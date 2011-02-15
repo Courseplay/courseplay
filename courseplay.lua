@@ -109,7 +109,9 @@ function courseplay:draw()
 					
 					if dist < 15 then
 						self.drive  = true
-						addTrigger(self.aiTrafficCollisionTrigger, "onTrafficCollisionTrigger", self);
+						 if self.aiTrafficCollisionTrigger ~= nil then
+						   addTrigger(self.aiTrafficCollisionTrigger, "onTrafficCollisionTrigger", self);
+						 end
 						self.record = false
 						self.dcheck = false
 					end	
@@ -122,7 +124,9 @@ function courseplay:draw()
 					
 					if dist < 15 then
 						self.drive  = true
-						addTrigger(self.aiTrafficCollisionTrigger, "onTrafficCollisionTrigger", self);
+						if self.aiTrafficCollisionTrigger ~= nil then
+						  addTrigger(self.aiTrafficCollisionTrigger, "onTrafficCollisionTrigger", self);
+						end
 						self.record = false
 						self.dcheck = false
 					end	
@@ -132,7 +136,9 @@ function courseplay:draw()
 			g_currentMission:addHelpButtonText(g_i18n:getText("CoursePlayStop"), InputBinding.CoursePlay);
 			if InputBinding.hasEvent(InputBinding.CoursePlay) then 
 				self.record = false
-				removeTrigger(self.aiTrafficCollisionTrigger);
+				 if self.aiTrafficCollisionTrigger ~= nil then
+				   removeTrigger(self.aiTrafficCollisionTrigger);
+				 end
 				self.drive  = false	
 				self.play = true
 				self.motor:setSpeedLevel(0, false);
@@ -280,8 +286,7 @@ end;
 -- checks collision trigger
 function courseplay:checkcollision(self)
   if self.aiTrafficCollisionTrigger ~= nil then
-    --AIVehicleUtil.setCollisionDirection(self.aiTractorDirectionNode, self.aiTrafficCollisionTrigger, 0.7071067, 0.7071067);
-    
+    AIVehicleUtil.setCollisionDirection(self.aiTractorDirectionNode, self.aiTrafficCollisionTrigger, -0.7071067, 0.7071067);    
   end;	
 	
   if self.numCollidingVehicles > 0 then
@@ -352,17 +357,20 @@ function courseplay:onTrafficCollisionTrigger(triggerId, otherId, onEnter, onLea
         if otherId == Player.rootNode then
             if onEnter then
                 self.numCollidingVehicles = self.numCollidingVehicles+1;
-		renderText(0.4, 0.001,0.02, "collision!!!");
+		print("collision!!!");
             elseif onLeave then
                 self.numCollidingVehicles = math.max(self.numCollidingVehicles-1, 0);
+		print("collision removed");
             end;
         else
             local vehicle = g_currentMission.nodeToVehicle[otherId];
             if vehicle ~= nil and self.trafficCollisionIgnoreList[otherId] == nil then
                 if onEnter then
                     self.numCollidingVehicles = self.numCollidingVehicles+1;
+		    print("collision!!!");
                 elseif onLeave then
                     self.numCollidingVehicles = math.max(self.numCollidingVehicles-1, 0);
+		    print("collision removed");
                 end;
             end;
         end;
