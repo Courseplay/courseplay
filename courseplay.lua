@@ -179,7 +179,6 @@ function courseplay:drive(self)
   local ctx,cty,ctz = getWorldTranslation(self.rootNode);
   cx ,cz = self.Waypoints[self.recordnumber].cx,self.Waypoints[self.recordnumber].cz
   self.dist = courseplay:distance(cx ,cz ,ctx ,ctz)
-
   
   local allowedToDrive = true;
   
@@ -190,7 +189,7 @@ function courseplay:drive(self)
   if not allowedToDrive then
      --local x,y,z = getWorldTranslation(self.aiTractorDirectionNode);
       local lx, lz = 0, 1; --AIVehicleUtil.getDriveDirection(self.aiTractorDirectionNode, self.aiTractorTargetX, y, self.aiTractorTargetZ);
-     AIVehicleUtil.driveInDirection(self, dt, 30, 0, 0, 28, false, moveForwards, lx, lz)
+     AIVehicleUtil.driveInDirection(self, 1, 30, 0, 0, 28, false, moveForwards, lx, lz)
      return;
    end;
 
