@@ -39,11 +39,33 @@ function courseplay:load(xmlFile)
 	-- traffic collision	
 	self.onTrafficCollisionTrigger = courseplay.onTrafficCollisionTrigger;
 	self.aiTrafficCollisionTrigger = Utils.indexToObject(self.components, getXMLString(xmlFile, "vehicle.aiTrafficCollisionTrigger#index"));
+	self.onToolTrafficCollisionTrigger = courseplay.onToolTrafficCollisionTrigger;
+	
 	self.trafficCollisionIgnoreList = {};
 	for k,v in pairs(self.components) do
 	  self.trafficCollisionIgnoreList[v.node] = true;
 	end;
 	self.numCollidingVehicles = 0;
+    self.numToolsCollidingVehicles = {};
+	
+	
+	-- name search
+	local aNameSearch = {"vehicle.name." .. g_languageShort, "vehicle.name.en", "vehicle.name", "vehicle#type"};
+	
+	if Steerable.load ~= nil then
+		local orgSteerableLoad = Steerable.load
+		
+		Steerable.load = function(self,xmlFile)
+			orgSteerableLoad(self,xmlFile)
+			
+			for nIndex,sXMLPath in pairs(aNameSearch) do 
+				self.name = getXMLString(xmlFile, sXMLPath);
+				if self.name ~= nil then break; end;
+			end;
+			if self.name == nil then self.name = g_i18n:getText("UNKNOWN") end;
+		end;
+	end;
+	
 end	
 	
 	
@@ -103,7 +125,6 @@ function courseplay:update()
 	end	
 	
 	if self.drive then
-	  courseplay:checkcollision(self);
 	  courseplay:drive(self);
 	end	
 	
@@ -113,6 +134,7 @@ end
 -- starts course recording
 function courseplay:start_record(self)
     courseplay:reset_course(self)
+	courseplay:init_implements(self)
 	self.record = true
 	self.drive  = false
 	-- show arrow to start if in circle mode
@@ -146,6 +168,8 @@ end
 
 -- starts driving the course
 function courseplay:start(self)
+    self.numCollidingVehicles = 0;
+    self.numToolsCollidingVehicles = {};
 	self.drive  = false
 	self.record = false		
 	self.wait   = false
@@ -203,9 +227,19 @@ function courseplay:drive(self)
     allowedToDrive = false;
   end
 
+   for k,v in pairs(self.numToolsCollidingVehicles) do
+		if v > 0 then
+			allowedToDrive = false;
+			break;
+		end;
+    end;
+
+  
   if not allowedToDrive then
-      local lx, lz = 0, 1; 
+     local lx, lz = 0, 1; 
      AIVehicleUtil.driveInDirection(self, 1, 30, 0, 0, 28, false, moveForwards, lx, lz)
+	 -- TODO renderText(0.4, 0.001,0.02, self.name .. ' steckt im Verkehr fest');
+	 renderText(0.4, 0.001,0.02, 'Abfahrer steckt im Verkehr fest');
      return;
    end;
   
@@ -304,12 +338,6 @@ function courseplay:record(self)
   self.tmr = self.tmr + 1 
 end;
 
--- checks collision trigger
-function courseplay:checkcollision(self)
-  --if self.aiTrafficCollisionTrigger ~= nil then
-    --AIVehicleUtil.setCollisionDirection(self.aiTractorDirectionNode, self.aiTrafficCollisionTrigger, -0.7071067, 0.7071067);    
-  --end;	
-end
 
 -- displays arrow and distance to start point
 function courseplay:dcheck(self)
@@ -336,6 +364,9 @@ function courseplay:dcheck(self)
   setOverlayUVs(self.ArrowOverlay.overlayId, arrowUV[1], arrowUV[2], arrowUV[3], arrowUV[4], arrowUV[5], arrowUV[6], arrowUV[7], arrowUV[8])
   self.ArrowOverlay:render()
   local ctx,cty,ctz = getWorldTranslation(self.rootNode);
+  if self.record then
+    return
+  end
   local cx ,cz = self.Waypoints[self.recordnumber].cx,self.Waypoints[self.recordnumber].cz
   dist = courseplay:distance(ctx ,ctz ,cx ,cz)
   renderText(0.4, 0.001,0.02,string.format("entfernung: %d ",dist ));
@@ -372,12 +403,19 @@ function courseplay:addsign(self, x, y, z)
     
 end
 
+function courseplay:init_implements(self)
+	for k,tool in pairs(self.attachedImplements) do
+		if tool.aiTrafficCollisionTrigger ~= nil then
+           addTrigger(tool.aiTrafficCollisionTrigger, "onToolTrafficCollisionTrigger", self);
+		end
+	end
+end
+
 function courseplay:onTrafficCollisionTrigger(triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
     if onEnter or onLeave then
         if otherId == Player.rootNode then
             if onEnter then
                 self.numCollidingVehicles = self.numCollidingVehicles+1;
-		
             elseif onLeave then
                 self.numCollidingVehicles = math.max(self.numCollidingVehicles-1, 0);
 		
@@ -387,7 +425,6 @@ function courseplay:onTrafficCollisionTrigger(triggerId, otherId, onEnter, onLea
             if vehicle ~= nil and self.trafficCollisionIgnoreList[otherId] == nil then
                 if onEnter then
                     self.numCollidingVehicles = self.numCollidingVehicles+1;
-		
                 elseif onLeave then
                     self.numCollidingVehicles = math.max(self.numCollidingVehicles-1, 0);
 		
@@ -396,3 +433,25 @@ function courseplay:onTrafficCollisionTrigger(triggerId, otherId, onEnter, onLea
         end;
     end;
 end;
+
+function courseplay:onToolTrafficCollisionTrigger(triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
+      if onEnter or onLeave then	      
+          if otherId == g_currentMission.player.rootNode then
+              if onEnter then
+                  self.numToolsCollidingVehicles[triggerId] = self.numToolsCollidingVehicles[triggerId]+1;
+              elseif onLeave then
+                  self.numToolsCollidingVehicles[triggerId] = math.max(self.numToolsCollidingVehicles[triggerId]-1, 0);
+				  end;
+          else
+              local vehicle = g_currentMission.nodeToVehicle[otherId];
+              if vehicle ~= nil and self.trafficCollisionIgnoreList[otherId] == nil then
+                  if onEnter then
+                      self.numToolsCollidingVehicles[triggerId] = self.numToolsCollidingVehicles[triggerId]+1;
+                  elseif onLeave then
+                      self.numToolsCollidingVehicles[triggerId] = math.max(self.numToolsCollidingVehicles[triggerId]-1, 0);
+                  end;
+              end;
+          end;
+      end;
+end;
+
