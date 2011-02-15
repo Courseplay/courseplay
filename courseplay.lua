@@ -340,6 +340,7 @@ function courseplay:onTrafficCollisionTrigger(triggerId, otherId, onEnter, onLea
         if otherId == Player.rootNode then
             if onEnter then
                 self.numCollidingVehicles = self.numCollidingVehicles+1;
+		renderText(0.4, 0.001,0.02, "collision!!!");
             elseif onLeave then
                 self.numCollidingVehicles = math.max(self.numCollidingVehicles-1, 0);
             end;
