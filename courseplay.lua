@@ -145,7 +145,9 @@ function courseplay:draw()
 	
 	
 	if self.dcheck then
-	  courseplay:dcheck(self);
+	  if self.recordnumber > 20 then
+	    courseplay:dcheck(self);
+	  end
 	end
 end	
 		
