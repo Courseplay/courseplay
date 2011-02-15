@@ -274,7 +274,7 @@ function courseplay:checkcollision(self)
   end;	
 	
   if self.numCollidingVehicles > 0 then
-    wait = true;
+    self.wait = true;
   end;	
 end
 
