@@ -4,6 +4,7 @@
 --
 -- @author  Lautschreier / Hummel
 -- @version:	v0.5.15.02.11
+-- @testing:    bullgore80
 -- @history:	14.02.01 added courseMode
 --		15.02.01 refactoring and collisiontrigger
 --
@@ -359,20 +360,20 @@ function courseplay:onTrafficCollisionTrigger(triggerId, otherId, onEnter, onLea
         if otherId == Player.rootNode then
             if onEnter then
                 self.numCollidingVehicles = self.numCollidingVehicles+1;
-		print("collision!!!");
+		
             elseif onLeave then
                 self.numCollidingVehicles = math.max(self.numCollidingVehicles-1, 0);
-		print("collision removed");
+		
             end;
         else
             local vehicle = g_currentMission.nodeToVehicle[otherId];
             if vehicle ~= nil and self.trafficCollisionIgnoreList[otherId] == nil then
                 if onEnter then
                     self.numCollidingVehicles = self.numCollidingVehicles+1;
-		    print("collision!!!");
+		
                 elseif onLeave then
                     self.numCollidingVehicles = math.max(self.numCollidingVehicles-1, 0);
-		    print("collision removed");
+		
                 end;
             end;
         end;
