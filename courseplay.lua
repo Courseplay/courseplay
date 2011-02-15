@@ -109,6 +109,7 @@ function courseplay:draw()
 					
 					if dist < 15 then
 						self.drive  = true
+						addTrigger(self.aiTrafficCollisionTrigger, "onTrafficCollisionTrigger", self);
 						self.record = false
 						self.dcheck = false
 					end	
@@ -121,6 +122,7 @@ function courseplay:draw()
 					
 					if dist < 15 then
 						self.drive  = true
+						addTrigger(self.aiTrafficCollisionTrigger, "onTrafficCollisionTrigger", self);
 						self.record = false
 						self.dcheck = false
 					end	
@@ -130,6 +132,7 @@ function courseplay:draw()
 			g_currentMission:addHelpButtonText(g_i18n:getText("CoursePlayStop"), InputBinding.CoursePlay);
 			if InputBinding.hasEvent(InputBinding.CoursePlay) then 
 				self.record = false
+				removeTrigger(self.aiTrafficCollisionTrigger);
 				self.drive  = false	
 				self.play = true
 				self.motor:setSpeedLevel(0, false);
@@ -277,8 +280,8 @@ end;
 -- checks collision trigger
 function courseplay:checkcollision(self)
   if self.aiTrafficCollisionTrigger ~= nil then
-    AIVehicleUtil.setCollisionDirection(self.aiTractorDirectionNode, self.aiTrafficCollisionTrigger, 0.7071067, 0.7071067);
-    addTrigger(self.aiTrafficCollisionTrigger, "onTrafficCollisionTrigger", self);
+    --AIVehicleUtil.setCollisionDirection(self.aiTractorDirectionNode, self.aiTrafficCollisionTrigger, 0.7071067, 0.7071067);
+    
   end;	
 	
   if self.numCollidingVehicles > 0 then
