@@ -268,7 +268,6 @@ end;
 
 -- checks collision trigger
 function courseplay:checkcollision(self)
-  self.numCollidingVehicles = 0;
   if self.aiTrafficCollisionTrigger ~= nil then
     addTrigger(self.aiTrafficCollisionTrigger, "onTrafficCollisionTrigger", self);
   end;	
