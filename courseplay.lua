@@ -172,7 +172,7 @@ function courseplay:drive(self)
   cx ,cz = self.Waypoints[self.recordnumber].cx,self.Waypoints[self.recordnumber].cz
   self.dist = courseplay:distance(cx ,cz ,ctx ,ctz)
 
-  if self.collissioned then
+  if self.collissioned then    
     if self.numCollidingVehicles == 0 then
       self.collissioned = false;
        self.drive  = true;
@@ -277,6 +277,7 @@ end;
 -- checks collision trigger
 function courseplay:checkcollision(self)
   if self.aiTrafficCollisionTrigger ~= nil then
+    AIVehicleUtil.setCollisionDirection(self.aiTractorDirectionNode, self.aiTrafficCollisionTrigger, 0.7071067, 0.7071067);
     addTrigger(self.aiTrafficCollisionTrigger, "onTrafficCollisionTrigger", self);
   end;	
 	
