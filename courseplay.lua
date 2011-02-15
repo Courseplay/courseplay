@@ -49,8 +49,7 @@ end
 	
 function courseplay:draw()
 	if not self.drive then
-		if not self.record then
-		
+		if not self.record then		
 			-- switch course mode
 			if self.circle then
 				g_currentMission:addHelpButtonText(g_i18n:getText("CoursePlayRound"), InputBinding.CourseMode);			      
@@ -68,24 +67,12 @@ function courseplay:draw()
 				
 			g_currentMission:addHelpButtonText(g_i18n:getText("PointRecordStart"), InputBinding.PointRecord);
 			if InputBinding.hasEvent(InputBinding.PointRecord) then 
-				self.record = true
-				self.drive  = false
-				-- show arrow to start if in circle mode
-				if self.circle then
-					self.dcheck = true
-				end
-				self.recordnumber = 1
-				self.tmr = 101
+				courseplay:start_record(self)
 			end
 		else
 			g_currentMission:addHelpButtonText(g_i18n:getText("PointRecordStop"), InputBinding.PointRecord);
 			if InputBinding.hasEvent(InputBinding.PointRecord) then 
-				self.record = false
-				self.drive  = false	
-				self.dcheck = false
-				self.play = true
-				self.maxnumber = self.recordnumber - 1
-	    self.back = false
+				courseplay:stop_record(self)
 			end
 		end	
 	end  
@@ -94,73 +81,21 @@ function courseplay:draw()
 		if not self.drive then 
 			g_currentMission:addHelpButtonText(g_i18n:getText("CoursePlayStart"), InputBinding.CoursePlay);
 			if InputBinding.hasEvent(InputBinding.CoursePlay) then 
-				self.drive  = false
-				self.record = false		
-				
-				
-				self.deactivateOnLeave = false
-				self.stopMotorOnLeave = false
-				if self.back then
-					self.recordnumber = self.maxnumber - 2
-					self.dcheck = true
-					local ctx,cty,ctz = getWorldTranslation(self.rootNode);
-					local cx ,cz = self.Waypoints[self.recordnumber].cx,self.Waypoints[self.recordnumber].cz
-					dist = courseplay:distance(ctx ,ctz ,cx ,cz)
-					
-					if dist < 15 then
-						self.drive  = true
-						 if self.aiTrafficCollisionTrigger ~= nil then
-						   addTrigger(self.aiTrafficCollisionTrigger, "onTrafficCollisionTrigger", self);
-						 end
-						self.record = false
-						self.dcheck = false
-					end	
-				else
-					self.recordnumber = 1
-					self.dcheck = true
-					local ctx,cty,ctz = getWorldTranslation(self.rootNode);
-					local cx ,cz = self.Waypoints[self.recordnumber].cx,self.Waypoints[self.recordnumber].cz
-					dist = courseplay:distance(ctx ,ctz ,cx ,cz)
-					
-					if dist < 15 then
-						self.drive  = true
-						if self.aiTrafficCollisionTrigger ~= nil then
-						  addTrigger(self.aiTrafficCollisionTrigger, "onTrafficCollisionTrigger", self);
-						end
-						self.record = false
-						self.dcheck = false
-					end	
-				end	
+				courseplay:start(self)
 			end	
 		else
 			g_currentMission:addHelpButtonText(g_i18n:getText("CoursePlayStop"), InputBinding.CoursePlay);
 			if InputBinding.hasEvent(InputBinding.CoursePlay) then 
-				self.record = false
-				 if self.aiTrafficCollisionTrigger ~= nil then
-				   removeTrigger(self.aiTrafficCollisionTrigger);
-				 end
-				self.drive  = false	
-				self.play = true
-				self.motor:setSpeedLevel(0, false);
-				self.motor.maxRpmOverride = nil;
-				WheelsUtil.updateWheelsPhysics(self, 0, self.lastSpeed, 0, false, self.requiredDriveMode)
-				self.recordnumber = 1
-				self.deactivateOnLeave = true
-				self.stopMotorOnLeave = true
+				courseplay:stop(self)
 			end
-		end		
-		
+		end				
 	end
 	
-	
-	
-	if self.dcheck then
-	  if self.recordnumber > 20 then
-	    courseplay:dcheck(self);
-	  end
+	if self.dcheck and self.recordnumber > 1 then
+		courseplay:dcheck(self);	  
 	end
 end	
-		
+
 		
 function courseplay:update()
 	if self.record then 
@@ -175,6 +110,87 @@ function courseplay:update()
 end		
 
 
+-- starts course recording
+function courseplay:start_record(self)
+    courseplay:reset_course(self)
+	self.record = true
+	self.drive  = false
+	-- show arrow to start if in circle mode
+	if self.circle then
+		self.dcheck = true
+	end
+	self.recordnumber = 1
+	self.tmr = 101
+end		
+
+-- stops course recording
+function courseplay:stop_record(self)
+	self.record = false
+	self.drive  = false	
+	self.dcheck = false
+	self.play = true
+	self.maxnumber = self.recordnumber - 1
+	self.back = false
+end		
+
+-- resets actual course
+function courseplay:reset_course(self)
+	self.recordnumber = 1
+	self.tmr = 1
+	self.Waypoints = {}
+	self.play = false
+	self.back = false 
+	self.wait = false
+	self.circle = false
+end	
+
+-- starts driving the course
+function courseplay:start(self)
+	self.drive  = false
+	self.record = false		
+
+	self.deactivateOnLeave = false
+	self.stopMotorOnLeave = false
+	if self.back then
+		self.recordnumber = self.maxnumber - 2
+	else
+		self.recordnumber = 1
+	end
+		
+	self.dcheck = true
+	local ctx,cty,ctz = getWorldTranslation(self.rootNode);
+	local cx ,cz = self.Waypoints[self.recordnumber].cx,self.Waypoints[self.recordnumber].cz
+	dist = courseplay:distance(ctx ,ctz ,cx ,cz)
+	
+	if dist < 15 then
+		self.drive  = true
+		 if self.aiTrafficCollisionTrigger ~= nil then
+		   addTrigger(self.aiTrafficCollisionTrigger, "onTrafficCollisionTrigger", self);
+		 end
+		self.record = false
+		self.dcheck = false
+	end		
+end
+
+-- stops driving the course
+function courseplay:stop(self)
+	self.record = false
+	-- remocing collision trigger
+	if self.aiTrafficCollisionTrigger ~= nil then
+		removeTrigger(self.aiTrafficCollisionTrigger);
+	end
+	self.drive  = false	
+	self.play = true
+	self.dcheck = false
+	self.motor:setSpeedLevel(0, false);
+	self.motor.maxRpmOverride = nil;
+	WheelsUtil.updateWheelsPhysics(self, 0, self.lastSpeed, 0, false, self.requiredDriveMode)
+	self.recordnumber = 1
+	self.deactivateOnLeave = true
+	self.stopMotorOnLeave = true
+end
+		
+
 -- drives recored course
 function courseplay:drive(self)
   local ctx,cty,ctz = getWorldTranslation(self.rootNode);
@@ -188,8 +204,7 @@ function courseplay:drive(self)
   end
 
   if not allowedToDrive then
-     --local x,y,z = getWorldTranslation(self.aiTractorDirectionNode);
-      local lx, lz = 0, 1; --AIVehicleUtil.getDriveDirection(self.aiTractorDirectionNode, self.aiTractorTargetX, y, self.aiTractorTargetZ);
+      local lx, lz = 0, 1; 
      AIVehicleUtil.driveInDirection(self, 1, 30, 0, 0, 28, false, moveForwards, lx, lz)
      return;
    end;
@@ -329,6 +344,9 @@ end;
 
 
 function courseplay:delete()
+	if self.aiTrafficCollisionTrigger ~= nil then
+		removeTrigger(self.aiTrafficCollisionTrigger);
+	end
 end;	
 
 function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
