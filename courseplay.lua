@@ -21,7 +21,6 @@ function courseplay:load(xmlFile)
 	self.back = false 
 	self.wait = false
 	self.circle = false
-	self.collissioned = false
 	
 	self.ArrowPath = Utils.getFilename("Speci/arrow.png", self.baseDirectory);
 	self.ArrowOverlay = Overlay:new("Arrow", self.ArrowPath, 0.4, 0.08, 0.250, 0.250);
@@ -181,15 +180,23 @@ function courseplay:drive(self)
   cx ,cz = self.Waypoints[self.recordnumber].cx,self.Waypoints[self.recordnumber].cz
   self.dist = courseplay:distance(cx ,cz ,ctx ,ctz)
 
-  if self.collissioned then    
-    if self.numCollidingVehicles == 0 then
-      self.collissioned = false;
-       self.drive  = true;
-    end;	
+  
+  local allowedToDrive = true;
+  
+  if self.numCollidingVehicles > 0 then
+    allowedToDrive = false;
   end
+
+  if not allowedToDrive then
+     --local x,y,z = getWorldTranslation(self.aiTractorDirectionNode);
+      local lx, lz = 0, 1; --AIVehicleUtil.getDriveDirection(self.aiTractorDirectionNode, self.aiTractorTargetX, y, self.aiTractorTargetZ);
+     AIVehicleUtil.driveInDirection(self, dt, 30, 0, 0, 28, false, moveForwards, lx, lz)
+     return;
+   end;
+
   
   -- only stop if have to wait
-  if self.wait or self.collissioned then				
+  if self.wait then				
     self.drive  = false
     self.motor:setSpeedLevel(0, false);
     self.motor.maxRpmOverride = nil;
@@ -287,10 +294,6 @@ end;
 function courseplay:checkcollision(self)
   if self.aiTrafficCollisionTrigger ~= nil then
     AIVehicleUtil.setCollisionDirection(self.aiTractorDirectionNode, self.aiTrafficCollisionTrigger, -0.7071067, 0.7071067);    
-  end;	
-	
-  if self.numCollidingVehicles > 0 then
-    self.collissioned = true;
   end;	
 end
 
