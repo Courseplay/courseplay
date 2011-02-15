@@ -1,5 +1,5 @@
 --
--- Courseplay v0.46
+-- Courseplay v0.48
 -- Specialization for Courseplay
 --
 -- @author  Lautschreier / Hummel
@@ -7,7 +7,7 @@
 -- @testing:    bullgore80
 -- @history:	14.02.01 added courseMode
 --		15.02.01 refactoring and collisiontrigger
---
+--		16.02.01 signs are dispearing 
 courseplay = {};
 
 function courseplay.prerequisitesPresent(specializations)
@@ -21,11 +21,15 @@ function courseplay:load(xmlFile)
 	self.play = false
 	self.back = false 
 	self.wait = false
-	self.circle = true
 	
-	self.ArrowPath = Utils.getFilename("Speci/arrow.png", self.baseDirectory);
+	-- course modes: 1 circle route - 2 returning route
+	self.course_mode = 1
+	
+	self.ArrowPath = Utils.getFilename("spezializations/arrow.png", self.baseDirectory);
 	self.ArrowOverlay = Overlay:new("Arrow", self.ArrowPath, 0.4, 0.08, 0.250, 0.250);
 	self.ArrowOverlay:render()
+	
+	-- kegel der route	
 	local baseDirectory = getAppBasePath()
 	local i3dNode = Utils.loadSharedI3DFile("data/maps/models/objects/beerKeg/beerKeg.i3d", baseDirectory)
 	local itemNode = getChildAt(i3dNode, 0)
@@ -35,6 +39,7 @@ function courseplay:load(xmlFile)
 	setVisibility(itemNode, false)
 	delete(i3dNode)
 	self.sign = itemNode
+	self.signs = {}
 	
 	-- traffic collision	
 	self.onTrafficCollisionTrigger = courseplay.onTrafficCollisionTrigger;
@@ -48,6 +53,9 @@ function courseplay:load(xmlFile)
 	self.numCollidingVehicles = 0;
     self.numToolsCollidingVehicles = {};
 	
+	
+	self.isTipperAttached = false
+	self.currentTrailerToFill = 1
 	
 	-- name search
 	local aNameSearch = {"vehicle.name." .. g_languageShort, "vehicle.name.en", "vehicle.name", "vehicle#type"};
@@ -73,17 +81,17 @@ function courseplay:draw()
 	if not self.drive then
 		if not self.record then		
 			-- switch course mode
-			if self.circle then
+			if self.course_mode == 1 then
 				g_currentMission:addHelpButtonText(g_i18n:getText("CoursePlayRound"), InputBinding.CourseMode);			      
 			else
 				g_currentMission:addHelpButtonText(g_i18n:getText("CoursePlayReturn"), InputBinding.CourseMode);			      
 			end
 				
 			if InputBinding.hasEvent(InputBinding.CourseMode) then 
-				if self.circle then
-					self.circle = false			      
+				if self.course_mode == 1 then
+					self.course_mode = 0
 				else
-					self.circle = true
+					self.course_mode = 1
 				end
 			end
 				
@@ -120,6 +128,13 @@ end
 
 		
 function courseplay:update()
+	if self.isEntered then
+		courseplay:sign_visibility(self, true)
+	else
+		courseplay:sign_visibility(self, false)
+	end
+
+
 	if self.record then 
 	  courseplay:record(self);
 	end	
@@ -138,7 +153,7 @@ function courseplay:start_record(self)
 	self.record = true
 	self.drive  = false
 	-- show arrow to start if in circle mode
-	if self.circle then
+	if self.course_mode == 1 then
 		self.dcheck = true
 	end
 	self.recordnumber = 1
@@ -156,14 +171,16 @@ function courseplay:stop_record(self)
 end		
 
 -- resets actual course
-function courseplay:reset_course(self)
+function courseplay:reset_course(self)	
 	self.recordnumber = 1
 	self.tmr = 1
 	self.Waypoints = {}
+	courseplay:sign_visibility(self, false)
+	self.signs = {}
 	self.play = false
 	self.back = false 
 	self.wait = false
-	self.circle = true
+	self.course_mode = 1
 end	
 
 -- starts driving the course
@@ -199,7 +216,7 @@ end
 -- stops driving the course
 function courseplay:stop(self)
 	self.record = false
-	-- remocing collision trigger
+	-- removing collision trigger
 	if self.aiTrafficCollisionTrigger ~= nil then
 		removeTrigger(self.aiTrafficCollisionTrigger);
 	end
@@ -269,7 +286,7 @@ function courseplay:drive(self)
 			  self.recordnumber = self.recordnumber + 1
 		  else			
 			  -- dont stop if in circle mode
-			  if self.circle then
+			  if self.course_mode == 1 then
 			    self.back = false
 			    self.recordnumber = 1
 			    self.wait = false
@@ -386,21 +403,26 @@ function courseplay:keyEvent(unicode, sym, modifier, isDown)
 end;	
 
 function courseplay:distance(x1 ,z1 ,x2 ,z2)
-	
 	xd = (x1 - x2) * (x1 - x2)
 	zd = (z1 -z2) * (z1 - z2)
 	dist = math.sqrt(math.abs(xd + zd) )
 	return dist
 end
 
-function courseplay:addsign(self, x, y, z)
-  
+function courseplay:addsign(self, x, y, z)  
     local height = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, x, 300, z)
     local root = self.sign
     local sign = clone(root, true)
     setTranslation(sign, x, height + 1 + self.recordnumber, z)
     setVisibility(sign, true)
-    
+    table.insert(self.signs, sign)
+	return(sign)
+end
+
+function courseplay:sign_visibility(self, visibilty)
+  for k,v in pairs(self.signs) do    
+      setVisibility(v, visibilty)	
+  end
 end
 
 function courseplay:init_implements(self)
