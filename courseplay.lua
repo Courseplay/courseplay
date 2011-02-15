@@ -21,6 +21,7 @@ function courseplay:load(xmlFile)
 	self.back = false 
 	self.wait = false
 	self.circle = false
+	self.collissioned = false
 	
 	self.ArrowPath = Utils.getFilename("Speci/arrow.png", self.baseDirectory);
 	self.ArrowOverlay = Overlay:new("Arrow", self.ArrowPath, 0.4, 0.08, 0.250, 0.250);
@@ -171,8 +172,15 @@ function courseplay:drive(self)
   cx ,cz = self.Waypoints[self.recordnumber].cx,self.Waypoints[self.recordnumber].cz
   self.dist = courseplay:distance(cx ,cz ,ctx ,ctz)
 
+  if self.collissioned then
+    if self.numCollidingVehicles == 0 then
+      self.collissioned = false;
+       self.drive  = true;
+    end;	
+  end
+  
   -- only stop if have to wait
-  if self.wait then				
+  if self.wait or self.collissioned then				
     self.drive  = false
     self.motor:setSpeedLevel(0, false);
     self.motor.maxRpmOverride = nil;
@@ -273,7 +281,7 @@ function courseplay:checkcollision(self)
   end;	
 	
   if self.numCollidingVehicles > 0 then
-    self.wait = true;
+    self.collissioned = true;
   end;	
 end
 
