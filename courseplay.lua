@@ -21,7 +21,7 @@ function courseplay:load(xmlFile)
 	self.play = false
 	self.back = false 
 	self.wait = false
-	self.circle = false
+	self.circle = true
 	
 	self.ArrowPath = Utils.getFilename("Speci/arrow.png", self.baseDirectory);
 	self.ArrowOverlay = Overlay:new("Arrow", self.ArrowPath, 0.4, 0.08, 0.250, 0.250);
@@ -91,7 +91,7 @@ function courseplay:draw()
 		end				
 	end
 	
-	if self.dcheck and self.recordnumber > 1 then
+	if self.dcheck and table.getn(self.Waypoints) > 1 then
 		courseplay:dcheck(self);	  
 	end
 end	
@@ -141,14 +141,14 @@ function courseplay:reset_course(self)
 	self.play = false
 	self.back = false 
 	self.wait = false
-	self.circle = false
+	self.circle = true
 end	
 
 -- starts driving the course
 function courseplay:start(self)
 	self.drive  = false
 	self.record = false		
-
+	self.wait   = false
 	self.deactivateOnLeave = false
 	self.stopMotorOnLeave = false
 	if self.back then
@@ -208,7 +208,6 @@ function courseplay:drive(self)
      AIVehicleUtil.driveInDirection(self, 1, 30, 0, 0, 28, false, moveForwards, lx, lz)
      return;
    end;
-
   
   -- only stop if have to wait
   if self.wait then				
@@ -264,7 +263,7 @@ function courseplay:drive(self)
 				  WheelsUtil.updateWheelsPhysics(self, 0, self.lastSpeed, 0, false, self.requiredDriveMode)
 				  self.recordnumber = 1
 				  self.back = false
-				  
+				  self.wait = true
 			  end	
 		  end	
 	  end
@@ -307,9 +306,9 @@ end;
 
 -- checks collision trigger
 function courseplay:checkcollision(self)
-  if self.aiTrafficCollisionTrigger ~= nil then
-    AIVehicleUtil.setCollisionDirection(self.aiTractorDirectionNode, self.aiTrafficCollisionTrigger, -0.7071067, 0.7071067);    
-  end;	
+  --if self.aiTrafficCollisionTrigger ~= nil then
+    --AIVehicleUtil.setCollisionDirection(self.aiTractorDirectionNode, self.aiTrafficCollisionTrigger, -0.7071067, 0.7071067);    
+  --end;	
 end
 
 -- displays arrow and distance to start point
