@@ -1,5 +1,5 @@
 --
--- Courseplay v0.48
+-- Courseplay v0.5
 -- Specialization for Courseplay
 --
 -- @author  Lautschreier / Hummel
@@ -7,7 +7,7 @@
 -- @testing:    bullgore80
 -- @history:	14.02.01 added courseMode
 --		15.02.01 refactoring and collisiontrigger
---		16.02.01 signs are dispearing 
+--		16.02.01 signs are dispearing, tipper support
 courseplay = {};
 
 function courseplay.prerequisitesPresent(specializations)
@@ -24,6 +24,9 @@ function courseplay:load(xmlFile)
 	
 	-- course modes: 1 circle route - 2 returning route
 	self.course_mode = 1
+	
+	-- ai mods: 1 abfahrer
+	self.ai_mode = 1
 	
 	self.ArrowPath = Utils.getFilename("spezializations/arrow.png", self.baseDirectory);
 	self.ArrowOverlay = Overlay:new("Arrow", self.ArrowPath, 0.4, 0.08, 0.250, 0.250);
@@ -54,7 +57,8 @@ function courseplay:load(xmlFile)
     self.numToolsCollidingVehicles = {};
 	
 	
-	self.isTipperAttached = false
+	self.tipper_attached = false
+	
 	self.currentTrailerToFill = 1
 	
 	-- name search
@@ -184,7 +188,16 @@ function courseplay:reset_course(self)
 end	
 
 -- starts driving the course
-function courseplay:start(self)
+function courseplay:start(self)    
+	self.tippers = {}
+	self.tipper_attached, self.tippers = courseplay:update_tools(self, self.tippers)
+	
+	if self.tipper_attached then
+		for k,object in pairs(self.tippers) do
+		  AITractor.addToolTrigger(self, object)
+		end
+	end
+	
     self.numCollidingVehicles = 0;
     self.numToolsCollidingVehicles = {};
 	self.drive  = false
@@ -220,6 +233,15 @@ function courseplay:stop(self)
 	if self.aiTrafficCollisionTrigger ~= nil then
 		removeTrigger(self.aiTrafficCollisionTrigger);
 	end
+	
+	-- removing tippers
+	if self.tipper_attached then
+		for key,tipper in pairs(self.tippers) do
+		  AITractor.removeToolTrigger(self, tipper)
+		  tipper:aiTurnOff()
+		end
+	end
+	
 	self.drive  = false	
 	self.play = true
 	self.dcheck = false
@@ -237,8 +259,14 @@ function courseplay:drive(self)
   local ctx,cty,ctz = getWorldTranslation(self.rootNode);
   cx ,cz = self.Waypoints[self.recordnumber].cx,self.Waypoints[self.recordnumber].cz
   self.dist = courseplay:distance(cx ,cz ,ctx ,ctz)
-  
+  local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
   local allowedToDrive = true;
+  
+  -- abfahrer-mode tippers are not full
+  if self.ai_mode == 1 and self.tipper_attached and tipper_fill_level < tipper_capacity then
+	allowedToDrive = false;
+  end
+  
   
   if self.numCollidingVehicles > 0 then
     allowedToDrive = false;
@@ -407,6 +435,25 @@ function courseplay:distance(x1 ,z1 ,x2 ,z2)
 	zd = (z1 -z2) * (z1 - z2)
 	dist = math.sqrt(math.abs(xd + zd) )
 	return dist
+end
+
+-- update implements
+-- TODO support more tippers
+function courseplay:update_tools(self)  
+  local tipper_attached = false
+  local tips = {}
+  -- go through all implements
+  for k,implement in pairs(self.attachedImplements) do
+    local object = implement.object
+    if object.allowTipDischarge then
+      tipper_attached = true
+      table.insert(tips, object)
+    end    
+  end
+  if tipper_attached then
+    return true, tips
+  end
+  return nil
 end
 
 function courseplay:addsign(self, x, y, z)  
