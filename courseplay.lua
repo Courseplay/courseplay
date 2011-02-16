@@ -18,6 +18,7 @@ function courseplay:load(xmlFile)
 	self.recordnumber = 1
 	self.tmr = 1
 	self.Waypoints = {}
+	self.courses = {}
 	self.play = false
 	self.back = false 
 	self.wait = false
@@ -193,13 +194,14 @@ function courseplay:start(self)
 	self.tipper_attached, self.tippers = courseplay:update_tools(self, self.tippers)
 	
 	if self.tipper_attached then
+		-- tool triggers for tippers
 		for k,object in pairs(self.tippers) do
 		  AITractor.addToolTrigger(self, object)
 		end
 	end
 	
-    self.numCollidingVehicles = 0;
-    self.numToolsCollidingVehicles = {};
+	self.numCollidingVehicles = 0;
+	self.numToolsCollidingVehicles = {};
 	self.drive  = false
 	self.record = false		
 	self.wait   = false
@@ -261,6 +263,7 @@ function courseplay:drive(self)
   self.dist = courseplay:distance(cx ,cz ,ctx ,ctz)
   local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
   local allowedToDrive = true;
+  local in_traffic = false;
   
   -- abfahrer-mode tippers are not full
   if self.ai_mode == 1 and self.tipper_attached and tipper_fill_level < tipper_capacity then
@@ -270,21 +273,26 @@ function courseplay:drive(self)
   
   if self.numCollidingVehicles > 0 then
     allowedToDrive = false;
+    in_traffic = true;
   end
 
    for k,v in pairs(self.numToolsCollidingVehicles) do
 		if v > 0 then
 			allowedToDrive = false;
+			in_traffic = true;			
 			break;
 		end;
     end;
+    
+  if in_traffic then
+    -- TODO renderText(0.4, 0.001,0.02, self.name .. ' steckt im Verkehr fest');
+    renderText(0.4, 0.001,0.02, 'Abfahrer steckt im Verkehr fest');
+  end
 
   
   if not allowedToDrive then
      local lx, lz = 0, 1; 
-     AIVehicleUtil.driveInDirection(self, 1, 30, 0, 0, 28, false, moveForwards, lx, lz)
-	 -- TODO renderText(0.4, 0.001,0.02, self.name .. ' steckt im Verkehr fest');
-	 renderText(0.4, 0.001,0.02, 'Abfahrer steckt im Verkehr fest');
+     AIVehicleUtil.driveInDirection(self, 1, 30, 0, 0, 28, false, moveForwards, lx, lz)	 
      return;
    end;
   
@@ -524,3 +532,33 @@ function courseplay:onToolTrafficCollisionTrigger(triggerId, otherId, onEnter, o
       end;
 end;
 
+
+-- saving // loading coures
+
+-- saves coures to xml-file
+function courseplay:save_courses(self)
+  -- TODO gameIndex finden
+  local path = getUserProfileAppPath() .. "savegame" .. gameIndex .. "/"
+  local File = io.open(path .. "courseplay.xml", "w")
+  local tab = "   "
+  if File ~= nil then
+    File:write("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\" ?>\n<XML>\n<courses>\n")
+    for name,x in pairs(self.courses) do
+      File:write(tab .. "<course name=\"" .. name .. "\">\n")
+      for i = 1, table.getn(x) do
+        local v = x[i]
+        File:write(tab .. tab .. "<waypoint" .. i .. " pos=\"" .. v.cx .. " " .. v.cz .. "\" angle=\"" .. v.angle .. "\" />\n")
+      end
+      File:write(tab .. "</course>\n")
+    end
+    File:write("</courses>\n")
+    
+    File:write("\n</XML>\n")
+    File:close()
+  end
+end
+
+
+function courseplay:load_courses(self)
+  
+end
