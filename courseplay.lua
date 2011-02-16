@@ -28,7 +28,7 @@ function courseplay:load(xmlFile)
 	-- ai mods: 1 abfahrer
 	self.ai_mode = 1
 	
-	self.ArrowPath = Utils.getFilename("spezializations/arrow.png", self.baseDirectory);
+	self.ArrowPath = Utils.getFilename("Specializations/arrow.png", self.baseDirectory);
 	self.ArrowOverlay = Overlay:new("Arrow", self.ArrowPath, 0.4, 0.08, 0.250, 0.250);
 	self.ArrowOverlay:render()
 	
