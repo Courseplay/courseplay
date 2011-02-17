@@ -3,12 +3,18 @@
 -- Specialization for Courseplay
 --
 -- @author  Lautschreier / Hummel
--- @version:	v0.5.15.02.11
+-- @version:	v0.5.16.02.11
 -- @testing:    bullgore80
--- @history:	14.02.01 added courseMode
---		15.02.01 refactoring and collisiontrigger
---		16.02.01 signs are dispearing, tipper support
+-- @history:	
+--      02.01.11/06.02.11 course recording and driving (Lautschreier)
+--      14.02.11 added courseMode (Hummel)
+--		15.02.11 refactoring and collisiontrigger (Hummel)
+--		16.02.11 signs are disapearing, tipper support (Hummel)
+--      17.02.11 info text and global saving of "course_players" (Hummel)
 courseplay = {};
+
+-- working tractors saved in this
+working_course_players = {};
 
 function courseplay.prerequisitesPresent(specializations)
     return true;
@@ -22,6 +28,13 @@ function courseplay:load(xmlFile)
 	self.play = false
 	self.back = false 
 	self.wait = false
+	self.working_course_player_num = nil
+	
+	-- info text on tractor
+	self.info_text = nil
+	
+	-- global info text - also displayed when not in vehicle
+	self.global_info_text = nil
 	
 	-- course modes: 1 circle route - 2 returning route
 	self.course_mode = 1
@@ -148,7 +161,89 @@ function courseplay:update()
 	  courseplay:drive(self);
 	end	
 	
+	courseplay:infotext(self);
+	
 end		
+
+
+-- starts driving the course
+function courseplay:start(self)    
+	-- add do working players if not already added
+	if self.working_course_player_num == nil then
+		self.working_course_player_num = courseplay:add_working_player(self)
+		print(self.working_course_player_num)
+	end	
+	
+	-- are there any tippers?
+	self.tippers = {}
+	self.tipper_attached, self.tippers = courseplay:update_tools(self, self.tippers)
+	
+	if self.tipper_attached then
+		-- tool triggers for tippers
+		for k,object in pairs(self.tippers) do
+		  AITractor.addToolTrigger(self, object)
+		end
+	end
+	
+	self.numCollidingVehicles = 0;
+	self.numToolsCollidingVehicles = {};
+	self.drive  = false
+	self.record = false		
+	self.wait   = false
+	self.deactivateOnLeave = false
+	self.stopMotorOnLeave = false
+	if self.back then
+		self.recordnumber = self.maxnumber - 2
+	else
+		self.recordnumber = 1
+	end
+		
+	self.dcheck = true
+	local ctx,cty,ctz = getWorldTranslation(self.rootNode);
+	local cx ,cz = self.Waypoints[self.recordnumber].cx,self.Waypoints[self.recordnumber].cz
+	dist = courseplay:distance(ctx ,ctz ,cx ,cz)
+	
+	if dist < 15 then
+		self.drive  = true
+		if self.aiTrafficCollisionTrigger ~= nil then
+		   addTrigger(self.aiTrafficCollisionTrigger, "onTrafficCollisionTrigger", self);
+		end
+		self.record = false
+		self.dcheck = false
+	end		
+end
+
+function courseplay:add_working_player(self)
+   table.insert(working_course_players, self)
+   return table.getn(working_course_players)
+end
+
+-- stops driving the course
+function courseplay:stop(self)
+	self.record = false
+	-- removing collision trigger
+	if self.aiTrafficCollisionTrigger ~= nil then
+		removeTrigger(self.aiTrafficCollisionTrigger);
+	end
+	
+	-- removing tippers
+	if self.tipper_attached then
+		for key,tipper in pairs(self.tippers) do
+		  AITractor.removeToolTrigger(self, tipper)
+		  tipper:aiTurnOff()
+		end
+	end
+	
+	self.drive  = false	
+	self.play = true
+	self.dcheck = false
+	self.motor:setSpeedLevel(0, false);
+	self.motor.maxRpmOverride = nil;
+	WheelsUtil.updateWheelsPhysics(self, 0, self.lastSpeed, 0, false, self.requiredDriveMode)
+	self.recordnumber = 1
+	self.deactivateOnLeave = true
+	self.stopMotorOnLeave = true
+end
 
 
 -- starts course recording
@@ -188,72 +283,6 @@ function courseplay:reset_course(self)
 	self.course_mode = 1
 end	
 
--- starts driving the course
-function courseplay:start(self)    
-	self.tippers = {}
-	self.tipper_attached, self.tippers = courseplay:update_tools(self, self.tippers)
-	
-	if self.tipper_attached then
-		-- tool triggers for tippers
-		for k,object in pairs(self.tippers) do
-		  AITractor.addToolTrigger(self, object)
-		end
-	end
-	
-	self.numCollidingVehicles = 0;
-	self.numToolsCollidingVehicles = {};
-	self.drive  = false
-	self.record = false		
-	self.wait   = false
-	self.deactivateOnLeave = false
-	self.stopMotorOnLeave = false
-	if self.back then
-		self.recordnumber = self.maxnumber - 2
-	else
-		self.recordnumber = 1
-	end
-		
-	self.dcheck = true
-	local ctx,cty,ctz = getWorldTranslation(self.rootNode);
-	local cx ,cz = self.Waypoints[self.recordnumber].cx,self.Waypoints[self.recordnumber].cz
-	dist = courseplay:distance(ctx ,ctz ,cx ,cz)
-	
-	if dist < 15 then
-		self.drive  = true
-		 if self.aiTrafficCollisionTrigger ~= nil then
-		   addTrigger(self.aiTrafficCollisionTrigger, "onTrafficCollisionTrigger", self);
-		 end
-		self.record = false
-		self.dcheck = false
-	end		
-end
-
--- stops driving the course
-function courseplay:stop(self)
-	self.record = false
-	-- removing collision trigger
-	if self.aiTrafficCollisionTrigger ~= nil then
-		removeTrigger(self.aiTrafficCollisionTrigger);
-	end
-	
-	-- removing tippers
-	if self.tipper_attached then
-		for key,tipper in pairs(self.tippers) do
-		  AITractor.removeToolTrigger(self, tipper)
-		  tipper:aiTurnOff()
-		end
-	end
-	
-	self.drive  = false	
-	self.play = true
-	self.dcheck = false
-	self.motor:setSpeedLevel(0, false);
-	self.motor.maxRpmOverride = nil;
-	WheelsUtil.updateWheelsPhysics(self, 0, self.lastSpeed, 0, false, self.requiredDriveMode)
-	self.recordnumber = 1
-	self.deactivateOnLeave = true
-	self.stopMotorOnLeave = true
-end
 		
 
 -- drives recored course
@@ -268,6 +297,7 @@ function courseplay:drive(self)
   -- abfahrer-mode tippers are not full
   if self.ai_mode == 1 and self.tipper_attached and tipper_fill_level < tipper_capacity then
 	allowedToDrive = false;
+	self.info_text = string.format("Warte bis von: %d von %d ",tipper_fill_level,tipper_capacity )
   end
   
   
@@ -285,8 +315,7 @@ function courseplay:drive(self)
     end;
     
   if in_traffic then
-    -- TODO renderText(0.4, 0.001,0.02, self.name .. ' steckt im Verkehr fest');
-    renderText(0.4, 0.001,0.02, 'Abfahrer steckt im Verkehr fest');
+    self.global_info_text = 'Abfahrer steckt im Verkehr fest'
   end
 
   
@@ -422,7 +451,7 @@ function courseplay:dcheck(self)
   end
   local cx ,cz = self.Waypoints[self.recordnumber].cx,self.Waypoints[self.recordnumber].cz
   dist = courseplay:distance(ctx ,ctz ,cx ,cz)
-  renderText(0.4, 0.001,0.02,string.format("entfernung: %d ",dist ));
+  self.info_text = string.format("entfernung: %d ",dist )  
 end;
 
 
@@ -437,6 +466,23 @@ end
 
 function courseplay:keyEvent(unicode, sym, modifier, isDown)
 end;	
+
+
+function courseplay:infotext(self)
+	if self.isEntered then
+		if self.info_text ~= nil then
+		  renderText(0.4, 0.001,0.02, self.info_text);
+		end
+	end
+	
+	if self.global_info_text ~= nil then
+	  local yspace = self.working_course_player_num * 0.022
+	  
+	  renderText(0.4, yspace ,0.02, self.global_info_text);
+	end
+	self.info_text = nil
+	self.global_info_text = nil
+end
 
 function courseplay:distance(x1 ,z1 ,x2 ,z2)
 	xd = (x1 - x2) * (x1 - x2)
