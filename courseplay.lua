@@ -298,10 +298,10 @@ function courseplay:drive(self)
   local allowedToDrive = true;
   local in_traffic = false;
     
-  local tx, ty, tz = getWorldTranslation(self.rootNode)
-  local nx, ny, nz = localDirectionToWorld(self.rootNode, 0, 0, 1)
+  local tx, ty, tz = getWorldTranslation(self.aiTrafficCollisionTrigger)
+  local nx, ny, nz = localDirectionToWorld(self.aiTractorDirectionNode, 0, 0, 1)
   
-  raycastAll(tx, ty, tz, 0, -1, 0, "onTipTrigger", 10, self)
+  raycastAll(tx, ty, tz, nx, ny, nz, "onTipTrigger", 10, self)
   
   if self.currentTipTrigger ~= nil then
 	self.info_text = "near trigger"
@@ -608,12 +608,12 @@ end;
 
 -- tip trigger
 
-courseplay.onTipTrigger = function(     transformId, x, y, z, distance)
-  local all_triggers = g_currentMission.tipTriggers
-  local count = table.getn(all_triggers)
+courseplay.onTipTrigger = function(l_21_0, l_21_1, l_21_2, l_21_3, l_21_4, l_21_5)
+  local trigger = g_currentMission.tipTriggers
+  local count = table.getn(trigger)
   for i = 1, count do
-    if all_triggers[i].triggerId == transformId then
-      triggerId.currentTipTrigger = all_triggers[i]
+    if trigger[i].triggerId == l_21_1 then
+      l_21_0.currentTipTrigger = trigger[i]
     end
   end
 end
