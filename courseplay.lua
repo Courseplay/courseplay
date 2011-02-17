@@ -3,7 +3,7 @@
 -- Specialization for Courseplay
 --
 -- @author  Lautschreier / Hummel
--- @version:	v0.5.16.02.11
+-- @version:	v0.5.18.02.11
 -- @testing:    bullgore80
 -- @history:	
 --      02.01.11/06.02.11 course recording and driving (Lautschreier)
@@ -11,6 +11,7 @@
 --		15.02.11 refactoring and collisiontrigger (Hummel)
 --		16.02.11 signs are disapearing, tipper support (Hummel)
 --      17.02.11 info text and global saving of "course_players" (Hummel)
+--      18.02.11 more than one tipper recognized by tractor // name of tractor in global info message
 courseplay = {};
 
 -- working tractors saved in this
@@ -67,9 +68,9 @@ function courseplay:load(xmlFile)
 	self.numCollidingVehicles = 0;
 	self.numToolsCollidingVehicles = {};
 	
-	self.tipper_attached = false
-	
-	self.currentTrailerToFill = 1
+	self.tippers = {}
+	self.tipper_attached = false	
+	self.currentTrailerToFill = nil
 	
 	-- name search
 	local aNameSearch = {"vehicle.name." .. g_languageShort, "vehicle.name.en", "vehicle.name", "vehicle#type"};
@@ -138,6 +139,8 @@ function courseplay:draw()
 	if self.dcheck and table.getn(self.Waypoints) > 1 then
 		courseplay:dcheck(self);	  
 	end
+	
+	courseplay:infotext(self);
 end	
 
 		
@@ -157,7 +160,7 @@ function courseplay:update()
 	  courseplay:drive(self);
 	end	
 	
-	courseplay:infotext(self);
+	
 	
 end		
 
@@ -167,13 +170,12 @@ function courseplay:start(self)
 	-- add do working players if not already added
 	if self.working_course_player_num == nil then
 		self.working_course_player_num = courseplay:add_working_player(self)
-		print(self.working_course_player_num)
 	end	
 	
-	-- are there any tippers?
 	self.tippers = {}
+	-- are there any tippers?	
 	self.tipper_attached, self.tippers = courseplay:update_tools(self, self.tippers)
-	
+		
 	if self.tipper_attached then
 		-- tool triggers for tippers
 		for k,object in pairs(self.tippers) do
@@ -245,7 +247,7 @@ end
 -- starts course recording
 function courseplay:start_record(self)
     courseplay:reset_course(self)
-	courseplay:init_implements(self)
+	
 	self.record = true
 	self.drive  = false
 	-- show arrow to start if in circle mode
@@ -300,11 +302,11 @@ function courseplay:drive(self)
   end
   
   -- abfahrer-mode
-  if self.ai_mode == 1 then
+  if self.ai_mode == 1 and self.tipper_attached then
   
 	-- tippers are not full
 	-- TODO wegpunkt berücksichtigen
-    if self.tipper_attached and tipper_fill_level < tipper_capacity then
+    if tipper_fill_level < tipper_capacity then
 		allowedToDrive = false;
 		self.info_text = string.format("Wird beladen: %d von %d ",tipper_fill_level,tipper_capacity )
 	end
@@ -494,7 +496,7 @@ function courseplay:infotext(self)
 	if self.global_info_text ~= nil then
 	  local yspace = self.working_course_player_num * 0.022
 	  
-	  renderText(0.4, yspace ,0.02, self.global_info_text);
+	  renderText(0.4, yspace ,0.02, self.name .. " " .. self.global_info_text);
 	end
 	self.info_text = nil
 	self.global_info_text = nil
@@ -508,31 +510,26 @@ function courseplay:distance(x1 ,z1 ,x2 ,z2)
 end
 
 -- update implements
--- TODO support more tippers
-function courseplay:update_tools(tractor_or_implement, given_tips)  
+function courseplay:update_tools(tractor_or_implement, tippers)    
   local tipper_attached = false
-  local tips = {}
-  
-  if given_tips ~= nil then
-    tips = given_tips
-  end
-  
   -- go through all implements
   for k,implement in pairs(tractor_or_implement.attachedImplements) do
     local object = implement.object
     if object.allowTipDischarge then
       tipper_attached = true
-      table.insert(tips, object)
+      table.insert(tippers, object)
     end    
+	-- are there more tippers attached to the current implement?
     if table.getn(object.attachedImplements) ~= 0 then
-      local c, f = courseplay:update_tools(object, tips)
+	  
+      local c, f = courseplay:update_tools(object, tippers)
       if c and f then
-        tips = f
+        tippers = f
       end
     end
   end
   if tipper_attached then
-    return true, tips
+    return true, tippers
   end
   return nil
 end
@@ -551,14 +548,6 @@ function courseplay:sign_visibility(self, visibilty)
   for k,v in pairs(self.signs) do    
       setVisibility(v, visibilty)	
   end
-end
-
-function courseplay:init_implements(self)
-	for k,tool in pairs(self.attachedImplements) do
-		if tool.aiTrafficCollisionTrigger ~= nil then
-           addTrigger(tool.aiTrafficCollisionTrigger, "onToolTrafficCollisionTrigger", self);
-		end
-	end
 end
 
 -- triggers
@@ -628,4 +617,83 @@ end
 
 function courseplay:load_courses(self)
   
+end
+
+
+-- debugging data dumper
+function table.show(t, name, indent)
+   local cart     -- a container
+   local autoref  -- for self references
+
+   --[[ counts the number of elements in a table
+   local function tablecount(t)
+      local n = 0
+      for _, _ in pairs(t) do n = n+1 end
+      return n
+   end
+   ]]
+   -- (RiciLake) returns true if the table is empty
+   local function isemptytable(t) return next(t) == nil end
+
+   local function basicSerialize (o)
+      local so = tostring(o)
+      if type(o) == "function" then
+         local info = debug.getinfo(o, "S")
+         -- info.name is nil because o is not a calling level
+         if info.what == "C" then
+            return string.format("%q", so .. ", C function")
+         else 
+            -- the information is defined through lines
+            return string.format("%q", so .. ", defined in (" ..
+                info.linedefined .. "-" .. info.lastlinedefined ..
+                ")" .. info.source)
+         end
+      elseif type(o) == "number" then
+         return so
+      else
+         return string.format("%q", so)
+      end
+   end
+
+   local function addtocart (value, name, indent, saved, field)
+      indent = indent or ""
+      saved = saved or {}
+      field = field or name
+
+      cart = cart .. indent .. field
+
+      if type(value) ~= "table" then
+         cart = cart .. " = " .. basicSerialize(value) .. ";\n"
+      else
+         if saved[value] then
+            cart = cart .. " = {}; -- " .. saved[value] 
+                        .. " (self reference)\n"
+            autoref = autoref ..  name .. " = " .. saved[value] .. ";\n"
+         else
+            saved[value] = name
+            --if tablecount(value) == 0 then
+            if isemptytable(value) then
+               cart = cart .. " = {};\n"
+            else
+               cart = cart .. " = {\n"
+               for k, v in pairs(value) do
+                  k = basicSerialize(k)
+                  local fname = string.format("%s[%s]", name, k)
+                  field = string.format("[%s]", k)
+                  -- three spaces between levels
+                  addtocart(v, fname, indent .. "   ", saved, field)
+               end
+               cart = cart .. indent .. "};\n"
+            end
+         end
+      end
+   end
+
+   name = name or "__unnamed__"
+   if type(t) ~= "table" then
+      return name .. " = " .. basicSerialize(t)
+   end
+   cart, autoref = "", ""
+   addtocart(t, name, indent)
+   return cart .. autoref
 end
