@@ -63,7 +63,8 @@ function courseplay:load(xmlFile)
 	self.onTrafficCollisionTrigger = courseplay.onTrafficCollisionTrigger;
 	self.aiTrafficCollisionTrigger = Utils.indexToObject(self.components, getXMLString(xmlFile, "vehicle.aiTrafficCollisionTrigger#index"));
 	
-	self.onTipTrigger = courseplay.onToolTipTrigger;
+	self.findTipTriggerCallback = courseplay.findTipTriggerCallback;
+	
 	
 	self.numCollidingVehicles = 0;
 	self.numToolsCollidingVehicles = {};
@@ -295,7 +296,7 @@ function courseplay:drive(self)
   local tx, ty, tz = getWorldTranslation(self.aiTrafficCollisionTrigger)
   local nx, ny, nz = localDirectionToWorld(self.aiTractorDirectionNode, 0, 0, 1)
   
-  raycastAll(tx, ty, tz, nx, ny, nz, "onTipTrigger", 10, self)
+  raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
   
   if self.currentTipTrigger ~= nil then
 	self.info_text = "near trigger"
@@ -495,8 +496,11 @@ function courseplay:infotext(self)
 	
 	if self.global_info_text ~= nil then
 	  local yspace = self.working_course_player_num * 0.022
-	  
-	  renderText(0.4, yspace ,0.02, self.name .. " " .. self.global_info_text);
+	  local show_name = ""
+	  if self.name ~= nil then
+	    show_name = self.name
+	  end
+	  renderText(0.4, yspace ,0.02, show_name .. " " .. self.global_info_text);
 	end
 	self.info_text = nil
 	self.global_info_text = nil
@@ -578,13 +582,18 @@ end;
 
 -- tip trigger
 
-courseplay.onTipTrigger = function(l_21_0, l_21_1, l_21_2, l_21_3, l_21_4, l_21_5)
+function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
   print("i am in onTipTrigger")
+  print(transformId)
+  
   local trigger = g_currentMission.tipTriggers
   local count = table.getn(trigger)
+  print(count)
   for i = 1, count do
-    if trigger[i].triggerId == l_21_1 then
-      l_21_0.currentTipTrigger = trigger[i]
+    print(trigger[i].triggerId)
+    if trigger[i].triggerId == transformId then
+	  print("hab den trigger gefunden")
+      self.currentTipTrigger = trigger[i]
     end
   end
 end
