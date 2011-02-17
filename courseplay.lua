@@ -39,7 +39,7 @@ function courseplay:load(xmlFile)
 	-- course modes: 1 circle route - 2 returning route
 	self.course_mode = 1
 	
-	-- ai mods: 1 abfahrer
+	-- ai mode: 1 abfahrer
 	self.ai_mode = 1
 	
 	self.ArrowPath = Utils.getFilename("Specializations/arrow.png", self.baseDirectory);
@@ -62,6 +62,7 @@ function courseplay:load(xmlFile)
 	self.onTrafficCollisionTrigger = courseplay.onTrafficCollisionTrigger;
 	self.aiTrafficCollisionTrigger = Utils.indexToObject(self.components, getXMLString(xmlFile, "vehicle.aiTrafficCollisionTrigger#index"));
 	self.onToolTrafficCollisionTrigger = courseplay.onToolTrafficCollisionTrigger;
+	self.onTipTrigger = courseplay.onToolTipTrigger;
 	
 	self.trafficCollisionIgnoreList = {};
 	for k,v in pairs(self.components) do
@@ -69,6 +70,9 @@ function courseplay:load(xmlFile)
 	end;
 	self.numCollidingVehicles = 0;
     self.numToolsCollidingVehicles = {};
+	
+	-- speeds	
+	--self.turnSpeed = Utils.getNoNil(getXMLFloat(self, "vehicle.aiConfig#turn"), config.turn) / 3600
 	
 	
 	self.tipper_attached = false
@@ -293,13 +297,33 @@ function courseplay:drive(self)
   local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
   local allowedToDrive = true;
   local in_traffic = false;
+    
+  local tx, ty, tz = getWorldTranslation(self.rootNode)
+  local nx, ny, nz = localDirectionToWorld(self.rootNode, 0, 0, 1)
   
-  -- abfahrer-mode tippers are not full
-  if self.ai_mode == 1 and self.tipper_attached and tipper_fill_level < tipper_capacity then
-	allowedToDrive = false;
-	self.info_text = string.format("Warte bis von: %d von %d ",tipper_fill_level,tipper_capacity )
+  raycastAll(tx, ty, tz, 0, -1, 0, "onTipTrigger", 10, self)
+  
+  if self.currentTipTrigger ~= nil then
+	self.info_text = "near trigger"
   end
   
+  -- abfahrer-mode
+  if self.ai_mode == 1 then
+  
+	-- tippers are not full
+	-- TODO wegpunkt berücksichtigen
+    if self.tipper_attached and tipper_fill_level < tipper_capacity then
+		allowedToDrive = false;
+		self.info_text = string.format("Wird beladen: %d von %d ",tipper_fill_level,tipper_capacity )
+	end
+	
+	-- tipper is not empty and tractor reaches TipTrigger
+	if tipper_fill_level > 0 and self.currentTipTrigger ~= nil then
+		allowedToDrive = false;
+		self.info_text = "Tip Trigger erreicht"
+	end
+	
+  end
   
   if self.numCollidingVehicles > 0 then
     allowedToDrive = false;
@@ -534,6 +558,9 @@ function courseplay:init_implements(self)
 	end
 end
 
+-- triggers
+
+-- traffic collision
 function courseplay:onTrafficCollisionTrigger(triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
     if onEnter or onLeave then
         if otherId == Player.rootNode then
@@ -557,6 +584,7 @@ function courseplay:onTrafficCollisionTrigger(triggerId, otherId, onEnter, onLea
     end;
 end;
 
+-- traffic collision of iplements
 function courseplay:onToolTrafficCollisionTrigger(triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
       if onEnter or onLeave then	      
           if otherId == g_currentMission.player.rootNode then
@@ -578,6 +606,17 @@ function courseplay:onToolTrafficCollisionTrigger(triggerId, otherId, onEnter, o
       end;
 end;
 
+-- tip trigger
+
+courseplay.onTipTrigger = function(     transformId, x, y, z, distance)
+  local all_triggers = g_currentMission.tipTriggers
+  local count = table.getn(all_triggers)
+  for i = 1, count do
+    if all_triggers[i].triggerId == transformId then
+      triggerId.currentTipTrigger = all_triggers[i]
+    end
+  end
+end
 
 -- saving // loading coures
 
