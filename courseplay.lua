@@ -61,19 +61,11 @@ function courseplay:load(xmlFile)
 	-- traffic collision	
 	self.onTrafficCollisionTrigger = courseplay.onTrafficCollisionTrigger;
 	self.aiTrafficCollisionTrigger = Utils.indexToObject(self.components, getXMLString(xmlFile, "vehicle.aiTrafficCollisionTrigger#index"));
-	self.onToolTrafficCollisionTrigger = courseplay.onToolTrafficCollisionTrigger;
+	
 	self.onTipTrigger = courseplay.onToolTipTrigger;
 	
-	self.trafficCollisionIgnoreList = {};
-	for k,v in pairs(self.components) do
-	  self.trafficCollisionIgnoreList[v.node] = true;
-	end;
 	self.numCollidingVehicles = 0;
-    self.numToolsCollidingVehicles = {};
-	
-	-- speeds	
-	--self.turnSpeed = Utils.getNoNil(getXMLFloat(self, "vehicle.aiConfig#turn"), config.turn) / 3600
-	
+	self.numToolsCollidingVehicles = {};
 	
 	self.tipper_attached = false
 	
@@ -517,16 +509,27 @@ end
 
 -- update implements
 -- TODO support more tippers
-function courseplay:update_tools(self)  
+function courseplay:update_tools(tractor_or_implement, given_tips)  
   local tipper_attached = false
   local tips = {}
+  
+  if given_tips ~= nil then
+    tips = given_tips
+  end
+  
   -- go through all implements
-  for k,implement in pairs(self.attachedImplements) do
+  for k,implement in pairs(tractor_or_implement.attachedImplements) do
     local object = implement.object
     if object.allowTipDischarge then
       tipper_attached = true
       table.insert(tips, object)
     end    
+    if table.getn(object.attachedImplements) ~= 0 then
+      local c, f = courseplay:update_tools(object, tips)
+      if c and f then
+        tips = f
+      end
+    end
   end
   if tipper_attached then
     return true, tips
@@ -584,31 +587,10 @@ function courseplay:onTrafficCollisionTrigger(triggerId, otherId, onEnter, onLea
     end;
 end;
 
--- traffic collision of iplements
-function courseplay:onToolTrafficCollisionTrigger(triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
-      if onEnter or onLeave then	      
-          if otherId == g_currentMission.player.rootNode then
-              if onEnter then
-                  self.numToolsCollidingVehicles[triggerId] = self.numToolsCollidingVehicles[triggerId]+1;
-              elseif onLeave then
-                  self.numToolsCollidingVehicles[triggerId] = math.max(self.numToolsCollidingVehicles[triggerId]-1, 0);
-				  end;
-          else
-              local vehicle = g_currentMission.nodeToVehicle[otherId];
-              if vehicle ~= nil and self.trafficCollisionIgnoreList[otherId] == nil then
-                  if onEnter then
-                      self.numToolsCollidingVehicles[triggerId] = self.numToolsCollidingVehicles[triggerId]+1;
-                  elseif onLeave then
-                      self.numToolsCollidingVehicles[triggerId] = math.max(self.numToolsCollidingVehicles[triggerId]-1, 0);
-                  end;
-              end;
-          end;
-      end;
-end;
-
 -- tip trigger
 
 courseplay.onTipTrigger = function(l_21_0, l_21_1, l_21_2, l_21_3, l_21_4, l_21_5)
+  print("i am in onTipTrigger")
   local trigger = g_currentMission.tipTriggers
   local count = table.getn(trigger)
   for i = 1, count do
