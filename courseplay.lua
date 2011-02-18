@@ -342,9 +342,11 @@ function courseplay:drive(self)
      local lx, lz = 0, 1; 
      AIVehicleUtil.driveInDirection(self, 1, 30, 0, 0, 28, false, moveForwards, lx, lz)	 
      
-     if active_tipper and active_tipper.tipState == 0 then
-       active_tipper.toggleTipState(self.currentTipTrigger)
+     if active_tipper   then
        self.info_text = string.format("Wird entladen: %d von %d ",tipper_fill_level,tipper_capacity )
+       if active_tipper.tipState == 0 then
+	 active_tipper.toggleTipState(self.currentTipTrigger)
+       end
      end
      return;
    end;
