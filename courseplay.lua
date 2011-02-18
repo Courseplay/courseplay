@@ -74,6 +74,7 @@ function courseplay:load(xmlFile)
 	self.tippers = {}
 	self.tipper_attached = false	
 	self.currentTrailerToFill = nil
+	self.unloaded = false
 	
 	-- name search
 	local aNameSearch = {"vehicle.name." .. g_languageShort, "vehicle.name.en", "vehicle.name", "vehicle#type"};
@@ -306,7 +307,7 @@ function courseplay:drive(self)
   
 	-- tippers are not full
 	-- TODO wegpunkt berücksichtigen
-    if tipper_fill_level < tipper_capacity then
+    if tipper_fill_level < tipper_capacity and self.unloaded == false then
 		allowedToDrive = false;
 		self.info_text = string.format("Wird beladen: %d von %d ",tipper_fill_level,tipper_capacity )
 	end
@@ -342,11 +343,22 @@ function courseplay:drive(self)
      local lx, lz = 0, 1; 
      AIVehicleUtil.driveInDirection(self, 1, 30, 0, 0, 28, false, moveForwards, lx, lz)	 
      
-     if active_tipper   then
+     
+     if active_tipper and  tipper_fill_level == 0 then
+        if active_tipper.tipState ~= 0 then
+	  active_tipper.toggleTipState(self.currentTipTrigger)
+	end       
+	self.unloaded = true
+	active_tipper = nil
+     end
+     
+     if active_tipper then
        self.info_text = string.format("Wird entladen: %d von %d ",tipper_fill_level,tipper_capacity )
        if active_tipper.tipState == 0 then
 	 active_tipper.toggleTipState(self.currentTipTrigger)
        end
+       
+       
      end
      return;
    end;
