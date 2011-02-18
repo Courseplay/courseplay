@@ -59,6 +59,8 @@ function courseplay:load(xmlFile)
 	self.sign = itemNode
 	self.signs = {}
 	
+	self.max_speed = nil
+	
 	-- traffic collision	
 	self.onTrafficCollisionTrigger = courseplay.onTrafficCollisionTrigger;
 	self.aiTrafficCollisionTrigger = Utils.indexToObject(self.components, getXMLString(xmlFile, "vehicle.aiTrafficCollisionTrigger#index"));
@@ -297,16 +299,12 @@ function courseplay:drive(self)
   local nx, ny, nz = localDirectionToWorld(self.aiTractorDirectionNode, 0, 0, 1)
   
   raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
-  
-  if self.currentTipTrigger ~= nil then
-	self.info_text = "near trigger"
-  end
-  
+    
   -- abfahrer-mode
   if self.ai_mode == 1 and self.tipper_attached then
   
 	-- tippers are not full
-	-- TODO wegpunkt berÃ¼cksichtigen
+	-- TODO wegpunkt berücksichtigen
     if tipper_fill_level < tipper_capacity then
 		allowedToDrive = false;
 		self.info_text = string.format("Wird beladen: %d von %d ",tipper_fill_level,tipper_capacity )
@@ -314,7 +312,8 @@ function courseplay:drive(self)
 	
 	-- tipper is not empty and tractor reaches TipTrigger
 	if tipper_fill_level > 0 and self.currentTipTrigger ~= nil then
-		allowedToDrive = false;
+		self.max_speed = 1
+		allowedToDrive = courseplay:unload_tippers(self)
 		self.info_text = "Tip Trigger erreicht"
 	end
 	
@@ -359,6 +358,11 @@ function courseplay:drive(self)
 	  else
 		  self.sl = 3					
 	  end	
+	  
+	  if self.max_speed ~= nil then	    
+	    self.sl = self.max_speed
+	  end
+	  
 
 	  local lx, lz = AIVehicleUtil.getDriveDirection(self.rootNode,cx,cty,cz);
 	  
@@ -556,12 +560,30 @@ end
 -- unloads all tippers
 function courseplay:unload_tippers(self)
   local allowedToDrive = false
-  
+  local active_tipper = nil
   -- drive forward until actual tipper reaches trigger
   
-  -- unload tipper
+    -- position of trigger
+    local trigger_x, trigger_y, trigger_z = getWorldTranslation(self.currentTipTrigger.triggerId)
+    
+    -- tipReferencePoint of each tipper    
+    for k,tipper in pairs(self.tippers) do 
+      local tipper_x, tipper_y, tipper_z = getWorldTranslation(tipper.tipReferencePoint)
+      local distance_to_trigger = Utils.vector2Length(trigger_x - tipper_x, trigger_z - tipper_z)
+      
+      -- if tipper is on trigger
+      if distance < g_currentMission.tipTriggerRangeThreshold then
+	active_tipper = tipper
+      end      
+      
+    end
+    
+  if active_tipper then    
+    allowedToDrive = false
+  else
+    allowedToDrive = true
+  end 
   
-  -- if there are more tippers, switch to next one
   
   return allowedToDrive
 end
@@ -611,9 +633,10 @@ end;
 
 -- tip trigger
 function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)  
+  self.currentTipTrigger = nil
   for k,trigger in pairs(g_currentMission.tipTriggers) do
 	if trigger.triggerId == transformId then
-		self.currentTipTrigger = trigger
+		self.currentTipTrigger = trigger		
 	end
   end
 end
