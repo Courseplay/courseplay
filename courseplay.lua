@@ -538,6 +538,35 @@ function courseplay:update_tools(tractor_or_implement, tippers)
   return nil
 end
 
+
+-- loads all tippers
+function courseplay:load_tippers(self)
+  local allowedToDrive = false
+  
+  -- drive on if actual tipper is full
+    
+    -- if there are more tippers, drive forward by the distance between the tippers
+  
+  
+  -- normal mode if all tippers are empty
+  
+  return allowedToDrive
+end
+
+-- unloads all tippers
+function courseplay:unload_tippers(self)
+  local allowedToDrive = false
+  
+  -- drive forward until actual tipper reaches trigger
+  
+  -- unload tipper
+  
+  -- if there are more tippers, switch to next one
+  
+  return allowedToDrive
+end
+
+
 function courseplay:addsign(self, x, y, z)  
     local height = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, x, 300, z)
     local root = self.sign
