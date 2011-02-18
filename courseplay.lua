@@ -572,10 +572,9 @@ function courseplay:unload_tippers(self)
       local distance_to_trigger = Utils.vector2Length(trigger_x - tipper_x, trigger_z - tipper_z)
       
       -- if tipper is on trigger
-      if distance < g_currentMission.tipTriggerRangeThreshold then
+      if distance_to_trigger < g_currentMission.tipTriggerRangeThreshold then
 	active_tipper = tipper
-      end      
-      
+      end            
     end
     
   if active_tipper then    
