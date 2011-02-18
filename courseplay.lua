@@ -306,7 +306,7 @@ function courseplay:drive(self)
   if self.ai_mode == 1 and self.tipper_attached then
   
 	-- tippers are not full
-	-- TODO wegpunkt berücksichtigen
+	-- TODO wegpunkt ber??ichtigen
     if tipper_fill_level < tipper_capacity and self.unloaded == false then
 		allowedToDrive = false;
 		self.info_text = string.format("Wird beladen: %d von %d ",tipper_fill_level,tipper_capacity )
@@ -345,20 +345,25 @@ function courseplay:drive(self)
      
      
      if active_tipper and  tipper_fill_level == 0 then
-        if active_tipper.tipState ~= 0 then
-	  active_tipper.toggleTipState(self.currentTipTrigger)
-	end       
-	self.unloaded = true
-	active_tipper = nil
+	    
+        if active_tipper.tipState ~= 0 then		  
+		  active_tipper.toggleTipState(self.currentTipTrigger)
+		  
+		end       
+		self.unloaded = true
+		self.max_speed = nil
+		self.currentTipTrigger = nil
+		active_tipper = nil
      end
      
      if active_tipper then
        self.info_text = string.format("Wird entladen: %d von %d ",tipper_fill_level,tipper_capacity )
        if active_tipper.tipState == 0 then
-	 active_tipper.toggleTipState(self.currentTipTrigger)
-       end
-       
-       
+		print("changing tip_state")
+		
+		active_tipper.toggleTipState(self.currentTipTrigger)
+		print("changed")
+       end       
      end
      return;
    end;
@@ -397,6 +402,7 @@ function courseplay:drive(self)
 			  if self.course_mode == 1 then
 			    self.back = false
 			    self.recordnumber = 1
+				self.unloaded = false
 			    self.wait = false
 			  else
 			    self.back = true
@@ -652,7 +658,6 @@ end;
 
 -- tip trigger
 function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)  
-  self.currentTipTrigger = nil
   for k,trigger in pairs(g_currentMission.tipTriggers) do
 	if trigger.triggerId == transformId then
 		self.currentTipTrigger = trigger		
