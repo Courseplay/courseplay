@@ -581,20 +581,11 @@ function courseplay:onTrafficCollisionTrigger(triggerId, otherId, onEnter, onLea
 end;
 
 -- tip trigger
-
-function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
-  print("i am in onTipTrigger")
-  print(transformId)
-  
-  local trigger = g_currentMission.tipTriggers
-  local count = table.getn(trigger)
-  print(count)
-  for i = 1, count do
-    print(trigger[i].triggerId)
-    if trigger[i].triggerId == transformId then
-	  print("hab den trigger gefunden")
-      self.currentTipTrigger = trigger[i]
-    end
+function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)  
+  for k,trigger in pairs(g_currentMission.tipTriggers) do
+	if trigger.triggerId == transformId then
+		self.currentTipTrigger = trigger
+	end
   end
 end
 
