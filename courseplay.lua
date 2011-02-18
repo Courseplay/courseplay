@@ -297,6 +297,7 @@ function courseplay:drive(self)
     
   local tx, ty, tz = getWorldTranslation(self.aiTrafficCollisionTrigger)
   local nx, ny, nz = localDirectionToWorld(self.aiTractorDirectionNode, 0, 0, 1)
+  local active_tipper = nil
   
   raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
     
@@ -313,7 +314,7 @@ function courseplay:drive(self)
 	-- tipper is not empty and tractor reaches TipTrigger
 	if tipper_fill_level > 0 and self.currentTipTrigger ~= nil then
 		self.max_speed = 1
-		allowedToDrive = courseplay:unload_tippers(self)
+		allowedToDrive, active_tipper = courseplay:unload_tippers(self)
 		self.info_text = "Tip Trigger erreicht"
 	end
 	
@@ -340,6 +341,11 @@ function courseplay:drive(self)
   if not allowedToDrive then
      local lx, lz = 0, 1; 
      AIVehicleUtil.driveInDirection(self, 1, 30, 0, 0, 28, false, moveForwards, lx, lz)	 
+     
+     if active_tipper and active_tipper.tipState == 0 then
+       active_tipper.toggleTipState(self.currentTipTrigger)
+       self.info_text = string.format("Wird entladen: %d von %d ",tipper_fill_level,tipper_capacity )
+     end
      return;
    end;
   
@@ -584,7 +590,7 @@ function courseplay:unload_tippers(self)
   end 
   
   
-  return allowedToDrive
+  return allowedToDrive, active_tipper
 end
 
 
