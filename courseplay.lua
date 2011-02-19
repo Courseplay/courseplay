@@ -1,9 +1,9 @@
 --
--- Courseplay v0.5
+-- Courseplay v0.6
 -- Specialization for Courseplay
 --
 -- @author  Lautschreier / Hummel
--- @version:	v0.5.18.02.11
+-- @version:	v0.6.19.02.11
 -- @testing:    bullgore80
 -- @history:	
 --      02.01.11/06.02.11 course recording and driving (Lautschreier)
@@ -12,6 +12,7 @@
 --		16.02.11 signs are disapearing, tipper support (Hummel)
 --      17.02.11 info text and global saving of "course_players" (Hummel)
 --      18.02.11 more than one tipper recognized by tractor // name of tractor in global info message
+-- 		19.02.11 trailer unloads on trigger // (Hummel/Lautschreier)
 courseplay = {};
 
 -- working tractors saved in this
@@ -75,6 +76,7 @@ function courseplay:load(xmlFile)
 	self.tipper_attached = false	
 	self.currentTrailerToFill = nil
 	self.unloaded = false
+	self.unloading_tipper = nil
 	
 	-- name search
 	local aNameSearch = {"vehicle.name." .. g_languageShort, "vehicle.name.en", "vehicle.name", "vehicle#type"};
@@ -303,8 +305,20 @@ function courseplay:drive(self)
   raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
     
   -- abfahrer-mode
-  if self.ai_mode == 1 and self.tipper_attached then
+  if self.ai_mode == 1 and self.tipper_attached and tipper_fill_level ~= nil then
   
+	if self.unloading_tipper ~= nil and self.unloading_tipper.fillLevel == 0 then
+		   
+	    print("done unloading")
+        if self.unloading_tipper.tipState ~= 0 then		  
+		  self.unloading_tipper:toggleTipState(self.currentTipTrigger)		  
+		end       
+		self.unloaded = true
+		self.max_speed = nil
+		self.currentTipTrigger = nil
+		self.unloading_tipper = nil
+	end
+	
 	-- tippers are not full
 	-- TODO wegpunkt ber??ichtigen
     if tipper_fill_level < tipper_capacity and self.unloaded == false then
@@ -339,30 +353,18 @@ function courseplay:drive(self)
   end
 
   
-  if not allowedToDrive then
-     local lx, lz = 0, 1; 
-     AIVehicleUtil.driveInDirection(self, 1, 30, 0, 0, 28, false, moveForwards, lx, lz)	 
-     
-     
-     if active_tipper and  tipper_fill_level == 0 then
-	    
-        if active_tipper.tipState ~= 0 then		  
-		  active_tipper.toggleTipState(self.currentTipTrigger)
-		  
-		end       
-		self.unloaded = true
-		self.max_speed = nil
-		self.currentTipTrigger = nil
-		active_tipper = nil
-     end
-     
+  if not allowedToDrive then  
+	 self.motor:setSpeedLevel(0, false);
+     self.motor.maxRpmOverride = nil;
+     AIVehicleUtil.driveInDirection(self, 1, 30, 0, 0, 28, false, moveForwards, 0, 1)	 
+	 
+	 
      if active_tipper then
        self.info_text = string.format("Wird entladen: %d von %d ",tipper_fill_level,tipper_capacity )
        if active_tipper.tipState == 0 then
-		print("changing tip_state")
 		
-		active_tipper.toggleTipState(self.currentTipTrigger)
-		print("changed")
+		active_tipper:toggleTipState(self.currentTipTrigger)
+		self.unloading_tipper = active_tipper
        end       
      end
      return;
@@ -371,9 +373,7 @@ function courseplay:drive(self)
   -- only stop if have to wait
   if self.wait then				
     self.drive  = false
-    self.motor:setSpeedLevel(0, false);
-    self.motor.maxRpmOverride = nil;
-    WheelsUtil.updateWheelsPhysics(self, 0, self.lastSpeed, 0, false, self.requiredDriveMode)
+
   end
   
   
@@ -599,16 +599,21 @@ function courseplay:unload_tippers(self)
       
       -- if tipper is on trigger
       if distance_to_trigger < g_currentMission.tipTriggerRangeThreshold then
-	active_tipper = tipper
+		active_tipper = tipper
       end            
     end
     
   if active_tipper then    
-    allowedToDrive = false
+	local trigger = self.currentTipTrigger
+	-- if trigger accepts fruit or already tipping
+	if trigger.acceptedFruitTypes[active_tipper:getCurrentFruitType()] then
+		allowedToDrive = false
+	else
+		allowedToDrive = true
+	end
   else
     allowedToDrive = true
   end 
-  
   
   return allowedToDrive, active_tipper
 end
