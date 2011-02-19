@@ -3,7 +3,7 @@
 -- Specialization for Courseplay
 --
 -- @author  Lautschreier / Hummel
--- @version:	v0.6.19.02.11
+-- @version:	v0.7.20.02.11
 -- @testing:    bullgore80
 -- @history:	
 --      02.01.11/06.02.11 course recording and driving (Lautschreier)
@@ -13,8 +13,9 @@
 --      17.02.11 info text and global saving of "course_players" (Hummel)
 --      18.02.11 more than one tipper recognized by tractor // name of tractor in global info message
 -- 		19.02.11 trailer unloads on trigger, kegel gefixt // (Hummel/Lautschreier)
---      19.02.11 changed loading/unloading logic, changed sound, added hire() dismiss()
---      19.02.11 auf/ablade logik erweitert - ablade trigger vergrößert
+--      19.02.11 changed loading/unloading logic, changed sound, added hire() dismiss()  (hummel)
+--      19.02.11 auf/ablade logik erweitert - ablade trigger vergrößert  (hummel)
+--      20.02.11 laden/speichern von kursen (hummel)
 courseplay = {};
 
 -- working tractors saved in this
@@ -61,6 +62,9 @@ function courseplay:load(xmlFile)
 	self.sign = itemNode
 	self.signs = {}
 	
+	-- course name for saving
+	self.current_course_name = nil
+	
 	self.max_speed = nil
 	
 	-- traffic collision	
@@ -80,7 +84,13 @@ function courseplay:load(xmlFile)
 	
 	self.unloading_tipper = nil
 	
-	-- name search
+	-- for user input like saving
+	self.user_input_active = false
+	self.user_input_message = nil
+	self.user_input = nil
+	self.save_name = false
+	
+	-- name search - look for the tractors name for messages on screen
 	local aNameSearch = {"vehicle.name." .. g_languageShort, "vehicle.name.en", "vehicle.name", "vehicle#type"};
 	
 	if Steerable.load ~= nil then
@@ -97,6 +107,8 @@ function courseplay:load(xmlFile)
 		end;
 	end;
 	
+	
+	courseplay.load_courses(self)
 end	
 	
 	
@@ -132,6 +144,11 @@ function courseplay:draw()
 	
 	if self.play then
 		if not self.drive then 
+			g_currentMission:addHelpButtonText(g_i18n:getText("CourseReset"), InputBinding.CourseReset);
+			if InputBinding.hasEvent(InputBinding.CourseReset) then 
+				courseplay:reset_course(self)
+			end	
+		
 			g_currentMission:addHelpButtonText(g_i18n:getText("CoursePlayStart"), InputBinding.CoursePlay);
 			if InputBinding.hasEvent(InputBinding.CoursePlay) then 
 				courseplay:start(self)
@@ -149,6 +166,9 @@ function courseplay:draw()
 	end
 	
 	courseplay:infotext(self);
+	if self.user_input_message then
+		courseplay:user_input(self);
+	end
 end	
 
 		
@@ -528,14 +548,59 @@ function courseplay:delete()
 	if self.aiTrafficCollisionTrigger ~= nil then
 		removeTrigger(self.aiTrafficCollisionTrigger);
 	end
+	
 end;	
 
 function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 end		
 
 function courseplay:keyEvent(unicode, sym, modifier, isDown)
+  if isDown and sym == Input.KEY_s and bitAND(modifier, Input.MOD_CTRL) > 0 then
+	courseplay:input_course_name(self)
+  end
+  
+  if isDown and self.user_input_active then
+	if 31 < unicode and unicode < 127 then 
+		if self.user_input:len() <= 20 then
+			self.user_input = self.user_input .. string.char(unicode)
+		end
+	end
+	
+	-- backspace
+	if sym == 8 then
+		if  self.user_input:len() >= 1 then
+			 self.user_input =  self.user_input:sub(1, self.user_input:len() - 1)
+		end
+	end
+	
+	-- enter
+	if sym == 13 then
+		courseplay:handle_user_input(self)
+	end
+  end
 end;	
 
+function courseplay:input_course_name(self)
+ self.user_input = ""
+ self.user_input_active = true
+ self.save_name = true
+ self.user_input_message = "Name des Kurses: "
+end
+
+
+function courseplay:handle_user_input(self)
+	if self.save_name then
+	   self.user_input_active = false
+	   self.current_course_name = self.user_input
+	   self.user_input = ""
+	   courseplay:save_courses(self)
+	   self.courses[self.current_course_name] = self.Waypoints
+	end
+end
+
+function courseplay:user_input(self)
+	renderText(0.4, 0.9,0.02, self.user_input_message .. self.user_input);
+end
 
 function courseplay:infotext(self)
 	if self.isEntered then
@@ -702,8 +767,7 @@ end
 
 -- saves coures to xml-file
 function courseplay:save_courses(self)
-  -- TODO gameIndex finden
-  local path = getUserProfileAppPath() .. "savegame" .. gameIndex .. "/"
+  local path = getUserProfileAppPath() .. "savegame" .. g_careerScreen.selectedIndex .. "/"
   local File = io.open(path .. "courseplay.xml", "w")
   local tab = "   "
   if File ~= nil then
@@ -725,7 +789,44 @@ end
 
 
 function courseplay:load_courses(self)
-  
+  if self.courses ~= {} then  
+	return
+   else
+	self.courses = {}
+	   local path = getUserProfileAppPath() .. "savegame" .. g_careerScreen.selectedIndex .. "/"
+		local File = io.open(path .. "courseplay.xml", "a")
+		File:close()
+		File = loadXMLFile("courseFile", path .. "courseplay.xml")
+		local i = 0
+		repeat
+		  local baseName = string.format("XML.Courses.course(%d)", i)
+		  local name = getXMLString(File, baseName .. "#name")
+		  if name == nil then
+			do return end
+		  end
+		  local tempCourse = {}
+		  do
+			local s = 1
+			repeat
+			  local key = baseName .. ".waypoint" .. s
+			  local x, z = Utils.getVectorFromString(getXMLString(File, key .. "#pos"))
+			  if x ~= nil then
+				if z == nil then
+				  do return end
+				end
+				local dangle = Utils.getVectorFromString(getXMLString(File, key .. "#angle"))				
+				tempCourse[s] = {cx = x, cz = z, angle = dangle}
+				s = s + 1
+			  else
+				self.courses[name] = tempCourse
+				i = i + 1
+			  end
+			  do return end
+			  i = 0
+			end
+		  end
+		end
+   end
 end
 
 
