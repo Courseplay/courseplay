@@ -12,7 +12,9 @@
 --		16.02.11 signs are disapearing, tipper support (Hummel)
 --      17.02.11 info text and global saving of "course_players" (Hummel)
 --      18.02.11 more than one tipper recognized by tractor // name of tractor in global info message
--- 		19.02.11 trailer unloads on trigger // (Hummel/Lautschreier)
+-- 		19.02.11 trailer unloads on trigger, kegel gefixt // (Hummel/Lautschreier)
+--      19.02.11 changed loading/unloading logic, changed sound, added hire() dismiss()
+--      19.02.11 auf/ablade logik erweitert - ablade trigger vergrößert
 courseplay = {};
 
 -- working tractors saved in this
@@ -28,8 +30,7 @@ function courseplay:load(xmlFile)
 	self.Waypoints = {}
 	self.courses = {}
 	self.play = false
-	self.back = false 
-	self.wait = false
+	self.back = false 	
 	self.working_course_player_num = nil
 	
 	-- info text on tractor
@@ -76,6 +77,7 @@ function courseplay:load(xmlFile)
 	self.tipper_attached = false	
 	self.currentTrailerToFill = nil
 	self.unloaded = false
+	
 	self.unloading_tipper = nil
 	
 	-- name search
@@ -173,6 +175,13 @@ end
 
 -- starts driving the course
 function courseplay:start(self)    
+	self:hire()
+	self.numCollidingVehicles = 0;
+	self.numToolsCollidingVehicles = {};
+	self.drive  = false
+	self.record = false
+	
+	
 	-- add do working players if not already added
 	if self.working_course_player_num == nil then
 		self.working_course_player_num = courseplay:add_working_player(self)
@@ -189,18 +198,12 @@ function courseplay:start(self)
 		end
 	end
 	
-	self.numCollidingVehicles = 0;
-	self.numToolsCollidingVehicles = {};
-	self.drive  = false
-	self.record = false		
-	self.wait   = false
-	self.deactivateOnLeave = false
-	self.stopMotorOnLeave = false
 	if self.back then
 		self.recordnumber = self.maxnumber - 2
 	else
 		self.recordnumber = 1
 	end
+	
 		
 	self.dcheck = true
 	local ctx,cty,ctz = getWorldTranslation(self.rootNode);
@@ -215,8 +218,14 @@ function courseplay:start(self)
 		self.record = false
 		self.dcheck = false
 	end		
+	
+	self.orgRpm = self.motor.maxRpm
+	
+	self.motor.maxRpmOverride = nil;
 end
 
+
+-- adds courseplayer to global table, so that the system knows all of them
 function courseplay:add_working_player(self)
    table.insert(working_course_players, self)
    return table.getn(working_course_players)
@@ -224,6 +233,7 @@ end
 
 -- stops driving the course
 function courseplay:stop(self)
+	self:dismiss()
 	self.record = false
 	-- removing collision trigger
 	if self.aiTrafficCollisionTrigger ~= nil then
@@ -238,6 +248,8 @@ function courseplay:stop(self)
 		end
 	end
 	
+	self.unloaded = false
+	self.currentTipTrigger = nil
 	self.drive  = false	
 	self.play = true
 	self.dcheck = false
@@ -245,8 +257,7 @@ function courseplay:stop(self)
 	self.motor.maxRpmOverride = nil;
 	WheelsUtil.updateWheelsPhysics(self, 0, self.lastSpeed, 0, false, self.requiredDriveMode)
 	self.recordnumber = 1
-	self.deactivateOnLeave = true
-	self.stopMotorOnLeave = true
+	
 end
 
 
@@ -282,8 +293,7 @@ function courseplay:reset_course(self)
 	courseplay:sign_visibility(self, false)
 	self.signs = {}
 	self.play = false
-	self.back = false 
-	self.wait = false
+	self.back = false
 	self.course_mode = 1
 end	
 
@@ -291,6 +301,10 @@ end
 
 -- drives recored course
 function courseplay:drive(self)
+  if not self.isEntered then
+	setVisibility(self.aiMotorSound, true)
+   end
+
   local ctx,cty,ctz = getWorldTranslation(self.rootNode);
   cx ,cz = self.Waypoints[self.recordnumber].cx,self.Waypoints[self.recordnumber].cz
   self.dist = courseplay:distance(cx ,cz ,ctx ,ctz)
@@ -301,38 +315,11 @@ function courseplay:drive(self)
   local tx, ty, tz = getWorldTranslation(self.aiTrafficCollisionTrigger)
   local nx, ny, nz = localDirectionToWorld(self.aiTractorDirectionNode, 0, 0, 1)
   local active_tipper = nil
-  
-  raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
-    
+      
   -- abfahrer-mode
-  if self.ai_mode == 1 and self.tipper_attached and tipper_fill_level ~= nil then
-  
-	if self.unloading_tipper ~= nil and self.unloading_tipper.fillLevel == 0 then
-		   
-	    print("done unloading")
-        if self.unloading_tipper.tipState ~= 0 then		  
-		  self.unloading_tipper:toggleTipState(self.currentTipTrigger)		  
-		end       
-		self.unloaded = true
-		self.max_speed = nil
-		self.currentTipTrigger = nil
-		self.unloading_tipper = nil
-	end
-	
-	-- tippers are not full
-	-- TODO wegpunkt ber??ichtigen
-    if tipper_fill_level < tipper_capacity and self.unloaded == false then
-		allowedToDrive = false;
-		self.info_text = string.format("Wird beladen: %d von %d ",tipper_fill_level,tipper_capacity )
-	end
-	
-	-- tipper is not empty and tractor reaches TipTrigger
-	if tipper_fill_level > 0 and self.currentTipTrigger ~= nil then
-		self.max_speed = 1
-		allowedToDrive, active_tipper = courseplay:unload_tippers(self)
-		self.info_text = "Tip Trigger erreicht"
-	end
-	
+  if self.ai_mode == 1 and self.tipper_attached and tipper_fill_level ~= nil then  
+	raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
+	allowedToDrive, active_tipper = courseplay:handle_mode1(self)
   end
   
   if self.numCollidingVehicles > 0 then
@@ -344,37 +331,25 @@ function courseplay:drive(self)
 		if v > 0 then
 			allowedToDrive = false;
 			in_traffic = true;			
+			self.global_info_text = 'Abfahrer steckt im Verkehr fest'
 			break;
 		end;
     end;
     
-  if in_traffic then
-    self.global_info_text = 'Abfahrer steckt im Verkehr fest'
-  end
-
-  
   if not allowedToDrive then  
 	 self.motor:setSpeedLevel(0, false);
      self.motor.maxRpmOverride = nil;
-     AIVehicleUtil.driveInDirection(self, 1, 30, 0, 0, 28, false, moveForwards, 0, 1)	 
-	 
+     AIVehicleUtil.driveInDirection(self, 1, 30, 0, 0, 28, false, moveForwards, 0, 1)	
 	 
      if active_tipper then
        self.info_text = string.format("Wird entladen: %d von %d ",tipper_fill_level,tipper_capacity )
-       if active_tipper.tipState == 0 then
-		
-		active_tipper:toggleTipState(self.currentTipTrigger)
-		self.unloading_tipper = active_tipper
+       if active_tipper.tipState == 0 then				  
+		  active_tipper:toggleTipState(self.currentTipTrigger)		  
+		  self.unloading_tipper = active_tipper
        end       
      end
      return;
    end;
-  
-  -- only stop if have to wait
-  if self.wait then				
-    self.drive  = false
-
-  end
   
   
   if self.dist > 5 then
@@ -386,16 +361,15 @@ function courseplay:drive(self)
 	  
 	  if self.max_speed ~= nil then	    
 	    self.sl = self.max_speed
-	  end
-	  
+	  end	  
 
 	  local lx, lz = AIVehicleUtil.getDriveDirection(self.rootNode,cx,cty,cz);
 	  
-	  AIVehicleUtil.driveInDirection(self, 1,  25, 0.5, 0.5, 20, true, true, lx, lz ,self.sl, 0.9);
+	  AIVehicleUtil.driveInDirection(self, 1,  25, 0.5, 0.5, 20, true, true, lx, lz ,self.sl, 1);
   else	
-	  if not self.back then
-				  
+	  if not self.back then	      
 		  if self.recordnumber < self.maxnumber  then
+		
 			  self.recordnumber = self.recordnumber + 1
 		  else			
 			  -- dont stop if in circle mode
@@ -403,13 +377,9 @@ function courseplay:drive(self)
 			    self.back = false
 			    self.recordnumber = 1
 				self.unloaded = false
-			    self.wait = false
 			  else
 			    self.back = true
-			    self.wait = true
 			  end
-			  
-			  
 			  
 			  self.record = false
 			  self.play = true
@@ -428,7 +398,6 @@ function courseplay:drive(self)
 				  WheelsUtil.updateWheelsPhysics(self, 0, self.lastSpeed, 0, false, self.requiredDriveMode)
 				  self.recordnumber = 1
 				  self.back = false
-				  self.wait = true
 			  end	
 		  end	
 	  end
@@ -436,37 +405,88 @@ function courseplay:drive(self)
   end
 end;  
   
+function courseplay:handle_mode1(self)
+	local allowedToDrive = true
+	local active_tipper  = nil
+	local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
+	
+	
+	if self.unloading_tipper ~= nil and self.unloading_tipper.fillLevel == 0 then			
+		if self.unloading_tipper.tipState ~= 0 then		  
+		  self.unloading_tipper:toggleTipState(self.currentTipTrigger)		  
+		end       
+		self.unloaded = true
+		self.max_speed = nil
+		self.currentTipTrigger = nil
+		self.unloading_tipper = nil
+	end
+
+
+	-- tippers are not full
+	-- tipper should be loaded 10 meters before wp 2		
+	if self.recordnumber == 2 and tipper_fill_level < tipper_capacity and self.unloaded == false and self.dist < 10 then
+		allowedToDrive = courseplay:load_tippers(self)
+		self.info_text = string.format("Wird beladen: %d von %d ",tipper_fill_level,tipper_capacity )
+	end
+
+	-- damn, i missed the trigger!
+	if self.currentTipTrigger ~= nil then
+		local trigger_x, trigger_y, trigger_z = getWorldTranslation(self.currentTipTrigger.triggerId)
+		local ctx,cty,ctz = getWorldTranslation(self.rootNode);
+		local distance_to_trigger = courseplay:distance(ctx ,ctz ,trigger_x ,trigger_z)
+		if distance_to_trigger > 30 then
+			self.currentTipTrigger = nil
+		end
+	end
+
+	-- tipper is not empty and tractor reaches TipTrigger
+	if tipper_fill_level > 0 and self.currentTipTrigger ~= nil then		
+		self.max_speed = 1
+		allowedToDrive, active_tipper = courseplay:unload_tippers(self)
+		self.info_text = "Abladestelle erreicht"
+	end
+	
+	return allowedToDrive, active_tipper
+end  
+  
 -- records waypoints for course
 function courseplay:record(self)
-  local cx,cy,cz = getWorldTranslation(self.rootNode);
-  local x,y,z = localDirectionToWorld(self.rootNode, 0, 0, 1);
-  local length = Utils.vector2Length(x,z);
-  local dX = x/length
-  local dZ = z/length
-  local newangle = math.deg(math.atan2(dX,dZ))	
-  
-  
-  if self.recordnumber < 4 then
-	  self.rotatedTime = 0
-  end	
-  if self.recordnumber > 2 then
-	  local oldcx ,oldcz ,oldangle= self.Waypoints[self.recordnumber - 1].cx,self.Waypoints[self.recordnumber - 1].cz,self.Waypoints[self.recordnumber - 1].angle
-	  anglediff = math.abs(newangle - oldangle)
-	  self.dist = courseplay:distance(cx ,cz ,oldcx ,oldcz)
-	  if self.dist > 10 and (anglediff > 5 or dist > 40) then
-		  self.tmr = 101
-	  end
-  end	
-  if self.tmr > 100 then	
-	  
-	  self.Waypoints[self.recordnumber] = {cx = cx  ,cz = cz  ,angle = newangle}
-	  if self.recordnumber < 3 then			
-		  courseplay:addsign(self, cx, cy,cz)
-	  end	
-	  self.tmr = 1
-	  self.recordnumber = self.recordnumber + 1
-  end
-  self.tmr = self.tmr + 1 
+	local cx,cy,cz = getWorldTranslation(self.rootNode);
+	local x,y,z = localDirectionToWorld(self.rootNode, 0, 0, 1);
+	local length = Utils.vector2Length(x,z);
+	local dX = x/length
+	local dZ = z/length
+	local newangle = math.deg(math.atan2(dX,dZ)) 
+
+
+	if self.recordnumber < 4 then
+		self.rotatedTime = 0
+	end 
+	if self.recordnumber > 2 then
+		local oldcx ,oldcz ,oldangle= self.Waypoints[self.recordnumber - 1].cx,self.Waypoints[self.recordnumber - 1].cz,self.Waypoints[self.recordnumber - 1].angle
+		anglediff = math.abs(newangle - oldangle)
+		self.dist = courseplay:distance(cx ,cz ,oldcx ,oldcz)
+		if self.dist > 5 and (anglediff > 5 or dist > 10) then
+			self.tmr = 101
+		end
+	end 
+
+	if self.recordnumber == 2 then
+		local oldcx ,oldcz = self.Waypoints[1].cx,self.Waypoints[1].cz
+
+		self.dist = courseplay:distance(cx ,cz ,oldcx ,oldcz)
+		if self.dist > 10 then
+			self.tmr = 101
+		end
+	end 
+	if self.tmr > 100 then 
+		self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle}
+		if self.recordnumber < 3 then 
+			courseplay:addsign(self, cx, cy,cz)
+		end 
+		self.tmr = 1
+		self.recordnumber = self.recordnumber + 1
+	end
 end;
 
 
@@ -573,10 +593,16 @@ end
 function courseplay:load_tippers(self)
   local allowedToDrive = false
   
-  -- drive on if actual tipper is full
-    
-    -- if there are more tippers, drive forward by the distance between the tippers
+  if self.currentTrailerToFill == nil then
+	current_tipper = self.tippers[1]
+  else
+	current_tipper = self.tippers[self.currentTrailerToFill]
+  end
   
+  -- drive on if actual tipper is full
+  if current_tipper.fillLevel == current_tipper.capacity then
+	allowedToDrive = true
+  end  
   
   -- normal mode if all tippers are empty
   
@@ -596,16 +622,18 @@ function courseplay:unload_tippers(self)
     for k,tipper in pairs(self.tippers) do 
       local tipper_x, tipper_y, tipper_z = getWorldTranslation(tipper.tipReferencePoint)
       local distance_to_trigger = Utils.vector2Length(trigger_x - tipper_x, trigger_z - tipper_z)
-      
+	  
+	  g_currentMission.tipTriggerRangeThreshold = 2
+	  
       -- if tipper is on trigger
-      if distance_to_trigger < g_currentMission.tipTriggerRangeThreshold then
+      if distance_to_trigger <= g_currentMission.tipTriggerRangeThreshold then
 		active_tipper = tipper
       end            
     end
     
   if active_tipper then    
 	local trigger = self.currentTipTrigger
-	-- if trigger accepts fruit or already tipping
+	-- if trigger accepts fruit
 	if trigger.acceptedFruitTypes[active_tipper:getCurrentFruitType()] then
 		allowedToDrive = false
 	else

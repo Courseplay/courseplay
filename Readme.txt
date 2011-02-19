@@ -32,6 +32,18 @@ in die moddesc eintragen:
 		<en>Course: return</en>
 		<de>Kurs: Hin und Zurück</de>
 	</text>
+	<text name="CourseLoad">
+		<en>load course</en>
+		<de>Kurs laden</de>
+	</text>
+	<text name="CourseSave">
+		<en>save course</en>
+		<de>Kurs speichern</de>
+	</text>		
+	<text name="CourseReset">
+		<en>reset course</en>
+		<de>Kurs zurücksetzen</de>
+	</text>		
 	</l10n>
 
 	<specializations>
@@ -51,9 +63,12 @@ in die moddesc eintragen:
         ...
 		...
 		...
-        <input name="PointRecord" key1="KEY_k" button="" />
-        <input name="CoursePlay" key1="KEY_l" button="" />
-	<input name ="CourseMode"			key1="KEY_j" />
+       	<input name ="CourseMode"			key1="KEY_k" />
+	<input name="PointRecord" key1="KEY_l" button="" />
+    <input name="CoursePlay" key1="KEY_j" button="" />
+	<input name="CourseSave" key1="KEY_s" button="" />
+	<input name="CourseLoad" key1="KEY_o" button="" />
+	<input name="CourseReset" key1="KEY_r" button="" />
     </inputBindings>
 
 
