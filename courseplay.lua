@@ -94,6 +94,7 @@ function courseplay:load(xmlFile)
 	self.tippers = {}
 	self.tipper_attached = false	
 	self.currentTrailerToFill = nil
+	self.lastTrailerToFillDistance = nil
 	self.unloaded = false	
 	self.unloading_tipper = nil
 	
@@ -496,16 +497,22 @@ function courseplay:handle_mode1(self)
 		if self.unloading_tipper.tipState ~= 0 then		  
 		  self.unloading_tipper:toggleTipState(self.currentTipTrigger)		  
 		end       
-		self.unloaded = true
-		self.max_speed = 3
-		self.currentTipTrigger = nil
+		
 		self.unloading_tipper = nil
+		
+		if tipper_fill_level == 0 then
+			self.unloaded = true
+			self.max_speed = 3
+			self.currentTipTrigger = nil
+		end
+		
 	end
 
 
 	-- tippers are not full
-	-- tipper should be loaded 10 meters before wp 2		
-	if self.recordnumber == 2 and tipper_fill_level < tipper_capacity and self.unloaded == false and self.dist < 10 then
+	-- tipper should be loaded 10 meters before wp 2	
+
+	if (self.recordnumber == 2 and tipper_fill_level < tipper_capacity and self.unloaded == false and self.dist < 10) or  self.lastTrailerToFillDistance then
 		allowedToDrive = courseplay:load_tippers(self)
 		self.info_text = string.format("Wird beladen: %d von %d ",tipper_fill_level,tipper_capacity )
 	end
@@ -785,17 +792,51 @@ end
 -- TODO only works for one tipper
 function courseplay:load_tippers(self)
   local allowedToDrive = false
+  local cx ,cz = self.Waypoints[2].cx,self.Waypoints[2].cz
   
   if self.currentTrailerToFill == nil then
-	current_tipper = self.tippers[1]
-  else
-	current_tipper = self.tippers[self.currentTrailerToFill]
+	self.currentTrailerToFill = 1
   end
+
+  if self.lastTrailerToFillDistance == nil then
   
-  -- drive on if actual tipper is full
-  if current_tipper.fillLevel == current_tipper.capacity then
-	allowedToDrive = true
-  end  
+	  local current_tipper = self.tippers[self.currentTrailerToFill] 
+	  
+	  -- drive on if actual tipper is full
+	  if current_tipper.fillLevel == current_tipper.capacity then    
+		if table.getn(self.tippers) > self.currentTrailerToFill then			
+			local tipper_x, tipper_y, tipper_z = getWorldTranslation(self.tippers[self.currentTrailerToFill].rootNode)			
+			self.lastTrailerToFillDistance = courseplay:distance(cx, cz, tipper_x, tipper_z)
+			self.currentTrailerToFill = self.currentTrailerToFill + 1
+		else
+			self.currentTrailerToFill = nil
+			self.lastTrailerToFillDistance = nil
+		end
+		allowedToDrive = true
+	  end  
+  
+  else
+    local tipper_x, tipper_y, tipper_z = getWorldTranslation(self.tippers[self.currentTrailerToFill].rootNode)
+	local distance = courseplay:distance(cx, cz, tipper_x, tipper_z)
+
+	if distance > self.lastTrailerToFillDistance then	
+		allowedToDrive = true
+	else	  
+	  allowedToDrive = false
+	  local current_tipper = self.tippers[self.currentTrailerToFill] 
+	  if current_tipper.fillLevel == current_tipper.capacity then    
+		  if table.getn(self.tippers) > self.currentTrailerToFill then			
+				local tipper_x, tipper_y, tipper_z = getWorldTranslation(self.tippers[self.currentTrailerToFill].rootNode)			
+				self.lastTrailerToFillDistance = courseplay:distance(cx, cz, tipper_x, tipper_z)
+				self.currentTrailerToFill = self.currentTrailerToFill + 1
+			else
+				self.currentTrailerToFill = nil
+				self.lastTrailerToFillDistance = nil
+			end	  
+		end
+	end
+	
+   end
   
   -- normal mode if all tippers are empty
   
@@ -936,7 +977,7 @@ function courseplay:load_courses(self)
 	File = loadXMLFile("courseFile", path .. "courseplay.xml")
 	local i = 0
 	repeat
-		print(i)
+		
 		local baseName = string.format("XML.courses.course(%d)", i)
 		local name = getXMLString(File, baseName .. "#name")
 		if name == nil then
@@ -946,7 +987,7 @@ function courseplay:load_courses(self)
 		local tempCourse = {}
 	  
 		local s = 1
-		print(s)
+		
 		local finish_wp = false
 		repeat
 		  local key = baseName .. ".waypoint" .. s
