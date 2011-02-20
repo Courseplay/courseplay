@@ -26,12 +26,20 @@ function courseplay.prerequisitesPresent(specializations)
 end
 
 function courseplay:load(xmlFile)
+	-- current number of waypoint
 	self.recordnumber = 1
+	self.lastrecordnumber = nil
+	-- TODO what is this?
 	self.tmr = 1
+	-- waypoints are stored in here
 	self.Waypoints = {}
+	-- loaded/saved courses saved in here
 	self.courses = {}
+	-- TODO still needed?
 	self.play = false
+	-- TODO still needed?
 	self.back = false 	
+	-- total number of course players
 	self.working_course_player_num = nil
 	
 	-- info text on tractor
@@ -46,6 +54,7 @@ function courseplay:load(xmlFile)
 	-- ai mode: 1 abfahrer
 	self.ai_mode = 1
 	
+	-- our arrow is displaying dirction to waypoints
 	self.ArrowPath = Utils.getFilename("Specializations/arrow.png", self.baseDirectory);
 	self.ArrowOverlay = Overlay:new("Arrow", self.ArrowPath, 0.4, 0.08, 0.250, 0.250);
 	self.ArrowOverlay:render()
@@ -60,28 +69,32 @@ function courseplay:load(xmlFile)
 	setVisibility(itemNode, false)
 	delete(i3dNode)
 	self.sign = itemNode
+	-- visual waypoints saved in this
 	self.signs = {}
 	
 	-- course name for saving
 	self.current_course_name = nil
 	
+	-- individual speed limit
 	self.max_speed = nil
 	
 	-- traffic collision	
 	self.onTrafficCollisionTrigger = courseplay.onTrafficCollisionTrigger;
 	self.aiTrafficCollisionTrigger = Utils.indexToObject(self.components, getXMLString(xmlFile, "vehicle.aiTrafficCollisionTrigger#index"));
 	
-	self.findTipTriggerCallback = courseplay.findTipTriggerCallback;
-	
-	
 	self.numCollidingVehicles = 0;
 	self.numToolsCollidingVehicles = {};
 	
+	
+	-- tipTrigger
+	self.findTipTriggerCallback = courseplay.findTipTriggerCallback;
+	
+	
+	-- tippers
 	self.tippers = {}
 	self.tipper_attached = false	
 	self.currentTrailerToFill = nil
-	self.unloaded = false
-	
+	self.unloaded = false	
 	self.unloading_tipper = nil
 	
 	-- for user input like saving
@@ -97,8 +110,7 @@ function courseplay:load(xmlFile)
 		local orgSteerableLoad = Steerable.load
 		
 		Steerable.load = function(self,xmlFile)
-			orgSteerableLoad(self,xmlFile)
-			
+			orgSteerableLoad(self,xmlFile)			
 			for nIndex,sXMLPath in pairs(aNameSearch) do 
 				self.name = getXMLString(xmlFile, sXMLPath);
 				if self.name ~= nil then break; end;
@@ -107,11 +119,11 @@ function courseplay:load(xmlFile)
 		end;
 	end;
 	
-	
-	courseplay.load_courses(self)
+	-- loading saved courses from xml
+	courseplay:load_courses(self)
 end	
 	
-	
+-- displays help text, user_input 	
 function courseplay:draw()
 	if not self.drive then
 		if not self.record then		
@@ -171,31 +183,31 @@ function courseplay:draw()
 	end
 end	
 
-		
+
+-- is been called everey frame
 function courseplay:update()
+	-- show visual waypoints only when in vehicle
 	if self.isEntered then
 		courseplay:sign_visibility(self, true)
 	else
 		courseplay:sign_visibility(self, false)
 	end
 
-
+	-- we are in record mode
 	if self.record then 
 	  courseplay:record(self);
 	end	
 	
+	-- we are in drive mode
 	if self.drive then
 	  courseplay:drive(self);
 	end	
-	
-	
-	
 end		
 
 
 -- starts driving the course
 function courseplay:start(self)    
-	self:hire()
+	
 	self.numCollidingVehicles = 0;
 	self.numToolsCollidingVehicles = {};
 	self.drive  = false
@@ -212,36 +224,47 @@ function courseplay:start(self)
 	self.tipper_attached, self.tippers = courseplay:update_tools(self, self.tippers)
 		
 	if self.tipper_attached then
-		-- tool triggers for tippers
+		-- tool (collision)triggers for tippers
 		for k,object in pairs(self.tippers) do
 		  AITractor.addToolTrigger(self, object)
 		end
 	end
 	
-	if self.back then
-		self.recordnumber = self.maxnumber - 2
+	if self.lastrecordnumber ~= nil then
+		self.recordnumber = self.lastrecordnumber
+		self.lastrecordnumber = nil
 	else
-		self.recordnumber = 1
+		-- TODO still needed?
+		if self.back then
+			self.recordnumber = self.maxnumber - 2
+		else
+			self.recordnumber = 1
+		end
 	end
 	
-		
+	
+	
+	-- show arrow
 	self.dcheck = true
+	-- current position
 	local ctx,cty,ctz = getWorldTranslation(self.rootNode);
+	-- positoin of next waypoint
 	local cx ,cz = self.Waypoints[self.recordnumber].cx,self.Waypoints[self.recordnumber].cz
+	-- distance
 	dist = courseplay:distance(ctx ,ctz ,cx ,cz)
 	
+	
 	if dist < 15 then
+		-- hire a helper
+		self:hire()
+		-- ok i am near the waypoint, let's go
 		self.drive  = true
 		if self.aiTrafficCollisionTrigger ~= nil then
 		   addTrigger(self.aiTrafficCollisionTrigger, "onTrafficCollisionTrigger", self);
 		end
 		self.record = false
 		self.dcheck = false
-	end		
-	
-	self.orgRpm = self.motor.maxRpm
-	
-	self.motor.maxRpmOverride = nil;
+	end			
 end
 
 
@@ -268,20 +291,21 @@ function courseplay:stop(self)
 		end
 	end
 	
+	-- reseting variables
 	self.unloaded = false
 	self.currentTipTrigger = nil
 	self.drive  = false	
 	self.play = true
 	self.dcheck = false
-	self.motor:setSpeedLevel(0, false);
-	self.motor.maxRpmOverride = nil;
-	WheelsUtil.updateWheelsPhysics(self, 0, self.lastSpeed, 0, false, self.requiredDriveMode)
-	self.recordnumber = 1
-	
+	--self.motor:setSpeedLevel(0, false);
+	--self.motor.maxRpmOverride = nil;
+	WheelsUtil.updateWheelsPhysics(self, 0, 0, 0, false, self.requiredDriveMode)
+	self.lastrecordnumber = self.recordnumber
+	self.recordnumber = 1	
 end
 
 
--- starts course recording
+-- starts course recording -- just setting variables
 function courseplay:start_record(self)
     courseplay:reset_course(self)
 	
@@ -295,7 +319,7 @@ function courseplay:start_record(self)
 	self.tmr = 101
 end		
 
--- stops course recording
+-- stops course recording -- just setting variables
 function courseplay:stop_record(self)
 	self.record = false
 	self.drive  = false	
@@ -305,7 +329,7 @@ function courseplay:stop_record(self)
 	self.back = false
 end		
 
--- resets actual course
+-- resets actual course -- just setting variables
 function courseplay:reset_course(self)	
 	self.recordnumber = 1
 	self.tmr = 1
@@ -322,31 +346,45 @@ end
 -- drives recored course
 function courseplay:drive(self)
   if not self.isEntered then
+	-- we want to hear our courseplayers
 	setVisibility(self.aiMotorSound, true)
    end
 
+  -- actual position
   local ctx,cty,ctz = getWorldTranslation(self.rootNode);
+  -- coordinates of next waypoint
   cx ,cz = self.Waypoints[self.recordnumber].cx,self.Waypoints[self.recordnumber].cz
+  -- distance to waypoint
   self.dist = courseplay:distance(cx ,cz ,ctx ,ctz)
+  -- what about our tippers?
   local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
-  local allowedToDrive = true;
+  -- may i drive or should i hold position for some reason?
+  local allowedToDrive = true;  
+  -- in a traffic yam?
   local in_traffic = false;
     
+  -- coordinates of coli
   local tx, ty, tz = getWorldTranslation(self.aiTrafficCollisionTrigger)
+  -- direction of tractor
   local nx, ny, nz = localDirectionToWorld(self.aiTractorDirectionNode, 0, 0, 1)
+  -- the tipper that is currently loaded/unloaded
   local active_tipper = nil
       
   -- abfahrer-mode
   if self.ai_mode == 1 and self.tipper_attached and tipper_fill_level ~= nil then  
+	-- is there a tipTrigger within 10 meters?
 	raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
+	-- handle mode
 	allowedToDrive, active_tipper = courseplay:handle_mode1(self)
   end
   
+  -- are there any other vehicles in front?
   if self.numCollidingVehicles > 0 then
     allowedToDrive = false;
     in_traffic = true;
   end
 
+  -- are there vehicles in front of any of my implements?
    for k,v in pairs(self.numToolsCollidingVehicles) do
 		if v > 0 then
 			allowedToDrive = false;
@@ -355,12 +393,15 @@ function courseplay:drive(self)
 			break;
 		end;
     end;
-    
+   
+   
+  -- stop or hold position
   if not allowedToDrive then  
-	 self.motor:setSpeedLevel(0, false);
+     self.motor:setSpeedLevel(0, false);
      self.motor.maxRpmOverride = nil;
      AIVehicleUtil.driveInDirection(self, 1, 30, 0, 0, 28, false, moveForwards, 0, 1)	
 	 
+     -- unload active tipper if given
      if active_tipper then
        self.info_text = string.format("Wird entladen: %d von %d ",tipper_fill_level,tipper_capacity )
        if active_tipper.tipState == 0 then				  
@@ -368,30 +409,38 @@ function courseplay:drive(self)
 		  self.unloading_tipper = active_tipper
        end       
      end
+     -- important, otherwhise i would drive on
      return;
    end;
   
-  
+  -- more than 5 meters away from next waypoint?
   if self.dist > 5 then
+	  -- speed limit at the end an the beginning of course
 	  if self.recordnumber > self.maxnumber - 4 or self.recordnumber < 4 then
 		  self.sl = 2
 	  else
 		  self.sl = 3					
 	  end	
 	  
+	  -- is there an individual speed limit? e.g. for triggers
 	  if self.max_speed ~= nil then	    
 	    self.sl = self.max_speed
 	  end	  
 
+	  -- where to drive?
 	  local lx, lz = AIVehicleUtil.getDriveDirection(self.rootNode,cx,cty,cz);
 	  
-	  AIVehicleUtil.driveInDirection(self, 1,  25, 0.5, 0.5, 20, true, true, lx, lz ,self.sl, 1);
+	  self.motor.maxRpmOverride = self.motor.maxRpm[self.sl]
+	  -- go, go, go!
+	  AIVehicleUtil.driveInDirection(self, 1,  30, 0, 0, 28, true, true, lx, lz ,self.sl, 2);
   else	
+	  -- i'm not returning right now?
+	  
 	  if not self.back then	      
 		  if self.recordnumber < self.maxnumber  then
 		
 			  self.recordnumber = self.recordnumber + 1
-		  else			
+		  else	-- reset some variables
 			  -- dont stop if in circle mode
 			  if self.course_mode == 1 then
 			    self.back = false
@@ -405,7 +454,7 @@ function courseplay:drive(self)
 			  self.play = true
 				  
 		  end	
-	  else
+	  else	-- TODO is this realy needed?
 		  if self.back then	
 			  if self.recordnumber > 1  then
 				  self.recordnumber = self.recordnumber - 1
@@ -425,18 +474,20 @@ function courseplay:drive(self)
   end
 end;  
   
+  
+-- handles "mode1" : waiting at start until tippers full - driving course and unloading on trigger
 function courseplay:handle_mode1(self)
 	local allowedToDrive = true
 	local active_tipper  = nil
 	local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
 	
-	
+	-- done tipping
 	if self.unloading_tipper ~= nil and self.unloading_tipper.fillLevel == 0 then			
 		if self.unloading_tipper.tipState ~= 0 then		  
 		  self.unloading_tipper:toggleTipState(self.currentTipTrigger)		  
 		end       
 		self.unloaded = true
-		self.max_speed = nil
+		self.max_speed = 3
 		self.currentTipTrigger = nil
 		self.unloading_tipper = nil
 	end
@@ -554,11 +605,14 @@ end;
 function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 end		
 
+
+-- deals with keyEvents
 function courseplay:keyEvent(unicode, sym, modifier, isDown)
   if isDown and sym == Input.KEY_s and bitAND(modifier, Input.MOD_CTRL) > 0 then
 	courseplay:input_course_name(self)
   end
   
+  -- user input fu
   if isDown and self.user_input_active then
 	if 31 < unicode and unicode < 127 then 
 		if self.user_input:len() <= 20 then
@@ -580,6 +634,8 @@ function courseplay:keyEvent(unicode, sym, modifier, isDown)
   end
 end;	
 
+
+-- enables input for course name
 function courseplay:input_course_name(self)
  self.user_input = ""
  self.user_input_active = true
@@ -587,21 +643,27 @@ function courseplay:input_course_name(self)
  self.user_input_message = "Name des Kurses: "
 end
 
-
+--  does something with the user input
 function courseplay:handle_user_input(self)
+	-- name for current_course
 	if self.save_name then
+	   courseplay:load_courses(self)
 	   self.user_input_active = false
 	   self.current_course_name = self.user_input
-	   self.user_input = ""
-	   courseplay:save_courses(self)
+	   self.user_input = ""	   
+	   self.user_input_message = nil
 	   self.courses[self.current_course_name] = self.Waypoints
+	   courseplay:save_courses(self)
 	end
 end
 
+-- renders input form
 function courseplay:user_input(self)
 	renderText(0.4, 0.9,0.02, self.user_input_message .. self.user_input);
 end
 
+
+-- renders info_text and global text for courseplaying tractors
 function courseplay:infotext(self)
 	if self.isEntered then
 		if self.info_text ~= nil then
@@ -621,6 +683,8 @@ function courseplay:infotext(self)
 	self.global_info_text = nil
 end
 
+
+-- distance between two coordinates
 function courseplay:distance(x1 ,z1 ,x2 ,z2)
 	xd = (x1 - x2) * (x1 - x2)
 	zd = (z1 -z2) * (z1 - z2)
@@ -628,7 +692,7 @@ function courseplay:distance(x1 ,z1 ,x2 ,z2)
 	return dist
 end
 
--- update implements
+-- update implements to find attached tippers
 function courseplay:update_tools(tractor_or_implement, tippers)    
   local tipper_attached = false
   -- go through all implements
@@ -655,6 +719,7 @@ end
 
 
 -- loads all tippers
+-- TODO only works for one tipper
 function courseplay:load_tippers(self)
   local allowedToDrive = false
   
@@ -675,6 +740,7 @@ function courseplay:load_tippers(self)
 end
 
 -- unloads all tippers
+-- TODO only works for one tipper
 function courseplay:unload_tippers(self)
   local allowedToDrive = false
   local active_tipper = nil
@@ -711,7 +777,7 @@ function courseplay:unload_tippers(self)
   return allowedToDrive, active_tipper
 end
 
-
+-- adds a visual waypoint to the map
 function courseplay:addsign(self, x, y, z)  
     local height = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, x, 300, z)
     local root = self.sign
@@ -722,6 +788,7 @@ function courseplay:addsign(self, x, y, z)
 	return(sign)
 end
 
+-- should the signs be visible?
 function courseplay:sign_visibility(self, visibilty)
   for k,v in pairs(self.signs) do    
       setVisibility(v, visibilty)	
@@ -789,48 +856,50 @@ end
 
 
 function courseplay:load_courses(self)
-  if self.courses ~= {} then  
-	return
-   else
+	local finish_all = false
 	self.courses = {}
-	   local path = getUserProfileAppPath() .. "savegame" .. g_careerScreen.selectedIndex .. "/"
-		local File = io.open(path .. "courseplay.xml", "a")
-		File:close()
-		File = loadXMLFile("courseFile", path .. "courseplay.xml")
-		local i = 0
-		repeat
-		  local baseName = string.format("XML.Courses.course(%d)", i)
-		  local name = getXMLString(File, baseName .. "#name")
-		  if name == nil then
-			do return end
-		  end
-		  local tempCourse = {}
-		  do
-			local s = 1
-			repeat
-			  local key = baseName .. ".waypoint" .. s
-			  local x, z = Utils.getVectorFromString(getXMLString(File, key .. "#pos"))
-			  if x ~= nil then
-				if z == nil then
-				  do return end
-				end
-				local dangle = Utils.getVectorFromString(getXMLString(File, key .. "#angle"))				
-				tempCourse[s] = {cx = x, cz = z, angle = dangle}
-				s = s + 1
-			  else
-				self.courses[name] = tempCourse
-				i = i + 1
-			  end
-			  do return end
-			  i = 0
-			end
-		  end
+	local path = getUserProfileAppPath() .. "savegame" .. g_careerScreen.selectedIndex .. "/"
+	local File = io.open(path .. "courseplay.xml", "a")
+	File:close()
+	File = loadXMLFile("courseFile", path .. "courseplay.xml")
+	local i = 0
+	repeat
+		print(i)
+		local baseName = string.format("XML.courses.course(%d)", i)
+		local name = getXMLString(File, baseName .. "#name")
+		if name == nil then
+			finish_all = true
+			break
 		end
-   end
+		local tempCourse = {}
+	  
+		local s = 1
+		print(s)
+		local finish_wp = false
+		repeat
+		  local key = baseName .. ".waypoint" .. s
+		  local x, z = Utils.getVectorFromString(getXMLString(File, key .. "#pos"))
+		  if x ~= nil then
+			if z == nil then
+			  finish_wp = true
+			  break
+			end
+			local dangle = Utils.getVectorFromString(getXMLString(File, key .. "#angle"))				
+			tempCourse[s] = {cx = x, cz = z, angle = dangle}
+			s = s + 1
+		  else
+			self.courses[name] = tempCourse
+			i = i + 1
+			finish_wp = true
+			break
+		  end
+		until finish_wp == true
+	until finish_all == true
 end
 
 
 -- debugging data dumper
+-- just for development and debugging
 function table.show(t, name, indent)
    local cart     -- a container
    local autoref  -- for self references
