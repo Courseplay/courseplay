@@ -1,9 +1,9 @@
 --
--- Courseplay v0.6
+-- Courseplay v0.8
 -- Specialization for Courseplay
 --
 -- @author  Lautschreier / Hummel
--- @version:	v0.7.20.02.11
+-- @version:	v0.8.20.02.11
 -- @testing:    bullgore80
 -- @history:	
 --      02.01.11/06.02.11 course recording and driving (Lautschreier)
@@ -103,6 +103,11 @@ function courseplay:load(xmlFile)
 	self.user_input = nil
 	self.save_name = false
 	
+	
+	self.course_selection_active = false
+	self.select_course = false
+	self.selected_course_number = 0
+	
 	-- name search - look for the tractors name for messages on screen
 	local aNameSearch = {"vehicle.name." .. g_languageShort, "vehicle.name.en", "vehicle.name", "vehicle#type"};
 	
@@ -180,6 +185,11 @@ function courseplay:draw()
 	courseplay:infotext(self);
 	if self.user_input_message then
 		courseplay:user_input(self);
+	end
+	
+	
+	if self.course_selection_active then
+		courseplay:display_course_selection(self);
 	end
 end	
 
@@ -612,6 +622,11 @@ function courseplay:keyEvent(unicode, sym, modifier, isDown)
 	courseplay:input_course_name(self)
   end
   
+  
+  if isDown and sym == Input.KEY_o and bitAND(modifier, Input.MOD_CTRL) > 0 then
+	courseplay:select_course(self)
+  end
+  
   -- user input fu
   if isDown and self.user_input_active then
 	if 31 < unicode and unicode < 127 then 
@@ -630,6 +645,26 @@ function courseplay:keyEvent(unicode, sym, modifier, isDown)
 	-- enter
 	if sym == 13 then
 		courseplay:handle_user_input(self)
+	end
+  end
+  
+  if isDown and self.course_selection_active then
+	-- enter
+	if sym == 13 then
+		self.select_course = true
+		courseplay:handle_user_input(self)
+	end
+	
+	if sym == 273 then
+	  if self.selected_course_number > 1 then
+		self.selected_course_number = self.selected_course_number - 1
+	  end
+	end
+	
+	if sym == 274 then
+	  if self.selected_course_number < 10 then
+		self.selected_course_number = self.selected_course_number + 1
+	  end
 	end
   end
 end;	
@@ -655,6 +690,16 @@ function courseplay:handle_user_input(self)
 	   self.courses[self.current_course_name] = self.Waypoints
 	   courseplay:save_courses(self)
 	end
+	
+	if self.select_course then
+		self.course_selection_active = false
+		if self.current_course_name ~= nil then
+		  courseplay:reset_course(self)
+		  self.Waypoints = self.courses[self.current_course_name]
+		  self.play = true
+		  self.maxnumber = table.getn(self.Waypoints)
+		end
+	end
 end
 
 -- renders input form
@@ -662,6 +707,24 @@ function courseplay:user_input(self)
 	renderText(0.4, 0.9,0.02, self.user_input_message .. self.user_input);
 end
 
+function courseplay:display_course_selection(self)
+  self.current_course_name = nil
+  renderText(0.4, 0.9 ,0.02, "Kurs Laden:");
+  
+  local i = 0
+  for name,wps in pairs(self.courses) do
+    local addit = ""
+	i = i + 1
+	if self.selected_course_number == i then
+	  addit = " <<<< "
+	  self.current_course_name = name
+	end
+	local yspace = 0.9 - (i * 0.022)
+	
+	renderText(0.4, yspace ,0.02, name .. addit);
+  end
+  
+end
 
 -- renders info_text and global text for courseplaying tractors
 function courseplay:infotext(self)
@@ -831,6 +894,15 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 end
 
 -- saving // loading coures
+
+
+function courseplay:select_course(self)
+  if self.course_selection_active then
+	self.course_selection_active = false
+  else
+	self.course_selection_active = true
+  end
+end
 
 -- saves coures to xml-file
 function courseplay:save_courses(self)
