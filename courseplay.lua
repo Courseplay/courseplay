@@ -1,9 +1,9 @@
 --
--- Courseplay v0.8
+-- Courseplay v0.9
 -- Specialization for Courseplay
 --
 -- @author  Lautschreier / Hummel
--- @version:	v0.8.20.02.11
+-- @version:	v0.9.21.02.11
 -- @testing:    bullgore80
 -- @history:	
 --      02.01.11/06.02.11 course recording and driving (Lautschreier)
@@ -16,6 +16,7 @@
 --      19.02.11 changed loading/unloading logic, changed sound, added hire() dismiss()  (hummel)
 --      19.02.11 auf/ablade logik erweitert - ablade trigger vergrößert  (hummel)
 --      20.02.11 laden/speichern von kursen (hummel)
+--      21.02.11 wartepunkte hinzugefügt (hummel)
 courseplay = {};
 
 -- working tractors saved in this
@@ -53,6 +54,8 @@ function courseplay:load(xmlFile)
 	
 	-- ai mode: 1 abfahrer
 	self.ai_mode = 1
+	
+	self.wait = true
 	
 	-- our arrow is displaying dirction to waypoints
 	self.ArrowPath = Utils.getFilename("Specializations/arrow.png", self.baseDirectory);
@@ -157,6 +160,11 @@ function courseplay:draw()
 			if InputBinding.hasEvent(InputBinding.PointRecord) then 
 				courseplay:stop_record(self)
 			end
+			
+			g_currentMission:addHelpButtonText(g_i18n:getText("CourseWaitpoint"), InputBinding.CourseWait);
+			if InputBinding.hasEvent(InputBinding.CourseWait) then 
+				courseplay:set_waitpoint(self)
+			end
 		end	
 	end  
 	
@@ -172,6 +180,13 @@ function courseplay:draw()
 				courseplay:start(self)
 			end	
 		else
+			if self.wait then
+				g_currentMission:addHelpButtonText(g_i18n:getText("CourseWaitpoinStart"), InputBinding.CourseWait);
+				
+				if InputBinding.hasEvent(InputBinding.CourseWait) then 
+					self.wait = false
+				end			
+			end
 			g_currentMission:addHelpButtonText(g_i18n:getText("CoursePlayStop"), InputBinding.CoursePlay);
 			if InputBinding.hasEvent(InputBinding.CoursePlay) then 
 				courseplay:stop(self)
@@ -370,10 +385,16 @@ function courseplay:drive(self)
   -- what about our tippers?
   local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
   -- may i drive or should i hold position for some reason?
-  local allowedToDrive = true;  
+  local allowedToDrive = true
   -- in a traffic yam?
   local in_traffic = false;
-    
+   
+   
+  if  self.Waypoints[self.recordnumber].wait and self.wait then
+     self.global_info_text = 'Abfahrer hat Wartepunkt erreicht.'
+     allowedToDrive = false
+  end
+  
   -- coordinates of coli
   local tx, ty, tz = getWorldTranslation(self.aiTrafficCollisionTrigger)
   -- direction of tractor
@@ -443,13 +464,14 @@ function courseplay:drive(self)
 	  
 	  self.motor.maxRpmOverride = self.motor.maxRpm[self.sl]
 	  -- go, go, go!
-	  AIVehicleUtil.driveInDirection(self, 1,  30, 0, 0, 28, true, true, lx, lz ,self.sl, 2);
+	  AIVehicleUtil.driveInDirection(self, 1,  25, 0.5, 0.5, 20, true, true, lx, lz ,self.sl, 0.9);
   else	
-	  -- i'm not returning right now?
-	  
+	  -- i'm not returning right now?	  
 	  if not self.back then	      
 		  if self.recordnumber < self.maxnumber  then
-		
+			  if not self.wait then
+			    self.wait = true
+			  end
 			  self.recordnumber = self.recordnumber + 1
 		  else	-- reset some variables
 			  -- dont stop if in circle mode
@@ -568,7 +590,7 @@ function courseplay:record(self)
 		end
 	end 
 	if self.tmr > 100 then 
-		self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle}
+		self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = false}
 		if self.recordnumber < 3 then 
 			courseplay:addsign(self, cx, cy,cz)
 		end 
@@ -577,6 +599,19 @@ function courseplay:record(self)
 	end
 end;
 
+
+function courseplay:set_waitpoint(self)
+	local cx,cy,cz = getWorldTranslation(self.rootNode);
+	local x,y,z = localDirectionToWorld(self.rootNode, 0, 0, 1);
+	local length = Utils.vector2Length(x,z);
+	local dX = x/length
+	local dZ = z/length
+	local newangle = math.deg(math.atan2(dX,dZ)) 
+  self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = true}
+  self.tmr = 1
+  self.recordnumber = self.recordnumber + 1
+  courseplay:addsign(self, cx, cy,cz)  
+end
 
 -- displays arrow and distance to start point
 function courseplay:dcheck(self)
@@ -743,7 +778,7 @@ function courseplay:infotext(self)
 	end
 	
 	if self.global_info_text ~= nil then
-	  local yspace = self.working_course_player_num * 0.022
+	  local yspace = 0.022
 	  local show_name = ""
 	  if self.name ~= nil then
 	    show_name = self.name
@@ -887,7 +922,7 @@ function courseplay:addsign(self, x, y, z)
     local height = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, x, 300, z)
     local root = self.sign
     local sign = clone(root, true)
-    setTranslation(sign, x, height + 1 + self.recordnumber, z)
+    setTranslation(sign, x, height + 1, z)
     setVisibility(sign, true)
     table.insert(self.signs, sign)
 	return(sign)
@@ -958,7 +993,7 @@ function courseplay:save_courses(self)
       File:write(tab .. "<course name=\"" .. name .. "\">\n")
       for i = 1, table.getn(x) do
         local v = x[i]
-        File:write(tab .. tab .. "<waypoint" .. i .. " pos=\"" .. v.cx .. " " .. v.cz .. "\" angle=\"" .. v.angle .. "\" />\n")
+        File:write(tab .. tab .. "<waypoint" .. i .. " pos=\"" .. v.cx .. " " .. v.cz .. "\" angle=\"" .. v.angle .. "\" wait=\"" .. v.wait .. "\" />\n")
       end
       File:write(tab .. "</course>\n")
     end
@@ -1000,7 +1035,8 @@ function courseplay:load_courses(self)
 			  break
 			end
 			local dangle = Utils.getVectorFromString(getXMLString(File, key .. "#angle"))				
-			tempCourse[s] = {cx = x, cz = z, angle = dangle}
+			local wait = Utils.getVectorFromString(getXMLString(File, key .. "#wait"))				
+			tempCourse[s] = {cx = x, cz = z, angle = dangle, wait = wait}
 			s = s + 1
 		  else
 			self.courses[name] = tempCourse
