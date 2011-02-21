@@ -390,10 +390,7 @@ function courseplay:drive(self)
   local in_traffic = false;
    
    
-  if  self.Waypoints[self.recordnumber].wait and self.wait then
-     self.global_info_text = 'Abfahrer hat Wartepunkt erreicht.'
-     allowedToDrive = false
-  end
+ 
   
   -- coordinates of coli
   local tx, ty, tz = getWorldTranslation(self.aiTrafficCollisionTrigger)
@@ -401,13 +398,19 @@ function courseplay:drive(self)
   local nx, ny, nz = localDirectionToWorld(self.aiTractorDirectionNode, 0, 0, 1)
   -- the tipper that is currently loaded/unloaded
   local active_tipper = nil
-      
-  -- abfahrer-mode
-  if self.ai_mode == 1 and self.tipper_attached and tipper_fill_level ~= nil then  
-	-- is there a tipTrigger within 10 meters?
-	raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
-	-- handle mode
-	allowedToDrive, active_tipper = courseplay:handle_mode1(self)
+  
+  
+   if  self.Waypoints[self.recordnumber].wait and self.wait then
+     self.global_info_text = 'Abfahrer hat Wartepunkt erreicht.'
+     allowedToDrive = false
+    else
+	  -- abfahrer-mode
+	  if self.ai_mode == 1 and self.tipper_attached and tipper_fill_level ~= nil then  
+		-- is there a tipTrigger within 10 meters?
+		raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
+		-- handle mode
+		allowedToDrive, active_tipper = courseplay:handle_mode1(self)
+	  end
   end
   
   -- are there any other vehicles in front?
