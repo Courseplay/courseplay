@@ -704,6 +704,7 @@ function courseplay:handle_user_input(self)
 		  courseplay:reset_course(self)
 		  self.Waypoints = self.courses[self.current_course_name]
 		  self.play = true
+		  self.recordnumber = 1
 		  self.maxnumber = table.getn(self.Waypoints)
 		end
 	end
@@ -941,6 +942,7 @@ function courseplay:select_course(self)
   if self.course_selection_active then
 	self.course_selection_active = false
   else
+	courseplay:load_courses(self)
 	self.course_selection_active = true
   end
 end
