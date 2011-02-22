@@ -1007,9 +1007,9 @@ function courseplay:save_courses(self)
         local v = x[i]
 		local wait = 0
 		if v.wait == true then
-		  local wait = 1
+		  local wait = "1"
 		else
-		  local wait = 0
+		  local wait = "0"
 		end
         File:write(tab .. tab .. "<waypoint" .. i .. " pos=\"" .. v.cx .. " " .. v.cz .. "\" angle=\"" .. v.angle .. "\" wait=\"" .. wait .. "\" />\n")
       end
@@ -1054,7 +1054,7 @@ function courseplay:load_courses(self)
 			end
 			local dangle = Utils.getVectorFromString(getXMLString(File, key .. "#angle"))				
 			local wait = Utils.getVectorFromString(getXMLString(File, key .. "#wait"))				
-			if wait == 1 then
+			if wait == "1" then
 			  wait = true
 			else
 			  wait = false
