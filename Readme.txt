@@ -44,6 +44,14 @@ in die moddesc eintragen:
 		<en>reset course</en>
 		<de>Kurs zurücksetzen</de>
 	</text>		
+	<text name="CourseWaitpoint">
+			<en>set waitpoint</en>
+			<de>Wartepunkt setzen</de>
+		</text>		
+		<text name="CourseWaitpoinStart">
+			<en>start</en>
+			<de>weiterfahren</de>
+		</text>		
 	</l10n>
 
 	<specializations>
@@ -69,6 +77,7 @@ in die moddesc eintragen:
 	<input name="CourseSave" key1="KEY_s" button="" />
 	<input name="CourseLoad" key1="KEY_o" button="" />
 	<input name="CourseReset" key1="KEY_r" button="" />
+	<input name="CourseWait" key1="KEY_KP_0" button="" />
     </inputBindings>
 
 
@@ -78,4 +87,4 @@ am startpunkt staste K
 strecke abfahren
 am zielpunkt wieder taste k, DANN erst anhalten(wird noch gefixt)
 
-taste L zum losfahren,der traktor fährt erst los wenn man ca 15 meter vom startpunkt/zielpunkt entfernt ist (dem pfeil nach fahren)
+taste J zum losfahren,der traktor fährt erst los wenn man ca 15 meter vom startpunkt/zielpunkt entfernt ist (dem pfeil nach fahren)

@@ -996,7 +996,13 @@ function courseplay:save_courses(self)
       File:write(tab .. "<course name=\"" .. name .. "\">\n")
       for i = 1, table.getn(x) do
         local v = x[i]
-        File:write(tab .. tab .. "<waypoint" .. i .. " pos=\"" .. v.cx .. " " .. v.cz .. "\" angle=\"" .. v.angle .. "\" wait=\"" .. v.wait .. "\" />\n")
+		local wait = 0
+		if v.wait == true then
+		  local wait = 1
+		else
+		  local wait = 0
+		end
+        File:write(tab .. tab .. "<waypoint" .. i .. " pos=\"" .. v.cx .. " " .. v.cz .. "\" angle=\"" .. v.angle .. "\" wait=\"" .. wait .. "\" />\n")
       end
       File:write(tab .. "</course>\n")
     end
@@ -1039,6 +1045,11 @@ function courseplay:load_courses(self)
 			end
 			local dangle = Utils.getVectorFromString(getXMLString(File, key .. "#angle"))				
 			local wait = Utils.getVectorFromString(getXMLString(File, key .. "#wait"))				
+			if wait == 1 then
+			  wait = true
+			else
+			  wait = false
+			end
 			tempCourse[s] = {cx = x, cz = z, angle = dangle, wait = wait}
 			s = s + 1
 		  else
