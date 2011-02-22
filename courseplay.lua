@@ -753,6 +753,13 @@ function courseplay:handle_user_input(self)
 		  self.play = true
 		  self.recordnumber = 1
 		  self.maxnumber = table.getn(self.Waypoints)
+		  
+		  -- this adds the signs to the course
+		  for k,wp in pairs(self.Waypoints) do
+			  if k < 3 or wp.wait == true then
+			  	courseplay:addsign(self, wp.cx, 0, wp.cz)
+			  end
+		  end
 		end
 	end
 end
