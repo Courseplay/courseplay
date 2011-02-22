@@ -14,9 +14,9 @@
 --      18.02.11 more than one tipper recognized by tractor // name of tractor in global info message
 -- 		19.02.11 trailer unloads on trigger, kegel gefixt // (Hummel/Lautschreier)
 --      19.02.11 changed loading/unloading logic, changed sound, added hire() dismiss()  (hummel)
---      19.02.11 auf/ablade logik erweitert - ablade trigger vergrößert  (hummel)
+--      19.02.11 auf/ablade logik erweitert - ablade trigger vergrï¿½ï¿½ert  (hummel)
 --      20.02.11 laden/speichern von kursen (hummel)
---      21.02.11 wartepunkte hinzugefügt (hummel)
+--      21.02.11 wartepunkte hinzugefï¿½gt (hummel)
 courseplay = {};
 
 -- working tractors saved in this
@@ -290,7 +290,16 @@ function courseplay:start(self)
 		end
 		self.record = false
 		self.dcheck = false
-	end			
+	else
+	  -- try to find other waypoint in reach
+	  for k,wp in pairs(self.Waypoints) do
+		  local wpdist = courseplay:distance(ctx ,ctz ,wp.cx ,wp.cz)
+		  if wpdist < 15 then
+		    self.recordnumber = k
+		    break
+		  end		  
+	  end
+	end
 end
 
 
