@@ -47,6 +47,7 @@ function courseplay:drive(self)
   if self.numCollidingVehicles > 0 then
     allowedToDrive = false;
     in_traffic = true;
+    self.global_info_text = 'Abfahrer steckt im Verkehr fest'
   end
 
   -- are there vehicles in front of any of my implements?

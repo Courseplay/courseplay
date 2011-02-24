@@ -170,7 +170,7 @@ function courseplay:draw()
 		courseplay:dcheck(self);	  
 	end
 	
-	courseplay:infotext(self);
+	
 	if self.user_input_message then
 		courseplay:user_input(self);
 	end
@@ -200,6 +200,8 @@ function courseplay:update()
 	if self.drive then
 		courseplay:drive(self);
 	end	
+	
+	courseplay:infotext(self);
 end		
 
 function courseplay:delete()
