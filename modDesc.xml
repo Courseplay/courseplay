@@ -5,7 +5,7 @@
     </title>
     <description>
         <de>
-		<![CDATA[Biogasanlage
+		<![CDATA[Courseplay
 		Grundversion: Lautschreier
 		Script: Hummel 
 		www.modhoster.de]]>
@@ -15,11 +15,7 @@
     <version>0.91</version>
     <iconFilename>store.png</iconFilename>
     <multiplayer supported="true"/>
-    <extraSourceFiles>
-        <sourceFile filename="register.lua" />
-    </extraSourceFiles>
-
-    <l10n>
+     <l10n>
 	<text name="PointRecordStart">
 		<en>Record Course Start</en>
 		<de>Kurs aufzeichnung starten</de>
@@ -66,13 +62,16 @@
 	</text>	
     </l10n>
 	<inputBindings>
-   		<input name ="CourseMode" key1="KEY_k" />
-		<input name="PointRecord" key1="KEY_l" button="" />
+   		<input name ="CourseMode" key1="KEY_l" />
+		<input name="PointRecord" key1="KEY_k" button="" />
     	<input name="CoursePlay" key1="KEY_j" button="" />
 		<input name="CourseSave" key1="KEY_s" button="" />
 		<input name="CourseLoad" key1="KEY_o" button="" />
 		<input name="CourseReset" key1="KEY_r" button="" />
 		<input name="CourseWait" key1="KEY_KP_0" button="" />
     </inputBindings>
+    <extraSourceFiles>
+        <sourceFile filename="register.lua" />
+    </extraSourceFiles>   
 </modDesc>
 

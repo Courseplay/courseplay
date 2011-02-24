@@ -1,0 +1,50 @@
+-- handles "mode1" : waiting at start until tippers full - driving course and unloading on trigger
+function courseplay:handle_mode1(self)
+	local allowedToDrive = true
+	local active_tipper  = nil
+	local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
+	
+	-- done tipping
+	if self.unloading_tipper ~= nil and self.unloading_tipper.fillLevel == 0 then			
+		if self.unloading_tipper.tipState ~= 0 then		  
+		  self.unloading_tipper:toggleTipState(self.currentTipTrigger)		  
+		end       
+		
+		self.unloading_tipper = nil
+		
+		if tipper_fill_level == 0 then
+			self.unloaded = true
+			self.max_speed = 3
+			self.currentTipTrigger = nil
+		end
+		
+	end
+
+
+	-- tippers are not full
+	-- tipper should be loaded 10 meters before wp 2	
+
+	if (self.recordnumber == 2 and tipper_fill_level < tipper_capacity and self.unloaded == false and self.dist < 10) or  self.lastTrailerToFillDistance then
+		allowedToDrive = courseplay:load_tippers(self)
+		self.info_text = string.format("Wird beladen: %d von %d ",tipper_fill_level,tipper_capacity )
+	end
+
+	-- damn, i missed the trigger!
+	if self.currentTipTrigger ~= nil then
+		local trigger_x, trigger_y, trigger_z = getWorldTranslation(self.currentTipTrigger.triggerId)
+		local ctx,cty,ctz = getWorldTranslation(self.rootNode);
+		local distance_to_trigger = courseplay:distance(ctx ,ctz ,trigger_x ,trigger_z)
+		if distance_to_trigger > 30 then
+			self.currentTipTrigger = nil
+		end
+	end
+
+	-- tipper is not empty and tractor reaches TipTrigger
+	if tipper_fill_level > 0 and self.currentTipTrigger ~= nil then		
+		self.max_speed = 1
+		allowedToDrive, active_tipper = courseplay:unload_tippers(self)
+		self.info_text = "Abladestelle erreicht"
+	end
+	
+	return allowedToDrive, active_tipper
+end  
