@@ -1,0 +1,1 @@
+SpecializationUtil.registerSpecialization("courseplay", "courseplay", g_modsDirectory.."/aacourseplay/courseplay.lua")

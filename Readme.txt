@@ -1,90 +1,23 @@
-die folgenden dateien in den order "specializations" des mods kopieren:
+Schritt 1: aacourseplay.zip ins Mod-Verzeichnis kopieren. Die "aa" am Anfang des Namens sind wichtig, damit dieser Mod vor allen anderen geladen wird
 
-courseplay.lua
-arrow.png
-
-
-
-in die moddesc eintragen:
-
-   <l10n>
-    <text name="PointRecordStart">
-		<en>Record Course Start</en>
-		<de>Kurs aufzeichnung starten</de>
-	</text>
-	<text name="PointRecordStop">
-		<en>Record Course Stop</en>
-		<de>Kurs aufzeichnung stoppen</de>
-	</text>
-	<text name="CoursePlayStart">
-		<en>Drive Course</en>
-		<de>Kurs abfahren</de>
-	</text>
-	<text name="CoursePlayStop">
-		<en>Drive stop</en>
-		<de>stop abfahren</de>
-	</text>
-	<text name="CoursePlayRound">
-	    <en>Kurs:  Round Course</en>
-	    <de>Kurs: Rundkurs</de>
-	</text>
-	<text name="CoursePlayReturn">
-		<en>Course: return</en>
-		<de>Kurs: Hin und Zur�ck</de>
-	</text>
-	<text name="CourseLoad">
-		<en>load course</en>
-		<de>Kurs laden</de>
-	</text>
-	<text name="CourseSave">
-		<en>save course</en>
-		<de>Kurs speichern</de>
-	</text>		
-	<text name="CourseReset">
-		<en>reset course</en>
-		<de>Kurs zur�cksetzen</de>
-	</text>		
-	<text name="CourseWaitpoint">
-			<en>set waitpoint</en>
-			<de>Wartepunkt setzen</de>
-		</text>		
-		<text name="CourseWaitpoinStart">
-			<en>start</en>
-			<de>weiterfahren</de>
-		</text>		
-	</l10n>
-
-	<specializations>
-        ...
-		...
-		...
-		<specialization name="courseplay" className="courseplay" filename="specializations/courseplay.lua"/>
-    </specializations>
-    <vehicleTypes>
-		...
-		...
-		...		
-		<specialization name="courseplay" />		
-    </vehicleTypes>
-	
-	<inputBindings>
-        ...
-		...
-		...
-       	<input name ="CourseMode"			key1="KEY_k" />
-	<input name="PointRecord" key1="KEY_l" button="" />
-    <input name="CoursePlay" key1="KEY_j" button="" />
-	<input name="CourseSave" key1="KEY_s" button="" />
-	<input name="CourseLoad" key1="KEY_o" button="" />
-	<input name="CourseReset" key1="KEY_r" button="" />
-	<input name="CourseWait" key1="KEY_KP_0" button="" />
-    </inputBindings>
+Schritt 2: Folgendes in die modDesc.xml des gewünschten Schleppers eintragen:
+  
+<vehicleTypes>
+	...
+	...
+	...		
+	<specialization name="courseplay" />		
+</vehicleTypes>
 
 
-anleitung zum fahren:
+Anleitung:
 
-am startpunkt staste K
-strecke abfahren
-am zielpunkt wieder taste k, DANN erst anhalten(wird noch gefixt)
+- Am Startpunkt Taste "K" drücken.
+- gewünschte Strecke abfahren
+- Um Wartepunkte zu setzen NUMPAD 0 drücken (der Schlepper hält beim abfahren hier an)
+- Am Zielpunkt nochmal "K" drücken um die Aufzeichnung zu beenden
+- Wenn ihr nicht mehr als 15 (Spiel)Meter vom Startpunkt entfernt seid könnt ihr mit der Taste "J" den Abfahrer starten.
+- Seid ihr weiter als 15 Meter erscheint ein Pfeil der euch zum Startpunkt lotst.
 
-taste J zum losfahren,der traktor f�hrt erst los wenn man ca 15 meter vom startpunkt/zielpunkt entfernt ist (dem pfeil nach fahren)
+- Routen speichern könnt ihr mit STRG+S, den Namen der Route mit Enter bestätigen.
+- Routen laden geht mit STRG+O, den Cursortasten zur Auswahl und Enter zum bestätigen.

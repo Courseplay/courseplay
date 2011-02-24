@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<modDesc descVersion="4">
+    <title>
+        <de>Courseplay - Abfahrhelfer</de>        
+    </title>
+    <description>
+        <de>
+		<![CDATA[Biogasanlage
+		Grundversion: Lautschreier
+		Script: Hummel 
+		www.modhoster.de]]>
+		</de>
+    </description>
+    <author>Lautschreier/Hummel (modhoster.de)</author>
+    <version>0.91</version>
+    <iconFilename>store.png</iconFilename>
+    <multiplayer supported="true"/>
+    <extraSourceFiles>
+        <sourceFile filename="register.lua" />
+    </extraSourceFiles>
+
+    <l10n>
+	<text name="PointRecordStart">
+		<en>Record Course Start</en>
+		<de>Kurs aufzeichnung starten</de>
+	</text>
+	<text name="PointRecordStop">
+		<en>Record Course Stop</en>
+		<de>Kurs aufzeichnung stoppen</de>
+	</text>
+	<text name="CoursePlayStart">
+		<en>Drive Course</en>
+		<de>Kurs abfahren</de>
+	</text>
+	<text name="CoursePlayStop">
+		<en>Drive stop</en>
+		<de>stop abfahren</de>
+	</text>
+	<text name="CoursePlayRound">
+	    <en>Kurs:  Round Course</en>
+	    <de>Kurs: Rundkurs</de>
+	</text>
+	<text name="CoursePlayReturn">
+		<en>Course: return</en>
+		<de>Kurs: Hin und Zurück</de>
+	</text>
+	<text name="CourseLoad">
+		<en>load course</en>
+		<de>Kurs laden</de>
+	</text>
+	<text name="CourseSave">
+		<en>save course</en>
+		<de>Kurs speichern</de>
+	</text>		
+	<text name="CourseReset">
+		<en>reset course</en>
+		<de>Kurs zurücksetzen</de>
+	</text>		
+	<text name="CourseWaitpoint">
+		<en>set waitpoint</en>
+		<de>Wartepunkt setzen</de>
+	</text>		
+	<text name="CourseWaitpoinStart">
+		<en>start</en>
+		<de>weiterfahren</de>
+	</text>	
+    </l10n>
+	<inputBindings>
+   		<input name ="CourseMode" key1="KEY_k" />
+		<input name="PointRecord" key1="KEY_l" button="" />
+    	<input name="CoursePlay" key1="KEY_j" button="" />
+		<input name="CourseSave" key1="KEY_s" button="" />
+		<input name="CourseLoad" key1="KEY_o" button="" />
+		<input name="CourseReset" key1="KEY_r" button="" />
+		<input name="CourseWait" key1="KEY_KP_0" button="" />
+    </inputBindings>
+</modDesc>
+

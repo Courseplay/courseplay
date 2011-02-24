@@ -14,7 +14,7 @@
 --      18.02.11 more than one tipper recognized by tractor // name of tractor in global info message
 -- 		19.02.11 trailer unloads on trigger, kegel gefixt // (Hummel/Lautschreier)
 --      19.02.11 changed loading/unloading logic, changed sound, added hire() dismiss()  (hummel)
---      19.02.11 auf/ablade logik erweitert - ablade trigger vergr��ert  (hummel)
+--      19.02.11 auf/ablade logik erweitert - ablade trigger vergrößrt  (hummel)
 --      20.02.11 laden/speichern von kursen (hummel)
 --      21.02.11 wartepunkte hinzugef�gt (hummel)
 courseplay = {};
@@ -58,7 +58,7 @@ function courseplay:load(xmlFile)
 	self.wait = true
 	
 	-- our arrow is displaying dirction to waypoints
-	self.ArrowPath = Utils.getFilename("Specializations/arrow.png", self.baseDirectory);
+	self.ArrowPath = Utils.getFilename("arrow.png", self.baseDirectory);
 	self.ArrowOverlay = Overlay:new("Arrow", self.ArrowPath, 0.4, 0.08, 0.250, 0.250);
 	self.ArrowOverlay:render()
 	
