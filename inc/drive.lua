@@ -1,6 +1,6 @@
 
 -- drives recored course
-function courseplay:drive(self)
+function courseplay:drive(self, dt)
   if not self.isEntered then
 	-- we want to hear our courseplayers
 	setVisibility(self.aiMotorSound, true)
@@ -31,7 +31,7 @@ function courseplay:drive(self)
   
   
    if  self.Waypoints[self.recordnumber].wait and self.wait then
-     self.global_info_text = 'Abfahrer hat Wartepunkt erreicht.'
+     self.global_info_text = 'hat Wartepunkt erreicht.'
      allowedToDrive = false
     else
 	  -- abfahrer-mode
@@ -47,7 +47,7 @@ function courseplay:drive(self)
   if self.numCollidingVehicles > 0 then
     allowedToDrive = false;
     in_traffic = true;
-    self.global_info_text = 'Abfahrer steckt im Verkehr fest'
+    self.global_info_text = ' steckt im Verkehr fest'
   end
 
   -- are there vehicles in front of any of my implements?
@@ -55,7 +55,7 @@ function courseplay:drive(self)
 		if v > 0 then
 			allowedToDrive = false;
 			in_traffic = true;			
-			self.global_info_text = 'Abfahrer steckt im Verkehr fest'
+			self.global_info_text = ' steckt im Verkehr fest'
 			break;
 		end;
     end;
@@ -64,8 +64,7 @@ function courseplay:drive(self)
   -- stop or hold position
   if not allowedToDrive then  
      self.motor:setSpeedLevel(0, false);
-     self.motor.maxRpmOverride = nil;
-     AIVehicleUtil.driveInDirection(self, 1, 30, 0, 0, 28, false, moveForwards, 0, 1)	
+     AIVehicleUtil.driveInDirection(self, dt, 30, 0, 0, 28, false, moveForwards, 0, 1)	
 	 
      -- unload active tipper if given
      if active_tipper then
@@ -77,28 +76,66 @@ function courseplay:drive(self)
      end
      -- important, otherwhise i would drive on
      return;
-   end;
+   end
   
   -- more than 5 meters away from next waypoint?
   if self.dist > 5 then
+  	  
+  
 	  -- speed limit at the end an the beginning of course
 	  if self.recordnumber > self.maxnumber - 4 or self.recordnumber < 4 then
 		  self.sl = 2
 	  else
 		  self.sl = 3					
-	  end	
-	  
+	  end		  
 	  -- is there an individual speed limit? e.g. for triggers
-	  if self.max_speed ~= nil then	    
-	    self.sl = self.max_speed
+	  if self.max_speed_level ~= nil then	    
+	    self.sl = self.max_speed_level
 	  end	  
+	  
+	  -- which speed?
+	  local ref_speed = nil
+	  local real_speed = self.lastSpeedReal
+	  
+	  if self.sl == 1 then
+	    ref_speed = self.turn_speed
+	  end
+	  
+	  if self.sl == 2 then
+	  	ref_speed = self.field_speed
+	  end
+	  
+	  if self.sl == 3 then
+	  	ref_speed = self.max_speed
+	  end
+	  
+	  local maxRpm = self.motor.maxRpm[self.sl]
+	  
+	  if real_speed < ref_speed then
+	  	maxRpm = maxRpm + 10
+	  elseif real_speed > ref_speed then
+	  	maxRpm = maxRpm - 10
+	  end
+	  
+	  print(ref_speed)  
+	  print(maxRpm)
+	  
+	  -- don't drive faster/slower than you can!
+	  if maxRpm > self.orgRpm[3] then
+		  maxRpm = self.orgRpm[3]
+	  else
+	  	if maxRpm < self.motor.minRpm then
+	  		maxRpm = self.motor.minRpm
+	  	end
+	  end
+	  
+	  self.motor.maxRpm[self.sl] = maxRpm
 
 	  -- where to drive?
 	  local lx, lz = AIVehicleUtil.getDriveDirection(self.rootNode,cx,cty,cz);
 	  
-	  self.motor.maxRpmOverride = self.motor.maxRpm[self.sl]
 	  -- go, go, go!
-	  AIVehicleUtil.driveInDirection(self, 1,  25, 0.5, 0.5, 20, true, true, lx, lz ,self.sl, 0.9);
+	  AIVehicleUtil.driveInDirection(self, dt,  45, 1, 0.7, 20, true, true, lx, lz , self.sl, 0.9);
   else	
 	  -- i'm not returning right now?	  
 	  if not self.back then	      
@@ -129,8 +166,7 @@ function courseplay:drive(self)
 				  self.record = false
 				  self.drive  = false	
 				  self.play = true
-				  self.motor:setSpeedLevel(0, false);
-				  self.motor.maxRpmOverride = nil;
+				  self.motor:setSpeedLevel(0, false);				  
 				  WheelsUtil.updateWheelsPhysics(self, 0, self.lastSpeed, 0, false, self.requiredDriveMode)
 				  self.recordnumber = 1
 				  self.back = false

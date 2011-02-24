@@ -47,10 +47,12 @@ function courseplay:start(self)
 		-- hire a helper
 		self:hire()
 		-- ok i am near the waypoint, let's go
+		self.checkSpeedLimit = false
 		self.drive  = true
 		if self.aiTrafficCollisionTrigger ~= nil then
 		   addTrigger(self.aiTrafficCollisionTrigger, "onTrafficCollisionTrigger", self);
 		end
+		self.orgRpm = self.motor.maxRpm
 		self.record = false
 		self.dcheck = false
 	else
@@ -68,7 +70,9 @@ end
 -- stops driving the course
 function courseplay:stop(self)
 	self:dismiss()
+	self.motor.maxRpm = self.orgRpm
 	self.record = false
+	
 	-- removing collision trigger
 	if self.aiTrafficCollisionTrigger ~= nil then
 		removeTrigger(self.aiTrafficCollisionTrigger);
@@ -84,12 +88,13 @@ function courseplay:stop(self)
 	
 	-- reseting variables
 	self.unloaded = false
+	self.checkSpeedLimit = true
 	self.currentTipTrigger = nil
 	self.drive  = false	
 	self.play = true
 	self.dcheck = false
-	--self.motor:setSpeedLevel(0, false);
-	--self.motor.maxRpmOverride = nil;
+	self.motor:setSpeedLevel(0, false);
+	self.motor.maxRpmOverride = nil;
 	WheelsUtil.updateWheelsPhysics(self, 0, 0, 0, false, self.requiredDriveMode)
 	self.lastrecordnumber = self.recordnumber
 	self.recordnumber = 1	

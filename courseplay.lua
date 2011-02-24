@@ -17,7 +17,7 @@
 --      19.02.11 auf/ablade logik erweitert - ablade trigger vergrößrt  (hummel)
 --      20.02.11 laden/speichern von kursen (hummel)
 --      21.02.11 wartepunkte hinzugefügt (hummel)
---      24.02.111 standalone Mod (hummel)
+--      24.02.11 refactoring & standalone Mod (hummel)
 
 courseplay = {};
 

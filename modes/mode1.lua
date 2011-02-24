@@ -14,7 +14,7 @@ function courseplay:handle_mode1(self)
 		
 		if tipper_fill_level == 0 then
 			self.unloaded = true
-			self.max_speed = 3
+			self.max_speed_level = 3
 			self.currentTipTrigger = nil
 		end
 		
@@ -41,7 +41,7 @@ function courseplay:handle_mode1(self)
 
 	-- tipper is not empty and tractor reaches TipTrigger
 	if tipper_fill_level > 0 and self.currentTipTrigger ~= nil then		
-		self.max_speed = 1
+		self.max_speed_level = 1
 		allowedToDrive, active_tipper = courseplay:unload_tippers(self)
 		self.info_text = "Abladestelle erreicht"
 	end

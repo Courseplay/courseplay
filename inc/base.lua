@@ -54,8 +54,13 @@ function courseplay:load(xmlFile)
 	-- course name for saving
 	self.current_course_name = nil
 	
-	-- individual speed limit
-	self.max_speed = nil
+	-- speed limits
+	self.max_speed_level = nil
+	self.max_speed = 40 / 3600
+	self.turn_speed = 8 / 3600
+	self.field_speed = 15 / 3600
+	
+	self.orgRpm = nil
 	
 	-- traffic collision	
 	self.onTrafficCollisionTrigger = courseplay.onTrafficCollisionTrigger;
@@ -183,7 +188,7 @@ end
 
 
 -- is been called everey frame
-function courseplay:update()
+function courseplay:update(dt)
 	-- show visual waypoints only when in vehicle
 	if self.isEntered then
 		courseplay:sign_visibility(self, true)
@@ -198,7 +203,7 @@ function courseplay:update()
 	
 	-- we are in drive mode
 	if self.drive then
-		courseplay:drive(self);
+		courseplay:drive(self, dt);
 	end	
 	
 	courseplay:infotext(self);
