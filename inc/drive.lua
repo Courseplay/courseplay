@@ -5,6 +5,15 @@ function courseplay:drive(self, dt)
 	-- we want to hear our courseplayers
 	setVisibility(self.aiMotorSound, true)
    end
+   
+  -- switch lights on!
+  if not self.isControlled then
+    if g_currentMission.environment.needsLights then
+       self:setLightsVisibility(true);
+    else
+       self:setLightsVisibility(false);
+    end;
+  end;
 
   -- actual position
   local ctx,cty,ctz = getWorldTranslation(self.rootNode);
