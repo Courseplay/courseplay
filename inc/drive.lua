@@ -79,8 +79,7 @@ function courseplay:drive(self, dt)
    end
   
   -- more than 5 meters away from next waypoint?
-  if self.dist > 5 then
-  	  
+  if self.dist > 5 then  	  
   
 	  -- speed limit at the end an the beginning of course
 	  if self.recordnumber > self.maxnumber - 4 or self.recordnumber < 4 then
@@ -107,8 +106,13 @@ function courseplay:drive(self, dt)
 	  
 	  if self.sl == 3 then
 	  	ref_speed = self.max_speed
-	  end
+	  end	  
 	  
+	  -- slow down before waitpoint	  
+	  if self.recordnumber < self.maxnumber-2 and self.Waypoints[self.recordnumber+1].wait then
+	  	ref_speed = self.turn_speed
+	  end
+	  	  
 	  local maxRpm = self.motor.maxRpm[self.sl]
 	  
 	  if real_speed < ref_speed then
@@ -116,10 +120,7 @@ function courseplay:drive(self, dt)
 	  elseif real_speed > ref_speed then
 	  	maxRpm = maxRpm - 10
 	  end
-	  
-	  print(ref_speed)  
-	  print(maxRpm)
-	  
+	  	  
 	  -- don't drive faster/slower than you can!
 	  if maxRpm > self.orgRpm[3] then
 		  maxRpm = self.orgRpm[3]
