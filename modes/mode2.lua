@@ -59,6 +59,7 @@ function courseplay:unload_combine(self, dt)
   local refSpeed = nil
   local handleTurn = false
   local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
+  local tipper_percentage = tipper_fill_level/tipper_capacity * 100
   local xt, yt, zt = worldToLocal(self.tippers[self.currentTrailerToFill].rootNode, x, y, z)
   local offset = zt
   
@@ -104,11 +105,9 @@ function courseplay:unload_combine(self, dt)
 		-- distance to right position
 		local disR = Utils.vector2Length(rx, rz)
 		if disL < disR then
-		  print(string.format("left side: x: %d z: %d ", cxl,czl  ))
 		  cx, cy, cz = cxl, cyl, czl
 	    else
 		  cx, cy, cz = cxr, cyr, czr
-		  print(string.format("right side: x: %d z: %d ", cxr,czr  ))
 	    end
 	  else
 	    -- tractor behind combine
@@ -121,7 +120,7 @@ function courseplay:unload_combine(self, dt)
       dod = Utils.vector2Length(lx, lz)
 		  
 	  -- near combine
-	  if dod < 2 then
+	  if dod < 3 then
 		mode = 6
 	  end
 	 -- end mode 2
@@ -220,27 +219,25 @@ function courseplay:unload_combine(self, dt)
     
   end -- end mode ~= 7
   
-  if handleTurn and tipper_fill_level < 90 then
-    print("handle turn")
-    local area = courseplay:checkForFruit(self) + courseplay:checkForFruit(self.tippers[self.currentTrailerToFill])
-    if area == 0 then
-      allowedToDrive = false
-      mode = 7
-    else
+  if handleTurn and tipper_percentage < 90 then
+--    local area = courseplay:checkForFruit(self) + courseplay:checkForFruit(self.tippers[self.currentTrailerToFill])
+--    if area == 0 then
+--      allowedToDrive = false
+--      mode = 7
+--    else
       local x, y, z = localDirectionToWorld(combine.rootNode, 0, 0, 1)
       self.comDirX, self.comDirZ = x, z
       if not self.turnTargetX and not self.turnTargetZ then
         local x, y, z = localToWorld(combine.rootNode, 0, 0, -35)
         self.turnTargetX, self.turnTargetZ = x, z
-        mode = 7
+        mode = 2
       end
-    end
+    --end
   end
   
   if self.turnTargetX ~= nil and self.turnTargetZ ~= nil then
-    print("turn target fu")
-    local area = courseplay:checkForFruit(self)
-    local area2 = courseplay:checkForFruit(self.tippers[self.currentTrailerToFill])
+   -- local area = courseplay:checkForFruit(self)
+    --local area2 = courseplay:checkForFruit(self.tippers[self.currentTrailerToFill])
     allowedToDrive = true
     local mx, mz = self.turnTargetX, self.turnTargetZ
     local lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, mx, y, mz)
@@ -252,11 +249,13 @@ function courseplay:unload_combine(self, dt)
   	  cx, cy, cz = localToWorld(self.aiTractorDirectionNode, 5, 0, 5)
 	end
 	if self.turnDone then
-	  if area == 0 and area2 == 0 and lz < 5 then
+--	  if area == 0 and area2 == 0 and lz < 5 then
 		self.turnTargetX, self.turnTargetZ = nil
 		self.turnDone = nil
 		self.waitTimer = nil
-	  elseif lz < 0 then
+	  mode = 2
+--	  elseif lz < 0 then
+	  if lz < 0 then
 	    local x, y, z = getWorldTranslation(self.aiTractorDirectionNode)
 		cx, cz = x + self.comDirX * -10, z + self.comDirZ * -10
 	  else
@@ -330,8 +329,8 @@ end
 
 function courseplay.checkForFruit(object)
   local node = object.rootNode
-  local width = object.sizeWidth
-  local length = object.sizeLength
+  local width = 5
+  local length = 10
   local x, y, z = localToWorld(node, -width / 2, 0, -length / 2)
   local hx, hy, hz = localToWorld(node, width / 2, 0, -length / 2)
   local wx, wy, wz = localToWorld(node, -width / 2, 0, length / 2)
