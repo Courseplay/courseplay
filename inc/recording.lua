@@ -8,7 +8,7 @@ function courseplay:record(self)
 	local newangle = math.deg(math.atan2(dX,dZ)) 
 
 
-	if self.recordnumber < 4 then
+	if self.recordnumber < 2 then
 		self.rotatedTime = 0
 	end 
 	if self.recordnumber > 2 then
@@ -74,6 +74,7 @@ function courseplay:stop_record(self)
 	self.dcheck = false
 	self.play = true
 	self.maxnumber = self.recordnumber - 1
+	self.recordnumber = 1
 	self.back = false
 end		
 

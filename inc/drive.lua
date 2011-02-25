@@ -18,7 +18,7 @@ function courseplay:drive(self, dt)
   -- actual position
   local ctx,cty,ctz = getWorldTranslation(self.rootNode);
   -- coordinates of next waypoint
-  cx ,cz = self.Waypoints[self.recordnumber].cx,self.Waypoints[self.recordnumber].cz
+  cx ,cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
   -- distance to waypoint
   self.dist = courseplay:distance(cx ,cz ,ctx ,ctz)
   -- what about our tippers?
@@ -27,10 +27,8 @@ function courseplay:drive(self, dt)
   local allowedToDrive = true
   -- in a traffic yam?
   local in_traffic = false;
-   
-   
- 
-  
+  self.max_speed_level = nil
+     
   -- coordinates of coli
   local tx, ty, tz = getWorldTranslation(self.aiTrafficCollisionTrigger)
   -- direction of tractor
@@ -49,6 +47,15 @@ function courseplay:drive(self, dt)
 		raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
 		-- handle mode
 		allowedToDrive, active_tipper = courseplay:handle_mode1(self)
+	  end
+	  
+	  -- combi-mode
+	  if self.ai_mode == 2 and self.tipper_attached and tipper_fill_level ~= nil then
+		  return courseplay:handle_mode2(self, dt)
+	  end
+	  
+	  if self.active_combine then
+	  	return courseplay:handle_mode2(self, dt)
 	  end
   end
   

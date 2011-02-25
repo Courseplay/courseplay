@@ -33,11 +33,14 @@ source(g_modsDirectory.."/aacourseplay/inc/start_stop.lua")
 -- course recording & resetting
 source(g_modsDirectory.."/aacourseplay/inc/recording.lua")
 
--- course recording & resetting
-source(g_modsDirectory.."/aacourseplay/inc/drive.lua")
+
 
 -- drive Modes
 source(g_modsDirectory.."/aacourseplay/modes/mode1.lua")
+source(g_modsDirectory.."/aacourseplay/modes/mode2.lua")
+
+-- course recording & resetting
+source(g_modsDirectory.."/aacourseplay/inc/drive.lua")
 
 -- Mouse/Key Managment
 source(g_modsDirectory.."/aacourseplay/inc/input.lua")
@@ -59,3 +62,8 @@ source(g_modsDirectory.."/aacourseplay/inc/tippers.lua")
 
 -- triggers
 source(g_modsDirectory.."/aacourseplay/inc/triggers.lua")
+
+-- triggers
+source(g_modsDirectory.."/aacourseplay/inc/combines.lua")
+
+source(g_modsDirectory.."/aacourseplay/inc/debug.lua")

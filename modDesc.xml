@@ -62,13 +62,15 @@
 	</text>	
     </l10n>
 	<inputBindings>
-   		<input name ="CourseMode" key1="KEY_l" />
-		<input name="PointRecord" key1="KEY_k" button="" />
-    	<input name="CoursePlay" key1="KEY_j" button="" />
+   		
+		<input name="PointRecord" key1="KEY_KP_9" button="" />
+    	<input name="CoursePlay" key1="KEY_KP_7" button="" />
 		<input name="CourseSave" key1="KEY_s" button="" />
 		<input name="CourseLoad" key1="KEY_o" button="" />
 		<input name="CourseReset" key1="KEY_r" button="" />
 		<input name="CourseWait" key1="KEY_KP_0" button="" />
+		<input name="CourseMode" key1="KEY_KP_6" button="" />
+		<input name="CourseAiMode" key1="KEY_KP_5" button="" />
     </inputBindings>
     <extraSourceFiles>
         <sourceFile filename="register.lua" />

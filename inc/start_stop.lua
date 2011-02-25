@@ -22,18 +22,6 @@ function courseplay:start(self)
 		end
 	end
 	
-	if self.lastrecordnumber ~= nil then
-		self.recordnumber = self.lastrecordnumber
-		self.lastrecordnumber = nil
-	else
-		-- TODO still needed?
-		if self.back then
-			self.recordnumber = self.maxnumber - 2
-		else
-			self.recordnumber = 1
-		end
-	end	
-	
 	-- show arrow
 	self.dcheck = true
 	-- current position
@@ -43,9 +31,13 @@ function courseplay:start(self)
 	-- distance
 	dist = courseplay:distance(ctx ,ctz ,cx ,cz)	
 	
-	if dist < 15 then
+	--if dist < 15 then
 		-- hire a helper
 		self:hire()
+		
+		if self.recordnumber == nil then
+			self.recordnumber = 1
+		end
 		-- ok i am near the waypoint, let's go
 		self.checkSpeedLimit = false
 		self.drive  = true
@@ -55,16 +47,7 @@ function courseplay:start(self)
 		self.orgRpm = self.motor.maxRpm
 		self.record = false
 		self.dcheck = false
-	else
-	  -- try to find other waypoint in reach
-	  for k,wp in pairs(self.Waypoints) do
-		  local wpdist = courseplay:distance(ctx ,ctz ,wp.cx ,wp.cz)
-		  if wpdist < 15 then
-		    self.recordnumber = k
-		    break
-		  end		  
-	  end
-	end
+	--end
 end
 
 -- stops driving the course
@@ -96,6 +79,5 @@ function courseplay:stop(self)
 	self.motor:setSpeedLevel(0, false);
 	self.motor.maxRpmOverride = nil;
 	WheelsUtil.updateWheelsPhysics(self, 0, 0, 0, false, self.requiredDriveMode)
-	self.lastrecordnumber = self.recordnumber
-	self.recordnumber = 1	
+
 end

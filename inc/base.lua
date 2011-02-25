@@ -5,9 +5,11 @@ end
 function courseplay:load(xmlFile)
 	-- current number of waypoint
 	self.recordnumber = 1
-	self.lastrecordnumber = nil
 	-- TODO what is this?
 	self.tmr = 1
+	self.timeout = 1
+	self.timer = 0
+	
 	-- waypoints are stored in here
 	self.Waypoints = {}
 	-- loaded/saved courses saved in here
@@ -28,11 +30,13 @@ function courseplay:load(xmlFile)
 	-- course modes: 1 circle route - 2 returning route
 	self.course_mode = 1
 	
-	-- ai mode: 1 abfahrer
+	-- ai mode: 1 abfahrer, 2 kombiniert
 	self.ai_mode = 1
 	
-	self.wait = true
 	
+	
+	self.wait = true
+	self.waitTimer = nil
 	-- our arrow is displaying dirction to waypoints
 	self.ArrowPath = Utils.getFilename("../aacourseplay/img/arrow.png", self.baseDirectory);
 	self.ArrowOverlay = Overlay:new("Arrow", self.ArrowPath, 0.4, 0.08, 0.250, 0.250);
@@ -57,8 +61,8 @@ function courseplay:load(xmlFile)
 	-- speed limits
 	self.max_speed_level = nil
 	self.max_speed = 40 / 3600
-	self.turn_speed = 8 / 3600
-	self.field_speed = 15 / 3600
+	self.turn_speed = 10 / 3600
+	self.field_speed = 24 / 3600
 	
 	self.orgRpm = nil
 	
@@ -105,6 +109,12 @@ function courseplay:load(xmlFile)
 	
 	print("initialized courseplay for " .. self.name)
 	
+	-- combines
+	
+	self.reachable_combines = {}
+	self.active_combine = nil
+	self.auto_mode = nil
+	
 	-- loading saved courses from xml
 	courseplay:load_courses(self)
 end	
@@ -125,6 +135,20 @@ function courseplay:draw()
 					self.course_mode = 0
 				else
 					self.course_mode = 1
+				end
+			end
+			
+			if self.ai_mode == 1 then
+				g_currentMission:addHelpButtonText(g_i18n:getText("CourseMode2"), InputBinding.CourseAiMode);			      
+			else
+				g_currentMission:addHelpButtonText(g_i18n:getText("CourseMode1"), InputBinding.CourseAiMode);			      
+			end
+				
+			if InputBinding.hasEvent(InputBinding.CourseAiMode) then 
+				if self.ai_mode == 1 then
+					self.ai_mode = 2
+				else
+					self.ai_mode = 1
 				end
 			end
 			
@@ -207,6 +231,7 @@ function courseplay:update(dt)
 	end	
 	
 	courseplay:infotext(self);
+	self.timer = self.timer + 1
 end		
 
 function courseplay:delete()
@@ -215,3 +240,6 @@ function courseplay:delete()
 	end	
 end;	
 
+function courseplay:set_timeout(self, interval)
+  self.timeout = self.timer + interval
+end
