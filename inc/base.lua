@@ -120,6 +120,7 @@ function courseplay:load(xmlFile)
 	
 	self.reachable_combines = {}
 	self.active_combine = nil
+	self.position_to_combine = 8
 	self.auto_mode = nil
 	
 	-- loading saved courses from xml

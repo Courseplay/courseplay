@@ -72,6 +72,7 @@ function courseplay:unload_combine(self, dt)
   local tipper_percentage = tipper_fill_level/tipper_capacity * 100
   local xt, yt, zt = worldToLocal(self.tippers[self.currentTrailerToFill].rootNode, x, y, z)
   local trailer_offset = zt
+  local sl = 2
   
   -- traffic collision  
   allowedToDrive = courseplay:check_traffic(self, false) 
@@ -97,9 +98,9 @@ function courseplay:unload_combine(self, dt)
 	  if z1 > 0 then
 	    -- tractor in front of combine
 	    -- left side of combine
-		local cx_left, cy_left, cz_left = localToWorld(combine.rootNode, 25, 0, -10)
+		local cx_left, cy_left, cz_left = localToWorld(combine.rootNode, 3, 0, -10)
 		-- righ side of combine
-		local cx_right, cy_right, cz_right = localToWorld(combine.rootNode, -25, 0, -10)
+		local cx_right, cy_right, cz_right = localToWorld(combine.rootNode, -30, 0, -10)
 		local lx, ly, lz =	worldToLocal(self.aiTractorDirectionNode, cx_left, y, cz_left)
 		-- distance to left position
 		local disL = Utils.vector2Length(lx, lz)
@@ -113,7 +114,7 @@ function courseplay:unload_combine(self, dt)
 	    end
 	  else
 	    -- tractor behind combine
-	    cx, cy, cz = localToWorld(combine.rootNode, 0, 0, -30)
+	    cx, cy, cz = localToWorld(combine.rootNode, 0, 0, -40)
 	  end
 	  
 	  		  
@@ -122,7 +123,7 @@ function courseplay:unload_combine(self, dt)
       dod = Utils.vector2Length(lx, lz)
 		  
 	  -- near point
-	  if dod < 5 then
+	  if dod < 2 then
 		mode = 3
 	  end
 	 -- end mode 2
@@ -158,7 +159,7 @@ function courseplay:unload_combine(self, dt)
       
       -- it's a chopper!
       if combine.grainTankCapacity == 0 then
-      	tX, tY, tZ = localToWorld(combine.rootNode, 8, 0, trailer_offset)
+      	tX, tY, tZ = localToWorld(combine.rootNode, self.position_to_combine, 0, trailer_offset)
       	cx, cz = tX, tZ
       else      
         -- pipe closed
@@ -183,20 +184,25 @@ function courseplay:unload_combine(self, dt)
       dod = Utils.vector2Length(lx, lz)
       
       -- too far away from pipe, switch to state 2, and follow combine
-      if dod > 30 then
+      if dod > 50 then
         mode = 2
       end
   
       -- combine is not moving and trailer is under pipe
-      if (combine.movingDirection <= 0 and lz <= 0.5) or lz < -0.4 * trailer_offset then     
-        self.info_text ="Must stop!!!"   
-        allowedToDrive = false
+      
+      
+      if (combine.movingDirection <= 0 and lz <= 0.5) or lz < -0.4 * trailer_offset then
+        if dod < 30 then     
+          self.info_text ="Must stop!!!"   
+          allowedToDrive = false
+        end
       end            
       
       -- speed limit
       if dod > 10 then
         refSpeed = self.field_speed
       else
+        sl = 4
         refSpeed = combine.lastSpeed
         if lz > 0.5 then
           refSpeed = combine.lastSpeed * 1.1
@@ -245,6 +251,7 @@ function courseplay:unload_combine(self, dt)
   	  allowedToDrive = false
   	  if self.next_ai_state == 2 and not combine_turning then
   	    mode = 2
+  	    self.position_to_combine = self.position_to_combine * -1 
   	  elseif self.next_ai_state == 2 and combine_turning then
   	    self.info_text = "Warte bis Drescher gewendet hat. "  	    
   	  else
@@ -310,7 +317,7 @@ function courseplay:unload_combine(self, dt)
 	  end
   end
   
-  AIVehicleUtil.driveInDirection(self, dt, 45, 1, 0.8, 25, true, true, target_x, target_z, 2, 0.8)
+  AIVehicleUtil.driveInDirection(self, dt, 45, 1, 0.8, 25, true, true, target_x, target_z, sl, 0.8)
   --self.motor.maxRpm[2] = maxRpm
 end
 

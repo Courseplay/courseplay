@@ -71,6 +71,7 @@
 		<input name="CourseWait" key1="KEY_KP_0" button="" />
 		<input name="CourseMode" key1="KEY_KP_6" button="" />
 		<input name="CourseAiMode" key1="KEY_KP_5" button="" />
+		<input name="CoursePosition" key1="KEY_KP_4" button="" />
     </inputBindings>
     <extraSourceFiles>
         <sourceFile filename="register.lua" />
