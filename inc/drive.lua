@@ -26,7 +26,7 @@ function courseplay:drive(self, dt)
   -- may i drive or should i hold position for some reason?
   local allowedToDrive = true
   -- in a traffic yam?
-  local in_traffic = false;
+  
   self.max_speed_level = nil
      
   -- coordinates of coli
@@ -50,32 +50,12 @@ function courseplay:drive(self, dt)
 	  end
 	  
 	  -- combi-mode
-	  if self.ai_mode == 2 and self.tipper_attached and tipper_fill_level ~= nil then
+	  if (self.ai_mode == 2 and self.recordnumber < 3 and self.tipper_attached and tipper_fill_level ~= nil) or self.active_combine then
 		  return courseplay:handle_mode2(self, dt)
-	  end
-	  
-	  if self.active_combine then
-	  	return courseplay:handle_mode2(self, dt)
 	  end
   end
   
-  -- are there any other vehicles in front?
-  if self.numCollidingVehicles > 0 then
-    allowedToDrive = false;
-    in_traffic = true;
-    self.global_info_text = ' steckt im Verkehr fest'
-  end
-
-  -- are there vehicles in front of any of my implements?
-   for k,v in pairs(self.numToolsCollidingVehicles) do
-		if v > 0 then
-			allowedToDrive = false;
-			in_traffic = true;			
-			self.global_info_text = ' steckt im Verkehr fest'
-			break;
-		end;
-    end;
-   
+  allowedToDrive = courseplay:check_traffic(self, true)
    
   -- stop or hold position
   if not allowedToDrive then  
@@ -193,3 +173,30 @@ function courseplay:drive(self, dt)
 	  
   end
 end;  
+
+
+function courseplay:check_traffic(self, display_warnings)
+  local allowedToDrive = true;
+  local in_traffic = false;
+  
+  -- are there any other vehicles in front?
+  if self.numCollidingVehicles > 0 then
+    allowedToDrive = false;
+    in_traffic = true;
+  end
+  
+  -- are there vehicles in front of any of my implements?
+  for k,v in pairs(self.numToolsCollidingVehicles) do
+    if v > 0 then
+      allowedToDrive = false;
+      in_traffic = true;
+      break;
+    end;
+  end;
+  
+  if display_warnings and in_traffic then
+    self.global_info_text = ' steckt im Verkehr fest'
+  end
+  
+  return allowedToDrive
+end

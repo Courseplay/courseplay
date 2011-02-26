@@ -1,22 +1,30 @@
+-- AI-states
+-- 1  warte am startpunkt auf arbeit
+-- 2 fahre hinter drescher
+-- 3 fahre zur pipe / abtanken
+-- 4 warte an dieser stelle
+-- 5 fahre zu wegpunkt
+-- 7 drescher voll, fahre zu wegpunkt
+-- 6 trailer voll, fahre zu wegpunkt
+-- 8 alle trailer voll
 
 function courseplay:handle_mode2(self, dt)
   local allowedToDrive = false
-  local cx = nil
-  local cz = nil
   local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
-  
-  if self.ai_mode == 8 then
+    
+  -- trailer full
+  if self.ai_state == 8 then
   	self.active_combine = nil
   	self.recordnumber = 3
-  	self.ai_mode = 2
+  	self.ai_state = 1
+  	allowedToDrive = true
   end
   
   if self.active_combine ~= nil then
   	-- support multiple tippers  
 	  if self.currentTrailerToFill == nil then
 	    self.currentTrailerToFill = 1 
-	  end
-	  
+	  end	  
 	  local current_tipper = self.tippers[self.currentTrailerToFill] 
 	  
 	  if current_tipper.fillLevel == current_tipper.capacity then    
@@ -30,18 +38,20 @@ function courseplay:handle_mode2(self, dt)
       courseplay:unload_combine(self, dt)    
     end
   else
-	  if self.timeout < self.timer then
-	  	courseplay:update_combines(self)
-	  	courseplay:set_timeout(self, 200)
+    -- are there any combines out there that need my help?
+	if self.timeout < self.timer then
+	  courseplay:update_combines(self)
+	  courseplay:set_timeout(self, 200)
+	end
+	--is any of the reachable combines full?
+	if table.getn(self.reachable_combines) > 0 then
+	  for k,combine in pairs(self.reachable_combines) do
+	    if (combine.grainTankFillLevel > (combine.grainTankCapacity*0.5)) or combine.grainTankCapacity == 0 then
+	  	  self.active_combine = combine  	     
+	  	  self.ai_state = 2
+	    end
 	  end
-	  --is any of the reachable combines full?
-	  if table.getn(self.reachable_combines) > 0 then
-	  	for k,combine in pairs(self.reachable_combines) do
-	  	   if (combine.grainTankFillLevel > (combine.grainTankCapacity*0.5)) or combine.grainTankCapacity == 0 then
-	  	     self.active_combine = combine  	     
-	  	   end
-	  	end
-	  end
+	end
   end
   
   return allowedToDrive
@@ -54,38 +64,30 @@ function courseplay:unload_combine(self, dt)
   local cx, cy, cz = nil, nil, nil
   local maxRpm = self.motor.maxRpm[2]
   local dod, sl = nil, nil
-  local mode = self.ai_mode
-  local fillLevel, isTurning = nil, nil
+  local mode = self.ai_state
+  local combine_fill_level, combine_turning = nil, nil
   local refSpeed = nil
   local handleTurn = false
   local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
   local tipper_percentage = tipper_fill_level/tipper_capacity * 100
   local xt, yt, zt = worldToLocal(self.tippers[self.currentTrailerToFill].rootNode, x, y, z)
-  local offset = zt
+  local trailer_offset = zt
   
-  if self.numCollidingVehicles > 0 then
-  	allowedToDrive = false
-  end
+  -- traffic collision  
+  allowedToDrive = courseplay:check_traffic(self, false) 
   
-  for k,v in pairs(self.numToolsCollidingVehicles) do
-  	if v > 0 then
-  		allowedToDrive = false
-	end
-  end
-  
-  if mode ~= 7 then
+  if mode == 2 or mode == 3 then
 	if combine == nil then
-	  print("no combine")
 	  allowedToDrive = false
 	elseif combine.turnStage ~= 0 or combine.turnTimer < combine.turnTimeout then
-	  print("combine turining")
-	  isTurning = true
+	  self.info_text = "Drescher wendet. "
+	  combine_turning = true
 	end
-	
+		
 	if combine.grainTankCapacity > 0 then
-	  fillLevel = combine.grainTankFillLevel * 100 / combine.grainTankCapacity
-	else
-	  fillLevel = 51
+	  combine_fill_level = combine.grainTankFillLevel * 100 / combine.grainTankCapacity
+	else -- combine is a chopper / has no tank
+	  combine_fill_level = 51
 	end
   
 	local x1, y1, z1 = worldToLocal(combine.rootNode, x, y, z)
@@ -95,19 +97,19 @@ function courseplay:unload_combine(self, dt)
 	  if z1 > 0 then
 	    -- tractor in front of combine
 	    -- left side of combine
-		local cxl, cyl, czl = localToWorld(combine.rootNode, 25, 0, -10)
+		local cx_left, cy_left, cz_left = localToWorld(combine.rootNode, 25, 0, -10)
 		-- righ side of combine
-		local cxr, cyr, czr = localToWorld(combine.rootNode, -25, 0, -10)
-		local lx, ly, lz =	worldToLocal(self.aiTractorDirectionNode, cxl, y, czl)
+		local cx_right, cy_right, cz_right = localToWorld(combine.rootNode, -25, 0, -10)
+		local lx, ly, lz =	worldToLocal(self.aiTractorDirectionNode, cx_left, y, cz_left)
 		-- distance to left position
 		local disL = Utils.vector2Length(lx, lz)
-		local rx, ry, rz = worldToLocal(self.aiTractorDirectionNode, cxr, y, czr)
+		local rx, ry, rz = worldToLocal(self.aiTractorDirectionNode, cx_right, y, c_right)
 		-- distance to right position
 		local disR = Utils.vector2Length(rx, rz)
 		if disL < disR then
-		  cx, cy, cz = cxl, cyl, czl
+		  cx, cy, cz = cx_left, cy_left, cz_left
 	    else
-		  cx, cy, cz = cxr, cyr, czr
+		  cx, cy, cz = cx_right, cy_right, cz_right
 	    end
 	  else
 	    -- tractor behind combine
@@ -121,29 +123,33 @@ function courseplay:unload_combine(self, dt)
 		  
 	  -- near combine
 	  if dod < 3 then
-		mode = 6
+		mode = 3
 	  end
 	 -- end mode 2
 	
-	elseif mode == 6 then
+	elseif mode == 3 then
 	  -- TODO eintellbar
-	  local pipeOffset = 0
-	  
+	  local pipeOffset = 0	  
 	
-	  if fillLevel == 0 then
-	    handleTurn = true
-	    print("handling turn!")
-	    self.waitTimer = self.timer 
-	    mode = 7
+	  if combine_fill_level == 0 then
+	    -- combine empty	    
+	    self.waitTimer = self.timer + 1500
+	    -- set waypoint 30 meters behind combine 
+	    self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, 0, 0, -30)
+	    mode = 5
+	    -- ai_state when waypoint is reached
+	    self.next_ai_state = 2
       elseif trailerFill == 100 then
-        mode = 8
-        print("full")
-        self.waitTimer = self.timer 
+        mode = 5
+        -- set waypoint 30 meters behind and 30 meters left from combine
+        self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, 30, 0, -30)
+        -- ai_state when waypoint is reached        
+        self.next_ai_state = 8
       end
       
       local rx, ry, rz = getWorldTranslation(combine.pipeRaycastNode)
       local tX, tY, tZ = nil, nil, nil
-      local ttX, ttY, ttZ = localToWorld(combine.pipeRaycastNode, pipeOffset, 0, offset)
+      local ttX, ttY, ttZ = localToWorld(combine.pipeRaycastNode, pipeOffset, 0, trailer_offset)
       local lx, ly, lz = nil, nil, nil
       
       if combine.isHired and combine.openPipe ~= nil then
@@ -152,37 +158,39 @@ function courseplay:unload_combine(self, dt)
       
       -- it's a chopper!
       if combine.grainTankCapacity == 0 then
-      	tX, tY, tZ = localToWorld(combine.rootNode, 8, 0, offset)
+      	tX, tY, tZ = localToWorld(combine.rootNode, 8, 0, trailer_offset)
       	cx, cz = tX, tZ
       else      
-	    if combine.currentPipeState ~=1 then
-          tX, tY, tZ = localToWorld(combine.pipeRaycastNode, pipeOffset, 0, offset * -2)
+        -- pipe closed
+	    if combine.currentPipeState == 1 then
+	      tX, tY, tZ = localToWorld(combine.pipeRaycastNode, 0, 0, trailer_offset)
+	      cx, cz = tX, tZ
+	      tX, tY, tZ = localToWorld(combine.pipeRaycastNode, trailer_offset, 0, trailer_offset)
+	    else
+	      -- pipe opening or open
+          tX, tY, tZ = localToWorld(combine.pipeRaycastNode, pipeOffset, 0, trailer_offset * -2)
           lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, tX, y, tZ)
           
           if lz <= 0.75 then
-            tX, tY, tZ = localToWorld(combine.pipeRaycastNode, pipeOffset, 0, offset * 2)
-          end
-      
+            tX, tY, tZ = localToWorld(combine.pipeRaycastNode, pipeOffset, 0, trailer_offset * 2)
+          end      
           cx, cz = tX, tZ
-          tX, tY, tZ = localToWorld(combine.pipeRaycastNode, pipeOffset, 0, offset)
-        else
-          tX, tY, tZ = localToWorld(combine.pipeRaycastNode, 0, 0, offset)
-          cx, cz = tX, tZ
-          tX, tY, tZ = localToWorld(combine.pipeRaycastNode, offset, 0, offset)
+          tX, tY, tZ = localToWorld(combine.pipeRaycastNode, pipeOffset, 0, trailer_offset)
         end        
       end
   
       lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, ttX, y, ttZ)
       dod = Utils.vector2Length(lx, lz)
-  
-      if (combine.movingDirection <= 0 and lz <= 0.5) or lz < -0.4 * offset then        
-        allowedToDrive = false
-      end
       
-      
+      -- too far away from pipe, switch to state 2, and follow combine
       if dod > 30 then
         mode = 2
       end
+  
+      -- combine is not moving and trailer is under pipe
+      if (combine.movingDirection <= 0 and lz <= 0.5) or lz < -0.4 * trailer_offset then        
+        allowedToDrive = false
+      end            
       
       -- speed limit
       if dod > 10 then
@@ -206,67 +214,45 @@ function courseplay:unload_combine(self, dt)
       	refSpeed = self.field_speed * 1.5
       end
       
-    end	 -- end mode 6
+    end	 -- end mode 3
     
-    if isTurning and distance < 30 then
-	  if mode == 6 then
-	    handleTurn = true
-	    mode = 7
+    if combine_turning and distance < 30 then
+	  if mode == 3 then
+	    -- combine empty	    
+	    -- set waypoint 15 meters diagonal vorne links ;)
+	    self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 15, 0, 15) 
+	    mode = 5
+	    -- ai_state when waypoint is reached
+	    self.next_ai_state = 2
 	  else
+	    -- just wait until combine has turned
 	    allowedToDrive = false
 	  end
-	end
-    
-  end -- end mode ~= 7
-  
-  if handleTurn and tipper_percentage < 90 then
---    local area = courseplay:checkForFruit(self) + courseplay:checkForFruit(self.tippers[self.currentTrailerToFill])
---    if area == 0 then
---      allowedToDrive = false
---      mode = 7
---    else
-      local x, y, z = localDirectionToWorld(combine.rootNode, 0, 0, 1)
-      self.comDirX, self.comDirZ = x, z
-      if not self.turnTargetX and not self.turnTargetZ then
-        local x, y, z = localToWorld(combine.rootNode, 0, 0, -35)
-        self.turnTargetX, self.turnTargetZ = x, z
-        mode = 2
-      end
-    --end
+	end    
+  end
+
+  -- drive to given waypoint
+  if mode == 5 and self.target_x ~= nil and self.target_z ~= nil then
+  	cx = self.target_x
+  	cy = self.target_y
+  	cz = self.target_z
+  	
+  	local wpx, wpy, wpz = worldToLocal(self.aiTractorDirectionNode, cx, y, cz)
+		  
+  	distance_to_wp = Utils.vector2Length(wpx, wpz)  	
+  	if distance_to_wp < 2 then
+  	  allowedToDrive = false
+  	  if self.next_ai_state == 2 and not combine_turning then
+  	    mode = 2
+  	  else
+  	    self.info_text = "Warte bis Drescher gewendet hat. "
+  	  end
+  	end  	
   end
   
-  if self.turnTargetX ~= nil and self.turnTargetZ ~= nil then
-   -- local area = courseplay:checkForFruit(self)
-    --local area2 = courseplay:checkForFruit(self.tippers[self.currentTrailerToFill])
-    allowedToDrive = true
-    local mx, mz = self.turnTargetX, self.turnTargetZ
-    local lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, mx, y, mz)
-    if lz > 0 and math.abs(lx) < lz * 0.5 then
-      self.turnDone = true
-    elseif self.waitTimer then
-	  cx, cy, cz = localToWorld(self.aiTractorDirectionNode, -5, 0, 5)
-    else
-  	  cx, cy, cz = localToWorld(self.aiTractorDirectionNode, 5, 0, 5)
-	end
-	if self.turnDone then
---	  if area == 0 and area2 == 0 and lz < 5 then
-		self.turnTargetX, self.turnTargetZ = nil
-		self.turnDone = nil
-		self.waitTimer = nil
-	  mode = 2
---	  elseif lz < 0 then
-	  if lz < 0 then
-	    local x, y, z = getWorldTranslation(self.aiTractorDirectionNode)
-		cx, cz = x + self.comDirX * -10, z + self.comDirZ * -10
-	  else
-		cx, cz = mx, mz
-	  end
-	end
-  end
+  self.ai_state = mode
   
-  self.ai_mode = mode
-  
-  if self.waitTimer and self.timer < self.waitTimer + 7500 then
+  if self.waitTimer and self.timer < self.waitTimer then
   	allowedToDrive = false
   	print("Timer active")
   end
@@ -282,10 +268,10 @@ function courseplay:unload_combine(self, dt)
     return 
   end  
   
-  local tarx, tarz = AIVehicleUtil.getDriveDirection(self.aiTractorDirectionNode, cx, y, cz)
+  local target_x, target_z = AIVehicleUtil.getDriveDirection(self.aiTractorDirectionNode, cx, y, cz)
   
   local realSpeed = self.lastSpeedReal
-  if mode == 6 or mode >= 7 then
+  if mode == 3 then
 	  if refSpeed then
 	    if refSpeed < realSpeed then
 	      maxRpm = maxRpm - 3
@@ -322,22 +308,8 @@ function courseplay:unload_combine(self, dt)
 	  end
   end
   
-  AIVehicleUtil.driveInDirection(self, dt, 45, 1, 0.8, 25, true, true, tarx, tarz, 2, 0.8)
+  AIVehicleUtil.driveInDirection(self, dt, 45, 1, 0.8, 25, true, true, target_x, target_z, 2, 0.8)
   --self.motor.maxRpm[2] = maxRpm
 end
 
 
-function courseplay.checkForFruit(object)
-  local node = object.rootNode
-  local width = 5
-  local length = 10
-  local x, y, z = localToWorld(node, -width / 2, 0, -length / 2)
-  local hx, hy, hz = localToWorld(node, width / 2, 0, -length / 2)
-  local wx, wy, wz = localToWorld(node, -width / 2, 0, length / 2)
-  local sum = 0
-  for i = 1, FruitUtil.NUM_FRUITTYPES do
-    local area = Utils.getFruitArea(i, x, z, wx, wz, hx, hz)
-    sum = sum + area
-  end
-  return sum
-end

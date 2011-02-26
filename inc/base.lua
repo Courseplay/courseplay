@@ -32,6 +32,8 @@ function courseplay:load(xmlFile)
 	
 	-- ai mode: 1 abfahrer, 2 kombiniert
 	self.ai_mode = 1
+	self.ai_state = 1
+	self.next_ai_state = nil
 	
 	
 	
@@ -57,6 +59,11 @@ function courseplay:load(xmlFile)
 	
 	-- course name for saving
 	self.current_course_name = nil
+	
+	-- forced waypoints	
+	self.target_x = nil
+	self.target_y = nil
+	self.target_z = nil
 	
 	-- speed limits
 	self.max_speed_level = nil

@@ -16,14 +16,11 @@ function courseplay:handle_mode1(self)
 			self.unloaded = true
 			self.max_speed_level = 3
 			self.currentTipTrigger = nil
-		end
-		
+		end		
 	end
-
 
 	-- tippers are not full
 	-- tipper should be loaded 10 meters before wp 2	
-
 	if (self.recordnumber == 2 and tipper_fill_level < tipper_capacity and self.unloaded == false and self.dist < 10) or  self.lastTrailerToFillDistance then
 		allowedToDrive = courseplay:load_tippers(self)
 		self.info_text = string.format("Wird beladen: %d von %d ",tipper_fill_level,tipper_capacity )
