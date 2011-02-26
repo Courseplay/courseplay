@@ -17,7 +17,7 @@ function courseplay:handle_mode2(self, dt)
   	self.active_combine = nil
   	self.recordnumber = 3
   	self.ai_state = 1
-  	allowedToDrive = true
+  	return true
   end
   
   if self.active_combine ~= nil then
@@ -79,7 +79,7 @@ function courseplay:unload_combine(self, dt)
   if mode == 2 or mode == 3 then
 	if combine == nil then
 	  allowedToDrive = false
-	elseif combine.turnStage ~= 0 or combine.turnTimer < combine.turnTimeout then
+	elseif (combine.turnStage == 1 or combine.turnStage == 2) or combine.turnTimer < combine.turnTimeout then
 	  self.info_text = "Drescher wendet. "
 	  combine_turning = true
 	end
@@ -103,7 +103,7 @@ function courseplay:unload_combine(self, dt)
 		local lx, ly, lz =	worldToLocal(self.aiTractorDirectionNode, cx_left, y, cz_left)
 		-- distance to left position
 		local disL = Utils.vector2Length(lx, lz)
-		local rx, ry, rz = worldToLocal(self.aiTractorDirectionNode, cx_right, y, c_right)
+		local rx, ry, rz = worldToLocal(self.aiTractorDirectionNode, cx_right, y, cz_right)
 		-- distance to right position
 		local disR = Utils.vector2Length(rx, rz)
 		if disL < disR then
@@ -121,8 +121,8 @@ function courseplay:unload_combine(self, dt)
 		  
       dod = Utils.vector2Length(lx, lz)
 		  
-	  -- near combine
-	  if dod < 3 then
+	  -- near point
+	  if dod < 5 then
 		mode = 3
 	  end
 	 -- end mode 2
@@ -133,12 +133,12 @@ function courseplay:unload_combine(self, dt)
 	
 	  if combine_fill_level == 0 then
 	    -- combine empty	    
-	    self.waitTimer = self.timer + 1500
+	    self.waitTimer = self.timer + 300
 	    -- set waypoint 30 meters behind combine 
 	    self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, 0, 0, -30)
 	    mode = 5
 	    -- ai_state when waypoint is reached
-	    self.next_ai_state = 2
+	    self.next_ai_state = 8
       elseif trailerFill == 100 then
         mode = 5
         -- set waypoint 30 meters behind and 30 meters left from combine
@@ -188,7 +188,8 @@ function courseplay:unload_combine(self, dt)
       end
   
       -- combine is not moving and trailer is under pipe
-      if (combine.movingDirection <= 0 and lz <= 0.5) or lz < -0.4 * trailer_offset then        
+      if (combine.movingDirection <= 0 and lz <= 0.5) or lz < -0.4 * trailer_offset then     
+        self.info_text ="Must stop!!!"   
         allowedToDrive = false
       end            
       
@@ -220,7 +221,7 @@ function courseplay:unload_combine(self, dt)
 	  if mode == 3 then
 	    -- combine empty	    
 	    -- set waypoint 15 meters diagonal vorne links ;)
-	    self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 15, 0, 15) 
+	    self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 20, 0, 15) 
 	    mode = 5
 	    -- ai_state when waypoint is reached
 	    self.next_ai_state = 2
@@ -244,8 +245,10 @@ function courseplay:unload_combine(self, dt)
   	  allowedToDrive = false
   	  if self.next_ai_state == 2 and not combine_turning then
   	    mode = 2
+  	  elseif self.next_ai_state == 2 and combine_turning then
+  	    self.info_text = "Warte bis Drescher gewendet hat. "  	    
   	  else
-  	    self.info_text = "Warte bis Drescher gewendet hat. "
+  	    mode = self.next_ai_state
   	  end
   	end  	
   end
@@ -259,7 +262,6 @@ function courseplay:unload_combine(self, dt)
   
   if cx == nil or cz == nil then
     allowedToDrive = false
-    print("this should never happen")
   end
   
   if not allowedToDrive then

@@ -18,6 +18,10 @@ function courseplay:drive(self, dt)
   -- actual position
   local ctx,cty,ctz = getWorldTranslation(self.rootNode);
   -- coordinates of next waypoint
+  if self.recordnumber > self.maxnumber then
+    -- this should never happen
+    self.recordnumber = self.maxnumber
+  end
   cx ,cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
   -- distance to waypoint
   self.dist = courseplay:distance(cx ,cz ,ctx ,ctz)
