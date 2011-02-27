@@ -26,29 +26,34 @@ function courseplay:handle_mode2(self, dt)
   end
   
   
+  -- support multiple tippers  
+  if self.currentTrailerToFill == nil then
+  self.currentTrailerToFill = 1 
+  end	  
+  local current_tipper = self.tippers[self.currentTrailerToFill] 
+  
+  if current_tipper.fillLevel == current_tipper.capacity then    
+  if table.getn(self.tippers) > self.currentTrailerToFill then			
+  self.currentTrailerToFill = self.currentTrailerToFill + 1
+else
+self.currentTrailerToFill = nil
+if self.ai_state ~= 5 then
+self.waitTimer = self.timer + 200
+-- set waypoint 30 meters behind and 30 meters left from combine
+if self.active_combine ~= nil then
+self.target_x, self.target_y, self.target_z = localToWorld(self.active_combine.rootNode, 15, 0, -15)
+else
+self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 15, 0, -15)
+end
+-- ai_state when waypoint is reached        
+self.ai_state = 5
+self.next_ai_state = 8
+end
+end
+end
   
   if self.active_combine ~= nil then
-  	-- support multiple tippers  
-	  if self.currentTrailerToFill == nil then
-	    self.currentTrailerToFill = 1 
-	  end	  
-	  local current_tipper = self.tippers[self.currentTrailerToFill] 
-	  
-	  if current_tipper.fillLevel == current_tipper.capacity then    
-		if table.getn(self.tippers) > self.currentTrailerToFill then			
-		  self.currentTrailerToFill = self.currentTrailerToFill + 1
-		else
-		  self.currentTrailerToFill = nil
-		  if self.ai_state ~= 5 then
-		    self.waitTimer = self.timer + 200
-		    -- set waypoint 30 meters behind and 30 meters left from combine
-		    self.target_x, self.target_y, self.target_z = localToWorld(self.active_combine.rootNode, 15, 0, -15)
-		    -- ai_state when waypoint is reached        
-		    self.ai_state = 5
-		    self.next_ai_state = 8
-		  end
-		end
-	  end
+  	
 	-- is there a trailer to fill, or at least a waypoint to go to?
 	if self.currentTrailerToFill or self.ai_state == 5 then
       courseplay:unload_combine(self, dt)    
