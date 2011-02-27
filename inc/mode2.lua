@@ -12,15 +12,20 @@ function courseplay:handle_mode2(self, dt)
   local allowedToDrive = false
   local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
     
+  if self.ai_state == 1 and self.active_combine ~= nil then
+    self.active_combine = nil
+  end
+    
   -- trailer full
   if self.ai_state == 8 then
   	self.active_combine = nil
   	self.recordnumber = 3
   	self.ai_state = 1
   	self.loaded = true
-  	print("done")
   	return true
   end
+  
+  
   
   if self.active_combine ~= nil then
   	-- support multiple tippers  
@@ -34,6 +39,14 @@ function courseplay:handle_mode2(self, dt)
 		  self.currentTrailerToFill = self.currentTrailerToFill + 1
 		else
 		  self.currentTrailerToFill = nil
+		  if self.ai_state ~= 5 then
+		    self.waitTimer = self.timer + 200
+		    -- set waypoint 30 meters behind and 30 meters left from combine
+		    self.target_x, self.target_y, self.target_z = localToWorld(self.active_combine.rootNode, 15, 0, -15)
+		    -- ai_state when waypoint is reached        
+		    self.ai_state = 5
+		    self.next_ai_state = 8
+		  end
 		end
 	  end
 	-- is there a trailer to fill, or at least a waypoint to go to?
@@ -73,9 +86,14 @@ function courseplay:unload_combine(self, dt)
   local handleTurn = false
   local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
   local tipper_percentage = tipper_fill_level/tipper_capacity * 100
-  local xt, yt, zt = worldToLocal(self.tippers[self.currentTrailerToFill].rootNode, x, y, z)
+  local xt, yt, zt = nil, nil, nil  
+  if self.currentTrailerToFill ~= nil then
+  	xt, yt, zt = worldToLocal(self.tippers[self.currentTrailerToFill].rootNode, x, y, z)
+  else
+    xt, yt, zt = worldToLocal(self.tippers[1].rootNode, x, y, z)
+  end
   local trailer_offset = zt
-  local sl = 2
+  local sl = 3
   
   -- traffic collision  
   allowedToDrive = courseplay:check_traffic(self, false, allowedToDrive) 
@@ -102,7 +120,7 @@ function courseplay:unload_combine(self, dt)
 	  if z1 > 0 then
 	    -- tractor in front of combine
 	    -- left side of combine
-		local cx_left, cy_left, cz_left = localToWorld(combine.rootNode, 3, 0, -10)
+		local cx_left, cy_left, cz_left = localToWorld(combine.rootNode, 30, 0, -10)
 		-- righ side of combine
 		local cx_right, cy_right, cz_right = localToWorld(combine.rootNode, -30, 0, -10)
 		local lx, ly, lz =	worldToLocal(self.aiTractorDirectionNode, cx_left, y, cz_left)
@@ -135,21 +153,16 @@ function courseplay:unload_combine(self, dt)
 	elseif mode == 3 then
 	  -- TODO eintellbar
 	  local pipeOffset = 0	  
+	  sl = 2
 	
 	  if combine_fill_level == 0 then
 	    -- combine empty	    
-	    self.waitTimer = self.timer + 300
+	    self.waitTimer = self.timer + 200
 	    -- set waypoint 30 meters behind combine 
-	    self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, 0, 0, -30)
+	    self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, 0, 0, -20)
 	    mode = 5
 	    -- ai_state when waypoint is reached
-	    self.next_ai_state = 2
-      elseif tipper_percentage == 100 then
-        mode = 5
-        -- set waypoint 30 meters behind and 30 meters left from combine
-        self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, 30, 0, -30)
-        -- ai_state when waypoint is reached        
-        self.next_ai_state = 8
+	    self.next_ai_state = 1
       end
       
       local rx, ry, rz = getWorldTranslation(combine.pipeRaycastNode)
@@ -170,7 +183,7 @@ function courseplay:unload_combine(self, dt)
 	    if combine.currentPipeState == 1 then
 	      tX, tY, tZ = localToWorld(combine.pipeRaycastNode, 0, 0, trailer_offset)
 	      cx, cz = tX, tZ
-	      tX, tY, tZ = localToWorld(combine.pipeRaycastNode, trailer_offset, 0, trailer_offset)
+	      tX, tY, tZ = localToWorld(combine.pipeRaycastNode, trailer_offset, 0, 0)
 	    else
 	      -- pipe opening or open
           tX, tY, tZ = localToWorld(combine.pipeRaycastNode, pipeOffset, 0, trailer_offset * -2)
@@ -197,7 +210,7 @@ function courseplay:unload_combine(self, dt)
       
       if (combine.movingDirection <= 0 and lz <= 0.5) or lz < -0.4 * trailer_offset then
         if dod < 30 then     
-          self.info_text ="Must stop!!!"   
+          self.info_text ="Drescher sagt ich soll anhalten."   
           allowedToDrive = false
         end
       end            
@@ -211,7 +224,7 @@ function courseplay:unload_combine(self, dt)
         if lz > 0.5 then
           refSpeed = combine.lastSpeed * 1.1
           if lz > 2 then
-            refSpeed = combine.lastSpeed * 1.3
+            refSpeed = combine.lastSpeed * 1.6
           elseif lz < -0.5 then
             refSpeed = combine.lastSpeed * 0.9
             if lz < -2 then
@@ -250,7 +263,7 @@ function courseplay:unload_combine(self, dt)
   	
   	local wpx, wpy, wpz = worldToLocal(self.aiTractorDirectionNode, cx, y, cz)
 		  
-  	distance_to_wp = Utils.vector2Length(wpx, wpz)  	
+  	distance_to_wp = Utils.vector2Length(wpx, wpz)  
   	if distance_to_wp < 2 then
   	  allowedToDrive = false
   	  if self.next_ai_state == 2 and not combine_turning then
@@ -268,7 +281,7 @@ function courseplay:unload_combine(self, dt)
   
   if self.waitTimer and self.timer < self.waitTimer then
   	allowedToDrive = false
-  	print("Timer active")
+  	self.info_text = "Warte auf bessere Zeiten."
   end
   
   if cx == nil or cz == nil then
@@ -323,7 +336,7 @@ function courseplay:unload_combine(self, dt)
   end
   
   AIVehicleUtil.driveInDirection(self, dt, 45, 1, 0.8, 25, true, true, target_x, target_z, sl, 0.8)
-  --self.motor.maxRpm[2] = maxRpm
+  self.motor.maxRpm[sl] = maxRpm
 end
 
 

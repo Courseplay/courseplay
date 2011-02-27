@@ -1,13 +1,11 @@
 
 -- drives recored course
 function courseplay:drive(self, dt)
-  if not self.isEntered then
-	-- we want to hear our courseplayers
-	setVisibility(self.aiMotorSound, true)
-   end
    
   -- switch lights on!
   if not self.isControlled then
+  	-- we want to hear our courseplayers
+    setVisibility(self.aiMotorSound, true)
     if g_currentMission.environment.needsLights then
        self:setLightsVisibility(true);
     else
@@ -54,7 +52,7 @@ function courseplay:drive(self, dt)
 	  end
 	  
 	  -- combi-mode
-	  if (self.ai_mode == 2 and self.recordnumber < 3 and self.tipper_attached) or self.active_combine then
+	  if (self.ai_mode == 2 and self.recordnumber < 3 and self.tipper_attached) or self.active_combine then	      
 		  return courseplay:handle_mode2(self, dt)
 	  end
   end
