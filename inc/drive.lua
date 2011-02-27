@@ -46,7 +46,7 @@ function courseplay:drive(self, dt)
      allowedToDrive = false
     else
 	  -- abfahrer-mode
-	  if self.ai_mode == 1 and self.tipper_attached and tipper_fill_level ~= nil then  
+	  if (self.ai_mode == 1 and self.tipper_attached and tipper_fill_level ~= nil) or self.loaded then  
 		-- is there a tipTrigger within 10 meters?
 		raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
 		-- handle mode
@@ -54,12 +54,12 @@ function courseplay:drive(self, dt)
 	  end
 	  
 	  -- combi-mode
-	  if (self.ai_mode == 2 and self.recordnumber < 3 and self.tipper_attached and tipper_fill_level ~= nil) or self.active_combine then
-		  return courseplay:handle_mode2(self, dt)
+	  if (self.ai_mode == 2 and self.recordnumber < 3 and self.tipper_attached) or self.active_combine then
+		  allowedToDrive = courseplay:handle_mode2(self, dt)
 	  end
   end
   
-  allowedToDrive = courseplay:check_traffic(self, true)
+  allowedToDrive = courseplay:check_traffic(self, true, allowedToDrive)
    
   -- stop or hold position
   if not allowedToDrive then  
@@ -179,8 +179,7 @@ function courseplay:drive(self, dt)
 end;  
 
 
-function courseplay:check_traffic(self, display_warnings)
-  local allowedToDrive = true;
+function courseplay:check_traffic(self, display_warnings, allowedToDrive)
   local in_traffic = false;
   
   -- are there any other vehicles in front?

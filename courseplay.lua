@@ -3,7 +3,7 @@
 -- Specialization for Courseplay
 --
 -- @author  Lautschreier / Hummel
--- @version:	v0.9.24.02.11
+-- @version:	v0.9.27.02.11
 -- @testing:    bullgore80
 -- @history:	
 --      02.01.11/06.02.11 course recording and driving (Lautschreier)
@@ -18,52 +18,57 @@
 --      20.02.11 laden/speichern von kursen (hummel)
 --      21.02.11 wartepunkte hinzugefügt (hummel)
 --      24.02.11 refactoring & standalone Mod (hummel)
+--      25.02.11 following combine (hummel)
+--      26.02.11 unloading combine (hummel)
+--      27.02.11 turning  (hummel)
 
 courseplay = {};
+
+courseplay_path = g_modsDirectory.."/aacourseplay/"
 
 -- working tractors saved in this
 working_course_players = {};
 
 -- load / draw / update methods
-source(g_modsDirectory.."/aacourseplay/inc/base.lua")
+source(courseplay_path.."inc/base.lua")
 
 -- starting & stopping of courseplay
-source(g_modsDirectory.."/aacourseplay/inc/start_stop.lua")
+source(courseplay_path.."inc/start_stop.lua")
 
 -- course recording & resetting
-source(g_modsDirectory.."/aacourseplay/inc/recording.lua")
+source(courseplay_path.."inc/recording.lua")
 
 
 
 -- drive Modes
-source(g_modsDirectory.."/aacourseplay/modes/mode1.lua")
-source(g_modsDirectory.."/aacourseplay/modes/mode2.lua")
+source(courseplay_path.."inc/mode1.lua")
+source(courseplay_path.."inc/mode2.lua")
 
 -- course recording & resetting
-source(g_modsDirectory.."/aacourseplay/inc/drive.lua")
+source(courseplay_path.."inc/drive.lua")
 
 -- Mouse/Key Managment
-source(g_modsDirectory.."/aacourseplay/inc/input.lua")
+source(courseplay_path.."inc/input.lua")
 
 -- Infotext
-source(g_modsDirectory.."/aacourseplay/inc/global.lua")
+source(courseplay_path.."inc/global.lua")
 
 -- Distance Check
-source(g_modsDirectory.."/aacourseplay/inc/distance.lua")
+source(courseplay_path.."inc/distance.lua")
 
 -- Visual Waypoints
-source(g_modsDirectory.."/aacourseplay/inc/signs.lua")
+source(courseplay_path.."inc/signs.lua")
 
 -- Loading/Saving Courses
-source(g_modsDirectory.."/aacourseplay/inc/course_management.lua")
+source(courseplay_path.."inc/course_management.lua")
 
 -- loading/unloading tippers
-source(g_modsDirectory.."/aacourseplay/inc/tippers.lua")
+source(courseplay_path.."inc/tippers.lua")
 
 -- triggers
-source(g_modsDirectory.."/aacourseplay/inc/triggers.lua")
+source(courseplay_path.."inc/triggers.lua")
 
 -- triggers
-source(g_modsDirectory.."/aacourseplay/inc/combines.lua")
+source(courseplay_path.."inc/combines.lua")
 
-source(g_modsDirectory.."/aacourseplay/inc/debug.lua")
+source(courseplay_path.."inc/debug.lua")

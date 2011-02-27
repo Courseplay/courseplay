@@ -17,6 +17,7 @@ function courseplay:handle_mode2(self, dt)
   	self.active_combine = nil
   	self.recordnumber = 3
   	self.ai_state = 1
+  	self.loaded = true
   	return true
   end
   
@@ -159,7 +160,7 @@ function courseplay:unload_combine(self, dt)
       
       -- it's a chopper!
       if combine.grainTankCapacity == 0 then
-      	tX, tY, tZ = localToWorld(combine.rootNode, self.position_to_combine, 0, trailer_offset)
+      	tX, tY, tZ = localToWorld(combine.rootNode, self.chopper_offset, 0, trailer_offset)
       	cx, cz = tX, tZ
       else      
         -- pipe closed
@@ -251,7 +252,7 @@ function courseplay:unload_combine(self, dt)
   	  allowedToDrive = false
   	  if self.next_ai_state == 2 and not combine_turning then
   	    mode = 2
-  	    self.position_to_combine = self.position_to_combine * -1 
+  	    self.chopper_offset = self.chopper_offset * -1 
   	  elseif self.next_ai_state == 2 and combine_turning then
   	    self.info_text = "Warte bis Drescher gewendet hat. "  	    
   	  else

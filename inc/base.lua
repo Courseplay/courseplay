@@ -91,6 +91,7 @@ function courseplay:load(xmlFile)
 	self.currentTrailerToFill = nil
 	self.lastTrailerToFillDistance = nil
 	self.unloaded = false	
+	self.loaded  = false
 	self.unloading_tipper = nil
 	
 	-- for user input like saving
@@ -120,7 +121,7 @@ function courseplay:load(xmlFile)
 	
 	self.reachable_combines = {}
 	self.active_combine = nil
-	self.position_to_combine = 8
+	self.chopper_offset = 8
 	self.auto_mode = nil
 	
 	-- loading saved courses from xml

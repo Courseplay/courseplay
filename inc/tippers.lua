@@ -56,7 +56,7 @@ function courseplay:load_tippers(self)
     local tipper_x, tipper_y, tipper_z = getWorldTranslation(self.tippers[self.currentTrailerToFill].rootNode)
 	local distance = courseplay:distance(cx, cz, tipper_x, tipper_z)
 
-	if distance > self.lastTrailerToFillDistance then	
+	if distance > self.lastTrailerToFillDistance and self.lastTrailerToFillDistance ~= nil then	
 		allowedToDrive = true
 	else	  
 	  allowedToDrive = false
