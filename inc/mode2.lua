@@ -18,6 +18,7 @@ function courseplay:handle_mode2(self, dt)
   	self.recordnumber = 3
   	self.ai_state = 1
   	self.loaded = true
+  	print("done")
   	return true
   end
   
@@ -35,7 +36,8 @@ function courseplay:handle_mode2(self, dt)
 		  self.currentTrailerToFill = nil
 		end
 	  end
-	if self.currentTrailerToFill then
+	-- is there a trailer to fill, or at least a waypoint to go to?
+	if self.currentTrailerToFill or self.ai_state == 5 then
       courseplay:unload_combine(self, dt)    
     end
   else
@@ -141,8 +143,8 @@ function courseplay:unload_combine(self, dt)
 	    self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, 0, 0, -30)
 	    mode = 5
 	    -- ai_state when waypoint is reached
-	    self.next_ai_state = 8
-      elseif trailerFill == 100 then
+	    self.next_ai_state = 2
+      elseif tipper_percentage == 100 then
         mode = 5
         -- set waypoint 30 meters behind and 30 meters left from combine
         self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, 30, 0, -30)
