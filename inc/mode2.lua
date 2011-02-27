@@ -76,10 +76,11 @@ function courseplay:unload_combine(self, dt)
   local sl = 2
   
   -- traffic collision  
-  allowedToDrive = courseplay:check_traffic(self, false) 
+  allowedToDrive = courseplay:check_traffic(self, false, allowedToDrive) 
   
   if mode == 2 or mode == 3 then
 	if combine == nil then
+	  self.info_text = "Mähdrescher verschwunden - Das kann eigentlich gar nicht sein! "
 	  allowedToDrive = false
 	elseif (combine.turnStage == 1 or combine.turnStage == 2) or combine.turnTimer < combine.turnTimeout then
 	  self.info_text = "Drescher wendet. "
@@ -269,6 +270,7 @@ function courseplay:unload_combine(self, dt)
   end
   
   if cx == nil or cz == nil then
+    self.info_text = "Warte bis ich neuen Wegpunkt habe"  	 
     allowedToDrive = false
   end
   

@@ -55,7 +55,7 @@ function courseplay:drive(self, dt)
 	  
 	  -- combi-mode
 	  if (self.ai_mode == 2 and self.recordnumber < 3 and self.tipper_attached) or self.active_combine then
-		  allowedToDrive = courseplay:handle_mode2(self, dt)
+		  return courseplay:handle_mode2(self, dt)
 	  end
   end
   
