@@ -40,7 +40,7 @@ self.currentTrailerToFill = nil
 if self.ai_state ~= 5 then
 self.waitTimer = self.timer + 200
 -- set waypoint 30 meters behind and 30 meters left from combine
-if self.active_combine ~= nil then
+if self.active_combine ~= nil and  courseplay:distance_to_object(self, self.active_combine) < 10 then
 self.target_x, self.target_y, self.target_z = localToWorld(self.active_combine.rootNode, 15, 0, -15)
 else
 self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 15, 0, -15)
@@ -83,7 +83,7 @@ function courseplay:unload_combine(self, dt)
   local combine = self.active_combine
   local x, y, z = getWorldTranslation(self.aiTractorDirectionNode)
   local cx, cy, cz = nil, nil, nil
-  local maxRpm = self.motor.maxRpm[2]
+  
   local dod, sl = nil, nil
   local mode = self.ai_state
   local combine_fill_level, combine_turning = nil, nil
@@ -118,8 +118,10 @@ function courseplay:unload_combine(self, dt)
 	  combine_fill_level = 51
 	end
   
-	local x1, y1, z1 = worldToLocal(combine.rootNode, x, y, z)
-	local distance = Utils.vector2Length(x1, z1)
+	--local x1, y1, z1 = worldToLocal(combine.rootNode, x, y, z)
+	--local distance = courseplay:distance_to_object
+	
+	local distance = courseplay:distance_to_object(combine)
 	
 	if mode == 2 then
 	  if z1 > 0 then
@@ -164,10 +166,15 @@ function courseplay:unload_combine(self, dt)
 	    -- combine empty	    
 	    self.waitTimer = self.timer + 200
 	    -- set waypoint 30 meters behind combine 
-	    self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, 0, 0, -20)
-	    mode = 5
-	    -- ai_state when waypoint is reached
-	    self.next_ai_state = 1
+	    if courseplay:distance_to_object(self, combine) < 10 then
+	      self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, 0, 0, -20)
+	      mode = 5
+	      -- ai_state when waypoint is reached
+	      self.next_ai_state = 1
+	    else	    
+	      mode = 1
+	    end	    
+	    
       end
       
       local rx, ry, rz = getWorldTranslation(combine.pipeRaycastNode)
@@ -270,9 +277,10 @@ function courseplay:unload_combine(self, dt)
   	cy = self.target_y
   	cz = self.target_z
   	
-  	local wpx, wpy, wpz = worldToLocal(self.aiTractorDirectionNode, cx, y, cz)
+  	sl = 3
 		  
-  	distance_to_wp = Utils.vector2Length(wpx, wpz)  
+  	distance_to_wp = courseplay:distance_to_point(self, cx, y, cz)
+  	
   	if distance_to_wp < 2 then
   	  allowedToDrive = false
   	  if self.next_ai_state == 2 and not combine_turning then
@@ -308,6 +316,7 @@ function courseplay:unload_combine(self, dt)
   
   local realSpeed = self.lastSpeedReal
   if mode == 3 then
+    local maxRpm = self.motor.maxRpm[sl]
 	  if refSpeed then
 	    if refSpeed < realSpeed then
 	      maxRpm = maxRpm - 3
@@ -334,16 +343,18 @@ function courseplay:unload_combine(self, dt)
 	      end
 	    end
 	  end
-  end
-	
-  if self.motor.maxRpm[3] < maxRpm then
+	 if self.motor.maxRpm[3] < maxRpm then
 	  maxRpm = self.motor.maxRpm[3]
-  else
+    else
 	  if maxRpm < self.motor.minRpm then
 	    maxRpm = self.motor.minRpm
 	  end
+    end
+  elseif
+      
+    sl = 3
   end
-  
+	
   AIVehicleUtil.driveInDirection(self, dt, 45, 1, 0.8, 25, true, true, target_x, target_z, sl, 0.8)
   self.motor.maxRpm[sl] = maxRpm
 end

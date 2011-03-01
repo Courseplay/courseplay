@@ -39,3 +39,16 @@ function courseplay:dcheck(self)
   dist = courseplay:distance(ctx ,ctz ,cx ,cz)
   self.info_text = string.format("entfernung: %d ",dist )  
 end;
+
+function courseplay:distance_to_object(self, object)
+  local x, y, z = getWorldTranslation(self.aiTractorDirectionNode)
+  local ox, oy, oz = localToWorld(object.rootNode, x, y, z)
+  
+  return Utils.vector2Length(ox, oz)  
+end
+
+
+function courseplay:distance_to_point(self, x, y, z)
+  local ox, oy, oz = worldToLocal(self.aiTractorDirectionNode, x, y, z)  
+  return Utils.vector2Length(ox, oz)  
+end

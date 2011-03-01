@@ -25,7 +25,12 @@ function courseplay:onTrafficCollisionTrigger(triggerId, otherId, onEnter, onLea
 end;
 
 -- tip trigger
-function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)  
+function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
+  print("objekt:")  
+  print(transformId)
+  print(distance)
+  print("")
+  
   for k,trigger in pairs(g_currentMission.onCreateLoadedObjects) do
 	if trigger.className == "SiloTrigger" or trigger.className == "TipTrigger"  then
 	    -- transformId
