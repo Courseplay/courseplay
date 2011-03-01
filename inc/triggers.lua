@@ -26,9 +26,24 @@ end;
 
 -- tip trigger
 function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)  
-  for k,trigger in pairs(g_currentMission.tipTriggers) do
-	if trigger.triggerId == transformId then
-		self.currentTipTrigger = trigger		
+  for k,trigger in pairs(g_currentMission.onCreateLoadedObjects) do
+	if trigger.className == "SiloTrigger" or trigger.className == "TipTrigger"  then
+	    -- transformId
+	    if trigger.triggerId ~= nil and trigger.triggerId == transformId then
+		  self.currentTipTrigger = trigger		
+		elseif trigger.triggerIds ~= nil and transformId ~= nil and table.contains(trigger.triggerIds, transformId) then
+		  self.currentTipTrigger = trigger		
+		end		
 	end
-  end
+  end 
+end
+
+
+function table.contains(table, element)
+for _, value in pairs(table) do
+if value == element then
+return true
+end
+end
+return false
 end

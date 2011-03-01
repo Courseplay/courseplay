@@ -249,7 +249,11 @@ function courseplay:unload_combine(self, dt)
 	  if mode == 3 then
 	    -- combine empty	    
 	    -- set waypoint 15 meters diagonal vorne links ;)
-	    self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 20, 0, 15) 
+	    if self.chopper_offset > 0 then
+	      self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 20, 0, 15)
+	    else
+	      self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, -20, 0, 15)
+	    end 
 	    mode = 5
 	    -- ai_state when waypoint is reached
 	    self.next_ai_state = 2

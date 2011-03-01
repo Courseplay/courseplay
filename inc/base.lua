@@ -126,6 +126,11 @@ function courseplay:load(xmlFile)
 	
 	-- loading saved courses from xml
 	courseplay:load_courses(self)
+	
+	--print(table.show(g_currentMission.trailerTipTriggers))
+	
+	--print(table.show(g_currentMission.onCreateLoadedObjects))
+	
 end	
 
 -- displays help text, user_input 	
