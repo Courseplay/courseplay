@@ -33,24 +33,24 @@ function courseplay:handle_mode2(self, dt)
   local current_tipper = self.tippers[self.currentTrailerToFill] 
   
   if current_tipper.fillLevel == current_tipper.capacity then    
-  if table.getn(self.tippers) > self.currentTrailerToFill then			
-  self.currentTrailerToFill = self.currentTrailerToFill + 1
-else
-self.currentTrailerToFill = nil
-if self.ai_state ~= 5 then
-self.waitTimer = self.timer + 200
--- set waypoint 30 meters behind and 30 meters left from combine
-if self.active_combine ~= nil and  courseplay:distance_to_object(self, self.active_combine) < 10 then
-self.target_x, self.target_y, self.target_z = localToWorld(self.active_combine.rootNode, 15, 0, -15)
-else
-self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 15, 0, -15)
-end
--- ai_state when waypoint is reached        
-self.ai_state = 5
-self.next_ai_state = 8
-end
-end
-end
+    if table.getn(self.tippers) > self.currentTrailerToFill then			
+      self.currentTrailerToFill = self.currentTrailerToFill + 1
+    else
+      self.currentTrailerToFill = nil
+      if self.ai_state ~= 5 then
+        self.waitTimer = self.timer + 200
+        -- set waypoint 30 meters behind and 30 meters left from combine
+        if self.active_combine ~= nil and courseplay:distance_to_object(self, self.active_combine) < 10 then
+          self.target_x, self.target_y, self.target_z = localToWorld(self.active_combine.rootNode, 15, 0, -15)
+        else
+          self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 15, 0, -15)
+        end
+        -- ai_state when waypoint is reached        
+        self.ai_state = 5
+        self.next_ai_state = 8
+      end
+    end
+  end
   
   if self.active_combine ~= nil then
   	
@@ -121,7 +121,8 @@ function courseplay:unload_combine(self, dt)
 	--local x1, y1, z1 = worldToLocal(combine.rootNode, x, y, z)
 	--local distance = courseplay:distance_to_object
 	
-	local distance = courseplay:distance_to_object(combine)
+	local x1, y1, z1 = worldToLocal(combine.rootNode, x, y, z)
+	local distance = Utils.vector2Length(x1, z1)
 	
 	if mode == 2 then
 	  if z1 > 0 then
@@ -231,7 +232,7 @@ function courseplay:unload_combine(self, dt)
       if dod > 10 then
         refSpeed = self.field_speed
       else
-        sl = 4
+        sl = 2
         refSpeed = combine.lastSpeed
         if lz > 0.5 then
           refSpeed = combine.lastSpeed * 1.1
@@ -314,9 +315,10 @@ function courseplay:unload_combine(self, dt)
   
   local target_x, target_z = AIVehicleUtil.getDriveDirection(self.aiTractorDirectionNode, cx, y, cz)
   
+  local maxRpm = self.motor.maxRpm[sl]
+  
   local realSpeed = self.lastSpeedReal
   if mode == 3 then
-    local maxRpm = self.motor.maxRpm[sl]
 	  if refSpeed then
 	    if refSpeed < realSpeed then
 	      maxRpm = maxRpm - 3
@@ -350,8 +352,7 @@ function courseplay:unload_combine(self, dt)
 	    maxRpm = self.motor.minRpm
 	  end
     end
-  elseif
-      
+  else      
     sl = 3
   end
 	

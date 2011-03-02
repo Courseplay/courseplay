@@ -28,7 +28,13 @@ function courseplay:handle_mode1(self)
 
 	-- damn, i missed the trigger!
 	if self.currentTipTrigger ~= nil then
-		local trigger_x, trigger_y, trigger_z = getWorldTranslation(self.currentTipTrigger.triggerId)
+	    local trigger_id = self.currentTipTrigger.triggerId
+	    
+	    if self.currentTipTrigger.specialTriggerId ~= nil then
+	      trigger_id = self.currentTipTrigger.specialTriggerId
+	    end
+	    
+		local trigger_x, trigger_y, trigger_z = getWorldTranslation(trigger_id)
 		local ctx,cty,ctz = getWorldTranslation(self.rootNode);
 		local distance_to_trigger = courseplay:distance(ctx ,ctz ,trigger_x ,trigger_z)
 		if distance_to_trigger > 30 then

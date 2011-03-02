@@ -78,8 +78,7 @@ function courseplay:load(xmlFile)
 	self.aiTrafficCollisionTrigger = Utils.indexToObject(self.components, getXMLString(xmlFile, "vehicle.aiTrafficCollisionTrigger#index"));
 	
 	self.numCollidingVehicles = 0;
-	self.numToolsCollidingVehicles = {};
-	
+	self.numToolsCollidingVehicles = {};	
 	
 	-- tipTrigger
 	self.findTipTriggerCallback = courseplay.findTipTriggerCallback;
@@ -126,10 +125,6 @@ function courseplay:load(xmlFile)
 	
 	-- loading saved courses from xml
 	courseplay:load_courses(self)
-	
-	--print(table.show(g_currentMission.trailerTipTriggers))
-	
-	--print(table.show(g_currentMission.onCreateLoadedObjects))
 	
 end	
 

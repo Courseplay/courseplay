@@ -85,20 +85,31 @@ end
 function courseplay:unload_tippers(self)
   local allowedToDrive = false
   local active_tipper = nil
+  local trigger = self.currentTipTrigger
+  g_currentMission.tipTriggerRangeThreshold = 2
   -- drive forward until actual tipper reaches trigger
   
     -- position of trigger
-    local trigger_x, trigger_y, trigger_z = getWorldTranslation(self.currentTipTrigger.triggerId)
+    local trigger_id = self.currentTipTrigger.triggerId
+	    
+    if self.currentTipTrigger.specialTriggerId ~= nil then
+    trigger_id = self.currentTipTrigger.specialTriggerId
+    end
+    local trigger_x, trigger_y, trigger_z = getWorldTranslation(trigger_id)
     
     -- tipReferencePoint of each tipper    
     for k,tipper in pairs(self.tippers) do 
       local tipper_x, tipper_y, tipper_z = getWorldTranslation(tipper.tipReferencePoint)
       local distance_to_trigger = Utils.vector2Length(trigger_x - tipper_x, trigger_z - tipper_z)
 	  
-	  g_currentMission.tipTriggerRangeThreshold = 2
+	  local needed_distance = g_currentMission.tipTriggerRangeThreshold
+	  
+	  if trigger.className ~= "TipTrigger" then
+	    needed_distance = 15
+	  end
 	  
       -- if tipper is on trigger
-      if distance_to_trigger <= g_currentMission.tipTriggerRangeThreshold then
+      if distance_to_trigger <= needed_distance then
 		active_tipper = tipper
       end            
     end
@@ -106,7 +117,7 @@ function courseplay:unload_tippers(self)
   if active_tipper then    
 	local trigger = self.currentTipTrigger
 	-- if trigger accepts fruit
-	if trigger.acceptedFruitTypes[active_tipper:getCurrentFruitType()] then
+	if (trigger.acceptedFruitTypes ~= nil and trigger.acceptedFruitTypes[active_tipper:getCurrentFruitType()]) or trigger.className == "MapBGASilo" then
 		allowedToDrive = false
 	else
 		allowedToDrive = true
