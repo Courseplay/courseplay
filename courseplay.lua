@@ -72,3 +72,5 @@ source(courseplay_path.."inc/triggers.lua")
 source(courseplay_path.."inc/combines.lua")
 
 source(courseplay_path.."inc/debug.lua")
+
+source(courseplay_path.."inc/button.lua")

@@ -67,18 +67,10 @@ function courseplay:drive(self, dt)
      -- unload active tipper if given
      if active_tipper then
        self.info_text = string.format("Wird entladen: %d von %d ",tipper_fill_level,tipper_capacity )
-       if active_tipper.tipState == 0 then --and self.currentTipTrigger.className ~= "MapBGASilo" then				  
+       if active_tipper.tipState == 0 then				  
 		  active_tipper:toggleTipState(self.currentTipTrigger)		  
 		  self.unloading_tipper = active_tipper
        end       
---       if active_tipper.tipState == 0 and self.currentTipTrigger.className == "MapBGASilo" then
---       	 for k,silo in pairs(MapBGASilo.ModEvent.silos) do       	     
---         	if table.contains(silo.trailerInTrigger, active_tipper)  then
---         	  print("identified!")
---         	  active_tipper:toggleTipState(silo)
---         	end
---         end
---       end
      end
      -- important, otherwhise i would drive on
      return;
