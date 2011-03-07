@@ -187,14 +187,15 @@ function courseplay:unload_combine(self, dt)
         combine.openPipe(combine)
       end
       
+      
       -- it's a chopper!
       if combine.grainTankCapacity == 0 then
       	tX, tY, tZ = localToWorld(combine.rootNode, self.chopper_offset, 0, trailer_offset * 2)
       	cx, cz = tX, tZ
       else      
         -- pipe closed
-	    if combine.currentPipeState == 1 then
-	      tX, tY, tZ = localToWorld(combine.pipeRaycastNode, 0, 0, trailer_offset)
+	    if combine.currentPipeState ~= 2 then
+	      tX, tY, tZ = localToWorld(combine.rootNode, self.chopper_offset, 0, trailer_offset)
 	      cx, cz = tX, tZ
 	      tX, tY, tZ = localToWorld(combine.pipeRaycastNode, trailer_offset, 0, 0)
 	    else
@@ -222,7 +223,7 @@ function courseplay:unload_combine(self, dt)
       
       
       if (combine.movingDirection <= 0 and lz <= 0.5) or lz < -0.4 * trailer_offset then
-        if dod < 30 then     
+        if dod < 10 then     
           self.info_text ="Drescher sagt ich soll anhalten."   
           allowedToDrive = false
         end
@@ -286,7 +287,9 @@ function courseplay:unload_combine(self, dt)
   	  allowedToDrive = false
   	  if self.next_ai_state == 2 and not combine_turning then
   	    mode = 2
-  	    self.chopper_offset = self.chopper_offset * -1 
+  	    if combine.grainTankCapacity == 0 then 
+  	      self.chopper_offset = self.chopper_offset * -1
+  	    end 
   	  elseif self.next_ai_state == 2 and combine_turning then
   	    self.info_text = "Warte bis Drescher gewendet hat. "  	    
   	  else
@@ -316,8 +319,13 @@ function courseplay:unload_combine(self, dt)
   local target_x, target_z = AIVehicleUtil.getDriveDirection(self.aiTractorDirectionNode, cx, y, cz)
   
   local maxRpm = self.motor.maxRpm[sl]
-  
   local real_speed = self.lastSpeedReal
+  
+  if refSpeed == nil then
+    refSpeed = real_speed
+  end
+  
+  
   if mode == 3 then  
 	if real_speed < refSpeed then	  
 	  maxRpm = maxRpm + 20	  
@@ -339,7 +347,6 @@ function courseplay:unload_combine(self, dt)
     sl = 3
     maxRpm = self.orgRpm[3]
   end
-  print(maxRpm)
   self.motor.maxRpm[sl] = maxRpm
   
   AIVehicleUtil.driveInDirection(self, dt, 45, 1, 0.8, 25, true, true, target_x, target_z, sl, 0.9)
