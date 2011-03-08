@@ -153,7 +153,7 @@ function courseplay:unload_combine(self, dt)
       dod = Utils.vector2Length(lx, lz)
 		  
 	  -- near point
-	  if dod < 2 then
+	  if dod < 3 then
 		mode = 3
 		self.chopper_offset = self.combine_offset		
 		
