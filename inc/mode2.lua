@@ -155,6 +155,40 @@ function courseplay:unload_combine(self, dt)
 	  -- near point
 	  if dod < 2 then
 		mode = 3
+		self.chopper_offset = self.combine_offset		
+		
+		if combine.grainTankCapacity == 0 then   	      
+  	      -- decide on which side to drive based on ai-combine  	      
+  	      local x,y,z = getWorldTranslation(combine.aiTreshingDirectionNode);
+		  local dirX, dirZ = combine.aiThreshingDirectionX, combine.aiThreshingDirectionZ;
+		  local sideX, sideZ = -dirZ, dirX;
+		
+  		  local threshWidth = 20		  
+		
+		  local lWidthX = x - sideX*0.5*threshWidth + dirX * combine.sideWatchDirOffset;
+		  local lWidthZ = z - sideZ*0.5*threshWidth + dirZ * combine.sideWatchDirOffset;
+		  local lStartX = lWidthX - sideX*0.7*threshWidth;
+		  local lStartZ = lWidthZ - sideZ*0.7*threshWidth;
+		  local lHeightX = lStartX + dirX*combine.sideWatchDirSize;
+		  local lHeightZ = lStartZ + dirZ*combine.sideWatchDirSize;
+ 		
+		  local rWidthX = x + sideX*0.5*threshWidth + dirX * combine.sideWatchDirOffset;
+		  local rWidthZ = z + sideZ*0.5*threshWidth + dirZ * combine.sideWatchDirOffset;
+		  local rStartX = rWidthX + sideX*0.7*threshWidth;
+		  local rStartZ = rWidthZ + sideZ*0.7*threshWidth;
+		  local rHeightX = rStartX + dirX*self.sideWatchDirSize;
+		  local rHeightZ = rStartZ + dirZ*self.sideWatchDirSize;
+		
+		  local leftFruit = Utils.getFruitArea(FruitUtil.FRUITTYPE_MAIZE, lStartX, lStartZ, lWidthX, lWidthZ, lHeightX, lHeightZ)
+		  local rightFruit = Utils.getFruitArea(FruitUtil.FRUITTYPE_MAIZE, rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ)
+		  
+		  print(string.format("links: %d rechts: %d ",leftFruit,rightFruit ))		  
+  	      
+  	      if leftFruit > rightFruit then
+  	      	self.chopper_offset = self.combine_offset * -1
+  	      end
+  	    end
+		
 	  end
 	 -- end mode 2
 	
@@ -229,23 +263,16 @@ function courseplay:unload_combine(self, dt)
         end
       end            
       
+      
+      
+      
       -- speed limit
       if dod > 10 then
         refSpeed = self.field_speed
       else
+        -- refspeed depends on the distance to the combine      
+      	refSpeed = combine.LastSpeed + (combine.LastSpeed * lz * 3 / 10)      
         sl = 2
-        refSpeed = combine.lastSpeed
-        if lz > 0.5 then
-          refSpeed = combine.lastSpeed * 1.1
-          if lz > 2 then
-            refSpeed = combine.lastSpeed * 1.6
-          elseif lz < -0.5 then
-            refSpeed = combine.lastSpeed * 0.9
-            if lz < -2 then
-              refSpeed = combine.lastSpeed * 0.7
-            end
-          end          
-        end
       end
       
       if combine.movingDirection == 0 then
@@ -286,10 +313,7 @@ function courseplay:unload_combine(self, dt)
   	if distance_to_wp < 2 then
   	  allowedToDrive = false
   	  if self.next_ai_state == 2 and not combine_turning then
-  	    mode = 2
-  	    if combine.grainTankCapacity == 0 then 
-  	      self.chopper_offset = self.chopper_offset * -1
-  	    end 
+  	    mode = 2  	    
   	  elseif self.next_ai_state == 2 and combine_turning then
   	    self.info_text = "Warte bis Drescher gewendet hat. "  	    
   	  else

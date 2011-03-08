@@ -120,7 +120,8 @@ function courseplay:load(xmlFile)
 	
 	self.reachable_combines = {}
 	self.active_combine = nil
-	self.chopper_offset = 8
+	self.combine_offset = 8
+	self.chopper_offset = nil
 	self.auto_mode = nil
 	
 	-- loading saved courses from xml
@@ -194,7 +195,7 @@ function courseplay:draw()
 			end	
 			
 			-- TODO i18n
-			g_currentMission:addHelpButtonText("Afahrer starten", InputBinding.CoursePlay);
+			g_currentMission:addHelpButtonText("Abfahrer starten", InputBinding.CoursePlay);
 			if InputBinding.hasEvent(InputBinding.CoursePlay) then 
 				courseplay:start(self)
 			end	

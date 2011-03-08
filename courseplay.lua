@@ -3,7 +3,7 @@
 -- Specialization for Courseplay
 --
 -- @author  Lautschreier / Hummel
--- @version:	v0.9.27.02.11
+-- @version:	v0.9.08.03.11
 -- @testing:    bullgore80
 -- @history:	
 --      02.01.11/06.02.11 course recording and driving (Lautschreier)
@@ -21,7 +21,8 @@
 --      25.02.11 following combine (hummel)
 --      26.02.11 unloading combine (hummel)
 --      27.02.11 turning  (hummel)
-
+--      01.03.11 supporting BGA (hummel)
+--      07.03.11 optimizing speed (hummel)
 courseplay = {};
 
 courseplay_path = g_modsDirectory.."/aacourseplay/"
