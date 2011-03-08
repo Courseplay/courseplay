@@ -6,6 +6,7 @@
 -- 5 fahre zu wegpunkt
 -- 7 drescher voll, fahre zu wegpunkt
 -- 6 trailer voll, fahre zu wegpunkt
+-- 9 wenden
 -- 8 alle trailer voll
 
 function courseplay:handle_mode2(self, dt)
@@ -144,7 +145,7 @@ function courseplay:unload_combine(self, dt)
 	    end
 	  else
 	    -- tractor behind combine
-	    cx, cy, cz = localToWorld(combine.rootNode, 0, 0, -40)
+	    cx, cy, cz = localToWorld(combine.rootNode, 0, 0, -30)
 	  end
 	  
 	  		  
@@ -226,7 +227,11 @@ function courseplay:unload_combine(self, dt)
       if combine.grainTankCapacity == 0 then
       	tX, tY, tZ = localToWorld(combine.rootNode, self.chopper_offset, 0, trailer_offset * 2)
       	cx, cz = tX, tZ
-      else      
+      else 
+        -- combines have their pipe on the left side!     
+        if self.chopper_offset < 0 then
+          self.chopper_offset = self.chopper_offset * -1
+        end
         -- pipe closed
 	    if combine.currentPipeState ~= 2 then
 	      tX, tY, tZ = localToWorld(combine.rootNode, self.chopper_offset, 0, trailer_offset)
@@ -261,10 +266,7 @@ function courseplay:unload_combine(self, dt)
           self.info_text ="Drescher sagt ich soll anhalten."   
           allowedToDrive = false
         end
-      end            
-      
-      
-      
+      end          
       
       -- speed limit
       if dod > 10 then
@@ -284,15 +286,17 @@ function courseplay:unload_combine(self, dt)
     if combine_turning and distance < 30 then
 	  if mode == 3 then
 	    -- combine empty	    
-	    -- set waypoint 15 meters diagonal vorne links ;)
+	    -- set waypoint self.turn_radius meters diagonal vorne links ;)
 	    if self.chopper_offset > 0 then
-	      self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 20, 0, 15)
+	      self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, self.turn_radius, 0, self.turn_radius)
+	      self.turn_factor = -5
 	    else
-	      self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, -20, 0, 15)
+	      self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, self.turn_radius*-1, 0, self.turn_radius)
+	      self.turn_factor = 5
 	    end 
 	    mode = 5
 	    -- ai_state when waypoint is reached
-	    self.next_ai_state = 2
+	    self.next_ai_state = 9
 	  else
 	    -- just wait until combine has turned
 	    allowedToDrive = false
@@ -315,11 +319,35 @@ function courseplay:unload_combine(self, dt)
   	  if self.next_ai_state == 2 and not combine_turning then
   	    mode = 2  	    
   	  elseif self.next_ai_state == 2 and combine_turning then
+  	    self.info_text = "Warte bis Drescher gewendet hat. "
+  	  if self.next_ai_state == 9 and not combine_turning then  	    
+  	    if self.turn_factor > 0 then
+  	      self.chopper_offset = self.combine_offset
+  	    else
+  	      self.chopper_offset = self.combine_offset * -1
+  	    end
+  	    self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, self.chopper_offset, 0, 0)
+  	    mode = 9  	    
+  	  elseif self.next_ai_state == 9 and combine_turning then
   	    self.info_text = "Warte bis Drescher gewendet hat. "  	    
   	  else
   	    mode = self.next_ai_state
   	  end
   	end  	
+  end
+  
+  -- wende manöver
+  if mode == 9 and self.target_x ~= nil and self.target_z ~= nil then
+    allowedToDrive = true
+    local mx, mz = self.target_x, self.target_z
+    local lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, mx, y, mz)
+    if lz > 0 and math.abs(lx) < lz * 0.5 then
+      self.target_x = nil
+      self.target_z = nil
+      mode = 3      
+    else
+      cx, cy, cz = localToWorld(self.aiTractorDirectionNode, self.turn_factor, 0, 5)
+    end
   end
   
   self.ai_state = mode

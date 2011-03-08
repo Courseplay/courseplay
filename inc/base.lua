@@ -124,6 +124,8 @@ function courseplay:load(xmlFile)
 	self.chopper_offset = nil
 	self.auto_mode = nil
 	
+	self.turn_factor = nil
+	
 	-- loading saved courses from xml
 	courseplay:load_courses(self)
 	
