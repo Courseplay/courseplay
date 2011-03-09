@@ -2,7 +2,7 @@
 
 -- find combines on the same field (texture)
 function courseplay:update_combines(self)
-  print("updating combines")
+  --print("updating combines")
   
   -- reseting reachable combines
   self.reachable_combines = {}
@@ -18,7 +18,7 @@ function courseplay:update_combines(self)
   	end     
   end
   
-  print(string.format("combines total: %d ", table.getn(found_combines) ))
+  --print(string.format("combines total: %d ", table.getn(found_combines) ))
   
   local x, y, z = getWorldTranslation(self.aiTractorDirectionNode)
   local hx, hy, hz = localToWorld(self.aiTractorDirectionNode, -2, 0, 0)
@@ -43,5 +43,41 @@ function courseplay:update_combines(self)
   	 end
   end
   
-  print(string.format("combines reachable: %d ", table.getn(self.reachable_combines) ))
+  --print(string.format("combines reachable: %d ", table.getn(self.reachable_combines) ))
+end
+
+
+function courseplay:register_at_combine(self, combine)
+  local num_allowed_courseplayers = 1
+  
+  if combine.courseplayers == nil then
+    combine.courseplayers = {}
+  end
+  
+  if combine.grainTankCapacity == 0 then
+     num_allowed_courseplayers = 2
+  end
+  
+  if table.getn(combine.courseplayers) == num_allowed_courseplayers then
+    return false
+  end
+    
+  table.insert(combine.courseplayers, self)
+  self.courseplay_position = table.getn(combine.courseplayers)
+  self.active_combine = combine  	     
+  return true
+end
+
+
+function courseplay:unregister_at_combine(self, combine)
+  table.remove(combine.courseplayers, self.courseplay_position)
+  
+  -- updating positions of tractors
+  for k,tractor in pairs(combine.courseplayers) do
+    tractor.courseplay_position = k
+  end
+  
+  self.courseplay_position = nil
+  self.active_combine = nil  
+  return true
 end

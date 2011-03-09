@@ -9,6 +9,8 @@ function courseplay:load(xmlFile)
 	self.tmr = 1
 	self.timeout = 1
 	self.timer = 0
+	self.drive_slow_timer = 0
+	self.courseplay_position = nil
 	
 	-- waypoints are stored in here
 	self.Waypoints = {}
@@ -32,6 +34,7 @@ function courseplay:load(xmlFile)
 	
 	-- ai mode: 1 abfahrer, 2 kombiniert
 	self.ai_mode = 1
+	self.follow_mode = 1
 	self.ai_state = 1
 	self.next_ai_state = nil
 	
