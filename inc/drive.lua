@@ -135,6 +135,10 @@ function courseplay:drive(self, dt)
 	  
 	  -- go, go, go!
 	  AIVehicleUtil.driveInDirection(self, dt,  45, 1, 0.7, 20, true, true, lx, lz , self.sl, 0.9);
+	  
+      if self.aiTrafficCollisionTrigger ~= nil then
+        AIVehicleUtil.setCollisionDirection(self.aiTractorDirectionNode, self.aiTrafficCollisionTrigger, lx, lz);
+      end
   else	
 	  -- i'm not returning right now?	  
 	  if not self.back then	      

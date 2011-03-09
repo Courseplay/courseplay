@@ -121,10 +121,11 @@ function courseplay:load(xmlFile)
 	self.reachable_combines = {}
 	self.active_combine = nil
 	self.combine_offset = 8
-	self.chopper_offset = nil
+	self.chopper_offset = 0
 	self.auto_mode = nil
 	
 	self.turn_factor = nil
+	self.turn_radius = 20
 	
 	-- loading saved courses from xml
 	courseplay:load_courses(self)
