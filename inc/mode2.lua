@@ -34,7 +34,7 @@ function courseplay:handle_mode2(self, dt)
   
   local current_tipper = self.tippers[self.currentTrailerToFill] 
   
-  if current_tipper.fillLevel == current_tipper.capacity then    
+  if (current_tipper.fillLevel == current_tipper.capacity) or self.manual_start then
     if table.getn(self.tippers) > self.currentTrailerToFill then			
       self.currentTrailerToFill = self.currentTrailerToFill + 1
     else
@@ -47,7 +47,8 @@ function courseplay:handle_mode2(self, dt)
           self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, self.chopper_offset*2, 0, -15)
         end
         -- ai_state when waypoint is reached        
-        self.ai_state = 5
+        self.manual_start = false
+		self.ai_state = 5
         self.next_ai_state = 8
       end
     end
@@ -74,7 +75,7 @@ function courseplay:handle_mode2(self, dt)
 	--is any of the reachable combines full?
 	if table.getn(self.reachable_combines) > 0 then
 	  for k,combine in pairs(self.reachable_combines) do
-	    if (combine.grainTankFillLevel > (combine.grainTankCapacity*0.5)) or combine.grainTankCapacity == 0 then
+	    if (combine.grainTankFillLevel > (combine.grainTankCapacity*0.5)) or combine.grainTankCapacity == 0 or self.manual_start then
 	      if courseplay:register_at_combine(self, combine) then	  	  
 	  	    self.ai_state = 2
 	  	  end
@@ -113,7 +114,7 @@ function courseplay:unload_combine(self, dt)
   
   if mode == 2 or mode == 3 or mode == 4 then
 	if combine == nil then
-	  self.info_text = "Mähdrescher verschwunden - Das kann eigentlich gar nicht sein! "
+	  self.info_text = "MÃ¤hdrescher verschwunden - Das kann eigentlich gar nicht sein! "
 	  allowedToDrive = false
 	elseif combine.turnStage == 1 or combine.turnStage == 2 then
 	  self.info_text = "Drescher wendet. "
@@ -329,7 +330,7 @@ function courseplay:unload_combine(self, dt)
     allowedToDrive = false
     self.info_text = "Abfahrer muss warten."    
   else  
-	  -- wende manöver
+	  -- wende manÃ¶ver
 	  if mode == 9 and self.target_x ~= nil and self.target_z ~= nil then    
 	    self.info_text = string.format("wende in Richtung koordinaten %d %d ", self.target_x, self.target_z )  	
 	    allowedToDrive = false

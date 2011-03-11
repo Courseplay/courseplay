@@ -24,6 +24,9 @@ function courseplay:handle_mode1(self)
 	if (self.recordnumber == 2 and tipper_fill_level < tipper_capacity and self.unloaded == false and self.dist < 10) or  self.lastTrailerToFillDistance then
 		allowedToDrive = courseplay:load_tippers(self)
 		self.info_text = string.format("Wird beladen: %d von %d ",tipper_fill_level,tipper_capacity )
+	    if self.manual_start == true then
+			allowedToDrive = true
+        end
 	end
 
 	-- damn, i missed the trigger!
@@ -47,6 +50,9 @@ function courseplay:handle_mode1(self)
 		self.max_speed_level = 1
 		allowedToDrive, active_tipper = courseplay:unload_tippers(self)
 		self.info_text = "Abladestelle erreicht"
+		if self.manual_start == true then
+			self.manual_start = false
+		end
 	end
 	
 	return allowedToDrive, active_tipper

@@ -25,6 +25,7 @@
 --      07.03.11 optimizing speed (hummel)
 --      08.03.11 optimized turning
 --      09.03.11 multiple courseplayers on a single field
+--      11.03.11 added manual start (Wolverin0815)
 courseplay = {};
 
 courseplay_path = g_modsDirectory.."/aacourseplay/"

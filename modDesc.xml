@@ -12,7 +12,7 @@
 		</de>
     </description>
     <author>Lautschreier/Hummel (modhoster.de)</author>
-    <version>0.91</version>
+    <version>0.92</version>
     <iconFilename>store.png</iconFilename>
     <multiplayer supported="true"/>
      <l10n>
@@ -59,7 +59,12 @@
 	<text name="CourseWaitpoinStart">
 		<en>start</en>
 		<de>weiterfahren</de>
+	</text>		
+	<text name="ManualStart">
+		<en>Manual Start</en>
+		<de>Manuell Start</de>
 	</text>	
+	
     </l10n>
 	<inputBindings>
    		
@@ -70,11 +75,12 @@
 		<input name="CourseReset" key1="KEY_r" button="" />
 		<input name="CourseWait" key1="KEY_KP_0" button="" />
 		<input name="CourseMode" key1="KEY_KP_6" button="" />
-		<input name="CourseAiMode" key1="KEY_KP_5" button="" />
+		<input name="CourseAiMode" key1="KEY_KP_5" button=""/>
 		<input name="CoursePosition" key1="KEY_KP_4" button="" />
+		<input name="ManualStart" key1="KEY_KP_8" button="" />
+
     </inputBindings>
     <extraSourceFiles>
         <sourceFile filename="register.lua" />
     </extraSourceFiles>   
 </modDesc>
-
