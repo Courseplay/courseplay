@@ -2,8 +2,8 @@ function courseplay.prerequisitesPresent(specializations)
 	return true;
 end
 
+
 function courseplay:load(xmlFile)
-	-- current number of waypoint
 	self.recordnumber = 1
 	-- TODO what is this?
 	self.tmr = 1
@@ -141,15 +141,13 @@ function courseplay:draw()
 		if not self.record then
 			-- switch course mode
 			if self.course_mode == 1 then
-				-- TODO i18n
-				g_currentMission:addHelpButtonText("Modus: Rundkurs", InputBinding.CourseMode);
+				g_currentMission:addHelpButtonText(g_i18n:getText("CoursePlayRound"), InputBinding.CourseMode);
 			else
-			    -- TODO i18n
-				g_currentMission:addHelpButtonText("Modus: Hin und zurÃ¼ck", InputBinding.CourseMode);
+				g_currentMission:addHelpButtonText(g_i18n:getText("CoursePlayReturn"), InputBinding.CourseMode);
 			end
 
 			if InputBinding.hasEvent(InputBinding.CourseMode) then
-				if self.course_mode == 1 then
+				    if self.course_mode == 1 then
 					self.course_mode = 0
 				else
 					self.course_mode = 1
@@ -157,11 +155,9 @@ function courseplay:draw()
 			end
 
 			if self.ai_mode == 1 then
-			    -- TODO i18n
-				g_currentMission:addHelpButtonText("Typ: Abfahrer", InputBinding.CourseAiMode);
+				g_currentMission:addHelpButtonText(g_i18n:getText("CourseMode1"), InputBinding.CourseAiMode);
 			else
-			    -- TODO i18n
-				g_currentMission:addHelpButtonText("Typ: Combi", InputBinding.CourseAiMode);
+				g_currentMission:addHelpButtonText(g_i18n:getText("CourseMode2"), InputBinding.CourseAiMode);
 			end
 
 			if InputBinding.hasEvent(InputBinding.CourseAiMode) then
@@ -172,22 +168,21 @@ function courseplay:draw()
 				end
 			end
 
-			-- TODO i18n
+		
 			if table.getn(self.Waypoints) == 0  then
-				g_currentMission:addHelpButtonText("Kurs aufzeichnung starten", InputBinding.PointRecord);
+				g_currentMission:addHelpButtonText(g_i18n:getText("PointRecordStart"), InputBinding.PointRecord);
 				if InputBinding.hasEvent(InputBinding.PointRecord) then
 					courseplay:start_record(self)
 				end
 			end
 		else
-		    -- TODO i18n
-			g_currentMission:addHelpButtonText("Kurs aufzeichnung beenden", InputBinding.PointRecord);
+			g_currentMission:addHelpButtonText(g_i18n:getText("PointRecordStop"), InputBinding.PointRecord);
 			if InputBinding.hasEvent(InputBinding.PointRecord) then
 				courseplay:stop_record(self)
 			end
 
-			-- TODO i18n
-			g_currentMission:addHelpButtonText("Wartepunkt setzen", InputBinding.CourseWait);
+
+			g_currentMission:addHelpButtonText(g_i18n:getText("CourseWaitpointSet"), InputBinding.CourseWait);
 			if InputBinding.hasEvent(InputBinding.CourseWait) then
 				courseplay:set_waitpoint(self)
 			end
@@ -196,34 +191,32 @@ function courseplay:draw()
 
 	if self.play then
 		if not self.drive then
-		    -- TODO i18n
-			g_currentMission:addHelpButtonText("Kurs zurÃ¼cksetzen", InputBinding.CourseReset);
+		
+			g_currentMission:addHelpButtonText(g_i18n:getText("CourseReset"), InputBinding.CourseReset);
 			if InputBinding.hasEvent(InputBinding.CourseReset) then
 				courseplay:reset_course(self)
 			end
 
-			-- TODO i18n
-			g_currentMission:addHelpButtonText("Abfahrer starten", InputBinding.CoursePlay);
+			g_currentMission:addHelpButtonText(g_i18n:getText("CoursePlayStart"), InputBinding.CoursePlay);
 			if InputBinding.hasEvent(InputBinding.CoursePlay) then
 				courseplay:start(self)
 			end
+			
 		else
 			if self.Waypoints[self.recordnumber].wait and self.wait then
-				-- TODO i18n
-				g_currentMission:addHelpButtonText("weiterfahren", InputBinding.CourseWait);
-
-				if InputBinding.hasEvent(InputBinding.CourseWait) then
+   				g_currentMission:addHelpButtonText(g_i18n:getText("CourseWaitpointStart"), InputBinding.CourseWait);
+   				if InputBinding.hasEvent(InputBinding.CourseWait) then
 					self.wait = false
 				end
 			end
-			-- TODO i18n
-			g_currentMission:addHelpButtonText("Abfahrer anhalten", InputBinding.CoursePlay);
+
+			g_currentMission:addHelpButtonText(g_i18n:getText("CoursePlayStop"), InputBinding.CoursePlay);
 			if InputBinding.hasEvent(InputBinding.CoursePlay) then
 				courseplay:stop(self)
 			end
-			-- TODO i18n
-			g_currentMission:addHelpButtonText("Manueller Start", InputBinding.ManualStart);
-			if InputBinding.hasEvent(InputBinding.ManualStart) then
+
+			g_currentMission:addHelpButtonText(g_i18n:getText("NoWaitforfill"), InputBinding.NoWaitforfill);
+			if InputBinding.hasEvent(InputBinding.NoWaitforfill) then
 					self.manual_start = true
    			end
 		end

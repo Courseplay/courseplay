@@ -1,86 +1,191 @@
-<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="4">
+   <author>Lautschreier/Hummel (modhoster.de)</author>
     <title>
-        <de>Courseplay - Abfahrhelfer</de>        
+		<en>Courseplay - Abfahrhelfer</en>
+        	<de>Courseplay - Abfahrhelfer</de>        
     </title>
     <description>
-        <de>
+        <en>
+		<![CDATA[Courseplay
+		Grundversion: Lautschreier
+		Script: Hummel 
+		www.modhoster.de]]>
+		</en>
+   	<de>
 		<![CDATA[Courseplay
 		Grundversion: Lautschreier
 		Script: Hummel 
 		www.modhoster.de]]>
 		</de>
-    </description>
-    <author>Lautschreier/Hummel (modhoster.de)</author>
-    <version>0.92</version>
-    <iconFilename>store.png</iconFilename>
-    <multiplayer supported="true"/>
+ 	</description>
+    	<multiplayer supported="true"/>
+   
+	<iconFilename>
+		<en>store.png</en>
+		<de>store.png</de>
+ 	</iconFilename>
+	<version>0.94</version>
+
+    
+    
      <l10n>
 	<text name="PointRecordStart">
 		<en>Record Course Start</en>
 		<de>Kurs aufzeichnung starten</de>
 	</text>
+
 	<text name="PointRecordStop">
 		<en>Record Course Stop</en>
 		<de>Kurs aufzeichnung stoppen</de>
 	</text>
+
 	<text name="CoursePlayStart">
 		<en>Drive Course</en>
 		<de>Kurs abfahren</de>
 	</text>
+
 	<text name="CoursePlayStop">
 		<en>Drive stop</en>
 		<de>stop abfahren</de>
 	</text>
+
 	<text name="CoursePlayRound">
 	    <en>Kurs:  Round Course</en>
 	    <de>Kurs: Rundkurs</de>
 	</text>
+
 	<text name="CoursePlayReturn">
 		<en>Course: return</en>
 		<de>Kurs: Hin und Zurück</de>
 	</text>
+
+
+	<text name="CourseMode1">
+		<en>Typ: Drivinghelper</en>
+		<de>Typ: Abfahrer</de>
+	</text>
+
+
+	<text name="CourseMode2">
+		<en>Typ: Combi</en>
+		<de>Typ: Combi</de>
+	</text>
+
 	<text name="CourseLoad">
 		<en>load course</en>
 		<de>Kurs laden</de>
 	</text>
+
 	<text name="CourseSave">
 		<en>save course</en>
 		<de>Kurs speichern</de>
-	</text>		
-	<text name="CourseReset">
-		<en>reset course</en>
-		<de>Kurs zurücksetzen</de>
-	</text>		
-	<text name="CourseWaitpoint">
-		<en>set waitpoint</en>
-		<de>Wartepunkt setzen</de>
-	</text>		
-	<text name="CourseWaitpoinStart">
-		<en>start</en>
-		<de>weiterfahren</de>
-	</text>		
-	<text name="ManualStart">
-		<en>Manual Start</en>
-		<de>Manuell Start</de>
 	</text>	
 	
+	<text name="CourseReset">
+		<en>reset course</en>
+		<de>Kurs reset</de>
+	</text>
+		
+	<text name="CourseWaitpointSet">
+		<en>set waitpoint</en>
+		<de>Wartepunkt setzen</de>
+	</text>	
+	
+	<text name="CourseWaitpointStart">
+		<en>start</en>
+		<de>weiterfahren</de>
+	</text> 
+
+
+
+
+	<text name="PointRecord">
+		<en>Record Course</en>
+		<de>Kurs aufzeichnen</de>
+	</text>
+	
+	<text name="CoursePlay">
+		<en>Driving Helper</en>
+		<de>Abfahrhelfer</de>
+	</text>	
+
+	<text name="CourseSave">
+		<en>save course</en>
+		<de>Kurs speichern</de>
+	</text>	
+
+	<text name="CourseLoad">
+		<en>load course</en>
+		<de>Kurs laden</de>
+	</text>
+
+	<text name="CourseReset">
+		<en>reset course</en>
+		<de>Kurs ruecksetzen</de>
+	</text>
+	
+	<text name="CourseWait">
+		<en>set waitpoint</en>
+		<de>Wartepunkt setzen</de>
+	</text>
+	
+	<text name="CourseMode">
+		<en>Course Mode</en>
+		<de>Kurs Modus</de>
+	</text>
+	
+	<text name="CourseAIMode">
+		<en>AI Mode</en>
+		<de>Helfermodus</de>
+	</text>
+
+	<text name="CoursePosition">
+		<en>Manual Start</en>
+		<de>Manuell Start</de>
+	</text>
+	
+	<text name="NoWaitforfill">
+		<en>Drive now</en>
+		<de>Sofort abfahren</de>				
+	</text>
+	
     </l10n>
+
+	<extraSourceFiles>
+        	<sourceFile filename="register.lua" />
+		<sourceFile filename="base.lua" />
+		<sourceFile filename="inc/button.lua" />
+		<sourceFile filename="inc/combines.lua" />
+		<sourceFile filename="inc/course_managment.lua" />
+		<sourceFile filename="inc/debug.lua" />
+		<sourceFile filename="inc/distance.lua" />
+		<sourceFile filename="inc/drive.lua" />
+		<sourceFile filename="inc/global.lua" />
+		<sourceFile filename="inc/input.lua" />
+		<sourceFile filename="inc/mode1.lua" />
+		<sourceFile filename="inc/mode2.lua" />
+		<sourceFile filename="inc/recording.lua" />
+		<sourceFile filename="inc/signs.lua" />
+		<sourceFile filename="inc/start_stop.lua" />
+		<sourceFile filename="inc/tippers.lua" />
+		<sourceFile filename="inc/triggers.lua" />
+
+    	</extraSourceFiles>   
+	
 	<inputBindings>
-   		
-		<input name="PointRecord" key1="KEY_KP_9" button="" />
-    	<input name="CoursePlay" key1="KEY_KP_7" button="" />
-		<input name="CourseSave" key1="KEY_s" button="" />
-		<input name="CourseLoad" key1="KEY_o" button="" />
-		<input name="CourseReset" key1="KEY_r" button="" />
-		<input name="CourseWait" key1="KEY_KP_0" button="" />
-		<input name="CourseMode" key1="KEY_KP_6" button="" />
-		<input name="CourseAiMode" key1="KEY_KP_5" button=""/>
-		<input name="CoursePosition" key1="KEY_KP_4" button="" />
-		<input name="ManualStart" key1="KEY_KP_8" button="" />
+ 
+		<input name="PointRecord" category="VEHICLE" key1="KEY_KP_9" key2="" button="" device="0" mouse="" />
+    		<input name="CoursePlay" category="VEHICLE" key1="KEY_KP_7" key2="" button="" device="0" mouse="" />
+		<input name="CourseSave" category="VEHICLE" key1="KEY_lctrl KEY_s" key2="" button="" device="0" mouse="" />
+		<input name="CourseLoad" category="VEHICLE" key1="KEY_lctrl KEY_o" key2="" button="" device="0" mouse="" />
+		<input name="CourseReset" category="VEHICLE" key1="KEY_r" key2="" button="" device="0" mouse="" />
+		<input name="CourseWait" category="VEHICLE" key1="KEY_KP_0" key2="" button="" device="0" mouse="" />
+		<input name="CourseMode" category="VEHICLE" key1="KEY_KP_6" key2="" button="" device="0" mouse="" />
+		<input name="CourseAiMode" category="VEHICLE" key1="KEY_KP_5" key2="" button="" device="0" mouse="" />
+		<input name="CoursePosition" category="VEHICLE" key1="KEY_KP_4" key2="" button="" device="0" mouse="" />
+		<input name="NoWaitforfill" category="VEHICLE" key1="KEY_KP_8" key2="" button="" device="0" mouse="" />
 
     </inputBindings>
-    <extraSourceFiles>
-        <sourceFile filename="register.lua" />
-    </extraSourceFiles>   
+    
 </modDesc>
