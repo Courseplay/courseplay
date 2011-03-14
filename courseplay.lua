@@ -35,8 +35,6 @@ courseplay_path = g_modsDirectory.."/aacourseplay/"
 -- working tractors saved in this
 working_course_players = {};
 
--- load / draw / update methods
-source(courseplay_path.."base.lua")
 
 -- starting & stopping of courseplay
 source(courseplay_path.."inc/start_stop.lua")
