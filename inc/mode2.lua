@@ -20,7 +20,7 @@ function courseplay:handle_mode2(self, dt)
     
   -- trailer full
   if self.ai_state == 8 then 
-  	self.recordnumber = 3
+  	self.recordnumber = 2
   	courseplay:unregister_at_combine(self, self.active_combine)
   	self.ai_state = 1
   	self.loaded = true  	
@@ -165,6 +165,7 @@ function courseplay:unload_combine(self, dt)
 	  -- near point
 	  if dod < 3 then
 		mode = 4
+		local last_offset = self.chopper_offset
 		self.chopper_offset = self.combine_offset		
 		
 		if combine.grainTankCapacity == 0 then   	      
@@ -174,6 +175,8 @@ function courseplay:unload_combine(self, dt)
   	      
   	      if leftFruit > rightFruit then
   	      	self.chopper_offset = self.combine_offset * -1
+  	      elseif leftFruit == rightFruit then
+  	        self.chopper_offset = last_offset * -1
   	      end
   	    end
 		
@@ -478,6 +481,8 @@ function courseplay:side_to_drive(self, combine)
   
   local leftFruit = Utils.getFruitArea(FruitUtil.FRUITTYPE_MAIZE, lStartX, lStartZ, lWidthX, lWidthZ, lHeightX, lHeightZ)
   local rightFruit = Utils.getFruitArea(FruitUtil.FRUITTYPE_MAIZE, rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ)
+  
+  print(string.format("fruit:  left %f right %f",leftFruit,rightFruit ))
   
   return leftFruit,rightFruit
 end

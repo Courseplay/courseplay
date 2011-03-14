@@ -5,7 +5,6 @@ end
 
 function courseplay:load(xmlFile)
 	self.recordnumber = 1
-	-- TODO what is this?
 	self.tmr = 1
 	self.timeout = 1
 	self.timer = 0
@@ -128,7 +127,7 @@ function courseplay:load(xmlFile)
 	self.auto_mode = nil
 	
 	self.turn_factor = nil
-	self.turn_radius = 20
+	self.turn_radius = 17
 	
 	-- loading saved courses from xml
 	courseplay:load_courses(self)

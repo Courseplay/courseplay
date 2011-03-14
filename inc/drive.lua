@@ -77,8 +77,9 @@ function courseplay:drive(self, dt)
    end
   
   -- more than 5 meters away from next waypoint?
-  if self.dist > 5 then  	  
+  if self.dist > 5 then
   
+  	  print(string.format("distance to WP: %f", self.dist ))
 	  -- speed limit at the end an the beginning of course
 	  if self.recordnumber > self.maxnumber - 4 or self.recordnumber < 4 then
 		  self.sl = 2

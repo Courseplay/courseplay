@@ -3,7 +3,7 @@
    <author>Lautschreier/Hummel (modhoster.de)</author>
     <title>
 		<en>Courseplay - Abfahrhelfer</en>
-        	<de>Courseplay - Abfahrhelfer</de>        
+        <de>Courseplay - Abfahrhelfer</de>        
     </title>
     <description>
         <en>
@@ -26,10 +26,7 @@
 		<de>store.png</de>
  	</iconFilename>
 	<version>0.94</version>
-
-    
-    
-     <l10n>
+    <l10n>
 	<text name="PointRecordStart">
 		<en>Record Course Start</en>
 		<de>Kurs aufzeichnung starten</de>
@@ -71,21 +68,6 @@
 		<en>Typ: Combi</en>
 		<de>Typ: Combi</de>
 	</text>
-
-	<text name="CourseLoad">
-		<en>load course</en>
-		<de>Kurs laden</de>
-	</text>
-
-	<text name="CourseSave">
-		<en>save course</en>
-		<de>Kurs speichern</de>
-	</text>	
-	
-	<text name="CourseReset">
-		<en>reset course</en>
-		<de>Kurs reset</de>
-	</text>
 		
 	<text name="CourseWaitpointSet">
 		<en>set waitpoint</en>
@@ -96,10 +78,6 @@
 		<en>start</en>
 		<de>weiterfahren</de>
 	</text> 
-
-
-
-
 	<text name="PointRecord">
 		<en>Record Course</en>
 		<de>Kurs aufzeichnen</de>
@@ -142,7 +120,7 @@
 
 	<text name="CoursePosition">
 		<en>Manual Start</en>
-		<de>Manuell Start</de>
+		<de>Manueller Start</de>
 	</text>
 	
 	<text name="NoWaitforfill">
@@ -153,11 +131,11 @@
     </l10n>
 
 	<extraSourceFiles>
-        	<sourceFile filename="register.lua" />
+        <sourceFile filename="register.lua" />
 		<sourceFile filename="base.lua" />
 		<sourceFile filename="inc/button.lua" />
 		<sourceFile filename="inc/combines.lua" />
-		<sourceFile filename="inc/course_managment.lua" />
+		<sourceFile filename="inc/course_management.lua" />
 		<sourceFile filename="inc/debug.lua" />
 		<sourceFile filename="inc/distance.lua" />
 		<sourceFile filename="inc/drive.lua" />
@@ -170,13 +148,12 @@
 		<sourceFile filename="inc/start_stop.lua" />
 		<sourceFile filename="inc/tippers.lua" />
 		<sourceFile filename="inc/triggers.lua" />
-
-    	</extraSourceFiles>   
+    </extraSourceFiles>   
 	
 	<inputBindings>
  
 		<input name="PointRecord" category="VEHICLE" key1="KEY_KP_9" key2="" button="" device="0" mouse="" />
-    		<input name="CoursePlay" category="VEHICLE" key1="KEY_KP_7" key2="" button="" device="0" mouse="" />
+    	<input name="CoursePlay" category="VEHICLE" key1="KEY_KP_7" key2="" button="" device="0" mouse="" />
 		<input name="CourseSave" category="VEHICLE" key1="KEY_lctrl KEY_s" key2="" button="" device="0" mouse="" />
 		<input name="CourseLoad" category="VEHICLE" key1="KEY_lctrl KEY_o" key2="" button="" device="0" mouse="" />
 		<input name="CourseReset" category="VEHICLE" key1="KEY_r" key2="" button="" device="0" mouse="" />
