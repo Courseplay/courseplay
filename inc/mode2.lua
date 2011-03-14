@@ -74,37 +74,39 @@ function courseplay:handle_mode2(self, dt)
 	
 	
 	--is any of the reachable combines full?
-	if table.getn(self.reachable_combines) > 0 then
-	
-	  local best_combine = nil
-	  local highest_fill_level = 0
-	  local num_courseplayers = 0
-	
-	  -- chose the combine who needs me the most
-	  for k,combine in pairs(self.reachable_combines) do
-	    if (combine.grainTankFillLevel > (combine.grainTankCapacity*0.5)) or combine.grainTankCapacity == 0 then
-	      if combine.grainTankCapacity == 0 then	        
-	        if combine.courseplayers == nil then
-	          best_combine = combine
-	        elseif table.getn(combine.courseplayers) <= num_courseplayers then
-	          num_courseplayers = table.getn(combine.courseplayers)
-	          best_combine = combine
-	        end
-	      else
-	        if combine.grainTankFillLevel >= highest_fill_level then
-	          highest_fill_level = combine.grainTankFillLevel
-	          best_combine = combine
-	        end
-	      end
-	    end
-	  end
-	  
-	  if best_combine ~= nil then
-	    if courseplay:register_at_combine(self, best_combine) then	  	  
-	  	  self.ai_state = 2
-	  	end
-	  end
-	  
+	if self.reachable_combines ~= nil then
+		if table.getn(self.reachable_combines) > 0 then
+		
+		  local best_combine = nil
+		  local highest_fill_level = 0
+		  local num_courseplayers = 0
+		
+		  -- chose the combine who needs me the most
+		  for k,combine in pairs(self.reachable_combines) do
+		    if (combine.grainTankFillLevel > (combine.grainTankCapacity*0.5)) or combine.grainTankCapacity == 0 then
+		      if combine.grainTankCapacity == 0 then	        
+		        if combine.courseplayers == nil then
+		          best_combine = combine
+		        elseif table.getn(combine.courseplayers) <= num_courseplayers then
+		          num_courseplayers = table.getn(combine.courseplayers)
+		          best_combine = combine
+		        end
+		      else
+		        if combine.grainTankFillLevel >= highest_fill_level then
+		          highest_fill_level = combine.grainTankFillLevel
+		          best_combine = combine
+		        end
+		      end
+		    end
+		  end
+		  
+		  if best_combine ~= nil then
+		    if courseplay:register_at_combine(self, best_combine) then	  	  
+		  	  self.ai_state = 2
+		  	end
+		  end
+		  
+		end
 	end
   end
   
