@@ -1,7 +1,12 @@
 
 -- drives recored course
 function courseplay:drive(self, dt)
-   
+  
+  -- unregister at combine, if there is one
+  if self.loaded == true and courseplay_position ~= nil then
+    courseplay:unregister_at_combine(self, self.active_combine)
+  end
+  
   -- switch lights on!
   if not self.isControlled then
   	-- we want to hear our courseplayers

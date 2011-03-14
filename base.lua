@@ -36,8 +36,6 @@ function courseplay:load(xmlFile)
 	self.follow_mode = 1
 	self.ai_state = 1
 	self.next_ai_state = nil
-	self.manual_start = false
-	
 	
 	self.wait = true
 	self.waitTimer = nil
@@ -216,7 +214,7 @@ function courseplay:draw()
 
 			g_currentMission:addHelpButtonText(g_i18n:getText("NoWaitforfill"), InputBinding.NoWaitforfill);
 			if InputBinding.hasEvent(InputBinding.NoWaitforfill) then
-					self.manual_start = true
+					self.loaded = true
    			end
 		end
 	end

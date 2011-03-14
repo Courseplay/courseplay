@@ -24,13 +24,23 @@ function courseplay:record(self)
 		local oldcx ,oldcz = self.Waypoints[1].cx,self.Waypoints[1].cz
 
 		self.dist = courseplay:distance(cx ,cz ,oldcx ,oldcz)
+		if self.dist > 10 then
+			self.tmr = 101
+		end
+	end	
+	
+	if self.recordnumber == 3 then
+		local oldcx ,oldcz = self.Waypoints[1].cx,self.Waypoints[1].cz
+
+		self.dist = courseplay:distance(cx ,cz ,oldcx ,oldcz)
 		if self.dist > 20 then
 			self.tmr = 101
 		end
 	end 
+	 
 	if self.tmr > 100 then 
 		self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = false}
-		if self.recordnumber < 3 then 
+		if self.recordnumber < 4 then 
 			courseplay:addsign(self, cx, cy,cz)
 		end 
 		self.tmr = 1

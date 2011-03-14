@@ -2,8 +2,8 @@
 -- Courseplay v0.95
 -- Specialization for Courseplay
 --
--- @author  Lautschreier / Hummel
--- @version:	v0.9.09.03.11
+-- @author  Lautschreier / Hummel / Wolverin0815
+-- @version:	v0.9.14.03.11
 -- @testing:    bullgore80
 -- @history:	
 --      02.01.11/06.02.11 course recording and driving (Lautschreier)
@@ -26,6 +26,8 @@
 --      08.03.11 optimized turning
 --      09.03.11 multiple courseplayers on a single field
 --      11.03.11 added manual start (Wolverin0815)
+--      13.03.11 localization (Wolverin0815)
+--      14.03.11 mode2 optimizations
 courseplay = {};
 
 courseplay_path = g_modsDirectory.."/aacourseplay/"
