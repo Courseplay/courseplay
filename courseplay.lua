@@ -27,7 +27,7 @@
 --      09.03.11 multiple courseplayers on a single field
 --      11.03.11 added manual start (Wolverin0815)
 --      13.03.11 localization (Wolverin0815)
---      14.03.11 mode2 optimizations
+--      14.03.11 mode2 optimizations (hummel)
 courseplay = {};
 
 courseplay_path = g_modsDirectory.."/aacourseplay/"

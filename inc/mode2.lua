@@ -355,7 +355,7 @@ function courseplay:unload_combine(self, dt)
     allowedToDrive = false
     self.info_text = "Abfahrer muss warten."    
   else  
-	  -- wende manÃ¶ver
+	  -- wende manöver
 	  if mode == 9 and self.target_x ~= nil and self.target_z ~= nil then    
 	    self.info_text = string.format("wende in Richtung koordinaten %d %d ", self.target_x, self.target_z )  	
 	    allowedToDrive = false
@@ -473,9 +473,8 @@ function courseplay:unload_combine(self, dt)
   
   AIVehicleUtil.driveInDirection(self, dt, 45, 1, 0.8, 25, true, true, target_x, target_z, sl, 0.9)
   
-  if self.aiTrafficCollisionTrigger ~= nil then
-    AIVehicleUtil.setCollisionDirection(self.aiTractorDirectionNode, self.aiTrafficCollisionTrigger, target_x, target_z);
-  end
+  courseplay:set_traffc_collision(self, target_x, target_z)
+  
   
 end
 
@@ -596,16 +595,9 @@ function courseplay:follow_tractor(self, dt, tractor)
   
   local target_x, target_z = AIVehicleUtil.getDriveDirection(self.aiTractorDirectionNode, cx, y, cz)
   
-  
   self.motor.maxRpm[sl] = maxRpm
   
   AIVehicleUtil.driveInDirection(self, dt, 45, 1, 0.8, 25, true, true, target_x, target_z, sl, 0.9)
     
-  if self.aiTrafficCollisionTrigger ~= nil then
-    AIVehicleUtil.setCollisionDirection(self.aiTractorDirectionNode, self.aiTrafficCollisionTrigger, target_x, target_z);
-  end
-    
-  
-  
-  
+  courseplay:set_traffc_collision(self, target_x, target_z)  
 end

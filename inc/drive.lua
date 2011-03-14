@@ -142,9 +142,8 @@ function courseplay:drive(self, dt)
 	  -- go, go, go!
 	  AIVehicleUtil.driveInDirection(self, dt,  45, 1, 0.7, 20, true, true, lx, lz , self.sl, 0.9);
 	  
-      if self.aiTrafficCollisionTrigger ~= nil then
-        AIVehicleUtil.setCollisionDirection(self.aiTractorDirectionNode, self.aiTrafficCollisionTrigger, lx, lz);
-      end
+	  courseplay:set_traffc_collision(self, lx, lz)
+	  
   else	
 	  -- i'm not returning right now?	  
 	  if not self.back then	      
@@ -185,6 +184,26 @@ function courseplay:drive(self, dt)
 	  
   end
 end;  
+
+
+function courseplay:set_traffc_collision(self, lx, lz)
+  local maxlx = 0.7071067; --math.sin(maxAngle);
+	  
+  local colDirX = lx;
+  local colDirZ = lz;
+   
+  if colDirX > maxlx then
+   colDirX = maxlx;
+   colDirZ = 0.7071067; --math.cos(maxAngle);
+  elseif colDirX < -maxlx then
+   colDirX = -maxlx;
+   colDirZ = 0.7071067; --math.cos(maxAngle);
+  end;	  
+	  
+  if self.aiTrafficCollisionTrigger ~= nil then
+    AIVehicleUtil.setCollisionDirection(self.aiTractorDirectionNode, self.aiTrafficCollisionTrigger, colDirX, colDirZ);
+  end
+end
 
 
 function courseplay:check_traffic(self, display_warnings, allowedToDrive)
