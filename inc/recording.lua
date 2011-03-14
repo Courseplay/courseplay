@@ -26,15 +26,19 @@ function courseplay:record(self)
 		self.dist = courseplay:distance(cx ,cz ,oldcx ,oldcz)
 		if self.dist > 10 then
 			self.tmr = 101
+		else
+		   self.tmr = 1
 		end
 	end	
 	
 	if self.recordnumber == 3 then
-		local oldcx ,oldcz = self.Waypoints[1].cx,self.Waypoints[1].cz
+		local oldcx ,oldcz = self.Waypoints[2].cx,self.Waypoints[2].cz
 
 		self.dist = courseplay:distance(cx ,cz ,oldcx ,oldcz)
 		if self.dist > 20 then
 			self.tmr = 101
+		else
+			self.tmr = 1
 		end
 	end 
 	 

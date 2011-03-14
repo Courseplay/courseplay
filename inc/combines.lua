@@ -77,6 +77,7 @@ function courseplay:unregister_at_combine(self, combine)
     tractor.courseplay_position = k
   end
   
+  self.allow_follwing = false
   self.courseplay_position = nil
   self.active_combine = nil  
   return true

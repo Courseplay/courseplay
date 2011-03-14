@@ -13,7 +13,13 @@
 function courseplay:handle_mode2(self, dt)
   local allowedToDrive = false
   local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
-    
+  
+  local fill_level = tipper_fill_level * 100 / tipper_capacity
+  
+  if fill_level > self.required_fill_level_for_follow then
+    self.allow_following = true
+  end
+  
   if self.ai_state == 1 and self.active_combine ~= nil then
     courseplay:unregister_at_combine(self, self.active_combine)    
   end
@@ -23,7 +29,7 @@ function courseplay:handle_mode2(self, dt)
   	self.recordnumber = 2
   	courseplay:unregister_at_combine(self, self.active_combine)
   	self.ai_state = 1
-  	self.loaded = true  	
+  	self.loaded = true
   	return false
   end  
   
@@ -34,7 +40,7 @@ function courseplay:handle_mode2(self, dt)
   
   local current_tipper = self.tippers[self.currentTrailerToFill] 
   
-  if (current_tipper.fillLevel == current_tipper.capacity) then
+  if (current_tipper.fillLevel == current_tipper.capacity) or self.manual_start then
     if table.getn(self.tippers) > self.currentTrailerToFill then			
       self.currentTrailerToFill = self.currentTrailerToFill + 1
     else
@@ -47,6 +53,7 @@ function courseplay:handle_mode2(self, dt)
           self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, self.chopper_offset*2, 0, -15)
         end
         -- ai_state when waypoint is reached
+        self.manual_start = false
 		self.ai_state = 5
         self.next_ai_state = 8
       end
@@ -87,9 +94,16 @@ function courseplay:handle_mode2(self, dt)
 		      if combine.grainTankCapacity == 0 then	        
 		        if combine.courseplayers == nil then
 		          best_combine = combine
-		        elseif table.getn(combine.courseplayers) <= num_courseplayers then
+		        elseif table.getn(combine.courseplayers) <= num_courseplayers or best_combine == nil then
 		          num_courseplayers = table.getn(combine.courseplayers)
-		          best_combine = combine
+		          
+		          if table.getn(combine.courseplayers) > 0 then
+		            if combine.courseplayers[1].allow_following then
+		              best_combine = combine
+		            end
+		          else
+		            best_combine = combine
+		          end
 		        end
 		      else
 		        if combine.grainTankFillLevel >= highest_fill_level then

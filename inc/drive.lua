@@ -57,7 +57,7 @@ function courseplay:drive(self, dt)
 	  end
 	  
 	  -- combi-mode
-	  if (self.ai_mode == 2 and self.recordnumber < 3 and self.tipper_attached) or self.active_combine then	      
+	  if (self.ai_mode == 2 and self.recordnumber < 2 and self.tipper_attached) or self.active_combine then	      
 		  return courseplay:handle_mode2(self, dt)
 	  end
   end
@@ -84,7 +84,7 @@ function courseplay:drive(self, dt)
   -- more than 5 meters away from next waypoint?
   if self.dist > 5 then
   
-  	  print(string.format("distance to WP: %f", self.dist ))
+  	  --print(string.format("distance to WP: %f", self.dist ))
 	  -- speed limit at the end an the beginning of course
 	  if self.recordnumber > self.maxnumber - 4 or self.recordnumber < 4 then
 		  self.sl = 2
