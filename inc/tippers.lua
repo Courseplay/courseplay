@@ -26,7 +26,6 @@ end
 
 
 -- loads all tippers
--- TODO only works for one tipper
 function courseplay:load_tippers(self)
   local allowedToDrive = false
   local cx ,cz = self.Waypoints[2].cx,self.Waypoints[2].cz
@@ -81,7 +80,6 @@ function courseplay:load_tippers(self)
 end
 
 -- unloads all tippers
--- TODO only works for one tipper
 function courseplay:unload_tippers(self)
   local allowedToDrive = false
   local active_tipper = nil
