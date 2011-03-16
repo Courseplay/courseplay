@@ -82,7 +82,7 @@ function courseplay:handle_user_input(self)
 		  
 		  -- this adds the signs to the course
 		  for k,wp in pairs(self.Waypoints) do
-			  if k < 3 or wp.wait == true then
+			  if k <= 3 or wp.wait == true then
 			  	courseplay:addsign(self, wp.cx, 0, wp.cz)
 			  end
 		  end
