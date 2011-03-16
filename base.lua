@@ -121,7 +121,7 @@ function courseplay:load(xmlFile)
 	self.reachable_combines = {}
 	self.active_combine = nil
 	self.combine_offset = 8
-	self.chopper_offset = 0
+	self.chopper_offset = 8
 	self.auto_mode = nil
 	
 	self.allow_following = false

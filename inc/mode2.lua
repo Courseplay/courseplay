@@ -70,7 +70,10 @@ function courseplay:handle_mode2(self, dt)
 	  tractor = self.active_combine.courseplayers[self.courseplay_position-1]
 	  courseplay:follow_tractor(self, dt, tractor)
     end
-  else
+  else -- NO active combine
+    -- STOP!!
+    AIVehicleUtil.driveInDirection(self, dt, 30, 0, 0, 28, false, moveForwards, 0, 1)
+  
   	if self.loaded then
   	  self.recordnumber = 2
   	  self.ai_state = 1
@@ -82,7 +85,6 @@ function courseplay:handle_mode2(self, dt)
 	  courseplay:update_combines(self)
 	  courseplay:set_timeout(self, 200)
 	end
-	
 	
 	--is any of the reachable combines full?
 	if self.reachable_combines ~= nil then
@@ -156,15 +158,18 @@ function courseplay:unload_combine(self, dt)
   -- traffic collision  
   allowedToDrive = courseplay:check_traffic(self, false, allowedToDrive) 
   
+  -- is combine turning ?
+  if combine ~= nil and (combine.turnStage == 1 or combine.turnStage == 2) then
+    self.info_text = "Drescher wendet. "
+    combine_turning = true
+  end
+  
   if mode == 2 or mode == 3 or mode == 4 then
-	if combine == nil then
-	  self.info_text = "Mähdrescher verschwunden - Das kann eigentlich gar nicht sein! "
-	  allowedToDrive = false
-	elseif combine.turnStage == 1 or combine.turnStage == 2 then
-	  self.info_text = "Drescher wendet. "
-	  combine_turning = true
-	end
-		
+    if combine == nil then
+      self.info_text = "Mähdrescher verschwunden - Das kann eigentlich gar nicht sein! "
+      allowedToDrive = false
+    end
+    
 	if combine.grainTankCapacity > 0 then
 	  combine_fill_level = combine.grainTankFillLevel * 100 / combine.grainTankCapacity
 	else -- combine is a chopper / has no tank
@@ -219,7 +224,7 @@ function courseplay:unload_combine(self, dt)
   	      
   	      if leftFruit > rightFruit then
   	      	self.chopper_offset = self.combine_offset * -1
-  	      elseif leftFruit == rightFruit then
+  	      elseif leftFruit == rightFruit then  	        
   	        self.chopper_offset = last_offset * -1
   	      end
   	    end
@@ -243,14 +248,14 @@ function courseplay:unload_combine(self, dt)
 	    -- combine empty	    
 	    self.waitTimer = self.timer + 200
 	    -- set waypoint 30 meters behind combine 
-	    if courseplay:distance_to_object(self, combine) < 10 then
-	      self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, 0, 0, -20)
-	      mode = 5
-	      -- ai_state when waypoint is reached
-	      self.next_ai_state = 1
-	    else	    
-	      mode = 1
-	    end	    
+	    --if courseplay:distance_to_object(self, combine) < 30 then
+	    self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, 0, 0, -20)
+	    mode = 5
+	    -- ai_state when waypoint is reached
+	    self.next_ai_state = 1
+	    --else	    
+	    --  mode = 1
+	    --end	    
 	    
       end
             
@@ -270,7 +275,7 @@ function courseplay:unload_combine(self, dt)
         if mode == 3 then
       	  tX, tY, tZ = localToWorld(combine.rootNode, self.chopper_offset, 0, trailer_offset)      	  
       	else
-      	  tX, tY, tZ = localToWorld(combine.rootNode, self.chopper_offset*0.5, 0, -10)
+      	  tX, tY, tZ = localToWorld(combine.rootNode, self.chopper_offset*0.6, 0, -10)
       	end
       	
       	cx, cz = tX, tZ
@@ -341,7 +346,7 @@ function courseplay:unload_combine(self, dt)
         refSpeed = 1/3600        
         self.motor.maxRpm[sl] = 200
         if combine.turnStage ~= 0 then
-          self.drive_slow_timer = self.timer + 100
+          self.drive_slow_timer = self.timer + 150
         end
       end
       
@@ -363,7 +368,7 @@ function courseplay:unload_combine(self, dt)
 	      self.turn_factor = 5
 	    end	    
 	    mode = 5
-	    self.waitTimer = self.timer + 350
+	    --self.waitTimer = self.timer + 350
 	    -- ai_state when waypoint is reached
 	    self.next_ai_state = 9
 	  else
@@ -410,12 +415,16 @@ function courseplay:unload_combine(self, dt)
 	  	
 	  	if distance_to_wp < 2 then
 	  	  allowedToDrive = false
-	  	  if self.next_ai_state == 9 and not combine_turning then  	    
+	  	  if self.next_ai_state == 9 and combine_turning == nil then  	    
 	  	  	self.chopper_offset = self.combine_offset  	  	
+	  	  	local last_offset = self.chopper_offset
 	  	    local leftFruit, rightFruit =  courseplay:side_to_drive(self, combine)
 	  	    if leftFruit > rightFruit then
-	  	     self.chopper_offset = self.combine_offset * -1
+	  	      self.chopper_offset = self.combine_offset * -1
+	  	    elseif leftFruit == rightFruit then  	        
+	  	      self.chopper_offset = last_offset * -1
 	  	    end
+	  	    
 	  	    self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, self.chopper_offset*0.5, 0, -10)
 	  	    mode = 9  	    
 	  	    self.next_ai_state = 4
@@ -502,8 +511,12 @@ end
 
 
 function courseplay:side_to_drive(self, combine)
-  local x,y,z = getWorldTranslation(combine.aiTreshingDirectionNode);
+  
+  local x,y,z = localToWorld(combine.aiTreshingDirectionNode, 0, 0, 30) --getWorldTranslation(combine.aiTreshingDirectionNode);
   local dirX, dirZ = combine.aiThreshingDirectionX, combine.aiThreshingDirectionZ;
+  if dirX == nil or x == nil or dirZ == nil then
+    return 0, 0 
+  end
   local sideX, sideZ = -dirZ, dirX;
   
   local threshWidth = 20		  
