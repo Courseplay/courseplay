@@ -135,9 +135,9 @@ function courseplay:load(xmlFile)
 	
 		-- HUD
 	self.hudInfoBasePosX = 0.755; --  position Links/ rechts.
-	self.hudInfoBaseWidth = 0.24; -- Breite  Je Größer die Zahl, desto größer wird das Bild in die Breite "gezogen".
-	self.hudInfoBasePosY = 0.215; --position höhe
-	self.hudInfoBaseHeight = 0.485; -- Höhe Je Größer die Zahl, desto größer wird das Bild in die Höhe "gezogen"
+	self.hudInfoBaseWidth = 0.24; -- Breite  Je GrÃ¶ÃŸer die Zahl, desto grÃ¶ÃŸer wird das Bild in die Breite "gezogen".
+	self.hudInfoBasePosY = 0.215; --position HÃ¶he
+	self.hudInfoBaseHeight = 0.485; -- HÃ¶he Je GrÃ¶ÃŸer die Zahl, desto grÃ¶ÃŸer wird das Bild in die HÃ¶he "gezogen"
 	self.infoPanelPath = Utils.getFilename("../aacourseplay/img/hud_bg.png", self.baseDirectory);
 	self.hudInfoBaseOverlay = Overlay:new("hudInfoBaseOverlay", self.infoPanelPath, self.hudInfoBasePosX, self.hudInfoBasePosY, self.hudInfoBaseWidth, self.hudInfoBaseHeight);
 	self.showHudInfoBase = 0;
