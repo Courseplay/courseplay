@@ -133,6 +133,18 @@ function courseplay:load(xmlFile)
 	-- loading saved courses from xml
 	courseplay:load_courses(self)
 	
+		-- HUD
+	self.hudInfoBasePosX = 0.755; --  position Links/ rechts.
+	self.hudInfoBaseWidth = 0.24; -- Breite  Je Größer die Zahl, desto größer wird das Bild in die Breite "gezogen".
+	self.hudInfoBasePosY = 0.215; --position höhe
+	self.hudInfoBaseHeight = 0.485; -- Höhe Je Größer die Zahl, desto größer wird das Bild in die Höhe "gezogen"
+	self.infoPanelPath = Utils.getFilename("../aacourseplay/img/hud_bg.png", self.baseDirectory);
+	self.hudInfoBaseOverlay = Overlay:new("hudInfoBaseOverlay", self.infoPanelPath, self.hudInfoBasePosX, self.hudInfoBasePosY, self.hudInfoBaseWidth, self.hudInfoBaseHeight);
+	self.showHudInfoBase = 0;
+	self.hudpage = {}
+	-- Function in Signs
+	courseplay:load_Hud(self)
+	
 end	
 
 -- displays help text, user_input 	
@@ -237,6 +249,32 @@ function courseplay:draw()
 
 	if self.course_selection_active then
 		courseplay:display_course_selection(self);
+	end
+	g_currentMission:addHelpButtonText(g_i18n:getText("HudControl"), InputBinding.HudControl);
+		-- Hud Control
+	if InputBinding.hasEvent(InputBinding.HudControl) then
+		if self.showHudInfoBase	== 3 then
+			self.showHudInfoBase = 0
+		else
+			self.showHudInfoBase = self.showHudInfoBase + 1
+		end
+	end
+
+    	-- HUD
+	if (self.showHudInfoBase > 0) and self.isEntered then
+		self.hudInfoBaseOverlay:render();
+
+		setTextBold(true)
+			if self.showHudInfoBase == 1 then
+				renderText(0.825, 0.625, 0.021, string.format("Tastenbelegung"));
+				courseplay:HudPage(self);
+			elseif self.showHudInfoBase == 2 then
+		        renderText(0.825, 0.625, 0.021, string.format("Optionen"));
+		        courseplay:HudPage(self);
+		    elseif self.showHudInfoBase == 3 then
+		      	renderText(0.825, 0.625, 0.021, string.format("Einstellungen"));
+				courseplay:HudPage(self);
+			end
 	end
 end
 
