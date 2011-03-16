@@ -23,10 +23,7 @@ function courseplay:handle_mode1(self)
 	-- tipper should be loaded 10 meters before wp 2	
 	if self.loaded ~= true and (self.recordnumber == 2 and tipper_fill_level < tipper_capacity and self.unloaded == false and self.dist < 10) or  self.lastTrailerToFillDistance then
 		allowedToDrive = courseplay:load_tippers(self)
-		self.info_text = string.format("Wird beladen: %d von %d ",tipper_fill_level,tipper_capacity )	    
-   	    if self.manual_start == true then
-		  allowedToDrive = true
-		end
+		self.info_text = string.format("Wird beladen: %d von %d ",tipper_fill_level,tipper_capacity )
 	end
 
 	-- damn, i missed the trigger!
@@ -49,10 +46,7 @@ function courseplay:handle_mode1(self)
 	if tipper_fill_level > 0 and self.currentTipTrigger ~= nil then		
 		self.max_speed_level = 1
 		allowedToDrive, active_tipper = courseplay:unload_tippers(self)
-		self.info_text = "Abladestelle erreicht"
-		if self.manual_start == true then
-		  self.manual_start = false
-		end
+		self.info_text = "Abladestelle erreicht"		
 	end
 	
 	return allowedToDrive, active_tipper

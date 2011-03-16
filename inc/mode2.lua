@@ -40,7 +40,7 @@ function courseplay:handle_mode2(self, dt)
   
   local current_tipper = self.tippers[self.currentTrailerToFill] 
   
-  if (current_tipper.fillLevel == current_tipper.capacity) or self.manual_start then
+  if (current_tipper.fillLevel == current_tipper.capacity) or self.loaded then
     if table.getn(self.tippers) > self.currentTrailerToFill then			
       self.currentTrailerToFill = self.currentTrailerToFill + 1
     else
@@ -53,15 +53,13 @@ function courseplay:handle_mode2(self, dt)
           self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, self.chopper_offset*2, 0, -15)
         end
         -- ai_state when waypoint is reached
-        self.manual_start = false
 		self.ai_state = 5
         self.next_ai_state = 8
       end
     end
   end
   
-  if self.active_combine ~= nil then
-  	
+  if self.active_combine ~= nil then  	
   	if self.courseplay_position == 1 then
   	  -- is there a trailer to fill, or at least a waypoint to go to?
   	  if self.currentTrailerToFill or self.ai_state == 5 then
@@ -73,6 +71,12 @@ function courseplay:handle_mode2(self, dt)
 	  courseplay:follow_tractor(self, dt, tractor)
     end
   else
+  	if self.loaded then
+  	  self.recordnumber = 2
+  	  self.ai_state = 1
+  	  return false
+  	end
+  
     -- are there any combines out there that need my help?
 	if self.timeout < self.timer then
 	  courseplay:update_combines(self)

@@ -158,6 +158,7 @@ function courseplay:drive(self, dt)
 			    self.back = false
 			    self.recordnumber = 1
 				self.unloaded = false
+				self.loaded = false
 			  else
 			    self.back = true
 			  end

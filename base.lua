@@ -56,7 +56,6 @@ function courseplay:load(xmlFile)
 	self.sign = itemNode
 	-- visual waypoints saved in this
 	self.signs = {}
-	self.manual_start = false
 	
 	-- course name for saving
 	self.current_course_name = nil
@@ -215,10 +214,13 @@ function courseplay:draw()
 			if InputBinding.hasEvent(InputBinding.CoursePlay) then
 				courseplay:stop(self)
 			end
-
-			g_currentMission:addHelpButtonText(g_i18n:getText("NoWaitforfill"), InputBinding.NoWaitforfill);
+			
+			if not self.loaded then
+			  g_currentMission:addHelpButtonText(g_i18n:getText("NoWaitforfill"), InputBinding.NoWaitforfill);
+			end
+			
 			if InputBinding.hasEvent(InputBinding.NoWaitforfill) then
-					self.manual_start = true
+				self.loaded = true
    			end
 		end
 	end
