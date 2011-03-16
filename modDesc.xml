@@ -118,9 +118,9 @@
 		<de>Helfermodus</de>
 	</text>
 
-	<text name="CoursePosition">
-		<en>Manual Start</en>
-		<de>Manueller Start</de>
+	<text name="HudControl">
+		<en>AH Hud</en>
+		<de>AH Hud</de>
 	</text>
 	
 	<text name="NoWaitforfill">
@@ -157,10 +157,10 @@
 		<input name="CourseSave" category="VEHICLE" key1="KEY_lctrl KEY_s" key2="" button="" device="0" mouse="" />
 		<input name="CourseLoad" category="VEHICLE" key1="KEY_lctrl KEY_o" key2="" button="" device="0" mouse="" />
 		<input name="CourseReset" category="VEHICLE" key1="KEY_r" key2="" button="" device="0" mouse="" />
-		<input name="CourseWait" category="VEHICLE" key1="KEY_KP_0" key2="" button="" device="0" mouse="" />
+		<input name="HudControl" category="VEHICLE" key1="KEY_KP_0" key2="" button="" device="0" mouse="" />
 		<input name="CourseMode" category="VEHICLE" key1="KEY_KP_6" key2="" button="" device="0" mouse="" />
 		<input name="CourseAiMode" category="VEHICLE" key1="KEY_KP_5" key2="" button="" device="0" mouse="" />
-		<input name="CoursePosition" category="VEHICLE" key1="KEY_KP_4" key2="" button="" device="0" mouse="" />
+		<input name="CourseWait" category="VEHICLE" key1="KEY_KP_4" key2="" button="" device="0" mouse="" />
 		<input name="NoWaitforfill" category="VEHICLE" key1="KEY_KP_8" key2="" button="" device="0" mouse="" />
 
     </inputBindings>
