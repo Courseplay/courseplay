@@ -70,6 +70,7 @@ end
 
 
 function courseplay:unregister_at_combine(self, combine)
+  courseplay:remove_from_combines_ignore_list(self, combine)
   table.remove(combine.courseplayers, self.courseplay_position)
   
   -- updating positions of tractors
@@ -81,4 +82,21 @@ function courseplay:unregister_at_combine(self, combine)
   self.courseplay_position = nil
   self.active_combine = nil  
   return true
+end
+
+
+function courseplay:add_to_combines_ignore_list(self, combine)
+  if combine.trafficCollisionIgnoreList[self.rootNode] == nil then
+    combine.trafficCollisionIgnoreList[self.rootNode] = true
+  end
+end
+
+
+function courseplay:remove_from_combines_ignore_list(self, combine)
+  if combine == nil then
+    return
+  end
+  if combine.trafficCollisionIgnoreList[self.rootNode] == true then
+    combine.trafficCollisionIgnoreList[self.rootNode] = nil
+  end
 end

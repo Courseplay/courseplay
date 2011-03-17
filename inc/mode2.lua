@@ -155,6 +155,8 @@ function courseplay:unload_combine(self, dt)
   local trailer_offset = zt
   local sl = 3
   
+  local colX, colZ = nil, nil
+  
   -- traffic collision  
   allowedToDrive = courseplay:check_traffic(self, false, allowedToDrive) 
   
@@ -183,6 +185,7 @@ function courseplay:unload_combine(self, dt)
 	local distance = Utils.vector2Length(x1, z1)
 	
 	if mode == 2 then
+	  courseplay:remove_from_combines_ignore_list(self, combine)
 	  self.info_text ="Fahre hinter Drescher"
 	  if z1 > 0 then
 	    -- tractor in front of combine
@@ -220,7 +223,7 @@ function courseplay:unload_combine(self, dt)
 		if combine.grainTankCapacity == 0 then   	      
   	      -- decide on which side to drive based on ai-combine  	      
   	      
-  	      local leftFruit, rightFruit =  courseplay:side_to_drive(self, combine) 
+  	      local leftFruit, rightFruit =  courseplay:side_to_drive(self, combine, 20) 
   	      
   	      if leftFruit > rightFruit then
   	      	self.chopper_offset = self.combine_offset * -1
@@ -234,6 +237,8 @@ function courseplay:unload_combine(self, dt)
 	
 	elseif mode == 3 or mode == 4 then
 	  -- TODO eintellbar
+	  
+	  courseplay:add_to_combines_ignore_list(self, combine)
 	  
 	  if mode == 3 then
 	    self.info_text ="Fahre neben Drescher"
@@ -255,8 +260,7 @@ function courseplay:unload_combine(self, dt)
 	    self.next_ai_state = 1
 	    --else	    
 	    --  mode = 1
-	    --end	    
-	    
+	    --end	 
       end
             
       local tX, tY, tZ = nil, nil, nil
@@ -359,6 +363,7 @@ function courseplay:unload_combine(self, dt)
     if combine_turning and distance < 30 then
 	  if mode == 3 or mode == 4 then
 	    -- combine empty	    
+	    self.rightFruit, self.leftFruit =  courseplay:side_to_drive(self, combine, -20)
 	    -- set waypoint self.turn_radius meters diagonal vorne links ;)
 	    if self.chopper_offset > 0 then
 	      self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, self.turn_radius, 0, self.turn_radius)
@@ -379,11 +384,13 @@ function courseplay:unload_combine(self, dt)
   end
   
   if self.waitTimer and self.timer < self.waitTimer then
+    courseplay:remove_from_combines_ignore_list(self, combine)
     allowedToDrive = false
     self.info_text = "Abfahrer muss warten."    
   else  
 	  -- wende manöver
 	  if mode == 9 and self.target_x ~= nil and self.target_z ~= nil then    
+	    courseplay:remove_from_combines_ignore_list(self, combine)
 	    self.info_text = string.format("wende in Richtung koordinaten %d %d ", self.target_x, self.target_z )  	
 	    allowedToDrive = false
 	    local mx, mz = self.target_x, self.target_z
@@ -404,6 +411,7 @@ function courseplay:unload_combine(self, dt)
 	
 	  -- drive to given waypoint
 	  if mode == 5 and self.target_x ~= nil and self.target_z ~= nil then
+	    courseplay:remove_from_combines_ignore_list(self, combine)
 	    self.info_text = string.format("fahre zu Wegpunkt %d %d ", self.target_x, self.target_z )
 	  	cx = self.target_x
 	  	cy = self.target_y
@@ -417,9 +425,8 @@ function courseplay:unload_combine(self, dt)
 	  	  allowedToDrive = false
 	  	  if self.next_ai_state == 9 and combine_turning == nil then  	    
 	  	  	self.chopper_offset = self.combine_offset  	  	
-	  	  	local last_offset = self.chopper_offset
-	  	    local leftFruit, rightFruit =  courseplay:side_to_drive(self, combine)
-	  	    if leftFruit > rightFruit then
+	  	  	local last_offset = self.chopper_offset	  	    
+	  	    if self.leftFruit > self.rightFruit then
 	  	      self.chopper_offset = self.combine_offset * -1
 	  	    elseif leftFruit == rightFruit then  	        
 	  	      self.chopper_offset = last_offset * -1
@@ -504,15 +511,19 @@ function courseplay:unload_combine(self, dt)
   
   AIVehicleUtil.driveInDirection(self, dt, 45, 1, 0.8, 25, true, true, target_x, target_z, sl, 0.9)
   
-  courseplay:set_traffc_collision(self, target_x, target_z)
-  
+  if colX == nil then  
+  	courseplay:set_traffc_collision(self, target_x, target_z)
+  else
+    courseplay:set_traffc_collision(self, colX, colZ)
+  end 
   
 end
 
 
-function courseplay:side_to_drive(self, combine)
+function courseplay:side_to_drive(self, combine, distance)
   
-  local x,y,z = localToWorld(combine.aiTreshingDirectionNode, 0, 0, 30) --getWorldTranslation(combine.aiTreshingDirectionNode);
+  local x,y,z = localToWorld(combine.aiTreshingDirectionNode, 0, 0, distance) --getWorldTranslation(combine.aiTreshingDirectionNode);
+    
   local dirX, dirZ = combine.aiThreshingDirectionX, combine.aiThreshingDirectionZ;
   if dirX == nil or x == nil or dirZ == nil then
     return 0, 0 
@@ -536,6 +547,7 @@ function courseplay:side_to_drive(self, combine)
   local rHeightZ = rStartZ + dirZ*self.sideWatchDirSize;
   
   local leftFruit = Utils.getFruitArea(FruitUtil.FRUITTYPE_MAIZE, lStartX, lStartZ, lWidthX, lWidthZ, lHeightX, lHeightZ)
+  
   local rightFruit = Utils.getFruitArea(FruitUtil.FRUITTYPE_MAIZE, rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ)
   
   print(string.format("fruit:  left %f right %f",leftFruit,rightFruit ))

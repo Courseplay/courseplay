@@ -262,6 +262,7 @@ function courseplay:draw()
 
     	-- HUD
 	if (self.showHudInfoBase > 0) and self.isEntered then
+	    courseplay:load_Hud(self)
 		self.hudInfoBaseOverlay:render();
 
 		setTextBold(true)
