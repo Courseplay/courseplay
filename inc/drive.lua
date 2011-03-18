@@ -30,7 +30,10 @@ function courseplay:drive(self, dt)
   self.dist = courseplay:distance(cx ,cz ,ctx ,ctz)
   -- what about our tippers?
   local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
-  local fill_level = tipper_fill_level * 100 / tipper_capacity
+  local fill_level = nil
+  if tipper_fill_level ~= nil then
+     fill_level = tipper_fill_level * 100 / tipper_capacity
+  end
   -- may i drive or should i hold position for some reason?
   local allowedToDrive = true
   -- in a traffic yam?
@@ -101,7 +104,12 @@ function courseplay:drive(self, dt)
 		  self.sl = 2
 	  else
 		  self.sl = 3					
-	  end		  
+	  end		
+	  
+	  if self.dist > 30 then
+	    self.sl = 3	
+	  end
+	    
 	  -- is there an individual speed limit? e.g. for triggers
 	  if self.max_speed_level ~= nil then	    
 	    self.sl = self.max_speed_level
