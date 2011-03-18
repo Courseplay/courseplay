@@ -437,7 +437,8 @@ function courseplay:unload_combine(self, dt)
 	  	    self.next_ai_state = 4
 	  	  elseif self.next_ai_state == 9 and combine_turning then
 	  	    self.info_text = "Warte bis Drescher gewendet hat. "
-	  	  elseif self.next_ai_state == 1  then	  	    
+	  	  elseif self.next_ai_state == 1  then	 
+	  	    self.sl = 3 	    
 	  	    mode = self.next_ai_state  	    
 	  	  else
 	  	    mode = self.next_ai_state

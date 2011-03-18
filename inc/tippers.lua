@@ -107,7 +107,7 @@ function courseplay:unload_tippers(self)
 	  end
 	  
       -- if tipper is on trigger
-      if distance_to_trigger <= needed_distance then
+      if distance_to_trigger <= needed_distance and tipper.fillLevel > 0 then
 		active_tipper = tipper
       end            
     end
