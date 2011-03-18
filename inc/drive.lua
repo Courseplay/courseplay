@@ -30,6 +30,7 @@ function courseplay:drive(self, dt)
   self.dist = courseplay:distance(cx ,cz ,ctx ,ctz)
   -- what about our tippers?
   local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
+  local fill_level = tipper_fill_level * 100 / tipper_capacity
   -- may i drive or should i hold position for some reason?
   local allowedToDrive = true
   -- in a traffic yam?
@@ -44,12 +45,22 @@ function courseplay:drive(self, dt)
   local active_tipper = nil
   
   
-   if  self.Waypoints[self.recordnumber].wait and self.wait then
-     self.global_info_text = 'hat Wartepunkt erreicht.'
+   if self.Waypoints[self.recordnumber].wait and self.wait then
+     if self.ai_mode == 3 then
+       self.global_info_text = 'hat Überladepunkt erreicht.'
+     else
+       self.global_info_text = 'hat Wartepunkt erreicht.'
+     end
+     
+     if self.ai_mode == 3 and self.tipper_attached and fill_level == 0 then
+       self.wait = false
+       self.unloaded = true
+     end
+     
      allowedToDrive = false
     else
 	  -- abfahrer-mode
-	  if (self.ai_mode == 1 and self.tipper_attached and tipper_fill_level ~= nil) or self.loaded then  
+	  if (self.ai_mode == 1 and self.tipper_attached and tipper_fill_level ~= nil) or (self.loaded and self.ai_mode == 2) then  
 		-- is there a tipTrigger within 10 meters?
 		raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
 		-- handle mode
@@ -57,7 +68,7 @@ function courseplay:drive(self, dt)
 	  end
 	  
 	  -- combi-mode
-	  if (self.ai_mode == 2 and self.recordnumber < 2 and self.tipper_attached) or self.active_combine then	      
+	  if ((self.ai_mode == 2 or self.ai_mode == 3) and self.recordnumber < 2 and self.tipper_attached) or self.active_combine then	      
 		  return courseplay:handle_mode2(self, dt)
 	  end
   end

@@ -28,6 +28,9 @@
 --      11.03.11 added manual start (Wolverin0815)
 --      13.03.11 localization (Wolverin0815)
 --      14.03.11 mode2 optimizations (hummel)
+--      16.03.11 HUD added (wolverin0815)
+--      17.03.11 optimized turning (hummel)
+--      18.03.11 distance and overload mode added (hummel)
 courseplay = {};
 
 courseplay_path = g_modsDirectory.."/aacourseplay/"

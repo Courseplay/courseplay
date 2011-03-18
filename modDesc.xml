@@ -59,14 +59,24 @@
 
 
 	<text name="CourseMode1">
-		<en>Typ: Drivinghelper</en>
+		<en>Type: Drivinghelper</en>
 		<de>Typ: Abfahrer</de>
 	</text>
 
 
 	<text name="CourseMode2">
-		<en>Typ: Combi</en>
+		<en>Type: Combi</en>
 		<de>Typ: Combi</de>
+	</text>
+	
+	<text name="CourseMode3">
+		<en>Type: Overloader</en>
+		<de>Typ: Überladewagen</de>
+	</text>
+	
+	<text name="CourseMode4">
+		<en>Type: Target</en>
+		<de>Typ: Überführung</de>
 	</text>
 		
 	<text name="CourseWaitpointSet">
@@ -78,6 +88,7 @@
 		<en>start</en>
 		<de>weiterfahren</de>
 	</text> 
+	
 	<text name="PointRecord">
 		<en>Record Course</en>
 		<de>Kurs aufzeichnen</de>
@@ -105,7 +116,7 @@
 	
 	<text name="CourseWait">
 		<en>set waitpoint</en>
-		<de>Wartepunkt setzen</de>
+		<de>Warte-/Überladepunkt setzen</de>
 	</text>
 	
 	<text name="CourseMode">

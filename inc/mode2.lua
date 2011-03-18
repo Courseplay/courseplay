@@ -497,7 +497,7 @@ function courseplay:unload_combine(self, dt)
     if self.next_ai_state == 4 then
       sl = 1
     else
-      sl = 2    
+      sl = 3    
     end
   end
   
@@ -601,7 +601,7 @@ function courseplay:follow_tractor(self, dt, tractor)
     end
   
     if distance > 50 then
-      refSpeed = self.field_speed * 1.5
+      refSpeed = self.max_speed
     end  
   
   self.follow_mode = mode
