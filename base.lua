@@ -67,7 +67,7 @@ function courseplay:load(xmlFile)
 	
 	-- speed limits
 	self.max_speed_level = nil
-	self.max_speed = 40 / 3600
+	self.max_speed = 50 / 3600
 	self.turn_speed = 10 / 3600
 	self.field_speed = 24 / 3600
 	
@@ -168,14 +168,17 @@ function courseplay:draw()
 
 			if self.ai_mode == 1 then
 				g_currentMission:addHelpButtonText(g_i18n:getText("CourseMode1"), InputBinding.CourseAiMode);
-			else
+			elseif self.ai_mode == 2 then
 				g_currentMission:addHelpButtonText(g_i18n:getText("CourseMode2"), InputBinding.CourseAiMode);
+		    elseif self.ai_mode == 3 then
+		        g_currentMission:addHelpButtonText(g_i18n:getText("CourseMode3"), InputBinding.CourseAiMode);
+		    elseif self.ai_mode == 4 then
+		        g_currentMission:addHelpButtonText(g_i18n:getText("CourseMode4"), InputBinding.CourseAiMode);
 			end
 
 			if InputBinding.hasEvent(InputBinding.CourseAiMode) then
-				if self.ai_mode == 1 then
-					self.ai_mode = 2
-				else
+			    self.ai_mode = self.ai_mode + 1
+				if self.ai_mode > 4 then
 					self.ai_mode = 1
 				end
 			end
