@@ -29,22 +29,22 @@
     <l10n>
 	<text name="PointRecordStart">
 		<en>Record Course Start</en>
-		<de>Kurs aufzeichnung starten</de>
+		<de>Neuer Kurs</de>
 	</text>
 
 	<text name="PointRecordStop">
 		<en>Record Course Stop</en>
-		<de>Kurs aufzeichnung stoppen</de>
+		<de>Endpunkt Kurs</de>
 	</text>
 
 	<text name="CoursePlayStart">
 		<en>Drive Course</en>
-		<de>Kurs abfahren</de>
+		<de>Start Helfer</de>
 	</text>
 
 	<text name="CoursePlayStop">
 		<en>Drive stop</en>
-		<de>stop abfahren</de>
+		<de>Stop Helfer</de>
 	</text>
 
 	<text name="CoursePlayRound">
@@ -81,23 +81,13 @@
 		
 	<text name="CourseWaitpointSet">
 		<en>set waitpoint</en>
-		<de>Wartepunkt setzen</de>
+		<de>Punkt setzen</de>
 	</text>	
 	
 	<text name="CourseWaitpointStart">
 		<en>start</en>
 		<de>weiterfahren</de>
 	</text> 
-	
-	<text name="PointRecord">
-		<en>Record Course</en>
-		<de>Kurs aufzeichnen</de>
-	</text>
-	
-	<text name="CoursePlay">
-		<en>Driving Helper</en>
-		<de>Abfahrhelfer</de>
-	</text>	
 
 	<text name="CourseSave">
 		<en>save course</en>
@@ -109,24 +99,15 @@
 		<de>Kurs laden</de>
 	</text>
 
+	<text name="CourseDel">
+		<en>delete course</en>
+		<de>Kurs löschen</de>
+	</text>
+
+
 	<text name="CourseReset">
 		<en>reset course</en>
-		<de>Kurs ruecksetzen</de>
-	</text>
-	
-	<text name="CourseWait">
-		<en>set waitpoint</en>
-		<de>Warte-/Überladepunkt setzen</de>
-	</text>
-	
-	<text name="CourseMode">
-		<en>Course Mode</en>
-		<de>Kurs Modus</de>
-	</text>
-	
-	<text name="CourseAIMode">
-		<en>AI Mode</en>
-		<de>Helfermodus</de>
+		<de>Kurs reset</de>
 	</text>
 
 	<text name="HudControl">
@@ -134,9 +115,35 @@
 		<de>AH Hud</de>
 	</text>
 	
+	<text name="ModusSet">
+		<en>change Modus</en>
+		<de>Modus wechseln</de>				
+	</text>
+
 	<text name="NoWaitforfill">
 		<en>Drive now</en>
 		<de>Sofort abfahren</de>				
+	</text>
+
+	
+	<text name="AHInput1">
+		<en>AH Input 1</en>
+		<de>AH Taste 1</de>				
+	</text>
+
+	<text name="AHInput2">
+		<en>AH Input 2</en>
+		<de>AH Taste 2</de>				
+	</text>
+
+	<text name="AHInput3">
+		<en>AH Input 3</en>
+		<de>AH Taste 3</de>				
+	</text>
+
+	<text name="AHInput4">
+		<en>AH Input 4</en>
+		<de>AH Taste 4</de>				
 	</text>
 	
     </l10n>
@@ -162,17 +169,11 @@
     </extraSourceFiles>   
 	
 	<inputBindings>
- 
-		<input name="PointRecord" category="VEHICLE" key1="KEY_KP_9" key2="" button="" device="0" mouse="" />
-    	<input name="CoursePlay" category="VEHICLE" key1="KEY_KP_7" key2="" button="" device="0" mouse="" />
-		<input name="CourseSave" category="VEHICLE" key1="KEY_lctrl KEY_s" key2="" button="" device="0" mouse="" />
-		<input name="CourseLoad" category="VEHICLE" key1="KEY_lctrl KEY_o" key2="" button="" device="0" mouse="" />
-		<input name="CourseReset" category="VEHICLE" key1="KEY_r" key2="" button="" device="0" mouse="" />
 		<input name="HudControl" category="VEHICLE" key1="KEY_KP_0" key2="" button="" device="0" mouse="" />
-		<input name="CourseMode" category="VEHICLE" key1="KEY_KP_6" key2="" button="" device="0" mouse="" />
-		<input name="CourseAiMode" category="VEHICLE" key1="KEY_KP_5" key2="" button="" device="0" mouse="" />
-		<input name="CourseWait" category="VEHICLE" key1="KEY_KP_4" key2="" button="" device="0" mouse="" />
-		<input name="NoWaitforfill" category="VEHICLE" key1="KEY_KP_8" key2="" button="" device="0" mouse="" />
+		<input name="AHInput1" category="VEHICLE" key1="KEY_KP_7" key2="" button="" device="0" mouse="" />
+		<input name="AHInput2" category="VEHICLE" key1="KEY_KP_8" key2="" button="" device="0" mouse="" />
+		<input name="AHInput3" category="VEHICLE" key1="KEY_KP_9" key2="" button="" device="0" mouse="" />
+		<input name="AHInput4" category="VEHICLE" key1="KEY_KP_5" key2="" button="" device="0" mouse="" />
 
     </inputBindings>
     
