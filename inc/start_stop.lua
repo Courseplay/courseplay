@@ -6,14 +6,16 @@ function courseplay:start(self)
 	self.drive  = false
 	self.record = false
 	
+	if self.recordnumber == nil then
+	  self.recordnumber = 1
+	end
+	
 	-- add do working players if not already added
 	if self.working_course_player_num == nil then
 		self.working_course_player_num = courseplay:add_working_player(self)
 	end	
 	
-	self.tippers = {}
-	-- are there any tippers?	
-	self.tipper_attached, self.tippers = courseplay:update_tools(self, self.tippers)
+	courseplay:reset_tools(self)
 		
 	if self.tipper_attached then
 		-- tool (collision)triggers for tippers

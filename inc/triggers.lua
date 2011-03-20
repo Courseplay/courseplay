@@ -2,6 +2,9 @@
 
 -- traffic collision
 function courseplay:onTrafficCollisionTrigger(triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
+    if otherId == self.rootNode then
+      return
+    end
     if onEnter or onLeave then
         if otherId == Player.rootNode then
             if onEnter then
@@ -9,7 +12,7 @@ function courseplay:onTrafficCollisionTrigger(triggerId, otherId, onEnter, onLea
             elseif onLeave then
                 self.numCollidingVehicles = math.max(self.numCollidingVehicles-1, 0);		
             end;
-        else
+        else          
             local vehicle = g_currentMission.nodeToVehicle[otherId];
             if vehicle ~= nil and self.trafficCollisionIgnoreList[otherId] == nil then
                 if onEnter then

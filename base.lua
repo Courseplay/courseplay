@@ -294,7 +294,12 @@ function courseplay:update(dt)
 	-- we are in record mode
 	if self.record then 
 		courseplay:record(self);
-	end	
+	end
+	
+	--attached or detached implement?
+	if self.aiToolsDirty then
+	  courseplay:reset_tools(self)
+	end
 	
 	-- we are in drive mode
 	if self.drive then

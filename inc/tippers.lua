@@ -1,4 +1,12 @@
 
+function courseplay:reset_tools(self)
+  self.tippers = {}
+  -- are there any tippers?	
+  self.tipper_attached, self.tippers = courseplay:update_tools(self, self.tippers)
+  self.aiToolsDirty = false;
+end
+
+
 -- update implements to find attached tippers
 function courseplay:update_tools(tractor_or_implement, tippers)    
   local tipper_attached = false
