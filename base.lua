@@ -161,6 +161,19 @@ function courseplay:load(xmlFile)
     self.hudinfo = {}
 end	
 
+
+function courseplay:onLeave()
+  if self.mouse_enabled then
+    InputBinding.setShowMouseCursor(false);
+  end
+end
+
+function courseplay:onEnter()
+  if self.mouse_enabled then
+    InputBinding.setShowMouseCursor(true);
+  end
+end
+
 -- displays help text, user_input 	
 function courseplay:draw()
 	self.hudpage[1][1] = {}
@@ -224,11 +237,7 @@ function courseplay:draw()
 	            self.hudpage[1][2][3]= InputBinding.getKeyNamesOfDigitalAction(InputBinding.AHInput2)
 
 				if InputBinding.hasEvent(InputBinding.AHInput2) then
-					if self.ai_mode == 4 then
-					   self.ai_mode = 1
-					else
-						self.ai_mode = self.ai_mode + 1
-					end
+				    courseplay:change_ai_state(self, 1)					
 				end
 	
 			else
@@ -315,8 +324,9 @@ function courseplay:draw()
 	  if self.mouse_enabled then
 	    self.mouse_enabled = false
 	  else
-	    self.mouse_enabled = true
+	    self.mouse_enabled = true	    
 	  end
+	  InputBinding.setShowMouseCursor(self.mouse_enabled)
 	end
 	
 	-- Hud Control
@@ -326,6 +336,10 @@ function courseplay:draw()
 		else
 			self.showHudInfoBase = self.showHudInfoBase + 1
 		end
+	end
+	
+	if self.mouse_enabled then 
+	  InputBinding.setShowMouseCursor(self.mouse_enabled)
 	end
 
     	-- HUD
@@ -379,11 +393,7 @@ function courseplay:draw()
 		end
 	end
 	
-	if self.mouse_enabled then
-	  InputBinding.setShowMouseCursor(true)
-	else
-	  setShowMouseCursor(false);
-	end
+
 end
 
 -- is been called everey frame
@@ -422,4 +432,13 @@ end;
 
 function courseplay:set_timeout(self, interval)
   self.timeout = self.timer + interval
+end
+
+
+function courseplay:change_ai_state(self, change_by)
+  self.ai_mode = self.ai_mode + change_by
+  
+  if self.ai_mode == 5 or self.ai_mode == 0 then  
+    self.ai_mode = 1    
+  end
 end

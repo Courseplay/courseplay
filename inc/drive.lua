@@ -189,7 +189,7 @@ end;
 
 function courseplay:set_traffc_collision(self, lx, lz)
   local maxlx = 0.7071067; --math.sin(maxAngle);
-	  
+
   local colDirX = lx;
   local colDirZ = lz;
    
@@ -199,7 +199,9 @@ function courseplay:set_traffc_collision(self, lx, lz)
   elseif colDirX < -maxlx then
    colDirX = -maxlx;
    colDirZ = 0.7071067; --math.cos(maxAngle);
-  end;	  
+  end;
+  
+  print(string.format("colDirX: %d colDirZ %d ",colDirX,colDirZ ))	  
 	  
   if self.aiTrafficCollisionTrigger ~= nil then
     AIVehicleUtil.setCollisionDirection(self.aiTractorDirectionNode, self.aiTrafficCollisionTrigger, colDirX, colDirZ);
