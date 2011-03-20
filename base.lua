@@ -187,7 +187,8 @@ end
 function courseplay:draw()
 	self.hudpage[1][1] = {}
     self.hudpage[1][2] = {}
-	if self.showHudInfoBase <= 1 then
+    if self.show_hud then
+	  if self.showHudInfoBase <= 1 then
         if self.play then
 			if not self.drive then
 			    self.hudpage[1][1][4]= g_i18n:getText("CourseReset")
@@ -266,7 +267,7 @@ function courseplay:draw()
 	
 
 	
-	elseif self.showHudInfoBase == 2 then
+	  elseif self.showHudInfoBase == 2 then
 		self.hudpage[2][1][2]= g_i18n:getText("CourseLoad")
 		self.hudpage[2][2][2]= InputBinding.getKeyNamesOfDigitalAction(InputBinding.AHInput2)
 	        if InputBinding.hasEvent(InputBinding.AHInput2) then
@@ -287,7 +288,7 @@ function courseplay:draw()
    				 courseplay:input_course_name(self)
    		 	end
    		end
-	elseif self.showHudInfoBase == 3 then
+	  elseif self.showHudInfoBase == 3 then
 		self.hudpage[3][1][1]= "Abstand zum Drescher:"
 	    self.hudpage[3][1][2]= "Start bei%:"
 		self.hudpage[3][1][3]= "Wenderadius:"
@@ -309,8 +310,10 @@ function courseplay:draw()
 			self.hudpage[3][2][3]= "---"
 		end	
 
-
-	end
+	  end
+	end-- end if show_hud
+	
+	
 	if self.dcheck and table.getn(self.Waypoints) > 1 then
 		courseplay:dcheck(self);
 	end
@@ -343,6 +346,7 @@ function courseplay:draw()
 		if self.show_hud then
 		  self.show_hud = false
 		else
+		  self.showHudInfoBase = 1
 		  self.show_hud = true
 		end
 	end
@@ -402,6 +406,28 @@ function courseplay:draw()
 	      	renderText(0.825, 0.408, 0.021, string.format("Einstellungen"));
 			courseplay:HudPage(self);
 		end
+	elseif self.play then
+	  -- hud not displayed - display start stop
+	  if self.drive then
+	    g_currentMission:addHelpButtonText(g_i18n:getText("CoursePlayStop"), InputBinding.AHInput1);
+	    if InputBinding.hasEvent(InputBinding.AHInput1) then
+	      courseplay:stop(self)
+	    end
+	    
+	    if self.Waypoints[self.recordnumber].wait and self.wait then
+	      self.hudpage[1][1][2]= g_i18n:getText("CourseWaitpointStart")
+	      self.hudpage[1][2][2]= InputBinding.getKeyNamesOfDigitalAction(InputBinding.AHInput2)
+	      if InputBinding.hasEvent(InputBinding.AHInput2) then
+	        self.wait = false
+	      end
+	    end
+	    	  
+	  else
+	  	g_currentMission:addHelpButtonText(g_i18n:getText("CoursePlayStart"), InputBinding.AHInput1);
+	  	if InputBinding.hasEvent(InputBinding.AHInput1) then
+	  	  courseplay:start(self)
+	  	end
+	  end
 	end
 	
 
