@@ -195,10 +195,12 @@ function courseplay:set_traffc_collision(self, lx, lz)
    
   if colDirX > maxlx then
    colDirX = maxlx;
-   colDirZ = 0.7071067; --math.cos(maxAngle);
   elseif colDirX < -maxlx then
    colDirX = -maxlx;
-   colDirZ = 0.7071067; --math.cos(maxAngle);
+  end;
+  
+  if colDirZ < -0.4 then
+    colDirZ = 0.4;
   end;
   
   print(string.format("colDirX: %f colDirZ %f ",colDirX,colDirZ ))	  
