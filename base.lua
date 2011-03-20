@@ -11,6 +11,9 @@ function courseplay:load(xmlFile)
 	self.drive_slow_timer = 0
 	self.courseplay_position = nil
 	
+	-- clickable buttons
+	self.buttons = {}
+	
 	-- waypoints are stored in here
 	self.Waypoints = {}
 	-- loaded/saved courses saved in here
@@ -147,7 +150,7 @@ function courseplay:load(xmlFile)
 	
 	self.infoPanelPath = Utils.getFilename("../aacourseplay/img/hud_bg.png", self.baseDirectory);
 	self.hudInfoBaseOverlay = Overlay:new("hudInfoBaseOverlay", self.infoPanelPath, self.hudInfoBasePosX, self.hudInfoBasePosY, self.hudInfoBaseWidth, self.hudInfoBaseHeight);
-	self.showHudInfoBase = 0;
+	self.showHudInfoBase = 1;
 	self.hudpage = {}
 	self.hudpage[1]  = {}
     self.hudpage[1][1]  = {}
@@ -159,6 +162,12 @@ function courseplay:load(xmlFile)
     self.hudpage[3][1]  = {}
     self.hudpage[3][2]  = {}
     self.hudinfo = {}
+    
+    self.show_hud = false
+    
+    -- buttons for hud    
+    courseplay:register_button(self, nil, "arrows-left.png", "switch_hud_page", -1, 0.79, 0.410, 0.020, 0.020)
+    courseplay:register_button(self, nil, "arrows-right.png", "switch_hud_page", 1, 0.96, 0.410, 0.020, 0.020)
 end	
 
 
@@ -279,9 +288,9 @@ function courseplay:draw()
    		 	end
    		end
 	elseif self.showHudInfoBase == 3 then
-		self.hudpage[3][1][1]= "Combine Offset:"
+		self.hudpage[3][1][1]= "Abstand zum Drescher:"
 	    self.hudpage[3][1][2]= "Start bei%:"
-		self.hudpage[3][1][3]= "Turn Radius:"
+		self.hudpage[3][1][3]= "Wenderadius:"
 		
 		if self.ai_state ~= nil then
 			self.hudpage[3][2][1]= string.format("%d", self.combine_offset)
@@ -331,10 +340,10 @@ function courseplay:draw()
 	
 	-- Hud Control
 	if InputBinding.hasEvent(InputBinding.HudControl) then
-		if self.showHudInfoBase	== 3 then  --edit for more sites
-			self.showHudInfoBase = 0
+		if self.show_hud then
+		  self.show_hud = false
 		else
-			self.showHudInfoBase = self.showHudInfoBase + 1
+		  self.show_hud = true
 		end
 	end
 	
@@ -343,9 +352,11 @@ function courseplay:draw()
 	end
 
     	-- HUD
-	if (self.showHudInfoBase > 0) and self.isEntered then
+	if self.show_hud and self.isEntered then
+	    
 		self.hudInfoBaseOverlay:render();
-
+		courseplay:render_buttons(self, self.showHudInfoBase)
+		
     	if self.ai_mode == 1 then
 			self.hudinfo[1]= g_i18n:getText("CourseMode1")
 		elseif self.ai_mode == 2 then
@@ -440,5 +451,16 @@ function courseplay:change_ai_state(self, change_by)
   
   if self.ai_mode == 5 or self.ai_mode == 0 then  
     self.ai_mode = 1    
+  end
+end
+
+function courseplay:switch_hud_page(self, change_by)
+  self.showHudInfoBase = self.showHudInfoBase + change_by
+  if self.showHudInfoBase == 0 then  --edit for more sites
+    self.showHudInfoBase = 1
+  end
+  
+  if self.showHudInfoBase == 4 then  --edit for more sites
+    self.showHudInfoBase = 3
   end
 end

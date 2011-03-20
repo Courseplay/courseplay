@@ -1,5 +1,17 @@
 
-function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
+function courseplay:mouseEvent(posX, posY, isDown, isUp, button) 
+  if isDown and self.show_hud and self.isEntered then
+    for _,button in pairs(self.buttons) do
+      if button.page == page or button.page == nil then
+        if posX > button.overlay.x and posX < button.x2 and posY > button.y and posY < button.y2 then
+          -- TODO überhaupt nicht DRY das geht bestimmt irgendwie schöner
+          if button.function_to_call == "switch_hud_page" then
+            courseplay:switch_hud_page(self, button.parameter)
+          end
+        end
+      end
+    end
+  end
 end		
 
 

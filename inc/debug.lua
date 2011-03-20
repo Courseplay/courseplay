@@ -77,3 +77,7 @@ function table.show(t, name, indent)
    addtocart(t, name, indent)
    return cart .. autoref
 end
+
+function eval(str)
+   return assert(loadstring(str))()
+end
