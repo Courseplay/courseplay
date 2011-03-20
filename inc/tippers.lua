@@ -14,13 +14,12 @@ function courseplay:update_tools(tractor_or_implement, tippers)
   for k,implement in pairs(tractor_or_implement.attachedImplements) do
     
     local object = implement.object
+    
     if object.allowTipDischarge then
       tipper_attached = true
       table.insert(tippers, object)
     end
     
-    self.trafficCollisionIgnoreList[object.node] = true;
-        
 	-- are there more tippers attached to the current implement?
     if table.getn(object.attachedImplements) ~= 0 then
 	  

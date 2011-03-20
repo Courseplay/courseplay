@@ -17,12 +17,6 @@ function courseplay:start(self)
 	
 	courseplay:reset_tools(self)
 		
-	if self.tipper_attached then
-		-- tool (collision)triggers for tippers
-		for k,object in pairs(self.tippers) do
-		  AITractor.addToolTrigger(self, object)
-		end
-	end
 	
 	-- show arrow
 	self.dcheck = true
