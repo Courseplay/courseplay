@@ -78,7 +78,11 @@ function courseplay:load(xmlFile)
 	self.aiTrafficCollisionTrigger = Utils.indexToObject(self.components, getXMLString(xmlFile, "vehicle.aiTrafficCollisionTrigger#index"));
 	
 	self.numCollidingVehicles = 0;
-	self.numToolsCollidingVehicles = {};	
+	self.numToolsCollidingVehicles = {};
+	self.trafficCollisionIgnoreList = {};
+	for k,v in pairs(self.components) do
+	  self.trafficCollisionIgnoreList[v.node] = true;
+	end;	
 	
 	-- tipTrigger
 	self.findTipTriggerCallback = courseplay.findTipTriggerCallback;
