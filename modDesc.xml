@@ -46,6 +46,7 @@
 		<en>Drive stop</en>
 		<de>stop abfahren</de>
 	</text>
+	
 
 	<text name="CoursePlayRound">
 	    <en>Kurs:  Round Course</en>
@@ -130,9 +131,15 @@
 	</text>
 
 	<text name="HudControl">
-		<en>AH Hud</en>
-		<de>AH Hud</de>
+		<en>Courseplay Hud</en>
+		<de>Courseplay Hud</de>
 	</text>
+	
+	<text name="MouseControl">
+		<en>Switch Mousecontrol</en>
+		<de>Courseplay: Maussteuerung</de>
+	</text>
+	
 	
 	<text name="NoWaitforfill">
 		<en>Drive now</en>
@@ -162,7 +169,7 @@
     </extraSourceFiles>   
 	
 	<inputBindings>
- 
+        <input name="MouseControl" category="VEHICLE" key1="KEY_KP_1" key2="" button="" device="0" mouse="" />
 		<input name="PointRecord" category="VEHICLE" key1="KEY_KP_9" key2="" button="" device="0" mouse="" />
     	<input name="CoursePlay" category="VEHICLE" key1="KEY_KP_7" key2="" button="" device="0" mouse="" />
 		<input name="CourseSave" category="VEHICLE" key1="KEY_lctrl KEY_s" key2="" button="" device="0" mouse="" />

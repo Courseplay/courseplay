@@ -137,6 +137,8 @@ function courseplay:load(xmlFile)
 	-- loading saved courses from xml
 	courseplay:load_courses(self)
 	
+	self.mouse_enabled = false
+	
 		-- HUD
 	self.hudInfoBasePosX = 0.755; --  position Links/ rechts.
 	self.hudInfoBaseWidth = 0.24; -- Breite  Je Größer die Zahl, desto größer wird das Bild in die Breite "gezogen".
@@ -258,7 +260,17 @@ function courseplay:draw()
 		courseplay:display_course_selection(self);
 	end
 	g_currentMission:addHelpButtonText(g_i18n:getText("HudControl"), InputBinding.HudControl);
-		-- Hud Control
+	g_currentMission:addHelpButtonText(g_i18n:getText("MouseControl"), InputBinding.MouseControl);
+	
+	if InputBinding.hasEvent(InputBinding.MouseControl) then
+	  if self.mouse_enabled then
+	    self.mouse_enabled = false
+	  else
+	    self.mouse_enabled = true
+	  end
+	end
+	
+	-- Hud Control
 	if InputBinding.hasEvent(InputBinding.HudControl) then
 		if self.showHudInfoBase	== 3 then
 			self.showHudInfoBase = 0
@@ -283,6 +295,12 @@ function courseplay:draw()
 		      	renderText(0.825, 0.625, 0.021, string.format("Einstellungen"));
 				courseplay:HudPage(self);
 			end
+	end
+	
+	if self.mouse_enabled then
+	  InputBinding.setShowMouseCursor(true)
+	else
+	  setShowMouseCursor(false);
 	end
 end
 
