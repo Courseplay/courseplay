@@ -16,8 +16,6 @@ function courseplay:start(self)
 	end	
 	
 	courseplay:reset_tools(self)
-		
-	
 	-- show arrow
 	self.dcheck = true
 	-- current position
@@ -74,6 +72,7 @@ function courseplay:stop(self)
 	self.dcheck = false
 	self.motor:setSpeedLevel(0, false);
 	self.motor.maxRpmOverride = nil;
-	WheelsUtil.updateWheelsPhysics(self, 0, 0, 0, false, self.requiredDriveMode)
+	
+	AIVehicleUtil.driveInDirection(self, 0, 30, 0, 0, 28, false, moveForwards, 0, 1)	
 
 end

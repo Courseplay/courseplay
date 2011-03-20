@@ -17,8 +17,6 @@ function courseplay:load(xmlFile)
 	self.courses = {}
 	-- TODO still needed?
 	self.play = false
-	-- TODO still needed?
-	self.back = false 	
 	-- total number of course players
 	self.working_course_player_num = nil
 	
@@ -107,6 +105,7 @@ function courseplay:load(xmlFile)
 	self.course_selection_active = false
 	self.select_course = false
 	self.selected_course_number = 0
+	self.course_Del = false
 	
 	-- name search
 	local aNameSearch = {"vehicle.name." .. g_languageShort, "vehicle.name.de", "vehicle.name.en", "vehicle.name", "vehicle#type"};
@@ -139,113 +138,161 @@ function courseplay:load(xmlFile)
 	
 	self.mouse_enabled = false
 	
-		-- HUD
-	self.hudInfoBasePosX = 0.755; --  position Links/ rechts.
-	self.hudInfoBaseWidth = 0.24; -- Breite  Je Größer die Zahl, desto größer wird das Bild in die Breite "gezogen".
-	self.hudInfoBasePosY = 0.215; --position Höhe
-	self.hudInfoBaseHeight = 0.485; -- Höhe Je Größer die Zahl, desto größer wird das Bild in die Höhe "gezogen"
+
+	-- HUD  	-- Function in Signs
+	self.hudInfoBasePosX = 0.755; 
+	self.hudInfoBaseWidth = 0.24; 
+	self.hudInfoBasePosY = 0.215; 
+	self.hudInfoBaseHeight = 0.235; 
+	
 	self.infoPanelPath = Utils.getFilename("../aacourseplay/img/hud_bg.png", self.baseDirectory);
 	self.hudInfoBaseOverlay = Overlay:new("hudInfoBaseOverlay", self.infoPanelPath, self.hudInfoBasePosX, self.hudInfoBasePosY, self.hudInfoBaseWidth, self.hudInfoBaseHeight);
 	self.showHudInfoBase = 0;
 	self.hudpage = {}
-	-- Function in Signs
-	courseplay:load_Hud(self)
-	
+	self.hudpage[1]  = {}
+    self.hudpage[1][1]  = {}
+    self.hudpage[1][2]  = {}
+    self.hudpage[2] = {}
+    self.hudpage[2][1]  = {}
+    self.hudpage[2][2]  = {}
+	self.hudpage[3] = {}
+    self.hudpage[3][1]  = {}
+    self.hudpage[3][2]  = {}
+    self.hudinfo = {}
 end	
 
 -- displays help text, user_input 	
 function courseplay:draw()
-	if not self.drive then
-		if not self.record then
-			-- switch course mode
-			if self.course_mode == 1 then
-				g_currentMission:addHelpButtonText(g_i18n:getText("CoursePlayRound"), InputBinding.CourseMode);
+	self.hudpage[1][1] = {}
+    self.hudpage[1][2] = {}
+	if self.showHudInfoBase <= 1 then
+        if self.play then
+			if not self.drive then
+			    self.hudpage[1][1][4]= g_i18n:getText("CourseReset")
+				self.hudpage[1][2][4]= InputBinding.getKeyNamesOfDigitalAction(InputBinding.AHInput3)
+				if InputBinding.hasEvent(InputBinding.AHInput3) then
+					courseplay:reset_course(self)
+				end
+	            self.hudpage[1][1][1]= g_i18n:getText("CoursePlayStart")
+				self.hudpage[1][2][1]= InputBinding.getKeyNamesOfDigitalAction(InputBinding.AHInput1)
+				if InputBinding.hasEvent(InputBinding.AHInput1) then
+					courseplay:start(self)
+				end
+
 			else
-				g_currentMission:addHelpButtonText(g_i18n:getText("CoursePlayReturn"), InputBinding.CourseMode);
-			end
-
-			if InputBinding.hasEvent(InputBinding.CourseMode) then
-				    if self.course_mode == 1 then
-					self.course_mode = 0
-				else
-					self.course_mode = 1
+				if self.Waypoints[self.recordnumber].wait and self.wait then
+	   				self.hudpage[1][1][2]= g_i18n:getText("CourseWaitpointStart")
+					self.hudpage[1][2][2]= InputBinding.getKeyNamesOfDigitalAction(InputBinding.AHInput2)
+	   				if InputBinding.hasEvent(InputBinding.AHInput2) then
+						self.wait = false
+					end
 				end
-			end
 
-			if self.ai_mode == 1 then
-				g_currentMission:addHelpButtonText(g_i18n:getText("CourseMode1"), InputBinding.CourseAiMode);
-			elseif self.ai_mode == 2 then
-				g_currentMission:addHelpButtonText(g_i18n:getText("CourseMode2"), InputBinding.CourseAiMode);
-		    elseif self.ai_mode == 3 then
-		        g_currentMission:addHelpButtonText(g_i18n:getText("CourseMode3"), InputBinding.CourseAiMode);
-		    elseif self.ai_mode == 4 then
-		        g_currentMission:addHelpButtonText(g_i18n:getText("CourseMode4"), InputBinding.CourseAiMode);
-			end
-
-			if InputBinding.hasEvent(InputBinding.CourseAiMode) then
-			    self.ai_mode = self.ai_mode + 1
-				if self.ai_mode > 4 then
-					self.ai_mode = 1
+				self.hudpage[1][1][1]= g_i18n:getText("CoursePlayStop")
+				self.hudpage[1][2][1]= InputBinding.getKeyNamesOfDigitalAction(InputBinding.AHInput1)
+				if InputBinding.hasEvent(InputBinding.AHInput1) then
+					courseplay:stop(self)
 				end
-			end
 
-		
-			if table.getn(self.Waypoints) == 0  then
-				g_currentMission:addHelpButtonText(g_i18n:getText("PointRecordStart"), InputBinding.PointRecord);
-				if InputBinding.hasEvent(InputBinding.PointRecord) then
+				if not self.loaded then
+					self.hudpage[1][1][3]= g_i18n:getText("NoWaitforfill")
+					self.hudpage[1][2][3]= InputBinding.getKeyNamesOfDigitalAction(InputBinding.AHInput3)
+				end
+
+				if InputBinding.hasEvent(InputBinding.AHInput3) then
+					self.loaded = true
+	   			end
+			end
+		end
+		if not self.drive  then
+			if not self.record and (table.getn(self.Waypoints) == 0)  then
+				self.hudpage[1][1][1]= g_i18n:getText("PointRecordStart")
+				self.hudpage[1][2][1]= InputBinding.getKeyNamesOfDigitalAction(InputBinding.AHInput1)
+				if InputBinding.hasEvent(InputBinding.AHInput1) then
 					courseplay:start_record(self)
 				end
-			end
-		else
-			g_currentMission:addHelpButtonText(g_i18n:getText("PointRecordStop"), InputBinding.PointRecord);
-			if InputBinding.hasEvent(InputBinding.PointRecord) then
-				courseplay:stop_record(self)
-			end
+	
+	            self.hudpage[1][1][2]= g_i18n:getText("CourseLoad")
+				self.hudpage[1][2][2]= InputBinding.getKeyNamesOfDigitalAction(InputBinding.AHInput2)
+	            if InputBinding.hasEvent(InputBinding.AHInput2) then
+	   				 courseplay:select_course(self)
+				end
+	
+					
+			elseif not self.record and (table.getn(self.Waypoints) ~= 0) then	
+			    self.hudpage[1][1][3]= g_i18n:getText("ModusSet")
+	            self.hudpage[1][2][3]= InputBinding.getKeyNamesOfDigitalAction(InputBinding.AHInput2)
 
-
-			g_currentMission:addHelpButtonText(g_i18n:getText("CourseWaitpointSet"), InputBinding.CourseWait);
-			if InputBinding.hasEvent(InputBinding.CourseWait) then
-				courseplay:set_waitpoint(self)
-			end
-		end
-	end
-
-	if self.play then
-		if not self.drive then
-		
-			g_currentMission:addHelpButtonText(g_i18n:getText("CourseReset"), InputBinding.CourseReset);
-			if InputBinding.hasEvent(InputBinding.CourseReset) then
-				courseplay:reset_course(self)
-			end
-
-			g_currentMission:addHelpButtonText(g_i18n:getText("CoursePlayStart"), InputBinding.CoursePlay);
-			if InputBinding.hasEvent(InputBinding.CoursePlay) then
-				courseplay:start(self)
-			end
-			
-		else
-			if self.Waypoints[self.recordnumber].wait and self.wait then
-   				g_currentMission:addHelpButtonText(g_i18n:getText("CourseWaitpointStart"), InputBinding.CourseWait);
-   				if InputBinding.hasEvent(InputBinding.CourseWait) then
-					self.wait = false
+				if InputBinding.hasEvent(InputBinding.AHInput2) then
+					if self.ai_mode == 4 then
+					   self.ai_mode = 1
+					else
+						self.ai_mode = self.ai_mode + 1
+					end
+				end
+	
+			else
+				self.hudpage[1][1][1]= g_i18n:getText("PointRecordStop")
+				self.hudpage[1][2][1]= InputBinding.getKeyNamesOfDigitalAction(InputBinding.AHInput1)
+				if InputBinding.hasEvent(InputBinding.AHInput1) then
+					courseplay:stop_record(self)
+				end
+	
+	            self.hudpage[1][1][2]= g_i18n:getText("CourseWaitpointSet")
+				self.hudpage[1][2][2]= InputBinding.getKeyNamesOfDigitalAction(InputBinding.AHInput2)
+				if InputBinding.hasEvent(InputBinding.AHInput2) then
+					courseplay:set_waitpoint(self)
 				end
 			end
-
-			g_currentMission:addHelpButtonText(g_i18n:getText("CoursePlayStop"), InputBinding.CoursePlay);
-			if InputBinding.hasEvent(InputBinding.CoursePlay) then
-				courseplay:stop(self)
-			end
-			
-			if not self.loaded then
-			  g_currentMission:addHelpButtonText(g_i18n:getText("NoWaitforfill"), InputBinding.NoWaitforfill);
-			end
-			
-			if InputBinding.hasEvent(InputBinding.NoWaitforfill) then
-				self.loaded = true
-   			end
 		end
-	end
+	
 
+	
+	elseif self.showHudInfoBase == 2 then
+		self.hudpage[2][1][2]= g_i18n:getText("CourseLoad")
+		self.hudpage[2][2][2]= InputBinding.getKeyNamesOfDigitalAction(InputBinding.AHInput2)
+	        if InputBinding.hasEvent(InputBinding.AHInput2) then
+	   			 courseplay:select_course(self)
+			end	
+			
+		self.hudpage[2][1][3]= g_i18n:getText("CourseDel")
+		self.hudpage[2][2][3]= InputBinding.getKeyNamesOfDigitalAction(InputBinding.AHInput3)
+        if InputBinding.hasEvent(InputBinding.AHInput3) then
+		 -- comming soon
+   		end
+   			
+		if not self.record and (table.getn(self.Waypoints) ~= 0) then
+			self.hudpage[2][1][1]= g_i18n:getText("CourseSave")
+			self.hudpage[2][2][1]= InputBinding.getKeyNamesOfDigitalAction(InputBinding.AHInput1)
+			
+			if InputBinding.hasEvent(InputBinding.AHInput1) then
+   				 courseplay:input_course_name(self)
+   		 	end
+   		end
+	elseif self.showHudInfoBase == 3 then
+		self.hudpage[3][1][1]= "Combine Offset:"
+	    self.hudpage[3][1][2]= "Start bei%:"
+		self.hudpage[3][1][3]= "Turn Radius:"
+		
+		if self.ai_state ~= nil then
+			self.hudpage[3][2][1]= string.format("%d", self.combine_offset)
+		else
+			self.hudpage[3][2][1]= "---"
+		end
+		if self.required_fill_level_for_follow ~= nil then
+			self.hudpage[3][2][2]= string.format("%d", self.required_fill_level_for_follow)
+		else
+			self.hudpage[3][2][2]= "---"
+		end
+
+		if self.turn_radius ~= nil then
+			self.hudpage[3][2][3]= string.format("%d", self.turn_radius)
+		else
+			self.hudpage[3][2][3]= "---"
+		end	
+
+
+	end
 	if self.dcheck and table.getn(self.Waypoints) > 1 then
 		courseplay:dcheck(self);
 	end
@@ -259,6 +306,8 @@ function courseplay:draw()
 	if self.course_selection_active then
 		courseplay:display_course_selection(self);
 	end
+	
+-- Hud Control
 	g_currentMission:addHelpButtonText(g_i18n:getText("HudControl"), InputBinding.HudControl);
 	g_currentMission:addHelpButtonText(g_i18n:getText("MouseControl"), InputBinding.MouseControl);
 	
@@ -272,7 +321,7 @@ function courseplay:draw()
 	
 	-- Hud Control
 	if InputBinding.hasEvent(InputBinding.HudControl) then
-		if self.showHudInfoBase	== 3 then
+		if self.showHudInfoBase	== 3 then  --edit for more sites
 			self.showHudInfoBase = 0
 		else
 			self.showHudInfoBase = self.showHudInfoBase + 1
@@ -281,20 +330,53 @@ function courseplay:draw()
 
     	-- HUD
 	if (self.showHudInfoBase > 0) and self.isEntered then
-	    courseplay:load_Hud(self)
 		self.hudInfoBaseOverlay:render();
 
+    	if self.ai_mode == 1 then
+			self.hudinfo[1]= g_i18n:getText("CourseMode1")
+		elseif self.ai_mode == 2 then
+		    self.hudinfo[1]= g_i18n:getText("CourseMode2")
+        elseif self.ai_mode == 3 then
+		    self.hudinfo[1]= g_i18n:getText("CourseMode3")
+        elseif self.ai_mode == 4 then
+		    self.hudinfo[1]= g_i18n:getText("CourseMode4")
+        elseif self.ai_mode == 5 then
+		    self.hudinfo[1]= g_i18n:getText("CourseMode5")
+		else
+		     self.hudinfo[1]= "---"
+		end
+
+    	if self.current_course_name ~= nil then
+			self.hudinfo[2]= "Kurs: "..self.current_course_name
+		else
+			self.hudinfo[2]=  "Kurs: kein Kurs geladen"
+		end
+		
+		if self.Waypoints[self.recordnumber ] ~= nil then
+		    self.hudinfo[3]= "Wegpunkt: "..self.recordnumber .." / "..self.maxnumber
+		else
+			self.hudinfo[3]=  "Keine Wegpunkte geladen"
+		end
+		setTextBold(false)
+		local i = 0
+        for v,name in pairs(self.hudinfo) do
+            local yspace = 0.292 - (i * 0.021)
+        	renderText(0.763, yspace, 0.021, name);
+            i = i + 1
+		end
+
+
 		setTextBold(true)
-			if self.showHudInfoBase == 1 then
-				renderText(0.825, 0.625, 0.021, string.format("Tastenbelegung"));
-				courseplay:HudPage(self);
-			elseif self.showHudInfoBase == 2 then
-		        renderText(0.825, 0.625, 0.021, string.format("Optionen"));
-		        courseplay:HudPage(self);
-		    elseif self.showHudInfoBase == 3 then
-		      	renderText(0.825, 0.625, 0.021, string.format("Einstellungen"));
-				courseplay:HudPage(self);
-			end
+		if self.showHudInfoBase == 1 then
+			renderText(0.825, 0.408, 0.021, string.format("Tastenbelegung"));
+			courseplay:HudPage(self);
+		elseif self.showHudInfoBase == 2 then
+	        renderText(0.825, 0.408, 0.021, string.format("Kurs Optionen"));
+	        courseplay:HudPage(self);
+	    elseif self.showHudInfoBase == 3 then
+	      	renderText(0.825, 0.408, 0.021, string.format("Einstellungen"));
+			courseplay:HudPage(self);
+		end
 	end
 	
 	if self.mouse_enabled then

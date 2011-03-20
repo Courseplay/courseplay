@@ -163,44 +163,25 @@ function courseplay:drive(self, dt)
 	  
 	  courseplay:set_traffc_collision(self, lx, lz)
 	  
-  else	
-	  -- i'm not returning right now?	  
-	  if not self.back then	      
-		  if self.recordnumber < self.maxnumber  then
-			  if not self.wait then
-			    self.wait = true
-			  end
-			  self.recordnumber = self.recordnumber + 1
-		  else	-- reset some variables
-			  -- dont stop if in circle mode
-			  if self.course_mode == 1 then
-			    self.back = false
-			    self.recordnumber = 1
-				self.unloaded = false
-				self.loaded = false
-			  else
-			    self.back = true
-			  end
+  else	     
+	  if self.recordnumber < self.maxnumber  then
+		  if not self.wait then
+		    self.wait = true
+		  end
+		  self.recordnumber = self.recordnumber + 1
+	  else	-- reset some variables
+		  -- dont stop if in circle mode
+		  if self.course_mode == 1 then
+		    
+		    self.recordnumber = 1
+			self.unloaded = false
+			self.loaded = false		  
+		  end
+		  
+		  self.record = false
+		  self.play = true
 			  
-			  self.record = false
-			  self.play = true
-				  
-		  end	
-	  else	-- TODO is this realy needed?
-		  if self.back then	
-			  if self.recordnumber > 1  then
-				  self.recordnumber = self.recordnumber - 1
-			  else
-				  self.record = false
-				  self.drive  = false	
-				  self.play = true
-				  self.motor:setSpeedLevel(0, false);				  
-				  WheelsUtil.updateWheelsPhysics(self, 0, self.lastSpeed, 0, false, self.requiredDriveMode)
-				  self.recordnumber = 1
-				  self.back = false
-			  end	
-		  end	
-	  end
+	  end	
 	  
   end
 end;  

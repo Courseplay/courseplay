@@ -5,15 +5,7 @@ end
 
 -- deals with keyEvents
 function courseplay:keyEvent(unicode, sym, modifier, isDown)
-  if isDown and sym == Input.KEY_s and bitAND(modifier, Input.MOD_CTRL) > 0 then
-	courseplay:input_course_name(self)
-  end
-  
-  
-  if isDown and sym == Input.KEY_o and bitAND(modifier, Input.MOD_CTRL) > 0 then
-	courseplay:select_course(self)
-  end
-  
+ 
   -- user input fu
   if isDown and self.user_input_active then
 	if 31 < unicode and unicode < 127 then 
