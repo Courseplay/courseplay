@@ -201,7 +201,7 @@ function courseplay:set_traffc_collision(self, lx, lz)
    colDirZ = 0.7071067; --math.cos(maxAngle);
   end;
   
-  print(string.format("colDirX: %d colDirZ %d ",colDirX,colDirZ ))	  
+  print(string.format("colDirX: %f colDirZ %f ",colDirX,colDirZ ))	  
 	  
   if self.aiTrafficCollisionTrigger ~= nil then
     AIVehicleUtil.setCollisionDirection(self.aiTractorDirectionNode, self.aiTrafficCollisionTrigger, colDirX, colDirZ);

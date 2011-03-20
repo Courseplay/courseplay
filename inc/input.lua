@@ -1,13 +1,87 @@
 
 function courseplay:mouseEvent(posX, posY, isDown, isUp, button) 
   if isDown and self.show_hud and self.isEntered then
+    --print(string.format("posX: %f posY: %f",posX,posY))
+    
     for _,button in pairs(self.buttons) do
-      if button.page == page or button.page == nil then
-        if posX > button.overlay.x and posX < button.x2 and posY > button.y and posY < button.y2 then
+      if button.page == self.showHudInfoBase or button.page == nil then
+        
+        if posX > button.x and posX < button.x2 and posY > button.y and posY < button.y2 then
+          local func = button.function_to_call
+          
           -- TODO überhaupt nicht DRY das geht bestimmt irgendwie schöner
-          if button.function_to_call == "switch_hud_page" then
+          if func == "switch_hud_page" then
             courseplay:switch_hud_page(self, button.parameter)
           end
+          
+          
+          if func == "row1" or func == "row2" or func == "row3" then
+            if self.showHudInfoBase == 1 then
+	            if self.play then
+	              if not self.drive then
+	                if func == "row3" then
+	                  courseplay:reset_course(self)
+	                end
+	                
+	                if func == "row1" then
+	                  courseplay:start(self)
+	                end 
+	              else -- not drving          
+	                if self.Waypoints[self.recordnumber].wait and self.wait and func == "row2" then
+	                  self.wait = false
+	                end
+	                
+	                if func == "row1" then
+	                  courseplay:stop(self)
+	                end
+	                
+	                if not self.loaded and func == "row3" then
+	                  self.loaded = true
+	                end 
+	              end -- end not driving
+	            end -- not playing
+	            
+	            if not self.drive  then
+	              if not self.record and (table.getn(self.Waypoints) == 0) then
+	                if func == "row1" then
+	                  courseplay:start_record(self)
+	                end
+	                
+	                if func == "row2" then
+	                  courseplay:select_course(self)
+	                end
+	              elseif not self.record and (table.getn(self.Waypoints) ~= 0) then
+	              	if func == "row2" then
+	              	  courseplay:change_ai_state(self, 1)
+	              	end
+	              else
+	                if func == "row1" then
+	                  courseplay:stop_record(self)
+	                end
+	                
+	                if func == "row2" then
+	                  courseplay:set_waitpoint(self)
+	                end
+	              end
+            	end
+            end
+            
+            if self.showHudInfoBase == 2 then
+              if func == "row2" then
+                courseplay:select_course(self)
+              end
+              
+              if func == "row3" then
+                -- TODO delete coming soon
+              end
+              
+              if func == "row1" and not self.record and (table.getn(self.Waypoints) ~= 0) then
+                courseplay:input_course_name(self)
+              end              
+            end
+            
+          end
+          
         end
       end
     end
