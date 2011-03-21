@@ -40,44 +40,45 @@ working_course_players = {};
 
 
 -- starting & stopping of courseplay
-source(courseplay_path.."inc/start_stop.lua")
+source(courseplay_path.."start_stop.lua")
 
 -- course recording & resetting
-source(courseplay_path.."inc/recording.lua")
+source(courseplay_path.."recording.lua")
 
 
 
 -- drive Modes
-source(courseplay_path.."inc/mode1.lua")
-source(courseplay_path.."inc/mode2.lua")
+source(courseplay_path.."mode1.lua")
+source(courseplay_path.."mode2.lua")
 
 -- course recording & resetting
-source(courseplay_path.."inc/drive.lua")
+source(courseplay_path.."drive.lua")
 
 -- Mouse/Key Managment
-source(courseplay_path.."inc/input.lua")
+source(courseplay_path.."input.lua")
 
 -- Infotext
-source(courseplay_path.."inc/global.lua")
+source(courseplay_path.."global.lua")
 
 -- Distance Check
-source(courseplay_path.."inc/distance.lua")
+source(courseplay_path.."distance.lua")
 
 -- Visual Waypoints
-source(courseplay_path.."inc/signs.lua")
+source(courseplay_path.."signs.lua")
 
 -- Loading/Saving Courses
-source(courseplay_path.."inc/course_management.lua")
+source(courseplay_path.."course_management.lua")
 
 -- loading/unloading tippers
-source(courseplay_path.."inc/tippers.lua")
+source(courseplay_path.."tippers.lua")
 
 -- triggers
-source(courseplay_path.."inc/triggers.lua")
+source(courseplay_path.."triggers.lua")
 
 -- triggers
-source(courseplay_path.."inc/combines.lua")
+source(courseplay_path.."combines.lua")
 
-source(courseplay_path.."inc/debug.lua")
+source(courseplay_path.."debug.lua")
 
-source(courseplay_path.."inc/button.lua")
+source(courseplay_path.."button.lua")
+source(courseplay_path.."hud.lua")

@@ -142,21 +142,22 @@
 	<extraSourceFiles>
         <sourceFile filename="register.lua" />
 		<sourceFile filename="base.lua" />
-		<sourceFile filename="inc/button.lua" />
-		<sourceFile filename="inc/combines.lua" />
-		<sourceFile filename="inc/course_management.lua" />
-		<sourceFile filename="inc/debug.lua" />
-		<sourceFile filename="inc/distance.lua" />
-		<sourceFile filename="inc/drive.lua" />
-		<sourceFile filename="inc/global.lua" />
-		<sourceFile filename="inc/input.lua" />
-		<sourceFile filename="inc/mode1.lua" />
-		<sourceFile filename="inc/mode2.lua" />
-		<sourceFile filename="inc/recording.lua" />
-		<sourceFile filename="inc/signs.lua" />
-		<sourceFile filename="inc/start_stop.lua" />
-		<sourceFile filename="inc/tippers.lua" />
-		<sourceFile filename="inc/triggers.lua" />
+		<sourceFile filename="button.lua" />
+		<sourceFile filename="combines.lua" />
+		<sourceFile filename="course_management.lua" />
+		<sourceFile filename="debug.lua" />
+		<sourceFile filename="distance.lua" />
+		<sourceFile filename="drive.lua" />
+		<sourceFile filename="global.lua" />
+		<sourceFile filename="input.lua" />
+		<sourceFile filename="mode1.lua" />
+		<sourceFile filename="mode2.lua" />
+		<sourceFile filename="recording.lua" />
+		<sourceFile filename="signs.lua" />
+		<sourceFile filename="start_stop.lua" />
+		<sourceFile filename="tippers.lua" />
+		<sourceFile filename="triggers.lua" />
+		<sourceFile filename="hud.lua" />
     </extraSourceFiles>   
 
 	<inputBindings>

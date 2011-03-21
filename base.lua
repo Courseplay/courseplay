@@ -166,8 +166,10 @@ function courseplay:load(xmlFile)
     self.show_hud = false
     
     -- buttons for hud    
-    courseplay:register_button(self, nil, "arrows-left.png", "switch_hud_page", -1, 0.79, 0.410, 0.020, 0.020)
-    courseplay:register_button(self, nil, "arrows-right.png", "switch_hud_page", 1, 0.96, 0.410, 0.020, 0.020)
+    courseplay:register_button(self, nil, "navigate_left.png", "switch_hud_page", -1, 0.79, 0.410, 0.020, 0.020)
+    courseplay:register_button(self, nil, "navigate_right.png", "switch_hud_page", 1, 0.96, 0.410, 0.020, 0.020)
+    
+    courseplay:register_button(self, nil, "delete.png", "close_hud", 1, 0.96, 0.410, 0.020, 0.020)
     
     courseplay:register_button(self, 1, "blank.png", "row1", nil, 0.75, 0.385, 0.32, 0.015)
     courseplay:register_button(self, 1, "blank.png", "row2", nil, 0.75, 0.363, 0.32, 0.015)
