@@ -124,9 +124,10 @@ function courseplay:loadHud(self)
    		 	end
    		end
 	  elseif self.showHudInfoBase == 3 then
-		self.hudpage[3][1][1]= "Abstand zum Drescher:"
+		self.hudpage[3][1][1]= "Abstand zum Drescher (z):"
 	    self.hudpage[3][1][2]= "Start bei%:"
 		self.hudpage[3][1][3]= "Wenderadius:"
+		self.hudpage[3][1][4]= "Abstand zum Drescher (x):"
 		
 		if self.ai_state ~= nil then
 			self.hudpage[3][2][1]= string.format("%.1f", self.combine_offset)
@@ -143,6 +144,12 @@ function courseplay:loadHud(self)
 			self.hudpage[3][2][3]= string.format("%d", self.turn_radius)
 		else
 			self.hudpage[3][2][3]= "---"
+		end	
+		
+		if self.tipper_offset ~= nil then
+		  self.hudpage[3][2][4]= string.format("%.1f", self.tipper_offset)
+		else
+		  self.hudpage[3][2][4]= "---"
 		end	
 
 	  end

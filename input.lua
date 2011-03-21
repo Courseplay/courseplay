@@ -34,6 +34,10 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
             courseplay:change_turn_radius(self, button.parameter)
           end
           
+          if func == "change_tipper_offset" then
+            courseplay:change_tipper_offset(self, button.parameter)
+          end
+          
           if func == "change_required_fill_level" then
             courseplay:change_required_fill_level(self, button.parameter)
           end

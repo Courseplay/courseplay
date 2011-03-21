@@ -152,7 +152,7 @@ function courseplay:unload_combine(self, dt)
   else
     xt, yt, zt = worldToLocal(self.tippers[1].rootNode, x, y, z)
   end
-  local trailer_offset = zt
+  local trailer_offset = zt + self.tipper_offset
   local sl = 3
   
   local colX, colZ = nil, nil

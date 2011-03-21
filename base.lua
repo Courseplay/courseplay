@@ -27,9 +27,9 @@ function courseplay:load(xmlFile)
 	
 	self.lastGui = nil
 	self.currentGui = nil
-	self.input_gui = "inputGui";
+	self.input_gui = "emptyGui";
 	 
-	g_gui:loadGui(Utils.getFilename("../aacourseplay/emptyGui.xml", self.baseDirectory), self.input_gui);
+	
 
 	self.recordnumber = 1
 	self.tmr = 1
@@ -155,6 +155,7 @@ function courseplay:load(xmlFile)
 	self.active_combine = nil
 	self.combine_offset = 8
 	self.chopper_offset = 8
+	self.tipper_offset = 0
 	self.auto_mode = nil
 	
 	self.allow_following = false
@@ -215,6 +216,9 @@ function courseplay:load(xmlFile)
     courseplay:register_button(self, 3, "navigate_minus.png", "change_turn_radius", -1, 0.955, 0.345, 0.010, 0.010)
     courseplay:register_button(self, 3, "navigate_plus.png", "change_turn_radius", 1, 0.97, 0.345, 0.010, 0.010)
     
+    courseplay:register_button(self, 3, "navigate_minus.png", "change_tipper_offset", -0.1, 0.955, 0.324, 0.010, 0.010)
+    courseplay:register_button(self, 3, "navigate_plus.png", "change_tipper_offset", 0.1, 0.97, 0.324, 0.010, 0.010)
+    
 end	
 
 
@@ -264,16 +268,17 @@ end
 -- is been called everey frame
 function courseplay:update(dt)
 
-	if self.user_input_active then
-	  if self.currentGui == nil then
-	    g_gui:showGui(self.input_gui);
-	    self.currentGui = self.input_gui
-	  end
-    else
-      if self.currentGui == self.input_gui then
-        g_gui:showGui("");
-      end
-    end
+	--if self.user_input_active == true then
+	--  if self.currentGui == nil then
+	--    g_gui:loadGui(Utils.getFilename("../aacourseplay/emptyGui.xml", self.baseDirectory), self.input_gui);
+	--    g_gui:showGui(self.input_gui);
+	--    self.currentGui = self.input_gui
+	--  end
+    --else
+    --  if self.currentGui == self.input_gui then
+    --    g_gui:showGui("");
+    --  end
+    --end
     
     if self.user_input_message then
       courseplay:user_input(self);

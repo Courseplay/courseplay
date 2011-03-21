@@ -24,7 +24,20 @@ function courseplay:change_combine_offset(self, change_by)
   if self.combine_offset < 0 then
     self.combine_offset = 0
   end
+  
+  if self.chopper_offset > 0 then
+    self.chopper_offset = self.combine_offset
+  else
+    self.chopper_offset = self.combine_offset * -1
+  end
+  
 end
+
+function courseplay:change_tipper_offset(self, change_by)
+  self.tipper_offset = self.tipper_offset + change_by
+
+end
+
 
 
 function courseplay:change_required_fill_level(self, change_by)
