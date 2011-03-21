@@ -1,5 +1,17 @@
 
-function courseplay:mouseEvent(posX, posY, isDown, isUp, button) 
+function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
+  if isDown and button == 3 and self.isEntered then
+    if self.mouse_enabled then
+      self.mouse_enabled = false
+    else
+      self.mouse_enabled = true	    
+      if not self.show_hud then
+        self.showHudInfoBase = 1
+        self.show_hud = true
+      end
+    end
+    InputBinding.setShowMouseCursor(self.mouse_enabled)
+  end
   if isDown and self.show_hud and self.isEntered then
     --print(string.format("posX: %f posY: %f",posX,posY))
     

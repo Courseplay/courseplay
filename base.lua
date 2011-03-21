@@ -338,16 +338,6 @@ function courseplay:draw()
 	
 -- Hud Control
 	g_currentMission:addHelpButtonText(g_i18n:getText("HudControl"), InputBinding.HudControl);
-	g_currentMission:addHelpButtonText(g_i18n:getText("MouseControl"), InputBinding.MouseControl);
-	
-	if InputBinding.hasEvent(InputBinding.MouseControl) then
-	  if self.mouse_enabled then
-	    self.mouse_enabled = false
-	  else
-	    self.mouse_enabled = true	    
-	  end
-	  InputBinding.setShowMouseCursor(self.mouse_enabled)
-	end
 	
 	-- Hud Control
 	if InputBinding.hasEvent(InputBinding.HudControl) then
