@@ -25,7 +25,11 @@ function courseplay:load(xmlFile)
 	self.locales.CourseMode5 = g_i18n:getText("CourseMode5")
 	
 	
-	
+	self.lastGui = nil
+	self.currentGui = nil
+	self.input_gui = "inputGui";
+	 
+	g_gui:loadGui(Utils.getFilename("../aacourseplay/emptyGui.xml", self.baseDirectory), self.input_gui);
 
 	self.recordnumber = 1
 	self.tmr = 1
@@ -219,17 +223,10 @@ end
 -- displays help text, user_input 	
 function courseplay:draw()
 	courseplay:loadHud(self)
-	
-	
+		
 	if self.dcheck and table.getn(self.Waypoints) > 1 then
 		courseplay:dcheck(self);
 	end
-
-
-	if self.user_input_message then
-		courseplay:user_input(self);
-	end
-
 
 	if self.course_selection_active then
 		courseplay:display_course_selection(self);
@@ -256,6 +253,22 @@ end
 
 -- is been called everey frame
 function courseplay:update(dt)
+
+	if self.user_input_active then
+	  if self.currentGui == nil then
+	    g_gui:showGui(self.input_gui);
+	    self.currentGui = self.input_gui
+	  end
+    else
+      if self.currentGui == self.input_gui then
+        g_gui:showGui("");
+      end
+    end
+    
+    if self.user_input_message then
+      courseplay:user_input(self);
+    end
+
 	-- show visual waypoints only when in vehicle
 	if self.isEntered then
 		courseplay:sign_visibility(self, true)
