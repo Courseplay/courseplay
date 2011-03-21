@@ -26,6 +26,12 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
             courseplay:switch_hud_page(self, button.parameter)
           end
           
+          if func == "close_hud" then
+            self.mouse_enabled = false
+            self.show_hud = false
+            InputBinding.setShowMouseCursor(self.mouse_enabled)
+          end
+          
           
           if func == "row1" or func == "row2" or func == "row3" then
             if self.showHudInfoBase == 1 then

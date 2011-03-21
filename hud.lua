@@ -37,7 +37,6 @@ function courseplay:loadHud(self)
 				if InputBinding.hasEvent(InputBinding.AHInput1) then
 					courseplay:start(self)
 				end
-
 			else
 				if self.Waypoints[self.recordnumber].wait and self.wait then
 	   				self.hudpage[1][1][2]= courseplay:get_locale(self, "CourseWaitpointStart")
@@ -226,4 +225,15 @@ function courseplay:showHud(self)
 	  	end
 	  end
 	end
+end
+
+function courseplay:switch_hud_page(self, change_by)
+  self.showHudInfoBase = self.showHudInfoBase + change_by
+  if self.showHudInfoBase == 0 then  --edit for more sites
+    self.showHudInfoBase = 1
+   end
+
+   if self.showHudInfoBase == 4 then  --edit for more sites
+     self.showHudInfoBase = 3
+   end
 end

@@ -192,7 +192,7 @@ function courseplay:load(xmlFile)
     courseplay:register_button(self, nil, "navigate_left.png", "switch_hud_page", -1, 0.79, 0.410, 0.020, 0.020)
     courseplay:register_button(self, nil, "navigate_right.png", "switch_hud_page", 1, 0.96, 0.410, 0.020, 0.020)
     
-    courseplay:register_button(self, nil, "delete.png", "close_hud", 1, 0.96, 0.410, 0.020, 0.020)
+    courseplay:register_button(self, nil, "delete.png", "close_hud", 1, 0.978, 0.418, 0.016, 0.016)
     
     courseplay:register_button(self, 1, "blank.png", "row1", nil, 0.75, 0.385, 0.32, 0.015)
     courseplay:register_button(self, 1, "blank.png", "row2", nil, 0.75, 0.363, 0.32, 0.015)
@@ -301,16 +301,6 @@ function courseplay:change_ai_state(self, change_by)
   end
 end
 
-function courseplay:switch_hud_page(self, change_by)
-  self.showHudInfoBase = self.showHudInfoBase + change_by
-  if self.showHudInfoBase == 0 then  --edit for more sites
-    self.showHudInfoBase = 1
-  end
-  
-  if self.showHudInfoBase == 4 then  --edit for more sites
-    self.showHudInfoBase = 3
-  end
-end
 
 function courseplay:get_locale(self, key)
   return self.locales[key]
