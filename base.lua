@@ -205,6 +205,16 @@ function courseplay:load(xmlFile)
     courseplay:register_button(self, 2, "blank.png", "row1", nil, 0.75, 0.385, 0.32, 0.015)
     courseplay:register_button(self, 2, "blank.png", "row2", nil, 0.75, 0.363, 0.32, 0.015)
     courseplay:register_button(self, 2, "blank.png", "row3", nil, 0.75, 0.342, 0.32, 0.015)
+    
+    courseplay:register_button(self, 3, "navigate_minus.png", "change_combine_offset", -0.1, 0.955, 0.388, 0.010, 0.010)
+    courseplay:register_button(self, 3, "navigate_plus.png", "change_combine_offset", 0.1, 0.97, 0.388, 0.010, 0.010)
+    
+    courseplay:register_button(self, 3, "navigate_minus.png", "change_required_fill_level", -1, 0.955, 0.366, 0.010, 0.010)
+    courseplay:register_button(self, 3, "navigate_plus.png", "change_required_fill_level", 1, 0.97, 0.366, 0.010, 0.010)
+    
+    courseplay:register_button(self, 3, "navigate_minus.png", "change_turn_radius", -1, 0.955, 0.345, 0.010, 0.010)
+    courseplay:register_button(self, 3, "navigate_plus.png", "change_turn_radius", 1, 0.97, 0.345, 0.010, 0.010)
+    
 end	
 
 
@@ -303,15 +313,6 @@ end;
 
 function courseplay:set_timeout(self, interval)
   self.timeout = self.timer + interval
-end
-
-
-function courseplay:change_ai_state(self, change_by)
-  self.ai_mode = self.ai_mode + change_by
-  
-  if self.ai_mode == 5 or self.ai_mode == 0 then  
-    self.ai_mode = 1    
-  end
 end
 
 

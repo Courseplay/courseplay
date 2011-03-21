@@ -26,6 +26,18 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
             courseplay:switch_hud_page(self, button.parameter)
           end
           
+          if func == "change_combine_offset" then
+            courseplay:change_combine_offset(self, button.parameter)
+          end
+          
+          if func == "change_turn_radius" then
+            courseplay:change_turn_radius(self, button.parameter)
+          end
+          
+          if func == "change_required_fill_level" then
+            courseplay:change_required_fill_level(self, button.parameter)
+          end
+          
           if func == "close_hud" then
             self.mouse_enabled = false
             self.show_hud = false

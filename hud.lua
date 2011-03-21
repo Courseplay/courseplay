@@ -8,10 +8,10 @@ function courseplay:HudPage(self)
     for v,name in pairs(self.hudpage[Page][c]) do
       if c == 1 then
         local yspace = 0.383 - (i * 0.021)
-        renderText(0.763, yspace, 0.021, name);
+        renderText(0.763, yspace, 0.017, name);
       elseif c == 2 then
        local yspace = 0.383 - (i * 0.021)
-       renderText(0.87, yspace, 0.021, name);
+       renderText(0.9, yspace, 0.013, name);
       end
      i = i + 1
     end
@@ -129,7 +129,7 @@ function courseplay:loadHud(self)
 		self.hudpage[3][1][3]= "Wenderadius:"
 		
 		if self.ai_state ~= nil then
-			self.hudpage[3][2][1]= string.format("%d", self.combine_offset)
+			self.hudpage[3][2][1]= string.format("%.1f", self.combine_offset)
 		else
 			self.hudpage[3][2][1]= "---"
 		end
@@ -186,7 +186,7 @@ function courseplay:showHud(self)
 		local i = 0
         for v,name in pairs(self.hudinfo) do
             local yspace = 0.292 - (i * 0.021)
-        	renderText(0.763, yspace, 0.021, name);
+        	renderText(0.763, yspace, 0.017, name);
             i = i + 1
 		end
 
@@ -227,13 +227,3 @@ function courseplay:showHud(self)
 	end
 end
 
-function courseplay:switch_hud_page(self, change_by)
-  self.showHudInfoBase = self.showHudInfoBase + change_by
-  if self.showHudInfoBase == 0 then  --edit for more sites
-    self.showHudInfoBase = 1
-   end
-
-   if self.showHudInfoBase == 4 then  --edit for more sites
-     self.showHudInfoBase = 3
-   end
-end

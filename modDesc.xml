@@ -158,6 +158,7 @@
 		<sourceFile filename="tippers.lua" />
 		<sourceFile filename="triggers.lua" />
 		<sourceFile filename="hud.lua" />
+		<sourceFile filename="settings.lua" />
     </extraSourceFiles>   
 
 	<inputBindings>

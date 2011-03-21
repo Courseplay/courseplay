@@ -82,3 +82,4 @@ source(courseplay_path.."debug.lua")
 
 source(courseplay_path.."button.lua")
 source(courseplay_path.."hud.lua")
+source(courseplay_path.."settings.lua")

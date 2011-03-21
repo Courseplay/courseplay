@@ -96,7 +96,7 @@ function courseplay:handle_mode2(self, dt)
 		
 		  -- chose the combine who needs me the most
 		  for k,combine in pairs(self.reachable_combines) do
-		    if (combine.grainTankFillLevel > (combine.grainTankCapacity*0.5)) or combine.grainTankCapacity == 0 then
+		    if (combine.grainTankFillLevel > (combine.grainTankCapacity*self.required_fill_level_for_follow/100)) or combine.grainTankCapacity == 0 then
 		      if combine.grainTankCapacity == 0 then	        
 		        if combine.courseplayers == nil then
 		          best_combine = combine
