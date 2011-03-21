@@ -93,9 +93,7 @@ function courseplay:load(xmlFile)
 	self.target_y = nil
 	self.target_z = nil
 	
-	self.next_target_x = nil
-	self.next_target_y = nil
-	self.next_target_z = nil
+	self.next_targets = {}
 	
 	-- speed limits
 	self.max_speed_level = nil

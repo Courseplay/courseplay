@@ -46,11 +46,11 @@ function courseplay:handle_mode2(self, dt)
     else
       self.currentTrailerToFill = nil
       if self.ai_state ~= 5 then
-        -- set waypoint 30 meters behind and 30 meters left from combine
+        -- set waypoint 40 meters in front of combine
         if self.active_combine ~= nil and courseplay:distance_to_object(self, self.active_combine) < 10 then          
-          self.target_x, self.target_y, self.target_z = localToWorld(self.active_combine.rootNode, self.chopper_offset*2, 0, -15)          
+          self.target_x, self.target_y, self.target_z = localToWorld(self.active_combine.rootNode, self.chopper_offset*2, 0, 40)          
         else          
-          self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, self.chopper_offset*2, 0, -15)
+          self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, self.chopper_offset*2, 0, 40)
         end
         -- ai_state when waypoint is reached
 		self.ai_state = 5
@@ -253,8 +253,20 @@ function courseplay:unload_combine(self, dt)
 	    -- set waypoint 30 meters behind combine 
 	    --if courseplay:distance_to_object(self, combine) < 30 then
 	    self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, 30, 0, -20)
+	    
+	    -- turn left
 	    self.turn_factor = 5
-	    self.next_target_x, self.next_target_y, self.next_target_z = localToWorld(combine.rootNode, 0, 0, -40)
+	    
+	    -- insert waypoint behind combine
+	    local next_x, next_y, next_z = localToWorld(combine.rootNode, 0, 0, -10)
+	    local next_wp = {x = next_x, y=next_y, z=next_z}
+	    table.insert(self.next_targets, next_wp) 
+	    
+	    -- insert another point behind combine
+	    local next_x, next_y, next_z = localToWorld(combine.rootNode, 0, 0, -30)
+	    local next_wp = {x = next_x, y=next_y, z=next_z}
+	    
+	    table.insert(self.next_targets, next_wp) 
 	    mode = 9
 	    -- ai_state when waypoint is reached
 	    self.next_ai_state = 1
@@ -387,15 +399,13 @@ function courseplay:unload_combine(self, dt)
 	      
 	      if self.next_ai_state == 1 then
 	        -- is there another waypoint to go to?
-	        if self.next_target_x ~= nil then
+	        if table.getn(self.next_targets)> 0 then
 	          mode = 5
-	          self.target_x =  self.next_target_x
-	          self.target_y =  self.next_target_y
-	          self.target_z =  self.next_target_z
+	          self.target_x =  self.next_targets[1].x
+	          self.target_y =  self.next_targets[1].y
+	          self.target_z =  self.next_targets[1].z
 	          
-	          self.next_target_x = nil
-	          self.next_target_y = nil
-	          self.next_target_z = nil
+	          table.remove(self.next_targets, 1)
 	        else
 	          mode = self.next_ai_state 
 	        end
@@ -422,30 +432,39 @@ function courseplay:unload_combine(self, dt)
 	  	
 	  	if distance_to_wp < 2 then
 	  	  allowedToDrive = false
-	  	  if self.next_ai_state == 9 and combine_turning == nil then  	    
-	  	  	self.chopper_offset = self.combine_offset  	  	
-	  	  	
-	  	  	-- only for corn choppers
-	  	  	if combine.grainTankCapacity == 0 then 
-	  	  	  local last_offset = self.chopper_offset	  	    
-	  	      if self.leftFruit > self.rightFruit then
-	  	        self.chopper_offset = self.combine_offset * -1
-	  	      elseif leftFruit == rightFruit then  	        
-	  	        self.chopper_offset = last_offset * -1
-	  	      end
-	  	    end
+	  	  if table.getn(self.next_targets)> 0 then
+	  	  	mode = 5
+	  	    self.target_x =  self.next_targets[1].x
+	  	    self.target_y =  self.next_targets[1].y
+	  	    self.target_z =  self.next_targets[1].z
 	  	    
-	  	    self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, self.chopper_offset*0.5, 0, -10)
-	  	    mode = 9  	    
-	  	    self.next_ai_state = 4
-	  	  elseif self.next_ai_state == 9 and combine_turning then
-	  	    self.info_text = "Warte bis Drescher gewendet hat. "
-	  	  elseif self.next_ai_state == 1  then	 
-	  	    self.sl = 3 	    
-	  	    mode = self.next_ai_state  	    
+	  	    table.remove(self.next_targets, 1)
 	  	  else
-	  	    mode = self.next_ai_state
-	  	  end
+		  	  if self.next_ai_state == 9 and combine_turning == nil then  	    
+		  	  	self.chopper_offset = self.combine_offset  	  	
+		  	  	
+		  	  	-- only for corn choppers
+		  	  	if combine.grainTankCapacity == 0 then 
+		  	  	  local last_offset = self.chopper_offset	  	    
+		  	      if self.leftFruit > self.rightFruit then
+		  	        self.chopper_offset = self.combine_offset * -1
+		  	      elseif leftFruit == rightFruit then  	        
+		  	        self.chopper_offset = last_offset * -1
+		  	      end
+		  	    end
+		  	    
+		  	    self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, self.chopper_offset*0.5, 0, -10)
+		  	    mode = 9  	    
+		  	    self.next_ai_state = 4
+		  	  elseif self.next_ai_state == 9 and combine_turning then
+		  	    self.info_text = "Warte bis Drescher gewendet hat. "
+		  	  elseif self.next_ai_state == 1  then	 
+		  	    self.sl = 3 	    
+		  	    mode = self.next_ai_state  	    
+		  	  else
+		  	    mode = self.next_ai_state
+		  	  end
+		  end
 	  	end  	
 	  end
   end  
