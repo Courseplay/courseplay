@@ -546,10 +546,14 @@ function courseplay:side_to_drive(self, combine, distance)
   local rStartZ = rWidthZ + sideZ*0.7*threshWidth;
   local rHeightX = rStartX + dirX*self.sideWatchDirSize;
   local rHeightZ = rStartZ + dirZ*self.sideWatchDirSize;
+  local leftFruit = 0
+  local rightFruit = 0
   
-  local leftFruit = Utils.getFruitArea(FruitUtil.FRUITTYPE_MAIZE, lStartX, lStartZ, lWidthX, lWidthZ, lHeightX, lHeightZ)
+  for i = 1, FruitUtil.NUM_FRUITTYPES do
+    leftFruit = leftFruit + Utils.getFruitArea(i, lStartX, lStartZ, lWidthX, lWidthZ, lHeightX, lHeightZ)
   
-  local rightFruit = Utils.getFruitArea(FruitUtil.FRUITTYPE_MAIZE, rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ)
+    rightFruit = rightFruit + Utils.getFruitArea(i, rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ)
+  end
   
   print(string.format("fruit:  left %f right %f",leftFruit,rightFruit ))
   
