@@ -246,7 +246,6 @@ function courseplay:unload_combine(self, dt)
 	    self.info_text ="Fahre zum Drescher"
 	  end   
 	  
-	  local pipeOffset = 0	  
 	  sl = 2
 	
 	  if combine_fill_level == 0 then
@@ -265,48 +264,31 @@ function courseplay:unload_combine(self, dt)
       end
             
       local tX, tY, tZ = nil, nil, nil
-      local ttX, ttY, ttZ = localToWorld(combine.pipeRaycastNode, pipeOffset, 0, trailer_offset)
       local lx, ly, lz = nil, nil, nil
       
             
       -- it's a chopper!
-      if combine.grainTankCapacity == 0 then     
-        local offset_to_chopper = self.chopper_offset
-         if combine.turnStage ~= 0 then
-           offset_to_chopper = self.chopper_offset * 1.3
-         end
-        ttX, ttY, ttZ = localToWorld(combine.rootNode, offset_to_chopper, 0, trailer_offset/2)        
+      if combine.grainTankCapacity > 0 and self.chopper_offset < 0 then
+        self.chopper_offset = self.chopper_offset * -1
+      end     
         
-        if mode == 3 then
-      	  tX, tY, tZ = localToWorld(combine.rootNode, self.chopper_offset, 0, trailer_offset)      	  
-      	else
-      	  tX, tY, tZ = localToWorld(combine.rootNode, self.chopper_offset*0.6, 0, -10)
-      	end
-      	
-      	cx, cz = tX, tZ
-      else 
-        
-        -- combines have their pipe on the left side!     
-        if self.chopper_offset < 0 then
-          self.chopper_offset = self.chopper_offset * -1
-        end
-        -- pipe closed
-	    if combine.currentPipeState ~= 2 then
-	      tX, tY, tZ = localToWorld(combine.rootNode, self.chopper_offset, 0, trailer_offset)
-	      cx, cz = tX, tZ
-	      tX, tY, tZ = localToWorld(combine.pipeRaycastNode, trailer_offset, 0, 0)
-	    else
-	      -- pipe opening or open
-          tX, tY, tZ = localToWorld(combine.pipeRaycastNode, pipeOffset, 0, trailer_offset * -2)
-          lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, tX, y, tZ)
-          
-          if lz <= 0.75 then
-            tX, tY, tZ = localToWorld(combine.pipeRaycastNode, pipeOffset, 0, trailer_offset * 2)
-          end      
-          cx, cz = tX, tZ
-          tX, tY, tZ = localToWorld(combine.pipeRaycastNode, pipeOffset, 0, trailer_offset)
-        end        
+      local offset_to_chopper = self.chopper_offset
+      if combine.turnStage ~= 0 then
+        offset_to_chopper = self.chopper_offset * 1.3
       end
+      ttX, ttY, ttZ = localToWorld(combine.rootNode, offset_to_chopper, 0, trailer_offset/2)        
+       
+      if mode == 3 then
+        tX, tY, tZ = localToWorld(combine.rootNode, self.chopper_offset, 0, trailer_offset)      	  
+      else
+        if combine.grainTankCapacity == 0 then
+          tX, tY, tZ = localToWorld(combine.rootNode, self.chopper_offset*0.6, 0, -10)
+        else
+          tX, tY, tZ = localToWorld(combine.rootNode, self.chopper_offset, 0, -10)
+        end
+      end
+      	
+      cx, cz = tX, tZ
   
       lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, ttX, y, ttZ)
   
