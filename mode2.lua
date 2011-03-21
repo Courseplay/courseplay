@@ -251,11 +251,12 @@ function courseplay:unload_combine(self, dt)
 	
 	  if combine_fill_level == 0 then
 	    -- combine empty	    
-	    self.waitTimer = self.timer + 200
 	    -- set waypoint 30 meters behind combine 
 	    --if courseplay:distance_to_object(self, combine) < 30 then
-	    self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, 0, 0, -20)
-	    mode = 5
+	    self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, 30, 0, -20)
+	    self.turn_factor = 5
+	    self.next_target_x, self.next_target_y, self.next_target_z = localToWorld(combine.rootNode, 0, 0, -40)
+	    mode = 9
 	    -- ai_state when waypoint is reached
 	    self.next_ai_state = 1
 	    --else	    
@@ -366,10 +367,10 @@ function courseplay:unload_combine(self, dt)
 	    self.rightFruit, self.leftFruit =  courseplay:side_to_drive(self, combine, -20)
 	    -- set waypoint self.turn_radius meters diagonal vorne links ;)
 	    if self.chopper_offset > 0 then
-	      self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, self.turn_radius, 0, self.turn_radius)
+	      self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, self.turn_radius, 0, self.turn_radius)
 	      self.turn_factor = -5
 	    else
-	      self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, self.turn_radius*-1, 0, self.turn_radius)
+	      self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, self.turn_radius*-1, 0, self.turn_radius)
 	      self.turn_factor = 5
 	    end	    
 	    mode = 5
@@ -401,6 +402,22 @@ function courseplay:unload_combine(self, dt)
 	        self.target_z = nil        
 	        mode = self.next_ai_state    
 	      end
+	      
+	      if self.next_ai_state == 1 then
+	        -- is there another waypoint to go to?
+	        if self.next_target_x ~= nil then
+	          mode = 5
+	          self.target_x =  self.next_target_x
+	          self.target_y =  self.next_target_y
+	          self.target_z =  self.next_target_z
+	          
+	          self.next_target_x = nil
+	          self.next_target_y = nil
+	          self.next_target_z = nil
+	        else
+	          mode = self.next_ai_state 
+	        end
+	      end
 	    else
 	     cx, cy, cz = localToWorld(self.aiTractorDirectionNode, self.turn_factor, 0, 5)
 	     allowedToDrive = true
@@ -425,11 +442,15 @@ function courseplay:unload_combine(self, dt)
 	  	  allowedToDrive = false
 	  	  if self.next_ai_state == 9 and combine_turning == nil then  	    
 	  	  	self.chopper_offset = self.combine_offset  	  	
-	  	  	local last_offset = self.chopper_offset	  	    
-	  	    if self.leftFruit > self.rightFruit then
-	  	      self.chopper_offset = self.combine_offset * -1
-	  	    elseif leftFruit == rightFruit then  	        
-	  	      self.chopper_offset = last_offset * -1
+	  	  	
+	  	  	-- only for corn choppers
+	  	  	if combine.grainTankCapacity == 0 then 
+	  	  	  local last_offset = self.chopper_offset	  	    
+	  	      if self.leftFruit > self.rightFruit then
+	  	        self.chopper_offset = self.combine_offset * -1
+	  	      elseif leftFruit == rightFruit then  	        
+	  	        self.chopper_offset = last_offset * -1
+	  	      end
 	  	    end
 	  	    
 	  	    self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, self.chopper_offset*0.5, 0, -10)
