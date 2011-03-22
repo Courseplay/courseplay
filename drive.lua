@@ -80,7 +80,7 @@ function courseplay:drive(self, dt)
    
   -- stop or hold position
   if not allowedToDrive then  
-     self.motor:setSpeedLevel(0, false);
+     self.motor:setSpeedLevel(0, false);     
      AIVehicleUtil.driveInDirection(self, dt, 30, 0, 0, 28, false, moveForwards, 0, 1)	
 	 
      -- unload active tipper if given

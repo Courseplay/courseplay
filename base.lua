@@ -157,7 +157,7 @@ function courseplay:load(xmlFile)
 	self.active_combine = nil
 	self.combine_offset = 8
 	self.chopper_offset = 8
-	self.tipper_offset = 0
+	self.tipper_offset = 8
 	self.auto_mode = nil
 	
 	self.allow_following = false
@@ -218,8 +218,8 @@ function courseplay:load(xmlFile)
     courseplay:register_button(self, 3, "navigate_minus.png", "change_turn_radius", -1, 0.955, 0.345, 0.010, 0.010)
     courseplay:register_button(self, 3, "navigate_plus.png", "change_turn_radius", 1, 0.97, 0.345, 0.010, 0.010)
     
-    courseplay:register_button(self, 3, "navigate_minus.png", "change_tipper_offset", -0.1, 0.955, 0.324, 0.010, 0.010)
-    courseplay:register_button(self, 3, "navigate_plus.png", "change_tipper_offset", 0.1, 0.97, 0.324, 0.010, 0.010)
+    courseplay:register_button(self, 3, "navigate_minus.png", "change_tipper_offset", -0.5, 0.955, 0.324, 0.010, 0.010)
+    courseplay:register_button(self, 3, "navigate_plus.png", "change_tipper_offset", 0.5, 0.97, 0.324, 0.010, 0.010)
     
 end	
 

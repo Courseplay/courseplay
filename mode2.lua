@@ -153,7 +153,10 @@ function courseplay:unload_combine(self, dt)
     xt, yt, zt = worldToLocal(self.tippers[1].rootNode, x, y, z)
   end
   local trailer_offset = zt + self.tipper_offset
-  local sl = 3
+  
+  if self.sl == nil then
+    self.sl = 3
+  end
   
   local colX, colZ = nil, nil
   
@@ -185,6 +188,8 @@ function courseplay:unload_combine(self, dt)
 	local distance = Utils.vector2Length(x1, z1)
 	
 	if mode == 2 then
+	  self.sl = 2
+	  refSpeed = self.field_speed
 	  courseplay:remove_from_combines_ignore_list(self, combine)
 	  self.info_text ="Fahre hinter Drescher"
 	  if z1 > 0 then
@@ -246,7 +251,8 @@ function courseplay:unload_combine(self, dt)
 	    self.info_text ="Fahre zum Drescher"
 	  end   
 	  
-	  sl = 2
+	  self.sl = 2
+	  refSpeed = self.field_speed
 	
 	  if combine_fill_level == 0 then
 	    -- combine empty	    
@@ -335,15 +341,18 @@ function courseplay:unload_combine(self, dt)
       --print(string.format("lz: %f combine.turnStage %d ", lz, combine.turnStage ))
        
       if combine_speed ~= nil then
-        refSpeed = combine_speed + (combine_speed * lz * 3 / 10) 
+        refSpeed = combine_speed + (combine_speed * lz * 3 / 10)
+        if refSpeed > self.field_speed then
+          refSpeed = self.field_speed
+        end 
       else
         refSpeed = self.field_speed
       end        
-      sl = 2
+      self.sl = 2
       
       if (combine.turnStage ~= 0 and lz < 20) or self.timer < self.drive_slow_timer then
         refSpeed = 1/3600        
-        self.motor.maxRpm[sl] = 200
+        self.motor.maxRpm[self.sl] = 200
         if combine.turnStage ~= 0 then
           self.drive_slow_timer = self.timer + 150
         end
@@ -390,6 +399,8 @@ function courseplay:unload_combine(self, dt)
 	    allowedToDrive = false
 	    local mx, mz = self.target_x, self.target_z
 	    local lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, mx, y, mz)
+	    self.sl = 1	    
+	    refSpeed = self.turn_speed
 	    if lz > 0 and math.abs(lx) < lz * 0.5 then
 	      if self.next_ai_state == 4 and not combine_turning then
 	        self.target_x = nil
@@ -426,7 +437,8 @@ function courseplay:unload_combine(self, dt)
 	  	cy = self.target_y
 	  	cz = self.target_z
 	  	
-	  	sl = 2
+	  	self.sl = 2
+	  	refSpeed = self.field_speed
 			  
 	  	distance_to_wp = courseplay:distance_to_point(self, cx, y, cz)
 	  	
@@ -460,6 +472,7 @@ function courseplay:unload_combine(self, dt)
 		  	    self.info_text = "Warte bis Drescher gewendet hat. "
 		  	  elseif self.next_ai_state == 1  then	 
 		  	    self.sl = 1	    
+		  	    refSpeed = self.turn_speed
 		  	    mode = self.next_ai_state  	    
 		  	  else
 		  	    mode = self.next_ai_state
@@ -478,6 +491,7 @@ function courseplay:unload_combine(self, dt)
   
   if not allowedToDrive then
 	local lx, lz = 0, 1
+	self.motor:setSpeedLevel(0, false);
 	AIVehicleUtil.driveInDirection(self, dt, 30, 0, 0, 28, false, moveForwards, lx, lz)
     return 
   end  
@@ -485,54 +499,50 @@ function courseplay:unload_combine(self, dt)
   local target_x, target_z = AIVehicleUtil.getDriveDirection(self.aiTractorDirectionNode, cx, y, cz)
   
   
-  local maxRpm = self.motor.maxRpm[sl]
+  local maxRpm = self.motor.maxRpm[self.sl]
   local real_speed = self.lastSpeedReal
   
   if refSpeed == nil then
     refSpeed = real_speed
   end
   
-  
-  if mode == 3 or mode == 4 then  
-	if real_speed < refSpeed then	  
-	  maxRpm = maxRpm + 10	  
-	end
-	
-	if real_speed > refSpeed then
-	  maxRpm = maxRpm - 10
-	end
-		  
-	 -- don't drive faster/slower than you can!
-	 if maxRpm > self.orgRpm[3] then
-		  maxRpm = self.orgRpm[3]
-	 else
-	   if maxRpm < self.motor.minRpm then
-  	     maxRpm = self.motor.minRpm
-	   end
-	 end   
-  else      
-    sl = 3
-    maxRpm = self.orgRpm[3]
-  end
+  --print(string.format("sl: %d old RPM %d  real_speed: %d refSpeed: %d ", self.sl, maxRpm, real_speed*3600, refSpeed*3600 ))
   
   
-  if mode == 5 then
-    if self.next_ai_state == 4 then
-      sl = 1
+  if real_speed < refSpeed then
+    if real_speed * 2 < refSpeed then
+      maxRpm = maxRpm + 100
+    elseif real_speed * 1.5 < refSpeed then
+      maxRpm = maxRpm + 50
     else
-      sl = 3    
-    end
+	  maxRpm = maxRpm + 5
+	end	  
+  end
+	
+  if real_speed > refSpeed then
+	if real_speed / 2 > refSpeed then
+	  maxRpm = maxRpm - 100
+    elseif real_speed / 1.5 > refSpeed then
+      maxRpm = maxRpm - 50
+    else
+      maxRpm = maxRpm - 5
+    end	  
   end
   
-  if mode == 9 then
-    sl =1
-  end
+		  
+   -- don't drive faster/slower than you can!
+   if maxRpm > self.orgRpm[3] then
+	  maxRpm = self.orgRpm[3]
+   else
+	 if maxRpm < self.motor.minRpm then
+  	   maxRpm = self.motor.minRpm
+	 end
+   end   
   
-  --print(string.format("Realspeed: %f refSpeed: %f RPM: %d ", real_speed, refSpeed, maxRpm ))
-  self.sl = sl
-  self.motor.maxRpm[sl] = maxRpm
   
-  AIVehicleUtil.driveInDirection(self, dt, 45, 1, 0.8, 25, true, true, target_x, target_z, sl, 0.9)
+  self.motor.maxRpm[self.sl] = maxRpm
+  
+  AIVehicleUtil.driveInDirection(self, dt, 45, 1, 0.8, 25, true, true, target_x, target_z, self.sl, 0.9)
   
   if colX == nil then  
   	courseplay:set_traffc_collision(self, target_x, target_z)
