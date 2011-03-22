@@ -2,13 +2,13 @@
 function courseplay:reset_tools(self)
   self.tippers = {}
   -- are there any tippers?	
-  self.tipper_attached, self.tippers = courseplay:update_tools(self, self.tippers)
+  self.tipper_attached = courseplay:update_tools(self, self)
   self.aiToolsDirty = false;
 end
 
 
 -- update implements to find attached tippers
-function courseplay:update_tools(tractor_or_implement, tippers)    
+function courseplay:update_tools(self, tractor_or_implement)    
   local tipper_attached = false
   -- go through all implements
   for k,implement in pairs(tractor_or_implement.attachedImplements) do
@@ -17,20 +17,16 @@ function courseplay:update_tools(tractor_or_implement, tippers)
     
     if object.allowTipDischarge then
       tipper_attached = true
-      table.insert(tippers, object)
+      table.insert(self.tippers, object)
     end
     
 	-- are there more tippers attached to the current implement?
-    if table.getn(object.attachedImplements) ~= 0 then
-	  
-      local c, f = courseplay:update_tools(object, tippers)
-      if c and f then
-        tippers = f
-      end
+    if table.getn(object.attachedImplements) ~= 0 then	  
+      courseplay:update_tools(self, object)
     end
   end
   if tipper_attached then
-    return true, tippers
+    return true
   end
   return nil
 end

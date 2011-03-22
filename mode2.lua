@@ -152,6 +152,7 @@ function courseplay:unload_combine(self, dt)
   else
     xt, yt, zt = worldToLocal(self.tippers[1].rootNode, x, y, z)
   end
+  
   local trailer_offset = zt + self.tipper_offset
   
   if self.sl == nil then
@@ -251,7 +252,6 @@ function courseplay:unload_combine(self, dt)
 	    self.info_text ="Fahre zum Drescher"
 	  end   
 	  
-	  self.sl = 2
 	  refSpeed = self.field_speed
 	
 	  if combine_fill_level == 0 then
@@ -346,10 +346,7 @@ function courseplay:unload_combine(self, dt)
           refSpeed = self.field_speed
         end 
       else
-        refSpeed = self.turn_speed
-        if mode == 3 then
-          refSpeed = 1/3600  
-        end
+        refSpeed = self.field_speed        
       end        
       self.sl = 2
       
@@ -363,6 +360,10 @@ function courseplay:unload_combine(self, dt)
       
       if combine.movingDirection == 0 then
       	refSpeed = self.field_speed * 1.5
+      	if mode == 3 and dod < 10 then
+      	  --print("near wating combine")
+      	  refSpeed = 1/3600  
+      	end
       end
       
     end	 -- end mode 3 or 4
@@ -391,7 +392,7 @@ function courseplay:unload_combine(self, dt)
 	      self.next_ai_state = 2
 	    else
 	      -- corn chopper	    
-	      self.rightFruit, self.leftFruit =  courseplay:side_to_drive(self, combine, -20)
+	      self.leftFruit, self.rightFruit =  courseplay:side_to_drive(self, combine, -20)
 	      -- set waypoint self.turn_radius meters diagonal vorne links ;)
 	      if self.chopper_offset > 0 then
 	        self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, self.turn_radius, 0, self.turn_radius)
@@ -467,8 +468,8 @@ function courseplay:unload_combine(self, dt)
 			  
 	  	distance_to_wp = courseplay:distance_to_point(self, cx, y, cz)
 	  	
-	  	if distance_to_wp < 6 then
-	  	  refSpeed = 1/3600
+	  	if distance_to_wp < 10 then
+	  	  refSpeed = 3/3600
 	  	end
 	  	
 	  	if distance_to_wp < 2 then
@@ -489,7 +490,7 @@ function courseplay:unload_combine(self, dt)
 		  	  	  local last_offset = self.chopper_offset	  	    
 		  	      if self.leftFruit > self.rightFruit then
 		  	        self.chopper_offset = self.combine_offset * -1
-		  	      elseif leftFruit == rightFruit then  	        
+		  	      elseif self.leftFruit == self.rightFruit then      
 		  	        self.chopper_offset = last_offset * -1
 		  	      end
 		  	    end
@@ -536,6 +537,7 @@ function courseplay:unload_combine(self, dt)
   end
   
   --print(string.format("sl: %d old RPM %d  real_speed: %d refSpeed: %d ", self.sl, maxRpm, real_speed*3600, refSpeed*3600 ))
+  
   
   
   if real_speed < refSpeed then
@@ -616,7 +618,7 @@ function courseplay:side_to_drive(self, combine, distance)
     rightFruit = rightFruit + Utils.getFruitArea(i, rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ)
   end
   
-  print(string.format("fruit:  left %f right %f",leftFruit,rightFruit ))
+  --print(string.format("fruit:  left %f right %f",leftFruit,rightFruit ))
   
   return leftFruit,rightFruit
 end
