@@ -12,8 +12,8 @@ function courseplay:switch_hud_page(self, change_by)
     self.showHudInfoBase = 1
    end
 
-   if self.showHudInfoBase == 4 then  --edit for more sites
-     self.showHudInfoBase = 3
+   if self.showHudInfoBase == 5 then  --edit for more sites
+     self.showHudInfoBase = 4
    end
 end
 

@@ -346,7 +346,7 @@ function courseplay:unload_combine(self, dt)
           refSpeed = self.field_speed
         end 
       else
-        refSpeed = self.field_speed
+        refSpeed = self.turn_speed
       end        
       self.sl = 2
       
@@ -366,20 +366,42 @@ function courseplay:unload_combine(self, dt)
     
     if combine_turning and distance < 30 then
 	  if mode == 3 or mode == 4 then
-	    -- combine empty	    
-	    self.rightFruit, self.leftFruit =  courseplay:side_to_drive(self, combine, -20)
-	    -- set waypoint self.turn_radius meters diagonal vorne links ;)
-	    if self.chopper_offset > 0 then
-	      self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, self.turn_radius, 0, self.turn_radius)
-	      self.turn_factor = -5
-	    else
-	      self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, self.turn_radius*-1, 0, self.turn_radius)
+	    if combine.grainTankCapacity > 0 then
+	      -- normal combine
+	      self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, 30, 0, -20)
+	    
+	      -- turn left
 	      self.turn_factor = 5
-	    end	    
-	    mode = 5
-	    --self.waitTimer = self.timer + 350
-	    -- ai_state when waypoint is reached
-	    self.next_ai_state = 9
+	      
+	      -- insert waypoint behind combine
+	      local next_x, next_y, next_z = localToWorld(combine.rootNode, 0, 0, -10)
+	      local next_wp = {x = next_x, y=next_y, z=next_z}
+	      table.insert(self.next_targets, next_wp) 
+	      
+	      -- insert another point behind combine
+	      local next_x, next_y, next_z = localToWorld(combine.rootNode, 0, 0, -30)
+	      local next_wp = {x = next_x, y=next_y, z=next_z}
+	      
+	      table.insert(self.next_targets, next_wp) 
+	      mode = 9
+	      
+	      self.next_ai_state = 2
+	    else
+	      -- corn chopper	    
+	      self.rightFruit, self.leftFruit =  courseplay:side_to_drive(self, combine, -20)
+	      -- set waypoint self.turn_radius meters diagonal vorne links ;)
+	      if self.chopper_offset > 0 then
+	        self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, self.turn_radius, 0, self.turn_radius)
+	        self.turn_factor = -5
+	      else
+	        self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, self.turn_radius*-1, 0, self.turn_radius)
+	        self.turn_factor = 5
+	      end	    
+	      mode = 5
+	      --self.waitTimer = self.timer + 350
+	      -- ai_state when waypoint is reached
+	      self.next_ai_state = 9
+	    end
 	  else
 	    -- just wait until combine has turned
 	    allowedToDrive = false
@@ -408,7 +430,7 @@ function courseplay:unload_combine(self, dt)
 	        mode = self.next_ai_state    
 	      end
 	      
-	      if self.next_ai_state == 1 then
+	      if self.next_ai_state == 1 or self.next_ai_state == 2 then
 	        -- is there another waypoint to go to?
 	        if table.getn(self.next_targets)> 0 then
 	          mode = 5
