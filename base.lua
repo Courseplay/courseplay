@@ -191,6 +191,9 @@ function courseplay:load(xmlFile)
 	self.hudpage[3] = {}
     self.hudpage[3][1]  = {}
     self.hudpage[3][2]  = {}
+    self.hudpage[4] = {}
+    self.hudpage[4][1]  = {}
+    self.hudpage[4][2]  = {}
     self.hudinfo = {}
     
     self.show_hud = false
@@ -212,14 +215,24 @@ function courseplay:load(xmlFile)
     courseplay:register_button(self, 3, "navigate_minus.png", "change_combine_offset", -0.1, 0.955, 0.388, 0.010, 0.010)
     courseplay:register_button(self, 3, "navigate_plus.png", "change_combine_offset", 0.1, 0.97, 0.388, 0.010, 0.010)
     
-    courseplay:register_button(self, 3, "navigate_minus.png", "change_required_fill_level", -1, 0.955, 0.366, 0.010, 0.010)
-    courseplay:register_button(self, 3, "navigate_plus.png", "change_required_fill_level", 1, 0.97, 0.366, 0.010, 0.010)
+    courseplay:register_button(self, 3, "navigate_minus.png", "change_required_fill_level", -5, 0.955, 0.366, 0.010, 0.010)
+    courseplay:register_button(self, 3, "navigate_plus.png", "change_required_fill_level", 5, 0.97, 0.366, 0.010, 0.010)
     
     courseplay:register_button(self, 3, "navigate_minus.png", "change_turn_radius", -1, 0.955, 0.345, 0.010, 0.010)
     courseplay:register_button(self, 3, "navigate_plus.png", "change_turn_radius", 1, 0.97, 0.345, 0.010, 0.010)
     
     courseplay:register_button(self, 3, "navigate_minus.png", "change_tipper_offset", -0.5, 0.955, 0.324, 0.010, 0.010)
     courseplay:register_button(self, 3, "navigate_plus.png", "change_tipper_offset", 0.5, 0.97, 0.324, 0.010, 0.010)
+    
+    
+    courseplay:register_button(self, 4, "navigate_minus.png", "change_turn_speed", -1, 0.955, 0.388, 0.010, 0.010)
+    courseplay:register_button(self, 4, "navigate_plus.png", "change_turn_speed", 1, 0.97, 0.388, 0.010, 0.010)
+    
+    courseplay:register_button(self, 4, "navigate_minus.png", "change_field_speed", -1, 0.955, 0.366, 0.010, 0.010)
+    courseplay:register_button(self, 4, "navigate_plus.png", "change_field_speed", 1, 0.97, 0.366, 0.010, 0.010)
+    
+    courseplay:register_button(self, 4, "navigate_minus.png", "change_max_speed", -1, 0.955, 0.345, 0.010, 0.010)
+    courseplay:register_button(self, 4, "navigate_plus.png", "change_max_speed", 1, 0.97, 0.345, 0.010, 0.010)
     
 end	
 

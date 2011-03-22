@@ -42,6 +42,18 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
             courseplay:change_required_fill_level(self, button.parameter)
           end
           
+          if func == "change_turn_speed" then
+            courseplay:change_turn_speed(self, button.parameter)
+          end
+          
+          if func == "change_field_speed" then
+            courseplay:change_field_speed(self, button.parameter)
+          end
+          
+          if func == "change_max_speed" then
+            courseplay:change_max_speed(self, button.parameter)
+          end
+          
           if func == "close_hud" then
             self.mouse_enabled = false
             self.show_hud = false

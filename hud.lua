@@ -151,7 +151,15 @@ function courseplay:loadHud(self)
 		else
 		  self.hudpage[3][2][4]= "---"
 		end	
-
+	  
+	  elseif self.showHudInfoBase == 4 then
+	    self.hudpage[4][1][1]= "Wendemanöver:"
+	    self.hudpage[4][1][2]= "Auf dem Feld:"
+	    self.hudpage[4][1][3]= "Auf Straße:"
+	    
+	    self.hudpage[4][2][1]= string.format("%d", self.turn_speed*3600)
+	    self.hudpage[4][2][2]= string.format("%d", self.field_speed*3600)
+	    self.hudpage[4][2][3]= string.format("%d", self.max_speed*3600)
 	  end
 	end-- end if show_hud
 end
@@ -208,6 +216,9 @@ function courseplay:showHud(self)
 	    elseif self.showHudInfoBase == 3 then
 	      	renderText(0.825, 0.408, 0.021, string.format("Einstellungen"));
 			courseplay:HudPage(self);
+		elseif self.showHudInfoBase == 4 then
+		    renderText(0.825, 0.408, 0.021, string.format("Geschwindigkeiten"));
+		    courseplay:HudPage(self);
 		end
 	elseif self.play then
 	  -- hud not displayed - display start stop
