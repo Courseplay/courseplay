@@ -53,7 +53,9 @@ function courseplay:load_tippers(self)
 	  if current_tipper.fillLevel == current_tipper.capacity then    
 		if table.getn(self.tippers) > self.currentTrailerToFill then			
 			local tipper_x, tipper_y, tipper_z = getWorldTranslation(self.tippers[self.currentTrailerToFill].rootNode)			
+			
 			self.lastTrailerToFillDistance = courseplay:distance(cx, cz, tipper_x, tipper_z)
+			
 			self.currentTrailerToFill = self.currentTrailerToFill + 1
 		else
 			self.currentTrailerToFill = nil
@@ -64,6 +66,7 @@ function courseplay:load_tippers(self)
   
   else
     local tipper_x, tipper_y, tipper_z = getWorldTranslation(self.tippers[self.currentTrailerToFill].rootNode)
+    
 	local distance = courseplay:distance(cx, cz, tipper_x, tipper_z)
 
 	if distance > self.lastTrailerToFillDistance and self.lastTrailerToFillDistance ~= nil then	
@@ -102,7 +105,7 @@ function courseplay:unload_tippers(self)
     local trigger_id = self.currentTipTrigger.triggerId
 	    
     if self.currentTipTrigger.specialTriggerId ~= nil then
-    trigger_id = self.currentTipTrigger.specialTriggerId
+      trigger_id = self.currentTipTrigger.specialTriggerId
     end
     local trigger_x, trigger_y, trigger_z = getWorldTranslation(trigger_id)
     

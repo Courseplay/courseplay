@@ -6,7 +6,7 @@ function courseplay:start(self)
 	self.drive  = false
 	self.record = false
 	
-	if self.recordnumber == nil then
+	if self.recordnumber < 1 then
 	  self.recordnumber = 1
 	end
 	
@@ -28,10 +28,6 @@ function courseplay:start(self)
 	--if dist < 15 then
 		-- hire a helper
 		self:hire()
-		
-		if self.recordnumber == nil then
-			self.recordnumber = 1
-		end
 		-- ok i am near the waypoint, let's go
 		self.checkSpeedLimit = false
 		self.drive  = true

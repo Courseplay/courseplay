@@ -27,7 +27,10 @@ function courseplay:drive(self, dt)
   end
   cx ,cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
   -- distance to waypoint
+  
+  
   self.dist = courseplay:distance(cx ,cz ,ctx ,ctz)
+ 
   -- what about our tippers?
   local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
   local fill_level = nil

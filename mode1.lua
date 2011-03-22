@@ -36,14 +36,14 @@ function courseplay:handle_mode1(self)
 	    
 		local trigger_x, trigger_y, trigger_z = getWorldTranslation(trigger_id)
 		local ctx,cty,ctz = getWorldTranslation(self.rootNode);
-		local distance_to_trigger = courseplay:distance(ctx ,ctz ,trigger_x ,trigger_z)
+		local distance_to_trigger = courseplay:distance(ctx ,ctz ,trigger_x ,trigger_z)		
 		if distance_to_trigger > 60 then
 			self.currentTipTrigger = nil
 		end
 	end
 
 	-- tipper is not empty and tractor reaches TipTrigger
-	if tipper_fill_level > 0 and self.currentTipTrigger ~= nil then		
+	if tipper_fill_level > 0 and self.currentTipTrigger ~= nil and self.loaded and self.recordnumber > 3  then		
 		self.max_speed_level = 1
 		allowedToDrive, active_tipper = courseplay:unload_tippers(self)
 		self.info_text = "Abladestelle erreicht"		
