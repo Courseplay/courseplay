@@ -347,6 +347,9 @@ function courseplay:unload_combine(self, dt)
         end 
       else
         refSpeed = self.turn_speed
+        if mode == 3 then
+          refSpeed = 1/3600  
+        end
       end        
       self.sl = 2
       
@@ -463,6 +466,10 @@ function courseplay:unload_combine(self, dt)
 	  	refSpeed = self.field_speed
 			  
 	  	distance_to_wp = courseplay:distance_to_point(self, cx, y, cz)
+	  	
+	  	if distance_to_wp < 6 then
+	  	  refSpeed = 1/3600
+	  	end
 	  	
 	  	if distance_to_wp < 2 then
 	  	  allowedToDrive = false
