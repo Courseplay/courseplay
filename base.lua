@@ -164,7 +164,7 @@ function courseplay:load(xmlFile)
 	self.required_fill_level_for_follow = 50
 	
 	self.turn_factor = nil
-	self.turn_radius = 17
+	self.turn_radius = 24
 	
 	-- loading saved courses from xml
 	courseplay:load_courses(self)
