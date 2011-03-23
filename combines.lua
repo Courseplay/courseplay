@@ -70,6 +70,10 @@ end
 
 
 function courseplay:unregister_at_combine(self, combine)
+  if self.active_combine == nil or combine == nil then
+    return true
+  end
+  
   courseplay:remove_from_combines_ignore_list(self, combine)
   table.remove(combine.courseplayers, self.courseplay_position)
   
@@ -81,6 +85,7 @@ function courseplay:unregister_at_combine(self, combine)
   self.allow_follwing = false
   self.courseplay_position = nil
   self.active_combine = nil  
+  self.ai_state = 1
   return true
 end
 

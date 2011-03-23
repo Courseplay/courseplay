@@ -54,6 +54,7 @@ function courseplay:handle_mode2(self, dt)
         end
         -- ai_state when waypoint is reached
 		self.ai_state = 5
+		courseplay:unregister_at_combine(self, self.active_combine)
         self.next_ai_state = 8
       end
     end
@@ -395,10 +396,10 @@ function courseplay:unload_combine(self, dt)
 	      self.leftFruit, self.rightFruit =  courseplay:side_to_drive(self, combine, -20)
 	      -- set waypoint self.turn_radius meters diagonal vorne links ;)
 	      if self.chopper_offset > 0 then
-	        self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, self.turn_radius, 0, self.turn_radius)
+	        self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, self.turn_radius, 0, self.turn_radius)
 	        self.turn_factor = -5
 	      else
-	        self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, self.turn_radius*-1, 0, self.turn_radius)
+	        self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, self.turn_radius*-1, 0, self.turn_radius)
 	        self.turn_factor = 5
 	      end	    
 	      mode = 5

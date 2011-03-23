@@ -7,10 +7,10 @@ function courseplay:HudPage(self)
   for c=1, 2, 1 do
     for v,name in pairs(self.hudpage[Page][c]) do
       if c == 1 then
-        local yspace = 0.383 - (i * 0.021)
+        local yspace = 0.383 - ((v-1) * 0.021)
         renderText(0.763, yspace, 0.017, name);
       elseif c == 2 then
-       local yspace = 0.383 - (i * 0.021)
+       local yspace = 0.383 - ((v-1) * 0.021)
        renderText(0.9, yspace, 0.013, name);
       end
      i = i + 1
@@ -27,8 +27,8 @@ function courseplay:loadHud(self)
 	  if self.showHudInfoBase <= 1 then
         if self.play then
 			if not self.drive then
-			    self.hudpage[1][1][4]= courseplay:get_locale(self, "CourseReset")
-				self.hudpage[1][2][4]= InputBinding.getKeyNamesOfDigitalAction(InputBinding.AHInput3)
+			    self.hudpage[1][1][3]= courseplay:get_locale(self, "CourseReset")
+				self.hudpage[1][2][3]= InputBinding.getKeyNamesOfDigitalAction(InputBinding.AHInput3)
 				if InputBinding.hasEvent(InputBinding.AHInput3) then
 					courseplay:reset_course(self)
 				end
@@ -78,8 +78,8 @@ function courseplay:loadHud(self)
 	
 					
 			elseif not self.record and (table.getn(self.Waypoints) ~= 0) then	
-			    self.hudpage[1][1][3]= courseplay:get_locale(self, "ModusSet")
-	            self.hudpage[1][2][3]= InputBinding.getKeyNamesOfDigitalAction(InputBinding.AHInput2)
+			    self.hudpage[1][1][2]= courseplay:get_locale(self, "ModusSet")
+	            self.hudpage[1][2][2]= InputBinding.getKeyNamesOfDigitalAction(InputBinding.AHInput2)
 
 				if InputBinding.hasEvent(InputBinding.AHInput2) then
 				    courseplay:change_ai_state(self, 1)					

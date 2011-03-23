@@ -27,9 +27,7 @@ function courseplay:load(xmlFile)
 	
 	self.lastGui = nil
 	self.currentGui = nil
-	self.input_gui = "emptyGui";
-	 
-	
+	self.input_gui = "emptyGui";	
 
 	self.recordnumber = 1
 	self.tmr = 1
@@ -164,7 +162,7 @@ function courseplay:load(xmlFile)
 	self.required_fill_level_for_follow = 50
 	
 	self.turn_factor = nil
-	self.turn_radius = 24
+	self.turn_radius = 17
 	
 	-- loading saved courses from xml
 	courseplay:load_courses(self)
