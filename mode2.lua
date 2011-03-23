@@ -54,7 +54,6 @@ function courseplay:handle_mode2(self, dt)
         end
         -- ai_state when waypoint is reached
 		self.ai_state = 5
-		courseplay:unregister_at_combine(self, self.active_combine)
         self.next_ai_state = 8
       end
     end
