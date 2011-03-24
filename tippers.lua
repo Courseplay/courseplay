@@ -1,9 +1,13 @@
 
+function courseplay:detachImplement(implementIndex)
+  self.tools_dirty = true
+end
+
 function courseplay:reset_tools(self)
   self.tippers = {}
   -- are there any tippers?	
   self.tipper_attached = courseplay:update_tools(self, self)
-  self.aiToolsDirty = false;
+  self.tools_dirty = false;
 end
 
 

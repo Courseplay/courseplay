@@ -99,6 +99,8 @@ function courseplay:load(xmlFile)
 	self.turn_speed = 10 / 3600
 	self.field_speed = 24 / 3600
 	
+	self.tools_dirty = false
+	
 	self.orgRpm = nil
 	
 	-- traffic collision	
@@ -280,7 +282,11 @@ end
 
 -- is been called everey frame
 function courseplay:update(dt)
-
+	--attached or detached implement?
+	if self.tools_dirty then
+	  courseplay:reset_tools(self)
+	end
+	
 	--if self.user_input_active == true then
 	--  if self.currentGui == nil then
 	--    g_gui:loadGui(Utils.getFilename("../aacourseplay/emptyGui.xml", self.baseDirectory), self.input_gui);
@@ -308,12 +314,7 @@ function courseplay:update(dt)
 	if self.record then 
 		courseplay:record(self);
 	end
-	
-	--attached or detached implement?
-	if self.aiToolsDirty then
-	  courseplay:reset_tools(self)
-	end
-	
+		
 	-- we are in drive mode
 	if self.drive then
 		courseplay:drive(self, dt);
