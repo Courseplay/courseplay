@@ -2,41 +2,43 @@ function courseplay.prerequisitesPresent(specializations)
 	return true;
 end
 
--- from switcher.lua - edmund
-function courseplay:loadMap(name)
-  local aNameSearch = {"vehicle.name." .. g_languageShort, "vehicle.name.en", "vehicle.name", "vehicle#type"};
-
-  if Steerable.load ~= nil then
-    local orgSteerableLoad = Steerable.load
-
-    Steerable.load = function(self,xmlFile)
-    orgSteerableLoad(self,xmlFile)
-
-    for nIndex,sXMLPath in pairs(aNameSearch) do 
-      self.name = getXMLString(xmlFile, sXMLPath);
-      if self.name ~= nil then break; end;
-    end;
-    if self.name == nil then self.name = g_i18n:getText("UNKNOWN") end;
-    end;
-  end;
-
-  if Attachable.load ~= nil then
-     local orgAttachableLoad = Attachable.load
-
-     Attachable.load = function(self,xmlFile)
-     orgAttachableLoad(self,xmlFile)
-
-     for nIndex,sXMLPath in pairs(aNameSearch) do 
-       self.name = getXMLString(xmlFile, sXMLPath);
-       if self.name ~= nil then break; end;
-     end;
-    if self.name == nil then self.name = g_i18n:getText("UNKNOWN") end;
-    end
-  end;
-end;
 
 function courseplay:load(xmlFile)
 	self.locales = {}
+	
+	if not steerable_overwritten then
+	  local aNameSearch = {"vehicle.name." .. g_languageShort, "vehicle.name.en", "vehicle.name", "vehicle#type"};
+	  steerable_overwritten = true
+	  if Steerable.load ~= nil then
+		local orgSteerableLoad = Steerable.load
+		print("overwriting steerable.load")
+		Steerable.load = function(self,xmlFile)
+		orgSteerableLoad(self,xmlFile)
+
+		for nIndex,sXMLPath in pairs(aNameSearch) do 
+		  self.name = getXMLString(xmlFile, sXMLPath);
+		  if self.name ~= nil then break; end;
+		end;
+		if self.name == nil then self.name = g_i18n:getText("UNKNOWN") end;
+		end;
+	  end;
+
+	  if Attachable.load ~= nil then
+		print("overwriting Attachable.load")
+		 local orgAttachableLoad = Attachable.load
+
+		 Attachable.load = function(self,xmlFile)
+		 orgAttachableLoad(self,xmlFile)
+
+		 for nIndex,sXMLPath in pairs(aNameSearch) do 
+		   self.name = getXMLString(xmlFile, sXMLPath);
+		   if self.name ~= nil then break; end;
+		 end;
+		if self.name == nil then self.name = g_i18n:getText("UNKNOWN") end;
+		end
+	  end;
+	
+	end
 	
 	self.locales.HudControl = g_i18n:getText("HudControl")
 	self.locales.CourseReset = g_i18n:getText("CourseReset")

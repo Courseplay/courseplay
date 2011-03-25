@@ -136,6 +136,11 @@
 		<en>AH Input 4</en>
 		<de>AH Taste 4</de>				
 	</text>
+	
+	<text name="UNKNOWN">
+      <en>unknown</en>
+      <de>unbekannt</de>
+    </text>
 
     </l10n>
 
