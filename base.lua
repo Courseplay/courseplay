@@ -171,7 +171,6 @@ function courseplay:load(xmlFile)
 	self.selected_course_number = 0
 	self.course_Del = false
 	
-	print("initialized courseplay for " .. self.name)
 	
 	-- combines
 	
