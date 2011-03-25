@@ -37,7 +37,15 @@ function courseplay:loadHud(self)
 					courseplay:start(self)
 				end
 			else
-				if self.Waypoints[self.recordnumber].wait and self.wait then
+				local last_recordnumber = nil
+				
+			    if self.recordnumber > 1 then
+			      last_recordnumber = self.recordnumber - 1    
+			    else
+			      last_recordnumber = 1
+			    end
+			    
+				if self.Waypoints[last_recordnumber].wait and self.wait then
 	   				self.hudpage[1][1][2]= courseplay:get_locale(self, "CourseWaitpointStart")
 					self.hudpage[1][2][2]= InputBinding.getKeyNamesOfDigitalAction(InputBinding.AHInput2)
 	   				if InputBinding.hasEvent(InputBinding.AHInput2) then

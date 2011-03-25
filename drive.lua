@@ -50,8 +50,15 @@ function courseplay:drive(self, dt)
   -- the tipper that is currently loaded/unloaded
   local active_tipper = nil
   
+  local last_recordnumber = nil
   
-   if self.Waypoints[self.recordnumber].wait and self.wait then
+  if self.recordnumber > 1 then
+    last_recordnumber = self.recordnumber - 1    
+  else
+    last_recordnumber = 1
+  end
+  
+   if self.Waypoints[last_recordnumber].wait and self.wait then
      if self.ai_mode == 3 then
        self.global_info_text = 'hat Überladepunkt erreicht.'
      else
@@ -122,6 +129,11 @@ function courseplay:drive(self, dt)
 	  local ref_speed = nil
 	  local real_speed = self.lastSpeedReal
 	  
+	  -- slow down before waitpoint	  
+	  if self.recordnumber < self.maxnumber-3 and (self.Waypoints[self.recordnumber+1].wait or self.Waypoints[self.recordnumber+2].wait) then
+	    self.sl = 1
+	  end
+	  
 	  if self.sl == 1 then
 	    ref_speed = self.turn_speed
 	  end
@@ -134,10 +146,6 @@ function courseplay:drive(self, dt)
 	  	ref_speed = self.max_speed
 	  end	  
 	  
-	  -- slow down before waitpoint	  
-	  if self.recordnumber < self.maxnumber-2 and self.Waypoints[self.recordnumber+1].wait then
-	  	ref_speed = self.turn_speed
-	  end
 	  	  
 	  local maxRpm = self.motor.maxRpm[self.sl]
 	  
