@@ -31,7 +31,7 @@ function courseplay:handle_mode2(self, dt)
   	self.ai_state = 1
   	self.loaded = true
   	return false
-  end  
+  end
   
   -- support multiple tippers  
   if self.currentTrailerToFill == nil then

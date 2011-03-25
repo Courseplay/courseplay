@@ -1,21 +1,28 @@
-
-
--- find combines on the same field (texture)
-function courseplay:update_combines(self)
-  --print("updating combines")
-  
+function courseplay:find_combines(self)
   -- reseting reachable combines
-  self.reachable_combines = {}
-  
   local found_combines = {}
   -- go through all vehicles and find filter all combines
   local all_vehicles = g_currentMission.vehicles      
   for k,vehicle in pairs(all_vehicles) do
-  	-- combines should have this trigger
-  	-- trying to identify combines
-  	if vehicle.onCutterTrafficCollisionTrigger ~= nil then
+    -- combines should have this trigger
+    -- trying to identify combines
+    if vehicle.onCutterTrafficCollisionTrigger ~= nil then
       table.insert(found_combines, vehicle)
-  	end     
+    end     
+  end
+  
+  return found_combines
+end
+
+
+-- find combines on the same field (texture)
+function courseplay:update_combines(self)
+  
+  self.reachable_combines = {}
+  
+  if not self.search_combine and self.saved_combine then
+  	table.insert(self.reachable_combines, self.saved_combine)
+    return
   end
   
   --print(string.format("combines total: %d ", table.getn(found_combines) ))
@@ -24,6 +31,8 @@ function courseplay:update_combines(self)
   local hx, hy, hz = localToWorld(self.aiTractorDirectionNode, -2, 0, 0)
   local lx, ly, lz = nil, nil, nil
   local terrain = g_currentMission.terrainDetailId	
+  
+  local found_combines = courseplay:find_combines(self)
     
   -- go throuh found
   for k,combine in pairs(found_combines) do

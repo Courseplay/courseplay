@@ -2,6 +2,39 @@ function courseplay.prerequisitesPresent(specializations)
 	return true;
 end
 
+-- from switcher.lua - edmund
+function courseplay:loadMap(name)
+  local aNameSearch = {"vehicle.name." .. g_languageShort, "vehicle.name.en", "vehicle.name", "vehicle#type"};
+
+  if Steerable.load ~= nil then
+    local orgSteerableLoad = Steerable.load
+
+    Steerable.load = function(self,xmlFile)
+    orgSteerableLoad(self,xmlFile)
+
+    for nIndex,sXMLPath in pairs(aNameSearch) do 
+      self.name = getXMLString(xmlFile, sXMLPath);
+      if self.name ~= nil then break; end;
+    end;
+    if self.name == nil then self.name = g_i18n:getText("UNKNOWN") end;
+    end;
+  end;
+
+  if Attachable.load ~= nil then
+     local orgAttachableLoad = Attachable.load
+
+     Attachable.load = function(self,xmlFile)
+     orgAttachableLoad(self,xmlFile)
+
+     for nIndex,sXMLPath in pairs(aNameSearch) do 
+       self.name = getXMLString(xmlFile, sXMLPath);
+       if self.name ~= nil then break; end;
+     end;
+    if self.name == nil then self.name = g_i18n:getText("UNKNOWN") end;
+    end
+  end;
+end;
+
 function courseplay:load(xmlFile)
 	self.locales = {}
 	
@@ -23,7 +56,6 @@ function courseplay:load(xmlFile)
 	self.locales.CourseMode3 = g_i18n:getText("CourseMode3")
 	self.locales.CourseMode4 = g_i18n:getText("CourseMode4")
 	self.locales.CourseMode5 = g_i18n:getText("CourseMode5")
-	
 	
 	self.lastGui = nil
 	self.currentGui = nil
@@ -139,16 +171,6 @@ function courseplay:load(xmlFile)
 	self.selected_course_number = 0
 	self.course_Del = false
 	
-	-- name search
-	local aNameSearch = {"vehicle.name." .. g_languageShort, "vehicle.name.de", "vehicle.name.en", "vehicle.name", "vehicle#type"};
-	
-	for nIndex,sXMLPath in pairs(aNameSearch) do 
-		self.name = getXMLString(xmlFile, sXMLPath);
-		if self.name ~= nil then 
-		break; 
-		end;
-	end;
-	
 	print("initialized courseplay for " .. self.name)
 	
 	-- combines
@@ -194,9 +216,15 @@ function courseplay:load(xmlFile)
     self.hudpage[4] = {}
     self.hudpage[4][1]  = {}
     self.hudpage[4][2]  = {}
+    self.hudpage[5] = {}
+    self.hudpage[5][1]  = {}
+    self.hudpage[5][2]  = {}
     self.hudinfo = {}
     
     self.show_hud = false
+    
+    self.search_combine = true
+    self.saved_combine  = nil
     
     -- buttons for hud    
     courseplay:register_button(self, nil, "navigate_left.png", "switch_hud_page", -1, 0.79, 0.410, 0.020, 0.020)
@@ -225,14 +253,14 @@ function courseplay:load(xmlFile)
     courseplay:register_button(self, 3, "navigate_plus.png", "change_tipper_offset", 0.5, 0.97, 0.324, 0.010, 0.010)
     
     
-    courseplay:register_button(self, 4, "navigate_minus.png", "change_turn_speed", -1, 0.955, 0.388, 0.010, 0.010)
-    courseplay:register_button(self, 4, "navigate_plus.png", "change_turn_speed", 1, 0.97, 0.388, 0.010, 0.010)
+    courseplay:register_button(self, 5, "navigate_minus.png", "change_turn_speed", -1, 0.955, 0.388, 0.010, 0.010)
+    courseplay:register_button(self, 5, "navigate_plus.png", "change_turn_speed", 1, 0.97, 0.388, 0.010, 0.010)
     
-    courseplay:register_button(self, 4, "navigate_minus.png", "change_field_speed", -1, 0.955, 0.366, 0.010, 0.010)
-    courseplay:register_button(self, 4, "navigate_plus.png", "change_field_speed", 1, 0.97, 0.366, 0.010, 0.010)
+    courseplay:register_button(self, 5, "navigate_minus.png", "change_field_speed", -1, 0.955, 0.366, 0.010, 0.010)
+    courseplay:register_button(self, 5, "navigate_plus.png", "change_field_speed", 1, 0.97, 0.366, 0.010, 0.010)
     
-    courseplay:register_button(self, 4, "navigate_minus.png", "change_max_speed", -1, 0.955, 0.345, 0.010, 0.010)
-    courseplay:register_button(self, 4, "navigate_plus.png", "change_max_speed", 1, 0.97, 0.345, 0.010, 0.010)
+    courseplay:register_button(self, 5, "navigate_minus.png", "change_max_speed", -1, 0.955, 0.345, 0.010, 0.010)
+    courseplay:register_button(self, 5, "navigate_plus.png", "change_max_speed", 1, 0.97, 0.345, 0.010, 0.010)
     
 end	
 
@@ -252,6 +280,7 @@ end
 -- displays help text, user_input 	
 function courseplay:draw()
 	courseplay:loadHud(self)
+	
 		
 	if self.dcheck and table.getn(self.Waypoints) > 1 then
 		courseplay:dcheck(self);

@@ -74,7 +74,7 @@ function courseplay:drive(self, dt)
 	  end
 	  
 	  -- combi-mode
-	  if ((self.ai_mode == 2 or self.ai_mode == 3) and self.recordnumber < 2 and self.tipper_attached) or self.active_combine then	      
+	  if (((self.ai_mode == 2 or self.ai_mode == 3) and self.recordnumber < 2) or self.active_combine) and self.tipper_attached then	      
 		  return courseplay:handle_mode2(self, dt)
 	  end
   end
