@@ -6,8 +6,9 @@ end
 function courseplay:load(xmlFile)
 	self.locales = {}
 	
-	if not steerable_overwritten then
-	  local aNameSearch = {"vehicle.name." .. g_languageShort, "vehicle.name.en", "vehicle.name", "vehicle#type"};
+	local aNameSearch = {"vehicle.name." .. g_languageShort, "vehicle.name.en", "vehicle.name", "vehicle#type"};
+	
+	if not steerable_overwritten then	  
 	  steerable_overwritten = true
 	  if Steerable.load ~= nil then
 		local orgSteerableLoad = Steerable.load
@@ -38,6 +39,14 @@ function courseplay:load(xmlFile)
 		end
 	  end;
 	
+	end
+	
+	if self.name == nilo then
+	  for nIndex,sXMLPath in pairs(aNameSearch) do 
+	    self.name = getXMLString(xmlFile, sXMLPath);
+	    if self.name ~= nil then break; end;
+	  end;
+	  if self.name == nil then self.name = g_i18n:getText("UNKNOWN") end;
 	end
 	
 	self.locales.HudControl = g_i18n:getText("HudControl")

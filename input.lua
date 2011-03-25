@@ -73,7 +73,9 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 	                  courseplay:start(self)
 	                end 
 	              else -- not drving          
-	                if self.Waypoints[self.recordnumber].wait and self.wait and func == "row2" then
+	                if self.recordnumber ~= nil and self.Waypoints[self.recordnumber].wait and self.wait and func == "row2" then
+	                  self.wait = false
+	                elseif self.recordnumber == nil and self.Waypoints[self.recordnumber].wait and self.wait and func == "row2" then
 	                  self.wait = false
 	                end
 	                
