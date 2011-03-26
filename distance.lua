@@ -39,9 +39,9 @@ function courseplay:dcheck(self)
     return
   end
   local cx ,cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
-  print("dcheck")
+  
   dist = courseplay:distance(ctx ,ctz ,cx ,cz)
-  print("dcheck not schuld")
+  
   self.info_text = string.format("entfernung: %d ",dist )  
 end;
 
