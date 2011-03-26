@@ -90,3 +90,8 @@ function courseplay:change_max_speed(self, change_by)
   end
   self.max_speed = speed / 3600
 end
+
+
+function courseplay:switch_search_combine(self)
+  self.search_combine = not self.search_combine
+end

@@ -28,47 +28,47 @@
     <l10n>
 	<text name="PointRecordStart">
 		<en>Record Course Start</en>
-		<de>Neuer Kurs</de>
+		<de>Kursaufzeichnung beginnen</de>
 	</text>
 
 	<text name="PointRecordStop">
 		<en>Record Course Stop</en>
-		<de>Endpunkt Kurs</de>
+		<de>Kursaufzeichnung beeenden</de>
 	</text>
 
 	<text name="CoursePlayStart">
 		<en>Drive Course</en>
-		<de>Start Helfer</de>
+		<de>Abfahrer einstellen</de>
 	</text>
 
 	<text name="CoursePlayStop">
 		<en>Drive stop</en>
-		<de>Stop Helfer</de>
+		<de>Abfahrer entlassen</de>
 	</text>
 	
 	<text name="CourseMode1">
 		<en>Type: Drivinghelper</en>
-		<de>Typ: Abfahrer</de>
+		<de>Typ: Abfahrer (Beladung am Startpunkt)</de>
 	</text>
 
 	<text name="CourseMode2">
 		<en>Type: Combi</en>
-		<de>Typ: Combi</de>
+		<de>Typ: kombiniert (Drescher abtanken und abfahren)</de>
 	</text>
 
 	<text name="CourseMode3">
 		<en>Type: Overloader</en>
-		<de>Typ: Überladewagen</de>
+		<de>Typ: Überladewagen (Drescher abtanken)</de>
 	</text>
 
 	<text name="CourseMode4">
 		<en>Type: Target</en>
-		<de>Typ: Überführung</de>
+		<de>Typ: Überführung (Route abfahren)</de>
 	</text>
 
 	<text name="CourseWaitpointSet">
 		<en>set waitpoint</en>
-		<de>Wartepunkt setzen</de>
+		<de>Hier Wartepunkt setzen</de>
 	</text>	
 
 	<text name="CourseWaitpointStart">
@@ -108,7 +108,7 @@
 
 	<text name="ModusSet">
 		<en>change Modus</en>
-		<de>Modus wechseln</de>				
+		<de>Abfahrer-Typ wechseln</de>				
 	</text>
 
 	<text name="NoWaitforfill">
@@ -167,12 +167,9 @@
     </extraSourceFiles>   
 
 	<inputBindings>
-		<input name="HudControl" category="VEHICLE" key1="KEY_KP_0" key2="" button="" device="0" mouse="" />
-		<input name="MouseControl" category="VEHICLE" key1="KEY_KP_1" key2="" button="" device="0" mouse="" />	
 		<input name="AHInput1" category="VEHICLE" key1="KEY_KP_7" key2="" button="" device="0" mouse="" />
 		<input name="AHInput2" category="VEHICLE" key1="KEY_KP_8" key2="" button="" device="0" mouse="" />
 		<input name="AHInput3" category="VEHICLE" key1="KEY_KP_9" key2="" button="" device="0" mouse="" />
-		<input name="AHInput4" category="VEHICLE" key1="KEY_KP_5" key2="" button="" device="0" mouse="" />
 
     </inputBindings>
     

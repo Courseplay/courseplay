@@ -54,6 +54,14 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
             courseplay:change_max_speed(self, button.parameter)
           end
           
+          if func == "switch_search_combine" then
+            courseplay:switch_search_combine(self)
+          end
+          
+          if func == "select_combine" then
+            courseplay:switch_combine(self)
+          end
+          
           if func == "close_hud" then
             self.mouse_enabled = false
             self.show_hud = false
