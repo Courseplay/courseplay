@@ -58,8 +58,8 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
             courseplay:switch_search_combine(self)
           end
           
-          if func == "select_combine" then
-            courseplay:switch_combine(self)
+          if func == "switch_combine" then
+            courseplay:switch_combine(self, button.parameter)
           end
           
           if func == "close_hud" then

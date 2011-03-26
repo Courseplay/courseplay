@@ -160,9 +160,9 @@ function courseplay:loadHud(self)
 	    end
 	  
 	    if self.search_combine then
-	      self.hudpage[4][2][2]= "automatisch"
+	      self.hudpage[4][2][2]= "automatisch finden"
 	    else
-	      self.hudpage[4][2][2]= "manuell"
+	      self.hudpage[4][2][2]= "manuell zuweisen"
 	    end
 	    
 	    
@@ -250,7 +250,7 @@ function courseplay:showHud(self)
 	    
 	    if self.Waypoints[self.recordnumber].wait and self.wait then
 	      self.hudpage[1][1][2]= courseplay:get_locale(self, "CourseWaitpointStart")
-	      self.hudpage[1][2][2]= InputBinding.getKeyNamesOfDigitalAction(InputBinding.AHInput2)
+	      g_currentMission:addHelpButtonText(courseplay:get_locale(self, "NoWaitforfill"), InputBinding.AHInput2);
 	      if InputBinding.hasEvent(InputBinding.AHInput2) then
 	        self.wait = false
 	      end
