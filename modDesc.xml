@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="4">
-   <author>Lautschreier/Hummel (modhoster.de)</author>
+   <author>Lautschreier/Wolverin0815/Hummel (modhoster.de)</author>
     <title>
 		<en>Courseplay - Abfahrhelfer</en>
         <de>Courseplay - Abfahrhelfer</de>        
@@ -24,7 +24,7 @@
 		<en>store.png</en>
 		<de>store.png</de>
  	</iconFilename>
-	<version>0.98</version>
+	<version>0.99</version>
     <l10n>
 	<text name="PointRecordStart">
 		<en>Record Course Start</en>
@@ -88,7 +88,7 @@
 
 	<text name="CourseDel">
 		<en>delete course</en>
-		<de>Kurs löschen</de>
+		<de>Kurs aus Datei löschen</de>
 	</text>
 
 	<text name="CourseReset">

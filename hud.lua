@@ -154,7 +154,7 @@ function courseplay:loadHud(self)
 	    end
 	  
 	    if self.saved_combine ~= nil then
-	      self.hudpage[4][2][1] = self.saved_combine.name
+	      self.hudpage[4][2][1] = self.saved_combine.name .. " (" .. string.format("%d", courseplay:distance_to_object(self, self.saved_combine)).."m)"
 	    else
 	      self.hudpage[4][2][1] = "keiner"
 	    end
