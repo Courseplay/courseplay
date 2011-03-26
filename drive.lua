@@ -130,7 +130,7 @@ function courseplay:drive(self, dt)
 	  local real_speed = self.lastSpeedReal
 	  
 	  -- slow down before waitpoint	  
-	  if self.recordnumber < self.maxnumber-3 and (self.Waypoints[self.recordnumber+1].wait or self.Waypoints[self.recordnumber+2].wait) then
+	  if self.recordnumber < self.maxnumber-3 and (self.Waypoints[self.recordnumber+1].wait or self.Waypoints[self.recordnumber+2].wait or self.Waypoints[self.recordnumber].wait) then
 	    self.sl = 1
 	  end
 	  
