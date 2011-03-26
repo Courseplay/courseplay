@@ -29,8 +29,7 @@ function courseplay:loadHud(self)
 			    self.hudpage[1][1][3]= courseplay:get_locale(self, "CourseReset")
 				
 	            self.hudpage[1][1][1]= courseplay:get_locale(self, "CoursePlayStart")
-	            				
-				g_currentMission:addHelpButtonText(courseplay:get_locale(self, "CoursePlayStart"), InputBinding.AHInput1);				
+	            							
 				if InputBinding.hasEvent(InputBinding.AHInput1) then
 					courseplay:start(self)
 				end
@@ -45,21 +44,18 @@ function courseplay:loadHud(self)
 			    
 				if self.Waypoints[last_recordnumber].wait and self.wait then
 	   				self.hudpage[1][1][2]= courseplay:get_locale(self, "CourseWaitpointStart")
-					g_currentMission:addHelpButtonText(courseplay:get_locale(self, "CourseWaitpointStart"), InputBinding.AHInput2);
 	   				if InputBinding.hasEvent(InputBinding.AHInput2) then
 						self.wait = false
 					end
 				end
 
 				self.hudpage[1][1][1]= courseplay:get_locale(self, "CoursePlayStop")
-				g_currentMission:addHelpButtonText(courseplay:get_locale(self, "CourseWaitpointStop"), InputBinding.AHInput1);
 				if InputBinding.hasEvent(InputBinding.AHInput1) then
 					courseplay:stop(self)
 				end
 
 				if not self.loaded then
-					self.hudpage[1][1][3]= courseplay:get_locale(self, "NoWaitforfill")
-					g_currentMission:addHelpButtonText(courseplay:get_locale(self, "NoWaitforfill"), InputBinding.AHInput3);					
+					self.hudpage[1][1][3]= courseplay:get_locale(self, "NoWaitforfill")				
 				end
 
 				if InputBinding.hasEvent(InputBinding.AHInput3) then
@@ -70,27 +66,22 @@ function courseplay:loadHud(self)
 		if not self.drive  then
 			if not self.record and (table.getn(self.Waypoints) == 0)  then
 				self.hudpage[1][1][1]= courseplay:get_locale(self, "PointRecordStart")
-				g_currentMission:addHelpButtonText(courseplay:get_locale(self, "PointRecordStart"), InputBinding.AHInput1);
 				if InputBinding.hasEvent(InputBinding.AHInput1) then
 					courseplay:start_record(self)
 				end
 			elseif not self.record and (table.getn(self.Waypoints) ~= 0) then	
 			    self.hudpage[1][1][2]= courseplay:get_locale(self, "ModusSet")
-			    g_currentMission:addHelpButtonText(courseplay:get_locale(self, "ModusSet"), InputBinding.AHInput2);
-
 				if InputBinding.hasEvent(InputBinding.AHInput2) then
 				    courseplay:change_ai_state(self, 1)					
 				end
 	
 			else
 				self.hudpage[1][1][1]= courseplay:get_locale(self, "PointRecordStop")
-				g_currentMission:addHelpButtonText(courseplay:get_locale(self, "PointRecordStop"), InputBinding.AHInput1);
 				if InputBinding.hasEvent(InputBinding.AHInput1) then
 					courseplay:stop_record(self)
 				end
 	
 	            self.hudpage[1][1][2]= courseplay:get_locale(self, "CourseWaitpointSet")
-				g_currentMission:addHelpButtonText(courseplay:get_locale(self, "CourseWaitpointSet"), InputBinding.AHInput2);
 				if InputBinding.hasEvent(InputBinding.AHInput2) then
 					courseplay:set_waitpoint(self)
 				end
@@ -154,7 +145,11 @@ function courseplay:loadHud(self)
 	    end
 	  
 	    if self.saved_combine ~= nil then
-	      self.hudpage[4][2][1] = self.saved_combine.name .. " (" .. string.format("%d", courseplay:distance_to_object(self, self.saved_combine)).."m)"
+	      local combine_name = self.saved_combine.name
+	      if combine_name == nil then
+	        combine_name = "Combine"
+	      end
+	      self.hudpage[4][2][1] = combine_name .. " (" .. string.format("%d", courseplay:distance_to_object(self, self.saved_combine)).."m)"
 	    else
 	      self.hudpage[4][2][1] = "keiner"
 	    end
@@ -240,7 +235,9 @@ function courseplay:showHud(self)
 	    courseplay:HudPage(self);
 
 
-	elseif self.play then
+	end
+	
+	if self.play then
 	  -- hud not displayed - display start stop
 	  if self.drive then
 	    g_currentMission:addHelpButtonText(courseplay:get_locale(self, "CoursePlayStop"), InputBinding.AHInput1);
@@ -248,9 +245,16 @@ function courseplay:showHud(self)
 	      courseplay:stop(self)
 	    end
 	    
-	    if self.Waypoints[self.recordnumber].wait and self.wait then
-	      self.hudpage[1][1][2]= courseplay:get_locale(self, "CourseWaitpointStart")
-	      g_currentMission:addHelpButtonText(courseplay:get_locale(self, "NoWaitforfill"), InputBinding.AHInput2);
+	     local last_recordnumber = nil
+  
+	     if self.recordnumber > 1 then
+	       last_recordnumber = self.recordnumber - 1    
+         else
+           last_recordnumber = 1
+         end
+	    
+	    if self.Waypoints[last_recordnumber].wait and self.wait then
+	      g_currentMission:addHelpButtonText(courseplay:get_locale(self, "CourseWaitpointStart"), InputBinding.AHInput2);
 	      if InputBinding.hasEvent(InputBinding.AHInput2) then
 	        self.wait = false
 	      end
