@@ -103,9 +103,6 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 	                  courseplay:start_record(self)
 	                end
 	                
-	                if func == "row2" then
-	                  courseplay:select_course(self)
-	                end
 	              elseif not self.record and (table.getn(self.Waypoints) ~= 0) then
 	              	if func == "row2" then
 	              	  courseplay:change_ai_state(self, 1)

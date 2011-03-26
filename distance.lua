@@ -46,8 +46,8 @@ function courseplay:dcheck(self)
 end;
 
 function courseplay:distance_to_object(self, object)
-  local x, y, z = getWorldTranslation(self.aiTractorDirectionNode)
-  local ox, oy, oz = localToWorld(object.rootNode, x, y, z)
+  local x, y, z = getWorldTranslation(self.rootNode)
+  local ox, oy, oz = worldToLocal(object.rootNode, x, y, z)
   
   return Utils.vector2Length(ox, oz)  
 end
