@@ -31,9 +31,7 @@ function courseplay:loadHud(self)
 				
 	            self.hudpage[1][1][1]= courseplay:get_locale(self, "CoursePlayStart")
 	            							
-				if InputBinding.hasEvent(InputBinding.AHInput1) then
-					courseplay:start(self)
-				end
+				
 			else
 				local last_recordnumber = nil
 				
@@ -45,15 +43,11 @@ function courseplay:loadHud(self)
 			    
 				if self.Waypoints[last_recordnumber].wait and self.wait then
 	   				self.hudpage[1][1][2]= courseplay:get_locale(self, "CourseWaitpointStart")
-	   				if InputBinding.hasEvent(InputBinding.AHInput2) then
-						self.wait = false
-					end
+	   				
 				end
 
 				self.hudpage[1][1][1]= courseplay:get_locale(self, "CoursePlayStop")
-				if InputBinding.hasEvent(InputBinding.AHInput1) then
-					courseplay:stop(self)
-				end
+			
 
 				if not self.loaded then
 					self.hudpage[1][1][3]= courseplay:get_locale(self, "NoWaitforfill")				

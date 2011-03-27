@@ -18,6 +18,8 @@ function courseplay:handle_mode2(self, dt)
   
   if fill_level > self.required_fill_level_for_follow then
     self.allow_following = true
+  else
+    self.allow_following  = false
   end
   
   if self.ai_state == 1 and self.active_combine ~= nil then
@@ -25,7 +27,7 @@ function courseplay:handle_mode2(self, dt)
   end
     
   -- trailer full
-  if self.ai_state == 8 then 
+  if self.ai_state == 8 then     
   	self.recordnumber = 2
   	courseplay:unregister_at_combine(self, self.active_combine)
   	self.ai_state = 1

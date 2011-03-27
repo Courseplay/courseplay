@@ -1,36 +1,18 @@
-Courseplay
-
-
-Dieser Mod befindet sich noch in der Entwicklungsphase und enthält natürlich einige Fehler und noch nicht alle
-gedachten Funktionen.
-Um diesen Mod im Spiel voll nutzen zu können müsst ihr euch noch bis zum Release gedulden.
-Der Mod kann vorerst nur zum Testen genutzt werden.
-Der Mod muss erst fertiggestellt und ausgiebig auf Fehler und Funktion getestet werden.
-
-Der Thread "Abfahrhelfer ersatz by netjungle" auf planet-ls.de ist nur für den Austausch der Entwickler und Tester gedacht
-um die Entwicklung des Mods und eventuelle Fehler zu besprechen und ist nicht für den Support gedacht. Tauscht euch bei Fragen
-und Problemen bezüglich Installation und Funktion bitte außerhalb des Threads mit den anderen Usern aus.
-Besser noch, ihr wartet einfach bis zum Release, dann wird sicher ein neuer Thread und eine ausführlich Anleitung
-für den Abfahrhelfer erstellt.
-
-
-
+Courseplay - Abfahrhelfer für LS 2011
 
 Inhaltsverzeichnis
 
 I.   Installationsanweisung
 II.  Bedienungsanleitung
-III. Entwicklungsstand
+III. Credits
 
 
 
 I. Installationsanweisung
 
+1. Das Archiv aacourseplay.zip in das Verzeichnis C:\Users\dein Username\MyGames\FarmingSimulator2011\mods kopieren
 
-1. Alle Dateien (außer Readme.txt) mit einem x-beliebigen Zip-Packer packen. Format: *.zip  Name: aacourseplay.zip
-2. Das Archiv aacourseplay.zip in das Verzeichnis C:\Users\dein Username\MyGames\FarmingSimulator2011\mods kopieren
-
-3. Jetzt das Archiv des gewünschten Schleppers entpacken und in der moddesc.xml folgende Einträge machen
+2. Jetzt das Archiv des Schleppers entpacken den du mit dem Abfahrhelfer versehen willst und in der moddesc.xml folgende Einträge machen
 
 <vehicleTypes>
         ...
@@ -41,7 +23,7 @@ I. Installationsanweisung
 
 anschließend die Dateien wieder zurückpacken.
 
-Das ganze Entpacken und Packen kann man sich mit dem Totalcommander sparen, da er das Entpacken und Packen automatisch macht.
+Das ganze Entpacken und Packen kann man sich mit dem Totalcommander oder Winrar sparen, da er das Entpacken und Packen automatisch macht.
 Hier einfach das Archiv öffnen, Datei bearbeiten, speichern, schließen und zurückpacken bestätigen.
 
 
@@ -80,12 +62,6 @@ Speichern und Laden von Routen:
 
 
 
-III. Entwicklungsstand
+III. Credits
 
 
-- Modus 1: Abfahrer fährt zum Abtanken neben dem Drescher her - läuft noch nicht richtig und befindet sich noch in Entwicklung
-- Modus 2: Abfahrer wartet am Startpunkt bis er voll ist und fährt zum Abladen und wieder zurück - läuft
-- Wartepunkte: Abfahrer bleibt an Wartepunkten stehen und kann dann weitergeschickt werden - läuft
-- Speichern und Laden von Routen: läuft aber die globalen Tastenbefehle sind noch aktiv und überschneiden sich beim eingeben
-  eines Dateinamen
-- HUD: noch nicht entwickelt
