@@ -10,7 +10,25 @@ function courseplay:input_course_name(self)
 end
 
 function courseplay:load_course(self, id)
-
+  if id ~= nil then
+    id = self.selected_course_number + id
+  	local course = self.courses[id]
+  	if course == nil then
+  	  return
+  	end
+  	courseplay:reset_course(self)
+  	self.Waypoints = course.waypoints
+	self.play = true
+	self.recordnumber = 1
+	self.maxnumber = table.getn(self.Waypoints)
+  	self.current_course_name = course.name
+	-- this adds the signs to the course
+	for k,wp in pairs(self.Waypoints) do
+  	  if k <= 3 or wp.wait == true then
+  		courseplay:addsign(self, wp.cx, 0, wp.cz)
+  	  end
+    end
+  end
 end
 
 -- saves coures to xml-file

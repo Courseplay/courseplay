@@ -16,7 +16,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
     --print(string.format("posX: %f posY: %f",posX,posY))
     
     for _,button in pairs(self.buttons) do
-      if button.page == self.showHudInfoBase or button.page == nil then
+      if button.page == self.showHudInfoBase or button.page == nil or button.page == self.showHudInfoBase*-1  then
         
         if posX > button.x and posX < button.x2 and posY > button.y and posY < button.y2 then
           local func = button.function_to_call

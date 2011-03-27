@@ -216,7 +216,7 @@ function courseplay:showHud(self)
 		end
 
     	if self.current_course_name ~= nil then
-			self.hudinfo[2]= courseplay:get_locale(self, "CPCourse")..self.current_course_name
+			self.hudinfo[2]= courseplay:get_locale(self, "CPCourse").. " " .. self.current_course_name
 		else
 			self.hudinfo[2]=  courseplay:get_locale(self, "CPNoCourseLoaded") -- "Kurs: kein Kurs geladen"
 		end
