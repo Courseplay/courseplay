@@ -180,14 +180,11 @@ function courseplay:drive(self, dt)
 		  end
 		  self.recordnumber = self.recordnumber + 1
 	  else	-- reset some variables
-		  -- dont stop if in circle mode
-		  if self.course_mode == 1 then
 		    
-		    self.recordnumber = 1
-			self.unloaded = false
-			self.loaded = false		  
-		  end
-		  
+		  self.recordnumber = 1
+		  self.unloaded = false
+		  self.loaded = false		  
+		
 		  self.record = false
 		  self.play = true
 			  

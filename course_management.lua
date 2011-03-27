@@ -9,6 +9,10 @@ function courseplay:input_course_name(self)
  self.user_input_message = courseplay:get_locale(self, "CPCourseName")
 end
 
+function courseplay:load_course(self, id)
+
+end
+
 -- saves coures to xml-file
 function courseplay:save_courses(self)
   local path = getUserProfileAppPath() .. "savegame" .. g_careerScreen.selectedIndex .. "/"

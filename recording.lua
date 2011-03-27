@@ -73,10 +73,7 @@ function courseplay:start_record(self)
 	
 	self.record = true
 	self.drive  = false
-	-- show arrow to start if in circle mode
-	if self.course_mode == 1 then
-		self.dcheck = true
-	end
+
 	self.recordnumber = 1
 	self.tmr = 101
 end		
@@ -101,5 +98,4 @@ function courseplay:reset_course(self)
 	self.signs = {}
 	self.play = false
 	self.back = false
-	self.course_mode = 1
 end	

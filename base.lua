@@ -140,8 +140,6 @@ function courseplay:load(xmlFile)
 	-- global info text - also displayed when not in vehicle
 	self.global_info_text = nil
 	
-	-- course modes: 1 circle route - 2 returning route
-	self.course_mode = 1
 	
 	-- ai mode: 1 abfahrer, 2 kombiniert
 	self.ai_mode = 1

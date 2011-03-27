@@ -30,6 +30,10 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
             courseplay:change_combine_offset(self, button.parameter)
           end
           
+          if func == "load_course" then
+            courseplay:load_course(self, button.parameter)
+          end
+          
           if func == "change_turn_radius" then
             courseplay:change_turn_radius(self, button.parameter)
           end
