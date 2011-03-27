@@ -293,6 +293,12 @@ function courseplay:load(xmlFile)
     courseplay:register_button(self, 2, "navigate_up.png",   "change_selected_course", -1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY +0.222, 0.020, 0.020)
     courseplay:register_button(self, 2, "navigate_down.png", "change_selected_course", 1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY +0.120, 0.020, 0.020)
     
+    for i = 1, 5, 1 do    
+      local posy = self.hudInfoBasePosY + 0.205 - (i-1) * 0.021
+      courseplay:register_button(self, -2, "folder.png",   "load_course", i, self.hudInfoBasePosX + 0.235, posy, 0.014, 0.014, i)
+      courseplay:register_button(self, -2, "delete.png",   "clear_course", i, self.hudInfoBasePosX + 0.258, posy, 0.014, 0.014, i)
+    end
+    
     courseplay:register_button(self, 3, "navigate_minus.png", "change_combine_offset", -0.1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.210, 0.010, 0.010)
     courseplay:register_button(self, 3, "navigate_plus.png", "change_combine_offset", 0.1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.210, 0.010, 0.010)
     

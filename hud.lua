@@ -23,6 +23,7 @@ function courseplay:loadHud(self)
   self.hudpage[1][1] = {}
     self.hudpage[1][2] = {}
     if self.show_hud then
+      self.hudInfoBaseOverlay:render();
 	  if self.showHudInfoBase <= 1 then
         if self.play then
 			if not self.drive then
@@ -105,8 +106,19 @@ function courseplay:loadHud(self)
 		end
 		
 		local row =1
-		for i = start_course_num, end_course_num, 1 do		  
-		  self.hudpage[2][1][row] = self.courses[i+1].name
+		for i = start_course_num, end_course_num, 1 do
+		  for _,button in pairs(self.buttons) do
+		    if button.page == -2 and button.row == row then
+		      button.overlay:render()
+		    end
+		  end		  
+		  local course_name = self.courses[i+1].name
+		  
+		  if course_name == nil or course_name == "" then
+		    course_name = "-"
+		  end
+		  
+		  self.hudpage[2][1][row] = course_name
 		  row = row +1 
 		end
 		
@@ -186,7 +198,7 @@ function courseplay:showHud(self)
   -- HUD
 	if self.show_hud and self.isEntered then
 	    
-		self.hudInfoBaseOverlay:render();
+		
 		courseplay:render_buttons(self, self.showHudInfoBase)
 		
     	if self.ai_mode == 1 then
