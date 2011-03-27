@@ -240,6 +240,7 @@ function courseplay:load(xmlFile)
 	-- loading saved courses from xml
 	courseplay:load_courses(self)
 	
+	
 	self.mouse_enabled = false	
 
 	-- HUD  	-- Function in Signs

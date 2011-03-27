@@ -8,10 +8,10 @@ function courseplay:HudPage(self)
     for v,name in pairs(self.hudpage[Page][c]) do
       if c == 1 then
         local yspace = self.hudInfoBasePosY + 0.200 - ((v-1) * 0.021)
-        renderText(self.hudInfoBasePosX + 0.003, yspace, 0.019, name);
+        renderText(self.hudInfoBasePosX + 0.005, yspace, 0.019, name);
       elseif c == 2 then
        local yspace = self.hudInfoBasePosY + 0.200 - ((v-1) * 0.021)
-       renderText(self.hudInfoBasePosX + 0.120, yspace, 0.017, name);
+       renderText(self.hudInfoBasePosX + 0.122, yspace, 0.017, name);
       end
      i = i + 1
     end
@@ -91,17 +91,23 @@ function courseplay:loadHud(self)
 
 	
 	  elseif self.showHudInfoBase == 2 then
-		local number_of_courses = table.getn(self.courses)
+		local number_of_courses = 0
+		
+		for k,course in pairs(self.courses) do 
+		  number_of_courses = number_of_courses + 1
+		end
 		
 		local start_course_num = self.selected_course_number
 		local end_course_num = start_course_num + 4
 		
-		if end_course_num > number_of_courses then
-		  end_course_num = number_of_courses
+		if end_course_num >= number_of_courses then
+		  end_course_num = number_of_courses-1
 		end
 		
-		for i = start_course_num, end_course_num, 1 do
-		  self.hudpage[3][1][i] = self.courses[i+1]
+		local row =1
+		for i = start_course_num, end_course_num, 1 do		  
+		  self.hudpage[2][1][row] = self.courses[i+1].name
+		  row = row +1 
 		end
 		
 	  elseif self.showHudInfoBase == 3 then

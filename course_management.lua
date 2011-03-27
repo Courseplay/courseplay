@@ -77,7 +77,7 @@ function courseplay:load_courses(self)
 			tempCourse[s] = {cx = x, cz = z, angle = dangle, wait = wait}
 			s = s + 1
 		  else
-		    local course = {"name" = name, "waypoints"=tempCourse}
+		    local course = {name= name, waypoints=tempCourse}
 		    table.insert(self.courses, course)
 			i = i + 1
 			finish_wp = true
