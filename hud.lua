@@ -105,6 +105,11 @@ function courseplay:loadHud(self)
 		  end_course_num = number_of_courses-1
 		end
 		
+		for i = 0, 10, 1 do
+		  self.hudpage[2][1][i] = nil
+		end
+		
+		
 		local row =1
 		for i = start_course_num, end_course_num, 1 do
 		  for _,button in pairs(self.buttons) do

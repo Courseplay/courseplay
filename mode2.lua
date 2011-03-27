@@ -241,9 +241,7 @@ function courseplay:unload_combine(self, dt)
 	  end
 	 -- end mode 2
 	
-	elseif mode == 3 or mode == 4 then
-	  -- TODO eintellbar
-	  
+	elseif mode == 3 or mode == 4 then	  
 	  courseplay:add_to_combines_ignore_list(self, combine)
 	  
 	  if mode == 3 then

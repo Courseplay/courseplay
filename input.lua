@@ -34,6 +34,14 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
             courseplay:load_course(self, button.parameter)
           end
           
+          if func == "save_course" then
+            courseplay:input_course_name(self)
+          end
+          
+          if func == "clear_course" then
+            courseplay:clear_course(self, button.parameter)
+          end
+          
           if func == "change_turn_radius" then
             courseplay:change_turn_radius(self, button.parameter)
           end
@@ -177,29 +185,13 @@ function courseplay:handle_user_input(self)
 	   courseplay:load_courses(self)
 	   self.user_input_active = false
 	   self.current_course_name = self.user_input
+	   course = {name =self.current_course_name, waypoints = self.Waypoints}
+	   table.insert(self.courses, course)
 	   self.user_input = ""	   
 	   self.user_input_message = nil
-	   self.courses[self.current_course_name] = self.Waypoints
+	   
 	   courseplay:save_courses(self)
 	end
-	
---	if self.select_course then
---		self.course_selection_active = false
---		if self.current_course_name ~= nil then
---		  courseplay:reset_course(self)
---		  self.Waypoints = self.courses[self.current_course_name]
---		  self.play = true
---		  self.recordnumber = 1
---		  self.maxnumber = table.getn(self.Waypoints)
---		  
---		  -- this adds the signs to the course
---		  for k,wp in pairs(self.Waypoints) do
---			  if k <= 3 or wp.wait == true then
---			  	courseplay:addsign(self, wp.cx, 0, wp.cz)
---			  end
---		  end
---		end
---	end
 end
 
 -- renders input form

@@ -129,8 +129,8 @@ function courseplay:change_selected_course(self, change_by)
 	  number_of_courses = number_of_courses + 1
 	end
 	
-	if selected_course_number >= number_of_courses-3 then
-	  selected_course_number = number_of_courses-4
+	if selected_course_number >= number_of_courses-4 then
+	  selected_course_number = number_of_courses-5
 	end
 	
 	if selected_course_number < 0 then

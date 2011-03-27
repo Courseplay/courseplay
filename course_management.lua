@@ -3,10 +3,12 @@
 
 -- enables input for course name
 function courseplay:input_course_name(self)
- self.user_input = ""
- self.user_input_active = true
- self.save_name = true
- self.user_input_message = courseplay:get_locale(self, "CPCourseName")
+ if table.getn(self.Waypoints) > 0 then
+   self.user_input = ""
+   self.user_input_active = true
+   self.save_name = true
+   self.user_input_message = courseplay:get_locale(self, "CPCourseName")
+ end
 end
 
 function courseplay:load_course(self, id)
@@ -31,6 +33,18 @@ function courseplay:load_course(self, id)
   end
 end
 
+function courseplay:clear_course(self, id)
+  if id ~= nil then
+    id = self.selected_course_number + id
+    local course = self.courses[id]
+    if course == nil then
+      return
+    end
+    table.remove(self.courses, id)
+    courseplay:save_courses(self)
+  end
+end
+
 -- saves coures to xml-file
 function courseplay:save_courses(self)
   local path = getUserProfileAppPath() .. "savegame" .. g_careerScreen.selectedIndex .. "/"
@@ -38,21 +52,26 @@ function courseplay:save_courses(self)
   local tab = "   "
   if File ~= nil then
     File:write("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\" ?>\n<XML>\n<courses>\n")
-    for name,x in pairs(self.courses) do
-      File:write(tab .. "<course name=\"" .. name .. "\">\n")
-      for i = 1, table.getn(x) do
-        local v = x[i]
-		local wait = 0
-		if v.wait then
-		  wait = "1"
-		else
-		  wait = "0"
-		end
-        File:write(tab .. tab .. "<waypoint" .. i .. " pos=\"" .. v.cx .. " " .. v.cz .. "\" angle=\"" .. v.angle .. "\" wait=\"" .. wait .. "\" />\n")
+    for _,course in pairs(self.courses) do
+      if course ~= nil then
+	      local name = course.name
+	      local x = course.waypoints
+	      File:write(tab .. "<course name=\"" .. name .. "\">\n")
+	      for i = 1, table.getn(x) do
+	        local v = x[i]
+			local wait = 0
+			if v.wait then
+			  wait = "1"
+			else
+			  wait = "0"
+			end
+	        File:write(tab .. tab .. "<waypoint" .. i .. " pos=\"" .. v.cx .. " " .. v.cz .. "\" angle=\"" .. v.angle .. "\" wait=\"" .. wait .. "\" />\n")
+	      end
+	      File:write(tab .. "</course>\n")
       end
-      File:write(tab .. "</course>\n")
     end
     File:write("</courses>\n")
+    
     
     File:write("\n</XML>\n")
     File:close()
