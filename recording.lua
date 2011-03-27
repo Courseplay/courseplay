@@ -99,6 +99,7 @@ function courseplay:reset_course(self)
 	self.next_targets = {}
 	self.current_course_name = nil
 	self.ai_mode = 1
+	self.ai_state = 1
 	self.tmr = 1
 	self.Waypoints = {}
 	courseplay:sign_visibility(self, false)

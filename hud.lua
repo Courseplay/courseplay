@@ -92,6 +92,7 @@ function courseplay:loadHud(self)
 
 	
 	  elseif self.showHudInfoBase == 2 then
+	    courseplay:load_courses(self)
 		local number_of_courses = 0
 		
 		for k,course in pairs(self.courses) do 

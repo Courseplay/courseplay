@@ -54,6 +54,7 @@ function courseplay:stop(self)
 	self.motor.maxRpm[2] = self.orgRpm[2] 
 	self.motor.maxRpm[3] = self.orgRpm[3] 
 	self.record = false
+	self.ai_state = 1
 	
 	-- removing collision trigger
 	if self.aiTrafficCollisionTrigger ~= nil then
