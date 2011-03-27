@@ -1,6 +1,10 @@
 -- starts driving the course
 function courseplay:start(self)    
 	
+	if table.getn(self.Waypoints) < 1 then
+	  return
+	end
+	
 	self.numCollidingVehicles = 0;
 	self.numToolsCollidingVehicles = {};
 	self.drive  = false

@@ -58,6 +58,10 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
             courseplay:switch_search_combine(self)
           end
           
+          if func == "change_selected_course" then
+            courseplay:change_selected_course(self, button.parameter)
+          end
+          
           if func == "switch_combine" then
             courseplay:switch_combine(self, button.parameter)
           end
@@ -125,20 +129,6 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
             	end
             end
             
-            if self.showHudInfoBase == 2 then
-              if func == "row2" then
-                courseplay:select_course(self)
-              end
-              
-              if func == "row3" then
-                -- TODO delete coming soon
-              end
-              
-              if func == "row1" and not self.record and (table.getn(self.Waypoints) ~= 0) then
-                courseplay:input_course_name(self)
-              end              
-            end
-            
           end
           
         end
@@ -172,25 +162,6 @@ function courseplay:keyEvent(unicode, sym, modifier, isDown)
 	end
   end
   
-  if isDown and self.course_selection_active then
-	-- enter
-	if sym == 13 then
-		self.select_course = true
-		courseplay:handle_user_input(self)
-	end
-	
-	if sym == 273 then
-	  if self.selected_course_number > 1 then
-		self.selected_course_number = self.selected_course_number - 1
-	  end
-	end
-	
-	if sym == 274 then
-	  if self.selected_course_number < 10 then
-		self.selected_course_number = self.selected_course_number + 1
-	  end
-	end
-  end
 end;	
 
 
@@ -208,23 +179,23 @@ function courseplay:handle_user_input(self)
 	   courseplay:save_courses(self)
 	end
 	
-	if self.select_course then
-		self.course_selection_active = false
-		if self.current_course_name ~= nil then
-		  courseplay:reset_course(self)
-		  self.Waypoints = self.courses[self.current_course_name]
-		  self.play = true
-		  self.recordnumber = 1
-		  self.maxnumber = table.getn(self.Waypoints)
-		  
-		  -- this adds the signs to the course
-		  for k,wp in pairs(self.Waypoints) do
-			  if k <= 3 or wp.wait == true then
-			  	courseplay:addsign(self, wp.cx, 0, wp.cz)
-			  end
-		  end
-		end
-	end
+--	if self.select_course then
+--		self.course_selection_active = false
+--		if self.current_course_name ~= nil then
+--		  courseplay:reset_course(self)
+--		  self.Waypoints = self.courses[self.current_course_name]
+--		  self.play = true
+--		  self.recordnumber = 1
+--		  self.maxnumber = table.getn(self.Waypoints)
+--		  
+--		  -- this adds the signs to the course
+--		  for k,wp in pairs(self.Waypoints) do
+--			  if k <= 3 or wp.wait == true then
+--			  	courseplay:addsign(self, wp.cx, 0, wp.cz)
+--			  end
+--		  end
+--		end
+--	end
 end
 
 -- renders input form

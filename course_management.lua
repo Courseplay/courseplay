@@ -9,35 +9,6 @@ function courseplay:input_course_name(self)
  self.user_input_message = courseplay:get_locale(self, "CPCourseName")
 end
 
-
-function courseplay:display_course_selection(self)
-  self.current_course_name = nil
-  renderText(0.4, 0.9 ,0.02, courseplay:get_locale(self, "CPLoadCourse"));
-  
-  local i = 0
-  for name,wps in pairs(self.courses) do
-    local addit = ""
-	i = i + 1
-	if self.selected_course_number == i then
-	  addit = " <<<< "
-	  self.current_course_name = name
-	end
-	local yspace = 0.9 - (i * 0.022)
-	
-	renderText(0.4, yspace ,0.02, name .. addit);
-  end
-  
-end
-
-function courseplay:select_course(self)
-  if self.course_selection_active then
-	self.course_selection_active = false
-  else
-	courseplay:load_courses(self)
-	self.course_selection_active = true
-  end
-end
-
 -- saves coures to xml-file
 function courseplay:save_courses(self)
   local path = getUserProfileAppPath() .. "savegame" .. g_careerScreen.selectedIndex .. "/"
@@ -106,7 +77,8 @@ function courseplay:load_courses(self)
 			tempCourse[s] = {cx = x, cz = z, angle = dangle, wait = wait}
 			s = s + 1
 		  else
-			self.courses[name] = tempCourse
+		    local course = {"name" = name, "waypoints"=tempCourse}
+		    table.insert(self.courses, course)
 			i = i + 1
 			finish_wp = true
 			break

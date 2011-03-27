@@ -116,5 +116,21 @@ function courseplay:switch_combine(self, change_by)
   else
     self.saved_combine = combines[self.selected_combine_number]
   end
-  
+end
+
+function courseplay:change_selected_course(self, change_by)
+	local selected_course_number = self.selected_course_number
+	selected_course_number = selected_course_number + change_by
+	
+	local number_of_courses = table.getn(self.courses)
+		
+	if selected_course_number > number_of_courses then
+	  selected_course_number = number_of_courses
+	end
+	
+	if selected_course_number < 0 then
+	  selected_course_number = 0
+	end
+	
+	self.selected_course_number = selected_course_number
 end

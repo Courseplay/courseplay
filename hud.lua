@@ -91,18 +91,19 @@ function courseplay:loadHud(self)
 
 	
 	  elseif self.showHudInfoBase == 2 then
-		self.hudpage[2][1][2]= courseplay:get_locale(self, "CourseLoad")
-			
-		self.hudpage[2][1][3]= courseplay:get_locale(self, "CourseDel")
-   			
-		if not self.record and (table.getn(self.Waypoints) ~= 0) then
-			self.hudpage[2][1][1]= courseplay:get_locale(self, "CourseSave")
-			
-			
-			if InputBinding.hasEvent(InputBinding.AHInput1) then
-   				 courseplay:input_course_name(self)
-   		 	end
-   		end
+		local number_of_courses = table.getn(self.courses)
+		
+		local start_course_num = self.selected_course_number
+		local end_course_num = start_course_num + 4
+		
+		if end_course_num > number_of_courses then
+		  end_course_num = number_of_courses
+		end
+		
+		for i = start_course_num, end_course_num, 1 do
+		  self.hudpage[3][1][i] = self.courses[i+1]
+		end
+		
 	  elseif self.showHudInfoBase == 3 then
 		self.hudpage[3][1][1]= courseplay:get_locale(self, "CPCombineOffset") --"seitl. Abstand:"
 	    self.hudpage[3][1][2]= courseplay:get_locale(self, "CPRequiredFillLevel") --"Start bei%:"
