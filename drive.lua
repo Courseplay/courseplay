@@ -28,7 +28,6 @@ function courseplay:drive(self, dt)
   cx ,cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
   -- distance to waypoint
   
-  
   self.dist = courseplay:distance(cx ,cz ,ctx ,ctz)
  
   -- what about our tippers?
@@ -60,9 +59,9 @@ function courseplay:drive(self, dt)
   
    if self.Waypoints[last_recordnumber].wait and self.wait then
      if self.ai_mode == 3 then
-       self.global_info_text = 'hat Überladepunkt erreicht.'
+       self.global_info_text = courseplay:get_locale(self, "CPReachedOverloadPoint") --'hat Überladepunkt erreicht.'
      else
-       self.global_info_text = 'hat Wartepunkt erreicht.'
+       self.global_info_text = courseplay:get_locale(self, "CPReachedWaitPoint") --'hat Wartepunkt erreicht.'
      end
      
      if self.ai_mode == 3 and self.tipper_attached and fill_level == 0 then
@@ -95,7 +94,7 @@ function courseplay:drive(self, dt)
 	 
      -- unload active tipper if given
      if active_tipper then
-       self.info_text = string.format("Wird entladen: %d von %d ",tipper_fill_level,tipper_capacity )
+       self.info_text = string.format(courseplay:get_locale(self, "CPUnloading"), tipper_fill_level,tipper_capacity )
        if active_tipper.tipState == 0 then				  
 		  active_tipper:toggleTipState(self.currentTipTrigger)		  
 		  self.unloading_tipper = active_tipper
@@ -241,7 +240,7 @@ function courseplay:check_traffic(self, display_warnings, allowedToDrive)
   end;
   
   if display_warnings and in_traffic then
-    self.global_info_text = ' steckt im Verkehr fest'
+    self.global_info_text = courseplay:get_locale(self, "CPInTraffic") --' steckt im Verkehr fest'
   end
   
   return allowedToDrive

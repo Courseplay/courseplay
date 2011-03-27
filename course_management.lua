@@ -6,13 +6,13 @@ function courseplay:input_course_name(self)
  self.user_input = ""
  self.user_input_active = true
  self.save_name = true
- self.user_input_message = "Name des Kurses: "
+ self.user_input_message = courseplay:get_locale(self, "CPCourseName")
 end
 
 
 function courseplay:display_course_selection(self)
   self.current_course_name = nil
-  renderText(0.4, 0.9 ,0.02, "Kurs Laden:");
+  renderText(0.4, 0.9 ,0.02, courseplay:get_locale(self, "CPLoadCourse"));
   
   local i = 0
   for name,wps in pairs(self.courses) do

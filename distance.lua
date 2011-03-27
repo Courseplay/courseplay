@@ -42,7 +42,7 @@ function courseplay:dcheck(self)
   
   dist = courseplay:distance(ctx ,ctz ,cx ,cz)
   
-  self.info_text = string.format("entfernung: %d ",dist )  
+  self.info_text = string.format(courseplay:get_locale(self, "CPDistance") ..": %d ",dist )  
 end;
 
 function courseplay:distance_to_object(self, object)

@@ -116,11 +116,11 @@
 		<de>Sofort abfahren</de>				
 	</text>
 
-
 	<text name="AHInput1">
 		<en>AH Input 1</en>
 		<de>AH Taste 1</de>				
 	</text>
+
 
 	<text name="AHInput2">
 		<en>AH Input 2</en>
@@ -141,6 +141,217 @@
       <en>unknown</en>
       <de>unbekannt</de>
     </text>
+    
+    <text name="CPDistance">
+      <en>distance</en>
+      <de>Entfernung</de>
+    </text>
+    
+    
+    <text name="CPLoadCourse">
+      <en>load course:</en>
+      <de>Kurs laden: </de>
+    </text>
+    
+    <text name="CPCourseName">
+      <en>name of course:</en>
+      <de>Name des Kurses: </de>
+    </text>
+    
+    <text name="CPReachedOverloadPoint">
+      <en>has reached overload point.</en>
+      <de>hat Überladepunkt erreicht.</de>
+    </text>
+    
+    <text name="CPReachedWaitPoint">
+      <en>has reached waitpoint.</en>
+      <de>hat Wartepunkt erreicht.</de>
+    </text>
+    
+    <text name="CPInTraffic">
+      <en> is in traffic.</en>
+      <de> steckt im Verkehr fest</de>
+    </text>
+    
+    <text name="CPloading">
+      <en>Loading: %d of %d</en>
+      <de>Wird Beladen: %d von %d</de>
+    </text>
+    
+    <text name="CPTriggerReached">
+      <en>tip trigger reached</en>
+      <de>Abladestelle erreicht</de>
+    </text>
+    
+    <text name="CPUnloading">
+      <en>Unloading: %d of %d</en>
+      <de>Wird entladen: %d von %d</de>
+    </text>
+    
+    <text name="CPCombineOffset">
+      <en>side offset:</en>
+      <de>seitl. Abstand:</de>
+    </text>
+    
+    <text name="CPRequiredFillLevel">
+      <en>start at %:</en>
+      <de>Start bei %:</de>
+    </text>
+    
+    <text name="CPTurnRadius">
+      <en>turn radius%:</en>
+      <de>Wenderadius:</de>
+    </text>
+    
+    <text name="CPPipeOffset">
+      <en>pipe offset:</en>
+      <de>Pipe Abstand:</de>
+    </text>
+    
+    <text name="CPNone">
+      <en>none</en>
+      <de>keiner</de>
+    </text>
+    
+    <text name="CPSelectCombine">
+      <en>chose combine:</en>
+      <de>Drescher wählen:</de>
+    </text>
+    
+     <text name="CPCombineSearch">
+      <en>find combine:</en>
+      <de>Dreschersuche:</de>
+    </text>
+    
+    <text name="CPActual">
+      <en>current:</en>
+      <de>Aktuell:</de>
+    </text>
+    
+    <text name="CPFindAuto">
+      <en>automatic search</en>
+      <de>automatisch finden</de>
+    </text>
+    
+    <text name="CPFindManual">
+      <en>select manually</en>
+      <de>manuell zuweisen</de>
+    </text>
+    
+    <text name="CPTurnSpeed">
+      <en>turn speed:</en>
+      <de>Wendemanöver:</de>
+    </text>
+    
+    <text name="CPFieldSpeed">
+      <en>field speed:</en>
+      <de>Auf dem Feld::</de>
+    </text>
+    
+    <text name="CPMaxSpeed">
+      <en>max speed:</en>
+      <de>Auf Straße:</de>
+    </text>
+    
+    <text name="CPCourse">
+      <en>course</en>
+      <de>Kurs</de>
+    </text>
+    
+    <text name="CPNoCourseLoaded">
+      <en>course: no course loaded</en>
+      <de>Kurs: kein Kurs geladen</de>
+    </text>
+    
+    <text name="CPWaypoint">
+      <en>waypoint: </en>
+      <de>Wegpunkt: </de>
+    </text>
+    
+    <text name="CPNoWaypoint">
+      <en>no waypoints yet</en>
+      <de>Noch keine Wegpunkte</de>
+    </text>
+    
+    
+    <text name="CPSteering">
+      <en>Courseplay control</en>
+      <de>Abfahrhelfer Steuerung</de>
+    </text>
+    
+    <text name="CPManageCourses">
+      <en>manage courses</en>
+      <de>Kurse verwalten</de>
+    </text>
+    
+    
+    <text name="CPCombiSettings">
+      <en>Settings combi mode</en>
+      <de>Einstellungen Combi Modus</de>
+    </text>
+    
+    
+    <text name="CPManageCombines">
+      <en>Manage combines</en>
+      <de>Drescher verwalten</de>
+    </text>
+    
+    <text name="CPSpeedLimit">
+      <en>SPEED LIMIT</en>
+      <de>Geschwindigkeiten</de>
+    </text>
+    
+    <text name="CPCombineTurning">
+      <en>combine is turning.</en>
+      <de>Drescher wendet.</de>
+    </text>
+    
+    <text name="CPDriveBehinCombine">
+      <en>drive behind combine</en>
+      <de>Fahre hinter Drescher.</de>
+    </text>
+    
+    <text name="CPDriveNextCombine">
+      <en>drive next to combine</en>
+      <de>Fahre neben Drescher</de>
+    </text>
+    
+    
+    <text name="CPDriveToCombine">
+      <en>drive to combine</en>
+      <de>Fahre zu Drescher</de>
+    </text>
+    
+    <text name="CPCombineWantsMeToStop">
+      <en>combine is telling me to stop</en>
+      <de>Drescher sagt ich soll anhalten.</de>
+    </text>
+    
+    <text name="CPTurningTo">
+      <en>turning to direction %d %d</en>
+      <de>wende in Richtung koordinaten %d %d </de>
+    </text>
+    
+    <text name="CPDriveToWP">
+      <en>drive to waypoint %d %d</en>
+      <de>fahre zu Wegpunkt %d %d </de>
+    </text>
+    
+    <text name="CPWaitUntilCombineTurned">
+      <en>waiting until combine has turned</en>
+      <de>Warte bis Drescher gewendet hat. </de>
+    </text>
+    
+    <text name="CPWaitForWaypoint">
+      <en>waiting for new waypoint</en>
+      <de>Warte bis ich neuen Wegpunkt habe</de>
+    </text>
+    
+    <text name="CPFollowTractor">
+      <en>following tractor</en>
+      <de>Fahre hinter Traktor</de>
+    </text>
+    
 
     </l10n>
 

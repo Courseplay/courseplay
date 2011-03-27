@@ -166,13 +166,13 @@ function courseplay:unload_combine(self, dt)
   
   -- is combine turning ?
   if combine ~= nil and (combine.turnStage == 1 or combine.turnStage == 2) then
-    self.info_text = "Drescher wendet. "
+    self.info_text = courseplay:get_locale(self, "CPCombineTurning") -- "Drescher wendet. "
     combine_turning = true
   end
   
   if mode == 2 or mode == 3 or mode == 4 then
     if combine == nil then
-      self.info_text = "Mähdrescher verschwunden - Das kann eigentlich gar nicht sein! "
+      self.info_text = "this should never happen"
       allowedToDrive = false
     end
     
@@ -192,7 +192,7 @@ function courseplay:unload_combine(self, dt)
 	  self.sl = 2
 	  refSpeed = self.field_speed
 	  courseplay:remove_from_combines_ignore_list(self, combine)
-	  self.info_text ="Fahre hinter Drescher"
+	  self.info_text =courseplay:get_locale(self, "CPDriveBehinCombine") -- ""
 	  if z1 > 0 then
 	    -- tractor in front of combine
 	    -- left side of combine
@@ -247,9 +247,9 @@ function courseplay:unload_combine(self, dt)
 	  courseplay:add_to_combines_ignore_list(self, combine)
 	  
 	  if mode == 3 then
-	    self.info_text ="Fahre neben Drescher"
+	    self.info_text =courseplay:get_locale(self, "CPDriveNextCombine") -- "Fahre neben Drescher"
 	  else
-	    self.info_text ="Fahre zum Drescher"
+	    self.info_text =courseplay:get_locale(self, "CPDriveToCombine") -- "Fahre zum Drescher"
 	  end   
 	  
 	  refSpeed = self.field_speed
@@ -330,7 +330,7 @@ function courseplay:unload_combine(self, dt)
   
       -- combine is not moving and trailer is under pipe
       if ((combine.movingDirection <= 0 and lz <= 0.5) or lz < -0.4 * trailer_offset) and mode == 3 then         
-        self.info_text ="Drescher sagt ich soll anhalten."   
+        self.info_text =courseplay:get_locale(self, "CPCombineWantsMeToStop") -- "Drescher sagt ich soll anhalten."   
         allowedToDrive = false        
       end   
       
@@ -415,13 +415,12 @@ function courseplay:unload_combine(self, dt)
   
   if self.waitTimer and self.timer < self.waitTimer then
     courseplay:remove_from_combines_ignore_list(self, combine)
-    allowedToDrive = false
-    self.info_text = "Abfahrer muss warten."    
+    allowedToDrive = false    
   else  
 	  -- wende manöver
 	  if mode == 9 and self.target_x ~= nil and self.target_z ~= nil then    
 	    courseplay:remove_from_combines_ignore_list(self, combine)
-	    self.info_text = string.format("wende in Richtung koordinaten %d %d ", self.target_x, self.target_z )  	
+	    self.info_text = string.format(courseplay:get_locale(self, "CPTurningTo"), self.target_x, self.target_z )  	
 	    allowedToDrive = false
 	    local mx, mz = self.target_x, self.target_z
 	    local lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, mx, y, mz)
@@ -458,7 +457,7 @@ function courseplay:unload_combine(self, dt)
 	  -- drive to given waypoint
 	  if mode == 5 and self.target_x ~= nil and self.target_z ~= nil then
 	    courseplay:remove_from_combines_ignore_list(self, combine)
-	    self.info_text = string.format("fahre zu Wegpunkt %d %d ", self.target_x, self.target_z )
+	    self.info_text = string.format(courseplay:get_locale(self, "CPDriveToWP"), self.target_x, self.target_z )
 	  	cx = self.target_x
 	  	cy = self.target_y
 	  	cz = self.target_z
@@ -499,7 +498,7 @@ function courseplay:unload_combine(self, dt)
 		  	    mode = 9  	    
 		  	    self.next_ai_state = 4
 		  	  elseif self.next_ai_state == 9 and combine_turning then
-		  	    self.info_text = "Warte bis Drescher gewendet hat. "
+		  	    self.info_text =courseplay:get_locale(self, "CPWaitUntilCombineTurned") --  ""
 		  	  elseif self.next_ai_state == 1  then	 
 		  	    self.sl = 1	    
 		  	    refSpeed = self.turn_speed
@@ -515,7 +514,7 @@ function courseplay:unload_combine(self, dt)
   self.ai_state = mode  
   
   if cx == nil or cz == nil then
-    self.info_text = "Warte bis ich neuen Wegpunkt habe"  	 
+    self.info_text = courseplay:get_locale(self, "CPWaitForWaypoint") -- "Warte bis ich neuen Wegpunkt habe"  	 
     allowedToDrive = false
   end
   
@@ -637,7 +636,7 @@ function courseplay:follow_tractor(self, dt, tractor)
     local distance = Utils.vector2Length(x1, z1)
     
     
-    self.info_text ="Fahre hinter Traktor"
+    self.info_text =courseplay:get_locale(self, "CPFollowTractor") -- "Fahre hinter Traktor"
     if z1 > 0 then
       -- tractor in front of tractor
       -- left side of tractor
@@ -681,7 +680,7 @@ function courseplay:follow_tractor(self, dt, tractor)
   end
   
   if cx == nil or cz == nil then
-    self.info_text = "Warte bis ich neuen Wegpunkt habe"  	 
+    self.info_text =courseplay:get_locale(self, "CPWaitForWaypoint") --  "Warte bis ich neuen Wegpunkt habe"  	 
     allowedToDrive = false
   end
   
