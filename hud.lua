@@ -155,6 +155,8 @@ function courseplay:loadHud(self)
 	    self.hudpage[4][1][1]= courseplay:get_locale(self, "CPSelectCombine") -- "Drescher wählen:"
 	    self.hudpage[4][1][2]= courseplay:get_locale(self, "CPCombineSearch") -- "Dreschersuche:"
 	    self.hudpage[4][1][3]= courseplay:get_locale(self, "CPActual") -- "Aktuell:"
+	    self.hudpage[4][1][3]= courseplay:get_locale(self, "CPMaxHireables") -- "Aktuell:"
+	  	self.hudpage[4][2][4] = string.format("%d", g_currentMission.maxNumHirables)
 	  
 	    if self.active_combine ~= nil then
 	      self.hudpage[4][2][3] = self.active_combine.name

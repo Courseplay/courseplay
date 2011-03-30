@@ -58,6 +58,10 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
             courseplay:change_turn_speed(self, button.parameter)
           end
           
+          if func == "change_num_ai_helpers" then
+            courseplay:change_num_ai_helpers(self, button.parameter)
+          end
+          
           if func == "change_field_speed" then
             courseplay:change_field_speed(self, button.parameter)
           end
