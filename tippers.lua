@@ -19,7 +19,7 @@ function courseplay:update_tools(self, tractor_or_implement)
     
     local object = implement.object
     
-    if object.allowTipDischarge then
+    if object.allowTipDischarge or object.allowFillFromAir then
       tipper_attached = true
       table.insert(self.tippers, object)
     end
