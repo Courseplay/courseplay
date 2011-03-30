@@ -207,6 +207,11 @@
       <en>pipe offset:</en>
       <de>Pipe Abstand:</de>
     </text>
+	
+	<text name="CPMaxHireables">
+      <en>maximum AI helpers:</en>
+      <de>max. Anz. AI Helfer:</de>
+    </text>
     
     <text name="CPNone">
       <en>none</en>
