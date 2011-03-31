@@ -44,7 +44,7 @@ function courseplay:handle_mode2(self, dt)
   
   if current_tipper == nil then
   	self.tools_dirty = true
-    return
+    return false
   end
   
   if (current_tipper.fillLevel == current_tipper.capacity) or self.loaded then
