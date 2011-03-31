@@ -42,6 +42,11 @@ function courseplay:handle_mode2(self, dt)
   
   local current_tipper = self.tippers[self.currentTrailerToFill] 
   
+  if current_tipper == nil then
+  	self.tools_dirty = true
+    return
+  end
+  
   if (current_tipper.fillLevel == current_tipper.capacity) or self.loaded then
     if table.getn(self.tippers) > self.currentTrailerToFill then			
       self.currentTrailerToFill = self.currentTrailerToFill + 1

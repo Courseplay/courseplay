@@ -7,6 +7,7 @@ function courseplay:reset_tools(self)
   self.tippers = {}
   -- are there any tippers?	
   self.tipper_attached = courseplay:update_tools(self, self)
+  self.currentTrailerToFill = nil
   self.tools_dirty = false;
 end
 
