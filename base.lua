@@ -5,7 +5,6 @@ end
 
 function courseplay:load(xmlFile)
 	self.locales = {}
-	g_currentMission.maxNumHirables = 30
 	local aNameSearch = {"vehicle.name." .. g_languageShort, "vehicle.name.en", "vehicle.name", "vehicle#type"};
 	
 	if not steerable_overwritten then	  
