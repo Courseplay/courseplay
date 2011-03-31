@@ -8,6 +8,7 @@ function courseplay:reset_tools(self)
   -- are there any tippers?	
   self.tipper_attached = courseplay:update_tools(self, self)
   self.currentTrailerToFill = nil
+  self.lastTrailerToFillDistance = nil
   self.tools_dirty = false;
 end
 
@@ -97,6 +98,7 @@ end
 -- unloads all tippers
 function courseplay:unload_tippers(self)
   local allowedToDrive = false
+  self.lastTrailerToFillDistance = nil
   local active_tipper = nil
   local trigger = self.currentTipTrigger
   g_currentMission.tipTriggerRangeThreshold = 2

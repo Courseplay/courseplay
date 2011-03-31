@@ -28,16 +28,18 @@ function courseplay:start(self)
 	local cx ,cz = self.Waypoints[self.recordnumber].cx,self.Waypoints[self.recordnumber].cz
 	-- distance
 	dist = courseplay:distance(ctx ,ctz ,cx ,cz)	
-	local nearestpoint = dist
-	-- search nearest Waypoint
-    for i=1, self.maxnumber do
-        local cx ,cz = self.Waypoints[i].cx,self.Waypoints[i].cz
-	   	dist = courseplay:distance(ctx ,ctz ,cx ,cz)
-      if dist < nearestpoint then
-			nearestpoint = dist
-			self.recordnumber = i
-       end
-    
+	if self.ai_state == 1 then
+		local nearestpoint = dist
+		-- search nearest Waypoint
+	    for i=1, self.maxnumber do
+	        local cx ,cz = self.Waypoints[i].cx,self.Waypoints[i].cz
+		   	dist = courseplay:distance(ctx ,ctz ,cx ,cz)
+	      if dist < nearestpoint then
+				nearestpoint = dist
+				self.recordnumber = i
+	       end
+	    
+	    end
     end
     
 	--if dist < 15 then
