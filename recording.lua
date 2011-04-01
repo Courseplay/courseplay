@@ -5,7 +5,8 @@ function courseplay:record(self)
 	local length = Utils.vector2Length(x,z);
 	local dX = x/length
 	local dZ = z/length
-	local newangle = math.deg(math.atan2(dX,dZ)) 
+	local newangle = math.deg(math.atan2(dX,dZ))
+	local fwd = self.direction
 
 
 	if self.recordnumber < 2 then
@@ -43,7 +44,7 @@ function courseplay:record(self)
 	end 
 	 
 	if self.tmr > 100 then 
-		self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = false}
+		self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = false, fwd = self.direction}
 		if self.recordnumber < 4 then 
 			courseplay:addsign(self, cx, cy,cz)
 		end 
@@ -60,13 +61,31 @@ function courseplay:set_waitpoint(self)
 	local dX = x/length
 	local dZ = z/length
 	local newangle = math.deg(math.atan2(dX,dZ)) 
-  self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = true}
+  self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = true, fwd = self.direction}
   self.tmr = 1
   self.recordnumber = self.recordnumber + 1
   courseplay:addsign(self, cx, cy,cz)  
 end
 
-
+-- set Waypoint before change direction
+function courseplay:set_direction(self)
+	local cx,cy,cz = getWorldTranslation(self.rootNode);
+	local x,y,z = localDirectionToWorld(self.rootNode, 0, 0, 1);
+	local length = Utils.vector2Length(x,z);
+	local dX = x/length
+	local dZ = z/length
+	local newangle = math.deg(math.atan2(dX,dZ))
+	local fwd = nil
+  	self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = false, fwd = self.direction}
+	if self.direction == true then
+        self.direction = false
+	else
+		self.direction = true
+	end
+  self.tmr = 1
+  self.recordnumber = self.recordnumber + 1
+  courseplay:addsign(self, cx, cy,cz)
+end
 -- starts course recording -- just setting variables
 function courseplay:start_record(self)
     courseplay:reset_course(self)
@@ -76,6 +95,7 @@ function courseplay:start_record(self)
 
 	self.recordnumber = 1
 	self.tmr = 101
+	self.direction = true
 end		
 
 -- stops course recording -- just setting variables

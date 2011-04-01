@@ -80,6 +80,10 @@ function courseplay:loadHud(self)
 				if InputBinding.hasEvent(InputBinding.AHInput2) then
 					courseplay:set_waitpoint(self)
 				end
+				
+				if InputBinding.hasEvent(InputBinding.AHInput3) then
+					courseplay:set_direction(self)
+				end
 			end
 		end
 	

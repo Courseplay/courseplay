@@ -33,13 +33,16 @@ function courseplay:start(self)
 		-- search nearest Waypoint
 	    for i=1, self.maxnumber do
 	        local cx ,cz = self.Waypoints[i].cx,self.Waypoints[i].cz
-		   	dist = courseplay:distance(ctx ,ctz ,cx ,cz)
-	      if dist < nearestpoint then
+			dist = courseplay:distance(ctx ,ctz ,cx ,cz)
+			if dist < nearestpoint then
 				nearestpoint = dist
-				self.recordnumber = i
-	       end
+				self.recordnumber = i + 1
+			end
 	    
 	    end
+	    if self.recordnumber > self.maxnumber then
+				self.recordnumber = 1
+		end
     end
     
 	--if dist < 15 then
