@@ -169,7 +169,7 @@ function courseplay:load(xmlFile)
 	
 	-- course name for saving
 	self.current_course_name = nil
-	
+	self.direction = nil
 	-- forced waypoints	
 	self.target_x = nil
 	self.target_y = nil
