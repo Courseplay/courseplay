@@ -105,7 +105,7 @@ function courseplay:drive(self, dt)
    end
   
   -- more than 5 meters away from next waypoint?
-  if self.dist > 5 then
+  if self.dist > 1 then  -- untesteted 5
   
   	  --print(string.format("distance to WP: %f", self.dist ))
 	  -- speed limit at the end an the beginning of course
@@ -131,6 +131,11 @@ function courseplay:drive(self, dt)
 	  -- slow down before waitpoint	  
 	  if self.recordnumber < self.maxnumber-3 and (self.Waypoints[self.recordnumber+1].wait or self.Waypoints[self.recordnumber+2].wait or self.Waypoints[self.recordnumber].wait) then
 	    self.sl = 1
+	  end
+	  
+	  -- slow down before drive reverse
+	  if self.recordnumber < self.maxnumber-3 and ((self.Waypoints[self.recordnumber+2].fwd == false) or (self.Waypoints[self.recordnumber+1].fwd == false) or (self.Waypoints[self.recordnumber].fwd == false)) then
+		self.sl = 1
 	  end
 	  
 	  if self.sl == 1 then
@@ -166,10 +171,17 @@ function courseplay:drive(self, dt)
 	  self.motor.maxRpm[self.sl] = maxRpm
 
 	  -- where to drive?
+	  local fwd = nil
 	  local lx, lz = AIVehicleUtil.getDriveDirection(self.rootNode,cx,cty,cz);
-	  
+	  if self.Waypoints[self.recordnumber].fwd == true then
+         fwd = true
+	  else
+		lz = lz * -1
+		lx = lx * -1
+  	    fwd = false
+	  end
 	  -- go, go, go!
-	  AIVehicleUtil.driveInDirection(self, dt,  45, 1, 0.7, 20, true, true, lx, lz , self.sl, 0.9);
+	  AIVehicleUtil.driveInDirection(self, dt,  30, 0.2, 0.1, 25, true, fwd, lx, lz , self.sl, 0.5);
 	  
 	  courseplay:set_traffc_collision(self, lx, lz)
 	  
