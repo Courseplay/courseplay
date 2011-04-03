@@ -40,7 +40,7 @@ function courseplay:load(xmlFile)
 	
 	end
 	
-	if self.name == nilo then
+	if self.name == nil then
 	  for nIndex,sXMLPath in pairs(aNameSearch) do 
 	    self.name = getXMLString(xmlFile, sXMLPath);
 	    if self.name ~= nil then break; end;
@@ -242,7 +242,7 @@ function courseplay:load(xmlFile)
 	self.mouse_enabled = false	
 
 	-- HUD  	-- Function in Signs
-	self.hudInfoBasePosX = 0.005; -- 0.755 
+	self.hudInfoBasePosX = 0.433; -- 0.755
 	self.hudInfoBaseWidth = 0.320; 
 	self.hudInfoBasePosY = 0.005;  -- 0.210
 	self.hudInfoBaseHeight = 0.287; 
