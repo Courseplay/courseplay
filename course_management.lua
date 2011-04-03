@@ -60,12 +60,18 @@ function courseplay:save_courses(self)
 	      for i = 1, table.getn(x) do
 	        local v = x[i]
 			local wait = 0
+			local fwd = 1
 			if v.wait then
 			  wait = "1"
 			else
 			  wait = "0"
 			end
-	        File:write(tab .. tab .. "<waypoint" .. i .. " pos=\"" .. v.cx .. " " .. v.cz .. "\" angle=\"" .. v.angle .. "\" wait=\"" .. wait .. "\" />\n")
+			if v.fwd then
+			  fwd = "1"
+			else
+			  fwd = "0"
+			end
+	        File:write(tab .. tab .. "<waypoint" .. i .. " pos=\"" .. v.cx .. " " .. v.cz .. "\" angle=\"" .. v.angle .. "\" fwd=\"" .. fwd .. "\" wait=\"" .. wait .. "\" />\n")
 	      end
 	      File:write(tab .. "</course>\n")
       end
@@ -108,14 +114,20 @@ function courseplay:load_courses(self)
 			  finish_wp = true
 			  break
 			end
-			local dangle = Utils.getVectorFromString(getXMLString(File, key .. "#angle"))				
-			local wait = Utils.getVectorFromString(getXMLString(File, key .. "#wait"))				
+			local dangle = Utils.getVectorFromString(getXMLString(File, key .. "#angle"))
+			local wait = Utils.getVectorFromString(getXMLString(File, key .. "#wait"))
+			local fwd = Utils.getVectorFromString(getXMLString(File, key .. "#fwd"))
 			if wait == 1 then
 			  wait = true
 			else
 			  wait = false
 			end
-			tempCourse[s] = {cx = x, cz = z, angle = dangle, wait = wait}
+			if fwd == 1 then
+			  fwd = true
+			else
+			  fwd = false
+			end
+			tempCourse[s] = {cx = x, cz = z, angle = dangle, fwd= fwd, wait = wait}
 			s = s + 1
 		  else
 		    local course = {name= name, waypoints=tempCourse}
