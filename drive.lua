@@ -173,7 +173,7 @@ function courseplay:drive(self, dt)
 	  -- where to drive?
 	  local fwd = nil
 	  local lx, lz = AIVehicleUtil.getDriveDirection(self.rootNode,cx,cty,cz);
-	  if self.Waypoints[self.recordnumber].fwd == true then
+	  if (self.Waypoints[self.recordnumber].fwd == true) or (self.Waypoints[self.recordnumber].fwd == nil) then
          fwd = true
 	  else
 		lz = lz * -1
@@ -181,7 +181,7 @@ function courseplay:drive(self, dt)
   	    fwd = false
 	  end
 	  -- go, go, go!
-	  AIVehicleUtil.driveInDirection(self, dt,  30, 0.2, 0.1, 25, true, fwd, lx, lz , self.sl, 0.5);
+	  AIVehicleUtil.driveInDirection(self, dt,  28, 0.2, 0.4, 8, true, fwd, lx, lz , self.sl, 0.5);
 	  
 	  courseplay:set_traffc_collision(self, lx, lz)
 	  
