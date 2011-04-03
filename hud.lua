@@ -81,12 +81,17 @@ function courseplay:loadHud(self)
 					courseplay:set_waitpoint(self)
 				end
 				
-				if InputBinding.hasEvent(InputBinding.AHInput3) then
-					courseplay:set_direction(self)
+	
+				if not self.direction and self.movingDirection == 1 then
+				courseplay:set_direction(self)
 				end
+				
+				if self.direction and self.movingDirection == -1 then
+				courseplay:set_direction(self)
+				end
+
 			end
 		end
-	
 
 	
 	  elseif self.showHudInfoBase == 2 then
