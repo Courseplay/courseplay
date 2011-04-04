@@ -82,9 +82,9 @@ function courseplay:set_direction(self)
 	else
 		self.direction = true
 	end
-  self.tmr = 1
-  self.recordnumber = self.recordnumber + 1
-  courseplay:addsign(self, cx, cy,cz)
+  	self.tmr = 1
+  	self.recordnumber = self.recordnumber + 1
+  	courseplay:addsign(self, cx, cy,cz)
 end
 -- starts course recording -- just setting variables
 function courseplay:start_record(self)
