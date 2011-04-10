@@ -139,14 +139,16 @@ function courseplay:load(xmlFile)
 	
 	-- global info text - also displayed when not in vehicle
 	self.global_info_text = nil
-	
+	self.testhe = false
 	
 	-- ai mode: 1 abfahrer, 2 kombiniert
 	self.ai_mode = 1
 	self.follow_mode = 1
 	self.ai_state = 1
 	self.next_ai_state = nil
-	
+	self.startWork = nil
+	self.stopWork = nil
+	self.abortWork = nil
 	self.wait = true
 	self.waitTimer = nil
 	-- our arrow is displaying dirction to waypoints
@@ -182,7 +184,7 @@ function courseplay:load(xmlFile)
 	self.max_speed = 50 / 3600
 	self.turn_speed = 10 / 3600
 	self.field_speed = 24 / 3600
-	
+	self.sl = 3
 	self.tools_dirty = false
 	
 	self.orgRpm = nil
@@ -356,6 +358,7 @@ function courseplay:draw()
 	end
 
     courseplay:showHud(self)
+    
 end
 
 -- is been called everey frame

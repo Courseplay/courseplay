@@ -6,6 +6,7 @@ function courseplay:input_course_name(self)
  if table.getn(self.Waypoints) > 0 then
    self.user_input = ""
    self.user_input_active = true
+   self.steeringEnabled = false     -- test
    self.save_name = true
    self.user_input_message = courseplay:get_locale(self, "CPCourseName")
  end
@@ -60,18 +61,18 @@ function courseplay:save_courses(self)
 	      for i = 1, table.getn(x) do
 	        local v = x[i]
 			local wait = 0
-			local fwd = 1
+			local rev = 0
 			if v.wait then
 			  wait = "1"
 			else
 			  wait = "0"
 			end
-			if v.fwd then
-			  fwd = "1"
+			if v.rev then
+			  rev = "1"
 			else
-			  fwd = "0"
+			  rev = "0"
 			end
-	        File:write(tab .. tab .. "<waypoint" .. i .. " pos=\"" .. v.cx .. " " .. v.cz .. "\" angle=\"" .. v.angle .. "\" fwd=\"" .. fwd .. "\" wait=\"" .. wait .. "\" />\n")
+	        File:write(tab .. tab .. "<waypoint" .. i .. " pos=\"" .. v.cx .. " " .. v.cz .. "\" angle=\"" .. v.angle .. "\" rev=\"" .. rev .. "\" wait=\"" .. wait .. "\" />\n")
 	      end
 	      File:write(tab .. "</course>\n")
       end
@@ -89,6 +90,11 @@ function courseplay:load_courses(self)
 	local finish_all = false
 	self.courses = {}
 	local path = getUserProfileAppPath() .. "savegame" .. g_careerScreen.selectedIndex .. "/"
+    local existDir = io.open (path .. "courseplay.xml")
+	if existDir == nil then
+	 return
+	end
+
 	local File = io.open(path .. "courseplay.xml", "a")
 	File:close()
 	File = loadXMLFile("courseFile", path .. "courseplay.xml")
@@ -116,18 +122,18 @@ function courseplay:load_courses(self)
 			end
 			local dangle = Utils.getVectorFromString(getXMLString(File, key .. "#angle"))
 			local wait = Utils.getVectorFromString(getXMLString(File, key .. "#wait"))
-			local fwd = Utils.getVectorFromString(getXMLString(File, key .. "#fwd"))
+			local rev = Utils.getVectorFromString(getXMLString(File, key .. "#rev"))
 			if wait == 1 then
 			  wait = true
 			else
 			  wait = false
 			end
-			if fwd == 1 then
-			  fwd = true
+			if rev == 1 then
+			  rev = true
 			else
-			  fwd = false
+			  rev = false
 			end
-			tempCourse[s] = {cx = x, cz = z, angle = dangle, fwd= fwd, wait = wait}
+			tempCourse[s] = {cx = x, cz = z, angle = dangle, rev= rev, wait = wait}
 			s = s + 1
 		  else
 		    local course = {name= name, waypoints=tempCourse}
