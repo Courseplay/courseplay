@@ -62,6 +62,11 @@
 	</text>
 
 	<text name="CourseMode4">
+		<en>Type: fertilice</en>
+		<de>Typ: Duengen</de>
+	</text>
+	
+	<text name="CourseMode5">
 		<en>Type: Target</en>
 		<de>Typ: Überführung (Route abfahren)</de>
 	</text>
