@@ -24,6 +24,17 @@ function courseplay:handle_mode1(self)
 	if self.loaded ~= true and (self.recordnumber == 2 and tipper_fill_level < tipper_capacity and self.unloaded == false and self.dist < 10) or  self.lastTrailerToFillDistance then
 		allowedToDrive = courseplay:load_tippers(self)
 		self.info_text = string.format(courseplay:get_locale(self, "CPloading") ,tipper_fill_level,tipper_capacity )
+	--[[	if self.ai_mode == 4 then
+			local activeTool = self.tippers[1]
+		    local mnum = table.getn(activeTool.sprayerFillActivatable)
+			for i=1, mnum do
+	    	print("\n %d \n", i)
+				for k,v in pairs (activeTool.sprayerFillActivatable[i])  do
+					print(k.." "..tostring(v).." "..type(v))
+				end	
+			end
+		    
+		end ]]
 	end
 
 	-- damn, i missed the trigger!
