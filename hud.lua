@@ -82,11 +82,11 @@ function courseplay:loadHud(self)
 				end
 				
 	
-				if not self.direction and self.movingDirection == 1 then
+				if not self.direction and self.movingDirection == -1 then
 				courseplay:set_direction(self)
 				end
 				
-				if self.direction and self.movingDirection == -1 then
+				if self.direction and self.movingDirection == 1 then
 				courseplay:set_direction(self)
 				end
 
