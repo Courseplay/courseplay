@@ -44,7 +44,7 @@ function courseplay:record(self)
 	end 
 	 
 	if self.tmr > 100 then 
-		self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = false, fwd = self.direction}
+		self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = false, rev = self.direction}
 		if self.recordnumber < 4 then 
 			courseplay:addsign(self, cx, cy,cz)
 		end 
@@ -61,7 +61,7 @@ function courseplay:set_waitpoint(self)
 	local dX = x/length
 	local dZ = z/length
 	local newangle = math.deg(math.atan2(dX,dZ)) 
-  self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = true, fwd = self.direction}
+  self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = true, rev = self.direction}
   self.tmr = 1
   self.recordnumber = self.recordnumber + 1
   courseplay:addsign(self, cx, cy,cz)  
@@ -76,12 +76,8 @@ function courseplay:set_direction(self)
 	local dZ = z/length
 	local newangle = math.deg(math.atan2(dX,dZ))
 	local fwd = nil
-  	self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = false, fwd = self.direction}
-	if self.direction == true then
-        self.direction = false
-	else
-		self.direction = true
-	end
+  	self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = false, rev = self.direction}
+	self.direction = not self.direction
   	self.tmr = 1
   	self.recordnumber = self.recordnumber + 1
   	courseplay:addsign(self, cx, cy,cz)
@@ -95,7 +91,7 @@ function courseplay:start_record(self)
 
 	self.recordnumber = 1
 	self.tmr = 101
-	self.direction = true
+	self.direction = false
 end		
 
 -- stops course recording -- just setting variables
@@ -126,4 +122,5 @@ function courseplay:reset_course(self)
 	self.signs = {}
 	self.play = false
 	self.back = false
+	self.abortWork = nil
 end	
