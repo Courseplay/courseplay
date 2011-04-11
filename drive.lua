@@ -1,7 +1,7 @@
 
 -- drives recored course
 function courseplay:drive(self, dt)
-  
+	  
   -- unregister at combine, if there is one
   if self.loaded == true and courseplay_position ~= nil then
     courseplay:unregister_at_combine(self, self.active_combine)
@@ -65,33 +65,57 @@ function courseplay:drive(self, dt)
 		   		self.wait = false
 		   		self.unloaded = true
 			end
-		else
-		   self.global_info_text = courseplay:get_locale(self, "CPReachedWaitPoint") --'hat Wartepunkt erreicht.'
-		end
-		
-		if self.ai_mode == 4 then
+		elseif self.ai_mode == 4 then
 			if last_recordnumber == self.startWork and fill_level ~= 0 then
 				self.wait = false
 			end
 			if last_recordnumber == self.stopWork and self.abortWork ~= nil then
 		    	self.wait = false
-			end			
-		end	
+			end
+			if last_recordnumber == self.stopWork and self.abortWork== nil then
+		    	self.global_info_text = courseplay:get_locale(self, "CPWorkEnd") --'hat Arbeit beendet.'
+			end
+			
+  		else
+		   	self.global_info_text = courseplay:get_locale(self, "CPReachedWaitPoint") --'hat Wartepunkt erreicht.'
+		end
+		
 		
      	allowedToDrive = false
 	else
 		-- abfahrer-mode
-		if ((self.ai_mode == 1 or self.ai_mode == 4) and self.tipper_attached and tipper_fill_level ~= nil) or (self.loaded and self.ai_mode == 2) then
+		if (self.ai_mode == 1 and self.tipper_attached and tipper_fill_level ~= nil) or (self.loaded and self.ai_mode == 2) then
 		-- is there a tipTrigger within 10 meters?
-		raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
+			raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
 		-- handle mode
-		allowedToDrive, active_tipper = courseplay:handle_mode1(self)
+			allowedToDrive, active_tipper = courseplay:handle_mode1(self)
 		end
 		
 		-- combi-mode
 		if (((self.ai_mode == 2 or self.ai_mode == 3) and self.recordnumber < 2) or self.active_combine) and self.tipper_attached then	      
 		  return courseplay:handle_mode2(self, dt)
 		end
+		
+		-- Fertilice loading --only for one Implement !
+		if self.ai_mode == 4 and self.tipper_attached then
+			if self.recordnumber == 2 and fill_level < 100 and not self.loaded then   --or self.loaded
+				allowedToDrive = false
+		    	self.info_text = string.format(courseplay:get_locale(self, "CPloading") ,tipper_fill_level,tipper_capacity )
+				if self.tippers ~= nil then
+					local tools= table.getn(self.tippers)
+					for i=1, tools do
+						local activeTool = self.tippers[i]
+		            	if activeTool.sprayerFillActivatable:getIsActivatable() == true then
+		            		if activeTool.isSprayerFilling == false and fill_level < 100 then
+								activeTool.sprayerFillActivatable:onActivateObject()
+							end
+						end
+					end
+				end
+			else 
+				allowedToDrive = true		 		    
+			end 
+ 		end
   	end
   
   allowedToDrive = courseplay:check_traffic(self, true, allowedToDrive)
@@ -118,12 +142,12 @@ function courseplay:drive(self, dt)
 	local workSpeed = nil
 	local workTool = self.tippers[1] -- to do, quick, dirty and unsafe
 	
-	if self.ai_mode == 4 then
+	if self.ai_mode == 4 and self.tipper_attached then
 		workArea = (self.recordnumber > self.startWork) and (self.recordnumber < self.stopWork)
 		-- Beginn Work
 		if last_recordnumber == self.startWork and fill_level ~= 0 then
 			if self.abortWork ~= nil then
-				self.recordnumber = self.abortWork
+				self.recordnumber = self.abortWork - 1
 			end
 		end
 		-- last point reached restart
@@ -208,7 +232,7 @@ function courseplay:drive(self, dt)
 	end
 	-- go, go, go!
 	if self.recordnumber + 1 <= self.maxnumber then
-		if self.Waypoints[self.recordnumber].rev or self.Waypoints[self.recordnumber].wait or self.Waypoints[self.recordnumber+1].rev then
+		if self.Waypoints[self.recordnumber].rev or self.Waypoints[self.recordnumber].wait or self.Waypoints[self.recordnumber+1].rev or self.recordnumber == 1 then
 			distToChange = 1
 		else	
 			distToChange = 5
