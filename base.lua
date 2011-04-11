@@ -73,6 +73,7 @@ function courseplay:load(xmlFile)
 	self.locales.CPNoCourseLoaded = g_i18n:getText("CPNoCourseLoaded")
 	self.locales.CPWaypoint = g_i18n:getText("CPWaypoint")
 	self.locales.CPNoWaypoint = g_i18n:getText("CPNoWaypoint")
+	self.locales.CPWorkEnd = g_i18n:getText("CPWorkEnd")
 	self.locales.CPFieldSpeed = g_i18n:getText("CPFieldSpeed")
 	self.locales.CPMaxSpeed = g_i18n:getText("CPMaxSpeed")	
 	self.locales.CPFindAuto = g_i18n:getText("CPFindAuto")
@@ -358,6 +359,39 @@ function courseplay:draw()
 	end
 
     courseplay:showHud(self)
+    
+    -- InputBinding.hasEvent(InputBinding.AHInput3) then         -- only for testing
+--		self.testhe = not self.testhe
+--	end
+
+    
+   -- if self.testhe then
+     -- local mnum = table.getn(self.attachedImplements)
+	--	for i=1, mnum do
+	    --	print("\n%d\n", i)
+			----for k,v in pairs (self.attachedImplements[i].object)  do
+			--	print(k.." "..tostring(v).." "..type(v))
+				--local mnum2 =  table.getn(self.attachedImplements[i].object.SprayerFillActivatable)
+			--		for k,v in pairs (self.attachedImplements[i].object)  do
+				    	-- print(k.." "..tostring(v).." "..type(v))
+				--    end
+			--	sprayerFillActivatable:getIsActivatable()
+			--end
+	--	end
+		--updateActivateText()
+				--		local testmax= table.getn(self.attachedImplements[1].object.sprayerFillActivatable)
+		          --  for i=1,testmax do
+		            --	    for k,v in pairs (self.attachedImplements[1].object.sprayerFillActivatable) do -- for test
+					--			print(k.." "..tostring(v).." "..type(v))
+					--		end
+					--	end
+	--	self.testhe = false
+		
+	--	if self.attachedImplements[1].object.isSprayerFilling == false then
+	--	self.attachedImplements[1].object.sprayerFillActivatable:onActivateObject()
+	--	self.testhe = false
+	--	end 
+   -- end
     
 end
 
