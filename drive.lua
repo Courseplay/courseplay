@@ -127,13 +127,13 @@ function courseplay:drive(self, dt)
 			end
 		end
 		-- last point reached restart
-		if last_recordnumber == self.abortWork and fill_level ~= 0 then
+		if last_recordnumber == self.abortWork and fill_level ~= 0 and self.abortWork ~= nil then
 			self.abortWork = nil
 		end
 		-- safe last point
-		if fill_level == 0 and workArea and self.recordnumber ~= self.stopWork then
+		if fill_level == 0 and workArea and self.abortWork == nil then
 			self.abortWork = self.recordnumber
-			self.recordnumber = self.stopWork
+			self.recordnumber = self.stopWork - 4
 		--	print(string.format("Abort: %d StopWork: %d",self.abortWork,self.stopWork))
         end
 

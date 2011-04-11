@@ -26,7 +26,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 		  		table.insert(self.tippers, object)
 			end 
 		elseif self.ai_mode == 3 then -- Overlader
-			if SpecializationUtil.hasSpecialization(Overcharge, object.specializations) or SpecializationUtil.hasSpecialization(BrentAvalanche1594, v.object.specializations) then
+			if SpecializationUtil.hasSpecialization(Trailer, object.specializations) then --to do 
 		  		tipper_attached = true
 		  		table.insert(self.tippers, object)
 			end
