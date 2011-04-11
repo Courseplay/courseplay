@@ -172,6 +172,11 @@
       <en>has reached waitpoint.</en>
       <de>hat Wartepunkt erreicht.</de>
     </text>
+
+    <text name="CPWorkEnd">
+      <en>has work finished.</en>
+      <de>hat die Aufgabe erledigt.</de>
+    </text>
     
     <text name="CPInTraffic">
       <en> is in traffic.</en>
