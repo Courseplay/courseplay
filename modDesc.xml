@@ -299,6 +299,10 @@
       <de>Kurse verwalten</de>
     </text>
     
+    <text name="CPCourseAdded">
+      <en>course combined</en>
+      <de>Kombinierter Kurs</de>
+    </text>
     
     <text name="CPCombiSettings">
       <en>Settings combi mode</en>

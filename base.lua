@@ -65,6 +65,7 @@ function courseplay:load(xmlFile)
 	self.locales.CPTriggerReached= g_i18n:getText("CPTriggerReached")
 	self.locales.CPSteering= g_i18n:getText("CPSteering")
 	self.locales.CPManageCourses= g_i18n:getText("CPManageCourses")
+	self.locales.CPCourseAdded= g_i18n:getText("CPCourseAdded")
 	self.locales.CPCombiSettings= g_i18n:getText("CPCombiSettings")
 	self.locales.CPManageCombines= g_i18n:getText("CPManageCombines")
 	self.locales.CPSpeedLimit= g_i18n:getText("CPSpeedLimit")	
@@ -360,21 +361,51 @@ function courseplay:draw()
 
     courseplay:showHud(self)
     
-    -- InputBinding.hasEvent(InputBinding.AHInput3) then         -- only for testing
+   -- if InputBinding.hasEvent(InputBinding.AHInput3) then         -- only for testing
 --		self.testhe = not self.testhe
 --	end
 
     
+    
    -- if self.testhe then
      -- local mnum = table.getn(self.attachedImplements)
 	--	for i=1, mnum do
-	    --	print("\n%d\n", i)
-			----for k,v in pairs (self.attachedImplements[i].object)  do
-			--	print(k.." "..tostring(v).." "..type(v))
+	     --   print("\nAttachedImplement\n")
+		--	for k,v in pairs (self.attachedImplements[1])  do
+		--	print(k.." "..tostring(v).." "..type(v))
+		--	end
+	   --[[ 	print("\nSelf\n")
+			for k,v in pairs (self)  do
+			print(k.." "..tostring(v).." "..type(v))
+			end
+			print("\nOwnert\n")
+			for k,v in pairs (self.owner)  do
+			print(k.." "..tostring(v).." "..type(v))
+			end
+			print("\nMission\n")
+			for k,v in pairs (g_currentMission)  do
+			print(k.." "..tostring(v).." "..type(v))
+			end ]]
+		--[[		print("\nTrigger\n")
+			local z=0;
+			for k,v in pairs(g_currentMission.chatMessages) do
+				z=z+1;
+				print("TipTrigger: " .. tostring(z));
+				print(tostring(k) .."("..type(v)..")="..tostring(v));
+				for i,j in pairs(g_currentMission.chatMessages[k]) do
+					print(tostring(i).."("..type(j)..")="..tostring(j));
+				end;
+			end; ]]
+		--	if g_currentMission.hasRefuelStationInRange then
+		--	    g_currentMission:startRefuel(true)
+		--	end
+	--		if g_currentMission.hasRefuelStationInRange then
+		--	    g_currentMission:stopRefuel()
+		--	end
 				--local mnum2 =  table.getn(self.attachedImplements[i].object.SprayerFillActivatable)
 			--		for k,v in pairs (self.attachedImplements[i].object)  do
 				    	-- print(k.." "..tostring(v).." "..type(v))
-				--    end
+				   -- end
 			--	sprayerFillActivatable:getIsActivatable()
 			--end
 	--	end
@@ -391,7 +422,7 @@ function courseplay:draw()
 	--	self.attachedImplements[1].object.sprayerFillActivatable:onActivateObject()
 	--	self.testhe = false
 	--	end 
-   -- end
+   -- end                 -- only for testing
     
 end
 

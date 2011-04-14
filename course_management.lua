@@ -19,12 +19,21 @@ function courseplay:load_course(self, id)
   	if course == nil then
   	  return
   	end
-  	courseplay:reset_course(self)
-  	self.Waypoints = course.waypoints
+  --	courseplay:reset_course(self)
+  	if table.getn(self.Waypoints) == 0 then
+    	self.Waypoints = course.waypoints
+    	self.current_course_name = course.name
+	else -- Add new course to old course
+		local lastWP = table.getn(self.Waypoints)
+  		local lastNewWP = table.getn(course.waypoints)
+  		for i=1,lastNewWP do
+  			self.Waypoints[lastWP+i] = course.waypoints[i]
+  		end
+  		self.current_course_name = self.locales.CPCourseAdded
+  	end
 	self.play = true
 	self.recordnumber = 1
 	self.maxnumber = table.getn(self.Waypoints)
-  	self.current_course_name = course.name
 	-- this adds the signs to the course
 	for k,wp in pairs(self.Waypoints) do
   	  if k <= 3 or wp.wait == true then

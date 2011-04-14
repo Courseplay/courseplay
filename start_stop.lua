@@ -1,7 +1,7 @@
 -- starts driving the course
 function courseplay:start(self)    
 	
-	if table.getn(self.Waypoints) < 1 and self.drive then
+	if table.getn(self.Waypoints) < 1 then
 	  return
 	end
 	
