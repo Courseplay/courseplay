@@ -12,7 +12,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
     end
     InputBinding.setShowMouseCursor(self.mouse_enabled)
   end
-  if isDown and self.show_hud and self.isEntered then
+  if isDown and button == 1 and self.show_hud and self.isEntered then
     --print(string.format("posX: %f posY: %f",posX,posY))
     
     for _,button in pairs(self.buttons) do
