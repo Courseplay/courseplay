@@ -105,7 +105,7 @@ function courseplay:drive(self, dt)
 					local tools= table.getn(self.tippers)
 					for i=1, tools do
 						local activeTool = self.tippers[i]
-		            	if activeTool.sprayerFillActivatable:getIsActivatable() == true then
+		            	if activeTool.sprayerFillActivatable:getIsActivatable() == true then  -- unsafe
 		            		if activeTool.isSprayerFilling == false and fill_level < 100 then
 								activeTool.sprayerFillActivatable:onActivateObject()
 							end
@@ -147,12 +147,14 @@ function courseplay:drive(self, dt)
 		-- Beginn Work
 		if last_recordnumber == self.startWork and fill_level ~= 0 then
 			if self.abortWork ~= nil then
-				self.recordnumber = self.abortWork - 1
+				self.recordnumber = self.abortWork - 2
 			end
 		end
 		-- last point reached restart
-		if last_recordnumber == self.abortWork and fill_level ~= 0 and self.abortWork ~= nil then
+		if self.abortWork ~= nil then
+			if (last_recordnumber == self.abortWork - 2 )and fill_level ~= 0 then
 			self.abortWork = nil
+			end
 		end
 		-- safe last point
 		if fill_level == 0 and workArea and self.abortWork == nil then
