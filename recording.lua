@@ -16,8 +16,14 @@ function courseplay:record(self)
 		local oldcx ,oldcz ,oldangle= self.Waypoints[self.recordnumber - 1].cx,self.Waypoints[self.recordnumber - 1].cz,self.Waypoints[self.recordnumber - 1].angle
 		anglediff = math.abs(newangle - oldangle)
 		self.dist = courseplay:distance(cx ,cz ,oldcx ,oldcz)
-		if self.dist > 5 and (anglediff > 5 or dist > 10) then
-			self.tmr = 101
+		if self.direction then
+		 	if self.dist > 2 and (anglediff > 2 or dist > 10) then
+				self.tmr = 101
+			end
+		else
+			if self.dist > 5 and (anglediff > 5 or dist > 10) then
+				self.tmr = 101
+			end
 		end
 	end 
 
@@ -45,7 +51,7 @@ function courseplay:record(self)
 	 
 	if self.tmr > 100 then 
 		self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = false, rev = self.direction}
-		if self.recordnumber < 4 then 
+		if self.recordnumber < 4 then
 			courseplay:addsign(self, cx, cy,cz)
 		end 
 		self.tmr = 1

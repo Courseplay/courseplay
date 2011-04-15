@@ -234,7 +234,9 @@ function courseplay:drive(self, dt)
 	end
 	-- go, go, go!
 	if self.recordnumber + 1 <= self.maxnumber then
-		if self.Waypoints[self.recordnumber].rev or self.Waypoints[self.recordnumber].wait or self.Waypoints[self.recordnumber+1].rev or self.recordnumber == 1 then
+	local beforeReverse = (self.Waypoints[self.recordnumber+1].rev and not self.Waypoints[last_recordnumber].rev)
+	local afterReverse =  (not self.Waypoints[self.recordnumber+1].rev and self.Waypoints[last_recordnumber].rev)
+		if self.Waypoints[self.recordnumber].wait or self.recordnumber == 1 or beforeReverse or afterReverse then
 			distToChange = 1
 		else	
 			distToChange = 5
