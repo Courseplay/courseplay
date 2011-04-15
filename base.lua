@@ -112,6 +112,11 @@ function courseplay:load(xmlFile)
 	self.locales.CourseMode3 = g_i18n:getText("CourseMode3")
 	self.locales.CourseMode4 = g_i18n:getText("CourseMode4")
 	self.locales.CourseMode5 = g_i18n:getText("CourseMode5")
+	self.locales.CPFuelWarning = g_i18n:getText("CPFuelWarning")
+    self.locales.CPNoFuelStop = g_i18n:getText("CPNoFuelStop")
+	self.locales.CPWrongTrailer = g_i18n:getText("CPWrongTrailer")
+    self.locales.CPNoWorkArea = g_i18n:getText("CPNoWorkArea")
+
 	
 	self.lastGui = nil
 	self.currentGui = nil
@@ -361,31 +366,31 @@ function courseplay:draw()
 
     courseplay:showHud(self)
     
-   -- if InputBinding.hasEvent(InputBinding.AHInput3) then         -- only for testing
---		self.testhe = not self.testhe
---	end
+  --[[	if InputBinding.hasEvent(InputBinding.AHInput3) then         -- only for testing
+		self.testhe = not self.testhe
+	end
 
     
     
-   -- if self.testhe then
+   if self.testhe then
      -- local mnum = table.getn(self.attachedImplements)
 	--	for i=1, mnum do
 	     --   print("\nAttachedImplement\n")
 		--	for k,v in pairs (self.attachedImplements[1])  do
 		--	print(k.." "..tostring(v).." "..type(v))
 		--	end
-	   --[[ 	print("\nSelf\n")
+	    	print("\nSelf\n")
 			for k,v in pairs (self)  do
 			print(k.." "..tostring(v).." "..type(v))
 			end
-			print("\nOwnert\n")
+			print("\nWheels\n")
 			for k,v in pairs (self.owner)  do
 			print(k.." "..tostring(v).." "..type(v))
 			end
 			print("\nMission\n")
 			for k,v in pairs (g_currentMission)  do
 			print(k.." "..tostring(v).." "..type(v))
-			end ]]
+			end   ]]
 		--[[		print("\nTrigger\n")
 			local z=0;
 			for k,v in pairs(g_currentMission.chatMessages) do
@@ -403,9 +408,15 @@ function courseplay:draw()
 		--	    g_currentMission:stopRefuel()
 		--	end
 				--local mnum2 =  table.getn(self.attachedImplements[i].object.SprayerFillActivatable)
-			--		for k,v in pairs (self.attachedImplements[i].object)  do
-				    	-- print(k.." "..tostring(v).." "..type(v))
-				   -- end
+               --[[     print("\nChat Messages\n")
+					for k,v in pairs (g_currentMission.chatMessages)  do
+				    	 print(k.." "..tostring(v).." "..type(v))
+				    end
+				    print("\nGame Messages\n")
+					for k,v in pairs (g_currentMission.inGameMessage)  do
+				    	 print(k.." "..tostring(v).." "..type(v))
+				    end ]]
+				  --  print(string.format("FillLevel: %d ",self.fuelFillLevel ))
 			--	sprayerFillActivatable:getIsActivatable()
 			--end
 	--	end
@@ -421,7 +432,7 @@ function courseplay:draw()
 	--	if self.attachedImplements[1].object.isSprayerFilling == false then
 	--	self.attachedImplements[1].object.sprayerFillActivatable:onActivateObject()
 	--	self.testhe = false
-	--	end 
+		--end
    -- end                 -- only for testing
     
 end

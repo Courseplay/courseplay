@@ -97,7 +97,7 @@ function courseplay:drive(self, dt)
 		end
 		
 		-- Fertilice loading --only for one Implement !
-		if self.ai_mode == 4 and self.tipper_attached then
+		if self.ai_mode == 4 and self.tipper_attached and self.startWork ~= nil and self.stopWork ~= nil then
 			if self.recordnumber == 2 and fill_level < 100 and not self.loaded then   --or self.loaded
 				allowedToDrive = false
 		    	self.info_text = string.format(courseplay:get_locale(self, "CPloading") ,tipper_fill_level,tipper_capacity )
@@ -105,16 +105,31 @@ function courseplay:drive(self, dt)
 					local tools= table.getn(self.tippers)
 					for i=1, tools do
 						local activeTool = self.tippers[i]
-		            	if activeTool.sprayerFillActivatable:getIsActivatable() == true then  -- unsafe
+		            	if activeTool.sprayerFillActivatable:getIsActivatable() == true then  -- only work with self on tractor to do
 		            		if activeTool.isSprayerFilling == false and fill_level < 100 then
 								activeTool.sprayerFillActivatable:onActivateObject()
 							end
 						end
 					end
 				end
-			else 
+   			else
 				allowedToDrive = true		 		    
-			end 
+			end
+        elseif  self.ai_mode == 4 and (self.startWork == nil or self.stopWork == nil) then
+			allowedToDrive = false
+			self.info_text = self.locales.CPNoWorkArea
+ 		end
+ 		
+ 		if self.ai_mode ~= 5 and not self.tipper_attached then
+ 		    self.info_text = self.locales.CPWrongTrailer
+ 		    allowedToDrive = false
+		end
+ 		
+ 		if self.fuelFillLevel < 50 then
+ 			self.global_info_text = self.locales.CPFuelWarning
+		elseif self.fuelFillLevel < 25 then
+		    allowedToDrive = false
+		    self.global_info_text = self.locales.CPNoFuelStop
  		end
   	end
   
@@ -123,7 +138,7 @@ function courseplay:drive(self, dt)
   -- stop or hold position
   if not allowedToDrive then  
      self.motor:setSpeedLevel(0, false);     
-     AIVehicleUtil.driveInDirection(self, dt, 30, 0, 0, 28, false, moveForwards, 0, 1)	
+     AIVehicleUtil.driveInDirection(self, dt, 30, 0.5, 0.5, 28, false, moveForwards, 0, 1)
 	 
      -- unload active tipper if given
      if active_tipper then
@@ -142,7 +157,7 @@ function courseplay:drive(self, dt)
 	local workSpeed = nil
 	local workTool = self.tippers[1] -- to do, quick, dirty and unsafe
 	
-	if self.ai_mode == 4 and self.tipper_attached then
+	if self.ai_mode == 4 and self.tipper_attached and self.startWork ~= nil and self.stopWork ~= nil   then
 		workArea = (self.recordnumber > self.startWork) and (self.recordnumber < self.stopWork)
 		-- Beginn Work
 		if last_recordnumber == self.startWork and fill_level ~= 0 then
@@ -238,6 +253,8 @@ function courseplay:drive(self, dt)
 	local afterReverse =  (not self.Waypoints[self.recordnumber+1].rev and self.Waypoints[last_recordnumber].rev)
 		if self.Waypoints[self.recordnumber].wait or self.recordnumber == 1 or beforeReverse or afterReverse then
 			distToChange = 1
+		elseif self.Waypoints[self.recordnumber].rev then
+		    distToChange = 3
 		else	
 			distToChange = 5
 		end
@@ -246,7 +263,7 @@ function courseplay:drive(self, dt)
 	end
 	
 	if self.dist > distToChange then
-	  AIVehicleUtil.driveInDirection(self, dt,  28, 0.5, 0.5, 8, true, fwd, lx, lz , self.sl, 0.5);
+	  AIVehicleUtil.driveInDirection(self, dt, 30, 0.5, 0.5, 8, true, fwd, lx, lz , self.sl, 0.5);
 	  courseplay:set_traffc_collision(self, lx, lz)
   	else	     
 		if self.recordnumber < self.maxnumber  then

@@ -298,6 +298,12 @@
       <en>manage courses</en>
       <de>Kurse verwalten</de>
     </text>
+
+    
+    <text name="CPNoWorkArea">
+      <en>no work area at this course</en>
+      <de>Kein Arbeitsbereich in diesem Kurs</de>
+    </text>
     
     <text name="CPCourseAdded">
       <en>course combined</en>
@@ -369,6 +375,21 @@
     <text name="CPFollowTractor">
       <en>following tractor</en>
       <de>Fahre hinter Traktor</de>
+    </text>
+
+    <text name="CPFuelWarning">
+      <en>to refuel soon</en>
+      <de>sollte aufgetankt werden</de>
+    </text>
+   
+    <text name="CPNoFuelStop">
+      <en>must be refueled</en>
+      <de>muss aufgetankt werden</de>
+    </text>
+	
+    <text name="CPWrongTrailer">
+      <en>wrong trailer for this mode</en>
+      <de>falscher Trailer für diesen Modus</de>
     </text>
     
 
