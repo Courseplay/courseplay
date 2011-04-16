@@ -20,8 +20,8 @@ function courseplay:update_tools(self, tractor_or_implement)
 	for k,implement in pairs(tractor_or_implement.attachedImplements) do
 		local object = implement.object
 		if self.ai_mode == 1 or self.ai_mode == 2 then
-			if SpecializationUtil.hasSpecialization(Trailer, object.specializations) then
-			--if object.allowTipDischarge then
+		--	if SpecializationUtil.hasSpecialization(Trailer, object.specializations) then
+			if object.allowTipDischarge then
 		  		tipper_attached = true
 		  		table.insert(self.tippers, object)
 			end 
