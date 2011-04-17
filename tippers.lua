@@ -17,24 +17,41 @@ end
 function courseplay:update_tools(self, tractor_or_implement)    
   local tipper_attached = false
   -- go through all implements
-  for k,implement in pairs(tractor_or_implement.attachedImplements) do
-    
-    local object = implement.object
-    
-    if object.allowTipDischarge or object.allowFillFromAir then
-      tipper_attached = true
-      table.insert(self.tippers, object)
-    end
-    
-	-- are there more tippers attached to the current implement?
-    if table.getn(object.attachedImplements) ~= 0 then	  
-      courseplay:update_tools(self, object)
-    end
-  end
-  if tipper_attached then
-    return true
-  end
-  return nil
+	for k,implement in pairs(tractor_or_implement.attachedImplements) do
+		local object = implement.object
+		if self.ai_mode == 1 or self.ai_mode == 2 then
+		--	if SpecializationUtil.hasSpecialization(Trailer, object.specializations) then
+			if object.allowTipDischarge then
+		  		tipper_attached = true
+		  		table.insert(self.tippers, object)
+			end 
+		elseif self.ai_mode == 3 then -- Overlader
+			if SpecializationUtil.hasSpecialization(Trailer, object.specializations) then --to do 
+		  		tipper_attached = true
+		  		table.insert(self.tippers, object)
+			end
+		elseif self.ai_mode == 4 then -- Fertilizer
+			if SpecializationUtil.hasSpecialization(Sprayer, object.specializations) then
+		  		tipper_attached = true
+		  		table.insert(self.tippers, object)
+			end
+		end
+		-- are there more tippers attached to the current implement?
+		if table.getn(object.attachedImplements) ~= 0 then
+		  courseplay:update_tools(self, object)
+		end
+	end
+--[[local mnum = table.getn(self.tippers)
+	for i=1, mnum do
+	    print("/n%d/n", i)
+		for k,v in pairs (self.tippers[i])  do
+			print(k.." "..tostring(v).." "..type(v))
+		end	
+	end]]
+	if tipper_attached then
+		return true
+	end
+	return nil
 end
 
 

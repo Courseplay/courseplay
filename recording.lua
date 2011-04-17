@@ -5,7 +5,8 @@ function courseplay:record(self)
 	local length = Utils.vector2Length(x,z);
 	local dX = x/length
 	local dZ = z/length
-	local newangle = math.deg(math.atan2(dX,dZ)) 
+	local newangle = math.deg(math.atan2(dX,dZ))
+	local fwd = self.direction
 
 
 	if self.recordnumber < 2 then
@@ -15,8 +16,14 @@ function courseplay:record(self)
 		local oldcx ,oldcz ,oldangle= self.Waypoints[self.recordnumber - 1].cx,self.Waypoints[self.recordnumber - 1].cz,self.Waypoints[self.recordnumber - 1].angle
 		anglediff = math.abs(newangle - oldangle)
 		self.dist = courseplay:distance(cx ,cz ,oldcx ,oldcz)
-		if self.dist > 5 and (anglediff > 5 or dist > 10) then
-			self.tmr = 101
+		if self.direction then
+		 	if self.dist > 3 and (anglediff > 2 or dist > 5)  then
+				self.tmr = 101
+			end
+		else
+			if self.dist > 5 and (anglediff > 5 or dist > 10) then
+				self.tmr = 101
+			end
 		end
 	end 
 
@@ -43,10 +50,10 @@ function courseplay:record(self)
 	end 
 	 
 	if self.tmr > 100 then 
-		self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = false}
-		if self.recordnumber < 4 then 
+		self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = false, rev = self.direction}
+		if self.recordnumber < 4 then
 			courseplay:addsign(self, cx, cy,cz)
-		end 
+		end
 		self.tmr = 1
 		self.recordnumber = self.recordnumber + 1
 	end
@@ -60,13 +67,27 @@ function courseplay:set_waitpoint(self)
 	local dX = x/length
 	local dZ = z/length
 	local newangle = math.deg(math.atan2(dX,dZ)) 
-  self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = true}
+  self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = true, rev = self.direction}
   self.tmr = 1
   self.recordnumber = self.recordnumber + 1
   courseplay:addsign(self, cx, cy,cz)  
 end
 
-
+-- set Waypoint before change direction
+function courseplay:set_direction(self)
+	local cx,cy,cz = getWorldTranslation(self.rootNode);
+	local x,y,z = localDirectionToWorld(self.rootNode, 0, 0, 1);
+	local length = Utils.vector2Length(x,z);
+	local dX = x/length
+	local dZ = z/length
+	local newangle = math.deg(math.atan2(dX,dZ))
+	local fwd = nil
+  	self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = false, rev = self.direction}
+	self.direction = not self.direction
+  	self.tmr = 1
+  	self.recordnumber = self.recordnumber + 1
+  	courseplay:addsign(self, cx, cy,cz)
+end
 -- starts course recording -- just setting variables
 function courseplay:start_record(self)
     courseplay:reset_course(self)
@@ -76,6 +97,7 @@ function courseplay:start_record(self)
 
 	self.recordnumber = 1
 	self.tmr = 101
+	self.direction = false
 end		
 
 -- stops course recording -- just setting variables
@@ -106,4 +128,5 @@ function courseplay:reset_course(self)
 	self.signs = {}
 	self.play = false
 	self.back = false
+	self.abortWork = nil
 end	

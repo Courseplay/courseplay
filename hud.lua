@@ -80,9 +80,18 @@ function courseplay:loadHud(self)
 				if InputBinding.hasEvent(InputBinding.AHInput2) then
 					courseplay:set_waitpoint(self)
 				end
+				
+	
+				if not self.direction and self.movingDirection == -1 then
+				courseplay:set_direction(self)
+				end
+				
+				if self.direction and self.movingDirection == 1 then
+				courseplay:set_direction(self)
+				end
+
 			end
 		end
-	
 
 	
 	  elseif self.showHudInfoBase == 2 then
@@ -155,7 +164,7 @@ function courseplay:loadHud(self)
 	    self.hudpage[4][1][1]= courseplay:get_locale(self, "CPSelectCombine") -- "Drescher wählen:"
 	    self.hudpage[4][1][2]= courseplay:get_locale(self, "CPCombineSearch") -- "Dreschersuche:"
 	    self.hudpage[4][1][3]= courseplay:get_locale(self, "CPActual") -- "Aktuell:"
-	    self.hudpage[4][1][3]= courseplay:get_locale(self, "CPMaxHireables") -- "Aktuell:"
+	    self.hudpage[4][1][4]= courseplay:get_locale(self, "CPMaxHireables") -- "Aktuell:"
 	  	self.hudpage[4][2][4] = string.format("%d", g_currentMission.maxNumHirables)
 	  
 	    if self.active_combine ~= nil then

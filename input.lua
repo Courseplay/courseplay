@@ -12,7 +12,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
     end
     InputBinding.setShowMouseCursor(self.mouse_enabled)
   end
-  if isDown and self.show_hud and self.isEntered then
+  if isDown and button == 1 and self.show_hud and self.isEntered then
     --print(string.format("posX: %f posY: %f",posX,posY))
     
     for _,button in pairs(self.buttons) do
@@ -186,15 +186,15 @@ end;
 function courseplay:handle_user_input(self)
 	-- name for current_course
 	if self.save_name then
-	   courseplay:load_courses(self)
-	   self.user_input_active = false
-	   self.current_course_name = self.user_input
-	   course = {name =self.current_course_name, waypoints = self.Waypoints}
-	   table.insert(self.courses, course)
-	   self.user_input = ""	   
-	   self.user_input_message = nil
-	   
-	   courseplay:save_courses(self)
+		courseplay:load_courses(self)
+		self.user_input_active = false
+		self.current_course_name = self.user_input
+		course = {name =self.current_course_name, waypoints = self.Waypoints}
+		table.insert(self.courses, course)
+		self.user_input = ""	   
+		self.user_input_message = nil
+		self.steeringEnabled = true   --test
+		courseplay:save_courses(self)
 	end
 end
 

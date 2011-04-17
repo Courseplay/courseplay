@@ -267,18 +267,24 @@ function courseplay:unload_combine(self, dt)
 	    
 	    -- turn left
 	    self.turn_factor = 5
-	    
 	    -- insert waypoint behind combine
-	    local next_x, next_y, next_z = localToWorld(combine.rootNode, 0, 0, -10)
-	    local next_wp = {x = next_x, y=next_y, z=next_z}
-	    table.insert(self.next_targets, next_wp) 
-	    
-	    -- insert another point behind combine
-	    local next_x, next_y, next_z = localToWorld(combine.rootNode, 0, 0, -30)
-	    local next_wp = {x = next_x, y=next_y, z=next_z}
-	    
-	    table.insert(self.next_targets, next_wp) 
-	    mode = 9
+    	local leftFruit, rightFruit =  courseplay:side_to_drive(self, combine, 20) 
+        local next_x, next_y, next_z = localToWorld(combine.rootNode, 5, 0, -10)
+		if leftFruit > rightFruit then
+			next_x, next_y, next_z = localToWorld(combine.rootNode, -5, 0, -10)
+		end
+		local next_wp = {x = next_x, y=next_y, z=next_z}
+		table.insert(self.next_targets, next_wp)	
+		
+		-- insert another point behind combine
+       	local next_x, next_y, next_z = localToWorld(combine.rootNode, 5, 0, -30)
+       	if leftFruit > rightFruit then
+			next_x, next_y, next_z = localToWorld(combine.rootNode, -5, 0, -30)
+		end
+        local next_wp = {x = next_x, y=next_y, z=next_z}
+		table.insert(self.next_targets, next_wp)
+		
+		mode = 9
 	    -- ai_state when waypoint is reached
 	    self.next_ai_state = 1
 	    --else	    
