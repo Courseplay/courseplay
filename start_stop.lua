@@ -10,6 +10,16 @@ function courseplay:start(self)
 	self.drive  = false
 	self.record = false
 	
+	
+	if self.ai_mode == 4 and self.tipper_attached then
+	  local start_anim_time =  self.tippers[1].startAnimTime 
+	  if start_anim_time == 1 then
+	    self.fold_move_direction = 1
+	  else
+	  	self.fold_move_direction = -1  
+	  end
+	end
+	
 	if self.recordnumber < 1 then
 	  self.recordnumber = 1
 	end

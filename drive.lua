@@ -180,9 +180,15 @@ function courseplay:drive(self, dt)
 
 		if workArea and fill_level ~= 0 and self.abortWork == nil then
 			workSpeed = true
+			if SpecializationUtil.hasSpecialization(Foldable, workTool.specializations) then
+			  workTool:setFoldDirection(self.fold_move_direction*-1)
+			end
 			workTool:setIsTurnedOn(true,false)
 		else
 			workSpeed = false
+			if SpecializationUtil.hasSpecialization(Foldable, workTool.specializations) then
+			  workTool:setFoldDirection(self.fold_move_direction)
+			end
 			workTool:setIsTurnedOn(false,false)
 		end 
 		

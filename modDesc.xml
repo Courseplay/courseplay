@@ -24,7 +24,7 @@
 		<en>store.png</en>
 		<de>store.png</de>
  	</iconFilename>
-	<version>1.00</version>
+	<version>1.13</version>
     <l10n>
 	<text name="PointRecordStart">
 		<en>Record Course Start</en>
