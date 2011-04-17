@@ -133,31 +133,14 @@ function courseplay:drive(self, dt)
  		end
   	end
   
-  allowedToDrive = courseplay:check_traffic(self, true, allowedToDrive)
-   
-  -- stop or hold position
-  if not allowedToDrive then  
-     self.motor:setSpeedLevel(0, false);     
-     AIVehicleUtil.driveInDirection(self, dt, 30, 0.5, 0.5, 28, false, moveForwards, 0, 1)
-	 
-     -- unload active tipper if given
-     if active_tipper then
-       self.info_text = string.format(courseplay:get_locale(self, "CPUnloading"), tipper_fill_level,tipper_capacity )
-       if active_tipper.tipState == 0 then				  
-		  active_tipper:toggleTipState(self.currentTipTrigger)		  
-		  self.unloading_tipper = active_tipper
-       end       
-     end
-     -- important, otherwhise i would drive on
-     return;
-   end
-  
-  -- ai_mode 4 = fertilize
+   -- ai_mode 4 = fertilize
 	local workArea = nil
 	local workSpeed = nil
 	local workTool = self.tippers[1] -- to do, quick, dirty and unsafe
 	
 	if self.ai_mode == 4 and self.tipper_attached and self.startWork ~= nil and self.stopWork ~= nil   then
+		local IsFoldable = SpecializationUtil.hasSpecialization(Foldable, workTool.specializations)
+	
 		workArea = (self.recordnumber > self.startWork) and (self.recordnumber < self.stopWork)
 		-- Beginn Work
 		if last_recordnumber == self.startWork and fill_level ~= 0 then
@@ -178,24 +161,80 @@ function courseplay:drive(self, dt)
 		--	print(string.format("Abort: %d StopWork: %d",self.abortWork,self.stopWork))
         end
 
+		
+		
+		-- stop while folding	
+		local isInvalid = true;
+			
+		if IsFoldable then
+		  for k,foldingPart in pairs(workTool.foldingParts) do
+		  	local charSet = foldingPart.animCharSet;
+		  	local animTime = nil
+		  	 if charSet ~= 0 then
+		  	   animTime = getAnimTrackTime(charSet, 0);
+		  	 else
+		  	   animTime = workTool:getRealAnimationTime(foldingPart.animationName);
+		  	 end;
+		  	 
+		  	 if animTime ~= nil then
+		  	   if workTool.foldMoveDirection > 0.1 then
+		  	     if animTime < foldingPart.animDuration then
+		  	        isInvalid = false;
+		  	     end
+		  	   else
+		  	 	  if animTime > 0 then
+		  	 	    isInvalid = false;
+		  	 	  end
+		  	   end
+		  	   
+		  	   allowedToDrive = isInvalid
+		  	 end
+		    
+		  end		  
+		end
+		
 		if workArea and fill_level ~= 0 and self.abortWork == nil then
-			workSpeed = true
-			if SpecializationUtil.hasSpecialization(Foldable, workTool.specializations) then
-			  workTool:setFoldDirection(self.fold_move_direction*-1)
-			end
-			workTool:setIsTurnedOn(true,false)
-		else
-			workSpeed = false
-			if SpecializationUtil.hasSpecialization(Foldable, workTool.specializations) then
-			  workTool:setFoldDirection(self.fold_move_direction)
-			end
-			workTool:setIsTurnedOn(false,false)
-		end 
+		  workSpeed = true
+		  if IsFoldable then
+		    workTool:setFoldDirection(self.fold_move_direction*-1)
+		  end
+		  if allowedToDrive then
+		    workTool:setIsTurnedOn(true,false)
+		  end
+        else
+         workSpeed = false
+         if IsFoldable then
+           workTool:setFoldDirection(self.fold_move_direction)
+		 end
+         workTool:setIsTurnedOn(false,false)
+       end 
 		
 	else
 		workArea = false
 		workSpeed = false
 	end
+  
+  
+  allowedToDrive = courseplay:check_traffic(self, true, allowedToDrive)
+   
+  -- stop or hold position
+  if not allowedToDrive then  
+     self.motor:setSpeedLevel(0, false);     
+     AIVehicleUtil.driveInDirection(self, dt, 30, 0.5, 0.5, 28, false, moveForwards, 0, 1)
+	 
+     -- unload active tipper if given
+     if active_tipper then
+       self.info_text = string.format(courseplay:get_locale(self, "CPUnloading"), tipper_fill_level,tipper_capacity )
+       if active_tipper.tipState == 0 then				  
+		  active_tipper:toggleTipState(self.currentTipTrigger)		  
+		  self.unloading_tipper = active_tipper
+       end       
+     end
+     -- important, otherwhise i would drive on
+     return;
+   end
+  
+ 
 	
 	  -- which speed?
 	local ref_speed = nil

@@ -118,7 +118,7 @@ function courseplay:unload_tippers(self)
   self.lastTrailerToFillDistance = nil
   local active_tipper = nil
   local trigger = self.currentTipTrigger
-  g_currentMission.tipTriggerRangeThreshold = 2
+  g_currentMission.tipTriggerRangeThreshold = 3
   -- drive forward until actual tipper reaches trigger
   
     -- position of trigger
