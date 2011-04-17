@@ -252,9 +252,9 @@ function courseplay:load(xmlFile)
 
 	-- HUD  	-- Function in Signs
 	self.hudInfoBasePosX = 0.433; -- 0.755
-	self.hudInfoBaseWidth = 0.320; 
+	self.hudInfoBaseWidth = 0.319; 
 	self.hudInfoBasePosY = 0.005;  -- 0.210
-	self.hudInfoBaseHeight = 0.287; 
+	self.hudInfoBaseHeight = 0.287;
 	
 	self.infoPanelPath = Utils.getFilename("../aacourseplay/img/hud_bg.png", self.baseDirectory);
 	self.hudInfoBaseOverlay = Overlay:new("hudInfoBaseOverlay", self.infoPanelPath, self.hudInfoBasePosX, self.hudInfoBasePosY, self.hudInfoBaseWidth, self.hudInfoBaseHeight);
@@ -299,8 +299,8 @@ function courseplay:load(xmlFile)
     courseplay:register_button(self, 2, "blank.png", "row2", nil, self.hudInfoBasePosX-0.05, self.hudInfoBasePosY + 0.185, 0.32, 0.015)
     courseplay:register_button(self, 2, "blank.png", "row3", nil, self.hudInfoBasePosX-0.05, self.hudInfoBasePosY + 0.164, 0.32, 0.015)
     
-    courseplay:register_button(self, 2, "navigate_up.png",   "change_selected_course", -1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY +0.222, 0.020, 0.020)
-    courseplay:register_button(self, 2, "navigate_down.png", "change_selected_course", 1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY +0.120, 0.020, 0.020)
+    courseplay:register_button(self, 2, "navigate_up.png",   "change_selected_course", -5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY +0.222, 0.020, 0.020)
+    courseplay:register_button(self, 2, "navigate_down.png", "change_selected_course", 5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY +0.120, 0.020, 0.020)
     
     for i = 1, 5, 1 do    
       local posy = self.hudInfoBasePosY + 0.205 - (i-1) * 0.021
