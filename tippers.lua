@@ -16,6 +16,28 @@ end
 -- update implements to find attached tippers
 function courseplay:update_tools(self, tractor_or_implement)    
   local tipper_attached = false
+  
+  if SpecializationUtil.hasSpecialization(AITractor, tractor_or_implement.specializations) then 
+    local object = tractor_or_implement 
+  	if self.ai_mode == 1 or self.ai_mode == 2 then 
+      -- if SpecializationUtil.hasSpecialization(Trailer, object.specializations) then 
+      if object.allowTipDischarge then 
+        tipper_attached = true 
+        table.insert(self.tippers, object) 
+      end 
+    elseif self.ai_mode == 3 then -- Overlader 
+      if SpecializationUtil.hasSpecialization(Trailer, object.specializations) then --to do 
+        tipper_attached = true 
+        table.insert(self.tippers, object) 
+      end 
+    elseif self.ai_mode == 4 then -- Fertilizer 
+      if SpecializationUtil.hasSpecialization(Sprayer, object.specializations) then 
+        tipper_attached = true 
+        table.insert(self.tippers, object) 
+      end 
+   end 
+  end 
+  
   -- go through all implements
 	for k,implement in pairs(tractor_or_implement.attachedImplements) do
 		local object = implement.object

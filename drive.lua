@@ -101,6 +101,7 @@ function courseplay:drive(self, dt)
 			if self.recordnumber == 2 and fill_level < 100 and not self.loaded then   --or self.loaded
 				allowedToDrive = false
 		    	self.info_text = string.format(courseplay:get_locale(self, "CPloading") ,tipper_fill_level,tipper_capacity )
+		    	
 				if self.tippers ~= nil then
 					local tools= table.getn(self.tippers)
 					for i=1, tools do
