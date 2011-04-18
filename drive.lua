@@ -164,7 +164,6 @@ function courseplay:drive(self, dt)
 		
 		
 		-- stop while folding	
-		local isInvalid = true;
 			
 		if IsFoldable then
 		  for k,foldingPart in pairs(workTool.foldingParts) do
@@ -179,15 +178,13 @@ function courseplay:drive(self, dt)
 		  	 if animTime ~= nil then
 		  	   if workTool.foldMoveDirection > 0.1 then
 		  	     if animTime < foldingPart.animDuration then
-		  	        isInvalid = false;
+		  	        allowedToDrive = false;
 		  	     end
 		  	   else
 		  	 	  if animTime > 0 then
-		  	 	    isInvalid = false;
+		  	 	    allowedToDrive = false;
 		  	 	  end
 		  	   end
-		  	   
-		  	   allowedToDrive = isInvalid
 		  	 end
 		    
 		  end		  
