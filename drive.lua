@@ -205,6 +205,10 @@ function courseplay:drive(self, dt)
 		 end
          workTool:setIsTurnedOn(false,false)
        end 
+       
+       if not allowedToDrive then
+       	 workTool:setIsTurnedOn(false,false)
+       end       
 		
 	else
 		workArea = false
