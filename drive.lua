@@ -103,15 +103,15 @@ function courseplay:drive(self, dt)
 		    	self.info_text = string.format(courseplay:get_locale(self, "CPloading") ,tipper_fill_level,tipper_capacity )
 		    	
 				if self.tippers ~= nil then
-					local tools= table.getn(self.tippers)
-					for i=1, tools do
-						local activeTool = self.tippers[i]
-		            	if activeTool.sprayerFillActivatable:getIsActivatable() == true then  -- only work with self on tractor to do
-		            		if activeTool.isSprayerFilling == false and fill_level < 100 then
-								activeTool.sprayerFillActivatable:onActivateObject()
-							end
-						end
-					end
+				  local tools= table.getn(self.tippers)
+				  for i=1, tools do
+				    local activeTool = self.tippers[i]
+				    if activeTool.sprayerFillActivatable:getIsActivatable() == true then  -- only work with self on tractor to do
+				       if activeTool.isSprayerFilling == false and fill_level < 100 then
+				         activeTool.sprayerFillActivatable:onActivateObject()
+				       end
+				    end
+				  end
 				end
    			else
 				allowedToDrive = true		 		    
