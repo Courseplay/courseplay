@@ -1,4 +1,4 @@
-Courseplay - Abfahrhelfer für LS 2011 v 1.0
+Courseplay - Abfahrhelfer für LS 2011 v 1.2
 
 Inhaltsverzeichnis
 
@@ -21,6 +21,8 @@ Wir haben weiterhin an einer Version 2 die komplett multiplayerfähig ist, die a
 II. Installationsanweisung
 
 1. Das Archiv aacourseplay.zip in das Verzeichnis C:\Users\dein Username\MyGames\FarmingSimulator2011\mods kopieren
+
+ACHTUNG: Beim Update von version 1.0 müsst ihr NUR die alte aacourseplay.zip durch die neue ersetzen, es muss NICHTS am Schlepper geändert werden.
 
 2. Jetzt das Archiv des Schleppers entpacken den du mit dem Abfahrhelfer versehen willst und in der moddesc.xml folgende Einträge machen
 
