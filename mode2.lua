@@ -169,7 +169,7 @@ function courseplay:unload_combine(self, dt)
   local colX, colZ = nil, nil
   
   -- traffic collision  
-  allowedToDrive = courseplay:check_traffic(self, false, allowedToDrive) 
+  allowedToDrive = courseplay:check_traffic(self, true, allowedToDrive) 
   
   -- is combine turning ?
   if combine ~= nil and (combine.turnStage == 1 or combine.turnStage == 2) then
