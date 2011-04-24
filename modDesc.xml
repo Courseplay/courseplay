@@ -19,12 +19,12 @@
 		www.modhoster.de]]>
 		</de>
  	</description>
-    	<multiplayer supported="false"/>   
+    	<multiplayer supported="true"/>   
 	<iconFilename>
 		<en>store.png</en>
 		<de>store.png</de>
  	</iconFilename>
-	<version>1.15</version>
+	<version>1.20</version>
     <l10n>
 	<text name="PointRecordStart">
 		<en>Record Course Start</en>

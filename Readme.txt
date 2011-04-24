@@ -2,12 +2,23 @@ Courseplay - Abfahrhelfer für LS 2011 v 1.0
 
 Inhaltsverzeichnis
 
-I.   Installationsanweisung
-II.  Bedienungsanleitung
-III. Credits
+I. Changelog
+II.   Installationsanweisung
+III.  Bedienungsanleitung
+IV. Credits
 
+I. Changelog - Änderungen seit Version 1.0
 
-I. Installationsanweisung
+Als neue Funktionen sind im wesentlichen der Düngemodus und das Rückwärtsfahren hinzugekommen. Außerdem wurde das Fahrverhalten (besonders in Kurven) verbessert und es werden mehr EntladeTrigger (Gras und Silage) erkannt.
+Zudem kann man jetzt gespeicherte Kurse kombinieren indem man mehrere Kurse hintereinander lädt. Wenn man nur einen neuen Kurs laden will muss man allerdings jetzt vorher die Wegpunkte des alten zurücksetzen.
+Außerdem ist der Abfahrhelfer jetzt kein "hireable" mehr, das heißt er verbraucht jetzt Benzin(Dünger..) beim Fahren. Damit der Abfahrer nicht einfach irgendwo stehen bleibt bekommt man eine Warnung sobald der Tank fast leer ist und bei einem minimalen Tankinhalt bleibt der Abfahrhelfer stehen damit man ihn noch bis zur Zapfsäule bekommt.
+Im Menu wurde noch der "BUG" behoben, dass man das Menu mit allen Maustasten steuern konnte.
+Natürlich gab es noch viele weitere kleine Bugfixes.
+
+Dieses Mal geht ein besonders großer Dank an Wolverine, der einen Großteil dieses Updates (Düngemodus und Rückwärtsfahren) implementiert hat.
+Wir haben weiterhin an einer Version 2 die komplett multiplayerfähig ist, die aktuelle Version 1.20 ist aber zumindest im MP vom Host bedienbar.
+
+II. Installationsanweisung
 
 1. Das Archiv aacourseplay.zip in das Verzeichnis C:\Users\dein Username\MyGames\FarmingSimulator2011\mods kopieren
 
@@ -27,7 +38,7 @@ Hier einfach das Archiv öffnen, Datei bearbeiten, speichern, schließen und zur
 
 
 
-II. Bedienungsanleitung
+III. Bedienungsanleitung
 
 
 	Steuerung:
@@ -102,6 +113,11 @@ II. Bedienungsanleitung
 			
 				In diesem Modus fährt der Abfahrer lediglich seine Route ab. Er wartet nicht am Startpunkt und wird an Abladestellen auch nicht entladen.
 				Dieser Modus eignet sich in Verbindung mit Wartepunkten um Gerätschaften zum Feld zu bringen oder zum Beispiel auch auf andere Höfe.
+			
+			Typ: Düngen
+			
+				Im Düngemodus füllt der Abfahrhelfer am Startpunkt eine Spritze oder ein Güllefass und fährt dann seine Route ab. Man fährt mit dem Abfahrhelfer zum Feld, setzt einen Wartepunkt an der Stelle an der er mit dem Düngen beginnen soll, fährt das Feld ab und setzt einen Wartepunkt am Feldende.
+				Beim Abfahren klappt der Abfahrhelfer automatisch die Spritze/Güllefass aus und schaltet es an, fährt das Feld ab bis der Tank leer ist und fährt zurück zum auftanken. Nach dem Auftanken macht er an der Position weiter an der er aufgehört hat.
 				 
 		
 		Wegpunkte löschen:
@@ -121,6 +137,7 @@ II. Bedienungsanleitung
 	HUD "Kurse verwalten":
 	
 		Auf diser Unterseite des HUD findet ihr eine Übersicht eurer gespeicherten Kurse. Ihr könnt durch Klick auf das Ordner Symbol einen Kurs laden und durch einen Klick auf das rote X einen Kurs komplett löschen.
+		ACHTUNG: seit version 1.2 müsst ihr wenn ihr einen neuen Kurs laden wollt erst die alten Wegpunkte zurücksetzen, sonst kombiniert ihr die beiden Kurse!
 		Mit den blauen Pfeilen rechts oben und rechts unten könnt ihr durch die gespeicherten Kurse blättern.
 		 
 	HUD "Einstellungen Combi Modus":
@@ -157,7 +174,7 @@ II. Bedienungsanleitung
 		Hier könnt ihr festlegen wie schnell euer Abfahrer fahren soll. Ich denke mal die Einstellungen sind selbst erklärend ;)
 
 
-III. Credits
+IV. Credits
 	Lautschreier/Wolverin0815/Hummel	
 	
 	Die Entwicklung von courseplay war wohl etwas "ungewöhnlich"
