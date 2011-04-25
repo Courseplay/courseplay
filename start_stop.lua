@@ -118,7 +118,9 @@ function courseplay:stop(self)
 	if self.tipper_attached then
 		for key,tipper in pairs(self.tippers) do
 		  AITractor.removeToolTrigger(self, tipper)
-		  tipper:aiTurnOff()
+		  if SpecializationUtil.hasSpecialization(Attachable, tipper.specializations) then
+			tipper:aiTurnOff()
+		  end
 		end
 	end
 	
