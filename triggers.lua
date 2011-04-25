@@ -28,7 +28,7 @@ end;
 -- tip trigger
 function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
   for k,trigger in pairs(g_currentMission.onCreateLoadedObjects) do
-	if trigger.className == "SiloTrigger" or trigger.className == "TipTrigger" or trigger.className =="MapBGASilo" or trigger.className =="MapBGASiloGrass" or trigger.className =="MapBGASiloChaff" then
+	if trigger.className == "SiloTrigger" or trigger.className == "TipTrigger" or trigger.className =="MapBGASilo" or trigger.className =="MapBGASiloGras" or trigger.className =="MapBGASiloChaff" then
 	    -- transformId
 	    if trigger.triggerId ~= nil and trigger.triggerId == transformId then
 		  self.currentTipTrigger = trigger		

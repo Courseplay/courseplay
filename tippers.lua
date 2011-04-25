@@ -171,7 +171,7 @@ function courseplay:unload_tippers(self)
   if active_tipper then    
 	local trigger = self.currentTipTrigger
 	-- if trigger accepts fruit
-	if (trigger.acceptedFruitTypes ~= nil and trigger.acceptedFruitTypes[active_tipper:getCurrentFruitType()]) or trigger.className == "MapBGASilo" or trigger.className =="MapBGASiloGrass" or trigger.className =="MapBGASiloChaff" then
+	if (trigger.acceptedFruitTypes ~= nil and trigger.acceptedFruitTypes[active_tipper:getCurrentFruitType()]) or trigger.className == "MapBGASilo" or trigger.className =="MapBGASiloGras" or trigger.className =="MapBGASiloChaff" then
 		allowedToDrive = false
 	else
 		allowedToDrive = true
