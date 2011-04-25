@@ -19,6 +19,10 @@ function courseplay:dcheck(self)
       number = 1
   end	
   
+  if self.record_pause then
+	number = self.recordnumber - 1
+  end
+  
   local arrowUV = {}
   local lx, ly, lz = worldToLocal(self.rootNode, self.Waypoints[number].cx, 0, self.Waypoints[number].cz)
   local arrowRotation = Utils.getYRotationFromDirection(lx, lz)
@@ -35,11 +39,11 @@ function courseplay:dcheck(self)
   setOverlayUVs(self.ArrowOverlay.overlayId, arrowUV[1], arrowUV[2], arrowUV[3], arrowUV[4], arrowUV[5], arrowUV[6], arrowUV[7], arrowUV[8])
   self.ArrowOverlay:render()
   local ctx,cty,ctz = getWorldTranslation(self.rootNode);
-  if self.record then
+  if self.record or self.record_pause then
     return
   end
-  local cx ,cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
   
+  local cx ,cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
   dist = courseplay:distance(ctx ,ctz ,cx ,cz)
   
   self.info_text = string.format(courseplay:get_locale(self, "CPDistance") ..": %d ",dist )  

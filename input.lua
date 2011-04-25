@@ -124,12 +124,12 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 	            end -- not playing
 	            
 	            if not self.drive  then
-	              if not self.record and (table.getn(self.Waypoints) == 0) then
+	              if (not self.record and not self.record_pause) and (table.getn(self.Waypoints) == 0) then
 	                if func == "row1" then
 	                  courseplay:start_record(self)
 	                end
 	                
-	              elseif not self.record and (table.getn(self.Waypoints) ~= 0) then
+	              elseif (not self.record and not self.record_pause) and (table.getn(self.Waypoints) ~= 0) then
 	              	if func == "row2" then
 	              	  courseplay:change_ai_state(self, 1)
 	              	end
@@ -138,10 +138,23 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 	                  courseplay:stop_record(self)
 	                end
 	                
-	                if func == "row2" then
-	                  courseplay:set_waitpoint(self)
-	                end
-	              end
+					if not self.record_pause then
+					  if func == "row2" and self.recordnumber > 3 then
+						courseplay:set_waitpoint(self)
+					  end
+					  if func == "row3" and self.recordnumber > 3 then
+						courseplay:interrupt_record(self)
+					  end
+					else
+					  if func == "row2" and self.recordnumber > 4 then
+					    courseplay:delete_waypoint(self)
+					  end
+					  if func == "row3" then
+						courseplay:continue_record(self)
+					  end
+					end
+	              end	  
+				  
             	end
             end
             

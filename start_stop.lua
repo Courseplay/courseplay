@@ -9,6 +9,7 @@ function courseplay:start(self)
 	self.numToolsCollidingVehicles = {};
 	self.drive  = false
 	self.record = false
+	self.record_pause = false
 	
 	
 	if self.ai_mode == 4 and self.tipper_attached then
@@ -105,6 +106,7 @@ function courseplay:stop(self)
 	self.motor.maxRpm[2] = self.orgRpm[2] 
 	self.motor.maxRpm[3] = self.orgRpm[3] 
 	self.record = false
+	self.record_pause = false
 	if self.ai_state > 4 then
 	  self.ai_state = 1
 	end

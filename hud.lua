@@ -30,7 +30,6 @@ function courseplay:loadHud(self)
 			    self.hudpage[1][1][3]= courseplay:get_locale(self, "CourseReset")
 				
 	            self.hudpage[1][1][1]= courseplay:get_locale(self, "CoursePlayStart")
-	            							
 				
 			else
 				local last_recordnumber = nil
@@ -58,13 +57,13 @@ function courseplay:loadHud(self)
 	   			end
 			end
 		end
-		if not self.drive  then
-			if not self.record and (table.getn(self.Waypoints) == 0)  then
+		if not self.drive then
+			if (not self.record and not self.record_pause) and (table.getn(self.Waypoints) == 0)  then
 				self.hudpage[1][1][1]= courseplay:get_locale(self, "PointRecordStart")
 				if InputBinding.hasEvent(InputBinding.AHInput1) then
 					courseplay:start_record(self)
 				end
-			elseif not self.record and (table.getn(self.Waypoints) ~= 0) then	
+			elseif (not self.record and not self.record_pause) and (table.getn(self.Waypoints) ~= 0) then	
 			    self.hudpage[1][1][2]= courseplay:get_locale(self, "ModusSet")
 				if InputBinding.hasEvent(InputBinding.AHInput2) then
 				    courseplay:change_ai_state(self, 1)					
@@ -75,21 +74,41 @@ function courseplay:loadHud(self)
 				if InputBinding.hasEvent(InputBinding.AHInput1) then
 					courseplay:stop_record(self)
 				end
-	
-	            self.hudpage[1][1][2]= courseplay:get_locale(self, "CourseWaitpointSet")
-				if InputBinding.hasEvent(InputBinding.AHInput2) then
-					courseplay:set_waitpoint(self)
-				end
 				
-	
-				if not self.direction and self.movingDirection == -1 then
-				courseplay:set_direction(self)
-				end
-				
-				if self.direction and self.movingDirection == 1 then
-				courseplay:set_direction(self)
-				end
+				if not self.record_pause then	
+					if self.recordnumber > 3 then
+						self.hudpage[1][1][2]= courseplay:get_locale(self, "CourseWaitpointSet")
+						if InputBinding.hasEvent(InputBinding.AHInput2) then
+							courseplay:set_waitpoint(self)
+						end
+						
+						self.hudpage[1][1][3]= courseplay:get_locale(self, "PointRecordInterrupt")
+						if InputBinding.hasEvent(InputBinding.AHInput3) then
+							courseplay:interrupt_record(self)
+						end
 
+						if not self.direction and self.movingDirection == -1 then
+							courseplay:set_direction(self)
+						end
+						
+						if self.direction and self.movingDirection == 1 then
+							courseplay:set_direction(self)
+						end
+					end
+				else
+					if self.recordnumber > 4 then
+						self.hudpage[1][1][2]= courseplay:get_locale(self, "PointRecordDelete")
+						if InputBinding.hasEvent(InputBinding.AHInput2) then
+							courseplay:delete_waypoint(self)
+						end
+					end
+					
+					self.hudpage[1][1][3]= courseplay:get_locale(self, "PointRecordContinue")
+					if InputBinding.hasEvent(InputBinding.AHInput3) then
+						courseplay:continue_record(self)
+					end
+				end
+				
 			end
 		end
 

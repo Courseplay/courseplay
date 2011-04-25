@@ -103,6 +103,7 @@ end
 -- stops course recording -- just setting variables
 function courseplay:stop_record(self)
 	self.record = false
+	self.record_pause = false
 	self.drive  = false	
 	self.dcheck = false
 	self.play = true
@@ -110,6 +111,43 @@ function courseplay:stop_record(self)
 	self.recordnumber = 1
 	self.back = false
 end		
+
+-- interrupts course recording -- just setting variables
+function courseplay:interrupt_record(self)
+	if self.recordnumber > 3 then
+		self.record_pause = true
+		self.record = false
+
+		self.dcheck = true
+		-- Show last 2 waypoints, in order to find position for continue
+		local cx ,cz = self.Waypoints[self.recordnumber - 1].cx, self.Waypoints[self.recordnumber - 1].cz
+		courseplay:addsign(self, cx, 0, cz)
+		cx ,cz = self.Waypoints[self.recordnumber - 2].cx, self.Waypoints[self.recordnumber - 2].cz
+		courseplay:addsign(self, cx, 0, cz)
+	end	
+end
+
+-- continues course recording -- just setting variables
+function courseplay:continue_record(self)
+	self.record_pause = false
+	self.record = true
+
+	self.dcheck = false
+end	
+
+-- delete last waypoint
+function courseplay:delete_waypoint(self)
+	if self.recordnumber > 4 then
+		self.recordnumber = self.recordnumber - 1
+		self.tmr = 1
+		self.Waypoints[self.recordnumber] = nil
+		-- Show last 2 waypoints, in order to find position for continue
+		local cx ,cz = self.Waypoints[self.recordnumber - 1].cx, self.Waypoints[self.recordnumber - 1].cz
+		courseplay:addsign(self, cx, 0, cz)
+		cx ,cz = self.Waypoints[self.recordnumber - 2].cx, self.Waypoints[self.recordnumber - 2].cz
+		courseplay:addsign(self, cx, 0, cz)
+	end	
+end
 
 -- resets actual course -- just setting variables
 function courseplay:reset_course(self)	

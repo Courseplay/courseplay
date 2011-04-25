@@ -35,6 +35,21 @@
 		<en>Record Course Stop</en>
 		<de>Kursaufzeichnung beenden</de>
 	</text>
+	
+	<text name="PointRecordInterrupt">
+		<en>Record Course Interrupt</en>
+		<de>Kursaufzeichnung anhalten</de>
+	</text>
+
+	<text name="PointRecordContinue">
+		<en>Record Course Continue</en>
+		<de>Kursaufzeichnung fortsetzen</de>
+	</text>
+	
+	<text name="PointRecordDelete">
+		<en>Delete Last Waypoint</en>
+		<de>Letzten Wegpunkt löschen</de>
+	</text>
 
 	<text name="CoursePlayStart">
 		<en>Drive Course</en>

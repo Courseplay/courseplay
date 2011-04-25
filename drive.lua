@@ -347,7 +347,7 @@ function courseplay:set_traffc_collision(self, lx, lz)
   
   --print(string.format("colDirX: %f colDirZ %f ",colDirX,colDirZ ))	  
 	  
-  if self.aiTrafficCollisionTrigger ~= nil then
+  if self.aiTrafficCollisionTrigger ~= nil and  SpecializationUtil.hasSpecialization(aiTractor, self)  then
     AIVehicleUtil.setCollisionDirection(self.aiTractorDirectionNode, self.aiTrafficCollisionTrigger, colDirX, colDirZ);
   end
 end
