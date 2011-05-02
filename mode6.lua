@@ -88,9 +88,6 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 						--if worktool.pickup ~= nil and worktool.pickup.isDown ~= nil then
 						--	SetIsPickupDownEvent.sendEvent(worktool, true, noEventSend);
 						--end
-						
-						-- InputBinding.LOWER_IMPLEMENT = true ??
-						-- InputBinding.IMPLEMENT_EXTRA = true
 					elseif workTool.isTurnedOn ~= nil and workTool.pickupDown ~= nil then
 						-- Krone ZX - planet-ls.de
 						workTool.isTurnedOn = true
@@ -104,11 +101,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 					workTool:setIsTurnedOn(false,false)	
 					--if worktool.pickup ~= nil and worktool.pickup.isDown ~= nil then
 					--	SetIsPickupDownEvent.sendEvent(worktool, false, noEventSend);
-					--end
-					
-					-- InputBinding.LOWER_IMPLEMENT = false ??
-					-- InputBinding.IMPLEMENT_EXTRA = false
-					
+					--end		
 				elseif workTool.isTurnedOn ~= nil and workTool.pickupDown ~= nil then
 					-- Krone ZX - planet-ls.de
 					workTool.isTurnedOn = false

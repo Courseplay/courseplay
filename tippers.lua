@@ -35,7 +35,7 @@ function courseplay:update_tools(self, tractor_or_implement)
         tipper_attached = true 
         table.insert(self.tippers, object) 
       end 
-	 elseif self.ai_mode == 6 then -- Baler 
+	 elseif self.ai_mode == 6 then -- Baler, foragewagon
 		if SpecializationUtil.hasSpecialization(Baler, object.specializations) then 
 			tipper_attached = true 
 			table.insert(self.tippers, object) 
@@ -65,7 +65,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 		  		tipper_attached = true
 		  		table.insert(self.tippers, object)
 			end
-		elseif self.ai_mode == 6 then -- Baler 
+		elseif self.ai_mode == 6 then -- Baler, foragewagon
 			if SpecializationUtil.hasSpecialization(Baler, object.specializations) then 
 				tipper_attached = true 
 				table.insert(self.tippers, object) 

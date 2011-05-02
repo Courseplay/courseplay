@@ -66,7 +66,7 @@ function courseplay:start(self)
 			end
 		
 	    end
-		-- mode 6 without start and stop point, for only-on-field-courses
+		-- mode 6 without start and stop point, set them at start and end, for only-on-field-courses
 		if self.ai_mode == 6 and wpanz == 0 then
 			self.startWork = 1
 			self.stopWork = self.maxnumber

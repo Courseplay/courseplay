@@ -122,6 +122,7 @@ function courseplay:load(xmlFile)
     self.locales.CPNoWorkArea = g_i18n:getText("CPNoWorkArea")
 
 	
+	
 	self.lastGui = nil
 	self.currentGui = nil
 	self.input_gui = "emptyGui";	

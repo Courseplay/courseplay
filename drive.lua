@@ -228,7 +228,7 @@ function courseplay:drive(self, dt)
 	
 
 	
-	-- Mode 6 Fieldwork for balers
+	-- Mode 6 Fieldwork for balers and foragewagon
 	if self.ai_mode == 6 and self.startWork ~= nil and self.stopWork ~= nil then
 		-- is there a tipTrigger within 10 meters?
 		raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)

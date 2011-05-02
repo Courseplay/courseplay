@@ -243,7 +243,7 @@ function courseplay:showHud(self)
         elseif self.ai_mode == 6 then
 		    self.hudinfo[1]= courseplay:get_locale(self, "CourseMode6")
 		else
-		     self.hudinfo[1]= "---"
+		    self.hudinfo[1]= "---"
 		end
 
     	if self.current_course_name ~= nil then
