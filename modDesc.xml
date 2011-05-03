@@ -428,6 +428,8 @@
 		<sourceFile filename="input.lua" />
 		<sourceFile filename="mode1.lua" />
 		<sourceFile filename="mode2.lua" />
+		<sourceFile filename="mode4.lua" />
+		<sourceFile filename="mode6.lua" />
 		<sourceFile filename="recording.lua" />
 		<sourceFile filename="signs.lua" />
 		<sourceFile filename="start_stop.lua" />
