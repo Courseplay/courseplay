@@ -9,6 +9,7 @@
 -- 9 wenden
 -- 8 alle trailer voll
 -- 9 traktor folgen
+-- 10 seite wechseln
 
 function courseplay:handle_mode2(self, dt)
   local allowedToDrive = false
@@ -45,6 +46,18 @@ function courseplay:handle_mode2(self, dt)
   if current_tipper == nil then
   	self.tools_dirty = true
     return false
+  end
+  
+  
+  -- switch side
+  if self.active_combine ~= nil and self.ai_state == 10 then
+    if self.chopper_offset > 0 then
+  		self.target_x, self.target_y, self.target_z = localToWorld(self.active_combine.rootNode, 25, 0, 0)
+  	else
+  		self.target_x, self.target_y, self.target_z = localToWorld(self.active_combine.rootNode, -25, 0, 0)
+  	end
+  	self.ai_state = 5
+    self.next_ai_state = 2
   end
   
   if (current_tipper.fillLevel == current_tipper.capacity) or self.loaded then
@@ -103,7 +116,7 @@ function courseplay:handle_mode2(self, dt)
 		
 		  -- chose the combine who needs me the most
 		  for k,combine in pairs(self.reachable_combines) do
-		    if (combine.grainTankFillLevel > (combine.grainTankCapacity*self.required_fill_level_for_follow/100)) or combine.grainTankCapacity == 0 then
+		    if (combine.grainTankFillLevel > (combine.grainTankCapacity*self.required_fill_level_for_follow/100)) or combine.grainTankCapacity == 0 or combine.wants_courseplayer then
 		      if combine.grainTankCapacity == 0 then	        
 		        if combine.courseplayers == nil then
 		          best_combine = combine
@@ -529,6 +542,11 @@ function courseplay:unload_combine(self, dt)
     allowedToDrive = false
   end
   
+  if self.forced_to_stop then
+  	self.info_text = courseplay:get_locale(self, "CPCombineWantsMeToStop") -- "Drescher sagt ich soll anhalten."   
+  	allowedToDrive = false
+  end  
+  
   if not allowedToDrive then
 	local lx, lz = 0, 1
 	self.motor:setSpeedLevel(0, false);
@@ -595,6 +613,14 @@ end
 
 
 function courseplay:side_to_drive(self, combine, distance)
+  -- if there is a forced side to drive return this
+  if self.forced_side ~= nil then
+    if self.forced_side == "left" then
+      return 0, 1000
+    else
+      return 1000, 0
+    end
+  end  
   
   local x,y,z = localToWorld(combine.aiTreshingDirectionNode, 0, 0, distance) --getWorldTranslation(combine.aiTreshingDirectionNode);
     

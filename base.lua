@@ -242,6 +242,8 @@ function courseplay:load(xmlFile)
 	self.chopper_offset = 8
 	self.tipper_offset = 8
 	self.auto_mode = nil
+	self.forced_side = nil
+	self.forced_to_stop = false
 	
 	self.allow_following = false
 	self.required_fill_level_for_follow = 50

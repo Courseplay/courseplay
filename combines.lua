@@ -74,6 +74,11 @@ function courseplay:register_at_combine(self, combine)
   if table.getn(combine.courseplayers) == 1 and not combine.courseplayers[1].allow_following then
     return false
   end
+  
+  -- you got a courseplayer, so stop yellin....
+  if combine.wants_courseplayer ~= nil and combine.wants_courseplayer == true then
+    combine.wants_courseplayer = false
+  end
     
   table.insert(combine.courseplayers, self)
   self.courseplay_position = table.getn(combine.courseplayers)
