@@ -8,8 +8,8 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 	if workArea then
 		workSpeed = true
 	end
-	if self.recordnumber == self.stopWork and self.abortWork == nil then
-		allowedToDrive = false		
+	if self.recordnumber == self.stopWork and self.abortWork == nil and not self.loaded then
+		allowedToDrive = false
 		self.global_info_text = courseplay:get_locale(self, "CPWorkEnd") --'hat Arbeit beendet.'
 	end
 		
@@ -38,8 +38,6 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 			end
 		else
 			-- other worktools			
-			-- is there a tipTrigger within 10 meters?
-			--raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
 			-- done tipping
 			local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
 			if self.unloading_tipper ~= nil and self.unloading_tipper.fillLevel == 0 then			
@@ -85,9 +83,9 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 				if allowedToDrive then
 					if workTool.setIsTurnedOn ~= nil then
 						workTool:setIsTurnedOn(true,false)
-						--if worktool.pickup ~= nil and worktool.pickup.isDown ~= nil then
-						--	SetIsPickupDownEvent.sendEvent(worktool, true, noEventSend);
-						--end
+						if workTool.setIsPickupDown ~= nil then
+							workTool:setIsPickupDown(true, false)
+						end
 					elseif workTool.isTurnedOn ~= nil and workTool.pickupDown ~= nil then
 						-- Krone ZX - planet-ls.de
 						workTool.isTurnedOn = true
@@ -98,10 +96,10 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 			elseif not workArea or fill_level == 100 or self.abortWork ~= nil or last_recordnumber == self.stopWork then
 				workSpeed = false
 				if workTool.setIsTurnedOn ~= nil then
-					workTool:setIsTurnedOn(false,false)	
-					--if worktool.pickup ~= nil and worktool.pickup.isDown ~= nil then
-					--	SetIsPickupDownEvent.sendEvent(worktool, false, noEventSend);
-					--end		
+					workTool:setIsTurnedOn(false, false)	
+					if workTool.setIsPickupDown ~= nil then
+						workTool:setIsPickupDown(false, false)
+					end		
 				elseif workTool.isTurnedOn ~= nil and workTool.pickupDown ~= nil then
 					-- Krone ZX - planet-ls.de
 					workTool.isTurnedOn = false
@@ -123,6 +121,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 			if self.abortWork ~= nil then
 				if (last_recordnumber == self.abortWork - 4 )and fill_level ~= 100 then
 					self.abortWork = nil
+					self.recordnumber = self.abortWork + 1 -- drive to waypoint after next waypoint
 				end
 			end
 			-- safe last point
