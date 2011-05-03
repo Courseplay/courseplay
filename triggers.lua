@@ -28,7 +28,7 @@ end;
 -- tip trigger
 function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
   for k,trigger in pairs(g_currentMission.onCreateLoadedObjects) do
-	if trigger.className == "SiloTrigger" or trigger.className == "TipTrigger" or trigger.className =="MapBGASilo" or trigger.className =="MapBGASiloGras" or trigger.className =="MapBGASiloChaff" then
+	if trigger.className == "SiloTrigger" or trigger.className == "TipTrigger" or startswith(trigger.className, "MapBGA") then
 	    -- transformId
 	    if trigger.triggerId ~= nil and trigger.triggerId == transformId then
 		  self.currentTipTrigger = trigger		
@@ -37,7 +37,6 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 		elseif trigger.specialTriggerId ~= nil and trigger.specialTriggerId == transformId then
 		  -- support map bga by headshot xxl 
 		  self.currentTipTrigger = trigger
-		  --self.currentTipTrigger.triggerId = trigger.specialTriggerId
 		end		
 	end
   end 
@@ -51,4 +50,16 @@ return true
 end
 end
 return false
+end
+
+function startswith(sbig, slittle)
+  if type(slittle) == "table" then
+    for k,v in ipairs(slittle) do
+      if string.sub(sbig, 1, string.len(v)) == v then 
+        return true
+      end
+    end
+    return false
+  end
+  return string.sub(sbig, 1, string.len(slittle)) == slittle
 end
