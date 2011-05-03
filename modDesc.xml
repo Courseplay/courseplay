@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="4">
-   <author>Lautschreier/Wolverin0815/Hummel (modhoster.de)</author>
+   <author>Lautschreier/Wolverin0815/Hummel (modhoster.de)/Bastian82</author>
     <title>
 		<en>Courseplay - Abfahrhelfer</en>
         <de>Courseplay - Abfahrhelfer</de>        
@@ -9,13 +9,13 @@
         <en>
 		<![CDATA[Courseplay
 		Grundversion: Lautschreier
-		Script: Hummel 
+		Script: Hummel, Wolverin0815,Bastian82 
 		www.modhoster.de]]>
 		</en>
    	<de>
 		<![CDATA[Courseplay
 		Grundversion: Lautschreier
-		Script: Hummel 
+		Script: Hummel, Wolverin0815,Bastian82 
 		www.modhoster.de]]>
 		</de>
  	</description>
@@ -24,7 +24,7 @@
 		<en>store.png</en>
 		<de>store.png</de>
  	</iconFilename>
-	<version>1.20</version>
+	<version>1.30</version>
     <l10n>
 	<text name="PointRecordStart">
 		<en>Record Course Start</en>
