@@ -149,7 +149,7 @@ function courseplay:drive(self, dt)
 	local workSpeed = nil
 
 	if self.ai_mode == 4 and self.tipper_attached and self.startWork ~= nil and self.stopWork ~= nil   then
-		allowedToDrive, workArea, workSpeed = courseplay:handle_mode4(self, workArea, workSpeed,  fill_level, last_recordnumber)
+		allowedToDrive, workArea, workSpeed = courseplay:handle_mode4(self, workArea, workSpeed, fill_level, last_recordnumber)
 	else
 		workArea = false
 		workSpeed = false
