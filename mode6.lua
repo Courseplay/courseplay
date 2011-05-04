@@ -120,8 +120,8 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 			-- last point reached restart
 			if self.abortWork ~= nil then
 				if (last_recordnumber == self.abortWork - 4 )and fill_level ~= 100 then
-					self.abortWork = nil
 					self.recordnumber = self.abortWork + 1 -- drive to waypoint after next waypoint
+					self.abortWork = nil					
 				end
 			end
 			-- safe last point
