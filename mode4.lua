@@ -1,4 +1,4 @@
-function courseplay:handle_mode4(self, workArea, workSpeed,  fill_level, last_recordnumber)
+function courseplay:handle_mode4(self,allowedToDrive, workArea, workSpeed,  fill_level, last_recordnumber)
 	local workTool = self.tippers[1] -- to do, quick, dirty and unsafe
     local IsFoldable = SpecializationUtil.hasSpecialization(Foldable, workTool.specializations)
 
