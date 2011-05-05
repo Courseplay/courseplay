@@ -54,6 +54,10 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
             courseplay:change_required_fill_level(self, button.parameter)
           end
           
+          if func == "change_required_fill_level_for_drive_on" then
+            courseplay:change_required_fill_level_for_drive_on(self, button.parameter)
+          end
+          
           if func == "change_turn_speed" then
             courseplay:change_turn_speed(self, button.parameter)
           end

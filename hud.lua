@@ -154,6 +154,7 @@ function courseplay:loadHud(self)
 	    self.hudpage[3][1][2]= courseplay:get_locale(self, "CPRequiredFillLevel") --"Start bei%:"
 		self.hudpage[3][1][3]= courseplay:get_locale(self, "CPTurnRadius") --"Wenderadius:"
 		self.hudpage[3][1][4]= courseplay:get_locale(self, "CPPipeOffset") --"Pipe Abstand:"
+		self.hudpage[3][1][5]= courseplay:get_locale(self, "NoWaitforfillAt") --"abfahren bei%:"
 		
 		if self.ai_state ~= nil then
 			self.hudpage[3][2][1]= string.format("%.1f", self.combine_offset)
@@ -177,6 +178,12 @@ function courseplay:loadHud(self)
 		else
 		  self.hudpage[3][2][4]= "---"
 		end	
+		
+		if self.required_fill_level_for_drive_on ~= nil then
+			self.hudpage[3][2][5]= string.format("%.1f", self.required_fill_level_for_drive_on)
+		else
+			self.hudpage[3][2][5]= "---"
+		end
 	  
 	  elseif self.showHudInfoBase == 4 then
 	    

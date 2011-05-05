@@ -24,7 +24,7 @@
 		<en>store.png</en>
 		<de>store.png</de>
  	</iconFilename>
-	<version>1.40</version>
+	<version>1.50</version>
     <l10n>
 	<text name="PointRecordStart">
 		<en>Record Course Start</en>
@@ -139,6 +139,11 @@
 	<text name="NoWaitforfill">
 		<en>Drive now</en>
 		<de>Sofort abfahren</de>				
+	</text>
+	
+	<text name="NoWaitforfillAt">
+		<en>Drive on at %</en>
+		<de>Abfahren bei %</de>				
 	</text>
 
 	<text name="AHInput1">

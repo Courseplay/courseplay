@@ -278,31 +278,35 @@ function courseplay:unload_combine(self, dt)
 	    --if courseplay:distance_to_object(self, combine) < 30 then
 	    self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, 30, 0, -20)
 	    
-	    -- turn left
-	    self.turn_factor = 5
-	    -- insert waypoint behind combine
-    	local leftFruit, rightFruit =  courseplay:side_to_drive(self, combine, 20) 
-        local next_x, next_y, next_z = localToWorld(combine.rootNode, 5, 0, -10)
-		if leftFruit > rightFruit then
-			next_x, next_y, next_z = localToWorld(combine.rootNode, -5, 0, -10)
-		end
-		local next_wp = {x = next_x, y=next_y, z=next_z}
-		table.insert(self.next_targets, next_wp)	
-		
-		-- insert another point behind combine
-       	local next_x, next_y, next_z = localToWorld(combine.rootNode, 5, 0, -30)
-       	if leftFruit > rightFruit then
-			next_x, next_y, next_z = localToWorld(combine.rootNode, -5, 0, -30)
-		end
-        local next_wp = {x = next_x, y=next_y, z=next_z}
-		table.insert(self.next_targets, next_wp)
-		
-		mode = 9
-	    -- ai_state when waypoint is reached
-	    self.next_ai_state = 1
-	    --else	    
-	    --  mode = 1
-	    --end	 
+	    if tipper_percentage >= self.required_fill_level_for_drive_on then
+	      self.loaded = true
+	    else	    
+		    -- turn left
+		    self.turn_factor = 5
+		    -- insert waypoint behind combine
+	    	local leftFruit, rightFruit =  courseplay:side_to_drive(self, combine, 20) 
+	        local next_x, next_y, next_z = localToWorld(combine.rootNode, 5, 0, -10)
+			if leftFruit > rightFruit then
+				next_x, next_y, next_z = localToWorld(combine.rootNode, -5, 0, -10)
+			end
+			local next_wp = {x = next_x, y=next_y, z=next_z}
+			table.insert(self.next_targets, next_wp)	
+			
+			-- insert another point behind combine
+	       	local next_x, next_y, next_z = localToWorld(combine.rootNode, 5, 0, -30)
+	       	if leftFruit > rightFruit then
+				next_x, next_y, next_z = localToWorld(combine.rootNode, -5, 0, -30)
+			end
+	        local next_wp = {x = next_x, y=next_y, z=next_z}
+			table.insert(self.next_targets, next_wp)
+			
+			mode = 9
+		    -- ai_state when waypoint is reached
+		    self.next_ai_state = 1
+		    --else	    
+		    --  mode = 1
+		    --end	 
+	    end
       end
             
       local tX, tY, tZ = nil, nil, nil
@@ -393,6 +397,10 @@ function courseplay:unload_combine(self, dt)
     end	 -- end mode 3 or 4
     
     if combine_turning and distance < 30 then
+      if tipper_percentage >= self.required_fill_level_for_drive_on then
+        self.loaded = true
+        allowedToDrive = false
+      end
 	  if mode == 3 or mode == 4 then
 	    if combine.grainTankCapacity > 0 then
 	      -- normal combine

@@ -3,7 +3,7 @@
 -- Specialization for Courseplay
 --
 -- @author  Lautschreier / Hummel / Wolverin0815 / Bastian82
--- @version:	v1.40 04.05.2011
+-- @version:	v1.50 05.05.2011
 -- @testing:    bullgore80
 
 courseplay = {};

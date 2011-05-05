@@ -100,6 +100,7 @@ function courseplay:load(xmlFile)
 	self.locales.CourseWaitpointStart = g_i18n:getText("CourseWaitpointStart")
 	self.locales.CoursePlayStop = g_i18n:getText("CoursePlayStop")
 	self.locales.NoWaitforfill = g_i18n:getText("NoWaitforfill")
+	self.locales.NoWaitforfillAt = g_i18n:getText("NoWaitforfillAt")
 	self.locales.PointRecordStart = g_i18n:getText("PointRecordStart")
 	self.locales.CourseLoad = g_i18n:getText("CourseLoad")
 	self.locales.ModusSet = g_i18n:getText("ModusSet")
@@ -247,6 +248,7 @@ function courseplay:load(xmlFile)
 	
 	self.allow_following = false
 	self.required_fill_level_for_follow = 50
+	self.required_fill_level_for_drive_on = 90
 	
 	self.turn_factor = nil
 	self.turn_radius = 17
@@ -326,6 +328,9 @@ function courseplay:load(xmlFile)
     
     courseplay:register_button(self, 3, "navigate_minus.png", "change_tipper_offset", -0.5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.146, 0.010, 0.010)
     courseplay:register_button(self, 3, "navigate_plus.png", "change_tipper_offset", 0.5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.146, 0.010, 0.010)
+    
+    courseplay:register_button(self, 3, "navigate_minus.png", "change_required_fill_level_for_drive_on", -5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.123, 0.010, 0.010)
+    courseplay:register_button(self, 3, "navigate_plus.png", "change_required_fill_level_for_drive_on", 5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.123, 0.010, 0.010)
     
     courseplay:register_button(self, 4, "navigate_up.png", "switch_combine", -1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY +0.210, 0.010, 0.010)
     courseplay:register_button(self, 4, "navigate_down.png", "switch_combine", 1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.210, 0.010, 0.010)
