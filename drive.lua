@@ -208,6 +208,10 @@ function courseplay:drive(self, dt)
 		ref_speed = self.max_speed
 	end
 	
+	if (self.sl == 3 and not self.beaconLightsActive) or (self.sl ~=3 and self.beaconLightsActive) then
+	  	self:setBeaconLightsVisibility(not self.beaconLightsActive);	  
+	end
+	
 	-- Speed Control
 	maxRpm = self.motor.maxRpm[self.sl]
 	 
