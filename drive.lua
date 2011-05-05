@@ -256,10 +256,22 @@ function courseplay:drive(self, dt)
 		distToChange = 5
 	end
 	
+	-- record shortest distance to the next waypoint
+	if self.shortest_dist == nil or self.shortest_dist > self.dist then
+	  self.shortest_dist = self.dist
+	end
+	
+	-- if distance grows i must be circling	
+	if self.dist > self.shortest_dist then
+	  distToChange = self.dist + 1
+	end
+	
 	if self.dist > distToChange then
 	  AIVehicleUtil.driveInDirection(self, dt, 30, 0.5, 0.5, 8, true, fwd, lx, lz , self.sl, 0.5);
 	  courseplay:set_traffc_collision(self, lx, lz)
   	else	     
+  		-- reset distance to waypoint
+  		self.shortest_dist = nil
 		if self.recordnumber < self.maxnumber  then
 		  if not self.wait then
 		    self.wait = true

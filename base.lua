@@ -135,6 +135,9 @@ function courseplay:load(xmlFile)
 	self.drive_slow_timer = 0
 	self.courseplay_position = nil
 	
+	-- saves the shortest distance to the next waypoint (for recocnizing circling)
+	self.shortest_dist = nil
+	
 	-- clickable buttons
 	self.buttons = {}
 	
@@ -225,6 +228,7 @@ function courseplay:load(xmlFile)
 	self.unloaded = false	
 	self.loaded  = false
 	self.unloading_tipper = nil
+	
 	
 	-- for user input like saving
 	self.user_input_active = false
