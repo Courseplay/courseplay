@@ -266,7 +266,7 @@ function courseplay:drive(self, dt)
 	  distToChange = self.dist + 1
 	end
 	
-	if self.dist > distToChange then
+	if self.dist > distToChange and self.recordnumber > 3 then
 	  AIVehicleUtil.driveInDirection(self, dt, 30, 0.5, 0.5, 8, true, fwd, lx, lz , self.sl, 0.5);
 	  courseplay:set_traffc_collision(self, lx, lz)
   	else	     
