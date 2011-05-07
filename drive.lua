@@ -262,11 +262,11 @@ function courseplay:drive(self, dt)
 	end
 	
 	-- if distance grows i must be circling	
-	if self.dist > self.shortest_dist then
+	if self.dist > self.shortest_dist and self.recordnumber > 3 and self.dist < 15 then
 	  distToChange = self.dist + 1
 	end
 	
-	if self.dist > distToChange and self.recordnumber > 3 then
+	if self.dist > distToChange then
 	  AIVehicleUtil.driveInDirection(self, dt, 30, 0.5, 0.5, 8, true, fwd, lx, lz , self.sl, 0.5);
 	  courseplay:set_traffc_collision(self, lx, lz)
   	else	     
