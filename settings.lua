@@ -17,7 +17,7 @@ function courseplay:call_player(self)
 end
 
 function courseplay:start_stop_player(self)
-  local tractor = self.courseplayers[1] 
+  local tractor = self.courseplayers[1]
   if tractor.forced_to_stop then  --edit for more sites
     tractor.forced_to_stop = false
   else
@@ -31,8 +31,10 @@ function courseplay:send_player_home(self)
 end
 
 function courseplay:switch_player_side(self)
-  local tractor = self.courseplayers[1]
-  tractor.ai_state = 10
+  if self.grainTankCapacity == 0 then
+    local tractor = self.courseplayers[1]
+    tractor.ai_state = 10
+  end
 end
 
 function courseplay:switch_hud_page(self, change_by)

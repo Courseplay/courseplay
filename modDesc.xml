@@ -355,6 +355,11 @@
       <de>Abfahrhelfer Steuerung</de>
     </text>
     
+    <text name="CPCombineMangament">
+      <en>driver managment</en>
+      <de>Abfahrer steuern</de>
+    </text>
+    
     <text name="CPManageCourses">
       <en>manage courses</en>
       <de>Kurse verwalten</de>

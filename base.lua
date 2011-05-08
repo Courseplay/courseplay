@@ -127,6 +127,8 @@ function courseplay:load(xmlFile)
     self.locales.CoursePlayPlayerStop = g_i18n:getText("CoursePlayPlayerStop")
     self.locales.CoursePlayPlayerSwitchSide = g_i18n:getText("CoursePlayPlayerSwitchSide")
     self.locales.CoursePlayPlayerSendHome = g_i18n:getText("CoursePlayPlayerSendHome")
+    self.locales.CPCombineMangament = g_i18n:getText("CPCombineMangament")
+    
 	
 	self.lastGui = nil
 	self.currentGui = nil

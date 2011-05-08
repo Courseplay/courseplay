@@ -93,7 +93,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
           end
           
           
-          if func == "row1" or func == "row2" or func == "row3" then
+          if func == "row1" or func == "row2" or func == "row3" or func == "row4" then
             if self.showHudInfoBase == 0 then
               if self.courseplayers == nil or table.getn(self.courseplayers) == 0 then
                 if func == "row1" then
@@ -111,7 +111,6 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
                 if func == "row4" then
                   courseplay:switch_player_side(self)
                 end
-                
               end
             end
             if self.showHudInfoBase == 1 then

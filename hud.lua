@@ -35,24 +35,21 @@ function courseplay:loadHud(self)
 	        self.hudpage[0][1][1]= courseplay:get_locale(self, "CoursePlayCalledPlayer")
 	      else
 	        self.hudpage[0][1][1]= courseplay:get_locale(self, "CoursePlayCallPlayer")
-	        
-	        
 	      end
 	    else
 	      self.hudpage[0][1][1]= courseplay:get_locale(self, "CoursePlayPlayer")
 	      local tractor = self.courseplayers[1] 
-	      self.hudpage[0][1][2] = tractor.name
-	        
+	      self.hudpage[0][2][1] = tractor.name
+	      
 	      if tractor.forced_to_stop then
-	    	self.hudpage[0][2][1]= courseplay:get_locale(self, "CoursePlayPlayerStart")	          
+	    	self.hudpage[0][1][2]= courseplay:get_locale(self, "CoursePlayPlayerStart")	          
 	      else
-	        self.hudpage[0][2][1]= courseplay:get_locale(self, "CoursePlayPlayerStop")
-	        
-	        self.hudpage[0][3][1]= courseplay:get_locale(self, "CoursePlayPlayerSendHome")
-	        if self.grainTankCapacity == 0 then
-	          self.hudpage[0][4][1]= courseplay:get_locale(self, "CoursePlayPlayerSwitchSide")
-	        end
-	      end  
+	        self.hudpage[0][1][2]= courseplay:get_locale(self, "CoursePlayPlayerStop")
+	      end   
+          self.hudpage[0][1][3]= courseplay:get_locale(self, "CoursePlayPlayerSendHome")
+          if self.grainTankCapacity == 0 then
+            self.hudpage[0][1][4]= courseplay:get_locale(self, "CoursePlayPlayerSwitchSide")
+          end
 	    end
 	  elseif self.showHudInfoBase == 1 then
         if self.play then
@@ -306,7 +303,9 @@ function courseplay:showHud(self)
 		setTextBold(true)
 		local hud_headline = nil
 		
-		if self.showHudInfoBase == 1 then
+		if self.showHudInfoBase == 0 then
+		  hud_headline= courseplay:get_locale(self, "CPCombineMangament") -- "Kurse verwalten"
+		elseif self.showHudInfoBase == 1 then
 		  hud_headline= courseplay:get_locale(self, "CPSteering") -- "Abfahrhelfer Steuerung"
 		elseif self.showHudInfoBase == 2 then
 	      hud_headline= courseplay:get_locale(self, "CPManageCourses") -- "Kurse verwalten"
