@@ -74,9 +74,13 @@ function courseplay:update_tools(self, tractor_or_implement)
 		  		table.insert(self.tippers, object)
 			end
 		end
-		-- are there more tippers attached to the current implement?
-		if table.getn(object.attachedImplements) ~= 0 then
-		  courseplay:update_tools(self, object)
+		 -- are there more tippers attached to the current implement? 
+		local other_tipper_attached 
+		if table.getn(object.attachedImplements) ~= 0 then 
+		  other_tipper_attached = courseplay:update_tools(self, object) 
+		end 
+		if other_tipper_attached == true then 
+		  tipper_attached = true 
 		end
 	end
 --[[local mnum = table.getn(self.tippers)
