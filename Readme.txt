@@ -177,7 +177,7 @@ III. Bedienungsanleitung
 
 
 IV. Credits
-	Lautschreier/Wolverin0815/Hummel	
+	Lautschreier/Wolverin0815/Bastian82/Hummel	
 	
 	Die Entwicklung von courseplay war wohl etwas "ungewöhnlich"
 	
@@ -187,6 +187,8 @@ IV. Credits
 	
 	Ein besonderer Dank geht also selbstverstänlich an Lautschreier ohne den dieses Projekt wohl nie gestartet wäre. Vor allem dafür, dass er sein geistiges Eigentum zur Weiterentwicklung freigeben hat. (Open Source kann halt funktionieren)
 	Weiterhin hat mich "Wolverin0815" auch sehr aktiv bei der Entwicklung unterstützt und unter anderem die erste Version des HUds integriert. Auch hier ein großer Dank für sein Engagement und seine Ideen.
+	
+	Den Feldarbeitsmodus mit automatischem Pressen und Schwadaufnahme mit einem Ladewagen verdanken wir bastian82
 	
 	Zudem geht natürlich ein riesengroßes Dankeschön an alle die bei planet-ls.de fleißig getestet haben und ihre Ideen haben einfließen lassen. Die Enticklung hat mit soviel Feedback wirklich sehr viel Spaß gemacht.
 			

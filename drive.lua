@@ -61,9 +61,23 @@ function courseplay:drive(self, dt)
 	if self.Waypoints[last_recordnumber].wait and self.wait then
 		if self.ai_mode == 3 then
 		   	self.global_info_text = courseplay:get_locale(self, "CPReachedOverloadPoint") --'hat Überladepunkt erreicht.'
-		   	if self.tipper_attached and fill_level == 0 then
+		   	if self.tipper_attached then
+		   	
+		   	  -- drive on if fill_level doesn't change and fill level is < 100-self.required_fill_level_for_follow
+		   	  local drive_on = false		   	  
+		   	  if self.timeout < self.timer or self.last_fill_level == nil then
+		   	    if self.last_fill_level ~= nil and fill_level == self.last_fill_level and fill_level < 100-self.required_fill_level_for_follow then
+		   	      drive_on = true
+		   	    end
+		   	    self.last_fill_level = fill_level
+		   	    courseplay:set_timeout(self, 400)
+		   	  end
+		   	
+		   	  if fill_level == 0 or drive_on then
 		   		self.wait = false
+		   		self.last_fill_level = nil
 		   		self.unloaded = true
+		   	  end
 			end
 		elseif self.ai_mode == 4 then
 			if last_recordnumber == self.startWork and fill_level ~= 0 then

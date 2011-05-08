@@ -228,7 +228,7 @@ function courseplay:load(xmlFile)
 	self.unloaded = false	
 	self.loaded  = false
 	self.unloading_tipper = nil
-	
+	self.last_fill_level = nil
 	
 	-- for user input like saving
 	self.user_input_active = false
