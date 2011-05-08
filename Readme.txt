@@ -7,16 +7,30 @@ II.   Installationsanweisung
 III.  Bedienungsanleitung
 IV. Credits
 
-I. Changelog - Änderungen seit Version 1.0
 
-Als neue Funktionen sind im wesentlichen der Düngemodus und das Rückwärtsfahren hinzugekommen. Außerdem wurde das Fahrverhalten (besonders in Kurven) verbessert und es werden mehr EntladeTrigger (Gras und Silage) erkannt.
-Zudem kann man jetzt gespeicherte Kurse kombinieren indem man mehrere Kurse hintereinander lädt. Wenn man nur einen neuen Kurs laden will muss man allerdings jetzt vorher die Wegpunkte des alten zurücksetzen.
-Außerdem ist der Abfahrhelfer jetzt kein "hireable" mehr, das heißt er verbraucht jetzt Benzin(Dünger..) beim Fahren. Damit der Abfahrer nicht einfach irgendwo stehen bleibt bekommt man eine Warnung sobald der Tank fast leer ist und bei einem minimalen Tankinhalt bleibt der Abfahrhelfer stehen damit man ihn noch bis zur Zapfsäule bekommt.
-Im Menu wurde noch der "BUG" behoben, dass man das Menu mit allen Maustasten steuern konnte.
-Natürlich gab es noch viele weitere kleine Bugfixes.
+Ia. Changelog - Änderungen seit Version 1.2
 
-Dieses Mal geht ein besonders großer Dank an Wolverine, der einen Großteil dieses Updates (Düngemodus und Rückwärtsfahren) implementiert hat.
-Wir haben weiterhin an einer Version 2 die komplett multiplayerfähig ist, die aktuelle Version 1.20 ist aber zumindest im MP vom Host bedienbar.
+	Neu hinzugekommen sind vor allem der Feldmodus mit dem man Ballen pressen und Heusammeln kann. Der Güllemodus wurde weiter perfektioniert und es ist jetzt auch möglich den Abfahrhelfer in Drescher und Häcksler einzubauen.
+	Damit kann man beispielsweise mit Dreschern im Helfermodus Kurse aufzeichnen lassen die man dann später für den Gülle- oder Feldmodus verändern kann.
+	Zudem gibt es eine Steuerung des Abfahrhelfers aus dem Drescher heraus. Man kann einen Abfahrhelfer rufen, starten, stoppen und beim Häcksler die Seite des Abfahrers ändern.
+	Beim Abfahrhelfer kann man jetzt einstellen bei wieviel Prozenz Füllstand er frühzeitig abfahren soll. Hat ein Abfahrer zum Beispiel einen Füllstand von 90% und der Drescher wendet am Ende des Feldes, fährt der Abfahrer gleich ab und wartet nicht auf das Wendemanöver.
+	Zudem fährt der Überladewagen an seinem Überladepunkt wieder zurück aufs Feld wenn er einen gewissen Füllstand unterschritten hat und für etwa 20 Sekunden kein weiterer Abfahrer zum überladen konmmt.
+	Außerdem wurrde gewünscht, dass der Abfahrhelfer auf der Straße seine Rundumleuchte einschaltet - das tut er jetzt ;)
+	Dann gab es natürlich auch noch etwas Feintuning: Das unsinnige Kreiseln auf dem Feld sollte jetzt vorbei sein, HW80 Drehschemel und Agroliner Container werden jetzt auch unterstützt. 
+	
+
+Ib. Changelog - Änderungen seit Version 1.0
+
+	Als neue Funktionen sind im wesentlichen der Düngemodus und das Rückwärtsfahren hinzugekommen. Außerdem wurde das Fahrverhalten (besonders in Kurven) verbessert und es werden mehr EntladeTrigger (Gras und Silage) erkannt.
+	Zudem kann man jetzt gespeicherte Kurse kombinieren indem man mehrere Kurse hintereinander lädt. Wenn man nur einen neuen Kurs laden will muss man allerdings jetzt vorher die Wegpunkte des alten zurücksetzen.
+	Außerdem ist der Abfahrhelfer jetzt kein "hireable" mehr, das heißt er verbraucht jetzt Benzin(Dünger..) beim Fahren. Damit der Abfahrer nicht einfach irgendwo stehen bleibt bekommt man eine Warnung sobald der Tank fast leer ist und bei einem minimalen Tankinhalt bleibt der Abfahrhelfer stehen damit man ihn noch bis zur Zapfsäule bekommt.
+	Im Menu wurde noch der "BUG" behoben, dass man das Menu mit allen Maustasten steuern konnte.
+	Natürlich gab es noch viele weitere kleine Bugfixes.
+	
+	Dieses Mal geht ein besonders großer Dank an Wolverine, der einen Großteil dieses Updates (Düngemodus und Rückwärtsfahren) implementiert hat.
+	Wir haben weiterhin an einer Version 2 die komplett multiplayerfähig ist, die aktuelle Version 1.20 ist aber zumindest im MP vom Host bedienbar.
+
+
 
 II. Installationsanweisung
 
@@ -65,6 +79,10 @@ III. Bedienungsanleitung
 			Mit dieser Option wird der Aufnahmemodus des Abfahrhelfers aktiviert. Ihr könnt damit den Kurs einfahren den der Abfahrer später fahren soll.
 			Bei Aktivierung werden anfangs drei Fässchen im Abstand von 10-20 Metern gesetzt. Ihr solltet darauf achten, dass ihr bis zum dritten Fass nach Möglichkeit geradeaus fahrt.
 			Wenn ihr diese Funktion aktiviert habt könnt ihr mit der rechten Maustaste die Maussteuerung deaktivieren damit ihr euch beim Einfahren des Kurses auch umschauen könnt.
+		
+		Kursaufzeichnung anhalten:
+		
+			Wenn die Kursaufzeichnung läuft könnt ihr mit dieser Funktion die Kursaufzeichnung pausieren. Es wird ein gelber Pfeil angezeigt der zum letzten Wegpunkt zeigt. Zusätzlich könnt ihr in diesem Modus auch den letzten Wegpunkt löschen.
 		
 		Kursaufzeichnung beenden:
 			
@@ -121,6 +139,12 @@ III. Bedienungsanleitung
 				Im Düngemodus füllt der Abfahrhelfer am Startpunkt eine Spritze oder ein Güllefass und fährt dann seine Route ab. Man fährt mit dem Abfahrhelfer zum Feld, setzt einen Wartepunkt an der Stelle an der er mit dem Düngen beginnen soll, fährt das Feld ab und setzt einen Wartepunkt am Feldende.
 				Beim Abfahren klappt der Abfahrhelfer automatisch die Spritze/Güllefass aus und schaltet es an, fährt das Feld ab bis der Tank leer ist und fährt zurück zum auftanken. Nach dem Auftanken macht er an der Position weiter an der er aufgehört hat.
 				 
+			Typ: Feldarbeit (Ballenpressen, Schwadaufnahme)
+			
+				Der Feldarbeitsmodus funktioniert ähnlich wie der Düngemodus. Hierbei wird ein zuvor aufgezeichneter Kurs mit Feldgeschwindigkeit abgefahren.
+				Als Besonderheit kann man in diesem Modus zum Beispiel eine Ballenpresse anhängen. Die Rundballenpresse hält hierbei an wenn sie voll ist und wirft den Ballen aus.
+				Wenn man einen Ladewagen anhängt wird der Kurs abgefahren bis dieser voll ist, dann wird die letzte Position gespeichert und der Kurs abgefahren. Der Kurs sollte dann natürlich an einem Abladetrigger vorbei führen. Dort wird der Wagen entleert und dann fährt er zurück zum Feld und setzt seine Arbeit am letzten Punkt fort.
+				Der Arbeitsbereich des Modus Feldarbeit muss wie im Düngemodus durch zwei Wartepunkte markiert werden.
 		
 		Wegpunkte löschen:
 			
