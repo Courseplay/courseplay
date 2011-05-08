@@ -171,6 +171,11 @@ function courseplay:unload_combine(self, dt)
   	xt, yt, zt = worldToLocal(self.tippers[self.currentTrailerToFill].rootNode, x, y, z)
   else
     xt, yt, zt = worldToLocal(self.tippers[1].rootNode, x, y, z)
+  end  
+  
+  -- support for tippers like hw80
+  if zt < 0 then 
+    zt = zt *-1 
   end
   
   local trailer_offset = zt + self.tipper_offset
