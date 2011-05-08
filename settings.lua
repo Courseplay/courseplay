@@ -34,6 +34,11 @@ function courseplay:switch_player_side(self)
   if self.grainTankCapacity == 0 then
     local tractor = self.courseplayers[1]
     tractor.ai_state = 10
+    if tractor.chopper_offset < 0 then
+      tractor.forced_side = "left"
+    else
+      tractor.forced_side = "right"    
+    end
   end
 end
 
