@@ -8,8 +8,15 @@ end
 
 function courseplay:switch_hud_page(self, change_by)
   self.showHudInfoBase = self.showHudInfoBase + change_by
-  if self.showHudInfoBase == 0 then  --edit for more sites
-    self.showHudInfoBase = 1
+  
+  local min_hud_page = 1
+  
+  if courseplay:is_a_combine(self) then
+    min_hud_page = 0
+  end
+  
+  if self.showHudInfoBase < min_hud_page then  --edit for more sites
+    self.showHudInfoBase = min_hud_page
    end
 
    if self.showHudInfoBase == 6 then  --edit for more sites

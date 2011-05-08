@@ -6,7 +6,7 @@ function courseplay:find_combines(self)
   for k,vehicle in pairs(all_vehicles) do
     -- combines should have this trigger
     -- trying to identify combines
-    if vehicle.onCutterTrafficCollisionTrigger ~= nil then
+    if courseplay:is_a_combine(vehicle) then
       table.insert(found_combines, vehicle)
     end     
   end
@@ -14,6 +14,14 @@ function courseplay:find_combines(self)
   return found_combines
 end
 
+
+function courseplay:is_a_combine(vehicle)
+  if vehicle.onCutterTrafficCollisionTrigger ~= nil then
+   return true
+  else
+    return false 
+  end
+end
 
 -- find combines on the same field (texture)
 function courseplay:update_combines(self)
