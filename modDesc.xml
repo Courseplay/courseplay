@@ -51,6 +51,42 @@
 		<de>Letzten Wegpunkt löschen</de>
 	</text>
 
+	<text name="CoursePlayPlayer">
+		<en>Driver</en>
+		<de>Abfahrer</de>
+	</text>
+	
+	<text name="CoursePlayPlayerStart">
+		<en>start driver</en>
+		<de>Abfahrer starten</de>
+	</text>
+	
+	<text name="CoursePlayPlayerStop">
+		<en>stop driver</en>
+		<de>Abfahrer stoppen</de>
+	</text>
+
+	<text name="CoursePlayPlayerSwitchSide">
+		<en>switch side</en>
+		<de>Seite wechseln</de>
+	</text>
+	
+	<text name="CoursePlayPlayerSendHome">
+		<en>send driver home</en>
+		<de>Abfahrer wegschicken</de>
+	</text>		
+	
+	
+	<text name="CoursePlayCallPlayer">
+		<en>call driver</en>
+		<de>Abfahrer rufen</de>
+	</text>
+	
+	<text name="CoursePlayCalledPlayer">
+		<en>called driver</en>
+		<de>Abfahrer gerufen</de>
+	</text>
+
 	<text name="CoursePlayStart">
 		<en>Drive Course</en>
 		<de>Abfahrer einstellen</de>

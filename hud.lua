@@ -20,11 +20,38 @@ function courseplay:HudPage(self)
 end
 
 function courseplay:loadHud(self)
-  self.hudpage[1][1] = {}
+	self.hudpage[0][1] = {}
+	self.hudpage[0][2] = {}
+    self.hudpage[1][1] = {}
     self.hudpage[1][2] = {}
     if self.show_hud then
       self.hudInfoBaseOverlay:render();
-	  if self.showHudInfoBase <= 1 then
+	  if self.showHudInfoBase == 0 then
+	    -- no courseplayer!
+	    if self.courseplayers == nil or table.getn(self.courseplayers) == 0 then
+	      if self.wants_courseplayer then
+	        self.hudpage[0][1][1]= courseplay:get_locale(self, "CoursePlayCalledPlayer")
+	      else
+	        self.hudpage[0][1][1]= courseplay:get_locale(self, "CoursePlayCallPlayer")
+	        local tractor = self.courseplayers[1] 
+	        self.hudpage[0][1][1] = tractor.name
+	        
+	        if tractor.forced_to_stop then
+	          self.hudpage[0][2][1]= courseplay:get_locale(self, "CoursePlayPlayerStart")	          
+	        else
+	          self.hudpage[0][2][1]= courseplay:get_locale(self, "CoursePlayPlayerStop")
+	          
+	          self.hudpage[0][3][1]= courseplay:get_locale(self, "CoursePlayPlayerSendHome")
+	          if self.grainTankCapacity == 0 then
+	            self.hudpage[0][4][1]= courseplay:get_locale(self, "CoursePlayPlayerSwitchSide")
+	          end
+	        end
+	        
+	      end
+	    else
+	      self.hudpage[0][1][1]= courseplay:get_locale(self, "CoursePlayPlayer")
+	    end
+	  elseif self.showHudInfoBase == 1 then
         if self.play then
 			if not self.drive then
 			    self.hudpage[1][1][3]= courseplay:get_locale(self, "CourseReset")

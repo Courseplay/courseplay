@@ -120,9 +120,13 @@ function courseplay:load(xmlFile)
 	self.locales.CPFuelWarning = g_i18n:getText("CPFuelWarning")
     self.locales.CPNoFuelStop = g_i18n:getText("CPNoFuelStop")
 	self.locales.CPWrongTrailer = g_i18n:getText("CPWrongTrailer")
-    self.locales.CPNoWorkArea = g_i18n:getText("CPNoWorkArea")
-
-	
+    self.locales.CoursePlayCallPlayer = g_i18n:getText("CoursePlayCallPlayer")
+    self.locales.CoursePlayCalledPlayer = g_i18n:getText("CoursePlayCalledPlayer")
+    self.locales.CoursePlayPlayer = g_i18n:getText("CoursePlayPlayer")
+    self.locales.CoursePlayPlayerStart = g_i18n:getText("CoursePlayPlayerStart")
+    self.locales.CoursePlayPlayerStop = g_i18n:getText("CoursePlayPlayerStop")
+    self.locales.CoursePlayPlayerSwitchSide = g_i18n:getText("CoursePlayPlayerSwitchSide")
+    self.locales.CoursePlayPlayerSendHome = g_i18n:getText("CoursePlayPlayerSendHome")
 	
 	self.lastGui = nil
 	self.currentGui = nil
@@ -271,8 +275,16 @@ function courseplay:load(xmlFile)
 	
 	self.infoPanelPath = Utils.getFilename("../aacourseplay/img/hud_bg.png", self.baseDirectory);
 	self.hudInfoBaseOverlay = Overlay:new("hudInfoBaseOverlay", self.infoPanelPath, self.hudInfoBasePosX, self.hudInfoBasePosY, self.hudInfoBaseWidth, self.hudInfoBaseHeight);
-	self.showHudInfoBase = 1;
-	self.hudpage = {}
+	
+	self.min_hud_page = 1
+	if courseplay:is_a_combine(self) then
+	  self.min_hud_page = 0
+	end
+	
+	self.showHudInfoBase = self.min_hud_page;
+	
+	self.hudpage = {}	
+	self.hudpage[0]  = {}
 	self.hudpage[1]  = {}
     self.hudpage[1][1]  = {}
     self.hudpage[1][2]  = {}

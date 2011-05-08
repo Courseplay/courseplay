@@ -6,7 +6,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
     else
       self.mouse_enabled = true	    
       if not self.show_hud then
-        self.showHudInfoBase = 1
+        self.showHudInfoBase = self.min_hud_page
         self.show_hud = true
       end
     end
