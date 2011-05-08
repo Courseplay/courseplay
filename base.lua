@@ -285,6 +285,10 @@ function courseplay:load(xmlFile)
 	
 	self.hudpage = {}	
 	self.hudpage[0]  = {}
+	self.hudpage[0][1]  = {}
+	self.hudpage[0][2]  = {}
+	self.hudpage[0][3]  = {}
+	self.hudpage[0][4]  = {}
 	self.hudpage[1]  = {}
     self.hudpage[1][1]  = {}
     self.hudpage[1][2]  = {}
@@ -315,6 +319,11 @@ function courseplay:load(xmlFile)
     courseplay:register_button(self, nil, "delete.png", "close_hud", 1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.255, 0.016, 0.016)
     
     courseplay:register_button(self, nil, "disk_blue.png", "save_course", 1, self.hudInfoBasePosX + 0.280, self.hudInfoBasePosY + 0.050, 0.016, 0.016)
+    
+    courseplay:register_button(self, 0, "blank.png", "row1", nil, self.hudInfoBasePosX-0.05, self.hudInfoBasePosY + 0.207, 0.32, 0.015)
+    courseplay:register_button(self, 0, "blank.png", "row2", nil, self.hudInfoBasePosX-0.05, self.hudInfoBasePosY + 0.185, 0.32, 0.015)
+    courseplay:register_button(self, 0, "blank.png", "row3", nil, self.hudInfoBasePosX-0.05, self.hudInfoBasePosY + 0.164, 0.32, 0.015)
+    courseplay:register_button(self, 0, "blank.png", "row4", nil, self.hudInfoBasePosX-0.05, self.hudInfoBasePosY + 0.143, 0.32, 0.015)
     
     courseplay:register_button(self, 1, "blank.png", "row1", nil, self.hudInfoBasePosX-0.05, self.hudInfoBasePosY + 0.207, 0.32, 0.015)
     courseplay:register_button(self, 1, "blank.png", "row2", nil, self.hudInfoBasePosX-0.05, self.hudInfoBasePosY + 0.185, 0.32, 0.015)

@@ -22,6 +22,8 @@ end
 function courseplay:loadHud(self)
 	self.hudpage[0][1] = {}
 	self.hudpage[0][2] = {}
+	self.hudpage[0][3] = {}
+	self.hudpage[0][4] = {}
     self.hudpage[1][1] = {}
     self.hudpage[1][2] = {}
     if self.show_hud then
@@ -33,23 +35,24 @@ function courseplay:loadHud(self)
 	        self.hudpage[0][1][1]= courseplay:get_locale(self, "CoursePlayCalledPlayer")
 	      else
 	        self.hudpage[0][1][1]= courseplay:get_locale(self, "CoursePlayCallPlayer")
-	        local tractor = self.courseplayers[1] 
-	        self.hudpage[0][1][1] = tractor.name
 	        
-	        if tractor.forced_to_stop then
-	          self.hudpage[0][2][1]= courseplay:get_locale(self, "CoursePlayPlayerStart")	          
-	        else
-	          self.hudpage[0][2][1]= courseplay:get_locale(self, "CoursePlayPlayerStop")
-	          
-	          self.hudpage[0][3][1]= courseplay:get_locale(self, "CoursePlayPlayerSendHome")
-	          if self.grainTankCapacity == 0 then
-	            self.hudpage[0][4][1]= courseplay:get_locale(self, "CoursePlayPlayerSwitchSide")
-	          end
-	        end
 	        
 	      end
 	    else
 	      self.hudpage[0][1][1]= courseplay:get_locale(self, "CoursePlayPlayer")
+	      local tractor = self.courseplayers[1] 
+	      self.hudpage[0][1][2] = tractor.name
+	        
+	      if tractor.forced_to_stop then
+	    	self.hudpage[0][2][1]= courseplay:get_locale(self, "CoursePlayPlayerStart")	          
+	      else
+	        self.hudpage[0][2][1]= courseplay:get_locale(self, "CoursePlayPlayerStop")
+	        
+	        self.hudpage[0][3][1]= courseplay:get_locale(self, "CoursePlayPlayerSendHome")
+	        if self.grainTankCapacity == 0 then
+	          self.hudpage[0][4][1]= courseplay:get_locale(self, "CoursePlayPlayerSwitchSide")
+	        end
+	      end  
 	    end
 	  elseif self.showHudInfoBase == 1 then
         if self.play then

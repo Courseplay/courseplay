@@ -94,6 +94,26 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
           
           
           if func == "row1" or func == "row2" or func == "row3" then
+            if self.showHudInfoBase == 0 then
+              if self.courseplayers == nil or table.getn(self.courseplayers) == 0 then
+                if func == "row1" then
+                  courseplay:call_player(self)
+                end
+              else
+                if func == "row2" then
+                  courseplay:start_stop_player(self)
+                end
+                
+                if func == "row3" then
+                  courseplay:send_player_home(self)
+                end
+                
+                if func == "row4" then
+                  courseplay:switch_player_side(self)
+                end
+                
+              end
+            end
             if self.showHudInfoBase == 1 then
 	            if self.play then
 	              if not self.drive then

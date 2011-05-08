@@ -6,6 +6,35 @@ function courseplay:change_ai_state(self, change_by)
   end
 end
 
+function courseplay:call_player(self)
+  
+
+  if self.wants_courseplayer then  --edit for more sites
+    self.wants_courseplayer = false
+  else
+    self.wants_courseplayer = true
+  end
+end
+
+function courseplay:start_stop_player(self)
+  local tractor = self.courseplayers[1] 
+  if tractor.forced_to_stop then  --edit for more sites
+    tractor.forced_to_stop = false
+  else
+    tractor.forced_to_stop = true
+  end
+end
+
+function courseplay:send_player_home(self)
+  local tractor = self.courseplayers[1]
+  tractor.loaded = true
+end
+
+function courseplay:switch_player_side(self)
+  local tractor = self.courseplayers[1]
+  tractor.ai_state = 10
+end
+
 function courseplay:switch_hud_page(self, change_by)
   self.showHudInfoBase = self.showHudInfoBase + change_by
     
