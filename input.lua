@@ -82,6 +82,10 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
             courseplay:change_selected_course(self, button.parameter)
           end
           
+          if func == "refresh_courses" then
+            courseplay:load_courses(self, button.parameter)
+          end
+          
           if func == "switch_combine" then
             courseplay:switch_combine(self, button.parameter)
           end

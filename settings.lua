@@ -170,7 +170,7 @@ end
 
 
 function courseplay:change_selected_course(self, change_by)
-    courseplay:load_courses(self)
+    
 	local selected_course_number = self.selected_course_number
 	selected_course_number = selected_course_number + change_by
 	
