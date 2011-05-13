@@ -97,7 +97,7 @@ end
 
 function courseplay:load_courses(self)
 	local finish_all = false
-	self.courses = {}
+	self.coursesUnsort = {}
 	local path = getUserProfileAppPath() .. "savegame" .. g_careerScreen.selectedIndex .. "/"
     local existDir = io.open (path .. "courseplay.xml")
 	if existDir == nil then
@@ -146,11 +146,34 @@ function courseplay:load_courses(self)
 			s = s + 1
 		  else
 		    local course = {name= name, waypoints=tempCourse}
-		    table.insert(self.courses, course)
+        	table.insert(self.coursesUnsort, course)
 			i = i + 1
 			finish_wp = true
 			break
 		  end
 		until finish_wp == true
 	until finish_all == true
+
+	self.courses = {}
+	
+	for i=1, table.getn(self.coursesUnsort) do
+		local name = self.coursesUnsort[i].name
+		table.insert(self.courses, name)
+   	end
+   	
+  	table.sort (self.courses)
+  	
+  	for i=1, table.getn(self.courses) do
+  	    for k, v in pairs (self.coursesUnsort) do
+			if self.courses[i] == self.coursesUnsort[k].name then
+				local waypoints = self.coursesUnsort[k].waypoints
+				local name =  self.courses[i]
+				local course = {name= name, waypoints=waypoints}
+	            self.courses[i] = course
+	            break
+			end
+		end
+    end
+
 end
+
