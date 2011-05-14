@@ -11,13 +11,14 @@ function courseplay:record(self)
 
 	if self.recordnumber < 2 then
 		self.rotatedTime = 0
-	end 
+	end
+	
 	if self.recordnumber > 2 then
 		local oldcx ,oldcz ,oldangle= self.Waypoints[self.recordnumber - 1].cx,self.Waypoints[self.recordnumber - 1].cz,self.Waypoints[self.recordnumber - 1].angle
 		anglediff = math.abs(newangle - oldangle)
 		self.dist = courseplay:distance(cx ,cz ,oldcx ,oldcz)
 		if self.direction then
-		 	if self.dist > 3 and (anglediff > 2 or dist > 5)  then
+		 	if self.dist > 1 and (anglediff > 2 or dist > 5)  then
 				self.tmr = 101
 			end
 		else
@@ -47,7 +48,7 @@ function courseplay:record(self)
 		else
 			self.tmr = 1
 		end
-	end 
+	end
 	 
 	if self.tmr > 100 then 
 		self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = false, rev = self.direction}
@@ -117,7 +118,7 @@ function courseplay:interrupt_record(self)
 	if self.recordnumber > 3 then
 		self.record_pause = true
 		self.record = false
-
+        courseplay:sign_visibility(self, false)
 		self.dcheck = true
 		-- Show last 2 waypoints, in order to find position for continue
 		local cx ,cz = self.Waypoints[self.recordnumber - 1].cx, self.Waypoints[self.recordnumber - 1].cz
@@ -133,13 +134,29 @@ function courseplay:continue_record(self)
 	self.record = true
 
 	self.dcheck = false
+	courseplay:sign_visibility(self, false)
+	self.signs = {}
+	for k,wp in pairs(self.Waypoints) do
+  	  if k <= 3 or wp.wait == true then
+  		courseplay:addsign(self, wp.cx, 0, wp.cz)
+  	  end
+   	end
 end	
 
 -- delete last waypoint
 function courseplay:delete_waypoint(self)
-	if self.recordnumber > 4 then
+	if self.recordnumber > 3 then
 		self.recordnumber = self.recordnumber - 1
 		self.tmr = 1
+		--table.remove(self.signs,table.getn(self.signs))
+		courseplay:sign_visibility(self, false)
+		self.signs = {}
+		for k,wp in pairs(self.Waypoints) do
+  	  		if k <= 3 or wp.wait == true then
+  				courseplay:addsign(self, wp.cx, 0, wp.cz)
+  	 		end
+   		end
+
 		self.Waypoints[self.recordnumber] = nil
 		-- Show last 2 waypoints, in order to find position for continue
 		local cx ,cz = self.Waypoints[self.recordnumber - 1].cx, self.Waypoints[self.recordnumber - 1].cz
@@ -158,7 +175,7 @@ function courseplay:reset_course(self)
 	end
 	self.next_targets = {}
 	self.current_course_name = nil
-	self.ai_mode = 1
+--self.ai_mode = 1
 	self.ai_state = 1
 	self.tmr = 1
 	self.Waypoints = {}
