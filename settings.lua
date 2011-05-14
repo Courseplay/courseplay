@@ -49,8 +49,8 @@ function courseplay:switch_hud_page(self, change_by)
     self.showHudInfoBase = self.min_hud_page
    end
 
-   if self.showHudInfoBase == 6 then  --edit for more sites
-     self.showHudInfoBase = 5
+   if self.showHudInfoBase == 7 then  --edit for more sites
+     self.showHudInfoBase = 6
    end
 end
 
@@ -72,6 +72,17 @@ end
 
 function courseplay:change_tipper_offset(self, change_by)
   self.tipper_offset = self.tipper_offset + change_by
+
+end
+
+
+function courseplay:changeCPWpOffsetX(self, change_by)
+  self.WpOffsetX = self.WpOffsetX + change_by
+
+end
+
+function courseplay:changeCPWpOffsetZ(self, change_by)
+  self.WpOffsetZ = self.WpOffsetZ + change_by
 
 end
 

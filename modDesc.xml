@@ -458,6 +458,21 @@
       <de>falscher Trailer für diesen Modus</de>
     </text>
     
+    <text name="CPSettings">
+      <en>Settings</en>
+      <de>Allgemeine Einstellungen</de>
+    </text>
+
+    <text name="CPWpOffsetX">
+      <en>Waypoint-X Offset</en>
+      <de>Wegpunkt Offset-X</de>
+    </text>
+
+    <text name="CPWpOffsetZ">
+      <en>Waypoint-Z Offset</en>
+      <de>Wegpunkt Offset-Z</de>
+    </text>
+
 
     </l10n>
 

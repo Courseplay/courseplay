@@ -90,6 +90,15 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
             courseplay:switch_combine(self, button.parameter)
           end
           
+          if func == "changeWpOffsetX" then
+            courseplay:changeCPWpOffsetX(self, button.parameter)
+          end
+          
+          if func == "changeWpOffsetZ" then
+            courseplay:changeCPWpOffsetZ(self, button.parameter)
+          end
+          
+
           if func == "close_hud" then
             self.mouse_enabled = false
             self.show_hud = false
@@ -166,14 +175,14 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 	                end
 	                
 					if not self.record_pause then
-					  if func == "row2" and self.recordnumber > 3 then
+					  if func == "row2" then  --and self.recordnumber > 3
 						courseplay:set_waitpoint(self)
 					  end
-					  if func == "row3" and self.recordnumber > 3 then
+					  if func == "row3" then  --and self.recordnumber > 3 
 						courseplay:interrupt_record(self)
 					  end
 					else
-					  if func == "row2" and self.recordnumber > 4 then
+					  if func == "row2" then  --and self.recordnumber > 4 
 					    courseplay:delete_waypoint(self)
 					  end
 					  if func == "row3" then

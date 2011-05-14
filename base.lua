@@ -128,8 +128,10 @@ function courseplay:load(xmlFile)
     self.locales.CoursePlayPlayerSwitchSide = g_i18n:getText("CoursePlayPlayerSwitchSide")
     self.locales.CoursePlayPlayerSendHome = g_i18n:getText("CoursePlayPlayerSendHome")
     self.locales.CPCombineMangament = g_i18n:getText("CPCombineMangament")
-    
-	
+    self.locales.CPSettings = g_i18n:getText("CPSettings")
+    self.locales.CPWpOffsetX = g_i18n:getText("CPWpOffsetX")
+    self.locales.CPWpOffsetZ = g_i18n:getText("CPWpOffsetZ")
+
 	self.lastGui = nil
 	self.currentGui = nil
 	self.input_gui = "emptyGui";	
@@ -263,6 +265,8 @@ function courseplay:load(xmlFile)
 	self.turn_factor = nil
 	self.turn_radius = 17
 	
+	self.WpOffsetX = 0
+	self.WpOffsetZ = 0
 	-- loading saved courses from xml
 	courseplay:load_courses(self)
 	
@@ -306,6 +310,9 @@ function courseplay:load(xmlFile)
     self.hudpage[5] = {}
     self.hudpage[5][1]  = {}
     self.hudpage[5][2]  = {}
+    self.hudpage[6] = {}
+	self.hudpage[6][1]  = {}
+    self.hudpage[6][2]  = {}
     self.hudinfo = {}
     
     self.show_hud = false
@@ -336,7 +343,7 @@ function courseplay:load(xmlFile)
     courseplay:register_button(self, 2, "blank.png", "row3", nil, self.hudInfoBasePosX-0.05, self.hudInfoBasePosY + 0.164, 0.32, 0.015)
     
     
-    courseplay:register_button(self, 2, "refresh.png",   "refresh_courses", -5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.222, 0.020, 0.020)
+    courseplay:register_button(self, 2, "refresh.png",   "refresh_courses", nil, self.hudInfoBasePosX + 0.247, self.hudInfoBasePosY +0.235, 0.020, 0.020)
     courseplay:register_button(self, 2, "navigate_up.png",   "change_selected_course", -5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY +0.222, 0.020, 0.020)
     courseplay:register_button(self, 2, "navigate_down.png", "change_selected_course", 5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY +0.120, 0.020, 0.020)
     
@@ -378,7 +385,12 @@ function courseplay:load(xmlFile)
     courseplay:register_button(self, 5, "navigate_minus.png", "change_max_speed", -1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY +0.167, 0.010, 0.010)
     courseplay:register_button(self, 5, "navigate_plus.png", "change_max_speed", 1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.167, 0.010, 0.010)
     
+    courseplay:register_button(self, 6, "navigate_minus.png", "changeWpOffsetX", -0.5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.210, 0.010, 0.010)
+    courseplay:register_button(self, 6, "navigate_plus.png", "changeWpOffsetX", 0.5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.210, 0.010, 0.010)
     
+    courseplay:register_button(self, 6, "navigate_minus.png", "changeWpOffsetZ", -0.5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.188, 0.010, 0.010)
+    courseplay:register_button(self, 6, "navigate_plus.png", "changeWpOffsetZ", 0.5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.188, 0.010, 0.010)
+
     self.fold_move_direction = 1
 end	
 

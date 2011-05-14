@@ -103,7 +103,7 @@ function courseplay:loadHud(self)
 				end
 				
 				if not self.record_pause then	
-					if self.recordnumber > 3 then
+					if self.recordnumber > 1 then
 						self.hudpage[1][1][2]= courseplay:get_locale(self, "CourseWaitpointSet")
 						if InputBinding.hasEvent(InputBinding.AHInput2) then
 							courseplay:set_waitpoint(self)
@@ -252,7 +252,29 @@ function courseplay:loadHud(self)
 	    self.hudpage[5][2][1]= string.format("%d", self.turn_speed*3600) .. " km/h"
 	    self.hudpage[5][2][2]= string.format("%d", self.field_speed*3600) .. " km/h"
 	    self.hudpage[5][2][3]= string.format("%d", self.max_speed*3600) .. " km/h"
+
+	  
+	  elseif self.showHudInfoBase == 6 then
+	    self.hudpage[6][1][1]= courseplay:get_locale(self, "CPWpOffsetX") -- X-Offset
+	    self.hudpage[6][1][2]= courseplay:get_locale(self, "CPWpOffsetZ") -- Z-Offset:
+
+
+     	if self.WpOffsetX ~= nil then
+		  self.hudpage[6][2][1]= string.format("%.1f", self.WpOffsetX) .. "m"
+		else
+		  self.hudpage[6][2][1]= "---"
+		end
+		
+		if self.WpOffsetZ ~= nil then
+		  self.hudpage[6][2][2]= string.format("%.1f", self.WpOffsetZ) .. "m"
+		else
+		  self.hudpage[6][2][2]= "---"
+		end
+
 	  end
+	  
+	  
+
 	end-- end if show_hud
 end
 
@@ -315,6 +337,8 @@ function courseplay:showHud(self)
 		  hud_headline= courseplay:get_locale(self, "CPManageCombines") -- "Drescher verwalten";
 		elseif self.showHudInfoBase == 5 then
 		  hud_headline= courseplay:get_locale(self, "CPSpeedLimit") -- "Geschwindigkeiten"
+		elseif self.showHudInfoBase == 6 then
+		  hud_headline= courseplay:get_locale(self, "CPSettings") -- "Allgemein"
 		end
 		
 	    renderText(self.hudInfoBasePosX + 0.060, self.hudInfoBasePosY + 0.240, 0.021, hud_headline);
