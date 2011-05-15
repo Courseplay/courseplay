@@ -178,9 +178,15 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 					  if func == "row2" then  --and self.recordnumber > 3
 						courseplay:set_waitpoint(self)
 					  end
+					  
+					  if func == "row4" then  --and self.recordnumber > 3
+					   courseplay:set_crossing(self)
+					  end
+					  
 					  if func == "row3" then  --and self.recordnumber > 3 
 						courseplay:interrupt_record(self)
 					  end
+					  
 					else
 					  if func == "row2" then  --and self.recordnumber > 4 
 					    courseplay:delete_waypoint(self)
