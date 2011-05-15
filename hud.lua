@@ -114,6 +114,8 @@ function courseplay:loadHud(self)
 							courseplay:interrupt_record(self)
 						end
 
+						self.hudpage[1][1][4]= courseplay:get_locale(self, "CourseCrossingSet")
+
 						if not self.direction and self.movingDirection == -1 then
 							courseplay:set_direction(self)
 						end

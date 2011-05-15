@@ -130,7 +130,12 @@
 	<text name="CourseWaitpointSet">
 		<en>set waitpoint</en>
 		<de>Hier Wartepunkt setzen</de>
-	</text>	
+	</text>
+	
+	<text name="CourseCrossingSet">
+		<en>set crossing</en>
+		<de>Hier Kreuzungspunkt setzen</de>
+	</text>		
 
 	<text name="CourseWaitpointStart">
 		<en>start</en>
