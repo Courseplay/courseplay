@@ -24,11 +24,44 @@ function courseplay:load_course(self, id)
     	self.Waypoints = course.waypoints
     	self.current_course_name = course.name
 	else -- Add new course to old course
+		local course1_waypoints = self.Waypoints
+		local course2_waypoints = course.waypoints
 		local lastWP = table.getn(self.Waypoints)
+		local wp_found = false
+		local new_wp = 1
+		-- go through all waypoints and try to find a waypoint of the next course near a crossing
+		
+		for number, course1_wp in pairs(course1_waypoints) do
+		  if course1_wp.crossing  == true then
+		  	for number_2, course2_wp in pairs(course2_waypoints) do
+		  	  if course2_wp.crossing == true then  
+		        if courseplay:distance(course1_wp.cx, course1_wp.cz, course2_wp.cx, course2_wp.cz) < 30 then
+		           if number > 3 and number ~= number_2 and not wp_found and course1_waypoints[number].merged == nil then
+		             lastWP = number
+		             new_wp = number_2
+		             wp_found = true
+		             print(number)
+		             print(number_2)
+		           end
+		        end
+		      end
+		    end
+		  end
+		end
+		
+		course1_waypoints[lastWP].merged = true
+		
+		self.Waypoints = {}
+		
+		for i=1, lastWP do
+		  table.insert(self.Waypoints, course1_waypoints[i])
+		end
+		
   		local lastNewWP = table.getn(course.waypoints)
-  		for i=1,lastNewWP do
-  			self.Waypoints[lastWP+i] = course.waypoints[i]
+  		for i=new_wp, lastNewWP do
+  			table.insert(self.Waypoints, course.waypoints[i])
   		end
+  		self.Waypoints[lastWP+1].merged = true
   		self.current_course_name = self.locales.CPCourseAdded
   	end
 	self.play = true
@@ -36,7 +69,7 @@ function courseplay:load_course(self, id)
 	self.maxnumber = table.getn(self.Waypoints)
 	-- this adds the signs to the course
 	for k,wp in pairs(self.Waypoints) do
-  		if k <= 3 or wp.wait == true then
+  		if k <= 3 or wp.wait == true  or wp.crossing == true then
   		courseplay:addsign(self, wp.cx, 0, wp.cz)
   	  	end
   	  	if wp.wait then
@@ -145,16 +178,12 @@ function courseplay:load_courses(self)
 			local rev = Utils.getVectorFromString(getXMLString(File, key .. "#rev"))
 			local crossing = Utils.getVectorFromString(getXMLString(File, key .. "#crossing"))
 			
-			if crossing == 1 then
+			if crossing == 1 or s == 1 then
 			  crossing = true
 		    else
 		      crossing = false
 		    end
 		    
-		    if i == 1 then
-		      crossing = true
-		    end
-			
 			if wait == 1 then
 			  wait = true
 			else
