@@ -49,9 +49,15 @@ function courseplay:record(self)
 			self.tmr = 1
 		end
 	end
-	 
+	
+	local set_crossing = false
+	
+	if self.recordnumber == 1 then
+	  set_crossing = true
+	end
+	
 	if self.tmr > 100 then 
-		self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = false, rev = self.direction}
+		self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = false, rev = self.direction, crossing = set_crossing}
 		if self.recordnumber < 4 then
 			courseplay:addsign(self, cx, cy,cz)
 		end
@@ -68,7 +74,22 @@ function courseplay:set_waitpoint(self)
 	local dX = x/length
 	local dZ = z/length
 	local newangle = math.deg(math.atan2(dX,dZ)) 
-  self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = true, rev = self.direction}
+  self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = true, rev = self.direction, crossing = false}
+  self.tmr = 1
+  self.recordnumber = self.recordnumber + 1
+  self.waitPoints = self.waitPoints + 1
+  courseplay:addsign(self, cx, cy,cz)  
+end
+
+
+function courseplay:set_crossing(self)
+  local cx,cy,cz = getWorldTranslation(self.rootNode);
+  local x,y,z = localDirectionToWorld(self.rootNode, 0, 0, 1);
+  local length = Utils.vector2Length(x,z);
+  local dX = x/length
+  local dZ = z/length
+  local newangle = math.deg(math.atan2(dX,dZ)) 
+  self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = false, rev = self.direction, crossing = true}
   self.tmr = 1
   self.recordnumber = self.recordnumber + 1
   self.waitPoints = self.waitPoints + 1
@@ -84,12 +105,13 @@ function courseplay:set_direction(self)
 	local dZ = z/length
 	local newangle = math.deg(math.atan2(dX,dZ))
 	local fwd = nil
-  	self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = false, rev = self.direction}
+  	self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = false, rev = self.direction, crossing = false}
 	self.direction = not self.direction
   	self.tmr = 1
   	self.recordnumber = self.recordnumber + 1
   	courseplay:addsign(self, cx, cy,cz)
 end
+
 -- starts course recording -- just setting variables
 function courseplay:start_record(self)
     courseplay:reset_course(self)
@@ -105,6 +127,7 @@ end
 
 -- stops course recording -- just setting variables
 function courseplay:stop_record(self)
+	courseplay:set_crossing(self)
 	self.record = false
 	self.record_pause = false
 	self.drive  = false	

@@ -15,7 +15,7 @@ end
 function courseplay:load_course(self, id)
   if id ~= nil then
     id = self.selected_course_number + id
-  	local course = self.courses[id]
+  	local course = courseplay_courses[id]
   	if course == nil then
   	  return
   	end
@@ -49,11 +49,11 @@ end
 function courseplay:clear_course(self, id)
   if id ~= nil then
     id = self.selected_course_number + id
-    local course = self.courses[id]
+    local course = courseplay_courses[id]
     if course == nil then
       return
     end
-    table.remove(self.courses, id)
+    table.remove(courseplay_courses, id)
     courseplay:save_courses(self)
   end
 end
@@ -65,7 +65,7 @@ function courseplay:save_courses(self)
   local tab = "   "
   if File ~= nil then
     File:write("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\" ?>\n<XML>\n<courses>\n")
-    for _,course in pairs(self.courses) do
+    for _,course in pairs(courseplay_courses) do
       if course ~= nil then
 	      local name = course.name
 	      local x = course.waypoints
@@ -73,7 +73,15 @@ function courseplay:save_courses(self)
 	      for i = 1, table.getn(x) do
 	        local v = x[i]
 			local wait = 0
+			local crossing = 0
 			local rev = 0
+			
+			if v.crossing then
+			  crossing = "1"
+			else
+			  crossing = "0"
+			end
+			
 			if v.wait then
 			  wait = "1"
 			else
@@ -84,7 +92,7 @@ function courseplay:save_courses(self)
 			else
 			  rev = "0"
 			end
-	        File:write(tab .. tab .. "<waypoint" .. i .. " pos=\"" .. v.cx .. " " .. v.cz .. "\" angle=\"" .. v.angle .. "\" rev=\"" .. rev .. "\" wait=\"" .. wait .. "\" />\n")
+	        File:write(tab .. tab .. "<waypoint" .. i .. " pos=\"" .. v.cx .. " " .. v.cz .. "\" angle=\"" .. v.angle .. "\" rev=\"" .. rev .. "\" wait=\"" .. wait .. "\" crossing=\"" .. crossing .. "\" />\n")
 	      end
 	      File:write(tab .. "</course>\n")
       end
@@ -100,7 +108,7 @@ end
 
 function courseplay:load_courses(self)
 	local finish_all = false
-	self.coursesUnsort = {}
+	courseplay_coursesUnsort = {}
 	local path = getUserProfileAppPath() .. "savegame" .. g_careerScreen.selectedIndex .. "/"
     local existDir = io.open (path .. "courseplay.xml")
 	if existDir == nil then
@@ -135,6 +143,18 @@ function courseplay:load_courses(self)
 			local dangle = Utils.getVectorFromString(getXMLString(File, key .. "#angle"))
 			local wait = Utils.getVectorFromString(getXMLString(File, key .. "#wait"))
 			local rev = Utils.getVectorFromString(getXMLString(File, key .. "#rev"))
+			local crossing = Utils.getVectorFromString(getXMLString(File, key .. "#crossing"))
+			
+			if crossing == 1 then
+			  crossing = true
+		    else
+		      crossing = false
+		    end
+		    
+		    if i == 1 then
+		      crossing = true
+		    end
+			
 			if wait == 1 then
 			  wait = true
 			else
@@ -145,11 +165,11 @@ function courseplay:load_courses(self)
 			else
 			  rev = false
 			end
-			tempCourse[s] = {cx = x, cz = z, angle = dangle, rev= rev, wait = wait}
+			tempCourse[s] = {cx = x, cz = z, angle = dangle, rev= rev, wait = wait, crossing = crossing}
 			s = s + 1
 		  else
 		    local course = {name= name, waypoints=tempCourse}
-        	table.insert(self.coursesUnsort, course)
+        	table.insert(courseplay_coursesUnsort, course)
 			i = i + 1
 			finish_wp = true
 			break
@@ -157,26 +177,28 @@ function courseplay:load_courses(self)
 		until finish_wp == true
 	until finish_all == true
 
-	self.courses = {}
+	courseplay_courses = {}
 	
-	for i=1, table.getn(self.coursesUnsort) do
-		local name = self.coursesUnsort[i].name
-		table.insert(self.courses, name)
+	for i=1, table.getn(courseplay_coursesUnsort) do
+		local name = courseplay_coursesUnsort[i].name
+		table.insert(courseplay_courses, name)
    	end
    	
-  	table.sort (self.courses)
+  	table.sort (courseplay_courses)
   	
-  	for i=1, table.getn(self.courses) do
-  	    for k, v in pairs (self.coursesUnsort) do
-			if self.courses[i] == self.coursesUnsort[k].name then
-				local waypoints = self.coursesUnsort[k].waypoints
-				local name =  self.courses[i]
+  	for i=1, table.getn(courseplay_courses) do
+  	    for k, v in pairs (courseplay_coursesUnsort) do
+			if courseplay_courses[i] == courseplay_coursesUnsort[k].name then
+				local waypoints = courseplay_coursesUnsort[k].waypoints
+				local name =  courseplay_courses[i]
 				local course = {name= name, waypoints=waypoints}
-	            self.courses[i] = course
+	            courseplay_courses[i] = course
 	            break
 			end
 		end
     end
-
+    
+    courseplay_coursesUnsort = nil
 end
+
 

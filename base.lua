@@ -2,6 +2,10 @@ function courseplay.prerequisitesPresent(specializations)
 	return true;
 end
 
+-- global array for courses, no refreshing needed any more
+if courseplay_courses == nil then
+  courseplay_courses = {}
+end
 
 function courseplay:load(xmlFile)
 	self.locales = {}
@@ -152,8 +156,7 @@ function courseplay:load(xmlFile)
 	
 	-- waypoints are stored in here
 	self.Waypoints = {}
-	-- loaded/saved courses saved in here
-	self.courses = {}
+	
 	-- TODO still needed?
 	self.play = false
 	-- total number of course players
@@ -344,7 +347,7 @@ function courseplay:load(xmlFile)
     courseplay:register_button(self, 2, "blank.png", "row3", nil, self.hudInfoBasePosX-0.05, self.hudInfoBasePosY + 0.164, 0.32, 0.015)
     
     
-    courseplay:register_button(self, 2, "refresh.png",   "refresh_courses", nil, self.hudInfoBasePosX + 0.247, self.hudInfoBasePosY +0.235, 0.020, 0.020)
+    -- courseplay:register_button(self, 2, "refresh.png",   "refresh_courses", nil, self.hudInfoBasePosX + 0.247, self.hudInfoBasePosY +0.235, 0.020, 0.020)
     courseplay:register_button(self, 2, "navigate_up.png",   "change_selected_course", -5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY +0.222, 0.020, 0.020)
     courseplay:register_button(self, 2, "navigate_down.png", "change_selected_course", 5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY +0.120, 0.020, 0.020)
     
