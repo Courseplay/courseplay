@@ -27,9 +27,14 @@ function courseplay:drive(self, dt)
   end
   cx ,cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
   -- distance to waypoint
+ --[[ if cx > ctx then
+    cx = cx + self.WpOffsetZ
+  else
+   	cx = cx - self.WpOffsetZ
+  end]]
   
   self.dist = courseplay:distance(cx ,cz ,ctx ,ctz)
- 
+  --print(string.format("Tx: %f2 Tz: %f2 WPcx: %f2 WPcz: %f2 dist: %f2 ", ctx, ctz, cx, cz, self.dist ))
   -- what about our tippers?
   local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
   local fill_level = nil
@@ -248,6 +253,7 @@ function courseplay:drive(self, dt)
 	local fwd = nil
 	local distToChange = nil
 	local lx, lz = AIVehicleUtil.getDriveDirection(self.rootNode,cx,cty,cz);
+
 	if self.Waypoints[self.recordnumber].rev then
 		lz = lz * -1
 		lx = lx * -1
@@ -255,6 +261,7 @@ function courseplay:drive(self, dt)
 	else
 		fwd = true
 	end
+	
 	-- go, go, go!
 	if self.recordnumber + 1 <= self.maxnumber then
 	local beforeReverse = (self.Waypoints[self.recordnumber+1].rev and not self.Waypoints[last_recordnumber].rev)
@@ -270,9 +277,15 @@ function courseplay:drive(self, dt)
 		distToChange = 5
 	end
 	
+	
+	
 	-- record shortest distance to the next waypoint
 	if self.shortest_dist == nil or self.shortest_dist > self.dist then
 	  self.shortest_dist = self.dist
+	end
+	
+	if beforeReverse then
+		self.shortest_dist = nil
 	end
 	
 	-- if distance grows i must be circling	
@@ -281,7 +294,7 @@ function courseplay:drive(self, dt)
 	end
 	
 	if self.dist > distToChange then
-	  AIVehicleUtil.driveInDirection(self, dt, 30, 0.5, 0.5, 8, true, fwd, lx, lz , self.sl, 0.5);
+	  AIVehicleUtil.driveInDirection(self, dt, 30, 0.5, 0.5, 8, true, fwd, lx, lz, self.sl, 0.5);
 	  courseplay:set_traffc_collision(self, lx, lz)
   	else	     
   		-- reset distance to waypoint

@@ -39,6 +39,9 @@ function courseplay:load_course(self, id)
   		if k <= 3 or wp.wait == true then
   		courseplay:addsign(self, wp.cx, 0, wp.cz)
   	  	end
+  	  	if wp.wait then
+		self.waitPoints = self.waitPoints + 1
+		end
     end
   end
 end

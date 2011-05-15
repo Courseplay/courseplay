@@ -64,7 +64,7 @@ function courseplay:start(self)
 	                self.stopWork = i
 				end
 			end
-		
+
 	    end
 		-- mode 6 without start and stop point, set them at start and end, for only-on-field-courses
 		if self.ai_mode == 6 and wpanz == 0 then
@@ -143,6 +143,7 @@ function courseplay:stop(self)
 	self.motor.maxRpmOverride = nil;
 	self.startWork = nil
 	self.stopWork = nil
+	
 	
 	AIVehicleUtil.driveInDirection(self, 0, 30, 0, 0, 28, false, moveForwards, 0, 1)	
 
