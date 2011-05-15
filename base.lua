@@ -142,6 +142,7 @@ function courseplay:load(xmlFile)
 	self.timer = 0
 	self.drive_slow_timer = 0
 	self.courseplay_position = nil
+	self.waitPoints = 0
 	
 	-- saves the shortest distance to the next waypoint (for recocnizing circling)
 	self.shortest_dist = nil
