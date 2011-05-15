@@ -186,7 +186,7 @@ function courseplay:change_selected_course(self, change_by)
 	selected_course_number = selected_course_number + change_by
 	
 	local number_of_courses = 0
-	for k,trigger in pairs(self.courses) do 
+	for k,trigger in pairs(courseplay_courses) do 
 	  number_of_courses = number_of_courses + 1
 	end
 	
