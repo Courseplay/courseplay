@@ -25,13 +25,20 @@ function courseplay:drive(self, dt)
     -- this should never happen
     self.recordnumber = self.maxnumber
   end
-  cx ,cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
-  -- distance to waypoint
- --[[ if cx > ctx then
-    cx = cx + self.WpOffsetZ
-  else
-   	cx = cx - self.WpOffsetZ
-  end]]
+  cx ,cz, angle = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz, self.Waypoints[self.recordnumber].angle
+  
+  -- TODO angle ist  nicht wirklich brauchbar, also neu berechnen
+  
+  -- offset - endlich lohnt sich der mathe-lk von vor 1000 Jahren ;)
+  if self.WpOffsetZ ~= nil and self.WpOffsetZ ~= 0 then
+  	if angle < 0 then
+  	  angle = 360 - angle * -1
+  	end
+    cz  = math.sin(angle) * self.WpOffsetZ + cz
+    cx  = math.cos(angle) * self.WpOffsetZ + cx
+    
+  end
+
   
   self.dist = courseplay:distance(cx ,cz ,ctx ,ctz)
   --print(string.format("Tx: %f2 Tz: %f2 WPcx: %f2 WPcz: %f2 dist: %f2 ", ctx, ctz, cx, cz, self.dist ))
