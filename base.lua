@@ -8,6 +8,9 @@ if courseplay_courses == nil then
 end
 
 function courseplay:load(xmlFile)
+	self.setWaypoint= SpecializationUtil.callSpecializationsFunction("setWaypoint");
+	
+	
 	self.locales = {}
 	local aNameSearch = {"vehicle.name." .. g_languageShort, "vehicle.name.en", "vehicle.name", "vehicle#type"};
 	

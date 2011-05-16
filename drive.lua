@@ -25,19 +25,42 @@ function courseplay:drive(self, dt)
     -- this should never happen
     self.recordnumber = self.maxnumber
   end
-  cx ,cz, angle = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz, self.Waypoints[self.recordnumber].angle
   
-  -- TODO angle ist  nicht wirklich brauchbar, also neu berechnen
+  local last_recordnumber = nil
+  
+   if self.recordnumber > 1 then
+     last_recordnumber = self.recordnumber - 1    
+    else
+     last_recordnumber = 1
+   end
+  
+  local next3_recordnumber = nil
+   
+   if self.recordnumber < self.maxnumber-3 then
+     next3_recordnumber = self.recordnumber +3
+   else
+   	 next3_recordnumber = self.recordnumber
+   end
+  local angle = nil
+  cx ,cz, angle = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz, self.Waypoints[self.recordnumber].angle
+  --local last_cx, last_cz = nil
+  --last_cx ,last_cz = self.Waypoints[next3_recordnumber].cx, self.Waypoints[next3_recordnumber].cz
   
   -- offset - endlich lohnt sich der mathe-lk von vor 1000 Jahren ;)
-  if self.WpOffsetZ ~= nil and self.WpOffsetZ ~= 0 then
-  	if angle < 0 then
-  	  angle = 360 - angle * -1
-  	end
-    cz  = math.sin(angle) * self.WpOffsetZ + cz
-    cx  = math.cos(angle) * self.WpOffsetZ + cx
+  --if self.WpOffsetZ ~= nil and self.WpOffsetZ ~= 0 then
+  	--courseplay:addsign(self, cx, 10, cz)  	
+  	--print(string.format("old WP: %d x %d ", cx, cz ))
+  	
+  	--if angle < 0 then
+  	--  angle = 360 - angle * -1
+  	--end
+  	
+    --cx  = math.sin(angle+90) * self.WpOffsetZ + cx
+    --cz  = math.cos(angle+90) * self.WpOffsetZ + cz
     
-  end
+    --print(string.format("new WP: %d x %d (angle) %d ", cx, cz, angle ))
+    --courseplay:addsign2(self, cx, 20, cz)
+  --end
 
   
   self.dist = courseplay:distance(cx ,cz ,ctx ,ctz)
@@ -62,13 +85,7 @@ function courseplay:drive(self, dt)
   local active_tipper = nil
 
 
-  local last_recordnumber = nil
-  
-  if self.recordnumber > 1 then
-    last_recordnumber = self.recordnumber - 1    
-  else
-    last_recordnumber = 1
-  end
+ 
   
 	if self.Waypoints[last_recordnumber].wait and self.wait then
 		if self.ai_mode == 3 then
