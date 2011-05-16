@@ -144,11 +144,11 @@ function courseplay:loadHud(self)
 	
 	  elseif self.showHudInfoBase == 2 then
 		local number_of_courses = 0
-		
-		for k,course in pairs(courseplay_courses) do 
-		  number_of_courses = number_of_courses + 1
+		if courseplay_courses ~= nil then
+			for k,course in pairs(courseplay_courses) do 
+			  number_of_courses = number_of_courses + 1
+			end
 		end
-		
 		local start_course_num = self.selected_course_number
 		local end_course_num = start_course_num + 4
 		
