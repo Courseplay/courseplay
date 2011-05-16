@@ -483,6 +483,16 @@
       <de>möchte baden gehen</de>
     </text>
 
+    <text name="WaitPoints">
+      <en>waitpoints:</en>
+      <de>Wartepunkte:</de>
+    </text>
+    
+     <text name="CrossPoints">
+      <en>crossing points:</en>
+      <de>Kreuzungspunkte:</de>
+    </text>
+
 
     </l10n>
 
