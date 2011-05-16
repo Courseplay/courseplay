@@ -245,7 +245,11 @@ function courseplay:handle_user_input(self)
 		self.user_input_active = false
 		self.current_course_name = self.user_input
 		course = {name =self.current_course_name, waypoints = self.Waypoints}
+  		if courseplay_courses == nil then
+  	  		courseplay_courses = {}
+		end
 		table.insert(courseplay_courses, course)
+		
 		self.user_input = ""	   
 		self.user_input_message = nil
 		self.steeringEnabled = true   --test
