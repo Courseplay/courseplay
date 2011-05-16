@@ -92,7 +92,7 @@ function courseplay:set_crossing(self)
   self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = false, rev = self.direction, crossing = true}
   self.tmr = 1
   self.recordnumber = self.recordnumber + 1
-  self.waitPoints = self.waitPoints + 1
+  self.crossPoints = self.crossPoints + 1
   courseplay:addsign(self, cx, cy,cz)  
 end
 
@@ -121,6 +121,7 @@ function courseplay:start_record(self)
 
 	self.recordnumber = 1
 	self.waitPoints = 0
+	self.crossPoints = 0
 	self.tmr = 101
 	self.direction = false
 end		
@@ -183,7 +184,10 @@ function courseplay:delete_waypoint(self)
    		end
 		if 	self.Waypoints[self.recordnumber].wait then
 				self.waitPoints = self.waitPoints - 1
-		end	
+		end
+		if 	self.Waypoints[self.recordnumber].crossing then
+				self.crossPoints = self.crossPoints - 1
+		end		
 		self.Waypoints[self.recordnumber] = nil
 		-- Show last 2 waypoints, in order to find position for continue
 		local cx ,cz = self.Waypoints[self.recordnumber - 1].cx, self.Waypoints[self.recordnumber - 1].cz
@@ -212,4 +216,5 @@ function courseplay:reset_course(self)
 	self.back = false
 	self.abortWork = nil
 	self.waitPoints =  0
+	self.crossPoints = 0
 end	

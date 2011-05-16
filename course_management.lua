@@ -75,6 +75,9 @@ function courseplay:load_course(self, id)
   	  	if wp.wait then
 		self.waitPoints = self.waitPoints + 1
 		end
+		if wp.crossing then
+		self.crossPoints = self.crossPoints + 1
+		end
     end
   end
 end

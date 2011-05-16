@@ -311,10 +311,10 @@ function courseplay:showHud(self)
 		end
 		
 		if self.Waypoints[self.recordnumber ] ~= nil then
-		    self.hudinfo[3]= courseplay:get_locale(self, "CPWaypoint") ..self.recordnumber .." / "..self.maxnumber .."   WP:" .. self.waitPoints
+		    self.hudinfo[3]= courseplay:get_locale(self, "CPWaypoint") ..self.recordnumber .." / "..self.maxnumber .."    ".. self.locales.WaitPoints.. self.waitPoints.."    "..self.locales.CrossPoints .. self.crossPoints
 		elseif self.record or self.record_pause then
-			 self.hudinfo[3]= courseplay:get_locale(self, "CPWaypoint") ..self.recordnumber .."  /  WP:" .. self.waitPoints	    
-		else
+			 self.hudinfo[3]= courseplay:get_locale(self, "CPWaypoint") ..self.recordnumber .."    ".. self.locales.WaitPoints .. self.waitPoints  .."    ".. self.locales.CrossPoints .. self.crossPoints
+		else  
 			self.hudinfo[3]=  courseplay:get_locale(self, "CPNoWaypoint") -- "Keine Wegpunkte geladen"
 		end
 		setTextBold(false)

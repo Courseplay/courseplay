@@ -140,7 +140,9 @@ function courseplay:load(xmlFile)
     self.locales.CPWpOffsetX = g_i18n:getText("CPWpOffsetX")
     self.locales.CPWpOffsetZ = g_i18n:getText("CPWpOffsetZ")
 	self.locales.CPWaterDrive = g_i18n:getText("CPWaterDrive")
-	
+	self.locales.WaitPoints = g_i18n:getText("WaitPoints")
+	self.locales.CrossPoints = g_i18n:getText("CrossPoints")
+
 	self.lastGui = nil
 	self.currentGui = nil
 	self.input_gui = "emptyGui";	
@@ -152,6 +154,7 @@ function courseplay:load(xmlFile)
 	self.drive_slow_timer = 0
 	self.courseplay_position = nil
 	self.waitPoints = 0
+	self.crossPoints = 0
 	
 	-- saves the shortest distance to the next waypoint (for recocnizing circling)
 	self.shortest_dist = nil
