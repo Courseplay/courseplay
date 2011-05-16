@@ -136,7 +136,8 @@ function courseplay:load(xmlFile)
     self.locales.CPSettings = g_i18n:getText("CPSettings")
     self.locales.CPWpOffsetX = g_i18n:getText("CPWpOffsetX")
     self.locales.CPWpOffsetZ = g_i18n:getText("CPWpOffsetZ")
-
+	self.locales.CPWaterDrive = g_i18n:getText("CPWaterDrive")
+	
 	self.lastGui = nil
 	self.currentGui = nil
 	self.input_gui = "emptyGui";	
