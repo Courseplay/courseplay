@@ -168,6 +168,11 @@ function courseplay:drive(self, dt)
 		    allowedToDrive = false
 		    self.global_info_text = self.locales.CPNoFuelStop
  		end
+ 		
+ 		if self.showWaterWarning then
+		    allowedToDrive = false
+		    self.global_info_text = self.locales.CPWaterDrive
+ 		end
   	end
   
    -- ai_mode 4 = fertilize

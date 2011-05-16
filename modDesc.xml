@@ -478,6 +478,11 @@
       <de>Wegpunkt Offset-Z</de>
     </text>
 
+    <text name="CPWaterDrive">
+      <en>would like to go swimming</en>
+      <de>möchte baden gehen</de>
+    </text>
+
 
     </l10n>
 
