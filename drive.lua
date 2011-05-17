@@ -207,8 +207,12 @@ function courseplay:drive(self, dt)
    
   -- stop or hold position
   if not allowedToDrive then  
-     self.motor:setSpeedLevel(0, false);     
-     AIVehicleUtil.driveInDirection(self, dt, 30, 0.5, 0.5, 28, false, moveForwards, 0, 1)
+     
+     self.motor:setSpeedLevel(0, false);
+     
+     if g_server ~= nil then
+       AIVehicleUtil.driveInDirection(self, dt, 30, 0.5, 0.5, 28, false, moveForwards, 0, 1)
+     end
 	 
      -- unload active tipper if given
      if active_tipper then
@@ -318,8 +322,10 @@ function courseplay:drive(self, dt)
 	end
 	
 	if self.dist > distToChange then
-	  AIVehicleUtil.driveInDirection(self, dt, 30, 0.5, 0.5, 8, true, fwd, lx, lz, self.sl, 0.5);
-	  courseplay:set_traffc_collision(self, lx, lz)
+	  if g_server ~= nil then
+	    AIVehicleUtil.driveInDirection(self, dt, 30, 0.5, 0.5, 8, true, fwd, lx, lz, self.sl, 0.5);
+	    courseplay:set_traffc_collision(self, lx, lz)
+	  end
   	else	     
   		-- reset distance to waypoint
   		self.shortest_dist = nil
@@ -361,7 +367,7 @@ function courseplay:set_traffc_collision(self, lx, lz)
   
   --print(string.format("colDirX: %f colDirZ %f ",colDirX,colDirZ ))	  
 	  
-  if self.aiTrafficCollisionTrigger ~= nil and  SpecializationUtil.hasSpecialization(aiTractor, self)  then
+  if self.aiTrafficCollisionTrigger ~= nil and  SpecializationUtil.hasSpecialization(aiTractor, self) and g_server ~= nil  then
     AIVehicleUtil.setCollisionDirection(self.aiTractorDirectionNode, self.aiTrafficCollisionTrigger, colDirX, colDirZ);
   end
 end

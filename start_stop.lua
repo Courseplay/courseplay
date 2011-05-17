@@ -144,7 +144,7 @@ function courseplay:stop(self)
 	self.startWork = nil
 	self.stopWork = nil
 	
-	
-	AIVehicleUtil.driveInDirection(self, 0, 30, 0, 0, 28, false, moveForwards, 0, 1)	
-
+	if g_server ~= nil then
+	  AIVehicleUtil.driveInDirection(self, 0, 30, 0, 0, 28, false, moveForwards, 0, 1)	
+	end
 end

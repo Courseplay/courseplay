@@ -143,7 +143,7 @@ function courseplay:load_courses(self)
 	local finish_all = false
 	courseplay_coursesUnsort = {}
 	local path = getUserProfileAppPath() .. "savegame" .. g_careerScreen.selectedIndex .. "/"
-    local existDir = io.open (path .. "courseplay.xml")
+    local existDir = io.open (path .. "courseplay.xml", "a")
 	if existDir == nil then
 	 return
 	end

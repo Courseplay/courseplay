@@ -29,7 +29,7 @@ end
 
 function courseplay:setCourseplayFunc(func, value, noEventSend)
   if noEventSend ~= true then
-		CourseplayEvent.sendEvent(self, func, state);	-- Die Funktion ruft sendEvent auf und übergibt 3 Werte   (self "also mein ID", action, "Ist eine Zahl an der ich festmache welches Fenster ich aufmachen will", state "Ist der eigentliche Wert also true oder false"
+		CourseplayEvent.sendEvent(self, func, value);	-- Die Funktion ruft sendEvent auf und übergibt 3 Werte   (self "also mein ID", action, "Ist eine Zahl an der ich festmache welches Fenster ich aufmachen will", state "Ist der eigentliche Wert also true oder false"
 	end;
 	courseplay:deal_with_mouse_input(self, func, value)
 end
