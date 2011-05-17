@@ -503,7 +503,7 @@
 		<sourceFile filename="triggers.lua" />
 		<sourceFile filename="hud.lua" />
 		<sourceFile filename="settings.lua" />
-		<sourceFile filename="config_event.lua" />
+		<sourceFile filename="courseplay_event.lua" />
     </extraSourceFiles>   
 
 	<inputBindings>

@@ -8,7 +8,7 @@ if courseplay_courses == nil then
 end
 
 function courseplay:load(xmlFile)
-	self.setWaypoint= SpecializationUtil.callSpecializationsFunction("setWaypoint");
+	self.setCourseplayFunc = SpecializationUtil.callSpecializationsFunction("setCourseplayFunc");
 	
 	
 	self.locales = {}
