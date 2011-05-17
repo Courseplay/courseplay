@@ -10,7 +10,7 @@ function courseplay:load(xmlFile)
   	  courseplay_courses = {}
   	  courseplay:load_courses(self)
 	end
-
+	
 	self.locales = {}
 	local aNameSearch = {"vehicle.name." .. g_languageShort, "vehicle.name.en", "vehicle.name", "vehicle#type"};
 	
@@ -415,9 +415,9 @@ function courseplay:onLeave()
 end
 
 function courseplay:onEnter()
-  if self.mouse_enabled then
-    InputBinding.setShowMouseCursor(true);
-  end
+	if self.mouse_enabled then
+    	InputBinding.setShowMouseCursor(true);
+  	end
 end
 
 -- displays help text, user_input 	
@@ -433,6 +433,7 @@ function courseplay:draw()
 	end
 
     courseplay:showHud(self)
+ 
 end
 
 -- is been called everey frame
@@ -477,6 +478,8 @@ function courseplay:update(dt)
 	
 	courseplay:infotext(self);
 	self.timer = self.timer + 1
+	
+
 end		
 
 function courseplay:delete()
@@ -492,4 +495,45 @@ end
 
 function courseplay:get_locale(self, key)
   return self.locales[key]
+end
+
+
+function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
+	if not resetVehicles then
+		self.max_speed = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#max_speed")),50 / 3600);
+		self.turn_speed = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#turn_speed")),10 / 3600);
+		self.field_speed = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#field_speed")),24 / 3600);
+		self.tipper_offset = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#tipper_off")),8);
+		self.combine_offset = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#combine_off")),8);
+		self.required_fill_level_for_follow = Utils.getNoNil(getXMLInt(xmlFile,key..string.format("#fill_follow")),50);
+		self.required_fill_level_for_drive_on = Utils.getNoNil(getXMLInt(xmlFile,key..string.format("#fill_drive")),90);
+		self.WpOffsetX = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#OffsetX")),0);
+		self.WpOffsetZ = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#OffsetZ")),0);
+		self.turn_radius = Utils.getNoNil(getXMLInt(xmlFile,key..string.format("#turn")),17);
+		self.current_course_name = Utils.getNoNil(getXMLString(xmlFile,key..string.format("#CourseName")),self.locales.CPNoCourseLoaded);
+		if self.current_course_name == "nil" then
+			self.current_course_name = nil
+		end	
+		self.ai_mode = Utils.getNoNil(getXMLInt(xmlFile,key..string.format("#ai_mode")),1);
+  	end
+	return BaseMission.VEHICLE_LOAD_OK;
+end
+
+
+function courseplay:getSaveAttributesAndNodes(nodeIdent)
+
+        local attributes =
+		' max_speed="'..tostring(self.max_speed)..'"'..
+		' turn_speed="'..tostring(self.turn_speed)..'"'..
+        ' field_speed="'..tostring(self.field_speed)..'"'..
+        ' tipper_off="'..tostring(self.tipper_offset)..'"'..
+        ' combine_off="'..tostring(self.combine_offset)..'"'..
+        ' fill_follow="'..tostring(self.required_fill_level_for_follow)..'"'..
+        ' fill_drive="'..tostring(self.required_fill_level_for_drive_on)..'"'..
+        ' OffsetX="'..tostring(self.WpOffsetX)..'"'..
+        ' OffsetZ="'..tostring(self.WpOffsetZ)..'"'..
+        ' turn="'..tostring(self.turn_radius)..'"'..
+        ' CourseName="'..tostring(self.current_course_name)..'"'..
+		' ai_mode="'..tostring(self.ai_mode)..'"';
+    return attributes, nil;
 end
