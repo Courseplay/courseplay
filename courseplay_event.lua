@@ -17,28 +17,28 @@ function CourseplayEvent:new(vehicle, func, value) -- Der konsturktor des Events
 end;
 
 function CourseplayEvent:readStream(streamId, connection)  -- wird aufgerufen wenn mich ein Event erreicht
-	print("read")
+	--print("read")
     local id = streamReadInt32(streamId); -- hier lesen wir die �bertragene ID des vehicles aus
 	self.vehicle = networkGetObject(id);
     self.func = streamReadString(streamId);
 	self.value = streamReadFloat32(streamId);	
 	
 	if self.value == nil then
-	  print(string.format("func: %s value: NONE ", self.func ))
+	 -- print(string.format("func: %s value: NONE ", self.func ))
     else	
-      print(string.format("func: %s value: %f ", self.func, self.value ))
+     -- print(string.format("func: %s value: %f ", self.func, self.value ))
     end
     
     self:run(connection);  -- das event wurde komplett empfangen und kann nun "ausgef�hrt" werden
 end;
 
 function CourseplayEvent:writeStream(streamId, connection)   -- Wird aufgrufen wenn ich ein event verschicke (merke: reihenfolge der Daten muss mit der bei readStream �bereinstimmen (z.B. hier: erst die Vehicle-Id und dann die rotation senden, und bei Readstream dann eben erst die vehicleId lesen und dann die rotation)
-	print("write")
+	--print("write")
 	
 	if self.value == nil then
-	  print(string.format("func: %s value: NONE ", self.func ))
+	  --print(string.format("func: %s value: NONE ", self.func ))
 	else	
-	  print(string.format("func: %s value: %f ", self.func, self.value ))
+	  --print(string.format("func: %s value: %f ", self.func, self.value ))
 	end
 	
     streamWriteInt32(streamId, networkGetObjectId(self.vehicle));	-- wir �bertragen das Vehicle in form seiner ID
@@ -47,7 +47,7 @@ function CourseplayEvent:writeStream(streamId, connection)   -- Wird aufgrufen w
 end;
 
 function CourseplayEvent:run(connection)  -- wir f�hren das empfangene event aus
-    print("run")
+    --print("run")
     self.vehicle:setCourseplayFunc(self.func, self.value, true); -- wir rufen die funktion setConfig auf, damit auch hier bei uns die drehrichtung ge�ndert wird. Das true ist hier wichtig, dann wir haben ein event erhalten, d.h. wir brauchen es nicht mehr versenden, weil es alle anderen mitpsieler schon erreicht hat! Das true also hier nie vergessen!!!!!!
 	if not connection:getIsServer() then  -- wenn der Empf�nger des Events der Server ist, dann soll er das Event an alle anderen Clients schicken
 		g_server:broadcastEvent(CourseplayEvent:new(self.vehicle, self.func, self.value), nil, connection, self.object);
@@ -57,11 +57,11 @@ end;
 function CourseplayEvent.sendEvent(vehicle, func, value, noEventSend)  -- hilfsfunktion, die Events anst��te (wirde von setRotateDirection in der Spezi aufgerufen)
 	if noEventSend == nil or noEventSend == false then
 		if g_server ~= nil then   -- wenn wir der Server sind dann schicken wir das event an alle clients
-		    print("broadcast event 43")
+		   -- print("broadcast event 43")
 			g_server:broadcastEvent(CourseplayEvent:new(vehicle, func, value), nil, nil, vehicle);
 		else -- wenn wir ein Client sind dann schicken wir das event zum server
 			g_client:getServerConnection():sendEvent(CourseplayEvent:new(vehicle, func, value));
-			print("send event 47")
+			-- print("send event 47")
 		end;
 	end;
 end;
