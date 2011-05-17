@@ -216,5 +216,6 @@ function courseplay:reset_course(self)
 	self.back = false
 	self.abortWork = nil
 	self.waitPoints =  0
+
 	self.crossPoints = 0
 end	

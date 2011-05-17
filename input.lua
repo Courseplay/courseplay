@@ -19,19 +19,33 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
       if button.page == self.showHudInfoBase or button.page == nil or button.page == self.showHudInfoBase*-1  then
         
         if posX > button.x and posX < button.x2 and posY > button.y and posY < button.y2 then
-          local func = button.function_to_call
-          
-          -- TODO überhaupt nicht DRY das geht bestimmt irgendwie schöner
+          self:setCourseplayFunc(button.function_to_call, button.parameter)          
+        end
+      end
+    end
+  end
+end		
+
+
+function courseplay:setCourseplayFunc(func, value, noEventSend)
+  if noEventSend ~= true then
+		CourseplayEvent.sendEvent(self, func, value);	-- Die Funktion ruft sendEvent auf und übergibt 3 Werte   (self "also mein ID", action, "Ist eine Zahl an der ich festmache welches Fenster ich aufmachen will", state "Ist der eigentliche Wert also true oder false"
+	end;
+	courseplay:deal_with_mouse_input(self, func, value)
+end
+
+function courseplay:deal_with_mouse_input(self, func, value)
+       -- TODO überhaupt nicht DRY das geht bestimmt irgendwie schöner
           if func == "switch_hud_page" then
-            courseplay:switch_hud_page(self, button.parameter)
+            courseplay:switch_hud_page(self, value)
           end
           
           if func == "change_combine_offset" then
-            courseplay:change_combine_offset(self, button.parameter)
+            courseplay:change_combine_offset(self, value)
           end
           
           if func == "load_course" then
-            courseplay:load_course(self, button.parameter)
+            courseplay:load_course(self, value)
           end
           
           if func == "save_course" then
@@ -39,39 +53,39 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
           end
           
           if func == "clear_course" then
-            courseplay:clear_course(self, button.parameter)
+            courseplay:clear_course(self, value)
           end
           
           if func == "change_turn_radius" then
-            courseplay:change_turn_radius(self, button.parameter)
+            courseplay:change_turn_radius(self, value)
           end
           
           if func == "change_tipper_offset" then
-            courseplay:change_tipper_offset(self, button.parameter)
+            courseplay:change_tipper_offset(self, value)
           end
           
           if func == "change_required_fill_level" then
-            courseplay:change_required_fill_level(self, button.parameter)
+            courseplay:change_required_fill_level(self, value)
           end
           
           if func == "change_required_fill_level_for_drive_on" then
-            courseplay:change_required_fill_level_for_drive_on(self, button.parameter)
+            courseplay:change_required_fill_level_for_drive_on(self, value)
           end
           
           if func == "change_turn_speed" then
-            courseplay:change_turn_speed(self, button.parameter)
+            courseplay:change_turn_speed(self, value)
           end
           
           if func == "change_num_ai_helpers" then
-            courseplay:change_num_ai_helpers(self, button.parameter)
+            courseplay:change_num_ai_helpers(self, value)
           end
           
           if func == "change_field_speed" then
-            courseplay:change_field_speed(self, button.parameter)
+            courseplay:change_field_speed(self, value)
           end
           
           if func == "change_max_speed" then
-            courseplay:change_max_speed(self, button.parameter)
+            courseplay:change_max_speed(self, value)
           end
           
           if func == "switch_search_combine" then
@@ -79,23 +93,23 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
           end
           
           if func == "change_selected_course" then
-            courseplay:change_selected_course(self, button.parameter)
+            courseplay:change_selected_course(self, value)
           end
           
           if func == "refresh_courses" then
-            courseplay:load_courses(self, button.parameter)
+            courseplay:load_courses(self, value)
           end
           
           if func == "switch_combine" then
-            courseplay:switch_combine(self, button.parameter)
+            courseplay:switch_combine(self, value)
           end
           
           if func == "changeWpOffsetX" then
-            courseplay:changeCPWpOffsetX(self, button.parameter)
+            courseplay:changeCPWpOffsetX(self, value)
           end
           
           if func == "changeWpOffsetZ" then
-            courseplay:changeCPWpOffsetZ(self, button.parameter)
+            courseplay:changeCPWpOffsetZ(self, value)
           end
           
 
@@ -201,12 +215,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
             end
             
           end
-          
-        end
-      end
-    end
-  end
-end		
+end
 
 
 -- deals with keyEvents

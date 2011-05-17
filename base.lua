@@ -5,12 +5,16 @@ end
 
 
 function courseplay:load(xmlFile)
+
 	-- global array for courses, no refreshing needed any more
 	if courseplay_courses == nil then
   	  courseplay_courses = {}
   	  courseplay:load_courses(self)
 	end
 
+	self.setCourseplayFunc = SpecializationUtil.callSpecializationsFunction("setCourseplayFunc");
+	
+	
 	self.locales = {}
 	local aNameSearch = {"vehicle.name." .. g_languageShort, "vehicle.name.en", "vehicle.name", "vehicle#type"};
 	

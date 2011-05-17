@@ -24,7 +24,7 @@
 		<en>store.png</en>
 		<de>store.png</de>
  	</iconFilename>
-	<version>1.7</version>
+	<version>1.8</version>
     <l10n>
 	<text name="PointRecordStart">
 		<en>Record Course Start</en>
@@ -518,6 +518,7 @@
 		<sourceFile filename="triggers.lua" />
 		<sourceFile filename="hud.lua" />
 		<sourceFile filename="settings.lua" />
+		<sourceFile filename="courseplay_event.lua" />
     </extraSourceFiles>   
 
 	<inputBindings>
