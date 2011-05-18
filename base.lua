@@ -441,11 +441,7 @@ function courseplay:draw()
 end
 
 -- is been called everey frame
-function courseplay:update(dt)
-	--attached or detached implement?
-	if self.tools_dirty then
-	  courseplay:reset_tools(self)
-	end
+function courseplay:update(dt)	
 	
 	--if self.user_input_active == true then
 	--  if self.currentGui == nil then
@@ -463,12 +459,21 @@ function courseplay:update(dt)
       courseplay:user_input(self);
     end
 
+end		
+
+function courseplay:updateTick(dt)
+  --attached or detached implement?
+	if self.tools_dirty then
+	  courseplay:reset_tools(self)
+	end
+	
 	-- show visual waypoints only when in vehicle
 	if self.isEntered then
 		courseplay:sign_visibility(self, true)
 	else
 		courseplay:sign_visibility(self, false)
 	end
+	
 	
 	-- we are in record mode
 	if self.record then 
@@ -482,9 +487,7 @@ function courseplay:update(dt)
 	
 	courseplay:infotext(self);
 	self.timer = self.timer + 1
-	
-
-end		
+end
 
 function courseplay:delete()
 	if self.aiTrafficCollisionTrigger ~= nil then
