@@ -505,7 +505,6 @@ end
 
 
 function courseplay:readStream(streamId, connection)
-  -- config variablen
   self.max_speed = streamReadFloat32(streamId)
   self.turn_speed = streamReadFloat32(streamId)
   self.field_speed = streamReadFloat32(streamId)
@@ -517,9 +516,6 @@ function courseplay:readStream(streamId, connection)
   self.WpOffsetZ = streamReadFloat32(streamId)
   self.turn_radius = streamReadFloat32(streamId)
   self.search_combine = streamReadBool(streamId)
-  	
-  -- status
-  
 	self.recordnumber = streamReadInt32(streamId)  
 	self.tmr = streamReadInt32(streamId)  
 	self.timeout = streamReadInt32(streamId)  
@@ -527,16 +523,12 @@ function courseplay:readStream(streamId, connection)
 	self.drive_slow_timer = streamReadInt32(streamId)  
 	self.courseplay_position = streamReadInt32(streamId)  
 	self.waitPoints = streamReadInt32(streamId)  
-	self.crossPoints = streamReadInt32(streamId)  
-  
+	self.crossPoints = streamReadInt32(streamId)    
 	self.shortest_dist = streamReadFloat32(streamId)
 	self.play = streamReadBool(streamId)
-	self.working_course_player_num = streamReadInt32(streamId)
-	
-	self.info_text = streamReadString(streamId)
-	
-	self.global_info_text = streamReadString(streamId)
-	
+	self.working_course_player_num = streamReadInt32(streamId)	
+	self.info_text = streamReadString(streamId)	
+	self.global_info_text = streamReadString(streamId)	
 	self.ai_mode = streamReadInt32(streamId)
 	self.follow_mode = streamReadInt32(streamId)
 	self.ai_state = streamReadInt32(streamId)
@@ -545,40 +537,29 @@ function courseplay:readStream(streamId, connection)
 	self.stopWork = streamReadInt32(streamId)
 	self.abortWork = streamReadInt32(streamId)
 	self.wait = streamReadBool(streamId)
-	self.waitTimer = streamReadInt32(streamId)
-	
+	self.waitTimer = streamReadInt32(streamId)	
 	self.target_x = streamReadFloat32(streamId)
 	self.target_y = streamReadFloat32(streamId)
-	self.target_z = streamReadFloat32(streamId)
-	
+	self.target_z = streamReadFloat32(streamId)	
 	self.sl = streamReadInt32(streamId)
 	self.orgRpm = streamReadInt32(streamId)
-	self.tipper_attached = streamReadBool(streamId)
-	
+	self.tipper_attached = streamReadBool(streamId)	
 	self.lastTrailerToFillDistance = streamReadFloat32(streamId)
 	self.unloaded = streamReadBool(streamId)	
-	self.loaded  = streamReadBool(streamId)
-	
-	self.last_fill_level = streamReadInt32(streamId)
-	
+	self.loaded  = streamReadBool(streamId)	
+	self.last_fill_level = streamReadInt32(streamId)	
 	self.user_input_active = streamReadBool(streamId)
 	self.user_input_message = streamReadString(streamId)
 	self.user_input = streamReadString(streamId)
-	self.save_name = streamReadBool(streamId)
-	
-	self.selected_course_number = streamReadInt32(streamId)
-	
+	self.save_name = streamReadBool(streamId)	
+	self.selected_course_number = streamReadInt32(streamId)	
 	self.forced_side = streamReadString(streamId)
-	self.forced_to_stop = streamReadBool(streamId)
-	
-	self.allow_following = streamReadBool(streamId)
-	
+	self.forced_to_stop = streamReadBool(streamId)	
+	self.allow_following = streamReadBool(streamId)	
 	self.mouse_enabled = streamReadBool(streamId)
-	self.show_hud = streamReadBool(streamId)
-	
+	self.show_hud = streamReadBool(streamId)	
 	self.selected_combine_number = streamReadInt32(streamId)
-	self.fold_move_direction = streamReadInt32(streamId)
-  
+	self.fold_move_direction = streamReadInt32(streamId)  
   local saved_combine_id = streamReadInt32(streamId)
   if saved_combine_id then
     self.saved_combine = networkGetObject(saved_combine_id)
@@ -609,7 +590,6 @@ function courseplay:readStream(streamId, connection)
 end
 
 function courseplay:writeStream(streamId, connection)
-  -- config variablen
   streamWriteFloat32(streamId, self.max_speed)
   streamWriteFloat32(streamId, self.turn_speed)
   streamWriteFloat32(streamId, self.field_speed)
@@ -621,9 +601,6 @@ function courseplay:writeStream(streamId, connection)
   streamWriteFloat32(streamId, self.WpOffsetZ)
   streamWriteFloat32(streamId, self.turn_radius)
   streamWriteBool(streamId, self.search_combine)
-  	
-  -- status
-  
 	streamWriteInt32(streamId, self.recordnumber)  
 	streamWriteInt32(streamId, self.tmr)  
 	streamWriteInt32(streamId, self.timeout)  
@@ -631,16 +608,12 @@ function courseplay:writeStream(streamId, connection)
 	streamWriteInt32(streamId, self.drive_slow_timer)  
 	streamWriteInt32(streamId, self.courseplay_position)  
 	streamWriteInt32(streamId, self.waitPoints)  
-	streamWriteInt32(streamId, self.crossPoints)  
-  
+	streamWriteInt32(streamId, self.crossPoints)
 	streamWriteFloat32(streamId, self.shortest_dist)
 	streamWriteBool(streamId, self.play)
 	streamWriteInt32(streamId, self.working_course_player_num)
-	
 	streamWriteString(streamId, self.info_text)
-	
 	streamWriteString(streamId, self.global_info_text)
-	
 	streamWriteInt32(streamId, self.ai_mode)
 	streamWriteInt32(streamId, self.follow_mode)
 	streamWriteInt32(streamId, self.ai_state)
@@ -650,39 +623,28 @@ function courseplay:writeStream(streamId, connection)
 	streamWriteInt32(streamId, self.abortWork)
 	streamWriteBool(streamId, self.wait)
 	streamWriteInt32(streamId, self.waitTimer)
-	
 	streamWriteFloat32(streamId, self.target_x)
 	streamWriteFloat32(streamId, self.target_y)
 	streamWriteFloat32(streamId, self.target_z)
-	
 	streamWriteInt32(streamId, self.sl)
 	streamWriteInt32(streamId, self.orgRpm)
 	streamWriteBool(streamId, self.tipper_attached)
-	
 	streamWriteFloat32(streamId, self.lastTrailerToFillDistance)
 	streamWriteBool(streamId, self.unloaded)	
 	streamWriteBool(streamId, self.loaded)
-	
-	streamWriteInt32(streamId, self.last_fill_level)
-	
+	streamWriteInt32(streamId, self.last_fill_level)	
 	streamWriteBool(streamId, self.user_input_active)
 	streamWriteString(streamId, self.user_input_message)
 	streamWriteString(streamId, self.user_input)
 	streamWriteBool(streamId, self.save_name)
-	
 	streamWriteInt32(streamId, self.selected_course_number)
-	
 	streamWriteString(streamId, self.forced_side)
 	streamWriteBool(streamId, self.forced_to_stop)
-	
 	streamWriteBool(streamId, self.allow_following)
-	
 	streamWriteBool(streamId, self.mouse_enabled)
 	streamWriteBool(streamId, self.show_hud)
-	
 	streamWriteInt32(streamId, self.selected_combine_number)
-	streamWriteInt32(streamId, self.fold_move_direction)
-  
+	streamWriteInt32(streamId, self.fold_move_direction)  
   local saved_combine_id = nil  
   if self.saved_combine  ~= nil then
      saved_combine_id= networkGetObject(self.saved_combine)
