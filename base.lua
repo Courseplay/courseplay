@@ -601,9 +601,11 @@ function courseplay:readStream(streamId, connection)
   
   -- kurs daten
   local courses = streamReadString(streamId)  
-  self.loaded_courses = split(courses, ",")
-
-  courseplay:reload_courses(self, true)  
+  if courses ~= nil then
+    self.loaded_courses = split(courses, ",")
+    courseplay:reload_courses(self, true)
+  end
+    
 end
 
 function courseplay:writeStream(streamId, connection)
@@ -705,7 +707,11 @@ function courseplay:writeStream(streamId, connection)
   end
   streamWriteInt32(streamId, unloading_tipper_id)
   
-  streamWriteString(streamId, join(self.loaded_courses, ","))
+  local loaded_courses = nil  
+  if table.getn(self.loaded_courses) then
+    loaded_courses = join(self.loaded_courses, ",")
+  end
+  streamWriteString(streamId, loaded_courses)
 end
 
 
