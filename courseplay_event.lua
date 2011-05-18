@@ -20,8 +20,7 @@ function CourseplayEvent:readStream(streamId, connection)
     local id = streamReadInt32(streamId);
 	self.vehicle = networkGetObject(id);
     self.func = streamReadString(streamId);
-	self.value = streamReadFloat32(streamId);	
-	
+	self.value = streamReadFloat32(streamId);		
     
     self:run(connection);
 end;

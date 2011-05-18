@@ -12,9 +12,18 @@ function courseplay:input_course_name(self)
  end
 end
 
-function courseplay:load_course(self, id)
+function courseplay:reload_courses(self, use_real_id)
+  for k,v in pairs(self.loaded_courses) do
+    courseplay:load_course(self, v, use_real_id)
+  end
+end
+
+
+function courseplay:load_course(self, id, use_real_id)
   if id ~= nil then
-    id = self.selected_course_number + id
+    if not use_real_id then
+      id = self.selected_course_number + id
+    end
   	local course = courseplay_courses[id]
   	if course == nil then
   	  return

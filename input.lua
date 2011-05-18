@@ -77,7 +77,7 @@ function courseplay:deal_with_mouse_input(self, func, value)
           end
           
           if func == "change_num_ai_helpers" then
-            courseplay:change_num_ai_helpers(self, value)
+            --courseplay:change_num_ai_helpers(self, value)
           end
           
           if func == "change_field_speed" then

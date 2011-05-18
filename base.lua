@@ -270,7 +270,6 @@ function courseplay:load(xmlFile)
 	self.combine_offset = 8
 	self.chopper_offset = 8
 	self.tipper_offset = 8
-	self.auto_mode = nil
 	self.forced_side = nil
 	self.forced_to_stop = false
 	
@@ -505,6 +504,115 @@ function courseplay:get_locale(self, key)
 end
 
 
+function courseplay:readStream(streamId, connection)
+  -- config variablen
+  self.max_speed = streamReadFloat32(streamId)
+  self.turn_speed = streamReadFloat32(streamId)
+  self.field_speed = streamReadFloat32(streamId)
+  self.tipper_offset = streamReadFloat32(streamId)
+  self.combine_offset = streamReadFloat32(streamId)
+  self.required_fill_level_for_follow = streamReadFloat32(streamId)
+  self.required_fill_level_for_drive_on = streamReadFloat32(streamId)
+  self.WpOffsetX = streamReadFloat32(streamId)
+  self.WpOffsetZ = streamReadFloat32(streamId)
+  self.turn_radius = streamReadFloat32(streamId)
+  self.search_combine = streamReadBool(streamId)
+  	
+  -- status
+  
+	self.recordnumber = streamReadInt32(streamId)  
+	self.tmr = streamReadInt32(streamId)  
+	self.timeout = streamReadInt32(streamId)  
+	self.timer = streamReadInt32(streamId)  
+	self.drive_slow_timer = streamReadInt32(streamId)  
+	self.courseplay_position = streamReadInt32(streamId)  
+	self.waitPoints = streamReadInt32(streamId)  
+	self.crossPoints = streamReadInt32(streamId)  
+  
+	self.shortest_dist = streamReadFloat32(streamId)
+	self.play = streamReadBool(streamId)
+	self.working_course_player_num = streamReadInt32(streamId)
+	
+	self.info_text = streamReadString(streamId)
+	
+	self.global_info_text = streamReadString(streamId)
+	
+	self.ai_mode = streamReadInt32(streamId)
+	self.follow_mode = streamReadInt32(streamId)
+	self.ai_state = streamReadInt32(streamId)
+	self.next_ai_state = streamReadInt32(streamId)
+	self.startWork = streamReadInt32(streamId)
+	self.stopWork = streamReadInt32(streamId)
+	self.abortWork = streamReadInt32(streamId)
+	self.wait = streamReadBool(streamId)
+	self.waitTimer = streamReadInt32(streamId)
+	
+	self.direction = nil
+	-- forced waypoints	
+	self.target_x = streamReadFloat32(streamId)
+	self.target_y = streamReadFloat32(streamId)
+	self.target_z = streamReadFloat32(streamId)
+	
+	self.sl = streamReadInt32(streamId)
+	self.orgRpm = streamReadInt32(streamId)
+	self.tipper_attached = streamReadBool(streamId)
+	
+	self.lastTrailerToFillDistance = streamReadFloat32(streamId)
+	self.unloaded = streamReadBool(streamId)	
+	self.loaded  = streamReadBool(streamId)
+	
+	self.last_fill_level = streamReadInt32(streamId)
+	
+	self.user_input_active = streamReadBool(streamId)
+	self.user_input_message = streamReadString(streamId)
+	self.user_input = streamReadString(streamId)
+	self.save_name = streamReadBool(streamId)
+	
+	self.selected_course_number = streamReadInt32(streamId)
+	
+	self.forced_side = streamReadString(streamId)
+	self.forced_to_stop = streamReadBool(streamId)
+	
+	self.allow_following = streamReadBool(streamId)
+	
+	self.mouse_enabled = streamReadBool(streamId)
+	self.show_hud = streamReadBool(streamId)
+	
+	self.selected_combine_number = streamReadInt32(streamId)
+	self.fold_move_direction = streamReadInt32(streamId)
+  
+  local saved_combine_id = streamReadInt32(streamId)
+  if saved_combine_id then
+    self.saved_combine = networkGetObject(saved_combine_id)
+  end  
+  
+  local active_combine_id = streamReadInt32(streamId)  
+  if active_combine_id then
+    self.active_combine = networkGetObject(active_combine_id)
+  end
+  
+  local current_trailer_id = streamReadInt32(streamId)
+  if current_trailer_id then
+    self.currentTrailerToFill = networkGetObject(current_trailer_id)
+  end
+  
+  local unloading_tipper_id = streamReadInt32(streamId)  
+  if unloading_tipper_id then
+    self.unloading_tipper = networkGetObject(unloading_tipper_id)
+  end
+  
+  -- kurs daten
+  local courses = streamReadString(streamId)  
+  self.loaded_courses = join(courses, ",")
+
+  courseplay:reload_courses(self, true)  
+end
+
+function courseplay:writeStream(streamId, connection)
+
+end
+
+
 function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 	if not resetVehicles then
 		self.max_speed = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#max_speed")),50 / 3600);
@@ -521,9 +629,7 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		self.loaded_courses = join(courses, ",")
 		self.selected_course_number = 0
 		
-		for k,v in pairs(self.loaded_courses) do
-		  courseplay:load_course(self, v)
-		end	
+		courseplay:reload_courses(self)	
 		
 		self.ai_mode = Utils.getNoNil(getXMLInt(xmlFile,key..string.format("#ai_mode")),1);
   	end
