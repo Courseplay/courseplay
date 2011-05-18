@@ -602,7 +602,7 @@ function courseplay:readStream(streamId, connection)
   -- kurs daten
   local courses = streamReadString(streamId)  
   if courses ~= nil then
-    self.loaded_courses = string:split(courses, ",")
+    self.loaded_courses = courses:split(",")
     courseplay:reload_courses(self, true)
   end
     
@@ -728,7 +728,7 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		self.WpOffsetZ = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#OffsetZ")),0);
 		self.turn_radius = Utils.getNoNil(getXMLInt(xmlFile,key..string.format("#turn")),17);
 		local courses = Utils.getNoNil(getXMLString(xmlFile,key..string.format("#courses")),self.locales.CPNoCourseLoaded);
-		self.loaded_courses = string:split(courses, ",")
+		self.loaded_courses = courses:split(",")
 		self.selected_course_number = 0
 		
 		courseplay:reload_courses(self)	
