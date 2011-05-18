@@ -118,7 +118,7 @@ function courseplay:start_record(self)
 	
 	self.record = true
 	self.drive  = false
-
+    self.loaded_courses = {}
 	self.recordnumber = 1
 	self.waitPoints = 0
 	self.crossPoints = 0

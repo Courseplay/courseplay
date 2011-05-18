@@ -209,6 +209,8 @@ function courseplay:load(xmlFile)
 	
 	-- course name for saving
 	self.current_course_name = nil
+	-- array for multiple courses
+	self.loaded_courses  = {}
 	self.direction = nil
 	-- forced waypoints	
 	self.target_x = nil
@@ -358,7 +360,7 @@ function courseplay:load(xmlFile)
     courseplay:register_button(self, 2, "blank.png", "row3", nil, self.hudInfoBasePosX-0.05, self.hudInfoBasePosY + 0.164, 0.32, 0.015)
     
     
-    -- courseplay:register_button(self, 2, "refresh.png",   "refresh_courses", nil, self.hudInfoBasePosX + 0.247, self.hudInfoBasePosY +0.235, 0.020, 0.020)
+    
     courseplay:register_button(self, 2, "navigate_up.png",   "change_selected_course", -5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY +0.222, 0.020, 0.020)
     courseplay:register_button(self, 2, "navigate_down.png", "change_selected_course", 5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY +0.120, 0.020, 0.020)
     
@@ -512,10 +514,14 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		self.WpOffsetX = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#OffsetX")),0);
 		self.WpOffsetZ = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#OffsetZ")),0);
 		self.turn_radius = Utils.getNoNil(getXMLInt(xmlFile,key..string.format("#turn")),17);
-		self.current_course_name = Utils.getNoNil(getXMLString(xmlFile,key..string.format("#CourseName")),self.locales.CPNoCourseLoaded);
-		if self.current_course_name == "nil" then
-			self.current_course_name = nil
+		local courses = Utils.getNoNil(getXMLString(xmlFile,key..string.format("#courses")),self.locales.CPNoCourseLoaded);
+		self.loaded_courses = join(courses, ",")
+		self.selected_course_number = 0
+		
+		for k,v in pairs(self.loaded_courses) do
+		  courseplay:load_course(self, v)
 		end	
+		
 		self.ai_mode = Utils.getNoNil(getXMLInt(xmlFile,key..string.format("#ai_mode")),1);
   	end
 	return BaseMission.VEHICLE_LOAD_OK;
@@ -535,7 +541,7 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
         ' OffsetX="'..tostring(self.WpOffsetX)..'"'..
         ' OffsetZ="'..tostring(self.WpOffsetZ)..'"'..
         ' turn="'..tostring(self.turn_radius)..'"'..
-        ' CourseName="'..tostring(self.current_course_name)..'"'..
+        ' courses="'..tostring(join(self.loaded_courses, ","))..'"'..
 		' ai_mode="'..tostring(self.ai_mode)..'"';
     return attributes, nil;
 end

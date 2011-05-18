@@ -19,6 +19,8 @@ function courseplay:load_course(self, id)
   	if course == nil then
   	  return
   	end
+  	
+  	table.insert(self.loaded_courses, id)
   --	courseplay:reset_course(self)
   	if table.getn(self.Waypoints) == 0 then
     	self.Waypoints = course.waypoints
