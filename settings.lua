@@ -7,8 +7,6 @@ function courseplay:change_ai_state(self, change_by)
 end
 
 function courseplay:call_player(self)
-  
-
   if self.wants_courseplayer then  --edit for more sites
     self.wants_courseplayer = false
   else

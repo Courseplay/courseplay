@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<i3D name="untitled" version="1.6" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://i3d.giants.ch/schema/i3d-1.6.xsd">
+  <Asset>
+    <Export program="GIANTS Editor" version="4.1.8"/>
+  </Asset>
+
+  <Files>
+    <File fileId="1" filename="texture0.jpg" relativePath="true"/>
+  </Files>
+
+
+  <Materials>
+    <Material name="ID17" materialId="10" ambientColor="1 1 1">
+      <Texture fileId="1"/>
+    </Material>
+  </Materials>
+
+
+  <Shapes>
+    <IndexedTriangleSet name="ID16" shapeId="1" bvCenter="1.41732 73.4732 0" bvRadius="13.7795">
+      <Vertices count="24" normal="true" uv0="true">
+        <v p="1.41732 78.7464 12.7306" n="1 -0 -0" t0="0.010626 3.70253"/>
+        <v p="1.41732 68.2 12.7306" n="1 -0 -0" t0="0.010626 3.29665"/>
+        <v p="1.41732 86.2038 5.2732" n="1 -0 -0" t0="0.297624 3.98953"/>
+        <v p="1.41732 86.2038 5.2732" n="1 -0 -0" t0="0.297624 3.98953"/>
+        <v p="1.41732 68.2 12.7306" n="1 -0 -0" t0="0.010626 3.29665"/>
+        <v p="1.41732 60.7426 5.2732" n="1 -0 -0" t0="0.297624 3.00965"/>
+        <v p="1.41732 60.7426 0" n="1 0 0" t0="0.500562 3.00965"/>
+        <v p="1.41732 86.2038 5.2732" n="1 0 0" t0="0.297624 3.98953"/>
+        <v p="1.41732 60.7426 5.2732" n="1 0 0" t0="0.297624 3.00965"/>
+        <v p="1.41732 86.2038 -0" n="1 -0 -0" t0="0.500562 3.98953"/>
+        <v p="1.41732 86.2038 5.2732" n="1 -0 -0" t0="0.297624 3.98953"/>
+        <v p="1.41732 60.7426 0" n="1 -0 -0" t0="0.500562 3.00965"/>
+        <v p="1.41732 60.7426 -5.2732" n="1 0 0" t0="0.703501 3.00965"/>
+        <v p="1.41732 86.2038 -0" n="1 0 0" t0="0.500562 3.98953"/>
+        <v p="1.41732 60.7426 0" n="1 0 0" t0="0.500562 3.00965"/>
+        <v p="1.41732 86.2038 -5.2732" n="1 -0 -0" t0="0.703501 3.98953"/>
+        <v p="1.41732 86.2038 -0" n="1 -0 -0" t0="0.500562 3.98953"/>
+        <v p="1.41732 60.7426 -5.2732" n="1 -0 -0" t0="0.703501 3.00965"/>
+        <v p="1.41732 68.2 -12.7306" n="1 0 0" t0="0.990498 3.29665"/>
+        <v p="1.41732 86.2038 -5.2732" n="1 0 0" t0="0.703501 3.98953"/>
+        <v p="1.41732 60.7426 -5.2732" n="1 0 0" t0="0.703501 3.00965"/>
+        <v p="1.41732 78.7464 -12.7306" n="1 -0 0" t0="0.990498 3.70253"/>
+        <v p="1.41732 86.2038 -5.2732" n="1 -0 0" t0="0.703501 3.98953"/>
+        <v p="1.41732 68.2 -12.7306" n="1 -0 0" t0="0.990498 3.29665"/>
+      </Vertices>
+      <Triangles count="8">
+        <t vi="0 1 2"/>
+        <t vi="3 4 5"/>
+        <t vi="6 7 8"/>
+        <t vi="9 10 11"/>
+        <t vi="12 13 14"/>
+        <t vi="15 16 17"/>
+        <t vi="18 19 20"/>
+        <t vi="21 22 23"/>
+      </Triangles>
+      <Subsets count="1">
+        <Subset firstVertex="0" numVertices="24" firstIndex="0" numIndices="24"/>
+      </Subsets>
+    </IndexedTriangleSet>
+  </Shapes>
+
+
+  <Dynamics>
+  </Dynamics>
+
+  <Scene>
+    <TransformGroup name="STOP" scale="0.035 0.035 0.035" clipDistance="150" nodeId="21">
+      <Shape name=".002" nodeId="22" materialIds="10" shapeId="1" castsShadows="true" receiveShadows="true"/>
+      <Shape name=".002" rotation="0 180 0" nodeId="34" materialIds="10" shapeId="1" castsShadows="true" receiveShadows="true"/>
+    </TransformGroup>
+  </Scene>
+
+</i3D>

@@ -14,22 +14,31 @@ end
 
 function courseplay:reload_courses(self, use_real_id)
   for k,v in pairs(self.loaded_courses) do
-    courseplay:load_course(self, v, use_real_id)
+      print(v)
+      courseplay:load_course(self, v, use_real_id)
   end
 end
 
 
 function courseplay:load_course(self, id, use_real_id)
-  if id ~= nil then
-    if not use_real_id then
+	-- global array for courses, no refreshing needed any more	
+
+  if id ~= nil and id ~= "" then
+    if not use_real_id then      
       id = self.selected_course_number + id
+      
     end
+    id = id * 1
+    print(id)
+    
   	local course = courseplay_courses[id]
   	if course == nil then
+  	  print("no course found")
   	  return
   	end
-  	
-  	table.insert(self.loaded_courses, id)
+  	if not use_real_id then
+  	  table.insert(self.loaded_courses, id)
+  	end
   --	courseplay:reset_course(self)
   	if table.getn(self.Waypoints) == 0 then
     	self.Waypoints = course.waypoints
@@ -81,7 +90,18 @@ function courseplay:load_course(self, id, use_real_id)
 	-- this adds the signs to the course
 	for k,wp in pairs(self.Waypoints) do
   		if k <= 3 or wp.wait == true  or wp.crossing == true then
-  		courseplay:addsign(self, wp.cx, 0, wp.cz)
+	  		if k == 1 then
+	  		  courseplay:addsign(self, wp.cx, wp.angle, wp.cz, self.start_sign, true)
+	  		elseif wp.crossing then
+	  		  courseplay:addsign(self, wp.cx, wp.angle, wp.cz, self.cross_sign, true)
+	  		elseif wp.wait then
+	  		  courseplay:addsign(self, wp.cx, wp.angle, wp.cz, self.wait_sign)	  		
+	  		else
+	  		  courseplay:addsign(self, wp.cx, wp.angle, wp.cz)
+	  		end	  		
+  	  	end
+  	  	if k == self.maxnumber then
+  	  	  courseplay:addsign(self, wp.cx, wp.angle, wp.cz, self.stop_sign)
   	  	end
   	  	if wp.wait then
 		self.waitPoints = self.waitPoints + 1
@@ -153,7 +173,8 @@ function courseplay:save_courses(self)
 end
 
 
-function courseplay:load_courses(self)
+function courseplay:load_courses()
+    print('loaded courses')
 	local finish_all = false
 	courseplay_coursesUnsort = {}
 	local path = getUserProfileAppPath() .. "savegame" .. g_careerScreen.selectedIndex .. "/"
@@ -242,6 +263,7 @@ function courseplay:load_courses(self)
     end
     
     courseplay_coursesUnsort = nil
+    return courseplay_courses
 end
 
 

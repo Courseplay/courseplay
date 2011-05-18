@@ -2,13 +2,13 @@ function courseplay.prerequisitesPresent(specializations)
 	return true;
 end
 
-function courseplay:load(xmlFile)
+	
 
+function courseplay:load(xmlFile)
 	-- global array for courses, no refreshing needed any more
 	if courseplay_courses == nil and g_server ~= nil then
-  	  courseplay_courses = {}
-  	  courseplay:load_courses(self)
-	end
+	  courseplay_courses = courseplay:load_courses()
+	end	
 
 	self.setCourseplayFunc = SpecializationUtil.callSpecializationsFunction("setCourseplayFunc");
 	
@@ -189,6 +189,7 @@ function courseplay:load(xmlFile)
 	self.abortWork = nil
 	self.wait = true
 	self.waitTimer = nil
+	
 	-- our arrow is displaying dirction to waypoints
 	self.ArrowPath = Utils.getFilename("../aacourseplay/img/arrow.png", self.baseDirectory);
 	self.ArrowOverlay = Overlay:new("Arrow", self.ArrowPath, 0.4, 0.08, 0.250, 0.250);
@@ -204,6 +205,43 @@ function courseplay:load(xmlFile)
 	setVisibility(itemNode, false)
 	delete(i3dNode)
 	self.sign = itemNode
+	
+	local i3dNode2 = Utils.loadSharedI3DFile("../aacourseplay/img/NurGerade/NurGerade.i3d", self.baseDirectory)
+	local itemNode2 = getChildAt(i3dNode2, 0)
+	link(getRootNode(), itemNode2)
+	setRigidBodyType(itemNode2, "NoRigidBody")
+	setTranslation(itemNode2, 0, 0, 0)
+	setVisibility(itemNode2, false)
+	delete(i3dNode2)
+	self.start_sign = itemNode2
+	
+	local i3dNode3 = Utils.loadSharedI3DFile("../aacourseplay/img/STOP/STOP.i3d", self.baseDirectory)
+	local itemNode3 = getChildAt(i3dNode3, 0)
+	link(getRootNode(), itemNode3)
+	setRigidBodyType(itemNode3, "NoRigidBody")
+	setTranslation(itemNode3, 0, 0, 0)
+	setVisibility(itemNode3, false)
+	delete(i3dNode3)
+	self.stop_sign = itemNode3
+	
+	local i3dNode4 = Utils.loadSharedI3DFile("../aacourseplay/img/VorfahrtAnDieserKreuzung/VorfahrtAnDieserKreuzung.i3d", self.baseDirectory)
+	local itemNode4 = getChildAt(i3dNode4, 0)
+	link(getRootNode(), itemNode4)
+	setRigidBodyType(itemNode4, "NoRigidBody")
+	setTranslation(itemNode4, 0, 0, 0)
+	setVisibility(itemNode4, false)
+	delete(i3dNode4)
+	self.cross_sign = itemNode4
+	
+	local i3dNode5 = Utils.loadSharedI3DFile("../aacourseplay/img/Parkplatz/Parkplatz.i3d", self.baseDirectory)
+	local itemNode5 = getChildAt(i3dNode5, 0)
+	link(getRootNode(), itemNode5)
+	setRigidBodyType(itemNode5, "NoRigidBody")
+	setTranslation(itemNode5, 0, 0, 0)
+	setVisibility(itemNode5, false)
+	delete(i3dNode5)
+	self.wait_sign = itemNode5
+	
 	-- visual waypoints saved in this
 	self.signs = {}
 	
@@ -542,7 +580,6 @@ function courseplay:readStream(streamId, connection)
 	self.target_y = streamReadFloat32(streamId)
 	self.target_z = streamReadFloat32(streamId)	
 	self.sl = streamReadInt32(streamId)
-	self.orgRpm = streamReadInt32(streamId)
 	self.tipper_attached = streamReadBool(streamId)	
 	self.lastTrailerToFillDistance = streamReadFloat32(streamId)
 	self.unloaded = streamReadBool(streamId)	
@@ -627,7 +664,6 @@ function courseplay:writeStream(streamId, connection)
 	streamWriteFloat32(streamId, self.target_y)
 	streamWriteFloat32(streamId, self.target_z)
 	streamWriteInt32(streamId, self.sl)
-	streamWriteInt32(streamId, self.orgRpm)
 	streamWriteBool(streamId, self.tipper_attached)
 	streamWriteFloat32(streamId, self.lastTrailerToFillDistance)
 	streamWriteBool(streamId, self.unloaded)	
@@ -678,7 +714,7 @@ end
 
 
 function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
-	if not resetVehicles then
+	if not resetVehicles then	   
 		self.max_speed = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#max_speed")),50 / 3600);
 		self.turn_speed = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#turn_speed")),10 / 3600);
 		self.field_speed = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#field_speed")),24 / 3600);
@@ -689,11 +725,11 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		self.WpOffsetX = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#OffsetX")),0);
 		self.WpOffsetZ = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#OffsetZ")),0);
 		self.turn_radius = Utils.getNoNil(getXMLInt(xmlFile,key..string.format("#turn")),17);
-		local courses = Utils.getNoNil(getXMLString(xmlFile,key..string.format("#courses")),self.locales.CPNoCourseLoaded);
+		local courses = Utils.getNoNil(getXMLString(xmlFile,key..string.format("#courses")),"");
 		self.loaded_courses = courses:split(",")
 		self.selected_course_number = 0
 		
-		courseplay:reload_courses(self)	
+		courseplay:reload_courses(self, true)	
 		
 		self.ai_mode = Utils.getNoNil(getXMLInt(xmlFile,key..string.format("#ai_mode")),1);
   	end

@@ -59,7 +59,11 @@ function courseplay:record(self)
 	if self.tmr > 100 then 
 		self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = false, rev = self.direction, crossing = set_crossing}
 		if self.recordnumber < 4 then
-			courseplay:addsign(self, cx, cy,cz)
+		    if self.recordnumber == 1 then
+		    	courseplay:addsign(self, cx, newangle,cz, self.start_sign, true)
+		    else
+		    	courseplay:addsign(self, cx, newangle,cz)
+		    end			
 		end
 		self.tmr = 1
 		self.recordnumber = self.recordnumber + 1
@@ -78,11 +82,11 @@ function courseplay:set_waitpoint(self)
   self.tmr = 1
   self.recordnumber = self.recordnumber + 1
   self.waitPoints = self.waitPoints + 1
-  courseplay:addsign(self, cx, cy,cz)  
+  courseplay:addsign(self, cx, cy,cz, self.wait_sign)  
 end
 
 
-function courseplay:set_crossing(self)
+function courseplay:set_crossing(self, stop)
   local cx,cy,cz = getWorldTranslation(self.rootNode);
   local x,y,z = localDirectionToWorld(self.rootNode, 0, 0, 1);
   local length = Utils.vector2Length(x,z);
@@ -93,7 +97,13 @@ function courseplay:set_crossing(self)
   self.tmr = 1
   self.recordnumber = self.recordnumber + 1
   self.crossPoints = self.crossPoints + 1
-  courseplay:addsign(self, cx, cy,cz)  
+  
+  if stop ~= nil then
+    courseplay:addsign(self, cx, cy,cz,self.stop_sign, true)
+  else
+  	courseplay:addsign(self, cx, cy,cz,self.cross_sign, true)
+  end
+    
 end
 
 -- set Waypoint before change direction
@@ -128,7 +138,7 @@ end
 
 -- stops course recording -- just setting variables
 function courseplay:stop_record(self)
-	courseplay:set_crossing(self)
+	courseplay:set_crossing(self, true)
 	self.record = false
 	self.record_pause = false
 	self.drive  = false	
@@ -175,7 +185,7 @@ function courseplay:delete_waypoint(self)
 		self.recordnumber = self.recordnumber - 1
 		self.tmr = 1
 		--table.remove(self.signs,table.getn(self.signs))
-		courseplay:sign_visibility(self, false)
+		courseplay:sign_visibility(self, false, true)
 		self.signs = {}
 		for k,wp in pairs(self.Waypoints) do
   	  		if k <= 3 or wp.wait == true then
@@ -210,7 +220,7 @@ function courseplay:reset_course(self)
 	self.ai_state = 1
 	self.tmr = 1
 	self.Waypoints = {}
-	courseplay:sign_visibility(self, false)
+	courseplay:sign_visibility(self, false, true)
 	self.signs = {}
 	self.play = false
 	self.back = false
