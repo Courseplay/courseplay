@@ -602,7 +602,7 @@ function courseplay:readStream(streamId, connection)
   -- kurs daten
   local courses = streamReadString(streamId)  
   if courses ~= nil then
-    self.loaded_courses = split(courses, ",")
+    self.loaded_courses = string:split(courses, ",")
     courseplay:reload_courses(self, true)
   end
     
@@ -709,7 +709,7 @@ function courseplay:writeStream(streamId, connection)
   
   local loaded_courses = nil  
   if table.getn(self.loaded_courses) then
-    loaded_courses = join(self.loaded_courses, ",")
+    loaded_courses = table.concat(self.loaded_courses, ",")
   end
   streamWriteString(streamId, loaded_courses)
 end
@@ -728,7 +728,7 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		self.WpOffsetZ = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#OffsetZ")),0);
 		self.turn_radius = Utils.getNoNil(getXMLInt(xmlFile,key..string.format("#turn")),17);
 		local courses = Utils.getNoNil(getXMLString(xmlFile,key..string.format("#courses")),self.locales.CPNoCourseLoaded);
-		self.loaded_courses = join(courses, ",")
+		self.loaded_courses = string:split(courses, ",")
 		self.selected_course_number = 0
 		
 		courseplay:reload_courses(self)	
@@ -752,7 +752,15 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
         ' OffsetX="'..tostring(self.WpOffsetX)..'"'..
         ' OffsetZ="'..tostring(self.WpOffsetZ)..'"'..
         ' turn="'..tostring(self.turn_radius)..'"'..
-        ' courses="'..tostring(join(self.loaded_courses, ","))..'"'..
+        ' courses="'..tostring(table.concat(self.loaded_courses, ","))..'"'..
 		' ai_mode="'..tostring(self.ai_mode)..'"';
     return attributes, nil;
+end
+
+
+function string:split(sep)
+        local sep, fields = sep or ":", {}
+        local pattern = string.format("([^%s]+)", sep)
+        self:gsub(pattern, function(c) fields[#fields+1] = c end)
+        return fields
 end
