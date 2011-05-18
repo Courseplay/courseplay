@@ -95,10 +95,7 @@ function courseplay:deal_with_mouse_input(self, func, value)
           if func == "change_selected_course" then
             courseplay:change_selected_course(self, value)
           end
-          
-          if func == "refresh_courses" then
-            courseplay:load_courses(self, value)
-          end
+         
           
           if func == "switch_combine" then
             courseplay:switch_combine(self, value)
@@ -250,7 +247,7 @@ end;
 function courseplay:handle_user_input(self)
 	-- name for current_course
 	if self.save_name then
-		courseplay:load_courses(self)
+		--courseplay:load_courses(self)
 		self.user_input_active = false
 		self.current_course_name = self.user_input
 		course = {name =self.current_course_name, waypoints = self.Waypoints}

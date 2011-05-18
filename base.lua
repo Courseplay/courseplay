@@ -5,7 +5,7 @@ end
 function courseplay:load(xmlFile)
 
 	-- global array for courses, no refreshing needed any more
-	if courseplay_courses == nil then
+	if courseplay_courses == nil and g_server ~= nil then
   	  courseplay_courses = {}
   	  courseplay:load_courses(self)
 	end
@@ -547,8 +547,6 @@ function courseplay:readStream(streamId, connection)
 	self.wait = streamReadBool(streamId)
 	self.waitTimer = streamReadInt32(streamId)
 	
-	self.direction = nil
-	-- forced waypoints	
 	self.target_x = streamReadFloat32(streamId)
 	self.target_y = streamReadFloat32(streamId)
 	self.target_z = streamReadFloat32(streamId)
@@ -603,13 +601,111 @@ function courseplay:readStream(streamId, connection)
   
   -- kurs daten
   local courses = streamReadString(streamId)  
-  self.loaded_courses = join(courses, ",")
+  self.loaded_courses = split(courses, ",")
 
   courseplay:reload_courses(self, true)  
 end
 
 function courseplay:writeStream(streamId, connection)
-
+  -- config variablen
+  streamWriteFloat32(streamId, self.max_speed)
+  streamWriteFloat32(streamId, self.turn_speed)
+  streamWriteFloat32(streamId, self.field_speed)
+  streamWriteFloat32(streamId, self.tipper_offset)
+  streamWriteFloat32(streamId, self.combine_offset)
+  streamWriteFloat32(streamId, self.required_fill_level_for_follow)
+  streamWriteFloat32(streamId, self.required_fill_level_for_drive_on)
+  streamWriteFloat32(streamId, self.WpOffsetX)
+  streamWriteFloat32(streamId, self.WpOffsetZ)
+  streamWriteFloat32(streamId, self.turn_radius)
+  streamWriteBool(streamId, self.search_combine)
+  	
+  -- status
+  
+	streamWriteInt32(streamId, self.recordnumber)  
+	streamWriteInt32(streamId, self.tmr)  
+	streamWriteInt32(streamId, self.timeout)  
+	streamWriteInt32(streamId, self.timer)  
+	streamWriteInt32(streamId, self.drive_slow_timer)  
+	streamWriteInt32(streamId, self.courseplay_position)  
+	streamWriteInt32(streamId, self.waitPoints)  
+	streamWriteInt32(streamId, self.crossPoints)  
+  
+	streamWriteFloat32(streamId, self.shortest_dist)
+	streamWriteBool(streamId, self.play)
+	streamWriteInt32(streamId, self.working_course_player_num)
+	
+	streamWriteString(streamId, self.info_text)
+	
+	streamWriteString(streamId, self.global_info_text)
+	
+	streamWriteInt32(streamId, self.ai_mode)
+	streamWriteInt32(streamId, self.follow_mode)
+	streamWriteInt32(streamId, self.ai_state)
+	streamWriteInt32(streamId, self.next_ai_state)
+	streamWriteInt32(streamId, self.startWork)
+	streamWriteInt32(streamId, self.stopWork)
+	streamWriteInt32(streamId, self.abortWork)
+	streamWriteBool(streamId, self.wait)
+	streamWriteInt32(streamId, self.waitTimer)
+	
+	streamWriteFloat32(streamId, self.target_x)
+	streamWriteFloat32(streamId, self.target_y)
+	streamWriteFloat32(streamId, self.target_z)
+	
+	streamWriteInt32(streamId, self.sl)
+	streamWriteInt32(streamId, self.orgRpm)
+	streamWriteBool(streamId, self.tipper_attached)
+	
+	streamWriteFloat32(streamId, self.lastTrailerToFillDistance)
+	streamWriteBool(streamId, self.unloaded)	
+	streamWriteBool(streamId, self.loaded)
+	
+	streamWriteInt32(streamId, self.last_fill_level)
+	
+	streamWriteBool(streamId, self.user_input_active)
+	streamWriteString(streamId, self.user_input_message)
+	streamWriteString(streamId, self.user_input)
+	streamWriteBool(streamId, self.save_name)
+	
+	streamWriteInt32(streamId, self.selected_course_number)
+	
+	streamWriteString(streamId, self.forced_side)
+	streamWriteBool(streamId, self.forced_to_stop)
+	
+	streamWriteBool(streamId, self.allow_following)
+	
+	streamWriteBool(streamId, self.mouse_enabled)
+	streamWriteBool(streamId, self.show_hud)
+	
+	streamWriteInt32(streamId, self.selected_combine_number)
+	streamWriteInt32(streamId, self.fold_move_direction)
+  
+  local saved_combine_id = nil  
+  if self.saved_combine  ~= nil then
+     saved_combine_id= networkGetObject(self.saved_combine)
+  end
+  streamWriteInt32(streamId, saved_combine_id)  
+    
+  local active_combine_id = nil  
+  if self.active_combine  ~= nil then
+     active_combine_id= networkGetObject(self.active_combine)
+  end
+  streamWriteInt32(streamId, active_combine_id)
+  
+  local current_trailer_id = nil  
+  if self.currentTrailerToFill  ~= nil then
+     current_trailer_id= networkGetObject(self.currentTrailerToFill)
+  end
+  streamWriteInt32(streamId, current_trailer_id)
+   
+  local unloading_tipper_id = nil  
+  if self.unloading_tipper  ~= nil then
+     unloading_tipper_id= networkGetObject(self.unloading_tipper)
+  end
+  streamWriteInt32(streamId, unloading_tipper_id)
+  
+  streamWriteString(streamId, join(self.loaded_courses, ","))
 end
 
 
