@@ -322,7 +322,7 @@ function courseplay:drive(self, dt)
 	end
 	
 	-- if distance grows i must be circling	
-	if self.dist > self.shortest_dist and self.recordnumber > 3 and self.dist < 15 then
+	if self.dist > self.shortest_dist and self.recordnumber > 3 and self.dist < 15 and self.Waypoints[self.recordnumber].rev ~= true  then
 	  distToChange = self.dist + 1
 	end
 	
