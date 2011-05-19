@@ -495,7 +495,20 @@ function courseplay:update(dt)
     if self.user_input_message then
       courseplay:user_input(self);
     end
-
+    
+    
+    courseplay:infotext(self);
+    self.timer = self.timer + 1
+    
+    -- we are in record mode
+    if self.record then 
+    	courseplay:record(self);
+    end
+    	
+    -- we are in drive mode
+    if self.drive then
+    	courseplay:drive(self, dt);
+    end	
 end		
 
 function courseplay:updateTick(dt)
@@ -512,18 +525,9 @@ function courseplay:updateTick(dt)
 	end
 	
 	
-	-- we are in record mode
-	if self.record then 
-		courseplay:record(self);
-	end
-		
-	-- we are in drive mode
-	if self.drive then
-		courseplay:drive(self, dt);
-	end	
+
 	
-	courseplay:infotext(self);
-	self.timer = self.timer + 1
+	
 end
 
 function courseplay:delete()

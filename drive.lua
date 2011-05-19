@@ -340,7 +340,11 @@ function courseplay:drive(self, dt)
 		  end
 		  self.recordnumber = self.recordnumber + 1
 		  -- ignore reverse Waypoints for mode 6
-		  while self.ai_mode == 6 and self.recordnumber < self.maxnumber and self.recordnumber >= self.startWork and self.recordnumber <= self.stopWork and self.Waypoints[self.recordnumber].rev do
+		  local in_work_area = false
+		  if self.startWork ~= nil and self.stopWork ~= nil and self.recordnumber >= self.startWork and self.recordnumber <= self.stopWork then
+		    in_work_area = true
+		  end
+		  while self.ai_mode == 6 and self.recordnumber < self.maxnumber and in_work_area and self.Waypoints[self.recordnumber].rev do
 			self.recordnumber = self.recordnumber + 1
 		  end
 		else	-- reset some variables   

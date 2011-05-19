@@ -14,7 +14,7 @@ end
 
 function courseplay:reload_courses(self, use_real_id)
   for k,v in pairs(self.loaded_courses) do
-      print(v)
+ 
       courseplay:load_course(self, v, use_real_id)
   end
 end
@@ -29,7 +29,6 @@ function courseplay:load_course(self, id, use_real_id)
       
     end
     id = id * 1
-    print(id)
     
   	local course = courseplay_courses[id]
   	if course == nil then
