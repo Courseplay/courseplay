@@ -2,8 +2,6 @@ function courseplay.prerequisitesPresent(specializations)
 	return true;
 end
 
-	
-
 function courseplay:load(xmlFile)
 	-- global array for courses, no refreshing needed any more
 	if courseplay_courses == nil and g_server ~= nil then
@@ -523,11 +521,6 @@ function courseplay:updateTick(dt)
 	else
 		courseplay:sign_visibility(self, false)
 	end
-	
-	
-
-	
-	
 end
 
 function courseplay:delete()
@@ -547,6 +540,30 @@ end
 
 
 function courseplay:readStream(streamId, connection)
+  
+  -- course count
+  local course_count = streamReadInt32(streamId)
+  local courseplay_courses = {}
+  for i=1, course_count do
+    local course_name = streamReadString(streamId)
+    local wp_count = streamReadInt32(streamId)
+  	local  waypoints = {}
+  	for w=1, wp_count do    
+  	  local cx = streamReadFloat32(streamId)
+  	  local cz = streamReadFloat32(streamId)
+  	  local angle = streamReadFloat32(streamId)
+  	  local wait = streamReadBool(streamId)
+  	  local rev = streamReadBool(streamId)
+  	  local crossing = streamReadBool(streamId)
+  	  local wp = {cx = cx, cz = cz, angle = angle , wait = wait, rev = rev, crossing = crossing}
+  	  table.insert(waypoints, wp)
+  	end
+    local course = {name = course_name, waypoints= waypoints}
+    table.insert(courseplay_courses, course)
+  end
+  
+  self.courseplay_courses = courseplay_courses
+  
   self.max_speed = streamReadFloat32(streamId)
   self.turn_speed = streamReadFloat32(streamId)
   self.field_speed = streamReadFloat32(streamId)
@@ -566,7 +583,7 @@ function courseplay:readStream(streamId, connection)
 	self.courseplay_position = streamReadInt32(streamId)  
 	self.waitPoints = streamReadInt32(streamId)  
 	self.crossPoints = streamReadInt32(streamId)    
-	self.shortest_dist = streamReadFloat32(streamId)
+	self.shortest_dist = streamReadFloat32(streamId) -- 20.
 	self.play = streamReadBool(streamId)
 	self.working_course_player_num = streamReadInt32(streamId)	
 	self.info_text = streamReadString(streamId)	
@@ -586,7 +603,7 @@ function courseplay:readStream(streamId, connection)
 	self.sl = streamReadInt32(streamId)
 	self.tipper_attached = streamReadBool(streamId)	
 	self.lastTrailerToFillDistance = streamReadFloat32(streamId)
-	self.unloaded = streamReadBool(streamId)	
+	self.unloaded = streamReadBool(streamId)	-- 40.
 	self.loaded  = streamReadBool(streamId)	
 	self.last_fill_level = streamReadInt32(streamId)	
 	self.user_input_active = streamReadBool(streamId)
@@ -623,15 +640,37 @@ function courseplay:readStream(streamId, connection)
   end
   
   -- kurs daten
-  local courses = streamReadString(streamId)  
+  local courses = streamReadString(streamId)  -- 60.
+ 
+  print(courses)
+  
   if courses ~= nil then
     self.loaded_courses = courses:split(",")
     courseplay:reload_courses(self, true)
   end
-    
+  
 end
 
 function courseplay:writeStream(streamId, connection)
+    --transfer courses
+    local course_count = table.getn(courseplay_courses)
+    print(course_count)
+    streamWriteInt32(streamId, course_count)
+    for i=1, course_count do 
+      
+      streamWriteString(streamId, courseplay_courses[i].name)
+      streamWriteInt32(streamId, table.getn(courseplay_courses[i].waypoints))
+      for w=1, table.getn(courseplay_courses[i].waypoints) do
+        streamWriteFloat32(streamId, courseplay_courses[i].waypoints[w].cx)
+        streamWriteFloat32(streamId, courseplay_courses[i].waypoints[w].cz)
+        streamWriteFloat32(streamId, courseplay_courses[i].waypoints[w].angle)
+        streamWriteBool(streamId, courseplay_courses[i].waypoints[w].wait)
+        streamWriteBool(streamId, courseplay_courses[i].waypoints[w].rev)
+        streamWriteBool(streamId, courseplay_courses[i].waypoints[w].crossing)      
+      end
+    end
+   
+
   streamWriteFloat32(streamId, self.max_speed)
   streamWriteFloat32(streamId, self.turn_speed)
   streamWriteFloat32(streamId, self.field_speed)
@@ -651,7 +690,7 @@ function courseplay:writeStream(streamId, connection)
 	streamWriteInt32(streamId, self.courseplay_position)  
 	streamWriteInt32(streamId, self.waitPoints)  
 	streamWriteInt32(streamId, self.crossPoints)
-	streamWriteFloat32(streamId, self.shortest_dist)
+	streamWriteFloat32(streamId, self.shortest_dist) -- 20.
 	streamWriteBool(streamId, self.play)
 	streamWriteInt32(streamId, self.working_course_player_num)
 	streamWriteString(streamId, self.info_text)
@@ -671,7 +710,7 @@ function courseplay:writeStream(streamId, connection)
 	streamWriteInt32(streamId, self.sl)
 	streamWriteBool(streamId, self.tipper_attached)
 	streamWriteFloat32(streamId, self.lastTrailerToFillDistance)
-	streamWriteBool(streamId, self.unloaded)	
+	streamWriteBool(streamId, self.unloaded)	-- 40.
 	streamWriteBool(streamId, self.loaded)
 	streamWriteInt32(streamId, self.last_fill_level)	
 	streamWriteBool(streamId, self.user_input_active)
@@ -715,12 +754,14 @@ function courseplay:writeStream(streamId, connection)
   if table.getn(self.loaded_courses) then
     loaded_courses = table.concat(self.loaded_courses, ",")
   end
-  streamWriteString(streamId, loaded_courses)
+  streamWriteString(streamId, loaded_courses) -- 60.
+  
+
 end
 
 
 function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
-	if not resetVehicles then	   
+	if not resetVehicles and g_server ~= nil then	   
 		self.max_speed = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#max_speed")),50 / 3600);
 		self.turn_speed = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#turn_speed")),10 / 3600);
 		self.field_speed = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#field_speed")),24 / 3600);

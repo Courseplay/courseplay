@@ -30,6 +30,15 @@ function courseplay:load_course(self, id, use_real_id)
     end
     id = id * 1
     
+    if courseplay_courses == nil then
+      if self.courseplay_courses ~= nil then
+        courseplay_courses = self.courseplay_courses
+      else
+        print("courseplay_courses is empty")
+        return    
+      end
+    end
+    
   	local course = courseplay_courses[id]
   	if course == nil then
   	  print("no course found")
