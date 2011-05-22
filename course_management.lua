@@ -32,7 +32,16 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
       id = self.selected_course_number + id
       
     end
+    
     id = id * 1
+    
+    -- negative values mean that add_course_end is true
+    if id < 1 then
+      id = id * -1
+      add_course_at_end = true
+    end
+    
+    
     
     if courseplay_courses == nil then
       if self.courseplay_courses ~= nil then
@@ -49,7 +58,11 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
   	  return
   	end
   	if not use_real_id then
-  	  table.insert(self.loaded_courses, id)
+  	  if add_course_at_end == true then
+  	  	table.insert(self.loaded_courses, id*-1)
+  	  else
+  	    table.insert(self.loaded_courses, id)
+  	  end
   	end
   --	courseplay:reset_course(self)
   	if table.getn(self.Waypoints) == 0 then

@@ -215,6 +215,7 @@ function courseplay:reset_course(self)
 	  courseplay:unregister_at_combine(self, self.active_combine)
 	end
 	self.next_targets = {}
+	self.loaded_courses = {}
 	self.current_course_name = nil
 --self.ai_mode = 1
 	self.ai_state = 1
