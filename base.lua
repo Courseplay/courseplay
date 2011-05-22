@@ -134,6 +134,9 @@ function courseplay:load(xmlFile)
     self.locales.CoursePlayPlayerStart = g_i18n:getText("CoursePlayPlayerStart")
     self.locales.CoursePlayPlayerStop = g_i18n:getText("CoursePlayPlayerStop")
     self.locales.CoursePlayPlayerSwitchSide = g_i18n:getText("CoursePlayPlayerSwitchSide")
+    self.locales.CoursePlayPlayerSideRight = g_i18n:getText("CoursePlayPlayerSideRight")
+    self.locales.CoursePlayPlayerSideLeft = g_i18n:getText("CoursePlayPlayerSideLeft")
+    self.locales.CoursePlayPlayerSideNone = g_i18n:getText("CoursePlayPlayerSideNone")
     self.locales.CoursePlayPlayerSendHome = g_i18n:getText("CoursePlayPlayerSendHome")
     self.locales.CPCombineMangament = g_i18n:getText("CPCombineMangament")
     self.locales.CPSettings = g_i18n:getText("CPSettings")
@@ -401,7 +404,8 @@ function courseplay:load(xmlFile)
     
     for i = 1, 5, 1 do    
       local posy = self.hudInfoBasePosY + 0.205 - (i-1) * 0.021
-      courseplay:register_button(self, -2, "folder.png",   "load_course", i, self.hudInfoBasePosX + 0.235, posy, 0.014, 0.014, i)
+      courseplay:register_button(self, -2, "folder.png",   "load_course", i, self.hudInfoBasePosX + 0.212, posy, 0.014, 0.014, i)
+      courseplay:register_button(self, -2, "folder_into.png",   "add_course", i, self.hudInfoBasePosX + 0.235, posy, 0.014, 0.014, i)
       courseplay:register_button(self, -2, "delete.png",   "clear_course", i, self.hudInfoBasePosX + 0.258, posy, 0.014, 0.014, i)
     end
     

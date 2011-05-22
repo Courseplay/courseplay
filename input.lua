@@ -44,8 +44,12 @@ function courseplay:deal_with_mouse_input(self, func, value)
             courseplay:change_combine_offset(self, value)
           end
           
+          if func == "add_course" then
+            courseplay:add_course(self, value, false)
+          end
+          
           if func == "load_course" then
-            courseplay:load_course(self, value)
+            courseplay:load_course(self, value, false)
           end
           
           if func == "save_course" then

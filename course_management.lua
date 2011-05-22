@@ -19,8 +19,12 @@ function courseplay:reload_courses(self, use_real_id)
   end
 end
 
+function courseplay:add_course(self, id, use_real_id)
+  courseplay:load_course(self, id, use_real_id, true)  
+end
 
-function courseplay:load_course(self, id, use_real_id)
+
+function courseplay:load_course(self, id, use_real_id, add_course_at_end)
 	-- global array for courses, no refreshing needed any more	
 
   if id ~= nil and id ~= "" then
@@ -59,22 +63,24 @@ function courseplay:load_course(self, id, use_real_id)
 		local new_wp = 1
 		-- go through all waypoints and try to find a waypoint of the next course near a crossing
 		
-		for number, course1_wp in pairs(course1_waypoints) do
-		  if course1_wp.crossing  == true then
-		  	for number_2, course2_wp in pairs(course2_waypoints) do
-		  	  if course2_wp.crossing == true then  
-		        if courseplay:distance(course1_wp.cx, course1_wp.cz, course2_wp.cx, course2_wp.cz) < 30 then
-		           if number > 3 and number ~= number_2 and not wp_found and course1_waypoints[number].merged == nil then
-		             lastWP = number
-		             new_wp = number_2
-		             wp_found = true
-		             print(number)
-		             print(number_2)
-		           end
-		        end
-		      end
-		    end
-		  end
+		if add_course_at_end ~= true then
+			for number, course1_wp in pairs(course1_waypoints) do
+			  if course1_wp.crossing  == true then
+			  	for number_2, course2_wp in pairs(course2_waypoints) do
+			  	  if course2_wp.crossing == true then  
+			        if courseplay:distance(course1_wp.cx, course1_wp.cz, course2_wp.cx, course2_wp.cz) < 30 then
+			           if number > 3 and number ~= number_2 and not wp_found and course1_waypoints[number].merged == nil then
+			             lastWP = number
+			             new_wp = number_2
+			             wp_found = true
+			             print(number)
+			             print(number_2)
+			           end
+			        end
+			      end
+			    end
+			  end
+			end
 		end
 		
 		course1_waypoints[lastWP].merged = true

@@ -58,7 +58,17 @@ function courseplay:loadHud(self)
 	      end   
           self.hudpage[0][1][3]= courseplay:get_locale(self, "CoursePlayPlayerSendHome")
           if self.grainTankCapacity == 0 then
-            self.hudpage[0][1][4]= courseplay:get_locale(self, "CoursePlayPlayerSwitchSide")
+             local tractor = self.courseplayers[1]
+             if tractor ~= nil then
+            	self.hudpage[0][1][4]= courseplay:get_locale(self, "CoursePlayPlayerSwitchSide")
+	            if tractor.forced_side == "left" then
+	              self.hudpage[0][2][4]= courseplay:get_locale(self, "CoursePlayPlayerSideLeft")
+	            elseif tractor.forced_side == "right" then
+	             self.hudpage[0][2][4]= courseplay:get_locale(self, "CoursePlayPlayerSideRight")
+	            else
+	      		  self.hudpage[0][2][4]= courseplay:get_locale(self, "CoursePlayPlayerSideNone")
+	      		end
+            end
           end
 	    end
 	  elseif self.showHudInfoBase == 1 then

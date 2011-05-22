@@ -67,8 +67,23 @@
 	</text>
 
 	<text name="CoursePlayPlayerSwitchSide">
-		<en>switch side</en>
-		<de>Seite wechseln</de>
+		<en>Driver side</en>
+		<de>Abfahrerseite</de>
+	</text>
+	
+	<text name="CoursePlayPlayerSideNone">
+		<en>automatic</en>
+		<de>automatisch</de>
+	</text>
+	
+	<text name="CoursePlayPlayerSideLeft">
+		<en>left</en>
+		<de>links</de>
+	</text>
+	
+	<text name="CoursePlayPlayerSideRight">
+		<en>right</en>
+		<de>rechts</de>
 	</text>
 	
 	<text name="CoursePlayPlayerSendHome">
