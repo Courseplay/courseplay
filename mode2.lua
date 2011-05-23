@@ -93,7 +93,7 @@ function courseplay:handle_mode2(self, dt)
   else -- NO active combine
     -- STOP!!
     if g_server ~= nil then
-      AIVehicleUtil.driveInDirection(self, dt, 30, 0, 0, 28, false, moveForwards, 0, 1)
+      AIVehicleUtil.driveInDirection(self, dt, self.steering_angle, 0, 0, 28, false, moveForwards, 0, 1)
     end
     
   	if self.loaded then
@@ -566,7 +566,7 @@ function courseplay:unload_combine(self, dt)
 	local lx, lz = 0, 1
 	if g_server ~= nil then
 	  self.motor:setSpeedLevel(0, false);
-	  AIVehicleUtil.driveInDirection(self, dt, 30, 0, 0, 28, false, moveForwards, lx, lz)
+	  AIVehicleUtil.driveInDirection(self, dt, self.steering_angle, 0, 0, 28, false, moveForwards, lx, lz)
 	end
     return 
   end  
@@ -741,7 +741,7 @@ function courseplay:follow_tractor(self, dt, tractor)
   if not allowedToDrive then
    local lx, lz = 0, 1
    if g_server ~= nil then
-     AIVehicleUtil.driveInDirection(self, dt, 30, 0, 0, 28, false, moveForwards, lx, lz)
+     AIVehicleUtil.driveInDirection(self, dt, self.steering_angle, 0, 0, 28, false, moveForwards, lx, lz)
    end
    return 
   end  

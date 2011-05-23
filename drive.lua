@@ -216,7 +216,7 @@ function courseplay:drive(self, dt)
      self.motor:setSpeedLevel(0, false);
      
      if g_server ~= nil then
-       AIVehicleUtil.driveInDirection(self, dt, 30, 0.5, 0.5, 28, false, moveForwards, 0, 1)
+       AIVehicleUtil.driveInDirection(self, dt, self.steering_angle, 0.5, 0.5, 28, false, moveForwards, 0, 1)
      end
 	 
      -- unload active tipper if given
@@ -328,7 +328,7 @@ function courseplay:drive(self, dt)
 	
 	if self.dist > distToChange then
 	  if g_server ~= nil then
-	    AIVehicleUtil.driveInDirection(self, dt, 30, 0.5, 0.5, 8, true, fwd, lx, lz, self.sl, 0.5);
+	    AIVehicleUtil.driveInDirection(self, dt, self.steering_angle, 0.5, 0.5, 8, true, fwd, lx, lz, self.sl, 0.5);
 	    courseplay:set_traffc_collision(self, lx, lz)
 	  end
   	else	     
