@@ -243,14 +243,14 @@ function courseplay:key_input(self, unicode)
 	end
 	
 	-- backspace
-	if sym == 8 then
+	if unicode == 8 then
 		if  self.user_input:len() >= 1 then
 			 self.user_input =  self.user_input:sub(1, self.user_input:len() - 1)
 		end
 	end
 	
 	-- enter
-	if sym == 13 then
+	if unicode == 13 then
 		courseplay:handle_user_input(self)
 	end
 end
