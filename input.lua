@@ -48,6 +48,10 @@ function courseplay:deal_with_mouse_input(self, func, value)
             courseplay:add_course(self, value, false)
           end
           
+          if func == "key_input" then
+            courseplay:key_input(self, value)
+          end
+          
           if func == "load_course" then
             courseplay:load_course(self, value, false)
           end
@@ -231,12 +235,8 @@ function courseplay:deal_with_mouse_input(self, func, value)
 end
 
 
--- deals with keyEvents
-function courseplay:keyEvent(unicode, sym, modifier, isDown)
- 
-  -- user input fu
-  if isDown and self.user_input_active then
-	if 31 < unicode and unicode < 127 then 
+function courseplay:key_input(self, unicode)
+    if 31 < unicode and unicode < 127 then 
 		if self.user_input:len() <= 20 then
 			self.user_input = self.user_input .. string.char(unicode)
 		end
@@ -253,6 +253,14 @@ function courseplay:keyEvent(unicode, sym, modifier, isDown)
 	if sym == 13 then
 		courseplay:handle_user_input(self)
 	end
+end
+
+-- deals with keyEvents
+function courseplay:keyEvent(unicode, sym, modifier, isDown)
+ 
+  -- user input fu
+  if isDown and self.user_input_active then
+  	self:setCourseplayFunc("key_input", unicode)
   end
   
 end;	
