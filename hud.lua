@@ -26,15 +26,6 @@ function courseplay:loadHud(self)
 	self.hudpage[0][4] = {}
     self.hudpage[1][1] = {}
     self.hudpage[1][2] = {}
-    -- load course after reloading 
-    --if courseplay_courses ~= nil and self.current_course_name ~= nil and (table.getn(self.Waypoints) == 0) then
-	--	for k,v in pairs(courseplay_courses) do
-	--    	if courseplay_courses[k].name == self.current_course_name then
-	--    		courseplay:load_course(self, k)
-	--			break	
-	--    	end
-	--	end
-	--end
 				
     if self.show_hud then
       self.hudInfoBaseOverlay:render();
