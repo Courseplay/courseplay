@@ -24,11 +24,21 @@ function courseplay:load_course(self, id, use_real_id)
 	-- global array for courses, no refreshing needed any more	
 
   if id ~= nil and id ~= "" then
-    if not use_real_id then      
+    local searchID = id * 1
+	if not use_real_id then      
       id = self.selected_course_number + id
-      
-    end
-    id = id * 1
+    else
+		for i=1, table.getn(courseplay_courses) do
+			if courseplay_courses[i].id ~= nil then
+				if courseplay_courses[i].id == searchID then
+            		id = i
+            		break
+       	 		end
+			end
+    	end
+
+  	end
+    id = id * 1 -- ?? Why ??
     
     if courseplay_courses == nil then
       if self.courseplay_courses ~= nil then
@@ -45,7 +55,7 @@ function courseplay:load_course(self, id, use_real_id)
   	  return
   	end
   	if not use_real_id then
-  	  table.insert(self.loaded_courses, id)
+  	  table.insert(self.loaded_courses, courseplay_courses[id].id)
   	end
   --	courseplay:reset_course(self)
   	if table.getn(self.Waypoints) == 0 then
@@ -143,8 +153,9 @@ function courseplay:save_courses(self)
     for _,course in pairs(courseplay_courses) do
       if course ~= nil then
 	      local name = course.name
+	      local id = course.id
 	      local x = course.waypoints
-	      File:write(tab .. "<course name=\"" .. name .. "\">\n")
+	      File:write(tab .. "<course name=\"" .. name .. "\" id=\"" ..id.."\" >\n")
 	      for i = 1, table.getn(x) do
 	        local v = x[i]
 			local wait = 0
@@ -203,6 +214,10 @@ function courseplay:load_courses()
 			finish_all = true
 			break
 		end
+		local id = getXMLInt(File, baseName .. "#id")
+		if id == nil then
+			id = 0
+		end
 		local tempCourse = {}
 	  
 		local s = 1
@@ -240,7 +255,7 @@ function courseplay:load_courses()
 			tempCourse[s] = {cx = x, cz = z, angle = dangle, rev= rev, wait = wait, crossing = crossing}
 			s = s + 1
 		  else
-		    local course = {name= name, waypoints=tempCourse}
+		    local course = {name= name,id= id, waypoints=tempCourse}
         	table.insert(courseplay_coursesUnsort, course)
 			i = i + 1
 			finish_wp = true
@@ -263,11 +278,29 @@ function courseplay:load_courses()
 			if courseplay_courses[i] == courseplay_coursesUnsort[k].name then
 				local waypoints = courseplay_coursesUnsort[k].waypoints
 				local name =  courseplay_courses[i]
-				local course = {name= name, waypoints=waypoints}
+				local id = courseplay_coursesUnsort[k].id
+				local course = {name= name, id = id, waypoints=waypoints}
 	            courseplay_courses[i] = course
 	            break
 			end
 		end
+    end
+	-- search highest ID
+	local maxID = 0
+    for i=1, table.getn(courseplay_courses) do
+		if courseplay_courses[i].id ~= nil then
+			if courseplay_courses[i].id > maxID then
+            	maxID = courseplay_courses[i].id
+       	 	end
+		end
+    end
+    self.courseID = maxID
+    -- define for old courses
+    for i=1, table.getn(courseplay_courses) do
+        if courseplay_courses[i].id == nil or courseplay_courses[i].id == 0 then
+        	self.courseID = self.courseID + 1
+			courseplay_courses[i].id = self.courseID  
+        end
     end
     
     courseplay_coursesUnsort = nil
