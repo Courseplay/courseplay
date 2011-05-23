@@ -221,6 +221,7 @@ function courseplay:reset_course(self)
 	self.ai_state = 1
 	self.tmr = 1
 	self.Waypoints = {}
+	self.loaded_courses = {}
 	courseplay:sign_visibility(self, false, true)
 	self.signs = {}
 	self.play = false

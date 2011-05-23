@@ -248,6 +248,7 @@ function courseplay:load(xmlFile)
 	
 	-- course name for saving
 	self.current_course_name = nil
+	self.courseID = 0
 	-- array for multiple courses
 	self.loaded_courses  = {}
 	self.direction = nil

@@ -274,7 +274,16 @@ function courseplay:handle_user_input(self)
 		--courseplay:load_courses(self)
 		self.user_input_active = false
 		self.current_course_name = self.user_input
-		course = {name =self.current_course_name, waypoints = self.Waypoints}
+		local maxID = 0
+    	for i=1, table.getn(courseplay_courses) do
+			if courseplay_courses[i].id ~= nil then
+				if courseplay_courses[i].id > maxID then
+            		maxID = courseplay_courses[i].id
+       	 		end
+			end
+    	end
+    	self.courseID = maxID + 1
+		course = {name =self.current_course_name, id = self.courseID, waypoints = self.Waypoints}
   		if courseplay_courses == nil then
   	  		courseplay_courses = {}
 		end
