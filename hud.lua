@@ -107,33 +107,20 @@ function courseplay:loadHud(self)
 		if not self.drive then
 			if (not self.record and not self.record_pause) and (table.getn(self.Waypoints) == 0)  then
 				self.hudpage[1][1][1]= courseplay:get_locale(self, "PointRecordStart")
-				if InputBinding.hasEvent(InputBinding.AHInput1) then
-					courseplay:start_record(self)
-				end
+				
 			elseif (not self.record and not self.record_pause) and (table.getn(self.Waypoints) ~= 0) then	
 			    self.hudpage[1][1][2]= courseplay:get_locale(self, "ModusSet")
-				if InputBinding.hasEvent(InputBinding.AHInput2) then
-				    courseplay:change_ai_state(self, 1)					
-				end
+				
 	
 			else
 				self.hudpage[1][1][1]= courseplay:get_locale(self, "PointRecordStop")
-				if InputBinding.hasEvent(InputBinding.AHInput1) then
-					courseplay:stop_record(self)
-				end
 				
 				if not self.record_pause then	
 					if self.recordnumber > 1 then
 						self.hudpage[1][1][2]= courseplay:get_locale(self, "CourseWaitpointSet")
-						if InputBinding.hasEvent(InputBinding.AHInput2) then
-							courseplay:set_waitpoint(self)
-						end
 						
 						self.hudpage[1][1][3]= courseplay:get_locale(self, "PointRecordInterrupt")
-						if InputBinding.hasEvent(InputBinding.AHInput3) then
-							courseplay:interrupt_record(self)
-						end
-
+				
 						self.hudpage[1][1][4]= courseplay:get_locale(self, "CourseCrossingSet")
 
 						if not self.direction and self.movingDirection == -1 then
@@ -147,15 +134,11 @@ function courseplay:loadHud(self)
 				else
 					if self.recordnumber > 4 then
 						self.hudpage[1][1][2]= courseplay:get_locale(self, "PointRecordDelete")
-						if InputBinding.hasEvent(InputBinding.AHInput2) then
-							courseplay:delete_waypoint(self)
-						end
+				
 					end
 					
 					self.hudpage[1][1][3]= courseplay:get_locale(self, "PointRecordContinue")
-					if InputBinding.hasEvent(InputBinding.AHInput3) then
-						courseplay:continue_record(self)
-					end
+				
 				end
 				
 			end
@@ -376,7 +359,7 @@ function courseplay:showHud(self)
 	  if self.drive then
 	    g_currentMission:addHelpButtonText(courseplay:get_locale(self, "CoursePlayStop"), InputBinding.AHInput1);
 	    if InputBinding.hasEvent(InputBinding.AHInput1) then
-	      courseplay:stop(self)
+	      self:setCourseplayFunc("stop", nil)    
 	    end
 	    
 	     local last_recordnumber = nil
@@ -390,14 +373,14 @@ function courseplay:showHud(self)
 	    if self.Waypoints[last_recordnumber].wait and self.wait then
 	      g_currentMission:addHelpButtonText(courseplay:get_locale(self, "CourseWaitpointStart"), InputBinding.AHInput2);
 	      if InputBinding.hasEvent(InputBinding.AHInput2) then
-	        self.wait = false
+	        self:setCourseplayFunc("drive_on", nil)    
 	      end
 	    end
 	    	  
 	  else
 	  	g_currentMission:addHelpButtonText(courseplay:get_locale(self, "CoursePlayStart"), InputBinding.AHInput1);
 	  	if InputBinding.hasEvent(InputBinding.AHInput1) then
-	  	  courseplay:start(self)
+	  	  self:setCourseplayFunc("start", nil)    
 	  	end
 	  end
 	end

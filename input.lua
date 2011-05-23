@@ -56,6 +56,18 @@ function courseplay:deal_with_mouse_input(self, func, value)
             courseplay:input_course_name(self)
           end
           
+           if func == "start" then
+            courseplay:start(self, value)
+          end
+          
+          if func == "stop" then
+            courseplay:stop(self, value)
+          end
+          
+           if func == "drive_on" then
+            self.wait = false
+          end
+          
           if func == "clear_course" then
             courseplay:clear_course(self, value)
           end
