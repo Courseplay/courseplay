@@ -272,7 +272,7 @@ function courseplay:load(xmlFile)
 	self.onTrafficCollisionTrigger = courseplay.onTrafficCollisionTrigger;
 	self.aiTrafficCollisionTrigger = Utils.indexToObject(self.components, getXMLString(xmlFile, "vehicle.aiTrafficCollisionTrigger#index"));
 	self.steering_angle = 30 --Utils.indexToObject(self.components, getXMLString(xmlFile, "vehicle.steering#index"));
-	print(table.show(self.steering_angle))
+	
 	self.numCollidingVehicles = 0;
 	self.numToolsCollidingVehicles = {};
 	self.trafficCollisionIgnoreList = {};
@@ -586,7 +586,8 @@ function courseplay:readStream(streamId, connection)
 	self.recordnumber = streamReadInt32(streamId)  
 	self.tmr = streamReadInt32(streamId)  
 	self.timeout = streamReadInt32(streamId)  
-	self.timer = streamReadInt32(streamId)  
+	self.timer = streamReadInt32(streamId)
+	self.drive = streamReadBool(streamId)  
 	self.drive_slow_timer = streamReadInt32(streamId)  
 	self.courseplay_position = streamReadInt32(streamId)  
 	self.waitPoints = streamReadInt32(streamId)  
@@ -631,7 +632,12 @@ function courseplay:readStream(streamId, connection)
   if saved_combine_id then
     self.saved_combine = networkGetObject(saved_combine_id)
   end  
-  
+  if self.drive then
+    self.orgRpm = {} 
+    self.orgRpm[1] = self.motor.maxRpm[1] 
+    self.orgRpm[2] = self.motor.maxRpm[2] 
+    self.orgRpm[3] = self.motor.maxRpm[3] 
+  end
   local active_combine_id = streamReadInt32(streamId)  
   if active_combine_id then
     self.active_combine = networkGetObject(active_combine_id)
@@ -650,7 +656,7 @@ function courseplay:readStream(streamId, connection)
   -- kurs daten
   local courses = streamReadString(streamId)  -- 60.
  
-  print(courses)
+  
   
   if courses ~= nil then
     self.loaded_courses = courses:split(",")
@@ -662,7 +668,7 @@ end
 function courseplay:writeStream(streamId, connection)
     --transfer courses
     local course_count = table.getn(courseplay_courses)
-    print(course_count)
+    
     streamWriteInt32(streamId, course_count)
     for i=1, course_count do 
       
@@ -693,7 +699,8 @@ function courseplay:writeStream(streamId, connection)
 	streamWriteInt32(streamId, self.recordnumber)  
 	streamWriteInt32(streamId, self.tmr)  
 	streamWriteInt32(streamId, self.timeout)  
-	streamWriteInt32(streamId, self.timer)  
+	streamWriteInt32(streamId, self.timer)
+	streamWriteBool(streamId, self.drive)  
 	streamWriteInt32(streamId, self.drive_slow_timer)  
 	streamWriteInt32(streamId, self.courseplay_position)  
 	streamWriteInt32(streamId, self.waitPoints)  

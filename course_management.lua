@@ -85,9 +85,7 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
 			           if number > 3 and number ~= number_2 and not wp_found and course1_waypoints[number].merged == nil then
 			             lastWP = number
 			             new_wp = number_2
-			             wp_found = true
-			             print(number)
-			             print(number_2)
+			             wp_found = true			             
 			           end
 			        end
 			      end
