@@ -1,4 +1,4 @@
-Courseplay - Abfahrhelfer für LS 2011 v 1.2
+Courseplay - Abfahrhelfer für LS 2011 v 2.0
 
 Inhaltsverzeichnis
 
@@ -6,9 +6,33 @@ I. Changelog
 II.   Installationsanweisung
 III.  Bedienungsanleitung
 IV. Credits
+V. Videos
+
+Ia. Changelog - Änderungen seit Version 1.6
+
+	Die größte Änderung im courseplay ist natürlich die Multiplayerfähigkeit. Dabei werden beim Spielstart alle Werte und sogar gespeicherte Kurse vom Host an die Clients übertragen. Das kann mitunter ein bisschen dauern ist aber notwendig.
+	Neben zahlreichen Bugfixes und Performance-Optimierungen die hier nicht weiter erwähnt werden sollen gibt es im wesentlichen die folgende Neuerungen:
+	
+	Kursverwaltung: Gespeicherte Kurse werden jetzt alphabetisch sortiert und werden immmer global für alle Fahrzeuge gespeichert. Dadurch ist kein Synchronisieren der Kurse zwischen den einzelnen Fahrzeugen mehr nötig und der Speicherverbrauch ist drastisch gesunken.
+	
+	Kurse aufnhemen: Das Pausieren der Kursaufnahme wurde überarbeitet. Man kann jetzt die Kursaufzeichnung pausieren und die letzten Wegpunkte löschen. Dabei wird jetzt immer nur der letzte Wegpunkt angezeigt und nicht mehr alle.
+
+	Neu: Kurs Offset
+
+	Dieses Feature ist noch experimentell und soll dafür sorgen, dass der Schlepper den gespeicherten Kurs leicht versetzt abfährt. Gedacht ist dies zum Beispiel für Ballensammelwagen.
+
+	Neue Kurskombination:
+
+	Ihr könnt beim Einfahren eines Kurses jetzt Kreuzungspunkte setzen. Wenn ihr später mehrere Kurse hintereinander ladet werden diese immer am ersten gemeinsamen Kreuzungspunkt (Abstand unter 30 Metern!) zusammengefügt. Damit könnt ihr also auch Teile von Routen wieder verwenden.
+	 
+	Das Rückwärtsfahren wurden optimiert und sollte jetzt wieder richtig funktionieren.
+
+	Wenn ihr das Spiel speichert werden die Einstellungen eurer Abfahrer mit gespeichert. Nach dem Neuladen müsst ihr also normalerweise nichts mehr einstellen. Die zuvor geladenen Kurse und Einstellungen sollten komplett wieder verfügbar sein.
+
+	Außerdem gibt es neue Symbole für die Wegpunkte und spezielle Wegpunkte wie Kreuzungspunkte und Startpunkte sind auch sichtbar wenn ihr nicht im Fahrzeug seid welches die Route gespeichert hat.
 
 
-Ia. Changelog - Änderungen seit Version 1.2
+Ib. Changelog - Änderungen seit Version 1.2
 
 	Neu hinzugekommen sind vor allem der Feldmodus mit dem man Ballen pressen und Heusammeln kann. Der Güllemodus wurde weiter perfektioniert und es ist jetzt auch möglich den Abfahrhelfer in Drescher und Häcksler einzubauen.
 	Damit kann man beispielsweise mit Dreschern im Helfermodus Kurse aufzeichnen lassen die man dann später für den Gülle- oder Feldmodus verändern kann.
@@ -19,7 +43,7 @@ Ia. Changelog - Änderungen seit Version 1.2
 	Dann gab es natürlich auch noch etwas Feintuning: Das unsinnige Kreiseln auf dem Feld sollte jetzt vorbei sein, HW80 Drehschemel und Agroliner Container werden jetzt auch unterstützt. 
 	
 
-Ib. Changelog - Änderungen seit Version 1.0
+Ic. Changelog - Änderungen seit Version 1.0
 
 	Als neue Funktionen sind im wesentlichen der Düngemodus und das Rückwärtsfahren hinzugekommen. Außerdem wurde das Fahrverhalten (besonders in Kurven) verbessert und es werden mehr EntladeTrigger (Gras und Silage) erkannt.
 	Zudem kann man jetzt gespeicherte Kurse kombinieren indem man mehrere Kurse hintereinander lädt. Wenn man nur einen neuen Kurs laden will muss man allerdings jetzt vorher die Wegpunkte des alten zurücksetzen.
@@ -36,15 +60,17 @@ II. Installationsanweisung
 
 1. Das Archiv aacourseplay.zip in das Verzeichnis C:\Users\dein Username\MyGames\FarmingSimulator2011\mods kopieren
 
-ACHTUNG: Beim Update von version 1.0 müsst ihr NUR die alte aacourseplay.zip durch die neue ersetzen, es muss NICHTS am Schlepper geändert werden.
+ACHTUNG: Beim Update von alten Versionen müsst ihr NUR die alte aacourseplay.zip durch die neue ersetzen, es muss NICHTS am Schlepper geändert werden.
 
 2. Jetzt das Archiv des Schleppers entpacken den du mit dem Abfahrhelfer versehen willst und in der moddesc.xml folgende Einträge machen
 
 <vehicleTypes>
+  <vehilceType ...>
         ...
         ...
         ...
         <specialization name="courseplay" />  <<-- Diese Zeile muss eingetragen werden
+  </vehilceType>
 </vehicleTypes>
 
 anschließend die Dateien wieder zurückpacken.
@@ -52,6 +78,10 @@ anschließend die Dateien wieder zurückpacken.
 Das ganze Entpacken und Packen kann man sich mit dem Totalcommander oder Winrar sparen, da er das Entpacken und Packen automatisch macht.
 Hier einfach das Archiv öffnen, Datei bearbeiten, speichern, schließen und zurückpacken bestätigen.
 
+3. Erklärungsvideo:
+
+Damit auch wirklich nichts mehr schief gehen kann gibt's mittlerweile auch ein Erklärungsvideo zum Einbau:
+http://www.youtube.com/watch?v=frfNX5ZD090
 
 
 III. Bedienungsanleitung
@@ -114,7 +144,7 @@ III. Bedienungsanleitung
 			
 			Typ: Abfahrer
 			
-				Der Typ Abfahrer wartet am Startpunkt bis er voll beladen ist und fährt erst dann die Route ab. Wenn er auf seiner Route über eine Abkippstelle kommt hält er an und entleert seine(n) Anhänger.
+				Der Typ Abfahrer wartet am Startpunkt bis er voll beladen ist und fährt erst dann die Route ab. Wenn er auf seiner Route über eine Abkippstelle kommt hält er an und entleert seine(n) Anhänger.			
 				Man kann dem Abfahrer am Startpunkt allerdings auch sagen, dass er sofort abfahren soll.
 				
 				
@@ -165,6 +195,7 @@ III. Bedienungsanleitung
 		Auf diser Unterseite des HUD findet ihr eine Übersicht eurer gespeicherten Kurse. Ihr könnt durch Klick auf das Ordner Symbol einen Kurs laden und durch einen Klick auf das rote X einen Kurs komplett löschen.
 		ACHTUNG: seit version 1.2 müsst ihr wenn ihr einen neuen Kurs laden wollt erst die alten Wegpunkte zurücksetzen, sonst kombiniert ihr die beiden Kurse!
 		Mit den blauen Pfeilen rechts oben und rechts unten könnt ihr durch die gespeicherten Kurse blättern.
+		Hinweis zum Kombinieren von Kursen: Das Ordner Symbol ohne den blauen Pfeil kombiniert die Kurse am ersten gemeinsamen Kreuzungspunkt, der mit dem blauen Pfeil hängt die Kurse einfach hintereinander.
 		 
 	HUD "Einstellungen Combi Modus":
 	
@@ -218,4 +249,28 @@ IV. Credits
 			
 	Auch beim Erfinder des Path Tractor aus LS 09 "micha381" an dem sich courseplay natürlich orientiert hat, muss ich mich bedanken.
 
+	Ein dickes Dankeschön auch an Sven777b, der mir die entscheidenen Tipps zum Thema Multiplayerfähigkeit gegeben hat.
+
 	Und last but not least noch ein großes Dankeschön an mein Weibchen die mich in den letzten Wochen diesen "24/7 Wahnsinn" hat ausleben lassen ;)
+
+V. Videos
+	
+	Ich habe mir mal die Mühe gemacht und einige Video-Tutorials zu Courseplay zur Verfügung gestellt:
+
+	Einbau:
+	http://www.youtube.com/watch?v=frfNX5ZD090
+
+	Steuerung/Überführung
+	http://www.youtube.com/watch?v=6ntt2RZGiTA
+
+	Combi Modus
+	http://www.youtube.com/watch?v=eQWQ7FrNBO8
+	
+	Überladewagen
+	http://www.youtube.com/watch?v=DxyInzZgdDc
+
+	Düngemodus
+	http://www.youtube.com/watch?v=7yvaOI_TUIg
+
+	Feldmodus
+	http://www.youtube.com/watch?v=fHnqo9Jq_nc
