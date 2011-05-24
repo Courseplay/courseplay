@@ -121,7 +121,7 @@ function courseplay:load_tippers(self)
    	    courseplay:set_timeout(self, 400)
    	  end
    	  
-   	  if fill_level == 0 or drive_on then
+   	  if fill_level == 100 or drive_on then
    		self.last_fill_level = nil
    		self.loaded = true
    		self.lastTrailerToFillDistance = nil

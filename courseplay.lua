@@ -1,9 +1,9 @@
 --
--- Courseplay v1.95
+-- Courseplay v2.00
 -- Specialization for Courseplay
 --
 -- @author  Lautschreier / Hummel / Wolverin0815 / Bastian82
--- @version:	v1.95 23.05.2011
+-- @version:	v2.00 23.05.2011
 -- @testing:    bullgore80
 
 courseplay = {};

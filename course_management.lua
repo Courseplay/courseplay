@@ -88,20 +88,33 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
 		
 		if add_course_at_end ~= true then
 			for number, course1_wp in pairs(course1_waypoints) do
-			  if course1_wp.crossing  == true then
+			  if course1_wp.crossing == true and course1_wp.merged == nil and wp_found == false then
 			  	for number_2, course2_wp in pairs(course2_waypoints) do
-			  	  if course2_wp.crossing == true then  
-			        if courseplay:distance(course1_wp.cx, course1_wp.cz, course2_wp.cx, course2_wp.cz) < 30 then
-			           if number > 3 and number ~= number_2 and not wp_found and course1_waypoints[number].merged == nil then
+			  	  if course2_wp.crossing == true then
+			  	  	local distance_between_waypoints = courseplay:distance(course1_wp.cx, course1_wp.cz, course2_wp.cx, course2_wp.cz)
+			  	  	--print("--------------")
+			  	  	--print(number_2)
+			  	  	--print(distance_between_waypoints)
+			  	  	--print("--------------")  
+			        if distance_between_waypoints < 50 then
+			           if number > 3 and number ~= number_2 then
 			             lastWP = number
 			             new_wp = number_2
-			             wp_found = true			             
+			             --print("found wp")
+			             --print(last_wp)
+			             --print(new_wp)
+			             --print("--------------")
+			             wp_found = true
 			           end
 			        end
 			      end
 			    end
 			  end
 			end
+		end
+		
+		if wp_found == false then
+		  print("no waypoint found")
 		end
 		
 		course1_waypoints[lastWP].merged = true
