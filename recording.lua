@@ -209,6 +209,7 @@ end
 
 -- resets actual course -- just setting variables
 function courseplay:reset_course(self)	
+	courseplay:reset_merged(self)
 	self.recordnumber = 1
 	self.target_x, self.target_y, self.target_z = nil, nil, nil
 	if self.active_combine ~= nil then
