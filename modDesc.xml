@@ -21,8 +21,7 @@
  	</description>
     	<multiplayer supported="true"/>   
 	<iconFilename>
-		<en>store.png</en>
-		<de>store.png</de>
+		store.png
  	</iconFilename>
 	<version>2.02</version>
     <l10n>
