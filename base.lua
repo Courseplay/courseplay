@@ -191,8 +191,10 @@ function courseplay:load(xmlFile)
 	self.wait = true
 	self.waitTimer = nil
 	
+	self.cp_directory = getUserProfileAppPath() .. "mods/aacourseplay/"
+	
 	-- our arrow is displaying dirction to waypoints
-	self.ArrowPath = Utils.getFilename("../aacourseplay/img/arrow.png", self.baseDirectory);
+	self.ArrowPath = Utils.getFilename("img/arrow.png", self.cp_directory);
 	self.ArrowOverlay = Overlay:new("Arrow", self.ArrowPath, 0.4, 0.08, 0.250, 0.250);
 	self.ArrowOverlay:render()
 	
@@ -207,7 +209,7 @@ function courseplay:load(xmlFile)
 	delete(i3dNode)
 	self.sign = itemNode
 	
-	local i3dNode2 = Utils.loadSharedI3DFile("../aacourseplay/img/NurGerade/NurGerade.i3d", self.baseDirectory)
+	local i3dNode2 = Utils.loadSharedI3DFile("img/NurGerade/NurGerade.i3d", self.cp_directory)
 	local itemNode2 = getChildAt(i3dNode2, 0)
 	link(getRootNode(), itemNode2)
 	setRigidBodyType(itemNode2, "NoRigidBody")
@@ -216,7 +218,7 @@ function courseplay:load(xmlFile)
 	delete(i3dNode2)
 	self.start_sign = itemNode2
 	
-	local i3dNode3 = Utils.loadSharedI3DFile("../aacourseplay/img/STOP/STOP.i3d", self.baseDirectory)
+	local i3dNode3 = Utils.loadSharedI3DFile("img/STOP/STOP.i3d", self.cp_directory)
 	local itemNode3 = getChildAt(i3dNode3, 0)
 	link(getRootNode(), itemNode3)
 	setRigidBodyType(itemNode3, "NoRigidBody")
@@ -225,7 +227,7 @@ function courseplay:load(xmlFile)
 	delete(i3dNode3)
 	self.stop_sign = itemNode3
 	
-	local i3dNode4 = Utils.loadSharedI3DFile("../aacourseplay/img/VorfahrtAnDieserKreuzung/VorfahrtAnDieserKreuzung.i3d", self.baseDirectory)
+	local i3dNode4 = Utils.loadSharedI3DFile("img/VorfahrtAnDieserKreuzung/VorfahrtAnDieserKreuzung.i3d", self.cp_directory)
 	local itemNode4 = getChildAt(i3dNode4, 0)
 	link(getRootNode(), itemNode4)
 	setRigidBodyType(itemNode4, "NoRigidBody")
@@ -234,7 +236,7 @@ function courseplay:load(xmlFile)
 	delete(i3dNode4)
 	self.cross_sign = itemNode4
 	
-	local i3dNode5 = Utils.loadSharedI3DFile("../aacourseplay/img/Parkplatz/Parkplatz.i3d", self.baseDirectory)
+	local i3dNode5 = Utils.loadSharedI3DFile("img/Parkplatz/Parkplatz.i3d", self.cp_directory)
 	local itemNode5 = getChildAt(i3dNode5, 0)
 	link(getRootNode(), itemNode5)
 	setRigidBodyType(itemNode5, "NoRigidBody")
@@ -335,7 +337,7 @@ function courseplay:load(xmlFile)
 	self.hudInfoBasePosY = 0.005;  -- 0.210
 	self.hudInfoBaseHeight = 0.287;
 	
-	self.infoPanelPath = Utils.getFilename("../aacourseplay/img/hud_bg.png", self.baseDirectory);
+	self.infoPanelPath = Utils.getFilename("img/hud_bg.png", self.cp_directory);
 	self.hudInfoBaseOverlay = Overlay:new("hudInfoBaseOverlay", self.infoPanelPath, self.hudInfoBasePosX, self.hudInfoBasePosY, self.hudInfoBaseWidth, self.hudInfoBaseHeight);
 	
 	self.min_hud_page = 1
@@ -489,7 +491,7 @@ function courseplay:update(dt)
 	
 	--if self.user_input_active == true then
 	--  if self.currentGui == nil then
-	--    g_gui:loadGui(Utils.getFilename("../aacourseplay/emptyGui.xml", self.baseDirectory), self.input_gui);
+	--    g_gui:loadGui(Utils.getFilename("emptyGui.xml", self.cp_directory), self.input_gui);
 	--    g_gui:showGui(self.input_gui);
 	--    self.currentGui = self.input_gui
 	--  end
