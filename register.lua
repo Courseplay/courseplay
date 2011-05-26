@@ -1,4 +1,4 @@
-SpecializationUtil.registerSpecialization("courseplay", "courseplay", g_modsDirectory.."/aacourseplay/courseplay.lua")
+SpecializationUtil.registerSpecialization("courseplay", "courseplay", g_modsDirectory.."/ZZZ_courseplay/courseplay.lua")
 
 -- adding courseplay to default vehicles and vehicles that are loaded after courseplay in multiplayer
 -- thanks to donner!

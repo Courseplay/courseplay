@@ -191,7 +191,7 @@ function courseplay:load(xmlFile)
 	self.wait = true
 	self.waitTimer = nil
 	
-	self.cp_directory = getUserProfileAppPath() .. "mods/aacourseplay/"
+	self.cp_directory = getUserProfileAppPath() .. "mods/ZZZ_courseplay/"
 	
 	-- our arrow is displaying dirction to waypoints
 	self.ArrowPath = Utils.getFilename("img/arrow.png", self.cp_directory);

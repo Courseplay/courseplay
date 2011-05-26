@@ -7,7 +7,7 @@
 -- @testing:    bullgore80
 
 courseplay = {};
-courseplay_path = g_modsDirectory.."/aacourseplay/"
+courseplay_path = g_modsDirectory.."/ZZZ_courseplay/"
 
 -- working tractors saved in this
 working_course_players = {};
