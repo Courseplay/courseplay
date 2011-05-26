@@ -145,7 +145,7 @@ function courseplay:load(xmlFile)
 	self.locales.CPWaterDrive = g_i18n:getText("CPWaterDrive")
 	self.locales.WaitPoints = g_i18n:getText("WaitPoints")
 	self.locales.CrossPoints = g_i18n:getText("CrossPoints")
-
+	self.drive  = false
 	self.lastGui = nil
 	self.currentGui = nil
 	self.input_gui = "emptyGui";	
