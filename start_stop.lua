@@ -60,7 +60,7 @@ function courseplay:start(self)
 				if wpanz == 1 and self.startWork == nil then
 	                self.startWork = i
 				end
-				if wpanz == 2 and self.stopWork == nil then
+				if wpanz > 1 and self.stopWork == nil then
 	                self.stopWork = i
 				end
 			end

@@ -136,6 +136,8 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
   	end
 	self.play = true
 	self.recordnumber = 1
+	self.waitPoints = 0
+	self.crossPoints = 0
 	self.maxnumber = table.getn(self.Waypoints)
 	-- this adds the signs to the course
 	for k,wp in pairs(self.Waypoints) do
@@ -154,10 +156,10 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
   	  	  courseplay:addsign(self, wp.cx, wp.angle, wp.cz, self.stop_sign)
   	  	end
   	  	if wp.wait then
-		self.waitPoints = self.waitPoints + 1
+		  self.waitPoints = self.waitPoints + 1
 		end
 		if wp.crossing then
-		self.crossPoints = self.crossPoints + 1
+		  self.crossPoints = self.crossPoints + 1
 		end
     end
   end
