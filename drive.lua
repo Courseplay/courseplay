@@ -47,20 +47,30 @@ function courseplay:drive(self, dt)
   --last_cx ,last_cz = self.Waypoints[next3_recordnumber].cx, self.Waypoints[next3_recordnumber].cz
   
   -- offset - endlich lohnt sich der mathe-lk von vor 1000 Jahren ;)
-  --if self.WpOffsetZ ~= nil and self.WpOffsetZ ~= 0 then
+  if self.WpOffsetZ ~= nil and self.WpOffsetZ ~= 0 then
   	--courseplay:addsign(self, cx, 10, cz)  	
   	--print(string.format("old WP: %d x %d ", cx, cz ))
-  	
-  	--if angle < 0 then
-  	--  angle = 360 - angle * -1
-  	--end
-  	
-    --cx  = math.sin(angle+90) * self.WpOffsetZ + cx
-    --cz  = math.cos(angle+90) * self.WpOffsetZ + cz
-    
+	
+	local vcx, vcz
+	if self.recordnumber == 1 then
+		vcx = self.Waypoints[1].cx - cx 
+		vcz = self.Waypoints[1].cz - cz
+	else
+		vcx = cx - self.Waypoints[last_recordnumber].cx
+		vcz = cz - self.Waypoints[last_recordnumber].cz
+	end
+
+	local vl = math.sqrt(vcx * vcx + vcz * vcz)
+	if vl ~= nil then
+		vcx = vcx / vl
+		vcz = vcz / vl
+		cx  = -vcz * self.WpOffsetZ + cx
+		cz  = vcx * self.WpOffsetZ + cz			
+	end
+		
     --print(string.format("new WP: %d x %d (angle) %d ", cx, cz, angle ))
-    --courseplay:addsign2(self, cx, 20, cz)
-  --end
+    --courseplay:addsign(self, cx, 10, cz)
+  end
 
   
   self.dist = courseplay:distance(cx ,cz ,ctx ,ctz)
