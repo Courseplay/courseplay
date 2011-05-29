@@ -23,7 +23,7 @@
 	<iconFilename>
 		store.png
  	</iconFilename>
-	<version>2.10</version>
+	<version>2.11</version>
     <l10n>
 	<text name="PointRecordStart">
 		<en>Record Course Start</en>
