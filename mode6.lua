@@ -37,7 +37,6 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 				end
 			end
 		else
-
 			-- baleloader				
 			if SpecializationUtil.hasSpecialization(BaleLoader, workTool.specializations) then
 				if workArea then
@@ -82,7 +81,8 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 				end
 								
 			else
-				-- other worktools			
+			
+				-- other worktools, tippers, e.g. forage wagon			
 				-- done tipping
 				local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
 				if self.unloading_tipper ~= nil and self.unloading_tipper.fillLevel == 0 then			
@@ -179,11 +179,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 				end
 			--	print(string.format("Abort: %d StopWork: %d",self.abortWork,self.stopWork))
 			end
-			
-			--if not allowedToDrive then
-			--	workTool:setIsTurnedOn(false,false)
-			--end       
-		
+					
 		end
 	end
 	

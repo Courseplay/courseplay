@@ -53,6 +53,7 @@ function courseplay:drive(self, dt)
   	--courseplay:addsign(self, cx, 10, cz)
   	--print(string.format("old WP: %d x %d ", cx, cz ))
 	
+	-- direction vector
 	local vcx, vcz
 	if self.recordnumber == 1 then
 		vcx = self.Waypoints[2].cx - cx 
@@ -66,8 +67,10 @@ function courseplay:drive(self, dt)
 			vcz = cz - self.Waypoints[last_recordnumber].cz
 		end
 	end
-
+	
+	-- length of vector
 	local vl = math.sqrt(vcx * vcx + vcz * vcz)
+	-- if not too short: normalize and add offsets
 	if vl ~= nil and vl > 0.01 then
 		vcx = vcx / vl
 		vcz = vcz / vl
