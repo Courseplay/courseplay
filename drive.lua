@@ -34,7 +34,7 @@ function courseplay:drive(self, dt)
      last_recordnumber = 1
    end
   
-  local next3_recordnumber = nil
+  --[[local next3_recordnumber = nil
    
    if self.recordnumber < self.maxnumber-3 then
      next3_recordnumber = self.recordnumber +3
@@ -42,36 +42,42 @@ function courseplay:drive(self, dt)
    	 next3_recordnumber = self.recordnumber
    end
   local angle = nil
-  cx ,cz, angle = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz, self.Waypoints[self.recordnumber].angle
+  cx ,cz, angle = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz, self.Waypoints[self.recordnumber].angle]]--
   --local last_cx, last_cz = nil
   --last_cx ,last_cz = self.Waypoints[next3_recordnumber].cx, self.Waypoints[next3_recordnumber].cz
   
+  cx ,cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
+  
   -- offset - endlich lohnt sich der mathe-lk von vor 1000 Jahren ;)
-  if self.WpOffsetZ ~= nil and self.WpOffsetZ ~= 0 then
-  	--courseplay:addsign(self, cx, 10, cz)  	
+  if self.ai_mode == 6 and self.recordnumber > self.startWork and self.recordnumber < self.stopWork and self.recordnumber > 1 and self.WpOffsetX ~= nil and self.WpOffsetZ ~= nil and (self.WpOffsetX ~= 0 or self.WpOffsetZ ~= 0) then
+  	--courseplay:addsign(self, cx, 10, cz)
   	--print(string.format("old WP: %d x %d ", cx, cz ))
 	
 	local vcx, vcz
 	if self.recordnumber == 1 then
-		vcx = self.Waypoints[1].cx - cx 
-		vcz = self.Waypoints[1].cz - cz
+		vcx = self.Waypoints[2].cx - cx 
+		vcz = self.Waypoints[2].cz - cz
 	else
-		vcx = cx - self.Waypoints[last_recordnumber].cx
-		vcz = cz - self.Waypoints[last_recordnumber].cz
+		if self.Waypoints[last_recordnumber].rev then
+			vcx = self.Waypoints[last_recordnumber].cx - cx
+			vcz = self.Waypoints[last_recordnumber].cz - cz
+		else
+			vcx = cx - self.Waypoints[last_recordnumber].cx
+			vcz = cz - self.Waypoints[last_recordnumber].cz
+		end
 	end
 
 	local vl = math.sqrt(vcx * vcx + vcz * vcz)
-	if vl ~= nil then
+	if vl ~= nil and vl > 0.01 then
 		vcx = vcx / vl
 		vcz = vcz / vl
-		cx  = -vcz * self.WpOffsetZ + cx
-		cz  = vcx * self.WpOffsetZ + cz			
+		cx  = cx - vcz * self.WpOffsetX + vcx * self.WpOffsetZ
+		cz  = cz + vcx * self.WpOffsetX + vcz * self.WpOffsetZ	
 	end
 		
     --print(string.format("new WP: %d x %d (angle) %d ", cx, cz, angle ))
     --courseplay:addsign(self, cx, 10, cz)
-  end
-
+  end  
   
   self.dist = courseplay:distance(cx ,cz ,ctx ,ctz)
   --print(string.format("Tx: %f2 Tz: %f2 WPcx: %f2 WPcz: %f2 dist: %f2 ", ctx, ctz, cx, cz, self.dist ))
@@ -137,6 +143,11 @@ function courseplay:drive(self, dt)
 			end
 			if last_recordnumber == self.stopWork and self.abortWork == nil then
 		    	self.global_info_text = courseplay:get_locale(self, "CPWorkEnd") --'hat Arbeit beendet.'
+			else
+				self.global_info_text = courseplay:get_locale(self, "CPTriggerReached") -- "Abladestelle erreicht"	
+				if fill_level == 0 or drive_on then
+					self.wait = false
+				end			
 			end
   		else
 		   	self.global_info_text = courseplay:get_locale(self, "CPReachedWaitPoint") --'hat Wartepunkt erreicht.'
