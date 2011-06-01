@@ -8,7 +8,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 	if workArea then
 		workSpeed = true
 	end
-	if self.recordnumber == self.stopWork and self.abortWork == nil and not self.loaded then
+	if self.recordnumber >= self.stopWork and self.abortWork == nil and not self.loaded then
 		allowedToDrive = false
 		self.global_info_text = courseplay:get_locale(self, "CPWorkEnd") --'hat Arbeit beendet.'
 	end
@@ -37,7 +37,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 				end
 			end
 		else
-			-- baleloader				
+			-- baleloader, copied original code parts				
 			if SpecializationUtil.hasSpecialization(BaleLoader, workTool.specializations) then
 				if workArea then
 					-- automatic stop for baleloader
@@ -165,7 +165,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 			end
 			-- last point reached restart
 			if self.abortWork ~= nil then
-				if (last_recordnumber == self.abortWork - 4 )and fill_level ~= 100 then
+				if (last_recordnumber == self.abortWork - 4) and fill_level ~= 100 then
 					self.recordnumber = self.abortWork - 2 -- drive to waypoint after next waypoint
 					self.abortWork = nil					
 				end
