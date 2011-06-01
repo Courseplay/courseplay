@@ -1,5 +1,6 @@
 -- AI-states
--- 1  warte am startpunkt auf arbeit
+-- 0 Default, wenn nicht in Mode2 aktiv
+-- 1 warte am startpunkt auf arbeit
 -- 2 fahre hinter drescher
 -- 3 fahre zur pipe / abtanken
 -- 4 fahre ans heck des dreschers
@@ -21,6 +22,10 @@ function courseplay:handle_mode2(self, dt)
     self.allow_following = true
   else
     self.allow_following  = false
+  end
+  
+  if self.ai_state == 0 then
+    self.ai_state = 1
   end
   
   if self.ai_state == 1 and self.active_combine ~= nil then

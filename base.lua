@@ -185,7 +185,7 @@ function courseplay:load(xmlFile)
 	-- ai mode: 1 abfahrer, 2 kombiniert
 	self.ai_mode = 1
 	self.follow_mode = 1
-	self.ai_state = 1
+	self.ai_state = 0
 	self.next_ai_state = nil
 	self.startWork = nil
 	self.stopWork = nil

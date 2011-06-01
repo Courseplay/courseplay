@@ -11,6 +11,10 @@ function courseplay:start(self)
 	self.record = false
 	self.record_pause = false
 	
+	-- set default ai_state if not in mode 2 or 3
+	if self.ai_mode ~= 2 and self.ai_mode ~= 3 then
+	  self.ai_state = 0
+	end
 	
 	if self.ai_mode == 4 and self.tipper_attached then
 	  local start_anim_time =  self.tippers[1].startAnimTime 
@@ -39,7 +43,7 @@ function courseplay:start(self)
 	local cx ,cz = self.Waypoints[self.recordnumber].cx,self.Waypoints[self.recordnumber].cz
 	-- distance
 	dist = courseplay:distance(ctx ,ctz ,cx ,cz)	
-	if self.ai_state == 1 then
+	if self.ai_state == 0 then
 		local nearestpoint = dist
 		local wpanz = 0
 		-- search nearest Waypoint

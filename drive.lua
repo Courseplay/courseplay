@@ -170,6 +170,8 @@ function courseplay:drive(self, dt)
 		-- combi-mode
 		if (((self.ai_mode == 2 or self.ai_mode == 3) and self.recordnumber < 2) or self.active_combine) and self.tipper_attached then	      
 		  return courseplay:handle_mode2(self, dt)
+		else
+		  self.ai_state = 0
 		end
 		
 		-- Fertilice loading --only for one Implement !
