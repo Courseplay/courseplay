@@ -137,8 +137,8 @@
 	</text>	
 	
 	<text name="CourseMode6">
-		<en>Type: Fieldwork for balers and forage wagons</en>
-		<de>Typ: Feldarbeit, Ballen pressen, Heu sammeln</de>
+		<en>Type: Fieldwork for balers, forage wagons, baloloader</en>
+		<de>Typ: Feldarbeit, Ballen pressen, Heu und Ballen sammeln</de>
 	</text>
 
 	<text name="CourseWaitpointSet">
@@ -256,6 +256,16 @@
     <text name="CPWorkEnd">
       <en>has work finished.</en>
       <de>hat die Aufgabe erledigt.</de>
+    </text>
+	
+	<text name="CPReadyUnloadBale">
+      <en>ready for unloading bales.</en>
+      <de>bereit zum Ballen entladen.</de>
+    </text>
+	
+	<text name="CPUnloadBale">
+      <en>unloading bales.</en>
+      <de>Ballen werden entladen.</de>
     </text>
     
     <text name="CPInTraffic">

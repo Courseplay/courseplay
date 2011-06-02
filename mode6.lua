@@ -44,7 +44,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 					if workTool.grabberIsMoving or workTool:getIsAnimationPlaying("rotatePlatform") then
 						allowedToDrive = false
 					end
-					if not workTool.isInWorkPosition then
+					if not workTool.isInWorkPosition and fill_level ~= 100 then
 						--g_client:getServerConnection():sendEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_BUTTON_WORK_TRANSPORT));
 						workTool.grabberIsMoving = true
 						workTool.isInWorkPosition = true
@@ -52,11 +52,16 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 					end
 				end
 					
-				if (fill_level == 100 or self.recordnumber == self.stopWork) and workTool.isInWorkPosition and not workTool:getIsAnimationPlaying("rotatePlatform") then
+				if (fill_level == 100 and self.maxnumber ~= self.stopWork or self.recordnumber == self.stopWork) and workTool.isInWorkPosition and not workTool:getIsAnimationPlaying("rotatePlatform") then
 					workTool.grabberIsMoving = true
 					workTool.isInWorkPosition = false
 					-- move to transport position
 					BaleLoader.moveToTransportPosition(workTool)
+				end
+				
+				if fill_level == 100 and self.maxnumber == self.stopWork then
+					allowedToDrive = false
+					self.global_info_text = courseplay:get_locale(self, "CPReadyUnloadBale") --'bereit zum entladen'
 				end
 				
 				-- automatic unload
@@ -171,7 +176,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 				end
 			end
 			-- safe last point
-			if fill_level == 100 and workArea and self.abortWork == nil then
+			if fill_level == 100 and workArea and self.abortWork == nil and self.maxnumber ~= self.stopWork then
 				self.abortWork = self.recordnumber
 				self.recordnumber = self.stopWork - 4
 				if self.recordnumber < 1 then

@@ -147,13 +147,13 @@ function courseplay:drive(self, dt)
 			if last_recordnumber == self.stopWork and self.abortWork == nil then
 		    	self.global_info_text = courseplay:get_locale(self, "CPWorkEnd") --'hat Arbeit beendet.'
 			else
-				self.global_info_text = courseplay:get_locale(self, "CPTriggerReached") -- "Abladestelle erreicht"	
+				self.global_info_text = courseplay:get_locale(self, "CPUnloadBale") -- "Ballen werden entladen"	
 				if fill_level == 0 or drive_on then
 					self.wait = false
 				end			
 			end
   		else
-		   	self.global_info_text = courseplay:get_locale(self, "CPReachedWaitPoint") --'hat Wartepunkt erreicht.'
+		   	self.global_info_text = courseplay:get_locale(self, "CPReachedWaitPoint") --'bereit zum entladen.'
 		end
 		
 		
