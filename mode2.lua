@@ -16,7 +16,12 @@ function courseplay:handle_mode2(self, dt)
   local allowedToDrive = false
   local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
   
-  local fill_level = tipper_fill_level * 100 / tipper_capacity
+  if tipper_fill_level == nil then tipper_fill_level = 0 end
+  if tipper_capacity == nil then tipper_capacity = 0 end
+  local fill_level = 0
+  if tipper_capacity ~= 0 then
+	fill_level = tipper_fill_level * 100 / tipper_capacity
+  end
   
   if fill_level > self.required_fill_level_for_follow then
     self.allow_following = true

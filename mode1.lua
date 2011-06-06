@@ -4,6 +4,10 @@ function courseplay:handle_mode1(self)
 	local active_tipper  = nil
 	local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
 	
+	if tipper_fill_level == nil then tipper_fill_level = 0 end
+	if tipper_capacity == nil then tipper_capacity = 0 end
+
+	
 	-- done tipping
 	if self.unloading_tipper ~= nil and self.unloading_tipper.fillLevel == 0 then			
 		if self.unloading_tipper.tipState ~= 0 then		  

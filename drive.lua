@@ -69,7 +69,7 @@ function courseplay:drive(self, dt)
 	end
 	
 	-- length of vector
-	local vl = math.sqrt(vcx * vcx + vcz * vcz)
+	local vl = Utils.vector2Length(vcx, vcz)
 	-- if not too short: normalize and add offsets
 	if vl ~= nil and vl > 0.01 then
 		vcx = vcx / vl
