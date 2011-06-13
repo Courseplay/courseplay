@@ -38,7 +38,7 @@ function courseplay:handle_mode2(self, dt)
   end
     
   -- trailer full
-  if self.ai_state == 8 then     
+  if self.ai_state == 8 or (self.ai_state == 1 and fill_level == 100) then     
   	self.recordnumber = 2
   	courseplay:unregister_at_combine(self, self.active_combine)
   	self.ai_state = 1
@@ -60,7 +60,7 @@ function courseplay:handle_mode2(self, dt)
   
   
   -- switch side
-  if self.active_combine ~= nil and self.ai_state == 10 then
+  if self.active_combine ~= nil and (self.ai_state == 10 or self.active_combine.turnAP ~= nil and self.active_combine.turnAP == true) then
     if self.chopper_offset > 0 then
   		self.target_x, self.target_y, self.target_z = localToWorld(self.active_combine.rootNode, 25, 0, 0)
   	else
