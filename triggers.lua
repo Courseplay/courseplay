@@ -28,7 +28,7 @@ end;
 -- tip trigger
 function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
   for k,trigger in pairs(g_currentMission.onCreateLoadedObjects) do
-	if trigger.className == "SiloTrigger" or trigger.className == "TipTrigger" or startswith(trigger.className, "MapBGA") then
+	if trigger.className == "SiloTrigger" or endswith(trigger.className, "TipTrigger") or startswith(trigger.className, "MapBGA") then
 	    -- transformId
 	    if trigger.triggerId ~= nil and trigger.triggerId == transformId then
 		  self.currentTipTrigger = trigger		
@@ -62,4 +62,16 @@ function startswith(sbig, slittle)
     return false
   end
   return string.sub(sbig, 1, string.len(slittle)) == slittle
+end
+
+function endswith(sbig, slittle)
+if type(slittle) == "table" then
+for k,v in ipairs(slittle) do
+if string.sub(sbig, string.len(sbig) - string.len(v) + 1) == v then 
+return true
+end
+end
+return false
+end
+return string.sub(sbig, string.len(sbig) - string.len(slittle) + 1) == slittle
 end

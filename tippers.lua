@@ -196,7 +196,7 @@ function courseplay:unload_tippers(self)
 	  
 	  local needed_distance = g_currentMission.tipTriggerRangeThreshold
 	  
-	  if trigger.className ~= "TipTrigger" then
+	  if startswith(trigger.className, "MapBGA") then
 	    needed_distance = 15
 	  end
 	  
