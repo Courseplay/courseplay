@@ -200,6 +200,11 @@ function courseplay:unload_tippers(self)
 	    needed_distance = 15
 	  end
 	  
+	  if startswith(trigger.className, "TipAny") then
+	    needed_distance = 5
+	  end
+	  	  
+	  
       -- if tipper is on trigger
       if distance_to_trigger <= needed_distance and tipper.fillLevel > 0 then
 		active_tipper = tipper
@@ -209,7 +214,7 @@ function courseplay:unload_tippers(self)
   if active_tipper then    
 	local trigger = self.currentTipTrigger
 	-- if trigger accepts fruit
-	if (trigger.acceptedFruitTypes ~= nil and trigger.acceptedFruitTypes[active_tipper:getCurrentFruitType()]) or startswith(trigger.className, "MapBGA")  then
+	if (trigger.acceptedFruitTypes ~= nil and trigger.acceptedFruitTypes[active_tipper:getCurrentFruitType()]) or startswith(trigger.className, "MapBGA") or startswith(trigger.className, "TipAny") then
 		allowedToDrive = false
 	else
 		allowedToDrive = true
