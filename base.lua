@@ -8,6 +8,8 @@ function courseplay:load(xmlFile)
 	-- global array for courses, no refreshing needed any more
 	if courseplay_courses == nil and g_server ~= nil then
 	  courseplay_courses = courseplay:load_courses()
+	elseif not courseplay_courses then
+	  courseplay_courses = {}
 	end
 		
 
