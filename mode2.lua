@@ -191,6 +191,9 @@ function courseplay:unload_combine(self, dt)
   end
   
   local trailer_offset = zt + self.tipper_offset
+  if self.currentTrailerToFill ~= nil then
+	trailer_offset = zt + self.tipper_offset*self.currentTrailerToFill
+  end
   
   if self.sl == nil then
     self.sl = 3
