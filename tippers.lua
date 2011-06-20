@@ -121,6 +121,7 @@ function courseplay:load_tippers(self)
    		self.last_fill_level = nil
    		self.loaded = true
    		self.lastTrailerToFillDistance = nil
+   		self.currentTrailerToFill = nil
    		return true
    	  end
 
