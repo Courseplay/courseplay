@@ -105,6 +105,7 @@ function courseplay:load(xmlFile)
 	self.locales.CPInTraffic = g_i18n:getText("CPInTraffic")
 	self.locales.CPReachedOverloadPoint = g_i18n:getText("CPReachedOverloadPoint")
 	self.locales.CPReachedWaitPoint = g_i18n:getText("CPReachedWaitPoint")
+	self.locales.CPReachedEndPoint = g_i18n:getText("CPReachedEndPoint")
 	self.locales.CPCourseName = g_i18n:getText("CPLoadCourse")
 	self.locales.CPCourseName = g_i18n:getText("CPCourseName")
 	self.locales.CPDistance = g_i18n:getText("CPDistance")
@@ -113,6 +114,7 @@ function courseplay:load(xmlFile)
 	self.locales.CoursePlayStart = g_i18n:getText("CoursePlayStart")
 	self.locales.CourseWaitpointStart = g_i18n:getText("CourseWaitpointStart")
 	self.locales.CoursePlayStop = g_i18n:getText("CoursePlayStop")
+	self.locales.CoursePlayStopEnd = g_i18n:getText("CoursePlayStopEnd")
 	self.locales.NoWaitforfill = g_i18n:getText("NoWaitforfill")
 	self.locales.NoWaitforfillAt = g_i18n:getText("NoWaitforfillAt")
 	self.locales.PointRecordStart = g_i18n:getText("PointRecordStart")
@@ -153,6 +155,7 @@ function courseplay:load(xmlFile)
 	self.locales.WaitPoints = g_i18n:getText("WaitPoints")
 	self.locales.CrossPoints = g_i18n:getText("CrossPoints")
 	self.drive  = false
+    self.StopEnd = false
 	self.lastGui = nil
 	self.currentGui = nil
 	self.input_gui = "emptyGui";	
@@ -281,6 +284,7 @@ function courseplay:load(xmlFile)
 	-- traffic collision	
 	self.onTrafficCollisionTrigger = courseplay.onTrafficCollisionTrigger;
 	self.aiTrafficCollisionTrigger = Utils.indexToObject(self.components, getXMLString(xmlFile, "vehicle.aiTrafficCollisionTrigger#index"));
+ 	self.steering_angle =  Utils.getNoNil(getXMLFloat(xmlFile, "vehicle.wheels.wheel(1)" .. "#rotMax"), 30)
 	self.steering_angle = 30 --Utils.indexToObject(self.components, getXMLString(xmlFile, "vehicle.steering#index"));
 	
 	self.numCollidingVehicles = 0;
@@ -796,6 +800,7 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		self.required_fill_level_for_drive_on = Utils.getNoNil(getXMLInt(xmlFile,key..string.format("#fill_drive")),90);
 		self.WpOffsetX = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#OffsetX")),0);
 		self.WpOffsetZ = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#OffsetZ")),0);
+		self.abortWork = Utils.getNoNil(getXMLInt(xmlFile,key..string.format("#AbortWork")),nil);
 		self.turn_radius = Utils.getNoNil(getXMLInt(xmlFile,key..string.format("#turn")),17);
 		local courses = Utils.getNoNil(getXMLString(xmlFile,key..string.format("#courses")),"");
 		self.loaded_courses = courses:split(",")
@@ -804,6 +809,10 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		courseplay:reload_courses(self, true)	
 		
 		self.ai_mode = Utils.getNoNil(getXMLInt(xmlFile,key..string.format("#ai_mode")),1);
+
+		if self.abortWork == 0 then
+			self.abortWork = nil
+		end
   	end
 	return BaseMission.VEHICLE_LOAD_OK;
 end
@@ -821,6 +830,7 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
         ' fill_drive="'..tostring(self.required_fill_level_for_drive_on)..'"'..
         ' OffsetX="'..tostring(self.WpOffsetX)..'"'..
         ' OffsetZ="'..tostring(self.WpOffsetZ)..'"'..
+        ' AbortWork="'..tostring(self.abortWork)..'"'..
         ' turn="'..tostring(self.turn_radius)..'"'..
         ' courses="'..tostring(table.concat(self.loaded_courses, ","))..'"'..
 		' ai_mode="'..tostring(self.ai_mode)..'"';

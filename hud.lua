@@ -78,7 +78,7 @@ function courseplay:loadHud(self)
 			      last_recordnumber = 1
 			    end
 			    
-				if self.Waypoints[last_recordnumber].wait and self.wait then
+				if (self.Waypoints[last_recordnumber].wait and self.wait) or (self.StopEnd and (self.recordnumber == self.maxnumber or self.currentTipTrigger ~= nil)) then
 	   				self.hudpage[1][1][2]= courseplay:get_locale(self, "CourseWaitpointStart")
 	   				
 				end
@@ -86,8 +86,12 @@ function courseplay:loadHud(self)
 				self.hudpage[1][1][1]= courseplay:get_locale(self, "CoursePlayStop")
 			
 
-				if not self.loaded then
+				if not self.loaded and self.ai_mode ~= 5 then
 					self.hudpage[1][1][3]= courseplay:get_locale(self, "NoWaitforfill")				
+				end
+				
+				if not self.StopEnd then
+					self.hudpage[1][1][4]= courseplay:get_locale(self, "CoursePlayStopEnd")
 				end
 
 				if InputBinding.hasEvent(InputBinding.AHInput3) then
@@ -305,7 +309,7 @@ function courseplay:showHud(self)
 		end
 		
 		if self.Waypoints[self.recordnumber ] ~= nil then
-		    self.hudinfo[3]= courseplay:get_locale(self, "CPWaypoint") ..self.recordnumber .." / "..self.maxnumber .."    ".. self.locales.WaitPoints.. self.waitPoints.."    "..self.locales.CrossPoints .. self.crossPoints
+		    self.hudinfo[3]= courseplay:get_locale(self, "CPWaypoint") ..self.recordnumber .."/"..self.maxnumber .."    ".. self.locales.WaitPoints.. self.waitPoints.."    "..self.locales.CrossPoints.. self.crossPoints
 		elseif self.record or self.record_pause then
 			 self.hudinfo[3]= courseplay:get_locale(self, "CPWaypoint") ..self.recordnumber .."    ".. self.locales.WaitPoints .. self.waitPoints  .."    ".. self.locales.CrossPoints .. self.crossPoints
 		else  
