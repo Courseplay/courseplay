@@ -279,6 +279,7 @@ function courseplay:load(xmlFile)
 	-- traffic collision	
 	self.onTrafficCollisionTrigger = courseplay.onTrafficCollisionTrigger;
 	self.aiTrafficCollisionTrigger = Utils.indexToObject(self.components, getXMLString(xmlFile, "vehicle.aiTrafficCollisionTrigger#index"));
+ 	self.steering_angle =  Utils.getNoNil(getXMLFloat(xmlFile, "vehicle.wheels.wheel(1)" .. "#rotMax"), 30)
 	self.steering_angle = 30 --Utils.indexToObject(self.components, getXMLString(xmlFile, "vehicle.steering#index"));
 	
 	self.numCollidingVehicles = 0;
