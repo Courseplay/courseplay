@@ -795,6 +795,7 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		self.required_fill_level_for_drive_on = Utils.getNoNil(getXMLInt(xmlFile,key..string.format("#fill_drive")),90);
 		self.WpOffsetX = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#OffsetX")),0);
 		self.WpOffsetZ = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#OffsetZ")),0);
+		self.abortWork = Utils.getNoNil(getXMLInt(xmlFile,key..string.format("#AbortWork")),nil);
 		self.turn_radius = Utils.getNoNil(getXMLInt(xmlFile,key..string.format("#turn")),17);
 		local courses = Utils.getNoNil(getXMLString(xmlFile,key..string.format("#courses")),"");
 		self.loaded_courses = courses:split(",")
@@ -803,6 +804,10 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		courseplay:reload_courses(self, true)	
 		
 		self.ai_mode = Utils.getNoNil(getXMLInt(xmlFile,key..string.format("#ai_mode")),1);
+
+		if self.abortWork == 0 then
+			self.abortWork = nil
+		end
   	end
 	return BaseMission.VEHICLE_LOAD_OK;
 end
@@ -820,6 +825,7 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
         ' fill_drive="'..tostring(self.required_fill_level_for_drive_on)..'"'..
         ' OffsetX="'..tostring(self.WpOffsetX)..'"'..
         ' OffsetZ="'..tostring(self.WpOffsetZ)..'"'..
+        ' AbortWork="'..tostring(self.abortWork)..'"'..
         ' turn="'..tostring(self.turn_radius)..'"'..
         ' courses="'..tostring(table.concat(self.loaded_courses, ","))..'"'..
 		' ai_mode="'..tostring(self.ai_mode)..'"';
