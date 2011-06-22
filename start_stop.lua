@@ -147,7 +147,7 @@ function courseplay:stop(self)
 	self.motor.maxRpmOverride = nil;
 	self.startWork = nil
 	self.stopWork = nil
-	
+	self.StopEnd = false
 	if g_server ~= nil then
 	  AIVehicleUtil.driveInDirection(self, 0, self.steering_angle, 0, 0, 28, false, moveForwards, 0, 1)	
 	end

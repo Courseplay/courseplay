@@ -216,6 +216,12 @@ function courseplay:drive(self, dt)
 		    allowedToDrive = false
 		    self.global_info_text = self.locales.CPWaterDrive
  		end
+
+ 		if self.StopEnd and (self.recordnumber == self.maxnumber or self.currentTipTrigger ~= nil) then
+		    allowedToDrive = false
+		    self.global_info_text = self.locales.CPReachedEndPoint
+ 		end
+
   	end
   
    -- ai_mode 4 = fertilize

@@ -65,6 +65,11 @@
 		<de>Abfahrer stoppen</de>
 	</text>
 
+	<text name="CoursePlayStopEnd">
+		<en>stop at last Point or next trigger</en>
+		<de>Warten am letzten Wegpunkt oder Trigger</de>
+	</text>  
+
 	<text name="CoursePlayPlayerSwitchSide">
 		<en>Driver side</en>
 		<de>Abfahrerseite</de>
@@ -154,7 +159,8 @@
 	<text name="CourseWaitpointStart">
 		<en>start</en>
 		<de>weiterfahren</de>
-	</text> 
+	</text>
+
 
 	<text name="CourseSave">
 		<en>save course</en>
@@ -251,6 +257,11 @@
     <text name="CPReachedWaitPoint">
       <en>has reached waitpoint.</en>
       <de>hat Wartepunkt erreicht.</de>
+    </text>
+
+    <text name="CPReachedEndPoint">
+      <en>has reached endpoint.</en>
+      <de>hat den Tigger bzw. das Ende der Route erreicht.</de>
     </text>
 
     <text name="CPWorkEnd">

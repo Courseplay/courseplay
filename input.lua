@@ -180,13 +180,23 @@ function courseplay:deal_with_mouse_input(self, func, value)
 	                  self.wait = false
 	                end
 	                
+	                if func == "row2" and self.StopEnd and (self.recordnumber == self.maxnumber or self.currentTipTrigger ~= nil)  then
+	                	self.StopEnd = false
+	                end
+	                
 	                if func == "row1" then
 	                  courseplay:stop(self)
 	                end
 	                
 	                if not self.loaded and func == "row3" then
 	                  self.loaded = true
-	                end 
+	                end
+	                
+	                if not self.StopEnd and func == "row4" then
+	                  self.StopEnd = true
+	                end
+
+					 
 	              end -- end not driving
 	            end -- not playing
 	            
