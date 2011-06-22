@@ -103,6 +103,7 @@ function courseplay:load(xmlFile)
 	self.locales.CPInTraffic = g_i18n:getText("CPInTraffic")
 	self.locales.CPReachedOverloadPoint = g_i18n:getText("CPReachedOverloadPoint")
 	self.locales.CPReachedWaitPoint = g_i18n:getText("CPReachedWaitPoint")
+	self.locales.CPReachedEndPoint = g_i18n:getText("CPReachedEndPoint")
 	self.locales.CPCourseName = g_i18n:getText("CPLoadCourse")
 	self.locales.CPCourseName = g_i18n:getText("CPCourseName")
 	self.locales.CPDistance = g_i18n:getText("CPDistance")
@@ -111,6 +112,7 @@ function courseplay:load(xmlFile)
 	self.locales.CoursePlayStart = g_i18n:getText("CoursePlayStart")
 	self.locales.CourseWaitpointStart = g_i18n:getText("CourseWaitpointStart")
 	self.locales.CoursePlayStop = g_i18n:getText("CoursePlayStop")
+	self.locales.CoursePlayStopEnd = g_i18n:getText("CoursePlayStopEnd")
 	self.locales.NoWaitforfill = g_i18n:getText("NoWaitforfill")
 	self.locales.NoWaitforfillAt = g_i18n:getText("NoWaitforfillAt")
 	self.locales.PointRecordStart = g_i18n:getText("PointRecordStart")
@@ -151,6 +153,7 @@ function courseplay:load(xmlFile)
 	self.locales.WaitPoints = g_i18n:getText("WaitPoints")
 	self.locales.CrossPoints = g_i18n:getText("CrossPoints")
 	self.drive  = false
+    self.StopEnd = false
 	self.lastGui = nil
 	self.currentGui = nil
 	self.input_gui = "emptyGui";	
