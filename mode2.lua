@@ -60,7 +60,7 @@ function courseplay:handle_mode2(self, dt)
   
   
   -- switch side
-  if self.active_combine ~= nil and (self.ai_state == 10 or self.active_combine.turnAP ~= nil and self.active_combine.turnAP == true) then
+  if self.active_combine ~= nil and self.ai_state == 10 then
     if self.chopper_offset > 0 then
   		self.target_x, self.target_y, self.target_z = localToWorld(self.active_combine.rootNode, 25, 0, 0)
   	else
@@ -68,6 +68,17 @@ function courseplay:handle_mode2(self, dt)
   	end
   	self.ai_state = 5
     self.next_ai_state = 2
+  end
+  
+  -- turn if autopilot combine moves back
+  if self.ai_state ~= 5 and self.ai_state ~= 2 and self.active_combine ~= nil and self.active_combine.turnAP ~= nil and self.active_combine.turnAP == true then
+    --if self.chopper_offset > 0 then
+  	--	self.target_x, self.target_y, self.target_z = localToWorld(self.active_combine.rootNode, 12, 0, 12)
+  	--else
+  	--	self.target_x, self.target_y, self.target_z = localToWorld(self.active_combine.rootNode, -12, 0, 12)
+  	--end
+  	self.ai_state = 2
+    --self.next_ai_state = 2
   end
   
   if (current_tipper.fillLevel == current_tipper.capacity) or self.loaded then
@@ -651,6 +662,18 @@ function courseplay:side_to_drive(self, combine, distance)
       return 1000, 0
     end
   end  
+  
+  -- with autopilot combine, choose search area side
+  if combine.apCombinePresent ~= nil and combine.apCombinePresent then
+	if combine.autoPilotEnabled then 							
+		if combine.autoPilotAreaLeft.available and combine.autoPilotAreaLeft.active then
+			return 0, 1000
+		end
+		if combine.autoPilotAreaRight.available and combine.autoPilotAreaRight.active then 
+			return 1000, 0
+		end
+	end
+  end
   
   local x,y,z = localToWorld(combine.aiTreshingDirectionNode, 0, 0, distance) --getWorldTranslation(combine.aiTreshingDirectionNode);
     
