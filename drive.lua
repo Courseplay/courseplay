@@ -382,6 +382,7 @@ function courseplay:drive(self, dt)
 		else	-- reset some variables   
 		  self.recordnumber = 1
 		  self.unloaded = false
+		  self.StopEnd = false
 		  self.loaded = false		  
 		  self.record = false
 		  self.play = true	  
