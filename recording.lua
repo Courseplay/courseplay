@@ -160,7 +160,7 @@ function courseplay:interrupt_record(self)
 		local cx ,cz = self.Waypoints[self.recordnumber - 1].cx, self.Waypoints[self.recordnumber - 1].cz
 		courseplay:addsign(self, cx, 0, cz)
 		cx ,cz = self.Waypoints[self.recordnumber - 2].cx, self.Waypoints[self.recordnumber - 2].cz
-		courseplay:addsign(self, cx, 0, cz,nil,self.signs)
+		courseplay:addsign(self, cx, 0, cz)
 	end	
 end
 
