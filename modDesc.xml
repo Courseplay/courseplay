@@ -388,7 +388,46 @@
       <en>no waypoints yet</en>
       <de>Noch keine Wegpunkte</de>
     </text>
+   
+    <text name="WaypointMode1">
+      <en>Show Waypoints:own and crosspoints (record)</en>
+      <de>Wegpunkte+Kreuzungspunkte(Record)</de>
+    </text> 	 
+	
+    <text name="WaypointMode2">
+      <en>Show Waypoints:own and crosspoints always</en>
+      <de>Wegpunkte+Kreuzungspunkte(Immer)</de>
+    </text>
+
+    <text name="WaypointMode3">
+      <en>Show all Waypoints:entire Route</en>
+      <de>Alle Wegpunkte (ohne Kreuzungspunkte)</de>
+    </text>
+
+    <text name="WaypointMode4">
+      <en>Show all Waypoints:entire Route</en>
+      <de>Alle Wegpunkte+Kreuzungspunkte </de>
+    </text>  
     
+    <text name="Rul">
+      <en>beaconligts:</en>
+      <de>Rundumleuchte:</de>
+    </text>
+
+    <text name="RulMode1">
+      <en>on the road turn on</en>
+      <de>Auf der Straße einschalten</de>
+    </text>
+
+    <text name="RulMode2">
+      <en>always turn on</en>
+      <de>Immer einschalten</de>
+    </text>
+	
+    <text name="RulMode3">
+      <en>never turn on</en>
+      <de>Nicht einschalten</de>
+    </text>	
     
     <text name="CPSteering">
       <en>Courseplay control</en>

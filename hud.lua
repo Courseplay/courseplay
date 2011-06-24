@@ -248,16 +248,22 @@ function courseplay:loadHud(self)
 	    self.hudpage[5][1][1]= courseplay:get_locale(self, "CPTurnSpeed") -- "Wendemanöver:"
 	    self.hudpage[5][1][2]= courseplay:get_locale(self, "CPFieldSpeed") -- "Auf dem Feld:"
 	    self.hudpage[5][1][3]= courseplay:get_locale(self, "CPMaxSpeed") -- "Auf Straße:"
-	    
+	    self.hudpage[5][1][4]= courseplay:get_locale(self, "Rul")
 	    self.hudpage[5][2][1]= string.format("%d", self.turn_speed*3600) .. " km/h"
 	    self.hudpage[5][2][2]= string.format("%d", self.field_speed*3600) .. " km/h"
 	    self.hudpage[5][2][3]= string.format("%d", self.max_speed*3600) .. " km/h"
 
+		if self.RulMode == 1 then
+        	self.hudpage[5][2][4]= courseplay:get_locale(self, "RulMode1") -- "on Street on"
+        elseif self.RulMode == 2 then
+            self.hudpage[5][2][4]= courseplay:get_locale(self, "RulMode2") -- "always on"
+        elseif self.RulMode == 3 then
+            self.hudpage[5][2][4]= courseplay:get_locale(self, "RulMode3") -- "never on"
+		end
 	  
 	  elseif self.showHudInfoBase == 6 then
 	    self.hudpage[6][1][1]= courseplay:get_locale(self, "CPWpOffsetX") -- X-Offset
 	    self.hudpage[6][1][2]= courseplay:get_locale(self, "CPWpOffsetZ") -- Z-Offset:
-
 
      	if self.WpOffsetX ~= nil then
 		  self.hudpage[6][2][1]= string.format("%.1f", self.WpOffsetX) .. "m"
@@ -270,6 +276,17 @@ function courseplay:loadHud(self)
 		else
 		  self.hudpage[6][2][2]= "---"
 		end
+		
+		if self.waypointMode == 1 then
+        	self.hudpage[6][1][3]= courseplay:get_locale(self, "WaypointMode1") -- "Wegpunkte+Kreuzungspunkte Record"
+        elseif self.waypointMode == 2 then
+            self.hudpage[6][1][3]= courseplay:get_locale(self, "WaypointMode2") -- "Wegpunkte+Kreuzungspunkte immer"
+        elseif self.waypointMode == 3 then
+            self.hudpage[6][1][3]= courseplay:get_locale(self, "WaypointMode3") -- "Komplette Route"
+         elseif self.waypointMode == 4 then
+            self.hudpage[6][1][3]= courseplay:get_locale(self, "WaypointMode4") -- "Komplette Route + all Crosspoints"
+		end 
+		
 
 	  end
 	  

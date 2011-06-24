@@ -91,6 +91,14 @@ function courseplay:changeCPWpOffsetZ(self, change_by)
 
 end
 
+function courseplay:change_WaypointMode(self, change_by)
+  self.waypointMode = self.waypointMode + change_by
+  if self.waypointMode == 5 then
+    self.waypointMode = 1
+  end
+  courseplay:RefreshSigns(self)
+end
+
 
 function courseplay:change_required_fill_level_for_drive_on(self, change_by)
 	self.required_fill_level_for_drive_on = self.required_fill_level_for_drive_on + change_by
@@ -155,6 +163,14 @@ function courseplay:change_max_speed(self, change_by)
   end
   self.max_speed = speed / 3600
 end
+
+function courseplay:change_RulMode(self, change_by)
+  self.RulMode = self.RulMode + change_by
+  if self.RulMode == 4 then
+    self.RulMode = 1
+  end
+end
+
 
 
 function courseplay:switch_search_combine(self)

@@ -108,6 +108,10 @@ function courseplay:deal_with_mouse_input(self, func, value)
             courseplay:change_max_speed(self, value)
           end
           
+          if func == "change_RulMode" then
+            courseplay:change_RulMode(self, value)
+          end
+
           if func == "switch_search_combine" then
             courseplay:switch_search_combine(self)
           end
@@ -129,6 +133,9 @@ function courseplay:deal_with_mouse_input(self, func, value)
             courseplay:changeCPWpOffsetZ(self, value)
           end
           
+          if func == "change_WaypointMode" then
+            courseplay:change_WaypointMode(self, value)
+          end
 
           if func == "close_hud" then
             self.mouse_enabled = false

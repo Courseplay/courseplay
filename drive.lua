@@ -292,8 +292,18 @@ function courseplay:drive(self, dt)
 		ref_speed = self.max_speed
 	end
 	
-	if (self.sl == 3 and not self.beaconLightsActive) or (self.sl ~=3 and self.beaconLightsActive) then
-	  	self:setBeaconLightsVisibility(not self.beaconLightsActive);	  
+	if self.RulMode == 1 then
+		if (self.sl == 3 and not self.beaconLightsActive) or (self.sl ~=3 and self.beaconLightsActive) then
+	  		self:setBeaconLightsVisibility(not self.beaconLightsActive);
+		end
+    elseif self.RulMode == 2 then
+        if (self.drive and not self.beaconLightsActive) or (not self.drive and self.beaconLightsActive) then
+	  		self:setBeaconLightsVisibility(not self.beaconLightsActive);
+		end
+    elseif self.RulMode == 3 then
+        if self.beaconLightsActive then
+	  		self:setBeaconLightsVisibility(false);
+		end
 	end
 	
 	-- Speed Control

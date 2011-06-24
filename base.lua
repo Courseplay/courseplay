@@ -9,7 +9,6 @@ function courseplay:load(xmlFile)
 	if courseplay_courses == nil and g_server ~= nil then
 	  courseplay_courses = courseplay:load_courses()
 	end
-		
 
 	self.setCourseplayFunc = SpecializationUtil.callSpecializationsFunction("setCourseplayFunc");
 	
@@ -84,6 +83,16 @@ function courseplay:load(xmlFile)
 	self.locales.CPNoCourseLoaded = g_i18n:getText("CPNoCourseLoaded")
 	self.locales.CPWaypoint = g_i18n:getText("CPWaypoint")
 	self.locales.CPNoWaypoint = g_i18n:getText("CPNoWaypoint")
+	
+	self.locales.WaypointMode1 = g_i18n:getText("WaypointMode1")
+	self.locales.WaypointMode2 = g_i18n:getText("WaypointMode2")
+	self.locales.WaypointMode3 = g_i18n:getText("WaypointMode3")
+	self.locales.WaypointMode4 = g_i18n:getText("WaypointMode4")
+	self.locales.Rul = g_i18n:getText("Rul")
+	self.locales.RulMode1 = g_i18n:getText("RulMode1")
+	self.locales.RulMode2 = g_i18n:getText("RulMode2")
+	self.locales.RulMode3 = g_i18n:getText("RulMode3")
+	
 	self.locales.CPWorkEnd = g_i18n:getText("CPWorkEnd")
 	self.locales.CPReadyUnloadBale = g_i18n:getText("CPReadyUnloadBale")
 	self.locales.CPUnloadBale = g_i18n:getText("CPUnloadBale")
@@ -166,7 +175,8 @@ function courseplay:load(xmlFile)
 	self.courseplay_position = nil
 	self.waitPoints = 0
 	self.crossPoints = 0
-	
+	self.waypointMode = 1
+	self.RulMode = 1
 	-- saves the shortest distance to the next waypoint (for recocnizing circling)
 	self.shortest_dist = nil
 	
@@ -255,7 +265,9 @@ function courseplay:load(xmlFile)
 	
 	-- visual waypoints saved in this
 	self.signs = {}
-	
+    courseplay:RefreshGlobalSigns(self) -- Global Signs Crosspoints
+
+		
 	-- course name for saving
 	self.current_course_name = nil
 	self.courseID = 0
@@ -283,7 +295,6 @@ function courseplay:load(xmlFile)
 	self.onTrafficCollisionTrigger = courseplay.onTrafficCollisionTrigger;
 	self.aiTrafficCollisionTrigger = Utils.indexToObject(self.components, getXMLString(xmlFile, "vehicle.aiTrafficCollisionTrigger#index"));
  	self.steering_angle =  Utils.getNoNil(getXMLFloat(xmlFile, "vehicle.wheels.wheel(1)" .. "#rotMax"), 30)
-	self.steering_angle = 30 --Utils.indexToObject(self.components, getXMLString(xmlFile, "vehicle.steering#index"));
 	
 	self.numCollidingVehicles = 0;
 	self.numToolsCollidingVehicles = {};
@@ -457,12 +468,15 @@ function courseplay:load(xmlFile)
     courseplay:register_button(self, 5, "navigate_minus.png", "change_max_speed", -1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY +0.167, 0.010, 0.010)
     courseplay:register_button(self, 5, "navigate_plus.png", "change_max_speed", 1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.167, 0.010, 0.010)
     
-    courseplay:register_button(self, 6, "navigate_minus.png", "changeWpOffsetX", -0.5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.210, 0.010, 0.010)
+    courseplay:register_button(self, 5, "blank.png", "change_RulMode", 1, self.hudInfoBasePosX-0.05, self.hudInfoBasePosY + 0.143, 0.32, 0.015)
+
+	courseplay:register_button(self, 6, "navigate_minus.png", "changeWpOffsetX", -0.5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.210, 0.010, 0.010)
     courseplay:register_button(self, 6, "navigate_plus.png", "changeWpOffsetX", 0.5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.210, 0.010, 0.010)
     
     courseplay:register_button(self, 6, "navigate_minus.png", "changeWpOffsetZ", -0.5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.188, 0.010, 0.010)
     courseplay:register_button(self, 6, "navigate_plus.png", "changeWpOffsetZ", 0.5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.188, 0.010, 0.010)
 
+    courseplay:register_button(self, 6, "blank.png", "change_WaypointMode", 1, self.hudInfoBasePosX-0.05, self.hudInfoBasePosY + 0.164, 0.32, 0.015)
     self.fold_move_direction = 1
 end	
 
@@ -526,7 +540,9 @@ function courseplay:update(dt)
     -- we are in drive mode
     if self.drive then
     	courseplay:drive(self, dt);
-    end	
+    end
+
+
 end		
 
 function courseplay:updateTick(dt)
@@ -537,10 +553,11 @@ function courseplay:updateTick(dt)
 	
 	-- show visual waypoints only when in vehicle
 	if self.isEntered then
-		courseplay:sign_visibility(self, true)
+		courseplay:sign_visibility(self,true)
 	else
-		courseplay:sign_visibility(self, false)
+		courseplay:sign_visibility(self,false)
 	end
+    
 end
 
 function courseplay:delete()
