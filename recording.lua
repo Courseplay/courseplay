@@ -58,9 +58,9 @@ function courseplay:record(self)
 	
 	if self.tmr > 100 then 
 		self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = false, rev = self.direction, crossing = set_crossing}
-		if self.recordnumber < 4 then
+		if self.recordnumber < 4 or self.waypointMode == 3 then
 		    if self.recordnumber == 1 then
-		    	courseplay:addsign(self, cx, newangle,cz, self.start_sign, true)
+		    	courseplay:addsign(self, cx, newangle,cz, self.start_sign)
 		    else
 		    	courseplay:addsign(self, cx, newangle,cz)
 		    end			
@@ -98,11 +98,11 @@ function courseplay:set_crossing(self, stop)
   self.recordnumber = self.recordnumber + 1
   self.crossPoints = self.crossPoints + 1
   
-  if stop ~= nil then
-    courseplay:addsign(self, cx, cy,cz,self.stop_sign, true)
-  else
-  	courseplay:addsign(self, cx, cy,cz,self.cross_sign, true)
-  end
+  	if stop ~= nil then
+    	courseplay:addsign(self, cx, cy,cz,self.stop_sign)
+  	else
+  		courseplay:addsign(self, cx, cy,cz,self.cross_sign,true)
+  	end
     
 end
 
@@ -124,7 +124,7 @@ end
 
 -- starts course recording -- just setting variables
 function courseplay:start_record(self)
-    courseplay:reset_course(self)
+--    courseplay:reset_course(self)
 	
 	self.record = true
 	self.drive  = false
@@ -171,12 +171,7 @@ function courseplay:continue_record(self)
 
 	self.dcheck = false
 	courseplay:sign_visibility(self, false)
-	self.signs = {}
-	for k,wp in pairs(self.Waypoints) do
-  	  if k <= 3 or wp.wait == true then
-  		courseplay:addsign(self, wp.cx, 0, wp.cz)
-  	  end
-   	end
+    courseplay:RefreshSigns(self)
 end	
 
 -- delete last waypoint
@@ -184,20 +179,7 @@ function courseplay:delete_waypoint(self)
 	if self.recordnumber > 3 then
 		self.recordnumber = self.recordnumber - 1
 		self.tmr = 1
-		--table.remove(self.signs,table.getn(self.signs))
-		courseplay:sign_visibility(self, false, true)
-		self.signs = {}
-		for k,wp in pairs(self.Waypoints) do
-  	  		if k <= 3 or wp.wait == true then
-  				courseplay:addsign(self, wp.cx, 0, wp.cz)
-  	 		end
-   		end
-		if 	self.Waypoints[self.recordnumber].wait then
-				self.waitPoints = self.waitPoints - 1
-		end
-		if 	self.Waypoints[self.recordnumber].crossing then
-				self.crossPoints = self.crossPoints - 1
-		end		
+        courseplay:RefreshSigns(self)
 		self.Waypoints[self.recordnumber] = nil
 		-- Show last 2 waypoints, in order to find position for continue
 		local cx ,cz = self.Waypoints[self.recordnumber - 1].cx, self.Waypoints[self.recordnumber - 1].cz
@@ -223,12 +205,9 @@ function courseplay:reset_course(self)
 	self.tmr = 1
 	self.Waypoints = {}
 	self.loaded_courses = {}
-	courseplay:sign_visibility(self, false, true)
-	self.signs = {}
+	courseplay:RefreshSigns(self)
 	self.play = false
 	self.back = false
 	self.abortWork = nil
-	self.waitPoints =  0
-
-	self.crossPoints = 0
+	
 end	

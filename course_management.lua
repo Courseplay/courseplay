@@ -144,33 +144,8 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
   	end
 	self.play = true
 	self.recordnumber = 1
-	self.waitPoints = 0
-	self.crossPoints = 0
-	self.maxnumber = table.getn(self.Waypoints)
-	-- this adds the signs to the course
-	for k,wp in pairs(self.Waypoints) do
-  		if k <= 3 or wp.wait == true  or wp.crossing == true then
-	  		if k == 1 then
-	  		  courseplay:addsign(self, wp.cx, wp.angle, wp.cz, self.start_sign, true)
-	  		elseif wp.crossing then
-	  		  courseplay:addsign(self, wp.cx, wp.angle, wp.cz, self.cross_sign, true)
-	  		elseif wp.wait then
-	  		  courseplay:addsign(self, wp.cx, wp.angle, wp.cz, self.wait_sign)	  		
-	  		else
-	  		  courseplay:addsign(self, wp.cx, wp.angle, wp.cz)
-	  		end	  		
-  	  	end
-  	  	if k == self.maxnumber then
-  	  	  courseplay:addsign(self, wp.cx, wp.angle, wp.cz, self.stop_sign)
-  	  	end
-  	  	if wp.wait then
-		  self.waitPoints = self.waitPoints + 1
-		end
-		if wp.crossing then
-		  self.crossPoints = self.crossPoints + 1
-		end
-    end
-  end
+    courseplay:RefreshSigns(self) -- this adds the signs to the course
+ end
 end
 
 function courseplay:reset_merged(self)
@@ -190,6 +165,7 @@ function courseplay:clear_course(self, id)
     end
     table.remove(courseplay_courses, id)
     courseplay:save_courses(self)
+    courseplay:RefreshGlobalSigns(self)
   end
 end
 
