@@ -90,6 +90,7 @@ function courseplay:load(xmlFile)
 	self.locales.WaypointMode2 = g_i18n:getText("WaypointMode2")
 	self.locales.WaypointMode3 = g_i18n:getText("WaypointMode3")
 	self.locales.WaypointMode4 = g_i18n:getText("WaypointMode4")
+	self.locales.WaypointMode5 = g_i18n:getText("WaypointMode5")
 	self.locales.Rul = g_i18n:getText("Rul")
 	self.locales.RulMode1 = g_i18n:getText("RulMode1")
 	self.locales.RulMode2 = g_i18n:getText("RulMode2")
@@ -163,6 +164,11 @@ function courseplay:load(xmlFile)
 	self.locales.CPWaterDrive = g_i18n:getText("CPWaterDrive")
 	self.locales.WaitPoints = g_i18n:getText("WaitPoints")
 	self.locales.CrossPoints = g_i18n:getText("CrossPoints")
+	self.locales.CourseGenerate = g_i18n:getText("CourseGenerate")
+	self.locales.CourseFieldPointSet = g_i18n:getText("CourseFieldPointSet")
+	self.locales.CPWorkingWidht = g_i18n:getText("CPWorkingWidht")
+	
+	
 	self.drive  = false
     self.StopEnd = false
 	self.lastGui = nil
@@ -347,6 +353,8 @@ function courseplay:load(xmlFile)
 	
 	self.WpOffsetX = 0
 	self.WpOffsetZ = 0
+	self.toolWorkWidht = 3 
+	self.createCourse = false
 	-- loading saved courses from xml
 	
 	
@@ -479,7 +487,13 @@ function courseplay:load(xmlFile)
     courseplay:register_button(self, 6, "navigate_plus.png", "changeWpOffsetZ", 0.5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.188, 0.010, 0.010)
 
     courseplay:register_button(self, 6, "blank.png", "change_WaypointMode", 1, self.hudInfoBasePosX-0.05, self.hudInfoBasePosY + 0.164, 0.32, 0.015)
-    self.fold_move_direction = 1
+    
+	courseplay:register_button(self, 6, "navigate_minus.png", "changeWorkWidth", -0.5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.146, 0.010, 0.010)
+    courseplay:register_button(self, 6, "navigate_plus.png", "changeWorkWidth", 0.5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.146, 0.010, 0.010)
+	
+	
+	
+	self.fold_move_direction = 1
 end	
 
 
@@ -554,7 +568,7 @@ function courseplay:updateTick(dt)
 	end
 	
 	-- show visual waypoints only when in vehicle
-	if self.isEntered then
+	if self.isEntered and self.waypointMode ~= 5 then
 		courseplay:sign_visibility(self,true)
 	else
 		courseplay:sign_visibility(self,false)

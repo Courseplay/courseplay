@@ -133,6 +133,10 @@ function courseplay:deal_with_mouse_input(self, func, value)
             courseplay:changeCPWpOffsetZ(self, value)
           end
           
+          if func == "changeWorkWidth" then
+            courseplay:changeWorkWidth(self, value)
+          end
+      
           if func == "change_WaypointMode" then
             courseplay:change_WaypointMode(self, value)
           end
@@ -206,14 +210,38 @@ function courseplay:deal_with_mouse_input(self, func, value)
 					 
 	              end -- end not driving
 	            end -- not playing
-	            
-	            if not self.drive  then
-	              if (not self.record and not self.record_pause) and (table.getn(self.Waypoints) == 0) then
-	                if func == "row1" then
-	                  courseplay:start_record(self)
-	                end
-	                
-	              elseif (not self.record and not self.record_pause) and (table.getn(self.Waypoints) ~= 0) then
+
+
+	            if not self.drive   then
+	              if (not self.record and not self.record_pause) and not self.play then---- and (table.getn(self.Waypoints) == 0) then
+                    	if (table.getn(self.Waypoints) == 0) and not self.createCourse then
+                            if func == "row1" then
+	                  			courseplay:start_record(self)
+	                		end
+	                	end
+
+                        if (table.getn(self.Waypoints) == 4) and self.createCourse then
+                            if func == "row2" then
+                      			courseplay:createCourse(self)
+	                		end
+                        end
+
+						if  (table.getn(self.Waypoints) >= 0) and (table.getn(self.Waypoints) < 4) then
+                            if func == "row2" then
+                      			courseplay:set_FieldPoint(self)
+	                		end
+						end
+						
+
+                        
+                        if self.createCourse then
+                            if func == "row3" then
+	                  			courseplay:reset_course(self)
+	                		end
+						end
+                        
+
+	              elseif (not self.record and not self.record_pause) and (table.getn(self.Waypoints) ~= 0) and self.play then
 	              	if func == "row2" then
 	              	  courseplay:change_ai_state(self, 1)
 	              	end

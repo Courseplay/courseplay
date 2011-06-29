@@ -91,9 +91,16 @@ function courseplay:changeCPWpOffsetZ(self, change_by)
 
 end
 
+function courseplay:changeWorkWidth(self, change_by)
+	self.toolWorkWidht = self.toolWorkWidht + change_by
+	if self.toolWorkWidht < 1 then
+    	self.toolWorkWidht = 1
+ 	end  
+end
+
 function courseplay:change_WaypointMode(self, change_by)
   self.waypointMode = self.waypointMode + change_by
-  if self.waypointMode == 5 then
+  if self.waypointMode == 6 then
     self.waypointMode = 1
   end
   courseplay:RefreshSigns(self)

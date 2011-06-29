@@ -11,7 +11,11 @@ function courseplay:HudPage(self)
         renderText(self.hudInfoBasePosX + 0.005, yspace, 0.019, name);
       elseif c == 2 then
        local yspace = self.hudInfoBasePosY + 0.200 - ((v-1) * 0.021)
-       renderText(self.hudInfoBasePosX + 0.122, yspace, 0.017, name);
+		if Page == 6 then
+		    renderText(self.hudInfoBasePosX + 0.182, yspace, 0.017, name);
+		else
+	   		renderText(self.hudInfoBasePosX + 0.122, yspace, 0.017, name);
+	    end
       end
      i = i + 1
     end
@@ -100,9 +104,23 @@ function courseplay:loadHud(self)
 			end
 		end
 		if not self.drive then
-			if (not self.record and not self.record_pause) and (table.getn(self.Waypoints) == 0)  then
-				self.hudpage[1][1][1]= courseplay:get_locale(self, "PointRecordStart")
+			if (not self.record and not self.record_pause) and not self.play then  --and (table.getn(self.Waypoints) == 0) and not self.createCourse 
+				if (table.getn(self.Waypoints) == 0) and not self.createCourse then 
+					self.hudpage[1][1][1]= courseplay:get_locale(self, "PointRecordStart")
+				end
+				if (table.getn(self.Waypoints) >= 0) and (table.getn(self.Waypoints) < 4) then
+					self.hudpage[1][1][2]= courseplay:get_locale(self, "CourseFieldPointSet") -- Arbeitspunkte setzten 
+				end
 				
+				if (table.getn(self.Waypoints) == 4) and self.createCourse then
+					self.hudpage[1][1][2]= courseplay:get_locale(self,"CourseGenerate") -- Kurs erzeugen
+				end
+				
+				if self.createCourse then
+     				self.hudpage[1][1][3]= courseplay:get_locale(self, "CourseReset")
+				end
+				
+		
 			elseif (not self.record and not self.record_pause) and (table.getn(self.Waypoints) ~= 0) then	
 			    self.hudpage[1][1][2]= courseplay:get_locale(self, "ModusSet")
 				
@@ -283,10 +301,18 @@ function courseplay:loadHud(self)
             self.hudpage[6][1][3]= courseplay:get_locale(self, "WaypointMode2") -- "Wegpunkte+Kreuzungspunkte immer"
         elseif self.waypointMode == 3 then
             self.hudpage[6][1][3]= courseplay:get_locale(self, "WaypointMode3") -- "Komplette Route"
-         elseif self.waypointMode == 4 then
+        elseif self.waypointMode == 4 then
             self.hudpage[6][1][3]= courseplay:get_locale(self, "WaypointMode4") -- "Komplette Route + all Crosspoints"
+        elseif self.waypointMode == 5 then
+            self.hudpage[6][1][3]= courseplay:get_locale(self, "WaypointMode5") -- "Komplette Route + all Crosspoints"    
 		end 
 		
+        self.hudpage[6][1][4]= courseplay:get_locale(self, "CPWorkingWidht") -- Arbeitsbreite
+		if self.toolWorkWidht ~= nil then
+		  self.hudpage[6][2][4]= string.format("%.1f", self.toolWorkWidht) .. "m"
+		else
+		  self.hudpage[6][2][4]= "---"
+		end
 
 	  end
 	  
@@ -327,7 +353,7 @@ function courseplay:showHud(self)
 		
 		if self.Waypoints[self.recordnumber ] ~= nil then
 		    self.hudinfo[3]= courseplay:get_locale(self, "CPWaypoint") ..self.recordnumber .."/"..self.maxnumber .."    ".. self.locales.WaitPoints.. self.waitPoints.."    "..self.locales.CrossPoints.. self.crossPoints
-		elseif self.record or self.record_pause then
+		elseif self.record or self.record_pause or self.createCourse then
 			 self.hudinfo[3]= courseplay:get_locale(self, "CPWaypoint") ..self.recordnumber .."    ".. self.locales.WaitPoints .. self.waitPoints  .."    ".. self.locales.CrossPoints .. self.crossPoints
 		else  
 			self.hudinfo[3]=  courseplay:get_locale(self, "CPNoWaypoint") -- "Keine Wegpunkte geladen"
