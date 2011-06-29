@@ -85,7 +85,7 @@ function courseplay:RefreshSigns(self)
   	courseplay:RefreshGlobalSigns(self)
 	self.maxnumber = table.getn(self.Waypoints)
 	for k,wp in pairs(self.Waypoints) do
-        if k <= 3 or self.waypointMode >= 3 or wp.wait == true then
+        if k <= 3 or self.waypointMode >= 3 or wp.wait == true or k == self.maxnumber then
 			if k == 1 then
 		  		courseplay:addsign(self, wp.cx, wp.angle, wp.cz,self.start_sign)
 		  	elseif wp.wait then
@@ -95,7 +95,8 @@ function courseplay:RefreshSigns(self)
 		  	else
 		  		courseplay:addsign(self, wp.cx, wp.angle, wp.cz)
 		  	end
-        end
+		end
+        
 
  	  	if wp.wait then
 		  self.waitPoints = self.waitPoints + 1

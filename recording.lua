@@ -209,5 +209,160 @@ function courseplay:reset_course(self)
 	self.play = false
 	self.back = false
 	self.abortWork = nil
+	self.createCourse = false
 	
 end	
+
+
+function courseplay:set_FieldPoint(self)
+	local cx,cy,cz = getWorldTranslation(self.rootNode);
+	local x,y,z = localDirectionToWorld(self.rootNode, 0, 0, 1);
+	local length = Utils.vector2Length(x,z);
+	local dX = x/length
+	local dZ = z/length
+	local newangle = math.deg(math.atan2(dX,dZ)) 
+  	self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = true, rev = false, crossing = false}
+  	self.tmr = 1
+  	self.recordnumber = self.recordnumber + 1
+  	self.createCourse = true
+  	courseplay:addsign(self, cx, cy,cz, self.wait_sign)
+end
+
+function courseplay:createCourse(self)
+--[[	local cx,cy,cz = getWorldTranslation(self.rootNode);
+	local x,y,z = localDirectionToWorld(self.rootNode, 0, 0, 1);
+	local length = Utils.vector2Length(x,z);
+	local dX = x/length
+	local dZ = z/length
+	local newangle = math.deg(math.atan2(dX,dZ))  ]]
+  	local cax =  self.Waypoints[1].cx
+  	local caz =  self.Waypoints[1].cz
+
+  	local cbx =   self.Waypoints[2].cx
+  	local cbz =   self.Waypoints[2].cz
+
+    local ccx =  self.Waypoints[3].cx
+  	local ccz =  self.Waypoints[3].cz
+
+  	local cdx =   self.Waypoints[4].cx
+  	local cdz =   self.Waypoints[4].cz
+
+    local vadx = cax - cdx
+	local vadz = caz - cdz
+
+    local vdax = cdx - cax
+	local vdaz = cdz - caz
+
+	local vbcx = cbx - ccx
+	local vbcz = cbz - ccz
+   	
+	local vcbx = ccx - cbx
+	local vcbz = ccz - cbz
+	
+	local vabx = cax - cbx
+	local vabz = caz - cbz
+	local vbax = cbx - cax
+	local vbaz = cbz - caz
+	
+
+    local vlad = Utils.vector2Length(vdax, vdaz)
+    local vlbc = Utils.vector2Length(vcbx, vcbz)
+    local workWidht = self.toolWorkWidht
+	local distWayPoint = 5
+	local wx, wz = cax, caz
+	local i, ib = 1,1
+	local fieldEndVad,fieldEndVbc,fieldEnd = false, false, false
+	
+	while fieldEnd == false do
+
+		local reachedVad = (workWidht*(ib+1)-(workWidht/2))/vlad
+        local reachedVbc = (workWidht*(ib+1)-(workWidht/2))/vlbc
+
+		if  math.mod(ib,2) == 0 then
+			if reachedVbc  < 1 then
+				if ib == 1 then
+					wxe = cax + (workWidht/2)*ib/vlad*vdax
+		   			wze = caz + (workWidht/2)*ib/vlad*vdaz
+		            wx = cbx + (workWidht/2)*ib/vlbc*vcbx
+		   			wz = cbz + (workWidht/2)*ib/vlbc*vcbz
+		
+				else
+					wxe = cax + (workWidht*ib-(workWidht/2))/vlad*vdax
+		   			wze = caz + (workWidht*ib-(workWidht/2))/vlad*vdaz
+		   			wx = cbx + (workWidht*ib-(workWidht/2))/vlbc*vcbx
+		   			wz = cbz + (workWidht*ib-(workWidht/2))/vlbc*vcbz
+		       	end
+              
+			else 
+	 	  		wxe = cdx + (workWidht/2)/vlad*vadx
+	    		wze = cdz + (workWidht/2)/vlad*vadz
+	    		wx = ccx + (workWidht/2)/vlbc*vbcx
+		  		wz = ccz + (workWidht/2)/vlbc*vbcz
+				
+				fieldEndVbc = true
+            end
+		else
+            if reachedVad  < 1 then
+				if ib == 1 then
+					wx = cax + (workWidht/2)*ib/vlad*vdax
+		   			wz = caz + (workWidht/2)*ib/vlad*vdaz
+		   			wxe = cbx + (workWidht/2)*ib/vlbc*vcbx
+		   			wze = cbz + (workWidht/2)*ib/vlbc*vcbz
+				else
+					wx = cax + (workWidht*ib-(workWidht/2))/vlad*vdax
+		   			wz = caz + (workWidht*ib-(workWidht/2))/vlad*vdaz
+		   			wxe = cbx + (workWidht*ib-(workWidht/2))/vlbc*vcbx
+		   			wze = cbz + (workWidht*ib-(workWidht/2))/vlbc*vcbz
+                end 
+			else
+
+	  	  		wx = cdx + (workWidht/2)/vlad*vadx
+	    		wz = cdz + (workWidht/2)/vlad*vadz
+	    		wxe = ccx + (workWidht/2)/vlbc*vbcx
+		  		wze = ccz + (workWidht/2)/vlbc*vbcz
+
+				fieldEndVad = true
+            end
+		end
+		
+		self.Waypoints[i] = {cx = wx ,cz = wz ,angle = 0, wait = false, rev = false, crossing = false}
+        i = i + 1
+		
+		local vsex = wx - wxe
+		local vsez = wz - wze
+		local vesx = wxe - wx
+		local vesz = wze - wz
+		local vlse = Utils.vector2Length(vsex,vsez)
+		local vlab = Utils.vector2Length(vabx, vabz)
+        local ig = 1
+		local fielEndLength = false
+		
+		while fielEndLength == false do -- gerade setzen
+				
+				local reachedEndlength = (distWayPoint*(ig+1)/vlse)
+                if reachedEndlength  < 1 then
+					wxl = wx + (distWayPoint*ig/vlse)*vesx
+					wzl = wz + (distWayPoint*ig/vlse)*vesz
+				else
+				   	wxl = wxe
+				   	wzl = wze
+				   	fielEndLength = true
+				end
+				
+				self.Waypoints[i] = {cx = wxl ,cz = wzl ,angle = 0, wait = false, rev = false, crossing = false}
+				
+				i = i + 1
+				ig = ig+1
+        end
+        ib = ib+1
+        fieldEnd = fieldEndVad or fieldEndVbc -- to do for not square Fields
+   end
+
+	self.maxnumber  = table.getn(self.Waypoints)
+    self.recordnumber = 1
+    self.createCourse = false
+    self.play = true
+    self.Waypoints[1].wait = true
+    self.Waypoints[self.maxnumber].wait = true
+    courseplay:RefreshSigns(self)
+end
