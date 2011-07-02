@@ -154,7 +154,12 @@
 	<text name="CourseCrossingSet">
 		<en>set crossing</en>
 		<de>Hier Kreuzungspunkt setzen</de>
-	</text>		
+	</text>
+
+	<text name="CourseFieldPointSet">
+		<en>set fieldpoint</en>
+		<de>Feldgrenze festlegen</de>
+	</text>			
 
 	<text name="CourseWaitpointStart">
 		<en>start</en>
@@ -180,6 +185,11 @@
 	<text name="CourseReset">
 		<en>reset course</en>
 		<de>Wegpunkte löschen</de>
+	</text>
+
+	<text name="CourseGenerate">
+		<en>course generate</en>
+		<de>Kurs generieren</de>
 	</text>
 
 	<text name="HudControl">
@@ -407,7 +417,12 @@
     <text name="WaypointMode4">
       <en>Show all Waypoints:entire Route</en>
       <de>Alle Wegpunkte+Kreuzungspunkte </de>
-    </text>  
+    </text>
+
+    <text name="WaypointMode5">
+      <en>no Waypoints show</en>
+      <de>Keine Wegpunkte anzeigen </de>
+    </text>    
     
     <text name="Rul">
       <en>beaconligts:</en>
@@ -550,6 +565,11 @@
     <text name="CPWpOffsetZ">
       <en>Waypoint-Z Offset</en>
       <de>Wegpunkt Offset-Z</de>
+    </text>
+
+    <text name="CPWorkingWidht">
+      <en>working with set</en>
+      <de>Arbeitsbreite einstellen</de>
     </text>
 
     <text name="CPWaterDrive">
