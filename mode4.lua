@@ -51,20 +51,52 @@ function courseplay:handle_mode4(self,allowedToDrive, workArea, workSpeed,  fill
 		  end		  
 		end
 
+		local is_ux5200 = workTool.setStateEvent ~= nil
+		
 		if workArea and fill_level ~= 0 and self.abortWork == nil then
-		  workSpeed = true
-		  if IsFoldable then
-		    workTool:setFoldDirection(self.fold_move_direction*-1)
-		  end
-		  if allowedToDrive then
-		    workTool:setIsTurnedOn(true,false)
+		  workSpeed = true	  
+		  if is_ux5200 then
+		    if workTool.state.isTurnedOn ~= true then
+		  	  workTool:setStateEvent("state", "isTurnedOn", true)
+		  	  workTool:setStateEvent("state", "markOn", true)
+		  	  
+		  	  workTool:setStateEvent("Speed", "ex", 1.0)
+		  	  workTool:setStateEvent("Speed", "trsp", 1.0)
+		  	  workTool:setStateEvent("Go", "trsp", true)
+		  	  workTool:setStateEvent("Go", "hubmast", false)
+		  	  workTool:setStateEvent("Done", "hubmast", true)
+		  	  workTool:setStateEvent("Go", "hubmast", false)
+		  	  workTool:setStateEvent("Go", "ex", true)
+		  	  workTool:setStateEvent("Done", "ex", true)
+		  	end
+		  else
+			  if IsFoldable then
+			    workTool:setFoldDirection(self.fold_move_direction*-1)		  
+			  end
+			  if allowedToDrive then
+			    workTool:setIsTurnedOn(true,false)
+			  end
 		  end
         else
          workSpeed = false
-         if IsFoldable then
-           workTool:setFoldDirection(self.fold_move_direction)
-		 end
-         workTool:setIsTurnedOn(false,false)
+         if is_ux5200 then
+		   if workTool.state.isTurnedOn ~= false then
+		     workTool:setStateEvent("state", "isTurnedOn", false)
+		     workTool:setStateEvent("state", "markOn", false)
+		     workTool:setStateEvent("Speed", "ex", 1.0)
+		     workTool:setStateEvent("Speed", "trsp", 1.0)
+		     workTool:setStateEvent("Go", "trsp", false)
+		     workTool:setStateEvent("Go", "hubmast", false)
+		     workTool:setStateEvent("Done", "hubmast", true)
+		     workTool:setStateEvent("Go", "ex", false)
+		     workTool:setStateEvent("Done", "ex", true)
+		   end
+         else
+	         if IsFoldable then
+	           workTool:setFoldDirection(self.fold_move_direction)
+			 end
+	         workTool:setIsTurnedOn(false,false)
+	     end
        end 
        
        if not allowedToDrive then

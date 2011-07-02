@@ -31,7 +31,7 @@ function courseplay:update_tools(self, tractor_or_implement)
         table.insert(self.tippers, object) 
       end 
     elseif self.ai_mode == 4 then -- Fertilizer 
-      if SpecializationUtil.hasSpecialization(Sprayer, object.specializations) then 
+      if SpecializationUtil.hasSpecialization(Sprayer, object.specializations) or (object.setStateEvent ~= nil) then 
         tipper_attached = true 
         table.insert(self.tippers, object) 
       end 
