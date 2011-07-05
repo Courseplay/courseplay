@@ -84,7 +84,7 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
 		local course1_waypoints = self.Waypoints
 		local course2_waypoints = course.waypoints
 		
-		
+		local old_distance = 51
 		local lastWP = table.getn(self.Waypoints)
 		local wp_found = false
 		local new_wp = 1
@@ -95,7 +95,7 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
 			  --print(number)
 			  if course1_wp.crossing == true and course1_wp.merged == nil and wp_found == false and number > 1 then
 			    -- go through the second course from behind!!
-			  	for number_2=table.getn(course2_waypoints), 1,-1  do
+      			for number_2=1,table.getn(course2_waypoints) do
 			  	  local  course2_wp = course2_waypoints[number_2]
 			  	  if course2_wp.crossing == true and course2_wp.merged == nil and wp_found == false then
 			  	  	local distance_between_waypoints = courseplay:distance(course1_wp.cx, course1_wp.cz, course2_wp.cx, course2_wp.cz)
@@ -108,15 +108,18 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
 			  	  --	print("--------------")  
 			        if distance_between_waypoints < 50 and distance_between_waypoints ~= 0 then
 			         --  if number > 3 and number ~= number_2 then
-			             lastWP = number
-			             course1_waypoints[lastWP].merged = true
-			             new_wp = number_2
+                         if distance_between_waypoints < old_distance then
+						 	old_distance = distance_between_waypoints
+						 	lastWP = number
+			             	course1_waypoints[lastWP].merged = true
+			             	new_wp = number_2
 			        --     print("--------------")
 			         --    print("found wp")
 			          --   print(lastWP)
 			           --  print(new_wp)
 			           --  print("--------------")
-			             wp_found = true
+			             	wp_found = true
+						 end
 			        --   end
 			        end
 			      end
