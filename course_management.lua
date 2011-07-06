@@ -145,7 +145,11 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
   		self.Waypoints[lastWP+1].merged = true
   		self.current_course_name = self.locales.CPCourseAdded
   	end
-	self.play = true
+  	if table.getn(self.Waypoints) == 4 then
+  		self.createCourse = true
+	else	
+		self.play = true
+	end
 	self.recordnumber = 1
     courseplay:RefreshSigns(self) -- this adds the signs to the course
  end
