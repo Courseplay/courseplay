@@ -210,6 +210,7 @@ function courseplay:reset_course(self)
 	self.back = false
 	self.abortWork = nil
 	self.createCourse = false
+	self.startlastload  = 1
 	
 end	
 
