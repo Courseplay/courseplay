@@ -93,7 +93,7 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
 		if add_course_at_end ~= true then
 			for number, course1_wp in pairs(course1_waypoints) do
 			  --print(number)
-			  if course1_wp.crossing == true and course1_wp.merged == nil and wp_found == false and number > 1 then
+			  	if course1_wp.crossing == true and course1_wp.merged == nil and wp_found == false and number > self.startlastload then
 			    -- go through the second course from behind!!
       			for number_2=1,table.getn(course2_waypoints) do
 			  	  local  course2_wp = course2_waypoints[number_2]
@@ -137,6 +137,7 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
 		for i=1, lastWP do
 		  table.insert(self.Waypoints, course1_waypoints[i])
 		end
+		self.startlastload = lastWP
 		
   		local lastNewWP = table.getn(course.waypoints)
   		for i=new_wp, lastNewWP do
