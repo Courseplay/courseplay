@@ -210,6 +210,7 @@ function courseplay:reset_course(self)
 	self.back = false
 	self.abortWork = nil
 	self.createCourse = false
+	self.startlastload  = 1
 	
 end	
 
@@ -246,8 +247,10 @@ function courseplay:createCourse(self)
 
   	local cdx =   self.Waypoints[4].cx
   	local cdz =   self.Waypoints[4].cz
-
-    local vadx = cax - cdx
+    
+	courseplay:reset_course(self)
+    
+	local vadx = cax - cdx
 	local vadz = caz - cdz
 
     local vdax = cdx - cax

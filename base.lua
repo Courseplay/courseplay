@@ -177,6 +177,7 @@ function courseplay:load(xmlFile)
 
 	self.recordnumber = 1
 	self.tmr = 1
+	self.startlastload  = 1
 	self.timeout = 1
 	self.timer = 0
 	self.drive_slow_timer = 0
