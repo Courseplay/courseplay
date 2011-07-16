@@ -36,6 +36,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
   end
   
   
+  
   for k,trigger in pairs(trigger_objects) do
 	if (trigger.className and (trigger.className == "SiloTrigger" or endswith(trigger.className, "TipTrigger") or startswith(trigger.className, "MapBGA")))  or trigger.isTipAnywhereTrigger then
 	    -- transformId
@@ -44,12 +45,14 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 	      trigger.className = "TipAnyWhere"
 	    end 
 	    if trigger.triggerId ~= nil and trigger.triggerId == transformId then
-		  self.currentTipTrigger = trigger		
+		  self.currentTipTrigger = trigger	
 		elseif trigger.triggerIds ~= nil and transformId ~= nil and table.contains(trigger.triggerIds, transformId) then
 		  self.currentTipTrigger = trigger		
 		elseif trigger.specialTriggerId ~= nil and trigger.specialTriggerId == transformId then
-		  -- support map bga by headshot xxl 
-		  self.currentTipTrigger = trigger
+		  -- support map bga by headshot xxl
+		  if trigger.silage.fillLevel < trigger.silage.maxFillLevel then
+		    self.currentTipTrigger = trigger
+		  end
 		end		
 	end
   end 
