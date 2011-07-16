@@ -127,7 +127,7 @@ function courseplay:drive(self, dt)
 		   		self.unloaded = true
 		   	  end
 			end
-		elseif self.ai_mode == 4 then
+		elseif self.ai_mode == 4 or self.ai_mode == 6 then
 			if last_recordnumber == self.startWork and fill_level ~= 0 then
 				self.wait = false
 			end
@@ -136,8 +136,25 @@ function courseplay:drive(self, dt)
 			end
 			if last_recordnumber == self.stopWork and self.abortWork == nil then
 		    	self.global_info_text = courseplay:get_locale(self, "CPWorkEnd") --'hat Arbeit beendet.'
+		    	else
+				self.global_info_text = courseplay:get_locale(self, "CPUnloadBale") -- "Ballen werden entladen"
+				if fill_level == 0 or drive_on then
+					self.wait = false
+				end
 			end
-		elseif self.ai_mode == 6 then
+			
+			if last_recordnumber > self.stopWork then
+    			self.info_text = string.format(courseplay:get_locale(self, "CPloading")
+				local sprayer = self.tippers[1].sprayerFillTriggers[1]
+				local activeTool = self.tippers[1]
+				if fill_level < self.required_fill_level_for_drive_on and not self.loaded then
+					activeTool:setIsSprayerFilling(true, 3, true, false)
+				else
+				    self.wait = false
+				end
+			end
+
+--[[		elseif self.ai_mode == 6 then
 			if last_recordnumber == self.startWork and fill_level ~= 100 then
 				self.wait = false
 			end
@@ -151,7 +168,7 @@ function courseplay:drive(self, dt)
 				if fill_level == 0 or drive_on then
 					self.wait = false
 				end			
-			end
+			end ]]
   		else
 		   	self.global_info_text = courseplay:get_locale(self, "CPReachedWaitPoint") --'bereit zum entladen.'
 		end
@@ -175,24 +192,23 @@ function courseplay:drive(self, dt)
 		end
 		
 		-- Fertilice loading --only for one Implement !
-		if self.ai_mode == 4 and self.tipper_attached and self.startWork ~= nil and self.stopWork ~= nil then
-			if self.recordnumber == 2 and fill_level < 100 and not self.loaded then   --or self.loaded
-				allowedToDrive = false
-		    	self.info_text = string.format(courseplay:get_locale(self, "CPloading") ,tipper_fill_level,tipper_capacity )
-		    	
-				if self.tippers ~= nil then
-				  local tools= table.getn(self.tippers)
-				  for i=1, tools do
-				    local activeTool = self.tippers[i]
-				    if activeTool.sprayerFillActivatable:getIsActivatable() == true then  -- only work with self on tractor to do
-				       if activeTool.isSprayerFilling == false and fill_level < 100 then
-				         activeTool.sprayerFillActivatable:onActivateObject()
-				       end
-				    end
-				  end
+		if self.ai_mode == 4 then
+            if self.tipper_attached and self.startWork ~= nil and self.stopWork ~= nil then
+	            local tools= table.getn(self.tippers)
+                if self.tippers ~= nil then
+					local tools= table.getn(self.tippers)
+				  	for i=1, tools do
+				    	local activeTool = self.tippers[i]
+				    	if fill_level < self.required_fill_level_for_drive_on and not self.loaded and activeTool.sprayerFillTriggers ~= nil and table.getn(activeTool.sprayerFillTriggers) > 0 then
+					    	allowedToDrive = false
+			    			self.info_text = string.format(courseplay:get_locale(self, "CPloading") ,tipper_fill_level,tipper_capacity )
+			    			local sprayer = activeTool.sprayerFillTriggers[1]
+			    			activeTool:setIsSprayerFilling(true, sprayer.fillType, sprayer.isSiloTrigger, false)
+           				else
+           			    	allowedToDrive = true
+				  		end
+					end
 				end
-   			else
-				allowedToDrive = true		 		    
 			end
         elseif  self.ai_mode == 4 and (self.startWork == nil or self.stopWork == nil) then
 			allowedToDrive = false
@@ -281,7 +297,7 @@ function courseplay:drive(self, dt)
 		slowDownRev = self.Waypoints[self.recordnumber].rev
 	end
 
-	if slowDownWP or self.ai_mode ~= 6 and slowDownRev or self.max_speed_level == 1 then
+	if (slowDownWP and not workArea) or slowDownRev or self.max_speed_level == 1 then
 		self.sl = 1
     	ref_speed = self.turn_speed
 	elseif slowStartEnd or workSpeed then
@@ -341,11 +357,13 @@ function courseplay:drive(self, dt)
 	if self.recordnumber + 1 <= self.maxnumber then
 	local beforeReverse = (self.Waypoints[self.recordnumber+1].rev and not self.Waypoints[last_recordnumber].rev)
 	local afterReverse =  (not self.Waypoints[self.recordnumber+1].rev and self.Waypoints[last_recordnumber].rev)
-		if self.Waypoints[self.recordnumber].wait or self.recordnumber == 1 or beforeReverse or afterReverse then
-			distToChange = 1
+  		if (self.Waypoints[self.recordnumber].wait  or beforeReverse) and not self.Waypoints[self.recordnumber].rev then
+        elseif self.Waypoints[self.recordnumber].rev and self.Waypoints[self.recordnumber].wait or afterReverse then
+		    distToChange = 2
 		elseif self.Waypoints[self.recordnumber].rev then
-		    distToChange = 3
-		else	
+		    distToChange = 6
+
+		else
 			distToChange = 5
 		end
     else
