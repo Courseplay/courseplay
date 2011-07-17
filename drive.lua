@@ -144,11 +144,10 @@ function courseplay:drive(self, dt)
 			end
 			
 			if last_recordnumber > self.stopWork then
-    			self.info_text = string.format(courseplay:get_locale(self, "CPloading")
-				local sprayer = self.tippers[1].sprayerFillTriggers[1]
+      			self.info_text = string.format(courseplay:get_locale(self, "CPloading") ,tipper_fill_level,tipper_capacity )
 				local activeTool = self.tippers[1]
 				if fill_level < self.required_fill_level_for_drive_on and not self.loaded then
-					activeTool:setIsSprayerFilling(true, 3, true, false)
+					activeTool:setIsSprayerFilling(true, 3, false, false)
 				else
 				    self.wait = false
 				end
@@ -355,9 +354,10 @@ function courseplay:drive(self, dt)
 	
 	-- go, go, go!
 	if self.recordnumber + 1 <= self.maxnumber then
-	local beforeReverse = (self.Waypoints[self.recordnumber+1].rev and not self.Waypoints[last_recordnumber].rev)
+	local beforeReverse = (self.Waypoints[self.recordnumber+1].rev and (self.Waypoints[self.recordnumber].rev == false ))
 	local afterReverse =  (not self.Waypoints[self.recordnumber+1].rev and self.Waypoints[last_recordnumber].rev)
-  		if (self.Waypoints[self.recordnumber].wait  or beforeReverse) and not self.Waypoints[self.recordnumber].rev then
+		if (self.Waypoints[self.recordnumber].wait  or beforeReverse) and self.Waypoints[self.recordnumber].rev ==false then  -- or afterReverse or self.recordnumber == 1
+			distToChange = 1
         elseif self.Waypoints[self.recordnumber].rev and self.Waypoints[self.recordnumber].wait or afterReverse then
 		    distToChange = 2
 		elseif self.Waypoints[self.recordnumber].rev then
