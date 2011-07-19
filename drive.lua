@@ -136,41 +136,13 @@ function courseplay:drive(self, dt)
 			end
 			if last_recordnumber == self.stopWork and self.abortWork == nil then
 		    	self.global_info_text = courseplay:get_locale(self, "CPWorkEnd") --'hat Arbeit beendet.'
-		    	else
+			else
 				self.global_info_text = courseplay:get_locale(self, "CPUnloadBale") -- "Ballen werden entladen"
 				if fill_level == 0 or drive_on then
 					self.wait = false
 				end
 			end
-			
-			if last_recordnumber > self.stopWork then
-      			self.info_text = string.format(courseplay:get_locale(self, "CPloading") ,tipper_fill_level,tipper_capacity )
-				local activeTool = self.tippers[1]
-				if fill_level < self.required_fill_level_for_drive_on and not self.loaded then
-					activeTool:setIsSprayerFilling(true, 3, false, false)
-				else
-				    self.wait = false
-				end
-			end
-
---[[		elseif self.ai_mode == 6 then
-			if last_recordnumber == self.startWork and fill_level ~= 100 then
-				self.wait = false
-			end
-			if last_recordnumber == self.stopWork and self.abortWork ~= nil then
-		    	self.wait = false
-			end
-			if last_recordnumber == self.stopWork and self.abortWork == nil then
-		    	self.global_info_text = courseplay:get_locale(self, "CPWorkEnd") --'hat Arbeit beendet.'
-			else
-				self.global_info_text = courseplay:get_locale(self, "CPUnloadBale") -- "Ballen werden entladen"	
-				if fill_level == 0 or drive_on then
-					self.wait = false
-				end			
-			end ]]
-  		else
-		   	self.global_info_text = courseplay:get_locale(self, "CPReachedWaitPoint") --'bereit zum entladen.'
-		end
+  		end
 		
 		
      	allowedToDrive = false
@@ -193,10 +165,8 @@ function courseplay:drive(self, dt)
 		-- Fertilice loading --only for one Implement !
 		if self.ai_mode == 4 then
             if self.tipper_attached and self.startWork ~= nil and self.stopWork ~= nil then
-	            local tools= table.getn(self.tippers)
                 if self.tippers ~= nil then
-					local tools= table.getn(self.tippers)
-				  	for i=1, tools do
+				  	for i=1, table.getn(self.tippers) do
 				    	local activeTool = self.tippers[i]
 				    	if fill_level < self.required_fill_level_for_drive_on and not self.loaded and activeTool.sprayerFillTriggers ~= nil and table.getn(activeTool.sprayerFillTriggers) > 0 then
 					    	allowedToDrive = false
@@ -206,6 +176,17 @@ function courseplay:drive(self, dt)
            				else
            			    	allowedToDrive = true
 				  		end
+				  		if MapBGA ~= nil then
+					  		for i=1, table.getn(MapBGA.ModEvent.bunkers) do      --support Heady´s BGA
+								if fill_level < self.required_fill_level_for_drive_on and not self.loaded and MapBGA.ModEvent.bunkers[i].manure.trailerInTrigger ==  activeTool then
+									self.info_text = "BGA LADEN"
+		                            allowedToDrive = false
+		                            MapBGA.ModEvent.bunkers[i].manure.fill = true 
+		                        else
+	           			    		allowedToDrive = true
+								end;
+							end;
+						end
 					end
 				end
 			end
@@ -363,7 +344,7 @@ function courseplay:drive(self, dt)
 		elseif self.Waypoints[self.recordnumber].rev then
 		    distToChange = 6
 
-		else
+		else	
 			distToChange = 5
 		end
     else
