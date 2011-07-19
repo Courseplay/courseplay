@@ -136,13 +136,20 @@ function courseplay:loadHud(self)
 				
 						self.hudpage[1][1][4]= courseplay:get_locale(self, "CourseCrossingSet")
 
-						if not self.direction and self.movingDirection == -1 then
+						if self.movingDirection == 1 then
+							if self.direction then
 							courseplay:set_direction(self)
+							self.direction = false
+							end
+						end
+
+						if self.movingDirection == -1 then
+       						if not self.direction then
+								courseplay:set_direction(self)
+								self.direction = true
+							end
 						end
 						
-						if self.direction and self.movingDirection == 1 then
-							courseplay:set_direction(self)
-						end
 					end
 				else
 					if self.recordnumber > 4 then

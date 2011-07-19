@@ -96,6 +96,7 @@ function courseplay:load(xmlFile)
 	self.locales.RulMode2 = g_i18n:getText("RulMode2")
 	self.locales.RulMode3 = g_i18n:getText("RulMode3")
 	
+	self.locales.CPNoWorkArea  = g_i18n:getText("CPNoWorkArea")
 	self.locales.CPWorkEnd = g_i18n:getText("CPWorkEnd")
 	self.locales.CPReadyUnloadBale = g_i18n:getText("CPReadyUnloadBale")
 	self.locales.CPUnloadBale = g_i18n:getText("CPUnloadBale")

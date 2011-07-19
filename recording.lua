@@ -18,7 +18,7 @@ function courseplay:record(self)
 		anglediff = math.abs(newangle - oldangle)
 		self.dist = courseplay:distance(cx ,cz ,oldcx ,oldcz)
 		if self.direction then
-		 	if self.dist > 1 and (anglediff > 2 or dist > 5)  then
+		 	if self.dist > 2 and (anglediff > 1.5 or dist > 10)  then
 				self.tmr = 101
 			end
 		else
@@ -43,7 +43,7 @@ function courseplay:record(self)
 		local oldcx ,oldcz = self.Waypoints[2].cx,self.Waypoints[2].cz
 
 		self.dist = courseplay:distance(cx ,cz ,oldcx ,oldcz)
-		if self.dist > 20 then
+		if self.dist > 10 then  --20-
 			self.tmr = 101
 		else
 			self.tmr = 1
