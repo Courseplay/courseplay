@@ -23,18 +23,22 @@ function courseplay:add_course(self, id, use_real_id)
   courseplay:load_course(self, id, use_real_id, true)  
 end
 
+function courseplay:reinit_courses(self)
+  if courseplay_courses == nil then
+	  if self.courseplay_courses ~= nil then
+	  courseplay_courses = self.courseplay_courses
+	else
+	  print("courseplay_courses is empty")
+	  return    
+	end
+	end
+end
+
 
 function courseplay:load_course(self, id, use_real_id, add_course_at_end)
 	-- global array for courses, no refreshing needed any more	
 
-  if courseplay_courses == nil then
-    if self.courseplay_courses ~= nil then
-      courseplay_courses = self.courseplay_courses
-    else
-      print("courseplay_courses is empty")
-      return    
-    end
-  end
+  courseplay:reinit_courses(self);
 
   if id ~= nil and id ~= "" then
     local searchID = id * 1

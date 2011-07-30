@@ -584,7 +584,7 @@ function courseplay:unload_combine(self, dt)
     return 
   end  
   
-  local target_x, target_z = AIVehicleUtil.getDriveDirection(self.aiTractorDirectionNode, cx, y, cz)
+  
   
   
   local maxRpm = self.motor.maxRpm[self.sl]
@@ -596,7 +596,7 @@ function courseplay:unload_combine(self, dt)
   
   --print(string.format("sl: %d old RPM %d  real_speed: %d refSpeed: %d ", self.sl, maxRpm, real_speed*3600, refSpeed*3600 ))
   
-  
+  local target_x, target_z = AIVehicleUtil.getDriveDirection(self.aiTractorDirectionNode, cx, y, cz)
   
   if real_speed < refSpeed then
     if real_speed * 2 < refSpeed then
@@ -631,6 +631,18 @@ function courseplay:unload_combine(self, dt)
   
   self.motor.maxRpm[self.sl] = maxRpm
   if g_server ~= nil then
+  	--local fruit_left, fruit_right = courseplay:check_for_fruit(self, 10)
+  	--print(string.format("fruit:  left %f right %f",fruit_left,fruit_right ))
+  	
+  	--if fruit_left > 0 and fruit_left > fruit_right*1.3  and fruit_left > 50 then
+  	--  cx, cy, cz = localToWorld(self.aiTractorDirectionNode, -3, 0, 3)
+  	 -- target_x, target_z = AIVehicleUtil.getDriveDirection(self.aiTractorDirectionNode, cx, y, cz)
+  	--end  	
+  	--if fruit_right > 0 and fruit_right > fruit_left*1.3 and fruit_right > 50 then
+  	--  cx, cy, cz = localToWorld(self.aiTractorDirectionNode, 3, 0, 3)
+  	--  target_x, target_z = AIVehicleUtil.getDriveDirection(self.aiTractorDirectionNode, cx, y, cz)
+  	--end  	
+  	
     AIVehicleUtil.driveInDirection(self, dt, 45, 1, 0.8, 25, true, true, target_x, target_z, self.sl, 0.9)
   end
   if colX == nil then  
@@ -639,6 +651,53 @@ function courseplay:unload_combine(self, dt)
     courseplay:set_traffc_collision(self, colX, colZ)
   end 
   
+end
+
+function courseplay:check_for_fruit(self, distance)
+  
+  local x,y,z = localToWorld(self.aiTractorDirectionNode, 0, 0, distance) --getWorldTranslation(combine.aiTreshingDirectionNode);
+   
+  local length = Utils.vector2Length(x,z);
+  local aiThreshingDirectionX = x/length;
+  local aiThreshingDirectionZ = z/length; 
+  
+  local dirX, dirZ = aiThreshingDirectionX, aiThreshingDirectionZ;
+  if dirX == nil or x == nil or dirZ == nil then
+	  return 0, 0 
+  end
+  local sideX, sideZ = -dirZ, dirX;
+	
+  local threshWidth = 3     		
+  
+  local sideWatchDirOffset = -8
+  local sideWatchDirSize = 3
+  
+  
+  local lWidthX = x - sideX*0.5*threshWidth + dirX * sideWatchDirOffset;
+  local lWidthZ = z - sideZ*0.5*threshWidth + dirZ * sideWatchDirOffset;
+  local lStartX = lWidthX - sideX*0.7*threshWidth;
+  local lStartZ = lWidthZ - sideZ*0.7*threshWidth;
+  local lHeightX = lStartX + dirX*sideWatchDirSize;
+  local lHeightZ = lStartZ + dirZ*sideWatchDirSize;
+  
+  local rWidthX = x + sideX*0.5*threshWidth + dirX * sideWatchDirOffset;
+  local rWidthZ = z + sideZ*0.5*threshWidth + dirZ * sideWatchDirOffset;
+  local rStartX = rWidthX + sideX*0.7*threshWidth;
+  local rStartZ = rWidthZ + sideZ*0.7*threshWidth;
+  local rHeightX = rStartX + dirX*sideWatchDirSize;
+  local rHeightZ = rStartZ + dirZ*sideWatchDirSize;
+  local leftFruit = 0
+  local rightFruit = 0
+   
+   for i = 1, FruitUtil.NUM_FRUITTYPES do
+     if i ~= FruitUtil.FRUITTYPE_GRASS then	   	 
+	     leftFruit = leftFruit + Utils.getFruitArea(i, lStartX, lStartZ, lWidthX, lWidthZ, lHeightX, lHeightZ)
+	   
+	     rightFruit = rightFruit + Utils.getFruitArea(i, rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ)
+     end
+   end
+  
+  return leftFruit, rightFruit;
 end
 
 
