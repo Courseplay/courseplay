@@ -23,18 +23,22 @@ function courseplay:add_course(self, id, use_real_id)
   courseplay:load_course(self, id, use_real_id, true)  
 end
 
+function courseplay:reinit_courses(self)
+  if courseplay_courses == nil then
+	  if self.courseplay_courses ~= nil then
+	  courseplay_courses = self.courseplay_courses
+	else
+	  print("courseplay_courses is empty")
+	  return    
+	end
+	end
+end
+
 
 function courseplay:load_course(self, id, use_real_id, add_course_at_end)
 	-- global array for courses, no refreshing needed any more	
 
-  if courseplay_courses == nil then
-    if self.courseplay_courses ~= nil then
-      courseplay_courses = self.courseplay_courses
-    else
-      print("courseplay_courses is empty")
-      return    
-    end
-  end
+  courseplay:reinit_courses(self);
 
   if id ~= nil and id ~= "" then
     local searchID = id * 1
@@ -84,7 +88,7 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
 		local course1_waypoints = self.Waypoints
 		local course2_waypoints = course.waypoints
 		
-		
+		local old_distance = 51
 		local lastWP = table.getn(self.Waypoints)
 		local wp_found = false
 		local new_wp = 1
@@ -93,9 +97,9 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
 		if add_course_at_end ~= true then
 			for number, course1_wp in pairs(course1_waypoints) do
 			  --print(number)
-			  if course1_wp.crossing == true and course1_wp.merged == nil and wp_found == false and number > 1 then
+			  	if course1_wp.crossing == true and course1_wp.merged == nil and wp_found == false and number > self.startlastload then
 			    -- go through the second course from behind!!
-			  	for number_2=table.getn(course2_waypoints), 1,-1  do
+      			for number_2=1,table.getn(course2_waypoints) do
 			  	  local  course2_wp = course2_waypoints[number_2]
 			  	  if course2_wp.crossing == true and course2_wp.merged == nil and wp_found == false then
 			  	  	local distance_between_waypoints = courseplay:distance(course1_wp.cx, course1_wp.cz, course2_wp.cx, course2_wp.cz)
@@ -108,15 +112,18 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
 			  	  --	print("--------------")  
 			        if distance_between_waypoints < 50 and distance_between_waypoints ~= 0 then
 			         --  if number > 3 and number ~= number_2 then
-			             lastWP = number
-			             course1_waypoints[lastWP].merged = true
-			             new_wp = number_2
+                         if distance_between_waypoints < old_distance then
+						 	old_distance = distance_between_waypoints
+						 	lastWP = number
+			             	course1_waypoints[lastWP].merged = true
+			             	new_wp = number_2
 			        --     print("--------------")
 			         --    print("found wp")
 			          --   print(lastWP)
 			           --  print(new_wp)
 			           --  print("--------------")
-			             wp_found = true
+			             	wp_found = true
+						 end
 			        --   end
 			        end
 			      end
@@ -134,6 +141,7 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
 		for i=1, lastWP do
 		  table.insert(self.Waypoints, course1_waypoints[i])
 		end
+		self.startlastload = lastWP
 		
   		local lastNewWP = table.getn(course.waypoints)
   		for i=new_wp, lastNewWP do
@@ -142,35 +150,14 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
   		self.Waypoints[lastWP+1].merged = true
   		self.current_course_name = self.locales.CPCourseAdded
   	end
-	self.play = true
+  	if table.getn(self.Waypoints) == 4 then
+  		self.createCourse = true
+	else	
+		self.play = true
+	end
 	self.recordnumber = 1
-	self.waitPoints = 0
-	self.crossPoints = 0
-	self.maxnumber = table.getn(self.Waypoints)
-	-- this adds the signs to the course
-	for k,wp in pairs(self.Waypoints) do
-  		if k <= 3 or wp.wait == true  or wp.crossing == true then
-	  		if k == 1 then
-	  		  courseplay:addsign(self, wp.cx, wp.angle, wp.cz, self.start_sign, true)
-	  		elseif wp.crossing then
-	  		  courseplay:addsign(self, wp.cx, wp.angle, wp.cz, self.cross_sign, true)
-	  		elseif wp.wait then
-	  		  courseplay:addsign(self, wp.cx, wp.angle, wp.cz, self.wait_sign)	  		
-	  		else
-	  		  courseplay:addsign(self, wp.cx, wp.angle, wp.cz)
-	  		end	  		
-  	  	end
-  	  	if k == self.maxnumber then
-  	  	  courseplay:addsign(self, wp.cx, wp.angle, wp.cz, self.stop_sign)
-  	  	end
-  	  	if wp.wait then
-		  self.waitPoints = self.waitPoints + 1
-		end
-		if wp.crossing then
-		  self.crossPoints = self.crossPoints + 1
-		end
-    end
-  end
+    courseplay:RefreshSigns(self) -- this adds the signs to the course
+ end
 end
 
 function courseplay:reset_merged(self)
@@ -190,6 +177,7 @@ function courseplay:clear_course(self, id)
     end
     table.remove(courseplay_courses, id)
     courseplay:save_courses(self)
+    courseplay:RefreshGlobalSigns(self)
   end
 end
 

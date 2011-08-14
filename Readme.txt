@@ -1,4 +1,4 @@
-Courseplay - Abfahrhelfer für LS 2011 v 2.1
+Courseplay - Abfahrhelfer für LS 2011 v 2.2
 
 Inhaltsverzeichnis
 
@@ -8,7 +8,17 @@ III.  Bedienungsanleitung
 IV. Credits
 V. Videos
 
-Ia. Changelog - Änderungen seit Version 2.0
+Ia. Changelog - Änderungen seit Version 2.11
+
+	- support für das BGA Silo des Giants DLC2
+	- support für typanywhere mod
+	- support für kommenden drescher autopilotenn 3.0.5
+	- bessere unterstützung für ballensammelwagen
+	- fehler beim befüllen von überladewagen und abfahrern auf der zweiten Runde gefixt
+	- selten auftretenden multiplayer-callstacks behoben 
+
+
+Ib. Changelog - Änderungen seit Version 2.0
 	In der Version 2.0 waren leider noch einige Fehler die den Multiplayermodus gestört haben. Diese wurden behoben.
 	Neu in dieser Version ist vor allem, dass ihr eure Schlepper nicht mehr mit courseplay nachrüsten müsst. Einfach den Mod ins Modverzeichnis und alle Fahrzeuge sind automatisch damit ausgestattet.
 	Durch diese Änderung müsst ihr leider in allen bereits umgerüsteten Schleppern den Eintrag "<specialization name="courseplay" />" entfernen.
@@ -16,7 +26,7 @@ Ia. Changelog - Änderungen seit Version 2.0
 	
 	Wichtig: die Datei aaacourseplay.zip (v2 und kleiner) MUSS aus dem Mod-Verzeichnis gelöscht werden.
 
-Ib. Changelog - Änderungen seit Version 1.6
+Ic. Changelog - Änderungen seit Version 1.6
 
 	Die größte Änderung im courseplay ist natürlich die Multiplayerfähigkeit. Dabei werden beim Spielstart alle Werte und sogar gespeicherte Kurse vom Host an die Clients übertragen. Das kann mitunter ein bisschen dauern ist aber notwendig.
 	Neben zahlreichen Bugfixes und Performance-Optimierungen die hier nicht weiter erwähnt werden sollen gibt es im wesentlichen die folgende Neuerungen:
@@ -40,7 +50,7 @@ Ib. Changelog - Änderungen seit Version 1.6
 	Außerdem gibt es neue Symbole für die Wegpunkte und spezielle Wegpunkte wie Kreuzungspunkte und Startpunkte sind auch sichtbar wenn ihr nicht im Fahrzeug seid welches die Route gespeichert hat.
 
 
-Ic. Changelog - Änderungen seit Version 1.2
+Id. Changelog - Änderungen seit Version 1.2
 
 	Neu hinzugekommen sind vor allem der Feldmodus mit dem man Ballen pressen und Heusammeln kann. Der Güllemodus wurde weiter perfektioniert und es ist jetzt auch möglich den Abfahrhelfer in Drescher und Häcksler einzubauen.
 	Damit kann man beispielsweise mit Dreschern im Helfermodus Kurse aufzeichnen lassen die man dann später für den Gülle- oder Feldmodus verändern kann.
@@ -51,7 +61,7 @@ Ic. Changelog - Änderungen seit Version 1.2
 	Dann gab es natürlich auch noch etwas Feintuning: Das unsinnige Kreiseln auf dem Feld sollte jetzt vorbei sein, HW80 Drehschemel und Agroliner Container werden jetzt auch unterstützt. 
 
 
-Id. Changelog - Änderungen seit Version 1.0
+Ie. Changelog - Änderungen seit Version 1.0
 
 	Als neue Funktionen sind im wesentlichen der Düngemodus und das Rückwärtsfahren hinzugekommen. Außerdem wurde das Fahrverhalten (besonders in Kurven) verbessert und es werden mehr EntladeTrigger (Gras und Silage) erkannt.
 	Zudem kann man jetzt gespeicherte Kurse kombinieren indem man mehrere Kurse hintereinander lädt. Wenn man nur einen neuen Kurs laden will muss man allerdings jetzt vorher die Wegpunkte des alten zurücksetzen.

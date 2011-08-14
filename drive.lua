@@ -127,7 +127,7 @@ function courseplay:drive(self, dt)
 		   		self.unloaded = true
 		   	  end
 			end
-		elseif self.ai_mode == 4 then
+		elseif self.ai_mode == 4 or self.ai_mode == 6 then
 			if last_recordnumber == self.startWork and fill_level ~= 0 then
 				self.wait = false
 			end
@@ -136,25 +136,13 @@ function courseplay:drive(self, dt)
 			end
 			if last_recordnumber == self.stopWork and self.abortWork == nil then
 		    	self.global_info_text = courseplay:get_locale(self, "CPWorkEnd") --'hat Arbeit beendet.'
-			end
-		elseif self.ai_mode == 6 then
-			if last_recordnumber == self.startWork and fill_level ~= 100 then
-				self.wait = false
-			end
-			if last_recordnumber == self.stopWork and self.abortWork ~= nil then
-		    	self.wait = false
-			end
-			if last_recordnumber == self.stopWork and self.abortWork == nil then
-		    	self.global_info_text = courseplay:get_locale(self, "CPWorkEnd") --'hat Arbeit beendet.'
 			else
-				self.global_info_text = courseplay:get_locale(self, "CPUnloadBale") -- "Ballen werden entladen"	
+				self.global_info_text = courseplay:get_locale(self, "CPUnloadBale") -- "Ballen werden entladen"
 				if fill_level == 0 or drive_on then
 					self.wait = false
-				end			
+				end
 			end
-  		else
-		   	self.global_info_text = courseplay:get_locale(self, "CPReachedWaitPoint") --'bereit zum entladen.'
-		end
+  		end
 		
 		
      	allowedToDrive = false
@@ -175,24 +163,32 @@ function courseplay:drive(self, dt)
 		end
 		
 		-- Fertilice loading --only for one Implement !
-		if self.ai_mode == 4 and self.tipper_attached and self.startWork ~= nil and self.stopWork ~= nil then
-			if self.recordnumber == 2 and fill_level < 100 and not self.loaded then   --or self.loaded
-				allowedToDrive = false
-		    	self.info_text = string.format(courseplay:get_locale(self, "CPloading") ,tipper_fill_level,tipper_capacity )
-		    	
-				if self.tippers ~= nil then
-				  local tools= table.getn(self.tippers)
-				  for i=1, tools do
-				    local activeTool = self.tippers[i]
-				    if activeTool.sprayerFillActivatable:getIsActivatable() == true then  -- only work with self on tractor to do
-				       if activeTool.isSprayerFilling == false and fill_level < 100 then
-				         activeTool.sprayerFillActivatable:onActivateObject()
-				       end
-				    end
-				  end
+		if self.ai_mode == 4 then
+            if self.tipper_attached and self.startWork ~= nil and self.stopWork ~= nil then
+                if self.tippers ~= nil then
+				  	for i=1, table.getn(self.tippers) do
+				    	local activeTool = self.tippers[i]
+				    	if fill_level < self.required_fill_level_for_drive_on and not self.loaded and activeTool.sprayerFillTriggers ~= nil and table.getn(activeTool.sprayerFillTriggers) > 0 then
+					    	allowedToDrive = false
+			    			self.info_text = string.format(courseplay:get_locale(self, "CPloading") ,tipper_fill_level,tipper_capacity )
+			    			local sprayer = activeTool.sprayerFillTriggers[1]
+			    			activeTool:setIsSprayerFilling(true, sprayer.fillType, sprayer.isSiloTrigger, false)
+           				else
+           			    	allowedToDrive = true
+				  		end
+				  		if MapBGA ~= nil then
+					  		for i=1, table.getn(MapBGA.ModEvent.bunkers) do      --support Heady´s BGA
+								if fill_level < self.required_fill_level_for_drive_on and not self.loaded and MapBGA.ModEvent.bunkers[i].manure.trailerInTrigger ==  activeTool then
+									self.info_text = "BGA LADEN"
+		                            allowedToDrive = false
+		                            MapBGA.ModEvent.bunkers[i].manure.fill = true 
+		                        else
+	           			    		allowedToDrive = true
+								end;
+							end;
+						end
+					end
 				end
-   			else
-				allowedToDrive = true		 		    
 			end
         elseif  self.ai_mode == 4 and (self.startWork == nil or self.stopWork == nil) then
 			allowedToDrive = false
@@ -281,7 +277,7 @@ function courseplay:drive(self, dt)
 		slowDownRev = self.Waypoints[self.recordnumber].rev
 	end
 
-	if slowDownWP or self.ai_mode ~= 6 and slowDownRev or self.max_speed_level == 1 then
+	if (slowDownWP and not workArea) or slowDownRev or self.max_speed_level == 1 then
 		self.sl = 1
     	ref_speed = self.turn_speed
 	elseif slowStartEnd or workSpeed then
@@ -292,8 +288,18 @@ function courseplay:drive(self, dt)
 		ref_speed = self.max_speed
 	end
 	
-	if (self.sl == 3 and not self.beaconLightsActive) or (self.sl ~=3 and self.beaconLightsActive) then
-	  	self:setBeaconLightsVisibility(not self.beaconLightsActive);	  
+	if self.RulMode == 1 then
+		if (self.sl == 3 and not self.beaconLightsActive) or (self.sl ~=3 and self.beaconLightsActive) then
+	  		self:setBeaconLightsVisibility(not self.beaconLightsActive);
+		end
+    elseif self.RulMode == 2 then
+        if (self.drive and not self.beaconLightsActive) or (not self.drive and self.beaconLightsActive) then
+	  		self:setBeaconLightsVisibility(not self.beaconLightsActive);
+		end
+    elseif self.RulMode == 3 then
+        if self.beaconLightsActive then
+	  		self:setBeaconLightsVisibility(false);
+		end
 	end
 	
 	-- Speed Control
@@ -329,12 +335,15 @@ function courseplay:drive(self, dt)
 	
 	-- go, go, go!
 	if self.recordnumber + 1 <= self.maxnumber then
-	local beforeReverse = (self.Waypoints[self.recordnumber+1].rev and not self.Waypoints[last_recordnumber].rev)
+	local beforeReverse = (self.Waypoints[self.recordnumber+1].rev and (self.Waypoints[self.recordnumber].rev == false ))
 	local afterReverse =  (not self.Waypoints[self.recordnumber+1].rev and self.Waypoints[last_recordnumber].rev)
-		if self.Waypoints[self.recordnumber].wait or self.recordnumber == 1 or beforeReverse or afterReverse then
+		if (self.Waypoints[self.recordnumber].wait  or beforeReverse) and self.Waypoints[self.recordnumber].rev ==false then  -- or afterReverse or self.recordnumber == 1
 			distToChange = 1
+        elseif self.Waypoints[self.recordnumber].rev and self.Waypoints[self.recordnumber].wait or afterReverse then
+		    distToChange = 2
 		elseif self.Waypoints[self.recordnumber].rev then
-		    distToChange = 3
+		    distToChange = 6
+
 		else	
 			distToChange = 5
 		end
