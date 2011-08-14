@@ -80,7 +80,6 @@ function courseplay:handle_mode2(self, dt)
   	self.ai_state = 2
     --self.next_ai_state = 2
   end
-  
   if (current_tipper.fillLevel == current_tipper.capacity) or self.loaded then
     if table.getn(self.tippers) > self.currentTrailerToFill then			
       self.currentTrailerToFill = self.currentTrailerToFill + 1
