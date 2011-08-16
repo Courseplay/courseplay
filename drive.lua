@@ -142,6 +142,8 @@ function courseplay:drive(self, dt)
 					self.wait = false
 				end
 			end
+        else
+		   	self.global_info_text = courseplay:get_locale(self, "CPReachedWaitPoint")
   		end
 		
 		
@@ -173,19 +175,15 @@ function courseplay:drive(self, dt)
 			    			self.info_text = string.format(courseplay:get_locale(self, "CPloading") ,tipper_fill_level,tipper_capacity )
 			    			local sprayer = activeTool.sprayerFillTriggers[1]
 			    			activeTool:setIsSprayerFilling(true, sprayer.fillType, sprayer.isSiloTrigger, false)
-           				else
-           			    	allowedToDrive = true
 				  		end
 				  		if MapBGA ~= nil then
-					  		for i=1, table.getn(MapBGA.ModEvent.bunkers) do      --support HeadyÂ´s BGA
+					  		for i=1, table.getn(MapBGA.ModEvent.bunkers) do      --support Heady´s BGA
 								if fill_level < self.required_fill_level_for_drive_on and not self.loaded and MapBGA.ModEvent.bunkers[i].manure.trailerInTrigger ==  activeTool then
 									self.info_text = "BGA LADEN"
 		                            allowedToDrive = false
 		                            MapBGA.ModEvent.bunkers[i].manure.fill = true 
-		                        else
-	           			    		allowedToDrive = true
-								end;
-							end;
+								end
+							end
 						end
 					end
 				end
