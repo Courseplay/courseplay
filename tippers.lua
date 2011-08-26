@@ -12,11 +12,18 @@ function courseplay:reset_tools(self)
   self.tools_dirty = false;
 end
 
+-- is the tool a baler?
+function courseplay:is_baler(workTool)
+  if SpecializationUtil.hasSpecialization(Baler, workTool.specializations) or workTool.balerUnloadingState ~= nil then
+    return true
+  else
+    return false
+  end
+end
 
 -- update implements to find attached tippers
 function courseplay:update_tools(self, tractor_or_implement)    
   local tipper_attached = false
-  
   if SpecializationUtil.hasSpecialization(AITractor, tractor_or_implement.specializations) then 
     local object = tractor_or_implement 
   	if self.ai_mode == 1 or self.ai_mode == 2 then 
@@ -36,7 +43,7 @@ function courseplay:update_tools(self, tractor_or_implement)
         table.insert(self.tippers, object) 
       end 
 	 elseif self.ai_mode == 6 then -- Baler, foragewagon, baleloader
-		if SpecializationUtil.hasSpecialization(Baler, object.specializations) or SpecializationUtil.hasSpecialization(BaleLoader, object.specializations) or object.allowTipDischarge then 
+		if courseplay:is_baler(object) or SpecializationUtil.hasSpecialization(BaleLoader, object.specializations) or object.allowTipDischarge then 
 			tipper_attached = true 
 			table.insert(self.tippers, object) 
 		end
@@ -56,14 +63,14 @@ function courseplay:update_tools(self, tractor_or_implement)
 			if SpecializationUtil.hasSpecialization(Trailer, object.specializations) then --to do 
 		  		tipper_attached = true
 		  		table.insert(self.tippers, object)
-			end
+			end 
 		elseif self.ai_mode == 4 then -- Fertilizer
 			if SpecializationUtil.hasSpecialization(Sprayer, object.specializations) or object.name == "AmazoneUX5200" then
 				tipper_attached = true
 		  		table.insert(self.tippers, object)
 			end
 		elseif self.ai_mode == 6 then -- Baler, foragewagon, baleloader
-			if SpecializationUtil.hasSpecialization(Baler, object.specializations) or SpecializationUtil.hasSpecialization(BaleLoader, object.specializations) or object.allowTipDischarge then 
+			if courseplay:is_baler(object)or SpecializationUtil.hasSpecialization(BaleLoader, object.specializations) or object.allowTipDischarge then  
 		  		tipper_attached = true
 		  		table.insert(self.tippers, object)
 			end
@@ -77,14 +84,9 @@ function courseplay:update_tools(self, tractor_or_implement)
 		  tipper_attached = true 
 		end
 	end
---[[local mnum = table.getn(self.tippers)
-	for i=1, mnum do
-	    print("/n%d/n", i)
-		for k,v in pairs (self.tippers[i])  do
-			print(k.." "..tostring(v).." "..type(v))
-		end	
-	end]]
+
 	if tipper_attached then
+	    print("tipper attached")
 		return true
 	end
 	return nil

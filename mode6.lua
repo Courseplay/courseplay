@@ -16,11 +16,12 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 	-- worktool defined above
 	if workTool ~= nil then
 		-- balers
-		if SpecializationUtil.hasSpecialization(Baler, workTool.specializations) then
+		if courseplay:is_baler(workTool) then
 			if self.recordnumber >= self.startWork then
 				-- automatic opening for balers
-				if workTool.baleUnloadAnimationName ~= nil then
+				if workTool.balerUnloadingState ~= nil then
 					if fill_level == 100 and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
+
 						allowedToDrive = false
 						workTool:setIsTurnedOn(false, false);					
 						if table.getn(workTool.bales) > 0 then
