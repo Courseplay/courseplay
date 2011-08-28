@@ -86,7 +86,6 @@ function courseplay:update_tools(self, tractor_or_implement)
 	end
 
 	if tipper_attached then
-	    print("tipper attached")
 		return true
 	end
 	return nil

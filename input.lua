@@ -1,6 +1,6 @@
 
 function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
-  if isDown and button == 3 and self.isEntered then
+  if isDown and button == 3 and self.isEntered and self.mouse_right_key_enabled then
     if self.mouse_enabled then
       self.mouse_enabled = false
     else
@@ -46,6 +46,10 @@ function courseplay:deal_with_mouse_input(self, func, value)
           
           if func == "add_course" then
             courseplay:add_course(self, value, false)
+          end
+          
+          if func == "mouse_right_key" then
+            courseplay:switch_mouse_right_key_enabled(self)
           end
           
           if func == "key_input" then
@@ -302,6 +306,26 @@ end
 
 -- deals with keyEvents
 function courseplay:keyEvent(unicode, sym, modifier, isDown)
+     -- inspired by knagsted's 8400 MouseOverride
+	 if isDown and sym == Input.KEY_insert and self.isEntered and not self.mouse_right_key_enabled then
+	   if self.mouse_enabled then
+ 	     self.mouse_enabled = false
+	     if self.show_hud then
+	       self.show_hud = false
+	     end
+	  else
+	    self.mouse_enabled = true	    
+	    if not self.show_hud then
+	      self.showHudInfoBase = self.min_hud_page
+	      self.show_hud = true
+	    end
+	  end
+	  InputBinding.setShowMouseCursor(self.mouse_enabled)	
+	end 
+ 
+ 	if isDown and sym == Input.KEY_insert and bitAND(modifier, Input.MOD_ALT) > 0  and self.isEntered then
+ 	  initialize_courseplay()
+ 	end
  
   -- user input fu
   if isDown and self.user_input_active then

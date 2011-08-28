@@ -559,7 +559,7 @@
 
     <text name="CPWpOffsetX">
       <en>Waypoint-X Offset</en>
-      <de>Wegpunkt Offset-X</de>
+      <de>versetzt fahren</de>
     </text>
 
     <text name="CPWpOffsetZ">
@@ -585,6 +585,19 @@
      <text name="CrossPoints">
       <en>crossing points:</en>
       <de>Kreuzungspunkte:</de>
+    </text>
+    
+     <text name="CPopenHud">
+      <en>open Hud:</en>
+      <de>Hud anzeigen:</de>
+    </text>
+    <text name="CPopenKey">
+      <en>KEY INSERT</en>
+      <de>Einfügen-Taste</de>
+    </text>
+    <text name="CPopenMouse">
+      <en>right mouse button</en>
+      <de>rechte Maustaste</de>
     </text>
 
 

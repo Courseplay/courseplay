@@ -168,8 +168,11 @@ function courseplay:load(xmlFile)
 	self.locales.CourseGenerate = g_i18n:getText("CourseGenerate")
 	self.locales.CourseFieldPointSet = g_i18n:getText("CourseFieldPointSet")
 	self.locales.CPWorkingWidht = g_i18n:getText("CPWorkingWidht")
+	self.locales.CPopenHud = g_i18n:getText("CPopenHud")
+	self.locales.CPopenHudMouse = g_i18n:getText("CPopenMouse")
+	self.locales.CPopenHudKey = g_i18n:getText("CPopenKey")
 	
-	
+	self.mouse_right_key_enabled = true
 	self.drive  = false
     self.StopEnd = false
 	self.lastGui = nil
@@ -485,8 +488,10 @@ function courseplay:load(xmlFile)
 	courseplay:register_button(self, 6, "navigate_minus.png", "changeWpOffsetX", -0.5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.210, 0.010, 0.010)
     courseplay:register_button(self, 6, "navigate_plus.png", "changeWpOffsetX", 0.5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.210, 0.010, 0.010)
     
-    courseplay:register_button(self, 6, "navigate_minus.png", "changeWpOffsetZ", -0.5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.188, 0.010, 0.010)
-    courseplay:register_button(self, 6, "navigate_plus.png", "changeWpOffsetZ", 0.5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.188, 0.010, 0.010)
+    courseplay:register_button(self, 6, "blank.png", "mouse_right_key", nil, self.hudInfoBasePosX-0.05, self.hudInfoBasePosY + 0.185, 0.32, 0.015)
+    
+    --courseplay:register_button(self, 6, "navigate_minus.png", "mouse_right_key", -0.5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.188, 0.010, 0.010)
+    --courseplay:register_button(self, 6, "navigate_plus.png", "changeWpOffsetZ", 0.5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.188, 0.010, 0.010)
 
     courseplay:register_button(self, 6, "blank.png", "change_WaypointMode", 1, self.hudInfoBasePosX-0.05, self.hudInfoBasePosY + 0.164, 0.32, 0.015)
     
@@ -678,7 +683,8 @@ function courseplay:readStream(streamId, connection)
 	self.forced_to_stop = streamDebugReadBool(streamId)	
 	self.allow_following = streamDebugReadBool(streamId)	
 	self.mouse_enabled = streamDebugReadBool(streamId)
-	self.show_hud = streamDebugReadBool(streamId)	
+	self.show_hud = streamDebugReadBool(streamId)
+	self.mouse_right_key_enabled = streamDebugReadBool(streamId)		
 	self.showHudInfoBase = streamDebugReadInt32(streamId)
 	self.selected_combine_number = streamDebugReadInt32(streamId)
 	self.fold_move_direction = streamDebugReadInt32(streamId)  
@@ -794,6 +800,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteBool(streamId, self.allow_following)
 	streamDebugWriteBool(streamId, self.mouse_enabled)
 	streamDebugWriteBool(streamId, self.show_hud)
+	streamDebugWriteBool(streamId, self.mouse_right_key_enabled)	
 	streamDebugWriteInt32(streamId, self.showHudInfoBase)
 	streamDebugWriteInt32(streamId, self.selected_combine_number)
 	streamDebugWriteInt32(streamId, self.fold_move_direction)  

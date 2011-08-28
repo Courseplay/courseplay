@@ -178,7 +178,9 @@ function courseplay:change_RulMode(self, change_by)
   end
 end
 
-
+function courseplay:switch_mouse_right_key_enabled(self)
+self.mouse_right_key_enabled = not self.mouse_right_key_enabled
+end
 
 function courseplay:switch_search_combine(self)
   self.search_combine = not self.search_combine

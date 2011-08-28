@@ -288,7 +288,7 @@ function courseplay:loadHud(self)
 	  
 	  elseif self.showHudInfoBase == 6 then
 	    self.hudpage[6][1][1]= courseplay:get_locale(self, "CPWpOffsetX") -- X-Offset
-	    self.hudpage[6][1][2]= courseplay:get_locale(self, "CPWpOffsetZ") -- Z-Offset:
+	    self.hudpage[6][1][2]= courseplay:get_locale(self, "CPopenHud") -- Z-Offset:
 
      	if self.WpOffsetX ~= nil then
 		  self.hudpage[6][2][1]= string.format("%.1f", self.WpOffsetX) .. "m"
@@ -296,10 +296,10 @@ function courseplay:loadHud(self)
 		  self.hudpage[6][2][1]= "---"
 		end
 		
-		if self.WpOffsetZ ~= nil then
-		  self.hudpage[6][2][2]= string.format("%.1f", self.WpOffsetZ) .. "m"
+		if self.mouse_right_key_enabled then
+		  self.hudpage[6][2][2]= courseplay:get_locale(self, "CPopenHudMouse")
 		else
-		  self.hudpage[6][2][2]= "---"
+		  self.hudpage[6][2][2]= courseplay:get_locale(self, "CPopenHudKey")
 		end
 		
 		if self.waypointMode == 1 then
