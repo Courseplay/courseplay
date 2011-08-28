@@ -535,20 +535,31 @@ end
 -- is been called everey frame
 function courseplay:update(dt)	
 	
-	--if self.user_input_active == true then
-	--  if self.currentGui == nil then
-	--    g_gui:loadGui(Utils.getFilename("emptyGui.xml", self.cp_directory), self.input_gui);
-	--    g_gui:showGui(self.input_gui);
-	--    self.currentGui = self.input_gui
-	--  end
-    --else
-    --  if self.currentGui == self.input_gui then
-    --    g_gui:showGui("");
-    --  end
-    --end
+	if self.isEntered then
+		if self.user_input_active == true then
+		  if self.currentGui == nil then
+		    g_gui:loadGui(Utils.getFilename("emptyGui.xml", self.cp_directory), self.input_gui);
+		    g_gui:showGui(self.input_gui);
+		    self.currentGui = self.input_gui
+		  end
+		  
+		  for unicode,isDown in pairs(Input.keyPressedState) do 
+		    if isDown then
+		      self:setCourseplayFunc("key_input", unicode)
+		    end
+		  end
+		  Input.keyPressedState = {};
+	    else
+	      if self.currentGui == self.input_gui then
+	        g_gui:showGui("");
+	        self.currentGui = nil
+	      end
+	    end
+	    
+	    if self.user_input_message then
+	      courseplay:user_input(self);
+	    end
     
-    if self.user_input_message then
-      courseplay:user_input(self);
     end
     
     

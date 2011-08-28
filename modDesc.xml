@@ -606,6 +606,7 @@
 	<extraSourceFiles>
         <sourceFile filename="register.lua" />
 		<sourceFile filename="base.lua" />
+		<sourceFile filename="astar.lua" />
 		<sourceFile filename="button.lua" />
 		<sourceFile filename="combines.lua" />
 		<sourceFile filename="course_management.lua" />
