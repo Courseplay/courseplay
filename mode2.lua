@@ -44,7 +44,7 @@ function courseplay:handle_mode2(self, dt)
 	end
 
 	-- trailer full
-	if self.ai_state == 8 or (self.ai_state == 1 and fill_level >= self.required_fill_level_for_drive_on ) then
+	if self.ai_state == 8 then
 		self.recordnumber = 2
 		courseplay:unregister_at_combine(self, self.active_combine)   
 		self.ai_state = 0
@@ -76,20 +76,22 @@ function courseplay:handle_mode2(self, dt)
     	self.next_ai_state = 2
   	end
   
-	if (current_tipper.fillLevel == current_tipper.capacity) or self.loaded then
+	if (current_tipper.fillLevel == current_tipper.capacity) or self.loaded or (fill_level >= self.required_fill_level_for_drive_on and self.ai_state == 1) then
     	if table.getn(self.tippers) > self.currentTrailerToFill then
       		self.currentTrailerToFill = self.currentTrailerToFill + 1
     	else
       		self.currentTrailerToFill = nil
       		if self.ai_state ~= 5 then
-        	-- set waypoint 40 meters in front of combine
-        		if self.active_combine ~= nil and courseplay:distance_to_object(self, self.active_combine) < 10 then
-          			self.target_x, self.target_y, self.target_z = localToWorld(self.active_combine.rootNode, self.chopper_offset*2, 0, 25)   -- 40
-        		else
-          			self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, self.chopper_offset*2, 0, 25)    -- 40
-        		end
-				self.ai_state = 5
+        	    courseplay:calculate_course_to(self, self.Waypoints[2].cx, self.Waypoints[2].cz)
         		self.next_ai_state = 8
+        		
+        		-- set waypoint 40 meters in front of combine
+        		--if self.active_combine ~= nil and courseplay:distance_to_object(self, self.active_combine) < 10 then
+        		--self.target_x, self.target_y, self.target_z = localToWorld(self.active_combine.rootNode, self.chopper_offset*2, 0, 25)   -- 40
+        	    --else
+        	    --self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, self.chopper_offset*2, 0, 25)    -- 40
+        	    --end
+        	    --self.ai_state = 5
       		end
     	end
   	end
@@ -282,36 +284,15 @@ function courseplay:unload_combine(self, dt)
 	  	end
 		
 		if not self.calculated_course then
-			self.calculated_course = true
-			print(string.format("position x: %d z %d", x, z ))
-			local wp_counter = 0
-			local wps = CalcMoves(z, x, cz, cx)
-			print(table.show(wps))
-			if wps ~= nil then
-				self.next_targets = {}
-				for _,wp in pairs(wps) do
-					wp_counter = wp_counter + 1
-					
-					local next_wp = {x = wp.y, y=0, z=wp.x}
-					table.insert(self.next_targets, next_wp)
-					wp_counter = 0	
-				end
-				
-				self.target_x =  self.next_targets[1].x
-				self.target_y =  self.next_targets[1].y
-				self.target_z =  self.next_targets[1].z
-				self.no_speed_limit = true
-				table.remove(self.next_targets, 1)
-				
-				mode = 5
-				-- ai_state when waypoint is reached
-				self.next_ai_state = 2
-			end
-		  end
+			courseplay:calculate_course_to(self, cx, cz)
+			mode = 5
+			-- ai_state when waypoint is reached
+			self.next_ai_state = 2			
+		 end
        		
         local lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, cx, cy, cz) 
      	dod = Utils.vector2Length(lx, lz)
-	    print(string.format("Dod: %d lx: %d lz: %d x1: %d z1: %d", dod,lx,lz,x1,z1 ))
+	    --print(string.format("Dod: %d lx: %d lz: %d x1: %d z1: %d", dod,lx,lz,x1,z1 ))
 	  -- near point
 		if dod < 3 then  -- change to mode 4 == drive behind combine or cornChopper
 
@@ -654,7 +635,9 @@ function courseplay:unload_combine(self, dt)
 			  	    table.remove(self.next_targets, 1)
 		  	  	else
 		  	  		allowedToDrive = false
-
+		  	  		if self.next_ai_state ~= 2 then
+		  	  		  self.calculated_course = false
+		  	  		end
 			  	  	if self.next_ai_state == 7 and combine_turning == nil then
 			  	  		self.chopper_offset = self.combine_offset
 
@@ -835,4 +818,30 @@ function courseplay:unload_combine(self, dt)
 		 -- new
 	end
 
+end
+
+function courseplay:calculate_course_to(self, target_x, target_z)
+  local x, y, z = getWorldTranslation(self.aiTractorDirectionNode)
+  self.calculated_course = true
+  print(string.format("position x: %d z %d", x, z ))
+  local wp_counter = 0
+  local wps = CalcMoves(z, x, target_z, target_x)
+  print(table.show(wps))
+  if wps ~= nil then
+  self.next_targets = {}
+  for _,wp in pairs(wps) do
+  wp_counter = wp_counter + 1
+  
+  local next_wp = {x = wp.y, y=0, z=wp.x}
+  table.insert(self.next_targets, next_wp)
+  wp_counter = 0	
+  end
+  
+  self.target_x =  self.next_targets[1].x
+  self.target_y =  self.next_targets[1].y
+  self.target_z =  self.next_targets[1].z
+  self.no_speed_limit = true
+  table.remove(self.next_targets, 1)
+  self.ai_state = 5
+  end
 end

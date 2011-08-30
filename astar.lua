@@ -63,9 +63,13 @@ It will return nil if all the available nodes have been checked but the target h
 	       	end
 		end
 
+		if closedk >= max_tries then
+		  return nil		
+		end
+
 		closedk=closedk+1
 		table.insert(closedlist,closedk,openlist[basis])
-
+		
 		curbase=closedlist[closedk]				 -- define current base from which to grow list
 		
 		print(string.format("a star check x: %f y %f - closedk: %d", curbase.x, curbase.y, closedk ))
