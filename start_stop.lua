@@ -10,7 +10,7 @@ function courseplay:start(self)
 	self.drive  = false
 	self.record = false
 	self.record_pause = false
-	
+	self.calculated_course = false
 	-- set default ai_state if not in mode 2 or 3
 	if self.ai_mode ~= 2 and self.ai_mode ~= 3 then
 	  self.ai_state = 0

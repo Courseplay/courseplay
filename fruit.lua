@@ -1,5 +1,5 @@
 -- inspired by fieldstatus of Alan R. (ls-uk.info: thebadtouch)
-function courseplay:is_area_cut(x,z)
+function courseplay:area_has_fruit(x,z)
   
   local numFruits = table.getn(g_currentMission.fruits);
   local getdenFunc = Utils.getDensity;
@@ -8,29 +8,25 @@ function courseplay:is_area_cut(x,z)
   local density = 0
   local startX, startZ, endX, endZ, widthX, widthZ, heightX, heightZ;
   
-  local widthX=1;
-  local widthZ=1;
+  local widthX=0.5;
+  local widthZ=0.5;
   
   --x = x - 2.5
   --z = z - 2.5
   
-  for i=1,numFruits do
-  	if g_currentMission.fruits[i] ~= nil then
-  	  --for _,fid in pairs({'cutShortId', 'cutLongId', 'windrowId'}) do 
-  	  	if g_currentMission.fruits[i].id ~= nil and g_currentMission.fruits[i].id > 0 then
-  	  	  print(string.format("checking x: %d z %d - Fruit: %d", x, z, g_currentMission.fruits[i].id ))
-  	  	  density = getdenFunc(g_currentMission.fruits[i].id, chnum, x, z, widthX, widthZ, widthX, widthX);
-  	  	    	  	     	  	  
-  	  	  if density > 0 then
-  	  	    print("false")
-  	  	    print(density)
-  	  	    return true
-  	  	  end  	  	  
-  	  	end
-  	  --end
+  for i = 1, FruitUtil.NUM_FRUITTYPES do
+  	if i ~= FruitUtil.FRUITTYPE_GRASS then	    
+  	  	  
+  	  density = Utils.getFruitArea(i, x, z, x-widthX, z-widthZ, x+widthX, z+widthZ);
+  	    	  	     	  	  
+  	  if density > 0 then
+  	  	print(string.format("checking x: %d z %d - density: %d", x, z, density ))
+  	    return true
+  	  end  	  	  
   	end
   end
   
+  print(string.format(" x: %d z %d - is really cut!", x, z ))
   return false
 end
 

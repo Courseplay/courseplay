@@ -66,7 +66,7 @@ end
 
 function courseplay:register_at_combine(self, combine)
   local num_allowed_courseplayers = 1
-  
+  self.calculated_course = false
   if combine.courseplayers == nil then
     combine.courseplayers = {}
   end
@@ -99,7 +99,7 @@ function courseplay:unregister_at_combine(self, combine)
   if self.active_combine == nil or combine == nil then
     return true
   end
-  
+  self.calculated_course = false
   courseplay:remove_from_combines_ignore_list(self, combine)
   table.remove(combine.courseplayers, self.courseplay_position)
   

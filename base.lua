@@ -178,6 +178,7 @@ function courseplay:load(xmlFile)
 	self.lastGui = nil
 	self.currentGui = nil
 	self.input_gui = "emptyGui";	
+	self.calculated_course = false
 
 	self.recordnumber = 1
 	self.tmr = 1
@@ -329,7 +330,6 @@ function courseplay:load(xmlFile)
 	self.loaded  = false
 	self.unloading_tipper = nil
 	self.last_fill_level = nil
-	self.no_speed_limit = false
 	
 	-- for user input like saving
 	self.user_input_active = false
