@@ -59,6 +59,7 @@ function initialize_courseplay()
 	source(courseplay_path.."settings.lua")
 	source(courseplay_path.."courseplay_event.lua")
 	source(courseplay_path.."astar.lua")
+	source(courseplay_path.."fruit.lua")
 
 end
 

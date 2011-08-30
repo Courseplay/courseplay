@@ -239,6 +239,7 @@ function courseplay:unload_combine(self, dt)
 	local distance = Utils.vector2Length(x1, z1)
 	
 	if mode == 2 then
+	  
 	  self.sl = 2
 	  refSpeed = self.field_speed
 	  courseplay:remove_from_combines_ignore_list(self, combine)
@@ -265,6 +266,34 @@ function courseplay:unload_combine(self, dt)
 	    cx, cy, cz = localToWorld(combine.rootNode, 0, 0, -40)
 	  end
 	  
+	  if distance > 20 then
+	    print(string.format("position x: %d z %d", x, z ))
+	    local wp_counter = 0
+	    local wps = CalcMoves(z, x, cz, cx)
+	    print(table.show(wps))
+	    if wps ~= nil then
+	    	self.next_targets = {}
+		    for _,wp in pairs(wps) do
+		    	wp_counter = wp_counter + 1
+		    	
+		    	if wp_counter == 4 then
+		    		local next_wp = {x = wp.y, y=0, z=wp.x}
+		    		table.insert(self.next_targets, next_wp)
+		    	  	wp_counter = 0	
+		    	end
+		    end
+		    
+		    self.target_x =  self.next_targets[1].x
+		    self.target_y =  self.next_targets[1].y
+		    self.target_z =  self.next_targets[1].z
+		    self.no_speed_limit = true
+		    table.remove(self.next_targets, 1)
+		    
+		    mode = 5
+		    -- ai_state when waypoint is reached
+		    self.next_ai_state = 2
+	    end
+	  end
 	  		  
 	  local lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, cx, cy, cz)
 		  
@@ -529,11 +558,24 @@ function courseplay:unload_combine(self, dt)
 			  
 	  	distance_to_wp = courseplay:distance_to_point(self, cx, y, cz)
 	  	
-	  	if distance_to_wp < 10 then
+	  	
+	  	if distance_to_wp < 10 and not self.no_speed_limit then
 	  	  refSpeed = 3/3600
 	  	end
 	  	
-	  	if distance_to_wp < 2 then
+	  	-- avoid circling
+	  	local distToChange = 2
+	  	if self.shortest_dist == nil or self.shortest_dist > distance_to_wp then
+	  	  self.shortest_dist = distance_to_wp
+	  	end  	
+	  	
+	  	if self.dist > self.shortest_dist and distance_to_wp < 15 then
+	  	  distToChange = distance_to_wp + 1
+	  	end
+	  	
+	  	
+	  	if distance_to_wp <= distToChange then
+	  	  self.shortest_dist = nil
 	  	  allowedToDrive = false
 	  	  if table.getn(self.next_targets)> 0 then
 	  	  	mode = 5
@@ -568,6 +610,7 @@ function courseplay:unload_combine(self, dt)
 		  	  else
 		  	    mode = self.next_ai_state
 		  	  end
+		  	  self.no_speed_limit = false
 		  end
 	  	end  	
 	  end
@@ -663,112 +706,6 @@ function courseplay:unload_combine(self, dt)
   
 end
 
-function courseplay:check_for_fruit(self, distance)
-  
-  local x,y,z = localToWorld(self.aiTractorDirectionNode, 0, 0, distance) --getWorldTranslation(combine.aiTreshingDirectionNode);
-   
-  local length = Utils.vector2Length(x,z);
-  local aiThreshingDirectionX = x/length;
-  local aiThreshingDirectionZ = z/length; 
-  
-  local dirX, dirZ = aiThreshingDirectionX, aiThreshingDirectionZ;
-  if dirX == nil or x == nil or dirZ == nil then
-	  return 0, 0 
-  end
-  local sideX, sideZ = -dirZ, dirX;
-	
-  local threshWidth = 3     		
-  
-  local sideWatchDirOffset = -8
-  local sideWatchDirSize = 3
-  
-  
-  local lWidthX = x - sideX*0.5*threshWidth + dirX * sideWatchDirOffset;
-  local lWidthZ = z - sideZ*0.5*threshWidth + dirZ * sideWatchDirOffset;
-  local lStartX = lWidthX - sideX*0.7*threshWidth;
-  local lStartZ = lWidthZ - sideZ*0.7*threshWidth;
-  local lHeightX = lStartX + dirX*sideWatchDirSize;
-  local lHeightZ = lStartZ + dirZ*sideWatchDirSize;
-  
-  local rWidthX = x + sideX*0.5*threshWidth + dirX * sideWatchDirOffset;
-  local rWidthZ = z + sideZ*0.5*threshWidth + dirZ * sideWatchDirOffset;
-  local rStartX = rWidthX + sideX*0.7*threshWidth;
-  local rStartZ = rWidthZ + sideZ*0.7*threshWidth;
-  local rHeightX = rStartX + dirX*sideWatchDirSize;
-  local rHeightZ = rStartZ + dirZ*sideWatchDirSize;
-  local leftFruit = 0
-  local rightFruit = 0
-   
-   for i = 1, FruitUtil.NUM_FRUITTYPES do
-     if i ~= FruitUtil.FRUITTYPE_GRASS then	   	 
-	     leftFruit = leftFruit + Utils.getFruitArea(i, lStartX, lStartZ, lWidthX, lWidthZ, lHeightX, lHeightZ)
-	   
-	     rightFruit = rightFruit + Utils.getFruitArea(i, rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ)
-     end
-   end
-  
-  return leftFruit, rightFruit;
-end
-
-
-function courseplay:side_to_drive(self, combine, distance)
-  -- if there is a forced side to drive return this
-  if self.forced_side ~= nil then
-    if self.forced_side == "left" then
-      return 0, 1000
-    else
-      return 1000, 0
-    end
-  end  
-  
-  -- with autopilot combine, choose search area side
-  if combine.apCombinePresent ~= nil and combine.apCombinePresent then
-	if combine.autoPilotEnabled then 							
-		if combine.autoPilotAreaLeft.available and combine.autoPilotAreaLeft.active then
-			return 0, 1000
-		end
-		if combine.autoPilotAreaRight.available and combine.autoPilotAreaRight.active then 
-			return 1000, 0
-		end
-	end
-  end
-  
-  local x,y,z = localToWorld(combine.aiTreshingDirectionNode, 0, 0, distance) --getWorldTranslation(combine.aiTreshingDirectionNode);
-    
-  local dirX, dirZ = combine.aiThreshingDirectionX, combine.aiThreshingDirectionZ;
-  if dirX == nil or x == nil or dirZ == nil then
-    return 0, 0 
-  end
-  local sideX, sideZ = -dirZ, dirX;
-  
-  local threshWidth = 20		  
-  
-  local lWidthX = x - sideX*0.5*threshWidth + dirX * combine.sideWatchDirOffset;
-  local lWidthZ = z - sideZ*0.5*threshWidth + dirZ * combine.sideWatchDirOffset;
-  local lStartX = lWidthX - sideX*0.7*threshWidth;
-  local lStartZ = lWidthZ - sideZ*0.7*threshWidth;
-  local lHeightX = lStartX + dirX*combine.sideWatchDirSize;
-  local lHeightZ = lStartZ + dirZ*combine.sideWatchDirSize;
-  
-  local rWidthX = x + sideX*0.5*threshWidth + dirX * combine.sideWatchDirOffset;
-  local rWidthZ = z + sideZ*0.5*threshWidth + dirZ * combine.sideWatchDirOffset;
-  local rStartX = rWidthX + sideX*0.7*threshWidth;
-  local rStartZ = rWidthZ + sideZ*0.7*threshWidth;
-  local rHeightX = rStartX + dirX*self.sideWatchDirSize;
-  local rHeightZ = rStartZ + dirZ*self.sideWatchDirSize;
-  local leftFruit = 0
-  local rightFruit = 0
-  
-  for i = 1, FruitUtil.NUM_FRUITTYPES do
-    leftFruit = leftFruit + Utils.getFruitArea(i, lStartX, lStartZ, lWidthX, lWidthZ, lHeightX, lHeightZ)
-  
-    rightFruit = rightFruit + Utils.getFruitArea(i, rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ)
-  end
-  
-  --print(string.format("fruit:  left %f right %f",leftFruit,rightFruit ))
-  
-  return leftFruit,rightFruit
-end
 
 function courseplay:follow_tractor(self, dt, tractor)
   local allowedToDrive = true

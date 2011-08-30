@@ -329,6 +329,7 @@ function courseplay:load(xmlFile)
 	self.loaded  = false
 	self.unloading_tipper = nil
 	self.last_fill_level = nil
+	self.no_speed_limit = false
 	
 	-- for user input like saving
 	self.user_input_active = false
@@ -636,11 +637,9 @@ function courseplay:readStream(streamId, connection)
   
   self.courseplay_courses = courseplay_courses
   
-  print("CCCCCCCCCCCCCCCCCCCCCCCCCC")
   print(table.getn(courseplay_courses))
   
   courseplay:reinit_courses(self)
-  print("CCCCCCCCCCCCCCCCCCCCCCCCCC")
   
   self.max_speed = streamDebugReadFloat32(streamId)
   self.turn_speed = streamDebugReadFloat32(streamId)
