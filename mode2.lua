@@ -289,6 +289,7 @@ function courseplay:unload_combine(self, dt)
 		if not self.calculated_course then
 			if courseplay:calculate_course_to(self, cx, cz) then
 				mode = 5
+				self.shortest_dist = nil
 				-- ai_state when waypoint is reached
 				self.next_ai_state = 2			
 			end
@@ -387,27 +388,23 @@ function courseplay:unload_combine(self, dt)
 				-- turn left
 			    self.turn_factor = 5 --??
 			    -- insert waypoint behind combine
-		    	local leftFruit, rightFruit =  courseplay:side_to_drive(self, combine, 20)
-		        local next_x, next_y, next_z = localToWorld(combine.rootNode, 5, 0, -5)
-				if leftFruit > rightFruit then
-					next_x, next_y, next_z = localToWorld(combine.rootNode, -5, 0, -5)
-				end
+		    	--local leftFruit, rightFruit =  courseplay:side_to_drive(self, combine, 20)
+		        local next_x, next_y, next_z = localToWorld(combine.rootNode, 0, 0, -10)
+				--if leftFruit > rightFruit then
+				--	next_x, next_y, next_z = localToWorld(combine.rootNode, -5, 0, -10)
+				--end
 				local next_wp = {x = next_x, y=next_y, z=next_z}
-				courseplay:addsign(self,next_x, 10,next_z)
+				
 				table.insert(self.next_targets, next_wp)
 				-- insert another point behind combine
-		       	next_x, next_y, next_z = localToWorld(combine.rootNode, 5, 0, -30)
-		       	if leftFruit > rightFruit then
-					next_x, next_y, next_z = localToWorld(combine.rootNode, -5, 0, -30)
-				end
+		       	next_x, next_y, next_z = localToWorld(combine.rootNode, 0, 0, -30)
+		       	--if leftFruit > rightFruit then
+				--	next_x, next_y, next_z = localToWorld(combine.rootNode, -5, 0, -30)
+				--end
 		        local next_wp = {x = next_x, y=next_y, z=next_z}
-		        courseplay:addsign(self,next_x, 10,next_z)
 				table.insert(self.next_targets, next_wp)
 				mode = 9 -- turn around and then wait for next start
 			    self.next_ai_state = 1
-
-
-
 	    	end
 		end
 
@@ -525,6 +522,7 @@ function courseplay:unload_combine(self, dt)
 
 
 				mode = 5
+				self.shortest_dist = nil
 			    self.next_ai_state = 7
 
 			else -- combine
@@ -543,6 +541,7 @@ function courseplay:unload_combine(self, dt)
 
 		     	table.insert(self.next_targets, next_wp)
 		      	mode = 5
+				self.shortest_dist = nil
 		      	self.next_ai_state = 2
 			end
 		elseif mode ~=5 and mode ~= 9 then
@@ -579,6 +578,7 @@ function courseplay:unload_combine(self, dt)
 				-- is there another waypoint to go to?
 					if table.getn(self.next_targets)> 0 then
 						mode = 5
+						self.shortest_dist = nil
 					  	self.target_x =  self.next_targets[1].x
 					  	self.target_y =  self.next_targets[1].y
 					  	self.target_z =  self.next_targets[1].z
