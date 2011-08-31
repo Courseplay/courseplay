@@ -52,7 +52,7 @@ It will return nil if all the available nodes have been checked but the target h
 	local ysize=1024					-- vertical map size
 	local curbase={}						-- Current square from which to check possible moves
 	local basis=1						-- Index of current base	
-	local max_tries = 10000
+	local max_tries = 3000
 	local max_distance_factor = 10
 	local air_distance = tempH
 	
@@ -78,7 +78,7 @@ It will return nil if all the available nodes have been checked but the target h
 		
 		curbase=closedlist[closedk]				 -- define current base from which to grow list
 		
-		print(string.format("a star check x: %f y %f - closedk: %d", curbase.x, curbase.y, closedk ))
+		--print(string.format("a star check x: %f y %f - closedk: %d", curbase.x, curbase.y, closedk ))
 		
 		local wOK=true
 		local eOK=true           				 -- Booleans defining if they're OK to add
@@ -166,7 +166,7 @@ It will return nil if all the available nodes have been checked but the target h
 		for k=1,listk do
 		    if wOK and openlist[k].x==curbase.x+interval and openlist[k].y==curbase.y then
 		      if openlist[k].g>tempG  then
-		      	  print("right OK 1")
+		      	  --print("right OK 1")
 				  tempH=math.abs((curbase.x+interval)-tx)+math.abs(curbase.y-ty)
 				  table.insert(openlist,k,{x=curbase.x+interval, y=curbase.y, g=tempG, h=tempH, f=tempG+tempH, par=closedk})				 
 			  end
@@ -175,7 +175,7 @@ It will return nil if all the available nodes have been checked but the target h
 
 		    if eOK and openlist[k].x==curbase.x-interval and openlist[k].y==curbase.y then		      
 		      if openlist[k].g>tempG  then
-		        print("left OK 1")
+		        --print("left OK 1")
 			    tempH=math.abs((curbase.x-interval)-tx)+math.abs(curbase.y-ty)
 			    table.insert(openlist,k,{x=curbase.x-interval, y=curbase.y, g=tempG, h=tempH, f=tempG+tempH, par=closedk})
 			   
@@ -185,7 +185,7 @@ It will return nil if all the available nodes have been checked but the target h
 
 		    if sOK and openlist[k].x==curbase.x and openlist[k].y==curbase.y+interval then		      
 		      if openlist[k].g>tempG  then
-		        print("down OK 1")
+		        --print("down OK 1")
 			    tempH=math.abs((curbase.x)-tx)+math.abs(curbase.y+interval-ty)
 				
 			    table.insert(openlist,k,{x=curbase.x, y=curbase.y+interval, g=tempG, h=tempH, f=tempG+tempH, par=closedk})
@@ -196,7 +196,7 @@ It will return nil if all the available nodes have been checked but the target h
 
 		    if nOK and openlist[k].x==curbase.x and openlist[k].y==curbase.y-interval then
 		      if openlist[k].g>tempG then
-		        print("up OK 1")
+		        --print("up OK 1")
 			    tempH=math.abs((curbase.x)-tx)+math.abs(curbase.y-interval-ty)
 			    table.insert(openlist,k,{x=curbase.x, y=curbase.y-interval, g=tempG, h=tempH, f=tempG+tempH, par=closedk})
 			    
@@ -208,7 +208,7 @@ It will return nil if all the available nodes have been checked but the target h
 		-- Add points to openlist
 		-- Add point to the right of current base point
 		if wOK then
-			print("right OK")
+			--print("right OK")
 			listk=listk+1
 			tempH=math.abs((curbase.x+interval)-tx)+math.abs(curbase.y-ty)
 			
@@ -217,7 +217,7 @@ It will return nil if all the available nodes have been checked but the target h
 
 		-- Add point to the left of current base point
 		if eOK then
-			print("left OK")
+			--print("left OK")
 			listk=listk+1
 			tempH=math.abs((curbase.x-interval)-tx)+math.abs(curbase.y-ty)			
 			table.insert(openlist,listk,{x=curbase.x-interval, y=curbase.y, g=tempG, h=tempH, f=tempG+tempH, par=closedk})			
@@ -225,7 +225,7 @@ It will return nil if all the available nodes have been checked but the target h
 
 		-- Add point on the top of current base point
 		if sOK then
-			print("down OK")
+			--print("down OK")
 			listk=listk+1
 			tempH=math.abs(curbase.x-tx)+math.abs((curbase.y+interval)-ty)
 			
@@ -234,7 +234,7 @@ It will return nil if all the available nodes have been checked but the target h
 
 		-- Add point on the bottom of current base point
 		if nOK then
-			print("up OK")
+			--print("up OK")
 			listk=listk+1
 			tempH=math.abs(curbase.x-tx)+math.abs((curbase.y-interval)-ty)
 			

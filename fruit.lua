@@ -22,13 +22,13 @@ function courseplay:area_has_fruit(x,z)
   	  density = Utils.getFruitArea(i, x, z, x-widthX, z-widthZ, x+widthX, z+widthZ);
   	    	  	     	  	  
   	  if density > 0 then
-  	  	print(string.format("checking x: %d z %d - density: %d", x, z, density ))
+  	  	--print(string.format("checking x: %d z %d - density: %d", x, z, density ))
   	    return true
   	  end  	  	  
   	end
   end
   
-  print(string.format(" x: %d z %d - is really cut!", x, z ))
+  --print(string.format(" x: %d z %d - is really cut!", x, z ))
   return false
 end
 

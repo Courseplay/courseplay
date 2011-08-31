@@ -73,6 +73,17 @@ function courseplay:register_at_combine(self, combine)
   
   if combine.grainTankCapacity == 0 then
      num_allowed_courseplayers = 2
+  else
+     if self.realistic_driving then
+		 -- is the pipe on the correct side?
+		 if combine.turnStage == 1 or combine.turnStage == 2 then
+		   return false
+		 end
+		 local left_fruit, right_fruit = courseplay:side_to_drive(self, combine, -10)
+		 if left_fruit > right_fruit then
+		   return false
+		 end
+	 end
   end
   
   if table.getn(combine.courseplayers) == num_allowed_courseplayers then

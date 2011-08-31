@@ -478,7 +478,10 @@ function courseplay:unload_combine(self, dt)
 															  ---------------------------------------------------------------------
 	end	 -- end mode 3 or 4
 
-    
+	if combine_turning and self.realistic_driving and not cornChopper and combine_fill_level > 0 then
+	  combine.waitForTurnTime = combine.time + 100
+	end	
+	
 	if combine_turning and distance < 30 then
 		if tipper_percentage >= self.required_fill_level_for_drive_on then
 	    	self.loaded = true
@@ -526,23 +529,25 @@ function courseplay:unload_combine(self, dt)
 			    self.next_ai_state = 7
 
 			else -- combine
+			    -- let the combine wait
+				if not self.realistic_driving then
+					self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, 10, 0, -10)
+					self.turn_factor = 5  -- turn left
 
-	      		self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, 10, 0, -10)
-		      	self.turn_factor = 5  -- turn left
+					-- insert waypoint behind combine
+					local next_x, next_y, next_z = localToWorld(combine.rootNode, 0, 0, -10)
+					local next_wp = {x = next_x, y=next_y, z=next_z}
+					table.insert(self.next_targets, next_wp)
 
-		      	-- insert waypoint behind combine
-		      	local next_x, next_y, next_z = localToWorld(combine.rootNode, 0, 0, -10)
-		      	local next_wp = {x = next_x, y=next_y, z=next_z}
-		      	table.insert(self.next_targets, next_wp)
+					 -- insert another point behind combine
+					local next_x, next_y, next_z = localToWorld(combine.rootNode, 0, 0, -30)
+					local next_wp = {x = next_x, y=next_y, z=next_z}
 
-		     	 -- insert another point behind combine
-		     	local next_x, next_y, next_z = localToWorld(combine.rootNode, 0, 0, -30)
-		     	local next_wp = {x = next_x, y=next_y, z=next_z}
-
-		     	table.insert(self.next_targets, next_wp)
-		      	mode = 5
-				self.shortest_dist = nil
-		      	self.next_ai_state = 2
+					table.insert(self.next_targets, next_wp)
+					mode = 5
+					self.shortest_dist = nil
+					self.next_ai_state = 2
+				end
 			end
 		elseif mode ~=5 and mode ~= 9 then
 			-- just wait until combine has turned
@@ -823,12 +828,37 @@ function courseplay:unload_combine(self, dt)
 end
 
 function courseplay:calculate_course_to(self, target_x, target_z)
-  local x, y, z = getWorldTranslation(self.aiTractorDirectionNode)
   self.calculated_course = true
-  print(string.format("position x: %d z %d", x, z ))
+  -- TODO check if there is fruit between me and the target, return false if not to avoid the calculating
+  local x, y, z = getWorldTranslation(self.aiTractorDirectionNode)
+  local hx, hy, hz = localToWorld(self.aiTractorDirectionNode, -2, 0, 0)
+  local lx, ly, lz = nil, nil, nil
+  local dlx, dly, dlz = worldToLocal(self.aiTractorDirectionNode, target_x, y,target_z)
+  local dnx = dlz * -1
+  local dnz = dlx
+  local angle = math.atan(dnz / dnx)
+  dnx = math.cos(angle) * -2
+  dnz = math.sin(angle) * -2  
+  hx, hy, hz = localToWorld(self.aiTractorDirectionNode, dnx, 0, dnz)
+  local density = 0
+  for i = 1, FruitUtil.NUM_FRUITTYPES do
+  	if i ~= FruitUtil.FRUITTYPE_GRASS then	
+  	   density = density + Utils.getFruitArea(i, x, z, target_x, target_z, hx, hz);
+	end
+  end
+  
+  if density == 0 then
+    return false
+  end
+  
+  if not self.realistic_driving then
+    return false
+  end
+  
+  --print(string.format("position x: %d z %d", x, z ))
   local wp_counter = 0
   local wps = CalcMoves(z, x, target_z, target_x)
-  print(table.show(wps))
+  --print(table.show(wps))
   
   if wps ~= nil then
 	  self.next_targets = {}
