@@ -12,6 +12,8 @@ end
 
 function CalcMoves(px, py, tx, ty)	-- Based on some code of LMelior but made it work and improved way beyond his code, still thx LMelior!
  local interval = 5
+ local vertical_costs = 10
+ local diagnoal_costs = 14
  
  px = round(px, interval)
  py = round(py, interval)
@@ -74,62 +76,67 @@ It will return nil if all the available nodes have been checked but the target h
 		
 		print(string.format("a star check x: %f y %f - closedk: %d", curbase.x, curbase.y, closedk ))
 		
-		local rightOK=true
-		local leftOK=true           				 -- Booleans defining if they're OK to add
-		local downOK=true             				 -- (must be reset for each while loop)
-		local upOK=true
+		local wOK=true
+		local eOK=true           				 -- Booleans defining if they're OK to add
+		local sOK=true             				 -- (must be reset for each while loop)
+		local nOK=true
+
+		local nwOK=true
+		local seOK=true           				 
+		local swOK=true             				 
+		local noOK=true
 
 		-- Look through closedlist
 		if closedk>0 then
 		    for k=1,closedk do
 				if closedlist[k].x==curbase.x+interval and closedlist[k].y==curbase.y then
-					rightOK=false
+					wOK=false
 				end
 				if closedlist[k].x==curbase.x-interval and closedlist[k].y==curbase.y then
-					leftOK=false
+					eOK=false
 				end
 				if closedlist[k].x==curbase.x and closedlist[k].y==curbase.y+interval then
-					downOK=false
+					sOK=false
 				end
 				if closedlist[k].x==curbase.x and closedlist[k].y==curbase.y-interval then
-					upOK=false
+					nOK=false
 				end
 		    end
 		end
 
 		-- Check if next points are on the map and within moving distance
 		if curbase.x+interval>xsize then
-			rightOK=false
+			wOK=false
 		end
 		if curbase.x-interval<-1024 then
-			leftOK=false
+			eOK=false
 		end
 		if curbase.y+interval>ysize then
-			downOK=false
+			sOK=false
 		end
 		if curbase.y-interval<-1024 then
-			upOK=false
+			nOK=false
 		end
 
 		-- If it IS on the map, check map for obstacles
 		--(Lua returns an error if you try to access a table position that doesn't exist, so you can't combine it with above)
-		if rightOK and curbase.x+interval<=xsize and courseplay:area_has_fruit(curbase.y, curbase.x+interval) then
-			rightOK=false
+		if wOK and curbase.x+interval<=xsize and courseplay:area_has_fruit(curbase.y, curbase.x+interval) then
+			wOK=false
 		end
-		if leftOK and curbase.x-interval>=-1024 and courseplay:area_has_fruit(curbase.y, curbase.x-interval) then
-			leftOK=false
+		if eOK and curbase.x-interval>=-1024 and courseplay:area_has_fruit(curbase.y, curbase.x-interval) then
+			eOK=false
 		end
-		if downOK and curbase.y+interval<=ysize and courseplay:area_has_fruit(curbase.y+interval, curbase.x) then
-			downOK=false
+		if sOK and curbase.y+interval<=ysize and courseplay:area_has_fruit(curbase.y+interval, curbase.x) then
+			sOK=false
 		end
-		if upOK and curbase.y-interval>=-1024 and courseplay:area_has_fruit(curbase.y-interval, curbase.x) then
-			upOK=false
+		if nOK and curbase.y-interval>=-1024 and courseplay:area_has_fruit(curbase.y-interval, curbase.x) then
+			nOK=false
 		end
 
 		-- check if the move from the current base is shorter then from the former parrent
 		tempG=curbase.g+1
 		for k=1,listk do
-		    if rightOK and openlist[k].x==curbase.x+interval and openlist[k].y==curbase.y then
+		    if wOK and openlist[k].x==curbase.x+interval and openlist[k].y==curbase.y then
 		      if openlist[k].g>tempG  then
 		      	  print("right OK 1")
 				  tempH=math.abs((curbase.x+interval)-tx)+math.abs(curbase.y-ty)
@@ -140,10 +147,10 @@ It will return nil if all the available nodes have been checked but the target h
 				    print("too far away")
 				  end
 			  end
-			  rightOK=false
+			  wOK=false
 		    end
 
-		    if leftOK and openlist[k].x==curbase.x-interval and openlist[k].y==curbase.y then		      
+		    if eOK and openlist[k].x==curbase.x-interval and openlist[k].y==curbase.y then		      
 		      if openlist[k].g>tempG  then
 		        print("left OK 1")
 			    tempH=math.abs((curbase.x-interval)-tx)+math.abs(curbase.y-ty)
@@ -154,10 +161,10 @@ It will return nil if all the available nodes have been checked but the target h
 			      print("too far away")
 			    end
 			  end
-			  leftOK=false
+			  eOK=false
 		    end
 
-		    if downOK and openlist[k].x==curbase.x and openlist[k].y==curbase.y+interval then		      
+		    if sOK and openlist[k].x==curbase.x and openlist[k].y==curbase.y+interval then		      
 		      if openlist[k].g>tempG  then
 		        print("down OK 1")
 			    tempH=math.abs((curbase.x)-tx)+math.abs(curbase.y+interval-ty)
@@ -168,10 +175,10 @@ It will return nil if all the available nodes have been checked but the target h
 			      print("too far away")
 			    end
 			  end
-			  downOK=false
+			  sOK=false
 		    end
 
-		    if upOK and openlist[k].x==curbase.x and openlist[k].y==curbase.y-interval then
+		    if nOK and openlist[k].x==curbase.x and openlist[k].y==curbase.y-interval then
 		      if openlist[k].g>tempG then
 		        print("up OK 1")
 			    tempH=math.abs((curbase.x)-tx)+math.abs(curbase.y-interval-ty)
@@ -182,13 +189,13 @@ It will return nil if all the available nodes have been checked but the target h
 			      print("too far away")
 			    end
 			  end
-			  upOK=false
+			  nOK=false
 		    end
    		end
 
 		-- Add points to openlist
 		-- Add point to the right of current base point
-		if rightOK then
+		if wOK then
 			print("right OK")
 			listk=listk+1
 			tempH=math.abs((curbase.x+interval)-tx)+math.abs(curbase.y-ty)
@@ -201,7 +208,7 @@ It will return nil if all the available nodes have been checked but the target h
 		end
 
 		-- Add point to the left of current base point
-		if leftOK then
+		if eOK then
 			print("left OK")
 			listk=listk+1
 			tempH=math.abs((curbase.x-interval)-tx)+math.abs(curbase.y-ty)
@@ -214,7 +221,7 @@ It will return nil if all the available nodes have been checked but the target h
 		end
 
 		-- Add point on the top of current base point
-		if downOK then
+		if sOK then
 			print("down OK")
 			listk=listk+1
 			tempH=math.abs(curbase.x-tx)+math.abs((curbase.y+interval)-ty)
@@ -227,7 +234,7 @@ It will return nil if all the available nodes have been checked but the target h
 		end
 
 		-- Add point on the bottom of current base point
-		if upOK then
+		if nOK then
 			print("up OK")
 			listk=listk+1
 			tempH=math.abs(curbase.x-tx)+math.abs((curbase.y-interval)-ty)
