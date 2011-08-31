@@ -11,6 +11,10 @@ function round(num, idp)
 end
 
 function CalcMoves(px, py, tx, ty)	-- Based on some code of LMelior but made it work and improved way beyond his code, still thx LMelior!
+ if not courseplay:is_field(py, px) then
+    return nil
+  end
+
  local interval = 5
  local vertical_costs = 10
  local diagnoal_costs = 14
@@ -101,21 +105,45 @@ It will return nil if all the available nodes have been checked but the target h
 				if closedlist[k].x==curbase.x and closedlist[k].y==curbase.y-interval then
 					nOK=false
 				end
+				
+				if closedlist[k].x==curbase.x+interval and closedlist[k].y==curbase.y-interval then
+					nwOK=false
+				end
+				
+				if closedlist[k].x==curbase.x-interval and closedlist[k].y==curbase.y-interval then
+					neOK=false
+				end
+				
+				if closedlist[k].x==curbase.x+interval and closedlist[k].y==curbase.y+interval then
+					swOK=false
+				end
+				
+				if closedlist[k].x==curbase.x-interval and closedlist[k].y==curbase.y+interval then
+					seOK=false
+				end
 		    end
 		end
 
 		-- Check if next points are on the map and within moving distance
 		if curbase.x+interval>xsize then
 			wOK=false
+			nwOK=false
+			swOK=false
 		end
 		if curbase.x-interval<-1024 then
 			eOK=false
+			neOK=false
+			seOK=false
 		end
 		if curbase.y+interval>ysize then
 			sOK=false
+			swOK=false
+			seOK=false
 		end
 		if curbase.y-interval<-1024 then
 			nOK=false
+			nwOK=false
+			neOK=false
 		end
 
 		-- If it IS on the map, check map for obstacles
@@ -134,18 +162,13 @@ It will return nil if all the available nodes have been checked but the target h
 		end
 
 		-- check if the move from the current base is shorter then from the former parrent
-		tempG=curbase.g+1
+		tempG=curbase.g+interval
 		for k=1,listk do
 		    if wOK and openlist[k].x==curbase.x+interval and openlist[k].y==curbase.y then
 		      if openlist[k].g>tempG  then
 		      	  print("right OK 1")
 				  tempH=math.abs((curbase.x+interval)-tx)+math.abs(curbase.y-ty)
-				  if tempH < max_distance_factor * air_distance then
-				    table.insert(openlist,k,{x=curbase.x+interval, y=curbase.y, g=tempG, h=tempH, f=tempG+tempH, par=closedk})
-				  else
-				    print(tempH)
-				    print("too far away")
-				  end
+				  table.insert(openlist,k,{x=curbase.x+interval, y=curbase.y, g=tempG, h=tempH, f=tempG+tempH, par=closedk})				 
 			  end
 			  wOK=false
 		    end
@@ -154,12 +177,8 @@ It will return nil if all the available nodes have been checked but the target h
 		      if openlist[k].g>tempG  then
 		        print("left OK 1")
 			    tempH=math.abs((curbase.x-interval)-tx)+math.abs(curbase.y-ty)
-			    if tempH < max_distance_factor * air_distance then
-			      table.insert(openlist,k,{x=curbase.x-interval, y=curbase.y, g=tempG, h=tempH, f=tempG+tempH, par=closedk})
-			    else
-			      print(tempH)
-			      print("too far away")
-			    end
+			    table.insert(openlist,k,{x=curbase.x-interval, y=curbase.y, g=tempG, h=tempH, f=tempG+tempH, par=closedk})
+			   
 			  end
 			  eOK=false
 		    end
@@ -168,12 +187,9 @@ It will return nil if all the available nodes have been checked but the target h
 		      if openlist[k].g>tempG  then
 		        print("down OK 1")
 			    tempH=math.abs((curbase.x)-tx)+math.abs(curbase.y+interval-ty)
-			    if tempH < max_distance_factor * air_distance then
-			      table.insert(openlist,k,{x=curbase.x, y=curbase.y+interval, g=tempG, h=tempH, f=tempG+tempH, par=closedk})
-			    else
-			      print(tempH)
-			      print("too far away")
-			    end
+				
+			    table.insert(openlist,k,{x=curbase.x, y=curbase.y+interval, g=tempG, h=tempH, f=tempG+tempH, par=closedk})
+			  
 			  end
 			  sOK=false
 		    end
@@ -182,12 +198,8 @@ It will return nil if all the available nodes have been checked but the target h
 		      if openlist[k].g>tempG then
 		        print("up OK 1")
 			    tempH=math.abs((curbase.x)-tx)+math.abs(curbase.y-interval-ty)
-			    if tempH < max_distance_factor * air_distance then
-			      table.insert(openlist,k,{x=curbase.x, y=curbase.y-interval, g=tempG, h=tempH, f=tempG+tempH, par=closedk})
-			    else
-			      print(tempH)
-			      print("too far away")
-			    end
+			    table.insert(openlist,k,{x=curbase.x, y=curbase.y-interval, g=tempG, h=tempH, f=tempG+tempH, par=closedk})
+			    
 			  end
 			  nOK=false
 		    end
@@ -199,25 +211,16 @@ It will return nil if all the available nodes have been checked but the target h
 			print("right OK")
 			listk=listk+1
 			tempH=math.abs((curbase.x+interval)-tx)+math.abs(curbase.y-ty)
-			if tempH < max_distance_factor * air_distance then
-			  table.insert(openlist,listk,{x=curbase.x+interval, y=curbase.y, g=tempG, h=tempH, f=tempG+tempH, par=closedk})
-			else
-			  print(tempH)
-			  print("too far away")
-			end
+			
+			table.insert(openlist,listk,{x=curbase.x+interval, y=curbase.y, g=tempG, h=tempH, f=tempG+tempH, par=closedk})			
 		end
 
 		-- Add point to the left of current base point
 		if eOK then
 			print("left OK")
 			listk=listk+1
-			tempH=math.abs((curbase.x-interval)-tx)+math.abs(curbase.y-ty)
-			if tempH < max_distance_factor * air_distance then
-			  table.insert(openlist,listk,{x=curbase.x-interval, y=curbase.y, g=tempG, h=tempH, f=tempG+tempH, par=closedk})
-			else
-			  print(tempH)
-			  print("too far away")
-			end
+			tempH=math.abs((curbase.x-interval)-tx)+math.abs(curbase.y-ty)			
+			table.insert(openlist,listk,{x=curbase.x-interval, y=curbase.y, g=tempG, h=tempH, f=tempG+tempH, par=closedk})			
 		end
 
 		-- Add point on the top of current base point
@@ -225,12 +228,8 @@ It will return nil if all the available nodes have been checked but the target h
 			print("down OK")
 			listk=listk+1
 			tempH=math.abs(curbase.x-tx)+math.abs((curbase.y+interval)-ty)
-			if tempH < max_distance_factor * air_distance then
-			  table.insert(openlist,listk,{x=curbase.x, y=curbase.y+interval, g=tempG, h=tempH, f=tempG+tempH, par=closedk})
-			else
-			  print(tempH)
-			  print("too far away")
-			end
+			
+			table.insert(openlist,listk,{x=curbase.x, y=curbase.y+interval, g=tempG, h=tempH, f=tempG+tempH, par=closedk})			
 		end
 
 		-- Add point on the bottom of current base point
@@ -238,12 +237,8 @@ It will return nil if all the available nodes have been checked but the target h
 			print("up OK")
 			listk=listk+1
 			tempH=math.abs(curbase.x-tx)+math.abs((curbase.y-interval)-ty)
-			if tempH < max_distance_factor * air_distance then
-			  table.insert(openlist,listk,{x=curbase.x, y=curbase.y-interval, g=tempG, h=tempH, f=tempG+tempH, par=closedk})
-			else
-			  print(tempH)
-			  print("too far away")
-			end
+			
+			table.insert(openlist,listk,{x=curbase.x, y=curbase.y-interval, g=tempG, h=tempH, f=tempG+tempH, par=closedk})			
 		end
 
 		table.remove(openlist,basis)

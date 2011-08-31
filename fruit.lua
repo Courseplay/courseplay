@@ -1,6 +1,8 @@
 -- inspired by fieldstatus of Alan R. (ls-uk.info: thebadtouch)
 function courseplay:area_has_fruit(x,z)
-  
+  if not courseplay:is_field(x, z) then
+    return false
+  end
   local numFruits = table.getn(g_currentMission.fruits);
   local getdenFunc = Utils.getDensity;
   local getfruitFunc = Utils.getFruitArea;
@@ -30,7 +32,15 @@ function courseplay:area_has_fruit(x,z)
   return false
 end
 
-
+function courseplay:is_field(x, z)
+  local widthX=0.5;
+  local widthZ=0.5;
+  if Utils.getDensity(g_currentMission.terrainDetailId, 2, x, z, x-widthX, z-widthZ, x+widthX, z+widthZ) > 0 then
+    return true
+  else
+    return false
+  end
+end
 
 function courseplay:check_for_fruit(self, distance)
   

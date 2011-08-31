@@ -537,6 +537,7 @@ end
 function courseplay:update(dt)	
 	
 	if self.isEntered then
+		
 		if self.user_input_active == true then
 		  if self.currentGui == nil then
 		    g_gui:loadGui(Utils.getFilename("emptyGui.xml", self.cp_directory), self.input_gui);
