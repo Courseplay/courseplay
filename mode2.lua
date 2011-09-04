@@ -627,7 +627,7 @@ function courseplay:unload_combine(self, dt)
 			  self.shortest_dist = distance_to_wp
 			end  	
 			
-			if self.dist > self.shortest_dist and distance_to_wp < 15 then
+			if distance_to_wp > self.shortest_dist and distance_to_wp < 10 then
 			  distToChange = distance_to_wp + 1
 			end
 			

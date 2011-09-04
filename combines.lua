@@ -102,6 +102,11 @@ function courseplay:register_at_combine(self, combine)
   table.insert(combine.courseplayers, self)
   self.courseplay_position = table.getn(combine.courseplayers)
   self.active_combine = combine  	     
+  
+  if self.trafficCollisionIgnoreList[combine.rootNode] == nil then
+    self.trafficCollisionIgnoreList[combine.rootNode] = true
+  end
+  
   return true
 end
 
@@ -123,6 +128,11 @@ function courseplay:unregister_at_combine(self, combine)
   self.courseplay_position = nil
   self.active_combine = nil  
   self.ai_state = 1
+  
+  if self.trafficCollisionIgnoreList[combine.rootNode] == true then
+    self.trafficCollisionIgnoreList[combine.rootNode] = nil
+  end
+  
   return true
 end
 
