@@ -1,5 +1,5 @@
 -- inspired by fieldstatus of Alan R. (ls-uk.info: thebadtouch)
-function courseplay:area_has_fruit(x,z)
+function courseplay:area_has_fruit(x,z, fruit_type)
   if not courseplay:is_field(x, z) then
     return false
   end
@@ -15,19 +15,27 @@ function courseplay:area_has_fruit(x,z)
   
   --x = x - 2.5
   --z = z - 2.5
-  
-  for i = 1, FruitUtil.NUM_FRUITTYPES do
-  	if i ~= FruitUtil.FRUITTYPE_GRASS then	    
-  	  	  
-  	  density = Utils.getFruitArea(i, x, z, x-widthX, z-widthZ, x+widthX, z+widthZ);
-  	    	  	     	  	  
-  	  if density > 0 then
-  	  	--print(string.format("checking x: %d z %d - density: %d", x, z, density ))
-  	    return true
-  	  end  	  	  
-  	end
+  if fruit_type ~= nil then
+    density = Utils.getFruitArea(fruit_type, x, z, x-widthX, z-widthZ, x+widthX, z+widthZ);
+								  
+	  if density > 0 then
+		--print(string.format("checking x: %d z %d - density: %d", x, z, density ))
+		return true
+      end
+  else
+	for i = 1, FruitUtil.NUM_FRUITTYPES do
+		if i ~= FruitUtil.FRUITTYPE_GRASS then	    
+			  
+		  density = Utils.getFruitArea(i, x, z, x-widthX, z-widthZ, x+widthX, z+widthZ);
+								  
+		  if density > 0 then
+			--print(string.format("checking x: %d z %d - density: %d", x, z, density ))
+			return true
+		  end  	  	  
+		end
+	end
   end
-  
+	
   --print(string.format(" x: %d z %d - is really cut!", x, z ))
   return false
 end

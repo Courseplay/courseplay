@@ -10,7 +10,7 @@ function round(num, idp)
   return math.floor(num /idp) * idp
 end
 
-function CalcMoves(px, py, tx, ty)	-- Based on some code of LMelior but made it work and improved way beyond his code, still thx LMelior!
+function CalcMoves(px, py, tx, ty, fruit_type)	-- Based on some code of LMelior but made it work and improved way beyond his code, still thx LMelior!
  if not courseplay:is_field(py, px) then
     return nil
   end
@@ -52,7 +52,7 @@ It will return nil if all the available nodes have been checked but the target h
 	local ysize=1024					-- vertical map size
 	local curbase={}						-- Current square from which to check possible moves
 	local basis=1						-- Index of current base	
-	local max_tries = 3000
+	local max_tries = 10000
 	local max_distance_factor = 10
 	local air_distance = tempH
 	
@@ -148,16 +148,16 @@ It will return nil if all the available nodes have been checked but the target h
 
 		-- If it IS on the map, check map for obstacles
 		--(Lua returns an error if you try to access a table position that doesn't exist, so you can't combine it with above)
-		if wOK and curbase.x+interval<=xsize and courseplay:area_has_fruit(curbase.y, curbase.x+interval) then
+		if wOK and curbase.x+interval<=xsize and courseplay:area_has_fruit(curbase.y, curbase.x+interval, fruit_type) then
 			wOK=false
 		end
-		if eOK and curbase.x-interval>=-1024 and courseplay:area_has_fruit(curbase.y, curbase.x-interval) then
+		if eOK and curbase.x-interval>=-1024 and courseplay:area_has_fruit(curbase.y, curbase.x-interval, fruit_type) then
 			eOK=false
 		end
-		if sOK and curbase.y+interval<=ysize and courseplay:area_has_fruit(curbase.y+interval, curbase.x) then
+		if sOK and curbase.y+interval<=ysize and courseplay:area_has_fruit(curbase.y+interval, curbase.x, fruit_type) then
 			sOK=false
 		end
-		if nOK and curbase.y-interval>=-1024 and courseplay:area_has_fruit(curbase.y-interval, curbase.x) then
+		if nOK and curbase.y-interval>=-1024 and courseplay:area_has_fruit(curbase.y-interval, curbase.x, fruit_type) then
 			nOK=false
 		end
 

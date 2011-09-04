@@ -855,9 +855,17 @@ function courseplay:calculate_course_to(self, target_x, target_z)
     return false
   end
   
+  if self.active_combine ~= nil then
+    local fruit_type = self.active_combine.lastValidInputFruitType
+  elseif self.tipper_attached then
+    local fruit_type = self.tippers[1].getCurrentFruitType
+  else
+    local fruit_type = nil
+  end
+  
   --print(string.format("position x: %d z %d", x, z ))
   local wp_counter = 0
-  local wps = CalcMoves(z, x, target_z, target_x)
+  local wps = CalcMoves(z, x, target_z, target_x, fruit_type)
   --print(table.show(wps))
   
   if wps ~= nil then
