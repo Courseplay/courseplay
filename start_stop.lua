@@ -56,7 +56,7 @@ function courseplay:start(self)
 				self.recordnumber = i + 1
 			end
 			-- specific Workzone
-	        if self.ai_mode == 4 or self.ai_mode == 6 then
+	        if self.ai_mode == 4 or self.ai_mode == 6 or self.ai_mode == 7 then
 	            if wait then
 	                wpanz = wpanz + 1
 				end

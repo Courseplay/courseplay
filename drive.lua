@@ -1,7 +1,53 @@
 
 -- drives recored course
 function courseplay:drive(self, dt)
-	  
+	
+	
+	if self.ai_mode == 7 then
+		if self.isAIThreshing then
+		    local cx,cy,cz = getWorldTranslation(self.rootNode);
+		    local oldcx ,oldcz = self.Waypoints[self.recordnumber].cx,self.Waypoints[self.recordnumber].cz
+		    self.dist = courseplay:distance(cx ,cz ,oldcx ,oldcz)
+
+			if self.dist > 15 then
+				if self.abortWork == nil then
+				    self.abortWork = 1
+				else
+					self.abortWork = self.abortWork + 1
+				end
+	   			self.recordnumber = self.recordnumber + 1
+				if self.recordnumber <= (self.maxnumber + 3) then
+					self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = 0, wait = false, rev = false, crossing = false}
+				else
+					self.Waypoints[self.maxnumber+1] = self.Waypoints[self.maxnumber+2]
+					self.Waypoints[self.maxnumber+2] = self.Waypoints[self.maxnumber+3]
+					self.Waypoints[self.maxnumber+3] = {cx = cx ,cz = cz ,angle = 0, wait = false, rev = false, crossing = false}
+					self.recordnumber = self.maxnumber + 2
+					self.abortWork = 2
+				end
+			end
+
+			if (self.grainTankFillLevel * 100 / self.grainTankCapacity)>= self.required_fill_level_for_drive_on then
+	            self:stopAIThreshing()
+      			if self.abortWork == nil then
+				    self.abortWork = 1
+				else
+					self.abortWork = self.abortWork + 1
+				end
+				cx, cy, cz = localToWorld(self.rootNode, 0, 0, 5)
+                courseplay:addsign(self,cx, 10,cz)
+				self.Waypoints[self.maxnumber+self.abortWork] = {cx = cx ,cz = cz ,angle = 0, wait = false, rev = false, crossing = false}
+                courseplay:start(self)
+				self.recordnumber = 2
+	            self.maxnumber  = table.getn(self.Waypoints)
+
+
+			else
+		        return
+			end
+	   	end
+	end
+		  
   -- unregister at combine, if there is one
   if self.loaded == true and courseplay_position ~= nil then
     courseplay:unregister_at_combine(self, self.active_combine)
@@ -21,10 +67,10 @@ function courseplay:drive(self, dt)
   -- actual position
   local ctx,cty,ctz = getWorldTranslation(self.rootNode);
   -- coordinates of next waypoint
-  if self.recordnumber > self.maxnumber then
+  --if self.recordnumber > self.maxnumber then
     -- this should never happen
-    self.recordnumber = self.maxnumber
-  end
+ --   self.recordnumber = self.maxnumber
+ -- end
   
   local last_recordnumber = nil
   
@@ -33,7 +79,10 @@ function courseplay:drive(self, dt)
     else
      last_recordnumber = 1
    end
-  
+   if self.recordnumber > self.maxnumber then
+    -- this should never happen
+    self.recordnumber = self.maxnumber
+  end
   --[[local next3_recordnumber = nil
    
    if self.recordnumber < self.maxnumber-3 then
@@ -49,35 +98,36 @@ function courseplay:drive(self, dt)
   cx ,cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
   
   -- offset - endlich lohnt sich der mathe-lk von vor 1000 Jahren ;)
-  if self.ai_mode == 6 and self.recordnumber > self.startWork and self.recordnumber < self.stopWork and self.recordnumber > 1 and self.WpOffsetX ~= nil and self.WpOffsetZ ~= nil and (self.WpOffsetX ~= 0 or self.WpOffsetZ ~= 0) then
+  if self.ai_mode == 6 then
+  	if self.recordnumber > self.startWork and self.recordnumber < self.stopWork and self.recordnumber > 1 and self.WpOffsetX ~= nil and self.WpOffsetZ ~= nil and (self.WpOffsetX ~= 0 or self.WpOffsetZ ~= 0) then
   	--courseplay:addsign(self, cx, 10, cz)
   	--print(string.format("old WP: %d x %d ", cx, cz ))
 	
 	-- direction vector
-	local vcx, vcz
-	if self.recordnumber == 1 then
-		vcx = self.Waypoints[2].cx - cx 
-		vcz = self.Waypoints[2].cz - cz
-	else
-		if self.Waypoints[last_recordnumber].rev then
-			vcx = self.Waypoints[last_recordnumber].cx - cx
-			vcz = self.Waypoints[last_recordnumber].cz - cz
+		local vcx, vcz
+		if self.recordnumber == 1 then
+			vcx = self.Waypoints[2].cx - cx
+			vcz = self.Waypoints[2].cz - cz
 		else
-			vcx = cx - self.Waypoints[last_recordnumber].cx
-			vcz = cz - self.Waypoints[last_recordnumber].cz
+			if self.Waypoints[last_recordnumber].rev then
+				vcx = self.Waypoints[last_recordnumber].cx - cx
+				vcz = self.Waypoints[last_recordnumber].cz - cz
+			else
+				vcx = cx - self.Waypoints[last_recordnumber].cx
+				vcz = cz - self.Waypoints[last_recordnumber].cz
+			end
+		end
+
+		-- length of vector
+		local vl = Utils.vector2Length(vcx, vcz)
+		-- if not too short: normalize and add offsets
+		if vl ~= nil and vl > 0.01 then
+			vcx = vcx / vl
+			vcz = vcz / vl
+			cx  = cx - vcz * self.WpOffsetX + vcx * self.WpOffsetZ
+			cz  = cz + vcx * self.WpOffsetX + vcz * self.WpOffsetZ
 		end
 	end
-	
-	-- length of vector
-	local vl = Utils.vector2Length(vcx, vcz)
-	-- if not too short: normalize and add offsets
-	if vl ~= nil and vl > 0.01 then
-		vcx = vcx / vl
-		vcz = vcz / vl
-		cx  = cx - vcz * self.WpOffsetX + vcx * self.WpOffsetZ
-		cz  = cz + vcx * self.WpOffsetX + vcz * self.WpOffsetZ	
-	end
-		
     --print(string.format("new WP: %d x %d (angle) %d ", cx, cz, angle ))
     --courseplay:addsign(self, cx, 10, cz)
   end  
@@ -108,7 +158,7 @@ function courseplay:drive(self, dt)
   
 	if self.Waypoints[last_recordnumber].wait and self.wait then
 		if self.ai_mode == 3 then
-		   	self.global_info_text = courseplay:get_locale(self, "CPReachedOverloadPoint") --'hat Ãœberladepunkt erreicht.'
+		   	self.global_info_text = courseplay:get_locale(self, "CPReachedOverloadPoint") --'hat Überladepunkt erreicht.'
 		   	if self.tipper_attached then
 		   	
 		   	  -- drive on if fill_level doesn't change and fill level is < 100-self.required_fill_level_for_follow
@@ -142,6 +192,17 @@ function courseplay:drive(self, dt)
 					self.wait = false
 				end
 			end
+		elseif self.ai_mode == 7 then	
+				if last_recordnumber == self.startWork then
+					if self.grainTankFillLevel > 0 then
+						self:setPipeOpening(true, false)
+						self.global_info_text = courseplay:get_locale(self, "CPReachedOverloadPoint") --'hat Überladepunkt erreicht.'
+					else
+					    self:setPipeOpening(false, false)
+					    self.wait = false
+					end
+				end
+				
         else
 		   	self.global_info_text = courseplay:get_locale(self, "CPReachedWaitPoint")
   		end
@@ -193,11 +254,36 @@ function courseplay:drive(self, dt)
 			self.info_text = self.locales.CPNoWorkArea
  		end
  		
- 		if self.ai_mode ~= 5 and self.ai_mode ~= 6 and not self.tipper_attached then
+
+
+		if self.ai_mode ~= 5 and self.ai_mode ~= 6 and self.ai_mode ~= 7 and not self.tipper_attached then
  		    self.info_text = self.locales.CPWrongTrailer
  		    allowedToDrive = false
 		end
 		
+		
+		if self.ai_mode == 7 then
+			if self.recordnumber == 1 then --self.maxnumber then
+                self.recordnumber = self.maxnumber
+				allowedToDrive = false
+				self.motor:setSpeedLevel(0, false);
+				self.motor.maxRpmOverride = nil;
+
+				if g_server ~= nil then
+  					AIVehicleUtil.driveInDirection(self, 0, self.steering_angle, 0, 0, 28, false, moveForwards, 0, 1)
+				end
+ 				self:startAIThreshing(true)
+ 				if self.abortWork ~= nil then
+					for i=0,(self.abortWork-1) do
+						self.Waypoints[self.maxnumber-i] = nil
+	            	end
+	            	self.maxnumber  = table.getn(self.Waypoints)
+	            	self.recordnumber = self.maxnumber
+					self.abortWork  = nil
+				end
+			end
+
+		end
  		
  		if self.fuelFillLevel < 50 then
  			self.global_info_text = self.locales.CPFuelWarning
@@ -233,7 +319,8 @@ function courseplay:drive(self, dt)
 		allowedToDrive, workArea, workSpeed, active_tipper = courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill_level, last_recordnumber)
 	end
   
-  
+    
+	
   allowedToDrive = courseplay:check_traffic(self, true, allowedToDrive)
    
   -- stop or hold position
@@ -278,13 +365,18 @@ function courseplay:drive(self, dt)
 	if (slowDownWP and not workArea) or slowDownRev or self.max_speed_level == 1 then
 		self.sl = 1
     	ref_speed = self.turn_speed
-	elseif slowStartEnd or workSpeed then
+	elseif (slowStartEnd or workSpeed) and self.ai_mode ~= 7 then
 	    self.sl = 2
 	    ref_speed = self.field_speed
 	else
 		self.sl = 3
-		ref_speed = self.max_speed
+		ref_speed = self.max_speed	
 	end
+	
+--	if self.ai_mode == 7 then
+--		self.sl = 3
+--		ref_speed = self.max_speed
+--	end
 	
 	if self.RulMode == 1 then
 		if (self.sl == 3 and not self.beaconLightsActive) or (self.sl ~=3 and self.beaconLightsActive) then
@@ -341,6 +433,8 @@ function courseplay:drive(self, dt)
 		    distToChange = 2
 		elseif self.Waypoints[self.recordnumber].rev then
 		    distToChange = 6
+	--	elseif self.ai_mode == 7 and (self.recordnumber > (self.maxnumber-3)) then
+	--	    distToChange = 2
 
 		else	
 			distToChange = 5
@@ -348,7 +442,13 @@ function courseplay:drive(self, dt)
     else
 		distToChange = 5
 	end
-	
+--	 if self.test2 ~= distToChange then
+--    	self.test2 = distToChange
+--    	print(string.format("distToChange: %d ", distToChange ))
+    --	for k,v in pairs (self)  do
+	--		print(k.." "..tostring(v).." "..type(v))
+	--	end
+  --  end
 	
 	
 	-- record shortest distance to the next waypoint
@@ -360,7 +460,7 @@ function courseplay:drive(self, dt)
 		self.shortest_dist = nil
 	end
 	
-	-- if distance grows i must be circling	
+	-- if distance grows i must be circling
 	if self.dist > self.shortest_dist and self.recordnumber > 3 and self.dist < 15 and self.Waypoints[self.recordnumber].rev ~= true  then
 	  distToChange = self.dist + 1
 	end
@@ -373,7 +473,7 @@ function courseplay:drive(self, dt)
   	else	     
   		-- reset distance to waypoint
   		self.shortest_dist = nil
-		if self.recordnumber < self.maxnumber  then
+		if self.recordnumber < self.maxnumber  then           -- = New
 		  if not self.wait then
 		    self.wait = true
 		  end
