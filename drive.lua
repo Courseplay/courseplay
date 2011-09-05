@@ -9,7 +9,7 @@ function courseplay:drive(self, dt)
 		    local oldcx ,oldcz = self.Waypoints[self.recordnumber].cx,self.Waypoints[self.recordnumber].cz
 		    self.dist = courseplay:distance(cx ,cz ,oldcx ,oldcz)
 
-			if self.dist > 10 then
+			if self.dist > 15 then
 				if self.abortWork == nil then
 				    self.abortWork = 1
 				else
@@ -34,10 +34,14 @@ function courseplay:drive(self, dt)
 				else
 					self.abortWork = self.abortWork + 1
 				end
+				cx, cy, cz = localToWorld(self.rootNode, 0, 0, 5)
+                courseplay:addsign(self,cx, 10,cz)
 				self.Waypoints[self.maxnumber+self.abortWork] = {cx = cx ,cz = cz ,angle = 0, wait = false, rev = false, crossing = false}
-	            courseplay:start(self)
-				self.recordnumber = 1
+                courseplay:start(self)
+				self.recordnumber = 2
 	            self.maxnumber  = table.getn(self.Waypoints)
+
+
 			else
 		        return
 			end
@@ -259,7 +263,7 @@ function courseplay:drive(self, dt)
 		
 		
 		if self.ai_mode == 7 then
-			if last_recordnumber == self.maxnumber then
+			if self.recordnumber == 1 then --self.maxnumber then
                 self.recordnumber = self.maxnumber
 				allowedToDrive = false
 				self.motor:setSpeedLevel(0, false);
@@ -361,21 +365,18 @@ function courseplay:drive(self, dt)
 	if (slowDownWP and not workArea) or slowDownRev or self.max_speed_level == 1 then
 		self.sl = 1
     	ref_speed = self.turn_speed
-	elseif slowStartEnd or workSpeed and self.ai_mode ~= 7 then
+	elseif (slowStartEnd or workSpeed) and self.ai_mode ~= 7 then
 	    self.sl = 2
 	    ref_speed = self.field_speed
-	elseif self.ai_mode == 7 then
-		self.sl = 3
-		ref_speed = self.max_speed
 	else
 		self.sl = 3
 		ref_speed = self.max_speed	
 	end
 	
-	if self.ai_mode == 7 then
-		self.sl = 3
-		ref_speed = self.max_speed 
-	end
+--	if self.ai_mode == 7 then
+--		self.sl = 3
+--		ref_speed = self.max_speed
+--	end
 	
 	if self.RulMode == 1 then
 		if (self.sl == 3 and not self.beaconLightsActive) or (self.sl ~=3 and self.beaconLightsActive) then
@@ -432,8 +433,8 @@ function courseplay:drive(self, dt)
 		    distToChange = 2
 		elseif self.Waypoints[self.recordnumber].rev then
 		    distToChange = 6
-		elseif self.ai_mode == 7 and self.recordnumber > (self.maxnumber-3) then
-		    distToChange = 1
+	--	elseif self.ai_mode == 7 and (self.recordnumber > (self.maxnumber-3)) then
+	--	    distToChange = 2
 
 		else	
 			distToChange = 5
@@ -441,13 +442,13 @@ function courseplay:drive(self, dt)
     else
 		distToChange = 5
 	end
-	 if self.test2 ~= distToChange then
-    	self.test2 = distToChange
-    	print(string.format("distToChange: %d ", distToChange ))
+--	 if self.test2 ~= distToChange then
+--    	self.test2 = distToChange
+--    	print(string.format("distToChange: %d ", distToChange ))
     --	for k,v in pairs (self)  do
 	--		print(k.." "..tostring(v).." "..type(v))
 	--	end
-    end
+  --  end
 	
 	
 	-- record shortest distance to the next waypoint
@@ -459,7 +460,7 @@ function courseplay:drive(self, dt)
 		self.shortest_dist = nil
 	end
 	
-	-- if distance grows i must be circling	
+	-- if distance grows i must be circling
 	if self.dist > self.shortest_dist and self.recordnumber > 3 and self.dist < 15 and self.Waypoints[self.recordnumber].rev ~= true  then
 	  distToChange = self.dist + 1
 	end
@@ -472,7 +473,7 @@ function courseplay:drive(self, dt)
   	else	     
   		-- reset distance to waypoint
   		self.shortest_dist = nil
-		if self.recordnumber <= self.maxnumber  then           -- = New
+		if self.recordnumber < self.maxnumber  then           -- = New
 		  if not self.wait then
 		    self.wait = true
 		  end
