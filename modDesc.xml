@@ -146,6 +146,11 @@
 		<de>Typ: Feldarbeit, Ballen pressen, Heu und Ballen sammeln</de>
 	</text>
 
+	<text name="CourseMode7">
+		<en>Type: Combine goes self to unload</en>
+		<de>Typ: Drescher fährt selbst abtanken</de>
+	</text>
+
 	<text name="CourseWaitpointSet">
 		<en>set waitpoint</en>
 		<de>Hier Wartepunkt setzen</de>
