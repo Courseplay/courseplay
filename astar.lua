@@ -52,7 +52,7 @@ It will return nil if all the available nodes have been checked but the target h
 	local ysize=1024					-- vertical map size
 	local curbase={}						-- Current square from which to check possible moves
 	local basis=1						-- Index of current base	
-	local max_tries = 10000
+	local max_tries = 2000
 	local max_distance_factor = 10
 	local air_distance = tempH
 	

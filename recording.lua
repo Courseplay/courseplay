@@ -57,7 +57,7 @@ function courseplay:record(self)
 	end
 	
 	if self.tmr > 100 then 
-		self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = false, rev = self.direction, crossing = set_crossing}
+		self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = false, rev = self.direction, crossing = set_crossing, speed = self.lastSpeedReal}
 		if self.recordnumber < 4 or self.waypointMode == 3 then
 		    if self.recordnumber == 1 then
 		    	courseplay:addsign(self, cx, newangle,cz, self.start_sign)
@@ -78,7 +78,7 @@ function courseplay:set_waitpoint(self)
 	local dX = x/length
 	local dZ = z/length
 	local newangle = math.deg(math.atan2(dX,dZ)) 
-  self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = true, rev = self.direction, crossing = false}
+  self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = true, rev = self.direction, crossing = false, speed = 0}
   self.tmr = 1
   self.recordnumber = self.recordnumber + 1
   self.waitPoints = self.waitPoints + 1
@@ -93,7 +93,7 @@ function courseplay:set_crossing(self, stop)
   local dX = x/length
   local dZ = z/length
   local newangle = math.deg(math.atan2(dX,dZ)) 
-  self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = false, rev = self.direction, crossing = true}
+  self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = false, rev = self.direction, crossing = true, speed = nil}
   self.tmr = 1
   self.recordnumber = self.recordnumber + 1
   self.crossPoints = self.crossPoints + 1
@@ -115,7 +115,7 @@ function courseplay:set_direction(self)
 	local dZ = z/length
 	local newangle = math.deg(math.atan2(dX,dZ))
 	local fwd = nil
-  	self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = false, rev = self.direction, crossing = false}
+  	self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = false, rev = self.direction, crossing = false, speed = nil}
 	self.direction = not self.direction
   	self.tmr = 1
   	self.recordnumber = self.recordnumber + 1
@@ -222,7 +222,7 @@ function courseplay:set_FieldPoint(self)
 	local dX = x/length
 	local dZ = z/length
 	local newangle = math.deg(math.atan2(dX,dZ)) 
-  	self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = true, rev = false, crossing = false}
+  	self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = newangle, wait = true, rev = false, crossing = false, speed = nil}
   	self.tmr = 1
   	self.recordnumber = self.recordnumber + 1
   	self.createCourse = true

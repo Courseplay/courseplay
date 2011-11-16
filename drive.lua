@@ -146,6 +146,10 @@ function courseplay:drive(self, dt)
 		   	self.global_info_text = courseplay:get_locale(self, "CPReachedWaitPoint")
   		end
 		
+		-- wait untli a specific time
+		if self.waitTimer and self.timer > self.waitTimer then
+		  self.wait = false
+		end
 		
      	allowedToDrive = false
 	else
@@ -284,6 +288,10 @@ function courseplay:drive(self, dt)
 	else
 		self.sl = 3
 		ref_speed = self.max_speed
+	end
+	
+	if self.Waypoints[self.recordnumber].speed ~= nil then
+	  ref_speed = self.Waypoints[self.recordnumber].speed
 	end
 	
 	if self.RulMode == 1 then

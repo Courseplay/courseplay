@@ -199,6 +199,7 @@ function courseplay:save_courses(self)
 			local wait = 0
 			local crossing = 0
 			local rev = 0
+			local speed = v.speed
 			
 			if v.crossing then
 			  crossing = "1"
@@ -216,7 +217,10 @@ function courseplay:save_courses(self)
 			else
 			  rev = "0"
 			end
-	        File:write(tab .. tab .. "<waypoint" .. i .. " pos=\"" .. v.cx .. " " .. v.cz .. "\" angle=\"" .. v.angle .. "\" rev=\"" .. rev .. "\" wait=\"" .. wait .. "\" crossing=\"" .. crossing .. "\" />\n")
+			if speed == nil then
+			  speed = 0
+			end
+	        File:write(tab .. tab .. "<waypoint" .. i .. " pos=\"" .. v.cx .. " " .. v.cz .. "\" angle=\"" .. v.angle .. "\" rev=\"" .. rev .. "\" wait=\"" .. wait .. "\" crossing=\"" .. crossing .. "\"  speed=\"" .. speed .. "\" />\n")
 	      end
 	      File:write(tab .. "</course>\n")
       end
@@ -271,6 +275,7 @@ function courseplay:load_courses()
 			end
 			local dangle = Utils.getVectorFromString(getXMLString(File, key .. "#angle"))
 			local wait = Utils.getVectorFromString(getXMLString(File, key .. "#wait"))
+			local speed = Utils.getVectorFromString(getXMLString(File, key .. "#speed"))
 			local rev = Utils.getVectorFromString(getXMLString(File, key .. "#rev"))
 			local crossing = Utils.getVectorFromString(getXMLString(File, key .. "#crossing"))
 			
@@ -290,7 +295,12 @@ function courseplay:load_courses()
 			else
 			  rev = false
 			end
-			tempCourse[s] = {cx = x, cz = z, angle = dangle, rev= rev, wait = wait, crossing = crossing}
+			
+			if speed == 0 then
+			  speed = nil
+			end
+			
+			tempCourse[s] = {cx = x, cz = z, angle = dangle, rev= rev, wait = wait, crossing = crossing, speed = speed}
 			s = s + 1
 		  else
 		    local course = {name= name,id= id, waypoints=tempCourse}

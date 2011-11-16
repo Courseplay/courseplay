@@ -630,7 +630,8 @@ function courseplay:readStream(streamId, connection)
   	  local wait = streamDebugReadBool(streamId)
   	  local rev = streamDebugReadBool(streamId)
   	  local crossing = streamDebugReadBool(streamId)
-  	  local wp = {cx = cx, cz = cz, angle = angle , wait = wait, rev = rev, crossing = crossing}
+  	  local speeed  = streamDebugReadInt32(streamId)
+  	  local wp = {cx = cx, cz = cz, angle = angle , wait = wait, rev = rev, crossing = crossing, speed = speed}
   	  table.insert(waypoints, wp)
   	end
     local course = {name = course_name, waypoints= waypoints, id = course_id}
@@ -754,7 +755,8 @@ function courseplay:writeStream(streamId, connection)
         streamDebugWriteFloat32(streamId, courseplay_courses[i].waypoints[w].angle)
         streamDebugWriteBool(streamId, courseplay_courses[i].waypoints[w].wait)
         streamDebugWriteBool(streamId, courseplay_courses[i].waypoints[w].rev)
-        streamDebugWriteBool(streamId, courseplay_courses[i].waypoints[w].crossing)      
+        streamDebugWriteBool(streamId, courseplay_courses[i].waypoints[w].crossing)
+        streamDebugWriteInt32(streamId, courseplay_courses[i].waypoints[w].speed)         
       end
     end
    
