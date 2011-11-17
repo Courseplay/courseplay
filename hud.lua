@@ -278,6 +278,14 @@ function courseplay:loadHud(self)
 	    self.hudpage[5][2][2]= string.format("%d", self.field_speed*3600) .. " km/h"
 	    self.hudpage[5][2][3]= string.format("%d", self.max_speed*3600) .. " km/h"
 
+	    self.hudpage[5][1][5]= courseplay:get_locale(self, "CPuseSpeed") -- "Wendemanöver:"
+	    
+	    if self.use_speed then
+	      self.hudpage[5][2][5]= courseplay:get_locale(self, "CPuseSpeed1") -- "on Street on"
+	    else
+	      self.hudpage[5][2][5]= courseplay:get_locale(self, "CPuseSpeed2") -- "on Street on"
+	    end
+
 		if self.RulMode == 1 then
         	self.hudpage[5][2][4]= courseplay:get_locale(self, "RulMode1") -- "on Street on"
         elseif self.RulMode == 2 then

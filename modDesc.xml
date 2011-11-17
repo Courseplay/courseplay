@@ -376,12 +376,27 @@
     
     <text name="CPFieldSpeed">
       <en>field speed:</en>
-      <de>Auf dem Feld::</de>
+      <de>Auf dem Feld:</de>
     </text>
     
     <text name="CPMaxSpeed">
       <en>max speed:</en>
       <de>Auf Straße:</de>
+    </text>
+    
+     <text name="CPuseSpeed">
+      <de>max. Geschwindigkeit:</de>
+      <en>MaxSpeed:</en>
+    </text>
+    
+    <text name="CPuseSpeed1">
+      <de>wie beim einfahren</de>
+      <en>from recording</en>
+    </text>
+    
+    <text name="CPuseSpeed2">
+      <de>maximale Geschwindigkeit</de>
+      <en>maximum speed</en>
     </text>
     
     <text name="CPCourse">

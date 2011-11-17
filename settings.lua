@@ -186,6 +186,10 @@ function courseplay:switch_search_combine(self)
   self.search_combine = not self.search_combine
 end
 
+function courseplay:switch_use_speed(self)
+  self.use_speed = not self.use_speed
+end
+
 function courseplay:switch_combine(self, change_by)
   local combines = courseplay:find_combines(self)
   

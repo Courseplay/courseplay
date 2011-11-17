@@ -43,7 +43,7 @@ function courseplay:record(self)
 		local oldcx ,oldcz = self.Waypoints[2].cx,self.Waypoints[2].cz
 
 		self.dist = courseplay:distance(cx ,cz ,oldcx ,oldcz)
-		if self.dist > 10 then  --20-
+		if self.dist > 20 then  --20-
 			self.tmr = 101
 		else
 			self.tmr = 1

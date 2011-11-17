@@ -115,6 +115,10 @@ function courseplay:deal_with_mouse_input(self, func, value)
           if func == "change_RulMode" then
             courseplay:change_RulMode(self, value)
           end
+          
+          if func == "change_use_speed" then
+            courseplay:switch_use_speed(self)
+          end
 
           if func == "switch_search_combine" then
             courseplay:switch_search_combine(self)

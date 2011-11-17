@@ -1,4 +1,5 @@
 SpecializationUtil.registerSpecialization("courseplay", "courseplay", g_modsDirectory.."/ZZZ_courseplay/courseplay.lua")
+SpecializationUtil.registerSpecialization("autoovercharge", "AutoOvercharge", g_modsDirectory.."/ZZZ_courseplay/AutoOvercharge.lua")
 
 -- adding courseplay to default vehicles and vehicles that are loaded after courseplay in multiplayer
 -- thanks to donner!
@@ -13,6 +14,12 @@ for k,v in pairs(VehicleTypeUtil.vehicleTypes) do
             table.insert(v.specializations, SpecializationUtil.getSpecialization("courseplay"));
           end
         end;
+        if s == SpecializationUtil.getSpecialization("fillable") then 
+          if not SpecializationUtil.hasSpecialization(autoovercharge, v.specializations) then
+            print("adding autoovercharge to:"..tostring(v.name));
+            table.insert(v.specializations, SpecializationUtil.getSpecialization("autoovercharge"));
+          end
+        end	
       end;
     end;
   end;

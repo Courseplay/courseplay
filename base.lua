@@ -172,6 +172,9 @@ function courseplay:load(xmlFile)
 	self.locales.CPopenHud = g_i18n:getText("CPopenHud")
 	self.locales.CPopenHudMouse = g_i18n:getText("CPopenMouse")
 	self.locales.CPopenHudKey = g_i18n:getText("CPopenKey")
+	self.locales.CPuseSpeed = g_i18n:getText("CPuseSpeed")
+	self.locales.CPuseSpeed1 = g_i18n:getText("CPuseSpeed1")
+	self.locales.CPuseSpeed2 = g_i18n:getText("CPuseSpeed2")
 	
 	self.mouse_right_key_enabled = true
 	self.drive  = false
@@ -194,6 +197,7 @@ function courseplay:load(xmlFile)
 	self.RulMode = 1
 	-- saves the shortest distance to the next waypoint (for recocnizing circling)
 	self.shortest_dist = nil
+	self.use_speed = true
 	
 	-- clickable buttons
 	self.buttons = {}
@@ -487,6 +491,7 @@ function courseplay:load(xmlFile)
     courseplay:register_button(self, 5, "navigate_plus.png", "change_max_speed", 1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.167, 0.010, 0.010)
     
     courseplay:register_button(self, 5, "blank.png", "change_RulMode", 1, self.hudInfoBasePosX-0.05, self.hudInfoBasePosY + 0.143, 0.32, 0.015)
+    courseplay:register_button(self, 5, "blank.png", "change_use_speed", 1, self.hudInfoBasePosX-0.05, self.hudInfoBasePosY + 0.123, 0.32, 0.015)
 
 	courseplay:register_button(self, 6, "navigate_minus.png", "changeWpOffsetX", -0.5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.210, 0.010, 0.010)
     courseplay:register_button(self, 6, "navigate_plus.png", "changeWpOffsetX", 0.5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.210, 0.010, 0.010)
@@ -646,6 +651,7 @@ function courseplay:readStream(streamId, connection)
   courseplay:reinit_courses(self)
   
   self.max_speed = streamDebugReadFloat32(streamId)
+  self.use_speed = streamDebugReadBool(streamId)
   self.turn_speed = streamDebugReadFloat32(streamId)
   self.field_speed = streamDebugReadFloat32(streamId)
   self.tipper_offset = streamDebugReadFloat32(streamId)
@@ -763,6 +769,7 @@ function courseplay:writeStream(streamId, connection)
    
 
   streamDebugWriteFloat32(streamId, self.max_speed)
+  streamDebugWriteBool(streamId, self.use_speed)
   streamDebugWriteFloat32(streamId, self.turn_speed)
   streamDebugWriteFloat32(streamId, self.field_speed)
   streamDebugWriteFloat32(streamId, self.tipper_offset)
@@ -856,6 +863,7 @@ end
 function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 	if not resetVehicles and g_server ~= nil then	   
 		self.max_speed = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#max_speed")),50 / 3600);
+		self.use_speed = Utils.getNoNil(getXMLBool(xmlFile,key..string.format("#use_speed")),false);
 		self.turn_speed = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#turn_speed")),10 / 3600);
 		self.field_speed = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#field_speed")),24 / 3600);
 		self.tipper_offset = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#tipper_off")),8);
@@ -887,6 +895,7 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 
         local attributes =
 		' max_speed="'..tostring(self.max_speed)..'"'..
+		' use_speed="'..tostring(self.use_speed)..'"'..
 		' turn_speed="'..tostring(self.turn_speed)..'"'..
         ' field_speed="'..tostring(self.field_speed)..'"'..
         ' tipper_off="'..tostring(self.tipper_offset)..'"'..

@@ -377,8 +377,12 @@ function courseplay:drive(self, dt)
 		ref_speed = self.max_speed	
 	end
 	
-	if self.Waypoints[self.recordnumber].speed ~= nil then
+	if self.Waypoints[self.recordnumber].speed ~= nil and self.use_speed then
 	  ref_speed = self.Waypoints[self.recordnumber].speed
+	end
+	
+	if slowDownRev and ref_speed > self.turn_speed then
+	  ref_speed = self.turn_speed
 	end
 --	if self.ai_mode == 7 then
 --		self.sl = 3
