@@ -198,12 +198,16 @@ function courseplay:unload_tippers(self)
 	  
 	  local needed_distance = g_currentMission.tipTriggerRangeThreshold
 	  
-	  if startswith(trigger.className, "MapBGA") then
+	  if startswith(trigger.className, "MapBGA")  then
 	    needed_distance = 15
 	  end
 	  
 	  if startswith(trigger.className, "TipAny") then
 	    needed_distance = 5
+	  end
+	  
+	  if endswith(trigger.className, "TipTrigger") then
+	    
 	  end
 	  	  
 	  
@@ -216,7 +220,7 @@ function courseplay:unload_tippers(self)
   if active_tipper then    
 	local trigger = self.currentTipTrigger
 	-- if trigger accepts fruit
-	if (trigger.acceptedFruitTypes ~= nil and trigger.acceptedFruitTypes[active_tipper:getCurrentFruitType()]) or startswith(trigger.className, "MapBGA") or startswith(trigger.className, "TipAny") then
+	if (trigger.acceptedFruitTypes ~= nil and trigger.acceptedFruitTypes[active_tipper:getCurrentFruitType()]) or startswith(trigger.className, "MapBGA") or startswith(trigger.className, "TipAny") or endswith(trigger.className, "TipTrigger") then
 		allowedToDrive = false
 	else
 		allowedToDrive = true
