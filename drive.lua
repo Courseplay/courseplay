@@ -66,48 +66,57 @@ function courseplay:drive(self, dt)
 		    local oldcx ,oldcz = self.Waypoints[self.recordnumber].cx,self.Waypoints[self.recordnumber].cz
 		    self.dist = courseplay:distance(cx ,cz ,oldcx ,oldcz)
 
-			if self.dist > 15 then
-				if self.abortWork == nil then
-				    self.abortWork = 1
-				else
-					self.abortWork = self.abortWork + 1
-				end
-	   			self.recordnumber = self.maxnumber + 1
-				if self.recordnumber <= (self.orig_maxnumber + 3) then
-				    print("adding waypoint")
-					self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = 0, wait = false, rev = false, crossing = false}
-				else
-				    print("changing waypoint")
-					self.Waypoints[self.orig_maxnumber+1] = self.Waypoints[self.orig_maxnumber+2]
-					self.Waypoints[self.orig_maxnumber+2] = self.Waypoints[self.orig_maxnumber+3]
-					self.Waypoints[self.orig_maxnumber+3] = {cx = cx ,cz = cz ,angle = 0, wait = false, rev = false, crossing = false}
-					self.recordnumber = self.orig_maxnumber + 2
-					self.abortWork = 2
-				end
-				self.maxnumber  = table.getn(self.Waypoints)
-			end
+			--if self.dist > 20 then
+			--	if self.abortWork == nil then
+			--	    self.abortWork = 1
+			--	else
+			--		self.abortWork = self.abortWork + 1
+			--	end
+	   		--	self.recordnumber = self.maxnumber + 1
+			--	if self.recordnumber <= (self.orig_maxnumber + 3) then
+			--	    print("adding waypoint")
+			--		self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = 0, wait = false, rev = false, crossing = false}
+			--	else
+			--	    print("changing waypoint")
+			--		self.Waypoints[self.orig_maxnumber+1] = self.Waypoints[self.orig_maxnumber+2]
+			--		self.Waypoints[self.orig_maxnumber+2] = self.Waypoints[self.orig_maxnumber+3]
+			--		self.Waypoints[self.orig_maxnumber+3] = {cx = cx ,cz = cz ,angle = 0, wait = false, rev = false, crossing = false}
+			--		self.recordnumber = self.orig_maxnumber + 2
+			--		self.abortWork = 2
+			--	end
+			--	self.maxnumber  = table.getn(self.Waypoints)
+			--end
 
 			if (self.grainTankFillLevel * 100 / self.grainTankCapacity)>= self.required_fill_level_for_drive_on then
+				self.lastaiThreshingDirectionX = self.aiThreshingDirectionX
+				self.lastaiThreshingDirectionZ = self.aiThreshingDirectionZ
 	            self:stopAIThreshing()
-      			if self.abortWork == nil then
-				    self.abortWork = 1
-				else
-					self.abortWork = self.abortWork + 1
-				end
-				cx, cy, cz = localToWorld(self.rootNode, 0, 0, 5)
-                courseplay:addsign(self,cx, 10,cz)
+				
+				self.abortWork = 3
+				
+				
+				cx, cy, cz = localToWorld(self.rootNode, 0, 0, -45)
+                
 				self.Waypoints[self.maxnumber+1] = {cx = cx ,cz = cz ,angle = 0, wait = false, rev = false, crossing = false}
+				
+				cx, cy, cz = localToWorld(self.rootNode, 0, 0, -12)
+                
+				self.Waypoints[self.maxnumber+2] = {cx = cx ,cz = cz ,angle = 0, wait = false, rev = false, crossing = false}
+				
+				cx, cy, cz = localToWorld(self.rootNode, 0, 0, 5)
+                
+				self.Waypoints[self.maxnumber+3] = {cx = cx ,cz = cz ,angle = 0, wait = false, rev = false, crossing = false}
+				
 				self.maxnumber  = table.getn(self.Waypoints)
                 courseplay:start(self)
 				self.recordnumber = 2
 				
-				if courseplay:calculate_course_to(self, self.Waypoints[2].cx, self.Waypoints[2].cz) then
+				if false then --courseplay:calculate_course_to(self, self.Waypoints[2].cx, self.Waypoints[2].cz) then
         		  self.ai_state = 5				
 				else -- fallback if no course could be calculated
 				  self.ai_state = 5
     			end
 	            self.maxnumber  = table.getn(self.Waypoints)
-
 
 			else
 		        return
@@ -345,8 +354,10 @@ function courseplay:drive(self, dt)
   					AIVehicleUtil.driveInDirection(self, 0, self.steering_angle, 0, 0, 28, false, moveForwards, 0, 1)
 				end
  				self:startAIThreshing(true)
+				self.aiThreshingDirectionX = self.lastaiThreshingDirectionX
+				self.aiThreshingDirectionZ = self.lastaiThreshingDirectionZ
  				if self.abortWork ~= nil then
-					for i=0,(self.abortWork-1) do
+					for i=0,(self.abortWork) do
 						table.remove(self.Waypoints, self.maxnumber-i)
 	            	end
 	            	self.maxnumber  = table.getn(self.Waypoints)
