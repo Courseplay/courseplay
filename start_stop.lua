@@ -1,7 +1,7 @@
 -- starts driving the course
 function courseplay:start(self)    
-	
-	if table.getn(self.Waypoints) < 1 then
+	self.maxnumber = table.getn(self.Waypoints)
+	if self.maxnumber < 1 then
 	  return
 	end
 	
@@ -11,6 +11,10 @@ function courseplay:start(self)
 	self.record = false
 	self.record_pause = false
 	self.calculated_course = false
+	
+	
+	
+	self.orig_maxnumber = self.maxnumber
 	-- set default ai_state if not in mode 2 or 3
 	if self.ai_mode ~= 2 and self.ai_mode ~= 3 then
 	  self.ai_state = 0

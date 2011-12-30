@@ -2,8 +2,65 @@
 -- drives recored course
 function courseplay:drive(self, dt)
 	
-	
 	if self.ai_mode == 7 then
+		local state = self.ai_state
+		
+		
+		if state == 5 and self.target_x ~= nil and self.target_z ~= nil then
+				
+			self.info_text = string.format(courseplay:get_locale(self, "CPDriveToWP"), self.target_x, self.target_z )
+			cx = self.target_x
+			cy = self.target_y
+			cz = self.target_z
+
+			self.sl = 2
+			refSpeed = self.field_speed
+
+			distance_to_wp = courseplay:distance_to_point(self, cx, y, cz)
+			
+			if table.getn(self.next_targets) == 0 then
+				if distance_to_wp < 10 then
+					refSpeed = self.turn_speed -- 3/3600
+					self.sl = 1
+				end
+			end
+			
+			-- avoid circling
+			local distToChange = 2
+			if self.shortest_dist == nil or self.shortest_dist > distance_to_wp then
+			  self.shortest_dist = distance_to_wp
+			end  	
+			
+			if distance_to_wp > self.shortest_dist and distance_to_wp < 10 then
+			  distToChange = distance_to_wp + 1
+			end
+			
+			if distance_to_wp < distToChange then
+				self.shortest_dist = nil
+				if table.getn(self.next_targets)> 0 then
+			  --	  	mode = 5
+					self.target_x =  self.next_targets[1].x
+					self.target_y =  self.next_targets[1].y
+					self.target_z =  self.next_targets[1].z
+
+					table.remove(self.next_targets, 1)
+				else
+					allowedToDrive = false
+					if self.next_ai_state ~= 2 then
+					  self.calculated_course = false
+					end
+					
+					mode = self.next_ai_state
+					self.next_ai_state = 0
+				
+				end
+			end
+		end
+	
+	
+	
+	
+	
 		if self.isAIThreshing then
 		    local cx,cy,cz = getWorldTranslation(self.rootNode);
 		    local oldcx ,oldcz = self.Waypoints[self.recordnumber].cx,self.Waypoints[self.recordnumber].cz
@@ -15,16 +72,19 @@ function courseplay:drive(self, dt)
 				else
 					self.abortWork = self.abortWork + 1
 				end
-	   			self.recordnumber = self.recordnumber + 1
-				if self.recordnumber <= (self.maxnumber + 3) then
+	   			self.recordnumber = self.maxnumber + 1
+				if self.recordnumber <= (self.orig_maxnumber + 3) then
+				    print("adding waypoint")
 					self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = 0, wait = false, rev = false, crossing = false}
 				else
-					self.Waypoints[self.maxnumber+1] = self.Waypoints[self.maxnumber+2]
-					self.Waypoints[self.maxnumber+2] = self.Waypoints[self.maxnumber+3]
-					self.Waypoints[self.maxnumber+3] = {cx = cx ,cz = cz ,angle = 0, wait = false, rev = false, crossing = false}
-					self.recordnumber = self.maxnumber + 2
+				    print("changing waypoint")
+					self.Waypoints[self.orig_maxnumber+1] = self.Waypoints[self.orig_maxnumber+2]
+					self.Waypoints[self.orig_maxnumber+2] = self.Waypoints[self.orig_maxnumber+3]
+					self.Waypoints[self.orig_maxnumber+3] = {cx = cx ,cz = cz ,angle = 0, wait = false, rev = false, crossing = false}
+					self.recordnumber = self.orig_maxnumber + 2
 					self.abortWork = 2
 				end
+				self.maxnumber  = table.getn(self.Waypoints)
 			end
 
 			if (self.grainTankFillLevel * 100 / self.grainTankCapacity)>= self.required_fill_level_for_drive_on then
@@ -36,9 +96,16 @@ function courseplay:drive(self, dt)
 				end
 				cx, cy, cz = localToWorld(self.rootNode, 0, 0, 5)
                 courseplay:addsign(self,cx, 10,cz)
-				self.Waypoints[self.maxnumber+self.abortWork] = {cx = cx ,cz = cz ,angle = 0, wait = false, rev = false, crossing = false}
+				self.Waypoints[self.maxnumber+1] = {cx = cx ,cz = cz ,angle = 0, wait = false, rev = false, crossing = false}
+				self.maxnumber  = table.getn(self.Waypoints)
                 courseplay:start(self)
 				self.recordnumber = 2
+				
+				if courseplay:calculate_course_to(self, self.Waypoints[2].cx, self.Waypoints[2].cz) then
+        		  self.ai_state = 5				
+				else -- fallback if no course could be calculated
+				  self.ai_state = 5
+    			end
 	            self.maxnumber  = table.getn(self.Waypoints)
 
 
@@ -200,6 +267,7 @@ function courseplay:drive(self, dt)
 					else
 					    self:setPipeOpening(false, false)
 					    self.wait = false
+						self.unloaded = true
 					end
 				end
 				
@@ -279,9 +347,10 @@ function courseplay:drive(self, dt)
  				self:startAIThreshing(true)
  				if self.abortWork ~= nil then
 					for i=0,(self.abortWork-1) do
-						self.Waypoints[self.maxnumber-i] = nil
+						table.remove(self.Waypoints, self.maxnumber-i)
 	            	end
 	            	self.maxnumber  = table.getn(self.Waypoints)
+					self.orig_maxnumber = self.maxnumber
 	            	self.recordnumber = self.maxnumber
 					self.abortWork  = nil
 				end
