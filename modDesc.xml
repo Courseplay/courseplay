@@ -10,7 +10,7 @@
 		<![CDATA[Courseplay
 		Grundversion: Lautschreier
 		Script: Hummel, Wolverin0815,Bastian82 
-		www.modhoster.de]]>
+		www.modhoster.com]]>
 		</en>
    	<de>
 		<![CDATA[Courseplay
@@ -23,7 +23,7 @@
 	<iconFilename>
 		store.png
  	</iconFilename>
-	<version>2.4</version>
+	<version>3.0</version>
     <l10n>
 	<text name="PointRecordStart">
 		<en>Record Course Start</en>

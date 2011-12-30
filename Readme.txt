@@ -1,4 +1,4 @@
-﻿Courseplay - Abfahrhelfer für LS 2011 v 2.2
+﻿Courseplay - Abfahrhelfer für LS 2011 v 3.0
 
 Inhaltsverzeichnis
 
@@ -8,7 +8,21 @@ III.  Bedienungsanleitung
 IV. Credits
 V. Videos
 
-Ia. Changelog - Änderungen seit Version 2.11
+Ia. Changelog - Änderungen seit Version 2.2 / 2.4
+	- Neuer Modus: Drescher fährt selbst zum abtanken
+	  - Mähdrescher können jetzt auch selbstständig zu Hängern am Feldrand fahren. Dazu muss man mit dem Drescher einen Kurs einfahren der einen Wartepunkt enthält. Dieser Wartepunkt ist die Stelle an der auf den Hänger übergeladen wird. Nach dem Überladepunkt muss die Aufzeichnung beendet werden. Dann richtet man den Drescher auf dem Feld aus, schaltet den Helfer ein und ERST DANN stellt man den Abfahrhelfer ein.
+	- Überladewagen kippen im Überlademodus automatisch ab
+	  - Brent Avelanche, Hilken, Agroliner TUW & Co., HAWE SUW 5000, Perard Innerbanne 25,  Kverneland Taarup Shuttle & Co. laden am Überladepunkt automatisch ab. Der Taarup fährt sogar seinen Aufbau hoch und auch wieder runter.
+	- AlternativeTipping von SFM wird voll unterstützt
+	- Wendemanöver im Kombimodus wurden überarbeitet
+	- A*Star Pathfinding
+	  - Abfahrer versuchen auf dem Feld nicht durch die Frucht zu fahren. Es wird automatisch nach einem Umweg um die Frucht herum gesucht. Wird ein Weg gefunden wird dieser genutzt und der Abfahrer fährt um die Frucht herum. (Dieses Feature ist noch experimentell)
+	- beim speichern von Kursen steigt man nicht mehr aus dem Fahrzeug aus
+	- Im Feldmodus werden weitere Rundballenpressen unterstützt
+	- Man kann in den Einstellungen die max. Geschwindigkeit auswählen zwischen "max Geschwindigkeit" und "eingefahrener Geschwindigkeit". Das erste ist die alte Einstellung, courseplay ermittelt die auf der Straße zu fahrende Geschwindigkeit. Bei der zweiten Option wird immer die Geschwindigkeit genutzt die beim Einfahren des Kurses gefahren wurde.
+
+
+Ib. Changelog - Änderungen seit Version 2.11
 	- Neuer Modus: Drescher fährt selbst zum abtanken
 	- support für das BGA Silo des Giants DLC2
 	- support für typanywhere mod
@@ -18,7 +32,7 @@ Ia. Changelog - Änderungen seit Version 2.11
 	- selten auftretenden multiplayer-callstacks behoben 
 
 
-Ib. Changelog - Änderungen seit Version 2.0
+Ic. Changelog - Änderungen seit Version 2.0
 	In der Version 2.0 waren leider noch einige Fehler die den Multiplayermodus gestört haben. Diese wurden behoben.
 	Neu in dieser Version ist vor allem, dass ihr eure Schlepper nicht mehr mit courseplay nachrüsten müsst. Einfach den Mod ins Modverzeichnis und alle Fahrzeuge sind automatisch damit ausgestattet.
 	Durch diese Änderung müsst ihr leider in allen bereits umgerüsteten Schleppern den Eintrag "<specialization name="courseplay" />" entfernen.
@@ -26,7 +40,7 @@ Ib. Changelog - Änderungen seit Version 2.0
 	
 	Wichtig: die Datei aaacourseplay.zip (v2 und kleiner) MUSS aus dem Mod-Verzeichnis gelöscht werden.
 
-Ic. Changelog - Änderungen seit Version 1.6
+Id. Changelog - Änderungen seit Version 1.6
 
 	Die größte Änderung im courseplay ist natürlich die Multiplayerfähigkeit. Dabei werden beim Spielstart alle Werte und sogar gespeicherte Kurse vom Host an die Clients übertragen. Das kann mitunter ein bisschen dauern ist aber notwendig.
 	Neben zahlreichen Bugfixes und Performance-Optimierungen die hier nicht weiter erwähnt werden sollen gibt es im wesentlichen die folgende Neuerungen:
@@ -50,7 +64,7 @@ Ic. Changelog - Änderungen seit Version 1.6
 	Außerdem gibt es neue Symbole für die Wegpunkte und spezielle Wegpunkte wie Kreuzungspunkte und Startpunkte sind auch sichtbar wenn ihr nicht im Fahrzeug seid welches die Route gespeichert hat.
 
 
-Id. Changelog - Änderungen seit Version 1.2
+Ie. Changelog - Änderungen seit Version 1.2
 
 	Neu hinzugekommen sind vor allem der Feldmodus mit dem man Ballen pressen und Heusammeln kann. Der Güllemodus wurde weiter perfektioniert und es ist jetzt auch möglich den Abfahrhelfer in Drescher und Häcksler einzubauen.
 	Damit kann man beispielsweise mit Dreschern im Helfermodus Kurse aufzeichnen lassen die man dann später für den Gülle- oder Feldmodus verändern kann.
@@ -61,7 +75,7 @@ Id. Changelog - Änderungen seit Version 1.2
 	Dann gab es natürlich auch noch etwas Feintuning: Das unsinnige Kreiseln auf dem Feld sollte jetzt vorbei sein, HW80 Drehschemel und Agroliner Container werden jetzt auch unterstützt. 
 
 
-Ie. Changelog - Änderungen seit Version 1.0
+If. Changelog - Änderungen seit Version 1.0
 
 	Als neue Funktionen sind im wesentlichen der Düngemodus und das Rückwärtsfahren hinzugekommen. Außerdem wurde das Fahrverhalten (besonders in Kurven) verbessert und es werden mehr EntladeTrigger (Gras und Silage) erkannt.
 	Zudem kann man jetzt gespeicherte Kurse kombinieren indem man mehrere Kurse hintereinander lädt. Wenn man nur einen neuen Kurs laden will muss man allerdings jetzt vorher die Wegpunkte des alten zurücksetzen.
