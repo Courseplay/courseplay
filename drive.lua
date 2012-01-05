@@ -234,7 +234,7 @@ function courseplay:drive(self, dt)
   
 	if self.Waypoints[last_recordnumber].wait and self.wait then
 	  if self.waitTimer == nil and self.waitTime > 0 then
-            self.waitTimer = self.timer + self.waitTime
+            self.waitTimer = self.timer + self.waitTime * 1000
 	  end
 		if self.ai_mode == 3 then
 		   	self.global_info_text = courseplay:get_locale(self, "CPReachedOverloadPoint") --'hat Überladepunkt erreicht.'
@@ -289,6 +289,7 @@ function courseplay:drive(self, dt)
 		
 		-- wait untli a specific time
 		if self.waitTimer and self.timer > self.waitTimer then
+		  self.waitTimer = nil
 		  self.wait = false
 		end
 		

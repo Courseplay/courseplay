@@ -331,7 +331,7 @@ function courseplay:loadHud(self)
 		end
 
 		self.hudpage[6][1][5]= courseplay:get_locale(self, "CPWaitTime") -- Wartezeit am Haltepunkt
-		self.hudpage[6][2][5]= string.format("%.1f", self.WaitTime) .. "m"
+		self.hudpage[6][2][5]= string.format("%.1f", self.waitTime) .. "sec"
 
 	  end
 

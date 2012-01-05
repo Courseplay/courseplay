@@ -189,11 +189,11 @@ function courseplay:load(xmlFile)
 	self.tmr = 1
 	self.startlastload  = 1
 	self.timeout = 1
-	self.timer = 0
+	self.timer = 0.00
 	self.drive_slow_timer = 0
 	self.courseplay_position = nil
 	self.waitPoints = 0
-	sekf.waitTime = 0
+	self.waitTime = 0
 	self.crossPoints = 0
 	self.waypointMode = 1
 	self.RulMode = 1
@@ -508,8 +508,8 @@ function courseplay:load(xmlFile)
     courseplay:register_button(self, 6, "navigate_minus.png", "changeWorkWidth", -0.5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.146, 0.010, 0.010)
     courseplay:register_button(self, 6, "navigate_plus.png", "changeWorkWidth", 0.5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.146, 0.010, 0.010)
 
-    courseplay:register_button(self, 6, "navigate_minus.png", "change_wait_time", -1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.128, 0.010, 0.010)
-    courseplay:register_button(self, 6, "navigate_plus.png", "change_wait_time", 1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.128, 0.010, 0.010)
+    courseplay:register_button(self, 6, "navigate_minus.png", "change_wait_time", -5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.128, 0.010, 0.010)
+    courseplay:register_button(self, 6, "navigate_plus.png", "change_wait_time", 5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.128, 0.010, 0.010)
 	
     self.fold_move_direction = 1
 end	
@@ -576,7 +576,7 @@ function courseplay:update(dt)
     
     
     courseplay:infotext(self);
-    self.timer = self.timer + dt
+    
     
     -- we are in record mode
     if self.record then 
@@ -603,6 +603,9 @@ function courseplay:updateTick(dt)
 	else
 		courseplay:sign_visibility(self,false)
 	end
+	
+	self.timer = self.timer + dt
+	--print(string.format("timer: %f", self.timer ))
     
 end
 
@@ -668,7 +671,7 @@ function courseplay:readStream(streamId, connection)
 	self.recordnumber = streamDebugReadInt32(streamId)  
 	self.tmr = streamDebugReadInt32(streamId)  
 	self.timeout = streamDebugReadInt32(streamId)  
-	self.timer = streamDebugReadInt32(streamId)
+	self.timer = streamDebugReadFloat32(streamId)
 	self.drive = streamDebugReadBool(streamId)  
 	self.drive_slow_timer = streamDebugReadInt32(streamId)  
 	self.courseplay_position = streamDebugReadInt32(streamId)  
@@ -788,7 +791,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteInt32(streamId, self.recordnumber)  
 	streamDebugWriteInt32(streamId, self.tmr)  
 	streamDebugWriteInt32(streamId, self.timeout)  
-	streamDebugWriteInt32(streamId, self.timer)
+	streamDebugWriteFloat32(streamId, self.timer)
 	streamDebugWriteBool(streamId, self.drive)  
 	streamDebugWriteInt32(streamId, self.drive_slow_timer)  
 	streamDebugWriteInt32(streamId, self.courseplay_position)  
