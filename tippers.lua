@@ -202,7 +202,7 @@ function courseplay:unload_tippers(self)
 	    needed_distance = 15
 	  end
 	  
-	  if startswith(trigger.className, "TipAny") then
+	  if startswith(trigger.className, "TipAny") or trigger.className == "HeapTipTrigger" then
 	    needed_distance = 5
 	  end
 	  
