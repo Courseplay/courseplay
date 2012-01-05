@@ -100,6 +100,11 @@ function courseplay:deal_with_mouse_input(self, func, value)
             courseplay:change_turn_speed(self, value)
           end
           
+
+	  if func == "change_wait_time" then
+            courseplay:change_wait_time(self, value)
+          end
+
           if func == "change_num_ai_helpers" then
             --courseplay:change_num_ai_helpers(self, value)
           end

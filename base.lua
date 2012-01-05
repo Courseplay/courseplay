@@ -82,6 +82,7 @@ function courseplay:load(xmlFile)
 	self.locales.CPSpeedLimit= g_i18n:getText("CPSpeedLimit")	
 	self.locales.CPTurnSpeed = g_i18n:getText("CPTurnSpeed")
 	self.locales.CPCourse = g_i18n:getText("CPCourse")
+	self.locales.CPWaitTime = g_i18n:getText("CPWaitTime")
 	self.locales.CPNoCourseLoaded = g_i18n:getText("CPNoCourseLoaded")
 	self.locales.CPWaypoint = g_i18n:getText("CPWaypoint")
 	self.locales.CPNoWaypoint = g_i18n:getText("CPNoWaypoint")
@@ -192,6 +193,7 @@ function courseplay:load(xmlFile)
 	self.drive_slow_timer = 0
 	self.courseplay_position = nil
 	self.waitPoints = 0
+	sekf.waitTime = 0
 	self.crossPoints = 0
 	self.waypointMode = 1
 	self.RulMode = 1
@@ -503,12 +505,13 @@ function courseplay:load(xmlFile)
 
     courseplay:register_button(self, 6, "blank.png", "change_WaypointMode", 1, self.hudInfoBasePosX-0.05, self.hudInfoBasePosY + 0.164, 0.32, 0.015)
     
-	courseplay:register_button(self, 6, "navigate_minus.png", "changeWorkWidth", -0.5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.146, 0.010, 0.010)
+    courseplay:register_button(self, 6, "navigate_minus.png", "changeWorkWidth", -0.5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.146, 0.010, 0.010)
     courseplay:register_button(self, 6, "navigate_plus.png", "changeWorkWidth", 0.5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.146, 0.010, 0.010)
+
+    courseplay:register_button(self, 6, "navigate_minus.png", "change_wait_time", -1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.128, 0.010, 0.010)
+    courseplay:register_button(self, 6, "navigate_plus.png", "change_wait_time", 1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.128, 0.010, 0.010)
 	
-	
-	
-	self.fold_move_direction = 1
+    self.fold_move_direction = 1
 end	
 
 
@@ -573,7 +576,7 @@ function courseplay:update(dt)
     
     
     courseplay:infotext(self);
-    self.timer = self.timer + 1
+    self.timer = self.timer + dt
     
     -- we are in record mode
     if self.record then 
@@ -685,6 +688,7 @@ function courseplay:readStream(streamId, connection)
 	self.abortWork = streamDebugReadInt32(streamId)
 	self.wait = streamDebugReadBool(streamId)
 	self.waitTimer = streamDebugReadInt32(streamId)	
+	self.waitTime = streamDebugReadInt32(streamId)
 	self.target_x = streamDebugReadFloat32(streamId)
 	self.target_y = streamDebugReadFloat32(streamId)
 	self.target_z = streamDebugReadFloat32(streamId)	
@@ -708,6 +712,7 @@ function courseplay:readStream(streamId, connection)
 	self.showHudInfoBase = streamDebugReadInt32(streamId)
 	self.selected_combine_number = streamDebugReadInt32(streamId)
 	self.fold_move_direction = streamDebugReadInt32(streamId)  
+
   local saved_combine_id = streamDebugReadInt32(streamId)
   if saved_combine_id then
     self.saved_combine = networkGetObject(saved_combine_id)
@@ -803,6 +808,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteInt32(streamId, self.abortWork)
 	streamDebugWriteBool(streamId, self.wait)
 	streamDebugWriteInt32(streamId, self.waitTimer)
+        streamDebugWriteInt32(streamId, self.waitTime)
 	streamDebugWriteFloat32(streamId, self.target_x)
 	streamDebugWriteFloat32(streamId, self.target_y)
 	streamDebugWriteFloat32(streamId, self.target_z)
@@ -873,6 +879,7 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		self.WpOffsetX = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#OffsetX")),0);
 		self.mouse_right_key_enabled = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#mouse_right_key_enabled")),true);
 		self.WpOffsetZ = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#OffsetZ")),0);
+		self.waitTime = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#waitTime")),0);
 		self.abortWork = Utils.getNoNil(getXMLInt(xmlFile,key..string.format("#AbortWork")),nil);
 		self.turn_radius = Utils.getNoNil(getXMLInt(xmlFile,key..string.format("#turn")),17);
 		local courses = Utils.getNoNil(getXMLString(xmlFile,key..string.format("#courses")),"");
@@ -906,6 +913,7 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
         ' OffsetZ="'..tostring(self.WpOffsetZ)..'"'..
         ' AbortWork="'..tostring(self.abortWork)..'"'..
         ' turn="'..tostring(self.turn_radius)..'"'..
+	' waitTime="'..tostring(self.waitTime)..'"'..
         ' courses="'..tostring(table.concat(self.loaded_courses, ","))..'"'..
         ' mouse_right_key_enabled="'..tostring(mouse_right_key_enabled)..'"'..
 		' ai_mode="'..tostring(self.ai_mode)..'"';

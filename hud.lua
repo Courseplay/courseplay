@@ -310,26 +310,32 @@ function courseplay:loadHud(self)
 		  self.hudpage[6][2][2]= courseplay:get_locale(self, "CPopenHudKey")
 		end
 		
+		-- wapyointMode
 		if self.waypointMode == 1 then
-        	self.hudpage[6][1][3]= courseplay:get_locale(self, "WaypointMode1") -- "Wegpunkte+Kreuzungspunkte Record"
-        elseif self.waypointMode == 2 then
-            self.hudpage[6][1][3]= courseplay:get_locale(self, "WaypointMode2") -- "Wegpunkte+Kreuzungspunkte immer"
-        elseif self.waypointMode == 3 then
-            self.hudpage[6][1][3]= courseplay:get_locale(self, "WaypointMode3") -- "Komplette Route"
-        elseif self.waypointMode == 4 then
-            self.hudpage[6][1][3]= courseplay:get_locale(self, "WaypointMode4") -- "Komplette Route + all Crosspoints"
-        elseif self.waypointMode == 5 then
-            self.hudpage[6][1][3]= courseplay:get_locale(self, "WaypointMode5") -- "Komplette Route + all Crosspoints"    
+			self.hudpage[6][1][3]= courseplay:get_locale(self, "WaypointMode1") -- "Wegpunkte+Kreuzungspunkte Record"
+		elseif self.waypointMode == 2 then
+		    self.hudpage[6][1][3]= courseplay:get_locale(self, "WaypointMode2") -- "Wegpunkte+Kreuzungspunkte immer"
+		elseif self.waypointMode == 3 then
+		    self.hudpage[6][1][3]= courseplay:get_locale(self, "WaypointMode3") -- "Komplette Route"
+		elseif self.waypointMode == 4 then
+		    self.hudpage[6][1][3]= courseplay:get_locale(self, "WaypointMode4") -- "Komplette Route + all Crosspoints"
+		elseif self.waypointMode == 5 then
+		    self.hudpage[6][1][3]= courseplay:get_locale(self, "WaypointMode5") -- "Komplette Route + all Crosspoints"    
 		end 
 		
-        self.hudpage[6][1][4]= courseplay:get_locale(self, "CPWorkingWidht") -- Arbeitsbreite
+	        self.hudpage[6][1][4]= courseplay:get_locale(self, "CPWorkingWidht") -- Arbeitsbreite
 		if self.toolWorkWidht ~= nil then
 		  self.hudpage[6][2][4]= string.format("%.1f", self.toolWorkWidht) .. "m"
 		else
 		  self.hudpage[6][2][4]= "---"
 		end
 
+		self.hudpage[6][1][5]= courseplay:get_locale(self, "CPWaitTime") -- Wartezeit am Haltepunkt
+		self.hudpage[6][2][5]= string.format("%.1f", self.WaitTime) .. "m"
+
 	  end
+
+
 	  
 	  
 

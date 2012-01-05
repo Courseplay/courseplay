@@ -253,6 +253,11 @@
       <de>Entfernung</de>
     </text>
     
+    <text name="CPWaitTime">
+      <en>WaitTime (seconds)</en>
+      <de>Haltezeit (sekunden)</de>
+    </text>
+    
     
     <text name="CPLoadCourse">
       <en>load course:</en>

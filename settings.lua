@@ -153,6 +153,17 @@ function courseplay:change_turn_speed(self, change_by)
   self.turn_speed = speed / 3600
 end
 
+function courseplay:change_wait_time(self, change_by)
+  local speed = self.waitTime
+  
+  speed = speed + change_by
+  
+  if speed < 0 then
+    speed = 0
+  end
+  self.waitTime = speed
+end
+
 function courseplay:change_field_speed(self, change_by)
   local speed = self.field_speed * 3600
   speed = speed + change_by

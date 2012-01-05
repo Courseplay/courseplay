@@ -233,6 +233,9 @@ function courseplay:drive(self, dt)
  
   
 	if self.Waypoints[last_recordnumber].wait and self.wait then
+	  if self.waitTimer == nil and self.waitTime > 0 then
+            self.waitTimer = self.timer + self.waitTime
+	  end
 		if self.ai_mode == 3 then
 		   	self.global_info_text = courseplay:get_locale(self, "CPReachedOverloadPoint") --'hat Überladepunkt erreicht.'
 		   	if self.tipper_attached then
