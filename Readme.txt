@@ -20,6 +20,7 @@ Ia. Changelog - Änderungen seit Version 2.2 / 2.4
 	- beim speichern von Kursen steigt man nicht mehr aus dem Fahrzeug aus
 	- Im Feldmodus werden weitere Rundballenpressen unterstützt
 	- Man kann in den Einstellungen die max. Geschwindigkeit auswählen zwischen "max Geschwindigkeit" und "eingefahrener Geschwindigkeit". Das erste ist die alte Einstellung, courseplay ermittelt die auf der Straße zu fahrende Geschwindigkeit. Bei der zweiten Option wird immer die Geschwindigkeit genutzt die beim Einfahren des Kurses gefahren wurde.
+    - man kann auf der letzten Seite der Einstellungen die Haltezeit am Wartepunkt definieren. Ist diese auf "0" wartet der Abfahrer am Wartepunkt bis er weitergeschickt wird. Ansonsten wartet er die vorgegebene Zeit am Wartepunkt und fährt dann automatisch weiter. (Ideal für die MapWeightStation)
 
 
 Ib. Changelog - Änderungen seit Version 2.11
