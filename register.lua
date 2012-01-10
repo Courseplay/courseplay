@@ -22,12 +22,12 @@ function register_courseplay()
 			for a=1, table.maxn(v.specializations) do
 			  local s = v.specializations[a];
 			  if s ~= nil then
-				--if s == SpecializationUtil.getSpecialization("steerable") then          
-				-- if not SpecializationUtil.hasSpecialization(courseplay, v.specializations) then
-				--	print("adding courseplay to:"..tostring(v.name));
-				--	table.insert(v.specializations, SpecializationUtil.getSpecialization("courseplay"));
-				--  end
-				--end;
+				if s == SpecializationUtil.getSpecialization("steerable") then          
+				 if not SpecializationUtil.hasSpecialization(courseplay, v.specializations) then
+					print("adding courseplay to:"..tostring(v.name));
+					table.insert(v.specializations, SpecializationUtil.getSpecialization("courseplay"));
+				  end
+				end;
 				if s == SpecializationUtil.getSpecialization("fillable") then 
 				  if not SpecializationUtil.hasSpecialization(autoovercharge, v.specializations) then
 					print("adding autoovercharge to:"..tostring(v.name));
@@ -43,14 +43,3 @@ end;
 
 register_courseplay();
 
-if Steerable.load ~= nil then
-	local orgSteerableLoad = Steerable.load
-	print("overwriting steerable.load")
-	Steerable.load = function(self,xmlFile)
-	orgSteerableLoad(self,xmlFile)
-
-	if not SpecializationUtil.hasSpecialization(courseplay, self.specializations) then
-	  print("adding courseplay to:"..tostring(v.name));
-	  table.insert(self.specializations, SpecializationUtil.getSpecialization("courseplay"));
-	end
-end;

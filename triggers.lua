@@ -53,7 +53,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
     end
 	end;
   -- C.Schoch
-  
+    
   for k,trigger in pairs(trigger_objects) do
 	--print(trigger.className);
 	if (trigger.className and (trigger.className == "SiloTrigger" or trigger.className == "HeapTipTrigger" or endswith(trigger.className, "TipTrigger") or startswith(trigger.className, "MapBGA")))  or trigger.isTipAnywhereTrigger then
