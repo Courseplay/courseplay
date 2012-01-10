@@ -237,7 +237,7 @@ function courseplay:drive(self, dt)
             self.waitTimer = self.timer + self.waitTime * 1000
 	  end
 		if self.ai_mode == 3 then
-		   	self.global_info_text = courseplay:get_locale(self, "CPReachedOverloadPoint") --'hat Überladepunkt erreicht.'
+		   	self.global_info_text = courseplay:get_locale(self, "CPReachedOverloadPoint") --'hat ï¿½berladepunkt erreicht.'
 		   	if self.tipper_attached then
 		   	
 		   	  -- drive on if fill_level doesn't change and fill level is < 100-self.required_fill_level_for_follow
@@ -247,7 +247,7 @@ function courseplay:drive(self, dt)
 		   	      drive_on = true
 		   	    end
 		   	    self.last_fill_level = fill_level
-		   	    courseplay:set_timeout(self, 400)
+		   	    courseplay:set_timeout(self, 7000)
 		   	  end
 		   	
 		   	  if fill_level == 0 or drive_on then
@@ -275,7 +275,7 @@ function courseplay:drive(self, dt)
 				if last_recordnumber == self.startWork then
 					if self.grainTankFillLevel > 0 then
 						self:setPipeOpening(true, false)
-						self.global_info_text = courseplay:get_locale(self, "CPReachedOverloadPoint") --'hat Überladepunkt erreicht.'
+						self.global_info_text = courseplay:get_locale(self, "CPReachedOverloadPoint") --'hat ï¿½berladepunkt erreicht.'
 					else
 					    self:setPipeOpening(false, false)
 					    self.wait = false
@@ -323,7 +323,7 @@ function courseplay:drive(self, dt)
 			    			activeTool:setIsSprayerFilling(true, sprayer.fillType, sprayer.isSiloTrigger, false)
 				  		end
 				  		if MapBGA ~= nil then
-					  		for i=1, table.getn(MapBGA.ModEvent.bunkers) do      --support Heady´s BGA
+					  		for i=1, table.getn(MapBGA.ModEvent.bunkers) do      --support Headyï¿½s BGA
 								if fill_level < self.required_fill_level_for_drive_on and not self.loaded and MapBGA.ModEvent.bunkers[i].manure.trailerInTrigger ==  activeTool then
 									self.info_text = "BGA LADEN"
 		                            allowedToDrive = false

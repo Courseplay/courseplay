@@ -115,7 +115,7 @@ function courseplay:load_tippers(self)
    	      drive_on = true
    	    end
    	    self.last_fill_level = fill_level
-   	    courseplay:set_timeout(self, 400)
+   	    courseplay:set_timeout(self, 7000)
    	  end
    	  
    	  if fill_level == 100 or drive_on then

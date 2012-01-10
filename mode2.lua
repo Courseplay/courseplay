@@ -130,8 +130,8 @@ function courseplay:handle_mode2(self, dt)
   
     -- are there any combines out there that need my help?
 		if self.timeout < self.timer then
-		courseplay:update_combines(self)
-	  	courseplay:set_timeout(self, 200)
+		  courseplay:update_combines(self)
+	  	  courseplay:set_timeout(self, 5000)
 		end
 
 		--is any of the reachable combines full?
