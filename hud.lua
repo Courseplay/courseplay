@@ -329,10 +329,15 @@ function courseplay:loadHud(self)
 		else
 		  self.hudpage[6][2][4]= "---"
 		end
+	  elseif self.showHudInfoBase == 7 then
+		self.hudpage[7][1][1]= courseplay:get_locale(self, "CPWaitTime") -- Wartezeit am Haltepunkt
+		self.hudpage[7][2][1]= string.format("%.1f", self.waitTime) .. "sec"
 
-		self.hudpage[6][1][5]= courseplay:get_locale(self, "CPWaitTime") -- Wartezeit am Haltepunkt
-		self.hudpage[6][2][5]= string.format("%.1f", self.waitTime) .. "sec"
-
+		if self.realistic_driving  then
+		   self.hudpage[7][2][2] = courseplay:get_locale(self, "CPastarOn")
+		  else
+		   self.hudpage[7][2][2] = courseplay:get_locale(self, "CPastarOff") -- "keiner"
+		end
 	  end
 
 

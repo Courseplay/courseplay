@@ -51,11 +51,11 @@ function courseplay:switch_hud_page(self, change_by)
   self.showHudInfoBase = self.showHudInfoBase + change_by
     
   if self.showHudInfoBase < self.min_hud_page then  --edit for more sites
-    self.showHudInfoBase = self.min_hud_page
+    self.showHudInfoBase = 7
    end
 
-   if self.showHudInfoBase == 7 then  --edit for more sites
-     self.showHudInfoBase = 6
+   if self.showHudInfoBase == 8 then  --edit for more sites
+     self.showHudInfoBase = self.min_hud_page
    end
 end
 
@@ -196,6 +196,11 @@ end
 function courseplay:switch_search_combine(self)
   self.search_combine = not self.search_combine
 end
+
+function courseplay:switch_realistic_driving(self)
+  self.realistic_driving = not self.realistic_driving
+end
+
 
 function courseplay:switch_use_speed(self)
   self.use_speed = not self.use_speed

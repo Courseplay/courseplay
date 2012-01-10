@@ -319,6 +319,16 @@
       <de>Wird entladen: %d von %d</de>
     </text>
     
+    <text name="CPastarOn">
+      <en>a* Pathfinding on</en>
+      <de>Fruchtumfahrung ein</de>
+    </text>
+    
+    <text name="CPastarOff">
+      <en>a* Pathfinding off</en>
+      <de>Fruchtumfahrung aus</de>
+    </text>
+    
     <text name="CPCombineOffset">
       <en>side offset:</en>
       <de>seitl. Abstand:</de>

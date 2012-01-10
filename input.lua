@@ -99,6 +99,11 @@ function courseplay:deal_with_mouse_input(self, func, value)
           if func == "change_turn_speed" then
             courseplay:change_turn_speed(self, value)
           end
+
+	  if func == "switch_realistic_driving" then
+            courseplay:switch_realistic_driving(self, value)
+          end
+          
           
 
 	  if func == "change_wait_time" then
