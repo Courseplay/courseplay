@@ -27,14 +27,16 @@ function courseplay:load(xmlFile)
 		print("overwriting steerable.load")
 		Steerable.load = function(self,xmlFile)
 		orgSteerableLoad(self,xmlFile)
-
+		
 		for nIndex,sXMLPath in pairs(aNameSearch) do 
 		  self.name = getXMLString(xmlFile, sXMLPath);
 		  if self.name ~= nil then break; end;
 		end;
 		if self.name == nil then self.name = g_i18n:getText("UNKNOWN") end;
 		end;
-	  end;
+
+		
+        end;
 
 	  if Attachable.load ~= nil then
 		print("overwriting Attachable.load")
