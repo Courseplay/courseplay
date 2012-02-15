@@ -26,6 +26,9 @@ end
 
 -- should the signs be visible?
 function courseplay:sign_visibility(self, visibilty, force_remove)
+	if self.signs == nil then
+          return
+	end 
 	for k,v in pairs(self.signs) do
     	local vis = visibilty
 
