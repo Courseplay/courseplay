@@ -18,27 +18,27 @@ function register_courseplay()
 		  table.insert(v.specializations, SpecializationUtil.getSpecialization("attachable"));
 		  table.insert(v.specializations, SpecializationUtil.getSpecialization("trailer"));
 		  table.insert(v.specializations, SpecializationUtil.getSpecialization("perard"));
-		else
-			for a=1, table.maxn(v.specializations) do
-			  local s = v.specializations[a];
-			  if s ~= nil then
-				if s == SpecializationUtil.getSpecialization("steerable") then          
-				 if not SpecializationUtil.hasSpecialization(courseplay, v.specializations) then
-					print("adding courseplay to:"..tostring(v.name));
-					table.insert(v.specializations, SpecializationUtil.getSpecialization("courseplay"));
-				  end
-				end;
-				if s == SpecializationUtil.getSpecialization("fillable") then 
-				  if not SpecializationUtil.hasSpecialization(autoovercharge, v.specializations) then
-					print("adding autoovercharge to:"..tostring(v.name));
-					table.insert(v.specializations, SpecializationUtil.getSpecialization("autoovercharge"));
-				  end
-				end	
-			  end;
-			end;
-		end;
-	  end;
+            else
+		for a=1, table.maxn(v.specializations) do
+		  local s = v.specializations[a];
+		  if s ~= nil then
+		    if s == SpecializationUtil.getSpecialization("steerable") then          
+		      if not SpecializationUtil.hasSpecialization(courseplay, v.specializations) then
+			print("adding courseplay to:"..tostring(v.name));
+			table.insert(v.specializations, SpecializationUtil.getSpecialization("courseplay"));
+		      end
+	   	  end;
+  		  if SpecializationUtil.hasSpecialization(fillable, v.specializations) then 
+		    if not SpecializationUtil.hasSpecialization(autoovercharge, v.specializations) then
+			print("adding autoovercharge to:"..tostring(v.name));
+			table.insert(v.specializations, SpecializationUtil.getSpecialization("autoovercharge"));
+		    end
+		  end	
+	        end;
+ 	    end;
+          end;
 	end;
+     end;
 end;
 
 register_courseplay();
