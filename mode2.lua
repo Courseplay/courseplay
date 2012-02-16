@@ -380,7 +380,7 @@ function courseplay:unload_combine(self, dt)
 
 	  	if combine_fill_level == 0 then --combine empty set waypoint 30 meters behind combine
 	    	self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, 10, 0, -5)
-            courseplay:addsign(self,self.target_x, 10,self.target_y)
+            
 	    	if tipper_percentage >= self.required_fill_level_for_drive_on then
 	      		self.loaded = true
 	    	else
@@ -492,15 +492,13 @@ function courseplay:unload_combine(self, dt)
 				self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, self.chopper_offset, 0, self.turn_radius)
 				self.turn_factor = -5
 				
-				courseplay:set_next_target(self, self.chopper_offset*3, 0, 0)
+				courseplay:set_next_target(self, self.chopper_offset*2, 0, 0)
 				
-				courseplay:set_next_target(self, self.chopper_offset*2, 0, self.turn_radius*-1)
-				
-				courseplay:set_next_target(self, self.chopper_offset, 0, self.turn_radius)
+				courseplay:set_next_target(self, self.chopper_offset, 0, self.turn_radius*-1)				
 
 				courseplay:set_next_target(self, 0, 0, self.turn_radius)
 
-				courseplay:set_next_target(self, self.chopper_offset*-1, 0, 0)
+				--courseplay:set_next_target(self, self.chopper_offset*-1, 0, 0)
 
 				mode = 5
 				self.shortest_dist = nil
@@ -807,7 +805,7 @@ end
 
 function courseplay:calculate_course_to(self, target_x, target_z)
   self.calculated_course = true
-  -- TODO check if there is fruit between me and the target, return false if not to avoid the calculating
+  -- check if there is fruit between me and the target, return false if not to avoid the calculating
   local x, y, z = getWorldTranslation(self.aiTractorDirectionNode)
   local hx, hy, hz = localToWorld(self.aiTractorDirectionNode, -2, 0, 0)
   local lx, ly, lz = nil, nil, nil
