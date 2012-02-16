@@ -2,6 +2,7 @@
 -- drives recored course
 function courseplay:drive(self, dt)
 	
+	-- combine self unloading
 	if self.ai_mode == 7 then
 		local state = self.ai_state
 		
@@ -65,27 +66,7 @@ function courseplay:drive(self, dt)
 		    local cx,cy,cz = getWorldTranslation(self.rootNode);
 		    local oldcx ,oldcz = self.Waypoints[self.recordnumber].cx,self.Waypoints[self.recordnumber].cz
 		    self.dist = courseplay:distance(cx ,cz ,oldcx ,oldcz)
-
-			--if self.dist > 20 then
-			--	if self.abortWork == nil then
-			--	    self.abortWork = 1
-			--	else
-			--		self.abortWork = self.abortWork + 1
-			--	end
-	   		--	self.recordnumber = self.maxnumber + 1
-			--	if self.recordnumber <= (self.orig_maxnumber + 3) then
-			--	    print("adding waypoint")
-			--		self.Waypoints[self.recordnumber] = {cx = cx ,cz = cz ,angle = 0, wait = false, rev = false, crossing = false}
-			--	else
-			--	    print("changing waypoint")
-			--		self.Waypoints[self.orig_maxnumber+1] = self.Waypoints[self.orig_maxnumber+2]
-			--		self.Waypoints[self.orig_maxnumber+2] = self.Waypoints[self.orig_maxnumber+3]
-			--		self.Waypoints[self.orig_maxnumber+3] = {cx = cx ,cz = cz ,angle = 0, wait = false, rev = false, crossing = false}
-			--		self.recordnumber = self.orig_maxnumber + 2
-			--		self.abortWork = 2
-			--	end
-			--	self.maxnumber  = table.getn(self.Waypoints)
-			--end
+			
 
 			if (self.grainTankFillLevel * 100 / self.grainTankCapacity)>= self.required_fill_level_for_drive_on then
 				self.lastaiThreshingDirectionX = self.aiThreshingDirectionX
@@ -159,17 +140,6 @@ function courseplay:drive(self, dt)
     -- this should never happen
     self.recordnumber = self.maxnumber
   end
-  --[[local next3_recordnumber = nil
-   
-   if self.recordnumber < self.maxnumber-3 then
-     next3_recordnumber = self.recordnumber +3
-   else
-   	 next3_recordnumber = self.recordnumber
-   end
-  local angle = nil
-  cx ,cz, angle = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz, self.Waypoints[self.recordnumber].angle]]--
-  --local last_cx, last_cz = nil
-  --last_cx ,last_cz = self.Waypoints[next3_recordnumber].cx, self.Waypoints[next3_recordnumber].cz
   
   cx ,cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
   
