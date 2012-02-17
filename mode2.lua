@@ -489,40 +489,18 @@ function courseplay:unload_combine(self, dt)
 			if cornChopper then
 				self.leftFruit, self.rightFruit =  courseplay:side_to_drive(self, combine, -20)
 
-	      		if self.chopper_offset > 0 then     --turn Left
-					self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, self.turn_radius, 0, self.turn_radius*-1)
-			        self.turn_factor = -5
+				self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, self.chopper_offset, 0, self.turn_radius)
+				self.turn_factor = -5
+				
+				courseplay:set_next_target(self, self.chopper_offset*3, 0, 0)
+				
+				courseplay:set_next_target(self, self.chopper_offset*2, 0, self.turn_radius*-1)
+				
+				courseplay:set_next_target(self, self.chopper_offset, 0, self.turn_radius)
 
-	                local next_x, next_y, next_z = localToWorld(self.rootNode, 0, 0, self.turn_radius*-1)
-		      		local next_wp = {x = next_x, y=next_y, z=next_z}
-		      		table.insert(self.next_targets, next_wp)
+				courseplay:set_next_target(self, 0, 0, self.turn_radius)
 
-			        local next_x, next_y, next_z = localToWorld(self.rootNode, self.turn_radius, 0, self.turn_radius*-0,4)
-		      		local next_wp = {x = next_x, y=next_y, z=next_z}
-		      		table.insert(self.next_targets, next_wp)
-
-		      		local next_x, next_y, next_z = localToWorld(self.rootNode,-1.5, 0, 5 )
-		      		local next_wp = {x = next_x, y=next_y, z=next_z}
-		      		table.insert(self.next_targets, next_wp)
-
-
-			    else -- turn right
-			        self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, self.turn_radius*-1, 0, self.turn_radius*-1)
-			        self.turn_factor = 5
-
-	                local next_x, next_y, next_z = localToWorld(self.rootNode, 0, 0, self.turn_radius*-1)
-		      		local next_wp = {x = next_x, y=next_y, z=next_z}
-		      		table.insert(self.next_targets, next_wp)
-
-			        local next_x, next_y, next_z = localToWorld(self.rootNode, self.turn_radius*-1, 0, self.turn_radius*-0.4)
-		      		local next_wp = {x = next_x, y=next_y, z=next_z}
-		      		table.insert(self.next_targets, next_wp)
-
-		      		local next_x, next_y, next_z = localToWorld(self.rootNode, 1.5, 0, 5)
-		      		local next_wp = {x = next_x, y=next_y, z=next_z}
-		      		table.insert(self.next_targets, next_wp)
-				end	
-
+				courseplay:set_next_target(self, self.chopper_offset*-1, 0, 0)
 
 				mode = 5
 				self.shortest_dist = nil

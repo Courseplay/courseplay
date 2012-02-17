@@ -412,6 +412,8 @@ function courseplay:showHud(self)
 		  hud_headline= courseplay:get_locale(self, "CPSpeedLimit") -- "Geschwindigkeiten"
 		elseif self.showHudInfoBase == 6 then
 		  hud_headline= courseplay:get_locale(self, "CPSettings") -- "Allgemein"
+		elseif self.showHudInfoBase == 7 then
+		  hud_headline= courseplay:get_locale(self, "CPHud7") -- "Allgemein"
 		end
 		
 	    renderText(self.hudInfoBasePosX + 0.060, self.hudInfoBasePosY + 0.240, 0.021, hud_headline);

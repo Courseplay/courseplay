@@ -520,6 +520,13 @@
       <en>SPEED LIMIT</en>
       <de>Geschwindigkeiten</de>
     </text>
+	
+	<text name="CPHud7">
+      <en>DRIVE SETTINGS</en>
+      <de>Fahreinstellungen</de>
+    </text>
+	
+	
     
     <text name="CPCombineTurning">
       <en>combine is turning.</en>
