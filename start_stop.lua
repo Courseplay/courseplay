@@ -116,9 +116,11 @@ function courseplay:stop(self)
   	self.steeringEnabled = true;
   	self.deactivateOnLeave = true
   	self.disableCharacterOnLeave = true
-	self.motor.maxRpm[1] = self.orgRpm[1] 
-	self.motor.maxRpm[2] = self.orgRpm[2] 
-	self.motor.maxRpm[3] = self.orgRpm[3] 
+	if self.orgRpm then
+		self.motor.maxRpm[1] = self.orgRpm[1] 
+		self.motor.maxRpm[2] = self.orgRpm[2] 
+		self.motor.maxRpm[3] = self.orgRpm[3] 
+	end
 	self.record = false
 	self.record_pause = false
 	if self.ai_state > 4 then

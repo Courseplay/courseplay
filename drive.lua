@@ -76,7 +76,7 @@ function courseplay:drive(self, dt)
 				self.abortWork = 3
 				
 				
-				cx, cy, cz = localToWorld(self.rootNode, 0, 0, -45)
+				cx, cy, cz = localToWorld(self.rootNode, 0, 0, -25)
                 
 				self.Waypoints[self.maxnumber+1] = {cx = cx ,cz = cz ,angle = 0, wait = false, rev = false, crossing = false}
 				
@@ -92,7 +92,7 @@ function courseplay:drive(self, dt)
                 courseplay:start(self)
 				self.recordnumber = 2
 				
-				if false then --courseplay:calculate_course_to(self, self.Waypoints[2].cx, self.Waypoints[2].cz) then
+				if courseplay:calculate_course_to(self, self.Waypoints[2].cx, self.Waypoints[2].cz) then
         		  self.ai_state = 5				
 				else -- fallback if no course could be calculated
 				  self.ai_state = 5
@@ -328,6 +328,8 @@ function courseplay:drive(self, dt)
   					AIVehicleUtil.driveInDirection(self, 0, self.steering_angle, 0, 0, 28, false, moveForwards, 0, 1)
 				end
  				self:startAIThreshing(true)
+				self.sl = 1
+				self:setBeaconLightsVisibility(false);
 				self.aiThreshingDirectionX = self.lastaiThreshingDirectionX
 				self.aiThreshingDirectionZ = self.lastaiThreshingDirectionZ
  				if self.abortWork ~= nil then

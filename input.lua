@@ -300,15 +300,19 @@ end
 
 function courseplay:key_input(self, unicode)
     if 31 < unicode and unicode < 127 then 
-		if self.user_input:len() <= 20 then
-			self.user_input = self.user_input .. string.char(unicode)
+		if self.user_input ~= nil then
+			if self.user_input:len() <= 20 then
+				self.user_input = self.user_input .. string.char(unicode)
+			end
 		end
 	end
 	
 	-- backspace
 	if unicode == 8 then
-		if  self.user_input:len() >= 1 then
-			 self.user_input =  self.user_input:sub(1, self.user_input:len() - 1)
+		if self.user_input ~= nil then
+			if  self.user_input:len() >= 1 then
+				self.user_input =  self.user_input:sub(1, self.user_input:len() - 1)
+			end
 		end
 	end
 	
