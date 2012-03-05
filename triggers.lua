@@ -62,7 +62,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 	    -- little hack ;)
 	    trigger.className = "TipAnyWhere"
 	  end 
-	  if trigger.triggerId ~= nil and trigger.triggerId == transformId then
+	  if trigger.triggerId ~= nil and trigger.triggerId == transformId and (trigger.capacity == nil or trigger.fillLevel < trigger.capacity ) then
 		  self.currentTipTrigger = trigger
 		elseif trigger.triggerIds ~= nil and transformId ~= nil and table.contains(trigger.triggerIds, transformId) then
 		  self.currentTipTrigger = trigger	
