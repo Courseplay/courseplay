@@ -47,7 +47,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
   -- C.Schoch
 	if g_currentMission.tipTriggers ~= nil then
 		for k,trigger in pairs(g_currentMission.tipTriggers) do
-			if trigger.isExtendedTrigger then
+			if trigger.isExtendedTrigger or trigger.className == "HeapTipTrigger" then
 				table.insert(trigger_objects, trigger);
 			end;
     end
