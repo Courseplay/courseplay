@@ -781,16 +781,23 @@ end
 function courseplay:calculate_course_to(self, target_x, target_z)
   self.calculated_course = true
   -- check if there is fruit between me and the target, return false if not to avoid the calculating
-  local x, y, z = getWorldTranslation(self.aiTractorDirectionNode)
-  local hx, hy, hz = localToWorld(self.aiTractorDirectionNode, -2, 0, 0)
+  local node = nil
+  if self.aiTractorDirectionNode ~= nil then
+     node = self.aiTractorDirectionNode
+  else
+     node = self.aiTreshingDirectionNode
+  end
+  
+  local x, y, z = getWorldTranslation(node)
+  local hx, hy, hz = localToWorld(node, -2, 0, 0)
   local lx, ly, lz = nil, nil, nil
-  local dlx, dly, dlz = worldToLocal(self.aiTractorDirectionNode, target_x, y,target_z)
+  local dlx, dly, dlz = worldToLocal(node, target_x, y,target_z)
   local dnx = dlz * -1
   local dnz = dlx
   local angle = math.atan(dnz / dnx)
   dnx = math.cos(angle) * -2
   dnz = math.sin(angle) * -2  
-  hx, hy, hz = localToWorld(self.aiTractorDirectionNode, dnx, 0, dnz)
+  hx, hy, hz = localToWorld(node, dnx, 0, dnz)
   local density = 0
   for i = 1, FruitUtil.NUM_FRUITTYPES do
   	if i ~= FruitUtil.FRUITTYPE_GRASS then	

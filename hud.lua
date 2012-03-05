@@ -167,8 +167,8 @@ function courseplay:loadHud(self)
 	
 	  elseif self.showHudInfoBase == 2 then
 		local number_of_courses = 0
-		if courseplay_courses ~= nil then
-			for k,course in pairs(courseplay_courses) do 
+		if g_currentMission.courseplay_courses ~= nil then
+			for k,course in pairs(g_currentMission.courseplay_courses) do 
 			  number_of_courses = number_of_courses + 1
 			end
 		end
@@ -191,7 +191,7 @@ function courseplay:loadHud(self)
 		      button.overlay:render()
 		    end
 		  end		  
-		  local course_name = courseplay_courses[i+1].name
+		  local course_name = g_currentMission.courseplay_courses[i+1].name
 		  
 		  if course_name == nil or course_name == "" then
 		    course_name = "-"

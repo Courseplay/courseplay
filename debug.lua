@@ -85,23 +85,31 @@ end
 stream_debug_counter = 0
 
 function streamDebugWriteFloat32(streamId, value)  
-  value = Utils.getNoNil(value, 0)
+  value = Utils.getNoNil(value, 0.0)
   stream_debug_counter = stream_debug_counter +1
---  print("++++++++++++++++") 
---  print(stream_debug_counter)
---  print("float: ")
---  print(value)
---  print("-----------------") 
+--print("++++++++++++++++") 
+--print(stream_debug_counter)
+--print("float: ")
+--print(value)
+--print("-----------------") 
   streamWriteFloat32(streamId, value)
 end
 
 function streamDebugWriteBool(streamId, value)
 	value = Utils.getNoNil(value, false)
+	if value == 1 then
+	  value = true
+	end
+	
+	if value == 0 then
+	  value = false
+	end
+	
 	stream_debug_counter = stream_debug_counter +1
 	--print("++++++++++++++++") 
---	print(stream_debug_counter)
+    --print(stream_debug_counter)
 	--print("Bool: ")
---	print(value)
+    --print(value)
 	--print("-----------------") 
 	streamWriteBool(streamId, value)
 end
@@ -134,9 +142,9 @@ stream_debug_counter = stream_debug_counter +1
 --print("++++++++++++++++") 
 --print(stream_debug_counter)
   local value = streamReadFloat32(streamId)
---  print("Float32: ")
---  print(value)
---  print("-----------------") 
+--print("Float32: ")
+--print(value)
+--print("-----------------") 
   return value
 end
 

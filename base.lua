@@ -6,13 +6,11 @@ end
 
 function courseplay:load(xmlFile)
 	-- global array for courses, no refreshing needed any more
-	if courseplay_courses == nil and g_server ~= nil then
-	  courseplay_courses = courseplay:load_courses()
-	elseif not courseplay_courses then
-	  courseplay_courses = {}
-	end
-
-	courseplay_courses_transfered = false
+	--if courseplay_courses == nil and g_server ~= nil then
+	--  courseplay_courses = courseplay:load_courses()
+	--elseif not courseplay_courses then
+	--  courseplay_courses = {}
+	--end
 
 	self.setCourseplayFunc = SpecializationUtil.callSpecializationsFunction("setCourseplayFunc");
 	
@@ -562,7 +560,7 @@ end
 
 -- is been called everey frame
 function courseplay:update(dt)	
-	
+    
 	if self.isEntered then
 		
 		if self.user_input_active == true then
@@ -730,32 +728,6 @@ function courseplay:readStream(streamId, connection)
   if unloading_tipper_id then
     self.unloading_tipper = networkGetObject(unloading_tipper_id)
   end
-
-
-  -- course count
-  local course_count = streamDebugReadInt32(streamId)
-  local courseplay_courses = {}
-  for i=1, course_count do
-    local course_name = streamDebugReadString(streamId)
-    local course_id = streamDebugReadInt32(streamId)
-    local wp_count = streamDebugReadInt32(streamId)
-  	local  waypoints = {}
-  	for w=1, wp_count do    
-  	  local cx = streamDebugReadFloat32(streamId)
-  	  local cz = streamDebugReadFloat32(streamId)
-  	  local angle = streamDebugReadFloat32(streamId)
-  	  local wait = streamDebugReadBool(streamId)
-  	  local rev = streamDebugReadBool(streamId)
-  	  local crossing = streamDebugReadBool(streamId)
-  	  local speeed  = streamDebugReadInt32(streamId)
-  	  local wp = {cx = cx, cz = cz, angle = angle , wait = wait, rev = rev, crossing = crossing, speed = speed}
-  	  table.insert(waypoints, wp)
-  	end
-    local course = {name = course_name, waypoints= waypoints, id = course_id}
-    table.insert(courseplay_courses, course)
-  end
-  
-  self.courseplay_courses = courseplay_courses
     
   courseplay:reinit_courses(self)
 
@@ -859,28 +831,6 @@ function courseplay:writeStream(streamId, connection)
      unloading_tipper_id= networkGetObject(self.unloading_tipper)
   end
   streamDebugWriteInt32(streamId, unloading_tipper_id)
-  
-
-  --transfer courses
-    local course_count = table.getn(courseplay_courses)
-    
-    streamDebugWriteInt32(streamId, course_count)
-    for i=1, course_count do 
-      
-      streamDebugWriteString(streamId, courseplay_courses[i].name)
-      streamDebugWriteInt32(streamId, courseplay_courses[i].id)
-      streamDebugWriteInt32(streamId, table.getn(courseplay_courses[i].waypoints))
-      for w=1, table.getn(courseplay_courses[i].waypoints) do
-        streamDebugWriteFloat32(streamId, courseplay_courses[i].waypoints[w].cx)
-        streamDebugWriteFloat32(streamId, courseplay_courses[i].waypoints[w].cz)
-        streamDebugWriteFloat32(streamId, courseplay_courses[i].waypoints[w].angle)
-        streamDebugWriteBool(streamId, courseplay_courses[i].waypoints[w].wait)
-        streamDebugWriteBool(streamId, courseplay_courses[i].waypoints[w].rev)
-        streamDebugWriteBool(streamId, courseplay_courses[i].waypoints[w].crossing)
-        streamDebugWriteInt32(streamId, courseplay_courses[i].waypoints[w].speed)         
-      end
-    end
-
 
   local loaded_courses = nil  
   if table.getn(self.loaded_courses) then

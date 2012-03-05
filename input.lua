@@ -300,15 +300,19 @@ end
 
 function courseplay:key_input(self, unicode)
     if 31 < unicode and unicode < 127 then 
-		if self.user_input:len() <= 20 then
-			self.user_input = self.user_input .. string.char(unicode)
+		if self.user_input ~= nil then
+			if self.user_input:len() <= 20 then
+				self.user_input = self.user_input .. string.char(unicode)
+			end
 		end
 	end
 	
 	-- backspace
 	if unicode == 8 then
-		if  self.user_input:len() >= 1 then
-			 self.user_input =  self.user_input:sub(1, self.user_input:len() - 1)
+		if self.user_input ~= nil then
+			if  self.user_input:len() >= 1 then
+				self.user_input =  self.user_input:sub(1, self.user_input:len() - 1)
+			end
 		end
 	end
 	
@@ -358,19 +362,19 @@ function courseplay:handle_user_input(self)
 		self.user_input_active = false
 		self.current_course_name = self.user_input
 		local maxID = 0
-    	for i=1, table.getn(courseplay_courses) do
-			if courseplay_courses[i].id ~= nil then
-				if courseplay_courses[i].id > maxID then
-            		maxID = courseplay_courses[i].id
+    	for i=1, table.getn(g_currentMission.courseplay_courses) do
+			if g_currentMission.courseplay_courses[i].id ~= nil then
+				if g_currentMission.courseplay_courses[i].id > maxID then
+            		maxID = g_currentMission.courseplay_courses[i].id
        	 		end
 			end
     	end
     	self.courseID = maxID + 1
 		course = {name =self.current_course_name, id = self.courseID, waypoints = self.Waypoints}
-  		if courseplay_courses == nil then
-  	  		courseplay_courses = {}
+  		if g_currentMission.courseplay_courses == nil then
+  	  		g_currentMission.courseplay_courses = {}
 		end
-		table.insert(courseplay_courses, course)
+		table.insert(g_currentMission.courseplay_courses, course)
 		
 		self.user_input = ""	   
 		self.user_input_message = nil

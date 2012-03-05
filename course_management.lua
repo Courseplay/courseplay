@@ -23,21 +23,22 @@ function courseplay:add_course(self, id, use_real_id)
   courseplay:load_course(self, id, use_real_id, true)  
 end
 
-function courseplay:reinit_courses(self)
-  if courseplay_courses == nil then
-	  if self.courseplay_courses ~= nil then
-	  courseplay_courses = self.courseplay_courses
+function courseplay:reinit_courses(self)  
+  if g_currentMission.courseplay_courses == nil then
+	if self.courseplay_courses ~= nil then
+	  g_currentMission.courseplay_courses = self.courseplay_courses
 	else
 	  print("courseplay_courses is empty")
+	  if g_server ~= nil then
+	    courseplay_manager:load_courses();
+	  end
 	  return    
 	end
-	end
+  end
 end
 
-
 function courseplay:load_course(self, id, use_real_id, add_course_at_end)
-	-- global array for courses, no refreshing needed any more	
-
+  -- global array for courses, no refreshing needed any more	
   courseplay:reinit_courses(self);
 
   if id ~= nil and id ~= "" then
@@ -45,9 +46,9 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
 	if not use_real_id then      
       id = self.selected_course_number + id
     else
-		for i=1, table.getn(courseplay_courses) do
-			if courseplay_courses[i].id ~= nil then
-				if courseplay_courses[i].id == searchID then
+		for i=1, table.getn(g_currentMission.courseplay_courses) do
+			if g_currentMission.courseplay_courses[i].id ~= nil then
+				if g_currentMission.courseplay_courses[i].id == searchID then
             		id = i
             		break
        	 		end
@@ -67,7 +68,7 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
     
     
     
-  	local course = courseplay_courses[id]
+  	local course = g_currentMission.courseplay_courses[id]
   	if course == nil then
   	  print("no course found")
   	  return
@@ -75,9 +76,9 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
   	if not use_real_id then
 
   	  if add_course_at_end == true then
-  	  	table.insert(self.loaded_courses, courseplay_courses[id].id*-1)
+  	  	table.insert(self.loaded_courses, g_currentMission.courseplay_courses[id].id*-1)
   	  else
-  	    table.insert(self.loaded_courses, courseplay_courses[id].id)
+  	    table.insert(self.loaded_courses, g_currentMission.courseplay_courses[id].id)
   	  end
   	end
   --	courseplay:reset_course(self)
@@ -103,28 +104,14 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
 			  	  local  course2_wp = course2_waypoints[number_2]
 			  	  if course2_wp.crossing == true and course2_wp.merged == nil and wp_found == false then
 			  	  	local distance_between_waypoints = courseplay:distance(course1_wp.cx, course1_wp.cz, course2_wp.cx, course2_wp.cz)
-			  	--  	print("--------------")
-			  	  --	print("comparing:")
-			  	  --	print(number)
-			  	  --	print(number_2)
-			  	  --	print("----DIST---")			  	  	
-			  	  --	print(distance_between_waypoints)
-			  	  --	print("--------------")  
 			        if distance_between_waypoints < 50 and distance_between_waypoints ~= 0 then
-			         --  if number > 3 and number ~= number_2 then
                          if distance_between_waypoints < old_distance then
 						 	old_distance = distance_between_waypoints
 						 	lastWP = number
 			             	course1_waypoints[lastWP].merged = true
 			             	new_wp = number_2
-			        --     print("--------------")
-			         --    print("found wp")
-			          --   print(lastWP)
-			           --  print(new_wp)
-			           --  print("--------------")
 			             	wp_found = true
 						 end
-			        --   end
 			        end
 			      end
 			    end
@@ -161,8 +148,8 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
 end
 
 function courseplay:reset_merged(self)
-  for i=1, table.getn(courseplay_courses) do
-     for num, wp in pairs(courseplay_courses[i].waypoints) do
+  for i=1, table.getn(g_currentMission.courseplay_courses) do
+     for num, wp in pairs(g_currentMission.courseplay_courses[i].waypoints) do
        wp.merged = nil
      end
   end
@@ -171,11 +158,11 @@ end
 function courseplay:clear_course(self, id)
   if id ~= nil then
     id = self.selected_course_number + id
-    local course = courseplay_courses[id]
+    local course = g_currentMission.courseplay_courses[id]
     if course == nil then
       return
     end
-    table.remove(courseplay_courses, id)
+    table.remove(g_currentMission.courseplay_courses, id)
     courseplay:save_courses(self)
     courseplay:RefreshGlobalSigns(self)
   end
@@ -188,7 +175,7 @@ function courseplay:save_courses(self)
   local tab = "   "
   if File ~= nil then
     File:write("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\" ?>\n<XML>\n<courses>\n")
-    for _,course in pairs(courseplay_courses) do
+    for _,course in pairs(g_currentMission.courseplay_courses) do
       if course ~= nil then
 	      local name = course.name
 	      local id = course.id
@@ -235,6 +222,11 @@ end
 
 
 function courseplay:load_courses()
+	print("try to load courses with old courseplay-function");
+	if true then
+	  return false;
+	end
+
     print('loaded courses')
 	local finish_all = false
 	courseplay_coursesUnsort = {}
@@ -312,47 +304,47 @@ function courseplay:load_courses()
 		until finish_wp == true
 	until finish_all == true
 
-	courseplay_courses = {}
+	g_currentMission.courseplay_courses = {}
 	
 	for i=1, table.getn(courseplay_coursesUnsort) do
 		local name = courseplay_coursesUnsort[i].name
-		table.insert(courseplay_courses, name)
+		table.insert(g_currentMission.courseplay_courses, name)
    	end
    	
-  	table.sort (courseplay_courses)
+  	table.sort (g_currentMission.courseplay_courses)
   	
-  	for i=1, table.getn(courseplay_courses) do
+  	for i=1, table.getn(g_currentMission.courseplay_courses) do
   	    for k, v in pairs (courseplay_coursesUnsort) do
-			if courseplay_courses[i] == courseplay_coursesUnsort[k].name then
+			if g_currentMission.courseplay_courses[i] == courseplay_coursesUnsort[k].name then
 				local waypoints = courseplay_coursesUnsort[k].waypoints
-				local name =  courseplay_courses[i]
+				local name =  g_currentMission.courseplay_courses[i]
 				local id = courseplay_coursesUnsort[k].id
 				local course = {name= name, id = id, waypoints=waypoints}
-	            courseplay_courses[i] = course
+	            g_currentMission.courseplay_courses[i] = course
 	            break
 			end
-		end
     end
+		end
 	-- search highest ID
 	local maxID = 0
-    for i=1, table.getn(courseplay_courses) do
-		if courseplay_courses[i].id ~= nil then
-			if courseplay_courses[i].id > maxID then
-            	maxID = courseplay_courses[i].id
+    for i=1, table.getn(g_currentMission.courseplay_courses) do
+		if g_currentMission.courseplay_courses[i].id ~= nil then
+			if g_currentMission.courseplay_courses[i].id > maxID then
+            	maxID = g_currentMission.courseplay_courses[i].id
        	 	end
 		end
     end
     self.courseID = maxID
     -- define for old courses
-    for i=1, table.getn(courseplay_courses) do
-        if courseplay_courses[i].id == nil or courseplay_courses[i].id == 0 then
+    for i=1, table.getn(g_currentMission.courseplay_courses) do
+        if g_currentMission.courseplay_courses[i].id == nil or g_currentMission.courseplay_courses[i].id == 0 then
         	self.courseID = self.courseID + 1
-			courseplay_courses[i].id = self.courseID  
+			g_currentMission.courseplay_courses[i].id = self.courseID  
         end
     end
     
     courseplay_coursesUnsort = nil
-    return courseplay_courses
+    return g_currentMission.courseplay_courses
 end
 
 
