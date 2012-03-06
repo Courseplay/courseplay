@@ -63,10 +63,10 @@ function courseplay:RefreshGlobalSigns(self)
     	courseplay:sign_visibility(self,false,true)
     	self.signs = {}
     end
-	if courseplay_courses ~= nil then  -- ??? MP Ready ???
-		for i=1, table.getn(courseplay_courses) do
-	        for k,v in pairs(courseplay_courses[i].waypoints) do
-	            local wp = courseplay_courses[i].waypoints[k]
+	if g_currentMission.courseplay_courses ~= nil then  -- ??? MP Ready ???
+		for i=1, table.getn(g_currentMission.courseplay_courses) do
+	        for k,v in pairs(g_currentMission.courseplay_courses[i].waypoints) do
+	            local wp = g_currentMission.courseplay_courses[i].waypoints[k]
   				if wp.crossing == true then
 					local x = wp.cx
 	               	local y = wp.angle
