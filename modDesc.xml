@@ -670,6 +670,7 @@
 		<sourceFile filename="hud.lua" />
 		<sourceFile filename="settings.lua" />
 		<sourceFile filename="courseplay_event.lua" />
+		<sourceFile filename="courseplay_manager.lua" />
     </extraSourceFiles>   
 
 	<inputBindings>
