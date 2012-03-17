@@ -4,15 +4,19 @@ local courseplay_manager_mt = Class(courseplay_manager);
 
 function courseplay_manager:loadMap(name)
   if g_currentMission.courseplay_courses == nil then
-    -- print("courseplay courses was nil and initialized");
+    --print("courseplay courses was nil and initialized");
     g_currentMission.courseplay_courses = {};
   
 	  courseplay_coursesUnsort = {}
 	  if g_server ~= nil and table.getn(g_currentMission.courseplay_courses) == 0 then
 		g_currentMission.courseplay_courses = courseplay_manager:load_courses();
-		---- print(table.show(g_currentMission.courseplay_courses));
+		----print(table.show(g_currentMission.courseplay_courses));
 	  end
   end
+end
+
+function courseplay_manager:deleteMap()
+  g_currentMission.courseplay_courses = nil
 end
 
 
@@ -20,14 +24,14 @@ function courseplay_manager:draw()
 
 end
 function courseplay_manager:update()
- 
+ --print(table.getn(g_currentMission.courseplay_courses));
 end
 
 function courseplay_manager:keyEvent()
 end
 
 function courseplay_manager:load_courses()
-    -- print('loaded courses by manager')
+    --print('loaded courses by manager')
 	local finish_all = false
 	local path = getUserProfileAppPath() .. "savegame" .. g_careerScreen.selectedIndex .. "/"
     local existDir = io.open (path .. "courseplay.xml", "a")
@@ -134,63 +138,12 @@ function courseplay_manager:load_courses()
 		end
     end
 	
+	--print(table.show(courseplay_courses));
     
     courseplay_coursesUnsort = nil
     return g_currentMission.courseplay_courses
 end
 
-function courseplay_manager:writeStream(streamId, connection)
-  -- print("manager transfering courses");
-  --transfer courses
-    local course_count = table.getn(g_currentMission.courseplay_courses)
-    
-    streamDebugWriteInt32(streamId, course_count)
-    for i=1, course_count do       
-      streamDebugWriteString(streamId, g_currentMission.courseplay_courses[i].name)
-      streamDebugWriteInt32(streamId, g_currentMission.courseplay_courses[i].id)
-      streamDebugWriteInt32(streamId, table.getn(g_currentMission.courseplay_courses[i].waypoints))
-      for w=1, table.getn(g_currentMission.courseplay_courses[i].waypoints) do
-        streamDebugWriteFloat32(streamId, g_currentMission.courseplay_courses[i].waypoints[w].cx)
-        streamDebugWriteFloat32(streamId, g_currentMission.courseplay_courses[i].waypoints[w].cz)
-        streamDebugWriteFloat32(streamId, g_currentMission.courseplay_courses[i].waypoints[w].angle)
-        streamDebugWriteBool(streamId, g_currentMission.courseplay_courses[i].waypoints[w].wait)
-        streamDebugWriteBool(streamId, g_currentMission.courseplay_courses[i].waypoints[w].rev)
-        streamDebugWriteBool(streamId, g_currentMission.courseplay_courses[i].waypoints[w].crossing)
-        streamDebugWriteInt32(streamId, g_currentMission.courseplay_courses[i].waypoints[w].speed)         
-      end
-    end
-end;
-
-function courseplay_manager:readStream(streamId, connection)
-  -- print("manager receiving courses");
-  -- course count
-  local course_count = streamDebugReadInt32(streamId)
-  -- print("manager reading stream");
-  -- print(course_count);
-  g_currentMission.courseplay_courses = {}
-  for i=1, course_count do
-    -- print("got course");
-    local course_name = streamDebugReadString(streamId)
-    local course_id = streamDebugReadInt32(streamId)
-    local wp_count = streamDebugReadInt32(streamId)
-  	local  waypoints = {}
-  	for w=1, wp_count do    
-	  -- print("got waypoint");
-  	  local cx = streamDebugReadFloat32(streamId)
-  	  local cz = streamDebugReadFloat32(streamId)
-  	  local angle = streamDebugReadFloat32(streamId)
-  	  local wait = streamDebugReadBool(streamId)
-  	  local rev = streamDebugReadBool(streamId)
-  	  local crossing = streamDebugReadBool(streamId)
-  	  local speeed  = streamDebugReadInt32(streamId)
-  	  local wp = {cx = cx, cz = cz, angle = angle , wait = wait, rev = rev, crossing = crossing, speed = speed}
-  	  table.insert(waypoints, wp)
-  	end
-    local course = {name = course_name, waypoints= waypoints, id = course_id}
-    table.insert(g_currentMission.courseplay_courses, course)
-  end  
-  -- print(table.show(courseplay_courses));
-end;
 
 function courseplay_manager:mouseEvent(posX, posY, isDown, isUp, button)
 end;
@@ -203,11 +156,11 @@ stream_debug_counter = 0
 function streamDebugWriteFloat32(streamId, value)  
   value = Utils.getNoNil(value, 0.0)
   stream_debug_counter = stream_debug_counter +1
--- print("++++++++++++++++") 
--- print(stream_debug_counter)
--- print("float: ")
--- print(value)
--- print("-----------------") 
+--print("++++++++++++++++") 
+--print(stream_debug_counter)
+--print("float: ")
+--print(value)
+--print("-----------------") 
   streamWriteFloat32(streamId, value)
 end
 
@@ -222,80 +175,179 @@ function streamDebugWriteBool(streamId, value)
 	end
 	
 	stream_debug_counter = stream_debug_counter +1
-	-- print("++++++++++++++++") 
-    -- print(stream_debug_counter)
-	-- print("Bool: ")
-    -- print(value)
-	-- print("-----------------") 
+	--print("++++++++++++++++") 
+    --print(stream_debug_counter)
+	--print("Bool: ")
+    --print(value)
+	--print("-----------------") 
 	streamWriteBool(streamId, value)
 end
 
 function streamDebugWriteInt32(streamId, value)
 value = Utils.getNoNil(value, 0)
 stream_debug_counter = stream_debug_counter +1
--- print("++++++++++++++++") 
--- print(stream_debug_counter)
--- print("Int32: ")
--- print(value)
--- print("-----------------") 
+--print("++++++++++++++++") 
+--print(stream_debug_counter)
+--print("Int32: ")
+--print(value)
+--print("-----------------") 
   streamWriteInt32(streamId, value)
 end
 
 function streamDebugWriteString(streamId, value)
 value = Utils.getNoNil(value, "")
 stream_debug_counter = stream_debug_counter +1
--- print("++++++++++++++++") 
--- print(stream_debug_counter)
--- print("String: ")
--- print(value)
--- print("-----------------") 
+--print("++++++++++++++++") 
+--print(stream_debug_counter)
+--print("String: ")
+--print(value)
+--print("-----------------") 
   streamWriteString(streamId, value)
 end
 
 
 function streamDebugReadFloat32(streamId)
 stream_debug_counter = stream_debug_counter +1
--- print("++++++++++++++++") 
--- print(stream_debug_counter)
+--print("++++++++++++++++") 
+--print(stream_debug_counter)
   local value = streamReadFloat32(streamId)
--- print("Float32: ")
--- print(value)
--- print("-----------------") 
+--print("Float32: ")
+--print(value)
+--print("-----------------") 
   return value
 end
 
 
 function streamDebugReadInt32(streamId)
 stream_debug_counter = stream_debug_counter +1
--- print("++++++++++++++++") 
--- print(stream_debug_counter)
+--print("++++++++++++++++") 
+--print(stream_debug_counter)
 local value = streamReadInt32(streamId)
--- print("Int32: ")
--- print(value)
--- print("-----------------") 
+--print("Int32: ")
+--print(value)
+--print("-----------------") 
 return value
 end
 
 function streamDebugReadBool(streamId)
 stream_debug_counter = stream_debug_counter +1
--- print("++++++++++++++++") 
--- print(stream_debug_counter)
+--print("++++++++++++++++") 
+--print(stream_debug_counter)
 local value = streamReadBool(streamId)
--- print("Bool: ")
--- print(value)
--- print("-----------------") 
+--print("Bool: ")
+--print(value)
+--print("-----------------") 
 return value
 end
 
 function streamDebugReadString(streamId)
 stream_debug_counter = stream_debug_counter +1
--- print("++++++++++++++++") 
--- print(stream_debug_counter)
+--print("++++++++++++++++") 
+--print(stream_debug_counter)
 local value = streamReadString(streamId)
--- print("String: ")
--- print(value)
--- print("-----------------") 
+--print("String: ")
+--print(value)
+--print("-----------------") 
 return value
 end
 
 addModEventListener(courseplay_manager);
+
+--
+-- based on PlayerJoinFix
+--
+-- SFM-Modding
+-- @author  Manuel Leithner
+-- @date:		01/08/11
+-- @version:	v1.0
+-- @history:	v1.0 - initial implementation 1.1 adaption to courseplay
+--
+
+local modName = g_currentModName;
+local Server_sendObjects_old = Server.sendObjects;
+
+function Server:sendObjects(connection, x,y,z, viewDistanceCoeff)
+    connection:sendEvent(CourseplayJoinFixEvent:new());
+
+    Server_sendObjects_old(self, connection, x,y,z, viewDistanceCoeff);
+end;
+
+
+CourseplayJoinFixEvent = {};
+CourseplayJoinFixEvent_mt = Class(CourseplayJoinFixEvent, Event);
+
+InitEventClass(CourseplayJoinFixEvent, "CourseplayJoinFixEvent");
+
+function CourseplayJoinFixEvent:emptyNew()
+    local self = Event:new(CourseplayJoinFixEvent_mt);
+    self.className = modName..".CourseplayJoinFixEvent";
+    return self;
+end;
+
+function CourseplayJoinFixEvent:new()
+    local self = CourseplayJoinFixEvent:emptyNew()
+    return self;
+end;
+
+function CourseplayJoinFixEvent:writeStream(streamId, connection)
+	
+	
+    if not connection:getIsServer() then
+	--print("manager transfering courses");
+	  --transfer courses
+	    local course_count = table.getn(g_currentMission.courseplay_courses)
+	    
+	    streamDebugWriteInt32(streamId, course_count)
+	    for i=1, course_count do       
+	      streamDebugWriteString(streamId, g_currentMission.courseplay_courses[i].name)
+	      streamDebugWriteInt32(streamId, g_currentMission.courseplay_courses[i].id)
+	      streamDebugWriteInt32(streamId, table.getn(g_currentMission.courseplay_courses[i].waypoints))
+	      for w=1, table.getn(g_currentMission.courseplay_courses[i].waypoints) do
+		streamDebugWriteFloat32(streamId, g_currentMission.courseplay_courses[i].waypoints[w].cx)
+		streamDebugWriteFloat32(streamId, g_currentMission.courseplay_courses[i].waypoints[w].cz)
+		streamDebugWriteFloat32(streamId, g_currentMission.courseplay_courses[i].waypoints[w].angle)
+		streamDebugWriteBool(streamId, g_currentMission.courseplay_courses[i].waypoints[w].wait)
+		streamDebugWriteBool(streamId, g_currentMission.courseplay_courses[i].waypoints[w].rev)
+		streamDebugWriteBool(streamId, g_currentMission.courseplay_courses[i].waypoints[w].crossing)
+		streamDebugWriteInt32(streamId, g_currentMission.courseplay_courses[i].waypoints[w].speed)         
+	      end
+	    end
+    end;
+end;
+
+function CourseplayJoinFixEvent:readStream(streamId, connection)
+    if connection:getIsServer() then
+	--print("manager receiving courses");
+	  -- course count
+	  local course_count = streamDebugReadInt32(streamId)
+	  --print("manager reading stream");
+	  --print(course_count);
+	  g_currentMission.courseplay_courses = {}
+	  for i=1, course_count do
+	    --print("got course");
+	    local course_name = streamDebugReadString(streamId)
+	    local course_id = streamDebugReadInt32(streamId)
+	    local wp_count = streamDebugReadInt32(streamId)
+	  	local  waypoints = {}
+	  	for w=1, wp_count do    
+		  --print("got waypoint");
+	  	  local cx = streamDebugReadFloat32(streamId)
+	  	  local cz = streamDebugReadFloat32(streamId)
+	  	  local angle = streamDebugReadFloat32(streamId)
+	  	  local wait = streamDebugReadBool(streamId)
+	  	  local rev = streamDebugReadBool(streamId)
+	  	  local crossing = streamDebugReadBool(streamId)
+	  	  local speeed  = streamDebugReadInt32(streamId)
+	  	  local wp = {cx = cx, cz = cz, angle = angle , wait = wait, rev = rev, crossing = crossing, speed = speed}
+	  	  table.insert(waypoints, wp)
+	  	end
+	    local course = {name = course_name, waypoints= waypoints, id = course_id}
+	    table.insert(g_currentMission.courseplay_courses, course)
+	  end  
+    end;
+end;
+
+function CourseplayJoinFixEvent:run(connection)
+    --print("CourseplayJoinFixEvent Run function should never be called");
+end;
+

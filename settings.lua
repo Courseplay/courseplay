@@ -1,7 +1,7 @@
 function courseplay:change_ai_state(self, change_by)
   self.ai_mode = self.ai_mode + change_by
 
-  if self.ai_mode == 8 or self.ai_mode == 0 then  
+  if self.ai_mode == 9 or self.ai_mode == 0 then  
     self.ai_mode = 1     
   end
 end

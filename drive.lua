@@ -206,9 +206,9 @@ function courseplay:drive(self, dt)
 	  if self.waitTimer == nil and self.waitTime > 0 then
             self.waitTimer = self.timer + self.waitTime * 1000
 	  end
-		if self.ai_mode == 3 then
-		   	self.global_info_text = courseplay:get_locale(self, "CPReachedOverloadPoint") --'hat �berladepunkt erreicht.'
-		   	if self.tipper_attached then
+	  if self.ai_mode == 3 then
+		self.global_info_text = courseplay:get_locale(self, "CPReachedOverloadPoint") --'hat �berladepunkt erreicht.'
+	    if self.tipper_attached then
 		   	
 		   	  -- drive on if fill_level doesn't change and fill level is < 100-self.required_fill_level_for_follow
 		   	  local drive_on = false		   	  
@@ -225,8 +225,8 @@ function courseplay:drive(self, dt)
 		   		self.last_fill_level = nil
 		   		self.unloaded = true
 		   	  end
-			end
-		elseif self.ai_mode == 4 or self.ai_mode == 6 then
+		end
+	  elseif self.ai_mode == 4 or self.ai_mode == 6 then
 			if last_recordnumber == self.startWork and fill_level ~= 0 then
 				self.wait = false
 			end
@@ -241,21 +241,26 @@ function courseplay:drive(self, dt)
 					self.wait = false
 				end
 			end
-		elseif self.ai_mode == 7 then	
+	  elseif self.ai_mode == 7 then	
 				if last_recordnumber == self.startWork then
 					if self.grainTankFillLevel > 0 then
 						self:setPipeOpening(true, false)
-						self.global_info_text = courseplay:get_locale(self, "CPReachedOverloadPoint") --'hat �berladepunkt erreicht.'
+						self.global_info_text = courseplay:get_locale(self, "CPReachedOverloadPoint") --'hat Überladepunkt erreicht.'
 					else
 					    self:setPipeOpening(false, false)
 					    self.wait = false
 						self.unloaded = true
 					end
 				end
-				
-        else
+	  elseif self.ai_mode == 8 then			
+	    
+		if weiterfahren then
+		  self.unloaded = true
+		  self.wait = false		  
+		end
+      else
 		   	self.global_info_text = courseplay:get_locale(self, "CPReachedWaitPoint")
-  		end
+  	  end
 		
 		-- wait untli a specific time
 		if self.waitTimer and self.timer > self.waitTimer then
@@ -264,13 +269,20 @@ function courseplay:drive(self, dt)
 		end
 		
      	allowedToDrive = false
-	else
+	else -- ende wartepunkt
 		-- abfahrer-mode
 		if (self.ai_mode == 1 and self.tipper_attached and tipper_fill_level ~= nil) or (self.loaded and self.ai_mode == 2) then
 		-- is there a tipTrigger within 10 meters?
 			raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
 		-- handle mode
 			allowedToDrive, active_tipper = courseplay:handle_mode1(self)
+		end
+		
+		if (self.ai_mode == 8 and self.tipper_attached and tipper_fill_level ~= nil) then
+		-- is there a tipTrigger within 10 meters?
+		--	raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
+		-- handle mode
+			allowedToDrive, active_tipper = courseplay:handle_mode8(self)
 		end
 		
 		-- combi-mode

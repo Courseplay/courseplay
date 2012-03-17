@@ -47,6 +47,11 @@ function courseplay:update_tools(self, tractor_or_implement)
 			tipper_attached = true 
 			table.insert(self.tippers, object) 
 		end
+	elseif self.ai_mode == 8 then -- Baler, foragewagon, baleloader
+	  --if SpecializationUtil.hasSpecialization(RefillTrigger, object.specializations) then
+		tipper_attached = true 
+		table.insert(self.tippers, object) 
+	  --end
    end 
   end 
   
