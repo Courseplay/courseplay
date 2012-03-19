@@ -47,6 +47,11 @@ function courseplay:update_tools(self, tractor_or_implement)
 			tipper_attached = true 
 			table.insert(self.tippers, object) 
 		end
+	elseif self.ai_mode == 8 then -- Baler, foragewagon, baleloader
+	  --if SpecializationUtil.hasSpecialization(RefillTrigger, object.specializations) then
+		tipper_attached = true 
+		table.insert(self.tippers, object) 
+	 -- end
    end 
   end 
   
@@ -73,7 +78,12 @@ function courseplay:update_tools(self, tractor_or_implement)
 			if courseplay:is_baler(object)or SpecializationUtil.hasSpecialization(BaleLoader, object.specializations) or object.allowTipDischarge then  
 		  		tipper_attached = true
 		  		table.insert(self.tippers, object)
-			end
+			end	
+		elseif self.ai_mode == 8 then -- Baler, foragewagon, baleloader
+	--if SpecializationUtil.hasSpecialization(RefillTrigger, object.specializations) then
+		  		tipper_attached = true
+		  		table.insert(self.tippers, object)
+	--		end
 		end
 		 -- are there more tippers attached to the current implement? 
 		local other_tipper_attached 
@@ -220,7 +230,7 @@ function courseplay:unload_tippers(self)
   if active_tipper then    
 	local trigger = self.currentTipTrigger
 	-- if trigger accepts fruit
-	if (trigger.acceptedFruitTypes ~= nil and trigger.acceptedFruitTypes[active_tipper:getCurrentFruitType()]) or startswith(trigger.className, "MapBGA") or startswith(trigger.className, "TipAny") or endswith(trigger.className, "TipTrigger") then
+	if (trigger.acceptedFruitTypes ~= nil and trigger.acceptedFruitTypes[active_tipper:getCurrentFruitType()]) or startswith(trigger.className, "MapBGA") or startswith(trigger.className, "TipAny") or endswith(trigger.className, "TipTrigger") or trigger.className == "HeapTipTrigger" then
 		allowedToDrive = false
 	else
 		allowedToDrive = true

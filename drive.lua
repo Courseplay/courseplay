@@ -206,9 +206,9 @@ function courseplay:drive(self, dt)
 	  if self.waitTimer == nil and self.waitTime > 0 then
             self.waitTimer = self.timer + self.waitTime * 1000
 	  end
-		if self.ai_mode == 3 then
-		   	self.global_info_text = courseplay:get_locale(self, "CPReachedOverloadPoint") --'hat �berladepunkt erreicht.'
-		   	if self.tipper_attached then
+	  if self.ai_mode == 3 then
+		self.global_info_text = courseplay:get_locale(self, "CPReachedOverloadPoint") --'hat �berladepunkt erreicht.'
+	    if self.tipper_attached then
 		   	
 		   	  -- drive on if fill_level doesn't change and fill level is < 100-self.required_fill_level_for_follow
 		   	  local drive_on = false		   	  
@@ -225,8 +225,8 @@ function courseplay:drive(self, dt)
 		   		self.last_fill_level = nil
 		   		self.unloaded = true
 		   	  end
-			end
-		elseif self.ai_mode == 4 or self.ai_mode == 6 then
+		end
+	  elseif self.ai_mode == 4 or self.ai_mode == 6 then
 			if last_recordnumber == self.startWork and fill_level ~= 0 then
 				self.wait = false
 			end
@@ -241,21 +241,43 @@ function courseplay:drive(self, dt)
 					self.wait = false
 				end
 			end
-		elseif self.ai_mode == 7 then	
+	  elseif self.ai_mode == 7 then	
 				if last_recordnumber == self.startWork then
 					if self.grainTankFillLevel > 0 then
 						self:setPipeOpening(true, false)
-						self.global_info_text = courseplay:get_locale(self, "CPReachedOverloadPoint") --'hat �berladepunkt erreicht.'
+						self.global_info_text = courseplay:get_locale(self, "CPReachedOverloadPoint") --'hat Überladepunkt erreicht.'
 					else
 					    self:setPipeOpening(false, false)
 					    self.wait = false
 						self.unloaded = true
 					end
 				end
+		elseif self.ai_mode == 8 then			
+			self.global_info_text = courseplay:get_locale(self, "CPReachedOverloadPoint") --'hat �berladepunkt erreicht.'
+			if self.tipper_attached then
+				-- drive on if fill_level doesn't change and fill level is < 100-self.required_fill_level_for_follow
+				courseplay:handle_mode8(self)
 				
-        else
+				
+				
+				local drive_on = false		   	  
+				if self.timeout < self.timer or self.last_fill_level == nil then
+					if self.last_fill_level ~= nil and fill_level == self.last_fill_level and fill_level < 100-self.required_fill_level_for_follow then
+						drive_on = true
+					end
+		   	    self.last_fill_level = fill_level
+		   	    courseplay:set_timeout(self, 7000)
+			end
+			if fill_level == 0 or drive_on then
+				self.wait = false
+				self.last_fill_level = nil
+				self.unloaded = true
+			end
+		end
+
+      else
 		   	self.global_info_text = courseplay:get_locale(self, "CPReachedWaitPoint")
-  		end
+  	  end
 		
 		-- wait untli a specific time
 		if self.waitTimer and self.timer > self.waitTimer then
@@ -264,7 +286,7 @@ function courseplay:drive(self, dt)
 		end
 		
      	allowedToDrive = false
-	else
+	else -- ende wartepunkt
 		-- abfahrer-mode
 		if (self.ai_mode == 1 and self.tipper_attached and tipper_fill_level ~= nil) or (self.loaded and self.ai_mode == 2) then
 		-- is there a tipTrigger within 10 meters?
@@ -272,14 +294,12 @@ function courseplay:drive(self, dt)
 		-- handle mode
 			allowedToDrive, active_tipper = courseplay:handle_mode1(self)
 		end
-		
 		-- combi-mode
 		if (((self.ai_mode == 2 or self.ai_mode == 3) and self.recordnumber < 2) or self.active_combine) and self.tipper_attached then	      
 		  return courseplay:handle_mode2(self, dt)
 		else
 		  self.ai_state = 0
 		end
-		
 		-- Fertilice loading --only for one Implement !
 		if self.ai_mode == 4 then
             if self.tipper_attached and self.startWork ~= nil and self.stopWork ~= nil then
@@ -308,8 +328,6 @@ function courseplay:drive(self, dt)
 			allowedToDrive = false
 			self.info_text = self.locales.CPNoWorkArea
  		end
- 		
-
 
 		if self.ai_mode ~= 5 and self.ai_mode ~= 6 and self.ai_mode ~= 7 and not self.tipper_attached then
  		    self.info_text = self.locales.CPWrongTrailer
@@ -344,7 +362,30 @@ function courseplay:drive(self, dt)
 			end
 
 		end
- 		
+ 		if self.ai_mode == 8 then
+			 if self.tipper_attached then
+                if self.tippers ~= nil then
+				  	for i=1, table.getn(self.tippers) do
+				    	local activeTool = self.tippers[i]
+				    	if fill_level < self.required_fill_level_for_drive_on and not self.loaded and activeTool.sprayerFillTriggers ~= nil and table.getn(activeTool.sprayerFillTriggers) > 0 then
+					    	allowedToDrive = false
+			    			self.info_text = string.format(courseplay:get_locale(self, "CPloading") ,tipper_fill_level,tipper_capacity )
+			    			local sprayer = activeTool.sprayerFillTriggers[1]
+			    			activeTool:setIsSprayerFilling(true, sprayer.fillType, sprayer.isSiloTrigger, false)
+				  		end
+				  		if MapBGA ~= nil then
+					  		for i=1, table.getn(MapBGA.ModEvent.bunkers) do      --support Heady�s BGA
+								if fill_level < self.required_fill_level_for_drive_on and not self.loaded and MapBGA.ModEvent.bunkers[i].manure.trailerInTrigger ==  activeTool then
+									self.info_text = "BGA LADEN"
+		                            allowedToDrive = false
+		                            MapBGA.ModEvent.bunkers[i].manure.fill = true 
+								end
+							end
+						end
+					end
+				end
+			end
+		end
  		if self.fuelFillLevel < 50 then
  			self.global_info_text = self.locales.CPFuelWarning
 		elseif self.fuelFillLevel < 25 then
