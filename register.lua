@@ -28,7 +28,7 @@ function register_courseplay()
 			table.insert(v.specializations, SpecializationUtil.getSpecialization("courseplay"));
 		      end
 	   	  end;
-  		  if s == SpecializationUtil.getSpecialization("fillable") then 
+  		  if SpecializationUtil.hasSpecialization(fillable, v.specializations) then 
 		    if not SpecializationUtil.hasSpecialization(autoovercharge, v.specializations) then
 			print("adding autoovercharge to:"..tostring(v.name));
 			table.insert(v.specializations, SpecializationUtil.getSpecialization("autoovercharge"));

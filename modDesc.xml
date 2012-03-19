@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="4">
-   <author>Hummel (modhoster.de) /Lautschreier/Wolverin0815/Bastian82</author>
+   <author>Lautschreier/Wolverin0815/Hummel (modhoster.de)/Bastian82</author>
     <title>
 		<en>Courseplay - Abfahrhelfer</en>
         <de>Courseplay - Abfahrhelfer</de>        
@@ -149,11 +149,6 @@
 	<text name="CourseMode7">
 		<en>Type: Combine goes self to unload</en>
 		<de>Typ: Drescher fährt selbst abtanken</de>
-	</text>
-	
-	<text name="CourseMode8">
-		<en>Type: Manuretransporter</en>
-		<de>Typ: Güllezubringer</de>
 	</text>
 
 	<text name="CourseWaitpointSet">
@@ -667,7 +662,6 @@
 		<sourceFile filename="mode2.lua" />
 		<sourceFile filename="mode4.lua" />
 		<sourceFile filename="mode6.lua" />
-		<sourceFile filename="mode8.lua" />
 		<sourceFile filename="recording.lua" />
 		<sourceFile filename="signs.lua" />
 		<sourceFile filename="start_stop.lua" />
@@ -676,7 +670,6 @@
 		<sourceFile filename="hud.lua" />
 		<sourceFile filename="settings.lua" />
 		<sourceFile filename="courseplay_event.lua" />
-		<sourceFile filename="courseplay_manager.lua" />
     </extraSourceFiles>   
 
 	<inputBindings>

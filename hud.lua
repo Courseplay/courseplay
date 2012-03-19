@@ -369,8 +369,6 @@ function courseplay:showHud(self)
 		    self.hudinfo[1]= courseplay:get_locale(self, "CourseMode6")
 		elseif self.ai_mode == 7 then
 		    self.hudinfo[1]= courseplay:get_locale(self, "CourseMode7")
-		elseif self.ai_mode == 8 then
-		    self.hudinfo[1]= courseplay:get_locale(self, "CourseMode8")
 		else
 		    self.hudinfo[1]= "---"
 		end
