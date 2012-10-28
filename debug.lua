@@ -1,4 +1,9 @@
 
+
+function courseplay:debug(string)
+  print(string)
+end
+
 -- debugging data dumper
 -- just for development and debugging
 function table.show(t, name, indent)

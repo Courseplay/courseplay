@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
-<modDesc descVersion="4">
+<modDesc descVersion="9">
    <author>Hummel (modhoster.de) /Lautschreier/Wolverin0815/Bastian82</author>
     <title>
 		<en>Courseplay - Abfahrhelfer</en>
@@ -23,7 +23,7 @@
 	<iconFilename>
 		store.png
  	</iconFilename>
-	<version>3.0</version>
+	<version>3.2</version>
     <l10n>
 	<text name="PointRecordStart">
 		<en>Record Course Start</en>
@@ -324,14 +324,24 @@
       <de>Wird entladen: %d von %d</de>
     </text>
     
-    <text name="CPastarOn">
-      <en>a* Pathfinding on</en>
-      <de>Fruchtumfahrung ein</de>
+	<text name="CPWPs">
+      <en>show waypoints</en>
+      <de>Wegpunkte anzeigen</de>
     </text>
+	
+    <text name="CPastarOn">
+      <en>on</en>
+      <de>eingeschaltet</de>
+    </text>
+	
+	<text name="CPaStar">
+	  <en>Pathfinding</en>
+	  <de>Fruchtumfahrung</de>
+	</text>
     
     <text name="CPastarOff">
-      <en>a* Pathfinding off</en>
-      <de>Fruchtumfahrung aus</de>
+      <en>off</en>
+      <de>ausgeschaltet</de>
     </text>
     
     <text name="CPCombineOffset">
@@ -405,7 +415,7 @@
     </text>
     
      <text name="CPuseSpeed">
-      <de>max. Geschwindigkeit:</de>
+      <de>Geschwindigkeit:</de>
       <en>MaxSpeed:</en>
     </text>
     
@@ -440,28 +450,28 @@
     </text>
    
     <text name="WaypointMode1">
-      <en>Show Waypoints:own and crosspoints (record)</en>
-      <de>Wegpunkte+Kreuzungspunkte(Record)</de>
+      <en>only when recording</en>
+      <de>nur bei Aufnahme</de>
     </text> 	 
 	
     <text name="WaypointMode2">
-      <en>Show Waypoints:own and crosspoints always</en>
-      <de>Wegpunkte+Kreuzungspunkte(Immer)</de>
+      <en>own waypoints</en>
+      <de>eigene Wegpunkte</de>
     </text>
 
     <text name="WaypointMode3">
-      <en>Show all Waypoints:entire Route</en>
-      <de>Alle Wegpunkte (ohne Kreuzungspunkte)</de>
+      <en>without crosspoints</en>
+      <de>ohne Kreuzungspunkte</de>
     </text>
 
     <text name="WaypointMode4">
-      <en>Show all Waypoints:entire Route</en>
-      <de>Alle Wegpunkte+Kreuzungspunkte </de>
+      <en>show all</en>
+      <de>alle</de>
     </text>
 
     <text name="WaypointMode5">
-      <en>no Waypoints show</en>
-      <de>Keine Wegpunkte anzeigen </de>
+      <en>none</en>
+      <de>keine</de>
     </text>    
     
     <text name="Rul">
@@ -471,17 +481,17 @@
 
     <text name="RulMode1">
       <en>on the road turn on</en>
-      <de>Auf der Straße einschalten</de>
+      <de>Auf der Straße</de>
     </text>
 
     <text name="RulMode2">
       <en>always turn on</en>
-      <de>Immer einschalten</de>
+      <de>eingeschaltet</de>
     </text>
 	
     <text name="RulMode3">
       <en>never turn on</en>
-      <de>Nicht einschalten</de>
+      <de>ausgeschaltet</de>
     </text>	
     
     <text name="CPSteering">
@@ -528,7 +538,7 @@
 	
 	<text name="CPHud7">
       <en>DRIVE SETTINGS</en>
-      <de>Fahreinstellungen</de>
+      <de>Fahr- Arbeitseinstellungen</de>
     </text>
 	
 	
@@ -611,12 +621,12 @@
 
     <text name="CPWpOffsetZ">
       <en>Waypoint-Z Offset</en>
-      <de>Wegpunkt Offset-Z</de>
+      <de>Versetzt fahren</de>
     </text>
 
     <text name="CPWorkingWidht">
-      <en>working with set</en>
-      <de>Arbeitsbreite einstellen</de>
+      <en>working with</en>
+      <de>Arbeitsbreite</de>
     </text>
 
     <text name="CPWaterDrive">
@@ -635,8 +645,8 @@
     </text>
     
      <text name="CPopenHud">
-      <en>open Hud:</en>
-      <de>Hud anzeigen:</de>
+      <en>open courseplay:</en>
+      <de>Courseplay öffnen:</de>
     </text>
     <text name="CPopenKey">
       <en>KEY INSERT</en>

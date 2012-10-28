@@ -173,6 +173,10 @@ function courseplay:save_courses(self)
   local path = getUserProfileAppPath() .. "savegame" .. g_careerScreen.selectedIndex .. "/"
   local File = io.open(path .. "courseplay.xml", "w")
   local tab = "   "
+
+  cpFile = createXMLFile("courseplay", path .. "courseplay2.xml", "xml");
+
+
   if File ~= nil then
     File:write("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\" ?>\n<XML>\n<courses>\n")
     for _,course in pairs(g_currentMission.courseplay_courses) do
@@ -231,12 +235,12 @@ function courseplay:load_courses()
 	local finish_all = false
 	courseplay_coursesUnsort = {}
 	local path = getUserProfileAppPath() .. "savegame" .. g_careerScreen.selectedIndex .. "/"
-    local existDir = io.open (path .. "courseplay.xml", "a")
+    local existDir = io.open (path .. "courseplay.xml", "r")
 	if existDir == nil then
 	 return
 	end
 
-	local File = io.open(path .. "courseplay.xml", "a")
+	local File = io.open(path .. "courseplay.xml", "r")
 	File:close()
 	File = loadXMLFile("courseFile", path .. "courseplay.xml")
 	local i = 0

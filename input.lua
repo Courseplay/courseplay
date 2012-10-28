@@ -196,6 +196,15 @@ function courseplay:deal_with_mouse_input(self, func, value)
 	                if func == "row1" then
 	                  courseplay:start(self)
 	                end 
+					
+					if (table.getn(self.Waypoints) >= 4) and not self.createCourse then
+                        if func == "row4" then
+							courseplay:set_FieldPoint(self)
+						end
+					end
+                        
+                       
+					
 	              else -- not drving     
 	              	 local last_recordnumber = nil
   
@@ -238,25 +247,6 @@ function courseplay:deal_with_mouse_input(self, func, value)
 	                		end
 	                	end
 
-                        if (table.getn(self.Waypoints) == 4) and self.createCourse then
-                            if func == "row2" then
-                      			courseplay:createCourse(self)
-	                		end
-                        end
-
-						if  (table.getn(self.Waypoints) >= 0) and (table.getn(self.Waypoints) < 4) then
-                            if func == "row2" then
-                      			courseplay:set_FieldPoint(self)
-	                		end
-						end
-						
-
-                        
-                        if self.createCourse then
-                            if func == "row3" then
-	                  			courseplay:reset_course(self)
-	                		end
-						end
                         
 
 	              elseif (not self.record and not self.record_pause) and (table.getn(self.Waypoints) ~= 0) and self.play then

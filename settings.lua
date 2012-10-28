@@ -93,6 +93,7 @@ end
 
 function courseplay:changeWorkWidth(self, change_by)
 	self.toolWorkWidht = self.toolWorkWidht + change_by
+	self.workWidthChanged = self.timer + 2000
 	if self.toolWorkWidht < 1 then
     	self.toolWorkWidht = 1
  	end  

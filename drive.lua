@@ -1,41 +1,31 @@
 
 -- drives recored course
 function courseplay:drive(self, dt)
-	
 	-- combine self unloading
 	if self.ai_mode == 7 then
 		local state = self.ai_state
-		
-		
 		if state == 5 and self.target_x ~= nil and self.target_z ~= nil then
-				
 			self.info_text = string.format(courseplay:get_locale(self, "CPDriveToWP"), self.target_x, self.target_z )
 			cx = self.target_x
 			cy = self.target_y
 			cz = self.target_z
-
 			self.sl = 2
 			refSpeed = self.field_speed
-
 			distance_to_wp = courseplay:distance_to_point(self, cx, y, cz)
-			
 			if table.getn(self.next_targets) == 0 then
 				if distance_to_wp < 10 then
 					refSpeed = self.turn_speed -- 3/3600
 					self.sl = 1
 				end
 			end
-			
 			-- avoid circling
 			local distToChange = 2
 			if self.shortest_dist == nil or self.shortest_dist > distance_to_wp then
 			  self.shortest_dist = distance_to_wp
 			end  	
-			
 			if distance_to_wp > self.shortest_dist and distance_to_wp < 10 then
 			  distToChange = distance_to_wp + 1
 			end
-			
 			if distance_to_wp < distToChange then
 				self.shortest_dist = nil
 				if table.getn(self.next_targets)> 0 then
@@ -43,249 +33,218 @@ function courseplay:drive(self, dt)
 					self.target_x =  self.next_targets[1].x
 					self.target_y =  self.next_targets[1].y
 					self.target_z =  self.next_targets[1].z
-
 					table.remove(self.next_targets, 1)
 				else
 					allowedToDrive = false
 					if self.next_ai_state ~= 2 then
-					  self.calculated_course = false
+						self.calculated_course = false
 					end
-					
 					mode = self.next_ai_state
 					self.next_ai_state = 0
 				
 				end
 			end
 		end
-	
-	
-	
-	
-	
 		if self.isAIThreshing then
 		    local cx,cy,cz = getWorldTranslation(self.rootNode);
 		    local oldcx ,oldcz = self.Waypoints[self.recordnumber].cx,self.Waypoints[self.recordnumber].cz
 		    self.dist = courseplay:distance(cx ,cz ,oldcx ,oldcz)
-			
-
 			if (self.grainTankFillLevel * 100 / self.grainTankCapacity)>= self.required_fill_level_for_drive_on then
 				self.lastaiThreshingDirectionX = self.aiThreshingDirectionX
 				self.lastaiThreshingDirectionZ = self.aiThreshingDirectionZ
 	            self:stopAIThreshing()
-				
 				self.abortWork = 3
-				
-				
 				cx, cy, cz = localToWorld(self.rootNode, 0, 0, -25)
-                
 				self.Waypoints[self.maxnumber+1] = {cx = cx ,cz = cz ,angle = 0, wait = false, rev = false, crossing = false}
-				
 				cx, cy, cz = localToWorld(self.rootNode, 0, 0, -12)
-                
 				self.Waypoints[self.maxnumber+2] = {cx = cx ,cz = cz ,angle = 0, wait = false, rev = false, crossing = false}
-				
 				cx, cy, cz = localToWorld(self.rootNode, 0, 0, 5)
-                
 				self.Waypoints[self.maxnumber+3] = {cx = cx ,cz = cz ,angle = 0, wait = false, rev = false, crossing = false}
-				
 				self.maxnumber  = table.getn(self.Waypoints)
                 courseplay:start(self)
 				self.recordnumber = 2
-				
 				if courseplay:calculate_course_to(self, self.Waypoints[2].cx, self.Waypoints[2].cz) then
-        		  self.ai_state = 5				
+					self.ai_state = 5				
 				else -- fallback if no course could be calculated
-				  self.ai_state = 5
+					self.ai_state = 5
     			end
 	            self.maxnumber  = table.getn(self.Waypoints)
-
 			else
 		        return
 			end
 	   	end
+	end  
+	-- unregister at combine, if there is one
+	if self.loaded == true and courseplay_position ~= nil then
+		courseplay:unregister_at_combine(self, self.active_combine)
 	end
-		  
-  -- unregister at combine, if there is one
-  if self.loaded == true and courseplay_position ~= nil then
-    courseplay:unregister_at_combine(self, self.active_combine)
-  end
   
-  -- switch lights on!
-  if not self.isControlled then
-  	-- we want to hear our courseplayers
-    setVisibility(self.aiMotorSound, true)
-    if g_currentMission.environment.needsLights then
-       self:setLightsVisibility(true);
-    else
-       self:setLightsVisibility(false);
-    end;
-  end;
-
-  -- actual position
-  local ctx,cty,ctz = getWorldTranslation(self.rootNode);
-  -- coordinates of next waypoint
-  --if self.recordnumber > self.maxnumber then
-    -- this should never happen
- --   self.recordnumber = self.maxnumber
- -- end
-  
-  local last_recordnumber = nil
-  
-   if self.recordnumber > 1 then
-     last_recordnumber = self.recordnumber - 1    
-    else
-     last_recordnumber = 1
-   end
-   if self.recordnumber > self.maxnumber then
-    -- this should never happen
-    self.recordnumber = self.maxnumber
-  end
-  
-  cx ,cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
-  
-  -- offset - endlich lohnt sich der mathe-lk von vor 1000 Jahren ;)
-  if self.ai_mode == 6 then
-  	if self.recordnumber > self.startWork and self.recordnumber < self.stopWork and self.recordnumber > 1 and self.WpOffsetX ~= nil and self.WpOffsetZ ~= nil and (self.WpOffsetX ~= 0 or self.WpOffsetZ ~= 0) then
-  	--courseplay:addsign(self, cx, 10, cz)
-  	--print(string.format("old WP: %d x %d ", cx, cz ))
-	
-	-- direction vector
-		local vcx, vcz
-		if self.recordnumber == 1 then
-			vcx = self.Waypoints[2].cx - cx
-			vcz = self.Waypoints[2].cz - cz
+	-- switch lights on!
+	if not self.isControlled then
+		-- we want to hear our courseplayers
+		setVisibility(self.aiMotorSound, true)
+		if g_currentMission.environment.needsLights then
+			self:setLightsVisibility(true);
 		else
-			if self.Waypoints[last_recordnumber].rev then
-				vcx = self.Waypoints[last_recordnumber].cx - cx
-				vcz = self.Waypoints[last_recordnumber].cz - cz
+			self:setLightsVisibility(false);
+		end;
+	end;
+	-- actual position
+	local ctx,cty,ctz = getWorldTranslation(self.rootNode);
+	-- coordinates of next waypoint
+	--if self.recordnumber > self.maxnumber then
+	-- this should never happen
+	--   self.recordnumber = self.maxnumber
+	-- end
+	local last_recordnumber = nil
+	if self.recordnumber > 1 then
+		last_recordnumber = self.recordnumber - 1    
+	else
+		last_recordnumber = 1
+	end
+	if self.recordnumber > self.maxnumber then
+		-- this should never happen
+		self.recordnumber = self.maxnumber
+	end
+	cx ,cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
+	-- offset - endlich lohnt sich der mathe-lk von vor 1000 Jahren ;)
+	if self.ai_mode == 6 then
+		if self.recordnumber > self.startWork and self.recordnumber < self.stopWork and self.recordnumber > 1 and self.WpOffsetX ~= nil and self.WpOffsetZ ~= nil and (self.WpOffsetX ~= 0 or self.WpOffsetZ ~= 0) then
+		--courseplay:addsign(self, cx, 10, cz)
+		--print(string.format("old WP: %d x %d ", cx, cz ))
+
+		-- direction vector
+			local vcx, vcz
+			if self.recordnumber == 1 then
+				vcx = self.Waypoints[2].cx - cx
+				vcz = self.Waypoints[2].cz - cz
 			else
-				vcx = cx - self.Waypoints[last_recordnumber].cx
-				vcz = cz - self.Waypoints[last_recordnumber].cz
+				if self.Waypoints[last_recordnumber].rev then
+					vcx = self.Waypoints[last_recordnumber].cx - cx
+					vcz = self.Waypoints[last_recordnumber].cz - cz
+				else
+					vcx = cx - self.Waypoints[last_recordnumber].cx
+					vcz = cz - self.Waypoints[last_recordnumber].cz
+				end
+			end
+			-- length of vector
+			local vl = Utils.vector2Length(vcx, vcz)
+			-- if not too short: normalize and add offsets
+			if vl ~= nil and vl > 0.01 then
+				vcx = vcx / vl
+				vcz = vcz / vl
+				cx  = cx - vcz * self.WpOffsetX + vcx * self.WpOffsetZ
+				cz  = cz + vcx * self.WpOffsetX + vcz * self.WpOffsetZ
 			end
 		end
-
-		-- length of vector
-		local vl = Utils.vector2Length(vcx, vcz)
-		-- if not too short: normalize and add offsets
-		if vl ~= nil and vl > 0.01 then
-			vcx = vcx / vl
-			vcz = vcz / vl
-			cx  = cx - vcz * self.WpOffsetX + vcx * self.WpOffsetZ
-			cz  = cz + vcx * self.WpOffsetX + vcz * self.WpOffsetZ
-		end
-	end
-    --print(string.format("new WP: %d x %d (angle) %d ", cx, cz, angle ))
-    --courseplay:addsign(self, cx, 10, cz)
-  end  
+		--print(string.format("new WP: %d x %d (angle) %d ", cx, cz, angle ))
+		--courseplay:addsign(self, cx, 10, cz)
+	end  
   
-  self.dist = courseplay:distance(cx ,cz ,ctx ,ctz)
+	self.dist = courseplay:distance(cx ,cz ,ctx ,ctz)
   --print(string.format("Tx: %f2 Tz: %f2 WPcx: %f2 WPcz: %f2 dist: %f2 ", ctx, ctz, cx, cz, self.dist ))
   -- what about our tippers?
-  local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
-  local fill_level = nil
-  if tipper_fill_level ~= nil then
-     fill_level = tipper_fill_level * 100 / tipper_capacity
-  end
+	local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
+	local fill_level = nil
+	if tipper_fill_level ~= nil then
+		fill_level = tipper_fill_level * 100 / tipper_capacity
+	end
   -- may i drive or should i hold position for some reason?
-  local allowedToDrive = true
+	local allowedToDrive = true
   -- in a traffic yam?
   
-  self.max_speed_level = nil
+	self.max_speed_level = nil
      
   -- coordinates of coli
-  local tx, ty, tz = getWorldTranslation(self.aiTrafficCollisionTrigger)
+	local tx, ty, tz = getWorldTranslation(self.aiTrafficCollisionTrigger)
   -- direction of tractor
-  local nx, ny, nz = localDirectionToWorld(self.aiTractorDirectionNode, 0, 0, 1)
+	local DirectionNode = nil;
+	if self.aiTractorDirectionNode ~= nil then
+		DirectionNode = self.aiTractorDirectionNode;
+	elseif self.aiTreshingDirectionNode ~= nil then
+		DirectionNode = self.aiTreshingDirectionNode;
+	end;
+	local nx, ny, nz = localDirectionToWorld(DirectionNode, 0, 0, 1)
   -- the tipper that is currently loaded/unloaded
-  local active_tipper = nil
-
-
- 
+	local active_tipper = nil
   
 	if self.Waypoints[last_recordnumber].wait and self.wait then
-	  if self.waitTimer == nil and self.waitTime > 0 then
-            self.waitTimer = self.timer + self.waitTime * 1000
-	  end
-	  if self.ai_mode == 3 then
-		self.global_info_text = courseplay:get_locale(self, "CPReachedOverloadPoint") --'hat �berladepunkt erreicht.'
-	    if self.tipper_attached then
-		   	
-		   	  -- drive on if fill_level doesn't change and fill level is < 100-self.required_fill_level_for_follow
-		   	  local drive_on = false		   	  
-		   	  if self.timeout < self.timer or self.last_fill_level == nil then
-		   	    if self.last_fill_level ~= nil and fill_level == self.last_fill_level and fill_level < 100-self.required_fill_level_for_follow then
-		   	      drive_on = true
-		   	    end
-		   	    self.last_fill_level = fill_level
-		   	    courseplay:set_timeout(self, 7000)
-		   	  end
-		   	
-		   	  if fill_level == 0 or drive_on then
-		   		self.wait = false
-		   		self.last_fill_level = nil
-		   		self.unloaded = true
-		   	  end
+		if self.waitTimer == nil and self.waitTime > 0 then
+			self.waitTimer = self.timer + self.waitTime * 1000
 		end
-	  elseif self.ai_mode == 4 or self.ai_mode == 6 then
+		if self.ai_mode == 3 then
+			self.global_info_text = courseplay:get_locale(self, "CPReachedOverloadPoint") --'hat Überladepunkt erreicht.'
+			if self.tipper_attached then
+				-- drive on if fill_level doesn't change and fill level is < 100-self.required_fill_level_for_follow
+				local drive_on = false		   	  
+				if self.timeout < self.timer or self.last_fill_level == nil then
+					if self.last_fill_level ~= nil and fill_level == self.last_fill_level and fill_level < 100-self.required_fill_level_for_follow then
+						drive_on = true
+					end
+					self.last_fill_level = fill_level
+					courseplay:set_timeout(self, 7000)
+				end
+
+				if fill_level == 0 or drive_on then
+					self.wait = false
+					self.last_fill_level = nil
+					self.unloaded = true
+				end
+			end
+		elseif self.ai_mode == 4 or self.ai_mode == 6 then
 			if last_recordnumber == self.startWork and fill_level ~= 0 then
 				self.wait = false
 			end
 			if last_recordnumber == self.stopWork and self.abortWork ~= nil then
-		    	self.wait = false
+				self.wait = false
 			end
 			if last_recordnumber == self.stopWork and self.abortWork == nil then
-		    	self.global_info_text = courseplay:get_locale(self, "CPWorkEnd") --'hat Arbeit beendet.'
+				self.global_info_text = courseplay:get_locale(self, "CPWorkEnd") --'hat Arbeit beendet.'
 			else
 				self.global_info_text = courseplay:get_locale(self, "CPUnloadBale") -- "Ballen werden entladen"
 				if fill_level == 0 or drive_on then
 					self.wait = false
 				end
 			end
-	  elseif self.ai_mode == 7 then	
-				if last_recordnumber == self.startWork then
-					if self.grainTankFillLevel > 0 then
-						self:setPipeOpening(true, false)
-						self.global_info_text = courseplay:get_locale(self, "CPReachedOverloadPoint") --'hat Überladepunkt erreicht.'
-					else
-					    self:setPipeOpening(false, false)
-					    self.wait = false
-						self.unloaded = true
-					end
+		elseif self.ai_mode == 7 then	
+			if last_recordnumber == self.startWork then
+				if self.grainTankFillLevel > 0 then
+					self:setPipeOpening(true, false)
+					self.global_info_text = courseplay:get_locale(self, "CPReachedOverloadPoint") --'hat Überladepunkt erreicht.'
+				else
+					self:setPipeOpening(false, false)
+					self.wait = false
+					self.unloaded = true
 				end
+			end
 		elseif self.ai_mode == 8 then			
 			self.global_info_text = courseplay:get_locale(self, "CPReachedOverloadPoint") --'hat �berladepunkt erreicht.'
 			if self.tipper_attached then
 				-- drive on if fill_level doesn't change and fill level is < 100-self.required_fill_level_for_follow
 				courseplay:handle_mode8(self)
-				
-				
-				
 				local drive_on = false		   	  
 				if self.timeout < self.timer or self.last_fill_level == nil then
 					if self.last_fill_level ~= nil and fill_level == self.last_fill_level and fill_level < 100-self.required_fill_level_for_follow then
 						drive_on = true
 					end
-		   	    self.last_fill_level = fill_level
-		   	    courseplay:set_timeout(self, 7000)
+					self.last_fill_level = fill_level
+					courseplay:set_timeout(self, 7000)
+				end
+				if fill_level == 0 or drive_on then
+					self.wait = false
+					self.last_fill_level = nil
+					self.unloaded = true
+				end
 			end
-			if fill_level == 0 or drive_on then
-				self.wait = false
-				self.last_fill_level = nil
-				self.unloaded = true
-			end
+		else
+			self.global_info_text = courseplay:get_locale(self, "CPReachedWaitPoint")
 		end
-
-      else
-		   	self.global_info_text = courseplay:get_locale(self, "CPReachedWaitPoint")
-  	  end
-		
 		-- wait untli a specific time
 		if self.waitTimer and self.timer > self.waitTimer then
-		  self.waitTimer = nil
-		  self.wait = false
+			self.waitTimer = nil
+			self.wait = false
 		end
-		
-     	allowedToDrive = false
+		allowedToDrive = false
 	else -- ende wartepunkt
 		-- abfahrer-mode
 		if (self.ai_mode == 1 and self.tipper_attached and tipper_fill_level ~= nil) or (self.loaded and self.ai_mode == 2) then
@@ -302,7 +261,7 @@ function courseplay:drive(self, dt)
 		end
 		-- Fertilice loading --only for one Implement !
 		if self.ai_mode == 4 then
-            if self.tipper_attached and self.startWork ~= nil and self.stopWork ~= nil then
+           if self.tipper_attached and self.startWork ~= nil and self.stopWork ~= nil then
                 if self.tippers ~= nil then
 				  	for i=1, table.getn(self.tippers) do
 				    	local activeTool = self.tippers[i]
@@ -310,14 +269,17 @@ function courseplay:drive(self, dt)
 					    	allowedToDrive = false
 			    			self.info_text = string.format(courseplay:get_locale(self, "CPloading") ,tipper_fill_level,tipper_capacity )
 			    			local sprayer = activeTool.sprayerFillTriggers[1]
-			    			activeTool:setIsSprayerFilling(true, sprayer.fillType, sprayer.isSiloTrigger, false)
-				  		end
+							activeTool:setIsSprayerFilling(true, sprayer.fillType, sprayer.isSiloTrigger, false)
+							if sprayer.trailerInTrigger == activeTool then ----- feldrant container gülle bomber
+								sprayer.fill = true
+							end
+						end
 				  		if MapBGA ~= nil then
 					  		for i=1, table.getn(MapBGA.ModEvent.bunkers) do      --support Heady�s BGA
 								if fill_level < self.required_fill_level_for_drive_on and not self.loaded and MapBGA.ModEvent.bunkers[i].manure.trailerInTrigger ==  activeTool then
 									self.info_text = "BGA LADEN"
 		                            allowedToDrive = false
-		                            MapBGA.ModEvent.bunkers[i].manure.fill = true 
+									MapBGA.ModEvent.bunkers[i].manure.fill = true 
 								end
 							end
 						end
@@ -348,8 +310,10 @@ function courseplay:drive(self, dt)
  				self:startAIThreshing(true)
 				self.sl = 1
 				self:setBeaconLightsVisibility(false);
-				self.aiThreshingDirectionX = self.lastaiThreshingDirectionX
-				self.aiThreshingDirectionZ = self.lastaiThreshingDirectionZ
+				if self.lastaiThreshingDirectionX ~= nil then
+				  self.aiThreshingDirectionX = self.lastaiThreshingDirectionX
+				  self.aiThreshingDirectionZ = self.lastaiThreshingDirectionZ
+				end
  				if self.abortWork ~= nil then
 					for i=0,(self.abortWork) do
 						table.remove(self.Waypoints, self.maxnumber-i)
@@ -363,7 +327,7 @@ function courseplay:drive(self, dt)
 
 		end
  		if self.ai_mode == 8 then
-			 if self.tipper_attached then
+			if self.tipper_attached and self.startWork ~= nil and self.stopWork ~= nil then
                 if self.tippers ~= nil then
 				  	for i=1, table.getn(self.tippers) do
 				    	local activeTool = self.tippers[i]
@@ -371,14 +335,18 @@ function courseplay:drive(self, dt)
 					    	allowedToDrive = false
 			    			self.info_text = string.format(courseplay:get_locale(self, "CPloading") ,tipper_fill_level,tipper_capacity )
 			    			local sprayer = activeTool.sprayerFillTriggers[1]
-			    			activeTool:setIsSprayerFilling(true, sprayer.fillType, sprayer.isSiloTrigger, false)
-				  		end
+							activeTool:setIsSprayerFilling(true, sprayer.fillType, sprayer.isSiloTrigger, false)
+							if sprayer.trailerInTrigger == activeTool then ----- feldrant container gülle bomber
+								sprayer.fill = true
+							end
+
+						end
 				  		if MapBGA ~= nil then
 					  		for i=1, table.getn(MapBGA.ModEvent.bunkers) do      --support Heady�s BGA
 								if fill_level < self.required_fill_level_for_drive_on and not self.loaded and MapBGA.ModEvent.bunkers[i].manure.trailerInTrigger ==  activeTool then
 									self.info_text = "BGA LADEN"
 		                            allowedToDrive = false
-		                            MapBGA.ModEvent.bunkers[i].manure.fill = true 
+										MapBGA.ModEvent.bunkers[i].manure.fill = true 
 								end
 							end
 						end
@@ -386,13 +354,26 @@ function courseplay:drive(self, dt)
 				end
 			end
 		end
- 		if self.fuelFillLevel < 50 then
- 			self.global_info_text = self.locales.CPFuelWarning
-		elseif self.fuelFillLevel < 25 then
+		
+		if self.fuelCapacity > 0 then
+			currentFuelPercentage = (self.fuelFillLevel / self.fuelCapacity + 0.0001) * 100;
+		end;
+		
+		if currentFuelPercentage < 20 and not self.doRefuel then
+			self.global_info_text = self.locales.CPFuelWarning
+			if self.hasRefuelStationInRange then
+				allowedToDrive = false
+				self:startRefuel();
+			end
+	
+		elseif currentFuelPercentage < 15 then
 		    allowedToDrive = false
 		    self.global_info_text = self.locales.CPNoFuelStop
  		end
- 		
+		if self.doRefuel then
+			allowedToDrive = false 
+		end;
+		 		
  		if self.showWaterWarning then
 		    allowedToDrive = false
 		    self.global_info_text = self.locales.CPWaterDrive
@@ -436,10 +417,10 @@ function courseplay:drive(self, dt)
      -- unload active tipper if given
      if active_tipper then
        self.info_text = string.format(courseplay:get_locale(self, "CPUnloading"), tipper_fill_level,tipper_capacity )
-       if active_tipper.tipState == 0 then				  
-		  active_tipper:toggleTipState(self.currentTipTrigger)		  
-		  self.unloading_tipper = active_tipper
-       end       
+     
+       if active_tipper.tipState ==  Trailer.TIPSTATE_CLOSED then		  
+	  active_tipper:toggleTipState(self.currentTipTrigger, 1)		  
+	end     
      end
      -- important, otherwhise i would drive on
      return;
@@ -481,10 +462,20 @@ function courseplay:drive(self, dt)
 	if slowDownRev and ref_speed > self.turn_speed then
 	  ref_speed = self.turn_speed
 	end
---	if self.ai_mode == 7 then
---		self.sl = 3
---		ref_speed = self.max_speed
---	end
+	
+	if self.traffic_vehicle_in_front ~= nil then
+		local vehicle_in_front = g_currentMission.nodeToVehicle[self.traffic_vehicle_in_front];
+		if vehicle_in_front == nil then
+			self.traffic_vehicle_in_front = nil
+			--self.CPnumCollidingVehicles = math.max(self.CPnumCollidingVehicles-1, 0);
+			return
+		end
+		if courseplay:distance_to_object(self, vehicle_in_front) > 30 then
+			self.traffic_vehicle_in_front = nil
+		else	     
+			ref_speed = 29 / 3600
+		end
+	end
 	
 	if self.RulMode == 1 then
 		if (self.sl == 3 and not self.beaconLightsActive) or (self.sl ~=3 and self.beaconLightsActive) then
@@ -508,6 +499,8 @@ function courseplay:drive(self, dt)
 	elseif real_speed > ref_speed then
 		maxRpm = maxRpm - 10
 	end
+	
+	
 	  	  
 	-- don't drive faster/slower than you can!
 	if maxRpm > self.orgRpm[3] then
@@ -550,13 +543,6 @@ function courseplay:drive(self, dt)
     else
 		distToChange = 5
 	end
---	 if self.test2 ~= distToChange then
---    	self.test2 = distToChange
---    	print(string.format("distToChange: %d ", distToChange ))
-    --	for k,v in pairs (self)  do
-	--		print(k.." "..tostring(v).." "..type(v))
-	--	end
-  --  end
 	
 	
 	-- record shortest distance to the next waypoint
@@ -574,10 +560,10 @@ function courseplay:drive(self, dt)
 	end
 	
 	if self.dist > distToChange then
-	  if g_server ~= nil then
-	    AIVehicleUtil.driveInDirection(self, dt, self.steering_angle, 0.5, 0.5, 8, true, fwd, lx, lz, self.sl, 0.5);
-	    courseplay:set_traffc_collision(self, lx, lz)
-	  end
+		if g_server ~= nil then
+			AIVehicleUtil.driveInDirection(self, dt, self.steering_angle, 0.5, 0.5, 8, true, fwd, lx, lz, self.sl, 0.5);
+			courseplay:set_traffc_collision(self, lx, lz)
+		end
   	else	     
   		-- reset distance to waypoint
   		self.shortest_dist = nil
@@ -607,49 +593,49 @@ end;
 
 
 function courseplay:set_traffc_collision(self, lx, lz)
-  local maxlx = 0.7071067; --math.sin(maxAngle);
-
-  local colDirX = lx;
-  local colDirZ = lz;
-   
-  if colDirX > maxlx then
-   colDirX = maxlx;
-  elseif colDirX < -maxlx then
-   colDirX = -maxlx;
-  end;
-  
-  if colDirZ < -0.4 then
-    colDirZ = 0.4;
-  end;
-  
+	local maxlx = 0.7071067; --math.sin(maxAngle);
+	local colDirX = lx;
+	local colDirZ = lz;
+	if colDirX > maxlx then
+		colDirX = maxlx;
+	elseif colDirX < -maxlx then
+		colDirX = -maxlx;
+	end;
+	if colDirZ < -0.4 then
+		colDirZ = 0.4;
+	end;  
   --print(string.format("colDirX: %f colDirZ %f ",colDirX,colDirZ ))	  
 	  
-  if self.aiTrafficCollisionTrigger ~= nil and  SpecializationUtil.hasSpecialization(aiTractor, self) and g_server ~= nil  then
-    AIVehicleUtil.setCollisionDirection(self.aiTractorDirectionNode, self.aiTrafficCollisionTrigger, colDirX, colDirZ);
-  end
+	if self.aiTrafficCollisionTrigger ~= nil and g_server ~= nil  then
+		local DirectionNode = nil;
+		if self.aiTractorDirectionNode ~= nil then
+			DirectionNode = self.aiTractorDirectionNode;
+		elseif self.aiTreshingDirectionNode ~= nil then
+			DirectionNode = self.aiTreshingDirectionNode;
+		end;
+		AIVehicleUtil.setCollisionDirection(DirectionNode, self.aiTrafficCollisionTrigger, colDirX, colDirZ);
+	end
 end
 
 
 function courseplay:check_traffic(self, display_warnings, allowedToDrive)
   local in_traffic = false;
-  
-  -- are there any other vehicles in front?
-  if self.numCollidingVehicles > 0 then
-    allowedToDrive = false;
-    in_traffic = true;
-  end
-  
-  -- are there vehicles in front of any of my implements?
-  for k,v in pairs(self.numToolsCollidingVehicles) do
-    if v > 0 then
-      allowedToDrive = false;
-      in_traffic = true;
-      break;
-    end;
-  end;
+  --print(table.show(self))
+  for k,v in pairs(self.numCollidingVehicles) do
+         if v > 0 then
+              courseplay:debug("colliding")
+              allowedToDrive = false;
+              break;
+          end;
+     end;
+
   
   if display_warnings and in_traffic then
     self.global_info_text = courseplay:get_locale(self, "CPInTraffic") --' steckt im Verkehr fest'
+  end
+  
+  if self.ai_state == 3 or self.ai_state == 4 then
+    return true
   end
   
   return allowedToDrive

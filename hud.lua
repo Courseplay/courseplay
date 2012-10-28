@@ -73,6 +73,12 @@ function courseplay:loadHud(self)
 				
 	            self.hudpage[1][1][1]= courseplay:get_locale(self, "CoursePlayStart")
 				
+				
+				if (table.getn(self.Waypoints) >= 4) and not self.createCourse then
+					self.hudpage[1][1][4]= courseplay:get_locale(self,"CourseGenerate") -- Kurs erzeugen
+				end
+				
+				
 			else
 				local last_recordnumber = nil
 				
@@ -108,17 +114,8 @@ function courseplay:loadHud(self)
 				if (table.getn(self.Waypoints) == 0) and not self.createCourse then 
 					self.hudpage[1][1][1]= courseplay:get_locale(self, "PointRecordStart")
 				end
-				if (table.getn(self.Waypoints) >= 0) and (table.getn(self.Waypoints) < 4) then
-					self.hudpage[1][1][2]= courseplay:get_locale(self, "CourseFieldPointSet") -- Arbeitspunkte setzten 
-				end
 				
-				if (table.getn(self.Waypoints) == 4) and self.createCourse then
-					self.hudpage[1][1][2]= courseplay:get_locale(self,"CourseGenerate") -- Kurs erzeugen
-				end
 				
-				if self.createCourse then
-     				self.hudpage[1][1][3]= courseplay:get_locale(self, "CourseReset")
-				end
 				
 		
 			elseif (not self.record and not self.record_pause) and (table.getn(self.Waypoints) ~= 0) then	
@@ -273,35 +270,32 @@ function courseplay:loadHud(self)
 	    self.hudpage[5][1][1]= courseplay:get_locale(self, "CPTurnSpeed") -- "Wendemanöver:"
 	    self.hudpage[5][1][2]= courseplay:get_locale(self, "CPFieldSpeed") -- "Auf dem Feld:"
 	    self.hudpage[5][1][3]= courseplay:get_locale(self, "CPMaxSpeed") -- "Auf Straße:"
-	    self.hudpage[5][1][4]= courseplay:get_locale(self, "Rul")
+	    
 	    self.hudpage[5][2][1]= string.format("%d", self.turn_speed*3600) .. " km/h"
 	    self.hudpage[5][2][2]= string.format("%d", self.field_speed*3600) .. " km/h"
 	    self.hudpage[5][2][3]= string.format("%d", self.max_speed*3600) .. " km/h"
 
-	    self.hudpage[5][1][5]= courseplay:get_locale(self, "CPuseSpeed") -- "Wendemanöver:"
+	    self.hudpage[5][1][4]= courseplay:get_locale(self, "CPuseSpeed") -- "Wendemanöver:"
 	    
 	    if self.use_speed then
-	      self.hudpage[5][2][5]= courseplay:get_locale(self, "CPuseSpeed1") -- "on Street on"
+	      self.hudpage[5][2][4]= courseplay:get_locale(self, "CPuseSpeed1") -- "on Street on"
 	    else
-	      self.hudpage[5][2][5]= courseplay:get_locale(self, "CPuseSpeed2") -- "on Street on"
+	      self.hudpage[5][2][4]= courseplay:get_locale(self, "CPuseSpeed2") -- "on Street on"
 	    end
 
-		if self.RulMode == 1 then
-        	self.hudpage[5][2][4]= courseplay:get_locale(self, "RulMode1") -- "on Street on"
-        elseif self.RulMode == 2 then
-            self.hudpage[5][2][4]= courseplay:get_locale(self, "RulMode2") -- "always on"
-        elseif self.RulMode == 3 then
-            self.hudpage[5][2][4]= courseplay:get_locale(self, "RulMode3") -- "never on"
-		end
+		
 	  
 	  elseif self.showHudInfoBase == 6 then
-	    self.hudpage[6][1][1]= courseplay:get_locale(self, "CPWpOffsetX") -- X-Offset
+	    
+		self.hudpage[6][1][1]= courseplay:get_locale(self, "CPaStar") -- Z-Offset:
+		
 	    self.hudpage[6][1][2]= courseplay:get_locale(self, "CPopenHud") -- Z-Offset:
+		self.hudpage[6][1][3]= courseplay:get_locale(self, "CPWPs") -- Z-Offset:
 
-     	if self.WpOffsetX ~= nil then
-		  self.hudpage[6][2][1]= string.format("%.1f", self.WpOffsetX) .. "m"
-		else
-		  self.hudpage[6][2][1]= "---"
+		if self.realistic_driving  then
+		   self.hudpage[6][2][1] = courseplay:get_locale(self, "CPastarOn")
+		  else
+		   self.hudpage[6][2][1] = courseplay:get_locale(self, "CPastarOff") -- "keiner"
 		end
 		
 		if self.mouse_right_key_enabled then
@@ -310,40 +304,59 @@ function courseplay:loadHud(self)
 		  self.hudpage[6][2][2]= courseplay:get_locale(self, "CPopenHudKey")
 		end
 		
+		self.hudpage[6][1][4]= courseplay:get_locale(self, "Rul")
+		
 		-- wapyointMode
 		if self.waypointMode == 1 then
-			self.hudpage[6][1][3]= courseplay:get_locale(self, "WaypointMode1") -- "Wegpunkte+Kreuzungspunkte Record"
+			self.hudpage[6][2][3]= courseplay:get_locale(self, "WaypointMode1") -- "Wegpunkte+Kreuzungspunkte Record"
 		elseif self.waypointMode == 2 then
-		    self.hudpage[6][1][3]= courseplay:get_locale(self, "WaypointMode2") -- "Wegpunkte+Kreuzungspunkte immer"
+		    self.hudpage[6][2][3]= courseplay:get_locale(self, "WaypointMode2") -- "Wegpunkte+Kreuzungspunkte immer"
 		elseif self.waypointMode == 3 then
-		    self.hudpage[6][1][3]= courseplay:get_locale(self, "WaypointMode3") -- "Komplette Route"
+		    self.hudpage[6][2][3]= courseplay:get_locale(self, "WaypointMode3") -- "Komplette Route"
 		elseif self.waypointMode == 4 then
-		    self.hudpage[6][1][3]= courseplay:get_locale(self, "WaypointMode4") -- "Komplette Route + all Crosspoints"
+		    self.hudpage[6][2][3]= courseplay:get_locale(self, "WaypointMode4") -- "Komplette Route + all Crosspoints"
 		elseif self.waypointMode == 5 then
-		    self.hudpage[6][1][3]= courseplay:get_locale(self, "WaypointMode5") -- "Komplette Route + all Crosspoints"    
+		    self.hudpage[6][2][3]= courseplay:get_locale(self, "WaypointMode5") -- "Komplette Route + all Crosspoints"    
 		end 
 		
-	        self.hudpage[6][1][4]= courseplay:get_locale(self, "CPWorkingWidht") -- Arbeitsbreite
-		if self.toolWorkWidht ~= nil then
-		  self.hudpage[6][2][4]= string.format("%.1f", self.toolWorkWidht) .. "m"
-		else
-		  self.hudpage[6][2][4]= "---"
+		if self.RulMode == 1 then
+        	self.hudpage[6][2][4]= courseplay:get_locale(self, "RulMode1") -- "on Street on"
+        elseif self.RulMode == 2 then
+            self.hudpage[6][2][4]= courseplay:get_locale(self, "RulMode2") -- "always on"
+        elseif self.RulMode == 3 then
+            self.hudpage[6][2][4]= courseplay:get_locale(self, "RulMode3") -- "never on"
 		end
+		
 	  elseif self.showHudInfoBase == 7 then
 		self.hudpage[7][1][1]= courseplay:get_locale(self, "CPWaitTime") -- Wartezeit am Haltepunkt
 		self.hudpage[7][2][1]= string.format("%.1f", self.waitTime) .. "sec"
-
-		if self.realistic_driving  then
-		   self.hudpage[7][2][2] = courseplay:get_locale(self, "CPastarOn")
-		  else
-		   self.hudpage[7][2][2] = courseplay:get_locale(self, "CPastarOff") -- "keiner"
+		
+		self.hudpage[7][1][2]= courseplay:get_locale(self, "CPWpOffsetX") -- X-Offset
+     	if self.WpOffsetX ~= nil then
+		  
+		  self.hudpage[7][2][2]= string.format("%.1f", self.WpOffsetX) .. "m (l/r)"
+		else
+		  self.hudpage[7][2][2]= "---"
 		end
+		
+		local direction = ""
+		self.hudpage[7][1][3]= courseplay:get_locale(self, "CPWpOffsetZ") -- X-Offset
+     	if self.WpOffsetZ ~= nil then
+		  
+		  self.hudpage[7][2][3]= string.format("%.1f", self.WpOffsetZ) .. "m (h/v)" 
+		  
+		else
+		  self.hudpage[7][2][3]= "---"
+		end
+		
+		self.hudpage[7][1][4]= courseplay:get_locale(self, "CPWorkingWidht") -- Arbeitsbreite
+		if self.toolWorkWidht ~= nil then
+		  self.hudpage[7][2][4]= string.format("%.1f", self.toolWorkWidht) .. "m"
+		else
+		  self.hudpage[7][2][4]= "---"
+		end
+		
 	  end
-
-
-	  
-	  
-
 	end-- end if show_hud
 end
 

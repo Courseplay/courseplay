@@ -10,8 +10,8 @@ function courseplay:handle_mode1(self)
 	
 	-- done tipping
 	if self.unloading_tipper ~= nil and self.unloading_tipper.fillLevel == 0 then			
-		if self.unloading_tipper.tipState ~= 0 then		  
-		  self.unloading_tipper:toggleTipState(self.currentTipTrigger)		  
+		if self.unloading_tipper.tipState ~=  Trailer.TIPSTATE_CLOSED then		  
+		  self.unloading_tipper:toggleTipState(self.currentTipTrigger, 1)		  
 		end       
 		
 		self.unloading_tipper = nil

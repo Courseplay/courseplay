@@ -8,6 +8,7 @@
 -- 7 warte auf die Pipe 
 -- 6 fahre hinter traktor
 -- 8 alle trailer voll
+-- 81 alle trailer voll, schlepper wendet von maschine weg
 -- 9 wenden
 -- 10 seite wechseln
 
@@ -81,12 +82,15 @@ function courseplay:handle_mode2(self, dt)
       		self.currentTrailerToFill = self.currentTrailerToFill + 1
     	else
       		self.currentTrailerToFill = nil
-      		if self.ai_state ~= 5 then
-        	    if courseplay:calculate_course_to(self, self.Waypoints[2].cx, self.Waypoints[2].cz) then
-        		  self.next_ai_state = 8				
-				else -- fallback if no course could be calculated
-				  self.ai_state = 8
+			--courseplay:unregister_at_combine(self, self.active_combine)  
+      		if self.ai_state ~= 5 then			
+			    if self.chopper_offset > 0 then
+					self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 10, 0, 0)
+				else
+					self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, -10, 0, 0)
 				end
+				self.ai_state = 5
+				self.next_ai_state = 81
       		end
     	end
   	end
@@ -108,6 +112,8 @@ function courseplay:handle_mode2(self, dt)
 		  	self.ai_state = 6
 		  	courseplay:unload_combine(self, dt)
     	end
+	elseif self.ai_mode == 5 and self.next_ai_state == 81 then
+	  courseplay:unload_combine(self, dt)
   	else -- NO active combine
     -- STOP!!
     	if g_server ~= nil then
@@ -117,7 +123,7 @@ function courseplay:handle_mode2(self, dt)
   		if self.loaded then
   	  		self.recordnumber = 2
   	  		self.ai_state = 1
-  	  	return false
+			return false
   		end
   
     -- are there any combines out there that need my help?
@@ -134,30 +140,27 @@ function courseplay:handle_mode2(self, dt)
 			  	local num_courseplayers = 0
 
 			  	-- chose the combine who needs me the most
-			  	for k,combine in pairs(self.reachable_combines) do
+				for k,combine in pairs(self.reachable_combines) do
 			    	if (combine.grainTankFillLevel > (combine.grainTankCapacity*self.required_fill_level_for_follow/100)) or combine.grainTankCapacity == 0 or combine.wants_courseplayer then
-			      		if combine.grainTankCapacity == 0 then
-			        		if combine.courseplayers == nil then
+						if combine.grainTankCapacity == 0 then
+							if combine.courseplayers == nil then
 			          			best_combine = combine
-			        		elseif table.getn(combine.courseplayers) <= num_courseplayers or best_combine == nil then
+							elseif table.getn(combine.courseplayers) <= num_courseplayers or best_combine == nil then
 			          			num_courseplayers = table.getn(combine.courseplayers)
 			          			if table.getn(combine.courseplayers) > 0 then
 			            			if combine.courseplayers[1].allow_following then
 			              				best_combine = combine
 			            			end
 			          			else
-			            			best_combine = combine
+			            			  best_combine = combine
 			          			end
-			        		end
-
-
-						else
-				        	if combine.grainTankFillLevel >= highest_fill_level then
-				          		highest_fill_level = combine.grainTankFillLevel
-				          		best_combine = combine
+			        		end						else
+				        	if combine.grainTankFillLevel >= highest_fill_level then				          										
+								  highest_fill_level = combine.grainTankFillLevel
+				          		  best_combine = combine								
 				        	end
 			      		end
-			    	end
+					end
 				end
 
 				if best_combine ~= nil then
@@ -195,6 +198,7 @@ function courseplay:unload_combine(self, dt)
     local dod = nil
 
 	-- Calculate Trailer Offset
+
 	if self.currentTrailerToFill ~= nil then
 		xt, yt, zt = worldToLocal(self.tippers[self.currentTrailerToFill].rootNode, x, y, z)
 	else
@@ -217,23 +221,23 @@ function courseplay:unload_combine(self, dt)
 
 
 	-- is combine turning ?
-	if combine ~= nil and (combine.turnStage == 1 or combine.turnStage == 2) then
+	if combine ~= nil and (combine.turnStage == 1 or combine.turnStage == 2 or combine.turnStage == 5) then
 		self.info_text = courseplay:get_locale(self, "CPCombineTurning") -- "Drescher wendet. "
 		combine_turning = true
 	end
 
 	if mode == 2 or mode == 3 or mode == 4 then
  		if combine == nil then
-		  self.info_text = "this should never happen"
-		  allowedToDrive = false
+			self.info_text = "this should never happen"
+			allowedToDrive = false
 		end
 	end
 
 	if combine.grainTankCapacity > 0 then
-	  combine_fill_level = combine.grainTankFillLevel * 100 / combine.grainTankCapacity
+		combine_fill_level = combine.grainTankFillLevel * 100 / combine.grainTankCapacity
 	else -- combine is a chopper / has no tank
-	  combine_fill_level = 51
-	  cornChopper = true
+		combine_fill_level = 51
+		cornChopper = true
 	end
 
     local offset_to_chopper = self.chopper_offset
@@ -250,15 +254,15 @@ function courseplay:unload_combine(self, dt)
 		self.sl = 3
 		refSpeed = self.field_speed
 	  	courseplay:remove_from_combines_ignore_list(self, combine)
-	  	self.info_text =courseplay:get_locale(self, "CPDriveBehinCombine") -- ""
+	  	self.info_text = courseplay:get_locale(self, "CPDriveBehinCombine") -- ""
 
 		local x1, y1, z1 = worldToLocal(combine.rootNode, x, y, z)  
 
 		if z1 > -10 then  -- tractor in front of combine      --0
 			-- left side of combine
-			local cx_left, cy_left, cz_left = localToWorld(combine.rootNode, 10, 0, -20)           --20,0, -30        (war 20,0,-25
+			local cx_left, cy_left, cz_left = localToWorld(combine.rootNode, 10, 0, -40)           --20,0, -30        (war 20,0,-25
 			-- righ side of combine
-			local cx_right, cy_right, cz_right = localToWorld(combine.rootNode, -10, 0, -20)       -- -20,0,-30            -20,0,-25
+			local cx_right, cy_right, cz_right = localToWorld(combine.rootNode, -10, 0, -40)       -- -20,0,-30            -20,0,-25
 			local lx, ly, lz =	worldToLocal(self.aiTractorDirectionNode, cx_left, y, cz_left)
 			-- distance to left position
 			local disL = Utils.vector2Length(lx, lz)
@@ -290,10 +294,8 @@ function courseplay:unload_combine(self, dt)
 	    --print(string.format("Dod: %d lx: %d lz: %d x1: %d z1: %d", dod,lx,lz,x1,z1 ))
 	  -- near point
 		if dod < 3 then  -- change to mode 4 == drive behind combine or cornChopper
-
-
 			if cornChopper then -- decide on which side to drive based on ai-combine
-	      		local leftFruit, rightFruit =  courseplay:side_to_drive(self, combine, 20)
+	      		local leftFruit, rightFruit =  courseplay:side_to_drive(self, combine, 35)
 	      		local last_offset = self.chopper_offset
 				self.chopper_offset = self.combine_offset
                 if leftFruit > rightFruit then
@@ -305,33 +307,38 @@ function courseplay:unload_combine(self, dt)
         	mode = 4
 	  	end
 	 -- end mode 2
-
-
-
 	elseif mode == 4 then -- Drive to rear Combine or Cornchopper
 
 		self.info_text =courseplay:get_locale(self, "CPDriveToCombine") -- "Fahre zum Drescher"
 	    courseplay:add_to_combines_ignore_list(self, combine)
 	    refSpeed = self.field_speed
-
-
-
+		
 	    local tX, tY, tZ = nil, nil, nil
 
 		if cornChopper then
-	      tX, tY, tZ = localToWorld(combine.rootNode, self.chopper_offset *0.7, 0, -10) -- offste *0.6     !????????????
+		  tX, tY, tZ = localToWorld(combine.rootNode, self.chopper_offset *0.7, 0, -20) -- offste *0.6     !????????????
 	    else
 	    	if self.chopper_offset < 0 then
 				self.chopper_offset = self.chopper_offset * -1
 			end
-	      	tX, tY, tZ = localToWorld(combine.rootNode, self.chopper_offset, 0, -10)
+			tX, tY, tZ = localToWorld(combine.rootNode, self.chopper_offset, 0, -20)
 	    end
 	    cx, cz = tX, tZ
-
 
         local ttX, ttY, ttZ = nil, nil, nil
 	  	local lx, ly, lz = nil, nil, nil
         ttX, ttY, ttZ = localToWorld(combine.rootNode, offset_to_chopper, 0, trailer_offset/2)
+			
+		if combine.attachedImplements ~= nil then
+			for k,i in pairs(combine.attachedImplements) do
+				local implement = i.object;
+				if implement.haeckseldolly == true then
+					ttX, ttY, ttZ = localToWorld(implement.rootNode, offset_to_chopper, 0, trailer_offset/2)
+				end 
+			end
+		end
+		
+	
 	  	lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, ttX, y, ttZ)
 
 	  	if cx ~= nil and cz ~= nil then
@@ -341,7 +348,6 @@ function courseplay:unload_combine(self, dt)
 	    	dod = Utils.vector2Length(lx, lz)
 	  	end
 
-
 		if dod < 2 then     -- dod < 2
 	    	allowedToDrive = false
 	    	mode = 3   -- change to mode 3 == drive to unload pipe
@@ -350,12 +356,6 @@ function courseplay:unload_combine(self, dt)
 	    if dod > 60 then      --??
 	    	mode = 2
 	  	end
-
-
-
-
-
-
 
 	elseif mode == 3 then --drive to unload pipe
 
@@ -368,23 +368,24 @@ function courseplay:unload_combine(self, dt)
 	    end
 
 	  	if combine_fill_level == 0 then --combine empty set waypoint 30 meters behind combine
-	    	self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, 10, 0, -5)
-            
+			local leftFruit, rightFruit =  courseplay:side_to_drive(self, combine, -40)
+			local offset = self.chopper_offset
+			if leftFruit > rightFruit then
+			  offset = self.chopper_offset*-0.3 -- *-1
+			end
+			self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, 0, 0, -10) --10, 0, -5)
             -- turn left
 		    self.turn_factor = 5 --??
 		    -- insert waypoint behind combine
-	        local next_x, next_y, next_z = localToWorld(combine.rootNode, 0, 0, -10)
-			
+	        local next_x, next_y, next_z = localToWorld(combine.rootNode, offset, 0, -30) -- -10
 			local next_wp = {x = next_x, y=next_y, z=next_z}
-			
 			table.insert(self.next_targets, next_wp)
 			-- insert another point behind combine
-	       	next_x, next_y, next_z = localToWorld(combine.rootNode, 0, 0, -30)
-	       	
+	       	next_x, next_y, next_z = localToWorld(combine.rootNode, offset, 0, -50) -- -30
 	        local next_wp = {x = next_x, y=next_y, z=next_z}
 			table.insert(self.next_targets, next_wp)
+			
 			mode = 9 -- turn around and then wait for next start
-            
 	    	if tipper_percentage >= self.required_fill_level_for_drive_on then
 	      		self.loaded = true
 	    	else				
@@ -397,39 +398,40 @@ function courseplay:unload_combine(self, dt)
 			self.chopper_offset = self.chopper_offset * -1
 		end
 
-
-
         cx, cy, cz = localToWorld(combine.rootNode, self.chopper_offset, 0, trailer_offset)      	  
-        
-
         local ttX, ttY, ttZ = localToWorld(combine.rootNode, offset_to_chopper, 0, trailer_offset/2)
+		if combine.attachedImplements ~= nil then
+			for k,i in pairs(combine.attachedImplements) do
+				local implement = i.object;
+				if implement.haeckseldolly == true then
+					ttX, ttY, ttZ = localToWorld(implement.rootNode, offset_to_chopper, 0, trailer_offset/2)
+				end 
+			end
+		end
 	  	local lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, ttX, y, ttZ)
         dod = Utils.vector2Length(lx, lz)
         if dod > 60 then
         	mode = 2
       	end
 
-      
-		-- combine is not moving and trailer is under pipe
+      		-- combine is not moving and trailer is under pipe
 		if not cornChopper and ((combine.movingDirection == 0 and lz <= 0.5) or lz < -0.4 * trailer_offset) then
-			self.info_text =courseplay:get_locale(self, "CPCombineWantsMeToStop") -- "Drescher sagt ich soll anhalten."
+			self.info_text = courseplay:get_locale(self, "CPCombineWantsMeToStop") -- "Drescher sagt ich soll anhalten."
 			allowedToDrive = false
-
 		elseif cornChopper then
 			if combine.movingDirection == 0 and (lz == -1 or dod == -1) then
 				allowedToDrive = false 
-				self.info_text =courseplay:get_locale(self, "CPCombineWantsMeToStop") -- "Drescher sagt ich soll anhalten."
+				self.info_text = courseplay:get_locale(self, "CPCombineWantsMeToStop") -- "Drescher sagt ich soll anhalten."
 		    end
 		    if lz < -5 or dod < -5 then
-		    	mode = 2
+			    allowedToDrive = false
+				self.info_text = courseplay:get_locale(self, "CPCombineWantsMeToStop")
+		    	--mode = 2
 		    end
-
 		end
 
 	  -- refspeed depends on the distance to the combine
 	  	local combine_speed = combine.lastSpeed
-
-
 
 		if combine_speed ~= nil then
 			refSpeed = combine_speed + (combine_speed * lz * 3 / 10)
@@ -446,7 +448,7 @@ function courseplay:unload_combine(self, dt)
 			refSpeed = 1/3600
 			self.motor.maxRpm[self.sl] = 200
 			if combine.turnStage ~= 0 then
-				self.drive_slow_timer = self.timer + 100
+				self.drive_slow_timer = self.timer + 2000
 			end
 		end
 
@@ -469,16 +471,17 @@ function courseplay:unload_combine(self, dt)
 	    	self.loaded = true
 	  	elseif mode == 3 or mode == 4 then
 			if cornChopper then
-				self.leftFruit, self.rightFruit =  courseplay:side_to_drive(self, combine, -20)
+				self.leftFruit, self.rightFruit = courseplay:side_to_drive(self, combine, -40)
+--			self.leftFruit, self.rightFruit = courseplay:side_to_drive(self, combine, -40)
 
 				self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, self.chopper_offset, 0, self.turn_radius)
 				self.turn_factor = -5
 				
 				courseplay:set_next_target(self, self.chopper_offset*2, 0, 0)
-				
+
 				courseplay:set_next_target(self, self.chopper_offset, 0, self.turn_radius*-1)				
 
-				courseplay:set_next_target(self, 0, 0, self.turn_radius)
+				--courseplay:set_next_target(self, 0, 0, self.turn_radius)
 
 				--courseplay:set_next_target(self, self.chopper_offset*-1, 0, 0)
 
@@ -558,12 +561,13 @@ function courseplay:unload_combine(self, dt)
 
 	  -- drive to given waypoint
 	if mode == 5 and self.target_x ~= nil and self.target_z ~= nil then
-		courseplay:remove_from_combines_ignore_list(self, combine)
+	    if combine ~= nil then
+		  courseplay:remove_from_combines_ignore_list(self, combine)
+		end
 	    self.info_text = string.format(courseplay:get_locale(self, "CPDriveToWP"), self.target_x, self.target_z )
 	  	cx = self.target_x
 	  	cy = self.target_y
 	  	cz = self.target_z
-
 	  	self.sl = 2
 	  	refSpeed = self.field_speed
 
@@ -587,12 +591,18 @@ function courseplay:unload_combine(self, dt)
 		end
 		
 	  	if distance_to_wp < distToChange then
+			if self.next_ai_state == 81 then
+			  if self.active_combine ~= nil then
+			    courseplay:unregister_at_combine(self, self.active_combine)   
+			  end
+			end
+		
 			self.shortest_dist = nil
-	  	 	if table.getn(self.next_targets)> 0 then
+	  	 	if table.getn(self.next_targets) > 0 then
 		  --	  	mode = 5
-		  	    self.target_x =  self.next_targets[1].x
-		  	    self.target_y =  self.next_targets[1].y
-		  	    self.target_z =  self.next_targets[1].z
+		  	    self.target_x = self.next_targets[1].x
+		  	    self.target_y = self.next_targets[1].y
+		  	    self.target_z = self.next_targets[1].z
 
 		  	    table.remove(self.next_targets, 1)
 	  	  	else
@@ -603,7 +613,7 @@ function courseplay:unload_combine(self, dt)
 		  	  	if self.next_ai_state == 7 and combine_turning == nil then
 		  	  		self.chopper_offset = self.combine_offset
 
-		  	  	-- only for corn choppers
+					-- only for corn choppers
 					if cornChopper then
 			  			local last_offset = self.chopper_offset
 			  	      	if self.leftFruit > self.rightFruit then
@@ -612,19 +622,22 @@ function courseplay:unload_combine(self, dt)
 			  	        	self.chopper_offset = last_offset * -1
 			  	      	end
 
-			  	    	if combine.movingDirection == 0 then
-							self.info_text ="Warte bis Pipe ausgerichtet"
-  							allowedToDrive = false
-  						elseif combine.movingDirection > 0 then
-  							self.next_ai_state = 3
-  						end
+  						self.next_ai_state = 2
+						
 			  	    end
-
-			  		self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, self.chopper_offset, 0, 3) -- -2          --??? *0,5 -10
+					
+					
+			  		--self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, self.chopper_offset*0.7, 0, -9) -- -2          --??? *0,5 -10
 
 				elseif (self.next_ai_state == 7 or self.next_ai_state == 4 )and combine_turning then
 		  	    	self.info_text =courseplay:get_locale(self, "CPWaitUntilCombineTurned") --  ""
-
+				elseif self.next_ai_state == 81 then -- tipper turning from combine
+				  
+				    self.recordnumber = 2
+					courseplay:unregister_at_combine(self, self.active_combine)   
+					self.ai_state = 0
+					self.loaded = true
+				  
 		  	  	elseif self.next_ai_state == 1  then
 		  	    --	self.sl = 1
 		  	    --	refSpeed = self.turn_speed
@@ -641,7 +654,7 @@ function courseplay:unload_combine(self, dt)
 
   	if mode == 6 then --Follow Tractor
   --      tractor = self.active_combine.courseplayers[self.courseplay_position-1]
-        self.info_text =courseplay:get_locale(self, "CPFollowTractor") -- "Fahre hinter Traktor"
+        self.info_text = courseplay:get_locale(self, "CPFollowTractor") -- "Fahre hinter Traktor"
 
 		 -- drive behind tractor
 		local x1, y1, z1 = worldToLocal(tractor.rootNode, x, y, z)
@@ -707,8 +720,8 @@ function courseplay:unload_combine(self, dt)
 		self.global_info_text = self.locales.CPWaterDrive
 	end
 
-    	-- check traffic and calculate speed
-    if allowedToDrive then
+  -- check traffic and calculate speed
+  if allowedToDrive then
 
 		allowedToDrive = courseplay:check_traffic(self, true, allowedToDrive)
 		if self.sl == nil then
@@ -779,71 +792,63 @@ function courseplay:unload_combine(self, dt)
 end
 
 function courseplay:calculate_course_to(self, target_x, target_z)
-  self.calculated_course = true
-  -- check if there is fruit between me and the target, return false if not to avoid the calculating
-  local node = nil
-  if self.aiTractorDirectionNode ~= nil then
-     node = self.aiTractorDirectionNode
-  else
-     node = self.aiTreshingDirectionNode
-  end
-  
-  local x, y, z = getWorldTranslation(node)
-  local hx, hy, hz = localToWorld(node, -2, 0, 0)
-  local lx, ly, lz = nil, nil, nil
-  local dlx, dly, dlz = worldToLocal(node, target_x, y,target_z)
-  local dnx = dlz * -1
-  local dnz = dlx
-  local angle = math.atan(dnz / dnx)
-  dnx = math.cos(angle) * -2
-  dnz = math.sin(angle) * -2  
-  hx, hy, hz = localToWorld(node, dnx, 0, dnz)
-  local density = 0
-  for i = 1, FruitUtil.NUM_FRUITTYPES do
-  	if i ~= FruitUtil.FRUITTYPE_GRASS then	
-  	   density = density + Utils.getFruitArea(i, x, z, target_x, target_z, hx, hz);
+	self.calculated_course = true
+	-- check if there is fruit between me and the target, return false if not to avoid the calculating
+	local node = nil
+	if self.aiTractorDirectionNode ~= nil then
+		node = self.aiTractorDirectionNode
+	else
+		node = self.aiTreshingDirectionNode
 	end
-  end
-  
-  if density == 0 then
-    return false
-  end
-  
-  if not self.realistic_driving then
-    return false
-  end
-  
-  if self.active_combine ~= nil then
-    local fruit_type = self.active_combine.lastValidInputFruitType
-  elseif self.tipper_attached then
-    local fruit_type = self.tippers[1].getCurrentFruitType
-  else
-    local fruit_type = nil
-  end
-  
-  --print(string.format("position x: %d z %d", x, z ))
-  local wp_counter = 0
-  local wps = CalcMoves(z, x, target_z, target_x, fruit_type)
-  --print(table.show(wps))
-  
-  if wps ~= nil then
-	  self.next_targets = {}
-	  for _,wp in pairs(wps) do
-		  wp_counter = wp_counter + 1
-		  
-		  local next_wp = {x = wp.y, y=0, z=wp.x}
-		  table.insert(self.next_targets, next_wp)
-		  wp_counter = 0	
-	  end
-	  
-	  self.target_x =  self.next_targets[1].x
-	  self.target_y =  self.next_targets[1].y
-	  self.target_z =  self.next_targets[1].z
-	  self.no_speed_limit = true
-	  table.remove(self.next_targets, 1)
-	  self.ai_state = 5
-  else
-    return false
-  end
-  return true
+	local x, y, z = getWorldTranslation(node)
+	local hx, hy, hz = localToWorld(node, -2, 0, 0)
+	local lx, ly, lz = nil, nil, nil
+	local dlx, dly, dlz = worldToLocal(node, target_x, y,target_z)
+	local dnx = dlz * -1
+	local dnz = dlx
+	local angle = math.atan(dnz / dnx)
+	dnx = math.cos(angle) * -2
+	dnz = math.sin(angle) * -2  
+	hx, hy, hz = localToWorld(node, dnx, 0, dnz)
+	local density = 0
+	for i = 1, FruitUtil.NUM_FRUITTYPES do
+		if i ~= FruitUtil.FRUITTYPE_GRASS then	
+			density = density + Utils.getFruitArea(i, x, z, target_x, target_z, hx, hz);
+		end
+	end
+ 	if density == 0 then
+		return false
+	end
+	if not self.realistic_driving then
+		return false
+	end
+	if self.active_combine ~= nil then
+		local fruit_type = self.active_combine.lastValidInputFruitType
+	elseif self.tipper_attached then
+		local fruit_type = self.tippers[1].getCurrentFruitType
+	else
+		local fruit_type = nil
+	end
+	--print(string.format("position x: %d z %d", x, z ))
+	local wp_counter = 0
+	local wps = CalcMoves(z, x, target_z, target_x, fruit_type)
+	--print(table.show(wps))
+	if wps ~= nil then
+		self.next_targets = {}
+		for _,wp in pairs(wps) do
+			wp_counter = wp_counter + 1
+			local next_wp = {x = wp.y, y=0, z=wp.x}
+			table.insert(self.next_targets, next_wp)
+			wp_counter = 0	
+		end
+		self.target_x =  self.next_targets[1].x
+		self.target_y =  self.next_targets[1].y
+		self.target_z =  self.next_targets[1].z
+		self.no_speed_limit = true
+		table.remove(self.next_targets, 1)
+		self.ai_state = 5
+	else
+		return false
+	end
+	return true
 end

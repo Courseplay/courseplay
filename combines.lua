@@ -5,6 +5,7 @@ function courseplay:find_combines(self)
   local all_vehicles = g_currentMission.vehicles      
   for k,vehicle in pairs(all_vehicles) do
     -- combines should have this trigger
+    
     -- trying to identify combines
     if courseplay:is_a_combine(vehicle) then
       table.insert(found_combines, vehicle)
@@ -16,11 +17,50 @@ end
 
 
 function courseplay:is_a_combine(vehicle)
-  if vehicle.onCutterTrafficCollisionTrigger ~= nil then
+  if vehicle.grainTankCapacity ~= nil then
    return true
   else
     return false 
   end
+end
+
+function courseplay:combine_allows_tractor(self, combine)
+  local num_allowed_courseplayers = 1
+  if combine.courseplayers == nil then
+    combine.courseplayers = {}
+  end
+  
+  if combine.grainTankCapacity == 0 then
+     num_allowed_courseplayers = 2
+  else  
+    if self.realistic_driving then
+	    if combine.wants_courseplayer == true then 
+	      return true
+	    end
+	    -- force unload when combine is full		
+		if combine.grainTankFillLevel  == combine.grainTankCapacity then
+		  return true
+		end
+		-- is the pipe on the correct side?
+		if combine.turnStage == 1 or combine.turnStage == 2 then
+		   return false
+		end
+		local left_fruit, right_fruit = courseplay:side_to_drive(self, combine, -10)
+		if left_fruit > right_fruit then
+		  return false
+		end
+	end
+  end
+  
+  if table.getn(combine.courseplayers) >= num_allowed_courseplayers then
+    return false
+  end
+  
+  if table.getn(combine.courseplayers) == 1 and not combine.courseplayers[1].allow_following then
+    return false
+  end
+  
+  return true
 end
 
 -- find combines on the same field (texture)
@@ -33,7 +73,7 @@ function courseplay:update_combines(self)
     return
   end
   
-  --print(string.format("combines total: %d ", table.getn(found_combines) ))
+  print(string.format("combines total: %d ", table.getn(self.reachable_combines) ))
   
   local x, y, z = getWorldTranslation(self.aiTractorDirectionNode)
   local hx, hy, hz = localToWorld(self.aiTractorDirectionNode, -2, 0, 0)
@@ -41,7 +81,8 @@ function courseplay:update_combines(self)
   local terrain = g_currentMission.terrainDetailId	
   
   local found_combines = courseplay:find_combines(self)
-    
+  
+  print(string.format("combines found: %d ", table.getn(found_combines) ))
   -- go throuh found
   for k,combine in pairs(found_combines) do
   	 lx, ly, lz = getWorldTranslation(combine.rootNode)
@@ -55,16 +96,19 @@ function courseplay:update_combines(self)
   	 local area1, area2 = Utils.getDensity(terrain, 2, x, z, lx, lz, hx, hz)
   	 area1 = area1 + Utils.getDensity(terrain, 0, x, z, lx, lz, hx, hz)
   	 area1 = area1 + Utils.getDensity(terrain, 1, x, z, lx, lz, hx, hz)
-  	 if area2 * 0.999 <= area1 then
+  	 if area2 * 0.999 <= area1 and courseplay:combine_allows_tractor(self, combine) then
   	 	table.insert(self.reachable_combines, combine)
   	 end
   end
   
-  --print(string.format("combines reachable: %d ", table.getn(self.reachable_combines) ))
+  print(string.format("combines reachable: %d ", table.getn(self.reachable_combines) ))
 end
 
 
 function courseplay:register_at_combine(self, combine)
+  courseplay:debug("registering at combine")
+  courseplay:debug(table.show(combine))
+
   local num_allowed_courseplayers = 1
   self.calculated_course = false
   if combine.courseplayers == nil then
@@ -73,16 +117,21 @@ function courseplay:register_at_combine(self, combine)
   
   if combine.grainTankCapacity == 0 then
      num_allowed_courseplayers = 2
-  else
+  else  
      if self.realistic_driving then
+	   if combine.wants_courseplayer == true or combine.grainTankFillLevel == combine.grainTankCapacity then 
+	     
+	   else
+	    -- force unload when combine is full		
 		 -- is the pipe on the correct side?
-		 if combine.turnStage == 1 or combine.turnStage == 2 then
-		   return false
-		 end
-		 local left_fruit, right_fruit = courseplay:side_to_drive(self, combine, -10)
-		 if left_fruit > right_fruit then
-		   return false
-		 end
+			 if combine.turnStage == 1 or combine.turnStage == 2 then
+			   return false
+			 end
+			 local left_fruit, right_fruit = courseplay:side_to_drive(self, combine, -10)
+			 if left_fruit > right_fruit then
+			   return false
+			 end
+	   end
 	 end
   end
   
@@ -103,12 +152,15 @@ function courseplay:register_at_combine(self, combine)
   self.courseplay_position = table.getn(combine.courseplayers)
   self.active_combine = combine  	     
   
-  if self.trafficCollisionIgnoreList[combine.rootNode] == nil then
-    self.trafficCollisionIgnoreList[combine.rootNode] = true
-  end
+  --if self.trafficCollisionIgnoreList[combine.rootNode] == nil then
+  --  self.trafficCollisionIgnoreList[combine.rootNode] = true
+  --end
   
   return true
 end
+
+
+
 
 
 function courseplay:unregister_at_combine(self, combine)
@@ -116,7 +168,7 @@ function courseplay:unregister_at_combine(self, combine)
     return true
   end
   self.calculated_course = false
-  courseplay:remove_from_combines_ignore_list(self, combine)
+  --courseplay:remove_from_combines_ignore_list(self, combine)
   table.remove(combine.courseplayers, self.courseplay_position)
   
   -- updating positions of tractors
@@ -129,23 +181,22 @@ function courseplay:unregister_at_combine(self, combine)
   self.active_combine = nil  
   self.ai_state = 1
   
-  if self.trafficCollisionIgnoreList[combine.rootNode] == true then
-    self.trafficCollisionIgnoreList[combine.rootNode] = nil
-  end
+ -- if self.trafficCollisionIgnoreList[combine.rootNode] == true then
+ --   self.trafficCollisionIgnoreList[combine.rootNode] = nil
+ -- end
   
   return true
 end
 
-
 function courseplay:add_to_combines_ignore_list(self, combine)
-  if combine.trafficCollisionIgnoreList[self.rootNode] == nil then
+ if combine.trafficCollisionIgnoreList[self.rootNode] == nil then
     combine.trafficCollisionIgnoreList[self.rootNode] = true
   end
 end
 
 
 function courseplay:remove_from_combines_ignore_list(self, combine)
-  if combine == nil then
+ if combine == nil then
     return
   end
   if combine.trafficCollisionIgnoreList[self.rootNode] == true then

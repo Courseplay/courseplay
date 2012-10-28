@@ -9,8 +9,9 @@ function courseplay_manager:loadMap(name)
   
 	  courseplay_coursesUnsort = {}
 	  if g_server ~= nil and table.getn(g_currentMission.courseplay_courses) == 0 then
-		g_currentMission.courseplay_courses = courseplay_manager:load_courses();
-		----print(table.show(g_currentMission.courseplay_courses));
+		g_currentMission.courseplay_courses = courseplay_manager:load_courses()
+		courseplay:debug("debugging g_currentMission.courseplay_coures")
+		courseplay:debug(table.show(g_currentMission.courseplay_courses))
 	  end
   end
 end
@@ -31,16 +32,11 @@ function courseplay_manager:keyEvent()
 end
 
 function courseplay_manager:load_courses()
-    --print('loaded courses by manager')
+    courseplay:debug('loading courses by courseplay manager')
 	local finish_all = false
 	local path = getUserProfileAppPath() .. "savegame" .. g_careerScreen.selectedIndex .. "/"
-    local existDir = io.open (path .. "courseplay.xml", "a")
-	if existDir == nil then
-	 return
-	end
+   
 
-	local File = io.open(path .. "courseplay.xml", "a")
-	File:close()
 	File = loadXMLFile("courseFile", path .. "courseplay.xml")
 	local i = 0
 	repeat
@@ -138,7 +134,7 @@ function courseplay_manager:load_courses()
 		end
     end
 	
-	--print(table.show(courseplay_courses));
+	courseplay:debug(table.show(courseplay_courses));
     
     courseplay_coursesUnsort = nil
     return g_currentMission.courseplay_courses

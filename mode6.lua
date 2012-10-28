@@ -2,7 +2,11 @@
 function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill_level, last_recordnumber)
 	local workTool = self.tippers[1] -- to do, quick, dirty and unsafe
 	local active_tipper  = nil
-	
+if self.attachedCutters ~= nil then
+	for cutter,implement in pairs(self.attachedCutters) do
+                   AICombine.addCutterTrigger(self, cutter);
+               end;
+			   end
 	workArea = (self.recordnumber > self.startWork) and (self.recordnumber < self.stopWork)
 	
 	if workArea then
@@ -12,6 +16,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 		allowedToDrive = false
 		self.global_info_text = courseplay:get_locale(self, "CPWorkEnd") --'hat Arbeit beendet.'
 	end
+	
 	
 	-- worktool defined above
 	if workTool ~= nil then
@@ -88,12 +93,43 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 								
 			else
 			
-				-- other worktools, tippers, e.g. forage wagon			
+				-- other worktools, tippers, e.g. forage wagon	
+				-- start/stop worktool
+				if workArea and fill_level ~= 100 and (self.abortWork == nil and last_recordnumber == self.startWork or self.abortWork ~= nil and last_recordnumber == self.abortWork - 2) then
+					--workSpeed = true
+					if allowedToDrive then
+						if workTool.setIsTurnedOn ~= nil then
+							workTool:setIsTurnedOn(true,false)
+							if workTool.setIsPickupDown ~= nil then
+								workTool:setIsPickupDown(true, false)
+							end
+						elseif workTool.isTurnedOn ~= nil and workTool.pickupDown ~= nil then
+							-- Krone ZX - planet-ls.de
+							workTool.isTurnedOn = true
+							workTool.pickupDown = true
+							workTool:updateSendEvent()
+						end
+					end
+				elseif not workArea or fill_level == 100 or self.abortWork ~= nil or last_recordnumber == self.stopWork then
+					workSpeed = false
+					if workTool.setIsTurnedOn ~= nil then
+						workTool:setIsTurnedOn(false, false)	
+						if workTool.setIsPickupDown ~= nil then
+							workTool:setIsPickupDown(false, false)
+						end		
+					elseif workTool.isTurnedOn ~= nil and workTool.pickupDown ~= nil then
+						-- Krone ZX - planet-ls.de
+						workTool.isTurnedOn = false
+						workTool.pickupDown = false
+						workTool:updateSendEvent()
+					end
+				end
 				-- done tipping
 				local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
 				if self.unloading_tipper ~= nil and self.unloading_tipper.fillLevel == 0 then			
-					if self.unloading_tipper.tipState ~= 0 then		  
-					  self.unloading_tipper:toggleTipState(self.currentTipTrigger)		  
+					if self.unloading_tipper.tipState ~=  Trailer.TIPSTATE_CLOSED then	
+					  print("toggle tip state")
+					  self.unloading_tipper:toggleTipState(self.currentTipTrigger,1)		  
 					end       
 					
 					self.unloading_tipper = nil
@@ -127,67 +163,56 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 					allowedToDrive, active_tipper = courseplay:unload_tippers(self)
 					self.info_text = courseplay:get_locale(self, "CPTriggerReached") -- "Abladestelle erreicht"		
 				end
-			
-				-- start/stop worktool
-				if workArea and fill_level ~= 100 and (self.abortWork == nil and last_recordnumber == self.startWork or self.abortWork ~= nil and last_recordnumber == self.abortWork - 4) then
-					--workSpeed = true
-					if allowedToDrive then
-						if workTool.setIsTurnedOn ~= nil then
-							workTool:setIsTurnedOn(true,false)
-							if workTool.setIsPickupDown ~= nil then
-								workTool:setIsPickupDown(true, false)
-							end
-						elseif workTool.isTurnedOn ~= nil and workTool.pickupDown ~= nil then
-							-- Krone ZX - planet-ls.de
-							workTool.isTurnedOn = true
-							workTool.pickupDown = true
-							workTool:updateSendEvent()
-						end
-					end
-				elseif not workArea or fill_level == 100 or self.abortWork ~= nil or last_recordnumber == self.stopWork then
-					workSpeed = false
-					if workTool.setIsTurnedOn ~= nil then
-						workTool:setIsTurnedOn(false, false)	
-						if workTool.setIsPickupDown ~= nil then
-							workTool:setIsPickupDown(false, false)
-						end		
-					elseif workTool.isTurnedOn ~= nil and workTool.pickupDown ~= nil then
-						-- Krone ZX - planet-ls.de
-						workTool.isTurnedOn = false
-						workTool.pickupDown = false
-						workTool:updateSendEvent()
-					end
-				end
+				-- Beginn Work
+	if last_recordnumber == self.startWork and fill_level ~= 100 then
+		if self.abortWork ~= nil then
+			self.recordnumber = self.abortWork - 4
+			if self.recordnumber < 1 then
+				self.recordnumber = 1
 			end
-			
-			-- Beginn Work
-			if last_recordnumber == self.startWork and fill_level ~= 100 then
-				if self.abortWork ~= nil then
-					self.recordnumber = self.abortWork - 4
-					if self.recordnumber < 1 then
-						self.recordnumber = 1
-					end
-				end
-			end
-			-- last point reached restart
-			if self.abortWork ~= nil then
-				if (last_recordnumber == self.abortWork - 4) and fill_level ~= 100 then
-					self.recordnumber = self.abortWork - 2 -- drive to waypoint after next waypoint
-					self.abortWork = nil					
-				end
-			end
-			-- safe last point
-			if fill_level == 100 and workArea and self.abortWork == nil and self.maxnumber ~= self.stopWork then
-				self.abortWork = self.recordnumber
-				self.recordnumber = self.stopWork - 4
-				if self.recordnumber < 1 then
-					self.recordnumber = 1
-				end
-			--	print(string.format("Abort: %d StopWork: %d",self.abortWork,self.stopWork))
-			end
-					
 		end
 	end
-	
+	-- last point reached restart
+	if self.abortWork ~= nil then
+		if (last_recordnumber == self.abortWork - 4) and fill_level ~= 100 then
+			self.recordnumber = self.abortWork - 2 -- drive to waypoint after next waypoint
+			self.abortWork = nil					
+		end
+	end
+	-- safe last point
+	if (fill_level == 100 or self.loaded) and workArea and self.abortWork == nil and self.maxnumber ~= self.stopWork then
+		self.abortWork = self.recordnumber
+		self.recordnumber = self.stopWork - 4
+		if self.recordnumber < 1 then
+			self.recordnumber = 1
+		end
+	--	print(string.format("Abort: %d StopWork: %d",self.abortWork,self.stopWork))
+	end
+			end		
+		end
+	else
+		if SpecializationUtil.hasSpecialization(Combine, self.specializations) then
+			if self.grainTankCapacity == 0 and ((self.pipeParticleActivated and not self.isPipeUnloading) or not self.pipeStateIsUnloading[self.currentPipeState]) then
+				-- there is some fruit to unload, but there is no trailer. Stop and wait for a trailer
+				self.waitingForTrailerToUnload = true;
+			end;
+			if self.waitingForTrailerToUnload then
+				if self.lastValidOutputFruitType ~= FruitUtil.FRUITTYPE_UNKNOWN then
+					local trailer = self:findTrailerToUnload(self.lastValidOutputFruitType);
+					if trailer ~= nil then
+					-- there is a trailer to unload. Continue working
+						self.waitingForTrailerToUnload = false;
+					end;
+				else
+					-- we did not cut anything yet. We shouldn't have ended in this state. Just continue working
+					self.waitingForTrailerToUnload = false;
+				end;
+			end;
+
+			if (self.grainTankFillLevel >= self.grainTankCapacity and self.grainTankCapacity > 0) or self.waitingForTrailerToUnload or self.waitingForDischarge  then
+				allowedToDrive = false;
+			end;
+		end;
+	end
 	return allowedToDrive, workArea, workSpeed, active_tipper
 end

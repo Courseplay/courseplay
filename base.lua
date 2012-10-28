@@ -182,6 +182,8 @@ function courseplay:load(xmlFile)
 	self.locales.CPastarOn = g_i18n:getText("CPastarOn")
 	self.locales.CPastarOff = g_i18n:getText("CPastarOff")
 	self.locales.CPHud7 = g_i18n:getText("CPHud7")
+	self.locales.CPaStar = g_i18n:getText("CPaStar")
+	self.locales.CPWPs = g_i18n:getText("CPWPs")
 	
 	self.mouse_right_key_enabled = true
 	self.drive  = false
@@ -203,6 +205,7 @@ function courseplay:load(xmlFile)
 	self.crossPoints = 0
 	self.waypointMode = 1
 	self.RulMode = 1
+	self.workWidthChanged = 0
 	-- saves the shortest distance to the next waypoint (for recocnizing circling)
 	self.shortest_dist = nil
 	self.use_speed = true
@@ -246,7 +249,7 @@ function courseplay:load(xmlFile)
 	
 	-- kegel der route	
 	local baseDirectory = getAppBasePath()
-	local i3dNode = Utils.loadSharedI3DFile("data/maps/models/objects/beerKeg/beerKeg.i3d", baseDirectory)
+	local i3dNode = Utils.loadSharedI3DFile("data/maps/models/objects/egg/egg.i3d", baseDirectory)
 	local itemNode = getChildAt(i3dNode, 0)
 	link(getRootNode(), itemNode)
 	setRigidBodyType(itemNode, "NoRigidBody")
@@ -295,6 +298,10 @@ function courseplay:load(xmlFile)
 	self.signs = {}
     courseplay:RefreshGlobalSigns(self) -- Global Signs Crosspoints
 
+	self.workMarkerLeft = clone(self.sign, true)
+	setVisibility(self.workMarkerLeft, false)
+	self.workMarkerRight = clone(self.sign, true)
+	setVisibility(self.workMarkerRight, false)
 		
 	-- course name for saving
 	self.current_course_name = nil
@@ -320,16 +327,16 @@ function courseplay:load(xmlFile)
 	self.orgRpm = nil
 	
 	-- traffic collision	
-	self.onTrafficCollisionTrigger = courseplay.onTrafficCollisionTrigger;
-	self.aiTrafficCollisionTrigger = Utils.indexToObject(self.components, getXMLString(xmlFile, "vehicle.aiTrafficCollisionTrigger#index"));
+	--self.onTrafficCollisionTrigger = courseplay.oncpTrafficCollisionTrigger;
+	--self.aiTrafficCollisionTrigger = Utils.indexToObject(self.components, getXMLString(xmlFile, "vehicle.aiTrafficCollisionTrigger#index"));
  	self.steering_angle =  Utils.getNoNil(getXMLFloat(xmlFile, "vehicle.wheels.wheel(1)" .. "#rotMax"), 30)
 	
-	self.numCollidingVehicles = 0;
-	self.numToolsCollidingVehicles = {};
-	self.trafficCollisionIgnoreList = {};
-	for k,v in pairs(self.components) do
-	  self.trafficCollisionIgnoreList[v.node] = true;
-	end;	
+self.CPnumCollidingVehicles = 0;
+--	self.numToolsCollidingVehicles = {};
+--	self.trafficCollisionIgnoreList = {};
+--	for k,v in pairs(self.components) do
+--	  self.trafficCollisionIgnoreList[v.node] = true;
+--	end;	
 	
 	-- tipTrigger
 	self.findTipTriggerCallback = courseplay.findTipTriggerCallback;
@@ -489,8 +496,8 @@ function courseplay:load(xmlFile)
     courseplay:register_button(self, 4, "navigate_up.png", "switch_combine", -1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY +0.210, 0.010, 0.010)
     courseplay:register_button(self, 4, "navigate_down.png", "switch_combine", 1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.210, 0.010, 0.010)
 	
-    courseplay:register_button(self, 4, "navigate_minus.png", "change_num_ai_helpers", -1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.146, 0.010, 0.010)
-    courseplay:register_button(self, 4, "navigate_plus.png", "change_num_ai_helpers", 1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.146, 0.010, 0.010)
+    --courseplay:register_button(self, 4, "navigate_minus.png", "change_num_ai_helpers", -1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.146, 0.010, 0.010)
+    --courseplay:register_button(self, 4, "navigate_plus.png", "change_num_ai_helpers", 1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.146, 0.010, 0.010)
         
     courseplay:register_button(self, 4, "blank.png", "switch_search_combine", nil, self.hudInfoBasePosX-0.05, self.hudInfoBasePosY + 0.185, 0.32, 0.015)
     
@@ -502,27 +509,29 @@ function courseplay:load(xmlFile)
     
     courseplay:register_button(self, 5, "navigate_minus.png", "change_max_speed", -1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY +0.167, 0.010, 0.010)
     courseplay:register_button(self, 5, "navigate_plus.png", "change_max_speed", 1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.167, 0.010, 0.010)
-    
-    courseplay:register_button(self, 5, "blank.png", "change_RulMode", 1, self.hudInfoBasePosX-0.05, self.hudInfoBasePosY + 0.143, 0.32, 0.015)
-    courseplay:register_button(self, 5, "blank.png", "change_use_speed", 1, self.hudInfoBasePosX-0.05, self.hudInfoBasePosY + 0.123, 0.32, 0.015)
-
-	courseplay:register_button(self, 6, "navigate_minus.png", "changeWpOffsetX", -0.5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.210, 0.010, 0.010)
-    courseplay:register_button(self, 6, "navigate_plus.png", "changeWpOffsetX", 0.5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.210, 0.010, 0.010)
-    
+    courseplay:register_button(self, 5, "blank.png", "change_use_speed", 1, self.hudInfoBasePosX-0.05, self.hudInfoBasePosY + 0.143, 0.32, 0.015)
+	
+	
+	courseplay:register_button(self, 6, "blank.png", "switch_realistic_driving", nil, self.hudInfoBasePosX-0.05, self.hudInfoBasePosY + 0.207, 0.32, 0.015)	
     courseplay:register_button(self, 6, "blank.png", "mouse_right_key", nil, self.hudInfoBasePosX-0.05, self.hudInfoBasePosY + 0.185, 0.32, 0.015)
     
-    --courseplay:register_button(self, 6, "navigate_minus.png", "mouse_right_key", -0.5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.188, 0.010, 0.010)
-    --courseplay:register_button(self, 6, "navigate_plus.png", "changeWpOffsetZ", 0.5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.188, 0.010, 0.010)
-
     courseplay:register_button(self, 6, "blank.png", "change_WaypointMode", 1, self.hudInfoBasePosX-0.05, self.hudInfoBasePosY + 0.164, 0.32, 0.015)
     
-    courseplay:register_button(self, 6, "navigate_minus.png", "changeWorkWidth", -0.5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.146, 0.010, 0.010)
-    courseplay:register_button(self, 6, "navigate_plus.png", "changeWorkWidth", 0.5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.146, 0.010, 0.010)
-
-    courseplay:register_button(self, 7, "navigate_minus.png", "change_wait_time", -5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.210, 0.010, 0.010)
-    courseplay:register_button(self, 7, "navigate_plus.png", "change_wait_time", 5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.210, 0.010, 0.010)
+	courseplay:register_button(self, 6, "blank.png", "change_RulMode", 1, self.hudInfoBasePosX-0.05, self.hudInfoBasePosY + 0.143, 0.32, 0.015)
     
-    courseplay:register_button(self, 7, "blank.png", "switch_realistic_driving", nil, self.hudInfoBasePosX-0.05, self.hudInfoBasePosY + 0.185, 0.32, 0.015)
+	
+	-- FARH arbeitseinstellungen
+	courseplay:register_button(self, 7, "navigate_minus.png", "change_wait_time", -5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.210, 0.010, 0.010)
+    courseplay:register_button(self, 7, "navigate_plus.png", "change_wait_time", 5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.210, 0.010, 0.010)
+	
+	courseplay:register_button(self, 7, "navigate_minus.png", "changeWpOffsetX", -0.5,  self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY +0.188, 0.010, 0.010)
+    courseplay:register_button(self, 7, "navigate_plus.png", "changeWpOffsetX", 0.5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.188, 0.010, 0.010)
+	
+	courseplay:register_button(self, 7, "navigate_minus.png", "changeWpOffsetZ", -0.5,  self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY +0.167, 0.010, 0.010)
+    courseplay:register_button(self, 7, "navigate_plus.png", "changeWpOffsetZ", 0.5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.167, 0.010, 0.010)
+	
+	courseplay:register_button(self, 7, "navigate_minus.png", "changeWorkWidth", -0.1,  self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY +0.146, 0.010, 0.010)
+    courseplay:register_button(self, 7, "navigate_plus.png", "changeWorkWidth", 0.1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.146, 0.010, 0.010)    
 	
 
     self.fold_move_direction = 1
@@ -551,12 +560,29 @@ function courseplay:draw()
 	  courseplay:dcheck(self);
 	end
 	
+	if self.workWidthChanged > self.timer then
+	  courseplay:show_work_witdh(self)
+	elseif self.work_with_shown then
+	  setVisibility(self.workMarkerRight, false) 
+	  setVisibility(self.workMarkerLeft, false) 
+	  self.work_with_shown = false
+	end
+	
 	if self.mouse_enabled then 
 	  InputBinding.setShowMouseCursor(self.mouse_enabled)
 	end
 
     courseplay:showHud(self)
  
+end
+
+function courseplay:show_work_witdh(self)
+  local x, y, z = getWorldTranslation(self.rootNode)
+  setTranslation(self.workMarkerRight, localToWorld(self.rootNode, self.toolWorkWidht/2, 3, -4 ))
+  setTranslation(self.workMarkerLeft, localToWorld(self.rootNode, self.toolWorkWidht*-1/2, 3,-4 ))
+  setVisibility(self.workMarkerRight, true) 
+  setVisibility(self.workMarkerLeft, true) 
+  self.work_with_shown = true
 end
 
 -- is been called everey frame
