@@ -478,8 +478,8 @@ self.CPnumCollidingVehicles = 0;
       end
     end
     
-    courseplay:register_button(self, 3, "navigate_minus.png", "change_combine_offset", -0.1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.210, 0.010, 0.010)
-    courseplay:register_button(self, 3, "navigate_plus.png", "change_combine_offset", 0.1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.210, 0.010, 0.010)
+    --courseplay:register_button(self, 3, "navigate_minus.png", "change_combine_offset", -0.1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.210, 0.010, 0.010)
+    --courseplay:register_button(self, 3, "navigate_plus.png", "change_combine_offset", 0.1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.210, 0.010, 0.010)
     
     courseplay:register_button(self, 3, "navigate_minus.png", "change_required_fill_level", -5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY +0.188, 0.010, 0.010)
     courseplay:register_button(self, 3, "navigate_plus.png", "change_required_fill_level", 5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.188, 0.010, 0.010)
@@ -487,8 +487,8 @@ self.CPnumCollidingVehicles = 0;
     courseplay:register_button(self, 3, "navigate_minus.png", "change_turn_radius", -1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY +0.167, 0.010, 0.010)
     courseplay:register_button(self, 3, "navigate_plus.png", "change_turn_radius", 1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.167, 0.010, 0.010)
     
-    courseplay:register_button(self, 3, "navigate_minus.png", "change_tipper_offset", -0.5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.146, 0.010, 0.010)
-    courseplay:register_button(self, 3, "navigate_plus.png", "change_tipper_offset", 0.5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.146, 0.010, 0.010)
+    --courseplay:register_button(self, 3, "navigate_minus.png", "change_tipper_offset", -0.5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.146, 0.010, 0.010)
+    --courseplay:register_button(self, 3, "navigate_plus.png", "change_tipper_offset", 0.5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.146, 0.010, 0.010)
     
     courseplay:register_button(self, 3, "navigate_minus.png", "change_required_fill_level_for_drive_on", -5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.123, 0.010, 0.010)
     courseplay:register_button(self, 3, "navigate_plus.png", "change_required_fill_level_for_drive_on", 5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.123, 0.010, 0.010)

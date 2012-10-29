@@ -152,9 +152,27 @@ function courseplay:register_at_combine(self, combine)
   self.courseplay_position = table.getn(combine.courseplayers)
   self.active_combine = combine  	     
   
-  --if self.trafficCollisionIgnoreList[combine.rootNode] == nil then
-  --  self.trafficCollisionIgnoreList[combine.rootNode] = true
-  --end
+ 
+ 
+  local leftMarker = nil
+  local currentCutter = nil
+
+  for cutter,implement in pairs(combine.attachedCutters) do
+    if cutter.aiLeftMarker ~= nil then
+       if leftMarker == nil then
+          leftMarker = cutter.aiLeftMarker;
+          currentCutter = cutter
+        end;
+       end;
+   end;
+
+  local x, y, z = getWorldTranslation(currentCutter.rootNode)
+  xt, yt, zt = worldToLocal(leftMarker, x, y, z)
+
+  self.combine_offset = xt + 1.5;
+
+  courseplay:debug("combine_offset:")
+  courseplay:debug( self.combine_offset)
   
   return true
 end
