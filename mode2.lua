@@ -204,15 +204,13 @@ function courseplay:unload_combine(self, dt)
 	else
 		xt, yt, zt = worldToLocal(self.tippers[1].rootNode, x, y, z)
 	end
+
 	-- support for tippers like hw80
 	if zt < 0 then
 		zt = zt *-1
 	end
 
-	local trailer_offset = zt + self.tipper_offset
-	if self.currentTrailerToFill ~= nil then
-		trailer_offset = zt + self.tipper_offset*self.currentTrailerToFill
-	end
+	local trailer_offset = zt
 
 
 	if self.sl == nil then
@@ -253,30 +251,32 @@ function courseplay:unload_combine(self, dt)
 
 		self.sl = 3
 		refSpeed = self.field_speed
-	  	courseplay:remove_from_combines_ignore_list(self, combine)
+	  	--courseplay:remove_from_combines_ignore_list(self, combine)
 	  	self.info_text = courseplay:get_locale(self, "CPDriveBehinCombine") -- ""
 
 		local x1, y1, z1 = worldToLocal(combine.rootNode, x, y, z)  
 
 		if z1 > -10 then  -- tractor in front of combine      --0
 			-- left side of combine
-			local cx_left, cy_left, cz_left = localToWorld(combine.rootNode, 10, 0, -40)           --20,0, -30        (war 20,0,-25
+			local cx_left, cy_left, cz_left = localToWorld(combine.rootNode, 20, 0, -25)           --20,0, -30        (war 20,0,-25
 			-- righ side of combine
-			local cx_right, cy_right, cz_right = localToWorld(combine.rootNode, -10, 0, -40)       -- -20,0,-30            -20,0,-25
+			local cx_right, cy_right, cz_right = localToWorld(combine.rootNode, -20, 0, -25)       -- -20,0,-30            -20,0,-25
 			local lx, ly, lz =	worldToLocal(self.aiTractorDirectionNode, cx_left, y, cz_left)
 			-- distance to left position
 			local disL = Utils.vector2Length(lx, lz)
 			local rx, ry, rz = worldToLocal(self.aiTractorDirectionNode, cx_right, y, cz_right)
 			-- distance to right position
 			local disR = Utils.vector2Length(rx, rz)
-			if disL < disR then
-		  		cx, cy, cz = cx_left, cy_left, cz_left
-	    		else
-		  		cx, cy, cz = cx_right, cy_right, cz_right
-	    		end
+			
+      if disL < disR then
+		  	cx, cy, cz = cx_left, cy_left, cz_left
+	    else
+		  	cx, cy, cz = cx_right, cy_right, cz_right
+	    end
+
 		else
 		    -- tractor behind combine
-		    cx, cy, cz = localToWorld(combine.rootNode, 0, 0, -30)
+		    cx, cy, cz = localToWorld(combine.rootNode, 0, 0, -15)
 	  	end
 		
 		if not self.calculated_course then
@@ -310,7 +310,7 @@ function courseplay:unload_combine(self, dt)
 	elseif mode == 4 then -- Drive to rear Combine or Cornchopper
 
 		self.info_text =courseplay:get_locale(self, "CPDriveToCombine") -- "Fahre zum Drescher"
-	    courseplay:add_to_combines_ignore_list(self, combine)
+	    --courseplay:add_to_combines_ignore_list(self, combine)
 	    refSpeed = self.field_speed
 		
 	    local tX, tY, tZ = nil, nil, nil
@@ -327,13 +327,13 @@ function courseplay:unload_combine(self, dt)
 
         local ttX, ttY, ttZ = nil, nil, nil
 	  	local lx, ly, lz = nil, nil, nil
-        ttX, ttY, ttZ = localToWorld(combine.rootNode, offset_to_chopper, 0, trailer_offset/2)
+        ttX, ttY, ttZ = localToWorld(combine.rootNode, offset_to_chopper, 0, trailer_offset)
 			
 		if combine.attachedImplements ~= nil then
 			for k,i in pairs(combine.attachedImplements) do
 				local implement = i.object;
 				if implement.haeckseldolly == true then
-					ttX, ttY, ttZ = localToWorld(implement.rootNode, offset_to_chopper, 0, trailer_offset/2)
+					ttX, ttY, ttZ = localToWorld(implement.rootNode, offset_to_chopper, 0, trailer_offset)
 				end 
 			end
 		end
@@ -360,37 +360,37 @@ function courseplay:unload_combine(self, dt)
 	elseif mode == 3 then --drive to unload pipe
 
 		self.info_text =courseplay:get_locale(self, "CPDriveNextCombine") -- "Fahre neben Drescher"
-		courseplay:add_to_combines_ignore_list(self, combine)
-        refSpeed = self.field_speed
+		--courseplay:add_to_combines_ignore_list(self, combine)
+    refSpeed = self.field_speed
 
-        if self.next_targets ~= nil then
-	        self.next_targets = {}
-	    end
+    if self.next_targets ~= nil then
+	    self.next_targets = {}
+	  end
 
-	  	if combine_fill_level == 0 then --combine empty set waypoint 30 meters behind combine
+	  if combine_fill_level == 0 then --combine empty set waypoint 30 meters behind combine
 			local leftFruit, rightFruit =  courseplay:side_to_drive(self, combine, -40)
 			local offset = self.chopper_offset
 			if leftFruit > rightFruit then
 			  offset = self.chopper_offset*-0.3 -- *-1
 			end
 			self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, 0, 0, -10) --10, 0, -5)
-            -- turn left
-		    self.turn_factor = 5 --??
-		    -- insert waypoint behind combine
-	        local next_x, next_y, next_z = localToWorld(combine.rootNode, offset, 0, -30) -- -10
+      -- turn left
+		  self.turn_factor = 5 --??
+		  -- insert waypoint behind combine
+	    local next_x, next_y, next_z = localToWorld(combine.rootNode, offset, 0, -30) -- -10
 			local next_wp = {x = next_x, y=next_y, z=next_z}
 			table.insert(self.next_targets, next_wp)
 			-- insert another point behind combine
-	       	next_x, next_y, next_z = localToWorld(combine.rootNode, offset, 0, -50) -- -30
-	        local next_wp = {x = next_x, y=next_y, z=next_z}
+	    next_x, next_y, next_z = localToWorld(combine.rootNode, offset, 0, -50) -- -30
+	    local next_wp = {x = next_x, y=next_y, z=next_z}
 			table.insert(self.next_targets, next_wp)
 			
 			mode = 9 -- turn around and then wait for next start
-	    	if tipper_percentage >= self.required_fill_level_for_drive_on then
-	      		self.loaded = true
-	    	else				
-			    self.next_ai_state = 1
-	    	end
+	    if tipper_percentage >= self.required_fill_level_for_drive_on then
+	      self.loaded = true
+	    else				
+			  self.next_ai_state = 1
+	    end
 		end
 
 
@@ -398,13 +398,14 @@ function courseplay:unload_combine(self, dt)
 			self.chopper_offset = self.chopper_offset * -1
 		end
 
-        cx, cy, cz = localToWorld(combine.rootNode, self.chopper_offset, 0, trailer_offset)      	  
-        local ttX, ttY, ttZ = localToWorld(combine.rootNode, offset_to_chopper, 0, trailer_offset/2)
+    cx, cy, cz = localToWorld(combine.rootNode, self.chopper_offset, 0, trailer_offset)      	  
+    local ttX, ttY, ttZ = localToWorld(combine.rootNode, offset_to_chopper, 0, trailer_offset)
+
 		if combine.attachedImplements ~= nil then
 			for k,i in pairs(combine.attachedImplements) do
 				local implement = i.object;
 				if implement.haeckseldolly == true then
-					ttX, ttY, ttZ = localToWorld(implement.rootNode, offset_to_chopper, 0, trailer_offset/2)
+					ttX, ttY, ttZ = localToWorld(implement.rootNode, offset_to_chopper, 0, trailer_offset)
 				end 
 			end
 		end
@@ -422,12 +423,12 @@ function courseplay:unload_combine(self, dt)
 			if combine.movingDirection == 0 and (lz == -1 or dod == -1) then
 				allowedToDrive = false 
 				self.info_text = courseplay:get_locale(self, "CPCombineWantsMeToStop") -- "Drescher sagt ich soll anhalten."
-		    end
-		    if lz < -5 or dod < -5 then
-			    allowedToDrive = false
+		  end
+		  if lz < -5 or dod < -5 then
+			  allowedToDrive = false
 				self.info_text = courseplay:get_locale(self, "CPCombineWantsMeToStop")
-		    	--mode = 2
-		    end
+		    --mode = 2
+		  end
 		end
 
 	  -- refspeed depends on the distance to the combine
@@ -521,7 +522,7 @@ function courseplay:unload_combine(self, dt)
 
 	  -- wende man?ver
 		if mode == 9 and self.target_x ~= nil and self.target_z ~= nil then
-			courseplay:remove_from_combines_ignore_list(self, combine)
+			--courseplay:remove_from_combines_ignore_list(self, combine)
 			self.info_text = string.format(courseplay:get_locale(self, "CPTurningTo"), self.target_x, self.target_z )
 			allowedToDrive = false
 			local mx, mz = self.target_x, self.target_z
@@ -562,7 +563,7 @@ function courseplay:unload_combine(self, dt)
 	  -- drive to given waypoint
 	if mode == 5 and self.target_x ~= nil and self.target_z ~= nil then
 	    if combine ~= nil then
-		  courseplay:remove_from_combines_ignore_list(self, combine)
+		  --courseplay:remove_from_combines_ignore_list(self, combine)
 		end
 	    self.info_text = string.format(courseplay:get_locale(self, "CPDriveToWP"), self.target_x, self.target_z )
 	  	cx = self.target_x
