@@ -377,17 +377,17 @@ function courseplay:unload_combine(self, dt)
 			if leftFruit > rightFruit then
 			  offset = self.chopper_offset*-1 -- *-1
 			end
-			self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, -5, 0, -5) --10, 0, -5)
+			self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, -7, 0, -5) --10, 0, -5)
       -- turn left
 		  self.turn_factor = 5 --??
 		  -- insert waypoint behind combine
-	    local next_x, next_y, next_z = localToWorld(combine.rootNode, offset, 0, -15) -- -10
+	    local next_x, next_y, next_z = localToWorld(self.rootNode, offset, 0, -15) -- -10
 			local next_wp = {x = next_x, y=next_y, z=next_z}
 			table.insert(self.next_targets, next_wp)
 			-- insert another point behind combine
-	    --next_x, next_y, next_z = localToWorld(combine.rootNode, offset, 0, -50) -- -30
-	    --local next_wp = {x = next_x, y=next_y, z=next_z}
-			--table.insert(self.next_targets, next_wp)
+	    next_x, next_y, next_z = localToWorld(self.rootNode, offset, 0, -30) -- -30
+	    local next_wp = {x = next_x, y=next_y, z=next_z}
+			table.insert(self.next_targets, next_wp)
 			
 			mode = 9 -- turn around and then wait for next start
 	    if tipper_percentage >= self.required_fill_level_for_drive_on then
