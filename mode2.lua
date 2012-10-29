@@ -423,7 +423,7 @@ function courseplay:unload_combine(self, dt)
     -- combine is not moving and trailer is under pipe
 		if not cornChopper and ((combine.movingDirection == 0 and lz <= 0.5) or lz < -0.4 * trailer_offset) then
 			self.info_text = courseplay:get_locale(self, "CPCombineWantsMeToStop") -- "Drescher sagt ich soll anhalten."
-		  --	allowedToDrive = false
+		  allowedToDrive = false
 		elseif cornChopper then
 			if combine.movingDirection == 0 and (lz == -1 or dod == -1) then
 				allowedToDrive = false 
