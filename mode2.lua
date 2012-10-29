@@ -402,7 +402,7 @@ function courseplay:unload_combine(self, dt)
 			self.chopper_offset = self.chopper_offset * -1
 		end
 
-    currentX, currentY, currentZ = localToWorld(combine.rootNode, self.chopper_offset, 0, trailer_offset)      	  
+    currentX, currentY, currentZ = localToWorld(combine.rootNode, self.chopper_offset, 0, trailer_offset*2)      	  
     local ttX, ttY, ttZ = localToWorld(combine.rootNode, offset_to_chopper, 0, trailer_offset)
 
 		if combine.attachedImplements ~= nil then
@@ -421,7 +421,7 @@ function courseplay:unload_combine(self, dt)
     end
 
     -- combine is not moving and trailer is under pipe
-		if not cornChopper and ((combine.movingDirection == 0 and lz <= 0.5) or lz < -0.4 * trailer_offset) then
+		if not cornChopper and ((combine.movingDirection == 0 and lz <= 0.5) or lz < -0.1 * trailer_offset) then
 			self.info_text = courseplay:get_locale(self, "CPCombineWantsMeToStop") -- "Drescher sagt ich soll anhalten."
 		  allowedToDrive = false
 		elseif cornChopper then
@@ -439,7 +439,7 @@ function courseplay:unload_combine(self, dt)
 	  -- refspeed depends on the distance to the combine
 	  local combine_speed = combine.lastSpeed
 
-		if combine_speed ~= nil then
+		if combine_speed > 1 then
 			refSpeed = combine_speed + (combine_speed * lz * 3 / 10)
 			if refSpeed > self.field_speed then
 			  refSpeed = self.field_speed
@@ -460,7 +460,7 @@ function courseplay:unload_combine(self, dt)
 
 		if combine.movingDirection == 0 then
 			refSpeed = self.field_speed * 1.5
-			if mode == 3 and dod < 10 then
+			if mode == 3 and dod < 10 and cornChopper then
 				refSpeed = 1/3600
 			end
 		end
@@ -515,10 +515,12 @@ function courseplay:unload_combine(self, dt)
 					self.next_ai_state = 2
 				end
 			end
-		elseif mode ~=5 and mode ~= 9 then
-			-- just wait until combine has turned
-			allowedToDrive = false
-			self.info_text =courseplay:get_locale(self, "CPCombineWantsMeToStop")
+		elseif mode ~=5 and mode ~= 9 and not self.realistic_driving then
+			
+      
+        -- just wait until combine has turned
+		  	allowedToDrive = false
+		  	self.info_text =courseplay:get_locale(self, "CPCombineWantsMeToStop")
 		end
 	end
 
