@@ -402,7 +402,15 @@ function courseplay:unload_combine(self, dt)
 			self.chopper_offset = self.chopper_offset * -1
 		end
 
-    currentX, currentY, currentZ = localToWorld(combine.rootNode, self.chopper_offset, 0, trailer_offset*2)      	  
+    if combine.currentPipeState == 2 then
+      local x, y, z = getWorldTranslation(combine.rootNode)
+      xt, yt, zt = worldToLocal(combine.pipeRaycastNode, x, y, z)
+      currentX, currentY, currentZ = localToWorld(combine.rootNode, zt, 0, trailer_offset*2)      
+    else
+      currentX, currentY, currentZ = localToWorld(combine.rootNode, self.chopper_offset, 0, trailer_offset*2)      
+    end
+
+	  
     local ttX, ttY, ttZ = localToWorld(combine.rootNode, offset_to_chopper, 0, trailer_offset)
 
 		if combine.attachedImplements ~= nil then

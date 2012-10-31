@@ -169,7 +169,7 @@ function courseplay:register_at_combine(self, combine)
   local x, y, z = getWorldTranslation(currentCutter.rootNode)
   xt, yt, zt = worldToLocal(leftMarker, x, y, z)
 
-  self.combine_offset = xt + 1.5;
+  self.combine_offset = xt + 2.5;
 
   courseplay:debug("combine_offset:")
   courseplay:debug( self.combine_offset)
