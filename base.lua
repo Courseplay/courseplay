@@ -530,8 +530,8 @@ self.CPnumCollidingVehicles = 0;
 	courseplay:register_button(self, 7, "navigate_minus.png", "changeWpOffsetZ", -0.5,  self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY +0.167, 0.010, 0.010)
     courseplay:register_button(self, 7, "navigate_plus.png", "changeWpOffsetZ", 0.5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.167, 0.010, 0.010)
 	
-	courseplay:register_button(self, 7, "navigate_minus.png", "changeWorkWidth", -0.1,  self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY +0.146, 0.010, 0.010)
-    courseplay:register_button(self, 7, "navigate_plus.png", "changeWorkWidth", 0.1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.146, 0.010, 0.010)    
+	courseplay:register_button(self, 7, "navigate_minus.png", "changeWorkWidth", -0.5,  self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY +0.146, 0.010, 0.010)
+    courseplay:register_button(self, 7, "navigate_plus.png", "changeWorkWidth", 0.5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.146, 0.010, 0.010)    
 	
 
     self.fold_move_direction = 1
