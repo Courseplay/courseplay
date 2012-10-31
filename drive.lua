@@ -371,7 +371,8 @@ function courseplay:drive(self, dt)
 		    self.global_info_text = self.locales.CPNoFuelStop
  		end
 		if self.doRefuel then
-			allowedToDrive = false 
+			allowedToDrive = false
+			self.global_info_text = self.locales.CPRefueling
 		end;
 		 		
  		if self.showWaterWarning then
