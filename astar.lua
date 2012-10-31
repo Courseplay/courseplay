@@ -1,3 +1,4 @@
+
 --[[
 A* algorithm for LUA
 Ported to LUA by Altair
