@@ -73,7 +73,7 @@ function courseplay:update_combines(self)
     return
   end
   
-  print(string.format("combines total: %d ", table.getn(self.reachable_combines) ))
+  courseplay:debug(string.format("combines total: %d ", table.getn(self.reachable_combines) ))
   
   local x, y, z = getWorldTranslation(self.aiTractorDirectionNode)
   local hx, hy, hz = localToWorld(self.aiTractorDirectionNode, -2, 0, 0)
@@ -82,7 +82,7 @@ function courseplay:update_combines(self)
   
   local found_combines = courseplay:find_combines(self)
   
-  print(string.format("combines found: %d ", table.getn(found_combines) ))
+  courseplay:debug(string.format("combines found: %d ", table.getn(found_combines) ))
   -- go throuh found
   for k,combine in pairs(found_combines) do
   	 lx, ly, lz = getWorldTranslation(combine.rootNode)
@@ -101,7 +101,7 @@ function courseplay:update_combines(self)
   	 end
   end
   
-  print(string.format("combines reachable: %d ", table.getn(self.reachable_combines) ))
+  courseplay:debug(string.format("combines reachable: %d ", table.getn(self.reachable_combines) ))
 end
 
 

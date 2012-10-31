@@ -621,6 +621,7 @@ end
 function courseplay:check_traffic(self, display_warnings, allowedToDrive)
   local in_traffic = false;
   --print(table.show(self))
+  if self.numCollidingVehicles ~= nil then
   for k,v in pairs(self.numCollidingVehicles) do
          if v > 0 then
               courseplay:debug("colliding")
@@ -628,7 +629,7 @@ function courseplay:check_traffic(self, display_warnings, allowedToDrive)
               break;
           end;
      end;
-
+  end
   
   if display_warnings and in_traffic then
     self.global_info_text = courseplay:get_locale(self, "CPInTraffic") --' steckt im Verkehr fest'
