@@ -1,4 +1,4 @@
-
+--Hallo ich bin Jakob
 --[[
 A* algorithm for LUA
 Ported to LUA by Altair
