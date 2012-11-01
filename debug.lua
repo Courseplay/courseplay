@@ -19,7 +19,7 @@ end
 -- debugging data dumper
 -- just for development and debugging
 function table.show(t, name, indent)
-	if currentDebugLevel > 3 then
+	if currentDebugLevel < 4 then
 		return
 	end
 	
