@@ -19,7 +19,7 @@ function courseplay:area_has_fruit(x,z, fruit_type)
     density = Utils.getFruitArea(fruit_type, x, z, x-widthX, z-widthZ, x+widthX, z+widthZ);
 								  
 	  if density > 0 then
-		--print(string.format("checking x: %d z %d - density: %d", x, z, density ))
+		--courseplay:debug(string.format("checking x: %d z %d - density: %d", x, z, density ), 3)
 		return true
       end
   else
@@ -29,14 +29,14 @@ function courseplay:area_has_fruit(x,z, fruit_type)
 		  density = Utils.getFruitArea(i, x, z, x-widthX, z-widthZ, x+widthX, z+widthZ);
 								  
 		  if density > 0 then
-			--print(string.format("checking x: %d z %d - density: %d", x, z, density ))
+			--courseplay:debug(string.format("checking x: %d z %d - density: %d", x, z, density ), 3)
 			return true
 		  end  	  	  
 		end
 	end
   end
 	
-  --print(string.format(" x: %d z %d - is really cut!", x, z ))
+  --courseplay:debug(string.format(" x: %d z %d - is really cut!", x, z ), 3)
   return false
 end
 
@@ -152,7 +152,7 @@ function courseplay:side_to_drive(self, combine, distance)
     rightFruit = rightFruit + Utils.getFruitArea(i, rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ)
   end
   
-  --print(string.format("fruit:  left %f right %f",leftFruit,rightFruit ))
+  --courseplay:debug(string.format("fruit:  left %f right %f",leftFruit,rightFruit ), 3)
   
   return leftFruit,rightFruit
 end

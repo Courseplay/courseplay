@@ -13,7 +13,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
     InputBinding.setShowMouseCursor(self.mouse_enabled)
   end
   if isDown and button == 1 and self.show_hud and self.isEntered then
-    --print(string.format("posX: %f posY: %f",posX,posY))
+	--courseplay:debug(string.format("posX: %f posY: %f",posX,posY), 4)
     
     for _,button in pairs(self.buttons) do
       if button.page == self.showHudInfoBase or button.page == nil or button.page == self.showHudInfoBase*-1  then

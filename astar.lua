@@ -78,7 +78,7 @@ It will return nil if all the available nodes have been checked but the target h
 		
 		curbase=closedlist[closedk]				 -- define current base from which to grow list
 		
-		--print(string.format("a star check x: %f y %f - closedk: %d", curbase.x, curbase.y, closedk ))
+		--courseplay:debug(string.format("a star check x: %f y %f - closedk: %d", curbase.x, curbase.y, closedk ), 4)
 		
 		local wOK=true
 		local eOK=true           				 -- Booleans defining if they're OK to add
@@ -165,27 +165,26 @@ It will return nil if all the available nodes have been checked but the target h
 		tempG=curbase.g+interval
 		for k=1,listk do
 		    if wOK and openlist[k].x==curbase.x+interval and openlist[k].y==curbase.y then
-		      if openlist[k].g>tempG  then
-		      	  --print("right OK 1")
-				  tempH=math.abs((curbase.x+interval)-tx)+math.abs(curbase.y-ty)
-				  table.insert(openlist,k,{x=curbase.x+interval, y=curbase.y, g=tempG, h=tempH, f=tempG+tempH, par=closedk})				 
-			  end
-			  wOK=false
+				if openlist[k].g>tempG  then
+					--courseplay:debug("right OK 1", 4)
+					tempH=math.abs((curbase.x+interval)-tx)+math.abs(curbase.y-ty)
+					table.insert(openlist,k,{x=curbase.x+interval, y=curbase.y, g=tempG, h=tempH, f=tempG+tempH, par=closedk})				 
+				end
+				wOK=false
 		    end
 
 		    if eOK and openlist[k].x==curbase.x-interval and openlist[k].y==curbase.y then		      
-		      if openlist[k].g>tempG  then
-		        --print("left OK 1")
-			    tempH=math.abs((curbase.x-interval)-tx)+math.abs(curbase.y-ty)
-			    table.insert(openlist,k,{x=curbase.x-interval, y=curbase.y, g=tempG, h=tempH, f=tempG+tempH, par=closedk})
-			   
-			  end
-			  eOK=false
+				if openlist[k].g>tempG  then
+					--courseplay:debug("left OK 1", 4)
+					tempH=math.abs((curbase.x-interval)-tx)+math.abs(curbase.y-ty)
+					table.insert(openlist,k,{x=curbase.x-interval, y=curbase.y, g=tempG, h=tempH, f=tempG+tempH, par=closedk})
+				end
+				eOK=false
 		    end
 
 		    if sOK and openlist[k].x==curbase.x and openlist[k].y==curbase.y+interval then		      
 		      if openlist[k].g>tempG  then
-		        --print("down OK 1")
+				--courseplay:debug("down OK 1", 4)
 			    tempH=math.abs((curbase.x)-tx)+math.abs(curbase.y+interval-ty)
 				
 			    table.insert(openlist,k,{x=curbase.x, y=curbase.y+interval, g=tempG, h=tempH, f=tempG+tempH, par=closedk})
@@ -196,7 +195,7 @@ It will return nil if all the available nodes have been checked but the target h
 
 		    if nOK and openlist[k].x==curbase.x and openlist[k].y==curbase.y-interval then
 		      if openlist[k].g>tempG then
-		        --print("up OK 1")
+				--courseplay:debug("up OK 1", 4)
 			    tempH=math.abs((curbase.x)-tx)+math.abs(curbase.y-interval-ty)
 			    table.insert(openlist,k,{x=curbase.x, y=curbase.y-interval, g=tempG, h=tempH, f=tempG+tempH, par=closedk})
 			    
@@ -208,7 +207,7 @@ It will return nil if all the available nodes have been checked but the target h
 		-- Add points to openlist
 		-- Add point to the right of current base point
 		if wOK then
-			--print("right OK")
+			--courseplay:debug("right OK", 4)
 			listk=listk+1
 			tempH=math.abs((curbase.x+interval)-tx)+math.abs(curbase.y-ty)
 			
@@ -217,7 +216,7 @@ It will return nil if all the available nodes have been checked but the target h
 
 		-- Add point to the left of current base point
 		if eOK then
-			--print("left OK")
+			--courseplay:debug("left OK", 4)
 			listk=listk+1
 			tempH=math.abs((curbase.x-interval)-tx)+math.abs(curbase.y-ty)			
 			table.insert(openlist,listk,{x=curbase.x-interval, y=curbase.y, g=tempG, h=tempH, f=tempG+tempH, par=closedk})			
@@ -225,7 +224,7 @@ It will return nil if all the available nodes have been checked but the target h
 
 		-- Add point on the top of current base point
 		if sOK then
-			--print("down OK")
+			--courseplay:debug("down OK", 4)
 			listk=listk+1
 			tempH=math.abs(curbase.x-tx)+math.abs((curbase.y+interval)-ty)
 			
@@ -234,7 +233,7 @@ It will return nil if all the available nodes have been checked but the target h
 
 		-- Add point on the bottom of current base point
 		if nOK then
-			--print("up OK")
+			--courseplay:debug("up OK", 4)
 			listk=listk+1
 			tempH=math.abs(curbase.x-tx)+math.abs((curbase.y-interval)-ty)
 			

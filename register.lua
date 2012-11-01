@@ -10,7 +10,7 @@ function register_courseplay()
 	for k,v in pairs(VehicleTypeUtil.vehicleTypes) do  
 	  if v~=nil then
 	    if v.name == "perard.perard" then
-		  --print("renew perard interbenne 25");
+		  --courseplay:debug("renew perard interbenne 25", 2);
 		  for l,w in pairs(v.specializations) do 
 		    v.specializations[l]=nil 
 		  end
@@ -24,13 +24,13 @@ function register_courseplay()
 		  if s ~= nil then
 		    if s == SpecializationUtil.getSpecialization("steerable") then          
 		      if not SpecializationUtil.hasSpecialization(courseplay, v.specializations) then
-			--print("adding courseplay to:"..tostring(v.name));
+			--courseplay:debug("adding courseplay to:"..tostring(v.name), 3);
 			table.insert(v.specializations, SpecializationUtil.getSpecialization("courseplay"));
 		      end
 	   	  end;
   		  if s == SpecializationUtil.getSpecialization("fillable") then 
 		    if not SpecializationUtil.hasSpecialization(autoovercharge, v.specializations) then
-			--print("adding autoovercharge to:"..tostring(v.name));
+			--courseplay:debug("adding autoovercharge to:"..tostring(v.name), 3);
 			table.insert(v.specializations, SpecializationUtil.getSpecialization("autoovercharge"));
 		    end
 		  end	

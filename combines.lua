@@ -106,8 +106,8 @@ end
 
 
 function courseplay:register_at_combine(self, combine)
-  courseplay:debug("registering at combine")
-  courseplay:debug(table.show(combine))
+  courseplay:debug("registering at combine", 4)
+  courseplay:debug(table.show(combine), 4)
 
   local num_allowed_courseplayers = 1
   self.calculated_course = false

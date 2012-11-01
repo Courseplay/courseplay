@@ -51,9 +51,9 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 		end
 	end;
 	-- C.Schoch
-	-- print(table.show(trigger_objects));
+	-- courseplay:debug(table.show(trigger_objects), 4);
 	for k,trigger in pairs(trigger_objects) do
-		--print(trigger.className);
+		--courseplay:debug(trigger.className, 3);
 		if (trigger.className and (trigger.className == "SiloTrigger" or trigger.className == "HeapTipTrigger" or endswith(trigger.className, "TipTrigger") or startswith(trigger.className, "MapBGA")))  or trigger.isTipAnywhereTrigger then
 			-- transformId
 			if  not trigger.className then
@@ -62,7 +62,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 			end 
 			local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
 			if trigger.triggerId ~= nil and trigger.triggerId == transformId and (trigger.bunkerSilo == nil or (trigger.bunkerSilo.fillLevel + tipper_capacity) < trigger.bunkerSilo.capacity ) then
-				--print(table.show(trigger.bunkerSilo));
+				--courseplay:debug(table.show(trigger.bunkerSilo), 4);
 				self.currentTipTrigger = trigger
 			elseif trigger.triggerIds ~= nil and transformId ~= nil and table.contains(trigger.triggerIds, transformId) then
 				self.currentTipTrigger = trigger	

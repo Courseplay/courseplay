@@ -128,7 +128,7 @@ if self.attachedCutters ~= nil then
 				local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
 				if self.unloading_tipper ~= nil and self.unloading_tipper.fillLevel == 0 then			
 					if self.unloading_tipper.tipState ~=  Trailer.TIPSTATE_CLOSED then	
-					  print("toggle tip state")
+					  courseplay:debug("toggle tip state", 2)
 					  self.unloading_tipper:toggleTipState(self.currentTipTrigger,1)		  
 					end       
 					
@@ -186,7 +186,7 @@ if self.attachedCutters ~= nil then
 		if self.recordnumber < 1 then
 			self.recordnumber = 1
 		end
-	--	print(string.format("Abort: %d StopWork: %d",self.abortWork,self.stopWork))
+	--	courseplay:debug(string.format("Abort: %d StopWork: %d",self.abortWork,self.stopWork), 2)
 	end
 			end		
 		end

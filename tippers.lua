@@ -203,7 +203,7 @@ function courseplay:unload_tippers(self)
     
     -- tipReferencePoint of each tipper    
     for k,tipper in pairs(self.tippers) do 
-      --print(table.show(tipper))
+      --courseplay:debug(table.show(tipper), 4)
       local tipper_x, tipper_y, tipper_z = getWorldTranslation(tipper.tipReferencePoints[1].node)
       local distance_to_trigger = Utils.vector2Length(trigger_x - tipper_x, trigger_z - tipper_z)
 	  
