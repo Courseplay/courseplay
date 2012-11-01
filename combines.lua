@@ -152,7 +152,7 @@ function courseplay:register_at_combine(self, combine)
   self.courseplay_position = table.getn(combine.courseplayers)
   self.active_combine = combine  	     
   
- 
+  self.combine_offset = 6
  
   local leftMarker = nil
   local currentCutter = nil
@@ -162,14 +162,19 @@ function courseplay:register_at_combine(self, combine)
        if leftMarker == nil then
           leftMarker = cutter.aiLeftMarker;
           currentCutter = cutter
+          local x, y, z = getWorldTranslation(currentCutter.rootNode)
+          xt, yt, zt = worldToLocal(leftMarker, x, y, z)
+
+          self.combine_offset = xt + 2.5;
         end;
        end;
    end;
 
-  local x, y, z = getWorldTranslation(currentCutter.rootNode)
-  xt, yt, zt = worldToLocal(leftMarker, x, y, z)
-
-  self.combine_offset = xt + 2.5;
+  if combine.typeName == "selfPropelledPotatoHarvester" then
+      local x, y, z = getWorldTranslation(combine.rootNode)
+      xt, yt, zt = worldToLocal(combine.pipeRaycastNode, x, y, z)
+      self.combine_offset = xt*-1
+  end
 
   courseplay:debug("combine_offset:")
   courseplay:debug( self.combine_offset)

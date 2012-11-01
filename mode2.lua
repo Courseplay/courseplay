@@ -141,7 +141,7 @@ function courseplay:handle_mode2(self, dt)
 
 			  	-- chose the combine who needs me the most
 				for k,combine in pairs(self.reachable_combines) do
-			    	if (combine.grainTankFillLevel > (combine.grainTankCapacity*self.required_fill_level_for_follow/100)) or combine.grainTankCapacity == 0 or combine.wants_courseplayer then
+			    	if (combine.grainTankFillLevel >= (combine.grainTankCapacity*self.required_fill_level_for_follow/100)) or combine.grainTankCapacity == 0 or combine.wants_courseplayer then
 						if combine.grainTankCapacity == 0 then
 							if combine.courseplayers == nil then
 			          			best_combine = combine
@@ -165,10 +165,10 @@ function courseplay:handle_mode2(self, dt)
 
 				if best_combine ~= nil then
 					if courseplay:register_at_combine(self, best_combine) then
-			  			self.ai_state = 2
-			  		end
-			  	else
-			    	self.info_text = "Warte bis Fuellstand erreicht ist"-- courseplay:get_locale(self, "CPCombineTurning") -- "Drescher wendet. "
+			  		self.ai_state = 2
+			  	end
+			  else
+			   	self.info_text = "Warte bis Fuellstand erreicht ist"-- courseplay:get_locale(self, "CPCombineTurning") -- "Drescher wendet. "
 				end
 
 			else
@@ -192,6 +192,7 @@ function courseplay:unload_combine(self, dt)
 	local refSpeed = nil
 	local handleTurn = false
 	local cornChopper = false
+  local isHarvester = false
 	local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
 	local tipper_percentage = tipper_fill_level/tipper_capacity * 100
 	local xt, yt, zt = nil, nil, nil
@@ -225,6 +226,24 @@ function courseplay:unload_combine(self, dt)
 		combine_turning = true
 	end
 
+  if combine.grainTankCapacity > 0 then
+		combine_fill_level = combine.grainTankFillLevel * 100 / combine.grainTankCapacity
+    if combine.typeName == "selfPropelledPotatoHarvester" then
+      isHarvester = true
+    end
+	else -- combine is a chopper / has no tank
+		combine_fill_level = 51
+		cornChopper = true
+	end
+
+  if not cornChopper and self.chopper_offset < 0 then
+    self.chopper_offset = self.chopper_offset * -1 
+  end
+
+  if isHarvester and self.chopper_offset > 0 then
+    self.chopper_offset = self.chopper_offset * -1
+  end
+
 	if mode == 2 or mode == 3 or mode == 4 then
  		if combine == nil then
 			self.info_text = "this should never happen"
@@ -232,12 +251,7 @@ function courseplay:unload_combine(self, dt)
 		end
 	end
 
-	if combine.grainTankCapacity > 0 then
-		combine_fill_level = combine.grainTankFillLevel * 100 / combine.grainTankCapacity
-	else -- combine is a chopper / has no tank
-		combine_fill_level = 51
-		cornChopper = true
-	end
+	
 
   local offset_to_chopper = self.chopper_offset
 	if combine.turnStage ~= 0 then
@@ -322,7 +336,7 @@ function courseplay:unload_combine(self, dt)
 		if cornChopper then
 		  tX, tY, tZ = localToWorld(combine.rootNode, offset_to_chopper, 0, -20) -- offste *0.6     !????????????
 	  else
-	   	if offset_to_chopper < 0 then
+	   	if not isHarvester and offset_to_chopper < 0 then
 				offset_to_chopper = offset_to_chopper * -1
 			end
     	tX, tY, tZ = localToWorld(combine.rootNode, offset_to_chopper, 0, -5)
@@ -372,14 +386,19 @@ function courseplay:unload_combine(self, dt)
 	  end
 
 	  if combine_fill_level == 0 then --combine empty set waypoint 30 meters behind combine
-			local leftFruit, rightFruit =  courseplay:side_to_drive(self, combine, -40)
-			local offset = self.chopper_offset
+			local leftFruit, rightFruit =  courseplay:side_to_drive(self, combine, -30)
+			local offset = self.combine_offset
 			if leftFruit > rightFruit then
 			  offset = self.chopper_offset*-1 -- *-1
 			end
-			self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, -7, 0, -5) --10, 0, -5)
+
+			self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, offset, 0, -5) --10, 0, -5)
       -- turn left
-		  self.turn_factor = 5 --??
+      if offset > 0 then
+		    self.turn_factor = 5 --??
+      else
+        self.turn_factor = -5 --??
+      end
 		  -- insert waypoint behind combine
 	    local next_x, next_y, next_z = localToWorld(self.rootNode, offset, 0, -15) -- -10
 			local next_wp = {x = next_x, y=next_y, z=next_z}
@@ -398,16 +417,17 @@ function courseplay:unload_combine(self, dt)
 		end
 
 
-		if not cornChopper and self.chopper_offset < 0 then
-			self.chopper_offset = self.chopper_offset * -1
-		end
+		
 
-    if combine.currentPipeState == 2 then
+    if isHarvester or combine.currentPipeState == 2 then
       local x, y, z = getWorldTranslation(combine.rootNode)
       xt, yt, zt = worldToLocal(combine.pipeRaycastNode, x, y, z)
-      currentX, currentY, currentZ = localToWorld(combine.rootNode, zt, 0, trailer_offset*2)      
+      if isHarvester then
+        zt = xt * -1
+      end
+      currentX, currentY, currentZ = localToWorld(combine.rootNode, zt, 0, trailer_offset+5)      
     else
-      currentX, currentY, currentZ = localToWorld(combine.rootNode, self.chopper_offset, 0, trailer_offset*2)      
+      currentX, currentY, currentZ = localToWorld(combine.rootNode, self.chopper_offset, 0, trailer_offset+5)      
     end
 
 	  
@@ -736,7 +756,7 @@ function courseplay:unload_combine(self, dt)
   -- check traffic and calculate speed
   if allowedToDrive then
 
-		allowedToDrive = courseplay:check_traffic(self, true, allowedToDrive)
+		
 		if self.sl == nil then
 			self.sl = 3
 		end
@@ -795,8 +815,11 @@ function courseplay:unload_combine(self, dt)
 	  	--	AIVehicleUtil.driveInDirection(self, dt, self.steering_angle, 0, 0, 28, false, moveForwards, lx, lz)
 		end
 
-		AIVehicleUtil.driveInDirection(self, dt, self.steering_angle, 0.5, 0.5, 8, allowedToDrive, true, target_x, target_z, self.sl, 0.4)
+
 		courseplay:set_traffc_collision(self, target_x, target_z)
+    allowedToDrive = courseplay:check_traffic(self, true, allowedToDrive)
+		AIVehicleUtil.driveInDirection(self, dt, self.steering_angle, 0.5, 0.5, 8, allowedToDrive, true, target_x, target_z, self.sl, 0.4)
+
 		 -- new
 	end
 

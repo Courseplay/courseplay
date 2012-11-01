@@ -1,7 +1,7 @@
 
 
 function courseplay:debug(string)
-  --print(string)
+  print(string)
 end
 
 -- debugging data dumper
