@@ -5,23 +5,23 @@
 	3 = important
 	4 = everything, most detailled
 ]]
-local currectDebugLevel = 4
+--local currectDebugLevel = 4
 
 function courseplay:debug(string, level)
-	if level ~= nil then
-		level = 0
-		if level <= currentDebugLevel then
-			print(string)
-		end
-	end
+--	if level ~= nil then
+--		level = 0
+--		if level <= currentDebugLevel then
+--			print(string)
+--		end
+--	end
 end
 
 -- debugging data dumper
 -- just for development and debugging
 function table.show(t, name, indent)
-	if currentDebugLevel < 4 then
-		return
-	end
+--	if currentDebugLevel < 4 then
+--		return
+--	end
 	
 	local cart     -- a container
 	local autoref  -- for self references
