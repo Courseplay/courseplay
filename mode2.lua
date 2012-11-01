@@ -756,7 +756,7 @@ function courseplay:unload_combine(self, dt)
   -- check traffic and calculate speed
   if allowedToDrive then
 
-		
+		allowedToDrive = courseplay:check_traffic(self, true, allowedToDrive)
 		if self.sl == nil then
 			self.sl = 3
 		end
@@ -817,7 +817,7 @@ function courseplay:unload_combine(self, dt)
 
 
 		courseplay:set_traffc_collision(self, target_x, target_z)
-    allowedToDrive = courseplay:check_traffic(self, true, allowedToDrive)
+
 		AIVehicleUtil.driveInDirection(self, dt, self.steering_angle, 0.5, 0.5, 8, allowedToDrive, true, target_x, target_z, self.sl, 0.4)
 
 		 -- new
