@@ -8,10 +8,11 @@
 local currectDebugLevel = 4
 
 function courseplay:debug(string, level)
-	if level == nil then level = 1 end
-	
-	if level <= currentDebugLevel then
-		print(string)
+	if level ~= nil then
+		level = 0
+		if level <= currentDebugLevel then
+			print(string)
+		end
 	end
 end
 
