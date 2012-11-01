@@ -731,7 +731,7 @@ function courseplay:unload_combine(self, dt)
     		end  
   
   			
-       --     print(string.format("distance: %d  dod: %d",distance,dod ))
+       --     courseplay:debug(string.format("distance: %d  dod: %d",distance,dod ), 3)
   
 	  	end
 
@@ -863,10 +863,10 @@ function courseplay:calculate_course_to(self, target_x, target_z)
 	else
 		local fruit_type = nil
 	end
-	--print(string.format("position x: %d z %d", x, z ))
+	--courseplay:debug(string.format("position x: %d z %d", x, z ))
 	local wp_counter = 0
 	local wps = CalcMoves(z, x, target_z, target_x, fruit_type)
-	--print(table.show(wps))
+	--courseplay:debug(table.show(wps), 1)
 	if wps ~= nil then
 		self.next_targets = {}
 		for _,wp in pairs(wps) do

@@ -28,7 +28,7 @@ function courseplay:reinit_courses(self)
 	if self.courseplay_courses ~= nil then
 	  g_currentMission.courseplay_courses = self.courseplay_courses
 	else
-	  print("courseplay_courses is empty")
+	  courseplay:debug("courseplay_courses is empty", 1)
 	  if g_server ~= nil then
 	    courseplay_manager:load_courses();
 	  end
@@ -70,8 +70,8 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
     
   	local course = g_currentMission.courseplay_courses[id]
   	if course == nil then
-  	  print("no course found")
-  	  return
+		courseplay:debug("no course found", 1)
+		return
   	end
   	if not use_real_id then
 
@@ -97,7 +97,7 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
 		
 		if add_course_at_end ~= true then
 			for number, course1_wp in pairs(course1_waypoints) do
-			  --print(number)
+			  --courseplay:debug(number, 3)
 			  	if course1_wp.crossing == true and course1_wp.merged == nil and wp_found == false and number > self.startlastload then
 			    -- go through the second course from behind!!
       			for number_2=1,table.getn(course2_waypoints) do
@@ -120,7 +120,7 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
 		end
 		
 		if wp_found == false then
-		  print("no waypoint found")
+		  courseplay:debug("no waypoint found", 2)
 		end
 		
 		self.Waypoints = {}
@@ -226,12 +226,12 @@ end
 
 
 function courseplay:load_courses()
-	print("try to load courses with old courseplay-function");
+	courseplay:debug("try to load courses with old courseplay-function", 1);
 	if true then
 	  return false;
 	end
 
-    print('loaded courses')
+	courseplay:debug('loaded courses', 1)
 	local finish_all = false
 	courseplay_coursesUnsort = {}
 	local path = getUserProfileAppPath() .. "savegame" .. g_careerScreen.selectedIndex .. "/"

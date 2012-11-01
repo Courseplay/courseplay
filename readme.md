@@ -168,7 +168,7 @@ Im unteren Bereich des HUDs findet ihr Infos über euren Abfahrer den geladenen 
          Wenn man einen Ladewagen anhängt wird der Kurs abgefahren bis dieser voll ist, dann wird die letzte Position gespeichert und der Kurs abgefahren. Der Kurs sollte dann natürlich an einem Abladetrigger vorbei führen. Dort wird der Wagen entleert und dann fährt er zurück zum Feld und setzt seine Arbeit am letzten Punkt fort.  
          Der Arbeitsbereich des Modus Feldarbeit muss wie im Düngemodus durch zwei Wartepunkte markiert werden.
 
-   * **Typ: Drescher färht selbst zum abtanken**  
+   * **Typ: Drescher fährt selbst zum abtanken**  
          Dieser Modus ist ähnlich dem des Überladewagens, nur eben für Drescher. Der Startpunkt der Route ist der Punkt den der Drescher anfährt wenn er den eingestellen Füllstand erreicht hat. Er fährt dann die Route bis zum 1. Wartepunkt ab. Am Wartepunkt tankt der Drescher ab und fährt, sobald er leer ist die Route weiter. Der Endpunkt der Route ist der Punkt an dem der Drescher den Helfer aktiviert. Wenn er bereits auf dieser Route gedroschen hat, fährt er nach dem abtanken den letzten Wegpunkt an und dann weiter an den Punkt an dem der Drescher weggefahren ist.
  
 

@@ -111,7 +111,7 @@ function courseplay:drive(self, dt)
 	if self.ai_mode == 6 then
 		if self.recordnumber > self.startWork and self.recordnumber < self.stopWork and self.recordnumber > 1 and self.WpOffsetX ~= nil and self.WpOffsetZ ~= nil and (self.WpOffsetX ~= 0 or self.WpOffsetZ ~= 0) then
 		--courseplay:addsign(self, cx, 10, cz)
-		--print(string.format("old WP: %d x %d ", cx, cz ))
+		--courseplay:debug(string.format("old WP: %d x %d ", cx, cz ), 2)
 
 		-- direction vector
 			local vcx, vcz
@@ -137,12 +137,12 @@ function courseplay:drive(self, dt)
 				cz  = cz + vcx * self.WpOffsetX + vcz * self.WpOffsetZ
 			end
 		end
-		--print(string.format("new WP: %d x %d (angle) %d ", cx, cz, angle ))
+		--courseplay:debug(string.format("new WP: %d x %d (angle) %d ", cx, cz, angle ), 2)
 		--courseplay:addsign(self, cx, 10, cz)
 	end  
   
 	self.dist = courseplay:distance(cx ,cz ,ctx ,ctz)
-  --print(string.format("Tx: %f2 Tz: %f2 WPcx: %f2 WPcz: %f2 dist: %f2 ", ctx, ctz, cx, cz, self.dist ))
+  --courseplay:debug(string.format("Tx: %f2 Tz: %f2 WPcx: %f2 WPcz: %f2 dist: %f2 ", ctx, ctz, cx, cz, self.dist ), 2)
   -- what about our tippers?
 	local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
 	local fill_level = nil
@@ -605,7 +605,7 @@ function courseplay:set_traffc_collision(self, lx, lz)
 	if colDirZ < -0.4 then
 		colDirZ = 0.4;
 	end;  
-  --print(string.format("colDirX: %f colDirZ %f ",colDirX,colDirZ ))	  
+  --courseplay:debug(string.format("colDirX: %f colDirZ %f ",colDirX,colDirZ ), 2)	  
 	  
 	if self.aiTrafficCollisionTrigger ~= nil and g_server ~= nil  then
 		local DirectionNode = nil;
@@ -621,11 +621,11 @@ end
 
 function courseplay:check_traffic(self, display_warnings, allowedToDrive)
   local in_traffic = false;
-  --print(table.show(self))
+  --courseplay:debug(table.show(self), 4)
   if self.numCollidingVehicles ~= nil then
   for k,v in pairs(self.numCollidingVehicles) do
          if v > 0 then
-              courseplay:debug("colliding")
+              courseplay:debug("colliding", 2)
               allowedToDrive = false;
               break;
           end;

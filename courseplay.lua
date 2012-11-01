@@ -13,9 +13,9 @@ courseplay_path = g_modsDirectory.."/ZZZ_courseplay/"
 working_course_players = {};
 
 function initialize_courseplay()
-	print("inizialized courseplay files")
+	courseplay:debug("inizialized courseplay files", 1)
 	-- starting & stopping of courseplay
-	print(courseplay_path.."start_stop.lua")
+	courseplay:debug(courseplay_path.."start_stop.lua", 1)
 	source(courseplay_path.."start_stop.lua")
 	-- course recording & resetting
 	source(courseplay_path.."recording.lua")

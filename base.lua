@@ -22,7 +22,7 @@ function courseplay:load(xmlFile)
 	  steerable_overwritten = true
 	  if Steerable.load ~= nil then
 		local orgSteerableLoad = Steerable.load
-		print("overwriting steerable.load")
+		courseplay:debug("overwriting steerable.load", 1)
 		Steerable.load = function(self,xmlFile)
 		orgSteerableLoad(self,xmlFile)
 		
@@ -37,7 +37,7 @@ function courseplay:load(xmlFile)
         end;
 
 	  if Attachable.load ~= nil then
-		print("overwriting Attachable.load")
+		courseplay:debug("overwriting Attachable.load", 1)
 		 local orgAttachableLoad = Attachable.load
 
 		 Attachable.load = function(self,xmlFile)
@@ -648,7 +648,7 @@ function courseplay:updateTick(dt)
 	end
 	
 	self.timer = self.timer + dt
-	--print(string.format("timer: %f", self.timer ))
+	--courseplay:debug(string.format("timer: %f", self.timer ), 2)
     
 end
 
@@ -669,7 +669,7 @@ end
 
 
 function courseplay:readStream(streamId, connection)
-  print("reading stream")
+  courseplay:debug("reading stream", 2)
   
   
   self.max_speed = streamDebugReadFloat32(streamId)
@@ -773,7 +773,7 @@ function courseplay:readStream(streamId, connection)
 end
 
 function courseplay:writeStream(streamId, connection)
-	print("writing stream")
+	courseplay:debug("writing stream", 2)
     
    
 
