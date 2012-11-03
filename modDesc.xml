@@ -530,6 +530,30 @@
 			<en>right mouse button</en>
 			<de>rechte Maustaste</de>
 		</text>
+		<text name="CPDebugLevel">
+			<en>Debug level</en>
+			<de>Debug-Level</de>
+		</text>
+		<text name="CPDebugLevel0">
+			<en>0: nothing</en>
+			<de>0: nichts</de>
+		</text>
+		<text name="CPDebugLevel1">
+			<en>1: not detailled</en>
+			<de>1: undetailliert</de>
+		</text>
+		<text name="CPDebugLevel2">
+			<en>2: semi-important</en>
+			<de>2: semi-wichtig</de>
+		</text>
+		<text name="CPDebugLevel3">
+			<en>3: important</en>
+			<de>3: wichtig</de>
+		</text>
+		<text name="CPDebugLevel4">
+			<en>4: everything (most detailled)</en>
+			<de>4: alles (detailliert)</de>
+		</text>
 	</l10n>
 
 	<extraSourceFiles>

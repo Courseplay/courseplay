@@ -73,7 +73,7 @@ function courseplay:update_combines(self)
     return
   end
   
-  courseplay:debug(string.format("combines total: %d ", table.getn(self.reachable_combines) ))
+  courseplay:debug(string.format("combines total: %d ", table.getn(self.reachable_combines) ), 4)
   
   local x, y, z = getWorldTranslation(self.aiTractorDirectionNode)
   local hx, hy, hz = localToWorld(self.aiTractorDirectionNode, -2, 0, 0)
@@ -82,7 +82,7 @@ function courseplay:update_combines(self)
   
   local found_combines = courseplay:find_combines(self)
   
-  courseplay:debug(string.format("combines found: %d ", table.getn(found_combines) ))
+  courseplay:debug(string.format("combines found: %d ", table.getn(found_combines) ), 4)
   -- go throuh found
   for k,combine in pairs(found_combines) do
   	 lx, ly, lz = getWorldTranslation(combine.rootNode)
@@ -101,7 +101,7 @@ function courseplay:update_combines(self)
   	 end
   end
   
-  courseplay:debug(string.format("combines reachable: %d ", table.getn(self.reachable_combines) ))
+  courseplay:debug(string.format("combines reachable: %d ", table.getn(self.reachable_combines) ), 4)
 end
 
 
@@ -176,8 +176,8 @@ function courseplay:register_at_combine(self, combine)
       self.combine_offset = xt*-1
   end
 
-  courseplay:debug("combine_offset:")
-  courseplay:debug( self.combine_offset)
+  courseplay:debug("combine_offset:", 4)
+  courseplay:debug(self.combine_offset, 4)
   
   return true
 end

@@ -203,7 +203,7 @@ function courseplay:unload_combine(self, dt)
 	if self.currentTrailerToFill ~= nil then
 		xt, yt, zt = worldToLocal(self.tippers[self.currentTrailerToFill].fillRootNode, x, y, z)
 	else
-    courseplay:debug("this should never happen - no currenTrailerToFillSet")
+		courseplay:debug("this should never happen - no currenTrailerToFillSet", 4)
 		xt, yt, zt = worldToLocal(self.tippers[1].rootNode, x, y, z)
 	end
 
@@ -863,10 +863,10 @@ function courseplay:calculate_course_to(self, target_x, target_z)
 	else
 		local fruit_type = nil
 	end
-	--courseplay:debug(string.format("position x: %d z %d", x, z ))
+	--courseplay:debug(string.format("position x: %d z %d", x, z ), 4)
 	local wp_counter = 0
 	local wps = CalcMoves(z, x, target_z, target_x, fruit_type)
-	--courseplay:debug(table.show(wps), 1)
+	--courseplay:debug(table.show(wps), 4)
 	if wps ~= nil then
 		self.next_targets = {}
 		for _,wp in pairs(wps) do

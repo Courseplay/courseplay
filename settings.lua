@@ -262,3 +262,12 @@ function courseplay:change_num_ai_helpers(self, change_by)
 	
 	g_currentMission.maxNumHirables = num_helpers
 end
+
+function courseplay:change_DebugLevel(change_by)
+	CPDebugLevel = CPDebugLevel + change_by
+	if CPDebugLevel == 5 then
+		CPDebugLevel = 0
+	end
+	--print('CPDebugLevel = '..CPDebugLevel)
+end
+

@@ -126,6 +126,10 @@ function courseplay:deal_with_mouse_input(self, func, value)
             courseplay:change_RulMode(self, value)
           end
           
+          if func == "change_DebugLevel" then
+            courseplay:change_DebugLevel(value)
+          end
+          
           if func == "change_use_speed" then
             courseplay:switch_use_speed(self)
           end

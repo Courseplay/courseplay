@@ -148,7 +148,7 @@ function AutoOvercharge:updateTick(dt)
 
 		if self:getIsActive() then
 			if self.trailerFoundId ~= nil and self.trailerFoundId ~= 0 then
-				courseplay:debug("AutoOvercharge trailer found!");
+				courseplay:debug("AutoOvercharge trailer found!", 3);
 				local trailer = g_currentMission.nodeToVehicle[self.trailerFoundId];
 				if trailer ~= nil and trailer ~= self and 
 					trailer.allowFillFromAir and trailer.capacity ~= trailer.fillLevel and

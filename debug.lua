@@ -5,23 +5,23 @@
 	3 = important
 	4 = everything, most detailled
 ]]
---local currectDebugLevel = 4
-
 function courseplay:debug(string, level)
---	if level ~= nil then
---		level = 0
---		if level <= currentDebugLevel then
---			print(string)
---		end
---	end
+	if level ~= nil then
+		level = 1 --when in doubt, print
+		if level <= CPDebugLevel then
+			--print('Global CPDebugLevel: '..CPDebugLevel..' / this Lvl: '..level)
+			print(string)
+		end
+	end
 end
 
 -- debugging data dumper
 -- just for development and debugging
 function table.show(t, name, indent)
---	if currentDebugLevel < 4 then
---		return
---	end
+	--only execute table.show if lvl == 4
+	if CPDebugLevel < 4 then
+		return
+	end
 	
 	local cart     -- a container
 	local autoref  -- for self references

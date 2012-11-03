@@ -8,14 +8,15 @@
 
 courseplay = {};
 courseplay_path = g_modsDirectory.."/ZZZ_courseplay/"
+CPDebugLevel = 0
 
 -- working tractors saved in this
 working_course_players = {};
 
 function initialize_courseplay()
-	print("inizialized courseplay files", 1)
+	print("inizialized courseplay files")
 	-- starting & stopping of courseplay
-	print(courseplay_path.."start_stop.lua", 1)
+	print(courseplay_path.."start_stop.lua")
 	source(courseplay_path.."start_stop.lua")
 	-- course recording & resetting
 	source(courseplay_path.."recording.lua")

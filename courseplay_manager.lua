@@ -4,7 +4,7 @@ local courseplay_manager_mt = Class(courseplay_manager);
 
 function courseplay_manager:loadMap(name)
   if g_currentMission.courseplay_courses == nil then
-    --courseplay:debug("courseplay courses was nil and initialized");
+	--courseplay:debug("courseplay courses was nil and initialized", 2);
     g_currentMission.courseplay_courses = {};
   
 	  courseplay_coursesUnsort = {}
@@ -25,14 +25,14 @@ function courseplay_manager:draw()
 
 end
 function courseplay_manager:update()
- --courseplay:debug(table.getn(g_currentMission.courseplay_courses));
+ --courseplay:debug(table.getn(g_currentMission.courseplay_courses), 4);
 end
 
 function courseplay_manager:keyEvent()
 end
 
 function courseplay_manager:load_courses()
-    courseplay:debug('loading courses by courseplay manager')
+	courseplay:debug('loading courses by courseplay manager', 3)
 	local finish_all = false
 	local path = getUserProfileAppPath() .. "savegame" .. g_careerScreen.selectedIndex .. "/"
    
@@ -152,11 +152,11 @@ stream_debug_counter = 0
 function streamDebugWriteFloat32(streamId, value)  
   value = Utils.getNoNil(value, 0.0)
   stream_debug_counter = stream_debug_counter +1
---courseplay:debug("++++++++++++++++") 
---courseplay:debug(stream_debug_counter)
+--courseplay:debug("++++++++++++++++", 4) 
+--courseplay:debug(stream_debug_counter, 4)
 --courseplay:debug("float: ")
---courseplay:debug(value)
---courseplay:debug("-----------------") 
+--courseplay:debug(value, 4)
+--courseplay:debug("-----------------", 4) 
   streamWriteFloat32(streamId, value)
 end
 
@@ -171,79 +171,79 @@ function streamDebugWriteBool(streamId, value)
 	end
 	
 	stream_debug_counter = stream_debug_counter +1
-	--courseplay:debug("++++++++++++++++") 
-    --courseplay:debug(stream_debug_counter)
-	--courseplay:debug("Bool: ")
-    --courseplay:debug(value)
-	--courseplay:debug("-----------------") 
+	--courseplay:debug("++++++++++++++++", 4) 
+    --courseplay:debug(stream_debug_counter, 4)
+	--courseplay:debug("Bool: ", 4)
+    --courseplay:debug(value, 4)
+	--courseplay:debug("-----------------", 4) 
 	streamWriteBool(streamId, value)
 end
 
 function streamDebugWriteInt32(streamId, value)
 value = Utils.getNoNil(value, 0)
 stream_debug_counter = stream_debug_counter +1
---courseplay:debug("++++++++++++++++") 
---courseplay:debug(stream_debug_counter)
---courseplay:debug("Int32: ")
---courseplay:debug(value)
---courseplay:debug("-----------------") 
+--courseplay:debug("++++++++++++++++", 4) 
+--courseplay:debug(stream_debug_counter, 4)
+--courseplay:debug("Int32: ", 4)
+--courseplay:debug(value, 4)
+--courseplay:debug("-----------------", 4) 
   streamWriteInt32(streamId, value)
 end
 
 function streamDebugWriteString(streamId, value)
 value = Utils.getNoNil(value, "")
 stream_debug_counter = stream_debug_counter +1
---courseplay:debug("++++++++++++++++") 
---courseplay:debug(stream_debug_counter)
---courseplay:debug("String: ")
---courseplay:debug(value)
---courseplay:debug("-----------------") 
+--courseplay:debug("++++++++++++++++", 4) 
+--courseplay:debug(stream_debug_counter, 4)
+--courseplay:debug("String: ", 4)
+--courseplay:debug(value, 4)
+--courseplay:debug("-----------------", 4) 
   streamWriteString(streamId, value)
 end
 
 
 function streamDebugReadFloat32(streamId)
 stream_debug_counter = stream_debug_counter +1
---courseplay:debug("++++++++++++++++") 
---courseplay:debug(stream_debug_counter)
+--courseplay:debug("++++++++++++++++", 4) 
+--courseplay:debug(stream_debug_counter, 4)
   local value = streamReadFloat32(streamId)
---courseplay:debug("Float32: ")
---courseplay:debug(value)
---courseplay:debug("-----------------") 
+--courseplay:debug("Float32: ", 4)
+--courseplay:debug(value, 4)
+--courseplay:debug("-----------------", 4) 
   return value
 end
 
 
 function streamDebugReadInt32(streamId)
 stream_debug_counter = stream_debug_counter +1
---courseplay:debug("++++++++++++++++") 
---courseplay:debug(stream_debug_counter)
+--courseplay:debug("++++++++++++++++", 4) 
+--courseplay:debug(stream_debug_counter, 4)
 local value = streamReadInt32(streamId)
---courseplay:debug("Int32: ")
---courseplay:debug(value)
---courseplay:debug("-----------------") 
+--courseplay:debug("Int32: ", 4)
+--courseplay:debug(value, 4)
+--courseplay:debug("-----------------", 4) 
 return value
 end
 
 function streamDebugReadBool(streamId)
 stream_debug_counter = stream_debug_counter +1
---courseplay:debug("++++++++++++++++") 
---courseplay:debug(stream_debug_counter)
+--courseplay:debug("++++++++++++++++", 4) 
+--courseplay:debug(stream_debug_counter, 4)
 local value = streamReadBool(streamId)
---courseplay:debug("Bool: ")
---courseplay:debug(value)
---courseplay:debug("-----------------") 
+--courseplay:debug("Bool: ", 4)
+--courseplay:debug(value, 4)
+--courseplay:debug("-----------------", 4) 
 return value
 end
 
 function streamDebugReadString(streamId)
 stream_debug_counter = stream_debug_counter +1
---courseplay:debug("++++++++++++++++") 
---courseplay:debug(stream_debug_counter)
+--courseplay:debug("++++++++++++++++", 4) 
+--courseplay:debug(stream_debug_counter, 4)
 local value = streamReadString(streamId)
---courseplay:debug("String: ")
---courseplay:debug(value)
---courseplay:debug("-----------------") 
+--courseplay:debug("String: ", 4)
+--courseplay:debug(value, 4)
+--courseplay:debug("-----------------", 4) 
 return value
 end
 
@@ -289,7 +289,7 @@ function CourseplayJoinFixEvent:writeStream(streamId, connection)
 	
 	
     if not connection:getIsServer() then
-	--courseplay:debug("manager transfering courses");
+	--courseplay:debug("manager transfering courses", 4);
 	  --transfer courses
 	    local course_count = table.getn(g_currentMission.courseplay_courses)
 	    
@@ -313,20 +313,20 @@ end;
 
 function CourseplayJoinFixEvent:readStream(streamId, connection)
     if connection:getIsServer() then
-	--courseplay:debug("manager receiving courses");
+	--courseplay:debug("manager receiving courses", 4);
 	  -- course count
 	  local course_count = streamDebugReadInt32(streamId)
-	  --courseplay:debug("manager reading stream");
-	  --courseplay:debug(course_count);
+	  --courseplay:debug("manager reading stream", 4);
+	  --courseplay:debug(course_count, 4);
 	  g_currentMission.courseplay_courses = {}
 	  for i=1, course_count do
-	    --courseplay:debug("got course");
+		--courseplay:debug("got course", 4);
 	    local course_name = streamDebugReadString(streamId)
 	    local course_id = streamDebugReadInt32(streamId)
 	    local wp_count = streamDebugReadInt32(streamId)
 	  	local  waypoints = {}
 	  	for w=1, wp_count do    
-		  --courseplay:debug("got waypoint");
+		  --courseplay:debug("got waypoint", 4);
 	  	  local cx = streamDebugReadFloat32(streamId)
 	  	  local cz = streamDebugReadFloat32(streamId)
 	  	  local angle = streamDebugReadFloat32(streamId)
@@ -344,6 +344,6 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 end;
 
 function CourseplayJoinFixEvent:run(connection)
-    --courseplay:debug("CourseplayJoinFixEvent Run function should never be called");
+	--courseplay:debug("CourseplayJoinFixEvent Run function should never be called", 4);
 end;
 
