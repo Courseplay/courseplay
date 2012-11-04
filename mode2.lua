@@ -302,7 +302,7 @@ function courseplay:unload_combine(self, dt)
 				self.next_ai_state = 2			
 			end
 			
-		 end
+		end
        		
      local lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, currentX, currentY, currentZ) 
      dod = Utils.vector2Length(lx, lz)
@@ -336,30 +336,28 @@ function courseplay:unload_combine(self, dt)
 	  local tX, tY, tZ = nil, nil, nil
 
 		if cornChopper then
-		  tX, tY, tZ = localToWorld(combine.rootNode, offset_to_chopper, 0, -20) -- offste *0.6     !????????????
+		  tX, tY, tZ = localToWorld(combine.rootNode, self.combine_offset * 0.6, 0, -15) -- offste *0.6     !????????????
 	  else
-	   	if not isHarvester and offset_to_chopper < 0 then
-				offset_to_chopper = offset_to_chopper * -1
+	   	if not isHarvester and self.combine_offset < 0 then
+				self.combine_offset = self.combine_offset * -1
 			end
-    	tX, tY, tZ = localToWorld(combine.rootNode, offset_to_chopper, 0, -5)
+    	tX, tY, tZ = localToWorld(combine.rootNode, self.combine_offset, 0, -5)
 	  end
-	  
-    currentX, currentZ = tX, tZ
 
-    local ttX, ttY, ttZ = nil, nil, nil
-	  local lx, ly, lz = nil, nil, nil
-    ttX, ttY, ttZ = localToWorld(combine.rootNode, offset_to_chopper, 0, trailer_offset)
-			
-		if combine.attachedImplements ~= nil then
+    if combine.attachedImplements ~= nil then
 			for k,i in pairs(combine.attachedImplements) do
 				local implement = i.object;
 				if implement.haeckseldolly == true then
-					ttX, ttY, ttZ = localToWorld(implement.rootNode, offset_to_chopper, 0, trailer_offset)
+					tX, tY, tZ = localToWorld(implement.rootNode, self.combine_offset, 0, trailer_offset)
 				end 
 			end
 		end
+	  
+    currentX, currentZ = tX, tZ
+
+	  local lx, ly, lz = nil, nil, nil
 		
-	  lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, ttX, y, ttZ)
+	  lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, tX, y, tZ)
 
 	  if currentX ~= nil and currentZ ~= nil then
 	   	local lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, currentX, y, currentZ)
@@ -831,6 +829,10 @@ function courseplay:unload_combine(self, dt)
 end
 
 function courseplay:calculate_course_to(self, target_x, target_z)
+  -- TODO disabeld a* Pathfinding
+  return false
+
+
 	self.calculated_course = true
 	-- check if there is fruit between me and the target, return false if not to avoid the calculating
 	local node = nil
