@@ -373,9 +373,10 @@ self.CPnumCollidingVehicles = 0;
 	-- combines	
 	self.reachable_combines = {}
 	self.active_combine = nil
-	self.combine_offset = 8
-	self.chopper_offset = 8
-	self.tipper_offset = 8
+
+	self.combine_offset = 0.0
+  self.tipper_offset = 0.0
+	
 	self.forced_side = nil
 	self.forced_to_stop = false
 	
@@ -486,17 +487,17 @@ self.CPnumCollidingVehicles = 0;
       end
     end
     
-    --courseplay:register_button(self, 3, "navigate_minus.dds", "change_combine_offset", -0.1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.210, 0.010, 0.010)
-    --courseplay:register_button(self, 3, "navigate_plus.dds", "change_combine_offset", 0.1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.210, 0.010, 0.010)
+    courseplay:register_button(self, 3, "navigate_minus.dds", "change_combine_offset", -0.5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.210, 0.010, 0.010)
+    courseplay:register_button(self, 3, "navigate_plus.dds", "change_combine_offset", 0.5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.210, 0.010, 0.010)
     
-    courseplay:register_button(self, 3, "navigate_minus.dds", "change_required_fill_level", -5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY +0.188, 0.010, 0.010)
-    courseplay:register_button(self, 3, "navigate_plus.dds", "change_required_fill_level", 5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.188, 0.010, 0.010)
+    courseplay:register_button(self, 3, "navigate_minus.dds", "change_tipper_offset", -0.5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY +0.188, 0.010, 0.010)
+    courseplay:register_button(self, 3, "navigate_plus.dds", "change_tipper_offset", 0.5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.188, 0.010, 0.010)
     
     courseplay:register_button(self, 3, "navigate_minus.dds", "change_turn_radius", -1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY +0.167, 0.010, 0.010)
     courseplay:register_button(self, 3, "navigate_plus.dds", "change_turn_radius", 1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.167, 0.010, 0.010)
     
-    --courseplay:register_button(self, 3, "navigate_minus.dds", "change_tipper_offset", -0.5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.146, 0.010, 0.010)
-    --courseplay:register_button(self, 3, "navigate_plus.dds", "change_tipper_offset", 0.5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.146, 0.010, 0.010)
+    courseplay:register_button(self, 3, "navigate_minus.dds", "change_required_fill_level", -5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.146, 0.010, 0.010)
+    courseplay:register_button(self, 3, "navigate_plus.dds", "change_required_fill_level", 5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.146, 0.010, 0.010)
     
     courseplay:register_button(self, 3, "navigate_minus.dds", "change_required_fill_level_for_drive_on", -5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.123, 0.010, 0.010)
     courseplay:register_button(self, 3, "navigate_plus.dds", "change_required_fill_level_for_drive_on", 5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.123, 0.010, 0.010)
@@ -884,9 +885,9 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		self.use_speed = Utils.getNoNil(getXMLBool(xmlFile,key..string.format("#use_speed")),false);
 		self.turn_speed = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#turn_speed")),10 / 3600);
 		self.field_speed = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#field_speed")),24 / 3600);
-		self.tipper_offset = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#tipper_off")),8);
-		self.combine_offset = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#combine_off")),8);
-		self.chopper_offset = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#combine_off")),8);
+		self.tipper_offset = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#tipper_offset")),0);
+		self.combine_offset = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#combine_offset")),0);
+
 		self.required_fill_level_for_follow = Utils.getNoNil(getXMLInt(xmlFile,key..string.format("#fill_follow")),50);
 		self.required_fill_level_for_drive_on = Utils.getNoNil(getXMLInt(xmlFile,key..string.format("#fill_drive")),90);
 		self.WpOffsetX = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#OffsetX")),0);
@@ -918,15 +919,15 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 		' use_speed="'..tostring(self.use_speed)..'"'..
 		' turn_speed="'..tostring(self.turn_speed)..'"'..
         ' field_speed="'..tostring(self.field_speed)..'"'..
-        ' tipper_off="'..tostring(self.tipper_offset)..'"'..
-        ' combine_off="'..tostring(self.combine_offset)..'"'..
+        ' tipper_offset="'..tostring(self.tipper_offset)..'"'..
+        ' combine_offset="'..tostring(self.combine_offset)..'"'..
         ' fill_follow="'..tostring(self.required_fill_level_for_follow)..'"'..
         ' fill_drive="'..tostring(self.required_fill_level_for_drive_on)..'"'..
         ' OffsetX="'..tostring(self.WpOffsetX)..'"'..
         ' OffsetZ="'..tostring(self.WpOffsetZ)..'"'..
         ' AbortWork="'..tostring(self.abortWork)..'"'..
         ' turn="'..tostring(self.turn_radius)..'"'..
-	' waitTime="'..tostring(self.waitTime)..'"'..
+    	' waitTime="'..tostring(self.waitTime)..'"'..
         ' courses="'..tostring(table.concat(self.loaded_courses, ","))..'"'..
         ' mouse_right_key_enabled="'..tostring(mouse_right_key_enabled)..'"'..
 		' ai_mode="'..tostring(self.ai_mode)..'"';

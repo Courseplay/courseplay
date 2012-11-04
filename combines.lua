@@ -152,32 +152,34 @@ function courseplay:register_at_combine(self, combine)
   self.courseplay_position = table.getn(combine.courseplayers)
   self.active_combine = combine  	     
   
-  self.combine_offset = 6
+  if math.floor(self.combine_offset) == 0 then
  
-  local leftMarker = nil
-  local currentCutter = nil
+    local leftMarker = nil
+    local currentCutter = nil
 
-  for cutter,implement in pairs(combine.attachedCutters) do
-    if cutter.aiLeftMarker ~= nil then
-       if leftMarker == nil then
-          leftMarker = cutter.aiLeftMarker;
-          currentCutter = cutter
-          local x, y, z = getWorldTranslation(currentCutter.rootNode)
-          xt, yt, zt = worldToLocal(leftMarker, x, y, z)
+    for cutter,implement in pairs(combine.attachedCutters) do
+      if cutter.aiLeftMarker ~= nil then
+         if leftMarker == nil then
+            leftMarker = cutter.aiLeftMarker;
+            currentCutter = cutter
+            local x, y, z = getWorldTranslation(currentCutter.rootNode)
+            xt, yt, zt = worldToLocal(leftMarker, x, y, z)
 
-          self.combine_offset = xt + 2.5;
-        end;
-       end;
-   end;
+            self.combine_offset = xt + 2.5;
+          end;
+         end;
+     end;
 
-  if combine.typeName == "selfPropelledPotatoHarvester" then
-      local x, y, z = getWorldTranslation(combine.rootNode)
-      xt, yt, zt = worldToLocal(combine.pipeRaycastNode, x, y, z)
-      self.combine_offset = xt*-1
+    if combine.typeName == "selfPropelledPotatoHarvester" then
+        local x, y, z = getWorldTranslation(combine.rootNode)
+        xt, yt, zt = worldToLocal(combine.pipeRaycastNode, x, y, z)
+        self.combine_offset = xt*-1
+    end
+
+    courseplay:debug("manually setting combine_offset:", 4)
+    courseplay:debug(self.combine_offset, 4)
+
   end
-
-  courseplay:debug("combine_offset:", 4)
-  courseplay:debug(self.combine_offset, 4)
   
   return true
 end

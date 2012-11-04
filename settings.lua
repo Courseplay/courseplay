@@ -61,18 +61,7 @@ end
 
 
 function courseplay:change_combine_offset(self, change_by)
-  self.combine_offset = self.combine_offset + change_by
-  
-  if self.combine_offset < 0 then
-    self.combine_offset = 0
-  end
-  
-  if self.chopper_offset > 0 then
-    self.chopper_offset = self.combine_offset
-  else
-    self.chopper_offset = self.combine_offset * -1
-  end
-  
+  self.combine_offset = self.combine_offset + change_by  
 end
 
 function courseplay:change_tipper_offset(self, change_by)

@@ -68,7 +68,7 @@ function courseplay:handle_mode2(self, dt)
   
   -- switch side
 	if self.active_combine ~= nil and (self.ai_state == 10 or self.active_combine.turnAP ~= nil and self.active_combine.turnAP == true) then
-    	if self.chopper_offset > 0 then
+    	if self.combine_offset > 0 then
   			self.target_x, self.target_y, self.target_z = localToWorld(self.active_combine.rootNode, 25, 0, 0)
   		else
   			self.target_x, self.target_y, self.target_z = localToWorld(self.active_combine.rootNode, -25, 0, 0)
@@ -84,13 +84,13 @@ function courseplay:handle_mode2(self, dt)
       		self.currentTrailerToFill = nil
 			--courseplay:unregister_at_combine(self, self.active_combine)  
       		if self.ai_state ~= 5 then			
-			    if self.chopper_offset > 0 then
-					self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 10, 0, 0)
-				else
-					self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, -10, 0, 0)
-				end
-				self.ai_state = 5
-				self.next_ai_state = 81
+			      if self.combine_offset > 0 then
+					    self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 10, 0, 0)
+				    else
+					    self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, -10, 0, 0)
+				    end
+				    self.ai_state = 5
+				    self.next_ai_state = 81
       		end
     	end
   	end
@@ -236,12 +236,12 @@ function courseplay:unload_combine(self, dt)
 		cornChopper = true
 	end
 
-  if not cornChopper and self.chopper_offset < 0 then
-    self.chopper_offset = self.chopper_offset * -1 
+  if not cornChopper and self.combine_offset < 0 then
+    self.combine_offset = self.combine_offset * -1 
   end
 
-  if isHarvester and self.chopper_offset > 0 then
-    self.chopper_offset = self.chopper_offset * -1
+  if isHarvester and self.combine_offset > 0 then
+    self.combine_offset = self.combine_offset * -1
   end
 
 	if mode == 2 or mode == 3 or mode == 4 then
@@ -253,9 +253,9 @@ function courseplay:unload_combine(self, dt)
 
 	
 
-  local offset_to_chopper = self.chopper_offset
+  local offset_to_chopper = self.combine_offset
 	if combine.turnStage ~= 0 then
-	    offset_to_chopper = self.chopper_offset * 1.6 --1,3
+	    offset_to_chopper = self.combine_offset * 1.6 --1,3
 	end
 
 
@@ -312,15 +312,17 @@ function courseplay:unload_combine(self, dt)
       
 			if cornChopper then -- decide on which side to drive based on ai-combine
 	    	local leftFruit, rightFruit =  courseplay:side_to_drive(self, combine, 35)
-	    	local last_offset = self.chopper_offset
-			  self.chopper_offset = self.combine_offset
+	    	local last_offset = self.combine_offset
+			  
         if leftFruit > rightFruit then
-	    		self.chopper_offset = self.combine_offset * -1
+          if self.combine_offset > 0 then
+	    		  self.combine_offset = self.combine_offset * -1
+          end
 	    	elseif leftFruit == rightFruit then
-	     		self.chopper_offset = last_offset * -1
+          if self.combine_offset < 0 then
+	     		  self.combine_offset = self.combine_offset * -1
+          end
 	    	end
-      else
-        self.chopper_offset = self.combine_offset
 	    end
       mode = 4
 	  end
@@ -389,7 +391,7 @@ function courseplay:unload_combine(self, dt)
 			local leftFruit, rightFruit =  courseplay:side_to_drive(self, combine, -30)
 			local offset = self.combine_offset
 			if leftFruit > rightFruit then
-			  offset = self.chopper_offset*-1 -- *-1
+			  offset = self.combine_offset*-1 -- *-1
 			end
 
 			self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, offset, 0, -5) --10, 0, -5)
@@ -427,7 +429,7 @@ function courseplay:unload_combine(self, dt)
       end
       currentX, currentY, currentZ = localToWorld(combine.rootNode, zt, 0, trailer_offset+5)      
     else
-      currentX, currentY, currentZ = localToWorld(combine.rootNode, self.chopper_offset, 0, trailer_offset+5)      
+      currentX, currentY, currentZ = localToWorld(combine.rootNode, self.combine_offset, 0, trailer_offset+5)      
     end
 
 	  
@@ -507,12 +509,12 @@ function courseplay:unload_combine(self, dt)
 				self.leftFruit, self.rightFruit = courseplay:side_to_drive(self, combine, -40)
 --			self.leftFruit, self.rightFruit = courseplay:side_to_drive(self, combine, -40)
 
-				self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, self.chopper_offset, 0, self.turn_radius)
+				self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, self.combine_offset, 0, self.turn_radius)
 				self.turn_factor = -5
 				
-				courseplay:set_next_target(self, self.chopper_offset*2, 0, 0)
+				courseplay:set_next_target(self, self.combine_offset*2, 0, 0)
 
-				courseplay:set_next_target(self, self.chopper_offset, 0, self.turn_radius*-1)				
+				courseplay:set_next_target(self, self.combine_offset, 0, self.turn_radius*-1)				
 
 				--courseplay:set_next_target(self, 0, 0, self.turn_radius)
 
@@ -650,11 +652,14 @@ function courseplay:unload_combine(self, dt)
 
 					-- only for corn choppers
 					if cornChopper then
-			  		local last_offset = self.chopper_offset
 			  	  if self.leftFruit > self.rightFruit then
-			  	   	self.chopper_offset = self.combine_offset * -1
+              if self.combine_offset > 0 then
+			  	   	  self.combine_offset = self.combine_offset * -1
+              end
 			  	  elseif self.leftFruit == self.rightFruit then
-			  	    self.chopper_offset = last_offset * -1
+			  	    if self.combine_offset < 0 then
+			  	   	  self.combine_offset = self.combine_offset * -1
+              end
 			  	  end
 
   				 	self.next_ai_state = 2						
