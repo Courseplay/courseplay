@@ -400,7 +400,7 @@ function courseplay:unload_combine(self, dt)
 
 			self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, offset, 0, -5) --10, 0, -5)
       -- turn left
-      if offset > 0 then
+      if offset < 0 then
 		    self.turn_factor = 5 --??
       else
         self.turn_factor = -5 --??
