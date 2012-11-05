@@ -386,36 +386,11 @@ function courseplay:unload_combine(self, dt)
 	  end
 
 	  if combine_fill_level == 0 then --combine empty set waypoint 30 meters behind combine
-			local leftFruit, rightFruit =  courseplay:side_to_drive(self, combine, 10)
-			local offset = self.combine_offset
-			if leftFruit > rightFruit then
-        if offset > 0 then
-          offset = offset * -1
-        end
-			else
-        if offset < 0 then
-          offset = offset * -1
-        end
-			end
 
-			self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, offset, 0, -5) --10, 0, -5)
-      -- turn left
-      if offset < 0 then
-		    self.turn_factor = 5 --??
-      else
-        self.turn_factor = -5 --??
-      end
-
-		  -- insert waypoint behind combine
-	    local next_x, next_y, next_z = localToWorld(self.rootNode, offset, 0, -15) -- -10
-			local next_wp = {x = next_x, y=next_y, z=next_z}
-			table.insert(self.next_targets, next_wp)
-			-- insert another point behind combine
-	    next_x, next_y, next_z = localToWorld(self.rootNode, offset, 0, -30) -- -30
-	    local next_wp = {x = next_x, y=next_y, z=next_z}
-			table.insert(self.next_targets, next_wp)
+			self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, self.combine_offset, 0, -15) --10, 0, -5)
+      courseplay:set_next_target(self, self.combine_offset*-1, -30)     
 			
-			mode = 9 -- turn around and then wait for next start
+			mode = 5 -- turn around and then wait for next start
 	    if tipper_percentage >= self.required_fill_level_for_drive_on then
 	      self.loaded = true
 	    else				
@@ -480,9 +455,9 @@ function courseplay:unload_combine(self, dt)
 	  -- refspeed depends on the distance to the combine
 	  local combine_speed = combine.lastSpeed
 
-    if lz > 2 then
+    if lz > 5 then
       refSpeed = self.field_speed
-    elseif lz < -2 then
+    elseif lz < -3 then
       refSpeed = combine_speed/2
     else
       refSpeed = combine_speed 

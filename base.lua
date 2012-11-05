@@ -385,7 +385,7 @@ self.CPnumCollidingVehicles = 0;
 	self.required_fill_level_for_drive_on = 90
 	
 	self.turn_factor = nil
-	self.turn_radius = 17
+	self.turn_radius = 8
 	
 	self.WpOffsetX = 0
 	self.WpOffsetZ = 0
@@ -895,7 +895,7 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		self.WpOffsetZ = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#OffsetZ")),0);
 		self.waitTime = Utils.getNoNil(getXMLFloat(xmlFile,key..string.format("#waitTime")),0);
 		self.abortWork = Utils.getNoNil(getXMLInt(xmlFile,key..string.format("#AbortWork")),nil);
-		self.turn_radius = Utils.getNoNil(getXMLInt(xmlFile,key..string.format("#turn")),17);
+		self.turn_radius = Utils.getNoNil(getXMLInt(xmlFile,key..string.format("#turn_radius")),8);
 		local courses = Utils.getNoNil(getXMLString(xmlFile,key..string.format("#courses")),"");
 		self.loaded_courses = courses:split(",")
 		self.selected_course_number = 0
@@ -926,7 +926,7 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
         ' OffsetX="'..tostring(self.WpOffsetX)..'"'..
         ' OffsetZ="'..tostring(self.WpOffsetZ)..'"'..
         ' AbortWork="'..tostring(self.abortWork)..'"'..
-        ' turn="'..tostring(self.turn_radius)..'"'..
+        ' turn_radius="'..tostring(self.turn_radius)..'"'..
     	' waitTime="'..tostring(self.waitTime)..'"'..
         ' courses="'..tostring(table.concat(self.loaded_courses, ","))..'"'..
         ' mouse_right_key_enabled="'..tostring(mouse_right_key_enabled)..'"'..
