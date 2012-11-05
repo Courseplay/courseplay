@@ -8,17 +8,17 @@ end
 function courseplay:infotext(self)
 	if self.isEntered then
 		if self.info_text ~= nil then
-			renderText(self.hudInfoBasePosX+0.005,self.hudInfoBasePosY+0.002,0.02, self.info_text);
+			renderText(self.hudInfoBasePosX + 0.005, self.hudInfoBasePosY + 0.002, 0.02, self.info_text);
 		end
 	end
-	
+
 	if self.global_info_text ~= nil then
 		local yspace = self.working_course_player_num * 0.022
 		local show_name = ""
 		if self.name ~= nil then
 			show_name = self.name
 		end
-		renderText(0.1, yspace ,0.02, show_name .. " " .. self.global_info_text);
+		renderText(0.1, yspace, 0.02, show_name .. " " .. self.global_info_text);
 	end
 	self.info_text = nil
 	self.global_info_text = nil
