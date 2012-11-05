@@ -85,9 +85,9 @@ function courseplay:handle_mode2(self, dt)
 			--courseplay:unregister_at_combine(self, self.active_combine)  
       		if self.ai_state ~= 5 then			
 			      if self.combine_offset > 0 then
-					    self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 10, 0, 0)
+					    self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, self.turn_radius, 0, self.turn_radius)
 				    else
-					    self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, -10, 0, 0)
+					    self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, -self.turn_radius, 0, self.turn_radius)
 				    end
 				    self.ai_state = 5
 				    self.next_ai_state = 81
@@ -405,6 +405,7 @@ function courseplay:unload_combine(self, dt)
       else
         self.turn_factor = -5 --??
       end
+
 		  -- insert waypoint behind combine
 	    local next_x, next_y, next_z = localToWorld(self.rootNode, offset, 0, -15) -- -10
 			local next_wp = {x = next_x, y=next_y, z=next_z}
@@ -670,7 +671,7 @@ function courseplay:unload_combine(self, dt)
 		  	    	self.info_text =courseplay:get_locale(self, "CPWaitUntilCombineTurned") --  ""
 				elseif self.next_ai_state == 81 then -- tipper turning from combine
 				  
-				    self.recordnumber = 2
+				  self.recordnumber = 2
 					courseplay:unregister_at_combine(self, self.active_combine)   
 					self.ai_state = 0
 					self.loaded = true
