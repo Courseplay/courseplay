@@ -309,37 +309,13 @@ function courseplay:loadHud(self)
 			self.hudpage[6][1][5] = courseplay:get_locale(self, "DebugLevel")
 
 			-- wapyointMode
-			if self.waypointMode == 1 then
-				self.hudpage[6][2][3] = courseplay:get_locale(self, "WaypointMode1") -- "Wegpunkte+Kreuzungspunkte Record"
-			elseif self.waypointMode == 2 then
-				self.hudpage[6][2][3] = courseplay:get_locale(self, "WaypointMode2") -- "Wegpunkte+Kreuzungspunkte immer"
-			elseif self.waypointMode == 3 then
-				self.hudpage[6][2][3] = courseplay:get_locale(self, "WaypointMode3") -- "Komplette Route"
-			elseif self.waypointMode == 4 then
-				self.hudpage[6][2][3] = courseplay:get_locale(self, "WaypointMode4") -- "Komplette Route + all Crosspoints"
-			elseif self.waypointMode == 5 then
-				self.hudpage[6][2][3] = courseplay:get_locale(self, "WaypointMode5") -- "Komplette Route + all Crosspoints"
-			end
+			self.hudpage[6][2][3] = courseplay:get_locale(self, "WaypointMode" .. string.format("%d", self.waypointMode))
 
-			if self.RulMode == 1 then
-				self.hudpage[6][2][4] = courseplay:get_locale(self, "RulMode1") -- "on Street on"
-			elseif self.RulMode == 2 then
-				self.hudpage[6][2][4] = courseplay:get_locale(self, "RulMode2") -- "always on"
-			elseif self.RulMode == 3 then
-				self.hudpage[6][2][4] = courseplay:get_locale(self, "RulMode3") -- "never on"
-			end
-
-			if CPDebugLevel == 0 then
-				self.hudpage[6][2][5] = courseplay:get_locale(self, "DebugLevel0") -- "0: nothing"
-			elseif CPDebugLevel == 1 then
-				self.hudpage[6][2][5] = courseplay:get_locale(self, "DebugLevel1") -- "1"
-			elseif CPDebugLevel == 2 then
-				self.hudpage[6][2][5] = courseplay:get_locale(self, "DebugLevel2") -- "2"
-			elseif CPDebugLevel == 3 then
-				self.hudpage[6][2][5] = courseplay:get_locale(self, "DebugLevel3") -- "3"
-			elseif CPDebugLevel == 4 then
-				self.hudpage[6][2][5] = courseplay:get_locale(self, "DebugLevel4") -- "4: everything, most detailed"
-			end
+			--RUL mode
+			self.hudpage[6][2][4] = courseplay:get_locale(self, "RulMode" .. string.format("%d", self.RulMode))
+			
+			--Debug Level
+			self.hudpage[6][2][5] = courseplay:get_locale(self, "DebugLevel" .. string.format("%d", CPDebugLevel))
 
 
 		elseif self.showHudInfoBase == 7 then
@@ -378,22 +354,8 @@ function courseplay:showHud(self)
 
 		courseplay:render_buttons(self, self.showHudInfoBase)
 
-		if self.ai_mode == 1 then
-			self.hudinfo[1] = courseplay:get_locale(self, "CourseMode1")
-		elseif self.ai_mode == 2 then
-			self.hudinfo[1] = courseplay:get_locale(self, "CourseMode2")
-		elseif self.ai_mode == 3 then
-			self.hudinfo[1] = courseplay:get_locale(self, "CourseMode3")
-		elseif self.ai_mode == 4 then
-			self.hudinfo[1] = courseplay:get_locale(self, "CourseMode4")
-		elseif self.ai_mode == 5 then
-			self.hudinfo[1] = courseplay:get_locale(self, "CourseMode5")
-		elseif self.ai_mode == 6 then
-			self.hudinfo[1] = courseplay:get_locale(self, "CourseMode6")
-		elseif self.ai_mode == 7 then
-			self.hudinfo[1] = courseplay:get_locale(self, "CourseMode7")
-		elseif self.ai_mode == 8 then
-			self.hudinfo[1] = courseplay:get_locale(self, "CourseMode8")
+		if self.ai_mode > 0 and self.ai_mode < 9 then
+			self.hudinfo[1] = courseplay:get_locale(self, "CourseMode" .. string.format("%d", self.ai_mode))
 		else
 			self.hudinfo[1] = "---"
 		end
