@@ -63,11 +63,11 @@ function courseplay:drive(self, dt)
 				self.maxnumber  = table.getn(self.Waypoints)
                 courseplay:start(self)
 				self.recordnumber = 2
-				if courseplay:calculate_course_to(self, self.Waypoints[2].cx, self.Waypoints[2].cz) then
+				--if courseplay:calculate_course_to(self, self.Waypoints[2].cx, self.Waypoints[2].cz) then
 					self.ai_state = 5				
-				else -- fallback if no course could be calculated
-					self.ai_state = 5
-    			end
+				--else -- fallback if no course could be calculated
+				--	self.ai_state = 5
+    		--	end
 	            self.maxnumber  = table.getn(self.Waypoints)
 			else
 		        return

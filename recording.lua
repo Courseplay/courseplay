@@ -61,7 +61,7 @@ function courseplay:record(self)
 end;
 
 function courseplay:set_next_target(self, x, z)
-    local next_x, next_y, next_z = localToWorld(self.rootNode, x, 0, z)
+  local next_x, next_y, next_z = localToWorld(self.rootNode, x, 0, z)
 	local next_wp = {x = next_x, y=next_y, z=next_z}
 	table.insert(self.next_targets, next_wp) 
 end
