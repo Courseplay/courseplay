@@ -187,19 +187,21 @@ function courseplay:unload_tippers(self)
 	local allowedToDrive = true
   for k, tipper in pairs(self.tippers) do
     --if not tipper.allowsDetaching then
-     
+     local numReferencePoints = table.getn(tipper.tipReferencePoints);
       local fruitType = tipper:getCurrentFruitType()
           
       if self.currentTipTrigger.acceptedFillTypes[fruitType] then
          if tipper.tipState == Trailer.TIPSTATE_CLOSED then
-            tipper:toggleTipState(self.currentTipTrigger, 1);      
-            
-            self.toggledTipState = 1
-         elseif tipper.tipState ~= Trailer.TIPSTATE_CLOSING then
-            self.toggledTipState = self.toggledTipState + 1
-            if self.toggledTipState > 4 then
-              allowedToDrive = false  
+
+            if self.toggledTipState < numReferencePoints then
+               self.toggledTipState = self.toggledTipState + 1
+               tipper:toggleTipState(self.currentTipTrigger, self.toggledTipState);
+            else
+               self.toggledTipState = 0
             end
+
+         elseif tipper.tipState ~= Trailer.TIPSTATE_CLOSING then
+            allowedToDrive = false  
          end
 
           if self.currentTipTrigger.bunkerSilo ~= nil then
