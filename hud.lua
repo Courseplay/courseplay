@@ -301,7 +301,9 @@ function courseplay:loadHud(self)
 			if self.mouse_right_key_enabled then
 				self.hudpage[6][2][2] = courseplay:get_locale(self, "CPopenHudMouse")
 			else
-				self.hudpage[6][2][2] = courseplay:get_locale(self, "CPopenHudKey")
+				local hudMod = string.lower(tostring(InputBinding.getKeyNamesOfDigitalAction(InputBinding.CP_Modifier_1)):split(" ")[2])
+				local hudKey = string.lower(tostring(InputBinding.getKeyNamesOfDigitalAction(InputBinding.CP_Hud)):split(" ")[2])
+				self.hudpage[6][2][2] = hudMod:gsub("^%l", string.upper) .. " + " .. hudKey:gsub("^%l", string.upper)
 			end
 
 			self.hudpage[6][1][4] = courseplay:get_locale(self, "Rul")
