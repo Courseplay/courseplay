@@ -1,4 +1,6 @@
 .project
 *~
+*.gitattributes
+*.gitignore
 *.idea
 *.iml

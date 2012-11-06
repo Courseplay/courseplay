@@ -227,7 +227,9 @@ function courseplay:unload_combine(self, dt)
 
 	if combine.grainTankCapacity > 0 then
 		combine_fill_level = combine.grainTankFillLevel * 100 / combine.grainTankCapacity
-		if combine.typeName == "selfPropelledPotatoHarvester" then
+		
+		--TODO: if (pipe is on right side) then pipeOnRightSide = true
+		if combine.typeName == "selfPropelledPotatoHarvester" or combine.typeName == "attachableCombine" then
 			isHarvester = true
 		end
 	else -- combine is a chopper / has no tank
