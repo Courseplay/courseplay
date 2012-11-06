@@ -190,9 +190,10 @@ function courseplay:unload_tippers(self)
      
       local fruitType = tipper:getCurrentFruitType()
           
-      if fruitType == FruitUtil.FRUITTYPE_UNKNOWN or self.currentTipTrigger.acceptedFillTypes[fruitType] then
+      if self.currentTipTrigger.acceptedFillTypes[fruitType] then
          if tipper.tipState == Trailer.TIPSTATE_CLOSED then
-            tipper:toggleTipState(self.currentTipTrigger, 1);       
+            tipper:toggleTipState(self.currentTipTrigger, 1);      
+            
             self.toggledTipState = 1
          elseif tipper.tipState ~= Trailer.TIPSTATE_CLOSING then
             self.toggledTipState = self.toggledTipState + 1
@@ -204,6 +205,8 @@ function courseplay:unload_tippers(self)
           if self.currentTipTrigger.bunkerSilo ~= nil then
             allowedToDrive = true
           end
+       else
+         courseplay:debug("trigger does not accept fruit", 1);
        end
    --  end
   end
