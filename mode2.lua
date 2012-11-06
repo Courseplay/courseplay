@@ -230,21 +230,14 @@ function courseplay:unload_combine(self, dt)
 		
 		--TODO: if (pipe is on right side) then pipeOnRightSide = true
 		if combine.typeName == "selfPropelledPotatoHarvester" or combine.typeName == "attachableCombine" then
-			isHarvester = true
+			--isHarvester = true
 		end
 	else -- combine is a chopper / has no tank
 		combine_fill_level = 51
 		cornChopper = true
 	end
 
-	if not cornChopper and self.combine_offset < 0 then
-		self.combine_offset = self.combine_offset * -1
-	end
-
-	if isHarvester and self.combine_offset > 0 then
-		self.combine_offset = self.combine_offset * -1
-	end
-
+	
 	if mode == 2 or mode == 3 or mode == 4 then
 		if combine == nil then
 			self.info_text = "this should never happen"

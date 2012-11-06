@@ -172,9 +172,8 @@ function courseplay:register_at_combine(self, combine)
 
 		--TODO: if (pipe is on right side) then pipeOnRightSide = true
 		if combine.typeName == "selfPropelledPotatoHarvester" or combine.typeName == "attachableCombine" then
-			local x, y, z = getWorldTranslation(combine.rootNode)
-			xt, yt, zt = worldToLocal(combine.pipeRaycastNode, x, y, z)
-			self.combine_offset = xt * -1
+			local pipeX, y, z = getTranslation(combine.pipeRaycastNode)
+			self.combine_offset = pipeX
 		end
 
 		courseplay:debug("manually setting combine_offset:", 4)
