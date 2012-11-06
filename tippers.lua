@@ -185,28 +185,27 @@ end
 -- unloads all tippers
 function courseplay:unload_tippers(self)
 	local allowedToDrive = true
-  if g_currentMission.trailerInTipRange ~= nil and g_currentMission.currentTipTrigger ~= nil then
-      if g_currentMission.currentTipTrigger.bunkerSilo ~= nil then
-        if g_currentMission.currentTipTrigger.bunkerSilo.fillLevel + 5000 > g_currentMission.currentTipTrigger.bunkerSilo.capacity then
-          return true
-        end
-      end
-      local fruitType = g_currentMission.trailerInTipRange:getCurrentFruitType();
-      
-      if fruitType == FruitUtil.FRUITTYPE_UNKNOWN or g_currentMission.currentTipTrigger.acceptedFillTypes[fruitType] then
-        if g_currentMission.trailerInTipRange.tipState == Trailer.TIPSTATE_CLOSED then
-          g_currentMission.trailerInTipRange:toggleTipState(g_currentMission.currentTipTrigger, 1);
+  for k, tipper in pairs(self.tippers) do
+    --if not tipper.allowsDetaching then
+     
+      local fruitType = tipper:getCurrentFruitType()
           
-        end
-      
+      if fruitType == FruitUtil.FRUITTYPE_UNKNOWN or self.currentTipTrigger.acceptedFillTypes[fruitType] then
+         if tipper.tipState == Trailer.TIPSTATE_CLOSED then
+            tipper:toggleTipState(self.currentTipTrigger, 1);       
+            self.toggledTipState = 1
+         elseif tipper.tipState ~= Trailer.TIPSTATE_CLOSING then
+            self.toggledTipState = self.toggledTipState + 1
+            if self.toggledTipState > 4 then
+              allowedToDrive = false  
+            end
+         end
 
-            allowedToDrive = false      
-      
-      if g_currentMission.currentTipTrigger.bunkerSilo ~= nil then
-        allowedToDrive = true
-      end
-
-      end
+          if self.currentTipTrigger.bunkerSilo ~= nil then
+            allowedToDrive = true
+          end
+       end
+   --  end
   end
 	return allowedToDrive
 end

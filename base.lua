@@ -59,7 +59,7 @@ function courseplay:load(xmlFile)
 	end
 
 	-- dirty workaround for localization - don't try this at home!
-
+  self.toggledTipState = 0
 	self.locales.CPMaxHireables = g_i18n:getText("CPMaxHireables")
 	self.locales.CPFollowTractor = g_i18n:getText("CPFollowTractor")
 	self.locales.CPWaitForWaypoint = g_i18n:getText("CPWaitForWaypoint")

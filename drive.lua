@@ -465,7 +465,7 @@ function courseplay:drive(self, dt)
 		end
 	end
 
-  if self.currentTipTrigger ~= nil and self.currentTipTrigger.bunkerSilo ~= nil then
+  if self.currentTipTrigger ~= nil then
     ref_speed = 9 / 3600
   end
 
