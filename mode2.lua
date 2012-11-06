@@ -388,8 +388,34 @@ function courseplay:unload_combine(self, dt)
 
 		if combine_fill_level == 0 then --combine empty set waypoint 30 meters behind combine
 
-			self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, self.combine_offset, 0, -15) --10, 0, -5)
-			courseplay:set_next_target(self, self.combine_offset * -1, -30)
+      if self.combine_offset > 0 then
+        self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 10, 0, -10) --10, 0, -5)
+      else
+        self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, -10 , 0, -10) --10, 0, -5)
+      end
+
+      local leftFruit, rightFruit = courseplay:side_to_drive(self, combine, -10)
+      
+
+      if leftFruit > rightFruit then
+        local next_x, next_y, next_z = localToWorld(combine.rootNode, -10, 0, -10)
+        local next_wp = { x = next_x, y = next_y, z = next_z }
+			  table.insert(self.next_targets, next_wp)
+
+        local next_x, next_y, next_z = localToWorld(combine.rootNode, -10, 0, -30)
+        local next_wp = { x = next_x, y = next_y, z = next_z }
+		  	table.insert(self.next_targets, next_wp)
+      else
+        local next_x, next_y, next_z = localToWorld(combine.rootNode, 10, 0, -10)
+        local next_wp = { x = next_x, y = next_y, z = next_z }
+			  table.insert(self.next_targets, next_wp)
+
+        local next_x, next_y, next_z = localToWorld(combine.rootNode, 10, 0, -30)
+        local next_wp = { x = next_x, y = next_y, z = next_z }
+		  	table.insert(self.next_targets, next_wp)
+      end
+			
+      
 
 			mode = 5 -- turn around and then wait for next start
 			if tipper_percentage >= self.required_fill_level_for_drive_on then
