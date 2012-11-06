@@ -62,7 +62,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 			end
 			local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
 			if trigger.triggerId ~= nil and trigger.triggerId == transformId and (trigger.bunkerSilo == nil or (trigger.bunkerSilo.fillLevel + tipper_capacity) < trigger.bunkerSilo.capacity) then
-				--courseplay:debug(table.show(trigger.bunkerSilo), 4);
+				courseplay:debug(table.show(trigger), 4);
 				self.currentTipTrigger = trigger
 			elseif trigger.triggerIds ~= nil and transformId ~= nil and table.contains(trigger.triggerIds, transformId) then
 				self.currentTipTrigger = trigger

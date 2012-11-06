@@ -249,7 +249,7 @@ function courseplay:drive(self, dt)
 			-- is there a tipTrigger within 10 meters?
 			raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
 			-- handle mode
-			allowedToDrive, active_tipper = courseplay:handle_mode1(self)
+			allowedToDrive  = courseplay:handle_mode1(self)
 		end
 		-- combi-mode
 		if (((self.ai_mode == 2 or self.ai_mode == 3) and self.recordnumber < 2) or self.active_combine) and self.tipper_attached then
@@ -411,14 +411,6 @@ function courseplay:drive(self, dt)
 		end
 
 		-- unload active tipper if given
-		if active_tipper then
-			self.info_text = string.format(courseplay:get_locale(self, "CPUnloading"), tipper_fill_level, tipper_capacity)
-
-			if active_tipper.tipState == Trailer.TIPSTATE_CLOSED then
-				active_tipper:toggleTipState(self.currentTipTrigger, 1)
-			end
-		end
-		-- important, otherwhise i would drive on
 		return;
 	end
 
@@ -472,6 +464,10 @@ function courseplay:drive(self, dt)
 			ref_speed = 29 / 3600
 		end
 	end
+
+  if self.currentTipTrigger ~= nil and self.currentTipTrigger.bunkerSilo ~= nil then
+    ref_speed = 9 / 3600
+  end
 
 	if self.RulMode == 1 then
 		if (self.sl == 3 and not self.beaconLightsActive) or (self.sl ~= 3 and self.beaconLightsActive) then

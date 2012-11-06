@@ -184,58 +184,29 @@ end
 
 -- unloads all tippers
 function courseplay:unload_tippers(self)
-	local allowedToDrive = false
-	self.lastTrailerToFillDistance = nil
-	local active_tipper = nil
-	local trigger = self.currentTipTrigger
-	g_currentMission.tipTriggerRangeThreshold = 3
-	-- drive forward until actual tipper reaches trigger
+	local allowedToDrive = true
+  if g_currentMission.trailerInTipRange ~= nil and g_currentMission.currentTipTrigger ~= nil then
+      if g_currentMission.currentTipTrigger.bunkerSilo ~= nil then
+        if g_currentMission.currentTipTrigger.bunkerSilo.fillLevel + 5000 > g_currentMission.currentTipTrigger.bunkerSilo.capacity then
+          return true
+        end
+      end
+      local fruitType = g_currentMission.trailerInTipRange:getCurrentFruitType();
+      
+      if fruitType == FruitUtil.FRUITTYPE_UNKNOWN or g_currentMission.currentTipTrigger.acceptedFillTypes[fruitType] then
+        if g_currentMission.trailerInTipRange.tipState == Trailer.TIPSTATE_CLOSED then
+          g_currentMission.trailerInTipRange:toggleTipState(g_currentMission.currentTipTrigger, 1);
+          
+        end
+      
 
-	-- position of trigger
-	local trigger_id = self.currentTipTrigger.triggerId
+            allowedToDrive = false      
+      
+      if g_currentMission.currentTipTrigger.bunkerSilo ~= nil then
+        allowedToDrive = true
+      end
 
-	if self.currentTipTrigger.specialTriggerId ~= nil then
-		trigger_id = self.currentTipTrigger.specialTriggerId
-	end
-	local trigger_x, trigger_y, trigger_z = getWorldTranslation(trigger_id)
-
-	-- tipReferencePoint of each tipper
-	for k, tipper in pairs(self.tippers) do
-		--courseplay:debug(table.show(tipper), 4)
-		local tipper_x, tipper_y, tipper_z = getWorldTranslation(tipper.tipReferencePoints[1].node)
-		local distance_to_trigger = Utils.vector2Length(trigger_x - tipper_x, trigger_z - tipper_z)
-
-		local needed_distance = g_currentMission.tipTriggerRangeThreshold
-
-		if startswith(trigger.className, "MapBGA") then
-			needed_distance = 15
-		end
-
-		if startswith(trigger.className, "TipAny") or trigger.className == "HeapTipTrigger" then
-			needed_distance = 5
-		end
-
-		if endswith(trigger.className, "TipTrigger") then
-		end
-
-
-		-- if tipper is on trigger
-		if distance_to_trigger <= needed_distance and tipper.fillLevel > 0 then
-			active_tipper = tipper
-		end
-	end
-
-	if active_tipper then
-		local trigger = self.currentTipTrigger
-		-- if trigger accepts fruit
-		if (trigger.acceptedFruitTypes ~= nil and trigger.acceptedFruitTypes[active_tipper:getCurrentFruitType()]) or startswith(trigger.className, "MapBGA") or startswith(trigger.className, "TipAny") or endswith(trigger.className, "TipTrigger") or trigger.className == "HeapTipTrigger" then
-			allowedToDrive = false
-		else
-			allowedToDrive = true
-		end
-	else
-		allowedToDrive = true
-	end
-
-	return allowedToDrive, active_tipper
+      end
+  end
+	return allowedToDrive
 end
