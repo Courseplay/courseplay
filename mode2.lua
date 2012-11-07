@@ -418,14 +418,12 @@ function courseplay:unload_combine(self, dt)
 
 		local current_offset = self.combine_offset
 
-		if combine.currentPipeState == 2 then
-			local combineXWorld, combineYWorld, combineZWorld = getWorldTranslation(combine.rootNode)
-			local pipeRaycastNodeXWorld, pipeRaycastNodeYWorld, pipeRaycastNodeZWorld = getWorldTranslation(combine.pipeRaycastNode)
+		if not cornChopper and combine.currentPipeState == 2 then
 			local pipeRaycastNodeX, pipeRaycastNodeY, pipeRaycastNodeZ = getTranslation(combine.pipeRaycastNode)
 			local pipeX, pipeY, pipeZ = getTranslation(getParent(combine.pipeRaycastNode))
 			
-			--if combine.typeName == "selfPropelledPotatoHarvester" then
-			if getParent(combine.pipeRaycastNode) == combine.rootNode then -- pipeRaycastNode is direct child of combine
+			if getParent(combine.pipeRaycastNode) == combine.rootNode then -- pipeRaycastNode is direct child of combine.root
+			--OLD: if combine.typeName == "selfPropelledPotatoHarvester" then
 				current_offset = pipeRaycastNodeX
 				
 				--safety distance so the trailer doesn't crash into the pipe (sidearm)
@@ -434,15 +432,17 @@ function courseplay:unload_combine(self, dt)
 				elseif combine.name == "Grimme Tectron 415" then
 					current_offset = pipeRaycastNodeX - 0.5
 				end
-				courseplay:debug("selfPropelledPotatoHarvester: current_offset = pipeX = " .. current_offset, 3)
-			else
-				if pipeX ~= nil then --pipeRaycastNode is child of pipe 
-					current_offset = pipeX - pipeRaycastNodeZ
-				else --BACKUP if pipeRaycastNode isn't child of pipe
-					--always positive (pipe is always on left side)
-					current_offset = Utils.vector2Length(pipeRaycastNodeXWorld-combineXWorld, pipeRaycastNodeZWorld-combineZWorld)
-				end
-				courseplay:debug("Drescher: current_offset = pipeX - pipeRaycastNodeZ = " .. current_offset, 3)
+				courseplay:debug("Harvester: root > pipeRaycastNode // current_offset = " .. current_offset, 3)
+			elseif getParent(getParent(combine.pipeRaycastNode)) == combine.rootNode then --pipeRaycastNode is direct child of pipe is direct child of combine.root
+				current_offset = pipeX - pipeRaycastNodeZ
+				courseplay:debug("Drescher: root > pipe > pipeRaycastNode // current_offset = " .. current_offset, 3)
+			else --BACKUP pipeRaycastNode isn't child of pipe
+				local combineXWorld, combineYWorld, combineZWorld = getWorldTranslation(combine.rootNode)
+				local pipeRaycastNodeXWorld, pipeRaycastNodeYWorld, pipeRaycastNodeZWorld = getWorldTranslation(combine.pipeRaycastNode)
+
+				--always positive (pipe is always on left side)
+				current_offset = Utils.vector2Length(pipeRaycastNodeXWorld-combineXWorld, pipeRaycastNodeZWorld-combineZWorld)
+				courseplay:debug("Drescher: vector2Length // current_offset = " .. current_offset, 3)
 			end
 		end
 
