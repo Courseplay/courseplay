@@ -331,10 +331,7 @@ function courseplay:unload_combine(self, dt)
 
 		if cornChopper then
 			tX, tY, tZ = localToWorld(combine.rootNode, self.combine_offset * 0.8, 0, -5) -- offste *0.6     !????????????
-		else
-			if not isHarvester and self.combine_offset < 0 then
-				self.combine_offset = self.combine_offset * -1
-			end
+		else			
 			tX, tY, tZ = localToWorld(combine.rootNode, self.combine_offset, 0, -5)
 		end
 
@@ -422,19 +419,18 @@ function courseplay:unload_combine(self, dt)
 		local current_offset = self.combine_offset
 
 		if isHarvester or combine.currentPipeState == 2 then
-			local x, y, z = getWorldTranslation(combine.rootNode)
-			xt, yt, zt = worldToLocal(combine.pipeRaycastNode, x, y, z)
-			if isHarvester then
-				zt = xt * -1
-			end
+			local pipeX, y, z = getTranslation(combine.pipeRaycastNode)
+			current_offset = pipeX
+	
 			current_offset = zt
 		end
 
-		if cornChopper then
+    if cornChopper then
 			if self.combine_offset < 0 then
 				current_offset = current_offset * -1
 			end
 		end
+
 
 
 		currentX, currentY, currentZ = localToWorld(combine.rootNode, current_offset, 0, trailer_offset + 5)
