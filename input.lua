@@ -18,7 +18,15 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 			if button.page == self.showHudInfoBase or button.page == nil or button.page == self.showHudInfoBase * -1 then
 
 				if posX > button.x and posX < button.x2 and posY > button.y and posY < button.y2 then
-					self:setCourseplayFunc(button.function_to_call, button.parameter)
+					if InputBinding.isPressed(InputBinding.CP_Modifier_1) then --for some reason InputBinding works in :mouseEvent
+						courseplay:debug("CP_Modifier_1 is pressed", 3)
+						if button.modifiedParameter ~= nil then
+							courseplay:debug("button.modifiedParameter = " .. tostring(button.modifiedParameter), 3)
+							self:setCourseplayFunc(button.function_to_call, button.modifiedParameter)
+						end
+					else
+						self:setCourseplayFunc(button.function_to_call, button.parameter)
+					end
 				end
 			end
 		end

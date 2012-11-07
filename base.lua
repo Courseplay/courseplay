@@ -484,20 +484,20 @@ function courseplay:load(xmlFile)
 		end
 	end
 
-	courseplay:register_button(self, 3, "navigate_minus.dds", "change_combine_offset", -0.5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.210, 0.010, 0.010)
-	courseplay:register_button(self, 3, "navigate_plus.dds", "change_combine_offset", 0.5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.210, 0.010, 0.010)
+	courseplay:register_button(self, 3, "navigate_minus.dds", "change_combine_offset", -0.1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.210, 0.010, 0.010, nil, -0.5)
+	courseplay:register_button(self, 3, "navigate_plus.dds", "change_combine_offset", 0.1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.210, 0.010, 0.010, nil, 0.5)
 
-	courseplay:register_button(self, 3, "navigate_minus.dds", "change_tipper_offset", -0.5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.188, 0.010, 0.010)
-	courseplay:register_button(self, 3, "navigate_plus.dds", "change_tipper_offset", 0.5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.188, 0.010, 0.010)
+	courseplay:register_button(self, 3, "navigate_minus.dds", "change_tipper_offset", -0.1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.188, 0.010, 0.010, nil, -0.5)
+	courseplay:register_button(self, 3, "navigate_plus.dds", "change_tipper_offset", 0.1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.188, 0.010, 0.010, nil, 0.5)
 
-	courseplay:register_button(self, 3, "navigate_minus.dds", "change_turn_radius", -1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.167, 0.010, 0.010)
-	courseplay:register_button(self, 3, "navigate_plus.dds", "change_turn_radius", 1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.167, 0.010, 0.010)
+	courseplay:register_button(self, 3, "navigate_minus.dds", "change_turn_radius", -1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.167, 0.010, 0.010, nil, -5)
+	courseplay:register_button(self, 3, "navigate_plus.dds", "change_turn_radius", 1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.167, 0.010, 0.010, nil, 5)
 
-	courseplay:register_button(self, 3, "navigate_minus.dds", "change_required_fill_level", -5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.146, 0.010, 0.010)
-	courseplay:register_button(self, 3, "navigate_plus.dds", "change_required_fill_level", 5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.146, 0.010, 0.010)
+	courseplay:register_button(self, 3, "navigate_minus.dds", "change_required_fill_level", -5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.146, 0.010, 0.010, nil, -10)
+	courseplay:register_button(self, 3, "navigate_plus.dds", "change_required_fill_level", 5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.146, 0.010, 0.010, nil, 10)
 
-	courseplay:register_button(self, 3, "navigate_minus.dds", "change_required_fill_level_for_drive_on", -5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.123, 0.010, 0.010)
-	courseplay:register_button(self, 3, "navigate_plus.dds", "change_required_fill_level_for_drive_on", 5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.123, 0.010, 0.010)
+	courseplay:register_button(self, 3, "navigate_minus.dds", "change_required_fill_level_for_drive_on", -5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.123, 0.010, 0.010, nil, -10)
+	courseplay:register_button(self, 3, "navigate_plus.dds", "change_required_fill_level_for_drive_on", 5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.123, 0.010, 0.010, nil, 10)
 
 	courseplay:register_button(self, 4, "navigate_up.dds", "switch_combine", -1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.210, 0.010, 0.010)
 	courseplay:register_button(self, 4, "navigate_down.dds", "switch_combine", 1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.210, 0.010, 0.010)
@@ -507,14 +507,14 @@ function courseplay:load(xmlFile)
 
 	courseplay:register_button(self, 4, "blank.dds", "switch_search_combine", nil, self.hudInfoBasePosX - 0.05, self.hudInfoBasePosY + 0.185, 0.32, 0.015)
 
-	courseplay:register_button(self, 5, "navigate_minus.dds", "change_turn_speed", -1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.210, 0.010, 0.010)
-	courseplay:register_button(self, 5, "navigate_plus.dds", "change_turn_speed", 1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.210, 0.010, 0.010)
+	courseplay:register_button(self, 5, "navigate_minus.dds", "change_turn_speed", -1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.210, 0.010, 0.010, nil, -5)
+	courseplay:register_button(self, 5, "navigate_plus.dds", "change_turn_speed", 1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.210, 0.010, 0.010, nil, 5)
 
-	courseplay:register_button(self, 5, "navigate_minus.dds", "change_field_speed", -1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.188, 0.010, 0.010)
-	courseplay:register_button(self, 5, "navigate_plus.dds", "change_field_speed", 1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.188, 0.010, 0.010)
+	courseplay:register_button(self, 5, "navigate_minus.dds", "change_field_speed", -1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.188, 0.010, 0.010, nil, -5)
+	courseplay:register_button(self, 5, "navigate_plus.dds", "change_field_speed", 1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.188, 0.010, 0.010, nil, 5)
 
-	courseplay:register_button(self, 5, "navigate_minus.dds", "change_max_speed", -1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.167, 0.010, 0.010)
-	courseplay:register_button(self, 5, "navigate_plus.dds", "change_max_speed", 1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.167, 0.010, 0.010)
+	courseplay:register_button(self, 5, "navigate_minus.dds", "change_max_speed", -1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.167, 0.010, 0.010, nil, -5)
+	courseplay:register_button(self, 5, "navigate_plus.dds", "change_max_speed", 1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.167, 0.010, 0.010, nil, 5)
 	courseplay:register_button(self, 5, "blank.dds", "change_use_speed", 1, self.hudInfoBasePosX - 0.05, self.hudInfoBasePosY + 0.143, 0.32, 0.015)
 
 
@@ -528,17 +528,17 @@ function courseplay:load(xmlFile)
 	courseplay:register_button(self, 6, "blank.dds", "change_DebugLevel", 1, self.hudInfoBasePosX - 0.05, self.hudInfoBasePosY + 0.122, 0.32, 0.015)
 
 	-- FAHR-Arbeitseinstellungen
-	courseplay:register_button(self, 7, "navigate_minus.dds", "change_wait_time", -5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.210, 0.010, 0.010)
-	courseplay:register_button(self, 7, "navigate_plus.dds", "change_wait_time", 5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.210, 0.010, 0.010)
+	courseplay:register_button(self, 7, "navigate_minus.dds", "change_wait_time", -5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.210, 0.010, 0.010, nil, -10)
+	courseplay:register_button(self, 7, "navigate_plus.dds", "change_wait_time", 5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.210, 0.010, 0.010, nil, 10)
 
-	courseplay:register_button(self, 7, "navigate_minus.dds", "changeWpOffsetX", -0.5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.188, 0.010, 0.010)
-	courseplay:register_button(self, 7, "navigate_plus.dds", "changeWpOffsetX", 0.5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.188, 0.010, 0.010)
+	courseplay:register_button(self, 7, "navigate_minus.dds", "changeWpOffsetX", -0.5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.188, 0.010, 0.010, nil, -1)
+	courseplay:register_button(self, 7, "navigate_plus.dds", "changeWpOffsetX", 0.5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.188, 0.010, 0.010, nil, 1)
 
-	courseplay:register_button(self, 7, "navigate_minus.dds", "changeWpOffsetZ", -0.5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.167, 0.010, 0.010)
-	courseplay:register_button(self, 7, "navigate_plus.dds", "changeWpOffsetZ", 0.5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.167, 0.010, 0.010)
+	courseplay:register_button(self, 7, "navigate_minus.dds", "changeWpOffsetZ", -0.5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.167, 0.010, 0.010, nil, -1)
+	courseplay:register_button(self, 7, "navigate_plus.dds", "changeWpOffsetZ", 0.5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.167, 0.010, 0.010, nil, 1)
 
-	courseplay:register_button(self, 7, "navigate_minus.dds", "changeWorkWidth", -0.5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.146, 0.010, 0.010)
-	courseplay:register_button(self, 7, "navigate_plus.dds", "changeWorkWidth", 0.5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.146, 0.010, 0.010)
+	courseplay:register_button(self, 7, "navigate_minus.dds", "changeWorkWidth", -0.1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.146, 0.010, 0.010, nil, -0.5)
+	courseplay:register_button(self, 7, "navigate_plus.dds", "changeWorkWidth", 0.1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.146, 0.010, 0.010, nil, 0.5)
 
 
 	self.fold_move_direction = 1
@@ -593,7 +593,8 @@ end
 
 -- is been called everey frame
 function courseplay:update(dt)
-   if self:getIsActive() then
+	if self:getIsActive() then
+   
 		if InputBinding.isPressed(InputBinding.CP_Modifier_1) and not self.mouse_right_key_enabled then
 			if self.show_hud then
 				g_currentMission:addHelpButtonText(g_i18n:getText("CPHudClose"), InputBinding.CP_Hud)
