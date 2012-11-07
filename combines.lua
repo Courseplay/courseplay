@@ -176,7 +176,7 @@ function courseplay:register_at_combine(self, combine)
 			self.combine_offset = pipeX
 		end
 
-		courseplay:debug("manually setting combine_offset:", 4)
+		courseplay:debug("automatically setting combine_offset:", 4)
 		courseplay:debug(self.combine_offset, 4)
 	end
 
@@ -195,10 +195,10 @@ function courseplay:unregister_at_combine(self, combine)
 		return true
 	end
 
-  if self.auto_combine_offset == true then
-    self.combine_offset = 0.0
-    self.auto_combine_offset = false
-  end
+	if self.auto_combine_offset == true then
+		self.combine_offset = 0.0
+		self.auto_combine_offset = false
+	end
 
 	self.calculated_course = false
 	courseplay:remove_from_combines_ignore_list(self, combine)
