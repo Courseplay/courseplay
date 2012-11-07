@@ -153,7 +153,7 @@ function courseplay:register_at_combine(self, combine)
 	self.active_combine = combine
 
 	if math.floor(self.combine_offset) == 0 then
-
+    self.auto_combine_offset = true
 		local leftMarker = nil
 		local currentCutter = nil
 
@@ -180,6 +180,9 @@ function courseplay:register_at_combine(self, combine)
 		courseplay:debug(self.combine_offset, 4)
 	end
 
+  courseplay:add_to_combines_ignore_list(self, combine)
+  self.trafficCollisionIgnoreList[combine.rootNode] = true
+
 	return true
 end
 
@@ -191,8 +194,14 @@ function courseplay:unregister_at_combine(self, combine)
 	if self.active_combine == nil or combine == nil then
 		return true
 	end
+
+  if self.auto_combine_offset == true then
+    self.combine_offset = 0.0
+    self.auto_combine_offset = false
+  end
+
 	self.calculated_course = false
-	--courseplay:remove_from_combines_ignore_list(self, combine)
+	courseplay:remove_from_combines_ignore_list(self, combine)
 	table.remove(combine.courseplayers, self.courseplay_position)
 
 	-- updating positions of tractors
@@ -205,9 +214,9 @@ function courseplay:unregister_at_combine(self, combine)
 	self.active_combine = nil
 	self.ai_state = 1
 
-	-- if self.trafficCollisionIgnoreList[combine.rootNode] == true then
-	--   self.trafficCollisionIgnoreList[combine.rootNode] = nil
-	-- end
+	if self.trafficCollisionIgnoreList[combine.rootNode] == true then
+	   self.trafficCollisionIgnoreList[combine.rootNode] = nil
+	end
 
 	return true
 end

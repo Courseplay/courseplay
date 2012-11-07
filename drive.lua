@@ -628,9 +628,7 @@ function courseplay:check_traffic(self, display_warnings, allowedToDrive)
 		self.global_info_text = courseplay:get_locale(self, "CPInTraffic") --' steckt im Verkehr fest'
 	end
 
-	if self.ai_state == 3 or self.ai_state == 4 then
-		return true
-	end
+
 
 	return allowedToDrive
 end

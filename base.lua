@@ -189,6 +189,7 @@ function courseplay:load(xmlFile)
 	self.locales.CPaStar = g_i18n:getText("CPaStar")
 	self.locales.CPWPs = g_i18n:getText("CPWPs")
 
+  self.auto_combine_offset = false
 	self.mouse_right_key_enabled = true
 	self.drive = false
 	self.StopEnd = false
