@@ -180,8 +180,8 @@ function courseplay:register_at_combine(self, combine)
 		courseplay:debug(self.combine_offset, 4)
 	end
 
-  courseplay:add_to_combines_ignore_list(self, combine)
-  self.trafficCollisionIgnoreList[combine.rootNode] = true
+	courseplay:add_to_combines_ignore_list(self, combine)
+	self.trafficCollisionIgnoreList[combine.rootNode] = true
 
 	return true
 end

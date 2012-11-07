@@ -378,34 +378,34 @@ function courseplay:unload_combine(self, dt)
 
 		if combine_fill_level == 0 then --combine empty set waypoint 30 meters behind combine
 
-      if self.combine_offset > 0 then
-        self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 10, 0, -10) --10, 0, -5)
-      else
-        self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, -10 , 0, -10) --10, 0, -5)
-      end
+			if self.combine_offset > 0 then
+				self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 10, 0, -10) --10, 0, -5)
+			else
+				self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, -10 , 0, -10) --10, 0, -5)
+			end
 
-      local leftFruit, rightFruit = courseplay:side_to_drive(self, combine, -10)
-      
+			local leftFruit, rightFruit = courseplay:side_to_drive(self, combine, -10)
+		  
 
-      if leftFruit > rightFruit then
-        local next_x, next_y, next_z = localToWorld(combine.rootNode, -10, 0, -10)
-        local next_wp = { x = next_x, y = next_y, z = next_z }
-			  table.insert(self.next_targets, next_wp)
+			if leftFruit > rightFruit then
+				local next_x, next_y, next_z = localToWorld(combine.rootNode, -10, 0, -10)
+				local next_wp = { x = next_x, y = next_y, z = next_z }
+				table.insert(self.next_targets, next_wp)
 
-        local next_x, next_y, next_z = localToWorld(combine.rootNode, -10, 0, -30)
-        local next_wp = { x = next_x, y = next_y, z = next_z }
-		  	table.insert(self.next_targets, next_wp)
-      else
-        local next_x, next_y, next_z = localToWorld(combine.rootNode, 10, 0, -10)
-        local next_wp = { x = next_x, y = next_y, z = next_z }
-			  table.insert(self.next_targets, next_wp)
+				local next_x, next_y, next_z = localToWorld(combine.rootNode, -10, 0, -30)
+				local next_wp = { x = next_x, y = next_y, z = next_z }
+				table.insert(self.next_targets, next_wp)
+			else
+				local next_x, next_y, next_z = localToWorld(combine.rootNode, 10, 0, -10)
+				local next_wp = { x = next_x, y = next_y, z = next_z }
+				table.insert(self.next_targets, next_wp)
 
-        local next_x, next_y, next_z = localToWorld(combine.rootNode, 10, 0, -30)
-        local next_wp = { x = next_x, y = next_y, z = next_z }
-		  	table.insert(self.next_targets, next_wp)
-      end
-			
-      
+				local next_x, next_y, next_z = localToWorld(combine.rootNode, 10, 0, -30)
+				local next_wp = { x = next_x, y = next_y, z = next_z }
+				table.insert(self.next_targets, next_wp)
+			end
+				
+		  
 
 			mode = 5 -- turn around and then wait for next start
 			if tipper_percentage >= self.required_fill_level_for_drive_on then
@@ -418,14 +418,35 @@ function courseplay:unload_combine(self, dt)
 
 		local current_offset = self.combine_offset
 
-		if isHarvester or combine.currentPipeState == 2 then
-			local pipeX, y, z = getTranslation(combine.pipeRaycastNode)
-			current_offset = pipeX
-	
-			current_offset = zt
+		if combine.currentPipeState == 2 then
+			local combineXWorld, combineYWorld, combineZWorld = getWorldTranslation(combine.rootNode)
+			local pipeRaycastNodeXWorld, pipeRaycastNodeYWorld, pipeRaycastNodeZWorld = getWorldTranslation(combine.pipeRaycastNode)
+			local pipeRaycastNodeX, pipeRaycastNodeY, pipeRaycastNodeZ = getTranslation(combine.pipeRaycastNode)
+			local pipeX, pipeY, pipeZ = getTranslation(getParent(combine.pipeRaycastNode))
+			
+			--if combine.typeName == "selfPropelledPotatoHarvester" then
+			if getParent(combine.pipeRaycastNode) == combine.rootNode then -- pipeRaycastNode is direct child of combine
+				current_offset = pipeRaycastNodeX
+				
+				--safety distance so the trailer doesn't crash into the pipe (sidearm)
+				if combine.name == "Grimme Maxtron 620" then
+					current_offset = pipeRaycastNodeX + 1.3
+				elseif combine.name == "Grimme Tectron 415" then
+					current_offset = pipeRaycastNodeX - 0.5
+				end
+				courseplay:debug("selfPropelledPotatoHarvester: current_offset = pipeX = " .. current_offset, 3)
+			else
+				if pipeX ~= nil then --pipeRaycastNode is child of pipe 
+					current_offset = pipeX - pipeRaycastNodeZ
+				else --BACKUP if pipeRaycastNode isn't child of pipe
+					--always positive (pipe is always on left side)
+					current_offset = Utils.vector2Length(pipeRaycastNodeXWorld-combineXWorld, pipeRaycastNodeZWorld-combineZWorld)
+				end
+				courseplay:debug("Drescher: current_offset = pipeX - pipeRaycastNodeZ = " .. current_offset, 3)
+			end
 		end
 
-    if cornChopper then
+		if cornChopper then
 			if self.combine_offset < 0 then
 				current_offset = current_offset * -1
 			end
