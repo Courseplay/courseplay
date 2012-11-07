@@ -889,7 +889,7 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		self.turn_radius = Utils.getNoNil(getXMLInt(xmlFile, key .. string.format("#turn_radius")), 8);
     self.RulMode = Utils.getNoNil(getXMLInt(xmlFile, key .. string.format("#rul_mode")), 1);
 		local courses = Utils.getNoNil(getXMLString(xmlFile, key .. string.format("#courses")), "");
-    self.toolWorkWidht = Utils.getNoNil(getXMLInt(xmlFile, key .. string.format("#toolWorkWidht")), 3);
+    self.toolWorkWidht = Utils.getNoNil(getXMLFloat(xmlFile, key .. string.format("#toolWorkWidht")), 3);
 		self.loaded_courses = courses:split(",")
 		self.selected_course_number = 0
 
