@@ -592,6 +592,36 @@ end
 
 -- is been called everey frame
 function courseplay:update(dt)
+   if self:getIsActive() then
+		if InputBinding.isPressed(InputBinding.CP_Modifier_1) and not self.mouse_right_key_enabled then
+			if self.show_hud then
+				g_currentMission:addHelpButtonText(g_i18n:getText("CPHudClose"), InputBinding.CP_Hud)
+			elseif not self.show_hud then
+				g_currentMission:addHelpButtonText(g_i18n:getText("CPHudOpen"), InputBinding.CP_Hud)
+			end
+		end
+		
+		-- inspired by knagsted's 8400 MouseOverride
+		if InputBinding.hasEvent(InputBinding.CP_Hud) and InputBinding.isPressed(InputBinding.CP_Modifier_1) and self.isEntered and not self.mouse_right_key_enabled then
+			if self.mouse_enabled then
+				self.mouse_enabled = false
+				if self.show_hud then
+					self.show_hud = false
+				end
+			else
+				self.mouse_enabled = true
+				if not self.show_hud then
+					self.showHudInfoBase = self.min_hud_page
+					self.show_hud = true
+				end
+			end
+			InputBinding.setShowMouseCursor(self.mouse_enabled)
+		end
+
+		if InputBinding.hasEvent(InputBinding.CP_Hud) and InputBinding.isPressed(InputBinding.CP_Modifier_2) and self.isEntered then
+			initialize_courseplay()
+		end
+	end
 
 	if self.isEntered then
 
