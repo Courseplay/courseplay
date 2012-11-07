@@ -62,7 +62,7 @@ end
 
 function courseplay:change_combine_offset(self, change_by)
 	self.combine_offset = self.combine_offset + change_by
-  if self.combine_offset > -0.5 and self.combine_offset < 0.5 then
+  if self.combine_offset > -0.1 and self.combine_offset < 0.1 then
     self.combine_offset = 0.0
   end
 end
