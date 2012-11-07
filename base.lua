@@ -873,6 +873,7 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 	if not resetVehicles and g_server ~= nil then
 		self.max_speed = Utils.getNoNil(getXMLFloat(xmlFile, key .. string.format("#max_speed")), 50 / 3600);
 		self.use_speed = Utils.getNoNil(getXMLBool(xmlFile, key .. string.format("#use_speed")), false);
+    self.realistic_driving = Utils.getNoNil(getXMLBool(xmlFile, key .. string.format("#realistic_driving")), true);    
 		self.turn_speed = Utils.getNoNil(getXMLFloat(xmlFile, key .. string.format("#turn_speed")), 10 / 3600);
 		self.field_speed = Utils.getNoNil(getXMLFloat(xmlFile, key .. string.format("#field_speed")), 24 / 3600);
 		self.tipper_offset = Utils.getNoNil(getXMLFloat(xmlFile, key .. string.format("#tipper_offset")), 0);
@@ -886,7 +887,9 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		self.waitTime = Utils.getNoNil(getXMLFloat(xmlFile, key .. string.format("#waitTime")), 0);
 		self.abortWork = Utils.getNoNil(getXMLInt(xmlFile, key .. string.format("#AbortWork")), nil);
 		self.turn_radius = Utils.getNoNil(getXMLInt(xmlFile, key .. string.format("#turn_radius")), 8);
+    self.RulMode = Utils.getNoNil(getXMLInt(xmlFile, key .. string.format("#rul_mode")), 1);
 		local courses = Utils.getNoNil(getXMLString(xmlFile, key .. string.format("#courses")), "");
+    self.toolWorkWidht = Utils.getNoNil(getXMLInt(xmlFile, key .. string.format("#toolWorkWidht")), 3);
 		self.loaded_courses = courses:split(",")
 		self.selected_course_number = 0
 
@@ -919,7 +922,10 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 			' turn_radius="' .. tostring(self.turn_radius) .. '"' ..
 			' waitTime="' .. tostring(self.waitTime) .. '"' ..
 			' courses="' .. tostring(table.concat(self.loaded_courses, ",")) .. '"' ..
-			' mouse_right_key_enabled="' .. tostring(mouse_right_key_enabled) .. '"' ..
+			' mouse_right_key_enabled="' .. tostring(self.mouse_right_key_enabled) .. '"' ..
+      ' rul_mode="'..tostring(self.RulMode) .. '"' ..
+      ' toolWorkWidht="'..tostring(self.toolWorkWidht) .. '"' ..
+      ' realistic_driving="'..tostring(self.realistic_driving) .. '"' ..
 			' ai_mode="' .. tostring(self.ai_mode) .. '"';
 	return attributes, nil;
 end
