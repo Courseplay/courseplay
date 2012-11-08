@@ -27,19 +27,19 @@
 	
 	<l10n>
 		<text name="PointRecordStart">
-			<en>Record Course Start</en>
+			<en>Start course recording</en>
 			<de>Kursaufzeichnung beginnen</de>
 		</text>
 		<text name="PointRecordStop">
-			<en>Record Course Stop</en>
+			<en>Stop course recording</en>
 			<de>Kursaufzeichnung beenden</de>
 		</text>
 		<text name="PointRecordInterrupt">
-			<en>Record Course Interrupt</en>
+			<en>Interrupt course recording</en>
 			<de>Kursaufzeichnung anhalten</de>
 		</text>
 		<text name="PointRecordContinue">
-			<en>Record Course Continue</en>
+			<en>Continue course recording</en>
 			<de>Kursaufzeichnung fortsetzen</de>
 		</text>
 		<text name="PointRecordDelete">
@@ -99,23 +99,23 @@
 			<de>Abfahrer entlassen</de>
 		</text>
 		<text name="CourseMode1">
-			<en>Type: Drivinghelper</en>
+			<en>Type: Drivinghelper (Load at start)</en>
 			<de>Typ: Abfahrer (Beladung am Startpunkt)</de>
 		</text>
 		<text name="CourseMode2">
-			<en>Type: Combi</en>
+			<en>Type: Combi (empty combine and offload)</en>
 			<de>Typ: kombiniert (Drescher abtanken und abfahren)</de>
 		</text>
 		<text name="CourseMode3">
-			<en>Type: Overloader</en>
+			<en>Type: Overloader (empty combine and offload to trailer)</en>
 			<de>Typ: Überladewagen (Drescher abtanken)</de>
 		</text>
 		<text name="CourseMode4">
 			<en>Type: fertilice</en>
-			<de>Typ: Duengen</de>
+			<de>Typ: Düngen</de>
 		</text>
 		<text name="CourseMode5">
-			<en>Type: Target</en>
+			<en>Type: Target (drive from start to finish)</en>
 			<de>Typ: Überführung (Route abfahren)</de>
 		</text>
 		<text name="CourseMode6">
@@ -123,11 +123,11 @@
 			<de>Typ: Feldarbeit, Ballen pressen, Heu und Ballen sammeln</de>
 		</text>
 		<text name="CourseMode7">
-			<en>Type: Combine goes self to unload</en>
+			<en>Type: Combine drives to trailer and unloads</en>
 			<de>Typ: Drescher fährt selbst abtanken</de>
 		</text>
 		<text name="CourseMode8">
-			<en>Type: Manuretransporter</en>
+			<en>Type: Manure transporter</en>
 			<de>Typ: Güllezubringer</de>
 		</text>
 		<text name="CourseWaitpointSet">
@@ -163,7 +163,7 @@
 			<de>Wegpunkte löschen</de>
 		</text>
 		<text name="CourseGenerate">
-			<en>course generate</en>
+			<en>generate course</en>
 			<de>Kurs generieren</de>
 		</text>
 		<text name="HudControl">
@@ -175,7 +175,7 @@
 			<de>Maussteuerung aktivieren</de>
 		</text>
 		<text name="ModusSet">
-			<en>change Modus</en>
+			<en>change mode</en>
 			<de>Abfahrer-Typ wechseln</de>
 		</text>
 		<text name="NoWaitforfill">
@@ -187,19 +187,19 @@
 			<de>Abfahren bei %</de>
 		</text>
 		<text name="AHInput1">
-			<en>AH Input 1</en>
+			<en>CP Input 1</en>
 			<de>AH Taste 1</de>
 		</text>
 		<text name="AHInput2">
-			<en>AH Input 2</en>
+			<en>CP Input 2</en>
 			<de>AH Taste 2</de>
 		</text>
 		<text name="AHInput3">
-			<en>AH Input 3</en>
+			<en>CP Input 3</en>
 			<de>AH Taste 3</de>
 		</text>
 		<text name="AHInput4">
-			<en>AH Input 4</en>
+			<en>CP Input 4</en>
 			<de>AH Taste 4</de>
 		</text>
 		<text name="UNKNOWN">
@@ -211,7 +211,7 @@
 			<de>Entfernung</de>
 		</text>
 		<text name="CPWaitTime">
-			<en>WaitTime</en>
+			<en>Wait time</en>
 			<de>Haltezeit</de>
 		</text>
 		<text name="CPLoadCourse">
@@ -219,7 +219,7 @@
 			<de>Kurs laden:</de>
 		</text>
 		<text name="CPCourseName">
-			<en>name of course:</en>
+			<en>Course name:</en>
 			<de>Name des Kurses:</de>
 		</text>
 		<text name="CPReachedOverloadPoint">
@@ -235,7 +235,7 @@
 			<de>hat den Tigger bzw. das Ende der Route erreicht.</de>
 		</text>
 		<text name="CPWorkEnd">
-			<en>has work finished.</en>
+			<en>has finished work.</en>
 			<de>hat die Aufgabe erledigt.</de>
 		</text>
 		<text name="CPReadyUnloadBale">
@@ -287,7 +287,7 @@
 			<de>Start bei %:</de>
 		</text>
 		<text name="CPTurnRadius">
-			<en>turn radius%:</en>
+			<en>turn radius:</en>
 			<de>Wenderadius:</de>
 		</text>
 		<text name="CPPipeOffset">
@@ -303,7 +303,7 @@
 			<de>keiner</de>
 		</text>
 		<text name="CPSelectCombine">
-			<en>chose combine:</en>
+			<en>Choose combine:</en>
 			<de>Drescher wählen:</de>
 		</text>
 		<text name="CPCombineSearch">
@@ -335,16 +335,16 @@
 			<de>Auf Straße:</de>
 		</text>
 		<text name="CPuseSpeed">
-			<de>Geschwindigkeit:</de>
 			<en>MaxSpeed:</en>
+			<de>Geschwindigkeit:</de>
 		</text>
 		<text name="CPuseSpeed1">
-			<de>wie beim einfahren</de>
 			<en>from recording</en>
+			<de>wie beim einfahren</de>
 		</text>
 		<text name="CPuseSpeed2">
-			<de>maximale Geschwindigkeit</de>
 			<en>maximum speed</en>
+			<de>maximale Geschwindigkeit</de>
 		</text>
 		<text name="CPCourse">
 			<en>course</en>
@@ -387,7 +387,7 @@
 			<de>Rundumleuchte:</de>
 		</text>
 		<text name="RulMode1">
-			<en>on the road turn on</en>
+			<en>only on the road</en>
 			<de>Auf der Straße</de>
 		</text>
 		<text name="RulMode2">
@@ -415,7 +415,7 @@
 			<de>Kein Arbeitsbereich in diesem Kurs</de>
 		</text>
 		<text name="CPCourseAdded">
-			<en>course combined</en>
+			<en>combined course</en>
 			<de>Kombinierter Kurs</de>
 		</text>
 		<text name="CPCombiSettings">
@@ -475,7 +475,7 @@
 			<de>Fahre hinter Traktor</de>
 		</text>
 		<text name="CPFuelWarning">
-			<en>to refuel soon</en>
+			<en>should be refueled soon</en>
 			<de>sollte aufgetankt werden</de>
 		</text>
 		<text name="CPNoFuelStop">
@@ -503,7 +503,7 @@
 			<de>Versetzt fahren</de>
 		</text>
 		<text name="CPWorkingWidht">
-			<en>working with</en>
+			<en>working width</en>
 			<de>Arbeitsbreite</de>
 		</text>
 		<text name="CPWaterDrive">
