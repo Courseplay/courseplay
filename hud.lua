@@ -197,8 +197,14 @@ function courseplay:loadHud(self)
 			self.hudpage[3][1][5] = courseplay:get_locale(self, "NoWaitforfillAt") --"abfahren bei%:"
 
 			if self.ai_state ~= nil then
-				if self.combine_offset > 0 or self.combine_offset < 0 then
-					self.hudpage[3][2][1] = string.format("%.1f", self.combine_offset)
+				if self.combine_offset ~= 0 then
+					local combine_offset_mode = ''
+					if self.auto_combine_offset then
+						combine_offset_mode = "(auto) "
+					else
+						combine_offset_mode = "(mnl) "
+					end
+					self.hudpage[3][2][1] = combine_offset_mode .. string.format("%.1f", self.combine_offset)
 				else
 					self.hudpage[3][2][1] = "auto"
 				end

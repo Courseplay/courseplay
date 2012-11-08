@@ -61,10 +61,16 @@ end
 
 
 function courseplay:change_combine_offset(self, change_by)
-	self.combine_offset = self.combine_offset + change_by
-  if self.combine_offset > -0.1 and self.combine_offset < 0.1 then
-    self.combine_offset = 0.0
-  end
+	local previousOffset = self.combine_offset
+	
+	self.auto_combine_offset = false
+	self.combine_offset = roundCustom(self.combine_offset, 1) + change_by
+	if self.combine_offset > -0.1 and self.combine_offset < 0.1 then
+		self.combine_offset = 0.0
+		self.auto_combine_offset = true
+	end
+	
+	courseplay:debug("manual combine_offset change: prev " .. previousOffset .. " // new " .. self.combine_offset .. " // auto = " .. tostring(self.auto_combine_offset), 2)
 end
 
 function courseplay:change_tipper_offset(self, change_by)

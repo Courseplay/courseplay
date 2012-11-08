@@ -189,7 +189,7 @@ function courseplay:load(xmlFile)
 	self.locales.CPaStar = g_i18n:getText("CPaStar")
 	self.locales.CPWPs = g_i18n:getText("CPWPs")
 
-  self.auto_combine_offset = false
+	self.auto_combine_offset = true
 	self.mouse_right_key_enabled = true
 	self.drive = false
 	self.StopEnd = false
@@ -970,4 +970,11 @@ function string:split(sep)
 	return fields
 end
 
+function roundCustom(number, numDecimals)
+	local positiveNegative = 1
+	if number < 0 then positiveNegative = -1 end
+	
+	local mult = 10^(numDecimals or 0)
+	return math.floor(number*positiveNegative * mult + 0.5) / mult * positiveNegative
+end
 
