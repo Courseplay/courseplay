@@ -213,11 +213,15 @@ function courseplay:loadHud(self)
 			end
 
 			if self.tipper_offset ~= nil then
-				if self.tipper_offset > 0 or self.tipper_offset < 0 then
-					self.hudpage[3][2][2] = string.format("%.1f", self.tipper_offset)
-				else
-					self.hudpage[3][2][2] = "auto"
+				local tipperOffsetStr = ''
+				if self.tipper_offset == 0 then
+					tipperOffsetStr = "auto"
+				elseif self.tipper_offset > 0 then
+					tipperOffsetStr = "auto+" .. string.format("%.1f", self.tipper_offset)
+				elseif self.tipper_offset < 0 then
+					tipperOffsetStr = "auto" .. string.format("%.1f", self.tipper_offset)
 				end
+				self.hudpage[3][2][2] = tipperOffsetStr
 			else
 				self.hudpage[3][2][2] = "---"
 			end

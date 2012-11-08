@@ -157,7 +157,6 @@ function courseplay:register_at_combine(self, combine)
 	if self.auto_combine_offset or self.auto_combine_offset == true or self.combine_offset == 0 then
 		courseplay:debug("combines.lua / self.auto_combine_offset = true / self.combine_offset: " .. self.combine_offset, 2)
 
-
 		--self.auto_combine_offset = true
 		local leftMarker = nil
 		local currentCutter = nil
@@ -176,9 +175,9 @@ function courseplay:register_at_combine(self, combine)
 		end;
 		
 		if leftMarker ~= nil then
-			courseplay:debug("combines.lua: leftMarker found / xt=" .. xt .. " / self.combine_offset=" .. self.combine_offset, 2)
+			courseplay:debug("combines.lua, " .. self.name .. "@" .. combine.name .. ": leftMarker found / xt=" .. xt .. " / self.combine_offset=" .. self.combine_offset, 2)
 		elseif leftMarker == nil then --combine has no cutter attached
-			courseplay:debug("combines.lua: leftMarker not found / self.combine_offset="..self.combine_offset.." / proceeding with estimate", 2)
+			courseplay:debug("combines.lua, " .. self.name .. "@" .. combine.name .. ": leftMarker not found / self.combine_offset="..self.combine_offset.." / proceeding with estimate", 2)
 			local pipeRaycastNodeX, pipeRaycastNodeY, pipeRaycastNodeZ = getTranslation(combine.pipeRaycastNode)
 
 			if getParent(combine.pipeRaycastNode) == combine.rootNode then -- pipeRaycastNode is direct child of combine.root
@@ -195,7 +194,7 @@ function courseplay:register_at_combine(self, combine)
 					self.combine_offset = -5
 				end
 			end
-			courseplay:debug("self.combine_offset=" .. self.combine_offset, 2)
+			courseplay:debug(self.name .. "@" .. combine.name .. ": self.combine_offset=" .. self.combine_offset, 2)
 		end
 		
 
@@ -206,7 +205,6 @@ function courseplay:register_at_combine(self, combine)
 		end
 
 		courseplay:debug("automatically setting combine_offset: " .. self.combine_offset, 2)
-
 	end
 
 	courseplay:add_to_combines_ignore_list(self, combine)

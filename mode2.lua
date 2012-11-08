@@ -202,7 +202,7 @@ function courseplay:unload_combine(self, dt)
 	if self.currentTrailerToFill ~= nil then
 		xt, yt, zt = worldToLocal(self.tippers[self.currentTrailerToFill].fillRootNode, x, y, z)
 	else
-		courseplay:debug("this should never happen - no currenTrailerToFillSet", 4)
+		courseplay:debug("this should never happen - no currentTrailerToFillSet", 4)
 		xt, yt, zt = worldToLocal(self.tippers[1].rootNode, x, y, z)
 	end
 
@@ -211,7 +211,7 @@ function courseplay:unload_combine(self, dt)
 		zt = zt * -1
 	end
 
-	local trailer_offset = zt
+	local trailer_offset = zt + self.tipper_offset
 
 
 	if self.sl == nil then
@@ -428,21 +428,21 @@ function courseplay:unload_combine(self, dt)
 				
 				--safety distance so the trailer doesn't crash into the pipe (sidearm)
 				if combine.name == "Grimme Maxtron 620" then
-					current_offset = pipeRaycastNodeX + 1.3
+					current_offset = pipeRaycastNodeX + 0.9 --0.8
 				elseif combine.name == "Grimme Tectron 415" then
 					current_offset = pipeRaycastNodeX - 0.5
 				end
-				courseplay:debug("Harvester: root > pipeRaycastNode // current_offset = " .. current_offset, 3)
+				courseplay:debug(self.name .. "@" .. combine.name .. ": root > pipeRaycastNode // current_offset = " .. current_offset, 3)
 			elseif getParent(getParent(combine.pipeRaycastNode)) == combine.rootNode then --pipeRaycastNode is direct child of pipe is direct child of combine.root
 				current_offset = pipeX - pipeRaycastNodeZ
-				courseplay:debug("Combine: root > pipe > pipeRaycastNode // current_offset = " .. current_offset, 3)
+				courseplay:debug(self.name .. "@" .. combine.name .. ": root > pipe > pipeRaycastNode // current_offset = " .. current_offset, 3)
 			else --BACKUP pipeRaycastNode isn't child of pipe
 				local combineXWorld, combineYWorld, combineZWorld = getWorldTranslation(combine.rootNode)
 				local pipeRaycastNodeXWorld, pipeRaycastNodeYWorld, pipeRaycastNodeZWorld = getWorldTranslation(combine.pipeRaycastNode)
 
 				--always positive (pipe is always on left side)
 				current_offset = Utils.vector2Length(pipeRaycastNodeXWorld-combineXWorld, pipeRaycastNodeZWorld-combineZWorld)
-				courseplay:debug("Combine: vector2Length // current_offset = " .. current_offset, 3)
+				courseplay:debug(self.name .. "@" .. combine.name .. ": vector2Length // current_offset = " .. current_offset, 3)
 			end
 		end
 
@@ -456,7 +456,6 @@ function courseplay:unload_combine(self, dt)
 		self.combine_offset = current_offset
 		
 		
-
 
 		currentX, currentY, currentZ = localToWorld(combine.rootNode, current_offset, 0, trailer_offset + 5)
 
