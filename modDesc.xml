@@ -558,6 +558,10 @@
 			<en>Hide Courseplay HUD</en>
 			<de>Courseplay HUD schließen</de>
 		</text>
+		<text name="CPOptions">
+			<en>Courseplay options</en>
+			<de>Courseplay-Optionen</de>
+		</text>
 	</l10n>
 
 	<extraSourceFiles>

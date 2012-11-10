@@ -595,6 +595,10 @@ end
 function courseplay:update(dt)
 	if self:getIsActive() then
    
+		if not InputBinding.isPressed(InputBinding.CP_Modifier_1) then
+			g_currentMission:addHelpButtonText(g_i18n:getText("CPOptions"), InputBinding.CP_Modifier_1)
+		end
+
 		if InputBinding.isPressed(InputBinding.CP_Modifier_1) and not self.mouse_right_key_enabled then
 			if self.show_hud then
 				g_currentMission:addHelpButtonText(g_i18n:getText("CPHudClose"), InputBinding.CP_Hud)
@@ -975,6 +979,7 @@ function roundCustom(number, numDecimals)
 	if number < 0 then positiveNegative = -1 end
 	
 	local mult = 10^(numDecimals or 0)
+	--local mult = math.pow(10, numDecimals or 0)
 	return math.floor(number*positiveNegative * mult + 0.5) / mult * positiveNegative
 end
 
