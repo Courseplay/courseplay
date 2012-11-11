@@ -446,11 +446,12 @@ function courseplay:unload_combine(self, dt)
 			end
 		end
 
-		if cornChopper and self.auto_combine_offset then
-			if self.combine_offset < 0 then
-				current_offset = current_offset * -1
-			end
-		end
+    -- FIXME WARUM war das wieder drin? häcksler müssen auf beiden seiten fahren könenn!
+		--if cornChopper and self.auto_combine_offset then
+		--	if self.combine_offset < 0 then
+		--		current_offset = current_offset * -1
+		--	end
+		--end
 
 		--refresh for display in HUD
 		self.combine_offset = current_offset
