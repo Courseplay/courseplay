@@ -30,6 +30,18 @@
 			<en>Start course recording</en>
 			<de>Kursaufzeichnung beginnen</de>
 		</text>
+		<text name="CourseDriveDirection">
+			<de>Fahrtrichtung</de>
+			<en>Direction</en>
+		</text>
+		<text name="CourseDriveDirectionFor">
+			<de>vorwärts</de>
+			<en>forwards</en>
+		</text>
+		<text name="CourseDriveDirectionBac">
+			<de>rückwärts</de>
+			<en>backwards</en>
+		</text>
 		<text name="PointRecordStop">
 			<en>Stop course recording</en>
 			<de>Kursaufzeichnung beenden</de>

@@ -133,6 +133,10 @@ function courseplay:deal_with_mouse_input(self, func, value)
 		courseplay:change_RulMode(self, value)
 	end
 
+  if func == "change_DriveDirection" then
+    courseplay:set_direction(self)
+  end
+
 	if func == "change_DebugLevel" then
 		courseplay:change_DebugLevel(value)
 	end
@@ -244,6 +248,8 @@ function courseplay:deal_with_mouse_input(self, func, value)
 					if not self.StopEnd and func == "row4" then
 						self.StopEnd = true
 					end
+
+          
 				end -- end not driving
 			end -- not playing
 
@@ -266,6 +272,7 @@ function courseplay:deal_with_mouse_input(self, func, value)
 					if func == "row1" then
 						courseplay:stop_record(self)
 					end
+
 
 					if not self.record_pause then
 						if func == "row2" then --and self.recordnumber > 3

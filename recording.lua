@@ -14,7 +14,7 @@ function courseplay:record(self)
 		local oldcx, oldcz, oldangle = self.Waypoints[self.recordnumber - 1].cx, self.Waypoints[self.recordnumber - 1].cz, self.Waypoints[self.recordnumber - 1].angle
 		anglediff = math.abs(newangle - oldangle)
 		self.dist = courseplay:distance(cx, cz, oldcx, oldcz)
-		if self.direction then
+		if self.direction == true then
 			if self.dist > 2 and (anglediff > 1.5 or dist > 10) then
 				self.tmr = 101
 			end
@@ -125,7 +125,7 @@ function courseplay:start_record(self)
 	self.waitPoints = 0
 	self.crossPoints = 0
 	self.tmr = 101
-	self.direction = false
+	self.direction = true
 end
 
 -- stops course recording -- just setting variables

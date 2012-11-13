@@ -86,6 +86,11 @@ function courseplay:load(xmlFile)
 	self.locales.CPWaypoint = g_i18n:getText("CPWaypoint")
 	self.locales.CPNoWaypoint = g_i18n:getText("CPNoWaypoint")
 
+  self.locales.CourseDriveDirection = g_i18n:getText("CourseDriveDirection")
+  self.locales.CourseDriveDirectionFor = g_i18n:getText("CourseDriveDirectionFor")
+  self.locales.CourseDriveDirectionBac = g_i18n:getText("CourseDriveDirectionBac")
+
+
 	self.locales.WaypointMode1 = g_i18n:getText("WaypointMode1")
 	self.locales.WaypointMode2 = g_i18n:getText("WaypointMode2")
 	self.locales.WaypointMode3 = g_i18n:getText("WaypointMode3")
@@ -313,7 +318,7 @@ function courseplay:load(xmlFile)
 	self.courseID = 0
 	-- array for multiple courses
 	self.loaded_courses = {}
-	self.direction = nil
+	self.direction = true
 	-- forced waypoints	
 	self.target_x = nil
 	self.target_y = nil
@@ -465,6 +470,8 @@ function courseplay:load(xmlFile)
 	courseplay:register_button(self, 1, "blank.dds", "row2", nil, self.hudInfoBasePosX - 0.05, self.hudInfoBasePosY + 0.185, 0.32, 0.015)
 	courseplay:register_button(self, 1, "blank.dds", "row3", nil, self.hudInfoBasePosX - 0.05, self.hudInfoBasePosY + 0.164, 0.32, 0.015)
 	courseplay:register_button(self, 1, "blank.dds", "row4", nil, self.hudInfoBasePosX - 0.05, self.hudInfoBasePosY + 0.143, 0.32, 0.015)
+  courseplay:register_button(self, 1, "blank.dds", "row5", nil, self.hudInfoBasePosX - 0.05, self.hudInfoBasePosY + 0.122, 0.32, 0.015)
+  courseplay:register_button(self, 1, "blank.dds", "change_DriveDirection", 1, self.hudInfoBasePosX - 0.05, self.hudInfoBasePosY + 0.122, 0.32, 0.015)
 
 	courseplay:register_button(self, 2, "blank.dds", "row1", nil, self.hudInfoBasePosX - 0.05, self.hudInfoBasePosY + 0.207, 0.32, 0.015)
 	courseplay:register_button(self, 2, "blank.dds", "row2", nil, self.hudInfoBasePosX - 0.05, self.hudInfoBasePosY + 0.185, 0.32, 0.015)
