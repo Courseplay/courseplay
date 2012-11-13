@@ -101,12 +101,12 @@ function courseplay:update_combines(self)
 		end
 	end
 
-	courseplay:debug(string.format("combines reachable: %d ", table.getn(self.reachable_combines)), 4)
+	courseplay:debug(string.format("%s: combines reachable: %d ", self.name, table.getn(self.reachable_combines)), 4)
 end
 
 
 function courseplay:register_at_combine(self, combine)
-	courseplay:debug("registering at combine", 2)
+	courseplay:debug(self.name .. ": registering at combine " .. combine.name, 2)
 	courseplay:debug(table.show(combine), 4)
 	
 
@@ -154,7 +154,7 @@ function courseplay:register_at_combine(self, combine)
 	self.active_combine = combine
 
 	--if math.floor(self.combine_offset) == 0 then
-	if self.auto_combine_offset or self.auto_combine_offset == true or self.combine_offset == 0 then
+	if self.auto_combine_offset or self.combine_offset == 0 then
 		courseplay:debug("combines.lua / self.auto_combine_offset = true / self.combine_offset: " .. self.combine_offset, 2)
 
 		--self.auto_combine_offset = true
@@ -174,10 +174,8 @@ function courseplay:register_at_combine(self, combine)
 			end;
 		end;
 		
-		if leftMarker ~= nil then
-			courseplay:debug("combines.lua, " .. self.name .. "@" .. combine.name .. ": leftMarker found / xt=" .. xt .. " / self.combine_offset=" .. self.combine_offset, 2)
-		elseif leftMarker == nil then --combine has no cutter attached
-			courseplay:debug("combines.lua, " .. self.name .. "@" .. combine.name .. ": leftMarker not found / self.combine_offset="..self.combine_offset.." / proceeding with estimate", 2)
+		if leftMarker == nil or xt < 0 then --combine has no cutter attached or aiLeftMarker has weird position
+			courseplay:debug("combines.lua, " .. self.name .. " @ " .. combine.name .. ": leftMarker not found / self.combine_offset="..self.combine_offset.." / proceeding with guesstimate-calculation", 2)
 			local pipeRaycastNodeX, pipeRaycastNodeY, pipeRaycastNodeZ = getTranslation(combine.pipeRaycastNode)
 
 			if getParent(combine.pipeRaycastNode) == combine.rootNode then -- pipeRaycastNode is direct child of combine.root
@@ -194,17 +192,13 @@ function courseplay:register_at_combine(self, combine)
 					self.combine_offset = -5
 				end
 			end
-			courseplay:debug(self.name .. "@" .. combine.name .. ": self.combine_offset=" .. self.combine_offset, 2)
+			courseplay:debug(self.name .. " @ " .. combine.name .. ": self.combine_offset=" .. self.combine_offset, 2)
+		elseif leftMarker ~= nil then
+			courseplay:debug("combines.lua, " .. self.name .. " @ " .. combine.name .. ": leftMarker found / xt=" .. xt .. " / self.combine_offset=" .. self.combine_offset, 2)
 		end
 		
 
-		--TODO: if (pipe is on right side) then pipeOnRightSide = true
-		if combine.typeName == "selfPropelledPotatoHarvester" or combine.typeName == "attachableCombine" then
-			local pipeX, y, z = getTranslation(combine.pipeRaycastNode)
-			self.combine_offset = pipeX
-		end
-
-		courseplay:debug("automatically setting combine_offset: " .. self.combine_offset, 2)
+		courseplay:debug(self.name .. ": automatically setting combine_offset: " .. self.combine_offset, 2)
 	end
 
 	courseplay:add_to_combines_ignore_list(self, combine)

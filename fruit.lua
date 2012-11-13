@@ -150,7 +150,7 @@ function courseplay:side_to_drive(self, combine, distance)
 
 	rightFruit = rightFruit + Utils.getFruitArea(combine.lastValidInputFruitType, rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ)
 
-	courseplay:debug(string.format("fruit:  left %f right %f", leftFruit, rightFruit), 3)
+	courseplay:debug(string.format("%s: fruit: left %f right %f", combine.name, leftFruit, rightFruit), 3)
 
 	return leftFruit, rightFruit
 end

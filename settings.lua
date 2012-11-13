@@ -65,7 +65,7 @@ function courseplay:change_combine_offset(self, change_by)
 	
 	self.auto_combine_offset = false
 	self.combine_offset = roundCustom(self.combine_offset, 1) + change_by
-	if self.combine_offset > -0.1 and self.combine_offset < 0.1 then
+	if self.combine_offset < 0.1 then
 		self.combine_offset = 0.0
 		self.auto_combine_offset = true
 	end
@@ -74,7 +74,10 @@ function courseplay:change_combine_offset(self, change_by)
 end
 
 function courseplay:change_tipper_offset(self, change_by)
-	self.tipper_offset = self.tipper_offset + change_by
+	self.tipper_offset = roundCustom(self.tipper_offset, 1) + change_by
+	if self.tipper_offset > -0.1 and self.tipper_offset < 0.1 then
+		self.tipper_offset = 0.0
+	end
 end
 
 

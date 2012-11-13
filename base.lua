@@ -594,11 +594,6 @@ end
 -- is been called everey frame
 function courseplay:update(dt)
 	if self:getIsActive() then
-   
-		if not InputBinding.isPressed(InputBinding.CP_Modifier_1) then
-			g_currentMission:addHelpButtonText(g_i18n:getText("CPOptions"), InputBinding.CP_Modifier_1)
-		end
-
 		if InputBinding.isPressed(InputBinding.CP_Modifier_1) and not self.mouse_right_key_enabled then
 			if self.show_hud then
 				g_currentMission:addHelpButtonText(g_i18n:getText("CPHudClose"), InputBinding.CP_Hud)

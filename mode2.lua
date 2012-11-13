@@ -417,11 +417,16 @@ function courseplay:unload_combine(self, dt)
 
 
 		local current_offset = self.combine_offset
-
+		
+		--TODO: move all that shit over to combines.lua, or better yet base.lua, so it doesn't have to be calculated constantly
+		local pipeRaycastNodeX, pipeRaycastNodeY, pipeRaycastNodeZ = getTranslation(combine.pipeRaycastNode)
+		local pipeX, pipeY, pipeZ = getTranslation(getParent(combine.pipeRaycastNode))
+		local combineWorldX, combineWorldY, combineWorldZ = getWorldTranslation(combine.rootNode)
+		local pipeRaycastNodeXWorld, pipeRaycastNodeYWorld, pipeRaycastNodeZWorld = getWorldTranslation(combine.pipeRaycastNode)
+		local pipeNodeToCombineX, pipeToCombineY, pipeToCombineZ = worldToLocal(combine.pipeRaycastNode, combineXWorld, combineYWorld, combineZWorld)
+		
+		--combine_offset is in auto mode
 		if not cornChopper and self.auto_combine_offset and combine.currentPipeState == 2 then
-			local pipeRaycastNodeX, pipeRaycastNodeY, pipeRaycastNodeZ = getTranslation(combine.pipeRaycastNode)
-			local pipeX, pipeY, pipeZ = getTranslation(getParent(combine.pipeRaycastNode))
-			
 			if getParent(combine.pipeRaycastNode) == combine.rootNode then -- pipeRaycastNode is direct child of combine.root
 			--OLD: if combine.typeName == "selfPropelledPotatoHarvester" then
 				current_offset = pipeRaycastNodeX
@@ -432,24 +437,38 @@ function courseplay:unload_combine(self, dt)
 				elseif combine.name == "Grimme Tectron 415" then
 					current_offset = pipeRaycastNodeX - 0.5
 				end
-				courseplay:debug(self.name .. "@" .. combine.name .. ": root > pipeRaycastNode // current_offset = " .. current_offset, 3)
+				courseplay:debug(self.name .. " @ " .. combine.name .. ": root > pipeRaycastNode // current_offset = " .. current_offset, 3)
 			elseif getParent(getParent(combine.pipeRaycastNode)) == combine.rootNode then --pipeRaycastNode is direct child of pipe is direct child of combine.root
 				current_offset = pipeX - pipeRaycastNodeZ
-				courseplay:debug(self.name .. "@" .. combine.name .. ": root > pipe > pipeRaycastNode // current_offset = " .. current_offset, 3)
+				courseplay:debug(self.name .. " @ " .. combine.name .. ": root > pipe > pipeRaycastNode // current_offset = " .. current_offset, 3)
 			else --BACKUP pipeRaycastNode isn't child of pipe
-				local combineXWorld, combineYWorld, combineZWorld = getWorldTranslation(combine.rootNode)
-				local pipeRaycastNodeXWorld, pipeRaycastNodeYWorld, pipeRaycastNodeZWorld = getWorldTranslation(combine.pipeRaycastNode)
 
-				--always positive (pipe is always on left side)
-				current_offset = Utils.vector2Length(pipeRaycastNodeXWorld-combineXWorld, pipeRaycastNodeZWorld-combineZWorld)
-				courseplay:debug(self.name .. "@" .. combine.name .. ": vector2Length // current_offset = " .. current_offset, 3)
+				current_offset = Utils.vector2Length(pipeRaycastNodeXWorld-combineWorldX, pipeRaycastNodeZWorld-combineWorldZ)
+				if pipeNodeToCombineX < 0 then
+					current_offset = current_offset * -1
+				end
+				courseplay:debug(self.name .. " @ " .. combine.name .. ": vector2Length // current_offset = " .. current_offset, 3)
 			end
-		end
 
-		if cornChopper and self.auto_combine_offset then
-			if self.combine_offset < 0 then
+		--combine_offset is in manual mode
+		elseif not cornChopper and not self.auto_combine_offset then
+			local distance_pipeNodeToCombine = Utils.vector2Length(pipeRaycastNodeXWorld-combineWorldX, pipeRaycastNodeZWorld-combineWorldZ)
+			courseplay:debug(self.name .. " @ " .. combine.name .. ": distance_pipeNodeToCombine = " .. distance_pipeNodeToCombine, 2)
+			courseplay:debug(self.name .. " @ " .. combine.name .. ": pipeNodeToCombineX = " .. pipeNodeToCombineX, 2)
+			if pipeNodeToCombineX < 0 then
 				current_offset = current_offset * -1
 			end
+		end
+		
+		--cornChopper forced side offset
+		if cornChopper and self.forced_side ~= nil then
+			local current_offset_positive = math.sqrt(current_offset^2)
+			if self.forced_side == "left" then
+				current_offset = current_offset_positive
+			elseif self.forced_side == "right" then
+				current_offset = current_offset_positive * -1
+			end
+			courseplay:debug(self.name .. " @ " .. combine.name .. ": forced_side = " .. self.forced_side .. " -> current_offset = " .. current_offset, 2)
 		end
 
 		--refresh for display in HUD
