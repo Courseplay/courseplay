@@ -128,7 +128,7 @@ function courseplay:loadHud(self)
 
 							self.hudpage[1][1][4] = courseplay:get_locale(self, "CourseCrossingSet")							
               self.hudpage[1][1][5] = courseplay:get_locale(self, "CourseDriveDirection")	.. " "
-              if self.direction == true then
+              if not self.direction  then
                 self.hudpage[1][1][5] =  self.hudpage[1][1][5] .. courseplay:get_locale(self, "CourseDriveDirectionFor")
               else
                 self.hudpage[1][1][5] =  self.hudpage[1][1][5] .. courseplay:get_locale(self, "CourseDriveDirectionBac")

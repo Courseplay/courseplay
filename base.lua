@@ -318,7 +318,7 @@ function courseplay:load(xmlFile)
 	self.courseID = 0
 	-- array for multiple courses
 	self.loaded_courses = {}
-	self.direction = true
+	self.direction = false
 	-- forced waypoints	
 	self.target_x = nil
 	self.target_y = nil

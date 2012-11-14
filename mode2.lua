@@ -388,26 +388,29 @@ function courseplay:unload_combine(self, dt)
 		  
 
 			if leftFruit > rightFruit then
-				local next_x, next_y, next_z = localToWorld(combine.rootNode, -10, 0, -10)
+				local next_x, next_y, next_z = localToWorld(combine.rootNode, -15, 0, -10)
 				local next_wp = { x = next_x, y = next_y, z = next_z }
 				table.insert(self.next_targets, next_wp)
 
-				local next_x, next_y, next_z = localToWorld(combine.rootNode, -10, 0, -30)
+				local next_x, next_y, next_z = localToWorld(combine.rootNode, -15, 0, -30)
 				local next_wp = { x = next_x, y = next_y, z = next_z }
 				table.insert(self.next_targets, next_wp)
+
+        mode = 5 -- turn around and then wait for next start
 			else
-				local next_x, next_y, next_z = localToWorld(combine.rootNode, 10, 0, -10)
-				local next_wp = { x = next_x, y = next_y, z = next_z }
-				table.insert(self.next_targets, next_wp)
+				--local next_x, next_y, next_z = localToWorld(combine.rootNode, 10, 0, -10)
+				--local next_wp = { x = next_x, y = next_y, z = next_z }
+				--table.insert(self.next_targets, next_wp)
 
-				local next_x, next_y, next_z = localToWorld(combine.rootNode, 10, 0, -30)
-				local next_wp = { x = next_x, y = next_y, z = next_z }
-				table.insert(self.next_targets, next_wp)
+				--local next_x, next_y, next_z = localToWorld(combine.rootNode, 10, 0, -30)
+				--local next_wp = { x = next_x, y = next_y, z = next_z }
+				--table.insert(self.next_targets, next_wp)
+        mode = 1
 			end
 				
 		  
 
-			mode = 5 -- turn around and then wait for next start
+			
 			if tipper_percentage >= self.required_fill_level_for_drive_on then
 				self.loaded = true
 			else

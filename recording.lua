@@ -125,7 +125,7 @@ function courseplay:start_record(self)
 	self.waitPoints = 0
 	self.crossPoints = 0
 	self.tmr = 101
-	self.direction = true
+	self.direction = false
 end
 
 -- stops course recording -- just setting variables
