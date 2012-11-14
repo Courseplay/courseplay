@@ -1,4 +1,4 @@
-﻿Courseplay - Abfahrhelfer für LS 2011 v 3.0
+﻿Courseplay - Abfahrhelfer für LS 2011 v 3.2
 
 Inhaltsverzeichnis
 
@@ -6,9 +6,24 @@ I. Changelog
 II.   Installationsanweisung
 III.  Bedienungsanleitung
 IV. Credits
-V. Videos
 
-Ia. Changelog - Änderungen seit Version 2.2 / 2.4
+1a. Changlog - Änderungen seit Version 3.12
+	- Konvertierung auf LS 2013
+	- Unterstützung mehrerer Abkippseiten beim Hänger
+	- Automatische Einstellung des seitlichen Abstandes
+	- Fruchtumfahrung dekativiert (gab zu viele Probleme damit)
+	- Unterstützung für Rüben/Kartoffelernter
+	- Optimiertes Wendemanöver beim Dreschen und Häckseln
+	- Einstellungen im HUD können mit gedrückter STRG-Taste in größeren Schritten verstellt werden.
+	- Debug-Level in allgemeinen Einstellungen einstellbar
+	- Abkippen auf der BGA erfolgt während der Fahrt
+	- Doppelbelegung der EINFG-Taste behoben
+	- Infomeldung wenn Abfahrer im Verkehr steckt wird wieder angezeigt
+	- Bedienung von Courseplay mit STRG+7 STRG+8 und STRG+9 statt ohne STRG
+	- manuelles Rückwärtsfahren: Um einen Kurs rückwärts aufzuzeichnen muss man jetzt die Fahrtrichtung im HUD ändern
+	- und zig Bugfixes
+
+Ib. Changelog - Änderungen seit Version 2.2 / 2.4
 	- Neuer Modus: Drescher fährt selbst zum abtanken
 	  - Mähdrescher können jetzt auch selbstständig zu Hängern am Feldrand fahren. Dazu muss man mit dem Drescher einen Kurs einfahren der einen Wartepunkt enthält. Dieser Wartepunkt ist die Stelle an der auf den Hänger übergeladen wird. Nach dem Überladepunkt muss die Aufzeichnung beendet werden. Dann richtet man den Drescher auf dem Feld aus, schaltet den Helfer ein und ERST DANN stellt man den Abfahrhelfer ein.
 	- Überladewagen kippen im Überlademodus automatisch ab
@@ -23,7 +38,7 @@ Ia. Changelog - Änderungen seit Version 2.2 / 2.4
     - man kann auf der letzten Seite der Einstellungen die Haltezeit am Wartepunkt definieren. Ist diese auf "0" wartet der Abfahrer am Wartepunkt bis er weitergeschickt wird. Ansonsten wartet er die vorgegebene Zeit am Wartepunkt und fährt dann automatisch weiter. (Ideal für die MapWeightStation)
 
 
-Ib. Changelog - Änderungen seit Version 2.11
+Ic. Changelog - Änderungen seit Version 2.11
 	- Neuer Modus: Drescher fährt selbst zum abtanken
 	- support für das BGA Silo des Giants DLC2
 	- support für typanywhere mod
@@ -33,7 +48,7 @@ Ib. Changelog - Änderungen seit Version 2.11
 	- selten auftretenden multiplayer-callstacks behoben 
 
 
-Ic. Changelog - Änderungen seit Version 2.0
+Id. Changelog - Änderungen seit Version 2.0
 	In der Version 2.0 waren leider noch einige Fehler die den Multiplayermodus gestört haben. Diese wurden behoben.
 	Neu in dieser Version ist vor allem, dass ihr eure Schlepper nicht mehr mit courseplay nachrüsten müsst. Einfach den Mod ins Modverzeichnis und alle Fahrzeuge sind automatisch damit ausgestattet.
 	Durch diese Änderung müsst ihr leider in allen bereits umgerüsteten Schleppern den Eintrag "<specialization name="courseplay" />" entfernen.
@@ -41,7 +56,7 @@ Ic. Changelog - Änderungen seit Version 2.0
 	
 	Wichtig: die Datei aaacourseplay.zip (v2 und kleiner) MUSS aus dem Mod-Verzeichnis gelöscht werden.
 
-Id. Changelog - Änderungen seit Version 1.6
+Ie. Changelog - Änderungen seit Version 1.6
 
 	Die größte Änderung im courseplay ist natürlich die Multiplayerfähigkeit. Dabei werden beim Spielstart alle Werte und sogar gespeicherte Kurse vom Host an die Clients übertragen. Das kann mitunter ein bisschen dauern ist aber notwendig.
 	Neben zahlreichen Bugfixes und Performance-Optimierungen die hier nicht weiter erwähnt werden sollen gibt es im wesentlichen die folgende Neuerungen:
@@ -65,7 +80,7 @@ Id. Changelog - Änderungen seit Version 1.6
 	Außerdem gibt es neue Symbole für die Wegpunkte und spezielle Wegpunkte wie Kreuzungspunkte und Startpunkte sind auch sichtbar wenn ihr nicht im Fahrzeug seid welches die Route gespeichert hat.
 
 
-Ie. Changelog - Änderungen seit Version 1.2
+If. Changelog - Änderungen seit Version 1.2
 
 	Neu hinzugekommen sind vor allem der Feldmodus mit dem man Ballen pressen und Heusammeln kann. Der Güllemodus wurde weiter perfektioniert und es ist jetzt auch möglich den Abfahrhelfer in Drescher und Häcksler einzubauen.
 	Damit kann man beispielsweise mit Dreschern im Helfermodus Kurse aufzeichnen lassen die man dann später für den Gülle- oder Feldmodus verändern kann.
@@ -76,7 +91,7 @@ Ie. Changelog - Änderungen seit Version 1.2
 	Dann gab es natürlich auch noch etwas Feintuning: Das unsinnige Kreiseln auf dem Feld sollte jetzt vorbei sein, HW80 Drehschemel und Agroliner Container werden jetzt auch unterstützt. 
 
 
-If. Changelog - Änderungen seit Version 1.0
+Ig. Changelog - Änderungen seit Version 1.0
 
 	Als neue Funktionen sind im wesentlichen der Düngemodus und das Rückwärtsfahren hinzugekommen. Außerdem wurde das Fahrverhalten (besonders in Kurven) verbessert und es werden mehr EntladeTrigger (Gras und Silage) erkannt.
 	Zudem kann man jetzt gespeicherte Kurse kombinieren indem man mehrere Kurse hintereinander lädt. Wenn man nur einen neuen Kurs laden will muss man allerdings jetzt vorher die Wegpunkte des alten zurücksetzen.
@@ -91,7 +106,7 @@ If. Changelog - Änderungen seit Version 1.0
 
 II. Installationsanweisung
 
-1. Das Archiv ZZZ_courseplay.zip in das Verzeichnis C:\Users\dein Username\MyGames\FarmingSimulator2011\mods kopieren. Das War es!
+1. Das Archiv ZZZ_courseplay.zip in das Verzeichnis C:\Users\dein Username\MyGames\FarmingSimulator2013\mods kopieren. Das War es!
 
 
 III. Bedienungsanleitung
@@ -217,11 +232,12 @@ III. Bedienungsanleitung
 	HUD "Einstellungen Combi Modus":
 
 		Diese Einstellungen gelten (wie der Name es andeutet) nur für den kombinierten Modus und den Überlademodus. Hiermit könnt ihr euren Abfahrer an den jeweiligen Drescher anpassen.
-		Ihr könnt die Werte mit einem Klick auf das +/- Symbol daneben anpassen
+		Ihr könnt die Werte mit einem Klick auf das +/- Symbol daneben anpassen (Bei klick mit gedrückter STRG-Taste verstellt ihr die Werte in größeren Abständen)
 
 		seitl. Abstand
 
 			Dieser Wert definiert den seitlichen Abstand den ein Abfahrer zum Drescher oder Häcksler beim nebenher fahren einhalten soll.
+			Voreingestellt ist hier "auto" damit passt sich der Abfahrer automatisch an den Drescher oder Häcksler an.
 
 		Start bei %:
 
@@ -234,7 +250,7 @@ III. Bedienungsanleitung
 
 		Pipe Abstand:
 
-			Dieser Wert legt fest wie weit der Abfahrer beim nebenher fahren vor oder zurück fahren soll. Hiermit lässt sich der Abfahrer auf verschiedene Anhänger umstellen.
+			wird im Spiel nicht mehr berücksichtigt
 
 	HUD "Drescher verwalten":
 
@@ -249,45 +265,10 @@ III. Bedienungsanleitung
 
 
 IV. Credits
-	Lautschreier/Wolverin0815/Bastian82/Hummel	
+	Lautschreier (Grundversion)
+	Hummel       (modhoster.de)
+	Wolverin0815 (Feldarbeitsmodus, HUD, ...)
+	Bastian82    (Feldarbeitsmodus, Optimierungen, ...)
+	Skydancer    (Feldkursgenerierung, Güllezubringerunterstützung, ...)
+	JakobT	     (debug Modus, automatischer Abstand, neue Steuerung mit STRG)
 
-	Die Entwicklung von courseplay war wohl etwas "ungewöhnlich"
-
-	Die Grundversion hat "lautschreier" Anfang des Jahres begonnen. Diese konnte bereits Kurse einspeichern und abfahren.
-	Mitte Februar wurde ich (hummel/netjungle) auf dieses Projekt bei planet-ls.de aufmerksam und beschloss da etwas mitzuhelfen.
-	Aus "etwas mithelfen" wurde eine krankhafte Sucht und das Ergebnis heißt heute courseplay
-
-	Ein besonderer Dank geht also selbstverstänlich an Lautschreier ohne den dieses Projekt wohl nie gestartet wäre. Vor allem dafür, dass er sein geistiges Eigentum zur Weiterentwicklung freigeben hat. (Open Source kann halt funktionieren)
-	Weiterhin hat mich "Wolverin0815" auch sehr aktiv bei der Entwicklung unterstützt und unter anderem die erste Version des HUds integriert. Auch hier ein großer Dank für sein Engagement und seine Ideen.
-
-	Den Feldarbeitsmodus mit automatischem Pressen und Schwadaufnahme mit einem Ladewagen verdanken wir bastian82
-
-	Zudem geht natürlich ein riesengroßes Dankeschön an alle die bei planet-ls.de fleißig getestet haben und ihre Ideen haben einfließen lassen. Die Enticklung hat mit soviel Feedback wirklich sehr viel Spaß gemacht.
-
-	Auch beim Erfinder des Path Tractor aus LS 09 "micha381" an dem sich courseplay natürlich orientiert hat, muss ich mich bedanken.
-
-	Ein dickes Dankeschön auch an Sven777b, der mir die entscheidenen Tipps zum Thema Multiplayerfähigkeit gegeben hat.
-
-	Und last but not least noch ein großes Dankeschön an mein Weibchen die mich in den letzten Wochen diesen "24/7 Wahnsinn" hat ausleben lassen ;)
-
-V. Videos
-
-	Ich habe mir mal die Mühe gemacht und einige Video-Tutorials zu Courseplay zur Verfügung gestellt:
-
-	Einbau:
-	http://www.youtube.com/watch?v=frfNX5ZD090
-
-	Steuerung/Überführung
-	http://www.youtube.com/watch?v=6ntt2RZGiTA
-
-	Combi Modus
-	http://www.youtube.com/watch?v=eQWQ7FrNBO8
-
-	Überladewagen
-	http://www.youtube.com/watch?v=DxyInzZgdDc
-
-	Düngemodus
-	http://www.youtube.com/watch?v=7yvaOI_TUIg
-
-	Feldmodus
-	http://www.youtube.com/watch?v=fHnqo9Jq_nc
