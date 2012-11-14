@@ -6,7 +6,6 @@
 2. [Installationsanweisung](#install)
 3. [Bedienungsanleitung](#bedienungsanleitung)
 4. [Credits](#credits)
-5. [Videos](#videos)
 
 ___
 
