@@ -13,6 +13,22 @@ ___
 <a name="changelog">
 ## Changelog
 
+### Änderungen seit Version 3.12
+* **Konvertierung auf LS 2013
+* **Unterstützung mehrerer Abkippseiten beim Hänger
+* **Automatische Einstellung des seitlichen Abstandes
+* **Fruchtumfahrung dekativiert (gab zu viele Probleme damit)
+* **Unterstützung für Rüben/Kartoffelernter
+* **Optimiertes Wendemanöver beim Dreschen und Häckseln
+* **Einstellungen im HUD können mit gedrückter STRG-Taste in größeren Schritten verstellt werden.
+* **Debug-Level in allgemeinen Einstellungen einstellbar
+* **Abkippen auf der BGA erfolgt während der Fahrt
+* **Doppelbelegung der EINFG-Taste behoben
+* **Infomeldung wenn Abfahrer im Verkehr steckt wird wieder angezeigt
+* **Bedienung von Courseplay mit STRG+7 STRG+8 und STRG+9 statt ohne STRG
+* **manuelles Rückwärtsfahren: Um einen Kurs rückwärts aufzuzeichnen muss man jetzt die Fahrtrichtung im HUD ändern
+* **und zig Bugfixes
+
 ### Änderungen seit Version 2.2 / 2.4
 * **Neuer Modus: Drescher fährt selbst zum abtanken**  
    Mähdrescher können jetzt auch selbstständig zu Hängern am Feldrand fahren. Dazu muss man mit dem Drescher einen Kurs einfahren der einen Wartepunkt enthält. Dieser Wartepunkt ist die Stelle an der auf den Hänger übergeladen wird. Nach dem Überladepunkt muss die Aufzeichnung beendet werden. Dann richtet man den Drescher auf dem Feld aus, schaltet den Helfer ein und ERST DANN stellt man den Abfahrhelfer ein.
@@ -189,10 +205,10 @@ Mit den blauen Pfeilen rechts oben und rechts unten könnt ihr durch die gespeic
 
 
 #### HUD "Einstellungen Combi Modus":
-Diese Einstellungen gelten (wie der Name es andeutet) nur für den kombinierten Modus und den Überlademodus. Hiermit könnt ihr euren Abfahrer an den jeweiligen Drescher anpassen. Ihr könnt die Werte mit einem Klick auf das +/- Symbol daneben anpassen
+Diese Einstellungen gelten (wie der Name es andeutet) nur für den kombinierten Modus und den Überlademodus. Hiermit könnt ihr euren Abfahrer an den jeweiligen Drescher anpassen. Ihr könnt die Werte mit einem Klick auf das +/- Symbol daneben anpassen (Bei klick mit gedrückter STRG-Taste verstellt ihr die Werte in größeren Abständen)
 
 * **seitl. Abstand**  
-   Dieser Wert definiert den seitlichen Abstand den ein Abfahrer zum Drescher oder Häcksler beim nebenher fahren einhalten soll.
+   Dieser Wert definiert den seitlichen Abstand den ein Abfahrer zum Drescher oder Häcksler beim nebenher fahren einhalten soll. Voreingestellt ist hier "auto" damit passt sich der Abfahrer automatisch an den Drescher oder Häcksler an.
 
 * **Start bei %**  
    Dieser Wert legt fest ab welchem Füllstand des Dreschers der Abfahrer zu ihm fährt und ihn abtankt. Bei Häckslern wird durch diesen Wert festgelegt ab wann der zweite Abfahrer in der Kette dem ersten hinterherfahren soll.
@@ -201,7 +217,7 @@ Diese Einstellungen gelten (wie der Name es andeutet) nur für den kombinierten 
    Dieser Wert ist nur beim Häckseln wichtig und legt fest wie weit der Abfahrer beim Wenden des Häckslers von ihm wegfahren soll ohne ihm im Weg zu stehen.
 
 * **Pipe Abstand**  
-   Dieser Wert legt fest wie weit der Abfahrer beim nebenher fahren vor oder zurück fahren soll. Hiermit lässt sich der Abfahrer auf verschiedene Anhänger umstellen.
+   entfällt in aktueller Version
 
 
 #### HUD "Drescher verwalten"
@@ -218,39 +234,12 @@ ___
 
 <a name="credits">
 ## Credits  
-* Lautschreier  
-* Wolverin0815  
-* Bastian82
-* Hummel  
-
-Die Entwicklung von Courseplay war wohl etwas "ungewöhnlich".   
-
-Die Grundversion hat **Lautschreier** Anfang des Jahres begonnen. Diese konnte bereits Kurse einspeichern und abfahren. Mitte Februar wurde ich (**hummel/netjungle**) auf dieses Projekt bei planet-ls.de aufmerksam und beschloss da etwas mitzuhelfen. Aus "etwas mithelfen" wurde eine krankhafte Sucht und das Ergebnis heißt heute Courseplay.
-
-Ein besonderer Dank geht also selbstverständlich an **Lautschreier** ohne den dieses Projekt wohl nie gestartet wäre. Vor allem dafür, dass er sein geistiges Eigentum zur Weiterentwicklung freigeben hat (Open Source kann halt funktionieren). Weiterhin hat mich **Wolverin0815** auch sehr aktiv bei der Entwicklung unterstützt und unter anderem die erste Version des HUDs integriert. Auch hier ein großer Dank für sein Engagement und seine Ideen.
-
-Den Feldarbeitsmodus mit automatischem Pressen und Schwadaufnahme mit einem Ladewagen verdanken wir **bastian82**.
-
-Zudem geht natürlich ein riesengroßes Dankeschön an alle die bei planet-ls.de fleißig getestet haben und ihre Ideen haben einfließen lassen. Die Enticklung hat mit soviel Feedback wirklich sehr viel Spaß gemacht.
-
-Auch beim Erfinder des Path Tractor aus LS 09 **micha381** an dem sich Courseplay natürlich orientiert hat, muss ich mich bedanken.
-
-Ein dickes Dankeschön auch an **Sven777b**, der mir die entscheidenen Tipps zum Thema Multiplayerfähigkeit gegeben hat.
-
-Und last but not least noch ein großes Dankeschön an mein Weibchen die mich in den letzten Wochen diesen "24/7 Wahnsinn" hat ausleben lassen ;)
-
-___
-
-<a name="videos">
-## Videos
-Ich habe mir mal die Mühe gemacht und einige Video-Tutorials zu Courseplay zur Verfügung gestellt:  
-
-* [Einbau](http://www.youtube.com/watch?v=frfNX5ZD090)
-* [Steuerung/Überführung](http://www.youtube.com/watch?v=6ntt2RZGiTA)
-* [Combi Modus](http://www.youtube.com/watch?v=eQWQ7FrNBO8)
-* [Überladewagen](http://www.youtube.com/watch?v=DxyInzZgdDc)
-* [Düngemodus](http://www.youtube.com/watch?v=7yvaOI_TUIg)
-* [Feldmodus](http://www.youtube.com/watch?v=fHnqo9Jq_nc)
+* Lautschreier (Grundversion)
+* Hummel       (modhoster.de)
+* Wolverin0815 (Feldarbeitsmodus, HUD, ...)
+* Bastian82    (Feldarbeitsmodus, Optimierungen, ...)
+* Skydancer    (Feldkursgenerierung, Güllezubringerunterstützung, ...)
+* JakobT	(debug Modus, automatischer Abstand, neue Steuerung mit STRG)
    
    
    
