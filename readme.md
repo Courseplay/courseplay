@@ -14,20 +14,20 @@ ___
 ## Changelog
 
 ### Änderungen seit Version 3.12
-* **Konvertierung auf LS 2013
-* **Unterstützung mehrerer Abkippseiten beim Hänger
-* **Automatische Einstellung des seitlichen Abstandes
-* **Fruchtumfahrung dekativiert (gab zu viele Probleme damit)
-* **Unterstützung für Rüben/Kartoffelernter
-* **Optimiertes Wendemanöver beim Dreschen und Häckseln
-* **Einstellungen im HUD können mit gedrückter STRG-Taste in größeren Schritten verstellt werden.
-* **Debug-Level in allgemeinen Einstellungen einstellbar
-* **Abkippen auf der BGA erfolgt während der Fahrt
-* **Doppelbelegung der EINFG-Taste behoben
-* **Infomeldung wenn Abfahrer im Verkehr steckt wird wieder angezeigt
-* **Bedienung von Courseplay mit STRG+7 STRG+8 und STRG+9 statt ohne STRG
-* **manuelles Rückwärtsfahren: Um einen Kurs rückwärts aufzuzeichnen muss man jetzt die Fahrtrichtung im HUD ändern
-* **und zig Bugfixes
+* Konvertierung auf LS 2013
+* Unterstützung mehrerer Abkippseiten beim Hänger
+* Automatische Einstellung des seitlichen Abstandes
+* Fruchtumfahrung dekativiert (gab zu viele Probleme damit)
+* Unterstützung für Rüben/Kartoffelernter
+* Optimiertes Wendemanöver beim Dreschen und Häckseln
+* Einstellungen im HUD können mit gedrückter STRG-Taste in größeren Schritten verstellt werden.
+* Debug-Level in allgemeinen Einstellungen einstellbar
+* Abkippen auf der BGA erfolgt während der Fahrt
+* Doppelbelegung der EINFG-Taste behoben
+* Infomeldung wenn Abfahrer im Verkehr steckt wird wieder angezeigt
+* Bedienung von Courseplay mit STRG+7 STRG+8 und STRG+9 statt ohne STRG
+* manuelles Rückwärtsfahren: Um einen Kurs rückwärts aufzuzeichnen muss man jetzt die Fahrtrichtung im HUD ändern
+* und zig Bugfixes
 
 ### Änderungen seit Version 2.2 / 2.4
 * **Neuer Modus: Drescher fährt selbst zum abtanken**  
