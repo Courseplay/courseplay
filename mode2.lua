@@ -227,11 +227,6 @@ function courseplay:unload_combine(self, dt)
 
 	if combine.grainTankCapacity > 0 then
 		combine_fill_level = combine.grainTankFillLevel * 100 / combine.grainTankCapacity
-		
-		--TODO: if (pipe is on right side) then pipeOnRightSide = true
-		if combine.typeName == "selfPropelledPotatoHarvester" or combine.typeName == "attachableCombine" then
-			--isHarvester = true
-		end
 	else -- combine is a chopper / has no tank
 		combine_fill_level = 51
 		cornChopper = true
@@ -396,7 +391,7 @@ function courseplay:unload_combine(self, dt)
 				local next_wp = { x = next_x, y = next_y, z = next_z }
 				table.insert(self.next_targets, next_wp)
 
-        mode = 5 -- turn around and then wait for next start
+				mode = 5 -- turn around and then wait for next start
 			else
 				--local next_x, next_y, next_z = localToWorld(combine.rootNode, 10, 0, -10)
 				--local next_wp = { x = next_x, y = next_y, z = next_z }
@@ -405,12 +400,12 @@ function courseplay:unload_combine(self, dt)
 				--local next_x, next_y, next_z = localToWorld(combine.rootNode, 10, 0, -30)
 				--local next_wp = { x = next_x, y = next_y, z = next_z }
 				--table.insert(self.next_targets, next_wp)
-        mode = 1
+				mode = 1
 			end
 				
 		  
 
-			
+
 			if tipper_percentage >= self.required_fill_level_for_drive_on then
 				self.loaded = true
 			else
@@ -422,44 +417,45 @@ function courseplay:unload_combine(self, dt)
 		local current_offset = self.combine_offset
 		
 		--TODO: move all that shit over to combines.lua, or better yet base.lua, so it doesn't have to be calculated constantly
+		--TODO: always use pipeNodeToCombineX, no matter what?
 		local pipeRaycastNodeX, pipeRaycastNodeY, pipeRaycastNodeZ = getTranslation(combine.pipeRaycastNode)
-		local pipeX, pipeY, pipeZ = getTranslation(getParent(combine.pipeRaycastNode))
 		local combineWorldX, combineWorldY, combineWorldZ = getWorldTranslation(combine.rootNode)
-		local pipeRaycastNodeXWorld, pipeRaycastNodeYWorld, pipeRaycastNodeZWorld = getWorldTranslation(combine.pipeRaycastNode)
-		local pipeNodeToCombineX, pipeToCombineY, pipeToCombineZ = worldToLocal(combine.pipeRaycastNode, combineXWorld, combineYWorld, combineZWorld)
+		local pipeNodeToCombineX, pipeToCombineY, pipeToCombineZ = worldToLocal(combine.pipeRaycastNode, combineWorldX, combineWorldY, combineWorldZ)
+		local curFile = "mode2.lua"
 		
 		--combine_offset is in auto mode
 		if not cornChopper and self.auto_combine_offset and combine.currentPipeState == 2 then
 			if getParent(combine.pipeRaycastNode) == combine.rootNode then -- pipeRaycastNode is direct child of combine.root
-			--OLD: if combine.typeName == "selfPropelledPotatoHarvester" then
-				current_offset = pipeRaycastNodeX
-				
+				local additionalSafetyDistance = 0
 				--safety distance so the trailer doesn't crash into the pipe (sidearm)
 				if combine.name == "Grimme Maxtron 620" then
-					current_offset = pipeRaycastNodeX + 0.9 --0.8
+					additionalSafetyDistance = 0.9 --0.8
 				elseif combine.name == "Grimme Tectron 415" then
-					current_offset = pipeRaycastNodeX - 0.5
+					additionalSafetyDistance = -0.5
 				end
-				courseplay:debug(self.name .. " @ " .. combine.name .. ": root > pipeRaycastNode // current_offset = " .. current_offset, 3)
-			elseif getParent(getParent(combine.pipeRaycastNode)) == combine.rootNode then --pipeRaycastNode is direct child of pipe is direct child of combine.root
-				current_offset = pipeX - pipeRaycastNodeZ
-				courseplay:debug(self.name .. " @ " .. combine.name .. ": root > pipe > pipeRaycastNode // current_offset = " .. current_offset, 3)
-			else --BACKUP pipeRaycastNode isn't child of pipe
 
-				current_offset = Utils.vector2Length(pipeRaycastNodeXWorld-combineWorldX, pipeRaycastNodeZWorld-combineWorldZ)
-				if pipeNodeToCombineX < 0 then
+				current_offset = pipeRaycastNodeX + additionalSafetyDistance
+				courseplay:debug(string.format("%s(%i): %s @ %s: root > pipeRaycastNode // current_offset = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, current_offset), 2)
+			elseif getParent(getParent(combine.pipeRaycastNode)) == combine.rootNode and combine.name ~= "Grimme Rootster 604" then --pipeRaycastNode is direct child of pipe is direct child of combine.root
+				--TODO: doesn't work with Grimme Rootster yet because pipeRaycastNode's Z = 0
+				local pipeX, pipeY, pipeZ = getTranslation(getParent(combine.pipeRaycastNode))
+				current_offset = pipeX - pipeRaycastNodeZ
+				courseplay:debug(string.format("%s(%i): %s @ %s: root > pipe > pipeRaycastNode // current_offset = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, current_offset), 2)
+			else --BACKUP pipeRaycastNode isn't child of pipe
+				current_offset = pipeNodeToCombineX
+				
+				--[[if pipeNodeToCombineX < 0 then --combine (not harvester) whose pipe is on the right side. Hence, should never happen
 					current_offset = current_offset * -1
-				end
-				courseplay:debug(self.name .. " @ " .. combine.name .. ": vector2Length // current_offset = " .. current_offset, 3)
+				end]]
+				courseplay:debug(string.format("%s(%i): %s @ %s: pipeNodeToCombineX // current_offset = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, current_offset), 2)
 			end
 
 		--combine_offset is in manual mode
 		elseif not cornChopper and not self.auto_combine_offset then
-			local distance_pipeNodeToCombine = Utils.vector2Length(pipeRaycastNodeXWorld-combineWorldX, pipeRaycastNodeZWorld-combineWorldZ)
-			courseplay:debug(self.name .. " @ " .. combine.name .. ": distance_pipeNodeToCombine = " .. distance_pipeNodeToCombine, 2)
-			courseplay:debug(self.name .. " @ " .. combine.name .. ": pipeNodeToCombineX = " .. pipeNodeToCombineX, 2)
-			if pipeNodeToCombineX < 0 then
-				current_offset = current_offset * -1
+			courseplay:debug(string.format("%s(%i): %s @ %s: pipeNodeToCombineX = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, pipeNodeToCombineX), 2)
+			if pipeNodeToCombineX < 0 then -- pipe on right side
+				current_offset = math.sqrt(current_offset^2) * -1
+				courseplay:debug(string.format("%s(%i): %s @ %s: pipe on right side / current_offset = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, current_offset), 2)
 			end
 		end
 		
@@ -471,7 +467,7 @@ function courseplay:unload_combine(self, dt)
 			elseif self.forced_side == "right" then
 				current_offset = current_offset_positive * -1
 			end
-			courseplay:debug(self.name .. " @ " .. combine.name .. ": forced_side = " .. self.forced_side .. " -> current_offset = " .. current_offset, 2)
+			courseplay:debug(string.format("%s(%i): %s @ %s: forced_side = %s -> current_offset = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, self.forced_side, current_offset), 2)
 		end
 
 		--refresh for display in HUD

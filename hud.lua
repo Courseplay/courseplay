@@ -192,11 +192,11 @@ function courseplay:loadHud(self)
 				if self.combine_offset ~= 0 then
 					local combine_offset_mode = ''
 					if self.auto_combine_offset then
-						combine_offset_mode = "(auto) "
+						combine_offset_mode = "(auto)"
 					else
-						combine_offset_mode = "(mnl) "
+						combine_offset_mode = "(mnl)"
 					end
-					self.hudpage[3][2][1] = combine_offset_mode .. string.format("%.1f", self.combine_offset)
+					self.hudpage[3][2][1] = string.format("%s %.1f", combine_offset_mode, self.combine_offset)
 				else
 					self.hudpage[3][2][1] = "auto"
 				end
