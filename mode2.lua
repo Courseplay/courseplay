@@ -415,14 +415,21 @@ function courseplay:unload_combine(self, dt)
 
 
 		local current_offset = self.combine_offset
+		local current_offset_positive = math.sqrt(self.combine_offset^2)
 		
 		--TODO: move all that shit over to combines.lua, or better yet base.lua, so it doesn't have to be calculated constantly
-		--TODO: always use pipeNodeToCombineX, no matter what?
+		--TODO: always use combineToPrnX, no matter what?
 		local pipeRaycastNodeX, pipeRaycastNodeY, pipeRaycastNodeZ = getTranslation(combine.pipeRaycastNode)
-		local combineWorldX, combineWorldY, combineWorldZ = getWorldTranslation(combine.rootNode)
-		local pipeNodeToCombineX, pipeToCombineY, pipeToCombineZ = worldToLocal(combine.pipeRaycastNode, combineWorldX, combineWorldY, combineWorldZ)
+		local cwX, cwY, cwZ = getWorldTranslation(combine.rootNode)
+		local prnwX, prnwY, prnwZ = getWorldTranslation(combine.pipeRaycastNode)
+		local combineToPrnX, combineToPrnY, combineToPrnZ = worldToLocal(combine.rootNode, prnwX, prnwY, prnwZ)
+		--NOTE by Jakob: after a shitload of testing and failing, it seems combineToPrnX is what we're looking for (instead of prnToCombineX). Always results in correct x-distance from combine.rn to prn.
+		
 		local curFile = "mode2.lua"
 		
+		courseplay:debug(string.format("%s(%i): %s: cwX=%f, cwZ=%f, prnwX=%f, prnwZ=%f, combineToPrnX=%f, combineToPrnZ=%f", curFile, debug.getinfo(1).currentline, combine.name, cwX, cwZ, prnwX, prnwZ, combineToPrnX, combineToPrnZ), 2)
+
+
 		--combine_offset is in auto mode
 		if not cornChopper and self.auto_combine_offset and combine.currentPipeState == 2 then
 			if getParent(combine.pipeRaycastNode) == combine.rootNode then -- pipeRaycastNode is direct child of combine.root
@@ -441,27 +448,24 @@ function courseplay:unload_combine(self, dt)
 				local pipeX, pipeY, pipeZ = getTranslation(getParent(combine.pipeRaycastNode))
 				current_offset = pipeX - pipeRaycastNodeZ
 				courseplay:debug(string.format("%s(%i): %s @ %s: root > pipe > pipeRaycastNode // current_offset = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, current_offset), 2)
-			else --BACKUP pipeRaycastNode isn't child of pipe
-				current_offset = pipeNodeToCombineX
-				
-				--[[if pipeNodeToCombineX < 0 then --combine (not harvester) whose pipe is on the right side. Hence, should never happen
-					current_offset = current_offset * -1
-				end]]
-				courseplay:debug(string.format("%s(%i): %s @ %s: pipeNodeToCombineX // current_offset = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, current_offset), 2)
+			else --BACKUP pipeRaycastNode isn't direct child of pipe
+				current_offset = combineToPrnX + 0.5
+				courseplay:debug(string.format("%s(%i): %s @ %s: combineToPrnX // current_offset = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, current_offset), 2)
 			end
 
 		--combine_offset is in manual mode
 		elseif not cornChopper and not self.auto_combine_offset then
-			courseplay:debug(string.format("%s(%i): %s @ %s: pipeNodeToCombineX = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, pipeNodeToCombineX), 2)
-			if pipeNodeToCombineX < 0 then -- pipe on right side
-				current_offset = math.sqrt(current_offset^2) * -1
+			courseplay:debug(string.format("%s(%i): %s @ %s: combineToPrnX = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, combineToPrnX), 2)
+			if combineToPrnX > 0 then
+				current_offset = current_offset_positive
+			elseif combineToPrnX < 0 then -- pipe on right side
+				current_offset = current_offset_positive * -1
 				courseplay:debug(string.format("%s(%i): %s @ %s: pipe on right side / current_offset = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, current_offset), 2)
 			end
 		end
 		
 		--cornChopper forced side offset
 		if cornChopper and self.forced_side ~= nil then
-			local current_offset_positive = math.sqrt(current_offset^2)
 			if self.forced_side == "left" then
 				current_offset = current_offset_positive
 			elseif self.forced_side == "right" then

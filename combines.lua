@@ -106,7 +106,8 @@ end
 
 
 function courseplay:register_at_combine(self, combine)
-	courseplay:debug(self.name .. ": registering at combine " .. combine.name, 2)
+	local curFile = "combines.lua"
+	courseplay:debug(string.format("%s(%i): %s: registering at combine %s", curFile, debug.getinfo(1).currentline, self.name, combine.name), 2)
 	courseplay:debug(table.show(combine), 4)
 	
 
@@ -118,7 +119,10 @@ function courseplay:register_at_combine(self, combine)
 
 	if combine.grainTankCapacity == 0 then
 		num_allowed_courseplayers = 2
+		combine.isCornchopper = true
 	else
+		combine.isCornchopper = false
+		
 		if self.realistic_driving then
 			if combine.wants_courseplayer == true or combine.grainTankFillLevel == combine.grainTankCapacity then
 
@@ -153,8 +157,6 @@ function courseplay:register_at_combine(self, combine)
 	self.courseplay_position = table.getn(combine.courseplayers)
 	self.active_combine = combine
 
-	local curFile = "combines.lua"
-
 	--if math.floor(self.combine_offset) == 0 then
 	if self.auto_combine_offset == true or self.combine_offset == 0 then
 		--courseplay:debug(string.format("%s(%i): self.auto_combine_offset = true / self.combine_offset: %f", curFile, debug.getinfo(1).currentline, self.combine_offset), 2)
@@ -175,25 +177,34 @@ function courseplay:register_at_combine(self, combine)
 			end;
 		end;
 		
-		if leftMarker == nil or xt < 0 then --combine has no cutter attached or aiLeftMarker has weird position
+		local prnwX, prnwY, prnwZ = getWorldTranslation(combine.pipeRaycastNode)
+		local combineToPrnX, combineToPrnY, combineToPrnZ = worldToLocal(combine.rootNode, prnwX, prnwY, prnwZ)
+		--NOTE by Jakob: after a shitload of testing and failing, it seems combineToPrnX is what we're looking for (instead of prnToCombineX). Always results in correct x-distance from combine.rn to prn.
+
+		--waiting combines
+		if not combine.isCornchopper and combine.currentPipeState == 2 then
+			self.combine_offset = combineToPrnX
+			courseplay:debug(string.format("%s(%i): %s @ %s: using combineToPrnX=%f, self.combine_offset=%f", curFile, debug.getinfo(1).currentline, self.name, combine.name, combineToPrnX, self.combine_offset), 2)
+		
+		elseif leftMarker == nil or xt < 0 then --combine has no cutter attached or aiLeftMarker has weird position
 			courseplay:debug(string.format("%s(%i): %s @ %s: leftMarker not found / self.combine_offset=%f / proceeding with guesstimate-calculation", curFile, debug.getinfo(1).currentline, self.name, combine.name, self.combine_offset), 2)
-			--[[local pipeRaycastNodeX, pipeRaycastNodeY, pipeRaycastNodeZ = getTranslation(combine.pipeRaycastNode)
 
 			if getParent(combine.pipeRaycastNode) == combine.rootNode then -- pipeRaycastNode is direct child of combine.root
+				local pipeRaycastNodeX, pipeRaycastNodeY, pipeRaycastNodeZ = getTranslation(combine.pipeRaycastNode)
 				self.combine_offset = pipeRaycastNodeX
+				courseplay:debug(string.format("%s(%i): %s @ %s: combine.root > pipeRaycastNode / self.combine_offset=pipeRaycastNodeX=%f", curFile, debug.getinfo(1).currentline, self.name, combine.name, self.combine_offset), 2)
 			elseif getParent(getParent(combine.pipeRaycastNode)) == combine.rootNode then --pipeRaycastNode is direct child of pipe is direct child of combine.root
 				local pipeX, pipeY, pipeZ = getTranslation(getParent(combine.pipeRaycastNode))
 				self.combine_offset = pipeX - pipeRaycastNodeZ
-			else]]
-				local cXw, cYw, cZw = getWorldTranslation(combine.rootNode)
-				local prnX, prnY, prnZ = worldToLocal(combine.pipeRaycastNode, cXw, cYw, cZw)
-				if prnX >= 0 then
-					self.combine_offset = 8
+				courseplay:debug(string.format("%s(%i): %s @ %s: combine.root > pipe > pipeRaycastNode / self.combine_offset=pipeX-pipeRaycastNodeX=%f", curFile, debug.getinfo(1).currentline, self.name, combine.name, self.combine_offset), 2)
+			else
+				if combineToPrnX >= 0 then
+					self.combine_offset = combineToPrnX + 1
 				else 
-					self.combine_offset = -6
+					self.combine_offset = combineToPrnX - 1
 				end
-			--end
-			courseplay:debug(string.format("%s(%i): %s @ %s: self.combine_offset=%f", curFile, debug.getinfo(1).currentline, self.name, combine.name, self.combine_offset), 2)
+				courseplay:debug(string.format("%s(%i): %s @ %s: using combineToPrnX=%f, self.combine_offset=%f", curFile, debug.getinfo(1).currentline, self.name, combine.name, combineToPrnX, self.combine_offset), 2)
+			end
 		elseif leftMarker ~= nil then
 			courseplay:debug(string.format("%s(%i): %s @ %s: leftMarker found / xt=%f / self.combine_offset=%f", curFile, debug.getinfo(1).currentline, self.name, combine.name, xt, self.combine_offset), 2)
 		end
