@@ -519,7 +519,9 @@ function courseplay:drive(self, dt)
 	end
 
 	-- go, go, go!
-	if self.recordnumber + 1 <= self.maxnumber then
+	if self.recordnumber == 1 then --courtesy of Thomas Gärtner
+		distToChange = 0.5
+	elseif self.recordnumber + 1 <= self.maxnumber then
 		local beforeReverse = (self.Waypoints[self.recordnumber + 1].rev and (self.Waypoints[self.recordnumber].rev == false))
 		local afterReverse = (not self.Waypoints[self.recordnumber + 1].rev and self.Waypoints[last_recordnumber].rev)
 		if (self.Waypoints[self.recordnumber].wait or beforeReverse) and self.Waypoints[self.recordnumber].rev == false then -- or afterReverse or self.recordnumber == 1
