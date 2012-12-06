@@ -357,18 +357,19 @@ function courseplay:drive(self, dt)
 			currentFuelPercentage = (self.fuelFillLevel / self.fuelCapacity + 0.0001) * 100;
 		end;
 
-		if currentFuelPercentage < 20 and not self.doRefuel then
+		--LS13 refuel method courtesy of Thomas Gärtner
+		if currentFuelPercentage < 20 and not self.isFuelFilling then
 			self.global_info_text = self.locales.CPFuelWarning
-			if self.hasRefuelStationInRange then
+			if self.fuelFillTriggers[1] then
 				allowedToDrive = false
-				self:startRefuel();
+				self:setIsFuelFilling(true, self.fuelFillTriggers[1].isEnabled, false)
 			end
 
 		elseif currentFuelPercentage < 15 then
 			allowedToDrive = false
 			self.global_info_text = self.locales.CPNoFuelStop
 		end
-		if self.doRefuel then
+		if self.isFuelFilling then
 			allowedToDrive = false
 			self.global_info_text = self.locales.CPRefueling
 		end;
