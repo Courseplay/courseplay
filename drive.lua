@@ -207,10 +207,12 @@ function courseplay:drive(self, dt)
 		elseif self.ai_mode == 7 then
 			if last_recordnumber == self.startWork then
 				if self.grainTankFillLevel > 0 then
-					self:setPipeOpening(true, false)
+					--courtesy of Thomas Gärtner
+					self.setPipeState(self, 2)
 					self.global_info_text = courseplay:get_locale(self, "CPReachedOverloadPoint") --'hat Überladepunkt erreicht.'
 				else
-					self:setPipeOpening(false, false)
+					--courtesy of Thomas Gärtner
+					self.setPipeState(self, 1)
 					self.wait = false
 					self.unloaded = true
 				end
