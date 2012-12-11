@@ -445,15 +445,15 @@
 			<de>Fahr- Arbeitseinstellungen</de>
 		</text>
 		<text name="CPCombineTurning">
-			<en>combine is turning.</en>
-			<de>Drescher wendet.</de>
+			<en>Combine is turning</en>
+			<de>Drescher wendet</de>
 		</text>
 		<text name="CPDriveBehinCombine">
-			<en>drive behind combine</en>
-			<de>Fahre hinter Drescher.</de>
+			<en>Drive behind combine</en>
+			<de>Fahre hinter Drescher</de>
 		</text>
 		<text name="CPDriveNextCombine">
-			<en>drive next to combine</en>
+			<en>Drive next to combine</en>
 			<de>Fahre neben Drescher</de>
 		</text>
 		<text name="CPDriveToCombine">
@@ -461,27 +461,35 @@
 			<de>Fahre zu Drescher</de>
 		</text>
 		<text name="CPCombineWantsMeToStop">
-			<en>Combine is telling me to stop.</en>
-			<de>Drescher sagt ich soll anhalten.</de>
+			<en>Combine is telling me to stop</en>
+			<de>Drescher sagt ich soll anhalten</de>
 		</text>
 		<text name="CPTurningTo">
-			<en>turning to direction %d %d</en>
+			<en>Turning to direction %d %d</en>
 			<de>wende in Richtung koordinaten %d %d</de>
 		</text>
 		<text name="CPDriveToWP">
-			<en>drive to waypoint %d %d</en>
+			<en>Drive to waypoint %d %d</en>
 			<de>fahre zu Wegpunkt %d %d</de>
 		</text>
+		<text name="CPwaitFillLevel">
+			<en>Waiting until fill level is reached</en>
+			<de>Warte bis Füllstand erreicht ist</de>
+		</text>
+		<text name="CPnoCombineInReach">
+			<en>No combine in reach</en>
+			<de>Kein Drescher in Reichweite</de>
+		</text>
 		<text name="CPWaitUntilCombineTurned">
-			<en>waiting until combine has turned.</en>
-			<de>Warte bis Drescher gewendet hat.</de>
+			<en>Waiting until combine has turned</en>
+			<de>Warte bis Drescher gewendet hat</de>
 		</text>
 		<text name="CPWaitForWaypoint">
-			<en>waiting for new waypoint</en>
+			<en>Waiting for new waypoint</en>
 			<de>Warte bis ich neuen Wegpunkt habe</de>
 		</text>
 		<text name="CPFollowTractor">
-			<en>following tractor</en>
+			<en>Following tractor</en>
 			<de>Fahre hinter Traktor</de>
 		</text>
 		<text name="CPFuelWarning">
@@ -571,6 +579,18 @@
 		<text name="CPOptions">
 			<en>Courseplay options</en>
 			<de>Courseplay-Optionen</de>
+		</text>
+		<text name="CP_Hud">
+			<en>Courseplay HUD</en>
+			<de>Courseplay HUD</de>
+		</text>
+		<text name="CP_Modifier_1">
+			<en>Courseplay key modifier 1</en>
+			<de>Courseplay Extrataste 1</de>
+		</text>
+		<text name="CP_Modifier_2">
+			<en>Courseplay key modifier 2</en>
+			<de>Courseplay Extrataste 2</de>
 		</text>
 	</l10n>
 

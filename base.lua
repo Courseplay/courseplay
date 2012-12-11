@@ -193,6 +193,8 @@ function courseplay:load(xmlFile)
 	self.locales.CPHud7 = g_i18n:getText("CPHud7")
 	self.locales.CPaStar = g_i18n:getText("CPaStar")
 	self.locales.CPWPs = g_i18n:getText("CPWPs")
+	self.locales.CPwaitFillLevel = g_i18n:getText("CPwaitFillLevel")
+	self.locales.CPnoCombineInReach = g_i18n:getText("CPnoCombineInReach")
 
 	self.auto_combine_offset = true
 	self.mouse_right_key_enabled = true

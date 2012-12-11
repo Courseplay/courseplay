@@ -168,11 +168,13 @@ function courseplay:handle_mode2(self, dt)
 						self.ai_state = 2
 					end
 				else
-					self.info_text = "Warte bis Fuellstand erreicht ist" -- courseplay:get_locale(self, "CPCombineTurning") -- "Drescher wendet. "
+					--self.info_text = "Warte bis Fuellstand erreicht ist"
+					self.info_text = courseplay:get_locale(self, "CPwaitFillLevel")
 				end
 
 			else
-				self.info_text = "Kein Drescher in Reichweite" -- courseplay:get_locale(self, "CPCombineTurning") -- "Drescher wendet. "
+				--self.info_text = "Kein Drescher in Reichweite"
+				self.info_text = courseplay:get_locale(self, "CPnoCombineInReach")
 			end
 		end
 	end
