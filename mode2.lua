@@ -381,15 +381,15 @@ function courseplay:unload_combine(self, dt)
 				self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, -10 , 0, -10) --10, 0, -5)
 			end
 
-			local leftFruit, rightFruit = courseplay:side_to_drive(self, combine, -10)
+			local leftFruit, rightFruit = courseplay:side_to_drive(self, combine, -20)
 		  
 
 			if leftFruit > rightFruit then
-				local next_x, next_y, next_z = localToWorld(combine.rootNode, -15, 0, -10)
+				local next_x, next_y, next_z = localToWorld(combine.rootNode, 0, 0, -30)
 				local next_wp = { x = next_x, y = next_y, z = next_z }
 				table.insert(self.next_targets, next_wp)
 
-				local next_x, next_y, next_z = localToWorld(combine.rootNode, -15, 0, -30)
+				local next_x, next_y, next_z = localToWorld(combine.rootNode, 0, 0, -50)
 				local next_wp = { x = next_x, y = next_y, z = next_z }
 				table.insert(self.next_targets, next_wp)
 
@@ -421,11 +421,12 @@ function courseplay:unload_combine(self, dt)
 		
 		--TODO: move all that shit over to combines.lua, or better yet base.lua, so it doesn't have to be calculated constantly
 		--TODO: always use combineToPrnX, no matter what?
-		local pipeRaycastNodeX, pipeRaycastNodeY, pipeRaycastNodeZ = getTranslation(combine.pipeRaycastNode)
+		local prnX, prnY, prnZ = getTranslation(combine.pipeRaycastNode)
 		local cwX, cwY, cwZ = getWorldTranslation(combine.rootNode)
 		local prnwX, prnwY, prnwZ = getWorldTranslation(combine.pipeRaycastNode)
 		local combineToPrnX, combineToPrnY, combineToPrnZ = worldToLocal(combine.rootNode, prnwX, prnwY, prnwZ)
 		--NOTE by Jakob: after a shitload of testing and failing, it seems combineToPrnX is what we're looking for (instead of prnToCombineX). Always results in correct x-distance from combine.rn to prn.
+		--TODO: support for Grimme SE75-55
 		
 		local curFile = "mode2.lua"
 		
@@ -435,20 +436,23 @@ function courseplay:unload_combine(self, dt)
 		--combine_offset is in auto mode
 		if not cornChopper and self.auto_combine_offset and combine.currentPipeState == 2 then
 			if getParent(combine.pipeRaycastNode) == combine.rootNode then -- pipeRaycastNode is direct child of combine.root
-				local additionalSafetyDistance = 0
 				--safety distance so the trailer doesn't crash into the pipe (sidearm)
+				local additionalSafetyDistance = 0
 				if combine.name == "Grimme Maxtron 620" then
 					additionalSafetyDistance = 0.9 --0.8
 				elseif combine.name == "Grimme Tectron 415" then
 					additionalSafetyDistance = -0.5
 				end
 
-				current_offset = pipeRaycastNodeX + additionalSafetyDistance
+				current_offset = prnX + additionalSafetyDistance
 				courseplay:debug(string.format("%s(%i): %s @ %s: root > pipeRaycastNode // current_offset = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, current_offset), 2)
-			elseif getParent(getParent(combine.pipeRaycastNode)) == combine.rootNode and combine.name ~= "Grimme Rootster 604" then --pipeRaycastNode is direct child of pipe is direct child of combine.root
-				--TODO: doesn't work with Grimme Rootster yet because pipeRaycastNode's Z = 0
+			elseif getParent(getParent(combine.pipeRaycastNode)) == combine.rootNode then --pipeRaycastNode is direct child of pipe is direct child of combine.root
 				local pipeX, pipeY, pipeZ = getTranslation(getParent(combine.pipeRaycastNode))
-				current_offset = pipeX - pipeRaycastNodeZ
+				current_offset = pipeX - prnZ
+				
+				if prnZ == 0 or combine.name == "Grimme Rootster 604" then
+					current_offset = pipeX - prnY
+				end
 				courseplay:debug(string.format("%s(%i): %s @ %s: root > pipe > pipeRaycastNode // current_offset = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, current_offset), 2)
 			else --BACKUP pipeRaycastNode isn't direct child of pipe
 				current_offset = combineToPrnX + 0.5
