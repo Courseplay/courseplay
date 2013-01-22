@@ -56,9 +56,9 @@ function courseplay:loadHud(self)
 					local tractor = self.courseplayers[1]
 					if tractor ~= nil then
 						self.hudpage[0][1][4] = courseplay:get_locale(self, "CoursePlayPlayerSwitchSide")
-						if tractor.forced_side == "left" then
+						if self.forced_side == "left" then
 							self.hudpage[0][2][4] = courseplay:get_locale(self, "CoursePlayPlayerSideLeft")
-						elseif tractor.forced_side == "right" then
+						elseif self.forced_side == "right" then
 							self.hudpage[0][2][4] = courseplay:get_locale(self, "CoursePlayPlayerSideRight")
 						else
 							self.hudpage[0][2][4] = courseplay:get_locale(self, "CoursePlayPlayerSideNone")
@@ -145,6 +145,7 @@ function courseplay:loadHud(self)
 			end
 
 
+		--Page 2 (course list)
 		elseif self.showHudInfoBase == 2 then
 			local number_of_courses = 0
 			if g_currentMission.courseplay_courses ~= nil then
@@ -181,6 +182,7 @@ function courseplay:loadHud(self)
 				row = row + 1
 			end
 
+		--Page 3
 		elseif self.showHudInfoBase == 3 then
 			self.hudpage[3][1][1] = courseplay:get_locale(self, "CPCombineOffset") --"seitl. Abstand:"
 			self.hudpage[3][1][2] = courseplay:get_locale(self, "CPPipeOffset") --"Pipe Abstand:"

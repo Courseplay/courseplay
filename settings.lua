@@ -37,12 +37,12 @@ function courseplay:switch_player_side(self)
 
 		tractor.ai_state = 10
 
-		if tractor.forced_side == nil then
-			tractor.forced_side = "left"
-		elseif tractor.forced_side == "left" then
-			tractor.forced_side = "right"
+		if self.forced_side == nil then
+			self.forced_side = "left"
+		elseif self.forced_side == "left" then
+			self.forced_side = "right"
 		else
-			tractor.forced_side = nil
+			self.forced_side = nil
 		end
 	end
 end
@@ -185,7 +185,6 @@ function courseplay:change_unload_speed(self, change_by)
 	if speed < 5 then
 		speed = 5
 	end
-
 	self.unload_speed = speed / 3600
 end
 

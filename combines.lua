@@ -168,6 +168,7 @@ function courseplay:register_at_combine(self, combine)
 	end
 	--THOMAS' best_combine END
 
+
 	if table.getn(combine.courseplayers) == 1 and not combine.courseplayers[1].allow_following then
 		return false
 	end
@@ -179,6 +180,7 @@ function courseplay:register_at_combine(self, combine)
 
 	courseplay:debug(string.format("%s(%i): %s is being checked in with %s", curFile, debug.getinfo(1).currentline, self.name, combine.name), 1)
 	combine.isCheckedIn = 1;
+
 	table.insert(combine.courseplayers, self)
 	self.courseplay_position = table.getn(combine.courseplayers)
 	self.active_combine = combine
@@ -236,9 +238,33 @@ function courseplay:register_at_combine(self, combine)
 				self.combine_offset = combine.lmX + 2.5
 				courseplay:debug(string.format("%s(%i): %s @ %s: using leftMarker+2.5, self.combine_offset=%f", curFile, debug.getinfo(1).currentline, self.name, combine.name, self.combine_offset), 2)
 			end
+		elseif combine.isCornchopper then
+			print(string.format("%s(%i): %s @ %s: combine.forced_side=%s", curFile, debug.getinfo(1).currentline, self.name, combine.name, tostring(combine.forced_side)));
+			if combine.forced_side ~= nil then
+				print(string.format("%s(%i): %s @ %s: combine.forced_side=%s, going by forced_side", curFile, debug.getinfo(1).currentline, self.name, combine.name, combine.forced_side));
+				if combine.forced_side == "left" then
+					self.sideToDrive = "left";
+					self.combine_offset = combine.lmX + 2.5
+				elseif combine.forced_side == "right" then
+					self.sideToDrive = "right";
+					self.combine_offset = (combine.lmX + 2.5) * -1
+				end
+			else
+				print(string.format("%s(%i): %s @ %s: combine.forced_side=%s, going by fruit", curFile, debug.getinfo(1).currentline, self.name, combine.name, tostring(combine.forced_side)));
+				local left_fruit, right_fruit = courseplay:side_to_drive(self, combine, -10);
+				if left_fruit < right_fruit then
+					self.sideToDrive = "left";
+					self.combine_offset = combine.lmX + 2.5
+				elseif left_fruit > right_fruit then
+					self.sideToDrive = "right";
+					self.combine_offset = (combine.lmX + 2.5) * -1
+				else
+					self.sideToDrive = nil;
+					self.combine_offset = combine.lmX + 2.5
+				end
+				courseplay:debug(string.format("%s(%i): %s @ %s: left_fruit=%f, right_fruit=%f, sideToDrive=%s", curFile, debug.getinfo(1).currentline, self.name, combine.name, left_fruit, right_fruit, tostring(self.sideToDrive)), 2)
+			end
 		end
-
-		courseplay:debug(string.format("%s(%i): %s: automatically setting combine_offset: %f", curFile, debug.getinfo(1).currentline, self.name, self.combine_offset), 2)
 	end
 
 	courseplay:add_to_combines_ignore_list(self, combine)
