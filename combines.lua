@@ -144,6 +144,30 @@ function courseplay:register_at_combine(self, combine)
 		return false
 	end
 
+	--THOMAS' best_combine START
+	if combine.grainTankCapacity > 0 then
+		local distance = 9999999
+		local vehicle_ID = 0
+		for k, vehicle in pairs(g_currentMission.vehicles) do --TODO: Liste einengen, nur Courseplayers
+			if vehicle.combineID ~= nil then
+				if vehicle.combineID == combine.id then
+					courseplay:debug(tostring(vehicle.id).." : distanceToCombine:"..tostring(vehicle.distanceToCombine).." for combine.id:"..tostring(combine.id), 1)
+					if distance > vehicle.distanceToCombine then
+						distance = vehicle.distanceToCombine
+						vehicle_ID = vehicle.id
+					end
+				end
+			end
+		end
+		if vehicle_ID ~= self.id then
+			courseplay:debug(tostring(self.id)..": es gibt einen naeheren trecker, der auch will. Es ist  :"..tostring(vehicle_ID),1)
+			return false
+		else
+			courseplay:debug((tostring(self.id).." : ich bin dran"),1)
+		end
+	end
+	--THOMAS' best_combine END
+
 	if table.getn(combine.courseplayers) == 1 and not combine.courseplayers[1].allow_following then
 		return false
 	end
@@ -153,6 +177,8 @@ function courseplay:register_at_combine(self, combine)
 		combine.wants_courseplayer = false
 	end
 
+	courseplay:debug(string.format("%s(%i): %s is being checked in with %s", curFile, debug.getinfo(1).currentline, self.name, combine.name), 1)
+	combine.isCheckedIn = 1;
 	table.insert(combine.courseplayers, self)
 	self.courseplay_position = table.getn(combine.courseplayers)
 	self.active_combine = combine
@@ -171,8 +197,8 @@ function courseplay:register_at_combine(self, combine)
 					rightMarker = cutter.aiRightMarker;
 					currentCutter = cutter
 					local x, y, z = getWorldTranslation(currentCutter.rootNode)
-					lmX, lmY, lmZ = worldToLocal(leftMarker, x, y, z)
-					rmX, rmY, rmZ = worldToLocal(rightMarker, x, y, z)
+					combine.lmX, lmY, lmZ = worldToLocal(leftMarker, x, y, z)
+					combine.rmX, rmY, rmZ = worldToLocal(rightMarker, x, y, z)
 
 					--self.combine_offset = lmX + 2.5;
 				end;
@@ -199,15 +225,15 @@ function courseplay:register_at_combine(self, combine)
 					self.combine_offset = pipeX - prnY
 				end
 				courseplay:debug(string.format("%s(%i): %s @ %s: combine.root > pipe > pipeRaycastNode / self.combine_offset=pipeX-prnX=%f", curFile, debug.getinfo(1).currentline, self.name, combine.name, self.combine_offset), 2)
-			elseif combineToPrnX > lmX then
+			elseif combineToPrnX > combine.lmX then
 				if combineToPrnX >= 0 then
 					self.combine_offset = combineToPrnX + 5
 				else 
 					self.combine_offset = combineToPrnX - 5
 				end
 				courseplay:debug(string.format("%s(%i): %s @ %s: using combineToPrnX=%f, self.combine_offset=%f", curFile, debug.getinfo(1).currentline, self.name, combine.name, combineToPrnX, self.combine_offset), 2)
-			elseif lmX > 0 then --use leftMarker
-				self.combine_offset = lmX + 2.5
+			elseif combine.lmX > 0 then --use leftMarker
+				self.combine_offset = combine.lmX + 2.5
 				courseplay:debug(string.format("%s(%i): %s @ %s: using leftMarker+2.5, self.combine_offset=%f", curFile, debug.getinfo(1).currentline, self.name, combine.name, self.combine_offset), 2)
 			end
 		end
@@ -230,8 +256,9 @@ function courseplay:unregister_at_combine(self, combine)
 		return true
 	end
 
-	self.calculated_course = false
+	self.calculated_course = false;
 	courseplay:remove_from_combines_ignore_list(self, combine)
+	combine.isCheckedIn = nil;
 	table.remove(combine.courseplayers, self.courseplay_position)
 
 	-- updating positions of tractors

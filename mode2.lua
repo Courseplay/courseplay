@@ -13,6 +13,7 @@
 -- 10 seite wechseln
 
 function courseplay:handle_mode2(self, dt)
+	local curFile = "mode2.lua"
 	local allowedToDrive = false
 
 	local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
@@ -101,7 +102,9 @@ function courseplay:handle_mode2(self, dt)
 			-- is there a trailer to fill, or at least a waypoint to go to?
 			if self.currentTrailerToFill or self.ai_state == 5 then
 				if self.ai_state == 6 then
-					self.ai_state = 2
+					-- drive behind combine: self.ai_state = 2
+					-- drive next to combine:
+					self.ai_state = 3
 				end
 				courseplay:unload_combine(self, dt)
 			end
@@ -135,41 +138,56 @@ function courseplay:handle_mode2(self, dt)
 		--is any of the reachable combines full?
 		if self.reachable_combines ~= nil then
 			if table.getn(self.reachable_combines) > 0 then
-				local best_combine = nil
-				local highest_fill_level = 0
-				local num_courseplayers = 0
+				-- choose the combine that needs me the most
+				if self.best_combine ~= nil then
+					courseplay:debug(tostring(self.id)..": request check in: "..tostring(self.combineID), 1)
+					if courseplay:register_at_combine(self, self.best_combine) then
+						local leftFruit, rightFruit = courseplay:side_to_drive(self, self.best_combine, -10) --changed by THOMAS
+						self.ai_state = 2
+					end
+				else
+					self.info_text = courseplay:get_locale(self, "CPwaitFillLevel") --TODO: g_i18n
+				end
 
+
+				local highest_fill_level = 0;
+				local num_courseplayers = 0;
+				local distance = 0;
+
+				self.best_combine = nil;
+				self.combineID = 0;
+				self.distanceToCombine = 99999999999;
 				-- chose the combine who needs me the most
 				for k, combine in pairs(self.reachable_combines) do
 					if (combine.grainTankFillLevel >= (combine.grainTankCapacity * self.required_fill_level_for_follow / 100)) or combine.grainTankCapacity == 0 or combine.wants_courseplayer then
 						if combine.grainTankCapacity == 0 then
 							if combine.courseplayers == nil then
-								best_combine = combine
-							elseif table.getn(combine.courseplayers) <= num_courseplayers or best_combine == nil then
+								self.best_combine = combine
+							elseif table.getn(combine.courseplayers) <= num_courseplayers or self.best_combine == nil then
 								num_courseplayers = table.getn(combine.courseplayers)
 								if table.getn(combine.courseplayers) > 0 then
 									if combine.courseplayers[1].allow_following then
-										best_combine = combine
+										self.best_combine = combine
 									end
 								else
-									best_combine = combine
+									self.best_combine = combine
 								end
-							end else
-							if combine.grainTankFillLevel >= highest_fill_level then
-								highest_fill_level = combine.grainTankFillLevel
-								best_combine = combine
-							end
+							end 
+
+						elseif combine.grainTankFillLevel >= highest_fill_level and combine.isCheckedIn == nil then
+							highest_fill_level = combine.grainTankFillLevel
+							self.best_combine = combine
+							local cx, cy, cz = getWorldTranslation(combine.rootNode)
+							local sx, sy, sz = getWorldTranslation(self.rootNode)
+							distance = courseplay:distance(sx, sz, cx, cz)
+							self.distanceToCombine = distance
+							self.combineID = combine.id
 						end
 					end
 				end
 
-				if best_combine ~= nil then
-					if courseplay:register_at_combine(self, best_combine) then
-						self.ai_state = 2
-					end
-				else
-					--self.info_text = "Warte bis Fuellstand erreicht ist"
-					self.info_text = courseplay:get_locale(self, "CPwaitFillLevel")
+				if self.combineID ~= 0 then
+					courseplay:debug(tostring(self.id).." : call combine: "..tostring(self.combineID), 1)
 				end
 
 			else
@@ -182,12 +200,13 @@ function courseplay:handle_mode2(self, dt)
 end
 
 function courseplay:unload_combine(self, dt)
+	local curFile = "mode2.lua"
 	local allowedToDrive = true
 	local combine = self.active_combine
 	local x, y, z = getWorldTranslation(self.aiTractorDirectionNode)
 	local currentX, currentY, currentZ = nil, nil, nil
 
-	local sl = nil
+	--local sl = nil --kann die weg??
 	local mode = self.ai_state
 	local combine_fill_level, combine_turning = nil, false
 	local refSpeed = nil
@@ -354,12 +373,13 @@ function courseplay:unload_combine(self, dt)
 			dod = Utils.vector2Length(lx, lz)
 		end
 
+
 		if dod < 2 then -- dod < 2
 			allowedToDrive = false
 			mode = 3 -- change to mode 3 == drive to unload pipe
 		end
 
-		if dod > 30 then
+		if dod > 50 then
 			mode = 2
 		end
 
@@ -381,7 +401,7 @@ function courseplay:unload_combine(self, dt)
 				self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, -10 , 0, -10) --10, 0, -5)
 			end
 
-			local leftFruit, rightFruit = courseplay:side_to_drive(self, combine, -20)
+			local leftFruit, rightFruit = courseplay:side_to_drive(self, combine, -10)
 		  
 
 			if leftFruit > rightFruit then
@@ -760,7 +780,7 @@ function courseplay:unload_combine(self, dt)
 			end
 		else
 			-- tractor behind tractor
-			currentX, currentY, currentZ = localToWorld(tractor.rootNode, 0, 0, -50)
+			currentX, currentY, currentZ = localToWorld(tractor.rootNode, 0, 0, -30)
 		end
 
 		local lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, currentX, currentY, currentZ)
@@ -870,7 +890,7 @@ function courseplay:unload_combine(self, dt)
 end
 
 function courseplay:calculate_course_to(self, target_x, target_z)
-
+	local curFile = "mode2.lua"
 	self.calculated_course = true
 	-- check if there is fruit between me and the target, return false if not to avoid the calculating
 	local node = nil
