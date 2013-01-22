@@ -327,25 +327,24 @@ function courseplay:unload_combine(self, dt)
 
 			if cornChopper then -- decide on which side to drive based on ai-combine
 				local leftFruit, rightFruit = courseplay:side_to_drive(self, combine, 10);
-					if combine.forced_side == nil then
-						if leftFruit > rightFruit then
-							if self.combine_offset > 0 then
-								self.combine_offset = math.abs(self.combine_offset) * -1;
-								self.sideToDrive = "right"
-							end
-						elseif leftFruit == rightFruit then
-							if self.combine_offset < 0 then
-								self.combine_offset = math.abs(self.combine_offset) * -1;
-								self.sideToDrive = "left"
-							end
+				if combine.forced_side == nil then
+					if leftFruit > rightFruit then
+						if self.combine_offset > 0 then
+							self.combine_offset = math.abs(self.combine_offset) * -1;
+							self.sideToDrive = "right"
 						end
-					elseif combine.forced_side == "right" then
-						self.sideToDrive = "right";
-						self.combine_offset = math.abs(self.combine_offset) * -1;
-					else
-						self.sideToDrive = "left";
-						self.combine_offset = math.abs(self.combine_offset);
+					elseif leftFruit == rightFruit then
+						if self.combine_offset < 0 then
+							self.combine_offset = math.abs(self.combine_offset) * -1;
+							self.sideToDrive = "left"
+						end
 					end
+				elseif combine.forced_side == "right" then
+					self.sideToDrive = "right";
+					self.combine_offset = math.abs(self.combine_offset) * -1;
+				else
+					self.sideToDrive = "left";
+					self.combine_offset = math.abs(self.combine_offset);
 				end
 			end
 			mode = 4
