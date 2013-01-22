@@ -357,8 +357,8 @@
 			<de>maximale Geschwindigkeit</de>
 		</text>
 		<text name="CPCourse">
-			<en>course</en>
-			<de>Kurs</de>
+			<en>Course:</en>
+			<de>Kurs:</de>
 		</text>
 		<text name="CPNoCourseLoaded">
 			<en>course: no course loaded</en>
@@ -425,8 +425,8 @@
 			<de>Kein Arbeitsbereich in diesem Kurs</de>
 		</text>
 		<text name="CPCourseAdded">
-			<en>combined course</en>
-			<de>Kombinierter Kurs</de>
+			<en>combined courses</en>
+			<de>kombinierte Kurse</de>
 		</text>
 		<text name="CPCombiSettings">
 			<en>Settings combi mode</en>

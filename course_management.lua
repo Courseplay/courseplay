@@ -82,6 +82,7 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
 		end
 		--	courseplay:reset_course(self)
 		if table.getn(self.Waypoints) == 0 then
+			self.numCourses = 1;
 			self.Waypoints = course.waypoints
 			self.current_course_name = course.name
 		else -- Add new course to old course
@@ -134,7 +135,8 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
 				table.insert(self.Waypoints, course.waypoints[i])
 			end
 			self.Waypoints[lastWP + 1].merged = true
-			self.current_course_name = self.locales.CPCourseAdded
+			self.numCourses = self.numCourses + 1;
+			self.current_course_name = string.format("%d %s", self.numCourses, self.locales.CPCourseAdded)
 		end
 		if table.getn(self.Waypoints) == 4 then
 			self.createCourse = true

@@ -623,7 +623,7 @@ function courseplay:check_traffic(self, display_warnings, allowedToDrive)
 			if v > 0 then
 				courseplay:debug("colliding", 2)
 				allowedToDrive = false;
-        in_traffic = true
+				in_traffic = true
 				break;
 			end;
 		end;

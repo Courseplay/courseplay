@@ -185,10 +185,10 @@ end
 -- unloads all tippers
 function courseplay:unload_tippers(self)
 	local allowedToDrive = true
-  for k, tipper in pairs(self.tippers) do
-    --if not tipper.allowsDetaching then
-     local numReferencePoints = table.getn(tipper.tipReferencePoints);
-      local fruitType = tipper:getCurrentFruitType()
+	for k, tipper in pairs(self.tippers) do
+		--if not tipper.allowsDetaching then
+		local numReferencePoints = table.getn(tipper.tipReferencePoints);
+		local fruitType = tipper:getCurrentFruitType()
           
       if self.currentTipTrigger.acceptedFillTypes[fruitType] then
          if tipper.tipState == Trailer.TIPSTATE_CLOSED then
