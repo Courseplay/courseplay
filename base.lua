@@ -114,6 +114,7 @@ function courseplay:load(xmlFile)
 	self.locales.CPUnloadBale = g_i18n:getText("CPUnloadBale")
 	self.locales.CPFieldSpeed = g_i18n:getText("CPFieldSpeed")
 	self.locales.CPMaxSpeed = g_i18n:getText("CPMaxSpeed")
+	self.locales.CPUnloadSpeed = g_i18n:getText("CPUnloadSpeed")
 	self.locales.CPFindAuto = g_i18n:getText("CPFindAuto")
 	self.locales.CPFindManual = g_i18n:getText("CPFindManual")
 	self.locales.CPActual = g_i18n:getText("CPActual")
@@ -330,9 +331,10 @@ function courseplay:load(xmlFile)
 
 	-- speed limits
 	self.max_speed_level = nil
-	self.max_speed =    50 / 3600
-	self.turn_speed =   10 / 3600
-	self.field_speed =  24 / 3600
+	self.max_speed =    50 / 3600 -- >5
+	self.turn_speed =   10 / 3600 -- >5
+	self.field_speed =  24 / 3600 -- >5
+	self.unload_speed =  6 / 3600 -- >5
 	self.sl = 3
 	self.tools_dirty = false
 
@@ -530,9 +532,10 @@ function courseplay:load(xmlFile)
 
 	courseplay:register_button(self, 5, "navigate_minus.dds", "change_max_speed",    -1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.167, 0.010, 0.010, nil, -5)
 	courseplay:register_button(self, 5, "navigate_plus.dds",  "change_max_speed",     1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.167, 0.010, 0.010, nil,  5)
-	courseplay:register_button(self, 5, "blank.dds", "change_use_speed", 1, self.hudInfoBasePosX - 0.05, self.hudInfoBasePosY + 0.143, 0.32, 0.015)
+	courseplay:register_button(self, 5, "navigate_minus.dds", "change_unload_speed", -1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.143, 0.010, 0.010, nil, -5)
+	courseplay:register_button(self, 5, "navigate_plus.dds",  "change_unload_speed",  1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.143, 0.010, 0.010, nil,  5)
 
-
+	courseplay:register_button(self, 5, "blank.dds",          "change_use_speed",     1, self.hudInfoBasePosX - 0.05,  self.hudInfoBasePosY + 0.121, 0.32, 0.015)
 	--Page 6
 	courseplay:register_button(self, 6, "blank.dds", "switch_realistic_driving", nil, self.hudInfoBasePosX - 0.05, self.hudInfoBasePosY + 0.207, 0.32, 0.015)
 	courseplay:register_button(self, 6, "blank.dds", "mouse_right_key", nil, self.hudInfoBasePosX - 0.05, self.hudInfoBasePosY + 0.185, 0.32, 0.015)
@@ -725,6 +728,7 @@ function courseplay:readStream(streamId, connection)
 	self.use_speed = streamDebugReadBool(streamId)
 	self.turn_speed = streamDebugReadFloat32(streamId)
 	self.field_speed = streamDebugReadFloat32(streamId)
+	self.unload_speed = streamDebugReadFloat32(streamId)
 	self.tipper_offset = streamDebugReadFloat32(streamId)
 	self.combine_offset = streamDebugReadFloat32(streamId)
 	self.required_fill_level_for_follow = streamDebugReadFloat32(streamId)
@@ -829,6 +833,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteBool(streamId, self.use_speed)
 	streamDebugWriteFloat32(streamId, self.turn_speed)
 	streamDebugWriteFloat32(streamId, self.field_speed)
+	streamDebugWriteFloat32(streamId, self.unload_speed)
 	streamDebugWriteFloat32(streamId, self.tipper_offset)
 	streamDebugWriteFloat32(streamId, self.combine_offset)
 	streamDebugWriteFloat32(streamId, self.required_fill_level_for_follow)
@@ -920,9 +925,10 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 	if not resetVehicles and g_server ~= nil then
 		self.max_speed = Utils.getNoNil(getXMLFloat(xmlFile, key .. string.format("#max_speed")), 50 / 3600);
 		self.use_speed = Utils.getNoNil(getXMLBool(xmlFile, key .. string.format("#use_speed")), false);
-		self.realistic_driving = Utils.getNoNil(getXMLBool(xmlFile, key .. string.format("#realistic_driving")), true);    
 		self.turn_speed = Utils.getNoNil(getXMLFloat(xmlFile, key .. string.format("#turn_speed")), 10 / 3600);
 		self.field_speed = Utils.getNoNil(getXMLFloat(xmlFile, key .. string.format("#field_speed")), 24 / 3600);
+		self.unload_speed = Utils.getNoNil(getXMLFloat(xmlFile, key .. string.format("#unload_speed")), 6 / 3600);
+		self.realistic_driving = Utils.getNoNil(getXMLBool(xmlFile, key .. string.format("#realistic_driving")), true);    
 		self.tipper_offset = Utils.getNoNil(getXMLFloat(xmlFile, key .. string.format("#tipper_offset")), 0);
 		self.combine_offset = Utils.getNoNil(getXMLFloat(xmlFile, key .. string.format("#combine_offset")), 0);
 
@@ -959,6 +965,7 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 			' use_speed="' .. tostring(self.use_speed) .. '"' ..
 			' turn_speed="' .. tostring(self.turn_speed) .. '"' ..
 			' field_speed="' .. tostring(self.field_speed) .. '"' ..
+			' unload_speed="' .. tostring(self.unload_speed) .. '"' ..
 			' tipper_offset="' .. tostring(self.tipper_offset) .. '"' ..
 			' combine_offset="' .. tostring(self.combine_offset) .. '"' ..
 			' fill_follow="' .. tostring(self.required_fill_level_for_follow) .. '"' ..

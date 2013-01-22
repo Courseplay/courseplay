@@ -272,17 +272,18 @@ function courseplay:loadHud(self)
 			self.hudpage[5][1][1] = courseplay:get_locale(self, "CPTurnSpeed") -- "Wendemanöver:"
 			self.hudpage[5][1][2] = courseplay:get_locale(self, "CPFieldSpeed") -- "Auf dem Feld:"
 			self.hudpage[5][1][3] = courseplay:get_locale(self, "CPMaxSpeed") -- "Auf Straße:"
+			self.hudpage[5][1][4] = courseplay:get_locale(self, "CPUnloadSpeed") -- "Abladen (BGA):"
 
 			self.hudpage[5][2][1] = string.format("%d", self.turn_speed * 3600) .. " km/h"
 			self.hudpage[5][2][2] = string.format("%d", self.field_speed * 3600) .. " km/h"
 			self.hudpage[5][2][3] = string.format("%d", self.max_speed * 3600) .. " km/h"
+			self.hudpage[5][2][4] = string.format("%d", self.unload_speed * 3600) .. " km/h"
 
-			self.hudpage[5][1][4] = courseplay:get_locale(self, "CPuseSpeed") -- "Wendemanöver:"
-
+			self.hudpage[5][1][5] = courseplay:get_locale(self, "CPuseSpeed") -- "Geschwindigkeit:"
 			if self.use_speed then
-				self.hudpage[5][2][4] = courseplay:get_locale(self, "CPuseSpeed1") -- "on Street on"
+				self.hudpage[5][2][5] = courseplay:get_locale(self, "CPuseSpeed1") -- "on Street on"
 			else
-				self.hudpage[5][2][4] = courseplay:get_locale(self, "CPuseSpeed2") -- "on Street on"
+				self.hudpage[5][2][5] = courseplay:get_locale(self, "CPuseSpeed2") -- "on Street on"
 			end
 
 

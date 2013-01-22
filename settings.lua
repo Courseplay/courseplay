@@ -65,7 +65,7 @@ function courseplay:change_combine_offset(self, change_by)
 	
 	self.auto_combine_offset = false
 	self.combine_offset = roundCustom(self.combine_offset, 1) + change_by
-	if self.combine_offset < 0.1 then
+	if self.combine_offset < 0.1 and self.combine_offset > -0.1 then
 		self.combine_offset = 0.0
 		self.auto_combine_offset = true
 	end
@@ -143,9 +143,7 @@ end
 
 function courseplay:change_turn_speed(self, change_by)
 	local speed = self.turn_speed * 3600
-
 	speed = speed + change_by
-
 	if speed < 1 then
 		speed = 1
 	end
@@ -179,6 +177,16 @@ function courseplay:change_max_speed(self, change_by)
 		speed = 1
 	end
 	self.max_speed = speed / 3600
+end
+
+function courseplay:change_unload_speed(self, change_by)
+	local speed = self.unload_speed * 3600
+	speed = speed + change_by
+	if speed < 5 then
+		speed = 5
+	end
+
+	self.unload_speed = speed / 3600
 end
 
 function courseplay:change_RulMode(self, change_by)

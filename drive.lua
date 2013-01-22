@@ -468,9 +468,23 @@ function courseplay:drive(self, dt)
 		end
 	end
 
-  if self.currentTipTrigger ~= nil then
-    ref_speed = 9 / 3600
-  end
+	--bunkerSilo speed by Thomas Gärtner
+	if self.currentTipTrigger ~= nil then
+		if self.currentTipTrigger.bunkerSilo ~= nil then
+			if self.unload_speed ~= nil then
+				refSpeed = self.unload_speed;
+			else
+				refSpeed = 6 / 3600;
+			end;
+		else
+			refSpeed = 9 / 3600;
+		end
+	else
+		if self.runonce ~= nil then
+			self.runonce = nil;
+		end
+	end
+
 
 	if self.RulMode == 1 then
 		if (self.sl == 3 and not self.beaconLightsActive) or (self.sl ~= 3 and self.beaconLightsActive) then

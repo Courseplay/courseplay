@@ -129,6 +129,10 @@ function courseplay:deal_with_mouse_input(self, func, value)
 		courseplay:change_max_speed(self, value)
 	end
 
+	if func == "change_unload_speed" then
+		courseplay:change_unload_speed(self, value)
+	end
+
 	if func == "change_RulMode" then
 		courseplay:change_RulMode(self, value)
 	end

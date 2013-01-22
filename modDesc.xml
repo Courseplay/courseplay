@@ -344,6 +344,10 @@
 			<en>Street speed:</en>
 			<de>Auf Straße:</de>
 		</text>
+		<text name="CPUnloadSpeed">
+			<en>Unload (BGA):</en>
+			<de>Abladen (BGA):</de>
+		</text>
 		<text name="CPuseSpeed">
 			<en>Speed:</en>
 			<de>Geschwindigkeit:</de>
