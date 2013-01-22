@@ -43,8 +43,10 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 			end
 		else
 			-- baleloader, copied original code parts				
-			if SpecializationUtil.hasSpecialization(BaleLoader, workTool.specializations) then
-				if workArea then
+			local is_ubt = workTool.numAttacherParts ~= nil and workTool.baleType ~= nil
+
+			if SpecializationUtil.hasSpecialization(BaleLoader, workTool.specializations) or is_ubt then
+				if workArea and not is_ubt then
 					-- automatic stop for baleloader
 					if workTool.grabberIsMoving or workTool:getIsAnimationPlaying("rotatePlatform") then
 						allowedToDrive = false
@@ -57,16 +59,25 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 					end
 				end
 
-				if (fill_level == 100 and self.maxnumber ~= self.stopWork or self.recordnumber == self.stopWork) and workTool.isInWorkPosition and not workTool:getIsAnimationPlaying("rotatePlatform") then
-					workTool.grabberIsMoving = true
-					workTool.isInWorkPosition = false
-					-- move to transport position
-					BaleLoader.moveToTransportPosition(workTool)
+				if not is_ubt then
+					if (fill_level == 100 and self.maxnumber ~= self.stopWork or self.recordnumber == self.stopWork) and workTool.isInWorkPosition and not workTool:getIsAnimationPlaying("rotatePlatform") then
+						workTool.grabberIsMoving = true
+						workTool.isInWorkPosition = false
+						-- move to transport position
+						BaleLoader.moveToTransportPosition(workTool)
+					end
 				end
 
 				if fill_level == 100 and self.maxnumber == self.stopWork then
 					allowedToDrive = false
 					self.global_info_text = courseplay:get_locale(self, "CPReadyUnloadBale") --'bereit zum entladen'
+				end
+
+				if is_ubt then
+					if (workTool.fillLevel == workTool.fillLevelMax or fill_level == 100) and self.maxnumber == self.stopWork then
+						allowedToDrive = false
+						self.global_info_text = "UBT "..courseplay:get_locale(self, "CPReadyUnloadBale") --'UBT bereit zum entladen'
+					end
 				end
 
 				-- automatic unload
@@ -90,11 +101,12 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 					end
 				end
 
+			--END baleloader	
 			else
 
 				-- other worktools, tippers, e.g. forage wagon	
 				-- start/stop worktool
-				if workArea and fill_level ~= 100 and (self.abortWork == nil and last_recordnumber == self.startWork or self.abortWork ~= nil and last_recordnumber == self.abortWork - 2) then
+				if workArea and fill_level ~= 100 and (self.abortWork == nil and last_recordnumber == self.startWork or self.abortWork ~= nil and last_recordnumber == self.abortWork - 4) then
 					--workSpeed = true
 					if allowedToDrive then
 						if workTool.setIsTurnedOn ~= nil then
@@ -190,7 +202,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 			end
 		end
 	else
-		if SpecializationUtil.hasSpecialization(Combine, self.specializations) then
+		if SpecializationUtil.hasSpecialization(Combine, self.specializations) or SpecializationUtil.hasSpecialization(combine, self.specializations) then
 			if self.grainTankCapacity == 0 and ((self.pipeParticleActivated and not self.isPipeUnloading) or not self.pipeStateIsUnloading[self.currentPipeState]) then
 				-- there is some fruit to unload, but there is no trailer. Stop and wait for a trailer
 				self.waitingForTrailerToUnload = true;

@@ -346,9 +346,11 @@ function courseplay:unload_combine(self, dt)
 					self.sideToDrive = "left";
 					self.combine_offset = math.abs(self.combine_offset);
 				end
+
 			end
 			mode = 4
 		end
+
 		-- end mode 2
 	elseif mode == 4 then -- Drive to rear Combine or Cornchopper
 
@@ -612,16 +614,21 @@ function courseplay:unload_combine(self, dt)
 
 		if (combine.turnStage ~= 0 and lz < 20) or self.timer < self.drive_slow_timer then
 			refSpeed = 1 / 3600
-			self.motor.maxRpm[self.sl] = 200
+			self.sl = 1
+			if self.ESLimiter == nil then
+				self.motor.maxRpm[self.sl] = 200
+			end --!!!
 			if combine.turnStage ~= 0 then
 				self.drive_slow_timer = self.timer + 2000
 			end
+		else
+			self.sl = 2
 		end
 
 		if combine.movingDirection == 0 then
 			refSpeed = self.field_speed * 1.5
-			if mode == 3 and dod < 10 and cornChopper then
-				refSpeed = 1 / 3600
+			if mode == 3 and dod < 20 and cornChopper then
+				refSpeed = 1 / 3600 
 			end
 		end
 		---------------------------------------------------------------------
@@ -643,34 +650,21 @@ function courseplay:unload_combine(self, dt)
 
 					if self.combine_offset > 0 then -- I'm left of chopper
 						courseplay:debug(string.format("%s(%i): %s @ %s: combine turns left, I'm left", curFile, debug.getinfo(1).currentline, self.name, combine.name), 2);
-
 						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 0, 0, self.turn_radius);
 						courseplay:set_next_target(self, -50 ,  self.turn_radius);
 	
 					else --i'm right of choppper
 						courseplay:debug(string.format("%s(%i): %s @ %s: combine turns left, I'm right", curFile, debug.getinfo(1).currentline, self.name, combine.name), 2);
-
-
-
 						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, -50, 0, 0);
-
-
-
 					end
 					
 				else -- chopper will turn right
-
 					if self.combine_offset < 0 then -- I'm right of chopper
 						courseplay:debug(string.format("%s(%i): %s @ %s: combine turns right, I'm right", curFile, debug.getinfo(1).currentline, self.name, combine.name), 2);
-
 						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 0, 0, self.turn_radius);
 						courseplay:set_next_target(self, 50,     self.turn_radius);
-	
 					else -- I'm left of chopper
 						courseplay:debug(string.format("%s(%i): %s @ %s: combine turns right, I'm left", curFile, debug.getinfo(1).currentline, self.name, combine.name), 2);
-
-
-
 						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 50, 0, 0);
 					end
 				end
@@ -679,9 +673,6 @@ function courseplay:unload_combine(self, dt)
 						self.sideToDrive = "left"
 					elseif self.sideToDrive == "left" then
 						self.sideToDrive = "right"
-
-
-
 					end
 				else
 					self.sideToDrive = combine.forced_side
@@ -919,37 +910,7 @@ function courseplay:unload_combine(self, dt)
 		if refSpeed == nil then
 			refSpeed = real_speed
 		end
-
-		if real_speed < refSpeed then
-			if real_speed * 2 < refSpeed then
-				maxRpm = maxRpm + 100
-			elseif real_speed * 1.5 < refSpeed then
-				maxRpm = maxRpm + 50
-			else
-				maxRpm = maxRpm + 5
-			end
-		end
-
-		if real_speed > refSpeed then
-			if real_speed / 2 > refSpeed then
-				maxRpm = maxRpm - 100
-			elseif real_speed / 1.5 > refSpeed then
-				maxRpm = maxRpm - 50
-			else
-				maxRpm = maxRpm - 5
-			end
-		end
-
-		-- don't drive faster/slower than you can!
-		if maxRpm > self.orgRpm[3] then
-			maxRpm = self.orgRpm[3]
-		else
-			if maxRpm < self.motor.minRpm then
-				maxRpm = self.motor.minRpm
-			end
-		end
-
-		self.motor.maxRpm[self.sl] = maxRpm
+		courseplay:setSpeed(self, refSpeed, self.sl)
 	end
 
 

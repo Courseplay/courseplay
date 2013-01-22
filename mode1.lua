@@ -42,9 +42,16 @@ function courseplay:handle_mode1(self)
 		local trigger_x, trigger_y, trigger_z = getWorldTranslation(trigger_id)
 		local ctx, cty, ctz = getWorldTranslation(self.rootNode);
 		local distance_to_trigger = courseplay:distance(ctx, ctz, trigger_x, trigger_z)
-		if distance_to_trigger > 60 then
-			self.currentTipTrigger = nil
-		end
+		
+		if self.currentTipTrigger.bunkerSilo ~= nil then
+			if distance_to_trigger > 60 then 
+				self.currentTipTrigger = nil
+			end
+		elseif 	
+			distance_to_trigger > 20 then
+				self.currentTipTrigger = nil
+		end --!!!
+
 	end
 
 	-- tipper is not empty and tractor reaches TipTrigger

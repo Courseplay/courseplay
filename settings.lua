@@ -144,8 +144,8 @@ end
 function courseplay:change_turn_speed(self, change_by)
 	local speed = self.turn_speed * 3600
 	speed = speed + change_by
-	if speed < 1 then
-		speed = 1
+	if speed < 5 then
+		speed = 5
 	end
 	self.turn_speed = speed / 3600
 end
@@ -164,8 +164,8 @@ end
 function courseplay:change_field_speed(self, change_by)
 	local speed = self.field_speed * 3600
 	speed = speed + change_by
-	if speed < 1 then
-		speed = 1
+	if speed < 5 then
+		speed = 5
 	end
 	self.field_speed = speed / 3600
 end
@@ -173,8 +173,8 @@ end
 function courseplay:change_max_speed(self, change_by)
 	local speed = self.max_speed * 3600
 	speed = speed + change_by
-	if speed < 1 then
-		speed = 1
+	if speed < 5 then
+		speed = 5
 	end
 	self.max_speed = speed / 3600
 end

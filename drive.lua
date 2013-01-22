@@ -435,25 +435,25 @@ function courseplay:drive(self, dt)
 		slowDownRev = self.Waypoints[self.recordnumber].rev
 	end
 
-	if (slowDownWP and not workArea) or slowDownRev or self.max_speed_level == 1 then
+	if (slowDownWP and not workArea) or slowDownRev or self.max_speed_level == 1 or slowStartEnd then
 		self.sl = 1
-		ref_speed = self.turn_speed
-	elseif (slowStartEnd or workSpeed) and self.ai_mode ~= 7 then
+		refSpeed = self.turn_speed
+	elseif workSpeed and self.ai_mode ~= 7 then
 		self.sl = 2
-		ref_speed = self.field_speed
+		refSpeed = self.field_speed
 	else
 		self.sl = 3
-		ref_speed = self.max_speed
+		refSpeed = self.max_speed
 	end
 
+	
 	if self.Waypoints[self.recordnumber].speed ~= nil and self.use_speed and self.recordnumber > 3 then
-		ref_speed = self.Waypoints[self.recordnumber].speed
+		refSpeed = self.Waypoints[self.recordnumber].speed
 	end
 
-	if slowDownRev and ref_speed > self.turn_speed then
-		ref_speed = self.turn_speed
+	if slowDownRev and refSpeed > self.turn_speed then
+		refSpeed = self.turn_speed
 	end
-
 	if self.traffic_vehicle_in_front ~= nil then
 		local vehicle_in_front = g_currentMission.nodeToVehicle[self.traffic_vehicle_in_front];
 		if vehicle_in_front == nil then
@@ -464,7 +464,7 @@ function courseplay:drive(self, dt)
 		if courseplay:distance_to_object(self, vehicle_in_front) > 30 then
 			self.traffic_vehicle_in_front = nil
 		else
-			ref_speed = 29 / 3600
+			refSpeed = 29 / 3600 -- = traffic speed ?
 		end
 	end
 
@@ -501,25 +501,9 @@ function courseplay:drive(self, dt)
 	end
 
 	-- Speed Control
-	maxRpm = self.motor.maxRpm[self.sl]
+	courseplay:setSpeed(self, refSpeed, self.sl)
 
-	if real_speed < ref_speed then
-		maxRpm = maxRpm + 10
-	elseif real_speed > ref_speed then
-		maxRpm = maxRpm - 10
-	end
-
-
-
-	-- don't drive faster/slower than you can!
-	if maxRpm > self.orgRpm[3] then
-		maxRpm = self.orgRpm[3]
-	elseif maxRpm < self.motor.minRpm then
-		maxRpm = self.motor.minRpm
-	end
-
-	self.motor.maxRpm[self.sl] = maxRpm
-
+	
 	-- where to drive?
 	local fwd = nil
 	local distToChange = nil
@@ -650,4 +634,66 @@ function courseplay:check_traffic(self, display_warnings, allowedToDrive)
 
 
 	return allowedToDrive
+end
+
+function courseplay:setSpeed(self, refSpeed, sl)
+	if self.ESLimiter ~= nil then   --!!!
+		if self.ESLimiter.percentage[self.sl+1] > 100 then
+			self.ESLimiter.percentage[self.sl+1] = 99.24
+		end
+		if refSpeed*3600 == 1 then
+			refSpeed = 1.6 / 3600
+		end				
+		local temppercent = self.ESLimiter.percentage[self.sl+1]
+		if self.ESLimiter.percentage[self.sl+1] < 100 then
+			if refSpeed*3600 - self.lastSpeed*3600 > 15 then
+				self:setNewLimit(self.sl+1, 100, false, true);
+			elseif refSpeed*3600 - self.lastSpeed*3600 > 5 then
+				self:setNewLimit(self.sl+1, self.ESLimiter.percentage[self.sl+1] + 0.75, false, true);
+			elseif refSpeed*3600 - self.lastSpeed*3600 > 1 then
+				self:setNewLimit(self.sl+1, self.ESLimiter.percentage[self.sl+1] + 0.25, false, true);
+			elseif refSpeed*3600 - self.lastSpeed*3600 > 0.5 then
+				self:setNewLimit(self.sl+1, self.ESLimiter.percentage[self.sl+1] + 0.05, false, true);
+			end
+		end
+		if self.ESLimiter.percentage[self.sl+1] > 0 then
+			if self.lastSpeed*3600 - refSpeed*3600 > 10 then
+				self:setNewLimit(self.sl+1, self.ESLimiter.percentage[self.sl+1] -5, false, true)
+			elseif self.lastSpeed*3600 - refSpeed*3600 > 5 then
+				self:setNewLimit(self.sl+1, self.ESLimiter.percentage[self.sl+1] -1 , false, true)
+			elseif self.lastSpeed*3600 - refSpeed*3600 > 1 then
+				self:setNewLimit(self.sl+1, self.ESLimiter.percentage[self.sl+1] -0.5 , false, true)
+			elseif self.lastSpeed*3600 - refSpeed*3600 > 0.5 then
+				self:setNewLimit(self.sl+1, self.ESLimiter.percentage[self.sl+1] -0.05 , false, true)
+			end
+		end
+		--print("mode2: lastspeed: "..tostring(self.lastSpeed*3600).." soll speed: "..tostring(refSpeed*3600).."speed level: "..tostring(self.sl).."  percentage: "..tostring(self.ESLimiter.percentage[self.sl+1]))
+		--print("mode2: delta V:".. tostring(refSpeed*3600 - self.lastSpeed*3600).." Delta %: "..tostring(self.ESLimiter.percentage[self.sl+1]- temppercent).." %: "..tostring(self.ESLimiter.percentage[self.sl+1]))
+		--print("self.motor.maxRpm[self.sl]"..tostring(self.motor.maxRpm[self.sl]))
+	else
+		maxRpm = self.motor.maxRpm[self.sl]
+
+			if refSpeed*3600 - self.lastSpeedReal*3600 > 1 then
+				maxRpm = maxRpm + 50
+			elseif refSpeed*3600 - self.lastSpeedReal*3600 > 0.5 then
+				maxRpm = maxRpm + 25
+			end
+			if self.lastSpeedReal*3600 - refSpeed*3600 > 3 then
+				maxRpm = maxRpm - 75
+			elseif self.lastSpeedReal*3600 - refSpeed*3600 > 1  then
+				maxRpm = maxRpm - 50
+			elseif self.lastSpeedReal*3600 - refSpeed*3600 > 0.5 then
+				maxRpm = maxRpm - 25
+			end
+
+		-- don't drive faster/slower than you can!
+		if maxRpm > self.orgRpm[3] then
+			maxRpm = self.orgRpm[3]
+		elseif maxRpm < self.motor.minRpm then
+			maxRpm = self.motor.minRpm
+		end
+
+		self.motor.maxRpm[self.sl] = maxRpm
+	end
+
 end
