@@ -59,7 +59,7 @@ function courseplay:load(xmlFile)
 	end
 
 	-- dirty workaround for localization - don't try this at home!
-  self.toggledTipState = 0
+	self.toggledTipState = 0
 	self.locales.CPMaxHireables = g_i18n:getText("CPMaxHireables")
 	self.locales.CPFollowTractor = g_i18n:getText("CPFollowTractor")
 	self.locales.CPWaitForWaypoint = g_i18n:getText("CPWaitForWaypoint")
@@ -86,9 +86,9 @@ function courseplay:load(xmlFile)
 	self.locales.CPWaypoint = g_i18n:getText("CPWaypoint")
 	self.locales.CPNoWaypoint = g_i18n:getText("CPNoWaypoint")
 
-  self.locales.CourseDriveDirection = g_i18n:getText("CourseDriveDirection")
-  self.locales.CourseDriveDirectionFor = g_i18n:getText("CourseDriveDirectionFor")
-  self.locales.CourseDriveDirectionBac = g_i18n:getText("CourseDriveDirectionBac")
+	self.locales.CourseDriveDirection = g_i18n:getText("CourseDriveDirection")
+	self.locales.CourseDriveDirectionFor = g_i18n:getText("CourseDriveDirectionFor")
+	self.locales.CourseDriveDirectionBac = g_i18n:getText("CourseDriveDirectionBac")
 
 
 	self.locales.WaypointMode1 = g_i18n:getText("WaypointMode1")
@@ -330,9 +330,9 @@ function courseplay:load(xmlFile)
 
 	-- speed limits
 	self.max_speed_level = nil
-	self.max_speed = 50 / 3600
-	self.turn_speed = 10 / 3600
-	self.field_speed = 24 / 3600
+	self.max_speed =    50 / 3600
+	self.turn_speed =   10 / 3600
+	self.field_speed =  24 / 3600
 	self.sl = 3
 	self.tools_dirty = false
 
@@ -463,26 +463,29 @@ function courseplay:load(xmlFile)
 
 	courseplay:register_button(self, nil, "disk_blue.dds", "save_course", 1, self.hudInfoBasePosX + 0.280, self.hudInfoBasePosY + 0.050, 0.016, 0.016)
 
+	--Page 0
 	courseplay:register_button(self, 0, "blank.dds", "row1", nil, self.hudInfoBasePosX - 0.05, self.hudInfoBasePosY + 0.207, 0.32, 0.015)
 	courseplay:register_button(self, 0, "blank.dds", "row2", nil, self.hudInfoBasePosX - 0.05, self.hudInfoBasePosY + 0.185, 0.32, 0.015)
 	courseplay:register_button(self, 0, "blank.dds", "row3", nil, self.hudInfoBasePosX - 0.05, self.hudInfoBasePosY + 0.164, 0.32, 0.015)
 	courseplay:register_button(self, 0, "blank.dds", "row4", nil, self.hudInfoBasePosX - 0.05, self.hudInfoBasePosY + 0.143, 0.32, 0.015)
 
+	--Page 1
 	courseplay:register_button(self, 1, "blank.dds", "row1", nil, self.hudInfoBasePosX - 0.05, self.hudInfoBasePosY + 0.207, 0.32, 0.015)
 	courseplay:register_button(self, 1, "blank.dds", "row2", nil, self.hudInfoBasePosX - 0.05, self.hudInfoBasePosY + 0.185, 0.32, 0.015)
 	courseplay:register_button(self, 1, "blank.dds", "row3", nil, self.hudInfoBasePosX - 0.05, self.hudInfoBasePosY + 0.164, 0.32, 0.015)
 	courseplay:register_button(self, 1, "blank.dds", "row4", nil, self.hudInfoBasePosX - 0.05, self.hudInfoBasePosY + 0.143, 0.32, 0.015)
-  courseplay:register_button(self, 1, "blank.dds", "row5", nil, self.hudInfoBasePosX - 0.05, self.hudInfoBasePosY + 0.122, 0.32, 0.015)
-  courseplay:register_button(self, 1, "blank.dds", "change_DriveDirection", 1, self.hudInfoBasePosX - 0.05, self.hudInfoBasePosY + 0.122, 0.32, 0.015)
+	courseplay:register_button(self, 1, "blank.dds", "row5", nil, self.hudInfoBasePosX - 0.05, self.hudInfoBasePosY + 0.122, 0.32, 0.015)
+	courseplay:register_button(self, 1, "blank.dds", "change_DriveDirection", 1, self.hudInfoBasePosX - 0.05, self.hudInfoBasePosY + 0.122, 0.32, 0.015)
 
+	--Page 2
 	courseplay:register_button(self, 2, "blank.dds", "row1", nil, self.hudInfoBasePosX - 0.05, self.hudInfoBasePosY + 0.207, 0.32, 0.015)
 	courseplay:register_button(self, 2, "blank.dds", "row2", nil, self.hudInfoBasePosX - 0.05, self.hudInfoBasePosY + 0.185, 0.32, 0.015)
 	courseplay:register_button(self, 2, "blank.dds", "row3", nil, self.hudInfoBasePosX - 0.05, self.hudInfoBasePosY + 0.164, 0.32, 0.015)
 
 
 
-	courseplay:register_button(self, 2, "navigate_up.dds", "change_selected_course", -5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.222, 0.020, 0.020)
-	courseplay:register_button(self, 2, "navigate_down.dds", "change_selected_course", 5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.120, 0.020, 0.020)
+	courseplay:register_button(self, 2, "navigate_up.dds",   "change_selected_course", -5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.222, 0.020, 0.020, nil, -10)
+	courseplay:register_button(self, 2, "navigate_down.dds", "change_selected_course",  5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.120, 0.020, 0.020, nil,  10)
 
 	for i = 1, 5, 1 do
 		local posy = self.hudInfoBasePosY + 0.205 - (i - 1) * 0.021
@@ -493,40 +496,44 @@ function courseplay:load(xmlFile)
 		end
 	end
 
+	--Page 3
 	courseplay:register_button(self, 3, "navigate_minus.dds", "change_combine_offset", -0.1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.210, 0.010, 0.010, nil, -0.5)
-	courseplay:register_button(self, 3, "navigate_plus.dds", "change_combine_offset", 0.1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.210, 0.010, 0.010, nil, 0.5)
+	courseplay:register_button(self, 3, "navigate_plus.dds",  "change_combine_offset",  0.1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.210, 0.010, 0.010, nil,  0.5)
 
 	courseplay:register_button(self, 3, "navigate_minus.dds", "change_tipper_offset", -0.1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.188, 0.010, 0.010, nil, -0.5)
-	courseplay:register_button(self, 3, "navigate_plus.dds", "change_tipper_offset", 0.1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.188, 0.010, 0.010, nil, 0.5)
+	courseplay:register_button(self, 3, "navigate_plus.dds",  "change_tipper_offset",  0.1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.188, 0.010, 0.010, nil,  0.5)
 
 	courseplay:register_button(self, 3, "navigate_minus.dds", "change_turn_radius", -1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.167, 0.010, 0.010, nil, -5)
-	courseplay:register_button(self, 3, "navigate_plus.dds", "change_turn_radius", 1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.167, 0.010, 0.010, nil, 5)
+	courseplay:register_button(self, 3, "navigate_plus.dds",  "change_turn_radius",  1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.167, 0.010, 0.010, nil,  5)
 
 	courseplay:register_button(self, 3, "navigate_minus.dds", "change_required_fill_level", -5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.146, 0.010, 0.010, nil, -10)
-	courseplay:register_button(self, 3, "navigate_plus.dds", "change_required_fill_level", 5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.146, 0.010, 0.010, nil, 10)
+	courseplay:register_button(self, 3, "navigate_plus.dds",  "change_required_fill_level",  5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.146, 0.010, 0.010, nil,  10)
 
 	courseplay:register_button(self, 3, "navigate_minus.dds", "change_required_fill_level_for_drive_on", -5, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.123, 0.010, 0.010, nil, -10)
-	courseplay:register_button(self, 3, "navigate_plus.dds", "change_required_fill_level_for_drive_on", 5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.123, 0.010, 0.010, nil, 10)
+	courseplay:register_button(self, 3, "navigate_plus.dds",  "change_required_fill_level_for_drive_on",  5, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.123, 0.010, 0.010, nil,  10)
 
-	courseplay:register_button(self, 4, "navigate_up.dds", "switch_combine", -1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.210, 0.010, 0.010)
-	courseplay:register_button(self, 4, "navigate_down.dds", "switch_combine", 1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.210, 0.010, 0.010)
+	--Page 4
+	courseplay:register_button(self, 4, "navigate_up.dds",   "switch_combine", -1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.210, 0.010, 0.010)
+	courseplay:register_button(self, 4, "navigate_down.dds", "switch_combine",  1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.210, 0.010, 0.010)
 
 	--courseplay:register_button(self, 4, "navigate_minus.dds", "change_num_ai_helpers", -1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.146, 0.010, 0.010)
 	--courseplay:register_button(self, 4, "navigate_plus.dds", "change_num_ai_helpers", 1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY +0.146, 0.010, 0.010)
 
 	courseplay:register_button(self, 4, "blank.dds", "switch_search_combine", nil, self.hudInfoBasePosX - 0.05, self.hudInfoBasePosY + 0.185, 0.32, 0.015)
 
-	courseplay:register_button(self, 5, "navigate_minus.dds", "change_turn_speed", -1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.210, 0.010, 0.010, nil, -5)
-	courseplay:register_button(self, 5, "navigate_plus.dds", "change_turn_speed", 1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.210, 0.010, 0.010, nil, 5)
+	--Page 5
+	courseplay:register_button(self, 5, "navigate_minus.dds", "change_turn_speed",   -1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.210, 0.010, 0.010, nil, -5)
+	courseplay:register_button(self, 5, "navigate_plus.dds",  "change_turn_speed",    1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.210, 0.010, 0.010, nil,  5)
 
-	courseplay:register_button(self, 5, "navigate_minus.dds", "change_field_speed", -1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.188, 0.010, 0.010, nil, -5)
-	courseplay:register_button(self, 5, "navigate_plus.dds", "change_field_speed", 1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.188, 0.010, 0.010, nil, 5)
+	courseplay:register_button(self, 5, "navigate_minus.dds", "change_field_speed",  -1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.188, 0.010, 0.010, nil, -5)
+	courseplay:register_button(self, 5, "navigate_plus.dds",  "change_field_speed",   1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.188, 0.010, 0.010, nil,  5)
 
-	courseplay:register_button(self, 5, "navigate_minus.dds", "change_max_speed", -1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.167, 0.010, 0.010, nil, -5)
-	courseplay:register_button(self, 5, "navigate_plus.dds", "change_max_speed", 1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.167, 0.010, 0.010, nil, 5)
+	courseplay:register_button(self, 5, "navigate_minus.dds", "change_max_speed",    -1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.167, 0.010, 0.010, nil, -5)
+	courseplay:register_button(self, 5, "navigate_plus.dds",  "change_max_speed",     1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.167, 0.010, 0.010, nil,  5)
 	courseplay:register_button(self, 5, "blank.dds", "change_use_speed", 1, self.hudInfoBasePosX - 0.05, self.hudInfoBasePosY + 0.143, 0.32, 0.015)
 
 
+	--Page 6
 	courseplay:register_button(self, 6, "blank.dds", "switch_realistic_driving", nil, self.hudInfoBasePosX - 0.05, self.hudInfoBasePosY + 0.207, 0.32, 0.015)
 	courseplay:register_button(self, 6, "blank.dds", "mouse_right_key", nil, self.hudInfoBasePosX - 0.05, self.hudInfoBasePosY + 0.185, 0.32, 0.015)
 
@@ -913,7 +920,7 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 	if not resetVehicles and g_server ~= nil then
 		self.max_speed = Utils.getNoNil(getXMLFloat(xmlFile, key .. string.format("#max_speed")), 50 / 3600);
 		self.use_speed = Utils.getNoNil(getXMLBool(xmlFile, key .. string.format("#use_speed")), false);
-    self.realistic_driving = Utils.getNoNil(getXMLBool(xmlFile, key .. string.format("#realistic_driving")), true);    
+		self.realistic_driving = Utils.getNoNil(getXMLBool(xmlFile, key .. string.format("#realistic_driving")), true);    
 		self.turn_speed = Utils.getNoNil(getXMLFloat(xmlFile, key .. string.format("#turn_speed")), 10 / 3600);
 		self.field_speed = Utils.getNoNil(getXMLFloat(xmlFile, key .. string.format("#field_speed")), 24 / 3600);
 		self.tipper_offset = Utils.getNoNil(getXMLFloat(xmlFile, key .. string.format("#tipper_offset")), 0);
@@ -927,9 +934,9 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		self.waitTime = Utils.getNoNil(getXMLFloat(xmlFile, key .. string.format("#waitTime")), 0);
 		self.abortWork = Utils.getNoNil(getXMLInt(xmlFile, key .. string.format("#AbortWork")), nil);
 		self.turn_radius = Utils.getNoNil(getXMLInt(xmlFile, key .. string.format("#turn_radius")), 8);
-    self.RulMode = Utils.getNoNil(getXMLInt(xmlFile, key .. string.format("#rul_mode")), 1);
+		self.RulMode = Utils.getNoNil(getXMLInt(xmlFile, key .. string.format("#rul_mode")), 1);
 		local courses = Utils.getNoNil(getXMLString(xmlFile, key .. string.format("#courses")), "");
-    self.toolWorkWidht = Utils.getNoNil(getXMLFloat(xmlFile, key .. string.format("#toolWorkWidht")), 3);
+		self.toolWorkWidht = Utils.getNoNil(getXMLFloat(xmlFile, key .. string.format("#toolWorkWidht")), 3);
 		self.loaded_courses = courses:split(",")
 		self.selected_course_number = 0
 
