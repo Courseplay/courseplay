@@ -611,7 +611,7 @@ function courseplay:unload_combine(self, dt)
 		else
 			refSpeed = combine_speed
 		end
-		print("combine.sentPipeIsUnloading: "..tostring(combine.sentPipeIsUnloading).." refSpeed:  "..tostring(refSpeed*3600).." combine_speed:  "..tostring(combine_speed*3600))  
+		courseplay:debug(print("combine.sentPipeIsUnloading: "..tostring(combine.sentPipeIsUnloading).." refSpeed:  "..tostring(refSpeed*3600).." combine_speed:  "..tostring(combine_speed*3600)),3)  
 		self.sl = 2
 
 		if (combine.turnStage ~= 0 and lz < 20) or self.timer < self.drive_slow_timer then
