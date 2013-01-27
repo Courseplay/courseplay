@@ -429,23 +429,34 @@ function courseplay:unload_combine(self, dt)
 
 
 			if leftFruit > rightFruit then
-				local next_x, next_y, next_z = localToWorld(combine.rootNode, 0, 0, -10)
+				local next_x, next_y, next_z = localToWorld(combine.rootNode, -10, 0, -20)
 
 				local next_wp = { x = next_x, y = next_y, z = next_z }
 				table.insert(self.next_targets, next_wp)
 
-				local next_x, next_y, next_z = localToWorld(combine.rootNode, 0, 0, -30)
+				local next_x, next_y, next_z = localToWorld(combine.rootNode, -10, 0, -35)
+				local next_wp = { x = next_x, y = next_y, z = next_z }
+				table.insert(self.next_targets, next_wp)
 
+				local next_x, next_y, next_z = localToWorld(combine.rootNode, -10, 0, -50)
 				local next_wp = { x = next_x, y = next_y, z = next_z }
 				table.insert(self.next_targets, next_wp)
 
 				mode = 5 -- turn around and then wait for next start
 			else
-				local next_x, next_y, next_z = localToWorld(combine.rootNode, 0, 0, -10)
+				local next_x, next_y, next_z = localToWorld(combine.rootNode, 10, 0, -20)
 				local next_wp = { x = next_x, y = next_y, z = next_z }
 				table.insert(self.next_targets, next_wp)
 
-				local next_x, next_y, next_z = localToWorld(combine.rootNode, 0, 0, -40)
+				local next_x, next_y, next_z = localToWorld(combine.rootNode, 10, 0, -40)
+				local next_wp = { x = next_x, y = next_y, z = next_z }
+				table.insert(self.next_targets, next_wp)
+
+				local next_x, next_y, next_z = localToWorld(combine.rootNode, 10, 0, -50)
+				local next_wp = { x = next_x, y = next_y, z = next_z }
+				table.insert(self.next_targets, next_wp)
+
+				local next_x, next_y, next_z = localToWorld(combine.rootNode, 10, 0, -60)
 				local next_wp = { x = next_x, y = next_y, z = next_z }
 				table.insert(self.next_targets, next_wp)
 				mode = 5
