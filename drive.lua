@@ -147,6 +147,11 @@ function courseplay:drive(self, dt)
 	if tipper_fill_level ~= nil then
 		fill_level = tipper_fill_level * 100 / tipper_capacity
 	end
+	
+	if self.ai_mode == 4 or self.ai_mode == 8 then
+		self.implementIsFull = (fill_level ~= nil and fill_level == 100);
+	end;
+	
 	-- may i drive or should i hold position for some reason?
 	local allowedToDrive = true
 	-- in a traffic yam?
@@ -265,7 +270,7 @@ function courseplay:drive(self, dt)
 				if self.tippers ~= nil then
 					for i = 1, table.getn(self.tippers) do
 						local activeTool = self.tippers[i]
-						if fill_level < self.required_fill_level_for_drive_on and not self.loaded and activeTool.sprayerFillTriggers ~= nil and table.getn(activeTool.sprayerFillTriggers) > 0 then
+						if fill_level < 100 and activeTool.sprayerFillTriggers ~= nil and table.getn(activeTool.sprayerFillTriggers) > 0 then
 							allowedToDrive = false
 							self.info_text = string.format(courseplay:get_locale(self, "CPloading"), tipper_fill_level, tipper_capacity)
 							local sprayer = activeTool.sprayerFillTriggers[1]
@@ -276,7 +281,7 @@ function courseplay:drive(self, dt)
 						end
 						if MapBGA ~= nil then
 							for i = 1, table.getn(MapBGA.ModEvent.bunkers) do --support Heady�s BGA
-								if fill_level < self.required_fill_level_for_drive_on and not self.loaded and MapBGA.ModEvent.bunkers[i].manure.trailerInTrigger == activeTool then
+								if fill_level < 100 and MapBGA.ModEvent.bunkers[i].manure.trailerInTrigger == activeTool then
 									self.info_text = "BGA LADEN"
 									allowedToDrive = false
 									MapBGA.ModEvent.bunkers[i].manure.fill = true
@@ -330,7 +335,7 @@ function courseplay:drive(self, dt)
 				if self.tippers ~= nil then
 					for i = 1, table.getn(self.tippers) do
 						local activeTool = self.tippers[i]
-						if fill_level < self.required_fill_level_for_drive_on and not self.loaded and activeTool.sprayerFillTriggers ~= nil and table.getn(activeTool.sprayerFillTriggers) > 0 then
+						if fill_level < self.required_fill_level_for_drive_on and activeTool.sprayerFillTriggers ~= nil and table.getn(activeTool.sprayerFillTriggers) > 0 then
 							allowedToDrive = false
 							self.info_text = string.format(courseplay:get_locale(self, "CPloading"), tipper_fill_level, tipper_capacity)
 							local sprayer = activeTool.sprayerFillTriggers[1]
@@ -341,7 +346,7 @@ function courseplay:drive(self, dt)
 						end
 						if MapBGA ~= nil then
 							for i = 1, table.getn(MapBGA.ModEvent.bunkers) do --support Heady�s BGA
-								if fill_level < self.required_fill_level_for_drive_on and not self.loaded and MapBGA.ModEvent.bunkers[i].manure.trailerInTrigger == activeTool then
+								if fill_level < self.required_fill_level_for_drive_on and MapBGA.ModEvent.bunkers[i].manure.trailerInTrigger == activeTool then
 									self.info_text = "BGA LADEN"
 									allowedToDrive = false
 									MapBGA.ModEvent.bunkers[i].manure.fill = true
