@@ -617,7 +617,7 @@ function courseplay:unload_combine(self, dt)
 			refSpeed = self.field_speed
 		elseif lz < -3 then
 			refSpeed = combine_speed / 2
-		elseif combine.sentPipeIsUnloading ~= true then  --!!!
+		elseif combine.sentPipeIsUnloading ~= true and not cornChopper then  --!!!
 			refSpeed = combine_speed + (1/3600) 
 		else
 			refSpeed = combine_speed
