@@ -405,10 +405,14 @@ function courseplay:load(xmlFile)
 
 	-- HUD  	-- Function in Signs
 	self.hudInfoBasePosX = 0.433; -- 0.755
-	self.hudInfoBaseWidth = 0.319;
-	self.hudInfoBasePosY = 0.005; -- 0.210
-	self.hudInfoBaseHeight = 0.287;
-
+	--self.hudInfoBaseWidth = 0.319;
+	--self.hudInfoBasePosY = 0.005; -- 0.210
+	--self.hudInfoBaseHeight = 0.287;
+	
+	--Jakob, 30 Jan 2013
+	self.hudInfoBasePosY = 0.002; -- 0.005
+	self.hudInfoBaseWidth = 0.512; --try: 512/1920
+	self.hudInfoBaseHeight = 0.512; --try: 512/1080
 	self.infoPanelPath = Utils.getFilename("img/hud_bg.dds", self.cp_directory);
 	self.hudInfoBaseOverlay = Overlay:new("hudInfoBaseOverlay", self.infoPanelPath, self.hudInfoBasePosX, self.hudInfoBasePosY, self.hudInfoBaseWidth, self.hudInfoBaseHeight);
 

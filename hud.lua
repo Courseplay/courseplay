@@ -7,10 +7,10 @@ function courseplay:HudPage(self)
 	for c = 1, 2, 1 do
 		for v, name in pairs(self.hudpage[Page][c]) do
 			if c == 1 then
-				local yspace = self.hudInfoBasePosY + 0.200 - ((v - 1) * 0.021)
+				local yspace = self.hudInfoBasePosY + 0.200 - ((v - 1) * 0.021) --ORIG: + 0.200 - NEW: + 0.210 ?
 				renderText(self.hudInfoBasePosX + 0.005, yspace, 0.019, name);
 			elseif c == 2 then
-				local yspace = self.hudInfoBasePosY + 0.200 - ((v - 1) * 0.021)
+				local yspace = self.hudInfoBasePosY + 0.200 - ((v - 1) * 0.021) --ORIG: + 0.200 - NEW: + 0.210 ?
 				if Page == 6 then
 					renderText(self.hudInfoBasePosX + 0.182, yspace, 0.017, name);
 				else
@@ -211,9 +211,9 @@ function courseplay:loadHud(self)
 				if self.tipper_offset == 0 then
 					tipperOffsetStr = "auto"
 				elseif self.tipper_offset > 0 then
-					tipperOffsetStr = "auto+" .. string.format("%.1f", self.tipper_offset)
+					tipperOffsetStr = string.format("auto+%.1f", self.tipper_offset)
 				elseif self.tipper_offset < 0 then
-					tipperOffsetStr = "auto" .. string.format("%.1f", self.tipper_offset)
+					tipperOffsetStr = string.format("auto%.1f", self.tipper_offset)
 				end
 				self.hudpage[3][2][2] = tipperOffsetStr
 			else
@@ -276,16 +276,16 @@ function courseplay:loadHud(self)
 			self.hudpage[5][1][3] = courseplay:get_locale(self, "CPMaxSpeed") -- "Auf Straße:"
 			self.hudpage[5][1][4] = courseplay:get_locale(self, "CPUnloadSpeed") -- "Abladen (BGA):"
 
-			self.hudpage[5][2][1] = string.format("%d", self.turn_speed * 3600) .. " km/h"
-			self.hudpage[5][2][2] = string.format("%d", self.field_speed * 3600) .. " km/h"
-			self.hudpage[5][2][3] = string.format("%d", self.max_speed * 3600) .. " km/h"
-			self.hudpage[5][2][4] = string.format("%d", self.unload_speed * 3600) .. " km/h"
+			self.hudpage[5][2][1] = string.format("%d km/h", self.turn_speed   * 3600);
+			self.hudpage[5][2][2] = string.format("%d km/h", self.field_speed  * 3600);
+			self.hudpage[5][2][3] = string.format("%d km/h", self.max_speed    * 3600);
+			self.hudpage[5][2][4] = string.format("%d km/h", self.unload_speed * 3600);
 
 			self.hudpage[5][1][5] = courseplay:get_locale(self, "CPuseSpeed") -- "Geschwindigkeit:"
 			if self.use_speed then
-				self.hudpage[5][2][5] = courseplay:get_locale(self, "CPuseSpeed1") -- "on Street on"
+				self.hudpage[5][2][5] = courseplay:get_locale(self, "CPuseSpeed1") -- "wie beim einfahren"
 			else
-				self.hudpage[5][2][5] = courseplay:get_locale(self, "CPuseSpeed2") -- "on Street on"
+				self.hudpage[5][2][5] = courseplay:get_locale(self, "CPuseSpeed2") -- "maximale Geschwindigkeit"
 			end
 
 
