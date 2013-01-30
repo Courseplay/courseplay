@@ -642,63 +642,74 @@ function courseplay:check_traffic(self, display_warnings, allowedToDrive)
 end
 
 function courseplay:setSpeed(self, refSpeed, sl)
-	if self.ESLimiter ~= nil then   --!!!
-		if self.ESLimiter.percentage[self.sl+1] > 100 then
-			self.ESLimiter.percentage[self.sl+1] = 99.24
-		end
+	if self.lastSpeedSave ~= self.lastSpeedReal*3600 then		
 		if refSpeed*3600 == 1 then
 			refSpeed = 1.6 / 3600
-		end				
-		local temppercent = self.ESLimiter.percentage[self.sl+1]
-		if self.ESLimiter.percentage[self.sl+1] < 100 then
-			if refSpeed*3600 - self.lastSpeed*3600 > 15 then
-				self:setNewLimit(self.sl+1, 100, false, true);
-			elseif refSpeed*3600 - self.lastSpeed*3600 > 5 then
-				self:setNewLimit(self.sl+1, self.ESLimiter.percentage[self.sl+1] + 0.75, false, true);
-			elseif refSpeed*3600 - self.lastSpeed*3600 > 1 then
-				self:setNewLimit(self.sl+1, self.ESLimiter.percentage[self.sl+1] + 0.25, false, true);
-			elseif refSpeed*3600 - self.lastSpeed*3600 > 0.5 then
-				self:setNewLimit(self.sl+1, self.ESLimiter.percentage[self.sl+1] + 0.05, false, true);
-			end
 		end
-		if self.ESLimiter.percentage[self.sl+1] > 0 then
-			if self.lastSpeed*3600 - refSpeed*3600 > 10 then
-				self:setNewLimit(self.sl+1, self.ESLimiter.percentage[self.sl+1] -5, false, true)
-			elseif self.lastSpeed*3600 - refSpeed*3600 > 5 then
-				self:setNewLimit(self.sl+1, self.ESLimiter.percentage[self.sl+1] -1 , false, true)
-			elseif self.lastSpeed*3600 - refSpeed*3600 > 1 then
-				self:setNewLimit(self.sl+1, self.ESLimiter.percentage[self.sl+1] -0.5 , false, true)
-			elseif self.lastSpeed*3600 - refSpeed*3600 > 0.5 then
-				self:setNewLimit(self.sl+1, self.ESLimiter.percentage[self.sl+1] -0.05 , false, true)
-			end
-		end
-		--print("mode2: lastspeed: "..tostring(self.lastSpeed*3600).." soll speed: "..tostring(refSpeed*3600).."speed level: "..tostring(self.sl).."  percentage: "..tostring(self.ESLimiter.percentage[self.sl+1]))
-		--print("mode2: delta V:".. tostring(refSpeed*3600 - self.lastSpeed*3600).." Delta %: "..tostring(self.ESLimiter.percentage[self.sl+1]- temppercent).." %: "..tostring(self.ESLimiter.percentage[self.sl+1]))
-		--print("self.motor.maxRpm[self.sl]"..tostring(self.motor.maxRpm[self.sl]))
-	else
-		maxRpm = self.motor.maxRpm[self.sl]
-
-			if refSpeed*3600 - self.lastSpeedReal*3600 > 1 then
-				maxRpm = maxRpm + 50
-			elseif refSpeed*3600 - self.lastSpeedReal*3600 > 0.5 then
-				maxRpm = maxRpm + 25
-			end
-			if self.lastSpeedReal*3600 - refSpeed*3600 > 3 then
-				maxRpm = maxRpm - 75
-			elseif self.lastSpeedReal*3600 - refSpeed*3600 > 1  then
-				maxRpm = maxRpm - 50
-			elseif self.lastSpeedReal*3600 - refSpeed*3600 > 0.5 then
-				maxRpm = maxRpm - 25
-			end
-
-		-- don't drive faster/slower than you can!
-		if maxRpm > self.orgRpm[3] then
-			maxRpm = self.orgRpm[3]
-		elseif maxRpm < self.motor.minRpm then
-			maxRpm = self.motor.minRpm
+		local trueRpm = self.motor.lastMotorRpm*100/self.orgRpm[3]
+		local targetRpm = self.motor.maxRpm[self.sl]*100/self.orgRpm[3]	
+		local newLimit = 0
+		local oldLimit = 0 
+		if self.ESLimiter ~= nil then 
+			oldLimit =  self.ESLimiter.percentage[self.sl+1]
+		else
+			oldLimit = targetRpm
 		end
 
-		self.motor.maxRpm[self.sl] = maxRpm
+		if refSpeed*3600 - self.lastSpeed*3600 > 15 then
+			if sl == 2 then
+				newLimit = 75
+			else
+				newLimit = 100
+			end
+		elseif refSpeed*3600 - self.lastSpeed*3600 > 4 then
+			newLimit = oldLimit + 1
+		elseif refSpeed*3600 - self.lastSpeed*3600 > 0.5 then
+			newLimit = oldLimit + 0.1
+		elseif refSpeed*3600 - self.lastSpeed*3600 > 0 then	
+			newLimit = oldLimit
+		end
+		if oldLimit - trueRpm > 10 then
+			if refSpeed*3600 - self.lastSpeed*3600 < 1 then
+				newLimit = trueRpm
+			
+			end
+		end
+		if self.lastSpeed*3600 - refSpeed*3600 > 8 then
+			if sl == 1 then
+				newLimit = 20
+			else			
+				newLimit = oldLimit - 3
+			end
+		elseif self.lastSpeed*3600 - refSpeed*3600 > 3 then
+			newLimit = oldLimit -1
+		elseif self.lastSpeed*3600 - refSpeed*3600 > 1 then
+			newLimit = oldLimit -0.75
+		elseif self.lastSpeed*3600 - refSpeed*3600 > 0.5 then
+			newLimit = oldLimit -0.25
+		elseif self.lastSpeed*3600 - refSpeed*3600 > 0 then
+			newLimit = oldLimit
+		end
+		
+		if newLimit > 100 then
+			newLimit = 100
+		elseif newLimit < 0 then
+			newLimit = 0
+		end
+		
+		if self.ESLimiter ~= nil then
+			self:setNewLimit(self.sl+1, newLimit , false, true)
+		else
+			local maxRpm = newLimit * self.orgRpm[3]/100
+			
+			-- don't drive faster/slower than you can!
+			if maxRpm > self.orgRpm[3] then
+				maxRpm = self.orgRpm[3]
+			elseif maxRpm < self.motor.minRpm then
+				maxRpm = self.motor.minRpm
+			end
+			self.motor.maxRpm[self.sl]= maxRpm
+		end
+		self.lastSpeedSave = self.lastSpeedReal*3600
 	end
-
 end
