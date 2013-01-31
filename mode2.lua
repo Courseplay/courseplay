@@ -240,7 +240,9 @@ function courseplay:unload_combine(self, dt)
 		self.sl = 3
 	end
 
-
+	if self.isChopperTurning == nil then
+		self.isChopperTurning = false
+	end
 	-- is combine turning ?
 	if combine ~= nil and (combine.turnStage == 1 or combine.turnStage == 2 or combine.turnStage == 5) then
 		self.info_text = courseplay:get_locale(self, "CPCombineTurning") -- "Drescher wendet. "
@@ -392,6 +394,7 @@ function courseplay:unload_combine(self, dt)
 		if dod < 2 then -- dod < 2
 			allowedToDrive = false
 			mode = 3 -- change to mode 3 == drive to unload pipe
+			self.isChopperTurning = false
 		end
 
 		if dod > 50 then
@@ -590,7 +593,7 @@ function courseplay:unload_combine(self, dt)
 
 		local lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, ttX, y, ttZ)
 		dod = Utils.vector2Length(lx, lz)
-		if dod > 40 then
+		if dod > 40 or self.isChopperTurning == true then
 			mode = 2
 		end
 
@@ -599,7 +602,7 @@ function courseplay:unload_combine(self, dt)
 			self.info_text = courseplay:get_locale(self, "CPCombineWantsMeToStop") -- "Drescher sagt ich soll anhalten."
 			allowedToDrive = false
 		elseif cornChopper then
-			if combine.movingDirection == 0 and (lz == -1 or dod == -1) then
+			if combine.movingDirection == 0 and (lz == -1 or dod == -1)and self.isChopperTurning == false then
 				allowedToDrive = false
 				self.info_text = courseplay:get_locale(self, "CPCombineWantsMeToStop") -- "Drescher sagt ich soll anhalten."
 			end
@@ -664,21 +667,25 @@ function courseplay:unload_combine(self, dt)
 					if self.combine_offset > 0 then -- I'm left of chopper
 						courseplay:debug(string.format("%s(%i): %s @ %s: combine turns left, I'm left", curFile, debug.getinfo(1).currentline, self.name, combine.name), 2);
 						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 0, 0, self.turn_radius);
-						courseplay:set_next_target(self, -50 ,  self.turn_radius);
+						courseplay:set_next_target(self, 2*self.turn_radius*-1 ,  self.turn_radius);
+						self.isChopperTurning = true
 	
 					else --i'm right of choppper
 						courseplay:debug(string.format("%s(%i): %s @ %s: combine turns left, I'm right", curFile, debug.getinfo(1).currentline, self.name, combine.name), 2);
-						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, -50, 0, 0);
+						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, self.turn_radius*-1, 0, 0);
+						self.isChopperTurning = true
 					end
 					
 				else -- chopper will turn right
 					if self.combine_offset < 0 then -- I'm right of chopper
 						courseplay:debug(string.format("%s(%i): %s @ %s: combine turns right, I'm right", curFile, debug.getinfo(1).currentline, self.name, combine.name), 2);
 						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 0, 0, self.turn_radius);
-						courseplay:set_next_target(self, 50,     self.turn_radius);
+						courseplay:set_next_target(self, 2*self.turn_radius,     self.turn_radius);
+						self.isChopperTurning = true
 					else -- I'm left of chopper
 						courseplay:debug(string.format("%s(%i): %s @ %s: combine turns right, I'm left", curFile, debug.getinfo(1).currentline, self.name, combine.name), 2);
-						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 50, 0, 0);
+						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, self.turn_radius, 0, 0);
+						self.isChopperTurning = true
 					end
 				end
 				if combine.forced_side == nil then
