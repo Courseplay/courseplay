@@ -426,21 +426,25 @@ function courseplay:drive(self, dt)
 
 	-- which speed?
 	local ref_speed = nil
-	local slowStartEnd = self.recordnumber > self.maxnumber - 3 or self.recordnumber < 3
+	local slowEnd = self.ai_mode == 2 and self.recordnumber > self.maxnumber - 3;
+	local slowStartEnd = self.ai_mode ~= 2 and self.ai_mode ~= 3 and self.ai_mode ~= 4 and self.ai_mode ~= 6 and (self.recordnumber > self.maxnumber - 3 or self.recordnumber < 3)
 	local slowDownWP = false
 	local slowDownRev = false
 	local real_speed = self.lastSpeedReal
 	local maxRpm = self.motor.maxRpm[self.sl]
 
 	if self.recordnumber < (self.maxnumber - 3) then
-		slowDownWP = (self.Waypoints[self.recordnumber + 2].wait or self.Waypoints[self.recordnumber + 1].wait or self.Waypoints[self.recordnumber].wait)
+		slowDownWP = (self.Waypoints[self.recordnumber + 2].wait or self.Waypoints[self.recordnumber + 1].wait or self.Waypoints[self.recordnumber].wait) --if mode4 or 6: last 3 points before stop or before start
 		slowDownRev = (self.Waypoints[self.recordnumber + 2].rev or self.Waypoints[self.recordnumber + 1].rev or self.Waypoints[self.recordnumber].rev)
 	else
 		slowDownWP = self.Waypoints[self.recordnumber].wait
 		slowDownRev = self.Waypoints[self.recordnumber].rev
 	end
 
-	if (slowDownWP and not workArea) or slowDownRev or self.max_speed_level == 1 or slowStartEnd then
+	if (slowDownWP and not workArea) or slowDownRev or self.max_speed_level == 1 or slowStartEnd or slowEnd then
+		if self.ai_mode == 4 then 
+			courseplay:debug(string.format("drive 446: %s: slowDownWP=%s, slowStartEnd=%s, slowEnd=%s", self.name, tostring(slowDownWP), tostring(slowStartEnd), tostring(slowEnd)), 3);
+		end;
 		self.sl = 1
 		refSpeed = self.turn_speed
 	elseif workSpeed and self.ai_mode ~= 7 then
