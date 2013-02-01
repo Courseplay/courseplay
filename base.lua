@@ -115,6 +115,8 @@ function courseplay:load(xmlFile)
 	self.locales.CPFieldSpeed = g_i18n:getText("CPFieldSpeed")
 	self.locales.CPMaxSpeed = g_i18n:getText("CPMaxSpeed")
 	self.locales.CPUnloadSpeed = g_i18n:getText("CPUnloadSpeed")
+	self.locales.CPspeedUnit = g_i18n:getText("CPspeedUnit")
+	self.locales.CPautomaticSpeed = g_i18n:getText("CPautomaticSpeed")
 	self.locales.CPFindAuto = g_i18n:getText("CPFindAuto")
 	self.locales.CPFindManual = g_i18n:getText("CPFindManual")
 	self.locales.CPActual = g_i18n:getText("CPActual")
@@ -413,6 +415,7 @@ function courseplay:load(xmlFile)
 	self.hudInfoBasePosY = 0.002; -- 0.005
 	self.hudInfoBaseWidth = 0.512; --try: 512/1920
 	self.hudInfoBaseHeight = 0.512; --try: 512/1080
+
 	self.infoPanelPath = Utils.getFilename("img/hud_bg.dds", self.cp_directory);
 	self.hudInfoBaseOverlay = Overlay:new("hudInfoBaseOverlay", self.infoPanelPath, self.hudInfoBasePosX, self.hudInfoBasePosY, self.hudInfoBaseWidth, self.hudInfoBaseHeight);
 
@@ -534,8 +537,8 @@ function courseplay:load(xmlFile)
 	courseplay:register_button(self, 5, "navigate_minus.dds", "change_field_speed",  -1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.188, 0.010, 0.010, nil, -5)
 	courseplay:register_button(self, 5, "navigate_plus.dds",  "change_field_speed",   1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.188, 0.010, 0.010, nil,  5)
 
-	courseplay:register_button(self, 5, "navigate_minus.dds", "change_max_speed",    -1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.167, 0.010, 0.010, nil, -5)
-	courseplay:register_button(self, 5, "navigate_plus.dds",  "change_max_speed",     1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.167, 0.010, 0.010, nil,  5)
+	courseplay:register_button(self, 5, "navigate_minus.dds", "change_max_speed",    -1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.167, 0.010, 0.010, nil, -5, "use_speed=false")
+	courseplay:register_button(self, 5, "navigate_plus.dds",  "change_max_speed",     1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.167, 0.010, 0.010, nil,  5, "use_speed=false")
 	courseplay:register_button(self, 5, "navigate_minus.dds", "change_unload_speed", -1, self.hudInfoBasePosX + 0.285, self.hudInfoBasePosY + 0.143, 0.010, 0.010, nil, -5)
 	courseplay:register_button(self, 5, "navigate_plus.dds",  "change_unload_speed",  1, self.hudInfoBasePosX + 0.300, self.hudInfoBasePosY + 0.143, 0.010, 0.010, nil,  5)
 

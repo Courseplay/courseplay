@@ -171,21 +171,23 @@ function courseplay:change_field_speed(self, change_by)
 end
 
 function courseplay:change_max_speed(self, change_by)
-	local speed = self.max_speed * 3600
-	speed = speed + change_by
-	if speed < 5 then
-		speed = 5
-	end
-	self.max_speed = speed / 3600
+	if not self.use_speed then
+		local speed = self.max_speed * 3600;
+		speed = speed + change_by;
+		if speed < 5 then
+			speed = 5;
+		end
+		self.max_speed = speed / 3600;
+	end;
 end
 
 function courseplay:change_unload_speed(self, change_by)
-	local speed = self.unload_speed * 3600
-	speed = speed + change_by
-	if speed < 5 then
-		speed = 5
+	local speed = self.unload_speed * 3600;
+	speed = speed + change_by;
+	if speed < 3 then
+		speed = 3;
 	end
-	self.unload_speed = speed / 3600
+	self.unload_speed = speed / 3600;
 end
 
 function courseplay:change_RulMode(self, change_by)

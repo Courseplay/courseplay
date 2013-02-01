@@ -17,7 +17,7 @@
 		Skydancer, JakobT]]>
 		</de>
  	</description>
-    	<multiplayer supported="true"/>   
+    <multiplayer supported="true"/>   
 	<iconFilename>
 		store.dds
  	</iconFilename>
@@ -359,6 +359,14 @@
 		<text name="CPuseSpeed2">
 			<en>maximum speed</en>
 			<de>maximale Geschwindigkeit</de>
+		</text>
+		<text name="CPspeedUnit">
+			<en>mph</en>
+			<de>km/h</de>
+		</text>
+		<text name="CPautomaticSpeed">
+			<en>automatic (from course)</en>
+			<de>automatisch (vom Kurs)</de>
 		</text>
 		<text name="CPCourse">
 			<en>Course:</en>
