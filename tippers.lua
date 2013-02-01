@@ -93,7 +93,9 @@ function courseplay:update_tools(self, tractor_or_implement)
 			tipper_attached = true
 		end
 	end
-
+	
+	courseplay:getAutoTurnradius(self, tipper_attached)	
+	
 	if tipper_attached then
 		return true
 	end
@@ -287,11 +289,56 @@ function courseplay:unload_tippers(self)
 	return allowedToDrive
 end
 
-
+function courseplay:getAutoTurnradius(self, tipper_attached)
+	local sinAlpha = 0       --Sinus vom Lenkwinkel
+	local wheelbase = 0      --Radstand
+	local track = 0		 --Spurweite
+	local turnRadius         --Wendekreis unbereinigt
+	if self.foundWheels == nil then
+		self.foundWheels = {}
+	end
 	
-				
+	for i=1,#self.wheels do
+		local wheel =  self.wheels[i]
+		if wheel.rotMax ~= 0 then
+			if self.foundWheels[1] == nil then
+				sinAlpha = wheel.rotMax
+				self.foundWheels[1] = wheel
+			elseif self.foundWheels[2] == nil then
+				self.foundWheels[2] = wheel
+			end
+		elseif self.foundWheels[3] == nil then
+			self.foundWheels[3] = wheel
+		end
+	
+	end
+	if table.getn(self.foundWheels) == 3 then
+		local wh1X, wh1Y, wh1Z = getWorldTranslation(self.foundWheels[1].driveNode);
+		local wh2X, wh2Y, wh2Z = getWorldTranslation(self.foundWheels[2].driveNode);	
+		local wh3X, wh3Y, wh3Z = getWorldTranslation(self.foundWheels[3].driveNode);	 
+		track  = courseplay:distance(wh1X, wh1Z, wh2X, wh2Z)
+		wheelbase = courseplay:distance(wh1X, wh1Z, wh3X, wh3Z)
+		turnRadius = 2*wheelbase/sinAlpha+track
+		self.foundWheels = {}	
+	else
+		turnRadius = self.turn_radius                  -- Kasi and Co are not supported. Nobody does hauling with a Kasi or Quadtrack !!! 
+	end	
+	if tipper_attached then
+		local n = table.getn(self.tippers)
+		if n == 1 then
+			if self.tippers[1].attacherVehicle ~= self then
+				self.autoTurnRadius = turnRadius * 2 --Dolly
+			else
+				self.autoTurnRadius = turnRadius --normaler Trailer
+			end
+		else
+			self.autoTurnRadius = (turnRadius * n) + (turnRadius*0.25*n) -->1 Trailers
+		end
+	else
+		self.autoTurnRadius = turnRadius
+	end
 
-
-
-
-
+	if self.turnRadiusAutoMode then
+		self.turn_radius = self.autoTurnRadius;
+	end;
+end

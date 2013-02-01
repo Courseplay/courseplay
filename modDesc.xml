@@ -17,7 +17,7 @@
 		Skydancer, JakobT]]>
 		</de>
  	</description>
-    <multiplayer supported="true"/>   
+	<multiplayer supported="true"/>
 	<iconFilename>
 		store.dds
  	</iconFilename>
@@ -273,7 +273,7 @@
 			<de>Wird entladen: %d von %d</de>
 		</text>
 		<text name="CPWPs">
-			<en>show waypoints</en>
+			<en>Show waypoints</en>
 			<de>Wegpunkte anzeigen</de>
 		</text>
 		<text name="CPastarOn">
@@ -289,16 +289,16 @@
 			<de>ausgeschaltet</de>
 		</text>
 		<text name="CPCombineOffset">
-			<en>side offset:</en>
+			<en>Side offset:</en>
 			<de>seitl. Abstand:</de>
 		</text>
 		<text name="CPRequiredFillLevel">
-			<en>start at %:</en>
+			<en>Start at %:</en>
 			<de>Start bei %:</de>
 		</text>
 		<text name="CPTurnRadius">
-			<en>turn radius:</en>
-			<de>Wenderadius:</de>
+			<en>Turning cirlce:</en>
+			<de>Wendekreis:</de>
 		</text>
 		<text name="CPPipeOffset">
 			<en>pipe offset:</en>
@@ -317,11 +317,11 @@
 			<de>Drescher wählen:</de>
 		</text>
 		<text name="CPCombineSearch">
-			<en>find combine:</en>
+			<en>Find combine:</en>
 			<de>Dreschersuche:</de>
 		</text>
 		<text name="CPActual">
-			<en>current:</en>
+			<en>Current:</en>
 			<de>Aktuell:</de>
 		</text>
 		<text name="CPFindAuto">

@@ -133,11 +133,17 @@ end
 
 
 function courseplay:change_turn_radius(self, change_by)
-	self.turn_radius = self.turn_radius + change_by
+	self.turn_radius = self.turn_radius + change_by;
+	self.turnRadiusAutoMode = false;
 
-	if self.turn_radius < 0 then
-		self.turn_radius = 0
-	end
+	if self.turn_radius < 0.5 then
+		self.turn_radius = 0;
+	end;
+	
+	if self.turn_radius <= 0 then
+		self.turnRadiusAutoMode = true;
+		self.turn_radius = self.autoTurnRadius
+	end;
 end
 
 

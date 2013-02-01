@@ -220,8 +220,14 @@ function courseplay:loadHud(self)
 				self.hudpage[3][2][2] = "---"
 			end
 
-			if self.turn_radius ~= nil then
-				self.hudpage[3][2][3] = string.format("%d", self.turn_radius)
+			if self.autoTurnRadius ~= nil or self.turn_radius ~= nil then
+				local turnRadiusMode = ''
+				if self.turnRadiusAutoMode then
+					turnRadiusMode = "(auto)"
+				else
+					turnRadiusMode = "(mnl)"
+				end
+				self.hudpage[3][2][3] = string.format("%s %d", turnRadiusMode, self.turn_radius)
 			else
 				self.hudpage[3][2][3] = "---"
 			end

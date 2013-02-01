@@ -393,7 +393,9 @@ function courseplay:load(xmlFile)
 	self.required_fill_level_for_drive_on = 90
 
 	self.turn_factor = nil
-	self.turn_radius = 8
+	self.turn_radius = 10;
+	self.autoTurnRadius = 10;
+	self.turnRadiusAutoMode = true;
 
 	self.WpOffsetX = 0
 	self.WpOffsetZ = 0
