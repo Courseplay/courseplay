@@ -101,7 +101,7 @@ function courseplay:drive(self, dt)
 		last_recordnumber = 1
 	end
 	if self.recordnumber > self.maxnumber then
-		-- this should never happen
+		couseplay:debug(string.format("drive %i: %s: self.recordnumber (%s) > self.maxnumber (%s)", debug.getinfo(1).currentline, self.name, tostring(self.recordnumber), tostring(self.maxnumber)), 3); --this should never happen
 		self.recordnumber = self.maxnumber
 	end
 	cx, cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
@@ -365,24 +365,22 @@ function courseplay:drive(self, dt)
 		end
 
 		if self.fuelCapacity > 0 then
-			currentFuelPercentage = (self.fuelFillLevel / self.fuelCapacity + 0.0001) * 100;
-		end;
-
-		--LS13 refuel method courtesy of Thomas Gärtner
-		if currentFuelPercentage < 20 and not self.isFuelFilling then
-			self.global_info_text = self.locales.CPFuelWarning
-			if self.fuelFillTriggers[1] then
+			local currentFuelPercentage = (self.fuelFillLevel / self.fuelCapacity + 0.0001) * 100;
+			if currentFuelPercentage < 5 then
 				allowedToDrive = false
-				self:setIsFuelFilling(true, self.fuelFillTriggers[1].isEnabled, false)
-			end
+				self.global_info_text = self.locales.CPNoFuelStop
 
-		elseif currentFuelPercentage < 15 then
-			allowedToDrive = false
-			self.global_info_text = self.locales.CPNoFuelStop
-		end
-		if self.isFuelFilling then
-			allowedToDrive = false
-			self.global_info_text = self.locales.CPRefueling
+			elseif currentFuelPercentage < 20 and not self.isFuelFilling then
+				self.global_info_text = self.locales.CPFuelWarning
+				if self.fuelFillTriggers[1] then
+					allowedToDrive = false
+					self:setIsFuelFilling(true, self.fuelFillTriggers[1].isEnabled, false)
+
+				end
+			elseif self.isFuelFilling then
+				allowedToDrive = false
+				self.global_info_text = self.locales.CPRefueling
+			end;
 		end;
 
 		if self.showWaterWarning then
@@ -454,9 +452,6 @@ function courseplay:drive(self, dt)
 	end
 
 	if (slowDownWP and not workArea) or slowDownRev or self.max_speed_level == 1 or slowStartEnd or slowEnd then
-		if self.ai_mode == 4 then 
-			courseplay:debug(string.format("drive 446: %s: slowDownWP=%s, slowStartEnd=%s, slowEnd=%s", self.name, tostring(slowDownWP), tostring(slowStartEnd), tostring(slowEnd)), 3);
-		end;
 		self.sl = 1
 		refSpeed = self.turn_speed
 	elseif workSpeed and self.ai_mode ~= 7 then
@@ -485,7 +480,7 @@ function courseplay:drive(self, dt)
 		if courseplay:distance_to_object(self, vehicle_in_front) > 30 then
 			self.traffic_vehicle_in_front = nil
 		else
-			refSpeed = 29 / 3600 -- = traffic speed ?
+			refSpeed = 29 / 3600 -- = traffic speed ? --TODO: maximum 29, if refspeed < 29 then do nothing
 		end
 	end
 
