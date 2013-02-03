@@ -255,6 +255,12 @@ function courseplay:drive(self, dt)
 		if (self.ai_mode == 1 and self.tipper_attached and tipper_fill_level ~= nil) or (self.loaded and self.ai_mode == 2) then
 			-- is there a tipTrigger within 10 meters?
 			raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
+			if self.currentTipTrigger == nil then
+				raycastAll(tx+self.tipRefOffset, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
+			end
+			if self.currentTipTrigger == nil then
+				raycastAll(tx-self.tipRefOffset, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
+			end
 			-- handle mode
 			allowedToDrive  = courseplay:handle_mode1(self)
 		end
@@ -402,6 +408,12 @@ function courseplay:drive(self, dt)
 	if self.ai_mode == 6 and self.startWork ~= nil and self.stopWork ~= nil then
 		-- is there a tipTrigger within 10 meters?
 		raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
+		if self.currentTipTrigger == nil then
+			raycastAll(tx+2, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
+		end
+		if self.currentTipTrigger == nil then
+			raycastAll(tx-2, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
+		end
 		allowedToDrive, workArea, workSpeed, active_tipper = courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill_level, last_recordnumber)
 	end
 

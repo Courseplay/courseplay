@@ -9,7 +9,6 @@ function courseplay:handle_mode1(self)
 
 
 	-- done tipping
-	
 	if self.unloading_tipper ~= nil and self.unloading_tipper.fillLevel == 0 then
 		self.unloading_tipper = nil
 		if tipper_fill_level == 0 then
@@ -22,12 +21,13 @@ function courseplay:handle_mode1(self)
 	-- tippers are not full
 	-- tipper should be loaded 10 meters before wp 2	
 	--if self.loaded ~= true and ((self.recordnumber == 2 and tipper_fill_level < tipper_capacity and self.unloaded == false and self.dist < 10) or self.lastTrailerToFillDistance) then
-  if self.loaded ~= true and ((self.recordnumber == 2 and tipper_fill_level < tipper_capacity and self.unloaded == false ) or self.lastTrailerToFillDistance) then
+  	if self.loaded ~= true and ((self.recordnumber == 2 and tipper_fill_level < tipper_capacity and self.unloaded == false ) or self.lastTrailerToFillDistance) then
 		allowedToDrive = courseplay:load_tippers(self)
 		self.info_text = string.format(courseplay:get_locale(self, "CPloading"), tipper_fill_level, tipper_capacity)
 	end
 
 	-- damn, i missed the trigger!
+
 	if self.currentTipTrigger ~= nil then
 		local trigger_id = self.currentTipTrigger.triggerId
 
@@ -39,14 +39,9 @@ function courseplay:handle_mode1(self)
 		local ctx, cty, ctz = getWorldTranslation(self.rootNode);
 		local distance_to_trigger = courseplay:distance(ctx, ctz, trigger_x, trigger_z)
 		
-		if self.currentTipTrigger.bunkerSilo ~= nil then
-			if distance_to_trigger > 60 then 
-				self.currentTipTrigger = nil
-			end
-		elseif 	
-			distance_to_trigger > 20 then
-				self.currentTipTrigger = nil
-		end --!!!
+		if distance_to_trigger > 60 then 
+			self.currentTipTrigger = nil
+		end	
 
 	end
 
