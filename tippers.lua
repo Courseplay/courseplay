@@ -179,7 +179,6 @@ function courseplay:load_tippers(self)
 	end
 
 	-- normal mode if all tippers are empty
-
 	return allowedToDrive
 end
 
@@ -192,7 +191,6 @@ function courseplay:unload_tippers(self)
 		local fruitType = tipper:getCurrentFruitType()
 
 		if self.currentTipTrigger.bunkerSilo ~= nil then
-			
 			
 			local silos = table.getn(self.currentTipTrigger.bunkerSilo.movingPlanes)
 			local x, y, z = getWorldTranslation(tipper.tipReferencePoints[1].node)
@@ -258,25 +256,19 @@ function courseplay:unload_tippers(self)
 		else
 			self.gofortipping = true
 		end
-
 		if self.currentTipTrigger.acceptedFillTypes[fruitType] and self.gofortipping == true then  
-			 
 			if tipper.tipState == Trailer.TIPSTATE_CLOSED then
-				if self.toggledTipState < numReferencePoints then
-					self.toggledTipState = self.toggledTipState + 1
-					--TODO :  if g_currentMission:getisTipTriggerInRange(tipper,self.currentTipTrigger) oder so
-					tipper:toggleTipState(self.currentTipTrigger, self.toggledTipState);
-					-- allowedToDrive = false
-					-- templösung ist loopcounter  --!!!
-					self.loopCounter = 1
-				else
-					self.toggledTipState = 0
+				if self.currentTipTrigger:getTipDistanceFromTrailer(tipper, tipper.currentTipReferencePointIndex)  == 0 or self.currentTipTrigger.bunkerSilo ~= nil then   --courtesy of Satis
+					if self.toggledTipState < numReferencePoints then
+						self.toggledTipState = self.toggledTipState +1
+						tipper:toggleTipState(self.currentTipTrigger,self.toggledTipState);
+						self.unloading_tipper = tipper
+					else
+						self.toggledTipState = 0
+					end
 				end
-			elseif tipper.tipState ~= Trailer.TIPSTATE_CLOSING and self.loopCounter >= 4 then
+			elseif tipper.tipState ~= Trailer.TIPSTATE_CLOSING then 
 				allowedToDrive = false
-				
-			else 
-				self.loopCounter = self.loopCounter +1  --!!!
 			end 
 					
 			if self.currentTipTrigger.bunkerSilo ~= nil then

@@ -138,11 +138,6 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 				-- done tipping
 				local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
 				if self.unloading_tipper ~= nil and self.unloading_tipper.fillLevel == 0 then
-					if self.unloading_tipper.tipState ~= Trailer.TIPSTATE_CLOSED then
-						courseplay:debug("toggle tip state", 2)
-						self.unloading_tipper:toggleTipState(self.currentTipTrigger, 1)
-					end
-
 					self.unloading_tipper = nil
 
 					if tipper_fill_level == 0 then
