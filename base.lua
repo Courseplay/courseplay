@@ -367,6 +367,7 @@ function courseplay:load(xmlFile)
 	self.loaded = false
 	self.unloading_tipper = nil
 	self.last_fill_level = nil
+	self.loopCounter = nil;
 
 	-- for user input like saving
 	self.user_input_active = false
@@ -733,66 +734,69 @@ function courseplay:readStream(streamId, connection)
 	courseplay:debug("reading stream", 4)
 
 
-	self.max_speed = streamDebugReadFloat32(streamId)
-	self.use_speed = streamDebugReadBool(streamId)
-	self.turn_speed = streamDebugReadFloat32(streamId)
-	self.field_speed = streamDebugReadFloat32(streamId)
-	self.unload_speed = streamDebugReadFloat32(streamId)
-	self.tipper_offset = streamDebugReadFloat32(streamId)
-	self.combine_offset = streamDebugReadFloat32(streamId)
-	self.required_fill_level_for_follow = streamDebugReadFloat32(streamId)
-	self.required_fill_level_for_drive_on = streamDebugReadFloat32(streamId)
 	self.WpOffsetX = streamDebugReadFloat32(streamId)
 	self.WpOffsetZ = streamDebugReadFloat32(streamId)
-	self.turn_radius = streamDebugReadFloat32(streamId)
-	self.search_combine = streamDebugReadBool(streamId)
-	self.recordnumber = streamDebugReadInt32(streamId)
-	self.tmr = streamDebugReadInt32(streamId)
-	self.timeout = streamDebugReadInt32(streamId)
-	self.timer = streamDebugReadFloat32(streamId)
+	self.abortWork = streamDebugReadInt32(streamId)
+	self.ai_mode = streamDebugReadInt32(streamId)
+	self.ai_state = streamDebugReadInt32(streamId)
+	self.allow_following = streamDebugReadBool(streamId)
+	self.autoTurnRadius = streamDebugReadInt32(streamId)
+	self.combine_offset = streamDebugReadFloat32(streamId)
+	self.courseplay_position = streamDebugReadInt32(streamId)
+	self.crossPoints = streamDebugReadInt32(streamId)
 	self.drive = streamDebugReadBool(streamId)
 	self.drive_slow_timer = streamDebugReadInt32(streamId)
-	self.courseplay_position = streamDebugReadInt32(streamId)
-	self.waitPoints = streamDebugReadInt32(streamId)
-	self.crossPoints = streamDebugReadInt32(streamId)
-	self.shortest_dist = streamDebugReadFloat32(streamId) -- 20.
-	self.play = streamDebugReadBool(streamId)
-	self.working_course_player_num = streamDebugReadInt32(streamId)
-	self.info_text = streamDebugReadString(streamId)
-	self.global_info_text = streamDebugReadString(streamId)
-	self.ai_mode = streamDebugReadInt32(streamId)
+	self.field_speed = streamDebugReadFloat32(streamId)
+	self.fold_move_direction = streamDebugReadInt32(streamId)
 	self.follow_mode = streamDebugReadInt32(streamId)
-	self.ai_state = streamDebugReadInt32(streamId)
+	self.forced_side = streamDebugReadString(streamId)
+	self.forced_to_stop = streamDebugReadBool(streamId)
+	self.global_info_text = streamDebugReadString(streamId)
+	self.info_text = streamDebugReadString(streamId)
+	self.lastTrailerToFillDistance = streamDebugReadFloat32(streamId)
+	self.last_fill_level = streamDebugReadInt32(streamId)
+	self.loaded = streamDebugReadBool(streamId)
+	self.loopCounter = streamDebugReadBool(streamId)
+	self.max_speed = streamDebugReadFloat32(streamId)
+	self.mouse_enabled = streamDebugReadBool(streamId)
+	self.mouse_right_key_enabled = streamDebugReadBool(streamId)
 	self.next_ai_state = streamDebugReadInt32(streamId)
+	self.play = streamDebugReadBool(streamId)
+	self.recordnumber = streamDebugReadInt32(streamId)
+	self.required_fill_level_for_drive_on = streamDebugReadFloat32(streamId)
+	self.required_fill_level_for_follow = streamDebugReadFloat32(streamId)
+	self.save_name = streamDebugReadBool(streamId)
+	self.search_combine = streamDebugReadBool(streamId)
+	self.selected_combine_number = streamDebugReadInt32(streamId)
+	self.selected_course_number = streamDebugReadInt32(streamId)
+	self.shortest_dist = streamDebugReadFloat32(streamId) -- 20.
+	self.showHudInfoBase = streamDebugReadInt32(streamId)
+	self.show_hud = streamDebugReadBool(streamId)
+	self.sl = streamDebugReadInt32(streamId)
 	self.startWork = streamDebugReadInt32(streamId)
 	self.stopWork = streamDebugReadInt32(streamId)
-	self.abortWork = streamDebugReadInt32(streamId)
-	self.wait = streamDebugReadBool(streamId)
-	self.waitTimer = streamDebugReadInt32(streamId)
-	self.waitTime = streamDebugReadInt32(streamId)
 	self.target_x = streamDebugReadFloat32(streamId)
 	self.target_y = streamDebugReadFloat32(streamId)
 	self.target_z = streamDebugReadFloat32(streamId)
-	self.sl = streamDebugReadInt32(streamId)
+	self.timeout = streamDebugReadInt32(streamId)
+	self.timer = streamDebugReadFloat32(streamId)
 	self.tipper_attached = streamDebugReadBool(streamId)
-	self.lastTrailerToFillDistance = streamDebugReadFloat32(streamId)
+	self.tipper_offset = streamDebugReadFloat32(streamId)
+	self.tmr = streamDebugReadInt32(streamId)
+	self.turnRadiusAutoMode = streamDebugReadInt32(streamId);
+	self.turn_radius = streamDebugReadFloat32(streamId)
+	self.turn_speed = streamDebugReadFloat32(streamId)
+	self.unload_speed = streamDebugReadFloat32(streamId)
 	self.unloaded = streamDebugReadBool(streamId) -- 40.
-	self.loaded = streamDebugReadBool(streamId)
-	self.last_fill_level = streamDebugReadInt32(streamId)
+	self.use_speed = streamDebugReadBool(streamId)
+	self.user_input = streamDebugReadString(streamId)
 	self.user_input_active = streamDebugReadBool(streamId)
 	self.user_input_message = streamDebugReadString(streamId)
-	self.user_input = streamDebugReadString(streamId)
-	self.save_name = streamDebugReadBool(streamId)
-	self.selected_course_number = streamDebugReadInt32(streamId)
-	self.forced_side = streamDebugReadString(streamId)
-	self.forced_to_stop = streamDebugReadBool(streamId)
-	self.allow_following = streamDebugReadBool(streamId)
-	self.mouse_enabled = streamDebugReadBool(streamId)
-	self.show_hud = streamDebugReadBool(streamId)
-	self.mouse_right_key_enabled = streamDebugReadBool(streamId)
-	self.showHudInfoBase = streamDebugReadInt32(streamId)
-	self.selected_combine_number = streamDebugReadInt32(streamId)
-	self.fold_move_direction = streamDebugReadInt32(streamId)
+	self.wait = streamDebugReadBool(streamId)
+	self.waitPoints = streamDebugReadInt32(streamId)
+	self.waitTime = streamDebugReadInt32(streamId)
+	self.waitTimer = streamDebugReadInt32(streamId)
+	self.working_course_player_num = streamDebugReadInt32(streamId)
 
 	local saved_combine_id = streamDebugReadInt32(streamId)
 	if saved_combine_id then
@@ -837,67 +841,70 @@ function courseplay:writeStream(streamId, connection)
 	courseplay:debug("writing stream", 4)
 
 
-
-	streamDebugWriteFloat32(streamId, self.max_speed)
+	streamDebugWriteBool(streamId, self.allow_following)
+	streamDebugWriteBool(streamId, self.drive)
+	streamDebugWriteBool(streamId, self.forced_to_stop)
+	streamDebugWriteBool(streamId, self.loaded)
+	streamDebugWriteBool(streamId, self.mouse_enabled)
+	streamDebugWriteBool(streamId, self.mouse_right_key_enabled)
+	streamDebugWriteBool(streamId, self.play)
+	streamDebugWriteBool(streamId, self.save_name)
+	streamDebugWriteBool(streamId, self.search_combine)
+	streamDebugWriteBool(streamId, self.show_hud)
+	streamDebugWriteBool(streamId, self.tipper_attached)
+	streamDebugWriteBool(streamId, self.unloaded) -- 40.
 	streamDebugWriteBool(streamId, self.use_speed)
-	streamDebugWriteFloat32(streamId, self.turn_speed)
-	streamDebugWriteFloat32(streamId, self.field_speed)
-	streamDebugWriteFloat32(streamId, self.unload_speed)
-	streamDebugWriteFloat32(streamId, self.tipper_offset)
-	streamDebugWriteFloat32(streamId, self.combine_offset)
-	streamDebugWriteFloat32(streamId, self.required_fill_level_for_follow)
-	streamDebugWriteFloat32(streamId, self.required_fill_level_for_drive_on)
+	streamDebugWriteBool(streamId, self.user_input_active)
+	streamDebugWriteBool(streamId, self.wait)
 	streamDebugWriteFloat32(streamId, self.WpOffsetX)
 	streamDebugWriteFloat32(streamId, self.WpOffsetZ)
-	streamDebugWriteFloat32(streamId, self.turn_radius)
-	streamDebugWriteBool(streamId, self.search_combine)
-	streamDebugWriteInt32(streamId, self.recordnumber)
-	streamDebugWriteInt32(streamId, self.tmr)
-	streamDebugWriteInt32(streamId, self.timeout)
-	streamDebugWriteFloat32(streamId, self.timer)
-	streamDebugWriteBool(streamId, self.drive)
-	streamDebugWriteInt32(streamId, self.drive_slow_timer)
-	streamDebugWriteInt32(streamId, self.courseplay_position)
-	streamDebugWriteInt32(streamId, self.waitPoints)
-	streamDebugWriteInt32(streamId, self.crossPoints)
+	streamDebugWriteFloat32(streamId, self.autoTurnRadius)
+	streamDebugWriteFloat32(streamId, self.combine_offset)
+	streamDebugWriteFloat32(streamId, self.field_speed)
+	streamDebugWriteFloat32(streamId, self.lastTrailerToFillDistance)
+	streamDebugWriteFloat32(streamId, self.loopCounter)
+	streamDebugWriteFloat32(streamId, self.max_speed)
+	streamDebugWriteFloat32(streamId, self.required_fill_level_for_drive_on)
+	streamDebugWriteFloat32(streamId, self.required_fill_level_for_follow)
 	streamDebugWriteFloat32(streamId, self.shortest_dist) -- 20.
-	streamDebugWriteBool(streamId, self.play)
-	streamDebugWriteInt32(streamId, self.working_course_player_num)
-	streamDebugWriteString(streamId, self.info_text)
-	streamDebugWriteString(streamId, self.global_info_text)
-	streamDebugWriteInt32(streamId, self.ai_mode)
-	streamDebugWriteInt32(streamId, self.follow_mode)
-	streamDebugWriteInt32(streamId, self.ai_state)
-	streamDebugWriteInt32(streamId, self.next_ai_state)
-	streamDebugWriteInt32(streamId, self.startWork)
-	streamDebugWriteInt32(streamId, self.stopWork)
-	streamDebugWriteInt32(streamId, self.abortWork)
-	streamDebugWriteBool(streamId, self.wait)
-	streamDebugWriteInt32(streamId, self.waitTimer)
-	streamDebugWriteInt32(streamId, self.waitTime)
 	streamDebugWriteFloat32(streamId, self.target_x)
 	streamDebugWriteFloat32(streamId, self.target_y)
 	streamDebugWriteFloat32(streamId, self.target_z)
-	streamDebugWriteInt32(streamId, self.sl)
-	streamDebugWriteBool(streamId, self.tipper_attached)
-	streamDebugWriteFloat32(streamId, self.lastTrailerToFillDistance)
-	streamDebugWriteBool(streamId, self.unloaded) -- 40.
-	streamDebugWriteBool(streamId, self.loaded)
-	streamDebugWriteInt32(streamId, self.last_fill_level)
-	streamDebugWriteBool(streamId, self.user_input_active)
-	streamDebugWriteString(streamId, self.user_input_message)
-	streamDebugWriteString(streamId, self.user_input)
-	streamDebugWriteBool(streamId, self.save_name)
-	streamDebugWriteInt32(streamId, self.selected_course_number)
-	streamDebugWriteString(streamId, self.forced_side)
-	streamDebugWriteBool(streamId, self.forced_to_stop)
-	streamDebugWriteBool(streamId, self.allow_following)
-	streamDebugWriteBool(streamId, self.mouse_enabled)
-	streamDebugWriteBool(streamId, self.show_hud)
-	streamDebugWriteBool(streamId, self.mouse_right_key_enabled)
-	streamDebugWriteInt32(streamId, self.showHudInfoBase)
-	streamDebugWriteInt32(streamId, self.selected_combine_number)
+	streamDebugWriteFloat32(streamId, self.timer)
+	streamDebugWriteFloat32(streamId, self.tipper_offset)
+	streamDebugWriteFloat32(streamId, self.turnRadiusAutoMode)
+	streamDebugWriteFloat32(streamId, self.turn_radius)
+	streamDebugWriteFloat32(streamId, self.turn_speed)
+	streamDebugWriteFloat32(streamId, self.unload_speed)
+	streamDebugWriteInt32(streamId, self.abortWork)
+	streamDebugWriteInt32(streamId, self.ai_mode)
+	streamDebugWriteInt32(streamId, self.ai_state)
+	streamDebugWriteInt32(streamId, self.courseplay_position)
+	streamDebugWriteInt32(streamId, self.crossPoints)
+	streamDebugWriteInt32(streamId, self.drive_slow_timer)
 	streamDebugWriteInt32(streamId, self.fold_move_direction)
+	streamDebugWriteInt32(streamId, self.follow_mode)
+	streamDebugWriteInt32(streamId, self.last_fill_level)
+	streamDebugWriteInt32(streamId, self.next_ai_state)
+	streamDebugWriteInt32(streamId, self.recordnumber)
+	streamDebugWriteInt32(streamId, self.selected_combine_number)
+	streamDebugWriteInt32(streamId, self.selected_course_number)
+	streamDebugWriteInt32(streamId, self.showHudInfoBase)
+	streamDebugWriteInt32(streamId, self.sl)
+	streamDebugWriteInt32(streamId, self.startWork)
+	streamDebugWriteInt32(streamId, self.stopWork)
+	streamDebugWriteInt32(streamId, self.timeout)
+	streamDebugWriteInt32(streamId, self.tmr)
+	streamDebugWriteInt32(streamId, self.waitPoints)
+	streamDebugWriteInt32(streamId, self.waitTime)
+	streamDebugWriteInt32(streamId, self.waitTimer)
+	streamDebugWriteInt32(streamId, self.working_course_player_num)
+	streamDebugWriteString(streamId, self.forced_side)
+	streamDebugWriteString(streamId, self.global_info_text)
+	streamDebugWriteString(streamId, self.info_text)
+	streamDebugWriteString(streamId, self.user_input)
+	streamDebugWriteString(streamId, self.user_input_message)
+	
 	local saved_combine_id = nil
 	if self.saved_combine ~= nil then
 		saved_combine_id = networkGetObject(self.saved_combine)
@@ -948,7 +955,7 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		self.WpOffsetZ = Utils.getNoNil(getXMLFloat(xmlFile, key .. string.format("#OffsetZ")), 0);
 		self.waitTime = Utils.getNoNil(getXMLFloat(xmlFile, key .. string.format("#waitTime")), 0);
 		self.abortWork = Utils.getNoNil(getXMLInt(xmlFile, key .. string.format("#AbortWork")), nil);
-		self.turn_radius = Utils.getNoNil(getXMLInt(xmlFile, key .. string.format("#turn_radius")), 8);
+		self.turn_radius = Utils.getNoNil(getXMLInt(xmlFile, key .. string.format("#turn_radius")), 10);
 		self.RulMode = Utils.getNoNil(getXMLInt(xmlFile, key .. string.format("#rul_mode")), 1);
 		local courses = Utils.getNoNil(getXMLString(xmlFile, key .. string.format("#courses")), "");
 		self.toolWorkWidht = Utils.getNoNil(getXMLFloat(xmlFile, key .. string.format("#toolWorkWidht")), 3);
@@ -970,26 +977,26 @@ end
 function courseplay:getSaveAttributesAndNodes(nodeIdent)
 
 	local attributes =
-	' max_speed="' .. tostring(self.max_speed) .. '"' ..
-			' use_speed="' .. tostring(self.use_speed) .. '"' ..
-			' turn_speed="' .. tostring(self.turn_speed) .. '"' ..
-			' field_speed="' .. tostring(self.field_speed) .. '"' ..
-			' unload_speed="' .. tostring(self.unload_speed) .. '"' ..
-			' tipper_offset="' .. tostring(self.tipper_offset) .. '"' ..
-			' combine_offset="' .. tostring(self.combine_offset) .. '"' ..
-			' fill_follow="' .. tostring(self.required_fill_level_for_follow) .. '"' ..
-			' fill_drive="' .. tostring(self.required_fill_level_for_drive_on) .. '"' ..
-			' OffsetX="' .. tostring(self.WpOffsetX) .. '"' ..
-			' OffsetZ="' .. tostring(self.WpOffsetZ) .. '"' ..
-			' AbortWork="' .. tostring(self.abortWork) .. '"' ..
-			' turn_radius="' .. tostring(self.turn_radius) .. '"' ..
-			' waitTime="' .. tostring(self.waitTime) .. '"' ..
-			' courses="' .. tostring(table.concat(self.loaded_courses, ",")) .. '"' ..
-			' mouse_right_key_enabled="' .. tostring(self.mouse_right_key_enabled) .. '"' ..
-      ' rul_mode="'..tostring(self.RulMode) .. '"' ..
-      ' toolWorkWidht="'..tostring(self.toolWorkWidht) .. '"' ..
-      ' realistic_driving="'..tostring(self.realistic_driving) .. '"' ..
-			' ai_mode="' .. tostring(self.ai_mode) .. '"';
+		' max_speed="' .. tostring(self.max_speed) .. '"' ..
+		' use_speed="' .. tostring(self.use_speed) .. '"' ..
+		' turn_speed="' .. tostring(self.turn_speed) .. '"' ..
+		' field_speed="' .. tostring(self.field_speed) .. '"' ..
+		' unload_speed="' .. tostring(self.unload_speed) .. '"' ..
+		' tipper_offset="' .. tostring(self.tipper_offset) .. '"' ..
+		' combine_offset="' .. tostring(self.combine_offset) .. '"' ..
+		' fill_follow="' .. tostring(self.required_fill_level_for_follow) .. '"' ..
+		' fill_drive="' .. tostring(self.required_fill_level_for_drive_on) .. '"' ..
+		' OffsetX="' .. tostring(self.WpOffsetX) .. '"' ..
+		' OffsetZ="' .. tostring(self.WpOffsetZ) .. '"' ..
+		' AbortWork="' .. tostring(self.abortWork) .. '"' ..
+		' turn_radius="' .. tostring(self.turn_radius) .. '"' ..
+		' waitTime="' .. tostring(self.waitTime) .. '"' ..
+		' courses="' .. tostring(table.concat(self.loaded_courses, ",")) .. '"' ..
+		' mouse_right_key_enabled="' .. tostring(self.mouse_right_key_enabled) .. '"' ..
+		' rul_mode="'..tostring(self.RulMode) .. '"' ..
+		' toolWorkWidht="'..tostring(self.toolWorkWidht) .. '"' ..
+		' realistic_driving="'..tostring(self.realistic_driving) .. '"' ..
+		' ai_mode="' .. tostring(self.ai_mode) .. '"';
 	return attributes, nil;
 end
 
