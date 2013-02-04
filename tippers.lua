@@ -97,21 +97,22 @@ function courseplay:update_tools(self, tractor_or_implement)
 	courseplay:getAutoTurnradius(self, tipper_attached)	
 	
 	--tipreferencepoints 
-	self.tipRefOffset = 0
-	local tipperX, tipperY, tipperZ = getWorldTranslation(self.tippers[1].rootNode)
-	if tipper_attached and table.getn(self.tippers[1].tipReferencePoints)> 1 then
-		for n=1 ,table.getn(self.tippers[1].tipReferencePoints)do 
-			local tipRefPointX, tipRefPointY, tipRefPointZ = worldToLocal(self.tippers[1].tipReferencePoints[n].node, tipperX, tipperY, tipperZ);
-			tipRefPointX = math.abs(tipRefPointX)
-			if tipRefPointX > 0.1 then
-				self.tipRefOffset = tipRefPointX
-				break
-			end
-		end
-
-	else 
-		self.tipRefOffset = 0	
-	end
+	self.tipRefOffset = 0;
+	if tipper_attached and self.tippers[1].rootNode ~= nil and self.tippers[1].tipReferencePoints ~= nil then
+		local tipperX, tipperY, tipperZ = getWorldTranslation(self.tippers[1].rootNode);
+		if tipper_attached and table.getn(self.tippers[1].tipReferencePoints) > 1 then
+			for n=1 ,table.getn(self.tippers[1].tipReferencePoints) do
+				local tipRefPointX, tipRefPointY, tipRefPointZ = worldToLocal(self.tippers[1].tipReferencePoints[n].node, tipperX, tipperY, tipperZ);
+				tipRefPointX = math.abs(tipRefPointX);
+				if tipRefPointX > 0.1 then
+					self.tipRefOffset = tipRefPointX;
+					break;
+				end;
+			end;
+		else 
+			self.tipRefOffset = 0;
+		end;
+	end;
 	
 	if tipper_attached then
 		return true
