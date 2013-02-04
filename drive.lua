@@ -367,19 +367,17 @@ function courseplay:drive(self, dt)
 		if self.fuelCapacity > 0 then
 			local currentFuelPercentage = (self.fuelFillLevel / self.fuelCapacity + 0.0001) * 100;
 			if currentFuelPercentage < 5 then
-				allowedToDrive = false
-				self.global_info_text = self.locales.CPNoFuelStop
-
+				allowedToDrive = false;
+				self.global_info_text = self.locales.CPNoFuelStop;
 			elseif currentFuelPercentage < 20 and not self.isFuelFilling then
-				self.global_info_text = self.locales.CPFuelWarning
+				self.global_info_text = self.locales.CPFuelWarning;
 				if self.fuelFillTriggers[1] then
-					allowedToDrive = false
-					self:setIsFuelFilling(true, self.fuelFillTriggers[1].isEnabled, false)
-
+					allowedToDrive = false;
+					self:setIsFuelFilling(true, self.fuelFillTriggers[1].isEnabled, false);
 				end
-			elseif self.isFuelFilling then
-				allowedToDrive = false
-				self.global_info_text = self.locales.CPRefueling
+			elseif self.isFuelFilling and currentFuelPercentage < 99.9 then
+				allowedToDrive = false;
+				self.global_info_text = self.locales.CPRefueling;
 			end;
 		end;
 
