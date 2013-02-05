@@ -914,7 +914,7 @@ function courseplay:unload_combine(self, dt)
 
 	if self.showWaterWarning then
 		allowedToDrive = false
-		self.global_info_text = self.locales.CPWaterDrive
+		self.global_info_text = courseplay.locales.CPWaterDrive
 	end
 
 	-- check traffic and calculate speed

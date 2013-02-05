@@ -136,7 +136,7 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
 			end
 			self.Waypoints[lastWP + 1].merged = true
 			self.numCourses = self.numCourses + 1;
-			self.current_course_name = string.format("%d %s", self.numCourses, self.locales.CPCourseAdded)
+			self.current_course_name = string.format("%d %s", self.numCourses, courseplay.locales.CPCourseAdded)
 		end
 		if table.getn(self.Waypoints) == 4 then
 			self.createCourse = true

@@ -299,11 +299,11 @@ function courseplay:drive(self, dt)
 			end
 		elseif self.ai_mode == 4 and (self.startWork == nil or self.stopWork == nil) then
 			allowedToDrive = false
-			self.info_text = self.locales.CPNoWorkArea
+			self.info_text = courseplay.locales.CPNoWorkArea
 		end
 
 		if self.ai_mode ~= 5 and self.ai_mode ~= 6 and self.ai_mode ~= 7 and not self.tipper_attached then
-			self.info_text = self.locales.CPWrongTrailer
+			self.info_text = courseplay.locales.CPWrongTrailer
 			allowedToDrive = false
 		end
 
@@ -368,27 +368,27 @@ function courseplay:drive(self, dt)
 			local currentFuelPercentage = (self.fuelFillLevel / self.fuelCapacity + 0.0001) * 100;
 			if currentFuelPercentage < 5 then
 				allowedToDrive = false;
-				self.global_info_text = self.locales.CPNoFuelStop;
+				self.global_info_text = courseplay.locales.CPNoFuelStop;
 			elseif currentFuelPercentage < 20 and not self.isFuelFilling then
-				self.global_info_text = self.locales.CPFuelWarning;
+				self.global_info_text = courseplay.locales.CPFuelWarning;
 				if self.fuelFillTriggers[1] then
 					allowedToDrive = false;
 					self:setIsFuelFilling(true, self.fuelFillTriggers[1].isEnabled, false);
 				end
 			elseif self.isFuelFilling and currentFuelPercentage < 99.9 then
 				allowedToDrive = false;
-				self.global_info_text = self.locales.CPRefueling;
+				self.global_info_text = courseplay.locales.CPRefueling;
 			end;
 		end;
 
 		if self.showWaterWarning then
 			allowedToDrive = false
-			self.global_info_text = self.locales.CPWaterDrive
+			self.global_info_text = courseplay.locales.CPWaterDrive
 		end
 
 		if self.StopEnd and (self.recordnumber == self.maxnumber or self.currentTipTrigger ~= nil) then
 			allowedToDrive = false
-			self.global_info_text = self.locales.CPReachedEndPoint
+			self.global_info_text = courseplay.locales.CPReachedEndPoint
 		end
 	end
 

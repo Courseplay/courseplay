@@ -296,15 +296,15 @@ function courseplay:loadHud(self)
 				localeSpeedMulti = 0.621371; --mph
 			end;
 
-			self.hudpage[5][2][1] = string.format("%d %s", self.turn_speed   * 3600 * localeSpeedMulti, self.locales.CPspeedUnit);
-			self.hudpage[5][2][2] = string.format("%d %s", self.field_speed  * 3600 * localeSpeedMulti, self.locales.CPspeedUnit);
-			self.hudpage[5][2][4] = string.format("%d %s", self.unload_speed * 3600 * localeSpeedMulti, self.locales.CPspeedUnit);
+			self.hudpage[5][2][1] = string.format("%d %s", self.turn_speed   * 3600 * localeSpeedMulti, courseplay.locales.CPspeedUnit);
+			self.hudpage[5][2][2] = string.format("%d %s", self.field_speed  * 3600 * localeSpeedMulti, courseplay.locales.CPspeedUnit);
+			self.hudpage[5][2][4] = string.format("%d %s", self.unload_speed * 3600 * localeSpeedMulti, courseplay.locales.CPspeedUnit);
 			
 			if self.use_speed then
 				self.hudpage[5][2][3] = courseplay:get_locale(self, "CPautomaticSpeed");
 				self.hudpage[5][2][5] = courseplay:get_locale(self, "CPuseSpeed1") -- "wie beim einfahren"
 			else
-				self.hudpage[5][2][3] = string.format("%d %s", self.max_speed * 3600 * localeSpeedMulti, self.locales.CPspeedUnit);
+				self.hudpage[5][2][3] = string.format("%d %s", self.max_speed * 3600 * localeSpeedMulti, courseplay.locales.CPspeedUnit);
 				self.hudpage[5][2][5] = courseplay:get_locale(self, "CPuseSpeed2") -- "maximale Geschwindigkeit"
 			end;
 
@@ -389,9 +389,9 @@ function courseplay:showHud(self)
 		end
 
 		if self.Waypoints[self.recordnumber] ~= nil then
-			self.hudinfo[3] = courseplay:get_locale(self, "CPWaypoint") .. self.recordnumber .. "/" .. self.maxnumber .. "	" .. self.locales.WaitPoints .. self.waitPoints .. "	" .. self.locales.CrossPoints .. self.crossPoints
+			self.hudinfo[3] = courseplay:get_locale(self, "CPWaypoint") .. self.recordnumber .. "/" .. self.maxnumber .. "	" .. courseplay.locales.WaitPoints .. self.waitPoints .. "	" .. courseplay.locales.CrossPoints .. self.crossPoints
 		elseif self.record or self.record_pause or self.createCourse then
-			self.hudinfo[3] = courseplay:get_locale(self, "CPWaypoint") .. self.recordnumber .. "	" .. self.locales.WaitPoints .. self.waitPoints .. "	" .. self.locales.CrossPoints .. self.crossPoints
+			self.hudinfo[3] = courseplay:get_locale(self, "CPWaypoint") .. self.recordnumber .. "	" .. courseplay.locales.WaitPoints .. self.waitPoints .. "	" .. courseplay.locales.CrossPoints .. self.crossPoints
 		else
 			self.hudinfo[3] = courseplay:get_locale(self, "CPNoWaypoint") -- "Keine Wegpunkte geladen"
 		end
