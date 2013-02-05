@@ -56,28 +56,8 @@ function courseplay:load(xmlFile)
 		if self.name == nil then self.name = g_i18n:getText("UNKNOWN") end;
 	end
 
-	self.toggledTipState = 0
+	self.toggledTipState = 0;
 	
-	-- dirty workaround for localization - don't try this at home!
-	-- get all l10n > text > #name attribues from modDesc.xml, insert them into self.locales
-	self.locales = {};
-	local cp_modDesc_file = loadXMLFile("cp_modDesc", courseplay_path .. "/modDesc.xml");
-	local b=0;
-	while true do
-		local attr = string.format("modDesc.l10n.text(%d)#name", b);
-		local textName = getXMLString(cp_modDesc_file, attr);
-		if textName ~= nil then
-			if not g_i18n:hasText(textName) then
-				g_i18n:setText(textName, textName);
-			end;
-			self.locales[textName] = g_i18n:getText(textName);
-			--print(string.format("self.locales[%s] (#%d) = %s", textName, b, self.locales[textName]));
-			b = b + 1;
-		else
-			break;
-		end;
-	end;
-
 	self.auto_combine_offset = true
 	self.mouse_right_key_enabled = true
 	self.drive = false
@@ -610,8 +590,8 @@ end
 
 
 function courseplay:get_locale(self, key)
-	if self.locales[key] ~= nil then
-		return self.locales[key];
+	if courseplay.locales[key] ~= nil then
+		return courseplay.locales[key];
 	else
 		return key;
 	end;

@@ -41,5 +41,29 @@ function register_courseplay()
 	end;
 end
 
+
+-- dirty workaround for localization - don't try this at home!
+-- get all l10n > text > #name attribues from modDesc.xml, insert them into courseplay.locales
+function cp_setLocales()
+	courseplay.locales = {};
+	local cp_modDesc_file = loadXMLFile("cp_modDesc", courseplay_path .. "/modDesc.xml");
+	local b=0;
+	while true do
+		local attr = string.format("modDesc.l10n.text(%d)#name", b);
+		local textName = getXMLString(cp_modDesc_file, attr);
+		if textName ~= nil then
+			if not g_i18n:hasText(textName) then
+				g_i18n:setText(textName, textName);
+			end;
+			courseplay.locales[textName] = g_i18n:getText(textName);
+			--print(string.format("courseplay.locales[%s] (#%d) = %s", textName, b, courseplay.locales[textName]));
+			b = b + 1;
+		else
+			break;
+		end;
+	end;
+end;
+
+cp_setLocales();
 register_courseplay();
 
