@@ -308,6 +308,10 @@
 			<en>maximum AI helpers:</en>
 			<de>max. Anz. AI Helfer:</de>
 		</text>
+		<text name="CPCombine">
+			<en>Combine</en>
+			<de>Drescher</de>
+		</text>
 		<text name="CPNone">
 			<en>none</en>
 			<de>keiner</de>
@@ -331,6 +335,18 @@
 		<text name="CPFindManual">
 			<en>select manually</en>
 			<de>manuell zuweisen</de>
+		</text>
+		<text name="CPcopyCourse">
+			<en>Copy course:</en>
+			<de>Kurs kopieren:</de>
+		</text>
+		<text name="CPDriver">
+			<en>Vehicle</en>
+			<de>Fahrzeug</de>
+		</text>
+		<text name="CPtempCourse">
+			<en>temporary course</en>
+			<de>temporärer Kurs</de>
 		</text>
 		<text name="CPTurnSpeed">
 			<en>Turn speed:</en>
@@ -552,7 +568,7 @@
 			<en>open Courseplay:</en>
 			<de>Courseplay öffnen:</de>
 		</text>
-		<text name="CPopenMouse">
+		<text name="CPopenHudMouse">
 			<en>right mouse button</en>
 			<de>rechte Maustaste</de>
 		</text>

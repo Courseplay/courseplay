@@ -14,8 +14,6 @@ function courseplay:load(xmlFile)
 
 	self.setCourseplayFunc = SpecializationUtil.callSpecializationsFunction("setCourseplayFunc");
 
-
-	self.locales = {}
 	local aNameSearch = { "vehicle.name." .. g_languageShort, "vehicle.name.en", "vehicle.name", "vehicle#type" };
 
 	if not steerable_overwritten then
@@ -58,146 +56,156 @@ function courseplay:load(xmlFile)
 		if self.name == nil then self.name = g_i18n:getText("UNKNOWN") end;
 	end
 
-	-- dirty workaround for localization - don't try this at home!
 	self.toggledTipState = 0
-	self.locales.CPMaxHireables = g_i18n:getText("CPMaxHireables")
-	self.locales.CPFollowTractor = g_i18n:getText("CPFollowTractor")
-	self.locales.CPWaitForWaypoint = g_i18n:getText("CPWaitForWaypoint")
-	self.locales.CPWaitUntilCombineTurned = g_i18n:getText("CPWaitUntilCombineTurned")
-	self.locales.CPDriveToWP = g_i18n:getText("CPDriveToWP")
-	self.locales.CPTurningTo = g_i18n:getText("CPTurningTo")
-	self.locales.CPCombineWantsMeToStop = g_i18n:getText("CPCombineWantsMeToStop")
-	self.locales.CPDriveToCombine = g_i18n:getText("CPDriveToCombine")
-	self.locales.CPDriveNextCombine = g_i18n:getText("CPDriveNextCombine")
-	self.locales.CPDriveBehinCombine = g_i18n:getText("CPDriveBehinCombine")
-	self.locales.CPCombineTurning = g_i18n:getText("CPCombineTurning")
-	self.locales.CPloading = g_i18n:getText("CPloading")
-	self.locales.CPTriggerReached = g_i18n:getText("CPTriggerReached")
-	self.locales.CPSteering = g_i18n:getText("CPSteering")
-	self.locales.CPManageCourses = g_i18n:getText("CPManageCourses")
-	self.locales.CPCourseAdded = g_i18n:getText("CPCourseAdded")
-	self.locales.CPCombiSettings = g_i18n:getText("CPCombiSettings")
-	self.locales.CPManageCombines = g_i18n:getText("CPManageCombines")
-	self.locales.CPSpeedLimit = g_i18n:getText("CPSpeedLimit")
-	self.locales.CPTurnSpeed = g_i18n:getText("CPTurnSpeed")
-	self.locales.CPCourse = g_i18n:getText("CPCourse")
-	self.locales.CPWaitTime = g_i18n:getText("CPWaitTime")
-	self.locales.CPNoCourseLoaded = g_i18n:getText("CPNoCourseLoaded")
-	self.locales.CPWaypoint = g_i18n:getText("CPWaypoint")
-	self.locales.CPNoWaypoint = g_i18n:getText("CPNoWaypoint")
-
-	self.locales.CourseDriveDirection = g_i18n:getText("CourseDriveDirection")
-	self.locales.CourseDriveDirectionFor = g_i18n:getText("CourseDriveDirectionFor")
-	self.locales.CourseDriveDirectionBac = g_i18n:getText("CourseDriveDirectionBac")
-
-
-	self.locales.WaypointMode1 = g_i18n:getText("WaypointMode1")
-	self.locales.WaypointMode2 = g_i18n:getText("WaypointMode2")
-	self.locales.WaypointMode3 = g_i18n:getText("WaypointMode3")
-	self.locales.WaypointMode4 = g_i18n:getText("WaypointMode4")
-	self.locales.WaypointMode5 = g_i18n:getText("WaypointMode5")
-	self.locales.Rul = g_i18n:getText("Rul")
-	self.locales.RulMode1 = g_i18n:getText("RulMode1")
-	self.locales.RulMode2 = g_i18n:getText("RulMode2")
-	self.locales.RulMode3 = g_i18n:getText("RulMode3")
-
-	self.locales.DebugLevel = g_i18n:getText("CPDebugLevel")
-	self.locales.DebugLevel0 = g_i18n:getText("CPDebugLevel0")
-	self.locales.DebugLevel1 = g_i18n:getText("CPDebugLevel1")
-	self.locales.DebugLevel2 = g_i18n:getText("CPDebugLevel2")
-	self.locales.DebugLevel3 = g_i18n:getText("CPDebugLevel3")
-	self.locales.DebugLevel4 = g_i18n:getText("CPDebugLevel4")
-
-	self.locales.CPNoWorkArea = g_i18n:getText("CPNoWorkArea")
-	self.locales.CPWorkEnd = g_i18n:getText("CPWorkEnd")
-	self.locales.CPReadyUnloadBale = g_i18n:getText("CPReadyUnloadBale")
-	self.locales.CPUnloadBale = g_i18n:getText("CPUnloadBale")
-	self.locales.CPFieldSpeed = g_i18n:getText("CPFieldSpeed")
-	self.locales.CPMaxSpeed = g_i18n:getText("CPMaxSpeed")
-	self.locales.CPUnloadSpeed = g_i18n:getText("CPUnloadSpeed")
-	self.locales.CPspeedUnit = g_i18n:getText("CPspeedUnit")
-	self.locales.CPautomaticSpeed = g_i18n:getText("CPautomaticSpeed")
-	self.locales.CPFindAuto = g_i18n:getText("CPFindAuto")
-	self.locales.CPFindManual = g_i18n:getText("CPFindManual")
-	self.locales.CPActual = g_i18n:getText("CPActual")
-	self.locales.CPSelectCombine = g_i18n:getText("CPSelectCombine")
-	self.locales.CPCombineSearch = g_i18n:getText("CPCombineSearch")
-	self.locales.CPNone = g_i18n:getText("CPNone")
-	self.locales.CPPipeOffset = g_i18n:getText("CPPipeOffset")
-	self.locales.CPTurnRadius = g_i18n:getText("CPTurnRadius")
-	self.locales.CPRequiredFillLevel = g_i18n:getText("CPRequiredFillLevel")
-	self.locales.CPCombineOffset = g_i18n:getText("CPCombineOffset")
-	self.locales.CPUnloading = g_i18n:getText("CPUnloading")
-	self.locales.CPInTraffic = g_i18n:getText("CPInTraffic")
-	self.locales.CPReachedOverloadPoint = g_i18n:getText("CPReachedOverloadPoint")
-	self.locales.CPReachedWaitPoint = g_i18n:getText("CPReachedWaitPoint")
-	self.locales.CPReachedEndPoint = g_i18n:getText("CPReachedEndPoint")
-	self.locales.CPCourseName = g_i18n:getText("CPLoadCourse")
-	self.locales.CPCourseName = g_i18n:getText("CPCourseName")
-	self.locales.CPDistance = g_i18n:getText("CPDistance")
-	self.locales.HudControl = g_i18n:getText("HudControl")
-	self.locales.CourseReset = g_i18n:getText("CourseReset")
-	self.locales.CoursePlayStart = g_i18n:getText("CoursePlayStart")
-	self.locales.CourseWaitpointStart = g_i18n:getText("CourseWaitpointStart")
-	self.locales.CoursePlayStop = g_i18n:getText("CoursePlayStop")
-	self.locales.CoursePlayStopEnd = g_i18n:getText("CoursePlayStopEnd")
-	self.locales.NoWaitforfill = g_i18n:getText("NoWaitforfill")
-	self.locales.NoWaitforfillAt = g_i18n:getText("NoWaitforfillAt")
-	self.locales.PointRecordStart = g_i18n:getText("PointRecordStart")
-	self.locales.CourseLoad = g_i18n:getText("CourseLoad")
-	self.locales.ModusSet = g_i18n:getText("ModusSet")
-	self.locales.PointRecordStop = g_i18n:getText("PointRecordStop")
-	self.locales.CourseWaitpointSet = g_i18n:getText("CourseWaitpointSet")
-	self.locales.CourseCrossingSet = g_i18n:getText("CourseCrossingSet")
-	self.locales.PointRecordInterrupt = g_i18n:getText("PointRecordInterrupt")
-	self.locales.PointRecordContinue = g_i18n:getText("PointRecordContinue")
-	self.locales.PointRecordDelete = g_i18n:getText("PointRecordDelete")
-	self.locales.CourseDel = g_i18n:getText("CourseDel")
-	self.locales.CourseSave = g_i18n:getText("CourseSave")
-	self.locales.CourseMode1 = g_i18n:getText("CourseMode1")
-	self.locales.CourseMode2 = g_i18n:getText("CourseMode2")
-	self.locales.CourseMode3 = g_i18n:getText("CourseMode3")
-	self.locales.CourseMode4 = g_i18n:getText("CourseMode4")
-	self.locales.CourseMode5 = g_i18n:getText("CourseMode5")
-	self.locales.CourseMode6 = g_i18n:getText("CourseMode6")
-	self.locales.CourseMode7 = g_i18n:getText("CourseMode7")
-	self.locales.CourseMode8 = g_i18n:getText("CourseMode8")
-	self.locales.CPFuelWarning = g_i18n:getText("CPFuelWarning")
-	self.locales.CPNoFuelStop = g_i18n:getText("CPNoFuelStop")
-	self.locales.CPRefueling = g_i18n:getText("CPRefueling")
-	self.locales.CPWrongTrailer = g_i18n:getText("CPWrongTrailer")
-	self.locales.CoursePlayCallPlayer = g_i18n:getText("CoursePlayCallPlayer")
-	self.locales.CoursePlayCalledPlayer = g_i18n:getText("CoursePlayCalledPlayer")
-	self.locales.CoursePlayPlayer = g_i18n:getText("CoursePlayPlayer")
-	self.locales.CoursePlayPlayerStart = g_i18n:getText("CoursePlayPlayerStart")
-	self.locales.CoursePlayPlayerStop = g_i18n:getText("CoursePlayPlayerStop")
-	self.locales.CoursePlayPlayerSwitchSide = g_i18n:getText("CoursePlayPlayerSwitchSide")
-	self.locales.CoursePlayPlayerSideRight = g_i18n:getText("CoursePlayPlayerSideRight")
-	self.locales.CoursePlayPlayerSideLeft = g_i18n:getText("CoursePlayPlayerSideLeft")
-	self.locales.CoursePlayPlayerSideNone = g_i18n:getText("CoursePlayPlayerSideNone")
-	self.locales.CoursePlayPlayerSendHome = g_i18n:getText("CoursePlayPlayerSendHome")
-	self.locales.CPCombineMangament = g_i18n:getText("CPCombineMangament")
-	self.locales.CPSettings = g_i18n:getText("CPSettings")
-	self.locales.CPWpOffsetX = g_i18n:getText("CPWpOffsetX")
-	self.locales.CPWpOffsetZ = g_i18n:getText("CPWpOffsetZ")
-	self.locales.CPWaterDrive = g_i18n:getText("CPWaterDrive")
-	self.locales.WaitPoints = g_i18n:getText("WaitPoints")
-	self.locales.CrossPoints = g_i18n:getText("CrossPoints")
-	self.locales.CourseGenerate = g_i18n:getText("CourseGenerate")
-	self.locales.CourseFieldPointSet = g_i18n:getText("CourseFieldPointSet")
-	self.locales.CPWorkingWidht = g_i18n:getText("CPWorkingWidht")
-	self.locales.CPopenHud = g_i18n:getText("CPopenHud")
-	self.locales.CPopenHudMouse = g_i18n:getText("CPopenMouse")
-	self.locales.CPuseSpeed = g_i18n:getText("CPuseSpeed")
-	self.locales.CPuseSpeed1 = g_i18n:getText("CPuseSpeed1")
-	self.locales.CPuseSpeed2 = g_i18n:getText("CPuseSpeed2")
-	self.locales.CPastarOn = g_i18n:getText("CPastarOn")
-	self.locales.CPastarOff = g_i18n:getText("CPastarOff")
-	self.locales.CPHud7 = g_i18n:getText("CPHud7")
-	self.locales.CPaStar = g_i18n:getText("CPaStar")
-	self.locales.CPWPs = g_i18n:getText("CPWPs")
-	self.locales.CPwaitFillLevel = g_i18n:getText("CPwaitFillLevel")
-	self.locales.CPnoCombineInReach = g_i18n:getText("CPnoCombineInReach")
+	
+	-- dirty workaround for localization - don't try this at home!
+	local tmpLocales = {
+		"CourseCrossingSet",
+		"CourseDel",
+		"CourseDriveDirection",
+		"CourseDriveDirectionBac",
+		"CourseDriveDirectionFor",
+		"CourseFieldPointSet",
+		"CourseGenerate",
+		"CourseLoad",
+		"CourseMode1",
+		"CourseMode2",
+		"CourseMode3",
+		"CourseMode4",
+		"CourseMode5",
+		"CourseMode6",
+		"CourseMode7",
+		"CourseMode8",
+		"CoursePlayCalledPlayer",
+		"CoursePlayCallPlayer",
+		"CoursePlayPlayer",
+		"CoursePlayPlayerSendHome",
+		"CoursePlayPlayerSideLeft",
+		"CoursePlayPlayerSideNone",
+		"CoursePlayPlayerSideRight",
+		"CoursePlayPlayerStart",
+		"CoursePlayPlayerStop",
+		"CoursePlayPlayerSwitchSide",
+		"CoursePlayStart",
+		"CoursePlayStop",
+		"CoursePlayStopEnd",
+		"CourseReset",
+		"CourseSave",
+		"CourseWaitpointSet",
+		"CourseWaitpointStart",
+		"CPActual",
+		"CPaStar",
+		"CPastarOff",
+		"CPastarOn",
+		"CPautomaticSpeed",
+		"CPCombine",
+		"CPCombineMangament",
+		"CPCombineOffset",
+		"CPCombineSearch",
+		"CPCombineTurning",
+		"CPCombineWantsMeToStop",
+		"CPCombiSettings",
+		"CPcopyCourse",
+		"CPCourse",
+		"CPCourseAdded",
+		"CPCourseName",
+		"CPDebugLevel",
+		"CPDebugLevel0",
+		"CPDebugLevel1",
+		"CPDebugLevel2",
+		"CPDebugLevel3",
+		"CPDebugLevel4",
+		"CPDistance",
+		"CPDriveBehinCombine",
+		"CPDriveNextCombine",
+		"CPDriver",
+		"CPDriveToCombine",
+		"CPDriveToWP",
+		"CPFieldSpeed",
+		"CPFindAuto",
+		"CPFindManual",
+		"CPFollowTractor",
+		"CPFuelWarning",
+		"CPHud7",
+		"CPInTraffic",
+		"CPLoadCourse",
+		"CPloading",
+		"CPManageCombines",
+		"CPManageCourses",
+		"CPMaxHireables",
+		"CPMaxSpeed",
+		"CPnoCombineInReach",
+		"CPNoCourseLoaded",
+		"CPNoFuelStop",
+		"CPNone",
+		"CPNoWaypoint",
+		"CPNoWorkArea",
+		"CPopenHud",
+		"CPopenHudMouse",
+		"CPPipeOffset",
+		"CPReachedEndPoint",
+		"CPReachedOverloadPoint",
+		"CPReachedWaitPoint",
+		"CPReadyUnloadBale",
+		"CPRefueling",
+		"CPRequiredFillLevel",
+		"CPSelectCombine",
+		"CPSettings",
+		"CPSpeedLimit",
+		"CPspeedUnit",
+		"CPSteering",
+		"CPtempCourse",
+		"CPTriggerReached",
+		"CPTurningTo",
+		"CPTurnRadius",
+		"CPTurnSpeed",
+		"CPUnloadBale",
+		"CPUnloading",
+		"CPUnloadSpeed",
+		"CPuseSpeed",
+		"CPuseSpeed1",
+		"CPuseSpeed2",
+		"CPwaitFillLevel",
+		"CPWaitForWaypoint",
+		"CPWaitTime",
+		"CPWaitUntilCombineTurned",
+		"CPWaterDrive",
+		"CPWaypoint",
+		"CPWorkEnd",
+		"CPWorkingWidht",
+		"CPWpOffsetX",
+		"CPWpOffsetZ",
+		"CPWPs",
+		"CPWrongTrailer",
+		"CrossPoints",
+		"HudControl",
+		"ModusSet",
+		"NoWaitforfill",
+		"NoWaitforfillAt",
+		"PointRecordContinue",
+		"PointRecordDelete",
+		"PointRecordInterrupt",
+		"PointRecordStart",
+		"PointRecordStop",
+		"Rul",
+		"RulMode1",
+		"RulMode2",
+		"RulMode3",
+		"WaitPoints",
+		"WaypointMode1",
+		"WaypointMode2",
+		"WaypointMode3",
+		"WaypointMode4",
+		"WaypointMode5"
+	};
+	self.locales = {};
+	for i=1,#tmpLocales do
+		local term = tmpLocales[i];
+		if not g_i18n:hasText(term) then
+			g_i18n:setText(term, term);
+		end;
+		self.locales[term] = g_i18n:getText(term);
+	end;
 
 	self.auto_combine_offset = true
 	self.mouse_right_key_enabled = true

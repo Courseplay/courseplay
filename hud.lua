@@ -146,6 +146,7 @@ function courseplay:loadHud(self)
 			end
 
 
+			
 		--Page 2 (course list)
 		elseif self.showHudInfoBase == 2 then
 			local number_of_courses = 0
@@ -183,6 +184,8 @@ function courseplay:loadHud(self)
 				row = row + 1
 			end
 
+			
+			
 		--Page 3
 		elseif self.showHudInfoBase == 3 then
 			self.hudpage[3][1][1] = courseplay:get_locale(self, "CPCombineOffset") --"seitl. Abstand:"
@@ -245,6 +248,9 @@ function courseplay:loadHud(self)
 				self.hudpage[3][2][5] = "---"
 			end
 
+			
+			
+		--Page 4
 		elseif self.showHudInfoBase == 4 then
 
 			self.hudpage[4][1][1] = courseplay:get_locale(self, "CPSelectCombine") -- "Drescher wählen:"
@@ -262,7 +268,7 @@ function courseplay:loadHud(self)
 			if self.saved_combine ~= nil then
 				local combine_name = self.saved_combine.name
 				if combine_name == nil then
-					combine_name = "Combine"
+					combine_name = courseplay:get_locale(self, "CPCombine");
 				end
 				self.hudpage[4][2][1] = combine_name .. " (" .. string.format("%d", courseplay:distance_to_object(self, self.saved_combine)) .. "m)"
 			else
@@ -273,10 +279,11 @@ function courseplay:loadHud(self)
 				self.hudpage[4][2][2] = courseplay:get_locale(self, "CPFindAuto") -- "automatisch finden"
 			else
 				self.hudpage[4][2][2] = courseplay:get_locale(self, "CPFindManual") -- "manuell zuweisen"
-			end
+			end;
 
 
 
+		--Page 5
 		elseif self.showHudInfoBase == 5 then
 			self.hudpage[5][1][1] = courseplay:get_locale(self, "CPTurnSpeed") -- "Wendemanöver:"
 			self.hudpage[5][1][2] = courseplay:get_locale(self, "CPFieldSpeed") -- "Auf dem Feld:"
@@ -301,8 +308,9 @@ function courseplay:loadHud(self)
 				self.hudpage[5][2][5] = courseplay:get_locale(self, "CPuseSpeed2") -- "maximale Geschwindigkeit"
 			end;
 
-
-
+			
+			
+		--Page 6
 		elseif self.showHudInfoBase == 6 then
 
 			self.hudpage[6][1][1] = courseplay:get_locale(self, "CPaStar") -- Z-Offset:
@@ -325,19 +333,13 @@ function courseplay:loadHud(self)
 			end
 
 			self.hudpage[6][1][4] = courseplay:get_locale(self, "Rul")
+			self.hudpage[6][1][5] = courseplay:get_locale(self, "CPDebugLevel")
 
-			self.hudpage[6][1][5] = courseplay:get_locale(self, "DebugLevel")
+			self.hudpage[6][2][3] = courseplay:get_locale(self, "WaypointMode" .. string.format("%d", self.waypointMode));
+			self.hudpage[6][2][4] = courseplay:get_locale(self, "RulMode" .. string.format("%d", self.RulMode));
+			self.hudpage[6][2][5] = courseplay:get_locale(self, "CPDebugLevel" .. string.format("%d", CPDebugLevel))
 
-			-- wapyointMode
-			self.hudpage[6][2][3] = courseplay:get_locale(self, "WaypointMode" .. string.format("%d", self.waypointMode))
-
-			--RUL mode
-			self.hudpage[6][2][4] = courseplay:get_locale(self, "RulMode" .. string.format("%d", self.RulMode))
-			
-			--Debug Level
-			self.hudpage[6][2][5] = courseplay:get_locale(self, "DebugLevel" .. string.format("%d", CPDebugLevel))
-
-
+		--Page 7
 		elseif self.showHudInfoBase == 7 then
 			self.hudpage[7][1][1] = courseplay:get_locale(self, "CPWaitTime") -- Wartezeit am Haltepunkt
 			self.hudpage[7][2][1] = string.format("%.1f", self.waitTime) .. "sec"
