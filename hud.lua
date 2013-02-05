@@ -146,7 +146,7 @@ function courseplay:loadHud(self)
 			end
 
 
-			
+
 		--Page 2 (course list)
 		elseif self.showHudInfoBase == 2 then
 			local number_of_courses = 0
@@ -184,8 +184,8 @@ function courseplay:loadHud(self)
 				row = row + 1
 			end
 
-			
-			
+
+
 		--Page 3
 		elseif self.showHudInfoBase == 3 then
 			self.hudpage[3][1][1] = courseplay:get_locale(self, "CPCombineOffset") --"seitl. Abstand:"
@@ -248,8 +248,8 @@ function courseplay:loadHud(self)
 				self.hudpage[3][2][5] = "---"
 			end
 
-			
-			
+
+
 		--Page 4
 		elseif self.showHudInfoBase == 4 then
 
@@ -308,8 +308,8 @@ function courseplay:loadHud(self)
 				self.hudpage[5][2][5] = courseplay:get_locale(self, "CPuseSpeed2") -- "maximale Geschwindigkeit"
 			end;
 
-			
-			
+
+
 		--Page 6
 		elseif self.showHudInfoBase == 6 then
 

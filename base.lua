@@ -59,152 +59,23 @@ function courseplay:load(xmlFile)
 	self.toggledTipState = 0
 	
 	-- dirty workaround for localization - don't try this at home!
-	local tmpLocales = {
-		"CourseCrossingSet",
-		"CourseDel",
-		"CourseDriveDirection",
-		"CourseDriveDirectionBac",
-		"CourseDriveDirectionFor",
-		"CourseFieldPointSet",
-		"CourseGenerate",
-		"CourseLoad",
-		"CourseMode1",
-		"CourseMode2",
-		"CourseMode3",
-		"CourseMode4",
-		"CourseMode5",
-		"CourseMode6",
-		"CourseMode7",
-		"CourseMode8",
-		"CoursePlayCalledPlayer",
-		"CoursePlayCallPlayer",
-		"CoursePlayPlayer",
-		"CoursePlayPlayerSendHome",
-		"CoursePlayPlayerSideLeft",
-		"CoursePlayPlayerSideNone",
-		"CoursePlayPlayerSideRight",
-		"CoursePlayPlayerStart",
-		"CoursePlayPlayerStop",
-		"CoursePlayPlayerSwitchSide",
-		"CoursePlayStart",
-		"CoursePlayStop",
-		"CoursePlayStopEnd",
-		"CourseReset",
-		"CourseSave",
-		"CourseWaitpointSet",
-		"CourseWaitpointStart",
-		"CPActual",
-		"CPaStar",
-		"CPastarOff",
-		"CPastarOn",
-		"CPautomaticSpeed",
-		"CPCombine",
-		"CPCombineMangament",
-		"CPCombineOffset",
-		"CPCombineSearch",
-		"CPCombineTurning",
-		"CPCombineWantsMeToStop",
-		"CPCombiSettings",
-		"CPcopyCourse",
-		"CPCourse",
-		"CPCourseAdded",
-		"CPCourseName",
-		"CPDebugLevel",
-		"CPDebugLevel0",
-		"CPDebugLevel1",
-		"CPDebugLevel2",
-		"CPDebugLevel3",
-		"CPDebugLevel4",
-		"CPDistance",
-		"CPDriveBehinCombine",
-		"CPDriveNextCombine",
-		"CPDriver",
-		"CPDriveToCombine",
-		"CPDriveToWP",
-		"CPFieldSpeed",
-		"CPFindAuto",
-		"CPFindManual",
-		"CPFollowTractor",
-		"CPFuelWarning",
-		"CPHud7",
-		"CPInTraffic",
-		"CPLoadCourse",
-		"CPloading",
-		"CPManageCombines",
-		"CPManageCourses",
-		"CPMaxHireables",
-		"CPMaxSpeed",
-		"CPnoCombineInReach",
-		"CPNoCourseLoaded",
-		"CPNoFuelStop",
-		"CPNone",
-		"CPNoWaypoint",
-		"CPNoWorkArea",
-		"CPopenHud",
-		"CPopenHudMouse",
-		"CPPipeOffset",
-		"CPReachedEndPoint",
-		"CPReachedOverloadPoint",
-		"CPReachedWaitPoint",
-		"CPReadyUnloadBale",
-		"CPRefueling",
-		"CPRequiredFillLevel",
-		"CPSelectCombine",
-		"CPSettings",
-		"CPSpeedLimit",
-		"CPspeedUnit",
-		"CPSteering",
-		"CPtempCourse",
-		"CPTriggerReached",
-		"CPTurningTo",
-		"CPTurnRadius",
-		"CPTurnSpeed",
-		"CPUnloadBale",
-		"CPUnloading",
-		"CPUnloadSpeed",
-		"CPuseSpeed",
-		"CPuseSpeed1",
-		"CPuseSpeed2",
-		"CPwaitFillLevel",
-		"CPWaitForWaypoint",
-		"CPWaitTime",
-		"CPWaitUntilCombineTurned",
-		"CPWaterDrive",
-		"CPWaypoint",
-		"CPWorkEnd",
-		"CPWorkingWidht",
-		"CPWpOffsetX",
-		"CPWpOffsetZ",
-		"CPWPs",
-		"CPWrongTrailer",
-		"CrossPoints",
-		"HudControl",
-		"ModusSet",
-		"NoWaitforfill",
-		"NoWaitforfillAt",
-		"PointRecordContinue",
-		"PointRecordDelete",
-		"PointRecordInterrupt",
-		"PointRecordStart",
-		"PointRecordStop",
-		"Rul",
-		"RulMode1",
-		"RulMode2",
-		"RulMode3",
-		"WaitPoints",
-		"WaypointMode1",
-		"WaypointMode2",
-		"WaypointMode3",
-		"WaypointMode4",
-		"WaypointMode5"
-	};
+	-- get all l10n > text > #name attribues from modDesc.xml, insert them into self.locales
 	self.locales = {};
-	for i=1,#tmpLocales do
-		local term = tmpLocales[i];
-		if not g_i18n:hasText(term) then
-			g_i18n:setText(term, term);
+	local cp_modDesc_file = loadXMLFile("cp_modDesc", courseplay_path .. "/modDesc.xml");
+	local b=0;
+	while true do
+		local attr = string.format("modDesc.l10n.text(%d)#name", b);
+		local textName = getXMLString(cp_modDesc_file, attr);
+		if textName ~= nil then
+			if not g_i18n:hasText(textName) then
+				g_i18n:setText(textName, textName);
+			end;
+			self.locales[textName] = g_i18n:getText(textName);
+			--print(string.format("self.locales[%s] (#%d) = %s", textName, b, self.locales[textName]));
+			b = b + 1;
+		else
+			break;
 		end;
-		self.locales[term] = g_i18n:getText(term);
 	end;
 
 	self.auto_combine_offset = true
@@ -739,7 +610,11 @@ end
 
 
 function courseplay:get_locale(self, key)
-	return self.locales[key]
+	if self.locales[key] ~= nil then
+		return self.locales[key];
+	else
+		return key;
+	end;
 end
 
 
