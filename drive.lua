@@ -1,5 +1,6 @@
 -- drives recored course
 function courseplay:drive(self, dt)
+	local refSpeed;
 	-- combine self unloading
 	if self.ai_mode == 7 then
 		local state = self.ai_state
@@ -435,6 +436,7 @@ function courseplay:drive(self, dt)
 	-- which speed?
 	local ref_speed = nil
 	local slowEnd = self.ai_mode == 2 and self.recordnumber > self.maxnumber - 3;
+	local slowStart_lvl2 = self.ai_mode == 2 and self.recordnumber < 3;
 	local slowStartEnd = self.ai_mode ~= 2 and self.ai_mode ~= 3 and self.ai_mode ~= 4 and self.ai_mode ~= 6 and (self.recordnumber > self.maxnumber - 3 or self.recordnumber < 3)
 	local slowDownWP = false
 	local slowDownRev = false
@@ -452,7 +454,7 @@ function courseplay:drive(self, dt)
 	if (slowDownWP and not workArea) or slowDownRev or self.max_speed_level == 1 or slowStartEnd or slowEnd then
 		self.sl = 1
 		refSpeed = self.turn_speed
-	elseif workSpeed and self.ai_mode ~= 7 then
+	elseif (workSpeed and self.ai_mode ~= 7) or slowStart_lvl2 then
 		self.sl = 2
 		refSpeed = self.field_speed
 	else
