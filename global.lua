@@ -8,7 +8,7 @@ end
 function courseplay:infotext(self)
 	if self.isEntered then
 		if self.info_text ~= nil then
-			renderText(self.hudInfoBasePosX + 0.005, self.hudInfoBasePosY + 0.002, 0.02, self.info_text);
+			renderText(courseplay.hud.infoBasePosX + 0.005, courseplay.hud.infoBasePosY + 0.0035, 0.02, self.info_text); --ORIG: +0.002
 		end
 	end
 

@@ -7,14 +7,14 @@ function courseplay:HudPage(self)
 	for c = 1, 2, 1 do
 		for v, name in pairs(self.hudpage[Page][c]) do
 			if c == 1 then
-				--local yspace = self.hudInfoBasePosY + 0.210 - ((v - 1) * 0.021) --ORIG: + 0.200 - NEW: + 0.210 ?
-				renderText(self.hudInfoBasePosX + 0.005, self.linesPosY[v], 0.019, name);
+				--local yspace = courseplay.hud.infoBasePosY + 0.210 - ((v - 1) * 0.021) --ORIG: + 0.200 - NEW: + 0.210 ?
+				renderText(courseplay.hud.infoBasePosX + 0.005, courseplay.hud.linesPosY[v], 0.019, name);
 			elseif c == 2 then
-				--local yspace = self.hudInfoBasePosY + 0.210 - ((v - 1) * 0.021) --ORIG: + 0.200 - NEW: + 0.210 ?
+				--local yspace = courseplay.hud.infoBasePosY + 0.210 - ((v - 1) * 0.021) --ORIG: + 0.200 - NEW: + 0.210 ?
 				if Page == 6 then
-					renderText(self.hudInfoBasePosX + 0.182, self.linesPosY[v], 0.017, name);
+					renderText(courseplay.hud.infoBasePosX + 0.182, courseplay.hud.linesPosY[v], 0.017, name);
 				else
-					renderText(self.hudInfoBasePosX + 0.122, self.linesPosY[v], 0.017, name);
+					renderText(courseplay.hud.infoBasePosX + 0.122, courseplay.hud.linesPosY[v], 0.017, name);
 				end
 			end
 			i = i + 1
@@ -151,7 +151,7 @@ function courseplay:loadHud(self)
 		elseif self.showHudInfoBase == 2 then
 			local number_of_courses = 0
 			if g_currentMission.courseplay_courses ~= nil then
-				for k, course in pairs(g_currentMission.courseplay_courses) do
+				for k, course in pairs(g_currentMission.courseplay_courses) do --TODO: table.getn ?
 					number_of_courses = number_of_courses + 1
 				end
 			end
@@ -398,8 +398,8 @@ function courseplay:showHud(self)
 		setTextBold(false)
 		local i = 0
 		for v, name in pairs(self.hudinfo) do
-			local yspace = self.hudInfoBasePosY + 0.077 - (i * 0.021); --ORIG: +0.077
-			renderText(self.hudInfoBasePosX + 0.006, yspace, 0.017, name); --ORIG: +0.003
+			--local yspace = courseplay.hud.infoBasePosY + 0.077 - (i * 0.021); --ORIG: +0.077
+			renderText(courseplay.hud.infoBasePosX + 0.006, courseplay.hud.linesBottomPosY[v], 0.017, name); --ORIG: +0.003
 			i = i + 1
 		end
 
@@ -425,7 +425,7 @@ function courseplay:showHud(self)
 			hud_headline = courseplay:get_locale(self, "CPHud7") -- "Allgemein"
 		end
 
-		renderText(self.hudInfoBasePosX + 0.060, self.hudInfoBasePosY + 0.240, 0.021, hud_headline);
+		renderText(courseplay.hud.infoBasePosX + 0.060, courseplay.hud.infoBasePosY + 0.240, 0.021, hud_headline);
 		courseplay:HudPage(self);
 	end
 

@@ -67,6 +67,32 @@ function cp_setLocales()
 	end;
 end;
 
+function cp_setLines()
+	courseplay.hud = {
+		infoBasePosX = 0.433;
+		infoBasePosY = 0.002;
+		infoBaseWidth = 0.512; --try: 512/1920
+		infoBaseHeight = 0.512; --try: 512/1080
+		linesPosY = {};
+		linesBottomPosY = {};
+		linesButtonPosY = {};
+		numLines = 5;
+		lineHeight = 0.021;
+	};
+	for l=1,courseplay.hud.numLines do
+		if l == 1 then
+			courseplay.hud.linesPosY[l] = courseplay.hud.infoBasePosY + 0.210;
+			courseplay.hud.linesBottomPosY[l] = courseplay.hud.infoBasePosY + 0.077;
+		else
+			courseplay.hud.linesPosY[l] = courseplay.hud.linesPosY[1] - ((l-1) * courseplay.hud.lineHeight);
+			courseplay.hud.linesBottomPosY[l] = courseplay.hud.linesBottomPosY[1] - ((l-1) * courseplay.hud.lineHeight);
+		end;
+		courseplay.hud.linesButtonPosY[l] = courseplay.hud.linesPosY[l] + 0.0045;
+	end;
+	
+end;
+
+cp_setLines();
 cp_setLocales();
 register_courseplay();
 
