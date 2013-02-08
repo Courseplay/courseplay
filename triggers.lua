@@ -10,7 +10,7 @@ function courseplay:cponTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 			if onEnter then
 				self.CPnumCollidingVehicles = self.CPnumCollidingVehicles + 1;
 			elseif onLeave then
-				self.CPnumCollidingVehicles = math.max(self.CPnumCollidingVehicle - 1, 0);
+				self.CPnumCollidingVehicles = math.max(self.CPnumCollidingVehicles - 1, 0);
 			end;
 		else
 			local vehicle = g_currentMission.nodeToVehicle[otherId];

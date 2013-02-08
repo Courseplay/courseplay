@@ -5,7 +5,8 @@ function courseplay:start(self)
 		return
 	end
 
-	--self.CPnumCollidingVehicles = 0;
+	self.CPnumCollidingVehicles = 0;
+	self.traffic_vehicle_in_front = nil
 	--self.numToolsCollidingVehicles = {};
 	self.drive = false
 	self.record = false

@@ -206,7 +206,7 @@ function courseplay:load(xmlFile)
 	self.courseListNext = table.getn(g_currentMission.courseplay_courses) > 5;
 
 	-- traffic collision	
-	--self.onTrafficCollisionTrigger = courseplay.cponTrafficCollisionTrigger;
+	self.onTrafficCollisionTrigger = courseplay.cponTrafficCollisionTrigger;
 	--self.aiTrafficCollisionTrigger = Utils.indexToObject(self.components, getXMLString(xmlFile, "vehicle.aiTrafficCollisionTrigger#index"));
 	self.steering_angle = Utils.getNoNil(getXMLFloat(xmlFile, "vehicle.wheels.wheel(1)" .. "#rotMax"), 30)
 
@@ -216,7 +216,7 @@ function courseplay:load(xmlFile)
 	--	for k,v in pairs(self.components) do
 	--	  self.trafficCollisionIgnoreList[v.node] = true;
 	--	end;
-
+	self.cpTrafficBrake = false
 	-- tipTrigger
 	self.findTipTriggerCallback = courseplay.findTipTriggerCallback;
 
@@ -603,6 +603,7 @@ function courseplay:readStream(streamId, connection)
 	self.courseListPrev = streamDebugReadBool(streamId)
 	self.courseListNext = streamDebugReadBool(streamId)
 	self.courseplay_position = streamDebugReadInt32(streamId)
+	self.cpTrafficBrake = streamDebugReadBool(streamId)
 	self.crossPoints = streamDebugReadInt32(streamId)
 	self.drive = streamDebugReadBool(streamId)
 	self.drive_slow_timer = streamDebugReadInt32(streamId)
@@ -711,6 +712,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteBool(streamId, self.courseListPrev)
 	streamDebugWriteBool(streamId, self.courseListNext)
 	streamDebugWriteInt32(streamId,self.courseplay_position)
+	streamDebugWriteBool(streamId, self.cpTrafficBrake)
 	streamDebugWriteInt32(streamId,self.crossPoints)
 	streamDebugWriteBool(streamId,self.drive)
 	streamDebugWriteInt32(streamId,self.drive_slow_timer)

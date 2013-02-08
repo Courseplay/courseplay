@@ -470,17 +470,28 @@ function courseplay:drive(self, dt)
 	if slowDownRev and refSpeed > self.turn_speed then
 		refSpeed = self.turn_speed
 	end
+	self.cpTrafficBrake = false
 	if self.traffic_vehicle_in_front ~= nil then
 		local vehicle_in_front = g_currentMission.nodeToVehicle[self.traffic_vehicle_in_front];
+		local vehicleBehind = false
 		if vehicle_in_front == nil then
 			self.traffic_vehicle_in_front = nil
-			--self.CPnumCollidingVehicles = math.max(self.CPnumCollidingVehicles-1, 0);
+			self.CPnumCollidingVehicles = math.max(self.CPnumCollidingVehicles-1, 0);
 			return
 		end
-		if courseplay:distance_to_object(self, vehicle_in_front) > 30 then
+		local x, y, z = getWorldTranslation(self.traffic_vehicle_in_front)
+		x1, y1, z1 = worldToLocal(self.rootNode, x, y, z)
+		if z1 < 0 or math.abs(x1) > 2 then -- vehicle behind tractor
+			vehicleBehind = true
+		end
+		if courseplay:distance_to_object(self, vehicle_in_front) > 30 or vehicleBehind then
 			self.traffic_vehicle_in_front = nil
 		else
-			refSpeed = 29 / 3600 -- = traffic speed ? --TODO: maximum 29, if refspeed < 29 then do nothing
+			if (self.lastSpeed*3600) - (vehicle_in_front.lastSpeed*3600) > 15 then
+				self.cpTrafficBrake = true
+			else
+				refSpeed = math.min(vehicle_in_front.lastSpeed,refSpeed)
+			end
 		end
 	end
 
@@ -532,6 +543,10 @@ function courseplay:drive(self, dt)
 	else
 		fwd = true
 	end
+
+	if self.cpTrafficBrake then
+		fwd = false
+	end  	
 
 	-- go, go, go!
 	if self.recordnumber == 1 then --courtesy of Thomas Gärtner
@@ -631,24 +646,32 @@ end
 
 function courseplay:check_traffic(self, display_warnings, allowedToDrive)
 	local in_traffic = false;
+	local ahead = false
+	local vehicle_in_front = g_currentMission.nodeToVehicle[self.traffic_vehicle_in_front]
+	local x, y, z = getWorldTranslation(self.aiTractorDirectionNode)
+	local x1, y1, z1 = 0,0,0
+	
 	--courseplay:debug(table.show(self), 4)
-	if self.numCollidingVehicles ~= nil then
-		for k, v in pairs(self.numCollidingVehicles) do
-			if v > 0 then
+	if self.CPnumCollidingVehicles ~= nil and self.CPnumCollidingVehicles > 0 then
+		print("CPnumCollidingVehicles:  "..tostring(self.CPnumCollidingVehicles))
+		print("self.traffic_vehicle_in_front: "..tostring(self.traffic_vehicle_in_front))
+		print("name: "..tostring(self.traffic_vehicle_in_front))
+		if vehicle_in_front ~= nil then
+			x1, y1, z1 = worldToLocal(self.traffic_vehicle_in_front, x, y, z)
+			if z1 > 0 then -- tractor in front of vehicle face2face 
+				ahead = true
+			end
+			if vehicle_in_front.lastSpeed*3600 < 1 or ahead then
 				courseplay:debug("colliding", 2)
 				allowedToDrive = false;
 				in_traffic = true
-				break;
-			end;
-		end;
+			end
+		end
 	end
 
 	if display_warnings and in_traffic then
 		self.global_info_text = courseplay:get_locale(self, "CPInTraffic") --' steckt im Verkehr fest'
 	end
-
-
-
 	return allowedToDrive
 end
 
