@@ -1,5 +1,5 @@
 ﻿function courseplay:detachImplement(implementIndex)
-	self.tools_dirty = true
+	self.tools_dirty = true;
 end
 
 function courseplay:reset_tools(self)
@@ -11,17 +11,22 @@ function courseplay:reset_tools(self)
 	self.tools_dirty = false;
 end
 
--- is the tool a baler?
-function courseplay:is_baler(workTool)
-	if SpecializationUtil.hasSpecialization(Baler, workTool.specializations) or workTool.balerUnloadingState ~= nil then
-		return true
-	else
-		return false
-	end
-end
+function courseplay:is_baler(workTool) -- is the tool a baler?
+	return (SpecializationUtil.hasSpecialization(Baler, workTool.specializations) or workTool.balerUnloadingState ~= nil);
+end;
+function courseplay:is_sowingMachine(workTool) -- is the tool a sowing machine?
+	return (SpecializationUtil.hasSpecialization(sowingMachine, workTool.specializations) or SpecializationUtil.hasSpecialization(SowingMachine, workTool.specializations));
+end;
+function courseplay:isFoldable(workTool) --is the tool foldable?
+	return SpecializationUtil.hasSpecialization(Foldable, workTool.specializations);
+end;
+function courseplay:isUBT(workTool) --is the tool a UBT?
+	return SpecializationUtil.hasSpecialization(ubt, workTool.specializations);
+end;
 
 -- update implements to find attached tippers
 function courseplay:update_tools(self, tractor_or_implement)
+	--steerable (tractor, combine etc.)
 	local tipper_attached = false
 	if SpecializationUtil.hasSpecialization(AITractor, tractor_or_implement.specializations) then
 		local object = tractor_or_implement
@@ -54,9 +59,11 @@ function courseplay:update_tools(self, tractor_or_implement)
 		end
 	end
 
+
 	-- go through all implements
 	for k, implement in pairs(tractor_or_implement.attachedImplements) do
 		local object = implement.object
+
 		if self.ai_mode == 1 or self.ai_mode == 2 then
 			--	if SpecializationUtil.hasSpecialization(Trailer, object.specializations) then
 			if object.allowTipDischarge then
@@ -68,13 +75,21 @@ function courseplay:update_tools(self, tractor_or_implement)
 				tipper_attached = true
 				table.insert(self.tippers, object)
 			end
-		elseif self.ai_mode == 4 then -- Fertilizer
-			if SpecializationUtil.hasSpecialization(Sprayer, object.specializations) or object.name == "AmazoneUX5200" then
+		elseif self.ai_mode == 4 then -- Fertilizer and Seeding
+			if SpecializationUtil.hasSpecialization(Sprayer, object.specializations) or courseplay:is_sowingMachine(object) or object.name == "AmazoneUX5200" then
 				tipper_attached = true
 				table.insert(self.tippers, object)
 			end
 		elseif self.ai_mode == 6 then -- Baler, foragewagon, baleloader
-			if courseplay:is_baler(object) or SpecializationUtil.hasSpecialization(BaleLoader, object.specializations) or object.allowTipDischarge then
+			if courseplay:is_baler(object) 
+			or SpecializationUtil.hasSpecialization(BaleLoader, object.specializations) 
+			or SpecializationUtil.hasSpecialization(Tedder, object.specializations) 
+			or SpecializationUtil.hasSpecialization(windrower, object.specializations) 
+			or SpecializationUtil.hasSpecialization(cultivator, object.specializations) 
+			or SpecializationUtil.hasSpecialization(plough, object.specializations) 
+			or object.allowTipDischarge 
+			or courseplay:isUBT(object) 
+			or courseplay:isFoldable(object) then
 				tipper_attached = true
 				table.insert(self.tippers, object)
 			end

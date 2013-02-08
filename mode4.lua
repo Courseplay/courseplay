@@ -1,6 +1,5 @@
 function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill_level, last_recordnumber)
 	local workTool = self.tippers[1] -- to do, quick, dirty and unsafe
-	local IsFoldable = SpecializationUtil.hasSpecialization(Foldable, workTool.specializations)
 
 	workArea = (self.recordnumber > self.startWork) and (self.recordnumber < self.stopWork)
 	-- Beginn Work
@@ -25,8 +24,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill
 
 
 	-- stop while folding
-
-	if IsFoldable then
+	if courseplay:isFoldable(workTool) then
 		for k, foldingPart in pairs(workTool.foldingParts) do
 			local charSet = foldingPart.animCharSet;
 			local animTime = nil
@@ -52,7 +50,8 @@ function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill
 
 	local is_ux5200 = workTool.state ~= nil and workTool.state.isTurnedOn ~= nil
 
-	if workArea and fill_level ~= 0 and self.abortWork == nil then
+	if workArea and fill_level ~= 0 and (self.abortWork == nil or self.runOnceStartCourse) then
+		self.runOnceStartCourse = false;
 		workSpeed = true
 		if is_ux5200 then
 			if workTool.state.isTurnedOn ~= true then
@@ -69,12 +68,33 @@ function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill
 				workTool:setStateEvent("Done", "ex", true)
 			end
 		else
-			if IsFoldable then
-				workTool:setFoldDirection(self.fold_move_direction * -1)
-			end
 			if allowedToDrive then
-				workTool:setIsTurnedOn(true, false)
-			end
+				--unfold
+				if courseplay:isFoldable(workTool) then
+					workTool:setFoldDirection(-1);
+				end;
+				
+				--stow ridge markers
+				if courseplay:is_sowingMachine(workTool) then
+					workTool:setRidgeMarkerState(0);
+
+				end;
+
+				--lower
+				if workTool.needsLowering and workTool.aiNeedsLowering then
+					self:setAIImplementsMoveDown(true);
+				end;
+
+				--turn on
+				if workTool.setIsTurnedOn ~= nil then
+					workTool:setIsTurnedOn(true, false);
+				end;
+
+				--stow ridge markers again. Just for kicks. And safety.
+				if courseplay:is_sowingMachine(workTool) then
+					workTool:setRidgeMarkerState(0);
+				end;
+			end;
 		end
 	else
 		workSpeed = false
@@ -91,10 +111,20 @@ function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill
 				workTool:setIsTurnedOn(false, false)
 			end
 		else
-			if IsFoldable then
-				workTool:setFoldDirection(self.fold_move_direction)
-			end
-			workTool:setIsTurnedOn(false, false)
+			--turn off
+			if workTool.setIsTurnedOn ~= nil then
+				workTool:setIsTurnedOn(false, false);
+			end;
+
+			--raise
+			if workTool.needsLowering and workTool.aiNeedsLowering then
+				self:setJointMoveDown(workTool.jointDescIndex, false, false);
+			end;
+
+			--fold
+			if courseplay:isFoldable(workTool) then
+				workTool:setFoldDirection(1);
+			end;
 		end
 	end
 

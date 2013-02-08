@@ -86,7 +86,7 @@ function courseplay:start(self)
 		end
 	end
 
-	if self.recordnumber > 2 then
+	if self.recordnumber > 2 and self.ai_mode ~= 4 then
 		self.loaded = true
 	end
 
@@ -98,6 +98,7 @@ function courseplay:start(self)
 	self.disableCharacterOnLeave = false
 	-- ok i am near the waypoint, let's go
 	self.checkSpeedLimit = false
+	self.runOnceStartCourse = true;
 	self.drive = true
 
 	self.orgRpm = {}

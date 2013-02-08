@@ -1,6 +1,7 @@
 -- drives recored course
 function courseplay:drive(self, dt)
 	local refSpeed;
+
 	-- combine self unloading
 	if self.ai_mode == 7 then
 		local state = self.ai_state
@@ -215,10 +216,12 @@ function courseplay:drive(self, dt)
 				if self.grainTankFillLevel > 0 then
 					--courtesy of Thomas Gärtner
 					self.setPipeState(self, 2)
+					-- TODO: self:setPipeState(2);
 					self.global_info_text = courseplay:get_locale(self, "CPReachedOverloadPoint") --'hat Überladepunkt erreicht.'
 				else
 					--courtesy of Thomas Gärtner
 					self.setPipeState(self, 1)
+					-- TODO: self:setPipeState(1);
 					self.wait = false
 					self.unloaded = true
 				end
@@ -277,24 +280,38 @@ function courseplay:drive(self, dt)
 				if self.tippers ~= nil then
 					for i = 1, table.getn(self.tippers) do
 						local activeTool = self.tippers[i]
-						if fill_level < 100 and activeTool.sprayerFillTriggers ~= nil and table.getn(activeTool.sprayerFillTriggers) > 0 then
-							allowedToDrive = false
-							self.info_text = string.format(courseplay:get_locale(self, "CPloading"), tipper_fill_level, tipper_capacity)
-							local sprayer = activeTool.sprayerFillTriggers[1]
-							activeTool:setIsSprayerFilling(true, sprayer.fillType, sprayer.isSiloTrigger, false)
-							if sprayer.trailerInTrigger == activeTool then ----- feldrant container gülle bomber
-								sprayer.fill = true
-							end
-						end
-						if MapBGA ~= nil then
-							for i = 1, table.getn(MapBGA.ModEvent.bunkers) do --support Heady�s BGA
-								if fill_level < 100 and MapBGA.ModEvent.bunkers[i].manure.trailerInTrigger == activeTool then
-									self.info_text = "BGA LADEN"
-									allowedToDrive = false
-									MapBGA.ModEvent.bunkers[i].manure.fill = true
+						
+						if not courseplay:is_sowingMachine(activeTool) then --sprayer
+							if fill_level < 100 and activeTool.sprayerFillTriggers ~= nil and table.getn(activeTool.sprayerFillTriggers) > 0 then
+								allowedToDrive = false
+								self.info_text = string.format(courseplay:get_locale(self, "CPloading"), tipper_fill_level, tipper_capacity)
+								local sprayer = activeTool.sprayerFillTriggers[1]
+								activeTool:setIsSprayerFilling(true, sprayer.fillType, sprayer.isSiloTrigger, false)
+								if sprayer.trailerInTrigger == activeTool then ----- feldrant container gülle bomber
+									sprayer.fill = true
 								end
 							end
-						end
+
+							if MapBGA ~= nil then
+								for i = 1, table.getn(MapBGA.ModEvent.bunkers) do --support Heady�s BGA
+									if fill_level < 100 and MapBGA.ModEvent.bunkers[i].manure.trailerInTrigger == activeTool then
+										self.info_text = "BGA LADEN"
+										allowedToDrive = false
+										MapBGA.ModEvent.bunkers[i].manure.fill = true
+									end
+								end
+							end
+						end;
+						
+						if courseplay:is_sowingMachine(activeTool) then --sowing machine
+							if fill_level < 100 and activeTool.sowingMachineFillTriggers[1] ~= nil then
+								activeTool:setIsSowingMachineFilling(true, activeTool.sowingMachineFillTriggers[1].isEnabled, false);
+								allowedToDrive = false;
+							end;
+							if activeTool.fillLevel == activeTool.capacity then
+								allowedToDrive = true;
+							end;
+						end;
 					end
 				end
 			end
@@ -420,7 +437,6 @@ function courseplay:drive(self, dt)
 
 	-- stop or hold position
 	if not allowedToDrive then
-
 		self.motor:setSpeedLevel(0, false);
 
 		if g_server ~= nil then
@@ -434,9 +450,8 @@ function courseplay:drive(self, dt)
 
 
 	-- which speed?
-	local ref_speed = nil
 	local slowEnd = self.ai_mode == 2 and self.recordnumber > self.maxnumber - 3;
-	local slowStart_lvl2 = self.ai_mode == 2 and self.recordnumber < 3;
+	local slowStart_lvl2 = (self.ai_mode == 2 or self.ai_mode == 3) and self.recordnumber < 3;
 	local slowStartEnd = self.ai_mode ~= 2 and self.ai_mode ~= 3 and self.ai_mode ~= 4 and self.ai_mode ~= 6 and (self.recordnumber > self.maxnumber - 3 or self.recordnumber < 3)
 	local slowDownWP = false
 	local slowDownRev = false
@@ -470,6 +485,8 @@ function courseplay:drive(self, dt)
 	if slowDownRev and refSpeed > self.turn_speed then
 		refSpeed = self.turn_speed
 	end
+
+
 	self.cpTrafficBrake = false
 	if self.traffic_vehicle_in_front ~= nil then
 		local vehicle_in_front = g_currentMission.nodeToVehicle[self.traffic_vehicle_in_front];
@@ -479,8 +496,9 @@ function courseplay:drive(self, dt)
 			self.CPnumCollidingVehicles = math.max(self.CPnumCollidingVehicles-1, 0);
 			return
 		end
+
 		local x, y, z = getWorldTranslation(self.traffic_vehicle_in_front)
-		x1, y1, z1 = worldToLocal(self.rootNode, x, y, z)
+		local x1, y1, z1 = worldToLocal(self.rootNode, x, y, z)
 		if z1 < 0 or math.abs(x1) > 2 then -- vehicle behind tractor
 			vehicleBehind = true
 		end
@@ -653,9 +671,6 @@ function courseplay:check_traffic(self, display_warnings, allowedToDrive)
 	
 	--courseplay:debug(table.show(self), 4)
 	if self.CPnumCollidingVehicles ~= nil and self.CPnumCollidingVehicles > 0 then
-		print("CPnumCollidingVehicles:  "..tostring(self.CPnumCollidingVehicles))
-		print("self.traffic_vehicle_in_front: "..tostring(self.traffic_vehicle_in_front))
-		print("name: "..tostring(self.traffic_vehicle_in_front))
 		if vehicle_in_front ~= nil then
 			x1, y1, z1 = worldToLocal(self.traffic_vehicle_in_front, x, y, z)
 			if z1 > 0 then -- tractor in front of vehicle face2face 
@@ -672,6 +687,7 @@ function courseplay:check_traffic(self, display_warnings, allowedToDrive)
 	if display_warnings and in_traffic then
 		self.global_info_text = courseplay:get_locale(self, "CPInTraffic") --' steckt im Verkehr fest'
 	end
+
 	return allowedToDrive
 end
 

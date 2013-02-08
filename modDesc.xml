@@ -145,9 +145,9 @@
 			<fr>Type: Transbordeur (Dechargement de la Batteuse)</fr>
 		</text>
 		<text name="CourseMode4">
-			<en>Type: fertilice</en>
-			<de>Typ: Düngen</de>
-			<fr>Type: Fertiliser</fr>
+			<en>Type: fertilice and seeding</en>
+			<de>Typ: Düngen und Säen</de>
+			<fr>Type: Fertiliser et semer</fr>
 		</text>
 		<text name="CourseMode5">
 			<en>Type: Target (drive from start to finish)</en>

@@ -3,7 +3,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 	local active_tipper = nil
 	if self.attachedCutters ~= nil then
 		for cutter, implement in pairs(self.attachedCutters) do
-			AICombine.addCutterTrigger(self, cutter);
+			--AICombine.addCutterTrigger(self, cutter);
 		end;
 	end
 	workArea = (self.recordnumber > self.startWork) and (self.recordnumber < self.stopWork)
@@ -19,6 +19,32 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 
 	-- worktool defined above
 	if workTool ~= nil then
+
+		-- stop while folding
+		if courseplay:isFoldable(workTool) then
+			for k, foldingPart in pairs(workTool.foldingParts) do
+				local charSet = foldingPart.animCharSet;
+				local animTime = nil
+				if charSet ~= 0 then
+					animTime = getAnimTrackTime(charSet, 0);
+				else
+					animTime = workTool:getRealAnimationTime(foldingPart.animationName);
+				end;
+
+				if animTime ~= nil then
+					if workTool.foldMoveDirection > 0.1 then
+						if animTime < foldingPart.animDuration then
+							allowedToDrive = false;
+						end;
+					else
+						if animTime > 0 then
+							allowedToDrive = false;
+						end;
+					end;
+				end;
+			end;
+		end;
+
 		-- balers
 		if courseplay:is_baler(workTool) then
 			if self.recordnumber >= self.startWork then
@@ -43,10 +69,8 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 			end
 		else
 			-- baleloader, copied original code parts				
-			local is_ubt = workTool.numAttacherParts ~= nil and workTool.baleType ~= nil
-
-			if SpecializationUtil.hasSpecialization(BaleLoader, workTool.specializations) or is_ubt then
-				if workArea and not is_ubt then
+			if SpecializationUtil.hasSpecialization(BaleLoader, workTool.specializations) or courseplay:isUBT(workTool) then
+				if workArea and not courseplay:isUBT(workTool) then
 					-- automatic stop for baleloader
 					if workTool.grabberIsMoving or workTool:getIsAnimationPlaying("rotatePlatform") then
 						allowedToDrive = false
@@ -59,7 +83,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 					end
 				end
 
-				if not is_ubt then
+				if not courseplay:isUBT(workTool) then
 					if (fill_level == 100 and self.maxnumber ~= self.stopWork or self.recordnumber == self.stopWork) and workTool.isInWorkPosition and not workTool:getIsAnimationPlaying("rotatePlatform") then
 						workTool.grabberIsMoving = true
 						workTool.isInWorkPosition = false
@@ -73,7 +97,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 					self.global_info_text = courseplay:get_locale(self, "CPReadyUnloadBale") --'bereit zum entladen'
 				end
 
-				if is_ubt then
+				if courseplay:isUBT(workTool) then
 					if (workTool.fillLevel == workTool.fillLevelMax or fill_level == 100) and self.maxnumber == self.stopWork then
 						allowedToDrive = false
 						self.global_info_text = "UBT "..courseplay:get_locale(self, "CPReadyUnloadBale") --'UBT bereit zum entladen'
@@ -106,70 +130,101 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 
 				-- other worktools, tippers, e.g. forage wagon	
 				-- start/stop worktool
-				if workArea and fill_level ~= 100 and (self.abortWork == nil and last_recordnumber == self.startWork or self.abortWork ~= nil and last_recordnumber == self.abortWork - 4) then
+				if workArea and fill_level ~= 100 and ((self.abortWork == nil and last_recordnumber == self.startWork) or (self.abortWork ~= nil and last_recordnumber == self.abortWork - 4) or (self.runOnceStartCourse)) then
+					--activate/lower/unfold workTool also when activating from within course (not only at start)
+					self.runOnceStartCourse = false;
+					
 					--workSpeed = true
 					if allowedToDrive then
+						--unfold
+						if courseplay:isFoldable(workTool) then
+							workTool:setFoldDirection(-1);
+						end;
+
+						--lower
+						if workTool.needsLowering and workTool.aiNeedsLowering then
+							self:setAIImplementsMoveDown(true);
+						end;
+					
+						--turn on
 						if workTool.setIsTurnedOn ~= nil then
-							workTool:setIsTurnedOn(true, false)
+							workTool:setIsTurnedOn(true, false);
 							if workTool.setIsPickupDown ~= nil then
-								workTool:setIsPickupDown(true, false)
-							end
+								workTool:setIsPickupDown(true, false);
+							end;
 						elseif workTool.isTurnedOn ~= nil and workTool.pickupDown ~= nil then
 							-- Krone ZX - planet-ls.de
-							workTool.isTurnedOn = true
-							workTool.pickupDown = true
-							workTool:updateSendEvent()
-						end
+							workTool.isTurnedOn = true;
+							workTool.pickupDown = true;
+							workTool:updateSendEvent();
+						end;
 					end
 				elseif not workArea or fill_level == 100 or self.abortWork ~= nil or last_recordnumber == self.stopWork then
 					workSpeed = false
+					
+					--turn off
 					if workTool.setIsTurnedOn ~= nil then
-						workTool:setIsTurnedOn(false, false)
+						workTool:setIsTurnedOn(false, false);
 						if workTool.setIsPickupDown ~= nil then
-							workTool:setIsPickupDown(false, false)
+							workTool:setIsPickupDown(false, false);
 						end
 					elseif workTool.isTurnedOn ~= nil and workTool.pickupDown ~= nil then
 						-- Krone ZX - planet-ls.de
-						workTool.isTurnedOn = false
-						workTool.pickupDown = false
-						workTool:updateSendEvent()
-					end
-				end
+						workTool.isTurnedOn = false;
+						workTool.pickupDown = false;
+						workTool:updateSendEvent();
+					end;
+
+					--raise
+					if workTool.needsLowering and workTool.aiNeedsLowering then
+						self:setAIImplementsMoveDown(false);
+					end;
+
+					--fold
+					if courseplay:isFoldable(workTool) then
+						workTool:setFoldDirection(1);
+					end;
+				end;
+
 				-- done tipping
 				local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
-				if self.unloading_tipper ~= nil and self.unloading_tipper.fillLevel == 0 then
-					self.unloading_tipper = nil
 
-					if tipper_fill_level == 0 then
-						self.unloaded = true
-						self.max_speed_level = 3
-						self.currentTipTrigger = nil
-					end
-				end
+				if tipper_fill_level ~= nil and tipper_capacity ~= nil then
+					if self.unloading_tipper ~= nil and self.unloading_tipper.fillLevel == 0 then
+						self.unloading_tipper = nil
 
-				-- damn, i missed the trigger!
-				if self.currentTipTrigger ~= nil then
-					local trigger_id = self.currentTipTrigger.triggerId
-
-					if self.currentTipTrigger.specialTriggerId ~= nil then
-						trigger_id = self.currentTipTrigger.specialTriggerId
+						if tipper_fill_level == 0 then
+							self.unloaded = true
+							self.max_speed_level = 3
+							self.currentTipTrigger = nil
+						end
 					end
 
-					local trigger_x, trigger_y, trigger_z = getWorldTranslation(trigger_id)
-					local ctx, cty, ctz = getWorldTranslation(self.rootNode);
-					local distance_to_trigger = courseplay:distance(ctx, ctz, trigger_x, trigger_z)
-					if distance_to_trigger > 60 then
-						self.currentTipTrigger = nil
-					end
-				end
+					-- damn, i missed the trigger!
+					if self.currentTipTrigger ~= nil then
+						local trigger_id = self.currentTipTrigger.triggerId
 
-				-- tipper is not empty and tractor reaches TipTrigger
-				if tipper_fill_level > 0 and self.currentTipTrigger ~= nil and self.recordnumber > 3 then
-					self.max_speed_level = 1
-					allowedToDrive, active_tipper = courseplay:unload_tippers(self)
-					self.info_text = courseplay:get_locale(self, "CPTriggerReached") -- "Abladestelle erreicht"		
-				end
-				-- Beginn Work
+						if self.currentTipTrigger.specialTriggerId ~= nil then
+							trigger_id = self.currentTipTrigger.specialTriggerId
+						end
+
+						local trigger_x, trigger_y, trigger_z = getWorldTranslation(trigger_id)
+						local ctx, cty, ctz = getWorldTranslation(self.rootNode);
+						local distance_to_trigger = courseplay:distance(ctx, ctz, trigger_x, trigger_z)
+						if distance_to_trigger > 60 then
+							self.currentTipTrigger = nil
+						end
+					end
+
+					-- tipper is not empty and tractor reaches TipTrigger
+					if tipper_fill_level > 0 and self.currentTipTrigger ~= nil and self.recordnumber > 3 then
+						self.max_speed_level = 1
+						allowedToDrive, active_tipper = courseplay:unload_tippers(self)
+						self.info_text = courseplay:get_locale(self, "CPTriggerReached") -- "Abladestelle erreicht"		
+					end
+				end;
+
+				-- Begin Work
 				if last_recordnumber == self.startWork and fill_level ~= 100 then
 					if self.abortWork ~= nil then
 						self.recordnumber = self.abortWork - 4

@@ -61,6 +61,7 @@ function courseplay:load(xmlFile)
 	self.auto_combine_offset = true
 	self.mouse_right_key_enabled = true
 	self.drive = false
+	self.runOnceStartCourse = false;
 	self.StopEnd = false
 	self.lastGui = nil
 	self.currentGui = nil
@@ -205,6 +206,7 @@ function courseplay:load(xmlFile)
 	self.courseListPrev = false;
 	self.courseListNext = table.getn(g_currentMission.courseplay_courses) > 5;
 
+	
 	-- traffic collision	
 	self.onTrafficCollisionTrigger = courseplay.cponTrafficCollisionTrigger;
 	--self.aiTrafficCollisionTrigger = Utils.indexToObject(self.components, getXMLString(xmlFile, "vehicle.aiTrafficCollisionTrigger#index"));
@@ -625,6 +627,7 @@ function courseplay:readStream(streamId, connection)
 	self.recordnumber = streamDebugReadInt32(streamId)
 	self.required_fill_level_for_drive_on = streamDebugReadFloat32(streamId)
 	self.required_fill_level_for_follow = streamDebugReadFloat32(streamId)
+	self.runOnceStartCourse = streamDebugReadBool(streamId)
 	self.save_name = streamDebugReadBool(streamId)
 	self.search_combine = streamDebugReadBool(streamId)
 	self.selected_combine_number = streamDebugReadInt32(streamId)
@@ -734,6 +737,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteInt32(streamId,self.recordnumber)
 	streamDebugWriteFloat32(streamId,self.required_fill_level_for_drive_on)
 	streamDebugWriteFloat32(streamId,self.required_fill_level_for_follow)
+	streamDebugWriteBool(streamId, self.runOnceStartCourse)
 	streamDebugWriteBool(streamId,self.save_name)
 	streamDebugWriteBool(streamId,self.search_combine)
 	streamDebugWriteInt32(streamId,self.selected_combine_number)
