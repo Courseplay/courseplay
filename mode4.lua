@@ -118,7 +118,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill
 
 			--raise
 			if workTool.needsLowering and workTool.aiNeedsLowering then
-				self:setJointMoveDown(workTool.jointDescIndex, false, false);
+				self:setAIImplementsMoveDown(false);
 			end;
 
 			--fold
