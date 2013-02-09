@@ -547,8 +547,12 @@ function courseplay:drive(self, dt)
 	end
 
 	-- Speed Control
+	
 	courseplay:setSpeed(self, refSpeed, self.sl)
-
+		
+	if self.ESLimiter ~= nil and self.ESLimiter.maxRPM[5] == nil then
+		self.info_text = courseplay:get_locale(self, "CPWrongESLversion")
+	end
 	
 	-- where to drive?
 	local fwd = nil
@@ -759,9 +763,10 @@ function courseplay:setSpeed(self, refSpeed, sl)
 		elseif newLimit < 0 then
 			newLimit = 0
 		end
-		
-		if self.ESLimiter ~= nil then
+		if self.ESLimiter ~= nil and self.ESLimiter.maxRPM[5] ~= nil then
 			self:setNewLimit(self.sl+1, newLimit , false, true)
+		elseif self.ESLimiter ~= nil and self.ESLimiter.maxRPM[5] == nil then
+			--ESlimiter < V3
 		else
 			local maxRpm = newLimit * self.orgRpm[3]/100
 			
@@ -773,6 +778,9 @@ function courseplay:setSpeed(self, refSpeed, sl)
 			end
 			self.motor.maxRpm[self.sl]= maxRpm
 		end
+
+
+
 		self.lastSpeedSave = self.lastSpeedReal*3600
 	end
 end

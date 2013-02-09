@@ -664,6 +664,11 @@
 			<de>falscher Trailer für diesen Modus</de>
 			<fr>pas la bonne remorque pour ce mode</fr>
 		</text>
+		<text name="CPWrongESLversion">
+			<en>ESLimiter version is not supported</en>
+			<de>ESLimiter-Version wird nicht unterstützt</de>
+			<fr>missing french translation</fr>
+		</text>
 		<text name="CPSettings">
 			<en>Settings</en>
 			<de>Allgemeine Einstellungen</de>
