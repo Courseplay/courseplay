@@ -280,8 +280,7 @@ function courseplay:unload_combine(self, dt)
 	end
 
 	if mode == 2 then -- Drive to Combine or Cornchopper
-
-		self.sl = 3
+		self.sl = 2
 		refSpeed = self.field_speed
 		--courseplay:remove_from_combines_ignore_list(self, combine)
 		self.info_text = courseplay:get_locale(self, "CPDriveBehinCombine") -- ""
@@ -615,38 +614,61 @@ function courseplay:unload_combine(self, dt)
 
 		-- refspeed depends on the distance to the combine
 		local combine_speed = combine.lastSpeed
-
-		if lz > 5 then
-			refSpeed = self.field_speed
-		elseif lz < -3 then
-			refSpeed = combine_speed / 2
-		elseif combine.sentPipeIsUnloading ~= true and not cornChopper then  --!!!
-			refSpeed = combine_speed + (2/3600) 
-		else
-			refSpeed = combine_speed
-		end
-		courseplay:debug("combine.sentPipeIsUnloading: "..tostring(combine.sentPipeIsUnloading).." refSpeed:  "..tostring(refSpeed*3600).." combine_speed:  "..tostring(combine_speed*3600),3)  
-		self.sl = 2
-
-		if (combine.turnStage ~= 0 and lz < 20) or self.timer < self.drive_slow_timer then
-			refSpeed = 1 / 3600
-			self.sl = 1
-			if self.ESLimiter == nil then
-				self.motor.maxRpm[self.sl] = 200
-			end --!!!
-			if combine.turnStage ~= 0 then
-				self.drive_slow_timer = self.timer + 2000
+		if cornChopper then
+			self.sl = 2
+			if lz > 20 then
+				refSpeed = self.field_speed
+				--print("refSpeed = self.field_speed")
+			elseif lz > 4 and (combine_speed*3600) > 5 then
+				refSpeed = combine_speed *1.5
+				--print("refSpeed = combine_speed *1.5")
+			elseif lz > 10 then
+				refSpeed = self.turn_speed
+				--print("refSpeed = self.turn_speed")
+			elseif lz < -1 then
+				refSpeed = combine_speed / 2
+			else
+				refSpeed = combine_speed
+				--print("refSpeed = combine_speed")
+			end
+			if (combine.turnStage ~= 0 and lz < 20) then
+				refSpeed = 1 / 3600
+				self.sl = 1
+				if self.ESLimiter == nil then
+					self.motor.maxRpm[self.sl] = 200
+				end 
 			end
 		else
 			self.sl = 2
-		end
-
-		if combine.movingDirection == 0 then
-			refSpeed = self.field_speed * 1.5
-			if mode == 3 and dod < 20 and cornChopper then
-				refSpeed = 1 / 3600 
+			if lz > 5 then
+				refSpeed = self.field_speed
+			elseif lz < -3 then
+				refSpeed = combine_speed / 2
+			elseif combine.sentPipeIsUnloading ~= true  then  
+				refSpeed = combine_speed + (2/3600) 
+			else
+				refSpeed = combine_speed
+			end
+			if combine.movingDirection == 0 then
+				refSpeed = self.field_speed * 1.5
+			end
+			if (combine.turnStage ~= 0 and lz < 20) or self.timer < self.drive_slow_timer then
+				refSpeed = 4 / 3600
+				self.sl = 1
+				if self.ESLimiter == nil then
+					self.motor.maxRpm[self.sl] = 200
+				end --!!!
+				if combine.turnStage ~= 0 then
+					self.drive_slow_timer = self.timer + 2000
+				end
 			end
 		end
+
+		--print(tostring(lz))	
+		--print("refSpeed:  "..tostring(refSpeed*3600))
+		--print("end")
+		courseplay:debug("combine.sentPipeIsUnloading: "..tostring(combine.sentPipeIsUnloading).." refSpeed:  "..tostring(refSpeed*3600).." combine_speed:  "..tostring(combine_speed*3600),3)  
+
 		---------------------------------------------------------------------
 	end -- end mode 3 or 4
 
