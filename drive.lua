@@ -170,6 +170,7 @@ function courseplay:drive(self, dt)
 		DirectionNode = self.aiTreshingDirectionNode;
 	end;
 	local nx, ny, nz = localDirectionToWorld(DirectionNode, 0, 0, 1)
+	
 	-- the tipper that is currently loaded/unloaded
 	local active_tipper = nil
 
@@ -637,7 +638,7 @@ end
 
 
 function courseplay:set_traffc_collision(self, lx, lz)
-	local maxlx = 0.7071067; --math.sin(maxAngle);
+	local maxlx = 0.5; --math.sin(maxAngle); --sin30°  old was : 0.7071067 sin 45°
 	local colDirX = lx;
 	local colDirZ = lz;
 	if colDirX > maxlx then
@@ -649,6 +650,18 @@ function courseplay:set_traffc_collision(self, lx, lz)
 		colDirZ = 0.4;
 	end;
 	--courseplay:debug(string.format("colDirX: %f colDirZ %f ",colDirX,colDirZ ), 2)
+					
+					if CPDebugLevel >0 then	
+						local x,y,z = getWorldTranslation(self.aiTrafficCollisionTrigger)
+						local x1,y1,z1 = localToWorld(self.aiTrafficCollisionTrigger, colDirX*5 , 0, colDirZ*5 )
+						local x2,y2,z2 = localToWorld(self.aiTrafficCollisionTrigger, (colDirX*5)+ 1.5 , 0, colDirZ*5 )
+						local x3,y3,z3 = localToWorld(self.aiTrafficCollisionTrigger, (colDirX*5)-1.5 , 0, colDirZ*5 )
+						drawDebugPoint(x2, y, z2, 1, 1, 0, 1);
+						drawDebugPoint(x3, y, z3, 1, 1, 0, 1);
+						drawDebugLine(x, y, z, 1, 0, 0, x1, y, z1, 1, 0, 0);
+					end
+
+
 
 	if self.aiTrafficCollisionTrigger ~= nil and g_server ~= nil then
 		local DirectionNode = nil;
@@ -677,7 +690,7 @@ function courseplay:check_traffic(self, display_warnings, allowedToDrive)
 				ahead = true
 			end
 			if vehicle_in_front.lastSpeed*3600 < 1 or ahead then
-				courseplay:debug("colliding", 2)
+				--courseplay:debug("colliding", 2)
 				allowedToDrive = false;
 				in_traffic = true
 			end

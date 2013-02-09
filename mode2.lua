@@ -667,7 +667,7 @@ function courseplay:unload_combine(self, dt)
 		--print(tostring(lz))	
 		--print("refSpeed:  "..tostring(refSpeed*3600))
 		--print("end")
-		courseplay:debug("combine.sentPipeIsUnloading: "..tostring(combine.sentPipeIsUnloading).." refSpeed:  "..tostring(refSpeed*3600).." combine_speed:  "..tostring(combine_speed*3600),3)  
+		--courseplay:debug("combine.sentPipeIsUnloading: "..tostring(combine.sentPipeIsUnloading).." refSpeed:  "..tostring(refSpeed*3600).." combine_speed:  "..tostring(combine_speed*3600),3)  
 
 		---------------------------------------------------------------------
 	end -- end mode 3 or 4

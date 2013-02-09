@@ -215,6 +215,7 @@ function courseplay:load(xmlFile)
 	self.CPnumCollidingVehicles = 0;
 	--	self.numToolsCollidingVehicles = {};
 	--	self.trafficCollisionIgnoreList = {};
+	self.cpTrafficCollisionIgnoreList = {};
 	--	for k,v in pairs(self.components) do
 	--	  self.trafficCollisionIgnoreList[v.node] = true;
 	--	end;

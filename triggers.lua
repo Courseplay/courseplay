@@ -13,8 +13,22 @@ function courseplay:cponTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 				self.CPnumCollidingVehicles = math.max(self.CPnumCollidingVehicles - 1, 0);
 			end;
 		else
+			courseplay:debug("found trigger",1)
 			local vehicle = g_currentMission.nodeToVehicle[otherId];
-			if vehicle ~= nil and self.trafficCollisionIgnoreList[otherId] == nil then
+			local vehicleConcerned = g_currentMission.nodeToVehicle[otherId]
+			local vehicleOnList = false
+			if vehicle ~= nil then
+				courseplay:debug("checking CollisionIgnoreList",1)
+				for a,b in pairs (self.cpTrafficCollisionIgnoreList) do
+					print(tostring(g_currentMission.nodeToVehicle[a].id).." vs "..tostring(vehicleConcerned.id))
+					if g_currentMission.nodeToVehicle[a].id == vehicleConcerned.id then
+						courseplay:debug(tostring(vehicleConcerned.name).." is on list",1)
+						vehicleOnList = true
+						break		
+					end
+				end
+			end
+			if vehicle ~= nil and self.trafficCollisionIgnoreList[otherId] == nil and vehicleOnList == false then
 				if onEnter then
 					self.traffic_vehicle_in_front = otherId
 					self.CPnumCollidingVehicles = self.CPnumCollidingVehicles + 1;
