@@ -496,14 +496,13 @@ function courseplay:drive(self, dt)
 			self.traffic_vehicle_in_front = nil
 			self.CPnumCollidingVehicles = math.max(self.CPnumCollidingVehicles-1, 0);
 			return
-		end
-
+		end  --!!!
 		local x, y, z = getWorldTranslation(self.traffic_vehicle_in_front)
 		local x1, y1, z1 = worldToLocal(self.rootNode, x, y, z)
 		if z1 < 0 or math.abs(x1) > 2 then -- vehicle behind tractor
 			vehicleBehind = true
 		end
-		if courseplay:distance_to_object(self, vehicle_in_front) > 40 or vehicleBehind then
+		if vehicle_in_front.rootNode == nil or vehicle_in_front.lastSpeed == nil or courseplay:distance_to_object(self, vehicle_in_front) > 40 or vehicleBehind then  --!!!
 			self.traffic_vehicle_in_front = nil
 		else
 			if allowedToDrive then 
