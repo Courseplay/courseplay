@@ -1,7 +1,5 @@
 -- drives recored course
 function courseplay:drive(self, dt)
-	local refSpeed;
-
 	-- combine self unloading
 	if self.ai_mode == 7 then
 		local state = self.ai_state
@@ -420,14 +418,15 @@ function courseplay:drive(self, dt)
 	end
 
 	-- Mode 6 Fieldwork for balers and foragewagon
-	if self.ai_mode == 6 and self.startWork ~= nil and self.stopWork ~= nil then
+	
+	if self.ai_mode == 6 and self.startWork ~= nil and self.stopWork ~= nil and not workArea  and self.aiTrafficCollisionTrigger ~= nil and self.grainTankCapacity == nil then
 		-- is there a tipTrigger within 10 meters?
 		raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
 		if self.currentTipTrigger == nil then
-			raycastAll(tx+2, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
+			raycastAll(tx+self.tipRefOffset, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
 		end
 		if self.currentTipTrigger == nil then
-			raycastAll(tx-2, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
+			raycastAll(tx-self.tipRefOffset, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
 		end
 		allowedToDrive, workArea, workSpeed, active_tipper = courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill_level, last_recordnumber)
 	end
@@ -656,15 +655,15 @@ function courseplay:set_traffc_collision(self, lx, lz)
 	end;
 	--courseplay:debug(string.format("colDirX: %f colDirZ %f ",colDirX,colDirZ ), 2)
 					
-					if CPDebugLevel >0 then	
-						local x,y,z = getWorldTranslation(self.aiTrafficCollisionTrigger)
-						local x1,y1,z1 = localToWorld(self.aiTrafficCollisionTrigger, colDirX*5 , 0, colDirZ*5 )
-						local x2,y2,z2 = localToWorld(self.aiTrafficCollisionTrigger, (colDirX*5)+ 1.5 , 0, colDirZ*5 )
-						local x3,y3,z3 = localToWorld(self.aiTrafficCollisionTrigger, (colDirX*5)-1.5 , 0, colDirZ*5 )
-						drawDebugPoint(x2, y, z2, 1, 1, 0, 1);
-						drawDebugPoint(x3, y, z3, 1, 1, 0, 1);
-						drawDebugLine(x, y, z, 1, 0, 0, x1, y, z1, 1, 0, 0);
-					end
+	if CPDebugLevel >0 then	
+		local x,y,z = getWorldTranslation(self.aiTrafficCollisionTrigger)
+		local x1,y1,z1 = localToWorld(self.aiTrafficCollisionTrigger, colDirX*5 , 0, colDirZ*5 )
+		local x2,y2,z2 = localToWorld(self.aiTrafficCollisionTrigger, (colDirX*5)+ 1.5 , 0, colDirZ*5 )
+		local x3,y3,z3 = localToWorld(self.aiTrafficCollisionTrigger, (colDirX*5)-1.5 , 0, colDirZ*5 )
+		drawDebugPoint(x2, y, z2, 1, 1, 0, 1);
+		drawDebugPoint(x3, y, z3, 1, 1, 0, 1);
+		drawDebugLine(x, y, z, 1, 0, 0, x1, y, z1, 1, 0, 0);
+	end
 
 
 
