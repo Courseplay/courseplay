@@ -9,8 +9,11 @@ function courseplay:cponTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 		if otherId == Player.rootNode then
 			if onEnter then
 				self.CPnumCollidingVehicles = self.CPnumCollidingVehicles + 1;
-			elseif onLeave then
+				self.numCollidingVehicles[triggerId] = self.numCollidingVehicles[triggerId]+1;
+ 			elseif onLeave then
 				self.CPnumCollidingVehicles = math.max(self.CPnumCollidingVehicles - 1, 0);
+				self.numCollidingVehicles[triggerId] = math.max(self.numCollidingVehicles[triggerId]-1, 0);
+ 
 			end;
 		else
 			courseplay:debug("found trigger",1)
@@ -20,7 +23,7 @@ function courseplay:cponTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 			if vehicle ~= nil then
 				courseplay:debug("checking CollisionIgnoreList",1)
 				for a,b in pairs (self.cpTrafficCollisionIgnoreList) do
-					print(tostring(g_currentMission.nodeToVehicle[a].id).." vs "..tostring(vehicleConcerned.id))
+					courseplay:debug(tostring(g_currentMission.nodeToVehicle[a].id).." vs "..tostring(vehicleConcerned.id),1)
 					if g_currentMission.nodeToVehicle[a].id == vehicleConcerned.id then
 						courseplay:debug(tostring(vehicleConcerned.name).." is on list",1)
 						vehicleOnList = true
@@ -32,9 +35,11 @@ function courseplay:cponTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 				if onEnter then
 					self.traffic_vehicle_in_front = otherId
 					self.CPnumCollidingVehicles = self.CPnumCollidingVehicles + 1;
+					self.numCollidingVehicles[triggerId] = self.numCollidingVehicles[triggerId]+1;
 				elseif onLeave then
 					self.CPnumCollidingVehicles = math.max(self.CPnumCollidingVehicles - 1, 0);
-				end;
+					self.numCollidingVehicles[triggerId] = math.max(self.numCollidingVehicles[triggerId]-1, 0);
+ 				end;
 			end;
 		end;
 	end;

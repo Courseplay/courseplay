@@ -667,7 +667,7 @@
 		<text name="CPWrongESLversion">
 			<en>ESLimiter version is not supported</en>
 			<de>ESLimiter-Version wird nicht unterstützt</de>
-			<fr>missing french translation</fr>
+			<fr> la version du ESLimiter n'est pas compatible</fr>
 		</text>
 		<text name="CPSettings">
 			<en>Settings</en>

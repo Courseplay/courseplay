@@ -503,13 +503,15 @@ function courseplay:drive(self, dt)
 		if z1 < 0 or math.abs(x1) > 2 then -- vehicle behind tractor
 			vehicleBehind = true
 		end
-		if courseplay:distance_to_object(self, vehicle_in_front) > 30 or vehicleBehind then
+		if courseplay:distance_to_object(self, vehicle_in_front) > 40 or vehicleBehind then
 			self.traffic_vehicle_in_front = nil
 		else
-			if (self.lastSpeed*3600) - (vehicle_in_front.lastSpeed*3600) > 15 then
-				self.cpTrafficBrake = true
-			else
-				refSpeed = math.min(vehicle_in_front.lastSpeed,refSpeed)
+			if allowedToDrive then 
+				if (self.lastSpeed*3600) - (vehicle_in_front.lastSpeed*3600) > 15 then
+					self.cpTrafficBrake = true
+				else
+					refSpeed = math.min(vehicle_in_front.lastSpeed,refSpeed)
+				end
 			end
 		end
 	end
@@ -693,7 +695,7 @@ function courseplay:check_traffic(self, display_warnings, allowedToDrive)
 			if z1 > 0 then -- tractor in front of vehicle face2face 
 				ahead = true
 			end
-			if vehicle_in_front.lastSpeed*3600 < 1 or ahead then
+			if vehicle_in_front.lastSpeed == nil or vehicle_in_front.lastSpeed*3600 < 1 or ahead then
 				--courseplay:debug("colliding", 2)
 				allowedToDrive = false;
 				in_traffic = true
