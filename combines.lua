@@ -109,8 +109,6 @@ function courseplay:register_at_combine(self, combine)
 	local curFile = "combines.lua"
 	courseplay:debug(string.format("%s(%i): %s: registering at combine %s", curFile, debug.getinfo(1).currentline, self.name, combine.name), 2)
 	courseplay:debug(table.show(combine), 4)
-	
-
 	local num_allowed_courseplayers = 1
 	self.calculated_course = false
 	if combine.courseplayers == nil then
@@ -180,7 +178,8 @@ function courseplay:register_at_combine(self, combine)
 
 	courseplay:debug(string.format("%s(%i): %s is being checked in with %s", curFile, debug.getinfo(1).currentline, self.name, combine.name), 1)
 	combine.isCheckedIn = 1;
-
+	self.distanceToCombine = nil
+	self.combineID = nil
 	table.insert(combine.courseplayers, self)
 	self.courseplay_position = table.getn(combine.courseplayers)
 	self.active_combine = combine
@@ -266,10 +265,7 @@ function courseplay:register_at_combine(self, combine)
 			end
 		end
 	end
-
 	courseplay:add_to_combines_ignore_list(self, combine)
-	self.trafficCollisionIgnoreList[combine.rootNode] = true
-
 	return true
 end
 
