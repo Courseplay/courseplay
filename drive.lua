@@ -437,8 +437,8 @@ function courseplay:drive(self, dt)
 
 	-- stop or hold position
 	if not allowedToDrive then
-		self.motor:setSpeedLevel(0, false);
-
+		--self.motor:setSpeedLevel(0, false);
+		AIVehicleUtil.driveInDirection(self, dt, 30, 0, 0, 28, false, moveForwards, nil, nil)
 		if g_server ~= nil then
 			AIVehicleUtil.driveInDirection(self, dt, self.steering_angle, 0.5, 0.5, 28, false, moveForwards, 0, 1)
 		end
@@ -498,22 +498,23 @@ function courseplay:drive(self, dt)
 		end  --!!!
 		local x, y, z = getWorldTranslation(self.traffic_vehicle_in_front)
 		local x1, y1, z1 = worldToLocal(self.rootNode, x, y, z)
-		if z1 < 0 or math.abs(x1) > 2 then -- vehicle behind tractor
+		if z1 < 0 or math.abs(x1) > 4 then -- vehicle behind tractor
 			vehicleBehind = true
 		end
-		if vehicle_in_front.rootNode == nil or vehicle_in_front.lastSpeed == nil or courseplay:distance_to_object(self, vehicle_in_front) > 40 or vehicleBehind then  --!!!
+		if vehicle_in_front.rootNode == nil or vehicle_in_front.lastSpeedReal == nil or courseplay:distance_to_object(self, vehicle_in_front) > 40 or vehicleBehind then  --!!!
 			self.traffic_vehicle_in_front = nil
 		else
 			if allowedToDrive then 
-				if (self.lastSpeed*3600) - (vehicle_in_front.lastSpeed*3600) > 15 then
+				if (self.lastSpeed*3600) - (vehicle_in_front.lastSpeedReal*3600) > 15 then
 					self.cpTrafficBrake = true
+				elseif vehicle_in_front.rootNode ~= nil and vehicle_in_front.lastSpeed ~= nil and courseplay:distance_to_object(self, vehicle_in_front) < 3 then
+					refSpeed = math.min(vehicle_in_front.lastSpeedReal -(3*3600),refSpeed)
 				else
-					refSpeed = math.min(vehicle_in_front.lastSpeed,refSpeed)
+					refSpeed = math.min(vehicle_in_front.lastSpeedReal,refSpeed)
 				end
 			end
 		end
 	end
-
 	--bunkerSilo speed by Thomas Gärtner
 	if self.currentTipTrigger ~= nil then
 		if self.currentTipTrigger.bunkerSilo ~= nil then
@@ -693,7 +694,7 @@ function courseplay:check_traffic(self, display_warnings, allowedToDrive)
 			if z1 > 0 then -- tractor in front of vehicle face2face 
 				ahead = true
 			end
-			if vehicle_in_front.lastSpeed == nil or vehicle_in_front.lastSpeed*3600 < 1 or ahead then
+			if vehicle_in_front.lastSpeedReal == nil or vehicle_in_front.lastSpeedReal*3600 < 5 or ahead then
 				--courseplay:debug("colliding", 2)
 				allowedToDrive = false;
 				in_traffic = true
