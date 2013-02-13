@@ -27,8 +27,7 @@ function courseplay:area_has_fruit(x, z, fruit_type)
 			if i ~= FruitUtil.FRUITTYPE_GRASS then
 
 				density = Utils.getFruitArea(i, x, z, x - widthX, z - widthZ, x + widthX, z + widthZ);
-
-				if density > 0 then
+                             	if density > 0 then
 					--courseplay:debug(string.format("checking x: %d z %d - density: %d", x, z, density ), 3)
 					return true
 				end
@@ -149,9 +148,9 @@ function courseplay:side_to_drive(self, combine, distance)
 	local leftFruit = 0
 	local rightFruit = 0
 
-	leftFruit = leftFruit + Utils.getFruitArea(combine.lastValidInputFruitType, lStartX, lStartZ, lWidthX, lWidthZ, lHeightX, lHeightZ)
+	leftFruit = leftFruit + Utils.getFruitArea(combine.lastValidInputFruitType, lStartX, lStartZ, lWidthX, lWidthZ, lHeightX, lHeightZ,true)
 
-	rightFruit = rightFruit + Utils.getFruitArea(combine.lastValidInputFruitType, rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ)
+	rightFruit = rightFruit + Utils.getFruitArea(combine.lastValidInputFruitType, rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ,true)
 
 	courseplay:debug(string.format("%s: fruit: left %f right %f", combine.name, leftFruit, rightFruit), 3)
 
