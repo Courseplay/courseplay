@@ -27,7 +27,8 @@ function courseplay:area_has_fruit(x, z, fruit_type)
 			if i ~= FruitUtil.FRUITTYPE_GRASS then
 
 				density = Utils.getFruitArea(i, x, z, x - widthX, z - widthZ, x + widthX, z + widthZ);
-                             	if density > 0 then
+
+				if density > 0 then
 					--courseplay:debug(string.format("checking x: %d z %d - density: %d", x, z, density ), 3)
 					return true
 				end

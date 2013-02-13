@@ -1,6 +1,7 @@
 -- drives recored course
 function courseplay:drive(self, dt)
 	local refSpeed = 0
+
 	-- combine self unloading
 	if self.ai_mode == 7 then
 		local state = self.ai_state
@@ -430,7 +431,7 @@ function courseplay:drive(self, dt)
 			if self.currentTipTrigger == nil then
 				raycastAll(tx-self.tipRefOffset, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
 			end
-		end
+		end;
 		allowedToDrive, workArea, workSpeed, active_tipper = courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill_level, last_recordnumber)
 	end
 
@@ -504,7 +505,7 @@ function courseplay:drive(self, dt)
 		if z1 < 0 or math.abs(x1) > 4 then -- vehicle behind tractor
 			vehicleBehind = true
 		end
-		if vehicle_in_front.rootNode == nil or vehicle_in_front.lastSpeedReal == nil or courseplay:distance_to_object(self, vehicle_in_front) > 40 or vehicleBehind then  --!!!
+		if vehicle_in_front.rootNode == nil or vehicle_in_front.lastSpeedReal == nil or (vehicle_in_front.rootNode ~= nil and courseplay:distance_to_object(self, vehicle_in_front) > 40) or vehicleBehind then  --!!!
 			self.traffic_vehicle_in_front = nil
 		else
 			if allowedToDrive then 
@@ -518,6 +519,7 @@ function courseplay:drive(self, dt)
 			end
 		end
 	end
+
 	--bunkerSilo speed by Thomas Gärtner
 	if self.currentTipTrigger ~= nil then
 		if self.currentTipTrigger.bunkerSilo ~= nil then
@@ -659,15 +661,15 @@ function courseplay:set_traffc_collision(self, lx, lz)
 	end;
 	--courseplay:debug(string.format("colDirX: %f colDirZ %f ",colDirX,colDirZ ), 2)
 					
-	if CPDebugLevel >0 then	
+	if CPDebugLevel > 0 then	
 		local x,y,z = getWorldTranslation(self.aiTrafficCollisionTrigger)
-		local x1,y1,z1 = localToWorld(self.aiTrafficCollisionTrigger, colDirX*5 , 0, colDirZ*5 )
+		local x1,y1,z1 = localToWorld(self.aiTrafficCollisionTrigger, colDirX*5, 0, colDirZ*5 )
 		local x2,y2,z2 = localToWorld(self.aiTrafficCollisionTrigger, (colDirX*5)+ 1.5 , 0, colDirZ*5 )
 		local x3,y3,z3 = localToWorld(self.aiTrafficCollisionTrigger, (colDirX*5)-1.5 , 0, colDirZ*5 )
 		drawDebugPoint(x2, y, z2, 1, 1, 0, 1);
 		drawDebugPoint(x3, y, z3, 1, 1, 0, 1);
 		drawDebugLine(x, y, z, 1, 0, 0, x1, y, z1, 1, 0, 0);
-	end
+	end;
 
 
 
@@ -767,6 +769,7 @@ function courseplay:setSpeed(self, refSpeed, sl)
 		elseif newLimit < 0 then
 			newLimit = 0
 		end
+
 		if self.ESLimiter ~= nil and self.ESLimiter.maxRPM[5] ~= nil then
 			self:setNewLimit(self.sl+1, newLimit , false, true)
 		elseif self.ESLimiter ~= nil and self.ESLimiter.maxRPM[5] == nil then
@@ -787,4 +790,4 @@ function courseplay:setSpeed(self, refSpeed, sl)
 
 		self.lastSpeedSave = self.lastSpeedReal*3600
 	end
-end
+end;

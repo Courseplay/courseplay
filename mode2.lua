@@ -404,6 +404,7 @@ function courseplay:unload_combine(self, dt)
 		if self.next_targets ~= nil then
 			self.next_targets = {}
 		end
+
 		if combine_fill_level == 0 then --combine empty set waypoints on the field !!!
 			local leftFruit, rightFruit = courseplay:side_to_drive(self, combine, -10)
 			local tempFruit

@@ -64,6 +64,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 	self.cpTrafficCollisionIgnoreList = {}
 	for k, implement in pairs(tractor_or_implement.attachedImplements) do
 		local object = implement.object
+
 		if self.ai_mode == 1 or self.ai_mode == 2 then
 			--	if SpecializationUtil.hasSpecialization(Trailer, object.specializations) then
 			if object.allowTipDischarge then
@@ -108,15 +109,15 @@ function courseplay:update_tools(self, tractor_or_implement)
 			tipper_attached = true
 		end
 		
-		courseplay:debug(string.format("courseplay:update_tools() (%s)", self.name),1);
+		courseplay:debug(string.format("courseplay:update_tools() (%s)", self.name), 2);
 
 		for k,v in pairs(self.components) do --TODO: self.components needed?
 			self.cpTrafficCollisionIgnoreList[v.node] = true;
 		end;
-		courseplay:debug(tostring(object.name).."- adding to cpTrafficCollisionIgnoreList",1)
+		courseplay:debug(tostring(object.name).."- adding to cpTrafficCollisionIgnoreList", 2)
 		self.cpTrafficCollisionIgnoreList[object.rootNode] = true;
 	end
-	if CPDebugLevel >0 then
+	if CPDebugLevel > 0 then
 		print(string.format("%s cpTrafficCollisionIgnoreList", self.name));
 		for a,b in pairs(self.cpTrafficCollisionIgnoreList) do
 			local name = g_currentMission.nodeToVehicle[a].name
