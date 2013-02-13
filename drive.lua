@@ -1,5 +1,6 @@
 -- drives recored course
 function courseplay:drive(self, dt)
+	local refSpeed = 0
 	-- combine self unloading
 	if self.ai_mode == 7 then
 		local state = self.ai_state
@@ -419,16 +420,14 @@ function courseplay:drive(self, dt)
 
 	-- Mode 6 Fieldwork for balers and foragewagon
 	
-	if self.ai_mode == 6 and self.startWork ~= nil and self.stopWork ~= nil then
-		if not workArea  and self.aiTrafficCollisionTrigger ~= nil and self.grainTankCapacity == nil then
-			-- is there a tipTrigger within 10 meters?
-			raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
-			if self.currentTipTrigger == nil then
-				raycastAll(tx+self.tipRefOffset, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
-			end
-			if self.currentTipTrigger == nil then
-				raycastAll(tx-self.tipRefOffset, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
-			end
+	if self.ai_mode == 6 and self.startWork ~= nil and self.stopWork ~= nil and not workArea  and self.aiTrafficCollisionTrigger ~= nil and self.grainTankCapacity == nil then
+		-- is there a tipTrigger within 10 meters?
+		raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
+		if self.currentTipTrigger == nil then
+			raycastAll(tx+self.tipRefOffset, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
+		end
+		if self.currentTipTrigger == nil then
+			raycastAll(tx-self.tipRefOffset, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
 		end
 		allowedToDrive, workArea, workSpeed, active_tipper = courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill_level, last_recordnumber)
 	end

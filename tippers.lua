@@ -113,7 +113,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 		for k,v in pairs(self.components) do --TODO: self.components needed?
 			self.cpTrafficCollisionIgnoreList[v.node] = true;
 		end;
-		courseplay:debug(tostring(object.name).." is in front - adding to cpTrafficCollisionIgnoreList",1)
+		courseplay:debug(tostring(object.name).."- adding to cpTrafficCollisionIgnoreList",1)
 		self.cpTrafficCollisionIgnoreList[object.rootNode] = true;
 	end
 	if CPDebugLevel >0 then
@@ -370,7 +370,7 @@ function courseplay:getAutoTurnradius(self, tipper_attached)
 				self.autoTurnRadius = turnRadius --normaler Trailer
 			end
 		else
-			self.autoTurnRadius = (turnRadius * n) + (turnRadius*0.25*n) -->1 Trailers
+			self.autoTurnRadius = (turnRadius * n) -->1 Trailers
 		end
 	else
 		self.autoTurnRadius = turnRadius

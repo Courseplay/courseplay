@@ -23,7 +23,7 @@ function courseplay:cponTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 			if vehicle ~= nil then
 				courseplay:debug("checking CollisionIgnoreList",1)
 				for a,b in pairs (self.cpTrafficCollisionIgnoreList) do
-					courseplay:debug(tostring(g_currentMission.nodeToVehicle[a].id).." vs "..tostring(vehicleConcerned.id),1)
+					courseplay:debug(tostring(g_currentMission.nodeToVehicle[a].name).." vs "..tostring(vehicleConcerned.name),1)
 					if g_currentMission.nodeToVehicle[a].id == vehicleConcerned.id then
 						courseplay:debug(tostring(vehicleConcerned.name).." is on list",1)
 						vehicleOnList = true
