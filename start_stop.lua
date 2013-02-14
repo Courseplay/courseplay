@@ -21,7 +21,7 @@ function courseplay:start(self)
 		self.ai_state = 0
 	end
 
-	if self.ai_mode == 4 and self.tipper_attached then
+	if (self.ai_mode == 4 or self.ai_mode == 6) and self.tipper_attached then
 		local start_anim_time = self.tippers[1].startAnimTime
 		if start_anim_time == 1 then
 			self.fold_move_direction = 1
@@ -99,7 +99,7 @@ function courseplay:start(self)
 	-- ok i am near the waypoint, let's go
 	self.checkSpeedLimit = false
 	self.runOnceStartCourse = true;
-	self.drive = true
+	self.drive = true;
 
 	self.orgRpm = {}
 	self.orgRpm[1] = self.motor.maxRpm[1]
