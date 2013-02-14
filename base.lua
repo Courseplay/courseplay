@@ -358,8 +358,8 @@ function courseplay:load(xmlFile)
 	courseplay:register_button(self, 2, "blank.dds", "row2", nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[2], 0.32, 0.015);
 	courseplay:register_button(self, 2, "blank.dds", "row3", nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[3], 0.32, 0.015);
 
-	courseplay:register_button(self, 2, "navigate_up.dds",   "change_selected_course", -5, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesPosY[1], w24px, h24px, nil, -10, "courseListPrev=true");
-	courseplay:register_button(self, 2, "navigate_down.dds", "change_selected_course",  5, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesPosY[5], w24px, h24px, nil,  10, "courseListNext=true");
+	courseplay:register_button(self, 2, "navigate_up.dds",   "change_selected_course", -5, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesPosY[1], w24px, h24px, nil, -10, "self.courseListPrev=true");
+	courseplay:register_button(self, 2, "navigate_down.dds", "change_selected_course",  5, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesPosY[5], w24px, h24px, nil,  10, "self.courseListNext=true");
 
 	for i = 1, 5, 1 do
 		local posy = courseplay.hud.infoBasePosY + 0.205 - (i - 1) * 0.021
@@ -402,8 +402,8 @@ function courseplay:load(xmlFile)
 	courseplay:register_button(self, 5, "navigate_minus.dds", "change_field_speed",  -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[2], w16px, h16px, nil, -5);
 	courseplay:register_button(self, 5, "navigate_plus.dds",  "change_field_speed",   1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[2], w16px, h16px, nil,  5);
 
-	courseplay:register_button(self, 5, "navigate_minus.dds", "change_max_speed",    -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[3], w16px, h16px, nil, -5, "use_speed=false");
-	courseplay:register_button(self, 5, "navigate_plus.dds",  "change_max_speed",     1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[3], w16px, h16px, nil,  5, "use_speed=false");
+	courseplay:register_button(self, 5, "navigate_minus.dds", "change_max_speed",    -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[3], w16px, h16px, nil, -5, "self.use_speed=false");
+	courseplay:register_button(self, 5, "navigate_plus.dds",  "change_max_speed",     1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[3], w16px, h16px, nil,  5, "self.use_speed=false");
 	
 	courseplay:register_button(self, 5, "navigate_minus.dds", "change_unload_speed", -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[4], w16px, h16px, nil, -5);
 	courseplay:register_button(self, 5, "navigate_plus.dds",  "change_unload_speed",  1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[4], w16px, h16px, nil,  5);
@@ -429,6 +429,7 @@ function courseplay:load(xmlFile)
 
 	courseplay:register_button(self, 7, "navigate_minus.dds", "changeWorkWidth", -0.1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[4], w16px, h16px, nil,  -0.5);
 	courseplay:register_button(self, 7, "navigate_plus.dds",  "changeWorkWidth",  0.1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[4], w16px, h16px, nil,   0.5);
+
 
 
 	self.fold_move_direction = 1;

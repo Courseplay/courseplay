@@ -17,10 +17,11 @@ function courseplay:register_button(self, hud_page, img, function_to_call, param
 		button.modifiedParameter = modifiedParameter;
 	end
 	
-	--NOTE: showHideVariable MUST be in self namespace -> to be called as "tostring(self[button.showWhat]) == button.showIs"
+	--NOTE: showHideVariable MUST be in self namespace, since self isn't global (can't be called as _G[self] or _G["self"])
 	if showHideVariable then
-		button.showWhat = showHideVariable:split("=")[1]
-		button.showIs = showHideVariable:split("=")[2]
+		--button.conditionalDisplay = showHideVariable;
+		button.showWhat = Utils.splitString("=", showHideVariable)[1];
+		button.showIs = Utils.splitString("=", showHideVariable)[2];
 	end;
 
 	table.insert(self.buttons, button)
@@ -29,11 +30,31 @@ end
 function courseplay:render_buttons(self, page)
 	for _, button in pairs(self.buttons) do
 		if button.page == page or button.page == nil then
-			if button.showHide ~= nil then
-				courseplay:debug("button "..button.function_to_call..", showHide:"..button.showWhat.." = "..button.showIs.." (currently is "..tostring(self[button.showWhat])..")", 3);
+			if button.showWhat ~= nil and button.showIs ~= nil then
+				local what = Utils.splitString(".", button.showWhat);
+				if what[1] == "self" then 
+					table.remove(what, 1); 
+				end;
+				local whatObj;
+				for i=1,#what do
+					local key = what[i]; 
+					--print(string.format("button %s: what[%d]=%s", button.function_to_call, i, tostring(what[i])));
+					if i == 1 then
+						whatObj = self[key];
+						--print(string.format("whatObj = self[%s]", tostring(key)));
+					end;
+					if i > 1 then
+						whatObj = whatObj[key];
+						--print(string.format("whatObj = prevWhatObj[%s]", tostring(key)));
+					end;
+				end;
+				
+				button.show = tostring(whatObj) == button.showIs;
+				
+				--print(string.format("%s = %s", button.showWhat, tostring(whatObj)));
 			end;
 			
-			if (button.showWhat ~=nil and tostring(self[button.showWhat]) == button.showIs) or button.showWhat == nil then
+			if (button.show ~= nil and button.show) or button.show == nil then
 				button.overlay:render();
 			end;
 		end
