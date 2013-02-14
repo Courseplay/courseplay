@@ -14,11 +14,14 @@ end
 function courseplay:is_baler(workTool) -- is the tool a baler?
 	return (SpecializationUtil.hasSpecialization(Baler, workTool.specializations) or workTool.balerUnloadingState ~= nil);
 end;
+function courseplay:is_baleLoader(workTool) -- is the tool a bale loader?
+	return (SpecializationUtil.hasSpecialization(baleLoader, workTool.specializations) or SpecializationUtil.hasSpecialization(BaleLoader, workTool.specializations));
+end;
 function courseplay:is_sowingMachine(workTool) -- is the tool a sowing machine?
 	return (SpecializationUtil.hasSpecialization(sowingMachine, workTool.specializations) or SpecializationUtil.hasSpecialization(SowingMachine, workTool.specializations));
 end;
 function courseplay:isFoldable(workTool) --is the tool foldable?
-	return SpecializationUtil.hasSpecialization(Foldable, workTool.specializations);
+	return SpecializationUtil.hasSpecialization(Foldable, workTool.specializations) or SpecializationUtil.hasSpecialization(foldable, workTool.specializations);
 end;
 function courseplay:isUBT(workTool) --is the tool a UBT?
 	return SpecializationUtil.hasSpecialization(ubt, workTool.specializations);
@@ -42,12 +45,20 @@ function courseplay:update_tools(self, tractor_or_implement)
 				table.insert(self.tippers, object)
 			end
 		elseif self.ai_mode == 4 then -- Fertilizer
-			if SpecializationUtil.hasSpecialization(Sprayer, object.specializations) then
+			if SpecializationUtil.hasSpecialization(Sprayer, object.specializations) or courseplay:is_sowingMachine(object) or object.name == "AmazoneUX5200" then
 				tipper_attached = true
 				table.insert(self.tippers, object)
 			end
 		elseif self.ai_mode == 6 then -- Baler, foragewagon, baleloader
-			if courseplay:is_baler(object) or SpecializationUtil.hasSpecialization(BaleLoader, object.specializations) or object.allowTipDischarge then
+			if courseplay:is_baler(object) 
+			or courseplay:is_baleLoader(object) 
+			or SpecializationUtil.hasSpecialization(Tedder, object.specializations) 
+			or SpecializationUtil.hasSpecialization(windrower, object.specializations) 
+			or SpecializationUtil.hasSpecialization(cultivator, object.specializations) 
+			or SpecializationUtil.hasSpecialization(plough, object.specializations) 
+			or object.allowTipDischarge 
+			or courseplay:isUBT(object) 
+			or courseplay:isFoldable(object) then
 				tipper_attached = true
 				table.insert(self.tippers, object)
 			end
@@ -64,6 +75,21 @@ function courseplay:update_tools(self, tractor_or_implement)
 	self.cpTrafficCollisionIgnoreList = {}
 	for k, implement in pairs(tractor_or_implement.attachedImplements) do
 		local object = implement.object
+		
+		--in front or in the back?
+		if object.cp == nil then
+			object.cp = {};
+		end;
+		local impXw, impYw, impZw = getWorldTranslation(object.rootNode);
+		local vehToImpX, vehToImpY, vehToImpZ = worldToLocal(self.rootNode, impXw, impYw, impZw);
+		if vehToImpZ > 0 then --implement in front of vehicle
+			object.cp.positionToVehicle = 1;
+			--print(string.format("Implement %s position = %d (in front) (vehToImpZ = %f)", object.name, object.cp.positionToVehicle, vehToImpZ));
+		else
+			object.cp.positionToVehicle = -1;
+			--print(string.format("Implement %s position = %d (in back) (vehToImpZ = %f)", object.name, object.cp.positionToVehicle, vehToImpZ));
+		end;
+		--END in front or in the back
 
 		if self.ai_mode == 1 or self.ai_mode == 2 then
 			--	if SpecializationUtil.hasSpecialization(Trailer, object.specializations) then
@@ -83,7 +109,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 			end
 		elseif self.ai_mode == 6 then -- Baler, foragewagon, baleloader
 			if courseplay:is_baler(object) 
-			or SpecializationUtil.hasSpecialization(BaleLoader, object.specializations) 
+			or courseplay:is_baleLoader(object) 
 			or SpecializationUtil.hasSpecialization(Tedder, object.specializations) 
 			or SpecializationUtil.hasSpecialization(windrower, object.specializations) 
 			or SpecializationUtil.hasSpecialization(cultivator, object.specializations) 
@@ -100,6 +126,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 			table.insert(self.tippers, object)
 			--		end
 		end
+
 		-- are there more tippers attached to the current implement?
 		local other_tipper_attached
 		if table.getn(object.attachedImplements) ~= 0 then
@@ -114,17 +141,18 @@ function courseplay:update_tools(self, tractor_or_implement)
 		for k,v in pairs(self.components) do --TODO: self.components needed?
 			self.cpTrafficCollisionIgnoreList[v.node] = true;
 		end;
-		courseplay:debug(tostring(object.name).."- adding to cpTrafficCollisionIgnoreList", 2)
+		courseplay:debug(tostring(object.name).." - adding to cpTrafficCollisionIgnoreList", 2)
 		self.cpTrafficCollisionIgnoreList[object.rootNode] = true;
 	end
 	if CPDebugLevel > 0 then
 		print(string.format("%s cpTrafficCollisionIgnoreList", self.name));
 		for a,b in pairs(self.cpTrafficCollisionIgnoreList) do
 			local name = g_currentMission.nodeToVehicle[a].name
-			print(string.format("%s = %s", tostring(a), tostring(name)));
+			print(string.format("\\___ %s = %s", tostring(a), tostring(name)));
 		end;
 	end
-	courseplay:getAutoTurnradius(self, tipper_attached)	
+
+	courseplay:getAutoTurnradius(self, tipper_attached);
 	
 	--tipreferencepoints 
 	self.tipRefOffset = 0;

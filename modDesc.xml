@@ -778,6 +778,7 @@
 
 	<extraSourceFiles>
         <sourceFile filename="register.lua" />
+        <sourceFile filename="helpers.lua" />
 		<sourceFile filename="base.lua" />
 		<sourceFile filename="astar.lua" />
 		<sourceFile filename="fruit.lua" />

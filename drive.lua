@@ -197,14 +197,14 @@ function courseplay:drive(self, dt)
 					self.unloaded = true
 				end
 			end
-		elseif self.ai_mode == 4 or self.ai_mode == 6 then
+		elseif self.ai_mode == 4 then
 			if last_recordnumber == self.startWork and fill_level ~= 0 then
 				self.wait = false
-			end
-			if last_recordnumber == self.stopWork and self.abortWork ~= nil then
+
+			elseif last_recordnumber == self.stopWork and self.abortWork ~= nil then
 				self.wait = false
-			end
-			if last_recordnumber == self.stopWork and self.abortWork == nil then
+
+			elseif last_recordnumber == self.stopWork and self.abortWork == nil then
 				self.global_info_text = courseplay:get_locale(self, "CPWorkEnd") --'hat Arbeit beendet.'
 			else
 				self.global_info_text = courseplay:get_locale(self, "CPUnloadBale") -- "Ballen werden entladen"
@@ -212,6 +212,19 @@ function courseplay:drive(self, dt)
 					self.wait = false
 				end
 			end
+		elseif self.ai_mode == 6 then
+			if last_recordnumber == self.startWork then
+				self.wait = false
+			elseif last_recordnumber == self.stopWork and self.abortWork ~= nil then
+				self.wait = false
+			elseif last_recordnumber == self.stopWork and self.abortWork == nil then
+				self.global_info_text = courseplay:get_locale(self, "CPWorkEnd") --'hat Arbeit beendet.'
+			elseif last_recordnumber ~= self.startWork and last_recordnumber ~= self.stopWork then 
+				self.global_info_text = courseplay:get_locale(self, "CPUnloadBale") -- "Ballen werden entladen"
+				if fill_level == 0 or drive_on then
+					self.wait = false
+				end;
+			end;
 		elseif self.ai_mode == 7 then
 			if last_recordnumber == self.startWork then
 				if self.grainTankFillLevel > 0 then
@@ -420,7 +433,6 @@ function courseplay:drive(self, dt)
 	end
 
 	-- Mode 6 Fieldwork for balers and foragewagon
-	
 	if self.ai_mode == 6 and self.startWork ~= nil and self.stopWork ~= nil then
 		if not workArea and self.aiTrafficCollisionTrigger ~= nil and self.grainTankCapacity == nil then
 			-- is there a tipTrigger within 10 meters?

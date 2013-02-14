@@ -15,9 +15,12 @@ working_course_players = {};
 
 function initialize_courseplay()
 	print("inizialized courseplay files")
+	source(courseplay_path .. "helpers.lua")
+
 	-- starting & stopping of courseplay
 	print(courseplay_path .. "start_stop.lua")
 	source(courseplay_path .. "start_stop.lua")
+
 	-- course recording & resetting
 	source(courseplay_path .. "recording.lua")
 

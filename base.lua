@@ -56,6 +56,7 @@ function courseplay:load(xmlFile)
 		if self.name == nil then self.name = g_i18n:getText("UNKNOWN") end;
 	end
 
+	self.cp = {};
 	self.toggledTipState = 0;
 	
 	self.auto_combine_offset = true
@@ -206,7 +207,8 @@ function courseplay:load(xmlFile)
 	self.courseListPrev = false;
 	self.courseListNext = table.getn(g_currentMission.courseplay_courses) > 5;
 
-	
+
+
 	-- traffic collision	
 	self.onTrafficCollisionTrigger = courseplay.cponTrafficCollisionTrigger;
 	--self.aiTrafficCollisionTrigger = Utils.indexToObject(self.components, getXMLString(xmlFile, "vehicle.aiTrafficCollisionTrigger#index"));
@@ -234,6 +236,7 @@ function courseplay:load(xmlFile)
 	self.unloading_tipper = nil
 	self.last_fill_level = nil
 	self.tipRefOffset = 0;
+
 	-- for user input like saving
 	self.user_input_active = false
 	self.user_input_message = nil
@@ -272,7 +275,6 @@ function courseplay:load(xmlFile)
 	self.search_combine = true
 	self.saved_combine = nil
 	self.selected_combine_number = 0
-
 
 	self.mouse_enabled = false
 
@@ -564,7 +566,7 @@ function courseplay:updateTick(dt)
 	if self.isEntered and self.waypointMode ~= 5 then
 		courseplay:sign_visibility(self, true)
 	else
-		courseplay:sign_visibility(self, false)
+		courseplay:sign_visibility(self, false);
 	end
 
 	self.timer = self.timer + dt
@@ -575,9 +577,7 @@ function courseplay:delete()
 	if self.aiTrafficCollisionTrigger ~= nil then
 		removeTrigger(self.aiTrafficCollisionTrigger);
 	end
-end
-
-;
+end;
 
 function courseplay:set_timeout(self, interval)
 	self.timeout = self.timer + interval

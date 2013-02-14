@@ -22,27 +22,11 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 
 		-- stop while folding
 		if courseplay:isFoldable(workTool) then
-			for k, foldingPart in pairs(workTool.foldingParts) do
-				local charSet = foldingPart.animCharSet;
-				local animTime = nil
-				if charSet ~= 0 then
-					animTime = getAnimTrackTime(charSet, 0);
-				else
-					animTime = workTool:getRealAnimationTime(foldingPart.animationName);
-				end;
-
-				if animTime ~= nil then
-					if workTool.foldMoveDirection > 0.1 then
-						if animTime < foldingPart.animDuration then
-							allowedToDrive = false;
-						end;
-					else
-						if animTime > 0 then
-							allowedToDrive = false;
-						end;
-					end;
-				end;
+			if courseplay:isFolding(workTool) then
+				allowedToDrive = false;
+				courseplay:debug(workTool.name .. ": isFolding -> allowedToDrive == false", 3);
 			end;
+			courseplay:debug(string.format("%s: unfold: turnOnFoldDirection=%s, foldMoveDirection=%s", workTool.name, tostring(workTool.turnOnFoldDirection), tostring(workTool.foldMoveDirection)), 3);
 		end;
 
 		-- balers
@@ -139,50 +123,56 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 						--unfold
 						if courseplay:isFoldable(workTool) then
 							workTool:setFoldDirection(-1);
+							--workTool:setFoldDirection(workTool.turnOnFoldDirection);
 						end;
 
-						--lower
-						if workTool.needsLowering and workTool.aiNeedsLowering then
-							self:setAIImplementsMoveDown(true);
-						end;
-					
-						--turn on
-						if workTool.setIsTurnedOn ~= nil then
-							workTool:setIsTurnedOn(true, false);
-							if workTool.setIsPickupDown ~= nil then
-								workTool:setIsPickupDown(true, false);
+						if not courseplay:isFolding(workTool) then
+							--lower
+							if workTool.needsLowering and workTool.aiNeedsLowering then
+								self:setAIImplementsMoveDown(true);
 							end;
-						elseif workTool.isTurnedOn ~= nil and workTool.pickupDown ~= nil then
-							-- Krone ZX - planet-ls.de
-							workTool.isTurnedOn = true;
-							workTool.pickupDown = true;
-							workTool:updateSendEvent();
+						
+							--turn on
+							if workTool.setIsTurnedOn ~= nil then
+								workTool:setIsTurnedOn(true, false);
+								if workTool.setIsPickupDown ~= nil then
+									workTool:setIsPickupDown(true, false);
+								end;
+							elseif workTool.isTurnedOn ~= nil and workTool.pickupDown ~= nil then
+								-- Krone ZX - planet-ls.de
+								workTool.isTurnedOn = true;
+								workTool.pickupDown = true;
+								workTool:updateSendEvent();
+							end;
 						end;
 					end
 				elseif not workArea or fill_level == 100 or self.abortWork ~= nil or last_recordnumber == self.stopWork then
 					workSpeed = false
 					
-					--turn off
-					if workTool.setIsTurnedOn ~= nil then
-						workTool:setIsTurnedOn(false, false);
-						if workTool.setIsPickupDown ~= nil then
-							workTool:setIsPickupDown(false, false);
-						end
-					elseif workTool.isTurnedOn ~= nil and workTool.pickupDown ~= nil then
-						-- Krone ZX - planet-ls.de
-						workTool.isTurnedOn = false;
-						workTool.pickupDown = false;
-						workTool:updateSendEvent();
-					end;
+					if not courseplay:isFolding(workTool) then
+						--turn off
+						if workTool.setIsTurnedOn ~= nil then
+							workTool:setIsTurnedOn(false, false);
+							if workTool.setIsPickupDown ~= nil then
+								workTool:setIsPickupDown(false, false);
+							end
+						elseif workTool.isTurnedOn ~= nil and workTool.pickupDown ~= nil then
+							-- Krone ZX - planet-ls.de
+							workTool.isTurnedOn = false;
+							workTool.pickupDown = false;
+							workTool:updateSendEvent();
+						end;
 
-					--raise
-					if workTool.needsLowering and workTool.aiNeedsLowering then
-						self:setAIImplementsMoveDown(false);
+						--raise
+						if workTool.needsLowering and workTool.aiNeedsLowering then
+							self:setAIImplementsMoveDown(false);
+						end;
 					end;
 
 					--fold
 					if courseplay:isFoldable(workTool) then
 						workTool:setFoldDirection(1);
+						--workTool:setFoldDirection(-workTool.turnOnFoldDirection);
 					end;
 				end;
 
