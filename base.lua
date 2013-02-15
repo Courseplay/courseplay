@@ -238,6 +238,7 @@ function courseplay:load(xmlFile)
 	self.tipRefOffset = 0;
 	self.cp.tipperHasCover = false;
 	self.cp.tippersWithCovers = {};
+
 	-- for user input like saving
 	self.user_input_active = false
 	self.user_input_message = nil
@@ -434,6 +435,7 @@ function courseplay:load(xmlFile)
 
 
 
+
 	self.fold_move_direction = 1;
 
 	register_courseplay();
@@ -463,8 +465,8 @@ function courseplay:draw()
 	if self.workWidthChanged > self.timer then
 		courseplay:show_work_witdh(self)
 	elseif self.work_with_shown then
-		setVisibility(self.workMarkerRight, false)
-		setVisibility(self.workMarkerLeft, false)
+		--setVisibility(self.workMarkerRight, false)
+		--setVisibility(self.workMarkerLeft, false)
 		self.work_with_shown = false
 	end
 
@@ -475,7 +477,9 @@ function courseplay:draw()
 	courseplay:showHud(self)
 end
 
-function courseplay:show_work_witdh(self)
+--[[
+function courseplay:show_work_witdh_OLD(self)
+
 	local x, y, z = getWorldTranslation(self.rootNode)
 	setTranslation(self.workMarkerRight, localToWorld(self.rootNode, self.toolWorkWidht / 2, 3, -4))
 	setTranslation(self.workMarkerLeft, localToWorld(self.rootNode, self.toolWorkWidht * -1 / 2, 3, -4))
@@ -483,7 +487,17 @@ function courseplay:show_work_witdh(self)
 	setVisibility(self.workMarkerLeft, true)
 	self.work_with_shown = true
 end
+]]
 
+function courseplay:show_work_witdh(self)
+	local x, y, z = getWorldTranslation(self.rootNode)
+	local pointLx, pointLy, pointLz = localToWorld(self.rootNode, self.toolWorkWidht *  0.5, 1, -6);
+	local pointRx, pointRy, pointRz = localToWorld(self.rootNode, self.toolWorkWidht * -0.5, 1, -6);
+	drawDebugPoint(pointLx, pointLy, pointLz, 1, 1, 0, 1);
+	drawDebugPoint(pointRx, pointRy, pointRz, 1, 1, 0, 1);
+	drawDebugLine(pointLx, pointLy, pointLz, 1, 0, 0, pointRx, pointRy, pointRz, 1, 0, 0);
+	self.work_with_shown = true
+end
 -- is been called everey frame
 function courseplay:update(dt)
 	if self:getIsActive() then
