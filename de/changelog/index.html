@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset='utf-8' />
+	<meta http-equiv="X-UA-Compatible" content="chrome=1" />
+	<link rel="stylesheet" href="../../res/css/reset.css">
+	<link rel="stylesheet" href="../../res/fonts/icomoon.css">
+	<link rel="stylesheet" href="../../res/css/base.css">
+	<!--[if lte IE 7]><script src="res/js/lte-ie7.js"></script><![endif]-->
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<title>Installation &rsaquo; Courseplay</title>
+</head>
+
+<body>
+<div id="container">
+	<header>
+		<h1><a class="imgLink" href="../"><img src="../../res/img/cp_logo.png" alt="Courseplay"></a></h1>
+	</header>
+	
+	<section id="navSection">
+		<nav id="mainNav">
+			<li><a href="../installation">Installation<span class="info">Wie? Was? Wohin?</span></a></li>
+			<li><a href="../manual">Anleitung<span class="info">Wie funktionert Courseplay? Was muss ich machen?</span></a></li>
+			<li><a href="../faq">FAQ<span class="info">Was gibt's noch zu wissen?</span></a></li>
+			<li class="active">Changelog</li>
+			<li><a href="../authors">Autoren<span class="info">Wer ist das Team?</span></a></li>
+		</nav>
+	</section>
+
+	<section id="changelog" class="content">
+		<h2>Changelog</h2>
+		<div id="cl_320" class="changelogVersion open" data-version="3.20">
+			<span class="fs1 toggle" aria-hidden="true" data-icon="&#xe004;" data-icon-open="&#xe005;" data-icon-closed="&#xe004;"></span>
+			<h3>Änderungen in Version 3.20</h3>
+			<ul>
+				<li>Konvertierung auf LS 2013</li>
+				<li>Unterstützung mehrerer Abkippseiten beim Hänger</li>
+				<li>Automatische Einstellung des seitlichen Abstandes</li>
+				<li>Fruchtumfahrung dekativiert (gab zu viele Probleme damit)</li>
+				<li>Unterstützung für Rüben/Kartoffelernter</li>
+				<li>Optimiertes Wendemanöver beim Dreschen und Häckseln</li>
+				<li>Einstellungen im HUD können mit gedrückter <code>STRG</code>-Taste in größeren Schritten verstellt werden.</li>
+				<li>Debug-Level in allgemeinen Einstellungen einstellbar</li>
+				<li>Abkippen auf der BGA erfolgt während der Fahrt</li>
+				<li>Doppelbelegung der <code>EINFG</code>-Taste behoben</li>
+				<li>Infomeldung wenn Abfahrer im Verkehr steckt wird wieder angezeigt</li>
+				<li>Bedienung von Courseplay mit <code>STRG</code>+<code>NUM7</code>,  <code>STRG</code>+<code>NUM8</code> und <code>STRG</code>+<code>NUM9</code> anstatt ohne <code>STRG</code></li>
+				<li>manuelles Rückwärtsfahren: Um einen Kurs rückwärts aufzuzeichnen muss man jetzt die Fahrtrichtung im HUD ändern</li>
+				<li>und zig Bugfixes</li>
+			</ul>
+		</div>
+		
+
+		<div id="cl_312" class="changelogVersion closed" data-version="3.12">
+			<span class="fs1 toggle" aria-hidden="true" data-icon="&#xe005;" data-icon-open="&#xe005;" data-icon-closed="&#xe004;"></span>
+			<h3>Änderungen in Version 3.12</h3>
+			<ul>
+				<li>
+					<h4>Neuer Modus: Drescher fährt selbst zum abtanken</h4>
+					Mähdrescher können jetzt auch selbstständig zu Hängern am Feldrand fahren. Dazu muss man mit dem Drescher einen Kurs einfahren der einen Wartepunkt enthält. Dieser Wartepunkt ist die Stelle an der auf den Hänger übergeladen wird. Nach dem Überladepunkt muss die Aufzeichnung beendet werden. Dann richtet man den Drescher auf dem Feld aus, schaltet den Helfer ein und ERST DANN stellt man den Abfahrhelfer ein.
+				</li>
+				<li>
+					<h4>Überladewagen kippen im Überlademodus automatisch ab</h4>
+					Brent Avelanche, Hilken, Agroliner TUW & co., HAWE SUW 5000, Perard Innerbanne 25, Kverneland Taarup Shuttle & co. laden am Überladepunkt automatisch ab. Der Taarup fährt sogar seinen Aufbau hoch und auch wieder runter.
+				</li>
+				<li>AlternativeTipping von SFM wird voll unterstützt</li>
+				<li>Wendemanöver im Kombimodus wurden überarbeitet</li>
+				<li>
+					<h4>A*Star Pathfinding</h4>
+					Abfahrer versuchen auf dem Feld nicht durch die Frucht zu fahren. Es wird automatisch nach einem Umweg um die Frucht herum gesucht. Wird ein Weg gefunden wird dieser genutzt und der Abfahrer fährt um die Frucht herum. <em>(Dieses Feature ist noch experimentell)</em>
+				</li>
+				<li>beim speichern von Kursen steigt man nicht mehr aus dem Fahrzeug aus</li>
+				<li>Im Feldarbeitsmodus werden weitere Rundballenpressen unterstützt</li>
+				<li>Man kann in den Einstellungen die max. Geschwindigkeit auswählen zwischen <em>"max Geschwindigkeit"</em> und <em>"eingefahrener Geschwindigkeit"</em>. Das erste ist die alte Einstellung, Courseplay ermittelt die auf der Straße zu fahrende Geschwindigkeit. Bei der zweiten Option wird immer die Geschwindigkeit genutzt die beim Einfahren des Kurses gefahren wurde.</li>
+				<li>man kann auf der letzten Seite der Einstellungen die Haltezeit am Wartepunkt definieren. Ist diese auf <em>"0"</em> wartet der Abfahrer am Wartepunkt bis er weitergeschickt wird. Ansonsten wartet er die vorgegebene Zeit am Wartepunkt und fährt dann automatisch weiter (ideal für die <em>MapWeightStation</em>).</li>
+			</ul>
+		</div>
+	</section>
+
+
+	<footer>
+		<span>© Courseplay, 2013</span>
+		<nav id="footerNav">
+			<li><a href="https://github.com/netjungle/courseplay">GitHub</a></li>
+			<li><a href="http://www.modhoster.de/projects/courseplay">WIP Project</a></li>
+			<li><a href="https://www.pivotaltracker.com/projects/675867#">Bug Tracker</a></li>
+			<li><a href="https://github.com/netjungle/courseplay/issues?sort=created&state=open">GitHub Issue Tracker</a></li>
+			<li><a href="../../en/installation">English Version</a></li>
+			<li><a href="../..">Home</a></li>
+		</nav>
+	</footer>	
+</div> <!-- #container -->
+</body>
+</html>
