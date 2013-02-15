@@ -1,7 +1,0 @@
-#navSection { padding:2em 0 0; position:relative; }
-#mainNav { text-align:center; }
-#mainNav li { border-right:1px solid #646464; display:inline; padding:0 0.5em; }
-#mainNav li:last-of-type { border-right:0; padding-right:0; }
-#mainNav li:first-of-type { padding-left:0; }
-#mainNav a .info { color:#323232; display:none; font-size:0.9em; font-weight:600; position:absolute; top:0; left:0; text-align:center; width:100%; }
-#mainNav a:hover .info, #mainNav a:focus .info, #mainNav a:active .info { display:block; }
