@@ -107,6 +107,11 @@ function courseplay:update_tools(self, tractor_or_implement)
 				tipper_attached = true
 				table.insert(self.tippers, object)
 			end
+		elseif self.ai_mode == 5 then -- Überführung
+			if object.setPlane ~= nil then --open/close cover
+				tipper_attached = true;
+				table.insert(self.tippers, object);
+			end;
 		elseif self.ai_mode == 6 then -- Baler, foragewagon, baleloader
 			if courseplay:is_baler(object) 
 			or courseplay:is_baleLoader(object) 
@@ -143,7 +148,8 @@ function courseplay:update_tools(self, tractor_or_implement)
 		end;
 		courseplay:debug(tostring(object.name).." - adding to cpTrafficCollisionIgnoreList", 2)
 		self.cpTrafficCollisionIgnoreList[object.rootNode] = true;
-	end
+	end; --END for implement in attachedImplements
+
 	if CPDebugLevel > 0 then
 		print(string.format("%s cpTrafficCollisionIgnoreList", self.name));
 		for a,b in pairs(self.cpTrafficCollisionIgnoreList) do
@@ -171,6 +177,27 @@ function courseplay:update_tools(self, tractor_or_implement)
 			self.tipRefOffset = 0;
 		end;
 	end;
+
+
+	--tippers with covers
+	self.cp.tipperHasCover = false;
+	self.cp.tippersWithCovers = nil;
+	self.cp.tippersWithCovers = {};
+	--courseplay:debug(self.name .. ": tipper_attached = ".. tostring(tipper_attached), 3);
+	if tipper_attached then
+		for i=1, table.getn(self.tippers) do
+			if self.tippers[i].setPlane ~= nil then
+				courseplay:debug(string.format("Implement \"%s\" has a cover (setPlane ~= nil)", self.tippers[i].name), 3);
+				self.cp.tipperHasCover = true;
+				table.insert(self.cp.tippersWithCovers, i);
+			else
+				courseplay:debug(string.format("Implement \"%s\" doesn't have a cover (setPlane == nil)", self.tippers[i].name), 3);
+			end;
+		end;
+	end;
+	courseplay:debug(tableShow(self.cp.tippersWithCovers, self.name .. ": self.cp.tippersWithCovers"), 4);
+	--END tippers with covers
+	
 	
 	if tipper_attached then
 		return true

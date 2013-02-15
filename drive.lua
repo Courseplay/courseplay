@@ -200,10 +200,8 @@ function courseplay:drive(self, dt)
 		elseif self.ai_mode == 4 then
 			if last_recordnumber == self.startWork and fill_level ~= 0 then
 				self.wait = false
-
 			elseif last_recordnumber == self.stopWork and self.abortWork ~= nil then
 				self.wait = false
-
 			elseif last_recordnumber == self.stopWork and self.abortWork == nil then
 				self.global_info_text = courseplay:get_locale(self, "CPWorkEnd") --'hat Arbeit beendet.'
 			else
@@ -448,6 +446,8 @@ function courseplay:drive(self, dt)
 	end
 
 
+	--Open/close cover
+	courseplay:openCloseCover(self);
 
 	allowedToDrive = courseplay:check_traffic(self, true, allowedToDrive)
 
@@ -802,4 +802,39 @@ function courseplay:setSpeed(self, refSpeed, sl)
 
 		self.lastSpeedSave = self.lastSpeedReal*3600
 	end
+end;
+
+function courseplay:openCloseCover(self)
+	--courseplay:debug("self.cp.tipperHasCover = " .. tostring(self.cp.tipperHasCover), 3);
+	if self.cp.tipperHasCover then
+		for i=1, table.getn(self.cp.tippersWithCovers) do
+			local tIdx = self.cp.tippersWithCovers[i];
+			local tipper = self.tippers[tIdx];
+			
+			--courseplay:debug(self.name .. ": tipper w/ cover = " .. tostring(tipper.name), 3);
+			
+			if tipper.plane.bOpen ~= nil and (self.ai_mode == 1 or self.ai_mode == 2 or self.ai_mode == 5) then
+				--courseplay:debug(string.format("recordnumber=%s, maxnumber=%s, currentTipTrigger=%s, plane.bOpen=%s", tostring(self.recordnumber), tostring(self.maxnumber), tostring(self.currentTipTrigger ~= nil), tostring(tipper.plane.bOpen)), 3);
+				local minCoverWaypoint = 3;
+				if self.ai_mode == 2 then
+					minCoverWaypoint = 2;
+				end;
+				if  self.recordnumber >= minCoverWaypoint 
+				and self.recordnumber < self.maxnumber 
+				and self.currentTipTrigger == nil 
+				and tipper.plane.bOpen then
+					tipper:setPlane(false);
+				elseif ((self.recordnumber == nil or (self.recordnumber ~= nil and (self.recordnumber == 1 or self.recordnumber == self.maxnumber))) or self.currentTipTrigger ~= nil) 
+				and not tipper.plane.bOpen then
+					tipper:setPlane(true);
+				end;
+			elseif tipper.plane.bOpen ~= nil and self.ai_mode == 6 then
+				if not workArea and self.currentTipTrigger == nil and tipper.plane.bOpen then
+					tipper:setPlane(false);
+				elseif (workArea or self.currentTipTriger ~= nil) and not tipper.plane.bOpen then
+					tipper:setPlane(true);
+				end;
+			end;
+		end; --END for
+	end;
 end;

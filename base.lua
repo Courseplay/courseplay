@@ -236,7 +236,8 @@ function courseplay:load(xmlFile)
 	self.unloading_tipper = nil
 	self.last_fill_level = nil
 	self.tipRefOffset = 0;
-
+	self.cp.tipperHasCover = false;
+	self.cp.tippersWithCovers = {};
 	-- for user input like saving
 	self.user_input_active = false
 	self.user_input_message = nil
@@ -432,6 +433,7 @@ function courseplay:load(xmlFile)
 
 
 
+
 	self.fold_move_direction = 1;
 
 	register_courseplay();
@@ -609,6 +611,7 @@ function courseplay:readStream(streamId, connection)
 	self.courseplay_position = streamDebugReadInt32(streamId)
 	self.CPnumCollidingVehicles = streamDebugReadInt32(streamId)
 	self.cpTrafficBrake = streamDebugReadBool(streamId)
+	self.cp.tipperHasCover = streamDebugReadBool(streamId);
 	self.crossPoints = streamDebugReadInt32(streamId)
 	self.drive = streamDebugReadBool(streamId)
 	self.drive_slow_timer = streamDebugReadInt32(streamId)
@@ -720,7 +723,8 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteInt32(streamId,self.courseplay_position)
 	streamDebugWriteInt32(streamId,self.CPnumCollidingVehicles)
 	streamDebugWriteBool(streamId, self.cpTrafficBrake)
-	streamDebugWriteInt32(streamId,self.crossPoints)
+	streamDebugWriteBool(streamId, self.cp.tipperHasCover);
+	streamDebugWriteInt32(streamId, self.crossPoints);
 	streamDebugWriteBool(streamId,self.drive)
 	streamDebugWriteInt32(streamId,self.drive_slow_timer)
 	streamDebugWriteFloat32(streamId,self.field_speed)
