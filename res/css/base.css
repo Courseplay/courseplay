@@ -57,6 +57,6 @@ section { padding:30px 0; }
 
 footer { border-top:1px solid #D6D6D6; font-size:0.7em; margin-top:3em; padding:1em 0; }
 footer span { padding-left:0.5em; }
-footer li { border-right:1px solid #646464; display:inline; padding:0 0.5em; }
-footer li:last-of-type { border-right:0; padding-right:0; }
-footer li:first-of-type { padding-left:0; }
+#footerNav li { border-right:1px solid #646464; display:inline; padding:0 0.5em; }
+#footerNav li:last-of-type { border-right:0; padding-right:0; }
+#footerNav li:first-of-type { padding-left:0; }
