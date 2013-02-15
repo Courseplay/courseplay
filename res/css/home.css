@@ -1,11 +1,12 @@
 section { width:350px; margin:60px auto 20px; }
 #language p { font-style:italic; margin:0 0 2em; text-align:center; }
 .imgLink { display:block; }
-section .col  { float:left; margin:0 1em; width:128px; }
+section .col  { float:left; margin:0 1em; text-align:center; width:128px; }
 #language .lang div { text-align:center; }
 
 #downloads a { text-align:center; }
-#downloads .col .imgLink {
+#downloads .col .iconLink {
 	color:#323232;
+	display:inline;
 	font-size:2em;
 }
