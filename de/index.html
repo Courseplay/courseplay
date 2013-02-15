@@ -3,10 +3,10 @@
 <head>
 	<meta charset='utf-8' />
 	<meta http-equiv="X-UA-Compatible" content="chrome=1" />
-	<link rel="stylesheet" href="res/css/reset.css">
-	<link rel="stylesheet" href="res/fonts/icomoon.css">
-	<link rel="stylesheet" href="res/css/base.css">
-	<link rel="stylesheet" href="res/css/home.css">
+	<link rel="stylesheet" href="../res/css/reset.css">
+	<link rel="stylesheet" href="../res/fonts/icomoon.css">
+	<link rel="stylesheet" href="../res/css/base.css">
+	<link rel="stylesheet" href="../res/css/home_local.css">
 	<!--[if lte IE 7]><script src="res/js/lte-ie7.js"></script><![endif]-->
 	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 	<title>Courseplay</title>
@@ -15,42 +15,32 @@
 <body>
 <div id="container">
 	<header>
-		<h1><img src="res/img/cp_logo.png" alt="Courseplay"></h1>
+		<h1><a class="imgLink" href="../de"><img src="../res/img/cp_logo.png" alt="Courseplay"></a></h1>
 	</header>
-
-	<section id="language">
-		<p>Yay for stereotypes!</p>
-		<div class="col lang">
-			<a class="imgLink" href="de" rel="lang" title="Deutsche Infoseite">
-				<img src="res/img/german.png" alt="Deutsch">
-			</a>
-			<div><a href="de" title="Deutsche Infoseite">Deutsch</a></div>
-		</div>
-		<div class="col lang">
-			<a class="imgLink" href="en" rel="lang" title="English info site">
-				<img src="res/img/english.png" alt="English">
-			</a>
-			<div><a href="en" title="English info site">English</a></div>
-		</div>
-		<div class="clearfix"></div>
-	</section>
-
-	<section id="downloads" class="clearfix">
-		<div class="col">
-			<a href="https://github.com/netjungle/courseplay/zipball/master" id="download-zip" class="imgLink">
-				<div class="fs1" aria-hidden="true" data-icon="&#xe001;"></div>
-			</a>
-			<div><a href="https://github.com/netjungle/courseplay/zipball/master" id="download-zip">Download .zip</a></div>
-		</div>
-		<div class="col">
-			<a href="https://github.com/netjungle/courseplay" id="view-on-github" class="imgLink">
-				<div class="fs1" aria-hidden="true" data-icon="&#xe000;"></div>
-			</a>
-			<div><a href="https://github.com/netjungle/courseplay" id="view-on-github">Code @ GitHub</a></div>
-		</div>
-		<div class="clearfix"></div>
+	
+	<section id="introduction">
+		<h2>Willkommen zu Courseplay</h2>
+		<p>Courseplay ist ein Mod für den Landwirtschafts-Simulator 2013, der es ermöglicht verschiedenste Fahrzeuge autonom Kurse abfahren zu lassen, Arbeiten zu erledigen, Drescher abzutanken und vieles mehr.</p>
 	</section>
 	
+	<nav>
+		<li><a href="/installation">Installation</a></li>
+		<li><a href="/manual">Anleitung</a></li>
+		<li><a href="/faq">FAQ</a></li>
+		<li><a href="/changelog">Changelog</a></li>
+		<li><a href="/authors">Autoren</a></li>
+	</nav>
+
+
+	<footer>
+		<span>&copy; Courseplay, 2013</span>
+		<nav>
+			<li><a href="https://github.com/netjungle/courseplay">GitHub</a></li>
+			<li><a href="http://www.modhoster.de/projects/courseplay">WIP Project</a></li>
+			<li><a href="https://www.pivotaltracker.com/projects/675867#">Bug Tracker</a></li>
+			<li><a href="https://github.com/netjungle/courseplay/issues?sort=created&state=open">GitHub Issue Tracker</a></li>
+		</nav>
+	</footer>	
 </div> <!-- #container -->
 </body>
 </html>

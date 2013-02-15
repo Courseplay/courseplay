@@ -30,12 +30,11 @@ a, button, button:before, div, fieldset, figure, img, input, label, li, span, te
 	box-sizing: border-box;
 }
 html {
-	background: url(../img/white_bed_sheet.png) 0 0 repeat scroll #f5f5f5;
+	background:url(../img/white_bed_sheet.png) 0 0 repeat scroll #f5f5f5;
 	font-family:Segoe UI, Trebuchet MS, sans-serif;
 }
-body {
+#container {
 	color: #323232;
-	font-family: 'Source Sans Pro Light', 'Open Sans', /* 'Myriad Pro', 'Myriad Web Pro', */ sans-serif;
 	font-size: 100%;
 	font-weight:100;
 	width: 1024px;
@@ -53,3 +52,11 @@ a:not(.imgLink):hover, a:not(.imgLink):focus, a:not(.imgLink):active {
 
 
 header h1 { text-align:center; }
+
+section { padding:30px 0; }
+
+footer { border-top:1px solid #D6D6D6; font-size:0.7em; margin-top:3em; padding:1em 0; }
+footer span { padding-left:0.5em; }
+footer li { border-right:1px solid #646464; display:inline; padding:0 0.5em; }
+footer li:last-of-type { border-right:0; padding-right:0; }
+footer li:first-of-type { padding-left:0; }
