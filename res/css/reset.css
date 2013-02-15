@@ -1,0 +1,107 @@
+/**
+ * CSS Stylesheet: Reset
+ * 
+ * This stylesheet resets default browser styling.
+ * 
+ * Shoutouts to meyerweb.com, html5doctor.com, paulirish.com
+ * and various other sources around the web.
+ * 
+ * @package WP Framework
+ * @subpackage CSS
+ */
+
+/* Resets all HTML5 tags */
+html, body, div, span, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, address, cite, code, 
+del, dfn, em, img, ins, kbd, q, samp,
+small, strike, strong, sub, sup, var, 
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section, summary,
+time, mark, audio, video { margin: 0; padding: 0; border: 0; outline: 0; font-size: 100%; vertical-align: baseline; background: transparent; }
+
+/* Force a scrollbar regardless of content height */
+html { overflow-y: scroll; }
+
+/* Using height: 100% on html and body allows to style containers with a 100% height */
+html, body { height: 100%; }
+
+/* Default HTML block elements */
+html, body, div, p,
+address, blockquote,
+ol, ul, dd, dl, dt, fieldset, form,
+h1, h2, h3, h4, h5, h6,
+pre, hr, menu { display: block; }
+
+/* Add support for HTML5 elements */
+article, aside, canvas, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section, summary { display: block; }
+
+/* Global Line height */
+body { font-size: 100%; line-height: 1.5; }
+
+/* Don't outline elements on focus */
+:focus { outline: none; }
+
+/* removes the bullets in nav menus */
+nav ul { list-style: none; }
+
+/* Prevents some browsers from inserting quotes on "q" and "p" ("p" in blockquotes) */
+blockquote, q { quotes: none; }
+blockquote:before, blockquote:after, q:before, q:after { content: ''; content: none; }
+
+/* Set italics */
+blockquote, q, em, cite, dfn, cite, var, address { font-style: italic; }
+
+/* Set boldness */
+th, strong, dt { font-weight: bold; }
+
+sub, sup { font-size: smaller; }
+
+mark { background-color: #ff9; color: #000; font-style: italic; font-weight: bold; }
+
+ins { background-color: #ff9; color: #000; text-decoration: none; }
+
+del { text-decoration: line-through; }
+
+abbr[title], dfn[title] { border-bottom: 1px dotted #000; cursor: help; }
+
+hr { display: block; height: 1px; border: 0; border-top: 1px solid #ccc; margin: 16px 0; padding: 0; }
+
+ul { list-style: disc; }
+ol { list-style: decimal; }
+
+/* tables still need cellspacing="0" in the markup */
+table { border-collapse: collapse; border-spacing: 0; }
+
+/* all th should be centered unless they are in tbody (table body) */
+th { text-align: left; }
+
+/* Cation is impossible to style correctly across browsers so let's remove it. */
+caption { position: absolute; left: -9999em; }
+
+input, select { vertical-align: middle; }
+
+/* Remove scrollbar in IE */
+textarea { overflow: auto; }
+
+/* Hand cursor on clickable input elements */
+label, input[type=button], input[type=submit], button { cursor: pointer; }
+
+/* Make buttons play nice in IE */
+button { width: auto; overflow: visible; }
+
+/* Remove annoying border on linked images. */
+a img { border: none; }
+
+/* Clearing floats without extra markup
+   Based on How To Clear Floats Without Structural Markup by PiE
+   [http://www.positioniseverything.net/easyclearing.html] */
+.clearfix:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
+.clearfix { display: block; }
+
+/* Regular clearing, just in case! */
+.clear { clear: both; }

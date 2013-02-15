@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset='utf-8' />
+	<meta http-equiv="X-UA-Compatible" content="chrome=1" />
+	<link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css' />
+	<link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+	<link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+	<link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<title>Courseplay for FS 2013</title>
+</head>
+
+<body>
+<div id="container">
+	<div class="inner">
+
+	<header>
+		<h1>Courseplay</h1>
+		<h2>PathTractor for FS 2013</h2>
+	</header>
+
+	<section id="downloads" class="clearfix">
+		<a href="https://github.com/netjungle/courseplay/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+		<a href="https://github.com/netjungle/courseplay" id="view-on-github" class="button"><span>View on GitHub</span></a>
+	</section>
+
+        <hr>
+
+        <section id="main_content">
+          <h1>Courseplay - Abfahrhelfer für LS 2013 v 3.20</h1>
+
+<h5>Inhaltsverzeichnis</h5>
+
+<ol>
+<li><a href="#changelog">Changelog</a></li>
+<li><a href="#install">Installationsanweisung</a></li>
+<li><a href="#bedienungsanleitung">Bedienungsanleitung</a></li>
+<li><a href="#credits">Credits</a></li>
+</ol><hr><p><a name="changelog"></a></p>
+
+<h2>Changelog</h2>
+
+<h3>Änderungen seit Version 3.12</h3>
+
+<ul>
+<li>Konvertierung auf LS 2013</li>
+<li>Unterstützung mehrerer Abkippseiten beim Hänger</li>
+<li>Automatische Einstellung des seitlichen Abstandes</li>
+<li>Fruchtumfahrung dekativiert (gab zu viele Probleme damit)</li>
+<li>Unterstützung für Rüben/Kartoffelernter</li>
+<li>Optimiertes Wendemanöver beim Dreschen und Häckseln</li>
+<li>Einstellungen im HUD können mit gedrückter STRG-Taste in größeren Schritten verstellt werden.</li>
+<li>Debug-Level in allgemeinen Einstellungen einstellbar</li>
+<li>Abkippen auf der BGA erfolgt während der Fahrt</li>
+<li>Doppelbelegung der EINFG-Taste behoben</li>
+<li>Infomeldung wenn Abfahrer im Verkehr steckt wird wieder angezeigt</li>
+<li>Bedienung von Courseplay mit STRG+7 STRG+8 und STRG+9 statt ohne STRG</li>
+<li>manuelles Rückwärtsfahren: Um einen Kurs rückwärts aufzuzeichnen muss man jetzt die Fahrtrichtung im HUD ändern</li>
+<li>und zig Bugfixes</li>
+</ul><h3>Änderungen seit Version 2.2 / 2.4</h3>
+
+<ul>
+<li><p><strong>Neuer Modus: Drescher fährt selbst zum abtanken</strong><br>
+Mähdrescher können jetzt auch selbstständig zu Hängern am Feldrand fahren. Dazu muss man mit dem Drescher einen Kurs einfahren der einen Wartepunkt enthält. Dieser Wartepunkt ist die Stelle an der auf den Hänger übergeladen wird. Nach dem Überladepunkt muss die Aufzeichnung beendet werden. Dann richtet man den Drescher auf dem Feld aus, schaltet den Helfer ein und ERST DANN stellt man den Abfahrhelfer ein.</p></li>
+<li><p><strong>Überladewagen kippen im Überlademodus automatisch ab</strong><br>
+Brent Avelanche, Hilken, Agroliner TUW &amp; Co., HAWE SUW 5000, Perard Innerbanne 25,  Kverneland Taarup Shuttle &amp; Co. laden am Überladepunkt automatisch ab. Der Taarup fährt sogar seinen Aufbau hoch und auch wieder runter.</p></li>
+<li><p>AlternativeTipping von SFM wird voll unterstützt  </p></li>
+<li><p>Wendemanöver im Kombimodus wurden überarbeitet</p></li>
+<li><p><strong>A*Star Pathfinding</strong><br>
+Abfahrer versuchen auf dem Feld nicht durch die Frucht zu fahren. Es wird automatisch nach einem Umweg um die Frucht herum gesucht. Wird ein Weg gefunden wird dieser genutzt und der Abfahrer fährt um die Frucht herum. <em>(Dieses Feature ist noch experimentell)</em>  </p></li>
+<li><p>beim speichern von Kursen steigt man nicht mehr aus dem Fahrzeug aus</p></li>
+<li><p>Im Feldmodus werden weitere Rundballenpressen unterstützt</p></li>
+<li><p>Man kann in den Einstellungen die max. Geschwindigkeit auswählen zwischen <em>"max Geschwindigkeit"</em> und <em>"eingefahrener Geschwindigkeit"</em>. Das erste ist die alte Einstellung, Courseplay ermittelt die auf der Straße zu fahrende Geschwindigkeit. Bei der zweiten Option wird immer die Geschwindigkeit genutzt die beim Einfahren des Kurses gefahren wurde.</p></li>
+<li><p>man kann auf der letzten Seite der Einstellungen die Haltezeit am Wartepunkt definieren. Ist diese auf <em>"0"</em> wartet der Abfahrer am Wartepunkt bis er weitergeschickt wird. Ansonsten wartet er die vorgegebene Zeit am Wartepunkt und fährt dann automatisch weiter (ideal für die <em>MapWeightStation</em>).</p></li>
+</ul><h3>Änderungen seit Version 2.11</h3>
+
+<ul>
+<li>Neuer Modus: Drescher fährt selbst zum abtanken</li>
+<li>support für das BGA Silo des Giants DLC2</li>
+<li>support für TipAnywhere mod</li>
+<li>support für kommenden Drescher-Autopiloten 3.0.5</li>
+<li>bessere Unterstützung für Ballensammelwagen</li>
+<li>Fehler beim Befüllen von Überladewagen und Abfahrern auf der zweiten Runde gefixt</li>
+<li>selten auftretenden Multiplayer-Callstacks behoben </li>
+</ul><h3>Änderungen seit Version 2.0</h3>
+
+<ul>
+<li>In der Version 2.0 waren leider noch einige Fehler die den Multiplayermodus gestört haben. Diese wurden behoben.</li>
+<li>Neu in dieser Version ist vor allem, dass ihr eure Schlepper nicht mehr mit courseplay nachrüsten müsst. Einfach den Mod ins Modverzeichnis und alle Fahrzeuge sind automatisch damit ausgestattet.
+Durch diese Änderung müsst ihr leider in allen bereits umgerüsteten Schleppern den Eintrag <code>&lt;specialization name="courseplay" /&gt;</code> entfernen.</li>
+<li>Weiterhin wurde in dieser Version das Kombinieren von Kursen verbessert.</li>
+<li>
+<strong><em>Wichtig:</em></strong> die Datei aaacourseplay.zip (v2 und kleiner) <strong>muss</strong> aus dem Mod-Verzeichnis gelöscht werden.</li>
+</ul><h3>Änderungen seit Version 1.6</h3>
+
+<p>Die größte Änderung im courseplay ist natürlich die Multiplayerfähigkeit. Dabei werden beim Spielstart alle Werte und sogar gespeicherte Kurse vom Host an die Clients übertragen. Das kann mitunter ein bisschen dauern ist aber notwendig.  </p>
+
+<p>Neben zahlreichen Bugfixes und Performance-Optimierungen die hier nicht weiter erwähnt werden sollen gibt es im wesentlichen die folgende Neuerungen:  </p>
+
+<ul>
+<li>Kursverwaltung: Gespeicherte Kurse werden jetzt alphabetisch sortiert und werden immmer global für alle Fahrzeuge gespeichert. Dadurch ist kein Synchronisieren der Kurse zwischen den einzelnen Fahrzeugen mehr nötig und der Speicherverbrauch ist drastisch gesunken.</li>
+<li>Kurse aufnhemen: Das Pausieren der Kursaufnahme wurde überarbeitet. Man kann jetzt die Kursaufzeichnung pausieren und die letzten Wegpunkte löschen. Dabei wird jetzt immer nur der letzte Wegpunkt angezeigt und nicht mehr alle.</li>
+<li>Neu: Kurs Offset</li>
+<li>Dieses Feature ist noch experimentell und soll dafür sorgen, dass der Schlepper den gespeicherten Kurs leicht versetzt abfährt. Gedacht ist dies zum Beispiel für Ballensammelwagen.</li>
+<li>Neue Kurskombination:</li>
+<li>Ihr könnt beim Einfahren eines Kurses jetzt Kreuzungspunkte setzen. Wenn ihr später mehrere Kurse hintereinander ladet werden diese immer am ersten gemeinsamen Kreuzungspunkt (Abstand unter 30 Metern!) zusammengefügt. Damit könnt ihr also auch Teile von Routen wieder verwenden.</li>
+<li>Das Rückwärtsfahren wurden optimiert und sollte jetzt wieder richtig funktionieren.</li>
+<li>Wenn ihr das Spiel speichert werden die Einstellungen eurer Abfahrer mit gespeichert. Nach dem Neuladen müsst ihr also normalerweise nichts mehr einstellen. Die zuvor geladenen Kurse und Einstellungen sollten komplett wieder verfügbar sein.</li>
+<li>Außerdem gibt es neue Symbole für die Wegpunkte und spezielle Wegpunkte wie Kreuzungspunkte und Startpunkte sind auch sichtbar wenn ihr nicht im Fahrzeug seid welches die Route gespeichert hat.</li>
+</ul><h3>Änderungen seit Version 1.2</h3>
+
+<ul>
+<li>Neu hinzugekommen sind vor allem der Feldmodus mit dem man Ballen pressen und Heusammeln kann. Der Güllemodus wurde weiter perfektioniert und es ist jetzt auch möglich den Abfahrhelfer in Drescher und Häcksler einzubauen.
+Damit kann man beispielsweise mit Dreschern im Helfermodus Kurse aufzeichnen lassen die man dann später für den Gülle- oder Feldmodus verändern kann.</li>
+<li>Zudem gibt es eine Steuerung des Abfahrhelfers aus dem Drescher heraus. Man kann einen Abfahrhelfer rufen, starten, stoppen und beim Häcksler die Seite des Abfahrers ändern.</li>
+<li>Beim Abfahrhelfer kann man jetzt einstellen bei wieviel Prozenz Füllstand er frühzeitig abfahren soll. Hat ein Abfahrer zum Beispiel einen Füllstand von 90% und der Drescher wendet am Ende des Feldes, fährt der Abfahrer gleich ab und wartet nicht auf das Wendemanöver.</li>
+<li>Zudem fährt der Überladewagen an seinem Überladepunkt wieder zurück aufs Feld wenn er einen gewissen Füllstand unterschritten hat und für etwa 20 Sekunden kein weiterer Abfahrer zum überladen konmmt.</li>
+<li>Außerdem wurde gewünscht, dass der Abfahrhelfer auf der Straße seine Rundumleuchte einschaltet - das tut er jetzt ;)</li>
+<li>Dann gab es natürlich auch noch etwas Feintuning: 
+
+<ul>
+<li>Das unsinnige Kreiseln auf dem Feld sollte jetzt vorbei sein</li>
+<li>HW80 Drehschemel und Agroliner Container werden jetzt auch unterstützt. </li>
+</ul>
+</li>
+</ul><h3>Änderungen seit Version 1.0</h3>
+
+<ul>
+<li>Als neue Funktionen sind im wesentlichen der Düngemodus und das Rückwärtsfahren hinzugekommen. Außerdem wurde das Fahrverhalten (besonders in Kurven) verbessert und es werden mehr EntladeTrigger (Gras und Silage) erkannt.</li>
+<li>Zudem kann man jetzt gespeicherte Kurse kombinieren indem man mehrere Kurse hintereinander lädt. Wenn man nur einen neuen Kurs laden will muss man allerdings jetzt vorher die Wegpunkte des alten zurücksetzen.</li>
+<li>Außerdem ist der Abfahrhelfer jetzt kein "hireable" mehr, das heißt er verbraucht jetzt Benzin(Dünger..) beim Fahren. Damit der Abfahrer nicht einfach irgendwo stehen bleibt bekommt man eine Warnung sobald der Tank fast leer ist und bei einem minimalen Tankinhalt bleibt der Abfahrhelfer stehen damit man ihn noch bis zur Zapfsäule bekommt.</li>
+<li>Im Menu wurde noch der "BUG" behoben, dass man das Menu mit allen Maustasten steuern konnte.</li>
+<li>Natürlich gab es noch viele weitere kleine Bugfixes.</li>
+</ul><p>Dieses Mal geht ein besonders großer Dank an Wolverine, der einen Großteil dieses Updates (Düngemodus und Rückwärtsfahren) implementiert hat.  </p>
+
+<p>Wir haben weiterhin an einer Version 2 die komplett multiplayerfähig ist, die aktuelle Version 1.20 ist aber zumindest im MP vom Host bedienbar.</p>
+
+<hr><p><a name="install"></a></p>
+
+<h2>Installationsanweisung</h2>
+
+<p>Das Archiv <code>ZZZ_courseplay.zip</code> in das Verzeichnis <code>C:\Users\</code>*[dein Username]*<code>\MyGames\FarmingSimulator2011\mods</code> kopieren. Das war es!</p>
+
+<hr><p><a name="bedienungsanleitung"></a></p>
+
+<h2>Bedienungsanleitung</h2>
+
+<h3>Steuerung</h3>
+
+<p>Die Steuerung des Abfahrhelfers funktioniert im wesentlichem mit der Maus da freie Tasten im Landwirtschafts Simulator ja sehr rah sind.<br>
+Mit einem Klick auf die rechte Maustaste aktiviert ihr das Courseplay HUD in dem ihr den Abfahrer konfigurieren könnt. Zusätzlich sind einige Funktionen wie Abfahrer starten und stoppen auch über die Tastatur über die Tasten <em>NUMPAD 7</em> bis <em>NUMPAD 9</em> belegt.</p>
+
+<h3>HUD</h3>
+
+<p>Wenn ihr das HUD öffnet wird automatisch die Maussteuerung aktiviert. Das heißt ihr könnt euch mit der Maus nicht mehr umgucken. Um die Maussteuerung zu deaktivieren müsst ihr einfach nochmal auf die rechte Maustaste klicken.<br>
+Alternativ könnt ihr auch auf das rote X oben rechts im HUD klicken. Dabei wird das HUD geschlossen und die Maussteuerung wieder deaktiviert.</p>
+
+<p>Das HUD ist in mehrere Unterseiten unterteilt. Diese könnt ihr mit den blauen Pfeilen im oberen Bereich des HUDs wechseln.<br>
+Im mittleren Bereich des HUDs könnt ihr auf jeder Unterseite verschiede Einstellungen vornehmen oder Befehle geben. Klickt dazu einfach auf die gewünschte Aktion.</p>
+
+<p>Im unteren Bereich des HUDs findet ihr Infos über euren Abfahrer den geladenen Kurs und den aktuellen Status. Dort könnt ihr durch klick auf die Diskette euren eingefahrenen Kurs auch speichern.</p>
+
+<h4>HUD "Abfahrhelfer Steuerung"</h4>
+
+<ul>
+<li><p><strong>Kursaufzeichnung beginnen</strong><br>
+Mit dieser Option wird der Aufnahmemodus des Abfahrhelfers aktiviert. Ihr könnt damit den Kurs einfahren den der Abfahrer später fahren soll.<br>
+Bei Aktivierung werden anfangs drei Fässchen im Abstand von 10-20 Metern gesetzt. Ihr solltet darauf achten, dass ihr bis zum dritten Fass nach Möglichkeit geradeaus fahrt.<br>
+Wenn ihr diese Funktion aktiviert habt könnt ihr mit der rechten Maustaste die Maussteuerung deaktivieren damit ihr euch beim Einfahren des Kurses auch umschauen könnt.</p></li>
+<li><p><strong>Kursaufzeichnung anhalten</strong><br>
+Wenn die Kursaufzeichnung läuft könnt ihr mit dieser Funktion die Kursaufzeichnung pausieren. Es wird ein gelber Pfeil angezeigt der zum letzten Wegpunkt zeigt. Zusätzlich könnt ihr in diesem Modus auch den letzten Wegpunkt löschen.</p></li>
+<li><p><strong>Kursaufzeichnung beenden</strong><br>
+Diese Aktion ist nur im Aufnahmemodus vergügbar und dient dazu diesen zu beenden. Klickt auf diese Funktion wenn ihr den Endpunkt eurer eingefahrenen Route erreicht habt.<br>
+Es empfiehlt sich, dass der Endpunkt etwa 10 Meter vor dem Startpunkt liegt und dass man grob aus der Richtung kommt in die der Abfahrer beim Startpunkt auch weiterfahren soll.</p></li>
+<li><p><strong>Hier Wartepunkt setzen</strong><br>
+Im Aufnahmemodus habt ihr die Möglichkeit auf der Strecke Wartepunkte zu setzen. An diesen Punkten wird der Abfahrer später beim Abfahren anhalten bis man ihn manuell weiter schickt.<br>
+Wenn ein Abfahrer einen Wartepunkt erreicht hat wird euch das am unteren Bildschirmrand angezeigt.</p></li>
+<li><p><strong>Abfahrer einstellen</strong><br>
+Wenn ihr einen Kurs eingefahren habt könnt ihr jetzt den Abfahrer einstellen. Dabei wird der Abfahrhelfer aktiviert und fährt brav seine Route ab.</p></li>
+<li><p><strong>Abfahrer entlassen</strong><br>
+Den aktivierten Abfahrer könnt ihr natürlich auch jederzeit entlassen bzw. anhalten. Wenn ihr den Abfahrhelfer später wieder aktiviert wird er seine Route am letzen Punkt fortführen.</p></li>
+<li><p><strong>weiterfahren</strong><br>
+Diese Option steht euch zur Verfügung wenn der Abfahrer einen Wartepunkt erreicht hat.</p></li>
+<li>
+<p><strong>Abfahrer-Typ wechseln</strong><br>
+Damit der Abfahrhelfer möglichst viele Aufgaben erledigen kann gibt es verschiedene Abfahrhelfer Typen.  Der aktuelle Typ wird im unteren Bereich des HUDs angezeigt. Mit klick auf diese Aktion könnt ihr die Typen durchgehen.</p>
+
+<ul>
+<li>
+<strong>Typ: Abfahrer</strong><br>
+ Der Typ Abfahrer wartet am Startpunkt bis er voll beladen ist und fährt erst dann die Route ab. Wenn er auf seiner Route über eine Abkippstelle kommt hält er an und entleert seine(n) Anhänger.<br>
+ Man kann dem Abfahrer am Startpunkt allerdings auch sagen, dass er sofort abfahren soll.</li>
+<li>
+<strong>Typ: Kombiniert</strong><br>
+ Der Kombinierte Modus ist ähnlich wie der Abfahrer Modus mit dem Unterschied, dass der Abfahrer am Startpunkt nicht wartet bis er beladen ist sondern selbstständig zu einem Drescher oder Häcksler auf dem aktuellen Feld fährt und diese bedient.
+ Wenn alle Hänger voll sind fährt der Abfahrer das zweite Fässchen auf seiner Route an und fährt von da an die Route ab wie der normale Abfahrer.<br>
+ Damit der kombinierte Modus funktioniert muss der Startpunkt des Abfahrers unbedingt auf dem gleichen Feld liegen auf dem der oder die Drescher sind.</li>
+<li>
+<strong>Typ: Überladewagen</strong><br>
+ Beim Typ Überladewagen fährt der Abfahrer auch direkt zum Drescher oder Häcksler und fährt anschließend seine Route ab. Der Unterschied hierbei ist, dass der Überladewagen "Wartepunkte" als "Abladepunkte" nutzt. Wenn der Überladewagen also voll ist fährt er seine Route bis zum Wartepunkt ab und fährt dort automatisch weiter, wenn der Überladewagen leer ist.</li>
+<li>
+<strong>Typ: Überführung</strong><br>
+ In diesem Modus fährt der Abfahrer lediglich seine Route ab. Er wartet nicht am Startpunkt und wird an Abladestellen auch nicht entladen. Dieser Modus eignet sich in Verbindung mit Wartepunkten um Gerätschaften zum Feld zu bringen oder zum Beispiel auch auf andere Höfe.</li>
+<li>
+<strong>Typ: Düngen</strong><br>
+ Im Düngemodus füllt der Abfahrhelfer am Startpunkt eine Spritze oder ein Güllefass und fährt dann seine Route ab. Man fährt mit dem Abfahrhelfer zum Feld, setzt einen Wartepunkt an der Stelle an der er mit dem Düngen beginnen soll, fährt das Feld ab und setzt einen Wartepunkt am Feldende.<br>
+ Beim Abfahren klappt der Abfahrhelfer automatisch die Spritze/Güllefass aus und schaltet es an, fährt das Feld ab bis der Tank leer ist und fährt zurück zum auftanken. Nach dem Auftanken macht er an der Position weiter an der er aufgehört hat.</li>
+<li>
+<strong>Typ: Feldarbeit (Ballenpressen, Schwadaufnahme)</strong><br>
+ Der Feldarbeitsmodus funktioniert ähnlich wie der Düngemodus. Hierbei wird ein zuvor aufgezeichneter Kurs mit Feldgeschwindigkeit abgefahren.<br>
+ Als Besonderheit kann man in diesem Modus zum Beispiel eine Ballenpresse anhängen. Die Rundballenpresse hält hierbei an wenn sie voll ist und wirft den Ballen aus.<br>
+ Wenn man einen Ladewagen anhängt wird der Kurs abgefahren bis dieser voll ist, dann wird die letzte Position gespeichert und der Kurs abgefahren. Der Kurs sollte dann natürlich an einem Abladetrigger vorbei führen. Dort wird der Wagen entleert und dann fährt er zurück zum Feld und setzt seine Arbeit am letzten Punkt fort.<br>
+ Der Arbeitsbereich des Modus Feldarbeit muss wie im Düngemodus durch zwei Wartepunkte markiert werden.</li>
+<li>
+<strong>Typ: Drescher fährt selbst zum abtanken</strong><br>
+ Dieser Modus ist ähnlich dem des Überladewagens, nur eben für Drescher. Der Startpunkt der Route ist der Punkt den der Drescher anfährt wenn er den eingestellen Füllstand erreicht hat. Er fährt dann die Route bis zum 1. Wartepunkt ab. Am Wartepunkt tankt der Drescher ab und fährt, sobald er leer ist die Route weiter. Der Endpunkt der Route ist der Punkt an dem der Drescher den Helfer aktiviert. Wenn er bereits auf dieser Route gedroschen hat, fährt er nach dem abtanken den letzten Wegpunkt an und dann weiter an den Punkt an dem der Drescher weggefahren ist.</li>
+</ul>
+</li>
+<li><p><strong>Wegpunkte löschen</strong><br>
+Wenn ein Kurs eingefahren ist kannst du über diese Option den Kurs wieder zurücksetzen. Dabei wird der gespeicherte Kurs nicht aus der Konfigurationsdaten gelöscht sondern nur der aktuelle Abfahrer wieder zurückgesetzt.</p></li>
+</ul><h4>HUD Kurs speichern</h4>
+
+<p>Im unteren Breich des Huds findet ihr eine Diskette. Wenn ihr einen Kurs eingefahren habt könnt ihr durch Klick auf die Diskette euren Kurs speichern. Dabei wird im oberen Bereich eine Eingabemaske angezeigt. Hier könnt ihr mit der Tastatur einen Namen für euren Kurs vergeben und diesen mit <em>ENTER</em> (Eingabetaste) bestätigen.<br><strong>Hinweis:</strong> Aktuell ist die Steuerung des Spiels im Speichermodus noch aktiv. Das heißt wenn ihr zum Beispiel "e" drückt steigt ihr leider noch aus dem Fahrzeug aus.  In diesem Fall einfach wieder einsteigen und weiter tippen. Dieses Problem wird in einer späteren Version natürlich behoben.</p>
+
+<h4>HUD "Kurse verwalten"</h4>
+
+<p>Auf dieser Unterseite des HUD findet ihr eine Übersicht eurer gespeicherten Kurse. Ihr könnt durch Klick auf das Ordner Symbol einen Kurs laden und durch einen Klick auf das rote X einen Kurs komplett löschen.<br><strong>ACHTUNG:</strong> seit version 1.2 müsst ihr wenn ihr einen neuen Kurs laden wollt erst die alten Wegpunkte zurücksetzen, sonst kombiniert ihr die beiden Kurse!<br>
+Mit den blauen Pfeilen rechts oben und rechts unten könnt ihr durch die gespeicherten Kurse blättern.<br><strong>Hinweis zum Kombinieren von Kursen:</strong> Das Ordner Symbol ohne den blauen Pfeil kombiniert die Kurse am ersten gemeinsamen Kreuzungspunkt, der mit dem blauen Pfeil hängt die Kurse einfach hintereinander.</p>
+
+<h4>HUD "Einstellungen Combi Modus":</h4>
+
+<p>Diese Einstellungen gelten (wie der Name es andeutet) nur für den kombinierten Modus und den Überlademodus. Hiermit könnt ihr euren Abfahrer an den jeweiligen Drescher anpassen. Ihr könnt die Werte mit einem Klick auf das +/- Symbol daneben anpassen (Bei klick mit gedrückter STRG-Taste verstellt ihr die Werte in größeren Abständen)</p>
+
+<ul>
+<li><p><strong>seitl. Abstand</strong><br>
+Dieser Wert definiert den seitlichen Abstand den ein Abfahrer zum Drescher oder Häcksler beim nebenher fahren einhalten soll. Voreingestellt ist hier "auto" damit passt sich der Abfahrer automatisch an den Drescher oder Häcksler an.</p></li>
+<li><p><strong>Start bei %</strong><br>
+Dieser Wert legt fest ab welchem Füllstand des Dreschers der Abfahrer zu ihm fährt und ihn abtankt. Bei Häckslern wird durch diesen Wert festgelegt ab wann der zweite Abfahrer in der Kette dem ersten hinterherfahren soll.</p></li>
+<li><p><strong>Wenderadius</strong><br>
+Dieser Wert ist nur beim Häckseln wichtig und legt fest wie weit der Abfahrer beim Wenden des Häckslers von ihm wegfahren soll ohne ihm im Weg zu stehen.</p></li>
+<li><p><strong>Pipe Abstand</strong><br>
+entfällt in aktueller Version</p></li>
+</ul><h4>HUD "Drescher verwalten"</h4>
+
+<p>Auch diese Einstellungen sind nur für den kombinierten Modus relevant. Hier könnt ihr einstellen ob der Abfahrer sich automatisch einen Drescher oder Häcksler suchen soll (Standard) oder er einen manuell zugewiesenen Drescher nutzen soll.<br>
+Wenn ihr einen Drescher manuell zuweist muss dieser auch nicht auf dem gleichen Feld stehen. Der Abfahrer fährt von seinem Startpunkt automatisch zum Drescher, egal wo dieser sich befindet.  </p>
+
+<p>Interessant ist diese Einstellung vor allem bei großen oder hügeligen Feldern auf denen die automatische Zuweisung nicht immer funktioniert und auf Feldern ohne Grubbertextur z.B. Wiesen.</p>
+
+<h4>HUD "Geschwidigkeiten":</h4>
+
+<p>Hier könnt ihr festlegen wie schnell euer Abfahrer fahren soll. Ich denke mal die Einstellungen sind selbst erklärend ;)</p>
+
+<hr><p><a name="credits"></a></p>
+
+<h2>Credits</h2>
+
+<ul>
+<li>Lautschreier (Grundversion)</li>
+<li>Hummel       (modhoster.de)</li>
+<li>Wolverin0815 (Feldarbeitsmodus, HUD, ...)</li>
+<li>Bastian82    (Feldarbeitsmodus, Optimierungen, ...)</li>
+<li>Skydancer    (Feldkursgenerierung, Güllezubringerunterstützung, ...)</li>
+<li>JakobT    (debug Modus, automatischer Abstand, neue Steuerung mit STRG)</li>
+</ul>
+        </section>
+
+        <footer>
+          Courseplay is maintained by <a href="https://github.com/Courseplay">Courseplay</a><br>
+          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="http://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
+
+        
+      </div>
+    </div>
+  </body>
+</html>
