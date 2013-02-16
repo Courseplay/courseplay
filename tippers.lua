@@ -291,7 +291,7 @@ function courseplay:unload_tippers(self)
 	for k, tipper in pairs(self.tippers) do
 		--if not tipper.allowsDetaching then
 		local numReferencePoints = table.getn(tipper.tipReferencePoints);
-		local fruitType = tipper:getCurrentFruitType()
+		local fruitType = tipper.currentFillType
 
 		if self.currentTipTrigger.bunkerSilo ~= nil then
 			
