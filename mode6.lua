@@ -217,6 +217,9 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 				-- Begin Work
 				if last_recordnumber == self.startWork and fill_level ~= 100 then
 					if self.abortWork ~= nil then
+						if self.abortWork < 5 then
+							self.abortWork = 6
+						end
 						self.recordnumber = self.abortWork - 4
 						if self.recordnumber < 1 then
 							self.recordnumber = 1
@@ -232,7 +235,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 				end
 				-- safe last point
 				if (fill_level == 100 or self.loaded) and workArea and self.abortWork == nil and self.maxnumber ~= self.stopWork then
-					self.abortWork = self.recordnumber
+					self.abortWork = self.recordnumber -4
 					self.recordnumber = self.stopWork - 4
 					if self.recordnumber < 1 then
 						self.recordnumber = 1
