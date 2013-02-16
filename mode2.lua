@@ -973,9 +973,10 @@ function courseplay:unload_combine(self, dt)
 	end
 
 	-- check traffic and calculate speed
+	
+	allowedToDrive = courseplay:check_traffic(self, true, allowedToDrive)
+	
 	if allowedToDrive then
-
-		allowedToDrive = courseplay:check_traffic(self, true, allowedToDrive)
 		if self.sl == nil then
 			self.sl = 3
 		end
