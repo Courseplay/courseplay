@@ -139,7 +139,7 @@ function courseplay:handle_mode2(self, dt)
 		if self.reachable_combines ~= nil then
 			if table.getn(self.reachable_combines) > 0 then
 				-- choose the combine that needs me the most
-				if self.best_combine ~= nil then
+				if self.best_combine ~= nil and combine.isCheckedIn == nil then
 					courseplay:debug(tostring(self.id)..": request check in: "..tostring(self.combineID), 1)
 					if courseplay:register_at_combine(self, self.best_combine) then
 						local leftFruit, rightFruit = courseplay:side_to_drive(self, self.best_combine, -10) --changed by THOMAS
