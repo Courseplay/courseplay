@@ -139,6 +139,7 @@ function courseplay:register_at_combine(self, combine)
 	end
 
 	if table.getn(combine.courseplayers) == num_allowed_courseplayers then
+		courseplay:debug(tostring(self.id).." :  combine: "..tostring(combine.id).. "is already registered ", 1)
 		return false
 	end
 
