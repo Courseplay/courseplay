@@ -388,7 +388,8 @@ function courseplay:getAutoTurnradius(self, tipper_attached)
 	local sinAlpha = 0       --Sinus vom Lenkwinkel
 	local wheelbase = 0      --Radstand
 	local track = 0		 --Spurweite
-	local turnRadius         --Wendekreis unbereinigt
+	local turnRadius = 0     --Wendekreis unbereinigt
+	local xerion = false
 	if self.foundWheels == nil then
 		self.foundWheels = {}
 	end
@@ -400,16 +401,28 @@ function courseplay:getAutoTurnradius(self, tipper_attached)
 				self.foundWheels[1] = wheel
 			elseif self.foundWheels[2] == nil then
 				self.foundWheels[2] = wheel
+			elseif self.foundWheels[4] == nil then
+				self.foundWheels[4] = wheel
 			end
 		elseif self.foundWheels[3] == nil then
 			self.foundWheels[3] = wheel
 		end
 	
 	end
-	if table.getn(self.foundWheels) == 3 then
+	if self.foundWheels[3] == nil then --Xerion and Co
+		sinAlpha = sinAlpha *2
+		xerion = true
+	end
+		
+	if table.getn(self.foundWheels) == 3 or xerion then
 		local wh1X, wh1Y, wh1Z = getWorldTranslation(self.foundWheels[1].driveNode);
 		local wh2X, wh2Y, wh2Z = getWorldTranslation(self.foundWheels[2].driveNode);	
-		local wh3X, wh3Y, wh3Z = getWorldTranslation(self.foundWheels[3].driveNode);	 
+		local wh3X, wh3Y, wh3Z = 0,0,0
+		if xerion then
+			wh3X, wh3Y, wh3Z = getWorldTranslation(self.foundWheels[4].driveNode);
+		else
+			wh3X, wh3Y, wh3Z = getWorldTranslation(self.foundWheels[3].driveNode);
+		end	 
 		track  = courseplay:distance(wh1X, wh1Z, wh2X, wh2Z)
 		wheelbase = courseplay:distance(wh1X, wh1Z, wh3X, wh3Z)
 		turnRadius = 2*wheelbase/sinAlpha+track
