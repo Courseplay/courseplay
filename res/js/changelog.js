@@ -17,8 +17,10 @@ CP.el.changelogToggle.on('click', function() {
 		$(this).attr('data-icon', $(this).attr('data-icon-closed'));
 	});
 
-	$(this).parents('div.changelogVersion').find('> ul').slideDown(CP.animationTime).fadeIn(CP.animationTime);
+	$(this).parents('div.changelogVersion').removeClass('closed').addClass('open').find('> ul').slideDown(CP.animationTime).fadeIn(CP.animationTime);
 	$(this).attr('data-icon', $(this).attr('data-icon-open'));
+	
+	//TODO: $(this) (section) toggle, all others: hide
 });
 
 
