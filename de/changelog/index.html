@@ -115,6 +115,64 @@
 		</div>
 		
 
+		<div id="cl_20" class="changelogVersion closed" data-version="2.0">
+			<span class="fs1 toggle" aria-hidden="true" data-icon="&#xe005;" data-icon-open="&#xe004;" data-icon-closed="&#xe005;"></span>
+			<h3>Änderungen in Version 2.00</h3>
+			<p>Die größte Änderung im courseplay ist natürlich die Multiplayerfähigkeit. Dabei werden beim Spielstart alle Werte und sogar gespeicherte Kurse vom Host an die Clients übertragen. Das kann mitunter ein bisschen dauern ist aber notwendig.</p>
+			<p>Neben zahlreichen Bugfixes und Performance-Optimierungen die hier nicht weiter erwähnt werden sollen gibt es im wesentlichen die folgende Neuerungen:</p>
+			<ul>
+				<li>Kursverwaltung: Gespeicherte Kurse werden jetzt alphabetisch sortiert und werden immmer global für alle Fahrzeuge gespeichert. Dadurch ist kein Synchronisieren der Kurse zwischen den einzelnen Fahrzeugen mehr nötig und der Speicherverbrauch ist drastisch gesunken.</li>
+				<li>Kurse aufnhemen: Das Pausieren der Kursaufnahme wurde überarbeitet. Man kann jetzt die Kursaufzeichnung pausieren und die letzten Wegpunkte löschen. Dabei wird jetzt immer nur der letzte Wegpunkt angezeigt und nicht mehr alle.</li>
+				<li>
+					<h4>Neu: Kurs Offset</h4>
+					Dieses Feature ist noch experimentell und soll dafür sorgen, dass der Schlepper den gespeicherten Kurs leicht versetzt abfährt. Gedacht ist dies zum Beispiel für Ballensammelwagen.
+				</li>
+				<li>
+					<h4>Neue Kurskombination:</h4>
+					Ihr könnt beim Einfahren eines Kurses jetzt Kreuzungspunkte setzen. Wenn ihr später mehrere Kurse hintereinander ladet werden diese immer am ersten gemeinsamen Kreuzungspunkt (Abstand unter 30 Metern!) zusammengefügt. Damit könnt ihr also auch Teile von Routen wieder verwenden.
+				</li>
+				<li>Das Rückwärtsfahren wurden optimiert und sollte jetzt wieder richtig funktionieren.</li>
+				<li>Wenn ihr das Spiel speichert werden die Einstellungen eurer Abfahrer mit gespeichert. Nach dem Neuladen müsst ihr also normalerweise nichts mehr einstellen. Die zuvor geladenen Kurse und Einstellungen sollten komplett wieder verfügbar sein.</li>
+				<li>Außerdem gibt es neue Symbole für die Wegpunkte und spezielle Wegpunkte wie Kreuzungspunkte und Startpunkte sind auch sichtbar wenn ihr nicht im Fahrzeug seid welches die Route gespeichert hat.</li>
+			</ul>
+		</div>
+		
+
+		<div id="cl_16" class="changelogVersion closed" data-version="1.6">
+			<span class="fs1 toggle" aria-hidden="true" data-icon="&#xe005;" data-icon-open="&#xe004;" data-icon-closed="&#xe005;"></span>
+			<h3>Änderungen in Version 1.6</h3>
+			<ul>
+				<li>Neu hinzugekommen sind vor allem der Feldmodus mit dem man Ballen pressen und Heusammeln kann. Der Güllemodus wurde weiter perfektioniert und es ist jetzt auch möglich den Abfahrhelfer in Drescher und Häcksler einzubauen. Damit kann man beispielsweise mit Dreschern im Helfermodus Kurse aufzeichnen lassen die man dann später für den Gülle- oder Feldmodus verändern kann.</li>
+				<li>Zudem gibt es eine Steuerung des Abfahrhelfers aus dem Drescher heraus. Man kann einen Abfahrhelfer rufen, starten, stoppen und beim Häcksler die Seite des Abfahrers ändern.</li>
+				<li>Beim Abfahrhelfer kann man jetzt einstellen bei wieviel Prozenz Füllstand er frühzeitig abfahren soll. Hat ein Abfahrer zum Beispiel einen Füllstand von 90% und der Drescher wendet am Ende des Feldes, fährt der Abfahrer gleich ab und wartet nicht auf das Wendemanöver.</li>
+				<li>Zudem fährt der Überladewagen an seinem Überladepunkt wieder zurück aufs Feld wenn er einen gewissen Füllstand unterschritten hat und für etwa 20 Sekunden kein weiterer Abfahrer zum überladen kommt.</li>
+				<li>Außerdem wurde gewünscht, dass der Abfahrhelfer auf der Straße seine Rundumleuchte einschaltet - das tut er jetzt ;)</li>
+				<li>Dann gab es natürlich auch noch etwas Feintuning:
+					<ul>
+						<li>Das unsinnige Kreiseln auf dem Feld sollte jetzt vorbei sein</li>
+						<li>HW80 Drehschemel und Agroliner Container werden jetzt auch unterstützt.</li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+		
+
+		<div id="cl_12" class="changelogVersion closed" data-version="1.2">
+			<span class="fs1 toggle" aria-hidden="true" data-icon="&#xe005;" data-icon-open="&#xe004;" data-icon-closed="&#xe005;"></span>
+			<h3>Änderungen in Version 1.2</h3>
+			<ul>
+				<li>Als neue Funktionen sind im wesentlichen der Düngemodus und das Rückwärtsfahren hinzugekommen. Außerdem wurde das Fahrverhalten (besonders in Kurven) verbessert und es werden mehr EntladeTrigger (Gras und Silage) erkannt.</li>
+				<li>Zudem kann man jetzt gespeicherte Kurse kombinieren indem man mehrere Kurse hintereinander lädt. Wenn man nur einen neuen Kurs laden will muss man allerdings jetzt vorher die Wegpunkte des alten zurücksetzen.</li>
+				<li>Außerdem ist der Abfahrhelfer jetzt kein "hireable" mehr, das heißt er verbraucht jetzt Benzin(Dünger..) beim Fahren. Damit der Abfahrer nicht einfach irgendwo stehen bleibt bekommt man eine Warnung sobald der Tank fast leer ist und bei einem minimalen Tankinhalt bleibt der Abfahrhelfer stehen damit man ihn noch bis zur Zapfsäule bekommt.</li>
+				<li>Im Menü wurde noch der Bug behoben, dass man das Menü mit allen Maustasten steuern konnte.</li>
+				<li>Natürlich gab es noch viele weitere kleine Bugfixes.</li>
+			</ul>
+			<br /><br />
+			<p>Dieses Mal geht ein besonders großer Dank an Wolverine, der einen Großteil dieses Updates (Düngemodus und Rückwärtsfahren) implementiert hat.</p>
+			<p>Wir haben weiterhin an einer Version 2 die komplett multiplayerfähig ist, die aktuelle Version 1.20 ist aber zumindest im MP vom Host bedienbar.</p>
+		</div>
+		
+
 	</section>
 
 

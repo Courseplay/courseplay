@@ -79,7 +79,7 @@ section { padding:30px 0; }
 
 
 #changelog li { padding:0 0 0.5em; }
-.changelogVersion { border-top:1px solid white; border-bottom:1px solid #E0E0E0; padding:2em 0; }
+.changelogVersion { border-top:1px solid #fcfcfc; border-bottom:1px solid #E0E0E0; padding:2em 0; }
 .changelogVersion:first-of-type { border-top:none; padding-top:0; }
 .changelogVersion:last-of-type { border-bottom:none; padding-bottom:0; }
 /*.changelogVersion.closed > ul { display:none; }*/ /* only via JS */
@@ -95,6 +95,10 @@ section { padding:30px 0; }
 	cursor: pointer;
 	position: relative;
 	top: -4px;
+}
+#changelog .toggle:hover, #changelog .toggle:focus, #changelog .toggle:active { 
+	border:1px solid #c6c6c6;
+	color:#444;
 }
 #changelog h3 { display:inline-block; }
 
