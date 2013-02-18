@@ -1,5 +1,5 @@
-section { width:350px; margin:0 auto; }
-section .col  { float:left; margin:0 1em; text-align:center; width:128px; }
+section { margin:0 auto; text-align:center; }
+section .col  { display:inline-block; margin:0 2em; text-align:center; width:128px; }
 .imgLink { display:block; }
 
 #language { border-bottom:1px solid #E0E0E0; }
