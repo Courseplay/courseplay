@@ -77,12 +77,14 @@ section { padding:30px 0; }
 .content p { margin-bottom:1em; }
 .content ul { list-style-position:outside; margin-left:1.15em; }
 
+
 #changelog li { padding:0 0 0.5em; }
 .changelogVersion { border-top:1px solid white; border-bottom:1px solid #E0E0E0; padding:2em 0; }
 .changelogVersion:first-of-type { border-top:none; padding-top:0; }
 .changelogVersion:last-of-type { border-bottom:none; padding-bottom:0; }
+/*.changelogVersion.closed > ul { display:none; }*/ /* only via JS */
 #changelog .toggle { 
-	display: inline-block;
+	display: none; /* inline-block */
 	border: 1px solid #d6d6d6;
 	background: #f9f9f9;
 	color: #888;
