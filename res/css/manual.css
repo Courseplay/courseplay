@@ -1,0 +1,18 @@
+.emphasize1 { font-weight:600; }
+
+.hudIcon {
+	background-image:url("../img/hudIcons.png");
+	background-repeat:no-repeat;
+	display:inline-block;
+	height:16px;
+	margin:0 3px;
+	position:relative;
+	top:1px;
+	width:16px;
+}
+.hudIcon.inline { top:3px; }
+#openCourse.hudIcon { background-position:0 -80px; }
+#addCourse.hudIcon { background-position:0 0; }
+#deleteCourse.hudIcon { background-position:0 -48px; }
+#plus.hudIcon { background-position:0 -96px; }
+#minus.hudIcon { background-position:0 -112px; }
