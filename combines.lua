@@ -139,6 +139,7 @@ function courseplay:register_at_combine(self, combine)
 	end
 
 	if table.getn(combine.courseplayers) == num_allowed_courseplayers then
+		courseplay:debug(tostring(self.id).." :  combine: "..tostring(combine.id).. "is already registered ", 1)
 		return false
 	end
 
@@ -148,7 +149,7 @@ function courseplay:register_at_combine(self, combine)
 		local vehicle_ID = 0
 		for k, vehicle in pairs(g_currentMission.vehicles) do --TODO: Liste einengen, nur Courseplayers
 			if vehicle.combineID ~= nil then
-				if vehicle.combineID == combine.id then
+				if vehicle.combineID == combine.id and vehicle.active_combine == nil then
 					courseplay:debug(tostring(vehicle.id).." : distanceToCombine:"..tostring(vehicle.distanceToCombine).." for combine.id:"..tostring(combine.id), 1)
 					if distance > vehicle.distanceToCombine then
 						distance = vehicle.distanceToCombine

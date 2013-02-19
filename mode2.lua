@@ -139,7 +139,7 @@ function courseplay:handle_mode2(self, dt)
 		if self.reachable_combines ~= nil then
 			if table.getn(self.reachable_combines) > 0 then
 				-- choose the combine that needs me the most
-				if self.best_combine ~= nil then
+				if self.best_combine ~= nil and self.active_combine == nil then
 					courseplay:debug(tostring(self.id)..": request check in: "..tostring(self.combineID), 1)
 					if courseplay:register_at_combine(self, self.best_combine) then
 						local leftFruit, rightFruit = courseplay:side_to_drive(self, self.best_combine, -10) --changed by THOMAS
@@ -285,9 +285,9 @@ function courseplay:unload_combine(self, dt)
 
 		if z1 > -10 then -- tractor in front of combine      --0
 			-- left side of combine
-			local cx_left, cy_left, cz_left = localToWorld(combine.rootNode, 20, 0, -20) --20,0, -30        (war 20,0,-25
+			local cx_left, cy_left, cz_left = localToWorld(combine.rootNode, 20, 0, -30) --20,0, -30        (war 20,0,-25
 			-- righ side of combine
-			local cx_right, cy_right, cz_right = localToWorld(combine.rootNode, -20, 0, -20) -- -20,0,-30            -20,0,-25
+			local cx_right, cy_right, cz_right = localToWorld(combine.rootNode, -20, 0, -30) -- -20,0,-30            -20,0,-25
 			local lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, cx_left, y, cz_left)
 			-- distance to left position
 			local disL = Utils.vector2Length(lx, lz)
@@ -303,7 +303,7 @@ function courseplay:unload_combine(self, dt)
 
 		else
 			-- tractor behind combine
-			currentX, currentY, currentZ = localToWorld(combine.rootNode, 0, 0, -25)
+			currentX, currentY, currentZ = localToWorld(combine.rootNode, 0, 0, -35)   -- -25
 		end
 
 		--if not self.calculated_course then
@@ -629,7 +629,7 @@ function courseplay:unload_combine(self, dt)
 		end
 
 		-- combine is not moving and trailer is under pipe
-		if not cornChopper and ((combine.movingDirection == 0 and lz <= 0.5) or lz < -0.1 * trailer_offset) then
+		if not cornChopper and combine.movingDirection == 0 and (lz <= 1 or lz < -0.1 * trailer_offset) then
 			self.info_text = courseplay:get_locale(self, "CPCombineWantsMeToStop") -- "Drescher sagt ich soll anhalten."
 			allowedToDrive = false
 		elseif cornChopper then
@@ -681,10 +681,7 @@ function courseplay:unload_combine(self, dt)
 			else
 				refSpeed = combine_speed
 			end
-			if combine.movingDirection == 0 then
-				refSpeed = self.field_speed * 1.5
-			end
-			if (combine.turnStage ~= 0 and lz < 20) or self.timer < self.drive_slow_timer then
+			if (combine.turnStage ~= 0 and lz < 20) or (self.timer < self.drive_slow_timer) or (combine.movingDirection == 0 and lz < 15) then
 				refSpeed = 4 / 3600
 				self.sl = 1
 				if self.ESLimiter == nil then
@@ -973,9 +970,10 @@ function courseplay:unload_combine(self, dt)
 	end
 
 	-- check traffic and calculate speed
+	
+	allowedToDrive = courseplay:check_traffic(self, true, allowedToDrive)
+	
 	if allowedToDrive then
-
-		allowedToDrive = courseplay:check_traffic(self, true, allowedToDrive)
 		if self.sl == nil then
 			self.sl = 3
 		end
