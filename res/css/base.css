@@ -116,7 +116,7 @@ kbd[title], .key[title] {
 	cursor: help;
 }
 .content p { font-size:0.95em; line-height:1.7em; margin-bottom:1em; }
-.content ul { list-style-position:outside; margin-left:1.15em; }
+.content ul, .content ol { list-style-position:outside; margin-left:1.15em; }
 
 
 #changelog li { padding:0 0 0.5em; }

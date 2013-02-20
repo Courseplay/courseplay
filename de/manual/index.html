@@ -46,14 +46,15 @@
 			<ul id="manualNav">
 				<li><a href="#controls">Steuerung</a></li>
 				<li><a href="#hud">HUD</a></li>
-				<li class="inset"><a href="#hud_driverControls">Abfahrhelfer Steuerung</a></li>
-				<li class="inset"><a href="#hud_saveCourse">Kurs speichern</a></li>
-				<li class="inset"><a href="#hud_manageCourses">Kurse verwalten</a></li>
-				<li class="inset"><a href="#hud_mode2settings">Einstellungen Combi Modus</a></li>
-				<li class="inset"><a href="#hud_manageCombine">Drescher verwalten</a></li>
-				<li class="inset"><a href="#hud_speeds">Geschwindigkeiten</a></li>
-				<li class="inset"><a href="#hud_generalSettings">Allgemeine Einstellungen</a></li>
-				<li class="inset"><a href="#hud_drivingSettings">Fahr-/Arbeitseinstellungen</a></li>
+					<li class="inset"><a href="#hud_driverControls">Abfahrhelfer Steuerung</a></li>
+					<li class="inset"><a href="#hud_saveCourse">Kurs speichern</a></li>
+					<li class="inset"><a href="#hud_manageCourses">Kurse verwalten</a></li>
+					<li class="inset"><a href="#hud_mode2settings">Einstellungen Combi Modus</a></li>
+					<li class="inset"><a href="#hud_manageCombine">Drescher verwalten</a></li>
+					<li class="inset"><a href="#hud_speeds">Geschwindigkeiten</a></li>
+					<li class="inset"><a href="#hud_generalSettings">Allgemeine Einstellungen</a></li>
+					<li class="inset"><a href="#hud_drivingSettings">Fahr-/Arbeitseinstellungen</a></li>
+				<li><a href="#driveModes">Fahrmodi</a></li>
 			</ul>
 			<div id="controls">
 				<h3>Steuerung</h3>
@@ -309,6 +310,57 @@
 				</ul>
 			</div>
 			
+			<div id="driveModes">
+				<h3>Fahrmodi</h3>
+				<p>Im Folgenden die Erklärung der verschiedenen Fahrmodi:</p>
+				<ol>
+					<li>
+						<h4>Abfahrer</h4>
+						<p>Der Traktor wartet am ersten Wegpunkt bis er beladen wird und voll ist. Dies kann an einem Silo, am Feldrand oder sonstwo erfolgen. Sobald der Füllstand mindestens die eingestellte Prozentzahl erreicht hat (<code>Abfahren bei %</code>), fährt der Abfahrer los. Sobald er durch einen Abladetrigger fährt, lädt er automatisch ab. Danach fährt er wieder zurück zum ersten Wegpunkt.</p>
+						<p>Der letzte Wegpunkt sollte in etwa 5 bis 10m vor dem ersten liegen und in etwa in die gleiche Richtung zeigen.</p>
+						<img src="../../res/img/manual_mode1_de.png" alt="Abfahrer Diagramm" class="infoImg">
+					</li>
+					<li>
+						<h4>kombiniert</h4>
+						<p>Der kombinierte Modus ist sehr ähnlich zum "Abfahrer"-Modus, insofern dass der Traktor einen Kurs abfährt und in einem Trigger entlädt. Zusätzlich tankt der Abfahrer aber noch einen Drescher oder Häcksler ab.</p>
+						<p>Der Traktor wartet am letzten Wegpunkt bis er einen Drescher/Häcksler in Reichweite hat dessen Füllstand über der im Traktor eingestellten Prozentzahl <code>Start&nbsp;bei&nbsp;%</code> liegt. Dann fährt er zum Drescher, von hinten heran unter die Pipe unt entlädt ihn. Wenn der Anhänger nocht nicht voll ist (<code>Abfahren&nbsp;bei&nbsp;%</code>), wendet der Schlepper und wartet im Feld auf seinen nächsten Einsatz. Sobal der Anhänger über <code>Abfahren bei %</code> gefüllt ist fährt der Abfahrer zum zweiten Wegpunkt, und von dort den Kurs ab (und entlädt, wie im Abfahrermodus, am Trigger automatisch).</p>
+						<p>Der Traktor hat zwei Möglichkeiten einen Drescher in Reichweite zu haben.
+							<ol>
+								<li><p>Der erste und letzte Punkt des Kurses liegen auf dem Feld auf dem der Drescher arbeitet. Dann erkennt der Abfahrer den Drescher zumeist automatisch (wenn das Feld nicht zu groß oder zu hügelig ist). Er erkennt auch mehrere Drescher und sucht sich den für ihn passenderen zum Abtanken (basierend auf Entfernung und Füllstand des Dreschers).</p></li>
+								<li><p>Dem Traktor wird ein fester Drescher zugewiesen (siehe <code>HUD:&nbsp;Drescher&nbsp;verwalten</code>). Nun wird nur noch dieser eine, ausgewählte Drescher abgetankt. Dafür ist es jetzt auch egal ob der Abfahrer auf dem selben Feld steht wie der Drescher.</p></li>
+							</ol>
+						</p>
+					</li>
+					<li>
+						<h4>Überladewagen</h4>
+						<p>Der Überlademodus ist leicht ähnlich zum kombinierten Modus, insofern dass der Fahrer einen Drescher abtankt. Aber anstatt dann zu einem Entladetrigger zu fahren, überlädt er in einen wartended Anhänger. Auch hier kann der Drescher automatisch gefunden oder manuell gesetzt werden.</p>
+						<p>Der Startpunkt des Kurses sollte in der Nähe eines wartenden Anhängers beginnen (z.B. ein Traktor im "Abfahrer"-Modus). Der Kurs muss dann hin zum Hänger führen. Wenn die Pipe des Überladewagens über dem wartenden Hänger ist (also überladen werden kann), muss ein <span class="emphasize1">Wartepunkt</span> gesetzt werden. Dieser signalisiert dem Überladewagen, wenn der Kurs abgefahren wird, dass hier angehalten, die Pipe ausgeklappt und der Überladevorgang gestartet werden soll. Es wird währenddessen eine Infomeldung "XYZ hat Überladepunkt erreicht." eingeblendet. Wenn der Überladewagen leer ist wird dieser seinen Kurs automatisch fortsetzen und am letzten Wegpunkt auf seinen nächsten Einsatz warten.</p>
+						<p>Nach dem Wartepunkt muss der Kurs noch etwas weiter (raus aus dem "Gefahrenbereich") gehen, idealerweise hin zum Anfangspunkt.</p>
+						<img src="../../res/img/manual_mode3_de.png" alt="Überladen Diagramm" class="infoImg">
+					</li>
+					<li>
+						<h4>Düngen und Säen</h4>
+						<p></p>
+					</li>
+					<li>
+						<h4>Überführung</h4>
+						<p></p>
+					</li>
+					<li>
+						<h4>Feldarbeit</h4>
+						<p></p>
+					</li>
+					<li>
+						<h4>Drescher fährt selbst abtanken</h4>
+						<p></p>
+					</li>
+					<li>
+						<h4>Güllezubringer</h4>
+						<p></p>
+					</li>
+				</ol>
+			</div>
+		
 		</div> <!-- #manualTabs -->
 	</section>
 
