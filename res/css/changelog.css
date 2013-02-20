@@ -1,0 +1,67 @@
+#changelog li { padding:0 0 0.5em; }
+.changelogVersion { border-top:1px solid #fcfcfc; border-bottom:1px solid #E0E0E0; padding:2em 0; }
+.changelogVersion:first-of-type { border-top:none; padding-top:0; }
+.changelogVersion:last-of-type { border-bottom:none; padding-bottom:0; }
+/*.changelogVersion.closed > ul { display:none; }*/ /* only via JS */
+#changelog .toggle { 
+	background: #f9f9f9;
+	border-radius: 3px;
+	border: 1px solid #d6d6d6;
+	color: #888;
+	cursor: pointer;
+	display: none; /* becomes inline-block via JS */
+	font-size: 9px;
+	margin:0 1em 0 0;
+	padding: 3px 5px;
+	position: relative;
+	text-align: center;
+	top:-5px;
+}
+#changelog .toggle:hover, #changelog .toggle:focus { 
+	border:1px solid #19A7D0;
+	color:#20A8DB;
+/*	border:1px solid #c6c6c6;
+	color:#444; */
+}
+#changelog .toggle:active { 
+	border:1px solid #19A7D0;
+	color:#20A8DB;
+}
+
+.changelogVersion ul { margin-left:0; padding-left:0; }
+
+/* CSS3 */
+.changelogVersion ul li.new, .changelogVersion ul li.fix, .changelogVersion ul li.bug, .changelogVersion ul li.change {
+	list-style:none;
+	margin-left:0;
+	padding-left:0;
+}	
+.changelogVersion ul li.new:before, .changelogVersion ul li.fix:before, .changelogVersion ul li.bug:before, .changelogVersion ul li.change:before {
+	border-radius:3px;
+	color:#F0F0F0;
+	content:attr(class);
+	display:inline-block;
+	font-size:10px;
+	font-weight:bold;
+	height:1em;
+	line-height:1em;
+	margin-right:10px;
+	padding:3px 2px;
+	text-align:center;
+	text-transform:uppercase;
+	width:50px;
+}
+.changelogVersion ul li.new:before    { background-color:#2c9dc6; }
+.changelogVersion ul li.fix:before    { background-color:#42c62c; }
+.changelogVersion ul li.bug:before    { background-color:#b82b0a; }
+.changelogVersion ul li.change:before { background-color:#ffa800; color:white; }
+
+/* IMAGES */
+.changelogVersion ul li.new    { list-style-image:url(../img/changelogIcons_01.png); margin-left:44px; }
+.changelogVersion ul li.fix    { list-style-image:url(../img/changelogIcons_02.png); margin-left:44px; }
+.changelogVersion ul li.bug    { list-style-image:url(../img/changelogIcons_03.png); margin-left:44px; }
+.changelogVersion ul li.change { list-style-image:url(../img/changelogIcons_04.png); margin-left:44px; }
+/**/
+#changelog h3 { display:inline-block; }
+
+/* .changelogVersion.closed ul { display:none; } */

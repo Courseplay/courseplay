@@ -21,14 +21,23 @@ CP.el.changelogToggles.on('click', function() {
 		$(this).attr('data-icon', $(this).attr('data-icon-closed'));
 	});
 
-	t.parents('div.changelogVersion').toggleClass('closed open').find('> ul, > p').slideFadeToggle(CP.animationTime);
+	t.parents('div.changelogVersion').toggleClass('closed open').find('> ul, > p').slideFadeToggle(CP.animationTime, scrollTo('#' + t.parents('div.changelogVersion').attr('id')));
 	
 	if (t.parents('div.changelogVersion').hasClass('closed')) {
 		t.attr('data-icon', closedIcon);
 	} else {
 		t.attr('data-icon', openIcon);
 	};
+	
+	console.log('#' + t.parents('div.changelogVersion').attr('id'));
+	
 });
+
+function scrollTo(targetId) {
+	$('html, body').animate({
+		scrollTop: $(targetId).offset().top
+	}, CP.animationTime);
+} //END scrollTo()	
 
 
 

@@ -33,6 +33,8 @@ html {
 	background:url(../img/white_bed_sheet.png) 0 0 repeat scroll #f5f5f5;
 	font-family:Open Sans, Segoe UI, Trebuchet MS, sans-serif;
 }
+body { height:auto; }
+
 #container {
 	color: #323232;
 	font-size: 100%;
@@ -53,7 +55,7 @@ a:not(.imgLink):hover, a:not(.imgLink):focus, a:not(.imgLink):active {
 header h1 { text-align:center; }
 
 h2, h3, h4 {
-	font-family:'adelle_sbsemibold', 'Adelle-SemiBold', Helvetica, Myriad Pro, Segoe UI, sans-serif;
+	font-family:'Adelle-SemiBold', 'adelle_sbsemibold', Helvetica, Myriad Pro, Segoe UI, sans-serif;
 	font-weight:300;
 }
 h2 { border-bottom:1px solid #d6d6d6; font-size:2em; margin:0 0 15px; }
@@ -62,8 +64,13 @@ h4 { font-size:1.05em; }
 
 section { padding:30px 0; }
 
+.serif {
+	font-family:'ACaslonPro-Italic', Caslon, 'Caslon Pro', Garamond, serif;
+	font-style:italic;
+}
+
 #navSection { position:relative; }
-#mainNav { font-family:'adelle_sbsemibold', 'Adelle-SemiBold', Helvetica, Myriad Pro, Segoe UI, sans-serif; font-size:1em; font-variant:small-caps; font-weight:300; letter-spacing:1px; text-align:center; text-transform:lowercase; }
+#mainNav { font-family:'Adelle-SemiBold', 'adelle_sbsemibold', Helvetica, Myriad Pro, Segoe UI, sans-serif; font-size:1em; font-variant:small-caps; font-weight:300; letter-spacing:1px; text-align:center; text-transform:lowercase; }
 #mainNav li { border-right:1px solid #646464; display:inline; padding:0 0.5em; }
 #mainNav li.active { opacity:0.65; font-size:1.1em; font-weight:300; }
 #mainNav li:first-of-type { padding-left:0; }
@@ -71,7 +78,7 @@ section { padding:30px 0; }
 #mainNav a .info { 
 	color:#404040; 
 	display:none; 
-	font-family:Segoe UI; font-size:0.9em; font-variant:normal; font-weight:300; 
+	font-family:Segoe UI, sans-serif; font-size:0.9em; font-variant:normal; font-weight:300; 
 	position:absolute; top:0; left:0; 
 	text-align:center; 
 	width:100%; 
@@ -154,40 +161,6 @@ ol > li:before {
 }
 li ol, li ul { margin-top:6px; }
 ol ol li:last-child { margin-bottom:0; }
-
-#changelog li { padding:0 0 0.5em; }
-.changelogVersion { border-top:1px solid #fcfcfc; border-bottom:1px solid #E0E0E0; padding:2em 0; }
-.changelogVersion:first-of-type { border-top:none; padding-top:0; }
-.changelogVersion:last-of-type { border-bottom:none; padding-bottom:0; }
-/*.changelogVersion.closed > ul { display:none; }*/ /* only via JS */
-#changelog .toggle { 
-	background: #f9f9f9;
-	border-radius: 3px;
-	border: 1px solid #d6d6d6;
-	color: #888;
-	cursor: pointer;
-	display: none; /* becomes inline-block via JS */
-	font-size: 9px;
-	margin:0 1em 0 0;
-	padding: 3px 5px;
-	position: relative;
-	text-align: center;
-	top:-5px;
-}
-#changelog .toggle:hover, #changelog .toggle:focus { 
-	border:1px solid #19A7D0;
-	color:#20A8DB;
-/*	border:1px solid #c6c6c6;
-	color:#444; */
-}
-#changelog .toggle:active { 
-	border:1px solid #19A7D0;
-	color:#20A8DB;
-}
-#changelog h3 { display:inline-block; }
-
-/* .changelogVersion.closed ul { display:none; } */
-
 
 footer { border-top:1px solid #D6D6D6; font-size:0.7em; margin-top:3em; padding:1em 0; }
 footer span { padding-left:0.5em; }
