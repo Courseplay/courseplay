@@ -4,7 +4,8 @@
 	<meta charset='utf-8' />
 	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
 	<link rel="stylesheet" href="../../res/css/reset.css">
-	<link rel="stylesheet" href="../../res/fonts/icomoon.css">
+	<link rel="stylesheet" href="../../res/fonts/icomoon.css" type="text/css" charset="utf-8">
+	<link rel="stylesheet" href="../../res/fonts/adelle/stylesheet.css" type="text/css" charset="utf-8">
 	<link rel="stylesheet" href="../../res/css/base.css">
 	<link rel="stylesheet" href="../../res/css/manual.css">
 	<!--[if lte IE 7]><script src="res/js/lte-ie7.js"></script><![endif]-->
@@ -42,127 +43,273 @@
 	<section id="manual" class="content">
 		<h2>Anleitung</h2>
 		<div id="manualTabs">
-		<ul>
-			<li><a href="#controls">Steuerung</a></li>
-			<li><a href="#hud">HUD</a></li>
-			<li class="inset"><a href="#hud_driverControls">Abfahrhelfer Steuerung</a></li>
-			<li class="inset"><a href="#hud_saveCourse">Kurs speichern</a></li>
-			<li class="inset"><a href="#hud_manageCourses">Kurse verwalten</a></li>
-			<li class="inset"><a href="#hud_mode2settings">Einstellungen Combi Modus</a></li>
-			<li class="inset"><a href="#hud_manageCombine">Drescher verwalten</a></li>
-			<li class="inset"><a href="#hud_speeds">Geschwindigkeiten</a></li>
-		</ul>
-		<div id="controls">
-			<h3>Steuerung</h3>
-			<p>Die Steuerung des Abfahrhelfers funktioniert im wesentlichem mit der Maus, da freie Tasten im Landwirtschafts Simulator ja sehr rah sind. Mit einem Klick auf die rechte Maustaste aktiviert ihr das Courseplay HUD, in dem ihr den Abfahrer konfigurieren könnt. Zusätzlich sind einige Funktionen wie Abfahrer starten und stoppen auch über die Tastatur über die Tasten <code>STRG</code>+<code>NUM 7</code> bis <code>STRG</code>+<code>NUM 9</code> belegt. Im HUD kann das Öffnen/Schließen auch auf die Tastatur gelegt werden (standardmäßig: <code>STRG</code>+<code>ENTF</code>).</p>
-		</div>
-		
-		<div id="hud">
-			<h3>HUD</h3>
-			<p>Wenn ihr das HUD öffnet wird automatisch die Maussteuerung aktiviert. Das heißt ihr könnt euch mit der Maus nicht mehr umgucken. Um die Maussteuerung zu deaktivieren müsst ihr einfach nochmal auf die rechte Maustaste klicken. Alternativ könnt ihr auch auf das X oben rechts im HUD klicken. Dabei wird das HUD geschlossen und die Maussteuerung wieder deaktiviert.</p>
-			<p>Das HUD ist in mehrere Unterseiten unterteilt. Diese könnt ihr mit den links-/rechts-Pfeilen im oberen Bereich des HUDs wechseln. Im mittleren Bereich des HUDs könnt ihr auf jeder Unterseite verschiede Einstellungen vornehmen oder Befehle geben. Klickt dazu einfach auf die gewünschte Aktion. Bestimmte Werte oder Einstellungen wie das Durchblättern der Kurse, oder das Einstellen von Breiten, Geschwindigkeiten oder Prozentzahlen etc. können durch Drücken der <code>STRG</code>-Taste in größeren Schritten verändert werden.</p>
-			<p>Im unteren Bereich des HUDs findet ihr Infos über euren Abfahrer den geladenen Kurs und den aktuellen Status. Dort könnt ihr durch klick auf die Diskette euren eingefahrenen Kurs auch speichern.</p>
-		</div>
-		
-		<div id="hud_driverControls">
-			<h3>HUD: Abfahrhelfer Steuerung</h3>
-			<ul>
-				<li>
-					<h4>Kursaufzeichnung beginnen</h4>
-					<p>Mit dieser Option wird der Aufnahmemodus des Abfahrhelfers aktiviert. Ihr könnt damit den Kurs einfahren den der Abfahrer später fahren soll. Bei Aktivierung werden anfangs drei Eier im Abstand von 10-20 Metern gesetzt. Ihr solltet darauf achten, dass ihr bis zum dritten Fass nach Möglichkeit geradeaus fahrt.</p>
-					<p>Wenn ihr diese Funktion aktiviert habt könnt ihr mit der rechten Maustaste die Maussteuerung deaktivieren damit ihr euch beim Einfahren des Kurses auch umschauen könnt.</p>
-				</li>
-				<li>
-					<h4>Kursaufzeichnung anhalten</h4>
-					<p>Wenn die Kursaufzeichnung läuft könnt ihr mit dieser Funktion die Kursaufzeichnung pausieren. Es wird ein gelber Pfeil angezeigt der zum letzten Wegpunkt zeigt. Zusätzlich könnt ihr in diesem Modus auch den letzten Wegpunkt löschen.</p>
-				</li>
-				<li>
-					<h4>Kursaufzeichnung beenden</h4>
-					<p>Diese Aktion ist nur im Aufnahmemodus vergügbar und dient dazu diesen zu beenden. Klickt auf diese Funktion wenn ihr den Endpunkt eurer eingefahrenen Route erreicht habt. Es empfiehlt sich, dass der Endpunkt etwa 5-10 Meter vor dem Startpunkt liegt und dass man grob aus der Richtung kommt in die der Abfahrer beim Startpunkt auch weiterfahren soll.</p>
-				</li>
-				<li>
-					<h4>Hier Wartepunkt setzen</h4>
-					<p>Im Aufnahmemodus habt ihr die Möglichkeit auf der Strecke Wartepunkte zu setzen. An diesen Punkten wird der Abfahrer später beim Abfahren anhalten bis man ihn manuell weiter schickt oder die eingestellte Zeit abgelaufen ist. Wenn ein Abfahrer einen Wartepunkt erreicht hat wird euch das am unteren Bildschirmrand angezeigt.</p>
-				</li>
-				<li>
-					<h4>Abfahrer einstellen</h4>
-					<p>Wenn ihr einen Kurs eingefahren oder geladen habt könnt ihr jetzt den Abfahrer einstellen. Dabei wird der Abfahrhelfer aktiviert und fährt seine Route ab.</p>
-				</li>
-				<li>
-					<h4>Abfahrer entlassen</h4>
-					<p>Den aktivierten Abfahrer könnt ihr natürlich auch jederzeit entlassen bzw. anhalten. Wenn ihr den Abfahrhelfer später wieder aktiviert wird er seine Route am letzen Punkt fortführen.</p>
-				</li>
-				<li>
-					<h4>weiterfahren</h4>
-					<p>Diese Option steht euch zur Verfügung wenn der Abfahrer einen Wartepunkt erreicht hat.</p>
-				</li>
-				<li>
-					<h4>Abfahrer-Typ wechseln</h4>
-					<p>Damit der Abfahrhelfer möglichst viele Aufgaben erledigen kann gibt es verschiedene Abfahrhelfer Typen. Der aktuelle Typ wird im unteren Bereich des HUDs angezeigt. Mit klick auf diese Aktion könnt ihr die Typen durchgehen.</p>
-					<p>Die Funktionen der einzelnen Abfahrtypen werden unter <a href="">[TODO: LINK]</a> beschrieben.</p>
-				</li>
-				<li>
-					<h4>Wegpunkte löschen</h4>
-					<p>Wenn ein Kurs eingefahren ist kannst du über diese Option den Kurs wieder zurücksetzen. Dabei wird der gespeicherte Kurs nicht aus der Konfigurationsdaten gelöscht sondern nur der aktuelle Abfahrer wieder zurückgesetzt.</p>
-				</li>
+			<ul id="manualNav">
+				<li><a href="#controls">Steuerung</a></li>
+				<li><a href="#hud">HUD</a></li>
+				<li class="inset"><a href="#hud_driverControls">Abfahrhelfer Steuerung</a></li>
+				<li class="inset"><a href="#hud_saveCourse">Kurs speichern</a></li>
+				<li class="inset"><a href="#hud_manageCourses">Kurse verwalten</a></li>
+				<li class="inset"><a href="#hud_mode2settings">Einstellungen Combi Modus</a></li>
+				<li class="inset"><a href="#hud_manageCombine">Drescher verwalten</a></li>
+				<li class="inset"><a href="#hud_speeds">Geschwindigkeiten</a></li>
+				<li class="inset"><a href="#hud_generalSettings">Allgemeine Einstellungen</a></li>
+				<li class="inset"><a href="#hud_drivingSettings">Fahr-/Arbeitseinstellungen</a></li>
 			</ul>
-		</div>
-
-		<div id="hud_saveCourse">
-			<h3>HUD: Kurs speichern</h3>
-			<p>Im unteren Breich des Huds findet ihr eine Diskette. Wenn ihr einen Kurs eingefahren habt könnt ihr durch Klick auf die Diskette euren Kurs speichern. Dabei wird im oberen Bereich eine Eingabemaske angezeigt. Hier könnt ihr mit der Tastatur einen Namen für euren Kurs vergeben und diesen mit <code>ENTER</code> (Eingabetaste) bestätigen.</p>
-		</div>
-		
-		<div id="hud_manageCourses">
-			<h3>HUD: Kurse verwalten</h3>
-			<p>Auf dieser Unterseite des HUD findet ihr eine Übersicht eurer gespeicherten Kurse. Die Liste kann über die hoch-/runter-Pfeile am rechten HUD-Rand durchgeblättert werden. Bei zusätzlichem Drücken der <code>STRG</code>-Taste wird die Liste schneller durchblättert.</p>
-			<p>Ein Kurs hat jeweils drei Aktionen:
+			<div id="controls">
+				<h3>Steuerung</h3>
+				<p>Die Steuerung des Abfahrhelfers funktioniert im wesentlichem mit der Maus, da freie Tasten im Landwirtschafts Simulator ja sehr rah sind. Mit einem Klick auf die <span class="emph1">rechte Maustaste</span> aktiviert ihr das Courseplay HUD, in dem ihr den Abfahrer konfigurieren könnt. Zusätzlich sind einige Funktionen wie Abfahrer starten und stoppen auch über die Tastatur über die Tasten <kbd title="Steuerung">STRG</kbd>+<kbd title="Numpad 7">NUM 7</kbd> bis <kbd title="Steuerung">STRG</kbd>+<kbd title="Numpad 9">NUM 9</kbd> belegt. Im HUD kann das Öffnen/Schließen auch auf die Tastatur gelegt werden (standardmäßig: <kbd title="Steuerung">STRG</kbd>+<kbd title="Entfernen">ENTF</kbd>).</p>
+			</div>
+			
+			<div id="hud">
+				<h3>HUD</h3>
+				<p>Wenn ihr das HUD öffnet wird automatisch die Maussteuerung aktiviert. Das heißt ihr könnt euch mit der Maus nicht mehr umgucken. Um die Maussteuerung zu deaktivieren müsst ihr einfach nochmal auf die rechte Maustaste klicken. Alternativ könnt ihr auch auf das <span id="closeHud" class="hudIcon inline"></span> oben rechts im HUD klicken. Dabei wird das HUD geschlossen und die Maussteuerung wieder deaktiviert.</p>
+				<p>Das HUD ist in mehrere Unterseiten unterteilt. Diese könnt ihr mit den links-/rechts-Pfeilen im oberen Bereich des HUDs wechseln. Im mittleren Bereich des HUDs könnt ihr auf jeder Unterseite verschiede Einstellungen vornehmen oder Befehle geben. Klickt dazu einfach auf die gewünschte Aktion. Bestimmte Werte oder Einstellungen wie das Durchblättern der Kurse, oder das Einstellen von Breiten, Geschwindigkeiten oder Prozentzahlen etc. können durch Drücken der <kbd title="Steuerung">STRG</kbd>-Taste in größeren Schritten verändert werden.</p>
+				<p>Im unteren Bereich des HUDs findet ihr Infos über euren Abfahrer den geladenen Kurs und den aktuellen Status. Dort könnt ihr durch klick auf die Diskette euren eingefahrenen Kurs auch speichern.</p>
+			</div>
+			
+			<div id="hud_driverControls">
+				<h3>HUD: Abfahrhelfer Steuerung</h3>
 				<ul>
 					<li>
-						<h4>Öffnen <span id="openCourse" class="hudIcon"></span></h4>
-						Den Kurs laden. Wenn schon ein Kurs geladen ist wird der Kurs auf den geklickt wurde mit dem aktuellen Kurs am ersten gemeinsamen Kreuzungspunkt kombiniert.
-						</li>
-					<li><h4>Hinzufügen <span id="addCourse" class="hudIcon"></span></h4>Wenn schon ein Kurs geladen ist wird der Kurs auf den geklickt wurde an den aktuellen Kurs angefügt.</li>
-					<li><h4>Löschen <span id="deleteCourse" class="hudIcon"></span></h4>Der Kurs wird aus Courseplay komplett entfernt, und wird auch beim nächsten Spielstart nicht mehr zur Verfügung stehen.</li>
+						<h4>Kursaufzeichnung beginnen</h4>
+						<p>Mit dieser Option wird der Aufnahmemodus des Abfahrhelfers aktiviert. Ihr könnt damit den Kurs einfahren den der Abfahrer später fahren soll. Bei Aktivierung werden anfangs drei Eier im Abstand von 10-20 Metern gesetzt. Ihr solltet darauf achten, dass ihr bis zum dritten Fass nach Möglichkeit geradeaus fahrt.</p>
+						<p>Wenn ihr diese Funktion aktiviert habt könnt ihr mit der rechten Maustaste die Maussteuerung deaktivieren damit ihr euch beim Einfahren des Kurses auch umschauen könnt.</p>
+					</li>
+					<li>
+						<h4>Kursaufzeichnung anhalten</h4>
+						<p>Wenn die Kursaufzeichnung läuft könnt ihr mit dieser Funktion die Kursaufzeichnung pausieren. Es wird ein gelber Pfeil angezeigt der zum letzten Wegpunkt zeigt. Zusätzlich könnt ihr in diesem Modus auch den letzten Wegpunkt löschen.</p>
+					</li>
+					<li>
+						<h4>Kursaufzeichnung beenden</h4>
+						<p>Diese Aktion ist nur im Aufnahmemodus vergügbar und dient dazu diesen zu beenden. Klickt auf diese Funktion wenn ihr den Endpunkt eurer eingefahrenen Route erreicht habt. Es empfiehlt sich, dass der Endpunkt etwa 5-10 Meter vor dem Startpunkt liegt und dass man grob aus der Richtung kommt in die der Abfahrer beim Startpunkt auch weiterfahren soll.</p>
+					</li>
+					<li>
+						<h4>Hier Wartepunkt setzen</h4>
+						<p>Im Aufnahmemodus habt ihr die Möglichkeit auf der Strecke Wartepunkte zu setzen. An diesen Punkten wird der Abfahrer später beim Abfahren anhalten bis man ihn manuell weiter schickt oder die eingestellte Zeit abgelaufen ist. Wenn ein Abfahrer einen Wartepunkt erreicht hat wird euch das am unteren Bildschirmrand angezeigt.</p>
+					</li>
+					<li>
+						<h4>Abfahrer einstellen</h4>
+						<p>Wenn ihr einen Kurs eingefahren oder geladen habt könnt ihr jetzt den Abfahrer einstellen. Dabei wird der Abfahrhelfer aktiviert und fährt seine Route ab.</p>
+					</li>
+					<li>
+						<h4>Abfahrer entlassen</h4>
+						<p>Den aktivierten Abfahrer könnt ihr natürlich auch jederzeit entlassen bzw. anhalten. Wenn ihr den Abfahrhelfer später wieder aktiviert wird er seine Route am letzen Punkt fortführen.</p>
+					</li>
+					<li>
+						<h4>weiterfahren</h4>
+						<p>Diese Option steht euch zur Verfügung wenn der Abfahrer einen Wartepunkt erreicht hat.</p>
+					</li>
+					<li>
+						<h4>Abfahrer-Typ wechseln</h4>
+						<p>Damit der Abfahrhelfer möglichst viele Aufgaben erledigen kann gibt es verschiedene Abfahrhelfer Typen. Der aktuelle Typ wird im unteren Bereich des HUDs angezeigt. Mit klick auf diese Aktion könnt ihr die Typen durchgehen.</p>
+						<p>Die Funktionen der einzelnen Abfahrtypen werden unter <a href="">[TODO: LINK]</a> beschrieben.</p>
+					</li>
+					<li>
+						<h4>Wegpunkte löschen</h4>
+						<p>Wenn ein Kurs eingefahren ist kannst du über diese Option den Kurs wieder zurücksetzen. Dabei wird der gespeicherte Kurs nicht aus der Konfigurationsdaten gelöscht sondern nur der aktuelle Abfahrer wieder zurückgesetzt.</p>
+					</li>
 				</ul>
-			</p>
-			<p>Um einen gänzlich neuen Kurs zu laden oder einzufahren, muss der aktuelle Kurs zurückgesetzt werden (siehe "Abfahrhelfer-Steuerung" > "Wegpunkte löschen").</p>
-		</div>
+			</div>
+
+			<div id="hud_saveCourse">
+				<h3>HUD: Kurs speichern</h3>
+				<p>Im unteren Breich des Huds findet ihr eine Diskette. Wenn ihr einen Kurs eingefahren habt könnt ihr durch Klick auf die Diskette euren Kurs speichern. Dabei wird im oberen Bereich eine Eingabemaske angezeigt. Hier könnt ihr mit der Tastatur einen Namen für euren Kurs vergeben und diesen mit <kbd>ENTER</kbd> (Eingabetaste) bestätigen.</p>
+			</div>
+			
+			<div id="hud_manageCourses">
+				<h3>HUD: Kurse verwalten</h3>
+				<p>Auf dieser Unterseite des HUD findet ihr eine Übersicht eurer gespeicherten Kurse. Die Liste kann über die hoch-/runter-Pfeile am rechten HUD-Rand durchgeblättert werden.</p>
+				
+				<dl class="buttonInfo">
+					<dt>Standard-Änderung</dt>
+					<dd>5 Kurse</dd>
+					<div class="clearfix"></div>
+					<dt><kbd title="Steuerung">STRG</kbd>-Änderung</dt>
+					<dd>10 Kurse</dd>
+					<div class="clearfix"></div>
+				</dl>
+
+				<p>Ein Kurs hat jeweils drei Aktionen:
+					<ul>
+						<li>
+							<h4>Öffnen <span id="openCourse" class="hudIcon"></span></h4>
+							Den Kurs laden. Wenn schon ein Kurs geladen ist wird der Kurs auf den geklickt wurde mit dem aktuellen Kurs am ersten gemeinsamen Kreuzungspunkt kombiniert.
+							</li>
+						<li><h4>Hinzufügen <span id="addCourse" class="hudIcon"></span></h4>Wenn schon ein Kurs geladen ist wird der Kurs auf den geklickt wurde an den aktuellen Kurs angefügt.</li>
+						<li><h4>Löschen <span id="deleteCourse" class="hudIcon"></span></h4>Der Kurs wird aus Courseplay komplett entfernt, und wird auch beim nächsten Spielstart nicht mehr zur Verfügung stehen.</li>
+					</ul>
+				</p>
+				<p>Um einen gänzlich neuen Kurs zu laden oder einzufahren, muss der aktuelle Kurs zurückgesetzt werden (siehe "Abfahrhelfer-Steuerung" > "Wegpunkte löschen").</p>
+			</div>
+			
+			<div id="hud_mode2settings">
+				<h3>HUD: Einstellungen Combi Modus</h3>
+				<p>Diese Einstellungen gelten (wie der Name es andeutet) nur für den kombinierten Modus und den Überlademodus. Hiermit könnt ihr euren Abfahrer an den jeweiligen Drescher anpassen. Ihr könnt die Werte mit einem Klick auf das +/- Symbol daneben anpassen (mit gedrückter <kbd title="Steuerung">STRG</kbd>-Taste verstellt ihr die Werte in größeren Abständen).</p>
+				<ul>
+					<li>
+						<h4>seitl. Abstand</h4>
+						<p>Dieser Wert definiert den seitlichen Abstand den ein Abfahrer zum Drescher oder Häcksler beim nebenher fahren einhalten soll. Standardmäßig ist "auto" eingestellt - damit passt sich der Abfahrer seitlich automatisch an den Drescher oder Häcksler an. Durch <span id="plus" class="hudIcon inline"></span> und <span id="minus" class="hudIcon inline"></span> kann der Wert verstellt und auf "manuell" gesetzt werden.</p>
+						<dl class="buttonInfo">
+							<dt>Standard-Änderung</dt>
+							<dd>0.1m</dd>
+							<div class="clearfix"></div>
+							<dt><kbd title="Steuerung">STRG</kbd>-Änderung</dt>
+							<dd>0.5m</dd>
+							<div class="clearfix"></div>
+						</dl>
+					</li>
+					<li>
+						<h4>Pipeabstand</h4>
+						<p>Dieser Wert legt den vertikalen Versatz zum Schlepper an (vor/zurück). Dies wird benutzt um den Hänger direkt unter die Pipe zu bekommen. Der Wert ist standardmäßig auf "auto". Anders als beim seitlichen Abstand oder Wendekreis wird per <span id="plus" class="hudIcon inline"></span>/<span id="minus" class="hudIcon inline"></span> auf den automatischen Wert heraufgerechnet / davon abgezogen (sprich: z.B. 1m vor/zurück).</p>
+						<dl class="buttonInfo">
+							<dt>Standard-Änderung</dt>
+							<dd>0.1m</dd>
+							<div class="clearfix"></div>
+							<dt><kbd title="Steuerung">STRG</kbd>-Änderung</dt>
+							<dd>0.5m</dd>
+							<div class="clearfix"></div>
+						</dl>
+					</li>
+					<li>
+						<h4>Wendekreis</h4>
+						<p>Dieser Wert legt den Wendekreis des Schleppers fest. Dies wird v.a. für die Wendemanöver beim Drescher/Häcksler abtanken benötigt. Der Wert wird, wie beim seitlichen Abstand, standardmäßig automatisch berechnet sobald man einen Kurs abfährt. Auch kann der Wert via <span id="plus" class="hudIcon inline"></span>/<span id="minus" class="hudIcon inline"></span> verändert und auf manuell gesetzt werden.</p>
+						<dl class="buttonInfo">
+							<dt>Standard-Änderung</dt>
+							<dd>1m</dd>
+							<div class="clearfix"></div>
+							<dt><kbd title="Steuerung">STRG</kbd>-Änderung</dt>
+							<dd>5m</dd>
+							<div class="clearfix"></div>
+						</dl>
+					</li>
+					<li>
+						<h4>Start bei %</h4>
+						<p>Dieser Wert legt fest ab welchem Füllstand des Dreschers der Abfahrer zu ihm fährt und ihn abtankt. Bei Häckslern wird durch diesen Wert festgelegt ab wann der zweite Abfahrer in der Kette dem ersten hinterherfahren soll.</p>
+						<dl class="buttonInfo">
+							<dt>Standard-Änderung</dt>
+							<dd>5%</dd>
+							<div class="clearfix"></div>
+							<dt><kbd title="Steuerung">STRG</kbd>-Änderung</dt>
+							<dd>10%</dd>
+							<div class="clearfix"></div>
+						</dl>
+					</li>
+					<li>
+						<h4>Abfahren bei %</h4>
+						<p>Dieser Wert legt fest ab welchem Füllstand des Hängers der Abfahrer zum Entladen losfahren soll. Dies kann praktisch sein wenn z.B. der Hänger zu 97% voll ist und der Abfahrer nicht noch 5 Minuten warten soll.</p>
+						<dl class="buttonInfo">
+							<dt>Standard-Änderung</dt>
+							<dd>5%</dd>
+							<div class="clearfix"></div>
+							<dt><kbd title="Steuerung">STRG</kbd>-Änderung</dt>
+							<dd>10%</dd>
+							<div class="clearfix"></div>
+						</dl>
+					</li>
+				</ul>
+			</div>
+			
+			<div id="hud_manageCombine">
+				<h3>HUD: Drescher verwalten</h3>
+				<p>Auch diese Einstellungen sind nur für den kombinierten Modus relevant. Hier könnt ihr einstellen ob der Abfahrer sich automatisch einen Drescher oder Häcksler suchen soll (Standard) oder er einen manuell zugewiesenen Drescher nutzen soll. Wenn ihr einen Drescher manuell zuweist muss dieser auch nicht auf dem gleichen Feld stehen. Der Abfahrer fährt von seinem Startpunkt automatisch zum Drescher, egal wo dieser sich befindet.</p>
+				<p>Interessant ist diese Einstellung vor allem bei großen oder hügeligen Feldern auf denen die automatische Zuweisung nicht immer funktioniert und auf Feldern ohne Grubbertextur, wie z.B. Wiesen.</p>
+			</div>
+			
+			<div id="hud_speeds">
+				<h3>HUD: Geschwindigkeiten</h3>
+				<p>Hier könnt ihr festlegen wie schnell euer Abfahrer fahren soll. Auch kann gewählt werden ob ein Kurs mit der Geschwindigkeit, die bei der Aufnahme eingefahren wurde, oder mit der höchstmöglichen (einstellbaren) Geschwindigkeit abgefahren werden soll.</p>
+				<dl class="buttonInfo">
+					<dt>Standard-Änderung</dt>
+					<dd>1 km/h</dd>
+					<div class="clearfix"></div>
+					<dt><kbd title="Steuerung">STRG</kbd>-Änderung</dt>
+					<dd>5 km/h</dd>
+					<div class="clearfix"></div>
+				</dl>
+			</div>
 		
-		<div id="hud_mode2settings">
-			<h3>HUD: Einstellungen Combi Modus</h3>
-			<p>Diese Einstellungen gelten (wie der Name es andeutet) nur für den kombinierten Modus und den Überlademodus. Hiermit könnt ihr euren Abfahrer an den jeweiligen Drescher anpassen. Ihr könnt die Werte mit einem Klick auf das +/- Symbol daneben anpassen (mit gedrückter <code>STRG</code>-Taste verstellt ihr die Werte in größeren Abständen).</p>
-			<ul>
-				<li>
-					<h4>seitl. Abstand</h4>
-					<p>Dieser Wert definiert den seitlichen Abstand den ein Abfahrer zum Drescher oder Häcksler beim nebenher fahren einhalten soll. Standardmäßig ist "auto" eingestellt - damit passt sich der Abfahrer seitlich automatisch an den Drescher oder Häcksler an. Durch <span id="plus" class="hudIcon inline"></span> und <span id="minus" class="hudIcon inline"></span> kann der Wert verstellt und auf "manuell" gesetzt werden.</p>
-				</li>
-				<li>
-					<h4>Start bei %</h4>
-					<p>Dieser Wert legt fest ab welchem Füllstand des Dreschers der Abfahrer zu ihm fährt und ihn abtankt. Bei Häckslern wird durch diesen Wert festgelegt ab wann der zweite Abfahrer in der Kette dem ersten hinterherfahren soll.</p>
-				</li>
-				<li>
-					<h4>Wendekreis</h4>
-					<p>Dieser Wert legt den Wendekreis des Schleppers fest. Dies wird v.a. für die Wendemanöver beim Drescher/Häcksler abtanken benötigt. Der Wert wird, wie beim seitlichen Abstand, standardmäßig automatisch berechnet sobald man einen Kurs abfährt. Auch kann der Wert via <span id="plus" class="hudIcon inline"></span>/<span id="minus" class="hudIcon inline"></span> verändert und auf manuell gesetzt werden.</p>
-				</li>
-				<li>
-					<h4>Pipeabstand</h4>
-					<p>Dieser Wert legt den vertikalen Versatz zum Schlepper an (vor/zurück). Dies wird benutzt um den Hänger direkt unter die Pipe zu bekommen. Der Wert ist standardmäßig auf "auto". Anders als beim seitlichen Abstand oder Wendekreis wird per <span id="plus" class="hudIcon inline"></span>/<span id="minus" class="hudIcon inline"></span> auf den automatischen Wert heraufgerechnet / davon abgezogen (sprich: z.B. 1m vor/zurück).</p>
-				</li>
-			</ul>
-		</div>
-		
-		<div id="hud_manageCombine">
-			<h3>HUD: Drescher verwalten</h3>
-			<p>Auch diese Einstellungen sind nur für den kombinierten Modus relevant. Hier könnt ihr einstellen ob der Abfahrer sich automatisch einen Drescher oder Häcksler suchen soll (Standard) oder er einen manuell zugewiesenen Drescher nutzen soll. Wenn ihr einen Drescher manuell zuweist muss dieser auch nicht auf dem gleichen Feld stehen. Der Abfahrer fährt von seinem Startpunkt automatisch zum Drescher, egal wo dieser sich befindet.</p>
-			<p>Interessant ist diese Einstellung vor allem bei großen oder hügeligen Feldern auf denen die automatische Zuweisung nicht immer funktioniert und auf Feldern ohne Grubbertextur, wie z.B. Wiesen.</p>
-		</div>
-		
-		<div id="hud_speeds">
-			<h3>HUD: Geschwindigkeiten</h3>
-			<p>Hier könnt ihr festlegen wie schnell euer Abfahrer fahren soll. Auch kann gewählt werden ob ein Kurs mit der Geschwindigkeit, die bei der Aufnahme eingefahren wurde, oder mit der höchstmöglichen (einstellbaren) Geschwindigkeit abgefahren werden soll.</p>
-		</div>
-		
+			<div id="hud_generalSettings">
+				<h3>HUD: Allgemeine Einstellungen</h3>
+				<ul>
+					<li>
+						<h4>Fruchtumfahrung</h4>
+						<p>Ist die Fruchtumfahrung aktiviert (nur für den Kombi- und Überlademodus relevant), versucht der Abfahrer so gut wie möglich nicht in die Frucht zu fahren.</p>
+						<p>Zum einen bedeutet das, dass er auf dem Weg zum Drescher/Häcksler um die Frucht herumfährt, zum anderen dass er einen Drescher dessen Pipe auf der Fruchtseite ist, erst abtankt wenn dieser 100% voll ist (unabhängig davon was beim Abfahrer für eine Startprozentzahl (<code>Start bei %</code>) eingestellt ist).</p>
+					</li>
+					<li>
+						<h4>Courseplay öffnen</h4>
+						<p>Hier kann gewählt werden ob das HUD mit der rechten Maustaste oder mit der Tastatur (Standard: <kbd title="Steuerung">STRG</kbd>+<kbd title="Entfernen">ENTF</kbd>) geöffnet wird.</p>
+					</li>
+					<li>
+						<h4>Wegpunkte anzeigen</h4>
+						<p>Hier kann gewählt werden ob und welche Kurs-Wegpunkte angezeigt werden sollen.</p>
+					</li>
+					<li>
+						<h4>Rundumleuchte</h4>
+						<p>Hier kann gewählt werden ob und wann die Rundumleuchte aktiviert werden soll.</p>
+					</li>
+					<li>
+						<h4>Debug-Level</h4>
+						<p>Sollte es zu Problemen mit Courseplay kommen, kann hier eingestellt werden wie tief die Fehlerausgabe in der Log sein soll. Dies sind wichtige Informationen für die Entwickler, um Ursachen- und Lösungssuche betreiben zu können.</p>
+					</li>
+				</ul>
+			</div>
+			
+			<div id="hud_drivingSettings">
+				<h3>HUD: Fahr-/Arbeitseinstellungen</h3>
+				<ul>
+					<li>
+						<h4>Haltezeit</h4>
+						<p>Standardmäßig wird an Wartepunkten (außer im Feldarbeits- und Dünge/Saatmodus) angehalt, bis dem Abfahrer explizit gesagt wird er soll weiterfahren (Haltezeit = 0 sec). Wird eine Haltezeit eingestellt (also über 0 sec), wartet der Abfahrer am Wartepunkt bis diese Zeit abgelaufen ist und fährt dann automatisch weiter. Dies kann z.B. für Waagen an einer BGA nötig sein.</p>
+						<dl class="buttonInfo">
+							<dt>Standard-Änderung</dt>
+							<dd>5 sec</dd>
+							<div class="clearfix"></div>
+							<dt><kbd title="Steuerung">STRG</kbd>-Änderung</dt>
+							<dd>10 sec</dd>
+							<div class="clearfix"></div>
+						</dl>
+					</li>
+					<li>
+						<h4>horiz. Versatz</h4>
+						<p>Nur für den Feldarbeits- und Dünge/Saatmodus. Für manche Geräte ist es wichtig, den Kurs nicht exakt in der Mitte sondern leicht nach links oder rechts abzufahren (z.B. Ballensammelwagen). Dieser Versatz kann hier eingestellt werden.</p>
+						<dl class="buttonInfo">
+							<dt>Standard-Änderung</dt>
+							<dd>0.5 m</dd>
+							<div class="clearfix"></div>
+							<dt><kbd title="Steuerung">STRG</kbd>-Änderung</dt>
+							<dd>1 m</dd>
+							<div class="clearfix"></div>
+						</dl>
+					</li>
+					<li>
+						<h4>vertik. Versatz</h4>
+						<p>Nur für den Feldarbeits- und Dünge/Saatmodus. Identisch zum horizontalen Versatz, nur dass man den Versatz nach vorne/hinten einstellt.</p>
+						<dl class="buttonInfo">
+							<dt>Standard-Änderung</dt>
+							<dd>0.5 m</dd>
+							<div class="clearfix"></div>
+							<dt><kbd title="Steuerung">STRG</kbd>-Änderung</dt>
+							<dd>1 m</dd>
+							<div class="clearfix"></div>
+						</dl>
+					</li>
+					<li>
+						<h4>Arbeitsbreite</h4>
+						<p>Wird für die Generierung von Feldkursen benötigt. Hier wird die Arbeitsbreite des Gerätes eingestellt, aus der dann die Breite der Bahnen errechnet wird.</p>
+						<dl class="buttonInfo">
+							<dt>Standard-Änderung</dt>
+							<dd>0.1 m</dd>
+							<div class="clearfix"></div>
+							<dt><kbd title="Steuerung">STRG</kbd>-Änderung</dt>
+							<dd>0.5 m</dd>
+							<div class="clearfix"></div>
+						</dl>
+					</li>
+				</ul>
+			</div>
+			
+		</div> <!-- #manualTabs -->
 	</section>
 
 
@@ -181,9 +328,10 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/jquery-ui.min.js"></script>
 <script>
-	$(function() {
-		$('#manualTabs').tabs();
-	});
+$(function() {
+	$('#manualNav').show();
+	$('#manualTabs').tabs();
+});
 </script>
 </body>
 </html>
