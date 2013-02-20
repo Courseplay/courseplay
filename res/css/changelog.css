@@ -56,7 +56,7 @@
 .changelogVersion ul li.bug:before    { background-color:#b82b0a; }
 .changelogVersion ul li.change:before { background-color:#ffa800; color:white; }
 
-/* IMAGES */
+/* IMAGES *
 .changelogVersion ul li.new    { list-style-image:url(../img/changelogIcons_01.png); margin-left:44px; }
 .changelogVersion ul li.fix    { list-style-image:url(../img/changelogIcons_02.png); margin-left:44px; }
 .changelogVersion ul li.bug    { list-style-image:url(../img/changelogIcons_03.png); margin-left:44px; }
