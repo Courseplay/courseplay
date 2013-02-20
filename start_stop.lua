@@ -4,6 +4,10 @@ function courseplay:start(self)
 	if self.maxnumber < 1 then
 		return
 	end
+	
+	if self.setManualIgnitionMode ~= nil then
+	  self:setManualIgnitionMode(2)
+	end
 
 	self.CPnumCollidingVehicles = 0;
 	self.traffic_vehicle_in_front = nil
