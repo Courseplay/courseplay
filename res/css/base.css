@@ -53,8 +53,8 @@ a:not(.imgLink):hover, a:not(.imgLink):focus, a:not(.imgLink):active {
 header h1 { text-align:center; }
 
 h2, h3, h4 {
-	font-family:'adelle_sbsemibold', Helvetica, Myriad Pro, Segoe UI, sans-serif;
-	font-weight:600;
+	font-family:'adelle_sbsemibold', 'Adelle-SemiBold', Helvetica, Myriad Pro, Segoe UI, sans-serif;
+	font-weight:300;
 }
 h2 { border-bottom:1px solid #d6d6d6; font-size:2em; margin:0 0 15px; }
 h3 { font-size:1.4em; }
@@ -63,9 +63,9 @@ h4 { font-size:1.05em; }
 section { padding:30px 0; }
 
 #navSection { position:relative; }
-#mainNav { font-family:'adelle_sbsemibold', Helvetica, Myriad Pro, Segoe UI, sans-serif; font-size:1em; font-variant:small-caps; font-weight:300; letter-spacing:1px; text-align:center; text-transform:lowercase; }
+#mainNav { font-family:'adelle_sbsemibold', 'Adelle-SemiBold', Helvetica, Myriad Pro, Segoe UI, sans-serif; font-size:1em; font-variant:small-caps; font-weight:300; letter-spacing:1px; text-align:center; text-transform:lowercase; }
 #mainNav li { border-right:1px solid #646464; display:inline; padding:0 0.5em; }
-#mainNav li.active { opacity:0.65; font-size:1.1em; font-weight:600; }
+#mainNav li.active { opacity:0.65; font-size:1.1em; font-weight:300; }
 #mainNav li:first-of-type { padding-left:0; }
 #mainNav li:last-of-type { border-right:0; padding-right:0; }
 #mainNav a .info { 
