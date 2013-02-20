@@ -6,6 +6,7 @@
 	<link rel="stylesheet" href="../../res/css/reset.css">
 	<link rel="stylesheet" href="../../res/fonts/icomoon.css" type="text/css" charset="utf-8">
 	<link rel="stylesheet" href="../../res/fonts/adelle/stylesheet.css" type="text/css" charset="utf-8">
+	<link rel="stylesheet" href="../../res/fonts/caslon/stylesheet.css" type="text/css" charset="utf-8">
 	<link rel="stylesheet" href="../../res/css/base.css">
 	<link rel="stylesheet" href="../../res/css/manual.css">
 	<!--[if lte IE 7]><script src="res/js/lte-ie7.js"></script><![endif]-->
@@ -58,7 +59,7 @@
 			</ul>
 			<div id="controls">
 				<h3>Steuerung</h3>
-				<p>Die Steuerung des Abfahrhelfers funktioniert im wesentlichem mit der Maus, da freie Tasten im Landwirtschafts Simulator ja sehr rah sind. Mit einem Klick auf die <span class="emph1">rechte Maustaste</span> aktiviert ihr das Courseplay HUD, in dem ihr den Abfahrer konfigurieren könnt. Zusätzlich sind einige Funktionen wie Abfahrer starten und stoppen auch über die Tastatur über die Tasten <kbd title="Steuerung">STRG</kbd>+<kbd title="Numpad 7">NUM 7</kbd> bis <kbd title="Steuerung">STRG</kbd>+<kbd title="Numpad 9">NUM 9</kbd> belegt. Im HUD kann das Öffnen/Schließen auch auf die Tastatur gelegt werden (standardmäßig: <kbd title="Steuerung">STRG</kbd>+<kbd title="Entfernen">ENTF</kbd>).</p>
+				<p>Die Steuerung des Abfahrhelfers funktioniert im wesentlichem mit der Maus, da freie Tasten im Landwirtschafts Simulator ja sehr rah sind. Mit einem Klick auf die <span class="emphasize1">rechte Maustaste</span> aktiviert ihr das Courseplay HUD, in dem ihr den Abfahrer konfigurieren könnt. Zusätzlich sind einige Funktionen wie Abfahrer starten und stoppen auch über die Tastatur über die Tasten <kbd title="Steuerung">STRG</kbd>+<kbd title="Numpad 7">NUM 7</kbd> bis <kbd title="Steuerung">STRG</kbd>+<kbd title="Numpad 9">NUM 9</kbd> belegt. Im HUD kann das Öffnen/Schließen auch auf die Tastatur gelegt werden (standardmäßig: <kbd title="Steuerung">STRG</kbd>+<kbd title="Entfernen">ENTF</kbd>).</p>
 			</div>
 			
 			<div id="hud">
@@ -318,7 +319,10 @@
 						<h4>Abfahrer</h4>
 						<p>Der Traktor wartet am ersten Wegpunkt bis er beladen wird und voll ist. Dies kann an einem Silo, am Feldrand oder sonstwo erfolgen. Sobald der Füllstand mindestens die eingestellte Prozentzahl erreicht hat (<code>Abfahren bei %</code>), fährt der Abfahrer los. Sobald er durch einen Abladetrigger fährt, lädt er automatisch ab. Danach fährt er wieder zurück zum ersten Wegpunkt.</p>
 						<p>Der letzte Wegpunkt sollte in etwa 5 bis 10m vor dem ersten liegen und in etwa in die gleiche Richtung zeigen.</p>
-						<img src="../../res/img/manual_mode1_de.png" alt="Abfahrer Diagramm" class="infoImg">
+						<figure>
+							<img src="../../res/img/manual_mode1_de.png" alt="Abfahrer Diagramm" class="infoImg">
+							<figcaption>Fig. 1: Start-, Weg-, und Stoppunkte im Abfahrermodus</figcaption>
+						</figure>
 					</li>
 					<li>
 						<h4>kombiniert</h4>
@@ -333,18 +337,32 @@
 					</li>
 					<li>
 						<h4>Überladewagen</h4>
-						<p>Der Überlademodus ist leicht ähnlich zum kombinierten Modus, insofern dass der Fahrer einen Drescher abtankt. Aber anstatt dann zu einem Entladetrigger zu fahren, überlädt er in einen wartended Anhänger. Auch hier kann der Drescher automatisch gefunden oder manuell gesetzt werden.</p>
+						<p>Der Überlademodus ist leicht ähnlich zum kombinierten Modus, insofern dass der Fahrer einen Drescher abtankt. Aber anstatt dann zu einem Entladetrigger zu fahren, überlädt er in einen wartenden Anhänger. Auch hier kann der Drescher automatisch gefunden oder manuell gesetzt werden.</p>
 						<p>Der Startpunkt des Kurses sollte in der Nähe eines wartenden Anhängers beginnen (z.B. ein Traktor im "Abfahrer"-Modus). Der Kurs muss dann hin zum Hänger führen. Wenn die Pipe des Überladewagens über dem wartenden Hänger ist (also überladen werden kann), muss ein <span class="emphasize1">Wartepunkt</span> gesetzt werden. Dieser signalisiert dem Überladewagen, wenn der Kurs abgefahren wird, dass hier angehalten, die Pipe ausgeklappt und der Überladevorgang gestartet werden soll. Es wird währenddessen eine Infomeldung "XYZ hat Überladepunkt erreicht." eingeblendet. Wenn der Überladewagen leer ist wird dieser seinen Kurs automatisch fortsetzen und am letzten Wegpunkt auf seinen nächsten Einsatz warten.</p>
 						<p>Nach dem Wartepunkt muss der Kurs noch etwas weiter (raus aus dem "Gefahrenbereich") gehen, idealerweise hin zum Anfangspunkt.</p>
-						<img src="../../res/img/manual_mode3_de.png" alt="Überladen Diagramm" class="infoImg">
+						<figure>
+							<img src="../../res/img/manual_mode3_de.png" alt="Überladen Diagramm" class="infoImg">
+							<figcaption>Fig. 2: Start-, Weg-, Warte- und Stoppunkte im Überlademodus</figcaption>
+						</figure>
 					</li>
 					<li>
 						<h4>Düngen und Säen</h4>
-						<p></p>
+						<p>Beim Düngen/Säen gibt es zwei Sektionen: zunächst die eigentliche Arbeit auf dem Feld, zum anderen die Fahrt zum Dünger-/Saattrigger um dort das Gerät wieder zu befüllen.</p>
+						<p>Der Kurs für die Arbeit auf dem Feld auf zwei verschiedene Wege erzeugt werden:</p>
+						<ol>
+							<li><p>Man fährt den Kurs selber ein. Hierbei ist zu beachten dass zwei Wartepunkte benötigt werden. Den ersten an dem Punkt, wo mit der Arbeit begonnen werden soll, den zweiten an dem Punkt, wo die Arbeit beendet werden soll. Dieser Arbeitsbereich ist unabdinglich für das korrekte Funktionieren in diesem Modus.</p></li>
+							<li><p>Der Kurs wird automatisch generiert. Siehe dazu "Kurs generieren" <a href="">[TODO: LINK]</a>. Die Wartepunkte werden hierbei schon automatisch gesetzt.</p></li>
+						</ol>
+						<p>Der zweite Abschnitt, das automatische Auftanken/Auffüllen, ist ein ganz normaler "A nach B"-Kurs. Er sollte am zweiten Wartepunkt, also dem Ende des Feldkurses, beginnen, dann durch den Dünger-/Saattrigger führen, und zurück und kurz vor dem ersten Wartepunkt enden. Der Fahrer hält, sofern er einen Aufladetrigger erkennt, automatisch an und füllt auch automatisch auf.</p>
+						<figure>
+							<img src="../../res/img/manual_mode4_de.png" alt="Düngen/Säen Diagramm" class="infoImg">
+							<figcaption>Fig. 3: Start-, Weg-, Warte- und Stoppunkte im Dünge-/Saatmodus</figcaption>
+						</figure>
+						<p>Sobald das Gerät leer ist, wird es in Transportstellung gebracht und fährt automatisch den Auftankkurs ab. Wieder am Feld angekommen fährt der Traktor zum Punkt wo er zuletzt war als das Gerät leer wurde, bringt das Gerät in Arbeitsstellung und arbeitet weiter.</p>
 					</li>
 					<li>
 						<h4>Überführung</h4>
-						<p></p>
+						<p>Der Überführungsmodus ist wohl die simpleste Form um von A nach B zu kommen. Es wird ein ganz normaler Kurs mit Anfang und Ende benötigt, der Fahrer fährt diesen stur ab, ohne zu entladen. Am Ende angekommen fährt der Abfahrer wieder zum ersten Wegpunkt zurück und fährt den Kurs von vorne ab. Wenn dies nicht geschehen soll, muss die Option <code>Warten&nbsp;am&nbsp;letzten&nbsp;Wegpunkt</code> aktiviert werden.</p>
 					</li>
 					<li>
 						<h4>Feldarbeit</h4>

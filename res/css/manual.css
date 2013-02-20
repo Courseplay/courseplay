@@ -38,7 +38,14 @@ dt { width: 30%; }
 	margin-bottom:20px;
 }
 
+figure { margin-bottom:1em; }
 img.infoImg {
 	border:1px solid #d6d6d6;
 	padding:5px;
+	width:100%;
+	max-width:100%;
+}
+figcaption {
+	font-family:'ACaslonPro-Italic', Caslon, 'Caslon Pro', Garamond, serif;
+	font-style:italic;
 }
