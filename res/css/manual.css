@@ -1,4 +1,110 @@
-#manualNav { display:none; }
+/*#manualNav { display:none; }*/
+#manualNav { margin-bottom:40px; }
+#manualNav ul, #manualNav li, #manualNav span, #manualNav a {
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+#manualNav {
+  height: 40px;
+  background: #323232;
+  border-bottom: 2px solid #20A8DB;
+}
+#manualNav:after,
+#manualNav ul:after {
+  content: '';
+  display: block;
+  clear: both;
+}
+#manualNav a {
+  color: #f0f0f0;
+  display: inline-block;
+  font-size: 0.9em;
+  line-height: 40px;
+  padding: 0 20px;
+  text-decoration: none;
+}
+#manualNav ul {
+  list-style: none;
+}
+#manualNav > ul {
+  float: left;
+}
+#manualNav > ul > li {
+  float: left;
+}
+#manualNav > ul > li.has-sub:hover:after {
+  content: '';
+  display: block;
+  width: 0;
+  height: 0;
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid #20A8DB;
+  margin-left: -10px;
+}
+#manualNav > ul > li:first-child > a {
+}
+#manualNav > ul > li:last-child > a {
+}
+#manualNav > ul > li > a {
+  border-bottom: 2px solid #20A8DB;
+  height:40px;
+}
+#manualNav > ul > li:hover > a {
+  background: #222;
+}
+#manualNav .has-sub {
+  z-index: 1;
+}
+#manualNav .has-sub:hover > ul {
+  display: block;
+}
+#manualNav .has-sub ul {
+  display: none;
+  position: absolute;
+  width: 200px;
+  top: 100%;
+  left: 0;
+}
+#manualNav .has-sub ul li {
+  margin-bottom: -1px;
+}
+#manualNav .has-sub ul li a {
+  background: #20A8DB;
+  border-bottom: 1px dotted #6fc7ec;
+  filter: none;
+  font-size: 11px;
+  display: block;
+  line-height: 120%;
+  padding: 10px;
+}
+#manualNav .has-sub ul li:hover a {
+  background: #0c7fb0;
+}
+#manualNav .has-sub .has-sub:hover > ul {
+  display: block;
+}
+#manualNav .has-sub .has-sub ul {
+  display: none;
+  position: absolute;
+  left: 100%;
+  top: 0;
+}
+#manualNav .has-sub .has-sub ul li a {
+  background: #20A8DB;
+  border-bottom: 1px dotted #6db2d0;
+}
+#manualNav .has-sub .has-sub ul li a:hover {
+  background: #15A3D9;
+}
+
+
+.no-js .manualSection { display:none; }
+.no-js .manualSection:target { display:block; }
 
 .emphasize1 { font-weight:600; }
 
@@ -13,12 +119,12 @@
 	width:16px;
 }
 .hudIcon.inline { top:3px; }
-#closeHud.hudIcon { background-position:0 -64px; }
-#openCourse.hudIcon { background-position:0 -80px; }
-#addCourse.hudIcon { background-position:0 0; }
-#deleteCourse.hudIcon { background-position:0 -48px; }
-#plus.hudIcon { background-position:0 -96px; }
-#minus.hudIcon { background-position:0 -112px; }
+.hudIcon.closeHud { background-position:0 -64px; }
+.hudIcon.openCourse { background-position:0 -80px; }
+.hudIcon.addCourse { background-position:0 0; }
+.hudIcon.deleteCourse { background-position:0 -48px; }
+.hudIcon.plus { background-position:0 -96px; }
+.hudIcon.minus { background-position:0 -112px; }
 
 .buttonInfo {
 	background:#555;
@@ -34,7 +140,7 @@ dt, dd {
 }
 dt { width: 30%; }
 
-#manualTabs > div li {
+.manualSection li {
 	margin-bottom:20px;
 }
 
