@@ -7,7 +7,7 @@ CP.el = {
 	secChangelog: $('#changelog'),
 	changelogVersions: $('div.changelogVersion'),
 };
-CP.el.changelogVersions.filter('.closed').find('> ul, > p').hide();
+CP.el.changelogVersions.filter('.closed').find('> ul, > dl, > p').hide();
 CP.el.changelogToggles = CP.el.changelogVersions.find('.toggle').css('display', 'inline-block');
 CP.el.changelogToggles.on('click', function() {
 	var t = $(this),
@@ -16,12 +16,12 @@ CP.el.changelogToggles.on('click', function() {
 		closedIcon = t.attr('data-icon-closed'),
 		openIcon = t.attr('data-icon-open');
 
-	otherVersions.removeClass('open').addClass('closed').find('> ul, > p').slideUp(CP.animationTime).fadeOut(CP.animationTime);
+	otherVersions.removeClass('open').addClass('closed').find('> ul, > dl, > p').slideUp(CP.animationTime).fadeOut(CP.animationTime);
 	otherVersions.find('.toggle').each(function() {
 		$(this).attr('data-icon', $(this).attr('data-icon-closed'));
 	});
 
-	t.parents('div.changelogVersion').toggleClass('closed open').find('> ul, > p').slideFadeToggle(CP.animationTime, scrollTo('#' + t.parents('div.changelogVersion').attr('id')));
+	t.parents('div.changelogVersion').toggleClass('closed open').find('> ul, > dl, > p').slideFadeToggle(CP.animationTime, scrollTo('#' + t.parents('div.changelogVersion').attr('id')));
 	
 	if (t.parents('div.changelogVersion').hasClass('closed')) {
 		t.attr('data-icon', closedIcon);
