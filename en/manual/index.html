@@ -61,6 +61,7 @@
 							<li><a href="#hud_speeds"><span>Speeds</span></a></li>
 							<li><a href="#hud_generalSettings"><span>General settings</span></a></li>
 							<li><a href="#hud_drivingSettings"><span>Drive and work settings</span></a></li>
+							<li><a href="#hud_combineSettings"><span>Combine controls</span></a></li>
 						</ul>
 					</li>
 					<li id="driveModesNav">
@@ -344,6 +345,30 @@
 							<dd>0.5 m</dd>
 							<div class="clearfix"></div>
 						</dl>
+					</li>
+				</ul>
+			</div>
+			
+			<div class="manualSection" id="hud_combineSettings">
+				<h3>HUD: Combine controls</h3>
+				<p>This page is only shown for combines and choppers.</p>
+				<ul>
+					<li>
+						<h4>Request driver / Driver requested</h4>
+						<p>Call a driver manually. If a driver has found the combine and is on his way, his name will be displayed.</p>
+					</li>
+					<li>
+						<h4>Start/stop driver</h4>
+						<p>Manually start or stop the current driver. If stopped, the driver will wait until being called to start again.</p>
+					</li>
+					<li>
+						<h4>Send driver home</h4>
+						<p>Manually send the current driver to follow his course. He will drive the course, unload/overload, and drive on to his first waypoint.</p>
+					</li>
+					<li>
+						<h4>Driver side</h4>
+						<p>Only displayed for choppers.</p>
+						<p>By default, the drivers choose the fitting (non fruit) side to drive by and unload a chopper. With this option you can hardcode a side of your choice where they should drive (e.g. when you're threshing a field manually in a spiral).</p>
 					</li>
 				</ul>
 			</div>
