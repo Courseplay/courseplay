@@ -143,19 +143,16 @@ dt, dd {
 }
 dt { width: 30%; }
 
-.manualSection li {
-	padding-top:10px;
-	padding-bottom:10px;
-}
 .manualSection ol li { 
-	margin-top:10px; 
-	margin-bottom:10px; 
+	margin-top:20px; 
+	margin-bottom:20px; 
 }
-.manualSection li:first-of-type { padding-top:none; }
-.manualSection ul li { border-top:1px dashed #CCC; }
+.manualSection li:first-of-type { padding-top:0; }
+.manualSection ul li { border-top:1px dashed #CCC; padding-top:10px; padding-bottom:10px; }
 .manualSection ul li:first-of-type { border-top:none; }
+#driveModes > ol > li { margin-top:40px; margin-bottom:40px; }
 
-figure { margin-bottom:1em; }
+figure { margin-top:1em; margin-bottom:1em; }
 img.infoImg {
 	border:1px solid #d6d6d6;
 	padding:5px;

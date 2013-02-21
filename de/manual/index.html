@@ -383,18 +383,18 @@
 					<li id="driveMode2">
 						<h4>kombiniert</h4>
 						<p>Der kombinierte Modus ist sehr ähnlich zum "Abfahrer"-Modus, insofern dass der Traktor einen Kurs abfährt und in einem Trigger entlädt. Zusätzlich tankt der Abfahrer aber noch einen Drescher oder Häcksler ab.</p>
-						<p>Der Traktor wartet am letzten Wegpunkt bis er einen Drescher/Häcksler in Reichweite hat dessen Füllstand über der im Traktor eingestellten Prozentzahl <code>Start&nbsp;bei&nbsp;%</code> liegt. Dann fährt er zum Drescher, von hinten heran unter die Pipe unt entlädt ihn. Wenn der Anhänger nocht nicht voll ist (<code>Abfahren&nbsp;bei&nbsp;%</code>), wendet der Schlepper und wartet im Feld auf seinen nächsten Einsatz. Sobal der Anhänger über <code>Abfahren bei %</code> gefüllt ist fährt der Abfahrer zum zweiten Wegpunkt, und von dort den Kurs ab (und entlädt, wie im Abfahrermodus, am Trigger automatisch).</p>
+						<p>Der Traktor wartet am letzten Wegpunkt bis er einen Drescher/Häcksler in Reichweite hat dessen Füllstand über der im Traktor eingestellten Prozentzahl <code>Start&nbsp;bei&nbsp;%</code> liegt. Dann fährt er zum Drescher, von hinten heran unter die Pipe und entlädt ihn. Wenn der Anhänger noch nicht voll ist (<code>Abfahren&nbsp;bei&nbsp;%</code>), wendet der Schlepper und wartet im Feld auf seinen nächsten Einsatz. Sobald der Anhänger über <code>Abfahren bei %</code> gefüllt ist fährt der Abfahrer zum zweiten Wegpunkt, und von dort den Kurs ab (und entlädt, wie im Abfahrermodus, am Trigger automatisch).</p>
 						<p>Der Traktor hat zwei Möglichkeiten einen Drescher in Reichweite zu haben.
 							<ol>
 								<li><p>Der erste und letzte Punkt des Kurses liegen auf dem Feld auf dem der Drescher arbeitet. Dann erkennt der Abfahrer den Drescher zumeist automatisch (wenn das Feld nicht zu groß oder zu hügelig ist). Er erkennt auch mehrere Drescher und sucht sich den für ihn passenderen zum Abtanken (basierend auf Entfernung und Füllstand des Dreschers).</p></li>
-								<li><p>Dem Traktor wird ein fester Drescher zugewiesen (siehe <code>HUD:&nbsp;Drescher&nbsp;verwalten</code>). Nun wird nur noch dieser eine, ausgewählte Drescher abgetankt. Dafür ist es jetzt auch egal ob der Abfahrer auf dem selben Feld steht wie der Drescher.</p></li>
+								<li><p>Dem Traktor wird ein fester Drescher zugewiesen (siehe <a href="#hud_manageCombine" class="internalTab">HUD:&nbsp;Drescher&nbsp;verwalten</a>). Nun wird nur noch dieser eine, ausgewählte Drescher abgetankt. Dafür ist es jetzt auch egal ob der Abfahrer auf dem selben Feld steht wie der Drescher.</p></li>
 							</ol>
 						</p>
 					</li>
 					<li id="driveMode3">
 						<h4>Überladewagen</h4>
 						<p>Der Überlademodus ist leicht ähnlich zum kombinierten Modus, insofern dass der Fahrer einen Drescher abtankt. Aber anstatt dann zu einem Entladetrigger zu fahren, überlädt er in einen wartenden Anhänger. Auch hier kann der Drescher automatisch gefunden oder manuell gesetzt werden.</p>
-						<p>Der Startpunkt des Kurses sollte in der Nähe eines wartenden Anhängers (z.B. ein Traktor im "Abfahrer"-Modus) beginnen. Der Kurs muss dann hin zum Hänger führen. Wenn die Pipe des Überladewagens über dem wartenden Hänger ist (also überladen werden kann), muss ein <span class="emphasize1">Wartepunkt</span> gesetzt werden. Dieser signalisiert dem Überladewagen, wenn der Kurs abgefahren wird, dass hier angehalten, die Pipe ausgeklappt und der Überladevorgang gestartet werden soll. Es wird währenddessen eine Infomeldung "XYZ hat Überladepunkt erreicht." eingeblendet. Wenn der Überladewagen leer ist wird dieser seinen Kurs automatisch fortsetzen und am letzten Wegpunkt auf seinen nächsten Einsatz warten.</p>
+						<p>Der Startpunkt des Kurses sollte in der Nähe eines wartenden Anhängers (z.B. ein Traktor im "Abfahrer"-Modus) beginnen. Der Kurs muss dann hin zum Hänger führen. Wenn die Pipe des Überladewagens über dem wartenden Hänger ist (also überladen werden kann), muss ein <span class="emphasize1">Wartepunkt</span> gesetzt werden. Dieser signalisiert dem Überladewagen, wenn der Kurs abgefahren wird, dass hier angehalten, die Pipe ausgeklappt und der Überladevorgang gestartet werden soll. Es wird währenddessen eine Infomeldung <code>XYZ hat Überladepunkt erreicht.</code> eingeblendet. Wenn der Überladewagen leer ist wird dieser seinen Kurs automatisch fortsetzen und am letzten Wegpunkt auf seinen nächsten Einsatz warten.</p>
 						<p>Nach dem Wartepunkt muss der Kurs noch etwas weiter (raus aus dem "Gefahrenbereich") gehen, idealerweise hin zum Anfangspunkt.</p>
 						<figure>
 							<img src="../../res/img/manual_mode3_de.png" alt="Überladen Diagramm" class="infoImg">
@@ -422,8 +422,8 @@
 					</li>
 					<li id="driveMode6">
 						<h4>Feldarbeit</h4>
-						<p>Der Feldarbeitsmodus das Arbeitstier und den verschiedenen Modi: es kann zum Ballen pressen, Ballen sammeln, schwadern, wenden, grubbern, und noch mehr benutzt werden.</p>
-						<p>Von der Herangehensweise her funktioniert er genauso wie der Dünge-/Saatmodus, nur dass das Gerät entleert anstatt wieder aufgefüllt wird. Der Feldbereich muss auch hier mit zwei Wartepunkten eingegrenzt werden; der Abladekurs muss durch einen entsprechenden Trigger führen.</p>
+						<p>Der Feldarbeitsmodus das Arbeitstier der verschiedenen Modi: es kann zum Ballen pressen, Ballen sammeln, schwadern, wenden, grubbern, und noch mehr benutzt werden.</p>
+						<p>Von der Herangehensweise her funktioniert er genauso wie der Dünge-/Saatmodus, nur dass das Gerät entleert anstatt wieder aufgefüllt wird. Der Feldarbeitsbereich muss auch hier mit zwei Wartepunkten eingegrenzt werden; der Abladekurs muss durch einen entsprechenden Trigger führen.</p>
 						<p>Wie im Dünge-/Saatmodus kann der Kurs für die Arbeit auf dem Feld auf zwei verschiedene Wege erzeugt werden:</p>
 						<ol>
 							<li><p>Man fährt den Kurs selber ein. Hierbei ist zu beachten dass zwei Wartepunkte benötigt werden. Den ersten an dem Punkt, wo mit der Arbeit begonnen werden soll, den zweiten an dem Punkt, wo die Arbeit beendet werden soll. Dieser Arbeitsbereich ist unabdinglich für das korrekte Funktionieren in diesem Modus.</p></li>
@@ -442,7 +442,7 @@
 							<img src="../../res/img/manual_mode3_de.png" alt="Überladen Diagramm" class="infoImg">
 							<figcaption>Fig. 5: Start-, Weg-, Warte- und Stoppunkte im Drescher-Abtankenmodus</figcaption>
 						</figure>
-						<p>Der Drescher muss normal als Helfer eingestellt werden, und <span class="emphasize1">erst dann</span> darf Courseplay aktiviert werden. Der Drescher wird als Helfer fahren bis sein Füllstand den bei <code>Start bei %</code> eingestellten Prozentwert erreicht hat. Dannfährt er zum Startpunkt des Kurses und fährt diesen bis zum Wartepunkt, wo er auf einen wartended Anhänger abtankt. Danach fährt er den Kurs weiter bis zum Kursendpunkt, von wo aus er zum letzten Punkt wo er gedroschen hat fährt. Nun aktiviert er wieder sein Schneidwerk und macht mit der Arbeit weiter.</p>
+						<p>Der Drescher muss normal als Helfer eingestellt werden, und <span class="emphasize1">erst dann</span> darf Courseplay aktiviert werden. Der Drescher wird als Helfer fahren bis sein Füllstand den bei <code>Start bei %</code> eingestellten Prozentwert erreicht hat. Dann fährt er zum Startpunkt des Kurses und fährt diesen bis zum Wartepunkt, wo er auf einen wartenden Anhänger abtankt. Danach fährt er den Kurs weiter bis zum Kursendpunkt, von wo aus er zum letzten Punkt wo er gedroschen hat fährt. Nun aktiviert er wieder sein Schneidwerk und macht mit der Arbeit weiter.</p>
 					</li>
 					<li id="driveMode8">
 						<h4>Güllezubringer</h4>
@@ -527,7 +527,7 @@ $('#manualNav a, a.internalTab').on('click', function(evt) {
 		}, CP.animationTime);
 	};
 	
-	if ($(this).hasClass('internalTab')) {
+	if ($(this).hasClass('internalTab') && (target.substr(1, 9) !== "driveMode" || target == "#driveModes")) {
 		$('html, body').animate({
 			scrollTop: $('#manualNav').offset().top
 		}, CP.animationTime);

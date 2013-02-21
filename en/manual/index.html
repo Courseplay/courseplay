@@ -33,11 +33,11 @@
 	
 	<section id="navSection">
 		<nav id="mainNav">
-			<li><a href="installation">Installation<span class="info">How? What? Where?</span></a></li>
+			<li><a href="../installation">Installation<span class="info">How? What? Where?</span></a></li>
 			<li class="active">Manual</li>
-			<li><a href="faq">FAQ<span class="info">What else is there to know?</span></a></li>
-			<li><a href="changelog">Changelog<span class="info">What's new, pussycat?</span></a></li>
-			<li><a href="authors">Authors<span class="info">Who's the team?</span></a></li>
+			<li><a href="../faq">FAQ<span class="info">What else is there to know?</span></a></li>
+			<li><a href="../changelog">Changelog<span class="info">What's new, pussycat?</span></a></li>
+			<li><a href="../authors">Authors<span class="info">Who's the team?</span></a></li>
 		</nav>
 	</section>
 
@@ -350,94 +350,106 @@
 			
 			<div class="manualSection" id="driveModes">
 				<h3>Driving modes</h3>
-				<p>Im Folgenden die Erklärung der verschiedenen Fahrmodi:</p>
+				<p>There are eight different driving modes:</p>
 				<ol>
 					<li id="driveMode1">
-						<h4>Abfahrer</h4>
-						<p>Der Traktor wartet am ersten Wegpunkt bis er beladen wird und voll ist. Dies kann an einem Silo, am Feldrand oder sonstwo erfolgen. Sobald der Füllstand mindestens die eingestellte Prozentzahl erreicht hat (<code>Abfahren bei %</code>), fährt der Abfahrer los. Sobald er durch einen Abladetrigger fährt, lädt er automatisch ab. Danach fährt er wieder zurück zum ersten Wegpunkt.</p>
-						<p>Der letzte Wegpunkt sollte in etwa 5 bis 10m vor dem ersten liegen und in etwa in die gleiche Richtung zeigen.</p>
+						<h4>Driving helper</h4>
+						<p>The tractor waits at the first waypoint until his trailer has been filled. This can happen at a silo, at a field edge or anywhere else. As soon as the fill level reaches the set percentage (<code>Drive on at %</code>), the driver starts to drive the course. As soon as he reaches an unloading trigger, he unloads automatically. Afterwards he continues the course to return to the first wayppoint.</p>
+						<p>The last waypoint should be 5 to 10 m ahead of the first, and have somewhat the same direction as the first.</p>
 						<figure>
 							<img src="../../res/img/manual_mode1_en.png" alt="Abfahrer Diagramm" class="infoImg">
-							<figcaption>Fig. 1: Start-, Weg-, und Stoppunkte im Abfahrermodus</figcaption>
+							<figcaption>Fig. 1: Start point, waypoints and end points in the driving helper mode</figcaption>
 						</figure>
 					</li>
 					<li id="driveMode2">
-						<h4>kombiniert</h4>
-						<p>Der kombinierte Modus ist sehr ähnlich zum "Abfahrer"-Modus, insofern dass der Traktor einen Kurs abfährt und in einem Trigger entlädt. Zusätzlich tankt der Abfahrer aber noch einen Drescher oder Häcksler ab.</p>
-						<p>Der Traktor wartet am letzten Wegpunkt bis er einen Drescher/Häcksler in Reichweite hat dessen Füllstand über der im Traktor eingestellten Prozentzahl <code>Start&nbsp;bei&nbsp;%</code> liegt. Dann fährt er zum Drescher, von hinten heran unter die Pipe unt entlädt ihn. Wenn der Anhänger nocht nicht voll ist (<code>Abfahren&nbsp;bei&nbsp;%</code>), wendet der Schlepper und wartet im Feld auf seinen nächsten Einsatz. Sobal der Anhänger über <code>Abfahren bei %</code> gefüllt ist fährt der Abfahrer zum zweiten Wegpunkt, und von dort den Kurs ab (und entlädt, wie im Abfahrermodus, am Trigger automatisch).</p>
-						<p>Der Traktor hat zwei Möglichkeiten einen Drescher in Reichweite zu haben.
+						<h4>Combi</h4>
+						<p>The combi mode is very similar to the <a href="#driveMode1" class="internalTab">Driving helper</a> mode, in that the tractor drives a course and unloads at a trigger. But, in addition, the driver unloads a working combine or chopper on the field.</p>
+						<p>The tractor waits at the last waypoint until it has a combine/chopper in reach, and said combine's fill level is above the percentage (<code>Start&nbsp;at&nbsp;%</code>) set for the tractor. Then, the driver drives to the combine, comes from behind, and drives underneath the pipe, where the combine starts to unload into the tractor's trailer. If the trailer isn't full yet (<code>Drive&nbsp;on&nbsp;at&nbsp;%</code>), the tractor turns around and waits in the field for his next unloading operation. As soon as the trailer's fill level is above the <code>Drive&nbsp;on&nbsp;at&nbsp;%</code> percentage, the driver will drive to the course's second waypoint, and from there continue the course, unloading the trailer and returning to the field.</p>
+						<p>The tractor has two possibilites to have a combine in reach:
 							<ol>
-								<li><p>Der erste und letzte Punkt des Kurses liegen auf dem Feld auf dem der Drescher arbeitet. Dann erkennt der Abfahrer den Drescher zumeist automatisch (wenn das Feld nicht zu groß oder zu hügelig ist). Er erkennt auch mehrere Drescher und sucht sich den für ihn passenderen zum Abtanken (basierend auf Entfernung und Füllstand des Dreschers).</p></li>
-								<li><p>Dem Traktor wird ein fester Drescher zugewiesen (siehe <code>HUD:&nbsp;Drescher&nbsp;verwalten</code>). Nun wird nur noch dieser eine, ausgewählte Drescher abgetankt. Dafür ist es jetzt auch egal ob der Abfahrer auf dem selben Feld steht wie der Drescher.</p></li>
+								<li>
+									<p>The course's first and last waypoint are on the field where the combine is working. Mostly, the driver identifies the combine automatically (if the field isn't too big or too hilly). The driver also identifies multiple combines and assigns himself to the combine that fits best for him (based on distance and the combine's fill level).</p>
+								</li>
+								<li>
+									<p>The tractor is assigned to one distinct combine (see <a href="#hud_manageCombine" class="internalTab">HUD:&nbsp;manage&nbsp;combines</a>). Only the selected combine will be unloading, none else. In this mode, it doesn't matter if the tractor and the combine are on the same field. The combine can wait outside of the field and still drive to/from the combine.</p>
+								</li>
 							</ol>
 						</p>
 					</li>
 					<li id="driveMode3">
-						<h4>Überladewagen</h4>
-						<p>Der Überlademodus ist leicht ähnlich zum kombinierten Modus, insofern dass der Fahrer einen Drescher abtankt. Aber anstatt dann zu einem Entladetrigger zu fahren, überlädt er in einen wartenden Anhänger. Auch hier kann der Drescher automatisch gefunden oder manuell gesetzt werden.</p>
-						<p>Der Startpunkt des Kurses sollte in der Nähe eines wartenden Anhängers (z.B. ein Traktor im "Abfahrer"-Modus) beginnen. Der Kurs muss dann hin zum Hänger führen. Wenn die Pipe des Überladewagens über dem wartenden Hänger ist (also überladen werden kann), muss ein <span class="emphasize1">Wartepunkt</span> gesetzt werden. Dieser signalisiert dem Überladewagen, wenn der Kurs abgefahren wird, dass hier angehalten, die Pipe ausgeklappt und der Überladevorgang gestartet werden soll. Es wird währenddessen eine Infomeldung "XYZ hat Überladepunkt erreicht." eingeblendet. Wenn der Überladewagen leer ist wird dieser seinen Kurs automatisch fortsetzen und am letzten Wegpunkt auf seinen nächsten Einsatz warten.</p>
-						<p>Nach dem Wartepunkt muss der Kurs noch etwas weiter (raus aus dem "Gefahrenbereich") gehen, idealerweise hin zum Anfangspunkt.</p>
+						<h4>Overloader</h4>
+						<p>The overloading mode is somewhat similar to the combi mode, in that the driver unloads a combine. But instead of the driving a course to an unloading trigger, the driver overloads into a waiting trailer. As with the combi mode, a combine can be found automatically or set manually.</p>
+						<p>The course's start point should be in proximity to a waiting trailer (e.g. another tractor in "driver helper" mode). From there, the course must lead to the trailer. When the overloader's pipe is above the waiting trailer (so when it's able to overload), a <span class="emphasize1">waiting point</span> needs to be set. Later, while driving the course, this waiting point tells the overloader to stop, extend the pipe, and start overloading. During, an info message <code>XYZ has reached overload point.</code> will be displayed. When the overloader is empty, the driver will continue the course and wait at the last waypoint for his next unloading operation.</p>
+						<p>After the waiting point, the course needs to extend a little further (away from the trailer), ideally back to the start point.</p>
 						<figure>
 							<img src="../../res/img/manual_mode3_en.png" alt="Überladen Diagramm" class="infoImg">
-							<figcaption>Fig. 2: Start-, Weg-, Warte- und Stoppunkte im Überlademodus</figcaption>
+							<figcaption>Fig. 2: Start point, waypoints, waiting/overloading point and stop point in the overload mode</figcaption>
 						</figure>
 					</li>
 					<li id="driveMode4">
-						<h4>Düngen und Säen</h4>
-						<p>Beim Düngen/Säen gibt es zwei Sektionen: zunächst die eigentliche Arbeit auf dem Feld, zum anderen die Fahrt zum Dünger-/Saattrigger um dort das Gerät wieder zu befüllen.</p>
-						<p>Der Kurs für die Arbeit auf dem Feld kann auf zwei verschiedene Wege erzeugt werden:</p>
+						<h4>Fertilize and seeding</h4>
+						<p>When fertilizing or seeding, there are two sections: one, the actual work part on the field, and two, the course from the field to the refilling trigger and back to the field.</p>
+						<p>The field work course kann be created in two different ways:</p>
 						<ol>
-							<li><p>Man fährt den Kurs selber ein. Hierbei ist zu beachten dass zwei Wartepunkte benötigt werden. Den ersten an dem Punkt, wo mit der Arbeit begonnen werden soll, den zweiten an dem Punkt, wo die Arbeit beendet werden soll. Dieser Arbeitsbereich ist unabdinglich für das korrekte Funktionieren in diesem Modus.</p></li>
-							<li><p>Der Kurs wird automatisch generiert. Siehe dazu <a class="internalTab" href="#generateCourse">Kurs generieren</a>. Die Wartepunkte werden hierbei schon automatisch gesetzt.</p></li>
+							<li>
+								<p>You record the course yourself. It is important that there need to be two waiting points. The first one at the position where the work on the field should start, and the second at the position where the work on the field should end. This work area is absolutely necessary for the correct functioning of this mode.</p>
+							</li>
+							<li>
+								<p>The course can be generated automatically. For further information, see the <a class="internalTab" href="#generateCourse">Generate course</a> section. The waiting points will be set automatically.</p>
+							</li>
 						</ol>
-						<p>Der zweite Abschnitt, das automatische Auftanken/Auffüllen, ist ein ganz normaler "A nach B"-Kurs. Er sollte am zweiten Wartepunkt, also dem Ende des Feldkurses, beginnen, dann durch den Dünger-/Saattrigger führen, und zurück und kurz vor dem ersten Wartepunkt enden. Der Fahrer hält, sofern er einen Aufladetrigger erkennt, automatisch an und füllt auch automatisch auf.</p>
+						<p>The second part, die automatic refilling, is a regular "A to B" course. It should start at the second waiting point (so, the end of the field work course), the go through the fertilizer/liquid manure/seeding trigger, and back to the field, ending just before the first waiting point of the field work course. As soon as he recognizes a refilling trigger, the driver stops and refills automatically.</p>
 						<figure>
 							<img src="../../res/img/manual_mode4_en.png" alt="Düngen/Säen Diagramm" class="infoImg">
-							<figcaption>Fig. 3: Start-, Weg-, Warte- und Stoppunkte im Dünge-/Saatmodus</figcaption>
+							<figcaption>Fig. 3: Start point, waypoints, waiting points and stop point in the fertilizer/seeding mode</figcaption>
 						</figure>
-						<p>Sobald das Gerät leer ist, wird es in Transportstellung gebracht und fährt automatisch den Auftankkurs ab. Wieder am Feld angekommen fährt der Traktor zum Punkt wo er zuletzt war als das Gerät leer wurde, bringt das Gerät in Arbeitsstellung und arbeitet weiter.</p>
+						<p>As soon as the tool is empty, it goes into transportation mode and the driver follows the refilling course. Back at the field, the driver drives to the point on the field where it last stopped work, sets the tool into work mode, and continues working.</p>
 					</li>
 					<li id="driveMode5">
-						<h4>Überführung</h4>
-						<p>Der Überführungsmodus ist wohl die simpleste Form um von A nach B zu kommen. Es wird ein ganz normaler Kurs mit Anfang und Ende benötigt, der Fahrer fährt diesen stur ab, ohne zu entladen. Am Ende angekommen fährt der Abfahrer wieder zum ersten Wegpunkt zurück und fährt den Kurs von vorne ab. Wenn dies nicht geschehen soll, muss die Option <code>Warten&nbsp;am&nbsp;letzten&nbsp;Wegpunkt</code> aktiviert werden.</p>
+						<h4>Transfer</h4>
+						<p>The transfer mode is the most simple form to get from A to B. It uses a completely regular course with a start and an end point. The driver blindly follows that course, without unloading or other fancy stuff. Reaching the end, the driver returns to the start point and repeats the course. If you want to prevent that, you need to activate the <code>Stop at last point or at next trigger</code> option.</p>
 					</li>
 					<li id="driveMode6">
-						<h4>Feldarbeit</h4>
-						<p>Der Feldarbeitsmodus das Arbeitstier und den verschiedenen Modi: es kann zum Ballen pressen, Ballen sammeln, schwadern, wenden, grubbern, und noch mehr benutzt werden.</p>
-						<p>Von der Herangehensweise her funktioniert er genauso wie der Dünge-/Saatmodus, nur dass das Gerät entleert anstatt wieder aufgefüllt wird. Der Feldbereich muss auch hier mit zwei Wartepunkten eingegrenzt werden; der Abladekurs muss durch einen entsprechenden Trigger führen.</p>
-						<p>Wie im Dünge-/Saatmodus kann der Kurs für die Arbeit auf dem Feld auf zwei verschiedene Wege erzeugt werden:</p>
+						<h4>Field work</h4>
+						<p>The field work mode is the work horse of all the different modes: it can be used for pressing bales, collecting bales, windrowing, teddering, cultivating and much more.</p>
+						<p>Basically, it works much the same as the fertilizing/seeding mode, only that the tool needs to be emptied/unloaded instead of being refilled. Also, the work area must be defined between two waiting points; the unloading course needs to go through a corresponding trigger.</p>
+						<p>As in the fertilizing/seeding mode, the field work course can be generated in two ways:</p>
 						<ol>
-							<li><p>Man fährt den Kurs selber ein. Hierbei ist zu beachten dass zwei Wartepunkte benötigt werden. Den ersten an dem Punkt, wo mit der Arbeit begonnen werden soll, den zweiten an dem Punkt, wo die Arbeit beendet werden soll. Dieser Arbeitsbereich ist unabdinglich für das korrekte Funktionieren in diesem Modus.</p></li>
-							<li><p>Der Kurs wird automatisch generiert. Siehe dazu <a class="internalTab" href="#generateCourse">Kurs generieren</a>. Die Wartepunkte werden hierbei schon automatisch gesetzt.</p></li>
+							<li>
+								<p>You record the course yourself. It is important that there need to be two waiting points. The first one at the position where the work on the field should start, and the second at the position where the work on the field should end. This work area is absolutely necessary for the correct functioning of this mode.</p>
+							</li>
+							<li>
+								<p>The course can be generated automatically. For further information, see the <a class="internalTab" href="#generateCourse">Generate course</a> section. The waiting points will be set automatically.</p>
+							</li>
 						</ol>
 						<figure>
 							<img src="../../res/img/manual_mode6_en.png" alt="Feldarbeit Diagramm" class="infoImg">
-							<figcaption>Fig. 4: Start-, Weg-, Warte- und Stoppunkte im Feldarbeitsmodus</figcaption>
+							<figcaption>Fig. 4: Start point, waypoints, waiting points and stop point in the field work mode</figcaption>
 						</figure>
-						<p>Geräte werden automatisch ein-/ausgeklappt und aktiviert. Traktoren mit Rundballenpressen bleiben zum Ballen entladen automatisch stehen und werfen diese aus.</p>
+						<p>Toools will be (un)folded and (de)activated automatically. Drivers mit balers as tools will stop and unload the bales automatically.</p>
 					</li>
 					<li id="driveMode7">
-						<h4>Drescher fährt selbst abtanken</h4>
-						<p>Dieser Modus funktioniert quasi genauso wie der Überlademodus. Der Kurs muss am Überladepunkt einen Wartepunkt haben, wo der Drescher dann anhält, die Pipe ausklappt und abtankt.</p>
+						<h4>Combine self unloading</h4>
+						<p>This mode works similarly to the overloading mode. The course must have a waiting point at the overloading position, where the combine will stop, extend the pipe, and unload.</p>
 						<figure>
 							<img src="../../res/img/manual_mode3_en.png" alt="Überladen Diagramm" class="infoImg">
-							<figcaption>Fig. 5: Start-, Weg-, Warte- und Stoppunkte im Drescher-Abtankenmodus</figcaption>
+							<figcaption>Fig. 5: Start point, waypoints, waiting/overloading point and stop point in the combine self unloading mode</figcaption>
 						</figure>
-						<p>Der Drescher muss normal als Helfer eingestellt werden, und <span class="emphasize1">erst dann</span> darf Courseplay aktiviert werden. Der Drescher wird als Helfer fahren bis sein Füllstand den bei <code>Start bei %</code> eingestellten Prozentwert erreicht hat. Dannfährt er zum Startpunkt des Kurses und fährt diesen bis zum Wartepunkt, wo er auf einen wartended Anhänger abtankt. Danach fährt er den Kurs weiter bis zum Kursendpunkt, von wo aus er zum letzten Punkt wo er gedroschen hat fährt. Nun aktiviert er wieder sein Schneidwerk und macht mit der Arbeit weiter.</p>
+						<p>The combine needs to be hired as a regular helper, and <span class="emphasize1">only then</span> Courseplay may be activated. The combine will work as a helper until its fill level reaches the percentage set at <code>Start at %</code>. Then it drives to the course's start point, follows the course until the waiting point, where it will unload into a waiting trailer. After, it will follow the course until the end point, from where it will drive to the last position where it worked as a helper. Now, it will activate its cutter and continue threshing.</p>
 					</li>
 					<li id="driveMode8">
-						<h4>Güllezubringer</h4>
-						<p>Der Güllezubringermodus ist für Feldrandcontainer und ähnliche Gerätschaften die einen integrierten Gülletrigger haben. Hierbei wird das Gerät an einem Güllesilo beladen und dann an einen Feldrand gebracht, wo ein im Düngemodus arbeitendes Güllefass automatisch aufgetankt werden kann.</p>
-						<p>Es ist quasi egal wo der Kurs beginnt und endet, nur folgendes muss gegeben sein:</p>
+						<h4>Liquid manure transporter</h4>
+						<p>The liquid manure transporting mode is for field containers and similar tools that have an integrated liquid manure filling trigger. The tool is refilled at a liquid manure silo and then driving to a field's edge, where a working liquid manure barell can refill automatically.</p>
+						<p>It basically doesn't matter where the course begins or ends, only make sure of two things:</p>
 						<ol>
-							<li><p>Das Gerät muss durch einen Gülletrigger (z.B. Güllesilo) fahren um dort automatisch aufgetankt zu werden.</p></li>
-							<li><p>An dem Punkt wo das sich im Düngemodus arbeitende Güllefass automatisch auftanken soll muss beim Güllecontainer ein Wartepunkt gesetzt werden.</p></li>
+							<li><p>The course must lead through a liquid manure trigger (e.g. liquid manure silo) so it can be refilled there automatically.</p></li>
+							<li><p>At the position where the liquid manure barell should refill, there needs to be a waiting point.</p></li>
 						</ol>
 						<figure>
 							<img src="../../res/img/manual_mode8_en.png" alt="Güllezubringer Diagramm" class="infoImg">
-							<figcaption>Fig. 6: Start-, Weg-, Warte-/Überlade- und Stoppunkte im Güllezubringer-Modus</figcaption>
+							<figcaption>Fig. 6: Start point, waypoints, waiting points and stop point in the liquid manure transport mode.</figcaption>
 						</figure>
-						<p>Der Fahrer fährt vom Wartepunkt weiter sobald das Gerät leer ist.</p>
+						<p>The driver will continue from the waiting/overloading point as soon as the tool is empty.</p>
 					</li>
 				</ol>
 			</div>
@@ -508,7 +520,7 @@ $('#manualNav a, a.internalTab').on('click', function(evt) {
 		}, CP.animationTime);
 	};
 	
-	if ($(this).hasClass('internalTab')) {
+	if ($(this).hasClass('internalTab') && (target.substr(1, 9) !== "driveMode" || target == "#driveModes")) {
 		$('html, body').animate({
 			scrollTop: $('#manualNav').offset().top
 		}, CP.animationTime);

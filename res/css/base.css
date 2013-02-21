@@ -126,6 +126,7 @@ kbd[title], .key[title] {
 }
 .content p { font-size:0.95em; line-height:1.7em; padding:0.5em 0; }
 .content p:first-of-type { padding-top:0; }
+.content p:last-child { padding-bottom:0; }
 .content ul, .content ol { list-style-position:outside; margin-left:1.15em; }
 .content ol {
 	counter-reset:li; /* Initiate a counter */
