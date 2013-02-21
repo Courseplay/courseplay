@@ -42,6 +42,93 @@
 
 	<section id="changelog" class="content">
 		<h2>Changelog</h2>
+		<div id="cl_320" class="changelogVersion open" data-version="3.25">
+			<span class="fs1 toggle" aria-hidden="true" data-icon="&#xe004;" data-icon-open="&#xe004;" data-icon-closed="&#xe005;"></span>
+			<h3>Änderungen in der aktuellen Entwickler-Version</h3>
+			<dl>
+				<dt class="fix">fix</dt>
+				<dd>Seitenberechnungs-Fehler beim automatischen seitlichen Offset gefixt</dd>
+				
+				<dt class="new">new</dt>
+				<dd>
+					<h4>BGA: 3 Sektionen-Abladen</h4>
+					das Silo wird in drei Sektionen aufgeteilt, und der Abfahrer sucht sich die leerste der drei Sektionen und lädt in diese ab. Dies garantiert nach ein paar Abladungen eine gleichmäßige Verteilung im Silo.
+				</dd>
+				
+				<dt class="new">new</dt>
+				<dd>
+					<h4>Geschwindigkeiten</h4>
+					<ul>
+						<li>verbesserte Geschwindigkeitsanpassung im Kombimodus (während dem Abtanken)</li>
+						<li>Support der Geschwindigkeitseinstellungen für ESLimiter (Version 3 und aufwärts)</li>
+						<li>neue Geschwindigkeitseinstellung "Abladen (BGA)" für &hellip; Überraschung &hellip; das Abladen in BGA Silos</li>
+					</ul>
+				</dd>
+				
+				<dt class="fix">fix</dt>
+				<dd>stark verbessertes Wendemanöver beim Häcksler-Abtanken in Kombimodus. Es sollte nun überhaupt nicht mehr vorkommen dass der Traktor in den Häcksler fährt. Auch ist es jetzt endlich wichtig den Wenderadius passend zum Schlepper einzustellen.</dd>
+				
+				<dt class="change">change</dt>
+				<dd>neues Wendemanöver beim Drescher-Abtanken im Kombi-/Überlademodus</dd>
+				
+				<dt class="fix">fix</dt>
+				<dd>leichte Verbesserungen für die feste Abfahrseite beim Häckseln</dd>
+				
+				<dt class="fix">fix</dt>
+				<dd>Abfahrer im Abfahrmodus hält wieder am ersten Wegpunkt</dd>
+				
+				<dt class="fix">fix</dt>
+				<dd>bei den meisten Maschinen sollte das automatische Auftanken wieder funktionieren</dd>
+				
+				<dt class="fix">fix</dt>
+				<dd>die Kursliste kann jetzt auch mit der STRG-Taste schneller durchgescrollt werden</dd>
+				
+				<dt class="fix">fix</dt>
+				<dd>bessere Berechnung welcher der Abfahrer eher zum Drescher fahren sollte (basierend auf Distanz)</dd>
+				
+				<dt class="fix">fix</dt>
+				<dd>Grafiken-Warnings (2^n) gefixt, incl. Pfeil-Anzeige beim Pausieren</dd>
+				
+				<dt class="fix">fix</dt>
+				<dd>Ladewagen werden beim Wiederaufnehmen des Feldkurses wieder aktiviert (Pickup runter, an)</dd>
+				
+				<dt class="new">new</dt>
+				<dd>Implementierung von mph-Anzeige für die englische Spielversion</dd>
+				
+				<dt class="new">new</dt>
+				<dd>
+					<h4>Automatische Wendekreisberechnung</h4>
+					<ul>
+						<li>basierend auf Radstand, Spurweite, Einschlagwinkel, Anzahl der Hänger</li>
+						<li>Manuelles Einstellen durch <span class="fs1" aria-hidden="true" data-icon="&#xe00b;" title="+"></span>/<span class="fs1" aria-hidden="true" data-icon="&#xe00c;" title="-"></span></li>
+						<li>Zurücksetzen auf Automatik durch Setzen auf 0 (null)</li>
+					</ul>
+				</dd>
+				
+				<dt class="fix">fix</dt>
+				<dd>Drei-Seiten-Kipper können wieder ohne Fehler abladen (und danach auch weiterhin benutzt werden)</dd>
+				
+				<dt class="new">new</dt>
+				<dd>
+					<h4>Saatmodus</h4>
+					<ul>
+						<li>Düngemodus ist nun "Düngen und Säen"</li>
+						<li>automatisches Aus-/Einklappen, Senken/Heben, (De-)Aktivieren</li>
+						<li>Genauso wie Dünge-, Mist- oder Gülletools können Säer automatisch am entsprechenden Trigger aufgefüllt werden</li>
+						<li>noch keine Unterstützung für die Amazone Condor</li>
+					</ul>
+				</dd>
+				
+				<dt class="new">new</dt>
+				<dd>Der Feldarbeitsmodus unterstützt neue Geräte:: Grubber, Pflüge, Schwader und Wender</dd>
+				
+				<dt class="fix">fix</dt>
+				<dd>ab Patch 1.4: Gelber Pfeil wird nicht mehr beim Laden der Map angezeigt</dd>
+				
+			</dl>
+		</div>
+		
+
 		<div id="cl_320" class="changelogVersion open" data-version="3.20">
 			<span class="fs1 toggle" aria-hidden="true" data-icon="&#xe004;" data-icon-open="&#xe004;" data-icon-closed="&#xe005;"></span>
 			<h3>Änderungen in Version 3.20</h3>
@@ -53,9 +140,9 @@
 				<dt class="new">new</dt>
 				<dd>Automatische Einstellung des seitlichen Abstandes</dd>
 				<dt class="change">change</dt>
-				<dd>Fruchtumfahrung dekativiert (gab zu viele Probleme damit)</dd>
+				<dd>Fruchtumfahrung deaktiviert (gab zu viele Probleme damit)</dd>
 				<dt class="new">new</dt>
-				<dd>Unterstützung für Rüben/Kartoffelernter</dd>
+				<dd>Unterstützung für Rüben-/Kartoffelernter</dd>
 				<dt class="fix">fix</dt>
 				<dd>Optimiertes Wendemanöver beim Dreschen und Häckseln</dd>
 				<dt class="new">new</dt>
