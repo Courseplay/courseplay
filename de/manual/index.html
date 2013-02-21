@@ -4,7 +4,7 @@
 	<meta charset='utf-8' />
 	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
 	<link rel="stylesheet" href="../../res/css/reset.css">
-	<link rel="stylesheet" href="../../res/fonts/icomoon.css" type="text/css" charset="utf-8">
+	<link rel="stylesheet" href="../../res/fonts/icomoon/style.css" type="text/css" charset="utf-8">
 	<link rel="stylesheet" href="../../res/fonts/adelle/stylesheet.css" type="text/css" charset="utf-8">
 	<link rel="stylesheet" href="../../res/fonts/caslon/stylesheet.css" type="text/css" charset="utf-8">
 	<link rel="stylesheet" href="../../res/css/base.css">
@@ -109,7 +109,7 @@
 			<div class="manualSection" id="hud">
 				<h3>HUD</h3>
 				<p>Wenn ihr das HUD öffnet wird automatisch die Maussteuerung aktiviert. Das heißt ihr könnt euch mit der Maus nicht mehr umgucken. Um die Maussteuerung zu deaktivieren müsst ihr einfach nochmal auf die rechte Maustaste klicken. Alternativ könnt ihr auch auf das <span class="hudIcon closeHud inline"></span> oben rechts im HUD klicken. Dabei wird das HUD geschlossen und die Maussteuerung wieder deaktiviert.</p>
-				<p>Das HUD ist in mehrere Unterseiten unterteilt. Diese könnt ihr mit den links-/rechts-Pfeilen im oberen Bereich des HUDs wechseln. Im mittleren Bereich des HUDs könnt ihr auf jeder Unterseite verschiede Einstellungen vornehmen oder Befehle geben. Klickt dazu einfach auf die gewünschte Aktion. Bestimmte Werte oder Einstellungen wie das Durchblättern der Kurse, oder das Einstellen von Breiten, Geschwindigkeiten oder Prozentzahlen etc. können durch Drücken der <kbd title="Steuerung">STRG</kbd>-Taste in größeren Schritten verändert werden.</p>
+				<p>Das HUD ist in mehrere Unterseiten unterteilt. Diese könnt ihr mit den links-/rechts-Pfeilen im oberen Bereich des HUDs wechseln. Im mittleren Bereich des HUDs könnt ihr auf jeder Unterseite verschiedene Einstellungen vornehmen oder Befehle geben. Klickt dazu einfach auf die gewünschte Aktion. Bestimmte Werte oder Einstellungen wie das Durchblättern der Kurse, oder das Einstellen von Breiten, Geschwindigkeiten oder Prozentzahlen etc. können durch Drücken der <kbd title="Steuerung">STRG</kbd>-Taste in größeren Schritten verändert werden.</p>
 				<p>Im unteren Bereich des HUDs findet ihr Infos über euren Abfahrer, den geladenen Kurs und den aktuellen Status. Dort könnt ihr durch einen Klick auf die Diskette euren eingefahrenen Kurs auch speichern.</p>
 			</div>
 			
@@ -163,7 +163,7 @@
 
 			<div class="manualSection" id="hud_saveCourse">
 				<h3>HUD: Kurs speichern</h3>
-				<p>Im unteren Breich des Huds findet ihr eine Diskette. Wenn ihr einen Kurs eingefahren habt könnt ihr durch Klick auf die Diskette euren Kurs speichern. Dabei wird im oberen Bereich eine Eingabemaske angezeigt. Hier könnt ihr mit der Tastatur einen Namen für euren Kurs vergeben und diesen mit <kbd>ENTER</kbd> (Eingabetaste) bestätigen.</p>
+				<p>Im unteren Breich des Huds findet ihr eine Diskette <span class="fs1" aria-hidden="true" data-icon="&#xe013;" title="disc"></span>. Wenn ihr einen Kurs eingefahren habt könnt ihr durch Klick auf die Diskette euren Kurs speichern. Dabei wird im oberen Bereich eine Eingabemaske angezeigt. Hier könnt ihr mit der Tastatur einen Namen für euren Kurs vergeben und diesen mit <kbd>ENTER</kbd> (Eingabetaste) bestätigen.</p>
 			</div>
 			
 			<div class="manualSection" id="hud_manageCourses">
@@ -182,19 +182,25 @@
 				<p>Ein Kurs hat jeweils drei Aktionen:
 					<ul>
 						<li>
-							<h4>Öffnen <span class="hudIcon openCourse"></span></h4>
-							Den Kurs laden. Wenn schon ein Kurs geladen ist wird der Kurs auf den geklickt wurde mit dem aktuellen Kurs am ersten gemeinsamen Kreuzungspunkt kombiniert.
-							</li>
-						<li><h4>Hinzufügen <span class="hudIcon addCourse"></span></h4>Wenn schon ein Kurs geladen ist wird der Kurs auf den geklickt wurde an den aktuellen Kurs angefügt.</li>
-						<li><h4>Löschen <span class="hudIcon deleteCourse"></span></h4>Der Kurs wird aus Courseplay komplett entfernt, und wird auch beim nächsten Spielstart nicht mehr zur Verfügung stehen.</li>
+							<h4><span class="hudIcon openCourse"></span> Öffnen/Kombinieren</h4>
+							<p>Den Kurs laden. Wenn schon ein Kurs geladen ist wird der Kurs auf den geklickt wurde mit dem aktuellen Kurs am ersten gemeinsamen Kreuzungspunkt kombiniert.</p>
+						</li>
+						<li>
+							<h4><span class="hudIcon addCourse"></span> Hinzufügen</h4>
+							<p>Wenn schon ein Kurs geladen ist wird der Kurs auf den geklickt wurde an den aktuellen Kurs angefügt.</p>
+						</li>
+						<li>
+							<h4><span class="hudIcon deleteCourse"></span> Löschen</h4>
+							<p>Der Kurs wird aus Courseplay komplett entfernt, und wird auch beim nächsten Spielstart nicht mehr zur Verfügung stehen.</p>
+						</li>
 					</ul>
 				</p>
-				<p>Um einen gänzlich neuen Kurs zu laden oder einzufahren, muss der aktuelle Kurs zurückgesetzt werden (siehe "Abfahrhelfer-Steuerung" > "Wegpunkte löschen").</p>
+				<p>Um einen gänzlich neuen Kurs zu laden oder einzufahren, muss der aktuelle Kurs zurückgesetzt werden (siehe <a href="#hud_driverControls" class="internalTab">Abfahrhelfer-Steuerung</a> > "Wegpunkte löschen").</p>
 			</div>
 			
 			<div class="manualSection" id="hud_mode2settings">
 				<h3>HUD: Einstellungen Combi Modus</h3>
-				<p>Diese Einstellungen gelten (wie der Name es andeutet) nur für den kombinierten Modus und den Überlademodus. Hiermit könnt ihr euren Abfahrer an den jeweiligen Drescher anpassen. Ihr könnt die Werte mit einem Klick auf das +/- Symbol daneben anpassen (mit gedrückter <kbd title="Steuerung">STRG</kbd>-Taste verstellt ihr die Werte in größeren Abständen).</p>
+				<p>Diese Einstellungen gelten (wie der Name es andeutet) nur für den kombinierten Modus und den Überlademodus. Hiermit könnt ihr euren Abfahrer an den jeweiligen Drescher anpassen. Ihr könnt die Werte mit einem Klick auf die <span class="fs1" aria-hidden="true" data-icon="&#xe00b;" title="+"></span>/<span class="fs1" aria-hidden="true" data-icon="&#xe00c;" title="-"></span> Symbole daneben anpassen (mit gedrückter <kbd title="Steuerung">STRG</kbd>-Taste verstellt ihr die Werte in größeren Abständen).</p>
 				<ul>
 					<li>
 						<h4>seitl. Abstand</h4>
@@ -235,6 +241,7 @@
 					<li>
 						<h4>Start bei %</h4>
 						<p>Dieser Wert legt fest ab welchem Füllstand des Dreschers der Abfahrer zu ihm fährt und ihn abtankt. Bei Häckslern wird durch diesen Wert festgelegt ab wann der zweite Abfahrer in der Kette dem ersten hinterherfahren soll.</p>
+						<p><span class="emphasize1">Info:</span> wenn <a href="#hud_generalSettings" class="internalTab">Fruchtumfahrung</a> aktiviert ist, wird dieser Wert ignoriert solange the Pipe des Dreschers in der Frucht ist und der Drescher nicht voll ist.</p>
 						<dl class="buttonInfo">
 							<dt>Standard-Änderung</dt>
 							<dd>5%</dd>
@@ -268,6 +275,7 @@
 			<div class="manualSection" id="hud_speeds">
 				<h3>HUD: Geschwindigkeiten</h3>
 				<p>Hier könnt ihr festlegen wie schnell euer Abfahrer fahren soll. Auch kann gewählt werden ob ein Kurs mit der Geschwindigkeit, die bei der Aufnahme eingefahren wurde, oder mit der höchstmöglichen (einstellbaren) Geschwindigkeit abgefahren werden soll.</p>
+				<p>ESLimiter ab Version 3.0 wird unterstützt.</p>
 				<dl class="buttonInfo">
 					<dt>Standard-Änderung</dt>
 					<dd>1 km/h</dd>
@@ -310,7 +318,7 @@
 				<ul>
 					<li>
 						<h4>Haltezeit</h4>
-						<p>Standardmäßig wird an Wartepunkten (außer im Feldarbeits- und Dünge/Saatmodus) angehalt, bis dem Abfahrer explizit gesagt wird er soll weiterfahren (Haltezeit = 0 sec). Wird eine Haltezeit eingestellt (also über 0 sec), wartet der Abfahrer am Wartepunkt bis diese Zeit abgelaufen ist und fährt dann automatisch weiter. Dies kann z.B. für Waagen an einer BGA nötig sein.</p>
+						<p>Standardmäßig wird an Wartepunkten (außer im Feldarbeits- und Dünge/Saatmodus) angehalten, bis dem Abfahrer explizit gesagt wird er soll weiterfahren (Haltezeit = 0 sec). Wird eine Haltezeit eingestellt (also über 0 sec), wartet der Abfahrer am Wartepunkt bis diese Zeit abgelaufen ist und fährt dann automatisch weiter. Dies kann z.B. für Waagen an einer BGA nötig sein.</p>
 						<dl class="buttonInfo">
 							<dt>Standard-Änderung</dt>
 							<dd>5 sec</dd>
@@ -346,7 +354,7 @@
 					</li>
 					<li>
 						<h4>Arbeitsbreite</h4>
-						<p>Wird für die Generierung von Feldkursen benötigt. Hier wird die Arbeitsbreite des Gerätes eingestellt, aus der dann die Breite der Bahnen errechnet wird.</p>
+						<p>Wird für die <a href="#generateCourse" class="internalTab">Generierung von Feldkursen</a> benötigt. Hier wird die Arbeitsbreite des Gerätes eingestellt, aus der dann die Breite der Bahnen errechnet wird.</p>
 						<dl class="buttonInfo">
 							<dt>Standard-Änderung</dt>
 							<dd>0.1 m</dd>
@@ -521,7 +529,7 @@ $('#manualNav a, a.internalTab').on('click', function(evt) {
 	
 	if ($(this).hasClass('internalTab')) {
 		$('html, body').animate({
-			scrollTop: $('body').offset().top
+			scrollTop: $('#manualNav').offset().top
 		}, CP.animationTime);
 	};
 });

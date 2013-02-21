@@ -126,6 +126,9 @@
 .hudIcon.plus { background-position:0 -96px; }
 .hudIcon.minus { background-position:0 -112px; }
 
+.manualSection span[data-icon] { font-size:1.1em; margin:0 3px; }
+.manualSection span[data-icon].big { font-size:1.5em; position:relative; top:3px; }
+
 .buttonInfo {
 	background:#555;
 	border:1px solid #404040;
@@ -141,8 +144,16 @@ dt, dd {
 dt { width: 30%; }
 
 .manualSection li {
-	margin-bottom:20px;
+	padding-top:10px;
+	padding-bottom:10px;
 }
+.manualSection ol li { 
+	margin-top:10px; 
+	margin-bottom:10px; 
+}
+.manualSection li:first-of-type { padding-top:none; }
+.manualSection ul li { border-top:1px dashed #CCC; }
+.manualSection ul li:first-of-type { border-top:none; }
 
 figure { margin-bottom:1em; }
 img.infoImg {
