@@ -1,5 +1,11 @@
 /*#manualNav { display:none; }*/
 #manualNav { margin-bottom:40px; }
+#manualNav.scrolling {
+	position:fixed;
+	top:0;
+	width:600px;
+	z-index:1000;
+}
 #manualNav ul, #manualNav li, #manualNav span, #manualNav a {
   margin: 0;
   padding: 0;

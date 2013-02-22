@@ -117,11 +117,11 @@
 					</li>
 					<li>
 						<h4>Drive course</h4>
-						<p>When you have recorded or loaded a course, you can "hire" a driver to have him drive the course.</p>
+						<p>When you have recorded or loaded a course, you can "hire" a driver to have him drive the course. From this moment, you won't have any manual control over the tractor.</p>
 					</li>
 					<li>
 						<h4>Stop driver</h4>
-						<p>Of course you can always stop the activated driver. Later, when reactivating the driver, it will continue from the last valid point.</p>
+						<p>Of course you can always stop the activated driver. Later, when reactivating the driver, it will continue from the next valid waypoint.</p>
 					</li>
 					<li>
 						<h4>continue</h4>
@@ -529,6 +529,9 @@ $('body').removeClass('no-js').addClass('js');
 $('#driveModesNav').addClass('has-sub');
 CP = {};
 
+CP.manualNav = $('#manualNav');
+CP.manualNavFixed = CP.manualNav.clone().removeClass('default').appendTo('#manualTabs').addClass('scrolling').hide();
+
 CP.animationTime = 250;
 CP.manualSections = $('.manualSection').hide();
 $('#manualNav a, a.internalTab').on('click', function(evt) {
@@ -551,6 +554,18 @@ $('#manualNav a, a.internalTab').on('click', function(evt) {
 		}, CP.animationTime);
 	};
 });
+
+//scroll: manual nav fixed
+$(window).on('scroll', function(){
+	var pos = CP.manualNav.offset();
+	
+	if ( $(this).scrollTop() > pos.top ) {
+		CP.manualNavFixed.show();
+	} else if ( $(this).scrollTop() <= pos.top ) {
+		CP.manualNavFixed.hide();
+	};
+});
+
 }); })(jQuery); //END document.ready
 </script>
 </body>
