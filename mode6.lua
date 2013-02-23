@@ -1,4 +1,4 @@
-function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill_level, last_recordnumber)
+function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill_level, last_recordnumber, lx , lz )
 	local workTool = self.tippers[1] -- to do, quick, dirty and unsafe
 	local active_tipper = nil
 	if self.attachedCutters ~= nil then
@@ -18,7 +18,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 
 
 	-- worktool defined above
-	if workTool ~= nil then
+	if workTool ~= nil and self.grainTankCapacity == nil then
 
 		-- stop while folding
 		if courseplay:isFoldable(workTool) then
@@ -244,28 +244,75 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 				end
 			end
 		end
-	else
-		if SpecializationUtil.hasSpecialization(Combine, self.specializations) or SpecializationUtil.hasSpecialization(combine, self.specializations) then
-			if self.grainTankCapacity == 0 and ((self.pipeParticleActivated and not self.isPipeUnloading) or not self.pipeStateIsUnloading[self.currentPipeState]) then
-				-- there is some fruit to unload, but there is no trailer. Stop and wait for a trailer
-				self.waitingForTrailerToUnload = true;
-			end;
-			if self.waitingForTrailerToUnload then
-				if self.lastValidOutputFruitType ~= FruitUtil.FRUITTYPE_UNKNOWN then
-					local trailer = self:findTrailerToUnload(self.lastValidOutputFruitType);
-					if trailer ~= nil then
-						-- there is a trailer to unload. Continue working
-						self.waitingForTrailerToUnload = false;
+	else  --!!!
+		if SpecializationUtil.hasSpecialization(Combine, self.specializations) or SpecializationUtil.hasSpecialization(combine, self.specializations) or self.grainTankCapacity == 0 then
+			if workArea and not self.isAIThreshing then
+				local pipeState = self:getCombineTrailerInRangePipeState();
+				if self.grainTankCapacity == 0 then
+					if courseplay:isFoldable(workTool) then
+						workTool:setFoldDirection(-1);
+						if courseplay:isFolding(workTool) then
+							allowedToDrive = false;
+						end
 					end;
+					self:setIsThreshing(true, true);
+					if pipeState > 0 then
+						self:setPipeState(pipeState);
+					else
+						self:setPipeState(2);
+					end;
+					if self.lastCuttersFruitType == 9 and not self.pipeParticleSystems[9].isEmitting and self.turnStage == 0 then
+						self.waitingForTrailerToUnload = true
+					end
+					if self.waitingForTrailerToUnload then
+						allowedToDrive = false;
+						if self.pipeParticleSystems[9].isEmitting or pipeState > 0 then
+							self.waitingForTrailerToUnload = false
+						end
+					end
+					if math.abs(lx) > 0.7 then
+						self.turnStage = 1
+					elseif math.abs(lx) < 0.2 and self.turnStage == 1 then
+						self.turnStage = 0
+					end
+					if self.turnStage == 1 and pipeState > 0 then 
+						allowedToDrive = false;
+					end
 				else
-					-- we did not cut anything yet. We shouldn't have ended in this state. Just continue working
-					self.waitingForTrailerToUnload = false;
-				end;
-			end;
-
-			if (self.grainTankFillLevel >= self.grainTankCapacity and self.grainTankCapacity > 0) or self.waitingForTrailerToUnload or self.waitingForDischarge then
+					if self.grainTankFillLevel < self.grainTankCapacity then
+						self:setIsThreshing(true, true);
+					elseif self.grainTankFillLevel >= self.grainTankCapacity or self.waitingForDischarge then
+						self.waitingForDischarge = true
+						allowedToDrive = false;
+						self:setIsThreshing(false, true);
+					end
+					if self.grainTankFillLevel == 0 then
+						self.waitingForDischarge = false
+						self.waitingForTrailerToUnload = false
+					end
+					if self.grainTankFillLevel >= self.grainTankCapacity*0.8  or pipeState > 0 then
+						self:setPipeState(2)
+					elseif  pipeState == 0 then 
+						self:setPipeState(1)
+					end
+					if math.abs(lx) > 0.5 and self.isCheckedIn ~= nil or self.waitingForTrailerToUnload then
+						self.waitingForTrailerToUnload = true
+						allowedToDrive = false;
+					end
+				end
+			elseif last_recordnumber == self.stopWork then
+				self:setIsThreshing(false, true);
 				allowedToDrive = false;
-			end;
+			end
+			local dx,_,dz = localDirectionToWorld(self.aiTreshingDirectionNode, 0, 0, 1);
+			local length = Utils.vector2Length(dx,dz);
+			if self.turnStage == 0 then
+				self.aiThreshingDirectionX = dx/length;
+				self.aiThreshingDirectionZ = dz/length;
+			else
+				self.aiThreshingDirectionX = -(dx/length);
+				self.aiThreshingDirectionZ = -(dz/length);
+			end				
 		end;
 	end
 	return allowedToDrive, workArea, workSpeed, active_tipper

@@ -582,7 +582,7 @@ function courseplay:unload_combine(self, dt)
 				elseif right_fruit < left_fruit then
 					self.sideToDrive = "right";
 				end
-				courseplay:debug(string.format("%s(%i): %s @ %s: sideToDrive first runthrough=%s => current_offset=%f", curFile, debug.getinfo(1).currentline, self.name, combine.name, tostring(self.sideToDrive), current_offset), 2)
+				--courseplay:debug(string.format("%s(%i): %s @ %s: sideToDrive first runthrough=%s => current_offset=%f", curFile, debug.getinfo(1).currentline, self.name, combine.name, tostring(self.sideToDrive), current_offset), 2)
 			end;
 				
 			if self.sideToDrive	~= nil then

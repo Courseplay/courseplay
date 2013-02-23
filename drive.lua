@@ -143,6 +143,10 @@ function courseplay:drive(self, dt)
 
 	self.dist = courseplay:distance(cx, cz, ctx, ctz)
 	--courseplay:debug(string.format("Tx: %f2 Tz: %f2 WPcx: %f2 WPcz: %f2 dist: %f2 ", ctx, ctz, cx, cz, self.dist ), 2)
+	local fwd = nil
+	local distToChange = nil
+	local lx, lz = AIVehicleUtil.getDriveDirection(self.rootNode, cx, cty, cz);
+	
 	-- what about our tippers?
 	local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
 	local fill_level = nil
@@ -430,9 +434,12 @@ function courseplay:drive(self, dt)
 		allowedToDrive, workArea, workSpeed = courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill_level, last_recordnumber)
 	end
 
+	
+
+
 	-- Mode 6 Fieldwork for balers and foragewagon
 	if self.ai_mode == 6 and self.startWork ~= nil and self.stopWork ~= nil then
-		allowedToDrive, workArea, workSpeed, active_tipper = courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill_level, last_recordnumber)
+		allowedToDrive, workArea, workSpeed, active_tipper = courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill_level, last_recordnumber, lx , lz )
 		if not workArea and self.aiTrafficCollisionTrigger ~= nil and self.grainTankCapacity == nil then
 			-- is there a tipTrigger within 10 meters?
 			
@@ -525,8 +532,6 @@ function courseplay:drive(self, dt)
 			if allowedToDrive then 
 				if (self.lastSpeed*3600) - (vehicle_in_front.lastSpeedReal*3600) > 15 then
 					self.cpTrafficBrake = true
-				elseif vehicle_in_front.rootNode ~= nil and vehicle_in_front.lastSpeed ~= nil and courseplay:distance_to_object(self, vehicle_in_front) < 3 then
-					refSpeed = math.min(vehicle_in_front.lastSpeedReal -(3*3600),refSpeed)
 				else
 					refSpeed = math.min(vehicle_in_front.lastSpeedReal,refSpeed)
 				end
@@ -573,12 +578,7 @@ function courseplay:drive(self, dt)
 	if self.ESLimiter ~= nil and self.ESLimiter.maxRPM[5] == nil then
 		self.info_text = courseplay:get_locale(self, "CPWrongESLversion")
 	end
-	
 	-- where to drive?
-	local fwd = nil
-	local distToChange = nil
-	local lx, lz = AIVehicleUtil.getDriveDirection(self.rootNode, cx, cty, cz);
-
 	if self.Waypoints[self.recordnumber].rev then
 		lz = lz * -1
 		lx = lx * -1
@@ -674,7 +674,6 @@ function courseplay:set_traffc_collision(self, lx, lz)
 		colDirZ = 0.4;
 	end;
 	--courseplay:debug(string.format("colDirX: %f colDirZ %f ",colDirX,colDirZ ), 2)
-					
 	if CPDebugLevel > 0 then	
 		local x,y,z = getWorldTranslation(self.aiTrafficCollisionTrigger)
 		local x1,y1,z1 = localToWorld(self.aiTrafficCollisionTrigger, colDirX*5, 0, colDirZ*5 )
