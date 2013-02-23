@@ -125,12 +125,12 @@
 			<fr>Démarrer la course</fr>
 		</text>
 		<text name="CoursePlayStop">
-			<en>Drive stop</en>
+			<en>Stop driver</en>
 			<de>Abfahrer entlassen</de>
 			<fr>Arrêter la course</fr>
 		</text>
 		<text name="CourseMode1">
-			<en>Type: Drivinghelper (Load at start)</en>
+			<en>Type: Driving helper (Load at start)</en>
 			<de>Typ: Abfahrer (Beladung am Startpunkt)</de>
 			<fr>Type: Aide à la conduite (Chargement au démarrage)</fr>
 		</text>
@@ -145,12 +145,12 @@
 			<fr>Type: Transbordeur (Dechargement de la Batteuse)</fr>
 		</text>
 		<text name="CourseMode4">
-			<en>Type: fertilice and seeding</en>
+			<en>Type: fertilize and seeding</en>
 			<de>Typ: Düngen und Säen</de>
 			<fr>Type: Fertiliser et semer</fr>
 		</text>
 		<text name="CourseMode5">
-			<en>Type: Target (drive from start to finish)</en>
+			<en>Type: Transfer (drive from start to finish)</en>
 			<de>Typ: Überführung (Route abfahren)</de>
 			<fr>Type: Route (voyage du début jusqu'a la fin de la course)</fr>
 		</text>
@@ -170,7 +170,7 @@
 			<fr>Type: Transport de fumier</fr>
 		</text>
 		<text name="CourseWaitpointSet">
-			<en>Set waitpoint</en>
+			<en>Set waiting point</en>
 			<de>Hier Wartepunkt setzen</de>
 			<fr>Placer un point d'attente</fr>
 		</text>
@@ -185,7 +185,7 @@
 			<fr>Placer un point de champs</fr>
 		</text>
 		<text name="CourseWaitpointStart">
-			<en>start</en>
+			<en>continue</en>
 			<de>weiterfahren</de>
 			<fr>Début</fr>
 		</text>
@@ -365,7 +365,7 @@
 			<fr>Demarrer à %:</fr>
 		</text>
 		<text name="CPTurnRadius">
-			<en>Turning cirlce:</en>
+			<en>Turning circle:</en>
 			<de>Wendekreis:</de>
 			<fr>Rayon de braquage:</fr>
 		</text>
@@ -545,8 +545,8 @@
 			<fr>Courseplay control</fr>
 		</text>
 		<text name="CPCombineMangament">
-			<en>Driver managment</en>
-			<de>Abfahrer steuern</de>
+			<en>Combine controls</en>
+			<de>Drescher steuern</de>
 			<fr>Gestion de la conduite</fr>
 		</text>
 		<text name="CPManageCourses">
@@ -575,13 +575,13 @@
 			<fr>Gestion des batteuses</fr>
 		</text>
 		<text name="CPSpeedLimit">
-			<en>SPEED LIMIT</en>
+			<en>Speed limits</en>
 			<de>Geschwindigkeiten</de>
 			<fr>Vitesse limite</fr>
 		</text>
 		<text name="CPHud7">
-			<en>DRIVE SETTINGS</en>
-			<de>Fahr- Arbeitseinstellungen</de>
+			<en>Driving settings</en>
+			<de>Fahr-/Arbeitseinstellungen</de>
 			<fr>Paramètres de conduite</fr>
 		</text>
 		<text name="CPCombineTurning">
@@ -667,7 +667,7 @@
 		<text name="CPWrongESLversion">
 			<en>ESLimiter version is not supported</en>
 			<de>ESLimiter-Version wird nicht unterstützt</de>
-			<fr> la version du ESLimiter n'est pas compatible</fr>
+			<fr>la version du ESLimiter n'est pas compatible</fr>
 		</text>
 		<text name="CPSettings">
 			<en>Settings</en>
@@ -675,13 +675,13 @@
 			<fr>Paramètres</fr>
 		</text>
 		<text name="CPWpOffsetX">
-			<en>Waypoint-X Offset</en>
-			<de>versetzt fahren</de>
+			<en>horizontal offset</en>
+			<de>horiz. Versatz</de>
 			<fr>décalage latéral</fr>
 		</text>
 		<text name="CPWpOffsetZ">
-			<en>Waypoint-Z Offset</en>
-			<de>Versetzt fahren</de>
+			<en>vertical offset</en>
+			<de>vertik. Versatz</de>
 			<fr>décalage Av/Ar</fr>
 		</text>
 		<text name="CPWorkingWidht">
@@ -695,7 +695,7 @@
 			<fr> a voulut prendre un bain</fr>
 		</text>
 		<text name="WaitPoints">
-			<en>wait points:</en>
+			<en>waiting points:</en>
 			<de>Wartepunkte:</de>
 			<fr>Points d'attente:</fr>
 		</text>
