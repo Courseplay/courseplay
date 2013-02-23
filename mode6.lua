@@ -114,7 +114,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 
 				-- other worktools, tippers, e.g. forage wagon	
 				-- start/stop worktool
-				if workArea and fill_level ~= 100 and ((self.abortWork == nil and last_recordnumber == self.startWork) or (self.abortWork ~= nil and last_recordnumber == self.abortWork - 4) or (self.runOnceStartCourse)) then
+				if workArea and fill_level ~= 100 and ((self.abortWork == nil and last_recordnumber == self.startWork) or (self.abortWork ~= nil and last_recordnumber == self.abortWork) or (self.runOnceStartCourse)) then
 					--activate/lower/unfold workTool also when activating from within course (not only at start)
 					self.runOnceStartCourse = false;
 					
@@ -214,28 +214,28 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 					end
 				end;
 
-				-- Begin Work
+				-- Begin Work   or goto abortWork
 				if last_recordnumber == self.startWork and fill_level ~= 100 then
 					if self.abortWork ~= nil then
 						if self.abortWork < 5 then
 							self.abortWork = 6
 						end
-						self.recordnumber = self.abortWork - 4
-						if self.recordnumber < 1 then
-							self.recordnumber = 1
+						self.recordnumber = self.abortWork 
+						if self.recordnumber < 2 then
+							self.recordnumber = 2
 						end
 					end
 				end
 				-- last point reached restart
 				if self.abortWork ~= nil then
-					if (last_recordnumber == self.abortWork - 4) and fill_level ~= 100 then
-						self.recordnumber = self.abortWork - 2 -- drive to waypoint after next waypoint
+					if (last_recordnumber == self.abortWork ) and fill_level ~= 100 then
+						self.recordnumber = self.abortWork + 2  -- drive to waypoint after next waypoint
 						self.abortWork = nil
 					end
 				end
 				-- safe last point
 				if (fill_level == 100 or self.loaded) and workArea and self.abortWork == nil and self.maxnumber ~= self.stopWork then
-					self.abortWork = self.recordnumber -4
+					self.abortWork = last_recordnumber - 10
 					self.recordnumber = self.stopWork - 4
 					if self.recordnumber < 1 then
 						self.recordnumber = 1
