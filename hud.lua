@@ -103,10 +103,6 @@ function courseplay:loadHud(self)
 					if not self.StopEnd then
 						self.hudpage[1][1][4] = courseplay:get_locale(self, "CoursePlayStopEnd")
 					end
-
-					if InputBinding.hasEvent(InputBinding.AHInput3) and InputBinding.isPressed(InputBinding.CP_Modifier_1) then
-						self.loaded = true
-					end
 				end
 			end
 			if not self.drive then
@@ -458,13 +454,15 @@ function courseplay:showHud(self)
 				end
 			end
 
-		else
-			if InputBinding.isPressed(InputBinding.CP_Modifier_1) then
-				g_currentMission:addHelpButtonText(courseplay:get_locale(self, "CoursePlayStart"), InputBinding.AHInput1)
-				if InputBinding.hasEvent(InputBinding.AHInput1) then
-					self:setCourseplayFunc("start", nil)
-				end
+		elseif InputBinding.isPressed(InputBinding.CP_Modifier_1) then
+			g_currentMission:addHelpButtonText(courseplay:get_locale(self, "CoursePlayStart"), InputBinding.AHInput1);
+			g_currentMission:addHelpButtonText(courseplay:get_locale(self, "NoWaitforfill"), InputBinding.AHInput3);
+			if InputBinding.hasEvent(InputBinding.AHInput1) then
+				self:setCourseplayFunc("start", nil);
 			end
-		end
+			if InputBinding.hasEvent(InputBinding.AHInput3) then
+				self.loaded = true;
+			end;
+		end;
 	end
 end
