@@ -279,14 +279,15 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 						allowedToDrive = false;
 					end
 				else
-					if self.grainTankFillLevel < self.grainTankCapacity then
+					if self.grainTankFillLevel < self.grainTankCapacity and not self.waitingForDischarge and not self.isThreshing then
 						self:setIsThreshing(true, true);
-					elseif self.grainTankFillLevel >= self.grainTankCapacity or self.waitingForDischarge then
+					end
+					if self.grainTankFillLevel >= self.grainTankCapacity or self.waitingForDischarge then
 						self.waitingForDischarge = true
 						allowedToDrive = false;
 						self:setIsThreshing(false, true);
 					end
-					if self.grainTankFillLevel == 0 then
+					if self.grainTankFillLevel == 0 or (self.grainTankFillLevel < self.grainTankCapacity and self.isCheckedIn == nil) then
 						self.waitingForDischarge = false
 						self.waitingForTrailerToUnload = false
 					end
