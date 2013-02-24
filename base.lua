@@ -452,6 +452,10 @@ function courseplay:onEnter()
 	if self.mouse_enabled then
 		InputBinding.setShowMouseCursor(true);
 	end
+	
+	if self.drive and self.steeringEnabled then
+	  self.steeringEnabled = false
+	end
 end
 
 -- displays help text, user_input 	

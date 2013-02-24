@@ -8,6 +8,16 @@ function courseplay:start(self)
 	if self.setManualIgnitionMode ~= nil then
 	  self:setManualIgnitionMode(2)
 	end
+	
+	
+	 --Manual ignition
+    if self.ignitionKey ~= nil and self.allowedIgnition ~= nil and self.invokeIgnition ~= nil and not self.isMotorStarted then
+        --print(string.format("%s: has manualIgnition, isMotorStarted==%s, ignitionKey=%s, allowedIgnition=%s, starting motor [self:invokeIgnition(true)]", self.name, tostring(self.isMotorStarted), tostring(self.ignitionKey), tostring(self.allowedIgnition)));
+		self.ignitionKey = true;
+        self.allowedIgnition = true;
+    end;
+    --END manual ignition
+	
 
 	self.CPnumCollidingVehicles = 0;
 	self.traffic_vehicle_in_front = nil
