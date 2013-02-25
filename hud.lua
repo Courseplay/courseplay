@@ -404,7 +404,7 @@ function courseplay:showHud(self)
 		local hud_headline = nil
 
 		if self.showHudInfoBase == 0 then
-			hud_headline = courseplay:get_locale(self, "CPCombineMangament") -- "Kurse verwalten"
+			hud_headline = courseplay:get_locale(self, "CPCombineMangament") -- Combine Controls
 		elseif self.showHudInfoBase == 1 then
 			hud_headline = courseplay:get_locale(self, "CPSteering") -- "Abfahrhelfer Steuerung"
 		elseif self.showHudInfoBase == 2 then
@@ -448,7 +448,7 @@ function courseplay:showHud(self)
 				last_recordnumber = 1
 			end
 
-			if self.Waypoints[last_recordnumber].wait and self.wait then
+			if --[[self.Waypoints[last_recordnumber].wait and]] self.wait then
 				if InputBinding.isPressed(InputBinding.CP_Modifier_1) then
 					g_currentMission:addHelpButtonText(courseplay:get_locale(self, "CourseWaitpointStart"), InputBinding.AHInput2)
 				
