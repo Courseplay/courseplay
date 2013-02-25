@@ -593,27 +593,28 @@ function courseplay:drive(self, dt)
 	end  	
 
 	-- go, go, go!
-	if self.recordnumber == 1 then --courtesy of Thomas Gärtner
+	if self.recordnumber == 1 or self.recordnumber == self.maxnumber - 1 then
 		distToChange = 0.5
 	elseif self.recordnumber + 1 <= self.maxnumber then
 		local beforeReverse = (self.Waypoints[self.recordnumber + 1].rev and (self.Waypoints[self.recordnumber].rev == false))
 		local afterReverse = (not self.Waypoints[self.recordnumber + 1].rev and self.Waypoints[last_recordnumber].rev)
 		if (self.Waypoints[self.recordnumber].wait or beforeReverse) and self.Waypoints[self.recordnumber].rev == false then -- or afterReverse or self.recordnumber == 1
 			distToChange = 1
-		elseif self.Waypoints[self.recordnumber].rev and self.Waypoints[self.recordnumber].wait or afterReverse then
+		elseif (self.Waypoints[self.recordnumber].rev and self.Waypoints[self.recordnumber].wait) or afterReverse then
 			distToChange = 2
 		elseif self.Waypoints[self.recordnumber].rev then
-			distToChange = 6
-			--	elseif self.ai_mode == 7 and (self.recordnumber > (self.maxnumber-3)) then
-			--	    distToChange = 2
+			distToChange = 1;
+		elseif self.ai_mode == 4 or self.ai_mode == 6 then
+			distToChange = 5;
+		elseif self.ai_mode == 7 and (self.recordnumber > (self.maxnumber-3)) then
+		    distToChange = 2
 
 		else
-			distToChange = 5
-		end
+			distToChange = 2.85; --orig: 5
+		end;
 	else
-		distToChange = 5
+		distToChange = 2.85; --orig: 5
 	end
-
 
 	-- record shortest distance to the next waypoint
 	if self.shortest_dist == nil or self.shortest_dist > self.dist then
@@ -675,6 +676,7 @@ function courseplay:set_traffc_collision(self, lx, lz)
 		colDirZ = 0.4;
 	end;
 	--courseplay:debug(string.format("colDirX: %f colDirZ %f ",colDirX,colDirZ ), 2)
+
 	if CPDebugLevel > 0 then	
 		local x,y,z = getWorldTranslation(self.aiTrafficCollisionTrigger)
 		local x1,y1,z1 = localToWorld(self.aiTrafficCollisionTrigger, colDirX*5, 0, colDirZ*5 )
@@ -813,8 +815,7 @@ function courseplay:openCloseCover(self)
 			local tIdx = self.cp.tippersWithCovers[i];
 			local tipper = self.tippers[tIdx];
 			
-			--courseplay:debug(self.name .. ": tipper w/ cover = " .. tostring(tipper.name), 3);
-			
+			--INFO: setPlane(true) = open / setPlane(false) = closed
 			if tipper.plane.bOpen ~= nil and (self.ai_mode == 1 or self.ai_mode == 2 or self.ai_mode == 5) then
 				--courseplay:debug(string.format("recordnumber=%s, maxnumber=%s, currentTipTrigger=%s, plane.bOpen=%s", tostring(self.recordnumber), tostring(self.maxnumber), tostring(self.currentTipTrigger ~= nil), tostring(tipper.plane.bOpen)), 3);
 				local minCoverWaypoint = 3;
