@@ -1,6 +1,7 @@
 function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill_level, last_recordnumber, lx , lz )
-	local workTool = self.tippers[1] -- to do, quick, dirty and unsafe
+	local workTool --= self.tippers[1] -- to do, quick, dirty and unsafe
 	local active_tipper = nil
+
 	if self.attachedCutters ~= nil then
 		for cutter, implement in pairs(self.attachedCutters) do
 			--AICombine.addCutterTrigger(self, cutter);
@@ -17,43 +18,45 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 	end
 
 
-	-- worktool defined above
-	if workTool ~= nil and self.grainTankCapacity == nil then
+	for i=1, table.getn(self.tippers) do
+		workTool = self.tippers[i];
+		-- implements, no combine or chopper
+		if workTool ~= nil and self.grainTankCapacity == nil then
 
-		-- stop while folding
-		if courseplay:isFoldable(workTool) then
-			if courseplay:isFolding(workTool) then
-				allowedToDrive = false;
-				courseplay:debug(workTool.name .. ": isFolding -> allowedToDrive == false", 3);
+			-- stop while folding
+			if courseplay:isFoldable(workTool) then
+				if courseplay:isFolding(workTool) then
+					allowedToDrive = false;
+					courseplay:debug(workTool.name .. ": isFolding -> allowedToDrive == false", 3);
+				end;
+				courseplay:debug(string.format("%s: unfold: turnOnFoldDirection=%s, foldMoveDirection=%s", workTool.name, tostring(workTool.turnOnFoldDirection), tostring(workTool.foldMoveDirection)), 3);
 			end;
-			courseplay:debug(string.format("%s: unfold: turnOnFoldDirection=%s, foldMoveDirection=%s", workTool.name, tostring(workTool.turnOnFoldDirection), tostring(workTool.foldMoveDirection)), 3);
-		end;
 
-		-- balers
-		if courseplay:is_baler(workTool) then
-			if self.recordnumber >= self.startWork then
-				-- automatic opening for balers
-				if workTool.balerUnloadingState ~= nil then
-					if fill_level == 100 and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
+			-- balers
+			if courseplay:is_baler(workTool) then
+				if self.recordnumber >= self.startWork then
+					-- automatic opening for balers
+					if workTool.balerUnloadingState ~= nil then
+						if fill_level == 100 and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
 
-						allowedToDrive = false
-						workTool:setIsTurnedOn(false, false);
-						if table.getn(workTool.bales) > 0 then
-							workTool:setIsUnloadingBale(true, false)
+							allowedToDrive = false
+							workTool:setIsTurnedOn(false, false);
+							if table.getn(workTool.bales) > 0 then
+								workTool:setIsUnloadingBale(true, false)
+							end
+						elseif workTool.balerUnloadingState ~= Baler.UNLOADING_CLOSED then
+							allowedToDrive = false
+							if workTool.balerUnloadingState == Baler.UNLOADING_OPEN then
+								workTool:setIsUnloadingBale(false)
+							end
+						elseif fill_level >= 0 and not workTool.isTurnedOn and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
+							workTool:setIsTurnedOn(true, false);
 						end
-					elseif workTool.balerUnloadingState ~= Baler.UNLOADING_CLOSED then
-						allowedToDrive = false
-						if workTool.balerUnloadingState == Baler.UNLOADING_OPEN then
-							workTool:setIsUnloadingBale(false)
-						end
-					elseif fill_level == 0 and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
-						workTool:setIsTurnedOn(true, false);
 					end
 				end
-			end
-		else
+				
 			-- baleloader, copied original code parts				
-			if SpecializationUtil.hasSpecialization(BaleLoader, workTool.specializations) or courseplay:isUBT(workTool) then
+			elseif courseplay:is_baleLoader(workTool) or courseplay:isUBT(workTool) then
 				if workArea and not courseplay:isUBT(workTool) then
 					-- automatic stop for baleloader
 					if workTool.grabberIsMoving or workTool:getIsAnimationPlaying("rotatePlatform") then
@@ -82,7 +85,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 				end
 
 				if courseplay:isUBT(workTool) then
-					if (workTool.fillLevel == workTool.fillLevelMax or fill_level == 100) and self.maxnumber == self.stopWork then
+					if (workTool.fillLevel == workTool.fillLevelMax or workTool.fillLevel == workTool.capacity or fill_level == 100) and self.maxnumber == self.stopWork then
 						allowedToDrive = false
 						self.global_info_text = "UBT "..courseplay:get_locale(self, "CPReadyUnloadBale") --'UBT bereit zum entladen'
 					end
@@ -108,17 +111,15 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 						end
 					end
 				end
-
 			--END baleloader	
-			else
 
-				-- other worktools, tippers, e.g. forage wagon	
-				-- start/stop worktool
+
+			-- other worktools, tippers, e.g. forage wagon	
+			else
 				if workArea and fill_level ~= 100 and ((self.abortWork == nil and last_recordnumber == self.startWork) or (self.abortWork ~= nil and last_recordnumber == self.abortWork) or (self.runOnceStartCourse)) then
 					--activate/lower/unfold workTool also when activating from within course (not only at start)
 					self.runOnceStartCourse = false;
 					
-					--workSpeed = true
 					if allowedToDrive then
 						--unfold
 						if courseplay:isFoldable(workTool) then
@@ -138,11 +139,6 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 								if workTool.setIsPickupDown ~= nil then
 									workTool:setIsPickupDown(true, false);
 								end;
-							elseif workTool.isTurnedOn ~= nil and workTool.pickupDown ~= nil then
-								-- Krone ZX - planet-ls.de
-								workTool.isTurnedOn = true;
-								workTool.pickupDown = true;
-								workTool:updateSendEvent();
 							end;
 						end;
 					end
@@ -242,79 +238,81 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 					end
 					--	courseplay:debug(string.format("Abort: %d StopWork: %d",self.abortWork,self.stopWork), 2)
 				end
-			end
-		end
-	else  --!!!
-		if SpecializationUtil.hasSpecialization(Combine, self.specializations) or SpecializationUtil.hasSpecialization(combine, self.specializations) or self.grainTankCapacity == 0 then
-			if workArea and not self.isAIThreshing then
-				local pipeState = self:getCombineTrailerInRangePipeState();
-				if self.grainTankCapacity == 0 then
-					if courseplay:isFoldable(workTool) then
-						workTool:setFoldDirection(-1);
-						if courseplay:isFolding(workTool) then
+			end; --END other tools
+			
+		else  --COMBINES
+			if SpecializationUtil.hasSpecialization(Combine, self.specializations) or SpecializationUtil.hasSpecialization(combine, self.specializations) or self.grainTankCapacity == 0 then
+				if workArea and not self.isAIThreshing then
+					local pipeState = self:getCombineTrailerInRangePipeState();
+					if self.grainTankCapacity == 0 then
+						if courseplay:isFoldable(workTool) then
+							workTool:setFoldDirection(-1);
+							if courseplay:isFolding(workTool) then
+								allowedToDrive = false;
+							end
+						end;
+						self:setIsThreshing(true, true);
+						if pipeState > 0 then
+							self:setPipeState(pipeState);
+						else
+							self:setPipeState(2);
+						end;
+						if self.lastCuttersFruitType == 9 and not self.pipeParticleSystems[9].isEmitting and self.turnStage == 0 then
+							self.waitingForTrailerToUnload = true
+						end
+						if self.waitingForTrailerToUnload then
+							allowedToDrive = false;
+							if self.pipeParticleSystems[9].isEmitting or pipeState > 0 then
+								self.waitingForTrailerToUnload = false
+							end
+						end
+						if math.abs(lx) > 0.7 then
+							self.turnStage = 1
+						elseif math.abs(lx) < 0.2 and self.turnStage == 1 then
+							self.turnStage = 0
+						end
+						if self.turnStage == 1 and pipeState > 0 then 
 							allowedToDrive = false;
 						end
-					end;
-					self:setIsThreshing(true, true);
-					if pipeState > 0 then
-						self:setPipeState(pipeState);
 					else
-						self:setPipeState(2);
-					end;
-					if self.lastCuttersFruitType == 9 and not self.pipeParticleSystems[9].isEmitting and self.turnStage == 0 then
-						self.waitingForTrailerToUnload = true
-					end
-					if self.waitingForTrailerToUnload then
-						allowedToDrive = false;
-						if self.pipeParticleSystems[9].isEmitting or pipeState > 0 then
+						if self.grainTankFillLevel < self.grainTankCapacity and not self.waitingForDischarge and not self.isThreshing then
+							self:setIsThreshing(true, true);
+						end
+						if self.grainTankFillLevel >= self.grainTankCapacity or self.waitingForDischarge then
+							self.waitingForDischarge = true
+							allowedToDrive = false;
+							self:setIsThreshing(false, true);
+						end
+						if self.grainTankFillLevel == 0 or (self.grainTankFillLevel < self.grainTankCapacity and self.isCheckedIn == nil) then
+							self.waitingForDischarge = false
 							self.waitingForTrailerToUnload = false
 						end
+						if self.grainTankFillLevel >= self.grainTankCapacity*0.8  or pipeState > 0 then
+							self:setPipeState(2)
+						elseif  pipeState == 0 then 
+							self:setPipeState(1)
+						end
+						if math.abs(lx) > 0.5 and self.isCheckedIn ~= nil or self.waitingForTrailerToUnload then
+							self.waitingForTrailerToUnload = true
+							allowedToDrive = false;
+						end
 					end
-					if math.abs(lx) > 0.7 then
-						self.turnStage = 1
-					elseif math.abs(lx) < 0.2 and self.turnStage == 1 then
-						self.turnStage = 0
-					end
-					if self.turnStage == 1 and pipeState > 0 then 
-						allowedToDrive = false;
-					end
-				else
-					if self.grainTankFillLevel < self.grainTankCapacity and not self.waitingForDischarge and not self.isThreshing then
-						self:setIsThreshing(true, true);
-					end
-					if self.grainTankFillLevel >= self.grainTankCapacity or self.waitingForDischarge then
-						self.waitingForDischarge = true
-						allowedToDrive = false;
-						self:setIsThreshing(false, true);
-					end
-					if self.grainTankFillLevel == 0 or (self.grainTankFillLevel < self.grainTankCapacity and self.isCheckedIn == nil) then
-						self.waitingForDischarge = false
-						self.waitingForTrailerToUnload = false
-					end
-					if self.grainTankFillLevel >= self.grainTankCapacity*0.8  or pipeState > 0 then
-						self:setPipeState(2)
-					elseif  pipeState == 0 then 
-						self:setPipeState(1)
-					end
-					if math.abs(lx) > 0.5 and self.isCheckedIn ~= nil or self.waitingForTrailerToUnload then
-						self.waitingForTrailerToUnload = true
-						allowedToDrive = false;
-					end
+				elseif last_recordnumber == self.stopWork then
+					self:setIsThreshing(false, true);
+					allowedToDrive = false;
 				end
-			elseif last_recordnumber == self.stopWork then
-				self:setIsThreshing(false, true);
-				allowedToDrive = false;
-			end
-			local dx,_,dz = localDirectionToWorld(self.aiTreshingDirectionNode, 0, 0, 1);
-			local length = Utils.vector2Length(dx,dz);
-			if self.turnStage == 0 then
-				self.aiThreshingDirectionX = dx/length;
-				self.aiThreshingDirectionZ = dz/length;
-			else
-				self.aiThreshingDirectionX = -(dx/length);
-				self.aiThreshingDirectionZ = -(dz/length);
-			end				
-		end;
-	end
+				local dx,_,dz = localDirectionToWorld(self.aiTreshingDirectionNode, 0, 0, 1);
+				local length = Utils.vector2Length(dx,dz);
+				if self.turnStage == 0 then
+					self.aiThreshingDirectionX = dx/length;
+					self.aiThreshingDirectionZ = dz/length;
+				else
+					self.aiThreshingDirectionX = -(dx/length);
+					self.aiThreshingDirectionZ = -(dz/length);
+				end				
+			end;
+		end
+	end; --END for i in self.tippers
+	
 	return allowedToDrive, workArea, workSpeed, active_tipper
 end
