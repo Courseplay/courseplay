@@ -427,7 +427,7 @@ function courseplay:unload_combine(self, dt)
 					else
 						courseplay:debug("target is not on field",1)
 						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 2 , 0, -self.turn_radius);
-						courseplay:set_next_target(self, -offset ,  -self.turn_radius-trailer_offset);
+						courseplay:set_next_target(self, 0 ,  -self.turn_radius-trailer_offset);
 						mode = 5
 					end					
 				else
