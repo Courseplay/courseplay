@@ -431,9 +431,13 @@ function courseplay:showHud(self)
 		if self.drive then
 			if InputBinding.isPressed(InputBinding.CP_Modifier_1) then
 				g_currentMission:addHelpButtonText(courseplay:get_locale(self, "CoursePlayStop"), InputBinding.AHInput1)
+				g_currentMission:addHelpButtonText(courseplay:get_locale(self, "NoWaitforfill"), InputBinding.AHInput3);
 				if InputBinding.hasEvent(InputBinding.AHInput1) then
 					self:setCourseplayFunc("stop", nil)
-				end
+				end;
+				if InputBinding.hasEvent(InputBinding.AHInput3) then
+					self.loaded = true;
+				end;
 			end
 
 			local last_recordnumber = nil
@@ -456,13 +460,9 @@ function courseplay:showHud(self)
 
 		elseif InputBinding.isPressed(InputBinding.CP_Modifier_1) then
 			g_currentMission:addHelpButtonText(courseplay:get_locale(self, "CoursePlayStart"), InputBinding.AHInput1);
-			g_currentMission:addHelpButtonText(courseplay:get_locale(self, "NoWaitforfill"), InputBinding.AHInput3);
 			if InputBinding.hasEvent(InputBinding.AHInput1) then
 				self:setCourseplayFunc("start", nil);
 			end
-			if InputBinding.hasEvent(InputBinding.AHInput3) then
-				self.loaded = true;
-			end;
 		end;
 	end
 end

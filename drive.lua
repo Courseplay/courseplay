@@ -578,6 +578,7 @@ function courseplay:drive(self, dt)
 	if self.ESLimiter ~= nil and self.ESLimiter.maxRPM[5] == nil then
 		self.info_text = courseplay:get_locale(self, "CPWrongESLversion")
 	end
+
 	-- where to drive?
 	if self.Waypoints[self.recordnumber].rev then
 		lz = lz * -1
