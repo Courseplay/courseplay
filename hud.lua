@@ -103,10 +103,6 @@ function courseplay:loadHud(self)
 					if not self.StopEnd then
 						self.hudpage[1][1][4] = courseplay:get_locale(self, "CoursePlayStopEnd")
 					end
-
-					if InputBinding.hasEvent(InputBinding.AHInput3) and InputBinding.isPressed(InputBinding.CP_Modifier_1) then
-						self.loaded = true
-					end
 				end
 			end
 			if not self.drive then
@@ -408,7 +404,7 @@ function courseplay:showHud(self)
 		local hud_headline = nil
 
 		if self.showHudInfoBase == 0 then
-			hud_headline = courseplay:get_locale(self, "CPCombineMangament") -- "Kurse verwalten"
+			hud_headline = courseplay:get_locale(self, "CPCombineMangament") -- Combine Controls
 		elseif self.showHudInfoBase == 1 then
 			hud_headline = courseplay:get_locale(self, "CPSteering") -- "Abfahrhelfer Steuerung"
 		elseif self.showHudInfoBase == 2 then
@@ -435,9 +431,13 @@ function courseplay:showHud(self)
 		if self.drive then
 			if InputBinding.isPressed(InputBinding.CP_Modifier_1) then
 				g_currentMission:addHelpButtonText(courseplay:get_locale(self, "CoursePlayStop"), InputBinding.AHInput1)
+				g_currentMission:addHelpButtonText(courseplay:get_locale(self, "NoWaitforfill"), InputBinding.AHInput3);
 				if InputBinding.hasEvent(InputBinding.AHInput1) then
 					self:setCourseplayFunc("stop", nil)
-				end
+				end;
+				if InputBinding.hasEvent(InputBinding.AHInput3) then
+					self.loaded = true;
+				end;
 			end
 
 			local last_recordnumber = nil
@@ -448,7 +448,7 @@ function courseplay:showHud(self)
 				last_recordnumber = 1
 			end
 
-			if self.Waypoints[last_recordnumber].wait and self.wait then
+			if --[[self.Waypoints[last_recordnumber].wait and]] self.wait then
 				if InputBinding.isPressed(InputBinding.CP_Modifier_1) then
 					g_currentMission:addHelpButtonText(courseplay:get_locale(self, "CourseWaitpointStart"), InputBinding.AHInput2)
 				
@@ -458,13 +458,11 @@ function courseplay:showHud(self)
 				end
 			end
 
-		else
-			if InputBinding.isPressed(InputBinding.CP_Modifier_1) then
-				g_currentMission:addHelpButtonText(courseplay:get_locale(self, "CoursePlayStart"), InputBinding.AHInput1)
-				if InputBinding.hasEvent(InputBinding.AHInput1) then
-					self:setCourseplayFunc("start", nil)
-				end
+		elseif InputBinding.isPressed(InputBinding.CP_Modifier_1) then
+			g_currentMission:addHelpButtonText(courseplay:get_locale(self, "CoursePlayStart"), InputBinding.AHInput1);
+			if InputBinding.hasEvent(InputBinding.AHInput1) then
+				self:setCourseplayFunc("start", nil);
 			end
-		end
+		end;
 	end
 end
