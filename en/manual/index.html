@@ -117,6 +117,15 @@
 						<p>While recording, you have the possibility to set waiting points on the course. At those points, the driver, while driving the course, will stop and wait until either you tell him to continue, or the configured waiting time has passed. When a driver reaches a waiting point, a message will be displayed (<code>XYZ has reached waiting point.</code>).</p>
 					</li>
 					<li>
+						<h4>Set crossing point</h4>
+						<p>Crossing points are "signal" or "combination points" where two seperate courses can be combined (see <a href="#hud_manageCourses" class="internalTab">Manage courses</a>). In both courses, two crossing points (one in each course) that are closer to each other than 50 metres are determined. The combined course will lead up until the first course's crossing point, and from there go the second course from its respective crossing point.</p>
+						<figure>
+							<img src="../../res/img/crossingPoints_en.png" alt="Crossing points diagram" class="infoImg">
+							<figcaption>Fig. 1: Combination of two course at crossing points</figcaption>
+						</figure>
+						<p><span class="emphasize1">Note:</span> A course's start and stop points are automatically set as crossing points. Hence, they don't have to be manually declared as those when recording.</p>
+					</li>
+					<li>
 						<h4>Drive course</h4>
 						<p>When you have recorded or loaded a course, you can "hire" a driver to have him drive the course. From this moment, you won't have any manual control over the tractor.</p>
 					</li>
@@ -166,7 +175,11 @@
 					<ul>
 						<li>
 							<h4><span class="hudIcon openCourse" title="Load/combine course"></span> Load/Combine</h4>
-							<p>Loading the course. If there already is a course loaded, the clicked course will be combined with the already loaded one at the first common cross point.</p>
+							<p>Loading the course. If there already is a course loaded, the clicked course will be combined with the already loaded one at the first common <a href="#hud_driverControls" class="internalTab">crossing point</a>. In both courses, two crossing points (one in each course) that are closer to each other than 50 metres are determined. The combined course will lead up until the first course's crossing point, and from there go the second course from its respective crossing point.</p>
+							<figure>
+								<img src="../../res/img/crossingPoints_en.png" alt="Crossing points diagram" class="infoImg">
+								<figcaption>Fig. 1: Combination of two course at crossing points</figcaption>
+							</figure>
 						</li>
 						<li>
 							<h4><span class="hudIcon addCourse" title="Add course"></span> Add</h4>

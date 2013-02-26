@@ -136,6 +136,15 @@
 						<p>Im Aufnahmemodus habt ihr die Möglichkeit auf der Strecke Wartepunkte zu setzen. An diesen Punkten wird der Abfahrer später beim Abfahren anhalten bis man ihn manuell weiter schickt oder die eingestellte Zeit abgelaufen ist. Wenn ein Abfahrer einen Wartepunkt erreicht hat, wird euch das am unteren Bildschirmrand angezeigt.</p>
 					</li>
 					<li>
+						<h4>Hier Kreuzungspunkt setzen</h4>
+						<p>Kreuzungspunkte sind "Signal-" oder "Kombinationspunkte", an denen verschiedene Kurse kombiniert werden können (siehe <a href="#hud_manageCourses" class="internalTab">Kurse verwalten</a>). Hierbei werden dann bei den beiden die ersten Kursen zwei Kreuzungspunkte gesucht, die weniger als 50m voneinander entfernt sind. Der kombinierte Kurs wird dann den ersten Kurs bis zu dem Kreuzungspunkt, und ab dort den zweiten Kurs ab dessen Kreuzungspunkt sein.</p>
+						<figure>
+							<img src="../../res/img/crossingPoints_de.png" alt="Kreuzungspunkte Diagramm" class="infoImg">
+							<figcaption>Fig. 1: Kombination von zwei Kursen an Kreuzungspunkten</figcaption>
+						</figure>
+						<p><span class="emphasize1">Hinweis:</span> Start- und Endpunkte von Kursen sind immer automatisch Kreuzungspunkte, müssen also nicht extra als solche deklariert werden.</p>
+					</li>
+					<li>
 						<h4>Abfahrer einstellen</h4>
 						<p>Wenn ihr einen Kurs eingefahren oder geladen habt, könnt ihr jetzt den Abfahrer einstellen. Dabei wird der Abfahrhelfer aktiviert und fährt seine Route ab. Die manuelle Steuerung des Schleppers wird dadurch deaktiviert.</p>
 					</li>
@@ -185,7 +194,11 @@
 					<ul>
 						<li>
 							<h4><span class="hudIcon openCourse" title="Kurs laden/kombinieren"></span> Öffnen/Kombinieren</h4>
-							<p>Den Kurs laden. Wenn schon ein Kurs geladen ist, wird der ausgewählte Kurs mit dem aktuellen Kurs am ersten gemeinsamen Kreuzungspunkt kombiniert.</p>
+							<p>Den Kurs laden. Wenn schon ein Kurs geladen ist, wird der ausgewählte Kurs mit dem aktuellen Kurs am ersten gemeinsamen <a href="#hud_driverControls" class="internalTab">Kreuzungspunkt</a> kombiniert. Hierbei werden dann bei den beiden die ersten Kursen zwei Kreuzungspunkte gesucht, die weniger als 50m voneinander entfernt sind. Der kombinierte Kurs wird dann den ersten Kurs bis zu dem Kreuzungspunkt, und ab dort den zweiten Kurs ab dessen Kreuzungspunkt sein.</p>
+							<figure>
+								<img src="../../res/img/crossingPoints_de.png" alt="Kreuzungspunkte Diagramm" class="infoImg">
+								<figcaption>Fig. 1: Kombination von zwei Kursen an Kreuzungspunkten</figcaption>
+							</figure>
 						</li>
 						<li>
 							<h4><span class="hudIcon addCourse" title="Kurs hinzufügen"></span> Hinzufügen</h4>
