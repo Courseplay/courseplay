@@ -101,12 +101,12 @@
 				<ul>
 					<li>
 						<h4>Start recording</h4>
-						<p>With this option, Courseplay's recording mode is activated. You can drive and record the course that the driver should use later. Upon activating, three eggs at an interval of ca. 10 to 20 m will be displayed at the start. You should make sure to go more or less straight until reaching the third egg (third way point).</p>
+						<p>With this option, Courseplay's recording mode is activated. You can drive and record the course that the driver should use later. Upon activating, three eggs at an interval of ca. 10 to 20 m will be displayed at the start. You should make sure to go more or less straight until reaching the third egg (third waypoint).</p>
 						<p>When recording is active, you can deactivate mouse controls by clicking the right mouse buttons, so you can look around while driving and recording.</p>
 					</li>
 					<li>
 						<h4>Pause recording</h4>
-						<p>While recording you can pause the recording with this option. A yellow arrow will be display, showing the direction to the last way point. In addition, while paused you can delete the last way points, respectively.</p>
+						<p>While recording you can pause the recording with this option. A yellow arrow will be display, showing the direction to the last waypoint. In addition, while paused you can delete the last waypoints, respectively.</p>
 					</li>
 					<li>
 						<h4>Stop recording</h4>
@@ -122,7 +122,7 @@
 					</li>
 					<li>
 						<h4>Stop driver</h4>
-						<p>Of course you can always stop the activated driver. Later, when reactivating the driver, it will continue from the next valid way point.</p>
+						<p>Of course you can always stop the activated driver. Later, when reactivating the driver, it will continue from the next valid waypoint.</p>
 					</li>
 					<li>
 						<h4>continue</h4>
@@ -134,7 +134,7 @@
 						<p>The modes' different functions and usages are described further in the <a class="internalTab" href="#driveModes">Driving&nbsp;modes</a> section.</p>
 					</li>
 					<li>
-						<h4>Delete way points</h4>
+						<h4>Delete waypoints</h4>
 						<p>When a course has been recorded or loaded, you can delete the current course selection. The saved course will not be deleted from the save game, only the driver will clear his current course.</p>
 					</li>
 					<li>
@@ -178,7 +178,7 @@
 						</li>
 					</ul>
 				</p>
-				<p>In order to record or load a completely new course, the current course must be cleared. See <a href="#hud_driverControls" class="internalTab">Driver controls</a> > "Delete way points".</p>
+				<p>In order to record or load a completely new course, the current course must be cleared. See <a href="#hud_driverControls" class="internalTab">Driver controls</a> > "Delete waypoints".</p>
 			</div>
 			
 			<div class="manualSection" id="hud_mode2settings">
@@ -282,8 +282,8 @@
 						<p>You can choose if the hud should be opened when the right mouse button is clicked, or if the keyboard keys should be used instead (default: <kbd title="Control">CTRL</kbd>+<kbd title="Delete">DELETE</kbd>).</p>
 					</li>
 					<li>
-						<h4>Show way points</h4>
-						<p>Choose which course way points should be displayed.</p>
+						<h4>Show waypoints</h4>
+						<p>Choose which course waypoints should be displayed.</p>
 					</li>
 					<li>
 						<h4>Beacon lights</h4>
@@ -364,7 +364,7 @@
 					</li>
 					<li>
 						<h4>Send driver home</h4>
-						<p>Manually send the current driver to follow his course. He will drive the course, unload/overload, and drive on to his first way point.</p>
+						<p>Manually send the current driver to follow his course. He will drive the course, unload/overload, and drive on to his first waypoint.</p>
 					</li>
 					<li>
 						<h4>Driver side</h4>
@@ -380,21 +380,21 @@
 				<ol>
 					<li id="driveMode1">
 						<h4>Driving helper</h4>
-						<p>The tractor waits at the first way point until his trailer has been filled. This can happen at a silo, at a field edge or anywhere else. As soon as the fill level reaches the set percentage (<code>Drive on at %</code>), the driver starts to drive the course. As soon as he reaches an unloading trigger, he unloads automatically. Afterwards he continues the course to return to the first way point.</p>
-						<p>The last way point should be 5 to 10 m ahead of the first, and have somewhat the same direction as the first.</p>
+						<p>The tractor waits at the first waypoint until his trailer has been filled. This can happen at a silo, at a field edge or anywhere else. As soon as the fill level reaches the set percentage (<code>Drive on at %</code>), the driver starts to drive the course. As soon as he reaches an unloading trigger, he unloads automatically. Afterwards he continues the course to return to the first waypoint.</p>
+						<p>The last waypoint should be 5 to 10 m ahead of the first, and have somewhat the same direction as the first.</p>
 						<figure>
 							<img src="../../res/img/manual_mode1_en.png" alt="Driver diagram" class="infoImg">
-							<figcaption>Fig. 1: Start point, way points and end points in the driving helper mode</figcaption>
+							<figcaption>Fig. 1: Start point, waypoints and end points in the driving helper mode</figcaption>
 						</figure>
 					</li>
 					<li id="driveMode2">
 						<h4>Combi</h4>
 						<p>The combi mode is very similar to the <a href="#driveMode1" class="internalTab">Driving helper</a> mode, in that the tractor drives a course and unloads at a trigger. But, in addition, the driver unloads a working combine or chopper on the field.</p>
-						<p>The tractor waits at the last way point until it has a combine/chopper in reach, and said combine's fill level is above the percentage (<code>Start&nbsp;at&nbsp;%</code>) set for the tractor. Then, the driver drives to the combine, comes from behind, and drives underneath the pipe, where the combine starts to unload into the tractor's trailer. If the trailer isn't full yet (<code>Drive&nbsp;on&nbsp;at&nbsp;%</code>), the tractor turns around and waits in the field for his next unloading operation. As soon as the trailer's fill level is above the <code>Drive&nbsp;on&nbsp;at&nbsp;%</code> percentage, the driver will drive to the course's second way point, and from there continue the course, unloading the trailer and returning to the field.</p>
+						<p>The tractor waits at the last waypoint until it has a combine/chopper in reach, and said combine's fill level is above the percentage (<code>Start&nbsp;at&nbsp;%</code>) set for the tractor. Then, the driver drives to the combine, comes from behind, and drives underneath the pipe, where the combine starts to unload into the tractor's trailer. If the trailer isn't full yet (<code>Drive&nbsp;on&nbsp;at&nbsp;%</code>), the tractor turns around and waits in the field for his next unloading operation. As soon as the trailer's fill level is above the <code>Drive&nbsp;on&nbsp;at&nbsp;%</code> percentage, the driver will drive to the course's second waypoint, and from there continue the course, unloading the trailer and returning to the field.</p>
 						<p>The tractor has two possibilities to have a combine in reach:
 							<ol>
 								<li>
-									<p>The course's first and last way point are on the field where the combine is working. Mostly, the driver identifies the combine automatically (if the field isn't too big or too hilly). The driver also identifies multiple combines and assigns himself to the combine that fits best for him (based on distance and the combine's fill level).</p>
+									<p>The course's first and last waypoint are on the field where the combine is working. Mostly, the driver identifies the combine automatically (if the field isn't too big or too hilly). The driver also identifies multiple combines and assigns himself to the combine that fits best for him (based on distance and the combine's fill level).</p>
 								</li>
 								<li>
 									<p>The tractor is assigned to one distinct combine (see <a href="#hud_manageCombine" class="internalTab">HUD:&nbsp;manage&nbsp;combines</a>). Only the selected combine will be unloading, none else. In this mode, it doesn't matter if the tractor and the combine are on the same field. The combine can wait outside of the field and still drive to/from the combine.</p>
@@ -405,11 +405,11 @@
 					<li id="driveMode3">
 						<h4>Overloader</h4>
 						<p>The overloading mode is somewhat similar to the combi mode, in that the driver unloads a combine. But instead of the driving a course to an unloading trigger, the driver overloads into a waiting trailer. As with the combi mode, a combine can be found automatically or set manually.</p>
-						<p>The course's start point should be in proximity to a waiting trailer (e.g. another tractor in "driver helper" mode). From there, the course must lead to the trailer. When the overloader's pipe is above the waiting trailer (so when it's able to overload), a <span class="emphasize1">waiting point</span> needs to be set. Later, while driving the course, this waiting point tells the overloader to stop, extend the pipe, and start overloading. During, an info message <code>XYZ has reached overload point.</code> will be displayed. When the overloader is empty, the driver will continue the course and wait at the last way point for his next unloading operation.</p>
+						<p>The course's start point should be in proximity to a waiting trailer (e.g. another tractor in "driver helper" mode). From there, the course must lead to the trailer. When the overloader's pipe is above the waiting trailer (so when it's able to overload), a <span class="emphasize1">waiting point</span> needs to be set. Later, while driving the course, this waiting point tells the overloader to stop, extend the pipe, and start overloading. During, an info message <code>XYZ has reached overload point.</code> will be displayed. When the overloader is empty, the driver will continue the course and wait at the last waypoint for his next unloading operation.</p>
 						<p>After the waiting point, the course needs to extend a little further (away from the trailer), ideally back to the start point.</p>
 						<figure>
 							<img src="../../res/img/manual_mode3_en.png" alt="Overloading diagram" class="infoImg">
-							<figcaption>Fig. 2: Start point, way points, waiting/overloading point and stop point in the overload mode</figcaption>
+							<figcaption>Fig. 2: Start point, waypoints, waiting/overloading point and stop point in the overload mode</figcaption>
 						</figure>
 					</li>
 					<li id="driveMode4">
@@ -427,7 +427,7 @@
 						<p>The second part, die automatic refilling, is a regular "A to B" course. It should start at the second waiting point (so, the end of the field work course), the go through the fertilizer/liquid manure/seeding trigger, and back to the field, ending just before the first waiting point of the field work course. As soon as he recognizes a refilling trigger, the driver stops and refills automatically.</p>
 						<figure>
 							<img src="../../res/img/manual_mode4_en.png" alt="Fertilizing/Seeding diagram" class="infoImg">
-							<figcaption>Fig. 3: Start point, way points, waiting points and stop point in the fertilizer/seeding mode</figcaption>
+							<figcaption>Fig. 3: Start point, waypoints, waiting points and stop point in the fertilizer/seeding mode</figcaption>
 						</figure>
 						<p>As soon as the tool is empty, it goes into transportation mode and the driver follows the refilling course. Back at the field, the driver drives to the point on the field where it last stopped work, sets the tool into work mode, and continues working.</p>
 					</li>
@@ -450,7 +450,7 @@
 						</ol>
 						<figure>
 							<img src="../../res/img/manual_mode6_en.png" alt="Fieldwork diagram" class="infoImg">
-							<figcaption>Fig. 4: Start point, way points, waiting points and stop point in the field work mode</figcaption>
+							<figcaption>Fig. 4: Start point, waypoints, waiting points and stop point in the field work mode</figcaption>
 						</figure>
 						<p>Tools will be (un)folded and (de)activated automatically. Drivers with balers as tools will stop and unload the bales automatically.</p>
 					</li>
@@ -459,7 +459,7 @@
 						<p>This mode works similarly to the overloading mode. The course must have a waiting point at the overloading position, where the combine will stop, extend the pipe, and unload.</p>
 						<figure>
 							<img src="../../res/img/manual_mode3_en.png" alt="Overloading diagram" class="infoImg">
-							<figcaption>Fig. 5: Start point, way points, waiting/overloading point and stop point in the combine self unloading mode</figcaption>
+							<figcaption>Fig. 5: Start point, waypoints, waiting/overloading point and stop point in the combine self unloading mode</figcaption>
 						</figure>
 						<p>The combine needs to be hired as a regular helper, and <span class="emphasize1">only then</span> Courseplay may be activated. The combine will work as a helper until its fill level reaches the percentage set at <code>Start at %</code>. Then it drives to the course's start point, follows the course until the waiting point, where it will unload into a waiting trailer. After, it will follow the course until the end point, from where it will drive to the last position where it worked as a helper. Now, it will activate its cutter and continue threshing.</p>
 					</li>
@@ -473,7 +473,7 @@
 						</ol>
 						<figure>
 							<img src="../../res/img/manual_mode8_en.png" alt="Liquid manure transport diagram" class="infoImg">
-							<figcaption>Fig. 6: Start point, way points, waiting points and stop point in the liquid manure transport mode.</figcaption>
+							<figcaption>Fig. 6: Start point, waypoints, waiting points and stop point in the liquid manure transport mode.</figcaption>
 						</figure>
 						<p>The driver will continue from the waiting/overloading point as soon as the tool is empty.</p>
 					</li>
