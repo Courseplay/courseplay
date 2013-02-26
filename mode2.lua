@@ -427,7 +427,7 @@ function courseplay:unload_combine(self, dt)
 					else
 						courseplay:debug("target is not on field",1)
 						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 2 , 0, -self.turn_radius);
-						courseplay:set_next_target(self, -offset ,  -self.turn_radius-trailer_offset);
+						courseplay:set_next_target(self, 0 ,  -self.turn_radius-trailer_offset);
 						mode = 5
 					end					
 				else
@@ -582,7 +582,7 @@ function courseplay:unload_combine(self, dt)
 				elseif right_fruit < left_fruit then
 					self.sideToDrive = "right";
 				end
-				courseplay:debug(string.format("%s(%i): %s @ %s: sideToDrive first runthrough=%s => current_offset=%f", curFile, debug.getinfo(1).currentline, self.name, combine.name, tostring(self.sideToDrive), current_offset), 2)
+				--courseplay:debug(string.format("%s(%i): %s @ %s: sideToDrive first runthrough=%s => current_offset=%f", curFile, debug.getinfo(1).currentline, self.name, combine.name, tostring(self.sideToDrive), current_offset), 2)
 			end;
 				
 			if self.sideToDrive	~= nil then

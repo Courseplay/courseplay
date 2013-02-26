@@ -108,11 +108,11 @@ stream_debug_counter = 0
 function streamDebugWriteFloat32(streamId, value)
 	value = Utils.getNoNil(value, 0.0)
 	stream_debug_counter = stream_debug_counter + 1
-	--courseplay:debug("++++++++++++++++", 4)
-	--courseplay:debug(stream_debug_counter, 4)
-	--courseplay:debug("float: ", 4)
-	--courseplay:debug(value, 4)
-	--courseplay:debug("-----------------", 4)
+	courseplay:debug("++++++++++++++++", 4)
+	courseplay:debug(stream_debug_counter, 4)
+	courseplay:debug("float: ", 4)
+	courseplay:debug(value, 4)
+	courseplay:debug("-----------------", 4)
 	streamWriteFloat32(streamId, value)
 end
 
@@ -127,78 +127,78 @@ function streamDebugWriteBool(streamId, value)
 	end
 
 	stream_debug_counter = stream_debug_counter + 1
-	--courseplay:debug("++++++++++++++++", 4) 
-	--courseplay:debug(stream_debug_counter, 4)
-	--courseplay:debug("Bool: ", 4)
-	--courseplay:debug(value, 4)
-	--courseplay:debug("-----------------", 4) 
+	courseplay:debug("++++++++++++++++", 4) 
+	courseplay:debug(stream_debug_counter, 4)
+	courseplay:debug("Bool: ", 4)
+	courseplay:debug(value, 4)
+	courseplay:debug("-----------------", 4) 
 	streamWriteBool(streamId, value)
 end
 
 function streamDebugWriteInt32(streamId, value)
 	value = Utils.getNoNil(value, 0)
 	stream_debug_counter = stream_debug_counter + 1
-	--courseplay:debug("++++++++++++++++", 4)
-	--courseplay:debug(stream_debug_counter, 4)
-	--courseplay:debug("Int32: ", 4)
-	--courseplay:debug(value, 4)
-	--courseplay:debug("-----------------", 4)
+	courseplay:debug("++++++++++++++++", 4)
+	courseplay:debug(stream_debug_counter, 4)
+	courseplay:debug("Int32: ", 4)
+	courseplay:debug(value, 4)
+	courseplay:debug("-----------------", 4)
 	streamWriteInt32(streamId, value)
 end
 
 function streamDebugWriteString(streamId, value)
 	value = Utils.getNoNil(value, "")
 	stream_debug_counter = stream_debug_counter + 1
-	--courseplay:debug("++++++++++++++++", 4)
-	--courseplay:debug(stream_debug_counter, 4)
-	--courseplay:debug("String: ", 4)
-	--courseplay:debug(value, 4)
-	--courseplay:debug("-----------------", 4)
+	courseplay:debug("++++++++++++++++", 4)
+	courseplay:debug(stream_debug_counter, 4)
+	courseplay:debug("String: ", 4)
+	courseplay:debug(value, 4)
+	courseplay:debug("-----------------", 4)
 	streamWriteString(streamId, value)
 end
 
 
 function streamDebugReadFloat32(streamId)
 	stream_debug_counter = stream_debug_counter + 1
-	--courseplay:debug("++++++++++++++++", 4)
-	--courseplay:debug(stream_debug_counter, 4)
+	courseplay:debug("++++++++++++++++", 4)
+	courseplay:debug(stream_debug_counter, 4)
 	local value = streamReadFloat32(streamId)
-	--courseplay:debug("Float32: ", 4)
-	--courseplay:debug(value, 4)
-	--courseplay:debug("-----------------", 4)
+	courseplay:debug("Float32: ", 4)
+	courseplay:debug(value, 4)
+	courseplay:debug("-----------------", 4)
 	return value
 end
 
 
 function streamDebugReadInt32(streamId)
 	stream_debug_counter = stream_debug_counter + 1
-	--courseplay:debug("++++++++++++++++", 4)
-	--courseplay:debug(stream_debug_counter, 4)
+	courseplay:debug("++++++++++++++++", 4)
+	courseplay:debug(stream_debug_counter, 4)
 	local value = streamReadInt32(streamId)
-	--courseplay:debug("Int32: ", 4)
-	--courseplay:debug(value, 4)
-	--courseplay:debug("-----------------", 4)
+	courseplay:debug("Int32: ", 4)
+	courseplay:debug(value, 4)
+	courseplay:debug("-----------------", 4)
 	return value
 end
 
 function streamDebugReadBool(streamId)
 	stream_debug_counter = stream_debug_counter + 1
-	--courseplay:debug("++++++++++++++++", 4)
-	--courseplay:debug(stream_debug_counter, 4)
+	courseplay:debug("++++++++++++++++", 4)
+	courseplay:debug(stream_debug_counter, 4)
 	local value = streamReadBool(streamId, 4)
-	--courseplay:debug("Bool: ", 4)
-	--courseplay:debug(value, 4)
-	--courseplay:debug("-----------------", 4)
+	courseplay:debug("Bool: ", 4)
+	courseplay:debug(value, 4)
+	courseplay:debug("-----------------", 4)
 	return value
 end
 
 function streamDebugReadString(streamId)
 	stream_debug_counter = stream_debug_counter + 1
-	--courseplay:debug("++++++++++++++++", 4)
-	--courseplay:debug(stream_debug_counter, 4)
+	courseplay:debug("++++++++++++++++", 4)
+	courseplay:debug(stream_debug_counter, 4)
 	local value = streamReadString(streamId)
-	--courseplay:debug("String: ", 4)
-	--courseplay:debug(value, 4)
-	--courseplay:debug("-----------------", 4)
+	courseplay:debug("String: ", 4)
+	courseplay:debug(value, 4)
+	courseplay:debug("-----------------", 4)
 	return value
 end

@@ -15,7 +15,7 @@ function courseplay:is_baler(workTool) -- is the tool a baler?
 	return (SpecializationUtil.hasSpecialization(Baler, workTool.specializations) or workTool.balerUnloadingState ~= nil);
 end;
 function courseplay:is_baleLoader(workTool) -- is the tool a bale loader?
-	return (SpecializationUtil.hasSpecialization(baleLoader, workTool.specializations) or SpecializationUtil.hasSpecialization(BaleLoader, workTool.specializations));
+	return (SpecializationUtil.hasSpecialization(baleLoader, workTool.specializations) or SpecializationUtil.hasSpecialization(BaleLoader, workTool.specializations) or (workTool.balesToLoad ~= nil and workTool.baleGrabber ~=nil and workTool.grabberIsMoving~= nil));
 end;
 function courseplay:is_sowingMachine(workTool) -- is the tool a sowing machine?
 	return (SpecializationUtil.hasSpecialization(sowingMachine, workTool.specializations) or SpecializationUtil.hasSpecialization(SowingMachine, workTool.specializations));
@@ -24,7 +24,7 @@ function courseplay:isFoldable(workTool) --is the tool foldable?
 	return SpecializationUtil.hasSpecialization(Foldable, workTool.specializations) or SpecializationUtil.hasSpecialization(foldable, workTool.specializations);
 end;
 function courseplay:isUBT(workTool) --is the tool a UBT?
-	return SpecializationUtil.hasSpecialization(ubt, workTool.specializations);
+	return SpecializationUtil.hasSpecialization(ubt, workTool.specializations) or workTool.name == "UniversalBaleTrailer";
 end;
 
 -- update implements to find attached tippers
@@ -103,11 +103,11 @@ function courseplay:update_tools(self, tractor_or_implement)
 				table.insert(self.tippers, object)
 			end
 		elseif self.ai_mode == 4 then -- Fertilizer and Seeding
-			if SpecializationUtil.hasSpecialization(Sprayer, object.specializations) or courseplay:is_sowingMachine(object) or object.name == "AmazoneUX5200" then
+			if SpecializationUtil.hasSpecialization(Sprayer, object.specializations) or courseplay:is_sowingMachine(object) then
 				tipper_attached = true
 				table.insert(self.tippers, object)
 			end
-		elseif self.ai_mode == 5 then -- Überführung
+		elseif self.ai_mode == 5 then -- Transfer
 			if object.setPlane ~= nil then --open/close cover
 				tipper_attached = true;
 				table.insert(self.tippers, object);
@@ -124,8 +124,8 @@ function courseplay:update_tools(self, tractor_or_implement)
 			or courseplay:isFoldable(object) then
 				tipper_attached = true
 				table.insert(self.tippers, object)
-			end
-		elseif self.ai_mode == 8 then -- Baler, foragewagon, baleloader
+			end;
+		elseif self.ai_mode == 8 then --Liquid manure transfer
 			--if SpecializationUtil.hasSpecialization(RefillTrigger, object.specializations) then
 			tipper_attached = true
 			table.insert(self.tippers, object)
