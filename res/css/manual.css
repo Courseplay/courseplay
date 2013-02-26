@@ -60,7 +60,7 @@
   border-bottom: 2px solid #20A8DB;
   height:40px;
 }
-#manualNav > ul > li:hover > a {
+#manualNav > ul > li:hover > a, #manualNav > ul > li.active > a {
   background: #222;
 }
 #manualNav .has-sub {
@@ -88,7 +88,7 @@
   line-height: 120%;
   padding: 10px;
 }
-#manualNav .has-sub ul li:hover a {
+#manualNav .has-sub ul li:hover a, #manualNav .has-sub ul li.active a {
   background: #0c7fb0;
 }
 #manualNav .has-sub .has-sub:hover > ul {

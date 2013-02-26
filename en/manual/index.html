@@ -529,11 +529,20 @@ $('body').removeClass('no-js').addClass('js');
 $('#driveModesNav').addClass('has-sub');
 CP = {};
 
-CP.manualNav = $('#manualNav');
-CP.manualNavFixed = CP.manualNav.clone().removeClass('default').appendTo('#manualTabs').addClass('scrolling').hide();
+CP.manualNavFixed = $('#manualNav').clone().removeClass('default').appendTo('#manualTabs').addClass('scrolling').hide();
+CP.manualNav = $('#manualNav.default');
+
+CP.manualNavs = $('#manualNav.default, #manualNav.scrolling');
+
+//set li levels
+CP.manualNavs.find('> ul > li').addClass('level_1');
+CP.manualNavs.find('> ul > li > ul > li').addClass('level_2');
+
+CP.manualNavLinks = CP.manualNavs.find('a');
 
 CP.animationTime = 250;
 CP.manualSections = $('.manualSection').hide();
+
 $('#manualNav a, a.internalTab').on('click', function(evt) {
 	evt.preventDefault();
 	var target = $(this).attr('href');
@@ -550,10 +559,24 @@ $('#manualNav a, a.internalTab').on('click', function(evt) {
 	
 	if ($(this).hasClass('internalTab') && (target.substr(1, 9) !== "driveMode" || target == "#driveModes")) {
 		$('html, body').animate({
-			scrollTop: $('#manualNav').offset().top
+			scrollTop: CP.manualNav.offset().top
 		}, CP.animationTime);
 	};
+	
+	
+	//nav: active item
+	CP.activeManualItem = target;
+	CP.manualNavLinks.removeClass('active');
+	CP.manualNavs.find('li.level_1, li.level_2').removeClass('active');
+
+	var curNavLink = CP.manualNavs.find('a[href="' + CP.activeManualItem + '"]');
+	var curNavLi = curNavLink.parents('li.level_1, li.level_2');
+
+	curNavLink.addClass('active');
+	curNavLi.addClass('active');
 });
+
+
 
 //scroll: manual nav fixed
 $(window).on('scroll', function(){
