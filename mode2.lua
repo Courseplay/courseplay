@@ -86,9 +86,9 @@ function courseplay:handle_mode2(self, dt)
 			--courseplay:unregister_at_combine(self, self.active_combine)  
 			if self.ai_state ~= 5 then
 				if self.combine_offset > 0 then
-					self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, self.turn_radius, 0, self.turn_radius)
+					self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 3, 0, -self.turn_radius)
 				else
-					self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, -self.turn_radius, 0, self.turn_radius)
+					self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, -3, 0, -self.turn_radius)
 				end
 				self.ai_state = 5
 				self.next_ai_state = 81
@@ -115,8 +115,6 @@ function courseplay:handle_mode2(self, dt)
 			self.ai_state = 6
 			courseplay:unload_combine(self, dt)
 		end
-	elseif self.ai_mode == 5 and self.next_ai_state == 81 then
-		courseplay:unload_combine(self, dt)
 	else -- NO active combine
 		-- STOP!!
 		if g_server ~= nil then
@@ -420,10 +418,11 @@ function courseplay:unload_combine(self, dt)
 			if self.combine_offset > 0 then  --I'm left
 				if leftFruit < rightFruit then 
 					courseplay:debug("I'm left, fruit is right",1)
-					local fx,fy,fz = localToWorld(self.rootNode, 0, 0, 3)
+					local fx,fy,fz = localToWorld(self.rootNode, 0, 0, 8)
 					if courseplay:is_field(fx, fz) then
 						courseplay:debug("target is on field",1)
-						mode = 1
+						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 0 , 0, 5);	
+						mode = 5
 					else
 						courseplay:debug("target is not on field",1)
 						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 2 , 0, -self.turn_radius);
