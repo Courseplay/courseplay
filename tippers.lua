@@ -150,6 +150,24 @@ function courseplay:update_tools(self, tractor_or_implement)
 		self.cpTrafficCollisionIgnoreList[object.rootNode] = true;
 	end; --END for implement in attachedImplements
 
+	--CUTTERS
+	if self.attachedCutters ~= nil then
+		if self.numAttachedCutters ~= nil and self.numAttachedCutters > 0 then
+			for cutter, implement in pairs(self.attachedCutters) do
+				local object = implement.object
+				if object.cp == nil then
+					object.cp = {};
+				end;
+				
+				if self.ai_mode == 6 then
+					tipper_attached = true;
+					table.insert(self.tippers, object);
+					self.cpTrafficCollisionIgnoreList[object.rootNode] = true;
+				end;
+			end;
+		end;
+	end;
+	
 	if CPDebugLevel > 0 then
 		print(string.format("%s cpTrafficCollisionIgnoreList", self.name));
 		for a,b in pairs(self.cpTrafficCollisionIgnoreList) do
