@@ -100,7 +100,7 @@ function courseplay:start(self)
 		end
 	end
 
-	if self.recordnumber > 2 and self.ai_mode ~= 4 then
+	if self.recordnumber > 2 and self.ai_mode ~= 4 and self.ai_mode ~= 6 then
 		self.loaded = true
 	end
 

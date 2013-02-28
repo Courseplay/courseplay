@@ -118,8 +118,6 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 			else
 				if workArea and fill_level ~= 100 and ((self.abortWork == nil and last_recordnumber == self.startWork) or (self.abortWork ~= nil and last_recordnumber == self.abortWork) or (self.runOnceStartCourse)) then
 					--activate/lower/unfold workTool also when activating from within course (not only at start)
-					self.runOnceStartCourse = false;
-					
 					if allowedToDrive then
 						--unfold
 						if courseplay:isFoldable(workTool) then
@@ -140,9 +138,10 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 									workTool:setIsPickupDown(true, false);
 								end;
 							end;
+							self.runOnceStartCourse = false;
 						end;
 					end
-				elseif not workArea or fill_level == 100 or self.abortWork ~= nil or last_recordnumber == self.stopWork then
+				elseif not workArea or self.abortWork ~= nil or self.loaded or last_recordnumber == self.stopWork then
 					workSpeed = false
 					
 					if not courseplay:isFolding(workTool) then
