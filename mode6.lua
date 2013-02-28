@@ -2,11 +2,14 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 	local workTool --= self.tippers[1] -- to do, quick, dirty and unsafe
 	local active_tipper = nil
 
+	--[[
 	if self.attachedCutters ~= nil then
 		for cutter, implement in pairs(self.attachedCutters) do
-			--AICombine.addCutterTrigger(self, cutter);
+			AICombine.addCutterTrigger(self, cutter);
 		end;
-	end
+	end;
+	--]]
+
 	workArea = (self.recordnumber > self.startWork) and (self.recordnumber < self.stopWork)
 
 	if workArea then
@@ -117,10 +120,9 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 			-- other worktools, tippers, e.g. forage wagon	
 			else
 				if workArea and fill_level ~= 100 and ((self.abortWork == nil and last_recordnumber == self.startWork) or (self.abortWork ~= nil and last_recordnumber == self.abortWork) or (self.runOnceStartCourse)) then
-					--activate/lower/unfold workTool also when activating from within course (not only at start)
 					if allowedToDrive then
 						--unfold
-						if courseplay:isFoldable(workTool) then
+						if courseplay:isFoldable(workTool) and not courseplay:isFolding(workTool) then
 							workTool:setFoldDirection(-1);
 							--workTool:setFoldDirection(workTool.turnOnFoldDirection);
 						end;
@@ -133,11 +135,10 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 						
 							--turn on
 							if workTool.setIsTurnedOn ~= nil then
-								workTool:setIsTurnedOn(true, false);
-								if workTool.setIsPickupDown ~= nil then
-									workTool:setIsPickupDown(true, false);
-								end;
+								workTool:setIsTurnedOn(true, false); --includes lowering the pickup
 							end;
+
+							--activate/lower/unfold workTool also when activating from within course (not only at start)
 							self.runOnceStartCourse = false;
 						end;
 					end
@@ -147,15 +148,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 					if not courseplay:isFolding(workTool) then
 						--turn off
 						if workTool.setIsTurnedOn ~= nil then
-							workTool:setIsTurnedOn(false, false);
-							if workTool.setIsPickupDown ~= nil then
-								workTool:setIsPickupDown(false, false);
-							end
-						elseif workTool.isTurnedOn ~= nil and workTool.pickupDown ~= nil then
-							-- Krone ZX - planet-ls.de
-							workTool.isTurnedOn = false;
-							workTool.pickupDown = false;
-							workTool:updateSendEvent();
+							workTool:setIsTurnedOn(false, false); --includes lifting the pickup
 						end;
 
 						--raise
