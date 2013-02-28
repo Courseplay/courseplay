@@ -504,118 +504,18 @@ function courseplay:unload_combine(self, dt)
 			end
 		end
 
+		--CALCULATE OFFSET
+		courseplay:calculateCombineOffset(self, combine);
 
-		local current_offset = self.combine_offset
-		local current_offset_positive = math.abs(self.combine_offset)
-		
-		--TODO: move all that shit over to combines.lua, or better yet base.lua, so it doesn't have to be calculated constantly
-		--TODO: always use combineToPrnX, no matter what?
-		local prnX, prnY, prnZ = getTranslation(combine.pipeRaycastNode)
-		local cwX, cwY, cwZ = getWorldTranslation(combine.rootNode)
-		local prnwX, prnwY, prnwZ = getWorldTranslation(combine.pipeRaycastNode)
-		local combineToPrnX, combineToPrnY, combineToPrnZ = worldToLocal(combine.rootNode, prnwX, prnwY, prnwZ)
-		--NOTE by Jakob: after a shitload of testing and failing, it seems combineToPrnX is what we're looking for (instead of prnToCombineX). Always results in correct x-distance from combine.rn to prn.
-		--TODO: support for Grimme SE75-55
-		
+		currentX, currentY, currentZ = localToWorld(combine.rootNode, self.combine_offset, 0, trailer_offset + 5)
 
-		
-		if not combine.isCornchopper and self.auto_combine_offset then
-			--courseplay:debug(string.format("%s(%i): %s: cwX=%f, cwZ=%f, prnwX=%f, prnwZ=%f, combineToPrnX=%f, combineToPrnZ=%f", curFile, debug.getinfo(1).currentline, combine.name, cwX, cwZ, prnwX, prnwZ, combineToPrnX, combineToPrnZ), 2)
-		end
-
-		--combine // combine_offset is in auto mode
-		if not combine.isCornchopper and self.auto_combine_offset and combine.currentPipeState == 2 then
-			if getParent(combine.pipeRaycastNode) == combine.rootNode then -- pipeRaycastNode is direct child of combine.root
-				--safety distance so the trailer doesn't crash into the pipe (sidearm)
-				local additionalSafetyDistance = 0
-				if combine.name == "Grimme Maxtron 620" then
-					additionalSafetyDistance = 0.9 --0.8
-				elseif combine.name == "Grimme Tectron 415" then
-					additionalSafetyDistance = -0.5
-				end
-
-				current_offset = prnX + additionalSafetyDistance
-				--courseplay:debug(string.format("%s(%i): %s @ %s: root > pipeRaycastNode // current_offset = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, current_offset), 2)
-			elseif getParent(getParent(combine.pipeRaycastNode)) == combine.rootNode then --pipeRaycastNode is direct child of pipe is direct child of combine.root
-				local pipeX, pipeY, pipeZ = getTranslation(getParent(combine.pipeRaycastNode))
-				current_offset = pipeX - prnZ
-				
-				if prnZ == 0 or combine.name == "Grimme Rootster 604" then
-					current_offset = pipeX - prnY
-				end
-				--courseplay:debug(string.format("%s(%i): %s @ %s: root > pipe > pipeRaycastNode // current_offset = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, current_offset), 2)
-			elseif combine.pipeRaycastNode ~= nil then --BACKUP pipeRaycastNode isn't direct child of pipe
-				current_offset = combineToPrnX + 0.5
-				--courseplay:debug(string.format("%s(%i): %s @ %s: combineToPrnX // current_offset = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, current_offset), 2)
-			elseif combine.lmX ~= nil then --user leftMarker
-				current_offset = combine.lmX + 2.5;
-			else --if all else fails
-				current_offset = 8;
-			end
-
-		--combine // combine_offset is in manual mode
-		elseif not combine.isCornchopper and not self.auto_combine_offset then
-			courseplay:debug(string.format("%s(%i): %s @ %s: combineToPrnX = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, combineToPrnX), 2)
-			if combineToPrnX > 0 then
-				current_offset = current_offset_positive
-			elseif combineToPrnX < 0 then -- pipe on right side
-				current_offset = current_offset_positive * -1
-				courseplay:debug(string.format("%s(%i): %s @ %s: pipe on right side / current_offset = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, current_offset), 2)
-			end
-		
-		--chopper // combine_offset is in auto mode
-		elseif combine.isCornchopper and self.auto_combine_offset then
-			if combine.lmX ~= nil then
-				current_offset = combine.lmX + 2.5
-				--courseplay:debug(string.format("%s(%i): %s @ %s: using leftMarker, current_offset = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, current_offset), 2)
-			else
-				current_offset = 8
-				courseplay:debug(string.format("%s(%i): %s @ %s: using default current_offset = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, current_offset), 2)
-			end
-
-			if self.sideToDrive == nil then
-				local left_fruit, right_fruit = courseplay:side_to_drive(self, combine, -10);
-				if left_fruit < right_fruit then
-					self.sideToDrive = "left";
-				elseif right_fruit < left_fruit then
-					self.sideToDrive = "right";
-				end
-				--courseplay:debug(string.format("%s(%i): %s @ %s: sideToDrive first runthrough=%s => current_offset=%f", curFile, debug.getinfo(1).currentline, self.name, combine.name, tostring(self.sideToDrive), current_offset), 2)
-			end;
-				
-			if self.sideToDrive	~= nil then
-				if self.sideToDrive == "left" then
-					current_offset = math.abs(current_offset);
-				elseif self.sideToDrive == "right" then
-					current_offset = math.abs(current_offset) * -1;
-				end
-			end;
-		end
-		
-		--cornChopper forced side offset
-		if combine.isCornchopper and combine.forced_side ~= nil then
-			if combine.forced_side == "left" then
-				current_offset = math.abs(current_offset);
-			elseif combine.forced_side == "right" then
-				current_offset = math.abs(current_offset) * -1;
-			end
-			courseplay:debug(string.format("%s(%i): %s @ %s: forced_side=%s => current_offset=%f", curFile, debug.getinfo(1).currentline, self.name, combine.name, combine.forced_side, current_offset), 2)
-		end
-
-		--refresh for display in HUD and other calculations
-		self.combine_offset = current_offset;
-		
-		
-
-		currentX, currentY, currentZ = localToWorld(combine.rootNode, current_offset, 0, trailer_offset + 5)
-
-		local ttX, ttY, ttZ = localToWorld(combine.rootNode, current_offset, 0, trailer_offset)
+		local ttX, ttY, ttZ = localToWorld(combine.rootNode, self.combine_offset, 0, trailer_offset)
 
 		if combine.attachedImplements ~= nil then
 			for k, i in pairs(combine.attachedImplements) do
 				local implement = i.object;
 				if implement.haeckseldolly == true then
-					ttX, ttY, ttZ = localToWorld(implement.rootNode, current_offset, 0, trailer_offset)
+					ttX, ttY, ttZ = localToWorld(implement.rootNode, self.combine_offset, 0, trailer_offset)
 				end
 			end
 		end
@@ -1072,3 +972,98 @@ function courseplay:calculate_course_to(self, target_x, target_z)
 	end
 	return true
 end
+
+function courseplay:calculateCombineOffset(self, combine)
+	local curFile = "mode2.lua";
+	local offs = self.combine_offset
+	local offsPos = math.abs(self.combine_offset)
+	
+	--TODO: move all that shit over to combines.lua, or better yet base.lua, so it doesn't have to be calculated constantly
+	local prnX, prnY, prnZ = getTranslation(combine.pipeRaycastNode)
+	local prnwX, prnwY, prnwZ = getWorldTranslation(combine.pipeRaycastNode)
+	local combineToPrnX, combineToPrnY, combineToPrnZ = worldToLocal(combine.rootNode, prnwX, prnwY, prnwZ)
+	--NOTE by Jakob: after a shitload of testing and failing, it seems combineToPrnX is what we're looking for (instead of prnToCombineX). Always results in correct x-distance from combine.rn to prn.
+	
+	--special tools, special cases
+	if combine.name == "Grimme Rootster 604" then
+		offs = -4.3;
+	elseif combine.name == "Grimme SE 75-55" then
+		offs =  4.3;
+	
+	--combine // combine_offset is in auto mode
+	elseif not combine.isCornchopper and self.auto_combine_offset and combine.currentPipeState == 2 then --pipe is open
+		if getParent(combine.pipeRaycastNode) == combine.rootNode then -- pipeRaycastNode is direct child of combine.root
+			--safety distance so the trailer doesn't crash into the pipe (sidearm)
+			local additionalSafetyDistance = 0;
+			if combine.name == "Grimme Maxtron 620" then
+				additionalSafetyDistance = 0.9;
+			elseif combine.name == "Grimme Tectron 415" then
+				additionalSafetyDistance = -0.5;
+			end;
+
+			offs = prnX + additionalSafetyDistance;
+			--courseplay:debug(string.format("%s(%i): %s @ %s: root > pipeRaycastNode // offs = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, offs), 2)
+		elseif getParent(getParent(combine.pipeRaycastNode)) == combine.rootNode then --pipeRaycastNode is direct child of pipe is direct child of combine.root
+			local pipeX, pipeY, pipeZ = getTranslation(getParent(combine.pipeRaycastNode))
+			offs = pipeX - prnZ;
+			
+			if prnZ == 0 or combine.name == "Grimme Rootster 604" then
+				offs = pipeX - prnY;
+			end;
+			--courseplay:debug(string.format("%s(%i): %s @ %s: root > pipe > pipeRaycastNode // offs = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, offs), 2)
+		elseif combine.pipeRaycastNode ~= nil then --BACKUP pipeRaycastNode isn't direct child of pipe
+			offs = combineToPrnX + 0.5;
+			--courseplay:debug(string.format("%s(%i): %s @ %s: combineToPrnX // offs = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, offs), 2)
+		elseif combine.cp.lmX ~= nil then --user leftMarker
+			offs = combine.cp.lmX + 2.5;
+		else --if all else fails
+			offs = 8;
+		end;
+
+	--combine // combine_offset is in manual mode
+	elseif not combine.isCornchopper and not self.auto_combine_offset then
+		--courseplay:debug(string.format("%s(%i): %s @ %s: combineToPrnX = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, combineToPrnX), 2);
+		offs = offsPos * combine.cp.pipeSide;
+	
+	--chopper // combine_offset is in auto mode
+	elseif combine.isCornchopper and self.auto_combine_offset then
+		if combine.cp.lmX ~= nil then
+			offs = combine.cp.lmX + 2.5;
+			--courseplay:debug(string.format("%s(%i): %s @ %s: using leftMarker, offs = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, offs), 2);
+		else
+			offs = 8;
+			--courseplay:debug(string.format("%s(%i): %s @ %s: using default offs = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, offs), 2);
+		end;
+
+		if self.sideToDrive == nil then
+			local left_fruit, right_fruit = courseplay:side_to_drive(self, combine, -10);
+			if left_fruit < right_fruit then
+				self.sideToDrive = "left";
+			elseif right_fruit < left_fruit then
+				self.sideToDrive = "right";
+			end;
+			--courseplay:debug(string.format("%s(%i): %s @ %s: sideToDrive first runthrough=%s => offs=%f", curFile, debug.getinfo(1).currentline, self.name, combine.name, tostring(self.sideToDrive), offs), 2)
+		end;
+			
+		if self.sideToDrive	~= nil then
+			if self.sideToDrive == "left" then
+				offs = math.abs(offs);
+			elseif self.sideToDrive == "right" then
+				offs = math.abs(offs) * -1;
+			end;
+		end;
+	end;
+	
+	--cornChopper forced side offset
+	if combine.isCornchopper and combine.forced_side ~= nil then
+		if combine.forced_side == "left" then
+			offs = math.abs(offs);
+		elseif combine.forced_side == "right" then
+			offs = math.abs(offs) * -1;
+		end
+		courseplay:debug(string.format("%s(%i): %s @ %s: forced_side=%s => offs=%f", curFile, debug.getinfo(1).currentline, self.name, combine.name, combine.forced_side, offs), 2)
+	end
+
+	--refresh for display in HUD and other calculations
+	self.combine_offset = offs;
+end;
