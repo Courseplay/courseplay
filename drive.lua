@@ -608,13 +608,13 @@ function courseplay:drive(self, dt)
 			distToChange = 5;
 		elseif self.ai_mode == 7 and (self.recordnumber > (self.maxnumber-3)) then
 		    distToChange = 2
-
 		else
 			distToChange = 2.85; --orig: 5
 		end;
 	else
 		distToChange = 2.85; --orig: 5
 	end
+
 
 	-- record shortest distance to the next waypoint
 	if self.shortest_dist == nil or self.shortest_dist > self.dist then

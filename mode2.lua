@@ -210,7 +210,6 @@ function courseplay:unload_combine(self, dt)
 	local combine_fill_level, combine_turning = nil, false
 	local refSpeed = nil
 	local handleTurn = false
-	local cornChopper = false
 	local isHarvester = false
 	local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
 	local tipper_percentage = tipper_fill_level / tipper_capacity * 100
@@ -251,7 +250,7 @@ function courseplay:unload_combine(self, dt)
 		combine_fill_level = combine.grainTankFillLevel * 100 / combine.grainTankCapacity
 	else -- combine is a chopper / has no tank
 		combine_fill_level = 51
-		cornChopper = true
+		combine.isCornchopper = true;
 	end
 
 	
@@ -319,7 +318,7 @@ function courseplay:unload_combine(self, dt)
 		-- near point
 		if dod < 3 then -- change to mode 4 == drive behind combine or cornChopper
 
-			if cornChopper then -- decide on which side to drive based on ai-combine
+			if combine.isCornchopper then -- decide on which side to drive based on ai-combine
 				local leftFruit, rightFruit = courseplay:side_to_drive(self, combine, 10);
 				if combine.forced_side == nil then
 					if leftFruit > rightFruit then
@@ -354,7 +353,7 @@ function courseplay:unload_combine(self, dt)
 
 		local tX, tY, tZ = nil, nil, nil
 
-		if cornChopper then
+		if combine.isCornchopper then
 			tX, tY, tZ = localToWorld(combine.rootNode, self.combine_offset * 0.8, 0, -5) -- offste *0.6     !????????????
 		else			
 			tX, tY, tZ = localToWorld(combine.rootNode, self.combine_offset, 0, -5)
@@ -520,12 +519,12 @@ function courseplay:unload_combine(self, dt)
 		
 
 		
-		if not cornChopper and self.auto_combine_offset then
+		if not combine.isCornchopper and self.auto_combine_offset then
 			--courseplay:debug(string.format("%s(%i): %s: cwX=%f, cwZ=%f, prnwX=%f, prnwZ=%f, combineToPrnX=%f, combineToPrnZ=%f", curFile, debug.getinfo(1).currentline, combine.name, cwX, cwZ, prnwX, prnwZ, combineToPrnX, combineToPrnZ), 2)
 		end
 
 		--combine // combine_offset is in auto mode
-		if not cornChopper and self.auto_combine_offset and combine.currentPipeState == 2 then
+		if not combine.isCornchopper and self.auto_combine_offset and combine.currentPipeState == 2 then
 			if getParent(combine.pipeRaycastNode) == combine.rootNode then -- pipeRaycastNode is direct child of combine.root
 				--safety distance so the trailer doesn't crash into the pipe (sidearm)
 				local additionalSafetyDistance = 0
@@ -555,7 +554,7 @@ function courseplay:unload_combine(self, dt)
 			end
 
 		--combine // combine_offset is in manual mode
-		elseif not cornChopper and not self.auto_combine_offset then
+		elseif not combine.isCornchopper and not self.auto_combine_offset then
 			courseplay:debug(string.format("%s(%i): %s @ %s: combineToPrnX = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, combineToPrnX), 2)
 			if combineToPrnX > 0 then
 				current_offset = current_offset_positive
@@ -565,7 +564,7 @@ function courseplay:unload_combine(self, dt)
 			end
 		
 		--chopper // combine_offset is in auto mode
-		elseif cornChopper and self.auto_combine_offset then
+		elseif combine.isCornchopper and self.auto_combine_offset then
 			if combine.lmX ~= nil then
 				current_offset = combine.lmX + 2.5
 				--courseplay:debug(string.format("%s(%i): %s @ %s: using leftMarker, current_offset = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, current_offset), 2)
@@ -594,7 +593,7 @@ function courseplay:unload_combine(self, dt)
 		end
 		
 		--cornChopper forced side offset
-		if cornChopper and combine.forced_side ~= nil then
+		if combine.isCornchopper and combine.forced_side ~= nil then
 			if combine.forced_side == "left" then
 				current_offset = math.abs(current_offset);
 			elseif combine.forced_side == "right" then
@@ -628,10 +627,10 @@ function courseplay:unload_combine(self, dt)
 		end
 
 		-- combine is not moving and trailer is under pipe
-		if not cornChopper and combine.movingDirection == 0 and (lz <= 1 or lz < -0.1 * trailer_offset) then
+		if not combine.isCornchopper and combine.movingDirection == 0 and (lz <= 1 or lz < -0.1 * trailer_offset) then
 			self.info_text = courseplay:get_locale(self, "CPCombineWantsMeToStop") -- "Drescher sagt ich soll anhalten."
 			allowedToDrive = false
-		elseif cornChopper then
+		elseif combine.isCornchopper then
 			if combine.movingDirection == 0 and (lz == -1 or dod == -1)and self.isChopperTurning == false then
 				allowedToDrive = false
 				self.info_text = courseplay:get_locale(self, "CPCombineWantsMeToStop") -- "Drescher sagt ich soll anhalten."
@@ -645,7 +644,7 @@ function courseplay:unload_combine(self, dt)
 
 		-- refspeed depends on the distance to the combine
 		local combine_speed = combine.lastSpeed
-		if cornChopper then
+		if combine.isCornchopper then
 			self.sl = 2
 			if lz > 20 then
 				refSpeed = self.field_speed
@@ -701,7 +700,7 @@ function courseplay:unload_combine(self, dt)
 		---------------------------------------------------------------------
 	end -- end mode 3 or 4
 
-	if combine_turning and not cornChopper and combine_fill_level > 0 then
+	if combine_turning and not combine.isCornchopper and combine_fill_level > 0 then
 		combine.waitForTurnTime = combine.time + 100
 	end
 
@@ -709,7 +708,7 @@ function courseplay:unload_combine(self, dt)
 		if tipper_percentage >= self.required_fill_level_for_drive_on then
 			self.loaded = true
 		elseif mode == 3 or mode == 4 then
-			if cornChopper then
+			if combine.isCornchopper then
 				self.leftFruit, self.rightFruit = courseplay:side_to_drive(self, combine, -10)
 
 				--new chopper turn maneuver by Thomas Gärtner  --!!!
