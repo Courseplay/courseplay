@@ -112,8 +112,6 @@
 .no-js .manualSection { display:none; }
 .no-js .manualSection:target { display:block; }
 
-.emphasize1 { font-weight:600; }
-
 .hudIcon {
 	background-image:url("../img/hudIcons.png");
 	background-repeat:no-repeat;
