@@ -155,7 +155,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 		if self.numAttachedCutters ~= nil and self.numAttachedCutters > 0 then
 			for cutter, implement in pairs(self.attachedCutters) do
 				local object = implement.object
-				if object.cp == nil then
+				if object ~= nil and object.cp == nil then
 					object.cp = {};
 				end;
 				
@@ -465,5 +465,8 @@ function courseplay:getAutoTurnradius(self, tipper_attached)
 
 	if self.turnRadiusAutoMode then
 		self.turn_radius = self.autoTurnRadius;
+		if math.abs(self.turn_radius) > 50 then
+			self.turn_radius = 15
+		end
 	end;
 end
