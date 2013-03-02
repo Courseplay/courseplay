@@ -134,15 +134,17 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 							end;
 						
 							--turn on
-							if workTool.setIsTurnedOn ~= nil then
-								workTool:setIsTurnedOn(true, false); --includes lowering the pickup
+							if workTool.setIsTurnedOn ~= nil and not workTool.isTurnedOn then
+								workTool:setIsTurnedOn(true, false);
 							end;
-							if workTool.setIsPickupDown ~= nil then 
-                                        			if self.pickup.isDown == nil or (self.pickup.isDown ~= nil and not self.pickup.isDown) then 
-                                             				workTool:setIsPickupDown(true, false); 
-                                        			end; 
-                                   			end;
-							self.runOnceStartCourse = false
+							if workTool.setIsPickupDown ~= nil then
+								if self.pickup.isDown == nil or (self.pickup.isDown ~= nil and not self.pickup.isDown) then
+									workTool:setIsPickupDown(true, false);
+								end;
+							end;
+
+							--activate/lower/unfold workTool also when activating from within course (not only at start)
+							self.runOnceStartCourse = false;
 						end;
 					end
 				elseif not workArea or self.abortWork ~= nil or self.loaded or last_recordnumber == self.stopWork then
@@ -150,8 +152,13 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 					
 					if not courseplay:isFolding(workTool) then
 						--turn off
-						if workTool.setIsTurnedOn ~= nil then
-							workTool:setIsTurnedOn(false, false); --includes lifting the pickup
+						if workTool.setIsTurnedOn ~= nil and workTool.isTurnedOn then
+							workTool:setIsTurnedOn(false, false);
+						end;
+						if workTool.setIsPickupDown ~= nil then
+							if self.pickup.isDown == nil or (self.pickup.isDown ~= nil and self.pickup.isDown) then
+								workTool:setIsPickupDown(false, false);
+							end;
 						end;
 
 						--raise
@@ -204,45 +211,47 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 						self.info_text = courseplay:get_locale(self, "CPTriggerReached") -- "Abladestelle erreicht"		
 					end
 				end;
-
-				-- Begin Work   or goto abortWork
-				if last_recordnumber == self.startWork and fill_level ~= 100 then
-					if self.abortWork ~= nil then
-						if self.abortWork < 5 then
-							self.abortWork = 6
-						end
-						self.recordnumber = self.abortWork 
-						if self.recordnumber < 2 then
-							self.recordnumber = 2
-						end
-					end
-				end
-				-- last point reached restart
-				if self.abortWork ~= nil then
-					if (last_recordnumber == self.abortWork ) and fill_level ~= 100 then
-						self.recordnumber = self.abortWork + 2  -- drive to waypoint after next waypoint
-						self.abortWork = nil
-					end
-				end
-				-- safe last point
-				if (fill_level == 100 or self.loaded) and workArea and self.abortWork == nil and self.maxnumber ~= self.stopWork then
-					self.abortWork = last_recordnumber - 10
-					self.recordnumber = self.stopWork - 4
-					if self.recordnumber < 1 then
-						self.recordnumber = 1
-					end
-					--	courseplay:debug(string.format("Abort: %d StopWork: %d",self.abortWork,self.stopWork), 2)
-				end
 			end; --END other tools
+
+			-- Begin Work   or goto abortWork
+			if last_recordnumber == self.startWork and fill_level ~= 100 then
+				if self.abortWork ~= nil then
+					if self.abortWork < 5 then
+						self.abortWork = 6
+					end
+					self.recordnumber = self.abortWork 
+					if self.recordnumber < 2 then
+						self.recordnumber = 2
+					end
+				end
+			end
+			-- last point reached restart
+			if self.abortWork ~= nil then
+				if (last_recordnumber == self.abortWork ) and fill_level ~= 100 then
+					self.recordnumber = self.abortWork + 2  -- drive to waypoint after next waypoint
+					self.abortWork = nil
+				end
+			end
+			-- safe last point
+			if (fill_level == 100 or self.loaded) and workArea and self.abortWork == nil and self.maxnumber ~= self.stopWork then
+				self.abortWork = last_recordnumber - 10
+				self.recordnumber = self.stopWork - 4
+				if self.recordnumber < 1 then
+					self.recordnumber = 1
+				end
+				--	courseplay:debug(string.format("Abort: %d StopWork: %d",self.abortWork,self.stopWork), 2)
+			end;
 			
 		else  --COMBINES
-			if SpecializationUtil.hasSpecialization(Combine, self.specializations) or SpecializationUtil.hasSpecialization(combine, self.specializations) or self.grainTankCapacity == 0 then
+		
+			--TODO: move combine out of for loop, it never has more than one workTool
+			if SpecializationUtil.hasSpecialization(Combine, self.specializations) or SpecializationUtil.hasSpecialization(combine, self.specializations) or self.grainTankCapacity == 0 then --TODO: create isCombine(bla) call
 				if workArea and not self.isAIThreshing then
 					local pipeState = self:getCombineTrailerInRangePipeState();
 					if self.grainTankCapacity == 0 then
 						if courseplay:isFoldable(workTool) then
 							workTool:setFoldDirection(-1);
-							if courseplay:isFolding(workTool) then
+							if courseplay:isFolding(workTool) then --TODO: delete, we already have it in line 30
 								allowedToDrive = false;
 							end
 						end;
