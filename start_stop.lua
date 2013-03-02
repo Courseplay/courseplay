@@ -103,7 +103,7 @@ function courseplay:start(self)
 
 	if self.recordnumber > 2 and self.ai_mode ~= 4 and self.ai_mode ~= 6 then
 		self.loaded = true
-	elseif self.ai_mode == 4 and self.ai_mode == 6 then
+	elseif self.ai_mode == 4 or self.ai_mode == 6 then
 		
 		self.loaded = false
 	end
