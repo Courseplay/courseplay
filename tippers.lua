@@ -308,95 +308,97 @@ function courseplay:unload_tippers(self)
 	local allowedToDrive = true
 	for k, tipper in pairs(self.tippers) do
 		--if not tipper.allowsDetaching then
-		local numReferencePoints = table.getn(tipper.tipReferencePoints);
-		local fruitType = tipper.currentFillType
+		if tipper.tipReferencePoints ~= nil then
+			local numReferencePoints = table.getn(tipper.tipReferencePoints);
+			local fruitType = tipper.currentFillType
 
-		if self.currentTipTrigger.bunkerSilo ~= nil then
-			
-			local silos = table.getn(self.currentTipTrigger.bunkerSilo.movingPlanes)
-			local x, y, z = getWorldTranslation(tipper.tipReferencePoints[1].node)
-			local sx, sy, sz = worldToLocal(self.currentTipTrigger.bunkerSilo.movingPlanes[1].nodeId, x, y, z)
-			local ex, ey, ez = worldToLocal(self.currentTipTrigger.bunkerSilo.movingPlanes[silos].nodeId, x, y, z)
-			self.startentfernung =  Utils.vector2Length(sx, sz) 
-			self.endentfernung = Utils.vector2Length(ex, ez)
-			local laenge = courseplay:distance(sx, sz, ex, ez) 
-			self.position = self.startentfernung*100/laenge
-			self.gofortipping = false
-			if self.runonce == nil then
-				self.runonce = 0
-			end
-			self.filling1 = 0
-			self.filling2 = 0
-			self.filling3 = 0
-			if self.runonce == 0 then
-				if self.startentfernung < self.endentfernung then   --Richtungsentscheidung
-					self.BGAdirection = 1   --vorwärts
-				else	
-					self.BGAdirection = 0   --rückwärts
-				end
-				for k = 1,silos,1 do
-					local filling = self.currentTipTrigger.bunkerSilo.movingPlanes[k].fillLevel
-					if k <= math.ceil(silos * 0.3) then
-						self.filling1 =	self.filling1 + filling
-						--print(tostring(k)..":1:"..tostring(self.filling1))
-					elseif k <= math.ceil(silos * 0.6) then
-						self.filling2 =	self.filling2 + filling
-						--print(tostring(k)..":2:"..tostring(self.filling2))
-					elseif k <= silos then 
-						self.filling3 =	self.filling3 + filling
-						--print(tostring(k)..":3:"..tostring(self.filling3))
-					end
-				end;
-				print(string.format("bga section 1: %f, bga section 3: %f, bga section 3: %f", self.filling1, self.filling2, self.filling3));
-				
-				if self.filling1 <= self.filling2 and self.filling1 < self.filling3 then
-					self.tipLocation = 1
-				elseif self.filling2 <= self.filling3 and self.filling2 < self.filling1 then
-					self.tipLocation = 2
-				elseif self.filling3 < self.filling1 and self.filling3 < self.filling2 then
-					self.tipLocation = 3
-				else
-					self.tipLocation = 1
-				end
-				print(string.format("BGA tipLocation = %d", self.tipLocation));
-				self.runonce = 1
-			end
-			if self.tipLocation == 1 then
-				if self.position >= 0 and self.position <= 40 then
-					self.gofortipping = true
-				end
-			elseif self.tipLocation == 2 then
-				if self.position >= 30 and self.position <= 70 then
-					self.gofortipping = true
-				end
-			elseif self.tipLocation == 3 then
-				if self.position >= 60 then
-					self.gofortipping = true
-				end
-			end
-		else
-			self.gofortipping = true
-		end
-		if self.currentTipTrigger.acceptedFillTypes[fruitType] and self.gofortipping == true then  
-			if tipper.tipState == Trailer.TIPSTATE_CLOSED then
-				if self.currentTipTrigger:getTipDistanceFromTrailer(tipper, tipper.currentTipReferencePointIndex)  == 0 or self.currentTipTrigger.bunkerSilo ~= nil then   --courtesy of Satis
-					if self.toggledTipState < numReferencePoints then
-						self.toggledTipState = self.toggledTipState +1
-						tipper:toggleTipState(self.currentTipTrigger,self.toggledTipState);
-						self.unloading_tipper = tipper
-					else
-						self.toggledTipState = 0
-					end
-				end
-			elseif tipper.tipState ~= Trailer.TIPSTATE_CLOSING then 
-				allowedToDrive = false
-			end 
-					
 			if self.currentTipTrigger.bunkerSilo ~= nil then
-				allowedToDrive = true
+				
+				local silos = table.getn(self.currentTipTrigger.bunkerSilo.movingPlanes)
+				local x, y, z = getWorldTranslation(tipper.tipReferencePoints[1].node)
+				local sx, sy, sz = worldToLocal(self.currentTipTrigger.bunkerSilo.movingPlanes[1].nodeId, x, y, z)
+				local ex, ey, ez = worldToLocal(self.currentTipTrigger.bunkerSilo.movingPlanes[silos].nodeId, x, y, z)
+				self.startentfernung =  Utils.vector2Length(sx, sz) 
+				self.endentfernung = Utils.vector2Length(ex, ez)
+				local laenge = courseplay:distance(sx, sz, ex, ez) 
+				self.position = self.startentfernung*100/laenge
+				self.gofortipping = false
+				if self.runonce == nil then
+					self.runonce = 0
+				end
+				self.filling1 = 0
+				self.filling2 = 0
+				self.filling3 = 0
+				if self.runonce == 0 then
+					if self.startentfernung < self.endentfernung then   --Richtungsentscheidung
+						self.BGAdirection = 1   --vorwärts
+					else	
+						self.BGAdirection = 0   --rückwärts
+					end
+					for k = 1,silos,1 do
+						local filling = self.currentTipTrigger.bunkerSilo.movingPlanes[k].fillLevel
+						if k <= math.ceil(silos * 0.3) then
+							self.filling1 =	self.filling1 + filling
+							--print(tostring(k)..":1:"..tostring(self.filling1))
+						elseif k <= math.ceil(silos * 0.6) then
+							self.filling2 =	self.filling2 + filling
+							--print(tostring(k)..":2:"..tostring(self.filling2))
+						elseif k <= silos then 
+							self.filling3 =	self.filling3 + filling
+							--print(tostring(k)..":3:"..tostring(self.filling3))
+						end
+					end;
+					print(string.format("bga section 1: %f, bga section 3: %f, bga section 3: %f", self.filling1, self.filling2, self.filling3));
+					
+					if self.filling1 <= self.filling2 and self.filling1 < self.filling3 then
+						self.tipLocation = 1
+					elseif self.filling2 <= self.filling3 and self.filling2 < self.filling1 then
+						self.tipLocation = 2
+					elseif self.filling3 < self.filling1 and self.filling3 < self.filling2 then
+						self.tipLocation = 3
+					else
+						self.tipLocation = 1
+					end
+					print(string.format("BGA tipLocation = %d", self.tipLocation));
+					self.runonce = 1
+				end
+				if self.tipLocation == 1 then
+					if self.position >= 0 and self.position <= 40 then
+						self.gofortipping = true
+					end
+				elseif self.tipLocation == 2 then
+					if self.position >= 30 and self.position <= 70 then
+						self.gofortipping = true
+					end
+				elseif self.tipLocation == 3 then
+					if self.position >= 60 then
+						self.gofortipping = true
+					end
+				end
+			else
+				self.gofortipping = true
 			end
-		else
-			courseplay:debug("trigger does not accept fruit or self.gofortipping = false(BGA) ", 1);
+			if self.currentTipTrigger.acceptedFillTypes[fruitType] and self.gofortipping == true then  
+				if tipper.tipState == Trailer.TIPSTATE_CLOSED then
+					if self.currentTipTrigger:getTipDistanceFromTrailer(tipper, tipper.currentTipReferencePointIndex)  == 0 or self.currentTipTrigger.bunkerSilo ~= nil then   --courtesy of Satis
+						if self.toggledTipState < numReferencePoints then
+							self.toggledTipState = self.toggledTipState +1
+							tipper:toggleTipState(self.currentTipTrigger,self.toggledTipState);
+							self.unloading_tipper = tipper
+						else
+							self.toggledTipState = 0
+						end
+					end
+				elseif tipper.tipState ~= Trailer.TIPSTATE_CLOSING then 
+					allowedToDrive = false
+				end 
+						
+				if self.currentTipTrigger.bunkerSilo ~= nil then
+					allowedToDrive = true
+				end
+			else
+				courseplay:debug("trigger does not accept fruit or self.gofortipping = false(BGA) ", 1);
+			end
 		end
 	end
 	return allowedToDrive

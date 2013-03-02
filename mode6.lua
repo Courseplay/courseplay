@@ -15,7 +15,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 	if workArea then
 		workSpeed = true
 	end
-	if self.recordnumber >= self.stopWork and self.abortWork == nil and not self.loaded then
+	if (self.recordnumber == self.stopWork or last_recordnumber == self.stopWork )and self.abortWork == nil and not self.loaded then
 		allowedToDrive = false
 		self.global_info_text = courseplay:get_locale(self, "CPWorkEnd") --'hat Arbeit beendet.'
 	end
@@ -119,7 +119,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 
 			-- other worktools, tippers, e.g. forage wagon	
 			else
-				if workArea and fill_level ~= 100 and ((self.abortWork == nil and last_recordnumber == self.startWork) or (self.abortWork ~= nil and last_recordnumber == self.abortWork) or (self.runOnceStartCourse)) then
+				if workArea and fill_level ~= 100 and ((self.abortWork == nil) or (self.abortWork ~= nil and last_recordnumber == self.abortWork) or (self.runOnceStartCourse)) then
 					if allowedToDrive then
 						--unfold
 						if courseplay:isFoldable(workTool) and not courseplay:isFolding(workTool) then
@@ -137,9 +137,12 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 							if workTool.setIsTurnedOn ~= nil then
 								workTool:setIsTurnedOn(true, false); --includes lowering the pickup
 							end;
-
-							--activate/lower/unfold workTool also when activating from within course (not only at start)
-							self.runOnceStartCourse = false;
+							if workTool.setIsPickupDown ~= nil then 
+                                        			if self.pickup.isDown == nil or (self.pickup.isDown ~= nil and not self.pickup.isDown) then 
+                                             				workTool:setIsPickupDown(true, false); 
+                                        			end; 
+                                   			end;
+							self.runOnceStartCourse = false
 						end;
 					end
 				elseif not workArea or self.abortWork ~= nil or self.loaded or last_recordnumber == self.stopWork then
