@@ -346,24 +346,25 @@ function courseplay:drive(self, dt)
 						
 						if not courseplay:is_sowingMachine(activeTool) then --sprayer
 							if fill_level < 100 and activeTool.sprayerFillTriggers ~= nil and table.getn(activeTool.sprayerFillTriggers) > 0 then
-								allowedToDrive = false
+								allowedToDrive = false;
+								
+								--Fuchs Guellefass
+								if activeTool.isFuchsFass and activeTool.setdeckelAnimationisPlaying ~= nil then
+									activeTool:setdeckelAnimationisPlaying(true);
+								end;
+								
 								self.info_text = string.format(courseplay:get_locale(self, "CPloading"), tipper_fill_level, tipper_capacity)
 								local sprayer = activeTool.sprayerFillTriggers[1]
 								activeTool:setIsSprayerFilling(true, sprayer.fillType, sprayer.isSiloTrigger, false)
 								if sprayer.trailerInTrigger == activeTool then ----- feldrant container gülle bomber
 									sprayer.fill = true
-								end
-							end
-
-							if MapBGA ~= nil then
-								for i = 1, table.getn(MapBGA.ModEvent.bunkers) do --support Heady�s BGA
-									if fill_level < 100 and MapBGA.ModEvent.bunkers[i].manure.trailerInTrigger == activeTool then
-										self.info_text = "BGA LADEN"
-										allowedToDrive = false
-										MapBGA.ModEvent.bunkers[i].manure.fill = true
-									end
-								end
-							end
+								end;
+							else
+								--Fuchs Guellefass
+								if activeTool.isFuchsFass and activeTool.setdeckelAnimationisPlaying ~= nil then
+									activeTool:setdeckelAnimationisPlaying(false);
+								end;
+							end;
 						end;
 						
 						if courseplay:is_sowingMachine(activeTool) then --sowing machine
@@ -375,6 +376,7 @@ function courseplay:drive(self, dt)
 								allowedToDrive = true;
 							end;
 						end;
+						
 					end
 				end
 			end
