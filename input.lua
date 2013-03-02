@@ -358,6 +358,7 @@ function courseplay:handle_user_input(self)
 		end
 		self.courseID = maxID + 1
 		course = { name = self.current_course_name, id = self.courseID, waypoints = self.Waypoints }
+		self.numCourses = 1;
 		if g_currentMission.courseplay_courses == nil then
 			g_currentMission.courseplay_courses = {}
 		end
