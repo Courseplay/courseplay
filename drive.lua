@@ -161,7 +161,7 @@ function courseplay:drive(self, dt)
 		cx, cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
 	end
 	-- offset - endlich lohnt sich der mathe-lk von vor 1000 Jahren ;)
-	if self.ai_mode == 6 then
+	if self.ai_mode == 4 or self.ai_mode == 6 then
 		if self.recordnumber > self.startWork and self.recordnumber < self.stopWork and self.recordnumber > 1 and self.WpOffsetX ~= nil and self.WpOffsetZ ~= nil and (self.WpOffsetX ~= 0 or self.WpOffsetZ ~= 0) then
 			--courseplay:addsign(self, cx, 10, cz)
 			--courseplay:debug(string.format("old WP: %d x %d ", cx, cz ), 2)
