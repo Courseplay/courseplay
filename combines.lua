@@ -233,6 +233,9 @@ function courseplay:unregister_at_combine(self, combine)
 end
 
 function courseplay:add_to_combines_ignore_list(self, combine)
+	if combine == nil or combine.trafficCollisionIgnoreList == nil then
+		return
+	end
 	if combine.trafficCollisionIgnoreList[self.rootNode] == nil then
 		combine.trafficCollisionIgnoreList[self.rootNode] = true
 	end
@@ -240,7 +243,7 @@ end
 
 
 function courseplay:remove_from_combines_ignore_list(self, combine)
-	if combine == nil then
+	if combine == nil or combine.trafficCollisionIgnoreList == nil then
 		return
 	end
 	if combine.trafficCollisionIgnoreList[self.rootNode] == true then
@@ -315,9 +318,9 @@ function courseplay:calculateInitialCombineOffset(self, combine)
 			self.combine_offset = 8 * combine.cp.pipeSide;
 		end;
 	elseif combine.isCornchopper then
-		print(string.format("%s(%i): %s @ %s: combine.forced_side=%s", curFile, debug.getinfo(1).currentline, self.name, combine.name, tostring(combine.forced_side)));
+		courseplay:debug(string.format("%s(%i): %s @ %s: combine.forced_side=%s", curFile, debug.getinfo(1).currentline, self.name, combine.name, tostring(combine.forced_side)), 3);
 		if combine.forced_side ~= nil then
-			print(string.format("%s(%i): %s @ %s: combine.forced_side=%s, going by forced_side", curFile, debug.getinfo(1).currentline, self.name, combine.name, combine.forced_side));
+			courseplay:debug(string.format("%s(%i): %s @ %s: combine.forced_side=%s, going by forced_side", curFile, debug.getinfo(1).currentline, self.name, combine.name, combine.forced_side), 3);
 			if combine.forced_side == "left" then
 				self.sideToDrive = "left";
 				if combine.cp.lmX ~= nil then
@@ -334,19 +337,31 @@ function courseplay:calculateInitialCombineOffset(self, combine)
 				end;
 			end
 		else
-			print(string.format("%s(%i): %s @ %s: combine.forced_side=%s, going by fruit", curFile, debug.getinfo(1).currentline, self.name, combine.name, tostring(combine.forced_side)));
+			courseplay:debug(string.format("%s(%i): %s @ %s: combine.forced_side=%s, going by fruit", curFile, debug.getinfo(1).currentline, self.name, combine.name, tostring(combine.forced_side)), 3);
 			local left_fruit, right_fruit = courseplay:side_to_drive(self, combine, -10);
 			if left_fruit < right_fruit then
 				self.sideToDrive = "left";
-				self.combine_offset = combine.cp.lmX + 2.5;
+				if combine.cp.lmX ~= nil then
+					self.combine_offset = combine.cp.lmX + 2.5;
+				else --attached chopper
+					self.combine_offset = 7;
+				end;
 			elseif left_fruit > right_fruit then
 				self.sideToDrive = "right";
-				self.combine_offset = (combine.cp.lmX + 2.5) * -1;
+				if combine.cp.lmX ~= nil then
+					self.combine_offset = (combine.cp.lmX + 2.5) * -1;
+				else --attached chopper
+					self.combine_offset = -3;
+				end;
 			else
 				self.sideToDrive = nil;
-				self.combine_offset = combine.cp.lmX + 2.5;
+				if combine.cp.lmX ~= nil then
+					self.combine_offset = combine.cp.lmX + 2.5;
+				else --attached chopper
+					self.combine_offset = 7;
+				end;
 			end
-			courseplay:debug(string.format("%s(%i): %s @ %s: left_fruit=%f, right_fruit=%f, sideToDrive=%s", curFile, debug.getinfo(1).currentline, self.name, combine.name, left_fruit, right_fruit, tostring(self.sideToDrive)), 2)
+			courseplay:debug(string.format("%s(%i): %s @ %s: left_fruit=%f, right_fruit=%f, sideToDrive=%s", curFile, debug.getinfo(1).currentline, self.name, combine.name, left_fruit, right_fruit, tostring(self.sideToDrive)), 3);
 		end;
 	end;
 end;
