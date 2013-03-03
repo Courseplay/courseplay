@@ -290,6 +290,5 @@ function courseplay:change_DebugLevel(change_by)
 	if CPDebugLevel == 5 then
 		CPDebugLevel = 0
 	end
-	--print('CPDebugLevel = '..CPDebugLevel)
 end
 

@@ -12,7 +12,7 @@ function courseplay:start(self)
 	
 	 --Manual ignition
     if self.ignitionKey ~= nil and self.allowedIgnition ~= nil and self.invokeIgnition ~= nil and not self.isMotorStarted then
-        --print(string.format("%s: has manualIgnition, isMotorStarted==%s, ignitionKey=%s, allowedIgnition=%s, starting motor [self:invokeIgnition(true)]", self.name, tostring(self.isMotorStarted), tostring(self.ignitionKey), tostring(self.allowedIgnition)));
+        courseplay:debug(string.format("%s: has manualIgnition, isMotorStarted==%s, ignitionKey=%s, allowedIgnition=%s, starting motor [self:invokeIgnition(true)]", self.name, tostring(self.isMotorStarted), tostring(self.ignitionKey), tostring(self.allowedIgnition)),3);
 		self.ignitionKey = true;
         self.allowedIgnition = true;
     end;
@@ -90,18 +90,21 @@ function courseplay:start(self)
 			end
 		end
 		-- mode 6 without start and stop point, set them at start and end, for only-on-field-courses
-		if self.ai_mode == 6 and wpanz == 0 then
+		if (self.ai_mode == 4 or self.ai_mode == 6) and wpanz == 0 then
 			self.startWork = 1
 			self.stopWork = self.maxnumber
 		end
-		--  print(string.format("StartWork: %d StopWork: %d",self.startWork,self.stopWork))
 		if self.recordnumber > self.maxnumber then
 			self.recordnumber = 1
 		end
 	end
 
-	if self.recordnumber > 2 and self.ai_mode ~= 4 then
+
+	if self.recordnumber > 2 and self.ai_mode ~= 4 and self.ai_mode ~= 6 then
 		self.loaded = true
+	elseif self.ai_mode == 4 or self.ai_mode == 6 then
+		
+		self.loaded = false
 	end
 
 

@@ -100,17 +100,6 @@ end
 
 function courseplay:side_to_drive(self, combine, distance)
 	-- if there is a forced side to drive return this
-	--[[if combine.forced_side ~= nil then
-		if combine.forced_side == "left" then
-			print("fruit 105 l:1000 r:0")
-			return 1000, 0
-		else
-			print("fruit 108 l:0 r:1000")
-			return 0, 1000
-
-
-		end
-	end]]
 	-- with autopilot combine, choose search area side
 	if combine.apCombinePresent ~= nil and combine.apCombinePresent then
 		if combine.autoPilotEnabled then

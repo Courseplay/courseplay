@@ -58,6 +58,14 @@ end
 
 
 function courseplay:distance_to_point(self, x, y, z)
-	local ox, oy, oz = worldToLocal(self.aiTractorDirectionNode, x, y, z)
+	local node
+	if self.aiTractorDirectionNode ~= nil then
+		node = self.aiTractorDirectionNode
+	elseif self.aiTreshingDirectionNode ~= nil then
+		node = self.aiTreshingDirectionNode
+	else
+		node = self.rootNode
+	end
+	local ox, oy, oz = worldToLocal(node, x, y, z)
 	return Utils.vector2Length(ox, oz)
 end
