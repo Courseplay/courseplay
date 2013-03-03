@@ -168,6 +168,32 @@ ol > li:before {
 li ol, li ul { margin-top:6px; }
 ol ol li:last-child { margin-bottom:0; }
 
+
+.hudIcon {
+	background-image:url("../img/hudIcons.png");
+	background-repeat:no-repeat;
+	display:inline-block;
+	height:16px;
+	margin:0 3px;
+	position:relative;
+	top:1px;
+	width:16px;
+}
+.hudIcon[title] { cursor:help; }
+.hudIcon.inline       { text-indent:-9999px; top:2px; }
+.hudIcon.addCourse    { background-position:0    0;   }
+.hudIcon.save         { background-position:0  -16px; }
+.hudIcon.arrowRight   { background-position:0  -32px; }
+.hudIcon.deleteCourse { background-position:0  -48px; }
+.hudIcon.closeHud     { background-position:0  -64px; }
+.hudIcon.openCourse   { background-position:0  -80px; }
+.hudIcon.plus         { background-position:0  -96px; }
+.hudIcon.minus        { background-position:0 -112px; }
+.hudIcon.arrowLeft    { background-position:0 -128px; }
+.hudIcon.arrowUp      { background-position:0 -144px; }
+.hudIcon.arrowDown    { background-position:0 -160px; }
+
+
 footer { border-top:1px solid #D6D6D6; font-size:0.7em; margin-top:3em; padding:1em 0; }
 footer span { padding-left:0.5em; }
 #footerNav li { border-right:1px solid #646464; display:inline; padding:0 0.5em; }
