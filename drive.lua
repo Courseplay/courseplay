@@ -1,78 +1,127 @@
 -- drives recored course
 function courseplay:drive(self, dt)
 	local refSpeed = 0
+	local cx,cy,cz = 0,0,0
 
 	-- combine self unloading
 	if self.ai_mode == 7 then
-		local state = self.ai_state
-		if state == 5 and self.target_x ~= nil and self.target_z ~= nil then
+		if self.isAIThreshing then
+			if (self.grainTankFillLevel * 100 / self.grainTankCapacity) >= self.required_fill_level_for_drive_on then
+				self.maxnumber = table.getn(self.Waypoints)
+				cx7, cz7 = self.Waypoints[self.maxnumber].cx, self.Waypoints[self.maxnumber].cz
+				local lx7, lz7 = AIVehicleUtil.getDriveDirection(self.rootNode, cx7, cty7, cz7);
+				local fx,fy,fz = localToWorld(self.rootNode, 0, 0, -3*self.turn_radius)
+				if courseplay:is_field(fx, fz) or self.grainTankFillLevel >= self.grainTankCapacity then
+					self.lastaiThreshingDirectionX = self.aiThreshingDirectionX
+					self.lastaiThreshingDirectionZ = self.aiThreshingDirectionZ
+					self:stopAIThreshing()
+					self.shortest_dist = nil
+					self.next_targets = {}
+					if lx7 < 0 then
+						courseplay:debug("approach from right",1)
+						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, -(0.34*3*self.turn_radius) , 0, -3*self.turn_radius);
+						courseplay:set_next_target(self, (0.34*2*self.turn_radius) , 0);
+						courseplay:set_next_target(self, 0 , 3);
+					else
+						courseplay:debug("approach from left",1)
+						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, (0.34*3*self.turn_radius) , 0, -3*self.turn_radius);
+						courseplay:set_next_target(self, -(0.34*2*self.turn_radius) , 0);
+						courseplay:set_next_target(self, 0 ,3);
+					end
+					courseplay:start(self)
+					self.sl = 3
+					refSpeed = self.field_speed
+					self:setBeaconLightsVisibility(true);
+					self.recordnumber = 2
+				else 
+					return
+				end
+			else
+				return
+			end
+		else
+			self.sl = 3
+			refSpeed = self.field_speed
+		end
+		if self.ai_state == 5 then
+			local targets = table.getn(self.next_targets)
+			local aligned  = false
+			local ctx7, cty7, ctz7 = getWorldTranslation(self.rootNode);
 			self.info_text = string.format(courseplay:get_locale(self, "CPDriveToWP"), self.target_x, self.target_z)
 			cx = self.target_x
 			cy = self.target_y
 			cz = self.target_z
-			self.sl = 2
+			if CPDebugLevel > 0 then drawDebugLine(cx, cty7+3, cz, 1, 0, 0, ctx7, cty7+3, ctz7, 1, 0, 0); end
+			self.sl = 3
 			refSpeed = self.field_speed
+			self:setBeaconLightsVisibility(true);
 			distance_to_wp = courseplay:distance_to_point(self, cx, y, cz)
-			if table.getn(self.next_targets) == 0 then
-				if distance_to_wp < 10 then
-					refSpeed = self.turn_speed -- 3/3600
-					self.sl = 1
-				end
-			end
-			-- avoid circling
-			local distToChange = 2
+			local distToChange = 4
 			if self.shortest_dist == nil or self.shortest_dist > distance_to_wp then
 				self.shortest_dist = distance_to_wp
 			end
-			if distance_to_wp > self.shortest_dist and distance_to_wp < 10 then
+			if distance_to_wp > self.shortest_dist and distance_to_wp < 6 then
 				distToChange = distance_to_wp + 1
 			end
-			if distance_to_wp < distToChange then
+			if targets == 2 then 
+				self.target_x7 = self.next_targets[2].x
+				self.target_y7 = self.next_targets[2].y
+				self.target_z7 = self.next_targets[2].z
+			elseif targets == 1 then
+				if math.abs(self.lastaiThreshingDirectionZ) > 0.1 then
+					if math.abs(self.target_x7-ctx7)< 3 then
+						aligned = true
+						courseplay:debug("aligned",1)
+					end
+				else
+					if math.abs(self.target_z7-ctz7)< 3 then
+						aligned = true
+						courseplay:debug("aligned",1)
+					end
+				end
+			elseif targets  == 0 then
+				if distance_to_wp < 25 then
+					self.sl = 3
+					refSpeed = self.turn_speed
+				end
+				if distance_to_wp < 15 then
+					self:setIsThreshing(true, true)
+				end
+				if math.abs(self.lastaiThreshingDirectionX) > 0.1 then
+					if math.abs(self.target_x7-ctx7)< 5 then
+						aligned = true
+						courseplay:debug("aligned",1)
+					end
+				else
+					if math.abs(self.target_z7-ctz7)< 5 then
+						aligned = true
+						courseplay:debug("aligned",1)
+					end
+				end
+			end
+			if distance_to_wp < distToChange or aligned then
 				self.shortest_dist = nil
-				if table.getn(self.next_targets) > 0 then
-					--	  	mode = 5
+				if targets  > 0 then
 					self.target_x = self.next_targets[1].x
 					self.target_y = self.next_targets[1].y
 					self.target_z = self.next_targets[1].z
 					table.remove(self.next_targets, 1)
+					self.recordnumber = 2 
 				else
-					allowedToDrive = false
-					if self.next_ai_state ~= 2 then
-						self.calculated_course = false
-					end
-					mode = self.next_ai_state
-					self.next_ai_state = 0
+					self.ai_state = 0
+					self:setBeaconLightsVisibility(false);
+					if self.lastaiThreshingDirectionX ~= nil then
+						self.aiThreshingDirectionX = self.lastaiThreshingDirectionX
+						self.aiThreshingDirectionZ = self.lastaiThreshingDirectionZ
+						courseplay:debug("restored self.aiThreshingDirection",1)
+					end	
+					self:startAIThreshing(true)
+					courseplay:debug("start AITreshing",1)
+					courseplay:debug("fault: "..tostring(math.ceil(math.abs(ctx7-self.target_x7)*100)).." cm X  "..tostring(math.ceil(math.abs(ctz7-self.target_z7)*100)).." cm Z",1)
 				end
 			end
 		end
-		if self.isAIThreshing then
-			local cx, cy, cz = getWorldTranslation(self.rootNode);
-			local oldcx, oldcz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
-			self.dist = courseplay:distance(cx, cz, oldcx, oldcz)
-			if (self.grainTankFillLevel * 100 / self.grainTankCapacity) >= self.required_fill_level_for_drive_on then
-				self.lastaiThreshingDirectionX = self.aiThreshingDirectionX
-				self.lastaiThreshingDirectionZ = self.aiThreshingDirectionZ
-				self:stopAIThreshing()
-				self.abortWork = 3
-				cx, cy, cz = localToWorld(self.rootNode, 0, 0, -25)
-				self.Waypoints[self.maxnumber + 1] = { cx = cx, cz = cz, angle = 0, wait = false, rev = false, crossing = false }
-				cx, cy, cz = localToWorld(self.rootNode, 0, 0, -12)
-				self.Waypoints[self.maxnumber + 2] = { cx = cx, cz = cz, angle = 0, wait = false, rev = false, crossing = false }
-				cx, cy, cz = localToWorld(self.rootNode, 0, 0, 5)
-				self.Waypoints[self.maxnumber + 3] = { cx = cx, cz = cz, angle = 0, wait = false, rev = false, crossing = false }
-				self.maxnumber = table.getn(self.Waypoints)
-				courseplay:start(self)
-				self.recordnumber = 2
-				--if courseplay:calculate_course_to(self, self.Waypoints[2].cx, self.Waypoints[2].cz) then
-				self.ai_state = 5
-				--else -- fallback if no course could be calculated
-				--	self.ai_state = 5
-				--	end
-				self.maxnumber = table.getn(self.Waypoints)
-			else
-				return
-			end
-		end
+
 	end
 	-- unregister at combine, if there is one
 	if self.loaded == true and courseplay_position ~= nil then
@@ -103,12 +152,16 @@ function courseplay:drive(self, dt)
 		last_recordnumber = 1
 	end
 	if self.recordnumber > self.maxnumber then
-		couseplay:debug(string.format("drive %i: %s: self.recordnumber (%s) > self.maxnumber (%s)", debug.getinfo(1).currentline, self.name, tostring(self.recordnumber), tostring(self.maxnumber)), 3); --this should never happen
+		courseplay:debug(string.format("drive %i: %s: self.recordnumber (%s) > self.maxnumber (%s)", debug.getinfo(1).currentline, self.name, tostring(self.recordnumber), tostring(self.maxnumber)), 3); --this should never happen
 		self.recordnumber = self.maxnumber
 	end
-	cx, cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
+	if self.ai_mode ~= 7 then 
+		cx, cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
+	elseif self.ai_mode == 7 and self.ai_state ~=5 then
+		cx, cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
+	end
 	-- offset - endlich lohnt sich der mathe-lk von vor 1000 Jahren ;)
-	if self.ai_mode == 6 then
+	if self.ai_mode == 4 or self.ai_mode == 6 then
 		if self.recordnumber > self.startWork and self.recordnumber < self.stopWork and self.recordnumber > 1 and self.WpOffsetX ~= nil and self.WpOffsetZ ~= nil and (self.WpOffsetX ~= 0 or self.WpOffsetZ ~= 0) then
 			--courseplay:addsign(self, cx, 10, cz)
 			--courseplay:debug(string.format("old WP: %d x %d ", cx, cz ), 2)
@@ -140,7 +193,6 @@ function courseplay:drive(self, dt)
 		--courseplay:debug(string.format("new WP: %d x %d (angle) %d ", cx, cz, angle ), 2)
 		--courseplay:addsign(self, cx, 10, cz)
 	end
-
 	self.dist = courseplay:distance(cx, cz, ctx, ctz)
 	--courseplay:debug(string.format("Tx: %f2 Tz: %f2 WPcx: %f2 WPcz: %f2 dist: %f2 ", ctx, ctz, cx, cz, self.dist ), 2)
 	local fwd = nil
@@ -230,14 +282,9 @@ function courseplay:drive(self, dt)
 		elseif self.ai_mode == 7 then
 			if last_recordnumber == self.startWork then
 				if self.grainTankFillLevel > 0 then
-					--courtesy of Thomas Gärtner
-					self.setPipeState(self, 2)
-					-- TODO: self:setPipeState(2);
+					self:setPipeState(2)
 					self.global_info_text = courseplay:get_locale(self, "CPReachedOverloadPoint") --'hat Überladepunkt erreicht.'
 				else
-					--courtesy of Thomas Gärtner
-					self.setPipeState(self, 1)
-					-- TODO: self:setPipeState(1);
 					self.wait = false
 					self.unloaded = true
 				end
@@ -287,7 +334,7 @@ function courseplay:drive(self, dt)
 		-- combi-mode
 		if (((self.ai_mode == 2 or self.ai_mode == 3) and self.recordnumber < 2) or self.active_combine) and self.tipper_attached then
 			return courseplay:handle_mode2(self, dt)
-		else
+		elseif self.ai_mode ~= 7 then
 			self.ai_state = 0
 		end
 		-- Fertilice loading --only for one Implement !
@@ -299,24 +346,25 @@ function courseplay:drive(self, dt)
 						
 						if not courseplay:is_sowingMachine(activeTool) then --sprayer
 							if fill_level < 100 and activeTool.sprayerFillTriggers ~= nil and table.getn(activeTool.sprayerFillTriggers) > 0 then
-								allowedToDrive = false
+								allowedToDrive = false;
+								
+								--Fuchs Guellefass
+								if activeTool.isFuchsFass and activeTool.setdeckelAnimationisPlaying ~= nil then
+									activeTool:setdeckelAnimationisPlaying(true);
+								end;
+								
 								self.info_text = string.format(courseplay:get_locale(self, "CPloading"), tipper_fill_level, tipper_capacity)
 								local sprayer = activeTool.sprayerFillTriggers[1]
 								activeTool:setIsSprayerFilling(true, sprayer.fillType, sprayer.isSiloTrigger, false)
 								if sprayer.trailerInTrigger == activeTool then ----- feldrant container gülle bomber
 									sprayer.fill = true
-								end
-							end
-
-							if MapBGA ~= nil then
-								for i = 1, table.getn(MapBGA.ModEvent.bunkers) do --support Heady�s BGA
-									if fill_level < 100 and MapBGA.ModEvent.bunkers[i].manure.trailerInTrigger == activeTool then
-										self.info_text = "BGA LADEN"
-										allowedToDrive = false
-										MapBGA.ModEvent.bunkers[i].manure.fill = true
-									end
-								end
-							end
+								end;
+							else
+								--Fuchs Guellefass
+								if activeTool.isFuchsFass and activeTool.setdeckelAnimationisPlaying ~= nil then
+									activeTool:setdeckelAnimationisPlaying(false);
+								end;
+							end;
 						end;
 						
 						if courseplay:is_sowingMachine(activeTool) then --sowing machine
@@ -328,6 +376,7 @@ function courseplay:drive(self, dt)
 								allowedToDrive = true;
 							end;
 						end;
+						
 					end
 				end
 			end
@@ -341,34 +390,18 @@ function courseplay:drive(self, dt)
 			allowedToDrive = false
 		end
 
-
 		if self.ai_mode == 7 then
-			if self.recordnumber == 1 then --self.maxnumber then
-				self.recordnumber = self.maxnumber
-				allowedToDrive = false
-				self.motor:setSpeedLevel(0, false);
-				self.motor.maxRpmOverride = nil;
-
-				if g_server ~= nil then
-					AIVehicleUtil.driveInDirection(self, 0, self.steering_angle, 0, 0, 28, false, moveForwards, 0, 1)
-				end
-				self:startAIThreshing(true)
-				self.sl = 1
-				self:setBeaconLightsVisibility(false);
-				if self.lastaiThreshingDirectionX ~= nil then
-					self.aiThreshingDirectionX = self.lastaiThreshingDirectionX
-					self.aiThreshingDirectionZ = self.lastaiThreshingDirectionZ
-				end
-				if self.abortWork ~= nil then
-					for i = 0, (self.abortWork) do
-						table.remove(self.Waypoints, self.maxnumber - i)
-					end
-					self.maxnumber = table.getn(self.Waypoints)
-					self.orig_maxnumber = self.maxnumber
-					self.recordnumber = self.maxnumber
-					self.abortWork = nil
-				end
+			if self.recordnumber == self.maxnumber then
+				self.ai_state = 5
+				self.recordnumber = 2				
+				courseplay:debug("347:  ai_state = 5",1) 
 			end
+			local pipeState = self:getCombineTrailerInRangePipeState();
+			if pipeState > 0 then
+				self:setPipeState(pipeState);
+			else
+				self:setPipeState(1);
+			end;
 		end
 		if self.ai_mode == 8 then
 			if self.tipper_attached and self.startWork ~= nil and self.stopWork ~= nil then
@@ -490,16 +523,20 @@ function courseplay:drive(self, dt)
 		slowDownWP = self.Waypoints[self.recordnumber].wait
 		slowDownRev = self.Waypoints[self.recordnumber].rev
 	end
-
-	if (slowDownWP and not workArea) or slowDownRev or self.max_speed_level == 1 or slowStartEnd or slowEnd then
+	if self.ai_mode ~= 7 then
+		if ((slowDownWP and not workArea) or slowDownRev or self.max_speed_level == 1 or slowStartEnd or slowEnd) then
+			self.sl = 1
+			refSpeed = self.turn_speed
+		elseif workSpeed or slowStart_lvl2 then
+			self.sl = 2
+			refSpeed = self.field_speed
+		else
+			self.sl = 3
+			refSpeed = self.max_speed
+		end
+	elseif slowDownWP then
 		self.sl = 1
 		refSpeed = self.turn_speed
-	elseif (workSpeed and self.ai_mode ~= 7) or slowStart_lvl2 then
-		self.sl = 2
-		refSpeed = self.field_speed
-	else
-		self.sl = 3
-		refSpeed = self.max_speed
 	end
 
 	
@@ -604,11 +641,8 @@ function courseplay:drive(self, dt)
 			distToChange = 2
 		elseif self.Waypoints[self.recordnumber].rev then
 			distToChange = 1;
-		elseif self.ai_mode == 4 or self.ai_mode == 6 then
+		elseif self.ai_mode == 4 or self.ai_mode == 6 or self.ai_mode == 7 then
 			distToChange = 5;
-		elseif self.ai_mode == 7 and (self.recordnumber > (self.maxnumber-3)) then
-		    distToChange = 2
-
 		else
 			distToChange = 2.85; --orig: 5
 		end;
@@ -642,7 +676,10 @@ function courseplay:drive(self, dt)
 			if not self.wait then
 				self.wait = true
 			end
-			self.recordnumber = self.recordnumber + 1
+			if self.ai_mode == 7 and self.ai_state == 5 then
+			else
+				self.recordnumber = self.recordnumber + 1
+			end
 			-- ignore reverse Waypoints for mode 6
 			local in_work_area = false
 			if self.startWork ~= nil and self.stopWork ~= nil and self.recordnumber >= self.startWork and self.recordnumber <= self.stopWork then

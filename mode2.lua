@@ -86,9 +86,9 @@ function courseplay:handle_mode2(self, dt)
 			--courseplay:unregister_at_combine(self, self.active_combine)  
 			if self.ai_state ~= 5 then
 				if self.combine_offset > 0 then
-					self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, self.turn_radius, 0, self.turn_radius)
+					self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 3, 0, -self.turn_radius)
 				else
-					self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, -self.turn_radius, 0, self.turn_radius)
+					self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, -3, 0, -self.turn_radius)
 				end
 				self.ai_state = 5
 				self.next_ai_state = 81
@@ -115,8 +115,6 @@ function courseplay:handle_mode2(self, dt)
 			self.ai_state = 6
 			courseplay:unload_combine(self, dt)
 		end
-	elseif self.ai_mode == 5 and self.next_ai_state == 81 then
-		courseplay:unload_combine(self, dt)
 	else -- NO active combine
 		-- STOP!!
 		if g_server ~= nil then
@@ -212,7 +210,6 @@ function courseplay:unload_combine(self, dt)
 	local combine_fill_level, combine_turning = nil, false
 	local refSpeed = nil
 	local handleTurn = false
-	local cornChopper = false
 	local isHarvester = false
 	local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
 	local tipper_percentage = tipper_fill_level / tipper_capacity * 100
@@ -253,7 +250,7 @@ function courseplay:unload_combine(self, dt)
 		combine_fill_level = combine.grainTankFillLevel * 100 / combine.grainTankCapacity
 	else -- combine is a chopper / has no tank
 		combine_fill_level = 51
-		cornChopper = true
+		combine.isCornchopper = true;
 	end
 
 	
@@ -321,7 +318,7 @@ function courseplay:unload_combine(self, dt)
 		-- near point
 		if dod < 3 then -- change to mode 4 == drive behind combine or cornChopper
 
-			if cornChopper then -- decide on which side to drive based on ai-combine
+			if combine.isCornchopper then -- decide on which side to drive based on ai-combine
 				local leftFruit, rightFruit = courseplay:side_to_drive(self, combine, 10);
 				if combine.forced_side == nil then
 					if leftFruit > rightFruit then
@@ -356,7 +353,7 @@ function courseplay:unload_combine(self, dt)
 
 		local tX, tY, tZ = nil, nil, nil
 
-		if cornChopper then
+		if combine.isCornchopper then
 			tX, tY, tZ = localToWorld(combine.rootNode, self.combine_offset * 0.8, 0, -5) -- offste *0.6     !????????????
 		else			
 			tX, tY, tZ = localToWorld(combine.rootNode, self.combine_offset, 0, -5)
@@ -420,10 +417,11 @@ function courseplay:unload_combine(self, dt)
 			if self.combine_offset > 0 then  --I'm left
 				if leftFruit < rightFruit then 
 					courseplay:debug("I'm left, fruit is right",1)
-					local fx,fy,fz = localToWorld(self.rootNode, 0, 0, 3)
+					local fx,fy,fz = localToWorld(self.rootNode, 0, 0, 8)
 					if courseplay:is_field(fx, fz) then
 						courseplay:debug("target is on field",1)
-						mode = 1
+						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 0 , 0, 5);	
+						mode = 5
 					else
 						courseplay:debug("target is not on field",1)
 						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 2 , 0, -self.turn_radius);
@@ -506,118 +504,18 @@ function courseplay:unload_combine(self, dt)
 			end
 		end
 
+		--CALCULATE OFFSET
+		courseplay:calculateCombineOffset(self, combine);
 
-		local current_offset = self.combine_offset
-		local current_offset_positive = math.abs(self.combine_offset)
-		
-		--TODO: move all that shit over to combines.lua, or better yet base.lua, so it doesn't have to be calculated constantly
-		--TODO: always use combineToPrnX, no matter what?
-		local prnX, prnY, prnZ = getTranslation(combine.pipeRaycastNode)
-		local cwX, cwY, cwZ = getWorldTranslation(combine.rootNode)
-		local prnwX, prnwY, prnwZ = getWorldTranslation(combine.pipeRaycastNode)
-		local combineToPrnX, combineToPrnY, combineToPrnZ = worldToLocal(combine.rootNode, prnwX, prnwY, prnwZ)
-		--NOTE by Jakob: after a shitload of testing and failing, it seems combineToPrnX is what we're looking for (instead of prnToCombineX). Always results in correct x-distance from combine.rn to prn.
-		--TODO: support for Grimme SE75-55
-		
+		currentX, currentY, currentZ = localToWorld(combine.rootNode, self.combine_offset, 0, trailer_offset + 5)
 
-		
-		if not cornChopper and self.auto_combine_offset then
-			--courseplay:debug(string.format("%s(%i): %s: cwX=%f, cwZ=%f, prnwX=%f, prnwZ=%f, combineToPrnX=%f, combineToPrnZ=%f", curFile, debug.getinfo(1).currentline, combine.name, cwX, cwZ, prnwX, prnwZ, combineToPrnX, combineToPrnZ), 2)
-		end
-
-		--combine // combine_offset is in auto mode
-		if not cornChopper and self.auto_combine_offset and combine.currentPipeState == 2 then
-			if getParent(combine.pipeRaycastNode) == combine.rootNode then -- pipeRaycastNode is direct child of combine.root
-				--safety distance so the trailer doesn't crash into the pipe (sidearm)
-				local additionalSafetyDistance = 0
-				if combine.name == "Grimme Maxtron 620" then
-					additionalSafetyDistance = 0.9 --0.8
-				elseif combine.name == "Grimme Tectron 415" then
-					additionalSafetyDistance = -0.5
-				end
-
-				current_offset = prnX + additionalSafetyDistance
-				--courseplay:debug(string.format("%s(%i): %s @ %s: root > pipeRaycastNode // current_offset = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, current_offset), 2)
-			elseif getParent(getParent(combine.pipeRaycastNode)) == combine.rootNode then --pipeRaycastNode is direct child of pipe is direct child of combine.root
-				local pipeX, pipeY, pipeZ = getTranslation(getParent(combine.pipeRaycastNode))
-				current_offset = pipeX - prnZ
-				
-				if prnZ == 0 or combine.name == "Grimme Rootster 604" then
-					current_offset = pipeX - prnY
-				end
-				--courseplay:debug(string.format("%s(%i): %s @ %s: root > pipe > pipeRaycastNode // current_offset = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, current_offset), 2)
-			elseif combine.pipeRaycastNode ~= nil then --BACKUP pipeRaycastNode isn't direct child of pipe
-				current_offset = combineToPrnX + 0.5
-				--courseplay:debug(string.format("%s(%i): %s @ %s: combineToPrnX // current_offset = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, current_offset), 2)
-			elseif combine.lmX ~= nil then --user leftMarker
-				current_offset = combine.lmX + 2.5;
-			else --if all else fails
-				current_offset = 8;
-			end
-
-		--combine // combine_offset is in manual mode
-		elseif not cornChopper and not self.auto_combine_offset then
-			courseplay:debug(string.format("%s(%i): %s @ %s: combineToPrnX = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, combineToPrnX), 2)
-			if combineToPrnX > 0 then
-				current_offset = current_offset_positive
-			elseif combineToPrnX < 0 then -- pipe on right side
-				current_offset = current_offset_positive * -1
-				courseplay:debug(string.format("%s(%i): %s @ %s: pipe on right side / current_offset = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, current_offset), 2)
-			end
-		
-		--chopper // combine_offset is in auto mode
-		elseif cornChopper and self.auto_combine_offset then
-			if combine.lmX ~= nil then
-				current_offset = combine.lmX + 2.5
-				--courseplay:debug(string.format("%s(%i): %s @ %s: using leftMarker, current_offset = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, current_offset), 2)
-			else
-				current_offset = 8
-				courseplay:debug(string.format("%s(%i): %s @ %s: using default current_offset = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, current_offset), 2)
-			end
-
-			if self.sideToDrive == nil then
-				local left_fruit, right_fruit = courseplay:side_to_drive(self, combine, -10);
-				if left_fruit < right_fruit then
-					self.sideToDrive = "left";
-				elseif right_fruit < left_fruit then
-					self.sideToDrive = "right";
-				end
-				--courseplay:debug(string.format("%s(%i): %s @ %s: sideToDrive first runthrough=%s => current_offset=%f", curFile, debug.getinfo(1).currentline, self.name, combine.name, tostring(self.sideToDrive), current_offset), 2)
-			end;
-				
-			if self.sideToDrive	~= nil then
-				if self.sideToDrive == "left" then
-					current_offset = math.abs(current_offset);
-				elseif self.sideToDrive == "right" then
-					current_offset = math.abs(current_offset) * -1;
-				end
-			end;
-		end
-		
-		--cornChopper forced side offset
-		if cornChopper and combine.forced_side ~= nil then
-			if combine.forced_side == "left" then
-				current_offset = math.abs(current_offset);
-			elseif combine.forced_side == "right" then
-				current_offset = math.abs(current_offset) * -1;
-			end
-			courseplay:debug(string.format("%s(%i): %s @ %s: forced_side=%s => current_offset=%f", curFile, debug.getinfo(1).currentline, self.name, combine.name, combine.forced_side, current_offset), 2)
-		end
-
-		--refresh for display in HUD and other calculations
-		self.combine_offset = current_offset;
-		
-		
-
-		currentX, currentY, currentZ = localToWorld(combine.rootNode, current_offset, 0, trailer_offset + 5)
-
-		local ttX, ttY, ttZ = localToWorld(combine.rootNode, current_offset, 0, trailer_offset)
+		local ttX, ttY, ttZ = localToWorld(combine.rootNode, self.combine_offset, 0, trailer_offset)
 
 		if combine.attachedImplements ~= nil then
 			for k, i in pairs(combine.attachedImplements) do
 				local implement = i.object;
 				if implement.haeckseldolly == true then
-					ttX, ttY, ttZ = localToWorld(implement.rootNode, current_offset, 0, trailer_offset)
+					ttX, ttY, ttZ = localToWorld(implement.rootNode, self.combine_offset, 0, trailer_offset)
 				end
 			end
 		end
@@ -629,10 +527,10 @@ function courseplay:unload_combine(self, dt)
 		end
 
 		-- combine is not moving and trailer is under pipe
-		if not cornChopper and combine.movingDirection == 0 and (lz <= 1 or lz < -0.1 * trailer_offset) then
+		if not combine.isCornchopper and combine.movingDirection == 0 and (lz <= 1 or lz < -0.1 * trailer_offset) then
 			self.info_text = courseplay:get_locale(self, "CPCombineWantsMeToStop") -- "Drescher sagt ich soll anhalten."
 			allowedToDrive = false
-		elseif cornChopper then
+		elseif combine.isCornchopper then
 			if combine.movingDirection == 0 and (lz == -1 or dod == -1)and self.isChopperTurning == false then
 				allowedToDrive = false
 				self.info_text = courseplay:get_locale(self, "CPCombineWantsMeToStop") -- "Drescher sagt ich soll anhalten."
@@ -646,22 +544,18 @@ function courseplay:unload_combine(self, dt)
 
 		-- refspeed depends on the distance to the combine
 		local combine_speed = combine.lastSpeed
-		if cornChopper then
+		if combine.isCornchopper then
 			self.sl = 2
 			if lz > 20 then
 				refSpeed = self.field_speed
-				--print("refSpeed = self.field_speed")
 			elseif lz > 4 and (combine_speed*3600) > 5 then
 				refSpeed = combine_speed *1.5
-				--print("refSpeed = combine_speed *1.5")
 			elseif lz > 10 then
 				refSpeed = self.turn_speed
-				--print("refSpeed = self.turn_speed")
 			elseif lz < -1 then
 				refSpeed = combine_speed / 2
 			else
 				refSpeed = combine_speed
-				--print("refSpeed = combine_speed")
 			end
 			if (combine.turnStage ~= 0 and lz < 20) then
 				refSpeed = 1 / 3600
@@ -694,15 +588,12 @@ function courseplay:unload_combine(self, dt)
 		
 		end
 
-		--print(tostring(lz))	
-		--print("refSpeed:  "..tostring(refSpeed*3600))
-		--print("end")
-		--courseplay:debug("combine.sentPipeIsUnloading: "..tostring(combine.sentPipeIsUnloading).." refSpeed:  "..tostring(refSpeed*3600).." combine_speed:  "..tostring(combine_speed*3600),3)  
+		courseplay:debug("combine.sentPipeIsUnloading: "..tostring(combine.sentPipeIsUnloading).." refSpeed:  "..tostring(refSpeed*3600).." combine_speed:  "..tostring(combine_speed*3600),3)  
 
 		---------------------------------------------------------------------
 	end -- end mode 3 or 4
 
-	if combine_turning and not cornChopper and combine_fill_level > 0 then
+	if combine_turning and not combine.isCornchopper and combine_fill_level > 0 then
 		combine.waitForTurnTime = combine.time + 100
 	end
 
@@ -710,7 +601,7 @@ function courseplay:unload_combine(self, dt)
 		if tipper_percentage >= self.required_fill_level_for_drive_on then
 			self.loaded = true
 		elseif mode == 3 or mode == 4 then
-			if cornChopper then
+			if combine.isCornchopper then
 				self.leftFruit, self.rightFruit = courseplay:side_to_drive(self, combine, -10)
 
 				--new chopper turn maneuver by Thomas Gärtner  --!!!
@@ -1074,3 +965,98 @@ function courseplay:calculate_course_to(self, target_x, target_z)
 	end
 	return true
 end
+
+function courseplay:calculateCombineOffset(self, combine)
+	local curFile = "mode2.lua";
+	local offs = self.combine_offset
+	local offsPos = math.abs(self.combine_offset)
+	
+	--TODO: move all that shit over to combines.lua, or better yet base.lua, so it doesn't have to be calculated constantly
+	local prnX, prnY, prnZ = getTranslation(combine.pipeRaycastNode)
+	local prnwX, prnwY, prnwZ = getWorldTranslation(combine.pipeRaycastNode)
+	local combineToPrnX, combineToPrnY, combineToPrnZ = worldToLocal(combine.rootNode, prnwX, prnwY, prnwZ)
+	--NOTE by Jakob: after a shitload of testing and failing, it seems combineToPrnX is what we're looking for (instead of prnToCombineX). Always results in correct x-distance from combine.rn to prn.
+	
+	--special tools, special cases
+	if combine.name == "Grimme Rootster 604" then
+		offs = -4.3;
+	elseif combine.name == "Grimme SE 75-55" then
+		offs =  4.3;
+	
+	--combine // combine_offset is in auto mode
+	elseif not combine.isCornchopper and self.auto_combine_offset and combine.currentPipeState == 2 then --pipe is open
+		if getParent(combine.pipeRaycastNode) == combine.rootNode then -- pipeRaycastNode is direct child of combine.root
+			--safety distance so the trailer doesn't crash into the pipe (sidearm)
+			local additionalSafetyDistance = 0;
+			if combine.name == "Grimme Maxtron 620" then
+				additionalSafetyDistance = 0.9;
+			elseif combine.name == "Grimme Tectron 415" then
+				additionalSafetyDistance = -0.5;
+			end;
+
+			offs = prnX + additionalSafetyDistance;
+			--courseplay:debug(string.format("%s(%i): %s @ %s: root > pipeRaycastNode // offs = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, offs), 2)
+		elseif getParent(getParent(combine.pipeRaycastNode)) == combine.rootNode then --pipeRaycastNode is direct child of pipe is direct child of combine.root
+			local pipeX, pipeY, pipeZ = getTranslation(getParent(combine.pipeRaycastNode))
+			offs = pipeX - prnZ;
+			
+			if prnZ == 0 or combine.name == "Grimme Rootster 604" then
+				offs = pipeX - prnY;
+			end;
+			--courseplay:debug(string.format("%s(%i): %s @ %s: root > pipe > pipeRaycastNode // offs = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, offs), 2)
+		elseif combine.pipeRaycastNode ~= nil then --BACKUP pipeRaycastNode isn't direct child of pipe
+			offs = combineToPrnX + 0.5;
+			--courseplay:debug(string.format("%s(%i): %s @ %s: combineToPrnX // offs = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, offs), 2)
+		elseif combine.cp.lmX ~= nil then --user leftMarker
+			offs = combine.cp.lmX + 2.5;
+		else --if all else fails
+			offs = 8;
+		end;
+
+	--combine // combine_offset is in manual mode
+	elseif not combine.isCornchopper and not self.auto_combine_offset then
+		--courseplay:debug(string.format("%s(%i): %s @ %s: combineToPrnX = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, combineToPrnX), 2);
+		offs = offsPos * combine.cp.pipeSide;
+	
+	--chopper // combine_offset is in auto mode
+	elseif combine.isCornchopper and self.auto_combine_offset then
+		if combine.cp.lmX ~= nil then
+			offs = combine.cp.lmX + 2.5;
+			--courseplay:debug(string.format("%s(%i): %s @ %s: using leftMarker, offs = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, offs), 2);
+		else
+			offs = 8;
+			--courseplay:debug(string.format("%s(%i): %s @ %s: using default offs = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, offs), 2);
+		end;
+
+		if self.sideToDrive == nil then
+			local left_fruit, right_fruit = courseplay:side_to_drive(self, combine, -10);
+			if left_fruit < right_fruit then
+				self.sideToDrive = "left";
+			elseif right_fruit < left_fruit then
+				self.sideToDrive = "right";
+			end;
+			--courseplay:debug(string.format("%s(%i): %s @ %s: sideToDrive first runthrough=%s => offs=%f", curFile, debug.getinfo(1).currentline, self.name, combine.name, tostring(self.sideToDrive), offs), 2)
+		end;
+			
+		if self.sideToDrive	~= nil then
+			if self.sideToDrive == "left" then
+				offs = math.abs(offs);
+			elseif self.sideToDrive == "right" then
+				offs = math.abs(offs) * -1;
+			end;
+		end;
+	end;
+	
+	--cornChopper forced side offset
+	if combine.isCornchopper and combine.forced_side ~= nil then
+		if combine.forced_side == "left" then
+			offs = math.abs(offs);
+		elseif combine.forced_side == "right" then
+			offs = math.abs(offs) * -1;
+		end
+		courseplay:debug(string.format("%s(%i): %s @ %s: forced_side=%s => offs=%f", curFile, debug.getinfo(1).currentline, self.name, combine.name, combine.forced_side, offs), 2)
+	end
+
+	--refresh for display in HUD and other calculations
+	self.combine_offset = offs;
+end;
