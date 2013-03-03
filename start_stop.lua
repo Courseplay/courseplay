@@ -12,7 +12,7 @@ function courseplay:start(self)
 	
 	 --Manual ignition
     if self.ignitionKey ~= nil and self.allowedIgnition ~= nil and self.invokeIgnition ~= nil and not self.isMotorStarted then
-        --print(string.format("%s: has manualIgnition, isMotorStarted==%s, ignitionKey=%s, allowedIgnition=%s, starting motor [self:invokeIgnition(true)]", self.name, tostring(self.isMotorStarted), tostring(self.ignitionKey), tostring(self.allowedIgnition)));
+        courseplay:debug(string.format("%s: has manualIgnition, isMotorStarted==%s, ignitionKey=%s, allowedIgnition=%s, starting motor [self:invokeIgnition(true)]", self.name, tostring(self.isMotorStarted), tostring(self.ignitionKey), tostring(self.allowedIgnition)),3);
 		self.ignitionKey = true;
         self.allowedIgnition = true;
     end;
@@ -94,7 +94,6 @@ function courseplay:start(self)
 			self.startWork = 1
 			self.stopWork = self.maxnumber
 		end
-		--  print(string.format("StartWork: %d StopWork: %d",self.startWork,self.stopWork))
 		if self.recordnumber > self.maxnumber then
 			self.recordnumber = 1
 		end

@@ -84,10 +84,10 @@ function courseplay:update_tools(self, tractor_or_implement)
 		local vehToImpX, vehToImpY, vehToImpZ = worldToLocal(self.rootNode, impXw, impYw, impZw);
 		if vehToImpZ > 0 then --implement in front of vehicle
 			object.cp.positionToVehicle = 1;
-			--print(string.format("Implement %s position = %d (in front) (vehToImpZ = %f)", object.name, object.cp.positionToVehicle, vehToImpZ));
+			courseplay:debug(string.format("Implement %s position = %d (in front) (vehToImpZ = %f)", object.name, object.cp.positionToVehicle, vehToImpZ),3);
 		else
 			object.cp.positionToVehicle = -1;
-			--print(string.format("Implement %s position = %d (in back) (vehToImpZ = %f)", object.name, object.cp.positionToVehicle, vehToImpZ));
+			courseplay:debug(string.format("Implement %s position = %d (in back) (vehToImpZ = %f)", object.name, object.cp.positionToVehicle, vehToImpZ),3);
 		end;
 		--END in front or in the back
 
@@ -339,16 +339,13 @@ function courseplay:unload_tippers(self)
 						local filling = self.currentTipTrigger.bunkerSilo.movingPlanes[k].fillLevel
 						if k <= math.ceil(silos * 0.3) then
 							self.filling1 =	self.filling1 + filling
-							--print(tostring(k)..":1:"..tostring(self.filling1))
 						elseif k <= math.ceil(silos * 0.6) then
 							self.filling2 =	self.filling2 + filling
-							--print(tostring(k)..":2:"..tostring(self.filling2))
 						elseif k <= silos then 
 							self.filling3 =	self.filling3 + filling
-							--print(tostring(k)..":3:"..tostring(self.filling3))
 						end
 					end;
-					print(string.format("bga section 1: %f, bga section 3: %f, bga section 3: %f", self.filling1, self.filling2, self.filling3));
+					courseplay:debug(string.format("bga section 1: %f, bga section 3: %f, bga section 3: %f", self.filling1, self.filling2, self.filling3),1);
 					
 					if self.filling1 <= self.filling2 and self.filling1 < self.filling3 then
 						self.tipLocation = 1
@@ -359,7 +356,7 @@ function courseplay:unload_tippers(self)
 					else
 						self.tipLocation = 1
 					end
-					print(string.format("BGA tipLocation = %d", self.tipLocation));
+					courseplay:debug(string.format("BGA tipLocation = %d", self.tipLocation)1);
 					self.runonce = 1
 				end
 				if self.tipLocation == 1 then

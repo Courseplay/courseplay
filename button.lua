@@ -38,20 +38,16 @@ function courseplay:render_buttons(self, page)
 				local whatObj;
 				for i=1,#what do
 					local key = what[i]; 
-					--print(string.format("button %s: what[%d]=%s", button.function_to_call, i, tostring(what[i])));
 					if i == 1 then
 						whatObj = self[key];
-						--print(string.format("whatObj = self[%s]", tostring(key)));
 					end;
 					if i > 1 then
 						whatObj = whatObj[key];
-						--print(string.format("whatObj = prevWhatObj[%s]", tostring(key)));
 					end;
 				end;
 				
 				button.show = tostring(whatObj) == button.showIs;
 				
-				--print(string.format("%s = %s", button.showWhat, tostring(whatObj)));
 			end;
 			
 			if (button.show ~= nil and button.show) or button.show == nil then

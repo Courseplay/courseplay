@@ -548,18 +548,14 @@ function courseplay:unload_combine(self, dt)
 			self.sl = 2
 			if lz > 20 then
 				refSpeed = self.field_speed
-				--print("refSpeed = self.field_speed")
 			elseif lz > 4 and (combine_speed*3600) > 5 then
 				refSpeed = combine_speed *1.5
-				--print("refSpeed = combine_speed *1.5")
 			elseif lz > 10 then
 				refSpeed = self.turn_speed
-				--print("refSpeed = self.turn_speed")
 			elseif lz < -1 then
 				refSpeed = combine_speed / 2
 			else
 				refSpeed = combine_speed
-				--print("refSpeed = combine_speed")
 			end
 			if (combine.turnStage ~= 0 and lz < 20) then
 				refSpeed = 1 / 3600
@@ -592,10 +588,7 @@ function courseplay:unload_combine(self, dt)
 		
 		end
 
-		--print(tostring(lz))	
-		--print("refSpeed:  "..tostring(refSpeed*3600))
-		--print("end")
-		--courseplay:debug("combine.sentPipeIsUnloading: "..tostring(combine.sentPipeIsUnloading).." refSpeed:  "..tostring(refSpeed*3600).." combine_speed:  "..tostring(combine_speed*3600),3)  
+		courseplay:debug("combine.sentPipeIsUnloading: "..tostring(combine.sentPipeIsUnloading).." refSpeed:  "..tostring(refSpeed*3600).." combine_speed:  "..tostring(combine_speed*3600),3)  
 
 		---------------------------------------------------------------------
 	end -- end mode 3 or 4

@@ -35,26 +35,6 @@ function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill
 	local turnEnd = prevPoint.turnEnd;
 	local raiseTool = prevPoint.raiseTool;
 
-	--[[
-	TODO: stop while lowering/raising
-		hasGroundContact ?
-		Attachable:onSetLowered(lowered) (attachable.lua, L382)
-		workTool.attacherVehicle.loweringDone (workTool.attacherVehicle = self)
-		print(string.format("self.loweringDone = %s, attacherVehicle.loweringDone = %s", tostring(self.loweringDone), tostring(workTool.attacherVehicle.loweringDone)));
-		print(string.format("upperDistanceToGround = %s, lowerDistanceToGround = %s", tostring(workTool.upperDistanceToGround), tostring(workTool.lowerDistanceToGround)));
-		print(string.format("lowerAnimation = %s, self:getIsAnimationPlaying(lowerAnimation)=%s, workTool:getIsAnimationPlaying(lowerAnimation)=%s", tostring(workTool.lowerAnimation), tostring(self:getIsAnimationPlaying(lowerAnimation)), tostring(workTool:getIsAnimationPlaying(lowerAnimation))));
-		self:getIsAnimationPlaying(name) (tractor attacherJoint)
-		self:setAIImplementsMoveDown [AITractor.lua, 794] --> benutzt Vehicle:setJointMoveDown() [Vehicle.lua, 2840] --> benutzt implement.object:onSetLowered(moveDown) [Attachable.lua, 382]
-		workTool:isLowered()
-		
-		-----from Vehicle:isLowered(default) [Vehicle.lua, 2827]
-		local implement = self.attacherVehicle:getImplementByObject(self);
-		local jointDesc = self.attacherVehicle.attacherJoints[implement.jointDescIndex];
-		jointDesc.allowsLowering / jointDesc.moveDown
-	]]
-	
-	--TODO: point in field? (rear of implement (posToVeh)) - if not then raise tool
-	
 	-- stop while folding
 	if courseplay:isFoldable(workTool) then
 		if courseplay:isFolding(workTool) then --TODO: doesn't seem to work perfectly w/ Amazone Condor
@@ -96,7 +76,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill
 
 				--lower/raise
 				if workTool.needsLowering and workTool.aiNeedsLowering then
-					--print(string.format("WP%d: isLowered() = %s, hasGroundContact = %s", self.recordnumber, tostring(workTool:isLowered()), tostring(workTool.hasGroundContact)));
+					courseplay:debug(string.format("WP%d: isLowered() = %s, hasGroundContact = %s", self.recordnumber, tostring(workTool:isLowered()), tostring(workTool.hasGroundContact)),3);
 					if turnEnd ~= nil and turnStart ~= nil then
 						if not workTool:isLowered() and turnEnd == false and turnStart == false then
 							self:setAIImplementsMoveDown(true);
