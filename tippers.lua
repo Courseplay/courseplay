@@ -356,7 +356,7 @@ function courseplay:unload_tippers(self)
 					else
 						self.tipLocation = 1
 					end
-					courseplay:debug(string.format("BGA tipLocation = %d", self.tipLocation)1);
+					courseplay:debug(string.format("BGA tipLocation = %d", self.tipLocation),1);
 					self.runonce = 1
 				end
 				if self.tipLocation == 1 then
