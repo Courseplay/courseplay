@@ -392,9 +392,14 @@ function courseplay:drive(self, dt)
 
 		if self.ai_mode == 7 then
 			if self.recordnumber == self.maxnumber then
-				self.ai_state = 5
-				self.recordnumber = 2				
-				courseplay:debug("347:  ai_state = 5",1) 
+				if self.target_x ~= nil then
+	 				self.ai_state = 5
+					self.recordnumber = 2				
+					courseplay:debug("347:  ai_state = 5",1)
+				else
+					allowedToDrive = false
+					--TODO local text no aithreshing
+				end
 			end
 			local pipeState = self:getCombineTrailerInRangePipeState();
 			if pipeState > 0 then
