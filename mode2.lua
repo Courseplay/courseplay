@@ -85,10 +85,20 @@ function courseplay:handle_mode2(self, dt)
 			self.currentTrailerToFill = nil
 			--courseplay:unregister_at_combine(self, self.active_combine)  
 			if self.ai_state ~= 5 then
-				if self.combine_offset > 0 then
-					self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 3, 0, -self.turn_radius)
-				else
-					self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, -3, 0, -self.turn_radius)
+				cx2, cz2 = self.Waypoints[1].cx, self.Waypoints[1].cz
+				local lx2, lz2 = AIVehicleUtil.getDriveDirection(self.rootNode, cx2, cty2, cz2);
+				if lz2 > 0 or (self.active_combine ~= nil and self.active_combine.isCornchopper) then
+					if self.combine_offset > 0 then
+						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, self.turn_radius, 0, self.turn_radius)
+					else
+						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, -self.turn_radius, 0, self.turn_radius)
+					end
+				elseif self.active_combine ~= nil and not self.active_combine.isCornchopper then
+					if self.combine_offset > 0 then
+						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 3, 0, -self.turn_radius)
+					else
+						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, -3, 0, -self.turn_radius)
+					end
 				end
 				self.ai_state = 5
 				self.next_ai_state = 81
