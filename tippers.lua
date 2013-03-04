@@ -84,10 +84,10 @@ function courseplay:update_tools(self, tractor_or_implement)
 		local vehToImpX, vehToImpY, vehToImpZ = worldToLocal(self.rootNode, impXw, impYw, impZw);
 		if vehToImpZ > 0 then --implement in front of vehicle
 			object.cp.positionToVehicle = 1;
-			courseplay:debug(string.format("Implement %s position = %s (in front) (vehToImpZ = %s)", tostring(object.)name, tostring(object.cp.positionToVehicle), tostring(vehToImpZ)), 3);
+			courseplay:debug(string.format("Implement %s position = %s (in front) (vehToImpZ = %s)", tostring(object.name), tostring(object.cp.positionToVehicle), tostring(vehToImpZ)), 3);
 		else
 			object.cp.positionToVehicle = -1;
-			courseplay:debug(string.format("Implement %s position = %s (in back) (vehToImpZ = %s)", tostring(object.)name, tostring(object.cp.positionToVehicle), tostring(vehToImpZ)), 3);
+			courseplay:debug(string.format("Implement %s position = %s (in back) (vehToImpZ = %s)", tostring(object.name), tostring(object.cp.positionToVehicle), tostring(vehToImpZ)), 3);
 		end;
 		--END in front or in the back
 
