@@ -516,16 +516,16 @@ function courseplay:unload_combine(self, dt)
 
 		--CALCULATE OFFSET
 		courseplay:calculateCombineOffset(self, combine);
-
 		currentX, currentY, currentZ = localToWorld(combine.rootNode, self.combine_offset, 0, trailer_offset + 5)
-
-		local ttX, ttY, ttZ = localToWorld(combine.rootNode, self.combine_offset, 0, trailer_offset)
+		local cwX, cwY, cwZ = getWorldTranslation(combine.pipeRaycastNode); 
+		local prnToCombineX, prnToCombineY, prnToCombineZ = worldToLocal(combine.rootNode, cwX, cwY, cwZ); 
+           	local ttX, _, ttZ = localToWorld(combine.rootNode, self.combine_offset, 0, trailer_offset + prnToCombineZ)
 
 		if combine.attachedImplements ~= nil then
 			for k, i in pairs(combine.attachedImplements) do
 				local implement = i.object;
 				if implement.haeckseldolly == true then
-					ttX, ttY, ttZ = localToWorld(implement.rootNode, self.combine_offset, 0, trailer_offset)
+					ttX, _, ttZ = localToWorld(implement.rootNode, self.combine_offset, 0, trailer_offset)
 				end
 			end
 		end
