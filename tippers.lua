@@ -45,7 +45,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 				table.insert(self.tippers, object)
 			end
 		elseif self.ai_mode == 4 then -- Fertilizer
-			if SpecializationUtil.hasSpecialization(Sprayer, object.specializations) or courseplay:is_sowingMachine(object) or object.name == "AmazoneUX5200" then
+			if SpecializationUtil.hasSpecialization(Sprayer, object.specializations) or SpecializationUtil.hasSpecialization(sprayer, object.specializations) or courseplay:is_sowingMachine(object) then
 				tipper_attached = true
 				table.insert(self.tippers, object)
 			end
@@ -84,10 +84,10 @@ function courseplay:update_tools(self, tractor_or_implement)
 		local vehToImpX, vehToImpY, vehToImpZ = worldToLocal(self.rootNode, impXw, impYw, impZw);
 		if vehToImpZ > 0 then --implement in front of vehicle
 			object.cp.positionToVehicle = 1;
-			courseplay:debug(string.format("Implement %s position = %d (in front) (vehToImpZ = %f)", object.name, object.cp.positionToVehicle, vehToImpZ),3);
+			courseplay:debug(string.format("Implement %s position = %s (in front) (vehToImpZ = %s)", tostring(object.)name, tostring(object.cp.positionToVehicle), tostring(vehToImpZ)), 3);
 		else
 			object.cp.positionToVehicle = -1;
-			courseplay:debug(string.format("Implement %s position = %d (in back) (vehToImpZ = %f)", object.name, object.cp.positionToVehicle, vehToImpZ),3);
+			courseplay:debug(string.format("Implement %s position = %s (in back) (vehToImpZ = %s)", tostring(object.)name, tostring(object.cp.positionToVehicle), tostring(vehToImpZ)), 3);
 		end;
 		--END in front or in the back
 
@@ -141,7 +141,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 			tipper_attached = true
 		end
 		
-		courseplay:debug(string.format("courseplay:update_tools() (%s)", self.name), 2);
+		courseplay:debug(string.format("courseplay:update_tools() (%s)", tostring(self.name)), 2);
 
 		for k,v in pairs(self.components) do --TODO: self.components needed?
 			self.cpTrafficCollisionIgnoreList[v.node] = true;
@@ -169,7 +169,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 	end;
 	
 	if CPDebugLevel > 0 then
-		print(string.format("%s cpTrafficCollisionIgnoreList", self.name));
+		print(string.format("%s cpTrafficCollisionIgnoreList", tostring(self.name)));
 		for a,b in pairs(self.cpTrafficCollisionIgnoreList) do
 			local name = g_currentMission.nodeToVehicle[a].name
 			print(string.format("\\___ %s = %s", tostring(a), tostring(name)));
@@ -205,11 +205,11 @@ function courseplay:update_tools(self, tractor_or_implement)
 	if tipper_attached then
 		for i=1, table.getn(self.tippers) do
 			if self.tippers[i].setPlane ~= nil then
-				courseplay:debug(string.format("Implement \"%s\" has a cover (setPlane ~= nil)", self.tippers[i].name), 3);
+				courseplay:debug(string.format("Implement \"%s\" has a cover (setPlane ~= nil)", tostring(self.tippers[i].name)), 3);
 				self.cp.tipperHasCover = true;
 				table.insert(self.cp.tippersWithCovers, i);
 			else
-				courseplay:debug(string.format("Implement \"%s\" doesn't have a cover (setPlane == nil)", self.tippers[i].name), 3);
+				courseplay:debug(string.format("Implement \"%s\" doesn't have a cover (setPlane == nil)", tostring(self.tippers[i].name)), 3);
 			end;
 		end;
 	end;

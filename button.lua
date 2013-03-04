@@ -47,7 +47,6 @@ function courseplay:render_buttons(self, page)
 				end;
 				
 				button.show = tostring(whatObj) == button.showIs;
-				
 			end;
 			
 			if (button.show ~= nil and button.show) or button.show == nil then
