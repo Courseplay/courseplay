@@ -6,6 +6,7 @@
 		<en>Courseplay</en>
 		<es>Courseplay</es>
 		<fr>Courseplay</fr>
+		<it>Courseplay</it>
     </title>
     <description>
 		<de>
@@ -13,21 +14,26 @@
 Script: Lautschreier, Hummel, Wolverin0815, Bastian82 
 Skydancer, Jakob Tischler, Thomas Gärtner]]>
 		</de>
-        <en>
+		<en>
 <![CDATA[www.modhoster.de
 Script: Lautschreier, Hummel, Wolverin0815, Bastian82 
 Skydancer, Jakob Tischler, Thomas Gärtner]]>
 		</en>
-        <es>
+		<es>
 <![CDATA[www.modhoster.de
 Script: Lautschreier, Hummel, Wolverin0815, Bastian82 
 Skydancer, Jakob Tischler, Thomas Gärtner]]>
 		</es>
-        <fr>
+		<fr>
 <![CDATA[www.modhoster.de
 Script: Lautschreier, Hummel, Wolverin0815, Bastian82 
 Skydancer, Jakob Tischler, Thomas Gärtner]]>
 		</fr>
+		<it>
+<![CDATA[www.modhoster.de
+Script: Lautschreier, Hummel, Wolverin0815, Bastian82 
+Skydancer, Jakob Tischler, Thomas Gärtner]]>
+		</it>
  	</description>
 	<multiplayer supported="true"/>
 	<iconFilename>
@@ -41,210 +47,245 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<de>Kursaufzeichnung beginnen</de>
 			<fr>Commencer l'enregistrement de la course</fr>
 			<es>Comenzar grabación</es>
+			<it>Inizia registrazione percorso</it>
 		</text>
 		<text name="CourseDriveDirection">
 			<de>Fahrtrichtung</de>
 			<en>Direction</en>
 			<fr>Direction</fr>
 			<es>Dirección</es>
+			<it>Direzione</it>
 		</text>
 		<text name="CourseDriveDirectionFor">
 			<de>vorwärts</de>
 			<en>forwards</en>
 			<fr>avant</fr>
 			<es>adelante</es>
+			<it>avanti</it>
 		</text>
 		<text name="CourseDriveDirectionBac">
 			<de>rückwärts</de>
 			<en>reverse</en>
 			<fr>arrière</fr>
 			<es>atras</es>
+			<it>indietro</it>
 		</text>
 		<text name="PointRecordStop">
 			<en>Stop course recording</en>
 			<de>Kursaufzeichnung beenden</de>
 			<fr>Arreter l'enregistrement de la course</fr>
 			<es>Detener grabación</es>
+			<it>Termina registrazione percorso</it>
 		</text>
 		<text name="PointRecordInterrupt">
 			<en>Pause course recording</en>
 			<de>Kursaufzeichnung anhalten</de>
 			<fr>Interrompre l'enregistrement de la course</fr>
 			<es>Interrumpir grabación</es>
+			<it>Sospendi registrazione percorso</it>
 		</text>
 		<text name="PointRecordContinue">
 			<en>Continue course recording</en>
 			<de>Kursaufzeichnung fortsetzen</de>
 			<fr>Reprendre l'enregistrement de la course</fr>
 			<es>Continuar grabación</es>
+			<it>Riprendi registrazione percorso</it>
 		</text>
 		<text name="PointRecordDelete">
 			<en>Delete last waypoint</en>
 			<de>Letzten Wegpunkt löschen</de>
 			<fr>Supprimer le dernier point</fr>
 			<es>Eliminar último punto</es>
+			<it>Elimina ultimo waypoint</it>
 		</text>
 		<text name="CoursePlayPlayer">
 			<en>Driver</en>
 			<de>Abfahrer</de>
 			<fr>Chauffeur</fr>
 			<es>Conductor</es>
+			<it>Autista</it>
 		</text>
 		<text name="CoursePlayPlayerStart">
 			<en>Start driver</en>
 			<de>Abfahrer starten</de>
 			<fr>Demarrer le chauffeur</fr>
 			<es>Empezar a conducir</es>
+			<it>Avvia autista</it>
 		</text>
 		<text name="CoursePlayPlayerStop">
 			<en>Stop driver</en>
 			<de>Abfahrer stoppen</de>
 			<fr>Arrêter le chauffeur</fr>
 			<es>Parar de conducir</es>
+			<it>Ferma autista</it>
 		</text>
 		<text name="CoursePlayStopEnd">
 			<en>Stop at last point or at next trigger</en>
 			<de>Warten am letzten Wegpunkt oder Trigger</de>
 			<fr>Arrêter au prochain point ou trigger</fr>
 			<es>Parar en último punto o siguiente trigger</es>
+			<it>Ferma all'ultimo punto o al prossimo trigger</it>
 		</text>
 		<text name="CoursePlayPlayerSwitchSide">
 			<en>Driver side</en>
 			<de>Abfahrerseite</de>
 			<fr>Coté du chauffeur</fr>
 			<es>Lado de conducción</es>
+			<it>Lato autista</it>
 		</text>
 		<text name="CoursePlayPlayerSideNone">
 			<en>automatic</en>
 			<de>automatisch</de>
 			<fr>automatique</fr>
 			<es>automático</es>
+			<it>automatico</it>
 		</text>
 		<text name="CoursePlayPlayerSideLeft">
 			<en>left</en>
 			<de>links</de>
 			<fr>gauche</fr>
-			<es>Izqu.</es>
+			<es>izquierdo</es>
+			<it>sinistra</it>
 		</text>
 		<text name="CoursePlayPlayerSideRight">
 			<en>right</en>
 			<de>rechts</de>
 			<fr>droite</fr>
-			<es>Der.</es>
+			<es>derecho</es>
+			<it>destra</it>
 		</text>
 		<text name="CoursePlayPlayerSendHome">
 			<en>Send driver home</en>
 			<de>Abfahrer wegschicken</de>
 			<fr>Renvoyer le chauffeur au début</fr>
 			<es>Enviar conductor a ruta</es>
+			<it>Manda a casa l'autista</it>
 		</text>
 		<text name="CoursePlayCallPlayer">
 			<en>Request driver</en>
 			<de>Abfahrer rufen</de>
 			<fr>Appeler un chauffeur</fr>
 			<es>Llamar a conductor</es>
+			<it>Richiedi autista</it>
 		</text>
 		<text name="CoursePlayCalledPlayer">
 			<en>Driver requested</en>
 			<de>Abfahrer gerufen</de>
 			<fr>Chauffeur appelé</fr>
 			<es>Llamada del conductor</es>
+			<it>Autista richiesto</it>
 		</text>
 		<text name="CoursePlayStart">
 			<en>Drive Course</en>
 			<de>Abfahrer einstellen</de>
 			<fr>Démarrer la course</fr>
 			<es>Conducir ruta</es>
+			<it>Usa percorso</it>
 		</text>
 		<text name="CoursePlayStop">
 			<en>Stop driver</en>
 			<de>Abfahrer entlassen</de>
 			<fr>Arrêter la course</fr>
 			<es>Detener ruta</es>
+			<it>Ferma percorso</it>
 		</text>
 		<text name="CourseMode1">
 			<en>Type: Driving helper (Load at start)</en>
 			<de>Typ: Abfahrer (Beladung am Startpunkt)</de>
 			<fr>Type: Aide à la conduite (Chargement au démarrage)</fr>
 			<es>Tipo: Ayudante (cargar y conducir)</es>
+			<it>Modo: Aiuto alla guida (Carico alla partenza)</it>
 		</text>
 		<text name="CourseMode2">
 			<en>Type: Combi (empty combine and offload)</en>
 			<de>Typ: kombiniert (Drescher abtanken und abfahren)</de>
 			<fr>Type: Batteuse (La remorque suit la Batteuse)</fr>
 			<es>Tipo: Combi (cargar de cosechadora y descargar)</es>
+			<it>Modo: Combinato (Svuota trebbia e scarica presso deposito)</it>
 		</text>
 		<text name="CourseMode3">
 			<en>Type: Overloader (empty combine and offload to trailer)</en>
 			<de>Typ: Überladewagen (Drescher abtanken)</de>
 			<fr>Type: Transbordeur (Dechargement de la Batteuse)</fr>
 			<es>Tipo: cargar de cosechadora y descargar a remolque</es>
+			<it>Modo: Trasferimento (Svuota trebbia e scarica su altro rimorchio)</it>
 		</text>
 		<text name="CourseMode4">
 			<en>Type: fertilize and seeding</en>
 			<de>Typ: Düngen und Säen</de>
 			<fr>Type: Fertiliser et semer</fr>
 			<es>Tipo: Fertilizar y sembrar</es>
+			<it>Modo: Concimare e seminare</it>
 		</text>
 		<text name="CourseMode5">
 			<en>Type: Transfer (drive from start to finish)</en>
 			<de>Typ: Überführung (Route abfahren)</de>
 			<fr>Type: Route (voyage du début jusqu'a la fin de la course)</fr>
 			<es>Tipo: Traslado (conducir de un punto al final)</es>
+			<it>Modo: Trasferimento (vai dall'inizio alla fine)</it>
 		</text>
 		<text name="CourseMode6">
 			<en>Type: Fieldwork for balers, forage wagons, baleloaders</en>
 			<de>Typ: Feldarbeit, Ballen pressen, Heu und Ballen sammeln</de>
-			<fr>Type: Travail des champs: Presse, chargeur à ballots...</fr>
-			<es>Tipo: Trabajo campo: Empacadoras, autocargadores...</es>
+			<fr>Type: Travail des champs: Presse, chargeur à ballots, ...</fr>
+			<es>Tipo: Trabajo campo: Empacadoras, autocargadores, ...</es>
+			<it>Modo: Lavori in campo: imballatrici, raccogliforaggio, ...</it>
 		</text>
 		<text name="CourseMode7">
 			<en>Type: Combine drives to trailer and unloads</en>
 			<de>Typ: Drescher fährt selbst abtanken</de>
 			<fr>Type: Batteuse va à la remorque pour vider</fr>
 			<es>Tipo: Cosechadora ir a remolque y descargar</es>
+			<it>Modo: La trebbia va a scaricare nel rimorchio</it>
 		</text>
 		<text name="CourseMode8">
 			<en>Type: Manure transporter</en>
 			<de>Typ: Güllezubringer</de>
 			<fr>Type: Transport de fumier</fr>
 			<es>Tipo: Transportar estiércol</es>
+			<it>Modo: Trasporto liquame</it>
 		</text>
 		<text name="CourseWaitpointSet">
 			<en>Set waiting point</en>
 			<de>Hier Wartepunkt setzen</de>
 			<fr>Placer un point d'attente</fr>
 			<es>Crear punto de espera</es>
+			<it>Imposta punto di attesa</it>
 		</text>
 		<text name="CourseCrossingSet">
 			<en>Set crossing</en>
 			<de>Hier Kreuzungspunkt setzen</de>
 			<fr>Placer un point de croisement</fr>
 			<es>Crear cruce</es>
+			<it>Imposta incrocio</it>
 		</text>
 		<text name="CourseFieldPointSet">
 			<en>Set fieldpoint</en>
 			<de>Feldgrenze festlegen</de>
 			<fr>Placer un point de champs</fr>
 			<es>Crear punto de campo</es>
+			<it>Imposta punto del campo</it>
 		</text>
 		<text name="CourseWaitpointStart">
 			<en>continue</en>
 			<de>weiterfahren</de>
 			<fr>Début</fr>
 			<es>continuar</es>
+			<it>Continua</it>
 		</text>
 		<text name="CourseSave">
 			<en>Save course</en>
 			<de>Kurs speichern</de>
 			<fr>Sauvegarder la course</fr>
 			<es>Guardar ruta</es>
+			<it>Salva percorso</it>
 		</text>
 		<text name="CourseLoad">
 			<en>Load course</en>
 			<de>Kurs laden</de>
 			<fr>Charger une course</fr>
 			<es>Cargar ruta</es>
+			<it>Carica percorso</it>
 		</text>
 		<text name="CourseDel">
 			<en>Delete course</en>
@@ -257,90 +298,105 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<de>Wegpunkte löschen</de>
 			<fr>Réinitialiser la course</fr>
 			<es>Reiniciar ruta</es>
+			<it>Azzera percorso</it>
 		</text>
 		<text name="CourseGenerate">
 			<en>Generate course</en>
 			<de>Kurs generieren</de>
 			<fr>Générer la course</fr>
 			<es>Generar ruta</es>
+			<it>Genera percorso</it>
 		</text>
 		<text name="HudControl">
 			<en>Courseplay HUD</en>
 			<de>Courseplay HUD</de>
 			<fr>Courseplay HUD</fr>
 			<es>Courseplay HUD</es>
+			<it>Courseplay HUD</it>
 		</text>
 		<text name="MouseControl">
 			<en>Switch Mousecontrol</en>
 			<de>Maussteuerung aktivieren</de>
 			<fr>Passer au contrôle à la souris</fr>
 			<es>Habilitar el control del raton</es>
+			<it>Passa al controllo con il mouse</it>
 		</text>
 		<text name="ModusSet">
 			<en>Change mode</en>
 			<de>Abfahrer-Typ wechseln</de>
 			<fr>Changer de mode</fr>
 			<es>Cambiar modo</es>
+			<it>Cambia modalita'</it>
 		</text>
 		<text name="NoWaitforfill">
 			<en>Drive now</en>
 			<de>Sofort abfahren</de>
 			<fr>Démarrer maintenant</fr>
 			<es>Conducir ahora</es>
+			<it>Avvia ora</it>
 		</text>
 		<text name="NoWaitforfillAt">
 			<en>Drive on at %</en>
 			<de>Abfahren bei %</de>
 			<fr>Partir à %</fr>
 			<es>Conducir a %</es>
+			<it>Avvia a %</it>
 		</text>
 		<text name="AHInput1">
 			<en>CP Input 1</en>
-			<de>AH Taste 1</de>
+			<de>CP Taste 1</de>
 			<fr>CP entrée 1</fr>
 			<es>CP tecla 1</es>
+			<it>CP Tasto 1</it>
 		</text>
 		<text name="AHInput2">
 			<en>CP Input 2</en>
-			<de>AH Taste 2</de>
+			<de>CP Taste 2</de>
 			<fr>CP entrée 2</fr>
 			<es>CP tecla 2</es>
+			<it>CP Tasto 2</it>
 		</text>
 		<text name="AHInput3">
 			<en>CP Input 3</en>
-			<de>AH Taste 3</de>
+			<de>CP Taste 3</de>
 			<fr>CP entrée 3</fr>
 			<es>CP tecla 3</es>
+			<it>CP Tasto 3</it>
 		</text>
 		<text name="AHInput4">
 			<en>CP Input 4</en>
-			<de>AH Taste 4</de>
+			<de>CP Taste 4</de>
 			<fr>CP entrée 4</fr>
 			<es>CP tecla 4</es>
+			<it>CP Tasto 4</it>
 		</text>
 		<text name="UNKNOWN">
 			<en>unknown</en>
 			<de>unbekannt</de>
 			<fr>inconnu</fr>
 			<es>desconocido</es>
+			<it>sconosciuto</it>
 		</text>
 		<text name="CPDistance">
 			<en>distance</en>
 			<de>Entfernung</de>
 			<fr>distance</fr>
 			<es>distancia</es>
+			<it>distanza</it>
 		</text>
 		<text name="CPWaitTime">
 			<en>Waiting time</en>
 			<de>Haltezeit</de>
 			<fr>Temps d'attente</fr>
 			<es>Tiempo de espera</es>
+			<it>Carica percorso</it>
 		</text>
 		<text name="CPLoadCourse">
 			<en>Load course:</en>
 			<de>Kurs laden:</de>
 			<fr>Parcours chargé:</fr>
 			<es>Cargar ruta:</es>
+			<it>Nome percorso</it>
 		</text>
 		<text name="CPCourseName">
 			<en>Course name:</en>
@@ -353,54 +409,63 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<de>hat Überladepunkt erreicht.</de>
 			<fr>a atteint le point de déchargement.</fr>
 			<es>ha alcanzado el punto de descarga.</es>
+			<it>ha raggiunto il punto di scarico.</it>
 		</text>
 		<text name="CPReachedWaitPoint">
 			<en>has reached waiting point.</en>
 			<de>hat Wartepunkt erreicht.</de>
 			<fr>a atteint le point d'attente.</fr>
 			<es>ha alcanzado el punto de espera.</es>
+			<it>ha raggiunto il punto d'attesa.</it>
 		</text>
 		<text name="CPReachedEndPoint">
 			<en>has reached end point.</en>
 			<de>hat den Tigger bzw. das Ende der Route erreicht.</de>
 			<fr>a atteint la fin de la course.</fr>
 			<es>ha alcanzado el punto final.</es>
+			<it>ha raggiunto la fine del percorso</it>
 		</text>
 		<text name="CPWorkEnd">
 			<en>has finished work.</en>
 			<de>hat die Aufgabe erledigt.</de>
 			<fr>a terminé le travail.</fr>
 			<es>ha terminado el trabajo.</es>
+			<it>ha finito il lavoro.</it>
 		</text>
 		<text name="CPReadyUnloadBale">
 			<en>ready for unloading bales.</en>
 			<de>bereit zum Ballen entladen.</de>
 			<fr>pret à décharger les ballots.</fr>
 			<es>listo para descargar alpacas.</es>
+			<it>pronto per scaricare le balle</it>
 		</text>
 		<text name="CPUnloadBale">
 			<en>unloading bales.</en>
 			<de>Ballen werden entladen.</de>
 			<fr>decharge les ballots.</fr>
 			<es>descargar alpacas.</es>
+			<it>scaricando le balle.</it>
 		</text>
 		<text name="CPInTraffic">
 			<en>is in traffic.</en>
 			<de>steckt im Verkehr fest</de>
 			<fr>est coincé.</fr>
 			<es>atasco de trafico.</es>
+			<it>e' nel traffico.</it>
 		</text>
 		<text name="CPloading">
 			<en>Loading: %d of %d</en>
 			<de>Wird Beladen: %d von %d</de>
 			<fr>Chargement: %d sur %d</fr>
 			<es>Carga: %d de %d</es>
+			<it>Carico: %d di %d</it>
 		</text>
 		<text name="CPTriggerReached">
 			<en>tip trigger reached</en>
 			<de>Abladestelle erreicht</de>
 			<fr>Le trigger est atteint</fr>
 			<es>Punto de descarga alcanzado</es>
+			<it>raggiunto trigger di scarico</it>
 		</text>
 		<text name="CPUnloading">
 			<en>Unloading: %d of %d</en>
@@ -413,528 +478,616 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<de>Wegpunkte anzeigen</de>
 			<fr>Montrer les points</fr>
 			<es>Mostrar los puntos</es>
+			<it>Mostra punti di passaggio</it>
 		</text>
 		<text name="CPastarOn">
 			<en>on</en>
 			<de>eingeschaltet</de>
 			<fr>activé</fr>
 			<es>activado</es>
+			<it>attiva</it>
 		</text>
 		<text name="CPaStar">
 			<en>Pathfinding</en>
 			<de>Fruchtumfahrung</de>
 			<fr>Evite les cultures</fr>
 			<es>Evite los cultivos</es>
+			<it>Evita la coltura</it>
 		</text>
 		<text name="CPastarOff">
 			<en>off</en>
 			<de>ausgeschaltet</de>
 			<fr>désactivé</fr>
 			<es>desactivado</es>
+			<it>disattiva</it>
 		</text>
 		<text name="CPCombineOffset">
 			<en>Side offset:</en>
 			<de>seitl. Abstand:</de>
 			<fr>Distance latéral:</fr>
 			<es>Distancia lateral:</es>
+			<it>Distanza laterale:</it>
 		</text>
 		<text name="CPRequiredFillLevel">
 			<en>Start at %:</en>
 			<de>Start bei %:</de>
 			<fr>Demarrer à %:</fr>
 			<es>Iniciar en %:</es>
+			<it>Inizia a %:</it>
 		</text>
 		<text name="CPTurnRadius">
 			<en>Turning circle:</en>
 			<de>Wendekreis:</de>
 			<fr>Rayon de braquage:</fr>
 			<es>Radio de giro:</es>
+			<it>Raggio di sterzata</it>
 		</text>
 		<text name="CPPipeOffset">
 			<en>pipe offset:</en>
 			<de>Pipe Abstand:</de>
 			<fr>Distance Av/Ar:</fr>
 			<es>Distancia al tubo:</es>
+			<it>Distanza dal tubo di scarico:</it>
 		</text>
 		<text name="CPMaxHireables">
 			<en>maximum AI helpers:</en>
 			<de>max. Anz. AI Helfer:</de>
 			<fr>Aide AI au max.:</fr>
 			<es>maximos AI ayudantes:</es>
+			<it>Num. massimo di aiutanti:</it>
 		</text>
 		<text name="CPCombine">
 			<en>Combine</en>
 			<de>Drescher</de>
 			<fr>Batteuse</fr>
 			<es>Cosechadora</es>
+			<it>Trebbia</it>
 		</text>
 		<text name="CPNone">
 			<en>none</en>
 			<de>keiner</de>
 			<fr>Aucun</fr>
 			<es>ningún</es>
+			<it>nessuno</it>
 		</text>
 		<text name="CPSelectCombine">
 			<en>Choose combine:</en>
 			<de>Drescher wählen:</de>
 			<fr>Choix de Batteuse:</fr>
 			<es>Cambiar cosechad:</es>
+			<it>Scegli la trebbia:</it>
 		</text>
 		<text name="CPCombineSearch">
 			<en>Find combine:</en>
 			<de>Dreschersuche:</de>
 			<fr>Type de recherche:</fr>
 			<es>Buscar cosechad:</es>
+			<it>Trova trebbia:</it>
 		</text>
 		<text name="CPActual">
 			<en>Current:</en>
 			<de>Aktuell:</de>
 			<fr>Actuelle:</fr>
 			<es>Actual:</es>
+			<it>Attuale:</it>
 		</text>
 		<text name="CPFindAuto">
 			<en>automatic search</en>
 			<de>automatisch finden</de>
 			<fr>recherche automatique</fr>
 			<es>busqueda automática</es>
+			<it>ricerca automatica</it>
 		</text>
 		<text name="CPFindManual">
 			<en>select manually</en>
 			<de>manuell zuweisen</de>
 			<fr>choisir manuellement</fr>
 			<es>selección manual</es>
+			<it>seleziona manualmente</it>
 		</text>
 		<text name="CPcopyCourse">
 			<en>Copy course:</en>
 			<de>Kurs kopieren:</de>
 			<fr>Importer une course:</fr>
 			<es>Copiar ruta:</es>
+			<it>Copia percorso:</it>
 		</text>
 		<text name="CPDriver">
 			<en>Vehicle</en>
 			<de>Fahrzeug</de>
 			<fr>véhicule</fr>
 			<es>Vehiculo</es>
+			<it>Veicolo</it>
 		</text>
 		<text name="CPtempCourse">
 			<en>temporary course</en>
 			<de>temporärer Kurs</de>
 			<fr>course temporaire</fr>
 			<es>ruta temporal</es>
+			<it>percorso temporaneo</it>
 		</text>
 		<text name="CPTurnSpeed">
 			<en>Turn speed:</en>
 			<de>Wendemanöver:</de>
 			<fr>Vitesse de virage:</fr>
 			<es>Velocidad de giro:</es>
+			<it>Velocita' di sterzata:</it>
 		</text>
 		<text name="CPFieldSpeed">
 			<en>Field speed:</en>
 			<de>Auf dem Feld:</de>
 			<fr>Vitesse de champs:</fr>
 			<es>Velocidad campo:</es>
+			<it>Velocita' sul campo:</it>
 		</text>
 		<text name="CPMaxSpeed">
 			<en>Street speed:</en>
 			<de>Auf Straße:</de>
 			<fr>Vitesse de route:</fr>
 			<es>Velocidad carretera:</es>
+			<it>Velocita' su strada:</it>
 		</text>
 		<text name="CPUnloadSpeed">
 			<en>Unload (BGA):</en>
 			<de>Abladen (BGA):</de>
 			<fr>Décharger (BGA):</fr>
 			<es>Descargar (BGA):</es>
+			<it>Scarica (BGA)</it>
 		</text>
 		<text name="CPuseSpeed">
 			<en>Speed:</en>
 			<de>Geschwindigkeit:</de>
 			<fr>Vitesse:</fr>
 			<es>Velocidad:</es>
+			<it>Velocita':</it>
 		</text>
 		<text name="CPuseSpeed1">
 			<en>from recording</en>
 			<de>wie beim einfahren</de>
 			<fr>même que l'enregistrement</fr>
 			<es>de grabación</es>
+			<it>come da registrazione</it>
 		</text>
 		<text name="CPuseSpeed2">
 			<en>maximum speed</en>
 			<de>maximale Geschwindigkeit</de>
 			<fr>vitesse maximal</fr>
 			<es>maxima velocidad</es>
+			<it>velocita' massima</it>
 		</text>
 		<text name="CPspeedUnit">
 			<en>mph</en>
 			<de>km/h</de>
 			<fr>km/h</fr>
 			<es>km/h</es>
+			<it>km/h</it>
 		</text>
 		<text name="CPautomaticSpeed">
 			<en>automatic (from course)</en>
 			<de>automatisch (vom Kurs)</de>
 			<fr>automatique</fr>
 			<es>automatico (de ruta)</es>
+			<it>automatica (dal percorso)</it>
 		</text>
 		<text name="CPCourse">
 			<en>Course:</en>
 			<de>Kurs:</de>
 			<fr>Course:</fr>
 			<es>Ruta:</es>
+			<it>Percorso:</it>
 		</text>
 		<text name="CPNoCourseLoaded">
 			<en>course: no course loaded</en>
 			<de>Kurs: kein Kurs geladen</de>
 			<fr>course: pas de course chargée</fr>
 			<es>ruta: no se ha cargado la ruta</es>
+			<it>percorso: nessun percorso selezionato</it>
 		</text>
 		<text name="CPWaypoint">
 			<en>waypoint:</en>
 			<de>Wegpunkt:</de>
 			<fr>Point:</fr>
 			<es>Punto:</es>
+			<it>punto di passaggio</it>
 		</text>
 		<text name="CPNoWaypoint">
 			<en>no waypoints yet</en>
 			<de>Noch keine Wegpunkte</de>
 			<fr>pas de points</fr>
 			<es>no hay puntos</es>
+			<it>nessun punto di passaggio</it>
 		</text>
 		<text name="WaypointMode1">
 			<en>only when recording</en>
 			<de>nur bei Aufnahme</de>
 			<fr>lors de l'enregistrement</fr>
 			<es>solo durante la grabación</es>
+			<it>solo durante la registrazione</it>
 		</text>
 		<text name="WaypointMode2">
 			<en>own waypoints</en>
 			<de>eigene Wegpunkte</de>
 			<fr>mes propres points</fr>
 			<es>mis propios puntos</es>
+			<it>solo punti di passaggio propri</it>
 		</text>
 		<text name="WaypointMode3">
 			<en>without crosspoints</en>
 			<de>ohne Kreuzungspunkte</de>
 			<fr>sans les croisements</fr>
 			<es>sin puntos de cruce</es>
+			<it>senza incroci</it>
 		</text>
 		<text name="WaypointMode4">
 			<en>show all</en>
 			<de>alle</de>
 			<fr>montrer les tous</fr>
 			<es>mostrar todos</es>
+			<it>mostra tutti</it>
 		</text>
 		<text name="WaypointMode5">
 			<en>none</en>
 			<de>keine</de>
 			<fr>aucun</fr>
 			<es>ninguno</es>
+			<it>nessuno</it>
 		</text>
 		<text name="Rul">
 			<en>Beacon lights:</en>
 			<de>Rundumleuchte:</de>
 			<fr>Girophares:</fr>
 			<es>Rotativos:</es>
+			<it>Lampeggianti:</it>
 		</text>
 		<text name="RulMode1">
 			<en>only on the road</en>
 			<de>Auf der Straße</de>
 			<fr>seulement sur la route</fr>
 			<es>solo en la carretera</es>
+			<it>solo su strada</it>
 		</text>
 		<text name="RulMode2">
 			<en>always turn on</en>
 			<de>eingeschaltet</de>
 			<fr>toujours allumés</fr>
 			<es>siempre encendidos</es>
+			<it>sempre accesi</it>
 		</text>
 		<text name="RulMode3">
 			<en>never turn on</en>
 			<de>ausgeschaltet</de>
 			<fr>jamais allumés</fr>
 			<es>siempre apagados</es>
+			<it>mai accesi</it>
 		</text>
 		<text name="CPSteering">
 			<en>Courseplay control</en>
 			<de>Abfahrhelfer Steuerung</de>
 			<fr>Courseplay control</fr>
 			<es>Courseplay control</es>
+			<it>Controlli del Courseplay</it>
 		</text>
 		<text name="CPCombineMangament">
 			<en>Combine controls</en>
 			<de>Drescher steuern</de>
 			<fr>Gestion de la conduite</fr>
 			<es>Controles de cosechadora</es>
+			<it>Controlli della trebbia</it>
 		</text>
 		<text name="CPManageCourses">
 			<en>Manage courses</en>
 			<de>Kurse verwalten</de>
 			<fr>Gestion des courses</fr>
 			<es>Gestión de cursos</es>
+			<it>Gestione percorsi</it>
 		</text>
 		<text name="CPNoWorkArea">
 			<en>no work area at this course</en>
 			<de>Kein Arbeitsbereich in diesem Kurs</de>
 			<fr>Pas de zone de trvail</fr>
 			<es>Sin area campo de trabajo en ruta</es>
+			<it>Nessuna area di lavoro in questo percorso</it>
 		</text>
 		<text name="CPCourseAdded">
 			<en>combined courses</en>
 			<de>kombinierte Kurse</de>
-			<fr>Course combiné</fr>
+			<fr>cours combinés</fr>
 			<es>rutas combinadas</es>
+			<it>percorsi combinati</it>
 		</text>
 		<text name="CPCombiSettings">
 			<en>Settings combi mode</en>
 			<de>Einstellungen Combi Modus</de>
 			<fr>Option du mode batteuse</fr>
 			<es>Configuración modo cosechadora</es>
+			<it>Opzioni della modalita' combi</it>
 		</text>
 		<text name="CPManageCombines">
 			<en>Manage combines</en>
 			<de>Drescher verwalten</de>
 			<fr>Gestion des batteuses</fr>
 			<es>Gestione cosechadoras</es>
+			<it>Gestione della trebbia</it>
 		</text>
 		<text name="CPSpeedLimit">
 			<en>Speed limits</en>
 			<de>Geschwindigkeiten</de>
 			<fr>Vitesse limite</fr>
 			<es>Limite velocidad</es>
+			<it>Velocita' limite</it>
 		</text>
 		<text name="CPHud7">
 			<en>Driving settings</en>
 			<de>Fahr-/Arbeitseinstellungen</de>
 			<fr>Paramètres de conduite</fr>
 			<es>Configuración conducción</es>
+			<it>Parametri di guida</it>
 		</text>
 		<text name="CPCombineTurning">
 			<en>Combine is turning</en>
 			<de>Drescher wendet</de>
 			<fr>La batteuse tourne</fr>
 			<es>Cosechadora está girando</es>
+			<it>La trebbia sta girando</it>
 		</text>
 		<text name="CPDriveBehinCombine">
 			<en>Drive behind combine</en>
 			<de>Fahre hinter Drescher</de>
 			<fr>Conduit derriere la batteuse</fr>
 			<es>Ir detras de la cosechadora</es>
+			<it>Guida dietro la trebbia</it>
 		</text>
 		<text name="CPDriveNextCombine">
 			<en>Drive next to combine</en>
 			<de>Fahre neben Drescher</de>
 			<fr>Conduit à coté de la batteuse</fr>
 			<es>Ir junto a la cosechadora</es>
+			<it>Guida accanto la trebbia</it>
 		</text>
 		<text name="CPDriveToCombine">
 			<en>drive to combine</en>
 			<de>Fahre zu Drescher</de>
 			<fr>Conduit vers la batteuse</fr>
 			<es>Ir a la cosechadora</es>
+			<it>Vai alla trebbia</it>
 		</text>
 		<text name="CPCombineWantsMeToStop">
 			<en>Combine is telling me to stop</en>
 			<de>Drescher sagt ich soll anhalten</de>
 			<fr>La batteuse me demande de m'arreter</fr>
 			<es>La cosechadora dice que pare</es>
+			<it>La trebbia mi dice di fermarmi</it>
 		</text>
 		<text name="CPTurningTo">
 			<en>Turning to direction %d %d</en>
 			<de>wende in Richtung koordinaten %d %d</de>
 			<fr>Tourne en direction de %d %d</fr>
 			<es>Girar en dirección %d %d</es>
+			<it>Girando in direzione %d %d</it>
 		</text>
 		<text name="CPDriveToWP">
 			<en>Drive to waypoint %d %d</en>
 			<de>fahre zu Wegpunkt %d %d</de>
 			<fr>Conduit vers le points %d %d</fr>
 			<es>Ir al punto %d %d</es>
+			<it>Guida a %d %d</it>
 		</text>
 		<text name="CPwaitFillLevel">
 			<en>Waiting until fill level is reached</en>
 			<de>Warte bis Füllstand erreicht ist</de>
 			<fr>Attend que le niveau soit atteint</fr>
 			<es>Esperar hasta llegue al nivel de llenado</es>
+			<it>Aspettando che il livello di riempimento sia raggiunto</it>
 		</text>
 		<text name="CPnoCombineInReach">
 			<en>No combine in reach</en>
 			<de>Kein Drescher in Reichweite</de>
 			<fr>Pas de Batteuse en vue</fr>
 			<es>Cosechadora fuera del alcance</es>
+			<it>Nessuna trebbia disponibile</it>
 		</text>
 		<text name="CPWaitUntilCombineTurned">
 			<en>Waiting until combine has turned</en>
 			<de>Warte bis Drescher gewendet hat</de>
 			<fr>Attend que la batteuse ait finis de tourner</fr>
 			<es>Esperar a que la cosechadora gire</es>
+			<it>Aspettando che la trebbia finisca di girare</it>
 		</text>
 		<text name="CPWaitForWaypoint">
 			<en>Waiting for new waypoint</en>
 			<de>Warte bis ich neuen Wegpunkt habe</de>
 			<fr>Attend pour le nouveau point</fr>
 			<es>Esperando el nuevo punto</es>
+			<it>Attendi il prossimo punto di passaggio</it>
 		</text>
 		<text name="CPFollowTractor">
 			<en>Following tractor</en>
 			<de>Fahre hinter Traktor</de>
 			<fr>Suit le tracteur</fr>
 			<es>Sigue el tractor</es>
+			<it>Segio il trattore</it>
 		</text>
 		<text name="CPFuelWarning">
 			<en>should be refueled soon</en>
 			<de>sollte aufgetankt werden</de>
 			<fr>doit bientôt faire le plein</fr>
 			<es>debe repostar pronto</es>
+			<it>dev'essere rifornito al piu' presto</it>
 		</text>
 		<text name="CPNoFuelStop">
 			<en>must be refueled</en>
 			<de>muss aufgetankt werden</de>
 			<fr>doit faire le plein</fr>
 			<es>debe repostar</es>
+			<it>dev'essere rifornito ora</it>
 		</text>
 		<text name="CPRefueling">
 			<en>is being refueled</en>
 			<de>wird aufgetankt</de>
 			<fr>est en train d'être ravitailler</fr>
 			<es>está repostando</es>
+			<it>si sta rifornendo</it>
 		</text>
 		<text name="CPWrongTrailer">
 			<en>wrong trailer for this mode</en>
 			<de>falscher Trailer für diesen Modus</de>
 			<fr>pas la bonne remorque pour ce mode</fr>
 			<es>remolque incorrecto para este modo</es>
+			<it>rimorchio sbagliato per questa modalita'</it>
 		</text>
 		<text name="CPWrongESLversion">
 			<en>ESLimiter version is not supported</en>
 			<de>ESLimiter-Version wird nicht unterstützt</de>
 			<fr>la version du ESLimiter n'est pas compatible</fr>
 			<es>la version de ESLimiter no es compatible</es>
+			<it>la versione dell'ESLimiter non e' compatibile</it>
 		</text>
 		<text name="CPSettings">
 			<en>Settings</en>
 			<de>Allgemeine Einstellungen</de>
 			<fr>Paramètres</fr>
 			<es>Configuración</es>
+			<it>Parametri</it>
 		</text>
 		<text name="CPWpOffsetX">
 			<en>horizontal offset</en>
 			<de>horiz. Versatz</de>
 			<fr>décalage latéral</fr>
 			<es>Mov. horizontal</es>
+			<it>distanza orizzontale</it>
 		</text>
 		<text name="CPWpOffsetZ">
 			<en>vertical offset</en>
 			<de>vertik. Versatz</de>
 			<fr>décalage Av/Ar</fr>
 			<es>Mov. vertical</es>
+			<it>distanza verticale</it>
 		</text>
 		<text name="CPWorkingWidht">
 			<en>working width</en>
 			<de>Arbeitsbreite</de>
 			<fr>largeur de travail</fr>
 			<es>ancho de trabajo</es>
+			<it>larghezza di lavoro</it>
 		</text>
 		<text name="CPWaterDrive">
 			<en>would like to go swimming</en>
 			<de>möchte baden gehen</de>
-			<fr> a voulut prendre un bain</fr>
+			<fr>a voulut prendre un bain</fr>
 			<es>quiere ir a nadar</es>
+			<it>vorrebbe nuotare</it>
 		</text>
 		<text name="WaitPoints">
 			<en>waiting points:</en>
 			<de>Wartepunkte:</de>
 			<fr>Points d'attente:</fr>
 			<es>Puntos de espera:</es>
+			<it>punti d'attesa:</it>
 		</text>
 		<text name="CrossPoints">
 			<en>crossing points:</en>
 			<de>Kreuzungspunkte:</de>
 			<fr>Points de croisement:</fr>
 			<es>Puntos de cruce:</es>
+			<it>incroci:</it>
 		</text>
 		<text name="CPopenHud">
 			<en>open Courseplay:</en>
 			<de>Courseplay öffnen:</de>
 			<fr>Ouverture de Courseplay:</fr>
 			<es>abrir Courseplay:</es>
+			<it>apri Courseplay:</it>
 		</text>
 		<text name="CPopenHudMouse">
 			<en>right mouse button</en>
 			<de>rechte Maustaste</de>
 			<fr>clic droit de la souris</fr>
 			<es>boton derecho del raton</es>
+			<it>tasto destro del mouse</it>
 		</text>
 		<text name="CPDebugLevel">
 			<en>Debug level</en>
 			<de>Debug-Level</de>
 			<fr>Niveau de débogage</fr>
 			<es>Depurar nivel</es>
+			<it>Livello di messa a punto</it>
 		</text>
 		<text name="CPDebugLevel0">
 			<en>0: nothing</en>
 			<de>0: nichts</de>
 			<fr>0: rien</fr>
 			<es>0: nada</es>
+			<it>0: nessuno</it>
 		</text>
 		<text name="CPDebugLevel1">
 			<en>1: not detailed</en>
 			<de>1: undetailliert</de>
 			<fr>1: pas détaillé</fr>
 			<es>1: no se detallan</es>
+			<it>1: non dettagliato</it>
 		</text>
 		<text name="CPDebugLevel2">
 			<en>2: semi-important</en>
 			<de>2: semi-wichtig</de>
 			<fr>2: semi-detaillé</fr>
 			<es>2: semi-importante</es>
+			<it>2: semi-dettagliato</it>
 		</text>
 		<text name="CPDebugLevel3">
 			<en>3: important</en>
 			<de>3: wichtig</de>
 			<fr>3: important</fr>
 			<es>3: importante</es>
+			<it>3: importante</it>
 		</text>
 		<text name="CPDebugLevel4">
 			<en>4: everything (most detailed)</en>
 			<de>4: alles (detailliert)</de>
 			<fr>4: tout (le plus détaillé)</fr>
 			<es>4: todo (en detalle)</es>
+			<it>4: tutto (il piu' dettagliato)</it>
 		</text>
 		<text name="CPHudOpen">
 			<en>Show Courseplay HUD</en>
 			<de>Courseplay HUD öffnen</de>
 			<fr>Montrer le Courseplay HUD</fr>
 			<es>Mostrar Courseplay HUD</es>
+			<it>Mostra il Courseplay HUD</it>
 		</text>
 		<text name="CPHudClose">
 			<en>Hide Courseplay HUD</en>
 			<de>Courseplay HUD schließen</de>
 			<fr>Cacher le Courseplay HUD</fr>
 			<es>Ocultar Courseplay HUD</es>
+			<it>Nascondi Courseplay HUD</it>
 		</text>
 		<text name="CPOptions">
 			<en>Courseplay options</en>
 			<de>Courseplay-Optionen</de>
 			<fr>Options du Courseplay</fr>
 			<es>Opciones de Courseplay</es>
+			<it>Opzioni del Courseplay</it>
 		</text>
 		<text name="CP_Hud">
 			<en>Courseplay HUD</en>
 			<de>Courseplay HUD</de>
 			<fr>Courseplay HUD</fr>
 			<es>Courseplay HUD</es>
+			<it>Courseplay HUD</it>
 		</text>
 		<text name="CP_Modifier_1">
 			<en>Courseplay key modifier 1</en>
 			<de>Courseplay Extrataste 1</de>
-			<fr>Courseplay touche 1</fr>
+			<fr>Courseplay touche extra 1</fr>
 			<es>Courseplay modificar tecla 1</es>
+			<it>Courseplay tasto extra 1</it>
 		</text>
 		<text name="CP_Modifier_2">
 			<en>Courseplay key modifier 2</en>
 			<de>Courseplay Extrataste 2</de>
-			<fr>Courseplay touche 2</fr>
+			<fr>Courseplay touche extra 2</fr>
 			<es>Courseplay modificar tecla 2</es>
+			<it>Courseplay tasto extra 2</it>
 		</text>
 	</l10n>
 
