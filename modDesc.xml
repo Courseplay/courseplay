@@ -1,21 +1,33 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="9">
-   <author>Hummel (modhoster.de) /Lautschreier/Wolverin0815/Bastian82</author>
+   <author>Hummel (modhoster.de) /Lautschreier/Wolverin0815/Bastian82/Jakob Tischler/Thomas Gärtner</author>
     <title>
-		<en>Courseplay - Abfahrhelfer</en>
-        <de>Courseplay - Abfahrhelfer</de>        
+		<de>Courseplay</de>        
+		<en>Courseplay</en>
+		<es>Courseplay</es>
+		<fr>Courseplay</fr>
     </title>
     <description>
-        <en>
-		<![CDATA[www.modhoster.de
-		Script: Lautschreier, Hummel, Wolverin0815, Bastian82 
-		Skydancer, Jakob Tischler, Thomas Gärtner]]>
-		</en>
-   	<de>
-		<![CDATA[www.modhoster.de
-		Script: Lautschreier, Hummel, Wolverin0815, Bastian82 
-		Skydancer, Jakob Tischler, Thomas Gärtner]]>
+		<de>
+<![CDATA[www.modhoster.de
+Script: Lautschreier, Hummel, Wolverin0815, Bastian82 
+Skydancer, Jakob Tischler, Thomas Gärtner]]>
 		</de>
+        <en>
+<![CDATA[www.modhoster.de
+Script: Lautschreier, Hummel, Wolverin0815, Bastian82 
+Skydancer, Jakob Tischler, Thomas Gärtner]]>
+		</en>
+        <es>
+<![CDATA[www.modhoster.de
+Script: Lautschreier, Hummel, Wolverin0815, Bastian82 
+Skydancer, Jakob Tischler, Thomas Gärtner]]>
+		</es>
+        <fr>
+<![CDATA[www.modhoster.de
+Script: Lautschreier, Hummel, Wolverin0815, Bastian82 
+Skydancer, Jakob Tischler, Thomas Gärtner]]>
+		</fr>
  	</description>
 	<multiplayer supported="true"/>
 	<iconFilename>
@@ -28,13 +40,13 @@
 			<en>Start course recording</en>
 			<de>Kursaufzeichnung beginnen</de>
 			<fr>Commencer l'enregistrement de la course</fr>
-			<es>Comenzar grabacion</es>
+			<es>Comenzar grabación</es>
 		</text>
 		<text name="CourseDriveDirection">
 			<de>Fahrtrichtung</de>
 			<en>Direction</en>
 			<fr>Direction</fr>
-			<es>Direccion</es>
+			<es>Dirección</es>
 		</text>
 		<text name="CourseDriveDirectionFor">
 			<de>vorwärts</de>
@@ -45,32 +57,32 @@
 		<text name="CourseDriveDirectionBac">
 			<de>rückwärts</de>
 			<en>reverse</en>
-			<fr>arriére</fr>
+			<fr>arrière</fr>
 			<es>atras</es>
 		</text>
 		<text name="PointRecordStop">
 			<en>Stop course recording</en>
 			<de>Kursaufzeichnung beenden</de>
 			<fr>Arreter l'enregistrement de la course</fr>
-			<es>Detener grabacion</es>
+			<es>Detener grabación</es>
 		</text>
 		<text name="PointRecordInterrupt">
 			<en>Pause course recording</en>
 			<de>Kursaufzeichnung anhalten</de>
 			<fr>Interrompre l'enregistrement de la course</fr>
-			<es>Interrumpir grabacion</es>
+			<es>Interrumpir grabación</es>
 		</text>
 		<text name="PointRecordContinue">
 			<en>Continue course recording</en>
 			<de>Kursaufzeichnung fortsetzen</de>
 			<fr>Reprendre l'enregistrement de la course</fr>
-			<es>Continuar grabacion</es>
+			<es>Continuar grabación</es>
 		</text>
 		<text name="PointRecordDelete">
 			<en>Delete last waypoint</en>
 			<de>Letzten Wegpunkt löschen</de>
 			<fr>Supprimer le dernier point</fr>
-			<es>Eliminar ultimo punto</es>
+			<es>Eliminar último punto</es>
 		</text>
 		<text name="CoursePlayPlayer">
 			<en>Driver</en>
@@ -94,19 +106,19 @@
 			<en>Stop at last point or at next trigger</en>
 			<de>Warten am letzten Wegpunkt oder Trigger</de>
 			<fr>Arrêter au prochain point ou trigger</fr>
-			<es>Parar en ultimo punto o siguiente Trigger</es>
+			<es>Parar en último punto o siguiente trigger</es>
 		</text>
 		<text name="CoursePlayPlayerSwitchSide">
 			<en>Driver side</en>
 			<de>Abfahrerseite</de>
 			<fr>Coté du chauffeur</fr>
-			<es>Lado de conduccion</es>
+			<es>Lado de conducción</es>
 		</text>
 		<text name="CoursePlayPlayerSideNone">
 			<en>automatic</en>
 			<de>automatisch</de>
 			<fr>automatique</fr>
-			<es>automatico</es>
+			<es>automático</es>
 		</text>
 		<text name="CoursePlayPlayerSideLeft">
 			<en>left</en>
@@ -130,25 +142,25 @@
 			<en>Request driver</en>
 			<de>Abfahrer rufen</de>
 			<fr>Appeler un chauffeur</fr>
-			<es>LLamar a conductor</es>
+			<es>Llamar a conductor</es>
 		</text>
 		<text name="CoursePlayCalledPlayer">
 			<en>Driver requested</en>
 			<de>Abfahrer gerufen</de>
 			<fr>Chauffeur appelé</fr>
-			<es>LLamada del conductor</es>
+			<es>Llamada del conductor</es>
 		</text>
 		<text name="CoursePlayStart">
 			<en>Drive Course</en>
 			<de>Abfahrer einstellen</de>
 			<fr>Démarrer la course</fr>
-			<es>Conducir Ruta</es>
+			<es>Conducir ruta</es>
 		</text>
 		<text name="CoursePlayStop">
 			<en>Stop driver</en>
 			<de>Abfahrer entlassen</de>
 			<fr>Arrêter la course</fr>
-			<es>Detener Ruta</es>
+			<es>Detener ruta</es>
 		</text>
 		<text name="CourseMode1">
 			<en>Type: Driving helper (Load at start)</en>
@@ -166,7 +178,7 @@
 			<en>Type: Overloader (empty combine and offload to trailer)</en>
 			<de>Typ: Überladewagen (Drescher abtanken)</de>
 			<fr>Type: Transbordeur (Dechargement de la Batteuse)</fr>
-			<es>Tipo: Remolque con sinfin</es>
+			<es>Tipo: cargar de cosechadora y descargar a remolque</es>
 		</text>
 		<text name="CourseMode4">
 			<en>Type: fertilize and seeding</en>
@@ -184,7 +196,7 @@
 			<en>Type: Fieldwork for balers, forage wagons, baleloaders</en>
 			<de>Typ: Feldarbeit, Ballen pressen, Heu und Ballen sammeln</de>
 			<fr>Type: Travail des champs: Presse, chargeur à ballots...</fr>
-			<es>Tipo: Trabajo campo: Empacadoras, autocargadores, arcusin...</es>
+			<es>Tipo: Trabajo campo: Empacadoras, autocargadores...</es>
 		</text>
 		<text name="CourseMode7">
 			<en>Type: Combine drives to trailer and unloads</en>
@@ -196,7 +208,7 @@
 			<en>Type: Manure transporter</en>
 			<de>Typ: Güllezubringer</de>
 			<fr>Type: Transport de fumier</fr>
-			<es>Tipo: Transportar estiercol</es>
+			<es>Tipo: Transportar estiércol</es>
 		</text>
 		<text name="CourseWaitpointSet">
 			<en>Set waiting point</en>
@@ -286,25 +298,25 @@
 			<en>CP Input 1</en>
 			<de>AH Taste 1</de>
 			<fr>CP entrée 1</fr>
-			<es>CP Entrda 1</es>
+			<es>CP tecla 1</es>
 		</text>
 		<text name="AHInput2">
 			<en>CP Input 2</en>
 			<de>AH Taste 2</de>
 			<fr>CP entrée 2</fr>
-			<es>CP Entrda 2</es>
+			<es>CP tecla 2</es>
 		</text>
 		<text name="AHInput3">
 			<en>CP Input 3</en>
 			<de>AH Taste 3</de>
 			<fr>CP entrée 3</fr>
-			<es>CP Entrda 3</es>
+			<es>CP tecla 3</es>
 		</text>
 		<text name="AHInput4">
 			<en>CP Input 4</en>
 			<de>AH Taste 4</de>
 			<fr>CP entrée 4</fr>
-			<es>CP Entrda 4</es>
+			<es>CP tecla 4</es>
 		</text>
 		<text name="UNKNOWN">
 			<en>unknown</en>
@@ -460,7 +472,7 @@
 			<en>none</en>
 			<de>keiner</de>
 			<fr>Aucun</fr>
-			<es>ninguno</es>
+			<es>ningún</es>
 		</text>
 		<text name="CPSelectCombine">
 			<en>Choose combine:</en>
@@ -484,13 +496,13 @@
 			<en>automatic search</en>
 			<de>automatisch finden</de>
 			<fr>recherche automatique</fr>
-			<es>busqueda automatica</es>
+			<es>busqueda automática</es>
 		</text>
 		<text name="CPFindManual">
 			<en>select manually</en>
 			<de>manuell zuweisen</de>
 			<fr>choisir manuellement</fr>
-			<es>seleccion manual</es>
+			<es>selección manual</es>
 		</text>
 		<text name="CPcopyCourse">
 			<en>Copy course:</en>
@@ -526,7 +538,7 @@
 			<en>Street speed:</en>
 			<de>Auf Straße:</de>
 			<fr>Vitesse de route:</fr>
-			<es>Velocidad calles:</es>
+			<es>Velocidad carretera:</es>
 		</text>
 		<text name="CPUnloadSpeed">
 			<en>Unload (BGA):</en>
@@ -544,7 +556,7 @@
 			<en>from recording</en>
 			<de>wie beim einfahren</de>
 			<fr>même que l'enregistrement</fr>
-			<es>de grabacion</es>
+			<es>de grabación</es>
 		</text>
 		<text name="CPuseSpeed2">
 			<en>maximum speed</en>
@@ -579,8 +591,8 @@
 		<text name="CPWaypoint">
 			<en>waypoint:</en>
 			<de>Wegpunkt:</de>
-			<fr>Points:</fr>
-			<es>Puntos</es>
+			<fr>Point:</fr>
+			<es>Punto:</es>
 		</text>
 		<text name="CPNoWaypoint">
 			<en>no waypoints yet</en>
@@ -592,7 +604,7 @@
 			<en>only when recording</en>
 			<de>nur bei Aufnahme</de>
 			<fr>lors de l'enregistrement</fr>
-			<es>solo cuando la grabacion</es>
+			<es>solo durante la grabación</es>
 		</text>
 		<text name="WaypointMode2">
 			<en>own waypoints</en>
@@ -658,7 +670,7 @@
 			<en>Manage courses</en>
 			<de>Kurse verwalten</de>
 			<fr>Gestion des courses</fr>
-			<es>Gestion de cursos</es>
+			<es>Gestión de cursos</es>
 		</text>
 		<text name="CPNoWorkArea">
 			<en>no work area at this course</en>
@@ -670,13 +682,13 @@
 			<en>combined courses</en>
 			<de>kombinierte Kurse</de>
 			<fr>Course combiné</fr>
-			<es>combinar rutas</es>
+			<es>rutas combinadas</es>
 		</text>
 		<text name="CPCombiSettings">
 			<en>Settings combi mode</en>
 			<de>Einstellungen Combi Modus</de>
 			<fr>Option du mode batteuse</fr>
-			<es>Configuracion modo cosechadora</es>
+			<es>Configuración modo cosechadora</es>
 		</text>
 		<text name="CPManageCombines">
 			<en>Manage combines</en>
@@ -694,13 +706,13 @@
 			<en>Driving settings</en>
 			<de>Fahr-/Arbeitseinstellungen</de>
 			<fr>Paramètres de conduite</fr>
-			<es>Configuracion conduccion</es>
+			<es>Configuración conducción</es>
 		</text>
 		<text name="CPCombineTurning">
 			<en>Combine is turning</en>
 			<de>Drescher wendet</de>
 			<fr>La batteuse tourne</fr>
-			<es>Cosechadora esta girando</es>
+			<es>Cosechadora está girando</es>
 		</text>
 		<text name="CPDriveBehinCombine">
 			<en>Drive behind combine</en>
@@ -730,7 +742,7 @@
 			<en>Turning to direction %d %d</en>
 			<de>wende in Richtung koordinaten %d %d</de>
 			<fr>Tourne en direction de %d %d</fr>
-			<es>Girar en direccion %d %d</es>
+			<es>Girar en dirección %d %d</es>
 		</text>
 		<text name="CPDriveToWP">
 			<en>Drive to waypoint %d %d</en>
@@ -784,7 +796,7 @@
 			<en>is being refueled</en>
 			<de>wird aufgetankt</de>
 			<fr>est en train d'être ravitailler</fr>
-			<es>esta repostando</es>
+			<es>está repostando</es>
 		</text>
 		<text name="CPWrongTrailer">
 			<en>wrong trailer for this mode</en>
@@ -796,13 +808,13 @@
 			<en>ESLimiter version is not supported</en>
 			<de>ESLimiter-Version wird nicht unterstützt</de>
 			<fr>la version du ESLimiter n'est pas compatible</fr>
-			<es>la version de ESLimeter no es compatible</es>
+			<es>la version de ESLimiter no es compatible</es>
 		</text>
 		<text name="CPSettings">
 			<en>Settings</en>
 			<de>Allgemeine Einstellungen</de>
 			<fr>Paramètres</fr>
-			<es>Configuracion</es>
+			<es>Configuración</es>
 		</text>
 		<text name="CPWpOffsetX">
 			<en>horizontal offset</en>
@@ -826,7 +838,7 @@
 			<en>would like to go swimming</en>
 			<de>möchte baden gehen</de>
 			<fr> a voulut prendre un bain</fr>
-			<es>quieres ir a nadar</es>
+			<es>quiere ir a nadar</es>
 		</text>
 		<text name="WaitPoints">
 			<en>waiting points:</en>
