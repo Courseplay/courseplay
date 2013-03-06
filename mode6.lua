@@ -19,6 +19,20 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 		allowedToDrive = false
 		self.global_info_text = courseplay:get_locale(self, "CPWorkEnd") --'hat Arbeit beendet.'
 	end
+	
+	--calculate total fillLevel for UBT (in case of multiple trailers)
+	local hasUBT = false;
+	local fillLevelUBT = 0;
+	for i=1, table.getn(self.tippers) do
+		if courseplay:isUBT(self.tippers[i]) then
+			hasUBT = true;
+			fillLevelUBT = fillLevelUBT + (self.tippers[i].fillLevel * 100 / self.tippers[i].fillLevelMax);
+		end;
+	end;
+	if hasUBT then 
+		fill_level = fillLevelUBT;
+	end;
+	--END UBT fillLevel
 
 
 	for i=1, table.getn(self.tippers) do
@@ -63,60 +77,131 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 				end
 			-- baleloader, copied original code parts				
 			elseif courseplay:is_baleLoader(workTool) or courseplay:isUBT(workTool) then
-				if workArea and not courseplay:isUBT(workTool) then
-					-- automatic stop for baleloader
-					if workTool.grabberIsMoving or workTool:getIsAnimationPlaying("rotatePlatform") then
-						allowedToDrive = false
-					end
-					if not workTool.isInWorkPosition and fill_level ~= 100 then
-						--g_client:getServerConnection():sendEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_BUTTON_WORK_TRANSPORT));
-						workTool.grabberIsMoving = true
-						workTool.isInWorkPosition = true
-						BaleLoader.moveToWorkPosition(workTool)
-					end
-				end
-
 				if not courseplay:isUBT(workTool) then
+					if workArea then
+						-- automatic stop for baleloader
+						if workTool.grabberIsMoving or workTool:getIsAnimationPlaying("rotatePlatform") then
+							allowedToDrive = false
+						end
+						if not workTool.isInWorkPosition and fill_level ~= 100 then
+							--g_client:getServerConnection():sendEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_BUTTON_WORK_TRANSPORT));
+							workTool.grabberIsMoving = true
+							workTool.isInWorkPosition = true
+							BaleLoader.moveToWorkPosition(workTool)
+						end
+					end
+
 					if (fill_level == 100 and self.maxnumber ~= self.stopWork or self.recordnumber == self.stopWork) and workTool.isInWorkPosition and not workTool:getIsAnimationPlaying("rotatePlatform") then
 						workTool.grabberIsMoving = true
 						workTool.isInWorkPosition = false
 						-- move to transport position
 						BaleLoader.moveToTransportPosition(workTool)
 					end
-				end
 
-				if fill_level == 100 and self.maxnumber == self.stopWork then
-					allowedToDrive = false
-					self.global_info_text = courseplay:get_locale(self, "CPReadyUnloadBale") --'bereit zum entladen'
-				end
-
-				if courseplay:isUBT(workTool) then
-					if (workTool.fillLevel == workTool.fillLevelMax or workTool.fillLevel == workTool.capacity or fill_level == 100) and self.maxnumber == self.stopWork then
+					if fill_level == 100 and self.maxnumber == self.stopWork then
 						allowedToDrive = false
-						self.global_info_text = "UBT "..courseplay:get_locale(self, "CPReadyUnloadBale") --'UBT bereit zum entladen'
+						self.global_info_text = courseplay:get_locale(self, "CPReadyUnloadBale") --'bereit zum entladen'
 					end
-				end
 
-				-- automatic unload
-				if self.Waypoints[last_recordnumber].wait and (self.wait or fill_level == 0) then
-					if workTool.emptyState ~= BaleLoader.EMPTY_NONE then
-						if workTool.emptyState == BaleLoader.EMPTY_WAIT_TO_DROP then
-							-- BaleLoader.CHANGE_DROP_BALES
-							g_server:broadcastEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_DROP_BALES), true, nil, workTool)
-						elseif workTool.emptyState == BaleLoader.EMPTY_WAIT_TO_SINK then
-							-- BaleLoader.CHANGE_SINK
-							g_server:broadcastEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_SINK), true, nil, workTool)
-						elseif workTool.emptyState == BaleLoader.EMPTY_WAIT_TO_REDO then
-							-- BaleLoader.CHANGE_EMPTY_REDO
-							g_server:broadcastEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_EMPTY_REDO), true, nil, workTool);
-						end
+					-- automatic unload
+					if self.Waypoints[last_recordnumber].wait and (self.wait or fill_level == 0) then
+						if not courseplay:isUBT(workTool) then
+							if workTool.emptyState ~= BaleLoader.EMPTY_NONE then
+								if workTool.emptyState == BaleLoader.EMPTY_WAIT_TO_DROP then
+									-- BaleLoader.CHANGE_DROP_BALES
+									g_server:broadcastEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_DROP_BALES), true, nil, workTool)
+								elseif workTool.emptyState == BaleLoader.EMPTY_WAIT_TO_SINK then
+									-- BaleLoader.CHANGE_SINK
+									g_server:broadcastEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_SINK), true, nil, workTool)
+								elseif workTool.emptyState == BaleLoader.EMPTY_WAIT_TO_REDO then
+									-- BaleLoader.CHANGE_EMPTY_REDO
+									g_server:broadcastEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_EMPTY_REDO), true, nil, workTool);
+								end
+							else
+								--BaleLoader.CHANGE_EMPTY_START
+								if BaleLoader.getAllowsStartUnloading(workTool) then
+									g_server:broadcastEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_EMPTY_START), true, nil, workTool)
+								end
+							end
+						end;
+					end;				
+				
+				elseif courseplay:isUBT(workTool) then
+					if not workTool.fillLevelMax == workTool.numAttachers[workTool.typeOnTrailer] then
+						workTool.fillLevelMax = workTool.numAttachers[workTool.typeOnTrailer];
+					end;
+					if workTool.capacity == nil or (workTool.capacity ~= nil and workTool.capacity ~= workTool.fillLevelMax) then
+						workTool.capacity = workTool.fillLevelMax;
+					end;
+					
+					if workArea then
+						if (workTool.fillLevel == workTool.fillLevelMax or (workTool.capacity ~= nil and workTool.fillLevel == workTool.capacity) or fill_level == 100) then
+							if self.maxnumber == self.stopWork then
+								if workTool.loadingIsActive then
+									workTool.loadingIsActive = false;
+								end;
+
+								allowedToDrive = false;
+								self.global_info_text = "UBT "..courseplay:get_locale(self, "CPReadyUnloadBale"); --'UBT bereit zum entladen'
+							end;
+							--print("UBT is full (" .. tostring(workTool.fillLevel) .. "/" .. tostring(workTool.fillLevelMax) .. ")"); -- WORKS
+						else
+							if not workTool.loadingIsActive then
+								--print("UBT activating loadingIsActive"); -- WORKS
+								workTool.loadingIsActive = true;
+							end;
+						end;
+						
+						if not workTool.autoLoad then
+							--print("UBT activating autoLoad"); -- WORKS
+							workTool.autoLoad = true;
+						end;
 					else
-						--BaleLoader.CHANGE_EMPTY_START
-						if BaleLoader.getAllowsStartUnloading(workTool) then
-							g_server:broadcastEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_EMPTY_START), true, nil, workTool)
-						end
-					end
-				end
+						if workTool.loadingIsActive then
+							workTool.loadingIsActive = false;
+						end;
+
+						-- automatic unload
+						if self.Waypoints[last_recordnumber].wait and (self.wait or fill_level == 0 or workTool.fillLevel == 0) then
+							--call unload function
+							for i=1, workTool.numAttachers[workTool.typeOnTrailer] do
+								if workTool.attacher[workTool.typeOnTrailer][i].attachedObject ~= nil then
+
+									--ORIG: if workTool.ulRef[workTool.ulMode][1] == g_i18n:getText("UNLOAD_TRAILER") then
+									if workTool.ulRef[workTool.ulMode][3] == 0 then --verrrrry dirty: unload on trailer
+										local x,y,z = getWorldTranslation(workTool.attacher[workTool.typeOnTrailer][i].attachedObject);
+										local rx,ry,rz = getWorldRotation(workTool.attacher[workTool.typeOnTrailer][i].attachedObject);
+										local root = getRootNode();
+										setRigidBodyType(workTool.attacher[workTool.typeOnTrailer][i].attachedObject,"Dynamic");
+										setTranslation(workTool.attacher[workTool.typeOnTrailer][i].attachedObject,x,y,z);
+										setRotation(workTool.attacher[workTool.typeOnTrailer][i].attachedObject,rx,ry,rz);
+										link(root,workTool.attacher[workTool.typeOnTrailer][i].attachedObject);
+										workTool.attacher[workTool.typeOnTrailer][i].attachedObject = nil;
+										workTool.fillLevel = workTool.fillLevel - 1;
+									else
+										local x,y,z = getWorldTranslation(workTool.attacher[workTool.typeOnTrailer][i].attachedObject);
+										local rx,ry,rz = getWorldRotation(workTool.attacher[workTool.typeOnTrailer][i].attachedObject);
+										local nx,ny,nz = getWorldTranslation(workTool.attacherLevel[workTool.typeOnTrailer]);
+										local tx,ty,tz = getWorldTranslation(workTool.ulRef[workTool.ulMode][3]);
+										local x = x + (tx - nx);
+										local y = y + (ty - ny);
+										local z = z + (tz - nz);
+										local tH = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, x, 0, z);
+										local relHeight = ny - tH;
+										local root = getRootNode();
+										setRigidBodyType(workTool.attacher[workTool.typeOnTrailer][i].attachedObject,"Dynamic");
+										setTranslation(workTool.attacher[workTool.typeOnTrailer][i].attachedObject,x,(y - relHeight),z);
+										setRotation(workTool.attacher[workTool.typeOnTrailer][i].attachedObject,rx,ry,rz);
+										link(root,workTool.attacher[workTool.typeOnTrailer][i].attachedObject);
+										workTool.attacher[workTool.typeOnTrailer][i].attachedObject = nil;
+										workTool.fillLevel = workTool.fillLevel - 1;
+									end;
+								end;
+							end;
+						end;				
+					
+					end;
+				end;
 			--END baleloader	
 
 

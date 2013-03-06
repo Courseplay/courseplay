@@ -24,7 +24,7 @@ function courseplay:isFoldable(workTool) --is the tool foldable?
 	return SpecializationUtil.hasSpecialization(Foldable, workTool.specializations) or SpecializationUtil.hasSpecialization(foldable, workTool.specializations);
 end;
 function courseplay:isUBT(workTool) --is the tool a UBT?
-	return SpecializationUtil.hasSpecialization(ubt, workTool.specializations) or workTool.name == "UniversalBaleTrailer";
+	return SpecializationUtil.hasSpecialization(ubt, workTool.specializations) or workTool.name == "UniversalBaleTrailer" or (workTool.numAttacherParts ~= nil and workTool.autoLoad ~= nil and workTool.loadingIsActive ~= nil and workTool.unloadLeft ~= nil and workTool.unloadRight ~= nil and workTool.unloadBack ~= nil and workTool.typeOnTrailer ~= nil);
 end;
 
 -- update implements to find attached tippers
@@ -122,6 +122,10 @@ function courseplay:update_tools(self, tractor_or_implement)
 			or object.allowTipDischarge 
 			or courseplay:isUBT(object) 
 			or courseplay:isFoldable(object) then
+				if courseplay:isUBT(object) and object.fillLevelMax ~= nil then
+					courseplay:debug(string.format("implement %s: setting UBT capacity to fillLevelMax (=%s)", tostring(object.name), tostring(object.fillLevelMax)), 3);
+					object.capacity = object.fillLevelMax;
+				end;
 				tipper_attached = true
 				table.insert(self.tippers, object)
 			end;
