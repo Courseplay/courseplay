@@ -137,9 +137,9 @@ function courseplay:deal_with_mouse_input(self, func, value)
 		courseplay:change_RulMode(self, value)
 	end
 
-  if func == "change_DriveDirection" then
-    courseplay:set_direction(self)
-  end
+	if func == "change_DriveDirection" then
+		courseplay:set_direction(self)
+	end
 
 	if func == "change_DebugLevel" then
 		courseplay:change_DebugLevel(value)
@@ -368,6 +368,11 @@ function courseplay:handle_user_input(self)
 		self.user_input_message = nil
 		self.steeringEnabled = true --test
 		courseplay:save_courses(self)
+		
+		if table.getn(g_currentMission.courseplay_courses) > 5 then
+			self.cp.courseListPrev = self.selected_course_number > 0;
+			self.cp.courseListNext = self.selected_course_number < (table.getn(g_currentMission.courseplay_courses) - 5);
+		end;
 	end
 end
 

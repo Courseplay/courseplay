@@ -248,8 +248,8 @@ function courseplay:change_selected_course(self, change_by)
 	local selected_course_number = self.selected_course_number
 	selected_course_number = selected_course_number + change_by
 
-	self.courseListPrev = true;
-	self.courseListNext = true;
+	self.cp.courseListPrev = true;
+	self.cp.courseListNext = true;
 
 	local number_of_courses = 0
 	for k, trigger in pairs(g_currentMission.courseplay_courses) do --TODO: table.getn ?
@@ -265,10 +265,10 @@ function courseplay:change_selected_course(self, change_by)
 	end
 	
 	if selected_course_number == 0 then 
-		self.courseListPrev = false;
+		self.cp.courseListPrev = false;
 	end;
 	if selected_course_number == (number_of_courses - 5) then
-		self.courseListNext = false;
+		self.cp.courseListNext = false;
 	end;
 
 	self.selected_course_number = selected_course_number

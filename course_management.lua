@@ -86,6 +86,11 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
 			self.Waypoints = course.waypoints
 			self.current_course_name = course.name
 		else -- Add new course to old course
+			if self.current_course_name == nil then --recorded but not saved course
+				self.numCourses = 1;
+			end;
+			courseplay:debug(string.format("course_management 92: %s: self.current_course_name=%s, self.numCourses=%s", self.name, tostring(self.current_course_name), tostring(self.numCourses)), 3);
+			
 			local course1_waypoints = self.Waypoints
 			local course2_waypoints = course.waypoints
 

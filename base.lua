@@ -204,8 +204,8 @@ function courseplay:load(xmlFile)
 	self.orgRpm = nil;
 	
 	-- Course list
-	self.courseListPrev = false;
-	self.courseListNext = table.getn(g_currentMission.courseplay_courses) > 5;
+	self.cp.courseListPrev = false;
+	self.cp.courseListNext = table.getn(g_currentMission.courseplay_courses) > 5;
 
 
 
@@ -360,8 +360,8 @@ function courseplay:load(xmlFile)
 	courseplay:register_button(self, 2, "blank.dds", "row2", nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[2], 0.32, 0.015);
 	courseplay:register_button(self, 2, "blank.dds", "row3", nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[3], 0.32, 0.015);
 
-	courseplay:register_button(self, 2, "navigate_up.dds",   "change_selected_course", -5, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesPosY[1], w24px, h24px, nil, -10, "self.courseListPrev=true");
-	courseplay:register_button(self, 2, "navigate_down.dds", "change_selected_course",  5, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesPosY[5], w24px, h24px, nil,  10, "self.courseListNext=true");
+	courseplay:register_button(self, 2, "navigate_up.dds",   "change_selected_course", -5, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesPosY[1], w24px, h24px, nil, -10, "self.cp.courseListPrev=true");
+	courseplay:register_button(self, 2, "navigate_down.dds", "change_selected_course",  5, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesPosY[5], w24px, h24px, nil,  10, "self.cp.courseListNext=true");
 
 	for i = 1, 5, 1 do
 		local posy = courseplay.hud.infoBasePosY + 0.205 - (i - 1) * 0.021
@@ -619,8 +619,8 @@ function courseplay:readStream(streamId, connection)
 	self.allow_following = streamDebugReadBool(streamId)
 	self.autoTurnRadius = streamDebugReadFloat32(streamId)
 	self.combine_offset = streamDebugReadFloat32(streamId)
-	self.courseListPrev = streamDebugReadBool(streamId)
-	self.courseListNext = streamDebugReadBool(streamId)
+	self.cp.courseListPrev = streamDebugReadBool(streamId)
+	self.cp.courseListNext = streamDebugReadBool(streamId)
 	self.courseplay_position = streamDebugReadInt32(streamId)
 	self.CPnumCollidingVehicles = streamDebugReadInt32(streamId)
 	self.cpTrafficBrake = streamDebugReadBool(streamId)
@@ -731,8 +731,8 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteBool(streamId, self.allow_following)
 	streamDebugWriteFloat32(streamId,self.autoTurnRadius)
 	streamDebugWriteFloat32(streamId,self.combine_offset)
-	streamDebugWriteBool(streamId, self.courseListPrev)
-	streamDebugWriteBool(streamId, self.courseListNext)
+	streamDebugWriteBool(streamId, self.cp.courseListPrev)
+	streamDebugWriteBool(streamId, self.cp.courseListNext)
 	streamDebugWriteInt32(streamId,self.courseplay_position)
 	streamDebugWriteInt32(streamId,self.CPnumCollidingVehicles)
 	streamDebugWriteBool(streamId, self.cpTrafficBrake)
