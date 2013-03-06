@@ -25,7 +25,7 @@
 #manualNav a {
   color: #f0f0f0;
   display: inline-block;
-  font-size: 0.9em;
+  /*font-size: 0.9em;*/
   line-height: 40px;
   padding: 0 20px;
   text-decoration: none;
@@ -83,7 +83,7 @@
   background: #20A8DB;
   border-bottom: 1px dotted #6fc7ec;
   filter: none;
-  font-size: 11px;
+  font-size: 0.8em;
   display: block;
   line-height: 120%;
   padding: 10px;

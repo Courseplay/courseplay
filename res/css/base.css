@@ -31,9 +31,12 @@ a, button, button:before, div, fieldset, figure, img, input, label, li, span, te
 }
 html {
 	background:url(../img/white_bed_sheet.png) 0 0 repeat scroll #f5f5f5;
-	font-family:Open Sans, Segoe UI, Trebuchet MS, sans-serif;
 }
-body { height:auto; }
+body { 
+	font-family:Source Sans Pro, Open Sans, Segoe UI, Trebuchet MS, sans-serif;
+	font-size:16px;
+	height:auto; 
+}
 
 #container {
 	color: #323232;
@@ -80,7 +83,7 @@ section { padding:30px 0; }
 #mainNav a .info { 
 	color:#404040; 
 	display:none; 
-	font-family:Segoe UI, sans-serif; font-size:0.9em; font-variant:normal; font-weight:300; 
+	font-family:Source Sans Pro, Open Sans, Segoe UI, Trebuchet MS, sans-serif; font-size:0.9em; font-style:italic; font-variant:normal; font-weight:300; 
 	position:absolute; top:0; left:0; 
 	text-align:center; 
 	width:100%; 
@@ -194,7 +197,7 @@ ol ol li:last-child { margin-bottom:0; }
 .hudIcon.arrowDown    { background-position:0 -160px; }
 
 
-footer { border-top:1px solid #D6D6D6; font-size:0.7em; margin-top:3em; padding:1em 0; }
+footer { border-top:1px solid #D6D6D6; font-size:0.8em; margin-top:3em; padding:1em 0; }
 footer span { padding-left:0.5em; }
 #footerNav li { border-right:1px solid #646464; display:inline; padding:0 0.5em; }
 #footerNav li:last-of-type { border-right:0; padding-right:0; }
