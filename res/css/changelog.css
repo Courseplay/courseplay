@@ -36,7 +36,7 @@
 .changelogVersion dt.new, .changelogVersion dt.fix, .changelogVersion dt.bug, .changelogVersion dt.change { 
 	border-radius:1px;
 	color:#F0F0F0;
-	font-size:10px;
+	font-size:12px;
 	height:20px;
 	line-height:14px;
 	margin-right:1%;
