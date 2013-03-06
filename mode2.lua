@@ -251,7 +251,7 @@ function courseplay:unload_combine(self, dt)
 		self.isChopperTurning = false
 	end
 	-- is combine turning ?
-	if combine ~= nil and (combine.turnStage == 1 or combine.turnStage == 2 or combine.turnStage == 5) then
+	if combine ~= nil and (combine.turnStage > 0) then
 		self.info_text = courseplay:get_locale(self, "CPCombineTurning") -- "Drescher wendet. "
 		combine_turning = true
 	end
@@ -415,8 +415,10 @@ function courseplay:unload_combine(self, dt)
 		if combine_fill_level == 0 then --combine empty set waypoints on the field !!!
 			local leftFruit, rightFruit = courseplay:side_to_drive(self, combine, -10)
 			local tempFruit
-			
-			if not combine.waitingForDischarge and combine.waitForTurnTime > combine.time then
+			if leftFruit == rightFruit then
+				leftFruit, rightFruit = courseplay:side_to_drive(self, combine, -50)
+			end
+			if not combine.waitingForDischarge and (combine.waitForTurnTime > combine.time or combine.waitingForTrailerToUnload) then
 				--Fruit side switch at end of field line
 				tempFruit = leftFruit;
 				leftFruit = rightFruit;
@@ -602,9 +604,25 @@ function courseplay:unload_combine(self, dt)
 
 		---------------------------------------------------------------------
 	end -- end mode 3 or 4
-
-	if combine_turning and not combine.isCornchopper and combine_fill_level > 0 then
-		combine.waitForTurnTime = combine.time + 100
+	local cx, cy, cz = getWorldTranslation(combine.rootNode)
+	local sx, sy, sz = getWorldTranslation(self.rootNode)
+	distance = courseplay:distance(sx, sz, cx, cz)
+	if combine_turning and not combine.isCornchopper then
+		if combine.grainTankFillLevel > combine.grainTankCapacity*0.9 then
+			if combine.isAIThreshing then 
+				combine.waitForTurnTime = combine.time + 100
+			elseif self.drive == true then
+				combine.waitingForTrailerToUnload = true
+			end			
+		elseif distance < 50 then
+			if combine.isAIThreshing then
+				combine.waitForTurnTime = combine.time + 100
+			elseif combine.drive == true then
+				combine.waitingForTrailerToUnload = true
+			end
+		elseif distance < 100 and mode == 2 then
+			allowedToDrive = false
+		end
 	end
 
 	if combine_turning and distance < 20 then
