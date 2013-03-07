@@ -118,10 +118,6 @@ function courseplay:start(self)
 	self.runOnceStartCourse = true;
 	self.drive = true;
 
-	self.orgRpm = {}
-	self.orgRpm[1] = self.motor.maxRpm[1]
-	self.orgRpm[2] = self.motor.maxRpm[2]
-	self.orgRpm[3] = self.motor.maxRpm[3]
 	self.record = false
 	self.dcheck = false
 end

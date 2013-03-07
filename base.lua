@@ -68,7 +68,10 @@ function courseplay:load(xmlFile)
 	self.currentGui = nil
 	self.input_gui = "emptyGui";
 	self.calculated_course = false
-
+	self.orgRpm = {}
+	self.orgRpm[1] = self.motor.maxRpm[1]
+	self.orgRpm[2] = self.motor.maxRpm[2]
+	self.orgRpm[3] = self.motor.maxRpm[3]
 	self.recordnumber = 1
 	self.tmr = 1
 	self.startlastload = 1
@@ -687,12 +690,7 @@ function courseplay:readStream(streamId, connection)
 	if saved_combine_id then
 		self.saved_combine = networkGetObject(saved_combine_id)
 	end
-	if self.drive then
-		self.orgRpm = {}
-		self.orgRpm[1] = self.motor.maxRpm[1]
-		self.orgRpm[2] = self.motor.maxRpm[2]
-		self.orgRpm[3] = self.motor.maxRpm[3]
-	end
+
 	local active_combine_id = streamDebugReadInt32(streamId)
 	if active_combine_id then
 		self.active_combine = networkGetObject(active_combine_id)
