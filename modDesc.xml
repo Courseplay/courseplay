@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="9">
-   <author>Hummel (modhoster.de) /Lautschreier/Wolverin0815/Bastian82/Jakob Tischler/Thomas Gärtner</author>
+	<author>Hummel (modhoster.de) /Lautschreier/Wolverin0815/Bastian82/Jakob Tischler/Thomas Gärtner</author>
     <title>
 		<de>Courseplay</de>        
 		<en>Courseplay</en>
@@ -12,27 +12,47 @@
 		<de>
 <![CDATA[www.modhoster.de
 Script: Lautschreier, Hummel, Wolverin0815, Bastian82 
-Skydancer, Jakob Tischler, Thomas Gärtner]]>
+Skydancer, Jakob Tischler, Thomas Gärtner
+Französische Übersetzung: Guillaume Dupuy
+Italienische Übersetzung: JD7530
+Spanische Übersetzung: JFMtb
+]]>
 		</de>
 		<en>
 <![CDATA[www.modhoster.de
 Script: Lautschreier, Hummel, Wolverin0815, Bastian82 
-Skydancer, Jakob Tischler, Thomas Gärtner]]>
+Skydancer, Jakob Tischler, Thomas Gärtner
+French translation: Guillaume Dupuy
+Italian translation: JD7530
+Spanish translation: JFMtb
+]]>
 		</en>
 		<es>
 <![CDATA[www.modhoster.de
 Script: Lautschreier, Hummel, Wolverin0815, Bastian82 
-Skydancer, Jakob Tischler, Thomas Gärtner]]>
+Skydancer, Jakob Tischler, Thomas Gärtner
+Traddución en francés: Guillaume Dupuy
+Traddución en italiano: JD7530
+Traddución en español: JFMtb
+]]>
 		</es>
 		<fr>
 <![CDATA[www.modhoster.de
 Script: Lautschreier, Hummel, Wolverin0815, Bastian82 
-Skydancer, Jakob Tischler, Thomas Gärtner]]>
+Skydancer, Jakob Tischler, Thomas Gärtner
+Traduction français: Guillaume Dupuy
+Traduction italien: JD7530
+Traduction espagnol: JFMtb
+]]>
 		</fr>
 		<it>
 <![CDATA[www.modhoster.de
 Script: Lautschreier, Hummel, Wolverin0815, Bastian82 
-Skydancer, Jakob Tischler, Thomas Gärtner]]>
+Skydancer, Jakob Tischler, Thomas Gärtner
+Traduzione francese: Guillaume Dupuy
+Traduzione italiano: JD7530
+Traduzione spagnolo: JFMtb
+]]>
 		</it>
  	</description>
 	<multiplayer supported="true"/>
