@@ -11,7 +11,7 @@ function courseplay:drive(self, dt)
 				cx7, cz7 = self.Waypoints[self.maxnumber].cx, self.Waypoints[self.maxnumber].cz
 				local lx7, lz7 = AIVehicleUtil.getDriveDirection(self.rootNode, cx7, cty7, cz7);
 				local fx,fy,fz = localToWorld(self.rootNode, 0, 0, -3*self.turn_radius)
-				if courseplay:is_field(fx, fz) or self.grainTankFillLevel >= self.grainTankCapacity then
+				if courseplay:is_field(fx, fz) or self.grainTankFillLevel >= self.grainTankCapacity*0.9 then
 					self.lastaiThreshingDirectionX = self.aiThreshingDirectionX
 					self.lastaiThreshingDirectionZ = self.aiThreshingDirectionZ
 					self:stopAIThreshing()

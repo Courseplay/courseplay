@@ -246,7 +246,7 @@ function courseplay:load_tippers(self)
 	-- drive on when required fill level is reached
 	local drive_on = false
 	if self.timeout < self.timer or self.last_fill_level == nil then
-		if self.last_fill_level ~= nil and fill_level == self.last_fill_level and fill_level > self.required_fill_level_for_follow then
+		if self.last_fill_level ~= nil and fill_level == self.last_fill_level and fill_level > self.required_fill_level_for_drive_on then
 			drive_on = true
 		end
 		self.last_fill_level = fill_level
