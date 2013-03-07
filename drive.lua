@@ -773,6 +773,12 @@ function courseplay:check_traffic(self, display_warnings, allowedToDrive)
 end
 
 function courseplay:setSpeed(self, refSpeed, sl)
+	if self.orgRpm == nil then
+		self.orgRpm = {}
+		self.orgRpm[1] = self.motor.maxRpm[1]
+		self.orgRpm[2] = self.motor.maxRpm[2]
+		self.orgRpm[3] = self.motor.maxRpm[3]
+	end
 	if self.lastSpeedSave ~= self.lastSpeedReal*3600 then		
 		if refSpeed*3600 == 1 then
 			refSpeed = 1.6 / 3600

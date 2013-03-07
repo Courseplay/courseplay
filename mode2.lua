@@ -251,11 +251,10 @@ function courseplay:unload_combine(self, dt)
 		self.isChopperTurning = false
 	end
 	-- is combine turning ?
-	if combine ~= nil and (combine.turnStage > 0) then
+	if combine ~= nil and (combine.turnStage == 1 or combine.turnStage == 2 or combine.turnStage == 5) then
 		self.info_text = courseplay:get_locale(self, "CPCombineTurning") -- "Drescher wendet. "
 		combine_turning = true
 	end
-
 	if combine.grainTankCapacity > 0 then
 		combine_fill_level = combine.grainTankFillLevel * 100 / combine.grainTankCapacity
 	else -- combine is a chopper / has no tank
@@ -522,7 +521,9 @@ function courseplay:unload_combine(self, dt)
 		local cwX, cwY, cwZ = getWorldTranslation(combine.pipeRaycastNode); 
 		local prnToCombineX, prnToCombineY, prnToCombineZ = worldToLocal(combine.rootNode, cwX, cwY, cwZ); 
            	local ttX, _, ttZ = localToWorld(combine.rootNode, self.combine_offset, 0, trailer_offset + prnToCombineZ)
-
+		if combine.isCornchopper then
+			ttX, _, ttZ = localToWorld(combine.rootNode, self.combine_offset, 0, trailer_offset)
+		end
 		if combine.attachedImplements ~= nil then
 			for k, i in pairs(combine.attachedImplements) do
 				local implement = i.object;
@@ -600,7 +601,7 @@ function courseplay:unload_combine(self, dt)
 		
 		end
 
-		courseplay:debug("combine.sentPipeIsUnloading: "..tostring(combine.sentPipeIsUnloading).." refSpeed:  "..tostring(refSpeed*3600).." combine_speed:  "..tostring(combine_speed*3600),3)  
+		--courseplay:debug("combine.sentPipeIsUnloading: "..tostring(combine.sentPipeIsUnloading).." refSpeed:  "..tostring(refSpeed*3600).." combine_speed:  "..tostring(combine_speed*3600),3)  
 
 		---------------------------------------------------------------------
 	end -- end mode 3 or 4
