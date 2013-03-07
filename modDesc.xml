@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="9">
    <author>Hummel (modhoster.de) /Lautschreier/Wolverin0815/Bastian82/Jakob Tischler/Thomas Gärtner</author>
     <title>
@@ -7,6 +7,7 @@
 		<es>Courseplay</es>
 		<fr>Courseplay</fr>
 		<it>Courseplay</it>
+		<cz>Courseplay</cz>
     </title>
     <description>
 		<de>
@@ -34,6 +35,11 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 Script: Lautschreier, Hummel, Wolverin0815, Bastian82 
 Skydancer, Jakob Tischler, Thomas Gärtner]]>
 		</it>
+		<cz>
+<![CDATA[www.modhoster.de
+Script: Lautschreier, Hummel, Wolverin0815, Bastian82 
+Skydancer, Jakob Tischler, Thomas Gärtner]]>
+		</cz>
  	</description>
 	<multiplayer supported="true"/>
 	<iconFilename>
@@ -48,6 +54,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Commencer l'enregistrement de la course</fr>
 			<es>Comenzar grabación</es>
 			<it>Inizia registrazione percorso</it>
+			<cz>Zapnout ukládání trasy</cz>
 		</text>
 		<text name="CourseDriveDirection">
 			<de>Fahrtrichtung</de>
@@ -55,6 +62,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Direction</fr>
 			<es>Dirección</es>
 			<it>Direzione</it>
+			<cz>Směr jízdy</cz>
 		</text>
 		<text name="CourseDriveDirectionFor">
 			<de>vorwärts</de>
@@ -62,6 +70,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>avant</fr>
 			<es>adelante</es>
 			<it>avanti</it>
+			<cz>vpřed</cz>
 		</text>
 		<text name="CourseDriveDirectionBac">
 			<de>rückwärts</de>
@@ -69,6 +78,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>arrière</fr>
 			<es>atras</es>
 			<it>indietro</it>
+			<cz>zpět</cz>
 		</text>
 		<text name="PointRecordStop">
 			<en>Stop course recording</en>
@@ -76,6 +86,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Arreter l'enregistrement de la course</fr>
 			<es>Detener grabación</es>
 			<it>Termina registrazione percorso</it>
+			<cz>Ukončit ukládání trasy</cz>
 		</text>
 		<text name="PointRecordInterrupt">
 			<en>Pause course recording</en>
@@ -83,6 +94,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Interrompre l'enregistrement de la course</fr>
 			<es>Interrumpir grabación</es>
 			<it>Sospendi registrazione percorso</it>
+			<cz>Přerušit ukládání trasy</cz>
 		</text>
 		<text name="PointRecordContinue">
 			<en>Continue course recording</en>
@@ -90,6 +102,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Reprendre l'enregistrement de la course</fr>
 			<es>Continuar grabación</es>
 			<it>Riprendi registrazione percorso</it>
+			<cz>Pokračovat v ukládání trasy</cz>
 		</text>
 		<text name="PointRecordDelete">
 			<en>Delete last waypoint</en>
@@ -97,6 +110,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Supprimer le dernier point</fr>
 			<es>Eliminar último punto</es>
 			<it>Elimina ultimo waypoint</it>
+			<cz>Smazat poslední bod</cz>
 		</text>
 		<text name="CoursePlayPlayer">
 			<en>Driver</en>
@@ -104,6 +118,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Chauffeur</fr>
 			<es>Conductor</es>
 			<it>Autista</it>
+			<cz>Odvozce</cz>
 		</text>
 		<text name="CoursePlayPlayerStart">
 			<en>Start driver</en>
@@ -111,6 +126,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Demarrer le chauffeur</fr>
 			<es>Empezar a conducir</es>
 			<it>Avvia autista</it>
+			<cz>Aktivovat odvozce</cz>
 		</text>
 		<text name="CoursePlayPlayerStop">
 			<en>Stop driver</en>
@@ -118,6 +134,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Arrêter le chauffeur</fr>
 			<es>Parar de conducir</es>
 			<it>Ferma autista</it>
+			<cz>Zastavit odvozce</cz>
 		</text>
 		<text name="CoursePlayStopEnd">
 			<en>Stop at last point or at next trigger</en>
@@ -125,6 +142,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Arrêter au prochain point ou trigger</fr>
 			<es>Parar en último punto o siguiente trigger</es>
 			<it>Ferma all'ultimo punto o al prossimo trigger</it>
+			<cz>Čekat na posledním bodě nebo triggeru</cz>
 		</text>
 		<text name="CoursePlayPlayerSwitchSide">
 			<en>Driver side</en>
@@ -132,6 +150,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Coté du chauffeur</fr>
 			<es>Lado de conducción</es>
 			<it>Lato autista</it>
+			<cz>Strana odvozce</cz>
 		</text>
 		<text name="CoursePlayPlayerSideNone">
 			<en>automatic</en>
@@ -139,6 +158,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>automatique</fr>
 			<es>automático</es>
 			<it>automatico</it>
+			<cz>automaticky</cz>
 		</text>
 		<text name="CoursePlayPlayerSideLeft">
 			<en>left</en>
@@ -146,6 +166,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>gauche</fr>
 			<es>izquierdo</es>
 			<it>sinistra</it>
+			<cz>vlevo</cz>
 		</text>
 		<text name="CoursePlayPlayerSideRight">
 			<en>right</en>
@@ -153,6 +174,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>droite</fr>
 			<es>derecho</es>
 			<it>destra</it>
+			<cz>vpravo</cz>
 		</text>
 		<text name="CoursePlayPlayerSendHome">
 			<en>Send driver home</en>
@@ -160,6 +182,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Renvoyer le chauffeur au début</fr>
 			<es>Enviar conductor a ruta</es>
 			<it>Manda a casa l'autista</it>
+			<cz>Poslat odvozce domů</cz>
 		</text>
 		<text name="CoursePlayCallPlayer">
 			<en>Request driver</en>
@@ -167,6 +190,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Appeler un chauffeur</fr>
 			<es>Llamar a conductor</es>
 			<it>Richiedi autista</it>
+			<cz>Zavolat odvozce</cz>
 		</text>
 		<text name="CoursePlayCalledPlayer">
 			<en>Driver requested</en>
@@ -174,6 +198,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Chauffeur appelé</fr>
 			<es>Llamada del conductor</es>
 			<it>Autista richiesto</it>
+			<cz>Odvozce zavolán</cz>
 		</text>
 		<text name="CoursePlayStart">
 			<en>Drive Course</en>
@@ -181,6 +206,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Démarrer la course</fr>
 			<es>Conducir ruta</es>
 			<it>Usa percorso</it>
+			<cz>Aktivovat odvozce</cz>
 		</text>
 		<text name="CoursePlayStop">
 			<en>Stop driver</en>
@@ -188,6 +214,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Arrêter la course</fr>
 			<es>Detener ruta</es>
 			<it>Ferma percorso</it>
+			<cz>Zastavit odvozce</cz>
 		</text>
 		<text name="CourseMode1">
 			<en>Type: Driving helper (Load at start)</en>
@@ -195,6 +222,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Type: Aide à la conduite (Chargement au démarrage)</fr>
 			<es>Tipo: Ayudante (cargar y conducir)</es>
 			<it>Modo: Aiuto alla guida (Carico alla partenza)</it>
+			<cz>Mod: Odvozce (naložení v místě startu)</cz>
 		</text>
 		<text name="CourseMode2">
 			<en>Type: Combi (empty combine and offload)</en>
@@ -202,6 +230,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Type: Batteuse (La remorque suit la Batteuse)</fr>
 			<es>Tipo: Combi (cargar de cosechadora y descargar)</es>
 			<it>Modo: Combinato (Svuota trebbia e scarica presso deposito)</it>
+			<cz>Mod: Kombajn (ke kombajnu/rezačce a pak odvézt)</cz>
 		</text>
 		<text name="CourseMode3">
 			<en>Type: Overloader (empty combine and offload to trailer)</en>
@@ -209,6 +238,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Type: Transbordeur (Dechargement de la Batteuse)</fr>
 			<es>Tipo: cargar de cosechadora y descargar a remolque</es>
 			<it>Modo: Trasferimento (Svuota trebbia e scarica su altro rimorchio)</it>
+			<cz>Mod: Překládací vůz (odvoz od kombajnu na překládku)</cz>
 		</text>
 		<text name="CourseMode4">
 			<en>Type: fertilize and seeding</en>
@@ -216,6 +246,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Type: Fertiliser et semer</fr>
 			<es>Tipo: Fertilizar y sembrar</es>
 			<it>Modo: Concimare e seminare</it>
+			<cz>Mod: Hnojení a setí </cz>
 		</text>
 		<text name="CourseMode5">
 			<en>Type: Transfer (drive from start to finish)</en>
@@ -223,6 +254,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Type: Route (voyage du début jusqu'a la fin de la course)</fr>
 			<es>Tipo: Traslado (conducir de un punto al final)</es>
 			<it>Modo: Trasferimento (vai dall'inizio alla fine)</it>
+			<cz>Mod: Průjezd (projede trasu bez zastavení)</cz>
 		</text>
 		<text name="CourseMode6">
 			<en>Type: Fieldwork for balers, forage wagons, baleloaders</en>
@@ -230,6 +262,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Type: Travail des champs: Presse, chargeur à ballots, ...</fr>
 			<es>Tipo: Trabajo campo: Empacadoras, autocargadores, ...</es>
 			<it>Modo: Lavori in campo: imballatrici, raccogliforaggio, ...</it>
+			<cz>Mod: Polní práce (lisování, sběr sena, slámy)</cz>
 		</text>
 		<text name="CourseMode7">
 			<en>Type: Combine drives to trailer and unloads</en>
@@ -237,6 +270,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Type: Batteuse va à la remorque pour vider</fr>
 			<es>Tipo: Cosechadora ir a remolque y descargar</es>
 			<it>Modo: La trebbia va a scaricare nel rimorchio</it>
+			<cz>Mod: Kombajn se jede sám vysypat</cz>
 		</text>
 		<text name="CourseMode8">
 			<en>Type: Manure transporter</en>
@@ -244,6 +278,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Type: Transport de fumier</fr>
 			<es>Tipo: Transportar estiércol</es>
 			<it>Modo: Trasporto liquame</it>
+			<cz>Mod: Převoz kejdy</cz>
 		</text>
 		<text name="CourseWaitpointSet">
 			<en>Set waiting point</en>
@@ -251,6 +286,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Placer un point d'attente</fr>
 			<es>Crear punto de espera</es>
 			<it>Imposta punto di attesa</it>
+			<cz>Uložit místo čekání</cz>
 		</text>
 		<text name="CourseCrossingSet">
 			<en>Set crossing</en>
@@ -258,6 +294,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Placer un point de croisement</fr>
 			<es>Crear cruce</es>
 			<it>Imposta incrocio</it>
+			<cz>Uložit místo křížení</cz>
 		</text>
 		<text name="CourseFieldPointSet">
 			<en>Set fieldpoint</en>
@@ -265,6 +302,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Placer un point de champs</fr>
 			<es>Crear punto de campo</es>
 			<it>Imposta punto del campo</it>
+			<cz>Uložit hranice pole</cz>
 		</text>
 		<text name="CourseWaitpointStart">
 			<en>continue</en>
@@ -272,6 +310,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Début</fr>
 			<es>continuar</es>
 			<it>Continua</it>
+			<cz>Pokračovat v jízdě</cz>
 		</text>
 		<text name="CourseSave">
 			<en>Save course</en>
@@ -279,6 +318,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Sauvegarder la course</fr>
 			<es>Guardar ruta</es>
 			<it>Salva percorso</it>
+			<cz>Uložit trasu</cz>
 		</text>
 		<text name="CourseLoad">
 			<en>Load course</en>
@@ -286,12 +326,14 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Charger une course</fr>
 			<es>Cargar ruta</es>
 			<it>Carica percorso</it>
+			<cz>Nahrát uloženou trasu</cz>
 		</text>
 		<text name="CourseDel">
 			<en>Delete course</en>
 			<de>Kurs aus Datei löschen</de>
 			<fr>Supprimer la course</fr>
 			<es>Borrar ruta</es>
+			<cz>Vymazat trasu z databáze</cz>
 		</text>
 		<text name="CourseReset">
 			<en>Reset course</en>
@@ -299,6 +341,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Réinitialiser la course</fr>
 			<es>Reiniciar ruta</es>
 			<it>Azzera percorso</it>
+			<cz>Odstranit orientační body</cz>
 		</text>
 		<text name="CourseGenerate">
 			<en>Generate course</en>
@@ -306,6 +349,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Générer la course</fr>
 			<es>Generar ruta</es>
 			<it>Genera percorso</it>
+			<cz>Generovat kurs</cz>
 		</text>
 		<text name="HudControl">
 			<en>Courseplay HUD</en>
@@ -313,6 +357,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Courseplay HUD</fr>
 			<es>Courseplay HUD</es>
 			<it>Courseplay HUD</it>
+			<cz>Courseplay HUD</cz>
 		</text>
 		<text name="MouseControl">
 			<en>Switch Mousecontrol</en>
@@ -320,6 +365,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Passer au contrôle à la souris</fr>
 			<es>Habilitar el control del raton</es>
 			<it>Passa al controllo con il mouse</it>
+			<cz>Aktivovat ovládání myší</cz>
 		</text>
 		<text name="ModusSet">
 			<en>Change mode</en>
@@ -327,6 +373,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Changer de mode</fr>
 			<es>Cambiar modo</es>
 			<it>Cambia modalita'</it>
+			<cz>Změnit typ odvozce</cz>
 		</text>
 		<text name="NoWaitforfill">
 			<en>Drive now</en>
@@ -334,6 +381,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Démarrer maintenant</fr>
 			<es>Conducir ahora</es>
 			<it>Avvia ora</it>
+			<cz>Odvézt bez čekání na doplnění</cz>
 		</text>
 		<text name="NoWaitforfillAt">
 			<en>Drive on at %</en>
@@ -341,6 +389,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Partir à %</fr>
 			<es>Conducir a %</es>
 			<it>Avvia a %</it>
+			<cz>Odvézt při %:</cz>
 		</text>
 		<text name="AHInput1">
 			<en>CP Input 1</en>
@@ -348,6 +397,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>CP entrée 1</fr>
 			<es>CP tecla 1</es>
 			<it>CP Tasto 1</it>
+			<cz>CP Tlačítko 1</cz>
 		</text>
 		<text name="AHInput2">
 			<en>CP Input 2</en>
@@ -355,6 +405,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>CP entrée 2</fr>
 			<es>CP tecla 2</es>
 			<it>CP Tasto 2</it>
+			<cz>CP Tlačítko 2</cz>
 		</text>
 		<text name="AHInput3">
 			<en>CP Input 3</en>
@@ -362,6 +413,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>CP entrée 3</fr>
 			<es>CP tecla 3</es>
 			<it>CP Tasto 3</it>
+			<cz>CP Tlačítko 3</cz>
 		</text>
 		<text name="AHInput4">
 			<en>CP Input 4</en>
@@ -369,6 +421,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>CP entrée 4</fr>
 			<es>CP tecla 4</es>
 			<it>CP Tasto 4</it>
+			<cz>CP Tlačítko 4</cz>
 		</text>
 		<text name="UNKNOWN">
 			<en>unknown</en>
@@ -376,6 +429,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>inconnu</fr>
 			<es>desconocido</es>
 			<it>sconosciuto</it>
+			<cz>neznámy</cz>
 		</text>
 		<text name="CPDistance">
 			<en>distance</en>
@@ -383,6 +437,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>distance</fr>
 			<es>distancia</es>
 			<it>distanza</it>
+			<cz>Vzdálenost</cz>
 		</text>
 		<text name="CPWaitTime">
 			<en>Waiting time</en>
@@ -390,6 +445,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Temps d'attente</fr>
 			<es>Tiempo de espera</es>
 			<it>Carica percorso</it>
+			<cz>Doba čekání:</cz>
 		</text>
 		<text name="CPLoadCourse">
 			<en>Load course:</en>
@@ -397,12 +453,14 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Parcours chargé:</fr>
 			<es>Cargar ruta:</es>
 			<it>Nome percorso</it>
+			<cz>Nahrát trasu:</cz>
 		</text>
 		<text name="CPCourseName">
 			<en>Course name:</en>
 			<de>Name des Kurses:</de>
 			<fr>Nom de la course:</fr>
 			<es>Nombre de ruta:</es>
+			<cz>Jméno trasy:</cz>
 		</text>
 		<text name="CPReachedOverloadPoint">
 			<en>has reached overload point.</en>
@@ -410,6 +468,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>a atteint le point de déchargement.</fr>
 			<es>ha alcanzado el punto de descarga.</es>
 			<it>ha raggiunto il punto di scarico.</it>
+			<cz>přijel na místo překládky.</cz>
 		</text>
 		<text name="CPReachedWaitPoint">
 			<en>has reached waiting point.</en>
@@ -417,6 +476,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>a atteint le point d'attente.</fr>
 			<es>ha alcanzado el punto de espera.</es>
 			<it>ha raggiunto il punto d'attesa.</it>
+			<cz>přijel na místo čekání.</cz>
 		</text>
 		<text name="CPReachedEndPoint">
 			<en>has reached end point.</en>
@@ -424,6 +484,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>a atteint la fin de la course.</fr>
 			<es>ha alcanzado el punto final.</es>
 			<it>ha raggiunto la fine del percorso</it>
+			<cz>dojel na trigger nebo konec.</cz>
 		</text>
 		<text name="CPWorkEnd">
 			<en>has finished work.</en>
@@ -431,6 +492,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>a terminé le travail.</fr>
 			<es>ha terminado el trabajo.</es>
 			<it>ha finito il lavoro.</it>
+			<cz>dokončil práci.</cz>
 		</text>
 		<text name="CPReadyUnloadBale">
 			<en>ready for unloading bales.</en>
@@ -438,6 +500,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>pret à décharger les ballots.</fr>
 			<es>listo para descargar alpacas.</es>
 			<it>pronto per scaricare le balle</it>
+			<cz>je připraven skládat balíky.</cz>
 		</text>
 		<text name="CPUnloadBale">
 			<en>unloading bales.</en>
@@ -445,6 +508,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>decharge les ballots.</fr>
 			<es>descargar alpacas.</es>
 			<it>scaricando le balle.</it>
+			<cz>skládá balíky.</cz>
 		</text>
 		<text name="CPInTraffic">
 			<en>is in traffic.</en>
@@ -452,6 +516,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>est coincé.</fr>
 			<es>atasco de trafico.</es>
 			<it>e' nel traffico.</it>
+			<cz>stoji v dopravní zácpě.</cz>
 		</text>
 		<text name="CPloading">
 			<en>Loading: %d of %d</en>
@@ -459,6 +524,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Chargement: %d sur %d</fr>
 			<es>Carga: %d de %d</es>
 			<it>Carico: %d di %d</it>
+			<cz>Bude naloženo: %d z %d</cz>
 		</text>
 		<text name="CPTriggerReached">
 			<en>tip trigger reached</en>
@@ -466,12 +532,14 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Le trigger est atteint</fr>
 			<es>Punto de descarga alcanzado</es>
 			<it>raggiunto trigger di scarico</it>
+			<cz>Místo vysypání dosaženo</cz>			
 		</text>
 		<text name="CPUnloading">
 			<en>Unloading: %d of %d</en>
 			<de>Wird entladen: %d von %d</de>
 			<fr>Déchargement: %d sur %d</fr>
 			<es>Descarga: %d de %d</es>
+			<cz>Bude vysypáno: %d z %d</cz>
 		</text>
 		<text name="CPWPs">
 			<en>Show waypoints</en>
@@ -479,6 +547,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Montrer les points</fr>
 			<es>Mostrar los puntos</es>
 			<it>Mostra punti di passaggio</it>
+			<cz>Zobrazit orientační body</cz>
 		</text>
 		<text name="CPastarOn">
 			<en>on</en>
@@ -486,6 +555,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>activé</fr>
 			<es>activado</es>
 			<it>attiva</it>
+			<cz>zapnuto</cz>
 		</text>
 		<text name="CPaStar">
 			<en>Pathfinding</en>
@@ -493,6 +563,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Evite les cultures</fr>
 			<es>Evite los cultivos</es>
 			<it>Evita la coltura</it>
+			<cz>Objíždění porostu</cz>
 		</text>
 		<text name="CPastarOff">
 			<en>off</en>
@@ -500,6 +571,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>désactivé</fr>
 			<es>desactivado</es>
 			<it>disattiva</it>
+			<cz>vypnuto</cz>
 		</text>
 		<text name="CPCombineOffset">
 			<en>Side offset:</en>
@@ -507,6 +579,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Distance latéral:</fr>
 			<es>Distancia lateral:</es>
 			<it>Distanza laterale:</it>
+			<cz>Boční odstup:</cz>
 		</text>
 		<text name="CPRequiredFillLevel">
 			<en>Start at %:</en>
@@ -514,6 +587,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Demarrer à %:</fr>
 			<es>Iniciar en %:</es>
 			<it>Inizia a %:</it>
+			<cz>Start při %:</cz>
 		</text>
 		<text name="CPTurnRadius">
 			<en>Turning circle:</en>
@@ -521,6 +595,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Rayon de braquage:</fr>
 			<es>Radio de giro:</es>
 			<it>Raggio di sterzata</it>
+			<cz>Poloměr otáčení:</cz>
 		</text>
 		<text name="CPPipeOffset">
 			<en>pipe offset:</en>
@@ -528,6 +603,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Distance Av/Ar:</fr>
 			<es>Distancia al tubo:</es>
 			<it>Distanza dal tubo di scarico:</it>
+			<cz>Odstup vpřed/vzad:</cz>
 		</text>
 		<text name="CPMaxHireables">
 			<en>maximum AI helpers:</en>
@@ -535,6 +611,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Aide AI au max.:</fr>
 			<es>maximos AI ayudantes:</es>
 			<it>Num. massimo di aiutanti:</it>
+			<cz>max. počet AI:</cz>
 		</text>
 		<text name="CPCombine">
 			<en>Combine</en>
@@ -542,6 +619,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Batteuse</fr>
 			<es>Cosechadora</es>
 			<it>Trebbia</it>
+			<cz>Kombajn</cz>
 		</text>
 		<text name="CPNone">
 			<en>none</en>
@@ -549,6 +627,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Aucun</fr>
 			<es>ningún</es>
 			<it>nessuno</it>
+			<cz>žádný</cz>
 		</text>
 		<text name="CPSelectCombine">
 			<en>Choose combine:</en>
@@ -556,6 +635,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Choix de Batteuse:</fr>
 			<es>Cambiar cosechad:</es>
 			<it>Scegli la trebbia:</it>
+			<cz>Vybrat kombajn:</cz>
 		</text>
 		<text name="CPCombineSearch">
 			<en>Find combine:</en>
@@ -563,6 +643,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Type de recherche:</fr>
 			<es>Buscar cosechad:</es>
 			<it>Trova trebbia:</it>
+			<cz>Hledání:</cz>
 		</text>
 		<text name="CPActual">
 			<en>Current:</en>
@@ -570,6 +651,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Actuelle:</fr>
 			<es>Actual:</es>
 			<it>Attuale:</it>
+			<cz>Aktuální:</cz>
 		</text>
 		<text name="CPFindAuto">
 			<en>automatic search</en>
@@ -577,6 +659,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>recherche automatique</fr>
 			<es>busqueda automática</es>
 			<it>ricerca automatica</it>
+			<cz>Najít automaticky</cz>
 		</text>
 		<text name="CPFindManual">
 			<en>select manually</en>
@@ -584,6 +667,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>choisir manuellement</fr>
 			<es>selección manual</es>
 			<it>seleziona manualmente</it>
+			<cz>Manuálně přiřadit</cz>
 		</text>
 		<text name="CPcopyCourse">
 			<en>Copy course:</en>
@@ -591,6 +675,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Importer une course:</fr>
 			<es>Copiar ruta:</es>
 			<it>Copia percorso:</it>
+			<cz>Zkopírovat trasu:</cz>
 		</text>
 		<text name="CPDriver">
 			<en>Vehicle</en>
@@ -598,6 +683,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>véhicule</fr>
 			<es>Vehiculo</es>
 			<it>Veicolo</it>
+			<cz>Vozidlo</cz>
 		</text>
 		<text name="CPtempCourse">
 			<en>temporary course</en>
@@ -605,6 +691,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>course temporaire</fr>
 			<es>ruta temporal</es>
 			<it>percorso temporaneo</it>
+			<en>dočasná trasa</en>
 		</text>
 		<text name="CPTurnSpeed">
 			<en>Turn speed:</en>
@@ -612,6 +699,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Vitesse de virage:</fr>
 			<es>Velocidad de giro:</es>
 			<it>Velocita' di sterzata:</it>
+			<cz>Rychlost otáčení:</cz>
 		</text>
 		<text name="CPFieldSpeed">
 			<en>Field speed:</en>
@@ -619,6 +707,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Vitesse de champs:</fr>
 			<es>Velocidad campo:</es>
 			<it>Velocita' sul campo:</it>
+			<cz>Rychlost na poli:</cz>
 		</text>
 		<text name="CPMaxSpeed">
 			<en>Street speed:</en>
@@ -626,6 +715,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Vitesse de route:</fr>
 			<es>Velocidad carretera:</es>
 			<it>Velocita' su strada:</it>
+			<cz>Rychlost na cestě:</cz>
 		</text>
 		<text name="CPUnloadSpeed">
 			<en>Unload (BGA):</en>
@@ -633,6 +723,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Décharger (BGA):</fr>
 			<es>Descargar (BGA):</es>
 			<it>Scarica (BGA)</it>
+			<cz>Rychlost při vykládání (BGA):</cz>
 		</text>
 		<text name="CPuseSpeed">
 			<en>Speed:</en>
@@ -640,6 +731,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Vitesse:</fr>
 			<es>Velocidad:</es>
 			<it>Velocita':</it>
+			<cz>Rychlost:</cz>
 		</text>
 		<text name="CPuseSpeed1">
 			<en>from recording</en>
@@ -647,6 +739,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>même que l'enregistrement</fr>
 			<es>de grabación</es>
 			<it>come da registrazione</it>
+			<cz>jako při najíždění</cz>
 		</text>
 		<text name="CPuseSpeed2">
 			<en>maximum speed</en>
@@ -654,6 +747,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>vitesse maximal</fr>
 			<es>maxima velocidad</es>
 			<it>velocita' massima</it>
+			<cz>maximální rychlost</cz>
 		</text>
 		<text name="CPspeedUnit">
 			<en>mph</en>
@@ -661,6 +755,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>km/h</fr>
 			<es>km/h</es>
 			<it>km/h</it>
+			<cz>km/h</cz>
 		</text>
 		<text name="CPautomaticSpeed">
 			<en>automatic (from course)</en>
@@ -668,6 +763,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>automatique</fr>
 			<es>automatico (de ruta)</es>
 			<it>automatica (dal percorso)</it>
+			<cz>automatická (z nahrávání)</cz>
 		</text>
 		<text name="CPCourse">
 			<en>Course:</en>
@@ -675,6 +771,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Course:</fr>
 			<es>Ruta:</es>
 			<it>Percorso:</it>
+			<cz>Trasa:</cz>
 		</text>
 		<text name="CPNoCourseLoaded">
 			<en>course: no course loaded</en>
@@ -682,6 +779,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>course: pas de course chargée</fr>
 			<es>ruta: no se ha cargado la ruta</es>
 			<it>percorso: nessun percorso selezionato</it>
+			<cz>Trasa: není nahrána žádná trasa</cz>
 		</text>
 		<text name="CPWaypoint">
 			<en>waypoint:</en>
@@ -689,6 +787,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Point:</fr>
 			<es>Punto:</es>
 			<it>punto di passaggio</it>
+			<cz>Orientační bod:</cz>
 		</text>
 		<text name="CPNoWaypoint">
 			<en>no waypoints yet</en>
@@ -696,6 +795,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>pas de points</fr>
 			<es>no hay puntos</es>
 			<it>nessun punto di passaggio</it>
+			<cz>Zatím žádné orientační body</cz>
 		</text>
 		<text name="WaypointMode1">
 			<en>only when recording</en>
@@ -703,6 +803,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>lors de l'enregistrement</fr>
 			<es>solo durante la grabación</es>
 			<it>solo durante la registrazione</it>
+			<cz>jen při nahrávání</cz>
 		</text>
 		<text name="WaypointMode2">
 			<en>own waypoints</en>
@@ -710,6 +811,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>mes propres points</fr>
 			<es>mis propios puntos</es>
 			<it>solo punti di passaggio propri</it>
+			<cz>vždy</cz>
 		</text>
 		<text name="WaypointMode3">
 			<en>without crosspoints</en>
@@ -717,6 +819,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>sans les croisements</fr>
 			<es>sin puntos de cruce</es>
 			<it>senza incroci</it>
+			<cz>všechny body (bez křížení)</cz>
 		</text>
 		<text name="WaypointMode4">
 			<en>show all</en>
@@ -724,6 +827,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>montrer les tous</fr>
 			<es>mostrar todos</es>
 			<it>mostra tutti</it>
+			<cz>všechny body</cz>
 		</text>
 		<text name="WaypointMode5">
 			<en>none</en>
@@ -731,6 +835,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>aucun</fr>
 			<es>ninguno</es>
 			<it>nessuno</it>
+			<cz>nezobrazovat</cz>
 		</text>
 		<text name="Rul">
 			<en>Beacon lights:</en>
@@ -738,6 +843,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Girophares:</fr>
 			<es>Rotativos:</es>
 			<it>Lampeggianti:</it>
+			<cz>Maják:</cz>
 		</text>
 		<text name="RulMode1">
 			<en>only on the road</en>
@@ -745,6 +851,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>seulement sur la route</fr>
 			<es>solo en la carretera</es>
 			<it>solo su strada</it>
+			<cz>zapnout jen na silnici</cz>
 		</text>
 		<text name="RulMode2">
 			<en>always turn on</en>
@@ -752,6 +859,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>toujours allumés</fr>
 			<es>siempre encendidos</es>
 			<it>sempre accesi</it>
+			<cz>vždy zapnout</cz>
 		</text>
 		<text name="RulMode3">
 			<en>never turn on</en>
@@ -759,6 +867,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>jamais allumés</fr>
 			<es>siempre apagados</es>
 			<it>mai accesi</it>
+			<cz>nezapínat</cz>
 		</text>
 		<text name="CPSteering">
 			<en>Courseplay control</en>
@@ -766,6 +875,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Courseplay control</fr>
 			<es>Courseplay control</es>
 			<it>Controlli del Courseplay</it>
+			<cz>Nastavení odvozce</cz>
 		</text>
 		<text name="CPCombineMangament">
 			<en>Combine controls</en>
@@ -773,6 +883,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Gestion de la conduite</fr>
 			<es>Controles de cosechadora</es>
 			<it>Controlli della trebbia</it>
+			<cz>Ovládání odvozce</cz>
 		</text>
 		<text name="CPManageCourses">
 			<en>Manage courses</en>
@@ -780,6 +891,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Gestion des courses</fr>
 			<es>Gestión de cursos</es>
 			<it>Gestione percorsi</it>
+			<cz>Správa tras</cz>
 		</text>
 		<text name="CPNoWorkArea">
 			<en>no work area at this course</en>
@@ -787,6 +899,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Pas de zone de trvail</fr>
 			<es>Sin area campo de trabajo en ruta</es>
 			<it>Nessuna area di lavoro in questo percorso</it>
+			<cz>Na této trase není žádná pracovní oblast</cz>
 		</text>
 		<text name="CPCourseAdded">
 			<en>combined courses</en>
@@ -794,6 +907,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>cours combinés</fr>
 			<es>rutas combinadas</es>
 			<it>percorsi combinati</it>
+			<cz>Složená trasa</cz>
 		</text>
 		<text name="CPCombiSettings">
 			<en>Settings combi mode</en>
@@ -801,6 +915,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Option du mode batteuse</fr>
 			<es>Configuración modo cosechadora</es>
 			<it>Opzioni della modalita' combi</it>
+			<cz>Nastavení módu kombajn</cz>
 		</text>
 		<text name="CPManageCombines">
 			<en>Manage combines</en>
@@ -808,6 +923,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Gestion des batteuses</fr>
 			<es>Gestione cosechadoras</es>
 			<it>Gestione della trebbia</it>
+			<cz>Správa kombajnu/řezačky</cz>
 		</text>
 		<text name="CPSpeedLimit">
 			<en>Speed limits</en>
@@ -815,6 +931,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Vitesse limite</fr>
 			<es>Limite velocidad</es>
 			<it>Velocita' limite</it>
+			<cz>Rychlosti</cz>
 		</text>
 		<text name="CPHud7">
 			<en>Driving settings</en>
@@ -822,6 +939,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Paramètres de conduite</fr>
 			<es>Configuración conducción</es>
 			<it>Parametri di guida</it>
+			<cz>Nastavení jízdy</cz>
 		</text>
 		<text name="CPCombineTurning">
 			<en>Combine is turning</en>
@@ -829,6 +947,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>La batteuse tourne</fr>
 			<es>Cosechadora está girando</es>
 			<it>La trebbia sta girando</it>
+			<cz>Kombajn/rezačka se otáčí</cz>
 		</text>
 		<text name="CPDriveBehinCombine">
 			<en>Drive behind combine</en>
@@ -836,6 +955,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Conduit derriere la batteuse</fr>
 			<es>Ir detras de la cosechadora</es>
 			<it>Guida dietro la trebbia</it>
+			<cz>Jedu za kombajn/rezačku</cz>
 		</text>
 		<text name="CPDriveNextCombine">
 			<en>Drive next to combine</en>
@@ -843,6 +963,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Conduit à coté de la batteuse</fr>
 			<es>Ir junto a la cosechadora</es>
 			<it>Guida accanto la trebbia</it>
+			<cz>Jedu vedle kombajnu/rezačky</cz>
 		</text>
 		<text name="CPDriveToCombine">
 			<en>drive to combine</en>
@@ -850,6 +971,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Conduit vers la batteuse</fr>
 			<es>Ir a la cosechadora</es>
 			<it>Vai alla trebbia</it>
+			<cz>Jedu ke kombajnu/rezačce</cz>
 		</text>
 		<text name="CPCombineWantsMeToStop">
 			<en>Combine is telling me to stop</en>
@@ -857,6 +979,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>La batteuse me demande de m'arreter</fr>
 			<es>La cosechadora dice que pare</es>
 			<it>La trebbia mi dice di fermarmi</it>
+			<cz>Kombajn/rezačka říká že mám zastavit</cz>
 		</text>
 		<text name="CPTurningTo">
 			<en>Turning to direction %d %d</en>
@@ -864,6 +987,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Tourne en direction de %d %d</fr>
 			<es>Girar en dirección %d %d</es>
 			<it>Girando in direzione %d %d</it>
+			<cz>Otočím se ve směru %d %d</cz>
 		</text>
 		<text name="CPDriveToWP">
 			<en>Drive to waypoint %d %d</en>
@@ -871,6 +995,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Conduit vers le points %d %d</fr>
 			<es>Ir al punto %d %d</es>
 			<it>Guida a %d %d</it>
+			<cz>Jedu na souřadnice %d %d </cz>
 		</text>
 		<text name="CPwaitFillLevel">
 			<en>Waiting until fill level is reached</en>
@@ -878,6 +1003,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Attend que le niveau soit atteint</fr>
 			<es>Esperar hasta llegue al nivel de llenado</es>
 			<it>Aspettando che il livello di riempimento sia raggiunto</it>
+			<cz>Čekám než se kombajn/rezačka otočí</cz>
 		</text>
 		<text name="CPnoCombineInReach">
 			<en>No combine in reach</en>
@@ -885,6 +1011,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Pas de Batteuse en vue</fr>
 			<es>Cosechadora fuera del alcance</es>
 			<it>Nessuna trebbia disponibile</it>
+			<cz>Kombajn/rezačka není v dosahu</cz>
 		</text>
 		<text name="CPWaitUntilCombineTurned">
 			<en>Waiting until combine has turned</en>
@@ -892,6 +1019,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Attend que la batteuse ait finis de tourner</fr>
 			<es>Esperar a que la cosechadora gire</es>
 			<it>Aspettando che la trebbia finisca di girare</it>
+			<cz>Čekám než se kombajn/rezačka otočí</cz>
 		</text>
 		<text name="CPWaitForWaypoint">
 			<en>Waiting for new waypoint</en>
@@ -899,6 +1027,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Attend pour le nouveau point</fr>
 			<es>Esperando el nuevo punto</es>
 			<it>Attendi il prossimo punto di passaggio</it>
+			<cz>Čekám na další orientační bod</cz>
 		</text>
 		<text name="CPFollowTractor">
 			<en>Following tractor</en>
@@ -906,6 +1035,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Suit le tracteur</fr>
 			<es>Sigue el tractor</es>
 			<it>Segio il trattore</it>
+			<cz>Jedu za traktor</cz>
 		</text>
 		<text name="CPFuelWarning">
 			<en>should be refueled soon</en>
@@ -913,6 +1043,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>doit bientôt faire le plein</fr>
 			<es>debe repostar pronto</es>
 			<it>dev'essere rifornito al piu' presto</it>
+			<cz>bude potřebovat dotankovat</cz>
 		</text>
 		<text name="CPNoFuelStop">
 			<en>must be refueled</en>
@@ -920,6 +1051,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>doit faire le plein</fr>
 			<es>debe repostar</es>
 			<it>dev'essere rifornito ora</it>
+			<cz>musí tankovat</cz>
 		</text>
 		<text name="CPRefueling">
 			<en>is being refueled</en>
@@ -927,6 +1059,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>est en train d'être ravitailler</fr>
 			<es>está repostando</es>
 			<it>si sta rifornendo</it>
+			<cz>tankuje</cz>
 		</text>
 		<text name="CPWrongTrailer">
 			<en>wrong trailer for this mode</en>
@@ -934,6 +1067,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>pas la bonne remorque pour ce mode</fr>
 			<es>remolque incorrecto para este modo</es>
 			<it>rimorchio sbagliato per questa modalita'</it>
+			<cz>Máš pro tento mod nevhodný příves</cz>
 		</text>
 		<text name="CPWrongESLversion">
 			<en>ESLimiter version is not supported</en>
@@ -941,6 +1075,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>la version du ESLimiter n'est pas compatible</fr>
 			<es>la version de ESLimiter no es compatible</es>
 			<it>la versione dell'ESLimiter non e' compatibile</it>
+			<cz>verze ESLimiter není podporována</cz>
 		</text>
 		<text name="CPSettings">
 			<en>Settings</en>
@@ -948,6 +1083,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Paramètres</fr>
 			<es>Configuración</es>
 			<it>Parametri</it>
+			<cz>Obecná nastavení</cz>
 		</text>
 		<text name="CPWpOffsetX">
 			<en>horizontal offset</en>
@@ -955,6 +1091,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>décalage latéral</fr>
 			<es>Mov. horizontal</es>
 			<it>distanza orizzontale</it>
+			<cz>Posunutí v ose X:</cz>
 		</text>
 		<text name="CPWpOffsetZ">
 			<en>vertical offset</en>
@@ -962,6 +1099,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>décalage Av/Ar</fr>
 			<es>Mov. vertical</es>
 			<it>distanza verticale</it>
+			<cz>Posunutí v ose Z:</cz>
 		</text>
 		<text name="CPWorkingWidht">
 			<en>working width</en>
@@ -969,6 +1107,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>largeur de travail</fr>
 			<es>ancho de trabajo</es>
 			<it>larghezza di lavoro</it>
+			<cz>Pracovní šířka:</cz>
 		</text>
 		<text name="CPWaterDrive">
 			<en>would like to go swimming</en>
@@ -976,6 +1115,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>a voulut prendre un bain</fr>
 			<es>quiere ir a nadar</es>
 			<it>vorrebbe nuotare</it>
+			<cz>by si rád zaplaval</cz>
 		</text>
 		<text name="WaitPoints">
 			<en>waiting points:</en>
@@ -983,6 +1123,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Points d'attente:</fr>
 			<es>Puntos de espera:</es>
 			<it>punti d'attesa:</it>
+			<cz>Bod čekání:</cz>
 		</text>
 		<text name="CrossPoints">
 			<en>crossing points:</en>
@@ -990,6 +1131,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Points de croisement:</fr>
 			<es>Puntos de cruce:</es>
 			<it>incroci:</it>
+			<cz>Bod křížení:</cz>
 		</text>
 		<text name="CPopenHud">
 			<en>open Courseplay:</en>
@@ -997,6 +1139,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Ouverture de Courseplay:</fr>
 			<es>abrir Courseplay:</es>
 			<it>apri Courseplay:</it>
+			<cz>Zapnout CP HUD:</cz>
 		</text>
 		<text name="CPopenHudMouse">
 			<en>right mouse button</en>
@@ -1004,6 +1147,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>clic droit de la souris</fr>
 			<es>boton derecho del raton</es>
 			<it>tasto destro del mouse</it>
+			<cz>pravé tlačítko myši</cz>
 		</text>
 		<text name="CPDebugLevel">
 			<en>Debug level</en>
@@ -1011,6 +1155,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Niveau de débogage</fr>
 			<es>Depurar nivel</es>
 			<it>Livello di messa a punto</it>
+			<cz>Úroveň ladění:</cz>
 		</text>
 		<text name="CPDebugLevel0">
 			<en>0: nothing</en>
@@ -1018,6 +1163,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>0: rien</fr>
 			<es>0: nada</es>
 			<it>0: nessuno</it>
+			<cz>0: nic</cz>
 		</text>
 		<text name="CPDebugLevel1">
 			<en>1: not detailed</en>
@@ -1025,6 +1171,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>1: pas détaillé</fr>
 			<es>1: no se detallan</es>
 			<it>1: non dettagliato</it>
+			<cz>1: méně důležitý</cz>
 		</text>
 		<text name="CPDebugLevel2">
 			<en>2: semi-important</en>
@@ -1032,6 +1179,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>2: semi-detaillé</fr>
 			<es>2: semi-importante</es>
 			<it>2: semi-dettagliato</it>
+			<cz>2: důležitý</cz>
 		</text>
 		<text name="CPDebugLevel3">
 			<en>3: important</en>
@@ -1039,6 +1187,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>3: important</fr>
 			<es>3: importante</es>
 			<it>3: importante</it>
+			<cz>3: důležitější</cz>
 		</text>
 		<text name="CPDebugLevel4">
 			<en>4: everything (most detailed)</en>
@@ -1046,6 +1195,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>4: tout (le plus détaillé)</fr>
 			<es>4: todo (en detalle)</es>
 			<it>4: tutto (il piu' dettagliato)</it>
+			<cz>4: vše (detailní)</cz>
 		</text>
 		<text name="CPHudOpen">
 			<en>Show Courseplay HUD</en>
@@ -1053,6 +1203,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Montrer le Courseplay HUD</fr>
 			<es>Mostrar Courseplay HUD</es>
 			<it>Mostra il Courseplay HUD</it>
+			<cz>Zobrazit Courseplay HUD</cz>
 		</text>
 		<text name="CPHudClose">
 			<en>Hide Courseplay HUD</en>
@@ -1060,6 +1211,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Cacher le Courseplay HUD</fr>
 			<es>Ocultar Courseplay HUD</es>
 			<it>Nascondi Courseplay HUD</it>
+			<cz>Skrýt Courseplay HUD</cz>
 		</text>
 		<text name="CPOptions">
 			<en>Courseplay options</en>
@@ -1067,6 +1219,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Options du Courseplay</fr>
 			<es>Opciones de Courseplay</es>
 			<it>Opzioni del Courseplay</it>
+			<cz>Courseplay nastavení</cz>
 		</text>
 		<text name="CP_Hud">
 			<en>Courseplay HUD</en>
@@ -1081,6 +1234,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Courseplay touche extra 1</fr>
 			<es>Courseplay modificar tecla 1</es>
 			<it>Courseplay tasto extra 1</it>
+			<cz>CP extra klávesa 1</cz>
 		</text>
 		<text name="CP_Modifier_2">
 			<en>Courseplay key modifier 2</en>
@@ -1088,6 +1242,7 @@ Skydancer, Jakob Tischler, Thomas Gärtner]]>
 			<fr>Courseplay touche extra 2</fr>
 			<es>Courseplay modificar tecla 2</es>
 			<it>Courseplay tasto extra 2</it>
+			<cz>CP extra klávesa 2</cz>
 		</text>
 	</l10n>
 
