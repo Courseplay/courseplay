@@ -139,6 +139,7 @@ function courseplay:stop_record(self)
 	self.maxnumber = self.recordnumber - 1
 	self.recordnumber = 1
 	self.back = false
+	self.numCourses = 1;
 end
 
 -- interrupts course recording -- just setting variables
