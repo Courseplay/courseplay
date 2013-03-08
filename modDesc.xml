@@ -1109,6 +1109,84 @@ Traduzione spagnolo: JFMtb
 			<es>Courseplay modificar tecla 2</es>
 			<it>Courseplay tasto extra 2</it>
 		</text>
+
+		<!-- Course Generation -->
+		<text name="CPcourseGeneration">
+			<de>Kursgenerierung</de>
+			<en>Course generation</en>
+			<es>Generación de una ruta</es>
+			<fr>Génération d'une course</fr>
+			<it>Course generation</it> <!-- !! IT -->
+		</text>
+		<text name="CPstartingCorner">
+			<en>Starting corner</en>
+			<de>Startecke</de>
+			<fr>Starting corner</fr> <!-- !! FR -->
+		</text>
+		<text name="CPstartingDirection">
+			<en>Starting direction</en>
+			<de>Startrichtung</de>
+			<fr>Starting direction</fr> <!-- !! FR -->
+		</text>
+		<text name="CPreturnToFirstPoint">
+			<en>Return to first point</en>
+			<de>Am Startpunkt enden</de>
+			<fr>Return to first point</fr> <!-- !! FR -->
+		</text>
+		<text name="CPcorner1">
+			<en>South-West</en>
+			<de>Südwest</de>
+			<fr>sud-ouest</fr>
+		</text>
+		<text name="CPcorner2">
+			<en>North-West</en>
+			<de>Nordwest</de>
+			<fr>nord-ouest</fr>
+		</text>
+		<text name="CPcorner3">
+			<en>North-East</en>
+			<de>Nordost</de>
+			<fr>nord-est</fr>
+		</text>
+		<text name="CPcorner4">
+			<en>South-East</en>
+			<de>Südost</de>
+			<fr>sud-est</fr>
+		</text>
+		<text name="CPdirection1">
+			<en>North</en>
+			<de>Norden</de>
+			<fr>nord</fr>
+		</text>
+		<text name="CPdirection2">
+			<en>East</en>
+			<de>Osten</de>
+			<fr>est</fr>
+		</text>
+		<text name="CPdirection3">
+			<en>South</en>
+			<de>Süden</de>
+			<fr>sud</fr>
+		</text>
+		<text name="CPdirection4">
+			<en>West</en>
+			<de>Westen</de>
+			<fr>ouest</fr>
+		</text>
+		<text name="CPyes">
+			<de>Ja</de>
+			<en>Yes</en>
+			<es>Si</es>
+			<fr>Oui</fr>
+			<it>Si</it>
+		</text>
+		<text name="CPno">
+			<de>Nein</de>
+			<en>No</en>
+			<es>No</es>
+			<fr>Non</fr>
+			<it>No</it>
+		</text>
 	</l10n>
 
 	<extraSourceFiles>

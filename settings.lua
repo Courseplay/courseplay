@@ -51,10 +51,10 @@ function courseplay:switch_hud_page(self, change_by)
 	self.showHudInfoBase = self.showHudInfoBase + change_by
 
 	if self.showHudInfoBase < self.min_hud_page then --edit for more sites
-		self.showHudInfoBase = 7
+		self.showHudInfoBase = 8
 	end
 
-	if self.showHudInfoBase == 8 then --edit for more sites
+	if self.showHudInfoBase > 8 then --edit for more sites
 		self.showHudInfoBase = self.min_hud_page
 	end
 end
@@ -292,3 +292,64 @@ function courseplay:change_DebugLevel(change_by)
 	end
 end
 
+
+--Course generation
+function courseplay:switchStartingCorner(self)
+	--print("switchStartingCorner() called");
+
+	self.cp.startingCorner = self.cp.startingCorner + 1;
+	if self.cp.startingCorner > 4 then
+		self.cp.startingCorner = 1;
+	end;
+	self.cp.hasStartingCorner = true;
+	self.cp.hasStartingDirection = false;
+	self.cp.startingDirection = 0;
+
+	--print(string.format("hasStartingCorner = %s / startingCorner = %s", tostring(self.cp.hasStartingCorner), tostring(self.cp.startingCorner)));
+	--print(string.format("hasStartingDirection = %s / startingDirection = %s", tostring(self.cp.hasStartingDirection), tostring(self.cp.startingDirection)));
+	--print("----- ----- ----- -----");
+end;
+
+function courseplay:switchStartingDirection(self)
+	--print("switchStartingDirection() called");
+	-- corners: 1 = SW, 2 = NW, 3 = NE, 4 = SE
+	-- directions: 1 = North, 2 = East, 3 = South, 4 = West
+
+	local validDirections = {};
+	if self.cp.hasStartingCorner then
+		if self.cp.startingCorner == 1 then --SW
+			validDirections[1] = 1; --N
+			validDirections[2] = 2; --E
+		elseif self.cp.startingCorner == 2 then --NW
+			validDirections[1] = 2; --E
+			validDirections[2] = 3; --S
+		elseif self.cp.startingCorner == 3 then --NE
+			validDirections[1] = 3; --S
+			validDirections[2] = 4; --W
+		elseif self.cp.startingCorner == 4 then --SE
+			validDirections[1] = 4; --W
+			validDirections[2] = 1; --N
+		end;
+
+		--would be easier with i=i+1, but more stored variables would be needed
+		if self.cp.startingDirection == 0 then
+			self.cp.startingDirection = validDirections[1];
+		elseif self.cp.startingDirection == validDirections[1] then
+			self.cp.startingDirection = validDirections[2];
+		elseif self.cp.startingDirection == validDirections[2] then
+			self.cp.startingDirection = validDirections[1];
+		end;
+		self.cp.hasStartingDirection = true;
+	end;
+	
+	--print(string.format("hasStartingCorner = %s / startingCorner = %s", tostring(self.cp.hasStartingCorner), tostring(self.cp.startingCorner)));
+	--print(string.format("hasStartingDirection = %s / startingDirection = %s", tostring(self.cp.hasStartingDirection), tostring(self.cp.startingDirection)));
+	--print("----- ----- ----- -----");
+end;
+
+function courseplay:switchReturnToFirstPoint(self)
+	--print("switchReturnToFirstPoint() called");
+	self.cp.returnToFirstPoint = not self.cp.returnToFirstPoint;
+	--print(string.format("returnToFirstPoint = %s", tostring(self.cp.returnToFirstPoint)));
+	--print("----- ----- ----- -----");
+end;

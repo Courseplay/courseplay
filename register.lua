@@ -59,7 +59,7 @@ function cp_setLocales()
 				g_i18n:setText(textName, textName);
 			end;
 			courseplay.locales[textName] = g_i18n:getText(textName);
-			courseplay:debug(string.format("courseplay.locales[%s] (#%d) = %s", textName, b, courseplay.locales[textName]),3);
+			--print(string.format("courseplay.locales[%s] (#%d) = %s", textName, b, courseplay.locales[textName]));
 			b = b + 1;
 		else
 			break;

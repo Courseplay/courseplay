@@ -1,9 +1,9 @@
 --
--- Courseplay v3.0
+-- Courseplay v3.30
 -- Specialization for Courseplay
 --
--- @author  Lautschreier / Hummel / Wolverin0815 / Bastian82
--- @version:	v3.0 30.12.2011
+-- @author  Lautschreier / Hummel / Wolverin0815 / Bastian82 / skydancer / Jakob Tischler / Thomas Gärtner
+-- @version:	v3.30 08 Mar 2013
 -- @testing:    bullgore80
 
 courseplay = {};
@@ -23,6 +23,7 @@ function initialize_courseplay()
 
 	-- course recording & resetting
 	source(courseplay_path .. "recording.lua")
+	source(courseplay_path .. "generateCourse.lua")
 
 	-- drive Modes
 	source(courseplay_path .. "mode1.lua")
@@ -65,6 +66,6 @@ function initialize_courseplay()
 	source(courseplay_path .. "courseplay_event.lua")
 	source(courseplay_path .. "astar.lua")
 	source(courseplay_path .. "fruit.lua")
-end
+end;
 
-initialize_courseplay()
+initialize_courseplay();

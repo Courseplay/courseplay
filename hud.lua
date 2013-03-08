@@ -11,7 +11,7 @@ function courseplay:HudPage(self)
 				renderText(courseplay.hud.infoBasePosX + 0.005, courseplay.hud.linesPosY[v], 0.019, name);
 			elseif c == 2 then
 				--local yspace = courseplay.hud.infoBasePosY + 0.210 - ((v - 1) * 0.021) --ORIG: + 0.200 - NEW: + 0.210 ?
-				if Page == 6 then
+				if Page == 6 or Page == 8 then
 					renderText(courseplay.hud.infoBasePosX + 0.182, courseplay.hud.linesPosY[v], 0.017, name);
 				else
 					renderText(courseplay.hud.infoBasePosX + 0.122, courseplay.hud.linesPosY[v], 0.017, name);
@@ -331,7 +331,7 @@ function courseplay:loadHud(self)
 			self.hudpage[6][1][4] = courseplay:get_locale(self, "Rul")
 			self.hudpage[6][1][5] = courseplay:get_locale(self, "CPDebugLevel")
 
-			self.hudpage[6][2][3] = courseplay:get_locale(self, "WaypointMode" .. string.format("%d", self.waypointMode));
+			self.hudpage[6][2][3] = courseplay:get_locale(self, string.format("WaypointMode%d", self.waypointMode));
 			self.hudpage[6][2][4] = courseplay:get_locale(self, "RulMode" .. string.format("%d", self.RulMode));
 			self.hudpage[6][2][5] = courseplay:get_locale(self, "CPDebugLevel" .. string.format("%d", CPDebugLevel))
 
@@ -361,7 +361,52 @@ function courseplay:loadHud(self)
 			else
 				self.hudpage[7][2][4] = "---"
 			end
-		end
+
+		--Page 8 (Course generation)
+		elseif self.showHudInfoBase == 8 then
+			--line 1 = work width
+			self.hudpage[8][1][1] = courseplay:get_locale(self, "CPWorkingWidht"); -- Arbeitsbreite
+			if self.toolWorkWidht ~= nil then
+				self.hudpage[8][2][1] = string.format("%.1f m", self.toolWorkWidht)
+			else
+				self.hudpage[8][2][1] = "---"
+			end
+
+			--line 2 = starting corner
+			self.hudpage[8][1][2] = courseplay:get_locale(self, "CPstartingCorner");
+			-- 1 = SW, 2 = NW, 3 = NE, 4 = SE
+			if self.cp.hasStartingCorner then
+				self.hudpage[8][2][2] = courseplay:get_locale(self, string.format("CPcorner%d", self.cp.startingCorner)); -- NE/SE/SW/NW
+			else
+				self.hudpage[8][2][2] = "---";
+			end;
+
+			--line 3 = starting direction
+			self.hudpage[8][1][3] = courseplay:get_locale(self, "CPstartingDirection");
+			-- 1 = North, 2 = East, 3 = South, 4 = West
+			if self.cp.hasStartingDirection then
+				self.hudpage[8][2][3] = courseplay:get_locale(self, string.format("CPdirection%d", self.cp.startingDirection)); -- East/South/West/North
+			else
+				self.hudpage[8][2][3] = "---";
+			end;
+
+			--line 4 = return to first point
+			self.hudpage[8][1][4] = courseplay:get_locale(self, "CPreturnToFirstPoint");
+			if self.cp.returnToFirstPoint then
+				self.hudpage[8][2][4] = courseplay:get_locale(self, "CPyes");
+			else
+				self.hudpage[8][2][4] = courseplay:get_locale(self, "CPno");
+			end;
+
+			--line 5 = generate course action
+			if table.getn(self.Waypoints) > 4 and self.cp.hasStartingCorner == true and self.cp.hasStartingDirection == true and (self.numCourses == nil or (self.numCourses ~= nil and self.numCourses == 1)) then
+				self.cp.hasValidCourseGenerationData = true;
+				self.hudpage[8][1][5] = courseplay:get_locale(self, "CourseGenerate");
+			else
+				self.cp.hasValidCourseGenerationData = false;
+				self.hudpage[8][1][5] = "";
+			end;
+		end;
 	end -- end if show_hud
 end
 
@@ -419,6 +464,8 @@ function courseplay:showHud(self)
 			hud_headline = courseplay:get_locale(self, "CPSettings") -- "Allgemein"
 		elseif self.showHudInfoBase == 7 then
 			hud_headline = courseplay:get_locale(self, "CPHud7") -- "Allgemein"
+		elseif self.showHudInfoBase == 8 then
+			hud_headline = courseplay:get_locale(self, "CPcourseGeneration") -- "Course Generation"
 		end
 
 		renderText(courseplay.hud.infoBasePosX + 0.060, courseplay.hud.infoBasePosY + 0.240, 0.021, hud_headline);

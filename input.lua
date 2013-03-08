@@ -42,7 +42,8 @@ function courseplay:setCourseplayFunc(func, value, noEventSend)
 end
 
 function courseplay:deal_with_mouse_input(self, func, value)
-	-- TODO überhaupt nicht DRY das geht bestimmt irgendwie schöner
+	--TODO: überhaupt nicht DRY das geht bestimmt irgendwie schöner
+	--TODO: (Jakob, 25 Jan 2013) http://stackoverflow.com/questions/1791234/lua-call-function-from-a-string-with-function-name
 	if func == "switch_hud_page" then
 		courseplay:switch_hud_page(self, value)
 	end
@@ -178,6 +179,20 @@ function courseplay:deal_with_mouse_input(self, func, value)
 		courseplay:change_WaypointMode(self, value)
 	end
 
+	--Course generation
+	if func == "switchStartingCorner" then
+		courseplay:switchStartingCorner(self);
+	end;
+	if func == "switchStartingDirection" then
+		courseplay:switchStartingDirection(self);
+	end;
+	if func == "switchReturnToFirstPoint" then
+		courseplay:switchReturnToFirstPoint(self);
+	end;
+	if func == "generateCourse" then
+		courseplay:generateCourse(self);
+	end;
+
 	if func == "close_hud" then
 		self.mouse_enabled = false
 		self.show_hud = false
@@ -224,7 +239,7 @@ function courseplay:deal_with_mouse_input(self, func, value)
 
 
 
-				else -- not drving
+				else -- driving
 					local last_recordnumber = nil
 
 					if self.recordnumber > 1 then
@@ -254,8 +269,8 @@ function courseplay:deal_with_mouse_input(self, func, value)
 					end
 
           
-				end -- end not driving
-			end -- not playing
+				end -- end driving
+			end -- playing
 
 
 			if not self.drive then

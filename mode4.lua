@@ -76,7 +76,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill
 
 				--lower/raise
 				if workTool.needsLowering and workTool.aiNeedsLowering then
-					courseplay:debug(string.format("WP%d: isLowered() = %s, hasGroundContact = %s", self.recordnumber, tostring(workTool:isLowered()), tostring(workTool.hasGroundContact)),3);
+					--courseplay:debug(string.format("WP%d: isLowered() = %s, hasGroundContact = %s", self.recordnumber, tostring(workTool:isLowered()), tostring(workTool.hasGroundContact)),3);
 					if turnEnd ~= nil and turnStart ~= nil then
 						if not workTool:isLowered() and turnEnd == false and turnStart == false then
 							self:setAIImplementsMoveDown(true);

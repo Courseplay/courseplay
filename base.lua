@@ -278,6 +278,14 @@ function courseplay:load(xmlFile)
 	self.saved_combine = nil
 	self.selected_combine_number = 0
 
+	--Course generation
+	self.cp.startingCorner = 0;
+	self.cp.hasStartingCorner = false;
+	self.cp.startingDirection = 0;
+	self.cp.hasStartingDirection = false;
+	self.cp.returnToFirstPoint = false;
+	self.cp.hasValidCourseGenerationData = false;
+	
 	self.mouse_enabled = false
 
 	-- HUD  	-- Function in Signs
@@ -322,7 +330,11 @@ function courseplay:load(xmlFile)
 	self.hudpage[7] = {}
 	self.hudpage[7][1] = {}
 	self.hudpage[7][2] = {}
-	
+
+	self.hudpage[8] = {}
+	self.hudpage[8][1] = {}
+	self.hudpage[8][2] = {}
+
 	local w16px = 16/1920;
 	local h16px = 16/1080;
 	local w24px = 24/1920;
@@ -432,8 +444,15 @@ function courseplay:load(xmlFile)
 	courseplay:register_button(self, 7, "navigate_minus.dds", "changeWorkWidth", -0.1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[4], w16px, h16px, nil,  -0.5);
 	courseplay:register_button(self, 7, "navigate_plus.dds",  "changeWorkWidth",  0.1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[4], w16px, h16px, nil,   0.5);
 
+	--Page 8: Course generation
+	courseplay:register_button(self, 8, "navigate_minus.dds", "changeWorkWidth", -0.1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], w16px, h16px, nil,  -0.5);
+	courseplay:register_button(self, 8, "navigate_plus.dds",  "changeWorkWidth",  0.1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[1], w16px, h16px, nil,   0.5);
 
-
+	courseplay:register_button(self, 8, "blank.dds", "switchStartingCorner",     nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[2], 0.32, 0.015, nil, nil);
+	courseplay:register_button(self, 8, "blank.dds", "switchStartingDirection",  nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[3], 0.32, 0.015, nil, nil, "self.cp.hasStartingCorner=true");
+	courseplay:register_button(self, 8, "blank.dds", "switchReturnToFirstPoint", nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[4], 0.32, 0.015, nil, nil);
+	courseplay:register_button(self, 8, "blank.dds", "generateCourse",           nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[5], 0.32, 0.015, nil, nil, "self.cp.hasValidCourseGenerationData=true");
+	--END Page 8
 
 
 	self.fold_move_direction = 1;
@@ -624,6 +643,12 @@ function courseplay:readStream(streamId, connection)
 	self.courseplay_position = streamDebugReadInt32(streamId)
 	self.CPnumCollidingVehicles = streamDebugReadInt32(streamId)
 	self.cpTrafficBrake = streamDebugReadBool(streamId)
+	self.cp.hasStartingCorner = streamDebugReadBool(streamId);
+	self.cp.hasStartingDirection = streamDebugReadBool(streamId);
+	self.cp.hasValidCourseGenerationData = streamDebugReadBool(streamId);
+	self.cp.returnToFirstPoint = streamDebugReadBool(streamId);
+	self.cp.startingCorner = streamDebugReadInt32(streamId);
+	self.cp.startingDirection = streamDebugReadInt32(streamId);
 	self.cp.tipperHasCover = streamDebugReadBool(streamId);
 	self.crossPoints = streamDebugReadInt32(streamId)
 	self.drive = streamDebugReadBool(streamId)
@@ -731,6 +756,12 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteInt32(streamId,self.courseplay_position)
 	streamDebugWriteInt32(streamId,self.CPnumCollidingVehicles)
 	streamDebugWriteBool(streamId, self.cpTrafficBrake)
+	streamDebugWriteBool(streamId, self.cp.hasStartingCorner);
+	streamDebugWriteBool(streamId, self.cp.hasStartingDirection);
+	streamDebugWriteBool(streamId, self.cp.hasValidCourseGenerationData);
+	streamDebugWriteBool(streamId, self.cp.returnToFirstPoint);
+	streamDebugWriteInt32(streamId, self.cp.startingCorner);
+	streamDebugWriteInt32(streamId, self.cp.startingDirection);
 	streamDebugWriteBool(streamId, self.cp.tipperHasCover);
 	streamDebugWriteInt32(streamId, self.crossPoints);
 	streamDebugWriteBool(streamId,self.drive)
