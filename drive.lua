@@ -261,10 +261,10 @@ function courseplay:drive(self, dt)
 			elseif last_recordnumber == self.stopWork and self.abortWork == nil then
 				self.global_info_text = courseplay:get_locale(self, "CPWorkEnd") --'hat Arbeit beendet.'
 			else
-				self.global_info_text = courseplay:get_locale(self, "CPUnloadBale") -- "Ballen werden entladen"
-				if fill_level == 0 or drive_on then
+				if fill_level == 100 or drive_on then
 					self.wait = false
 				end
+				self.info_text = string.format(courseplay:get_locale(self, "CPloading"), tipper_fill_level, tipper_capacity)
 			end
 		elseif self.ai_mode == 6 then
 			if last_recordnumber == self.startWork then
