@@ -13,6 +13,7 @@ TODO:
 3) raise/lower implements at lane end doesn't work yet -- see notes in mode4
 4) pointInPoly too inaccurate with points too close at poly edge
 5) ridgeMarker deployed too early (already before last_recordnumber == firstInLane)
+6) translate hud settings
 ]]
 
 function courseplay:generateCourse(self)
@@ -266,7 +267,6 @@ function courseplay:generateCourse(self)
 	-- (3) CHECK PATH LANES FOR VALID START AND END POINTS and FILL self.Waypoints
 	------------------------------------------------------------------------------
 	local numPoints = table.getn(pathPoints);
-	local turnReverse = true;
 	for i=1, numPoints do
 		local cp = pathPoints[i];   --current
 		local np = pathPoints[i+1]; --next
@@ -279,8 +279,9 @@ function courseplay:generateCourse(self)
 			np = pathPoints[1];
 		end;
 		
-		cp.firstInLane = pp.lane ~= cp.lane and i > 1; --previous point in different lane -> I'm first in lane
-		cp.lastInLane = np.lane ~= cp.lane and i < numPoints; --next point in different lane -> I'm last in lane
+		cp.firstInLane = pp.lane ~= cp.lane; --previous point in different lane -> I'm first in lane
+		cp.lastInLane = np.lane ~= cp.lane; --next point in different lane -> I'm last in lane
+		local isLastLane = cp.lane == numLanes;
 		
 		
 		--right = 0deg, top = 90deg, left = 180deg, bottom = 270deg
@@ -288,18 +289,17 @@ function courseplay:generateCourse(self)
 		if cp.firstInLane or i == 1 then
 			--angleDeg = math.deg(math.atan2(np.x - cp.x, np.z - cp.z));
 			angleDeg = math.deg(math.atan2(np.z - cp.z, np.x - cp.x));
-			cp.ridgeMarker = 0;
 		else
 			--angleDeg = math.deg(math.atan2(cp.x - pp.x, cp.z - pp.z));
 			angleDeg = math.deg(math.atan2(cp.z - pp.z, cp.x - pp.x));
 		end;
 		
-		local wait = i == 1 or (i == numPoints and not self.cp.returnToFirstPoint);
-		--print(string.format("Point %d of %d: pp.lane=%d, cp.lane=%d, np.lane=%d, wait=%s, firstInLane=%s, lastInLane=%s, angleDeg=%s, ridgeMarker=%s", i, numPoints, pp.lane, cp.lane, np.lane, tostring(wait), tostring(cp.firstInLane), tostring(cp.lastInLane), tostring(angleDeg), tostring(cp.ridgeMarker)));
-		
-		if cp.firstInLane or i == numPoints then
+		if cp.firstInLane or i == 1 or isLastLane then 
 			cp.ridgeMarker = 0;
 		end;
+		
+		local wait = i == 1 or (i == numPoints and not self.cp.returnToFirstPoint);
+		--print(string.format("Point %d of %d: pp.lane=%d, cp.lane=%d, np.lane=%d, wait=%s, firstInLane=%s, lastInLane=%s, angleDeg=%s, ridgeMarker=%s", i, numPoints, pp.lane, cp.lane, np.lane, tostring(wait), tostring(cp.firstInLane), tostring(cp.lastInLane), tostring(angleDeg), tostring(cp.ridgeMarker)));
 		
 		local point = { 
 			cx = cp.x, 
@@ -310,15 +310,51 @@ function courseplay:generateCourse(self)
 			crossing = false,
 			lane = cp.lane,
 			laneDir = cp.laneDir,
-			turnStart = cp.lastInLane,
-			turnEnd = cp.firstInLane,
+			turnStart = cp.lastInLane and cp.lane < numLanes,
+			turnEnd = cp.firstInLane and i > 1,
 			ridgeMarker = cp.ridgeMarker,
 			raiseTool = false,
 			generated = true
 		};
-		table.insert(self.Waypoints, point);
+		
+		local newFirstInLane, newLastInLane;
 		
 		--TURN MANEUVER ... AND STUFF
+		if cp.firstInLane then
+			local projectionAngle = courseplay:invertAngleDeg(point.angle);
+			local testPoint, testLength = {}, 20;
+			testPoint.x = cp.x + testLength * math.cos(Utils.degToRad(projectionAngle));
+			testPoint.z = cp.z + testLength * math.sin(Utils.degToRad(projectionAngle));
+			newFirstInLane = courseplay:lineIntersectsPoly(cp, testPoint, poly);
+			
+			if newFirstInLane ~= nil then
+				print(string.format("lane %d: newFirstInLane: x=%f, z=%f", cp.lane, newFirstInLane.x, newFirstInLane.z));
+			
+				newFirstInLane.cx = newFirstInLane.x;
+				newFirstInLane.cz = newFirstInLane.z;
+				newFirstInLane.angle = point.angle;
+				newFirstInLane.wait = point.wait;
+				newFirstInLane.crossing = point.crossing;
+				newFirstInLane.lane = point.lane;
+				newFirstInLane.laneDir = point.laneDir;
+				newFirstInLane.firstInLane = true;				
+				newFirstInLane.turn = point.turn;
+				newFirstInLane.turnStart = false;
+				newFirstInLane.turnEnd = true;
+				newFirstInLane.ridgeMarker = 0;
+				newFirstInLane.raiseTool = false;
+				newFirstInLane.generated = true;
+				
+				--reset some vars in old first point
+				point.wait = false;
+				point.firstInLane = false;
+				point.turn = nil;
+				point.turnStart = false;
+				point.turnEnd = false;
+				point.raiseTool = false;
+			end;
+		end; --END cp.firstInLane
+		
 		if cp.lastInLane then
 			--North
 			if cp.laneDir == "N" then
@@ -348,7 +384,6 @@ function courseplay:generateCourse(self)
 			--print(string.format("laneDir=%s, cp.turn=%s", cp.laneDir, tostring(cp.turn)));
 		
 		
-			--TODO: add point exactly on polygon edge (polygon vector intersection point)
 			angleDeg = courseplay:positiveAngleDeg(angleDeg);
 			
 			local testPoint, testLength = {}, 20;
@@ -356,57 +391,44 @@ function courseplay:generateCourse(self)
 			testPoint.z = cp.z + testLength * math.sin(Utils.degToRad(angleDeg));
 			--print(string.format("x=%f, z=%f, testPoint: x=%f, z=%f", cp.x, cp.z, testPoint.x, testPoint.z));
 	
-			local lastInLane = courseplay:lineIntersectsPoly(cp, testPoint, poly);
-			--local lastInLane = nil;
+			newLastInLane = courseplay:lineIntersectsPoly(cp, testPoint, poly);
 			
-			if lastInLane then
-				--print(string.format("new lastInLane: x=%f, z=%f", lastInLane.x, lastInLane.z));
-				cp.lastInLane = false;
-				cp.turnStart = false;
-			
-				lastInLane.cx = lastInLane.x;
-				lastInLane.cz = lastInLane.z;
-				lastInLane.angle = angleDeg;
-				lastInLane.lastInLane = true;
-				lastInLane.wait = false;
-				lastInLane.crossing = false;
-				lastInLane.turn = cp.turn;
-				lastInLane.turnStart = true;
-				lastInLane.turnEnd = false;
-				lastInLane.ridgeMarker = 0;
-				lastInLane.raiseTool = false;
-				lastInLane.generated = true;
+			if newLastInLane ~= nil then
+				--print(string.format("newLastInLane: x=%f, z=%f", newLastInLane.x, newLastInLane.z));
+				newLastInLane.cx = newLastInLane.x;
+				newLastInLane.cz = newLastInLane.z;
+				newLastInLane.angle = point.angle;
+				newLastInLane.wait = point.wait;
+				newLastInLane.crossing = point.crossing;
+				newLastInLane.lane = point.lane;
+				newLastInLane.laneDir = point.laneDir;
+				newLastInLane.lastInLane = true;
+				newLastInLane.turn = point.turn;
+				newLastInLane.turnStart = true;
+				newLastInLane.turnEnd = false;
+				newLastInLane.ridgeMarker = 0;
+				newLastInLane.raiseTool = true;
+				newLastInLane.generated = true;
 				
-				table.insert(self.Waypoints, lastInLane);
-			else
-				lastInLane = cp;
-				cp.ridgeMarker = 0;
+				point.lastInLane = false;
+				point.turn = nil;
+				point.turnStart = false;
+				point.turnEnd = false;
+				point.raiseTool = false;
+
 			end;
-			
-			np.turn = lastInLane.turn;
-			
-			--CALCULATE EXTRA TURN WAYPOINTS
-			local turningCircle = 12;
-			if self.autoTurnRadius ~= nil and self.autoTurnRadius > 0 then
-				turningCircle = self.autoTurnRadius; 
-			end;
-			local dist = math.min(3, turningCircle/3); 
-			
-			local dirFactor = 1;
-			if lastInLane.turn == "left" then
-				dirFactor = 1;
-			elseif lastInLane.turn == "right" then
-				dirFactor = -1;
-			end;
-			
-			--Turning (reverse)
-			if turnReverse then
-			end; --END reverse
-			
-			--Turning (no reverse)
-			if not turnReverse then
-			end; --END not reverse
 		end; --END cp.lastInLane
+
+		if newFirstInLane ~= nil then
+			table.insert(self.Waypoints, newFirstInLane);
+		end;
+		
+		table.insert(self.Waypoints, point);
+		
+		if newLastInLane ~= nil then
+			table.insert(self.Waypoints, newLastInLane);
+		end;
+		
 	end; --END for i in numPoints
 	
 	if self.cp.returnToFirstPoint then
