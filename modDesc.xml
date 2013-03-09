@@ -1121,17 +1121,17 @@ Traduzione spagnolo: JFMtb
 		<text name="CPstartingCorner">
 			<en>Starting corner</en>
 			<de>Startecke</de>
-			<fr>Starting corner</fr> <!-- !! FR -->
+			<fr>Coin de départ</fr>
 		</text>
 		<text name="CPstartingDirection">
 			<en>Starting direction</en>
 			<de>Startrichtung</de>
-			<fr>Starting direction</fr> <!-- !! FR -->
+			<fr>Direction de départ</fr>
 		</text>
 		<text name="CPreturnToFirstPoint">
 			<en>Return to first point</en>
 			<de>Am Startpunkt enden</de>
-			<fr>Return to first point</fr> <!-- !! FR -->
+			<fr>Retour au depart</fr>
 		</text>
 		<text name="CPcorner1">
 			<en>South-West</en>
