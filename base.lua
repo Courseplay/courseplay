@@ -57,6 +57,7 @@ function courseplay:load(xmlFile)
 	end
 
 	self.cp = {};
+
 	--turn maneuver
 	self.cp.waitForTurnTime = 0.00   --float
 	self.cp.turnStage = 0 --int
@@ -64,8 +65,6 @@ function courseplay:load(xmlFile)
 	self.cp.backMarkerOffset = nil --float
 	self.cp.turnTimer = 8000 --int
 	self.cp.noStopOnEdge = false --bool
-	
-
 
 	self.toggledTipState = 0;
 	
@@ -281,7 +280,6 @@ function courseplay:load(xmlFile)
 	self.WpOffsetX = 0
 	self.WpOffsetZ = 0
 	self.toolWorkWidht = 3
-	self.createCourse = false
 	-- loading saved courses from xml
 
 	self.search_combine = true
@@ -451,9 +449,6 @@ function courseplay:load(xmlFile)
 
 	courseplay:register_button(self, 7, "navigate_minus.dds", "changeWpOffsetZ", -0.5, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[3], w16px, h16px, nil,  -1);
 	courseplay:register_button(self, 7, "navigate_plus.dds",  "changeWpOffsetZ",  0.5, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[3], w16px, h16px, nil,   1);
-
-	courseplay:register_button(self, 7, "navigate_minus.dds", "changeWorkWidth", -0.1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[4], w16px, h16px, nil,  -0.5);
-	courseplay:register_button(self, 7, "navigate_plus.dds",  "changeWorkWidth",  0.1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[4], w16px, h16px, nil,   0.5);
 
 	--Page 8: Course generation
 	courseplay:register_button(self, 8, "navigate_minus.dds", "changeWorkWidth", -0.1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], w16px, h16px, nil,  -0.5);
@@ -880,26 +875,26 @@ end
 
 function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 	if not resetVehicles and g_server ~= nil then
-		self.max_speed = Utils.getNoNil(getXMLFloat(xmlFile, key .. string.format("#max_speed")), 50 / 3600);
-		self.use_speed = Utils.getNoNil(getXMLBool(xmlFile, key .. string.format("#use_speed")), false);
-		self.turn_speed = Utils.getNoNil(getXMLFloat(xmlFile, key .. string.format("#turn_speed")), 10 / 3600);
-		self.field_speed = Utils.getNoNil(getXMLFloat(xmlFile, key .. string.format("#field_speed")), 24 / 3600);
-		self.unload_speed = Utils.getNoNil(getXMLFloat(xmlFile, key .. string.format("#unload_speed")), 6 / 3600);
-		self.realistic_driving = Utils.getNoNil(getXMLBool(xmlFile, key .. string.format("#realistic_driving")), true);    
-		self.tipper_offset = Utils.getNoNil(getXMLFloat(xmlFile, key .. string.format("#tipper_offset")), 0);
-		self.combine_offset = Utils.getNoNil(getXMLFloat(xmlFile, key .. string.format("#combine_offset")), 0);
+		self.max_speed                        = Utils.getNoNil(getXMLFloat( xmlFile, key .. string.format("#max_speed")              ), 50 / 3600);
+		self.use_speed                        = Utils.getNoNil(getXMLBool(  xmlFile, key .. string.format("#use_speed")              ), false);
+		self.turn_speed                       = Utils.getNoNil(getXMLFloat( xmlFile, key .. string.format("#turn_speed")             ), 10 / 3600);
+		self.field_speed                      = Utils.getNoNil(getXMLFloat( xmlFile, key .. string.format("#field_speed")            ), 24 / 3600);
+		self.unload_speed                     = Utils.getNoNil(getXMLFloat( xmlFile, key .. string.format("#unload_speed")           ),  6 / 3600);
+		self.realistic_driving                = Utils.getNoNil(getXMLBool(  xmlFile, key .. string.format("#realistic_driving")      ), true);    
+		self.tipper_offset                    = Utils.getNoNil(getXMLFloat( xmlFile, key .. string.format("#tipper_offset")          ), 0);
+		self.combine_offset                   = Utils.getNoNil(getXMLFloat( xmlFile, key .. string.format("#combine_offset")         ), 0);
 
-		self.required_fill_level_for_follow = Utils.getNoNil(getXMLInt(xmlFile, key .. string.format("#fill_follow")), 50);
-		self.required_fill_level_for_drive_on = Utils.getNoNil(getXMLInt(xmlFile, key .. string.format("#fill_drive")), 90);
-		self.WpOffsetX = Utils.getNoNil(getXMLFloat(xmlFile, key .. string.format("#OffsetX")), 0);
-		self.mouse_right_key_enabled = Utils.getNoNil(getXMLFloat(xmlFile, key .. string.format("#mouse_right_key_enabled")), true);
-		self.WpOffsetZ = Utils.getNoNil(getXMLFloat(xmlFile, key .. string.format("#OffsetZ")), 0);
-		self.waitTime = Utils.getNoNil(getXMLFloat(xmlFile, key .. string.format("#waitTime")), 0);
-		self.abortWork = Utils.getNoNil(getXMLInt(xmlFile, key .. string.format("#AbortWork")), nil);
-		self.turn_radius = Utils.getNoNil(getXMLInt(xmlFile, key .. string.format("#turn_radius")), 10);
-		self.RulMode = Utils.getNoNil(getXMLInt(xmlFile, key .. string.format("#rul_mode")), 1);
-		local courses = Utils.getNoNil(getXMLString(xmlFile, key .. string.format("#courses")), "");
-		self.toolWorkWidht = Utils.getNoNil(getXMLFloat(xmlFile, key .. string.format("#toolWorkWidht")), 3);
+		self.required_fill_level_for_follow   = Utils.getNoNil(getXMLInt(   xmlFile, key .. string.format("#fill_follow")            ), 50);
+		self.required_fill_level_for_drive_on = Utils.getNoNil(getXMLInt(   xmlFile, key .. string.format("#fill_drive")             ), 90);
+		self.WpOffsetX                        = Utils.getNoNil(getXMLFloat( xmlFile, key .. string.format("#OffsetX")                ), 0);
+		self.mouse_right_key_enabled          = Utils.getNoNil(getXMLBool(  xmlFile, key .. string.format("#mouse_right_key_enabled")), true);
+		self.WpOffsetZ                        = Utils.getNoNil(getXMLFloat( xmlFile, key .. string.format("#OffsetZ")                ), 0);
+		self.waitTime                         = Utils.getNoNil(getXMLFloat( xmlFile, key .. string.format("#waitTime")               ), 0);
+		self.abortWork                        = Utils.getNoNil(getXMLInt(   xmlFile, key .. string.format("#AbortWork")              ), nil);
+		self.turn_radius                      = Utils.getNoNil(getXMLInt(   xmlFile, key .. string.format("#turn_radius")            ), 10);
+		self.RulMode                          = Utils.getNoNil(getXMLInt(   xmlFile, key .. string.format("#rul_mode")               ), 1);
+		local courses                         = Utils.getNoNil(getXMLString(xmlFile, key .. string.format("#courses")                ), "");
+		self.toolWorkWidht                    = Utils.getNoNil(getXMLFloat( xmlFile, key .. string.format("#toolWorkWidht")          ), 3);
 		self.loaded_courses = courses:split(",")
 		self.selected_course_number = 0
 
@@ -918,26 +913,26 @@ end
 function courseplay:getSaveAttributesAndNodes(nodeIdent)
 
 	local attributes =
-		' max_speed="' .. tostring(self.max_speed) .. '"' ..
-		' use_speed="' .. tostring(self.use_speed) .. '"' ..
-		' turn_speed="' .. tostring(self.turn_speed) .. '"' ..
-		' field_speed="' .. tostring(self.field_speed) .. '"' ..
-		' unload_speed="' .. tostring(self.unload_speed) .. '"' ..
-		' tipper_offset="' .. tostring(self.tipper_offset) .. '"' ..
-		' combine_offset="' .. tostring(self.combine_offset) .. '"' ..
-		' fill_follow="' .. tostring(self.required_fill_level_for_follow) .. '"' ..
-		' fill_drive="' .. tostring(self.required_fill_level_for_drive_on) .. '"' ..
-		' OffsetX="' .. tostring(self.WpOffsetX) .. '"' ..
-		' OffsetZ="' .. tostring(self.WpOffsetZ) .. '"' ..
-		' AbortWork="' .. tostring(self.abortWork) .. '"' ..
-		' turn_radius="' .. tostring(self.turn_radius) .. '"' ..
-		' waitTime="' .. tostring(self.waitTime) .. '"' ..
-		' courses="' .. tostring(table.concat(self.loaded_courses, ",")) .. '"' ..
-		' mouse_right_key_enabled="' .. tostring(self.mouse_right_key_enabled) .. '"' ..
-		' rul_mode="'..tostring(self.RulMode) .. '"' ..
-		' toolWorkWidht="'..tostring(self.toolWorkWidht) .. '"' ..
-		' realistic_driving="'..tostring(self.realistic_driving) .. '"' ..
-		' ai_mode="' .. tostring(self.ai_mode) .. '"';
+		' max_speed="'               .. tostring(self.max_speed)                         .. '"' ..
+		' use_speed="'               .. tostring(self.use_speed)                         .. '"' ..
+		' turn_speed="'              .. tostring(self.turn_speed)                        .. '"' ..
+		' field_speed="'             .. tostring(self.field_speed)                       .. '"' ..
+		' unload_speed="'            .. tostring(self.unload_speed)                      .. '"' ..
+		' tipper_offset="'           .. tostring(self.tipper_offset)                     .. '"' ..
+		' combine_offset="'          .. tostring(self.combine_offset)                    .. '"' ..
+		' fill_follow="'             .. tostring(self.required_fill_level_for_follow)    .. '"' ..
+		' fill_drive="'              .. tostring(self.required_fill_level_for_drive_on)  .. '"' ..
+		' OffsetX="'                 .. tostring(self.WpOffsetX)                         .. '"' ..
+		' OffsetZ="'                 .. tostring(self.WpOffsetZ)                         .. '"' ..
+		' AbortWork="'               .. tostring(self.abortWork)                         .. '"' ..
+		' turn_radius="'             .. tostring(self.turn_radius)                       .. '"' ..
+		' waitTime="'                .. tostring(self.waitTime)                          .. '"' ..
+		' courses="'                 .. tostring(table.concat(self.loaded_courses, ",")) .. '"' ..
+		' mouse_right_key_enabled="' .. tostring(self.mouse_right_key_enabled)           .. '"' .. --should save as bool string ("true"/"false")
+		' rul_mode="'                .. tostring(self.RulMode)                           .. '"' ..
+		' toolWorkWidht="'           .. tostring(self.toolWorkWidht)                     .. '"' ..
+		' realistic_driving="'       .. tostring(self.realistic_driving)                 .. '"' ..
+		' ai_mode="'                 .. tostring(self.ai_mode) .. '"';
 	return attributes, nil;
 end
 

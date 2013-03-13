@@ -231,14 +231,6 @@ function courseplay:deal_with_mouse_input(self, func, value)
 						courseplay:start(self)
 					end
 
-					if (table.getn(self.Waypoints) >= 4) and not self.createCourse then
-						if func == "row4" then
-							courseplay:set_FieldPoint(self)
-						end
-					end
-
-
-
 				else -- driving
 					local last_recordnumber = nil
 

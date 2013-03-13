@@ -42,7 +42,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 
 			-- stop while folding
 			if courseplay:isFoldable(workTool) then
-				if courseplay:isFolding(workTool)and self.turnStage == 0  then 
+				if courseplay:isFolding(workTool) and self.turnStage == 0 then 
 					allowedToDrive = false;
 					courseplay:debug(workTool.name .. ": isFolding -> allowedToDrive == false", 3);
 				end;

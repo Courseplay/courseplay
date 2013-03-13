@@ -488,7 +488,6 @@ function courseplay:drive(self, dt)
 			
 			raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
 			if self.currentTipTrigger == nil then
-			
 				raycastAll(tx+self.tipRefOffset, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
 			end
 			if self.currentTipTrigger == nil then
@@ -525,9 +524,10 @@ function courseplay:drive(self, dt)
 		return;
 	end
 	if self.cp.isTurning ~= nil then
-		courseplay:turn(self, dt,cx,cz)
+		courseplay:turn(self, dt, cx, cz);
 		return
 	end
+
 
 	-- which speed?
 	local slowEnd = self.ai_mode == 2 and self.recordnumber > self.maxnumber - 3;
@@ -542,9 +542,10 @@ function courseplay:drive(self, dt)
 		slowDownWP = (self.Waypoints[self.recordnumber + 2].wait or self.Waypoints[self.recordnumber + 1].wait or self.Waypoints[self.recordnumber].wait) --if mode4 or 6: last 3 points before stop or before start
 		slowDownRev = (self.Waypoints[self.recordnumber + 2].rev or self.Waypoints[self.recordnumber + 1].rev or self.Waypoints[self.recordnumber].rev)
 	else
-		slowDownWP = self.Waypoints[self.recordnumber].wait
-		slowDownRev = self.Waypoints[self.recordnumber].rev
+		slowDownWP = self.Waypoints[self.recordnumber].wait;
+		slowDownRev = self.Waypoints[self.recordnumber].rev;
 	end
+
 	if self.ai_mode ~= 7 then
 		if ((slowDownWP and not workArea) or slowDownRev or self.max_speed_level == 1 or slowStartEnd or slowEnd) then
 			self.sl = 1
@@ -579,13 +580,13 @@ function courseplay:drive(self, dt)
 			self.traffic_vehicle_in_front = nil
 			self.CPnumCollidingVehicles = math.max(self.CPnumCollidingVehicles-1, 0);
 			return
-		end  
+		end
 		local x, y, z = getWorldTranslation(self.traffic_vehicle_in_front)
 		local x1, y1, z1 = worldToLocal(self.rootNode, x, y, z)
 		if z1 < 0 or math.abs(x1) > 4 then -- vehicle behind tractor
 			vehicleBehind = true
 		end
-		if vehicle_in_front.rootNode == nil or vehicle_in_front.lastSpeedReal == nil or (vehicle_in_front.rootNode ~= nil and courseplay:distance_to_object(self, vehicle_in_front) > 40) or vehicleBehind then  
+		if vehicle_in_front.rootNode == nil or vehicle_in_front.lastSpeedReal == nil or (vehicle_in_front.rootNode ~= nil and courseplay:distance_to_object(self, vehicle_in_front) > 40) or vehicleBehind then
 			self.traffic_vehicle_in_front = nil
 		else
 			if allowedToDrive then 

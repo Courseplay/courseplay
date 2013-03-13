@@ -1370,9 +1370,9 @@ Italský překlad: JD7530
 	</l10n>
 
 	<extraSourceFiles>
+		<sourceFile filename="register.lua" />
+		<sourceFile filename="helpers.lua" />
 		<sourceFile filename="turn.lua" />
-        <sourceFile filename="register.lua" />
-        <sourceFile filename="helpers.lua" />
 		<sourceFile filename="base.lua" />
 		<sourceFile filename="astar.lua" />
 		<sourceFile filename="fruit.lua" />

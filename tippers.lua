@@ -178,6 +178,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 				if object ~= nil and object.cp == nil then
 					object.cp = {};
 				end;
+
 				if self.ai_mode == 6 then
 					tipper_attached = true;
 					table.insert(self.tippers, object);

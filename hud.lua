@@ -73,13 +73,6 @@ function courseplay:loadHud(self)
 					self.hudpage[1][1][3] = courseplay:get_locale(self, "CourseReset")
 
 					self.hudpage[1][1][1] = courseplay:get_locale(self, "CoursePlayStart")
-
-
-					if (table.getn(self.Waypoints) >= 4) and not self.createCourse then
-						self.hudpage[1][1][4] = courseplay:get_locale(self, "CourseGenerate") -- Kurs erzeugen
-					end
-
-
 				else
 					local last_recordnumber = nil
 
@@ -353,13 +346,6 @@ function courseplay:loadHud(self)
 				self.hudpage[7][2][3] = string.format("%.1f", self.WpOffsetZ) .. "m (h/v)"
 			else
 				self.hudpage[7][2][3] = "---"
-			end
-
-			self.hudpage[7][1][4] = courseplay:get_locale(self, "CPWorkingWidht") -- Arbeitsbreite
-			if self.toolWorkWidht ~= nil then
-				self.hudpage[7][2][4] = string.format("%.1f", self.toolWorkWidht) .. "m"
-			else
-				self.hudpage[7][2][4] = "---"
 			end
 
 		--Page 8 (Course generation)
