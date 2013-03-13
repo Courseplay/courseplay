@@ -90,7 +90,14 @@ function courseplay:changeCPWpOffsetZ(self, change_by)
 end
 
 function courseplay:changeWorkWidth(self, change_by)
-	self.toolWorkWidht = self.toolWorkWidht + change_by
+	if self.toolWorkWidht + change_by > 10 then
+		if math.abs(change_by) == 0.1 then
+			change_by = 0.5 * (math.abs(change_by)/change_by);
+		elseif math.abs(change_by) == 0.5 then
+			change_by = 2 * (math.abs(change_by)/change_by);
+		end;
+	end;
+	self.toolWorkWidht = self.toolWorkWidht + change_by;
 	self.workWidthChanged = self.timer + 2000
 	if self.toolWorkWidht < 0.1 then
 		self.toolWorkWidht = 0.1
