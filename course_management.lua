@@ -197,6 +197,13 @@ function courseplay:save_courses(self)
 					local crossing = 0
 					local rev = 0
 					local speed = v.speed
+					
+					--course generation
+					local turn = "false";
+					local turnStart = 0;
+					local turnEnd = 0;
+					local ridgeMarker = 0;
+					local generated = "false";
 
 					if v.crossing then
 						crossing = "1"
@@ -217,7 +224,36 @@ function courseplay:save_courses(self)
 					if speed == nil then
 						speed = 0
 					end
-					File:write(tab .. tab .. "<waypoint" .. i .. " pos=\"" .. v.cx .. " " .. v.cz .. "\" angle=\"" .. v.angle .. "\" rev=\"" .. rev .. "\" wait=\"" .. wait .. "\" crossing=\"" .. crossing .. "\"  speed=\"" .. speed .. "\" />\n")
+					
+					--course generation
+					if v.turn ~= nil then
+						turn = v.turn;
+					end;
+					
+					if v.turnStart ~= nil and v.turnStart then
+						turnStart = 1;
+					else
+						turnStart = 0;
+					end;
+
+					if v.turnEnd ~= nil and v.turnEnd then
+						turnEnd = 1;
+					else
+						turnEnd = 0
+					end;
+
+					if v.ridgeMarker ~= nil then
+						ridgeMarker = tostring(v.ridgeMarker);
+					end;
+					if v.generated ~= nil and v.generated then
+						generated = "true";
+					else
+						generated = "false";
+					end;
+					
+					
+					
+					File:write(tab .. tab .. "<waypoint" .. i .. " pos=\"" .. v.cx .. " " .. v.cz .. "\" angle=\"" .. v.angle .. "\" rev=\"" .. rev .. "\" wait=\"" .. wait .. "\" crossing=\"" .. crossing .. "\"  speed=\"" .. speed .. "\" generated=\"" .. generated .. "\" turn=\"" .. turn .. "\" turnstart=\"" .. turnStart .. "\" turnend=\"" .. turnEnd .. "\" ridgemarker=\"" .. ridgeMarker .. "\" />\n")
 				end
 				File:write(tab .. "</course>\n")
 			end
@@ -280,6 +316,13 @@ function courseplay:load_courses()
 				local speed = Utils.getVectorFromString(getXMLString(File, key .. "#speed"))
 				local rev = Utils.getVectorFromString(getXMLString(File, key .. "#rev"))
 				local crossing = Utils.getVectorFromString(getXMLString(File, key .. "#crossing"))
+				
+				--course generation
+				local generated = Utils.getNoNil(getXMLString(File, key .. "#generated"), "false");
+				local turn = Utils.getNoNil(getXMLString(File, key .. "#turn"), "false");
+				local turnStart = Utils.getNoNil(Utils.getVectorFromString(getXMLString(File, key .. "#turnstart")), 0); --TODO: use getXMLInt ?
+				local turnEnd = Utils.getNoNil(Utils.getVectorFromString(getXMLString(File, key .. "#turnend")), 0);
+				local ridgeMarker = Utils.getNoNil(Utils.getVectorFromString(getXMLString(File, key .. "#ridgemarker")), 0);
 
 				if crossing == 1 or s == 1 then
 					crossing = true
@@ -301,8 +344,46 @@ function courseplay:load_courses()
 				if speed == 0 then
 					speed = nil
 				end
-
-				tempCourse[s] = { cx = x, cz = z, angle = dangle, rev = rev, wait = wait, crossing = crossing, speed = speed }
+				
+				
+				if generated == "true" then
+					generated = true;
+				else
+					generated = false;
+				end;
+				if turn == "false" then
+					turn = nil;
+				end;
+				if turnStart == 1 then
+					turnStart = true;
+				else
+					turnStart = false;
+				end;
+				--[[
+				if turnEnd == 1 then
+					turnEnd = true;
+				else
+					turnEnd = false;
+				end;]]
+				--turnEnd test
+				turnEnd = turnEnd == 1;
+				
+				--ridgeMarker not needed, since 0, 1 or 2 is loaded from file
+				
+				tempCourse[s] = { 
+					cx = x, 
+					cz = z, 
+					angle = dangle, 
+					rev = rev, 
+					wait = wait, 
+					crossing = crossing, 
+					speed = speed,
+					generated = generated,
+					turn = turn,
+					turnStart = turnStart,
+					turnEnd = turnEnd,
+					ridgeMarker = ridgeMarker
+				}
 				s = s + 1
 			else
 				local course = { name = name, id = id, waypoints = tempCourse }
@@ -311,8 +392,8 @@ function courseplay:load_courses()
 				finish_wp = true
 				break
 			end
-			until finish_wp == true
-		until finish_all == true
+		until finish_wp == true
+	until finish_all == true
 
 	g_currentMission.courseplay_courses = {}
 

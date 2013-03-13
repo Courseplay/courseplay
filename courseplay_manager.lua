@@ -69,6 +69,13 @@ function courseplay_manager:load_courses()
 				local rev = Utils.getVectorFromString(getXMLString(File, key .. "#rev"))
 				local crossing = Utils.getVectorFromString(getXMLString(File, key .. "#crossing"))
 
+				--course generation
+				local generated = Utils.getNoNil(getXMLString(File, key .. "#generated"), "false");
+				local turn = Utils.getNoNil(getXMLString(File, key .. "#turn"), "false");
+				local turnStart = Utils.getNoNil(Utils.getVectorFromString(getXMLString(File, key .. "#turnstart")), 0); --TODO: use getXMLInt ?
+				local turnEnd = Utils.getNoNil(Utils.getVectorFromString(getXMLString(File, key .. "#turnend")), 0);
+				local ridgeMarker = Utils.getNoNil(Utils.getVectorFromString(getXMLString(File, key .. "#ridgemarker")), 0);
+
 				if crossing == 1 or s == 1 then
 					crossing = true
 				else
@@ -90,8 +97,45 @@ function courseplay_manager:load_courses()
 					speed = nil
 				end
 
-				tempCourse[s] = { cx = x, cz = z, angle = dangle, rev = rev, wait = wait, crossing = crossing, speed = speed }
-				s = s + 1
+				if generated == "true" then
+					generated = true;
+				else
+					generated = false;
+				end;
+				if turn == "false" then
+					turn = nil;
+				end;
+				if turnStart == 1 then
+					turnStart = true;
+				else
+					turnStart = false;
+				end;
+				--[[
+				if turnEnd == 1 then
+					turnEnd = true;
+				else
+					turnEnd = false;
+				end;]]
+				--turnEnd test
+				turnEnd = turnEnd == 1;
+				
+				--ridgeMarker not needed, since 0, 1 or 2 is loaded from file
+
+				tempCourse[s] = { 
+					cx = x, 
+					cz = z, 
+					angle = dangle, 
+					rev = rev, 
+					wait = wait, 
+					crossing = crossing, 
+					speed = speed,
+					generated = generated,
+					turn = turn,
+					turnStart = turnStart,
+					turnEnd = turnEnd,
+					ridgeMarker = ridgeMarker
+				};
+				s = s + 1;
 			else
 				local course = { name = name, id = id, waypoints = tempCourse }
 				table.insert(courseplay_coursesUnsort, course)
@@ -206,6 +250,12 @@ function CourseplayJoinFixEvent:writeStream(streamId, connection)
 				streamDebugWriteBool(streamId, g_currentMission.courseplay_courses[i].waypoints[w].rev)
 				streamDebugWriteBool(streamId, g_currentMission.courseplay_courses[i].waypoints[w].crossing)
 				streamDebugWriteInt32(streamId, g_currentMission.courseplay_courses[i].waypoints[w].speed)
+
+				streamDebugWriteBool(streamId, g_currentMission.courseplay_courses[i].waypoints[w].generated)
+				streamDebugWriteString(streamId, g_currentMission.courseplay_courses[i].turn)
+				streamDebugWriteBool(streamId, g_currentMission.courseplay_courses[i].waypoints[w].turnStart)
+				streamDebugWriteBool(streamId, g_currentMission.courseplay_courses[i].waypoints[w].turnEnd)
+				streamDebugWriteInt32(streamId, g_currentMission.courseplay_courses[i].waypoints[w].ridgeMarker)
 			end
 		end
 	end;
@@ -234,7 +284,27 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 				local rev = streamDebugReadBool(streamId)
 				local crossing = streamDebugReadBool(streamId)
 				local speeed = streamDebugReadInt32(streamId)
-				local wp = { cx = cx, cz = cz, angle = angle, wait = wait, rev = rev, crossing = crossing, speed = speed }
+
+				local generated = streamDebugReadBool(streamId)
+				local turn = streamDebugReadString(streamId)
+				local turnStart = streamDebugReadBool(streamId)
+				local turnEnd = streamDebugReadBool(streamId)
+				local ridgeMarker = streamDebugReadInt32(streamId)
+				
+				local wp = {
+					cx = cx, 
+					cz = cz, 
+					angle = angle, 
+					wait = wait, 
+					rev = rev, 
+					crossing = crossing, 
+					speed = speed,
+					generated = generated,
+					turn = turn,
+					turnStart = turnStart,
+					turnEnd = turnEnd,
+					ridgeMarker = ridgeMarker 
+				};
 				table.insert(waypoints, wp)
 			end
 			local course = { name = course_name, waypoints = waypoints, id = course_id }
