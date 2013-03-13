@@ -148,8 +148,12 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
 		else
 			self.play = true
 		end
+		
 		self.recordnumber = 1
 		courseplay:RefreshSigns(self) -- this adds the signs to the course
+
+		self.cp.hasGeneratedCourse = false;
+		courseplay:validateCourseGenerationData(self);
 	end
 end
 

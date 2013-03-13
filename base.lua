@@ -284,7 +284,7 @@ function courseplay:load(xmlFile)
 	self.cp.startingDirection = 0;
 	self.cp.hasStartingDirection = false;
 	self.cp.returnToFirstPoint = false;
-
+	self.cp.hasGeneratedCourse = false;
 	self.cp.hasValidCourseGenerationData = false;
 	
 	self.mouse_enabled = false
@@ -646,6 +646,7 @@ function courseplay:readStream(streamId, connection)
 	self.cpTrafficBrake = streamDebugReadBool(streamId)
 	self.cp.hasStartingCorner = streamDebugReadBool(streamId);
 	self.cp.hasStartingDirection = streamDebugReadBool(streamId);
+	self.cp.hasGeneratedCourse = streamDebugReadBool(streamId);
 	self.cp.hasValidCourseGenerationData = streamDebugReadBool(streamId);
 	self.cp.returnToFirstPoint = streamDebugReadBool(streamId);
 	self.cp.startingCorner = streamDebugReadInt32(streamId);
@@ -759,6 +760,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteBool(streamId, self.cpTrafficBrake)
 	streamDebugWriteBool(streamId, self.cp.hasStartingCorner);
 	streamDebugWriteBool(streamId, self.cp.hasStartingDirection);
+	streamDebugWriteBool(streamId, self.cp.hasGeneratedCourse);
 	streamDebugWriteBool(streamId, self.cp.hasValidCourseGenerationData);
 	streamDebugWriteBool(streamId, self.cp.returnToFirstPoint);
 	streamDebugWriteInt32(streamId, self.cp.startingCorner);

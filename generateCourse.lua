@@ -10,10 +10,10 @@
 TODO: 
 [DONE 1) North/South point positions]
 [DONE 2) ridgeMarker is down but doesn't draw line]
-3) raise/lower implements at lane end doesn't work yet -- see notes in mode4
+[DONE 3) raise/lower implements at lane end doesn't work yet -- see notes in mode4]
 4) pointInPoly too inaccurate with points too close at poly edge
-5) ridgeMarker deployed too early (already before last_recordnumber == firstInLane)
-6) translate hud settings
+[DONE 5) ridgeMarker deployed too early (already before last_recordnumber == firstInLane)]
+[DONE 6) translate hud settings]
 ]]
 
 function courseplay:generateCourse(self)
@@ -92,7 +92,7 @@ function courseplay:generateCourse(self)
 		if numLanes * workWidth < dimensions.width then
 			numLanes = numLanes + 1;
 		end;
-		print(string.format("numLanes = %s, pointsPerLane = %s", tostring(numLanes), tostring(pointsPerLane))); --WORKS
+		--print(string.format("numLanes = %s, pointsPerLane = %s", tostring(numLanes), tostring(pointsPerLane))); --WORKS
 		
 		for curLane=1, numLanes do
 			--Lane directions
@@ -298,9 +298,6 @@ function courseplay:generateCourse(self)
 			cp.ridgeMarker = 0;
 		end;
 		
-		local wait = i == 1 or (i == numPoints and not self.cp.returnToFirstPoint);
-		--print(string.format("Point %d of %d: pp.lane=%d, cp.lane=%d, np.lane=%d, wait=%s, firstInLane=%s, lastInLane=%s, angleDeg=%s, ridgeMarker=%s", i, numPoints, pp.lane, cp.lane, np.lane, tostring(wait), tostring(cp.firstInLane), tostring(cp.lastInLane), tostring(angleDeg), tostring(cp.ridgeMarker)));
-		
 		local point = { 
 			cx = cp.x, 
 			cz = cp.z,
@@ -313,7 +310,6 @@ function courseplay:generateCourse(self)
 			turnStart = cp.lastInLane and cp.lane < numLanes,
 			turnEnd = cp.firstInLane and i > 1,
 			ridgeMarker = cp.ridgeMarker,
-			raiseTool = false,
 			generated = true
 		};
 		
@@ -328,7 +324,7 @@ function courseplay:generateCourse(self)
 			newFirstInLane = courseplay:lineIntersectsPoly(cp, testPoint, poly);
 			
 			if newFirstInLane ~= nil then
-				print(string.format("lane %d: newFirstInLane: x=%f, z=%f", cp.lane, newFirstInLane.x, newFirstInLane.z));
+				--print(string.format("lane %d: newFirstInLane: x=%f, z=%f", cp.lane, newFirstInLane.x, newFirstInLane.z));
 			
 				newFirstInLane.cx = newFirstInLane.x;
 				newFirstInLane.cz = newFirstInLane.z;
@@ -342,7 +338,6 @@ function courseplay:generateCourse(self)
 				newFirstInLane.turnStart = false;
 				newFirstInLane.turnEnd = true;
 				newFirstInLane.ridgeMarker = 0;
-				newFirstInLane.raiseTool = false;
 				newFirstInLane.generated = true;
 				
 				--reset some vars in old first point
@@ -351,7 +346,6 @@ function courseplay:generateCourse(self)
 				point.turn = nil;
 				point.turnStart = false;
 				point.turnEnd = false;
-				point.raiseTool = false;
 			end;
 		end; --END cp.firstInLane
 		
@@ -359,30 +353,29 @@ function courseplay:generateCourse(self)
 			--North
 			if cp.laneDir == "N" then
 			--if math.floor(angleDeg) == 90 then
-				if np.x < cp.x then cp.turn = "left" end;
-				if np.x > cp.x then cp.turn = "right" end;
+				if np.x < cp.x then point.turn = "left" end;
+				if np.x > cp.x then point.turn = "right" end;
 				
 			--East
 			elseif cp.laneDir == "E" then
 			--elseif math.floor(angleDeg) == 0 then
-				if np.z < cp.z then cp.turn = "left" end;
-				if np.z > cp.z then cp.turn = "right" end;
+				if np.z < cp.z then point.turn = "left" end;
+				if np.z > cp.z then point.turn = "right" end;
 			
 			--South
 			elseif cp.laneDir == "S" then
 			--elseif math.floor(angleDeg) == -90 or math.floor(angleDeg) == 270 then
-				if np.x < cp.x then cp.turn = "right" end;
-				if np.x > cp.x then cp.turn = "left" end;
+				if np.x < cp.x then point.turn = "right" end;
+				if np.x > cp.x then point.turn = "left" end;
 			
 			--West
 			elseif cp.laneDir == "W" then
 			--elseif math.floor(angleDeg) == -180 or math.floor(angleDeg) == 180 then
-				if np.z < cp.z then cp.turn = "right" end;
-				if np.z > cp.z then cp.turn = "left" end;
+				if np.z < cp.z then point.turn = "right" end;
+				if np.z > cp.z then point.turn = "left" end;
 			end;
 			--print("--------------------------------------------------------------------");
-			--print(string.format("laneDir=%s, cp.turn=%s", cp.laneDir, tostring(cp.turn)));
-		
+			--print(string.format("laneDir=%s, point.turn=%s", cp.laneDir, tostring(point.turn)));
 		
 			angleDeg = courseplay:positiveAngleDeg(angleDeg);
 			
@@ -407,14 +400,13 @@ function courseplay:generateCourse(self)
 				newLastInLane.turnStart = true;
 				newLastInLane.turnEnd = false;
 				newLastInLane.ridgeMarker = 0;
-				newLastInLane.raiseTool = true;
 				newLastInLane.generated = true;
 				
+				point.wait = false;
 				point.lastInLane = false;
 				point.turn = nil;
 				point.turnStart = false;
 				point.turnEnd = false;
-				point.raiseTool = false;
 
 			end;
 		end; --END cp.lastInLane
@@ -457,11 +449,14 @@ function courseplay:generateCourse(self)
 	
 	self.maxnumber = table.getn(self.Waypoints)
 	self.recordnumber = 1
-	self.createCourse = false
 	self.play = true
 	self.Waypoints[1].wait = true
 	self.Waypoints[self.maxnumber].wait = true
-	courseplay:RefreshSigns(self)
+	self.numCourses = 1;
+	courseplay:RefreshSigns(self);
+	
+	self.cp.hasGeneratedCourse = true;
+	courseplay:validateCourseGenerationData(self);
 end;
 
 function courseplay:calcDimensions(polyXValues, polyZValues)
@@ -483,9 +478,10 @@ end;
 --raycast
 function courseplay:pointInPolygon(polyPoints, x, z)
 	local intersectionCount = 0;
-	local x0 = polyPoints[#polyPoints].cx - x;
-	local z0 = polyPoints[#polyPoints].cz - z;
-	for i = 1, #polyPoints do
+	local polyCount = table.getn(polyPoints);
+	local x0 = polyPoints[polyCount].cx - x;
+	local z0 = polyPoints[polyCount].cz - z;
+	for i = 1, polyCount do
 		local x1 = polyPoints[i].cx - x;
 		local z1 = polyPoints[i].cz - z;
 		if z0 > 0 and z1 <= 0 and x1 * z0 > z1 * x0 then

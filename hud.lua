@@ -124,12 +124,12 @@ function courseplay:loadHud(self)
 							self.hudpage[1][1][3] = courseplay:get_locale(self, "PointRecordInterrupt")
 
 							self.hudpage[1][1][4] = courseplay:get_locale(self, "CourseCrossingSet")							
-              self.hudpage[1][1][5] = courseplay:get_locale(self, "CourseDriveDirection")	.. " "
-              if not self.direction  then
-                self.hudpage[1][1][5] =  self.hudpage[1][1][5] .. courseplay:get_locale(self, "CourseDriveDirectionFor")
-              else
-                self.hudpage[1][1][5] =  self.hudpage[1][1][5] .. courseplay:get_locale(self, "CourseDriveDirectionBac")
-              end
+							self.hudpage[1][1][5] = courseplay:get_locale(self, "CourseDriveDirection")	.. " "
+							if not self.direction  then
+								self.hudpage[1][1][5] =  self.hudpage[1][1][5] .. courseplay:get_locale(self, "CourseDriveDirectionFor")
+							else
+								self.hudpage[1][1][5] =  self.hudpage[1][1][5] .. courseplay:get_locale(self, "CourseDriveDirectionBac")
+							end
 						end
 					else
 						if self.recordnumber > 4 then
@@ -399,11 +399,9 @@ function courseplay:loadHud(self)
 			end;
 
 			--line 5 = generate course action
-			if table.getn(self.Waypoints) > 4 and self.cp.hasStartingCorner == true and self.cp.hasStartingDirection == true and (self.numCourses == nil or (self.numCourses ~= nil and self.numCourses == 1)) then
-				self.cp.hasValidCourseGenerationData = true;
+			if self.cp.hasValidCourseGenerationData then
 				self.hudpage[8][1][5] = courseplay:get_locale(self, "CourseGenerate");
 			else
-				self.cp.hasValidCourseGenerationData = false;
 				self.hudpage[8][1][5] = "";
 			end;
 		end;

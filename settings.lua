@@ -302,8 +302,6 @@ end
 
 --Course generation
 function courseplay:switchStartingCorner(self)
-	--print("switchStartingCorner() called");
-
 	self.cp.startingCorner = self.cp.startingCorner + 1;
 	if self.cp.startingCorner > 4 then
 		self.cp.startingCorner = 1;
@@ -312,13 +310,10 @@ function courseplay:switchStartingCorner(self)
 	self.cp.hasStartingDirection = false;
 	self.cp.startingDirection = 0;
 
-	--print(string.format("hasStartingCorner = %s / startingCorner = %s", tostring(self.cp.hasStartingCorner), tostring(self.cp.startingCorner)));
-	--print(string.format("hasStartingDirection = %s / startingDirection = %s", tostring(self.cp.hasStartingDirection), tostring(self.cp.startingDirection)));
-	--print("----- ----- ----- -----");
+	courseplay:validateCourseGenerationData(self);
 end;
 
 function courseplay:switchStartingDirection(self)
-	--print("switchStartingDirection() called");
 	-- corners: 1 = SW, 2 = NW, 3 = NE, 4 = SE
 	-- directions: 1 = North, 2 = East, 3 = South, 4 = West
 
@@ -349,14 +344,25 @@ function courseplay:switchStartingDirection(self)
 		self.cp.hasStartingDirection = true;
 	end;
 	
-	--print(string.format("hasStartingCorner = %s / startingCorner = %s", tostring(self.cp.hasStartingCorner), tostring(self.cp.startingCorner)));
-	--print(string.format("hasStartingDirection = %s / startingDirection = %s", tostring(self.cp.hasStartingDirection), tostring(self.cp.startingDirection)));
-	--print("----- ----- ----- -----");
+	courseplay:validateCourseGenerationData(self);
 end;
 
 function courseplay:switchReturnToFirstPoint(self)
-	--print("switchReturnToFirstPoint() called");
 	self.cp.returnToFirstPoint = not self.cp.returnToFirstPoint;
-	--print(string.format("returnToFirstPoint = %s", tostring(self.cp.returnToFirstPoint)));
-	--print("----- ----- ----- -----");
+end;
+
+function courseplay:validateCourseGenerationData(self)
+	if not self.cp.hasGeneratedCourse
+	and self.Waypoints ~= nil 
+	and table.getn(self.Waypoints) > 4
+	and self.cp.hasStartingCorner == true 
+	and self.cp.hasStartingDirection == true 
+	and (self.numCourses == nil or (self.numCourses ~= nil and self.numCourses == 1)) 
+	then
+		self.cp.hasValidCourseGenerationData = true;
+	else
+		self.cp.hasValidCourseGenerationData = false;
+	end;
+
+	courseplay:debug(string.format("hasGeneratedCourse=%s, #waypoints=%s, hasStartingCorner=%s, hasStartingDirection=%s, numCourses=%s, hasValidCourseGenerationData=%s", tostring(self.cp.hasGeneratedCourse), tostring(#self.Waypoints), tostring(self.cp.hasStartingCorner), tostring(self.cp.hasStartingDirection), tostring(self.numCourses), tostring(self.cp.hasValidCourseGenerationData)), 2);
 end;

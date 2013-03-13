@@ -140,6 +140,7 @@ function courseplay:stop_record(self)
 	self.recordnumber = 1
 	self.back = false
 	self.numCourses = 1;
+	courseplay:validateCourseGenerationData(self);
 end
 
 -- interrupts course recording -- just setting variables
@@ -181,7 +182,7 @@ function courseplay:delete_waypoint(self)
 	end
 end
 
--- resets actual course -- just setting variables
+-- resets current course -- just setting variables
 function courseplay:reset_course(self)
 	courseplay:reset_merged(self)
 	self.recordnumber = 1
@@ -203,6 +204,10 @@ function courseplay:reset_course(self)
 	self.abortWork = nil
 	self.createCourse = false
 	self.startlastload = 1
+	self.numCourses = 0;
+
+	self.cp.hasGeneratedCourse = false;
+	courseplay:validateCourseGenerationData(self);
 end
 
 function courseplay:set_FieldPoint(self)
