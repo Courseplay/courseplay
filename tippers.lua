@@ -24,7 +24,7 @@ function courseplay:is_baleLoader(workTool) -- is the tool a bale loader?
 	return (SpecializationUtil.hasSpecialization(baleLoader, workTool.specializations) or SpecializationUtil.hasSpecialization(BaleLoader, workTool.specializations) or (workTool.balesToLoad ~= nil and workTool.baleGrabber ~=nil and workTool.grabberIsMoving~= nil));
 end;
 function courseplay:isSprayer(workTool) -- is the tool a sprayer/spreader?
-	return SpecializationUtil.hasSpecialization(Sprayer, object.specializations) or SpecializationUtil.hasSpecialization(sprayer, object.specializations);
+	return SpecializationUtil.hasSpecialization(Sprayer, workTool.specializations) or SpecializationUtil.hasSpecialization(sprayer, workTool.specializations);
 end;
 function courseplay:is_sowingMachine(workTool) -- is the tool a sowing machine?
 	return (SpecializationUtil.hasSpecialization(sowingMachine, workTool.specializations) or SpecializationUtil.hasSpecialization(SowingMachine, workTool.specializations));
