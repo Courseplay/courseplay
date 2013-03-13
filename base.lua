@@ -57,6 +57,16 @@ function courseplay:load(xmlFile)
 	end
 
 	self.cp = {};
+	--turn maneuver
+	self.cp.waitForTurnTime = 0.00   --float
+	self.cp.turnStage = 0 --int
+	self.cp.aiTurnNoBackward = false --bool
+	self.cp.backMarkerOffset = nil --float
+	self.cp.turnTimer = 8000 --int
+	self.cp.noStopOnEdge = false --bool
+	
+
+
 	self.toggledTipState = 0;
 	
 	self.auto_combine_offset = true
@@ -652,6 +662,12 @@ function courseplay:readStream(streamId, connection)
 	self.cp.startingCorner = streamDebugReadInt32(streamId);
 	self.cp.startingDirection = streamDebugReadInt32(streamId);
 	self.cp.tipperHasCover = streamDebugReadBool(streamId);
+	self.cp.waitForTurnTime = streamDebugReadFloat32(streamId)
+	self.cp.turnStage = streamDebugReadInt32(streamId);
+	self.cp.aiTurnNoBackward = streamDebugReadBool(streamId);
+	self.cp.backMarkerOffset = streamDebugReadFloat32(streamId)
+	self.cp.turnTimer = streamDebugReadInt32(streamId);
+	self.cp.noStopOnEdge = streamDebugReadBool(streamId);
 	self.crossPoints = streamDebugReadInt32(streamId)
 	self.drive = streamDebugReadBool(streamId)
 	self.drive_slow_timer = streamDebugReadInt32(streamId)
@@ -766,6 +782,12 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteInt32(streamId, self.cp.startingCorner);
 	streamDebugWriteInt32(streamId, self.cp.startingDirection);
 	streamDebugWriteBool(streamId, self.cp.tipperHasCover);
+	streamDebugWriteFloat32(streamId,self.cp.waitForTurnTime)
+	streamDebugWriteInt32(streamId, self.cp.turnStage)
+	streamDebugWriteBool(streamId, self.cp.aiTurnNoBackward)
+	streamDebugWriteFloat32(streamId,self.cp.backMarkerOffset)
+	streamDebugWriteInt32(streamId, self.cp.turnTimer)
+	streamDebugWriteBool(streamId, self.cp.noStopOnEdge)
 	streamDebugWriteInt32(streamId, self.crossPoints);
 	streamDebugWriteBool(streamId,self.drive)
 	streamDebugWriteInt32(streamId,self.drive_slow_timer)

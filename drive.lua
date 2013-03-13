@@ -205,7 +205,12 @@ function courseplay:drive(self, dt)
 	if tipper_fill_level ~= nil then
 		fill_level = tipper_fill_level * 100 / tipper_capacity
 	end
-	
+	if self.ai_mode == 4 or self.ai_mode == 6 then
+		if  self.Waypoints[last_recordnumber].turn ~= nil then
+			self.cp.isTurning = self.Waypoints[last_recordnumber].turn
+		end	
+	end
+
 	if self.ai_mode == 4 or self.ai_mode == 8 then
 		self.implementIsFull = (fill_level ~= nil and fill_level == 100);
 	end;
@@ -491,12 +496,22 @@ function courseplay:drive(self, dt)
 			end
 		end;
 	end
-
+	
+	local dx,_,dz = localDirectionToWorld(self.cp.DirectionNode, 0, 0, 1);
+	local length = Utils.vector2Length(dx,dz);
+	if self.turnStage == 0 then
+		self.aiTractorDirectionX = dx/length;
+		self.aiTractorDirectionZ = dz/length;
+	end
 
 	--Open/close cover
 	courseplay:openCloseCover(self);
 
 	allowedToDrive = courseplay:check_traffic(self, true, allowedToDrive)
+	
+	if self.cp.waitForTurnTime > self.timer then
+		allowedToDrive = false
+	end 
 
 	-- stop or hold position
 	if not allowedToDrive then
@@ -509,8 +524,10 @@ function courseplay:drive(self, dt)
 		-- unload active tipper if given
 		return;
 	end
-
-
+	if self.cp.isTurning ~= nil then
+		courseplay:turn(self, dt,cx,cz)
+		return
+	end
 
 	-- which speed?
 	local slowEnd = self.ai_mode == 2 and self.recordnumber > self.maxnumber - 3;
@@ -562,13 +579,13 @@ function courseplay:drive(self, dt)
 			self.traffic_vehicle_in_front = nil
 			self.CPnumCollidingVehicles = math.max(self.CPnumCollidingVehicles-1, 0);
 			return
-		end  --!!!
+		end  
 		local x, y, z = getWorldTranslation(self.traffic_vehicle_in_front)
 		local x1, y1, z1 = worldToLocal(self.rootNode, x, y, z)
 		if z1 < 0 or math.abs(x1) > 4 then -- vehicle behind tractor
 			vehicleBehind = true
 		end
-		if vehicle_in_front.rootNode == nil or vehicle_in_front.lastSpeedReal == nil or (vehicle_in_front.rootNode ~= nil and courseplay:distance_to_object(self, vehicle_in_front) > 40) or vehicleBehind then  --!!!
+		if vehicle_in_front.rootNode == nil or vehicle_in_front.lastSpeedReal == nil or (vehicle_in_front.rootNode ~= nil and courseplay:distance_to_object(self, vehicle_in_front) > 40) or vehicleBehind then  
 			self.traffic_vehicle_in_front = nil
 		else
 			if allowedToDrive then 
@@ -635,7 +652,7 @@ function courseplay:drive(self, dt)
 	end  	
 
 	-- go, go, go!
-	if self.recordnumber == 1 or self.recordnumber == self.maxnumber - 1 then
+	if self.recordnumber == 1 or self.recordnumber == self.maxnumber - 1 or self.Waypoints[self.recordnumber].turn then
 		distToChange = 0.5
 	elseif self.recordnumber + 1 <= self.maxnumber then
 		local beforeReverse = (self.Waypoints[self.recordnumber + 1].rev and (self.Waypoints[self.recordnumber].rev == false))
@@ -732,13 +749,7 @@ function courseplay:set_traffc_collision(self, lx, lz)
 
 
 	if self.aiTrafficCollisionTrigger ~= nil and g_server ~= nil then
-		local DirectionNode = nil;
-		if self.aiTractorDirectionNode ~= nil then
-			DirectionNode = self.aiTractorDirectionNode;
-		elseif self.aiTreshingDirectionNode ~= nil then
-			DirectionNode = self.aiTreshingDirectionNode;
-		end;
-		AIVehicleUtil.setCollisionDirection(DirectionNode, self.aiTrafficCollisionTrigger, colDirX, colDirZ);
+		AIVehicleUtil.setCollisionDirection(self.cp.DirectionNode, self.aiTrafficCollisionTrigger, colDirX, colDirZ);
 	end
 end
 
@@ -747,7 +758,7 @@ function courseplay:check_traffic(self, display_warnings, allowedToDrive)
 	local in_traffic = false;
 	local ahead = false
 	local vehicle_in_front = g_currentMission.nodeToVehicle[self.traffic_vehicle_in_front]
-	local x, y, z = getWorldTranslation(self.aiTractorDirectionNode)
+	local x, y, z = getWorldTranslation(self.cp.DirectionNode)
 	local x1, y1, z1 = 0,0,0
 	
 	--courseplay:debug(table.show(self), 4)
@@ -773,22 +784,16 @@ function courseplay:check_traffic(self, display_warnings, allowedToDrive)
 end
 
 function courseplay:setSpeed(self, refSpeed, sl)
-	if self.orgRpm == nil then
-		self.orgRpm = {}
-		self.orgRpm[1] = self.motor.maxRpm[1]
-		self.orgRpm[2] = self.motor.maxRpm[2]
-		self.orgRpm[3] = self.motor.maxRpm[3]
-	end
 	if self.lastSpeedSave ~= self.lastSpeedReal*3600 then		
 		if refSpeed*3600 == 1 then
 			refSpeed = 1.6 / 3600
 		end
 		local trueRpm = self.motor.lastMotorRpm*100/self.orgRpm[3]
-		local targetRpm = self.motor.maxRpm[self.sl]*100/self.orgRpm[3]	
+		local targetRpm = self.motor.maxRpm[sl]*100/self.orgRpm[3]	
 		local newLimit = 0
 		local oldLimit = 0 
 		if self.ESLimiter ~= nil then 
-			oldLimit =  self.ESLimiter.percentage[self.sl+1]
+			oldLimit =  self.ESLimiter.percentage[sl+1]
 		else
 			oldLimit = targetRpm
 		end
@@ -835,7 +840,7 @@ function courseplay:setSpeed(self, refSpeed, sl)
 		end
 
 		if self.ESLimiter ~= nil and self.ESLimiter.maxRPM[5] ~= nil then
-			self:setNewLimit(self.sl+1, newLimit , false, true)
+			self:setNewLimit(sl+1, newLimit , false, true)
 		elseif self.ESLimiter ~= nil and self.ESLimiter.maxRPM[5] == nil then
 			--ESlimiter < V3
 		else
@@ -847,7 +852,7 @@ function courseplay:setSpeed(self, refSpeed, sl)
 			elseif maxRpm < self.motor.minRpm then
 				maxRpm = self.motor.minRpm
 			end
-			self.motor.maxRpm[self.sl]= maxRpm
+			self.motor.maxRpm[sl]= maxRpm
 		end
 
 

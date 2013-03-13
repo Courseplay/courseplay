@@ -31,7 +31,7 @@ end;
 function courseplay:update_tools(self, tractor_or_implement)
 	--steerable (tractor, combine etc.)
 	local tipper_attached = false
-	if SpecializationUtil.hasSpecialization(AITractor, tractor_or_implement.specializations) then
+	if SpecializationUtil.hasSpecialization(AITractor, tractor_or_implement.specializations) or tractor_or_implement.typeName == "selfPropelledMower" or tractor_or_implement.typeName == "selfPropelledPotatoHarvester"  then
 		local object = tractor_or_implement
 		if self.ai_mode == 1 or self.ai_mode == 2 then
 			-- if SpecializationUtil.hasSpecialization(Trailer, object.specializations) then
@@ -48,6 +48,8 @@ function courseplay:update_tools(self, tractor_or_implement)
 			if SpecializationUtil.hasSpecialization(Sprayer, object.specializations) or SpecializationUtil.hasSpecialization(sprayer, object.specializations) or courseplay:is_sowingMachine(object) then
 				tipper_attached = true
 				table.insert(self.tippers, object)
+				courseplay:setMarkers(self, object)
+				self.cp.noStopOnEdge = SpecializationUtil.hasSpecialization(Sprayer, object.specializations) or SpecializationUtil.hasSpecialization(sprayer, object.specializations)
 			end
 		elseif self.ai_mode == 6 then -- Baler, foragewagon, baleloader
 			if courseplay:is_baler(object) 
@@ -55,12 +57,14 @@ function courseplay:update_tools(self, tractor_or_implement)
 			or SpecializationUtil.hasSpecialization(Tedder, object.specializations) 
 			or SpecializationUtil.hasSpecialization(windrower, object.specializations) 
 			or SpecializationUtil.hasSpecialization(cultivator, object.specializations) 
-			or SpecializationUtil.hasSpecialization(plough, object.specializations) 
+			or SpecializationUtil.hasSpecialization(plough, object.specializations)
+			or SpecializationUtil.hasSpecialization(fruitPreparer, self.specializations) 
 			or object.allowTipDischarge 
 			or courseplay:isUBT(object) 
 			or courseplay:isFoldable(object) then
 				tipper_attached = true
 				table.insert(self.tippers, object)
+				courseplay:setMarkers(self, object)
 			end
 		elseif self.ai_mode == 8 then -- Baler, foragewagon, baleloader
 			--if SpecializationUtil.hasSpecialization(RefillTrigger, object.specializations) then
@@ -73,6 +77,8 @@ function courseplay:update_tools(self, tractor_or_implement)
 
 	-- go through all implements
 	self.cpTrafficCollisionIgnoreList = {}
+	self.cp.aiBackMarker = nil
+	
 	for k, implement in pairs(tractor_or_implement.attachedImplements) do
 		local object = implement.object
 		
@@ -103,9 +109,11 @@ function courseplay:update_tools(self, tractor_or_implement)
 				table.insert(self.tippers, object)
 			end
 		elseif self.ai_mode == 4 then -- Fertilizer and Seeding
-			if SpecializationUtil.hasSpecialization(Sprayer, object.specializations) or courseplay:is_sowingMachine(object) then
+			if SpecializationUtil.hasSpecialization(Sprayer, object.specializations) or SpecializationUtil.hasSpecialization(sprayer, object.specializations) or courseplay:is_sowingMachine(object) then
 				tipper_attached = true
 				table.insert(self.tippers, object)
+				courseplay:setMarkers(self, object)
+				self.cp.noStopOnEdge = SpecializationUtil.hasSpecialization(Sprayer, object.specializations) or SpecializationUtil.hasSpecialization(sprayer, object.specializations)
 			end
 		elseif self.ai_mode == 5 then -- Transfer
 			if object.setPlane ~= nil then --open/close cover
@@ -128,13 +136,21 @@ function courseplay:update_tools(self, tractor_or_implement)
 				end;
 				tipper_attached = true
 				table.insert(self.tippers, object)
-			end;
+				courseplay:setMarkers(self, object)
+			end
 		elseif self.ai_mode == 8 then --Liquid manure transfer
 			--if SpecializationUtil.hasSpecialization(RefillTrigger, object.specializations) then
 			tipper_attached = true
 			table.insert(self.tippers, object)
 			--		end
 		end
+
+		if object.aiLeftMarker ~= nil and object.aiForceTurnNoBackward == true then 
+			self.cp.aiTurnNoBackward = true
+		elseif object.aiLeftMarker == nil and table.getn(object.wheels) > 0 then
+			self.cp.aiTurnNoBackward = true
+		end
+		
 
 		-- are there more tippers attached to the current implement?
 		local other_tipper_attached
@@ -155,17 +171,17 @@ function courseplay:update_tools(self, tractor_or_implement)
 	end; --END for implement in attachedImplements
 
 	--CUTTERS
-	if self.attachedCutters ~= nil then
+	if self.attachedCutters ~= nil and table.getn(self.attachedImplements)~= 0  then
 		if self.numAttachedCutters ~= nil and self.numAttachedCutters > 0 then
 			for cutter, implement in pairs(self.attachedCutters) do
 				local object = implement.object
 				if object ~= nil and object.cp == nil then
 					object.cp = {};
 				end;
-				
 				if self.ai_mode == 6 then
 					tipper_attached = true;
 					table.insert(self.tippers, object);
+					courseplay:setMarkers(self, object)
 					self.cpTrafficCollisionIgnoreList[object.rootNode] = true;
 				end;
 			end;
@@ -225,6 +241,37 @@ function courseplay:update_tools(self, tractor_or_implement)
 		return true
 	end
 	return nil
+end
+
+function courseplay:setMarkers(self, object)
+	-- get the behindest and the frontest  points :-) ( as offset to root node)
+	local zf = 99999
+	for k = 1, table.getn(object.cuttingAreas) do
+		for j,node in pairs(object.cuttingAreas[k]) do
+			if j == "start" or j == "height" or j == "width" then 
+				x, y, z = getWorldTranslation(node)
+				_, _, ztt = worldToLocal(self.rootNode, x, y, z)
+				ztt = -ztt
+				if self.cp.backMarkerOffset == nil or ztt > self.cp.backMarkerOffset then
+					self.cp.backMarkerOffset = ztt
+				end
+				x, y, z = getWorldTranslation(self.cp.aiFrontMarker)
+				_, _, ztfo = worldToLocal(self.rootNode, x, y, z)
+				if self.cp.aiFrontMarker == nil  or ztt < ztfo then
+					self.cp.aiFrontMarker = node
+				end
+				if ztt > 3 then
+					self.cp.aiFrontMarker = object.rootNode
+				end
+			end
+		end
+	end
+	if self.cp.backMarkerOffset == nil then
+		self.cp.backMarkerOffset = 3 
+	end
+	if self.cp.aiFrontMarker == nil then
+		self.cp.aiFrontMarker = object.rootNode
+	end
 end
 
 -- loads all tippers
@@ -451,7 +498,7 @@ function courseplay:getAutoTurnradius(self, tipper_attached)
 	else
 		turnRadius = self.turn_radius                  -- Kasi and Co are not supported. Nobody does hauling with a Kasi or Quadtrack !!! 
 	end	
-	if tipper_attached then
+	if tipper_attached and self.ai_mode == 2 then
 		local n = table.getn(self.tippers)
 		if n == 1 then
 			if self.tippers[1].attacherVehicle ~= self then

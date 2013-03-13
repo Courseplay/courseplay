@@ -42,7 +42,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 
 			-- stop while folding
 			if courseplay:isFoldable(workTool) then
-				if courseplay:isFolding(workTool) then
+				if courseplay:isFolding(workTool)and self.turnStage == 0  then 
 					allowedToDrive = false;
 					courseplay:debug(workTool.name .. ": isFolding -> allowedToDrive == false", 3);
 				end;
@@ -207,12 +207,28 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 
 			-- other worktools, tippers, e.g. forage wagon	
 			else
-				if workArea and fill_level ~= 100 and ((self.abortWork == nil) or (self.abortWork ~= nil and last_recordnumber == self.abortWork) or (self.runOnceStartCourse)) then
+				if workArea and fill_level ~= 100 and ((self.abortWork == nil) or (self.abortWork ~= nil and last_recordnumber == self.abortWork) or (self.runOnceStartCourse)) and self.turnStage == 0  then
 					if allowedToDrive then
 						--unfold
+						local forecast = 0
+						if self.recordnumber+2 <= self.maxnumber then
+							forecast = self.Waypoints[self.recordnumber+2].ridgeMarker
+						end
+						local waypoint = math.max(self.Waypoints[self.recordnumber].ridgeMarker,forecast)
 						if courseplay:isFoldable(workTool) and not courseplay:isFolding(workTool) then
-							workTool:setFoldDirection(-1);
-							--workTool:setFoldDirection(workTool.turnOnFoldDirection);
+							if not SpecializationUtil.hasSpecialization(Plough, workTool.specializations) then
+								workTool:setFoldDirection(-1);
+								self.runOnceStartCourse = false; 
+							elseif waypoint == 2 and self.runOnceStartCourse then --wegpunkte finden und richtung setzen...
+								workTool:setFoldDirection(-1);
+								if workTool:getIsPloughRotationAllowed() then
+									AITractor.aiRotateLeft(self);
+									self.runOnceStartCourse = false;
+								end
+							elseif self.runOnceStartCourse then
+								workTool:setFoldDirection(-1);
+								self.runOnceStartCourse = false; 
+							end
 						end;
 
 						if not courseplay:isFolding(workTool) then
@@ -230,9 +246,6 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 									workTool:setIsPickupDown(true, false);
 								end;
 							end;
-
-							--activate/lower/unfold workTool also when activating from within course (not only at start)
-							self.runOnceStartCourse = false;
 						end;
 					end
 				elseif not workArea or self.abortWork ~= nil or self.loaded or last_recordnumber == self.stopWork then
@@ -250,7 +263,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 						end;
 
 						--raise
-						if workTool.needsLowering and workTool.aiNeedsLowering then
+						if workTool.needsLowering and workTool.aiNeedsLowering and self.turnStage == 0 then
 							self:setAIImplementsMoveDown(false);
 						end;
 					end;
@@ -384,12 +397,6 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 						elseif  pipeState == 0 then 
 							self:setPipeState(1)
 						end
-						if math.abs(lx) > 0.7 and self.turnStage == 0 then
-							self.turnStage = 1
-						end
-						if math.abs(lx) < 0.2 and self.turnStage == 1 then
-							self.turnStage = 0
-						end	
 						if self.waitingForTrailerToUnload then
 							allowedToDrive = false;
 						end

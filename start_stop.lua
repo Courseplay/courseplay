@@ -18,7 +18,12 @@ function courseplay:start(self)
     end;
     --END manual ignition
 	
-
+	if self.orgRpm == nil then
+		self.orgRpm = {}
+		self.orgRpm[1] = self.motor.maxRpm[1]
+		self.orgRpm[2] = self.motor.maxRpm[2]
+		self.orgRpm[3] = self.motor.maxRpm[3]
+	end
 	self.CPnumCollidingVehicles = 0;
 	self.traffic_vehicle_in_front = nil
 	--self.numToolsCollidingVehicles = {};
@@ -26,8 +31,21 @@ function courseplay:start(self)
 	self.record = false
 	self.record_pause = false
 	self.calculated_course = false
+	
+	
 
 	AITractor.addCollisionTrigger(self, self);
+
+	local DirectionNode = nil;
+	if self.aiTractorDirectionNode ~= nil then
+		DirectionNode = self.aiTractorDirectionNode;
+	elseif self.aiTreshingDirectionNode ~= nil then
+		DirectionNode = self.aiTreshingDirectionNode;
+	else
+		DirectionNode = self.rootNode
+	end;
+	self.cp.DirectionNode = DirectionNode
+
 
 	self.orig_maxnumber = self.maxnumber
 	-- set default ai_state if not in mode 2 or 3
@@ -73,7 +91,11 @@ function courseplay:start(self)
 			dist = courseplay:distance(ctx, ctz, cx, cz)
 			if dist < nearestpoint then
 				nearestpoint = dist
-				self.recordnumber = i + 1
+				if self.Waypoints[i].turn ~= nil then
+					self.recordnumber = i + 2
+				else 
+					self.recordnumber = i + 1
+				end
 			end
 			-- specific Workzone
 			if self.ai_mode == 4 or self.ai_mode == 6 or self.ai_mode == 7 then
@@ -140,6 +162,18 @@ function courseplay:stop(self)
 	if self.ai_state > 4 then
 		self.ai_state = 1
 	end
+	self.turnStage = 0
+	self.cp.isTurning = nil
+	self.aiTractorTargetX = nil
+	self.aiTractorTargetZ = nil
+	self.aiTractorTargetBeforeTurnX = nil
+	self.aiTractorTargetBeforeTurnZ = nil
+	self.cp.backMarkerOffset = nil
+	self.cp.aiFrontMarker = nil
+	self.cp.aiTurnNoBackward = false
+	self.numCollidingVehicles = {}
+	self.cp.noStopOnEdge = false
+
 
 	AITractor.removeCollisionTrigger(self, self);
 

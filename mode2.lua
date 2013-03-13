@@ -250,18 +250,18 @@ function courseplay:unload_combine(self, dt)
 	if self.isChopperTurning == nil then
 		self.isChopperTurning = false
 	end
-	-- is combine turning ?
-	if combine ~= nil and (combine.turnStage == 1 or combine.turnStage == 2 or combine.turnStage == 5) then
-		self.info_text = courseplay:get_locale(self, "CPCombineTurning") -- "Drescher wendet. "
-		combine_turning = true
-	end
+
 	if combine.grainTankCapacity > 0 then
 		combine_fill_level = combine.grainTankFillLevel * 100 / combine.grainTankCapacity
 	else -- combine is a chopper / has no tank
 		combine_fill_level = 51
 		combine.isCornchopper = true;
 	end
-
+	-- is combine turning ?
+	if combine ~= nil and (combine.turnStage == 1 or combine.turnStage == 2 or (combine.turnStage == 3 and not combine.isCornchopper) or combine.turnStage == 4 or combine.turnStage == 5) then
+		self.info_text = courseplay:get_locale(self, "CPCombineTurning") -- "Drescher wendet. "
+		combine_turning = true
+	end
 	
 	if mode == 2 or mode == 3 or mode == 4 then
 		if combine == nil then
