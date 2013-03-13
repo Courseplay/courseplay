@@ -15,7 +15,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 		--courseplay:debug(string.format("posX: %f posY: %f",posX,posY), 4)
 
 		for _, button in pairs(self.buttons) do
-			if button.page == self.showHudInfoBase or button.page == nil or button.page == self.showHudInfoBase * -1 then
+			if (button.page == self.showHudInfoBase or button.page == nil or button.page == self.showHudInfoBase * -1) and (button.show == nil or (button.show ~= nil and button.show)) then
 
 				if posX > button.x and posX < button.x2 and posY > button.y and posY < button.y2 then
 					if InputBinding.isPressed(InputBinding.CP_Modifier_1) then --for some reason InputBinding works in :mouseEvent

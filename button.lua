@@ -19,9 +19,9 @@ function courseplay:register_button(self, hud_page, img, function_to_call, param
 	
 	--NOTE: showHideVariable MUST be in self namespace, since self isn't global (can't be called as _G[self] or _G["self"])
 	if showHideVariable then
-		--button.conditionalDisplay = showHideVariable;
-		button.showWhat = Utils.splitString("=", showHideVariable)[1];
-		button.showIs = Utils.splitString("=", showHideVariable)[2];
+		local split = Utils.splitString("=", showHideVariable);
+		button.showWhat = split[1];
+		button.showIs = split[2];
 	end;
 
 	table.insert(self.buttons, button)
@@ -49,7 +49,7 @@ function courseplay:render_buttons(self, page)
 				button.show = tostring(whatObj) == button.showIs;
 			end;
 			
-			if (button.show ~= nil and button.show) or button.show == nil then
+			if button.show == nil or (button.show ~= nil and button.show) then
 				button.overlay:render();
 			end;
 		end
