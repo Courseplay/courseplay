@@ -322,56 +322,26 @@ function courseplay:load_courses()
 				local crossing = Utils.getVectorFromString(getXMLString(File, key .. "#crossing"))
 				
 				--course generation
-				local generated = Utils.getNoNil(getXMLString(File, key .. "#generated"), "false");
+				local generated = Utils.getNoNil(getXMLBool(File, key .. "#generated"), false);
 				local turn = Utils.getNoNil(getXMLString(File, key .. "#turn"), "false");
-				local turnStart = Utils.getNoNil(Utils.getVectorFromString(getXMLString(File, key .. "#turnstart")), 0); --TODO: use getXMLInt ?
-				local turnEnd = Utils.getNoNil(Utils.getVectorFromString(getXMLString(File, key .. "#turnend")), 0);
-				local ridgeMarker = Utils.getNoNil(Utils.getVectorFromString(getXMLString(File, key .. "#ridgemarker")), 0);
+				local turnStart = Utils.getNoNil(getXMLInt(File, key .. "#turnstart"), 0);
+				local turnEnd = Utils.getNoNil(getXMLInt(File, key .. "#turnend"), 0);
+				local ridgeMarker = Utils.getNoNil(getXMLInt(File, key .. "#ridgemarker"), 0);
 
-				if crossing == 1 or s == 1 then
-					crossing = true
-				else
-					crossing = false
-				end
-
-				if wait == 1 then
-					wait = true
-				else
-					wait = false
-				end
-				if rev == 1 then
-					rev = true
-				else
-					rev = false
-				end
+				crossing = crossing == 1 or s == 1;
+				wait = wait == 1;
+				rev = rev == 1;
 
 				if speed == 0 then
 					speed = nil
 				end
 				
-				
-				if generated == "true" then
-					generated = true;
-				else
-					generated = false;
-				end;
+				--generated not needed, since true or false are loaded from file
 				if turn == "false" then
 					turn = nil;
 				end;
-				if turnStart == 1 then
-					turnStart = true;
-				else
-					turnStart = false;
-				end;
-				--[[
-				if turnEnd == 1 then
-					turnEnd = true;
-				else
-					turnEnd = false;
-				end;]]
-				--turnEnd test
+				turnStart = turnStart == 1;
 				turnEnd = turnEnd == 1;
-				
 				--ridgeMarker not needed, since 0, 1 or 2 is loaded from file
 				
 				tempCourse[s] = { 
