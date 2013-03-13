@@ -284,6 +284,7 @@ function courseplay:load(xmlFile)
 	self.cp.startingDirection = 0;
 	self.cp.hasStartingDirection = false;
 	self.cp.returnToFirstPoint = false;
+
 	self.cp.hasValidCourseGenerationData = false;
 	
 	self.mouse_enabled = false
@@ -364,8 +365,8 @@ function courseplay:load(xmlFile)
 	courseplay:register_button(self, 1, "blank.dds", "row2", nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[2], 0.32, 0.015);
 	courseplay:register_button(self, 1, "blank.dds", "row3", nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[3], 0.32, 0.015);
 	courseplay:register_button(self, 1, "blank.dds", "row4", nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[4], 0.32, 0.015);
-	courseplay:register_button(self, 1, "blank.dds", "row5", nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[5], 0.32, 0.015);
-	courseplay:register_button(self, 1, "blank.dds", "change_DriveDirection", 1, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[5], 0.32, 0.015);
+	--courseplay:register_button(self, 1, "blank.dds", "row5", nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[5], 0.32, 0.015); --TODO: delete? (next line: button at same position)
+	courseplay:register_button(self, 1, "blank.dds", "change_DriveDirection", 1, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[5], 0.32, 0.015, nil, nil, "self.record=true");
 
 	--Page 2: Course management
 	courseplay:register_button(self, 2, "blank.dds", "row1", nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[1], 0.32, 0.015);
