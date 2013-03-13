@@ -12,7 +12,7 @@ function courseplay:reset_tools(self)
 end
 
 function courseplay:isCombine(workTool)
-	return SpecializationUtil.hasSpecialization(combine, workTool.specializations) and SpecializationUtil.hasSpecialization(aiCombine, workTool.specializations) and workTool.grainTankCapacity ~= nil;
+	return (SpecializationUtil.hasSpecialization(Combine, workTool.specializations) or SpecializationUtil.hasSpecialization(combine, workTool.specializations)) and (SpecializationUtil.hasSpecialization(AiCombine, workTool.specializations) or SpecializationUtil.hasSpecialization(aiCombine, workTool.specializations)) and workTool.grainTankCapacity ~= nil;
 end;
 function courseplay:isChopper(workTool)
 	return courseplay:isCombine(workTool) and workTool.grainTankCapacity == 0;
@@ -64,10 +64,10 @@ function courseplay:update_tools(self, tractor_or_implement)
 			if courseplay:is_baler(object) 
 			or courseplay:is_baleLoader(object) 
 			or SpecializationUtil.hasSpecialization(Tedder, object.specializations) 
-			or SpecializationUtil.hasSpecialization(windrower, object.specializations) 
-			or SpecializationUtil.hasSpecialization(cultivator, object.specializations) 
-			or SpecializationUtil.hasSpecialization(plough, object.specializations)
-			or SpecializationUtil.hasSpecialization(fruitPreparer, self.specializations) 
+			or SpecializationUtil.hasSpecialization(Windrower, object.specializations) 
+			or SpecializationUtil.hasSpecialization(Cultivator, object.specializations) 
+			or SpecializationUtil.hasSpecialization(Plough, object.specializations)
+			or SpecializationUtil.hasSpecialization(FruitPreparer, self.specializations) or SpecializationUtil.hasSpecialization(fruitPreparer, self.specializations) 
 			or object.allowTipDischarge 
 			or courseplay:isUBT(object) 
 			or courseplay:isFoldable(object) then
@@ -140,9 +140,10 @@ function courseplay:update_tools(self, tractor_or_implement)
 			if courseplay:is_baler(object) 
 			or courseplay:is_baleLoader(object) 
 			or SpecializationUtil.hasSpecialization(Tedder, object.specializations) 
-			or SpecializationUtil.hasSpecialization(windrower, object.specializations) 
-			or SpecializationUtil.hasSpecialization(cultivator, object.specializations) 
-			or SpecializationUtil.hasSpecialization(plough, object.specializations) 
+			or SpecializationUtil.hasSpecialization(Windrower, object.specializations) 
+			or SpecializationUtil.hasSpecialization(Cultivator, object.specializations) 
+			or SpecializationUtil.hasSpecialization(Plough, object.specializations) 
+			or SpecializationUtil.hasSpecialization(FruitPreparer, self.specializations) or SpecializationUtil.hasSpecialization(fruitPreparer, self.specializations) 
 			or object.allowTipDischarge 
 			or courseplay:isUBT(object) 
 			or courseplay:isFoldable(object) then
