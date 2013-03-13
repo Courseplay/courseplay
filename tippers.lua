@@ -11,11 +11,20 @@ function courseplay:reset_tools(self)
 	self.tools_dirty = false;
 end
 
+function courseplay:isCombine(workTool)
+	return SpecializationUtil.hasSpecialization(combine, workTool.specializations) and SpecializationUtil.hasSpecialization(aiCombine, workTool.specializations) and workTool.grainTankCapacity ~= nil;
+end;
+function courseplay:isChopper(workTool)
+	return courseplay:isCombine(workTool) and workTool.grainTankCapacity == 0;
+end;
 function courseplay:is_baler(workTool) -- is the tool a baler?
 	return (SpecializationUtil.hasSpecialization(Baler, workTool.specializations) or workTool.balerUnloadingState ~= nil);
 end;
 function courseplay:is_baleLoader(workTool) -- is the tool a bale loader?
 	return (SpecializationUtil.hasSpecialization(baleLoader, workTool.specializations) or SpecializationUtil.hasSpecialization(BaleLoader, workTool.specializations) or (workTool.balesToLoad ~= nil and workTool.baleGrabber ~=nil and workTool.grabberIsMoving~= nil));
+end;
+function courseplay:isSprayer(workTool) -- is the tool a sprayer/spreader?
+	return SpecializationUtil.hasSpecialization(Sprayer, object.specializations) or SpecializationUtil.hasSpecialization(sprayer, object.specializations);
 end;
 function courseplay:is_sowingMachine(workTool) -- is the tool a sowing machine?
 	return (SpecializationUtil.hasSpecialization(sowingMachine, workTool.specializations) or SpecializationUtil.hasSpecialization(SowingMachine, workTool.specializations));
@@ -24,14 +33,14 @@ function courseplay:isFoldable(workTool) --is the tool foldable?
 	return SpecializationUtil.hasSpecialization(Foldable, workTool.specializations) or SpecializationUtil.hasSpecialization(foldable, workTool.specializations);
 end;
 function courseplay:isUBT(workTool) --is the tool a UBT?
-	return SpecializationUtil.hasSpecialization(ubt, workTool.specializations) or workTool.name == "UniversalBaleTrailer" or (workTool.numAttacherParts ~= nil and workTool.autoLoad ~= nil and workTool.loadingIsActive ~= nil and workTool.unloadLeft ~= nil and workTool.unloadRight ~= nil and workTool.unloadBack ~= nil and workTool.typeOnTrailer ~= nil);
+	return SpecializationUtil.hasSpecialization(ubt, workTool.specializations) or SpecializationUtil.hasSpecialization(Ubt, workTool.specializations) or workTool.name == "UniversalBaleTrailer" or (workTool.numAttacherParts ~= nil and workTool.autoLoad ~= nil and workTool.loadingIsActive ~= nil and workTool.unloadLeft ~= nil and workTool.unloadRight ~= nil and workTool.unloadBack ~= nil and workTool.typeOnTrailer ~= nil);
 end;
 
 -- update implements to find attached tippers
 function courseplay:update_tools(self, tractor_or_implement)
 	--steerable (tractor, combine etc.)
 	local tipper_attached = false
-	if SpecializationUtil.hasSpecialization(AITractor, tractor_or_implement.specializations) or tractor_or_implement.typeName == "selfPropelledMower" or tractor_or_implement.typeName == "selfPropelledPotatoHarvester"  then
+	if SpecializationUtil.hasSpecialization(AITractor, tractor_or_implement.specializations) or tractor_or_implement.typeName == "selfPropelledPotatoHarvester" or tractor_or_implement.typeName == "selfPropelledMower" then
 		local object = tractor_or_implement
 		if self.ai_mode == 1 or self.ai_mode == 2 then
 			-- if SpecializationUtil.hasSpecialization(Trailer, object.specializations) then
@@ -45,11 +54,11 @@ function courseplay:update_tools(self, tractor_or_implement)
 				table.insert(self.tippers, object)
 			end
 		elseif self.ai_mode == 4 then -- Fertilizer
-			if SpecializationUtil.hasSpecialization(Sprayer, object.specializations) or SpecializationUtil.hasSpecialization(sprayer, object.specializations) or courseplay:is_sowingMachine(object) then
+			if courseplay:isSprayer(object) or courseplay:is_sowingMachine(object) then
 				tipper_attached = true
 				table.insert(self.tippers, object)
 				courseplay:setMarkers(self, object)
-				self.cp.noStopOnEdge = SpecializationUtil.hasSpecialization(Sprayer, object.specializations) or SpecializationUtil.hasSpecialization(sprayer, object.specializations)
+				self.cp.noStopOnEdge = courseplay:isSprayer(object);
 			end
 		elseif self.ai_mode == 6 then -- Baler, foragewagon, baleloader
 			if courseplay:is_baler(object) 
@@ -62,6 +71,11 @@ function courseplay:update_tools(self, tractor_or_implement)
 			or object.allowTipDischarge 
 			or courseplay:isUBT(object) 
 			or courseplay:isFoldable(object) then
+				if courseplay:isUBT(object) and object.fillLevelMax ~= nil then
+					self.cp.hasUBT = true;
+					courseplay:debug(string.format("implement %s: setting UBT capacity to fillLevelMax (=%s)", tostring(object.name), tostring(object.fillLevelMax)), 3);
+					object.capacity = object.fillLevelMax;
+				end;
 				tipper_attached = true
 				table.insert(self.tippers, object)
 				courseplay:setMarkers(self, object)
@@ -74,11 +88,13 @@ function courseplay:update_tools(self, tractor_or_implement)
 		end
 	end
 
-
+	if not self.cp.hasUBT then
+		self.cp.hasUBT = false;
+	end;
 	-- go through all implements
 	self.cpTrafficCollisionIgnoreList = {}
 	self.cp.aiBackMarker = nil
-	
+
 	for k, implement in pairs(tractor_or_implement.attachedImplements) do
 		local object = implement.object
 		
@@ -109,11 +125,11 @@ function courseplay:update_tools(self, tractor_or_implement)
 				table.insert(self.tippers, object)
 			end
 		elseif self.ai_mode == 4 then -- Fertilizer and Seeding
-			if SpecializationUtil.hasSpecialization(Sprayer, object.specializations) or SpecializationUtil.hasSpecialization(sprayer, object.specializations) or courseplay:is_sowingMachine(object) then
+			if courseplay:isSprayer(object) or courseplay:is_sowingMachine(object) then
 				tipper_attached = true
 				table.insert(self.tippers, object)
 				courseplay:setMarkers(self, object)
-				self.cp.noStopOnEdge = SpecializationUtil.hasSpecialization(Sprayer, object.specializations) or SpecializationUtil.hasSpecialization(sprayer, object.specializations)
+				self.cp.noStopOnEdge = courseplay:isSprayer(object);
 			end
 		elseif self.ai_mode == 5 then -- Transfer
 			if object.setPlane ~= nil then --open/close cover
@@ -131,13 +147,14 @@ function courseplay:update_tools(self, tractor_or_implement)
 			or courseplay:isUBT(object) 
 			or courseplay:isFoldable(object) then
 				if courseplay:isUBT(object) and object.fillLevelMax ~= nil then
+					self.cp.hasUBT = true;
 					courseplay:debug(string.format("implement %s: setting UBT capacity to fillLevelMax (=%s)", tostring(object.name), tostring(object.fillLevelMax)), 3);
 					object.capacity = object.fillLevelMax;
 				end;
 				tipper_attached = true
 				table.insert(self.tippers, object)
 				courseplay:setMarkers(self, object)
-			end
+			end;
 		elseif self.ai_mode == 8 then --Liquid manure transfer
 			--if SpecializationUtil.hasSpecialization(RefillTrigger, object.specializations) then
 			tipper_attached = true
@@ -222,7 +239,6 @@ function courseplay:update_tools(self, tractor_or_implement)
 	self.cp.tipperHasCover = false;
 	self.cp.tippersWithCovers = nil;
 	self.cp.tippersWithCovers = {};
-	--courseplay:debug(self.name .. ": tipper_attached = ".. tostring(tipper_attached), 3);
 	if tipper_attached then
 		for i=1, table.getn(self.tippers) do
 			if self.tippers[i].setPlane ~= nil then
@@ -234,7 +250,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 			end;
 		end;
 	end;
-	courseplay:debug(tableShow(self.cp.tippersWithCovers, self.name .. ": self.cp.tippersWithCovers"), 4);
+	courseplay:debug(tableShow(self.cp.tippersWithCovers, tostring(self.name) .. ": self.cp.tippersWithCovers"), 4);
 	--END tippers with covers
 	
 	
