@@ -1367,6 +1367,30 @@ Italský překlad: JD7530
 			<it>No</it>
 			<cz>Ne</cz>
 		</text>
+		<text name="CPridgeMarkers">
+			<de>Spurreißer</de>
+			<en>Ridge markers</en>
+			<es>Trazador de huellas</es>
+			<fr>Traceurs</fr>
+			<it>Segnafile</it>
+			<cz>Znamenák stop</cz>
+		</text>
+		<text name="CPautomatic">
+			<en>automatic</en>
+			<de>automatisch</de>
+			<fr>automatique</fr>
+			<es>automático</es>
+			<it>automatico</it>
+			<cz>automaticky</cz>
+		</text>
+		<text name="CPmanual">
+			<de>manuell</de>
+			<en>manually</en>
+			<es>manual</es>
+			<fr>manuel</fr>
+			<it>manuale</it>
+			<cz>ručně</cz>
+		</text>
 	</l10n>
 
 	<extraSourceFiles>

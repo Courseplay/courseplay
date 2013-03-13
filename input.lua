@@ -200,7 +200,7 @@ function courseplay:deal_with_mouse_input(self, func, value)
 	end
 
 
-	if func == "row1" or func == "row2" or func == "row3" or func == "row4" then
+	if func == "row1" or func == "row2" or func == "row3" or func == "row4" or func == "row5" then
 		if self.showHudInfoBase == 0 then
 			if self.courseplayers == nil or table.getn(self.courseplayers) == 0 then
 				if func == "row1" then
@@ -259,8 +259,10 @@ function courseplay:deal_with_mouse_input(self, func, value)
 					if not self.StopEnd and func == "row4" then
 						self.StopEnd = true
 					end
-
-          
+					
+					if self.ai_mode == 4 and func == "row5" then
+						self.cp.ridgeMarkersAutomatic = not self.cp.ridgeMarkersAutomatic;
+					end;
 				end -- end driving
 			end -- playing
 

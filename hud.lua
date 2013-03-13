@@ -96,6 +96,16 @@ function courseplay:loadHud(self)
 					if not self.StopEnd then
 						self.hudpage[1][1][4] = courseplay:get_locale(self, "CoursePlayStopEnd")
 					end
+					
+					if self.ai_mode == 4 then
+						self.hudpage[1][1][5] = courseplay:get_locale(self, "CPridgeMarkers");
+						
+						if self.cp.ridgeMarkersAutomatic then
+							self.hudpage[1][2][5] = courseplay:get_locale(self, "CPautomatic");
+						else
+							self.hudpage[1][2][5] = courseplay:get_locale(self, "CPmanual");
+						end;
+					end;
 				end
 			end
 			if not self.drive then
