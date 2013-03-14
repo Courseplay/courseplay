@@ -35,12 +35,15 @@ end;
 function courseplay:isUBT(workTool) --is the tool a UBT?
 	return SpecializationUtil.hasSpecialization(ubt, workTool.specializations) or SpecializationUtil.hasSpecialization(Ubt, workTool.specializations) or workTool.name == "UniversalBaleTrailer" or (workTool.numAttacherParts ~= nil and workTool.autoLoad ~= nil and workTool.loadingIsActive ~= nil and workTool.unloadLeft ~= nil and workTool.unloadRight ~= nil and workTool.unloadBack ~= nil and workTool.typeOnTrailer ~= nil);
 end;
+function courseplay:isBigM(workTool)
+	return (SpecializationUtil.hasSpecialization(Steerable, workTool.specializations) or SpecializationUtil.hasSpecialization(steerable, workTool.specializations)) and (SpecializationUtil.hasSpecialization(Mower, workTool.specializations) or SpecializationUtil.hasSpecialization(mower, workTool.specializations));
+end;
 
 -- update implements to find attached tippers
 function courseplay:update_tools(self, tractor_or_implement)
 	--steerable (tractor, combine etc.)
 	local tipper_attached = false
-	if SpecializationUtil.hasSpecialization(AITractor, tractor_or_implement.specializations) or tractor_or_implement.typeName == "selfPropelledPotatoHarvester" or tractor_or_implement.typeName == "selfPropelledMower" then
+	if SpecializationUtil.hasSpecialization(AITractor, tractor_or_implement.specializations) or tractor_or_implement.typeName == "selfPropelledPotatoHarvester" or courseplay:isBigM(tractor_or_implement) then
 		local object = tractor_or_implement
 		if self.ai_mode == 1 or self.ai_mode == 2 then
 			-- if SpecializationUtil.hasSpecialization(Trailer, object.specializations) then
@@ -76,8 +79,8 @@ function courseplay:update_tools(self, tractor_or_implement)
 					courseplay:debug(string.format("implement %s: setting UBT capacity to fillLevelMax (=%s)", tostring(object.name), tostring(object.fillLevelMax)), 3);
 					object.capacity = object.fillLevelMax;
 				end;
-				tipper_attached = true
-				table.insert(self.tippers, object)
+				tipper_attached = true;
+				table.insert(self.tippers, object);
 				courseplay:setMarkers(self, object);
 				self.cp.noStopOnEdge = courseplay:is_baler(object) or courseplay:is_baleLoader(object) or courseplay:isUBT(object);
 			end
@@ -255,7 +258,6 @@ function courseplay:update_tools(self, tractor_or_implement)
 	end;
 	courseplay:debug(tableShow(self.cp.tippersWithCovers, tostring(self.name) .. ": self.cp.tippersWithCovers"), 4);
 	--END tippers with covers
-	
 	
 	if tipper_attached then
 		return true

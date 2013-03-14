@@ -45,7 +45,10 @@ function courseplay:start(self)
 		DirectionNode = self.rootNode
 	end;
 	self.cp.DirectionNode = DirectionNode
-
+	if self.turnStage == nil then
+		self.turnStage = 0;
+	end;
+	self.numCollidingVehicles = {};
 
 	self.orig_maxnumber = self.maxnumber
 	-- set default ai_state if not in mode 2 or 3
@@ -171,7 +174,6 @@ function courseplay:stop(self)
 	self.cp.backMarkerOffset = nil
 	self.cp.aiFrontMarker = nil
 	self.cp.aiTurnNoBackward = false
-	self.numCollidingVehicles = {}
 	self.cp.noStopOnEdge = false
 
 
