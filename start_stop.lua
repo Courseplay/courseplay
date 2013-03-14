@@ -183,6 +183,12 @@ function courseplay:stop(self)
 	-- removing tippers
 	if self.tipper_attached then
 		for key, tipper in pairs(self.tippers) do
+			if workTool.setIsTurnedOn ~= nil
+				tipper:setIsTurnedOn(false, false);
+			end
+			if courseplay:isFoldable(tipper) then
+				tipper:setFoldDirection(1);
+			end
 			-- TODO AITractor.removeToolTrigger(self, tipper)
 			if SpecializationUtil.hasSpecialization(Attachable, tipper.specializations) then
 				tipper:aiTurnOff()
