@@ -78,7 +78,8 @@ function courseplay:update_tools(self, tractor_or_implement)
 				end;
 				tipper_attached = true
 				table.insert(self.tippers, object)
-				courseplay:setMarkers(self, object)
+				courseplay:setMarkers(self, object);
+				self.cp.noStopOnEdge = courseplay:is_baler(object) or courseplay:is_baleLoader(object) or courseplay:isUBT(object);
 			end
 		elseif self.ai_mode == 8 then -- Baler, foragewagon, baleloader
 			--if SpecializationUtil.hasSpecialization(RefillTrigger, object.specializations) then
@@ -155,6 +156,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 				tipper_attached = true
 				table.insert(self.tippers, object)
 				courseplay:setMarkers(self, object)
+				self.cp.noStopOnEdge = courseplay:is_baler(object) or courseplay:is_baleLoader(object) or courseplay:isUBT(object);
 			end;
 		elseif self.ai_mode == 8 then --Liquid manure transfer
 			--if SpecializationUtil.hasSpecialization(RefillTrigger, object.specializations) then
