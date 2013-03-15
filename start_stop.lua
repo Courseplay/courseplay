@@ -183,7 +183,7 @@ function courseplay:stop(self)
 	-- removing tippers
 	if self.tipper_attached then
 		for key, tipper in pairs(self.tippers) do
-			if workTool.setIsTurnedOn ~= nil
+			if tipper.setIsTurnedOn ~= nil
 				tipper:setIsTurnedOn(false, false);
 			end
 			if courseplay:isFoldable(tipper) then
