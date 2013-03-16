@@ -114,28 +114,12 @@ end
 
 
 function courseplay:change_required_fill_level_for_drive_on(self, change_by)
-	self.required_fill_level_for_drive_on = self.required_fill_level_for_drive_on + change_by
-
-	if self.required_fill_level_for_drive_on < 0 then
-		self.required_fill_level_for_drive_on = 0
-	end
-
-	if self.required_fill_level_for_drive_on > 100 then
-		self.required_fill_level_for_drive_on = 100
-	end
+	self.required_fill_level_for_drive_on = Utils.clamp(self.required_fill_level_for_drive_on + change_by, 0, 100);
 end
 
 
 function courseplay:change_required_fill_level(self, change_by)
-	self.required_fill_level_for_follow = self.required_fill_level_for_follow + change_by
-
-	if self.required_fill_level_for_follow < 0 then
-		self.required_fill_level_for_follow = 0
-	end
-
-	if self.required_fill_level_for_follow > 100 then
-		self.required_fill_level_for_follow = 100
-	end
+	self.required_fill_level_for_follow = Utils.clamp(self.required_fill_level_for_follow + change_by, 0, 100);
 end
 
 
