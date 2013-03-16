@@ -73,7 +73,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 	-- courseplay:debug(table.show(trigger_objects), 4);
 	for k, trigger in pairs(trigger_objects) do
 		--courseplay:debug(trigger.className, 3);
-		if (trigger.className and (trigger.className == "SiloTrigger" or trigger.className == "HeapTipTrigger" or endswith(trigger.className, "TipTrigger") or startswith(trigger.className, "MapBGA"))) or trigger.isTipAnywhereTrigger then
+		if (trigger.className and (trigger.className == "SiloTrigger" or trigger.className == "HeapTipTrigger" or Utils.endsWith(trigger.className, "TipTrigger") or Utils.startsWith(trigger.className, "MapBGA"))) or trigger.isTipAnywhereTrigger then
 			-- transformId
 			if not trigger.className then
 				-- little hack ;)
@@ -99,8 +99,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 	end
 end
 
-
-function table.contains(table, element)
+function table.contains(table, element) --TODO: always use Utils.hasListElement
 	for _, value in pairs(table) do
 		if value == element then
 			return true
@@ -109,7 +108,7 @@ function table.contains(table, element)
 	return false
 end
 
-function startswith(sbig, slittle)
+function startswith(sbig, slittle) --TODO: always use Utils.startsWith
 	if type(slittle) == "table" then
 		for k, v in ipairs(slittle) do
 			if string.sub(sbig, 1, string.len(v)) == v then
@@ -121,7 +120,7 @@ function startswith(sbig, slittle)
 	return string.sub(sbig, 1, string.len(slittle)) == slittle
 end
 
-function endswith(sbig, slittle)
+function endswith(sbig, slittle) --TODO: always use Utils.endsWith
 	if type(slittle) == "table" then
 		for k, v in ipairs(slittle) do
 			if string.sub(sbig, string.len(sbig) - string.len(v) + 1) == v then
