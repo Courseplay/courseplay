@@ -349,7 +349,7 @@ function courseplay:generateCourse(self)
 			end;
 		end; --END cp.firstInLane
 		
-		if cp.lastInLane then
+		if cp.lastInLane and i ~= numPoints then
 			--North
 			if cp.laneDir == "N" then
 			--if math.floor(angleDeg) == 90 then
