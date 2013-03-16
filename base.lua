@@ -285,6 +285,11 @@ function courseplay:load(xmlFile)
 	self.search_combine = true
 	self.saved_combine = nil
 	self.selected_combine_number = 0
+	
+	--Copy course
+	self.cp.hasFoundCopyDriver = false;
+	self.cp.copyCourseFromDriver = nil;
+	self.cp.selectedDriverNumber = 0;
 
 	--Course generation
 	self.cp.startingCorner = 0;
@@ -419,6 +424,10 @@ function courseplay:load(xmlFile)
 
 	courseplay:register_button(self, 4, "blank.dds", "switch_search_combine", nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[2], 0.32, 0.015);
 
+	courseplay:register_button(self, 4, "navigate_up.dds",   "switchDriverCopy", -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[4], w16px, h16px);
+	courseplay:register_button(self, 4, "navigate_down.dds", "switchDriverCopy",  1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[4], w16px, h16px);
+	courseplay:register_button(self, 4, "copy3.dds",         "copyCourse",      nil, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[5], w16px, h16px, nil, nil, "self.cp.hasFoundCopyDriver=true");
+	
 	--Page 5: Speeds
 	courseplay:register_button(self, 5, "navigate_minus.dds", "change_turn_speed",   -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], w16px, h16px, nil, -5);
 	courseplay:register_button(self, 5, "navigate_plus.dds",  "change_turn_speed",    1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[1], w16px, h16px, nil,  5);
@@ -650,12 +659,14 @@ function courseplay:readStream(streamId, connection)
 	self.courseplay_position = streamDebugReadInt32(streamId)
 	self.CPnumCollidingVehicles = streamDebugReadInt32(streamId)
 	self.cpTrafficBrake = streamDebugReadBool(streamId)
+	self.cp.hasFoundCopyDriver = streamDebugReadBool(streamId);
 	self.cp.hasStartingCorner = streamDebugReadBool(streamId);
 	self.cp.hasStartingDirection = streamDebugReadBool(streamId);
 	self.cp.hasGeneratedCourse = streamDebugReadBool(streamId);
 	self.cp.hasValidCourseGenerationData = streamDebugReadBool(streamId);
 	self.cp.ridgeMarkersAutomatic = streamDebugReadBool(streamId);
 	self.cp.returnToFirstPoint = streamDebugReadBool(streamId);
+	self.cp.selectedDriverNumber = streamDebugReadInt32(streamId);
 	self.cp.startingCorner = streamDebugReadInt32(streamId);
 	self.cp.startingDirection = streamDebugReadInt32(streamId);
 	self.cp.tipperHasCover = streamDebugReadBool(streamId);
@@ -771,12 +782,14 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteInt32(streamId,self.courseplay_position)
 	streamDebugWriteInt32(streamId,self.CPnumCollidingVehicles)
 	streamDebugWriteBool(streamId, self.cpTrafficBrake)
+	streamDebugWriteBool(streamId, self.cp.hasFoundCopyDriver);
 	streamDebugWriteBool(streamId, self.cp.hasStartingCorner);
 	streamDebugWriteBool(streamId, self.cp.hasStartingDirection);
 	streamDebugWriteBool(streamId, self.cp.hasGeneratedCourse);
 	streamDebugWriteBool(streamId, self.cp.hasValidCourseGenerationData);
 	streamDebugWriteBool(streamId, self.cp.ridgeMarkersAutomatic);
 	streamDebugWriteBool(streamId, self.cp.returnToFirstPoint);
+	streamDebugWriteInt32(streamId, self.cp.selectedDriverNumber);
 	streamDebugWriteInt32(streamId, self.cp.startingCorner);
 	streamDebugWriteInt32(streamId, self.cp.startingDirection);
 	streamDebugWriteBool(streamId, self.cp.tipperHasCover);

@@ -233,6 +233,78 @@ function courseplay:switch_combine(self, change_by)
 	end
 end
 
+function courseplay:switchDriverCopy(self, change_by)
+	local drivers = courseplay:findDrivers(self);
+
+	if drivers ~= nil then
+		local selectedDriverNumber = self.cp.selectedDriverNumber + change_by;
+		self.cp.selectedDriverNumber = Utils.clamp(selectedDriverNumber, 0, table.getn(drivers));
+
+		if self.cp.selectedDriverNumber == 0 then
+			self.cp.copyCourseFromDriver = nil;
+			self.cp.hasFoundCopyDriver = false;
+		else
+			self.cp.copyCourseFromDriver = drivers[self.cp.selectedDriverNumber];
+			self.cp.hasFoundCopyDriver = true;
+			--print("now calling copyCourse from within switchDriverCopy()");
+			--courseplay:copyCourse(self);
+		end;
+	else
+		self.cp.copyCourseFromDriver = nil;
+		self.cp.selectedDriverNumber = 0;
+		self.cp.hasFoundCopyDriver = false;
+	end;
+end;
+
+function courseplay:findDrivers(self)
+	local foundDrivers = {}; -- resetting all drivers
+	local all_vehicles = g_currentMission.vehicles -- go through all vehicles that have a course -- TODO: only check courseplayers
+	for k, vehicle in pairs(all_vehicles) do
+		if vehicle.Waypoints ~= nil then
+			if vehicle.rootNode ~= self.rootNode and table.getn(vehicle.Waypoints) > 0 then
+				table.insert(foundDrivers, vehicle);
+			end;
+		end;
+	end;
+
+	return foundDrivers;
+end;
+
+function courseplay:copyCourse(self)
+	if self.cp.hasFoundCopyDriver ~= nil and self.cp.copyCourseFromDriver ~= nil then
+		local src = self.cp.copyCourseFromDriver;
+		
+		self.Waypoints = src.Waypoints;
+		self.current_course_name = src.current_course_name;
+		self.loaded_courses = src.loaded_courses;
+		self.numCourses = src.numCourses;
+		self.recordnumber = 1;
+		self.maxnumber = table.getn(self.Waypoints);
+
+		self.record = false;
+		self.record_pause = false;
+		self.drive = false;
+		self.dcheck = false;
+		self.play = true;
+		self.back = false;
+		self.abortWork = nil;
+
+		self.target_x, self.target_y, self.target_z = nil, nil, nil;
+		if self.active_combine ~= nil then
+			courseplay:unregister_at_combine(self, self.active_combine);
+		end
+		
+		self.ai_state = 1;
+		self.tmr = 1;
+
+		courseplay:RefreshSigns(self);
+		
+		--reset variables
+		self.cp.selectedDriverNumber = 0;
+		self.cp.hasFoundCopyDriver = false;
+		self.cp.copyCourseFromDriver = nil;
+	end;
+end;
 
 function courseplay:change_selected_course(self, change_by)
 
