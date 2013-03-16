@@ -817,11 +817,11 @@ function courseplay:unload_combine(self, dt)
 		end
 	end
 
-	if mode == 6 then --Follow Tractor
+	if mode == 6 and tractor ~= nil then --Follow Tractor
 		self.info_text = courseplay:get_locale(self, "CPFollowTractor") -- "Fahre hinter Traktor"
 		--use the current tractor's sideToDrive as own
 		if tractor.sideToDrive ~= nil then
-			courseplay:debug(string.format("setting current tractor's sideToDrive (%s) as my own", tractor.sideToDrive));
+			courseplay:debug(string.format("setting current tractor's sideToDrive (%s) as my own", tostring(tractor.sideToDrive)));
 			self.sideToDrive = tractor.sideToDrive;
 		end;
 
