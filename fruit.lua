@@ -116,7 +116,11 @@ function courseplay:side_to_drive(self, combine, distance)
 
 	local dirX, dirZ = combine.aiThreshingDirectionX, combine.aiThreshingDirectionZ;
 	if dirX == nil or x == nil or dirZ == nil then
-		return 0, 0
+			local dx,_,dz = localDirectionToWorld(combine.rootNode, 0, 0, 2);
+			local length = Utils.vector2Length(dx,dz);
+			dirX = dx/length;
+			dirZ = dz/length;
+	
 	end
 	local sideX, sideZ = -dirZ, dirX;
 
