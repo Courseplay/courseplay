@@ -36,19 +36,9 @@ function courseplay:start(self)
 
 	AITractor.addCollisionTrigger(self, self);
 
-	local DirectionNode = nil;
-	if self.aiTractorDirectionNode ~= nil then
-		DirectionNode = self.aiTractorDirectionNode;
-	elseif self.aiTreshingDirectionNode ~= nil then
-		DirectionNode = self.aiTreshingDirectionNode;
-	else
-		DirectionNode = self.rootNode
-	end;
-	self.cp.DirectionNode = DirectionNode
 	if self.turnStage == nil then
 		self.turnStage = 0;
 	end;
-	self.numCollidingVehicles = {};
 
 	self.orig_maxnumber = self.maxnumber
 	-- set default ai_state if not in mode 2 or 3

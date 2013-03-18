@@ -216,7 +216,16 @@ function courseplay:load(xmlFile)
 	self.cp.courseListPrev = false;
 	self.cp.courseListNext = table.getn(g_currentMission.courseplay_courses) > 5;
 
-
+	--Direction 
+	local DirectionNode = nil;
+	if self.aiTractorDirectionNode ~= nil then
+		DirectionNode = self.aiTractorDirectionNode;
+	elseif self.aiTreshingDirectionNode ~= nil then
+		DirectionNode = self.aiTreshingDirectionNode;
+	else
+		DirectionNode = self.rootNode
+	end;
+	self.cp.DirectionNode = DirectionNode
 
 	-- traffic collision	
 	self.onTrafficCollisionTrigger = courseplay.cponTrafficCollisionTrigger;
@@ -233,7 +242,16 @@ function courseplay:load(xmlFile)
 	self.cpTrafficBrake = false
 	-- tipTrigger
 	self.findTipTriggerCallback = courseplay.findTipTriggerCallback;
-
+	
+	if self.numCollidingVehicles == nil then
+		self.numCollidingVehicles = {};
+	end
+	if self.trafficCollisionIgnoreList == nil then
+		self.trafficCollisionIgnoreList = {}
+	end
+	if self.aiTrafficCollisionTrigger == nil then		
+		self.aiTrafficCollisionTrigger = getChild(self.rootNode, "trafficCollisionTrigger")
+	end
 
 	-- tippers
 	self.tippers = {}
