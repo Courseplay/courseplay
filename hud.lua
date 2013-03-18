@@ -53,7 +53,9 @@ function courseplay:loadHud(self)
 					self.hudpage[0][1][2] = courseplay:get_locale(self, "CoursePlayPlayerStop")
 				end
 				self.hudpage[0][1][3] = courseplay:get_locale(self, "CoursePlayPlayerSendHome")
-				if self.grainTankCapacity == 0 then
+
+				--chopper
+				if self.grainTankCapacity == 0 then --TODO: if courseplay:isChopper(self) then
 					local tractor = self.courseplayers[1]
 					if tractor ~= nil then
 						self.hudpage[0][1][4] = courseplay:get_locale(self, "CoursePlayPlayerSwitchSide")
@@ -63,6 +65,16 @@ function courseplay:loadHud(self)
 							self.hudpage[0][2][4] = courseplay:get_locale(self, "CoursePlayPlayerSideRight")
 						else
 							self.hudpage[0][2][4] = courseplay:get_locale(self, "CoursePlayPlayerSideNone")
+						end
+						
+						--manual chopping: initiate/end turning maneuver
+						if not self.drive and not self.isAIThreshing then
+							self.hudpage[0][1][5] = courseplay:get_locale(self, "CPturnManeuver");
+							if self.turnStage == 0 then
+								self.hudpage[0][2][5] = courseplay:get_locale(self, "CPStart");
+							elseif self.turnStage == 1 then
+								self.hudpage[0][2][5] = courseplay:get_locale(self, "CPEnd");
+							end;
 						end
 					end
 				end

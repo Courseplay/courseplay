@@ -1013,7 +1013,7 @@ Italský překlad: JD7530
 		</text>
 		<text name="CPTurningTo">
 			<en>Turning to direction %d %d</en>
-			<de>wende in Richtung koordinaten %d %d</de>
+			<de>wende in Richtung Koordinaten %d %d</de>
 			<fr>Tourne en direction de %d %d</fr>
 			<es>Girar en dirección %d %d</es>
 			<it>Girando in direzione %d %d</it>
@@ -1390,6 +1390,30 @@ Italský překlad: JD7530
 			<fr>manuel</fr>
 			<it>manuale</it>
 			<cz>ručně</cz>
+		</text>
+		<text name="CPturnManeuver">
+			<en>Turning maneuver:</en>
+			<de>Wendemanöver:</de>
+			<fr>Manœuvre de demi-tour:</fr>
+			<es>Maniobras de giro:</es> <!-- !! -->
+			<it>Manovre di svolta:</it> <!-- !! -->
+			<cz>Soustružnické manévry:</cz> <!-- !! -->
+		</text>
+		<text name="CPStart">
+			<en>Start</en>
+			<de>Starten</de>
+			<fr>Demarrer</fr>
+			<es>Iniciar</es>
+			<it>Inizia</it>
+			<cz>Start</cz>
+		</text>
+		<text name="CPEnd">
+			<en>Finish</en>
+			<de>Beenden</de>
+			<fr>Arreter</fr>
+			<es>Detener</es>
+			<it>Termina</it>
+			<cz>Ukončit</cz>
 		</text>
 	</l10n>
 

@@ -747,7 +747,6 @@ function courseplay:set_traffc_collision(self, lx, lz)
 		drawDebugLine(x, y, z, 1, 0, 0, x1, y, z1, 1, 0, 0);
 	end;
 
-	
 	if self.aiTrafficCollisionTrigger ~= nil and g_server ~= nil then
 		AIVehicleUtil.setCollisionDirection(self.cp.DirectionNode, self.aiTrafficCollisionTrigger, colDirX, colDirZ);
 	end

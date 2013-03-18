@@ -163,6 +163,14 @@ function courseplay:deal_with_mouse_input(self, func, value)
 		courseplay:switch_combine(self, value)
 	end
 
+	if func == "switchDriverCopy" then
+		courseplay:switchDriverCopy(self, value)
+	end
+
+	if func == "copyCourse" then
+		courseplay:copyCourse(self)
+	end
+
 	if func == "changeWpOffsetX" then
 		courseplay:changeCPWpOffsetX(self, value)
 	end
@@ -217,6 +225,16 @@ function courseplay:deal_with_mouse_input(self, func, value)
 
 				if func == "row4" then
 					courseplay:switch_player_side(self)
+				end
+				
+				--manual chopping: initiate/end turning maneuver
+				--TODO: self.cp.turnStage (when ready)
+				if func == "row5" and courseplay:isChopper(self) and not self.drive and not self.isAIThreshing then
+					if self.turnStage == 0 then
+						self.turnStage = 1;
+					elseif self.turnStage == 1 then
+						self.turnStage = 0;
+					end;
 				end
 			end
 		end

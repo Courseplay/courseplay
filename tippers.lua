@@ -12,7 +12,7 @@ function courseplay:reset_tools(self)
 end
 
 function courseplay:isCombine(workTool)
-	return (SpecializationUtil.hasSpecialization(Combine, workTool.specializations) or SpecializationUtil.hasSpecialization(combine, workTool.specializations)) and (SpecializationUtil.hasSpecialization(AiCombine, workTool.specializations) or SpecializationUtil.hasSpecialization(aiCombine, workTool.specializations)) and workTool.grainTankCapacity ~= nil;
+	return (SpecializationUtil.hasSpecialization(Combine, workTool.specializations) or SpecializationUtil.hasSpecialization(combine, workTool.specializations) or SpecializationUtil.hasSpecialization(AiCombine, workTool.specializations) or SpecializationUtil.hasSpecialization(aiCombine, workTool.specializations)) and workTool.grainTankCapacity ~= nil;
 end;
 function courseplay:isChopper(workTool)
 	return courseplay:isCombine(workTool) and workTool.grainTankCapacity == 0;
