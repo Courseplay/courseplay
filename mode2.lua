@@ -627,9 +627,7 @@ function courseplay:unload_combine(self, dt)
 	end
 
 	if combine_turning and distance < 20 then
-		if tipper_percentage >= self.required_fill_level_for_drive_on then
-			self.loaded = true
-		elseif mode == 3 or mode == 4 then
+		if mode == 3 or mode == 4 then
 			if combine.isCornchopper then
 				self.leftFruit, self.rightFruit = courseplay:side_to_drive(self, combine, -10)
 
