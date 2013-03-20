@@ -19,7 +19,15 @@ function courseplay:register_button(self, hud_page, img, function_to_call, param
 	
 	--NOTE: showHideVariable MUST be in self namespace, since self isn't global (can't be called as _G[self] or _G["self"])
 	if showHideVariable then
-		local split = Utils.splitString("=", showHideVariable);
+		if string.find(showHideVariable, "<") then
+			button.compare = "<";
+		elseif string.find(showHideVariable, ">") then
+			button.compare = ">";
+		else
+			button.compare = "=";
+		end;
+		
+		local split = Utils.splitString(button.compare, showHideVariable);
 		button.showWhat = split[1];
 		button.showIs = split[2];
 	end;
@@ -46,7 +54,15 @@ function courseplay:render_buttons(self, page)
 					end;
 				end;
 				
-				button.show = tostring(whatObj) == button.showIs;
+				if button.compare == "=" then
+					button.show = tostring(whatObj) == button.showIs;
+				elseif button.compare == ">" then
+					button.show = whatObj > tonumber(button.showIs);
+				elseif button.compare == "<" then
+					button.show = whatObj < tonumber(button.showIs);
+				else 
+					button.show = false;
+				end;
 			end;
 			
 			if button.show == nil or (button.show ~= nil and button.show) then
