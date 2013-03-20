@@ -864,32 +864,65 @@ function courseplay:openCloseCover(self)
 	--courseplay:debug("self.cp.tipperHasCover = " .. tostring(self.cp.tipperHasCover), 3);
 	if self.cp.tipperHasCover then
 		for i=1, table.getn(self.cp.tippersWithCovers) do
-			local tIdx = self.cp.tippersWithCovers[i];
+			local tIdx = self.cp.tippersWithCovers[i].tipperIndex;
 			local tipper = self.tippers[tIdx];
+			local coverItems = self.cp.tippersWithCovers[i].coverItems;
 			
 			--INFO: setPlane(true) = open / setPlane(false) = closed
-			if tipper.plane.bOpen ~= nil and (self.ai_mode == 1 or self.ai_mode == 2 or self.ai_mode == 5) then
-				--courseplay:debug(string.format("recordnumber=%s, maxnumber=%s, currentTipTrigger=%s, plane.bOpen=%s", tostring(self.recordnumber), tostring(self.maxnumber), tostring(self.currentTipTrigger ~= nil), tostring(tipper.plane.bOpen)), 3);
+			if self.ai_mode == 1 or self.ai_mode == 2 or self.ai_mode == 5 then
 				local minCoverWaypoint = 3;
 				if self.ai_mode == 2 then
 					minCoverWaypoint = 2;
 				end;
-				if  self.recordnumber >= minCoverWaypoint 
-				and self.recordnumber < self.maxnumber 
-				and self.currentTipTrigger == nil 
-				and tipper.plane.bOpen then
-					tipper:setPlane(false);
-				elseif ((self.recordnumber == nil or (self.recordnumber ~= nil and (self.recordnumber == 1 or self.recordnumber == self.maxnumber))) or self.currentTipTrigger ~= nil) 
-				and not tipper.plane.bOpen then
-					tipper:setPlane(true);
+				
+				if self.recordnumber >= minCoverWaypoint and self.recordnumber < self.maxnumber and self.currentTipTrigger == nil then
+					if tipper.plane ~= nil and tipper.plane.bOpen ~= nil and tipper.plane.bOpen then
+						tipper:setPlane(false);
+					end;
+					if coverItems ~= nil then
+						for _,ci in pairs(coverItems) do
+							if not getVisibility(ci) then
+								setVisibility(ci, true);
+							end;
+						end;
+					end;
+				elseif ((self.recordnumber == nil or (self.recordnumber ~= nil and (self.recordnumber == 1 or self.recordnumber == self.maxnumber))) or self.currentTipTrigger ~= nil) then
+					if tipper.plane ~= nil and tipper.plane.bOpen ~= nil and tipper.plane.bOpen then
+						tipper:setPlane(true);
+					end;
+					if coverItems ~= nil then
+						for _,ci in pairs(coverItems) do
+							if getVisibility(ci) then
+								setVisibility(ci, false);
+							end;
+						end;
+					end;
 				end;
-			elseif tipper.plane.bOpen ~= nil and self.ai_mode == 6 then
-				if not workArea and self.currentTipTrigger == nil and tipper.plane.bOpen then
-					tipper:setPlane(false);
-				elseif (workArea or self.currentTipTriger ~= nil) and not tipper.plane.bOpen then
-					tipper:setPlane(true);
+			elseif self.ai_mode == 6 then
+				if not workArea and self.currentTipTrigger == nil then
+					if tipper.plane ~= nil and tipper.plane.bOpen ~= nil and tipper.plane.bOpen then
+						tipper:setPlane(false);
+					end;
+					if coverItems ~= nil then
+						for _,ci in pairs(coverItems) do
+							if not getVisibility(ci) then
+								setVisibility(ci, true);
+							end;
+						end;
+					end;
+				elseif (workArea or self.currentTipTriger ~= nil) then
+					if tipper.plane ~= nil and tipper.plane.bOpen ~= nil and not tipper.plane.bOpen then
+						tipper:setPlane(true);
+					end;
+					if coverItems ~= nil then
+						for _,ci in pairs(coverItems) do
+							if getVisibility(ci) then
+								setVisibility(ci, false);
+							end;
+						end;
+					end;
 				end;
 			end;
-		end; --END for
+		end; --END for i in self.cp.tippersWithCovers
 	end;
 end;

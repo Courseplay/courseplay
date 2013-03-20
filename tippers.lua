@@ -247,16 +247,72 @@ function courseplay:update_tools(self, tractor_or_implement)
 	self.cp.tippersWithCovers = {};
 	if tipper_attached then
 		for i=1, table.getn(self.tippers) do
-			if self.tippers[i].setPlane ~= nil then
-				courseplay:debug(string.format("Implement \"%s\" has a cover (setPlane ~= nil)", tostring(self.tippers[i].name)), 3);
+			local t = self.tippers[i];
+			local coverItems = {};
+			
+			if t.configFileName ~= nil then
+				local isHKD302 = t.configFileName == "data/vehicles/trailers/kroeger/HKD302.xml";
+				local isMUK = t.configFileName == "data/vehicles/trailers/kroeger/MUK303.xml" or t.configFileName == "data/vehicles/trailers/kroeger/MUK402.xml";
+				local isSRB35 = t.configFileName == "data/vehicles/trailers/kroeger/SRB35.xml";
+				
+				if isHKD302 then
+					local c = getChild(t.rootNode, "bodyLeft");
+					
+					if c ~= nil and c ~= 0 then
+						c = getChild(c, "bodyRight");
+					end;
+					if c ~= nil and c ~= 0 then
+						c = getChild(c, "body");
+					end;
+					if c ~= nil and c ~= 0 then
+						c = getChild(c, "plasticPlane");
+					end;
+					
+					if c ~= nil and c ~= 0 then
+						self.cp.tipperHasCover = true;
+						table.insert(coverItems, c);
+					end;
+				elseif isMUK then
+					local c = getChild(t.rootNode, "tank");
+					
+					if c ~= nil and c ~= 0 then
+						c1 = getChild(c, "planeFlapLeft");
+						c2 = getChild(c, "planeFlapRight");
+					end;
+					if c1 ~= nil and c1 ~= 0 and c2 ~= nil and c2 ~= 0  then
+						self.cp.tipperHasCover = true;
+						
+						table.insert(coverItems, c1);
+						table.insert(coverItems, c2);
+					end;
+				elseif isSRB35 then
+					local c = getChild(t.rootNode, "plasticPlane");
+					if c ~= nil and c ~= 0 then
+						self.cp.tipperHasCover = true;
+						
+						table.insert(coverItems, c);
+					end;
+				end;
+				
+				if self.cp.tipperHasCover and table.getn(coverItems) > 0 then
+					local data = {
+						tipperIndex = i,
+						coverItems = coverItems
+					};
+					table.insert(self.cp.tippersWithCovers, data);
+				end;
+			
+			elseif t.setPlane ~= nil then
+				courseplay:debug(string.format("Implement \"%s\" has a cover (setPlane ~= nil)", tostring(t.name)), 3);
 				self.cp.tipperHasCover = true;
-				table.insert(self.cp.tippersWithCovers, i);
-			else
-				courseplay:debug(string.format("Implement \"%s\" doesn't have a cover (setPlane == nil)", tostring(self.tippers[i].name)), 3);
+				local data = {
+					tipperIndex = i
+				};
+				table.insert(self.cp.tippersWithCovers, data);
 			end;
 		end;
 	end;
-	courseplay:debug(tableShow(self.cp.tippersWithCovers, tostring(self.name) .. ": self.cp.tippersWithCovers"), 4);
+	--courseplay:debug(tableShow(self.cp.tippersWithCovers, tostring(self.name) .. ": self.cp.tippersWithCovers"), 4);
 	--END tippers with covers
 	
 	if tipper_attached then

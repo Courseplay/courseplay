@@ -184,6 +184,21 @@ function courseplay:stop(self)
 				tipper:aiTurnOff()
 			end
 		end
+		
+		--open all covers
+		if self.cp.tipperHasCover then
+			for i=1, table.getn(self.cp.tippersWithCovers) do
+				local tIdx = self.cp.tippersWithCovers[i].tipperIndex;
+				local coverItems = self.cp.tippersWithCovers[i].coverItems;
+				if coverItems ~= nil then
+					for _,ci in pairs(coverItems) do
+						if getVisibility(ci) then
+							setVisibility(ci, false);
+						end;
+					end;
+				end;
+			end;
+		end;
 	end
 
 	-- reseting variables
