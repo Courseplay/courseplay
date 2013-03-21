@@ -210,7 +210,8 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 				if workArea and fill_level ~= 100 and ((self.abortWork == nil) or (self.abortWork ~= nil and last_recordnumber == self.abortWork) or (self.runOnceStartCourse)) and self.turnStage == 0  then
 					if allowedToDrive then
 						--unfold
-						local forecast = Utils.getNoNil(self.Waypoints[self.recordnumber+2].ridgeMarker,0)
+						local recordnumber = math.max(self.recordnumber+2 ,self.maxnumber)
+						local forecast = Utils.getNoNil(self.Waypoints[recordnumber].ridgeMarker,0)
 						local marker = Utils.getNoNil(self.Waypoints[self.recordnumber].ridgeMarker,0)
 						local waypoint = math.max(marker,forecast)
 						if courseplay:isFoldable(workTool) and not courseplay:isFolding(workTool) then
