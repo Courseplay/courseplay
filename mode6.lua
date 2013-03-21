@@ -352,9 +352,6 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 					if self.grainTankCapacity == 0 then
 						if courseplay:isFoldable(workTool) then
 							workTool:setFoldDirection(-1);
-							if courseplay:isFolding(workTool) then --TODO: delete, we already have it in line 30
-								allowedToDrive = false;
-							end
 						end;
 						self:setIsThreshing(true, true);
 						if pipeState > 0 then
@@ -370,14 +367,6 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 							if self.pipeParticleSystems[9].isEmitting or pipeState > 0 then
 								self.waitingForTrailerToUnload = false
 							end
-						end
-						if math.abs(lx) > 0.7 then
-							self.turnStage = 1
-						elseif math.abs(lx) < 0.2 and self.turnStage == 1 then
-							self.turnStage = 0
-						end
-						if self.turnStage == 1 and pipeState > 0 then 
-							allowedToDrive = false;
 						end
 					else
 						if self.grainTankFillLevel < self.grainTankCapacity and not self.waitingForDischarge and not self.isThreshing then

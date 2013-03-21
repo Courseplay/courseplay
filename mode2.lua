@@ -328,7 +328,16 @@ function courseplay:unload_combine(self, dt)
 		if dod < 3 then -- change to mode 4 == drive behind combine or cornChopper
 
 			if combine.isCornchopper then -- decide on which side to drive based on ai-combine
-				local leftFruit, rightFruit = courseplay:side_to_drive(self, combine, 10);
+				local leftFruit, rightFruit = 0, 0
+				local Dir = Utils.getNoNil(combine.Waypoints[combine.recordnumber +1].ridgeMarker , 0)
+				if Dir == 0 then
+					leftFruit, rightFruit = courseplay:side_to_drive(self, combine, 10);
+				elseif Dir == 1 then
+					leftFruit, rightFruit = 100,0
+				elseif Dir == 2 then
+					leftFruit, rightFruit = 0,100
+				end
+				
 				if combine.forced_side == nil then
 					if leftFruit > rightFruit then
 						if self.combine_offset > 0 then
@@ -413,10 +422,10 @@ function courseplay:unload_combine(self, dt)
 
 		if combine_fill_level == 0 then --combine empty set waypoints on the field !!!
 			local leftFruit, rightFruit = courseplay:side_to_drive(self, combine, -10)
-			local tempFruit
 			if leftFruit == rightFruit then
 				leftFruit, rightFruit = courseplay:side_to_drive(self, combine, -50)
 			end
+			local tempFruit
 			if not combine.waitingForDischarge and (combine.waitForTurnTime > combine.time or combine.waitingForTrailerToUnload) then
 				--Fruit side switch at end of field line
 				tempFruit = leftFruit;
@@ -629,7 +638,11 @@ function courseplay:unload_combine(self, dt)
 	if combine_turning and distance < 20 then
 		if mode == 3 or mode == 4 then
 			if combine.isCornchopper then
-				self.leftFruit, self.rightFruit = courseplay:side_to_drive(self, combine, -10)
+				if combine.isAIThreshing then
+					self.leftFruit, self.rightFruit = courseplay:side_to_drive(self, combine, -10)
+				else
+					self.rightFruit, self.leftFruit = courseplay:side_to_drive(self, combine, -10)
+				end
 
 				--new chopper turn maneuver by Thomas Gärtner  --!!!
 				if self.leftFruit < self.rightFruit then -- chopper will turn left
