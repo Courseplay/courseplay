@@ -252,7 +252,10 @@ function courseplay:load(xmlFile)
 	if self.aiTrafficCollisionTrigger == nil then		
 		self.aiTrafficCollisionTrigger = getChild(self.rootNode, "trafficCollisionTrigger")
 	end
-
+	
+	if self.aiTractorDirectionNode == nil then
+		self.aiTractorDirectionNode = getChild(self.rootNode, "trafficCollisionTrigger")
+	end
 	-- tippers
 	self.tippers = {}
 	self.tipper_attached = false
