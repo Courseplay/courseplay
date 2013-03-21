@@ -76,7 +76,7 @@ function cp_setLines()
 		linesPosY = {};
 		linesBottomPosY = {};
 		linesButtonPosY = {};
-		numLines = 5;
+		numLines = 6;
 		lineHeight = 0.021;
 	};
 	for l=1,courseplay.hud.numLines do
@@ -87,7 +87,7 @@ function cp_setLines()
 			courseplay.hud.linesPosY[l] = courseplay.hud.linesPosY[1] - ((l-1) * courseplay.hud.lineHeight);
 			courseplay.hud.linesBottomPosY[l] = courseplay.hud.linesBottomPosY[1] - ((l-1) * courseplay.hud.lineHeight);
 		end;
-		courseplay.hud.linesButtonPosY[l] = courseplay.hud.linesPosY[l] + 0.0045;
+		courseplay.hud.linesButtonPosY[l] = courseplay.hud.linesPosY[l] + 0.0020; --0.0045
 	end;
 	
 end;

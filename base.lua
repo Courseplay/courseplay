@@ -336,37 +336,12 @@ function courseplay:load(xmlFile)
 	self.showHudInfoBase = self.min_hud_page;
 
 	self.hudpage = {}
-	self.hudpage[0] = {}
-	self.hudpage[0][1] = {}
-	self.hudpage[0][2] = {}
-	self.hudpage[0][3] = {}
-	self.hudpage[0][4] = {}
-	self.hudpage[1] = {}
-	self.hudpage[1][1] = {}
-	self.hudpage[1][2] = {}
-	self.hudpage[2] = {}
-	self.hudpage[2][1] = {}
-	self.hudpage[2][2] = {}
-	self.hudpage[3] = {}
-	self.hudpage[3][1] = {}
-	self.hudpage[3][2] = {}
-	self.hudpage[4] = {}
-	self.hudpage[4][1] = {}
-	self.hudpage[4][2] = {}
-	self.hudpage[5] = {}
-	self.hudpage[5][1] = {}
-	self.hudpage[5][2] = {}
-	self.hudpage[6] = {}
-	self.hudpage[6][1] = {}
-	self.hudpage[6][2] = {}
-
-	self.hudpage[7] = {}
-	self.hudpage[7][1] = {}
-	self.hudpage[7][2] = {}
-
-	self.hudpage[8] = {}
-	self.hudpage[8][1] = {}
-	self.hudpage[8][2] = {}
+	for a=0,8 do
+		self.hudpage[a] = {};
+		for b=1,courseplay.hud.numLines do
+			self.hudpage[a][b] = {};
+		end;
+	end;
 
 	local w16px = 16/1920;
 	local h16px = 16/1080;
@@ -391,6 +366,7 @@ function courseplay:load(xmlFile)
 	courseplay:register_button(self, 0, "blank.dds", "row2", nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[2], 0.32, 0.015);
 	courseplay:register_button(self, 0, "blank.dds", "row3", nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[3], 0.32, 0.015);
 	courseplay:register_button(self, 0, "blank.dds", "row4", nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[4], 0.32, 0.015);
+	courseplay:register_button(self, 0, "blank.dds", "row5", nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[5], 0.32, 0.015);
 
 	--Page 1
 	courseplay:register_button(self, 1, "blank.dds", "row1", nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[1], 0.32, 0.015);
@@ -427,11 +403,11 @@ function courseplay:load(xmlFile)
 	courseplay:register_button(self, 3, "navigate_minus.dds", "change_turn_radius", -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[3], w16px, h16px, nil, -5);
 	courseplay:register_button(self, 3, "navigate_plus.dds",  "change_turn_radius",  1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[3], w16px, h16px, nil,  5);
 
-	courseplay:register_button(self, 3, "navigate_minus.dds", "change_required_fill_level", -5, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[4], w16px, h16px, nil, -10);
-	courseplay:register_button(self, 3, "navigate_plus.dds",  "change_required_fill_level",  5, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[4], w16px, h16px, nil,  10);
+	courseplay:register_button(self, 3, "navigate_minus.dds", "change_required_fill_level", -5, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[4], w16px, h16px, nil, -10, "self.required_fill_level_for_follow>0");
+	courseplay:register_button(self, 3, "navigate_plus.dds",  "change_required_fill_level",  5, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[4], w16px, h16px, nil,  10, "self.required_fill_level_for_follow<100");
 
-	courseplay:register_button(self, 3, "navigate_minus.dds", "change_required_fill_level_for_drive_on", -5, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[5], w16px, h16px, nil, -10);
-	courseplay:register_button(self, 3, "navigate_plus.dds",  "change_required_fill_level_for_drive_on",  5, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[5], w16px, h16px, nil,  10);
+	courseplay:register_button(self, 3, "navigate_minus.dds", "change_required_fill_level_for_drive_on", -5, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[5], w16px, h16px, nil, -10, "self.required_fill_level_for_drive_on>0");
+	courseplay:register_button(self, 3, "navigate_plus.dds",  "change_required_fill_level_for_drive_on",  5, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[5], w16px, h16px, nil,  10, "self.required_fill_level_for_drive_on<100");
 
 	--Page 4
 	courseplay:register_button(self, 4, "navigate_up.dds",   "switch_combine", -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], w16px, h16px);
@@ -469,7 +445,7 @@ function courseplay:load(xmlFile)
 	courseplay:register_button(self, 6, "blank.dds", "change_DebugLevel",        1,   courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[5], 0.32, 0.015);
 
 	--Page 7: Driving settings
-	courseplay:register_button(self, 7, "navigate_minus.dds", "change_wait_time",  -5, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], w16px, h16px, nil, -10);
+	courseplay:register_button(self, 7, "navigate_minus.dds", "change_wait_time",  -5, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], w16px, h16px, nil, -10, "self.waitTime>0");
 	courseplay:register_button(self, 7, "navigate_plus.dds",  "change_wait_time",   5, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[1], w16px, h16px, nil,  10);
 
 	courseplay:register_button(self, 7, "navigate_minus.dds", "changeWpOffsetX", -0.5, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[2], w16px, h16px, nil,  -1);
@@ -479,7 +455,7 @@ function courseplay:load(xmlFile)
 	courseplay:register_button(self, 7, "navigate_plus.dds",  "changeWpOffsetZ",  0.5, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[3], w16px, h16px, nil,   1);
 
 	--Page 8: Course generation
-	courseplay:register_button(self, 8, "navigate_minus.dds", "changeWorkWidth", -0.1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], w16px, h16px, nil,  -0.5);
+	courseplay:register_button(self, 8, "navigate_minus.dds", "changeWorkWidth", -0.1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], w16px, h16px, nil,  -0.5, "self.toolWorkWidht>0.1");
 	courseplay:register_button(self, 8, "navigate_plus.dds",  "changeWorkWidth",  0.1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[1], w16px, h16px, nil,   0.5);
 
 	courseplay:register_button(self, 8, "blank.dds", "switchStartingCorner",     nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[2], 0.32, 0.015, nil, nil);
