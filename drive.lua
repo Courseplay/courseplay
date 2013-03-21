@@ -483,7 +483,7 @@ function courseplay:drive(self, dt)
 	-- Mode 6 Fieldwork for balers and foragewagon
 	if self.ai_mode == 6 and self.startWork ~= nil and self.stopWork ~= nil then
 		allowedToDrive, workArea, workSpeed, active_tipper = courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill_level, last_recordnumber, lx , lz )
-		if not workArea and self.grainTankCapacity == nil then
+		if not workArea and self.grainTankCapacity == nil and self.tipRefOffset ~= 0 then
 			-- is there a tipTrigger within 10 meters?
 			
 			raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)

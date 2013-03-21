@@ -236,7 +236,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 				end;
 			end;
 		else 
-			self.tipRefOffset = 0;
+			self.tipRefOffset = 0.001;
 		end;
 	end;
 
