@@ -15,7 +15,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 	if workArea then
 		workSpeed = true
 	end
-	if (self.recordnumber == self.stopWork or last_recordnumber == self.stopWork )and self.abortWork == nil and not self.loaded then
+	if (self.recordnumber == self.stopWork or last_recordnumber == self.stopWork) and self.abortWork == nil and not self.loaded then
 		allowedToDrive = false
 		self.global_info_text = courseplay:get_locale(self, "CPWorkEnd") --'hat Arbeit beendet.'
 	end
