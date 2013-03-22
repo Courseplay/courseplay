@@ -223,7 +223,8 @@ function courseplay:load(xmlFile)
 	elseif self.aiTreshingDirectionNode ~= nil then
 		DirectionNode = self.aiTreshingDirectionNode;
 	else
-		DirectionNode = self.rootNode
+		DirectionNode = getChild(self.rootNode, "trafficCollisionTrigger")
+		self.aiTractorDirectionNode = DirectionNode
 	end;
 	self.cp.DirectionNode = DirectionNode
 
@@ -251,10 +252,6 @@ function courseplay:load(xmlFile)
 	end
 	if self.aiTrafficCollisionTrigger == nil then		
 		self.aiTrafficCollisionTrigger = getChild(self.rootNode, "trafficCollisionTrigger")
-	end
-	
-	if self.aiTractorDirectionNode == nil then
-		self.aiTractorDirectionNode = getChild(self.rootNode, "trafficCollisionTrigger")
 	end
 	-- tippers
 	self.tippers = {}

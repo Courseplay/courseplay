@@ -224,13 +224,8 @@ function courseplay:drive(self, dt)
 	-- coordinates of coli
 	local tx, ty, tz = getWorldTranslation(self.aiTrafficCollisionTrigger)
 	-- direction of tractor
-	local DirectionNode = nil;
-	if self.aiTractorDirectionNode ~= nil then
-		DirectionNode = self.aiTractorDirectionNode;
-	elseif self.aiTreshingDirectionNode ~= nil then
-		DirectionNode = self.aiTreshingDirectionNode;
-	end;
-	local nx, ny, nz = localDirectionToWorld(DirectionNode, 0, 0, 1)
+
+	local nx, ny, nz = localDirectionToWorld(self.cp.DirectionNode, 0, 0, 1)
 	
 	-- the tipper that is currently loaded/unloaded
 	local active_tipper = nil
