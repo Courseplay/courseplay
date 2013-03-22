@@ -92,9 +92,9 @@ end
 function courseplay:changeWorkWidth(self, change_by)
 	if self.toolWorkWidht + change_by > 10 then
 		if math.abs(change_by) == 0.1 then
-			change_by = 0.5 * (math.abs(change_by)/change_by);
+			change_by = 0.5 * Utils.sign(change_by);
 		elseif math.abs(change_by) == 0.5 then
-			change_by = 2 * (math.abs(change_by)/change_by);
+			change_by = 2 * Utils.sign(change_by);
 		end;
 	end;
 	self.toolWorkWidht = self.toolWorkWidht + change_by;
@@ -314,13 +314,10 @@ function courseplay:change_selected_course(self, change_by)
 	self.cp.courseListPrev = true;
 	self.cp.courseListNext = true;
 
-	local number_of_courses = 0
-	for k, trigger in pairs(g_currentMission.courseplay_courses) do --TODO: table.getn ?
-		number_of_courses = number_of_courses + 1
-	end
+	local number_of_courses = table.getn(g_currentMission.courseplay_courses);
 
-	if selected_course_number >= number_of_courses - 4 then
-		selected_course_number = number_of_courses - 5
+	if selected_course_number >= number_of_courses - (courseplay.hud.numLines - 1) then
+		selected_course_number = number_of_courses - courseplay.hud.numLines;
 	end
 
 	if selected_course_number < 0 then
@@ -330,7 +327,7 @@ function courseplay:change_selected_course(self, change_by)
 	if selected_course_number == 0 then 
 		self.cp.courseListPrev = false;
 	end;
-	if selected_course_number == (number_of_courses - 5) then
+	if selected_course_number == (number_of_courses - courseplay.hud.numLines) then
 		self.cp.courseListNext = false;
 	end;
 

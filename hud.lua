@@ -160,20 +160,18 @@ function courseplay:loadHud(self)
 
 		--Page 2 (course list)
 		elseif self.showHudInfoBase == 2 then
-			local number_of_courses = 0
+			local number_of_courses = 0;
 			if g_currentMission.courseplay_courses ~= nil then
-				for k, course in pairs(g_currentMission.courseplay_courses) do --TODO: table.getn ?
-					number_of_courses = number_of_courses + 1
-				end
+				number_of_courses = table.getn(g_currentMission.courseplay_courses);
 			end
 			local start_course_num = self.selected_course_number
-			local end_course_num = start_course_num + 4
+			local end_course_num = start_course_num + (courseplay.hud.numLines - 1)
 
 			if end_course_num >= number_of_courses then
 				end_course_num = number_of_courses - 1
 			end
 
-			for i = 0, 10, 1 do
+			for i = 0, 12, 1 do
 				self.hudpage[2][1][i] = nil
 			end
 

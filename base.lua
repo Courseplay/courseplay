@@ -381,11 +381,10 @@ function courseplay:load(xmlFile)
 	courseplay:register_button(self, 2, "blank.dds", "row2", nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[2], 0.32, 0.015);
 	courseplay:register_button(self, 2, "blank.dds", "row3", nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[3], 0.32, 0.015);
 
-	courseplay:register_button(self, 2, "navigate_up.dds",   "change_selected_course", -5, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesPosY[1], w24px, h24px, nil, -10, "self.cp.courseListPrev=true");
-	courseplay:register_button(self, 2, "navigate_down.dds", "change_selected_course",  5, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesPosY[5], w24px, h24px, nil,  10, "self.cp.courseListNext=true");
+	courseplay:register_button(self, 2, "navigate_up.dds",   "change_selected_course", -courseplay.hud.numLines, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesPosY[1] - 0.003,                       w24px, h24px, nil, -courseplay.hud.numLines*2, "self.cp.courseListPrev=true");
+	courseplay:register_button(self, 2, "navigate_down.dds", "change_selected_course",  courseplay.hud.numLines, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesPosY[courseplay.hud.numLines] - 0.003, w24px, h24px, nil,  courseplay.hud.numLines*2, "self.cp.courseListNext=true");
 
-	for i = 1, 5, 1 do
-		local posy = courseplay.hud.infoBasePosY + 0.205 - (i - 1) * 0.021
+	for i=1, courseplay.hud.numLines do
 		courseplay:register_button(self, -2, "folder.dds", "load_course", i, courseplay.hud.infoBasePosX + 0.212, courseplay.hud.linesButtonPosY[i], w16px, h16px, i);
 		courseplay:register_button(self, -2, "folder_into.dds", "add_course", i, courseplay.hud.infoBasePosX + 0.235, courseplay.hud.linesButtonPosY[i], w16px, h16px, i);
 		if g_server ~= nil then
