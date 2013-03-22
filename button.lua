@@ -19,10 +19,16 @@ function courseplay:register_button(self, hud_page, img, function_to_call, param
 	
 	--NOTE: showHideVariable MUST be in self namespace, since self isn't global (can't be called as _G[self] or _G["self"])
 	if showHideVariable then
-		if string.find(showHideVariable, "<") then
+		if string.find(showHideVariable, "<=") then
+			button.compare = "<=";
+		elseif string.find(showHideVariable, ">=") then
+			button.compare = ">=";
+		elseif string.find(showHideVariable, "<") then
 			button.compare = "<";
 		elseif string.find(showHideVariable, ">") then
 			button.compare = ">";
+		elseif string.find(showHideVariable, "!=") then
+			button.compare = "!=";
 		else
 			button.compare = "=";
 		end;
@@ -30,6 +36,10 @@ function courseplay:register_button(self, hud_page, img, function_to_call, param
 		local split = Utils.splitString(button.compare, showHideVariable);
 		button.showWhat = split[1];
 		button.showIs = split[2];
+		
+		if button.compare == "<=" or button.compare == ">=" or button.compare == "<" or button.compare == ">" then
+			button.showIs = courseplay:stringToMath(button.showIs);
+		end;
 	end;
 
 	table.insert(self.buttons, button)
@@ -56,10 +66,16 @@ function courseplay:render_buttons(self, page)
 				
 				if button.compare == "=" then
 					button.show = tostring(whatObj) == button.showIs;
+				elseif button.compare == "!=" then
+					button.show = not tostring(whatObj) == button.showIs;
 				elseif button.compare == ">" then
-					button.show = whatObj > tonumber(button.showIs);
+					button.show = whatObj > button.showIs;
 				elseif button.compare == "<" then
-					button.show = whatObj < tonumber(button.showIs);
+					button.show = whatObj < button.showIs;
+				elseif button.compare == ">=" then
+					button.show = whatObj >= button.showIs;
+				elseif button.compare == "<=" then
+					button.show = whatObj <= button.showIs;
 				else 
 					button.show = false;
 				end;

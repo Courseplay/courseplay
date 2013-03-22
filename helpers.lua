@@ -6,7 +6,59 @@ function courseplay:isOdd(n)
    return tonumber(n) % 2 == 1;
 end;
 
-function courseplay:isFolding(workTool)
+--Table concatenation: http://stackoverflow.com/a/1413919
+-- return a new array containing the concatenation of all of its parameters. Scaler parameters are included in place, and array parameters have their values shallow-copied to the final array. Note that userdata and function values are treated as scalar.
+function tableConcat(...) 
+    local t = {}
+    for n = 1,select("#",...) do
+        local arg = select(n,...)
+        if type(arg)=="table" then
+            for _,v in ipairs(arg) do
+                t[#t+1] = v
+            end
+        else
+            t[#t+1] = arg
+        end
+    end
+    return t
+end
+
+
+--stringToMath [Jakob Tischler, 22 Mar 2013]
+function courseplay:stringToMath(str)
+	local result = str;
+	
+	if string.find(str, "+") then
+		local strAr = Utils.splitString("+", str);
+		if table.getn(strAr) == 2 then
+			result = tonumber(strAr[1]) + tonumber(strAr[2]);
+			return result;
+		end;
+	elseif string.find(str, "-") and string.find(str, "-") > 1 then --Note: >1 so that it doesn't match simple negative numbers (e.g. "-2");
+		local strAr = Utils.splitString("-", str);
+		if table.getn(strAr) == 2 then
+			result = tonumber(strAr[1]) - tonumber(strAr[2]);
+			return result;
+		end;
+	elseif string.find(str, "*") then
+		local strAr = Utils.splitString("*", str);
+		if table.getn(strAr) == 2 then
+			result = tonumber(strAr[1]) * tonumber(strAr[2]);
+			return result;
+		end;
+	elseif string.find(str, "/") then
+		local strAr = Utils.splitString("/", str);
+		if table.getn(strAr) == 2 then
+			result = tonumber(strAr[1]) / tonumber(strAr[2]);
+			return result;
+		end;
+	end;
+	
+	return tonumber(result);
+end;
+
+
+function courseplay:isFolding(workTool) --TODO: use getIsAnimationPlaying(animationName)
 	if SpecializationUtil.hasSpecialization(Foldable, workTool.specializations) or SpecializationUtil.hasSpecialization(foldable, workTool.specializations) then
 		for k, foldingPart in pairs(workTool.foldingParts) do
 			local charSet = foldingPart.animCharSet;
