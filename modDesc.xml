@@ -702,7 +702,7 @@ Italský překlad: JD7530
 		<text name="CPcopyCourse">
 			<en>Copy course:</en>
 			<de>Kurs kopieren:</de>
-			<fr>Importer une course:</fr>
+			<fr>Importer course:</fr>
 			<es>Copiar ruta:</es>
 			<it>Copia percorso:</it>
 			<cz>Zkopírovat trasu:</cz>
@@ -1306,49 +1306,49 @@ Italský překlad: JD7530
 		<text name="CPcorner1">
 			<en>South-West</en>
 			<de>Südwest</de>
-			<fr>sud-ouest</fr>
+			<fr>Sud-Ouest</fr>
 			<cz>Jihozápad</cz>
 		</text>
 		<text name="CPcorner2">
 			<en>North-West</en>
 			<de>Nordwest</de>
-			<fr>nord-ouest</fr>
+			<fr>Nord-Ouest</fr>
 			<cz>Severozápad</cz>
 		</text>
 		<text name="CPcorner3">
 			<en>North-East</en>
 			<de>Nordost</de>
-			<fr>nord-est</fr>
+			<fr>Nord-Est</fr>
 			<cz>Severovýchod</cz>
 		</text>
 		<text name="CPcorner4">
 			<en>South-East</en>
 			<de>Südost</de>
-			<fr>sud-est</fr>
+			<fr>Sud-Est</fr>
 			<cz>Jihovýchod</cz>
 		</text>
 		<text name="CPdirection1">
 			<en>North</en>
 			<de>Norden</de>
-			<fr>nord</fr>
+			<fr>Nord</fr>
 			<cz>Sever</cz>
 		</text>
 		<text name="CPdirection2">
 			<en>East</en>
 			<de>Osten</de>
-			<fr>est</fr>
+			<fr>Est</fr>
 			<cz>Východ</cz>
 		</text>
 		<text name="CPdirection3">
 			<en>South</en>
 			<de>Süden</de>
-			<fr>sud</fr>
+			<fr>Sud</fr>
 			<cz>Jih</cz>
 		</text>
 		<text name="CPdirection4">
 			<en>West</en>
 			<de>Westen</de>
-			<fr>ouest</fr>
+			<fr>Ouest</fr>
 			<cz>Západ</cz>
 		</text>
 		<text name="CPyes">
