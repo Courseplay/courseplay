@@ -70,10 +70,19 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 							workTool:setIsTurnedOn(true, false);
 						end
 					end
+					-- support form Extreme baling balers
+					if workTool.workPos ~= nil then
+						workTool.isTurnedOn = true;
+						workTool:pickUpMode(true);
+					end
 				end
 				
 				if last_recordnumber == self.stopWork -1  and workTool.isTurnedOn and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
 					workTool:setIsTurnedOn(false, false);
+					-- support form Extreme baling balers
+					if workTool.workPos ~= nil then
+						workTool:pickUpMode(false);
+					end
 				end
 			-- baleloader, copied original code parts				
 			elseif courseplay:is_baleLoader(workTool) or courseplay:isUBT(workTool) then
