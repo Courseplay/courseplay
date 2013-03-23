@@ -459,7 +459,7 @@ function courseplay:load(xmlFile)
 	courseplay:register_button(self, 8, "blank.dds", "switchStartingCorner",     nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[2], lineButtonWidth, 0.015, nil, nil);
 	courseplay:register_button(self, 8, "blank.dds", "switchStartingDirection",  nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[3], lineButtonWidth, 0.015, nil, nil, "self.cp.hasStartingCorner=true");
 	courseplay:register_button(self, 8, "blank.dds", "switchReturnToFirstPoint", nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[4], lineButtonWidth, 0.015, nil, nil);
-	courseplay:register_button(self, 8, "blank.dds", "generateCourse",           nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[6], lineButtonWidth, 0.015, nil, nil, "self.cp.hasValidCourseGenerationData=true");
+	courseplay:register_button(self, 8, "blank.dds", "generateCourse",           nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[5], lineButtonWidth, 0.015, nil, nil, "self.cp.hasValidCourseGenerationData=true");
 	--END Page 8
 
 
