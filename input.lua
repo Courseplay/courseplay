@@ -65,7 +65,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 						--baseColor[4] = 0.35;
 						baseColor = {206/255, 83/255, 77/255, 1};
 						setOverlayColor(button.overlay.overlayId, unpack(baseColor));
-						print(tableShow(button, "ai_mode active button"));
+						--print(tableShow(button, "ai_mode active button"));
 					end;
 				end;
 			end;
