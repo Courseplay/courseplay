@@ -274,7 +274,7 @@ function courseplay:loadHud(self)
 				self.hudpage[4][2][3] = courseplay:get_locale(self, "CPNone") -- "keiner"
 			end
 
-			if self.saved_combine ~= nil then
+			if self.saved_combine ~= nil and self.saved_combine.rootNode ~= nil then
 				local combine_name = self.saved_combine.name
 				if combine_name == nil then
 					combine_name = courseplay:get_locale(self, "CPCombine");
