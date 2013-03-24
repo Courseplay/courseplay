@@ -1,27 +1,21 @@
 -- Load Lines for Hud
 function courseplay:HudPage(self)
 	local Page = self.showHudInfoBase
-	local i = 0
-	--local c = 1
 	setTextBold(false)
-	for c = 1, 2, 1 do
-		for v, name in pairs(self.hudpage[Page][c]) do
-			if c == 1 then
-				--local yspace = courseplay.hud.infoBasePosY + 0.210 - ((v - 1) * 0.021) --ORIG: + 0.200 - NEW: + 0.210 ?
-				renderText(courseplay.hud.infoBasePosX + 0.005, courseplay.hud.linesPosY[v], 0.019, name);
-			elseif c == 2 then
-				--local yspace = courseplay.hud.infoBasePosY + 0.210 - ((v - 1) * 0.021) --ORIG: + 0.200 - NEW: + 0.210 ?
+	for column=1, 2 do
+		for line, name in pairs(self.hudpage[Page][column]) do
+			if column == 1 then
+				renderText(courseplay.hud.infoBasePosX + 0.005, courseplay.hud.linesPosY[line], 0.019, name);
+			elseif column == 2 then
 				if Page == 6 or Page == 8 then
-					renderText(courseplay.hud.infoBasePosX + 0.182, courseplay.hud.linesPosY[v], 0.017, name);
+					renderText(courseplay.hud.infoBasePosX + 0.182, courseplay.hud.linesPosY[line], 0.017, name);
 				else
-					renderText(courseplay.hud.infoBasePosX + 0.122, courseplay.hud.linesPosY[v], 0.017, name);
-				end
-			end
-			i = i + 1
-		end
-		i = 0
-	end
-end
+					renderText(courseplay.hud.infoBasePosX + 0.122, courseplay.hud.linesPosY[line], 0.017, name);
+				end;
+			end;
+		end;
+	end;
+end;
 
 function courseplay:loadHud(self)
 	self.hudpage[0][1] = {}
@@ -82,7 +76,7 @@ function courseplay:loadHud(self)
 		elseif self.showHudInfoBase == 1 then
 			if self.play then
 				if not self.drive then
-					self.hudpage[1][1][3] = courseplay:get_locale(self, "CourseReset")
+					self.hudpage[1][1][4] = courseplay:get_locale(self, "CourseReset")
 
 					self.hudpage[1][1][1] = courseplay:get_locale(self, "CoursePlayStart")
 				else
@@ -126,7 +120,7 @@ function courseplay:loadHud(self)
 						self.hudpage[1][1][1] = courseplay:get_locale(self, "PointRecordStart")
 					end
 
-				elseif (not self.record and not self.record_pause) and (table.getn(self.Waypoints) ~= 0) then
+				elseif (not self.record and not self.record_pause) and (table.getn(self.Waypoints) ~= 0) then --TODO: use courseplay:validateCanSwitchMode(self)
 					self.hudpage[1][1][2] = courseplay:get_locale(self, "ModusSet")
 
 				else

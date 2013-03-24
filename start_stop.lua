@@ -135,6 +135,10 @@ function courseplay:start(self)
 
 	self.record = false
 	self.dcheck = false
+	
+	
+	--validation: can switch ai_mode?
+	courseplay:validateCanSwitchMode(self);
 end
 
 -- stops driving the course
