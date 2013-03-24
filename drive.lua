@@ -224,7 +224,6 @@ function courseplay:drive(self, dt)
 	-- coordinates of coli
 	local tx, ty, tz = getWorldTranslation(self.aiTrafficCollisionTrigger)
 	-- direction of tractor
-
 	local nx, ny, nz = localDirectionToWorld(self.cp.DirectionNode, 0, 0, 1)
 	
 	-- the tipper that is currently loaded/unloaded
@@ -290,7 +289,7 @@ function courseplay:drive(self, dt)
 				end
 			end
 		elseif self.ai_mode == 8 then
-			self.global_info_text = courseplay:get_locale(self, "CPReachedOverloadPoint") --'hat �berladepunkt erreicht.'
+			self.global_info_text = courseplay:get_locale(self, "CPReachedOverloadPoint") --'hat Überladepunkt erreicht.'
 			if self.tipper_attached then
 				-- drive on if fill_level doesn't change and fill level is < 100-self.required_fill_level_for_follow
 				courseplay:handle_mode8(self)
@@ -341,43 +340,7 @@ function courseplay:drive(self, dt)
 		if self.ai_mode == 4 then
 			if self.tipper_attached and self.startWork ~= nil and self.stopWork ~= nil then
 				if self.tippers ~= nil then
-					for i = 1, table.getn(self.tippers) do
-						local activeTool = self.tippers[i]
-						
-						if not courseplay:is_sowingMachine(activeTool) then --sprayer
-							if fill_level < 100 and activeTool.sprayerFillTriggers ~= nil and table.getn(activeTool.sprayerFillTriggers) > 0 then
-								allowedToDrive = false;
-								
-								--Fuchs Guellefass
-								if activeTool.isFuchsFass and activeTool.setdeckelAnimationisPlaying ~= nil then
-									activeTool:setdeckelAnimationisPlaying(true);
-								end;
-								
-								self.info_text = string.format(courseplay:get_locale(self, "CPloading"), tipper_fill_level, tipper_capacity)
-								local sprayer = activeTool.sprayerFillTriggers[1]
-								activeTool:setIsSprayerFilling(true, sprayer.fillType, sprayer.isSiloTrigger, false)
-								if sprayer.trailerInTrigger == activeTool then ----- feldrant container gülle bomber
-									sprayer.fill = true
-								end;
-							else
-								--Fuchs Guellefass
-								if activeTool.isFuchsFass and activeTool.setdeckelAnimationisPlaying ~= nil then
-									activeTool:setdeckelAnimationisPlaying(false);
-								end;
-							end;
-						end;
-						
-						if courseplay:is_sowingMachine(activeTool) then --sowing machine
-							if fill_level < 100 and activeTool.sowingMachineFillTriggers[1] ~= nil then
-								activeTool:setIsSowingMachineFilling(true, activeTool.sowingMachineFillTriggers[1].isEnabled, false);
-								allowedToDrive = false;
-							end;
-							if activeTool.fillLevel == activeTool.capacity then
-								allowedToDrive = true;
-							end;
-						end;
-						
-					end
+					allowedToDrive = courseplay:refillSprayer(self, fill_level, tipper_fill_level, tipper_capacity, 100, allowedToDrive);
 				end
 			end
 		elseif self.ai_mode == 4 and (self.startWork == nil or self.stopWork == nil) then
@@ -407,34 +370,15 @@ function courseplay:drive(self, dt)
 			else
 				self:setPipeState(1);
 			end;
-		end
+		end;
+
 		if self.ai_mode == 8 then
-			if self.tipper_attached and self.startWork ~= nil and self.stopWork ~= nil then
+			if self.tipper_attached then
 				if self.tippers ~= nil then
-					for i = 1, table.getn(self.tippers) do
-						local activeTool = self.tippers[i]
-						if fill_level < self.required_fill_level_for_drive_on and activeTool.sprayerFillTriggers ~= nil and table.getn(activeTool.sprayerFillTriggers) > 0 then
-							allowedToDrive = false
-							self.info_text = string.format(courseplay:get_locale(self, "CPloading"), tipper_fill_level, tipper_capacity)
-							local sprayer = activeTool.sprayerFillTriggers[1]
-							activeTool:setIsSprayerFilling(true, sprayer.fillType, sprayer.isSiloTrigger, false)
-							if sprayer.trailerInTrigger == activeTool then ----- feldrant container gülle bomber
-								sprayer.fill = true
-							end
-						end
-						if MapBGA ~= nil then
-							for i = 1, table.getn(MapBGA.ModEvent.bunkers) do --support Heady�s BGA
-								if fill_level < self.required_fill_level_for_drive_on and MapBGA.ModEvent.bunkers[i].manure.trailerInTrigger == activeTool then
-									self.info_text = "BGA LADEN"
-									allowedToDrive = false
-									MapBGA.ModEvent.bunkers[i].manure.fill = true
-								end
-							end
-						end
-					end
-				end
-			end
-		end
+					allowedToDrive = courseplay:refillSprayer(self, fill_level, tipper_fill_level, tipper_capacity, Utils.getNoNil(self.required_fill_level_for_drive_on, 100), allowedToDrive);
+				end;
+			end;
+		end;
 
 		if self.fuelCapacity > 0 then
 			local currentFuelPercentage = (self.fuelFillLevel / self.fuelCapacity + 0.0001) * 100;
@@ -925,4 +869,59 @@ function courseplay:openCloseCover(self)
 			end;
 		end; --END for i in self.cp.tippersWithCovers
 	end;
+end;
+
+function courseplay:refillSprayer(self, fill_level, tipper_fill_level, tipper_capacity, driveOn, allowedToDrive)
+	--TODO: move tipper_fill_level and tipper_capacity to self.cp
+	for i = 1, table.getn(self.tippers) do
+		local activeTool = self.tippers[i];
+		
+		if courseplay:isSprayer(activeTool) then --sprayer
+			--ManureLager: activeTool.ReFillTrigger has to be nil so it doesn't refill
+			local canRefill = fill_level < 100 and activeTool.sprayerFillTriggers ~= nil and table.getn(activeTool.sprayerFillTriggers) > 0;
+			if self.ai_mode == 8 then
+				canRefill = canRefill and activeTool.ReFillTrigger == nil;
+				--TODO: what to do when transfering from one ManureLager to another?
+			end;
+			
+		
+			if canRefill then
+				allowedToDrive = false;
+				
+				--Fuchs Guellefass
+				if activeTool.isFuchsFass and activeTool.setdeckelAnimationisPlaying ~= nil then
+					activeTool:setdeckelAnimationisPlaying(true);
+				end;
+				
+				self.info_text = string.format(courseplay:get_locale(self, "CPloading"), tipper_fill_level, tipper_capacity);
+				local sprayer = activeTool.sprayerFillTriggers[1];
+				--activeTool:setIsSprayerFilling(true, sprayer.fillType, sprayer.isSiloTrigger, false);
+				
+				--Test
+				activeTool:setIsSprayerFilling(true, false);
+				
+				if sprayer.trailerInTrigger == activeTool then --Feldrand-Container Guellebomber
+					sprayer.fill = true;
+				end;
+			else
+				activeTool:setIsSprayerFilling(false, false);
+				--Fuchs Guellefass
+				if activeTool.isFuchsFass and activeTool.setdeckelAnimationisPlaying ~= nil then
+					activeTool:setdeckelAnimationisPlaying(false);
+				end;
+			end;
+		elseif courseplay:is_sowingMachine(activeTool) then --sowing machine
+			if fill_level < driveOn and activeTool.sowingMachineFillTriggers[1] ~= nil then
+				activeTool:setIsSowingMachineFilling(true, activeTool.sowingMachineFillTriggers[1].isEnabled, false);
+				allowedToDrive = false;
+			end;
+			
+			--TODO: needed?
+			if activeTool.fillLevel == activeTool.capacity then
+				allowedToDrive = true;
+			end;
+		end;
+	end;
+	
+	return allowedToDrive;
 end;

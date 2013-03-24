@@ -6,7 +6,11 @@ function courseplay:handle_mode8(self)
 			if workTool ~= nil then
 				if workTool.trailerInTrigger ~= nil and workTool.fillLevel > 0 and not workTool.fill then
 					workTool.fill = true;
-				end
+				
+				--ManureLager
+				elseif workTool.setIsReFilling ~= nil and workTool.ReFillTrigger ~= nil and workTool.fillLevel > 0 and not workTool.isReFilling then
+					workTool:setIsReFilling(true);
+				end;
 			end
 		end
 	end
