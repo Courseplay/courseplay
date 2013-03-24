@@ -186,12 +186,13 @@ function courseplay:update_tools(self, tractor_or_implement)
 		
 		courseplay:debug(string.format("courseplay:update_tools() (%s)", tostring(self.name)), 2);
 
-		for k,v in pairs(self.components) do --TODO: self.components needed?
-			self.cpTrafficCollisionIgnoreList[v.node] = true;
-		end;
 		courseplay:debug(tostring(object.name).." - adding to cpTrafficCollisionIgnoreList", 2)
 		self.cpTrafficCollisionIgnoreList[object.rootNode] = true;
 	end; --END for implement in attachedImplements
+	
+	for k,v in pairs(self.components) do
+		self.cpTrafficCollisionIgnoreList[v.node] = true;
+	end;
 
 	--CUTTERS
 	if self.attachedCutters ~= nil and table.getn(self.attachedImplements)~= 0  then
