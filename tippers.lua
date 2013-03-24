@@ -303,7 +303,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 					table.insert(self.cp.tippersWithCovers, data);
 				end;
 			
-			elseif t.setPlane ~= nil then
+			elseif t.setPlane ~= nil or t.planeOpen ~= nil then
 				courseplay:debug(string.format("Implement \"%s\" has a cover (setPlane ~= nil)", tostring(t.name)), 3);
 				self.cp.tipperHasCover = true;
 				local data = {

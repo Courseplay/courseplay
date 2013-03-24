@@ -870,22 +870,27 @@ function courseplay:openCloseCover(self)
 					minCoverWaypoint = 2;
 				end;
 				
+				--close
 				if self.recordnumber >= minCoverWaypoint and self.recordnumber < self.maxnumber and self.currentTipTrigger == nil then
 					if tipper.plane ~= nil and tipper.plane.bOpen ~= nil and tipper.plane.bOpen then
 						tipper:setPlane(false);
-					end;
-					if coverItems ~= nil then
+					elseif tipper.planeOpen ~= nil and tipper.planeOpen then
+						tipper:setAnimationTime(3, tipper.animationParts[3].offSet, false);
+					elseif coverItems ~= nil then
 						for _,ci in pairs(coverItems) do
 							if not getVisibility(ci) then
 								setVisibility(ci, true);
 							end;
 						end;
 					end;
+
+				--open
 				elseif ((self.recordnumber == nil or (self.recordnumber ~= nil and (self.recordnumber == 1 or self.recordnumber == self.maxnumber))) or self.currentTipTrigger ~= nil) then
-					if tipper.plane ~= nil and tipper.plane.bOpen ~= nil and tipper.plane.bOpen then
+					if tipper.plane ~= nil and tipper.plane.bOpen ~= nil and not tipper.plane.bOpen then
 						tipper:setPlane(true);
-					end;
-					if coverItems ~= nil then
+					elseif tipper.planeOpen ~= nil and not tipper.planeOpen then
+						tipper:setAnimationTime(3, tipper.animationParts[3].animDuration, false);
+					elseif coverItems ~= nil then
 						for _,ci in pairs(coverItems) do
 							if getVisibility(ci) then
 								setVisibility(ci, false);
