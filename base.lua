@@ -224,7 +224,7 @@ function courseplay:load(xmlFile)
 		DirectionNode = self.aiTractorDirectionNode;
 	elseif self.aiTreshingDirectionNode ~= nil then
 		DirectionNode = self.aiTreshingDirectionNode;
-	elseif getChild(self.rootNode, "trafficCollisionTrigger") ~= nil then
+	elseif getChild(self.rootNode, "trafficCollisionTrigger") ~= 0 then
 		DirectionNode = getChild(self.rootNode, "trafficCollisionTrigger");
 		self.aiTractorDirectionNode = DirectionNode;
 	else
@@ -255,12 +255,8 @@ function courseplay:load(xmlFile)
 	if self.trafficCollisionIgnoreList == nil then
 		self.trafficCollisionIgnoreList = {}
 	end
-	if self.aiTrafficCollisionTrigger == nil then
-		if getChild(self.rootNode, "trafficCollisionTrigger") ~= nil then
-			self.aiTrafficCollisionTrigger = getChild(self.rootNode, "trafficCollisionTrigger");
-		else
-			self.aiTrafficCollisionTrigger = self.rootNode;
-		end;
+	if self.aiTrafficCollisionTrigger == nil and getChild(self.rootNode, "trafficCollisionTrigger") ~= 0 then
+		self.aiTrafficCollisionTrigger = getChild(self.rootNode, "trafficCollisionTrigger");
 	end;
 
 	-- tippers
@@ -388,11 +384,9 @@ function courseplay:load(xmlFile)
 		local w = w16px * 2;
 		local h = h16px * 2;
 
-		local posX;
-		if courseplay:isOdd(i) then
-			posX = courseplay.hud.infoBasePosX + 0.25;
-		else 
-			posX = courseplay.hud.infoBasePosX + 0.25 + w;
+		local posX = courseplay.hud.infoBasePosX + 0.25;
+		if courseplay:isEven(i) then
+			posX = posX + w;
 		end;
 		
 		local l = 1;
@@ -725,7 +719,7 @@ function courseplay:readStream(streamId, connection)
 	self.search_combine = streamDebugReadBool(streamId)
 	self.selected_combine_number = streamDebugReadInt32(streamId)
 	self.selected_course_number = streamDebugReadInt32(streamId)
-	self.shortest_dist = streamDebugReadFloat32(streamId) -- 20.
+	self.shortest_dist = streamDebugReadFloat32(streamId)
 	self.show_hud = streamDebugReadBool(streamId)
 	self.showHudInfoBase = streamDebugReadInt32(streamId)
 	self.sl = streamDebugReadInt32(streamId)
@@ -744,7 +738,7 @@ function courseplay:readStream(streamId, connection)
 	self.turn_speed = streamDebugReadFloat32(streamId)
 	self.turnRadiusAutoMode = streamDebugReadBool(streamId);
 	self.unload_speed = streamDebugReadFloat32(streamId)
-	self.unloaded = streamDebugReadBool(streamId) -- 40.
+	self.unloaded = streamDebugReadBool(streamId)
 	self.use_speed = streamDebugReadBool(streamId)
 	self.user_input = streamDebugReadString(streamId)
 	self.user_input_active = streamDebugReadBool(streamId)
@@ -995,4 +989,3 @@ function roundCustom(number, numDecimals)
 	--local mult = math.pow(10, numDecimals or 0)
 	return math.floor(number*positiveNegative * mult + 0.5) / mult * positiveNegative
 end
-
