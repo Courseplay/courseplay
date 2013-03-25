@@ -30,8 +30,48 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 				end
 			end
 		end
-	end
-end
+		
+	--hover
+	elseif not isDown and self.show_hud and self.isEntered then
+		if self.mouse_enabled then
+			for _, button in pairs(self.buttons) do
+				if (button.page == self.showHudInfoBase or button.page == nil or button.page == self.showHudInfoBase * -1) and (button.show == nil or (button.show ~= nil and button.show)) then
+					local baseColor = {1, 1, 1, 1};
+					local noHoverChange = false;
+
+					--quick switch buttons: if active mode
+					if button.function_to_call == "setAiMode" and self.ai_mode ~= nil and self.ai_mode == button.parameter then
+						--baseColor[4] = 0.35;
+						baseColor = {206/255, 83/255, 77/255, 1};
+						noHoverChange = true;
+					end;
+					
+					if not noHoverChange and posX > button.x and posX < button.x2 and posY > button.y and posY < button.y2 then
+						if button.function_to_call == "close_hud" then
+							setOverlayColor(button.overlay.overlayId, 180/255,0,0,1);
+						else
+							setOverlayColor(button.overlay.overlayId, courseplay.hud.hoverColor.r, courseplay.hud.hoverColor.g, courseplay.hud.hoverColor.b, courseplay.hud.hoverColor.a);
+						end;
+					else
+						setOverlayColor(button.overlay.overlayId, unpack(baseColor));
+					end;
+				end;
+			end;
+		elseif self.showHudInfoBase == 1 then
+			for _, button in pairs(self.buttons) do
+				if (button.page == self.showHudInfoBase or button.page == nil or button.page == self.showHudInfoBase * -1) and (button.show == nil or (button.show ~= nil and button.show)) then
+					--quick switch buttons: if active mode
+					if button.function_to_call == "setAiMode" and self.ai_mode ~= nil and self.ai_mode == button.parameter then
+						--baseColor[4] = 0.35;
+						baseColor = {206/255, 83/255, 77/255, 1};
+						setOverlayColor(button.overlay.overlayId, unpack(baseColor));
+						--print(tableShow(button, "ai_mode active button"));
+					end;
+				end;
+			end;
+		end;
+	end;
+end;
 
 
 function courseplay:setCourseplayFunc(func, value, noEventSend)
@@ -201,6 +241,10 @@ function courseplay:deal_with_mouse_input(self, func, value)
 		courseplay:generateCourse(self);
 	end;
 
+	if func == "setAiMode" then
+		courseplay:setAiMode(self, value);
+	end;
+
 	if func == "close_hud" then
 		self.mouse_enabled = false
 		self.show_hud = false
@@ -241,7 +285,7 @@ function courseplay:deal_with_mouse_input(self, func, value)
 		if self.showHudInfoBase == 1 then
 			if self.play then
 				if not self.drive then
-					if func == "row3" then
+					if func == "row4" then
 						courseplay:reset_course(self)
 					end
 

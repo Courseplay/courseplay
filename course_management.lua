@@ -154,6 +154,8 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
 
 		self.cp.hasGeneratedCourse = false;
 		courseplay:validateCourseGenerationData(self);
+		
+		courseplay:validateCanSwitchMode(self);
 	end
 end
 

@@ -207,5 +207,7 @@ function courseplay:reset_course(self)
 	self.numCourses = 0;
 
 	self.cp.hasGeneratedCourse = false;
+	
 	courseplay:validateCourseGenerationData(self);
+	courseplay:validateCanSwitchMode(self);
 end

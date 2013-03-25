@@ -78,6 +78,12 @@ function cp_setLines()
 		linesButtonPosY = {};
 		numLines = 6;
 		lineHeight = 0.021;
+		hoverColor = {
+			r =  32/255;
+			g = 168/255;
+			b = 219/255;
+			a = 1;
+		};
 	};
 	for l=1,courseplay.hud.numLines do
 		if l == 1 then

@@ -328,8 +328,11 @@ function courseplay:unload_combine(self, dt)
 		if dod < 3 then -- change to mode 4 == drive behind combine or cornChopper
 
 			if combine.isCornchopper then -- decide on which side to drive based on ai-combine
-				local leftFruit, rightFruit = 0, 0
-				local Dir = Utils.getNoNil(combine.Waypoints[combine.recordnumber +1].ridgeMarker , 0)
+				local leftFruit, rightFruit = 0, 0;
+				local Dir = 0;
+				if combine.Waypoints ~= nil and combine.recordnumber ~= nil and combine.Waypoints[combine.recordnumber+1] ~= nil then
+					Dir = Utils.getNoNil(combine.Waypoints[combine.recordnumber+1].ridgeMarker , 0);
+				end;
 				if Dir == 0 then
 					leftFruit, rightFruit = courseplay:side_to_drive(self, combine, 10);
 				elseif Dir == 1 then

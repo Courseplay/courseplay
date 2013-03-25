@@ -123,7 +123,9 @@ function courseplay:load(xmlFile)
 	self.abortWork = nil
 	self.wait = true
 	self.waitTimer = nil
-	self.realistic_driving = true
+	self.realistic_driving = true;
+	self.cp.canSwitchMode = false;
+
 
 	self.cp_directory = cp_directory
 
@@ -253,6 +255,7 @@ function courseplay:load(xmlFile)
 	if self.aiTrafficCollisionTrigger == nil then		
 		self.aiTrafficCollisionTrigger = getChild(self.rootNode, "trafficCollisionTrigger")
 	end
+
 	-- tippers
 	self.tippers = {}
 	self.tipper_attached = false
@@ -348,6 +351,7 @@ function courseplay:load(xmlFile)
 	local w24px = 24/1920;
 	local h24px = 24/1080;
 	local lineButtonWidth = 0.32;
+
 	self.hudinfo = {}
 
 	self.show_hud = false
@@ -360,26 +364,46 @@ function courseplay:load(xmlFile)
 
 	courseplay:register_button(self, nil, "disk.dds", "save_course", 1, courseplay.hud.infoBasePosX + 0.280, courseplay.hud.infoBasePosY + 0.056, w24px, h24px);
 
-	--Page 0: Combine controls
-	courseplay:register_button(self, 0, "blank.dds", "row1", nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[1], lineButtonWidth, 0.015);
-	courseplay:register_button(self, 0, "blank.dds", "row2", nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[2], lineButtonWidth, 0.015);
-	courseplay:register_button(self, 0, "blank.dds", "row3", nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[3], lineButtonWidth, 0.015);
-	courseplay:register_button(self, 0, "blank.dds", "row4", nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[4], lineButtonWidth, 0.015);
-	courseplay:register_button(self, 0, "blank.dds", "row5", nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[5], lineButtonWidth, 0.015);
-
-	--Page 1
-	courseplay:register_button(self, 1, "blank.dds", "row1", nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[1], lineButtonWidth, 0.015);
-	courseplay:register_button(self, 1, "blank.dds", "row2", nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[2], lineButtonWidth, 0.015);
-	courseplay:register_button(self, 1, "blank.dds", "row3", nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[3], lineButtonWidth, 0.015);
-	courseplay:register_button(self, 1, "blank.dds", "row4", nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[4], lineButtonWidth, 0.015);
-	courseplay:register_button(self, 1, "blank.dds", "row5", nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[5], lineButtonWidth, 0.015);
+	for i=1, courseplay.hud.numLines do
+		--Page 0: Combine controls
+		courseplay:register_button(self, 0, "blank.dds", string.format("row%d", i), nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[i], lineButtonWidth, 0.015);
+		
+		--Page 1
+		courseplay:register_button(self, 1, "blank.dds", string.format("row%d", i), nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[i], lineButtonWidth-0.08, 0.015);
+	end;
 	courseplay:register_button(self, 1, "blank.dds", "change_DriveDirection", 1, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[5], lineButtonWidth, 0.015, nil, nil, "self.record=true");
 
-	--Page 2: Course management
-	courseplay:register_button(self, 2, "blank.dds", "row1", nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[1], lineButtonWidth, 0.015);
-	courseplay:register_button(self, 2, "blank.dds", "row2", nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[2], lineButtonWidth, 0.015);
-	courseplay:register_button(self, 2, "blank.dds", "row3", nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[3], lineButtonWidth, 0.015);
 
+	--ai_mode: quickSwitch
+	for i=1,8 do
+		--2 blocks of 4
+		local icon = string.format("quickSwitch_mode%d.dds", i);
+		local w = w16px * 2;
+		local h = h16px * 2;
+
+		local posX;
+		if courseplay:isOdd(i) then
+			posX = courseplay.hud.infoBasePosX + 0.25;
+		else 
+			posX = courseplay.hud.infoBasePosX + 0.25 + w;
+		end;
+		
+		local l = 1;
+		if i <= 2 then
+			l = 1;
+		elseif i <= 4 then
+			l = 2;
+		elseif i <= 6 then
+			l = 3;
+		elseif i <= 8 then
+			l = 4;
+		end;
+		local posY = courseplay.hud.linesPosY[1] + (20/1080) - (h*l);
+		
+		courseplay:register_button(self, 1, icon, "setAiMode", i, posX, posY, w, h, nil, nil, "self.cp.canSwitchMode=true");
+	end;
+	
+	--Page 2: Course management
 	courseplay:register_button(self, 2, "navigate_up.dds",   "change_selected_course", -courseplay.hud.numLines, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesPosY[1] - 0.003,                       w24px, h24px, nil, -courseplay.hud.numLines*2, "self.cp.courseListPrev=true");
 	courseplay:register_button(self, 2, "navigate_down.dds", "change_selected_course",  courseplay.hud.numLines, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesPosY[courseplay.hud.numLines] - 0.003, w24px, h24px, nil,  courseplay.hud.numLines*2, "self.cp.courseListNext=true");
 
@@ -645,6 +669,7 @@ function courseplay:readStream(streamId, connection)
 	self.allow_following = streamDebugReadBool(streamId)
 	self.autoTurnRadius = streamDebugReadFloat32(streamId)
 	self.combine_offset = streamDebugReadFloat32(streamId)
+	self.cp.canSwitchMode = streamDebugReadBool(streamId)
 	self.cp.courseListPrev = streamDebugReadBool(streamId)
 	self.cp.courseListNext = streamDebugReadBool(streamId)
 	self.courseplay_position = streamDebugReadInt32(streamId)
@@ -768,6 +793,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteBool(streamId, self.allow_following)
 	streamDebugWriteFloat32(streamId,self.autoTurnRadius)
 	streamDebugWriteFloat32(streamId,self.combine_offset)
+	streamDebugWriteBool(streamId, self.cp.canSwitchMode);
 	streamDebugWriteBool(streamId, self.cp.courseListPrev)
 	streamDebugWriteBool(streamId, self.cp.courseListNext)
 	streamDebugWriteInt32(streamId,self.courseplay_position)
@@ -912,6 +938,9 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		if self.abortWork == 0 then
 			self.abortWork = nil
 		end
+		
+		courseplay:validateCanSwitchMode(self);
+		
 	end
 	return BaseMission.VEHICLE_LOAD_OK;
 end

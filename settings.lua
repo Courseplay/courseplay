@@ -5,6 +5,9 @@ function courseplay:change_ai_state(self, change_by)
 		self.ai_mode = 1
 	end
 end
+function courseplay:setAiMode(self, modeNum)
+	self.ai_mode = modeNum;
+end;
 
 function courseplay:call_player(self)
 	if self.wants_courseplayer then --edit for more sites
@@ -246,8 +249,6 @@ function courseplay:switchDriverCopy(self, change_by)
 		else
 			self.cp.copyCourseFromDriver = drivers[self.cp.selectedDriverNumber];
 			self.cp.hasFoundCopyDriver = true;
-			--print("now calling copyCourse from within switchDriverCopy()");
-			--courseplay:copyCourse(self);
 		end;
 	else
 		self.cp.copyCourseFromDriver = nil;
@@ -303,6 +304,8 @@ function courseplay:copyCourse(self)
 		self.cp.selectedDriverNumber = 0;
 		self.cp.hasFoundCopyDriver = false;
 		self.cp.copyCourseFromDriver = nil;
+		
+		courseplay:validateCanSwitchMode(self);
 	end;
 end;
 
@@ -418,4 +421,9 @@ function courseplay:validateCourseGenerationData(self)
 	end;
 
 	courseplay:debug(string.format("hasGeneratedCourse=%s, #waypoints=%s, hasStartingCorner=%s, hasStartingDirection=%s, numCourses=%s, hasValidCourseGenerationData=%s", tostring(self.cp.hasGeneratedCourse), tostring(#self.Waypoints), tostring(self.cp.hasStartingCorner), tostring(self.cp.hasStartingDirection), tostring(self.numCourses), tostring(self.cp.hasValidCourseGenerationData)), 2);
+end;
+
+function courseplay:validateCanSwitchMode(self)
+	self.cp.canSwitchMode = self.play and not self.drive and not self.record and not self.record_pause and (self.Waypoints ~= nil and table.getn(self.Waypoints) ~= 0);
+	--print("validateCanSwitchMode(): self.cp.canSwitchMode=" .. tostring(self.cp.canSwitchMode));
 end;
