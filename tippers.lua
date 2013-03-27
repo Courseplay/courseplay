@@ -17,7 +17,7 @@ end;
 function courseplay:isChopper(workTool)
 	return courseplay:isCombine(workTool) and workTool.grainTankCapacity == 0;
 end;
-function courseplay:is_baler(workTool) -- is the tool a baler?
+function courseplay:isBaler(workTool) -- is the tool a baler?
 	return (SpecializationUtil.hasSpecialization(Baler, workTool.specializations) or workTool.balerUnloadingState ~= nil);
 end;
 function courseplay:is_baleLoader(workTool) -- is the tool a bale loader?
@@ -64,7 +64,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 				self.cp.noStopOnEdge = courseplay:isSprayer(object);
 			end
 		elseif self.ai_mode == 6 then -- Baler, foragewagon, baleloader
-			if courseplay:is_baler(object) 
+			if courseplay:isBaler(object) 
 			or courseplay:is_baleLoader(object) 
 			or SpecializationUtil.hasSpecialization(Tedder, object.specializations) 
 			or SpecializationUtil.hasSpecialization(Windrower, object.specializations) 
@@ -82,7 +82,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 				tipper_attached = true;
 				table.insert(self.tippers, object);
 				courseplay:setMarkers(self, object);
-				self.cp.noStopOnEdge = courseplay:is_baler(object) or courseplay:is_baleLoader(object) or courseplay:isUBT(object);
+				self.cp.noStopOnEdge = courseplay:isBaler(object) or courseplay:is_baleLoader(object) or courseplay:isUBT(object);
 			end
 		elseif self.ai_mode == 8 then -- Baler, foragewagon, baleloader
 			--if SpecializationUtil.hasSpecialization(RefillTrigger, object.specializations) then
@@ -141,7 +141,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 				table.insert(self.tippers, object);
 			end;
 		elseif self.ai_mode == 6 then -- Baler, foragewagon, baleloader
-			if courseplay:is_baler(object) 
+			if courseplay:isBaler(object) 
 			or courseplay:is_baleLoader(object) 
 			or SpecializationUtil.hasSpecialization(Tedder, object.specializations) 
 			or SpecializationUtil.hasSpecialization(Windrower, object.specializations) 
@@ -159,7 +159,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 				tipper_attached = true
 				table.insert(self.tippers, object)
 				courseplay:setMarkers(self, object)
-				self.cp.noStopOnEdge = courseplay:is_baler(object) or courseplay:is_baleLoader(object) or courseplay:isUBT(object);
+				self.cp.noStopOnEdge = courseplay:isBaler(object) or courseplay:is_baleLoader(object) or courseplay:isUBT(object);
 			end;
 		elseif self.ai_mode == 8 then --Liquid manure transfer
 			--if SpecializationUtil.hasSpecialization(RefillTrigger, object.specializations) then
@@ -302,8 +302,9 @@ function courseplay:update_tools(self, tractor_or_implement)
 					};
 					table.insert(self.cp.tippersWithCovers, data);
 				end;
+			end;
 			
-			elseif t.setPlane ~= nil or t.planeOpen ~= nil then
+			if t.setPlane ~= nil or t.planeOpen ~= nil then
 				courseplay:debug(string.format("Implement \"%s\" has a cover (setPlane ~= nil)", tostring(t.name)), 3);
 				self.cp.tipperHasCover = true;
 				local data = {

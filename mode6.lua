@@ -50,7 +50,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 			end;
 
 			-- balers
-			if courseplay:is_baler(workTool) then
+			if courseplay:isBaler(workTool) then
 				if self.recordnumber >= self.startWork + 1 and self.recordnumber < self.stopWork then
 					-- automatic opening for balers
 					if workTool.balerUnloadingState ~= nil then
@@ -333,7 +333,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 				end
 			end
 			-- safe last point
-			if (fill_level == 100 or self.loaded) and workArea and self.abortWork == nil and self.maxnumber ~= self.stopWork then
+			if (fill_level == 100 or self.loaded) and workArea and self.abortWork == nil and self.maxnumber ~= self.stopWork and not courseplay:isBaler(workTool) then
 				self.abortWork = last_recordnumber - 10
 				self.recordnumber = self.stopWork - 4
 				if self.recordnumber < 1 then
