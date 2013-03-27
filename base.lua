@@ -216,7 +216,7 @@ function courseplay:load(xmlFile)
 	
 	-- Course list
 	self.cp.courseListPrev = false;
-	self.cp.courseListNext = table.getn(g_currentMission.courseplay_courses) > 5;
+	self.cp.courseListNext = table.getn(g_currentMission.courseplay_courses) > courseplay.hud.numLines;
 
 	--Direction 
 	local DirectionNode = nil;
@@ -224,12 +224,12 @@ function courseplay:load(xmlFile)
 		DirectionNode = self.aiTractorDirectionNode;
 	elseif self.aiTreshingDirectionNode ~= nil then
 		DirectionNode = self.aiTreshingDirectionNode;
-	elseif getChild(self.rootNode, "trafficCollisionTrigger") ~= 0 then
-		DirectionNode = getChild(self.rootNode, "trafficCollisionTrigger");
-		self.aiTractorDirectionNode = DirectionNode;
 	else
 		DirectionNode = self.rootNode;
-		self.aiTractorDirectionNode = DirectionNode;
+		
+		if getChild(self.rootNode, "trafficCollisionTrigger") ~= 0 then
+			self.aiTractorDirectionNode = getChild(self.rootNode, "trafficCollisionTrigger");
+		end;
 	end;
 	self.cp.DirectionNode = DirectionNode;
 
@@ -242,9 +242,6 @@ function courseplay:load(xmlFile)
 	--	self.numToolsCollidingVehicles = {};
 	--	self.trafficCollisionIgnoreList = {};
 	self.cpTrafficCollisionIgnoreList = {};
-	--	for k,v in pairs(self.components) do
-	--	  self.trafficCollisionIgnoreList[v.node] = true;
-	--	end;
 	self.cpTrafficBrake = false
 	-- tipTrigger
 	self.findTipTriggerCallback = courseplay.findTipTriggerCallback;
@@ -409,8 +406,8 @@ function courseplay:load(xmlFile)
 	courseplay:register_button(self, 2, "navigate_down.dds", "change_selected_course",  courseplay.hud.numLines, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesPosY[courseplay.hud.numLines] - 0.003, w24px, h24px, nil,  courseplay.hud.numLines*2, "self.cp.courseListNext=true");
 
 	for i=1, courseplay.hud.numLines do
-		courseplay:register_button(self, -2, "folder.dds", "load_course", i, courseplay.hud.infoBasePosX + 0.212, courseplay.hud.linesButtonPosY[i], w16px, h16px, i);
-		courseplay:register_button(self, -2, "folder_into.dds", "add_course", i, courseplay.hud.infoBasePosX + 0.235, courseplay.hud.linesButtonPosY[i], w16px, h16px, i);
+		courseplay:register_button(self, -2, "folder.dds",      "load_course", i, courseplay.hud.infoBasePosX + 0.212, courseplay.hud.linesButtonPosY[i], w16px, h16px, i);
+		courseplay:register_button(self, -2, "folder_into.dds", "add_course",  i, courseplay.hud.infoBasePosX + 0.235, courseplay.hud.linesButtonPosY[i], w16px, h16px, i);
 		if g_server ~= nil then
 			courseplay:register_button(self, -2, "delete.dds", "clear_course", i, courseplay.hud.infoBasePosX + 0.258, courseplay.hud.linesButtonPosY[i], w16px, h16px, i);
 		end
