@@ -33,7 +33,6 @@ function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill
 	local ridgeMarker = prevPoint.ridgeMarker;
 	local turnStart = prevPoint.turnStart;
 	local turnEnd = prevPoint.turnEnd;
-	local raiseTool = prevPoint.raiseTool;
 
 	for i=1, table.getn(self.tippers) do
 		workTool = self.tippers[i];
@@ -49,7 +48,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill
 
 		if workArea and fill_level ~= 0 and (self.abortWork == nil or self.runOnceStartCourse) and (self.turnStage == nil or self.turnStage == 0) then
 			self.runOnceStartCourse = false;
-			workSpeed = true
+			workSpeed = 1;
 			if allowedToDrive then
 				--unfold
 				if courseplay:isFoldable(workTool) and workTool:getIsFoldAllowed() then -- and ((self.abortWork ~= nil and self.recordnumber == self.abortWork - 2) or (self.abortWork == nil and self.recordnumber == 2)) then
@@ -80,6 +79,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill
 					--lower/raise
 					if workTool.needsLowering and workTool.aiNeedsLowering then
 						--courseplay:debug(string.format("WP%d: isLowered() = %s, hasGroundContact = %s", self.recordnumber, tostring(workTool:isLowered()), tostring(workTool.hasGroundContact)),3);
+						--TODO: still needed here? already implemented in turn maneuver
 						if turnEnd ~= nil and turnStart ~= nil then
 							if not workTool:isLowered() and turnEnd == false and turnStart == false then
 								self:setAIImplementsMoveDown(true);
@@ -112,7 +112,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill
 				end; --END if not isFolding
 			end;
 		elseif self.turnStage == nil or self.turnStage == 0 then
-			workSpeed = false
+			workSpeed = 0;
 			--turn off
 			if workTool.setIsTurnedOn ~= nil and workTool.isTurnedOn then
 				if courseplay:is_sowingMachine(workTool) then

@@ -13,7 +13,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 	workArea = (self.recordnumber > self.startWork) and (self.recordnumber < self.stopWork)
 
 	if workArea then
-		workSpeed = true
+		workSpeed = 1;
 	end
 	if (self.recordnumber == self.stopWork or last_recordnumber == self.stopWork) and self.abortWork == nil and not self.loaded then
 		allowedToDrive = false
@@ -54,8 +54,9 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 				if self.recordnumber >= self.startWork + 1 and self.recordnumber < self.stopWork then
 					-- automatic opening for balers
 					if workTool.balerUnloadingState ~= nil then
-						if fill_level == 100 and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
-
+						if fill_level > 95 and fill_level < 100 and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
+							workSpeed = 0.5;
+						elseif fill_level == 100 and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
 							allowedToDrive = false
 							workTool:setIsTurnedOn(false, false);
 							if table.getn(workTool.bales) > 0 then
@@ -248,7 +249,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 						end;
 					end
 				elseif not workArea or self.abortWork ~= nil or self.loaded or last_recordnumber == self.stopWork then
-					workSpeed = false
+					workSpeed = 0;
 					
 					if not courseplay:isFolding(workTool) then
 						--turn off

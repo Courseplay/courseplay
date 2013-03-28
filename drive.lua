@@ -410,7 +410,7 @@ function courseplay:drive(self, dt)
 
 	-- ai_mode 4 = fertilize
 	local workArea = false
-	local workSpeed = false
+	local workSpeed = 0;
 
 	if self.ai_mode == 4 and self.tipper_attached and self.startWork ~= nil and self.stopWork ~= nil then
 		allowedToDrive, workArea, workSpeed = courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill_level, last_recordnumber)
@@ -486,10 +486,10 @@ function courseplay:drive(self, dt)
 	end
 
 	if self.ai_mode ~= 7 then
-		if ((slowDownWP and not workArea) or slowDownRev or self.max_speed_level == 1 or slowStartEnd or slowEnd) then
+		if (workSpeed ~= nil and workSpeed == 0.5) or ((slowDownWP and not workArea) or slowDownRev or self.max_speed_level == 1 or slowStartEnd or slowEnd) then
 			self.sl = 1
 			refSpeed = self.turn_speed
-		elseif workSpeed or slowStart_lvl2 then
+		elseif (workSpeed ~= nil and workSpeed == 1) or slowStart_lvl2 then
 			self.sl = 2
 			refSpeed = self.field_speed
 		else
