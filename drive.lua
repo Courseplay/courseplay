@@ -877,8 +877,13 @@ function courseplay:refillSprayer(self, fill_level, tipper_fill_level, tipper_ca
 		local activeTool = self.tippers[i];
 		
 		if courseplay:isSprayer(activeTool) then --sprayer
+			local activeToolFillLevel = nil;
+			if activeTool.fillLevel ~= nil and activeTool.capacity ~= nil then
+				activeToolFillLevel = (activeTool.fillLevel / activeTool.capacity) * 100;
+			end;
+			local canRefill = (activeToolFillLevel ~= nil and activeToolFillLevel < driveOn) and (activeTool.sprayerFillTriggers ~= nil and table.getn(activeTool.sprayerFillTriggers) > 0);
+
 			--ManureLager: activeTool.ReFillTrigger has to be nil so it doesn't refill
-			local canRefill = fill_level < 100 and activeTool.sprayerFillTriggers ~= nil and table.getn(activeTool.sprayerFillTriggers) > 0;
 			if self.ai_mode == 8 then
 				canRefill = canRefill and activeTool.ReFillTrigger == nil;
 				--TODO: what to do when transfering from one ManureLager to another?
