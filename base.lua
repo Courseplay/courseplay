@@ -268,7 +268,8 @@ function courseplay:load(xmlFile)
 	self.tipRefOffset = 0;
 	self.cp.tipperHasCover = false;
 	self.cp.tippersWithCovers = {};
-
+	self.cp.tipperFillLevel = nil;
+	self.cp.tipperCapacity = nil;
 	-- for user input like saving
 	self.user_input_active = false
 	self.user_input_message = nil
@@ -684,6 +685,8 @@ function courseplay:readStream(streamId, connection)
 	self.cp.startingCorner = streamDebugReadInt32(streamId);
 	self.cp.startingDirection = streamDebugReadInt32(streamId);
 	self.cp.tipperHasCover = streamDebugReadBool(streamId);
+	self.cp.tipperFillLevel = streamDebugReadFloat32(streamId);
+	self.cp.tipperCapacity = streamDebugReadFloat32(streamId);
 	self.cp.waitForTurnTime = streamDebugReadFloat32(streamId)
 	self.cp.turnStage = streamDebugReadInt32(streamId);
 	self.cp.aiTurnNoBackward = streamDebugReadBool(streamId);
@@ -808,6 +811,8 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteInt32(streamId, self.cp.startingCorner);
 	streamDebugWriteInt32(streamId, self.cp.startingDirection);
 	streamDebugWriteBool(streamId, self.cp.tipperHasCover);
+	streamDebugWriteFloat32(streamId,self.cp.tipperFillLevel);
+	streamDebugWriteFloat32(streamId,self.cp.tipperCapacity);
 	streamDebugWriteFloat32(streamId,self.cp.waitForTurnTime)
 	streamDebugWriteInt32(streamId, self.cp.turnStage)
 	streamDebugWriteBool(streamId, self.cp.aiTurnNoBackward)
