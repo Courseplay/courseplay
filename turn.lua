@@ -70,7 +70,13 @@ function courseplay:turn(self, dt) --!!!
 					self.turnStage = 5;
 				end;
 			elseif self.turnStage == 5 then
-				local backX, backY, backZ = getWorldTranslation(self.cp.aiFrontMarker);
+				local frontNode
+				if self.cp.aiFrontMarker ~= nil then
+					frontNode = self.cp.aiFrontMarker
+				else
+					frontNode = self.rootNode
+				end
+				local backX, backY, backZ = getWorldTranslation(frontNode);
 				local dx, dz = backX-newTargetX, backZ-newTargetZ;
 				local dot = dx*dirX + dz*dirZ;
 				local moveback = 0
@@ -80,7 +86,6 @@ function courseplay:turn(self, dt) --!!!
 					moveback = 10
 				end
 				if -dot < moveback  then
-					--self.cp.turnTimer = Utils.getNoNil(self.turnTimeoutLong, 10000);
 					self.turnStage = 0;
 					self.recordnumber = self.recordnumber +1
 					courseplay:lowerImplements(self, true, true)
@@ -112,7 +117,7 @@ function courseplay:turn(self, dt) --!!!
 					moveForwards = false;
 				end;
 			end;
-			drawDebugPoint(newTargetX, y+3, newTargetZ, 1, 1, 0, 1)			
+			if CPDebugLevel > 0 then drawDebugPoint(newTargetX, y+3, newTargetZ, 1, 1, 0, 1) end			
 		elseif self.turnStage == 1 then
 			-- turn
 			local dirX, dirZ = self.aiTractorDirectionX, self.aiTractorDirectionZ;
@@ -146,13 +151,13 @@ function courseplay:turn(self, dt) --!!!
 		end;
 	else
 		local offset = Utils.getNoNil(self.WpOffsetX ,0)
-		local x,y,z = localToWorld(self.rootNode, offset, 0, -(self.cp.backMarkerOffset))
+		local x,y,z = localToWorld(self.rootNode, offset, 0, -(Utils.getNoNil(self.cp.backMarkerOffset, 0)))
 		local dist = courseplay:distance(self.Waypoints[self.recordnumber-1].cx, self.Waypoints[self.recordnumber-1].cz, x, z)
 		if self.grainTankCapacity ~= nil then
 			self.cp.noStopOnEdge = true
 		end
 
-		if  dist < 0.5 or self.cp.backMarkerOffset < 0 then
+		if  dist < 0.5 or  Utils.getNoNil(self.cp.backMarkerOffset, 0) < 0 then
 			self.cp.waitForTurnTime = self.timer + 1500
 			courseplay:lowerImplements(self, false, true)
 			updateWheels = false;
@@ -211,7 +216,7 @@ function courseplay:turn(self, dt) --!!!
 	
 end
 
-function courseplay:lowerImplements(self, direction, mode4onOff)
+function courseplay:lowerImplements(self, direction, workToolonOff)
 	--direction true= lower false = raise , mode4onOff true = switch on or off worktool false = dont
 	local state  = 1
 	if direction then
@@ -222,9 +227,11 @@ function courseplay:lowerImplements(self, direction, mode4onOff)
 	elseif self.setFoldState ~= nil then
 		self:setFoldState(state, true) 
 	end		
-	if self.ai_mode == 4 and mode4onOff then 
+	if workToolonOff then 
 		for _,worktool in pairs(self.tippers) do
-			worktool:setIsTurnedOn(direction, false);
+			if not( worktool.needsLowering or worktool.aiNeedsLowering) then
+				worktool:setIsTurnedOn(direction, false);
+			end
 		end
 	end
 end
