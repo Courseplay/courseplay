@@ -7,6 +7,7 @@ function courseplay:turn(self, dt) --!!!
 		turnOutTimer = 0
 	end
 	self.cp.turnTimer = self.cp.turnTimer - dt;
+
 	if self.cp.turnTimer < 0 or self.turnStage > 0 then
 		if self.turnStage > 1 then
 			local x,y,z = getWorldTranslation(self.rootNode);
@@ -79,7 +80,7 @@ function courseplay:turn(self, dt) --!!!
 					moveback = 10
 				end
 				if -dot < moveback  then
-					self.cp.turnTimer = self.turnTimeoutLong;
+					--self.cp.turnTimer = Utils.getNoNil(self.turnTimeoutLong, 10000);
 					self.turnStage = 0;
 					self.recordnumber = self.recordnumber +1
 					courseplay:lowerImplements(self, true, true)
@@ -178,7 +179,6 @@ function courseplay:turn(self, dt) --!!!
 	end;
 
 	if updateWheels then
-		
 		local lx, lz = AIVehicleUtil.getDriveDirection(self.cp.DirectionNode, newTargetX, newTargetY, newTargetZ);
 		if self.turnStage == 3 and math.abs(lx) < 0.1 then
 			self.turnStage = 4;
@@ -249,4 +249,3 @@ function courseplay:turnWithOffset(self)
 	end;
 	return cx,cz
 end
-

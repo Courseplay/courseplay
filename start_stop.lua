@@ -187,7 +187,6 @@ function courseplay:stop(self)
 				self:setAIImplementsMoveDown(false);
 			end;
 
-
 			-- TODO AITractor.removeToolTrigger(self, tipper)
 			if SpecializationUtil.hasSpecialization(Attachable, tipper.specializations) then
 				tipper:aiTurnOff()
@@ -228,4 +227,7 @@ function courseplay:stop(self)
 	if g_server ~= nil then
 		AIVehicleUtil.driveInDirection(self, 0, self.steering_angle, 0, 0, 28, false, moveForwards, 0, 1)
 	end
+	
+	--validation: can switch ai_mode?
+	courseplay:validateCanSwitchMode(self);
 end

@@ -157,6 +157,7 @@ function courseplay:drive(self, dt)
 	elseif self.ai_mode == 7 and self.ai_state ~=5 then
 		cx, cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
 	end
+
 	if CPDebugLevel > 0 then  drawDebugPoint(cx, cty+3, cz, 1, 0 , 1, 1) end
 	-- offset - endlich lohnt sich der mathe-lk von vor 1000 Jahren ;)
 	if (self.ai_mode == 4 or self.ai_mode == 6 ) and self.startWork ~= nil and self.stopWork ~=nil and self.WpOffsetX ~= nil and self.WpOffsetZ ~= nil then
@@ -191,7 +192,9 @@ function courseplay:drive(self, dt)
 		--courseplay:debug(string.format("new WP: %d x %d (angle) %d ", cx, cz, angle ), 2)
 		--courseplay:addsign(self, cx, 10, cz)
 	end
+
 	if CPDebugLevel > 0 then  drawDebugPoint(cx, cty+3, cz, 0, 1 , 1, 1) end
+
 	self.dist = courseplay:distance(cx, cz, ctx, ctz)
 	--courseplay:debug(string.format("Tx: %f2 Tz: %f2 WPcx: %f2 WPcz: %f2 dist: %f2 ", ctx, ctz, cx, cz, self.dist ), 2)
 	local fwd = nil
@@ -199,10 +202,10 @@ function courseplay:drive(self, dt)
 	local lx, lz = AIVehicleUtil.getDriveDirection(self.rootNode, cx, cty, cz);
 	
 	-- what about our tippers?
-	local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
+	self.cp.tipperFillLevel, self.cp.tipperCapacity = self:getAttachedTrailersFillLevelAndCapacity()
 	local fill_level = nil
-	if tipper_fill_level ~= nil then
-		fill_level = tipper_fill_level * 100 / tipper_capacity
+	if self.cp.tipperFillLevel ~= nil then
+		fill_level = self.cp.tipperFillLevel * 100 / self.cp.tipperCapacity
 	end
 	if self.ai_mode == 4 or self.ai_mode == 6 then
 		if  self.Waypoints[last_recordnumber].turn ~= nil then
@@ -262,7 +265,7 @@ function courseplay:drive(self, dt)
 				if fill_level == 100 or drive_on then
 					self.wait = false
 				end
-				self.info_text = string.format(courseplay:get_locale(self, "CPloading"), tipper_fill_level, tipper_capacity)
+				self.info_text = string.format(courseplay:get_locale(self, "CPloading"), self.cp.tipperFillLevel, self.cp.tipperCapacity)
 			end
 		elseif self.ai_mode == 6 then
 			if last_recordnumber == self.startWork then
@@ -317,7 +320,7 @@ function courseplay:drive(self, dt)
 		allowedToDrive = false
 	else -- ende wartepunkt
 		-- abfahrer-mode
-		if (self.ai_mode == 1 and self.tipper_attached and tipper_fill_level ~= nil) or (self.loaded and self.ai_mode == 2) then
+		if (self.ai_mode == 1 and self.tipper_attached and self.cp.tipperFillLevel ~= nil) or (self.loaded and self.ai_mode == 2) then
 			-- is there a tipTrigger within 10 meters?
 			raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
 			if self.currentTipTrigger == nil then
@@ -339,7 +342,7 @@ function courseplay:drive(self, dt)
 		if self.ai_mode == 4 then
 			if self.tipper_attached and self.startWork ~= nil and self.stopWork ~= nil then
 				if self.tippers ~= nil then
-					allowedToDrive = courseplay:refillSprayer(self, fill_level, tipper_fill_level, tipper_capacity, 100, allowedToDrive);
+					allowedToDrive = courseplay:refillSprayer(self, fill_level, 100, allowedToDrive);
 				end
 			end
 		elseif self.ai_mode == 4 and (self.startWork == nil or self.stopWork == nil) then
@@ -374,7 +377,7 @@ function courseplay:drive(self, dt)
 		if self.ai_mode == 8 then
 			if self.tipper_attached then
 				if self.tippers ~= nil then
-					allowedToDrive = courseplay:refillSprayer(self, fill_level, tipper_fill_level, tipper_capacity, Utils.getNoNil(self.required_fill_level_for_drive_on, 100), allowedToDrive);
+					allowedToDrive = courseplay:refillSprayer(self, fill_level, Utils.getNoNil(self.required_fill_level_for_drive_on, 100), allowedToDrive);
 				end;
 			end;
 		end;
@@ -870,8 +873,7 @@ function courseplay:openCloseCover(self)
 	end;
 end;
 
-function courseplay:refillSprayer(self, fill_level, tipper_fill_level, tipper_capacity, driveOn, allowedToDrive)
-	--TODO: move tipper_fill_level and tipper_capacity to self.cp
+function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive)
 	for i = 1, table.getn(self.tippers) do
 		local activeTool = self.tippers[i];
 		
@@ -887,21 +889,18 @@ function courseplay:refillSprayer(self, fill_level, tipper_fill_level, tipper_ca
 				canRefill = canRefill and activeTool.ReFillTrigger == nil;
 				--TODO: what to do when transfering from one ManureLager to another?
 			end;
+			local isFuchsFass = activeTool.isFuchsFass and activeTool.setdeckelAnimationisPlaying ~= nil; --Fuchs Guellefass
 			
 		
 			if canRefill then
 				allowedToDrive = false;
 				
-				--Fuchs Guellefass
-				if activeTool.isFuchsFass and activeTool.setdeckelAnimationisPlaying ~= nil then
+				if isFuchsFass then
 					activeTool:setdeckelAnimationisPlaying(true);
 				end;
 				
-				self.info_text = string.format(courseplay:get_locale(self, "CPloading"), tipper_fill_level, tipper_capacity);
+				self.info_text = string.format(courseplay:get_locale(self, "CPloading"), self.cp.tipperFillLevel, self.cp.tipperCapacity);
 				local sprayer = activeTool.sprayerFillTriggers[1];
-				--activeTool:setIsSprayerFilling(true, sprayer.fillType, sprayer.isSiloTrigger, false);
-				
-				--Test
 				activeTool:setIsSprayerFilling(true, false);
 				
 				if sprayer.trailerInTrigger == activeTool then --Feldrand-Container Guellebomber
@@ -909,8 +908,8 @@ function courseplay:refillSprayer(self, fill_level, tipper_fill_level, tipper_ca
 				end;
 			else
 				activeTool:setIsSprayerFilling(false, false);
-				--Fuchs Guellefass
-				if activeTool.isFuchsFass and activeTool.setdeckelAnimationisPlaying ~= nil then
+
+				if isFuchsFass then
 					activeTool:setdeckelAnimationisPlaying(false);
 				end;
 			end;
@@ -920,10 +919,11 @@ function courseplay:refillSprayer(self, fill_level, tipper_fill_level, tipper_ca
 				allowedToDrive = false;
 			end;
 			
-			--TODO: needed?
+			--[[TODO: needed?
 			if activeTool.fillLevel == activeTool.capacity then
 				allowedToDrive = true;
 			end;
+			--]]
 		end;
 	end;
 	
