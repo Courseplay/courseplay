@@ -20,6 +20,14 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 		self.global_info_text = courseplay:get_locale(self, "CPWorkEnd") --'hat Arbeit beendet.'
 	end
 	
+	local returnToStartPoint = false;
+	if  self.Waypoints[self.stopWork].cx == self.Waypoints[self.startWork].cx 
+	and self.Waypoints[self.stopWork].cz == self.Waypoints[self.startWork].cz 
+	and self.recordnumber > self.stopWork - 5
+	and self.recordnumber <= self.stopWork then
+		returnToStartPoint = true;
+	end;
+	
 	--calculate total fillLevel for UBT (in case of multiple trailers)
 	local hasUBT = false;
 	local fillLevelUBT = 0;
@@ -44,9 +52,8 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 			if courseplay:isFoldable(workTool) then
 				if courseplay:isFolding(workTool) and self.turnStage == 0 then 
 					allowedToDrive = false;
-					courseplay:debug(workTool.name .. ": isFolding -> allowedToDrive == false", 3);
+					--courseplay:debug(workTool.name .. ": isFolding -> allowedToDrive == false", 3);
 				end;
-				courseplay:debug(string.format("%s: unfold: turnOnFoldDirection=%s, foldMoveDirection=%s", workTool.name, tostring(workTool.turnOnFoldDirection), tostring(workTool.foldMoveDirection)), 3);
 			end;
 
 			-- balers
@@ -54,6 +61,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 				if self.recordnumber >= self.startWork + 1 and self.recordnumber < self.stopWork then
 					-- automatic opening for balers
 					if workTool.balerUnloadingState ~= nil then
+						--TODO: only set workSpeed to 0.5 when baler is roundBaler
 						if fill_level > 95 and fill_level < 100 and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
 							workSpeed = 0.5;
 						elseif fill_level == 100 and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
@@ -238,12 +246,24 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 							end;
 						
 							--turn on
-							if workTool.setIsTurnedOn ~= nil and not workTool.isTurnedOn then
-								workTool:setIsTurnedOn(true, false);
-							end;
-							if workTool.setIsPickupDown ~= nil then
-								if self.pickup.isDown == nil or (self.pickup.isDown ~= nil and not self.pickup.isDown) then
-									workTool:setIsPickupDown(true, false);
+							if not returnToStartPoint then
+								if workTool.setIsTurnedOn ~= nil and not workTool.isTurnedOn then
+									workTool:setIsTurnedOn(true, false);
+								end;
+
+								if workTool.setIsPickupDown ~= nil then
+									if self.pickup.isDown == nil or (self.pickup.isDown ~= nil and not self.pickup.isDown) then
+										workTool:setIsPickupDown(true, false);
+									end;
+								end;
+							else
+								if workTool.setIsTurnedOn ~= nil and workTool.isTurnedOn then
+									workTool:setIsTurnedOn(false, false);
+								end;
+								if workTool.setIsPickupDown ~= nil then
+									if self.pickup.isDown == nil or (self.pickup.isDown ~= nil and self.pickup.isDown) then
+										workTool:setIsPickupDown(false, false);
+									end;
 								end;
 							end;
 						end;

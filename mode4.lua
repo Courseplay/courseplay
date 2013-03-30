@@ -25,7 +25,15 @@ function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill
 		self.recordnumber = self.stopWork - 4
 		--	courseplay:debug(string.format("Abort: %d StopWork: %d",self.abortWork,self.stopWork), 2)
 	end
-
+	
+	local returnToStartPoint = false;
+	if  self.Waypoints[self.stopWork].cx == self.Waypoints[self.startWork].cx 
+	and self.Waypoints[self.stopWork].cz == self.Waypoints[self.startWork].cz 
+	and self.recordnumber > self.stopWork - 5
+	and self.recordnumber <= self.stopWork then
+		returnToStartPoint = true;
+	end;
+	
 	local firstPoint = last_recordnumber == 1;
 	local prevPoint = self.Waypoints[last_recordnumber];
 	local nextPoint = self.Waypoints[self.recordnumber];
@@ -43,7 +51,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill
 				allowedToDrive = false;
 				courseplay:debug(workTool.name .. ": isFolding -> allowedToDrive == false", 3);
 			end;
-			courseplay:debug(string.format("%s: unfold: turnOnFoldDirection=%s, foldMoveDirection=%s", workTool.name, tostring(workTool.turnOnFoldDirection), tostring(workTool.foldMoveDirection)), 3);
+			--courseplay:debug(string.format("%s: unfold: turnOnFoldDirection=%s, foldMoveDirection=%s", workTool.name, tostring(workTool.turnOnFoldDirection), tostring(workTool.foldMoveDirection)), 3);
 		end;
 
 		if workArea and fill_level ~= 0 and (self.abortWork == nil or self.runOnceStartCourse) and (self.turnStage == nil or self.turnStage == 0) then
@@ -90,7 +98,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill
 					end;
 
 					--turn on
-					if workTool.setIsTurnedOn ~= nil and not workTool.isTurnedOn then
+					if workTool.setIsTurnedOn ~= nil and not workTool.isTurnedOn and not returnToStartPoint then
 						if courseplay:is_sowingMachine(workTool) then
 							--do manually instead of :setIsTurnedOn so that workTool.turnOnAnimation and workTool.playAnimation aren't called
 							workTool.isTurnedOn = true;
@@ -107,6 +115,12 @@ function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill
 							end;
 						
 							workTool:setIsTurnedOn(true, false);
+						end;
+					elseif returnToStartPoint and workTool.isTurnedOn then
+						if courseplay:is_sowingMachine(workTool) then
+							workTool.isTurnedOn = false;
+						elseif workTool.setIsTurnedOn ~= nil then
+							workTool:setIsTurnedOn(false, false);
 						end;
 					end;
 				end; --END if not isFolding
