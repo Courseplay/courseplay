@@ -457,6 +457,7 @@ function courseplay:generateCourse(self)
 	
 	self.cp.hasGeneratedCourse = true;
 	courseplay:validateCourseGenerationData(self);
+	courseplay:validateCanSwitchMode(self);
 end;
 
 function courseplay:calcDimensions(polyXValues, polyZValues)

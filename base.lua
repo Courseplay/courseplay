@@ -270,6 +270,7 @@ function courseplay:load(xmlFile)
 	self.cp.tippersWithCovers = {};
 	self.cp.tipperFillLevel = nil;
 	self.cp.tipperCapacity = nil;
+
 	-- for user input like saving
 	self.user_input_active = false
 	self.user_input_message = nil

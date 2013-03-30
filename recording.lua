@@ -141,6 +141,7 @@ function courseplay:stop_record(self)
 	self.back = false
 	self.numCourses = 1;
 	courseplay:validateCourseGenerationData(self);
+	courseplay:validateCanSwitchMode(self);
 end
 
 -- interrupts course recording -- just setting variables
