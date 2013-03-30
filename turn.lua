@@ -229,7 +229,7 @@ function courseplay:lowerImplements(self, direction, workToolonOff)
 	end		
 	if workToolonOff then 
 		for _,worktool in pairs(self.tippers) do
-			if not( worktool.needsLowering or worktool.aiNeedsLowering) then
+			if workTool.setIsTurnedOn ~= nil and not (worktool.needsLowering or worktool.aiNeedsLowering) then
 				worktool:setIsTurnedOn(direction, false);
 			end
 		end

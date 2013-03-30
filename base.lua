@@ -388,7 +388,8 @@ function courseplay:load(xmlFile)
 			posX = posX + w;
 		end;
 		
-		local l = 1;
+		--[[
+		local l = 1; 
 		if i <= 2 then
 			l = 1;
 		elseif i <= 4 then
@@ -398,6 +399,8 @@ function courseplay:load(xmlFile)
 		elseif i <= 8 then
 			l = 4;
 		end;
+		]]
+		local l = math.floor((i+1)/2); --OR: math.ceil(i/2);
 		local posY = courseplay.hud.linesPosY[1] + (20/1080) - (h*l);
 		
 		courseplay:register_button(self, 1, icon, "setAiMode", i, posX, posY, w, h, nil, nil, "self.cp.canSwitchMode=true");
