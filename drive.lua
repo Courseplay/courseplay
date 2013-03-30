@@ -31,7 +31,6 @@ function courseplay:drive(self, dt)
 					courseplay:start(self)
 					self.sl = 3
 					refSpeed = self.field_speed
-					self:setBeaconLightsVisibility(true);
 					self.recordnumber = 2
 				else 
 					return
@@ -54,7 +53,6 @@ function courseplay:drive(self, dt)
 			if CPDebugLevel > 0 then drawDebugLine(cx, cty7+3, cz, 1, 0, 0, ctx7, cty7+3, ctz7, 1, 0, 0); end
 			self.sl = 3
 			refSpeed = self.field_speed
-			self:setBeaconLightsVisibility(true);
 			distance_to_wp = courseplay:distance_to_point(self, cx, y, cz)
 			local distToChange = 4
 			if self.shortest_dist == nil or self.shortest_dist > distance_to_wp then
@@ -109,7 +107,6 @@ function courseplay:drive(self, dt)
 					self.recordnumber = 2 
 				else
 					self.ai_state = 0
-					self:setBeaconLightsVisibility(false);
 					if self.lastaiThreshingDirectionX ~= nil then
 						self.aiThreshingDirectionX = self.lastaiThreshingDirectionX
 						self.aiThreshingDirectionZ = self.lastaiThreshingDirectionZ
@@ -160,6 +157,7 @@ function courseplay:drive(self, dt)
 	elseif self.ai_mode == 7 and self.ai_state ~=5 then
 		cx, cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
 	end
+	if CPDebugLevel > 0 then  drawDebugPoint(cx, cty+3, cz, 1, 0 , 1, 1) end
 	-- offset - endlich lohnt sich der mathe-lk von vor 1000 Jahren ;)
 	if (self.ai_mode == 4 or self.ai_mode == 6 ) and self.startWork ~= nil and self.stopWork ~=nil and self.WpOffsetX ~= nil and self.WpOffsetZ ~= nil then
 		if self.recordnumber > self.startWork and self.recordnumber < self.stopWork and self.recordnumber > 1  and (self.WpOffsetX ~= 0 or self.WpOffsetZ ~= 0) then
@@ -193,6 +191,7 @@ function courseplay:drive(self, dt)
 		--courseplay:debug(string.format("new WP: %d x %d (angle) %d ", cx, cz, angle ), 2)
 		--courseplay:addsign(self, cx, 10, cz)
 	end
+	if CPDebugLevel > 0 then  drawDebugPoint(cx, cty+3, cz, 0, 1 , 1, 1) end
 	self.dist = courseplay:distance(cx, cz, ctx, ctz)
 	--courseplay:debug(string.format("Tx: %f2 Tz: %f2 WPcx: %f2 WPcz: %f2 dist: %f2 ", ctx, ctz, cx, cz, self.dist ), 2)
 	local fwd = nil
@@ -463,7 +462,7 @@ function courseplay:drive(self, dt)
 		return;
 	end
 	if self.cp.isTurning ~= nil then
-		courseplay:turn(self, dt, cx, cz);
+		courseplay:turn(self, dt);
 		return
 	end
 
@@ -557,7 +556,7 @@ function courseplay:drive(self, dt)
 
 
 	if self.RulMode == 1 then
-		if (self.sl == 3 and not self.beaconLightsActive) or (self.sl ~= 3 and self.beaconLightsActive) then
+		if (self.sl == 3 and not self.beaconLightsActive) or (self.sl ~= 3 and self.beaconLightsActive) or (self.ai_mode == 7 and self.isAIThreshing and self.beaconLightsActive)  then
 			self:setBeaconLightsVisibility(not self.beaconLightsActive);
 		end
 	elseif self.RulMode == 2 then

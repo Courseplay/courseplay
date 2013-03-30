@@ -1,4 +1,4 @@
-function courseplay:turn(self, dt,cx, cz) --!!!
+function courseplay:turn(self, dt) --!!!
 	local newTargetX, newTargetY, newTargetZ;
 	local moveForwards = true;
 	local updateWheels = true;
@@ -111,6 +111,7 @@ function courseplay:turn(self, dt,cx, cz) --!!!
 					moveForwards = false;
 				end;
 			end;
+			drawDebugPoint(newTargetX, y+3, newTargetZ, 1, 1, 0, 1)			
 		elseif self.turnStage == 1 then
 			-- turn
 			local dirX, dirZ = self.aiTractorDirectionX, self.aiTractorDirectionZ;
@@ -118,6 +119,12 @@ function courseplay:turn(self, dt,cx, cz) --!!!
 				self.aiTractorTurnLeft = false;
 			else
 				self.aiTractorTurnLeft = true;
+			end
+			if self.WpOffsetX ~= nil and self.WpOffsetZ ~= nil and (self.WpOffsetX ~= 0 or self.WpOffsetZ ~= 0 ) then
+				cx,cz = courseplay:turnWithOffset(self)
+			else
+				cx = self.Waypoints[self.recordnumber].cx		
+				cz = self.Waypoints[self.recordnumber].cz
 			end
 			newTargetX = cx
 			newTargetY = y;
@@ -171,6 +178,7 @@ function courseplay:turn(self, dt,cx, cz) --!!!
 	end;
 
 	if updateWheels then
+		
 		local lx, lz = AIVehicleUtil.getDriveDirection(self.cp.DirectionNode, newTargetX, newTargetY, newTargetZ);
 		if self.turnStage == 3 and math.abs(lx) < 0.1 then
 			self.turnStage = 4;
@@ -220,3 +228,25 @@ function courseplay:lowerImplements(self, direction, mode4onOff)
 		end
 	end
 end
+function courseplay:turnWithOffset(self)
+	local curPoint = self.Waypoints[self.recordnumber]
+	local cx = curPoint.cx;
+	local cz = curPoint.cz;
+	local offsetX = self.WpOffsetX
+	if curPoint.turnEnd and curPoint.laneDir ~= nil then
+		local dir = curPoint.laneDir;
+		local turnDir = curPoint.turn;
+		
+		if dir == "E" then
+			cz = curPoint.cz + offsetX;
+		elseif dir == "W" then
+			cz = curPoint.cz - offsetX;
+		elseif dir == "N" then
+			cx = curPoint.cx + offsetX;
+		elseif dir == "S" then
+			cx = curPoint.cx - offsetX;
+		end;
+	end;
+	return cx,cz
+end
+
