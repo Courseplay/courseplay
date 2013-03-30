@@ -183,6 +183,11 @@ function courseplay:stop(self)
 			if courseplay:isFoldable(tipper) then
 				tipper:setFoldDirection(1);
 			end
+			if tipper.needsLowering and tipper.aiNeedsLowering and tipper:isLowered() then
+				self:setAIImplementsMoveDown(false);
+			end;
+
+
 			-- TODO AITractor.removeToolTrigger(self, tipper)
 			if SpecializationUtil.hasSpecialization(Attachable, tipper.specializations) then
 				tipper:aiTurnOff()

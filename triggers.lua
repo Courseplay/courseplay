@@ -33,6 +33,7 @@ function courseplay:cponTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 			end
 			if vehicle ~= nil and self.trafficCollisionIgnoreList[otherId] == nil and vehicleOnList == false then
 				if onEnter then
+					courseplay:debug(tostring(vehicleConcerned.name).." is not on list",1)
 					self.traffic_vehicle_in_front = otherId
 					self.CPnumCollidingVehicles = self.CPnumCollidingVehicles + 1;
 					self.numCollidingVehicles[triggerId] = self.numCollidingVehicles[triggerId]+1;
