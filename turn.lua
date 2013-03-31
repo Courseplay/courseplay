@@ -228,9 +228,9 @@ function courseplay:lowerImplements(self, direction, workToolonOff)
 		self:setFoldState(state, true) 
 	end		
 	if workToolonOff then 
-		for _,worktool in pairs(self.tippers) do
-			if workTool.setIsTurnedOn ~= nil and not (worktool.needsLowering or worktool.aiNeedsLowering) then
-				worktool:setIsTurnedOn(direction, false);
+		for _,workTool in pairs(self.tippers) do
+			if workTool.setIsTurnedOn ~= nil and not (workTool.needsLowering or workTool.aiNeedsLowering) then
+				workTool:setIsTurnedOn(direction, false);
 			end
 		end
 	end
