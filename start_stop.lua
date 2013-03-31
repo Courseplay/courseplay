@@ -180,8 +180,14 @@ function courseplay:stop(self)
 			if tipper.setIsTurnedOn ~= nil then
 				tipper:setIsTurnedOn(false, false);
 			end
-			if courseplay:isFoldable(tipper) then
-				tipper:setFoldDirection(1);
+			if courseplay:isFoldable(tipper) and tipper.setFoldDirection ~= nil then
+				if self.ai_mode == 6 or courseplay:is_sowingMachine(tipper) then
+					tipper:setFoldDirection(1);
+				elseif tipper.turnOnFoldDirection ~= nil and tipper.turnOnFoldDirection ~= 0 then
+					tipper:setFoldDirection(-tipper.turnOnFoldDirection);
+				else
+					tipper:setFoldDirection(-1); --> doesn't work for Kotte VTL (liquidManure)
+				end;
 			end
 			if tipper.needsLowering and tipper.aiNeedsLowering and tipper:isLowered() then
 				self:setAIImplementsMoveDown(false);
