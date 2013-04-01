@@ -73,6 +73,7 @@ section { padding:30px 0; }
 }
 
 .emphasize1 { font-weight:600; }
+.emphasize2 { font-style:italic; }
 
 #navSection { position:relative; }
 #mainNav { font-family:'Adelle-SemiBold', 'adelle_sbsemibold', Helvetica, Myriad Pro, Segoe UI, sans-serif; font-size:1em; font-variant:small-caps; font-weight:300; letter-spacing:1px; text-align:center; text-transform:lowercase; }
