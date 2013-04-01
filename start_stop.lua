@@ -36,10 +36,6 @@ function courseplay:start(self)
 
 	AITractor.addCollisionTrigger(self, self);
 
-	if self.turnStage == nil then
-		self.turnStage = 0;
-	end;
-
 	self.orig_maxnumber = self.maxnumber
 	-- set default ai_state if not in mode 2 or 3
 	if self.ai_mode ~= 2 and self.ai_mode ~= 3 then
@@ -159,7 +155,7 @@ function courseplay:stop(self)
 	if self.ai_state > 4 then
 		self.ai_state = 1
 	end
-	self.turnStage = 0
+	self.cp.turnStage = 0
 	self.cp.isTurning = nil
 	self.aiTractorTargetX = nil
 	self.aiTractorTargetZ = nil

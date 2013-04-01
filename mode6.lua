@@ -50,7 +50,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 
 			-- stop while folding
 			if courseplay:isFoldable(workTool) then
-				if courseplay:isFolding(workTool) and self.turnStage == 0 then 
+				if courseplay:isFolding(workTool) and self.cp.turnStage == 0 then 
 					allowedToDrive = false;
 					--courseplay:debug(workTool.name .. ": isFolding -> allowedToDrive == false", 3);
 				end;
@@ -216,7 +216,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 
 			-- other worktools, tippers, e.g. forage wagon	
 			else
-				if workArea and fill_level ~= 100 and ((self.abortWork == nil) or (self.abortWork ~= nil and last_recordnumber == self.abortWork) or (self.runOnceStartCourse)) and self.turnStage == 0  then
+				if workArea and fill_level ~= 100 and ((self.abortWork == nil) or (self.abortWork ~= nil and last_recordnumber == self.abortWork) or (self.runOnceStartCourse)) and self.cp.turnStage == 0  then
 					if allowedToDrive then
 						--unfold
 						local recordnumber = math.min(self.recordnumber+2 ,self.maxnumber)
@@ -283,7 +283,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 						end;
 
 						--raise
-						if workTool.needsLowering and workTool.aiNeedsLowering and self.turnStage == 0 then
+						if workTool.needsLowering and workTool.aiNeedsLowering and self.cp.turnStage == 0 then
 							self:setAIImplementsMoveDown(false);
 						end;
 					end;
@@ -379,7 +379,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 						else
 							self:setPipeState(2);
 						end;
-						if self.lastCuttersFruitType == 9 and not self.pipeParticleSystems[9].isEmitting and self.turnStage == 0 then
+						if self.lastCuttersFruitType == 9 and not self.pipeParticleSystems[9].isEmitting and self.cp.turnStage == 0 then
 							self.waitingForTrailerToUnload = true
 						end
 						if self.waitingForTrailerToUnload then
@@ -416,7 +416,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 				end
 				local dx,_,dz = localDirectionToWorld(self.aiTreshingDirectionNode, 0, 0, 1);
 				local length = Utils.vector2Length(dx,dz);
-				if self.turnStage == 0 then
+				if self.cp.turnStage == 0 then
 					self.aiThreshingDirectionX = dx/length;
 					self.aiThreshingDirectionZ = dz/length;
 				else

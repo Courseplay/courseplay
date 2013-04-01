@@ -64,9 +64,9 @@ function courseplay:loadHud(self)
 						--manual chopping: initiate/end turning maneuver
 						if not self.drive and not self.isAIThreshing then
 							self.hudpage[0][1][5] = courseplay:get_locale(self, "CPturnManeuver");
-							if self.turnStage == 0 then
+							if self.cp.turnStage == 0 then
 								self.hudpage[0][2][5] = courseplay:get_locale(self, "CPStart");
-							elseif self.turnStage == 1 then
+							elseif self.cp.turnStage == 1 then
 								self.hudpage[0][2][5] = courseplay:get_locale(self, "CPEnd");
 							end;
 						end

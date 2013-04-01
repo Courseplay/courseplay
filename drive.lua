@@ -439,7 +439,7 @@ function courseplay:drive(self, dt)
 	
 	local dx,_,dz = localDirectionToWorld(self.cp.DirectionNode, 0, 0, 1);
 	local length = Utils.vector2Length(dx,dz);
-	if self.turnStage == 0 then
+	if self.cp.turnStage == 0 then
 		self.aiTractorDirectionX = dx/length;
 		self.aiTractorDirectionZ = dz/length;
 	end

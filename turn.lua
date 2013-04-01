@@ -8,8 +8,8 @@ function courseplay:turn(self, dt) --!!!
 	end
 	self.cp.turnTimer = self.cp.turnTimer - dt;
 
-	if self.cp.turnTimer < 0 or self.turnStage > 0 then
-		if self.turnStage > 1 then
+	if self.cp.turnTimer < 0 or self.cp.turnStage > 0 then
+		if self.cp.turnStage > 1 then
 			local x,y,z = getWorldTranslation(self.rootNode);
 			local dirX, dirZ = self.aiTractorDirectionX, self.aiTractorDirectionZ;
 			local myDirX, myDirY, myDirZ = localDirectionToWorld(self.cp.DirectionNode, 0, 0, 1);
@@ -17,7 +17,7 @@ function courseplay:turn(self, dt) --!!!
 			newTargetX = self.aiTractorTargetX;
 			newTargetY = y;
 			newTargetZ = self.aiTractorTargetZ;
-			if self.turnStage == 2 then
+			if self.cp.turnStage == 2 then
 				self.turnStageTimer = self.turnStageTimer - dt;
 				if self.cp.isTurning == "left" then
 					AITractor.aiRotateLeft(self);
@@ -27,9 +27,9 @@ function courseplay:turn(self, dt) --!!!
 				if myDirX*dirX + myDirZ*dirZ > 0.2 or self.turnStageTimer < 0 then
 					if self.cp.aiTurnNoBackward or
 					(courseplay:distance(newTargetX, newTargetZ, self.Waypoints[self.recordnumber-1].cx, self.Waypoints[self.recordnumber-1].cz) > self.turn_radius *1.2) then
-						self.turnStage = 4;
+						self.cp.turnStage = 4;
 					else
-						self.turnStage = 3;
+						self.cp.turnStage = 3;
 						moveForwards = false;
 					end;
 					if self.turnStageTimer < 0 then
@@ -38,20 +38,20 @@ function courseplay:turn(self, dt) --!!!
 						newTargetX = self.aiTractorTargetBeforeTurnX;
 						newTargetZ = self.aiTractorTargetBeforeTurnZ;
 						moveForwards = false;
-						self.turnStage = 6;
+						self.cp.turnStage = 6;
 						self.turnStageTimer = Utils.getNoNil(self.turnStage6Timeout,3000)
 					else
 						self.turnStageTimer = Utils.getNoNil(self.turnStage3Timeout,20000)
 					end;
 				end;
-			elseif self.turnStage == 3 then
+			elseif self.cp.turnStage == 3 then
 				self.turnStageTimer = self.turnStageTimer - dt;
 				if myDirX*dirX + myDirZ*dirZ > 0.95 or self.turnStageTimer < 0 then
-					self.turnStage = 4;
+					self.cp.turnStage = 4;
 				else
 					moveForwards = false;
 				end;
-			elseif self.turnStage == 4 then
+			elseif self.cp.turnStage == 4 then
 				local dx, dz = x-newTargetX, z-newTargetZ;
 				local dot = dx*dirX + dz*dirZ;
 				if self.cp.noStopOnEdge then
@@ -67,9 +67,9 @@ function courseplay:turn(self, dt) --!!!
 						newTargetY = y;
 						newTargetZ = self.aiTractorTargetZ
 					end
-					self.turnStage = 5;
+					self.cp.turnStage = 5;
 				end;
-			elseif self.turnStage == 5 then
+			elseif self.cp.turnStage == 5 then
 				local frontNode
 				if self.cp.aiFrontMarker ~= nil then
 					frontNode = self.cp.aiFrontMarker
@@ -86,18 +86,18 @@ function courseplay:turn(self, dt) --!!!
 					moveback = 10
 				end
 				if -dot < moveback  then
-					self.turnStage = 0;
+					self.cp.turnStage = 0;
 					self.recordnumber = self.recordnumber +1
 					courseplay:lowerImplements(self, true, true)
 					self.cp.turnTimer = 8000
 					self.cp.isTurning = nil 
 					self.cp.waitForTurnTime = self.time + turnOutTimer; 
 				end;
-			elseif self.turnStage == 6 then
+			elseif self.cp.turnStage == 6 then
 				self.turnStageTimer = self.turnStageTimer - dt;
 				if self.turnStageTimer < 0 then
 					self.turnStageTimer = Utils.getNoNil(self.turnStage2Timeout,20000)
-					self.turnStage = 2;
+					self.cp.turnStage = 2;
 
 					newTargetX = self.aiTractorTargetBeforeSaveX;
 					newTargetZ = self.aiTractorTargetBeforeSaveZ;
@@ -118,7 +118,7 @@ function courseplay:turn(self, dt) --!!!
 				end;
 			end;
 			if CPDebugLevel > 0 then drawDebugPoint(newTargetX, y+3, newTargetZ, 1, 1, 0, 1) end			
-		elseif self.turnStage == 1 then
+		elseif self.cp.turnStage == 1 then
 			-- turn
 			local dirX, dirZ = self.aiTractorDirectionX, self.aiTractorDirectionZ;
 			if self.cp.isTurning == "right" then
@@ -141,10 +141,10 @@ function courseplay:turn(self, dt) --!!!
 
 			self.aiTractorDirectionX = -dirX;
 			self.aiTractorDirectionZ = -dirZ;
-			self.turnStage = 2;
+			self.cp.turnStage = 2;
 			self.turnStageTimer = Utils.getNoNil(self.turnStage2Timeout,20000)
 		else
-			self.turnStage = 1;
+			self.cp.turnStage = 1;
 			self.waitForTurnTime = self.time + 1500;
 			courseplay:lowerImplements(self, false, true)
 			updateWheels = false;
@@ -161,7 +161,7 @@ function courseplay:turn(self, dt) --!!!
 			self.cp.waitForTurnTime = self.timer + 1500
 			courseplay:lowerImplements(self, false, true)
 			updateWheels = false;
-			self.turnStage = 1;
+			self.cp.turnStage = 1;
 		end
 		
 		x,y,z = localToWorld(self.cp.DirectionNode, 0, 0, 1)
@@ -185,8 +185,8 @@ function courseplay:turn(self, dt) --!!!
 
 	if updateWheels then
 		local lx, lz = AIVehicleUtil.getDriveDirection(self.cp.DirectionNode, newTargetX, newTargetY, newTargetZ);
-		if self.turnStage == 3 and math.abs(lx) < 0.1 then
-			self.turnStage = 4;
+		if self.cp.turnStage == 3 and math.abs(lx) < 0.1 then
+			self.cp.turnStage = 4;
 			moveForwards = true;
 		end;
 
@@ -217,7 +217,7 @@ function courseplay:turn(self, dt) --!!!
 end
 
 function courseplay:lowerImplements(self, direction, workToolonOff)
-	--direction true= lower false = raise , mode4onOff true = switch on or off worktool false = dont
+	--direction true= lower,  false = raise , workToolonOff true = switch on worktool,  false = switch off worktool
 	local state  = 1
 	if direction then
 		state  = -1

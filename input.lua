@@ -272,12 +272,11 @@ function courseplay:deal_with_mouse_input(self, func, value)
 				end
 				
 				--manual chopping: initiate/end turning maneuver
-				--TODO: self.cp.turnStage (when ready)
 				if func == "row5" and courseplay:isChopper(self) and not self.drive and not self.isAIThreshing then
-					if self.turnStage == 0 then
-						self.turnStage = 1;
-					elseif self.turnStage == 1 then
-						self.turnStage = 0;
+					if self.cp.turnStage == 0 then
+						self.cp.turnStage = 1;
+					elseif self.cp.turnStage == 1 then
+						self.cp.turnStage = 0;
 					end;
 				end
 			end

@@ -47,14 +47,14 @@ function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill
 
 		-- stop while folding
 		if courseplay:isFoldable(workTool) then
-			if courseplay:isFolding(workTool) and (self.turnStage == nil or self.turnStage == 0) then
+			if courseplay:isFolding(workTool) and self.cp.turnStage == 0 then
 				allowedToDrive = false;
 				courseplay:debug(workTool.name .. ": isFolding -> allowedToDrive == false", 3);
 			end;
 			--courseplay:debug(string.format("%s: unfold: turnOnFoldDirection=%s, foldMoveDirection=%s", workTool.name, tostring(workTool.turnOnFoldDirection), tostring(workTool.foldMoveDirection)), 3);
 		end;
 
-		if workArea and fill_level ~= 0 and (self.abortWork == nil or self.runOnceStartCourse) and (self.turnStage == nil or self.turnStage == 0) then
+		if workArea and fill_level ~= 0 and (self.abortWork == nil or self.runOnceStartCourse) and self.cp.turnStage == 0 then
 			self.runOnceStartCourse = false;
 			workSpeed = 1;
 			if allowedToDrive then
@@ -125,7 +125,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill
 					end;
 				end; --END if not isFolding
 			end;
-		elseif self.turnStage == nil or self.turnStage == 0 then
+		elseif self.cp.turnStage == 0 then
 			workSpeed = 0;
 			--turn off
 			if workTool.setIsTurnedOn ~= nil and workTool.isTurnedOn then

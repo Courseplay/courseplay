@@ -258,7 +258,7 @@ function courseplay:unload_combine(self, dt)
 		combine.isCornchopper = true;
 	end
 	-- is combine turning ?
-	if combine ~= nil and (combine.turnStage == 1 or combine.turnStage == 2 or (combine.turnStage == 3 and not combine.isCornchopper) or combine.turnStage == 4 or combine.turnStage == 5) then
+	if combine ~= nil and (combine.turnStage == 1 or combine.turnStage == 2 or combine.turnStage == 4 or combine.turnStage == 5 or combine.cp.turnStage > 0 ) then
 		self.info_text = courseplay:get_locale(self, "CPCombineTurning") -- "Drescher wendet. "
 		combine_turning = true
 	end
@@ -273,7 +273,7 @@ function courseplay:unload_combine(self, dt)
 
 
 	local offset_to_chopper = self.combine_offset
-	if combine.turnStage ~= 0 then
+	if combine.turnStage ~= 0 or combine.cp.turnStage ~= 0 then
 		offset_to_chopper = self.combine_offset * 1.6 --1,3
 	end
 
@@ -582,7 +582,7 @@ function courseplay:unload_combine(self, dt)
 			else
 				refSpeed = combine_speed
 			end
-			if (combine.turnStage ~= 0 and lz < 20) then
+			if ((combine.turnStage ~= 0 or combine.cp.turnStage ~= 0) and lz < 20) then
 				refSpeed = 1 / 3600
 				self.sl = 1
 				if self.ESLimiter == nil then
@@ -600,13 +600,13 @@ function courseplay:unload_combine(self, dt)
 			else
 				refSpeed = combine_speed
 			end
-			if (combine.turnStage ~= 0 and lz < 20) or (self.timer < self.drive_slow_timer) or (combine.movingDirection == 0 and lz < 15) then
+			if ((combine.turnStage ~= 0 or combine.cp.turnStage ~= 0) and lz < 20) or (self.timer < self.drive_slow_timer) or (combine.movingDirection == 0 and lz < 15) then
 				refSpeed = 4 / 3600
 				self.sl = 1
 				if self.ESLimiter == nil then
 					self.motor.maxRpm[self.sl] = 200
 				end 
-				if combine.turnStage ~= 0 then
+				if combine.turnStage ~= 0 or combine.cp.turnStage ~= 0 then
 					self.drive_slow_timer = self.timer + 2000
 				end
 			end

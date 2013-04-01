@@ -42,7 +42,7 @@ function courseplay:combine_allows_tractor(self, combine)
 				return true
 			end
 			-- is the pipe on the correct side?
-			if combine.turnStage == 1 or combine.turnStage == 2 then
+			if combine.turnStage == 1 or combine.turnStage == 2 or combine.cp.turnStage ~= 0 then
 				return false
 			end
 			local left_fruit, right_fruit = courseplay:side_to_drive(self, combine, -10)
@@ -127,7 +127,7 @@ function courseplay:register_at_combine(self, combine)
 			else
 				-- force unload when combine is full
 				-- is the pipe on the correct side?
-				if combine.turnStage == 1 or combine.turnStage == 2 then
+				if combine.turnStage == 1 or combine.turnStage == 2 or combine.cp.turnStage ~= 0 then
 					return false
 				end
 				local left_fruit, right_fruit = courseplay:side_to_drive(self, combine, -10)
