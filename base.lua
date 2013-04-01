@@ -65,6 +65,7 @@ function courseplay:load(xmlFile)
 	self.cp.backMarkerOffset = nil --float
 	self.cp.turnTimer = 8000 --int
 	self.cp.noStopOnEdge = false --bool
+	self.cp.noStopOnTurn = false --bool
 
 	self.toggledTipState = 0;
 	
@@ -697,6 +698,7 @@ function courseplay:readStream(streamId, connection)
 	self.cp.backMarkerOffset = streamDebugReadFloat32(streamId)
 	self.cp.turnTimer = streamDebugReadInt32(streamId);
 	self.cp.noStopOnEdge = streamDebugReadBool(streamId);
+	self.cp.noStopOnTurn = streamDebugReadBool(streamId);
 	self.crossPoints = streamDebugReadInt32(streamId)
 	self.drive = streamDebugReadBool(streamId)
 	self.drive_slow_timer = streamDebugReadInt32(streamId)
@@ -823,6 +825,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteFloat32(streamId,self.cp.backMarkerOffset)
 	streamDebugWriteInt32(streamId, self.cp.turnTimer)
 	streamDebugWriteBool(streamId, self.cp.noStopOnEdge)
+	streamDebugWriteBool(streamId, self.cp.noStopOnTurn)
 	streamDebugWriteInt32(streamId, self.crossPoints);
 	streamDebugWriteBool(streamId,self.drive)
 	streamDebugWriteInt32(streamId,self.drive_slow_timer)

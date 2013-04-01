@@ -62,6 +62,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 				table.insert(self.tippers, object)
 				courseplay:setMarkers(self, object)
 				self.cp.noStopOnEdge = courseplay:isSprayer(object);
+				self.cp.noStopOnTurn = courseplay:isSprayer(object);
 			end
 		elseif self.ai_mode == 6 then -- Baler, foragewagon, baleloader
 			if courseplay:isBaler(object) 
@@ -82,6 +83,10 @@ function courseplay:update_tools(self, tractor_or_implement)
 				tipper_attached = true;
 				table.insert(self.tippers, object);
 				courseplay:setMarkers(self, object);
+				self.cp.noStopOnTurn = 	courseplay:isBaler(object) 
+							or courseplay:is_baleLoader(object) 
+							or courseplay:isUBT(object)
+							or SpecializationUtil.hasSpecialization(Mower, object.specializations)
 				self.cp.noStopOnEdge = courseplay:isBaler(object) or courseplay:is_baleLoader(object) or courseplay:isUBT(object);
 			end
 		elseif self.ai_mode == 8 then -- Baler, foragewagon, baleloader
@@ -134,6 +139,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 				table.insert(self.tippers, object)
 				courseplay:setMarkers(self, object)
 				self.cp.noStopOnEdge = courseplay:isSprayer(object);
+				self.cp.noStopOnTurn = courseplay:isSprayer(object)
 			end
 		elseif self.ai_mode == 5 then -- Transfer
 			if object.setPlane ~= nil then --open/close cover
@@ -159,6 +165,9 @@ function courseplay:update_tools(self, tractor_or_implement)
 				tipper_attached = true
 				table.insert(self.tippers, object)
 				courseplay:setMarkers(self, object)
+				self.cp.noStopOnTurn = 	courseplay:isBaler(object) 
+							or courseplay:is_baleLoader(object) 
+							or courseplay:isUBT(object) 
 				self.cp.noStopOnEdge = courseplay:isBaler(object) or courseplay:is_baleLoader(object) or courseplay:isUBT(object);
 			end;
 		elseif self.ai_mode == 8 then --Liquid manure transfer

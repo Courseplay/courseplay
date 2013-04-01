@@ -59,6 +59,8 @@ function courseplay:start(self)
 	if self.working_course_player_num == nil then
 		self.working_course_player_num = courseplay:add_working_player(self)
 	end
+	self.cp.backMarkerOffset = nil
+	self.cp.aiFrontMarker = nil
 
 	courseplay:reset_tools(self)
 	-- show arrow

@@ -145,7 +145,9 @@ function courseplay:turn(self, dt) --!!!
 			self.turnStageTimer = Utils.getNoNil(self.turnStage2Timeout,20000)
 		else
 			self.cp.turnStage = 1;
-			self.waitForTurnTime = self.time + 1500;
+			if self.cp.noStopOnTurn == false then
+				self.waitForTurnTime = self.time + 1500;
+			end
 			courseplay:lowerImplements(self, false, true)
 			updateWheels = false;
 		end;
@@ -158,7 +160,9 @@ function courseplay:turn(self, dt) --!!!
 		end
 
 		if  dist < 0.5 or  Utils.getNoNil(self.cp.backMarkerOffset, 0) < 0 then
-			self.cp.waitForTurnTime = self.timer + 1500
+			if self.cp.noStopOnTurn == false then
+				self.cp.waitForTurnTime = self.timer + 1500
+			end
 			courseplay:lowerImplements(self, false, true)
 			updateWheels = false;
 			self.cp.turnStage = 1;
