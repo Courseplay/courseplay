@@ -406,7 +406,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 							self:setPipeState(1)
 						end
 						if self.waitingForTrailerToUnload then
-							if pipeState == 0 and self.grainTankFillLevel == 0 then
+							if 	self.isCheckedIn == nil or (pipeState == 0 and self.grainTankFillLevel == 0) then
 								self.waitingForTrailerToUnload = false
 							else
 								allowedToDrive = false;
