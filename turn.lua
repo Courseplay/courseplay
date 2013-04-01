@@ -225,11 +225,11 @@ function courseplay:lowerImplements(self, direction, workToolonOff)
 	if  self.setAIImplementsMoveDown ~= nil then
 		self:setAIImplementsMoveDown(direction)
 	elseif self.setFoldState ~= nil then
-		self:setFoldState(state, true) 
+		self:setFoldState(state, true)
 	end		
 	if workToolonOff then 
 		for _,workTool in pairs(self.tippers) do
-			if workTool.setIsTurnedOn ~= nil and not (workTool.needsLowering or workTool.aiNeedsLowering) then
+			if workTool.setIsTurnedOn ~= nil and not courseplay:isFolding(workTool) then
 				workTool:setIsTurnedOn(direction, false);
 			end
 		end
