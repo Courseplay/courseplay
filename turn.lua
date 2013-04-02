@@ -153,13 +153,13 @@ function courseplay:turn(self, dt) --!!!
 		end;
 	else
 		local offset = Utils.getNoNil(self.WpOffsetX ,0)
-		local x,y,z = localToWorld(self.rootNode, offset, 0, -(Utils.getNoNil(self.cp.backMarkerOffset, 0)))
+		local x,y,z = localToWorld(self.rootNode, offset, 0, (Utils.getNoNil(self.cp.backMarkerOffset, 0)))
 		local dist = courseplay:distance(self.Waypoints[self.recordnumber-1].cx, self.Waypoints[self.recordnumber-1].cz, x, z)
 		if self.grainTankCapacity ~= nil then
 			self.cp.noStopOnEdge = true
 		end
 
-		if  dist < 0.5 or  Utils.getNoNil(self.cp.backMarkerOffset, 0) < 0 then
+		if  dist < 0.5 or  Utils.getNoNil(self.cp.backMarkerOffset, 0) > 0 then
 			if self.cp.noStopOnTurn == false then
 				self.cp.waitForTurnTime = self.timer + 1500
 			end

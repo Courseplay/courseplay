@@ -337,13 +337,11 @@ end
 
 function courseplay:setMarkers(self, object)
 	-- get the behindest and the frontest  points :-) ( as offset to root node)
-	local zf = 99999
 	for k = 1, table.getn(object.cuttingAreas) do
 		for j,node in pairs(object.cuttingAreas[k]) do
 			if j == "start" or j == "height" or j == "width" then 
-				x, y, z = getWorldTranslation(node)
+				local x, y, z = getWorldTranslation(node)
 				_, _, ztt = worldToLocal(self.rootNode, x, y, z)
-				ztt = -ztt
 				if self.cp.backMarkerOffset == nil or ztt > self.cp.backMarkerOffset then
 					self.cp.backMarkerOffset = ztt
 				end
@@ -352,18 +350,14 @@ function courseplay:setMarkers(self, object)
 				if self.cp.aiFrontMarker == nil  or ztt < ztfo then
 					self.cp.aiFrontMarker = node
 				end
-				if ztt > 3 then
-					self.cp.aiFrontMarker = object.rootNode
-				end
 			end
 		end
-	end
-	if self.cp.backMarkerOffset == nil then
-		self.cp.backMarkerOffset = 3 
 	end
 	if self.cp.aiFrontMarker == nil then
 		self.cp.aiFrontMarker = object.rootNode
 	end
+	local x, y, z = getWorldTranslation(self.cp.aiFrontMarker)
+	_, _, ztt = worldToLocal(self.rootNode, x, y, z)
 end
 
 -- loads all tippers
