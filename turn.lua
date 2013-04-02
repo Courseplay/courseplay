@@ -26,7 +26,7 @@ function courseplay:turn(self, dt) --!!!
 				end
 				if myDirX*dirX + myDirZ*dirZ > 0.2 or self.turnStageTimer < 0 then
 					if self.cp.aiTurnNoBackward or
-					(courseplay:distance(newTargetX, newTargetZ, self.Waypoints[self.recordnumber-1].cx, self.Waypoints[self.recordnumber-1].cz) > self.turn_radius) then
+					(courseplay:distance(newTargetX, newTargetZ, self.Waypoints[self.recordnumber-1].cx, self.Waypoints[self.recordnumber-1].cz) > self.turn_radius * 1.2) then
 						self.cp.turnStage = 4;
 					else
 						self.cp.turnStage = 3;
