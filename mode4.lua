@@ -58,7 +58,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill
 			self.runOnceStartCourse = false;
 			workSpeed = 1;
 			--turn On
-			specialTool, allowedToDrive = courseplay:handleSpecialTools(workTool,true,true,true)
+			specialTool, allowedToDrive = courseplay:handleSpecialTools(workTool,true,true,true,allowedToDrive)
 			if allowedToDrive then
 				if not specialTool then
 					--unfold
@@ -113,7 +113,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill
 		elseif self.cp.turnStage == 0 then
 			workSpeed = 0;
 			--turn off
-			specialTool, allowedToDrive = courseplay:handleSpecialTools(workTool,false,false,false)
+			specialTool, allowedToDrive = courseplay:handleSpecialTools(workTool,false,false,false,allowedToDrive)
 			if not specialTool then
 				if workTool.setIsTurnedOn ~= nil and workTool.isTurnedOn then
 					if courseplay:is_sowingMachine(workTool) then

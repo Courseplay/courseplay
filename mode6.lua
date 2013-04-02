@@ -218,7 +218,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 			-- other worktools, tippers, e.g. forage wagon	
 			else
 				if workArea and fill_level ~= 100 and ((self.abortWork == nil) or (self.abortWork ~= nil and last_recordnumber == self.abortWork) or (self.runOnceStartCourse)) and self.cp.turnStage == 0  then
-					specialTool, allowedToDrive = courseplay:handleSpecialTools(workTool,true,true,true)
+					specialTool, allowedToDrive = courseplay:handleSpecialTools(workTool,true,true,true,allowedToDrive)
 					if allowedToDrive then
 						if not specialTool then
 							--unfold
@@ -275,7 +275,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 					end
 				elseif not workArea or self.abortWork ~= nil or self.loaded or last_recordnumber == self.stopWork then
 					workSpeed = 0;
-					specialTool, allowedToDrive = courseplay:handleSpecialTools(workTool,false,false,false)
+					specialTool, allowedToDrive = courseplay:handleSpecialTools(workTool,false,false,false,allowedToDrive)
 					if not specialTool then
 						if not courseplay:isFolding(workTool) then
 							--turn off

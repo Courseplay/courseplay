@@ -164,10 +164,8 @@ end
 	return cart .. autoref
 end;
 
-function courseplay:handleSpecialTools(workTool,unfold,lower,turnOnOff,spare1,spare2,spare3)
-	local allowedToDrive = true
-
-
+function courseplay:handleSpecialTools(workTool,unfold,lower,turnOnOff,allowedToDrive,spare2,spare3)
+	
 	if workTool.name == "Claas Liner 4000" then
 		local isReadyToWork = workTool.rowerFoldingParts[1].isDown;
 		local manualReset = false
@@ -229,5 +227,5 @@ function courseplay:handleSpecialTools(workTool,unfold,lower,turnOnOff,spare1,sp
 
 
 
-	return false, allowedToDrive
+	return false, allowedToDrive 
 end

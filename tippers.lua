@@ -358,6 +358,10 @@ function courseplay:setMarkers(self, object)
 	end
 	local x, y, z = getWorldTranslation(self.cp.aiFrontMarker)
 	_, _, ztt = worldToLocal(self.rootNode, x, y, z)
+	if ztt < -5 then
+		self.cp.aiFrontMarker = object.rootNode
+	end
+		
 end
 
 -- loads all tippers
