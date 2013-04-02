@@ -26,7 +26,7 @@ function courseplay:turn(self, dt) --!!!
 				end
 				if myDirX*dirX + myDirZ*dirZ > 0.2 or self.turnStageTimer < 0 then
 					if self.cp.aiTurnNoBackward or
-					(courseplay:distance(newTargetX, newTargetZ, self.Waypoints[self.recordnumber-1].cx, self.Waypoints[self.recordnumber-1].cz) > self.turn_radius *1.2) then
+					(courseplay:distance(newTargetX, newTargetZ, self.Waypoints[self.recordnumber-1].cx, self.Waypoints[self.recordnumber-1].cz) > self.turn_radius) then
 						self.cp.turnStage = 4;
 					else
 						self.cp.turnStage = 3;
@@ -194,7 +194,7 @@ function courseplay:turn(self, dt) --!!!
 			moveForwards = true;
 		end;
 
-		AIVehicleUtil.driveInDirection(self, dt, 25, 0.5, 0.5, 20, true, moveForwards, lx, lz, speedLevel, 0.9);
+		AIVehicleUtil.driveInDirection(self, dt, 25, 0.5, 0.5, 20, true, moveForwards, lx, lz, self.sl, 0.9);
 		
 		local maxlx = 0.7071067; --math.sin(maxAngle);
 		local colDirX = lx;
@@ -233,7 +233,7 @@ function courseplay:lowerImplements(self, direction, workToolonOff)
 	end		
 	if workToolonOff then 
 		for _,workTool in pairs(self.tippers) do
-			if workTool.setIsTurnedOn ~= nil and not courseplay:isFolding(workTool) then
+			if workTool.setIsTurnedOn ~= nil and not courseplay:isFolding(workTool) and not workTool.needsLowering then
 				workTool:setIsTurnedOn(direction, false);
 			end
 		end
