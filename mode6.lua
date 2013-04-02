@@ -1,6 +1,7 @@
 function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill_level, last_recordnumber, lx , lz )
 	local workTool --= self.tippers[1] -- to do, quick, dirty and unsafe
 	local active_tipper = nil
+	local specialTool = false
 
 	--[[
 	if self.attachedCutters ~= nil then
@@ -61,7 +62,8 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 				if self.recordnumber >= self.startWork + 1 and self.recordnumber < self.stopWork then
 					-- automatic opening for balers
 					if workTool.balerUnloadingState ~= nil then
-						if courseplay:isRoundbaler(workTool) and fill_level > 95 and fill_level < 100 and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
+						--TODO: only set workSpeed to 0.5 when baler is roundBaler
+						if fill_level > 95 and fill_level < 100 and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
 							workSpeed = 0.5;
 						elseif fill_level == 100 and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
 							allowedToDrive = false
@@ -216,52 +218,56 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 			-- other worktools, tippers, e.g. forage wagon	
 			else
 				if workArea and fill_level ~= 100 and ((self.abortWork == nil) or (self.abortWork ~= nil and last_recordnumber == self.abortWork) or (self.runOnceStartCourse)) and self.cp.turnStage == 0  then
+					specialTool, allowedToDrive = courseplay:handleSpecialTools(workTool,true,true,true)
 					if allowedToDrive then
-						--unfold
-						local recordnumber = math.min(self.recordnumber+2 ,self.maxnumber)
-						local forecast = Utils.getNoNil(self.Waypoints[recordnumber].ridgeMarker,0)
-						local marker = Utils.getNoNil(self.Waypoints[self.recordnumber].ridgeMarker,0)
-						local waypoint = math.max(marker,forecast)
-						if courseplay:isFoldable(workTool) and not courseplay:isFolding(workTool) then
-							if not SpecializationUtil.hasSpecialization(Plough, workTool.specializations) then
-								workTool:setFoldDirection(-1);
-								self.runOnceStartCourse = false; 
-							elseif waypoint == 2 and self.runOnceStartCourse then --wegpunkte finden und richtung setzen...
-								workTool:setFoldDirection(-1);
-								if workTool:getIsPloughRotationAllowed() then
-									AITractor.aiRotateLeft(self);
-									self.runOnceStartCourse = false;
+						if not specialTool then
+							--unfold
+							local recordnumber = math.min(self.recordnumber+2 ,self.maxnumber)
+							local forecast = Utils.getNoNil(self.Waypoints[recordnumber].ridgeMarker,0)
+							local marker = Utils.getNoNil(self.Waypoints[self.recordnumber].ridgeMarker,0)
+							local waypoint = math.max(marker,forecast)
+							if courseplay:isFoldable(workTool) and not courseplay:isFolding(workTool) then
+								if not SpecializationUtil.hasSpecialization(Plough, workTool.specializations) then
+									workTool:setFoldDirection(-1);
+									self.runOnceStartCourse = false; 
+								elseif waypoint == 2 and self.runOnceStartCourse then --wegpunkte finden und richtung setzen...
+									workTool:setFoldDirection(-1);
+									if workTool:getIsPloughRotationAllowed() then
+										AITractor.aiRotateLeft(self);
+										self.runOnceStartCourse = false;
+									end
+								elseif self.runOnceStartCourse then
+									workTool:setFoldDirection(-1);
+									self.runOnceStartCourse = false; 
 								end
-							elseif self.runOnceStartCourse then
-								workTool:setFoldDirection(-1);
-								self.runOnceStartCourse = false; 
-							end
-						end;
-
-						if not courseplay:isFolding(workTool) then
-							--lower
-							if workTool.needsLowering and workTool.aiNeedsLowering then
-								self:setAIImplementsMoveDown(true);
 							end;
-						
-							--turn on
-							if not returnToStartPoint then
-								if workTool.setIsTurnedOn ~= nil and not workTool.isTurnedOn then
-									workTool:setIsTurnedOn(true, false);
-								end;
+							
 
-								if workTool.setIsPickupDown ~= nil then
-									if self.pickup.isDown == nil or (self.pickup.isDown ~= nil and not self.pickup.isDown) then
-										workTool:setIsPickupDown(true, false);
+							if not courseplay:isFolding(workTool) and not waitForSpecialTool then
+								--lower
+								if workTool.needsLowering and workTool.aiNeedsLowering then
+									self:setAIImplementsMoveDown(true);
+								end;
+							
+								--turn on
+								if not returnToStartPoint then
+									if workTool.setIsTurnedOn ~= nil and not workTool.isTurnedOn then
+										workTool:setIsTurnedOn(true, false);
 									end;
-								end;
-							else
-								if workTool.setIsTurnedOn ~= nil and workTool.isTurnedOn then
-									workTool:setIsTurnedOn(false, false);
-								end;
-								if workTool.setIsPickupDown ~= nil then
-									if self.pickup.isDown == nil or (self.pickup.isDown ~= nil and self.pickup.isDown) then
-										workTool:setIsPickupDown(false, false);
+
+									if workTool.setIsPickupDown ~= nil then
+										if self.pickup.isDown == nil or (self.pickup.isDown ~= nil and not self.pickup.isDown) then
+											workTool:setIsPickupDown(true, false);
+										end;
+									end;
+								else
+									if workTool.setIsTurnedOn ~= nil and workTool.isTurnedOn then
+										workTool:setIsTurnedOn(false, false);
+									end;
+									if workTool.setIsPickupDown ~= nil then
+										if self.pickup.isDown == nil or (self.pickup.isDown ~= nil and self.pickup.isDown) then
+											workTool:setIsPickupDown(false, false);
+										end;
 									end;
 								end;
 							end;
@@ -269,28 +275,30 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 					end
 				elseif not workArea or self.abortWork ~= nil or self.loaded or last_recordnumber == self.stopWork then
 					workSpeed = 0;
-					
-					if not courseplay:isFolding(workTool) then
-						--turn off
-						if workTool.setIsTurnedOn ~= nil and workTool.isTurnedOn then
-							workTool:setIsTurnedOn(false, false);
-						end;
-						if workTool.setIsPickupDown ~= nil then
-							if self.pickup.isDown == nil or (self.pickup.isDown ~= nil and self.pickup.isDown) then
-								workTool:setIsPickupDown(false, false);
+					specialTool, allowedToDrive = courseplay:handleSpecialTools(workTool,false,false,false)
+					if not specialTool then
+						if not courseplay:isFolding(workTool) then
+							--turn off
+							if workTool.setIsTurnedOn ~= nil and workTool.isTurnedOn then
+								workTool:setIsTurnedOn(false, false);
+							end;
+							if workTool.setIsPickupDown ~= nil then
+								if self.pickup.isDown == nil or (self.pickup.isDown ~= nil and self.pickup.isDown) then
+									workTool:setIsPickupDown(false, false);
+								end;
+							end;
+
+							--raise
+							if workTool.needsLowering and workTool.aiNeedsLowering and self.cp.turnStage == 0 then
+								self:setAIImplementsMoveDown(false);
 							end;
 						end;
 
-						--raise
-						if workTool.needsLowering and workTool.aiNeedsLowering and self.cp.turnStage == 0 then
-							self:setAIImplementsMoveDown(false);
+						--fold
+						if courseplay:isFoldable(workTool) then
+							workTool:setFoldDirection(1);
+							--workTool:setFoldDirection(-workTool.turnOnFoldDirection);
 						end;
-					end;
-
-					--fold
-					if courseplay:isFoldable(workTool) then
-						workTool:setFoldDirection(1);
-						--workTool:setFoldDirection(-workTool.turnOnFoldDirection);
 					end;
 				end;
 
@@ -405,7 +413,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 							self:setPipeState(1)
 						end
 						if self.waitingForTrailerToUnload then
-							if self.isCheckedIn == nil or (pipeState == 0 and self.grainTankFillLevel == 0) then
+							if 	self.isCheckedIn == nil or (pipeState == 0 and self.grainTankFillLevel == 0) then
 								self.waitingForTrailerToUnload = false
 							else
 								allowedToDrive = false;

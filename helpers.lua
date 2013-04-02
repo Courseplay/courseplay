@@ -163,3 +163,71 @@ end
 	addtocart(t, name, indent)
 	return cart .. autoref
 end;
+
+function courseplay:handleSpecialTools(workTool,unfold,lower,turnOnOff,spare1,spare2,spare3)
+	local allowedToDrive = true
+
+
+	if workTool.name == "Claas Liner 4000" then
+		local isReadyToWork = workTool.rowerFoldingParts[1].isDown;
+		local manualReset = false
+		if workTool.unfoldOrderIsGiven == nil then
+			workTool.unfoldOrderIsGiven = false
+			workTool.foldOrderIsGiven = false
+		end
+		if unfold == false and isReadyToWork then
+			workTool.foldOrderIsGiven = true
+		end
+		--lower
+		if workTool.foldAnimTime > 0.99 then
+			if isReadyToWork then
+				for k, part in pairs(workTool.rowerFoldingParts) do
+					workTool:setIsArmDown(k, lower);
+				end;
+				if workTool.unfoldOrderIsGiven or workTool.foldOrderIsGiven then
+					--turn OnOff
+					workTool:setIsTurnedOn(turnOnOff);
+					workTool.unfoldOrderIsGiven = false
+				end
+			end
+		else
+			allowedToDrive = false
+		end
+		--unfold			
+		if (unfold and workTool.isTransport) or (workTool.foldOrderIsGiven and isReadyToWork)  then
+			workTool:setTransport(not unfold)
+			if workTool.isReadyToTransport or workTool.foldOrderIsGiven then
+				if workTool.foldMoveDirection > 0.1 or (workTool.foldMoveDirection == 0 and workTool.foldAnimTime > 0.5) then
+					workTool:setFoldDirection(-1)	
+				else
+					workTool:setFoldDirection(1)
+				end;
+				workTool.foldOrderIsGiven = false
+			end;
+			workTool.unfoldOrderIsGiven = true
+			
+		end
+		if workTool.foldAnimTime == 0 then
+			allowedToDrive = true
+		end
+		return true, allowedToDrive
+	end
+
+	--Tebbe HS180 (Maurus)
+	if workTool.setDoorHigh ~= nil and workTool.doorhigh ~= nil then
+		local flap = 0
+		if turnOnOff then 
+			flap = 3
+		end
+		workTool:setDoorHigh(flap);
+		if workTool.setFlapOpen ~= nil and workTool.flapopen then
+			workTool:setFlapOpen(turnOnOff)
+		end
+		return false, allowedToDrive
+	end;
+
+
+
+
+	return false, allowedToDrive
+end

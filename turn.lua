@@ -225,16 +225,21 @@ function courseplay:lowerImplements(self, direction, workToolonOff)
 	local state  = 1
 	if direction then
 		state  = -1
+	end
+	for _,workTool in pairs(self.tippers) do
+		specialTool = courseplay:handleSpecialTools(workTool,true,false,true)	
 	end	
-	if  self.setAIImplementsMoveDown ~= nil then
-		self:setAIImplementsMoveDown(direction)
-	elseif self.setFoldState ~= nil then
-		self:setFoldState(state, true)
-	end		
-	if workToolonOff then 
-		for _,workTool in pairs(self.tippers) do
-			if workTool.setIsTurnedOn ~= nil and not courseplay:isFolding(workTool) and not workTool.needsLowering then
-				workTool:setIsTurnedOn(direction, false);
+	if not specialTool then
+		if  self.setAIImplementsMoveDown ~= nil then
+			self:setAIImplementsMoveDown(direction)
+		elseif self.setFoldState ~= nil then
+			self:setFoldState(state, true)
+		end		
+		if workToolonOff then 
+			for _,workTool in pairs(self.tippers) do
+				if workTool.setIsTurnedOn ~= nil and not courseplay:isFolding(workTool) and not workTool.needsLowering then
+					workTool:setIsTurnedOn(direction, false);
+				end
 			end
 		end
 	end
