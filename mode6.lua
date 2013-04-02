@@ -61,8 +61,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 				if self.recordnumber >= self.startWork + 1 and self.recordnumber < self.stopWork then
 					-- automatic opening for balers
 					if workTool.balerUnloadingState ~= nil then
-						--TODO: only set workSpeed to 0.5 when baler is roundBaler
-						if fill_level > 95 and fill_level < 100 and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
+						if courseplay:isRoundbaler(workTool) and fill_level > 95 and fill_level < 100 and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
 							workSpeed = 0.5;
 						elseif fill_level == 100 and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
 							allowedToDrive = false
@@ -406,7 +405,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 							self:setPipeState(1)
 						end
 						if self.waitingForTrailerToUnload then
-							if 	self.isCheckedIn == nil or (pipeState == 0 and self.grainTankFillLevel == 0) then
+							if self.isCheckedIn == nil or (pipeState == 0 and self.grainTankFillLevel == 0) then
 								self.waitingForTrailerToUnload = false
 							else
 								allowedToDrive = false;

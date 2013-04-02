@@ -20,6 +20,9 @@ end;
 function courseplay:isBaler(workTool) -- is the tool a baler?
 	return (SpecializationUtil.hasSpecialization(Baler, workTool.specializations) or workTool.balerUnloadingState ~= nil);
 end;
+function courseplay:isRoundbaler(workTool) -- is the tool a roundbaler?
+	return courseplay:isBaler(workTool) and workTool.baleCloseAnimationName ~= nil and workTool.baleUnloadAnimationName ~= nil;
+end;
 function courseplay:is_baleLoader(workTool) -- is the tool a bale loader?
 	return (SpecializationUtil.hasSpecialization(baleLoader, workTool.specializations) or SpecializationUtil.hasSpecialization(BaleLoader, workTool.specializations) or (workTool.balesToLoad ~= nil and workTool.baleGrabber ~=nil and workTool.grabberIsMoving~= nil));
 end;
@@ -204,7 +207,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 	end;
 
 	--CUTTERS
-	if self.attachedCutters ~= nil and table.getn(self.attachedImplements)~= 0  then
+	if self.attachedCutters ~= nil and table.getn(self.attachedImplements) ~= 0 then
 		if self.numAttachedCutters ~= nil and self.numAttachedCutters > 0 then
 			for cutter, implement in pairs(self.attachedCutters) do
 				local object = implement.object
