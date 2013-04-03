@@ -43,12 +43,14 @@ end
 function courseplay:is_field(x, z)
 	local widthX = 0.5;
 	local widthZ = 0.5;
-	if Utils.getDensity(g_currentMission.terrainDetailId, 2, x, z, x - widthX, z - widthZ, x + widthX, z + widthZ) > 0 then
-		return true
-	else
-		return false
-	end
-end
+	
+	for i=0,3 do
+		if Utils.getDensity(g_currentMission.terrainDetailId, i, x, z, x - widthX, z - widthZ, x + widthX, z + widthZ) ~= 0 then
+			return true;
+		end;
+	end;
+	return false;
+end;
 
 function courseplay:check_for_fruit(self, distance)
 

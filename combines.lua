@@ -94,6 +94,8 @@ function courseplay:update_combines(self)
 		dnz = math.sin(angle) * -2
 		hx, hy, hz = localToWorld(self.aiTractorDirectionNode, dnx, 0, dnz)
 		local area1, area2 = Utils.getDensity(terrain, 2, x, z, lx, lz, hx, hz)
+		local area3  = Utils.getDensity(terrain, 3, x, z, lx, lz, hx, hz)
+		area1 = area1 + area3
 		area1 = area1 + Utils.getDensity(terrain, 0, x, z, lx, lz, hx, hz)
 		area1 = area1 + Utils.getDensity(terrain, 1, x, z, lx, lz, hx, hz)
 		if area2 * 0.999 <= area1 and courseplay:combine_allows_tractor(self, combine) then
