@@ -262,6 +262,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 								else
 									if workTool.setIsTurnedOn ~= nil and workTool.isTurnedOn then
 										workTool:setIsTurnedOn(false, false);
+										self.runOnceStartCourse = false;
 									end;
 									if workTool.setIsPickupDown ~= nil then
 										if self.pickup.isDown == nil or (self.pickup.isDown ~= nil and self.pickup.isDown) then
