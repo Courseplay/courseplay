@@ -79,10 +79,51 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 							workTool:setIsTurnedOn(true, false);
 						end
 					end
+					-- support form Extreme baling balers
+					if workTool.workPos ~= nil then
+						if not workTool.workPos then
+							workTool.workPos = true;			
+							if courseplay:is_BB9090(workTool) then
+								workTool:WorkBB9090(workTool.workPos);
+							elseif courseplay:is_MF2190(workTool) then
+								workTool:WorkMF2190(workTool.workPos);
+							elseif courseplay:is_Fendt12130N(workTool) then
+								workTool:WorkFendt12130N(workTool.workPos);
+							end
+						end
+						workTool:pickUpMode(true)
+						workTool.isTurnedOn = true
+					end
 				end
 				
 				if last_recordnumber == self.stopWork -1  and workTool.isTurnedOn and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
 					workTool:setIsTurnedOn(false, false);
+					-- support form Extreme baling balers
+					if workTool.workPos ~= nil then
+						workTool.isTurnedOn = false
+						workTool:pickUpMode(false)
+						if not workTool.allowTransport and not workTool.isTurnedOn and workTool.workPos and not workTool.emptyBaler and not workTool.unloadBales then
+							workTool.unloadBales = not workTool.unloadBales
+							if courseplay:is_BB9090(workTool) then
+								workTool:UnloadBB9090(workTool.unloadBales);
+							elseif courseplay:is_MF2190(workTool) then
+								workTool:UnloadMF2190(workTool.unloadBales);
+							elseif courseplay:is_Fendt12130N(workTool) then
+								workTool:UnloadFendt12130N(workTool.unloadBales);
+							end
+							workTool.allowTransport = true
+						end;
+						if (not workTool.isTurnedOn) and (not self.pickUpPos) and workTool.allowTransport then	
+							workTool.workPos = false
+							if courseplay:is_BB9090(workTool) then
+								workTool:WorkBB9090(workTool.workPos);
+							elseif courseplay:is_MF2190(workTool) then
+								workTool:WorkMF2190(workTool.workPos);
+							elseif courseplay:is_Fendt12130N(workTool) then
+								workTool:WorkFendt12130N(workTool.workPos);
+							end
+						end
+					end
 				end
 			-- baleloader, copied original code parts				
 			elseif courseplay:is_baleLoader(workTool) or courseplay:isUBT(workTool) then

@@ -41,7 +41,15 @@ end;
 function courseplay:isBigM(workTool)
 	return (SpecializationUtil.hasSpecialization(Steerable, workTool.specializations) or SpecializationUtil.hasSpecialization(steerable, workTool.specializations)) and (SpecializationUtil.hasSpecialization(Mower, workTool.specializations) or SpecializationUtil.hasSpecialization(mower, workTool.specializations));
 end;
-
+function courseplay:is_BB9090(workTool) --is the tool a BB9090?
+	return (courseplay:is_baler(workTool) and SpecializationUtil.hasSpecialization(BB9090, workTool.specializations) or workTool.WorkBB9090 ~= nil);
+end;
+function courseplay:is_MF2190(workTool) --is the tool a MF2190?
+	return (courseplay:is_baler(workTool) and SpecializationUtil.hasSpecialization(MF2190, workTool.specializations) or workTool.WorkMF2190 ~= nil);
+end;
+function courseplay:is_Fendt12130N(workTool) --is the tool a Fendt12130N?
+	return (courseplay:is_baler(workTool) and SpecializationUtil.hasSpecialization(Fendt12130N, workTool.specializations) or workTool.WorkFendt12130N ~= nil);
+end;
 -- update implements to find attached tippers
 function courseplay:update_tools(self, tractor_or_implement)
 	--steerable (tractor, combine etc.)
