@@ -4,19 +4,15 @@ function courseplay:start(self)
 	if self.maxnumber < 1 then
 		return
 	end
-	
-	if self.setManualIgnitionMode ~= nil then
-	  self:setManualIgnitionMode(2)
-	end
-	
-	
-	 --Manual ignition
-    if self.ignitionKey ~= nil and self.allowedIgnition ~= nil and self.invokeIgnition ~= nil and not self.isMotorStarted then
-        courseplay:debug(string.format("%s: has manualIgnition, isMotorStarted==%s, ignitionKey=%s, allowedIgnition=%s, starting motor [self:invokeIgnition(true)]", self.name, tostring(self.isMotorStarted), tostring(self.ignitionKey), tostring(self.allowedIgnition)),3);
+	print("self.ignitionMode: "..tostring(self.ignitionMode))
+	--Manual ignition
+	if self.setManualIgnitionMode ~= nil and self.ignitionMode ~= 2 then
+	  	self:setManualIgnitionMode(2)
+	elseif self.ignitionKey ~= nil and self.allowedIgnition ~= nil and self.invokeIgnition ~= nil and not self.isMotorStarted then
 		self.ignitionKey = true;
-        self.allowedIgnition = true;
-    end;
-    --END manual ignition
+        	self.allowedIgnition = true;
+	end
+	--END manual ignition
 	
 	if self.orgRpm == nil then
 		self.orgRpm = {}
