@@ -165,16 +165,16 @@ end
 end;
 
 function courseplay:handleSpecialTools(workTool,unfold,lower,turnOnOff,allowedToDrive,spare2,spare3)
-	
-	if workTool.name == "Claas Liner 4000" then
+	-- Claas liner 4000
+	if Utils.endsWith(workTool.configFileName, "liner4000.xml") then
 		local isReadyToWork = workTool.rowerFoldingParts[1].isDown;
 		local manualReset = false
-		if workTool.unfoldOrderIsGiven == nil then
-			workTool.unfoldOrderIsGiven = false
-			workTool.foldOrderIsGiven = false
+		if workTool.cp.unfoldOrderIsGiven == nil then
+			workTool.cp.unfoldOrderIsGiven = false
+			workTool.cp.foldOrderIsGiven = false
 		end
 		if unfold == false and isReadyToWork then
-			workTool.foldOrderIsGiven = true
+			workTool.cp.foldOrderIsGiven = true
 		end
 		--lower
 		if workTool.foldAnimTime > 0.99 then
@@ -182,27 +182,27 @@ function courseplay:handleSpecialTools(workTool,unfold,lower,turnOnOff,allowedTo
 				for k, part in pairs(workTool.rowerFoldingParts) do
 					workTool:setIsArmDown(k, lower);
 				end;
-				if workTool.unfoldOrderIsGiven or workTool.foldOrderIsGiven then
+				if workTool.cp.unfoldOrderIsGiven or workTool.cp.foldOrderIsGiven then
 					--turn OnOff
 					workTool:setIsTurnedOn(turnOnOff);
-					workTool.unfoldOrderIsGiven = false
+					workTool.cp.unfoldOrderIsGiven = false
 				end
 			end
 		else
 			allowedToDrive = false
 		end
 		--unfold			
-		if (unfold and workTool.isTransport) or (workTool.foldOrderIsGiven and isReadyToWork)  then
+		if (unfold and workTool.isTransport) or (workTool.cp.foldOrderIsGiven and isReadyToWork)  then
 			workTool:setTransport(not unfold)
-			if workTool.isReadyToTransport or workTool.foldOrderIsGiven then
+			if workTool.isReadyToTransport or workTool.cp.foldOrderIsGiven then
 				if workTool.foldMoveDirection > 0.1 or (workTool.foldMoveDirection == 0 and workTool.foldAnimTime > 0.5) then
 					workTool:setFoldDirection(-1)	
 				else
 					workTool:setFoldDirection(1)
 				end;
-				workTool.foldOrderIsGiven = false
+				workTool.cp.foldOrderIsGiven = false
 			end;
-			workTool.unfoldOrderIsGiven = true
+			workTool.cp.unfoldOrderIsGiven = true
 			
 		end
 		if workTool.foldAnimTime == 0 then
@@ -212,12 +212,14 @@ function courseplay:handleSpecialTools(workTool,unfold,lower,turnOnOff,allowedTo
 	end
 
 	--Tebbe HS180 (Maurus)
-	if workTool.setDoorHigh ~= nil and workTool.doorhigh ~= nil then
+	if Utils.endsWith(workTool.configFileName, "TebbeHS180.xml") then
 		local flap = 0
-		if turnOnOff then 
-			flap = 3
+		if workTool.setDoorHigh ~= nil and workTool.doorhigh ~= nil then
+			if turnOnOff then 
+				flap = 3
+			end
+			workTool:setDoorHigh(flap);
 		end
-		workTool:setDoorHigh(flap);
 		if workTool.setFlapOpen ~= nil and workTool.flapopen then
 			workTool:setFlapOpen(turnOnOff)
 		end
