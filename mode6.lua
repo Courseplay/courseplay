@@ -216,7 +216,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 
 			-- other worktools, tippers, e.g. forage wagon	
 			else
-				if workArea and fill_level ~= 100 and ((self.abortWork == nil) or (self.abortWork ~= nil and last_recordnumber == self.abortWork) or (self.runOnceStartCourse)) and self.cp.turnStage == 0  then
+				if workArea and fill_level ~= 100 and ((self.abortWork == nil) or (self.abortWork ~= nil and last_recordnumber == self.abortWork) or (self.runOnceStartCourse)) and self.cp.turnStage == 0  and not returnToStartPoint then
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(workTool,true,true,true,allowedToDrive)
 					if allowedToDrive then
 						if not specialTool then
@@ -249,31 +249,20 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 								end;
 							
 								--turn on
-								if not returnToStartPoint then
-									if workTool.setIsTurnedOn ~= nil and not workTool.isTurnedOn then
-										workTool:setIsTurnedOn(true, false);
-									end;
+								if workTool.setIsTurnedOn ~= nil and not workTool.isTurnedOn then
+									workTool:setIsTurnedOn(true, false);
+									self.runOnceStartCourse = false
+								end;
 
-									if workTool.setIsPickupDown ~= nil then
-										if self.pickup.isDown == nil or (self.pickup.isDown ~= nil and not self.pickup.isDown) then
-											workTool:setIsPickupDown(true, false);
-										end;
-									end;
-								else
-									if workTool.setIsTurnedOn ~= nil and workTool.isTurnedOn then
-										workTool:setIsTurnedOn(false, false);
-										self.runOnceStartCourse = false;
-									end;
-									if workTool.setIsPickupDown ~= nil then
-										if self.pickup.isDown == nil or (self.pickup.isDown ~= nil and self.pickup.isDown) then
-											workTool:setIsPickupDown(false, false);
-										end;
+								if workTool.setIsPickupDown ~= nil then
+									if self.pickup.isDown == nil or (self.pickup.isDown ~= nil and not self.pickup.isDown) then
+										workTool:setIsPickupDown(true, false);
 									end;
 								end;
 							end;
 						end;
 					end
-				elseif not workArea or self.abortWork ~= nil or self.loaded or last_recordnumber == self.stopWork then
+				elseif not workArea or self.abortWork ~= nil or self.loaded or last_recordnumber == self.stopWork or returnToStartPoint then
 					workSpeed = 0;
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(workTool,false,false,false,allowedToDrive)
 					if not specialTool then
