@@ -4,7 +4,6 @@ function courseplay:start(self)
 	if self.maxnumber < 1 then
 		return
 	end
-	print("self.ignitionMode: "..tostring(self.ignitionMode))
 	--Manual ignition
 	if self.setManualIgnitionMode ~= nil and self.ignitionMode ~= 2 then
 	  	self:setManualIgnitionMode(2)

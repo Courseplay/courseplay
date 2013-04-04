@@ -228,6 +228,22 @@ function courseplay:drive(self, dt)
 	-- direction of tractor
 	local nx, ny, nz = localDirectionToWorld(self.cp.DirectionNode, 0, 0, 1)
 	
+	--RulModiä
+	if self.RulMode == 1 then
+		if (self.sl == 3 and not self.beaconLightsActive) or (self.sl ~= 3 and self.beaconLightsActive) or (self.ai_mode == 7 and self.isAIThreshing and self.beaconLightsActive)  then
+			self:setBeaconLightsVisibility(not self.beaconLightsActive);
+		end
+	elseif self.RulMode == 2 then
+		if (self.drive and not self.beaconLightsActive) or (not self.drive and self.beaconLightsActive) then
+			self:setBeaconLightsVisibility(not self.beaconLightsActive);
+		end
+	elseif self.RulMode == 3 then
+		if self.beaconLightsActive then
+			self:setBeaconLightsVisibility(false);
+		end
+	end
+
+
 	-- the tipper that is currently loaded/unloaded
 	local active_tipper = nil
 
@@ -557,20 +573,6 @@ function courseplay:drive(self, dt)
 		end
 	end
 
-
-	if self.RulMode == 1 then
-		if (self.sl == 3 and not self.beaconLightsActive) or (self.sl ~= 3 and self.beaconLightsActive) or (self.ai_mode == 7 and self.isAIThreshing and self.beaconLightsActive)  then
-			self:setBeaconLightsVisibility(not self.beaconLightsActive);
-		end
-	elseif self.RulMode == 2 then
-		if (self.drive and not self.beaconLightsActive) or (not self.drive and self.beaconLightsActive) then
-			self:setBeaconLightsVisibility(not self.beaconLightsActive);
-		end
-	elseif self.RulMode == 3 then
-		if self.beaconLightsActive then
-			self:setBeaconLightsVisibility(false);
-		end
-	end
 
 	-- Speed Control
 	
