@@ -505,7 +505,7 @@ function courseplay:drive(self, dt)
 
 	
 	if self.Waypoints[self.recordnumber].speed ~= nil and self.use_speed and self.recordnumber > 3 then
-		refSpeed = self.Waypoints[self.recordnumber].speed
+		refSpeed = math.max(self.Waypoints[self.recordnumber].speed,3/3600)
 	end
 
 	if slowDownRev and refSpeed > self.turn_speed then
