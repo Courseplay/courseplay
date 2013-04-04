@@ -730,8 +730,8 @@ function courseplay:setSpeed(self, refSpeed, sl)
 		if refSpeed*3600 == 1 then
 			refSpeed = 1.6 / 3600
 		end
-		local trueRpm = self.motor.lastMotorRpm*100/self.orgRpm[3]
-		local targetRpm = self.motor.maxRpm[sl]*100/self.orgRpm[3]	
+		local trueRpm = self.motor.lastMotorRpm*100/self.cp.orgRpm[3]
+		local targetRpm = self.motor.maxRpm[sl]*100/self.cp.orgRpm[3]	
 		local newLimit = 0
 		local oldLimit = 0 
 		if self.ESLimiter ~= nil then 
@@ -790,7 +790,7 @@ function courseplay:setSpeed(self, refSpeed, sl)
 			
 			-- don't drive faster/slower than you can!
 			if maxRpm > self.orgRpm[3] then
-				maxRpm = self.orgRpm[3]
+				maxRpm = self.cp.orgRpm[3]
 			elseif maxRpm < self.motor.minRpm then
 				maxRpm = self.motor.minRpm
 			end

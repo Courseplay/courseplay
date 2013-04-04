@@ -14,10 +14,16 @@ function courseplay:start(self)
 	--END manual ignition
 	
 	if self.orgRpm == nil then
-		self.orgRpm = {}
-		self.orgRpm[1] = self.motor.maxRpm[1]
-		self.orgRpm[2] = self.motor.maxRpm[2]
-		self.orgRpm[3] = self.motor.maxRpm[3]
+		self.cp.orgRpm = {}
+		self.cp.orgRpm[1] = self.motor.maxRpm[1]
+		self.cp.orgRpm[2] = self.motor.maxRpm[2]
+		self.cp.orgRpm[3] = self.motor.maxRpm[3]
+	end
+	if self.ESLimiter ~= nil and self.ESLimiter.maxRPM[5] ~= nil then
+		self.cp.ESL = {}
+		self.cp.ESL[1] = self.ESLimiter.percentage[2]
+		self.cp.ESL[2] = self.ESLimiter.percentage[3]
+		self.cp.ESL[3] = self.ESLimiter.percentage[4]
 	end
 	self.CPnumCollidingVehicles = 0;
 	self.traffic_vehicle_in_front = nil
@@ -143,9 +149,14 @@ function courseplay:stop(self)
 	self.deactivateOnLeave = true
 	self.disableCharacterOnLeave = true
 	if self.orgRpm then
-		self.motor.maxRpm[1] = self.orgRpm[1]
-		self.motor.maxRpm[2] = self.orgRpm[2]
-		self.motor.maxRpm[3] = self.orgRpm[3]
+		self.motor.maxRpm[1] = self.cp.orgRpm[1]
+		self.motor.maxRpm[2] = self.cp.orgRpm[2]
+		self.motor.maxRpm[3] = self.cp.orgRpm[3]
+	end
+	if self.ESLimiter ~= nil and self.ESLimiter.maxRPM[5] ~= nil then
+		self.ESLimiter.percentage[2] =	self.cp.ESL[1]
+		self.ESLimiter.percentage[3] =	self.cp.ESL[2]
+		self.ESLimiter.percentage[4] =	self.cp.ESL[3]  
 	end
 	self.record = false
 	self.record_pause = false
