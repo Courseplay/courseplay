@@ -14,7 +14,7 @@ CPDebugLevel = 0
 working_course_players = {};
 
 function initialize_courseplay()
-	print("inizialized courseplay files")
+	print("Initialized Courseplay files")
 	source(courseplay_path .. "helpers.lua")
 	source(courseplay_path .. "turn.lua")
 
