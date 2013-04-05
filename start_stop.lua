@@ -4,14 +4,17 @@ function courseplay:start(self)
 	if self.maxnumber < 1 then
 		return
 	end
-	--Manual ignition
-	if self.setManualIgnitionMode ~= nil and self.ignitionMode ~= 2 then
-	  	self:setManualIgnitionMode(2)
-	elseif self.ignitionKey ~= nil and self.allowedIgnition ~= nil and self.invokeIgnition ~= nil and not self.isMotorStarted then
+	
+	--Manual ignition v3.01/3.04 (self-installing)
+	if self.setManualIgnitionMode ~= nil and self.ignitionMode ~= nil and self.ignitionMode ~= 2 then
+		self:setManualIgnitionMode(2);
+		
+	--Manual ignition v3.x (in steerable as lua)
+	elseif self.ignitionKey ~= nil and self.allowedIgnition ~= nil and not self.isMotorStarted then
 		self.ignitionKey = true;
-        	self.allowedIgnition = true;
-	end
-	--END manual ignition
+        self.allowedIgnition = true;
+    end;
+    --END manual ignition
 	
 	if self.cp.orgRpm == nil then
 		self.cp.orgRpm = {}
@@ -25,6 +28,7 @@ function courseplay:start(self)
 		self.cp.ESL[2] = self.ESLimiter.percentage[3]
 		self.cp.ESL[3] = self.ESLimiter.percentage[4]
 	end
+
 	self.CPnumCollidingVehicles = 0;
 	self.traffic_vehicle_in_front = nil
 	--self.numToolsCollidingVehicles = {};

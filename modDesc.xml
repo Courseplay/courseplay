@@ -1367,6 +1367,55 @@ Italský překlad: JD7530
 			<it>No</it>
 			<cz>Ne</cz>
 		</text>
+		<text name="CPheadland">
+			<de>Vorgewende</de>
+			<en>Headland</en>
+			<es>Cabecera</es> <!-- !!! -->
+			<fr>Fourrière</fr> <!-- !!! -->
+			<it>Headland</it> <!-- !!! -->
+			<cz>Úvrať</cz>
+		</text>
+		<text name="CPheadlandLane">
+			<de>Bahn</de>
+			<en>lane</en>
+			<es>carril</es>
+			<fr>voie</fr> <!-- !!! -->
+			<it>corsia</it> <!-- !!! -->
+			<cz>lane</cz> <!-- !!! -->
+		</text>
+		<text name="CPheadlandLanes">
+			<de>Bahnen</de>
+			<en>lanes</en>
+			<es>carriles</es>
+			<fr>voies</fr> <!-- !!! -->
+			<it>corsie</it> <!-- !!! -->
+			<cz>lanes</cz> <!-- !!! -->
+		</text>
+		<text name="CPdeactivated">
+			<de>deaktiviert</de>
+			<en>deactivated</en>
+			<es>desactivado</es>
+			<fr>désactivé</fr>
+			<it>disattivato</it>
+			<cz>deaktivována</cz>
+		</text>
+		<text name="CPbefore">
+			<de>davor</de>
+			<en>before</en>
+			<es>antes</es>
+			<fr>avant</fr>
+			<it>prima</it> <!-- !!! -->
+			<cz>před</cz> <!-- !!! -->
+		</text>
+		<text name="CPafter">
+			<de>danach</de>
+			<en>after</en>
+			<es>después</es>
+			<fr>après</fr>
+			<it>dopo</it> <!-- !!! -->
+			<cz>po</cz> <!-- !!! -->
+		</text>
+		
 		<text name="CPridgeMarkers">
 			<de>Spurreißer</de>
 			<en>Ridge markers</en>

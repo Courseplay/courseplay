@@ -237,6 +237,9 @@ function courseplay:deal_with_mouse_input(self, func, value)
 	if func == "switchReturnToFirstPoint" then
 		courseplay:switchReturnToFirstPoint(self);
 	end;
+	if func == "setHeadlandLanes" then
+		courseplay:setHeadlandLanes(self, value);
+	end;
 	if func == "generateCourse" then
 		courseplay:generateCourse(self);
 	end;

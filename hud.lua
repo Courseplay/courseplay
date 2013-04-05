@@ -418,11 +418,33 @@ function courseplay:loadHud(self)
 				self.hudpage[8][2][4] = courseplay:get_locale(self, "CPno");
 			end;
 
-			--line 5 = generate course action
+			--line 5 = headland
+			self.hudpage[8][1][5] = courseplay:get_locale(self, "CPheadland");
+			if self.cp.headland.numLanes == 0 then
+				self.hudpage[8][2][5] = courseplay:get_locale(self, "CPdeactivated");
+			elseif self.cp.headland.numLanes ~= 0 then
+				local lanesString;
+				local order;
+				
+				if math.abs(self.cp.headland.numLanes) == 1 then
+					lanesStr = courseplay:get_locale(self, "CPheadlandLane");
+				else
+					lanesStr = courseplay:get_locale(self, "CPheadlandLanes");
+				end;
+				if self.cp.headland.numLanes > 0 then
+					order = courseplay:get_locale(self, "CPbefore");
+				else
+					order = courseplay:get_locale(self, "CPafter");
+				end;
+
+				self.hudpage[8][2][5] = string.format("%d %s (%s)", math.abs(self.cp.headland.numLanes), lanesStr, order);
+			end;
+
+			--line 6 = generate course action
 			if self.cp.hasValidCourseGenerationData then
-				self.hudpage[8][1][5] = courseplay:get_locale(self, "CourseGenerate");
+				self.hudpage[8][1][6] = courseplay:get_locale(self, "CourseGenerate");
 			else
-				self.hudpage[8][1][5] = "";
+				self.hudpage[8][1][6] = "";
 			end;
 		end;
 	end -- end if show_hud

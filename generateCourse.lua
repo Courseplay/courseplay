@@ -1,9 +1,9 @@
 --[[
 @title:     Course Generation for Courseplay
-@author:    Jakob Tischler
-@version:   0.5
+@authors:   Jakob Tischler, skyDancer
+@version:   0.6
 @date:      09 Feb 2013
-@updated:   08 Mar 2013
+@updated:   04 Apr 2013
 
 @copyright: No reproduction, usage or copying without the explicit permission by the author allowed.
 
@@ -17,16 +17,11 @@ TODO:
 ]]
 
 function courseplay:generateCourse(self)
-	print("----- ----- ----- -----");
-	print(string.format("generateCourse() called for %s", tostring(self.current_course_name)));
-	print("     *     *     *     ");
+	courseplay:debug(string.format("generateCourse() called for %s", tostring(self.current_course_name)), 1);
 
 	-- Make sure everything's set and in order
-	if self.Waypoints == nil or table.getn(self.Waypoints) < 5 
-	or self.cp.hasStartingCorner == nil 
-	or self.cp.hasStartingDirection == nil 
-	or self.cp.startingCorner == 0 
-	or self.cp.startingDirection == 0 then
+	courseplay:validateCourseGenerationData(self);
+	if not self.cp.hasValidCourseGenerationData then
 		return;
 	end;
 	
@@ -43,7 +38,7 @@ function courseplay:generateCourse(self)
 	courseplay:reset_course(self);
 	
 	---#################################################################
-	-- (1) SET UP DIMENSIONS, CORNERS AND DIRECTIONS --
+	-- (1) SET UP CORNERS AND DIRECTIONS --
 	--------------------------------------------------------------------
 	local workWidth = self.toolWorkWidht;
 	local corners = {
@@ -66,20 +61,170 @@ function courseplay:generateCourse(self)
 	local crn = corners[self.cp.startingCorner];
 	local dir = directions[self.cp.startingDirection];
 	
-	courseplay:getAutoTurnradius(self, table.getn(self.attachedImplements) > 0);
-	print(string.format("turn_radius=%f, autoTurnRadius=%f", self.turn_radius, self.autoTurnRadius));
-				
 	
-	--get field dimensions
-	local dimensions = courseplay:calcDimensions(poly.xValues, poly.zValues);
-	print(string.format("minX = %s, maxX = %s", tostring(dimensions.minX), tostring(dimensions.maxX))); --WORKS
-	print(string.format("minZ = %s, maxZ = %s", tostring(dimensions.minZ), tostring(dimensions.maxZ))); --WORKS
-	print(string.format("width = %s, height = %s", tostring(dimensions.width), tostring(dimensions.height))); --WORKS
+	---#################################################################
+	-- (2) HEADLAND
+	--------------------------------------------------------------------
+	if self.cp.headland.numLanes ~= nil and self.cp.headland.numLanes ~= 0 then --we have headland, baby!
+		local clockwise = courseplay:isPolyClockwise(poly.points);
+		if clockwise then
+			self.cp.headland.direction = "clockwise";
+		else
+			self.cp.headland.direction = "counterclockwise";
+		end;
+		
+		if self.cp.headland.numLanes > 0 then
+			self.cp.headland.order = "before";
+		elseif self.cp.headland.numLanes < 0 then
+			self.cp.headland.order = "after";
+		end;
+		courseplay:debug(string.format("generateCourse(%i): self.cp.headland.numLanes = %s, self.cp.headland.order = %s", debug.getinfo(1).currentline, tostring(self.cp.headland.numLanes), tostring(self.cp.headland.order)), 2);
+		
+		
+		local numLanes = math.abs(self.cp.headland.numLanes);
+		local fieldEdgePath = poly.points;
+		self.cp.headland.lanes = {};
+
+		for curLane=1, numLanes do
+			local lane = {};
+			local polyLength = table.getn(fieldEdgePath);
+			local fieldEdgePathXvalues, fieldEdgePathZvalues = {}, {};
+			for _,wp in pairs(fieldEdgePath) do
+				table.insert(fieldEdgePathXvalues, wp.cx);
+				table.insert(fieldEdgePathZvalues, wp.cz);
+			end;
+			local width = self.toolWorkWidht;
+			if curLane == 1 then
+				width = self.toolWorkWidht / 2;
+			end;
+			
+			for i=1, polyLength do
+				--print("curLane="..curLane..", i=" .. i);
+				local p1 = fieldEdgePath[i];
+				local p2 = fieldEdgePath[i+1];
+				local p3 = fieldEdgePath[i+2];
+				
+				if i == polyLength - 1 then --penultimate point
+					p2 = fieldEdgePath[i+1];
+					p3 = fieldEdgePath[1];
+				elseif i == polyLength then --last point
+					p2 = fieldEdgePath[1];
+					p3 = fieldEdgePath[2];
+				end;
+				
+				if p1.cx == p2.cx then
+					p2.cx = p2.cx + 0.1;
+					--print(i.." p2.cx == p1.cx, adding 0.1, new="..p2.cx);
+				end;
+				if p1.cz == p2.cz then
+					p2.cz = p2.cz + 0.1;
+					--print(i.." p2.cz == p1.cz, adding 0.1, new="..p2.cz);
+				end;
+				if p2.cx == p3.cx then
+					p3.cx = p3.cx + 0.1;
+					--print(i.." p3.cx == p2.cx, adding 0.1, new="..p3.cx);
+				end;
+				if p2.cz == p3.cz then
+					p3.cz = p3.cz + 0.1;
+					--print(i.." p3.cz == p2.cz, adding 0.1, new="..p3.cz);
+				end;
+				
+				local x,z = courseplay:getOffsetCornerPoint(self, p1, p2, p3, width);
+				--print(string.format("curLane=%d, point=%d, getOffsetCornerPoint: x=%s y=%s", curLane, i, tostring(x), tostring(z)));
+				if courseplay:pointInPolygon_v2(fieldEdgePath, fieldEdgePathXvalues, fieldEdgePathZvalues, x, z) then
+					--print(string.format("curLane=%d, point=%d, point is in fieldEdgePath", curLane, i));
+					local pos = {
+						cx = x,
+						cz = z,
+					};
+					
+					table.insert(lane, pos);
+				end;
+			end; --END for i in poly
+				
+			courseplay:debug(string.format("generateCourse(%i): #lane %s = %s", debug.getinfo(1).currentline, tostring(curLane), tostring(table.getn(lane))), 2);
+			local fixedLane = courseplay:removeIntersections(lane, 7); --DEFAULT: 7 // TEST: 12
+			courseplay:debug(string.format("generateCourse(%i): #fixedLane = %s", debug.getinfo(1).currentline, tostring(table.getn(fixedLane))), 2);
+			
+			if curLane == 1 then
+				repeat
+					change = false;
+					local lastPoint = table.getn(fixedLane);
+					local distance = courseplay:distance(fixedLane[1].cx, fixedLane[1].cz, fixedLane[lastPoint].cx, fixedLane[lastPoint].cz);
+					if distance <= self.toolWorkWidht then --TODO: self.toolWorkWidht or self.toolWorkWidht/2 ???
+						table.remove(fixedLane, lastPoint);
+						change = true;
+					end
+				until change == false;
+			end;
+			courseplay:debug(string.format("generateCourse(%i): #fixedLane (after distance checks) = %s", debug.getinfo(1).currentline, tostring(table.getn(fixedLane))), 2);
+
+			
+			local laneRidgeMarker = ridgeMarker["none"];
+			if numLanes == 2 then
+				if self.cp.headland.order == "before" and curLane == 1 then
+					if self.cp.headland.direction == "clockwise" then
+						laneRidgeMarker = ridgeMarker["right"];
+					elseif self.cp.headland.direction == "counterclockwise" then
+						laneRidgeMarker = ridgeMarker["left"];
+					end;
+				elseif self.cp.headland.order == "after" and curLane == 2 then
+					if self.cp.headland.direction == "clockwise" then
+						laneRidgeMarker = ridgeMarker["left"];
+					elseif self.cp.headland.direction == "counterclockwise" then
+						laneRidgeMarker = ridgeMarker["right"];
+					end;
+				end;
+			end;
+			
+			for j=1, table.getn(fixedLane) do
+				local p = fixedLane[j];
+				p.angle = 0;
+				p.wait = false;
+				p.rev = false;
+				p.crossing = false;
+				p.generated = true;
+				p.lane = curLane * -1; --negative lane = headland
+				p.firstInLane = false;
+				p.turn = nil;
+				p.turnStart = false;
+				p.turnEnd = false;
+				p.ridgeMarker = laneRidgeMarker;
+			end;
+			
+			fieldEdgePath = fixedLane;
+			courseplay:debug(string.format("generateCourse(%i): inserting fixedLane #%s into headland.lanes", debug.getinfo(1).currentline, tostring(curLane)), 2);
+			table.insert(self.cp.headland.lanes, fixedLane);
+		end; --END for curLane in numLanes
+		
+		
+		--base field work course on headland path
+		local numCreatedLanes = table.getn(self.cp.headland.lanes);
+		if numCreatedLanes > 0 then
+			poly.points = self.cp.headland.lanes[numCreatedLanes];
+			poly.numPoints = table.getn(poly.points);
+		end;
+
+		courseplay:debug(string.format("generateCourse(%i):  #self.cp.headland.lanes = %s", debug.getinfo(1).currentline, tostring(table.getn(self.cp.headland.lanes))), 2);
+		--print(tableShow(self.cp.headland.lanes, "self.cp.headland.lanes"));
+	end; --END if self.cp.headland.numLanes ~= 0
+	
 	
 	
 	---#################################################################
-	-- (2) ALL PATH POINTS
+	-- (3) DIMENSIONS, ALL PATH POINTS
 	--------------------------------------------------------------------
+	--reset x/z values and get field dimensions
+	poly.xValues, poly.zValues = {}, {};
+	for _,wp in pairs(poly.points) do
+		table.insert(poly.xValues, wp.cx);
+		table.insert(poly.zValues, wp.cz);
+	end;
+	local dimensions = courseplay:calcDimensions(poly.xValues, poly.zValues);
+	--print(string.format("minX = %s, maxX = %s", tostring(dimensions.minX), tostring(dimensions.maxX))); --WORKS
+	--print(string.format("minZ = %s, maxZ = %s", tostring(dimensions.minZ), tostring(dimensions.maxZ))); --WORKS
+	courseplay:debug(string.format("generateCourse(%i): width = %s, height = %s", debug.getinfo(1).currentline, tostring(dimensions.width), tostring(dimensions.height)), 2); --WORKS
+
 	local numLanes, pointsPerLane = 0, 0;
 	local curLaneDir;
 	local pointDistance = 5;
@@ -92,7 +237,7 @@ function courseplay:generateCourse(self)
 		if numLanes * workWidth < dimensions.width then
 			numLanes = numLanes + 1;
 		end;
-		--print(string.format("numLanes = %s, pointsPerLane = %s", tostring(numLanes), tostring(pointsPerLane))); --WORKS
+		courseplay:debug(string.format("generateCourse(%i): numLanes = %s, pointsPerLane = %s", debug.getinfo(1).currentline, tostring(numLanes), tostring(pointsPerLane)), 2); --WORKS
 		
 		for curLane=1, numLanes do
 			--Lane directions
@@ -164,7 +309,7 @@ function courseplay:generateCourse(self)
 				
 				--is point in field?
 				--if courseplay:pointInPolygon(poly.points, curPoint.x, curPoint.z) then
-				if courseplay:pointInPolygon_v2(poly, curPoint.x, curPoint.z) then
+				if courseplay:pointInPolygon_v2(poly.points, poly.xValues, poly.zValues, curPoint.x, curPoint.z) then
 					--print(string.format("Point %d (lane %d, point %d) - x=%.1f, z=%.1f - in Poly - adding to pathPoints", curPoint.num, curLane, a, curPoint.x, curPoint.z));
 					table.insert(pathPoints, curPoint);
 				else
@@ -180,7 +325,7 @@ function courseplay:generateCourse(self)
 		if numLanes * workWidth < dimensions.height then
 			numLanes = numLanes + 1;
 		end;
-		print(string.format("numLanes = %s, pointsPerLane = %s", tostring(numLanes), tostring(pointsPerLane))); --WORKS
+		courseplay:debug(string.format("generateCourse(%i): numLanes = %s, pointsPerLane = %s", debug.getinfo(1).currentline, tostring(numLanes), tostring(pointsPerLane)), 2); --WORKS
 		
 		for curLane=1, numLanes do
 			--Lane directions
@@ -252,7 +397,7 @@ function courseplay:generateCourse(self)
 				
 				--is point in field?
 				--if courseplay:pointInPolygon(poly.points, curPoint.x, curPoint.z) then
-				if courseplay:pointInPolygon_v2(poly, curPoint.x, curPoint.z) then
+				if courseplay:pointInPolygon_v2(poly.points, poly.xValues, poly.zValues, curPoint.x, curPoint.z) then
 					--print(string.format("Point %d (lane %d, point %d) - x=%.1f, z=%.1f - in Poly - adding to pathPoints", curPoint.num, curLane, a, curPoint.x, curPoint.z));
 					table.insert(pathPoints, curPoint);
 				else
@@ -263,10 +408,12 @@ function courseplay:generateCourse(self)
 	end; --END East or West
 	
 	
-	---###########################################################################
-	-- (3) CHECK PATH LANES FOR VALID START AND END POINTS and FILL self.Waypoints
-	------------------------------------------------------------------------------
+	---############################################################################
+	-- (4) CHECK PATH LANES FOR VALID START AND END POINTS and FILL fieldWorkCourse
+	-------------------------------------------------------------------------------
+	local fieldWorkCourse = {};
 	local numPoints = table.getn(pathPoints);
+	
 	for i=1, numPoints do
 		local cp = pathPoints[i];   --current
 		local np = pathPoints[i+1]; --next
@@ -302,7 +449,7 @@ function courseplay:generateCourse(self)
 			cx = cp.x, 
 			cz = cp.z,
 			angle = angleDeg,
-			wait = i == 1 or (i == numPoints and not self.cp.returnToFirstPoint),
+			wait = false, --i == 1 or (i == numPoints and not self.cp.returnToFirstPoint), --will be set to true for first and last after all is set and done
 			rev = false, 
 			crossing = false,
 			lane = cp.lane,
@@ -336,7 +483,7 @@ function courseplay:generateCourse(self)
 				newFirstInLane.firstInLane = true;				
 				newFirstInLane.turn = point.turn;
 				newFirstInLane.turnStart = false;
-				newFirstInLane.turnEnd = true;
+				newFirstInLane.turnEnd = i > 1 --true;
 				newFirstInLane.ridgeMarker = 0;
 				newFirstInLane.generated = true;
 				
@@ -352,25 +499,21 @@ function courseplay:generateCourse(self)
 		if cp.lastInLane and i ~= numPoints then
 			--North
 			if cp.laneDir == "N" then
-			--if math.floor(angleDeg) == 90 then
 				if np.x < cp.x then point.turn = "left" end;
 				if np.x > cp.x then point.turn = "right" end;
 				
 			--East
 			elseif cp.laneDir == "E" then
-			--elseif math.floor(angleDeg) == 0 then
 				if np.z < cp.z then point.turn = "left" end;
 				if np.z > cp.z then point.turn = "right" end;
 			
 			--South
 			elseif cp.laneDir == "S" then
-			--elseif math.floor(angleDeg) == -90 or math.floor(angleDeg) == 270 then
 				if np.x < cp.x then point.turn = "right" end;
 				if np.x > cp.x then point.turn = "left" end;
 			
 			--West
 			elseif cp.laneDir == "W" then
-			--elseif math.floor(angleDeg) == -180 or math.floor(angleDeg) == 180 then
 				if np.z < cp.z then point.turn = "right" end;
 				if np.z > cp.z then point.turn = "left" end;
 			end;
@@ -397,7 +540,7 @@ function courseplay:generateCourse(self)
 				newLastInLane.laneDir = point.laneDir;
 				newLastInLane.lastInLane = true;
 				newLastInLane.turn = point.turn;
-				newLastInLane.turnStart = true;
+				newLastInLane.turnStart = i < numPoints --true;
 				newLastInLane.turnEnd = false;
 				newLastInLane.ridgeMarker = 0;
 				newLastInLane.generated = true;
@@ -412,42 +555,109 @@ function courseplay:generateCourse(self)
 		end; --END cp.lastInLane
 
 		if newFirstInLane ~= nil then
-			table.insert(self.Waypoints, newFirstInLane);
+			table.insert(fieldWorkCourse, newFirstInLane);
 		end;
 		
-		table.insert(self.Waypoints, point);
+		table.insert(fieldWorkCourse, point);
 		
 		if newLastInLane ~= nil then
-			table.insert(self.Waypoints, newLastInLane);
+			table.insert(fieldWorkCourse, newLastInLane);
 		end;
 		
 	end; --END for i in numPoints
 	
 	if self.cp.returnToFirstPoint then
-		self.Waypoints[table.getn(self.Waypoints)].wait = false;
+		fieldWorkCourse[table.getn(fieldWorkCourse)].wait = false;
 		
 		for b=5, 1, -1 do
-			local origPathPoint = self.Waypoints[b];
+			local origPathPoint = fieldWorkCourse[b];
 			
 			local point = {
 				cx = origPathPoint.cx, 
 				cz = origPathPoint.cz,
 				angle = courseplay:invertAngleDeg(origPathPoint.angle),
-				wait = b == 1,
-				rev = false, 
+				wait = false, --b == 1,
+				rev = false,
 				crossing = false,
 				lane = 1,
 				turnStart = false,
 				turnEnd = false,
 				ridgeMarker = 0,
 				generated = true
-
 			};
-			table.insert(self.Waypoints, point);
+			table.insert(fieldWorkCourse, point);
 		end;
 	end;
 	
+	
+	
+	---############################################################################
+	-- (5) ROTATE HEADLAND COURSES
+	-------------------------------------------------------------------------------
+	local numHeadlandLanesCreated = 0;
+	if math.abs(self.cp.headland.numLanes) > 0 then
+		numHeadlandLanesCreated = table.getn(self.cp.headland.lanes);
+		if numHeadlandLanesCreated > 0 then
+			if self.cp.headland.order == "before" then --each headland lanes' first point is closest to first fieldwork course point
+			
+				for i=1, numHeadlandLanesCreated do
+					local lane = self.cp.headland.lanes[i];
+					local closest = courseplay:closestPolyPoint(lane, fieldWorkCourse[1].cx, fieldWorkCourse[1].cz);
+					courseplay:debug(string.format("[before] rotating headland lane=%d, closest=%s", i, tostring(closest)), 2);
+					self.cp.headland.lanes[i] = courseplay:rotateTable(lane, table.getn(lane) - (closest-1));
+					--print(tableShow(self.cp.headland.lanes[i], "rotated headland lane "..i));
+				end;
+			elseif self.cp.headland.order == "after" then --each headland lanes' first point is closest to last fieldwork course point
+				local lastFieldworkPoint = fieldWorkCourse[table.getn(fieldWorkCourse)];
+				--print(tableShow(lastFieldWorkPoint, "lastFieldWorkPoint")); --TODO: is nil - whyyyyy?
+				local headlandLanes = {}
+				for i=numHeadlandLanesCreated, 1, -1 do
+					local lane = self.cp.headland.lanes[i];
+					local closest = courseplay:closestPolyPoint(lane, lastFieldworkPoint.cx, lastFieldworkPoint.cz); --TODO: works, but how if lastFieldWorkPoint is nil???
+					courseplay:debug(string.format("[after] rotating headland lane=%d, closest=%s", i, tostring(closest)), 2);
+					table.insert(headlandLanes, courseplay:rotateTable(lane, table.getn(lane) - (closest-1)));
+				end;
+				
+				self.cp.headland.lanes = nil;
+				self.cp.headland.lanes = {};
+				self.cp.headland.lanes = headlandLanes;
+				--print(tableShow(self.cp.headland.lanes, "rotated headland lanes"));
+			end;
+		end;
+	end;
+	
+
+	
+	---############################################################################
+	-- (6) CONCATENATE HEADLAND COURSE and FIELDWORK COURSE
+	-------------------------------------------------------------------------------
+	self.Waypoints = {};
+	if numHeadlandLanesCreated > 0 then
+		if self.cp.headland.order == "before" then
+			for i=1, table.getn(self.cp.headland.lanes) do
+				self.Waypoints = tableConcat(self.Waypoints, self.cp.headland.lanes[i]);
+			end;
+			self.Waypoints = tableConcat(self.Waypoints, fieldWorkCourse);
+		elseif self.cp.headland.order == "after" then
+			self.Waypoints = tableConcat(self.Waypoints, fieldWorkCourse);
+			for i=1, table.getn(self.cp.headland.lanes) do
+				self.Waypoints = tableConcat(self.Waypoints, self.cp.headland.lanes[i]);
+			end;
+		end;
+	else
+		self.Waypoints = fieldWorkCourse;
+	end;
+
+	
+	
+	---############################################################################
+	-- (7) FINAL COURSE DATA
+	-------------------------------------------------------------------------------
 	self.maxnumber = table.getn(self.Waypoints)
+	if self.maxnumber == 0 then
+		return;
+	end;
+	
 	self.recordnumber = 1
 	self.play = true
 	self.Waypoints[1].wait = true
@@ -458,8 +668,15 @@ function courseplay:generateCourse(self)
 	self.cp.hasGeneratedCourse = true;
 	courseplay:validateCourseGenerationData(self);
 	courseplay:validateCanSwitchMode(self);
+
+	courseplay:debug(string.format("generateCourse() finished: %d lanes, %d headland lane(s)", numLanes, numLanes), 1);
 end;
 
+
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+-- ############# HELPER FUNCTIONS
 function courseplay:calcDimensions(polyXValues, polyZValues)
 	local dimensions = {};
 	
@@ -474,8 +691,6 @@ function courseplay:calcDimensions(polyXValues, polyZValues)
 	return dimensions;
 end;
 
-------------------------------------------------------------------------
--- ############# HELPER FUNCTIONS
 --raycast
 function courseplay:pointInPolygon(polyPoints, x, z)
 	local intersectionCount = 0;
@@ -503,14 +718,13 @@ function courseplay:pointInPolygon(polyPoints, x, z)
 end;
 
 
---http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
-function courseplay:pointInPolygon_v2(poly, x, z)
+function courseplay:pointInPolygon_v2(polygon, xValues, zValues, x, z) --@src: http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
 	--nvert: Number of vertices in the polygon. Whether to repeat the first vertex at the end.
 	--vertx, verty: Arrays containing the x- and y-coordinates of the polygon's vertices.
 	--testx, testy: X- and y-coordinate of the test point.
 
-	local nvert = poly.numPoints;
-	local vertx, verty = poly.xValues, poly.zValues;
+	local nvert = table.getn(polygon);
+	local vertx, verty = xValues, zValues;
 	local testx, testy = x, z;
 
 	local i, j;
@@ -568,8 +782,7 @@ function courseplay:lineIntersectsPoly(point1, point2, poly)
 	return nil;
 end;
 
---http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect#comment19248344_1968345
-function courseplay:segmentsIntersection(A1x, A1y, A2x, A2y, B1x, B1y, B2x, B2y)
+function courseplay:segmentsIntersection(A1x, A1y, A2x, A2y, B1x, B1y, B2x, B2y) --@src: http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect#comment19248344_1968345
 	local s1_x, s1_y, s2_x, s2_y; 
 	s1_x = A2x - A1x; 
 	s1_y = A2y - A1y; 
@@ -590,3 +803,192 @@ function courseplay:segmentsIntersection(A1x, A1y, A2x, A2y, B1x, B1y, B2x, B2y)
 	--No collision
 	return nil;
 end;
+
+function courseplay:isPolyClockwise(poly) --@src: https://github.com/ChubbRck/Cosmic-Crossfire/blob/master/mathlib.lua#L322
+	local area = 0;
+	local cp, np, fp;
+
+	for i=1, table.getn(poly)-1 do
+		cp = poly[i];
+		np = poly[i+1];
+		fp = poly[1];
+		
+		local pointStart = {
+			x = cp.cx - fp.cx;
+			z = cp.cz - fp.cz;
+		};
+		local pointEnd = {
+			x = np.cx - fp.cx;
+			z = np.cz - fp.cz;
+		};
+		
+		area = area + (pointStart.x * -pointEnd.z) - (pointEnd.x * -pointStart.z);
+	end;
+
+	return (area < 0);
+end;
+
+
+function courseplay:calcOffsetPoint(self, pt1, pt2, offset) 
+	theta = math.atan2(pt2.cz - pt1.cz, pt2.cx - pt1.cx);
+	
+	if self.cp.headland.direction == "clockwise" then
+		theta = theta - math.pi/2;
+	elseif self.cp.headland.direction == "counterclockwise" then
+		theta = theta + math.pi/2;
+	end;
+	
+	x = pt1.cx - math.cos(theta) * offset;
+	z = pt1.cz - math.sin(theta) * offset;
+	return x, z;
+end 
+function courseplay:getOffsetIntercept(self, pt1, pt2, m, offset) 
+	x,z = courseplay:calcOffsetPoint(self, pt1, pt2, offset)
+	return z - m * x;
+end
+function courseplay:getPt(self, pt1, pt2, pt3, offset) 
+	m = (pt2.cz - pt1.cz) / (pt2.cx - pt1.cx);
+	bOffset = courseplay:getOffsetIntercept(self, pt1, pt2, m, offset);
+	mPrime = (pt3.cz - pt2.cz) / (pt3.cx - pt2.cx);
+	bOffsetPrime = courseplay:getOffsetIntercept(self, pt2, pt3, mPrime, offset);
+	newX = (bOffsetPrime - bOffset) / (m - mPrime);
+	newY = m * newX + bOffset;
+	return newX, newY;
+end
+function courseplay:getSlopeAndIntercept(self, pt1, pt2, offset)
+	m = (pt2.cz - pt1.cz) / (pt2.cx - pt1.cx);
+	b = courseplay:getOffsetIntercept(self, pt1, pt2, m, offset);
+	return m, b;
+end
+function courseplay:getOffsetCornerPoint(self, pt1, pt2, pt3, offset)
+	if pt2.cz - pt1.cz == 0.0 then
+		ycoord = pt1.cz - math.cos(math.atan2(0.0, pt2.cx - pt1.cx)) * offset;
+		if pt3.cx - pt2.cx == 0.0 then
+			xcoord = pt2.cx + math.sin(math.atan2(pt3.cz - pt2.cz, 0.0)) * offset;
+		else
+			local m,offsetIntercept = courseplay:getSlopeAndIntercept(self, pt2, pt3, offset);
+			xcoord = (ycoord - offsetIntercept)/m;
+		end;
+	end;
+	if pt2.cx - pt1.cx == 0.0 then
+		xcoord = pt1.cx + math.sin(math.atan2(pt2.cz - pt1.cz, 0.0)) * offset;
+		if (pt3.cz - pt2.cz == 0.0) then
+			ycoord = pt2.cz - math.cos(math.atan2(0.0, pt3.cx - pt2.cx)) * offset;
+		else 
+			local m,offsetIntercept = courseplay:getSlopeAndIntercept(self, pt2, pt3, offset);
+			ycoord = m * xcoord + offsetIntercept;
+		end;
+	end;
+	if (pt2.cz - pt1.cz ~= 0.0 and pt2.cx - pt1.cx ~= 0.0) then
+		if (pt3.cz - pt2.cz == 0.0) then
+			ycoord = pt2.cz - math.cos(math.atan2(0.0, pt3.cx - pt2.cx)) * offset;
+			local m,offsetIntercept = courseplay:getSlopeAndIntercept(self, pt2, pt3, offset);
+			xcoord = (ycoord - offsetIntercept)/m;
+		elseif (pt3.cx - pt2.cx == 0.0) then
+			xcoord = pt2.cx + math.sin(math.atan2(pt3.cz - pt2.cz, 0.0)) * offset;
+			local m,offsetIntercept = courseplay:getSlopeAndIntercept(self, pt2, pt3, offset);
+			ycoord = m * xcoord + offsetIntercept;
+		else 
+			xcoord, ycoord = courseplay:getPt(self, pt1, pt2, pt3, offset);
+		end;
+	end;
+    return xcoord, ycoord;
+end
+
+function courseplay:removeIntersections(poly, lookAhead)
+	local outputList = poly;
+	if lookAhead == nil then
+		lookAhead = 7;
+	end;
+
+	repeat
+		hasChanged = false;
+		for m=3, lookAhead do
+			local inputList = outputList;
+			--print(tableShow(inputList, "inputList"));
+			outputList = {};
+			
+			i = 1;
+			while i <= table.getn(inputList) do
+				local p1 = i;
+				local p2 = i+1;
+				local p3 = i+m-1; 
+				local p4 = i+m;
+				
+				if p2 > table.getn(inputList) then
+					p2 = p2 - table.getn(inputList);
+				end;
+				if p3 > table.getn(inputList) then
+					p3 = p3 - table.getn(inputList);
+				end;
+				if p4 > table.getn(inputList) then
+					p4 = p4 - table.getn(inputList);
+				end;
+
+				local intersect = courseplay:segmentsIntersection(inputList[p1].cx,inputList[p1].cz, inputList[p2].cx,inputList[p2].cz, inputList[p3].cx,inputList[p3].cz, inputList[p4].cx,inputList[p4].cz);
+				if intersect then
+					local p = {
+						cx = intersect.x;
+						cz = intersect.z;
+					};
+					table.insert(outputList, p);
+					i = i+m;
+					hasChanged = true
+				else
+					local p = {
+						cx = inputList[p1].cx;
+						cz = inputList[p1].cz;
+					};
+					table.insert(outputList, p);
+					i = i + 1;
+				end;
+			end; --END while
+		end; --END for m=3,lookAhead
+	until hasChanged == false;
+	return outputList;
+end;
+
+function courseplay:closestPolyPoint(poly, x, z)
+	--local closestDistance = 999999999; --TODO: testing math.huge
+	local closestDistance = math.huge;
+	local closestPointIndex;
+	local rotatedPoly = poly;
+	
+	for i=1, table.getn(poly) do
+		local cp = poly[i];
+		local distanceToPoint = courseplay:distance(cp.cx, cp.cz, x, z);
+		if distanceToPoint < closestDistance then
+			closestDistance = distanceToPoint;
+			closestPointIndex = i;
+		end;
+	end;
+	
+	return closestPointIndex;
+end;
+
+function courseplay:rotateTable(tableArray, inc) --@gist: https://gist.github.com/JakobTischler/b4bb7a4d1c8cf8d2d85f
+	if inc == nil or inc == 0 then
+		return tableArray;
+	end;
+	
+	local t = tableArray;
+	local rot = math.abs(inc);
+
+	if inc < 0 then
+		for i=1,rot do
+			local p = t[1];
+			table.remove(t, 1);
+			table.insert(t, p);
+		end;
+	else
+		for i=1,rot do
+			local n = table.getn(t);
+			local p = t[n];
+			table.remove(t, n);
+			table.insert(t, 1, p);
+		end;
+	end;
+
+	return t;
+end;
+

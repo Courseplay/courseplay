@@ -324,6 +324,9 @@ function courseplay:load(xmlFile)
 	self.cp.hasGeneratedCourse = false;
 	self.cp.hasValidCourseGenerationData = false;
 	self.cp.ridgeMarkersAutomatic = true;
+	self.cp.headland = {
+		numLanes = 0;
+	};
 	
 	self.mouse_enabled = false
 
@@ -335,7 +338,7 @@ function courseplay:load(xmlFile)
 	self.hudInfoBaseOverlay = Overlay:new("hudInfoBaseOverlay", self.infoPanelPath, courseplay.hud.infoBasePosX - 10/1920, courseplay.hud.infoBasePosY - 10/1920, courseplay.hud.infoBaseWidth, courseplay.hud.infoBaseHeight);
 
 	self.min_hud_page = 1
-	if courseplay:is_a_combine(self) then
+	if courseplay:is_a_combine(self) then --TODO: only use one isCombine() function
 		self.min_hud_page = 0
 	end
 
@@ -348,6 +351,7 @@ function courseplay:load(xmlFile)
 			self.hudpage[a][b] = {};
 		end;
 	end;
+
 
 	local w16px = 16/1920;
 	local h16px = 16/1080;
@@ -377,31 +381,20 @@ function courseplay:load(xmlFile)
 	courseplay:register_button(self, 1, "blank.dds", "change_DriveDirection", 1, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[5], lineButtonWidth, 0.015, nil, nil, "self.record=true");
 
 
-	--ai_mode: quickSwitch
+	--Page 1: ai_mode quickSwitch
 	for i=1,8 do
-		--2 blocks of 4
+		--2 columns, 4 rows
 		local icon = string.format("quickSwitch_mode%d.dds", i);
 		local w = w16px * 2;
 		local h = h16px * 2;
+		local numColumns = 2;
 
 		local posX = courseplay.hud.infoBasePosX + 0.25;
 		if courseplay:isEven(i) then
 			posX = posX + w;
 		end;
 		
-		--[[
-		local l = 1; 
-		if i <= 2 then
-			l = 1;
-		elseif i <= 4 then
-			l = 2;
-		elseif i <= 6 then
-			l = 3;
-		elseif i <= 8 then
-			l = 4;
-		end;
-		]]
-		local l = math.floor((i+1)/2); --OR: math.ceil(i/2);
+		local l = math.ceil(i/numColumns);
 		local posY = courseplay.hud.linesPosY[1] + (20/1080) - (h*l);
 		
 		courseplay:register_button(self, 1, icon, "setAiMode", i, posX, posY, w, h, nil, nil, "self.cp.canSwitchMode=true");
@@ -487,7 +480,11 @@ function courseplay:load(xmlFile)
 	courseplay:register_button(self, 8, "blank.dds", "switchStartingCorner",     nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[2], lineButtonWidth, 0.015, nil, nil);
 	courseplay:register_button(self, 8, "blank.dds", "switchStartingDirection",  nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[3], lineButtonWidth, 0.015, nil, nil, "self.cp.hasStartingCorner=true");
 	courseplay:register_button(self, 8, "blank.dds", "switchReturnToFirstPoint", nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[4], lineButtonWidth, 0.015, nil, nil);
-	courseplay:register_button(self, 8, "blank.dds", "generateCourse",           nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[5], lineButtonWidth, 0.015, nil, nil, "self.cp.hasValidCourseGenerationData=true");
+	
+	courseplay:register_button(self, 8, "navigate_up.dds",   "setHeadlandLanes",   1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[5], w16px, h16px, nil, nil, "self.cp.headland.numLanes<1");
+	courseplay:register_button(self, 8, "navigate_down.dds", "setHeadlandLanes",  -1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[5], w16px, h16px, nil, nil, "self.cp.headland.numLanes>-1");
+	
+	courseplay:register_button(self, 8, "blank.dds", "generateCourse",           nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[6], lineButtonWidth, 0.015, nil, nil, "self.cp.hasValidCourseGenerationData=true");
 	--END Page 8
 
 

@@ -407,6 +407,10 @@ function courseplay:switchReturnToFirstPoint(self)
 	self.cp.returnToFirstPoint = not self.cp.returnToFirstPoint;
 end;
 
+function courseplay:setHeadlandLanes(self, change_by)
+	self.cp.headland.numLanes = Utils.clamp(self.cp.headland.numLanes + change_by, -1, 1);
+end;
+
 function courseplay:validateCourseGenerationData(self)
 	if not self.cp.hasGeneratedCourse
 	and self.Waypoints ~= nil 
