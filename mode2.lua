@@ -282,6 +282,14 @@ function courseplay:unload_combine(self, dt)
 	local distance = Utils.vector2Length(x1, z1)
 
 	if mode == 2 then -- Drive to Combine or Cornchopper
+		local safetyDistance = 0
+		if courseplay:isHarvesterSteerable(combine) then
+			safetyDistance = 24
+		elseif courseplay:isCombine(combine) then
+			safetyDistance = 10
+		elseif courseplay:isChopper(combine) then
+			safetyDistance = 6
+		end
 		self.sl = 2
 		refSpeed = self.field_speed
 		--courseplay:remove_from_combines_ignore_list(self, combine)
@@ -289,11 +297,11 @@ function courseplay:unload_combine(self, dt)
 
 		local x1, y1, z1 = worldToLocal(combine.rootNode, x, y, z)
 
-		if z1 > -10 then -- tractor in front of combine      --0
+		if z1 > -(self.turn_radius + safetyDistance) then -- tractor in front of combine     
 			-- left side of combine
-			local cx_left, cy_left, cz_left = localToWorld(combine.rootNode, 20, 0, -30) --20,0, -30        (war 20,0,-25
+			local cx_left, cy_left, cz_left = localToWorld(combine.rootNode, 20, 0, -30) 
 			-- righ side of combine
-			local cx_right, cy_right, cz_right = localToWorld(combine.rootNode, -20, 0, -30) -- -20,0,-30            -20,0,-25
+			local cx_right, cy_right, cz_right = localToWorld(combine.rootNode, -20, 0, -30) 
 			local lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, cx_left, y, cz_left)
 			-- distance to left position
 			local disL = Utils.vector2Length(lx, lz)
@@ -309,7 +317,7 @@ function courseplay:unload_combine(self, dt)
 
 		else
 			-- tractor behind combine
-			currentX, currentY, currentZ = localToWorld(combine.rootNode, 0, 0, -35)   -- -25
+			currentX, currentY, currentZ = localToWorld(combine.rootNode, 0, 0, -(self.turn_radius + safetyDistance)) --!!!
 		end
 
 		--if not self.calculated_course then
@@ -375,7 +383,7 @@ function courseplay:unload_combine(self, dt)
 		local tX, tY, tZ = nil, nil, nil
 
 		if combine.isCornchopper then
-			tX, tY, tZ = localToWorld(combine.rootNode, self.combine_offset * 0.8, 0, -5) -- offste *0.6     !????????????
+			tX, tY, tZ = localToWorld(combine.rootNode, self.combine_offset * 0.8, 0, -5) 
 		else			
 			tX, tY, tZ = localToWorld(combine.rootNode, self.combine_offset, 0, -5)
 		end
@@ -647,7 +655,7 @@ function courseplay:unload_combine(self, dt)
 					self.rightFruit, self.leftFruit = courseplay:side_to_drive(self, combine, -10)
 				end
 
-				--new chopper turn maneuver by Thomas Gärtner  --!!!
+				--new chopper turn maneuver by Thomas Gärtner  
 				if self.leftFruit < self.rightFruit then -- chopper will turn left
 
 					if self.combine_offset > 0 then -- I'm left of chopper
@@ -658,7 +666,7 @@ function courseplay:unload_combine(self, dt)
 	
 					else --i'm right of choppper
 						courseplay:debug(string.format("%s(%i): %s @ %s: combine turns left, I'm right", curFile, debug.getinfo(1).currentline, self.name, combine.name), 2);
-						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, self.turn_radius*-1, 0, 0);
+						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, self.turn_radius*-1, 0, self.turn_radius);
 						self.isChopperTurning = true
 					end
 					
@@ -670,7 +678,7 @@ function courseplay:unload_combine(self, dt)
 						self.isChopperTurning = true
 					else -- I'm left of chopper
 						courseplay:debug(string.format("%s(%i): %s @ %s: combine turns right, I'm left", curFile, debug.getinfo(1).currentline, self.name, combine.name), 2);
-						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, self.turn_radius, 0, 0);
+						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, self.turn_radius, 0, self.turn_radius);
 						self.isChopperTurning = true
 					end
 				end

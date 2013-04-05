@@ -17,6 +17,9 @@ end;
 function courseplay:isChopper(workTool)
 	return courseplay:isCombine(workTool) and workTool.grainTankCapacity == 0;
 end;
+function courseplay:isHarvesterSteerable(workTool) 
+     return workTool.typeName == "selfPropelledPotatoHarvester"; 
+end;
 function courseplay:isBaler(workTool) -- is the tool a baler?
 	return (SpecializationUtil.hasSpecialization(Baler, workTool.specializations) or workTool.balerUnloadingState ~= nil);
 end;
