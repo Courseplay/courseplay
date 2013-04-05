@@ -12,13 +12,13 @@ function courseplay:reset_tools(self)
 end
 
 function courseplay:isCombine(workTool)
-	return (SpecializationUtil.hasSpecialization(Combine, workTool.specializations) or SpecializationUtil.hasSpecialization(combine, workTool.specializations) or SpecializationUtil.hasSpecialization(AiCombine, workTool.specializations) or SpecializationUtil.hasSpecialization(aiCombine, workTool.specializations)) and workTool.grainTankCapacity ~= nil;
+	return (SpecializationUtil.hasSpecialization(Combine, workTool.specializations) or SpecializationUtil.hasSpecialization(AICombine, workTool.specializations) and workTool.grainTankCapacity ~= nil and workTool.grainTankCapacity > 0;
 end;
 function courseplay:isChopper(workTool)
-	return courseplay:isCombine(workTool) and workTool.grainTankCapacity == 0;
+	return (SpecializationUtil.hasSpecialization(Combine, workTool.specializations) or SpecializationUtil.hasSpecialization(AICombine, workTool.specializations) and workTool.grainTankCapacity ~= nil and workTool.grainTankCapacity == 0;
 end;
-function courseplay:isHarvesterSteerable(workTool) 
-     return workTool.typeName == "selfPropelledPotatoHarvester"; 
+function courseplay:isHarvesterSteerable(workTool)
+	return workTool.typeName == "selfPropelledPotatoHarvester" or Utils.endsWith(workTool.configFileName, "grimmeMaxtron620.xml") or Utils.endsWith(workTool.configFileName, "grimmeTectron415.xml");
 end;
 function courseplay:isBaler(workTool) -- is the tool a baler?
 	return (SpecializationUtil.hasSpecialization(Baler, workTool.specializations) or workTool.balerUnloadingState ~= nil);
@@ -49,7 +49,7 @@ end;
 function courseplay:update_tools(self, tractor_or_implement)
 	--steerable (tractor, combine etc.)
 	local tipper_attached = false
-	if SpecializationUtil.hasSpecialization(AITractor, tractor_or_implement.specializations) or tractor_or_implement.typeName == "selfPropelledPotatoHarvester" or courseplay:isBigM(tractor_or_implement) then
+	if SpecializationUtil.hasSpecialization(AITractor, tractor_or_implement.specializations) or courseplay:isHarvesterSteerable(tractor_or_implement) or courseplay:isBigM(tractor_or_implement) then
 		local object = tractor_or_implement
 		if self.ai_mode == 1 or self.ai_mode == 2 then
 			-- if SpecializationUtil.hasSpecialization(Trailer, object.specializations) then
@@ -89,10 +89,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 				tipper_attached = true;
 				table.insert(self.tippers, object);
 				courseplay:setMarkers(self, object);
-				self.cp.noStopOnTurn = 	courseplay:isBaler(object) 
-							or courseplay:is_baleLoader(object) 
-							or courseplay:isUBT(object)
-							or SpecializationUtil.hasSpecialization(Mower, object.specializations)
+				self.cp.noStopOnTurn = courseplay:isBaler(object) or courseplay:is_baleLoader(object) or courseplay:isUBT(object) or SpecializationUtil.hasSpecialization(Mower, object.specializations);
 				self.cp.noStopOnEdge = courseplay:isBaler(object) or courseplay:is_baleLoader(object) or courseplay:isUBT(object);
 			end
 		elseif self.ai_mode == 8 then -- Baler, foragewagon, baleloader
@@ -113,20 +110,9 @@ function courseplay:update_tools(self, tractor_or_implement)
 	for k, implement in pairs(tractor_or_implement.attachedImplements) do
 		local object = implement.object
 		
-		--in front or in the back?
-		if object.cp == nil then
+		if object.cp == nil then --table for custom implement variables
 			object.cp = {};
 		end;
-		local impXw, impYw, impZw = getWorldTranslation(object.rootNode);
-		local vehToImpX, vehToImpY, vehToImpZ = worldToLocal(self.rootNode, impXw, impYw, impZw);
-		if vehToImpZ > 0 then --implement in front of vehicle
-			object.cp.positionToVehicle = 1;
-			courseplay:debug(string.format("Implement %s position = %s (in front) (vehToImpZ = %s)", tostring(object.name), tostring(object.cp.positionToVehicle), tostring(vehToImpZ)), 3);
-		else
-			object.cp.positionToVehicle = -1;
-			courseplay:debug(string.format("Implement %s position = %s (in back) (vehToImpZ = %s)", tostring(object.name), tostring(object.cp.positionToVehicle), tostring(vehToImpZ)), 3);
-		end;
-		--END in front or in the back
 
 		if self.ai_mode == 1 or self.ai_mode == 2 then
 			--	if SpecializationUtil.hasSpecialization(Trailer, object.specializations) then
@@ -145,7 +131,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 				table.insert(self.tippers, object)
 				courseplay:setMarkers(self, object)
 				self.cp.noStopOnEdge = courseplay:isSprayer(object);
-				self.cp.noStopOnTurn = courseplay:isSprayer(object)
+				self.cp.noStopOnTurn = courseplay:isSprayer(object);
 			end
 		elseif self.ai_mode == 5 then -- Transfer
 			if object.setPlane ~= nil then --open/close cover
@@ -171,9 +157,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 				tipper_attached = true
 				table.insert(self.tippers, object)
 				courseplay:setMarkers(self, object)
-				self.cp.noStopOnTurn = 	courseplay:isBaler(object) 
-							or courseplay:is_baleLoader(object) 
-							or courseplay:isUBT(object) 
+				self.cp.noStopOnTurn = courseplay:isBaler(object) or courseplay:is_baleLoader(object) or courseplay:isUBT(object);
 				self.cp.noStopOnEdge = courseplay:isBaler(object) or courseplay:is_baleLoader(object) or courseplay:isUBT(object);
 			end;
 		elseif self.ai_mode == 8 then --Liquid manure transfer
@@ -311,6 +295,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 				end;
 				
 				if self.cp.tipperHasCover and table.getn(coverItems) > 0 then
+					courseplay:debug(string.format("Implement \"%s\" has a cover (coverItems ~= nil)", tostring(t.name)), 3);
 					local data = {
 						tipperIndex = i,
 						coverItems = coverItems
