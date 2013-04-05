@@ -12,10 +12,10 @@ function courseplay:reset_tools(self)
 end
 
 function courseplay:isCombine(workTool)
-	return (SpecializationUtil.hasSpecialization(Combine, workTool.specializations) or SpecializationUtil.hasSpecialization(AICombine, workTool.specializations) and workTool.grainTankCapacity ~= nil and workTool.grainTankCapacity > 0);
+	return (SpecializationUtil.hasSpecialization(Combine, workTool.specializations) or SpecializationUtil.hasSpecialization(AICombine, workTool.specializations)) and workTool.grainTankCapacity ~= nil and workTool.grainTankCapacity > 0;
 end;
 function courseplay:isChopper(workTool)
-	return (SpecializationUtil.hasSpecialization(Combine, workTool.specializations) or SpecializationUtil.hasSpecialization(AICombine, workTool.specializations) and workTool.grainTankCapacity ~= nil and workTool.grainTankCapacity == 0);
+	return (SpecializationUtil.hasSpecialization(Combine, workTool.specializations) or SpecializationUtil.hasSpecialization(AICombine, workTool.specializations)) and workTool.grainTankCapacity ~= nil and workTool.grainTankCapacity == 0;
 end;
 function courseplay:isHarvesterSteerable(workTool)
 	return workTool.typeName == "selfPropelledPotatoHarvester" or Utils.endsWith(workTool.configFileName, "grimmeMaxtron620.xml") or Utils.endsWith(workTool.configFileName, "grimmeTectron415.xml");
