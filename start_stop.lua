@@ -13,7 +13,7 @@ function courseplay:start(self)
 	end
 	--END manual ignition
 	
-	if self.orgRpm == nil then
+	if self.cp.orgRpm == nil then
 		self.cp.orgRpm = {}
 		self.cp.orgRpm[1] = self.motor.maxRpm[1]
 		self.cp.orgRpm[2] = self.motor.maxRpm[2]
@@ -148,7 +148,7 @@ function courseplay:stop(self)
 	self.steeringEnabled = true;
 	self.deactivateOnLeave = true
 	self.disableCharacterOnLeave = true
-	if self.orgRpm then
+	if self.cp.orgRpm then
 		self.motor.maxRpm[1] = self.cp.orgRpm[1]
 		self.motor.maxRpm[2] = self.cp.orgRpm[2]
 		self.motor.maxRpm[3] = self.cp.orgRpm[3]

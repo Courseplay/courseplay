@@ -213,7 +213,7 @@ function courseplay:load(xmlFile)
 	self.sl = 3
 	self.tools_dirty = false
 
-	self.orgRpm = nil;
+	self.cp.orgRpm = nil;
 	
 	-- Course list
 	self.cp.courseListPrev = false;
