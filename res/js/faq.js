@@ -121,7 +121,7 @@ function updateOffsetData() {
 		animEasing = 'ease-in-out';
 		
 	var totalWidthText = stage.get('#totalWidthText')[0];
-	totalWidthText.setText('Course work width: ' + resultData.totalWorkWidth + 'm');
+	totalWidthText.setText(textElements.courseWorkWidth + ': ' + resultData.totalWorkWidth + 'm');
 	totalWidthText.transitionTo({
 		x: stage.getWidth() / 2,
 	});
@@ -153,9 +153,9 @@ function updateOffsetData() {
 		});*/
 		toolCourse.setPoints([rectCenter, stage.getHeight()-50, rectCenter, 50]);
 
-		var text = 'Tool #' + parseFloat(i+1);
+		var text = textElements.tool + ' #' + parseFloat(i+1);
 		if (i < num) { 
-			text = 'Tool #' + parseFloat(i+1) + '\nOffset: ' + resultData.toolOffsets[i] + 'm';
+			text = textElements.tool + ' #' + parseFloat(i+1) + '\n' + textElements.offset + ': ' + resultData.toolOffsets[i] + 'm';
 		};
 		toolText.setText(text);
 		toolText.transitionTo({
