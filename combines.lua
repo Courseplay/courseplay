@@ -7,7 +7,7 @@ function courseplay:find_combines(self)
 		-- combines should have this trigger
 
 		-- trying to identify combines
-		if courseplay:is_a_combine(vehicle) then
+		if courseplay:isCombine(vehicle) or courseplay:isChopper(vehicle) or courseplay:isHarvesterSteerable(vehicle) then
 			table.insert(found_combines, vehicle)
 		end
 	end
@@ -15,14 +15,6 @@ function courseplay:find_combines(self)
 	return found_combines
 end
 
-
-function courseplay:is_a_combine(vehicle)
-	if vehicle.grainTankCapacity ~= nil then
-		return true
-	else
-		return false
-	end
-end
 
 function courseplay:combine_allows_tractor(self, combine)
 	local num_allowed_courseplayers = 1

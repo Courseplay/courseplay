@@ -338,7 +338,7 @@ function courseplay:load(xmlFile)
 	self.hudInfoBaseOverlay = Overlay:new("hudInfoBaseOverlay", self.infoPanelPath, courseplay.hud.infoBasePosX - 10/1920, courseplay.hud.infoBasePosY - 10/1920, courseplay.hud.infoBaseWidth, courseplay.hud.infoBaseHeight);
 
 	self.min_hud_page = 1
-	if courseplay:is_a_combine(self) then --TODO: only use one isCombine() function
+	if courseplay:isCombine(self) or courseplay:isChopper(self) or courseplay:isHarvesterSteerable(self) then
 		self.min_hud_page = 0
 	end
 
