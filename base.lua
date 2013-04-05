@@ -345,7 +345,7 @@ function courseplay:load(xmlFile)
 	self.showHudInfoBase = self.min_hud_page;
 
 	self.hudpage = {}
-	for a=0,8 do
+	for a=0,courseplay.hud.numPages do
 		self.hudpage[a] = {};
 		for b=1,courseplay.hud.numLines do
 			self.hudpage[a][b] = {};

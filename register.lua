@@ -76,6 +76,7 @@ function cp_setLines()
 		linesPosY = {};
 		linesBottomPosY = {};
 		linesButtonPosY = {};
+		numPages = 8,
 		numLines = 6;
 		lineHeight = 0.021;
 		hoverColor = {

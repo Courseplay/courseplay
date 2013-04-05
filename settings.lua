@@ -54,10 +54,10 @@ function courseplay:switch_hud_page(self, change_by)
 	self.showHudInfoBase = self.showHudInfoBase + change_by
 
 	if self.showHudInfoBase < self.min_hud_page then --edit for more sites
-		self.showHudInfoBase = 8
+		self.showHudInfoBase = courseplay.hud.numPages
 	end
 
-	if self.showHudInfoBase > 8 then --edit for more sites
+	if self.showHudInfoBase > courseplay.hud.numPages then --edit for more sites
 		self.showHudInfoBase = self.min_hud_page
 	end
 end
