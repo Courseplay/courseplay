@@ -252,6 +252,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 								if workTool.setIsTurnedOn ~= nil and not workTool.isTurnedOn then
 									workTool:setIsTurnedOn(true, false);
 									self.runOnceStartCourse = false
+									courseplay:setMarkers(self, workTool);
 								end;
 
 								if workTool.setIsPickupDown ~= nil then

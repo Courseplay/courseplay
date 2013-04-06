@@ -63,6 +63,7 @@ function courseplay:load(xmlFile)
 	self.cp.turnStage = 0 --int
 	self.cp.aiTurnNoBackward = false --bool
 	self.cp.backMarkerOffset = nil --float
+	self.cp.aiFrontMarker = nil --float
 	self.cp.turnTimer = 8000 --int
 	self.cp.noStopOnEdge = false --bool
 	self.cp.noStopOnTurn = false --bool
@@ -693,6 +694,7 @@ function courseplay:readStream(streamId, connection)
 	self.cp.turnStage = streamDebugReadInt32(streamId);
 	self.cp.aiTurnNoBackward = streamDebugReadBool(streamId);
 	self.cp.backMarkerOffset = streamDebugReadFloat32(streamId)
+	self.cp.aiFrontMarker = streamDebugReadFloat32(streamId)
 	self.cp.turnTimer = streamDebugReadInt32(streamId);
 	self.cp.noStopOnEdge = streamDebugReadBool(streamId);
 	self.cp.noStopOnTurn = streamDebugReadBool(streamId);
@@ -820,6 +822,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteInt32(streamId, self.cp.turnStage)
 	streamDebugWriteBool(streamId, self.cp.aiTurnNoBackward)
 	streamDebugWriteFloat32(streamId,self.cp.backMarkerOffset)
+	streamDebugWriteFloat32(streamId,self.cp.aiFrontMarker)
 	streamDebugWriteInt32(streamId, self.cp.turnTimer)
 	streamDebugWriteBool(streamId, self.cp.noStopOnEdge)
 	streamDebugWriteBool(streamId, self.cp.noStopOnTurn)

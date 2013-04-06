@@ -3,6 +3,8 @@ function courseplay:turn(self, dt) --!!!
 	local moveForwards = true;
 	local updateWheels = true;
 	local turnOutTimer = 1500
+	local frontMarker = Utils.getNoNil(self.cp.aiFrontMarker,-3)
+	local backMarker = Utils.getNoNil(self.cp.backMarkerOffset, 0)
 	if self.cp.noStopOnEdge then 
 		turnOutTimer = 0
 	end
@@ -70,13 +72,7 @@ function courseplay:turn(self, dt) --!!!
 					self.cp.turnStage = 5;
 				end;
 			elseif self.cp.turnStage == 5 then
-				local frontNode
-				if self.cp.aiFrontMarker ~= nil then
-					frontNode = self.cp.aiFrontMarker
-				else
-					frontNode = self.rootNode
-				end
-				local backX, backY, backZ = getWorldTranslation(frontNode);
+				local backX, backY, backZ = localToWorld(self.rootNode,0,0,frontMarker);
 				local dx, dz = backX-newTargetX, backZ-newTargetZ;
 				local dot = dx*dirX + dz*dirZ;
 				local moveback = 0
@@ -129,8 +125,8 @@ function courseplay:turn(self, dt) --!!!
 			if self.WpOffsetX ~= nil and self.WpOffsetZ ~= nil and (self.WpOffsetX ~= 0 or self.WpOffsetZ ~= 0 ) then
 				cx,cz = courseplay:turnWithOffset(self)
 			else
-				cx = self.Waypoints[self.recordnumber].cx		
-				cz = self.Waypoints[self.recordnumber].cz
+				cx = self.Waypoints[self.recordnumber+1].cx		
+				cz = self.Waypoints[self.recordnumber+1].cz
 			end
 			newTargetX = cx
 			newTargetY = y;
@@ -153,21 +149,33 @@ function courseplay:turn(self, dt) --!!!
 		end;
 	else
 		local offset = Utils.getNoNil(self.WpOffsetX ,0)
-		local x,y,z = localToWorld(self.rootNode, offset, 0, (Utils.getNoNil(self.cp.backMarkerOffset, 0)))
-		local dist = courseplay:distance(self.Waypoints[self.recordnumber-1].cx, self.Waypoints[self.recordnumber-1].cz, x, z)
+		local x,y,z = localToWorld(self.rootNode, offset, 0, backMarker)
+		local dist = courseplay:distance(self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz, x, z)
 		if self.grainTankCapacity ~= nil then
 			self.cp.noStopOnEdge = true
 		end
-
-		if  dist < 0.5 or  Utils.getNoNil(self.cp.backMarkerOffset, 0) > 0 then
-			if self.cp.noStopOnTurn == false then
-				self.cp.waitForTurnTime = self.timer + 1500
+		if backMarker <= 0 then
+			if  dist < 0.5 then
+				if self.cp.noStopOnTurn == false then
+					self.cp.waitForTurnTime = self.timer + 1500
+				end
+				courseplay:lowerImplements(self, false, true)
+				updateWheels = false;
+				self.cp.turnStage = 1;
 			end
-			courseplay:lowerImplements(self, false, true)
-			updateWheels = false;
-			self.cp.turnStage = 1;
-		end
-		
+		else
+			if dist < 0.5 then
+				self.cp.turnStage = -1
+				courseplay:lowerImplements(self, false, true)
+			end
+			if dist > backMarker then
+				if self.cp.noStopOnTurn == false then
+					self.cp.waitForTurnTime = self.timer + 1500
+				end
+				updateWheels = false;
+				self.cp.turnStage = 1;
+			end
+		end		
 		x,y,z = localToWorld(self.cp.DirectionNode, 0, 0, 1)
 		self.aiTractorTargetX, self.aiTractorTargetZ = x,z
 		local dirX, dirZ = self.aiTractorDirectionX, self.aiTractorDirectionZ;

@@ -324,32 +324,33 @@ function courseplay:update_tools(self, tractor_or_implement)
 end
 
 function courseplay:setMarkers(self, object)
+	object.cp.backMarkerOffset = nil
+	object.cp.aiFrontMarker = nil
 	-- get the behindest and the frontest  points :-) ( as offset to root node)
 	for k = 1, table.getn(object.cuttingAreas) do
 		for j,node in pairs(object.cuttingAreas[k]) do
 			if j == "start" or j == "height" or j == "width" then 
 				local x, y, z = getWorldTranslation(node)
 				_, _, ztt = worldToLocal(self.rootNode, x, y, z)
-				if self.cp.backMarkerOffset == nil or ztt > self.cp.backMarkerOffset then
-					self.cp.backMarkerOffset = ztt
+				if object.cp.backMarkerOffset == nil or ztt > object.cp.backMarkerOffset then
+					object.cp.backMarkerOffset = ztt
 				end
-				x, y, z = getWorldTranslation(self.cp.aiFrontMarker)
-				_, _, ztfo = worldToLocal(self.rootNode, x, y, z)
-				if self.cp.aiFrontMarker == nil  or ztt < ztfo then
-					self.cp.aiFrontMarker = node
+				if object.cp.aiFrontMarker == nil  or ztt < object.cp.aiFrontMarker then
+					object.cp.aiFrontMarker = ztt
 				end
 			end
 		end
 	end
-	if self.cp.aiFrontMarker == nil then
-		self.cp.aiFrontMarker = object.rootNode
+	if self.cp.backMarkerOffset == nil or object.cp.backMarkerOffset < self.cp.backMarkerOffset then
+		self.cp.backMarkerOffset = object.cp.backMarkerOffset
 	end
-	local x, y, z = getWorldTranslation(self.cp.aiFrontMarker)
-	_, _, ztt = worldToLocal(self.rootNode, x, y, z)
-	if ztt < -5 then
-		self.cp.aiFrontMarker = object.rootNode
+	if self.cp.aiFrontMarker == nil  or object.cp.aiFrontMarker > self.cp.aiFrontMarker then
+		self.cp.aiFrontMarker = object.cp.aiFrontMarker
 	end
-		
+	if self.cp.aiFrontMarker < -7 then
+		self.cp.aiFrontMarker = -7
+	end
+	courseplay:debug("setMarkers: self.cp.backMarkerOffset: "..tostring(self.cp.backMarkerOffset).."  self.cp.aiFrontMarker: "..tostring(self.cp.aiFrontMarker),1)  
 end
 
 -- loads all tippers

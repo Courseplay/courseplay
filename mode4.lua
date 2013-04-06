@@ -97,6 +97,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill
 
 						--turn on
 						if workTool.setIsTurnedOn ~= nil and not workTool.isTurnedOn then
+							courseplay:setMarkers(self, workTool);
 							if courseplay:is_sowingMachine(workTool) then
 								--do manually instead of :setIsTurnedOn so that workTool.turnOnAnimation and workTool.playAnimation aren't called
 								workTool.isTurnedOn = true;

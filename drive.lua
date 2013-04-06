@@ -208,8 +208,8 @@ function courseplay:drive(self, dt)
 		fill_level = self.cp.tipperFillLevel * 100 / self.cp.tipperCapacity
 	end
 	if self.ai_mode == 4 or self.ai_mode == 6 then
-		if  self.Waypoints[last_recordnumber].turn ~= nil then
-			self.cp.isTurning = self.Waypoints[last_recordnumber].turn
+		if  self.Waypoints[self.recordnumber].turn ~= nil then
+			self.cp.isTurning = self.Waypoints[self.recordnumber].turn
 		end	
 	end
 
