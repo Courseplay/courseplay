@@ -79,11 +79,15 @@ function courseplay:setCourseplayFunc(func, value, noEventSend)
 		CourseplayEvent.sendEvent(self, func, value); -- Die Funktion ruft sendEvent auf und übergibt 3 Werte   (self "also mein ID", action, "Ist eine Zahl an der ich festmache welches Fenster ich aufmachen will", state "Ist der eigentliche Wert also true oder false"
 	end;
 	courseplay:deal_with_mouse_input(self, func, value)
+	
+	playSample(courseplay.hud.clickSound, 1, 1, 0);
 end
 
 function courseplay:deal_with_mouse_input(self, func, value)
 	--TODO: überhaupt nicht DRY das geht bestimmt irgendwie schöner
 	--TODO: (Jakob, 25 Jan 2013) http://stackoverflow.com/questions/1791234/lua-call-function-from-a-string-with-function-name
+	--TODO: general usage of elseif for performance improvements
+
 	if func == "switch_hud_page" then
 		courseplay:switch_hud_page(self, value)
 	end

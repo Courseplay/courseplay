@@ -67,7 +67,7 @@ function cp_setLocales()
 	end;
 end;
 
-function cp_setLines()
+function cp_setupHud()
 	courseplay.hud = {
 		infoBasePosX = 0.433;
 		infoBasePosY = 0.002;
@@ -85,7 +85,10 @@ function cp_setLines()
 			b = 219/255;
 			a = 1;
 		};
+		clickSound = createSample("clickSound");
 	};
+	loadSample(courseplay.hud.clickSound, Utils.getFilename("sounds/cpClickSound.wav", courseplay_path), false);
+	
 	for l=1,courseplay.hud.numLines do
 		if l == 1 then
 			courseplay.hud.linesPosY[l] = courseplay.hud.infoBasePosY + 0.210;
@@ -99,7 +102,7 @@ function cp_setLines()
 	
 end;
 
-cp_setLines();
+cp_setupHud();
 cp_setLocales();
 register_courseplay();
 
