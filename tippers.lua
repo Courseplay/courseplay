@@ -331,7 +331,11 @@ function courseplay:setMarkers(self, object)
 	if courseplay:isBigM(object) then
 		area = object.mowerCutAreas
 	end
-	for k = 1, table.getn(area) do
+	local tableLength = table.getn(area)
+	if tableLength == 0 then
+		return
+	end
+	for k = 1, tableLength do
 		for j,node in pairs(area[k]) do
 			if j == "start" or j == "height" or j == "width" then 
 				local x, y, z = getWorldTranslation(node)
