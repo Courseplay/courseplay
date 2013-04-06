@@ -636,7 +636,7 @@ function courseplay:unload_combine(self, dt)
 				combine.waitingForTrailerToUnload = true
 			end			
 		elseif distance < 50 then
-			if combine.isAIThreshing then
+			if combine.isAIThreshing and not (combine_fill_level == 0 and combine.currentPipeState ~= 2) then
 				combine.waitForTurnTime = combine.time + 100
 			elseif combine.drive == true then
 				combine.waitingForTrailerToUnload = true
