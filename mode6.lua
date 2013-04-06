@@ -366,6 +366,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 			if SpecializationUtil.hasSpecialization(Combine, self.specializations) or SpecializationUtil.hasSpecialization(combine, self.specializations) or self.grainTankCapacity == 0 then --TODO: create isCombine(bla) call
 				if workArea and not self.isAIThreshing then
 					local pipeState = self:getCombineTrailerInRangePipeState();
+					local weatherStop = not self:getIsThreshingAllowed(true)
 					if self.grainTankCapacity == 0 then
 						if courseplay:isFoldable(workTool) then
 							workTool:setFoldDirection(-1);
@@ -386,7 +387,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 							end
 						end
 					else
-						if self.grainTankFillLevel < self.grainTankCapacity and not self.waitingForDischarge and not self.isThreshing then
+						if self.grainTankFillLevel < self.grainTankCapacity and not self.waitingForDischarge and not self.isThreshing and not weatherStop then
 							self:setIsThreshing(true, true);
 						end
 						if self.grainTankFillLevel >= self.grainTankCapacity or self.waitingForDischarge then
@@ -409,6 +410,12 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 								allowedToDrive = false;
 							end							 
 						end
+						if weatherStop then
+							allowedToDrive = false;
+							self:setIsThreshing(false, true);
+							self.global_info_text = courseplay:get_locale(self, "CPwaitingForWeather")
+						end
+							
 					end
 				elseif self.recordnumber == self.stopWork then
 					self:setIsThreshing(false, true);

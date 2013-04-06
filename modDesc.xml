@@ -1107,6 +1107,14 @@ Italský překlad: JD7530
 			<it>la versione dell'ESLimiter non e' compatibile</it>
 			<cz>verze ESLimiter není podporována</cz>
 		</text>
+		<text name="CPwaitingForWeather">
+			<en>is waiting for better weather</en>
+			<de>wartet auf besseres Wetter</de>
+			<fr>est en attente d'une meilleure météo</fr>
+			<es>está esperando por un clima mejor</es>
+			<it>è in attesa di un tempo migliore</it>
+			<cz>čeká na lepší počasí</cz>
+		</text>
 		<text name="CPSettings">
 			<en>Settings</en>
 			<de>Allgemeine Einstellungen</de>
