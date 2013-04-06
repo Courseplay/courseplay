@@ -327,8 +327,12 @@ function courseplay:setMarkers(self, object)
 	object.cp.backMarkerOffset = nil
 	object.cp.aiFrontMarker = nil
 	-- get the behindest and the frontest  points :-) ( as offset to root node)
-	for k = 1, table.getn(object.cuttingAreas) do
-		for j,node in pairs(object.cuttingAreas[k]) do
+	local area = object.cuttingAreas
+	if courseplay:isBigM(object) then
+		area = object.mowerCutAreas
+	end
+	for k = 1, table.getn(area) do
+		for j,node in pairs(area[k]) do
 			if j == "start" or j == "height" or j == "width" then 
 				local x, y, z = getWorldTranslation(node)
 				_, _, ztt = worldToLocal(self.rootNode, x, y, z)
