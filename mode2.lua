@@ -1072,11 +1072,9 @@ function courseplay:calculateCombineOffset(self, combine)
 	--chopper // combine_offset is in auto mode
 	elseif combine.isCornchopper and self.auto_combine_offset then
 		if combine.cp.lmX ~= nil then
-			offs = combine.cp.lmX + 2.5;
-			--courseplay:debug(string.format("%s(%i): %s @ %s: using leftMarker, offs = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, offs), 2);
+			offs = math.max(combine.cp.lmX + 2.5, 7);
 		else
 			offs = 8;
-			--courseplay:debug(string.format("%s(%i): %s @ %s: using default offs = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, offs), 2);
 		end;
 
 		if self.sideToDrive == nil then

@@ -336,21 +336,21 @@ function courseplay:calculateInitialCombineOffset(self, combine)
 			if left_fruit < right_fruit then
 				self.sideToDrive = "left";
 				if combine.cp.lmX ~= nil then
-					self.combine_offset = combine.cp.lmX + 2.5;
+					self.combine_offset = math.max(combine.cp.lmX + 2.5, 7);
 				else --attached chopper
 					self.combine_offset = 7;
 				end;
 			elseif left_fruit > right_fruit then
 				self.sideToDrive = "right";
 				if combine.cp.lmX ~= nil then
-					self.combine_offset = (combine.cp.lmX + 2.5) * -1;
+					self.combine_offset = math.max(combine.cp.lmX + 2.5, 7) * -1;
 				else --attached chopper
 					self.combine_offset = -3;
 				end;
 			else
 				self.sideToDrive = nil;
 				if combine.cp.lmX ~= nil then
-					self.combine_offset = combine.cp.lmX + 2.5;
+					self.combine_offset = math.max(combine.cp.lmX + 2.5, 7);
 				else --attached chopper
 					self.combine_offset = 7;
 				end;

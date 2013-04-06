@@ -331,6 +331,7 @@ function courseplay:setMarkers(self, object)
 	if courseplay:isBigM(object) then
 		area = object.mowerCutAreas
 	end
+
 	local tableLength = table.getn(area)
 	if tableLength == 0 then
 		return
@@ -349,6 +350,7 @@ function courseplay:setMarkers(self, object)
 			end
 		end
 	end
+
 	if self.cp.backMarkerOffset == nil or object.cp.backMarkerOffset < self.cp.backMarkerOffset then
 		self.cp.backMarkerOffset = object.cp.backMarkerOffset
 	end
