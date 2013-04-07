@@ -253,7 +253,7 @@ function courseplay:lowerImplements(self, direction, workToolonOff)
 	end
 end
 function courseplay:turnWithOffset(self)
-	local curPoint = self.Waypoints[self.recordnumber]
+	local curPoint = self.Waypoints[self.recordnumber+1]
 	local cx = curPoint.cx;
 	local cz = curPoint.cz;
 	local offsetX = self.WpOffsetX
