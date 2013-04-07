@@ -333,7 +333,6 @@ function courseplay:unload_combine(self, dt)
 		dod = Utils.vector2Length(lx, lz)
 		-- near point
 		if dod < 3 then -- change to mode 4 == drive behind combine or cornChopper
-			courseplay:calculateCombineOffset(self, combine);
 			if combine.isCornchopper then -- decide on which side to drive based on ai-combine
 				courseplay:side_to_drive(self, combine, 10);
 
@@ -414,41 +413,51 @@ function courseplay:unload_combine(self, dt)
 				if fruitSide == "right" or fruitSide == "none" then 
 					courseplay:debug("I'm left, fruit is right",1)
 					local fx,fy,fz = localToWorld(self.rootNode, 0, 0, 8)
+					local sx,sy,sz = localToWorld(self.rootNode, 0 , 0, -self.turn_radius-trailer_offset)
 					if courseplay:is_field(fx, fz) then
 						courseplay:debug("target is on field",1)
 						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 0 , 0, 5);	
 						mode = 5
-					else
+					elseif courseplay:is_field(sx, sz) then
 						courseplay:debug("target is not on field",1)
 						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 2 , 0, -self.turn_radius);
 						courseplay:set_next_target(self, 0 ,  -self.turn_radius-trailer_offset);
+						mode = 5
+					else
+						self.target_x, self.target_z  = self.Waypoints[self.maxnumber].cx, self.Waypoints[self.maxnumber].cz
 						mode = 5
 					end					
 				else
 					courseplay:debug("I'm left, fruit is left",1)
 					local fx,fy,fz = localToWorld(self.rootNode, 2*offset*-1, 0, -self.turn_radius-trailer_offset)
+					local tx,ty,tz = localToWorld(self.rootNode, 2*offset*-1, 0, -(2*self.turn_radius)-trailer_offset)
 					if courseplay:is_field(fx, fz) then
 						courseplay:debug("deepest waypoint is on field",1)
 						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 2, 0, -self.turn_radius-trailer_offset);
 						courseplay:set_next_target(self, 2*offset*-1 ,  -self.turn_radius-trailer_offset);
 						fx,fy,fz = localToWorld(self.rootNode, 2*offset*-1, 0, 0)
+						sx,sy,sz = localToWorld(self.rootNode, 2*offset*-1, 0, -(2*self.turn_radius)-trailer_offset)
 						if courseplay:is_field(fx, fz) then
 							courseplay:debug("traget is on field",1)
 							courseplay:set_next_target(self, 2*offset*-1,0);
-						else
+						elseif courseplay:is_field(sx, sz) then
 							courseplay:debug("target is not on field",1)
 							courseplay:set_next_target(self, 2*offset*-1 ,  -(2*self.turn_radius)-trailer_offset);
+						else
+							self.target_x, self.target_z  = self.Waypoints[self.maxnumber].cx, self.Waypoints[self.maxnumber].cz
 						end
 						mode = 5
-					else		
+					elseif courseplay:is_field(tx, tz) then		
 						courseplay:debug("deepest waypoint is not on field",1)
 						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, self.turn_radius, 0, 0);
 						courseplay:set_next_target(self, 0 ,  -(2*trailer_offset));
 						courseplay:set_next_target(self, 2*offset*-1 ,  -(2*trailer_offset));
 						courseplay:set_next_target(self, 2*offset*-1 , self.turn_radius);
 						mode = 5
+					else
+						self.target_x, self.target_z  = self.Waypoints[self.maxnumber].cx, self.Waypoints[self.maxnumber].cz
+						mode = 5
 					end
-
 				end
 			else
 				if fruitSide == "right" or fruitSide == "none" then 
@@ -501,7 +510,7 @@ function courseplay:unload_combine(self, dt)
 		end
 
 		--CALCULATE OFFSET
-		--courseplay:calculateCombineOffset(self, combine);
+		courseplay:calculateCombineOffset(self, combine);
 		currentX, currentY, currentZ = localToWorld(combine.rootNode, self.combine_offset, 0, trailer_offset + 5)
 		local cwX, cwY, cwZ = getWorldTranslation(combine.pipeRaycastNode); 
 		local prnToCombineX, prnToCombineY, prnToCombineZ = worldToLocal(combine.rootNode, cwX, cwY, cwZ); 
