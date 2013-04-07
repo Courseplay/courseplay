@@ -209,10 +209,11 @@ function courseplay:handleSpecialTools(workTool,unfold,lower,turnOnOff,allowedTo
 			allowedToDrive = true
 		end
 		return true, allowedToDrive
-	end
+
+
 
 	--Tebbe HS180 (Maurus)
-	if Utils.endsWith(workTool.configFileName, "TebbeHS180.xml") then
+	elseif Utils.endsWith(workTool.configFileName, "TebbeHS180.xml") then
 		local flap = 0
 		if workTool.setDoorHigh ~= nil and workTool.doorhigh ~= nil then
 			if turnOnOff then 
@@ -224,10 +225,60 @@ function courseplay:handleSpecialTools(workTool,unfold,lower,turnOnOff,allowedTo
 			workTool:setFlapOpen(turnOnOff)
 		end
 		return false, allowedToDrive
+
+
+
+	--Poettinger Alpha
+	elseif workTool.alpMot ~= nil and workTool.setTurnedOn ~= nil and workTool.setLiftUp ~= nil and workTool.setTransport ~= nil then
+		--fold/unfold
+		workTool:setTransport(not unfold);
+		if workTool.alpMot.isTransport ~= nil then
+			if (unfold and workTool.alpMot.isTransport) or (not unfold and not workTool.alpMot.isTransport) then
+				allowedToDrive = false;
+			end;
+		end;
+		
+		--lower/raise
+		workTool:setLiftUp(not lower);
+		if workTool.alpMot.isLiftUp ~= nil and workTool.alpMot.isLiftDown ~= nil then
+			if (lower and workTool.alpMot.isLiftUp) or (not lower and workTool.alpMot.isLiftDown) then
+				allowedToDrive = false;
+			end;
+		end;
+
+		--turn on/off
+		workTool:setTurnedOn(turnOnOff);
+		
+		return true, allowedToDrive;
+
+
+
+	--Poettinger X8
+	elseif workTool.x8 ~= nil and workTool.x8.mowers ~= nil and workTool.setTurnedOn ~= nil and workTool.setLiftUp ~= nil and workTool.setTransport ~= nil and workTool.setSelection ~= nil then
+		workTool:setSelection(3);
+		
+		local isFolded = workTool.x8.mowers[1].isTransport and workTool.x8.mowers[2].isTransport;
+		local isRaised = workTool.x8.mowers[1].isLiftUp and workTool.x8.mowers[2].isLiftUp;
+		
+		--fold/unfold
+		workTool:setTransport(not unfold);
+		if (unfold and isFolded) or (not unfold and not isFolded) then
+			allowedToDrive = false;
+		end;
+		
+		--lower/raise
+		workTool:setLiftUp(not lower);
+		if (lower and isRaised) or (not lower and not isRaised) then
+			allowedToDrive = false;
+		end;
+
+		--turn on/off
+		workTool:setTurnedOn(turnOnOff);
+		
+		return true, allowedToDrive;
 	end;
 
 
 
-
-	return false, allowedToDrive 
+	return false, allowedToDrive;
 end

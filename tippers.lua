@@ -41,10 +41,12 @@ end;
 function courseplay:isUBT(workTool) --is the tool a UBT?
 	return SpecializationUtil.hasSpecialization(ubt, workTool.specializations) or SpecializationUtil.hasSpecialization(Ubt, workTool.specializations) or workTool.name == "UniversalBaleTrailer" or (workTool.numAttacherParts ~= nil and workTool.autoLoad ~= nil and workTool.loadingIsActive ~= nil and workTool.unloadLeft ~= nil and workTool.unloadRight ~= nil and workTool.unloadBack ~= nil and workTool.typeOnTrailer ~= nil);
 end;
-function courseplay:isBigM(workTool)
-	return (SpecializationUtil.hasSpecialization(Steerable, workTool.specializations) or SpecializationUtil.hasSpecialization(steerable, workTool.specializations)) and (SpecializationUtil.hasSpecialization(Mower, workTool.specializations) or SpecializationUtil.hasSpecialization(mower, workTool.specializations));
+function courseplay:isMower(workTool)
+	return SpecializationUtil.hasSpecialization(Mower, workTool.specializations) or Utils.endsWith(workTool.configFileName, "PoettingerAlpha.xml") or Utils.endsWith(workTool.configFileName, "PoettingerX8.xml");
 end;
-
+function courseplay:isBigM(workTool)
+	return (SpecializationUtil.hasSpecialization(Steerable, workTool.specializations) or SpecializationUtil.hasSpecialization(steerable, workTool.specializations)) and courseplay:isMower(workTool);
+end;
 -- update implements to find attached tippers
 function courseplay:update_tools(self, tractor_or_implement)
 	--steerable (tractor, combine etc.)
@@ -89,7 +91,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 				tipper_attached = true;
 				table.insert(self.tippers, object);
 				courseplay:setMarkers(self, object);
-				self.cp.noStopOnTurn = courseplay:isBaler(object) or courseplay:is_baleLoader(object) or courseplay:isUBT(object) or SpecializationUtil.hasSpecialization(Mower, object.specializations);
+				self.cp.noStopOnTurn = courseplay:isBaler(object) or courseplay:is_baleLoader(object) or courseplay:isUBT(object) or courseplay:isMower(object);
 				self.cp.noStopOnEdge = courseplay:isBaler(object) or courseplay:is_baleLoader(object) or courseplay:isUBT(object);
 			end
 		elseif self.ai_mode == 8 then -- Baler, foragewagon, baleloader
@@ -148,6 +150,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 			or SpecializationUtil.hasSpecialization(FruitPreparer, self.specializations) or SpecializationUtil.hasSpecialization(fruitPreparer, self.specializations) 
 			or object.allowTipDischarge 
 			or courseplay:isUBT(object) 
+			or courseplay:isMower(object) 
 			or courseplay:isFoldable(object) then
 				if courseplay:isUBT(object) and object.fillLevelMax ~= nil then
 					self.cp.hasUBT = true;
