@@ -37,8 +37,7 @@ function courseplay:combine_allows_tractor(self, combine)
 			if combine.turnStage == 1 or combine.turnStage == 2 or combine.cp.turnStage ~= 0 then
 				return false
 			end
-			local left_fruit, right_fruit = courseplay:side_to_drive(self, combine, -10)
-			if left_fruit > right_fruit then
+			if courseplay:side_to_drive(self, combine, -10) == "left" then
 				return false
 			end
 		end
@@ -124,8 +123,7 @@ function courseplay:register_at_combine(self, combine)
 				if combine.turnStage == 1 or combine.turnStage == 2 or combine.cp.turnStage ~= 0 then
 					return false
 				end
-				local left_fruit, right_fruit = courseplay:side_to_drive(self, combine, -10)
-				if left_fruit > right_fruit then
+				if courseplay:side_to_drive(self, combine, -10) == "left" then
 					return false
 				end
 			end
@@ -332,30 +330,26 @@ function courseplay:calculateInitialCombineOffset(self, combine)
 			end
 		else
 			courseplay:debug(string.format("%s(%i): %s @ %s: combine.forced_side=%s, going by fruit", curFile, debug.getinfo(1).currentline, self.name, combine.name, tostring(combine.forced_side)), 3);
-			local left_fruit, right_fruit = courseplay:side_to_drive(self, combine, -10);
-			if left_fruit < right_fruit then
-				self.sideToDrive = "left";
+			local fruitSide = courseplay:side_to_drive(self, combine, -10);
+			if fruitSide == "right" then
 				if combine.cp.lmX ~= nil then
 					self.combine_offset = math.max(combine.cp.lmX + 2.5, 7);
 				else --attached chopper
 					self.combine_offset = 7;
 				end;
-			elseif left_fruit > right_fruit then
-				self.sideToDrive = "right";
+			elseif fruitSide == "left" then
 				if combine.cp.lmX ~= nil then
 					self.combine_offset = math.max(combine.cp.lmX + 2.5, 7) * -1;
 				else --attached chopper
 					self.combine_offset = -3;
 				end;
-			else
-				self.sideToDrive = nil;
+			elseif fruitSide == "none" then
 				if combine.cp.lmX ~= nil then
 					self.combine_offset = math.max(combine.cp.lmX + 2.5, 7);
 				else --attached chopper
 					self.combine_offset = 7;
 				end;
 			end
-			courseplay:debug(string.format("%s(%i): %s @ %s: left_fruit=%f, right_fruit=%f, sideToDrive=%s", curFile, debug.getinfo(1).currentline, self.name, combine.name, left_fruit, right_fruit, tostring(self.sideToDrive)), 3);
 		end;
 	end;
 end;

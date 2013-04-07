@@ -377,12 +377,12 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 						else
 							self:setPipeState(2);
 						end;
-						if self.lastCuttersFruitType == Fillable.FILLTYPE_CHAFF and not self.pipeParticleSystems[Fillable.FILLTYPE_CHAFF].isEmitting and self.cp.turnStage == 0 then
+						if pipeState == 0 and self.cp.turnStage == 0 then
 							self.waitingForTrailerToUnload = true
 						end
 						if self.waitingForTrailerToUnload then
 							allowedToDrive = false;
-							if self.pipeParticleSystems[Fillable.FILLTYPE_CHAFF].isEmitting or pipeState > 0 then
+							if self.pipeParticleSystems[9].isEmitting or pipeState > 0 then
 								self.waitingForTrailerToUnload = false
 							end
 						end

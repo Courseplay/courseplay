@@ -150,7 +150,6 @@ function courseplay:handle_mode2(self, dt)
 				if self.best_combine ~= nil and self.active_combine == nil then
 					courseplay:debug(tostring(self.id)..": request check in: "..tostring(self.combineID), 1)
 					if courseplay:register_at_combine(self, self.best_combine) then
-						local leftFruit, rightFruit = courseplay:side_to_drive(self, self.best_combine, -10) --changed by THOMAS
 						self.ai_state = 2
 					end
 				else
@@ -334,41 +333,15 @@ function courseplay:unload_combine(self, dt)
 		dod = Utils.vector2Length(lx, lz)
 		-- near point
 		if dod < 3 then -- change to mode 4 == drive behind combine or cornChopper
-
+			courseplay:calculateCombineOffset(self, combine);
 			if combine.isCornchopper then -- decide on which side to drive based on ai-combine
-				local leftFruit, rightFruit = 0, 0;
-				local Dir = 0;
-				if combine.Waypoints ~= nil and combine.recordnumber ~= nil and combine.Waypoints[combine.recordnumber+1] ~= nil then
-					Dir = Utils.getNoNil(combine.Waypoints[combine.recordnumber+1].ridgeMarker , 0);
-				end;
-				if Dir == 0 then
-					leftFruit, rightFruit = courseplay:side_to_drive(self, combine, 10);
-				elseif Dir == 1 then
-					leftFruit, rightFruit = 100,0
-				elseif Dir == 2 then
-					leftFruit, rightFruit = 0,100
-				end
-				
-				if combine.forced_side == nil then
-					if leftFruit > rightFruit then
-						if self.combine_offset > 0 then
-							self.combine_offset = math.abs(self.combine_offset) * -1;
-							self.sideToDrive = "right"
-						end
-					elseif leftFruit == rightFruit then
-						if self.combine_offset < 0 then
-							self.combine_offset = math.abs(self.combine_offset) * -1;
-							self.sideToDrive = "left"
-						end
-					end
-				elseif combine.forced_side == "right" then
-					self.sideToDrive = "right";
-					self.combine_offset = math.abs(self.combine_offset) * -1;
-				else
-					self.sideToDrive = "left";
+				courseplay:side_to_drive(self, combine, 10);
+
+				if self.sideToDrive == "right" then
+						self.combine_offset = math.abs(self.combine_offset) * -1;
+				else 
 					self.combine_offset = math.abs(self.combine_offset);
 				end
-
 			end
 			mode = 4
 		end
@@ -432,21 +405,13 @@ function courseplay:unload_combine(self, dt)
 		end
 
 		if combine_fill_level == 0 then --combine empty set waypoints on the field !!!
-			local leftFruit, rightFruit = courseplay:side_to_drive(self, combine, -10)
-			if leftFruit == rightFruit then
-				leftFruit, rightFruit = courseplay:side_to_drive(self, combine, -50)
+			local fruitSide = courseplay:side_to_drive(self, combine, -10)
+			if fruitSide == "none" then
+				fruitSide = courseplay:side_to_drive(self, combine, -50)
 			end
-			local tempFruit
-			if not combine.waitingForDischarge and (combine.waitForTurnTime > combine.time or combine.waitingForTrailerToUnload) then
-				--Fruit side switch at end of field line
-				tempFruit = leftFruit;
-				leftFruit = rightFruit;
-				rightFruit = tempFruit;
-			end;
-						
 			local offset = math.abs(self.combine_offset)
 			if self.combine_offset > 0 then  --I'm left
-				if leftFruit < rightFruit then 
+				if fruitSide == "right" or fruitSide == "none" then 
 					courseplay:debug("I'm left, fruit is right",1)
 					local fx,fy,fz = localToWorld(self.rootNode, 0, 0, 8)
 					if courseplay:is_field(fx, fz) then
@@ -486,7 +451,7 @@ function courseplay:unload_combine(self, dt)
 
 				end
 			else
-				if leftFruit < rightFruit then
+				if fruitSide == "right" or fruitSide == "none" then 
 					courseplay:debug("I'm right, fruit is right",1)
 					local fx,fy,fz = localToWorld(self.rootNode, 2*offset, 0, -self.turn_radius-trailer_offset)
 					if courseplay:is_field(fx, fz) then
@@ -536,7 +501,7 @@ function courseplay:unload_combine(self, dt)
 		end
 
 		--CALCULATE OFFSET
-		courseplay:calculateCombineOffset(self, combine);
+		--courseplay:calculateCombineOffset(self, combine);
 		currentX, currentY, currentZ = localToWorld(combine.rootNode, self.combine_offset, 0, trailer_offset + 5)
 		local cwX, cwY, cwZ = getWorldTranslation(combine.pipeRaycastNode); 
 		local prnToCombineX, prnToCombineY, prnToCombineZ = worldToLocal(combine.rootNode, cwX, cwY, cwZ); 
@@ -649,14 +614,10 @@ function courseplay:unload_combine(self, dt)
 	if combine_turning and distance < 20 then
 		if mode == 3 or mode == 4 then
 			if combine.isCornchopper then
-				if combine.isAIThreshing then
-					self.leftFruit, self.rightFruit = courseplay:side_to_drive(self, combine, -10)
-				else
-					self.rightFruit, self.leftFruit = courseplay:side_to_drive(self, combine, -10)
-				end
-
+				local fruitSide = courseplay:side_to_drive(self, combine, -10,true);
+				
 				--new chopper turn maneuver by Thomas Gärtner  
-				if self.leftFruit < self.rightFruit then -- chopper will turn left
+				if fruitSide == "left" then -- chopper will turn left
 
 					if self.combine_offset > 0 then -- I'm left of chopper
 						courseplay:debug(string.format("%s(%i): %s @ %s: combine turns left, I'm left", curFile, debug.getinfo(1).currentline, self.name, combine.name), 2);
@@ -682,15 +643,7 @@ function courseplay:unload_combine(self, dt)
 						self.isChopperTurning = true
 					end
 				end
-				if combine.forced_side == nil then
-					if self.sideToDrive == "right" then
-						self.sideToDrive = "left"
-					elseif self.sideToDrive == "left" then
-						self.sideToDrive = "right"
-					end
-				else
-					self.sideToDrive = combine.forced_side
-				end
+
 				if self.sideToDrive == "right" then
 					self.combine_offset = math.abs(self.combine_offset) * -1;
 				elseif self.sideToDrive == "left" then
@@ -1076,18 +1029,9 @@ function courseplay:calculateCombineOffset(self, combine)
 		else
 			offs = 8;
 		end;
-
-		if self.sideToDrive == nil then
-			local left_fruit, right_fruit = courseplay:side_to_drive(self, combine, -10);
-			if left_fruit < right_fruit then
-				self.sideToDrive = "left";
-			elseif right_fruit < left_fruit then
-				self.sideToDrive = "right";
-			end;
-			--courseplay:debug(string.format("%s(%i): %s @ %s: sideToDrive first runthrough=%s => offs=%f", curFile, debug.getinfo(1).currentline, self.name, combine.name, tostring(self.sideToDrive), offs), 2)
-		end;
+		courseplay:side_to_drive(self, combine, 10);
 			
-		if self.sideToDrive	~= nil then
+		if self.sideToDrive ~= nil then
 			if self.sideToDrive == "left" then
 				offs = math.abs(offs);
 			elseif self.sideToDrive == "right" then

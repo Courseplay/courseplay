@@ -100,34 +100,20 @@ function courseplay:check_for_fruit(self, distance)
 end
 
 
-function courseplay:side_to_drive(self, combine, distance)
+function courseplay:side_to_drive(self, combine, distance,switchSide)
 	-- if there is a forced side to drive return this
-	-- with autopilot combine, choose search area side
-	if combine.apCombinePresent ~= nil and combine.apCombinePresent then
-		if combine.autoPilotEnabled then
-			if combine.autoPilotAreaLeft.available and combine.autoPilotAreaLeft.active then
-				return 0, 1000
-			end
-			if combine.autoPilotAreaRight.available and combine.autoPilotAreaRight.active then
-				return 1000, 0
-			end
-		end
-	end
-
+	--print("sideToDrive:")
 	local x, y, z = localToWorld(combine.aiTreshingDirectionNode, 0, 0, distance) --getWorldTranslation(combine.aiTreshingDirectionNode);
-
 	local dirX, dirZ = combine.aiThreshingDirectionX, combine.aiThreshingDirectionZ;
-	if dirX == nil or x == nil or dirZ == nil then
+	if not (combine.isAIThreshing or combine.drive) then 
 			local dx,_,dz = localDirectionToWorld(combine.rootNode, 0, 0, 2);
 			local length = Utils.vector2Length(dx,dz);
 			dirX = dx/length;
 			dirZ = dz/length;
-	
 	end
 	local sideX, sideZ = -dirZ, dirX;
 
 	local threshWidth = 10
-
 	local lWidthX = x - sideX * 0.5 * threshWidth + dirX * combine.sideWatchDirOffset;
 	local lWidthZ = z - sideZ * 0.5 * threshWidth + dirZ * combine.sideWatchDirOffset;
 	local lStartX = lWidthX - sideX * 0.7 * threshWidth;
@@ -145,10 +131,73 @@ function courseplay:side_to_drive(self, combine, distance)
 	local rightFruit = 0
 
 	leftFruit = leftFruit + Utils.getFruitArea(combine.lastValidInputFruitType, lStartX, lStartZ, lWidthX, lWidthZ, lHeightX, lHeightZ,true)
-
 	rightFruit = rightFruit + Utils.getFruitArea(combine.lastValidInputFruitType, rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ,true)
-
+	--print("	leftFruit:  "..tostring(leftFruit).."  rightFruit:  "..tostring(rightFruit))
 	courseplay:debug(string.format("%s: fruit: left %f right %f", combine.name, leftFruit, rightFruit), 3)
+	local fruitSide 
+	if combine.isAIThreshing then
+		--print("	isAITreshing")
+		local tempFruit
+		if (not combine.waitingForDischarge and combine.waitForTurnTime > combine.time) or (combine.turnStage == 1) then
+			--Fruit side switch at end of field line
+			--print("	automatic changeover")
+			tempFruit = leftFruit;
+			leftFruit = rightFruit;
+			rightFruit = tempFruit;
+		end;
+	elseif combine.drive then
+		--print("	is in mode6") 
+		local Dir = 0;
+		local wayPoint = combine.recordnumber
+		if not switchSide then
+			wayPoint = wayPoint +2
+		else
+			wayPoint = wayPoint -2
+		end						
+		if combine.Waypoints ~= nil and wayPoint ~= nil and combine.Waypoints[wayPoint] ~= nil then
+			Dir = Utils.getNoNil(combine.Waypoints[wayPoint].ridgeMarker , 0);
+		end;
+		if Dir == 1 then
+			leftFruit , rightFruit  = 100,0
+		elseif Dir == 2 then
+			leftFruit , rightFruit  = 0,100
+		end
+	end
+	
+	if leftFruit > rightFruit then
+		fruitSide = "left"
+	elseif leftFruit < rightFruit then
+		fruitSide = "right"
+	else
+		fruitSide = "none"
+	end
+	if combine.forced_side == nil then
+		--print("	forced side == nil")
+		if not switchSide then
+			if fruitSide == "right" then
+				self.sideToDrive = "left";
+			elseif fruitSide == "left" then
+				self.sideToDrive = "right";
+			else
+				self.sideToDrive = nil;
+			end;
+		else
+			if fruitSide == "right" then
+				self.sideToDrive = "right";
+			elseif fruitSide == "left" then
+				self.sideToDrive = "left";
+			end;
+		end;
+	elseif combine.forced_side == "right" then
+		--print("	forced side right")
+		self.sideToDrive = "right";
+	else
+		--print("	forced side left")
+		self.sideToDrive = "left";
+	end
 
-	return leftFruit, rightFruit
+
+
+	--print("	return: fruitSide: "..tostring(fruitSide))
+	return fruitSide
 end
