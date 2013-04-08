@@ -117,15 +117,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill
 			specialTool, allowedToDrive = courseplay:handleSpecialTools(workTool,false,false,false,allowedToDrive)
 			if not specialTool then
 				if workTool.setIsTurnedOn ~= nil and workTool.isTurnedOn then
-					if courseplay:is_sowingMachine(workTool) then
-						--do manually instead of :setIsTurnedOn so that workTool.turnOnAnimation and workTool.playAnimation aren't called
-						workTool.isTurnedOn = false;
-						--[[if workTool.airBlowerSoundEnabled ~= nil then
-							workTool.airBlowerSoundEnabled = false;
-						end;]]
-					else
-						workTool:setIsTurnedOn(false, false);
-					end;
+					workTool:setIsTurnedOn(false, false);
 				end;
 
 				--raise
@@ -135,6 +127,11 @@ function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill
 					end;
 				end;
 
+				--retract ridgemarker
+				if workTool.setRidgeMarkerState ~= nil and workTool.ridgeMarkerState ~= nil and workTool.ridgeMarkerState ~= 0 then
+					workTool:setRidgeMarkerState(0);
+				end;
+				
 				--fold
 				if courseplay:isFoldable(workTool) then
 					if courseplay:is_sowingMachine(workTool) then
