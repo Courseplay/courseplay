@@ -468,8 +468,8 @@ function courseplay:load(xmlFile)
 	courseplay:register_button(self, 7, "navigate_minus.dds", "change_wait_time",  -5, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], w16px, h16px, nil, -10, "self.waitTime>0");
 	courseplay:register_button(self, 7, "navigate_plus.dds",  "change_wait_time",   5, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[1], w16px, h16px, nil,  10);
 
-	courseplay:register_button(self, 7, "navigate_minus.dds", "changeWpOffsetX", -0.1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[2], w16px, h16px, nil,  -0,5);
-	courseplay:register_button(self, 7, "navigate_plus.dds",  "changeWpOffsetX",  0.1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[2], w16px, h16px, nil,   0,5);
+	courseplay:register_button(self, 7, "navigate_minus.dds", "changeWpOffsetX", -0.1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[2], w16px, h16px, nil,  -0.5);
+	courseplay:register_button(self, 7, "navigate_plus.dds",  "changeWpOffsetX",  0.1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[2], w16px, h16px, nil,   0.5);
 
 	courseplay:register_button(self, 7, "navigate_minus.dds", "changeWpOffsetZ", -0.5, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[3], w16px, h16px, nil,  -1);
 	courseplay:register_button(self, 7, "navigate_plus.dds",  "changeWpOffsetZ",  0.5, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[3], w16px, h16px, nil,   1);
