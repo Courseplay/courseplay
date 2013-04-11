@@ -179,15 +179,15 @@ function courseplay:update_tools(self, tractor_or_implement)
 			self.cp.aiTurnNoBackward = true
 		end
 		if courseplay:isAttachedCombine(object) then
-			if object.name == "Grimme SE 75-55" then
+			if Utils.endsWith(object.configFileName, "grimmeSE75-55.xml") then
 				self.cp.aiTurnNoBackward = true
 				self.WpOffsetX = -2.1
-				print(" Grimme SE 75-55 workwidth: 0.7 m")
-			elseif object.name == "Grimme Rootster 604" then
+				print("Grimme SE 75-55 workwidth: 0.7 m");
+			elseif Utils.endsWith(object.configFileName, "grimmeRootster604.xml") then
 				self.cp.aiTurnNoBackward = true
 				self.WpOffsetX = -0.9
-				print("Grimme Rootster 604 workwidth: 2.8 m")
-			elseif object.name == "Pöttinger Mex 6" then
+				print("Grimme Rootster 604 workwidth: 2.8 m");
+			elseif Utils.endsWith(object.configFileName, "poettingerMex6.xml") then
 				self.cp.aiTurnNoBackward = true
 				self.WpOffsetX = -2.5
 				print("Pöttinger Mex 6 workwidth: 2.0 m")
