@@ -415,7 +415,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 					end
 						
 				end
-			elseif self.cp.turnStage == 0 then  --Stop combine
+			elseif self.cp.turnStage == 0 and self.recordnumber == self.stopWork  then  --Stop combine
 				if self.abortWork == nil then
 					allowedToDrive = false;
 				end
