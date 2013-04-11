@@ -46,12 +46,17 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 
 	for i=1, table.getn(self.tippers) do
 		workTool = self.tippers[i];
+		local tool = self
+		if courseplay:isAttachedCombine(workTool) then
+			tool = workTool
+		end
+		
 		-- implements, no combine or chopper
-		if workTool ~= nil and self.grainTankCapacity == nil then
+		if workTool ~= nil and tool.grainTankCapacity == nil then
 
 			-- stop while folding
 			if courseplay:isFoldable(workTool) then
-				if courseplay:isFolding(workTool) and self.cp.turnStage == 0 then 
+				if courseplay:isFolding(tool) and self.cp.turnStage == 0 then 
 					allowedToDrive = false;
 					--courseplay:debug(workTool.name .. ": isFolding -> allowedToDrive == false", 3);
 				end;
@@ -362,75 +367,80 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 			
 		else  --COMBINES
 		
-			--TODO: move combine out of for loop, it never has more than one workTool
-			if SpecializationUtil.hasSpecialization(Combine, self.specializations) or SpecializationUtil.hasSpecialization(combine, self.specializations) or self.grainTankCapacity == 0 then --TODO: create isCombine(bla) call
-				if workArea and not self.isAIThreshing then
-					local pipeState = self:getCombineTrailerInRangePipeState();
-					local weatherStop = not self:getIsThreshingAllowed(true)
-					if self.grainTankCapacity == 0 then
-						if courseplay:isFoldable(workTool) then
-							workTool:setFoldDirection(-1);
-						end;
-						self:setIsThreshing(true, true);
-						if pipeState > 0 then
-							self:setPipeState(pipeState);
-						else
-							self:setPipeState(2);
-						end;
-						if pipeState == 0 and self.cp.turnStage == 0 then
-							self.waitingForTrailerToUnload = true
-						end
-						if self.waitingForTrailerToUnload then
-							allowedToDrive = false;
-							if self.pipeParticleSystems[9].isEmitting or pipeState > 0 then
-								self.waitingForTrailerToUnload = false
-							end
-						end
+			--Start combine
+			if workArea and not tool.isAIThreshing and self.abortWork == nil and self.cp.turnStage == 0 then
+				local pipeState = tool:getCombineTrailerInRangePipeState();
+				local weatherStop = not tool:getIsThreshingAllowed(true)
+				if tool.grainTankCapacity == 0 then
+					if courseplay:isFoldable(workTool) then
+						workTool:setFoldDirection(-1);
+					end;
+					tool:setIsThreshing(true, true);
+					if pipeState > 0 then
+						tool:setPipeState(pipeState);
 					else
-						if self.grainTankFillLevel < self.grainTankCapacity and not self.waitingForDischarge and not self.isThreshing and not weatherStop then
-							self:setIsThreshing(true, true);
-						end
-						if self.grainTankFillLevel >= self.grainTankCapacity or self.waitingForDischarge then
-							self.waitingForDischarge = true
-							allowedToDrive = false;
-							self:setIsThreshing(false, true);
-							if self.grainTankFillLevel < self.grainTankCapacity*0.8 then
-								self.waitingForDischarge = false
-							end
-						end
-						if self.grainTankFillLevel >= self.grainTankCapacity*0.8  or pipeState > 0 then
-							self:setPipeState(2)
-						elseif  pipeState == 0 then 
-							self:setPipeState(1)
-						end
-						if self.waitingForTrailerToUnload then
-							if 	self.isCheckedIn == nil or (pipeState == 0 and self.grainTankFillLevel == 0) then
-								self.waitingForTrailerToUnload = false
-							else
-								allowedToDrive = false;
-							end							 
-						end
-						if weatherStop then
-							allowedToDrive = false;
-							self:setIsThreshing(false, true);
-							self.global_info_text = courseplay:get_locale(self, "CPwaitingForWeather")
-						end
-							
+						tool:setPipeState(2);
+					end;
+					if pipeState == 0 and self.cp.turnStage == 0 then
+						tool.cp.waitingForTrailerToUnload = true
 					end
-				elseif self.recordnumber == self.stopWork then
-					self:setIsThreshing(false, true);
+					if tool.cp.waitingForTrailerToUnload and (tool.pipeParticleSystems[9].isEmitting or pipeState > 0) then
+							self.cp.waitingForTrailerToUnload = false
+					end
+				else
+					if courseplay:isFoldable(workTool) then
+						workTool:setFoldDirection(-1);
+					end;
+					if not courseplay:isFolding(workTool) and tool.grainTankFillLevel < tool.grainTankCapacity and not tool.waitingForDischarge and not tool.isThreshing and not weatherStop then
+						tool:setIsThreshing(true, true);
+					end
+					
+					if tool.grainTankFillLevel >= tool.grainTankCapacity or tool.waitingForDischarge then
+						tool.waitingForDischarge = true
+						allowedToDrive = false;
+						tool:setIsThreshing(false, true);
+						if tool.grainTankFillLevel < tool.grainTankCapacity*0.8 then
+							tool.waitingForDischarge = false
+						end
+					end
+					if tool.grainTankFillLevel >= tool.grainTankCapacity*0.8  or pipeState > 0 or courseplay:isAttachedCombine(workTool) then
+						tool:setPipeState(2)
+					elseif  pipeState == 0 then 
+						tool:setPipeState(1)
+					end
+					if weatherStop then
+						allowedToDrive = false;
+						tool:setIsThreshing(false, true);
+						self.global_info_text = courseplay:get_locale(self, "CPwaitingForWeather")
+					end
+						
+				end
+			elseif self.cp.turnStage == 0 then  --Stop combine
+				if self.abortWork == nil then
 					allowedToDrive = false;
 				end
-				local dx,_,dz = localDirectionToWorld(self.aiTreshingDirectionNode, 0, 0, 1);
-				local length = Utils.vector2Length(dx,dz);
-				if self.cp.turnStage == 0 then
-					self.aiThreshingDirectionX = dx/length;
-					self.aiThreshingDirectionZ = dz/length;
-				else
-					self.aiThreshingDirectionX = -(dx/length);
-					self.aiThreshingDirectionZ = -(dz/length);
-				end				
-			end;
+				tool:setIsThreshing(false, true);
+				if courseplay:isFoldable(workTool) then
+					workTool:setFoldDirection(1);
+				end;
+				tool:setPipeState(1)
+			end
+			if tool.cp.waitingForTrailerToUnload then
+				allowedToDrive = false;
+				if tool.isCheckedIn == nil or (pipeState ==0 and tool.grainTankFillLevel == 0) then
+					tool.cp.waitingForTrailerToUnload = false
+				end
+			end
+			local dx,_,dz = localDirectionToWorld(self.cp.DirectionNode, 0, 0, 1);
+			local length = Utils.vector2Length(dx,dz);
+			if self.cp.turnStage == 0 then
+				self.aiThreshingDirectionX = dx/length;
+				self.aiThreshingDirectionZ = dz/length;
+			else
+				self.aiThreshingDirectionX = -(dx/length);
+				self.aiThreshingDirectionZ = -(dz/length);
+			end				
+			
 		end
 	end; --END for i in self.tippers
 	

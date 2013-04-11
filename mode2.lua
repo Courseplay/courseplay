@@ -120,7 +120,7 @@ function courseplay:handle_mode2(self, dt)
 			end
 		else
 			-- follow tractor in front of me
-			tractor = self.active_combine.courseplayers[self.courseplay_position - 1]
+			frontTractor = self.active_combine.courseplayers[self.courseplay_position - 1]
 			--	courseplay:follow_tractor(self, dt, tractor)
 			self.ai_state = 6
 			courseplay:unload_combine(self, dt)
@@ -256,8 +256,14 @@ function courseplay:unload_combine(self, dt)
 		combine_fill_level = 51
 		combine.isCornchopper = true;
 	end
+	local tractor = combine
+	if courseplay:isAttachedCombine(combine) then
+		tractor = combine.attacherVehicle
+	end
+
 	-- is combine turning ?
-	if combine ~= nil and (combine.turnStage == 1 or combine.turnStage == 2 or combine.turnStage == 4 or combine.turnStage == 5 or combine.cp.turnStage > 0 ) then
+	local aiTurn = combine.isAIThreshing and (combine.turnStage == 1 or combine.turnStage == 2 or combine.turnStage == 4 or combine.turnStage == 5)
+	if tractor ~= nil and (aiTurn or (tractor.cp.turnStage > 0)) then
 		self.info_text = courseplay:get_locale(self, "CPCombineTurning") -- "Drescher wendet. "
 		combine_turning = true
 	end
@@ -272,7 +278,7 @@ function courseplay:unload_combine(self, dt)
 
 
 	local offset_to_chopper = self.combine_offset
-	if combine.turnStage ~= 0 or combine.cp.turnStage ~= 0 then
+	if tractor.turnStage ~= 0 or tractor.cp.turnStage ~= 0 then
 		offset_to_chopper = self.combine_offset * 1.6 --1,3
 	end
 
@@ -282,7 +288,9 @@ function courseplay:unload_combine(self, dt)
 
 	if mode == 2 then -- Drive to Combine or Cornchopper
 		local safetyDistance = 0
-		if courseplay:isHarvesterSteerable(combine) then
+		if courseplay:isAttachedCombine(combine) then
+			safetyDistance = 11
+		elseif courseplay:isHarvesterSteerable(combine) then
 			safetyDistance = 24
 		elseif courseplay:isCombine(combine) then
 			safetyDistance = 10
@@ -294,13 +302,13 @@ function courseplay:unload_combine(self, dt)
 		--courseplay:remove_from_combines_ignore_list(self, combine)
 		self.info_text = courseplay:get_locale(self, "CPDriveBehinCombine") -- ""
 
-		local x1, y1, z1 = worldToLocal(combine.rootNode, x, y, z)
+		local x1, y1, z1 = worldToLocal(tractor.rootNode, x, y, z)
 
 		if z1 > -(self.turn_radius + safetyDistance) then -- tractor in front of combine     
 			-- left side of combine
-			local cx_left, cy_left, cz_left = localToWorld(combine.rootNode, 20, 0, -30) 
+			local cx_left, cy_left, cz_left = localToWorld(tractor.rootNode, 20, 0, -30) 
 			-- righ side of combine
-			local cx_right, cy_right, cz_right = localToWorld(combine.rootNode, -20, 0, -30) 
+			local cx_right, cy_right, cz_right = localToWorld(tractor.rootNode, -20, 0, -30) 
 			local lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, cx_left, y, cz_left)
 			-- distance to left position
 			local disL = Utils.vector2Length(lx, lz)
@@ -316,7 +324,7 @@ function courseplay:unload_combine(self, dt)
 
 		else
 			-- tractor behind combine
-			currentX, currentY, currentZ = localToWorld(combine.rootNode, 0, 0, -(self.turn_radius + safetyDistance)) --!!!
+			currentX, currentY, currentZ = localToWorld(tractor.rootNode, 0, 0, -(self.turn_radius + safetyDistance)) --!!!
 		end
 
 		--if not self.calculated_course then
@@ -355,7 +363,7 @@ function courseplay:unload_combine(self, dt)
 		local tX, tY, tZ = nil, nil, nil
 
 		if combine.isCornchopper then
-			tX, tY, tZ = localToWorld(combine.rootNode, self.combine_offset * 0.8, 0, -5) 
+			tX, tY, tZ = localToWorld(tractor.rootNode, self.combine_offset * 0.8, 0, -5) 
 		else			
 			tX, tY, tZ = localToWorld(combine.rootNode, self.combine_offset, 0, -5)
 		end
@@ -532,9 +540,8 @@ function courseplay:unload_combine(self, dt)
 		if dod > 40 or self.isChopperTurning == true then
 			mode = 2
 		end
-
 		-- combine is not moving and trailer is under pipe
-		if not combine.isCornchopper and combine.movingDirection == 0 and (lz <= 1 or lz < -0.1 * trailer_offset) then
+		if not combine.isCornchopper and tractor.movingDirection == 0 and (lz <= 1 or lz < -0.1 * trailer_offset) then
 			self.info_text = courseplay:get_locale(self, "CPCombineWantsMeToStop") -- "Drescher sagt ich soll anhalten."
 			allowedToDrive = false
 		elseif combine.isCornchopper then
@@ -550,7 +557,7 @@ function courseplay:unload_combine(self, dt)
 		end
 
 		-- refspeed depends on the distance to the combine
-		local combine_speed = combine.lastSpeed
+		local combine_speed = tractor.lastSpeed
 		if combine.isCornchopper then
 			self.sl = 2
 			if lz > 20 then
@@ -564,7 +571,7 @@ function courseplay:unload_combine(self, dt)
 			else
 				refSpeed = combine_speed
 			end
-			if ((combine.turnStage ~= 0 or combine.cp.turnStage ~= 0) and lz < 20) then
+			if ((tractor.turnStage ~= 0 or tractor.cp.turnStage ~= 0) and lz < 20) then
 				refSpeed = 1 / 3600
 				self.sl = 1
 				if self.ESLimiter == nil then
@@ -582,13 +589,13 @@ function courseplay:unload_combine(self, dt)
 			else
 				refSpeed = combine_speed
 			end
-			if ((combine.turnStage ~= 0 or combine.cp.turnStage ~= 0) and lz < 20) or (self.timer < self.drive_slow_timer) or (combine.movingDirection == 0 and lz < 15) then
+			if ((tractor.turnStage ~= 0 or tractor.cp.turnStage ~= 0) and lz < 20) or (self.timer < self.drive_slow_timer) or (combine.movingDirection == 0 and lz < 15) then
 				refSpeed = 4 / 3600
 				self.sl = 1
 				if self.ESLimiter == nil then
 					self.motor.maxRpm[self.sl] = 200
 				end 
-				if combine.turnStage ~= 0 or combine.cp.turnStage ~= 0 then
+				if tractor.turnStage ~= 0 or tractor.cp.turnStage ~= 0 then
 					self.drive_slow_timer = self.timer + 2000
 				end
 			end
@@ -606,20 +613,19 @@ function courseplay:unload_combine(self, dt)
 		if combine.grainTankFillLevel > combine.grainTankCapacity*0.9 then
 			if combine.isAIThreshing then 
 				combine.waitForTurnTime = combine.time + 100
-			elseif self.drive == true then
-				combine.waitingForTrailerToUnload = true
+			elseif tractor.drive == true then
+				combine.cp.waitingForTrailerToUnload = true
 			end			
 		elseif distance < 50 then
 			if combine.isAIThreshing and not (combine_fill_level == 0 and combine.currentPipeState ~= 2) then
 				combine.waitForTurnTime = combine.time + 100
-			elseif combine.drive == true then
-				combine.waitingForTrailerToUnload = true
+			elseif tractor.drive == true and not (combine_fill_level == 0 and combine:getCombineTrailerInRangePipeState()==0) then
+				combine.cp.waitingForTrailerToUnload = true
 			end
 		elseif distance < 100 and mode == 2 then
 			allowedToDrive = false
 		end
 	end
-
 	if combine_turning and distance < 20 then
 		if mode == 3 or mode == 4 then
 			if combine.isCornchopper then
@@ -801,16 +807,16 @@ function courseplay:unload_combine(self, dt)
 		end
 	end
 
-	if mode == 6 and tractor ~= nil then --Follow Tractor
+	if mode == 6 and frontTractor ~= nil then --Follow Tractor
 		self.info_text = courseplay:get_locale(self, "CPFollowTractor") -- "Fahre hinter Traktor"
 		--use the current tractor's sideToDrive as own
-		if tractor.sideToDrive ~= nil then
-			courseplay:debug(string.format("setting current tractor's sideToDrive (%s) as my own", tostring(tractor.sideToDrive)));
-			self.sideToDrive = tractor.sideToDrive;
+		if frontTractor.sideToDrive ~= nil then
+			courseplay:debug(string.format("setting current tractor's sideToDrive (%s) as my own", tostring(frontTractor.sideToDrive)));
+			self.sideToDrive = frontTractor.sideToDrive;
 		end;
 
 		-- drive behind tractor
-		local x1, y1, z1 = worldToLocal(tractor.rootNode, x, y, z)
+		local x1, y1, z1 = worldToLocal(frontTractor.rootNode, x, y, z)
 		local distance = Utils.vector2Length(x1, z1)
 
 
@@ -818,9 +824,9 @@ function courseplay:unload_combine(self, dt)
 		if z1 > 0 then
 			-- tractor in front of tractor
 			-- left side of tractor
-			local cx_left, cy_left, cz_left = localToWorld(tractor.rootNode, 30, 0, -10)
+			local cx_left, cy_left, cz_left = localToWorld(frontTractor.rootNode, 30, 0, -10)
 			-- righ side of tractor
-			local cx_right, cy_right, cz_right = localToWorld(tractor.rootNode, -30, 0, -10)
+			local cx_right, cy_right, cz_right = localToWorld(frontTractor.rootNode, -30, 0, -10)
 			local lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, cx_left, y, cz_left)
 			-- distance to left position
 			local disL = Utils.vector2Length(lx, lz)
@@ -835,20 +841,20 @@ function courseplay:unload_combine(self, dt)
 		else
 			-- tractor behind tractor
 			--TODO: ORIG: z = -40
-			currentX, currentY, currentZ = localToWorld(tractor.rootNode, 0, 0, -30)
+			currentX, currentY, currentZ = localToWorld(frontTractor.rootNode, 0, 0, -30)
 		end
 
 		local lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, currentX, currentY, currentZ)
 		dod = Utils.vector2Length(lx, lz)
 
-		if dod < 2 or tractor.ai_state ~= 3 then
+		if dod < 2 or frontTractor.ai_state ~= 3 then
 			allowedToDrive = false
 		end
 
 		if distance > 50 then
 			refSpeed = self.max_speed
 		else
-			refSpeed = tractor.lastSpeedReal --10/3600 -- tractor.lastSpeedReal
+			refSpeed = frontTractor.lastSpeedReal --10/3600 -- frontTractor.lastSpeedReal
 		end
 
 
@@ -1056,7 +1062,7 @@ function courseplay:calculateCombineOffset(self, combine)
 		elseif combine.forced_side == "right" then
 			offs = math.abs(offs) * -1;
 		end
-		courseplay:debug(string.format("%s(%i): %s @ %s: forced_side=%s => offs=%f", curFile, debug.getinfo(1).currentline, self.name, combine.name, combine.forced_side, offs), 2)
+		--courseplay:debug(string.format("%s(%i): %s @ %s: forced_side=%s => offs=%f", curFile, debug.getinfo(1).currentline, self.name, combine.name, combine.forced_side, offs), 2)
 	end
 
 	--refresh for display in HUD and other calculations

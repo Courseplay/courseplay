@@ -47,6 +47,9 @@ end;
 function courseplay:isBigM(workTool)
 	return (SpecializationUtil.hasSpecialization(Steerable, workTool.specializations) or SpecializationUtil.hasSpecialization(steerable, workTool.specializations)) and courseplay:isMower(workTool);
 end;
+function courseplay:isAttachedCombine(workTool)
+	return workTool.typeName == "attachableCombine" or (not SpecializationUtil.hasSpecialization(Steerable, workTool.specializations) and  workTool.grainTankCapacity ~= nil)
+end;
 -- update implements to find attached tippers
 function courseplay:update_tools(self, tractor_or_implement)
 	--steerable (tractor, combine etc.)
@@ -174,6 +177,21 @@ function courseplay:update_tools(self, tractor_or_implement)
 			self.cp.aiTurnNoBackward = true
 		elseif object.aiLeftMarker == nil and table.getn(object.wheels) > 0 then
 			self.cp.aiTurnNoBackward = true
+		end
+		if courseplay:isAttachedCombine(object) then
+			if object.name == "Grimme SE 75-55" then
+				self.cp.aiTurnNoBackward = true
+				self.WpOffsetX = -2.1
+				print(" Grimme SE 75-55 workwidth: 0.7 m")
+			elseif object.name == "Grimme Rootster 604" then
+				self.cp.aiTurnNoBackward = true
+				self.WpOffsetX = -0.9
+				print("Grimme Rootster 604 workwidth: 2.8 m")
+			elseif object.name == "Pöttinger Mex 6" then
+				self.cp.aiTurnNoBackward = true
+				self.WpOffsetX = -2.5
+				print("Pöttinger Mex 6 workwidth: 2.0 m")
+			end
 		end
 		
 
@@ -333,6 +351,9 @@ function courseplay:setMarkers(self, object)
 	local area = object.cuttingAreas
 	if courseplay:isBigM(object) then
 		area = object.mowerCutAreas
+	elseif object.typeName == "defoliator_animated" then
+		print("fruit preparer")
+		area = object.fruitPreparerAreas
 	end
 
 	local tableLength = table.getn(area)

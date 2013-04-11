@@ -187,8 +187,11 @@ function courseplay:stop(self)
 		for key, tipper in pairs(self.tippers) do
 			specialTool = courseplay:handleSpecialTools(tipper,false,false,false)
 			if not specialTool then
-				if tipper.setIsTurnedOn ~= nil then
+				if tipper.setIsTurnedOn ~= nil and tipper.isTurnedOn then
 					tipper:setIsTurnedOn(false, false);
+				end;
+				if tipper.isThreshing then
+					tipper:setIsThreshing(false, true);
 				end
 				if courseplay:isFoldable(tipper) and tipper.setFoldDirection ~= nil then
 					if self.ai_mode == 6 or courseplay:is_sowingMachine(tipper) then

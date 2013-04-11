@@ -102,8 +102,15 @@ end
 
 function courseplay:side_to_drive(self, combine, distance,switchSide)
 	-- if there is a forced side to drive return this
-	--print("sideToDrive:")
-	local x, y, z = localToWorld(combine.aiTreshingDirectionNode, 0, 0, distance) --getWorldTranslation(combine.aiTreshingDirectionNode);
+	--print("sideToDrive:") 
+	local tractor = combine
+	if courseplay:isAttachedCombine(combine) then
+		tractor = combine.attacherVehicle
+	end
+
+
+	local x, y, z = 0,0,0
+	x, y, z = localToWorld(tractor.cp.DirectionNode, 0, 0, distance -5)
 	local dirX, dirZ = combine.aiThreshingDirectionX, combine.aiThreshingDirectionZ;
 	if not (combine.isAIThreshing or combine.drive) then 
 			local dx,_,dz = localDirectionToWorld(combine.rootNode, 0, 0, 2);
@@ -112,28 +119,31 @@ function courseplay:side_to_drive(self, combine, distance,switchSide)
 			dirZ = dz/length;
 	end
 	local sideX, sideZ = -dirZ, dirX;
+	local sideWatchDirOffset = Utils.getNoNil(combine.sideWatchDirOffset,-8)
+	local sideWatchDirSize = Utils.getNoNil(combine.sideWatchDirSize,3)
+	local selfSideWatchDirSize = Utils.getNoNil(self.sideWatchDirSize,3)
 
 	local threshWidth = 10
-	local lWidthX = x - sideX * 0.5 * threshWidth + dirX * combine.sideWatchDirOffset;
-	local lWidthZ = z - sideZ * 0.5 * threshWidth + dirZ * combine.sideWatchDirOffset;
+	local lWidthX = x - sideX * 0.5 * threshWidth + dirX * sideWatchDirOffset;
+	local lWidthZ = z - sideZ * 0.5 * threshWidth + dirZ * sideWatchDirOffset;
 	local lStartX = lWidthX - sideX * 0.7 * threshWidth;
 	local lStartZ = lWidthZ - sideZ * 0.7 * threshWidth;
-	local lHeightX = lStartX + dirX * combine.sideWatchDirSize;
-	local lHeightZ = lStartZ + dirZ * combine.sideWatchDirSize;
+	local lHeightX = lStartX + dirX * sideWatchDirSize;
+	local lHeightZ = lStartZ + dirZ * sideWatchDirSize;
 
-	local rWidthX = x + sideX * 0.5 * threshWidth + dirX * combine.sideWatchDirOffset;
-	local rWidthZ = z + sideZ * 0.5 * threshWidth + dirZ * combine.sideWatchDirOffset;
+	local rWidthX = x + sideX * 0.5 * threshWidth + dirX * sideWatchDirOffset;
+	local rWidthZ = z + sideZ * 0.5 * threshWidth + dirZ * sideWatchDirOffset;
 	local rStartX = rWidthX + sideX * 0.7 * threshWidth;
 	local rStartZ = rWidthZ + sideZ * 0.7 * threshWidth;
-	local rHeightX = rStartX + dirX * self.sideWatchDirSize;
-	local rHeightZ = rStartZ + dirZ * self.sideWatchDirSize;
+	local rHeightX = rStartX + dirX * selfSideWatchDirSize;
+	local rHeightZ = rStartZ + dirZ * selfSideWatchDirSize;
 	local leftFruit = 0
 	local rightFruit = 0
 
 	leftFruit = leftFruit + Utils.getFruitArea(combine.lastValidInputFruitType, lStartX, lStartZ, lWidthX, lWidthZ, lHeightX, lHeightZ,true)
 	rightFruit = rightFruit + Utils.getFruitArea(combine.lastValidInputFruitType, rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ,true)
 	--print("	leftFruit:  "..tostring(leftFruit).."  rightFruit:  "..tostring(rightFruit))
-	courseplay:debug(string.format("%s: fruit: left %f right %f", combine.name, leftFruit, rightFruit), 3)
+	--courseplay:debug(string.format("%s: fruit: left %f right %f", combine.name, leftFruit, rightFruit), 3)
 	local fruitSide 
 	if combine.isAIThreshing then
 		--print("	isAITreshing")
@@ -145,17 +155,20 @@ function courseplay:side_to_drive(self, combine, distance,switchSide)
 			leftFruit = rightFruit;
 			rightFruit = tempFruit;
 		end;
-	elseif combine.drive then
+	elseif tractor.drive then
 		--print("	is in mode6") 
 		local Dir = 0;
-		local wayPoint = combine.recordnumber
+		local wayPoint = tractor.recordnumber
+		if tractor.cp.turnStage > 0 then
+   			switchSide = true
+  		end
 		if not switchSide then
 			wayPoint = wayPoint +2
 		else
 			wayPoint = wayPoint -2
 		end						
-		if combine.Waypoints ~= nil and wayPoint ~= nil and combine.Waypoints[wayPoint] ~= nil then
-			Dir = Utils.getNoNil(combine.Waypoints[wayPoint].ridgeMarker , 0);
+		if tractor.Waypoints ~= nil and wayPoint ~= nil and tractor.Waypoints[wayPoint] ~= nil then
+			Dir = Utils.getNoNil(tractor.Waypoints[wayPoint].ridgeMarker , 0);
 		end;
 		if Dir == 1 then
 			leftFruit , rightFruit  = 100,0
