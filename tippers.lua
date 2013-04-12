@@ -50,11 +50,21 @@ end;
 function courseplay:isAttachedCombine(workTool)
 	return workTool.typeName == "attachableCombine" or (not SpecializationUtil.hasSpecialization(Steerable, workTool.specializations) and  workTool.grainTankCapacity ~= nil)
 end;
+function courseplay:isAttachedMixer(workTool)
+	return workTool.typeName == "mixerWagon" or (not SpecializationUtil.hasSpecialization(Steerable, workTool.specializations) and  SpecializationUtil.hasSpecialization(MixerWagon, workTool.specializations))
+end;
+function courseplay:isMixer(workTool)
+	return workTool.typeName == "selfPropelledMixerWagon" or (SpecializationUtil.hasSpecialization(Steerable, workTool.specializations) and  SpecializationUtil.hasSpecialization(MixerWagon, workTool.specializations))
+end;
+
 -- update implements to find attached tippers
 function courseplay:update_tools(self, tractor_or_implement)
 	--steerable (tractor, combine etc.)
 	local tipper_attached = false
-	if SpecializationUtil.hasSpecialization(AITractor, tractor_or_implement.specializations) or courseplay:isHarvesterSteerable(tractor_or_implement) or courseplay:isBigM(tractor_or_implement) then
+	if SpecializationUtil.hasSpecialization(AITractor, tractor_or_implement.specializations) 
+	or courseplay:isHarvesterSteerable(tractor_or_implement) 
+	or courseplay:isBigM(tractor_or_implement) 
+	or courseplay:isMixer(tractor_or_implement) then
 		local object = tractor_or_implement
 		if self.ai_mode == 1 or self.ai_mode == 2 then
 			-- if SpecializationUtil.hasSpecialization(Trailer, object.specializations) then
@@ -190,7 +200,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 			elseif Utils.endsWith(object.configFileName, "poettingerMex6.xml") then
 				self.cp.aiTurnNoBackward = true
 				self.WpOffsetX = -2.5
-				print("Pöttinger Mex 6 workwidth: 2.0 m")
+				print("Pöttinger Mex 6 workwidth: 2.0 m");
 			end
 		end
 		
