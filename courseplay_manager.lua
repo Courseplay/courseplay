@@ -223,7 +223,7 @@ function CourseplayJoinFixEvent:writeStream(streamId, connection)
 				streamDebugWriteInt32(streamId, g_currentMission.courseplay_courses[i].waypoints[w].speed)
 
 				streamDebugWriteBool(streamId, g_currentMission.courseplay_courses[i].waypoints[w].generated)
-				streamDebugWriteString(streamId, g_currentMission.courseplay_courses[i].turn)
+				streamDebugWriteString(streamId, g_currentMission.courseplay_courses[i].waypoints[w].turn)
 				streamDebugWriteBool(streamId, g_currentMission.courseplay_courses[i].waypoints[w].turnStart)
 				streamDebugWriteBool(streamId, g_currentMission.courseplay_courses[i].waypoints[w].turnEnd)
 				streamDebugWriteInt32(streamId, g_currentMission.courseplay_courses[i].waypoints[w].ridgeMarker)
