@@ -193,6 +193,9 @@ function courseplay:stop(self)
 				if tipper.isThreshing then
 					tipper:setIsThreshing(false, true);
 				end
+				if self.isThreshing then
+					self:setIsThreshing(false, true);
+				end
 				if courseplay:isFoldable(tipper) and tipper.setFoldDirection ~= nil then
 					if self.ai_mode == 6 or courseplay:is_sowingMachine(tipper) then
 						tipper:setFoldDirection(1);

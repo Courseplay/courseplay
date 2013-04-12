@@ -59,7 +59,7 @@ end;
 
 
 function courseplay:isFolding(workTool) --TODO: use getIsAnimationPlaying(animationName)
-	if SpecializationUtil.hasSpecialization(Foldable, workTool.specializations) or SpecializationUtil.hasSpecialization(foldable, workTool.specializations) then
+	if courseplay:isFoldable(workTool) then
 		for k, foldingPart in pairs(workTool.foldingParts) do
 			local charSet = foldingPart.animCharSet;
 			local animTime = nil

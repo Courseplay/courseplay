@@ -375,12 +375,14 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 					if courseplay:isFoldable(workTool) then
 						workTool:setFoldDirection(-1);
 					end;
-					tool:setIsThreshing(true, true);
-					if pipeState > 0 then
-						tool:setPipeState(pipeState);
-					else
-						tool:setPipeState(2);
-					end;
+					if not courseplay:isFolding(workTool) then
+						tool:setIsThreshing(true, true);
+						if pipeState > 0 then
+							tool:setPipeState(pipeState);
+						else
+							tool:setPipeState(2);
+						end;
+					end
 					if pipeState == 0 and self.cp.turnStage == 0 then
 						tool.cp.waitingForTrailerToUnload = true
 					end
