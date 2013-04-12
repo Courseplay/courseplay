@@ -336,14 +336,16 @@ function courseplay:drive(self, dt)
 		allowedToDrive = false
 	else -- ende wartepunkt
 		-- abfahrer-mode
-		if (self.ai_mode == 1 and self.tipper_attached and self.cp.tipperFillLevel ~= nil) or (self.loaded and self.ai_mode == 2) then
+		if (self.ai_mode == 1 and self.tipper_attached and self.cp.tipperFillLevel ~= nil and self.tipRefOffset ~= nil) or (self.loaded and self.ai_mode == 2 and self.tipRefOffset ~= nil) then
 			-- is there a tipTrigger within 10 meters?
 			raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
-			if self.currentTipTrigger == nil then
-				raycastAll(tx+self.tipRefOffset, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
-			end
-			if self.currentTipTrigger == nil then
-				raycastAll(tx-self.tipRefOffset, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
+			if self.tipRefOffset ~= 0 then
+				if self.currentTipTrigger == nil then
+					raycastAll(tx+self.tipRefOffset, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
+				end
+				if self.currentTipTrigger == nil then
+					raycastAll(tx-self.tipRefOffset, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
+				end
 			end
 			-- handle mode
 			allowedToDrive  = courseplay:handle_mode1(self)
@@ -440,15 +442,16 @@ function courseplay:drive(self, dt)
 	-- Mode 6 Fieldwork for balers and foragewagon
 	if self.ai_mode == 6 and self.startWork ~= nil and self.stopWork ~= nil then
 		allowedToDrive, workArea, workSpeed, active_tipper = courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill_level, last_recordnumber, lx , lz )
-		if not workArea and self.grainTankCapacity == nil and self.tipRefOffset ~= 0 then
+		if not workArea and self.grainTankCapacity == nil and self.tipRefOffset ~= nil then
 			-- is there a tipTrigger within 10 meters?
-			
 			raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
-			if self.currentTipTrigger == nil then
-				raycastAll(tx+self.tipRefOffset, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
-			end
-			if self.currentTipTrigger == nil then
-				raycastAll(tx-self.tipRefOffset, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
+			if self.tipRefOffset ~= 0 then
+				if self.currentTipTrigger == nil then
+					raycastAll(tx+self.tipRefOffset, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
+				end
+				if self.currentTipTrigger == nil then
+					raycastAll(tx-self.tipRefOffset, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
+				end
 			end
 		end;
 	end

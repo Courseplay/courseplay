@@ -69,6 +69,7 @@ function courseplay:load(xmlFile)
 	self.cp.noStopOnTurn = false --bool
 
 	self.toggledTipState = 0;
+	self.cp.lastCheckedTransformID = 0
 	
 	self.auto_combine_offset = true
 	self.mouse_right_key_enabled = true
@@ -698,6 +699,7 @@ function courseplay:readStream(streamId, connection)
 	self.cp.turnTimer = streamDebugReadInt32(streamId);
 	self.cp.noStopOnEdge = streamDebugReadBool(streamId);
 	self.cp.noStopOnTurn = streamDebugReadBool(streamId);
+	self.cp.lastCheckedTransformID = streamDebugReadInt32(streamId);
 	self.crossPoints = streamDebugReadInt32(streamId)
 	self.drive = streamDebugReadBool(streamId)
 	self.drive_slow_timer = streamDebugReadInt32(streamId)
@@ -826,6 +828,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteInt32(streamId, self.cp.turnTimer)
 	streamDebugWriteBool(streamId, self.cp.noStopOnEdge)
 	streamDebugWriteBool(streamId, self.cp.noStopOnTurn)
+	streamDebugWriteInt32(streamId, self.cp.lastCheckedTransformID)
 	streamDebugWriteInt32(streamId, self.crossPoints);
 	streamDebugWriteBool(streamId,self.drive)
 	streamDebugWriteInt32(streamId,self.drive_slow_timer)

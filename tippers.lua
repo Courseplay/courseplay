@@ -36,7 +36,7 @@ function courseplay:is_sowingMachine(workTool) -- is the tool a sowing machine?
 	return (SpecializationUtil.hasSpecialization(sowingMachine, workTool.specializations) or SpecializationUtil.hasSpecialization(SowingMachine, workTool.specializations));
 end;
 function courseplay:isFoldable(workTool) --is the tool foldable?
-	return SpecializationUtil.hasSpecialization(Foldable, workTool.specializations) or SpecializationUtil.hasSpecialization(foldable, workTool.specializations);
+	return SpecializationUtil.hasSpecialization(Foldable, workTool.specializations) or SpecializationUtil.hasSpecialization(foldable, workTool.specializations) or workTool.foldingParts ~= nil;
 end;
 function courseplay:isUBT(workTool) --is the tool a UBT?
 	return SpecializationUtil.hasSpecialization(ubt, workTool.specializations) or SpecializationUtil.hasSpecialization(Ubt, workTool.specializations) or workTool.name == "UniversalBaleTrailer" or (workTool.numAttacherParts ~= nil and workTool.autoLoad ~= nil and workTool.loadingIsActive ~= nil and workTool.unloadLeft ~= nil and workTool.unloadRight ~= nil and workTool.unloadBack ~= nil and workTool.typeOnTrailer ~= nil);
@@ -254,7 +254,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 	courseplay:getAutoTurnradius(self, tipper_attached);
 	
 	--tipreferencepoints 
-	self.tipRefOffset = 0;
+	self.tipRefOffset = nil;
 	if tipper_attached and self.tippers[1].rootNode ~= nil and self.tippers[1].tipReferencePoints ~= nil then
 		local tipperX, tipperY, tipperZ = getWorldTranslation(self.tippers[1].rootNode);
 		if tipper_attached and table.getn(self.tippers[1].tipReferencePoints) > 1 then
@@ -264,10 +264,12 @@ function courseplay:update_tools(self, tractor_or_implement)
 				if tipRefPointX > 0.1 then
 					self.tipRefOffset = tipRefPointX;
 					break;
+				else
+					self.tipRefOffset = 0
 				end;
 			end;
 		else 
-			self.tipRefOffset = 0.001;
+			self.tipRefOffset = 0;
 		end;
 	end;
 

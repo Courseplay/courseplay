@@ -56,47 +56,34 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 			table.insert(trigger_objects, trigger)
 		end
 	end
-	--C.Schoch
-	if g_currentMission.tipAnywhereTriggers ~= nil then
-		for k, trigger in pairs(g_currentMission.tipAnywhereTriggers) do
-			table.insert(trigger_objects, trigger)
-		end
-	end
 	-- C.Schoch
 	if g_currentMission.tipTriggers ~= nil then
 		for k, trigger in pairs(g_currentMission.tipTriggers) do
-			if trigger.isExtendedTrigger or trigger.className == "HeapTipTrigger" then
+			if trigger.isExtendedTrigger then
 				table.insert(trigger_objects, trigger);
 			end;
 		end
 	end;
 	-- C.Schoch
 	-- courseplay:debug(table.show(trigger_objects), 4);
-	for k, trigger in pairs(trigger_objects) do
-		--courseplay:debug(trigger.className, 3);
-		if (trigger.className and (trigger.className == "SiloTrigger" or trigger.className == "HeapTipTrigger" or Utils.endsWith(trigger.className, "TipTrigger") or Utils.startsWith(trigger.className, "MapBGA"))) or trigger.isTipAnywhereTrigger then
-			-- transformId
-			if not trigger.className then
-				-- little hack ;)
-				trigger.className = "TipAnyWhere"
-			end
-			local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
-			if trigger.triggerId ~= nil and trigger.triggerId == transformId and (trigger.bunkerSilo == nil or (trigger.bunkerSilo.fillLevel + tipper_capacity) < trigger.bunkerSilo.capacity) then
-				courseplay:debug(table.show(trigger), 4);
-				local fruitType = self.tippers[1].currentFillType
-
-				if trigger.acceptedFillTypes[fruitType] then
-					self.currentTipTrigger = trigger
-				end
-			elseif trigger.triggerIds ~= nil and transformId ~= nil and table.contains(trigger.triggerIds, transformId) then
-				self.currentTipTrigger = trigger
-			elseif trigger.specialTriggerId ~= nil and trigger.specialTriggerId == transformId then
-				-- support map bga by headshot xxl
-				if trigger.silage.fillLevel < trigger.silage.maxFillLevel then
+	if self.cp.lastCheckedTransformID ~= transformId then
+		for k, trigger in pairs(trigger_objects) do
+			--courseplay:debug(trigger.className, 3);
+			if (trigger.className and (trigger.className == "SiloTrigger" or Utils.endsWith(trigger.className, "TipTrigger"))) then
+				-- transformId
+				local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
+				if trigger.triggerId ~= nil and trigger.triggerId == transformId and (trigger.bunkerSilo == nil or (trigger.bunkerSilo.fillLevel + tipper_capacity) < trigger.bunkerSilo.capacity) then
+					--courseplay:debug(table.show(trigger), 4);
+					local fruitType = self.tippers[1].currentFillType
+					if trigger.acceptedFillTypes[fruitType] then
+						self.currentTipTrigger = trigger
+					end
+				elseif trigger.triggerIds ~= nil and transformId ~= nil and table.contains(trigger.triggerIds, transformId) then
 					self.currentTipTrigger = trigger
 				end
 			end
 		end
+		self.cp.lastCheckedTransformID = transformId	
 	end
 end
 
