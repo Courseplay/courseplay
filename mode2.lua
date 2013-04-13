@@ -295,7 +295,7 @@ function courseplay:unload_combine(self, dt)
 		elseif courseplay:isCombine(combine) then
 			safetyDistance = 10
 		elseif courseplay:isChopper(combine) then
-			safetyDistance = 6
+			safetyDistance = 11
 		end
 		self.sl = 2
 		refSpeed = self.field_speed
@@ -417,6 +417,7 @@ function courseplay:unload_combine(self, dt)
 				fruitSide = courseplay:side_to_drive(self, combine, -50)
 			end
 			local offset = math.abs(self.combine_offset)
+			local DirTx,_,DirTz = worldToLocal(self.rootNode,self.Waypoints[self.maxnumber].cx,0, self.Waypoints[self.maxnumber].cz)
 			if self.combine_offset > 0 then  --I'm left
 				if fruitSide == "right" or fruitSide == "none" then 
 					courseplay:debug("I'm left, fruit is right",1)
@@ -432,7 +433,10 @@ function courseplay:unload_combine(self, dt)
 						courseplay:set_next_target(self, 0 ,  -self.turn_radius-trailer_offset);
 						mode = 5
 					else
-						self.target_x, self.target_z  = self.Waypoints[self.maxnumber].cx, self.Waypoints[self.maxnumber].cz
+						courseplay:debug("backup- back to start",1)
+						self.target_x,self.target_y, self.target_z  = localToWorld(self.rootNode, 2 , 0, -self.turn_radius-trailer_offset)
+						courseplay:set_next_target(self, DirTx, DirTz);
+
 						mode = 5
 					end					
 				else
@@ -452,7 +456,10 @@ function courseplay:unload_combine(self, dt)
 							courseplay:debug("target is not on field",1)
 							courseplay:set_next_target(self, 2*offset*-1 ,  -(2*self.turn_radius)-trailer_offset);
 						else
+							courseplay:debug("backup- back to start",1)
 							self.target_x, self.target_z  = self.Waypoints[self.maxnumber].cx, self.Waypoints[self.maxnumber].cz
+
+
 						end
 						mode = 5
 					elseif courseplay:is_field(tx, tz) then		
@@ -463,7 +470,9 @@ function courseplay:unload_combine(self, dt)
 						courseplay:set_next_target(self, 2*offset*-1 , self.turn_radius);
 						mode = 5
 					else
-						self.target_x, self.target_z  = self.Waypoints[self.maxnumber].cx, self.Waypoints[self.maxnumber].cz
+						courseplay:debug("backup- back to start",1)
+						self.target_x,self.target_y, self.target_z  = localToWorld(self.rootNode, 2 , 0, -self.turn_radius-trailer_offset)
+						courseplay:set_next_target(self, DirTx, DirTz);
 						mode = 5
 					end
 				end
@@ -471,45 +480,65 @@ function courseplay:unload_combine(self, dt)
 				if fruitSide == "right" or fruitSide == "none" then 
 					courseplay:debug("I'm right, fruit is right",1)
 					local fx,fy,fz = localToWorld(self.rootNode, 2*offset, 0, -self.turn_radius-trailer_offset)
+					local sx,sy,sz = localToWorld(self.rootNode, 2*offset,0,  -(2*trailer_offset))
 					if courseplay:is_field(fx, fz) then
 						courseplay:debug("deepest waypoint is on field",1)
 						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, -4, 0, -self.turn_radius-trailer_offset);
 						courseplay:set_next_target(self, 2*offset ,  -self.turn_radius-trailer_offset);
 						fx,fy,fz = localToWorld(self.rootNode, 2*offset, 0, 0)
+						sx,sy,sz = localToWorld(self.rootNode, 2*offset,  -(2*self.turn_radius)-trailer_offset)
 						if courseplay:is_field(fx, fz) then
 							courseplay:debug("traget is on field",1)
 							courseplay:set_next_target(self, 2*offset,0);
-						else
+
+						elseif courseplay:is_field(sx, sz) then
 							courseplay:debug("target is not on field",1)
 							courseplay:set_next_target(self, 2*offset,  -(2*self.turn_radius)-trailer_offset);
+						else
+							courseplay:debug("backup- back to start",1)
+							self.target_x,self.target_y, self.target_z  = localToWorld(self.rootNode, -2 , 0, -self.turn_radius-trailer_offset)
+							courseplay:set_next_target(self, DirTx, DirTz);
 						end
 						mode = 5
-					else		
+
+					elseif courseplay:is_field(sx, sz) then	
 						courseplay:debug("deepest waypoint is not on field",1)
 						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, -self.turn_radius, 0, 0);
 						courseplay:set_next_target(self, 0 ,  -(2*trailer_offset));
 						courseplay:set_next_target(self, 2*offset,  -(2*trailer_offset));
 						courseplay:set_next_target(self, 2*offset, self.turn_radius);
 						mode = 5
+					else
+						courseplay:debug("backup- back to start",1)
+						self.target_x,self.target_y, self.target_z  = localToWorld(self.rootNode, -2 , 0, -self.turn_radius-trailer_offset)
+						courseplay:set_next_target(self, DirTx, DirTz);
+						mode = 5
 					end
 				else
 					courseplay:debug("I'm right, fruit is left",1)
 					local fx,fy,fz = localToWorld(self.rootNode, 0, 0, 3)
+					local sx,sy,sz = localToWorld(self.rootNode, 0,0, -self.turn_radius-trailer_offset)
 					if courseplay:is_field(fx, fz) then
 						courseplay:debug("target is on field",1)
 						mode = 1
-					else
+
+					elseif courseplay:is_field(sx, sz) then
 						courseplay:debug("target is not on field",1)
 						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, -2 , 0, -self.turn_radius);
 						courseplay:set_next_target(self, 0, -self.turn_radius-trailer_offset);
+						mode = 5
+					else
+						courseplay:debug("backup- back to start",1)
+						self.target_x,self.target_y, self.target_z  = localToWorld(self.rootNode, -2 , 0, -self.turn_radius-trailer_offset)
+						courseplay:set_next_target(self, DirTx, DirTz);
 						mode = 5
 					end
 
 				end
 
 			end
-				
-		  
+
+
 			if tipper_percentage >= self.required_fill_level_for_drive_on then
 				self.loaded = true
 			else
