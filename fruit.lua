@@ -112,7 +112,7 @@ function courseplay:side_to_drive(self, combine, distance,switchSide)
 	local x, y, z = 0,0,0
 	x, y, z = localToWorld(tractor.cp.DirectionNode, 0, 0, distance -5)
 	local dirX, dirZ = combine.aiThreshingDirectionX, combine.aiThreshingDirectionZ;
-	if not (combine.isAIThreshing or combine.drive) then 
+	if (not (combine.isAIThreshing or combine.drive)) or  combine.aiThreshingDirectionX == nil or combine.aiThreshingDirectionZ == nil then
 			local dx,_,dz = localDirectionToWorld(combine.rootNode, 0, 0, 2);
 			local length = Utils.vector2Length(dx,dz);
 			dirX = dx/length;

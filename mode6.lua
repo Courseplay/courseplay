@@ -51,17 +51,16 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 			tool = workTool
 		end
 		
+		-- stop while folding
+		if courseplay:isFoldable(workTool) then
+			if courseplay:isFolding(workTool) and self.cp.turnStage == 0 then 
+				allowedToDrive = false;
+				--courseplay:debug(workTool.name .. ": isFolding -> allowedToDrive == false", 3);
+			end;
+		end;
+
 		-- implements, no combine or chopper
 		if workTool ~= nil and tool.grainTankCapacity == nil then
-
-			-- stop while folding
-			if courseplay:isFoldable(workTool) then
-				if courseplay:isFolding(tool) and self.cp.turnStage == 0 then 
-					allowedToDrive = false;
-					--courseplay:debug(workTool.name .. ": isFolding -> allowedToDrive == false", 3);
-				end;
-			end;
-
 			-- balers
 			if courseplay:isBaler(workTool) then
 				if self.recordnumber >= self.startWork + 1 and self.recordnumber < self.stopWork then
@@ -368,69 +367,81 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 		else  --COMBINES
 		
 			--Start combine
-			if workArea and not tool.isAIThreshing and self.abortWork == nil and self.cp.turnStage == 0 then
-				local pipeState = tool:getCombineTrailerInRangePipeState();
-				local weatherStop = not tool:getIsThreshingAllowed(true)
-				if tool.grainTankCapacity == 0 then
-					if courseplay:isFoldable(workTool) then
-						workTool:setFoldDirection(-1);
-					end;
-					if not courseplay:isFolding(workTool) then
-						tool:setIsThreshing(true, true);
-						if pipeState > 0 then
-							tool:setPipeState(pipeState);
-						else
-							tool:setPipeState(2);
+			if workArea and not tool.isAIThreshing and self.abortWork == nil then
+				specialTool, allowedToDrive = courseplay:handleSpecialTools(workTool,true,true,true,allowedToDrive,tool)
+				if not specialTool then
+					local pipeState = tool:getCombineTrailerInRangePipeState();
+					local weatherStop = not tool:getIsThreshingAllowed(true)
+					if tool.grainTankCapacity == 0 then
+						if courseplay:isFoldable(workTool) and not tool.isThreshing then
+							workTool:setFoldDirection(-1);
 						end;
-					end
-					if pipeState == 0 and self.cp.turnStage == 0 then
-						tool.cp.waitingForTrailerToUnload = true
-					end
-					if tool.cp.waitingForTrailerToUnload and (tool.pipeParticleSystems[9].isEmitting or pipeState > 0) then
-							self.cp.waitingForTrailerToUnload = false
-					end
-				else
-					if courseplay:isFoldable(workTool) then
-						workTool:setFoldDirection(-1);
-					end;
-					if not courseplay:isFolding(workTool) and tool.grainTankFillLevel < tool.grainTankCapacity and not tool.waitingForDischarge and not tool.isThreshing and not weatherStop then
-						tool:setIsThreshing(true, true);
-					end
-					
-					if tool.grainTankFillLevel >= tool.grainTankCapacity or tool.waitingForDischarge then
-						tool.waitingForDischarge = true
-						allowedToDrive = false;
-						tool:setIsThreshing(false, true);
-						if tool.grainTankFillLevel < tool.grainTankCapacity*0.8 then
-							tool.waitingForDischarge = false
+						if not courseplay:isFolding(workTool) and not tool.isThreshing then
+							tool:setIsThreshing(true, true);
+							if pipeState > 0 then
+								tool:setPipeState(pipeState);
+							else
+								tool:setPipeState(2);
+							end;
 						end
-					end
-					if tool.grainTankFillLevel >= tool.grainTankCapacity*0.8  or pipeState > 0 or courseplay:isAttachedCombine(workTool) then
-						tool:setPipeState(2)
-					elseif  pipeState == 0 then 
-						tool:setPipeState(1)
-					end
-					if weatherStop then
-						allowedToDrive = false;
-						tool:setIsThreshing(false, true);
-						self.global_info_text = courseplay:get_locale(self, "CPwaitingForWeather")
-					end
+						if pipeState == 0 and self.cp.turnStage == 0 then
+							tool.cp.waitingForTrailerToUnload = true
+						end
+						if tool.cp.waitingForTrailerToUnload and (tool.pipeParticleSystems[9].isEmitting or pipeState > 0) then
+							self.cp.waitingForTrailerToUnload = false
+						else
+							allowedToDrive = false;
+						end
+					else
+						if courseplay:isFoldable(workTool) and not tool.isThreshing then
+							workTool:setFoldDirection(-1);
+						end;
+						if not courseplay:isFolding(workTool) and tool.grainTankFillLevel < tool.grainTankCapacity and not tool.waitingForDischarge and not tool.isThreshing and not weatherStop then
+							tool:setIsThreshing(true, true);
+						end
 						
+						if tool.grainTankFillLevel >= tool.grainTankCapacity or tool.waitingForDischarge then
+							tool.waitingForDischarge = true
+							allowedToDrive = false;
+							tool:setIsThreshing(false, true);
+							if tool.grainTankFillLevel < tool.grainTankCapacity*0.8 then
+								tool.waitingForDischarge = false
+							end
+						end
+
+						if tool.grainTankFillLevel >= tool.grainTankCapacity*0.8  or pipeState > 0 or courseplay:isAttachedCombine(workTool) then
+							tool:setPipeState(2)
+						elseif  pipeState == 0 then 
+							tool:setPipeState(1)
+						end
+
+						if tool.cp.waitingForTrailerToUnload then
+							allowedToDrive = false;
+							if tool.isCheckedIn == nil or (pipeState ==0 and tool.grainTankFillLevel == 0) then
+								tool.cp.waitingForTrailerToUnload = false
+							end
+						end
+	
+						if weatherStop then
+							allowedToDrive = false;
+							tool:setIsThreshing(false, true);
+							self.global_info_text = courseplay:get_locale(self, "CPwaitingForWeather")
+						end
+							
+					end
 				end
-			elseif self.cp.turnStage == 0 and self.recordnumber == self.stopWork  then  --Stop combine
+			 --Stop combine
+			elseif self.recordnumber == self.stopWork  then 
 				if self.abortWork == nil then
 					allowedToDrive = false;
 				end
-				tool:setIsThreshing(false, true);
-				if courseplay:isFoldable(workTool) then
-					workTool:setFoldDirection(1);
-				end;
-				tool:setPipeState(1)
-			end
-			if tool.cp.waitingForTrailerToUnload then
-				allowedToDrive = false;
-				if tool.isCheckedIn == nil or (pipeState ==0 and tool.grainTankFillLevel == 0) then
-					tool.cp.waitingForTrailerToUnload = false
+				specialTool, allowedToDrive = courseplay:handleSpecialTools(workTool,false,false,false,allowedToDrive,tool)
+				if not specialTool then
+					tool:setIsThreshing(false, true);
+					if courseplay:isFoldable(workTool) then
+						workTool:setFoldDirection(1);
+					end;
+					tool:setPipeState(1)
 				end
 			end
 			local dx,_,dz = localDirectionToWorld(self.cp.DirectionNode, 0, 0, 1);
