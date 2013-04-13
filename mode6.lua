@@ -387,10 +387,11 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 						if pipeState == 0 and self.cp.turnStage == 0 then
 							tool.cp.waitingForTrailerToUnload = true
 						end
-						if tool.cp.waitingForTrailerToUnload and (tool.pipeParticleSystems[9].isEmitting or pipeState > 0) then
-							self.cp.waitingForTrailerToUnload = false
-						else
+						if tool.cp.waitingForTrailerToUnload then
 							allowedToDrive = false;
+							if (tool.pipeParticleSystems[9].isEmitting or pipeState > 0) then
+								self.cp.waitingForTrailerToUnload = false
+							end
 						end
 					else
 						if courseplay:isFoldable(workTool) and not tool.isThreshing then
