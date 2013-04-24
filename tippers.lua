@@ -56,6 +56,9 @@ end;
 function courseplay:isMixer(workTool)
 	return workTool.typeName == "selfPropelledMixerWagon" or (SpecializationUtil.hasSpecialization(Steerable, workTool.specializations) and  SpecializationUtil.hasSpecialization(MixerWagon, workTool.specializations))
 end;
+function courseplay:isFrontloader(workTool)
+	return SpecializationUtil.hasSpecialization(Cylindered, workTool.specializations) and SpecializationUtil.hasSpecialization(AnimatedVehicle, workTool.specializations) and not SpecializationUtil.hasSpecialization(Shovel, workTool.specializations)
+end
 
 -- update implements to find attached tippers
 function courseplay:update_tools(self, tractor_or_implement)
@@ -64,7 +67,9 @@ function courseplay:update_tools(self, tractor_or_implement)
 	if SpecializationUtil.hasSpecialization(AITractor, tractor_or_implement.specializations) 
 	or courseplay:isHarvesterSteerable(tractor_or_implement) 
 	or courseplay:isBigM(tractor_or_implement) 
-	or courseplay:isMixer(tractor_or_implement) then
+	or courseplay:isMixer(tractor_or_implement)
+	or tractor_or_implement.typeName == "wheelLoader"
+	or tractor_or_implement.typeName == "frontloader" then
 		local object = tractor_or_implement
 		if self.ai_mode == 1 or self.ai_mode == 2 then
 			-- if SpecializationUtil.hasSpecialization(Trailer, object.specializations) then
@@ -112,6 +117,14 @@ function courseplay:update_tools(self, tractor_or_implement)
 			tipper_attached = true
 			table.insert(self.tippers, object)
 			-- end
+		elseif self.ai_mode == 9 then --Fill and empty shovel
+			if tractor_or_implement.typeName == "wheelLoader" 
+			or tractor_or_implement.typeName == "frontloader" 
+			or courseplay:isMixer(tractor_or_implement) then
+				tipper_attached = true;
+				table.insert(self.tippers, object);
+				object.cp.shovelState = 1
+			end;
 		end
 	end
 
@@ -121,10 +134,9 @@ function courseplay:update_tools(self, tractor_or_implement)
 	-- go through all implements
 	self.cpTrafficCollisionIgnoreList = {}
 	self.cp.aiBackMarker = nil
-
 	for k, implement in pairs(tractor_or_implement.attachedImplements) do
 		local object = implement.object
-		
+
 		if object.cp == nil then --table for custom implement variables
 			object.cp = {};
 		end;
@@ -181,6 +193,12 @@ function courseplay:update_tools(self, tractor_or_implement)
 			tipper_attached = true
 			table.insert(self.tippers, object)
 			--		end
+		elseif self.ai_mode == 9 then --Fill and empty shovel
+			if courseplay:isFrontloader(object) or SpecializationUtil.hasSpecialization(Shovel, object.specializations) then 
+				tipper_attached = true;
+				table.insert(self.tippers, object);
+				object.attacherVehicle.cp.shovelState = 1
+			end
 		end
 
 		if object.aiLeftMarker ~= nil and object.aiForceTurnNoBackward == true then 
@@ -364,7 +382,6 @@ function courseplay:setMarkers(self, object)
 	if courseplay:isBigM(object) then
 		area = object.mowerCutAreas
 	elseif object.typeName == "defoliator_animated" then
-		print("fruit preparer")
 		area = object.fruitPreparerAreas
 	end
 

@@ -106,6 +106,22 @@ function courseplay:start(self)
 					self.stopWork = i
 				end
 			end
+			if self.ai_mode == 9 then
+				if wait then
+					wpanz = wpanz + 1;
+				end;
+				
+				if wpanz == 1 and self.cp.shovelFillStartPoint == nil then
+					self.cp.shovelFillStartPoint = i;
+				end;
+				if wpanz == 2 and self.cp.shovelFillEndPoint == nil then
+					self.cp.shovelFillEndPoint = i;
+				end;
+				if wpanz == 3 and self.cp.shovelEmptyPoint == nil then
+					self.cp.shovelEmptyPoint = i;
+				end;
+			end;
+
 		end
 		-- mode 6 without start and stop point, set them at start and end, for only-on-field-courses
 		if (self.ai_mode == 4 or self.ai_mode == 6) and wpanz == 0 then
@@ -116,7 +132,7 @@ function courseplay:start(self)
 			self.recordnumber = 1
 		end
 	end
-
+	self.ai_state = 9  --!!!
 
 	if self.recordnumber > 2 and self.ai_mode ~= 4 and self.ai_mode ~= 6 then
 		self.loaded = true

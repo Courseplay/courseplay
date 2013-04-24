@@ -257,6 +257,18 @@ function courseplay:deal_with_mouse_input(self, func, value)
 		self.show_hud = false
 		InputBinding.setShowMouseCursor(self.mouse_enabled)
 	end
+	if func == "setShovelLoad" then
+		courseplay:saveShovelStatus(self, 2);
+	end
+	if func == "setShovelTransport" then
+		courseplay:saveShovelStatus(self, 3);
+	end
+	if func == "setShovelPreUnload" then
+		courseplay:saveShovelStatus(self, 4);
+	end
+	if func == "setShovelUnload" then
+		courseplay:saveShovelStatus(self, 5);
+	end
 
 
 	if func == "row1" or func == "row2" or func == "row3" or func == "row4" or func == "row5" then

@@ -157,7 +157,7 @@ function courseplay:drive(self, dt)
 	elseif self.ai_mode == 7 and self.ai_state ~=5 then
 		cx, cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
 	end
-
+	
 	if CPDebugLevel > 0 then  drawDebugPoint(cx, cty+3, cz, 1, 0 , 1, 1) end
 	-- offset - endlich lohnt sich der mathe-lk von vor 1000 Jahren ;)
 	if (self.ai_mode == 4 or self.ai_mode == 6 ) and self.startWork ~= nil and self.stopWork ~=nil and self.WpOffsetX ~= nil and self.WpOffsetZ ~= nil then
@@ -199,7 +199,7 @@ function courseplay:drive(self, dt)
 	--courseplay:debug(string.format("Tx: %f2 Tz: %f2 WPcx: %f2 WPcz: %f2 dist: %f2 ", ctx, ctz, cx, cz, self.dist ), 2)
 	local fwd = nil
 	local distToChange = nil
-	local lx, lz = AIVehicleUtil.getDriveDirection(self.rootNode, cx, cty, cz);
+	local lx, lz = AIVehicleUtil.getDriveDirection(self.cp.DirectionNode, cx, cty, cz);
 	
 	-- what about our tippers?
 	self.cp.tipperFillLevel, self.cp.tipperCapacity = self:getAttachedTrailersFillLevelAndCapacity()
@@ -325,6 +325,8 @@ function courseplay:drive(self, dt)
 					self.unloaded = true
 				end
 			end
+		elseif self.ai_mode == 9 then
+			self.wait = false;
 		else
 			self.global_info_text = courseplay:get_locale(self, "CPReachedWaitPoint")
 		end
@@ -455,6 +457,10 @@ function courseplay:drive(self, dt)
 			end
 		end;
 	end
+	if self.ai_mode == 9 then
+		allowedToDrive = courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToDrive, dt);
+	end;
+
 	
 	local dx,_,dz = localDirectionToWorld(self.cp.DirectionNode, 0, 0, 1);
 	local length = Utils.vector2Length(dx,dz);
@@ -492,7 +498,7 @@ function courseplay:drive(self, dt)
 	-- which speed?
 	local slowEnd = self.ai_mode == 2 and self.recordnumber > self.maxnumber - 3;
 	local slowStart_lvl2 = (self.ai_mode == 2 or self.ai_mode == 3) and self.recordnumber < 3;
-	local slowStartEnd = self.ai_mode ~= 2 and self.ai_mode ~= 3 and self.ai_mode ~= 4 and self.ai_mode ~= 6 and (self.recordnumber > self.maxnumber - 3 or self.recordnumber < 3)
+	local slowStartEnd = self.ai_mode ~= 2 and self.ai_mode ~= 3 and self.ai_mode ~= 4 and self.ai_mode ~= 6 and self.ai_mode ~= 9 and (self.recordnumber > self.maxnumber - 3 or self.recordnumber < 3)
 	local slowDownWP = false
 	local slowDownRev = false
 	local real_speed = self.lastSpeedReal
@@ -521,7 +527,9 @@ function courseplay:drive(self, dt)
 		self.sl = 1
 		refSpeed = self.turn_speed
 	end
-
+	if self.ai_mode == 9 then
+		slowDownWP = false
+	end
 	
 	if self.Waypoints[self.recordnumber].speed ~= nil and self.use_speed and self.recordnumber > 3 then
 		refSpeed = math.max(self.Waypoints[self.recordnumber].speed,3/3600)
@@ -609,9 +617,11 @@ function courseplay:drive(self, dt)
 		elseif (self.Waypoints[self.recordnumber].rev and self.Waypoints[self.recordnumber].wait) or afterReverse then
 			distToChange = 2
 		elseif self.Waypoints[self.recordnumber].rev then
-			distToChange = 1;
+			distToChange = 2;  --1
 		elseif self.ai_mode == 4 or self.ai_mode == 6 or self.ai_mode == 7 then
 			distToChange = 5;
+		elseif self.ai_mode == 9 then
+			distToChange = 4;
 		else
 			distToChange = 2.85; --orig: 5
 		end;

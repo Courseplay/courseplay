@@ -1,7 +1,7 @@
 function courseplay:change_ai_state(self, change_by)
 	self.ai_mode = self.ai_mode + change_by
 
-	if self.ai_mode == 9 or self.ai_mode == 0 then
+	if self.ai_mode == 10 or self.ai_mode == 0 then
 		self.ai_mode = 1
 	end
 end
@@ -430,4 +430,21 @@ end;
 function courseplay:validateCanSwitchMode(self)
 	self.cp.canSwitchMode = self.play and not self.drive and not self.record and not self.record_pause and (self.Waypoints ~= nil and table.getn(self.Waypoints) ~= 0);
 	--print("validateCanSwitchMode(): self.cp.canSwitchMode=" .. tostring(self.cp.canSwitchMode));
+end;
+
+function courseplay:saveShovelStatus(self, stage)
+	local mt , secondary = courseplay:getMovingTools(self)
+
+	if stage == 2 then
+		self.cp.shovelState2Rot = courseplay:getCurrentRotation(mt,secondary)
+		for k,v in pairs ( self.cp.shovelState2Rot) do
+			print("k:  "..tostring(k).."  v:  "..tostring(v))
+		end
+	elseif stage == 3 then
+		self.cp.shovelState3Rot = courseplay:getCurrentRotation(mt,secondary)
+	elseif stage == 4 then
+		self.cp.shovelState4Rot = courseplay:getCurrentRotation(mt,secondary)
+	elseif stage == 5 then
+		self.cp.shovelState5Rot = courseplay:getCurrentRotation(mt,secondary);
+	end
 end;

@@ -119,7 +119,7 @@ function courseplay:load(xmlFile)
 	-- ai mode: 1 abfahrer, 2 kombiniert
 	self.ai_mode = 1
 	self.follow_mode = 1
-	self.ai_state = 0
+	self.ai_state = 9
 	self.next_ai_state = nil
 	self.startWork = nil
 	self.stopWork = nil
@@ -487,7 +487,13 @@ function courseplay:load(xmlFile)
 	courseplay:register_button(self, 8, "navigate_down.dds", "setHeadlandLanes",  -1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[5], w16px, h16px, nil, nil, "self.cp.headland.numLanes>-1");
 	
 	courseplay:register_button(self, 8, "blank.dds", "generateCourse",           nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[6], lineButtonWidth, 0.015, nil, nil, "self.cp.hasValidCourseGenerationData=true");
-	--END Page 8
+	
+	--Page 9: Wheelloader settings
+	courseplay:register_button(self, 9, "navigate_plus.dds",  "setShovelLoad",   true, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[1], w16px, h16px, nil,  10);
+	courseplay:register_button(self, 9, "navigate_plus.dds",  "setShovelTransport",   true, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[2], w16px, h16px, nil,  10);
+	courseplay:register_button(self, 9, "navigate_plus.dds",  "setShovelPreUnload",   true, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[3], w16px, h16px, nil,  10);
+	courseplay:register_button(self, 9, "navigate_plus.dds",  "setShovelUnload",   true, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[4], w16px, h16px, nil,  10);
+	--END Page 9
 
 
 	self.fold_move_direction = 1;

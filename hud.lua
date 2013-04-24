@@ -446,6 +446,33 @@ function courseplay:loadHud(self)
 			else
 				self.hudpage[8][1][6] = "";
 			end;
+		elseif self.showHudInfoBase == 9 then
+			self.hudpage[9][1][1] = courseplay:get_locale(self, "setLoad");  --"laden"
+			self.hudpage[9][1][2] = courseplay:get_locale(self, "setTransport");  --"transportieren"
+			self.hudpage[9][1][3] = courseplay:get_locale(self, "setPreUnload");  --"fertig zum entladen"
+			self.hudpage[9][1][4] = courseplay:get_locale(self, "setUnload");  --"entladen"
+			self.hudpage[9][1][5] = "                                 save"
+			
+			if self.cp.shovelState2Rot ~= nil then
+				self.hudpage[9][2][1] = "OK"
+			else
+				self.hudpage[9][2][1] = ""
+			end
+			if self.cp.shovelState3Rot ~= nil then
+				self.hudpage[9][2][2] = "OK"
+			else
+				self.hudpage[9][2][2] = ""
+			end
+			if self.cp.shovelState4Rot ~= nil then
+				self.hudpage[9][2][3] = "OK"
+			else
+				self.hudpage[9][2][3] = ""
+			end
+			if self.cp.shovelState5Rot ~= nil then
+				self.hudpage[9][2][4] = "OK"
+			else
+				self.hudpage[9][2][4] = ""
+			end
 		end;
 	end -- end if show_hud
 end
@@ -457,7 +484,7 @@ function courseplay:showHud(self)
 
 		courseplay:render_buttons(self, self.showHudInfoBase)
 
-		if self.ai_mode > 0 and self.ai_mode < 9 then
+		if self.ai_mode > 0 and self.ai_mode <= 9 then
 			self.hudinfo[1] = courseplay:get_locale(self, "CourseMode" .. string.format("%d", self.ai_mode))
 		else
 			self.hudinfo[1] = "---"
@@ -506,6 +533,8 @@ function courseplay:showHud(self)
 			hud_headline = courseplay:get_locale(self, "CPHud7") -- "Allgemein"
 		elseif self.showHudInfoBase == 8 then
 			hud_headline = courseplay:get_locale(self, "CPcourseGeneration") -- "Course Generation"
+		elseif self.showHudInfoBase == 9 then
+			hud_headline = courseplay:get_locale(self, "CPAssignShovel") --Schaufel progammieren
 		end
 
 		renderText(courseplay.hud.infoBasePosX + 0.060, courseplay.hud.infoBasePosY + 0.240, 0.021, hud_headline);

@@ -14,7 +14,6 @@ CPDebugLevel = 0
 working_course_players = {};
 
 function initialize_courseplay()
-	print("Initialized Courseplay files")
 	source(courseplay_path .. "helpers.lua")
 	source(courseplay_path .. "turn.lua")
 
@@ -31,6 +30,7 @@ function initialize_courseplay()
 	source(courseplay_path .. "mode2.lua")
 	source(courseplay_path .. "mode4.lua")
 	source(courseplay_path .. "mode6.lua")
+	source(courseplay_path .. "mode9.lua")
 
 	-- course recording & resetting
 	source(courseplay_path .. "drive.lua")

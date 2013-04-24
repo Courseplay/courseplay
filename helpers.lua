@@ -165,8 +165,14 @@ end
 end;
 
 function courseplay:handleSpecialTools(workTool,unfold,lower,turnOnOff,allowedToDrive,spare2,spare3)
+	
+	--gueldnerG40Frontloader free DLC classics
+	if workTool.animatedFrontloader ~= nil then
+		workTool:releaseShovel(unfold);
+	
+
 	-- Claas liner 4000
-	if Utils.endsWith(workTool.configFileName, "liner4000.xml") then
+	elseif Utils.endsWith(workTool.configFileName, "liner4000.xml") then
 		local isReadyToWork = workTool.rowerFoldingParts[1].isDown;
 		local manualReset = false
 		if workTool.cp.unfoldOrderIsGiven == nil then
@@ -282,3 +288,11 @@ function courseplay:handleSpecialTools(workTool,unfold,lower,turnOnOff,allowedTo
 
 	return false, allowedToDrive;
 end
+
+function courseplay:round(num, decimals)
+	if decimals and decimals > 0 then
+		local mult = 10^decimals;
+		return math.floor(num * mult + 0.5) / mult;
+	end;
+	return math.floor(num + 0.5);
+end;

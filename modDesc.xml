@@ -1472,6 +1472,62 @@ Italský překlad: JD7530
 			<it>Termina</it>
 			<cz>Ukončit</cz>
 		</text>
+		<text name="CourseMode9">
+			<en>Type: Fill + empty shovel</en>
+			<de>Typ: Schaufel befüllen + entleeren</de>
+			<fr>Type: Fill + empty shovel</fr>
+			<es>Tipo: Fill + empty shovel</es>
+			<it>Modo: Fill + empty shovel</it>
+			<cz>Mod: Fill + empty shovel</cz>
+		</text>
+		<text name="CPNoShovel">
+			<en>missing shovel for this mode</en>
+			<de>keine Schaufel dran Du Depp</de>
+			<fr>missing shovel for this mode</fr>
+			<es>missing shovel for this mode</es>
+			<it>missing shovel for this mode</it>
+			<cz>missing shovel for this mode</cz>
+		</text>
+		<text name="CPAssignShovel">
+			<en>assign shovel position</en>
+			<de>Schaufelstellung programmieren</de>
+			<fr>assign shovel position</fr>
+			<es>assign shovel position</es>
+			<it>assign shovel position</it>
+			<cz>assign shovel position</cz>
+		</text>
+				<text name="setLoad">
+			<en>assign loading position</en>
+			<de>Position "Laden"</de>
+			<fr>assign loading position</fr>
+			<es>assign loading position</es>
+			<it>assign loading position</it>
+			<cz>assign loading position</cz>
+		</text>
+				<text name="setTransport">
+			<en>assign transport position</en>
+			<de> Position "Transport"</de>
+			<fr>assign transport position</fr>
+			<es>assign transport position</es>
+			<it>assign transport position</it>
+			<cz>assign transport position</cz>
+		</text>
+				<text name="setPreUnload">
+			<en>assign preunloading position</en>
+			<de>Position "vor Abladen"</de>
+			<fr>assign preunloading position</fr>
+			<es>assign preunloading position</es>
+			<it>assign preunloading position</it>
+			<cz>assign preunloading position</cz>
+		</text>
+				<text name="setUnload">
+			<en>assign unloading position</en>
+			<de>Position "Abladen"</de>
+			<fr>assign unloading position</fr>
+			<es>assign unloading position</es>
+			<it>assign unloading position</it>
+			<cz>assign unloading position</cz>
+		</text>
 	</l10n>
 
 	<extraSourceFiles>
@@ -1503,6 +1559,7 @@ Italský překlad: JD7530
 		<sourceFile filename="settings.lua" />
 		<sourceFile filename="courseplay_event.lua" />
 		<sourceFile filename="courseplay_manager.lua" />
+		<sourceFile filename="mode9.lua" />
     </extraSourceFiles>   
 
 	<inputBindings>

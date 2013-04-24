@@ -76,7 +76,7 @@ function cp_setupHud()
 		linesPosY = {};
 		linesBottomPosY = {};
 		linesButtonPosY = {};
-		numPages = 8,
+		numPages = 9,
 		numLines = 6;
 		lineHeight = 0.021;
 		hoverColor = {
