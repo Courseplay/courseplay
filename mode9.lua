@@ -12,15 +12,9 @@ handles "mode9": Fill and empty shovel
 1)  drive course until waiting point #1 - set shovel to "filling" rotation
 2)  [repeat] if lastFillLevel == currentFillLevel: drive ahead until is filling
 2b) if waiting point #2 is reached, area is empty -> stop work
-3)  if currentFillLevel == 100: set shovel to "transport" rotation, find closest point that's behind , drive course from there
+3)  if currentFillLevel == 100: set shovel to "transport" rotation, find closest point that's behind tractor, drive course from there
 4)  drive course forwards until waiting point #3 - set shovel to "empty" rotation
 5)  drive course with recorded direction (most likely in reverse) until end - continue and repeat to 1)
- 
-Additional notes/TODO:
-
-* self.cp.shovelEmptyPoint [int];
-  self.cp.shovelFillStartPoint [int];
-  self.cp.shovelFillEndPoint [int];
 ]]
 
 function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToDrive, dt)
@@ -30,7 +24,9 @@ function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToD
 	--state 4: get ready to unload
 	--state 5: unload
 	--state 6: leave BGA
-	local isValid = self.cp.shovelState2Rot ~= nil and self.cp.shovelState3Rot ~= nil and self.cp.shovelState4Rot ~= nil and self.cp.shovelState5Rot ~= nil
+	
+	--local isValid = self.cp.shovelState2Rot ~= nil and self.cp.shovelState3Rot ~= nil and self.cp.shovelState4Rot ~= nil and self.cp.shovelState5Rot ~= nil
+	local isValid = self.cp.shovelStateRot ~= nil and self.cp.shovelStateRot["2"] ~= nil and self.cp.shovelStateRot["3"] ~= nil and self.cp.shovelStateRot["4"] ~= nil and self.cp.shovelStateRot["5"] ~= nil;
 	if not isValid then
 		self.info_text = courseplay.locales.CPAssignShovel
 		return false
@@ -40,7 +36,7 @@ function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToD
 		return false
 	end
 	
-	local mt , secondary = courseplay:getMovingTools(self)
+	local mt, secondary = courseplay:getMovingTools(self)
 			
 	if self.recordnumber == 1 and self.cp.shovelState ~= 6 then  --backup for missed approach
 		self.cp.shovelState = 1
@@ -49,15 +45,16 @@ function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToD
 	
 	if self.cp.shovelState == 1 then
 		if self.recordnumber + 1 > self.cp.shovelFillStartPoint then
-			local hasAimedRotation = courseplay:hasAimedRotation(self, mt, secondary, self.cp.shovelState2Rot);
-			if hasAimedRotation ~= nil and not hasAimedRotation then
-				courseplay:setMovingToolsRotation(self, dt, mt, secondary,  self.cp.shovelState2Rot);
+			local hasTargetRotation = courseplay:hasTargetRotation(self, mt, secondary, self.cp.shovelStateRot["2"]);
+			if hasTargetRotation ~= nil and not hasTargetRotation then
+				courseplay:setMovingToolsRotation(self, dt, mt, secondary,  self.cp.shovelStateRot["2"]);
 			end
-			if hasAimedRotation then
+			if hasTargetRotation then
 				self.cp.shovelState = 2
 				--print("set state 2")
 			end
 		end
+
 	elseif self.cp.shovelState == 2 then
 		if last_recordnumber == self.cp.shovelFillEndPoint then
 			self.loaded = true;
@@ -75,11 +72,11 @@ function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToD
 					end
 				end			
 			else
-				local hasAimedRotation = courseplay:hasAimedRotation(self, mt, secondary,  self.cp.shovelState3Rot);
-				if hasAimedRotation ~= nil and not hasAimedRotation then
-					courseplay:setMovingToolsRotation(self, dt, mt, secondary,  self.cp.shovelState3Rot);
+				local hasTargetRotation = courseplay:hasTargetRotation(self, mt, secondary, self.cp.shovelStateRot["3"]);
+				if hasTargetRotation ~= nil and not hasTargetRotation then
+					courseplay:setMovingToolsRotation(self, dt, mt, secondary, self.cp.shovelStateRot["3"]);
 				end
-				if hasAimedRotation then
+				if hasTargetRotation then
 					self.cp.shovelState = 3
 					--print("set state 3")
 				else
@@ -89,13 +86,14 @@ function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToD
 
 			end
 		end
+
 	elseif self.cp.shovelState == 3 then
 		if last_recordnumber + 3 > self.cp.shovelEmptyPoint then
-			local hasAimedRotation = courseplay:hasAimedRotation(self, mt, secondary,  self.cp.shovelState4Rot);
-			if hasAimedRotation ~= nil and not hasAimedRotation then
-				courseplay:setMovingToolsRotation(self, dt, mt, secondary,  self.cp.shovelState4Rot);
+			local hasTargetRotation = courseplay:hasTargetRotation(self, mt, secondary, self.cp.shovelStateRot["4"]);
+			if hasTargetRotation ~= nil and not hasTargetRotation then
+				courseplay:setMovingToolsRotation(self, dt, mt, secondary, self.cp.shovelStateRot["4"]);
 			end
-			if hasAimedRotation then
+			if hasTargetRotation then
 				self.cp.shovelState = 4
 				--print("set state 4")
 			end
@@ -103,39 +101,40 @@ function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToD
 
 	elseif self.cp.shovelState == 4 then
 		if last_recordnumber == self.cp.shovelEmptyPoint then
-			local hasAimedRotation = courseplay:hasAimedRotation(self, mt, secondary,  self.cp.shovelState5Rot);
-			if hasAimedRotation ~= nil and not hasAimedRotation then
-				courseplay:setMovingToolsRotation(self, dt, mt, secondary,  self.cp.shovelState5Rot);
+			local hasTargetRotation = courseplay:hasTargetRotation(self, mt, secondary, self.cp.shovelStateRot["5"]);
+			if hasTargetRotation ~= nil and not hasTargetRotation then
+				courseplay:setMovingToolsRotation(self, dt, mt, secondary, self.cp.shovelStateRot["5"]);
 			end
 			
-			if hasAimedRotation then
+			if hasTargetRotation then
 				self.cp.shovelState = 5
 				--print("set state 5") 
 			else
 				allowedToDrive = false
 			end
 		end
-		
+
 	elseif self.cp.shovelState == 5 then
 		courseplay:handleSpecialTools(self,true)
 		if fill_level == 0 then
 			self.loaded = false
-			local hasAimedRotation = courseplay:hasAimedRotation(self, mt, secondary,  self.cp.shovelState4Rot);
-			if hasAimedRotation ~= nil and not hasAimedRotation then
-				courseplay:setMovingToolsRotation(self, dt, mt, secondary,  self.cp.shovelState4Rot);
+			local hasTargetRotation = courseplay:hasTargetRotation(self, mt, secondary, self.cp.shovelStateRot["4"]);
+			if hasTargetRotation ~= nil and not hasTargetRotation then
+				courseplay:setMovingToolsRotation(self, dt, mt, secondary, self.cp.shovelStateRot["4"]);
 			end
-			if hasAimedRotation and not self.Waypoints[self.recordnumber].rev then
+			if hasTargetRotation and not self.Waypoints[self.recordnumber].rev then
 				self.cp.shovelState = 6
 				--print("set state 6")
 			end	
 		else
 			allowedToDrive = false
 		end
+
 	elseif self.cp.shovelState == 6 then
 		courseplay:handleSpecialTools(self,false)
-		local hasAimedRotation = courseplay:hasAimedRotation(self, mt, secondary,  self.cp.shovelState3Rot);
-		if hasAimedRotation ~= nil and not hasAimedRotation then
-			courseplay:setMovingToolsRotation(self, dt, mt, secondary,  self.cp.shovelState3Rot);
+		local hasTargetRotation = courseplay:hasTargetRotation(self, mt, secondary, self.cp.shovelStateRot["3"]);
+		if hasTargetRotation ~= nil and not hasTargetRotation then
+			courseplay:setMovingToolsRotation(self, dt, mt, secondary, self.cp.shovelStateRot["3"]);
 		end
 		if self.recordnumber == 1 then
 			self.cp.shovelState = 1
@@ -145,8 +144,8 @@ function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToD
 	return allowedToDrive
 end
 
-function courseplay:setMovingToolsRotation(self, dt, movingTools, secondary,  aimedRot)
-	local curRot = courseplay:getCurrentRotation(movingTools, secondary)
+function courseplay:setMovingToolsRotation(self, dt, movingTools, secondary, targetRot)
+	local curRot = courseplay:getCurrentRotation(self, movingTools, secondary)
 	local changed = false;
 	if curRot == nil then
 		return
@@ -167,13 +166,13 @@ function courseplay:setMovingToolsRotation(self, dt, movingTools, secondary,  ai
 		
 		local oldRot = curRot[i];
 		local newRot = nil;
-		local dir = aimedRot[i] - oldRot;
+		local dir = targetRot[i] - oldRot;
 		dir = math.abs(dir)/dir;
 		
 		if tool.node ~= nil and tool.rotMin ~= nil and tool.rotMax ~= nil and dir ~= nil and dir ~= 0 then
 			newRot = Utils.clamp(oldRot + (rotSpeed * dir), tool.rotMin, tool.rotMax);
-			if (dir == 1 and newRot > aimedRot[i]) or (dir == -1 and newRot < aimedRot[i]) then
-				newRot = aimedRot[i];
+			if (dir == 1 and newRot > targetRot[i]) or (dir == -1 and newRot < targetRot[i]) then
+				newRot = targetRot[i];
 			end;
 			if newRot ~= oldRot and newRot > tool.rotMin and newRot < tool.rotMax then
 				tool.curRot[1] = newRot;
@@ -193,22 +192,22 @@ function courseplay:setMovingToolsRotation(self, dt, movingTools, secondary,  ai
 	end;
 end; 
  
-function courseplay:hasAimedRotation(self,movingTools, secondary, aimedRot)
-	local curRot = courseplay:getCurrentRotation(movingTools,secondary)
-	local curRotNum, aimedRotNum = table.getn(curRot), table.getn(aimedRot);
-	if curRotNum ~= aimedRotNum then
-		self.cp.shovelState2Rot = nil
-		self.cp.shovelState3Rot = nil
-		self.cp.shovelState4Rot = nil
-		self.cp.shovelState5Rot = nil
-		print("courseplay:hasAimedRotation return nil")
+function courseplay:hasTargetRotation(self, movingTools, secondary, targetRot)
+	local curRot = courseplay:getCurrentRotation(self, movingTools, secondary)
+	local curRotNum, targetRotNum = table.getn(curRot), table.getn(targetRot);
+	if curRotNum ~= targetRotNum then
+		self.cp.shovelStateRot["2"] = nil
+		self.cp.shovelStateRot["3"] = nil
+		self.cp.shovelStateRot["4"] = nil
+		self.cp.shovelStateRot["5"] = nil
+		print(self.name, ": courseplay:hasTargetRotation() return nil")
 		return nil;
 	end;
 	local rotationsMatch = true;
 	for i=1, curRotNum do
-		local a, b = courseplay:round(curRot[i], 1), courseplay:round(aimedRot[i], 1);
+		local a, b = courseplay:round(curRot[i], 1), courseplay:round(targetRot[i], 1);
 		if a ~= b then
-			courseplay:debug(string.format("%s: curRot[%d]=%s (%s), aimedRot[%d]=%s (%s)", self.name, i, tostring(curRot[i]), tostring(a), i, tostring(aimedRot[i]), tostring(b)),1);
+			courseplay:debug(string.format("%s: curRot[%d]=%s (%s), targetRot[%d]=%s (%s)", self.name, i, tostring(curRot[i]), tostring(a), i, tostring(targetRot[i]), tostring(b)), 2);
 			rotationsMatch = false;
 			break;
 		end;
@@ -216,21 +215,21 @@ function courseplay:hasAimedRotation(self,movingTools, secondary, aimedRot)
 	return rotationsMatch;
 end; 
 
-function courseplay:getCurrentRotation(movingTools,secondary)
+function courseplay:getCurrentRotation(self, movingTools, secondary)
 	if movingTools == nil then
-		print("courseplay:getCurrentRotation return nil")
+		print(self.name, ": courseplay:getCurrentRotation() return nil")
 		return nil
 	end
 	local curRot = {}
-	for i=1,table.getn(movingTools)do
+	for i=1,table.getn(movingTools) do
 		if movingTools[i].curRot ~= nil and movingTools[i].curRot[1] ~= nil then
-			table.insert(curRot,movingTools[i].curRot[1]);
+			table.insert(curRot, movingTools[i].curRot[1]);
 		end;
 	end
 	if secondary ~= nil then
-		for i=1,table.getn(secondary)do
+		for i=1,table.getn(secondary) do
 			if secondary[i].curRot ~= nil and secondary[i].curRot[1] ~= nil then
-				table.insert(curRot,secondary[i].curRot[1]);
+				table.insert(curRot, secondary[i].curRot[1]);
 			end;
 		end
 	end
@@ -258,7 +257,8 @@ function courseplay:getMovingTools(self)
 			secondary = object.attachedImplements[1].object.movingTools
 		end
 	else
+		print(self.name, ": mt = self.movingTools");
 		mt = self.movingTools	
 	end
-	return mt , secondary
+	return mt, secondary
 end

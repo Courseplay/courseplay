@@ -157,7 +157,7 @@ function courseplay:drive(self, dt)
 	elseif self.ai_mode == 7 and self.ai_state ~=5 then
 		cx, cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
 	end
-	
+
 	if CPDebugLevel > 0 then  drawDebugPoint(cx, cty+3, cz, 1, 0 , 1, 1) end
 	-- offset - endlich lohnt sich der mathe-lk von vor 1000 Jahren ;)
 	if (self.ai_mode == 4 or self.ai_mode == 6 ) and self.startWork ~= nil and self.stopWork ~=nil and self.WpOffsetX ~= nil and self.WpOffsetZ ~= nil then
@@ -247,6 +247,7 @@ function courseplay:drive(self, dt)
 	-- the tipper that is currently loaded/unloaded
 	local active_tipper = nil
 
+	--### WAITING POINTS - START
 	if self.Waypoints[last_recordnumber].wait and self.wait then
 		if self.waitTimer == nil and self.waitTime > 0 then
 			self.waitTimer = self.timer + self.waitTime * 1000
@@ -336,11 +337,14 @@ function courseplay:drive(self, dt)
 			self.wait = false
 		end
 		allowedToDrive = false
+	--### WAITING POINTS - END
+
 	else -- ende wartepunkt
 		-- abfahrer-mode
 		if (self.ai_mode == 1 and self.tipper_attached and self.cp.tipperFillLevel ~= nil and self.tipRefOffset ~= nil) or (self.loaded and self.ai_mode == 2 and self.tipRefOffset ~= nil) then
 			-- is there a tipTrigger within 10 meters?
 			raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
+
 			if self.tipRefOffset ~= 0 then
 				if self.currentTipTrigger == nil then
 					raycastAll(tx+self.tipRefOffset, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
@@ -527,12 +531,10 @@ function courseplay:drive(self, dt)
 		self.sl = 1
 		refSpeed = self.turn_speed
 	end
-	if self.ai_mode == 9 then
-		slowDownWP = false
-	end
+
 	
 	if self.Waypoints[self.recordnumber].speed ~= nil and self.use_speed and self.recordnumber > 3 then
-		refSpeed = math.max(self.Waypoints[self.recordnumber].speed,3/3600)
+		refSpeed = math.max(self.Waypoints[self.recordnumber].speed, 3/3600)
 	end
 
 	if slowDownRev and refSpeed > self.turn_speed then
@@ -617,7 +619,7 @@ function courseplay:drive(self, dt)
 		elseif (self.Waypoints[self.recordnumber].rev and self.Waypoints[self.recordnumber].wait) or afterReverse then
 			distToChange = 2
 		elseif self.Waypoints[self.recordnumber].rev then
-			distToChange = 2;  --1
+			distToChange = 2; --1
 		elseif self.ai_mode == 4 or self.ai_mode == 6 or self.ai_mode == 7 then
 			distToChange = 5;
 		elseif self.ai_mode == 9 then
@@ -933,12 +935,6 @@ function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive)
 				activeTool:setIsSowingMachineFilling(true, activeTool.sowingMachineFillTriggers[1].isEnabled, false);
 				allowedToDrive = false;
 			end;
-			
-			--[[TODO: needed?
-			if activeTool.fillLevel == activeTool.capacity then
-				allowedToDrive = true;
-			end;
-			--]]
 		end;
 	end;
 	

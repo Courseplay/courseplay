@@ -310,6 +310,14 @@ Italský překlad: JD7530
 			<it>Modo: Trasporto liquame</it>
 			<cz>Mod: Převoz kejdy</cz>
 		</text>
+		<text name="CourseMode9">
+			<en>Type: Fill and empty shovel</en>
+			<de>Typ: Schaufel befüllen und entleeren</de>
+			<fr>Type: Charger et décharger une pelle</fr>
+			<es>Tipo: Cargar y descargar una pala</es>
+			<it>Modo: Fill + empty shovel</it>
+			<cz>Mod: Fill + empty shovel</cz>
+		</text>
 		<text name="CourseWaitpointSet">
 			<en>Set waiting point</en>
 			<de>Hier Wartepunkt setzen</de>
@@ -1472,61 +1480,62 @@ Italský překlad: JD7530
 			<it>Termina</it>
 			<cz>Ukončit</cz>
 		</text>
-		<text name="CourseMode9">
-			<en>Type: Fill + empty shovel</en>
-			<de>Typ: Schaufel befüllen + entleeren</de>
-			<fr>Type: Fill + empty shovel</fr>
-			<es>Tipo: Fill + empty shovel</es>
-			<it>Modo: Fill + empty shovel</it>
-			<cz>Mod: Fill + empty shovel</cz>
-		</text>
+
 		<text name="CPNoShovel">
-			<en>missing shovel for this mode</en>
-			<de>keine Schaufel dran Du Depp</de>
-			<fr>missing shovel for this mode</fr>
-			<es>missing shovel for this mode</es>
-			<it>missing shovel for this mode</it>
-			<cz>missing shovel for this mode</cz>
+			<en>No shovel could be found</en>
+			<de>keine Schaufel vorhanden</de>
+			<fr>Pas de pelle trouvée</fr>
+			<es>Falta una pala</es>
+			<it>No shovel could be found</it>
+			<cz>No shovel could be found</cz>
+		</text>
+		<text name="CPShovelPositions">
+			<en>Shovel positions</en>
+			<de>Schaufelstellung</de>
+			<fr>Positions de la pelle</fr>
+			<es>Posiciónes de la pala</es>
+			<it>Shovel positions</it>
+			<cz>Shovel positions</cz>
 		</text>
 		<text name="CPAssignShovel">
-			<en>assign shovel position</en>
-			<de>Schaufelstellung programmieren</de>
-			<fr>assign shovel position</fr>
-			<es>assign shovel position</es>
-			<it>assign shovel position</it>
-			<cz>assign shovel position</cz>
+			<en>Missing shovel positions</en>
+			<de>Es fehlen Schaufelstellungen</de>
+			<fr>Il faux unes positions de la pelle</fr>
+			<es>Faltan unas posiciónes de la pala</es>
+			<it>Missing shovel positions</it>
+			<cz>Missing shovel positions</cz>
 		</text>
-				<text name="setLoad">
-			<en>assign loading position</en>
-			<de>Position "Laden"</de>
-			<fr>assign loading position</fr>
-			<es>assign loading position</es>
-			<it>assign loading position</it>
-			<cz>assign loading position</cz>
+		<text name="setLoad">
+			<en>Loading position</en>
+			<de>Position "Beladen"</de>
+			<fr>Position charger</fr>
+			<es>Posición cargar</es>
+			<it>Loading position</it>
+			<cz>Loading position</cz>
 		</text>
-				<text name="setTransport">
-			<en>assign transport position</en>
-			<de> Position "Transport"</de>
-			<fr>assign transport position</fr>
-			<es>assign transport position</es>
-			<it>assign transport position</it>
-			<cz>assign transport position</cz>
+		<text name="setTransport">
+			<en>Transport position</en>
+			<de>Position "Transport"</de>
+			<fr>Position transporter</fr>
+			<es>Posición transportar</es>
+			<it>Transport position</it>
+			<cz>Transport position</cz>
 		</text>
-				<text name="setPreUnload">
-			<en>assign preunloading position</en>
+		<text name="setPreUnload">
+			<en>Pre-unloading position</en>
 			<de>Position "vor Abladen"</de>
-			<fr>assign preunloading position</fr>
-			<es>assign preunloading position</es>
-			<it>assign preunloading position</it>
-			<cz>assign preunloading position</cz>
+			<fr>Position avant de décharger</fr>
+			<es>Posición antes de descargar</es>
+			<it>Pre-unloading position</it>
+			<cz>Pre-unloading position</cz>
 		</text>
-				<text name="setUnload">
-			<en>assign unloading position</en>
+		<text name="setUnload">
+			<en>Unloading position</en>
 			<de>Position "Abladen"</de>
-			<fr>assign unloading position</fr>
-			<es>assign unloading position</es>
-			<it>assign unloading position</it>
-			<cz>assign unloading position</cz>
+			<fr>Position décharger</fr>
+			<es>Posición descargar</es>
+			<it>Unloading position</it>
+			<cz>Unloading position</cz>
 		</text>
 	</l10n>
 
@@ -1550,6 +1559,7 @@ Italský překlad: JD7530
 		<sourceFile filename="mode4.lua" />
 		<sourceFile filename="mode6.lua" />
 		<sourceFile filename="mode8.lua" />
+		<sourceFile filename="mode9.lua" />
 		<sourceFile filename="recording.lua" />
 		<sourceFile filename="signs.lua" />
 		<sourceFile filename="start_stop.lua" />
@@ -1559,7 +1569,6 @@ Italský překlad: JD7530
 		<sourceFile filename="settings.lua" />
 		<sourceFile filename="courseplay_event.lua" />
 		<sourceFile filename="courseplay_manager.lua" />
-		<sourceFile filename="mode9.lua" />
     </extraSourceFiles>   
 
 	<inputBindings>

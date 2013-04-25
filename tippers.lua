@@ -57,8 +57,11 @@ function courseplay:isMixer(workTool)
 	return workTool.typeName == "selfPropelledMixerWagon" or (SpecializationUtil.hasSpecialization(Steerable, workTool.specializations) and  SpecializationUtil.hasSpecialization(MixerWagon, workTool.specializations))
 end;
 function courseplay:isFrontloader(workTool)
-	return SpecializationUtil.hasSpecialization(Cylindered, workTool.specializations) and SpecializationUtil.hasSpecialization(AnimatedVehicle, workTool.specializations) and not SpecializationUtil.hasSpecialization(Shovel, workTool.specializations)
-end
+	return SpecializationUtil.hasSpecialization(Cylindered, workTool.specializations) and SpecializationUtil.hasSpecialization(AnimatedVehicle, workTool.specializations) and not SpecializationUtil.hasSpecialization(Shovel, workTool.specializations);
+end;
+function courseplay:isWheelloader(workTool)
+	return workTool.typeName == "wheelLoader" or (SpecializationUtil.hasSpecialization(Steerable, workTool.specializations) and SpecializationUtil.hasSpecialization(Shovel, workTool.specializations) and SpecializationUtil.hasSpecialization(BunkerSiloCompacter, workTool.specializations));
+end;
 
 -- update implements to find attached tippers
 function courseplay:update_tools(self, tractor_or_implement)
@@ -68,7 +71,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 	or courseplay:isHarvesterSteerable(tractor_or_implement) 
 	or courseplay:isBigM(tractor_or_implement) 
 	or courseplay:isMixer(tractor_or_implement)
-	or tractor_or_implement.typeName == "wheelLoader"
+	or courseplay:isWheelloader(tractor_or_implement)
 	or tractor_or_implement.typeName == "frontloader" then
 		local object = tractor_or_implement
 		if self.ai_mode == 1 or self.ai_mode == 2 then
@@ -112,13 +115,13 @@ function courseplay:update_tools(self, tractor_or_implement)
 				self.cp.noStopOnTurn = courseplay:isBaler(object) or courseplay:is_baleLoader(object) or courseplay:isUBT(object) or courseplay:isMower(object);
 				self.cp.noStopOnEdge = courseplay:isBaler(object) or courseplay:is_baleLoader(object) or courseplay:isUBT(object);
 			end
-		elseif self.ai_mode == 8 then -- Baler, foragewagon, baleloader
+		elseif self.ai_mode == 8 then -- Liquid manure transfer
 			--if SpecializationUtil.hasSpecialization(RefillTrigger, object.specializations) then
 			tipper_attached = true
 			table.insert(self.tippers, object)
 			-- end
 		elseif self.ai_mode == 9 then --Fill and empty shovel
-			if tractor_or_implement.typeName == "wheelLoader" 
+			if courseplay:isWheelloader(tractor_or_implement) 
 			or tractor_or_implement.typeName == "frontloader" 
 			or courseplay:isMixer(tractor_or_implement) then
 				tipper_attached = true;
@@ -134,6 +137,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 	-- go through all implements
 	self.cpTrafficCollisionIgnoreList = {}
 	self.cp.aiBackMarker = nil
+
 	for k, implement in pairs(tractor_or_implement.attachedImplements) do
 		local object = implement.object
 
@@ -603,7 +607,7 @@ function courseplay:getAutoTurnradius(self, tipper_attached)
 	if self.foundWheels == nil then
 		self.foundWheels = {}
 	end
-	for i=1,#self.wheels do
+	for i=1, table.getn(self.wheels) do
 		local wheel =  self.wheels[i]
 		if wheel.rotMax ~= 0 then
 			if self.foundWheels[1] == nil then
@@ -639,21 +643,16 @@ function courseplay:getAutoTurnradius(self, tipper_attached)
 		self.foundWheels = {}	
 	else
 		turnRadius = self.turn_radius                  -- Kasi and Co are not supported. Nobody does hauling with a Kasi or Quadtrack !!! 
-	end	
-	if tipper_attached and self.ai_mode == 2 then
-		local n = table.getn(self.tippers)
-		if n == 1 then
-			if self.tippers[1].attacherVehicle ~= self then
-				self.autoTurnRadius = turnRadius * 2 --Dolly
-			else
-				self.autoTurnRadius = turnRadius --normaler Trailer
-			end
-		else
-			self.autoTurnRadius = (turnRadius * n) -->1 Trailers
-		end
-	else
-		self.autoTurnRadius = turnRadius
-	end
+	end;
+	
+	--if tipper_attached and self.ai_mode == 2 then
+	if tipper_attached and (self.ai_mode == 2 or self.ai_mode == 3 or self.ai_mode == 4 or self.ai_mode == 6) then --JT: I've added modes 3, 4 & 6 - needed?
+		self.autoTurnRadius = turnRadius;
+		local n = table.getn(self.tippers);
+		if (n == 1 and self.tippers[1].attacherVehicle ~= self) or (n > 1) then
+			self.autoTurnRadius = turnRadius * 1.5;
+		end;
+	end;
 
 	if self.turnRadiusAutoMode then
 		self.turn_radius = self.autoTurnRadius;

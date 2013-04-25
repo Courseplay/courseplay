@@ -36,36 +36,48 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 		if self.mouse_enabled then
 			for _, button in pairs(self.buttons) do
 				if (button.page == self.showHudInfoBase or button.page == nil or button.page == self.showHudInfoBase * -1) and (button.show == nil or (button.show ~= nil and button.show)) then
-					local baseColor = {1, 1, 1, 1};
+					local buttonColor = courseplay.hud.colors.white;
 					local noHoverChange = false;
 
 					--quick switch buttons: if active mode
-					if button.function_to_call == "setAiMode" and self.ai_mode ~= nil and self.ai_mode == button.parameter then
-						--baseColor[4] = 0.35;
-						baseColor = {206/255, 83/255, 77/255, 1};
+					if self.showHudInfoBase == 1 and button.function_to_call == "setAiMode" and self.ai_mode ~= nil and self.ai_mode == button.parameter then
+						buttonColor = courseplay.hud.colors.activeGreen;
 						noHoverChange = true;
+
+						--mode 9 shovel buttons
+					elseif self.showHudInfoBase == 9 and button.function_to_call == "saveShovelStatus" then
+						for a=2,5 do
+							if button.parameter == a and self.cp.shovelStateRot[tostring(a)] ~= nil then
+								buttonColor = courseplay.hud.colors.activeGreen;
+								break;
+							end;
+						end;
 					end;
 					
 					if not noHoverChange and posX > button.x and posX < button.x2 and posY > button.y and posY < button.y2 then
 						if button.function_to_call == "close_hud" then
-							setOverlayColor(button.overlay.overlayId, 180/255,0,0,1);
+							setOverlayColor(button.overlay.overlayId, unpack(courseplay.hud.colors.closeRed));
 						else
-							setOverlayColor(button.overlay.overlayId, courseplay.hud.hoverColor.r, courseplay.hud.hoverColor.g, courseplay.hud.hoverColor.b, courseplay.hud.hoverColor.a);
+							setOverlayColor(button.overlay.overlayId, unpack(courseplay.hud.colors.hover));
 						end;
 					else
-						setOverlayColor(button.overlay.overlayId, unpack(baseColor));
+						setOverlayColor(button.overlay.overlayId, unpack(buttonColor));
 					end;
 				end;
 			end;
-		elseif self.showHudInfoBase == 1 then
+		elseif self.showHudInfoBase == 1 or self.showHudInfoBase == 9 then
 			for _, button in pairs(self.buttons) do
-				if (button.page == self.showHudInfoBase or button.page == nil or button.page == self.showHudInfoBase * -1) and (button.show == nil or (button.show ~= nil and button.show)) then
+				if (button.page == 1 and (button.show == nil or (button.show ~= nil and button.show))) then
 					--quick switch buttons: if active mode
 					if button.function_to_call == "setAiMode" and self.ai_mode ~= nil and self.ai_mode == button.parameter then
-						--baseColor[4] = 0.35;
-						baseColor = {206/255, 83/255, 77/255, 1};
-						setOverlayColor(button.overlay.overlayId, unpack(baseColor));
-						--print(tableShow(button, "ai_mode active button"));
+						setOverlayColor(button.overlay.overlayId, unpack(courseplay.hud.colors.activeGreen));
+					end;
+				elseif button.page == 9 and button.show == nil and button.function_to_call == "saveShovelStatus" then
+					for a=2,5 do
+						if button.parameter == a and self.cp.shovelStateRot[tostring(a)] ~= nil then
+							setOverlayColor(button.overlay.overlayId, unpack(courseplay.hud.colors.activeGreen));
+							break;
+						end;
 					end;
 				end;
 			end;
@@ -257,19 +269,10 @@ function courseplay:deal_with_mouse_input(self, func, value)
 		self.show_hud = false
 		InputBinding.setShowMouseCursor(self.mouse_enabled)
 	end
-	if func == "setShovelLoad" then
-		courseplay:saveShovelStatus(self, 2);
-	end
-	if func == "setShovelTransport" then
-		courseplay:saveShovelStatus(self, 3);
-	end
-	if func == "setShovelPreUnload" then
-		courseplay:saveShovelStatus(self, 4);
-	end
-	if func == "setShovelUnload" then
-		courseplay:saveShovelStatus(self, 5);
-	end
 
+	if func == "saveShovelStatus" then
+		courseplay:saveShovelStatus(self, value);
+	end;
 
 	if func == "row1" or func == "row2" or func == "row3" or func == "row4" or func == "row5" then
 		if self.showHudInfoBase == 0 then

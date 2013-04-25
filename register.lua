@@ -68,6 +68,7 @@ function cp_setLocales()
 end;
 
 function cp_setupHud()
+	courseplay.numAiModes = 9;
 	courseplay.hud = {
 		infoBasePosX = 0.433;
 		infoBasePosY = 0.002;
@@ -79,11 +80,12 @@ function cp_setupHud()
 		numPages = 9,
 		numLines = 6;
 		lineHeight = 0.021;
-		hoverColor = {
-			r =  32/255;
-			g = 168/255;
-			b = 219/255;
-			a = 1;
+		colors = {
+			white =       {       1,       1,       1, 1 };
+			hover =       {  32/255, 168/255, 219/255, 1 };
+			activeGreen = { 110/255, 235/255,  56/255, 1 };
+			activeRed =   { 206/255,  83/255,  77/255, 1 };
+			closeRed =    { 180/255,       0,       0, 1 };
 		};
 		clickSound = createSample("clickSound");
 	};

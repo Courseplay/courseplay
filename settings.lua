@@ -1,7 +1,7 @@
 function courseplay:change_ai_state(self, change_by)
 	self.ai_mode = self.ai_mode + change_by
 
-	if self.ai_mode == 10 or self.ai_mode == 0 then
+	if self.ai_mode > courseplay.numAiModes or self.ai_mode == 0 then
 		self.ai_mode = 1
 	end
 end
@@ -51,15 +51,13 @@ function courseplay:switch_player_side(self)
 end
 
 function courseplay:switch_hud_page(self, change_by)
-	self.showHudInfoBase = self.showHudInfoBase + change_by
+	self.showHudInfoBase = self.showHudInfoBase + change_by;
 
-	if self.showHudInfoBase < self.min_hud_page then --edit for more sites
-		self.showHudInfoBase = courseplay.hud.numPages
-	end
-
-	if self.showHudInfoBase > courseplay.hud.numPages then --edit for more sites
-		self.showHudInfoBase = self.min_hud_page
-	end
+	if self.showHudInfoBase < self.min_hud_page then
+		self.showHudInfoBase = courseplay.hud.numPages;
+	elseif self.showHudInfoBase > courseplay.hud.numPages then
+		self.showHudInfoBase = self.min_hud_page;
+	end;
 end
 
 
@@ -409,12 +407,18 @@ end;
 
 function courseplay:setHeadlandLanes(self, change_by)
 	self.cp.headland.numLanes = Utils.clamp(self.cp.headland.numLanes + change_by, -1, 1);
+	courseplay:validateCourseGenerationData(self);
 end;
 
 function courseplay:validateCourseGenerationData(self)
+	local hasEnoughWaypoints = table.getn(self.Waypoints) > 4;
+	if self.cp.headland.numLanes ~= 0 then
+		hasEnoughWaypoints = table.getn(self.Waypoints) >= 20;
+	end;
+
 	if not self.cp.hasGeneratedCourse
 	and self.Waypoints ~= nil 
-	and table.getn(self.Waypoints) > 4
+	and hasEnoughWaypoints
 	and self.cp.hasStartingCorner == true 
 	and self.cp.hasStartingDirection == true 
 	and (self.numCourses == nil or (self.numCourses ~= nil and self.numCourses == 1)) 
@@ -433,18 +437,13 @@ function courseplay:validateCanSwitchMode(self)
 end;
 
 function courseplay:saveShovelStatus(self, stage)
-	local mt , secondary = courseplay:getMovingTools(self)
+	if stage == nil then
+		return;
+	end;
+	
+	local mt, secondary = courseplay:getMovingTools(self)
 
-	if stage == 2 then
-		self.cp.shovelState2Rot = courseplay:getCurrentRotation(mt,secondary)
-		for k,v in pairs ( self.cp.shovelState2Rot) do
-			print("k:  "..tostring(k).."  v:  "..tostring(v))
-		end
-	elseif stage == 3 then
-		self.cp.shovelState3Rot = courseplay:getCurrentRotation(mt,secondary)
-	elseif stage == 4 then
-		self.cp.shovelState4Rot = courseplay:getCurrentRotation(mt,secondary)
-	elseif stage == 5 then
-		self.cp.shovelState5Rot = courseplay:getCurrentRotation(mt,secondary);
-	end
+	if stage >= 2 and stage <= 5 then
+		self.cp.shovelStateRot[tostring(stage)] = courseplay:getCurrentRotation(self, mt, secondary);
+	end;
 end;

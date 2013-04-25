@@ -119,7 +119,7 @@ function courseplay:load(xmlFile)
 	-- ai mode: 1 abfahrer, 2 kombiniert
 	self.ai_mode = 1
 	self.follow_mode = 1
-	self.ai_state = 9
+	self.ai_state = 0
 	self.next_ai_state = nil
 	self.startWork = nil
 	self.stopWork = nil
@@ -129,6 +129,12 @@ function courseplay:load(xmlFile)
 	self.realistic_driving = true;
 	self.cp.canSwitchMode = false;
 
+	-- ai mode 9: shovel
+	self.cp.shovelEmptyPoint = nil;
+	self.cp.shovelFillStartPoint = nil;
+	self.cp.shovelFillEndPoint = nil;
+	self.cp.shovelState = 1;
+	self.cp.shovelStateRot = {};
 
 	self.cp_directory = cp_directory
 
@@ -384,19 +390,20 @@ function courseplay:load(xmlFile)
 
 
 	--Page 1: ai_mode quickSwitch
-	for i=1,8 do
-		--2 columns, 4 rows
+	for i=1, courseplay.numAiModes do
 		local icon = string.format("quickSwitch_mode%d.dds", i);
-		local w = w16px * 2;
-		local h = h16px * 2;
-		local numColumns = 2;
+		local w = w16px * 2.25;
+		local h = h16px * 2.25;
+		--3 columns, 3 rows
+		local numColumns = 3;
 
-		local posX = courseplay.hud.infoBasePosX + 0.25;
-		if courseplay:isEven(i) then
-			posX = posX + w;
+		local l = math.ceil(i/numColumns);
+		local col = i;
+		while col > numColumns do
+			col = col - numColumns;
 		end;
 		
-		local l = math.ceil(i/numColumns);
+		local posX = courseplay.hud.infoBasePosX + 0.25 + (w * (col-1));
 		local posY = courseplay.hud.linesPosY[1] + (20/1080) - (h*l);
 		
 		courseplay:register_button(self, 1, icon, "setAiMode", i, posX, posY, w, h, nil, nil, "self.cp.canSwitchMode=true");
@@ -488,11 +495,13 @@ function courseplay:load(xmlFile)
 	
 	courseplay:register_button(self, 8, "blank.dds", "generateCourse",           nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[6], lineButtonWidth, 0.015, nil, nil, "self.cp.hasValidCourseGenerationData=true");
 	
-	--Page 9: Wheelloader settings
-	courseplay:register_button(self, 9, "navigate_plus.dds",  "setShovelLoad",   true, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[1], w16px, h16px, nil,  10);
-	courseplay:register_button(self, 9, "navigate_plus.dds",  "setShovelTransport",   true, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[2], w16px, h16px, nil,  10);
-	courseplay:register_button(self, 9, "navigate_plus.dds",  "setShovelPreUnload",   true, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[3], w16px, h16px, nil,  10);
-	courseplay:register_button(self, 9, "navigate_plus.dds",  "setShovelUnload",   true, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[4], w16px, h16px, nil,  10);
+	--Page 9: Shovel settings
+	local wTemp = 22/1920;
+	local hTemp = 22/1080;
+	courseplay:register_button(self, 9, "shovelLoading.dds",      "saveShovelStatus", 2, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[1] - 0.003, wTemp, hTemp, nil, 2);
+	courseplay:register_button(self, 9, "shovelTransport.dds",    "saveShovelStatus", 3, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[2] - 0.003, wTemp, hTemp, nil, 3);
+	courseplay:register_button(self, 9, "shovelPreUnloading.dds", "saveShovelStatus", 4, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[3] - 0.003, wTemp, hTemp, nil, 4);
+	courseplay:register_button(self, 9, "shovelUnloading.dds",    "saveShovelStatus", 5, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[4] - 0.003, wTemp, hTemp, nil, 5);
 	--END Page 9
 
 
@@ -692,6 +701,10 @@ function courseplay:readStream(streamId, connection)
 	self.cp.ridgeMarkersAutomatic = streamDebugReadBool(streamId);
 	self.cp.returnToFirstPoint = streamDebugReadBool(streamId);
 	self.cp.selectedDriverNumber = streamDebugReadInt32(streamId);
+	self.cp.shovelEmptyPoint = streamDebugReadInt32(streamId);
+	self.cp.shovelFillStartPoint = streamDebugReadInt32(streamId);
+	self.cp.shovelFillEndPoint = streamDebugReadInt32(streamId);
+	self.cp.shovelState = streamDebugReadInt32(streamId);
 	self.cp.startingCorner = streamDebugReadInt32(streamId);
 	self.cp.startingDirection = streamDebugReadInt32(streamId);
 	self.cp.tipperHasCover = streamDebugReadBool(streamId);
@@ -821,6 +834,10 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteBool(streamId, self.cp.ridgeMarkersAutomatic);
 	streamDebugWriteBool(streamId, self.cp.returnToFirstPoint);
 	streamDebugWriteInt32(streamId, self.cp.selectedDriverNumber);
+	streamDebugWriteInt32(streamId, self.cp.shovelEmptyPoint);
+	streamDebugWriteInt32(streamId, self.cp.shovelFillStartPoint);
+	streamDebugWriteInt32(streamId, self.cp.shovelFillEndPoint);
+	streamDebugWriteInt32(streamId, self.cp.shovelState);
 	streamDebugWriteInt32(streamId, self.cp.startingCorner);
 	streamDebugWriteInt32(streamId, self.cp.startingDirection);
 	streamDebugWriteBool(streamId, self.cp.tipperHasCover);

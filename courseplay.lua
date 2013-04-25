@@ -7,7 +7,7 @@
 -- @testing:    bullgore80
 
 courseplay = {};
-courseplay_path = g_modsDirectory .. "/ZZZ_courseplay/"
+courseplay_path = g_modsDirectory .. "/ZZZ_courseplay/" --TODO: g_currentModDirectory
 CPDebugLevel = 0
 
 -- working tractors saved in this
@@ -18,7 +18,6 @@ function initialize_courseplay()
 	source(courseplay_path .. "turn.lua")
 
 	-- starting & stopping of courseplay
-	print(courseplay_path .. "start_stop.lua")
 	source(courseplay_path .. "start_stop.lua")
 
 	-- course recording & resetting
@@ -67,6 +66,7 @@ function initialize_courseplay()
 	source(courseplay_path .. "courseplay_event.lua")
 	source(courseplay_path .. "astar.lua")
 	source(courseplay_path .. "fruit.lua")
+	print("### Initialized 26 Courseplay files")
 end;
 
 initialize_courseplay();
