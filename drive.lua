@@ -720,7 +720,7 @@ function courseplay:check_traffic(self, display_warnings, allowedToDrive)
 	
 	--courseplay:debug(table.show(self), 4)
 	if self.CPnumCollidingVehicles ~= nil and self.CPnumCollidingVehicles > 0 then
-		if vehicle_in_front ~= nil then
+		if vehicle_in_front ~= nil and not (self.ai_mode == 9 and vehicle_in_front.allowFillFromAir) then
 			x1, y1, z1 = worldToLocal(self.traffic_vehicle_in_front, x, y, z)
 			if z1 > 0 then -- tractor in front of vehicle face2face 
 				ahead = true
