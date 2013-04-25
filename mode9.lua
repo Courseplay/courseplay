@@ -42,7 +42,7 @@ function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToD
 		self.cp.shovelState = 1
 		self.loaded = false
 	end
-	
+
 	if self.cp.shovelState == 1 then
 		if self.recordnumber + 1 > self.cp.shovelFillStartPoint then
 			local hasTargetRotation = courseplay:hasTargetRotation(self, mt, secondary, self.cp.shovelStateRot["2"]);
@@ -100,7 +100,12 @@ function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToD
 		end
 
 	elseif self.cp.shovelState == 4 then
-		if last_recordnumber == self.cp.shovelEmptyPoint then
+		local x,y,z = localToWorld(self.cp.shovel.shovelTipReferenceNode,0,0,-1);
+		local emptySpeed = self.cp.shovel:getShovelEmptyingSpeed()
+		if emptySpeed == 0 then
+			raycastAll(x, y, z, 0, -1, 0, "findTrailerRaycastCallback", 10, self.cp.shovel);
+		end
+		if self.cp.shovel.trailerFound ~= nil or self.cp.shovel.objectFound ~= nil or emptySpeed > 0 then
 			local hasTargetRotation = courseplay:hasTargetRotation(self, mt, secondary, self.cp.shovelStateRot["5"]);
 			if hasTargetRotation ~= nil and not hasTargetRotation then
 				courseplay:setMovingToolsRotation(self, dt, mt, secondary, self.cp.shovelStateRot["5"]);
@@ -117,7 +122,15 @@ function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToD
 	elseif self.cp.shovelState == 5 then
 		courseplay:handleSpecialTools(self,true)
 		if fill_level == 0 then
-			self.loaded = false
+			if self.loaded then
+				for i = self.recordnumber,self.maxnumber do
+					if self.Waypoints[i].rev then
+						self.loaded = false
+						self.recordnumber = i
+						break	
+					end
+				end
+			end
 			local hasTargetRotation = courseplay:hasTargetRotation(self, mt, secondary, self.cp.shovelStateRot["4"]);
 			if hasTargetRotation ~= nil and not hasTargetRotation then
 				courseplay:setMovingToolsRotation(self, dt, mt, secondary, self.cp.shovelStateRot["4"]);
@@ -132,6 +145,8 @@ function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToD
 
 	elseif self.cp.shovelState == 6 then
 		courseplay:handleSpecialTools(self,false)
+		self.cp.shovel.trailerFound = nil
+		self.cp.shovel.objectFound = nil
 		local hasTargetRotation = courseplay:hasTargetRotation(self, mt, secondary, self.cp.shovelStateRot["3"]);
 		if hasTargetRotation ~= nil and not hasTargetRotation then
 			courseplay:setMovingToolsRotation(self, dt, mt, secondary, self.cp.shovelStateRot["3"]);
@@ -249,16 +264,18 @@ function courseplay:getMovingTools(self)
 	if shovel ~= 0 then
 		mt = self.movingTools
 		secondary = self.attachedImplements[shovel].object.movingTools
+		self.cp.shovel = self.attachedImplements[shovel].object
 	elseif frontLoader ~= 0 then
 		
 		local object = self.attachedImplements[frontLoader].object
 		mt = object.movingTools
 		if object.attachedImplements[1] ~= nil then
 			secondary = object.attachedImplements[1].object.movingTools
+			self.cp.shovel = object.attachedImplements[1].object
 		end
 	else
-		print(self.name, ": mt = self.movingTools");
-		mt = self.movingTools	
+		mt = self.movingTools
+		self.cp.shovel = self	
 	end
 	return mt, secondary
 end

@@ -135,6 +135,7 @@ function courseplay:load(xmlFile)
 	self.cp.shovelFillEndPoint = nil;
 	self.cp.shovelState = 1;
 	self.cp.shovelStateRot = {};
+	self.cp.shovel = {};
 
 	self.cp_directory = cp_directory
 
