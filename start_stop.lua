@@ -140,6 +140,10 @@ function courseplay:start(self)
 		
 		self.loaded = false
 	end
+	if self.ai_mode == 9 then
+		self.recordnumber = 1
+		self.cp.shovelState = 1;
+	end	
 
 
 	self.forceIsActive = true;
