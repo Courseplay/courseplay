@@ -235,8 +235,20 @@ function courseplay:load(xmlFile)
 	elseif self.aiTreshingDirectionNode ~= nil then
 		DirectionNode = self.aiTreshingDirectionNode;
 	else
-		DirectionNode = self.rootNode;
-		
+		if courseplay:isWheelloader(self)then
+			DirectionNode = getParent(self.shovelTipReferenceNode)
+			if DirectionNode == nil then
+				for i=1, table.getn(self.attacherJoints) do
+					if self.rootNode ~= getParent(self.attacherJoints[i].jointTransform) then
+						DirectionNode = getParent(self.attacherJoints[i].jointTransform)
+						break
+					end
+				end
+			end		
+		end
+		if DirectionNode == nil then
+			DirectionNode = self.rootNode;
+		end
 		if getChild(self.rootNode, "trafficCollisionTrigger") ~= 0 then
 			self.aiTractorDirectionNode = getChild(self.rootNode, "trafficCollisionTrigger");
 		end;

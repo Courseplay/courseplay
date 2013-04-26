@@ -200,7 +200,7 @@ function courseplay:drive(self, dt)
 	local fwd = nil
 	local distToChange = nil
 	local lx, lz = AIVehicleUtil.getDriveDirection(self.cp.DirectionNode, cx, cty, cz);
-	
+
 	-- what about our tippers?
 	self.cp.tipperFillLevel, self.cp.tipperCapacity = self:getAttachedTrailersFillLevelAndCapacity()
 	local fill_level = nil
@@ -596,6 +596,16 @@ function courseplay:drive(self, dt)
 	end
 
 	-- where to drive?
+	if courseplay:isWheelloader(self) then
+		local lx2 ,lz2  = AIVehicleUtil.getDriveDirection(self.rootNode, cx, cty, cz); 
+		if math.abs(self.steeringLastRotation) < 0.5 then
+			lx = lx2
+			lz = lz2
+		end
+	end
+
+
+
 	if self.Waypoints[self.recordnumber].rev then
 		lz = lz * -1
 		lx = lx * -1
