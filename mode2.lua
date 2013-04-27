@@ -341,9 +341,8 @@ function courseplay:unload_combine(self, dt)
 		dod = Utils.vector2Length(lx, lz)
 		-- near point
 		if dod < 3 then -- change to mode 4 == drive behind combine or cornChopper
-			if combine.isCornchopper then -- decide on which side to drive based on ai-combine
+			if combine.isCornchopper and not self.isChopperTurning  then -- decide on which side to drive based on ai-combine
 				courseplay:side_to_drive(self, combine, 10);
-
 				if self.sideToDrive == "right" then
 						self.combine_offset = math.abs(self.combine_offset) * -1;
 				else 
@@ -355,7 +354,13 @@ function courseplay:unload_combine(self, dt)
 
 		-- end mode 2
 	elseif mode == 4 then -- Drive to rear Combine or Cornchopper
-
+		if combine.cp.offset == nil or self.combine_offset == 0 then
+			--print("offset not saved - calculate")
+			courseplay:calculateCombineOffset(self, combine);
+		elseif not combine.isCornchopper and self.auto_combine_offset and self.combine_offset ~= combine.cp.offset then
+			--print("set saved offset")
+			self.combine_offset = combine.cp.offset			
+		end
 		self.info_text = courseplay:get_locale(self, "CPDriveToCombine") -- "Fahre zum Drescher"
 		--courseplay:add_to_combines_ignore_list(self, combine)
 		refSpeed = self.field_speed
@@ -412,6 +417,10 @@ function courseplay:unload_combine(self, dt)
 		end
 
 		if combine_fill_level == 0 then --combine empty set waypoints on the field !!!
+			if combine.cp.offset == nil then
+				--print("saving offset")
+				combine.cp.offset = self.combine_offset;
+			end			
 			local fruitSide = courseplay:side_to_drive(self, combine, -10)
 			if fruitSide == "none" then
 				fruitSide = courseplay:side_to_drive(self, combine, -50)
@@ -547,7 +556,9 @@ function courseplay:unload_combine(self, dt)
 		end
 
 		--CALCULATE OFFSET
-		courseplay:calculateCombineOffset(self, combine);
+		if combine.cp.offset == nil and not combine.isCornchopper then
+			courseplay:calculateCombineOffset(self, combine);
+		end
 		currentX, currentY, currentZ = localToWorld(combine.rootNode, self.combine_offset, 0, trailer_offset + 5)
 		local cwX, cwY, cwZ = getWorldTranslation(combine.pipeRaycastNode); 
 		local prnToCombineX, prnToCombineY, prnToCombineZ = worldToLocal(combine.rootNode, cwX, cwY, cwZ); 
@@ -600,8 +611,9 @@ function courseplay:unload_combine(self, dt)
 			else
 				refSpeed = combine_speed
 			end
-			if ((tractor.turnStage ~= 0 or tractor.cp.turnStage ~= 0) and lz < 20) then
-				refSpeed = 1 / 3600
+			
+			if ((tractor.turnStage ~= 0 or tractor.cp.turnStage ~= 0) and lz < 20) or (combine.movingDirection == 0 and lz < 5) then
+				refSpeed = 4 / 3600
 				self.sl = 1
 				if self.ESLimiter == nil then
 					self.motor.maxRpm[self.sl] = 200
@@ -688,13 +700,19 @@ function courseplay:unload_combine(self, dt)
 					end
 				end
 
-				if self.sideToDrive == "right" then
-					self.combine_offset = math.abs(self.combine_offset) * -1;
-				elseif self.sideToDrive == "left" then
-					self.combine_offset = math.abs(self.combine_offset);
-				end
-					
-
+				if self.auto_combine_offset then
+					if self.sideToDrive == "right" then
+						self.combine_offset = combine.cp.offset * -1;
+					elseif self.sideToDrive == "left" then
+						self.combine_offset = combine.cp.offset;
+					end;
+				else
+					if self.sideToDrive == "right" then
+						self.combine_offset = math.abs(self.combine_offset) * -1;
+					elseif self.sideToDrive == "left" then
+						self.combine_offset = math.abs(self.combine_offset);
+					end;
+				end;
 				mode = 5
 				self.shortest_dist = nil
 				self.next_ai_state = 7
@@ -1024,12 +1042,20 @@ function courseplay:calculateCombineOffset(self, combine)
 	local prnwX, prnwY, prnwZ = getWorldTranslation(combine.pipeRaycastNode)
 	local combineToPrnX, combineToPrnY, combineToPrnZ = worldToLocal(combine.rootNode, prnwX, prnwY, prnwZ)
 	--NOTE by Jakob: after a shitload of testing and failing, it seems combineToPrnX is what we're looking for (instead of prnToCombineX). Always results in correct x-distance from combine.rn to prn.
-	
+	if combineToPrnX >= 0 then
+		combine.cp.pipeSide = 1; --left
+		--print("pipe is left")
+	else
+		combine.cp.pipeSide = -1; --right
+		--print("pipe is right")		
+	end;
 	--special tools, special cases
 	if combine.name == "Grimme Rootster 604" then
 		offs = -4.3;
 	elseif combine.name == "Grimme SE 75-55" then
 		offs =  4.3;
+	elseif combine.name == "Fahr M66" then
+		offs =  4.4;
 	
 	--combine // combine_offset is in auto mode
 	elseif not combine.isCornchopper and self.auto_combine_offset and combine.currentPipeState == 2 then --pipe is open
@@ -1082,6 +1108,8 @@ function courseplay:calculateCombineOffset(self, combine)
 				offs = math.abs(offs) * -1;
 			end;
 		end;
+	elseif not combine.isCornchopper and self.auto_combine_offset then
+		offs = offsPos * combine.cp.pipeSide;
 	end;
 	
 	--cornChopper forced side offset

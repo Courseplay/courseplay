@@ -307,7 +307,7 @@ function courseplay:load(xmlFile)
 	-- combines	
 	self.reachable_combines = {}
 	self.active_combine = nil
-
+	self.cp.offset = nil
 	self.combine_offset = 0.0
 	self.tipper_offset = 0.0
 
@@ -733,6 +733,7 @@ function courseplay:readStream(streamId, connection)
 	self.cp.noStopOnEdge = streamDebugReadBool(streamId);
 	self.cp.noStopOnTurn = streamDebugReadBool(streamId);
 	self.cp.lastCheckedTransformID = streamDebugReadInt32(streamId);
+	self.cp.offset = streamDebugReadFloat32(streamId) 
 	self.crossPoints = streamDebugReadInt32(streamId)
 	self.drive = streamDebugReadBool(streamId)
 	self.drive_slow_timer = streamDebugReadInt32(streamId)
@@ -866,6 +867,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteBool(streamId, self.cp.noStopOnEdge)
 	streamDebugWriteBool(streamId, self.cp.noStopOnTurn)
 	streamDebugWriteInt32(streamId, self.cp.lastCheckedTransformID)
+	streamDebugWriteFloat32(streamId, self.cp.offset)
 	streamDebugWriteInt32(streamId, self.crossPoints);
 	streamDebugWriteBool(streamId,self.drive)
 	streamDebugWriteInt32(streamId,self.drive_slow_timer)

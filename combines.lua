@@ -184,7 +184,13 @@ function courseplay:register_at_combine(self, combine)
 	combine.cp.pipeSide = 1;
 
 	if self.auto_combine_offset == true or self.combine_offset == 0 then
-		courseplay:calculateInitialCombineOffset(self, combine);
+	  	if combine.cp.offset == nil then
+			--print("no saved offset - initialise")
+	   		courseplay:calculateInitialCombineOffset(self, combine);
+	  	else 
+			--print("take the saved cp.offset")
+	   		self.combine_offset = combine.cp.offset;
+	  	end;
 	end;
 	--END OFFSET
 
@@ -248,7 +254,7 @@ function courseplay:calculateInitialCombineOffset(self, combine)
 	local leftMarker = nil
 	local currentCutter = nil
 	combine.cp.lmX, combine.cp.rmX = nil, nil;
-
+	--print("run initial offset")
 	if combine.attachedCutters ~= nil then
 		for cutter, implement in pairs(combine.attachedCutters) do
 			if cutter.aiLeftMarker ~= nil then
@@ -272,8 +278,10 @@ function courseplay:calculateInitialCombineOffset(self, combine)
 	--NOTE by Jakob: after a shitload of testing and failing, it seems combineToPrnX is what we're looking for (instead of prnToCombineX). Always results in correct x-distance from combine.rn to prn.
 	if combineToPrnX >= 0 then
 		combine.cp.pipeSide = 1; --left
+		--print("pipe is left")
 	else
 		combine.cp.pipeSide = -1; --right
+		--print("pipe is right")		
 	end;
 
 	--special tools, special cases
@@ -281,6 +289,8 @@ function courseplay:calculateInitialCombineOffset(self, combine)
 		self.combine_offset = -4.3;
 	elseif combine.name == "Grimme SE 75-55" then
 		self.combine_offset =  4.3;
+	elseif combine.name == "Fahr M66" then
+		self.combine_offset =  4.4;
 
 	--combine // combine_offset is in auto mode
 	elseif not combine.isCornchopper and combine.currentPipeState == 2 then -- pipe is extended
@@ -330,7 +340,7 @@ function courseplay:calculateInitialCombineOffset(self, combine)
 			end
 		else
 			courseplay:debug(string.format("%s(%i): %s @ %s: combine.forced_side=%s, going by fruit", curFile, debug.getinfo(1).currentline, self.name, combine.name, tostring(combine.forced_side)), 3);
-			local fruitSide = courseplay:side_to_drive(self, combine, -10);
+			local fruitSide = courseplay:side_to_drive(self, combine, 5);
 			if fruitSide == "right" then
 				if combine.cp.lmX ~= nil then
 					self.combine_offset = math.max(combine.cp.lmX + 2.5, 7);
@@ -350,6 +360,8 @@ function courseplay:calculateInitialCombineOffset(self, combine)
 					self.combine_offset = 7;
 				end;
 			end
+			--print("saving offset")
+			combine.cp.offset = math.abs(self.combine_offset)
 		end;
 	end;
 end;
