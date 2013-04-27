@@ -288,27 +288,6 @@ function courseplay:loadHud(self)
 			end;
 
 
-			--Copy course from driver
-			self.hudpage[4][1][4] = courseplay:get_locale(self, "CPcopyCourse");
-			if self.cp.copyCourseFromDriver ~= nil then
-				local driverName = self.cp.copyCourseFromDriver.name;
-				if driverName == nil then
-					driverName = courseplay:get_locale(self, "CPDriver");
-				end;
-				
-				local courseName = self.cp.copyCourseFromDriver.current_course_name;
-				if courseName == nil then
-					courseName = courseplay:get_locale(self, "CPtempCourse");
-				end;
-				
-				self.hudpage[4][2][4] = string.format("%s (%dm)", driverName, courseplay:distance_to_object(self, self.cp.copyCourseFromDriver));
-				self.hudpage[4][2][5] = string.format("(%s)", courseName);
-			else
-				self.hudpage[4][2][4] = courseplay:get_locale(self, "CPNone"); -- "keiner"
-				self.hudpage[4][2][5] = "";
-			end;
-			
-
 		--Page 5
 		elseif self.showHudInfoBase == 5 then
 			self.hudpage[5][1][1] = courseplay:get_locale(self, "CPTurnSpeed") -- "Wendemanöver:"
@@ -384,6 +363,27 @@ function courseplay:loadHud(self)
 			else
 				self.hudpage[7][2][3] = "---"
 			end
+
+			--Copy course from driver
+			self.hudpage[7][1][5] = courseplay:get_locale(self, "CPcopyCourse");
+			if self.cp.copyCourseFromDriver ~= nil then
+				local driverName = self.cp.copyCourseFromDriver.name;
+				if driverName == nil then
+					driverName = courseplay:get_locale(self, "CPDriver");
+				end;
+				
+				local courseName = self.cp.copyCourseFromDriver.current_course_name;
+				if courseName == nil then
+					courseName = courseplay:get_locale(self, "CPtempCourse");
+				end;
+				
+				self.hudpage[7][2][5] = string.format("%s (%dm)", driverName, courseplay:distance_to_object(self, self.cp.copyCourseFromDriver));
+				self.hudpage[7][2][6] = string.format("(%s)", courseName);
+			else
+				self.hudpage[7][2][5] = courseplay:get_locale(self, "CPNone"); -- "keiner"
+				self.hudpage[7][2][6] = "";
+			end;
+			
 
 		--Page 8 (Course generation)
 		elseif self.showHudInfoBase == 8 then

@@ -237,6 +237,7 @@ function courseplay:load(xmlFile)
 	else
 		if courseplay:isWheelloader(self)then
 			DirectionNode = getParent(self.shovelTipReferenceNode)
+
 			if DirectionNode == nil then
 				for i=1, table.getn(self.attacherJoints) do
 					if self.rootNode ~= getParent(self.attacherJoints[i].jointTransform) then
@@ -459,10 +460,6 @@ function courseplay:load(xmlFile)
 
 	courseplay:register_button(self, 4, "blank.dds", "switch_search_combine", nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[2], lineButtonWidth, 0.015);
 
-	courseplay:register_button(self, 4, "navigate_up.dds",   "switchDriverCopy", -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[4], w16px, h16px, nil, nil, "self.cp.selectedDriverNumber>0");
-	courseplay:register_button(self, 4, "navigate_down.dds", "switchDriverCopy",  1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[4], w16px, h16px);
-	courseplay:register_button(self, 4, "copy3.dds",         "copyCourse",      nil, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[5], w16px, h16px, nil, nil, "self.cp.hasFoundCopyDriver=true");
-	
 	--Page 5: Speeds
 	courseplay:register_button(self, 5, "navigate_minus.dds", "change_turn_speed",   -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], w16px, h16px, nil, -5, "self.turn_speed>5/3600");
 	courseplay:register_button(self, 5, "navigate_plus.dds",  "change_turn_speed",    1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[1], w16px, h16px, nil,  5);
@@ -494,6 +491,10 @@ function courseplay:load(xmlFile)
 
 	courseplay:register_button(self, 7, "navigate_minus.dds", "changeWpOffsetZ", -0.5, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[3], w16px, h16px, nil,  -1);
 	courseplay:register_button(self, 7, "navigate_plus.dds",  "changeWpOffsetZ",  0.5, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[3], w16px, h16px, nil,   1);
+
+	courseplay:register_button(self, 7, "navigate_up.dds",   "switchDriverCopy", -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[5], w16px, h16px, nil, nil, "self.cp.selectedDriverNumber>0");
+	courseplay:register_button(self, 7, "navigate_down.dds", "switchDriverCopy",  1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[5], w16px, h16px);
+	courseplay:register_button(self, 7, "copy3.dds",         "copyCourse",      nil, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[6], w16px, h16px, nil, nil, "self.cp.hasFoundCopyDriver=true");
 
 	--Page 8: Course generation
 	courseplay:register_button(self, 8, "navigate_minus.dds", "changeWorkWidth", -0.1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], w16px, h16px, nil,  -0.5, "self.toolWorkWidht>0.1");

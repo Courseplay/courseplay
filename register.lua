@@ -88,6 +88,18 @@ function cp_setupHud()
 			closeRed =    { 180/255,       0,       0, 1 };
 		};
 		clickSound = createSample("clickSound");
+		pagesPerMode = {
+			--Pg 0  Pg 1  Pg 2  Pg 3   Pg 4   Pg 5  Pg 6  Pg 7  Pg 8   Pg 9
+			{ true, true, true, true,  false, true, true, true, false, false }; --Mode 1
+			{ true, true, true, true,  true,  true, true, true, false, false }; --Mode 2
+			{ true, true, true, true,  true,  true, true, true, false, false }; --Mode 3
+			{ true, true, true, false, false, true, true, true, true,  false }; --Mode 4
+			{ true, true, true, false, false, true, true, true, false, false }; --Mode 5
+			{ true, true, true, false, false, true, true, true, true,  false }; --Mode 6
+			{ true, true, true, true,  false, true, true, true, false, false }; --Mode 7
+			{ true, true, true, true,  false, true, true, true, false, false }; --Mode 8
+			{ true, true, true, false, false, true, true, true, false, true  }; --Mode 9
+		};
 	};
 	loadSample(courseplay.hud.clickSound, Utils.getFilename("sounds/cpClickSound.wav", courseplay_path), false);
 	

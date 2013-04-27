@@ -51,15 +51,30 @@ function courseplay:switch_player_side(self)
 end
 
 function courseplay:switch_hud_page(self, change_by)
-	self.showHudInfoBase = self.showHudInfoBase + change_by;
+	newPage = courseplay:minMaxPage(self, self.showHudInfoBase + change_by);
+	--print("55: oldPage=", tostring(self.showHudInfoBase), ", newPage=",tostring(newPage));
 
-	if self.showHudInfoBase < self.min_hud_page then
-		self.showHudInfoBase = courseplay.hud.numPages;
-	elseif self.showHudInfoBase > courseplay.hud.numPages then
-		self.showHudInfoBase = self.min_hud_page;
+	if self.ai_mode == nil then
+		self.showHudInfoBase = newPage;
+	elseif courseplay.hud.pagesPerMode[self.ai_mode] ~= nil then
+		while courseplay.hud.pagesPerMode[self.ai_mode][newPage+1] == false do
+			--print(string.format("61: pagesPerMode[%s][%s] == false", tostring(self.ai_mode), tostring(newPage+1)));
+			newPage = courseplay:minMaxPage(self, newPage + change_by);
+			--print(string.format("63 newPage=%s", tostring(newPage)));
+		end;
+		self.showHudInfoBase = newPage;
+		--print(string.format("66 showHudInfoBase=%s", tostring(self.showHudInfoBase)));
 	end;
-end
+end;
 
+function courseplay:minMaxPage(self, pageNum)
+	if pageNum < self.min_hud_page then
+		pageNum = courseplay.hud.numPages;
+	elseif pageNum > courseplay.hud.numPages then
+		pageNum = self.min_hud_page;
+	end;
+	return pageNum;
+end;
 
 function courseplay:change_combine_offset(self, change_by)
 	local previousOffset = self.combine_offset

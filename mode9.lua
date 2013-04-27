@@ -42,7 +42,7 @@ function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToD
 		self.cp.shovelState = 1
 		self.loaded = false
 	end
-
+	
 	if self.cp.shovelState == 1 then
 		if self.recordnumber + 1 > self.cp.shovelFillStartPoint then
 			local hasTargetRotation = courseplay:hasTargetRotation(self, mt, secondary, self.cp.shovelStateRot["2"]);
