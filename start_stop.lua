@@ -204,38 +204,6 @@ function courseplay:stop(self)
 
 	-- removing tippers
 	if self.tipper_attached then
-		for key, tipper in pairs(self.tippers) do
-			specialTool = courseplay:handleSpecialTools(tipper,false,false,false)
-			if not specialTool then
-				if tipper.setIsTurnedOn ~= nil and tipper.isTurnedOn then
-					tipper:setIsTurnedOn(false, false);
-				end;
-				if tipper.isThreshing then
-					tipper:setIsThreshing(false, true);
-				end
-				if self.isThreshing then
-					self:setIsThreshing(false, true);
-				end
-				if courseplay:isFoldable(tipper) and tipper.setFoldDirection ~= nil then
-					if self.ai_mode == 6 or courseplay:is_sowingMachine(tipper) then
-						tipper:setFoldDirection(1);
-					elseif tipper.turnOnFoldDirection ~= nil and tipper.turnOnFoldDirection ~= 0 then
-						tipper:setFoldDirection(-tipper.turnOnFoldDirection);
-					else
-						tipper:setFoldDirection(-1); --> doesn't work for Kotte VTL (liquidManure)
-					end;
-				end
-				if tipper.needsLowering and tipper.aiNeedsLowering and tipper:isLowered() then
-					self:setAIImplementsMoveDown(false);
-				end;
-
-				-- TODO AITractor.removeToolTrigger(self, tipper)
-				if SpecializationUtil.hasSpecialization(Attachable, tipper.specializations) then
-					tipper:aiTurnOff()
-				end
-			end
-		end
-		
 		--open all covers
 		if self.cp.tipperHasCover then
 			for i=1, table.getn(self.cp.tippersWithCovers) do
