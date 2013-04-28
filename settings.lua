@@ -4,9 +4,11 @@ function courseplay:change_ai_state(self, change_by)
 	if self.ai_mode > courseplay.numAiModes or self.ai_mode == 0 then
 		self.ai_mode = 1
 	end
+	courseplay:buttonsActiveEnabled(self, "all");
 end
 function courseplay:setAiMode(self, modeNum)
 	self.ai_mode = modeNum;
+	courseplay:buttonsActiveEnabled(self, "all");
 end;
 
 function courseplay:call_player(self)
@@ -50,21 +52,35 @@ function courseplay:switch_player_side(self)
 	end
 end
 
+function courseplay:setHudPage(self, pageNum)
+	if self.ai_mode == nil then
+		self.showHudInfoBase = pageNum;
+	elseif courseplay.hud.pagesPerMode[self.ai_mode] ~= nil and courseplay.hud.pagesPerMode[self.ai_mode][pageNum+1] then
+		if pageNum == 0 then
+			if courseplay:isCombine(self) or courseplay:isChopper(self) or courseplay:isHarvesterSteerable(self) then
+				self.showHudInfoBase = pageNum;
+			end;
+		else
+			self.showHudInfoBase = pageNum;
+		end;
+	end;
+
+	courseplay:buttonsActiveEnabled(self, "pageNav");
+end;
+
 function courseplay:switch_hud_page(self, change_by)
 	newPage = courseplay:minMaxPage(self, self.showHudInfoBase + change_by);
-	--print("55: oldPage=", tostring(self.showHudInfoBase), ", newPage=",tostring(newPage));
 
 	if self.ai_mode == nil then
 		self.showHudInfoBase = newPage;
 	elseif courseplay.hud.pagesPerMode[self.ai_mode] ~= nil then
 		while courseplay.hud.pagesPerMode[self.ai_mode][newPage+1] == false do
-			--print(string.format("61: pagesPerMode[%s][%s] == false", tostring(self.ai_mode), tostring(newPage+1)));
 			newPage = courseplay:minMaxPage(self, newPage + change_by);
-			--print(string.format("63 newPage=%s", tostring(newPage)));
 		end;
 		self.showHudInfoBase = newPage;
-		--print(string.format("66 showHudInfoBase=%s", tostring(self.showHudInfoBase)));
 	end;
+
+	courseplay:buttonsActiveEnabled(self, "pageNav");
 end;
 
 function courseplay:minMaxPage(self, pageNum)
@@ -75,6 +91,46 @@ function courseplay:minMaxPage(self, pageNum)
 	end;
 	return pageNum;
 end;
+
+function courseplay:buttonsActiveEnabled(self, section)
+	for _,button in pairs(self.cp.buttons) do
+		if section == nil or section == "all" or section == "pageNav" then
+			if button.function_to_call == "setHudPage" then
+				local pageNum = button.parameter;
+				button.isActive = pageNum == self.showHudInfoBase;
+				
+				if self.ai_mode == nil then
+					button.isDisabled = false;
+				elseif courseplay.hud.pagesPerMode[self.ai_mode] ~= nil and courseplay.hud.pagesPerMode[self.ai_mode][pageNum+1] then
+					if pageNum == 0 then
+						button.isDisabled = not (courseplay:isCombine(self) or courseplay:isChopper(self) or courseplay:isHarvesterSteerable(self));
+					else
+						button.isDisabled = false;
+					end;
+				else
+					button.isDisabled = true;
+				end;
+				
+				button.canBeClicked = not button.isDisabled and not button.isActive;
+			end;
+		end;
+		
+		if section == nil or section == "all" or section == "quickModes" then
+			if self.showHudInfoBase == 1 and button.function_to_call == "setAiMode" then
+				button.isActive = self.ai_mode == button.parameter;
+				button.canBeClicked = not button.isActive;
+			end;
+		end;
+
+		if section == nil or section == "all" or section == "shovel" then
+			if self.showHudInfoBase == 9 and button.function_to_call == "saveShovelStatus" then
+				button.isActive = self.cp.shovelStateRot[tostring(button.parameter)] ~= nil;
+				button.canBeClicked = true;
+			end;
+		end;
+	end;
+end;
+
 
 function courseplay:change_combine_offset(self, change_by)
 	local previousOffset = self.combine_offset
@@ -461,4 +517,5 @@ function courseplay:saveShovelStatus(self, stage)
 	if stage >= 2 and stage <= 5 then
 		self.cp.shovelStateRot[tostring(stage)] = courseplay:getCurrentRotation(self, mt, secondary);
 	end;
+	courseplay:buttonsActiveEnabled(self, "shovel");
 end;

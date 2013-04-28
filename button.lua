@@ -11,7 +11,12 @@ function courseplay:register_button(self, hud_page, img, function_to_call, param
 		x2 = (x + width), 
 		y = y, 
 		y2 = (y + height), 
-		row = hud_row
+		row = hud_row,
+		color = courseplay.hud.colors.white,
+		canBeClicked = true,
+		isActive = false,
+		isDisabled = false,
+		isHovered = false
 	};
 	if modifiedParameter then 
 		button.modifiedParameter = modifiedParameter;
@@ -42,11 +47,11 @@ function courseplay:register_button(self, hud_page, img, function_to_call, param
 		end;
 	end;
 
-	table.insert(self.buttons, button)
+	table.insert(self.cp.buttons, button)
 end
 
 function courseplay:render_buttons(self, page)
-	for _, button in pairs(self.buttons) do
+	for _, button in pairs(self.cp.buttons) do
 		if button.page == page or button.page == nil then
 			if button.showWhat ~= nil and button.showIs ~= nil then
 				local what = Utils.splitString(".", button.showWhat);
@@ -82,8 +87,55 @@ function courseplay:render_buttons(self, page)
 			end;
 			
 			if button.show == nil or (button.show ~= nil and button.show) then
+				local colors = courseplay.hud.colors;
+				local currentColor = courseplay:getButtonColor(button);
+				local targetColor = currentColor;
+
+				if not button.isDisabled and not button.isActive and not button.isHovered and button.canBeClicked and not courseplay:colorsMatch(currentColor, colors.white) then
+					targetColor = colors.white;
+				elseif button.isDisabled and not courseplay:colorsMatch(currentColor, colors.whiteDisabled) then
+					targetColor = colors.whiteDisabled;
+				elseif button.isActive and not courseplay:colorsMatch(currentColor, colors.activeGreen) then
+					targetColor = colors.activeGreen;
+				elseif not button.isActive and not button.isDisabled and (button.canBeClicked == nil or (button.canBeClicked ~= nil and button.canBeClicked)) and button.isHovered then
+					local hoverColor = colors.hover;
+					if button.function_to_call == "close_hud" then
+						hoverColor = colors.closeRed;
+					end;
+					
+					if not courseplay:colorsMatch(currentColor, hoverColor) then
+						targetColor = hoverColor;
+					end;
+				end;
+				
+				-- set colors
+				if not courseplay:colorsMatch(currentColor, targetColor) then
+					courseplay:setButtonColor(button, targetColor)
+				end;
+			
 				button.overlay:render();
 			end;
 		end
 	end
-end
+end;
+
+function courseplay:setButtonColor(button, color)
+	if button == nil or button.overlay == nil or color == nil or table.getn(color) ~= 4 then
+		return;
+	end;
+	
+	button.color = color;
+	setOverlayColor(button.overlay.overlayId, unpack(color));
+end;
+
+function courseplay:getButtonColor(button)
+	if button == nil or button.overlay == nil or button.color == nil then
+		return nil;
+	end;
+
+	return button.color;
+end;
+
+function courseplay:colorsMatch(color1, color2)
+	return Utils.areListsEqual(color1, color2, false);
+end;

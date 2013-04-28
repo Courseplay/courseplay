@@ -99,7 +99,7 @@ function courseplay:load(xmlFile)
 	self.use_speed = true
 
 	-- clickable buttons
-	self.buttons = {}
+	self.cp.buttons = {}
 
 	-- waypoints are stored in here
 	self.Waypoints = {}
@@ -307,7 +307,8 @@ function courseplay:load(xmlFile)
 	-- combines	
 	self.reachable_combines = {}
 	self.active_combine = nil
-	self.cp.offset = nil
+
+	self.cp.offset = nil --self = combine [flt]
 	self.combine_offset = 0.0
 	self.tipper_offset = 0.0
 
@@ -385,7 +386,24 @@ function courseplay:load(xmlFile)
 
 	self.show_hud = false
 
-	-- buttons for hud
+	-- ## BUTTONS FOR HUD ##
+
+	-- Page nav
+	local pageNav = {
+		buttonW = 32/1920;
+		buttonH = 32/1080;
+		paddingRight = 0.005;
+		posY = courseplay.hud.infoBasePosY + 0.271;
+	};
+	pageNav.totalWidth = ((courseplay.hud.numPages + 1) * pageNav.buttonW) + (courseplay.hud.numPages * pageNav.paddingRight); --numPages=9, real numPages=10
+	pageNav.baseX = courseplay.hud.infoBaseCenter - pageNav.totalWidth/2;
+	for p=0, courseplay.hud.numPages do
+		local posX = pageNav.baseX + (p * (pageNav.buttonW + pageNav.paddingRight));
+		local icon = string.format("pageNav_%d.dds", p);
+		courseplay:register_button(self, nil, icon, "setHudPage", p, posX, pageNav.posY, pageNav.buttonW, pageNav.buttonH);
+	end;
+
+
 	courseplay:register_button(self, nil, "navigate_left.dds", "switch_hud_page", -1, courseplay.hud.infoBasePosX + 0.035, courseplay.hud.infoBasePosY + 0.2395, w24px, h24px); --ORIG: +0.242
 	courseplay:register_button(self, nil, "navigate_right.dds", "switch_hud_page", 1, courseplay.hud.infoBasePosX + 0.280, courseplay.hud.infoBasePosY + 0.2395, w24px, h24px);
 
@@ -733,7 +751,7 @@ function courseplay:readStream(streamId, connection)
 	self.cp.noStopOnEdge = streamDebugReadBool(streamId);
 	self.cp.noStopOnTurn = streamDebugReadBool(streamId);
 	self.cp.lastCheckedTransformID = streamDebugReadInt32(streamId);
-	self.cp.offset = streamDebugReadFloat32(streamId) 
+	self.cp.offset = streamDebugReadFloat32(streamId);
 	self.crossPoints = streamDebugReadInt32(streamId)
 	self.drive = streamDebugReadBool(streamId)
 	self.drive_slow_timer = streamDebugReadInt32(streamId)

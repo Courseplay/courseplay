@@ -5,8 +5,9 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 		else
 			self.mouse_enabled = true
 			if not self.show_hud then
-				self.showHudInfoBase = self.min_hud_page
-				self.show_hud = true
+				--self.showHudInfoBase = self.min_hud_page
+				courseplay:buttonsActiveEnabled(self, "all");
+				self.show_hud = true;
 			end
 		end
 		InputBinding.setShowMouseCursor(self.mouse_enabled)
@@ -14,7 +15,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 	if isDown and button == 1 and self.show_hud and self.isEntered then
 		--courseplay:debug(string.format("posX: %f posY: %f",posX,posY), 4)
 
-		for _, button in pairs(self.buttons) do
+		for _, button in pairs(self.cp.buttons) do
 			if (button.page == self.showHudInfoBase or button.page == nil or button.page == self.showHudInfoBase * -1) and (button.show == nil or (button.show ~= nil and button.show)) then
 
 				if posX > button.x and posX < button.x2 and posY > button.y and posY < button.y2 then
@@ -22,10 +23,17 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 						courseplay:debug("CP_Modifier_1 is pressed", 3)
 						if button.modifiedParameter ~= nil then
 							courseplay:debug("button.modifiedParameter = " .. tostring(button.modifiedParameter), 3)
-							self:setCourseplayFunc(button.function_to_call, button.modifiedParameter)
+							
+							if button.canBeClicked == nil or (button.canBeClicked ~= nil and button.canBeClicked) then
+								playSample(courseplay.hud.clickSound, 1, 1, 0);
+								self:setCourseplayFunc(button.function_to_call, button.modifiedParameter)
+							end;
 						end
 					else
-						self:setCourseplayFunc(button.function_to_call, button.parameter)
+						if button.canBeClicked == nil or (button.canBeClicked ~= nil and button.canBeClicked) then
+							playSample(courseplay.hud.clickSound, 1, 1, 0);
+							self:setCourseplayFunc(button.function_to_call, button.parameter);
+						end;
 					end
 				end
 			end
@@ -34,50 +42,12 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 	--hover
 	elseif not isDown and self.show_hud and self.isEntered then
 		if self.mouse_enabled then
-			for _, button in pairs(self.buttons) do
+			for _, button in pairs(self.cp.buttons) do
 				if (button.page == self.showHudInfoBase or button.page == nil or button.page == self.showHudInfoBase * -1) and (button.show == nil or (button.show ~= nil and button.show)) then
-					local buttonColor = courseplay.hud.colors.white;
-					local noHoverChange = false;
-
-					--quick switch buttons: if active mode
-					if self.showHudInfoBase == 1 and button.function_to_call == "setAiMode" and self.ai_mode ~= nil and self.ai_mode == button.parameter then
-						buttonColor = courseplay.hud.colors.activeGreen;
-						noHoverChange = true;
-
-						--mode 9 shovel buttons
-					elseif self.showHudInfoBase == 9 and button.function_to_call == "saveShovelStatus" then
-						for a=2,5 do
-							if button.parameter == a and self.cp.shovelStateRot[tostring(a)] ~= nil then
-								buttonColor = courseplay.hud.colors.activeGreen;
-								break;
-							end;
-						end;
-					end;
-					
-					if not noHoverChange and posX > button.x and posX < button.x2 and posY > button.y and posY < button.y2 then
-						if button.function_to_call == "close_hud" then
-							setOverlayColor(button.overlay.overlayId, unpack(courseplay.hud.colors.closeRed));
-						else
-							setOverlayColor(button.overlay.overlayId, unpack(courseplay.hud.colors.hover));
-						end;
+					if posX > button.x and posX < button.x2 and posY > button.y and posY < button.y2 then
+						button.isHovered = true;
 					else
-						setOverlayColor(button.overlay.overlayId, unpack(buttonColor));
-					end;
-				end;
-			end;
-		elseif self.showHudInfoBase == 1 or self.showHudInfoBase == 9 then
-			for _, button in pairs(self.buttons) do
-				if (button.page == 1 and (button.show == nil or (button.show ~= nil and button.show))) then
-					--quick switch buttons: if active mode
-					if button.function_to_call == "setAiMode" and self.ai_mode ~= nil and self.ai_mode == button.parameter then
-						setOverlayColor(button.overlay.overlayId, unpack(courseplay.hud.colors.activeGreen));
-					end;
-				elseif button.page == 9 and button.show == nil and button.function_to_call == "saveShovelStatus" then
-					for a=2,5 do
-						if button.parameter == a and self.cp.shovelStateRot[tostring(a)] ~= nil then
-							setOverlayColor(button.overlay.overlayId, unpack(courseplay.hud.colors.activeGreen));
-							break;
-						end;
+						button.isHovered = false;
 					end;
 				end;
 			end;
@@ -91,8 +61,6 @@ function courseplay:setCourseplayFunc(func, value, noEventSend)
 		CourseplayEvent.sendEvent(self, func, value); -- Die Funktion ruft sendEvent auf und übergibt 3 Werte   (self "also mein ID", action, "Ist eine Zahl an der ich festmache welches Fenster ich aufmachen will", state "Ist der eigentliche Wert also true oder false"
 	end;
 	courseplay:deal_with_mouse_input(self, func, value)
-	
-	playSample(courseplay.hud.clickSound, 1, 1, 0);
 end
 
 function courseplay:deal_with_mouse_input(self, func, value)
@@ -102,6 +70,10 @@ function courseplay:deal_with_mouse_input(self, func, value)
 
 	if func == "switch_hud_page" then
 		courseplay:switch_hud_page(self, value)
+	end
+
+	if func == "setHudPage" then
+		courseplay:setHudPage(self, value)
 	end
 
 	if func == "change_combine_offset" then

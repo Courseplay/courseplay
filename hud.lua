@@ -175,7 +175,7 @@ function courseplay:loadHud(self)
 
 			local row = 1
 			for i = start_course_num, end_course_num, 1 do
-				for _, button in pairs(self.buttons) do
+				for _, button in pairs(self.cp.buttons) do
 					if button.page == -2 and button.row == row then
 						button.overlay:render()
 					end

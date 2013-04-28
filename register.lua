@@ -74,6 +74,7 @@ function cp_setupHud()
 		infoBasePosY = 0.002;
 		infoBaseWidth = 0.512; --try: 512/1920
 		infoBaseHeight = 0.512; --try: 512/1080
+		infoBaseCenter = 0.433 + 0.16;
 		linesPosY = {};
 		linesBottomPosY = {};
 		linesButtonPosY = {};
@@ -81,11 +82,13 @@ function cp_setupHud()
 		numLines = 6;
 		lineHeight = 0.021;
 		colors = {
-			white =       {       1,       1,       1, 1 };
-			hover =       {  32/255, 168/255, 219/255, 1 };
-			activeGreen = { 110/255, 235/255,  56/255, 1 };
-			activeRed =   { 206/255,  83/255,  77/255, 1 };
-			closeRed =    { 180/255,       0,       0, 1 };
+			white =         {       1,       1,       1, 1    };
+			whiteInactive = {       1,       1,       1, 0.75 };
+			whiteDisabled = {       1,       1,       1, 0.15 };
+			hover =         {  32/255, 168/255, 219/255, 1    };
+			activeGreen =   { 110/255, 235/255,  56/255, 1    };
+			activeRed =     { 206/255,  83/255,  77/255, 1    };
+			closeRed =      { 180/255,       0,       0, 1    };
 		};
 		clickSound = createSample("clickSound");
 		pagesPerMode = {
