@@ -45,7 +45,6 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 				if (button.page == self.showHudInfoBase or button.page == nil or button.page == self.showHudInfoBase * -1) and (button.show == nil or (button.show ~= nil and button.show)) then
 					if posX > button.x and posX < button.x2 and posY > button.y and posY < button.y2 then
 						button.isHovered = true;
-						print("button ", button.function_to_call, "(", tostring(button.parameter), ").isHovered = true")
 					else
 						button.isHovered = false;
 					end;
