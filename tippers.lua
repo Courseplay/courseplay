@@ -413,18 +413,19 @@ function courseplay:setMarkers(self, object)
 	end
 
 	if object.isFuchsFass then
-		local caOffsetFromValve = 4.5;
+		local x,y,z = 0,0,0;
+		local valveOffsetFromRootNode = 0;
+		local caOffsetFromValve = -1.5; --4.5;
 
 		if object.distributerIsAttached then
-			local x,y,z = getWorldTranslation(object.attachedImplements[1].object.rootNode);
-			local _, _, distToFuchs = worldToLocal(self.rootNode, x, y, z);
-			self.cp.backMarkerOffset = distToFuchs + caOffsetFromValve;
+			x,y,z = getWorldTranslation(object.attachedImplements[1].object.rootNode);
 		else
-			local x,y,z = getWorldTranslation(object.rootNode);
-			local _, _, distToFuchs = worldToLocal(self.rootNode, x, y, z);
-			local valveOffsetFromRootNode = 3.5;
-			self.cp.backMarkerOffset = distToFuchs + valveOffsetFromRootNode + caOffsetFromValve;
+			x,y,z = getWorldTranslation(object.rootNode);
+			valveOffsetFromRootNode = 3.5;
 		end;
+
+		local _, _, distToFuchs = worldToLocal(self.rootNode, x, y, z);
+		self.cp.backMarkerOffset = distToFuchs + valveOffsetFromRootNode + caOffsetFromValve;
 	end;
 
 	if self.cp.aiFrontMarker == nil  or object.cp.aiFrontMarker > self.cp.aiFrontMarker then
