@@ -1,0 +1,13 @@
+Icons
+------------------------------------
+* Tractor icon by Olivier Guin - under "CC BY 3.0" license
+* Globe icon by Nicholas Menghini - under "CC BY 3.0" license
+* Speed gauge icon by Márcio Duarte - under "CC BY 3.0" license
+* Gear icon by Johan H. W. Basberg - Public Domain (CC0 1.0)
+* Arrow icon by Thomas Le Bas - under "CC BY 3.0" license
+* Folder icons by Sergio Calcara - under "CC BY 3.0" license
+* Trash can icon by Ruben Steeman - under "CC BY 3.0" license
+* Floppy disk icon by Cor Tiemens - under "CC BY 3.0" license
+* Copy icon part of "Font Awesome" by Dave Gandy - under "CC BY 3.0" license
+
+* All other icons and graphics by Jakob Tischler

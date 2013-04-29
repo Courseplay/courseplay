@@ -75,6 +75,12 @@ function cp_setupHud()
 		infoBaseWidth = 0.512; --try: 512/1920
 		infoBaseHeight = 0.512; --try: 512/1080
 		infoBaseCenter = 0.433 + 0.16;
+		visibleArea = {
+			x1 = 0.433;
+			x2 = 0.753;
+			y1 = 0.002;
+			y2 = 0.30463; --0.002 + 0.271 + 32/1080 + 0.002;
+		};
 		linesPosY = {};
 		linesBottomPosY = {};
 		linesButtonPosY = {};

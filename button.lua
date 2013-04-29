@@ -14,6 +14,7 @@ function courseplay:register_button(self, hud_page, img, function_to_call, param
 		row = hud_row,
 		color = courseplay.hud.colors.white,
 		canBeClicked = true,
+		isClicked = false,
 		isActive = false,
 		isDisabled = false,
 		isHovered = false
@@ -52,7 +53,7 @@ end
 
 function courseplay:render_buttons(self, page)
 	for _, button in pairs(self.cp.buttons) do
-		if button.page == page or button.page == nil then
+		if button.page == nil or button.page == page or button.page == -page then
 			if button.showWhat ~= nil and button.showIs ~= nil then
 				local what = Utils.splitString(".", button.showWhat);
 				if what[1] == "self" then 
@@ -91,13 +92,15 @@ function courseplay:render_buttons(self, page)
 				local currentColor = courseplay:getButtonColor(button);
 				local targetColor = currentColor;
 
-				if not button.isDisabled and not button.isActive and not button.isHovered and button.canBeClicked and not courseplay:colorsMatch(currentColor, colors.white) then
+				if not button.isDisabled and not button.isActive and not button.isHovered and button.canBeClicked and not button.isClicked and not courseplay:colorsMatch(currentColor, colors.white) then
 					targetColor = colors.white;
 				elseif button.isDisabled and not courseplay:colorsMatch(currentColor, colors.whiteDisabled) then
 					targetColor = colors.whiteDisabled;
+				elseif not button.isDisabled and button.canBeClicked and button.isClicked then
+					targetColor = colors.activeRed;
 				elseif button.isActive and not courseplay:colorsMatch(currentColor, colors.activeGreen) then
 					targetColor = colors.activeGreen;
-				elseif not button.isActive and not button.isDisabled and (button.canBeClicked == nil or (button.canBeClicked ~= nil and button.canBeClicked)) and button.isHovered then
+				elseif not button.isDisabled and not button.isActive and button.isHovered and button.canBeClicked and not button.isClicked then
 					local hoverColor = colors.hover;
 					if button.function_to_call == "close_hud" then
 						hoverColor = colors.closeRed;

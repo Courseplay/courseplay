@@ -12,54 +12,57 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 		end
 		InputBinding.setShowMouseCursor(self.mouse_enabled)
 	end
-	if isDown and button == 1 and self.show_hud and self.isEntered then
+	
+	local hudGfx = courseplay.hud.visibleArea;
+	local mouseIsInHudArea = self.mouse_enabled and posX > hudGfx.x1 and posX < hudGfx.x2 and posY > hudGfx.y1 and posY < hudGfx.y2;
+	
+	if isDown and button == 1 and self.show_hud and self.isEntered and mouseIsInHudArea then
 		--courseplay:debug(string.format("posX: %f posY: %f",posX,posY), 4)
 
 		for _, button in pairs(self.cp.buttons) do
-			if (button.page == self.showHudInfoBase or button.page == nil or button.page == self.showHudInfoBase * -1) and (button.show == nil or (button.show ~= nil and button.show)) then
+			button.isClicked = false;
 
+			if (button.page == self.showHudInfoBase or button.page == nil or button.page == self.showHudInfoBase * -1) and (button.show == nil or (button.show ~= nil and button.show)) then
 				if posX > button.x and posX < button.x2 and posY > button.y and posY < button.y2 then
-					if InputBinding.isPressed(InputBinding.CP_Modifier_1) then --for some reason InputBinding works in :mouseEvent
-						courseplay:debug("CP_Modifier_1 is pressed", 3)
-						if button.modifiedParameter ~= nil then
-							courseplay:debug("button.modifiedParameter = " .. tostring(button.modifiedParameter), 3)
-							
-							if button.canBeClicked == nil or (button.canBeClicked ~= nil and button.canBeClicked) then
-								playSample(courseplay.hud.clickSound, 1, 1, 0);
-								self:setCourseplayFunc(button.function_to_call, button.modifiedParameter)
-							end;
-						end
-					else
-						if button.canBeClicked == nil or (button.canBeClicked ~= nil and button.canBeClicked) then
-							playSample(courseplay.hud.clickSound, 1, 1, 0);
-							self:setCourseplayFunc(button.function_to_call, button.parameter);
-						end;
-					end
+					local parameter = button.parameter;
+					if InputBinding.isPressed(InputBinding.CP_Modifier_1) and button.modifiedParameter ~= nil then --for some reason InputBinding works in :mouseEvent
+						courseplay:debug("button.modifiedParameter = " .. tostring(button.modifiedParameter), 3);
+						parameter = button.modifiedParameter;
+					end;
+
+					if (button.show == nil or (button.show ~= nil and button.show)) and (button.canBeClicked == nil or (button.canBeClicked ~= nil and button.canBeClicked)) then
+						button.isClicked = true;
+						self:setCourseplayFunc(button.function_to_call, parameter);
+					end;
 				end
 			end
 		end
 		
 	--hover
 	elseif not isDown and self.show_hud and self.isEntered then
-		if self.mouse_enabled then
+		if mouseIsInHudArea then
 			for _, button in pairs(self.cp.buttons) do
 				if (button.page == self.showHudInfoBase or button.page == nil or button.page == self.showHudInfoBase * -1) and (button.show == nil or (button.show ~= nil and button.show)) then
 					if posX > button.x and posX < button.x2 and posY > button.y and posY < button.y2 then
 						button.isHovered = true;
+						print("button ", button.function_to_call, "(", tostring(button.parameter), ").isHovered = true")
 					else
 						button.isHovered = false;
 					end;
 				end;
+				button.isClicked = false;
 			end;
 		end;
 	end;
-end;
+end; --END mouseEvent()
 
 
 function courseplay:setCourseplayFunc(func, value, noEventSend)
 	if noEventSend ~= true then
 		CourseplayEvent.sendEvent(self, func, value); -- Die Funktion ruft sendEvent auf und übergibt 3 Werte   (self "also mein ID", action, "Ist eine Zahl an der ich festmache welches Fenster ich aufmachen will", state "Ist der eigentliche Wert also true oder false"
 	end;
+
+	playSample(courseplay.hud.clickSound, 1, 1, 0);
 	courseplay:deal_with_mouse_input(self, func, value)
 end
 

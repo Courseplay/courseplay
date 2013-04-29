@@ -399,8 +399,7 @@ function courseplay:load(xmlFile)
 	pageNav.baseX = courseplay.hud.infoBaseCenter - pageNav.totalWidth/2;
 	for p=0, courseplay.hud.numPages do
 		local posX = pageNav.baseX + (p * (pageNav.buttonW + pageNav.paddingRight));
-		local icon = string.format("pageNav_%d.dds", p);
-		courseplay:register_button(self, nil, icon, "setHudPage", p, posX, pageNav.posY, pageNav.buttonW, pageNav.buttonH);
+		courseplay:register_button(self, nil, string.format("pageNav_%d.dds", p), "setHudPage", p, posX, pageNav.posY, pageNav.buttonW, pageNav.buttonH);
 	end;
 
 
@@ -424,8 +423,8 @@ function courseplay:load(xmlFile)
 	--Page 1: ai_mode quickSwitch
 	for i=1, courseplay.numAiModes do
 		local icon = string.format("quickSwitch_mode%d.dds", i);
-		local w = w16px * 2.25;
-		local h = h16px * 2.25;
+		local w = w16px * 2;
+		local h = h16px * 2;
 		--3 columns, 3 rows
 		local numColumns = 3;
 
@@ -472,9 +471,6 @@ function courseplay:load(xmlFile)
 	--Page 4: Combine management
 	courseplay:register_button(self, 4, "navigate_up.dds",   "switch_combine", -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], w16px, h16px, nil, nil, "self.selected_combine_number>0");
 	courseplay:register_button(self, 4, "navigate_down.dds", "switch_combine",  1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[1], w16px, h16px);
-
-	--courseplay:register_button(self, 4, "navigate_minus.dds", "change_num_ai_helpers", -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[4], w16px, h16px);
-	--courseplay:register_button(self, 4, "navigate_plus.dds", "change_num_ai_helpers", 1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[4], w16px, h16px);
 
 	courseplay:register_button(self, 4, "blank.dds", "switch_search_combine", nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[2], lineButtonWidth, 0.015);
 
@@ -885,7 +881,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteBool(streamId, self.cp.noStopOnEdge)
 	streamDebugWriteBool(streamId, self.cp.noStopOnTurn)
 	streamDebugWriteInt32(streamId, self.cp.lastCheckedTransformID)
-	streamDebugWriteFloat32(streamId, self.cp.offset)
+	streamDebugWriteFloat32(streamId, self.cp.offset);
 	streamDebugWriteInt32(streamId, self.crossPoints);
 	streamDebugWriteBool(streamId,self.drive)
 	streamDebugWriteInt32(streamId,self.drive_slow_timer)
