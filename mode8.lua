@@ -4,7 +4,10 @@ function courseplay:handle_mode8(self)
 		for i = 1, table.getn(self.tippers) do
 			workTool = self.tippers[i]
 			if workTool ~= nil then
+				--courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
+				courseplay:handleSpecialTools(self,workTool,nil,nil,nil,nil,nil,true)
 				if workTool.trailerInTrigger ~= nil and workTool.fillLevel > 0 and not workTool.fill then
+			
 					workTool.fill = true;
 				
 				--ManureLager
@@ -14,4 +17,4 @@ function courseplay:handle_mode8(self)
 			end
 		end
 	end
-end  
+end

@@ -221,7 +221,8 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 			-- other worktools, tippers, e.g. forage wagon	
 			else
 				if workArea and fill_level ~= 100 and ((self.abortWork == nil) or (self.abortWork ~= nil and last_recordnumber == self.abortWork) or (self.runOnceStartCourse)) and self.cp.turnStage == 0  and not returnToStartPoint then
-					specialTool, allowedToDrive = courseplay:handleSpecialTools(workTool,true,true,true,allowedToDrive)
+								--courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
+					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,true,true,true,allowedToDrive,nil,nil)
 					if allowedToDrive then
 						if not specialTool then
 							--unfold
@@ -269,7 +270,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 					end
 				elseif not workArea or self.abortWork ~= nil or self.loaded or last_recordnumber == self.stopWork or returnToStartPoint then
 					workSpeed = 0;
-					specialTool, allowedToDrive = courseplay:handleSpecialTools(workTool,false,false,false,allowedToDrive)
+					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,nil)
 					if not specialTool then
 						if not courseplay:isFolding(workTool) then
 							--turn off
@@ -368,7 +369,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 		
 			--Start combine
 			if workArea and not tool.isAIThreshing and self.abortWork == nil then
-				specialTool, allowedToDrive = courseplay:handleSpecialTools(workTool,true,true,true,allowedToDrive,tool)
+				specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,true,true,true,allowedToDrive,nil,nil)
 				if not specialTool then
 					local pipeState = tool:getCombineTrailerInRangePipeState();
 					local weatherStop = not tool:getIsThreshingAllowed(true)
@@ -436,7 +437,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 				if self.abortWork == nil then
 					allowedToDrive = false;
 				end
-				specialTool, allowedToDrive = courseplay:handleSpecialTools(workTool,false,false,false,allowedToDrive,tool)
+				specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil)
 				if not specialTool then
 					tool:setIsThreshing(false, true);
 					if courseplay:isFoldable(workTool) then

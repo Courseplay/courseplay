@@ -16,6 +16,7 @@ working_course_players = {};
 function initialize_courseplay()
 	source(courseplay_path .. "helpers.lua")
 	source(courseplay_path .. "turn.lua")
+	source(courseplay_path .. "specialTools.lua")
 
 	-- starting & stopping of courseplay
 	source(courseplay_path .. "start_stop.lua")
@@ -66,7 +67,7 @@ function initialize_courseplay()
 	source(courseplay_path .. "courseplay_event.lua")
 	source(courseplay_path .. "astar.lua")
 	source(courseplay_path .. "fruit.lua")
-	print("### Initialized 26 Courseplay files")
+	print("### Initialized 27 Courseplay files")
 end;
 
 initialize_courseplay();

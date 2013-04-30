@@ -235,7 +235,8 @@ function courseplay:lowerImplements(self, direction, workToolonOff)
 		state  = -1
 	end
 	for _,workTool in pairs(self.tippers) do
-		specialTool = courseplay:handleSpecialTools(workTool,true,false,true)	
+			    --courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
+		specialTool = courseplay:handleSpecialTools(self,workTool,true,direction,workToolonOff,nil,nil,nil)	
 	end	
 	if not specialTool then
 		if  self.setAIImplementsMoveDown ~= nil then

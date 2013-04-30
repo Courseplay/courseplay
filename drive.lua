@@ -314,7 +314,7 @@ function courseplay:drive(self, dt)
 				courseplay:handle_mode8(self)
 				local drive_on = false
 				if self.timeout < self.timer or self.last_fill_level == nil then
-					if self.last_fill_level ~= nil and fill_level == self.last_fill_level and fill_level < 100 - self.required_fill_level_for_follow then
+					if self.last_fill_level ~= nil and fill_level == self.last_fill_level and fill_level < self.required_fill_level_for_follow then
 						drive_on = true
 					end
 					self.last_fill_level = fill_level
@@ -910,22 +910,16 @@ function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive)
 				activeToolFillLevel = (activeTool.fillLevel / activeTool.capacity) * 100;
 			end;
 			local canRefill = (activeToolFillLevel ~= nil and activeToolFillLevel < driveOn) and (activeTool.sprayerFillTriggers ~= nil and table.getn(activeTool.sprayerFillTriggers) > 0);
-
 			--ManureLager: activeTool.ReFillTrigger has to be nil so it doesn't refill
 			if self.ai_mode == 8 then
 				canRefill = canRefill and activeTool.ReFillTrigger == nil;
 				--TODO: what to do when transfering from one ManureLager to another?
 			end;
-			local isFuchsFass = activeTool.isFuchsFass and activeTool.setdeckelAnimationisPlaying ~= nil; --Fuchs Guellefass
 			
-		
 			if canRefill then
 				allowedToDrive = false;
-				
-				if isFuchsFass then
-					activeTool:setdeckelAnimationisPlaying(true);
-				end;
-				
+				--courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
+				courseplay:handleSpecialTools(self,activeTool,nil,nil,nil,allowedToDrive,true,false)
 				self.info_text = string.format(courseplay:get_locale(self, "CPloading"), self.cp.tipperFillLevel, self.cp.tipperCapacity);
 				local sprayer = activeTool.sprayerFillTriggers[1];
 				activeTool:setIsSprayerFilling(true, false);
@@ -933,12 +927,9 @@ function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive)
 				if sprayer.trailerInTrigger == activeTool then --Feldrand-Container Guellebomber
 					sprayer.fill = true;
 				end;
-			else
+			elseif not self.cp.stopForLoading then
 				activeTool:setIsSprayerFilling(false, false);
-
-				if isFuchsFass then
-					activeTool:setdeckelAnimationisPlaying(false);
-				end;
+				courseplay:handleSpecialTools(self,activeTool,nil,nil,nil,allowedToDrive,false,false)
 			end;
 		elseif courseplay:is_sowingMachine(activeTool) then --sowing machine
 			if fill_level < driveOn and activeTool.sowingMachineFillTriggers[1] ~= nil then
@@ -946,6 +937,10 @@ function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive)
 				allowedToDrive = false;
 			end;
 		end;
+		if self.cp.stopForLoading then
+			courseplay:handleSpecialTools(self,activeTool,nil,nil,nil,allowedToDrive,true,false)
+			allowedToDrive = false
+		end
 	end;
 	
 	return allowedToDrive;

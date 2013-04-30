@@ -30,7 +30,7 @@ function courseplay:is_baleLoader(workTool) -- is the tool a bale loader?
 	return (SpecializationUtil.hasSpecialization(baleLoader, workTool.specializations) or SpecializationUtil.hasSpecialization(BaleLoader, workTool.specializations) or (workTool.balesToLoad ~= nil and workTool.baleGrabber ~=nil and workTool.grabberIsMoving~= nil));
 end;
 function courseplay:isSprayer(workTool) -- is the tool a sprayer/spreader?
-	return SpecializationUtil.hasSpecialization(Sprayer, workTool.specializations) or SpecializationUtil.hasSpecialization(sprayer, workTool.specializations);
+	return SpecializationUtil.hasSpecialization(Sprayer, workTool.specializations) or SpecializationUtil.hasSpecialization(sprayer, workTool.specializations) or courseplay:isSpecialSprayer(workTool)
 end;
 function courseplay:is_sowingMachine(workTool) -- is the tool a sowing machine?
 	return (SpecializationUtil.hasSpecialization(sowingMachine, workTool.specializations) or SpecializationUtil.hasSpecialization(SowingMachine, workTool.specializations));
@@ -210,23 +210,8 @@ function courseplay:update_tools(self, tractor_or_implement)
 		elseif object.aiLeftMarker == nil and table.getn(object.wheels) > 0 then
 			self.cp.aiTurnNoBackward = true
 		end
-		if courseplay:isAttachedCombine(object) then
-			if Utils.endsWith(object.configFileName, "grimmeSE75-55.xml") then
-				self.cp.aiTurnNoBackward = true
-				self.WpOffsetX = -2.1
-				print("Grimme SE 75-55 workwidth: 0.7 m");
-			elseif Utils.endsWith(object.configFileName, "grimmeRootster604.xml") then
-				self.cp.aiTurnNoBackward = true
-				self.WpOffsetX = -0.9
-				print("Grimme Rootster 604 workwidth: 2.8 m");
-			elseif Utils.endsWith(object.configFileName, "poettingerMex6.xml") then
-				self.cp.aiTurnNoBackward = true
-				self.WpOffsetX = -2.5
-				print("Pöttinger Mex 6 workwidth: 2.0 m");
-			end
-		end
+		courseplay:askForSpecialSettings(self,object)
 		
-
 		-- are there more tippers attached to the current implement?
 		local other_tipper_attached
 		if table.getn(object.attachedImplements) ~= 0 then
