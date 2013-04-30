@@ -352,6 +352,15 @@ function courseplay:update_tools(self, tractor_or_implement)
 				};
 				table.insert(self.cp.tippersWithCovers, data);
 			end;
+			
+			if t.setCoverState ~= nil and t.cover ~= nil and t.cover.opened ~= nil and t.cover.closed ~= nil then
+				courseplay:debug(string.format("Implement \"%s\" has a cover (setCoverState ~= nil)", tostring(t.name)), 3);
+				self.cp.tipperHasCover = true;
+				local data = {
+					tipperIndex = i
+				};
+				table.insert(self.cp.tippersWithCovers, data);
+			end;
 		end;
 	end;
 	--courseplay:debug(tableShow(self.cp.tippersWithCovers, tostring(self.name) .. ": self.cp.tippersWithCovers"), 4);

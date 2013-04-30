@@ -835,7 +835,7 @@ function courseplay:openCloseCover(self)
 			local tIdx = self.cp.tippersWithCovers[i].tipperIndex;
 			local tipper = self.tippers[tIdx];
 			local coverItems = self.cp.tippersWithCovers[i].coverItems;
-			
+
 			--INFO: setPlane(true) = open / setPlane(false) = closed
 			if self.ai_mode == 1 or self.ai_mode == 2 or self.ai_mode == 5 then
 				local minCoverWaypoint = 3;
@@ -849,6 +849,8 @@ function courseplay:openCloseCover(self)
 						tipper:setPlane(false);
 					elseif tipper.planeOpen ~= nil and tipper.planeOpen then
 						tipper:setAnimationTime(3, tipper.animationParts[3].offSet, false);
+					elseif tipper.setCoverState ~= nil and tipper.cover ~= nil and tipper.cover.opened ~= nil and tipper.cover.closed ~= nil and tipper.cover.state ~= nil and not tipper.cover.state then
+						tipper:setCoverState(true);
 					elseif coverItems ~= nil then
 						for _,ci in pairs(coverItems) do
 							if not getVisibility(ci) then
@@ -863,6 +865,8 @@ function courseplay:openCloseCover(self)
 						tipper:setPlane(true);
 					elseif tipper.planeOpen ~= nil and not tipper.planeOpen then
 						tipper:setAnimationTime(3, tipper.animationParts[3].animDuration, false);
+					elseif tipper.setCoverState ~= nil and tipper.cover ~= nil and tipper.cover.opened ~= nil and tipper.cover.closed ~= nil and tipper.cover.state ~= nil and tipper.cover.state then
+						tipper:setCoverState(false);
 					elseif coverItems ~= nil then
 						for _,ci in pairs(coverItems) do
 							if getVisibility(ci) then
