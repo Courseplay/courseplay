@@ -248,6 +248,10 @@ function courseplay:deal_with_mouse_input(self, func, value)
 		courseplay:saveShovelStatus(self, value);
 	end;
 
+	if func == "setShovelStopAndGo" then
+		courseplay:setShovelStopAndGo(self);
+	end;
+
 	if func == "row1" or func == "row2" or func == "row3" or func == "row4" or func == "row5" then
 		if self.showHudInfoBase == 0 then
 			if self.courseplayers == nil or table.getn(self.courseplayers) == 0 then

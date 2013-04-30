@@ -464,6 +464,14 @@ function courseplay:loadHud(self)
 					self.hudpage[9][2][a-1] = "";
 				end;
 			end;
+
+			self.hudpage[9][1][5] = courseplay:get_locale(self, "cpShovelStopAndGo");
+			if self.cp.shovelStopAndGo then
+				self.hudpage[9][2][5] = courseplay:get_locale(self, "CPon");
+			else
+				self.hudpage[9][2][5] = courseplay:get_locale(self, "CPoff");
+			end;
+
 		end;
 	end -- end if show_hud
 end

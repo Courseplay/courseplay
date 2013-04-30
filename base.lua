@@ -136,6 +136,8 @@ function courseplay:load(xmlFile)
 	self.cp.shovelState = 1;
 	self.cp.shovelStateRot = {};
 	self.cp.shovel = {};
+	self.cp.shovelStopAndGo = false;
+	self.cp.shovelLastFillLevel = nil;
 
 	self.cp_directory = cp_directory
 
@@ -530,6 +532,8 @@ function courseplay:load(xmlFile)
 	courseplay:register_button(self, 9, "shovelTransport.dds",    "saveShovelStatus", 3, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[2] - 0.003, wTemp, hTemp, nil, 3);
 	courseplay:register_button(self, 9, "shovelPreUnloading.dds", "saveShovelStatus", 4, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[3] - 0.003, wTemp, hTemp, nil, 4);
 	courseplay:register_button(self, 9, "shovelUnloading.dds",    "saveShovelStatus", 5, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[4] - 0.003, wTemp, hTemp, nil, 5);
+
+	courseplay:register_button(self, 9, "blank.dds", "setShovelStopAndGo",   nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[5], lineButtonWidth, 0.015, nil, nil);
 	--END Page 9
 
 
@@ -733,6 +737,8 @@ function courseplay:readStream(streamId, connection)
 	self.cp.shovelFillStartPoint = streamDebugReadInt32(streamId);
 	self.cp.shovelFillEndPoint = streamDebugReadInt32(streamId);
 	self.cp.shovelState = streamDebugReadInt32(streamId);
+	self.cp.shovelStopAndGo = streamDebugReadBool(streamId);
+	self.cp.shovelLastFillLevel = streamDebugReadFloat32(streamId);
 	self.cp.startingCorner = streamDebugReadInt32(streamId);
 	self.cp.startingDirection = streamDebugReadInt32(streamId);
 	self.cp.tipperHasCover = streamDebugReadBool(streamId);
@@ -867,6 +873,8 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteInt32(streamId, self.cp.shovelFillStartPoint);
 	streamDebugWriteInt32(streamId, self.cp.shovelFillEndPoint);
 	streamDebugWriteInt32(streamId, self.cp.shovelState);
+	streamDebugWriteBool(streamId, self.cp.shovelStopAndGo);
+	streamDebugWriteFloat32(streamId, self.cp.shovelLastFillLevel);
 	streamDebugWriteInt32(streamId, self.cp.startingCorner);
 	streamDebugWriteInt32(streamId, self.cp.startingDirection);
 	streamDebugWriteBool(streamId, self.cp.tipperHasCover);

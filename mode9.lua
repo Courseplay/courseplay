@@ -59,9 +59,21 @@ function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToD
 		if last_recordnumber == self.cp.shovelFillEndPoint then
 			self.loaded = true;
 		end
+		
+		if self.cp.shovelStopAndGo then
+			if self.cp.shovelLastFillLevel == nil then
+				self.cp.shovelLastFillLevel = fill_level;
+			elseif self.cp.shovelLastFillLevel ~= nil and fill_level == self.cp.shovelLastFillLevel and fill_level < 100 then
+				--allowedToDrive = true;
+			elseif self.cp.shovelLastFillLevel ~= nil and self.cp.shovelLastFillLevel ~= fill_level then
+				allowedToDrive = false;
+			end;
+			self.cp.shovelLastFillLevel = fill_level;
+		end;
+
 		if fill_level == 100 or last_recordnumber == self.cp.shovelFillEndPoint then 
 			if not self.loaded then
-				for i = self.recordnumber,self.maxnumber do
+				for i=self.recordnumber, self.maxnumber do
 					local _,ty,_ = getWorldTranslation(self.rootNode)
 					local _,_,z = worldToLocal(self.rootNode, self.Waypoints[i].cx , ty , self.Waypoints[i].cz)
 					if z < -3 then

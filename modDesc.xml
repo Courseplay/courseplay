@@ -1537,6 +1537,30 @@ Italský překlad: JD7530
 			<it>Unloading position</it>
 			<cz>Unloading position</cz>
 		</text>
+		<text name="cpShovelStopAndGo">
+			<de>Stop + Go Laden</de>
+			<en>Stop + go loading</en>
+			<es>Stop + go loading</es>
+			<fr>Stop + go loading</fr>
+			<it>Stop + go loading</it>
+			<cz>Stop + go loading</cz>
+		</text>
+		<text name="CPon">
+			<de>An</de>
+			<en>On</en>
+			<es>On</es>
+			<fr>On</fr>
+			<it>On</it>
+			<cz>On</cz>
+		</text>
+		<text name="CPoff">
+			<de>Aus</de>
+			<en>Off</en>
+			<es>Off</es>
+			<fr>Off</fr>
+			<it>Off</it>
+			<cz>Off</cz>
+		</text>
 	</l10n>
 
 	<extraSourceFiles>
