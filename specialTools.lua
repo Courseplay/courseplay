@@ -233,7 +233,7 @@ function courseplay:askForSpecialSettings(self,object)
 	elseif Utils.endsWith(object.configFileName, "poettingerMex6.xml") then
 		self.cp.aiTurnNoBackward = true
 		self.WpOffsetX = -2.5
-		print("Pöttinger Mex 6 workwidth: 2.0 m");
+		print("PÃ¶ttinger Mex 6 workwidth: 2.0 m");
 	elseif Utils.endsWith(object.configFileName, "Abbey_AP900.xml") then
 		self.cp.aiTurnNoBackward = true
 		self.WpOffsetX = -4.1
