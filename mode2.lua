@@ -290,7 +290,7 @@ function courseplay:unload_combine(self, dt)
 		local safetyDistance = 0
 		if courseplay:isAttachedCombine(combine) then
 			safetyDistance = 11
-		elseif courseplay:isHarvesterSteerable(combine) then
+		elseif courseplay:isHarvesterSteerable(combine) or courseplay:isSpecialCombine(combine, "sugarBeetLoader") then
 			safetyDistance = 24
 		elseif courseplay:isCombine(combine) then
 			safetyDistance = 10
@@ -357,7 +357,7 @@ function courseplay:unload_combine(self, dt)
 		if combine.cp.offset == nil or self.combine_offset == 0 then
 			--print("offset not saved - calculate")
 			courseplay:calculateCombineOffset(self, combine);
-		elseif not combine.isCornchopper and self.auto_combine_offset and self.combine_offset ~= combine.cp.offset then
+		elseif not combine.isCornchopper and not courseplay:isSpecialCombine(workTool, "sugarBeetLoader") and self.auto_combine_offset and self.combine_offset ~= combine.cp.offset then
 			--print("set saved offset")
 			self.combine_offset = combine.cp.offset			
 		end
@@ -1037,17 +1037,19 @@ function courseplay:calculateCombineOffset(self, combine)
 	local offs = self.combine_offset
 	local offsPos = math.abs(self.combine_offset)
 	
-	--TODO: move all that shit over to combines.lua, or better yet base.lua, so it doesn't have to be calculated constantly
-	local prnX, prnY, prnZ = getTranslation(combine.pipeRaycastNode)
-	local prnwX, prnwY, prnwZ = getWorldTranslation(combine.pipeRaycastNode)
-	local combineToPrnX, combineToPrnY, combineToPrnZ = worldToLocal(combine.rootNode, prnwX, prnwY, prnwZ)
-	--NOTE by Jakob: after a shitload of testing and failing, it seems combineToPrnX is what we're looking for (instead of prnToCombineX). Always results in correct x-distance from combine.rn to prn.
-	if combineToPrnX >= 0 then
-		combine.cp.pipeSide = 1; --left
-		--print("pipe is left")
-	else
-		combine.cp.pipeSide = -1; --right
-		--print("pipe is right")		
+	local prnX,prnY,prnZ, prnwX,prnwY,prnwZ, combineToPrnX,combineToPrnY,combineToPrnZ = 0,0,0, 0,0,0, 0,0,0;
+	if combine.pipeRaycastNode ~= nil then
+		prnX, prnY, prnZ = getTranslation(combine.pipeRaycastNode)
+		prnwX, prnwY, prnwZ = getWorldTranslation(combine.pipeRaycastNode)
+		combineToPrnX, combineToPrnY, combineToPrnZ = worldToLocal(combine.rootNode, prnwX, prnwY, prnwZ)
+
+		if combineToPrnX >= 0 then
+			combine.cp.pipeSide = 1; --left
+			--print("pipe is left")
+		else
+			combine.cp.pipeSide = -1; --right
+			--print("pipe is right")		
+		end;
 	end;
 	--special tools, special cases
 	if self.auto_combine_offset and combine.name == "Grimme Rootster 604" then
@@ -1059,7 +1061,14 @@ function courseplay:calculateCombineOffset(self, combine)
 	
 	--combine // combine_offset is in auto mode
 	elseif not combine.isCornchopper and self.auto_combine_offset and combine.currentPipeState == 2 then --pipe is open
-		if getParent(combine.pipeRaycastNode) == combine.rootNode then -- pipeRaycastNode is direct child of combine.root
+		if courseplay:isSpecialCombine(combine, "sugarBeetLoader") then
+			if combine.unloadingTrigger ~= nil and combine.unloadingTrigger.node ~= nil then
+				local utwX,utwY,utwZ = getWorldTranslation(combine.unloadingTrigger.node);
+				local combineToUtwX,_,_ = worldToLocal(combine.rootNode, utwX,utwY,utwZ);
+				offs = combineToUtwX;
+			end;
+		
+		elseif getParent(combine.pipeRaycastNode) == combine.rootNode then -- pipeRaycastNode is direct child of combine.root
 			--safety distance so the trailer doesn't crash into the pipe (sidearm)
 			local additionalSafetyDistance = 0;
 			if combine.name == "Grimme Maxtron 620" then

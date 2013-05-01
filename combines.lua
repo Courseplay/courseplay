@@ -7,7 +7,7 @@ function courseplay:find_combines(self)
 		-- combines should have this trigger
 
 		-- trying to identify combines
-		if courseplay:isCombine(vehicle) or courseplay:isChopper(vehicle) or courseplay:isHarvesterSteerable(vehicle) then
+		if courseplay:isCombine(vehicle) or courseplay:isChopper(vehicle) or courseplay:isHarvesterSteerable(vehicle) or courseplay:isSpecialCombine(vehicle, "sugarBeetLoader") then
 			table.insert(found_combines, vehicle)
 		end
 	end
@@ -22,7 +22,7 @@ function courseplay:combine_allows_tractor(self, combine)
 		combine.courseplayers = {}
 	end
 
-	if combine.grainTankCapacity == 0 then
+	if combine.grainTankCapacity == 0 or courseplay:isSpecialCombine(combine, "sugarBeetLoader") then
 		num_allowed_courseplayers = 2
 	else
 		if self.realistic_driving then
@@ -111,6 +111,9 @@ function courseplay:register_at_combine(self, combine)
 	if combine.grainTankCapacity == 0 then
 		num_allowed_courseplayers = 2
 		combine.isCornchopper = true
+	elseif courseplay:isSpecialCombine(combine, "sugarBeetLoader")
+		num_allowed_courseplayers = 2;
+		combine.isCornchopper = false;
 	else
 		combine.isCornchopper = false
 		
@@ -136,7 +139,7 @@ function courseplay:register_at_combine(self, combine)
 	end
 
 	--THOMAS' best_combine START
-	if combine.grainTankCapacity > 0 then
+	if combine.grainTankCapacity ~= nil and combine.grainTankCapacity > 0 then
 		local distance = 9999999
 		local vehicle_ID = 0
 		for k, vehicle in pairs(g_currentMission.vehicles) do --TODO: Liste einengen, nur Courseplayers
@@ -272,16 +275,19 @@ function courseplay:calculateInitialCombineOffset(self, combine)
 		end;
 	end;
 	
-	local prnX, prnY, prnZ = getTranslation(combine.pipeRaycastNode)
-	local prnwX, prnwY, prnwZ = getWorldTranslation(combine.pipeRaycastNode)
-	local combineToPrnX, combineToPrnY, combineToPrnZ = worldToLocal(combine.rootNode, prnwX, prnwY, prnwZ)
-	--NOTE by Jakob: after a shitload of testing and failing, it seems combineToPrnX is what we're looking for (instead of prnToCombineX). Always results in correct x-distance from combine.rn to prn.
-	if combineToPrnX >= 0 then
-		combine.cp.pipeSide = 1; --left
-		--print("pipe is left")
-	else
-		combine.cp.pipeSide = -1; --right
-		--print("pipe is right")		
+	local prnX,prnY,prnZ, prnwX,prnwY,prnwZ, combineToPrnX,combineToPrnY,combineToPrnZ = 0,0,0, 0,0,0, 0,0,0;
+	if combine.pipeRaycastNode ~= nil then
+		prnX, prnY, prnZ = getTranslation(combine.pipeRaycastNode)
+		prnwX, prnwY, prnwZ = getWorldTranslation(combine.pipeRaycastNode)
+		combineToPrnX, combineToPrnY, combineToPrnZ = worldToLocal(combine.rootNode, prnwX, prnwY, prnwZ)
+
+		if combineToPrnX >= 0 then
+			combine.cp.pipeSide = 1; --left
+			--print("pipe is left")
+		else
+			combine.cp.pipeSide = -1; --right
+			--print("pipe is right")		
+		end;
 	end;
 
 	--special tools, special cases
@@ -292,6 +298,14 @@ function courseplay:calculateInitialCombineOffset(self, combine)
 	elseif combine.name == "Fahr M66" then
 		self.combine_offset =  4.4;
 
+
+	elseif courseplay:isSpecialCombine(combine, "sugarBeetLoader") then
+		if combine.unloadingTrigger ~= nil and combine.unloadingTrigger.node ~= nil then
+			local utwX,utwY,utwZ = getWorldTranslation(combine.unloadingTrigger.node);
+			local combineToUtwX,_,_ = worldToLocal(combine.rootNode, utwX,utwY,utwZ);
+			self.combine_offset = combineToUtwX;
+		end;
+	
 	--combine // combine_offset is in auto mode
 	elseif not combine.isCornchopper and combine.currentPipeState == 2 then -- pipe is extended
 		self.combine_offset = combineToPrnX;
