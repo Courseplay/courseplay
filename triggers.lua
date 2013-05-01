@@ -85,7 +85,8 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 						--courseplay:debug(table.show(trigger), 4);
 						if trigger.acceptedFillTypes[fruitType] then
 							if not isExtendedTipTrigger or (isExtendedTipTrigger and trigger.currentFillType == fruitType) then
-							self.currentTipTrigger = trigger
+								self.currentTipTrigger = trigger
+							end
 						end;
 					elseif trigger.triggerIds ~= nil and table.contains(trigger.triggerIds, transformId) then
 						self.currentTipTrigger = trigger

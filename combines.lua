@@ -111,7 +111,7 @@ function courseplay:register_at_combine(self, combine)
 	if combine.grainTankCapacity == 0 then
 		num_allowed_courseplayers = 2
 		combine.isCornchopper = true
-	elseif courseplay:isSpecialCombine(combine, "sugarBeetLoader")
+	elseif courseplay:isSpecialCombine(combine, "sugarBeetLoader") then
 		num_allowed_courseplayers = 2;
 		combine.isCornchopper = false;
 	else
