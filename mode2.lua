@@ -1050,11 +1050,11 @@ function courseplay:calculateCombineOffset(self, combine)
 		--print("pipe is right")		
 	end;
 	--special tools, special cases
-	if combine.name == "Grimme Rootster 604" then
+	if self.auto_combine_offset and combine.name == "Grimme Rootster 604" then
 		offs = -4.3;
-	elseif combine.name == "Grimme SE 75-55" then
+	elseif self.auto_combine_offset and combine.name == "Grimme SE 75-55" then
 		offs =  4.3;
-	elseif combine.name == "Fahr M66" then
+	elseif self.auto_combine_offset and combine.name == "Fahr M66" then
 		offs =  4.4;
 	
 	--combine // combine_offset is in auto mode
