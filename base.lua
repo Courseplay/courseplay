@@ -128,7 +128,8 @@ function courseplay:load(xmlFile)
 	self.waitTimer = nil
 	self.realistic_driving = true;
 	self.cp.canSwitchMode = false;
-
+	
+	self.cp.stopForLoading = false;
 	-- ai mode 9: shovel
 	self.cp.shovelEmptyPoint = nil;
 	self.cp.shovelFillStartPoint = nil;
@@ -741,6 +742,7 @@ function courseplay:readStream(streamId, connection)
 	self.cp.shovelLastFillLevel = streamDebugReadFloat32(streamId);
 	self.cp.startingCorner = streamDebugReadInt32(streamId);
 	self.cp.startingDirection = streamDebugReadInt32(streamId);
+	self.cp.stopForLoading = streamDebugReadBool(streamId);
 	self.cp.tipperHasCover = streamDebugReadBool(streamId);
 	self.cp.tipperFillLevel = streamDebugReadFloat32(streamId);
 	self.cp.tipperCapacity = streamDebugReadFloat32(streamId);
@@ -877,6 +879,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteFloat32(streamId, self.cp.shovelLastFillLevel);
 	streamDebugWriteInt32(streamId, self.cp.startingCorner);
 	streamDebugWriteInt32(streamId, self.cp.startingDirection);
+	streamDebugWriteBool(streamId, self.cp.stopForLoading);
 	streamDebugWriteBool(streamId, self.cp.tipperHasCover);
 	streamDebugWriteFloat32(streamId,self.cp.tipperFillLevel);
 	streamDebugWriteFloat32(streamId,self.cp.tipperCapacity);
