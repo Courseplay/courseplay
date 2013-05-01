@@ -44,6 +44,8 @@ function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToD
 	end
 
 	if self.cp.shovelState == 1 then
+		self.cp.shovel.trailerFound = nil
+		self.cp.shovel.objectFound = nil
 		if self.recordnumber + 1 > self.cp.shovelFillStartPoint then
 			local hasTargetRotation = courseplay:hasTargetRotation(self, mt, secondary, self.cp.shovelStateRot["2"]);
 			if hasTargetRotation ~= nil and not hasTargetRotation then
@@ -115,8 +117,9 @@ function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToD
 		local x,y,z = localToWorld(self.cp.shovel.shovelTipReferenceNode,0,0,-1);
 		local emptySpeed = self.cp.shovel:getShovelEmptyingSpeed()
 		if emptySpeed == 0 then
-			raycastAll(x, y, z, 0, -1, 0, "findTrailerRaycastCallback", 10, self.cp.shovel);
+			raycastAll(x, y, z, 0, -1.5, 0, "findTrailerRaycastCallback", 10, self.cp.shovel);
 		end
+	
 		if self.cp.shovel.trailerFound ~= nil or self.cp.shovel.objectFound ~= nil or emptySpeed > 0 then
 			--print("trailer/object found")
 			local hasTargetRotation = courseplay:hasTargetRotation(self, mt, secondary, self.cp.shovelStateRot["5"]);
@@ -159,8 +162,6 @@ function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToD
 
 	elseif self.cp.shovelState == 6 then
 		courseplay:handleSpecialTools(self,self,false,nil,nil,nil,nil,nil)
-		self.cp.shovel.trailerFound = nil
-		self.cp.shovel.objectFound = nil
 		local hasTargetRotation = courseplay:hasTargetRotation(self, mt, secondary, self.cp.shovelStateRot["3"]);
 		if hasTargetRotation ~= nil and not hasTargetRotation then
 			courseplay:setMovingToolsRotation(self, dt, mt, secondary, self.cp.shovelStateRot["3"]);

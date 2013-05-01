@@ -482,6 +482,20 @@ function courseplay:drive(self, dt)
 		allowedToDrive = false
 	end 
 
+	local WpUnload = false
+	if self.cp.shovelEmptyPoint ~= nil and self.recordnumber >=3  then
+		WpUnload = self.recordnumber == self.cp.shovelEmptyPoint
+	end
+	
+	if WpUnload then
+		local i = self.cp.shovelEmptyPoint
+		local x,y,z = getWorldTranslation(self.rootNode)
+		local _,_,ez = worldToLocal(self.rootNode, self.Waypoints[i].cx , y , self.Waypoints[i].cz)
+		if  ez < 0.2 then
+			allowedToDrive = false
+		end
+	end
+
 	-- stop or hold position
 	if not allowedToDrive then
 		--self.motor:setSpeedLevel(0, false);
@@ -531,7 +545,6 @@ function courseplay:drive(self, dt)
 		self.sl = 1
 		refSpeed = self.turn_speed
 	end
-
 	
 	if self.Waypoints[self.recordnumber].speed ~= nil and self.use_speed and self.recordnumber > 3 then
 		refSpeed = math.max(self.Waypoints[self.recordnumber].speed, 3/3600)
@@ -654,8 +667,7 @@ function courseplay:drive(self, dt)
 	if self.dist > self.shortest_dist and self.recordnumber > 3 and self.dist < 15 and self.Waypoints[self.recordnumber].rev ~= true then
 		distToChange = self.dist + 1
 	end
-
-	if self.dist > distToChange then
+	if self.dist > distToChange or WpUnload then
 		if g_server ~= nil then
 			AIVehicleUtil.driveInDirection(self, dt, self.steering_angle, 0.5, 0.5, 8, true, fwd, lx, lz, self.sl, 0.5);
 			courseplay:set_traffc_collision(self, lx, lz)
