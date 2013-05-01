@@ -71,21 +71,32 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 			--courseplay:debug(trigger.className, 3);
 			if (trigger.className and (trigger.className == "SiloTrigger" or Utils.endsWith(trigger.className, "TipTrigger"))) then
 				-- transformId
-				local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
-				if trigger.triggerId ~= nil and trigger.triggerId == transformId and (trigger.bunkerSilo == nil or (trigger.bunkerSilo.fillLevel + tipper_capacity) < trigger.bunkerSilo.capacity) then
-					--courseplay:debug(table.show(trigger), 4);
-					local fruitType = self.tippers[1].currentFillType
-					if trigger.acceptedFillTypes[fruitType] then
+				local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity();
+				local fruitType = self.tippers[1].currentFillType;
+				local isExtendedTipTrigger = trigger.isExtendedTrigger and Utils.endsWith(trigger.className, "ExtendedTipTrigger");
+				
+				--AlternativeTipping
+				if isExtendedTipTrigger then
+					fruitType = FruitUtil.fillTypeToFruitType[self.tippers[1].currentFillType];
+				end;
+				
+				if transformId ~= nil and trigger.acceptedFillTypes ~= nil and trigger.acceptedFillTypes[fruitType] then
+					if trigger.triggerId ~= nil and trigger.triggerId == transformId and (trigger.bunkerSilo == nil or (trigger.bunkerSilo.fillLevel + tipper_capacity) < trigger.bunkerSilo.capacity) then
+						--courseplay:debug(table.show(trigger), 4);
+						if trigger.acceptedFillTypes[fruitType] then
+							if not isExtendedTipTrigger or (isExtendedTipTrigger and trigger.currentFillType == fruitType) then
+							self.currentTipTrigger = trigger
+						end;
+					elseif trigger.triggerIds ~= nil and table.contains(trigger.triggerIds, transformId) then
 						self.currentTipTrigger = trigger
-					end
-				elseif trigger.triggerIds ~= nil and transformId ~= nil and table.contains(trigger.triggerIds, transformId) then
-					self.currentTipTrigger = trigger
-				end
-			end
-		end
-		self.cp.lastCheckedTransformID = transformId	
-	end
-end
+						--print("currentTipTrigger=", tostring(self.currentTipTrigger), ", fruitType allowed = ", tostring(self.currentTipTrigger.acceptedFillTypes[self.tippers[1].currentFillType]));
+					end;
+				end;
+			end;
+		end;
+		self.cp.lastCheckedTransformID = transformId;
+	end;
+end;
 
 function table.contains(table, element) --TODO: always use Utils.hasListElement
 	for _, value in pairs(table) do
