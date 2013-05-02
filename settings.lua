@@ -11,53 +11,49 @@ function courseplay:setAiMode(self, modeNum)
 	courseplay:buttonsActiveEnabled(self, "all");
 end;
 
-function courseplay:call_player(self)
-	if self.wants_courseplayer then --edit for more sites
-		self.wants_courseplayer = false
+function courseplay:call_player(combine)
+	combine.wants_courseplayer = not combine.wants_courseplayer;
+end;
+
+function courseplay:start_stop_player(combine)
+	local tractor = combine.courseplayers[1];
+	if combine.forced_to_stop then
+		tractor.forced_to_stop = false;
 	else
-		self.wants_courseplayer = true
-	end
+		tractor.forced_to_stop = true;
+	end;
+end;
+
+function courseplay:send_player_home(combine)
+	local tractor = combine.courseplayers[1];
+	tractor.loaded = true;
 end
 
-function courseplay:start_stop_player(self)
-	local tractor = self.courseplayers[1]
-	if tractor.forced_to_stop then --edit for more sites
-		tractor.forced_to_stop = false
-	else
-		tractor.forced_to_stop = true
-	end
-end
-
-function courseplay:send_player_home(self)
-	local tractor = self.courseplayers[1]
-	tractor.loaded = true
-end
-
-function courseplay:switch_player_side(self)
-	if self.grainTankCapacity == 0 then
-		local tractor = self.courseplayers[1]
+function courseplay:switch_player_side(combine)
+	if combine.grainTankCapacity == 0 then
+		local tractor = combine.courseplayers[1];
 		if tractor == nil then
-			return
-		end
+			return;
+		end;
 
-		tractor.ai_state = 10
+		tractor.ai_state = 10;
 
-		if self.forced_side == nil then
-			self.forced_side = "left"
-		elseif self.forced_side == "left" then
-			self.forced_side = "right"
+		if combine.forced_side == nil then
+			combine.forced_side = "left";
+		elseif combine.forced_side == "left" then
+			combine.forced_side = "right";
 		else
-			self.forced_side = nil
-		end
-	end
-end
+			combine.forced_side = nil;
+		end;
+	end;
+end;
 
 function courseplay:setHudPage(self, pageNum)
 	if self.ai_mode == nil then
 		self.showHudInfoBase = pageNum;
 	elseif courseplay.hud.pagesPerMode[self.ai_mode] ~= nil and courseplay.hud.pagesPerMode[self.ai_mode][pageNum+1] then
 		if pageNum == 0 then
-			if self.cp.isCombine or self.cp.isChopper or self.cp.isHarvesterSteerable or self.cp.isSugarBeetLoader then
+			if self.cp.minHudPage == 0 or self.cp.isCombine or self.cp.isChopper or self.cp.isHarvesterSteerable or self.cp.isSugarBeetLoader then
 				self.showHudInfoBase = pageNum;
 			end;
 		else
@@ -84,10 +80,10 @@ function courseplay:switch_hud_page(self, change_by)
 end;
 
 function courseplay:minMaxPage(self, pageNum)
-	if pageNum < self.min_hud_page then
+	if pageNum < self.cp.minHudPage then
 		pageNum = courseplay.hud.numPages;
 	elseif pageNum > courseplay.hud.numPages then
-		pageNum = self.min_hud_page;
+		pageNum = self.cp.minHudPage;
 	end;
 	return pageNum;
 end;

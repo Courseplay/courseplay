@@ -5,7 +5,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 		else
 			self.mouse_enabled = true
 			if not self.show_hud then
-				--self.showHudInfoBase = self.min_hud_page
+				--self.showHudInfoBase = self.cp.minHudPage
 				courseplay:buttonsActiveEnabled(self, "all");
 				self.show_hud = true;
 			end
@@ -254,21 +254,26 @@ function courseplay:deal_with_mouse_input(self, func, value)
 
 	if func == "row1" or func == "row2" or func == "row3" or func == "row4" or func == "row5" then
 		if self.showHudInfoBase == 0 then
-			if self.courseplayers == nil or table.getn(self.courseplayers) == 0 then
+			local combine = self;
+			if self.cp.attachedCombineIdx ~= nil and self.tippers ~= nil and self.tippers[self.cp.attachedCombineIdx] ~= nil then
+				combine = self.tippers[self.cp.attachedCombineIdx];
+			end;
+			
+			if combine.courseplayers == nil or table.getn(combine.courseplayers) == 0 then
 				if func == "row1" then
-					courseplay:call_player(self)
+					courseplay:call_player(combine)
 				end
 			else
 				if func == "row2" then
-					courseplay:start_stop_player(self)
+					courseplay:start_stop_player(combine)
 				end
 
 				if func == "row3" then
-					courseplay:send_player_home(self)
+					courseplay:send_player_home(combine)
 				end
 
 				if func == "row4" then
-					courseplay:switch_player_side(self)
+					courseplay:switch_player_side(combine)
 				end
 				
 				--manual chopping: initiate/end turning maneuver

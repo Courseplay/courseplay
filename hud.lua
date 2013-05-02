@@ -1,7 +1,9 @@
 -- Load Lines for Hud
 function courseplay:HudPage(self)
-	local Page = self.showHudInfoBase
-	setTextBold(false)
+	setTextBold(false);
+	setTextColor(unpack(courseplay.hud.colors.white));
+	
+	local Page = self.showHudInfoBase;
 	for column=1, 2 do
 		for line, name in pairs(self.hudpage[Page][column]) do
 			if column == 1 then
@@ -21,27 +23,31 @@ function courseplay:HudPage(self)
 end;
 
 function courseplay:loadHud(self)
-	self.hudpage[0][1] = {}
-	self.hudpage[0][2] = {}
-	self.hudpage[0][3] = {}
-	self.hudpage[0][4] = {}
-	self.hudpage[1][1] = {}
-	self.hudpage[1][2] = {}
+	for page=0,1 do
+		for line=1, courseplay.hud.numLines do
+			self.hudpage[page][line] = {};
+		end;
+	end;
 
 	if self.show_hud then
 		--setOverlayUVs(self.hudInfoBaseOverlay, 0,0, 0,0.95, 0.95,0, 0.95,0.95);
 		self.hudInfoBaseOverlay:render();
 		if self.showHudInfoBase == 0 then
+			local combine = self;
+			if self.cp.attachedCombineIdx ~= nil and self.tippers ~= nil and self.tippers[self.cp.attachedCombineIdx] ~= nil then
+				combine = self.tippers[self.cp.attachedCombineIdx];
+			end;
+
 			-- no courseplayer!
-			if self.courseplayers == nil or table.getn(self.courseplayers) == 0 then
-				if self.wants_courseplayer then
+			if combine.courseplayers == nil or table.getn(combine.courseplayers) == 0 then
+				if combine.wants_courseplayer then
 					self.hudpage[0][1][1] = courseplay:get_locale(self, "CoursePlayCalledPlayer")
 				else
 					self.hudpage[0][1][1] = courseplay:get_locale(self, "CoursePlayCallPlayer")
 				end
 			else
 				self.hudpage[0][1][1] = courseplay:get_locale(self, "CoursePlayPlayer")
-				local tractor = self.courseplayers[1]
+				local tractor = combine.courseplayers[1]
 				self.hudpage[0][2][1] = tractor.name
 
 				if tractor.forced_to_stop then
@@ -52,20 +58,20 @@ function courseplay:loadHud(self)
 				self.hudpage[0][1][3] = courseplay:get_locale(self, "CoursePlayPlayerSendHome")
 
 				--chopper
-				if self.cp.isChopper then
-					local tractor = self.courseplayers[1]
+				if combine.cp.isChopper then
+					local tractor = combine.courseplayers[1]
 					if tractor ~= nil then
 						self.hudpage[0][1][4] = courseplay:get_locale(self, "CoursePlayPlayerSwitchSide")
-						if self.forced_side == "left" then
+						if combine.forced_side == "left" then
 							self.hudpage[0][2][4] = courseplay:get_locale(self, "CoursePlayPlayerSideLeft")
-						elseif self.forced_side == "right" then
+						elseif combine.forced_side == "right" then
 							self.hudpage[0][2][4] = courseplay:get_locale(self, "CoursePlayPlayerSideRight")
 						else
 							self.hudpage[0][2][4] = courseplay:get_locale(self, "CoursePlayPlayerSideNone")
 						end
 						
 						--manual chopping: initiate/end turning maneuver
-						if not self.drive and not self.isAIThreshing then
+						if not self.drive and not combine.isAIThreshing then
 							self.hudpage[0][1][5] = courseplay:get_locale(self, "CPturnManeuver");
 							if self.cp.turnStage == 0 then
 								self.hudpage[0][2][5] = courseplay:get_locale(self, "CPStart");
@@ -471,7 +477,6 @@ function courseplay:loadHud(self)
 			else
 				self.hudpage[9][2][5] = courseplay:get_locale(self, "CPoff");
 			end;
-
 		end;
 	end -- end if show_hud
 end
@@ -480,6 +485,7 @@ end
 function courseplay:showHud(self)
 	-- HUD
 	if self.show_hud and self.isEntered then
+		setTextColor(unpack(courseplay.hud.colors.white));
 
 		courseplay:render_buttons(self, self.showHudInfoBase)
 
@@ -496,6 +502,7 @@ function courseplay:showHud(self)
 		end
 
 		if self.Waypoints[self.recordnumber] ~= nil then
+			--self.hudinfo[3] = courseplay:get_locale(self, "CPWaypoint") .. self.recordnumber .. "/" .. self.maxnumber .. "	" .. courseplay.locales.WaitPoints .. self.waitPoints .. "	" .. courseplay.locales.CrossPoints .. self.crossPoints
 			self.hudinfo[3] = string.format("%s%s/%s	%s%s	%s%s", courseplay:get_locale(self, "CPWaypoint"), tostring(self.recordnumber), tostring(self.maxnumber),  tostring(courseplay.locales.WaitPoints), tostring(self.waitPoints), tostring(courseplay.locales.CrossPoints), tostring(self.crossPoints));
 		elseif self.record or self.record_pause or self.createCourse then
 			self.hudinfo[3] = courseplay:get_locale(self, "CPWaypoint") .. self.recordnumber .. "	" .. courseplay.locales.WaitPoints .. self.waitPoints .. "	" .. courseplay.locales.CrossPoints .. self.crossPoints
@@ -581,3 +588,17 @@ function courseplay:showHud(self)
 		end;
 	end
 end
+
+function courseplay:setMinHudPage(self, workTool)
+	self.cp.minHudPage = 1;
+	
+	local hasAttachedCombine = workTool ~= nil and courseplay:isAttachedCombine(workTool);
+	
+	if self.cp.isCombine or self.cp.isChopper or self.cp.isHarvesterSteerable or self.cp.isSugarBeetLoader or hasAttachedCombine then
+		self.cp.minHudPage = 0;
+	end;
+	
+	self.showHudInfoBase = math.max(self.showHudInfoBase, self.cp.minHudPage);
+	print(string.format("setMinHudPage: minHudPage=%s, showHudInfoBase=%s", tostring(self.cp.minHudPage), tostring(self.showHudInfoBase)));
+	courseplay:buttonsActiveEnabled(self, "pageNav");
+end;

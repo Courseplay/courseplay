@@ -135,6 +135,9 @@ function courseplay:load(xmlFile)
 	self.cp.canSwitchMode = false;
 	
 	self.cp.stopForLoading = false;
+
+	self.cp.attachedCombineIdx = nil;
+
 	-- ai mode 9: shovel
 	self.cp.shovelEmptyPoint = nil;
 	self.cp.shovelFillStartPoint = nil;
@@ -368,12 +371,8 @@ function courseplay:load(xmlFile)
 	self.infoPanelPath = Utils.getFilename("img/hud_bg.dds", self.cp_directory);
 	self.hudInfoBaseOverlay = Overlay:new("hudInfoBaseOverlay", self.infoPanelPath, courseplay.hud.infoBasePosX - 10/1920, courseplay.hud.infoBasePosY - 10/1920, courseplay.hud.infoBaseWidth, courseplay.hud.infoBaseHeight);
 
-	self.min_hud_page = 1
-	if self.cp.isCombine or self.cp.isChopper or self.cp.isHarvesterSteerable or self.cp.isSugarBeetLoader then
-		self.min_hud_page = 0
-	end;
-
-	self.showHudInfoBase = self.min_hud_page;
+	self.showHudInfoBase = 1;
+	courseplay:setMinHudPage(self, nil);
 
 	self.hudpage = {}
 	for a=0,courseplay.hud.numPages do
@@ -624,7 +623,7 @@ function courseplay:update(dt)
 			else
 				self.mouse_enabled = true
 				if not self.show_hud then
-					self.showHudInfoBase = self.min_hud_page
+					--self.showHudInfoBase = self.min_hud_page
 					self.show_hud = true
 				end
 			end
@@ -725,6 +724,7 @@ function courseplay:readStream(streamId, connection)
 	self.allow_following = streamDebugReadBool(streamId)
 	self.autoTurnRadius = streamDebugReadFloat32(streamId)
 	self.combine_offset = streamDebugReadFloat32(streamId)
+	self.cp.attachedCombineIdx = streamDebugReadInt32(streamId)
 	self.cp.canSwitchMode = streamDebugReadBool(streamId)
 	self.cp.courseListPrev = streamDebugReadBool(streamId)
 	self.cp.courseListNext = streamDebugReadBool(streamId)
@@ -740,6 +740,7 @@ function courseplay:readStream(streamId, connection)
 	self.cp.isChopper = streamDebugReadBool(streamId);
 	self.cp.isHarvesterSteerable = streamDebugReadBool(streamId);
 	self.cp.isSugarBeetLoader = streamDebugReadBool(streamId);
+	self.cp.minHudPage = streamDebugReadInt32(streamId);
 	self.cp.ridgeMarkersAutomatic = streamDebugReadBool(streamId);
 	self.cp.returnToFirstPoint = streamDebugReadBool(streamId);
 	self.cp.selectedDriverNumber = streamDebugReadInt32(streamId);
@@ -866,6 +867,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteBool(streamId, self.allow_following)
 	streamDebugWriteFloat32(streamId,self.autoTurnRadius)
 	streamDebugWriteFloat32(streamId,self.combine_offset)
+	streamDebugWriteInt32(streamId, self.cp.attachedCombineIdx);
 	streamDebugWriteBool(streamId, self.cp.canSwitchMode);
 	streamDebugWriteBool(streamId, self.cp.courseListPrev)
 	streamDebugWriteBool(streamId, self.cp.courseListNext)
@@ -881,6 +883,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteBool(streamId, self.cp.isChopper);
 	streamDebugWriteBool(streamId, self.cp.isHarvesterSteerable);
 	streamDebugWriteBool(streamId, self.cp.isSugarBeetLoader);
+	streamDebugWriteInt32(streamId, self.cp.minHudPage);
 	streamDebugWriteBool(streamId, self.cp.ridgeMarkersAutomatic);
 	streamDebugWriteBool(streamId, self.cp.returnToFirstPoint);
 	streamDebugWriteInt32(streamId, self.cp.selectedDriverNumber);

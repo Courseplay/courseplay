@@ -203,7 +203,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 				table.insert(self.tippers, object);
 				object.attacherVehicle.cp.shovelState = 1
 			end
-		end
+		end;
 
 		if object.aiLeftMarker ~= nil and object.aiForceTurnNoBackward == true then 
 			self.cp.aiTurnNoBackward = true
@@ -229,6 +229,21 @@ function courseplay:update_tools(self, tractor_or_implement)
 	
 	for k,v in pairs(self.components) do
 		self.cpTrafficCollisionIgnoreList[v.node] = true;
+	end;
+
+	--MINHUDPAGE for attached combines
+	self.cp.attachedCombineIdx = nil;
+	if not (self.cp.isCombine or self.cp.isChopper or self.cp.isHarvesterSteerable or self.cp.isSugarBeetLoader) then
+		for i=1,table.getn(self.tippers) do
+			if courseplay:isAttachedCombine(self.tippers[i]) then
+				self.cp.attachedCombineIdx = i;
+				break;
+			end;
+		end;
+	end;
+	if self.cp.attachedCombineIdx ~= nil then
+		print(string.format("setMinHudPage(self, self.tippers[%d])", self.cp.attachedCombineIdx));
+		courseplay:setMinHudPage(self, self.tippers[self.cp.attachedCombineIdx]);
 	end;
 
 	--CUTTERS
@@ -581,15 +596,20 @@ function courseplay:unload_tippers(self)
 					end
 				end
 			else
-				self.gofortipping = true
+				self.gofortipping = true;
+				if self.currentTipTrigger.fillLevel ~= nil and self.currentTipTrigger.capacity ~= nil and self.currentTipTrigger.fillLevel >= self.currentTipTrigger.capacity then
+					self.gofortipping = false;
+					allowedToDrive = false;
+					self.info_text = "Heap has reached its capacity"; --TODO: i18n / courseplay:get_locale(self, "CPheapFull");
+				end;
 			end
 			if self.currentTipTrigger.acceptedFillTypes[fruitType] and self.gofortipping == true then  
 				if tipper.tipState == Trailer.TIPSTATE_CLOSED then
 					local distanceToTrigger = math.huge;
 					if self.currentTipTrigger.getTipDistanceFromTrailer ~= nil then
-						distanceToTrigger = self.currentTipTrigger:getTipDistanceFromTrailer(tipper, tipper.currentTipReferencePointIndex);
+						distanceToTrigger = self.currentTipTrigger:getTipDistanceFromTrailer(tipper, tipper.currentTipReferencePointIndex); --courtesy of Satis
 					end;
-					if distanceToTrigger == 0 or self.currentTipTrigger.bunkerSilo ~= nil then   --courtesy of Satis
+					if distanceToTrigger == 0 or self.currentTipTrigger.bunkerSilo ~= nil then
 						if self.toggledTipState < numReferencePoints then
 							self.toggledTipState = self.toggledTipState +1
 							tipper:toggleTipState(self.currentTipTrigger,self.toggledTipState);

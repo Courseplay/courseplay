@@ -565,7 +565,7 @@ function courseplay:unload_combine(self, dt)
 		
 		--SET TARGET UNLOADING COORDINATES @ COMBINE
 		local ttX, ttZ = courseplay:setTargetUnloadingCoords(self, combine, trailer_offset, prnToCombineZ);
-		
+		currentX, currentZ = ttx, ttZ;
 
 		local lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, ttX, y, ttZ)
 		dod = Utils.vector2Length(lx, lz)
@@ -1053,18 +1053,8 @@ function courseplay:calculateCombineOffset(self, combine)
 	
 	--Sugarbeet Loaders (e.g. Ropa Euro Maus, Holmer Terra Felis)
 	elseif self.auto_combine_offset and combine.cp.isSugarBeetLoader then
-		--offs = 14;
 		local utwX,utwY,utwZ = getWorldTranslation(combine.unloadingTrigger.node);
-		--drawDebugPoint(utwX,utwY,utwZ, 196/255,1,0,1); --works
 		local combineToUtwX,_,combineToUtwZ = worldToLocal(combine.rootNode, utwX,utwY,utwZ);
-		
-		if courseplay:round(combineToUtwX, 1) ~= courseplay:round(self.combine_offset, 1) then
-			print(string.format("%s: utwX,utwY,utwZ=%s,%s,%s   /   combineToUtwX,combineToUtwZ=%s", combine.name, tostring(utwX),tostring(utwY),tostring(utwZ), tostring(combineToUtwX), tostring(combineToUtwZ)));
-		end;
-		
-		local rnLeftX, rnLeftY, rnLeftZ =             localToWorld(combine.rootNode, combineToUtwX, 2, 0);
-		local rnLeftBackX, rnLeftBackY, rnLeftBackZ = localToWorld(combine.rootNode, combineToUtwX, 2, -20);
-		drawDebugLine(rnLeftX, utwY, rnLeftZ, 196/255,1,0, rnLeftBackX, utwY, rnLeftBackZ, 196/255,1,0);
 		offs = combineToUtwX;
 
 	--combine // combine_offset is in auto mode, pipe is open
