@@ -599,6 +599,6 @@ function courseplay:setMinHudPage(self, workTool)
 	end;
 	
 	self.showHudInfoBase = math.max(self.showHudInfoBase, self.cp.minHudPage);
-	print(string.format("setMinHudPage: minHudPage=%s, showHudInfoBase=%s", tostring(self.cp.minHudPage), tostring(self.showHudInfoBase)));
+	--print(string.format("setMinHudPage: minHudPage=%s, showHudInfoBase=%s", tostring(self.cp.minHudPage), tostring(self.showHudInfoBase)));
 	courseplay:buttonsActiveEnabled(self, "pageNav");
 end;

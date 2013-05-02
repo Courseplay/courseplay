@@ -242,7 +242,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 		end;
 	end;
 	if self.cp.attachedCombineIdx ~= nil then
-		print(string.format("setMinHudPage(self, self.tippers[%d])", self.cp.attachedCombineIdx));
+		--print(string.format("setMinHudPage(self, self.tippers[%d])", self.cp.attachedCombineIdx));
 		courseplay:setMinHudPage(self, self.tippers[self.cp.attachedCombineIdx]);
 	end;
 
