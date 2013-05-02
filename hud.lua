@@ -52,7 +52,7 @@ function courseplay:loadHud(self)
 				self.hudpage[0][1][3] = courseplay:get_locale(self, "CoursePlayPlayerSendHome")
 
 				--chopper
-				if self.grainTankCapacity == 0 then --TODO: if courseplay:isChopper(self) then
+				if self.cp.isChopper then
 					local tractor = self.courseplayers[1]
 					if tractor ~= nil then
 						self.hudpage[0][1][4] = courseplay:get_locale(self, "CoursePlayPlayerSwitchSide")
@@ -256,7 +256,7 @@ function courseplay:loadHud(self)
 
 
 
-		--Page 4
+		--Page 4: Assign combine
 		elseif self.showHudInfoBase == 4 then
 
 			self.hudpage[4][1][1] = courseplay:get_locale(self, "CPSelectCombine") -- "Drescher wählen:"
@@ -288,7 +288,7 @@ function courseplay:loadHud(self)
 			end;
 
 
-		--Page 5
+		--Page 5: Speeds
 		elseif self.showHudInfoBase == 5 then
 			self.hudpage[5][1][1] = courseplay:get_locale(self, "CPTurnSpeed") -- "Wendemanöver:"
 			self.hudpage[5][1][2] = courseplay:get_locale(self, "CPFieldSpeed") -- "Auf dem Feld:"
@@ -315,7 +315,7 @@ function courseplay:loadHud(self)
 
 
 
-		--Page 6
+		--Page 6: General settings
 		elseif self.showHudInfoBase == 6 then
 
 			self.hudpage[6][1][1] = courseplay:get_locale(self, "CPaStar") -- Z-Offset:
@@ -344,7 +344,7 @@ function courseplay:loadHud(self)
 			self.hudpage[6][2][4] = courseplay:get_locale(self, "RulMode" .. string.format("%d", self.RulMode));
 			self.hudpage[6][2][5] = courseplay:get_locale(self, "CPDebugLevel" .. string.format("%d", CPDebugLevel))
 
-		--Page 7
+		--Page 7: Driving settings
 		elseif self.showHudInfoBase == 7 then
 			self.hudpage[7][1][1] = courseplay:get_locale(self, "CPWaitTime") -- Wartezeit am Haltepunkt
 			self.hudpage[7][2][1] = string.format("%.1f", self.waitTime) .. "sec"
@@ -496,7 +496,7 @@ function courseplay:showHud(self)
 		end
 
 		if self.Waypoints[self.recordnumber] ~= nil then
-			self.hudinfo[3] = courseplay:get_locale(self, "CPWaypoint") .. self.recordnumber .. "/" .. self.maxnumber .. "	" .. courseplay.locales.WaitPoints .. self.waitPoints .. "	" .. courseplay.locales.CrossPoints .. self.crossPoints
+			self.hudinfo[3] = string.format("%s%s/%s	%s%s	%s%s", courseplay:get_locale(self, "CPWaypoint"), tostring(self.recordnumber), tostring(self.maxnumber),  tostring(courseplay.locales.WaitPoints), tostring(self.waitPoints), tostring(courseplay.locales.CrossPoints), tostring(self.crossPoints));
 		elseif self.record or self.record_pause or self.createCourse then
 			self.hudinfo[3] = courseplay:get_locale(self, "CPWaypoint") .. self.recordnumber .. "	" .. courseplay.locales.WaitPoints .. self.waitPoints .. "	" .. courseplay.locales.CrossPoints .. self.crossPoints
 		else

@@ -57,7 +57,12 @@ function courseplay:load(xmlFile)
 	end
 
 	self.cp = {};
-
+	
+	self.cp.isCombine = courseplay:isCombine(self);
+	self.cp.isChopper = courseplay:isChopper(self);
+	self.cp.isHarvesterSteerable = courseplay:isHarvesterSteerable(self);
+	self.cp.isSugarBeetLoader = courseplay:isSpecialCombine(self, "sugarBeetLoader");
+		
 	--turn maneuver
 	self.cp.waitForTurnTime = 0.00   --float
 	self.cp.turnStage = 0 --int
@@ -364,9 +369,9 @@ function courseplay:load(xmlFile)
 	self.hudInfoBaseOverlay = Overlay:new("hudInfoBaseOverlay", self.infoPanelPath, courseplay.hud.infoBasePosX - 10/1920, courseplay.hud.infoBasePosY - 10/1920, courseplay.hud.infoBaseWidth, courseplay.hud.infoBaseHeight);
 
 	self.min_hud_page = 1
-	if courseplay:isCombine(self) or courseplay:isChopper(self) or courseplay:isHarvesterSteerable(self) then
+	self.cp.isCombine or self.cp.isChopper or self.cp.isHarvesterSteerable or self.cp.isSugarBeetLoader then
 		self.min_hud_page = 0
-	end
+	end;
 
 	self.showHudInfoBase = self.min_hud_page;
 
@@ -731,6 +736,10 @@ function courseplay:readStream(streamId, connection)
 	self.cp.hasStartingDirection = streamDebugReadBool(streamId);
 	self.cp.hasGeneratedCourse = streamDebugReadBool(streamId);
 	self.cp.hasValidCourseGenerationData = streamDebugReadBool(streamId);
+	self.cp.isCombine = streamDebugReadBool(streamId);
+	self.cp.isChopper = streamDebugReadBool(streamId);
+	self.cp.isHarvesterSteerable = streamDebugReadBool(streamId);
+	self.cp.isSugarBeetLoader = streamDebugReadBool(streamId);
 	self.cp.ridgeMarkersAutomatic = streamDebugReadBool(streamId);
 	self.cp.returnToFirstPoint = streamDebugReadBool(streamId);
 	self.cp.selectedDriverNumber = streamDebugReadInt32(streamId);
@@ -868,6 +877,10 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteBool(streamId, self.cp.hasStartingDirection);
 	streamDebugWriteBool(streamId, self.cp.hasGeneratedCourse);
 	streamDebugWriteBool(streamId, self.cp.hasValidCourseGenerationData);
+	streamDebugWriteBool(streamId, self.cp.isCombine);
+	streamDebugWriteBool(streamId, self.cp.isChopper);
+	streamDebugWriteBool(streamId, self.cp.isHarvesterSteerable);
+	streamDebugWriteBool(streamId, self.cp.isSugarBeetLoader);
 	streamDebugWriteBool(streamId, self.cp.ridgeMarkersAutomatic);
 	streamDebugWriteBool(streamId, self.cp.returnToFirstPoint);
 	streamDebugWriteInt32(streamId, self.cp.selectedDriverNumber);

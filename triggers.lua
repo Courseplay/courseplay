@@ -56,6 +56,21 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 			table.insert(trigger_objects, trigger)
 		end
 	end
+	
+	if g_currentMission.placeables ~= nil then
+		for xml, placeable in pairs(g_currentMission.placeables) do
+			if Utils.endsWith(xml, "placeableheap.xml") then
+				for k, trigger in pairs(placeable) do
+					if (trigger.className and Utils.endsWith(trigger.className, "PlaceableHeap")) then
+						--https://gist.github.com/JakobTischler/913f94f8b43c8c1afb79
+						trigger.isPlaceableHeapTrigger = true;
+						table.insert(trigger_objects, trigger)
+					end;
+				end;
+			end;
+		end
+	end
+
 	-- C.Schoch
 	if g_currentMission.tipTriggers ~= nil then
 		for k, trigger in pairs(g_currentMission.tipTriggers) do
@@ -69,7 +84,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 	if self.cp.lastCheckedTransformID ~= transformId then
 		for k, trigger in pairs(trigger_objects) do
 			--courseplay:debug(trigger.className, 3);
-			if (trigger.className and (trigger.className == "SiloTrigger" or Utils.endsWith(trigger.className, "TipTrigger"))) then
+			if (trigger.className and (trigger.className == "SiloTrigger" or trigger.isPlaceableHeapTrigger or Utils.endsWith(trigger.className, "TipTrigger"))) then
 				-- transformId
 				local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity();
 				local fruitType = self.tippers[1].currentFillType;
@@ -90,6 +105,8 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 						end;
 					elseif trigger.triggerIds ~= nil and table.contains(trigger.triggerIds, transformId) then
 						self.currentTipTrigger = trigger
+					elseif trigger.isPlaceableHeapTrigger and trigger.tipTriggerId ~= nil and trigger.tipTriggerId == transformId then
+						self.currentTipTrigger = trigger;
 						--print("currentTipTrigger=", tostring(self.currentTipTrigger), ", fruitType allowed = ", tostring(self.currentTipTrigger.acceptedFillTypes[self.tippers[1].currentFillType]));
 					end;
 				end;

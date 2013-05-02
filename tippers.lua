@@ -68,7 +68,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 	--steerable (tractor, combine etc.)
 	local tipper_attached = false
 	if SpecializationUtil.hasSpecialization(AITractor, tractor_or_implement.specializations) 
-	or courseplay:isHarvesterSteerable(tractor_or_implement) 
+	or tractor_or_implement.cp.isHarvesterSteerable 
 	or courseplay:isBigM(tractor_or_implement) 
 	or courseplay:isMixer(tractor_or_implement)
 	or courseplay:isWheelloader(tractor_or_implement)
@@ -585,7 +585,11 @@ function courseplay:unload_tippers(self)
 			end
 			if self.currentTipTrigger.acceptedFillTypes[fruitType] and self.gofortipping == true then  
 				if tipper.tipState == Trailer.TIPSTATE_CLOSED then
-					if self.currentTipTrigger:getTipDistanceFromTrailer(tipper, tipper.currentTipReferencePointIndex)  == 0 or self.currentTipTrigger.bunkerSilo ~= nil then   --courtesy of Satis
+					local distanceToTrigger = math.huge;
+					if self.currentTipTrigger.getTipDistanceFromTrailer ~= nil then
+						distanceToTrigger = self.currentTipTrigger:getTipDistanceFromTrailer(tipper, tipper.currentTipReferencePointIndex);
+					end;
+					if distanceToTrigger == 0 or self.currentTipTrigger.bunkerSilo ~= nil then   --courtesy of Satis
 						if self.toggledTipState < numReferencePoints then
 							self.toggledTipState = self.toggledTipState +1
 							tipper:toggleTipState(self.currentTipTrigger,self.toggledTipState);

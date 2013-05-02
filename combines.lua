@@ -7,7 +7,7 @@ function courseplay:find_combines(self)
 		-- combines should have this trigger
 
 		-- trying to identify combines
-		if courseplay:isCombine(vehicle) or courseplay:isChopper(vehicle) or courseplay:isHarvesterSteerable(vehicle) or courseplay:isSpecialCombine(vehicle, "sugarBeetLoader") then
+		if vehicle.cp ~= nil and (vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable or vehicle.cp.isSugarBeetLoader) then
 			table.insert(found_combines, vehicle)
 		end
 	end
@@ -22,7 +22,7 @@ function courseplay:combine_allows_tractor(self, combine)
 		combine.courseplayers = {}
 	end
 
-	if combine.grainTankCapacity == 0 or courseplay:isSpecialCombine(combine, "sugarBeetLoader") then
+	if combine.cp.isChopper or combine.cp.isSugarBeetLoader then
 		num_allowed_courseplayers = 2
 	else
 		if self.realistic_driving then
@@ -108,14 +108,9 @@ function courseplay:register_at_combine(self, combine)
 		combine.courseplayers = {}
 	end
 
-	if combine.grainTankCapacity == 0 then
+	if combine.cp.isChopper or combine.cp.isSugarBeetLoader then
 		num_allowed_courseplayers = 2
-		combine.isCornchopper = true
-	elseif courseplay:isSpecialCombine(combine, "sugarBeetLoader") then
-		num_allowed_courseplayers = 2;
-		combine.isCornchopper = false;
 	else
-		combine.isCornchopper = false
 		
 		if self.realistic_driving then
 			if combine.wants_courseplayer == true or combine.grainTankFillLevel == combine.grainTankCapacity then
@@ -139,7 +134,7 @@ function courseplay:register_at_combine(self, combine)
 	end
 
 	--THOMAS' best_combine START
-	if combine.grainTankCapacity ~= nil and combine.grainTankCapacity > 0 then
+	if combine.cp.isCombine then
 		local distance = 9999999
 		local vehicle_ID = 0
 		for k, vehicle in pairs(g_currentMission.vehicles) do --TODO: Liste einengen, nur Courseplayers
@@ -299,16 +294,16 @@ function courseplay:calculateInitialCombineOffset(self, combine)
 		self.combine_offset =  4.4;
 
 
-	elseif courseplay:isSpecialCombine(combine, "sugarBeetLoader") then
+	elseif combine.cp.isSugarBeetLoader then
 		local utwX,utwY,utwZ = getWorldTranslation(combine.unloadingTrigger.node);
 		local combineToUtwX,_,_ = worldToLocal(combine.rootNode, utwX,utwY,utwZ);
 		self.combine_offset = combineToUtwX;
 	
 	--combine // combine_offset is in auto mode
-	elseif not combine.isCornchopper and combine.currentPipeState == 2 and combine.pipeRaycastNode ~= nil then -- pipe is extended
+	elseif not combine.cp.isChopper and combine.currentPipeState == 2 and combine.pipeRaycastNode ~= nil then -- pipe is extended
 		self.combine_offset = combineToPrnX;
 		courseplay:debug(string.format("%s(%i): %s @ %s: using combineToPrnX=%f, self.combine_offset=%f", curFile, debug.getinfo(1).currentline, self.name, combine.name, combineToPrnX, self.combine_offset), 2)
-	elseif not combine.isCornchopper and combine.pipeRaycastNode ~= nil then --pipe is closed
+	elseif not combine.cp.isChopper and combine.pipeRaycastNode ~= nil then --pipe is closed
 		if getParent(combine.pipeRaycastNode) == combine.rootNode then -- pipeRaycastNode is direct child of combine.root
 			self.combine_offset = prnX;
 			courseplay:debug(string.format("%s(%i): %s @ %s: combine.root > pipeRaycastNode / self.combine_offset=prnX=%f", curFile, debug.getinfo(1).currentline, self.name, combine.name, self.combine_offset), 2)
@@ -331,7 +326,7 @@ function courseplay:calculateInitialCombineOffset(self, combine)
 		else --BACKUP
 			self.combine_offset = 8 * combine.cp.pipeSide;
 		end;
-	elseif combine.isCornchopper then
+	elseif combine.cp.isChopper then
 		courseplay:debug(string.format("%s(%i): %s @ %s: combine.forced_side=%s", curFile, debug.getinfo(1).currentline, self.name, combine.name, tostring(combine.forced_side)), 3);
 		if combine.forced_side ~= nil then
 			courseplay:debug(string.format("%s(%i): %s @ %s: combine.forced_side=%s, going by forced_side", curFile, debug.getinfo(1).currentline, self.name, combine.name, combine.forced_side), 3);

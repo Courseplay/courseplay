@@ -57,7 +57,7 @@ function courseplay:setHudPage(self, pageNum)
 		self.showHudInfoBase = pageNum;
 	elseif courseplay.hud.pagesPerMode[self.ai_mode] ~= nil and courseplay.hud.pagesPerMode[self.ai_mode][pageNum+1] then
 		if pageNum == 0 then
-			if courseplay:isCombine(self) or courseplay:isChopper(self) or courseplay:isHarvesterSteerable(self) then
+			if self.cp.isCombine or self.cp.isChopper or self.cp.isHarvesterSteerable or self.cp.isSugarBeetLoader then
 				self.showHudInfoBase = pageNum;
 			end;
 		else
@@ -103,7 +103,7 @@ function courseplay:buttonsActiveEnabled(self, section)
 					button.isDisabled = false;
 				elseif courseplay.hud.pagesPerMode[self.ai_mode] ~= nil and courseplay.hud.pagesPerMode[self.ai_mode][pageNum+1] then
 					if pageNum == 0 then
-						button.isDisabled = not (courseplay:isCombine(self) or courseplay:isChopper(self) or courseplay:isHarvesterSteerable(self));
+						button.isDisabled = not (self.cp.isCombine or self.cp.isChopper or self.cp.isHarvesterSteerable or self.cp.isSugarBeetLoader);
 					else
 						button.isDisabled = false;
 					end;
@@ -136,7 +136,7 @@ function courseplay:change_combine_offset(self, change_by)
 	local previousOffset = self.combine_offset
 	
 	self.auto_combine_offset = false
-	self.combine_offset = roundCustom(self.combine_offset, 1) + change_by
+	self.combine_offset = courseplay:round(self.combine_offset, 1) + change_by
 	if self.combine_offset < 0.1 and self.combine_offset > -0.1 then
 		self.combine_offset = 0.0
 		self.auto_combine_offset = true
@@ -146,7 +146,7 @@ function courseplay:change_combine_offset(self, change_by)
 end
 
 function courseplay:change_tipper_offset(self, change_by)
-	self.tipper_offset = roundCustom(self.tipper_offset, 1) + change_by
+	self.tipper_offset = courseplay:round(self.tipper_offset, 1) + change_by
 	if self.tipper_offset > -0.1 and self.tipper_offset < 0.1 then
 		self.tipper_offset = 0.0
 	end
