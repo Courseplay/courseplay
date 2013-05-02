@@ -555,25 +555,18 @@ function courseplay:unload_combine(self, dt)
 			end
 		end
 
-		--CALCULATE OFFSET
+		--CALCULATE HORIZONTAL OFFSET (side offset)
 		if combine.cp.offset == nil and not combine.isCornchopper then
 			courseplay:calculateCombineOffset(self, combine);
 		end
 		currentX, currentY, currentZ = localToWorld(combine.rootNode, self.combine_offset, 0, trailer_offset + 5)
-		local cwX, cwY, cwZ = getWorldTranslation(combine.pipeRaycastNode); 
-		local prnToCombineX, prnToCombineY, prnToCombineZ = worldToLocal(combine.rootNode, cwX, cwY, cwZ); 
-           	local ttX, _, ttZ = localToWorld(combine.rootNode, self.combine_offset, 0, trailer_offset + prnToCombineZ)
-		if combine.isCornchopper then
-			ttX, _, ttZ = localToWorld(combine.rootNode, self.combine_offset, 0, trailer_offset)
-		end
-		if combine.attachedImplements ~= nil then
-			for k, i in pairs(combine.attachedImplements) do
-				local implement = i.object;
-				if implement.haeckseldolly == true then
-					ttX, _, ttZ = localToWorld(implement.rootNode, self.combine_offset, 0, trailer_offset)
-				end
-			end
-		end
+		
+		--CALCULATE VERTICAL OFFSET (tipper offset)
+		local prnToCombineZ = courseplay:calculateVerticalOffset(self, combine);
+		
+		--SET TARGET UNLOADING COORDINATES @ COMBINE
+		local ttX, ttZ = courseplay:setTargetUnloadingCoords(self, combine, trailer_offset, prnToCombineZ);
+		
 
 		local lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, ttX, y, ttZ)
 		dod = Utils.vector2Length(lx, lz)
@@ -1061,14 +1054,12 @@ function courseplay:calculateCombineOffset(self, combine)
 	
 	--Sugarbeet Loaders (e.g. Ropa Euro Maus, Holmer Terra Felis)
 	elseif self.auto_combine_offset and courseplay:isSpecialCombine(combine, "sugarBeetLoader") then
-		offs = 14;
-		if combine.unloadingTrigger ~= nil and combine.unloadingTrigger.node ~= nil then
-			print(tableShow(combine.unloadingTrigger.node, "unloadingTrigger.node"));
-			local utwX,utwY,utwZ = getWorldTranslation(combine.unloadingTrigger.node);
-			local combineToUtwX,_,_ = worldToLocal(combine.rootNode, utwX,utwY,utwZ);
-			print(string.format("utwX,utwY,utwZ=%s,%s,%s   /   combineToUtwX=%s", tostring(utwX),tostring(utwY),tostring(utwZ), tostring(combineToUtwX)));
-			offs = combineToUtwX;
-		end;
+		--offs = 14;
+		local utwX,utwY,utwZ = getWorldTranslation(combine.unloadingTrigger.node);
+		--drawDebugPoint(utwX,utwY,utwZ, 196/255,1,0,1); --works
+		local combineToUtwX,_,combineToUtwZ = worldToLocal(combine.rootNode, utwX,utwY,utwZ);
+		--print(string.format("%s: utwX,utwY,utwZ=%s,%s,%s   /   combineToUtwX,combineToUtwZ=%s", combine.name, tostring(utwX),tostring(utwY),tostring(utwZ), tostring(combineToUtwX), tostring(combineToUtwZ)));
+		offs = combineToUtwX;
 
 	--combine // combine_offset is in auto mode, pipe is open
 	elseif not combine.isCornchopper and self.auto_combine_offset and combine.currentPipeState == 2 and combine.pipeRaycastNode ~= nil then --pipe is open
@@ -1103,12 +1094,12 @@ function courseplay:calculateCombineOffset(self, combine)
 	--combine // combine_offset is in manual mode
 	elseif not combine.isCornchopper and not self.auto_combine_offset and combine.pipeRaycastNode ~= nil then
 		offs = offsPos * combine.cp.pipeSide;
-		courseplay:debug(string.format("%s(%i): %s @ %s: [manual] offs = offsPos * pipeSide = %s * %s = %s", curFile, debug.getinfo(1).currentline, self.name, combine.name, tostring(offsPos), tostring(combine.cp.pipeSide), tostring(offs)), 2);
+		--courseplay:debug(string.format("%s(%i): %s @ %s: [manual] offs = offsPos * pipeSide = %s * %s = %s", curFile, debug.getinfo(1).currentline, self.name, combine.name, tostring(offsPos), tostring(combine.cp.pipeSide), tostring(offs)), 2);
 	
 	--combine // combine_offset is in auto mode
 	elseif not combine.isCornchopper and self.auto_combine_offset and combine.pipeRaycastNode ~= nil then
 		offs = offsPos * combine.cp.pipeSide;
-		courseplay:debug(string.format("%s(%i): %s @ %s: [auto] offs = offsPos * pipeSide = %s * %s = %s", curFile, debug.getinfo(1).currentline, self.name, combine.name, tostring(offsPos), tostring(combine.cp.pipeSide), tostring(offs)), 2);
+		--courseplay:debug(string.format("%s(%i): %s @ %s: [auto] offs = offsPos * pipeSide = %s * %s = %s", curFile, debug.getinfo(1).currentline, self.name, combine.name, tostring(offsPos), tostring(combine.cp.pipeSide), tostring(offs)), 2);
 
 	--chopper // combine_offset is in auto mode
 	elseif combine.isCornchopper and self.auto_combine_offset then
@@ -1140,4 +1131,38 @@ function courseplay:calculateCombineOffset(self, combine)
 
 	--refresh for display in HUD and other calculations
 	self.combine_offset = offs;
+end;
+
+function courseplay:calculateVerticalOffset(self, combine)
+	local cwX,cwY,cwZ;
+	if courseplay:isSpecialCombine(combine, "sugarBeetLoader") then
+		cwX, cwY, cwZ = getWorldTranslation(combine.unloadingTrigger.node);
+	else
+		cwX, cwY, cwZ = getWorldTranslation(combine.pipeRaycastNode);
+	end;
+	
+	local _, _, prnToCombineZ = worldToLocal(combine.rootNode, cwX, cwY, cwZ); 
+	
+	return prnToCombineZ;
+end;
+
+function courseplay:setTargetUnloadingCoords(self, combine, trailer_offset, prnToCombineZ)
+	local sourceRootNode = combine.rootNode;
+
+	if combine.isCornchopper then
+		prnToCombineZ = 0;
+
+		if combine.attachedImplements ~= nil then
+			for k, i in pairs(combine.attachedImplements) do
+				local implement = i.object;
+				if implement.haeckseldolly == true then
+					sourceRootNode = implement.rootNode;
+				end;
+			end;
+		end;
+	end;
+
+	local ttX, _, ttZ = localToWorld(sourceRootNode, self.combine_offset, 0, trailer_offset + prnToCombineZ);
+	
+	return ttX, ttZ;
 end;

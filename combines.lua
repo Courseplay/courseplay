@@ -300,11 +300,9 @@ function courseplay:calculateInitialCombineOffset(self, combine)
 
 
 	elseif courseplay:isSpecialCombine(combine, "sugarBeetLoader") then
-		if combine.unloadingTrigger ~= nil and combine.unloadingTrigger.node ~= nil then
-			local utwX,utwY,utwZ = getWorldTranslation(combine.unloadingTrigger.node);
-			local combineToUtwX,_,_ = worldToLocal(combine.rootNode, utwX,utwY,utwZ);
-			self.combine_offset = combineToUtwX;
-		end;
+		local utwX,utwY,utwZ = getWorldTranslation(combine.unloadingTrigger.node);
+		local combineToUtwX,_,_ = worldToLocal(combine.rootNode, utwX,utwY,utwZ);
+		self.combine_offset = combineToUtwX;
 	
 	--combine // combine_offset is in auto mode
 	elseif not combine.isCornchopper and combine.currentPipeState == 2 and combine.pipeRaycastNode ~= nil then -- pipe is extended
