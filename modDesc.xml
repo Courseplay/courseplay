@@ -313,7 +313,7 @@ Italský překlad: JD7530
 		<text name="CourseMode9">
 			<en>Type: Fill and empty shovel</en>
 			<de>Typ: Schaufel befüllen und entleeren</de>
-			<fr>Type: Charger et décharger une pelle</fr>
+			<fr>Type: Charger et décharger un godet</fr>
 			<es>Tipo: Cargar y descargar una pala</es>
 			<it>Modo: Fill + empty shovel</it>
 			<cz>Mod: Fill + empty shovel</cz>
@@ -782,7 +782,7 @@ Italský překlad: JD7530
 		<text name="CPuseSpeed2">
 			<en>maximum speed</en>
 			<de>maximale Geschwindigkeit</de>
-			<fr>vitesse maximal</fr>
+			<fr>vitesse maximale</fr>
 			<es>maxima velocidad</es>
 			<it>velocita' massima</it>
 			<cz>maximální rychlost</cz>
@@ -1387,7 +1387,7 @@ Italský překlad: JD7530
 			<de>Vorgewende</de>
 			<en>Headland</en>
 			<es>Cabecera</es> <!-- !!! -->
-			<fr>Fourrière</fr> <!-- !!! -->
+			<fr>Fourrière</fr>
 			<it>Headland</it> <!-- !!! -->
 			<cz>Úvrať</cz>
 		</text>
@@ -1395,7 +1395,7 @@ Italský překlad: JD7530
 			<de>Bahn</de>
 			<en>lane</en>
 			<es>carril</es>
-			<fr>voie</fr> <!-- !!! -->
+			<fr>voie</fr>
 			<it>corsia</it> <!-- !!! -->
 			<cz>lane</cz> <!-- !!! -->
 		</text>
@@ -1403,7 +1403,7 @@ Italský překlad: JD7530
 			<de>Bahnen</de>
 			<en>lanes</en>
 			<es>carriles</es>
-			<fr>voies</fr> <!-- !!! -->
+			<fr>voies</fr>
 			<it>corsie</it> <!-- !!! -->
 			<cz>lanes</cz> <!-- !!! -->
 		</text>
