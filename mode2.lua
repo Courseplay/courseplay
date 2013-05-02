@@ -357,7 +357,7 @@ function courseplay:unload_combine(self, dt)
 		if combine.cp.offset == nil or self.combine_offset == 0 then
 			--print("offset not saved - calculate")
 			courseplay:calculateCombineOffset(self, combine);
-		elseif not combine.isCornchopper and not courseplay:isSpecialCombine(workTool, "sugarBeetLoader") and self.auto_combine_offset and self.combine_offset ~= combine.cp.offset then
+		elseif not combine.isCornchopper and not courseplay:isSpecialCombine(combine, "sugarBeetLoader") and self.auto_combine_offset and self.combine_offset ~= combine.cp.offset then
 			--print("set saved offset")
 			self.combine_offset = combine.cp.offset			
 		end
@@ -1059,16 +1059,20 @@ function courseplay:calculateCombineOffset(self, combine)
 	elseif self.auto_combine_offset and combine.name == "Fahr M66" then
 		offs =  4.4;
 	
-	--combine // combine_offset is in auto mode
-	elseif not combine.isCornchopper and self.auto_combine_offset and combine.currentPipeState == 2 then --pipe is open
-		if courseplay:isSpecialCombine(combine, "sugarBeetLoader") then
-			if combine.unloadingTrigger ~= nil and combine.unloadingTrigger.node ~= nil then
-				local utwX,utwY,utwZ = getWorldTranslation(combine.unloadingTrigger.node);
-				local combineToUtwX,_,_ = worldToLocal(combine.rootNode, utwX,utwY,utwZ);
-				offs = combineToUtwX;
-			end;
-		
-		elseif getParent(combine.pipeRaycastNode) == combine.rootNode then -- pipeRaycastNode is direct child of combine.root
+	--Sugarbeet Loaders (e.g. Ropa Euro Maus, Holmer Terra Felis)
+	elseif self.auto_combine_offset and courseplay:isSpecialCombine(combine, "sugarBeetLoader") then
+		offs = 14;
+		if combine.unloadingTrigger ~= nil and combine.unloadingTrigger.node ~= nil then
+			print(tableShow(combine.unloadingTrigger.node, "unloadingTrigger.node"));
+			local utwX,utwY,utwZ = getWorldTranslation(combine.unloadingTrigger.node);
+			local combineToUtwX,_,_ = worldToLocal(combine.rootNode, utwX,utwY,utwZ);
+			print(string.format("utwX,utwY,utwZ=%s,%s,%s   /   combineToUtwX=%s", tostring(utwX),tostring(utwY),tostring(utwZ), tostring(combineToUtwX)));
+			offs = combineToUtwX;
+		end;
+
+	--combine // combine_offset is in auto mode, pipe is open
+	elseif not combine.isCornchopper and self.auto_combine_offset and combine.currentPipeState == 2 and combine.pipeRaycastNode ~= nil then --pipe is open
+		if getParent(combine.pipeRaycastNode) == combine.rootNode then -- pipeRaycastNode is direct child of combine.root
 			--safety distance so the trailer doesn't crash into the pipe (sidearm)
 			local additionalSafetyDistance = 0;
 			if combine.name == "Grimme Maxtron 620" then
@@ -1097,10 +1101,15 @@ function courseplay:calculateCombineOffset(self, combine)
 		end;
 
 	--combine // combine_offset is in manual mode
-	elseif not combine.isCornchopper and not self.auto_combine_offset then
-		--courseplay:debug(string.format("%s(%i): %s @ %s: combineToPrnX = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, combineToPrnX), 2);
+	elseif not combine.isCornchopper and not self.auto_combine_offset and combine.pipeRaycastNode ~= nil then
 		offs = offsPos * combine.cp.pipeSide;
+		courseplay:debug(string.format("%s(%i): %s @ %s: [manual] offs = offsPos * pipeSide = %s * %s = %s", curFile, debug.getinfo(1).currentline, self.name, combine.name, tostring(offsPos), tostring(combine.cp.pipeSide), tostring(offs)), 2);
 	
+	--combine // combine_offset is in auto mode
+	elseif not combine.isCornchopper and self.auto_combine_offset and combine.pipeRaycastNode ~= nil then
+		offs = offsPos * combine.cp.pipeSide;
+		courseplay:debug(string.format("%s(%i): %s @ %s: [auto] offs = offsPos * pipeSide = %s * %s = %s", curFile, debug.getinfo(1).currentline, self.name, combine.name, tostring(offsPos), tostring(combine.cp.pipeSide), tostring(offs)), 2);
+
 	--chopper // combine_offset is in auto mode
 	elseif combine.isCornchopper and self.auto_combine_offset then
 		if combine.cp.lmX ~= nil then
@@ -1117,8 +1126,6 @@ function courseplay:calculateCombineOffset(self, combine)
 				offs = math.abs(offs) * -1;
 			end;
 		end;
-	elseif not combine.isCornchopper and self.auto_combine_offset then
-		offs = offsPos * combine.cp.pipeSide;
 	end;
 	
 	--cornChopper forced side offset

@@ -245,7 +245,7 @@ end
 function courseplay:isSpecialCombine(workTool, specialType, fileNames)
 	if specialType ~= nil then
 		if specialType == "sugarBeetLoader" then
-			 if Utils.endsWith(workTool.configFileName, "RopaEuroMaus.xml") or Utils.endsWith(workTool.configFileName, "HolmerTerraFelis.xml") then
+			if Utils.endsWith(workTool.configFileName, "RopaEuroMaus.xml") or Utils.endsWith(workTool.configFileName, "HolmerTerraFelis.xml") then
 				if workTool.grainTankFillLevel == nil then
 					workTool.grainTankFillLevel = 0;
 				end;
@@ -258,15 +258,13 @@ function courseplay:isSpecialCombine(workTool, specialType, fileNames)
 	end;
 	
 	--[[if fileNames ~= nil and table.getn(fileNames) > 0 then
-		local returnTrueFalse = false;
 		for i=1, table.getn(fileNames) do
 			if Utils.endsWith(workTool.configFileName, fileNames[i] .. ".xml") then
-				returnTrueFalse = true;
-				break;
+				return true;
 			end;
 		end;
-		return returnTrueFalse;
+		return false;
 	end;]]
 	
-	return  false -- Utils.endsWith(workTool.configFileName, "JF_1060.xml") or courseplay:isSpecialCombine(workTool, "sugarBeetLoader");
+	return false; --Utils.endsWith(workTool.configFileName, "JF_1060.xml") or courseplay:isSpecialCombine(workTool, "sugarBeetLoader");
 end;

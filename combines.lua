@@ -307,10 +307,10 @@ function courseplay:calculateInitialCombineOffset(self, combine)
 		end;
 	
 	--combine // combine_offset is in auto mode
-	elseif not combine.isCornchopper and combine.currentPipeState == 2 then -- pipe is extended
+	elseif not combine.isCornchopper and combine.currentPipeState == 2 and combine.pipeRaycastNode ~= nil then -- pipe is extended
 		self.combine_offset = combineToPrnX;
 		courseplay:debug(string.format("%s(%i): %s @ %s: using combineToPrnX=%f, self.combine_offset=%f", curFile, debug.getinfo(1).currentline, self.name, combine.name, combineToPrnX, self.combine_offset), 2)
-	elseif not combine.isCornchopper then --pipe is closed
+	elseif not combine.isCornchopper and combine.pipeRaycastNode ~= nil then --pipe is closed
 		if getParent(combine.pipeRaycastNode) == combine.rootNode then -- pipeRaycastNode is direct child of combine.root
 			self.combine_offset = prnX;
 			courseplay:debug(string.format("%s(%i): %s @ %s: combine.root > pipeRaycastNode / self.combine_offset=prnX=%f", curFile, debug.getinfo(1).currentline, self.name, combine.name, self.combine_offset), 2)
