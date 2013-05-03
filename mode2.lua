@@ -323,7 +323,11 @@ function courseplay:unload_combine(self, dt)
 
 		else
 			-- tractor behind combine
-			currentX, currentY, currentZ = localToWorld(tractor.rootNode, 0, 0, -(self.turn_radius + safetyDistance)) --!!!
+			if not combine.cp.isChopper then
+				currentX, currentY, currentZ = localToWorld(tractor.rootNode, self.combine_offset, 0, -(self.turn_radius + safetyDistance)) --!!!
+			else
+				currentX, currentY, currentZ = localToWorld(tractor.rootNode, 0, 0, -(self.turn_radius + safetyDistance))
+			end
 		end
 
 		--if not self.calculated_course then
@@ -558,15 +562,15 @@ function courseplay:unload_combine(self, dt)
 		if combine.cp.offset == nil and not combine.cp.isChopper then
 			courseplay:calculateCombineOffset(self, combine);
 		end
-		currentX, currentY, currentZ = localToWorld(combine.rootNode, self.combine_offset, 0, trailer_offset + 5)
+		--currentX, currentY, currentZ = localToWorld(combine.rootNode, self.combine_offset, 0, trailer_offset + 5)
 		
 		--CALCULATE VERTICAL OFFSET (tipper offset)
 		local prnToCombineZ = courseplay:calculateVerticalOffset(self, combine);
 		
 		--SET TARGET UNLOADING COORDINATES @ COMBINE
 		local ttX, ttZ = courseplay:setTargetUnloadingCoords(self, combine, trailer_offset, prnToCombineZ);
-		currentX, currentZ = ttx, ttZ;
-
+		
+		currentX, currentZ = ttX, ttZ;
 		local lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, ttX, y, ttZ)
 		dod = Utils.vector2Length(lx, lz)
 		if dod > 40 or self.isChopperTurning == true then
@@ -1157,7 +1161,7 @@ function courseplay:setTargetUnloadingCoords(self, combine, trailer_offset, prnT
 			end;
 		end;
 	end;
-
+	
 	local ttX, _, ttZ = localToWorld(sourceRootNode, self.combine_offset, 0, trailer_offset + prnToCombineZ);
 	
 	return ttX, ttZ;
