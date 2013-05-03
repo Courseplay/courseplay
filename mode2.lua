@@ -590,6 +590,9 @@ function courseplay:unload_combine(self, dt)
 				self.info_text = courseplay:get_locale(self, "CPCombineWantsMeToStop")
 				--mode = 2
 			end
+		elseif lz < -1.5 then
+				allowedToDrive = false
+				self.info_text = courseplay:get_locale(self, "CPCombineWantsMeToStop")
 		end
 
 		-- refspeed depends on the distance to the combine
@@ -620,9 +623,9 @@ function courseplay:unload_combine(self, dt)
 			if lz > 5 then
 				refSpeed = self.field_speed
 			elseif lz < -0.5 then
-				refSpeed = combine_speed - (2/3600)
+				refSpeed = combine_speed - (3/3600)
 			elseif lz > 1 or combine.sentPipeIsUnloading ~= true  then  
-				refSpeed = combine_speed + (2/3600) 
+				refSpeed = combine_speed + (3/3600) 
 			else
 				refSpeed = combine_speed
 			end
