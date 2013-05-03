@@ -4,15 +4,18 @@ function courseplay:find_combines(self)
 	-- go through all vehicles and find filter all combines
 	local all_vehicles = g_currentMission.vehicles
 	for k, vehicle in pairs(all_vehicles) do
-		-- combines should have this trigger
-
 		-- trying to identify combines
-		if vehicle.cp ~= nil and (vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable or vehicle.cp.isSugarBeetLoader) then
-			table.insert(found_combines, vehicle)
-		end
-	end
+		
+		if vehicle.cp == nil then
+			vehicle.cp = {};
+		end;
+		
+		if vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable or vehicle.cp.isSugarBeetLoader or courseplay:isAttachedCombine(vehicle) then
+			table.insert(found_combines, vehicle);
+		end;
+	end;
 
-	return found_combines
+	return found_combines;
 end
 
 
@@ -105,8 +108,11 @@ function courseplay:register_at_combine(self, combine)
 	local num_allowed_courseplayers = 1
 	self.calculated_course = false
 	if combine.courseplayers == nil then
-		combine.courseplayers = {}
-	end
+		combine.courseplayers = {};
+	end;
+	if combine.cp == nil then
+		combine.cp = {};
+	end;
 
 	if combine.cp.isChopper or combine.cp.isSugarBeetLoader then
 		num_allowed_courseplayers = 2
