@@ -554,33 +554,7 @@ function courseplay:drive(self, dt)
 		refSpeed = self.turn_speed
 	end
 
-
-	self.cpTrafficBrake = false
-	if self.traffic_vehicle_in_front ~= nil then
-		local vehicle_in_front = g_currentMission.nodeToVehicle[self.traffic_vehicle_in_front];
-		local vehicleBehind = false
-		if vehicle_in_front == nil then
-			self.traffic_vehicle_in_front = nil
-			self.CPnumCollidingVehicles = math.max(self.CPnumCollidingVehicles-1, 0);
-			return
-		end
-		local x, y, z = getWorldTranslation(self.traffic_vehicle_in_front)
-		local x1, y1, z1 = worldToLocal(self.rootNode, x, y, z)
-		if z1 < 0 or math.abs(x1) > 4 then -- vehicle behind tractor
-			vehicleBehind = true
-		end
-		if vehicle_in_front.rootNode == nil or vehicle_in_front.lastSpeedReal == nil or (vehicle_in_front.rootNode ~= nil and courseplay:distance_to_object(self, vehicle_in_front) > 40) or vehicleBehind then
-			self.traffic_vehicle_in_front = nil
-		else
-			if allowedToDrive then 
-				if (self.lastSpeed*3600) - (vehicle_in_front.lastSpeedReal*3600) > 15 then
-					self.cpTrafficBrake = true
-				else
-					refSpeed = math.min(vehicle_in_front.lastSpeedReal,refSpeed)
-				end
-			end
-		end
-	end
+	refSpeed = courseplay:regulateTrafficSpeed(self,refSpeed)
 
 	--bunkerSilo speed by Thomas Gärtner
 	if self.currentTipTrigger ~= nil then
@@ -743,8 +717,8 @@ function courseplay:check_traffic(self, display_warnings, allowedToDrive)
 	--courseplay:debug(table.show(self), 4)
 	if self.CPnumCollidingVehicles ~= nil and self.CPnumCollidingVehicles > 0 then
 		if vehicle_in_front ~= nil and not (self.ai_mode == 9 and vehicle_in_front.allowFillFromAir) then
-			x1, y1, z1 = worldToLocal(self.traffic_vehicle_in_front, x, y, z)
-			if z1 > 0 then -- tractor in front of vehicle face2face 
+			x1,z1 = AIVehicleUtil.getDriveDirection(self.traffic_vehicle_in_front, x, y, z);
+			if z1 > -0.9 then -- tractor in front of vehicle face2face or beside < 4 o'clock
 				ahead = true
 			end
 			if vehicle_in_front.lastSpeedReal == nil or vehicle_in_front.lastSpeedReal*3600 < 5 or ahead then
@@ -961,3 +935,31 @@ function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive)
 	
 	return allowedToDrive;
 end;
+
+function courseplay:regulateTrafficSpeed(self,refSpeed)
+	self.cpTrafficBrake = false
+	if self.traffic_vehicle_in_front ~= nil then
+		local vehicle_in_front = g_currentMission.nodeToVehicle[self.traffic_vehicle_in_front];
+		local vehicleBehind = false
+		if vehicle_in_front == nil then
+			self.traffic_vehicle_in_front = nil
+			self.CPnumCollidingVehicles = math.max(self.CPnumCollidingVehicles-1, 0);
+			return
+		end
+		local x, y, z = getWorldTranslation(self.traffic_vehicle_in_front)
+		local x1, y1, z1 = worldToLocal(self.rootNode, x, y, z)
+		if z1 < 0 or math.abs(x1) > 4 then -- vehicle behind tractor
+			vehicleBehind = true
+		end
+		if vehicle_in_front.rootNode == nil or vehicle_in_front.lastSpeedReal == nil or (vehicle_in_front.rootNode ~= nil and courseplay:distance_to_object(self, vehicle_in_front) > 40) or vehicleBehind then
+			self.traffic_vehicle_in_front = nil
+		else
+			if (self.lastSpeed*3600) - (vehicle_in_front.lastSpeedReal*3600) > 15 or z1 < 3 then
+				self.cpTrafficBrake = true
+			else
+				return math.min(vehicle_in_front.lastSpeedReal,refSpeed)
+			end
+		end
+	end
+	return refSpeed
+end
