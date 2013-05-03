@@ -34,6 +34,9 @@ function courseplay:handle_mode1(self)
 		if self.currentTipTrigger.specialTriggerId ~= nil then
 			trigger_id = self.currentTipTrigger.specialTriggerId
 		end
+		if self.currentTipTrigger.isPlaceableHeapTrigger then
+			trigger_id = self.currentTipTrigger.rootNode
+		end
 
 		local trigger_x, trigger_y, trigger_z = getWorldTranslation(trigger_id)
 		local ctx, cty, ctz = getWorldTranslation(self.rootNode);
@@ -56,3 +59,4 @@ function courseplay:handle_mode1(self)
 
 	return allowedToDrive
 end  
+	
