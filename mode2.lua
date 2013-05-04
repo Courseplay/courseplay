@@ -230,7 +230,7 @@ function courseplay:unload_combine(self, dt)
 	if self.currentTrailerToFill ~= nil then
 		xt, yt, zt = worldToLocal(self.tippers[self.currentTrailerToFill].fillRootNode, x, y, z)
 	else
-		courseplay:debug("this should never happen - no currentTrailerToFillSet", 4)
+		courseplay:debug(self.name .. ": no currentTrailerToFillSet", 4);
 		xt, yt, zt = worldToLocal(self.tippers[1].rootNode, x, y, z)
 	end
 
@@ -269,7 +269,7 @@ function courseplay:unload_combine(self, dt)
 	
 	if mode == 2 or mode == 3 or mode == 4 then
 		if combine == nil then
-			self.info_text = "this should never happen" --TODO: change text to something less dramatic
+			self.info_text = "this should never happen";
 			allowedToDrive = false
 		end
 	end
@@ -871,7 +871,7 @@ function courseplay:unload_combine(self, dt)
 		local dx,dz = AIVehicleUtil.getDriveDirection(frontTractor.rootNode, x, y, z);
 		local x1, y1, z1 = worldToLocal(frontTractor.rootNode, x, y, z)
 		local distance = Utils.vector2Length(x1, z1)
-		if z1 > -backDistance1 and dz > -0.9 then
+		if z1 > -backDistance and dz > -0.9 then
 			-- tractor in front of tractor
 			-- left side of tractor
 			local cx_left, cy_left, cz_left = localToWorld(frontTractor.rootNode, 30, 0, -backDistance-20)
@@ -912,8 +912,6 @@ function courseplay:unload_combine(self, dt)
 				refSpeed = frontTractor.lastSpeedReal --10/3600 -- frontTractor.lastSpeedReal
 			end
 		end
-
-
 		--     courseplay:debug(string.format("distance: %d  dod: %d",distance,dod ), 3)
 	end
 

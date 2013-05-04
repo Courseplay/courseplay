@@ -1072,12 +1072,3 @@ function string:split(sep)
 	self:gsub(pattern, function(c) fields[#fields + 1] = c end)
 	return fields
 end
-
-function roundCustom(number, numDecimals)
-	local positiveNegative = 1
-	if number < 0 then positiveNegative = -1 end
-	
-	local mult = 10^(numDecimals or 0)
-	--local mult = math.pow(10, numDecimals or 0)
-	return math.floor(number*positiveNegative * mult + 0.5) / mult * positiveNegative
-end

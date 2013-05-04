@@ -29,24 +29,27 @@ function courseplay:handle_mode1(self)
 	-- damn, i missed the trigger!
 
 	if self.currentTipTrigger ~= nil then
-		local trigger_id = self.currentTipTrigger.triggerId
+		local trigger_id = self.currentTipTrigger.triggerId;
 
-		if self.currentTipTrigger.specialTriggerId ~= nil then
-			trigger_id = self.currentTipTrigger.specialTriggerId
-		end
+		if t.specialTriggerId ~= nil then
+			trigger_id = self.currentTipTrigger.specialTriggerId;
+		end;
 		if self.currentTipTrigger.isPlaceableHeapTrigger then
-			trigger_id = self.currentTipTrigger.rootNode
-		end
+			trigger_id = self.currentTipTrigger.rootNode;
+		end;
 
-		local trigger_x, trigger_y, trigger_z = getWorldTranslation(trigger_id)
-		local ctx, cty, ctz = getWorldTranslation(self.rootNode);
-		local distance_to_trigger = courseplay:distance(ctx, ctz, trigger_x, trigger_z)
-		
-		if distance_to_trigger > 60 then 
-			self.currentTipTrigger = nil
-		end	
-
-	end
+		if trigger_id ~= nil then
+			local trigger_x, trigger_y, trigger_z = getWorldTranslation(trigger_id)
+			local ctx, cty, ctz = getWorldTranslation(self.rootNode);
+			local distance_to_trigger = courseplay:distance(ctx, ctz, trigger_x, trigger_z)
+			
+			if distance_to_trigger > 60 then 
+				self.currentTipTrigger = nil
+			end	
+		else
+			self.currentTipTrigger = nil;
+		end;
+	end;
 
 	-- tipper is not empty and tractor reaches TipTrigger
 	if tipper_fill_level > 0 and self.currentTipTrigger ~= nil and self.recordnumber > 3 then
@@ -58,5 +61,4 @@ function courseplay:handle_mode1(self)
 	end
 
 	return allowedToDrive
-end  
-	
+end
