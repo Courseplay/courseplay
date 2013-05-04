@@ -182,6 +182,7 @@ function courseplay:stop(self)
 		self.ESLimiter.percentage[3] =	self.cp.ESL[2]
 		self.ESLimiter.percentage[4] =	self.cp.ESL[3]  
 	end
+	self.forced_to_stop = false
 	self.record = false
 	self.record_pause = false
 	if self.ai_state > 4 then

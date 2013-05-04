@@ -285,17 +285,18 @@ function courseplay:unload_combine(self, dt)
 	local x1, y1, z1 = worldToLocal(combine.rootNode, x, y, z)
 	local distance = Utils.vector2Length(x1, z1)
 
+	local safetyDistance = 11;
+	if courseplay:isAttachedCombine(combine) then
+		safetyDistance = 11;
+	elseif combine.cp.isHarvesterSteerable or combine.cp.isSugarBeetLoader then
+		safetyDistance = 24;
+	elseif combine.cp.isCombine then
+		safetyDistance = 10;
+	elseif combine.cp.isChopper then
+		safetyDistance = 11;
+	end;
+
 	if mode == 2 then -- Drive to Combine or Cornchopper
-		local safetyDistance = 11;
-		if courseplay:isAttachedCombine(combine) then
-			safetyDistance = 11;
-		elseif combine.cp.isHarvesterSteerable or combine.cp.isSugarBeetLoader then
-			safetyDistance = 24;
-		elseif combine.cp.isCombine then
-			safetyDistance = 10;
-		elseif combine.cp.isChopper then
-			safetyDistance = 11;
-		end;
 		self.sl = 2
 		refSpeed = self.field_speed
 		--courseplay:remove_from_combines_ignore_list(self, combine)
@@ -372,6 +373,10 @@ function courseplay:unload_combine(self, dt)
 
 		if combine.cp.isChopper then
 			tX, tY, tZ = localToWorld(tractor.rootNode, self.combine_offset * 0.8, 0, -5) 
+		elseif combine.cp.isSugarBeetLoader then
+			local prnToCombineZ = courseplay:calculateVerticalOffset(self, combine);
+	
+			tX, tY, tZ = localToWorld(combine.rootNode, self.combine_offset, 0, prnToCombineZ -5)			
 		else			
 			tX, tY, tZ = localToWorld(combine.rootNode, self.combine_offset, 0, -5)
 		end
@@ -862,17 +867,16 @@ function courseplay:unload_combine(self, dt)
 		end;
 
 		-- drive behind tractor
+		local backDistance = math.max(10,(self.turn_radius + safetyDistance))
+		local dx,dz = AIVehicleUtil.getDriveDirection(frontTractor.rootNode, x, y, z);
 		local x1, y1, z1 = worldToLocal(frontTractor.rootNode, x, y, z)
 		local distance = Utils.vector2Length(x1, z1)
-
-
-
-		if z1 > 0 then
+		if z1 > -backDistance1 and dz > -0.9 then
 			-- tractor in front of tractor
 			-- left side of tractor
-			local cx_left, cy_left, cz_left = localToWorld(frontTractor.rootNode, 30, 0, -10)
+			local cx_left, cy_left, cz_left = localToWorld(frontTractor.rootNode, 30, 0, -backDistance-20)
 			-- righ side of tractor
-			local cx_right, cy_right, cz_right = localToWorld(frontTractor.rootNode, -30, 0, -10)
+			local cx_right, cy_right, cz_right = localToWorld(frontTractor.rootNode, -30, 0, -backDistance-20)
 			local lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, cx_left, y, cz_left)
 			-- distance to left position
 			local disL = Utils.vector2Length(lx, lz)
@@ -887,20 +891,26 @@ function courseplay:unload_combine(self, dt)
 		else
 			-- tractor behind tractor
 			--TODO: ORIG: z = -40
-			currentX, currentY, currentZ = localToWorld(frontTractor.rootNode, 0, 0, -30)
+			currentX, currentY, currentZ = localToWorld(frontTractor.rootNode, 0, 0, -backDistance)
 		end
 
 		local lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, currentX, currentY, currentZ)
 		dod = Utils.vector2Length(lx, lz)
-
 		if dod < 2 or frontTractor.ai_state ~= 3 then
 			allowedToDrive = false
 		end
-
-		if distance > 50 then
-			refSpeed = self.max_speed
+		if combine.cp.isSugarBeetLoader then
+			if distance > 50 then
+				refSpeed = self.max_speed
+			else
+				refSpeed = Utils.clamp(frontTractor.lastSpeedReal, self.turn_speed, self.field_speed)
+			end
 		else
-			refSpeed = frontTractor.lastSpeedReal --10/3600 -- frontTractor.lastSpeedReal
+			if distance > 50 then
+				refSpeed = self.max_speed
+			else
+				refSpeed = frontTractor.lastSpeedReal --10/3600 -- frontTractor.lastSpeedReal
+			end
 		end
 
 
