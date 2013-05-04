@@ -5,13 +5,80 @@ function courseplay:isSpecialSprayer(workTool)
 		or Utils.endsWith(workTool.configFileName, "Abbey_2000R.xml")
 		or Utils.endsWith(workTool.configFileName, "Abbey_3000_Nurse.xml")
 end;
+function courseplay:isSpecialChopper(workTool)
+	if Utils.endsWith(workTool.configFileName, "JF_1060.xml") then
+		if workTool.grainTankFillLevel == nil then
+			workTool.grainTankFillLevel = 0;
+		end;
+		if workTool.grainTankCapacity == nil then
+			workTool.grainTankCapacity = 0;
+		end;
+		if workTool.cp.isChopper == nil then
+			workTool.cp.isChopper = true
+		end
+		return true;
+	end
+	return false
+end
+
+function courseplay:isSpecialCombine(workTool, specialType, fileNames)
+	if specialType ~= nil then
+		if specialType == "sugarBeetLoader" then
+			if (Utils.endsWith(workTool.configFileName, "RopaEuroMaus.xml") or Utils.endsWith(workTool.configFileName, "HolmerTerraFelis.xml")) and workTool.unloadingTrigger ~= nil and workTool.unloadingTrigger.node ~= nil then
+				if workTool.grainTankFillLevel == nil then
+					workTool.grainTankFillLevel = 0;
+				end;
+				if workTool.grainTankCapacity == nil then
+					workTool.grainTankCapacity = 0;
+				end;
+				return true;
+			end;
+		end;
+	end;
+	
+	--[[if fileNames ~= nil and table.getn(fileNames) > 0 then
+		for i=1, table.getn(fileNames) do
+			if Utils.endsWith(workTool.configFileName, fileNames[i] .. ".xml") then
+				return true;
+			end;
+		end;
+		return false;
+	end;]]
+	
+	return Utils.endsWith(workTool.configFileName, "JF_1060.xml");
+end
+
 
 function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
-	--Abbey 3000 NurseTanker
-	if Utils.endsWith(workTool.configFileName, "Abbey_3000_Nurse.xml") then
-		if workTool.PTOId then
-			workTool:setPTO(false)
+	if workTool.PTOId then
+		workTool:setPTO(false)
+	end
+	--JF_FCT1060_ProTec
+	if Utils.endsWith(workTool.configFileName, "JF_1060.xml") then
+		if unfold ~= nil and turnOn ~= nil and lower ~= nil then
+			if unfold ~= workTool.isArmOneOn and not workTool.isTurnedOn then
+				workTool:setArmOne(unfold);
+			end
+			if unfold ~= workTool.isTransRotOn and not workTool.isTurnedOn  then
+				workTool:setTransRot(unfold);
+			end
+			if workTool.isTurnedOn then
+				workTool:setPickup(lower);
+			end
+			if workTool.isTransRotOn and workTool.isArmOneOn then
+				workTool:setIsTurnedOn(unfold);
+			end
 		end
+		local targetTrailer = workTool:findAutoAimTrailerToUnload(workTool.currentFruitType);
+		if targetTrailer == nil then
+			allowedToDrive = false
+		end		
+		
+		return true ,allowedToDrive
+
+	--Abbey 3000 NurseTanker
+	elseif Utils.endsWith(workTool.configFileName, "Abbey_3000_Nurse.xml") then
+
 		local x,y,z = getRotation(workTool.boomArmY)
 		local a,b,c = getRotation(workTool.boomArmX)
 		if unload ~= nil then
@@ -238,33 +305,10 @@ function courseplay:askForSpecialSettings(self,object)
 		self.cp.aiTurnNoBackward = true
 		self.WpOffsetX = -4.1
 		print("Abbey AP900 workwidth: 5.8 m");
+	elseif Utils.endsWith(object.configFileName, "JF_1060.xml") then
+		self.cp.aiTurnNoBackward = true
+		self.WpOffsetX = -2.5
 	end
 
 end
 
-function courseplay:isSpecialCombine(workTool, specialType, fileNames)
-	if specialType ~= nil then
-		if specialType == "sugarBeetLoader" then
-			if (Utils.endsWith(workTool.configFileName, "RopaEuroMaus.xml") or Utils.endsWith(workTool.configFileName, "HolmerTerraFelis.xml")) and workTool.unloadingTrigger ~= nil and workTool.unloadingTrigger.node ~= nil then
-				if workTool.grainTankFillLevel == nil then
-					workTool.grainTankFillLevel = 0;
-				end;
-				if workTool.grainTankCapacity == nil then
-					workTool.grainTankCapacity = 0;
-				end;
-				return true;
-			end;
-		end;
-	end;
-	
-	--[[if fileNames ~= nil and table.getn(fileNames) > 0 then
-		for i=1, table.getn(fileNames) do
-			if Utils.endsWith(workTool.configFileName, fileNames[i] .. ".xml") then
-				return true;
-			end;
-		end;
-		return false;
-	end;]]
-	
-	return Utils.endsWith(workTool.configFileName, "JF_1060.xml");
-end;

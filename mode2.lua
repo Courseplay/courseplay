@@ -936,7 +936,7 @@ function courseplay:unload_combine(self, dt)
 	-- check traffic and calculate speed
 	
 	allowedToDrive = courseplay:check_traffic(self, true, allowedToDrive)
-	refSpeed = courseplay:regulateTrafficSpeed(self,refSpeed)
+	refSpeed = courseplay:regulateTrafficSpeed(self,refSpeed,allowedToDrive)
 
 
 	if allowedToDrive then
@@ -1066,6 +1066,8 @@ function courseplay:calculateCombineOffset(self, combine)
 		offs =  4.3;
 	elseif self.auto_combine_offset and combine.name == "Fahr M66" then
 		offs =  4.4;
+	elseif self.auto_combine_offset and Utils.endsWith(combine.configFileName, "JF_1060.xml") then
+		offs =  7
 	
 	--Sugarbeet Loaders (e.g. Ropa Euro Maus, Holmer Terra Felis)
 	elseif self.auto_combine_offset and combine.cp.isSugarBeetLoader then

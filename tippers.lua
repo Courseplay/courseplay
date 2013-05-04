@@ -15,7 +15,7 @@ function courseplay:isCombine(workTool)
 	return (SpecializationUtil.hasSpecialization(Combine, workTool.specializations) or SpecializationUtil.hasSpecialization(AICombine, workTool.specializations)) and workTool.grainTankCapacity ~= nil and workTool.grainTankCapacity > 0;
 end;
 function courseplay:isChopper(workTool)
-	return (SpecializationUtil.hasSpecialization(Combine, workTool.specializations) or SpecializationUtil.hasSpecialization(AICombine, workTool.specializations)) and workTool.grainTankCapacity ~= nil and workTool.grainTankCapacity == 0;
+	return (SpecializationUtil.hasSpecialization(Combine, workTool.specializations) or SpecializationUtil.hasSpecialization(AICombine, workTool.specializations)) and workTool.grainTankCapacity ~= nil and workTool.grainTankCapacity == 0 or courseplay:isSpecialChopper(workTool);
 end;
 function courseplay:isHarvesterSteerable(workTool)
 	return workTool.typeName == "selfPropelledPotatoHarvester" or Utils.endsWith(workTool.configFileName, "grimmeMaxtron620.xml") or Utils.endsWith(workTool.configFileName, "grimmeTectron415.xml");
@@ -48,7 +48,7 @@ function courseplay:isBigM(workTool)
 	return (SpecializationUtil.hasSpecialization(Steerable, workTool.specializations) or SpecializationUtil.hasSpecialization(steerable, workTool.specializations)) and courseplay:isMower(workTool);
 end;
 function courseplay:isAttachedCombine(workTool)
-	return workTool.typeName == "attachableCombine" or (not SpecializationUtil.hasSpecialization(Steerable, workTool.specializations) and  workTool.grainTankCapacity ~= nil)
+	return (workTool.typeName~= nil and workTool.typeName == "attachableCombine") or (not SpecializationUtil.hasSpecialization(Steerable, workTool.specializations) and  workTool.grainTankCapacity ~= nil) or courseplay:isSpecialChopper(workTool)
 end;
 function courseplay:isAttachedMixer(workTool)
 	return workTool.typeName == "mixerWagon" or (not SpecializationUtil.hasSpecialization(Steerable, workTool.specializations) and  SpecializationUtil.hasSpecialization(MixerWagon, workTool.specializations))
@@ -179,7 +179,8 @@ function courseplay:update_tools(self, tractor_or_implement)
 			or SpecializationUtil.hasSpecialization(FruitPreparer, self.specializations) or SpecializationUtil.hasSpecialization(fruitPreparer, self.specializations) 
 			or object.allowTipDischarge 
 			or courseplay:isUBT(object) 
-			or courseplay:isMower(object) 
+			or courseplay:isMower(object)
+			or courseplay:isAttachedCombine(object) 
 			or courseplay:isFoldable(object) then
 				if courseplay:isUBT(object) and object.fillLevelMax ~= nil then
 					self.cp.hasUBT = true;

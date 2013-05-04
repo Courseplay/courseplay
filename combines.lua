@@ -298,8 +298,9 @@ function courseplay:calculateInitialCombineOffset(self, combine)
 		self.combine_offset =  4.3;
 	elseif combine.name == "Fahr M66" then
 		self.combine_offset =  4.4;
-
-
+	elseif self.auto_combine_offset and Utils.endsWith(combine.configFileName, "JF_1060.xml") then
+		self.combine_offset =  -7
+		combine.cp.offset = 7
 	elseif combine.cp.isSugarBeetLoader then
 		local utwX,utwY,utwZ = getWorldTranslation(combine.unloadingTrigger.node);
 		local combineToUtwX,_,_ = worldToLocal(combine.rootNode, utwX,utwY,utwZ);

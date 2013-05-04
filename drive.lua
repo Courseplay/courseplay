@@ -554,7 +554,7 @@ function courseplay:drive(self, dt)
 		refSpeed = self.turn_speed
 	end
 
-	refSpeed = courseplay:regulateTrafficSpeed(self,refSpeed)
+	refSpeed = courseplay:regulateTrafficSpeed(self,refSpeed,allowedToDrive)
 
 	--bunkerSilo speed by Thomas Gärtner
 	if self.currentTipTrigger ~= nil then
@@ -936,7 +936,7 @@ function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive)
 	return allowedToDrive;
 end;
 
-function courseplay:regulateTrafficSpeed(self,refSpeed)
+function courseplay:regulateTrafficSpeed(self,refSpeed,allowedToDrive)
 	self.cpTrafficBrake = false
 	if self.traffic_vehicle_in_front ~= nil then
 		local vehicle_in_front = g_currentMission.nodeToVehicle[self.traffic_vehicle_in_front];
@@ -954,10 +954,12 @@ function courseplay:regulateTrafficSpeed(self,refSpeed)
 		if vehicle_in_front.rootNode == nil or vehicle_in_front.lastSpeedReal == nil or (vehicle_in_front.rootNode ~= nil and courseplay:distance_to_object(self, vehicle_in_front) > 40) or vehicleBehind then
 			self.traffic_vehicle_in_front = nil
 		else
-			if (self.lastSpeed*3600) - (vehicle_in_front.lastSpeedReal*3600) > 15 or z1 < 3 then
-				self.cpTrafficBrake = true
-			else
-				return math.min(vehicle_in_front.lastSpeedReal,refSpeed)
+			if allowedToDrive then
+				if (self.lastSpeed*3600) - (vehicle_in_front.lastSpeedReal*3600) > 15 or z1 < 3 then
+					self.cpTrafficBrake = true
+				else
+					return math.min(vehicle_in_front.lastSpeedReal,refSpeed)
+				end
 			end
 		end
 	end
