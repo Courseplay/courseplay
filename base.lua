@@ -63,6 +63,7 @@ function courseplay:load(xmlFile)
 	self.cp.isHarvesterSteerable = courseplay:isHarvesterSteerable(self);
 	self.cp.isSugarBeetLoader = courseplay:isSpecialCombine(self, "sugarBeetLoader");
 		
+
 	--turn maneuver
 	self.cp.waitForTurnTime = 0.00   --float
 	self.cp.turnStage = 0 --int
@@ -381,7 +382,22 @@ function courseplay:load(xmlFile)
 			self.hudpage[a][b] = {};
 		end;
 	end;
-
+	
+	--HUD TITLES
+	if courseplay.hud.hudTitles == nil then
+		courseplay.hud.hudTitles = {
+			courseplay:get_locale(self, "CPCombineMangament"), -- Combine Controls
+			courseplay:get_locale(self, "CPSteering"), -- "Abfahrhelfer Steuerung"
+			courseplay:get_locale(self, "CPManageCourses"), -- "Kurse verwalten"
+			courseplay:get_locale(self, "CPCombiSettings"), -- "Einstellungen Combi Modus"
+			courseplay:get_locale(self, "CPManageCombines"), -- "Drescher verwalten"
+			courseplay:get_locale(self, "CPSpeedLimit"), -- "Speeds"
+			courseplay:get_locale(self, "CPSettings"), -- "General settings"
+			courseplay:get_locale(self, "CPHud7"), -- "Driving settings"
+			courseplay:get_locale(self, "CPcourseGeneration"), -- "Course Generation"
+			courseplay:get_locale(self, "CPShovelPositions") --Schaufel progammieren
+		};
+	end;
 
 	local w16px = 16/1920;
 	local h16px = 16/1080;
@@ -623,7 +639,7 @@ function courseplay:update(dt)
 			else
 				self.mouse_enabled = true
 				if not self.show_hud then
-					--self.showHudInfoBase = self.min_hud_page
+					--self.showHudInfoBase = self.minHudPage
 					self.show_hud = true
 				end
 			end

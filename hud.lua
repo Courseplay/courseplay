@@ -519,30 +519,7 @@ function courseplay:showHud(self)
 
 
 		setTextBold(true)
-		local hud_headline = nil
-
-		if self.showHudInfoBase == 0 then
-			hud_headline = courseplay:get_locale(self, "CPCombineMangament") -- Combine Controls
-		elseif self.showHudInfoBase == 1 then
-			hud_headline = courseplay:get_locale(self, "CPSteering") -- "Abfahrhelfer Steuerung"
-		elseif self.showHudInfoBase == 2 then
-			hud_headline = courseplay:get_locale(self, "CPManageCourses") -- "Kurse verwalten"
-		elseif self.showHudInfoBase == 3 then
-			hud_headline = courseplay:get_locale(self, "CPCombiSettings") -- "Einstellungen Combi Modus"
-		elseif self.showHudInfoBase == 4 then
-			hud_headline = courseplay:get_locale(self, "CPManageCombines") -- "Drescher verwalten";
-		elseif self.showHudInfoBase == 5 then
-			hud_headline = courseplay:get_locale(self, "CPSpeedLimit") -- "Geschwindigkeiten"
-		elseif self.showHudInfoBase == 6 then
-			hud_headline = courseplay:get_locale(self, "CPSettings") -- "Allgemein"
-		elseif self.showHudInfoBase == 7 then
-			hud_headline = courseplay:get_locale(self, "CPHud7") -- "Allgemein"
-		elseif self.showHudInfoBase == 8 then
-			hud_headline = courseplay:get_locale(self, "CPcourseGeneration") -- "Course Generation"
-		elseif self.showHudInfoBase == 9 then
-			hud_headline = courseplay:get_locale(self, "CPShovelPositions") --Schaufel progammieren
-		end
-
+		local hud_headline = courseplay.hud.hudTitles[self.showHudInfoBase + 1];
 		renderText(courseplay.hud.infoBasePosX + 0.060, courseplay.hud.infoBasePosY + 0.240, 0.021, hud_headline);
 		courseplay:HudPage(self);
 	end
