@@ -1,7 +1,6 @@
 -- Load Lines for Hud
 function courseplay:HudPage(self)
-	setTextBold(false);
-	setTextColor(unpack(courseplay.hud.colors.white));
+	courseplay:setFontSettings("white", false);
 	
 	local Page = self.showHudInfoBase;
 	for column=1, 2 do
@@ -485,7 +484,7 @@ end
 function courseplay:showHud(self)
 	-- HUD
 	if self.show_hud and self.isEntered then
-		setTextColor(unpack(courseplay.hud.colors.white));
+		courseplay:setFontSettings("white", false);
 
 		courseplay:render_buttons(self, self.showHudInfoBase)
 
@@ -509,7 +508,7 @@ function courseplay:showHud(self)
 		else
 			self.hudinfo[3] = courseplay:get_locale(self, "CPNoWaypoint") -- "Keine Wegpunkte geladen"
 		end
-		setTextBold(false)
+
 		local i = 0
 		for v, name in pairs(self.hudinfo) do
 			--local yspace = courseplay.hud.infoBasePosY + 0.077 - (i * 0.021); --ORIG: +0.077
@@ -518,7 +517,7 @@ function courseplay:showHud(self)
 		end
 
 
-		setTextBold(true)
+		courseplay:setFontSettings("white", true);
 		local hud_headline = courseplay.hud.hudTitles[self.showHudInfoBase + 1];
 		renderText(courseplay.hud.infoBasePosX + 0.060, courseplay.hud.infoBasePosY + 0.240, 0.021, hud_headline);
 		courseplay:HudPage(self);
