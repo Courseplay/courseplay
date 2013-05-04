@@ -601,7 +601,7 @@ function courseplay:unload_tippers(self)
 				if self.currentTipTrigger.fillLevel ~= nil and self.currentTipTrigger.capacity ~= nil and self.currentTipTrigger.fillLevel >= self.currentTipTrigger.capacity then
 					self.gofortipping = false;
 					allowedToDrive = false;
-					self.info_text = "Heap has reached its capacity"; --TODO: i18n / courseplay:get_locale(self, "CPheapFull");
+					self.cp.infoText = "Heap has reached its capacity"; --TODO: i18n / courseplay:get_locale(self, "CPheapFull");
 				end;
 			end
 			if self.currentTipTrigger.acceptedFillTypes[fruitType] and self.gofortipping == true then  

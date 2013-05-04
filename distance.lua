@@ -45,7 +45,7 @@ function courseplay:dcheck(self)
 	local cx, cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
 	dist = courseplay:distance(ctx, ctz, cx, cz)
 
-	self.info_text = string.format(courseplay:get_locale(self, "CPDistance") .. ": %d ", dist)
+	self.cp.infoText = string.format(courseplay:get_locale(self, "CPDistance") .. ": %d ", dist)
 end
 
 

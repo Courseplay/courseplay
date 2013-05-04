@@ -28,11 +28,11 @@ function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToD
 	--local isValid = self.cp.shovelState2Rot ~= nil and self.cp.shovelState3Rot ~= nil and self.cp.shovelState4Rot ~= nil and self.cp.shovelState5Rot ~= nil
 	local isValid = self.cp.shovelStateRot ~= nil and self.cp.shovelStateRot["2"] ~= nil and self.cp.shovelStateRot["3"] ~= nil and self.cp.shovelStateRot["4"] ~= nil and self.cp.shovelStateRot["5"] ~= nil;
 	if not isValid then
-		self.info_text = courseplay.locales.CPAssignShovel
+		self.cp.infoText = courseplay.locales.CPAssignShovel
 		return false
 	end
 	if self.cp.tipperCapacity == nil or self.cp.tipperCapacity == 0 then
-		self.info_text = courseplay.locales.CPNoShovel
+		self.cp.infoText = courseplay.locales.CPNoShovel
 		return false
 	end
 	

@@ -46,7 +46,7 @@ function courseplay:drive(self, dt)
 			local targets = table.getn(self.next_targets)
 			local aligned  = false
 			local ctx7, cty7, ctz7 = getWorldTranslation(self.rootNode);
-			self.info_text = string.format(courseplay:get_locale(self, "CPDriveToWP"), self.target_x, self.target_z)
+			self.cp.infoText = string.format(courseplay:get_locale(self, "CPDriveToWP"), self.target_x, self.target_z)
 			cx = self.target_x
 			cy = self.target_y
 			cz = self.target_z
@@ -135,6 +135,7 @@ function courseplay:drive(self, dt)
 			self:setLightsVisibility(false);
 		end;
 	end;
+
 	-- current position
 	local ctx, cty, ctz = getWorldTranslation(self.rootNode);
 	-- coordinates of next waypoint
@@ -253,7 +254,7 @@ function courseplay:drive(self, dt)
 			self.waitTimer = self.timer + self.waitTime * 1000
 		end
 		if self.ai_mode == 3 then
-			self.global_info_text = courseplay:get_locale(self, "CPReachedOverloadPoint") --'hat Überladepunkt erreicht.'
+			courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPReachedOverloadPoint"));
 			if self.tipper_attached then
 				-- drive on if fill_level doesn't change and fill level is < self.required_fill_level_for_follow
 				local drive_on = false
@@ -277,12 +278,12 @@ function courseplay:drive(self, dt)
 			elseif last_recordnumber == self.stopWork and self.abortWork ~= nil then
 				self.wait = false
 			elseif last_recordnumber == self.stopWork and self.abortWork == nil then
-				self.global_info_text = courseplay:get_locale(self, "CPWorkEnd") --'hat Arbeit beendet.'
+				courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPWorkEnd"), 1);
 			else
 				if fill_level == 100 or drive_on then
 					self.wait = false
 				end
-				self.info_text = string.format(courseplay:get_locale(self, "CPloading"), self.cp.tipperFillLevel, self.cp.tipperCapacity)
+				self.cp.infoText = string.format(courseplay:get_locale(self, "CPloading"), self.cp.tipperFillLevel, self.cp.tipperCapacity)
 			end
 		elseif self.ai_mode == 6 then
 			if last_recordnumber == self.startWork then
@@ -290,9 +291,9 @@ function courseplay:drive(self, dt)
 			elseif last_recordnumber == self.stopWork and self.abortWork ~= nil then
 				self.wait = false
 			elseif last_recordnumber == self.stopWork and self.abortWork == nil then
-				self.global_info_text = courseplay:get_locale(self, "CPWorkEnd") --'hat Arbeit beendet.'
+				courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPWorkEnd"), 1);
 			elseif last_recordnumber ~= self.startWork and last_recordnumber ~= self.stopWork then 
-				self.global_info_text = courseplay:get_locale(self, "CPUnloadBale") -- "Ballen werden entladen"
+				courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPUnloadBale"));
 				if fill_level == 0 or drive_on then
 					self.wait = false
 				end;
@@ -301,14 +302,14 @@ function courseplay:drive(self, dt)
 			if last_recordnumber == self.startWork then
 				if self.grainTankFillLevel > 0 then
 					self:setPipeState(2)
-					self.global_info_text = courseplay:get_locale(self, "CPReachedOverloadPoint") --'hat Überladepunkt erreicht.'
+					courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPReachedOverloadPoint"));
 				else
 					self.wait = false
 					self.unloaded = true
 				end
 			end
 		elseif self.ai_mode == 8 then
-			self.global_info_text = courseplay:get_locale(self, "CPReachedOverloadPoint") --'hat Überladepunkt erreicht.'
+			courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPReachedOverloadPoint"));
 			if self.tipper_attached then
 				-- drive on if fill_level doesn't change and fill level is < 100-self.required_fill_level_for_follow
 				courseplay:handle_mode8(self)
@@ -329,7 +330,7 @@ function courseplay:drive(self, dt)
 		elseif self.ai_mode == 9 then
 			self.wait = false;
 		else
-			self.global_info_text = courseplay:get_locale(self, "CPReachedWaitPoint")
+			courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPReachedWaitPoint"));
 		end
 		-- wait untli a specific time
 		if self.waitTimer and self.timer > self.waitTimer then
@@ -371,11 +372,11 @@ function courseplay:drive(self, dt)
 			end
 		elseif self.ai_mode == 4 and (self.startWork == nil or self.stopWork == nil) then
 			allowedToDrive = false
-			self.info_text = courseplay.locales.CPNoWorkArea
+			self.cp.infoText = courseplay.locales.CPNoWorkArea
 		end
 
 		if self.ai_mode ~= 5 and self.ai_mode ~= 6 and self.ai_mode ~= 7 and not self.tipper_attached then
-			self.info_text = courseplay.locales.CPWrongTrailer
+			self.cp.infoText = courseplay.locales.CPWrongTrailer
 			allowedToDrive = false
 		end
 
@@ -410,27 +411,27 @@ function courseplay:drive(self, dt)
 			local currentFuelPercentage = (self.fuelFillLevel / self.fuelCapacity + 0.0001) * 100;
 			if currentFuelPercentage < 5 then
 				allowedToDrive = false;
-				self.global_info_text = courseplay.locales.CPNoFuelStop;
+				courseplay:setGlobalInfoText(self, courseplay:get_locale(self, courseplay.locales.CPNoFuelStop), -2);
 			elseif currentFuelPercentage < 20 and not self.isFuelFilling then
-				self.global_info_text = courseplay.locales.CPFuelWarning;
+				courseplay:setGlobalInfoText(self, courseplay:get_locale(self, courseplay.locales.CPFuelWarning), -1);
 				if self.fuelFillTriggers[1] then
 					allowedToDrive = false;
 					self:setIsFuelFilling(true, self.fuelFillTriggers[1].isEnabled, false);
 				end
 			elseif self.isFuelFilling and currentFuelPercentage < 99.9 then
 				allowedToDrive = false;
-				self.global_info_text = courseplay.locales.CPRefueling;
+				courseplay:setGlobalInfoText(self, courseplay:get_locale(self, courseplay.locales.CPRefueling));
 			end;
 		end;
 
 		if self.showWaterWarning then
 			allowedToDrive = false
-			self.global_info_text = courseplay.locales.CPWaterDrive
+			courseplay:setGlobalInfoText(self, courseplay:get_locale(self, courseplay.locales.CPWaterDrive), -2);
 		end
 
 		if self.StopEnd and (self.recordnumber == self.maxnumber or self.currentTipTrigger ~= nil) then
 			allowedToDrive = false
-			self.global_info_text = courseplay.locales.CPReachedEndPoint
+			courseplay:setGlobalInfoText(self, courseplay:get_locale(self, courseplay.locales.CPReachedEndPoint));
 		end
 	end
 
@@ -579,7 +580,7 @@ function courseplay:drive(self, dt)
 	courseplay:setSpeed(self, refSpeed, self.sl)
 		
 	if self.ESLimiter ~= nil and self.ESLimiter.maxRPM[5] == nil then
-		self.info_text = courseplay:get_locale(self, "CPWrongESLversion")
+		self.cp.infoText = courseplay:get_locale(self, "CPWrongESLversion")
 	end
 
 	-- where to drive?
@@ -641,6 +642,7 @@ function courseplay:drive(self, dt)
 	if self.dist > self.shortest_dist and self.recordnumber > 3 and self.dist < 15 and self.Waypoints[self.recordnumber].rev ~= true then
 		distToChange = self.dist + 1
 	end
+
 	if self.dist > distToChange or WpUnload then
 		if g_server ~= nil then
 			AIVehicleUtil.driveInDirection(self, dt, self.steering_angle, 0.5, 0.5, 8, true, fwd, lx, lz, self.sl, 0.5);
@@ -730,7 +732,7 @@ function courseplay:check_traffic(self, display_warnings, allowedToDrive)
 	end
 
 	if display_warnings and in_traffic then
-		self.global_info_text = courseplay:get_locale(self, "CPInTraffic") --' steckt im Verkehr fest'
+		courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPInTraffic"), -1);
 	end
 
 	return allowedToDrive
@@ -910,7 +912,7 @@ function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive)
 				allowedToDrive = false;
 				--courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
 				courseplay:handleSpecialTools(self,activeTool,nil,nil,nil,allowedToDrive,true,false)
-				self.info_text = string.format(courseplay:get_locale(self, "CPloading"), self.cp.tipperFillLevel, self.cp.tipperCapacity);
+				self.cp.infoText = string.format(courseplay:get_locale(self, "CPloading"), self.cp.tipperFillLevel, self.cp.tipperCapacity);
 				local sprayer = activeTool.sprayerFillTriggers[1];
 				activeTool:setIsSprayerFilling(true, false);
 				

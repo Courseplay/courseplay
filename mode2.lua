@@ -153,7 +153,7 @@ function courseplay:handle_mode2(self, dt)
 						self.ai_state = 2
 					end
 				else
-					self.info_text = courseplay:get_locale(self, "CPwaitFillLevel") --TODO: g_i18n
+					self.cp.infoText = courseplay:get_locale(self, "CPwaitFillLevel") --TODO: g_i18n
 				end
 
 
@@ -199,8 +199,8 @@ function courseplay:handle_mode2(self, dt)
 				end
 
 			else
-				--self.info_text = "Kein Drescher in Reichweite"
-				self.info_text = courseplay:get_locale(self, "CPnoCombineInReach")
+				--self.cp.infoText = "Kein Drescher in Reichweite"
+				self.cp.infoText = courseplay:get_locale(self, "CPnoCombineInReach")
 			end
 		end
 	end
@@ -263,13 +263,13 @@ function courseplay:unload_combine(self, dt)
 	-- is combine turning ?
 	local aiTurn = combine.isAIThreshing and (combine.turnStage == 1 or combine.turnStage == 2 or combine.turnStage == 4 or combine.turnStage == 5)
 	if tractor ~= nil and (aiTurn or (tractor.cp.turnStage > 0)) then
-		self.info_text = courseplay:get_locale(self, "CPCombineTurning") -- "Drescher wendet. "
+		self.cp.infoText = courseplay:get_locale(self, "CPCombineTurning") -- "Drescher wendet. "
 		combine_turning = true
 	end
 	
 	if mode == 2 or mode == 3 or mode == 4 then
 		if combine == nil then
-			self.info_text = "this should never happen";
+			self.cp.infoText = "this should never happen";
 			allowedToDrive = false
 		end
 	end
@@ -300,7 +300,7 @@ function courseplay:unload_combine(self, dt)
 		self.sl = 2
 		refSpeed = self.field_speed
 		--courseplay:remove_from_combines_ignore_list(self, combine)
-		self.info_text = courseplay:get_locale(self, "CPDriveBehinCombine") -- ""
+		self.cp.infoText = courseplay:get_locale(self, "CPDriveBehinCombine") -- ""
 
 		local x1, y1, z1 = worldToLocal(tractor.rootNode, x, y, z)
 
@@ -365,7 +365,7 @@ function courseplay:unload_combine(self, dt)
 			--print("set saved offset")
 			self.combine_offset = combine.cp.offset			
 		end
-		self.info_text = courseplay:get_locale(self, "CPDriveToCombine") -- "Fahre zum Drescher"
+		self.cp.infoText = courseplay:get_locale(self, "CPDriveToCombine") -- "Fahre zum Drescher"
 		--courseplay:add_to_combines_ignore_list(self, combine)
 		refSpeed = self.field_speed
 
@@ -416,7 +416,7 @@ function courseplay:unload_combine(self, dt)
 
 	elseif mode == 3 then --drive to unload pipe
 
-		self.info_text = courseplay:get_locale(self, "CPDriveNextCombine") -- "Fahre neben Drescher"
+		self.cp.infoText = courseplay:get_locale(self, "CPDriveNextCombine") -- "Fahre neben Drescher"
 		--courseplay:add_to_combines_ignore_list(self, combine)
 		refSpeed = self.field_speed
 
@@ -583,21 +583,21 @@ function courseplay:unload_combine(self, dt)
 		end
 		-- combine is not moving and trailer is under pipe
 		if not combine.cp.isChopper and tractor.movingDirection == 0 and (lz <= 1 or lz < -0.1 * trailer_offset) then
-			self.info_text = courseplay:get_locale(self, "CPCombineWantsMeToStop") -- "Drescher sagt ich soll anhalten."
+			self.cp.infoText = courseplay:get_locale(self, "CPCombineWantsMeToStop") -- "Drescher sagt ich soll anhalten."
 			allowedToDrive = false
 		elseif combine.cp.isChopper then
 			if combine.movingDirection == 0 and (lz == -1 or dod == -1)and self.isChopperTurning == false then
 				allowedToDrive = false
-				self.info_text = courseplay:get_locale(self, "CPCombineWantsMeToStop") -- "Drescher sagt ich soll anhalten."
+				self.cp.infoText = courseplay:get_locale(self, "CPCombineWantsMeToStop") -- "Drescher sagt ich soll anhalten."
 			end
 			if lz < -2 then
 				allowedToDrive = false
-				self.info_text = courseplay:get_locale(self, "CPCombineWantsMeToStop")
+				self.cp.infoText = courseplay:get_locale(self, "CPCombineWantsMeToStop")
 				--mode = 2
 			end
 		elseif lz < -1.5 then
 				allowedToDrive = false
-				self.info_text = courseplay:get_locale(self, "CPCombineWantsMeToStop")
+				self.cp.infoText = courseplay:get_locale(self, "CPCombineWantsMeToStop")
 		end
 
 		-- refspeed depends on the distance to the combine
@@ -724,7 +724,7 @@ function courseplay:unload_combine(self, dt)
 		elseif mode ~= 5 and mode ~= 9 and not self.realistic_driving then
 			-- just wait until combine has turned
 			allowedToDrive = false
-			self.info_text = courseplay:get_locale(self, "CPCombineWantsMeToStop")
+			self.cp.infoText = courseplay:get_locale(self, "CPCombineWantsMeToStop")
 		end
 	end
 
@@ -733,7 +733,7 @@ function courseplay:unload_combine(self, dt)
 		if combine.movingDirection == 0 then
 			mode = 3
 		else
-			self.info_text = courseplay:get_locale(self, "CPWaitUntilCombineTurned") --  ""
+			self.cp.infoText = courseplay:get_locale(self, "CPWaitUntilCombineTurned") --  ""
 		end
 	end
 
@@ -741,7 +741,7 @@ function courseplay:unload_combine(self, dt)
 	-- wende man?ver
 	if mode == 9 and self.target_x ~= nil and self.target_z ~= nil then
 		--courseplay:remove_from_combines_ignore_list(self, combine)
-		self.info_text = string.format(courseplay:get_locale(self, "CPTurningTo"), self.target_x, self.target_z)
+		self.cp.infoText = string.format(courseplay:get_locale(self, "CPTurningTo"), self.target_x, self.target_z)
 		allowedToDrive = false
 		local mx, mz = self.target_x, self.target_z
 		local lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, mx, y, mz)
@@ -783,7 +783,7 @@ function courseplay:unload_combine(self, dt)
 		if combine ~= nil then
 			--courseplay:remove_from_combines_ignore_list(self, combine)
 		end
-		self.info_text = string.format(courseplay:get_locale(self, "CPDriveToWP"), self.target_x, self.target_z)
+		self.cp.infoText = string.format(courseplay:get_locale(self, "CPDriveToWP"), self.target_x, self.target_z)
 		currentX = self.target_x
 		currentY = self.target_y
 		currentZ = self.target_z
@@ -836,7 +836,7 @@ function courseplay:unload_combine(self, dt)
 					--self.target_x, self.target_y, self.target_z = localToWorld(combine.rootNode, self.chopper_offset*0.7, 0, -9) -- -2          --??? *0,5 -10
 
 				elseif self.next_ai_state == 4 and combine_turning then
-					self.info_text = courseplay:get_locale(self, "CPWaitUntilCombineTurned") --  ""
+					self.cp.infoText = courseplay:get_locale(self, "CPWaitUntilCombineTurned") --  ""
 				elseif self.next_ai_state == 81 then -- tipper turning from combine
 
 					self.recordnumber = 2
@@ -859,7 +859,7 @@ function courseplay:unload_combine(self, dt)
 	end
 
 	if mode == 6 and frontTractor ~= nil then --Follow Tractor
-		self.info_text = courseplay:get_locale(self, "CPFollowTractor") -- "Fahre hinter Traktor"
+		self.cp.infoText = courseplay:get_locale(self, "CPFollowTractor") -- "Fahre hinter Traktor"
 		--use the current tractor's sideToDrive as own
 		if frontTractor.sideToDrive ~= nil then
 			courseplay:debug(string.format("setting current tractor's sideToDrive (%s) as my own", tostring(frontTractor.sideToDrive)));
@@ -919,18 +919,18 @@ function courseplay:unload_combine(self, dt)
 	self.ai_state = mode
 
 	if currentX == nil or currentZ == nil then
-		self.info_text = courseplay:get_locale(self, "CPWaitForWaypoint") -- "Warte bis ich neuen Wegpunkt habe"
+		self.cp.infoText = courseplay:get_locale(self, "CPWaitForWaypoint") -- "Warte bis ich neuen Wegpunkt habe"
 		allowedToDrive = false
 	end
 
 	if self.forced_to_stop then
-		self.info_text = courseplay:get_locale(self, "CPCombineWantsMeToStop") -- "Drescher sagt ich soll anhalten."
+		self.cp.infoText = courseplay:get_locale(self, "CPCombineWantsMeToStop") -- "Drescher sagt ich soll anhalten."
 		allowedToDrive = false
 	end
 
 	if self.showWaterWarning then
 		allowedToDrive = false
-		self.global_info_text = courseplay.locales.CPWaterDrive
+		courseplay:setGlobalInfoText(self, courseplay.locales.CPWaterDrive, -2);
 	end
 
 	-- check traffic and calculate speed

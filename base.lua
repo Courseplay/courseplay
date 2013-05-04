@@ -116,10 +116,11 @@ function courseplay:load(xmlFile)
 	self.working_course_player_num = nil
 
 	-- info text on tractor
-	self.info_text = nil
+	self.cp.infoText = nil
 
 	-- global info text - also displayed when not in vehicle
-	self.global_info_text = nil
+	self.cp.globalInfoText = nil;
+	self.cp.globalInfoTextLevel = 0;
 	self.testhe = false
 
 	-- ai mode: 1 abfahrer, 2 kombiniert
@@ -639,7 +640,7 @@ function courseplay:update(dt)
 			else
 				self.mouse_enabled = true
 				if not self.show_hud then
-					--self.showHudInfoBase = self.minHudPage
+					--self.showHudInfoBase = self.cp.minHudPage
 					self.show_hud = true
 				end
 			end
@@ -679,7 +680,7 @@ function courseplay:update(dt)
 	end
 
 
-	courseplay:infotext(self);
+	courseplay:renderInfoText(self);
 
 
 	-- we are in record mode
@@ -790,8 +791,9 @@ function courseplay:readStream(streamId, connection)
 	self.follow_mode = streamDebugReadInt32(streamId)
 	self.forced_side = streamDebugReadString(streamId)
 	self.forced_to_stop = streamDebugReadBool(streamId)
-	self.global_info_text = streamDebugReadString(streamId)
-	self.info_text = streamDebugReadString(streamId)
+	self.cp.globalInfoText = streamDebugReadString(streamId);
+	self.cp.globalInfoTextLevel = streamDebugReadInt32(streamId);
+	self.cp.infoText = streamDebugReadString(streamId)
 	self.last_fill_level = streamDebugReadInt32(streamId)
 	self.lastTrailerToFillDistance = streamDebugReadFloat32(streamId)
 	self.loaded = streamDebugReadBool(streamId)
@@ -933,8 +935,9 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteInt32(streamId,self.follow_mode)
 	streamDebugWriteString(streamId,self.forced_side)
 	streamDebugWriteBool(streamId,self.forced_to_stop)
-	streamDebugWriteString(streamId,self.global_info_text)
-	streamDebugWriteString(streamId,self.info_text)
+	streamDebugWriteString(streamId,self.cp.globalInfoText);
+	streamDebugWriteInt32(streamId,self.cp.globalInfoTextLevel);
+	streamDebugWriteString(streamId,self.cp.infoText)
 	streamDebugWriteInt32(streamId,self.last_fill_level)
 	streamDebugWriteFloat32(streamId,self.lastTrailerToFillDistance)
 	streamDebugWriteBool(streamId,self.loaded)

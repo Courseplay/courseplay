@@ -23,7 +23,7 @@ function courseplay:handle_mode1(self)
 	--if self.loaded ~= true and ((self.recordnumber == 2 and tipper_fill_level < tipper_capacity and self.unloaded == false and self.dist < 10) or self.lastTrailerToFillDistance) then
   	if self.loaded ~= true and ((self.recordnumber == 2 and tipper_fill_level < tipper_capacity and self.unloaded == false ) or self.lastTrailerToFillDistance) then
 		allowedToDrive = courseplay:load_tippers(self)
-		self.info_text = string.format(courseplay:get_locale(self, "CPloading"), tipper_fill_level, tipper_capacity)
+		self.cp.infoText = string.format(courseplay:get_locale(self, "CPloading"), tipper_fill_level, tipper_capacity)
 	end
 
 	-- damn, i missed the trigger!
@@ -58,7 +58,7 @@ function courseplay:handle_mode1(self)
 		allowedToDrive = courseplay:unload_tippers(self)
 
 
-		self.info_text = courseplay:get_locale(self, "CPTriggerReached") -- "Abladestelle erreicht"		
+		self.cp.infoText = courseplay:get_locale(self, "CPTriggerReached") -- "Abladestelle erreicht"		
 	end
 
 	return allowedToDrive

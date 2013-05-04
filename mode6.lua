@@ -18,7 +18,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 	end
 	if (self.recordnumber == self.stopWork or last_recordnumber == self.stopWork) and self.abortWork == nil and not self.loaded then
 		allowedToDrive = false
-		self.global_info_text = courseplay:get_locale(self, "CPWorkEnd") --'hat Arbeit beendet.'
+		courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPWorkEnd"), 1);
 	end
 	
 	local returnToStartPoint = false;
@@ -113,7 +113,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 
 					if fill_level == 100 and self.maxnumber == self.stopWork then
 						allowedToDrive = false
-						self.global_info_text = courseplay:get_locale(self, "CPReadyUnloadBale") --'bereit zum entladen'
+						courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPUnloadBale"));
 					end
 
 					-- automatic unload
@@ -155,7 +155,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 								end;
 
 								allowedToDrive = false;
-								self.global_info_text = "UBT "..courseplay:get_locale(self, "CPReadyUnloadBale"); --'UBT bereit zum entladen'
+								courseplay:setGlobalInfoText(self, "UBT " .. courseplay:get_locale(self, "CPUnloadBale"));
 							end;
 							--print("UBT is full (" .. tostring(workTool.fillLevel) .. "/" .. tostring(workTool.fillLevelMax) .. ")"); -- WORKS
 						else
@@ -331,7 +331,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 					if tipper_fill_level > 0 and self.currentTipTrigger ~= nil and self.recordnumber > 3 then
 						self.max_speed_level = 1
 						allowedToDrive, active_tipper = courseplay:unload_tippers(self)
-						self.info_text = courseplay:get_locale(self, "CPTriggerReached") -- "Abladestelle erreicht"		
+						self.cp.infoText = courseplay:get_locale(self, "CPTriggerReached") -- "Abladestelle erreicht"		
 					end
 				end;
 			end; --END other tools
@@ -427,7 +427,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 						if weatherStop then
 							allowedToDrive = false;
 							tool:setIsThreshing(false, true);
-							self.global_info_text = courseplay:get_locale(self, "CPwaitingForWeather")
+							courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPwaitingForWeather"));
 						end
 							
 					end

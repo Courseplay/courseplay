@@ -95,6 +95,7 @@ function cp_setupHud()
 			activeGreen =   { 110/255, 235/255,  56/255, 1    };
 			activeRed =     { 206/255,  83/255,  77/255, 1    };
 			closeRed =      { 180/255,       0,       0, 1    };
+			shadow =        {  35/255,  35/255,  35/255, 1    };
 		};
 		clickSound = createSample("clickSound");
 		pagesPerMode = {
