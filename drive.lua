@@ -129,13 +129,13 @@ function courseplay:drive(self, dt)
 	if not self.isControlled then
 		-- we want to hear our courseplayers
 		setVisibility(self.aiMotorSound, true)
-		if g_currentMission.environment.needsLights then
+		if g_currentMission.environment.needsLights or (g_currentMission.environment.lastRainScale > 0.1 and g_currentMission.environment.timeSinceLastRain < 30) then
 			self:setLightsVisibility(true);
 		else
 			self:setLightsVisibility(false);
 		end;
 	end;
-	-- actual position
+	-- current position
 	local ctx, cty, ctz = getWorldTranslation(self.rootNode);
 	-- coordinates of next waypoint
 	--if self.recordnumber > self.maxnumber then
@@ -255,10 +255,10 @@ function courseplay:drive(self, dt)
 		if self.ai_mode == 3 then
 			self.global_info_text = courseplay:get_locale(self, "CPReachedOverloadPoint") --'hat Überladepunkt erreicht.'
 			if self.tipper_attached then
-				-- drive on if fill_level doesn't change and fill level is < 100-self.required_fill_level_for_follow
+				-- drive on if fill_level doesn't change and fill level is < self.required_fill_level_for_follow
 				local drive_on = false
 				if self.timeout < self.timer or self.last_fill_level == nil then
-					if self.last_fill_level ~= nil and fill_level == self.last_fill_level and fill_level < 100 - self.required_fill_level_for_follow then
+					if self.last_fill_level ~= nil and fill_level == self.last_fill_level and fill_level < self.required_fill_level_for_follow then
 						drive_on = true
 					end
 					self.last_fill_level = fill_level
