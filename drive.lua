@@ -825,8 +825,8 @@ function courseplay:openCloseCover(self)
 			--INFO: setPlane(true) = open / setPlane(false) = closed
 			if self.ai_mode == 1 or self.ai_mode == 2 or self.ai_mode == 5 then
 				local minCoverWaypoint = 3;
-				if self.ai_mode == 2 then
-					minCoverWaypoint = 2;
+				if self.ai_mode == 1 then
+					minCoverWaypoint = 4;
 				end;
 				
 				--close
