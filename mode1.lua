@@ -29,19 +29,20 @@ function courseplay:handle_mode1(self)
 	-- damn, i missed the trigger!
 
 	if self.currentTipTrigger ~= nil then
-		local trigger_id = self.currentTipTrigger.triggerId;
+		local t = self.currentTipTrigger;
+		local trigger_id = t.triggerId;
 
 		if t.specialTriggerId ~= nil then
-			trigger_id = self.currentTipTrigger.specialTriggerId;
+			trigger_id = t.specialTriggerId;
 		end;
-		if self.currentTipTrigger.isPlaceableHeapTrigger then
-			trigger_id = self.currentTipTrigger.rootNode;
+		if t.isPlaceableHeapTrigger then
+			trigger_id = t.rootNode;
 		end;
 
 		if trigger_id ~= nil then
 			local trigger_x, trigger_y, trigger_z = getWorldTranslation(trigger_id)
 			local ctx, cty, ctz = getWorldTranslation(self.rootNode);
-			local distance_to_trigger = courseplay:distance(ctx, ctz, trigger_x, trigger_z)
+			local distance_to_trigger = courseplay:distance(ctx, ctz, trigger_x, trigger_z);
 			
 			if distance_to_trigger > 60 then 
 				self.currentTipTrigger = nil
