@@ -492,7 +492,7 @@ function courseplay:drive(self, dt)
 		local i = self.cp.shovelEmptyPoint
 		local x,y,z = getWorldTranslation(self.rootNode)
 		local _,_,ez = worldToLocal(self.rootNode, self.Waypoints[i].cx , y , self.Waypoints[i].cz)
-		if  ez < 0.2 then
+		if  ez < 0 then
 			allowedToDrive = false
 		end
 	end

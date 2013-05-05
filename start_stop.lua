@@ -80,6 +80,9 @@ function courseplay:start(self)
 	if self.ai_state == 0 then
 		local nearestpoint = dist
 		local wpanz = 0
+		self.cp.shovelFillStartPoint = nil
+		self.cp.shovelFillEndPoint = nil
+		self.cp.shovelEmptyPoint = nil
 		-- search nearest Waypoint
 		for i = 1, self.maxnumber do
 			local cx, cz = self.Waypoints[i].cx, self.Waypoints[i].cz
