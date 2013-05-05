@@ -95,6 +95,7 @@ function cp_setupHud()
 			activeGreen =   { 110/255, 235/255,  56/255, 1    };
 			activeRed =     { 206/255,  83/255,  77/255, 1    };
 			closeRed =      { 180/255,       0,       0, 1    };
+			warningRed =    { 240/255,  25/255,  25/255, 1    };
 			shadow =        {  35/255,  35/255,  35/255, 1    };
 		};
 		clickSound = createSample("clickSound");
@@ -111,8 +112,7 @@ function cp_setupHud()
 			{ true, true, true, false, false, true, true, true, false, true  }; --Mode 9
 		};
 	};
-	loadSample(courseplay.hud.clickSound, Utils.getFilename("sounds/cpClickSound.wav", courseplay_path), false);
-	
+
 	for l=1,courseplay.hud.numLines do
 		if l == 1 then
 			courseplay.hud.linesPosY[l] = courseplay.hud.infoBasePosY + 0.210;
@@ -123,7 +123,16 @@ function cp_setupHud()
 		end;
 		courseplay.hud.linesButtonPosY[l] = courseplay.hud.linesPosY[l] + 0.0020; --0.0045
 	end;
-	
+
+	courseplay.globalInfoText = {
+		fontSize = 0.02;
+		posX = 0.035;
+		backgroundImg = "dataS2/menu/white.png";
+		backgroundPadding = 0.005;
+		backgroundX = 0.035 - 0.005;
+	};
+
+	loadSample(courseplay.hud.clickSound, Utils.getFilename("sounds/cpClickSound.wav", courseplay_path), false);
 end;
 
 cp_setupHud();

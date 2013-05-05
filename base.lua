@@ -121,6 +121,9 @@ function courseplay:load(xmlFile)
 	-- global info text - also displayed when not in vehicle
 	self.cp.globalInfoText = nil;
 	self.cp.globalInfoTextLevel = 0;
+	local git = courseplay.globalInfoText;
+	self.cp.globalInfoTextOverlay = Overlay:new(string.format("globalInfoTextOverlay%d", self.rootNode), git.backgroundImg, git.backgroundX, 0, 0.1, git.fontSize);
+	self.cp.globalInfoTextOverlay.isRendering = false;
 	self.testhe = false
 
 	-- ai mode: 1 abfahrer, 2 kombiniert
@@ -399,6 +402,7 @@ function courseplay:load(xmlFile)
 			courseplay:get_locale(self, "CPShovelPositions") --Schaufel progammieren
 		};
 	end;
+
 
 	local w16px = 16/1920;
 	local h16px = 16/1080;
@@ -679,10 +683,6 @@ function courseplay:update(dt)
 		end
 	end
 
-
-	courseplay:renderInfoText(self);
-
-
 	-- we are in record mode
 	if self.record then
 		courseplay:record(self);
@@ -692,7 +692,10 @@ function courseplay:update(dt)
 	if self.drive then
 		courseplay:drive(self, dt);
 	end
-end
+
+	courseplay:renderInfoText(self);
+	courseplay:setGlobalInfoText(self, nil, nil);
+end;
 
 function courseplay:updateTick(dt)
 	--attached or detached implement?
@@ -748,6 +751,7 @@ function courseplay:readStream(streamId, connection)
 	self.courseplay_position = streamDebugReadInt32(streamId)
 	self.CPnumCollidingVehicles = streamDebugReadInt32(streamId)
 	self.cpTrafficBrake = streamDebugReadBool(streamId)
+	self.cp.isRendering = streamDebugReadBool(streamId);
 	self.cp.hasFoundCopyDriver = streamDebugReadBool(streamId);
 	self.cp.hasStartingCorner = streamDebugReadBool(streamId);
 	self.cp.hasStartingDirection = streamDebugReadBool(streamId);
@@ -892,6 +896,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteInt32(streamId,self.courseplay_position)
 	streamDebugWriteInt32(streamId,self.CPnumCollidingVehicles)
 	streamDebugWriteBool(streamId, self.cpTrafficBrake)
+	streamDebugWriteBool(streamId, self.cp.globalInfoTextOverlay.isRendering);
 	streamDebugWriteBool(streamId, self.cp.hasFoundCopyDriver);
 	streamDebugWriteBool(streamId, self.cp.hasStartingCorner);
 	streamDebugWriteBool(streamId, self.cp.hasStartingDirection);
