@@ -1480,7 +1480,16 @@ Italský překlad: JD7530
 			<it>Termina</it>
 			<cz>Ukončit</cz>
 		</text>
-
+		
+		
+		<text name="CPNoCourse">
+			<en>course is not valid</en>
+			<de>kein gültiger Kurs geladen</de>
+			<fr>course is not valid</fr>
+			<es>course is not valid</es>
+			<it>course is not valid</it>
+			<cz>course is not valid</cz>
+		</text>
 		<text name="CPNoShovel">
 			<en>No shovel could be found</en>
 			<de>keine Schaufel vorhanden</de>

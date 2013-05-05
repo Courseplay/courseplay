@@ -35,6 +35,10 @@ function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToD
 		self.cp.infoText = courseplay.locales.CPNoShovel
 		return false
 	end
+	if self.cp.shovelFillStartPoint == nil or self.cp.shovelFillEndPoint == nil or self.cp.shovelEmptyPoint == nil then 
+		self.cp.infoText = courseplay.locales.CPNoCourse
+		return false
+	end
 	
 	local mt, secondary = courseplay:getMovingTools(self)
 			
