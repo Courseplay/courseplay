@@ -127,7 +127,7 @@
 				</dd>
 				
 				<dt class="fix">fix</dt>
-				<dd>Kombimodus: wird der Drescher/Häcksler gesteuert, wenden die Abfahrer nun nicht mehr in die Frucht.</dd>
+				<dd>Kombimodus: wird der Drescher/Häcksler manuell gesteuert, wenden die Abfahrer nun nicht mehr in die Frucht.</dd>
 				
 				<dt class="new">new</dt> <!-- 18 Mar 2013, https://github.com/Courseplay/courseplay/commit/f04690000d6570d4bfa41bfd58e1368f825da3f1 -->
 				<dd>Kombimodus: wird der Drescher/Häcksler manuell gesteuert, muss dem Abfahrer nun über einen Button gesagt werden, dass man das Wendemanöver anfängt - und beendet. Dies kann auf der ersten Seite ("Drescher steuern") unter dem Punkt "Wendemanöver starten/beenden" gemacht werden.</dd>
@@ -139,13 +139,20 @@
 				<dd>Güllezubringer: funktioniert wieder wie gewollt (vorerst nur mit Abbey Nurse Tanker).</dd>
 				
 				<dt class="new">new</dt>
-				<dd>Aktualisierte Hud, neue Schnellknöpfe für Modi-Wechseln und Seite-Auswählen, Clicksound</dd>
+				<dd>Aktualisierte Hud, neue Schnellknöpfe zum Modus wechseln und Seite auswählen, Clicksound</dd>
 				
 				<dt class="fix">fix</dt>
-				<dd>Verbesserte Frucht- und Felderkennung bei Kartoffeln und Zuckerrüben.</dd>
+				<dd>Frucht- und Felderkennung bei Kartoffeln und Zuckerrüben</dd>
 				
 				<dt class="fix">fix</dt>
-				<dd>Drescher im Feldarbeitsmodus hält bei Regen an.</dd>
+				<dd>
+					<h4>Verbesserte Prozedur beim Drescher im Feldarbeitsmodus</h4>
+					<ul>
+						<li>Drescher unterbricht bei Regen seine Arbeit</li>
+						<li>Fährt beim Abtanken ab 80% Füllstand weiter</li>
+						<li>Am Bahnende beginnt der Drescher sein Wendemanöver sobald der Abfahrer eine sichere Entfernung erreicht hat.</li>
+					</ul>
+				</dd>
 				
 				<dt class="new">new</dt>
 				<dd>Unterstützung für gezogene Erntemaschinen (z.B. Grimme Rootster, Grimme SE75) außer Maishäcksler</dd>
@@ -154,8 +161,9 @@
 				<dd>
 					<h4>Neuer Modus: Schaufel füllen und entleeren</h4>
 					<ul>
-						<li>Die Schaufel wird in einem abgesteckten Bereich (z.B. BGA-Silo) befüllt, setzt zurück und wird an einem BGA-Bunker oder in einen Hänger entleert.</li>
+						<li>Die Schaufel wird in einem abgesteckten Bereich (z.B. BGA-Silo) befüllt, setzt zurück und wird an einem BGA-Bunker oder (mit Rampe) in einen Hänger entleert.</li>
 						<li>Die vier Schaufelpositionen müssen einmal am Anfang gesetzt werden: Aufladen, Transport, vor Abladen, Abladen</li>
+						<li>Telelader werden nur bedingt unterstützt (kein Ein-/Ausfahren des Armes).</li>
 					</ul>
 				</dd>
 				
