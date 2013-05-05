@@ -751,7 +751,7 @@ function courseplay:readStream(streamId, connection)
 	self.courseplay_position = streamDebugReadInt32(streamId)
 	self.CPnumCollidingVehicles = streamDebugReadInt32(streamId)
 	self.cpTrafficBrake = streamDebugReadBool(streamId)
-	self.cp.isRendering = streamDebugReadBool(streamId);
+	self.cp.globalInfoTextOverlay.isRendering = streamDebugReadBool(streamId);
 	self.cp.hasFoundCopyDriver = streamDebugReadBool(streamId);
 	self.cp.hasStartingCorner = streamDebugReadBool(streamId);
 	self.cp.hasStartingDirection = streamDebugReadBool(streamId);
