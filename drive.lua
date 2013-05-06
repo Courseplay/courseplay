@@ -931,7 +931,7 @@ function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive)
 			if canRefill then
 				allowedToDrive = false;
 				--courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
-				courseplay:handleSpecialTools(self,activeTool,nil,nil,nil,allowedToDrive,true,false)
+				courseplay:handleSpecialTools(self,activeTool,nil,nil,nil,allowedToDrive,false,false)
 				self.cp.infoText = string.format(courseplay:get_locale(self, "CPloading"), self.cp.tipperFillLevel, self.cp.tipperCapacity);
 				local sprayer = activeTool.sprayerFillTriggers[1];
 				activeTool:setIsSprayerFilling(true, false);
