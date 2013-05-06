@@ -349,6 +349,12 @@ function courseplay:drive(self, dt)
 		if (self.ai_mode == 1 and self.tipper_attached and self.cp.tipperFillLevel ~= nil and self.tipRefOffset ~= nil) or (self.loaded and self.ai_mode == 2 and self.tipRefOffset ~= nil) then
 			-- is there a tipTrigger within 10 meters?
 			raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
+			if not self.printed then
+				print("call Raycast")
+				self.printed = true
+				self.printed1 = false
+			end
+
 
 			if self.tipRefOffset ~= 0 then
 				if self.currentTipTrigger == nil then
@@ -360,6 +366,12 @@ function courseplay:drive(self, dt)
 			end
 			-- handle mode
 			allowedToDrive  = courseplay:handle_mode1(self)
+		else
+			if not self.printed1 then
+				print("call NO Raycast")
+				self.printed1 = true
+				self.printed = false
+			end
 		end
 		-- combi-mode
 		if (((self.ai_mode == 2 or self.ai_mode == 3) and self.recordnumber < 2) or self.active_combine) and self.tipper_attached then

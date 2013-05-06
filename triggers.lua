@@ -50,6 +50,13 @@ end
 function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 	--C.Schoch
 	--local trigger_objects = g_currentMission.onCreateLoadedObjects
+	local allowPrint = false
+	if courseplay.debugLevel > 0 then
+		allowPrint = true
+	end
+	if self.currentTipTrigger ~= nil then 
+		allowPrint = false
+	end
 	local trigger_objects = {};
 	if g_currentMission.onCreateLoadedObjects ~= nil then
 		for k, trigger in pairs(g_currentMission.onCreateLoadedObjects) do
@@ -82,10 +89,15 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 	end;
 	-- C.Schoch
 	-- courseplay:debug(table.show(trigger_objects), 4);
+
 	if self.cp.lastCheckedTransformID ~= transformId then
+		local name = getParent(transformId)
+		if allowPrint then print("checking "..tostring(getName(name))) end
+		if allowPrint then print("transformId:"..tostring(transformId).." name: "..tostring(getName(transformId))) end
 		for k, trigger in pairs(trigger_objects) do
 			--courseplay:debug(trigger.className, 3);
 			if (trigger.className and (trigger.className == "SiloTrigger" or trigger.isPlaceableHeapTrigger or Utils.endsWith(trigger.className, "TipTrigger"))) then
+				if allowPrint then print("	is Trigger") end
 				-- transformId
 				local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity();
 				local fruitType = self.tippers[1].currentFillType;
@@ -94,10 +106,15 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 				if trigger.isAlternativeTipTrigger then
 					fruitType = FruitUtil.fillTypeToFruitType[fruitType];
 				end;
-				
+				if allowPrint then print("	checking Fruittype  "..tostring(fruitType)) end
 				if transformId ~= nil and trigger.acceptedFillTypes ~= nil and trigger.acceptedFillTypes[fruitType] then
+					if allowPrint then print("		accepted fruittype") end
+					if allowPrint then print("		checking with: "..tostring(trigger.triggerId)) end
 					if trigger.triggerId ~= nil and trigger.triggerId == transformId then
+						if allowPrint then print("			is valid") end
+						if allowPrint then print("			checking trigger.isAlternativeTipTrigger : "..tostring(trigger.isAlternativeTipTrigger)) end  
 						if not trigger.isAlternativeTipTrigger or (trigger.isAlternativeTipTrigger and trigger.currentFillType == fruitType) then
+							if allowPrint then print("				insert TipTrigger") end
 							self.currentTipTrigger = trigger;
 						end;
 					elseif trigger.triggerIds ~= nil and table.contains(trigger.triggerIds, transformId) then
@@ -105,7 +122,11 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 					elseif trigger.isPlaceableHeapTrigger and trigger.tipTriggerId ~= nil and trigger.tipTriggerId == transformId then
 						self.currentTipTrigger = trigger;
 						--print("currentTipTrigger=", tostring(self.currentTipTrigger), ", fruitType allowed = ", tostring(self.currentTipTrigger.acceptedFillTypes[self.tippers[1].currentFillType]));
+					else 
+						if allowPrint then print("			not valid") end
 					end;
+				else
+					if allowPrint then print("		no valid fruittype") end
 				end;
 			end;
 		end;
