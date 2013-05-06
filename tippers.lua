@@ -530,14 +530,17 @@ end
 -- unloads all tippers
 function courseplay:unload_tippers(self)
 	local allowedToDrive = true
+	local tipperFillLevel, tipperCapacity = self:getAttachedTrailersFillLevelAndCapacity();
 	for k, tipper in pairs(self.tippers) do
 		--if not tipper.allowsDetaching then
 		if tipper.tipReferencePoints ~= nil then
 			local numReferencePoints = table.getn(tipper.tipReferencePoints);
 			local fruitType = tipper.currentFillType
-
-			if self.currentTipTrigger.bunkerSilo ~= nil then
-				
+			local isBunkerSilo = false;
+			
+			if self.currentTipTrigger.bunkerSilo ~= nil then --TODO after v3.40: and (self.currentTipTrigger.bunkerSilo.fillLevel + tipperFillLevel) < self.currentTipTrigger.bunkerSilo.capacity) then
+				--TODO after v3.40: clean up variable names, put in cp table etc.
+				isBunkerSilo = true;
 				local silos = table.getn(self.currentTipTrigger.bunkerSilo.movingPlanes)
 				local x, y, z = getWorldTranslation(tipper.tipReferencePoints[1].node)
 				local sx, sy, sz = worldToLocal(self.currentTipTrigger.bunkerSilo.movingPlanes[1].nodeId, x, y, z)
@@ -596,21 +599,27 @@ function courseplay:unload_tippers(self)
 						self.gofortipping = true
 					end
 				end
+				
+				--TODO after v3.40: if section == 1 is full, check 2 and 3 / if section == 2 is full, check 1 and 3 etc.
 			else
 				self.gofortipping = true;
+				
+				--AlternativeTipping: don't unload if full
 				if self.currentTipTrigger.fillLevel ~= nil and self.currentTipTrigger.capacity ~= nil and self.currentTipTrigger.fillLevel >= self.currentTipTrigger.capacity then
 					self.gofortipping = false;
-					allowedToDrive = false;
-					self.cp.infoText = "Heap has reached its capacity"; --TODO: i18n / courseplay:get_locale(self, "CPheapFull");
+					--allowedToDrive = false;
+					--self.cp.infoText = "Heap has reached its capacity"; --TODO: i18n / courseplay:get_locale(self, "CPheapFull");
 				end;
 			end
 			if self.currentTipTrigger.acceptedFillTypes[fruitType] and self.gofortipping == true then  
+				courseplay:debug(self.name .. ": trigger accepts fruit (" .. tostring(fruitType) .. "), gofortipping == true", 1);
 				if tipper.tipState == Trailer.TIPSTATE_CLOSED then
 					local distanceToTrigger = math.huge;
 					if self.currentTipTrigger.getTipDistanceFromTrailer ~= nil then
 						distanceToTrigger = self.currentTipTrigger:getTipDistanceFromTrailer(tipper, tipper.currentTipReferencePointIndex); --courtesy of Satis
 					end;
 					if distanceToTrigger == 0 or self.currentTipTrigger.bunkerSilo ~= nil then
+						courseplay:debug(string.format("%s: distanceToTrigger=%s, isBunkerSilo=%s", tostring(self.name), tostring(distanceToTrigger), tostring(isBunkerSilo)), 1);
 						if self.toggledTipState < numReferencePoints then
 							self.toggledTipState = self.toggledTipState +1
 							tipper:toggleTipState(self.currentTipTrigger,self.toggledTipState);
@@ -626,9 +635,11 @@ function courseplay:unload_tippers(self)
 				if self.currentTipTrigger.bunkerSilo ~= nil then
 					allowedToDrive = true
 				end
-			else
-				courseplay:debug("trigger does not accept fruit or self.gofortipping = false(BGA) ", 1);
-			end
+            elseif not self.currentTipTrigger.acceptedFillTypes[fruitType] then
+                courseplay:debug(self.name .. ": trigger does not accept fruit (" .. tostring(fruitType) .. ")", 1);
+            elseif not self.gofortipping then
+                courseplay:debug(self.name .. ": self.gofortipping = false (BGA / fillLevel > capacity)", 1);
+			end;
 		end
 	end
 	return allowedToDrive

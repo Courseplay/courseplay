@@ -75,6 +75,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 	if g_currentMission.tipTriggers ~= nil then
 		for k, trigger in pairs(g_currentMission.tipTriggers) do
 			if trigger.isExtendedTrigger then
+				trigger.isAlternativeTipTrigger = Utils.endsWith(trigger.className, "ExtendedTipTrigger");
 				table.insert(trigger_objects, trigger);
 			end;
 		end
@@ -88,20 +89,16 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 				-- transformId
 				local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity();
 				local fruitType = self.tippers[1].currentFillType;
-				local isExtendedTipTrigger = trigger.isExtendedTrigger and Utils.endsWith(trigger.className, "ExtendedTipTrigger");
 				
 				--AlternativeTipping
-				if isExtendedTipTrigger then
-					fruitType = FruitUtil.fillTypeToFruitType[self.tippers[1].currentFillType];
+				if trigger.isAlternativeTipTrigger then
+					fruitType = FruitUtil.fillTypeToFruitType[fruitType];
 				end;
 				
 				if transformId ~= nil and trigger.acceptedFillTypes ~= nil and trigger.acceptedFillTypes[fruitType] then
-					if trigger.triggerId ~= nil and trigger.triggerId == transformId and (trigger.bunkerSilo == nil or (trigger.bunkerSilo.fillLevel + tipper_capacity) < trigger.bunkerSilo.capacity) then
-						--courseplay:debug(table.show(trigger), 4);
-						if trigger.acceptedFillTypes[fruitType] then
-							if not isExtendedTipTrigger or (isExtendedTipTrigger and trigger.currentFillType == fruitType) then
-								self.currentTipTrigger = trigger;
-							end;
+					if trigger.triggerId ~= nil and trigger.triggerId == transformId then
+						if not trigger.isAlternativeTipTrigger or (trigger.isAlternativeTipTrigger and trigger.currentFillType == fruitType) then
+							self.currentTipTrigger = trigger;
 						end;
 					elseif trigger.triggerIds ~= nil and table.contains(trigger.triggerIds, transformId) then
 						self.currentTipTrigger = trigger
