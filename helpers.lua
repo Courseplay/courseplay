@@ -171,3 +171,7 @@ function courseplay:round(num, decimals)
 	end;
 	return math.floor(num + 0.5);
 end;
+
+function courseplay:nilOrBool(variable, bool)
+	return variable == nil or (variable ~= nil and variable == bool);
+end;

@@ -52,6 +52,7 @@ function courseplay:register_button(self, hud_page, img, function_to_call, param
 end
 
 function courseplay:render_buttons(self, page)
+	local colors = courseplay.hud.colors;
 	for _, button in pairs(self.cp.buttons) do
 		if button.page == nil or button.page == page or button.page == -page then
 			if button.showWhat ~= nil and button.showIs ~= nil then
@@ -87,8 +88,8 @@ function courseplay:render_buttons(self, page)
 				end;
 			end;
 			
-			if button.show == nil or (button.show ~= nil and button.show) then
-				local colors = courseplay.hud.colors;
+			--if button.show == nil or (button.show ~= nil and button.show) then
+			if courseplay:nilOrBool(button.show, true) then
 				local currentColor = courseplay:getButtonColor(button);
 				local targetColor = currentColor;
 
@@ -96,7 +97,7 @@ function courseplay:render_buttons(self, page)
 					targetColor = colors.white;
 				elseif button.isDisabled and not courseplay:colorsMatch(currentColor, colors.whiteDisabled) then
 					targetColor = colors.whiteDisabled;
-				elseif not button.isDisabled and button.canBeClicked and button.isClicked then
+				elseif not button.isDisabled and button.canBeClicked and button.isClicked and not button.function_to_call == "close_hud" then
 					targetColor = colors.activeRed;
 				elseif button.isActive and not courseplay:colorsMatch(currentColor, colors.activeGreen) then
 					targetColor = colors.activeGreen;
@@ -126,19 +127,19 @@ function courseplay:setButtonColor(button, color)
 	if button == nil or button.overlay == nil or color == nil or table.getn(color) ~= 4 then
 		return;
 	end;
-	
-	button.color = color;
-	setOverlayColor(button.overlay.overlayId, unpack(color));
+	button.overlay:setColor(unpack(color));
 end;
 
 function courseplay:getButtonColor(button)
-	if button == nil or button.overlay == nil or button.color == nil then
+	if button == nil or button.overlay == nil or button.overlay.r == nil or button.overlay.g == nil or button.overlay.b == nil or button.overlay.a == nil then
 		return nil;
 	end;
-
-	return button.color;
+	return { button.overlay.r, button.overlay.g, button.overlay.b, button.overlay.a };
 end;
 
 function courseplay:colorsMatch(color1, color2)
+	if color1 == nil or color2 == nil then
+		return nil;
+	end;
 	return Utils.areListsEqual(color1, color2, false);
 end;
