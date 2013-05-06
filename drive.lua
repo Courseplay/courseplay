@@ -2,7 +2,8 @@
 function courseplay:drive(self, dt)
 	local refSpeed = 0
 	local cx,cy,cz = 0,0,0
-
+	-- may i drive or should i hold position for some reason?
+	local allowedToDrive = true
 	-- combine self unloading
 	if self.ai_mode == 7 then
 		if self.isAIThreshing then
@@ -28,6 +29,7 @@ function courseplay:drive(self, dt)
 						courseplay:set_next_target(self, -(0.34*2*self.turn_radius) , 0);
 						courseplay:set_next_target(self, 0 ,3);
 					end
+					self.cp.mode7Unloading = true
 					courseplay:start(self)
 					self.sl = 3
 					refSpeed = self.field_speed
@@ -38,9 +40,12 @@ function courseplay:drive(self, dt)
 			else
 				return
 			end
-		else
+		elseif self.cp.mode7Unloading then
 			self.sl = 3
 			refSpeed = self.field_speed
+		else
+			allowedToDrive = false
+			courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPWorkEnd"), 1);
 		end
 		if self.ai_state == 5 then
 			local targets = table.getn(self.next_targets)
@@ -113,6 +118,7 @@ function courseplay:drive(self, dt)
 						courseplay:debug("restored self.aiThreshingDirection",1)
 					end	
 					self:startAIThreshing(true)
+					self.cp.mode7Unloading = false
 					courseplay:debug("start AITreshing",1)
 					courseplay:debug("fault: "..tostring(math.ceil(math.abs(ctx7-self.target_x7)*100)).." cm X  "..tostring(math.ceil(math.abs(ctz7-self.target_z7)*100)).." cm Z",1)
 				end
@@ -218,8 +224,6 @@ function courseplay:drive(self, dt)
 		self.implementIsFull = (fill_level ~= nil and fill_level == 100);
 	end;
 	
-	-- may i drive or should i hold position for some reason?
-	local allowedToDrive = true
 	-- in a traffic yam?
 
 	self.max_speed_level = nil

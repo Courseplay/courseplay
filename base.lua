@@ -63,7 +63,9 @@ function courseplay:load(xmlFile)
 	self.cp.isHarvesterSteerable = courseplay:isHarvesterSteerable(self);
 	self.cp.isKasi = nil
 	self.cp.isSugarBeetLoader = courseplay:isSpecialCombine(self, "sugarBeetLoader");
-		
+	if self.cp.isCombine then
+		self.cp.mode7Unloading = false
+	end	
 
 	--turn maneuver
 	self.cp.waitForTurnTime = 0.00   --float
@@ -767,6 +769,7 @@ function courseplay:readStream(streamId, connection)
 	self.cp.isKasi = streamDebugReadFloat32(streamId)
 	self.cp.isSugarBeetLoader = streamDebugReadBool(streamId);
 	self.cp.minHudPage = streamDebugReadInt32(streamId);
+	self.cp.mode7Unloading = streamDebugReadBool(streamId);
 	self.cp.ridgeMarkersAutomatic = streamDebugReadBool(streamId);
 	self.cp.returnToFirstPoint = streamDebugReadBool(streamId);
 	self.cp.selectedDriverNumber = streamDebugReadInt32(streamId);
@@ -913,6 +916,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteFloat32(streamId, self.cp.isKasi);
 	streamDebugWriteBool(streamId, self.cp.isSugarBeetLoader);
 	streamDebugWriteInt32(streamId, self.cp.minHudPage);
+	streamDebugWriteBool(streamId, self.cp.mode7Unloading)
 	streamDebugWriteBool(streamId, self.cp.ridgeMarkersAutomatic);
 	streamDebugWriteBool(streamId, self.cp.returnToFirstPoint);
 	streamDebugWriteInt32(streamId, self.cp.selectedDriverNumber);
