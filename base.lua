@@ -61,6 +61,7 @@ function courseplay:load(xmlFile)
 	self.cp.isCombine = courseplay:isCombine(self);
 	self.cp.isChopper = courseplay:isChopper(self);
 	self.cp.isHarvesterSteerable = courseplay:isHarvesterSteerable(self);
+	self.cp.isKasi = nil
 	self.cp.isSugarBeetLoader = courseplay:isSpecialCombine(self, "sugarBeetLoader");
 		
 
@@ -271,8 +272,8 @@ function courseplay:load(xmlFile)
 		end;
 	end;
 	self.cp.DirectionNode = DirectionNode;
-
-	-- traffic collision	
+	
+	 -- traffic collision	
 	self.onTrafficCollisionTrigger = courseplay.cponTrafficCollisionTrigger;
 	--self.aiTrafficCollisionTrigger = Utils.indexToObject(self.components, getXMLString(xmlFile, "vehicle.aiTrafficCollisionTrigger#index"));
 	self.steering_angle = Utils.getNoNil(getXMLFloat(xmlFile, "vehicle.wheels.wheel(1)" .. "#rotMax"), 30)
@@ -294,6 +295,9 @@ function courseplay:load(xmlFile)
 	if self.aiTrafficCollisionTrigger == nil and getChild(self.rootNode, "trafficCollisionTrigger") ~= 0 then
 		self.aiTrafficCollisionTrigger = getChild(self.rootNode, "trafficCollisionTrigger");
 	end;
+	
+	courseplay:askForSpecialSettings(self,self)
+
 
 	-- tippers
 	self.tippers = {}
@@ -760,6 +764,7 @@ function courseplay:readStream(streamId, connection)
 	self.cp.isCombine = streamDebugReadBool(streamId);
 	self.cp.isChopper = streamDebugReadBool(streamId);
 	self.cp.isHarvesterSteerable = streamDebugReadBool(streamId);
+	self.cp.isKasi = streamDebugReadFloat32(streamId)
 	self.cp.isSugarBeetLoader = streamDebugReadBool(streamId);
 	self.cp.minHudPage = streamDebugReadInt32(streamId);
 	self.cp.ridgeMarkersAutomatic = streamDebugReadBool(streamId);
@@ -905,6 +910,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteBool(streamId, self.cp.isCombine);
 	streamDebugWriteBool(streamId, self.cp.isChopper);
 	streamDebugWriteBool(streamId, self.cp.isHarvesterSteerable);
+	streamDebugWriteFloat32(streamId, self.cp.isKasi);
 	streamDebugWriteBool(streamId, self.cp.isSugarBeetLoader);
 	streamDebugWriteInt32(streamId, self.cp.minHudPage);
 	streamDebugWriteBool(streamId, self.cp.ridgeMarkersAutomatic);

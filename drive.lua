@@ -628,6 +628,10 @@ function courseplay:drive(self, dt)
 	else
 		distToChange = 2.85; --orig: 5
 	end
+	
+	if self.cp.isKasi ~= nil then 
+		distToChange = distToChange * self.cp.isKasi
+	end  
 
 	-- record shortest distance to the next waypoint
 	if self.shortest_dist == nil or self.shortest_dist > self.dist then

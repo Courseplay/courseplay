@@ -289,7 +289,10 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 end
 function courseplay:askForSpecialSettings(self,object)
 	
-	if Utils.endsWith(object.configFileName, "grimmeSE75-55.xml") then
+	if Utils.endsWith(self.configFileName, "KirovetsK700A.xml") then
+		self.cp.DirectionNode = self.rootNode
+		self.cp.isKasi = 2.5
+	elseif Utils.endsWith(object.configFileName, "grimmeSE75-55.xml") then
 		self.cp.aiTurnNoBackward = true
 		self.WpOffsetX = -2.1
 		print("Grimme SE 75-55 workwidth: 0.7 m");
