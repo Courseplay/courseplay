@@ -7,8 +7,9 @@
 -- @testing:    bullgore80
 
 courseplay = {};
-courseplay_path = g_modsDirectory .. "/ZZZ_courseplay/" --TODO: g_currentModDirectory
-CPDebugLevel = 0
+--courseplay_path = g_modsDirectory .. "/ZZZ_courseplay/" --TODO: g_currentModDirectory
+courseplay_path = g_currentModDirectory;
+courseplay.debugLevel = 0;
 
 -- working tractors saved in this
 working_course_players = {};
@@ -32,7 +33,7 @@ function initialize_courseplay()
 	source(courseplay_path .. "mode6.lua")
 	source(courseplay_path .. "mode9.lua")
 
-	-- course recording & resetting
+	-- course driving
 	source(courseplay_path .. "drive.lua")
 
 	-- Mouse/Key Managment

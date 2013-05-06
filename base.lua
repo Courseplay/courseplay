@@ -274,8 +274,8 @@ function courseplay:load(xmlFile)
 		end;
 	end;
 	self.cp.DirectionNode = DirectionNode;
-	
-	 -- traffic collision	
+
+	-- traffic collision
 	self.onTrafficCollisionTrigger = courseplay.cponTrafficCollisionTrigger;
 	--self.aiTrafficCollisionTrigger = Utils.indexToObject(self.components, getXMLString(xmlFile, "vehicle.aiTrafficCollisionTrigger#index"));
 	self.steering_angle = Utils.getNoNil(getXMLFloat(xmlFile, "vehicle.wheels.wheel(1)" .. "#rotMax"), 30)
@@ -442,7 +442,7 @@ function courseplay:load(xmlFile)
 
 	courseplay:register_button(self, nil, "close.dds", "close_hud", 1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.infoBasePosY + 0.255, w24px, h24px);
 
-	courseplay:register_button(self, nil, "disk.dds", "save_course", 1, courseplay.hud.infoBasePosX + 0.280, courseplay.hud.infoBasePosY + 0.056, w24px, h24px);
+	courseplay:register_button(self, nil, "disk.dds", "input_course_name", 1, courseplay.hud.infoBasePosX + 0.280, courseplay.hud.infoBasePosY + 0.056, w24px, h24px);
 
 	for i=1, courseplay.hud.numLines do
 		--Page 0: Combine controls
@@ -524,11 +524,11 @@ function courseplay:load(xmlFile)
 	courseplay:register_button(self, 5, "blank.dds",          "change_use_speed",     1, courseplay.hud.infoBasePosX - 0.05,  courseplay.hud.linesPosY[5],       lineButtonWidth,  0.015);
 	
 	--Page 6: General settings
-	courseplay:register_button(self, 6, "blank.dds", "switch_realistic_driving", nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[1], lineButtonWidth, 0.015);
-	courseplay:register_button(self, 6, "blank.dds", "mouse_right_key",          nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[2], lineButtonWidth, 0.015);
-	courseplay:register_button(self, 6, "blank.dds", "change_WaypointMode",      1,   courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[3], lineButtonWidth, 0.015);
-	courseplay:register_button(self, 6, "blank.dds", "change_RulMode",           1,   courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[4], lineButtonWidth, 0.015);
-	courseplay:register_button(self, 6, "blank.dds", "change_DebugLevel",        1,   courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[5], lineButtonWidth, 0.015);
+	courseplay:register_button(self, 6, "blank.dds", "switch_realistic_driving",       nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[1], lineButtonWidth, 0.015);
+	courseplay:register_button(self, 6, "blank.dds", "switch_mouse_right_key_enabled", nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[2], lineButtonWidth, 0.015);
+	courseplay:register_button(self, 6, "blank.dds", "change_WaypointMode",            1,   courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[3], lineButtonWidth, 0.015);
+	courseplay:register_button(self, 6, "blank.dds", "change_RulMode",                 1,   courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[4], lineButtonWidth, 0.015);
+	courseplay:register_button(self, 6, "blank.dds", "change_DebugLevel",              1,   courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[5], lineButtonWidth, 0.015);
 
 	--Page 7: Driving settings
 	courseplay:register_button(self, 7, "navigate_minus.dds", "change_wait_time",  -5, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], w16px, h16px, nil, -10, "self.waitTime>0");

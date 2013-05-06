@@ -347,7 +347,7 @@ function courseplay:loadHud(self)
 
 			self.hudpage[6][2][3] = courseplay:get_locale(self, string.format("WaypointMode%d", self.waypointMode));
 			self.hudpage[6][2][4] = courseplay:get_locale(self, "RulMode" .. string.format("%d", self.RulMode));
-			self.hudpage[6][2][5] = courseplay:get_locale(self, "CPDebugLevel" .. string.format("%d", CPDebugLevel))
+			self.hudpage[6][2][5] = courseplay:get_locale(self, "CPDebugLevel" .. string.format("%d", courseplay.debugLevel))
 
 		--Page 7: Driving settings
 		elseif self.showHudInfoBase == 7 then

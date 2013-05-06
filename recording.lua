@@ -100,7 +100,7 @@ function courseplay:set_crossing(self, stop)
 end
 
 -- set Waypoint before change direction
-function courseplay:set_direction(self)
+function courseplay:change_DriveDirection(self)
 	local cx, cy, cz = getWorldTranslation(self.rootNode);
 	local x, y, z = localDirectionToWorld(self.rootNode, 0, 0, 1);
 	local length = Utils.vector2Length(x, z);

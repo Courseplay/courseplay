@@ -5,21 +5,21 @@
 	3 = important
 	4 = everything, most detailled
 ]]
-function courseplay:debug(string, level)
-	if level ~= nil then
+function courseplay:debug(str, level)
+	if level == nil then
 		level = 1 --when in doubt, print
-		if level <= CPDebugLevel then
-			--print('Global CPDebugLevel: '..CPDebugLevel..' / this Lvl: '..level)
-			print(string)
-		end
-	end
-end
+	end;
+	if level <= courseplay.debugLevel then
+		--print('courseplay.debugLevel='..courseplay.debugLevel..' / this Lvl='..level);
+		print(str);
+	end;
+end;
 
 -- debugging data dumper
 -- just for development and debugging
 function table.show(t, name, indent)
 	--only execute table.show if lvl == 4
-	if CPDebugLevel < 4 then
+	if courseplay.debugLevel < 4 then
 		return
 	end
 

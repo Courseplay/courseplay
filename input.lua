@@ -17,8 +17,6 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 	local mouseIsInHudArea = self.mouse_enabled and posX > hudGfx.x1 and posX < hudGfx.x2 and posY > hudGfx.y1 and posY < hudGfx.y2;
 	
 	if isDown and button == 1 and self.show_hud and self.isEntered and mouseIsInHudArea then
-		--courseplay:debug(string.format("posX: %f posY: %f",posX,posY), 4)
-
 		for _, button in pairs(self.cp.buttons) do
 			button.isClicked = false;
 
@@ -30,7 +28,8 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 						parameter = button.modifiedParameter;
 					end;
 
-					if (button.show == nil or (button.show ~= nil and button.show)) and (button.canBeClicked == nil or (button.canBeClicked ~= nil and button.canBeClicked)) then
+					--if (button.show == nil or (button.show ~= nil and button.show)) and (button.canBeClicked == nil or (button.canBeClicked ~= nil and button.canBeClicked)) then
+					if courseplay:nilOrBool(button.show, true) and courseplay:nilOrBool(button.canBeClicked, true) then
 						button.isClicked = true;
 						self:setCourseplayFunc(button.function_to_call, parameter);
 					end;
@@ -40,9 +39,9 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 		
 	--hover
 	elseif not isDown and self.show_hud and self.isEntered then
-		if mouseIsInHudArea then
+		--if mouseIsInHudArea then
 			for _, button in pairs(self.cp.buttons) do
-				if (button.page == self.showHudInfoBase or button.page == nil or button.page == self.showHudInfoBase * -1) and (button.show == nil or (button.show ~= nil and button.show)) then
+				if (button.page == self.showHudInfoBase or button.page == nil or button.page == self.showHudInfoBase * -1) and courseplay:nilOrBool(button.show, true) then
 					if posX > button.x and posX < button.x2 and posY > button.y and posY < button.y2 then
 						button.isHovered = true;
 					else
@@ -51,7 +50,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 				end;
 				button.isClicked = false;
 			end;
-		end;
+		--end;
 	end;
 end; --END mouseEvent()
 
@@ -66,193 +65,15 @@ function courseplay:setCourseplayFunc(func, value, noEventSend)
 end
 
 function courseplay:deal_with_mouse_input(self, func, value)
-	--TODO: überhaupt nicht DRY das geht bestimmt irgendwie schöner
-	--TODO: (Jakob, 25 Jan 2013) http://stackoverflow.com/questions/1791234/lua-call-function-from-a-string-with-function-name
-	--TODO: general usage of elseif for performance improvements
 
-	if func == "switch_hud_page" then
-		courseplay:switch_hud_page(self, value)
-	end
+	local str1,str2 = string.find(func, "row%d");
+	local isRowFunction = str1 ~= nil and str2 ~= nil and str1 == 1 and str2 == string.len(func);
 
-	if func == "setHudPage" then
-		courseplay:setHudPage(self, value)
-	end
+	if not isRowFunction then
+		--@source: http://stackoverflow.com/questions/1791234/lua-call-function-from-a-string-with-function-name
+		assert(loadstring('courseplay:' .. func .. '(...)'))(self, value);
 
-	if func == "change_combine_offset" then
-		courseplay:change_combine_offset(self, value)
-	end
-
-	if func == "add_course" then
-		courseplay:add_course(self, value, false)
-	end
-
-	if func == "mouse_right_key" then
-		courseplay:switch_mouse_right_key_enabled(self)
-	end
-
-	if func == "key_input" then
-		courseplay:key_input(self, value)
-	end
-
-	if func == "load_course" then
-		courseplay:load_course(self, value, false)
-	end
-
-	if func == "save_course" then
-		courseplay:input_course_name(self)
-	end
-
-	if func == "start" then
-		courseplay:start(self, value)
-	end
-
-	if func == "stop" then
-		courseplay:stop(self, value)
-	end
-
-	if func == "drive_on" then
-		self.wait = false
-	end
-
-	if func == "clear_course" then
-		courseplay:clear_course(self, value)
-	end
-
-	if func == "change_turn_radius" then
-		courseplay:change_turn_radius(self, value)
-	end
-
-	if func == "change_tipper_offset" then
-		courseplay:change_tipper_offset(self, value)
-	end
-
-	if func == "change_required_fill_level" then
-		courseplay:change_required_fill_level(self, value)
-	end
-
-	if func == "change_required_fill_level_for_drive_on" then
-		courseplay:change_required_fill_level_for_drive_on(self, value)
-	end
-
-	if func == "change_turn_speed" then
-		courseplay:change_turn_speed(self, value)
-	end
-
-	if func == "switch_realistic_driving" then
-		courseplay:switch_realistic_driving(self, value)
-	end
-
-
-
-	if func == "change_wait_time" then
-		courseplay:change_wait_time(self, value)
-	end
-
-	if func == "change_num_ai_helpers" then
-		--courseplay:change_num_ai_helpers(self, value)
-	end
-
-	if func == "change_field_speed" then
-		courseplay:change_field_speed(self, value)
-	end
-
-	if func == "change_max_speed" then
-		courseplay:change_max_speed(self, value)
-	end
-
-	if func == "change_unload_speed" then
-		courseplay:change_unload_speed(self, value)
-	end
-
-	if func == "change_RulMode" then
-		courseplay:change_RulMode(self, value)
-	end
-
-	if func == "change_DriveDirection" then
-		courseplay:set_direction(self)
-	end
-
-	if func == "change_DebugLevel" then
-		courseplay:change_DebugLevel(value)
-	end
-
-	if func == "change_use_speed" then
-		courseplay:switch_use_speed(self)
-	end
-
-	if func == "switch_search_combine" then
-		courseplay:switch_search_combine(self)
-	end
-
-	if func == "change_selected_course" then
-		courseplay:change_selected_course(self, value)
-	end
-
-
-	if func == "switch_combine" then
-		courseplay:switch_combine(self, value)
-	end
-
-	if func == "switchDriverCopy" then
-		courseplay:switchDriverCopy(self, value)
-	end
-
-	if func == "copyCourse" then
-		courseplay:copyCourse(self)
-	end
-
-	if func == "changeWpOffsetX" then
-		courseplay:changeCPWpOffsetX(self, value)
-	end
-
-	if func == "changeWpOffsetZ" then
-		courseplay:changeCPWpOffsetZ(self, value)
-	end
-
-	if func == "changeWorkWidth" then
-		courseplay:changeWorkWidth(self, value)
-	end
-
-	if func == "change_WaypointMode" then
-		courseplay:change_WaypointMode(self, value)
-	end
-
-	--Course generation
-	if func == "switchStartingCorner" then
-		courseplay:switchStartingCorner(self);
-	end;
-	if func == "switchStartingDirection" then
-		courseplay:switchStartingDirection(self);
-	end;
-	if func == "switchReturnToFirstPoint" then
-		courseplay:switchReturnToFirstPoint(self);
-	end;
-	if func == "setHeadlandLanes" then
-		courseplay:setHeadlandLanes(self, value);
-	end;
-	if func == "generateCourse" then
-		courseplay:generateCourse(self);
-	end;
-
-	if func == "setAiMode" then
-		courseplay:setAiMode(self, value);
-	end;
-
-	if func == "close_hud" then
-		self.mouse_enabled = false
-		self.show_hud = false
-		InputBinding.setShowMouseCursor(self.mouse_enabled)
-	end
-
-	if func == "saveShovelStatus" then
-		courseplay:saveShovelStatus(self, value);
-	end;
-
-	if func == "setShovelStopAndGo" then
-		courseplay:setShovelStopAndGo(self);
-	end;
-
-	if func == "row1" or func == "row2" or func == "row3" or func == "row4" or func == "row5" then
+	else
 		if self.showHudInfoBase == 0 then
 			local combine = self;
 			if self.cp.attachedCombineIdx ~= nil and self.tippers ~= nil and self.tippers[self.cp.attachedCombineIdx] ~= nil then
@@ -285,8 +106,8 @@ function courseplay:deal_with_mouse_input(self, func, value)
 					end;
 				end
 			end
-		end
-		if self.showHudInfoBase == 1 then
+
+		elseif self.showHudInfoBase == 1 then
 			if self.play then
 				if not self.drive then
 					if func == "row4" then
@@ -330,7 +151,7 @@ function courseplay:deal_with_mouse_input(self, func, value)
 						self.cp.ridgeMarkersAutomatic = not self.cp.ridgeMarkersAutomatic;
 					end;
 				end -- end driving
-			end -- playing
+			end -- END if self.play
 
 
 			if not self.drive then
@@ -375,9 +196,9 @@ function courseplay:deal_with_mouse_input(self, func, value)
 						end
 					end
 				end
-			end
-		end
-	end
+			end --END if not self.drive
+		end --END is page 0 or 1
+	end --END isRowFunction
 end
 
 
@@ -453,5 +274,6 @@ end
 
 -- renders input form
 function courseplay:user_input(self)
+	courseplay:setFontSettings("white", false);
 	renderText(0.4, 0.9, 0.02, self.user_input_message .. self.user_input);
 end

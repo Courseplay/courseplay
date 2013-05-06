@@ -1,3 +1,9 @@
+function courseplay:close_hud(self)
+	self.mouse_enabled = false;
+	self.show_hud = false;
+	InputBinding.setShowMouseCursor(self.mouse_enabled);
+end;
+
 function courseplay:change_ai_state(self, change_by)
 	self.ai_mode = self.ai_mode + change_by
 
@@ -22,6 +28,10 @@ function courseplay:start_stop_player(combine)
 	else
 		tractor.forced_to_stop = true;
 	end;
+end;
+
+function courseplay:drive_on(self)
+	self.wait = false;
 end;
 
 function courseplay:send_player_home(combine)
@@ -99,7 +109,7 @@ function courseplay:buttonsActiveEnabled(self, section)
 					button.isDisabled = false;
 				elseif courseplay.hud.pagesPerMode[self.ai_mode] ~= nil and courseplay.hud.pagesPerMode[self.ai_mode][pageNum+1] then
 					if pageNum == 0 then
-						button.isDisabled = not (self.cp.isCombine or self.cp.isChopper or self.cp.isHarvesterSteerable or self.cp.isSugarBeetLoader);
+						button.isDisabled = not (self.cp.minHudPage == 0 or self.cp.isCombine or self.cp.isChopper or self.cp.isHarvesterSteerable or self.cp.isSugarBeetLoader);
 					else
 						button.isDisabled = false;
 					end;
@@ -149,11 +159,11 @@ function courseplay:change_tipper_offset(self, change_by)
 end
 
 
-function courseplay:changeCPWpOffsetX(self, change_by)
+function courseplay:changeWpOffsetX(self, change_by)
 	self.WpOffsetX = self.WpOffsetX + change_by
 end
 
-function courseplay:changeCPWpOffsetZ(self, change_by)
+function courseplay:changeWpOffsetZ(self, change_by)
 	self.WpOffsetZ = self.WpOffsetZ + change_by
 end
 
@@ -275,7 +285,7 @@ function courseplay:switch_realistic_driving(self)
 end
 
 
-function courseplay:switch_use_speed(self)
+function courseplay:change_use_speed(self)
 	self.use_speed = not self.use_speed
 end
 
@@ -413,13 +423,12 @@ function courseplay:change_num_ai_helpers(self, change_by)
 	g_currentMission.maxNumHirables = num_helpers
 end
 
-function courseplay:change_DebugLevel(change_by)
-	CPDebugLevel = CPDebugLevel + change_by
-	if CPDebugLevel == 5 then
-		CPDebugLevel = 0
-	end
-end
-
+function courseplay:change_DebugLevel(self, change_by)
+	courseplay.debugLevel = courseplay.debugLevel + change_by;
+	if courseplay.debugLevel > 4 then
+		courseplay.debugLevel = 0;
+	end;
+end;
 
 --Course generation
 function courseplay:switchStartingCorner(self)

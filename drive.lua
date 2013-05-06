@@ -55,7 +55,7 @@ function courseplay:drive(self, dt)
 			cx = self.target_x
 			cy = self.target_y
 			cz = self.target_z
-			if CPDebugLevel > 0 then drawDebugLine(cx, cty7+3, cz, 1, 0, 0, ctx7, cty7+3, ctz7, 1, 0, 0); end
+			if courseplay.debugLevel > 0 then drawDebugLine(cx, cty7+3, cz, 1, 0, 0, ctx7, cty7+3, ctz7, 1, 0, 0); end
 			self.sl = 3
 			refSpeed = self.field_speed
 			distance_to_wp = courseplay:distance_to_point(self, cx, y, cz)
@@ -165,7 +165,7 @@ function courseplay:drive(self, dt)
 		cx, cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
 	end
 
-	if CPDebugLevel > 0 then  drawDebugPoint(cx, cty+3, cz, 1, 0 , 1, 1) end
+	if courseplay.debugLevel > 0 then  drawDebugPoint(cx, cty+3, cz, 1, 0 , 1, 1) end
 	-- offset - endlich lohnt sich der mathe-lk von vor 1000 Jahren ;)
 	if (self.ai_mode == 4 or self.ai_mode == 6 ) and self.startWork ~= nil and self.stopWork ~=nil and self.WpOffsetX ~= nil and self.WpOffsetZ ~= nil then
 		if self.recordnumber > self.startWork and self.recordnumber < self.stopWork and self.recordnumber > 1  and (self.WpOffsetX ~= 0 or self.WpOffsetZ ~= 0) then
@@ -200,7 +200,7 @@ function courseplay:drive(self, dt)
 		--courseplay:addsign(self, cx, 10, cz)
 	end
 
-	if CPDebugLevel > 0 then  drawDebugPoint(cx, cty+3, cz, 0, 1 , 1, 1) end
+	if courseplay.debugLevel > 0 then  drawDebugPoint(cx, cty+3, cz, 0, 1 , 1, 1) end
 
 	self.dist = courseplay:distance(cx, cz, ctx, ctz)
 	--courseplay:debug(string.format("Tx: %f2 Tz: %f2 WPcx: %f2 WPcz: %f2 dist: %f2 ", ctx, ctz, cx, cz, self.dist ), 2)
@@ -701,7 +701,7 @@ function courseplay:set_traffc_collision(self, lx, lz)
 	end;
 	--courseplay:debug(string.format("colDirX: %f colDirZ %f ",colDirX,colDirZ ), 2)
 
-	if CPDebugLevel > 0 then	
+	if courseplay.debugLevel > 0 then	
 		local x,y,z = getWorldTranslation(self.aiTrafficCollisionTrigger)
 		local x1,y1,z1 = localToWorld(self.aiTrafficCollisionTrigger, colDirX*5, 0, colDirZ*5 )
 		local x2,y2,z2 = localToWorld(self.aiTrafficCollisionTrigger, (colDirX*5)+ 1.5 , 0, colDirZ*5 )

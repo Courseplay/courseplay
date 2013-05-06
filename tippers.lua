@@ -266,7 +266,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 		end;
 	end;
 	
-	if CPDebugLevel > 0 then
+	if courseplay.debugLevel > 0 then
 		print(string.format("%s cpTrafficCollisionIgnoreList", tostring(self.name)));
 		for a,b in pairs(self.cpTrafficCollisionIgnoreList) do
 			local name = g_currentMission.nodeToVehicle[a].name
