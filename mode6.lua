@@ -368,10 +368,8 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 		else  --COMBINES
 		
 			--Start combine
-			if workArea and not tool.isAIThreshing and self.abortWork == nil then
-				if self.cp.turnStage == 0 then
-					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,true,true,true,allowedToDrive,nil,nil)
-				end
+			if workArea and not tool.isAIThreshing and self.abortWork == nil and self.cp.turnStage == 0 then
+				specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,true,true,true,allowedToDrive,nil,nil)
 				if not specialTool then
 					local pipeState = tool:getCombineTrailerInRangePipeState();
 					local weatherStop = not tool:getIsThreshingAllowed(true)
@@ -389,12 +387,6 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 						end
 						if pipeState == 0 and self.cp.turnStage == 0 then
 							tool.cp.waitingForTrailerToUnload = true
-						end
-						if tool.cp.waitingForTrailerToUnload then
-							allowedToDrive = false;
-							if (tool.pipeParticleSystems[9].isEmitting or pipeState > 0) then
-								self.cp.waitingForTrailerToUnload = false
-							end
 						end
 					else
 						if courseplay:isFoldable(workTool) and not tool.isThreshing then
@@ -419,13 +411,6 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 							tool:setPipeState(1)
 						end
 
-						if tool.cp.waitingForTrailerToUnload then
-							allowedToDrive = false;
-							if tool.isCheckedIn == nil or (pipeState ==0 and tool.grainTankFillLevel == 0) then
-								tool.cp.waitingForTrailerToUnload = false
-							end
-						end
-	
 						if weatherStop then
 							allowedToDrive = false;
 							tool:setIsThreshing(false, true);
@@ -448,6 +433,20 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 					tool:setPipeState(1)
 				end
 			end
+			
+			if tool.cp.waitingForTrailerToUnload then
+				allowedToDrive = false;
+				if tool.cp.isCombine then
+					if tool.isCheckedIn == nil or (pipeState ==0 and tool.grainTankFillLevel == 0) then
+						tool.cp.waitingForTrailerToUnload = false
+					end
+				elseif tool.cp.isChopper then
+					if (tool.pipeParticleSystems[9].isEmitting or pipeState > 0) then
+						self.cp.waitingForTrailerToUnload = false
+					end
+				end
+			end
+
 			local dx,_,dz = localDirectionToWorld(self.cp.DirectionNode, 0, 0, 1);
 			local length = Utils.vector2Length(dx,dz);
 			if self.cp.turnStage == 0 then
