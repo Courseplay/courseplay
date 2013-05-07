@@ -572,7 +572,7 @@ function courseplay:unload_tippers(self)
 							self.filling3 =	self.filling3 + filling
 						end
 					end;
-					courseplay:debug(string.format("bga section 1: %f, bga section 3: %f, bga section 3: %f", self.filling1, self.filling2, self.filling3),1);
+					courseplay:debug(string.format("%s: BGA section 1: %f, section 2: %f, section 3: %f", self.name, self.filling1, self.filling2, self.filling3), 1);
 					
 					if self.filling1 <= self.filling2 and self.filling1 < self.filling3 then
 						self.tipLocation = 1
@@ -618,6 +618,7 @@ function courseplay:unload_tippers(self)
 					if self.currentTipTrigger.getTipDistanceFromTrailer ~= nil then
 						distanceToTrigger = self.currentTipTrigger:getTipDistanceFromTrailer(tipper, tipper.currentTipReferencePointIndex); --courtesy of Satis
 					end;
+					courseplay:debug(self.name .. ": distanceToTrigger=" .. tostring(distanceToTrigger), 3);
 					if distanceToTrigger == 0 or self.currentTipTrigger.bunkerSilo ~= nil then
 						courseplay:debug(string.format("%s: distanceToTrigger=%s, isBunkerSilo=%s", tostring(self.name), tostring(distanceToTrigger), tostring(isBunkerSilo)), 1);
 						if self.toggledTipState < numReferencePoints then

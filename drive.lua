@@ -346,23 +346,27 @@ function courseplay:drive(self, dt)
 
 	else -- ende wartepunkt
 		-- abfahrer-mode
-		if (self.ai_mode == 1 and self.tipper_attached and self.cp.tipperFillLevel ~= nil and self.tipRefOffset ~= nil) or (self.loaded and self.ai_mode == 2 and self.tipRefOffset ~= nil) then
-			-- is there a tipTrigger within 10 meters?
-			raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
-			
-			if self.tipRefOffset ~= 0 then
-				if self.currentTipTrigger == nil then
-					local x1,y1,z1 = localToWorld(self.aiTrafficCollisionTrigger,self.tipRefOffset,0,0)
-					raycastAll(x1,y1,z1, 0, 0 , 1, "findTipTriggerCallback", 10, self)
+		if (self.ai_mode == 1 or (self.ai_mode == 2 and self.loaded)) and self.cp.tipperFillLevel ~= nil and self.tipRefOffset ~= nil and self.tipper_attached then
+			if self.currentTipTrigger == nil and self.cp.tipperFillLevel > 0 then
+				-- is there a tipTrigger within 10 meters?
+				raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
+
+				if self.tipRefOffset ~= 0 then
+					if self.currentTipTrigger == nil then
+						local x1,y1,z1 = localToWorld(self.aiTrafficCollisionTrigger,self.tipRefOffset,0,0)
+						raycastAll(x1,y1,z1, 0, 0 , 1, "findTipTriggerCallback", 10, self)
+					end
+					if self.currentTipTrigger == nil then
+						local x1,y1,z1 = localToWorld(self.aiTrafficCollisionTrigger,-self.tipRefOffset,0,0)
+						raycastAll(x1,y1,z1, 0, 0 , 1, "findTipTriggerCallback", 10, self)
+					end
 				end
-				if self.currentTipTrigger == nil then
-					local x1,y1,z1 = localToWorld(self.aiTrafficCollisionTrigger,-self.tipRefOffset,0,0)
-					raycastAll(x1,y1,z1, 0, 0 , 1, "findTipTriggerCallback", 10, self)
-				end
-			end
+			end;
+
 			-- handle mode
-			allowedToDrive  = courseplay:handle_mode1(self)
-		end
+			allowedToDrive = courseplay:handle_mode1(self);
+		end;
+
 		-- combi-mode
 		if (((self.ai_mode == 2 or self.ai_mode == 3) and self.recordnumber < 2) or self.active_combine) and self.tipper_attached then
 			return courseplay:handle_mode2(self, dt)
