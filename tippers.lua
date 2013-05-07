@@ -612,7 +612,7 @@ function courseplay:unload_tippers(self)
 				end;
 			end
 			if self.currentTipTrigger.acceptedFillTypes[fruitType] and self.gofortipping == true then  
-				courseplay:debug(self.name .. ": trigger accepts fruit (" .. tostring(fruitType) .. "), gofortipping == true", 1);
+				courseplay:debug(self.name .. ": trigger accepts fruit (" .. tostring(fruitType) .. "), gofortipping == true", 2);
 				if tipper.tipState == Trailer.TIPSTATE_CLOSED then
 					local distanceToTrigger = math.huge;
 					if self.currentTipTrigger.getTipDistanceFromTrailer ~= nil then
@@ -636,9 +636,9 @@ function courseplay:unload_tippers(self)
 					allowedToDrive = true
 				end
             elseif not self.currentTipTrigger.acceptedFillTypes[fruitType] then
-                courseplay:debug(self.name .. ": trigger does not accept fruit (" .. tostring(fruitType) .. ")", 1);
+                courseplay:debug(self.name .. ": trigger does not accept fruit (" .. tostring(fruitType) .. ")", 2);
             elseif not self.gofortipping then
-                courseplay:debug(self.name .. ": self.gofortipping = false (BGA / fillLevel > capacity)", 1);
+                courseplay:debug(self.name .. ": self.gofortipping = false (BGA / fillLevel > capacity)", 2);
 			end;
 		end
 	end
