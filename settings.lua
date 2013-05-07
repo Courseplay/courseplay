@@ -23,11 +23,7 @@ end;
 
 function courseplay:start_stop_player(combine)
 	local tractor = combine.courseplayers[1];
-	if combine.forced_to_stop then
-		tractor.forced_to_stop = false;
-	else
-		tractor.forced_to_stop = true;
-	end;
+	tractor.forced_to_stop = not tractor.forced_to_stop;
 end;
 
 function courseplay:drive_on(self)
