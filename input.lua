@@ -264,11 +264,6 @@ function courseplay:handle_user_input(self)
 		self.user_input_message = nil
 		self.steeringEnabled = true --test
 		courseplay:save_courses(self)
-		
-		if table.getn(g_currentMission.courseplay_courses) > courseplay.hud.numLines then
-			self.cp.courseListPrev = self.selected_course_number > 0;
-			self.cp.courseListNext = self.selected_course_number < (table.getn(g_currentMission.courseplay_courses) - courseplay.hud.numLines);
-		end;
 	end
 end
 

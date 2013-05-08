@@ -184,7 +184,7 @@ end
 function courseplay:save_courses(self)
 	local path = getUserProfileAppPath() .. "savegame" .. g_careerScreen.selectedIndex .. "/"
 	local File = io.open(path .. "courseplay.xml", "w")
-	local tab = "   "
+	local tab = "\t"
 
 	cpFile = createXMLFile("courseplay", path .. "courseplay2.xml", "xml");
 
@@ -270,6 +270,8 @@ function courseplay:save_courses(self)
 		File:write("\n</XML>\n")
 		File:close()
 	end
+	
+	courseplay:validateCourseListArrows(table.getn(g_currentMission.courseplay_courses));
 end
 
 
@@ -411,7 +413,17 @@ function courseplay:load_courses()
 	end
 
 	courseplay_coursesUnsort = nil
+	courseplay:validateCourseListArrows(table.getn(g_currentMission.courseplay_courses));
 	return g_currentMission.courseplay_courses
 end
 
 
+--Update all vehicles' course list arrow displays
+function courseplay:validateCourseListArrows(numCourses)
+	for _,vehicle in pairs(g_currentMission.steerables) do
+		if vehicle.cp.courseListPrev ~= nil and vehicle.cp.courseListNext ~= nil and vehicle.selected_course_number ~= nil then
+			vehicle.cp.courseListPrev = vehicle.selected_course_number > 0;
+			vehicle.cp.courseListNext = vehicle.selected_course_number < (numCourses - courseplay.hud.numLines);
+		end;
+	end;
+end;
