@@ -616,18 +616,13 @@ function courseplay:unload_tippers(self)
 				if tipper.tipState == Trailer.TIPSTATE_CLOSED then
 					local distanceToTrigger = math.huge;
 					if self.currentTipTrigger.getTipDistanceFromTrailer ~= nil then
-						distanceToTrigger = self.currentTipTrigger:getTipDistanceFromTrailer(tipper, tipper.currentTipReferencePointIndex); --courtesy of Satis
+						distanceToTrigger,self.toggledTipState  = self.currentTipTrigger:getTipDistanceFromTrailer(tipper); --courtesy of Satis
 					end;
 					courseplay:debug(self.name .. ": distanceToTrigger=" .. tostring(distanceToTrigger), 3);
 					if distanceToTrigger == 0 or self.currentTipTrigger.bunkerSilo ~= nil then
 						courseplay:debug(string.format("%s: distanceToTrigger=%s, isBunkerSilo=%s", tostring(self.name), tostring(distanceToTrigger), tostring(isBunkerSilo)), 1);
-						if self.toggledTipState < numReferencePoints then
-							self.toggledTipState = self.toggledTipState +1
-							tipper:toggleTipState(self.currentTipTrigger,self.toggledTipState);
-							self.unloading_tipper = tipper
-						else
-							self.toggledTipState = 0
-						end
+						tipper:toggleTipState(self.currentTipTrigger,self.toggledTipState);
+						self.unloading_tipper = tipper
 					end
 				elseif tipper.tipState ~= Trailer.TIPSTATE_CLOSING then 
 					allowedToDrive = false

@@ -354,11 +354,11 @@ function courseplay:drive(self, dt)
 				if self.tipRefOffset ~= 0 then
 					if self.currentTipTrigger == nil then
 						local x1,y1,z1 = localToWorld(self.aiTrafficCollisionTrigger,self.tipRefOffset,0,0)
-						raycastAll(x1,y1,z1, 0, 0 , 1, "findTipTriggerCallback", 10, self)
+						raycastAll(x1,y1,z1, nx, ny, nz, "findTipTriggerCallback", 10, self)
 					end
 					if self.currentTipTrigger == nil then
 						local x1,y1,z1 = localToWorld(self.aiTrafficCollisionTrigger,-self.tipRefOffset,0,0)
-						raycastAll(x1,y1,z1, 0, 0 , 1, "findTipTriggerCallback", 10, self)
+						raycastAll(x1,y1,z1, nx, ny, nz, "findTipTriggerCallback", 10, self)
 					end
 				end
 			end;
