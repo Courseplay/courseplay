@@ -368,10 +368,10 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 		else  --COMBINES
 		
 			--Start combine
+			local pipeState = tool:getCombineTrailerInRangePipeState();
 			if workArea and not tool.isAIThreshing and self.abortWork == nil and self.cp.turnStage == 0 then
 				specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,true,true,true,allowedToDrive,nil,nil)
 				if not specialTool then
-					local pipeState = tool:getCombineTrailerInRangePipeState();
 					local weatherStop = not tool:getIsThreshingAllowed(true)
 					if tool.grainTankCapacity == 0 then
 						if courseplay:isFoldable(workTool) and not tool.isThreshing then
@@ -437,7 +437,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 			if tool.cp.waitingForTrailerToUnload then
 				allowedToDrive = false;
 				if tool.cp.isCombine then
-					if tool.isCheckedIn == nil or (pipeState ==0 and tool.grainTankFillLevel == 0) then
+					if tool.isCheckedIn == nil or (pipeState == 0 and tool.grainTankFillLevel == 0) then
 						tool.cp.waitingForTrailerToUnload = false
 					end
 				elseif tool.cp.isChopper then
