@@ -2,73 +2,73 @@
 -- Courseplay v3.40 RC
 -- Specialization for Courseplay
 --
--- @author  Lautschreier / Hummel / Wolverin0815 / Bastian82 / skydancer / Jakob Tischler / Thomas Gärtner
+-- @author  Lautschreier / Hummel / Wolverin0815 / Bastian82 / skydancer / Jakob Tischler / Thomas GÃ¤rtner
 -- @version:	v3.40 RC (09 May 2013)
 
-courseplay = {};
-courseplay.version = "3.40 RC";
---courseplay_path = g_modsDirectory .. "/ZZZ_courseplay/" --TODO: g_currentModDirectory
-courseplay_path = g_currentModDirectory;
-courseplay.debugLevel = 0;
+courseplay = {
+	path = g_currentModDirectory;
+	debugLevel = 0;
+	version = "3.40 RC";
+};
 
 -- working tractors saved in this
 working_course_players = {};
 
 function initialize_courseplay()
-	source(courseplay_path .. "helpers.lua")
-	source(courseplay_path .. "turn.lua")
-	source(courseplay_path .. "specialTools.lua")
+	source(courseplay.path .. "helpers.lua")
+	source(courseplay.path .. "turn.lua")
+	source(courseplay.path .. "specialTools.lua")
 
 	-- starting & stopping of courseplay
-	source(courseplay_path .. "start_stop.lua")
+	source(courseplay.path .. "start_stop.lua")
 
 	-- course recording & resetting
-	source(courseplay_path .. "recording.lua")
-	source(courseplay_path .. "generateCourse.lua")
+	source(courseplay.path .. "recording.lua")
+	source(courseplay.path .. "generateCourse.lua")
 
 	-- drive Modes
-	source(courseplay_path .. "mode1.lua")
-	source(courseplay_path .. "mode2.lua")
-	source(courseplay_path .. "mode4.lua")
-	source(courseplay_path .. "mode6.lua")
-	source(courseplay_path .. "mode9.lua")
+	source(courseplay.path .. "mode1.lua")
+	source(courseplay.path .. "mode2.lua")
+	source(courseplay.path .. "mode4.lua")
+	source(courseplay.path .. "mode6.lua")
+	source(courseplay.path .. "mode9.lua")
 
 	-- course driving
-	source(courseplay_path .. "drive.lua")
+	source(courseplay.path .. "drive.lua")
 
 	-- Mouse/Key Managment
-	source(courseplay_path .. "input.lua")
+	source(courseplay.path .. "input.lua")
 
 	-- Infotext
-	source(courseplay_path .. "global.lua")
+	source(courseplay.path .. "global.lua")
 
 	-- Distance Check
-	source(courseplay_path .. "distance.lua")
+	source(courseplay.path .. "distance.lua")
 
 	-- Visual Waypoints
-	source(courseplay_path .. "signs.lua")
+	source(courseplay.path .. "signs.lua")
 
 	-- Loading/Saving Courses
-	source(courseplay_path .. "course_management.lua")
+	source(courseplay.path .. "course_management.lua")
 
 	-- loading/unloading tippers
-	source(courseplay_path .. "tippers.lua")
+	source(courseplay.path .. "tippers.lua")
 
 	-- triggers
-	source(courseplay_path .. "triggers.lua")
+	source(courseplay.path .. "triggers.lua")
 
 	-- triggers
-	source(courseplay_path .. "combines.lua")
+	source(courseplay.path .. "combines.lua")
 
-	source(courseplay_path .. "debug.lua")
+	source(courseplay.path .. "debug.lua")
 
-	source(courseplay_path .. "button.lua")
-	source(courseplay_path .. "hud.lua")
-	source(courseplay_path .. "settings.lua")
-	source(courseplay_path .. "courseplay_event.lua")
-	source(courseplay_path .. "astar.lua")
-	source(courseplay_path .. "fruit.lua")
-	print("### Initialized 27 Courseplay files")
+	source(courseplay.path .. "button.lua")
+	source(courseplay.path .. "hud.lua")
+	source(courseplay.path .. "settings.lua")
+	source(courseplay.path .. "courseplay_event.lua")
+	source(courseplay.path .. "astar.lua")
+	source(courseplay.path .. "fruit.lua")
+	print("### Initialized 27 Courseplay files (v" .. tostring(courseplay.version) .. ")");
 end;
 
 initialize_courseplay();

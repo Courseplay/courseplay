@@ -46,10 +46,10 @@ end
 -- get all l10n > text > #name attribues from modDesc.xml, insert them into courseplay.locales
 function cp_setLocales()
 	courseplay.locales = {};
-	if not Utils.endsWith(courseplay_path, "/") then
-		courseplay_path = courseplay_path .. "/";
+	if not Utils.endsWith(courseplay.path, "/") then
+		courseplay.path = courseplay.path .. "/";
 	end;
-	local cp_modDesc_file = loadXMLFile("cp_modDesc", courseplay_path .. "modDesc.xml");
+	local cp_modDesc_file = loadXMLFile("cp_modDesc", courseplay.path .. "modDesc.xml");
 	local b=0;
 	while true do
 		local attr = string.format("modDesc.l10n.text(%d)#name", b);
@@ -132,7 +132,7 @@ function cp_setupHud()
 		backgroundX = 0.035 - 0.005;
 	};
 
-	loadSample(courseplay.hud.clickSound, Utils.getFilename("sounds/cpClickSound.wav", courseplay_path), false);
+	loadSample(courseplay.hud.clickSound, Utils.getFilename("sounds/cpClickSound.wav", courseplay.path), false);
 end;
 
 cp_setupHud();
