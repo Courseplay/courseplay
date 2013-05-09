@@ -972,7 +972,7 @@ function courseplay:regulateTrafficSpeed(self,refSpeed,allowedToDrive)
 		if vehicle_in_front.rootNode == nil or vehicle_in_front.lastSpeedReal == nil or (vehicle_in_front.rootNode ~= nil and courseplay:distance_to_object(self, vehicle_in_front) > 40) or vehicleBehind then
 			self.traffic_vehicle_in_front = nil
 		else
-			if allowedToDrive then
+			if allowedToDrive and not (self.ai_mode == 9 and vehicle_in_front.allowFillFromAir) then
 				if (self.lastSpeed*3600) - (vehicle_in_front.lastSpeedReal*3600) > 15 or z1 < 3 then
 					self.cpTrafficBrake = true
 				else

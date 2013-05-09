@@ -24,6 +24,7 @@ function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToD
 	--state 4: get ready to unload
 	--state 5: unload
 	--state 6: leave BGA
+	--state 7: wait for Trailer 10 before EmptyPoint
 	
 	--local isValid = self.cp.shovelState2Rot ~= nil and self.cp.shovelState3Rot ~= nil and self.cp.shovelState4Rot ~= nil and self.cp.shovelState5Rot ~= nil
 	local isValid = self.cp.shovelStateRot ~= nil and self.cp.shovelStateRot["2"] ~= nil and self.cp.shovelStateRot["3"] ~= nil and self.cp.shovelStateRot["4"] ~= nil and self.cp.shovelStateRot["5"] ~= nil;
@@ -104,7 +105,7 @@ function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToD
 		end
 
 	elseif self.cp.shovelState == 3 then
-		if last_recordnumber + 3 > self.cp.shovelEmptyPoint then
+		if last_recordnumber + 4 > self.cp.shovelEmptyPoint then
 			local hasTargetRotation = courseplay:hasTargetRotation(self, mt, secondary, self.cp.shovelStateRot["4"]);
 			if hasTargetRotation ~= nil and not hasTargetRotation then
 				courseplay:setMovingToolsRotation(self, dt, mt, secondary, self.cp.shovelStateRot["4"]);
@@ -112,29 +113,52 @@ function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToD
 			if hasTargetRotation then
 				self.cp.shovel.trailerFound = nil
 				self.cp.shovel.objectFound = nil
-				self.cp.shovelState = 4
-				--print("set state 4")
+				self.cp.shovelState = 7
+				--print("set state 7")
 			end
 		end
-
+	elseif self.cp.shovelState == 7 then
+		local p = self.cp.shovelEmptyPoint
+		local _,ry,_ = getWorldTranslation(self.rootNode)
+		local nx, nz = AIVehicleUtil.getDriveDirection(self.rootNode, self.Waypoints[p].cx, ry, self.Waypoints[p].cz);
+		local lx,ly,lz = localDirectionToWorld(self.cp.DirectionNode, nx, 0, nz)
+		for i=6,12 do
+			local x,y,z = localToWorld(self.rootNode,0,4,i);
+			raycastAll(x, y, z, lx, -1, lz, "findTrailerRaycastCallback", 10, self.cp.shovel);
+			if courseplay.debugLevel > 0 then  drawDebugLine(x, y, z, 1, 0, 0, x+lx*10, y-10, z+lz*10, 1, 0, 0) end
+		end
+		local distance = courseplay:distance_to_point(self, self.Waypoints[p].cx, ry, self.Waypoints[p].cz)
+		if self.cp.shovel.trailerFound == nil and self.cp.shovel.objectFound == nil and distance < 10 then 
+			allowedToDrive = false
+		elseif distance < 10 then
+			self.cp.shovel.trailerFound = nil
+			self.cp.shovel.objectFound = nil
+			self.cp.shovelState = 4
+			--print("set state 4")
+		end
 	elseif self.cp.shovelState == 4 then
 		local x,y,z = localToWorld(self.cp.shovel.shovelTipReferenceNode,0,0,-1);
 		local emptySpeed = self.cp.shovel:getShovelEmptyingSpeed()
 		if emptySpeed == 0 then
-			raycastAll(x, y, z, 0, -1.5, 0, "findTrailerRaycastCallback", 10, self.cp.shovel);
+			raycastAll(x, y, z, 0, -1, 0, "findTrailerRaycastCallback", 10, self.cp.shovel);
 		end
 	
 		if self.cp.shovel.trailerFound ~= nil or self.cp.shovel.objectFound ~= nil or emptySpeed > 0 then
 			--print("trailer/object found")
-			local hasTargetRotation = courseplay:hasTargetRotation(self, mt, secondary, self.cp.shovelStateRot["5"]);
-			if hasTargetRotation ~= nil and not hasTargetRotation then
-				courseplay:setMovingToolsRotation(self, dt, mt, secondary, self.cp.shovelStateRot["5"]);
-			end
-			
-			if hasTargetRotation then
-				self.cp.shovelState = 5
-				--print("set state 5") 
-			else
+			local unloadAllowed = self.cp.shovel.trailerFoundSupported or self.cp.shovel.objectFoundSupported
+			if unloadAllowed then
+				local hasTargetRotation = courseplay:hasTargetRotation(self, mt, secondary, self.cp.shovelStateRot["5"]);
+				if hasTargetRotation ~= nil and not hasTargetRotation then
+					courseplay:setMovingToolsRotation(self, dt, mt, secondary, self.cp.shovelStateRot["5"]);
+				end
+				
+				if hasTargetRotation then
+					self.cp.shovelState = 5
+					--print("set state 5") 
+				else
+					allowedToDrive = false
+				end
+			else	
 				allowedToDrive = false
 			end
 		end
@@ -142,7 +166,8 @@ function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToD
 	elseif self.cp.shovelState == 5 then
 		--courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
 		courseplay:handleSpecialTools(self,self,true,nil,nil,nil,nil,nil)
-		if fill_level == 0 then
+		local stopUnloading = self.cp.shovel.trailerFound ~= nil and self.cp.shovel.trailerFound.fillLevel >= self.cp.shovel.trailerFound.capacity 
+		if fill_level == 0 or stopUnloading then
 			if self.loaded then
 				for i = self.recordnumber,self.maxnumber do
 					if self.Waypoints[i].rev then
