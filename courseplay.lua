@@ -8,8 +8,13 @@
 courseplay = {
 	path = g_currentModDirectory;
 	debugLevel = 0;
-	version = "3.40 RC";
+	--version = "";
 };
+if courseplay.path ~= nil then
+	if not Utils.endsWith(courseplay.path, "/") then
+		courseplay.path = courseplay.path .. "/";
+	end;
+end;
 
 -- working tractors saved in this
 working_course_players = {};
@@ -68,7 +73,6 @@ function initialize_courseplay()
 	source(courseplay.path .. "courseplay_event.lua")
 	source(courseplay.path .. "astar.lua")
 	source(courseplay.path .. "fruit.lua")
-	print("### Initialized 27 Courseplay files (v" .. tostring(courseplay.version) .. ")");
 end;
 
 initialize_courseplay();

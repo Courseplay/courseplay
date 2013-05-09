@@ -41,14 +41,18 @@ function register_courseplay()
 	end;
 end
 
+function cp_getSetVersion()
+	local cp_modDesc_file = loadXMLFile("cp_modDesc", courseplay.path .. "modDesc.xml");
+	local modDescVersion = getXMLString(cp_modDesc_file, "modDesc.version");
+	if modDescVersion ~= nil then
+		courseplay.version = modDescVersion;
+	end;
+end;
 
 -- dirty workaround for localization - don't try this at home!
 -- get all l10n > text > #name attribues from modDesc.xml, insert them into courseplay.locales
 function cp_setLocales()
 	courseplay.locales = {};
-	if not Utils.endsWith(courseplay.path, "/") then
-		courseplay.path = courseplay.path .. "/";
-	end;
 	local cp_modDesc_file = loadXMLFile("cp_modDesc", courseplay.path .. "modDesc.xml");
 	local b=0;
 	while true do
@@ -135,7 +139,9 @@ function cp_setupHud()
 	loadSample(courseplay.hud.clickSound, Utils.getFilename("sounds/cpClickSound.wav", courseplay.path), false);
 end;
 
+cp_getSetVersion();
 cp_setupHud();
 cp_setLocales();
 register_courseplay();
 
+print("### Initialized 27 Courseplay files (v" .. tostring(courseplay.version) .. ")");
