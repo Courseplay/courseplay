@@ -1,22 +1,18 @@
 function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
-	if isDown and button == 3 and self.isEntered and self.mouse_right_key_enabled then
-		if self.mouse_enabled then
-			self.mouse_enabled = false
-		else
-			self.mouse_enabled = true
-			if not self.show_hud then
-				--self.showHudInfoBase = self.cp.minHudPage
-				courseplay:buttonsActiveEnabled(self, "all");
-				self.show_hud = true;
-			end
+	if isDown and button == 3 and self.isEntered then
+		if self.show_hud then
+			self.mouse_enabled = not self.mouse_enabled;
+			InputBinding.setShowMouseCursor(self.mouse_enabled);
+		elseif not self.show_hud and self.mouse_right_key_enabled then
+			courseplay:openCloseHud(self, true)
+			courseplay:buttonsActiveEnabled(self, "all");
 		end
-		InputBinding.setShowMouseCursor(self.mouse_enabled)
-	end
+	end;
 	
 	local hudGfx = courseplay.hud.visibleArea;
 	local mouseIsInHudArea = self.mouse_enabled and posX > hudGfx.x1 and posX < hudGfx.x2 and posY > hudGfx.y1 and posY < hudGfx.y2;
 	
-	if isDown and button == 1 and self.show_hud and self.isEntered and mouseIsInHudArea then
+	if self.mouse_enabled and isDown and button == 1 and self.show_hud and self.isEntered and mouseIsInHudArea then
 		for _, button in pairs(self.cp.buttons) do
 			button.isClicked = false;
 
@@ -38,7 +34,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 		end
 		
 	--hover
-	elseif not isDown and self.show_hud and self.isEntered then
+	elseif self.mouse_enabled and not isDown and self.show_hud and self.isEntered then
 		--if mouseIsInHudArea then
 			for _, button in pairs(self.cp.buttons) do
 				if (button.page == self.showHudInfoBase or button.page == nil or button.page == self.showHudInfoBase * -1) and courseplay:nilOrBool(button.show, true) then

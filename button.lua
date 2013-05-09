@@ -97,13 +97,13 @@ function courseplay:render_buttons(self, page)
 					targetColor = colors.white;
 				elseif button.isDisabled and not courseplay:colorsMatch(currentColor, colors.whiteDisabled) then
 					targetColor = colors.whiteDisabled;
-				elseif not button.isDisabled and button.canBeClicked and button.isClicked and not button.function_to_call == "close_hud" then
+				elseif not button.isDisabled and button.canBeClicked and button.isClicked and not button.function_to_call == "openCloseHud" then
 					targetColor = colors.activeRed;
 				elseif button.isActive and not courseplay:colorsMatch(currentColor, colors.activeGreen) then
 					targetColor = colors.activeGreen;
 				elseif not button.isDisabled and not button.isActive and button.isHovered and button.canBeClicked and not button.isClicked then
 					local hoverColor = colors.hover;
-					if button.function_to_call == "close_hud" then
+					if button.function_to_call == "openCloseHud" then
 						hoverColor = colors.closeRed;
 					end;
 					
@@ -134,7 +134,11 @@ function courseplay:getButtonColor(button)
 	if button == nil or button.overlay == nil or button.overlay.r == nil or button.overlay.g == nil or button.overlay.b == nil or button.overlay.a == nil then
 		return nil;
 	end;
-	return { button.overlay.r, button.overlay.g, button.overlay.b, button.overlay.a };
+	local r,g,b,a = button.overlay.r, button.overlay.g, button.overlay.b, button.overlay.a;
+	if r == nil or g == nil or b == nil or a == nil then
+		return nil;
+	end;
+	return { r,g,b,a };
 end;
 
 function courseplay:colorsMatch(color1, color2)

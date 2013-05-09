@@ -1,7 +1,61 @@
-function courseplay:close_hud(self)
-	self.mouse_enabled = false;
-	self.show_hud = false;
+function courseplay:openCloseHud(self, open)
+	self.mouse_enabled = open;
+	self.show_hud = open;
 	InputBinding.setShowMouseCursor(self.mouse_enabled);
+
+	--set ESLimiter
+	if self.cp.ESLimiterOrigPosY == nil and open and self.ESLimiter ~= nil then
+		if self.ESLimiter.xPos ~= nil and self.ESLimiter.yPos ~= nil then
+			if self.ESLimiter.xPos > courseplay.hud.visibleArea.x1 and self.ESLimiter.xPos < courseplay.hud.visibleArea.x2 and self.ESLimiter.yPos > courseplay.hud.visibleArea.y1 and self.ESLimiter.yPos < courseplay.hud.visibleArea.y2 then
+				self.cp.ESLimiterOrigPosY = { 
+					self.ESLimiter.yPos,
+					self.ESLimiter.overlay.y,
+					self.ESLimiter.overlayBg.y,
+					self.ESLimiter.overlayBar.y
+				}
+			end;
+		end;
+	end;
+
+	--hide/show ESLimiter
+	if self.cp.ESLimiterOrigPosY ~= nil then
+		if open then
+			self.ESLimiter.yPos = -1;
+			self.ESLimiter.overlay:setPosition(self.ESLimiter.overlay.x, -1);
+			self.ESLimiter.overlayBg:setPosition(self.ESLimiter.overlayBg.x, -1);
+			self.ESLimiter.overlayBar:setPosition(self.ESLimiter.overlayBar.x, -1);
+		else
+			self.ESLimiter.yPos = self.cp.ESLimiterOrigPosY[1];
+			self.ESLimiter.overlay:setPosition(self.ESLimiter.overlay.x, self.cp.ESLimiterOrigPosY[2]);
+			self.ESLimiter.overlayBg:setPosition(self.ESLimiter.overlayBg.x, self.cp.ESLimiterOrigPosY[3]);
+			self.ESLimiter.overlayBar:setPosition(self.ESLimiter.overlayBar.x, self.cp.ESLimiterOrigPosY[4]);
+		end;
+	end;
+
+
+	--set ThreshingCounter
+	if self.cp.ThreshingCounterOrigPosY == nil and open and self.sessionHectars ~= nil and self.totalHectars ~= nil and self.tcOverlay ~= nil then
+		if self.tcX ~= nil and self.tcY ~= nil then
+			if self.tcX > courseplay.hud.visibleArea.x1 and self.tcX < courseplay.hud.visibleArea.x2 and self.tcY > courseplay.hud.visibleArea.y1 and self.tcY < courseplay.hud.visibleArea.y2 then
+				self.cp.ThreshingCounterOrigPosY = { 
+					self.tcY,
+					self.tcOverlay.y,
+				};
+			end;
+		end;
+	end;
+
+	--hide/show ThreshingCounter
+	if self.cp.ThreshingCounterOrigPosY ~= nil then
+		if open then
+			self.tcY = -1;
+			self.tcOverlay:setPosition(self.tcOverlay.x, -1);
+		else
+			self.tcY = self.cp.ThreshingCounterOrigPosY[1];
+			self.tcOverlay:setPosition(self.tcOverlay.x, self.cp.ThreshingCounterOrigPosY[2]);
+		end;
+	end;
+	
 end;
 
 function courseplay:change_ai_state(self, change_by)

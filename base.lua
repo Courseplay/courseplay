@@ -371,7 +371,9 @@ function courseplay:load(xmlFile)
 	};
 	
 	self.mouse_enabled = false
-
+	
+	self.cp.ESLimiterOrigPosY = nil; --[table]
+	self.cp.ThreshingCounterOrigPosY = nil; --[table]
 	-- HUD  	-- Function in Signs
 	self.hudInfoBaseWidth = 0.512; --try: 512/1920
 	self.hudInfoBaseHeight = 0.512; --try: 512/1080
@@ -433,11 +435,10 @@ function courseplay:load(xmlFile)
 		courseplay:register_button(self, nil, string.format("pageNav_%d.dds", p), "setHudPage", p, posX, pageNav.posY, pageNav.buttonW, pageNav.buttonH);
 	end;
 
-
 	courseplay:register_button(self, nil, "navigate_left.dds", "switch_hud_page", -1, courseplay.hud.infoBasePosX + 0.035, courseplay.hud.infoBasePosY + 0.2395, w24px, h24px); --ORIG: +0.242
 	courseplay:register_button(self, nil, "navigate_right.dds", "switch_hud_page", 1, courseplay.hud.infoBasePosX + 0.280, courseplay.hud.infoBasePosY + 0.2395, w24px, h24px);
 
-	courseplay:register_button(self, nil, "close.dds", "close_hud", 1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.infoBasePosY + 0.255, w24px, h24px);
+	courseplay:register_button(self, nil, "close.dds", "openCloseHud", false, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.infoBasePosY + 0.255, w24px, h24px);
 
 	courseplay:register_button(self, nil, "disk.dds", "input_course_name", 1, courseplay.hud.infoBasePosX + 0.280, courseplay.hud.infoBasePosY + 0.056, w24px, h24px);
 
@@ -639,24 +640,12 @@ function courseplay:update(dt)
 		
 		-- inspired by knagsted's 8400 MouseOverride
 		if InputBinding.hasEvent(InputBinding.CP_Hud) and InputBinding.isPressed(InputBinding.CP_Modifier_1) and self.isEntered and not self.mouse_right_key_enabled then
-			if self.mouse_enabled then
-				self.mouse_enabled = false
-				if self.show_hud then
-					self.show_hud = false
-				end
-			else
-				self.mouse_enabled = true
-				if not self.show_hud then
-					--self.showHudInfoBase = self.cp.minHudPage
-					self.show_hud = true
-				end
-			end
-			InputBinding.setShowMouseCursor(self.mouse_enabled)
-		end
+			courseplay:openCloseHud(self, not self.show_hud);
+		end;
 
 		if InputBinding.hasEvent(InputBinding.CP_Hud) and InputBinding.isPressed(InputBinding.CP_Modifier_2) and self.isEntered then
-			initialize_courseplay()
-		end
+			initialize_courseplay();
+		end;
 	end
 
 	if self.isEntered then
