@@ -110,22 +110,27 @@ function courseplay:deal_with_mouse_input(self, func, value)
 		elseif self.showHudInfoBase == 1 then
 			if self.play then
 				if not self.drive then
-					if func == "row4" then
-						courseplay:reset_course(self)
-					end
-
 					if func == "row1" then
 						courseplay:start(self)
 					end
 
-				else -- driving
-					local last_recordnumber = nil
+					if func == "row3" and self.ai_mode ~= 9 then
+						courseplay:setStartAtFirstPoint(self)
+					end
 
+					if func == "row4" then
+						courseplay:reset_course(self)
+					end
+
+				else -- driving
+					local last_recordnumber = Utils.clamp(self.recordnumber-1, 1, self.recordnumber);
+					--[[
+					local last_recordnumber = nil;
 					if self.recordnumber > 1 then
 						last_recordnumber = self.recordnumber - 1
 					else
 						last_recordnumber = 1
-					end
+					end]]
 
 					if last_recordnumber ~= nil and self.Waypoints[last_recordnumber].wait and self.wait and func == "row2" then
 						self.wait = false

@@ -110,16 +110,12 @@ function courseplay:load(xmlFile)
 	-- clickable buttons
 	self.cp.buttons = {}
 
-	-- waypoints are stored in here
 	self.Waypoints = {}
 
-	-- TODO still needed?
-	self.play = false
-	-- total number of course players
-	self.working_course_player_num = nil
+	self.play = false --can drive course (has >4 waypoints, is not recording)
+	self.working_course_player_num = nil; -- total number of course players
 
-	-- info text on tractor
-	self.cp.infoText = nil
+	self.cp.infoText = nil -- info text on tractor
 
 	-- global info text - also displayed when not in vehicle
 	self.cp.globalInfoText = nil;
@@ -141,6 +137,7 @@ function courseplay:load(xmlFile)
 	self.waitTimer = nil
 	self.realistic_driving = true;
 	self.cp.canSwitchMode = false;
+	self.cp.startAtFirstPoint = false;
 	
 	self.cp.stopForLoading = false;
 
@@ -779,6 +776,7 @@ function courseplay:readStream(streamId, connection)
 	self.cp.shovelState = streamDebugReadInt32(streamId);
 	self.cp.shovelStopAndGo = streamDebugReadBool(streamId);
 	self.cp.shovelLastFillLevel = streamDebugReadFloat32(streamId);
+	self.cp.startAtFirstPoint = streamDebugReadBool(streamId);
 	self.cp.startingCorner = streamDebugReadInt32(streamId);
 	self.cp.startingDirection = streamDebugReadInt32(streamId);
 	self.cp.stopForLoading = streamDebugReadBool(streamId);
@@ -926,6 +924,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteInt32(streamId, self.cp.shovelState);
 	streamDebugWriteBool(streamId, self.cp.shovelStopAndGo);
 	streamDebugWriteFloat32(streamId, self.cp.shovelLastFillLevel);
+	streamDebugWriteBool(streamId, self.cp.startAtFirstPoint);
 	streamDebugWriteInt32(streamId, self.cp.startingCorner);
 	streamDebugWriteInt32(streamId, self.cp.startingDirection);
 	streamDebugWriteBool(streamId, self.cp.stopForLoading);

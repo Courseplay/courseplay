@@ -84,9 +84,18 @@ function courseplay:loadHud(self)
 		elseif self.showHudInfoBase == 1 then
 			if self.play then
 				if not self.drive then
-					self.hudpage[1][1][4] = courseplay:get_locale(self, "CourseReset")
-
 					self.hudpage[1][1][1] = courseplay:get_locale(self, "CoursePlayStart")
+
+					if self.ai_mode ~= 9 then
+						self.hudpage[1][1][3] = courseplay:get_locale(self, "cpStartAtFirstPoint");
+						if self.cp.startAtFirstPoint then
+							self.hudpage[1][2][3] = courseplay:get_locale(self, "cpFirstPoint");
+						else
+							self.hudpage[1][2][3] = courseplay:get_locale(self, "cpNearestPoint");
+						end;
+					end;
+
+					self.hudpage[1][1][4] = courseplay:get_locale(self, "CourseReset")
 				else
 					local last_recordnumber = nil
 
@@ -323,15 +332,15 @@ function courseplay:loadHud(self)
 		--Page 6: General settings
 		elseif self.showHudInfoBase == 6 then
 
-			self.hudpage[6][1][1] = courseplay:get_locale(self, "CPaStar") -- Z-Offset:
+			self.hudpage[6][1][1] = courseplay:get_locale(self, "CPaStar")
 
-			self.hudpage[6][1][2] = courseplay:get_locale(self, "CPopenHud") -- Z-Offset:
-			self.hudpage[6][1][3] = courseplay:get_locale(self, "CPWPs") -- Z-Offset:
+			self.hudpage[6][1][2] = courseplay:get_locale(self, "CPopenHud")
+			self.hudpage[6][1][3] = courseplay:get_locale(self, "CPWPs")
 
 			if self.realistic_driving then
 				self.hudpage[6][2][1] = courseplay:get_locale(self, "CPastarOn")
 			else
-				self.hudpage[6][2][1] = courseplay:get_locale(self, "CPastarOff") -- "keiner"
+				self.hudpage[6][2][1] = courseplay:get_locale(self, "CPastarOff");
 			end
 
 			if self.mouse_right_key_enabled then

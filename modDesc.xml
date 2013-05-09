@@ -139,7 +139,7 @@ Italský překlad: JD7530
 			<de>Letzten Wegpunkt löschen</de>
 			<fr>Supprimer le dernier point</fr>
 			<es>Eliminar último punto</es>
-			<it>Elimina ultimo waypoint</it>
+			<it>Elimina ultimo punto di passaggio</it>
 			<cz>Smazat poslední bod</cz>
 		</text>
 		<text name="CoursePlayPlayer">
@@ -1482,12 +1482,12 @@ Italský překlad: JD7530
 		</text>
 
 		<text name="CPNoCourse">
-			<en>course is not valid</en>
-			<de>kein gültiger Kurs geladen</de>
-			<fr>course is not valid</fr>
-			<es>course is not valid</es>
-			<it>course is not valid</it>
-			<cz>course is not valid</cz>
+			<de>Kein gültiger Kurs geladen</de>
+			<en>Course is not valid</en>
+			<fr>La course n'est pas valide</fr>
+			<es>El curso no es válida</es>
+			<it>Il percorso non è valida</it>
+			<cz>Course is not valid</cz> <!-- !! -->
 		</text>
 		<text name="CPNoShovel">
 			<en>No shovel could be found</en>
@@ -1553,6 +1553,32 @@ Italský překlad: JD7530
 			<it>Stop + go loading</it> <!-- !! -->
 			<cz>Stop + go loading</cz> <!-- !! -->
 		</text>
+		
+		<text name="cpStartAtFirstPoint">
+			<de>Kurs beginnen am</de>
+			<en>Start course at</en>
+			<es>Empezar el curso al</es>
+			<fr>Commencer la course au</fr>
+			<it>Avviare il corso al</it>
+			<cz>Start course at</cz> <!-- !! -->
+		</text>
+		<text name="cpFirstPoint">
+			<de>ersten Wegpunkt</de>
+			<en>first waypoint</en>
+			<es>primer punto</es>
+			<fr>premier point</fr>
+			<it>primo punto</it>
+			<cz>first waypoint</cz> <!-- !! -->
+		</text>
+		<text name="cpNearestPoint">
+			<de>nächsten Wegpunkt</de>
+			<en>nearest waypoint</en>
+			<es>punto más cercano</es>
+			<fr>point le plus proche</fr>
+			<it>punto più vicino</it>
+			<cz>nearest waypoint</cz> <!-- !! -->
+		</text>
+		
 		<text name="CPon">
 			<de>An</de>
 			<en>On</en>

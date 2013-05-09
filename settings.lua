@@ -525,3 +525,6 @@ function courseplay:setShovelStopAndGo(self)
 	self.cp.shovelStopAndGo = not self.cp.shovelStopAndGo;
 end;
 
+function courseplay:setStartAtFirstPoint(self)
+	self.cp.startAtFirstPoint = not self.cp.startAtFirstPoint;
+end;
