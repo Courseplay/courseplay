@@ -49,7 +49,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill
 		if courseplay:isFoldable(workTool) then
 			if courseplay:isFolding(workTool) and self.cp.turnStage == 0 then
 				allowedToDrive = false;
-				courseplay:debug(workTool.name .. ": isFolding -> allowedToDrive == false", 3);
+				courseplay:debug(tostring(workTool.name) .. ": isFolding -> allowedToDrive == false", 3);
 			end;
 			--courseplay:debug(string.format("%s: unfold: turnOnFoldDirection=%s, foldMoveDirection=%s", workTool.name, tostring(workTool.turnOnFoldDirection), tostring(workTool.foldMoveDirection)), 3);
 		end;
