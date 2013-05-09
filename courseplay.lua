@@ -1,12 +1,12 @@
 --
--- Courseplay v3.30
+-- Courseplay v3.40 RC
 -- Specialization for Courseplay
 --
 -- @author  Lautschreier / Hummel / Wolverin0815 / Bastian82 / skydancer / Jakob Tischler / Thomas Gärtner
--- @version:	v3.30 08 Mar 2013
--- @testing:    bullgore80
+-- @version:	v3.40 RC (09 May 2013)
 
 courseplay = {};
+courseplay.version = "3.40 RC";
 --courseplay_path = g_modsDirectory .. "/ZZZ_courseplay/" --TODO: g_currentModDirectory
 courseplay_path = g_currentModDirectory;
 courseplay.debugLevel = 0;

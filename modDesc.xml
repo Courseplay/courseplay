@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
-<modDesc descVersion="9">
-	<author>Hummel (modhoster.de) /Lautschreier/Wolverin0815/Bastian82/Jakob Tischler/Thomas Gärtner</author>
+<modDesc descVersion="12">
+	<author>Hummel (modhoster.de) / Lautschreier / Wolverin0815 / Bastian82 / Jakob Tischler / Thomas Gärtner</author>
     <title>
 		<de>Courseplay</de>        
 		<en>Courseplay</en>
@@ -1480,8 +1480,7 @@ Italský překlad: JD7530
 			<it>Termina</it>
 			<cz>Ukončit</cz>
 		</text>
-		
-		
+
 		<text name="CPNoCourse">
 			<en>course is not valid</en>
 			<de>kein gültiger Kurs geladen</de>
@@ -1493,66 +1492,66 @@ Italský překlad: JD7530
 		<text name="CPNoShovel">
 			<en>No shovel could be found</en>
 			<de>keine Schaufel vorhanden</de>
-			<fr>Pas de pelle trouvée</fr>
+			<fr>Pas de godet trouvée</fr>
 			<es>Falta una pala</es>
-			<it>No shovel could be found</it>
-			<cz>No shovel could be found</cz>
+			<it>No shovel could be found</it> <!-- !! -->
+			<cz>No shovel could be found</cz> <!-- !! -->
 		</text>
 		<text name="CPShovelPositions">
 			<en>Shovel positions</en>
 			<de>Schaufelstellung</de>
 			<fr>Positions de la pelle</fr>
 			<es>Posiciónes de la pala</es>
-			<it>Shovel positions</it>
-			<cz>Shovel positions</cz>
+			<it>Shovel positions</it> <!-- !! -->
+			<cz>Shovel positions</cz> <!-- !! -->
 		</text>
 		<text name="CPAssignShovel">
 			<en>Missing shovel positions</en>
 			<de>Es fehlen Schaufelstellungen</de>
-			<fr>Il faux unes positions de la pelle</fr>
+			<fr>Il faux unes positions du godet</fr>
 			<es>Faltan unas posiciónes de la pala</es>
-			<it>Missing shovel positions</it>
-			<cz>Missing shovel positions</cz>
+			<it>Missing shovel positions</it> <!-- !! -->
+			<cz>Missing shovel positions</cz> <!-- !! -->
 		</text>
 		<text name="setLoad">
 			<en>Loading position</en>
 			<de>Position "Beladen"</de>
 			<fr>Position charger</fr>
 			<es>Posición cargar</es>
-			<it>Loading position</it>
-			<cz>Loading position</cz>
+			<it>Loading position</it> <!-- !! -->
+			<cz>Loading position</cz> <!-- !! -->
 		</text>
 		<text name="setTransport">
 			<en>Transport position</en>
 			<de>Position "Transport"</de>
 			<fr>Position transporter</fr>
 			<es>Posición transportar</es>
-			<it>Transport position</it>
-			<cz>Transport position</cz>
+			<it>Transport position</it> <!-- !! -->
+			<cz>Transport position</cz> <!-- !! -->
 		</text>
 		<text name="setPreUnload">
 			<en>Pre-unloading position</en>
 			<de>Position "vor Abladen"</de>
 			<fr>Position avant de décharger</fr>
 			<es>Posición antes de descargar</es>
-			<it>Pre-unloading position</it>
-			<cz>Pre-unloading position</cz>
+			<it>Pre-unloading position</it> <!-- !! -->
+			<cz>Pre-unloading position</cz> <!-- !! -->
 		</text>
 		<text name="setUnload">
 			<en>Unloading position</en>
 			<de>Position "Abladen"</de>
 			<fr>Position décharger</fr>
 			<es>Posición descargar</es>
-			<it>Unloading position</it>
-			<cz>Unloading position</cz>
+			<it>Unloading position</it> <!-- !! -->
+			<cz>Unloading position</cz> <!-- !! -->
 		</text>
 		<text name="cpShovelStopAndGo">
 			<de>Stop + Go Laden</de>
 			<en>Stop + go loading</en>
-			<es>Stop + go loading</es>
-			<fr>Stop + go loading</fr>
-			<it>Stop + go loading</it>
-			<cz>Stop + go loading</cz>
+			<es>Stop + go loading</es> <!-- !! -->
+			<fr>Stop + go loading</fr> <!-- !! -->
+			<it>Stop + go loading</it> <!-- !! -->
+			<cz>Stop + go loading</cz> <!-- !! -->
 		</text>
 		<text name="CPon">
 			<de>An</de>
