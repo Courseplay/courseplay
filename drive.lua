@@ -412,7 +412,7 @@ function courseplay:drive(self, dt)
 		if self.ai_mode == 8 then
 			if self.tipper_attached then
 				if self.tippers ~= nil then
-					allowedToDrive = courseplay:refillSprayer(self, fill_level, Utils.getNoNil(self.required_fill_level_for_drive_on, 100), allowedToDrive);
+					allowedToDrive = courseplay:refillSprayer(self, fill_level, 100, allowedToDrive);
 				end;
 			end;
 		end;
