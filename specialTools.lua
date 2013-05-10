@@ -96,6 +96,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 					if fillable.fillLevel >= fillable.capacity  or workTool.fillLevel <= 5 then
 						workTool:setIsTurnedOn(false)
 						fillable.attacherVehicle.cp.stopForLoading = false
+						fillable.attacherVehicle.wait = false
 					elseif not workTool.isTurnedOn then
 						workTool:setIsTurnedOn(true)
 					end

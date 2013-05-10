@@ -325,7 +325,7 @@ function courseplay:drive(self, dt)
 					self.last_fill_level = fill_level
 					courseplay:set_timeout(self, 7000)
 				end
-				if fill_level == 0 or drive_on then
+				if fill_level == 0 then
 					self.wait = false
 					self.last_fill_level = nil
 					self.unloaded = true
