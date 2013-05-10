@@ -277,6 +277,7 @@ function courseplay:drive(self, dt)
 				end
 			end
 		elseif self.ai_mode == 4 then
+			local drive_on = false
 			if last_recordnumber == self.startWork and fill_level ~= 0 then
 				self.wait = false
 			elseif last_recordnumber == self.stopWork and self.abortWork ~= nil then
@@ -284,6 +285,14 @@ function courseplay:drive(self, dt)
 			elseif last_recordnumber == self.stopWork and self.abortWork == nil then
 				courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPWorkEnd"), 1);
 			else
+				if self.timeout < self.timer or self.last_fill_level == nil then
+					if self.last_fill_level ~= nil and fill_level == self.last_fill_level and fill_level > self.required_fill_level_for_drive_on then
+						drive_on = true
+					end
+					self.last_fill_level = fill_level
+					courseplay:set_timeout(self, 7000)
+				end
+
 				if fill_level == 100 or drive_on then
 					self.wait = false
 				end
@@ -325,7 +334,7 @@ function courseplay:drive(self, dt)
 					self.last_fill_level = fill_level
 					courseplay:set_timeout(self, 7000)
 				end
-				if fill_level == 0 then
+				if fill_level == 0 or drive_on then
 					self.wait = false
 					self.last_fill_level = nil
 					self.unloaded = true

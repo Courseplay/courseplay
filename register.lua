@@ -108,7 +108,7 @@ function cp_setupHud()
 			{ true, true, true, true,  false, true, true, true, false, false }; --Mode 1
 			{ true, true, true, true,  true,  true, true, true, false, false }; --Mode 2
 			{ true, true, true, true,  true,  true, true, true, false, false }; --Mode 3
-			{ true, true, true, false, false, true, true, true, true,  false }; --Mode 4
+			{ true, true, true, true, false, true, true, true, true,  false }; --Mode 4
 			{ true, true, true, false, false, true, true, true, false, false }; --Mode 5
 			{ true, true, true, false, false, true, true, true, true,  false }; --Mode 6
 			{ true, true, true, true,  false, true, true, true, false, false }; --Mode 7
