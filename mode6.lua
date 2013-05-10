@@ -405,12 +405,6 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 							end
 						end
 
-						if tool.grainTankFillLevel >= tool.grainTankCapacity*0.8  or pipeState > 0 or courseplay:isAttachedCombine(workTool) then
-							tool:setPipeState(2)
-						elseif  pipeState == 0 then 
-							tool:setPipeState(1)
-						end
-
 						if weatherStop then
 							allowedToDrive = false;
 							tool:setIsThreshing(false, true);
@@ -434,6 +428,11 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 				end
 			end
 			
+			if tool.cp.isCombine and tool.isThreshing and tool.grainTankFillLevel >= tool.grainTankCapacity*0.8  or pipeState > 0 or courseplay:isAttachedCombine(workTool) then
+				tool:setPipeState(2)
+			elseif  pipeState == 0 then 
+				tool:setPipeState(1)
+			end
 			if tool.cp.waitingForTrailerToUnload then
 				allowedToDrive = false;
 				if tool.cp.isCombine then
