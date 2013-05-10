@@ -440,7 +440,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 			end
 			if tool.cp.waitingForTrailerToUnload then
 				allowedToDrive = false;
-				if tool.cp.isCombine then
+				if tool.cp.isCombine or courseplay:isAttachedCombine(workTool) then
 					if tool.isCheckedIn == nil or (pipeState == 0 and tool.grainTankFillLevel == 0) then
 						tool.cp.waitingForTrailerToUnload = false
 					end
