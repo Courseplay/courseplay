@@ -83,7 +83,7 @@ function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToD
 					local _,_,z = worldToLocal(self.rootNode, self.Waypoints[i].cx , ty , self.Waypoints[i].cz)
 					if z < -3 then
 						--print("z taken:  "..tostring(z))
-						self.recordnumber = i+1 
+						self.recordnumber = i+2 
 						self.loaded = true;
 						break	
 					end
