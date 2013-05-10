@@ -312,6 +312,8 @@ function courseplay:askForSpecialSettings(self,object)
 	elseif Utils.endsWith(object.configFileName, "JF_1060.xml") then
 		self.cp.aiTurnNoBackward = true
 		self.WpOffsetX = -2.5
+	elseif Utils.endsWith(object.configFileName, "claasConspeed.xml") then
+		object.cp.inversedFoldDirection = true;
 	end
 
 end
