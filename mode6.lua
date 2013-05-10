@@ -415,13 +415,18 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 				end
 			 --Stop combine
 			elseif self.recordnumber == self.stopWork then 
+				local isEmpty = tool.grainTankFillLevel == 0
 				if self.abortWork == nil then
 					allowedToDrive = false;
 				end
-				specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil)
+				if isEmpty then
+					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil)
+				else
+					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,true,false,false,allowedToDrive,nil)
+				end
 				if not specialTool then
 					tool:setIsThreshing(false, true);
-					if courseplay:isFoldable(workTool) then
+					if courseplay:isFoldable(workTool) and isEmpty then
 						workTool:setFoldDirection(1);
 					end;
 					tool:setPipeState(1)
