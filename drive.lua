@@ -517,6 +517,27 @@ function courseplay:drive(self, dt)
 			allowedToDrive = false
 		end
 	end
+	
+	local WpLoadEnd = false
+	if self.cp.shovelFillEndPoint ~= nil and self.recordnumber >=3  then
+		WpLoadEnd = self.recordnumber == self.cp.shovelFillEndPoint
+	end
+	if WpLoadEnd then
+		local i = self.cp.shovelFillEndPoint
+		local x,y,z = getWorldTranslation(self.rootNode)
+		local _,_,ez = worldToLocal(self.rootNode, self.Waypoints[i].cx , y , self.Waypoints[i].cz)
+		if  ez < 0.2 then
+			if fill_level == 0 then
+				allowedToDrive = false
+				courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPWorkEnd"), 1);
+			else
+				self.loaded = true;
+				self.recordnumber = i + 2
+			end
+		end
+	end
+
+
 
 	-- stop or hold position
 	if not allowedToDrive then
@@ -668,7 +689,7 @@ function courseplay:drive(self, dt)
 		distToChange = self.dist + 1
 	end
 
-	if self.dist > distToChange or WpUnload then
+	if self.dist > distToChange or WpUnload or WpLoadEnd then
 		if g_server ~= nil then
 			AIVehicleUtil.driveInDirection(self, dt, self.steering_angle, 0.5, 0.5, 8, true, fwd, lx, lz, self.sl, 0.5);
 			courseplay:set_traffc_collision(self, lx, lz)

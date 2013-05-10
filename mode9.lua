@@ -61,10 +61,7 @@ function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToD
 		end
 
 	elseif self.cp.shovelState == 2 then
-		if last_recordnumber == self.cp.shovelFillEndPoint then
-			self.loaded = true;
-		end
-		
+
 		if self.cp.shovelStopAndGo then
 			if self.cp.shovelLastFillLevel == nil then
 				self.cp.shovelLastFillLevel = fill_level;
@@ -76,14 +73,14 @@ function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToD
 			self.cp.shovelLastFillLevel = fill_level;
 		end;
 
-		if fill_level == 100 or last_recordnumber == self.cp.shovelFillEndPoint then 
+		if fill_level == 100 or self.loaded then 
 			if not self.loaded then
 				for i=self.recordnumber, self.maxnumber do
 					local _,ty,_ = getWorldTranslation(self.rootNode)
 					local _,_,z = worldToLocal(self.rootNode, self.Waypoints[i].cx , ty , self.Waypoints[i].cz)
-					if z < -3 then
+					if z < -3 and self.Waypoints[i].rev  then
 						--print("z taken:  "..tostring(z))
-						self.recordnumber = i+2 
+						self.recordnumber = i+1 
 						self.loaded = true;
 						break	
 					end
