@@ -143,7 +143,7 @@ kbd[title], .key[title] {
 ol > li {
 	position:relative; /* Create a positioning context */
 	margin:0 0 6px 2em; /* Give each list item a left margin to make room for the numbers */
-	padding:4px 8px; /* Add some spacing around the content */
+	padding:4px 0 4px 8px; /* Add some spacing around the content */
 	list-style:none; /* Disable the normal item numbering */
 	border-top:2px solid #666;
 	/*background:#f6f6f6;*/

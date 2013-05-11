@@ -552,7 +552,7 @@
 							<li><p>Man fährt den Kurs selber ein. Hierbei ist zu beachten dass zwei Wartepunkte benötigt werden. Den ersten an dem Punkt, wo mit der Arbeit begonnen werden soll, den zweiten an dem Punkt, wo die Arbeit beendet werden soll. Dieser Arbeitsbereich ist unabdinglich für das korrekte Funktionieren in diesem Modus.</p></li>
 							<li><p>Der Kurs wird automatisch generiert. Siehe dazu <a class="internalTab" href="#generateCourse">Kurs generieren</a>. Die Wartepunkte werden hierbei schon automatisch gesetzt.</p></li>
 						</ol>
-						<p>Der zweite Abschnitt, das automatische Auftanken/Auffüllen, ist ein ganz normaler "A nach B"-Kurs. Er sollte am zweiten Wartepunkt, also dem Ende des Feldkurses, beginnen, dann durch den Dünger-/Saattrigger führen, und zurück und kurz vor dem ersten Wartepunkt enden. Der Fahrer hält, sofern er einen Aufladetrigger erkennt, automatisch an und füllt auch automatisch auf. Sollte ein Gerät nicht per Trigger aufzufüllen sein (wie z.B. ein Miststreuer), muss an dem Punkt wo er beladen werden soll ein zusätzlicher Wartepunkt gesetzt werden. Dort wartet er dann bis er zu 100% befüllt wurde und fährt weiter.</p>
+						<p>Der zweite Abschnitt, das automatische Auftanken/Auffüllen, ist ein ganz normaler "A nach B"-Kurs. Er sollte am zweiten Wartepunkt, also dem Ende des Feldkurses, beginnen, dann durch den Dünger-/Saattrigger führen, und zurück und kurz vor dem ersten Wartepunkt enden. Der Fahrer hält, sofern er einen Aufladetrigger erkennt, automatisch an und füllt auch automatisch auf bis er 100% erreicht hat. Sollte ein Gerät nicht per Trigger aufzufüllen sein (wie z.B. ein Miststreuer), muss an dem Punkt wo er beladen werden soll ein zusätzlicher Wartepunkt gesetzt werden. Dort wartet er dann bis sein Füllstand die bei <code>Start bei %</code> eingestellte Prozentzahl erreicht hat und fährt weiter.</p>
 						<figure>
 							<img src="../../res/img/manual_mode4_de.png" alt="Düngen/Säen Diagramm" class="infoImg">
 							<figcaption>Fig. 3: Start-, Weg-, Warte- und Stoppunkte im Dünge-/Saatmodus</figcaption>
@@ -593,7 +593,7 @@
 						<p>Es ist quasi egal wo der Kurs beginnt und endet, nur folgendes muss gegeben sein:</p>
 						<ol>
 							<li><p>Das Gerät muss durch einen Gülletrigger (z.B. Güllesilo) fahren um dort automatisch aufgetankt zu werden.</p></li>
-							<li><p>An dem Punkt wo das sich im Düngemodus arbeitende Güllefass automatisch auftanken soll muss beim Güllecontainer ein Wartepunkt gesetzt werden.</p></li>
+							<li><p>An dem Punkt wo das sich im Düngemodus arbeitende Güllefass automatisch auftanken soll (der Zubringer also anhalten soll), muss beim Güllezubringer ein Wartepunkt gesetzt werden.</p></li>
 						</ol>
 						<figure>
 							<img src="../../res/img/manual_mode8_de.png" alt="Güllezubringer Diagramm" class="infoImg">
@@ -606,6 +606,7 @@
 		
 			<div class="manualSection" id="generateCourse">
 				<h3>Kurs generieren</h3>
+				<p>Allgemeine Erklärungen zu den jeweiligen Einstellungen: siehe <a href="#hud_courseGeneration" class="internalTab">HUD: Kursgenerierung</a></p>
 				<p>Um einen Feldkurs (für den Dünge-/Saat- bzw. Feldarbeitsmodus) automatisch zu generieren müssen folgende Schritte durchgeführt werden.</p>
 				<ol>
 					<li>
@@ -616,14 +617,47 @@
 						</figure>
 					</li>
 					<li>
-						<p>Die Arbeitsbreite einstellen. Dies kann im HUD unter <a class="internalTab" href="#hud_drivingSettings">Fahr-/Arbeitseinstellungen</a> vorgenommen werden. Die Arbeitsbreite gibt an wie weit die Bahnen voneinander entfernt sein sollen.</p>
+						<p>Die Arbeitsbreite einstellen. Diese gibt an wie weit die Bahnen voneinander entfernt sein sollen.</p>
 					</li>
 					<li>
-						<p>In der Abfahrhelfer-Steuerung auf <code>Kurs generieren</code> klicken.</p>
+						<p>Die Startecke einstellen. Je nach Beschaffenheit des Feldes und der eingestellten Startrichtung kann der Startpunkt an verschieden Positionen liegen:</p>
 						<figure>
-							<img src="../../res/img/generateCourse_2_de.png" alt="Kursgenerierung Diagramm 2" class="infoImg">
-							<figcaption>Fig. 2: Generierter Kurs</figcaption>
+							<img src="../../res/img/generateCourse_3_de.png" alt="Kursgenerierung Diagramm 2: Startecke" class="infoImg">
+							<figcaption>Fig. 2: Zwei mögliche Startpositionen bei Startecke "Nordost"</figcaption>
 						</figure>
+					</li>
+					<li>
+						<p>Die Startrichtung einstellen. Diese Richtung wird die erste Bahn haben.</p>
+					</li>
+					<li>
+						<p><span class="emphasize2">(optional)</span><br />
+						<code>Am Startpunkt enden</code> aktivieren/deaktivieren. Wenn aktiviert, fährt der Fahrer, sobald das Gerät voll (Feldarbeitsmodus) bzw. leer (Dünge-/Sämodus) ist zum Startpunkt (anstatt zum Endpunkt), und von dort aus den Ablade-/Auffüllkurs ab. Dies ist nützlich wenn der Ablade-/Auffüllkurs vom Startpunkt aus beginnt.</p>
+						<figure>
+							<img src="../../res/img/generateCourse_4_de.png" alt="Kursgenerierung Diagramm 3: am Startpunkt enden" class="infoImg">
+							<figcaption>Fig. 3: Der Abfahrer fährt zum Start- anstatt zum Endpunkt zurück</figcaption>
+						</figure>
+						<p>Die Einstellung wird fest in den Kurs geschrieben, kann also nicht dynamisch, während der Kurs gefahren wird, verändert werden.</p>
+					</li>
+					<li>
+						<p><span class="emphasize2">(optional)</span><br />
+						Vorgewende einstellen. Momentan unterstützt Courseplay eine (1) Bahn Vorgewende, das entweder vor (z.B. Drescher) oder nach (z.B. Grubber) dem Feldkurs gefahren werden kann.</p>
+						<p>Wird es davor gefahren, beginnt es (ungefähr) an der eingestellten Startecke. Wird es danach gefahren, geht der Feldkurs direkt in das Vorgewende über.</p>
+						<p>Je nach Form und Größe des Feldes, der ausgewählten Startecke und Startrichtung kann es vorkommen, dass das Vorgewende an einem Punkt beginnt, wo auch einige andere Punkte (z.B. vom restlichen Feldkurs) sind. Dies kann dazu führen dass der Abfahrer den Startpunkt (Wegpunkt 1) nicht immer findet und trifft. Sollte das passieren, kann auf der Seite <a href="#hud_driverControls" class="internalTab">Abfahrhelfer Steuerung</a> die Option <code>Kurs beginnen am ersten Punkt</code> gesetzt werden.</p>
+					</li>
+					<li>
+						<p>Auf <code>Kurs generieren</code> klicken.</p>
+						<figure>
+							<img src="../../res/img/generateCourse_2_de.png" alt="Kursgenerierung Diagramm 4" class="infoImg">
+							<figcaption>Fig. 4: Generierter Kurs</figcaption>
+						</figure>
+						<p>Wird die Zeile <code>Kurs generieren</code> nicht angezeigt, sollte man überprüfen ob alle Voraussetzungen erfüllt sind:</p>
+						<ol>
+							<li>es muss ein Kurs mit mindestens <span class="emphasize2">5 Wegpunkten</span> geladen sein (wenn Vorgewende aktiviert ist, muss der Kurs mindestens <span class="emphasize2">20 Wegpunkte</span> haben)</li>
+							<li>der geladene Kurs wurde nicht generiert</li>
+							<li>der geladene Kurs wurde nicht aus mehreren Kursen kombiniert</li>
+							<li>die Startecke ist festgelegt</li>
+							<li>die Startrichtung ist festgelegt</li>
+						</ol>
 					</li>
 					<p>Die Wartepunkt am Anfang und Ende werden automatisch gesetzt. Wenn ein Entlade-/Auftankkurs hinzugefügt werden soll, muss der Feldkurs zuerst generiert werden, und danach der Entlade-/Auftankkurs angehängt werden.</p>
 				</ol>

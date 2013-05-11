@@ -523,6 +523,7 @@
 							<figcaption>Fig. 1: Start point, waypoints and end points in the driving helper mode</figcaption>
 						</figure>
 					</li>
+					
 					<li id="driveMode2">
 						<h4>Combi</h4>
 						<p>The combi mode is very similar to the <a href="#driveMode1" class="internalTab">Driving helper</a> mode, in that the tractor drives a course and unloads at a trigger. But, in addition, the driver unloads a working combine or chopper on the field.</p>
@@ -538,6 +539,7 @@
 							</ol>
 						</p>
 					</li>
+					
 					<li id="driveMode3">
 						<h4>Overloader</h4>
 						<p>The overloading mode is somewhat similar to the combi mode, in that the driver unloads a combine. But instead of the driving a course to an unloading trigger, the driver overloads into a waiting trailer. As with the combi mode, a combine can be found automatically or set manually.</p>
@@ -548,6 +550,7 @@
 							<figcaption>Fig. 2: Start point, waypoints, waiting/overloading point and stop point in the overload mode</figcaption>
 						</figure>
 					</li>
+					
 					<li id="driveMode4">
 						<h4>Fertilize and seeding</h4>
 						<p>When fertilizing or seeding, there are two sections: one, the actual work part on the field, and two, the course from the field to the refilling trigger and back to the field.</p>
@@ -560,17 +563,20 @@
 								<p>The course can be generated automatically. For further information, see the <a class="internalTab" href="#generateCourse">Generate course</a> section. The waiting points will be set automatically.</p>
 							</li>
 						</ol>
-						<p>The second part, the automatic refilling, is a regular "A to B" course. It should start at the second waiting point (so, the end of the field work course), then go through the fertilizer/liquid manure/seeding trigger, and back to the field, ending just before the first waiting point of the field work course. As soon as a refilling trigger is recognized, the driver stops and refills automatically. If a tool isn't fillable via a trigger, but rather manually (e.g. a solid manure spreader), an additional waiting point has to be set and the point where the tool should be filled. The driver will wait until the tool is filled 100% and then continue his course.</p>
+						<p>The second part, the automatic refilling, is a regular "A to B" course. It should start at the second waiting point (so, the end of the field work course), then go through the fertilizer/liquid manure/seeding trigger, and back to the field, ending just before the first waiting point of the field work course. As soon as a refilling trigger is recognized, the driver stops and refills automatically. If a tool isn't fillable via a trigger, but rather manually (e.g. a solid manure spreader or via a liquid manure transfer trailer), an additional waiting point has to be set and the point where the tool should be filled.</p>
+						<p>When driving through a trigger, the driver will wait until the tool is filled 100% and then continue his course. When not driving through a trigger but rather using a waiting point, the driver will wait until the tool's fill level has reached the set <code>Start at %</code> percentage.</p>
 						<figure>
 							<img src="../../res/img/manual_mode4_en.png" alt="Fertilizing/Seeding diagram" class="infoImg">
 							<figcaption>Fig. 3: Start point, waypoints, waiting points and stop point in the fertilizer/seeding mode</figcaption>
 						</figure>
 						<p>As soon as the tool is empty, it goes into transportation mode and the driver follows the refilling course. Back at the field, the driver drives to the point on the field where it last stopped work, sets the tool into work mode, and continues working.</p>
 					</li>
+					
 					<li id="driveMode5">
 						<h4>Transfer</h4>
 						<p>The transfer mode is the most simple form to get from A to B. It uses a completely regular course with a start and an end point. The driver blindly follows that course, without unloading or other fancy stuff. Reaching the end, the driver returns to the start point and repeats the course. If you want to prevent that, you need to activate the <code>Stop at last point or at next trigger</code> option.</p>
 					</li>
+					
 					<li id="driveMode6">
 						<h4>Field work</h4>
 						<p>The field work mode is the work horse of all the different modes: it can be used for pressing bales, collecting bales, windrowing, teddering, cultivating and much more.</p>
@@ -590,6 +596,7 @@
 						</figure>
 						<p>Tools will be (un)folded and (de)activated automatically. Drivers with balers as tools will stop and unload the bales automatically.</p>
 					</li>
+					
 					<li id="driveMode7">
 						<h4>Combine self unloading</h4>
 						<p>This mode works similarly to the overloading mode. The course must have a waiting point at the overloading position, where the combine will stop, extend the pipe, and unload.</p>
@@ -599,13 +606,14 @@
 						</figure>
 						<p>The combine needs to be hired as a regular helper, and <span class="emphasize1">only then</span> Courseplay may be activated. The combine will work as a helper until its fill level reaches the percentage set at <code>Start at %</code>. Then it drives to the course's start point, follows the course until the waiting point, where it will unload into a waiting trailer. After, it will follow the course until the end point, from where it will drive to the last position where it worked as a helper. Now, it will activate its cutter and continue threshing.</p>
 					</li>
+					
 					<li id="driveMode8">
 						<h4>Liquid manure transporter</h4>
 						<p>The liquid manure transporting mode is for field containers and similar tools that have an integrated liquid manure filling trigger. The tool is refilled at a liquid manure silo and then driven to a field's edge, where a working liquid manure barrel can refill automatically.</p>
 						<p>It basically doesn't matter where the course begins or ends, only make sure of two things:</p>
 						<ol>
 							<li><p>The course must lead through a liquid manure trigger (e.g. liquid manure silo) so it can be refilled there automatically.</p></li>
-							<li><p>At the position where the liquid manure barrel should refill, there needs to be a waiting point.</p></li>
+							<li><p>At the position where the liquid manure barrel should refill (hence the transporter should stop), there needs to be a waiting point.</p></li>
 						</ol>
 						<figure>
 							<img src="../../res/img/manual_mode8_en.png" alt="Liquid manure transport diagram" class="infoImg">
@@ -613,29 +621,99 @@
 						</figure>
 						<p>The driver will continue from the waiting/overloading point as soon as the tool is empty.</p>
 					</li>
+					
+					<li id="driveMode9">
+						<h4>Fill and empty shovel</h4>
+						<p>This mode lets you fill a shovel in a designated area (e.g. a BGA silo) and unload it into a bunker or trailer.</p>
+						<p>The course setup <span class="emphasize1 emphasize2">has to be</span> as follows:</p>
+						<figure>
+							<img src="../../res/img/manual_mode9_en.png" alt="Fill and empty shovel diagram" class="infoImg">
+							<figcaption>Fig. 7: All points and directions in the fill and empty shovel mode.</figcaption>
+						</figure>
+						<ol>
+							<li>
+								<p></p>
+							</li>
+							<li>
+								<p></p>
+							</li>
+							<li>
+								<p></p>
+							</li>
+							<li>
+								<p></p>
+							</li>
+							<li>
+								<p></p>
+							</li>
+							<li>
+								<p></p>
+							</li>
+							<li>
+								<p></p>
+							</li>
+							<li>
+								<p></p>
+							</li>
+						</ol>
+					</li>
 				</ol>
 			</div>
 		
 			<div class="manualSection" id="generateCourse">
 				<h3>Generating a course</h3>
+				<p>For general descriptions of the settings, see <a href="#hud_courseGeneration" class="internalTab">HUD: Course generation</a>.</p>
 				<p>In order to generate a field course (for the field work and fertilizing/seeding modes) automatically, the following steps need to be done.</p>
 				<ol>
 					<li>
 						<p>Record a course around the field's edges. It doesn't matter which direction, you should just take care not to cut corners too tightly. It's possible to save this "border course" and use it later for more course generations for this field.</p>
 						<figure>
-							<img src="../../res/img/generateCourse_en.png" alt="Course generation diagram 1" class="infoImg">
+							<img src="../../res/img/generateCourse_en.png" alt="Course generation diagram 1: field edge course" class="infoImg">
 							<figcaption>Fig. 1: border course along a field's edges</figcaption>
 						</figure>
 					</li>
 					<li>
-						<p>Set the work width. This can be done on the <a class="internalTab" href="#hud_drivingSettings">Drive and work settings</a> page. The work width is needed to calculated the distance between the course's lanes.</p>
+						<p>Set the work width. The work width is needed to calculated the distance between the course's lanes.</p>
 					</li>
 					<li>
-						<p>On the <a class="internalTab" href="#hud_driverControls">Driver controls</a> page, click <code>Generate course</code>.</p>
+						<p>Set the starting corner. Depending on the size and form of the field and the chosen starting direction, the starting point's position can be in different places:</p>
 						<figure>
-							<img src="../../res/img/generateCourse_2_en.png" alt="Course generation diagram 2" class="infoImg">
-							<figcaption>Fig. 2: generated course</figcaption>
+							<img src="../../res/img/generateCourse_3_en.png" alt="Course generation diagram 2: starting corner" class="infoImg">
+							<figcaption>Fig. 2: Two possible starting positions with a "northeast" starting corner</figcaption>
 						</figure>
+					</li>
+					<li>
+						<p>Set the starting direction. That's the direction that the first lane will have.</p>
+					</li>
+					<li>
+						<p><span class="emphasize2">(optional)</span><br />
+						Activate/deactivate <code>Return to first point</code>. If activated, the driver will drive to the starting point (instead of the end point) when the used tool is full (field work mode)/empty (fertilizinger and seeding mode). This can be useful if the unloading/refilling course begins at the starting point.</p>
+						<figure>
+							<img src="../../res/img/generateCourse_4_en.png" alt="Course generation diagram 3: return to first point" class="infoImg">
+							<figcaption>Fig. 3: The driver drives to the starting instead of the end point</figcaption>
+						</figure>
+						<p>This settings will be hard coded into the course, meaning it can not be changed dynamically while the course is being driven.</p>
+					</li>
+					<li>
+						<p><span class="emphasize2">(optional)</span><br />
+						Set your headland option. Courseplay currently supports one (1) lane, which can be either before (e.g. with a combine) or after (e.g. with a cultivator) the field course.</p>
+						<p>If the headland is set to "before", it will start approximately at the set starting corner. If it's set to "after", the field course will continue directly into the headland lane.</p>
+						<p>Depending on the size and form of the field, the set starting corner and start direction, it can happen that the headland begins at a point where there are multiple are waypoints close by (e.g. the field course's points). This can lead to the driver not always finding waypoint #1. Should this happen, you can set <code>Start course at first point</code> on the <a href="#hud_driverControls" class="internalTab">Driver controls</a> page.</p>
+					</li>
+					<li>
+						<p>Click <code>Generate course</code>.</p>
+						<figure>
+							<img src="../../res/img/generateCourse_2_en.png" alt="Course generation diagram 4: generated course" class="infoImg">
+							<figcaption>Fig. 4: generated course</figcaption>
+						</figure>
+						<p>If the row <code>generate course</code> is not display, you should check if all requirements are met:</p>
+						<ol>
+							<li>a course with at least <span class="emphasize2">5 waypoints</span> must be loaded (when headland is activated, the course has to have at least <span class="emphasize2">20 waypoints</span>)</li>
+							<li>the loaded course has not been generated</li>
+							<li>the loaded course has not been combined from multiple courses</li>
+							<li>a starting corner has been set</li>
+							<li>a starting direction has been set</li>
+						</ol>
 					</li>
 					<p>The waiting points at the start and the end will be set automatically. If you want to add an unloading/refilling course, the field course must be generated first. Afterwards, add the unloading/refilling course.</p>
 				</ol>
