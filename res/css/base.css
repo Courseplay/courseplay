@@ -57,13 +57,14 @@ a:not(.imgLink):hover, a:not(.imgLink):focus, a:not(.imgLink):active {
 
 header h1 { text-align:center; }
 
-h2, h3, h4 {
+h2, h3, h4, h5 {
 	font-family:'Adelle-SemiBold', 'adelle_sbsemibold', Helvetica, Myriad Pro, Segoe UI, sans-serif;
 	font-weight:300;
 }
 h2 { border-bottom:1px solid #d6d6d6; font-size:2em; margin:0 0 15px; }
-h3 { border-bottom:1px solid #d6d6d6; font-size:1.4em; margin:0 0 10px; }
+h3 { border-bottom:1px solid #d6d6d6; font-size:1.4em;  margin:0 0 10px;}
 h4 { font-size:1.05em; }
+h5 { font-size:1.2em; font-style:italic; margin:0 0 10px; }
 
 section { padding:30px 0; }
 
@@ -196,6 +197,8 @@ ol ol li:last-child { margin-bottom:0; }
 .hudIcon.arrowLeft    { background-position:0 -128px; }
 .hudIcon.arrowUp      { background-position:0 -144px; }
 .hudIcon.arrowDown    { background-position:0 -160px; }
+.hudIcon.copy         { background-position:0 -176px; }
+.hudIcon.wiki         { background-position:0 -192px; }
 
 
 footer { border-top:1px solid #D6D6D6; font-size:0.8em; margin-top:3em; padding:1em 0; }

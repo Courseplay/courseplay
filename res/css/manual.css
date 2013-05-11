@@ -116,8 +116,18 @@
 .manualSection span[data-icon].big { font-size:1.5em; position:relative; top:3px; }
 
 .buttonInfo {
-	background:#555;
-	border:1px solid #404040;
+	background: #555; /* Old browsers */
+	/* IE9 SVG, needs conditional override of 'filter' to 'none' */
+	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzVhNWE1YSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM1MDUwNTAiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+	background: -moz-linear-gradient(top,  #5a5a5a 0%, #505050 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#5a5a5a), color-stop(100%,#505050)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  #5a5a5a 0%,#505050 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  #5a5a5a 0%,#505050 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  #5a5a5a 0%,#505050 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  #5a5a5a 0%,#505050 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#5a5a5a', endColorstr='#505050',GradientType=0 ); /* IE6-8 */
+
+	border:1px solid #454545;
 	color:#f0f0f0;
 	border-radius:1px;
 	padding:6px 8px;
@@ -128,6 +138,13 @@ dt, dd {
 	font-size:0.9em;
 }
 dt { width: 30%; }
+
+.manualSection .manualSubSection {
+	border-bottom:2px dashed #BBB;
+	padding:20px 0;
+}
+.manualSection .manualSubSection:first-of-type { padding-top:0; }
+.manualSection .manualSubSection:last-of-type { border-bottom:none; padding-bottom:0; }
 
 .manualSection ol li { 
 	margin-top:20px; 
@@ -144,6 +161,10 @@ img.infoImg {
 	padding:5px;
 	width:100%;
 	max-width:100%;
+}
+img.origSize {
+	width:auto !important;
+	max-width:auto !important;
 }
 figcaption {
 	font-family:'ACaslonPro-Italic', Caslon, 'Caslon Pro', Garamond, serif;
