@@ -58,7 +58,12 @@ function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToD
 				self.cp.shovelState = 2
 				--print("set state 2")
 			end
+			if fill_level == 100 then
+				local fillType = self.cp.shovel.currentFillType;
+				self.cp.shovel:setFillLevel(self.cp.shovel.capacity*0.99, fillType);
+			end 
 		end
+
 
 	elseif self.cp.shovelState == 2 then
 
