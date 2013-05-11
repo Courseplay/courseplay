@@ -76,6 +76,13 @@ function courseplay:start(self)
 	local cx, cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
 	-- distance
 	dist = courseplay:distance(ctx, ctz, cx, cz)
+	
+
+	for k,workTool in pairs(self.tippers) do    --TODO temporary solution (better would be Tool:getIsAnimationPlaying(animationName))
+		if courseplay:isFolding(workTool) then
+			self:setAIImplementsMoveDown(true);
+		end
+	end
 
 	if self.ai_state == 0 then
 		local nearestpoint = dist
