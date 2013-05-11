@@ -443,7 +443,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 			
 			if tool.cp.isCombine and tool.isThreshing and tool.grainTankFillLevel >= tool.grainTankCapacity*0.8  or pipeState > 0 or courseplay:isAttachedCombine(workTool) then
 				tool:setPipeState(2)
-			elseif  pipeState == 0 then 
+			elseif  pipeState == 0 and tool.cp.isCombine then 
 				tool:setPipeState(1)
 			end
 			if tool.cp.waitingForTrailerToUnload then
