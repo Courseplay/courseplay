@@ -523,6 +523,7 @@
 							<figcaption>Fig. 1: Start-, Weg-, und Stoppunkte im Abfahrermodus</figcaption>
 						</figure>
 					</li>
+					
 					<li id="driveMode2">
 						<h4>kombiniert</h4>
 						<p>Der kombinierte Modus ist sehr ähnlich zum "Abfahrer"-Modus, insofern dass der Traktor einen Kurs abfährt und in einem Trigger entlädt. Zusätzlich tankt der Abfahrer aber noch einen Drescher oder Häcksler ab.</p>
@@ -534,6 +535,7 @@
 							</ol>
 						</p>
 					</li>
+					
 					<li id="driveMode3">
 						<h4>Überladewagen</h4>
 						<p>Der Überlademodus ist leicht ähnlich zum kombinierten Modus, insofern dass der Fahrer einen Drescher abtankt. Aber anstatt dann zu einem Entladetrigger zu fahren, überlädt er in einen wartenden Anhänger. Auch hier kann der Drescher automatisch gefunden oder manuell gesetzt werden.</p>
@@ -544,6 +546,7 @@
 							<figcaption>Fig. 2: Start-, Weg-, Warte- und Stoppunkte im Überlademodus</figcaption>
 						</figure>
 					</li>
+					
 					<li id="driveMode4">
 						<h4>Düngen und Säen</h4>
 						<p>Beim Düngen/Säen gibt es zwei Sektionen: zunächst die eigentliche Arbeit auf dem Feld, zum anderen die Fahrt zum Dünger-/Saattrigger um dort das Gerät wieder zu befüllen.</p>
@@ -559,10 +562,12 @@
 						</figure>
 						<p>Sobald das Gerät leer ist, wird es in Transportstellung gebracht und fährt automatisch den Auftankkurs ab. Wieder am Feld angekommen fährt der Traktor zum Punkt wo er zuletzt war als das Gerät leer wurde, bringt das Gerät in Arbeitsstellung und arbeitet weiter.</p>
 					</li>
+					
 					<li id="driveMode5">
 						<h4>Überführung</h4>
 						<p>Der Überführungsmodus ist wohl die simpleste Form um von A nach B zu kommen. Es wird ein ganz normaler Kurs mit Anfang und Ende benötigt, der Fahrer fährt diesen stur ab, ohne zu entladen. Am Ende angekommen fährt der Abfahrer wieder zum ersten Wegpunkt zurück und fährt den Kurs von vorne ab. Wenn dies nicht geschehen soll, muss die Option <code>Warten&nbsp;am&nbsp;letzten&nbsp;Wegpunkt</code> aktiviert werden.</p>
 					</li>
+					
 					<li id="driveMode6">
 						<h4>Feldarbeit</h4>
 						<p>Der Feldarbeitsmodus das Arbeitstier der verschiedenen Modi: es kann zum Ballen pressen, Ballen sammeln, schwadern, wenden, grubbern, und noch mehr benutzt werden.</p>
@@ -578,6 +583,7 @@
 						</figure>
 						<p>Geräte werden automatisch ein-/ausgeklappt und aktiviert. Traktoren mit Rundballenpressen bleiben zum Ballen entladen automatisch stehen und werfen diese aus.</p>
 					</li>
+					
 					<li id="driveMode7">
 						<h4>Drescher fährt selbst abtanken</h4>
 						<p>Dieser Modus funktioniert quasi genauso wie der Überlademodus. Der Kurs muss am Überladepunkt einen Wartepunkt haben, wo der Drescher dann anhält, die Pipe ausklappt und abtankt.</p>
@@ -587,6 +593,7 @@
 						</figure>
 						<p>Der Drescher muss normal als Helfer eingestellt werden, und <span class="emphasize1">erst dann</span> darf Courseplay aktiviert werden. Der Drescher wird als Helfer fahren bis sein Füllstand den bei <code>Start bei %</code> eingestellten Prozentwert erreicht hat. Dann fährt er zum Startpunkt des Kurses und fährt diesen bis zum Wartepunkt, wo er auf einen wartenden Anhänger abtankt. Danach fährt er den Kurs weiter bis zum Kursendpunkt, von wo aus er zum letzten Punkt wo er gedroschen hat fährt. Nun aktiviert er wieder sein Schneidwerk und macht mit der Arbeit weiter.</p>
 					</li>
+					
 					<li id="driveMode8">
 						<h4>Güllezubringer</h4>
 						<p>Der Güllezubringermodus ist für Feldrandcontainer und ähnliche Gerätschaften die einen integrierten Gülletrigger haben. Hierbei wird das Gerät an einem Güllesilo beladen und dann an einen Feldrand gebracht, wo ein im Düngemodus arbeitendes Güllefass automatisch aufgetankt werden kann.</p>
@@ -600,6 +607,44 @@
 							<figcaption>Fig. 6: Start-, Weg-, Warte-/Überlade- und Stoppunkte im Güllezubringer-Modus</figcaption>
 						</figure>
 						<p>Der Fahrer fährt vom Wartepunkt weiter sobald das Gerät leer ist.</p>
+					</li>
+					
+					<li id="driveMode9">
+						<h4>Schaufel befüllen und entleeren</h4>
+						<p>In diesem Modus wird die Schaufel in einem Bereich (z.B. BGA-Silo) befüllt und an einer festen Stellen (z.B. BGA-Bunker oder Hänger) entladen.</p>
+						<p>Der Kursaufbau <span class="emphasize1 emphasize2">muss</span> wie folgt sein:</p>
+						<figure>
+							<img src="../../res/img/manual_mode9_de.png" alt="Schaufel befüllen und entleeren" class="infoImg">
+							<figcaption>Fig. 7: Alle Punkte und Richtungen im "Schaufel befüllen und entleeren" Modus</figcaption>
+						</figure>
+						<ol>
+							<li>
+								<p>Vor dem Silo beginnen und vorwärts fahren.</p>
+							</li>
+							<li>
+								<p>An dem Punkt, an dem die Schaufel zu laden beginnen soll, Wartepunkt #1 setzen. Dieser Punkt bezeichnet den Beginn des "Befüllen"-Bereichs.</p>
+							</li>
+							<li>
+								<p>Am Ende des Silos einen weiteren Wartepunkt (#2) setzen. Dieser Punkt bezeichnet das Ende des "Befüllen"-Bereichs.</p>
+							</li>
+							<li>
+								<p>Die Fahrtrichtung auf <span class="emphasize2">rückwärts</span> setzen, und rückwärts aus dem Silo herausfahren (und noch ein Stückchen weiter). Versucht, so gerade wie möglich zu fahren.</p>
+							</li>
+							<li>
+								<p>Die Fahrtrichtung auf <span class="emphasize2">vorwärts</span> setzen, und zum zu befüllenden Bunker/Hänger fahren. The letzten drei oder vier Wegpunkt dieser Sektion sollten so gerade wie möglich sein.</p>
+							</li>
+							<li>
+								<p>An dem Punkt, an dem die Schaufel entleert werden soll, Wartepunkt #3 setzen.</p>
+							</li>
+							<li>
+								<p>Die Fahrtrichtung auf <span class="emphasize2">rückwärts</span> setzen, und möglichst gerade zurücksetzen, bis genügend Platz zum rangieren ist.</p>
+							</li>
+							<li>
+								<p>Die Fahrtrichtung auf <span class="emphasize2">vorwärts</span> setzen und zurück zum Startpunkt fahren.</p>
+							</li>
+						</ol><br />
+						<p>Bevor man den Fahrer startet muss sichergestellt werden, dass die <a href="#hud_shovelSettings" class="internalTab">Schaufelpositionen</a> korrekt gesetzt wurden.</p>
+						<p>Wenn der Fahrer gestartet wird, fährt er zu Wartepunkt #1 und setzt die Schaufel in die <span class="emphasize2">"Beladen"-Position</span>. Er fährt weiter bis die Schaufel voll ist, hält an und setzt die Schaufel in die <span class="emphasize2">Transportposition</span>. Nun wechselt er in den "aus dem Silo zurücksetzen"-Teil des Kurses und fährt den Kurs weiter ab. Vier Wegpunkte vor Wartepunkt #3 wird die Schaufel in die <span class="emphasize2">"vor Abladen"-Position</span> gesetzt und der Fahrer beginnt nach einem Bunker oder Hänger zu suchen. Wenn nichts gefunden hält der Traktor an. Wird etwas gefunden fährt der Traktor weiter bis die Schaufel in den Bunker/Hänger entleert werden kann. Der Hänger muss nicht nötigerweise direkt an Wartepunkt #3 stehen, er kann auch leicht davor stehen. Doch um einen reibungsfreien Ablauf zu gewährleisten sollte er am besten relativ direkt an Wartepunkt #3 stehen. Nach dem Entleeren wird die Schaufel zurück in die <span class="emphasize2">"vor Abladen"-Position</span> gesetzt; der Abfahrer wird den "vom Bunker/Hänger zurücksetzen"-Teil des Kurses benutzen und zum Endpunkt fahren.</p>
 					</li>
 				</ol>
 			</div>
