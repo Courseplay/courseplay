@@ -12,6 +12,9 @@
 	<link rel="stylesheet" href="../../res/css/manual.css">
 	<!--[if lte IE 7]><script src="res/js/lte-ie7.js"></script><![endif]-->
 	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+	<!--[if gte IE 9]><style type="text/css">.buttonInfo { filter: none; }</style><![endif]-->
+
 	<title>Anleitung &rsaquo; Courseplay</title>
 
 	<script type="text/javascript">
@@ -42,8 +45,8 @@
 		</nav>
 	</section>
 
-	<section id="manual" class="content">
-		<h2>Anleitung</h2>
+	<section id="manual" class="content" data-version="3.40">
+		<h2>Anleitung <span id="manualVersion">gültig für v3.40</span></h2>
 		<div id="manualTabs">
 			<div id="manualNav" class="default">
 				<ul>
@@ -61,6 +64,8 @@
 							<li><a href="#hud_speeds"><span>Geschwindigkeiten</span></a></li>
 							<li><a href="#hud_generalSettings"><span>Allgemeine Einstellungen</span></a></li>
 							<li><a href="#hud_drivingSettings"><span>Fahr-/Arbeitseinstellungen</span></a></li>
+							<li><a href="#hud_courseGeneration"><span>Kursgenerierung</span></a></li>
+							<li><a href="#hud_shovelSettings"><span>Schaufelpositionen</span></a></li>
 							<li><a href="#hud_combineSettings"><span>Drescher steuern</span></a></li>
 						</ul>
 					</li>
@@ -75,6 +80,7 @@
 							<li><a href="#driveMode6"><span>Feldarbeit</span></a></li>
 							<li><a href="#driveMode7"><span>Drescher fährt selbst abtanken</span></a></li>
 							<li><a href="#driveMode8"><span>Güllezubringer</span></a></li>
+							<li><a href="#driveMode9"><span>Schaufel befüllen und entleeren</span></a></li>
 						</ul>
 					</li>
 					<li>
@@ -85,70 +91,94 @@
 			
 			<div class="manualSection" id="controls">
 				<h3>Steuerung</h3>
-				<p>Die Steuerung des Abfahrhelfers funktioniert im wesentlichem mit der Maus, da freie Tasten im Landwirtschafts Simulator ja sehr rar sind. Mit einem Klick auf die <span class="emphasize1">rechte Maustaste</span> aktiviert ihr das Courseplay HUD, in dem ihr den Abfahrer konfigurieren könnt. Zusätzlich sind einige Funktionen wie Abfahrer starten und stoppen auch über die Tastatur über die Tasten <kbd title="Steuerung">STRG</kbd>+<kbd title="Numpad 7">NUM 7</kbd> bis <kbd title="Steuerung">STRG</kbd>+<kbd title="Numpad 9">NUM 9</kbd> belegt. Im HUD kann das Öffnen/Schließen auch auf die Tastatur gelegt werden (standardmäßig: <kbd title="Steuerung">STRG</kbd>+<kbd title="Entfernen">ENTF</kbd>).</p>
+				<p>Die Steuerung des Abfahrhelfers funktioniert im wesentlichem mit der Maus, da freie Tasten im Landwirtschafts Simulator ja sehr rar sind. Mit einem Klick auf die <span class="emphasize1">rechte Maustaste</span> aktiviert ihr das Courseplay HUD, in dem ihr den Abfahrer konfigurieren könnt. Zusätzlich sind einige Funktionen wie Abfahrer starten und stoppen auch über die Tastatur über die Tasten <kbd title="Steuerung">STRG</kbd>+<kbd title="Numpad 7">NUM 7</kbd> bis <kbd title="Steuerung">STRG</kbd>+<kbd title="Numpad 9">NUM 9</kbd> belegt. Im HUD kann das Öffnen/Schließen auch auf die Tastatur gelegt werden (Standardeinstellung: <kbd title="Steuerung">STRG</kbd>+<kbd title="Entfernen">ENTF</kbd>).</p>
 			</div>
 			
 			<div class="manualSection" id="hud">
 				<h3>HUD</h3>
 				<p>Wenn ihr das HUD öffnet, wird automatisch die Maussteuerung aktiviert. Das heißt, ihr könnt euch mit der Maus nicht mehr umgucken. Um die Maussteuerung zu deaktivieren, müsst ihr einfach nochmal auf die rechte Maustaste klicken. Alternativ könnt ihr auch auf das <span class="hudIcon closeHud inline" title="HUD schließen">x</span> oben rechts im HUD klicken. Dabei wird das HUD geschlossen und die Maussteuerung wieder deaktiviert.</p>
-				<p>Das HUD ist in mehrere Unterseiten unterteilt. Diese könnt ihr mit den links-/rechts-Pfeilen <span class="hudIcon arrowLeft inline" title="Pfeil links">&lsaquo;</span>/<span class="hudIcon arrowRight inline" title="Pfeil rechts">&rsaquo;</span> im oberen Bereich des HUDs wechseln. Im mittleren Bereich des HUDs könnt ihr auf jeder Unterseite verschiedene Einstellungen vornehmen oder Befehle geben. Klickt dazu einfach auf die gewünschte Aktion bzw. die entsprechenden Buttons (<span class="hudIcon plus inline" title="plus">+</span>/<span class="hudIcon minus inline" title="minus">-</span>/<span class="hudIcon arrowLeft inline" title="Pfeil links">&lsaquo;</span>/<span class="hudIcon arrowRight inline" title="Pfeil rechts">&rsaquo;</span>). Bestimmte Werte oder Einstellungen wie das Durchblättern der Kurse, oder das Einstellen von Breiten, Geschwindigkeiten oder Prozentzahlen etc. können durch drücken der <kbd title="Steuerung">STRG</kbd>-Taste in größeren Schritten verändert werden.</p>
+				<p>Das HUD ist in mehrere Unterseiten unterteilt. Diese könnt ihr mit den links-/rechts-Pfeilen <span class="hudIcon arrowLeft inline" title="Pfeil links">&lsaquo;</span>/<span class="hudIcon arrowRight inline" title="Pfeil rechts">&rsaquo;</span> im oberen Bereich des HUDs wechseln. Alternativ kann eine Seite durch die Buttons am oberen Rand direkt aufgerufen werden. Dabei ist zu beachten dass bestimmte Seiten deaktiviert sind wenn man in einem bestimmten Modus ist.</p>
+				<p>Im mittleren Bereich des HUDs könnt ihr auf jeder Unterseite verschiedene Einstellungen vornehmen oder Befehle geben. Klickt dazu einfach auf die gewünschte Aktion bzw. die entsprechenden Buttons (<span class="hudIcon plus inline" title="plus">+</span>/<span class="hudIcon minus inline" title="minus">-</span>/<span class="hudIcon arrowLeft inline" title="Pfeil links">&lsaquo;</span>/<span class="hudIcon arrowRight inline" title="Pfeil rechts">&rsaquo;</span>). Bestimmte Werte oder Einstellungen wie das Durchblättern der Kurse, oder das Einstellen von Breiten, Geschwindigkeiten oder Prozentzahlen etc. können durch drücken der <kbd title="Steuerung">STRG</kbd>-Taste in größeren Schritten verändert werden.</p>
 				<p>Im unteren Bereich des HUDs findet ihr Infos über euren Abfahrer, den geladenen Kurs und den aktuellen Status. Dort könnt ihr durch einen Klick auf die Diskette <span class="hudIcon save inline" title="Kurs speichern"></span> euren eingefahrenen Kurs auch speichern.</p>
 			</div>
 			
 			<div class="manualSection" id="hud_driverControls">
 				<h3>HUD: Abfahrhelfer Steuerung</h3>
+				<div class="manualSubSection">
+					<h5>Kein Kurs geladen</h5>
+					<ul>
+						<li>
+							<h4>Kursaufzeichnung beginnen</h4>
+							<p>Mit dieser Option wird der Aufnahmemodus des Abfahrhelfers aktiviert. Ihr könnt damit den Kurs einfahren den der Abfahrer später fahren soll. Bei Aktivierung werden anfangs drei Eier im Abstand von 10-20 Metern gesetzt. Ihr solltet darauf achten, dass ihr bis zum dritten Ei nach Möglichkeit geradeaus fahrt.</p>
+							<p>Wenn ihr diese Funktion aktiviert habt, könnt ihr mit der rechten Maustaste die Maussteuerung deaktivieren, damit ihr euch beim Einfahren des Kurses auch umschauen könnt.</p>
+						</li>
+						<li>
+							<h4>Kursaufzeichnung anhalten</h4>
+							<p>Wenn die Kursaufzeichnung läuft, könnt ihr mit dieser Funktion die Kursaufzeichnung pausieren. Es wird ein gelber Pfeil angezeigt, der zum letzten Wegpunkt zeigt. Zusätzlich könnt ihr in diesem Modus auch den letzten Wegpunkt löschen.</p>
+						</li>
+						<li>
+							<h4>Kursaufzeichnung beenden</h4>
+							<p>Diese Aktion ist nur im Aufnahmemodus verfügbar und dient dazu, diesen zu beenden. Klickt auf diese Funktion, wenn ihr den Endpunkt eurer eingefahrenen Route erreicht habt. Es empfiehlt sich, dass der Endpunkt etwa 5-10 Meter vor dem Startpunkt liegt und dass man grob aus der Richtung kommt, in die der Abfahrer beim Startpunkt auch weiterfahren soll.</p>
+						</li>
+						<li>
+							<h4>Hier Wartepunkt setzen</h4>
+							<p>Im Aufnahmemodus habt ihr die Möglichkeit auf der Strecke Wartepunkte zu setzen. An diesen Punkten wird der Abfahrer später beim Abfahren anhalten bis man ihn manuell weiter schickt oder die eingestellte Zeit abgelaufen ist. Wenn ein Abfahrer einen Wartepunkt erreicht hat, wird euch das am unteren Bildschirmrand angezeigt.</p>
+						</li>
+						<li>
+							<h4>Hier Kreuzungspunkt setzen</h4>
+							<p>Kreuzungspunkte sind "Signal-" oder "Kombinationspunkte", an denen verschiedene Kurse kombiniert werden können (siehe <a href="#hud_manageCourses" class="internalTab">Kurse verwalten</a>). Hierbei werden dann bei den beiden die ersten Kursen zwei Kreuzungspunkte gesucht, die weniger als 50m voneinander entfernt sind. Der kombinierte Kurs wird dann den ersten Kurs bis zu dem Kreuzungspunkt, und ab dort den zweiten Kurs ab dessen Kreuzungspunkt sein.</p>
+							<figure>
+								<img src="../../res/img/crossingPoints_de.png" alt="Kreuzungspunkte Diagramm" class="infoImg">
+								<figcaption>Fig. 1: Kombination von zwei Kursen an Kreuzungspunkten</figcaption>
+							</figure>
+							<p><span class="emphasize1">Hinweis:</span> Start- und Endpunkte von Kursen sind immer automatisch Kreuzungspunkte, müssen also nicht extra als solche deklariert werden.</p>
+						</li>
+					</ul>
+				</div>
+				<div class="manualSubSection">
+					<h5>Kurs geladen, Fahrer inaktiv</h5>
+					<ul>
+						<li>
+							<h4>Abfahrer einstellen</h4>
+							<p>Wenn ihr einen Kurs eingefahren oder geladen habt, könnt ihr jetzt den Abfahrer einstellen. Dabei wird der Abfahrhelfer aktiviert und fährt seine Route ab. Die manuelle Steuerung des Schleppers wird dadurch deaktiviert.</p>
+						</li>
+						<li>
+							<h4>Abfahrer-Typ wechseln</h4>
+							<p>Damit der Abfahrhelfer möglichst viele Aufgaben erledigen kann, gibt es verschiedene Fahrmodi. Der aktuelle Typ wird im unteren Bereich des HUDs angezeigt. Mit Klick auf diese Aktion könnt ihr die Typen durchschalten.</p>
+							<p>Alternativ kann man auch die neun Buttons auf der rechten Seite der Hud benutzen. Diese haben den Vorteil dass man nicht durchschalten muss, sondern direkt den gewünschten Fahrmodus auswählen kann.</p>
+							<p>Die Funktionen der einzelnen Fahrmodi werden unter <a class="internalTab" href="#driveModes">Fahrmodi</a> beschrieben.</p>
+						</li>
+						<li>
+							<h4>Wegpunkte löschen</h4>
+							<p>Wenn ein Kurs eingefahren ist, könnt ihr über diese Option den Kurs wieder zurücksetzen. Dabei wird der gespeicherte Kurs nicht aus der Konfigurationsdatei gelöscht, sondern nur der aktuelle Abfahrer wieder zurückgesetzt.</p>
+						</li>
+						<li>
+							<h4>Kurs beginnen am&hellip;</h4>
+							<p class="emphasize2">In allen Modi außer "Schaufel befüllen und entleeren" verfügbar</p>
+							<p>Manche bestimmte Kurse haben relativ viele Punkte in einem kleinen Bereich, gerade am Startpunkt (z.B. generierte Kurse mit Vorgewende). Hier kann ausgewählt werden ob der Kurs am nächstgelegenen Punkt (Standardeinstellung) oder fest am ersten Punkt begonnen werden soll.</p>
+						</li>
+					</ul>
+				</div>
+				<div class="manualSubSection">
+					<h5>Kurs geladen, Fahrer aktiv</h5>
+					<ul>
+						<li>
+							<h4>Abfahrer entlassen</h4>
+							<p>Den aktivierten Abfahrer könnt ihr auch jederzeit entlassen bzw. anhalten. Wenn ihr den Abfahrhelfer später wieder aktiviert, wird er seine Route am nächsten Wegpunkt fortführen.</p>
+						</li>
+						<li>
+							<h4>weiterfahren</h4>
+							<p>Diese Option steht euch zur Verfügung wenn der Abfahrer einen Wartepunkt erreicht hat.</p>
+						</li>
+						<li>
+							<h4>Spurreißer</h4>
+							<p class="emphasize2">Nur im Dünge- und Sämodus verfügbar</p>
+							<p>Wird eine Sämaschine auf einem generierten Kurs eingesetzt, kann man hier auswählen, ob die Spurreißer automatisch gesetzt werden sollen oder man sie manuell steuert.</p>
+						</li>
+					</ul>
+				</div>
+				
 				<ul>
-					<li>
-						<h4>Kursaufzeichnung beginnen</h4>
-						<p>Mit dieser Option wird der Aufnahmemodus des Abfahrhelfers aktiviert. Ihr könnt damit den Kurs einfahren den der Abfahrer später fahren soll. Bei Aktivierung werden anfangs drei Eier im Abstand von 10-20 Metern gesetzt. Ihr solltet darauf achten, dass ihr bis zum dritten Ei nach Möglichkeit geradeaus fahrt.</p>
-						<p>Wenn ihr diese Funktion aktiviert habt, könnt ihr mit der rechten Maustaste die Maussteuerung deaktivieren, damit ihr euch beim Einfahren des Kurses auch umschauen könnt.</p>
-					</li>
-					<li>
-						<h4>Kursaufzeichnung anhalten</h4>
-						<p>Wenn die Kursaufzeichnung läuft, könnt ihr mit dieser Funktion die Kursaufzeichnung pausieren. Es wird ein gelber Pfeil angezeigt, der zum letzten Wegpunkt zeigt. Zusätzlich könnt ihr in diesem Modus auch den letzten Wegpunkt löschen.</p>
-					</li>
-					<li>
-						<h4>Kursaufzeichnung beenden</h4>
-						<p>Diese Aktion ist nur im Aufnahmemodus verfügbar und dient dazu, diesen zu beenden. Klickt auf diese Funktion, wenn ihr den Endpunkt eurer eingefahrenen Route erreicht habt. Es empfiehlt sich, dass der Endpunkt etwa 5-10 Meter vor dem Startpunkt liegt und dass man grob aus der Richtung kommt, in die der Abfahrer beim Startpunkt auch weiterfahren soll.</p>
-					</li>
-					<li>
-						<h4>Hier Wartepunkt setzen</h4>
-						<p>Im Aufnahmemodus habt ihr die Möglichkeit auf der Strecke Wartepunkte zu setzen. An diesen Punkten wird der Abfahrer später beim Abfahren anhalten bis man ihn manuell weiter schickt oder die eingestellte Zeit abgelaufen ist. Wenn ein Abfahrer einen Wartepunkt erreicht hat, wird euch das am unteren Bildschirmrand angezeigt.</p>
-					</li>
-					<li>
-						<h4>Hier Kreuzungspunkt setzen</h4>
-						<p>Kreuzungspunkte sind "Signal-" oder "Kombinationspunkte", an denen verschiedene Kurse kombiniert werden können (siehe <a href="#hud_manageCourses" class="internalTab">Kurse verwalten</a>). Hierbei werden dann bei den beiden die ersten Kursen zwei Kreuzungspunkte gesucht, die weniger als 50m voneinander entfernt sind. Der kombinierte Kurs wird dann den ersten Kurs bis zu dem Kreuzungspunkt, und ab dort den zweiten Kurs ab dessen Kreuzungspunkt sein.</p>
-						<figure>
-							<img src="../../res/img/crossingPoints_de.png" alt="Kreuzungspunkte Diagramm" class="infoImg">
-							<figcaption>Fig. 1: Kombination von zwei Kursen an Kreuzungspunkten</figcaption>
-						</figure>
-						<p><span class="emphasize1">Hinweis:</span> Start- und Endpunkte von Kursen sind immer automatisch Kreuzungspunkte, müssen also nicht extra als solche deklariert werden.</p>
-					</li>
-					<li>
-						<h4>Abfahrer einstellen</h4>
-						<p>Wenn ihr einen Kurs eingefahren oder geladen habt, könnt ihr jetzt den Abfahrer einstellen. Dabei wird der Abfahrhelfer aktiviert und fährt seine Route ab. Die manuelle Steuerung des Schleppers wird dadurch deaktiviert.</p>
-					</li>
-					<li>
-						<h4>Abfahrer entlassen</h4>
-						<p>Den aktivierten Abfahrer könnt ihr auch jederzeit entlassen bzw. anhalten. Wenn ihr den Abfahrhelfer später wieder aktiviert, wird er seine Route am nächsten Wegpunkt fortführen.</p>
-					</li>
-					<li>
-						<h4>weiterfahren</h4>
-						<p>Diese Option steht euch zur Verfügung wenn der Abfahrer einen Wartepunkt erreicht hat.</p>
-					</li>
-					<li>
-						<h4>Abfahrer-Typ wechseln</h4>
-						<p>Damit der Abfahrhelfer möglichst viele Aufgaben erledigen kann, gibt es verschiedene Fahrmodi. Der aktuelle Typ wird im unteren Bereich des HUDs angezeigt. Mit Klick auf diese Aktion könnt ihr die Typen durchschalten.</p>
-						<p>Die Funktionen der einzelnen Fahrmodi werden unter <a class="internalTab" href="#driveModes">Fahrmodi</a> beschrieben.</p>
-					</li>
-					<li>
-						<h4>Wegpunkte löschen</h4>
-						<p>Wenn ein Kurs eingefahren ist, könnt ihr über diese Option den Kurs wieder zurücksetzen. Dabei wird der gespeicherte Kurs nicht aus der Konfigurationsdatei gelöscht, sondern nur der aktuelle Abfahrer wieder zurückgesetzt.</p>
-					</li>
-					<li>
-						<h4>Kurs generieren</h4>
-						<p>Siehe <a href="#generateCourse" class="internalTab">Kurs generieren</a>.</p>
-					</li>
 				</ul>
 			</div>
 
@@ -270,6 +300,7 @@
 			<div class="manualSection" id="hud_speeds">
 				<h3>HUD: Geschwindigkeiten</h3>
 				<p>Hier könnt ihr festlegen, wie schnell euer Abfahrer fahren soll. Auch kann gewählt werden, ob ein Kurs mit der Geschwindigkeit, die bei der Aufnahme eingefahren wurde, oder mit der höchstmöglichen (einstellbaren) Geschwindigkeit abgefahren werden soll.</p>
+				<p><code>Geschwindigkeit: wie beim einfahren</code> and <code>Geschwindigkeit: maximale Geschwindigkeit</code> legt fest, ob die beim Aufzeichnen verwendete Geschwindkeit oder die maximale Geschwindigkeit benutzt werden soll.</p>
 				<p>ESLimiter wird ab Version 3.0 unterstützt.</p>
 				<dl class="buttonInfo">
 					<dt>Standard-Änderung</dt>
@@ -328,10 +359,10 @@
 						<p>Nur für den Feldarbeits- und Dünge/Saatmodus. Für manche Geräte ist es wichtig, den Kurs nicht exakt in der Mitte, sondern nach links oder rechts versetzt abzufahren (z.B. Ballensammelwagen). Dieser Versatz kann hier eingestellt werden.</p>
 						<dl class="buttonInfo">
 							<dt>Standard-Änderung</dt>
-							<dd>0.5 m</dd>
+							<dd>0.5m</dd>
 							<div class="clearfix"></div>
 							<dt><kbd title="Steuerung">STRG</kbd>-Änderung</dt>
-							<dd>1 m</dd>
+							<dd>1m</dd>
 							<div class="clearfix"></div>
 						</dl>
 					</li>
@@ -340,31 +371,116 @@
 						<p>Nur für den Feldarbeits- und Dünge/Saatmodus. Identisch zum horizontalen Versatz, nur dass man den Versatz nach vorne/hinten einstellt.</p>
 						<dl class="buttonInfo">
 							<dt>Standard-Änderung</dt>
-							<dd>0.5 m</dd>
+							<dd>0.5m</dd>
 							<div class="clearfix"></div>
 							<dt><kbd title="Steuerung">STRG</kbd>-Änderung</dt>
-							<dd>1 m</dd>
+							<dd>1m</dd>
 							<div class="clearfix"></div>
 						</dl>
 					</li>
 					<li>
-						<h4>Arbeitsbreite</h4>
-						<p>Wird für die <a href="#generateCourse" class="internalTab">Generierung von Feldkursen</a> benötigt. Hier wird die Arbeitsbreite des Gerätes eingestellt, aus der dann die Breite der Bahnen errechnet wird.</p>
-						<dl class="buttonInfo">
-							<dt>Standard-Änderung</dt>
-							<dd>0.1 m</dd>
-							<div class="clearfix"></div>
-							<dt><kbd title="Steuerung">STRG</kbd>-Änderung</dt>
-							<dd>0.5 m</dd>
-							<div class="clearfix"></div>
-						</dl>
+						<h4>Kurs kopieren</h4>
+						<p>Kopiert den exakten Kurs und seine Wegpunkte von einem anderen Fahrzeug. Funktioniert auch mit kombinierten, generierte und nicht abgespeicherten Kursen.</p>
+						<p>Wählt zuerst das Fahrzeug dessen Kurs ihr kopieren möchtet, drückt dann den <span class="hudIcon copy inline" title="Kopieren-Knopf">[kopieren]</span> Knopf. Der aktuelle Kurs und seine Wegpunkte werden komplett überschrieben.</p>
 					</li>
 				</ul>
 			</div>
-			
+
+			<div class="manualSection" id="hud_courseGeneration">
+				<h3>HUD: Kursgenerierung</h3>
+				<p class="emphasize2">Diese Seite wird nur in den "Dünge-/Sä-" und "Feldarbeits"-Modi angezeigt.</p>
+				<p>Für die allgemeine Benutzung, bitte die <a href="#generateCourse" class="internalTab">Kursgenerierungs</a>-Seite lesen.</p>
+				<ul>
+					<li>
+						<h4>Arbeitsbreite</h4>
+						<p>Hier wird die Arbeitsbreite des Gerätes eingestellt, aus der dann die Breite der Bahnen errechnet wird.</p>
+						<dl class="buttonInfo">
+							<dt>Standard-Änderung</dt>
+							<dd>0.1m (ab über 10m: 0.5m)</dd>
+							<div class="clearfix"></div>
+							<dt><kbd title="Steuerung">STRG</kbd>-Änderung</dt>
+							<dd>0.5m (ab über 10m: 2m)</dd>
+							<div class="clearfix"></div>
+						</dl>
+					</li>
+					<li>
+						<h4>Startecke</h4>
+						<p>Die Feldecke wählen wo der Kurs beginnen soll</p>
+					</li>
+					<li>
+						<h4>Startrichtung</h4>
+						<p>Die Richtung wählen, in die die erste Bahn geht. Auswahlmöglichkeiten hängen von der Startecke ab.</p>
+					</li>
+					<li>
+						<h4>Am Startpunkt enden</h4>
+						<p>Wählen, ob der Fahrer zum ersten (Start-) Punkt zurückfahren soll wenn das Gerät voll (Feldarbeitsmodus) bzw. leer (Dünge- und Sämodus) ist.</p>
+					</li>
+					<li>
+						<h4>Vorgewende</h4>
+						<p>Auswählen ob der Kurs eine Bahn Vorgewende (<a href="http://de.wikipedia.org/wiki/Vorgewende" title="Mehr über Vorgewende auf Wikipedia lesen" class="iconLink"><span class="hudIcon wiki inline">Wikipedia</span></a>), und ob das Vorgewende am davor (z.B. beim Drescher) oder danach (z.B. beim Säer) sein soll.</p>
+					</li>
+					<li>
+						<h4>Kurs generieren</h4>
+						<p>Den Kurs schlussendlich mit den oberen Einstellungen generieren. Voraussetzungen sind:<br />
+						<ol>
+							<li>es muss ein Kurs mit mindestens <span class="emphasize2">5 Wegpunkten</span> geladen sein (wenn Vorgewende aktiviert ist, muss der Kurs mindestens <span class="emphasize2">20 Wegpunkte</span> haben)</li>
+							<li>der geladene Kurs wurde nicht generiert</li>
+							<li>der geladene Kurs wurde nicht aus mehreren Kursen kombiniert</li>
+							<li>die Startecke ist festgelegt</li>
+							<li>die Startrichtung ist festgelegt</li>
+						</ol>
+					</li>
+				</ul>
+			</div>
+
+			<div class="manualSection" id="hud_shovelSettings">
+				<h3>HUD: Schaufelstellung</h3>
+				<p class="emphasize2">Diese Seite wird nur im "Schaufel befüllen und entleeren"-Modus angezeigt.</p>
+				<p>Den Arm, die Schaufel und den Greifer wie gewünscht positionieren, dann den entsprechenden Knopf drücken. Die eingestellten Positionen können jederzeit überschrieben werden.</p>
+				<ul>
+					<li>
+						<h4>Position "Beladen"</h4>
+						<p>Die Position des Arms, der Schaufel und des Greifers während dem Beladen.</p>
+						<figure>
+							<img src="../../res/img/manual_mode9_01_loading.png" alt="Schaufel in Ladeposition" class="infoImg origSize">
+							<figcaption>Fig. 1: Schaufel in normaler Ladeposition</figcaption>
+						</figure>
+					</li>
+					<li>
+						<h4>Position "Transport"</h4>
+						<p>Die Position des Arms, der Schaufel und des Greifers während dem Transport.</p>
+						<figure>
+							<img src="../../res/img/manual_mode9_02_transport.png" alt="Schaufel in Transportposition" class="infoImg origSize">
+							<figcaption>Fig. 2: Schaufel in normaler Transportposition</figcaption>
+						</figure>
+					</li>
+					<li>
+						<h4>Position "vor Abladen"</h4>
+						<p>Die Position des Arms, der Schaufel und des Greifers vor dem Abladen.</p>
+						<figure>
+							<img src="../../res/img/manual_mode9_03_pre-unloading.png" alt='Schaufel in "vor Abladen"-Position' class="infoImg origSize">
+							<figcaption>Fig. 3: Schaufel in normaler "vor Abladen"-Position</figcaption>
+						</figure>
+					</li>
+					<li>
+						<h4>Position "Abladen"</h4>
+						<p>Die Position des Arms, der Schaufel und des Greifers während dem Abladen.</p>
+						<figure>
+							<img src="../../res/img/manual_mode9_04_unloading.png" alt="Schaufel in Abladeposition" class="infoImg origSize">
+							<figcaption>Fig. 4: Schaufel in normaler Abladeposition</figcaption>
+						</figure>
+					</li>
+					<li>
+						<h4>Stop + go Laden</h4>
+						<p>Wenn aktiviert, hält der Fahrer an sobald die Schaufel befüllt wird, fährt dann weiter wenn sie nicht mehr befüllt wird bis zum Punkt wo sie wieder befüllt wird.</p>
+						<p>Wenn deaktiviert, fährt der Fahrer durch das Silo, während die Schaufel während dem Fahren befüllt wird (Standardeinstellung).</p>
+					</li>
+				</ul>
+			</div>
+
 			<div class="manualSection" id="hud_combineSettings">
 				<h3>HUD: Drescher steuern</h3>
-				<p>Diese Seite wird nur bei Dreschern und Häckslern angezeigt.</p>
+				<p class="emphasize2">Diese Seite wird nur bei Dreschern und Häckslern angezeigt.</p>
 				<ul>
 					<li>
 						<h4>Abfahrer rufen/gerufen</h4>
@@ -380,12 +496,20 @@
 					</li>
 					<li>
 						<h4>Abfahrerseite</h4>
-						<p>Nur bei Häckslern.</p>
+						<p class="emphasize2">Nur bei Häckslern.</p>
 						<p>Standardmäßig suchen sich die Abfahrer automatisch die richtige (Nicht-Frucht-) Seite zum Fahren neben dem Häcksler. Mit dieser Funktion kann eine feste Seite festgelegt werden (z.B. wenn man manuell das Feld im Kreis abfährt).</p>
+					</li>
+					<li>
+						<h4>Wendemanöver</h4>
+						<p class="emphasize2">Wird nur bei Häckslern angezeigt, und nur solange sie nicht im Helfer- oder Feldarbeitsmodus sind (sprich: nur wenn sie manuell gesteuert werden).</p>
+						<p>Sendet ein Signal an den Abfahrer dass der Häcksler nun das Wendemanöver beginnt. Der Abfahrer wird aus dem Weg fahren und selber anfangen zu wenden. Ein nochmaliger Klick bewirkt dass der Abfahrer zurückkommt an die Seite kommt und wieder ablädt.</p>
 					</li>
 				</ul>
 			</div>
-			
+
+
+
+			<!-- ### DRIVEMODES ### -->
 			<div class="manualSection" id="driveModes">
 				<h3>Fahrmodi</h3>
 				<p>Im Folgenden die Erklärung der verschiedenen Fahrmodi:</p>
@@ -399,6 +523,7 @@
 							<figcaption>Fig. 1: Start-, Weg-, und Stoppunkte im Abfahrermodus</figcaption>
 						</figure>
 					</li>
+					
 					<li id="driveMode2">
 						<h4>kombiniert</h4>
 						<p>Der kombinierte Modus ist sehr ähnlich zum "Abfahrer"-Modus, insofern dass der Traktor einen Kurs abfährt und in einem Trigger entlädt. Zusätzlich tankt der Abfahrer aber noch einen Drescher oder Häcksler ab.</p>
@@ -410,6 +535,7 @@
 							</ol>
 						</p>
 					</li>
+					
 					<li id="driveMode3">
 						<h4>Überladewagen</h4>
 						<p>Der Überlademodus ist leicht ähnlich zum kombinierten Modus, insofern dass der Fahrer einen Drescher abtankt. Aber anstatt dann zu einem Entladetrigger zu fahren, überlädt er in einen wartenden Anhänger. Auch hier kann der Drescher automatisch gefunden oder manuell gesetzt werden.</p>
@@ -420,6 +546,7 @@
 							<figcaption>Fig. 2: Start-, Weg-, Warte- und Stoppunkte im Überlademodus</figcaption>
 						</figure>
 					</li>
+					
 					<li id="driveMode4">
 						<h4>Düngen und Säen</h4>
 						<p>Beim Düngen/Säen gibt es zwei Sektionen: zunächst die eigentliche Arbeit auf dem Feld, zum anderen die Fahrt zum Dünger-/Saattrigger um dort das Gerät wieder zu befüllen.</p>
@@ -428,17 +555,19 @@
 							<li><p>Man fährt den Kurs selber ein. Hierbei ist zu beachten dass zwei Wartepunkte benötigt werden. Den ersten an dem Punkt, wo mit der Arbeit begonnen werden soll, den zweiten an dem Punkt, wo die Arbeit beendet werden soll. Dieser Arbeitsbereich ist unabdinglich für das korrekte Funktionieren in diesem Modus.</p></li>
 							<li><p>Der Kurs wird automatisch generiert. Siehe dazu <a class="internalTab" href="#generateCourse">Kurs generieren</a>. Die Wartepunkte werden hierbei schon automatisch gesetzt.</p></li>
 						</ol>
-						<p>Der zweite Abschnitt, das automatische Auftanken/Auffüllen, ist ein ganz normaler "A nach B"-Kurs. Er sollte am zweiten Wartepunkt, also dem Ende des Feldkurses, beginnen, dann durch den Dünger-/Saattrigger führen, und zurück und kurz vor dem ersten Wartepunkt enden. Der Fahrer hält, sofern er einen Aufladetrigger erkennt, automatisch an und füllt auch automatisch auf. Sollte ein Gerät nicht per Trigger aufzufüllen sein (wie z.B. ein Miststreuer), muss an dem Punkt wo er beladen werden soll ein zusätzlicher Wartepunkt gesetzt werden. Dort wartet er dann bis er zu 100% befüllt wurde und fährt weiter.</p>
+						<p>Der zweite Abschnitt, das automatische Auftanken/Auffüllen, ist ein ganz normaler "A nach B"-Kurs. Er sollte am zweiten Wartepunkt, also dem Ende des Feldkurses, beginnen, dann durch den Dünger-/Saattrigger führen, und zurück und kurz vor dem ersten Wartepunkt enden. Der Fahrer hält, sofern er einen Aufladetrigger erkennt, automatisch an und füllt auch automatisch auf bis er 100% erreicht hat. Sollte ein Gerät nicht per Trigger aufzufüllen sein (wie z.B. ein Miststreuer), muss an dem Punkt wo er beladen werden soll ein zusätzlicher Wartepunkt gesetzt werden. Dort wartet er dann bis sein Füllstand die bei <code>Start bei %</code> eingestellte Prozentzahl erreicht hat und fährt weiter.</p>
 						<figure>
 							<img src="../../res/img/manual_mode4_de.png" alt="Düngen/Säen Diagramm" class="infoImg">
 							<figcaption>Fig. 3: Start-, Weg-, Warte- und Stoppunkte im Dünge-/Saatmodus</figcaption>
 						</figure>
 						<p>Sobald das Gerät leer ist, wird es in Transportstellung gebracht und fährt automatisch den Auftankkurs ab. Wieder am Feld angekommen fährt der Traktor zum Punkt wo er zuletzt war als das Gerät leer wurde, bringt das Gerät in Arbeitsstellung und arbeitet weiter.</p>
 					</li>
+					
 					<li id="driveMode5">
 						<h4>Überführung</h4>
 						<p>Der Überführungsmodus ist wohl die simpleste Form um von A nach B zu kommen. Es wird ein ganz normaler Kurs mit Anfang und Ende benötigt, der Fahrer fährt diesen stur ab, ohne zu entladen. Am Ende angekommen fährt der Abfahrer wieder zum ersten Wegpunkt zurück und fährt den Kurs von vorne ab. Wenn dies nicht geschehen soll, muss die Option <code>Warten&nbsp;am&nbsp;letzten&nbsp;Wegpunkt</code> aktiviert werden.</p>
 					</li>
+					
 					<li id="driveMode6">
 						<h4>Feldarbeit</h4>
 						<p>Der Feldarbeitsmodus das Arbeitstier der verschiedenen Modi: es kann zum Ballen pressen, Ballen sammeln, schwadern, wenden, grubbern, und noch mehr benutzt werden.</p>
@@ -454,6 +583,7 @@
 						</figure>
 						<p>Geräte werden automatisch ein-/ausgeklappt und aktiviert. Traktoren mit Rundballenpressen bleiben zum Ballen entladen automatisch stehen und werfen diese aus.</p>
 					</li>
+					
 					<li id="driveMode7">
 						<h4>Drescher fährt selbst abtanken</h4>
 						<p>Dieser Modus funktioniert quasi genauso wie der Überlademodus. Der Kurs muss am Überladepunkt einen Wartepunkt haben, wo der Drescher dann anhält, die Pipe ausklappt und abtankt.</p>
@@ -463,13 +593,14 @@
 						</figure>
 						<p>Der Drescher muss normal als Helfer eingestellt werden, und <span class="emphasize1">erst dann</span> darf Courseplay aktiviert werden. Der Drescher wird als Helfer fahren bis sein Füllstand den bei <code>Start bei %</code> eingestellten Prozentwert erreicht hat. Dann fährt er zum Startpunkt des Kurses und fährt diesen bis zum Wartepunkt, wo er auf einen wartenden Anhänger abtankt. Danach fährt er den Kurs weiter bis zum Kursendpunkt, von wo aus er zum letzten Punkt wo er gedroschen hat fährt. Nun aktiviert er wieder sein Schneidwerk und macht mit der Arbeit weiter.</p>
 					</li>
+					
 					<li id="driveMode8">
 						<h4>Güllezubringer</h4>
 						<p>Der Güllezubringermodus ist für Feldrandcontainer und ähnliche Gerätschaften die einen integrierten Gülletrigger haben. Hierbei wird das Gerät an einem Güllesilo beladen und dann an einen Feldrand gebracht, wo ein im Düngemodus arbeitendes Güllefass automatisch aufgetankt werden kann.</p>
 						<p>Es ist quasi egal wo der Kurs beginnt und endet, nur folgendes muss gegeben sein:</p>
 						<ol>
 							<li><p>Das Gerät muss durch einen Gülletrigger (z.B. Güllesilo) fahren um dort automatisch aufgetankt zu werden.</p></li>
-							<li><p>An dem Punkt wo das sich im Düngemodus arbeitende Güllefass automatisch auftanken soll muss beim Güllecontainer ein Wartepunkt gesetzt werden.</p></li>
+							<li><p>An dem Punkt wo das sich im Düngemodus arbeitende Güllefass automatisch auftanken soll (der Zubringer also anhalten soll), muss beim Güllezubringer ein Wartepunkt gesetzt werden.</p></li>
 						</ol>
 						<figure>
 							<img src="../../res/img/manual_mode8_de.png" alt="Güllezubringer Diagramm" class="infoImg">
@@ -477,11 +608,50 @@
 						</figure>
 						<p>Der Fahrer fährt vom Wartepunkt weiter sobald das Gerät leer ist.</p>
 					</li>
+					
+					<li id="driveMode9">
+						<h4>Schaufel befüllen und entleeren</h4>
+						<p>In diesem Modus wird die Schaufel in einem Bereich (z.B. BGA-Silo) befüllt und an einer festen Stelle (z.B. BGA-Bunker oder Hänger) entladen.</p>
+						<p>Der Kursaufbau <span class="emphasize1 emphasize2">muss</span> wie folgt sein:</p>
+						<figure>
+							<img src="../../res/img/manual_mode9_de.png" alt="Schaufel befüllen und entleeren" class="infoImg">
+							<figcaption>Fig. 7: Alle Punkte und Richtungen im "Schaufel befüllen und entleeren" Modus</figcaption>
+						</figure>
+						<ol>
+							<li>
+								<p>Vor dem Silo beginnen und vorwärts fahren.</p>
+							</li>
+							<li>
+								<p>An dem Punkt, an dem die Schaufel zu laden beginnen soll, Wartepunkt #1 setzen. Dieser Punkt bezeichnet den Beginn des "Befüllen"-Bereichs.</p>
+							</li>
+							<li>
+								<p>Am Ende des Silos einen weiteren Wartepunkt (#2) setzen. Dieser Punkt bezeichnet das Ende des "Befüllen"-Bereichs.</p>
+							</li>
+							<li>
+								<p>Die Fahrtrichtung auf <span class="emphasize2">rückwärts</span> setzen, und rückwärts aus dem Silo herausfahren (und noch ein Stückchen weiter). Versucht, so gerade wie möglich zu fahren.</p>
+							</li>
+							<li>
+								<p>Die Fahrtrichtung auf <span class="emphasize2">vorwärts</span> setzen, und zum zu befüllenden Bunker/Hänger fahren. Die letzten drei oder vier Wegpunkte dieser Sektion sollten so gerade wie möglich sein.</p>
+							</li>
+							<li>
+								<p>An dem Punkt, an dem die Schaufel entleert werden soll, Wartepunkt #3 setzen.</p>
+							</li>
+							<li>
+								<p>Die Fahrtrichtung auf <span class="emphasize2">rückwärts</span> setzen, und möglichst gerade zurücksetzen, bis genügend Platz zum rangieren ist.</p>
+							</li>
+							<li>
+								<p>Die Fahrtrichtung auf <span class="emphasize2">vorwärts</span> setzen und zurück zum Startpunkt fahren.</p>
+							</li>
+						</ol><br />
+						<p>Bevor man den Fahrer startet muss sichergestellt werden, dass die <a href="#hud_shovelSettings" class="internalTab">Schaufelpositionen</a> korrekt gesetzt wurden.</p>
+						<p>Wenn der Fahrer gestartet wird, fährt er zu Wartepunkt #1 und setzt die Schaufel in die <span class="emphasize2">"Beladen"-Position</span>. Er fährt weiter bis die Schaufel voll ist, hält an und setzt die Schaufel in die <span class="emphasize2">Transportposition</span>. Nun wechselt er in den "aus dem Silo zurücksetzen"-Teil des Kurses und fährt den Kurs weiter ab. Vier Wegpunkte vor Wartepunkt #3 wird die Schaufel in die <span class="emphasize2">"vor Abladen"-Position</span> gesetzt und der Fahrer beginnt nach einem Bunker oder Hänger zu suchen. Wenn nichts gefunden wird, hält der Traktor an. Wird etwas gefunden, fährt der Traktor weiter bis die Schaufel in den Bunker/Hänger entleert werden kann. Der Hänger muss nicht nötigerweise direkt an Wartepunkt #3 stehen, er kann auch leicht davor stehen. Doch um einen reibungslosen Ablauf zu gewährleisten sollte er am besten direkt an Wartepunkt #3 stehen. Nach dem Entleeren wird die Schaufel zurück in die <span class="emphasize2">"vor Abladen"-Position</span> gesetzt; der Traktor fährt den "vom Bunker/Hänger zurücksetzen"-Teil des Kurses bis zum Endpunkt ab.</p>
+					</li>
 				</ol>
 			</div>
 		
 			<div class="manualSection" id="generateCourse">
 				<h3>Kurs generieren</h3>
+				<p>Allgemeine Erklärungen zu den jeweiligen Einstellungen: siehe <a href="#hud_courseGeneration" class="internalTab">HUD: Kursgenerierung</a></p>
 				<p>Um einen Feldkurs (für den Dünge-/Saat- bzw. Feldarbeitsmodus) automatisch zu generieren müssen folgende Schritte durchgeführt werden.</p>
 				<ol>
 					<li>
@@ -492,14 +662,47 @@
 						</figure>
 					</li>
 					<li>
-						<p>Die Arbeitsbreite einstellen. Dies kann im HUD unter <a class="internalTab" href="#hud_drivingSettings">Fahr-/Arbeitseinstellungen</a> vorgenommen werden. Die Arbeitsbreite gibt an wie weit die Bahnen voneinander entfernt sein sollen.</p>
+						<p>Die Arbeitsbreite einstellen. Diese gibt an wie weit die Bahnen voneinander entfernt sein sollen.</p>
 					</li>
 					<li>
-						<p>In der Abfahrhelfer-Steuerung auf <code>Kurs generieren</code> klicken.</p>
+						<p>Die Startecke einstellen. Je nach Beschaffenheit des Feldes und der eingestellten Startrichtung kann der Startpunkt an verschieden Positionen liegen:</p>
 						<figure>
-							<img src="../../res/img/generateCourse_2_de.png" alt="Kursgenerierung Diagramm 2" class="infoImg">
-							<figcaption>Fig. 2: Generierter Kurs</figcaption>
+							<img src="../../res/img/generateCourse_3_de.png" alt="Kursgenerierung Diagramm 2: Startecke" class="infoImg">
+							<figcaption>Fig. 2: Zwei mögliche Startpositionen bei Startecke "Nordost"</figcaption>
 						</figure>
+					</li>
+					<li>
+						<p>Die Startrichtung einstellen. Diese Richtung wird die erste Bahn haben.</p>
+					</li>
+					<li>
+						<p><span class="emphasize2">(optional)</span><br />
+						<code>Am Startpunkt enden</code> aktivieren/deaktivieren. Wenn aktiviert, fährt der Fahrer, sobald das Gerät voll (Feldarbeitsmodus) bzw. leer (Dünge-/Sämodus) ist zum Startpunkt (anstatt zum Endpunkt), und von dort aus den Ablade-/Auffüllkurs ab. Dies ist nützlich wenn der Ablade-/Auffüllkurs am Startpunkt beginnt.</p>
+						<figure>
+							<img src="../../res/img/generateCourse_4_de.png" alt="Kursgenerierung Diagramm 3: am Startpunkt enden" class="infoImg">
+							<figcaption>Fig. 3: Der Abfahrer fährt zum Start- anstatt zum Endpunkt zurück</figcaption>
+						</figure>
+						<p>Die Einstellung wird fest in den Kurs geschrieben, kann also nicht dynamisch, während der Kurs gefahren wird, verändert werden.</p>
+					</li>
+					<li>
+						<p><span class="emphasize2">(optional)</span><br />
+						Vorgewende einstellen. Momentan unterstützt Courseplay eine (1) Bahn Vorgewende, das entweder vor (z.B. Drescher) oder nach (z.B. Grubber) dem Feldkurs gefahren werden kann.</p>
+						<p>Wird es davor gefahren, beginnt es (ungefähr) an der eingestellten Startecke. Wird es danach gefahren, geht der Feldkurs direkt in das Vorgewende über.</p>
+						<p>Je nach Form und Größe des Feldes, der ausgewählten Startecke und Startrichtung kann es vorkommen, dass das Vorgewende an einem Punkt beginnt, wo auch einige andere Punkte (z.B. vom restlichen Feldkurs) sind. Dies kann dazu führen, dass der Abfahrer den Startpunkt (Wegpunkt 1) nicht immer findet und trifft. Sollte das passieren, kann auf der Seite <a href="#hud_driverControls" class="internalTab">Abfahrhelfer Steuerung</a> die Option <code>Kurs beginnen am ersten Punkt</code> gesetzt werden.</p>
+					</li>
+					<li>
+						<p>Auf <code>Kurs generieren</code> klicken.</p>
+						<figure>
+							<img src="../../res/img/generateCourse_2_de.png" alt="Kursgenerierung Diagramm 4" class="infoImg">
+							<figcaption>Fig. 4: Generierter Kurs</figcaption>
+						</figure>
+						<p>Wird die Zeile <code>Kurs generieren</code> nicht angezeigt, sollte man überprüfen ob alle Voraussetzungen erfüllt sind:</p>
+						<ol>
+							<li>es muss ein Kurs mit mindestens <span class="emphasize2">5 Wegpunkten</span> geladen sein (wenn Vorgewende aktiviert ist, muss der Kurs mindestens <span class="emphasize2">20 Wegpunkte</span> haben)</li>
+							<li>der geladene Kurs wurde nicht generiert</li>
+							<li>der geladene Kurs wurde nicht aus mehreren Kursen kombiniert</li>
+							<li>die Startecke ist festgelegt</li>
+							<li>die Startrichtung ist festgelegt</li>
+						</ol>
 					</li>
 					<p>Die Wartepunkt am Anfang und Ende werden automatisch gesetzt. Wenn ein Entlade-/Auftankkurs hinzugefügt werden soll, muss der Feldkurs zuerst generiert werden, und danach der Entlade-/Auftankkurs angehängt werden.</p>
 				</ol>
