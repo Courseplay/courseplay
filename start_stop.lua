@@ -80,7 +80,11 @@ function courseplay:start(self)
 
 	for k,workTool in pairs(self.tippers) do    --TODO temporary solution (better would be Tool:getIsAnimationPlaying(animationName))
 		if courseplay:isFolding(workTool) then
-			self:setAIImplementsMoveDown(true);
+			if  self.setAIImplementsMoveDown ~= nil then
+				self:setAIImplementsMoveDown(true)
+			elseif self.setFoldState ~= nil then
+				self:setFoldState(-1, true)
+			end
 		end
 	end
 
