@@ -46,82 +46,115 @@
 		<h2>Frequently Asked Questions</h2>
 		<!--<p>Momentan gibt es hier weder Fragen noch Antworten noch Gedanken. Wie man Courseplay bedient wird genauestens in der <a href="../manual/index.html" title="Anleitung">Anleitung</a> beschrieben.</p>-->
 		
-		<article id="faq_01" class="singleFaq">
+		<article id="faq01" class="singleFaq">
+			<h3>Welche Fahrzeuge und Geräte unterstützt Courseplay?</h3>
+			<div class="faqContent">
+				<p>Courseplay unterstützt alle Giants Standard-Geräte und -Fahrzeuge, ausgenommen dem <span class="emphasize2">Pöttinger Mex6</span> Maishäcksler und dem <span class="emphasize2">Wasseranhänger</span>. Wir unterstützen auch alle Modifikationen, die die standard Spiel-Scripts benutzen.</p>
+				
+				<p>Zusätzlich dazu unterstützen wir spezifisch die folgenden Modifikationen:</p>
+				<ul>
+					<li><span class="emphasize1">Giants Free DLC &mdash; Klassiker der Landwirtschaft</span> &mdash; mit der Ausnahme des <span class="emphasize2">Fahr MH 650</span> Maishäckslers und des <span class="emphasize2">Wasseranhängers</span></li>
+					<li><span class="emphasize1">Giants DLC Ursus AddOn</span> &mdash; ausgenommen dem <span class="emphasize2">Ursus Z-586 Ballenwickler</span></li>
+					<li><span class="emphasize1">Abbey Manure Handling Kit</span> von <span class="emphasize2">FS-UK Modteam</span></li>
+					<li><span class="emphasize1">JF FCT1060 Pro Tec</span> von <span class="emphasize2">NI Modding</span></li>
+					<li><span class="emphasize1">Ropa EuroMaus*</span> und <span class="emphasize1">Holmer Terra Felis*</span> von <span class="emphasize2">Maciusboss1 & Burner</span></li>
+					<li><span class="emphasize1">Claas Liner 4000</span> von <span class="emphasize2">LS-Landtechnik & Fuqsbow-Team</span></li>
+					<li><span class="emphasize1">Tebbe HS180</span> von <span class="emphasize2">Stefan Maurus</span></li>
+					<li><span class="emphasize1">Fuchs Güllefass</span> von <span class="emphasize2">Stefan Maurus</span></li>
+					<li><span class="emphasize1">Kirovets K700A</span> von <span class="emphasize2">SFM</span></li>
+					<li><span class="emphasize1">Claas Lexion 700</span> (einschließlich aller Geräte) von <span class="emphasize2">SFM</span></li>
+				</ul>
+				<p class="annotations"><span class="emphasize1">*</span> diese beiden Rübenlader werden als Drescher unterstützt. Was bedeutet, man muss sie immer noch manuell steuern, doch Abfahrer werden sie automatisch erkennen, anfahren und abladen.</p>
+			</div>
+		</article>
+		
+		<article id="faq02" class="singleFaq">
+			<h3>Nachdem ich mein altes Savegame geladen habe kann ich die Courseplay-Hud nicht mehr öffnen</h3>
+			<div class="faqContent">
+				<p>Mit Courseplay <span class="emphasize1">v3.40</span> haben wir einen Bug beim Speichern der <span class="emphasize2">Tastatur/Maus-Einstellung</span> repariert. Dadurch hat sich der entsprechende Wert in der <code>vehicles.xml</code> geändert. Dementsprechend können die Werte alter Savegames (v3.30 und älter) nicht mehr korrekt geladen werden.</p>
+				
+				<p>Um dies zu lösen muss <span class="emphasize1">für jedes Fahrzeug</span> einmal die Hud mit der Tastatur geöffnet werden (standardmäßig <kbd title="Steuerung">STRG</kbd> + <kbd title="Entfernen">Entf</kbd>) und die Einstellung auf <code>Maus</code> geändert werden. Dies muss nur einmal gemacht werden &mdash; nachdem man das Spiel gespeichert hat wird von un an alles wieder richtig gespeichert und geladen.</p>
+			</div>
+		</article>
+		
+		<article id="faq03" class="singleFaq">
 			<h3>Wie funktioniert der Versatz? &mdash; a.k.a. wie lasse ich mehrere Fahrzeuge im Verbund fahren?</h3>
-			<p>Der <span class="emphasize1">seitliche Versatz</span> kann in zwei verschiedenen Situationen benutzt werden:</p>
-			
-			<ol>
-				<li>Das Arbeitsger&auml;t ist asymmetrisch, so dass man leicht seitlich versetzt (links oder rechts) zum Kurs fahren muss. Das ist z.B. beim Ballenladen oder einem Seitenm&auml;her der Fall.</li>
-				<li>Man m&ouml;chte mehrere Fahrzeuge nebeneinander einen Feldarbeitskurs abfahren lassen (um das Feld schneller zu bearbeiten).</li>
-			</ol>
-			<br />
+			<div class="faqContent">
+				<p>Der <span class="emphasize1">seitliche Versatz</span> kann in zwei verschiedenen Situationen benutzt werden:</p>
 				
-			<h4>Das asymmetrische Ger&auml;t</h4>
-			<p>Berechne (oder sch&auml;tze zumindest) den horizontalen Abstand zwischen dem Punkt des Arbeitsger&auml;tes, der in der Kursmitte sein sollte, und der Mitte des Fahrzeuges. Diese Distanz wird der horizontale Versatz sein. Der Standard-Ballenlader (Arcusin), zum Beispiel, ben&ouml;tigt einen Versatz von etwa <span class="serif">1.5</span> bis <span class="serif">2</span> Meter nach <span class="emphasize2">links</span> (da der Greifer auf der <span class="emphasize2">rechten</span> Seite des Ger&auml;tes ist).</p>
-			<br />
-			
-			
-			<h4>Der Verbund</h4>
-			<p>Um mehrere Fahrzeuge im Verbund fahren zu lassen muss folgendes beachtet werden:</p>
-			<ol>
-				<li>Alle Fahrzeuge benutzen das gleiche Ger&auml;t, mit der gleichen Arbeitsbreite.</li>
-				<li>Starte nicht alle Fahrzeuge zugleich, sondern zeitlich versetzt; ansonsten werden sie sich fr&uuml;her oder sp&auml;ter ineinander verkeilen.</li>
-				<li>Wenn die Arbeitsbreite des Ger&auml;tes keine Ganzzahl ist (<span class="serif">6</span>, <span class="serif">8</span>, <span class="serif">12</span> usw.), sondern im Kommabereich liegt (z.B. <span class="serif">7,5</span>, <span class="serif">3,4</span>), sollte auf die n&auml;chste ganze Zahl abgerundet werden um den Versatz zu berechnen. Dies liegt an unserer Limitierung, dass der Versatz nur in <span class="serif">0,5er</span>-Schritten eingestellt werden kann.</li>
-			</ol>
-			
-			<p>Jedes Fahrzeug muss den selben generierten Kurs benutzen. Die Kursarbeitsbreite ist die Anzahl der Fahrzeuge multipliziert mit der Ger&auml;tearbeitsbreite. Werden zum Beispiel zwei 6m-S&auml;er benutzt, muss die Kursarbeitsbreite <span class="serif">12m</span> sein &ndash; nochmal: jedes Fahrzeug muss diesen 12m-<span class="emphasize1">(Gesamtarbeitsbreite)</span>-Kurs benutzen.</p>
-			
-			<p>Um beim S&auml;erbeispiel zu bleiben wird Fahrzeug #1 auf der <span class="emphasize2">linken</span> Seite des Kurses fahren, mit einem Versatz von <span class="emphasize1">-3 Meter</span>; Fahrzeug #2 wird auf der  <span class="emphasize2">rechten</span> Seite des Kurses mit einem Versatz von <span class="emphasize1">3 Meter</span> fahren.</p>
-			
-			<p>W&auml;hrend sie in der ersten Bahn nebeneinander fahren werden, sollte nicht vergessen werden ihre jeweilige Position, relativ zum Kurs, <span class="emphasize2">immer</span> links bzw. rechts ist. In der n&auml;chsten Bahn scheinen sie also ihre Positionen zu wechseln, doch in Wirklichkeit bleiben sie links bzw. rechts vom Kurs.</p>
-			
-			<p>Die Formel zur Berechnung des Versatzes lautet:</p>
-			<figure>
-				<img src="../../res/img/faq_offset_de.png" alt="Berechnung des jeweiligen Versatzes" class="infoImg">
-				<figcaption>Fig. 1: Berechnung des jeweiligen Versatzes</figcaption>
-			</figure>
-			
-			
-			<p>Wir haben zus&auml;tzlich noch ein Tool zur Berechnung des Versatzes f&uuml;r mehrere Ger&auml;te gebaut:</p>
+				<ol>
+					<li>Das Arbeitsger&auml;t ist asymmetrisch, so dass man leicht seitlich versetzt (links oder rechts) zum Kurs fahren muss. Das ist z.B. beim Ballenladen oder einem Seitenm&auml;her der Fall.</li>
+					<li>Man m&ouml;chte mehrere Fahrzeuge nebeneinander einen Feldarbeitskurs abfahren lassen (um das Feld schneller zu bearbeiten).</li>
+				</ol>
+				<br />
+					
+				<h4>Das asymmetrische Ger&auml;t</h4>
+				<p>Berechne (oder sch&auml;tze zumindest) den horizontalen Abstand zwischen dem Punkt des Arbeitsger&auml;tes, der in der Kursmitte sein sollte, und der Mitte des Fahrzeuges. Diese Distanz wird der horizontale Versatz sein. Der Standard-Ballenlader (Arcusin), zum Beispiel, ben&ouml;tigt einen Versatz von etwa <span class="serif">1.5</span> bis <span class="serif">2</span> Meter nach <span class="emphasize2">links</span> (da der Greifer auf der <span class="emphasize2">rechten</span> Seite des Ger&auml;tes ist).</p>
+				<br />
+				
+				
+				<h4>Der Verbund</h4>
+				<p>Um mehrere Fahrzeuge im Verbund fahren zu lassen muss folgendes beachtet werden:</p>
+				<ol>
+					<li>Alle Fahrzeuge benutzen das gleiche Ger&auml;t, mit der gleichen Arbeitsbreite.</li>
+					<li>Starte nicht alle Fahrzeuge zugleich, sondern zeitlich versetzt; ansonsten werden sie sich fr&uuml;her oder sp&auml;ter ineinander verkeilen.</li>
+					<li>Wenn die Arbeitsbreite des Ger&auml;tes keine Ganzzahl ist (<span class="serif">6</span>, <span class="serif">8</span>, <span class="serif">12</span> usw.), sondern im Kommabereich liegt (z.B. <span class="serif">7,5</span>, <span class="serif">3,4</span>), sollte auf die n&auml;chste ganze Zahl abgerundet werden um den Versatz zu berechnen. Dies liegt an unserer Limitierung, dass der Versatz nur in <span class="serif">0,5er</span>-Schritten eingestellt werden kann.</li>
+				</ol>
+				
+				<p>Jedes Fahrzeug muss den selben generierten Kurs benutzen. Die Kursarbeitsbreite ist die Anzahl der Fahrzeuge multipliziert mit der Ger&auml;tearbeitsbreite. Werden zum Beispiel zwei 6m-S&auml;er benutzt, muss die Kursarbeitsbreite <span class="serif">12m</span> sein &ndash; nochmal: jedes Fahrzeug muss diesen 12m-<span class="emphasize1">(Gesamtarbeitsbreite)</span>-Kurs benutzen.</p>
+				
+				<p>Um beim S&auml;erbeispiel zu bleiben wird Fahrzeug #1 auf der <span class="emphasize2">linken</span> Seite des Kurses fahren, mit einem Versatz von <span class="emphasize1">-3 Meter</span>; Fahrzeug #2 wird auf der  <span class="emphasize2">rechten</span> Seite des Kurses mit einem Versatz von <span class="emphasize1">3 Meter</span> fahren.</p>
+				
+				<p>W&auml;hrend sie in der ersten Bahn nebeneinander fahren werden, sollte nicht vergessen werden ihre jeweilige Position, relativ zum Kurs, <span class="emphasize2">immer</span> links bzw. rechts ist. In der n&auml;chsten Bahn scheinen sie also ihre Positionen zu wechseln, doch in Wirklichkeit bleiben sie links bzw. rechts vom Kurs.</p>
+				
+				<p>Die Formel zur Berechnung des Versatzes lautet:</p>
+				<figure>
+					<img src="../../res/img/faq_offset_de.png" alt="Berechnung des jeweiligen Versatzes" class="infoImg">
+					<figcaption>Fig. 1: Berechnung des jeweiligen Versatzes</figcaption>
+				</figure>
+				
+				
+				<p>Wir haben zus&auml;tzlich noch ein Tool zur Berechnung des Versatzes f&uuml;r mehrere Ger&auml;te gebaut:</p>
 
-			<noscript>Bitte Javascript aktivieren um fortzufahren.</noscript>
-			
-			<div id="offsetCalculator">
-				<h5>Der Versatzrechner</h5>
+				<noscript>Bitte Javascript aktivieren um fortzufahren.</noscript>
 				
-				<div id="textElements">
-					<sub data-lang="en" data-text="courseWorkWidth">Kursarbeitsbreite</sub>
-					<sub data-lang="en" data-text="tool">Ger&auml;t</sub>
-					<sub data-lang="en" data-text="offset">Versatz</sub>
+				<div id="offsetCalculator">
+					<h5>Der Versatzrechner</h5>
+					
+					<div id="textElements">
+						<sub data-lang="en" data-text="courseWorkWidth">Kursarbeitsbreite</sub>
+						<sub data-lang="en" data-text="tool">Ger&auml;t</sub>
+						<sub data-lang="en" data-text="offset">Versatz</sub>
+					</div>
+
+					<form id="input">
+						<fieldset>
+							<label for="amount">Anzahl der Fahrzeuge</label>
+							<select name="amount" id="amount">
+								<option value="2" selected>2</option>
+								<option value="3">3</option>
+								<option value="4">4</option>
+								<option value="5">5</option>
+								<option value="6">6</option>
+								<option value="7">7</option>
+								<option value="8">8</option>
+							</select>
+							<span id="amountText">2</span>
+							<span id="amountplus" class="hudIcon plus inline">+</span>&nbsp;<span id="amountminus" class="hudIcon minus inline hidden">-</span>
+						</fieldset>
+						
+						<fieldset>
+							<label for="workWidth">Arbeitsbreite</label>
+							<input id="workWidth" name="workWidth" type="number" min="1" step="0.5" value="6">
+						</fieldset>
+						
+						<div class="clearfix"></div>
+					</form>
+
+					<button id="save" class="button">Als Bild speichern</button>
+					<div id="stage"></div>
+
 				</div>
-
-				<form id="input">
-					<fieldset>
-						<label for="amount">Anzahl der Fahrzeuge</label>
-						<select name="amount" id="amount">
-							<option value="2" selected>2</option>
-							<option value="3">3</option>
-							<option value="4">4</option>
-							<option value="5">5</option>
-							<option value="6">6</option>
-							<option value="7">7</option>
-							<option value="8">8</option>
-						</select>
-						<span id="amountText">2</span>
-						<span id="amountplus" class="hudIcon plus inline">+</span>&nbsp;<span id="amountminus" class="hudIcon minus inline hidden">-</span>
-					</fieldset>
-					
-					<fieldset>
-						<label for="workWidth">Arbeitsbreite</label>
-						<input id="workWidth" name="workWidth" type="number" min="1" step="0.5" value="6">
-					</fieldset>
-					
-					<div class="clearfix"></div>
-				</form>
-
-				<button id="save" class="button">Als Bild speichern</button>
-				<div id="stage"></div>
-
 			</div>
 		</article>
 		
