@@ -19,7 +19,17 @@
 .singleFaq .faqContent {
 	padding-bottom:20px;
 }
+.singleFaq .faqContent.closed {
+	display:none;
+}
 
+#faq01 ul { margin:0; }
+#faq01 li {
+	list-style-type:none;
+	padding:8px;
+}
+#faq01 li:nth-child(2n)   { background:rgba(20,20,20,0.07); }
+#faq01 li:nth-child(2n-1) { background:rgba(20,20,20,0.035); }
 .annotations {
 	border-top:1px solid #D6D6D6;
 	font-size:0.9em;

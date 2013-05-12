@@ -5,16 +5,21 @@ CP = {};
 
 CP.animationTime = 250;
 CP.el = {
-	secFaq: $('#faq'),
 	faqContent: $('div.faqContent'),
 	faqTitles: $('.singleFaq').find('h3')
 };
-CP.el.faqContent.hide();
+CP.el.faqContent.addClass('closed');
 
 CP.el.faqTitles.on('click', function(evt) {
-	CP.el.faqContent.hide();
-	$(this).next('.faqContent').show();
-	scrollTo('#' + $(this).parents('.singleFaq').attr('id'));
+	var t = $(this),
+		thisFaqContent = t.next('.faqContent'),
+		isOpen = thisFaqContent.hasClass('open');
+
+	CP.el.faqContent.removeClass('open').addClass('closed');
+	if (!isOpen) {
+		thisFaqContent.removeClass('closed').addClass('open');
+		scrollTo('#' + t.parents('.singleFaq').attr('id'));
+	};
 });
 
 function scrollTo(targetId) {
