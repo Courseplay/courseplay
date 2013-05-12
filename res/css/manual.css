@@ -179,3 +179,47 @@ figcaption {
 	font-family:'ACaslonPro-Italic', Caslon, 'Caslon Pro', Garamond, serif;
 	font-style:italic;
 }
+
+.manualSection h3, .manualSection h4 { display:inline-block; }
+.pageButton {
+	background:url(../img/quickPages_website.png) 0 0 repeat scroll transparent;
+	display:inline-block;
+	height:32px;
+	margin-right:10px;
+	opacity:0.9;
+	position:relative;
+	top:5px;
+	width:32px;
+}
+.pageButton.page0 { background-position:0    0;   }
+.pageButton.page1 { background-position:0  -32px; }
+.pageButton.page2 { background-position:0  -64px; }
+.pageButton.page3 { background-position:0  -96px; }
+.pageButton.page4 { background-position:0 -128px; }
+.pageButton.page5 { background-position:0 -160px; }
+.pageButton.page6 { background-position:0 -192px; }
+.pageButton.page7 { background-position:0 -224px; }
+.pageButton.page8 { background-position:0 -256px; }
+.pageButton.page9 { background-position:0 -288px; }
+
+.modeButton {
+	background:url(../img/quickSwitch_website.png) 0 0 repeat scroll transparent;
+	display:inline-block;
+	height:32px;
+	margin-right:5px;
+	opacity:0.9;
+	position:relative;
+	top:4px;
+	width:32px;
+}
+
+.modeButton.mode1 { background-position:0    0;   }
+.modeButton.mode2 { background-position:0  -32px; }
+.modeButton.mode3 { background-position:0  -64px; }
+.modeButton.mode4 { background-position:0  -96px; }
+.modeButton.mode5 { background-position:0 -128px; }
+.modeButton.mode6 { background-position:0 -160px; }
+.modeButton.mode7 { background-position:0 -192px; }
+.modeButton.mode8 { background-position:0 -224px; }
+.modeButton.mode9 { background-position:0 -256px; }
+

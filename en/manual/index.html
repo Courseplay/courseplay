@@ -104,7 +104,10 @@
 			</div>
 			
 			<div class="manualSection" id="hud_driverControls">
-				<h3>HUD: Driver controls</h3>
+				<h3>
+					<div class="pageButton page1"></div>
+					HUD: Driver controls
+				</h3>
 				<div class="manualSubSection">
 					<h5>No course loaded</h5>
 					<ul>
@@ -186,7 +189,10 @@
 			</div>
 			
 			<div class="manualSection" id="hud_manageCourses">
-				<h3>HUD: Manage courses</h3>
+				<h3>
+					<div class="pageButton page2"></div>
+					HUD: Manage courses
+				</h3>
 				<p>On this page you'll find an overview containing your saved courses. The list can be scrolled through by using the up/down arrows <span class="hudIcon arrowUp inline" title="up arrow"></span>/<span class="hudIcon arrowDown inline" title="down arrow"></span> near the hud's right edge.</p>
 				
 				<dl class="buttonInfo">
@@ -222,7 +228,10 @@
 			</div>
 			
 			<div class="manualSection" id="hud_mode2settings">
-				<h3>HUD: Combi mode settings</h3>
+				<h3>
+					<div class="pageButton page3"></div>
+					HUD: Combi mode settings
+				</h3>
 				<p class="emphasize2">This page is displayed in all modes except "Transfer", "Field work" and "Fill and empty shovel".</p>
 				<p>Just like the name implies, these settings are for the combi and overload modes. You can configure your driver to be better suited to unload the combine. The values can be changed by clicking the <span class="hudIcon plus inline" title="plus">+</span>/<span class="hudIcon minus inline" title="minus">-</span> buttons on the right hand side (bigger steps with pressed <kbd title="Control">CTRL</kbd> key).</p>
 				<ul>
@@ -291,14 +300,20 @@
 			</div>
 			
 			<div class="manualSection" id="hud_manageCombine">
-				<h3>HUD: Manage combines</h3>
+				<h3>
+					<div class="pageButton page4"></div>
+					HUD: Manage combines
+				</h3>
 				<p class="emphasize2">This page is displayed only in the "combine" and "overloader" modes.</p>
 				<p>These settings are only relevant for the combine and overloader modes. You can choose between the driver looking for a combine in need automatically (the default setting), or have a assigned, non-changing combine (manual). If the driver has been assigned manually to a combine, it doesn't have to be on the same field as the combine in order to find it. The driver drives from his start point to the combine, no matter where it is.</p>
 				<p>This can be useful for big and hilly fields where the automatic assignment doesn't always work. Or for areas which aren't fields, like meadows.</p>
 			</div>
 			
 			<div class="manualSection" id="hud_speeds">
-				<h3>HUD: Speeds</h3>
+				<h3>
+					<div class="pageButton page5"></div>
+					HUD: Speeds
+				</h3>
 				<p>Here you can set how fast your driver should drive. Also, you can choose if a course should be driven with the speed used during the recording, or the maximum speed.</p>
 				<p>Switching <code>Speed: from recording</code> and <code>Speed: maximum speed</code> determines if the speed used during the recording or the set maximum speed should be used.</p>
 				<p>ESLimiter version 3.0 and upwards is supported.</p>
@@ -313,7 +328,10 @@
 			</div>
 		
 			<div class="manualSection" id="hud_generalSettings">
-				<h3>HUD: General settings</h3>
+				<h3>
+					<div class="pageButton page6"></div>
+					HUD: General settings
+				</h3>
 				<ul>
 					<li>
 						<h4>Path finding</h4>
@@ -340,7 +358,10 @@
 			</div>
 			
 			<div class="manualSection" id="hud_drivingSettings">
-				<h3>HUD: Drive and work settings</h3>
+				<h3>
+					<div class="pageButton page7"></div>
+					HUD: Drive and work settings
+				</h3>
 				<ul>
 					<li>
 						<h4>Waiting time</h4>
@@ -388,7 +409,10 @@
 			</div>
 			
 			<div class="manualSection" id="hud_courseGeneration">
-				<h3>HUD: Course generation</h3>
+				<h3>
+					<div class="pageButton page8"></div>
+					HUD: Course generation
+				</h3>
 				<p class="emphasize2">This page is only displayed in the "Fertilizer and seeding" and "Field work" modes.</p>
 				<p>For general usage, see the <a href="#generateCourse" class="internalTab">course generation</a> page.</p>
 				<ul>
@@ -435,7 +459,10 @@
 			</div>
 
 			<div class="manualSection" id="hud_shovelSettings">
-				<h3>HUD: Shovel positions</h3>
+				<h3>
+					<div class="pageButton page9"></div>
+					HUD: Shovel positions
+				</h3>
 				<p class="emphasize2">This page is only displayed in <a href="#driveMode9" class="internalTab">Fill and empty shovel</a> mode.</p>
 				<p>Position the arm, shovel and grabber to your liking, then click the corresponding button. The positions can be overwritten anytime.</p>
 				<ul>
@@ -480,7 +507,10 @@
 			</div>
 
 			<div class="manualSection" id="hud_combineSettings">
-				<h3>HUD: Combine controls</h3>
+				<h3>
+					<div class="pageButton page0"></div>
+					HUD: Combine controls
+				</h3>
 				<p class="emphasize2">This page is only displayed for combines and choppers.</p>
 				<ul>
 					<li>
@@ -515,6 +545,7 @@
 				<p>There are eight different driving modes:</p>
 				<ol>
 					<li id="driveMode1">
+						<div class="modeButton mode1"></div>
 						<h4>Driving helper</h4>
 						<p>The tractor waits at the first waypoint until his trailer has been filled. This can happen at a silo, at a field edge or anywhere else. As soon as the fill level reaches the set percentage (<code>Drive on at %</code>), the driver starts to drive the course. As soon as he reaches an unloading trigger, he unloads automatically. Afterwards he continues the course to return to the first waypoint.</p>
 						<p>The last waypoint should be 5 to 10 m ahead of the first, and have somewhat the same direction as the first.</p>
@@ -525,6 +556,7 @@
 					</li>
 					
 					<li id="driveMode2">
+						<div class="modeButton mode2"></div>
 						<h4>Combi</h4>
 						<p>The combi mode is very similar to the <a href="#driveMode1" class="internalTab">Driving helper</a> mode, in that the tractor drives a course and unloads at a trigger. But, in addition, the driver unloads a working combine or chopper on the field.</p>
 						<p>The tractor waits at the last waypoint until it has a combine/chopper in reach, and said combine's fill level is above the percentage (<code>Start&nbsp;at&nbsp;%</code>) set for the tractor. Then, the driver drives to the combine, comes from behind, and drives underneath the pipe, where the combine starts to unload into the tractor's trailer. If the trailer isn't full yet (<code>Drive&nbsp;on&nbsp;at&nbsp;%</code>), the tractor turns around and waits in the field for his next unloading operation. As soon as the trailer's fill level is above the <code>Drive&nbsp;on&nbsp;at&nbsp;%</code> percentage, the driver will drive to the course's second waypoint, and from there continue the course, unloading the trailer and returning to the field.</p>
@@ -541,6 +573,7 @@
 					</li>
 					
 					<li id="driveMode3">
+						<div class="modeButton mode3"></div>
 						<h4>Overloader</h4>
 						<p>The overloading mode is somewhat similar to the combi mode, in that the driver unloads a combine. But instead of the driving a course to an unloading trigger, the driver overloads into a waiting trailer. As with the combi mode, a combine can be found automatically or set manually.</p>
 						<p>The course's start point should be in proximity to a waiting trailer (e.g. another tractor in "driver helper" mode). From there, the course must lead to the trailer. When the overloader's pipe is above the waiting trailer (so when it's able to overload), a <span class="emphasize1">waiting point</span> needs to be set. Later, while driving the course, this waiting point tells the overloader to stop, extend the pipe, and start overloading. During, an info message <code>XYZ has reached overload point.</code> will be displayed. When the overloader is empty, the driver will continue the course and wait at the last waypoint for his next unloading operation.</p>
@@ -552,6 +585,7 @@
 					</li>
 					
 					<li id="driveMode4">
+						<div class="modeButton mode4"></div>
 						<h4>Fertilize and seeding</h4>
 						<p>When fertilizing or seeding, there are two sections: one, the actual work part on the field, and two, the course from the field to the refilling trigger and back to the field.</p>
 						<p>The field work course can be created in two different ways:</p>
@@ -573,11 +607,13 @@
 					</li>
 					
 					<li id="driveMode5">
+						<div class="modeButton mode5"></div>
 						<h4>Transfer</h4>
 						<p>The transfer mode is the most simple form to get from A to B. It uses a completely regular course with a start and an end point. The driver blindly follows that course, without unloading or other fancy stuff. Reaching the end, the driver returns to the start point and repeats the course. If you want to prevent that, you need to activate the <code>Stop at last point or at next trigger</code> option.</p>
 					</li>
 					
 					<li id="driveMode6">
+						<div class="modeButton mode6"></div>
 						<h4>Field work</h4>
 						<p>The field work mode is the work horse of all the different modes: it can be used for pressing bales, collecting bales, windrowing, teddering, cultivating and much more.</p>
 						<p>Basically, it works much the same as the fertilizing/seeding mode, only that the tool needs to be emptied/unloaded instead of being refilled. Also, the work area must be defined between two waiting points; the unloading course needs to go through a corresponding trigger.</p>
@@ -598,6 +634,7 @@
 					</li>
 					
 					<li id="driveMode7">
+						<div class="modeButton mode7"></div>
 						<h4>Combine self unloading</h4>
 						<p>This mode works similarly to the overloading mode. The course must have a waiting point at the overloading position, where the combine will stop, extend the pipe, and unload.</p>
 						<figure>
@@ -608,6 +645,7 @@
 					</li>
 					
 					<li id="driveMode8">
+						<div class="modeButton mode8"></div>
 						<h4>Liquid manure transporter</h4>
 						<p>The liquid manure transporting mode is for field containers and similar tools that have an integrated liquid manure filling trigger. The tool is refilled at a liquid manure silo and then driven to a field's edge, where a working liquid manure barrel can refill automatically.</p>
 						<p>It basically doesn't matter where the course begins or ends, only make sure of two things:</p>
@@ -623,6 +661,7 @@
 					</li>
 					
 					<li id="driveMode9">
+						<div class="modeButton mode9"></div>
 						<h4>Fill and empty shovel</h4>
 						<p>This mode lets you fill a shovel in a designated area (e.g. a BGA silo) and unload it into a bunker or trailer.</p>
 						<p>The course setup <span class="emphasize1 emphasize2">has to be</span> as follows:</p>
