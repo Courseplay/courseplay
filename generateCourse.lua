@@ -669,7 +669,7 @@ function courseplay:generateCourse(self)
 	courseplay:validateCourseGenerationData(self);
 	courseplay:validateCanSwitchMode(self);
 
-	courseplay:debug(string.format("generateCourse() finished: %d lanes, %d headland lane(s)", numLanes, numLanes), 1);
+	courseplay:debug(string.format("generateCourse() finished: %d lanes, %d headland lane(s)", numLanes, numHeadlandLanesCreated), 1);
 end;
 
 
