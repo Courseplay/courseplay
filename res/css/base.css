@@ -1,5 +1,5 @@
 /*** TRANSITIONS ***/
-a, button, button:before, div, fieldset, figure, img, input, label, li, span, textarea {
+a, button, button:before, div, fieldset, figure, h3, img, input, label, li, span, textarea {
 	-webkit-transition: all 0.2s;
 	-moz-transition: all 0.2s;
 	-ms-transition: all 0.2s;
@@ -199,6 +199,31 @@ ol ol li:last-child { margin-bottom:0; }
 .hudIcon.arrowDown    { background-position:0 -160px; }
 .hudIcon.copy         { background-position:0 -176px; }
 .hudIcon.wiki         { background-position:0 -192px; }
+
+.toggle { 
+	background: #f9f9f9;
+	border-radius: 3px;
+	border: 1px solid #d6d6d6;
+	color: #888;
+	cursor: pointer;
+	display: none; /* becomes inline-block via JS */
+	font-size: 9px;
+	margin:0 1em 0 0;
+	padding: 3px 5px;
+	position: relative;
+	text-align: center;
+	top:-5px;
+}
+.toggle:hover, .toggle:focus { 
+	border:1px solid #19A7D0;
+	color:#20A8DB;
+/*	border:1px solid #c6c6c6;
+	color:#444; */
+}
+.toggle:active { 
+	border:1px solid #19A7D0;
+	color:#20A8DB;
+}
 
 
 footer { border-top:1px solid #D6D6D6; font-size:0.8em; margin-top:3em; padding:1em 0; }

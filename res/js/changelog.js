@@ -30,7 +30,7 @@ CP.el.changelogToggles.on('click', function() {
 		t.attr('data-icon', openIcon);
 	};
 	
-	console.log('#' + t.parents('div.changelogVersion').attr('id'));
+	//console.log('#' + t.parents('div.changelogVersion').attr('id'));
 	
 });
 

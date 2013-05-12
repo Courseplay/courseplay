@@ -1,6 +1,31 @@
 ;(function ($) { $(document).ready(function () {
 $('body').removeClass('no-js').addClass('js');
+/** TOGGLE **/
+CP = {};
 
+CP.animationTime = 250;
+CP.el = {
+	secFaq: $('#faq'),
+	faqContent: $('div.faqContent'),
+	faqTitles: $('.singleFaq').find('h3')
+};
+CP.el.faqContent.hide();
+
+CP.el.faqTitles.on('click', function(evt) {
+	CP.el.faqContent.hide();
+	$(this).next('.faqContent').show();
+	scrollTo('#' + $(this).parents('.singleFaq').attr('id'));
+});
+
+function scrollTo(targetId) {
+	$('html, body').animate({
+		scrollTop: $(targetId).offset().top
+	}, CP.animationTime);
+} //END scrollTo()	
+
+
+
+/** OFFSET CALCULATOR **/
 $('#input').show();
 
 var maxNumTools = 6;

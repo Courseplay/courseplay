@@ -1,3 +1,35 @@
+.singleFaq {
+	padding:20px 0 0;
+	margin:20px 0;
+}
+
+.singleFaq h3 {
+	cursor:pointer;
+	padding:2px 4px;
+	text-decoration:none;
+}
+.singleFaq h3:hover, .singleFaq h3:focus {
+	color: #20A8DB;
+}
+.singleFaq h3:active {
+	background-color:#20A8DB;
+	color:#F0F0F0;
+}
+
+.singleFaq .faqContent {
+	padding-bottom:20px;
+}
+
+.annotations {
+	border-top:1px solid #D6D6D6;
+	font-size:0.9em;
+	margin-top:20px;
+}
+
+
+
+
+/* OFFSET CALCULATOR */
 #offsetCalculator { border-top:2px solid #c6c6c6; margin-top:20px; padding-top:20px; position:relative; }
 #textElements { display:none; }
 #input { 

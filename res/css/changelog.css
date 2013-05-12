@@ -3,30 +3,6 @@
 .changelogVersion:first-of-type { border-top:none; padding-top:0; }
 .changelogVersion:last-of-type { border-bottom:none; padding-bottom:0; }
 /*.changelogVersion.closed > ul { display:none; }*/ /* only via JS */
-#changelog .toggle { 
-	background: #f9f9f9;
-	border-radius: 3px;
-	border: 1px solid #d6d6d6;
-	color: #888;
-	cursor: pointer;
-	display: none; /* becomes inline-block via JS */
-	font-size: 9px;
-	margin:0 1em 0 0;
-	padding: 3px 5px;
-	position: relative;
-	text-align: center;
-	top:-5px;
-}
-#changelog .toggle:hover, #changelog .toggle:focus { 
-	border:1px solid #19A7D0;
-	color:#20A8DB;
-/*	border:1px solid #c6c6c6;
-	color:#444; */
-}
-#changelog .toggle:active { 
-	border:1px solid #19A7D0;
-	color:#20A8DB;
-}
 
 .changelogVersion ul { margin-left:0; padding-left:0; }
 .changelogVersion ul li { list-style-position:outside; margin-left:1.25em; }
