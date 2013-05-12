@@ -108,6 +108,15 @@
   background: #15A3D9;
 }
 
+#manual h2 { position:relative; }
+#manualVersion {
+	font-family: Source Sans Pro, Open Sans, Segoe UI, Trebuchet MS, sans-serif;
+	font-size: 0.45em;
+	font-style: italic;
+	position: absolute;
+	right: 0;
+	bottom: 7px;
+}
 
 .no-js .manualSection { display:none; }
 .no-js .manualSection:target { display:block; }
