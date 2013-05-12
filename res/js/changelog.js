@@ -6,32 +6,23 @@ CP = {};
 CP.animationTime = 250;
 CP.el = {
 	secChangelog: $('#changelog'),
-	changelogVersions: $('div.changelogVersion'),
+	changelogVersions: $('div.changelogVersion')
 };
-CP.el.changelogVersions.filter('.closed').find('> ul, > dl, > p').hide();
-CP.el.changelogToggles = CP.el.changelogVersions.find('.toggle').css('display', 'inline-block');
-CP.el.changelogToggles.on('click', function() {
+CP.el.changelogTitles = CP.el.changelogVersions.find('h3')
+CP.el.changelogContent = CP.el.changelogVersions.find('.changelogContent');
+CP.el.changelogVersions.filter(':first').find('.changelogContent').addClass('open');
+CP.el.changelogVersions.not(':first').find('.changelogContent').addClass('closed');
+
+CP.el.changelogTitles.on('click', function(evt) {
 	var t = $(this),
-		otherVersions = CP.el.changelogVersions.not(t.parents('div.changelogVersion')).filter('.open'),
-		curIcon = t.attr('data-icon'),
-		closedIcon = t.attr('data-icon-closed'),
-		openIcon = t.attr('data-icon-open');
+		thisContent = t.next('.changelogContent'),
+		isOpen = thisContent.hasClass('open');
 
-	otherVersions.removeClass('open').addClass('closed').find('> ul, > dl, > p').slideUp(CP.animationTime).fadeOut(CP.animationTime);
-	otherVersions.find('.toggle').each(function() {
-		$(this).attr('data-icon', $(this).attr('data-icon-closed'));
-	});
-
-	t.parents('div.changelogVersion').toggleClass('closed open').find('> ul, > dl, > p').slideFadeToggle(CP.animationTime, scrollTo('#' + t.parents('div.changelogVersion').attr('id')));
-	
-	if (t.parents('div.changelogVersion').hasClass('closed')) {
-		t.attr('data-icon', closedIcon);
-	} else {
-		t.attr('data-icon', openIcon);
+	CP.el.changelogContent.removeClass('open').addClass('closed');
+	if (!isOpen) {
+		thisContent.removeClass('closed').addClass('open');
+		scrollTo('#' + t.parents('.changelogVersion').attr('id'));
 	};
-	
-	//console.log('#' + t.parents('div.changelogVersion').attr('id'));
-	
 });
 
 function scrollTo(targetId) {

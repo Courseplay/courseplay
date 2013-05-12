@@ -4,6 +4,21 @@
 .changelogVersion:last-of-type { border-bottom:none; padding-bottom:0; }
 /*.changelogVersion.closed > ul { display:none; }*/ /* only via JS */
 
+.changelogVersion h3 {
+	cursor:pointer;
+	padding:2px 4px;
+	text-decoration:none;
+}
+.changelogVersion h3:hover, .changelogVersion h3:focus {
+	color: #20A8DB;
+}
+.changelogVersion h3:active {
+	background-color:#20A8DB;
+	color:#F0F0F0;
+}
+
+.changelogVersion .changelogContent.closed { display:none; }
+
 .changelogVersion ul { margin-left:0; padding-left:0; }
 .changelogVersion ul li { list-style-position:outside; margin-left:1.25em; }
 
@@ -34,6 +49,7 @@
 .changelogVersion ul li.bug    { list-style-image:url(../img/changelogIcons_03.png); margin-left:44px; }
 .changelogVersion ul li.change { list-style-image:url(../img/changelogIcons_04.png); margin-left:44px; }
 /**/
-#changelog h3 { display:inline-block; }
+
+/*#changelog h3 { display:inline-block; }*/
 
 /* .changelogVersion.closed ul { display:none; } */
