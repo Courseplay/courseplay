@@ -356,16 +356,16 @@ function courseplay:drive(self, dt)
 	else -- ende wartepunkt
 		-- abfahrer-mode
 		if (self.ai_mode == 1 or (self.ai_mode == 2 and self.loaded)) and self.cp.tipperFillLevel ~= nil and self.tipRefOffset ~= nil and self.tipper_attached then
-			if self.currentTipTrigger == nil and self.cp.tipperFillLevel > 0 then
+			if self.cp.currentTipTrigger == nil and self.cp.tipperFillLevel > 0 then
 				-- is there a tipTrigger within 10 meters?
 				raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
 
 				if self.tipRefOffset ~= 0 then
-					if self.currentTipTrigger == nil then
+					if self.cp.currentTipTrigger == nil then
 						local x1,y1,z1 = localToWorld(self.aiTrafficCollisionTrigger,self.tipRefOffset,0,0)
 						raycastAll(x1,y1,z1, nx, ny, nz, "findTipTriggerCallback", 10, self)
 					end
-					if self.currentTipTrigger == nil then
+					if self.cp.currentTipTrigger == nil then
 						local x1,y1,z1 = localToWorld(self.aiTrafficCollisionTrigger,-self.tipRefOffset,0,0)
 						raycastAll(x1,y1,z1, nx, ny, nz, "findTipTriggerCallback", 10, self)
 					end
@@ -448,7 +448,7 @@ function courseplay:drive(self, dt)
 			courseplay:setGlobalInfoText(self, courseplay:get_locale(self, courseplay.locales.CPWaterDrive), -2);
 		end
 
-		if self.StopEnd and (self.recordnumber == self.maxnumber or self.currentTipTrigger ~= nil) then
+		if self.StopEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil) then
 			allowedToDrive = false
 			courseplay:setGlobalInfoText(self, courseplay:get_locale(self, courseplay.locales.CPReachedEndPoint));
 		end
@@ -472,11 +472,11 @@ function courseplay:drive(self, dt)
 			-- is there a tipTrigger within 10 meters?
 			raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
 			if self.tipRefOffset ~= 0 then
-				if self.currentTipTrigger == nil then
+				if self.cp.currentTipTrigger == nil then
 					local x1,y1,z1 = localToWorld(self.aiTrafficCollisionTrigger,self.tipRefOffset,0,0)
 					raycastAll(x1,y1,z1, 0, 0, 1, "findTipTriggerCallback", 10, self)
 				end
-				if self.currentTipTrigger == nil then
+				if self.cp.currentTipTrigger == nil then
 					local x1,y1,z1 = localToWorld(self.aiTrafficCollisionTrigger,-self.tipRefOffset,0,0)
 					raycastAll(x1,y1,z1, 0, 0, 1, "findTipTriggerCallback", 10, self)
 				end
@@ -600,8 +600,8 @@ function courseplay:drive(self, dt)
 	refSpeed = courseplay:regulateTrafficSpeed(self,refSpeed,allowedToDrive)
 
 	--bunkerSilo speed by Thomas Gärtner
-	if self.currentTipTrigger ~= nil then
-		if self.currentTipTrigger.bunkerSilo ~= nil then
+	if self.cp.currentTipTrigger ~= nil then
+		if self.cp.currentTipTrigger.bunkerSilo ~= nil then
 			if self.unload_speed ~= nil then
 				refSpeed = self.unload_speed;
 			else
@@ -878,7 +878,7 @@ function courseplay:openCloseCover(self)
 				end;
 				
 				--close
-				if self.recordnumber >= minCoverWaypoint and self.recordnumber < self.maxnumber and self.currentTipTrigger == nil then
+				if self.recordnumber >= minCoverWaypoint and self.recordnumber < self.maxnumber and self.cp.currentTipTrigger == nil then
 					if tipper.plane ~= nil and tipper.plane.bOpen ~= nil and tipper.plane.bOpen then
 						tipper:setPlane(false);
 					elseif tipper.planeOpen ~= nil and tipper.planeOpen then
@@ -894,7 +894,7 @@ function courseplay:openCloseCover(self)
 					end;
 
 				--open
-				elseif ((self.recordnumber == nil or (self.recordnumber ~= nil and (self.recordnumber == 1 or self.recordnumber == self.maxnumber))) or self.currentTipTrigger ~= nil) then
+				elseif ((self.recordnumber == nil or (self.recordnumber ~= nil and (self.recordnumber == 1 or self.recordnumber == self.maxnumber))) or self.cp.currentTipTrigger ~= nil) then
 					if tipper.plane ~= nil and tipper.plane.bOpen ~= nil and not tipper.plane.bOpen then
 						tipper:setPlane(true);
 					elseif tipper.planeOpen ~= nil and not tipper.planeOpen then
@@ -910,7 +910,7 @@ function courseplay:openCloseCover(self)
 					end;
 				end;
 			elseif self.ai_mode == 6 then
-				if not workArea and self.currentTipTrigger == nil then
+				if not workArea and self.cp.currentTipTrigger == nil then
 					if tipper.plane ~= nil and tipper.plane.bOpen ~= nil and tipper.plane.bOpen then
 						tipper:setPlane(false);
 					end;

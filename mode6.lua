@@ -307,28 +307,28 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 						if tipper_fill_level == 0 then
 							self.unloaded = true
 							self.max_speed_level = 3
-							self.currentTipTrigger = nil
+							self.cp.currentTipTrigger = nil
 						end
 					end
 
 					-- damn, i missed the trigger!
-					if self.currentTipTrigger ~= nil then
-						local trigger_id = self.currentTipTrigger.triggerId
+					if self.cp.currentTipTrigger ~= nil then
+						local trigger_id = self.cp.currentTipTrigger.triggerId
 
-						if self.currentTipTrigger.specialTriggerId ~= nil then
-							trigger_id = self.currentTipTrigger.specialTriggerId
+						if self.cp.currentTipTrigger.specialTriggerId ~= nil then
+							trigger_id = self.cp.currentTipTrigger.specialTriggerId
 						end
 
 						local trigger_x, trigger_y, trigger_z = getWorldTranslation(trigger_id)
 						local ctx, cty, ctz = getWorldTranslation(self.rootNode);
 						local distance_to_trigger = courseplay:distance(ctx, ctz, trigger_x, trigger_z)
 						if distance_to_trigger > 60 then
-							self.currentTipTrigger = nil
+							self.cp.currentTipTrigger = nil
 						end
 					end
 
 					-- tipper is not empty and tractor reaches TipTrigger
-					if tipper_fill_level > 0 and self.currentTipTrigger ~= nil and self.recordnumber > 3 then
+					if tipper_fill_level > 0 and self.cp.currentTipTrigger ~= nil and self.recordnumber > 3 then
 						self.max_speed_level = 1
 						allowedToDrive, active_tipper = courseplay:unload_tippers(self)
 						self.cp.infoText = courseplay:get_locale(self, "CPTriggerReached") -- "Abladestelle erreicht"		

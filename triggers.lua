@@ -80,8 +80,8 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 						end;
 
 						if fillTypeIsValid then
-							courseplay:debug(string.format("%s: self.currentTipTrigger = %s", tostring(self.name), tostring(triggerId)), 1);
-							self.currentTipTrigger = trigger;
+							courseplay:debug(string.format("%s: self.cp.currentTipTrigger = %s", tostring(self.name), tostring(triggerId)), 1);
+							self.cp.currentTipTrigger = trigger;
 						end;
 					end;
 				end;

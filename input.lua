@@ -132,7 +132,7 @@ function courseplay:deal_with_mouse_input(self, func, value)
 						self.wait = false
 					end
 
-					if func == "row2" and self.StopEnd and (self.recordnumber == self.maxnumber or self.currentTipTrigger ~= nil) then
+					if func == "row2" and self.StopEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil) then
 						self.StopEnd = false
 					end
 

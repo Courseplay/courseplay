@@ -14,7 +14,7 @@ function courseplay:handle_mode1(self)
 		if tipper_fill_level == 0 then
 			self.unloaded = true
 			self.max_speed_level = 3
-			self.currentTipTrigger = nil
+			self.cp.currentTipTrigger = nil
 		end
 	end
 
@@ -28,8 +28,8 @@ function courseplay:handle_mode1(self)
 
 	-- damn, i missed the trigger!
 
-	if self.currentTipTrigger ~= nil then
-		local t = self.currentTipTrigger;
+	if self.cp.currentTipTrigger ~= nil then
+		local t = self.cp.currentTipTrigger;
 		local trigger_id = t.triggerId;
 
 		if t.specialTriggerId ~= nil then
@@ -45,15 +45,15 @@ function courseplay:handle_mode1(self)
 			local distance_to_trigger = courseplay:distance(ctx, ctz, trigger_x, trigger_z);
 			
 			if distance_to_trigger > 60 then 
-				self.currentTipTrigger = nil
+				self.cp.currentTipTrigger = nil
 			end	
 		else
-			self.currentTipTrigger = nil;
+			self.cp.currentTipTrigger = nil;
 		end;
 	end;
 
 	-- tipper is not empty and tractor reaches TipTrigger
-	if tipper_fill_level > 0 and self.currentTipTrigger ~= nil and self.recordnumber > 3 then
+	if tipper_fill_level > 0 and self.cp.currentTipTrigger ~= nil and self.recordnumber > 3 then
 		self.max_speed_level = 1
 		allowedToDrive = courseplay:unload_tippers(self)
 

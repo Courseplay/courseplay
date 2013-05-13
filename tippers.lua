@@ -538,13 +538,13 @@ function courseplay:unload_tippers(self)
 			local fruitType = tipper.currentFillType
 			local isBunkerSilo = false;
 			
-			if self.currentTipTrigger.bunkerSilo ~= nil then --TODO after v3.40: and (self.currentTipTrigger.bunkerSilo.fillLevel + tipperFillLevel) < self.currentTipTrigger.bunkerSilo.capacity) then
+			if self.cp.currentTipTrigger.bunkerSilo ~= nil then --TODO after v3.40: and (self.cp.currentTipTrigger.bunkerSilo.fillLevel + tipperFillLevel) < self.cp.currentTipTrigger.bunkerSilo.capacity) then
 				--TODO after v3.40: clean up variable names, put in cp table etc.
 				isBunkerSilo = true;
-				local silos = table.getn(self.currentTipTrigger.bunkerSilo.movingPlanes)
+				local silos = table.getn(self.cp.currentTipTrigger.bunkerSilo.movingPlanes)
 				local x, y, z = getWorldTranslation(tipper.tipReferencePoints[1].node)
-				local sx, sy, sz = worldToLocal(self.currentTipTrigger.bunkerSilo.movingPlanes[1].nodeId, x, y, z)
-				local ex, ey, ez = worldToLocal(self.currentTipTrigger.bunkerSilo.movingPlanes[silos].nodeId, x, y, z)
+				local sx, sy, sz = worldToLocal(self.cp.currentTipTrigger.bunkerSilo.movingPlanes[1].nodeId, x, y, z)
+				local ex, ey, ez = worldToLocal(self.cp.currentTipTrigger.bunkerSilo.movingPlanes[silos].nodeId, x, y, z)
 				self.startentfernung =  Utils.vector2Length(sx, sz) 
 				self.endentfernung = Utils.vector2Length(ex, ez)
 				local laenge = courseplay:distance(sx, sz, ex, ez) 
@@ -563,7 +563,7 @@ function courseplay:unload_tippers(self)
 						self.BGAdirection = 0   --rückwärts
 					end
 					for k = 1,silos,1 do
-						local filling = self.currentTipTrigger.bunkerSilo.movingPlanes[k].fillLevel
+						local filling = self.cp.currentTipTrigger.bunkerSilo.movingPlanes[k].fillLevel
 						if k <= math.ceil(silos * 0.3) then
 							self.filling1 =	self.filling1 + filling
 						elseif k <= math.ceil(silos * 0.6) then
@@ -605,33 +605,33 @@ function courseplay:unload_tippers(self)
 				self.gofortipping = true;
 				
 				--AlternativeTipping: don't unload if full
-				if self.currentTipTrigger.fillLevel ~= nil and self.currentTipTrigger.capacity ~= nil and self.currentTipTrigger.fillLevel >= self.currentTipTrigger.capacity then
+				if self.cp.currentTipTrigger.fillLevel ~= nil and self.cp.currentTipTrigger.capacity ~= nil and self.cp.currentTipTrigger.fillLevel >= self.cp.currentTipTrigger.capacity then
 					self.gofortipping = false;
 					--allowedToDrive = false;
 					--self.cp.infoText = "Heap has reached its capacity"; --TODO: i18n / courseplay:get_locale(self, "CPheapFull");
 				end;
 			end
-			if self.currentTipTrigger.acceptedFillTypes[fruitType] and self.gofortipping == true then  
+			if self.cp.currentTipTrigger.acceptedFillTypes[fruitType] and self.gofortipping == true then  
 				courseplay:debug(self.name .. ": trigger accepts fruit (" .. tostring(fruitType) .. "), gofortipping == true", 2);
 				if tipper.tipState == Trailer.TIPSTATE_CLOSED then
 					local distanceToTrigger = math.huge;
-					if self.currentTipTrigger.getTipDistanceFromTrailer ~= nil then
-						distanceToTrigger,self.toggledTipState  = self.currentTipTrigger:getTipDistanceFromTrailer(tipper); --courtesy of Satis
+					if self.cp.currentTipTrigger.getTipDistanceFromTrailer ~= nil then
+						distanceToTrigger,self.toggledTipState  = self.cp.currentTipTrigger:getTipDistanceFromTrailer(tipper); --courtesy of Satis
 					end;
 					courseplay:debug(self.name .. ": distanceToTrigger=" .. tostring(distanceToTrigger), 3);
-					if distanceToTrigger == 0 or self.currentTipTrigger.bunkerSilo ~= nil then
+					if distanceToTrigger == 0 or self.cp.currentTipTrigger.bunkerSilo ~= nil then
 						courseplay:debug(string.format("%s: distanceToTrigger=%s, isBunkerSilo=%s", tostring(self.name), tostring(distanceToTrigger), tostring(isBunkerSilo)), 1);
-						tipper:toggleTipState(self.currentTipTrigger,self.toggledTipState);
+						tipper:toggleTipState(self.cp.currentTipTrigger,self.toggledTipState);
 						self.unloading_tipper = tipper
 					end
 				elseif tipper.tipState ~= Trailer.TIPSTATE_CLOSING then 
 					allowedToDrive = false
 				end 
 						
-				if self.currentTipTrigger.bunkerSilo ~= nil then
+				if self.cp.currentTipTrigger.bunkerSilo ~= nil then
 					allowedToDrive = true
 				end
-            elseif not self.currentTipTrigger.acceptedFillTypes[fruitType] then
+            elseif not self.cp.currentTipTrigger.acceptedFillTypes[fruitType] then
                 courseplay:debug(self.name .. ": trigger does not accept fruit (" .. tostring(fruitType) .. ")", 2);
             elseif not self.gofortipping then
                 courseplay:debug(self.name .. ": self.gofortipping = false (BGA / fillLevel > capacity)", 2);

@@ -241,7 +241,7 @@ function courseplay:stop(self)
 	self.cp.attachedCombineIdx = nil;
 
 	self.checkSpeedLimit = true
-	self.currentTipTrigger = nil
+	self.cp.currentTipTrigger = nil
 	self.drive = false
 	self.play = true
 	self.dcheck = false

@@ -105,7 +105,7 @@ function courseplay:loadHud(self)
 						last_recordnumber = 1
 					end
 
-					if (self.Waypoints[last_recordnumber].wait and self.wait) or (self.StopEnd and (self.recordnumber == self.maxnumber or self.currentTipTrigger ~= nil)) then
+					if (self.Waypoints[last_recordnumber].wait and self.wait) or (self.StopEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil)) then
 						self.hudpage[1][1][2] = courseplay:get_locale(self, "CourseWaitpointStart")
 					end
 
