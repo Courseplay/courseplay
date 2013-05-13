@@ -6,68 +6,73 @@
             http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 
 <url>
-  <loc>http://courseplay.github.com/courseplay/</loc>
-  <lastmod>2013-02-26T00:54:54+00:00</lastmod>
-  <changefreq>never</changefreq>
-</url>
-<url>
-  <loc>http://courseplay.github.com/courseplay/de/</loc>
-  <lastmod>2013-02-26T00:54:54+00:00</lastmod>
-  <changefreq>never</changefreq>
-</url>
-<url>
-  <loc>http://courseplay.github.com/courseplay/en/</loc>
-  <lastmod>2013-02-26T00:54:54+00:00</lastmod>
-  <changefreq>never</changefreq>
-</url>
-<url>
-  <loc>http://courseplay.github.com/courseplay/de/installation/</loc>
-  <lastmod>2013-02-26T00:54:54+00:00</lastmod>
-  <changefreq>never</changefreq>
-</url>
-<url>
-  <loc>http://courseplay.github.com/courseplay/de/manual/</loc>
-  <lastmod>2013-02-26T00:54:54+00:00</lastmod>
+  <loc>http://courseplay.github.io/courseplay/</loc>
+  <lastmod>2013-05-12T20:55:09+00:00</lastmod>
   <changefreq>daily</changefreq>
 </url>
 <url>
-  <loc>http://courseplay.github.com/courseplay/de/faq/</loc>
-  <lastmod>2013-02-26T00:54:54+00:00</lastmod>
-  <changefreq>never</changefreq>
-</url>
-<url>
-  <loc>http://courseplay.github.com/courseplay/de/changelog/</loc>
-  <lastmod>2013-02-26T00:54:54+00:00</lastmod>
+  <loc>http://courseplay.github.io/courseplay/de/index.html</loc>
+  <lastmod>2013-05-12T20:55:09+00:00</lastmod>
   <changefreq>daily</changefreq>
 </url>
 <url>
-  <loc>http://courseplay.github.com/courseplay/de/authors/</loc>
-  <lastmod>2013-02-26T00:54:54+00:00</lastmod>
-  <changefreq>never</changefreq>
-</url>
-<url>
-  <loc>http://courseplay.github.com/courseplay/en/installation/</loc>
-  <lastmod>2013-02-26T00:54:54+00:00</lastmod>
-  <changefreq>never</changefreq>
-</url>
-<url>
-  <loc>http://courseplay.github.com/courseplay/en/manual/</loc>
-  <lastmod>2013-02-26T00:54:54+00:00</lastmod>
+  <loc>http://courseplay.github.io/courseplay/en/index.html</loc>
+  <lastmod>2013-05-12T20:55:09+00:00</lastmod>
   <changefreq>daily</changefreq>
 </url>
 <url>
-  <loc>http://courseplay.github.com/courseplay/en/faq/</loc>
-  <lastmod>2013-02-26T00:54:54+00:00</lastmod>
-  <changefreq>never</changefreq>
-</url>
-<url>
-  <loc>http://courseplay.github.com/courseplay/en/changelog/</loc>
-  <lastmod>2013-02-26T00:54:54+00:00</lastmod>
+  <loc>http://courseplay.github.io/courseplay/de/installation/index.html</loc>
+  <lastmod>2013-05-12T20:55:09+00:00</lastmod>
   <changefreq>daily</changefreq>
 </url>
 <url>
-  <loc>http://courseplay.github.com/courseplay/en/authors/</loc>
-  <lastmod>2013-02-26T00:54:54+00:00</lastmod>
-  <changefreq>never</changefreq>
+  <loc>http://courseplay.github.io/courseplay/de/manual/index.html</loc>
+  <lastmod>2013-05-12T20:55:09+00:00</lastmod>
+  <changefreq>daily</changefreq>
+</url>
+<url>
+  <loc>http://courseplay.github.io/courseplay/de/faq/index.html</loc>
+  <lastmod>2013-05-12T20:55:09+00:00</lastmod>
+  <changefreq>daily</changefreq>
+</url>
+<url>
+  <loc>http://courseplay.github.io/courseplay/de/changelog/index.html</loc>
+  <lastmod>2013-05-12T20:55:09+00:00</lastmod>
+  <changefreq>daily</changefreq>
+</url>
+<url>
+  <loc>http://courseplay.github.io/courseplay/de/authors/index.html</loc>
+  <lastmod>2013-05-12T20:55:09+00:00</lastmod>
+  <changefreq>daily</changefreq>
+</url>
+<url>
+  <loc>http://courseplay.github.io/courseplay/index.html</loc>
+  <lastmod>2013-05-12T20:55:09+00:00</lastmod>
+  <changefreq>daily</changefreq>
+</url>
+<url>
+  <loc>http://courseplay.github.io/courseplay/en/installation/index.html</loc>
+  <lastmod>2013-05-12T20:55:09+00:00</lastmod>
+  <changefreq>daily</changefreq>
+</url>
+<url>
+  <loc>http://courseplay.github.io/courseplay/en/manual/index.html</loc>
+  <lastmod>2013-05-12T20:55:09+00:00</lastmod>
+  <changefreq>daily</changefreq>
+</url>
+<url>
+  <loc>http://courseplay.github.io/courseplay/en/faq/index.html</loc>
+  <lastmod>2013-05-12T20:55:09+00:00</lastmod>
+  <changefreq>daily</changefreq>
+</url>
+<url>
+  <loc>http://courseplay.github.io/courseplay/en/changelog/index.html</loc>
+  <lastmod>2013-05-12T20:55:09+00:00</lastmod>
+  <changefreq>daily</changefreq>
+</url>
+<url>
+  <loc>http://courseplay.github.io/courseplay/en/authors/index.html</loc>
+  <lastmod>2013-05-12T20:55:09+00:00</lastmod>
+  <changefreq>daily</changefreq>
 </url>
 </urlset>
