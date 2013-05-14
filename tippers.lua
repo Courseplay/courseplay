@@ -353,6 +353,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 				if self.cp.tipperHasCover and table.getn(coverItems) > 0 then
 					courseplay:debug(string.format("Implement \"%s\" has a cover (coverItems ~= nil)", tostring(t.name)), 3);
 					local data = {
+						coverType = "defaultGiants",
 						tipperIndex = i,
 						coverItems = coverItems
 					};
@@ -360,19 +361,29 @@ function courseplay:update_tools(self, tractor_or_implement)
 				end;
 			end;
 			
-			if t.setPlane ~= nil or t.planeOpen ~= nil then
+			if t.setPlane ~= nil then
 				courseplay:debug(string.format("Implement \"%s\" has a cover (setPlane ~= nil)", tostring(t.name)), 3);
 				self.cp.tipperHasCover = true;
 				local data = {
+					coverType = "setPlane",
 					tipperIndex = i
 				};
 				table.insert(self.cp.tippersWithCovers, data);
-			end;
 			
-			if t.setCoverState ~= nil and t.cover ~= nil and t.cover.opened ~= nil and t.cover.closed ~= nil then
+			elseif t.planeOpen ~= nil then
+				courseplay:debug(string.format("Implement \"%s\" has a cover (planeOpen ~= nil)", tostring(t.name)), 3);
+				self.cp.tipperHasCover = true;
+				local data = {
+					coverType = "planeOpen",
+					tipperIndex = i
+				};
+				table.insert(self.cp.tippersWithCovers, data);
+			
+			elseif t.setCoverState ~= nil and t.cover ~= nil and t.cover.opened ~= nil and t.cover.closed ~= nil and t.cover.state ~= nil then
 				courseplay:debug(string.format("Implement \"%s\" has a cover (setCoverState ~= nil)", tostring(t.name)), 3);
 				self.cp.tipperHasCover = true;
 				local data = {
+					coverType = "setCoverState",
 					tipperIndex = i
 				};
 				table.insert(self.cp.tippersWithCovers, data);
@@ -381,7 +392,8 @@ function courseplay:update_tools(self, tractor_or_implement)
 	end;
 	--courseplay:debug(tableShow(self.cp.tippersWithCovers, tostring(self.name) .. ": self.cp.tippersWithCovers"), 4);
 	--END tippers with covers
-	
+
+
 	if tipper_attached then
 		return true
 	end

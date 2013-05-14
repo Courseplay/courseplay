@@ -496,7 +496,26 @@ function courseplay:drive(self, dt)
 	end
 
 	--Open/close cover
-	courseplay:openCloseCover(self);
+	if self.cp.tipperHasCover and self.ai_mode == 1 or self.ai_mode == 2 or self.ai_mode == 5 or self.ai_mode == 6 then
+		local showCover = false;
+
+		if self.ai_mode ~= 6 then
+			local minCoverWaypoint = 3;
+			if self.ai_mode == 1 then
+				minCoverWaypoint = 4;
+			end;
+
+			if self.recordnumber >= minCoverWaypoint and self.recordnumber < self.maxnumber and self.cp.currentTipTrigger == nil then
+				showCover = true;
+			elseif (self.recordnumber == nil or (self.recordnumber ~= nil and (self.recordnumber == 1 or self.recordnumber == self.maxnumber))) or self.cp.currentTipTrigger ~= nil then
+				showCover = false;
+			end;
+		else
+			showCover = not workArea and self.cp.currentTipTrigger == nil;
+		end;
+
+		courseplay:openCloseCover(self, dt, showCover);
+	end;
 
 	allowedToDrive = courseplay:check_traffic(self, true, allowedToDrive)
 	
@@ -862,80 +881,37 @@ function courseplay:setSpeed(self, refSpeed, sl)
 	end
 end;
 
-function courseplay:openCloseCover(self)
-	--courseplay:debug("self.cp.tipperHasCover = " .. tostring(self.cp.tipperHasCover), 3);
-	if self.cp.tipperHasCover then
-		for i=1, table.getn(self.cp.tippersWithCovers) do
-			local tIdx = self.cp.tippersWithCovers[i].tipperIndex;
-			local tipper = self.tippers[tIdx];
-			local coverItems = self.cp.tippersWithCovers[i].coverItems;
+function courseplay:openCloseCover(self, dt, showCover)
+	for i=1, table.getn(self.cp.tippersWithCovers) do
+		local twc = self.cp.tippersWithCovers[i];
+		local tIdx, coverType, coverItems = twc.tipperIndex, twc.coverType, twc.coverItems;
+		local tipper = self.tippers[tIdx];
 
-			--INFO: setPlane(true) = open / setPlane(false) = closed
-			if self.ai_mode == 1 or self.ai_mode == 2 or self.ai_mode == 5 then
-				local minCoverWaypoint = 3;
-				if self.ai_mode == 1 then
-					minCoverWaypoint = 4;
-				end;
-				
-				--close
-				if self.recordnumber >= minCoverWaypoint and self.recordnumber < self.maxnumber and self.cp.currentTipTrigger == nil then
-					if tipper.plane ~= nil and tipper.plane.bOpen ~= nil and tipper.plane.bOpen then
-						tipper:setPlane(false);
-					elseif tipper.planeOpen ~= nil and tipper.planeOpen then
-						tipper:setAnimationTime(3, tipper.animationParts[3].offSet, false);
-					elseif tipper.setCoverState ~= nil and tipper.cover ~= nil and tipper.cover.opened ~= nil and tipper.cover.closed ~= nil and tipper.cover.state ~= nil and not tipper.cover.state then
-						tipper:setCoverState(true);
-					elseif coverItems ~= nil then
-						for _,ci in pairs(coverItems) do
-							if not getVisibility(ci) then
-								setVisibility(ci, true);
-							end;
-						end;
-					end;
+		--SMK-34 et al.
+		if coverType == "setPlane" and tipper.plane.bOpen == showCover then
+			tipper:setPlane(not showCover);
 
-				--open
-				elseif ((self.recordnumber == nil or (self.recordnumber ~= nil and (self.recordnumber == 1 or self.recordnumber == self.maxnumber))) or self.cp.currentTipTrigger ~= nil) then
-					if tipper.plane ~= nil and tipper.plane.bOpen ~= nil and not tipper.plane.bOpen then
-						tipper:setPlane(true);
-					elseif tipper.planeOpen ~= nil and not tipper.planeOpen then
-						tipper:setAnimationTime(3, tipper.animationParts[3].animDuration, false);
-					elseif tipper.setCoverState ~= nil and tipper.cover ~= nil and tipper.cover.opened ~= nil and tipper.cover.closed ~= nil and tipper.cover.state ~= nil and tipper.cover.state then
-						tipper:setCoverState(false);
-					elseif coverItems ~= nil then
-						for _,ci in pairs(coverItems) do
-							if getVisibility(ci) then
-								setVisibility(ci, false);
-							end;
-						end;
-					end;
-				end;
-			elseif self.ai_mode == 6 then
-				if not workArea and self.cp.currentTipTrigger == nil then
-					if tipper.plane ~= nil and tipper.plane.bOpen ~= nil and tipper.plane.bOpen then
-						tipper:setPlane(false);
-					end;
-					if coverItems ~= nil then
-						for _,ci in pairs(coverItems) do
-							if not getVisibility(ci) then
-								setVisibility(ci, true);
-							end;
-						end;
-					end;
-				elseif (workArea or self.currentTipTriger ~= nil) then
-					if tipper.plane ~= nil and tipper.plane.bOpen ~= nil and not tipper.plane.bOpen then
-						tipper:setPlane(true);
-					end;
-					if coverItems ~= nil then
-						for _,ci in pairs(coverItems) do
-							if getVisibility(ci) then
-								setVisibility(ci, false);
-							end;
-						end;
-					end;
+		--Hobein 18t et al.
+		elseif coverType == "setCoverState" and tipper.cover.state ~= showCover then
+			tipper:setCoverState(showCover);
+
+		--TUW et al.
+		elseif coverType == "planeOpen" then
+			if showCover and tipper.planeOpen then 
+				tipper:setAnimationTime(3, tipper.animationParts[3].offSet, false);
+			elseif not showCover and not tipper.planeOpen then
+				tipper:setAnimationTime(3, tipper.animationParts[3].animDuration, false);
+			end;
+
+		--default Giants trailers
+		elseif coverType == "defaultGiants" then
+			for _,ci in pairs(coverItems) do
+				if getVisibility(ci) ~= showCover then
+					setVisibility(ci, showCover);
 				end;
 			end;
-		end; --END for i in self.cp.tippersWithCovers
-	end;
+		end;
+	end; --END for i in self.cp.tippersWithCovers
 end;
 
 function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive)

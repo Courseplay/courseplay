@@ -218,23 +218,10 @@ function courseplay:stop(self)
 	AITractor.removeCollisionTrigger(self, self);
 
 
-	-- removing tippers
-	if self.tipper_attached then
-		--open all covers
-		if self.cp.tipperHasCover then
-			for i=1, table.getn(self.cp.tippersWithCovers) do
-				local tIdx = self.cp.tippersWithCovers[i].tipperIndex;
-				local coverItems = self.cp.tippersWithCovers[i].coverItems;
-				if coverItems ~= nil then
-					for _,ci in pairs(coverItems) do
-						if getVisibility(ci) then
-							setVisibility(ci, false);
-						end;
-					end;
-				end;
-			end;
-		end;
-	end
+	--open all covers
+	if self.tipper_attached and self.cp.tipperHasCover and self.ai_mode == 1 or self.ai_mode == 2 or self.ai_mode == 5 or self.ai_mode == 6 then
+		courseplay:openCloseCover(self, nil, false);
+	end;
 
 	-- resetting variables
 	courseplay:setMinHudPage(self, nil);
