@@ -328,6 +328,8 @@ function courseplay:askForSpecialSettings(self,object)
 		object.cp.inversedFoldDirection = true;
 	elseif Utils.endsWith(object.configFileName, "ursusZ586.xml") then
 		self.cp.aiTurnNoBackward = true
+		self.cp.noStopOnEdge = true
+		self.cp.noStopOnTurn = true
 		self.WpOffsetX = -2.5
 	end
 
