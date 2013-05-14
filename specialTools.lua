@@ -53,8 +53,20 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 	if workTool.PTOId then
 		workTool:setPTO(false)
 	end
+	--Ursus Z586 BaleWrapper
+	if Utils.endsWith(workTool.configFileName, "ursusZ586.xml") then
+		
+		if workTool.baleWrapperState == 4 then
+			workTool:doStateChange(5)
+		end
+		if workTool.baleWrapperState ~= 0 then 
+			allowedToDrive = false
+		end
+
+		return false ,allowedToDrive
+	
 	--JF_FCT1060_ProTec
-	if Utils.endsWith(workTool.configFileName, "JF_1060.xml") then
+	elseif Utils.endsWith(workTool.configFileName, "JF_1060.xml") then
 		if unfold ~= nil and turnOn ~= nil and lower ~= nil then
 			if unfold ~= workTool.isArmOneOn and not workTool.isTurnedOn then
 				workTool:setArmOne(unfold);
@@ -314,6 +326,9 @@ function courseplay:askForSpecialSettings(self,object)
 		self.WpOffsetX = -2.5
 	elseif Utils.endsWith(object.configFileName, "claasConspeed.xml") then
 		object.cp.inversedFoldDirection = true;
+	elseif Utils.endsWith(object.configFileName, "ursusZ586.xml") then
+		self.cp.aiTurnNoBackward = true
+		self.WpOffsetX = -2.5
 	end
 
 end
