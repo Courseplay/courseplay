@@ -48,8 +48,13 @@ end
 
 -- tip trigger
 function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
-	local triggerObjects, triggerObjectsCount = courseplay:getAllTipTriggers();
+	
+	if courseplay.confirmedNoneTriggers[transformId] == true then
+		return
+	end
 
+	local triggerObjects, triggerObjectsCount = courseplay:getAllTipTriggers();
+	
 	if triggerObjects ~= nil and triggerObjectsCount > 0 then
 		if self.cp.lastCheckedTransformID ~= transformId then
 			local fruitType = self.tippers[1].currentFillType;
@@ -84,6 +89,8 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 							self.cp.currentTipTrigger = trigger;
 						end;
 					end;
+				else
+					courseplay.confirmedNoneTriggers[transformId] = true
 				end;
 			end;
 			self.cp.lastCheckedTransformID = transformId;

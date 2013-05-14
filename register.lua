@@ -116,6 +116,7 @@ function cp_setupHud()
 			{ true, true, true, false, false, true, true, true, false, true  }; --Mode 9
 		};
 	};
+	courseplay.confirmedNoneTriggers = {}
 
 	for l=1,courseplay.hud.numLines do
 		if l == 1 then
