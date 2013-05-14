@@ -55,7 +55,31 @@ function courseplay:openCloseHud(self, open)
 			self.tcOverlay:setPosition(self.tcOverlay.x, self.cp.ThreshingCounterOrigPosY[2]);
 		end;
 	end;
-	
+
+
+	--set Odometer
+	if self.cp.OdometerOrigPosY == nil and open and self.Odometer ~= nil and self.Odometer.HUD ~= nil then
+		if self.Odometer.posX ~= nil and self.Odometer.posY ~= nil then
+			if self.Odometer.posX > courseplay.hud.visibleArea.x1 and self.Odometer.posX < courseplay.hud.visibleArea.x2 and self.Odometer.posY > courseplay.hud.visibleArea.y1 and self.Odometer.posY < courseplay.hud.visibleArea.y2 then
+			--if courseplay:numberInSpan(self.Odometer.posX, courseplay.hud.visibleArea.x1, courseplay.hud.visibleArea.x2) and courseplay:numberInSpan(self.Odometer.posY, courseplay.hud.visibleArea.y1, courseplay.hud.visibleArea.y2) then
+				self.cp.OdometerOrigPosY = { 
+					self.Odometer.posY,
+					self.Odometer.HUD.y,
+				};
+			end;
+		end;
+	end;
+
+	--hide/show Odometer
+	if self.cp.OdometerOrigPosY ~= nil then
+		if open then
+			self.Odometer.posY = -1;
+			self.Odometer.HUD:setPosition(self.Odometer.HUD.x, -1);
+		else
+			self.Odometer.posY = self.cp.OdometerOrigPosY[1];
+			self.Odometer.HUD:setPosition(self.Odometer.HUD.x, self.cp.OdometerOrigPosY[2]);
+		end;
+	end;
 end;
 
 function courseplay:change_ai_state(self, change_by)

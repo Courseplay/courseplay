@@ -374,6 +374,8 @@ function courseplay:load(xmlFile)
 	
 	self.cp.ESLimiterOrigPosY = nil; --[table]
 	self.cp.ThreshingCounterOrigPosY = nil; --[table]
+	self.cp.OdometerOrigPosY = nil; --[table]
+
 	-- HUD  	-- Function in Signs
 	self.hudInfoBaseWidth = 0.512; --try: 512/1920
 	self.hudInfoBaseHeight = 0.512; --try: 512/1080
