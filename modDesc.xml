@@ -625,7 +625,7 @@ Italský překlad: JD7530
 			<fr>Demarrer à %:</fr>
 			<es>Iniciar en %:</es>
 			<it>Inizia a %:</it>
-			<cz>Start při %:</cz>
+			<cz>Přijet při %:</cz>
 		</text>
 		<text name="CPTurnRadius">
 			<en>Turning circle:</en>
@@ -1299,7 +1299,7 @@ Italský překlad: JD7530
 			<es>Generación de una ruta</es>
 			<fr>Génération d'une course</fr>
 			<it>Course generation</it> <!-- !! IT -->
-			<cz>Generovat kurs</cz>
+			<cz>Generovat trasu</cz>
 		</text>
 		<text name="CPstartingCorner">
 			<en>Starting corner</en>
@@ -1311,7 +1311,7 @@ Italský překlad: JD7530
 			<en>Starting direction</en>
 			<de>Startrichtung</de>
 			<fr>Direction de départ</fr>
-			<en>Směr trasy:</en>
+			<cz>Směr trasy:</cz>
 		</text>
 		<text name="CPreturnToFirstPoint">
 			<en>Return to first point</en>
@@ -1323,7 +1323,7 @@ Italský překlad: JD7530
 			<en>South-West</en>
 			<de>Südwest</de>
 			<fr>Sud-Ouest</fr>
-			<cz>Jihozápad</cz>
+			<cz>jihozápad</cz>
 		</text>
 		<text name="CPcorner2">
 			<en>North-West</en>
@@ -1519,7 +1519,7 @@ Italský překlad: JD7530
 			<fr>Position charger</fr>
 			<es>Posición cargar</es>
 			<it>Loading position</it> <!-- !! -->
-			<cz>Pozice při nakládání:</cz>
+			<cz>Pozice lžíce při nakládání:</cz>
 		</text>
 		<text name="setTransport">
 			<en>Transport position</en>
@@ -1527,7 +1527,7 @@ Italský překlad: JD7530
 			<fr>Position transporter</fr>
 			<es>Posición transportar</es>
 			<it>Transport position</it> <!-- !! -->
-			<cz>Pozice při převozu:</cz>
+			<cz>Pozice lžíce při převozu:</cz>
 		</text>
 		<text name="setPreUnload">
 			<en>Pre-unloading position</en>
@@ -1535,7 +1535,7 @@ Italský překlad: JD7530
 			<fr>Position avant de décharger</fr>
 			<es>Posición antes de descargar</es>
 			<it>Pre-unloading position</it> <!-- !! -->
-			<cz>Pozice před vykládáním:</cz>
+			<cz>Pozice lžíce před vykládáním:</cz>
 		</text>
 		<text name="setUnload">
 			<en>Unloading position</en>
@@ -1543,7 +1543,7 @@ Italský překlad: JD7530
 			<fr>Position décharger</fr>
 			<es>Posición descargar</es>
 			<it>Unloading position</it> <!-- !! -->
-			<cz>Pozice při vykládání:</cz>
+			<cz>Pozice lžíce při vykládání:</cz>
 		</text>
 		<text name="cpShovelStopAndGo">
 			<de>Stop + Go Laden</de>
@@ -1551,7 +1551,7 @@ Italský překlad: JD7530
 			<es>Stop + go loading</es> <!-- !! -->
 			<fr>Stop + go loading</fr> <!-- !! -->
 			<it>Stop + go loading</it> <!-- !! -->
-			<cz>Zastavit a jet nákládat</cz>
+			<cz>Zastavit a jet nákládat:</cz>
 		</text>
 		
 		<text name="cpStartAtFirstPoint">
@@ -1585,7 +1585,7 @@ Italský překlad: JD7530
 			<es>On</es>
 			<fr>On</fr>
 			<it>On</it>
-			<cz>Zapnuto</cz>
+			<cz>zapnuto</cz>
 		</text>
 		<text name="CPoff">
 			<de>Aus</de>
@@ -1593,7 +1593,7 @@ Italský překlad: JD7530
 			<es>Off</es>
 			<fr>Off</fr>
 			<it>Off</it>
-			<cz>Vypnout</cz>
+			<cz>vypnuto</cz>
 		</text>
 	</l10n>
 
