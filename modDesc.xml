@@ -316,7 +316,7 @@ Italský překlad: JD7530
 			<fr>Type: Charger et décharger un godet</fr>
 			<es>Tipo: Cargar y descargar una pala</es>
 			<it>Modo: Fill + empty shovel</it>
-			<cz>Mod: Fill + empty shovel</cz>
+			<cz>Mod: Nakladač</cz>
 		</text>
 		<text name="CourseWaitpointSet">
 			<en>Set waiting point</en>
@@ -585,7 +585,7 @@ Italský překlad: JD7530
 			<fr>Montrer les points</fr>
 			<es>Mostrar los puntos</es>
 			<it>Mostra punti di passaggio</it>
-			<cz>Zobrazit orientační body</cz>
+			<cz>Zobrazit orientační body:</cz>
 		</text>
 		<text name="CPastarOn">
 			<en>on</en>
@@ -601,7 +601,7 @@ Italský překlad: JD7530
 			<fr>Evite les cultures</fr>
 			<es>Evite los cultivos</es>
 			<it>Evita la coltura</it>
-			<cz>Objíždění porostu</cz>
+			<cz>Objíždění porostu:</cz>
 		</text>
 		<text name="CPastarOff">
 			<en>off</en>
@@ -833,7 +833,7 @@ Italský překlad: JD7530
 			<fr>pas de points</fr>
 			<es>no hay puntos</es>
 			<it>nessun punto di passaggio</it>
-			<cz>Zatím žádné orientační body</cz>
+			<cz>zatím žádné orientační body</cz>
 		</text>
 		<text name="WaypointMode1">
 			<en>only when recording</en>
@@ -1129,7 +1129,7 @@ Italský překlad: JD7530
 			<fr>Paramètres</fr>
 			<es>Configuración</es>
 			<it>Parametri</it>
-			<cz>Obecná nastavení</cz>
+			<cz>Nastavení</cz>
 		</text>
 		<text name="CPWpOffsetX">
 			<en>horizontal offset</en>
@@ -1137,7 +1137,7 @@ Italský překlad: JD7530
 			<fr>décalage latéral</fr>
 			<es>Mov. horizontal</es>
 			<it>distanza orizzontale</it>
-			<cz>Horizontální posunutí:</cz>
+			<cz>Horiz. posunutí:</cz>
 		</text>
 		<text name="CPWpOffsetZ">
 			<en>vertical offset</en>
@@ -1145,7 +1145,7 @@ Italský překlad: JD7530
 			<fr>décalage Av/Ar</fr>
 			<es>Mov. vertical</es>
 			<it>distanza verticale</it>
-			<cz>Vertikální posunutí:</cz>
+			<cz>Vertik. posunutí:</cz>
 		</text>
 		<text name="CPWorkingWidht">
 			<en>working width</en>
@@ -1305,19 +1305,19 @@ Italský překlad: JD7530
 			<en>Starting corner</en>
 			<de>Startecke</de>
 			<fr>Coin de départ</fr>
-			<cz>Počáteční roh</cz>
+			<cz>Počáteční roh:</cz>
 		</text>
 		<text name="CPstartingDirection">
 			<en>Starting direction</en>
 			<de>Startrichtung</de>
 			<fr>Direction de départ</fr>
-			<en>Směr trasy</en>
+			<en>Směr trasy:</en>
 		</text>
 		<text name="CPreturnToFirstPoint">
 			<en>Return to first point</en>
 			<de>Am Startpunkt enden</de>
 			<fr>Retour au depart</fr>
-			<cz>Návrat na první bod</cz>
+			<cz>Návrat na první bod:</cz>
 		</text>
 		<text name="CPcorner1">
 			<en>South-West</en>
@@ -1329,43 +1329,43 @@ Italský překlad: JD7530
 			<en>North-West</en>
 			<de>Nordwest</de>
 			<fr>Nord-Ouest</fr>
-			<cz>Severozápad</cz>
+			<cz>severozápad</cz>
 		</text>
 		<text name="CPcorner3">
 			<en>North-East</en>
 			<de>Nordost</de>
 			<fr>Nord-Est</fr>
-			<cz>Severovýchod</cz>
+			<cz>severovýchod</cz>
 		</text>
 		<text name="CPcorner4">
 			<en>South-East</en>
 			<de>Südost</de>
 			<fr>Sud-Est</fr>
-			<cz>Jihovýchod</cz>
+			<cz>jihovýchod</cz>
 		</text>
 		<text name="CPdirection1">
 			<en>North</en>
 			<de>Norden</de>
 			<fr>Nord</fr>
-			<cz>Sever</cz>
+			<cz>sever</cz>
 		</text>
 		<text name="CPdirection2">
 			<en>East</en>
 			<de>Osten</de>
 			<fr>Est</fr>
-			<cz>Východ</cz>
+			<cz>východ</cz>
 		</text>
 		<text name="CPdirection3">
 			<en>South</en>
 			<de>Süden</de>
 			<fr>Sud</fr>
-			<cz>Jih</cz>
+			<cz>jih</cz>
 		</text>
 		<text name="CPdirection4">
 			<en>West</en>
 			<de>Westen</de>
 			<fr>Ouest</fr>
-			<cz>Západ</cz>
+			<cz>západ</cz>
 		</text>
 		<text name="CPyes">
 			<de>Ja</de>
@@ -1373,7 +1373,7 @@ Italský překlad: JD7530
 			<es>Si</es>
 			<fr>Oui</fr>
 			<it>Si</it>
-			<cz>Ano</cz>
+			<cz>ano</cz>
 		</text>
 		<text name="CPno">
 			<de>Nein</de>
@@ -1381,7 +1381,7 @@ Italský překlad: JD7530
 			<es>No</es>
 			<fr>Non</fr>
 			<it>No</it>
-			<cz>Ne</cz>
+			<cz>ne</cz>
 		</text>
 		<text name="CPheadland">
 			<de>Vorgewende</de>
@@ -1389,7 +1389,7 @@ Italský překlad: JD7530
 			<es>Cabecera</es> <!-- !!! -->
 			<fr>Fourrière</fr>
 			<it>Headland</it> <!-- !!! -->
-			<cz>Úvrať</cz>
+			<cz>Úvrať:</cz>
 		</text>
 		<text name="CPheadlandLane">
 			<de>Bahn</de>
@@ -1397,7 +1397,7 @@ Italský překlad: JD7530
 			<es>carril</es>
 			<fr>voie</fr>
 			<it>corsia</it> <!-- !!! -->
-			<cz>lane</cz> <!-- !!! -->
+			<cz>pruh</cz>
 		</text>
 		<text name="CPheadlandLanes">
 			<de>Bahnen</de>
@@ -1405,7 +1405,7 @@ Italský překlad: JD7530
 			<es>carriles</es>
 			<fr>voies</fr>
 			<it>corsie</it> <!-- !!! -->
-			<cz>lanes</cz> <!-- !!! -->
+			<cz>pruhy</cz>
 		</text>
 		<text name="CPdeactivated">
 			<de>deaktiviert</de>
@@ -1413,7 +1413,7 @@ Italský překlad: JD7530
 			<es>desactivado</es>
 			<fr>désactivé</fr>
 			<it>disattivato</it>
-			<cz>deaktivována</cz>
+			<cz>vypnuta</cz>
 		</text>
 		<text name="CPbefore">
 			<de>davor</de>
@@ -1421,7 +1421,7 @@ Italský překlad: JD7530
 			<es>antes</es>
 			<fr>avant</fr>
 			<it>prima</it> <!-- !!! -->
-			<cz>před</cz> <!-- !!! -->
+			<cz>před</cz>
 		</text>
 		<text name="CPafter">
 			<de>danach</de>
@@ -1429,7 +1429,7 @@ Italský překlad: JD7530
 			<es>después</es>
 			<fr>après</fr>
 			<it>dopo</it> <!-- !!! -->
-			<cz>po</cz> <!-- !!! -->
+			<cz>po</cz>
 		</text>
 		
 		<text name="CPridgeMarkers">
@@ -1438,7 +1438,7 @@ Italský překlad: JD7530
 			<es>Trazador de huellas</es>
 			<fr>Traceurs</fr>
 			<it>Segnafile</it>
-			<cz>Znamenák stop</cz>
+			<cz>Znamenák stop:</cz>
 		</text>
 		<text name="CPautomatic">
 			<en>automatic</en>
@@ -1462,7 +1462,7 @@ Italský překlad: JD7530
 			<fr>Manœuvre de demi-tour:</fr>
 			<es>Maniobras de giro:</es> <!-- !! -->
 			<it>Manovre di svolta:</it> <!-- !! -->
-			<cz>Soustružnické manévry:</cz> <!-- !! -->
+			<cz>Otáčení:</cz>
 		</text>
 		<text name="CPStart">
 			<en>Start</en>
@@ -1487,7 +1487,7 @@ Italský překlad: JD7530
 			<fr>La course n'est pas valide</fr>
 			<es>El curso no es válida</es>
 			<it>Il percorso non è valida</it>
-			<cz>Course is not valid</cz> <!-- !! -->
+			<cz>Trasa není platná</cz>
 		</text>
 		<text name="CPNoShovel">
 			<en>No shovel could be found</en>
@@ -1495,7 +1495,7 @@ Italský překlad: JD7530
 			<fr>Pas de godet trouvée</fr>
 			<es>Falta una pala</es>
 			<it>No shovel could be found</it> <!-- !! -->
-			<cz>No shovel could be found</cz> <!-- !! -->
+			<cz>Lžíce nenalezena</cz>
 		</text>
 		<text name="CPShovelPositions">
 			<en>Shovel positions</en>
@@ -1503,7 +1503,7 @@ Italský překlad: JD7530
 			<fr>Positions de la pelle</fr>
 			<es>Posiciónes de la pala</es>
 			<it>Shovel positions</it> <!-- !! -->
-			<cz>Shovel positions</cz> <!-- !! -->
+			<cz>Pozice lžíce:</cz>
 		</text>
 		<text name="CPAssignShovel">
 			<en>Missing shovel positions</en>
@@ -1511,7 +1511,7 @@ Italský překlad: JD7530
 			<fr>Il faux unes positions du godet</fr>
 			<es>Faltan unas posiciónes de la pala</es>
 			<it>Missing shovel positions</it> <!-- !! -->
-			<cz>Missing shovel positions</cz> <!-- !! -->
+			<cz>Chybí pozice lžíce</cz>
 		</text>
 		<text name="setLoad">
 			<en>Loading position</en>
@@ -1519,7 +1519,7 @@ Italský překlad: JD7530
 			<fr>Position charger</fr>
 			<es>Posición cargar</es>
 			<it>Loading position</it> <!-- !! -->
-			<cz>Loading position</cz> <!-- !! -->
+			<cz>Pozice při nakládání:</cz>
 		</text>
 		<text name="setTransport">
 			<en>Transport position</en>
@@ -1527,7 +1527,7 @@ Italský překlad: JD7530
 			<fr>Position transporter</fr>
 			<es>Posición transportar</es>
 			<it>Transport position</it> <!-- !! -->
-			<cz>Transport position</cz> <!-- !! -->
+			<cz>Pozice při převozu:</cz>
 		</text>
 		<text name="setPreUnload">
 			<en>Pre-unloading position</en>
@@ -1535,7 +1535,7 @@ Italský překlad: JD7530
 			<fr>Position avant de décharger</fr>
 			<es>Posición antes de descargar</es>
 			<it>Pre-unloading position</it> <!-- !! -->
-			<cz>Pre-unloading position</cz> <!-- !! -->
+			<cz>Pozice před vykládáním:</cz>
 		</text>
 		<text name="setUnload">
 			<en>Unloading position</en>
@@ -1543,7 +1543,7 @@ Italský překlad: JD7530
 			<fr>Position décharger</fr>
 			<es>Posición descargar</es>
 			<it>Unloading position</it> <!-- !! -->
-			<cz>Unloading position</cz> <!-- !! -->
+			<cz>Pozice při vykládání:</cz>
 		</text>
 		<text name="cpShovelStopAndGo">
 			<de>Stop + Go Laden</de>
@@ -1551,7 +1551,7 @@ Italský překlad: JD7530
 			<es>Stop + go loading</es> <!-- !! -->
 			<fr>Stop + go loading</fr> <!-- !! -->
 			<it>Stop + go loading</it> <!-- !! -->
-			<cz>Stop + go loading</cz> <!-- !! -->
+			<cz>Zastavit a jet nákládat</cz>
 		</text>
 		
 		<text name="cpStartAtFirstPoint">
@@ -1560,7 +1560,7 @@ Italský překlad: JD7530
 			<es>Empezar el curso al</es>
 			<fr>Commencer la course au</fr>
 			<it>Avviare il corso al</it>
-			<cz>Start course at</cz> <!-- !! -->
+			<cz>Začátek trasy:</cz>
 		</text>
 		<text name="cpFirstPoint">
 			<de>ersten Wegpunkt</de>
@@ -1568,7 +1568,7 @@ Italský překlad: JD7530
 			<es>primer punto</es>
 			<fr>premier point</fr>
 			<it>primo punto</it>
-			<cz>first waypoint</cz> <!-- !! -->
+			<cz>na prvním bodě</cz>
 		</text>
 		<text name="cpNearestPoint">
 			<de>nächsten Wegpunkt</de>
@@ -1576,7 +1576,7 @@ Italský překlad: JD7530
 			<es>punto más cercano</es>
 			<fr>point le plus proche</fr>
 			<it>punto più vicino</it>
-			<cz>nearest waypoint</cz> <!-- !! -->
+			<cz>na nejbližším bodě</cz>
 		</text>
 		
 		<text name="CPon">
@@ -1585,7 +1585,7 @@ Italský překlad: JD7530
 			<es>On</es>
 			<fr>On</fr>
 			<it>On</it>
-			<cz>On</cz>
+			<cz>Zapnuto</cz>
 		</text>
 		<text name="CPoff">
 			<de>Aus</de>
@@ -1593,7 +1593,7 @@ Italský překlad: JD7530
 			<es>Off</es>
 			<fr>Off</fr>
 			<it>Off</it>
-			<cz>Off</cz>
+			<cz>Vypnout</cz>
 		</text>
 	</l10n>
 
