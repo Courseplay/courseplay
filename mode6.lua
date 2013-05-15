@@ -394,7 +394,11 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 						end
 					else
 						if courseplay:isFoldable(workTool) and not tool.isThreshing then
-							workTool:setFoldDirection(-1);
+							if workTool.cp.inversedFoldDirection then
+								workTool:setFoldDirection(1);
+							else
+								workTool:setFoldDirection(-1);
+							end;
 						end;
 						if not courseplay:isFolding(workTool) and tool.grainTankFillLevel < tool.grainTankCapacity and not tool.waitingForDischarge and not tool.isThreshing and not weatherStop then
 							tool:setIsThreshing(true, true);
