@@ -549,7 +549,7 @@ function courseplay:unload_tippers(self)
 			local numReferencePoints = table.getn(tipper.tipReferencePoints);
 			local fruitType = tipper.currentFillType
 			local isBunkerSilo = false;
-			
+			self.gofortipping = false
 			if self.cp.currentTipTrigger.bunkerSilo ~= nil then --TODO after v3.40: and (self.cp.currentTipTrigger.bunkerSilo.fillLevel + tipperFillLevel) < self.cp.currentTipTrigger.bunkerSilo.capacity) then
 				--TODO after v3.40: clean up variable names, put in cp table etc.
 				isBunkerSilo = true;
@@ -561,7 +561,6 @@ function courseplay:unload_tippers(self)
 				self.endentfernung = Utils.vector2Length(ex, ez)
 				local laenge = courseplay:distance(sx, sz, ex, ez) 
 				self.position = self.startentfernung*100/laenge
-				self.gofortipping = false
 				if self.runonce == nil then
 					self.runonce = 0
 				end
@@ -624,15 +623,15 @@ function courseplay:unload_tippers(self)
 				end;
 			end
 			if self.cp.currentTipTrigger.acceptedFillTypes[fruitType] and self.gofortipping == true then  
-				courseplay:debug(self.name .. ": trigger accepts fruit (" .. tostring(fruitType) .. "), gofortipping == true", 2);
+				courseplay:debug(tostring(self.name)..nameNum(self).. ": trigger accepts fruit (" .. tostring(fruitType) .. "), gofortipping == true", 2);
 				if tipper.tipState == Trailer.TIPSTATE_CLOSED then
 					local distanceToTrigger = math.huge;
 					if self.cp.currentTipTrigger.getTipDistanceFromTrailer ~= nil then
 						distanceToTrigger,self.toggledTipState  = self.cp.currentTipTrigger:getTipDistanceFromTrailer(tipper); --courtesy of Satis
 					end;
-					courseplay:debug(self.name .. ": distanceToTrigger=" .. tostring(distanceToTrigger), 3);
+					courseplay:debug(tostring(self.name).. nameNum(self).. ": distanceToTrigger=" .. tostring(distanceToTrigger), 3);
 					if distanceToTrigger == 0 or self.cp.currentTipTrigger.bunkerSilo ~= nil then
-						courseplay:debug(string.format("%s: distanceToTrigger=%s, isBunkerSilo=%s", tostring(self.name), tostring(distanceToTrigger), tostring(isBunkerSilo)), 1);
+						--courseplay:debug(string.format("%s %s: distanceToTrigger=%s, isBunkerSilo=%s", tostring(self.name),nameNum(self), tostring(distanceToTrigger), tostring(isBunkerSilo)), 1);
 						tipper:toggleTipState(self.cp.currentTipTrigger,self.toggledTipState);
 						self.unloading_tipper = tipper
 					end
@@ -643,10 +642,10 @@ function courseplay:unload_tippers(self)
 				if self.cp.currentTipTrigger.bunkerSilo ~= nil then
 					allowedToDrive = true
 				end
-            elseif not self.cp.currentTipTrigger.acceptedFillTypes[fruitType] then
-                courseplay:debug(self.name .. ": trigger does not accept fruit (" .. tostring(fruitType) .. ")", 2);
-            elseif not self.gofortipping then
-                courseplay:debug(self.name .. ": self.gofortipping = false (BGA / fillLevel > capacity)", 2);
+            		elseif not self.cp.currentTipTrigger.acceptedFillTypes[fruitType] then
+                		courseplay:debug(tostring(self.name)..nameNum(self) .. ": trigger does not accept fruit (" .. tostring(fruitType) .. ")", 2);
+            		elseif not self.gofortipping then
+                		courseplay:debug(tostring(self.name) ..nameNum(self).. ": self.gofortipping = false (BGA / fillLevel > capacity)", 2);
 			end;
 		end
 	end
