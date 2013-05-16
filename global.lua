@@ -19,47 +19,49 @@ function courseplay:renderInfoText(self)
 	end;
 	self.cp.infoText = nil;
 
-	self.cp.globalInfoTextOverlay.isRendering = false;
-	if self.cp.globalInfoText ~= nil then
-		local posY = self.working_course_player_num * 0.022;
-		local vehicleName = "unknown";
-		if self.name ~= nil then
-			vehicleName = self.name;
-		end;
-		local msg = vehicleName .. " " .. self.cp.globalInfoText;
-
-		--Background overlay
-		local level = self.cp.globalInfoTextLevel;
-		local bgColorName = nil;
-		
-		if level ~= nil then
-			if level == 0 then
-				bgColorName = nil;
-			elseif level == 1 then
-				bgColorName = "activeGreen";
-			elseif level == -1 then
-				bgColorName = "activeRed";
-			elseif level == -2 then
-				bgColorName = "closeRed";
+	if not g_currentMission.missionPDA.showPDA then
+		self.cp.globalInfoTextOverlay.isRendering = false;
+		if self.cp.globalInfoText ~= nil then
+			local posY = self.working_course_player_num * 0.022;
+			local vehicleName = "unknown";
+			if self.name ~= nil then
+				vehicleName = self.name;
 			end;
-		end;
+			local msg = vehicleName .. " " .. self.cp.globalInfoText;
 
-		if bgColorName ~= nil then
-			local currentColor = { self.cp.globalInfoTextOverlay.r, self.cp.globalInfoTextOverlay.g, self.cp.globalInfoTextOverlay.b, self.cp.globalInfoTextOverlay.a };
-			local bgColor = courseplay.hud.colors[bgColorName];
-			bgColor[4] = 0.85;
-			if currentColor == nil or not courseplay:colorsMatch(currentColor, bgColor) then
-				self.cp.globalInfoTextOverlay:setColor(unpack(bgColor))
+			--Background overlay
+			local level = self.cp.globalInfoTextLevel;
+			local bgColorName = nil;
+			
+			if level ~= nil then
+				if level == 0 then
+					bgColorName = nil;
+				elseif level == 1 then
+					bgColorName = "activeGreen";
+				elseif level == -1 then
+					bgColorName = "activeRed";
+				elseif level == -2 then
+					bgColorName = "closeRed";
+				end;
 			end;
 
-			self.cp.globalInfoTextOverlay:setPosition(self.cp.globalInfoTextOverlay.x, posY)
-			self.cp.globalInfoTextOverlay:setDimension(getTextWidth(courseplay.globalInfoText.fontSize, msg) + courseplay.globalInfoText.backgroundPadding * 2.5, self.cp.globalInfoTextOverlay.height)
+			if bgColorName ~= nil then
+				local currentColor = { self.cp.globalInfoTextOverlay.r, self.cp.globalInfoTextOverlay.g, self.cp.globalInfoTextOverlay.b, self.cp.globalInfoTextOverlay.a };
+				local bgColor = courseplay.hud.colors[bgColorName];
+				bgColor[4] = 0.85;
+				if currentColor == nil or not courseplay:colorsMatch(currentColor, bgColor) then
+					self.cp.globalInfoTextOverlay:setColor(unpack(bgColor))
+				end;
 
-			self.cp.globalInfoTextOverlay.isRendering = true; --NOTE: render() happens in courseplay_manager:draw()
+				self.cp.globalInfoTextOverlay:setPosition(self.cp.globalInfoTextOverlay.x, posY)
+				self.cp.globalInfoTextOverlay:setDimension(getTextWidth(courseplay.globalInfoText.fontSize, msg) + courseplay.globalInfoText.backgroundPadding * 2.5, self.cp.globalInfoTextOverlay.height)
+
+				self.cp.globalInfoTextOverlay.isRendering = true; --NOTE: render() happens in courseplay_manager:draw()
+			end;
+			
+			courseplay:setFontSettings("white", false);
+			renderText(courseplay.globalInfoText.posX, posY, courseplay.globalInfoText.fontSize, msg);
 		end;
-		
-		courseplay:setFontSettings("white", false);
-		renderText(courseplay.globalInfoText.posX, posY, courseplay.globalInfoText.fontSize, msg);
 	end;
 end;
 

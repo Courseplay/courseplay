@@ -21,14 +21,16 @@ end
 
 
 function courseplay_manager:draw()
-	if table.getn(working_course_players) > 0 then
-		for k,v in pairs(working_course_players) do
-			if v.cp.globalInfoTextOverlay.isRendering then
-				v.cp.globalInfoTextOverlay:render();
+	if not g_currentMission.missionPDA.showPDA then
+		if table.getn(working_course_players) > 0 then
+			for k,v in pairs(working_course_players) do
+				if v.cp.globalInfoTextOverlay.isRendering then
+					v.cp.globalInfoTextOverlay:render();
+				end;
 			end;
 		end;
 	end;
-end
+end;
 
 function courseplay_manager:update()
 	--courseplay:debug(table.getn(g_currentMission.courseplay_courses), 4);
