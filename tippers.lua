@@ -623,13 +623,13 @@ function courseplay:unload_tippers(self)
 				end;
 			end
 			if self.cp.currentTipTrigger.acceptedFillTypes[fruitType] and self.gofortipping == true then  
-				courseplay:debug(tostring(self.name)..nameNum(self).. ": trigger accepts fruit (" .. tostring(fruitType) .. "), gofortipping == true", 2);
+				courseplay:debug(nameNum(self) .. ": trigger accepts fruit (" .. tostring(fruitType) .. "), gofortipping == true", 2);
 				if tipper.tipState == Trailer.TIPSTATE_CLOSED then
 					local distanceToTrigger = math.huge;
 					if self.cp.currentTipTrigger.getTipDistanceFromTrailer ~= nil then
 						distanceToTrigger,self.toggledTipState  = self.cp.currentTipTrigger:getTipDistanceFromTrailer(tipper); --courtesy of Satis
 					end;
-					courseplay:debug(tostring(self.name).. nameNum(self).. ": distanceToTrigger=" .. tostring(distanceToTrigger), 3);
+					courseplay:debug(nameNum(self).. ": distanceToTrigger=" .. tostring(distanceToTrigger), 3);
 					if distanceToTrigger == 0 or self.cp.currentTipTrigger.bunkerSilo ~= nil then
 						--courseplay:debug(string.format("%s %s: distanceToTrigger=%s, isBunkerSilo=%s", tostring(self.name),nameNum(self), tostring(distanceToTrigger), tostring(isBunkerSilo)), 1);
 						tipper:toggleTipState(self.cp.currentTipTrigger,self.toggledTipState);
@@ -643,9 +643,9 @@ function courseplay:unload_tippers(self)
 					allowedToDrive = true
 				end
             		elseif not self.cp.currentTipTrigger.acceptedFillTypes[fruitType] then
-                		courseplay:debug(tostring(self.name)..nameNum(self) .. ": trigger does not accept fruit (" .. tostring(fruitType) .. ")", 2);
+                		courseplay:debug(nameNum(self) .. ": trigger does not accept fruit (" .. tostring(fruitType) .. ")", 2);
             		elseif not self.gofortipping then
-                		courseplay:debug(tostring(self.name) ..nameNum(self).. ": self.gofortipping = false (BGA / fillLevel > capacity)", 2);
+						courseplay:debug(nameNum(self) .. ": self.gofortipping = false (BGA / fillLevel > capacity)", 2);
 			end;
 		end
 	end
