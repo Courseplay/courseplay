@@ -208,3 +208,7 @@ function endswith(sbig, slittle) --TODO: always use Utils.endsWith
 	end
 	return string.sub(sbig, string.len(sbig) - string.len(slittle) + 1) == slittle
 end
+
+function nameNum(vehicle)
+	return tostring(vehicle.name) .. " (#" .. tostring(vehicle.working_course_player_num) .. ")";
+end;

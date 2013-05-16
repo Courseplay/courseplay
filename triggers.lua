@@ -16,16 +16,16 @@ function courseplay:cponTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
  
 			end;
 		else
-			courseplay:debug("found trigger",1)
+			courseplay:debug(string.format("%s: found collision trigger", nameNum(self)), 2);
 			local vehicle = g_currentMission.nodeToVehicle[otherId];
 			local vehicleConcerned = g_currentMission.nodeToVehicle[otherId]
 			local vehicleOnList = false
 			if vehicle ~= nil then
-				courseplay:debug("checking CollisionIgnoreList",1)
+				courseplay:debug(string.format("%s: checking CollisionIgnoreList", nameNum(self)), 2);
 				for a,b in pairs (self.cpTrafficCollisionIgnoreList) do
-					courseplay:debug(tostring(g_currentMission.nodeToVehicle[a].name).." vs "..tostring(vehicleConcerned.name),1)
+					courseplay:debug(string.format("%s: %s vs %s", nameNum(self), tostring(g_currentMission.nodeToVehicle[a].name), tostring(vehicleConcerned.name)), 2);
 					if g_currentMission.nodeToVehicle[a].id == vehicleConcerned.id then
-						courseplay:debug(tostring(vehicleConcerned.name).." is on list",1)
+						courseplay:debug(string.format("%s: %s is on list", nameNum(self), tostring(vehicleConcerned.name)), 2);
 						vehicleOnList = true
 						break		
 					end
@@ -33,7 +33,7 @@ function courseplay:cponTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 			end
 			if vehicle ~= nil and self.trafficCollisionIgnoreList[otherId] == nil and vehicleOnList == false then
 				if onEnter then
-					courseplay:debug(tostring(vehicleConcerned.name).." is not on list",1)
+					courseplay:debug(string.format("%s: %s is not on list", nameNum(self), tostring(vehicleConcerned.name)), 2);
 					self.traffic_vehicle_in_front = otherId
 					self.CPnumCollidingVehicles = self.CPnumCollidingVehicles + 1;
 					self.numCollidingVehicles[triggerId] = self.numCollidingVehicles[triggerId]+1;
@@ -56,6 +56,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 	local triggerObjects, triggerObjectsCount = courseplay:getAllTipTriggers();
 	
 	if triggerObjects ~= nil and triggerObjectsCount > 0 then
+		courseplay:debug(nameNum(self) .. ": lastCheckedTransformID vs transformId = " .. tostring(self.cp.lastCheckedTransformID) .. " vs " .. tostring(transformId), 1);
 		local fruitType = self.tippers[1].currentFillType;
 
 		if transformId ~= nil then
@@ -66,25 +67,25 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 				if triggerId == nil then
 					triggerId = trigger.tipTriggerId;
 				end;
-				courseplay:debug(string.format("%s: transformId %s is in triggerObjects (#%s) (triggerId=%s)", tostring(self.name), tostring(transformId), tostring(triggerObjectsCount), tostring(triggerId)), 1);
+				courseplay:debug(string.format("%s: transformId %s is in triggerObjects (#%s) (triggerId=%s)", nameNum(self), tostring(transformId), tostring(triggerObjectsCount), tostring(triggerId)), 1);
 
 				if trigger.isAlternativeTipTrigger then
 					fruitType = FruitUtil.fillTypeToFruitType[fruitType];
 				end;
 
 				if trigger.acceptedFillTypes ~= nil and trigger.acceptedFillTypes[fruitType] then
-					courseplay:debug(string.format("%s: trigger %s accepts fruit (%s)", tostring(self.name), tostring(triggerId), tostring(fruitType)), 1);
+					courseplay:debug(string.format("%s: trigger %s accepts fruit (%s)", nameNum(self), tostring(triggerId), tostring(fruitType)), 1);
 					local fillTypeIsValid = true;
 					if trigger.isAlternativeTipTrigger then
 						fillTypeIsValid = trigger.currentFillType == 0 or trigger.currentFillType == fruitType;
-						courseplay:debug(string.format("%s: AlternativeTipTrigger %s's current fruit == trailer fruit = %s", tostring(self.name), tostring(triggerId), tostring(fillTypeIsValid)), 1);
+						courseplay:debug(string.format("%s: AlternativeTipTrigger %s's current fruit == trailer fruit = %s", nameNum(self), tostring(triggerId), tostring(fillTypeIsValid)), 1);
 					elseif trigger.isPlaceableHeapTrigger then
 						fillTypeIsValid = trigger.fillType == 0 or trigger.fillType == fruitType;
-						courseplay:debug(string.format("%s: PlaceableHeapTrigger %s's current fruit == trailer fruit = %s", tostring(self.name), tostring(triggerId), tostring(fillTypeIsValid)), 1);
+						courseplay:debug(string.format("%s: PlaceableHeapTrigger %s's current fruit == trailer fruit = %s", nameNum(self), tostring(triggerId), tostring(fillTypeIsValid)), 1);
 					end;
 
 					if fillTypeIsValid then
-						courseplay:debug(string.format("%s: self.cp.currentTipTrigger = %s", tostring(self.name), tostring(triggerId)), 1);
+						courseplay:debug(string.format("%s: self.cp.currentTipTrigger = %s", nameNum(self), tostring(triggerId)), 1);
 						self.cp.currentTipTrigger = trigger;
 					end;
 				end;
@@ -92,7 +93,6 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 				courseplay.confirmedNoneTriggers[transformId] = true
 			end;
 		end;
-		self.cp.lastCheckedTransformID = transformId;
 	end;
 end;
 
