@@ -160,6 +160,7 @@ function courseplay:start(self)
 		self.cp.shovelState = 1;
 	end;
 
+	courseplay:getAllTipTriggers();
 
 	self.forceIsActive = true;
 	self.stopMotorOnLeave = false;

@@ -117,6 +117,7 @@ function cp_setupHud()
 		};
 	};
 	courseplay.confirmedNoneTriggers = {}
+	courseplay.confirmedNoneTriggersCounter = 0
 
 	for l=1,courseplay.hud.numLines do
 		if l == 1 then

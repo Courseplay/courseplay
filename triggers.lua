@@ -53,7 +53,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 		return
 	end
 
-	local triggerObjects, triggerObjectsCount = courseplay:getAllTipTriggers();
+	local triggerObjects, triggerObjectsCount = courseplay.triggerObjects, courseplay.triggerObjectsCount
 	local name = getName(transformId)	
 
 	if triggerObjects ~= nil and triggerObjectsCount > 0 then
@@ -92,7 +92,9 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 				end;
 			else
 				courseplay.confirmedNoneTriggers[transformId] = true
+				courseplay.confirmedNoneTriggersCounter = courseplay.confirmedNoneTriggersCounter +1
 				courseplay:debug(string.format("%s: added %s to blacklist", nameNum(self), tostring(name)), 1);
+				courseplay:debug("courseplay.confirmedNoneTriggers:  "..tostring(courseplay.confirmedNoneTriggersCounter),1);
 			end;
 		end;
 	end;
@@ -144,8 +146,9 @@ function courseplay:getAllTipTriggers()
 			end;
 		end
 	end;
-	
-	return triggerObjects, triggerObjectsCount;
+	courseplay.triggerObjects = {}
+	courseplay.triggerObjects = triggerObjects 
+	courseplay.triggerObjectsCount = triggerObjectsCount
 end;
 
 function courseplay:isValidTipTrigger(trigger)
