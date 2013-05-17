@@ -364,12 +364,14 @@ function courseplay:drive(self, dt)
 				if self.tipRefOffset ~= 0 then
 					if self.cp.currentTipTrigger == nil then
 						local x1,y1,z1 = localToWorld(self.aiTrafficCollisionTrigger,self.tipRefOffset,0,0)
-						raycastAll(x1,y1,z1, nx, ny, nz, "findTipTriggerCallback", 10, self)
+						num =  raycastAll(x1,y1,z1, nx, ny, nz, "findTipTriggerCallback", 10, self)
+						if num >0 then print("drive(362): 2nd raycast end") end
 						drawDebugLine(x1,y1,z1, 1, 0, 0, x1+(nx*10), y1+(ny*10), z1+(nz*10), 1, 0, 0);
 					end
 					if self.cp.currentTipTrigger == nil then
 						local x1,y1,z1 = localToWorld(self.aiTrafficCollisionTrigger,-self.tipRefOffset,0,0)
-						raycastAll(x1,y1,z1, nx, ny, nz, "findTipTriggerCallback", 10, self)
+						num = raycastAll(x1,y1,z1, nx, ny, nz, "findTipTriggerCallback", 10, self)
+						if num >0 then print("drive(362): 3rd raycast end") end
 						drawDebugLine(x1,y1,z1, 1, 0, 0, x1+(nx*10), y1+(ny*10), z1+(nz*10), 1, 0, 0);
 					end
 				end
