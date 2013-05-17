@@ -168,7 +168,7 @@ function courseplay:turn(self, dt) --!!!
 				self.cp.turnStage = -1
 				courseplay:lowerImplements(self, false, true)
 			end
-			if dist > backMarker then
+			if dist > backMarker and self.cp.turnStage == -1 then
 				if self.cp.noStopOnTurn == false then
 					self.cp.waitForTurnTime = self.timer + 1500
 				end
