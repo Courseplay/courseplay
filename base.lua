@@ -252,7 +252,9 @@ function courseplay:load(xmlFile)
 	else
 		if courseplay:isWheelloader(self)then
 			DirectionNode = getParent(self.shovelTipReferenceNode)
-
+			if self.wheels[1].rotMax ~= 0 then
+				DirectionNode = self.rootNode;
+			end
 			if DirectionNode == nil then
 				for i=1, table.getn(self.attacherJoints) do
 					if self.rootNode ~= getParent(self.attacherJoints[i].jointTransform) then
