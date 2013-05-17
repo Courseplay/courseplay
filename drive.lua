@@ -232,7 +232,7 @@ function courseplay:drive(self, dt)
 	local tx, ty, tz = getWorldTranslation(self.aiTrafficCollisionTrigger)
 	-- direction of tractor
 	local nx, ny, nz = localDirectionToWorld(self.cp.DirectionNode, 0, 0, 1)
-	
+	--local nx, ny, nz = localDirectionToWorld(self.cp.DirectionNode, lx, 0, lz)
 	--RulModiä
 	if self.RulMode == 1 then
 		if (self.sl == 3 and not self.beaconLightsActive) or (self.sl ~= 3 and self.beaconLightsActive) or (self.ai_mode == 7 and self.isAIThreshing and self.beaconLightsActive)  then
@@ -358,16 +358,19 @@ function courseplay:drive(self, dt)
 		if (self.ai_mode == 1 or (self.ai_mode == 2 and self.loaded)) and self.cp.tipperFillLevel ~= nil and self.tipRefOffset ~= nil and self.tipper_attached then
 			if self.cp.currentTipTrigger == nil and self.cp.tipperFillLevel > 0 then
 				-- is there a tipTrigger within 10 meters?
-				raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
-
+				local num = raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
+				if num >0 then print("drive(362): raycast end") end
+				drawDebugLine(tx, ty, tz, 1, 0, 0, tx+(nx*10), ty+(ny*10), tz+(nz*10), 1, 0, 0);
 				if self.tipRefOffset ~= 0 then
 					if self.cp.currentTipTrigger == nil then
 						local x1,y1,z1 = localToWorld(self.aiTrafficCollisionTrigger,self.tipRefOffset,0,0)
 						raycastAll(x1,y1,z1, nx, ny, nz, "findTipTriggerCallback", 10, self)
+						drawDebugLine(x1,y1,z1, 1, 0, 0, x1+(nx*10), y1+(ny*10), z1+(nz*10), 1, 0, 0);
 					end
 					if self.cp.currentTipTrigger == nil then
 						local x1,y1,z1 = localToWorld(self.aiTrafficCollisionTrigger,-self.tipRefOffset,0,0)
 						raycastAll(x1,y1,z1, nx, ny, nz, "findTipTriggerCallback", 10, self)
+						drawDebugLine(x1,y1,z1, 1, 0, 0, x1+(nx*10), y1+(ny*10), z1+(nz*10), 1, 0, 0);
 					end
 				end
 			end;
@@ -474,11 +477,11 @@ function courseplay:drive(self, dt)
 			if self.tipRefOffset ~= 0 then
 				if self.cp.currentTipTrigger == nil then
 					local x1,y1,z1 = localToWorld(self.aiTrafficCollisionTrigger,self.tipRefOffset,0,0)
-					raycastAll(x1,y1,z1, 0, 0, 1, "findTipTriggerCallback", 10, self)
+					raycastAll(x1,y1,z1, nx, ny, nz, "findTipTriggerCallback", 10, self)
 				end
 				if self.cp.currentTipTrigger == nil then
 					local x1,y1,z1 = localToWorld(self.aiTrafficCollisionTrigger,-self.tipRefOffset,0,0)
-					raycastAll(x1,y1,z1, 0, 0, 1, "findTipTriggerCallback", 10, self)
+					raycastAll(x1,y1,z1, nx, ny, nz, "findTipTriggerCallback", 10, self)
 				end
 			end
 		end;

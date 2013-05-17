@@ -50,7 +50,7 @@ end
 function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 	
 	if courseplay.confirmedNoneTriggers[transformId] == true then
-		return
+		return true
 	end
 
 	local triggerObjects, triggerObjectsCount = courseplay.triggerObjects, courseplay.triggerObjectsCount
@@ -88,6 +88,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 					if fillTypeIsValid then
 						courseplay:debug(string.format("%s: self.cp.currentTipTrigger = %s", nameNum(self), tostring(triggerId)), 1);
 						self.cp.currentTipTrigger = trigger;
+						return false
 					end;
 				end;
 			else
@@ -98,6 +99,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 			end;
 		end;
 	end;
+	return true
 end;
 
 function courseplay:getAllTipTriggers()
