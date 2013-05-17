@@ -54,9 +54,10 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 	end
 
 	local triggerObjects, triggerObjectsCount = courseplay:getAllTipTriggers();
-	
+	local name = getName(transformId)	
+
 	if triggerObjects ~= nil and triggerObjectsCount > 0 then
-		courseplay:debug(nameNum(self) .. "transformId = ".. tostring(transformId), 1);
+		courseplay:debug(nameNum(self) .. "transformId = ".. tostring(transformId)..": "..tostring(name), 1);
 		local fruitType = self.tippers[1].currentFillType;
 
 		if transformId ~= nil then
@@ -91,7 +92,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 				end;
 			else
 				courseplay.confirmedNoneTriggers[transformId] = true
-				courseplay:debug(string.format("%s: added %s to blacklist", nameNum(self), tostring(transformId)), 1);
+				courseplay:debug(string.format("%s: added %s to blacklist", nameNum(self), tostring(name)), 1);
 			end;
 		end;
 	end;
