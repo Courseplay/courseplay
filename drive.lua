@@ -358,20 +358,23 @@ function courseplay:drive(self, dt)
 		if (self.ai_mode == 1 or (self.ai_mode == 2 and self.loaded)) and self.cp.tipperFillLevel ~= nil and self.tipRefOffset ~= nil and self.tipper_attached then
 			if self.cp.currentTipTrigger == nil and self.cp.tipperFillLevel > 0 then
 				-- is there a tipTrigger within 10 meters?
+				print("call 1st raycast")
 				local num = raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
-				if num >0 then print("drive(362): raycast end") end
+				if num >0 then print("drive(363): raycast end") end
 				drawDebugLine(tx, ty, tz, 1, 0, 0, tx+(nx*10), ty+(ny*10), tz+(nz*10), 1, 0, 0);
 				if self.tipRefOffset ~= 0 then
 					if self.cp.currentTipTrigger == nil then
 						local x1,y1,z1 = localToWorld(self.aiTrafficCollisionTrigger,self.tipRefOffset,0,0)
+						print("call 2nd raycast")
 						num =  raycastAll(x1,y1,z1, nx, ny, nz, "findTipTriggerCallback", 10, self)
-						if num >0 then print("drive(362): 2nd raycast end") end
+						if num >0 then print("drive(370): 2nd raycast end") end
 						drawDebugLine(x1,y1,z1, 1, 0, 0, x1+(nx*10), y1+(ny*10), z1+(nz*10), 1, 0, 0);
 					end
 					if self.cp.currentTipTrigger == nil then
 						local x1,y1,z1 = localToWorld(self.aiTrafficCollisionTrigger,-self.tipRefOffset,0,0)
+						print("call 3rd raycast")
 						num = raycastAll(x1,y1,z1, nx, ny, nz, "findTipTriggerCallback", 10, self)
-						if num >0 then print("drive(362): 3rd raycast end") end
+						if num >0 then print("drive(377): 3rd raycast end") end
 						drawDebugLine(x1,y1,z1, 1, 0, 0, x1+(nx*10), y1+(ny*10), z1+(nz*10), 1, 0, 0);
 					end
 				end
