@@ -48,7 +48,7 @@ end
 
 -- tip trigger
 function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
-	
+	--drawDebugPoint( x, y, z, 1, 1, 0, 1); --TODO use DebugChannel
 	if courseplay.confirmedNoneTriggers[transformId] == true then
 		return true
 	end

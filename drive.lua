@@ -231,8 +231,7 @@ function courseplay:drive(self, dt)
 	-- coordinates of coli
 	local tx, ty, tz = getWorldTranslation(self.aiTrafficCollisionTrigger)
 	-- direction of tractor
-	local nx, ny, nz = localDirectionToWorld(self.cp.DirectionNode, 0, 0, 1)
-	--local nx, ny, nz = localDirectionToWorld(self.cp.DirectionNode, lx, 0, lz)
+	local nx, ny, nz = localDirectionToWorld(self.cp.DirectionNode, lx, 0, lz)
 	--RulModiä
 	if self.RulMode == 1 then
 		if (self.sl == 3 and not self.beaconLightsActive) or (self.sl ~= 3 and self.beaconLightsActive) or (self.ai_mode == 7 and self.isAIThreshing and self.beaconLightsActive)  then
@@ -358,24 +357,24 @@ function courseplay:drive(self, dt)
 		if (self.ai_mode == 1 or (self.ai_mode == 2 and self.loaded)) and self.cp.tipperFillLevel ~= nil and self.tipRefOffset ~= nil and self.tipper_attached then
 			if self.cp.currentTipTrigger == nil and self.cp.tipperFillLevel > 0 then
 				-- is there a tipTrigger within 10 meters?
-				print("call 1st raycast")
+				--print("call 1st raycast")--TODO use DebugChannel
 				local num = raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
-				if num >0 then print("drive(363): raycast end") end
-				drawDebugLine(tx, ty, tz, 1, 0, 0, tx+(nx*10), ty+(ny*10), tz+(nz*10), 1, 0, 0);
+				--if num >0 then print("drive(363): raycast end") end --TODO use DebugChannel
+				--drawDebugLine(tx, ty, tz, 1, 0, 0, tx+(nx*10), ty+(ny*10), tz+(nz*10), 1, 0, 0);
 				if self.tipRefOffset ~= 0 then
 					if self.cp.currentTipTrigger == nil then
 						local x1,y1,z1 = localToWorld(self.aiTrafficCollisionTrigger,self.tipRefOffset,0,0)
-						print("call 2nd raycast")
+						--print("call 2nd raycast")
 						num =  raycastAll(x1,y1,z1, nx, ny, nz, "findTipTriggerCallback", 10, self)
-						if num >0 then print("drive(370): 2nd raycast end") end
-						drawDebugLine(x1,y1,z1, 1, 0, 0, x1+(nx*10), y1+(ny*10), z1+(nz*10), 1, 0, 0);
+						--if num >0 then print("drive(370): 2nd raycast end") end --TODO use DebugChannel
+						--drawDebugLine(x1,y1,z1, 1, 0, 0, x1+(nx*10), y1+(ny*10), z1+(nz*10), 1, 0, 0); --TODO use DebugChannel
 					end
 					if self.cp.currentTipTrigger == nil then
 						local x1,y1,z1 = localToWorld(self.aiTrafficCollisionTrigger,-self.tipRefOffset,0,0)
-						print("call 3rd raycast")
+						--print("call 3rd raycast") --TODO use DebugChannel
 						num = raycastAll(x1,y1,z1, nx, ny, nz, "findTipTriggerCallback", 10, self)
-						if num >0 then print("drive(377): 3rd raycast end") end
-						drawDebugLine(x1,y1,z1, 1, 0, 0, x1+(nx*10), y1+(ny*10), z1+(nz*10), 1, 0, 0);
+						--if num >0 then print("drive(377): 3rd raycast end") end --TODO use DebugChannel
+						--drawDebugLine(x1,y1,z1, 1, 0, 0, x1+(nx*10), y1+(ny*10), z1+(nz*10), 1, 0, 0); 
 					end
 				end
 			end;
