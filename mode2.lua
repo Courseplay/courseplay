@@ -371,14 +371,12 @@ function courseplay:unload_combine(self, dt)
 
 		local tX, tY, tZ = nil, nil, nil
 
-		if combine.cp.isChopper then
-			tX, tY, tZ = localToWorld(tractor.rootNode, self.combine_offset * 0.8, 0, -5) 
-		elseif combine.cp.isSugarBeetLoader then
+		if combine.cp.isSugarBeetLoader then
 			local prnToCombineZ = courseplay:calculateVerticalOffset(self, combine);
 	
-			tX, tY, tZ = localToWorld(combine.rootNode, self.combine_offset, 0, prnToCombineZ -5)			
+			tX, tY, tZ = localToWorld(combine.rootNode, self.combine_offset, 0, prnToCombineZ -5);
 		else			
-			tX, tY, tZ = localToWorld(combine.rootNode, self.combine_offset, 0, -5)
+			tX, tY, tZ = localToWorld(combine.rootNode, self.combine_offset, 0, -5);
 		end
 
 		if combine.attachedImplements ~= nil then
