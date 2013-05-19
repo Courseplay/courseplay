@@ -209,10 +209,10 @@ function courseplay:loadHud(self)
 		--Page 3
 		elseif self.showHudInfoBase == 3 then
 			self.hudpage[3][1][1] = courseplay:get_locale(self, "CPCombineOffset") --"seitl. Abstand:"
-			self.hudpage[3][1][2] = courseplay:get_locale(self, "CPPipeOffset") --"Pipe Abstand:"
+			self.hudpage[3][1][2] = courseplay:get_locale(self, "CPVerticalOffset") --"vertikaler Abstand:"
 			self.hudpage[3][1][3] = courseplay:get_locale(self, "CPTurnRadius") --"Wenderadius:"
-			self.hudpage[3][1][4] = courseplay:get_locale(self, "CPRequiredFillLevel") --"Start bei%:"
-			self.hudpage[3][1][5] = courseplay:get_locale(self, "NoWaitforfillAt") --"abfahren bei%:"
+			self.hudpage[3][1][4] = courseplay:get_locale(self, "CPRequiredFillLevel") --"Start bei %:"
+			self.hudpage[3][1][5] = courseplay:get_locale(self, "NoWaitforfillAt") --"abfahren bei %:"
 
 			if self.ai_state ~= nil then
 				if self.combine_offset ~= 0 then

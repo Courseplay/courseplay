@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="12">
-	<version>3.40.0016</version>
+	<version>3.40.0017</version>
 	<author>Hummel (modhoster.de) / Lautschreier / Wolverin0815 / Bastian82 / Jakob Tischler / Thomas Gärtner</author>
     <title>
 		<de>Courseplay</de>        
@@ -635,12 +635,12 @@ Italský překlad: JD7530
 			<it>Raggio di sterzata</it>
 			<cz>Poloměr otáčení:</cz>
 		</text>
-		<text name="CPPipeOffset">
-			<en>pipe offset:</en>
-			<de>Pipe Abstand:</de>
-			<fr>Distance Av/Ar:</fr>
-			<es>Distancia al tubo:</es>
-			<it>Distanza dal tubo di scarico:</it>
+		<text name="CPVerticalOffset">
+			<en>Vertical offset:</en>
+			<de>Vertikaler Abstand:</de>
+			<fr>Distance verticale:</fr>
+			<es>Distancia vertical:</es>
+			<it>Distanza verticale:</it>
 			<cz>Odstup vpřed/vzad:</cz>
 		</text>
 		<text name="CPMaxHireables">
