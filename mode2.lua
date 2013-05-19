@@ -565,7 +565,7 @@ function courseplay:unload_combine(self, dt)
 		if combine.cp.offset == nil and not combine.cp.isChopper then
 			courseplay:calculateCombineOffset(self, combine);
 		end
-		--currentX, currentY, currentZ = localToWorld(combine.rootNode, self.combine_offset, 0, trailer_offset + 5)
+		currentX, currentY, currentZ = localToWorld(combine.rootNode, self.combine_offset, 0, trailer_offset + 5)
 		
 		--CALCULATE VERTICAL OFFSET (tipper offset)
 		local prnToCombineZ = courseplay:calculateVerticalOffset(self, combine);
@@ -573,7 +573,6 @@ function courseplay:unload_combine(self, dt)
 		--SET TARGET UNLOADING COORDINATES @ COMBINE
 		local ttX, ttZ = courseplay:setTargetUnloadingCoords(self, combine, trailer_offset, prnToCombineZ);
 		
-		currentX, currentZ = ttX, ttZ;
 		local lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, ttX, y, ttZ)
 		dod = Utils.vector2Length(lx, lz)
 		if dod > 40 or self.isChopperTurning == true then
@@ -584,7 +583,7 @@ function courseplay:unload_combine(self, dt)
 			self.cp.infoText = courseplay:get_locale(self, "CPCombineWantsMeToStop") -- "Drescher sagt ich soll anhalten."
 			allowedToDrive = false
 		elseif combine.cp.isChopper then
-			if combine.movingDirection == 0 and (lz == -1 or dod == -1)and self.isChopperTurning == false then
+			if combine.movingDirection == 0 and dod == -1 and self.isChopperTurning == false then
 				allowedToDrive = false
 				self.cp.infoText = courseplay:get_locale(self, "CPCombineWantsMeToStop") -- "Drescher sagt ich soll anhalten."
 			end
@@ -611,7 +610,7 @@ function courseplay:unload_combine(self, dt)
 			elseif lz < -1 then
 				refSpeed = combine_speed / 2
 			else
-				refSpeed = combine_speed
+				refSpeed = math.max(combine_speed,3/3600)
 			end
 			
 			if ((tractor.turnStage ~= 0 or tractor.cp.turnStage ~= 0) and lz < 20) or (combine.movingDirection == 0 and lz < 5) then
