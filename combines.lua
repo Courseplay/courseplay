@@ -104,7 +104,7 @@ end
 function courseplay:register_at_combine(self, combine)
 	local curFile = "combines.lua"
 	courseplay:debug(string.format("%s(%i): %s: registering at combine %s", curFile, debug.getinfo(1).currentline, self.name, combine.name), 2)
-	courseplay:debug(table.show(combine), 4)
+	--courseplay:debug(table.show(combine), 4)
 	local num_allowed_courseplayers = 1
 	self.calculated_course = false
 	if combine.courseplayers == nil then
