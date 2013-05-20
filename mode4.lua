@@ -81,10 +81,10 @@ function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill
 						--set or stow ridge markers
 						if courseplay:is_sowingMachine(workTool) and self.cp.ridgeMarkersAutomatic then
 							if ridgeMarker ~= nil then
-								if workTool.ridgeMarkerState ~= ridgeMarker then
+								if workTool.setRidgeMarkerState ~= nil and workTool.ridgeMarkerState ~= ridgeMarker then
 									workTool:setRidgeMarkerState(ridgeMarker);
 								end;
-							elseif workTool.ridgeMarkerState ~= nil and workTool.ridgeMarkerState ~= 0 then
+							elseif workTool.setRidgeMarkerState ~= nil and workTool.ridgeMarkerState ~= 0 then
 								workTool:setRidgeMarkerState(0);
 							end;
 						end;
