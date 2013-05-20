@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="12">
-	<version>3.40.0024</version>
+	<version>3.40.0025</version>
 	<author>Hummel (modhoster.de) / Lautschreier / Wolverin0815 / Bastian82 / Jakob Tischler / Thomas Gärtner</author>
     <title>
 		<de>Courseplay</de>        
@@ -539,6 +539,22 @@ Italský překlad: JD7530
 			<es>listo para descargar alpacas.</es>
 			<it>pronto per scaricare le balle</it>
 			<cz>je připraven skládat balíky.</cz>
+		</text>
+		<text name="CPneedsToBeUnloaded">
+			<en>needs to be unloaded.</en>
+			<de>muss entladen werden.</de>
+			<fr>needs to be unloaded.</fr> <!-- !!! -->
+			<es>needs to be unloaded.</es> <!-- !!! -->
+			<it>needs to be unloaded.</it> <!-- !!! -->
+			<cz>needs to be unloaded.</cz> <!-- !!! -->
+		</text>
+		<text name="CPworkToolNeedsToBeRefilled">
+			<en>work tool needs to be refilled.</en>
+			<de>Gerät muss aufgefüllt werden.</de>
+			<fr>work tool needs to be refilled.</fr> <!-- !!! -->
+			<es>work tool needs to be refilled.</es> <!-- !!! -->
+			<it>work tool needs to be refilled.</it> <!-- !!! -->
+			<cz>work tool needs to be refilled.</cz> <!-- !!! -->
 		</text>
 		<text name="CPUnloadBale">
 			<en>unloading bales.</en>

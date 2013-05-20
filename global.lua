@@ -20,14 +20,11 @@ function courseplay:renderInfoText(self)
 	self.cp.infoText = nil;
 
 	if not g_currentMission.missionPDA.showPDA then
-		self.cp.globalInfoTextOverlay.isRendering = false;
+		local bg = self.cp.globalInfoTextOverlay;
+		bg.isRendering = false;
 		if self.cp.globalInfoText ~= nil then
 			local posY = self.working_course_player_num * 0.022;
-			local vehicleName = "unknown";
-			if self.name ~= nil then
-				vehicleName = self.name;
-			end;
-			local msg = vehicleName .. " " .. self.cp.globalInfoText;
+			local msg = Utils.getNoNil(self.name, g_i18n:getText("UNKNOWN")) .. " " .. self.cp.globalInfoText;
 
 			--Background overlay
 			local level = self.cp.globalInfoTextLevel;
@@ -46,17 +43,17 @@ function courseplay:renderInfoText(self)
 			end;
 
 			if bgColorName ~= nil then
-				local currentColor = { self.cp.globalInfoTextOverlay.r, self.cp.globalInfoTextOverlay.g, self.cp.globalInfoTextOverlay.b, self.cp.globalInfoTextOverlay.a };
+				local currentColor = { bg.r, bg.g, bg.b, bg.a };
 				local bgColor = courseplay.hud.colors[bgColorName];
 				bgColor[4] = 0.85;
 				if currentColor == nil or not courseplay:colorsMatch(currentColor, bgColor) then
-					self.cp.globalInfoTextOverlay:setColor(unpack(bgColor))
+					bg:setColor(unpack(bgColor))
 				end;
 
-				self.cp.globalInfoTextOverlay:setPosition(self.cp.globalInfoTextOverlay.x, posY)
-				self.cp.globalInfoTextOverlay:setDimension(getTextWidth(courseplay.globalInfoText.fontSize, msg) + courseplay.globalInfoText.backgroundPadding * 2.5, self.cp.globalInfoTextOverlay.height)
+				bg:setPosition(bg.x, posY)
+				bg:setDimension(getTextWidth(courseplay.globalInfoText.fontSize, msg) + courseplay.globalInfoText.backgroundPadding * 2.5, bg.height)
 
-				self.cp.globalInfoTextOverlay.isRendering = true; --NOTE: render() happens in courseplay_manager:draw()
+				bg.isRendering = true; --NOTE: render() happens in courseplay_manager:draw()
 			end;
 			
 			courseplay:setFontSettings("white", false);
