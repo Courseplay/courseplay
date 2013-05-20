@@ -222,9 +222,9 @@ function courseplay:update_tools(self, tractor_or_implement)
 			tipper_attached = true
 		end
 		
-		courseplay:debug(string.format("courseplay:update_tools() (%s)", tostring(self.name)), 2);
+		courseplay:debug(string.format("%s: courseplay:update_tools()", nameNum(self)), 2);
 
-		courseplay:debug(tostring(object.name).." - adding to cpTrafficCollisionIgnoreList", 2)
+		courseplay:debug(nameNum(self) .. ": adding " .. tostring(object.name) .. " to cpTrafficCollisionIgnoreList", 2)
 		self.cpTrafficCollisionIgnoreList[object.rootNode] = true;
 	end; --END for implement in attachedImplements
 	
@@ -267,7 +267,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 	end;
 	
 	if courseplay.debugLevel > 0 then
-		print(string.format("%s cpTrafficCollisionIgnoreList", tostring(self.name)));
+		print(string.format("%s cpTrafficCollisionIgnoreList", nameNum(self)));
 		for a,b in pairs(self.cpTrafficCollisionIgnoreList) do
 			local name = g_currentMission.nodeToVehicle[a].name
 			print(string.format("\\___ %s = %s", tostring(a), tostring(name)));
@@ -305,12 +305,15 @@ function courseplay:update_tools(self, tractor_or_implement)
 		for i=1, table.getn(self.tippers) do
 			local t = self.tippers[i];
 			local coverItems = {};
+			local isHKD302, isMUK, isSRB35 = false, false, false;
 			
 			if t.configFileName ~= nil then
-				local isHKD302 = t.configFileName == "data/vehicles/trailers/kroeger/HKD302.xml";
-				local isMUK = t.configFileName == "data/vehicles/trailers/kroeger/MUK303.xml" or t.configFileName == "data/vehicles/trailers/kroeger/MUK402.xml";
-				local isSRB35 = t.configFileName == "data/vehicles/trailers/kroeger/SRB35.xml";
-				
+				isHKD302 = t.configFileName == "data/vehicles/trailers/kroeger/HKD302.xml";
+				isMUK = t.configFileName == "data/vehicles/trailers/kroeger/MUK303.xml" or t.configFileName == "data/vehicles/trailers/kroeger/MUK402.xml";
+				isSRB35 = t.configFileName == "data/vehicles/trailers/kroeger/SRB35.xml";
+			end;
+			
+			if isHKD302 or isMUK or isSRB35 then
 				if isHKD302 then
 					local c = getChild(t.rootNode, "bodyLeft");
 					
@@ -359,9 +362,10 @@ function courseplay:update_tools(self, tractor_or_implement)
 					};
 					table.insert(self.cp.tippersWithCovers, data);
 				end;
-			end;
-			
-			if t.setPlane ~= nil then
+
+			elseif t.setPlane ~= nil and t.currentPlaneId == nil and t.currentPlaneSetId == nil then
+				--NOTE: setPlane is both in SMK and in chaffCover.lua -> check for currentPlaneId, currentPlaneSetId (chaffCover) nil
+				
 				courseplay:debug(string.format("Implement \"%s\" has a cover (setPlane ~= nil)", tostring(t.name)), 3);
 				self.cp.tipperHasCover = true;
 				local data = {
@@ -456,7 +460,7 @@ function courseplay:setMarkers(self, object)
 	if self.cp.aiFrontMarker < -7 then
 		self.cp.aiFrontMarker = -7
 	end
-	courseplay:debug("setMarkers: self.cp.backMarkerOffset: "..tostring(self.cp.backMarkerOffset).."  self.cp.aiFrontMarker: "..tostring(self.cp.aiFrontMarker),1)  
+	courseplay:debug(nameNum(self) .. " setMarkers(): self.cp.backMarkerOffset: "..tostring(self.cp.backMarkerOffset).."  self.cp.aiFrontMarker: "..tostring(self.cp.aiFrontMarker),1)  
 end
 
 -- loads all tippers
@@ -583,7 +587,7 @@ function courseplay:unload_tippers(self)
 							self.filling3 =	self.filling3 + filling
 						end
 					end;
-					courseplay:debug(string.format("%s: BGA section 1: %f, section 2: %f, section 3: %f", self.name, self.filling1, self.filling2, self.filling3), 1);
+					courseplay:debug(string.format("%s: BGA section 1: %f, section 2: %f, section 3: %f", nameNum(self), self.filling1, self.filling2, self.filling3), 1);
 					
 					if self.filling1 <= self.filling2 and self.filling1 < self.filling3 then
 						self.tipLocation = 1
@@ -594,7 +598,7 @@ function courseplay:unload_tippers(self)
 					else
 						self.tipLocation = 1
 					end
-					courseplay:debug(string.format("BGA tipLocation = %d", self.tipLocation),1);
+					courseplay:debug(string.format("%s: BGA tipLocation = %d", nameNum(self), self.tipLocation),1);
 					self.runonce = 1
 				end
 				if self.tipLocation == 1 then
@@ -629,7 +633,7 @@ function courseplay:unload_tippers(self)
 					if self.cp.currentTipTrigger.getTipDistanceFromTrailer ~= nil then
 						distanceToTrigger,self.toggledTipState  = self.cp.currentTipTrigger:getTipDistanceFromTrailer(tipper); --courtesy of Satis
 					end;
-					courseplay:debug(nameNum(self).. ": distanceToTrigger=" .. tostring(distanceToTrigger), 3);
+					courseplay:debug(nameNum(self) .. ": distanceToTrigger=" .. tostring(distanceToTrigger), 3);
 					if distanceToTrigger == 0 or self.cp.currentTipTrigger.bunkerSilo ~= nil then
 						--courseplay:debug(string.format("%s %s: distanceToTrigger=%s, isBunkerSilo=%s", tostring(self.name),nameNum(self), tostring(distanceToTrigger), tostring(isBunkerSilo)), 1);
 						tipper:toggleTipState(self.cp.currentTipTrigger,self.toggledTipState);
@@ -642,10 +646,10 @@ function courseplay:unload_tippers(self)
 				if self.cp.currentTipTrigger.bunkerSilo ~= nil then
 					allowedToDrive = true
 				end
-            		elseif not self.cp.currentTipTrigger.acceptedFillTypes[fruitType] then
-                		courseplay:debug(nameNum(self) .. ": trigger does not accept fruit (" .. tostring(fruitType) .. ")", 2);
-            		elseif not self.gofortipping then
-						courseplay:debug(nameNum(self) .. ": self.gofortipping = false (BGA / fillLevel > capacity)", 2);
+			elseif not self.cp.currentTipTrigger.acceptedFillTypes[fruitType] then
+				courseplay:debug(nameNum(self) .. ": trigger does not accept fruit (" .. tostring(fruitType) .. ")", 2);
+			elseif not self.gofortipping then
+				courseplay:debug(nameNum(self) .. ": self.gofortipping = false (BGA / fillLevel > capacity)", 2);
 			end;
 		end
 	end
