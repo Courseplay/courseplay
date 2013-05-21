@@ -1087,11 +1087,9 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 				movingTool[i] = courseplay:round(movingTool[i], 4);
 			end;
 			table.insert(shovelRotsTmp, tostring(table.concat(movingTool, " ")));
-			--print(nameNum(self) .. ": k=" .. tostring(k) .. ", movingTool (concat)=" .. tostring(table.concat(movingTool, " ")));
 		end;
 		if table.getn(shovelRotsTmp) > 0 then
 			shovelRotsAttr = ' shovelRots="' .. tostring(table.concat(shovelRotsTmp, ";")) .. '"';
-			--print(nameNum(self) .. ": " .. shovelRotsAttr);
 		end;
 	end;
 	local attributes =
@@ -1115,6 +1113,7 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 		' toolWorkWidht="'           .. tostring(self.toolWorkWidht)                     .. '"' ..
 		' realistic_driving="'       .. tostring(self.realistic_driving)                 .. '"' ..
 		' ridgeMarkersAutomatic="'   .. tostring(self.cp.ridgeMarkersAutomatic)          .. '"' ..
+		shovelRotsAttr .. 
 		' ai_mode="'                 .. tostring(self.ai_mode) .. '"';
 	return attributes, nil;
 end
