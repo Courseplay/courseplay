@@ -1057,6 +1057,20 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 			self.abortWork = nil
 		end
 		
+		--Shovel positions
+		local shovelRots = getXMLString(xmlFile, key .. string.format("#shovelRots"));
+		if shovelRots ~= nil then
+			self.cp.shovelStateRot = nil;
+			self.cp.shovelStateRot = {};
+			local shovelStates = Utils.splitString(";", shovelRots);
+			if table.getn(shovelStates) == 4 then
+				for i=1,4 do
+					self.cp.shovelStateRot[tostring(i+1)] = Utils.splitString(" ", shovelStates[i]);
+				end;
+				courseplay:buttonsActiveEnabled(self, "shovel");
+			end;
+		end;
+		
 		courseplay:validateCanSwitchMode(self);
 		
 	end
@@ -1065,7 +1079,21 @@ end
 
 
 function courseplay:getSaveAttributesAndNodes(nodeIdent)
-
+	local shovelRotsTmp, shovelRotsAttr = {}, "";
+	local hasAllShovelRots = self.cp.shovelStateRot ~= nil and self.cp.shovelStateRot["2"] ~= nil and self.cp.shovelStateRot["3"] ~= nil and self.cp.shovelStateRot["4"] ~= nil and self.cp.shovelStateRot["5"] ~= nil;
+	if hasAllShovelRots then
+		for k,movingTool in pairs(self.cp.shovelStateRot) do
+			for i=1,table.getn(movingTool) do
+				movingTool[i] = courseplay:round(movingTool[i], 4);
+			end;
+			table.insert(shovelRotsTmp, tostring(table.concat(movingTool, " ")));
+			--print(nameNum(self) .. ": k=" .. tostring(k) .. ", movingTool (concat)=" .. tostring(table.concat(movingTool, " ")));
+		end;
+		if table.getn(shovelRotsTmp) > 0 then
+			shovelRotsAttr = ' shovelRots="' .. tostring(table.concat(shovelRotsTmp, ";")) .. '"';
+			--print(nameNum(self) .. ": " .. shovelRotsAttr);
+		end;
+	end;
 	local attributes =
 		' max_speed="'               .. tostring(self.max_speed)                         .. '"' ..
 		' use_speed="'               .. tostring(self.use_speed)                         .. '"' ..

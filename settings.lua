@@ -173,7 +173,11 @@ function courseplay:setHudPage(self, pageNum)
 		end;
 	end;
 
-	courseplay:buttonsActiveEnabled(self, "pageNav");
+	if self.showHudInfoBase == 9 then
+		courseplay:buttonsActiveEnabled(self, "all");
+	else
+		courseplay:buttonsActiveEnabled(self, "pageNav");
+	end;
 end;
 
 function courseplay:switch_hud_page(self, change_by)
