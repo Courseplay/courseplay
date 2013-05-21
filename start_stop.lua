@@ -47,6 +47,7 @@ function courseplay:start(self)
 		self.ai_state = 0
 	end
 
+	--TODO: section needed?
 	if (self.ai_mode == 4 or self.ai_mode == 6) and self.tipper_attached then
 		local start_anim_time = self.tippers[1].startAnimTime
 		if start_anim_time == 1 then
@@ -151,8 +152,8 @@ function courseplay:start(self)
 	if self.recordnumber > 2 and self.ai_mode ~= 4 and self.ai_mode ~= 6 then
 		self.loaded = true
 	elseif self.ai_mode == 4 or self.ai_mode == 6 then
-		
-		self.loaded = false
+		self.loaded = false;
+		self.cp.hasUnloadingRefillingCourse = self.maxnumber > self.stopWork + 7;
 	end
 
 	if self.ai_mode == 9 or self.cp.startAtFirstPoint then
@@ -243,6 +244,7 @@ function courseplay:stop(self)
 	self.motor.maxRpmOverride = nil;
 	self.startWork = nil
 	self.stopWork = nil
+	self.cp.hasUnloadingRefillingCourse = false;
 	self.StopEnd = false
 	self.unloaded = false
 

@@ -22,10 +22,15 @@ function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill
 		end
 	end
 	-- safe last point
-	if fill_level == 0 and workArea and self.abortWork == nil then
-		self.abortWork = self.recordnumber -10
-		self.recordnumber = self.stopWork - 4
-		--	courseplay:debug(string.format("Abort: %d StopWork: %d",self.abortWork,self.stopWork), 2)
+	if fill_level == 0 and workArea then
+		if self.cp.hasUnloadingRefillingCourse and self.abortWork == nil then
+			self.abortWork = self.recordnumber -10
+			self.recordnumber = self.stopWork - 4
+			--courseplay:debug(string.format("Abort: %d StopWork: %d",self.abortWork,self.stopWork), 2)
+		elseif not self.cp.hasUnloadingRefillingCourse then
+			allowedToDrive = false;
+			courseplay:setGlobalInfoText(self, ": " .. courseplay:get_locale(self, "CPworkToolNeedsToBeRefilled"), -1);
+		end;
 	end
 	
 	local returnToStartPoint = false;

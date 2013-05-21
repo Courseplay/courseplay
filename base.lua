@@ -132,6 +132,7 @@ function courseplay:load(xmlFile)
 	self.startWork = nil
 	self.stopWork = nil
 	self.abortWork = nil
+	self.cp.hasUnloadingRefillingCourse = false;
 	self.wait = true
 	self.waitTimer = nil
 	self.realistic_driving = true;
@@ -752,6 +753,7 @@ function courseplay:readStream(streamId, connection)
 	self.cp.hasStartingCorner = streamDebugReadBool(streamId);
 	self.cp.hasStartingDirection = streamDebugReadBool(streamId);
 	self.cp.hasGeneratedCourse = streamDebugReadBool(streamId);
+	self.cp.hasUnloadingRefillingCourse = streamDebugReadBool(streamId);
 	self.cp.hasValidCourseGenerationData = streamDebugReadBool(streamId);
 	self.cp.isCombine = streamDebugReadBool(streamId);
 	self.cp.isChopper = streamDebugReadBool(streamId);
@@ -899,6 +901,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteBool(streamId, self.cp.hasStartingCorner);
 	streamDebugWriteBool(streamId, self.cp.hasStartingDirection);
 	streamDebugWriteBool(streamId, self.cp.hasGeneratedCourse);
+	streamDebugWriteBool(streamId, self.cp.hasUnloadingRefillingCourse);
 	streamDebugWriteBool(streamId, self.cp.hasValidCourseGenerationData);
 	streamDebugWriteBool(streamId, self.cp.isCombine);
 	streamDebugWriteBool(streamId, self.cp.isChopper);

@@ -356,13 +356,18 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 				end
 			end
 			-- safe last point
-			if (fill_level == 100 or self.loaded) and workArea and self.abortWork == nil and self.maxnumber ~= self.stopWork and not courseplay:isBaler(workTool) then
-				self.abortWork = last_recordnumber - 10
-				self.recordnumber = self.stopWork - 4
-				if self.recordnumber < 1 then
-					self.recordnumber = 1
-				end
-				--	courseplay:debug(string.format("Abort: %d StopWork: %d",self.abortWork,self.stopWork), 2)
+			if (fill_level == 100 or self.loaded) and workArea and not courseplay:isBaler(workTool) then
+				if self.cp.hasUnloadingRefillingCourse and self.abortWork == nil then
+					self.abortWork = last_recordnumber - 10
+					self.recordnumber = self.stopWork - 4
+					if self.recordnumber < 1 then
+						self.recordnumber = 1
+					end
+					--courseplay:debug(string.format("Abort: %d StopWork: %d",self.abortWork,self.stopWork), 2)
+				elseif not self.cp.hasUnloadingRefillingCourse then
+					allowedToDrive = false;
+					courseplay:setGlobalInfoText(self, string.format(": %s %s", tostring(workTool.name), courseplay:get_locale(self, "CPneedsToBeUnloaded")), -1);
+				end;
 			end;
 			
 		else  --COMBINES
