@@ -80,6 +80,34 @@ function courseplay:openCloseHud(self, open)
 			self.Odometer.HUD:setPosition(self.Odometer.HUD.x, self.cp.OdometerOrigPosY[2]);
 		end;
 	end;
+
+
+
+	--set 4WD/Allrad
+	if self.cp.AllradOrigPosY == nil and open and self.AllradV4Active ~= nil and self.hudAllradONOverlay ~= nil and self.hudAllradOFFOverlay ~= nil then
+		if self.hudAllradPosX ~= nil and self.hudAllradPosY ~= nil then
+			if self.hudAllradPosX > courseplay.hud.visibleArea.x1 and self.hudAllradPosX < courseplay.hud.visibleArea.x2 and self.hudAllradPosY > courseplay.hud.visibleArea.y1 and self.hudAllradPosY < courseplay.hud.visibleArea.y2 then
+				self.cp.OdometerOrigPosY = { 
+					self.hudAllradPosY,
+					self.hudAllradONOverlay.y,
+					self.hudAllradOFFOverlay.y,
+				};
+			end;
+		end;
+	end;
+
+	--4WD/Allrad
+	if self.cp.AllradOrigPosY ~= nil then
+		if open then
+			self.hudAllradPosY = -1;
+			self.hudAllradONOverlay:setPosition(self.hudAllradONOverlay.x, -1);
+			self.hudAllradOFFOverlay:setPosition(self.hudAllradOFFOverlay.x, -1);
+		else
+			self.hudAllradPosY = self.cp.OdometerOrigPosY[1];
+			self.hudAllradONOverlay:setPosition(self.hudAllradONOverlay.x, self.cp.OdometerOrigPosY[2]);
+			self.hudAllradOFFOverlay:setPosition(self.hudAllradOFFOverlay.x, self.cp.OdometerOrigPosY[3]);
+		end;
+	end;
 end;
 
 function courseplay:change_ai_state(self, change_by)
