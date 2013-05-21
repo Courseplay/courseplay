@@ -219,6 +219,11 @@ function courseplay:stop(self)
 	AITractor.removeCollisionTrigger(self, self);
 
 
+	--deactivate beacon lights
+	if self.beaconLightsActive then
+		self:setBeaconLightsVisibility(false);
+	end;
+
 	--open all covers
 	if self.tipper_attached and self.cp.tipperHasCover and self.ai_mode == 1 or self.ai_mode == 2 or self.ai_mode == 5 or self.ai_mode == 6 then
 		courseplay:openCloseCover(self, nil, false);
