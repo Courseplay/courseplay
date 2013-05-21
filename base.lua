@@ -377,6 +377,7 @@ function courseplay:load(xmlFile)
 	self.cp.ThreshingCounterOrigPosY = nil; --[table]
 	self.cp.OdometerOrigPosY = nil; --[table]
 	self.cp.AllradOrigPosY = nil; --[table]
+
 	-- HUD  	-- Function in Signs
 	self.hudInfoBaseWidth = 0.512; --try: 512/1920
 	self.hudInfoBaseHeight = 0.512; --try: 512/1080
@@ -1044,6 +1045,7 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		self.RulMode                          = Utils.getNoNil(getXMLInt(   xmlFile, key .. string.format("#rul_mode")               ), 1);
 		local courses                         = Utils.getNoNil(getXMLString(xmlFile, key .. string.format("#courses")                ), "");
 		self.toolWorkWidht                    = Utils.getNoNil(getXMLFloat( xmlFile, key .. string.format("#toolWorkWidht")          ), 3);
+		self.cp.ridgeMarkersAutomatic         = Utils.getNoNil(getXMLBool(  xmlFile, key .. string.format("#ridgeMarkersAutomatic"  )), true);
 		self.loaded_courses = courses:split(",")
 		self.selected_course_number = 0
 
@@ -1084,6 +1086,7 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 		' rul_mode="'                .. tostring(self.RulMode)                           .. '"' ..
 		' toolWorkWidht="'           .. tostring(self.toolWorkWidht)                     .. '"' ..
 		' realistic_driving="'       .. tostring(self.realistic_driving)                 .. '"' ..
+		' ridgeMarkersAutomatic="'   .. tostring(self.cp.ridgeMarkersAutomatic)          .. '"' ..
 		' ai_mode="'                 .. tostring(self.ai_mode) .. '"';
 	return attributes, nil;
 end
