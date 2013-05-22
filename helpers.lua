@@ -183,7 +183,15 @@ function table.contains(table, element) --TODO: always use Utils.hasListElement
 		end
 	end
 	return false
-end
+end;
+
+function table.map(table, func)
+	local newArray = {};
+	for i,v in ipairs(table) do
+		newArray[i] = func(v);
+	end;
+	return newArray;
+end;
 
 function startswith(sbig, slittle) --TODO: always use Utils.startsWith
 	if type(slittle) == "table" then

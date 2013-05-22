@@ -1063,13 +1063,16 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		--Shovel positions
 		local shovelRots = getXMLString(xmlFile, key .. string.format("#shovelRots"));
 		if shovelRots ~= nil then
+			courseplay:debug(tableShow(self.cp.shovelStateRot, nameNum(self) .. " shovelStateRot (before loading)"), 4);
 			self.cp.shovelStateRot = nil;
 			self.cp.shovelStateRot = {};
 			local shovelStates = Utils.splitString(";", shovelRots);
 			if table.getn(shovelStates) == 4 then
 				for i=1,4 do
-					self.cp.shovelStateRot[tostring(i+1)] = Utils.splitString(" ", shovelStates[i]);
+					local shovelStateSplit = table.map(Utils.splitString(" ", shovelStates[i]), tonumber);
+					self.cp.shovelStateRot[tostring(i+1)] = shovelStateSplit;
 				end;
+				courseplay:debug(tableShow(self.cp.shovelStateRot, nameNum(self) .. " shovelStateRot (after loading)"), 4);
 				courseplay:buttonsActiveEnabled(self, "shovel");
 			end;
 		end;
@@ -1085,16 +1088,22 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 	local shovelRotsTmp, shovelRotsAttr = {}, "";
 	local hasAllShovelRots = self.cp.shovelStateRot ~= nil and self.cp.shovelStateRot["2"] ~= nil and self.cp.shovelStateRot["3"] ~= nil and self.cp.shovelStateRot["4"] ~= nil and self.cp.shovelStateRot["5"] ~= nil;
 	if hasAllShovelRots then
-		for k,movingTool in pairs(self.cp.shovelStateRot) do
-			for i=1,table.getn(movingTool) do
-				movingTool[i] = courseplay:round(movingTool[i], 4);
+		courseplay:debug(tableShow(self.cp.shovelStateRot, nameNum(self) .. " shovelStateRot (before saving)"), 4);
+		local shovelStateRotSaveTable = {};
+		for a=1,4 do
+			shovelStateRotSaveTable[a] = {};
+			local rotTable = self.cp.shovelStateRot[tostring(a+1)];
+			for i=1,table.getn(rotTable) do
+				shovelStateRotSaveTable[a][i] = courseplay:round(rotTable[i], 4);
 			end;
-			table.insert(shovelRotsTmp, tostring(table.concat(movingTool, " ")));
+			table.insert(shovelRotsTmp, tostring(table.concat(shovelStateRotSaveTable[a], " ")));
 		end;
 		if table.getn(shovelRotsTmp) > 0 then
 			shovelRotsAttr = ' shovelRots="' .. tostring(table.concat(shovelRotsTmp, ";")) .. '"';
+			courseplay:debug(nameNum(self) .. ":" .. shovelRotsAttr, 4);
 		end;
 	end;
+
 	local attributes =
 		' max_speed="'               .. tostring(self.max_speed)                         .. '"' ..
 		' use_speed="'               .. tostring(self.use_speed)                         .. '"' ..
