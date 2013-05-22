@@ -4,15 +4,15 @@
 .changelogVersion:last-of-type { border-bottom:none; padding-bottom:0; }
 /*.changelogVersion.closed > ul { display:none; }*/ /* only via JS */
 
-.changelogVersion h3 {
+body.js .changelogVersion h3 {
 	cursor:pointer;
 	padding:2px 4px;
 	text-decoration:none;
 }
-.changelogVersion h3:hover, .changelogVersion h3:focus {
+body.js .changelogVersion h3:hover, body.js .changelogVersion h3:focus {
 	color: #20A8DB;
 }
-.changelogVersion h3:active {
+body.js .changelogVersion h3:active {
 	background-color:#20A8DB;
 	color:#F0F0F0;
 }

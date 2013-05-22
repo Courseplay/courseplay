@@ -3,15 +3,15 @@
 	margin:20px 0;
 }
 
-.singleFaq h3 {
+body.js .singleFaq h3 {
 	cursor:pointer;
 	padding:2px 4px;
 	text-decoration:none;
 }
-.singleFaq h3:hover, .singleFaq h3:focus {
+body.js .singleFaq h3:hover, body.js .singleFaq h3:focus {
 	color: #20A8DB;
 }
-.singleFaq h3:active {
+body.js .singleFaq h3:active {
 	background-color:#20A8DB;
 	color:#F0F0F0;
 }
