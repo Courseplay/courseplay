@@ -55,7 +55,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 		if courseplay:isFoldable(workTool) then
 			if courseplay:isFolding(workTool) and self.cp.turnStage == 0 then 
 				allowedToDrive = false;
-				--courseplay:debug(tostring(workTool.name) .. ": isFolding -> allowedToDrive == false", 3);
+				--courseplay:debug(tostring(workTool.name) .. ": isFolding -> allowedToDrive == false", 12);
 			end;
 		end;
 
@@ -363,7 +363,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 					if self.recordnumber < 1 then
 						self.recordnumber = 1
 					end
-					--courseplay:debug(string.format("Abort: %d StopWork: %d",self.abortWork,self.stopWork), 2)
+					--courseplay:debug(string.format("Abort: %d StopWork: %d",self.abortWork,self.stopWork), 12)
 				elseif not self.cp.hasUnloadingRefillingCourse then
 					allowedToDrive = false;
 					courseplay:setGlobalInfoText(self, string.format(": %s %s", tostring(workTool.name), courseplay:get_locale(self, "CPneedsToBeUnloaded")), -1);

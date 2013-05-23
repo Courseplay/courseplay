@@ -173,11 +173,7 @@ function courseplay:setHudPage(self, pageNum)
 		end;
 	end;
 
-	if self.showHudInfoBase == 9 then
-		courseplay:buttonsActiveEnabled(self, "all");
-	else
-		courseplay:buttonsActiveEnabled(self, "pageNav");
-	end;
+	courseplay:buttonsActiveEnabled(self, "all");
 end;
 
 function courseplay:switch_hud_page(self, change_by)
@@ -192,7 +188,7 @@ function courseplay:switch_hud_page(self, change_by)
 		self.showHudInfoBase = newPage;
 	end;
 
-	courseplay:buttonsActiveEnabled(self, "pageNav");
+	courseplay:buttonsActiveEnabled(self, "all");
 end;
 
 function courseplay:minMaxPage(self, pageNum)
@@ -240,6 +236,14 @@ function courseplay:buttonsActiveEnabled(self, section)
 				button.canBeClicked = true;
 			end;
 		end;
+
+		if section == nil or section == "all" or section == "debug" then
+			if self.showHudInfoBase == 6 and button.function_to_call == "toggleDebugChannel" then
+				button.isActive = courseplay.debugChannels[button.parameter] == true;
+				button.canBeClicked = true;
+				--button.canBeClicked = button.parameter ~= 5;
+			end;
+		end;
 	end;
 end;
 
@@ -254,7 +258,7 @@ function courseplay:change_combine_offset(self, change_by)
 		self.auto_combine_offset = true
 	end
 	
-	courseplay:debug("manual combine_offset change: prev " .. previousOffset .. " // new " .. self.combine_offset .. " // auto = " .. tostring(self.auto_combine_offset), 2)
+	courseplay:debug(nameNum(self) .. ": manual combine_offset change: prev " .. previousOffset .. " // new " .. self.combine_offset .. " // auto = " .. tostring(self.auto_combine_offset), 4)
 end
 
 function courseplay:change_tipper_offset(self, change_by)
@@ -536,6 +540,13 @@ function courseplay:change_DebugLevel(self, change_by)
 	end;
 end;
 
+function courseplay:toggleDebugChannel(self, channel)
+	if courseplay.debugChannels[channel] ~= nil then
+		courseplay.debugChannels[channel] = not courseplay.debugChannels[channel];
+		courseplay:buttonsActiveEnabled(self, "debug");
+	end;
+end;
+
 --Course generation
 function courseplay:switchStartingCorner(self)
 	self.cp.startingCorner = self.cp.startingCorner + 1;
@@ -610,12 +621,16 @@ function courseplay:validateCourseGenerationData(self)
 		self.cp.hasValidCourseGenerationData = false;
 	end;
 
-	courseplay:debug(string.format("hasGeneratedCourse=%s, #waypoints=%s, hasStartingCorner=%s, hasStartingDirection=%s, numCourses=%s, hasValidCourseGenerationData=%s", tostring(self.cp.hasGeneratedCourse), tostring(#self.Waypoints), tostring(self.cp.hasStartingCorner), tostring(self.cp.hasStartingDirection), tostring(self.numCourses), tostring(self.cp.hasValidCourseGenerationData)), 2);
+	courseplay:debug(string.format("%s: hasGeneratedCourse=%s, #Waypoints=%s, hasStartingCorner=%s, hasStartingDirection=%s, numCourses=%s ==> hasValidCourseGenerationData=%s", nameNum(self), tostring(self.cp.hasGeneratedCourse), tostring(#self.Waypoints), tostring(self.cp.hasStartingCorner), tostring(self.cp.hasStartingDirection), tostring(self.numCourses), tostring(self.cp.hasValidCourseGenerationData)), 7);
 end;
 
 function courseplay:validateCanSwitchMode(self)
 	self.cp.canSwitchMode = self.play and not self.drive and not self.record and not self.record_pause and (self.Waypoints ~= nil and table.getn(self.Waypoints) ~= 0);
-	--print("validateCanSwitchMode(): self.cp.canSwitchMode=" .. tostring(self.cp.canSwitchMode));
+	if self.Waypoints ~= nil then
+		courseplay:debug(string.format("%s: validateCanSwitchMode(): play=%s, drive=%s, record=%s, record_pause=%s, #Waypoints=%s ==> canSwitchMode=%s", nameNum(self), tostring(self.play), tostring(self.drive), tostring(self.record), tostring(self.record_pause), tostring(table.getn(self.Waypoints)), tostring(self.cp.canSwitchMode)), 12);
+	else
+		courseplay:debug(string.format("%s: validateCanSwitchMode(): play=%s, drive=%s, record=%s, record_pause=%s, Waypoints=nil ==> canSwitchMode=%s", nameNum(self), tostring(self.play), tostring(self.drive), tostring(self.record), tostring(self.record_pause), tostring(self.cp.canSwitchMode)), 12);
+	end;
 end;
 
 function courseplay:saveShovelStatus(self, stage)

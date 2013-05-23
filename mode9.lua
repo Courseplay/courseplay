@@ -26,7 +26,6 @@ function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToD
 	--state 6: leave BGA
 	--state 7: wait for Trailer 10 before EmptyPoint
 	
-	--local isValid = self.cp.shovelState2Rot ~= nil and self.cp.shovelState3Rot ~= nil and self.cp.shovelState4Rot ~= nil and self.cp.shovelState5Rot ~= nil
 	local isValid = self.cp.shovelStateRot ~= nil and self.cp.shovelStateRot["2"] ~= nil and self.cp.shovelStateRot["3"] ~= nil and self.cp.shovelStateRot["4"] ~= nil and self.cp.shovelStateRot["5"] ~= nil;
 	if not isValid then
 		self.cp.infoText = courseplay.locales.CPAssignShovel
@@ -46,6 +45,7 @@ function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToD
 	if self.recordnumber == 1 and self.cp.shovelState ~= 6 then  --backup for missed approach
 		self.cp.shovelState = 1
 		self.loaded = false
+		courseplay:debug(nameNum(self) .. ": set state 1 (backup)", 10);
 	end
 
 	if self.cp.shovelState == 1 then
@@ -56,7 +56,7 @@ function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToD
 			end
 			if hasTargetRotation then
 				self.cp.shovelState = 2
-				--print("set state 2")
+				courseplay:debug(nameNum(self) .. ": set state 2", 10);
 			end
 			if fill_level == 100 then
 				local fillType = self.cp.shovel.currentFillType;
@@ -97,7 +97,7 @@ function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToD
 				end
 				if hasTargetRotation then
 					self.cp.shovelState = 3
-					--print("set state 3")
+					courseplay:debug(nameNum(self) .. ": set state 3", 10);
 				else
 					allowedToDrive = false
 				end
@@ -116,7 +116,7 @@ function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToD
 				self.cp.shovel.trailerFound = nil
 				self.cp.shovel.objectFound = nil
 				self.cp.shovelState = 7
-				--print("set state 7")
+				courseplay:debug(nameNum(self) .. ": set state 7", 10);
 			end
 		end
 	elseif self.cp.shovelState == 7 then
@@ -127,7 +127,9 @@ function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToD
 		for i=6,12 do
 			local x,y,z = localToWorld(self.rootNode,0,4,i);
 			raycastAll(x, y, z, lx, -1, lz, "findTrailerRaycastCallback", 10, self.cp.shovel);
-			if courseplay.debugLevel > 0 then  drawDebugLine(x, y, z, 1, 0, 0, x+lx*10, y-10, z+lz*10, 1, 0, 0) end
+			if courseplay.debugChannels[10] then
+				drawDebugLine(x, y, z, 1, 0, 0, x+lx*10, y-10, z+lz*10, 1, 0, 0);
+			end;
 		end
 		local distance = courseplay:distance_to_point(self, self.Waypoints[p].cx, ry, self.Waypoints[p].cz)
 		if self.cp.shovel.trailerFound == nil and self.cp.shovel.objectFound == nil and distance < 10 then 
@@ -136,7 +138,7 @@ function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToD
 			self.cp.shovel.trailerFound = nil
 			self.cp.shovel.objectFound = nil
 			self.cp.shovelState = 4
-			--print("set state 4")
+			courseplay:debug(nameNum(self) .. ": set state 4", 10);
 		end
 	elseif self.cp.shovelState == 4 then
 		local x,y,z = localToWorld(self.cp.shovel.shovelTipReferenceNode,0,0,-1);
@@ -156,7 +158,7 @@ function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToD
 				
 				if hasTargetRotation then
 					self.cp.shovelState = 5
-					--print("set state 5") 
+					courseplay:debug(nameNum(self) .. ": set state 5", 10);
 				else
 					allowedToDrive = false
 				end
@@ -175,7 +177,7 @@ function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToD
 					if self.Waypoints[i].rev then
 						self.loaded = false
 						self.recordnumber = i
-						break	
+						break
 					end
 				end
 			end
@@ -185,7 +187,7 @@ function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToD
 			end
 			if hasTargetRotation and not self.Waypoints[self.recordnumber].rev then
 				self.cp.shovelState = 6
-				--print("set state 6")
+				courseplay:debug(nameNum(self) .. ": set state 6", 10);
 			end	
 		else
 			allowedToDrive = false
@@ -199,7 +201,7 @@ function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToD
 		end
 		if self.recordnumber == 1 then
 			self.cp.shovelState = 1
-			--print("set state 1")
+			courseplay:debug(nameNum(self) .. ": set state 1", 10);
 		end
 	end
 	return allowedToDrive
@@ -232,6 +234,7 @@ function courseplay:setMovingToolsRotation(self, dt, movingTools, secondary, tar
 		
 		if tool.node ~= nil and tool.rotMin ~= nil and tool.rotMax ~= nil and dir ~= nil and dir ~= 0 then
 			newRot = Utils.clamp(oldRot + (rotSpeed * dir), tool.rotMin, tool.rotMax);
+			--courseplay:debug(string.format("%s: curRot[%d]=%s, targetRot[%d]=%s, newRot=%s, dir=%s", nameNum(self), i, tostring(curRot[i]), i, tostring(targetRot[i]), tostring(newRot), tostring(dir)), 10);
 			if (dir == 1 and newRot > targetRot[i]) or (dir == -1 and newRot < targetRot[i]) then
 				newRot = targetRot[i];
 			end;
@@ -240,7 +243,7 @@ function courseplay:setMovingToolsRotation(self, dt, movingTools, secondary, tar
 				setRotation(tool.node, unpack(tool.curRot));
 				Cylindered.setDirty(self, tool);
 				self:raiseDirtyFlags(self.cylinderedDirtyFlag);
-				--print(string.format("%s: MT1 rot=%s, MT2 rot=%s", tostring(self.name), tostring(self.movingTools[1].curRot[1]), tostring(self.movingTools[2].curRot[1])));
+				--courseplay:debug(string.format("%s: MT1 rot=%s, MT2 rot=%s", tostring(self.name), tostring(self.movingTools[1].curRot[1]), tostring(self.movingTools[2].curRot[1])), 10);
 				changed = true;
 			end;
 		end;
@@ -261,14 +264,14 @@ function courseplay:hasTargetRotation(self, movingTools, secondary, targetRot)
 		self.cp.shovelStateRot["3"] = nil
 		self.cp.shovelStateRot["4"] = nil
 		self.cp.shovelStateRot["5"] = nil
-		print(self.name, ": courseplay:hasTargetRotation() return nil")
+		print(nameNum(self) .. ": courseplay:hasTargetRotation() return nil")
 		return nil;
 	end;
 	local rotationsMatch = true;
 	for i=1, curRotNum do
 		local a, b = courseplay:round(curRot[i], 1), courseplay:round(targetRot[i], 1);
 		if a ~= b then
-			courseplay:debug(string.format("%s: curRot[%d]=%s (%s), targetRot[%d]=%s (%s)", self.name, i, tostring(curRot[i]), tostring(a), i, tostring(targetRot[i]), tostring(b)), 2);
+			courseplay:debug(string.format("%s: curRot[%d]=%s (%s), targetRot[%d]=%s (%s)", nameNum(self), i, tostring(curRot[i]), tostring(a), i, tostring(targetRot[i]), tostring(b)), 10);
 			rotationsMatch = false;
 			break;
 		end;
@@ -278,7 +281,7 @@ end;
 
 function courseplay:getCurrentRotation(self, movingTools, secondary)
 	if movingTools == nil then
-		print(self.name, ": courseplay:getCurrentRotation() return nil")
+		print(nameNum(self) .. ": courseplay:getCurrentRotation() return nil")
 		return nil
 	end
 	local curRot = {}
@@ -300,7 +303,7 @@ end
 function courseplay:getMovingTools(self)
 	local mt, secondary = nil, nil
 	local frontLoader, shovel = 0,0
-	for i=1, table.getn(self.attachedImplements) do		
+	for i=1, table.getn(self.attachedImplements) do
 		if SpecializationUtil.hasSpecialization(Shovel, self.attachedImplements[i].object.specializations) then 
 			shovel = i
 		elseif courseplay:isFrontloader(self.attachedImplements[i].object) then 
@@ -321,7 +324,7 @@ function courseplay:getMovingTools(self)
 		end
 	else
 		mt = self.movingTools
-		self.cp.shovel = self	
+		self.cp.shovel = self
 	end
 	return mt, secondary
 end

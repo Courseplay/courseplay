@@ -3,14 +3,13 @@ local courseplay_manager_mt = Class(courseplay_manager);
 
 function courseplay_manager:loadMap(name)
 	if g_currentMission.courseplay_courses == nil then
-		--courseplay:debug("courseplay courses was nil and initialized", 2);
+		--courseplay:debug("courseplay courses was nil and initialized", 8);
 		g_currentMission.courseplay_courses = {};
 
 		courseplay_coursesUnsort = {}
 		if g_server ~= nil and table.getn(g_currentMission.courseplay_courses) == 0 then
 			g_currentMission.courseplay_courses = courseplay_manager:load_courses()
-			courseplay:debug("debugging g_currentMission.courseplay_coures", 4)
-			courseplay:debug(table.show(g_currentMission.courseplay_courses), 4)
+			courseplay:debug(tableShow(g_currentMission.courseplay_courses, "g_cM courseplay_courses", 8), 8);
 		end
 	end
 end
@@ -33,14 +32,14 @@ function courseplay_manager:draw()
 end;
 
 function courseplay_manager:update()
-	--courseplay:debug(table.getn(g_currentMission.courseplay_courses), 4);
+	--courseplay:debug(table.getn(g_currentMission.courseplay_courses), 8);
 end
 
 function courseplay_manager:keyEvent()
 end
 
 function courseplay_manager:load_courses()
-	courseplay:debug('loading courses by courseplay manager', 3)
+	courseplay:debug('loading courses by courseplay manager', 8)
 	local finish_all = false
 	local path = getUserProfileAppPath() .. "savegame" .. g_careerScreen.selectedIndex .. "/"
 
@@ -157,7 +156,7 @@ function courseplay_manager:load_courses()
 		end
 	end
 
-	courseplay:debug(table.show(courseplay_courses), 4);
+	courseplay:debug(tableShow(courseplay_courses, "courseplay_courses", 8), 8);
 
 	courseplay_coursesUnsort = nil
 	return g_currentMission.courseplay_courses
@@ -213,7 +212,7 @@ function CourseplayJoinFixEvent:writeStream(streamId, connection)
 
 
 	if not connection:getIsServer() then
-		--courseplay:debug("manager transfering courses", 4);
+		--courseplay:debug("manager transfering courses", 8);
 		--transfer courses
 		local course_count = table.getn(g_currentMission.courseplay_courses)
 
@@ -243,20 +242,20 @@ end
 
 function CourseplayJoinFixEvent:readStream(streamId, connection)
 	if connection:getIsServer() then
-		--courseplay:debug("manager receiving courses", 4);
+		--courseplay:debug("manager receiving courses", 8);
 		-- course count
 		local course_count = streamDebugReadInt32(streamId)
-		--courseplay:debug("manager reading stream", 4);
-		--courseplay:debug(course_count, 4);
+		--courseplay:debug("manager reading stream", 8);
+		--courseplay:debug(course_count, 8);
 		g_currentMission.courseplay_courses = {}
 		for i = 1, course_count do
-			--courseplay:debug("got course", 4);
+			--courseplay:debug("got course", 8);
 			local course_name = streamDebugReadString(streamId)
 			local course_id = streamDebugReadInt32(streamId)
 			local wp_count = streamDebugReadInt32(streamId)
 			local waypoints = {}
 			for w = 1, wp_count do
-				--courseplay:debug("got waypoint", 4);
+				--courseplay:debug("got waypoint", 8);
 				local cx = streamDebugReadFloat32(streamId)
 				local cz = streamDebugReadFloat32(streamId)
 				local angle = streamDebugReadFloat32(streamId)
@@ -294,7 +293,7 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 end
 
 function CourseplayJoinFixEvent:run(connection)
-	--courseplay:debug("CourseplayJoinFixEvent Run function should never be called", 4);
+	--courseplay:debug("CourseplayJoinFixEvent Run function should never be called", 8);
 end
 
 ;

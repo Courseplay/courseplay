@@ -74,7 +74,7 @@ function courseplay:RefreshGlobalSigns(self)
 				end
 			end
 		end
-		--	courseplay:debug("Refresh Global Signs", 4)
+		--	courseplay:debug("Refresh Global Signs", 12)
 	end
 end
 

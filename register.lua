@@ -43,10 +43,7 @@ end
 
 function cp_getSetVersion()
 	local cp_modDesc_file = loadXMLFile("cp_modDesc", courseplay.path .. "modDesc.xml");
-	local modDescVersion = getXMLString(cp_modDesc_file, "modDesc.version");
-	if modDescVersion ~= nil then
-		courseplay.version = modDescVersion;
-	end;
+	courseplay.version = Utils.getNoNil(getXMLString(cp_modDesc_file, "modDesc.version"), " [no version specified]");
 end;
 
 -- dirty workaround for localization - don't try this at home!
@@ -71,7 +68,7 @@ function cp_setLocales()
 	end;
 end;
 
-function cp_setupHud()
+function cp_setupGlobalData()
 	courseplay.numAiModes = 9;
 	courseplay.hud = {
 		infoBasePosX = 0.433;
@@ -116,8 +113,6 @@ function cp_setupHud()
 			{ true, true, true, false, false, true, true, true, false, true  }; --Mode 9
 		};
 	};
-	courseplay.confirmedNoneTriggers = {}
-	courseplay.confirmedNoneTriggersCounter = 0
 
 	for l=1,courseplay.hud.numLines do
 		if l == 1 then
@@ -139,10 +134,50 @@ function cp_setupHud()
 	};
 
 	loadSample(courseplay.hud.clickSound, Utils.getFilename("sounds/cpClickSound.wav", courseplay.path), false);
+
+	courseplay.confirmedNoneTriggers = {};
+	courseplay.confirmedNoneTriggersCounter = 0;
+
+	courseplay.numDebugChannels = 12;
+	courseplay.debugChannels = {};
+	for channel=1, courseplay.numDebugChannels do
+		courseplay.debugChannels[channel] = false;
+	end;
+	--[[
+	courseplay.debugChannels = {
+		{ name = "TipTriggers", active = false },
+		{ name = "unloading",   active = false },
+		{ name = "trafficColl", active = false },
+		{ name = "mode2",       active = false },
+		{ name = "collRaycast", active = false },
+		{ name = "implements",  active = false },
+		{ name = "courseGen",   active = false },
+		{ name = "courseMng",   active = false },
+		{ name = "pathFind",    active = false },
+		{ name = "mode9",       active = false },
+		{ name = "mode7",       active = false },
+		{ name = "no cat",      active = false }
+	};
+	--]]
+	--[[
+	Debug channels legend:
+	1  	Raycast (drive + triggers) / TipTriggers
+	2	unload_tippers
+	3	traffic collision
+	4	Combines/mode2, register and unload combines
+	5	[collision raycast]
+	6	implements (update_tools etc)
+	7	course generation
+	8	course management
+	9	path finding
+	10	mode9
+	11	mode7
+	12	all other debugs (uncategorized)
+	--]]
 end;
 
 cp_getSetVersion();
-cp_setupHud();
+cp_setupGlobalData();
 cp_setLocales();
 register_courseplay();
 

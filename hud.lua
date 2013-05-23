@@ -356,7 +356,6 @@ function courseplay:loadHud(self)
 
 			self.hudpage[6][2][3] = courseplay:get_locale(self, string.format("WaypointMode%d", self.waypointMode));
 			self.hudpage[6][2][4] = courseplay:get_locale(self, "RulMode" .. string.format("%d", self.RulMode));
-			self.hudpage[6][2][5] = courseplay:get_locale(self, "CPDebugLevel" .. string.format("%d", courseplay.debugLevel))
 
 		--Page 7: Driving settings
 		elseif self.showHudInfoBase == 7 then
@@ -584,6 +583,6 @@ function courseplay:setMinHudPage(self, workTool)
 	end;
 	
 	self.showHudInfoBase = math.max(self.showHudInfoBase, self.cp.minHudPage);
-	--print(string.format("setMinHudPage: minHudPage=%s, showHudInfoBase=%s", tostring(self.cp.minHudPage), tostring(self.showHudInfoBase)));
+	courseplay:debug(string.format("setMinHudPage: minHudPage=%s, showHudInfoBase=%s", tostring(self.cp.minHudPage), tostring(self.showHudInfoBase)), 12);
 	courseplay:buttonsActiveEnabled(self, "pageNav");
 end;

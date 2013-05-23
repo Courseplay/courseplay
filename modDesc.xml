@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="12">
-	<version>3.41.0007</version>
+	<version>3.41.0008</version>
 	<author>Hummel (modhoster.de) / Lautschreier / Wolverin0815 / Bastian82 / Jakob Tischler / Thomas Gärtner</author>
     <title>
 		<de>Courseplay</de>        
@@ -1218,46 +1218,6 @@ Italský překlad: JD7530
 			<es>Depurar nivel</es>
 			<it>Livello di messa a punto</it>
 			<cz>Úroveň ladění:</cz>
-		</text>
-		<text name="CPDebugLevel0">
-			<en>0: nothing</en>
-			<de>0: nichts</de>
-			<fr>0: rien</fr>
-			<es>0: nada</es>
-			<it>0: nessuno</it>
-			<cz>0: nic</cz>
-		</text>
-		<text name="CPDebugLevel1">
-			<en>1: not detailed</en>
-			<de>1: undetailliert</de>
-			<fr>1: pas détaillé</fr>
-			<es>1: no se detallan</es>
-			<it>1: non dettagliato</it>
-			<cz>1: méně důležitý</cz>
-		</text>
-		<text name="CPDebugLevel2">
-			<en>2: semi-important</en>
-			<de>2: semi-wichtig</de>
-			<fr>2: semi-detaillé</fr>
-			<es>2: semi-importante</es>
-			<it>2: semi-dettagliato</it>
-			<cz>2: důležitý</cz>
-		</text>
-		<text name="CPDebugLevel3">
-			<en>3: important</en>
-			<de>3: wichtig</de>
-			<fr>3: important</fr>
-			<es>3: importante</es>
-			<it>3: importante</it>
-			<cz>3: důležitější</cz>
-		</text>
-		<text name="CPDebugLevel4">
-			<en>4: everything (most detailed)</en>
-			<de>4: alles (detailliert)</de>
-			<fr>4: tout (le plus détaillé)</fr>
-			<es>4: todo (en detalle)</es>
-			<it>4: tutto (il piu' dettagliato)</it>
-			<cz>4: vše (detailní)</cz>
 		</text>
 		<text name="CPHudOpen">
 			<en>Show Courseplay HUD</en>

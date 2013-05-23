@@ -20,7 +20,7 @@ function courseplay:load(xmlFile)
 		steerable_overwritten = true
 		if Steerable.load ~= nil then
 			local orgSteerableLoad = Steerable.load
-			courseplay:debug("overwriting steerable.load", 1)
+			courseplay:debug("overwriting steerable.load", 12)
 			Steerable.load = function(self, xmlFile)
 				orgSteerableLoad(self, xmlFile)
 
@@ -33,7 +33,7 @@ function courseplay:load(xmlFile)
 		end;
 
 		if Attachable.load ~= nil then
-			courseplay:debug("overwriting Attachable.load", 1)
+			courseplay:debug("overwriting Attachable.load", 12)
 			local orgAttachableLoad = Attachable.load
 
 			Attachable.load = function(self, xmlFile)
@@ -531,7 +531,17 @@ function courseplay:load(xmlFile)
 	courseplay:register_button(self, 6, "blank.dds", "switch_mouse_right_key_enabled", nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[2], lineButtonWidth, 0.015);
 	courseplay:register_button(self, 6, "blank.dds", "change_WaypointMode",            1,   courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[3], lineButtonWidth, 0.015);
 	courseplay:register_button(self, 6, "blank.dds", "change_RulMode",                 1,   courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[4], lineButtonWidth, 0.015);
-	courseplay:register_button(self, 6, "blank.dds", "change_DebugLevel",              1,   courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[5], lineButtonWidth, 0.015);
+	
+	local dbgW, dbgH = 22/1920, 22/1080;
+	local dbgPosY = courseplay.hud.linesPosY[5] - 0.004;
+	for dbg=1, courseplay.numDebugChannels do
+		local dbgPosX = courseplay.hud.infoBasePosX + 0.282 - (courseplay.numDebugChannels * dbgW) + ((dbg-1) * dbgW);
+		local icon = "debugChannels_0" .. dbg .. ".dds";
+		if dbg >= 10 then
+			icon = "debugChannels_" .. dbg .. ".dds";
+		end;
+		courseplay:register_button(self, 6, icon, "toggleDebugChannel", dbg, dbgPosX, dbgPosY, dbgW, dbgH);
+	end;
 
 	--Page 7: Driving settings
 	courseplay:register_button(self, 7, "navigate_minus.dds", "change_wait_time",  -5, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], w16px, h16px, nil, -10, "self.waitTime>0");
@@ -732,7 +742,7 @@ end
 
 
 function courseplay:readStream(streamId, connection)
-	courseplay:debug("reading stream", 4)
+	courseplay:debug("reading stream", 12)
 
 
 	self.abortWork = streamDebugReadInt32(streamId)
@@ -881,7 +891,7 @@ function courseplay:readStream(streamId, connection)
 end
 
 function courseplay:writeStream(streamId, connection)
-	courseplay:debug("writing stream", 4)
+	courseplay:debug("writing stream", 12)
 
 	streamDebugWriteInt32(streamId,self.abortWork)
 	streamDebugWriteInt32(streamId,self.ai_mode)
@@ -1063,7 +1073,7 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		--Shovel positions
 		local shovelRots = getXMLString(xmlFile, key .. string.format("#shovelRots"));
 		if shovelRots ~= nil then
-			courseplay:debug(tableShow(self.cp.shovelStateRot, nameNum(self) .. " shovelStateRot (before loading)"), 4);
+			courseplay:debug(tableShow(self.cp.shovelStateRot, nameNum(self) .. " shovelStateRot (before loading)", 10), 10);
 			self.cp.shovelStateRot = nil;
 			self.cp.shovelStateRot = {};
 			local shovelStates = Utils.splitString(";", shovelRots);
@@ -1072,7 +1082,7 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 					local shovelStateSplit = table.map(Utils.splitString(" ", shovelStates[i]), tonumber);
 					self.cp.shovelStateRot[tostring(i+1)] = shovelStateSplit;
 				end;
-				courseplay:debug(tableShow(self.cp.shovelStateRot, nameNum(self) .. " shovelStateRot (after loading)"), 4);
+				courseplay:debug(tableShow(self.cp.shovelStateRot, nameNum(self) .. " shovelStateRot (after loading)", 10), 10);
 				courseplay:buttonsActiveEnabled(self, "shovel");
 			end;
 		end;
@@ -1088,7 +1098,7 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 	local shovelRotsTmp, shovelRotsAttr = {}, "";
 	local hasAllShovelRots = self.cp.shovelStateRot ~= nil and self.cp.shovelStateRot["2"] ~= nil and self.cp.shovelStateRot["3"] ~= nil and self.cp.shovelStateRot["4"] ~= nil and self.cp.shovelStateRot["5"] ~= nil;
 	if hasAllShovelRots then
-		courseplay:debug(tableShow(self.cp.shovelStateRot, nameNum(self) .. " shovelStateRot (before saving)"), 4);
+		courseplay:debug(tableShow(self.cp.shovelStateRot, nameNum(self) .. " shovelStateRot (before saving)", 10), 10);
 		local shovelStateRotSaveTable = {};
 		for a=1,4 do
 			shovelStateRotSaveTable[a] = {};
@@ -1100,7 +1110,7 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 		end;
 		if table.getn(shovelRotsTmp) > 0 then
 			shovelRotsAttr = ' shovelRots="' .. tostring(table.concat(shovelRotsTmp, ";")) .. '"';
-			courseplay:debug(nameNum(self) .. ":" .. shovelRotsAttr, 4);
+			courseplay:debug(nameNum(self) .. ":" .. shovelRotsAttr, 10);
 		end;
 	end;
 

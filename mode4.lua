@@ -26,7 +26,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill
 		if self.cp.hasUnloadingRefillingCourse and self.abortWork == nil then
 			self.abortWork = self.recordnumber -10
 			self.recordnumber = self.stopWork - 4
-			--courseplay:debug(string.format("Abort: %d StopWork: %d",self.abortWork,self.stopWork), 2)
+			--courseplay:debug(string.format("Abort: %d StopWork: %d",self.abortWork,self.stopWork), 12)
 		elseif not self.cp.hasUnloadingRefillingCourse then
 			allowedToDrive = false;
 			courseplay:setGlobalInfoText(self, ": " .. courseplay:get_locale(self, "CPworkToolNeedsToBeRefilled"), -1);
@@ -56,9 +56,9 @@ function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill
 		if courseplay:isFoldable(workTool) then
 			if courseplay:isFolding(workTool) and self.cp.turnStage == 0 then
 				allowedToDrive = false;
-				courseplay:debug(tostring(workTool.name) .. ": isFolding -> allowedToDrive == false", 3);
+				--courseplay:debug(tostring(workTool.name) .. ": isFolding -> allowedToDrive == false", 12);
 			end;
-			--courseplay:debug(string.format("%s: unfold: turnOnFoldDirection=%s, foldMoveDirection=%s", workTool.name, tostring(workTool.turnOnFoldDirection), tostring(workTool.foldMoveDirection)), 3);
+			--courseplay:debug(string.format("%s: unfold: turnOnFoldDirection=%s, foldMoveDirection=%s", workTool.name, tostring(workTool.turnOnFoldDirection), tostring(workTool.foldMoveDirection)), 12);
 		end;
 
 		if workArea and fill_level ~= 0 and (self.abortWork == nil or self.runOnceStartCourse) and self.cp.turnStage == 0 and not returnToStartPoint then
@@ -96,7 +96,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill
 
 						--lower/raise
 						if workTool.needsLowering and workTool.aiNeedsLowering then
-							--courseplay:debug(string.format("WP%d: isLowered() = %s, hasGroundContact = %s", self.recordnumber, tostring(workTool:isLowered()), tostring(workTool.hasGroundContact)),3);
+							--courseplay:debug(string.format("WP%d: isLowered() = %s, hasGroundContact = %s", self.recordnumber, tostring(workTool:isLowered()), tostring(workTool.hasGroundContact)),12);
 							if not workTool:isLowered() then
 								self:setAIImplementsMoveDown(true);
 							end;

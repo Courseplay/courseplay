@@ -113,7 +113,9 @@ function courseplay:turn(self, dt) --!!!
 					moveForwards = false;
 				end;
 			end;
-			if courseplay.debugLevel > 0 then drawDebugPoint(newTargetX, y+3, newTargetZ, 1, 1, 0, 1) end			
+			if courseplay.debugChannels[12].active then
+				drawDebugPoint(newTargetX, y+3, newTargetZ, 1, 1, 0, 1);
+			end;
 		elseif self.cp.turnStage == 1 then
 			-- turn
 			local dirX, dirZ = self.aiTractorDirectionX, self.aiTractorDirectionZ;

@@ -106,7 +106,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 			or courseplay:isFoldable(object) then
 				if courseplay:isUBT(object) and object.fillLevelMax ~= nil then
 					self.cp.hasUBT = true;
-					courseplay:debug(string.format("implement %s: setting UBT capacity to fillLevelMax (=%s)", tostring(object.name), tostring(object.fillLevelMax)), 3);
+					courseplay:debug(string.format("%s: implement %s: setting UBT capacity to fillLevelMax (=%s)", nameNum(self), tostring(object.name), tostring(object.fillLevelMax)), 6);
 					object.capacity = object.fillLevelMax;
 				end;
 				tipper_attached = true;
@@ -184,7 +184,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 			or courseplay:isFoldable(object) then
 				if courseplay:isUBT(object) and object.fillLevelMax ~= nil then
 					self.cp.hasUBT = true;
-					courseplay:debug(string.format("implement %s: setting UBT capacity to fillLevelMax (=%s)", tostring(object.name), tostring(object.fillLevelMax)), 3);
+					courseplay:debug(string.format("%s: implement %s: setting UBT capacity to fillLevelMax (=%s)", nameNum(self), tostring(object.name), tostring(object.fillLevelMax)), 6);
 					object.capacity = object.fillLevelMax;
 				end;
 				tipper_attached = true
@@ -222,9 +222,9 @@ function courseplay:update_tools(self, tractor_or_implement)
 			tipper_attached = true
 		end
 		
-		courseplay:debug(string.format("%s: courseplay:update_tools()", nameNum(self)), 2);
+		courseplay:debug(string.format("%s: courseplay:update_tools()", nameNum(self)), 6);
 
-		courseplay:debug(nameNum(self) .. ": adding " .. tostring(object.name) .. " to cpTrafficCollisionIgnoreList", 2)
+		courseplay:debug(nameNum(self) .. ": adding " .. tostring(object.name) .. " to cpTrafficCollisionIgnoreList", 3)
 		self.cpTrafficCollisionIgnoreList[object.rootNode] = true;
 	end; --END for implement in attachedImplements
 	
@@ -243,7 +243,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 		end;
 	end;
 	if self.cp.attachedCombineIdx ~= nil then
-		--print(string.format("setMinHudPage(self, self.tippers[%d])", self.cp.attachedCombineIdx));
+		--courseplay:debug(string.format("setMinHudPage(self, self.tippers[%d])", self.cp.attachedCombineIdx), 12);
 		courseplay:setMinHudPage(self, self.tippers[self.cp.attachedCombineIdx]);
 	end;
 
@@ -266,11 +266,11 @@ function courseplay:update_tools(self, tractor_or_implement)
 		end;
 	end;
 	
-	if courseplay.debugLevel > 0 then
-		print(string.format("%s cpTrafficCollisionIgnoreList", nameNum(self)));
+	if courseplay.debugChannels[3] then
+		courseplay:debug(string.format("%s cpTrafficCollisionIgnoreList", nameNum(self)), 3);
 		for a,b in pairs(self.cpTrafficCollisionIgnoreList) do
 			local name = g_currentMission.nodeToVehicle[a].name
-			print(string.format("\\___ %s = %s", tostring(a), tostring(name)));
+			courseplay:debug(string.format("\\___ %s = %s", tostring(a), tostring(name)), 3);
 		end;
 	end
 
@@ -354,7 +354,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 				end;
 				
 				if self.cp.tipperHasCover and table.getn(coverItems) > 0 then
-					courseplay:debug(string.format("Implement \"%s\" has a cover (coverItems ~= nil)", tostring(t.name)), 3);
+					courseplay:debug(string.format("Implement \"%s\" has a cover (coverItems ~= nil)", tostring(t.name)), 6);
 					local data = {
 						coverType = "defaultGiants",
 						tipperIndex = i,
@@ -366,7 +366,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 			elseif t.setPlane ~= nil and t.currentPlaneId == nil and t.currentPlaneSetId == nil then
 				--NOTE: setPlane is both in SMK and in chaffCover.lua -> check for currentPlaneId, currentPlaneSetId (chaffCover) nil
 				
-				courseplay:debug(string.format("Implement \"%s\" has a cover (setPlane ~= nil)", tostring(t.name)), 3);
+				courseplay:debug(string.format("Implement \"%s\" has a cover (setPlane ~= nil)", tostring(t.name)), 6);
 				self.cp.tipperHasCover = true;
 				local data = {
 					coverType = "setPlane",
@@ -375,7 +375,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 				table.insert(self.cp.tippersWithCovers, data);
 			
 			elseif t.planeOpen ~= nil then
-				courseplay:debug(string.format("Implement \"%s\" has a cover (planeOpen ~= nil)", tostring(t.name)), 3);
+				courseplay:debug(string.format("Implement \"%s\" has a cover (planeOpen ~= nil)", tostring(t.name)), 6);
 				self.cp.tipperHasCover = true;
 				local data = {
 					coverType = "planeOpen",
@@ -384,7 +384,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 				table.insert(self.cp.tippersWithCovers, data);
 			
 			elseif t.setCoverState ~= nil and t.cover ~= nil and t.cover.opened ~= nil and t.cover.closed ~= nil and t.cover.state ~= nil then
-				courseplay:debug(string.format("Implement \"%s\" has a cover (setCoverState ~= nil)", tostring(t.name)), 3);
+				courseplay:debug(string.format("Implement \"%s\" has a cover (setCoverState ~= nil)", tostring(t.name)), 6);
 				self.cp.tipperHasCover = true;
 				local data = {
 					coverType = "setCoverState",
@@ -394,7 +394,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 			end;
 		end;
 	end;
-	--courseplay:debug(tableShow(self.cp.tippersWithCovers, tostring(self.name) .. ": self.cp.tippersWithCovers"), 4);
+	--courseplay:debug(tableShow(self.cp.tippersWithCovers, tostring(self.name) .. ": self.cp.tippersWithCovers", 6), 6);
 	--END tippers with covers
 
 
@@ -460,7 +460,7 @@ function courseplay:setMarkers(self, object)
 	if self.cp.aiFrontMarker < -7 then
 		self.cp.aiFrontMarker = -7
 	end
-	courseplay:debug(nameNum(self) .. " setMarkers(): self.cp.backMarkerOffset: "..tostring(self.cp.backMarkerOffset).."  self.cp.aiFrontMarker: "..tostring(self.cp.aiFrontMarker),1)  
+	courseplay:debug(nameNum(self) .. " setMarkers(): self.cp.backMarkerOffset: "..tostring(self.cp.backMarkerOffset).."  self.cp.aiFrontMarker: "..tostring(self.cp.aiFrontMarker), 6);
 end
 
 -- loads all tippers
@@ -587,7 +587,7 @@ function courseplay:unload_tippers(self)
 							self.filling3 =	self.filling3 + filling
 						end
 					end;
-					courseplay:debug(string.format("%s: BGA section 1: %f, section 2: %f, section 3: %f", nameNum(self), self.filling1, self.filling2, self.filling3), 1);
+					courseplay:debug(string.format("%s: BGA section 1: %f, section 2: %f, section 3: %f", nameNum(self), self.filling1, self.filling2, self.filling3), 2);
 					
 					if self.filling1 <= self.filling2 and self.filling1 < self.filling3 then
 						self.tipLocation = 1
@@ -598,7 +598,7 @@ function courseplay:unload_tippers(self)
 					else
 						self.tipLocation = 1
 					end
-					courseplay:debug(string.format("%s: BGA tipLocation = %d", nameNum(self), self.tipLocation),1);
+					courseplay:debug(string.format("%s: BGA tipLocation = %d", nameNum(self), self.tipLocation), 2);
 					self.runonce = 1
 				end
 				if self.tipLocation == 1 then
@@ -633,9 +633,9 @@ function courseplay:unload_tippers(self)
 					if self.cp.currentTipTrigger.getTipDistanceFromTrailer ~= nil then
 						distanceToTrigger,self.toggledTipState  = self.cp.currentTipTrigger:getTipDistanceFromTrailer(tipper); --courtesy of Satis
 					end;
-					courseplay:debug(nameNum(self) .. ": distanceToTrigger=" .. tostring(distanceToTrigger), 3);
+					courseplay:debug(nameNum(self) .. ": distanceToTrigger=" .. tostring(distanceToTrigger), 2);
 					if distanceToTrigger == 0 or self.cp.currentTipTrigger.bunkerSilo ~= nil then
-						--courseplay:debug(string.format("%s %s: distanceToTrigger=%s, isBunkerSilo=%s", tostring(self.name),nameNum(self), tostring(distanceToTrigger), tostring(isBunkerSilo)), 1);
+						--courseplay:debug(string.format("%s %s: distanceToTrigger=%s, isBunkerSilo=%s", tostring(self.name),nameNum(self), tostring(distanceToTrigger), tostring(isBunkerSilo)), 2);
 						tipper:toggleTipState(self.cp.currentTipTrigger,self.toggledTipState);
 						self.unloading_tipper = tipper
 					end

@@ -45,7 +45,8 @@ function courseplay:handle_mode1(self)
 			local distance_to_trigger = courseplay:distance(ctx, ctz, trigger_x, trigger_z);
 			
 			if distance_to_trigger > 60 then 
-				self.cp.currentTipTrigger = nil
+				self.cp.currentTipTrigger = nil;
+				courseplay:debug(nameNum(self) .. ": distance to currentTipTrigger = " .. tostring(distance_to_trigger) .. " (> 60) --> currentTipTrigger = nil", 1);
 			end	
 		else
 			self.cp.currentTipTrigger = nil;
@@ -58,7 +59,7 @@ function courseplay:handle_mode1(self)
 		allowedToDrive = courseplay:unload_tippers(self)
 
 
-		self.cp.infoText = courseplay:get_locale(self, "CPTriggerReached") -- "Abladestelle erreicht"		
+		self.cp.infoText = courseplay:get_locale(self, "CPTriggerReached") -- "Abladestelle erreicht"
 	end
 
 	return allowedToDrive

@@ -1,27 +1,15 @@
---[[ DEBUG LEVELS
-	0 = nothing
-	1 = important, not detailled
-	2 = mildly important
-	3 = important
-	4 = everything, most detailled
-]]
-function courseplay:debug(str, level)
-	if level == nil then
-		level = 1 --when in doubt, print
-	end;
-	if level <= courseplay.debugLevel then
-		--print('courseplay.debugLevel='..courseplay.debugLevel..' / this Lvl='..level);
-		print(str);
+function courseplay:debug(str, channel)
+	if channel ~= nil and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == true then
+		print("[dbg" .. tostring(channel) .. "] " .. str);
 	end;
 end;
 
--- debugging data dumper
--- just for development and debugging
-function table.show(t, name, indent)
-	--only execute table.show if lvl == 4
-	if courseplay.debugLevel < 4 then
-		return
-	end
+function tableShow(t, name, channel, indent)
+	--important performance backup: the channel is checked first before proceeding with the compilation of the table
+	if channel ~= nil and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == false then
+		return;
+	end;
+
 
 	local cart -- a container
 	local autoref -- for self references
@@ -97,7 +85,7 @@ end
 	cart, autoref = "", ""
 	addtocart(t, name, indent)
 	return cart .. autoref
-end
+end;
 
 function eval(str)
 	return assert(loadstring(str))()
@@ -108,11 +96,10 @@ stream_debug_counter = 0
 function streamDebugWriteFloat32(streamId, value)
 	value = Utils.getNoNil(value, 0.0)
 	stream_debug_counter = stream_debug_counter + 1
-	courseplay:debug("++++++++++++++++", 4)
-	courseplay:debug(stream_debug_counter, 4)
-	courseplay:debug("float: ", 4)
-	courseplay:debug(value, 4)
-	courseplay:debug("-----------------", 4)
+	courseplay:debug("++++++++++++++++", 12)
+	courseplay:debug(stream_debug_counter, 12)
+	courseplay:debug("float: " .. value, 12)
+	courseplay:debug("-----------------", 12)
 	streamWriteFloat32(streamId, value)
 end
 
@@ -127,78 +114,78 @@ function streamDebugWriteBool(streamId, value)
 	end
 
 	stream_debug_counter = stream_debug_counter + 1
-	courseplay:debug("++++++++++++++++", 4) 
-	courseplay:debug(stream_debug_counter, 4)
-	courseplay:debug("Bool: ", 4)
-	courseplay:debug(value, 4)
-	courseplay:debug("-----------------", 4) 
+	courseplay:debug("++++++++++++++++", 12)
+	courseplay:debug(stream_debug_counter, 12)
+	courseplay:debug("Bool: ", 12)
+	courseplay:debug(value, 12)
+	courseplay:debug("-----------------", 12) 
 	streamWriteBool(streamId, value)
 end
 
 function streamDebugWriteInt32(streamId, value)
 	value = Utils.getNoNil(value, 0)
 	stream_debug_counter = stream_debug_counter + 1
-	courseplay:debug("++++++++++++++++", 4)
-	courseplay:debug(stream_debug_counter, 4)
-	courseplay:debug("Int32: ", 4)
-	courseplay:debug(value, 4)
-	courseplay:debug("-----------------", 4)
+	courseplay:debug("++++++++++++++++", 12)
+	courseplay:debug(stream_debug_counter, 12)
+	courseplay:debug("Int32: ", 12)
+	courseplay:debug(value, 12)
+	courseplay:debug("-----------------", 12)
 	streamWriteInt32(streamId, value)
 end
 
 function streamDebugWriteString(streamId, value)
 	value = Utils.getNoNil(value, "")
 	stream_debug_counter = stream_debug_counter + 1
-	courseplay:debug("++++++++++++++++", 4)
-	courseplay:debug(stream_debug_counter, 4)
-	courseplay:debug("String: ", 4)
-	courseplay:debug(value, 4)
-	courseplay:debug("-----------------", 4)
+	courseplay:debug("++++++++++++++++", 12)
+	courseplay:debug(stream_debug_counter, 12)
+	courseplay:debug("String: ", 12)
+	courseplay:debug(value, 12)
+	courseplay:debug("-----------------", 12)
 	streamWriteString(streamId, value)
 end
 
 
 function streamDebugReadFloat32(streamId)
 	stream_debug_counter = stream_debug_counter + 1
-	courseplay:debug("++++++++++++++++", 4)
-	courseplay:debug(stream_debug_counter, 4)
+	courseplay:debug("++++++++++++++++", 12)
+	courseplay:debug(stream_debug_counter, 12)
 	local value = streamReadFloat32(streamId)
-	courseplay:debug("Float32: ", 4)
-	courseplay:debug(value, 4)
-	courseplay:debug("-----------------", 4)
+	courseplay:debug("Float32: ", 12)
+	courseplay:debug(value, 12)
+	courseplay:debug("-----------------", 12)
 	return value
 end
 
 
 function streamDebugReadInt32(streamId)
 	stream_debug_counter = stream_debug_counter + 1
-	courseplay:debug("++++++++++++++++", 4)
-	courseplay:debug(stream_debug_counter, 4)
+	courseplay:debug("++++++++++++++++", 12)
+	courseplay:debug(stream_debug_counter, 12)
 	local value = streamReadInt32(streamId)
-	courseplay:debug("Int32: ", 4)
-	courseplay:debug(value, 4)
-	courseplay:debug("-----------------", 4)
+	courseplay:debug("Int32: ", 12)
+	courseplay:debug(value, 12)
+	courseplay:debug("-----------------", 12)
 	return value
 end
 
 function streamDebugReadBool(streamId)
 	stream_debug_counter = stream_debug_counter + 1
-	courseplay:debug("++++++++++++++++", 4)
-	courseplay:debug(stream_debug_counter, 4)
-	local value = streamReadBool(streamId, 4)
-	courseplay:debug("Bool: ", 4)
-	courseplay:debug(value, 4)
-	courseplay:debug("-----------------", 4)
+	courseplay:debug("++++++++++++++++", 12)
+	courseplay:debug(stream_debug_counter, 12)
+	local value = streamReadBool(streamId)
+	courseplay:debug("Bool: ", 12)
+	courseplay:debug(value, 12)
+	courseplay:debug("-----------------", 12)
 	return value
 end
 
 function streamDebugReadString(streamId)
 	stream_debug_counter = stream_debug_counter + 1
-	courseplay:debug("++++++++++++++++", 4)
-	courseplay:debug(stream_debug_counter, 4)
+	courseplay:debug("++++++++++++++++", 12)
+	courseplay:debug(stream_debug_counter, 12)
 	local value = streamReadString(streamId)
-	courseplay:debug("String: ", 4)
-	courseplay:debug(value, 4)
-	courseplay:debug("-----------------", 4)
+	courseplay:debug("String: ", 12)
+	courseplay:debug(value, 12)
+	courseplay:debug("-----------------", 12)
 	return value
 end

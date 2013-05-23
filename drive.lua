@@ -19,12 +19,12 @@ function courseplay:drive(self, dt)
 					self.shortest_dist = nil
 					self.next_targets = {}
 					if lx7 < 0 then
-						courseplay:debug("approach from right",1)
+						courseplay:debug(nameNum(self) .. ": approach from right", 11);
 						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, -(0.34*3*self.turn_radius) , 0, -3*self.turn_radius);
 						courseplay:set_next_target(self, (0.34*2*self.turn_radius) , 0);
 						courseplay:set_next_target(self, 0 , 3);
 					else
-						courseplay:debug("approach from left",1)
+						courseplay:debug(nameNum(self) .. ": approach from left", 11);
 						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, (0.34*3*self.turn_radius) , 0, -3*self.turn_radius);
 						courseplay:set_next_target(self, -(0.34*2*self.turn_radius) , 0);
 						courseplay:set_next_target(self, 0 ,3);
@@ -55,7 +55,11 @@ function courseplay:drive(self, dt)
 			cx = self.target_x
 			cy = self.target_y
 			cz = self.target_z
-			if courseplay.debugLevel > 0 then drawDebugLine(cx, cty7+3, cz, 1, 0, 0, ctx7, cty7+3, ctz7, 1, 0, 0); end
+
+			if courseplay.debugChannels[11] then 
+				drawDebugLine(cx, cty7+3, cz, 1, 0, 0, ctx7, cty7+3, ctz7, 1, 0, 0); 
+			end;
+
 			self.sl = 3
 			refSpeed = self.field_speed
 			distance_to_wp = courseplay:distance_to_point(self, cx, y, cz)
@@ -74,12 +78,12 @@ function courseplay:drive(self, dt)
 				if math.abs(self.lastaiThreshingDirectionZ) > 0.1 then
 					if math.abs(self.target_x7-ctx7)< 3 then
 						aligned = true
-						courseplay:debug("aligned",1)
+						courseplay:debug(nameNum(self) .. ": aligned", 11);
 					end
 				else
 					if math.abs(self.target_z7-ctz7)< 3 then
 						aligned = true
-						courseplay:debug("aligned",1)
+						courseplay:debug(nameNum(self) .. ": aligned", 11);
 					end
 				end
 			elseif targets  == 0 then
@@ -93,12 +97,12 @@ function courseplay:drive(self, dt)
 				if math.abs(self.lastaiThreshingDirectionX) > 0.1 then
 					if math.abs(self.target_x7-ctx7)< 5 then
 						aligned = true
-						courseplay:debug("aligned",1)
+						courseplay:debug(nameNum(self) .. ": aligned", 11);
 					end
 				else
 					if math.abs(self.target_z7-ctz7)< 5 then
 						aligned = true
-						courseplay:debug("aligned",1)
+						courseplay:debug(nameNum(self) .. ": aligned", 11);
 					end
 				end
 			end
@@ -115,12 +119,12 @@ function courseplay:drive(self, dt)
 					if self.lastaiThreshingDirectionX ~= nil then
 						self.aiThreshingDirectionX = self.lastaiThreshingDirectionX
 						self.aiThreshingDirectionZ = self.lastaiThreshingDirectionZ
-						courseplay:debug("restored self.aiThreshingDirection",1)
+						courseplay:debug(nameNum(self) .. ": restored self.aiThreshingDirection", 11);
 					end	
 					self:startAIThreshing(true)
 					self.cp.mode7Unloading = false
-					courseplay:debug("start AITreshing",1)
-					courseplay:debug("fault: "..tostring(math.ceil(math.abs(ctx7-self.target_x7)*100)).." cm X  "..tostring(math.ceil(math.abs(ctz7-self.target_z7)*100)).." cm Z",1)
+					courseplay:debug(nameNum(self) .. ": start AITreshing", 11);
+					courseplay:debug(nameNum(self) .. ": fault: "..tostring(math.ceil(math.abs(ctx7-self.target_x7)*100)).." cm X  "..tostring(math.ceil(math.abs(ctz7-self.target_z7)*100)).." cm Z", 11);
 				end
 			end
 		end
@@ -156,7 +160,7 @@ function courseplay:drive(self, dt)
 		last_recordnumber = 1
 	end
 	if self.recordnumber > self.maxnumber then
-		courseplay:debug(string.format("drive %i: %s: self.recordnumber (%s) > self.maxnumber (%s)", debug.getinfo(1).currentline, self.name, tostring(self.recordnumber), tostring(self.maxnumber)), 3); --this should never happen
+		courseplay:debug(string.format("drive %i: %s: self.recordnumber (%s) > self.maxnumber (%s)", debug.getinfo(1).currentline, self.name, tostring(self.recordnumber), tostring(self.maxnumber)), 12); --this should never happen
 		self.recordnumber = self.maxnumber
 	end
 	if self.ai_mode ~= 7 then 
@@ -165,7 +169,10 @@ function courseplay:drive(self, dt)
 		cx, cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
 	end
 
-	if courseplay.debugLevel > 0 then  drawDebugPoint(cx, cty+3, cz, 1, 0 , 1, 1) end
+	if courseplay.debugChannels[12] then
+		drawDebugPoint(cx, cty+3, cz, 1, 0 , 1, 1);
+	end;
+
 	-- offset - endlich lohnt sich der mathe-lk von vor 1000 Jahren ;)
 	if (self.ai_mode == 4 or self.ai_mode == 6 ) and self.startWork ~= nil and self.stopWork ~=nil and self.WpOffsetX ~= nil and self.WpOffsetZ ~= nil then
 		if self.recordnumber > self.startWork and self.recordnumber < self.stopWork and self.recordnumber > 1  and (self.WpOffsetX ~= 0 or self.WpOffsetZ ~= 0) then
@@ -200,7 +207,9 @@ function courseplay:drive(self, dt)
 		--courseplay:addsign(self, cx, 10, cz)
 	end
 
-	if courseplay.debugLevel > 0 then  drawDebugPoint(cx, cty+3, cz, 0, 1 , 1, 1) end
+	if courseplay.debugChannels[12] then
+		drawDebugPoint(cx, cty+3, cz, 0, 1 , 1, 1);
+	end;
 
 	self.dist = courseplay:distance(cx, cz, ctx, ctz)
 	--courseplay:debug(string.format("Tx: %f2 Tz: %f2 WPcx: %f2 WPcz: %f2 dist: %f2 ", ctx, ctz, cx, cz, self.dist ), 2)
@@ -357,24 +366,36 @@ function courseplay:drive(self, dt)
 		if (self.ai_mode == 1 or (self.ai_mode == 2 and self.loaded)) and self.cp.tipperFillLevel ~= nil and self.tipRefOffset ~= nil and self.tipper_attached then
 			if self.cp.currentTipTrigger == nil and self.cp.tipperFillLevel > 0 then
 				-- is there a tipTrigger within 10 meters?
-				--print("call 1st raycast")--TODO use DebugChannel
+				courseplay:debug(nameNum(self) .. ": call 1st raycast", 1);
 				local num = raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
-				--if num >0 then print("drive(363): raycast end") end --TODO use DebugChannel
-				--drawDebugLine(tx, ty, tz, 1, 0, 0, tx+(nx*10), ty+(ny*10), tz+(nz*10), 1, 0, 0);
+				if num > 0 then 
+					courseplay:debug(string.format("%s: drive(%d): 1st raycast end", nameNum(self), debug.getinfo(1).currentline), 1);
+				end;
+				if courseplay.debugChannels[1] then
+					drawDebugLine(tx, ty, tz, 1, 0, 0, tx+(nx*10), ty+(ny*10), tz+(nz*10), 1, 0, 0);
+				end;
 				if self.tipRefOffset ~= 0 then
 					if self.cp.currentTipTrigger == nil then
 						local x1,y1,z1 = localToWorld(self.aiTrafficCollisionTrigger,self.tipRefOffset,0,0)
-						--print("call 2nd raycast")
-						num =  raycastAll(x1,y1,z1, nx, ny, nz, "findTipTriggerCallback", 10, self)
-						--if num >0 then print("drive(370): 2nd raycast end") end --TODO use DebugChannel
-						--drawDebugLine(x1,y1,z1, 1, 0, 0, x1+(nx*10), y1+(ny*10), z1+(nz*10), 1, 0, 0); --TODO use DebugChannel
+						courseplay:debug(nameNum(self) .. ": call 2nd raycast", 1);
+						num = raycastAll(x1,y1,z1, nx, ny, nz, "findTipTriggerCallback", 10, self)
+						if num > 0 then 
+							courseplay:debug(string.format("%s: drive(%d): 2nd raycast end", nameNum(self), debug.getinfo(1).currentline), 1);
+						end;
+						if courseplay.debugChannels[1] then
+							drawDebugLine(x1,y1,z1, 1, 0, 0, x1+(nx*10), y1+(ny*10), z1+(nz*10), 1, 0, 0);
+						end;
 					end
 					if self.cp.currentTipTrigger == nil then
 						local x1,y1,z1 = localToWorld(self.aiTrafficCollisionTrigger,-self.tipRefOffset,0,0)
-						--print("call 3rd raycast") --TODO use DebugChannel
+						courseplay:debug(nameNum(self) .. ": call 3rd raycast", 1);
 						num = raycastAll(x1,y1,z1, nx, ny, nz, "findTipTriggerCallback", 10, self)
-						--if num >0 then print("drive(377): 3rd raycast end") end --TODO use DebugChannel
-						--drawDebugLine(x1,y1,z1, 1, 0, 0, x1+(nx*10), y1+(ny*10), z1+(nz*10), 1, 0, 0); 
+						if num > 0 then 
+							courseplay:debug(string.format("%s: drive(%d): 3rd raycast end", nameNum(self), debug.getinfo(1).currentline), 1);
+						end;
+						if courseplay.debugChannels[1] then
+							drawDebugLine(x1,y1,z1, 1, 0, 0, x1+(nx*10), y1+(ny*10), z1+(nz*10), 1, 0, 0); 
+						end;
 					end
 				end
 			end;
@@ -410,8 +431,8 @@ function courseplay:drive(self, dt)
 			if self.recordnumber == self.maxnumber then
 				if self.target_x ~= nil then
 	 				self.ai_state = 5
-					self.recordnumber = 2				
-					courseplay:debug("347:  ai_state = 5",1)
+					self.recordnumber = 2
+					courseplay:debug(nameNum(self) .. ": " .. tostring(debug.getinfo(1).currentline) .. ": ai_state = 5", 11);
 				else
 					allowedToDrive = false
 					--TODO local text no aithreshing
@@ -478,24 +499,37 @@ function courseplay:drive(self, dt)
 		if not workArea and self.grainTankCapacity == nil and self.tipRefOffset ~= nil then
 			if self.cp.currentTipTrigger == nil and self.cp.tipperFillLevel > 0 then
 				-- is there a tipTrigger within 10 meters?
-				--print("call 1st raycast")--TODO use DebugChannel
+				courseplay:debug(nameNum(self) .. ": call 1st raycast", 1);
 				local num = raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
-				--if num >0 then print("drive(363): raycast end") end --TODO use DebugChannel
-				--drawDebugLine(tx, ty, tz, 1, 0, 0, tx+(nx*10), ty+(ny*10), tz+(nz*10), 1, 0, 0);
+				if num > 0 then
+					courseplay:debug(string.format("%s: drive(%d): 1st raycast end", nameNum(self), debug.getinfo(1).currentline), 1);
+				end;
+				if courseplay.debugChannels[1] then
+					drawDebugLine(tx, ty, tz, 1, 0, 0, tx+(nx*10), ty+(ny*10), tz+(nz*10), 1, 0, 0);
+				end;
+
 				if self.tipRefOffset ~= 0 then
 					if self.cp.currentTipTrigger == nil then
 						local x1,y1,z1 = localToWorld(self.aiTrafficCollisionTrigger,self.tipRefOffset,0,0)
-						--print("call 2nd raycast")
-						num =  raycastAll(x1,y1,z1, nx, ny, nz, "findTipTriggerCallback", 10, self)
-						--if num >0 then print("drive(370): 2nd raycast end") end --TODO use DebugChannel
-						--drawDebugLine(x1,y1,z1, 1, 0, 0, x1+(nx*10), y1+(ny*10), z1+(nz*10), 1, 0, 0); --TODO use DebugChannel
+						courseplay:debug(nameNum(self) .. ": call 2nd raycast", 1);
+						num = raycastAll(x1,y1,z1, nx, ny, nz, "findTipTriggerCallback", 10, self)
+						if num > 0 then
+							courseplay:debug(string.format("%s: drive(%d): 2nd raycast end", nameNum(self), debug.getinfo(1).currentline), 1);
+						end;
+						if courseplay.debugChannels[1] then
+							drawDebugLine(x1,y1,z1, 1, 0, 0, x1+(nx*10), y1+(ny*10), z1+(nz*10), 1, 0, 0);
+						end;
 					end
 					if self.cp.currentTipTrigger == nil then
 						local x1,y1,z1 = localToWorld(self.aiTrafficCollisionTrigger,-self.tipRefOffset,0,0)
-						--print("call 3rd raycast") --TODO use DebugChannel
+						courseplay:debug(nameNum(self) .. ": call 3rd raycast", 1);
 						num = raycastAll(x1,y1,z1, nx, ny, nz, "findTipTriggerCallback", 10, self)
-						--if num >0 then print("drive(377): 3rd raycast end") end --TODO use DebugChannel
-						--drawDebugLine(x1,y1,z1, 1, 0, 0, x1+(nx*10), y1+(ny*10), z1+(nz*10), 1, 0, 0); 
+						if num > 0 then
+							courseplay:debug(string.format("%s: drive(%d): 3rd raycast end", nameNum(self), debug.getinfo(1).currentline), 1);
+						end;
+						if courseplay.debugChannels[1] then
+							drawDebugLine(x1,y1,z1, 1, 0, 0, x1+(nx*10), y1+(ny*10), z1+(nz*10), 1, 0, 0);
+						end;
 					end
 				end
 			end;
@@ -774,9 +808,9 @@ function courseplay:set_traffc_collision(self, lx, lz)
 	if colDirZ < -0.4 then
 		colDirZ = 0.4;
 	end;
-	--courseplay:debug(string.format("colDirX: %f colDirZ %f ",colDirX,colDirZ ), 2)
+	--courseplay:debug(string.format("colDirX: %f colDirZ %f ",colDirX,colDirZ ), 3)
 
-	if courseplay.debugLevel > 0 then	
+	if courseplay.debugChannels[3] then
 		local x,y,z = getWorldTranslation(self.aiTrafficCollisionTrigger)
 		local x1,y1,z1 = localToWorld(self.aiTrafficCollisionTrigger, colDirX*5, 0, colDirZ*5 )
 		local x2,y2,z2 = localToWorld(self.aiTrafficCollisionTrigger, (colDirX*5)+ 1.5 , 0, colDirZ*5 )
@@ -799,7 +833,7 @@ function courseplay:check_traffic(self, display_warnings, allowedToDrive)
 	local x, y, z = getWorldTranslation(self.cp.DirectionNode)
 	local x1, y1, z1 = 0,0,0
 	
-	--courseplay:debug(table.show(self), 4)
+	--courseplay:debug(tableShow(self, nameNum(self), 4), 4)
 	if self.CPnumCollidingVehicles ~= nil and self.CPnumCollidingVehicles > 0 then
 		if vehicle_in_front ~= nil and not (self.ai_mode == 9 and vehicle_in_front.allowFillFromAir) then
 			x1,z1 = AIVehicleUtil.getDriveDirection(self.traffic_vehicle_in_front, x, y, z);
@@ -807,7 +841,7 @@ function courseplay:check_traffic(self, display_warnings, allowedToDrive)
 				ahead = true
 			end
 			if vehicle_in_front.lastSpeedReal == nil or vehicle_in_front.lastSpeedReal*3600 < 5 or ahead then
-				--courseplay:debug("colliding", 2)
+				--courseplay:debug(nameNum(self) .. ": colliding", 4)
 				allowedToDrive = false;
 				in_traffic = true
 			end

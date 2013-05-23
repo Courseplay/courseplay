@@ -20,7 +20,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 				if posX > button.x and posX < button.x2 and posY > button.y and posY < button.y2 then
 					local parameter = button.parameter;
 					if InputBinding.isPressed(InputBinding.CP_Modifier_1) and button.modifiedParameter ~= nil then --for some reason InputBinding works in :mouseEvent
-						courseplay:debug("button.modifiedParameter = " .. tostring(button.modifiedParameter), 3);
+						courseplay:debug("button.modifiedParameter = " .. tostring(button.modifiedParameter), 12);
 						parameter = button.modifiedParameter;
 					end;
 
@@ -61,6 +61,7 @@ function courseplay:setCourseplayFunc(func, value, noEventSend)
 end
 
 function courseplay:deal_with_mouse_input(self, func, value)
+	courseplay:debug(nameNum(self) .. ": calling function \"" .. tostring(func) .. "(" .. tostring(value) .. ")\"", 12);
 
 	local str1,str2 = string.find(func, "row%d");
 	local isRowFunction = str1 ~= nil and str2 ~= nil and str1 == 1 and str2 == string.len(func);

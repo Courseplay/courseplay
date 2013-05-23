@@ -97,14 +97,14 @@ function courseplay:update_combines(self)
 		end
 	end
 
-	courseplay:debug(string.format("%s: combines reachable: %d ", self.name, table.getn(self.reachable_combines)), 4)
+	courseplay:debug(string.format("%s: combines reachable: %d ", nameNum(self), table.getn(self.reachable_combines)), 4)
 end
 
 
 function courseplay:register_at_combine(self, combine)
 	local curFile = "combines.lua"
-	courseplay:debug(string.format("%s(%i): %s: registering at combine %s", curFile, debug.getinfo(1).currentline, self.name, combine.name), 2)
-	--courseplay:debug(table.show(combine), 4)
+	courseplay:debug(string.format("%s(%i): %s: registering at combine %s", curFile, debug.getinfo(1).currentline, nameNum(self), combine.name), 4)
+	--courseplay:debug(tableShow(combine, tostring(combine.name), 4), 4)
 	local num_allowed_courseplayers = 1
 	self.calculated_course = false
 	if combine.courseplayers == nil then
@@ -135,7 +135,7 @@ function courseplay:register_at_combine(self, combine)
 	end
 
 	if table.getn(combine.courseplayers) == num_allowed_courseplayers then
-		courseplay:debug(tostring(self.id).." :  combine: "..tostring(combine.id).. "is already registered ", 1)
+		courseplay:debug(string.format("%s (id %s): combine (id %s) is already registered", nameNum(self), tostring(self.id), tostring(combine.id)), 4);
 		return false
 	end
 
@@ -146,7 +146,7 @@ function courseplay:register_at_combine(self, combine)
 		for k, vehicle in pairs(g_currentMission.vehicles) do --TODO: Liste einengen, nur Courseplayers
 			if vehicle.combineID ~= nil then
 				if vehicle.combineID == combine.id and vehicle.active_combine == nil then
-					courseplay:debug(tostring(vehicle.id).." : distanceToCombine:"..tostring(vehicle.distanceToCombine).." for combine.id:"..tostring(combine.id), 1)
+					courseplay:debug(tostring(vehicle.id).." : distanceToCombine:"..tostring(vehicle.distanceToCombine).." for combine.id:"..tostring(combine.id), 4)
 					if distance > vehicle.distanceToCombine then
 						distance = vehicle.distanceToCombine
 						vehicle_ID = vehicle.id
@@ -155,10 +155,10 @@ function courseplay:register_at_combine(self, combine)
 			end
 		end
 		if vehicle_ID ~= self.id then
-			courseplay:debug(tostring(self.id)..": es gibt einen naeheren trecker, der auch will. Es ist  :"..tostring(vehicle_ID),1)
+			courseplay:debug(nameNum(self) .. " (id " .. tostring(self.id) .. "): there's a closer tractor that's trying to register: "..tostring(vehicle_ID), 4)
 			return false
 		else
-			courseplay:debug((tostring(self.id).." : ich bin dran"),1)
+			courseplay:debug(nameNum(self) .. " (id " .. tostring(self.id) .. "): it's my turn", 4);
 		end
 	end
 	--THOMAS' best_combine END
@@ -173,7 +173,7 @@ function courseplay:register_at_combine(self, combine)
 		combine.wants_courseplayer = false
 	end
 
-	courseplay:debug(string.format("%s(%i): %s is being checked in with %s", curFile, debug.getinfo(1).currentline, self.name, combine.name), 1)
+	courseplay:debug(string.format("%s(%i): %s is being checked in with %s", curFile, debug.getinfo(1).currentline, nameNum(self), combine.name), 4)
 	combine.isCheckedIn = 1;
 	self.distanceToCombine = nil
 	self.combineID = nil
@@ -309,11 +309,11 @@ function courseplay:calculateInitialCombineOffset(self, combine)
 	--combine // combine_offset is in auto mode
 	elseif not combine.cp.isChopper and combine.currentPipeState == 2 and combine.pipeRaycastNode ~= nil then -- pipe is extended
 		self.combine_offset = combineToPrnX;
-		courseplay:debug(string.format("%s(%i): %s @ %s: using combineToPrnX=%f, self.combine_offset=%f", curFile, debug.getinfo(1).currentline, self.name, combine.name, combineToPrnX, self.combine_offset), 2)
+		courseplay:debug(string.format("%s(%i): %s @ %s: using combineToPrnX=%f, self.combine_offset=%f", curFile, debug.getinfo(1).currentline, nameNum(self), combine.name, combineToPrnX, self.combine_offset), 4)
 	elseif not combine.cp.isChopper and combine.pipeRaycastNode ~= nil then --pipe is closed
 		if getParent(combine.pipeRaycastNode) == combine.rootNode then -- pipeRaycastNode is direct child of combine.root
 			self.combine_offset = prnX;
-			courseplay:debug(string.format("%s(%i): %s @ %s: combine.root > pipeRaycastNode / self.combine_offset=prnX=%f", curFile, debug.getinfo(1).currentline, self.name, combine.name, self.combine_offset), 2)
+			courseplay:debug(string.format("%s(%i): %s @ %s: combine.root > pipeRaycastNode / self.combine_offset=prnX=%f", curFile, debug.getinfo(1).currentline, nameNum(self), combine.name, self.combine_offset), 4)
 		elseif getParent(getParent(combine.pipeRaycastNode)) == combine.rootNode then --pipeRaycastNode is direct child of pipe is direct child of combine.root
 			local pipeX, pipeY, pipeZ = getTranslation(getParent(combine.pipeRaycastNode))
 			self.combine_offset = pipeX - prnZ;
@@ -321,22 +321,22 @@ function courseplay:calculateInitialCombineOffset(self, combine)
 			if prnZ == 0 or combine.name == "Grimme Rootster 604" then
 				self.combine_offset = pipeX - prnY;
 			end
-			courseplay:debug(string.format("%s(%i): %s @ %s: combine.root > pipe > pipeRaycastNode / self.combine_offset=pipeX-prnX=%f", curFile, debug.getinfo(1).currentline, self.name, combine.name, self.combine_offset), 2)
+			courseplay:debug(string.format("%s(%i): %s @ %s: combine.root > pipe > pipeRaycastNode / self.combine_offset=pipeX-prnX=%f", curFile, debug.getinfo(1).currentline, nameNum(self), combine.name, self.combine_offset), 4)
 		elseif combineToPrnX > combine.cp.lmX then
 			self.combine_offset = combineToPrnX + (5 * combine.cp.pipeSide);
-			courseplay:debug(string.format("%s(%i): %s @ %s: using combineToPrnX=%f, self.combine_offset=%f", curFile, debug.getinfo(1).currentline, self.name, combine.name, combineToPrnX, self.combine_offset), 2)
+			courseplay:debug(string.format("%s(%i): %s @ %s: using combineToPrnX=%f, self.combine_offset=%f", curFile, debug.getinfo(1).currentline, nameNum(self), combine.name, combineToPrnX, self.combine_offset), 4)
 		elseif combine.cp.lmX ~= nil then
 			if combine.cp.lmX > 0 then --use leftMarker
 				self.combine_offset = combine.cp.lmX + 2.5;
-				courseplay:debug(string.format("%s(%i): %s @ %s: using leftMarker+2.5, self.combine_offset=%f", curFile, debug.getinfo(1).currentline, self.name, combine.name, self.combine_offset), 2);
+				courseplay:debug(string.format("%s(%i): %s @ %s: using leftMarker+2.5, self.combine_offset=%f", curFile, debug.getinfo(1).currentline, nameNum(self), combine.name, self.combine_offset), 4);
 			end;
 		else --BACKUP
 			self.combine_offset = 8 * combine.cp.pipeSide;
 		end;
 	elseif combine.cp.isChopper then
-		courseplay:debug(string.format("%s(%i): %s @ %s: combine.forced_side=%s", curFile, debug.getinfo(1).currentline, self.name, combine.name, tostring(combine.forced_side)), 3);
+		courseplay:debug(string.format("%s(%i): %s @ %s: combine.forced_side=%s", curFile, debug.getinfo(1).currentline, nameNum(self), combine.name, tostring(combine.forced_side)), 4);
 		if combine.forced_side ~= nil then
-			courseplay:debug(string.format("%s(%i): %s @ %s: combine.forced_side=%s, going by forced_side", curFile, debug.getinfo(1).currentline, self.name, combine.name, combine.forced_side), 3);
+			courseplay:debug(string.format("%s(%i): %s @ %s: combine.forced_side=%s, going by forced_side", curFile, debug.getinfo(1).currentline, nameNum(self), combine.name, combine.forced_side), 4);
 			if combine.forced_side == "left" then
 				self.sideToDrive = "left";
 				if combine.cp.lmX ~= nil then
@@ -353,7 +353,7 @@ function courseplay:calculateInitialCombineOffset(self, combine)
 				end;
 			end
 		else
-			courseplay:debug(string.format("%s(%i): %s @ %s: combine.forced_side=%s, going by fruit", curFile, debug.getinfo(1).currentline, self.name, combine.name, tostring(combine.forced_side)), 3);
+			courseplay:debug(string.format("%s(%i): %s @ %s: combine.forced_side=%s, going by fruit", curFile, debug.getinfo(1).currentline, nameNum(self), combine.name, tostring(combine.forced_side)), 4);
 			local fruitSide = courseplay:side_to_drive(self, combine, 5);
 			if fruitSide == "right" then
 				if combine.cp.lmX ~= nil then

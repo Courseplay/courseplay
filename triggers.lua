@@ -16,16 +16,16 @@ function courseplay:cponTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
  
 			end;
 		else
-			courseplay:debug(string.format("%s: found collision trigger", nameNum(self)), 2);
+			courseplay:debug(string.format("%s: found collision trigger", nameNum(self)), 3);
 			local vehicle = g_currentMission.nodeToVehicle[otherId];
 			local vehicleConcerned = g_currentMission.nodeToVehicle[otherId]
 			local vehicleOnList = false
 			if vehicle ~= nil then
-				courseplay:debug(string.format("%s: checking CollisionIgnoreList", nameNum(self)), 2);
+				courseplay:debug(string.format("%s: checking CollisionIgnoreList", nameNum(self)), 3);
 				for a,b in pairs (self.cpTrafficCollisionIgnoreList) do
-					courseplay:debug(string.format("%s: %s vs %s", nameNum(self), tostring(g_currentMission.nodeToVehicle[a].name), tostring(vehicleConcerned.name)), 2);
+					courseplay:debug(string.format("%s: %s vs %s", nameNum(self), tostring(g_currentMission.nodeToVehicle[a].name), tostring(vehicleConcerned.name)), 3);
 					if g_currentMission.nodeToVehicle[a].id == vehicleConcerned.id then
-						courseplay:debug(string.format("%s: %s is on list", nameNum(self), tostring(vehicleConcerned.name)), 2);
+						courseplay:debug(string.format("%s: %s is on list", nameNum(self), tostring(vehicleConcerned.name)), 3);
 						vehicleOnList = true
 						break		
 					end
@@ -33,7 +33,7 @@ function courseplay:cponTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 			end
 			if vehicle ~= nil and self.trafficCollisionIgnoreList[otherId] == nil and vehicleOnList == false then
 				if onEnter then
-					courseplay:debug(string.format("%s: %s is not on list", nameNum(self), tostring(vehicleConcerned.name)), 2);
+					courseplay:debug(string.format("%s: %s is not on list", nameNum(self), tostring(vehicleConcerned.name)), 3);
 					self.traffic_vehicle_in_front = otherId
 					self.CPnumCollidingVehicles = self.CPnumCollidingVehicles + 1;
 					self.numCollidingVehicles[triggerId] = self.numCollidingVehicles[triggerId]+1;
@@ -48,7 +48,10 @@ end
 
 -- tip trigger
 function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
-	--drawDebugPoint( x, y, z, 1, 1, 0, 1); --TODO use DebugChannel
+	if courseplay.debugChannels[1] then
+		drawDebugPoint( x, y, z, 1, 1, 0, 1);
+	end;
+
 	if courseplay.confirmedNoneTriggers[transformId] == true then
 		return true
 	end

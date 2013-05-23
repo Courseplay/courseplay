@@ -28,7 +28,7 @@ function courseplay:reinit_courses(self)
 		if self.courseplay_courses ~= nil then
 			g_currentMission.courseplay_courses = self.courseplay_courses
 		else
-			courseplay:debug("courseplay_courses is empty", 1)
+			courseplay:debug("courseplay_courses is empty", 8)
 			if g_server ~= nil then
 				courseplay_manager:load_courses();
 			end
@@ -69,7 +69,7 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
 
 		local course = g_currentMission.courseplay_courses[id]
 		if course == nil then
-			courseplay:debug("no course found", 1)
+			courseplay:debug("no course found", 8)
 			return
 		end
 		if not use_real_id then
@@ -89,7 +89,7 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
 			if self.current_course_name == nil then --recorded but not saved course
 				self.numCourses = 1;
 			end;
-			courseplay:debug(string.format("course_management 92: %s: self.current_course_name=%s, self.numCourses=%s", self.name, tostring(self.current_course_name), tostring(self.numCourses)), 3);
+			courseplay:debug(string.format("course_management 92: %s: self.current_course_name=%s, self.numCourses=%s", nameNum(self), tostring(self.current_course_name), tostring(self.numCourses)), 8);
 			
 			local course1_waypoints = self.Waypoints
 			local course2_waypoints = course.waypoints
@@ -125,7 +125,7 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
 			end
 
 			if wp_found == false then
-				courseplay:debug("no waypoint found", 2)
+				courseplay:debug(nameNum(self) .. ": no waypoint found", 8)
 			end
 
 			self.Waypoints = {}
@@ -276,12 +276,12 @@ end
 
 
 function courseplay:load_courses()
-	courseplay:debug("try to load courses with old courseplay-function", 1);
+	courseplay:debug("try to load courses with old courseplay-function", 8);
 	if true then
 		return false;
 	end
 
-	courseplay:debug('loaded courses', 1)
+	courseplay:debug('loaded courses', 8)
 	local finish_all = false
 	courseplay_coursesUnsort = {}
 	local path = getUserProfileAppPath() .. "savegame" .. g_careerScreen.selectedIndex .. "/"
