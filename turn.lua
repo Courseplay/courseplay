@@ -113,7 +113,7 @@ function courseplay:turn(self, dt) --!!!
 					moveForwards = false;
 				end;
 			end;
-			if courseplay.debugChannels[12].active then
+			if courseplay.debugChannels[12] then
 				drawDebugPoint(newTargetX, y+3, newTargetZ, 1, 1, 0, 1);
 			end;
 		elseif self.cp.turnStage == 1 then
