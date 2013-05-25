@@ -226,7 +226,10 @@ function courseplay:drive(self, dt)
 	if self.ai_mode == 4 or self.ai_mode == 6 then
 		if  self.Waypoints[self.recordnumber].turn ~= nil then
 			self.cp.isTurning = self.Waypoints[self.recordnumber].turn
-		end	
+		end
+		if self.abortWork ~= nil and fill_level == 0 then
+			self.cp.isTurning = nil
+		end
 	end
 
 	if self.ai_mode == 4 or self.ai_mode == 8 then
