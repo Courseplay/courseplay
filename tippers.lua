@@ -545,111 +545,134 @@ end
 
 -- unloads all tippers
 function courseplay:unload_tippers(self)
-	local allowedToDrive = true
+	local allowedToDrive = true;
+	local ctt = self.cp.currentTipTrigger;
+	if ctt.getTipDistanceFromTrailer == nil then
+		courseplay:debug(nameNum(self) .. ": getTipDistanceFromTrailer function doesn't exist for currentTipTrigger - unloading function aborted");
+		return allowedToDrive;
+	end;
 	local tipperFillLevel, tipperCapacity = self:getAttachedTrailersFillLevelAndCapacity();
+	local isBGA = ctt.bunkerSilo ~= nil;
+	local bgaIsFull = isBGA and (ctt.bunkerSilo.fillLevel >= ctt.bunkerSilo.capacity);
+	local bgaSectionPositions = {
+		{ from =  0, to =   40 },
+		{ from = 30, to =   70 },
+		{ from = 60, to = 1000 }
+	};
+
 	for k, tipper in pairs(self.tippers) do
-		--if not tipper.allowsDetaching then
 		if tipper.tipReferencePoints ~= nil then
-			local numReferencePoints = table.getn(tipper.tipReferencePoints);
 			local fruitType = tipper.currentFillType
-			local isBunkerSilo = false;
-			self.gofortipping = false
-			if self.cp.currentTipTrigger.bunkerSilo ~= nil then --TODO after v3.40: and (self.cp.currentTipTrigger.bunkerSilo.fillLevel + tipperFillLevel) < self.cp.currentTipTrigger.bunkerSilo.capacity) then
-				--TODO after v3.40: clean up variable names, put in cp table etc.
-				isBunkerSilo = true;
-				local silos = table.getn(self.cp.currentTipTrigger.bunkerSilo.movingPlanes)
-				local x, y, z = getWorldTranslation(tipper.tipReferencePoints[1].node)
-				local sx, sy, sz = worldToLocal(self.cp.currentTipTrigger.bunkerSilo.movingPlanes[1].nodeId, x, y, z)
-				local ex, ey, ez = worldToLocal(self.cp.currentTipTrigger.bunkerSilo.movingPlanes[silos].nodeId, x, y, z)
-				self.startentfernung =  Utils.vector2Length(sx, sz) 
-				self.endentfernung = Utils.vector2Length(ex, ez)
-				local laenge = courseplay:distance(sx, sz, ex, ez) 
-				self.position = self.startentfernung*100/laenge
-				if self.runonce == nil then
-					self.runonce = 0
-				end
-				self.filling1 = 0
-				self.filling2 = 0
-				self.filling3 = 0
-				if self.runonce == 0 then
-					if self.startentfernung < self.endentfernung then   --Richtungsentscheidung
-						self.BGAdirection = 1   --vorwärts
-					else	
-						self.BGAdirection = 0   --rückwärts
-					end
-					for k = 1,silos,1 do
-						local filling = self.cp.currentTipTrigger.bunkerSilo.movingPlanes[k].fillLevel
-						if k <= math.ceil(silos * 0.3) then
-							self.filling1 =	self.filling1 + filling
-						elseif k <= math.ceil(silos * 0.6) then
-							self.filling2 =	self.filling2 + filling
-						elseif k <= silos then 
-							self.filling3 =	self.filling3 + filling
-						end
+			local positionInSilo = -1;
+			local distanceToTrigger, bestTipReferencePoint = ctt:getTipDistanceFromTrailer(tipper);
+			local trailerInTipRange = g_currentMission:getIsTrailerInTipRange(tipper, ctt, bestTipReferencePoint);
+			local goForTipping = false;
+			
+			--BGA TRIGGER
+			if isBGA and not bgaIsFull then
+				if self.cp.unloadAtSiloStart then
+					goForTipping = trailerInTipRange;
+				else
+					if self.runonce == nil then
+						self.runonce = 0;
 					end;
-					courseplay:debug(string.format("%s: BGA section 1: %f, section 2: %f, section 3: %f", nameNum(self), self.filling1, self.filling2, self.filling3), 2);
-					
-					if self.filling1 <= self.filling2 and self.filling1 < self.filling3 then
-						self.tipLocation = 1
-					elseif self.filling2 <= self.filling3 and self.filling2 < self.filling1 then
-						self.tipLocation = 2
-					elseif self.filling3 < self.filling1 and self.filling3 < self.filling2 then
-						self.tipLocation = 3
-					else
-						self.tipLocation = 1
+
+					local silos = table.getn(ctt.bunkerSilo.movingPlanes);
+					local x, y, z = getWorldTranslation(tipper.tipReferencePoints[bestTipReferencePoint].node);
+					local sx, sy, sz = worldToLocal(ctt.bunkerSilo.movingPlanes[1].nodeId, x, y, z);
+					local ex, ey, ez = worldToLocal(ctt.bunkerSilo.movingPlanes[silos].nodeId, x, y, z);
+					local startDistance =  Utils.vector2Length(sx, sz) 
+					local endDistance = Utils.vector2Length(ex, ez)
+					local dist = courseplay:distance(sx, sz, ex, ez) 
+					positionInSilo = startDistance*100/dist
+
+					if self.runonce == 0 then
+						local section1FillLevel, section2FillLevel, section3FillLevel, section1Capacity, section2Capacity, section3Capacity = 0, 0, 0, 0, 0, 0;
+
+						for k=1,silos do
+							local filling = ctt.bunkerSilo.movingPlanes[k].fillLevel;
+							local capacity = ctt.bunkerSilo.movingPlanes[k].capacity;
+							if k <= math.ceil(silos * 0.3) then
+								section1FillLevel = section1FillLevel + filling;
+								section1Capacity = section1Capacity + capacity;
+							elseif k <= math.ceil(silos * 0.6) then
+								section2FillLevel = section2FillLevel + filling
+								section2Capacity = section2Capacity + capacity;
+							elseif k <= silos then 
+								section3FillLevel = section3FillLevel + filling
+								section3Capacity = section3Capacity + capacity;
+							end
+						end;
+						courseplay:debug(string.format("%s: BGA section 1: %d/%d, section 2: %d/%d, section 3: %d/%d", nameNum(self), section1FillLevel, section1Capacity, section2FillLevel, section2Capacity, section3FillLevel, section3Capacity), 2);
+
+						if section1FillLevel <= section2FillLevel and section1FillLevel < section3FillLevel then
+							self.cp.tipLocation = 1
+						elseif section2FillLevel <= section3FillLevel and section2FillLevel < section1FillLevel then
+							self.cp.tipLocation = 2
+						elseif section3FillLevel < section1FillLevel and section3FillLevel < section2FillLevel then
+							self.cp.tipLocation = 3
+						else
+							self.cp.tipLocation = 1
+						end
+						courseplay:debug(string.format("%s: BGA tipLocation = %d", nameNum(self), self.cp.tipLocation), 2);
+						self.runonce = 1
 					end
-					courseplay:debug(string.format("%s: BGA tipLocation = %d", nameNum(self), self.tipLocation), 2);
-					self.runonce = 1
-				end
-				if self.tipLocation == 1 then
-					if self.position >= 0 and self.position <= 40 then
-						self.gofortipping = true
-					end
-				elseif self.tipLocation == 2 then
-					if self.position >= 30 and self.position <= 70 then
-						self.gofortipping = true
-					end
-				elseif self.tipLocation == 3 then
-					if self.position >= 60 then
-						self.gofortipping = true
-					end
-				end
-				
-				--TODO after v3.40: if section == 1 is full, check 2 and 3 / if section == 2 is full, check 1 and 3 etc.
+
+					goForTipping = trailerInTipRange and positionInSilo >= bgaSectionPositions[self.cp.tipLocation].from and positionInSilo <= bgaSectionPositions[self.cp.tipLocation].to;
+
+					--TODO after v3.40: if section == 1 is full, check 2 and 3 / if section == 2 is full, check 1 and 3 etc.
+				end;
+
+			--REGULAR TIPTRIGGER
 			else
-				self.gofortipping = true;
-				
+				goForTipping = trailerInTipRange;
+
 				--AlternativeTipping: don't unload if full
-				if self.cp.currentTipTrigger.fillLevel ~= nil and self.cp.currentTipTrigger.capacity ~= nil and self.cp.currentTipTrigger.fillLevel >= self.cp.currentTipTrigger.capacity then
-					self.gofortipping = false;
-					--allowedToDrive = false;
-					--self.cp.infoText = "Heap has reached its capacity"; --TODO: i18n / courseplay:get_locale(self, "CPheapFull");
+				if ctt.fillLevel ~= nil and ctt.capacity ~= nil and ctt.fillLevel >= ctt.capacity then
+					goForTipping = false;
 				end;
 			end
-			if self.cp.currentTipTrigger.acceptedFillTypes[fruitType] and self.gofortipping == true then  
-				courseplay:debug(nameNum(self) .. ": trigger accepts fruit (" .. tostring(fruitType) .. "), gofortipping == true", 2);
+
+			--UNLOAD
+			if ctt.acceptedFillTypes[fruitType] and goForTipping == true then  
+				if isBGA then
+					courseplay:debug(nameNum(self) .. ": goForTipping = true [BGA trigger accepts fruit (" .. tostring(fruitType) .. ")]", 2);
+				else
+					courseplay:debug(nameNum(self) .. ": goForTipping = true [trigger accepts fruit (" .. tostring(fruitType) .. ")]", 2);
+				end;
+
 				if tipper.tipState == Trailer.TIPSTATE_CLOSED then
-					local distanceToTrigger = math.huge;
-					if self.cp.currentTipTrigger.getTipDistanceFromTrailer ~= nil then
-						distanceToTrigger,self.toggledTipState  = self.cp.currentTipTrigger:getTipDistanceFromTrailer(tipper); --courtesy of Satis
-					end;
+					self.toggledTipState = bestTipReferencePoint;
 					courseplay:debug(nameNum(self) .. ": distanceToTrigger=" .. tostring(distanceToTrigger), 2);
-					if distanceToTrigger == 0 or self.cp.currentTipTrigger.bunkerSilo ~= nil then
-						--courseplay:debug(string.format("%s %s: distanceToTrigger=%s, isBunkerSilo=%s", tostring(self.name),nameNum(self), tostring(distanceToTrigger), tostring(isBunkerSilo)), 2);
-						tipper:toggleTipState(self.cp.currentTipTrigger,self.toggledTipState);
+					if distanceToTrigger == 0 or ctt.bunkerSilo ~= nil then
+						tipper:toggleTipState(ctt,self.toggledTipState);
 						self.unloading_tipper = tipper
 					end
 				elseif tipper.tipState ~= Trailer.TIPSTATE_CLOSING then 
 					allowedToDrive = false
 				end 
-						
-				if self.cp.currentTipTrigger.bunkerSilo ~= nil then
+
+				if ctt.bunkerSilo ~= nil then
 					allowedToDrive = true
 				end
-			elseif not self.cp.currentTipTrigger.acceptedFillTypes[fruitType] then
-				courseplay:debug(nameNum(self) .. ": trigger does not accept fruit (" .. tostring(fruitType) .. ")", 2);
-			elseif not self.gofortipping then
-				courseplay:debug(nameNum(self) .. ": self.gofortipping = false (BGA / fillLevel > capacity)", 2);
+			elseif not ctt.acceptedFillTypes[fruitType] then
+				if isBGA then
+					courseplay:debug(nameNum(self) .. ": goForTipping = false [BGA trigger does not accept fruit (" .. tostring(fruitType) .. ")]", 2);
+				else
+					courseplay:debug(nameNum(self) .. ": goForTipping = false [trigger does not accept fruit (" .. tostring(fruitType) .. ")]", 2);
+				end;
+			elseif isBGA and not bgaIsFull and not trailerInTipRange and not goForTipping then
+				courseplay:debug(nameNum(self) .. ": goForTipping = false [BGA: trailerInTipRange == false]", 2);
+			elseif isBGA and not bgaIsFull and trailerInTipRange and not goForTipping then
+				courseplay:debug(string.format("%s: goForTipping = false [BGA: position %.1f is not in section %d's area]", nameNum(self), positionInSilo, self.cp.tipLocation), 2);
+			elseif isBGA and bgaIsFull and not goForTipping then
+				courseplay:debug(nameNum(self) .. ": goForTipping = false [BGA: fillLevel > capacity]", 2);
+			elseif isBGA and not goForTipping then
+				courseplay:debug(nameNum(self) .. ": goForTipping = false [BGA]", 2);
+			elseif not isBGA and not trailerInTipRange and not goForTipping then
+				courseplay:debug(nameNum(self) .. ": goForTipping = false [trailerInTipRange == false]", 2);
+			elseif not isBGA and not goForTipping then
+				courseplay:debug(nameNum(self) .. ": goForTipping = false [fillLevel > capacity]", 2);
 			end;
 		end
 	end

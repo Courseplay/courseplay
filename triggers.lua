@@ -60,7 +60,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 	local name = getName(transformId)	
 
 	if triggerObjects ~= nil and triggerObjectsCount > 0 then
-		courseplay:debug(nameNum(self) .. "transformId = ".. tostring(transformId)..": "..tostring(name), 1);
+		courseplay:debug(nameNum(self) .. " transformId = ".. tostring(transformId)..": "..tostring(name), 1);
 		local fruitType = self.tippers[1].currentFillType;
 
 		if transformId ~= nil then
