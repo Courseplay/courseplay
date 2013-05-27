@@ -310,11 +310,11 @@ function courseplay:load(xmlFile)
 	self.unloading_tipper = nil
 	self.last_fill_level = nil
 	self.tipRefOffset = 0;
+	self.cp.tipLocation = 1;
 	self.cp.tipperHasCover = false;
 	self.cp.tippersWithCovers = {};
 	self.cp.tipperFillLevel = nil;
 	self.cp.tipperCapacity = nil;
-
 	-- for user input like saving
 	self.user_input_active = false
 	self.user_input_message = nil
@@ -536,10 +536,7 @@ function courseplay:load(xmlFile)
 	local dbgPosY = courseplay.hud.linesPosY[5] - 0.004;
 	for dbg=1, courseplay.numDebugChannels do
 		local dbgPosX = courseplay.hud.infoBasePosX + 0.282 - (courseplay.numDebugChannels * dbgW) + ((dbg-1) * dbgW);
-		local icon = "debugChannels_0" .. dbg .. ".dds";
-		if dbg >= 10 then
-			icon = "debugChannels_" .. dbg .. ".dds";
-		end;
+		local icon = string.format("debugChannels_%02d.dds", dbg);
 		courseplay:register_button(self, 6, icon, "toggleDebugChannel", dbg, dbgPosX, dbgPosY, dbgW, dbgH);
 	end;
 
@@ -785,6 +782,7 @@ function courseplay:readStream(streamId, connection)
 	self.cp.startingCorner = streamDebugReadInt32(streamId);
 	self.cp.startingDirection = streamDebugReadInt32(streamId);
 	self.cp.stopForLoading = streamDebugReadBool(streamId);
+	self.cp.tipLocation = streamDebugReadInt32(streamId);
 	self.cp.tipperHasCover = streamDebugReadBool(streamId);
 	self.cp.tipperFillLevel = streamDebugReadFloat32(streamId);
 	self.cp.tipperCapacity = streamDebugReadFloat32(streamId);
@@ -933,6 +931,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteInt32(streamId, self.cp.startingCorner);
 	streamDebugWriteInt32(streamId, self.cp.startingDirection);
 	streamDebugWriteBool(streamId, self.cp.stopForLoading);
+	streamDebugWriteInt32(streamId, self.cp.tipLocation);
 	streamDebugWriteBool(streamId, self.cp.tipperHasCover);
 	streamDebugWriteFloat32(streamId,self.cp.tipperFillLevel);
 	streamDebugWriteFloat32(streamId,self.cp.tipperCapacity);

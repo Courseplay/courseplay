@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="12">
-	<version>3.41.0012</version>
+	<version>3.41.0013</version>
 	<author>Hummel (modhoster.de) / Lautschreier / Wolverin0815 / Bastian82 / Jakob Tischler / Thomas Gärtner</author>
     <title>
 		<de>Courseplay</de>        
@@ -1343,22 +1343,6 @@ Italský překlad: JD7530
 			<fr>Ouest</fr>
 			<cz>západ</cz>
 		</text>
-		<text name="CPyes">
-			<de>Ja</de>
-			<en>Yes</en>
-			<es>Si</es>
-			<fr>Oui</fr>
-			<it>Si</it>
-			<cz>ano</cz>
-		</text>
-		<text name="CPno">
-			<de>Nein</de>
-			<en>No</en>
-			<es>No</es>
-			<fr>Non</fr>
-			<it>No</it>
-			<cz>ne</cz>
-		</text>
 		<text name="CPheadland">
 			<de>Vorgewende</de>
 			<en>Headland</en>
@@ -1382,6 +1366,14 @@ Italský překlad: JD7530
 			<fr>voies</fr>
 			<it>corsie</it> <!-- !!! -->
 			<cz>pruhy</cz>
+		</text>
+		<text name="CPactivated">
+			<de>aktiviert</de>
+			<en>activated</en>
+			<es>activado</es>
+			<fr>activé</fr>
+			<it>attivato</it>
+			<cz>activated</cz> <!-- !!! -->
 		</text>
 		<text name="CPdeactivated">
 			<de>deaktiviert</de>
@@ -1553,23 +1545,6 @@ Italský překlad: JD7530
 			<fr>point le plus proche</fr>
 			<it>punto più vicino</it>
 			<cz>na nejbližším bodě</cz>
-		</text>
-		
-		<text name="CPon">
-			<de>An</de>
-			<en>On</en>
-			<es>On</es>
-			<fr>On</fr>
-			<it>On</it>
-			<cz>zapnuto</cz>
-		</text>
-		<text name="CPoff">
-			<de>Aus</de>
-			<en>Off</en>
-			<es>Off</es>
-			<fr>Off</fr>
-			<it>Off</it>
-			<cz>vypnuto</cz>
 		</text>
 	</l10n>
 

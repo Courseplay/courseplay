@@ -429,9 +429,9 @@ function courseplay:loadHud(self)
 			--line 4 = return to first point
 			self.hudpage[8][1][4] = courseplay:get_locale(self, "CPreturnToFirstPoint");
 			if self.cp.returnToFirstPoint then
-				self.hudpage[8][2][4] = courseplay:get_locale(self, "CPyes");
+				self.hudpage[8][2][4] = courseplay:get_locale(self, "CPactivated");
 			else
-				self.hudpage[8][2][4] = courseplay:get_locale(self, "CPno");
+				self.hudpage[8][2][4] = courseplay:get_locale(self, "CPdeactivated");
 			end;
 
 			--line 5 = headland
@@ -480,9 +480,9 @@ function courseplay:loadHud(self)
 
 			self.hudpage[9][1][5] = courseplay:get_locale(self, "cpShovelStopAndGo");
 			if self.cp.shovelStopAndGo then
-				self.hudpage[9][2][5] = courseplay:get_locale(self, "CPon");
+				self.hudpage[9][2][5] = courseplay:get_locale(self, "CPactivated");
 			else
-				self.hudpage[9][2][5] = courseplay:get_locale(self, "CPoff");
+				self.hudpage[9][2][5] = courseplay:get_locale(self, "CPdeactivated");
 			end;
 		end;
 	end -- end if show_hud
