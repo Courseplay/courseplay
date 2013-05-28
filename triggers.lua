@@ -93,6 +93,14 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 						self.cp.currentTipTrigger = trigger;
 						return false
 					end;
+				elseif trigger.acceptedFillTypes ~= nil then
+					if trigger.isAlternativeTipTrigger then
+						courseplay:debug(string.format("%s: trigger %s (AlternativeTipTrigger) does not accept fruit (%s)", nameNum(self), tostring(triggerId), tostring(fruitType)), 1);
+					else
+						courseplay:debug(string.format("%s: trigger %s does not accept fruit (%s)", nameNum(self), tostring(triggerId), tostring(fruitType)), 1);
+					end;
+				else
+					courseplay:debug(string.format("%s: trigger %s does not have acceptedFillTypes (fruitType=%s)", nameNum(self), tostring(triggerId), tostring(fruitType)), 1);
 				end;
 			else
 				courseplay.confirmedNoneTriggers[transformId] = true
