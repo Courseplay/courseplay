@@ -295,12 +295,7 @@ function courseplay:generateCourse(self)
 				end;
 				
 				--last lane
-				if curPoint.x <= dimensions.minX then
-					curPoint.x = dimensions.minX + (workWidth/2);
-				end;
-				if curPoint.x >= dimensions.maxX then
-					curPoint.x = dimensions.maxX - (workWidth/2);
-				end;
+				curPoint.x = Utils.clamp(curPoint.x, dimensions.minX + (workWidth/2), dimensions.maxX - (workWidth/2));
 				
 				--is point in field?
 				--if courseplay:pointInPolygon(poly.points, curPoint.x, curPoint.z) then
@@ -383,12 +378,7 @@ function courseplay:generateCourse(self)
 				end;
 				
 				--last lane
-				if curPoint.z <= dimensions.minZ then
-					curPoint.z = dimensions.minZ + (workWidth/2);
-				end;
-				if curPoint.z >= dimensions.maxZ then
-					curPoint.z = dimensions.maxZ - (workWidth/2);
-				end;
+				curPoint.z = Utils.clamp(curPoint.z, dimensions.minZ + (workWidth/2), dimensions.maxZ - (workWidth/2));
 				
 				--is point in field?
 				--if courseplay:pointInPolygon(poly.points, curPoint.x, curPoint.z) then
