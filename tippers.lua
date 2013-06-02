@@ -566,6 +566,7 @@ function courseplay:unload_tippers(self)
 			local positionInSilo = -1;
 			local distanceToTrigger, bestTipReferencePoint = ctt:getTipDistanceFromTrailer(tipper);
 			local trailerInTipRange = g_currentMission:getIsTrailerInTipRange(tipper, ctt, bestTipReferencePoint);
+			courseplay:debug(nameNum(self)..": distanceToTrigger: "..tostring(distanceToTrigger).."  /bestTipReferencePoint: "..tostring(bestTipReferencePoint).." /trailerInTipRange: "..tostring(trailerInTipRange), 2);
 			local goForTipping = false;
 			
 			--BGA TRIGGER
@@ -647,6 +648,7 @@ function courseplay:unload_tippers(self)
 					if distanceToTrigger == 0 or ctt.bunkerSilo ~= nil then
 						tipper:toggleTipState(ctt,self.toggledTipState);
 						self.unloading_tipper = tipper
+						courseplay:debug(nameNum(self)..": toggleTipState: "..tostring(self.toggledTipState).."  /unloading_tipper= "..tostring(self.unloading_tipper.name), 2);
 					end
 				elseif tipper.tipState ~= Trailer.TIPSTATE_CLOSING then 
 					allowedToDrive = false
