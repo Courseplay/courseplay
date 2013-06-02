@@ -1023,7 +1023,7 @@ function courseplay:regulateTrafficSpeed(self,refSpeed,allowedToDrive)
 		if vehicle_in_front == nil then
 			self.traffic_vehicle_in_front = nil
 			self.CPnumCollidingVehicles = math.max(self.CPnumCollidingVehicles-1, 0);
-			return
+			return refSpeed
 		end
 		local x, y, z = getWorldTranslation(self.traffic_vehicle_in_front)
 		local x1, y1, z1 = worldToLocal(self.rootNode, x, y, z)
