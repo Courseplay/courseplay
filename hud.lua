@@ -335,12 +335,12 @@ function courseplay:loadHud(self)
 			self.hudpage[6][1][2] = courseplay:get_locale(self, "CPopenHud")
 			self.hudpage[6][1][3] = courseplay:get_locale(self, "CPWPs")
 			self.hudpage[6][1][4] = courseplay:get_locale(self, "Rul")
-			self.hudpage[6][1][5] = courseplay:get_locale(self, "CPDebugLevel")
+			self.hudpage[6][1][5] = courseplay:get_locale(self, "CPDebugChannels")
 
 			if self.realistic_driving then
-				self.hudpage[6][2][1] = courseplay:get_locale(self, "CPastarOn")
+				self.hudpage[6][2][1] = courseplay:get_locale(self, "CPactivated")
 			else
-				self.hudpage[6][2][1] = courseplay:get_locale(self, "CPastarOff");
+				self.hudpage[6][2][1] = courseplay:get_locale(self, "CPdeactivated");
 			end
 
 			if self.mouse_right_key_enabled then

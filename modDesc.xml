@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="12">
-	<version>3.41.0020</version>
+	<version>3.41.0021</version>
 	<author>Hummel (modhoster.de) / Lautschreier / Wolverin0815 / Bastian82 / Jakob Tischler / Thomas Gärtner</author>
 	<title>
 		<de>Courseplay</de>        
@@ -75,8 +75,9 @@ Italský překlad: JD7530
 	<multiplayer supported="true"/>
 	<iconFilename>
 		store.dds
- 	</iconFilename>
-	
+	</iconFilename>
+
+
 	<l10n>
 		<text name="PointRecordStart">
 			<en>Start course recording</en>
@@ -603,14 +604,6 @@ Italský překlad: JD7530
 			<it>Mostra punti di passaggio</it>
 			<cz>Zobrazit orientační body:</cz>
 		</text>
-		<text name="CPastarOn">
-			<en>on</en>
-			<de>eingeschaltet</de>
-			<fr>activé</fr>
-			<es>activado</es>
-			<it>attiva</it>
-			<cz>zapnuto</cz>
-		</text>
 		<text name="CPaStar">
 			<en>Pathfinding</en>
 			<de>Fruchtumfahrung</de>
@@ -618,14 +611,6 @@ Italský překlad: JD7530
 			<es>Evite los cultivos</es>
 			<it>Evita la coltura</it>
 			<cz>Objíždění porostu:</cz>
-		</text>
-		<text name="CPastarOff">
-			<en>off</en>
-			<de>ausgeschaltet</de>
-			<fr>désactivé</fr>
-			<es>desactivado</es>
-			<it>disattiva</it>
-			<cz>vypnuto</cz>
 		</text>
 		<text name="CPCombineOffset">
 			<en>Side offset:</en>
@@ -653,7 +638,7 @@ Italský překlad: JD7530
 		</text>
 		<text name="CPVerticalOffset">
 			<en>Vertical offset:</en>
-			<de>Vertikaler Abstand:</de>
+			<de>vertik. Abstand:</de>
 			<fr>Distance verticale:</fr>
 			<es>Distancia vertical:</es>
 			<it>Distanza verticale:</it>
@@ -1211,13 +1196,13 @@ Italský překlad: JD7530
 			<it>tasto destro del mouse</it>
 			<cz>pravé tlačítko myši</cz>
 		</text>
-		<text name="CPDebugLevel">
-			<en>Debug level</en>
-			<de>Debug-Level</de>
-			<fr>Niveau de débogage</fr>
-			<es>Depurar nivel</es>
-			<it>Livello di messa a punto</it>
-			<cz>Úroveň ladění:</cz>
+		<text name="CPDebugChannels">
+			<en>Debug channels</en>
+			<de>Debug-Channels</de>
+			<fr>Chaînes de débogage</fr>
+			<es>Canales de depuración</es>
+			<it>Canali di messa a punto</it>
+			<cz>Kanálů ladění:</cz>
 		</text>
 		<text name="CPHudOpen">
 			<en>Show Courseplay HUD</en>
@@ -1373,7 +1358,7 @@ Italský překlad: JD7530
 			<es>activado</es>
 			<fr>activé</fr>
 			<it>attivato</it>
-			<cz>activated</cz> <!-- !!! -->
+			<cz>zapnuto</cz>
 		</text>
 		<text name="CPdeactivated">
 			<de>deaktiviert</de>
