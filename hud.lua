@@ -149,8 +149,8 @@ function courseplay:loadHud(self)
 
 							self.hudpage[1][1][3] = courseplay:get_locale(self, "PointRecordInterrupt")
 
-							self.hudpage[1][1][4] = courseplay:get_locale(self, "CourseCrossingSet")							
-							self.hudpage[1][1][5] = courseplay:get_locale(self, "CourseDriveDirection")	.. " "
+							self.hudpage[1][1][4] = courseplay:get_locale(self, "CourseCrossingSet")
+							self.hudpage[1][1][5] = courseplay:get_locale(self, "CourseDriveDirection") .. " "
 							if not self.direction  then
 								self.hudpage[1][1][5] =  self.hudpage[1][1][5] .. courseplay:get_locale(self, "CourseDriveDirectionFor")
 							else
@@ -492,8 +492,6 @@ end
 function courseplay:showHud(self)
 	-- HUD
 	if self.show_hud and self.isEntered then
-		courseplay:setFontSettings("white", false);
-
 		courseplay:render_buttons(self, self.showHudInfoBase)
 
 		if self.ai_mode > 0 and self.ai_mode <= courseplay.numAiModes then
@@ -517,15 +515,27 @@ function courseplay:showHud(self)
 			self.hudinfo[3] = courseplay:get_locale(self, "CPNoWaypoint") -- "Keine Wegpunkte geladen"
 		end
 
-		local i = 0
+		courseplay:setFontSettings("white", false, "left");
 		for v, name in pairs(self.hudinfo) do
-			--local yspace = courseplay.hud.infoBasePosY + 0.077 - (i * 0.021); --ORIG: +0.077
 			renderText(courseplay.hud.infoBasePosX + 0.006, courseplay.hud.linesBottomPosY[v], 0.017, name); --ORIG: +0.003
-			i = i + 1
 		end
 
 
-		courseplay:setFontSettings("white", true);
+		--VERSION INFO
+		if courseplay.version ~= " [no version specified]" then
+			courseplay:setFontSettings("white", false, "right");
+			local versionText = Utils.splitString(".", courseplay.version);
+			renderText(courseplay.hud.visibleArea.x2 - 0.008, courseplay.hud.infoBasePosY + 0.015, 0.012, "v" .. versionText[1] .. "." .. versionText[2]);
+			if table.getn(versionText) < 3 then
+				renderText(courseplay.hud.visibleArea.x2 - 0.008, courseplay.hud.infoBasePosY + 0.003, 0.012, ".0000");
+			else
+				renderText(courseplay.hud.visibleArea.x2 - 0.008, courseplay.hud.infoBasePosY + 0.003, 0.012, "." .. versionText[3]);
+			end;
+		end;
+
+
+		--HUD TITLES
+		courseplay:setFontSettings("white", true, "left");
 		local hud_headline = courseplay.hud.hudTitles[self.showHudInfoBase + 1];
 		renderText(courseplay.hud.infoBasePosX + 0.060, courseplay.hud.infoBasePosY + 0.240, 0.021, hud_headline);
 		courseplay:HudPage(self);

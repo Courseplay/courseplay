@@ -62,7 +62,7 @@ function courseplay:renderInfoText(self)
 	end;
 end;
 
-function courseplay:setFontSettings(color, fontBold)
+function courseplay:setFontSettings(color, fontBold, align)
 	if color ~= nil and (type(color) == "string" or type(color) == "table") then
 		if type(color) == "string" and courseplay.hud.colors[color] ~= nil and table.getn(courseplay.hud.colors[color]) == 4 then
 			setTextColor(unpack(courseplay.hud.colors[color]));
@@ -77,5 +77,9 @@ function courseplay:setFontSettings(color, fontBold)
 		setTextBold(fontBold);
 	else
 		setTextBold(false);
+	end;
+
+	if align ~= nil and (align == "left" or align == "center" or align == "right") then
+		setTextAlignment(RenderText["ALIGN_" .. string.upper(align)]);
 	end;
 end;
