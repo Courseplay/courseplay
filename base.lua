@@ -478,9 +478,15 @@ function courseplay:load(xmlFile)
 	end;
 	
 	--Page 2: Course management
+	--course navigation
 	courseplay:register_button(self, 2, "navigate_up.dds",   "change_selected_course", -courseplay.hud.numLines, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesPosY[1] - 0.003,                       w24px, h24px, nil, -courseplay.hud.numLines*2, "self.cp.courseListPrev=true");
 	courseplay:register_button(self, 2, "navigate_down.dds", "change_selected_course",  courseplay.hud.numLines, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesPosY[courseplay.hud.numLines] - 0.003, w24px, h24px, nil,  courseplay.hud.numLines*2, "self.cp.courseListNext=true");
 
+	--reload courses
+	local rldPosY = (courseplay.hud.linesPosY[1] + courseplay.hud.linesPosY[courseplay.hud.numLines])/2 - 0.003;
+	courseplay:register_button(self, 2, "refresh.dds", "reloadCoursesFromXML", courseplay.hud.numLines, courseplay.hud.infoBasePosX + 0.285, rldPosY, w24px, h24px);
+	
+	--course actions
 	for i=1, courseplay.hud.numLines do
 		courseplay:register_button(self, -2, "folder.dds",      "load_course", i, courseplay.hud.infoBasePosX + 0.212, courseplay.hud.linesButtonPosY[i], w16px, h16px, i);
 		courseplay:register_button(self, -2, "folder_into.dds", "add_course",  i, courseplay.hud.infoBasePosX + 0.235, courseplay.hud.linesButtonPosY[i], w16px, h16px, i);
@@ -575,7 +581,7 @@ function courseplay:load(xmlFile)
 	courseplay:register_button(self, 9, "shovelPreUnloading.dds", "saveShovelStatus", 4, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[3] - 0.003, wTemp, hTemp, nil, 4);
 	courseplay:register_button(self, 9, "shovelUnloading.dds",    "saveShovelStatus", 5, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[4] - 0.003, wTemp, hTemp, nil, 5);
 
-	courseplay:register_button(self, 9, "blank.dds", "setShovelStopAndGo",   nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[5], lineButtonWidth, 0.015, nil, nil);
+	courseplay:register_button(self, 9, "blank.dds", "setShovelStopAndGo", nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[5], lineButtonWidth, 0.015, nil, nil);
 	--END Page 9
 
 

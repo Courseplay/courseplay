@@ -176,10 +176,11 @@ addModEventListener(courseplay_manager);
 -- based on PlayerJoinFix
 --
 -- SFM-Modding
--- @author  Manuel Leithner
--- @date:		01/08/11
--- @version:	v1.0
--- @history:	v1.0 - initial implementation 1.1 adaption to courseplay
+-- @author:  Manuel Leithner
+-- @date:    01/08/11
+-- @version: v1.1
+-- @history: v1.0 - initial implementation
+--           v1.1 - adaption to courseplay
 --
 
 local modName = g_currentModName;

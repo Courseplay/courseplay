@@ -55,7 +55,7 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
 				end
 			end
 		end
-		id = id * 1 -- ?? Why ??
+		id = id * 1 -- equivalent to tonumber()
 
 		-- negative values mean that add_course_end is true
 		if id < 1 then

@@ -653,3 +653,22 @@ end;
 function courseplay:setStartAtFirstPoint(self)
 	self.cp.startAtFirstPoint = not self.cp.startAtFirstPoint;
 end;
+
+function courseplay:reloadCoursesFromXML(self)
+	courseplay:debug("reloadCoursesFromXML()", 8);
+	g_currentMission.courseplay_courses = nil;
+	g_currentMission.courseplay_courses = {};
+	courseplay_coursesUnsort = {};
+	if g_server ~= nil then
+		g_currentMission.courseplay_courses = courseplay_manager:load_courses();
+		courseplay:debug(tableShow(g_currentMission.courseplay_courses, "g_cM courseplay_courses", 8), 8);
+		courseplay:debug("g_currentMission.courseplay_courses = courseplay_manager:load_courses()", 8);
+		if not self.drive then
+			local loadedCoursesBackup = self.loaded_courses;
+			courseplay:reset_course(self);
+			self.loaded_courses = loadedCoursesBackup;
+			courseplay:reload_courses(self, true);
+			courseplay:debug("courseplay:reload_courses(self, true)", 8);
+		end;
+	end
+end;
