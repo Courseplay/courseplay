@@ -67,6 +67,12 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 			local trigger = triggerObjects[transformId];
 
 			if trigger ~= nil then
+				if trigger.bunkerSilo ~= nil and trigger.bunkerSilo.state ~= 0 then 
+					courseplay:debug(nameNum(self) .. ": bunkerSilo.state ~= 0 -> ignoring trigger", 1);
+					return true
+				end	
+
+
 				local triggerId = trigger.triggerId;
 				if triggerId == nil then
 					triggerId = trigger.tipTriggerId;
