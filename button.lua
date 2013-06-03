@@ -87,7 +87,11 @@ function courseplay:render_buttons(self, page)
 					button.show = false;
 				end;
 			end;
-			
+
+			if button.page == -2 then
+				button.show = self.hudpage[2][1][button.parameter] ~= nil;
+			end;
+
 			--if button.show == nil or (button.show ~= nil and button.show) then
 			if courseplay:nilOrBool(button.show, true) then
 				local currentColor = courseplay:getButtonColor(button);
@@ -116,7 +120,7 @@ function courseplay:render_buttons(self, page)
 				if not courseplay:colorsMatch(currentColor, targetColor) then
 					courseplay:setButtonColor(button, targetColor)
 				end;
-			
+
 				button.overlay:render();
 			end;
 		end

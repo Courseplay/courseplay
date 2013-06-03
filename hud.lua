@@ -189,11 +189,11 @@ function courseplay:loadHud(self)
 
 			local row = 1
 			for i = start_course_num, end_course_num, 1 do
-				for _, button in pairs(self.cp.buttons) do
+				--[[for _, button in pairs(self.cp.buttons) do
 					if button.page == -2 and button.row == row then
 						button.overlay:render()
 					end
-				end
+				end]]
 				local course_name = g_currentMission.courseplay_courses[i + 1].name
 
 				if course_name == nil or course_name == "" then
@@ -331,11 +331,11 @@ function courseplay:loadHud(self)
 
 		--Page 6: General settings
 		elseif self.showHudInfoBase == 6 then
-
 			self.hudpage[6][1][1] = courseplay:get_locale(self, "CPaStar")
-
 			self.hudpage[6][1][2] = courseplay:get_locale(self, "CPopenHud")
 			self.hudpage[6][1][3] = courseplay:get_locale(self, "CPWPs")
+			self.hudpage[6][1][4] = courseplay:get_locale(self, "Rul")
+			self.hudpage[6][1][5] = courseplay:get_locale(self, "CPDebugLevel")
 
 			if self.realistic_driving then
 				self.hudpage[6][2][1] = courseplay:get_locale(self, "CPastarOn")
@@ -350,9 +350,6 @@ function courseplay:loadHud(self)
 				local hudKey = string.lower(tostring(InputBinding.getKeyNamesOfDigitalAction(InputBinding.CP_Hud)):split(" ")[2])
 				self.hudpage[6][2][2] = hudMod:gsub("^%l", string.upper) .. " + " .. hudKey:gsub("^%l", string.upper)
 			end
-
-			self.hudpage[6][1][4] = courseplay:get_locale(self, "Rul")
-			self.hudpage[6][1][5] = courseplay:get_locale(self, "CPDebugLevel")
 
 			self.hudpage[6][2][3] = courseplay:get_locale(self, string.format("WaypointMode%d", self.waypointMode));
 			self.hudpage[6][2][4] = courseplay:get_locale(self, "RulMode" .. string.format("%d", self.RulMode));
