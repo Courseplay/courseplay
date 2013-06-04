@@ -67,7 +67,7 @@ function courseplay:update_combines(self)
 		return
 	end
 
-	courseplay:debug(string.format("combines total: %d ", table.getn(self.reachable_combines)), 4)
+	courseplay:debug(string.format("%s: combines total: %d", nameNum(self), table.getn(self.reachable_combines)), 4)
 
 	local x, y, z = getWorldTranslation(self.aiTractorDirectionNode)
 	local hx, hy, hz = localToWorld(self.aiTractorDirectionNode, -2, 0, 0)
@@ -76,7 +76,7 @@ function courseplay:update_combines(self)
 
 	local found_combines = courseplay:find_combines(self)
 
-	courseplay:debug(string.format("combines found: %d ", table.getn(found_combines)), 4)
+	courseplay:debug(string.format("%s: combines found: %d", nameNum(self), table.getn(found_combines)), 4)
 	-- go throuh found
 	for k, combine in pairs(found_combines) do
 		lx, ly, lz = getWorldTranslation(combine.rootNode)
@@ -103,7 +103,7 @@ end
 
 function courseplay:register_at_combine(self, combine)
 	local curFile = "combines.lua"
-	courseplay:debug(string.format("%s(%i): %s: registering at combine %s", curFile, debug.getinfo(1).currentline, nameNum(self), combine.name), 4)
+	courseplay:debug(string.format("%s: registering at combine %s", nameNum(self), tostring(combine.name)), 4)
 	--courseplay:debug(tableShow(combine, tostring(combine.name), 4), 4)
 	local num_allowed_courseplayers = 1
 	self.calculated_course = false
@@ -173,7 +173,7 @@ function courseplay:register_at_combine(self, combine)
 		combine.wants_courseplayer = false
 	end
 
-	courseplay:debug(string.format("%s(%i): %s is being checked in with %s", curFile, debug.getinfo(1).currentline, nameNum(self), combine.name), 4)
+	courseplay:debug(string.format("%s is being checked in with %s", nameNum(self), tostring(combine.name)), 4)
 	combine.isCheckedIn = 1;
 	self.distanceToCombine = nil
 	self.combineID = nil
@@ -257,7 +257,7 @@ function courseplay:calculateInitialCombineOffset(self, combine)
 	local curFile = "combines.lua";
 	local leftMarker = nil
 	local currentCutter = nil
-	combine.cp.lmX, combine.cp.rmX = nil, nil;
+	combine.cp.lmX, combine.cp.rmX = 1.5, -1.5;
 	--print("run initial offset")
 	if combine.attachedCutters ~= nil then
 		for cutter, implement in pairs(combine.attachedCutters) do
@@ -309,11 +309,11 @@ function courseplay:calculateInitialCombineOffset(self, combine)
 	--combine // combine_offset is in auto mode
 	elseif not combine.cp.isChopper and combine.currentPipeState == 2 and combine.pipeRaycastNode ~= nil then -- pipe is extended
 		self.combine_offset = combineToPrnX;
-		courseplay:debug(string.format("%s(%i): %s @ %s: using combineToPrnX=%f, self.combine_offset=%f", curFile, debug.getinfo(1).currentline, nameNum(self), combine.name, combineToPrnX, self.combine_offset), 4)
+		courseplay:debug(string.format("%s(%i): %s @ %s: using combineToPrnX=%f, self.combine_offset=%f", curFile, debug.getinfo(1).currentline, nameNum(self), tostring(combine.name), combineToPrnX, self.combine_offset), 4)
 	elseif not combine.cp.isChopper and combine.pipeRaycastNode ~= nil then --pipe is closed
 		if getParent(combine.pipeRaycastNode) == combine.rootNode then -- pipeRaycastNode is direct child of combine.root
 			self.combine_offset = prnX;
-			courseplay:debug(string.format("%s(%i): %s @ %s: combine.root > pipeRaycastNode / self.combine_offset=prnX=%f", curFile, debug.getinfo(1).currentline, nameNum(self), combine.name, self.combine_offset), 4)
+			courseplay:debug(string.format("%s(%i): %s @ %s: combine.root > pipeRaycastNode / self.combine_offset=prnX=%f", curFile, debug.getinfo(1).currentline, nameNum(self), tostring(combine.name), self.combine_offset), 4)
 		elseif getParent(getParent(combine.pipeRaycastNode)) == combine.rootNode then --pipeRaycastNode is direct child of pipe is direct child of combine.root
 			local pipeX, pipeY, pipeZ = getTranslation(getParent(combine.pipeRaycastNode))
 			self.combine_offset = pipeX - prnZ;
@@ -321,14 +321,14 @@ function courseplay:calculateInitialCombineOffset(self, combine)
 			if prnZ == 0 or combine.name == "Grimme Rootster 604" then
 				self.combine_offset = pipeX - prnY;
 			end
-			courseplay:debug(string.format("%s(%i): %s @ %s: combine.root > pipe > pipeRaycastNode / self.combine_offset=pipeX-prnX=%f", curFile, debug.getinfo(1).currentline, nameNum(self), combine.name, self.combine_offset), 4)
+			courseplay:debug(string.format("%s(%i): %s @ %s: combine.root > pipe > pipeRaycastNode / self.combine_offset=pipeX-prnX=%f", curFile, debug.getinfo(1).currentline, nameNum(self), tostring(combine.name), self.combine_offset), 4)
 		elseif combineToPrnX > combine.cp.lmX then
 			self.combine_offset = combineToPrnX + (5 * combine.cp.pipeSide);
-			courseplay:debug(string.format("%s(%i): %s @ %s: using combineToPrnX=%f, self.combine_offset=%f", curFile, debug.getinfo(1).currentline, nameNum(self), combine.name, combineToPrnX, self.combine_offset), 4)
+			courseplay:debug(string.format("%s(%i): %s @ %s: using combineToPrnX=%f, self.combine_offset=%f", curFile, debug.getinfo(1).currentline, nameNum(self), tostring(combine.name), combineToPrnX, self.combine_offset), 4)
 		elseif combine.cp.lmX ~= nil then
 			if combine.cp.lmX > 0 then --use leftMarker
 				self.combine_offset = combine.cp.lmX + 2.5;
-				courseplay:debug(string.format("%s(%i): %s @ %s: using leftMarker+2.5, self.combine_offset=%f", curFile, debug.getinfo(1).currentline, nameNum(self), combine.name, self.combine_offset), 4);
+				courseplay:debug(string.format("%s(%i): %s @ %s: using leftMarker+2.5, self.combine_offset=%f", curFile, debug.getinfo(1).currentline, nameNum(self), tostring(combine.name), self.combine_offset), 4);
 			end;
 		else --BACKUP
 			self.combine_offset = 8 * combine.cp.pipeSide;
@@ -336,7 +336,7 @@ function courseplay:calculateInitialCombineOffset(self, combine)
 	elseif combine.cp.isChopper then
 		courseplay:debug(string.format("%s(%i): %s @ %s: combine.forced_side=%s", curFile, debug.getinfo(1).currentline, nameNum(self), combine.name, tostring(combine.forced_side)), 4);
 		if combine.forced_side ~= nil then
-			courseplay:debug(string.format("%s(%i): %s @ %s: combine.forced_side=%s, going by forced_side", curFile, debug.getinfo(1).currentline, nameNum(self), combine.name, combine.forced_side), 4);
+			courseplay:debug(string.format("%s(%i): %s @ %s: combine.forced_side=%s, going by forced_side", curFile, debug.getinfo(1).currentline, nameNum(self), tostring(combine.name), combine.forced_side), 4);
 			if combine.forced_side == "left" then
 				self.sideToDrive = "left";
 				if combine.cp.lmX ~= nil then
@@ -353,7 +353,7 @@ function courseplay:calculateInitialCombineOffset(self, combine)
 				end;
 			end
 		else
-			courseplay:debug(string.format("%s(%i): %s @ %s: combine.forced_side=%s, going by fruit", curFile, debug.getinfo(1).currentline, nameNum(self), combine.name, tostring(combine.forced_side)), 4);
+			courseplay:debug(string.format("%s(%i): %s @ %s: combine.forced_side=%s, going by fruit", curFile, debug.getinfo(1).currentline, nameNum(self), tostring(combine.name), tostring(combine.forced_side)), 4);
 			local fruitSide = courseplay:side_to_drive(self, combine, 5);
 			if fruitSide == "right" then
 				if combine.cp.lmX ~= nil then
