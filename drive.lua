@@ -465,11 +465,11 @@ function courseplay:drive(self, dt)
 			elseif currentFuelPercentage < 20 and not self.isFuelFilling then
 				courseplay:setGlobalInfoText(self, courseplay:get_locale(self, courseplay.locales.CPFuelWarning), -1);
 				if self.fuelFillTriggers[1] then
-					allowedToDrive = false;
+					allowedToDrive = courseplay:brakeToStop(self);
 					self:setIsFuelFilling(true, self.fuelFillTriggers[1].isEnabled, false);
 				end
 			elseif self.isFuelFilling and currentFuelPercentage < 99.9 then
-				allowedToDrive = false;
+				allowedToDrive = courseplay:brakeToStop(self);
 				courseplay:setGlobalInfoText(self, courseplay:get_locale(self, courseplay.locales.CPRefueling));
 			end;
 		end;
@@ -575,7 +575,7 @@ function courseplay:drive(self, dt)
 	allowedToDrive = courseplay:check_traffic(self, true, allowedToDrive)
 	
 	if self.cp.waitForTurnTime > self.timer then
-		allowedToDrive = false
+		allowedToDrive = courseplay:brakeToStop(self)
 	end 
 
 	local WpUnload = false
@@ -716,6 +716,10 @@ function courseplay:drive(self, dt)
 		fwd = false
 	else
 		fwd = true
+	end
+
+	if self.movingDirection == 0 then
+		self.cpTrafficBrake = false
 	end
 
 	if self.cpTrafficBrake then
@@ -1016,7 +1020,9 @@ function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive)
 end;
 
 function courseplay:regulateTrafficSpeed(self,refSpeed,allowedToDrive)
-	self.cpTrafficBrake = false
+	if not allowedToDrive then
+		self.cpTrafficBrake = false
+	end
 	if self.traffic_vehicle_in_front ~= nil then
 		local vehicle_in_front = g_currentMission.nodeToVehicle[self.traffic_vehicle_in_front];
 		local vehicleBehind = false
@@ -1043,4 +1049,14 @@ function courseplay:regulateTrafficSpeed(self,refSpeed,allowedToDrive)
 		end
 	end
 	return refSpeed
+end
+
+function courseplay:brakeToStop(self)
+	if self.lastSpeedReal > 1/3600 then
+		self.cpTrafficBrake = true
+		return true
+	else
+		self.cpTrafficBrake = false
+		return false
+	end
 end

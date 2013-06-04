@@ -665,7 +665,7 @@ function courseplay:unload_combine(self, dt)
 				combine.cp.waitingForTrailerToUnload = true
 			end
 		elseif distance < 100 and mode == 2 then
-			allowedToDrive = false
+			allowedToDrive = courseplay:brakeToStop(self)
 		end
 	end
 	if combine_turning and distance < 20 then
@@ -894,7 +894,7 @@ function courseplay:unload_combine(self, dt)
 		local lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, currentX, currentY, currentZ)
 		dod = Utils.vector2Length(lx, lz)
 		if dod < 2 or frontTractor.ai_state ~= 3 then
-			allowedToDrive = false
+			allowedToDrive = courseplay:brakeToStop(self)
 		end
 		if combine.cp.isSugarBeetLoader then
 			if distance > 50 then
@@ -917,12 +917,12 @@ function courseplay:unload_combine(self, dt)
 
 	if currentX == nil or currentZ == nil then
 		self.cp.infoText = courseplay:get_locale(self, "CPWaitForWaypoint") -- "Warte bis ich neuen Wegpunkt habe"
-		allowedToDrive = false
+		allowedToDrive = courseplay:brakeToStop(self)
 	end
 
 	if self.forced_to_stop then
 		self.cp.infoText = courseplay:get_locale(self, "CPCombineWantsMeToStop") -- "Drescher sagt ich soll anhalten."
-		allowedToDrive = false
+		allowedToDrive = courseplay:brakeToStop(self)
 	end
 
 	if self.showWaterWarning then
@@ -953,21 +953,27 @@ function courseplay:unload_combine(self, dt)
 
 	if g_server ~= nil then
 		local target_x, target_z = nil, nil
+		local moveForwards = true
 		if currentX ~= nil and currentZ ~= nil then
 			target_x, target_z = AIVehicleUtil.getDriveDirection(self.aiTractorDirectionNode, currentX, y, currentZ)
 		else
 			allowedToDrive = false
 		end
-
+		
 		if not allowedToDrive then
 			target_x, target_z = 0, 1
 			self.motor:setSpeedLevel(0, false);
 			AIVehicleUtil.driveInDirection(self, dt, self.steering_angle, 0, 0, 28, false, moveForwards, lx, lz)
 		end
-
+		if self.movingDirection == 0 then
+			self.cpTrafficBrake = false
+		end
+		if self.cpTrafficBrake then
+			moveForwards = false
+		end
 
 		courseplay:set_traffc_collision(self, target_x, target_z)
-		AIVehicleUtil.driveInDirection(self, dt, self.steering_angle, 0.5, 0.5, 8, allowedToDrive, true, target_x, target_z, self.sl, 0.4)
+		AIVehicleUtil.driveInDirection(self, dt, self.steering_angle, 0.5, 0.5, 8, allowedToDrive, moveForwards, target_x, target_z, self.sl, 0.4)
 
 		-- new
 	end

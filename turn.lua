@@ -203,6 +203,9 @@ function courseplay:turn(self, dt) --!!!
 			self.cp.turnStage = 4;
 			moveForwards = true;
 		end;
+		if self.cpTrafficBrake then
+			moveForwards = false;
+		end
 
 		AIVehicleUtil.driveInDirection(self, dt, 25, 0.5, 0.5, 20, true, moveForwards, lx, lz, self.sl, 0.9);
 		
