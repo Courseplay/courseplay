@@ -83,7 +83,15 @@ function courseplay:turn(self, dt) --!!!
 				end
 				if -dot < moveback  then
 					self.cp.turnStage = 0;
-					self.recordnumber = self.recordnumber +1
+					local _,_,z1 = worldToLocal(self.rootNode,self.Waypoints[self.recordnumber+1].cx, backY, self.Waypoints[self.recordnumber+1].cz)
+					local _,_,z2 = worldToLocal(self.rootNode,self.Waypoints[self.recordnumber+1].cx, backY, self.Waypoints[self.recordnumber+1].cz)
+					if z1 > 0 then
+						self.recordnumber = self.recordnumber +1
+					elseif z2 > 0 then
+						self.recordnumber = self.recordnumber +2
+					else
+						self.recordnumber = self.recordnumber +3
+					end
 					courseplay:lowerImplements(self, true, true)
 					self.cp.turnTimer = 8000
 					self.cp.isTurning = nil 

@@ -457,9 +457,11 @@ function courseplay:setMarkers(self, object)
 	if self.cp.aiFrontMarker == nil  or object.cp.aiFrontMarker > self.cp.aiFrontMarker then
 		self.cp.aiFrontMarker = object.cp.aiFrontMarker
 	end
+
 	if self.cp.aiFrontMarker < -7 then
-		self.cp.aiFrontMarker = -7
+		self.aiToolExtraTargetMoveBack = math.abs(self.cp.aiFrontMarker)
 	end
+	courseplay:debug(nameNum(self) .. " self.turnEndBackDistance: "..tostring(self.turnEndBackDistance).."  self.aiToolExtraTargetMoveBack: "..tostring(self.aiToolExtraTargetMoveBack),6); 
 	courseplay:debug(nameNum(self) .. " setMarkers(): self.cp.backMarkerOffset: "..tostring(self.cp.backMarkerOffset).."  self.cp.aiFrontMarker: "..tostring(self.cp.aiFrontMarker), 6);
 end
 
