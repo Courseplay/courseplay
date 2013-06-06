@@ -126,12 +126,17 @@ function cp_setupGlobalData()
 	end;
 
 	courseplay.globalInfoText = {
-		fontSize = 0.02;
-		posX = 0.035;
-		backgroundImg = "dataS2/menu/white.png";
-		backgroundPadding = 0.005;
-		backgroundX = 0.035 - 0.005;
+		fontSize = 0.02,
+		posX = 0.035,
+		backgroundImg = "dataS2/menu/white.png",
+		backgroundPadding = 0.005,
+		backgroundX = 0.035 - 0.005,
+		levelColors = {}
 	};
+	courseplay.globalInfoText.levelColors["0"]  = courseplay.hud.colors.hover;
+	courseplay.globalInfoText.levelColors["1"]  = courseplay.hud.colors.activeGreen;
+	courseplay.globalInfoText.levelColors["-1"] = courseplay.hud.colors.activeRed;
+	courseplay.globalInfoText.levelColors["-2"] = courseplay.hud.colors.closeRed;
 
 	loadSample(courseplay.hud.clickSound, Utils.getFilename("sounds/cpClickSound.wav", courseplay.path), false);
 
