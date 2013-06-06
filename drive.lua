@@ -1046,6 +1046,7 @@ function courseplay:regulateTrafficSpeed(self,refSpeed,allowedToDrive)
 				if (self.lastSpeed*3600) - (vehicle_in_front.lastSpeedReal*3600) > 15 or z1 < 3 then
 					self.cpTrafficBrake = true
 				else
+					self.cpTrafficBrake = false
 					return math.min(vehicle_in_front.lastSpeedReal,refSpeed)
 				end
 			end
