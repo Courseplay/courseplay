@@ -544,7 +544,7 @@ Italský překlad: JD7530
 		<text name="CPneedsToBeUnloaded">
 			<en>needs to be unloaded.</en>
 			<de>muss entladen werden.</de>
-			<fr>needs to be unloaded.</fr> <!-- !!! -->
+			<fr>a besoin d'être vidé.</fr>
 			<es>needs to be unloaded.</es> <!-- !!! -->
 			<it>needs to be unloaded.</it> <!-- !!! -->
 			<cz>needs to be unloaded.</cz> <!-- !!! -->
@@ -552,7 +552,7 @@ Italský překlad: JD7530
 		<text name="CPworkToolNeedsToBeRefilled">
 			<en>work tool needs to be refilled.</en>
 			<de>Gerät muss aufgefüllt werden.</de>
-			<fr>work tool needs to be refilled.</fr> <!-- !!! -->
+			<fr>l'outil a besoin d'être rechargé.</fr>
 			<es>work tool needs to be refilled.</es> <!-- !!! -->
 			<it>work tool needs to be refilled.</it> <!-- !!! -->
 			<cz>work tool needs to be refilled.</cz> <!-- !!! -->
