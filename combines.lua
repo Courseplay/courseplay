@@ -10,7 +10,7 @@ function courseplay:find_combines(self)
 			vehicle.cp = {};
 		end;
 		
-		if vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable or vehicle.cp.isSugarBeetLoader or courseplay:isAttachedCombine(vehicle) then
+		if vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable or vehicle.cp.isSugarBeetLoader or (courseplay:isAttachedCombine(vehicle) and vehicle.attacherVehicle ~= nil and not Utils.endsWith(vehicle.configFileName, "poettingerMex6.xml")) then
 			table.insert(found_combines, vehicle);
 		end;
 	end;
