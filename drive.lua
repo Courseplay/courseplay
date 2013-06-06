@@ -676,11 +676,7 @@ function courseplay:drive(self, dt)
 	--bunkerSilo speed by Thomas Gärtner
 	if self.cp.currentTipTrigger ~= nil then
 		if self.cp.currentTipTrigger.bunkerSilo ~= nil then
-			if self.unload_speed ~= nil then
-				refSpeed = self.unload_speed;
-			else
-				refSpeed = 6 / 3600;
-			end;
+			refSpeed = Utils.getNoNil(self.unload_speed, 3/3600);
 		else
 			refSpeed = 9 / 3600;
 		end
@@ -985,7 +981,12 @@ function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive)
 			local canRefill = (activeToolFillLevel ~= nil and activeToolFillLevel < driveOn) and (activeTool.sprayerFillTriggers ~= nil and table.getn(activeTool.sprayerFillTriggers) > 0);
 			--ManureLager: activeTool.ReFillTrigger has to be nil so it doesn't refill
 			if self.ai_mode == 8 then
-				canRefill = canRefill and activeTool.ReFillTrigger == nil;
+				canRefill = canRefill and activeTool.ReFillTrigger == nil and not self.Waypoints[self.recordnumber].wait and not self.Waypoints[self.recordnumber-1].wait and not self.Waypoints[self.recordnumber-2].wait;
+
+				if activeTool.isSpreaderInRange ~= nil and activeTool.isSpreaderInRange.manureTriggerc ~= nil then
+					canRefill = false;
+				end;
+
 				--TODO: what to do when transfering from one ManureLager to another?
 			end;
 			
@@ -993,14 +994,15 @@ function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive)
 				allowedToDrive = false;
 				--courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
 				courseplay:handleSpecialTools(self,activeTool,nil,nil,nil,allowedToDrive,false,false)
-				self.cp.infoText = string.format(courseplay:get_locale(self, "CPloading"), self.cp.tipperFillLevel, self.cp.tipperCapacity);
 				local sprayer = activeTool.sprayerFillTriggers[1];
 				activeTool:setIsSprayerFilling(true, false);
 				
 				if sprayer.trailerInTrigger == activeTool then --Feldrand-Container Guellebomber
 					sprayer.fill = true;
 				end;
-			elseif not self.cp.stopForLoading then
+
+				self.cp.infoText = string.format(courseplay:get_locale(self, "CPloading"), self.cp.tipperFillLevel, self.cp.tipperCapacity);
+			elseif self.loaded or not self.cp.stopForLoading then
 				activeTool:setIsSprayerFilling(false, false);
 				courseplay:handleSpecialTools(self,activeTool,nil,nil,nil,allowedToDrive,false,false)
 			end;
@@ -1008,6 +1010,7 @@ function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive)
 			if fill_level < driveOn and activeTool.sowingMachineFillTriggers[1] ~= nil then
 				activeTool:setIsSowingMachineFilling(true, activeTool.sowingMachineFillTriggers[1].isEnabled, false);
 				allowedToDrive = false;
+				self.cp.infoText = string.format(courseplay:get_locale(self, "CPloading"), activeTool.fillLevel, activeTool.capacity);
 			end;
 		end;
 		if self.cp.stopForLoading then

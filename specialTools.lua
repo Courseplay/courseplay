@@ -104,11 +104,16 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 				end				
 				if workTool.isSpreaderInRange ~= nil then
 					local fillable = workTool.isSpreaderInRange
-					fillable.attacherVehicle.cp.stopForLoading = true
+					local fillableHasAttacherVehicle = fillable.attacherVehicle ~= nil;
+					if fillableHasAttacherVehicle then
+						fillable.attacherVehicle.cp.stopForLoading = true;
+					end;
 					if fillable.fillLevel >= fillable.capacity  or workTool.fillLevel <= 5 then
 						workTool:setIsTurnedOn(false)
-						fillable.attacherVehicle.cp.stopForLoading = false
-						fillable.attacherVehicle.wait = false
+						if fillableHasAttacherVehicle then
+							fillable.attacherVehicle.cp.stopForLoading = false
+							fillable.attacherVehicle.wait = false
+						end;
 					elseif not workTool.isTurnedOn then
 						workTool:setIsTurnedOn(true)
 					end
