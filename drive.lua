@@ -624,6 +624,11 @@ function courseplay:drive(self, dt)
 		-- unload active tipper if given
 		return;
 	end
+
+	if self.cpTrafficBrake and self.lastSpeedReal < 1/3600 then
+		self.cpTrafficBrake = false
+	end
+
 	if self.cp.isTurning ~= nil then
 		courseplay:turn(self, dt);
 		return
@@ -712,10 +717,6 @@ function courseplay:drive(self, dt)
 		fwd = false
 	else
 		fwd = true
-	end
-
-	if self.movingDirection == 0 then
-		self.cpTrafficBrake = false
 	end
 
 	if self.cpTrafficBrake then
