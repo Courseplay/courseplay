@@ -483,8 +483,7 @@ function courseplay:load(xmlFile)
 	courseplay:register_button(self, 2, "navigate_down.dds", "change_selected_course",  courseplay.hud.numLines, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesPosY[courseplay.hud.numLines] - 0.003, w24px, h24px, nil,  courseplay.hud.numLines*2, "self.cp.courseListNext=true");
 
 	--reload courses
-	local rldPosY = (courseplay.hud.linesPosY[1] + courseplay.hud.linesPosY[courseplay.hud.numLines])/2 - 0.003;
-	courseplay:register_button(self, 2, "refresh.dds", "reloadCoursesFromXML", courseplay.hud.numLines, courseplay.hud.infoBasePosX + 0.285, rldPosY, w24px, h24px);
+	courseplay:register_button(self, 2, "refresh.dds", "reloadCoursesFromXML", nil, courseplay.hud.infoBasePosX + 0.258, courseplay.hud.infoBasePosY + 0.24, w16px, h16px);
 	
 	--course actions
 	for i=1, courseplay.hud.numLines do
