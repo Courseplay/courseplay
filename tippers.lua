@@ -363,7 +363,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 					table.insert(self.cp.tippersWithCovers, data);
 				end;
 
-			elseif t.setPlane ~= nil and t.currentPlaneId == nil and t.currentPlaneSetId == nil then
+			elseif t.setPlane ~= nil and type(t.setPlane) == "function" and t.currentPlaneId == nil and t.currentPlaneSetId == nil then
 				--NOTE: setPlane is both in SMK and in chaffCover.lua -> check for currentPlaneId, currentPlaneSetId (chaffCover) nil
 				
 				courseplay:debug(string.format("Implement \"%s\" has a cover (setPlane ~= nil)", tostring(t.name)), 6);
@@ -374,7 +374,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 				};
 				table.insert(self.cp.tippersWithCovers, data);
 			
-			elseif t.planeOpen ~= nil then
+			elseif t.planeOpen ~= nil and t.animationParts[3] ~= nil and t.animationParts[3].offSet ~= nil and t.animationParts[3].animDuration ~= nil then
 				courseplay:debug(string.format("Implement \"%s\" has a cover (planeOpen ~= nil)", tostring(t.name)), 6);
 				self.cp.tipperHasCover = true;
 				local data = {
@@ -383,7 +383,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 				};
 				table.insert(self.cp.tippersWithCovers, data);
 			
-			elseif t.setCoverState ~= nil and t.cover ~= nil and t.cover.opened ~= nil and t.cover.closed ~= nil and t.cover.state ~= nil then
+			elseif t.setCoverState ~= nil and type(t.setCoverState) == "function" and t.cover ~= nil and t.cover.opened ~= nil and t.cover.closed ~= nil and t.cover.state ~= nil then
 				courseplay:debug(string.format("Implement \"%s\" has a cover (setCoverState ~= nil)", tostring(t.name)), 6);
 				self.cp.tipperHasCover = true;
 				local data = {
