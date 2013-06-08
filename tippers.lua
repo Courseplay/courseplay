@@ -452,9 +452,11 @@ function courseplay:setMarkers(self, object)
 
 		local _, _, distToFuchs = worldToLocal(self.rootNode, x, y, z);
 		self.cp.backMarkerOffset = distToFuchs + valveOffsetFromRootNode + caOffsetFromValve;
+		object.cp.aiFrontMarker = self.cp.backMarkerOffset - 2.5;
+		self.cp.aiFrontMarker = object.cp.aiFrontMarker;
 	end;
 
-	if self.cp.aiFrontMarker == nil  or object.cp.aiFrontMarker > self.cp.aiFrontMarker then
+	if self.cp.aiFrontMarker == nil or object.cp.aiFrontMarker > self.cp.aiFrontMarker then
 		self.cp.aiFrontMarker = object.cp.aiFrontMarker
 	end
 
