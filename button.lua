@@ -92,12 +92,17 @@ function courseplay:render_buttons(self, page)
 			--course management buttons
 			if button.page == -2 then
 				button.show = self.hudpage[2][1][button.parameter] ~= nil;
-
+			
+			--save course button
+			elseif button.function_to_call == "input_course_name" then
+				button.show = self.play and not self.record and not self.record_pause and self.Waypoints ~= nil and table.getn(self.Waypoints) ~= 0;
+			
 			--offset
 			elseif button.function_to_call == "changeWpOffsetX" or button.function_to_call == "changeWpOffsetZ" then
 				button.show = self.ai_mode == 4 or self.ai_mode == 6;
 			end;
-			--if button.show == nil or (button.show ~= nil and button.show) then
+
+
 			if courseplay:nilOrBool(button.show, true) then
 				local currentColor = courseplay:getButtonColor(button);
 				local targetColor = currentColor;
