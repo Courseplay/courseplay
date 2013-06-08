@@ -1,9 +1,9 @@
 --[[
 @title:     Course Generation for Courseplay
 @authors:   Jakob Tischler, skyDancer
-@version:   0.6
+@version:   0.61
 @date:      09 Feb 2013
-@updated:   23 May 2013
+@updated:   08 Jun 2013
 
 @copyright: No reproduction, usage or copying without the explicit permission by the author allowed.
 
@@ -551,6 +551,7 @@ function courseplay:generateCourse(self)
 		
 	end; --END for i in numPoints
 	
+	local lastFivePoints = {};
 	if self.cp.returnToFirstPoint then
 		fieldWorkCourse[table.getn(fieldWorkCourse)].wait = false;
 		
@@ -570,12 +571,12 @@ function courseplay:generateCourse(self)
 				ridgeMarker = 0,
 				generated = true
 			};
-			table.insert(fieldWorkCourse, point);
+			table.insert(lastFivePoints, point);
 		end;
 	end;
-	
-	
-	
+
+
+
 	---############################################################################
 	-- (5) ROTATE HEADLAND COURSES
 	-------------------------------------------------------------------------------
@@ -610,13 +611,14 @@ function courseplay:generateCourse(self)
 			end;
 		end;
 	end;
-	
 
-	
+
+
 	---############################################################################
 	-- (6) CONCATENATE HEADLAND COURSE and FIELDWORK COURSE
 	-------------------------------------------------------------------------------
 	self.Waypoints = {};
+	
 	if numHeadlandLanesCreated > 0 then
 		if self.cp.headland.order == "before" then
 			for i=1, table.getn(self.cp.headland.lanes) do
@@ -633,8 +635,12 @@ function courseplay:generateCourse(self)
 		self.Waypoints = fieldWorkCourse;
 	end;
 
-	
-	
+	if table.getn(lastFivePoints) > 0 then
+		self.Waypoints = tableConcat(self.Waypoints, lastFivePoints);
+	end;
+
+
+
 	---############################################################################
 	-- (7) FINAL COURSE DATA
 	-------------------------------------------------------------------------------
