@@ -81,6 +81,8 @@ function courseplay:loadHud(self)
 					end
 				end
 			end
+
+		--Page 1 (CP Control)
 		elseif self.showHudInfoBase == 1 then
 			if self.play then
 				if not self.drive then
@@ -137,10 +139,12 @@ function courseplay:loadHud(self)
 						self.hudpage[1][1][1] = courseplay:get_locale(self, "PointRecordStart")
 					end
 
+				--[[
 				elseif (not self.record and not self.record_pause) and (table.getn(self.Waypoints) ~= 0) then --TODO: use courseplay:validateCanSwitchMode(self)
 					self.hudpage[1][1][2] = courseplay:get_locale(self, "ModusSet")
+				--]]
 
-				else
+				elseif self.record then
 					self.hudpage[1][1][1] = courseplay:get_locale(self, "PointRecordStop")
 
 					if not self.record_pause then

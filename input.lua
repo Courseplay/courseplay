@@ -164,13 +164,14 @@ function courseplay:deal_with_mouse_input(self, func, value)
 						end
 					end
 
-
-
+				--[[
 				elseif (not self.record and not self.record_pause) and (table.getn(self.Waypoints) ~= 0) and self.play then
 					if func == "row2" then
 						courseplay:change_ai_state(self, 1)
 					end
-				else
+				--]]
+
+				elseif self.record then
 					if func == "row1" then
 						courseplay:stop_record(self)
 					end
