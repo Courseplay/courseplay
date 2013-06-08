@@ -88,10 +88,15 @@ function courseplay:render_buttons(self, page)
 				end;
 			end;
 
+			--SPECIAL CONDITIONAL DISPLAY
+			--course management buttons
 			if button.page == -2 then
 				button.show = self.hudpage[2][1][button.parameter] ~= nil;
-			end;
 
+			--offset
+			elseif button.function_to_call == "changeWpOffsetX" or button.function_to_call == "changeWpOffsetZ" then
+				button.show = self.ai_mode == 4 or self.ai_mode == 6;
+			end;
 			--if button.show == nil or (button.show ~= nil and button.show) then
 			if courseplay:nilOrBool(button.show, true) then
 				local currentColor = courseplay:getButtonColor(button);

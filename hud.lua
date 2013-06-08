@@ -363,21 +363,22 @@ function courseplay:loadHud(self)
 			self.hudpage[7][1][1] = courseplay:get_locale(self, "CPWaitTime") -- Wartezeit am Haltepunkt
 			self.hudpage[7][2][1] = string.format("%.1f", self.waitTime) .. "sec"
 
-			self.hudpage[7][1][2] = courseplay:get_locale(self, "CPWpOffsetX") -- X-Offset
-			if self.WpOffsetX ~= nil then
-				self.hudpage[7][2][2] = string.format("%.1f", self.WpOffsetX) .. "m (l/r)"
-			else
-				self.hudpage[7][2][2] = "---"
-			end
+			self.hudpage[7][1][2], self.hudpage[7][2][2], self.hudpage[7][1][3], self.hudpage[7][2][3] = "", "", "", "";
+			if self.ai_mode == 4 or self.ai_mode == 6 then
+				self.hudpage[7][1][2] = courseplay:get_locale(self, "CPWpOffsetX") -- X-Offset
+				if self.WpOffsetX ~= nil then
+					self.hudpage[7][2][2] = string.format("%.1f", self.WpOffsetX) .. "m (l/r)"
+				else
+					self.hudpage[7][2][2] = "---"
+				end
 
-			local direction = ""
-			self.hudpage[7][1][3] = courseplay:get_locale(self, "CPWpOffsetZ") -- X-Offset
-			if self.WpOffsetZ ~= nil then
-				self.hudpage[7][2][3] = string.format("%.1f", self.WpOffsetZ) .. "m (h/v)"
-			else
-				self.hudpage[7][2][3] = "---"
-			end
-
+				self.hudpage[7][1][3] = courseplay:get_locale(self, "CPWpOffsetZ") -- X-Offset
+				if self.WpOffsetZ ~= nil then
+					self.hudpage[7][2][3] = string.format("%.1f", self.WpOffsetZ) .. "m (h/v)"
+				else
+					self.hudpage[7][2][3] = "---"
+				end
+			end;
 			--Copy course from driver
 			self.hudpage[7][1][5] = courseplay:get_locale(self, "CPcopyCourse");
 			if self.cp.copyCourseFromDriver ~= nil then
