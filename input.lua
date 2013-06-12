@@ -61,6 +61,13 @@ function courseplay:setCourseplayFunc(func, value, noEventSend)
 end
 
 function courseplay:deal_with_mouse_input(self, func, value)
+	if Utils.startsWith(func,"self") then
+		courseplay:debug("					setting value",5)
+		courseplay:setVarValueFromString(self, func, value)
+		courseplay:debug("					"..tostring(func)..": "..tostring(value),5)
+		return
+	end
+
 	courseplay:debug(nameNum(self) .. ": calling function \"" .. tostring(func) .. "(" .. tostring(value) .. ")\"", 12);
 
 	local str1,str2 = string.find(func, "row%d");

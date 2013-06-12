@@ -142,3 +142,65 @@ end
 function nameNum(vehicle)
 	return tostring(vehicle.name) .. " (#" .. tostring(vehicle.working_course_player_num) .. ")";
 end;
+
+function courseplay:setVarValueFromString(self, str, value)
+	local what = Utils.splitString(".", str);
+	local whatDepth = table.getn(what);
+	if whatDepth < 2 or whatDepth > 5 then
+		return;
+	end;
+
+	local baseVar = nil;
+	if what[1] == "self" then 
+		baseVar = self;
+	elseif what[1] == "courseplay" then
+		baseVar = courseplay;
+	end;
+
+	if baseVar ~= nil then
+		local result = nil;
+		if whatDepth == 2 then
+			baseVar[what[2]] = value;
+			result = value;
+		elseif whatDepth == 3 then
+			baseVar[what[2]][what[3]] = value;
+			result = value;
+		elseif whatDepth == 4 then
+			baseVar[what[2]][what[3]][what[4]] = value;
+			result = value;
+		elseif whatDepth == 5 then
+			baseVar[what[2]][what[3]][what[4]][what[5]] = value;
+			result = value;
+		end;
+
+		--print("[WRITE] " .. table.concat(what, ".") .."=" .. tostring(result));
+	end;
+
+	what = nil;
+end;
+function courseplay:getVarValueFromString(self, str)
+	local what = Utils.splitString(".", str);
+	local whatDepth = table.getn(what);
+	local whatObj = nil;
+	if what[1] == "self" then 
+		whatObj = self;
+	elseif what[1] == "courseplay" then
+		whatObj = courseplay;
+	end;
+
+	if whatObj ~= nil then
+		for i=2,whatDepth do
+			local key = what[i];
+			whatObj = whatObj[key];
+			
+			if i ~= whatDepth and type(whatObj) ~= "table" then
+				print(nameNum(self) .. ": error in string [" .. str .. "] @".. key .. ": traversal failed");
+				whatObj = nil;
+				break;
+			end;
+		end;
+	end;
+
+	--print(table.concat(what, ".") .."=" .. tostring(whatObj))
+	return whatObj;
+end

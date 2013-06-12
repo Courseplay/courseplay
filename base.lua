@@ -744,7 +744,7 @@ end
 
 
 function courseplay:readStream(streamId, connection)
-	courseplay:debug("reading stream", 12)
+	courseplay:debug("id: "..tostring(self.id).."  base: readStream", 5)
 
 
 	self.abortWork = streamDebugReadInt32(streamId)
@@ -894,7 +894,7 @@ function courseplay:readStream(streamId, connection)
 end
 
 function courseplay:writeStream(streamId, connection)
-	courseplay:debug("writing stream", 12)
+	courseplay:debug("id: "..tostring(networkGetObjectId(self)).."  base: write stream", 5)
 
 	streamDebugWriteInt32(streamId,self.abortWork)
 	streamDebugWriteInt32(streamId,self.ai_mode)

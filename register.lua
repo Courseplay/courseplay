@@ -170,7 +170,7 @@ function cp_setupGlobalData()
 	2	unload_tippers
 	3	traffic collision
 	4	Combines/mode2, register and unload combines
-	5	[collision raycast]
+	5	Multiplayer
 	6	implements (update_tools etc)
 	7	course generation
 	8	course management
