@@ -157,7 +157,7 @@ function courseplay:load(xmlFile)
 
 	-- our arrow is displaying dirction to waypoints
 	self.ArrowPath = Utils.getFilename("img/arrow.dds", self.cp_directory);
-	self.ArrowOverlay = Overlay:new("Arrow", self.ArrowPath, 0.4, 0.08, 0.250, 0.250);
+	self.ArrowOverlay = Overlay:new("Arrow", self.ArrowPath, 0.55, 0.05, 0.250, 0.250);
 	--self.ArrowOverlay:render()
 
 	-- kegel der route	
