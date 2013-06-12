@@ -153,10 +153,9 @@ function courseplay:deal_with_mouse_input(self, func, value)
 						self.cp.ridgeMarkersAutomatic = not self.cp.ridgeMarkersAutomatic;
 					end;
 				end -- end driving
-			end -- END if self.play
 
 
-			if not self.drive then
+			elseif not self.drive then
 				if (not self.record and not self.record_pause) and not self.play then --- - and (table.getn(self.Waypoints) == 0) then
 					if (table.getn(self.Waypoints) == 0) and not self.createCourse then
 						if func == "row1" then
@@ -164,18 +163,10 @@ function courseplay:deal_with_mouse_input(self, func, value)
 						end
 					end
 
-				--[[
-				elseif (not self.record and not self.record_pause) and (table.getn(self.Waypoints) ~= 0) and self.play then
-					if func == "row2" then
-						courseplay:change_ai_state(self, 1)
-					end
-				--]]
-
-				elseif self.record then
+				elseif self.record or self.record_pause then
 					if func == "row1" then
 						courseplay:stop_record(self)
-					end
-
+					end;
 
 					if not self.record_pause then
 						if func == "row2" then --and self.recordnumber > 3
@@ -186,12 +177,12 @@ function courseplay:deal_with_mouse_input(self, func, value)
 							courseplay:set_crossing(self)
 						end
 
-						if func == "row3" then --and self.recordnumber > 3
+						if func == "row3" and self.recordnumber > 3 then
 							courseplay:interrupt_record(self)
 						end
 
 					else
-						if func == "row2" then --and self.recordnumber > 4
+						if func == "row2" then
 							courseplay:delete_waypoint(self)
 						end
 						if func == "row3" then

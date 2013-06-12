@@ -132,44 +132,39 @@ function courseplay:loadHud(self)
 						end;
 					end;
 				end
-			end
-			if not self.drive then
-				if (not self.record and not self.record_pause) and not self.play then --and (table.getn(self.Waypoints) == 0) and not self.createCourse
+
+			elseif not self.drive then
+				if (not self.record and not self.record_pause) and not self.play then
 					if (table.getn(self.Waypoints) == 0) and not self.createCourse then
-						self.hudpage[1][1][1] = courseplay:get_locale(self, "PointRecordStart")
-					end
+						self.hudpage[1][1][1] = courseplay:get_locale(self, "PointRecordStart");
+					end;
 
-				--[[
-				elseif (not self.record and not self.record_pause) and (table.getn(self.Waypoints) ~= 0) then --TODO: use courseplay:validateCanSwitchMode(self)
-					self.hudpage[1][1][2] = courseplay:get_locale(self, "ModusSet")
-				--]]
-
-				elseif self.record then
-					self.hudpage[1][1][1] = courseplay:get_locale(self, "PointRecordStop")
+				elseif self.record or self.record_pause then
+					self.hudpage[1][1][1] = courseplay:get_locale(self, "PointRecordStop");
 
 					if not self.record_pause then
 						if self.recordnumber > 1 then
-							self.hudpage[1][1][2] = courseplay:get_locale(self, "CourseWaitpointSet")
+							self.hudpage[1][1][2] = courseplay:get_locale(self, "CourseWaitpointSet");
 
-							self.hudpage[1][1][3] = courseplay:get_locale(self, "PointRecordInterrupt")
+							if self.recordnumber > 3 then
+								self.hudpage[1][1][3] = courseplay:get_locale(self, "PointRecordInterrupt");
+							end;
 
-							self.hudpage[1][1][4] = courseplay:get_locale(self, "CourseCrossingSet")
-							self.hudpage[1][1][5] = courseplay:get_locale(self, "CourseDriveDirection") .. " "
+							self.hudpage[1][1][4] = courseplay:get_locale(self, "CourseCrossingSet");
+							self.hudpage[1][1][5] = courseplay:get_locale(self, "CourseDriveDirection") .. " ";
 							if not self.direction  then
-								self.hudpage[1][1][5] =  self.hudpage[1][1][5] .. courseplay:get_locale(self, "CourseDriveDirectionFor")
+								self.hudpage[1][1][5] =  self.hudpage[1][1][5] .. courseplay:get_locale(self, "CourseDriveDirectionFor");
 							else
-								self.hudpage[1][1][5] =  self.hudpage[1][1][5] .. courseplay:get_locale(self, "CourseDriveDirectionBac")
-							end
-						end
+								self.hudpage[1][1][5] =  self.hudpage[1][1][5] .. courseplay:get_locale(self, "CourseDriveDirectionBac");
+							end;
+						end;
 					else
-						if self.recordnumber > 4 then
-							self.hudpage[1][1][2] = courseplay:get_locale(self, "PointRecordDelete")
-						end
+						self.hudpage[1][1][2] = courseplay:get_locale(self, "PointRecordDelete");
 
-						self.hudpage[1][1][3] = courseplay:get_locale(self, "PointRecordContinue")
-					end
-				end
-			end
+						self.hudpage[1][1][3] = courseplay:get_locale(self, "PointRecordContinue");
+					end;
+				end;
+			end;
 
 
 
@@ -379,6 +374,7 @@ function courseplay:loadHud(self)
 					self.hudpage[7][2][3] = "---"
 				end
 			end;
+
 			--Copy course from driver
 			self.hudpage[7][1][5] = courseplay:get_locale(self, "CPcopyCourse");
 			if self.cp.copyCourseFromDriver ~= nil then
