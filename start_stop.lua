@@ -114,10 +114,10 @@ function courseplay:start(self)
 					wpanz = wpanz + 1
 				end
 
-				if wpanz == 1 and self.startWork == nil then
+				if wpanz == 1 and (self.startWork == nil or self.startWork == 0) then
 					self.startWork = i
 				end
-				if wpanz > 1 and self.stopWork == nil then
+				if wpanz > 1 and (self.stopWork == nil or self.stopWork ==0)  then
 					self.stopWork = i
 				end
 			end;

@@ -55,8 +55,6 @@ function courseplay:setCourseplayFunc(func, value, noEventSend)
 	if noEventSend ~= true then
 		CourseplayEvent.sendEvent(self, func, value); -- Die Funktion ruft sendEvent auf und übergibt 3 Werte   (self "also mein ID", action, "Ist eine Zahl an der ich festmache welches Fenster ich aufmachen will", state "Ist der eigentliche Wert also true oder false"
 	end;
-
-	playSample(courseplay.hud.clickSound, 1, 1, 0);
 	courseplay:deal_with_mouse_input(self, func, value)
 end
 
@@ -67,7 +65,7 @@ function courseplay:deal_with_mouse_input(self, func, value)
 		courseplay:debug("					"..tostring(func)..": "..tostring(value),5)
 		return
 	end
-
+	playSample(courseplay.hud.clickSound, 1, 1, 0);
 	courseplay:debug(nameNum(self) .. ": calling function \"" .. tostring(func) .. "(" .. tostring(value) .. ")\"", 12);
 
 	local str1,str2 = string.find(func, "row%d");

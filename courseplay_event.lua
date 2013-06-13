@@ -11,11 +11,10 @@ function CourseplayEvent:emptyNew()
 end
 
 function CourseplayEvent:new(vehicle, func, value)
-	--print("new")
-	--print("	id: "..tostring(networkGetObjectId(vehicle).."  function: "..tostring(func).."  value: "..tostring(value)))
 	self.vehicle = vehicle;
 	self.func = func
 	self.value = value;
+	self.type = type(value)
 	return self;
 end
 
@@ -23,19 +22,31 @@ function CourseplayEvent:readStream(streamId, connection) -- wird aufgerufen wen
 	local id = streamReadInt32(streamId);
 	self.vehicle = networkGetObject(id);
 	self.func = streamReadString(streamId);
-	self.value = streamReadFloat32(streamId);
+	self.type = streamReadString(streamId);
+	if self.type == "boolean" then
+		self.value = streamReadBool(streamId);
+	elseif self.type == "nil" then
+		self.value = nil
+	else 
+		self.value = streamReadFloat32(streamId);
+	end
 	courseplay:debug("	readStream",5)
-	courseplay:debug("		id: "..tostring(networkGetObjectId(self.vehicle).."  function: "..tostring(self.func).."  self.value: "..tostring(self.value)),5)
+	courseplay:debug("		id: "..tostring(networkGetObjectId(self.vehicle).."  function: "..tostring(self.func).."  self.value: "..tostring(self.value).."  self.type: "..tostring(self.type)),5)
 
 	self:run(connection);
 end
 
 function CourseplayEvent:writeStream(streamId, connection)  -- Wird aufgrufen wenn ich ein event verschicke (merke: reihenfolge der Daten muss mit der bei readStream uebereinstimmen 
 	courseplay:debug("		writeStream",5)
-	courseplay:debug("			id: "..tostring(networkGetObjectId(self.vehicle).."  function: "..tostring(self.func).."  value: "..tostring(self.value)),5)
+	courseplay:debug("			id: "..tostring(networkGetObjectId(self.vehicle).."  function: "..tostring(self.func).."  value: "..tostring(self.value).."  type: "..tostring(self.type)),5)
 	streamWriteInt32(streamId, networkGetObjectId(self.vehicle));
 	streamWriteString(streamId, self.func);
-	streamWriteFloat32(streamId, self.value);
+	streamWriteString(streamId, self.type);
+	if self.type == "boolean" then
+		streamWriteBool(streamId, self.value);
+	else
+		streamWriteFloat32(streamId, self.value);
+	end
 end
 
 function CourseplayEvent:run(connection) -- wir fuehren das empfangene event aus
