@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<GUI onOpen="onOpen" onClose="onClose" onEnterPressed="onEnterPressed" onEscPressed="onEscPressed">
+	<GuiElement type="bitmap" position="0.1 0.5" size="0.8 0.2667" imageFilename="dataS2/menu/dialog_bg.png" imageColor="1 1 1 0">
+		<GuiElement type="text" profile="defaultText" position="0.235 0.17" onCreate="onCreateTitleText" size="0.8 1" textSize="0.025" text2Size="0.025" text="$CP_CPCourseName" textWrapWidth="0.6" alignment="left"/>
+		<GuiElement type="button" profile="defaultButton" position="0.235 0.08" text="$l10n_Button_Cancel" onCreate="onCreateCancelButton" onClick="onCancelClick" focusId="2" focusChangeLeft="1" focusChangeRight="3" focusChangeUp="1" />
+		<GuiElement type="button" profile="defaultButton" position="0.41 0.08" text="$l10n_Button_Save" onCreate="onCreateSaveButton" onClick="onSaveClick" focusId="3" focusChangeLeft="2" focusChangeUp="1" disabled="true" />
+
+		<GuiElement 
+			type="textInput" 
+			profile="defaultTextInput" 
+			position="0.235 0.125" 
+			text="" 
+			onCreate="onCreateTextInput" 
+			onEnterPressed="onEnterPressed" 
+			onEscPressed="onEscPressed" 
+			onTextChanged="onTextChanged" 
+			onIsUnicodeAllowed="onIsUnicodeAllowed" 
+			maxCharacters="20" 
+			focusId="1" 
+			focusChangeRight="2" 
+			focusChangeDown="2" 
+			focusInit="onOpen"
+		/>
+	</GuiElement>
+</GUI>

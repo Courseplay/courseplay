@@ -2,15 +2,12 @@
 
 
 -- enables input for course name
-function courseplay:input_course_name(self)
+function courseplay:showSaveCourseForm(self)
 	if table.getn(self.Waypoints) > 0 then
-		self.user_input = ""
-		self.user_input_active = true
-		self.steeringEnabled = false -- test
-		self.save_name = true
-		self.user_input_message = courseplay:get_locale(self, "CPCourseName")
-	end
-end
+		courseplay.vehicleToSaveCourseIn = self;
+		g_gui:showGui("inputCourseNameDialogue");
+	end;
+end;
 
 function courseplay:reload_courses(self, use_real_id)
 	for k, v in pairs(self.loaded_courses) do
@@ -259,7 +256,7 @@ function courseplay:save_courses(self)
 					
 					
 					
-					File:write(tab .. tab .. "<waypoint" .. i .. " pos=\"" .. v.cx .. " " .. v.cz .. "\" angle=\"" .. v.angle .. "\" rev=\"" .. rev .. "\" wait=\"" .. wait .. "\" crossing=\"" .. crossing .. "\"  speed=\"" .. speed .. "\" generated=\"" .. generated .. "\" turn=\"" .. turn .. "\" turnstart=\"" .. turnStart .. "\" turnend=\"" .. turnEnd .. "\" ridgemarker=\"" .. ridgeMarker .. "\" />\n")
+					File:write(tab .. tab .. "<waypoint" .. i .. " pos=\"" .. v.cx .. " " .. v.cz .. "\" angle=\"" .. v.angle .. "\" rev=\"" .. rev .. "\" wait=\"" .. wait .. "\" crossing=\"" .. crossing .. "\" speed=\"" .. speed .. "\" generated=\"" .. generated .. "\" turn=\"" .. turn .. "\" turnstart=\"" .. turnStart .. "\" turnend=\"" .. turnEnd .. "\" ridgemarker=\"" .. ridgeMarker .. "\" />\n")
 				end
 				File:write(tab .. "</course>\n")
 			end

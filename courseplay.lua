@@ -73,6 +73,11 @@ function initialize_courseplay()
 	source(courseplay.path .. "courseplay_event.lua")
 	source(courseplay.path .. "astar.lua")
 	source(courseplay.path .. "fruit.lua")
+
+	--save course input form
+	source(courseplay.path .. "inputCourseNameDialogue.lua")
+	g_inputCourseNameDialogue = inputCourseNameDialogue:new();
+	g_gui:loadGui(courseplay.path .. "inputCourseNameDialogue.xml", "inputCourseNameDialogue", g_inputCourseNameDialogue);
 end;
 
 initialize_courseplay();

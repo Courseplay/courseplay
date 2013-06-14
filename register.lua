@@ -1,7 +1,8 @@
-SpecializationUtil.registerSpecialization("courseplay", "courseplay", g_modsDirectory .. "/ZZZ_courseplay/courseplay.lua")
-SpecializationUtil.registerSpecialization("autoovercharge", "AutoOvercharge", g_modsDirectory .. "/ZZZ_courseplay/AutoOvercharge.lua")
-SpecializationUtil.registerSpecialization("perard", "perard", g_modsDirectory .. "/ZZZ_courseplay/AutoOvercharge.lua")
+local modsDir = g_currentModDirectory;
 
+SpecializationUtil.registerSpecialization("courseplay", "courseplay", modsDir .. "courseplay.lua")
+SpecializationUtil.registerSpecialization("autoovercharge", "AutoOvercharge", modsDir .. "AutoOvercharge.lua")
+SpecializationUtil.registerSpecialization("perard", "perard", modsDir .. "AutoOvercharge.lua")
 
 -- adding courseplay to default vehicles and vehicles that are loaded after courseplay in multiplayer
 -- thanks to donner!
@@ -149,22 +150,6 @@ function cp_setupGlobalData()
 		courseplay.debugChannels[channel] = false;
 	end;
 	--[[
-	courseplay.debugChannels = {
-		{ name = "TipTriggers", active = false },
-		{ name = "unloading",   active = false },
-		{ name = "trafficColl", active = false },
-		{ name = "mode2",       active = false },
-		{ name = "collRaycast", active = false },
-		{ name = "implements",  active = false },
-		{ name = "courseGen",   active = false },
-		{ name = "courseMng",   active = false },
-		{ name = "pathFind",    active = false },
-		{ name = "mode9",       active = false },
-		{ name = "mode7",       active = false },
-		{ name = "no cat",      active = false }
-	};
-	--]]
-	--[[
 	Debug channels legend:
 	1  	Raycast (drive + triggers) / TipTriggers
 	2	unload_tippers
@@ -186,4 +171,5 @@ cp_setupGlobalData();
 cp_setLocales();
 register_courseplay();
 
-print("### Initialized 27 Courseplay files (v" .. tostring(courseplay.version) .. ")");
+local numFiles = 28;
+print("### Initialized " .. tostring(numFiles) .. " Courseplay files (v" .. tostring(courseplay.version) .. ")");

@@ -84,9 +84,6 @@ function courseplay:load(xmlFile)
 	self.drive = false
 	self.runOnceStartCourse = false;
 	self.StopEnd = false
-	self.lastGui = nil
-	self.currentGui = nil
-	self.input_gui = "emptyGui";
 	self.calculated_course = false
 
 	self.recordnumber = 1
@@ -315,12 +312,6 @@ function courseplay:load(xmlFile)
 	self.cp.tippersWithCovers = {};
 	self.cp.tipperFillLevel = nil;
 	self.cp.tipperCapacity = nil;
-	-- for user input like saving
-	self.user_input_active = false
-	self.user_input_message = nil
-	self.user_input = nil
-	self.save_name = false
-
 
 	self.selected_course_number = 0
 	self.course_Del = false
@@ -445,7 +436,7 @@ function courseplay:load(xmlFile)
 
 	courseplay:register_button(self, nil, "close.dds", "openCloseHud", false, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.infoBasePosY + 0.255, w24px, h24px);
 
-	courseplay:register_button(self, nil, "disk.dds", "input_course_name", 1, courseplay.hud.infoBasePosX + 0.280, courseplay.hud.infoBasePosY + 0.056, w24px, h24px);
+	courseplay:register_button(self, nil, "disk.dds", "showSaveCourseForm", 1, courseplay.hud.infoBasePosX + 0.280, courseplay.hud.infoBasePosY + 0.056, w24px, h24px);
 
 	for i=1, courseplay.hud.numLines do
 		--Page 0: Combine controls
@@ -605,14 +596,15 @@ function courseplay:onEnter()
 	end
 end
 
--- displays help text, user_input 	
 function courseplay:draw()
+	--SET HUD CONTENT
 	courseplay:loadHud(self)
 
 	if self.dcheck and table.getn(self.Waypoints) > 1 then
 		courseplay:dcheck(self);
 	end
 
+	--WORKWIDTH DISPLAY
 	if self.workWidthChanged > self.timer then
 		courseplay:show_work_witdh(self)
 	elseif self.work_with_shown then
@@ -621,12 +613,14 @@ function courseplay:draw()
 		self.work_with_shown = false
 	end
 
+	--MOUSE CURSOR
 	if self.mouse_enabled then
 		InputBinding.setShowMouseCursor(self.mouse_enabled)
 	end
 
-	courseplay:showHud(self)
-end
+	--SHOW HUD
+	courseplay:showHud(self);
+end; --END draw()
 
 function courseplay:show_work_witdh(self)
 	local x, y, z = getWorldTranslation(self.rootNode)
@@ -665,33 +659,6 @@ function courseplay:update(dt)
 		end;
 	end
 
-	if self.isEntered then
-
-		if self.user_input_active == true then
-			if self.currentGui == nil then
-				g_gui:loadGui(Utils.getFilename("emptyGui.xml", self.cp_directory), self.input_gui);
-				g_gui:showGui(self.input_gui);
-				self.currentGui = self.input_gui
-			end
-
-			for unicode, isDown in pairs(Input.keyPressedState) do
-				if isDown then
-					self:setCourseplayFunc("key_input", unicode)
-				end
-			end
-			Input.keyPressedState = {};
-		else
-			if self.currentGui == self.input_gui then
-				g_gui:showGui("");
-				self.currentGui = nil
-			end
-		end
-
-		if self.user_input_message then
-			courseplay:user_input(self);
-		end
-	end
-
 	-- we are in record mode
 	if self.record then
 		courseplay:record(self);
@@ -725,7 +692,7 @@ function courseplay:update(dt)
 		self.cp.infoText = nil;
 		courseplay:setGlobalInfoText(self, nil, nil);
 	end
-end;
+end; --END update()
 
 function courseplay:updateTick(dt)
 	--attached or detached implement?
@@ -871,9 +838,6 @@ function courseplay:readStream(streamId, connection)
 	self.unload_speed = streamDebugReadFloat32(streamId)
 	self.unloaded = streamDebugReadBool(streamId)
 	self.use_speed = streamDebugReadBool(streamId)
-	self.user_input = streamDebugReadString(streamId)
-	self.user_input_active = streamDebugReadBool(streamId)
-	self.user_input_message = streamDebugReadString(streamId)
 	self.wait = streamDebugReadBool(streamId)
 	self.waitPoints = streamDebugReadInt32(streamId)
 	self.waitTime = streamDebugReadInt32(streamId)
@@ -1021,9 +985,6 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteFloat32(streamId,self.unload_speed)
 	streamDebugWriteBool(streamId,self.unloaded)
 	streamDebugWriteBool(streamId,self.use_speed)
-	streamDebugWriteString(streamId,self.user_input)
-	streamDebugWriteBool(streamId,self.user_input_active)
-	streamDebugWriteString(streamId,self.user_input_message)
 	streamDebugWriteBool(streamId,self.wait)
 	streamDebugWriteInt32(streamId,self.waitPoints)
 	streamDebugWriteInt32(streamId,self.waitTime)
