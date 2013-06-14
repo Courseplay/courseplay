@@ -62,7 +62,7 @@ function courseplay:deal_with_mouse_input(self, func, value)
 	if Utils.startsWith(func,"self") then
 		courseplay:debug("					setting value",5)
 		courseplay:setVarValueFromString(self, func, value)
-		courseplay:debug("					"..tostring(func)..": "..tostring(value),5)
+		--courseplay:debug("					"..tostring(func)..": "..tostring(value),5)
 		return
 	end
 	playSample(courseplay.hud.clickSound, 1, 1, 0);

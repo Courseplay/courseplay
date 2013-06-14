@@ -25,13 +25,15 @@ function CourseplayEvent:readStream(streamId, connection) -- wird aufgerufen wen
 	self.type = streamReadString(streamId);
 	if self.type == "boolean" then
 		self.value = streamReadBool(streamId);
-	elseif self.type == "nil" then
+	elseif self.type == "string" then
+		self.value = streamReadString(streamId);
+	elseif self.type == "nil" or self.type == nil  then
 		self.value = nil
 	else 
 		self.value = streamReadFloat32(streamId);
 	end
 	courseplay:debug("	readStream",5)
-	courseplay:debug("		id: "..tostring(networkGetObjectId(self.vehicle).."  function: "..tostring(self.func).."  self.value: "..tostring(self.value).."  self.type: "..tostring(self.type)),5)
+	courseplay:debug("		id: "..tostring(networkGetObjectId(self.vehicle).."  function: "..tostring(self.func).."  self.value: "..tostring(self.value).."  self.type: "..self.type),5)
 
 	self:run(connection);
 end
@@ -44,6 +46,8 @@ function CourseplayEvent:writeStream(streamId, connection)  -- Wird aufgrufen we
 	streamWriteString(streamId, self.type);
 	if self.type == "boolean" then
 		streamWriteBool(streamId, self.value);
+	elseif self.type == "string" then
+		streamWriteString(streamId, self.value);
 	else
 		streamWriteFloat32(streamId, self.value);
 	end

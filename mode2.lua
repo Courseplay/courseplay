@@ -912,9 +912,6 @@ function courseplay:unload_combine(self, dt)
 		--courseplay:debug(string.format("distance: %d  dod: %d",distance,dod ), 4)
 	end
 
-	if g_server ~= nil and self.ai_state ~= mode then
-		CourseplayEvent.sendEvent(self, "self.ai_state", mode);
-	end
 	self.ai_state = mode
 
 	if currentX == nil or currentZ == nil then

@@ -1,5 +1,9 @@
 -- drives recored course
 function courseplay:drive(self, dt)
+	if g_server == nil then
+		return
+	end
+
 	local refSpeed = 0
 	local cx,cy,cz = 0,0,0
 	-- may i drive or should i hold position for some reason?
@@ -851,7 +855,7 @@ function courseplay:check_traffic(self, display_warnings, allowedToDrive)
 			end
 		end
 	end
-
+	
 	if display_warnings and in_traffic then
 		courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPInTraffic"), -1);
 	end

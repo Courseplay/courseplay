@@ -17,7 +17,7 @@ function courseplay:renderInfoText(self)
 			renderText(courseplay.hud.infoBasePosX + 0.005, courseplay.hud.infoBasePosY + 0.0035, 0.02, self.cp.infoText); --ORIG: +0.002
 		end;
 	end;
-	self.cp.infoText = nil;
+	
 
 	local bg = self.cp.globalInfoTextOverlay;
 	bg.isRendering = false;

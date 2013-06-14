@@ -703,7 +703,28 @@ function courseplay:update(dt)
 	end
 
 	courseplay:renderInfoText(self);
-	courseplay:setGlobalInfoText(self, nil, nil);
+	if g_server ~= nil then
+		
+		if self.cp.globalInfoText ~= nil and self.cp.globalText == nil then
+			self.cp.globalText = true
+			CourseplayEvent.sendEvent(self, "self.cp.globalInfoText", self.cp.globalInfoText)
+			CourseplayEvent.sendEvent(self, "self.cp.globalInfoTextLevel", self.cp.globalInfoTextLevel)
+			CourseplayEvent.sendEvent(self, "self.working_course_player_num",self.working_course_player_num)
+		end
+
+		if self.cp.infoText ~= self.cp.localTextMemory then
+			CourseplayEvent.sendEvent(self, "self.cp.infoText", self.cp.infoText)
+		end
+
+		if self.cp.globalInfoText == nil and self.cp.globalText == true then
+			self.cp.globalText = nil
+			CourseplayEvent.sendEvent(self, "self.cp.globalInfoText", nil)
+		end
+		
+		self.cp.localTextMemory = self.cp.infoText
+		self.cp.infoText = nil;
+		courseplay:setGlobalInfoText(self, nil, nil);
+	end
 end;
 
 function courseplay:updateTick(dt)
@@ -745,6 +766,10 @@ end
 
 function courseplay:readStream(streamId, connection)
 	courseplay:debug("id: "..tostring(self.id).."  base: readStream", 5)
+
+	
+
+-----------------------------------------------------------------------
 
 
 	self.abortWork = streamDebugReadInt32(streamId)
@@ -808,9 +833,6 @@ function courseplay:readStream(streamId, connection)
 	self.follow_mode = streamDebugReadInt32(streamId)
 	self.forced_side = streamDebugReadString(streamId)
 	self.forced_to_stop = streamDebugReadBool(streamId)
-	self.cp.globalInfoText = streamDebugReadString(streamId);
-	self.cp.globalInfoTextLevel = streamDebugReadInt32(streamId);
-	self.cp.infoText = streamDebugReadString(streamId)
 	self.last_fill_level = streamDebugReadInt32(streamId)
 	self.lastTrailerToFillDistance = streamDebugReadFloat32(streamId)
 	self.loaded = streamDebugReadBool(streamId)
@@ -896,7 +918,10 @@ end
 
 function courseplay:writeStream(streamId, connection)
 	courseplay:debug("id: "..tostring(networkGetObjectId(self)).."  base: write stream", 5)
+	
+	
 
+-----------------------------------------------------------------------------
 	streamDebugWriteInt32(streamId,self.abortWork)
 	streamDebugWriteInt32(streamId,self.ai_mode)
 	streamDebugWriteInt32(streamId,self.ai_state)
@@ -958,9 +983,6 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteInt32(streamId,self.follow_mode)
 	streamDebugWriteString(streamId,self.forced_side)
 	streamDebugWriteBool(streamId,self.forced_to_stop)
-	streamDebugWriteString(streamId,self.cp.globalInfoText);
-	streamDebugWriteInt32(streamId,self.cp.globalInfoTextLevel);
-	streamDebugWriteString(streamId,self.cp.infoText)
 	streamDebugWriteInt32(streamId,self.last_fill_level)
 	streamDebugWriteFloat32(streamId,self.lastTrailerToFillDistance)
 	streamDebugWriteBool(streamId,self.loaded)
