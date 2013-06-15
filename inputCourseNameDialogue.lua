@@ -2,9 +2,11 @@
 @name:    inputCourseNameDialogue
 @desc:    Dialogue settings for the Courseplay course saving form
 @author:  Jakob Tischler
-@version: 1.1
+@version: 1.2
 @date:    15 Jun 2013
 --]]
+
+local modDir = g_currentModDirectory;
 
 inputCourseNameDialogue = {}
 local inputCourseNameDialogue_mt = Class(inputCourseNameDialogue)
@@ -14,6 +16,46 @@ function inputCourseNameDialogue:new()
 	instance = setmetatable(instance, inputCourseNameDialogue_mt);
 	return instance;
 end; --END new()
+
+function inputCourseNameDialogue.setModImages(element, xmlFile, key)
+	local name = Utils.getNoNil(getXMLString(xmlFile, key .. "#name", "[no name]"));
+	--print("inputCourseNameDialogue.setModImages() for element " .. tostring(key) .. " (\"" .. name .. "\")");
+	--print(string.format("inputCourseNameDialogue.setModImages() for element %s (\"%s\")", tostring(key), name));
+
+	local MOD_imageFilename =         getXMLString(xmlFile, key .. "#MOD_imageFilename");
+	local MOD_imageFocusedFilename =  getXMLString(xmlFile, key .. "#MOD_imageFocusedFilename");
+	local MOD_imagePressedFilename =  getXMLString(xmlFile, key .. "#MOD_imagePressedFilename");
+	local MOD_imageDisabledFilename = getXMLString(xmlFile, key .. "#MOD_imageDisabledFilename");
+	--[[
+	print("\\___MOD_imageFilename from xml = " .. tostring(MOD_imageFilename));
+	print("\\___MOD_imageFocusedFilename from xml = " .. tostring(MOD_imageFocusedFilename));
+	print("\\___MOD_imagePressedFilename from xml = " .. tostring(MOD_imagePressedFilename));
+	print("\\___MOD_imageDisabledFilename from xml = " .. tostring(MOD_imageDisabledFilename));
+	--]]
+
+	if MOD_imageFilename ~= nil then
+		element:setImageFilename(modDir .. MOD_imageFilename, element);
+	end;
+	if MOD_imageFocusedFilename ~= nil then
+		element:setImageFocusedFilename(modDir .. MOD_imageFocusedFilename, element);
+	end;
+	if MOD_imagePressedFilename ~= nil then
+		element:setImagePressedFilename(modDir .. MOD_imagePressedFilename, element);
+	end;
+	if MOD_imageDisabledFilename ~= nil then
+		element:setImageDisabledFilename(modDir .. MOD_imageDisabledFilename, element);
+	end;
+	
+	--[[
+	print("\\___new imageFilename = " .. tostring(element.imageFilename));
+	print("\\___new imageFocusedFilename = " .. tostring(element.imageFocusedFilename));
+	print("\\___new imagePressedFilename = " .. tostring(element.imagePressedFilename));
+	print("\\___new imageDisabledFilename = " .. tostring(element.imageDisabledFilename));
+	--]]
+end; --END setModImages()
+BitmapElement.loadFromXML =    Utils.appendedFunction(BitmapElement.loadFromXML,    inputCourseNameDialogue.setModImages);
+TextInputElement.loadFromXML = Utils.appendedFunction(TextInputElement.loadFromXML, inputCourseNameDialogue.setModImages);
+ButtonElement.loadFromXML =    Utils.appendedFunction(ButtonElement.loadFromXML,    inputCourseNameDialogue.setModImages);
 
 function inputCourseNameDialogue:onCreateTitleText(element)
 	self.titleTextElement = element;
@@ -63,6 +105,8 @@ function inputCourseNameDialogue:onOpen(element)
 
 	FocusManager:setFocus(self.textInputElement);
 	InputBinding.hasEvent(InputBinding.MENU_ACCEPT, true); --set focus
+	
+	--print(inputCourseNameDialogue:tableShow(element, "element"));
 end; --END onOpen()
 
 function inputCourseNameDialogue:onClose(element)
@@ -79,26 +123,23 @@ function inputCourseNameDialogue:onSaveClick()
 	--print("self.textInputElement.text="..tostring(self.textInputElement.text));
 	
 	courseplay.vehicleToSaveCourseIn.current_course_name = self.textInputElement.text;
+	if g_currentMission.courseplay_courses == nil then
+		g_currentMission.courseplay_courses = {};
+	end
+	local numExistingCourses = table.getn(g_currentMission.courseplay_courses);
 	local maxId = 0;
-	if g_currentMission.courseplay_courses ~= nil then
-		local numExistingCourses = table.getn(g_currentMission.courseplay_courses);
-		if numExistingCourses > 0 then
-			for i=1, numExistingCourses do
-				local curCourseId = g_currentMission.courseplay_courses[i].id;
-				if curCourseId ~= nil and curCourseId > maxId then
-					maxId = curCourseId;
-				end;
+	if numExistingCourses > 0 then
+		for i=1, numExistingCourses do
+			local curCourseId = g_currentMission.courseplay_courses[i].id;
+			if curCourseId ~= nil and curCourseId > maxId then
+				maxId = curCourseId;
 			end;
 		end;
 	end;
 	courseplay.vehicleToSaveCourseIn.courseID = maxId + 1;
-
 	courseplay.vehicleToSaveCourseIn.numCourses = 1;
-	local course = { name = courseplay.vehicleToSaveCourseIn.current_course_name, id = courseplay.vehicleToSaveCourseIn.courseID, waypoints = courseplay.vehicleToSaveCourseIn.Waypoints };
 
-	if g_currentMission.courseplay_courses == nil then
-		g_currentMission.courseplay_courses = {};
-	end
+	local course = { name = courseplay.vehicleToSaveCourseIn.current_course_name, id = courseplay.vehicleToSaveCourseIn.courseID, waypoints = courseplay.vehicleToSaveCourseIn.Waypoints };
 	table.insert(g_currentMission.courseplay_courses, course);
 
 	courseplay:save_courses(courseplay.vehicleToSaveCourseIn);
@@ -150,3 +191,34 @@ function inputCourseNameDialogue:update(dt)
 		self:onCancelClick();
 	end;
 end; --END update()
+
+function TextInputElement:setImageFilename(filename, element)
+	if element.overlays[TextInputElement.STATE_NORMAL] ~= nil then
+		delete(element.overlays[TextInputElement.STATE_NORMAL]);
+	end;
+	element.imageFilename = filename;
+	if element.imageFilename ~= nil then
+		local overlay = createImageOverlay(element.imageFilename)
+		element.overlays[TextInputElement.STATE_NORMAL] = overlay;
+	end;
+end;
+function TextInputElement:setImageFocusedFilename(filename, element)
+	if element.overlays[TextInputElement.STATE_FOCUSED] ~= nil then
+		delete(element.overlays[TextInputElement.STATE_FOCUSED]);
+	end;
+	element.imageFocusedFilename = filename;
+	if element.imageFocusedFilename ~= nil then
+		local overlay = createImageOverlay(element.imageFocusedFilename)
+		element.overlays[TextInputElement.STATE_FOCUSED] = overlay;
+	end;
+end;
+function TextInputElement:setImagePressedFilename(filename, element)
+	if element.overlays[TextInputElement.STATE_PRESSED] ~= nil then
+		delete(element.overlays[TextInputElement.STATE_PRESSED]);
+	end;
+	element.imagePressedFilename = filename;
+	if element.imagePressedFilename ~= nil then
+		local overlay = createImageOverlay(element.imagePressedFilename)
+		element.overlays[TextInputElement.STATE_PRESSED] = overlay;
+	end;
+end;

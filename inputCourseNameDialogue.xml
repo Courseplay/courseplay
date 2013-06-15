@@ -1,14 +1,31 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <GUI onOpen="onOpen" onClose="onClose" onEnterPressed="onEnterPressed">
-	<GuiElement type="bitmap" position="0.1 0.5" size="0.8 0.2667" imageFilename="dataS2/menu/dialog_bg.png" imageColor="1 1 1 0">
-		<GuiElement type="text" profile="defaultText" position="0.235 0.17" onCreate="onCreateTitleText" size="0.8 1" textSize="0.025" text2Size="0.025" text="$CP_CPCourseName" textWrapWidth="0.6" alignment="left"/>
-		<GuiElement type="button" profile="defaultButton" position="0.235 0.08" text="$l10n_Button_Cancel" onCreate="onCreateCancelButton" onClick="onCancelClick" focusId="2" focusChangeLeft="1" focusChangeRight="3" focusChangeTop="1" />
-		<GuiElement type="button" profile="defaultButton" position="0.41 0.08" text="$l10n_Button_Save" onCreate="onCreateSaveButton" onClick="onSaveClick" focusId="3" focusChangeLeft="2" focusChangeTop="1" disabled="true" />
-
+	<GuiElement name="background" type="bitmap" position="0.4096 0.8" size="0.2667 0.1185" imageFilename="dataS2/menu/dialog_bg.png" MOD_imageFilename="img/inputCourseNameGUI/inputCourseName_bg.png" imageColor="1 1 1 1">
+		<!-- Title text -->
 		<GuiElement 
+			name="titleText" 
+			type="text" 
+			profile="defaultText" 
+			position="0.006 0.065" 
+			onCreate="onCreateTitleText" 
+			size="0.8 1" 
+			textSize="0.0125" 
+			text2Size="0" 
+			textOffset="0 0" 
+			textColor="0.95 0.95 0.95 1" 
+			textBold="false" 
+			text="$CP_CPCourseName" 
+			textWrapWidth="0.8" 
+			alignment="left"
+		/>
+
+		<!-- Text input -->
+		<GuiElement 
+			name="textInput" 
 			type="textInput" 
 			profile="defaultTextInput" 
-			position="0.235 0.125" 
+			position="0 0" 
+			size="0.2667 0.1185" 
 			text="" 
 			onCreate="onCreateTextInput" 
 			onEnterPressed="onEnterPressed" 
@@ -19,6 +36,74 @@
 			focusChangeRight="2" 
 			focusChangeBottom="2" 
 			focusInit="onOpen"
+
+			textColor="0.15 0.15 0.15 1" 
+			textSize="0.0225"
+			textBold="false" 
+			textOffset="0.0085 0.038" 
+
+			text2Size="0" 
+
+			MOD_imageFilename="img/inputCourseNameGUI/inputCourseName_input_normal.png" 
+			MOD_imageFocusedFilename="img/inputCourseNameGUI/inputCourseName_input_focused.png" 
+			MOD_imagePressedFilename="img/inputCourseNameGUI/inputCourseName_input_focused.png" 
+		/>
+
+		<!-- Cancel button -->
+		<GuiElement 
+			name="cancelButton" 
+			type="button" 
+			profile="defaultButton" 
+			position="0.1410 0.01" 
+			size="0.01354167 0.02407" 
+			text="" 
+			onCreate="onCreateCancelButton" 
+			onClick="onCancelClick" 
+			focusId="2" 
+			focusChangeLeft="1" 
+			focusChangeRight="3" 
+			focusChangeTop="1" 
+
+			textColor="0.1 0.1 0.1 1" 
+			textDisabledColor="0.1 0.1 0.1 0.4" 
+			textOffset="0 0" 
+			textSize="0.026"
+			textBold="false" 
+
+			text2Size="0" 
+
+			MOD_imageFilename="img/inputCourseNameGUI/inputCourseName_cancelButton_normal.png" 
+			MOD_imageFocusedFilename="img/inputCourseNameGUI/inputCourseName_cancelButton_focused.png" 
+			MOD_imagePressedFilename="img/inputCourseNameGUI/inputCourseName_cancelButton_pressed.png" 
+		/>
+
+		<!-- Save button -->
+		<GuiElement 
+			name="saveButton" 
+			type="button" 
+			profile="defaultButton" 
+			position="0.1590 0.01" 
+			size="0.01354167 0.02407" 
+			text="" 
+			onCreate="onCreateSaveButton" 
+			onClick="onSaveClick" 
+			focusId="3" 
+			focusChangeLeft="2" 
+			focusChangeTop="1" 
+			disabled="true" 
+
+			textColor="0.1 0.1 0.1 1" 
+			textDisabledColor="0.1 0.1 0.1 0.4" 
+			textOffset="0 0" 
+			textSize="0.026"
+			textBold="false" 
+
+			text2Size="0" 
+
+			MOD_imageFilename="img/inputCourseNameGUI/inputCourseName_saveButton_normal.png" 
+			MOD_imageFocusedFilename="img/inputCourseNameGUI/inputCourseName_saveButton_focused.png" 
+			MOD_imagePressedFilename="img/inputCourseNameGUI/inputCourseName_saveButton_pressed.png" 
+			MOD_imageDisabledFilename="img/inputCourseNameGUI/inputCourseName_saveButton_disabled.png" 
 		/>
 	</GuiElement>
 </GUI>
