@@ -2,8 +2,8 @@
 @name:    inputCourseNameDialogue
 @desc:    Dialogue settings for the Courseplay course saving form
 @author:  Jakob Tischler
-@version: 1.0
-@date:    14 Jun 2013
+@version: 1.1
+@date:    15 Jun 2013
 --]]
 
 inputCourseNameDialogue = {}
@@ -58,11 +58,11 @@ function inputCourseNameDialogue:onOpen(element)
 		self.titleTextElement.textCP = nil;
 	end;
 	
-	FocusManager:setFocus(self.textInputElement);
 	
 	self:validateCourseName();
-	
-	--print(inputCourseNameDialogue:tableShow(self, "inputCourseNameDialogue", nil, "\t"));
+
+	FocusManager:setFocus(self.textInputElement);
+	InputBinding.hasEvent(InputBinding.MENU_ACCEPT, true); --set focus
 end; --END onOpen()
 
 function inputCourseNameDialogue:onClose(element)
@@ -71,23 +71,6 @@ function inputCourseNameDialogue:onClose(element)
 end; --END onClose()
 
 function inputCourseNameDialogue:onIsUnicodeAllowed(unicode)
-	--print("inputCourseNameDialogue:onIsUnicodeAllowed()");
-	--print("self.allowedCharacters["..tostring(unicode) .."]=" .. tostring(self.allowedCharacters[unicode] == true));
-
-	--[[
-	--save [RETURN/ENTER]
-	if unicode == 13 then
-		if self:validateCourseName() then
-			self:onSaveClick();
-			return false;
-		end;
-	--cancel [ESCAPE]
-	elseif unicode == 27 then
-		self:onCancelClick();
-		return false;
-	end;
-	]]
-	
 	return self.textInputElement.allowedCharacters[unicode] == true;
 end; --END onIsUnicodeAllowed()
 
@@ -97,12 +80,14 @@ function inputCourseNameDialogue:onSaveClick()
 	
 	courseplay.vehicleToSaveCourseIn.current_course_name = self.textInputElement.text;
 	local maxId = 0;
-	local numExistingCourses = table.getn(g_currentMission.courseplay_courses);
-	if g_currentMission.courseplay_courses ~= nil and numExistingCourses > 0 then
-		for i=1, numExistingCourses do
-			local curCourseId = g_currentMission.courseplay_courses[i].id;
-			if curCourseId ~= nil and g_currentMission.courseplay_courses[i].id > maxId then
-				maxId = g_currentMission.courseplay_courses[i].id;
+	if g_currentMission.courseplay_courses ~= nil then
+		local numExistingCourses = table.getn(g_currentMission.courseplay_courses);
+		if numExistingCourses > 0 then
+			for i=1, numExistingCourses do
+				local curCourseId = g_currentMission.courseplay_courses[i].id;
+				if curCourseId ~= nil and curCourseId > maxId then
+					maxId = curCourseId;
+				end;
 			end;
 		end;
 	end;
@@ -142,10 +127,6 @@ function inputCourseNameDialogue:onEnterPressed()
 	end;
 end; --END onEnterPressed()
 
-function inputCourseNameDialogue:onEscPressed()
-	self:onCancelClick(self);
-end; --END onEscPressed()
-
 function inputCourseNameDialogue:validateCourseName()
 	self.saveButtonElement.disabled = self.textInputElement.text == nil or self.textInputElement.text:len() < 1;
 	--print("self.saveButtonElement.disabled="..tostring(self.saveButtonElement.disabled));
@@ -160,88 +141,12 @@ function inputCourseNameDialogue:setCallbacks(onCourseNameEntered, target)
 end; --END setCallbacks()
 
 function inputCourseNameDialogue:update(dt)
-	--print("inputCourseNameDialogue:update()");
-end; --END update()
-
-function inputCourseNameDialogue:tableShow(t, name, channel, indent)
-	--important performance backup: the channel is checked first before proceeding with the compilation of the table
-	if channel ~= nil and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == false then
-		return;
+	if InputBinding.hasEvent(InputBinding.MENU_ACCEPT, true) then
+		InputBinding.hasEvent(InputBinding.MENU_ACCEPT, true);
+		self:onEnterPressed();
+	elseif InputBinding.hasEvent(InputBinding.MENU, true) or InputBinding.hasEvent(InputBinding.MENU_CANCEL, true) then
+		InputBinding.hasEvent(InputBinding.MENU_CANCEL, true);
+		InputBinding.hasEvent(InputBinding.MENU, true);
+		self:onCancelClick();
 	end;
-
-
-	local cart -- a container
-	local autoref -- for self references
-
-	--[[ counts the number of elements in a table
-local function tablecount(t)
-   local n = 0
-   for _, _ in pairs(t) do n = n+1 end
-   return n
-end
-]]
-	-- (RiciLake) returns true if the table is empty
-	local function isemptytable(t) return next(t) == nil end
-
-	local function basicSerialize(o)
-		local so = tostring(o)
-		if type(o) == "function" then
-			local info = debug.getinfo(o, "S")
-			-- info.name is nil because o is not a calling level
-			if info.what == "C" then
-				return string.format("%q", so .. ", C function")
-			else
-				-- the information is defined through lines
-				return string.format("%q", so .. ", defined in (" ..
-						info.linedefined .. "-" .. info.lastlinedefined ..
-						")" .. info.source)
-			end
-		elseif type(o) == "number" then
-			return so
-		else
-			return string.format("%q", so)
-		end
-	end
-
-	local function addtocart(value, name, indent, saved, field)
-		indent = indent or ""
-		saved = saved or {}
-		field = field or name
-
-		cart = cart .. indent .. field
-
-		if type(value) ~= "table" then
-			cart = cart .. " = " .. basicSerialize(value) .. ";\n"
-		else
-			if saved[value] then
-				cart = cart .. " = {}; -- " .. saved[value]
-						.. " (self reference)\n"
-				autoref = autoref .. name .. " = " .. saved[value] .. ";\n"
-			else
-				saved[value] = name
-				--if tablecount(value) == 0 then
-				if isemptytable(value) then
-					cart = cart .. " = {};\n"
-				else
-					cart = cart .. " = {\n"
-					for k, v in pairs(value) do
-						k = basicSerialize(k)
-						local fname = string.format("%s[%s]", name, k)
-						field = string.format("[%s]", k)
-						-- three spaces between levels
-						addtocart(v, fname, indent .. "   ", saved, field)
-					end
-					cart = cart .. indent .. "};\n"
-				end
-			end
-		end
-	end
-
-	name = name or "__unnamed__"
-	if type(t) ~= "table" then
-		return name .. " = " .. basicSerialize(t)
-	end
-	cart, autoref = "", ""
-	addtocart(t, name, indent)
-	return cart .. autoref
-end;
+end; --END update()

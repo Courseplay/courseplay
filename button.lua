@@ -56,20 +56,7 @@ function courseplay:render_buttons(self, page)
 	for _, button in pairs(self.cp.buttons) do
 		if button.page == nil or button.page == page or button.page == -page then
 			if button.showWhat ~= nil and button.showIs ~= nil then
-				local what = Utils.splitString(".", button.showWhat);
-				if what[1] == "self" then 
-					table.remove(what, 1); 
-				end;
-				local whatObj;
-				for i=1,#what do
-					local key = what[i]; 
-					if i == 1 then
-						whatObj = self[key];
-					end;
-					if i > 1 then
-						whatObj = whatObj[key];
-					end;
-				end;
+				local whatObj = courseplay:getVarValueFromString(self, button.showWhat);
 				
 				if button.compare == "=" then
 					button.show = tostring(whatObj) == button.showIs;
@@ -94,7 +81,7 @@ function courseplay:render_buttons(self, page)
 				button.show = self.hudpage[2][1][button.parameter] ~= nil;
 			
 			--save course button
-			elseif button.function_to_call == "input_course_name" then
+			elseif button.function_to_call == "showSaveCourseForm" then
 				button.show = self.play and not self.record and not self.record_pause and self.Waypoints ~= nil and table.getn(self.Waypoints) ~= 0;
 			
 			--offset
