@@ -77,3 +77,11 @@ function CourseplayEvent.sendEvent(vehicle, func, value, noEventSend) -- hilfsfu
 	end;
 end
 
+function courseplay:checkForChangeAndBroadcast(self, stringName, variable , variableMemory)
+	if variable ~= variableMemory then
+		CourseplayEvent.sendEvent(self, stringName, variable)
+		variableMemory = variable
+	end
+	return variableMemory
+
+end

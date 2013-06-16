@@ -173,7 +173,7 @@ function courseplay:setVarValueFromString(self, str, value)
 			result = value;
 		end;
 
-		courseplay:debug("					" .. table.concat(what, ".") .."=" .. tostring(result),5);
+		courseplay:debug("					" .. table.concat(what, ".") .." = " .. tostring(result),5);
 	end;
 
 	what = nil;

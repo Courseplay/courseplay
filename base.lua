@@ -669,29 +669,21 @@ function courseplay:update(dt)
 		courseplay:drive(self, dt);
 	end
 
+
 	courseplay:renderInfoText(self);
+	if g_server ~= nil then --TODO find out whether it's a MP game or not
+		self.cp.infoTextMemory = courseplay:checkForChangeAndBroadcast(self, "self.cp.infoText" , self.cp.infoText, self.cp.infoTextMemory)
+		self.cp.globalInfoTextMemory = courseplay:checkForChangeAndBroadcast(self, "self.cp.globalInfoText", self.cp.globalInfoText, self.cp.globalInfoTextMemory)
+		self.cp.globalInfoTextLevelMemory = courseplay:checkForChangeAndBroadcast(self, "self.cp.globalInfoTextLevel", self.cp.globalInfoTextLevel, self.cp.globalInfoTextLevelMemory)
+		
+
+	
+	end
 	if g_server ~= nil then
-		
-		if self.cp.globalInfoText ~= nil and self.cp.globalText == nil then
-			self.cp.globalText = true
-			CourseplayEvent.sendEvent(self, "self.cp.globalInfoText", self.cp.globalInfoText)
-			CourseplayEvent.sendEvent(self, "self.cp.globalInfoTextLevel", self.cp.globalInfoTextLevel)
-			CourseplayEvent.sendEvent(self, "self.working_course_player_num",self.working_course_player_num)
-		end
-
-		if self.cp.infoText ~= self.cp.localTextMemory then
-			CourseplayEvent.sendEvent(self, "self.cp.infoText", self.cp.infoText)
-		end
-
-		if self.cp.globalInfoText == nil and self.cp.globalText == true then
-			self.cp.globalText = nil
-			CourseplayEvent.sendEvent(self, "self.cp.globalInfoText", nil)
-		end
-		
-		self.cp.localTextMemory = self.cp.infoText
 		self.cp.infoText = nil;
 		courseplay:setGlobalInfoText(self, nil, nil);
 	end
+
 end; --END update()
 
 function courseplay:updateTick(dt)

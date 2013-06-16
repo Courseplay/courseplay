@@ -21,11 +21,12 @@ end
 
 function courseplay_manager:draw()
 	if not g_currentMission.missionPDA.showPDA then
-		if table.getn(working_course_players) > 0 then
-			for k,v in pairs(working_course_players) do
-				if v.cp.globalInfoTextOverlay.isRendering then
-					v.cp.globalInfoTextOverlay:render();
-				end;
+		for k,v in pairs(g_currentMission.steerables) do
+			if v.cp == nil then
+				break
+			end
+			if v.cp.globalInfoTextOverlay.isRendering then
+				v.cp.globalInfoTextOverlay:render();
 			end;
 		end;
 	end;

@@ -1,7 +1,9 @@
 -- adds courseplayer to global table, so that the system knows all of them
 function courseplay:add_working_player(self)
 	table.insert(working_course_players, self)
-	return table.getn(working_course_players)
+	local numPlayers = table.getn(working_course_players)
+	CourseplayEvent.sendEvent(self, "self.working_course_player_num", numPlayers)
+	return numPlayers
 end
 
 function courseplay:setGlobalInfoText(self, text, level)
