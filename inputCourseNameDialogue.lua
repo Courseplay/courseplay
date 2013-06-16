@@ -120,9 +120,14 @@ end; --END onIsUnicodeAllowed()
 
 function inputCourseNameDialogue:onSaveClick()
 	--print("inputCourseNameDialogue:onSaveClick()");
-	--print("self.textInputElement.text="..tostring(self.textInputElement.text));
-	
-	courseplay.vehicleToSaveCourseIn.current_course_name = self.textInputElement.text;
+	if self.textInputElement ~= nil then
+		--print("self.textInputElement.text= "..tostring(self.textInputElement.text).."  courseplay.vehicleToSaveCourseIn.current_course_name= "..tostring(courseplay.vehicleToSaveCourseIn.current_course_name));
+		courseplay.vehicleToSaveCourseIn.current_course_name = self.textInputElement.text;
+		CourseplayEvent.sendEvent(courseplay.vehicleToSaveCourseIn, "self.current_course_name", self.textInputElement.text)
+		courseplay.vehicleToSaveCourseIn.cp.doNotOnSaveClick = true
+	else
+		--print("self.textInputElement.text= "..tostring(self.textInputElement).."  courseplay.vehicleToSaveCourseIn.current_course_name= "..tostring(courseplay.vehicleToSaveCourseIn.current_course_name));
+	end
 	if g_currentMission.courseplay_courses == nil then
 		g_currentMission.courseplay_courses = {};
 	end
@@ -144,7 +149,10 @@ function inputCourseNameDialogue:onSaveClick()
 
 	courseplay:save_courses(courseplay.vehicleToSaveCourseIn);
 	
-	self:onCancelClick();
+	if self.textInputElement ~= nil then
+		CourseplayEvent.sendEvent(courseplay.vehicleToSaveCourseIn, "self.cp.onSaveClick",true)
+		self:onCancelClick();
+	end
 end; --END onStartClick()
 
 function inputCourseNameDialogue:onCancelClick()

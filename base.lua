@@ -668,7 +668,12 @@ function courseplay:update(dt)
 	if self.drive then
 		courseplay:drive(self, dt);
 	end
-
+	 
+	if self.cp.onSaveClick and not self.cp.doNotOnSaveClick then
+		inputCourseNameDialogue:onSaveClick()
+		self.cp.onSaveClick = false
+		self.cp.doNotOnSaveClick = false
+	end
 
 	courseplay:renderInfoText(self);
 	if g_server ~= nil then --TODO find out whether it's a MP game or not

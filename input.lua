@@ -27,6 +27,9 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 					--if (button.show == nil or (button.show ~= nil and button.show)) and (button.canBeClicked == nil or (button.canBeClicked ~= nil and button.canBeClicked)) then
 					if courseplay:nilOrBool(button.show, true) and courseplay:nilOrBool(button.canBeClicked, true) then
 						button.isClicked = true;
+						if button.function_to_call == "showSaveCourseForm" then
+							self.cp.imWriting = true
+						end
 						self:setCourseplayFunc(button.function_to_call, parameter);
 					end;
 				end
@@ -59,7 +62,7 @@ function courseplay:setCourseplayFunc(func, value, noEventSend)
 end
 
 function courseplay:deal_with_mouse_input(self, func, value)
-	if Utils.startsWith(func,"self") then
+	if Utils.startsWith(func,"self") or Utils.startsWith(func,"courseplay") then
 		courseplay:debug("					setting value",5)
 		courseplay:setVarValueFromString(self, func, value)
 		--courseplay:debug("					"..tostring(func)..": "..tostring(value),5)
@@ -74,6 +77,7 @@ function courseplay:deal_with_mouse_input(self, func, value)
 	if not isRowFunction then
 		--@source: http://stackoverflow.com/questions/1791234/lua-call-function-from-a-string-with-function-name
 		assert(loadstring('courseplay:' .. func .. '(...)'))(self, value);
+		
 
 	else
 		if self.showHudInfoBase == 0 then

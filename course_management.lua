@@ -5,7 +5,10 @@
 function courseplay:showSaveCourseForm(self)
 	if table.getn(self.Waypoints) > 0 then
 		courseplay.vehicleToSaveCourseIn = self;
-		g_gui:showGui("inputCourseNameDialogue");
+		if self.cp.imWriting then
+			g_gui:showGui("inputCourseNameDialogue");
+			self.cp.imWriting = false
+		end
 	end;
 end;
 
