@@ -520,17 +520,18 @@ function courseplay:showHud(self)
 
 
 		--VERSION INFO
-		if courseplay.version ~= " [no version specified]" then
-			courseplay:setFontSettings("white", false, "right");
-			local versionText = Utils.splitString(".", courseplay.version);
-			renderText(courseplay.hud.visibleArea.x2 - 0.008, courseplay.hud.infoBasePosY + 0.015, 0.012, "v" .. versionText[1] .. "." .. versionText[2]);
-			if table.getn(versionText) < 3 then
+		courseplay:setFontSettings("white", false, "right");
+		if courseplay.versionDisplay ~= nil then
+			renderText(courseplay.hud.visibleArea.x2 - 0.008, courseplay.hud.infoBasePosY + 0.015, 0.012, "v" .. courseplay.versionDisplay[1] .. "." .. courseplay.versionDisplay[2]);
+			if table.getn(courseplay.versionDisplay) < 3 then
 				renderText(courseplay.hud.visibleArea.x2 - 0.008, courseplay.hud.infoBasePosY + 0.003, 0.012, ".0000");
 			else
-				renderText(courseplay.hud.visibleArea.x2 - 0.008, courseplay.hud.infoBasePosY + 0.003, 0.012, "." .. versionText[3]);
+				renderText(courseplay.hud.visibleArea.x2 - 0.008, courseplay.hud.infoBasePosY + 0.003, 0.012, "." .. courseplay.versionDisplay[3]);
 			end;
+		else
+			renderText(courseplay.hud.visibleArea.x2 - 0.008, courseplay.hud.infoBasePosY + 0.015, 0.012, "no");
+			renderText(courseplay.hud.visibleArea.x2 - 0.008, courseplay.hud.infoBasePosY + 0.003, 0.012, "version");
 		end;
-
 
 		--HUD TITLES
 		courseplay:setFontSettings("white", true, "left");

@@ -45,6 +45,9 @@ end
 function cp_getSetVersion()
 	local cp_modDesc_file = loadXMLFile("cp_modDesc", courseplay.path .. "modDesc.xml");
 	courseplay.version = Utils.getNoNil(getXMLString(cp_modDesc_file, "modDesc.version"), " [no version specified]");
+	if courseplay.version ~= " [no version specified]" then
+		courseplay.versionDisplay = Utils.splitString(".", courseplay.version);
+	end;
 end;
 
 -- dirty workaround for localization - don't try this at home!
