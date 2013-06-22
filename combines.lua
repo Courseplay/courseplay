@@ -90,12 +90,15 @@ function courseplay:update_combines(self)
 		dnx = math.cos(angle) * -2
 		dnz = math.sin(angle) * -2
 		hx, hy, hz = localToWorld(self.aiTractorDirectionNode, dnx, 0, dnz)
-		local area1, area2 = Utils.getDensity(terrain, 2, x, z, lx, lz, hx, hz)
-		local area3  = Utils.getDensity(terrain, 3, x, z, lx, lz, hx, hz)
-		area1 = area1 + area3
-		area1 = area1 + Utils.getDensity(terrain, 0, x, z, lx, lz, hx, hz)
-		area1 = area1 + Utils.getDensity(terrain, 1, x, z, lx, lz, hx, hz)
-		if area2 * 0.999 <= area1 and courseplay:combine_allows_tractor(self, combine) then
+		local area0, area = Utils.getDensity(terrain, 0, x, z, lx, lz, hx, hz)
+		local area1 = Utils.getDensity(terrain, 1, x, z, lx, lz, hx, hz)
+		local area2 = Utils.getDensity(terrain, 2, x, z, lx, lz, hx, hz)
+		local area3 = Utils.getDensity(terrain, 3, x, z, lx, lz, hx, hz)
+		areaAll = area0 + area1 + area2 + area3
+		courseplay:debug("channel0: "..tostring(area0).."  channel1: "..tostring(area1).."  channel2: "..tostring(area2).."  channel3: "..tostring(area3),4)
+		courseplay:debug("area: "..tostring(area).."  field in area: "..tostring(areaAll),4)
+		if area * 0.999 <= areaAll and courseplay:combine_allows_tractor(self, combine) then
+			courseplay:debug(nameNum(self)..": adding "..tostring(combine.name).." to reachable combines list",4)
 			table.insert(self.reachable_combines, combine)
 		end
 	end
