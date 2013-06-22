@@ -731,12 +731,16 @@ end
 function courseplay:readStream(streamId, connection)
 	courseplay:debug("id: "..tostring(self.id).."  base: readStream", 5)
 
-	
+	self.cp.globalInfoText = streamReadString(streamId);
+	self.cp.globalInfoTextLevel = streamReadFloat32(streamId)
+	self.cp.globalInfoTextOverlay.isRendering = streamReadBool(streamId);
+	self.cp.infoText = streamReadString(streamId); 
+	self.working_course_player_num = streamReadFloat32(streamId)
 
 -----------------------------------------------------------------------
 
 
-	self.abortWork = streamDebugReadInt32(streamId)
+	--[[self.abortWork = streamDebugReadInt32(streamId)
 	self.ai_mode = streamDebugReadInt32(streamId)
 	self.ai_state = streamDebugReadInt32(streamId)
 	self.allow_following = streamDebugReadBool(streamId)
@@ -749,7 +753,7 @@ function courseplay:readStream(streamId, connection)
 	self.courseplay_position = streamDebugReadInt32(streamId)
 	self.CPnumCollidingVehicles = streamDebugReadInt32(streamId)
 	self.cpTrafficBrake = streamDebugReadBool(streamId)
-	self.cp.globalInfoTextOverlay.isRendering = streamDebugReadBool(streamId);
+	
 	self.cp.hasFoundCopyDriver = streamDebugReadBool(streamId);
 	self.cp.hasStartingCorner = streamDebugReadBool(streamId);
 	self.cp.hasStartingDirection = streamDebugReadBool(streamId);
@@ -839,9 +843,10 @@ function courseplay:readStream(streamId, connection)
 	self.waitPoints = streamDebugReadInt32(streamId)
 	self.waitTime = streamDebugReadInt32(streamId)
 	self.waitTimer = streamDebugReadInt32(streamId)
-	self.working_course_player_num = streamDebugReadInt32(streamId)
+	
 	self.WpOffsetX = streamDebugReadFloat32(streamId)
 	self.WpOffsetZ = streamDebugReadFloat32(streamId)
+	]]
 
 	local saved_combine_id = streamDebugReadInt32(streamId)
 	if saved_combine_id then
@@ -881,9 +886,14 @@ function courseplay:writeStream(streamId, connection)
 	courseplay:debug("id: "..tostring(networkGetObjectId(self)).."  base: write stream", 5)
 	
 	
+	streamWriteString(streamId, self.cp.globalInfoText);
+	streamWriteFloat32(streamId, self.cp.globalInfoTextLevel);
+	streamWriteBool(streamId, self.cp.globalInfoTextOverlay.isRendering);
+	streamWriteString(streamId, self.cp.infoText);
+	streamWriteFloat32(streamId,self.working_course_player_num);
 
 -----------------------------------------------------------------------------
-	streamDebugWriteInt32(streamId,self.abortWork)
+	--[[streamDebugWriteInt32(streamId,self.abortWork)
 	streamDebugWriteInt32(streamId,self.ai_mode)
 	streamDebugWriteInt32(streamId,self.ai_state)
 	streamDebugWriteBool(streamId, self.allow_following)
@@ -896,7 +906,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteInt32(streamId,self.courseplay_position)
 	streamDebugWriteInt32(streamId,self.CPnumCollidingVehicles)
 	streamDebugWriteBool(streamId, self.cpTrafficBrake)
-	streamDebugWriteBool(streamId, self.cp.globalInfoTextOverlay.isRendering);
+	
 	streamDebugWriteBool(streamId, self.cp.hasFoundCopyDriver);
 	streamDebugWriteBool(streamId, self.cp.hasStartingCorner);
 	streamDebugWriteBool(streamId, self.cp.hasStartingDirection);
@@ -986,9 +996,10 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteInt32(streamId,self.waitPoints)
 	streamDebugWriteInt32(streamId,self.waitTime)
 	streamDebugWriteInt32(streamId,self.waitTimer)
-	streamDebugWriteInt32(streamId,self.working_course_player_num)
+	
 	streamDebugWriteFloat32(streamId,self.WpOffsetX)
 	streamDebugWriteFloat32(streamId,self.WpOffsetZ)
+	]]
 
 	local saved_combine_id = nil
 	if self.saved_combine ~= nil then

@@ -12,6 +12,7 @@ end
 
 function CourseplayEvent:new(vehicle, func, value)
 	self.vehicle = vehicle;
+	self.messageNumber = Utils.getNoNil(self.messageNumber,0) +1
 	self.func = func
 	self.value = value;
 	self.type = type(value)
@@ -21,27 +22,30 @@ end
 function CourseplayEvent:readStream(streamId, connection) -- wird aufgerufen wenn mich ein Event erreicht
 	local id = streamReadInt32(streamId);
 	self.vehicle = networkGetObject(id);
+	local messageNumber = streamReadFloat32(streamId);
 	self.func = streamReadString(streamId);
 	self.type = streamReadString(streamId);
 	if self.type == "boolean" then
 		self.value = streamReadBool(streamId);
 	elseif self.type == "string" then
 		self.value = streamReadString(streamId);
-	elseif self.type == "nil" or self.type == nil  then
-		self.value = nil
+	elseif self.type == "nil" then
+		local dummy = streamReadFloat32(streamId); 
+		self.value = "nil"
 	else 
 		self.value = streamReadFloat32(streamId);
 	end
 	courseplay:debug("	readStream",5)
-	courseplay:debug("		id: "..tostring(networkGetObjectId(self.vehicle).."  function: "..tostring(self.func).."  self.value: "..tostring(self.value).."  self.type: "..self.type),5)
+	courseplay:debug("		id: "..tostring(networkGetObjectId(self.vehicle).."/"..tostring(messageNumber).."  function: "..tostring(self.func).."  self.value: "..tostring(self.value).."  self.type: "..self.type),5)
 
 	self:run(connection);
 end
 
 function CourseplayEvent:writeStream(streamId, connection)  -- Wird aufgrufen wenn ich ein event verschicke (merke: reihenfolge der Daten muss mit der bei readStream uebereinstimmen 
 	courseplay:debug("		writeStream",5)
-	courseplay:debug("			id: "..tostring(networkGetObjectId(self.vehicle).."  function: "..tostring(self.func).."  value: "..tostring(self.value).."  type: "..tostring(self.type)),5)
+	courseplay:debug("			id: "..tostring(networkGetObjectId(self.vehicle).."/"..tostring(self.messageNumber).."  function: "..tostring(self.func).."  value: "..tostring(self.value).."  type: "..tostring(self.type)),5)
 	streamWriteInt32(streamId, networkGetObjectId(self.vehicle));
+	streamWriteFloat32(streamId, self.messageNumber);
 	streamWriteString(streamId, self.func);
 	streamWriteString(streamId, self.type);
 	if self.type == "boolean" then
