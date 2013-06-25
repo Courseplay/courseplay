@@ -96,7 +96,7 @@ function courseplay:drive(self, dt)
 					refSpeed = self.turn_speed
 				end
 				if distance_to_wp < 15 then
-					self:setIsThreshing(true, true)
+					self:setIsThreshing(true)
 				end
 				if math.abs(self.lastaiThreshingDirectionX) > 0.1 then
 					if math.abs(self.target_x7-ctx7)< 5 then

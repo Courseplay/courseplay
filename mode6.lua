@@ -390,7 +390,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 							end;
 						end;
 						if not courseplay:isFolding(workTool) and not tool.isThreshing then
-							tool:setIsThreshing(true, true);
+							tool:setIsThreshing(true);
 							if pipeState > 0 then
 								tool:setPipeState(pipeState);
 							else
@@ -409,13 +409,13 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 							end;
 						end;
 						if not courseplay:isFolding(workTool) and tool.grainTankFillLevel < tool.grainTankCapacity and not tool.waitingForDischarge and not tool.isThreshing and not weatherStop then
-							tool:setIsThreshing(true, true);
+							tool:setIsThreshing(true);
 						end
 						
 						if tool.grainTankFillLevel >= tool.grainTankCapacity or tool.waitingForDischarge then
 							tool.waitingForDischarge = true
 							allowedToDrive = false;
-							tool:setIsThreshing(false, true);
+							tool:setIsThreshing(false);
 							if tool.grainTankFillLevel < tool.grainTankCapacity*0.8 then
 								tool.waitingForDischarge = false
 							end
@@ -423,7 +423,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 
 						if weatherStop then
 							allowedToDrive = false;
-							tool:setIsThreshing(false, true);
+							tool:setIsThreshing(false);
 							courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPwaitingForWeather"));
 						end
 							
@@ -441,7 +441,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,true,false,false,allowedToDrive,nil)
 				end
 				if not specialTool then
-					tool:setIsThreshing(false, true);
+					tool:setIsThreshing(false);
 					if courseplay:isFoldable(workTool) and isEmpty then
 						if workTool.cp.inversedFoldDirection then
 							workTool:setFoldDirection(-1);

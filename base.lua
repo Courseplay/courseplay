@@ -843,9 +843,12 @@ function courseplay:readStream(streamId, connection)
 		self.loaded_courses = courses:split(",")
 		courseplay:reload_courses(self, true)
 	end
-
-	courseplay.debugChannels[5] = streamDebugReadBool(streamId)
-
+	
+	local debugChannelsString = streamDebugReadString(streamId)
+	
+	for k,v in pairs(Utils.splitString(",", debugChannelsString)) do
+		courseplay.debugChannels[k] = v == "true";
+	end;
 end
 
 function courseplay:writeStream(streamId, connection)
@@ -924,8 +927,9 @@ function courseplay:writeStream(streamId, connection)
 	end
 	streamDebugWriteString(streamId, loaded_courses) -- 60.
 
-	streamDebugWriteBool(streamId, courseplay.debugChannels[5]) 
-
+	local debugChannelsString = table.concat(table.map(courseplay.debugChannels, tostring), ",");
+	
+	streamDebugWriteString(streamId, debugChannelsString) 
 
 end
 
