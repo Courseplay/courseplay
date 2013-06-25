@@ -30,8 +30,7 @@ function CourseplayEvent:readStream(streamId, connection) -- wird aufgerufen wen
 	elseif self.type == "string" then
 		self.value = streamReadString(streamId);
 	elseif self.type == "nil" then
-		local dummy = streamReadFloat32(streamId); 
-		self.value = "nil"
+		self.value = streamReadString(streamId);
 	else 
 		self.value = streamReadFloat32(streamId);
 	end
@@ -52,6 +51,8 @@ function CourseplayEvent:writeStream(streamId, connection)  -- Wird aufgrufen we
 		streamWriteBool(streamId, self.value);
 	elseif self.type == "string" then
 		streamWriteString(streamId, self.value);
+	elseif self.type == "nil" then
+		streamWriteString(streamId, "nil");
 	else
 		streamWriteFloat32(streamId, self.value);
 	end

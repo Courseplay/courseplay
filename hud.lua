@@ -33,23 +33,18 @@ function courseplay:loadHud(self)
 		self.hudInfoBaseOverlay:render();
 		if self.showHudInfoBase == 0 then
 			local combine = self;
-			if self.cp.attachedCombineIdx ~= nil and self.tippers ~= nil and self.tippers[self.cp.attachedCombineIdx] ~= nil then
-				combine = self.tippers[self.cp.attachedCombineIdx];
-			end;
-
 			-- no courseplayer!
-			if combine.courseplayers == nil or table.getn(combine.courseplayers) == 0 then
-				if combine.wants_courseplayer then
+			if self.cp.HUD0noCourseplayer then
+				if self.cp.HUD0wantsCourseplayer then
 					self.hudpage[0][1][1] = courseplay:get_locale(self, "CoursePlayCalledPlayer")
 				else
 					self.hudpage[0][1][1] = courseplay:get_locale(self, "CoursePlayCallPlayer")
 				end
 			else
 				self.hudpage[0][1][1] = courseplay:get_locale(self, "CoursePlayPlayer")
-				local tractor = combine.courseplayers[1]
-				self.hudpage[0][2][1] = tractor.name
+				self.hudpage[0][2][1] = self.cp.HUD0tractorName
 
-				if tractor.forced_to_stop then
+				if self.cp.HUD0tractorForcedToStop then
 					self.hudpage[0][1][2] = courseplay:get_locale(self, "CoursePlayPlayerStart")
 				else
 					self.hudpage[0][1][2] = courseplay:get_locale(self, "CoursePlayPlayerStop")
@@ -58,23 +53,22 @@ function courseplay:loadHud(self)
 
 				--chopper
 				if combine.cp.isChopper then
-					local tractor = combine.courseplayers[1]
-					if tractor ~= nil then
+					if self.cp.HUD0tractor then
 						self.hudpage[0][1][4] = courseplay:get_locale(self, "CoursePlayPlayerSwitchSide")
-						if combine.forced_side == "left" then
+						if self.cp.HUD0combineForcedSide == "left" then
 							self.hudpage[0][2][4] = courseplay:get_locale(self, "CoursePlayPlayerSideLeft")
-						elseif combine.forced_side == "right" then
+						elseif self.cp.HUD0combineForcedSide == "right" then
 							self.hudpage[0][2][4] = courseplay:get_locale(self, "CoursePlayPlayerSideRight")
 						else
 							self.hudpage[0][2][4] = courseplay:get_locale(self, "CoursePlayPlayerSideNone")
 						end
 						
 						--manual chopping: initiate/end turning maneuver
-						if not self.drive and not combine.isAIThreshing then
+						if self.cp.HUD0isManual then
 							self.hudpage[0][1][5] = courseplay:get_locale(self, "CPturnManeuver");
-							if self.cp.turnStage == 0 then
+							if self.cp.HUD0turnStage == 0 then
 								self.hudpage[0][2][5] = courseplay:get_locale(self, "CPStart");
-							elseif self.cp.turnStage == 1 then
+							elseif self.cp.HUD0turnStage == 1 then
 								self.hudpage[0][2][5] = courseplay:get_locale(self, "CPEnd");
 							end;
 						end
@@ -107,14 +101,14 @@ function courseplay:loadHud(self)
 						last_recordnumber = 1
 					end
 
-					if (self.Waypoints[last_recordnumber].wait and self.wait) or (self.StopEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil)) then
+					if self.cp.HUD1goOn then
 						self.hudpage[1][1][2] = courseplay:get_locale(self, "CourseWaitpointStart")
 					end
 
 					self.hudpage[1][1][1] = courseplay:get_locale(self, "CoursePlayStop")
 
 
-					if not self.loaded and self.ai_mode ~= 5 then
+					if self.cp.HUD1noWaitforFill then
 						self.hudpage[1][1][3] = courseplay:get_locale(self, "NoWaitforfill")
 					end
 
@@ -278,18 +272,18 @@ function courseplay:loadHud(self)
 			--self.hudpage[4][1][4]= courseplay:get_locale(self, "CPMaxHireables") -- "Aktuell:"
 			--self.hudpage[4][2][4] = string.format("%d", g_currentMission.maxNumHirables)
 
-			if self.active_combine ~= nil then
-				self.hudpage[4][2][3] = self.active_combine.name
+			if self.cp.HUD4hasActiveCombine then
+				self.hudpage[4][2][3] = self.cp.HUD4combineName
 			else
 				self.hudpage[4][2][3] = courseplay:get_locale(self, "CPNone") -- "keiner"
 			end
 
-			if self.saved_combine ~= nil and self.saved_combine.rootNode ~= nil then
-				local combine_name = self.saved_combine.name
-				if combine_name == nil then
-					combine_name = courseplay:get_locale(self, "CPCombine");
+			if self.cp.HUD4savedCombine then
+				
+				if self.cp.HUD4savedCombineName == nil then
+					self.cp.HUD4savedCombineName = courseplay:get_locale(self, "CPCombine");
 				end
-				self.hudpage[4][2][1] = combine_name .. " (" .. string.format("%d", courseplay:distance_to_object(self, self.saved_combine)) .. "m)"
+				self.hudpage[4][2][1] = self.cp.HUD4savedCombineName .. " (" .. string.format("%d", courseplay:distance_to_object(self, self.saved_combine)) .. "m)"
 			else
 				self.hudpage[4][2][1] = courseplay:get_locale(self, "CPNone") -- "keiner"
 			end

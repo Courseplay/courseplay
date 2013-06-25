@@ -167,6 +167,30 @@ function cp_setupGlobalData()
 	11	mode7
 	12	all other debugs (uncategorized)
 	--]]
+
+	courseplay.checkValues = {
+		"infoText",
+		"globalInfoText",
+		"globalInfoTextLevel",
+		"HUD0noCourseplayer",
+		"HUD0wantsCourseplayer",
+		"HUD0tractorName",
+		"HUD0tractorForcedToStop",
+		"HUD0tractor",
+		"HUD0combineForcedSide",
+		"HUD0isManual",
+		"HUD0turnStage",
+		"HUD1notDrive",
+		"HUD1goOn",
+		"HUD1noWaitforFill",
+		"HUD4combineName",
+		"HUD4hasActiveCombine",
+		"HUD4savedCombine",
+		"HUD4savedCombineName"
+	}
+
+
+
 end;
 
 cp_getSetVersion();
