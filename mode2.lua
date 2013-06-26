@@ -439,11 +439,11 @@ function courseplay:unload_combine(self, dt)
 					local fx,fy,fz = localToWorld(self.rootNode, 0, 0, 8)
 					local sx,sy,sz = localToWorld(self.rootNode, 0 , 0, -self.turn_radius-trailer_offset)
 					if courseplay:is_field(fx, fz) then
-						courseplay:debug(nameNum(self) .. ": target is on field", 4)
+						courseplay:debug(nameNum(self) .. ": 1st target is on field", 4)
 						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 0 , 0, 5);	
 						mode = 5
 					elseif courseplay:is_field(sx, sz) then
-						courseplay:debug(nameNum(self) .. ": target is not on field", 4)
+						courseplay:debug(nameNum(self) .. ": 2nd target is on field", 4)
 						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 2 , 0, -self.turn_radius);
 						courseplay:set_next_target(self, 0 ,  -self.turn_radius-trailer_offset);
 						mode = 5
@@ -451,38 +451,35 @@ function courseplay:unload_combine(self, dt)
 						courseplay:debug(nameNum(self) .. ": backup- back to start", 4)
 						self.target_x,self.target_y, self.target_z  = localToWorld(self.rootNode, 2 , 0, -self.turn_radius-trailer_offset)
 						courseplay:set_next_target(self, DirTx, DirTz);
-
 						mode = 5
 					end					
 				else
 					courseplay:debug(nameNum(self) .. ": I'm left, fruit is left", 4)
-					local fx,fy,fz = localToWorld(self.rootNode, 2*offset*-1, 0, -self.turn_radius-trailer_offset)
-					local tx,ty,tz = localToWorld(self.rootNode, 2*offset*-1, 0, -(2*self.turn_radius)-trailer_offset)
+					local fx,fy,fz = localToWorld(self.rootNode, 3*offset*-1, 0, -self.turn_radius-trailer_offset)
+					local tx,ty,tz = localToWorld(self.rootNode, 3*offset*-1, 0, -(2*self.turn_radius)-trailer_offset)
 					if courseplay:is_field(fx, fz) then
 						courseplay:debug(nameNum(self) .. ": deepest waypoint is on field", 4)
 						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 2, 0, -self.turn_radius-trailer_offset);
-						courseplay:set_next_target(self, 2*offset*-1 ,  -self.turn_radius-trailer_offset);
-						fx,fy,fz = localToWorld(self.rootNode, 2*offset*-1, 0, 0)
-						sx,sy,sz = localToWorld(self.rootNode, 2*offset*-1, 0, -(2*self.turn_radius)-trailer_offset)
+						courseplay:set_next_target(self, 3*offset*-1 ,  -self.turn_radius-trailer_offset);
+						fx,fy,fz = localToWorld(self.rootNode, 3*offset*-1, 0, 0)
+						sx,sy,sz = localToWorld(self.rootNode, 3*offset*-1, 0, -(2*self.turn_radius)-trailer_offset)
 						if courseplay:is_field(fx, fz) then
-							courseplay:debug(nameNum(self) .. ": target is on field", 4)
-							courseplay:set_next_target(self, 2*offset*-1,0);
+							courseplay:debug(nameNum(self) .. ": 1st target is on field", 4)
+							courseplay:set_next_target(self, 3*offset*-1,0);
 						elseif courseplay:is_field(sx, sz) then
-							courseplay:debug(nameNum(self) .. ": target is not on field",4)
-							courseplay:set_next_target(self, 2*offset*-1 ,  -(2*self.turn_radius)-trailer_offset);
+							courseplay:debug(nameNum(self) .. ": 2nd target is on field",4)
+							courseplay:set_next_target(self, 3*offset*-1 ,  -(2*self.turn_radius)-trailer_offset);
 						else
 							courseplay:debug(nameNum(self) .. ": backup- back to start", 4)
 							self.target_x, self.target_z  = self.Waypoints[self.maxnumber].cx, self.Waypoints[self.maxnumber].cz
-
-
 						end
 						mode = 5
 					elseif courseplay:is_field(tx, tz) then		
 						courseplay:debug(nameNum(self) .. ": deepest waypoint is not on field", 4)
 						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, self.turn_radius, 0, 0);
 						courseplay:set_next_target(self, 0 ,  -(2*trailer_offset));
-						courseplay:set_next_target(self, 2*offset*-1 ,  -(2*trailer_offset));
-						courseplay:set_next_target(self, 2*offset*-1 , self.turn_radius);
+						courseplay:set_next_target(self, 3*offset*-1 ,  -(2*trailer_offset));
+						courseplay:set_next_target(self, 3*offset*-1 , self.turn_radius);
 						mode = 5
 					else
 						courseplay:debug(nameNum(self) .. ": backup- back to start", 4)
@@ -494,21 +491,21 @@ function courseplay:unload_combine(self, dt)
 			else
 				if fruitSide == "right" or fruitSide == "none" then 
 					courseplay:debug(nameNum(self) .. ": I'm right, fruit is right", 4)
-					local fx,fy,fz = localToWorld(self.rootNode, 2*offset, 0, -self.turn_radius-trailer_offset)
-					local sx,sy,sz = localToWorld(self.rootNode, 2*offset,0,  -(2*trailer_offset))
+					local fx,fy,fz = localToWorld(self.rootNode, 3*offset, 0, -self.turn_radius-trailer_offset)
+					local sx,sy,sz = localToWorld(self.rootNode, 3*offset,0,  -(2*trailer_offset))
 					if courseplay:is_field(fx, fz) then
 						courseplay:debug(nameNum(self) .. ": deepest waypoint is on field", 4)
 						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, -4, 0, -self.turn_radius-trailer_offset);
-						courseplay:set_next_target(self, 2*offset ,  -self.turn_radius-trailer_offset);
-						fx,fy,fz = localToWorld(self.rootNode, 2*offset, 0, 0)
-						sx,sy,sz = localToWorld(self.rootNode, 2*offset,  -(2*self.turn_radius)-trailer_offset)
+						courseplay:set_next_target(self, 3*offset ,  -self.turn_radius-trailer_offset);
+						fx,fy,fz = localToWorld(self.rootNode, 3*offset, 0, 0)
+						sx,sy,sz = localToWorld(self.rootNode, 3*offset,  -(2*self.turn_radius)-trailer_offset)
 						if courseplay:is_field(fx, fz) then
-							courseplay:debug(nameNum(self) .. ": target is on field", 4)
-							courseplay:set_next_target(self, 2*offset,0);
+							courseplay:debug(nameNum(self) .. ": 1st target is on field", 4)
+							courseplay:set_next_target(self, 3*offset,0);
 
 						elseif courseplay:is_field(sx, sz) then
-							courseplay:debug(nameNum(self) .. ": target is not on field", 4)
-							courseplay:set_next_target(self, 2*offset,  -(2*self.turn_radius)-trailer_offset);
+							courseplay:debug(nameNum(self) .. ": 2nd target is on field", 4)
+							courseplay:set_next_target(self, 3*offset,  -(2*self.turn_radius)-trailer_offset);
 						else
 							courseplay:debug(nameNum(self) .. ": backup- back to start", 4)
 							self.target_x,self.target_y, self.target_z  = localToWorld(self.rootNode, -2 , 0, -self.turn_radius-trailer_offset)
@@ -520,8 +517,8 @@ function courseplay:unload_combine(self, dt)
 						courseplay:debug(nameNum(self) .. ": deepest waypoint is not on field", 4)
 						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, -self.turn_radius, 0, 0);
 						courseplay:set_next_target(self, 0 ,  -(2*trailer_offset));
-						courseplay:set_next_target(self, 2*offset,  -(2*trailer_offset));
-						courseplay:set_next_target(self, 2*offset, self.turn_radius);
+						courseplay:set_next_target(self, 3*offset,  -(2*trailer_offset));
+						courseplay:set_next_target(self, 3*offset, self.turn_radius);
 						mode = 5
 					else
 						courseplay:debug(nameNum(self) .. ": backup- back to start", 4)
@@ -534,11 +531,11 @@ function courseplay:unload_combine(self, dt)
 					local fx,fy,fz = localToWorld(self.rootNode, 0, 0, 3)
 					local sx,sy,sz = localToWorld(self.rootNode, 0,0, -self.turn_radius-trailer_offset)
 					if courseplay:is_field(fx, fz) then
-						courseplay:debug(nameNum(self) .. ": target is on field", 4)
+						courseplay:debug(nameNum(self) .. ": 1st target is on field", 4)
 						mode = 1
 
 					elseif courseplay:is_field(sx, sz) then
-						courseplay:debug(nameNum(self) .. ": target is not on field", 4)
+						courseplay:debug(nameNum(self) .. ": 2nd target is on field", 4)
 						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, -2 , 0, -self.turn_radius);
 						courseplay:set_next_target(self, 0, -self.turn_radius-trailer_offset);
 						mode = 5

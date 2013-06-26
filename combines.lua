@@ -146,7 +146,7 @@ function courseplay:register_at_combine(self, combine)
 	end
 
 	--THOMAS' best_combine START
-	if combine.cp.isCombine then
+	if combine.cp.isCombine or courseplay:isAttachedCombine(combine) then
 		local distance = 9999999
 		local vehicle_ID = 0
 		for k, vehicle in pairs(g_currentMission.vehicles) do --TODO: Liste einengen, nur Courseplayers
