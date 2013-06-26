@@ -16,6 +16,10 @@ function courseplay:drive(self, dt)
 				cx7, cz7 = self.Waypoints[self.maxnumber].cx, self.Waypoints[self.maxnumber].cz
 				local lx7, lz7 = AIVehicleUtil.getDriveDirection(self.rootNode, cx7, cty7, cz7);
 				local fx,fy,fz = localToWorld(self.rootNode, 0, 0, -3*self.turn_radius)
+				local x7,y7,z7 = localToWorld(self.rootNode, 0, 0, -15)
+				self.cp.mode7tx7 = x7
+				self.cp.mode7ty7 = y7
+				self.cp.mode7tz7 = z7
 				if courseplay:is_field(fx, fz) or self.grainTankFillLevel >= self.grainTankCapacity*0.99 then
 					self.lastaiThreshingDirectionX = self.aiThreshingDirectionX
 					self.lastaiThreshingDirectionZ = self.aiThreshingDirectionZ
@@ -34,10 +38,10 @@ function courseplay:drive(self, dt)
 						courseplay:set_next_target(self, 0 ,3);
 					end
 					self.cp.mode7Unloading = true
+					self.cp.mode7GoBackBeforeUnloading = true
 					courseplay:start(self)
 					self.sl = 3
 					refSpeed = self.field_speed
-					self.recordnumber = 2
 				else 
 					return
 				end
@@ -47,6 +51,13 @@ function courseplay:drive(self, dt)
 		elseif self.cp.mode7Unloading then
 			self.sl = 3
 			refSpeed = self.field_speed
+			if self.cp.mode7GoBackBeforeUnloading then
+				local dist = courseplay:distance_to_point(self, self.cp.mode7tx7,self.cp.mode7ty7,self.cp.mode7tz7)
+				if  dist  < 1 then
+					self.cp.mode7GoBackBeforeUnloading = false
+					self.recordnumber = 2
+				end
+			end
 		else
 			allowedToDrive = false
 			courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPWorkEnd"), 1);
@@ -170,7 +181,11 @@ function courseplay:drive(self, dt)
 	if self.ai_mode ~= 7 then 
 		cx, cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
 	elseif self.ai_mode == 7 and self.ai_state ~=5 then
-		cx, cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
+		if not self.cp.mode7GoBackBeforeUnloading then
+			cx, cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
+		else
+			cx,cz = self.cp.mode7tx7, self.cp.mode7tz7
+		end
 	end
 
 	if courseplay.debugChannels[12] then
@@ -726,6 +741,12 @@ function courseplay:drive(self, dt)
 	if self.cpTrafficBrake then
 		fwd = false
 	end  	
+
+	if self.cp.mode7GoBackBeforeUnloading then
+		fwd = false
+		lz = lz * -1
+		lx = lx * -1
+	end
 
 	-- go, go, go!
 	if self.recordnumber == 1 or self.recordnumber == self.maxnumber - 1 or self.Waypoints[self.recordnumber].turn then
