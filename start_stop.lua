@@ -172,6 +172,7 @@ function courseplay:start(self)
 	self.checkSpeedLimit = false
 	self.runOnceStartCourse = true;
 	self.drive = true;
+	self.cp.maxFieldSpeed = 0
 
 	self.record = false
 	self.dcheck = false

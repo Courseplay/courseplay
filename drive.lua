@@ -712,9 +712,12 @@ function courseplay:drive(self, dt)
 
 
 	-- Speed Control
-	
+	if self.cp.maxFieldSpeed ~= 0 then
+		refSpeed = self.cp.maxFieldSpeed
+	end
+
 	courseplay:setSpeed(self, refSpeed, self.sl)
-		
+
 	if self.ESLimiter ~= nil and self.ESLimiter.maxRPM[5] == nil then
 		self.cp.infoText = courseplay:get_locale(self, "CPWrongESLversion")
 	end

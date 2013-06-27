@@ -21,7 +21,7 @@ function courseplay:isHarvesterSteerable(workTool)
 	return workTool.typeName == "selfPropelledPotatoHarvester" or Utils.endsWith(workTool.configFileName, "grimmeMaxtron620.xml") or Utils.endsWith(workTool.configFileName, "grimmeTectron415.xml");
 end;
 function courseplay:isBaler(workTool) -- is the tool a baler?
-	return (SpecializationUtil.hasSpecialization(Baler, workTool.specializations) or workTool.balerUnloadingState ~= nil);
+	return (SpecializationUtil.hasSpecialization(Baler, workTool.specializations) or workTool.balerUnloadingState ~= nil or courseplay:isSpecialBaler(workTool));
 end;
 function courseplay:isRoundbaler(workTool) -- is the tool a roundbaler?
 	return courseplay:isBaler(workTool) and workTool.baleCloseAnimationName ~= nil and workTool.baleUnloadAnimationName ~= nil;

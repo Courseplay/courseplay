@@ -21,6 +21,11 @@ function courseplay:isSpecialChopper(workTool)
 	return false
 end
 
+function courseplay:isSpecialBaler(workTool)
+	return Utils.endsWith(workTool.configFileName, "Claas_Quadrant_1200.xml")
+end
+
+
 function courseplay:isSpecialCombine(workTool, specialType, fileNames)
 	if specialType ~= nil then
 		if specialType == "sugarBeetLoader" then
@@ -53,8 +58,53 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 	if workTool.PTOId then
 		workTool:setPTO(false)
 	end
+	
+	--Claas Quadrant 1200
+	if Utils.endsWith(workTool.configFileName, "Claas_Quadrant_1200.xml") then
+		if unfold ~= nil and turnOn ~= nil and lower ~= nil then
+			if not unfold then
+				workTool:emptyBaler(true);
+				workTool:setPTO(true)
+			end
+			local pickup = lower and turnOn
+			if workTool.sl.isOpen ~= unfold then
+				workTool:openSlide(unfold);
+			end
+			if workTool.pu.bDown ~= pickup then
+				workTool:releasePickUp(pickup)
+			end
+			if workTool.isTurnedOn ~= unfold then
+				workTool.isTurnedOn = unfold
+			end
+
+			--speed regulation
+			if workTool.isBlocked then 
+				allowedToDrive = false
+			end
+			workTool.blockMaxTime = 10000
+			if workTool.actLoad2 == 1 then
+				if workTool.blockTimer > workTool.blockMaxTime *0.8 then
+					self.cp.maxFieldSpeed = 7/3600
+					allowedToDrive = false
+				end
+			end
+			if workTool.actLoad_IntSend < 0.8 and not workTool.isBlocked and workTool.actLoad_IntSend ~= 0 then
+				self.cp.maxFieldSpeed = self.cp.maxFieldSpeed + 0.02/3600
+			end
+			if workTool.actLoad_IntSend == 0 and self.cp.maxFieldSpeed == 0 then
+				self.cp.maxFieldSpeed = 4/3600
+			end
+			if workTool.actLoad_IntSend > 0.9 and self.cp.maxFieldSpeed > 1/3600 then
+				self.cp.maxFieldSpeed = self.cp.maxFieldSpeed - 0.05/3600
+			end
+			--speed regulation END
+
+		end
+		
+		return true ,allowedToDrive
+
 	--Ursus Z586 BaleWrapper
-	if Utils.endsWith(workTool.configFileName, "ursusZ586.xml") then
+	elseif Utils.endsWith(workTool.configFileName, "ursusZ586.xml") then
 		
 		if workTool.baleWrapperState == 4 then
 			workTool:doStateChange(5)
