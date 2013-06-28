@@ -756,11 +756,7 @@ end
 
 
 function courseplay:get_locale(self, key)
-	if courseplay.locales[key] ~= nil then
-		return courseplay.locales[key];
-	else
-		return key;
-	end;
+	return Utils.getNoNil(courseplay.locales[key], key);
 end
 
 
@@ -930,27 +926,27 @@ end
 
 function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 	if not resetVehicles and g_server ~= nil then
-		self.max_speed                        = Utils.getNoNil(getXMLFloat( xmlFile, key .. string.format("#max_speed")              ), 50 / 3600);
-		self.use_speed                        = Utils.getNoNil(getXMLBool(  xmlFile, key .. string.format("#use_speed")              ), false);
-		self.turn_speed                       = Utils.getNoNil(getXMLFloat( xmlFile, key .. string.format("#turn_speed")             ), 10 / 3600);
-		self.field_speed                      = Utils.getNoNil(getXMLFloat( xmlFile, key .. string.format("#field_speed")            ), 24 / 3600);
-		self.unload_speed                     = Utils.getNoNil(getXMLFloat( xmlFile, key .. string.format("#unload_speed")           ),  6 / 3600);
-		self.realistic_driving                = Utils.getNoNil(getXMLBool(  xmlFile, key .. string.format("#realistic_driving")      ), true);    
-		self.tipper_offset                    = Utils.getNoNil(getXMLFloat( xmlFile, key .. string.format("#tipper_offset")          ), 0);
-		self.combine_offset                   = Utils.getNoNil(getXMLFloat( xmlFile, key .. string.format("#combine_offset")         ), 0);
+		self.max_speed                        = Utils.getNoNil(getXMLFloat( xmlFile, key .. "#max_speed"              ), 50 / 3600);
+		self.use_speed                        = Utils.getNoNil(getXMLBool(  xmlFile, key .. "#use_speed"              ), false);
+		self.turn_speed                       = Utils.getNoNil(getXMLFloat( xmlFile, key .. "#turn_speed"             ), 10 / 3600);
+		self.field_speed                      = Utils.getNoNil(getXMLFloat( xmlFile, key .. "#field_speed"            ), 24 / 3600);
+		self.unload_speed                     = Utils.getNoNil(getXMLFloat( xmlFile, key .. "#unload_speed"           ),  6 / 3600);
+		self.realistic_driving                = Utils.getNoNil(getXMLBool(  xmlFile, key .. "#realistic_driving"      ), true);    
+		self.tipper_offset                    = Utils.getNoNil(getXMLFloat( xmlFile, key .. "#tipper_offset"          ), 0);
+		self.combine_offset                   = Utils.getNoNil(getXMLFloat( xmlFile, key .. "#combine_offset"         ), 0);
 
-		self.required_fill_level_for_follow   = Utils.getNoNil(getXMLInt(   xmlFile, key .. string.format("#fill_follow")            ), 50);
-		self.required_fill_level_for_drive_on = Utils.getNoNil(getXMLInt(   xmlFile, key .. string.format("#fill_drive")             ), 90);
-		self.WpOffsetX                        = Utils.getNoNil(getXMLFloat( xmlFile, key .. string.format("#OffsetX")                ), 0);
-		self.mouse_right_key_enabled          = Utils.getNoNil(getXMLBool(  xmlFile, key .. string.format("#mouse_right_key_enabled")), true);
-		self.WpOffsetZ                        = Utils.getNoNil(getXMLFloat( xmlFile, key .. string.format("#OffsetZ")                ), 0);
-		self.waitTime                         = Utils.getNoNil(getXMLFloat( xmlFile, key .. string.format("#waitTime")               ), 0);
-		self.abortWork                        = Utils.getNoNil(getXMLInt(   xmlFile, key .. string.format("#AbortWork")              ), nil);
-		self.turn_radius                      = Utils.getNoNil(getXMLInt(   xmlFile, key .. string.format("#turn_radius")            ), 10);
-		self.RulMode                          = Utils.getNoNil(getXMLInt(   xmlFile, key .. string.format("#rul_mode")               ), 1);
-		local courses                         = Utils.getNoNil(getXMLString(xmlFile, key .. string.format("#courses")                ), "");
-		self.toolWorkWidht                    = Utils.getNoNil(getXMLFloat( xmlFile, key .. string.format("#toolWorkWidht")          ), 3);
-		self.cp.ridgeMarkersAutomatic         = Utils.getNoNil(getXMLBool(  xmlFile, key .. string.format("#ridgeMarkersAutomatic"  )), true);
+		self.required_fill_level_for_follow   = Utils.getNoNil(getXMLInt(   xmlFile, key .. "#fill_follow"            ), 50);
+		self.required_fill_level_for_drive_on = Utils.getNoNil(getXMLInt(   xmlFile, key .. "#fill_drive"             ), 90);
+		self.WpOffsetX                        = Utils.getNoNil(getXMLFloat( xmlFile, key .. "#OffsetX"                ), 0);
+		self.mouse_right_key_enabled          = Utils.getNoNil(getXMLBool(  xmlFile, key .. "#mouse_right_key_enabled"), true);
+		self.WpOffsetZ                        = Utils.getNoNil(getXMLFloat( xmlFile, key .. "#OffsetZ"                ), 0);
+		self.waitTime                         = Utils.getNoNil(getXMLFloat( xmlFile, key .. "#waitTime"               ), 0);
+		self.abortWork                        = Utils.getNoNil(getXMLInt(   xmlFile, key .. "#AbortWork"              ), nil);
+		self.turn_radius                      = Utils.getNoNil(getXMLInt(   xmlFile, key .. "#turn_radius"            ), 10);
+		self.RulMode                          = Utils.getNoNil(getXMLInt(   xmlFile, key .. "#rul_mode"               ), 1);
+		local courses                         = Utils.getNoNil(getXMLString(xmlFile, key .. "#courses"                ), "");
+		self.toolWorkWidht                    = Utils.getNoNil(getXMLFloat( xmlFile, key .. "#toolWorkWidht"          ), 3);
+		self.cp.ridgeMarkersAutomatic         = Utils.getNoNil(getXMLBool(  xmlFile, key .. "#ridgeMarkersAutomatic"  ), true);
 		self.loaded_courses = courses:split(",")
 		self.selected_course_number = 0
 

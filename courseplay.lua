@@ -86,19 +86,27 @@ function courseplay:initialize()
 end;
 
 function courseplay:setGlobalData()
+	local posX, posY = nil, nil;
+	local savegame = g_careerScreen.savegames[g_careerScreen.selectedIndex];
+	if savegame ~= nil then
+		local cpFilePath = savegame.savegameDirectory .. "/courseplay.xml";
+		if fileExists(cpFilePath) then
+			local cpFile = loadXMLFile("cpFile", cpFilePath);
+			local hudKey = "XML.courseplayHud"
+			if hasXMLProperty(cpFile, hudKey) then
+				posX = getXMLFloat(cpFile, hudKey .. "#posX");
+				posY = getXMLFloat(cpFile, hudKey .. "#posY");
+			end;
+			delete(cpFile);
+		end;
+	end;
+
 	courseplay.numAiModes = 9;
 	courseplay.hud = {
-		infoBasePosX = 0.433;
-		infoBasePosY = 0.002;
+		infoBasePosX = Utils.getNoNil(posX, 0.433);
+		infoBasePosY = Utils.getNoNil(posY, 0.002);
 		infoBaseWidth = 0.512; --try: 512/1920
 		infoBaseHeight = 0.512; --try: 512/1080
-		infoBaseCenter = 0.433 + 0.16;
-		visibleArea = {
-			x1 = 0.433;
-			x2 = 0.753;
-			y1 = 0.002;
-			y2 = 0.30463; --0.002 + 0.271 + 32/1080 + 0.002;
-		};
 		linesPosY = {};
 		linesBottomPosY = {};
 		linesButtonPosY = {};
@@ -130,6 +138,15 @@ function courseplay:setGlobalData()
 			{ true, true, true, false, false, true, true, true, false, true  }; --Mode 9
 		};
 	};
+	courseplay.hud.visibleArea = {
+		x1 = courseplay.hud.infoBasePosX;
+		x2 = courseplay.hud.infoBasePosX + 0.320;
+		y1 = courseplay.hud.infoBasePosY;
+		y2 = --[[0.30463;]] --[[0.002 + 0.271 + 32/1080 + 0.002;]] courseplay.hud.infoBasePosY + 0.271 + 32/1080 + 0.002;
+	};
+	courseplay.hud.infoBaseCenter = (courseplay.hud.visibleArea.x1 + courseplay.hud.visibleArea.x2)/2;
+	
+	--print(string.format("\t\tposX=%f,posY=%f, visX1=%f,visX2=%f, visY1=%f,visY2=%f, visCenter=%f", courseplay.hud.infoBasePosX, courseplay.hud.infoBasePosY, courseplay.hud.visibleArea.x1, courseplay.hud.visibleArea.x2, courseplay.hud.visibleArea.y1, courseplay.hud.visibleArea.y2, courseplay.hud.infoBaseCenter));
 
 	for l=1,courseplay.hud.numLines do
 		if l == 1 then
@@ -207,3 +224,5 @@ end;
 
 courseplay:initialize();
 
+--load(), update(), updateTick(), draw() are located in base.lua
+--mouseEvent(), keyEvent() are located in input.lua

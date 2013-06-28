@@ -194,15 +194,20 @@ function courseplay:save_courses(self)
 		local key = "XML";
 		local xmlFile = createXMLFile("courseplayXmlFile", savegame.savegameDirectory .. "/courseplay.xml", key);
 
+		-- <courseplayHud posX="0.3" posY="0.35" />
+		local hudKey = string.format("%s.courseplayHud", key);
+		setXMLFloat(xmlFile, hudKey .. "#posX", courseplay.hud.infoBasePosX);
+		setXMLFloat(xmlFile, hudKey .. "#posY", courseplay.hud.infoBasePosY);
+
 		for i,course in ipairs(g_currentMission.courseplay_courses) do
 			local courseKey = string.format("%s.courses.course(%d)", key, i - 1);
 
-			--<course name="xxx" id="0">
+			-- <course name="xxx" id="0">
 			setXMLString(xmlFile, courseKey .. "#name",         course.name);
 			setXMLInt(   xmlFile, courseKey .. "#id",           course.id);
 			setXMLInt(   xmlFile, courseKey .. "#numWaypoints", table.getn(course.waypoints));
 
-			--<waypoint0 ...
+			-- <waypoint0 ...
 			for wpNum, wp in ipairs(course.waypoints) do
 				local wpKey = string.format("%s.waypoint%d", courseKey, wpNum);
 
