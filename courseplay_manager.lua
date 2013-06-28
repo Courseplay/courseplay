@@ -6,7 +6,7 @@ function courseplay_manager:loadMap(name)
 		--courseplay:debug("courseplay courses was nil and initialized", 8);
 		g_currentMission.courseplay_courses = {};
 
-		courseplay_coursesUnsort = {}
+		courseplay.coursesUnsorted = {}
 		if g_server ~= nil and table.getn(g_currentMission.courseplay_courses) == 0 then
 			g_currentMission.courseplay_courses = courseplay_manager:load_courses()
 			courseplay:debug(tableShow(g_currentMission.courseplay_courses, "g_cM courseplay_courses", 8), 8);
@@ -40,107 +40,128 @@ function courseplay_manager:keyEvent()
 end
 
 function courseplay_manager:load_courses()
-	courseplay:debug('loading courses by courseplay manager', 8)
-	local finish_all = false
-	local path = getUserProfileAppPath() .. "savegame" .. g_careerScreen.selectedIndex .. "/"
+	--print("courseplay_manager:load_courses()");
+	courseplay:debug('loading courses by courseplay manager', 8);
 
+	local finish_all = false;
+	local folderPath = getUserProfileAppPath() .. "savegame" .. g_careerScreen.selectedIndex;
+	if not Utils.endsWith(folderPath, "/") then
+		folderPath = folderPath .. "/";
+	end;
+	local filePath = folderPath .. "courseplay.xml";
 
-	File = loadXMLFile("courseFile", path .. "courseplay.xml")
-	local i = 0
-	repeat
-
-		local baseName = string.format("XML.courses.course(%d)", i)
-		local name = getXMLString(File, baseName .. "#name")
-		if name == nil then
-			finish_all = true
-			break
-		end
-		local id = getXMLInt(File, baseName .. "#id")
-		if id == nil then
-			id = 0
-		end
-		local tempCourse = {}
-
-		local s = 1
-
-		local finish_wp = false
+	if fileExists(filePath) then
+		local cpFile = loadXMLFile("courseFile", filePath);
+		
+		local i = 0
 		repeat
-			local key = baseName .. ".waypoint" .. s
-			local x, z = Utils.getVectorFromString(getXMLString(File, key .. "#pos"))
-			if x ~= nil then
-				if z == nil then
-					finish_wp = true
-					break
-				end
-				local dangle = Utils.getVectorFromString(getXMLString(File, key .. "#angle"))
-				local wait = Utils.getVectorFromString(getXMLString(File, key .. "#wait"))
-				local speed = Utils.getVectorFromString(getXMLString(File, key .. "#speed"))
-				local rev = Utils.getVectorFromString(getXMLString(File, key .. "#rev"))
-				local crossing = Utils.getVectorFromString(getXMLString(File, key .. "#crossing"))
 
-				--course generation
-				local generated = Utils.getNoNil(getXMLBool(File, key .. "#generated"), false);
-				local turn = Utils.getNoNil(getXMLString(File, key .. "#turn"), "false");
-				local turnStart = Utils.getNoNil(getXMLInt(File, key .. "#turnstart"), 0);
-				local turnEnd = Utils.getNoNil(getXMLInt(File, key .. "#turnend"), 0);
-				local ridgeMarker = Utils.getNoNil(getXMLInt(File, key .. "#ridgemarker"), 0);
+			--current course
+			local currentCourse = string.format("XML.courses.course(%d)", i)
+			if not hasXMLProperty(cpFile, currentCourse) then 
+				break;
+			end;
 
-				crossing = crossing == 1 or s == 1;
-				wait = wait == 1;
-				rev = rev == 1;
+			--course name
+			local courseName = getXMLString(cpFile, currentCourse .. "#name");
+			if courseName == nil then
+				finish_all = true;
+				break;
+			end;
 
-				if speed == 0 then
-					speed = nil
-				end
+			--course ID
+			local id = getXMLInt(cpFile, currentCourse .. "#id")
+			if id == nil then
+				id = 0;
+			end;
 
-				--generated not needed, since true or false are loaded from file
-				if turn == "false" then
-					turn = nil;
+			--course waypoints
+			local tempCourse = {};
+			local finish_wp = false;
+			local wpNum = 1;
+			repeat
+				local key = currentCourse .. ".waypoint" .. wpNum;
+
+				local x, z = Utils.getVectorFromString(getXMLString(cpFile, key .. "#pos"));
+				if x ~= nil then
+					if z == nil then
+						finish_wp = true;
+						break;
+					end;
+					local dangle =   Utils.getVectorFromString(getXMLString(cpFile, key .. "#angle"));
+					local wait =     Utils.getVectorFromString(getXMLString(cpFile, key .. "#wait"));
+					local speed =    Utils.getVectorFromString(getXMLString(cpFile, key .. "#speed"));
+					local rev =      Utils.getVectorFromString(getXMLString(cpFile, key .. "#rev"));
+					local crossing = Utils.getVectorFromString(getXMLString(cpFile, key .. "#crossing"));
+
+					--course generation
+					local generated =   Utils.getNoNil(getXMLBool(cpFile, key .. "#generated"), false);
+					local turn =        Utils.getNoNil(getXMLString(cpFile, key .. "#turn"), "false");
+					local turnStart =   Utils.getNoNil(getXMLInt(cpFile, key .. "#turnstart"), 0);
+					local turnEnd =     Utils.getNoNil(getXMLInt(cpFile, key .. "#turnend"), 0);
+					local ridgeMarker = Utils.getNoNil(getXMLInt(cpFile, key .. "#ridgemarker"), 0);
+
+					crossing = crossing == 1 or wpNum == 1;
+					wait = wait == 1;
+					rev = rev == 1;
+
+					if speed == 0 then
+						speed = nil
+					end
+
+					--generated not needed, since true or false are loaded from file
+					if turn == "false" then
+						turn = nil;
+					end;
+					turnStart = turnStart == 1;
+					turnEnd = turnEnd == 1;
+					--ridgeMarker not needed, since 0, 1 or 2 is loaded from file
+
+					tempCourse[wpNum] = { 
+						cx = x, 
+						cz = z, 
+						angle = dangle, 
+						rev = rev, 
+						wait = wait, 
+						crossing = crossing, 
+						speed = speed,
+						generated = generated,
+						turn = turn,
+						turnStart = turnStart,
+						turnEnd = turnEnd,
+						ridgeMarker = ridgeMarker
+					};
+					wpNum = wpNum + 1;
+				else
+					local course = { name = courseName, id = id, waypoints = tempCourse };
+					table.insert(courseplay.coursesUnsorted, course);
+					i = i + 1;
+					finish_wp = true;
+					break;
 				end;
-				turnStart = turnStart == 1;
-				turnEnd = turnEnd == 1;
-				--ridgeMarker not needed, since 0, 1 or 2 is loaded from file
+			until finish_wp == true;
+		until finish_all == true;
 
-				tempCourse[s] = { 
-					cx = x, 
-					cz = z, 
-					angle = dangle, 
-					rev = rev, 
-					wait = wait, 
-					crossing = crossing, 
-					speed = speed,
-					generated = generated,
-					turn = turn,
-					turnStart = turnStart,
-					turnEnd = turnEnd,
-					ridgeMarker = ridgeMarker
-				};
-				s = s + 1;
-			else
-				local course = { name = name, id = id, waypoints = tempCourse }
-				table.insert(courseplay_coursesUnsort, course)
-				i = i + 1
-				finish_wp = true
-				break
-			end
-			until finish_wp == true
-		until finish_all == true
-
+	else
+		--print("\t \"courseplay.xml\" missing from \"savegame" .. g_careerScreen.selectedIndex .. "\" folder");
+	end; --END if fileExists
+	
 	g_currentMission.courseplay_courses = {}
 
-	for i = 1, table.getn(courseplay_coursesUnsort) do
-		local name = courseplay_coursesUnsort[i].name
+	for i = 1, table.getn(courseplay.coursesUnsorted) do
+		local name = courseplay.coursesUnsorted[i].name
 		table.insert(g_currentMission.courseplay_courses, name)
 	end
 
-	table.sort(g_currentMission.courseplay_courses)
+	table.sort(g_currentMission.courseplay_courses);
 
+	--TODO: use course name as index instead of doing double for-loops
 	for i = 1, table.getn(g_currentMission.courseplay_courses) do
-		for k, v in pairs(courseplay_coursesUnsort) do
-			if g_currentMission.courseplay_courses[i] == courseplay_coursesUnsort[k].name then
-				local waypoints = courseplay_coursesUnsort[k].waypoints
+		for k, v in pairs(courseplay.coursesUnsorted) do
+			if g_currentMission.courseplay_courses[i] == courseplay.coursesUnsorted[k].name then
+				local waypoints = courseplay.coursesUnsorted[k].waypoints
 				local name = g_currentMission.courseplay_courses[i]
-				local id = courseplay_coursesUnsort[k].id
+				local id = courseplay.coursesUnsorted[k].id
 				local course = { name = name, id = id, waypoints = waypoints }
 				g_currentMission.courseplay_courses[i] = course
 				break
@@ -159,7 +180,7 @@ function courseplay_manager:load_courses()
 
 	courseplay:debug(tableShow(courseplay_courses, "courseplay_courses", 8), 8);
 
-	courseplay_coursesUnsort = nil
+	courseplay.coursesUnsorted = {};
 	return g_currentMission.courseplay_courses
 end
 

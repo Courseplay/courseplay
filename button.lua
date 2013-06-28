@@ -1,5 +1,5 @@
 function courseplay:register_button(self, hud_page, img, function_to_call, parameter, x, y, width, height, hud_row, modifiedParameter, showHideVariable)
-	local overlay_path = Utils.getFilename("img/" .. img, self.cp_directory);
+	local overlay_path = Utils.getFilename("img/" .. img, courseplay.path);
 	local overlay = Overlay:new(img, overlay_path, x, y, width, height);
 
 	button = { 

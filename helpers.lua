@@ -87,6 +87,10 @@ function courseplay:isFolding(workTool) --TODO: use getIsAnimationPlaying(animat
 end;
 
 function courseplay:round(num, decimals)
+	if num == nil or type(num) ~= "number" then
+		return nil;
+	end;
+
 	if decimals and decimals > 0 then
 		local mult = 10^decimals;
 		return math.floor(num * mult + 0.5) / mult;
@@ -143,10 +147,17 @@ function nameNum(vehicle)
 	return tostring(vehicle.name) .. " (#" .. tostring(vehicle.working_course_player_num) .. ")";
 end;
 
+function courseplay:isBetween(n, num1, num2)
+	if type(n) ~= "number" or type(num1) ~= "number" or type(num2) ~= "number" then
+		return;
+	end;
+	return (num1 > num2 and n < num1 and n > num2) or (num1 < num2 and n > num1 and n < num2);
+end;
+
 function courseplay:setVarValueFromString(self, str, value)
 	local what = Utils.splitString(".", str);
 	local whatDepth = table.getn(what);
-	if whatDepth < 2 or whatDepth > 5 then
+	if whatDepth < 1 or whatDepth > 5 then
 		return;
 	end;
 
@@ -159,7 +170,10 @@ function courseplay:setVarValueFromString(self, str, value)
 
 	if baseVar ~= nil then
 		local result = nil;
-		if whatDepth == 2 then
+		if whatDepth == 1 then
+			baseVar = value;
+			result = value;
+		elseif whatDepth == 2 then
 			baseVar[what[2]] = value;
 			result = value;
 		elseif whatDepth == 3 then
@@ -203,4 +217,15 @@ function courseplay:getVarValueFromString(self, str)
 
 	--print(table.concat(what, ".") .."=" .. tostring(whatObj))
 	return whatObj;
-end
+end;
+
+function courseplay:boolToInt(bool)
+	if bool == nil or type(bool) ~= "boolean" then
+		return nil;
+	elseif bool == true then
+		return 1;
+	elseif bool == false then
+		return 0; 
+	end;
+end;
+
