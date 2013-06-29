@@ -21,6 +21,22 @@ function courseplay:isSpecialChopper(workTool)
 	return false
 end
 
+function courseplay:isSpecialMower(workTool)
+	workTool.isKvernelandMowerPack = Utils.endsWith(workTool.configFileName, "Kverneland_4028.xml")
+				or Utils.endsWith(workTool.configFileName, "Kverneland_4028_AS.xml")
+				or Utils.endsWith(workTool.configFileName, "Kverneland_KD240.xml")
+				or Utils.endsWith(workTool.configFileName, "Kverneland_KD240F.xml")
+	 			or Utils.endsWith(workTool.configFileName, "Taarup_3532F.xml");
+	workTool.isTaarupMowerPack = Utils.endsWith(workTool.configFileName, "Taarup_5090.xml");
+
+
+	return Utils.endsWith(workTool.configFileName, "PoettingerAlpha.xml") 
+		or Utils.endsWith(workTool.configFileName, "PoettingerX8.xml")
+		or workTool.isKvernelandMowerPack
+		or workTool.isTaarupMowerPack
+
+end
+
 function courseplay:isSpecialBaler(workTool)
 	return Utils.endsWith(workTool.configFileName, "Claas_Quadrant_1200.xml")
 end
@@ -55,23 +71,73 @@ end
 
 
 function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
+	local implementsDown = lower and turnOn
 	if workTool.PTOId then
 		workTool:setPTO(false)
 	end
 	
+	--KvernelandMowerPack
+	if workTool.isKvernelandMowerPack then
+		if Utils.endsWith(workTool.configFileName, "Kverneland_KD240.xml") then
+			if workTool.TransRot ~= nil and workTool.TransRot ~= down then
+				workTool:setTransRot(not unfold);
+			end
+			if workTool.setArmOne ~= nil then
+				workTool:setArmOne(implementsDown);
+			end
+		elseif Utils.endsWith(workTool.configFileName, "Kverneland_4028_AS.xml")
+		or Utils.endsWith(workTool.configFileName, "Kverneland_4028.xml") then
+			if workTool.TransRot ~= nil and workTool.TransRot ~= down then
+				workTool:setTransRot(unfold);
+			end
+			if workTool.setSideSkirts ~= nil and workTool.isSideSkirtsOn ~= unfold then
+				workTool:setSideSkirts(unfold);
+			end
+			if workTool.setWheelRot ~= nil and (workTool.isWheelRotOn == implementsDown) or (workTool.isWheelRotOn == nil and not implementsDown) then
+				workTool:setWheelRot(not implementsDown );
+			end
+		else
+			if workTool.TransRot ~= nil and workTool.TransRot ~= down then
+				workTool:setTransRot(implementsDown);
+			end
+			if workTool.setSideSkirts ~= nil and workTool.isSideSkirtsOn ~= unfold then
+				workTool:setSideSkirts(unfold);
+			end
+		end
+		if workTool.isTurnedOn ~= turnOn then
+			workTool:setIsTurnedOn(turnOn);
+		end
+
+		return true, allowedToDrive
+
+	-- TaarupMowerPack
+	elseif workTool.isTaarupMowerPack then
+		if workTool.isReadyToTransport then
+			workTool:setTransport(not unfold)
+		end
+		if down ~= workTool.mowerFoldingParts[1].mainPart.isDown then
+			for k, part in pairs(workTool.mowerFoldingParts) do
+				workTool:setIsArmDown(k, implementsDown);
+			end;
+		end
+		if workTool.isTurnedOn ~= turnOn then
+			workTool:setIsTurnedOn(turnOn);
+		end
+		
+		return true, allowedToDrive
+
 	--Claas Quadrant 1200
-	if Utils.endsWith(workTool.configFileName, "Claas_Quadrant_1200.xml") then
+	elseif Utils.endsWith(workTool.configFileName, "Claas_Quadrant_1200.xml") then
 		if unfold ~= nil and turnOn ~= nil and lower ~= nil then
 			if not unfold then
 				workTool:emptyBaler(true);
 				workTool:setPTO(true)
 			end
-			local pickup = lower and turnOn
 			if workTool.sl.isOpen ~= unfold then
 				workTool:openSlide(unfold);
 			end
-			if workTool.pu.bDown ~= pickup then
-				workTool:releasePickUp(pickup)
+			if workTool.pu.bDown ~= implementsDown then
+				workTool:releasePickUp(implementsDown)
 			end
 			if workTool.isTurnedOn ~= unfold then
 				workTool.isTurnedOn = unfold
@@ -199,12 +265,11 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		end				
 		
 		if lower ~= nil and turnOn ~= nil then				
-			local spray = lower and turnOn
 			if workTool.setIsTurnedOn ~= nil and not workTool.isTurnedOn then
-				workTool:setIsTurnedOn(spray, false);
+				workTool:setIsTurnedOn(implementsDown, false);
 			end
 			if workTool.setIsTurnedOn ~= nil and workTool.isTurnedOn and not spray then
-				workTool:setIsTurnedOn(spray, false);
+				workTool:setIsTurnedOn(implementsDown, false);
 			end
 		end
 

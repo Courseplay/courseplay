@@ -42,7 +42,7 @@ function courseplay:isUBT(workTool) --is the tool a UBT?
 	return SpecializationUtil.hasSpecialization(ubt, workTool.specializations) or SpecializationUtil.hasSpecialization(Ubt, workTool.specializations) or workTool.name == "UniversalBaleTrailer" or (workTool.numAttacherParts ~= nil and workTool.autoLoad ~= nil and workTool.loadingIsActive ~= nil and workTool.unloadLeft ~= nil and workTool.unloadRight ~= nil and workTool.unloadBack ~= nil and workTool.typeOnTrailer ~= nil);
 end;
 function courseplay:isMower(workTool)
-	return SpecializationUtil.hasSpecialization(Mower, workTool.specializations) or Utils.endsWith(workTool.configFileName, "PoettingerAlpha.xml") or Utils.endsWith(workTool.configFileName, "PoettingerX8.xml");
+	return SpecializationUtil.hasSpecialization(Mower, workTool.specializations) or courseplay:isSpecialMower(workTool);
 end;
 function courseplay:isBigM(workTool)
 	return (SpecializationUtil.hasSpecialization(Steerable, workTool.specializations) or SpecializationUtil.hasSpecialization(steerable, workTool.specializations)) and courseplay:isMower(workTool);
