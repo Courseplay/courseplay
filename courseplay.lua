@@ -86,7 +86,7 @@ function courseplay:initialize()
 end;
 
 function courseplay:setGlobalData()
-	local posX, posY = nil, nil;
+	local customPosX, customPosY = nil, nil;
 	local savegame = g_careerScreen.savegames[g_careerScreen.selectedIndex];
 	if savegame ~= nil then
 		local cpFilePath = savegame.savegameDirectory .. "/courseplay.xml";
@@ -94,8 +94,8 @@ function courseplay:setGlobalData()
 			local cpFile = loadXMLFile("cpFile", cpFilePath);
 			local hudKey = "XML.courseplayHud"
 			if hasXMLProperty(cpFile, hudKey) then
-				posX = getXMLFloat(cpFile, hudKey .. "#posX");
-				posY = getXMLFloat(cpFile, hudKey .. "#posY");
+				customPosX = getXMLFloat(cpFile, hudKey .. "#posX");
+				customPosY = getXMLFloat(cpFile, hudKey .. "#posY");
 			end;
 			delete(cpFile);
 		end;
@@ -103,8 +103,8 @@ function courseplay:setGlobalData()
 
 	courseplay.numAiModes = 9;
 	courseplay.hud = {
-		infoBasePosX = Utils.getNoNil(posX, 0.433);
-		infoBasePosY = Utils.getNoNil(posY, 0.002);
+		infoBasePosX = Utils.getNoNil(customPosX, 0.433);
+		infoBasePosY = Utils.getNoNil(customPosY, 0.002);
 		infoBaseWidth = 0.512; --try: 512/1920
 		infoBaseHeight = 0.512; --try: 512/1080
 		linesPosY = {};
@@ -184,18 +184,22 @@ function courseplay:setGlobalData()
 	end;
 	--[[
 	Debug channels legend:
-	1  	Raycast (drive + triggers) / TipTriggers
-	2	unload_tippers
-	3	traffic collision
-	4	Combines/mode2, register and unload combines
-	5	Multiplayer
-	6	implements (update_tools etc)
-	7	course generation
-	8	course management
-	9	path finding
+	 1	Raycast (drive + triggers) / TipTriggers
+	 2	unload_tippers
+	 3	traffic collision
+	 4	Combines/mode2, register and unload combines
+	 5	Multiplayer
+	 6	implements (update_tools etc)
+	 7	course generation
+	 8	course management
+	 9	path finding
 	10	mode9
 	11	mode7
 	12	all other debugs (uncategorized)
+	13	[empty]
+	14	[empty]
+	15	[empty]
+	16	[empty]
 	--]]
 
 	courseplay.checkValues = {
