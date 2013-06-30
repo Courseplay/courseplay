@@ -138,11 +138,16 @@ function courseplay:start(self)
 					self.cp.shovelEmptyPoint = i;
 				end;
 			end;
-		end
+		end;
+
 		-- mode 6 without start and stop point, set them at start and end, for only-on-field-courses
-		if (self.ai_mode == 4 or self.ai_mode == 6) and wpanz == 0 then
-			self.startWork = 1
-			self.stopWork = self.maxnumber
+		if (self.ai_mode == 4 or self.ai_mode == 6) then
+			if wpanz == 0 or self.startWork == nil then
+				self.startWork = 1;
+			end;
+			if wpanz == 0 or self.stopWork == nil then
+				self.stopWork = self.maxnumber;
+			end;
 		end
 		if self.recordnumber > self.maxnumber then
 			self.recordnumber = 1
@@ -154,6 +159,7 @@ function courseplay:start(self)
 	elseif self.ai_mode == 4 or self.ai_mode == 6 then
 		self.loaded = false;
 		self.cp.hasUnloadingRefillingCourse = self.maxnumber > self.stopWork + 7;
+		courseplay:debug(string.format("%s: maxnumber=%d, stopWork=%d, hasUnloadingRefillingCourse=%s", nameNum(self), self.maxnumber, self.stopWork, tostring(self.cp.hasUnloadingRefillingCourse)), 12);
 	end
 
 	if self.ai_mode == 9 or self.cp.startAtFirstPoint then
@@ -173,7 +179,6 @@ function courseplay:start(self)
 	self.runOnceStartCourse = true;
 	self.drive = true;
 	self.cp.maxFieldSpeed = 0
-
 	self.record = false
 	self.dcheck = false
 	
