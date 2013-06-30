@@ -81,6 +81,22 @@ function courseplay:isFolding(workTool) --TODO: use getIsAnimationPlaying(animat
 			end
 		end;
 		return false;
+
+	elseif (workTool.isKvernelandMowerPack or workTool.isTaarupMowerPack) and workTool.mowerFoldingParts ~= nil and type(workTool.mowerFoldingParts) == "table" then
+		for partIdx, foldingPart in pairs(workTool.mowerFoldingParts) do
+			local mainPart = foldingPart.mainPart;
+			local axes, curRot = { "x", "y", "z" }, {};
+			curRot.x, curRot.y, curRot.z = getRotation(mainPart.joint.jointNode);
+			--print(string.format("part %d: minRot=%f,%f,%f, maxRot=%f,%f,%f, curRot=%f,%f,%f", partIdx, mainPart.minRot[1], mainPart.minRot[2], mainPart.minRot[3], mainPart.maxRot[1], mainPart.maxRot[2], mainPart.maxRot[3], curRot.x, curRot.y, curRot.z));
+			for i,axis in pairs(axes) do
+				if courseplay:isBetween(curRot[axis], mainPart.minRot[i], mainPart.maxRot[i], false) then
+					--print(string.format("isFolding: curRot.%s is between mainPart.minRot[%d] and mainPart.maxRot[%d]", axis, i, i));
+					return true;
+				end;
+			end;
+		end;
+		return false;
+
 	else
 		return false;
 	end;
@@ -147,11 +163,15 @@ function nameNum(vehicle)
 	return tostring(vehicle.name) .. " (#" .. tostring(vehicle.working_course_player_num) .. ")";
 end;
 
-function courseplay:isBetween(n, num1, num2)
+function courseplay:isBetween(n, num1, num2, include)
 	if type(n) ~= "number" or type(num1) ~= "number" or type(num2) ~= "number" then
 		return;
 	end;
-	return (num1 > num2 and n < num1 and n > num2) or (num1 < num2 and n > num1 and n < num2);
+	if include then
+		return (num1 > num2 and n <= num1 and n >= num2) or (num1 < num2 and n >= num1 and n <= num2);
+	else
+		return (num1 > num2 and n < num1 and n > num2) or (num1 < num2 and n > num1 and n < num2);
+	end;
 end;
 
 function courseplay:setVarValueFromString(self, str, value)

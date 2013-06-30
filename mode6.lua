@@ -52,11 +52,9 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 		end
 		
 		-- stop while folding
-		if courseplay:isFoldable(workTool) then
-			if courseplay:isFolding(workTool) and self.cp.turnStage == 0 then 
-				allowedToDrive = courseplay:brakeToStop(self);
-				--courseplay:debug(tostring(workTool.name) .. ": isFolding -> allowedToDrive == false", 12);
-			end;
+		if courseplay:isFolding(workTool) and self.cp.turnStage == 0 then 
+			allowedToDrive = courseplay:brakeToStop(self);
+			--courseplay:debug(tostring(workTool.name) .. ": isFolding -> allowedToDrive == false", 12);
 		end;
 
 		-- implements, no combine or chopper
@@ -236,7 +234,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 							local forecast = Utils.getNoNil(self.Waypoints[recordnumber].ridgeMarker,0)
 							local marker = Utils.getNoNil(self.Waypoints[self.recordnumber].ridgeMarker,0)
 							local waypoint = math.max(marker,forecast)
-							if courseplay:isFoldable(workTool) and not courseplay:isFolding(workTool) then
+							if not courseplay:isFolding(workTool) then
 								if not SpecializationUtil.hasSpecialization(Plough, workTool.specializations) then
 									workTool:setFoldDirection(-1);
 									self.runOnceStartCourse = false; 
