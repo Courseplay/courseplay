@@ -81,22 +81,6 @@ function courseplay:isFolding(workTool) --TODO: use getIsAnimationPlaying(animat
 			end
 		end;
 		return false;
-
-	elseif (workTool.isKvernelandMowerPack or workTool.isTaarupMowerPack) and workTool.mowerFoldingParts ~= nil and type(workTool.mowerFoldingParts) == "table" then
-		for partIdx, foldingPart in pairs(workTool.mowerFoldingParts) do
-			local mainPart = foldingPart.mainPart;
-			local axes, curRot = { "x", "y", "z" }, {};
-			curRot.x, curRot.y, curRot.z = getRotation(mainPart.joint.jointNode);
-			--print(string.format("part %d: minRot=%f,%f,%f, maxRot=%f,%f,%f, curRot=%f,%f,%f", partIdx, mainPart.minRot[1], mainPart.minRot[2], mainPart.minRot[3], mainPart.maxRot[1], mainPart.maxRot[2], mainPart.maxRot[3], curRot.x, curRot.y, curRot.z));
-			for i,axis in pairs(axes) do
-				if courseplay:isBetween(curRot[axis], mainPart.minRot[i], mainPart.maxRot[i], false) then
-					--print(string.format("isFolding: curRot.%s is between mainPart.minRot[%d] and mainPart.maxRot[%d]", axis, i, i));
-					return true;
-				end;
-			end;
-		end;
-		return false;
-
 	else
 		return false;
 	end;
