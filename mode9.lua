@@ -238,7 +238,8 @@ function courseplay:setMovingToolsRotation(self, dt, movingTools, secondary, tar
 			if (dir == 1 and newRot > targetRot[i]) or (dir == -1 and newRot < targetRot[i]) then
 				newRot = targetRot[i];
 			end;
-			if newRot ~= oldRot and newRot > tool.rotMin and newRot < tool.rotMax then
+			courseplay:debug(string.format("%s: rotMax[%d] = %s, rotMin[%d]= %s", nameNum(self), i, tostring(tool.rotMax),i, tostring(tool.rotMin)), 10);
+			if newRot ~= oldRot and newRot >= tool.rotMin and newRot <= tool.rotMax then
 				tool.curRot[1] = newRot;
 				setRotation(tool.node, unpack(tool.curRot));
 				Cylindered.setDirty(self, tool);
@@ -270,8 +271,8 @@ function courseplay:hasTargetRotation(self, movingTools, secondary, targetRot)
 	local rotationsMatch = true;
 	for i=1, curRotNum do
 		local a, b = courseplay:round(curRot[i], 1), courseplay:round(targetRot[i], 1);
+		courseplay:debug(string.format("%s: curRot[%d]=%s (%s), targetRot[%d]=%s (%s)", nameNum(self), i, tostring(curRot[i]), tostring(a), i, tostring(targetRot[i]), tostring(b)), 10);
 		if a ~= b then
-			courseplay:debug(string.format("%s: curRot[%d]=%s (%s), targetRot[%d]=%s (%s)", nameNum(self), i, tostring(curRot[i]), tostring(a), i, tostring(targetRot[i]), tostring(b)), 10);
 			rotationsMatch = false;
 			break;
 		end;
