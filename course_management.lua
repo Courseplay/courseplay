@@ -182,70 +182,42 @@ end
 
 -- saves coures to xml-file
 function courseplay:save_courses(self)
-	--[[ INFORMATION:
-	There are different ways to access the currently used savegame table and/or folder:
-	1)	g_careerScreen.savegames[g_careerScreen.selectedIndex].savegameDirectory
-	2)	g_currentMission.loadingScreen.missionInfo.savegameDirectory
-	3)	getUserProfileAppPath() .. "savegame" .. g_careerScreen.selectedIndex
-	--]]
+	if g_server ~= nil then
+		local savegame = g_careerScreen.savegames[g_careerScreen.selectedIndex];
+		if savegame ~= nil and g_currentMission.courseplay_courses ~= nil and table.getn(g_currentMission.courseplay_courses) > 0 then
+			local file = io.open(savegame.savegameDirectory .. "/courseplay.xml", "w");
+			if file ~= nil then
+				file:write('<?xml version="1.0" encoding="utf-8" standalone="no" ?>\n<XML>\n\t<courseplayHud posX="' .. courseplay.hud.infoBasePosX .. '" posY="' .. courseplay.hud.infoBasePosY .. '" />\n\t<courses>\n');
 
-	local savegame = g_careerScreen.savegames[g_careerScreen.selectedIndex];
-	if savegame ~= nil and g_currentMission.courseplay_courses ~= nil and table.getn(g_currentMission.courseplay_courses) > 0 then
-		local key = "XML";
-		local xmlFile = createXMLFile("courseplayXmlFile", savegame.savegameDirectory .. "/courseplay.xml", key);
+				for i,course in ipairs(g_currentMission.courseplay_courses) do
+					file:write('\t\t<course name="' .. course.name .. '" id="' .. course.id .. '" numWaypoints="' .. table.getn(course.waypoints) .. '">\n');
+					for wpNum,wp in ipairs(course.waypoints) do
+						local wpContent = '\t\t\t<waypoint' .. wpNum .. ' ';
+						wpContent = wpContent .. 'pos="' .. tostring(Utils.getNoNil(courseplay:round(wp.cx, 4), 0)) .. ' ' .. tostring(Utils.getNoNil(courseplay:round(wp.cz, 4), 0)) .. '" ';
+						wpContent = wpContent .. 'angle="' .. tostring(Utils.getNoNil(wp.angle, 0)) .. '" ';
+						wpContent = wpContent .. 'wait="' .. tostring(Utils.getNoNil(courseplay:boolToInt(wp.wait), 0)) .. '" ';
+						wpContent = wpContent .. 'crossing="' .. tostring(Utils.getNoNil(courseplay:boolToInt(wp.crossing), 0)) .. '" ';
+						wpContent = wpContent .. 'rev="' .. tostring(Utils.getNoNil(courseplay:boolToInt(wp.rev), 0)) .. '" ';
+						wpContent = wpContent .. 'speed="' .. tostring(courseplay:round(Utils.getNoNil(wp.speed, 0), 5)) .. '" ';
+						wpContent = wpContent .. 'turn="' .. tostring(Utils.getNoNil(wp.turn, false)) .. '" ';
+						wpContent = wpContent .. 'turnstart="' .. tostring(Utils.getNoNil(courseplay:boolToInt(wp.turnStart), 0)) .. '" ';
+						wpContent = wpContent .. 'turnend="' .. tostring(Utils.getNoNil(courseplay:boolToInt(wp.turnEnd), 0)) .. '" ';
+						wpContent = wpContent .. 'ridgemarker="' .. tostring(Utils.getNoNil(wp.ridgeMarker, 0)) .. '" ';
+						wpContent = wpContent .. 'generated="' .. tostring(Utils.getNoNil(wp.generated, false)) .. '" ';
+						wpContent = wpContent .. '/>\n';
 
-		-- <courseplayHud posX="0.3" posY="0.35" />
-		local hudKey = string.format("%s.courseplayHud", key);
-		setXMLFloat(xmlFile, hudKey .. "#posX", courseplay.hud.infoBasePosX);
-		setXMLFloat(xmlFile, hudKey .. "#posY", courseplay.hud.infoBasePosY);
-
-		for i,course in ipairs(g_currentMission.courseplay_courses) do
-			local courseKey = string.format("%s.courses.course(%d)", key, i - 1);
-
-			-- <course name="xxx" id="0">
-			setXMLString(xmlFile, courseKey .. "#name",         course.name);
-			setXMLInt(   xmlFile, courseKey .. "#id",           course.id);
-			setXMLInt(   xmlFile, courseKey .. "#numWaypoints", table.getn(course.waypoints));
-
-			-- <waypoint0 ...
-			for wpNum, wp in ipairs(course.waypoints) do
-				local wpKey = string.format("%s.waypoint%d", courseKey, wpNum);
-
-				local pos =         Utils.getNoNil(courseplay:round(wp.cx, 4), 0) .. " " .. Utils.getNoNil(courseplay:round(wp.cz, 4), 0);
-				local angle =       Utils.getNoNil(wp.angle, 0);
-				local wait =        Utils.getNoNil(courseplay:boolToInt(wp.wait), 0);
-				local crossing =    Utils.getNoNil(courseplay:boolToInt(wp.crossing), 0);
-				local rev =         Utils.getNoNil(courseplay:boolToInt(wp.rev), 0);
-				local speed =       Utils.getNoNil(wp.speed, 0);
-				local turn =        Utils.getNoNil(wp.turn, false);
-				local turnStart =   Utils.getNoNil(courseplay:boolToInt(wp.turnStart), 0);
-				local turnEnd =     Utils.getNoNil(courseplay:boolToInt(wp.turnEnd), 0);
-				local ridgeMarker = Utils.getNoNil(wp.ridgeMarker, 0);
-				local generated =   Utils.getNoNil(wp.generated, false);
-
-				setXMLString(xmlFile, wpKey .. "#pos",         pos);
-				setXMLFloat( xmlFile, wpKey .. "#angle",       angle);
-				setXMLInt(   xmlFile, wpKey .. "#wait",        wait);
-				setXMLInt(   xmlFile, wpKey .. "#crossing",    crossing);
-				setXMLInt(   xmlFile, wpKey .. "#rev",         rev);
-				setXMLFloat( xmlFile, wpKey .. "#speed",       speed);
-				setXMLBool(  xmlFile, wpKey .. "#turn",        turn);
-				setXMLInt(   xmlFile, wpKey .. "#turnstart",   turnStart);
-				setXMLInt(   xmlFile, wpKey .. "#turnend",     turnEnd);
-				setXMLInt(   xmlFile, wpKey .. "#ridgemarker", ridgeMarker);
-				setXMLBool(  xmlFile, wpKey .. "#generated",   generated);
+						file:write(wpContent);
+					end;
+					file:write('\t\t</course>\n');
+				end;
+				file:write('\t</courses>\n</XML>');
+				file:close();
+			else
+				print("Error: Courseplay courses could not be saved to " .. tostring(savegame.savegameDirectory) .. "/courseplay.xml"); 
 			end;
 		end;
-
-		saveXMLFile(xmlFile);
-		delete(xmlFile);
-	else
-		print("Error: Courseplay courses could not be saved!"); 
 	end;
-
-	courseplay:validateCourseListArrows(table.getn(g_currentMission.courseplay_courses));
-end
-
+end;
 
 
 --Update all vehicles' course list arrow displays
