@@ -18,7 +18,7 @@ function courseplay:isChopper(workTool)
 	return (SpecializationUtil.hasSpecialization(Combine, workTool.specializations) or SpecializationUtil.hasSpecialization(AICombine, workTool.specializations)) and workTool.grainTankCapacity ~= nil and workTool.grainTankCapacity == 0 or courseplay:isSpecialChopper(workTool);
 end;
 function courseplay:isHarvesterSteerable(workTool)
-	return workTool.typeName == "selfPropelledPotatoHarvester" or Utils.endsWith(workTool.configFileName, "grimmeMaxtron620.xml") or Utils.endsWith(workTool.configFileName, "grimmeTectron415.xml");
+	return workTool.typeName == "selfPropelledPotatoHarvester" or workTool.cp.isGrimmeMaxtron620 or workTool.cp.isGrimmeTectron415;
 end;
 function courseplay:isBaler(workTool) -- is the tool a baler?
 	return (SpecializationUtil.hasSpecialization(Baler, workTool.specializations) or workTool.balerUnloadingState ~= nil or courseplay:isSpecialBaler(workTool));
@@ -65,6 +65,8 @@ end;
 
 -- update implements to find attached tippers
 function courseplay:update_tools(self, tractor_or_implement)
+	courseplay:setNameVariable(tractor_or_implement);
+
 	--steerable (tractor, combine etc.)
 	local tipper_attached = false
 	if SpecializationUtil.hasSpecialization(AITractor, tractor_or_implement.specializations) 
@@ -141,9 +143,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 	for k, implement in pairs(tractor_or_implement.attachedImplements) do
 		local object = implement.object
 
-		if object.cp == nil then --table for custom implement variables
-			object.cp = {};
-		end;
+		courseplay:setNameVariable(object);
 
 		if self.ai_mode == 1 or self.ai_mode == 2 then
 			--	if SpecializationUtil.hasSpecialization(Trailer, object.specializations) then

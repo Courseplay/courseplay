@@ -1,12 +1,119 @@
+function courseplay:setNameVariable(workTool)
+	if workTool.cp == nil then
+		workTool.cp = {};
+	end;
+
+	--Abbey Sprayer Pack [FS-UK Modteam]
+	if Utils.endsWith(workTool.configFileName, "Abbey_AP900.xml") then
+		workTool.cp.isAbbeySprayerPack = true;
+		workTool.cp.isAbbeyAP900 = true;
+	elseif Utils.endsWith(workTool.configFileName, "Abbey_3000R.xml") then
+		workTool.cp.isAbbeySprayerPack = true;
+		workTool.cp.isAbbey3000R = true;
+	elseif Utils.endsWith(workTool.configFileName, "Abbey_2000R.xml") then
+		workTool.cp.isAbbeySprayerPack = true;
+		workTool.cp.isAbbey2000R = true;
+	elseif Utils.endsWith(workTool.configFileName, "Abbey_3000_Nurse.xml") then
+		workTool.cp.isAbbeySprayerPack = true;
+		workTool.cp.isAbbey3000Nurse = true;
+
+	--JF-Stoll 1060 [NI Modding]
+	elseif Utils.endsWith(workTool.configFileName, "JF_1060.xml") then
+		workTool.cp.isJF1060 = true;
+
+	--Kverneland Mower Pack [NI Modding]
+	elseif Utils.endsWith(workTool.configFileName, "Kverneland_4028.xml") then
+		workTool.cp.isKvernelandMowerPack = true;
+		workTool.cp.isKverneland4028 = true;
+	elseif Utils.endsWith(workTool.configFileName, "Kverneland_4028_AS.xml") then
+		workTool.cp.isKvernelandMowerPack = true;
+		workTool.cp.isKverneland4028AS = true;
+	elseif Utils.endsWith(workTool.configFileName, "Kverneland_KD240.xml") then
+		workTool.cp.isKvernelandMowerPack = true;
+		workTool.cp.isKvernelandKD240 = true;
+	elseif Utils.endsWith(workTool.configFileName, "Kverneland_KD240F.xml") then
+		workTool.cp.isKvernelandMowerPack = true;
+		workTool.cp.isKvernelandKD240F = true;
+	elseif Utils.endsWith(workTool.configFileName, "Taarup_3532F.xml") then
+		workTool.cp.isKvernelandMowerPack = true;
+		workTool.cp.isKverneland3532F = true;
+
+	--Taarup Mower Pack [NI Modding]
+	elseif Utils.endsWith(workTool.configFileName, "Taarup_5090.xml") then
+		workTool.cp.isTaarupMowerPack = true;
+		workTool.cp.isTaarup5090 = true;
+
+	--Poettinger Alpha/X8 Mower Pack [Eifok Team]
+	elseif Utils.endsWith(workTool.configFileName, "PoettingerAlpha.xml") then
+		workTool.cp.isPoettingerAlphaX8MowerPack = true;
+		workTool.cp.isPoettingerAlpha = true;
+	elseif Utils.endsWith(workTool.configFileName, "PoettingerX8.xml") then
+		workTool.cp.isPoettingerAlphaX8MowerPack = true;
+		workTool.cp.isPoettingerX8 = true;
+
+	--Claas Quadrant 1200 [Eifok Team]
+	elseif Utils.endsWith(workTool.configFileName, "Claas_Quadrant_1200.xml") then
+		workTool.cp.isClaasQuadrant1200 = true;
+
+	--Claas Liner 4000 [LS-Landtechnik & Fuqsbow-Team]
+	elseif Utils.endsWith(workTool.configFileName, "liner4000.xml") then
+		workTool.cp.isClaasLiner4000 = true;
+
+	--Ursus Z586 bale wrapper [Giants]
+	elseif Utils.endsWith(workTool.configFileName, "ursusZ586.xml") then
+		workTool.cp.isUrsusZ586 = true;
+
+	--Tebbe HS180 [Stefan Maurus]
+	elseif Utils.endsWith(workTool.configFileName, "TebbeHS180.xml") then
+		workTool.cp.isTebbeHS180 = true;
+
+	--Fuchs liquid manure trailer [Stefan Maurus]
+	elseif Utils.endsWith(workTool.configFileName, "FuchsGuellefass.xml") and workTool.isFuchsFass then
+		workTool.cp.isFuchsLiquidManure = true;
+
+	--Claas Conspeed [SFM]
+	elseif Utils.endsWith(workTool.configFileName, "claasConspeed.xml") then
+		workTool.cp.isClaasConspeedSFM = true;
+
+	--Poettinger Mex 6 [Giants]
+	elseif Utils.endsWith(workTool.configFileName, "poettingerMex6.xml") then
+		workTool.cp.isPoettingerMex6 = true;
+
+	--Sugarbeet Loaders [burner]
+	elseif Utils.endsWith(workTool.configFileName, "RopaEuroMaus.xml") then
+		workTool.cp.isRopaEuroMaus = true;
+	elseif Utils.endsWith(workTool.configFileName, "HolmerTerraFelis.xml") then
+		workTool.cp.isHolmerTerraFelis = true;
+
+	--Harvesters (steerable) [Giants]
+	elseif Utils.endsWith(workTool.configFileName, "grimmeMaxtron620.xml") then
+		workTool.cp.isHarvesterSteerable = true;
+		workTool.cp.isGrimmeMaxtron620 = true;
+	elseif Utils.endsWith(workTool.configFileName, "grimmeTectron415.xml") then
+		workTool.cp.isHarvesterSteerable = true;
+		workTool.cp.isGrimmeTectron415 = true;
+
+	--Harvesters (attachable) [Giants]
+	elseif Utils.endsWith(workTool.configFileName, "grimmeRootster604.xml") then
+		workTool.cp.isHarvesterAttachable = true;
+		workTool.cp.isGrimmeRootster604 = true;
+	elseif Utils.endsWith(workTool.configFileName, "grimmeSE75-55.xml") then
+		workTool.cp.isHarvesterAttachable = true;
+		workTool.cp.isGrimmeSE7555 = true;
+
+	elseif Utils.endsWith(workTool.configFileName, "KirovetsK700A.xml") then
+		workTool.cp.isKirovetsK700A = true;
+	end;
+end;
+
+------------------------------------------------------------------------------------------
 
 function courseplay:isSpecialSprayer(workTool)
-	return	Utils.endsWith(workTool.configFileName, "Abbey_AP900.xml") 
-		or Utils.endsWith(workTool.configFileName, "Abbey_3000R.xml") 
-		or Utils.endsWith(workTool.configFileName, "Abbey_2000R.xml")
-		or Utils.endsWith(workTool.configFileName, "Abbey_3000_Nurse.xml")
+	return workTool.cp.isAbbeySprayerPack;
 end;
+
 function courseplay:isSpecialChopper(workTool)
-	if Utils.endsWith(workTool.configFileName, "JF_1060.xml") then
+	if workTool.cp.isJF1060 then
 		if workTool.grainTankFillLevel == nil then
 			workTool.grainTankFillLevel = 0;
 		end;
@@ -22,30 +129,18 @@ function courseplay:isSpecialChopper(workTool)
 end
 
 function courseplay:isSpecialMower(workTool)
-	workTool.isKvernelandMowerPack = Utils.endsWith(workTool.configFileName, "Kverneland_4028.xml")
-				or Utils.endsWith(workTool.configFileName, "Kverneland_4028_AS.xml")
-				or Utils.endsWith(workTool.configFileName, "Kverneland_KD240.xml")
-				or Utils.endsWith(workTool.configFileName, "Kverneland_KD240F.xml")
-	 			or Utils.endsWith(workTool.configFileName, "Taarup_3532F.xml");
-	workTool.isTaarupMowerPack = Utils.endsWith(workTool.configFileName, "Taarup_5090.xml");
-
-
-	return Utils.endsWith(workTool.configFileName, "PoettingerAlpha.xml") 
-		or Utils.endsWith(workTool.configFileName, "PoettingerX8.xml")
-		or workTool.isKvernelandMowerPack
-		or workTool.isTaarupMowerPack
-
+	return workTool.cp.isPoettingerAlphaX8MowerPack or workTool.cp.isKvernelandMowerPack or workTool.cp.isTaarupMowerPack;
 end
 
 function courseplay:isSpecialBaler(workTool)
-	return Utils.endsWith(workTool.configFileName, "Claas_Quadrant_1200.xml")
+	return workTool.cp.isClaasQuadrant1200;
 end
 
 
 function courseplay:isSpecialCombine(workTool, specialType, fileNames)
 	if specialType ~= nil then
 		if specialType == "sugarBeetLoader" then
-			if (Utils.endsWith(workTool.configFileName, "RopaEuroMaus.xml") or Utils.endsWith(workTool.configFileName, "HolmerTerraFelis.xml")) and workTool.unloadingTrigger ~= nil and workTool.unloadingTrigger.node ~= nil then
+			if (workTool.cp.isRopaEuroMaus or workTool.cp.isHolmerTerraFelis) and workTool.unloadingTrigger ~= nil and workTool.unloadingTrigger.node ~= nil then
 				if workTool.grainTankFillLevel == nil then
 					workTool.grainTankFillLevel = 0;
 				end;
@@ -66,7 +161,7 @@ function courseplay:isSpecialCombine(workTool, specialType, fileNames)
 		return false;
 	end;]]
 	
-	return Utils.endsWith(workTool.configFileName, "JF_1060.xml");
+	return workTool.cp.isJF1060;
 end
 
 
@@ -77,16 +172,15 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 	end
 	
 	--KvernelandMowerPack
-	if workTool.isKvernelandMowerPack then
-		if Utils.endsWith(workTool.configFileName, "Kverneland_KD240.xml") then
+	if workTool.cp.isKvernelandMowerPack then
+		if workTool.cp.isKvernelandKD240 then
 			if workTool.TransRot ~= nil and workTool.TransRot ~= down then
 				workTool:setTransRot(not unfold);
 			end
 			if workTool.setArmOne ~= nil then
 				workTool:setArmOne(implementsDown);
 			end
-		elseif Utils.endsWith(workTool.configFileName, "Kverneland_4028_AS.xml")
-		or Utils.endsWith(workTool.configFileName, "Kverneland_4028.xml") then
+		elseif workTool.cp.isKverneland4028AS or workTool.cp.isKverneland4028 then
 			if workTool.TransRot ~= nil and workTool.TransRot ~= down then
 				workTool:setTransRot(unfold);
 			end
@@ -111,7 +205,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		return true, allowedToDrive
 
 	-- TaarupMowerPack
-	elseif workTool.isTaarupMowerPack then
+	elseif workTool.cp.isTaarupMowerPack then
 		if workTool.isReadyToTransport then
 			workTool:setTransport(not unfold)
 		end
@@ -143,7 +237,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		return true, allowedToDrive
 
 	--Claas Quadrant 1200
-	elseif Utils.endsWith(workTool.configFileName, "Claas_Quadrant_1200.xml") then
+	elseif workTool.cp.isClaasQuadrant1200 then
 		if unfold ~= nil and turnOn ~= nil and lower ~= nil then
 			if not unfold then
 				workTool:emptyBaler(true);
@@ -186,8 +280,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		return true ,allowedToDrive
 
 	--Ursus Z586 BaleWrapper
-	elseif Utils.endsWith(workTool.configFileName, "ursusZ586.xml") then
-		
+	elseif workTool.cp.isUrsusZ586 then
 		if workTool.baleWrapperState == 4 then
 			workTool:doStateChange(5)
 		end
@@ -198,7 +291,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		return false ,allowedToDrive
 	
 	--JF_FCT1060_ProTec
-	elseif Utils.endsWith(workTool.configFileName, "JF_1060.xml") then
+	elseif workTool.cp.isJF1060 then
 		if unfold ~= nil and turnOn ~= nil and lower ~= nil then
 			if unfold ~= workTool.isArmOneOn and not workTool.isTurnedOn then
 				workTool:setArmOne(unfold);
@@ -221,8 +314,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		return true ,allowedToDrive
 
 	--Abbey 3000 NurseTanker
-	elseif Utils.endsWith(workTool.configFileName, "Abbey_3000_Nurse.xml") then
-
+	elseif workTool.cp.isAbbey3000Nurse then
 		local x,y,z = getRotation(workTool.boomArmY)
 		local a,b,c = getRotation(workTool.boomArmX)
 		if unload ~= nil then
@@ -267,8 +359,9 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		end
 		
 		return true, allowedToDrive
+
 	--Abbey 2000/3000R
-	elseif Utils.endsWith(workTool.configFileName, "Abbey_3000R.xml") or Utils.endsWith(workTool.configFileName, "Abbey_2000R.xml") then
+	elseif workTool.cp.isAbbey3000R or workTool.cp.isAbbey2000R then
 		if workTool.PTOId then
 			workTool:setPTO(false)
 		end
@@ -278,9 +371,9 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 				Cover = 1
 			end
 			workTool:setFoldDirection(Cover);
-		end				
-		
-		if lower ~= nil and turnOn ~= nil then				
+		end
+
+		if lower ~= nil and turnOn ~= nil then
 			if workTool.setIsTurnedOn ~= nil and not workTool.isTurnedOn then
 				workTool:setIsTurnedOn(implementsDown, false);
 			end
@@ -292,7 +385,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		return true, allowedToDrive
 
 	--Abbey AP900  workwith 5.8m offset-4,1m
-	elseif Utils.endsWith(workTool.configFileName, "Abbey_AP900.xml")	then
+	elseif workTool.cp.isAbbeyAP900 then
 		if workTool.PTOId then
 			workTool:setPTO(false)
 		end
@@ -304,7 +397,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 			if workTool.animationParts[1].currentPosition > 0 then
 				workTool:setAnimationTime(1, workTool.animationParts[1].currentPosition-(workTool.animationParts[1].offSet*(3)));
 			end
-		end			
+		end
 
 		return false, allowedToDrive
 		
@@ -314,7 +407,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 	
 
 	-- Claas liner 4000
-	elseif Utils.endsWith(workTool.configFileName, "liner4000.xml") then
+	elseif workTool.cp.isClaasLiner4000 then
 		local isReadyToWork = workTool.rowerFoldingParts[1].isDown;
 		local manualReset = false
 		if workTool.cp.unfoldOrderIsGiven == nil then
@@ -361,7 +454,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 
 
 	--Tebbe HS180 (Maurus)
-	elseif Utils.endsWith(workTool.configFileName, "TebbeHS180.xml") then
+	elseif workTool.cp.isTebbeHS180 then
 		local flap = 0
 		if workTool.setDoorHigh ~= nil and workTool.doorhigh ~= nil then
 			if turnOn then 
@@ -376,14 +469,14 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 
 
 	--Fuchsfass
-	elseif workTool.isFuchsFass and workTool.setdeckelAnimationisPlaying ~= nil then
+	elseif workTool.cp.isFuchsLiquidManure and workTool.setdeckelAnimationisPlaying ~= nil then
 		if cover ~= nil then
 			workTool:setdeckelAnimationisPlaying(cover);
 		end
 		return false, allowedToDrive
 
 	--Poettinger Alpha
-	elseif workTool.alpMot ~= nil and workTool.setTurnedOn ~= nil and workTool.setLiftUp ~= nil and workTool.setTransport ~= nil then
+	elseif workTool.cp.isPoettingerAlpha and workTool.alpMot ~= nil and workTool.setTurnedOn ~= nil and workTool.setLiftUp ~= nil and workTool.setTransport ~= nil then
 		--fold/unfold
 		workTool:setTransport(not unfold);
 		if workTool.alpMot.isTransport ~= nil then
@@ -408,7 +501,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 
 
 	--Poettinger X8
-	elseif workTool.x8 ~= nil and workTool.x8.mowers ~= nil and workTool.setTurnedOn ~= nil and workTool.setLiftUp ~= nil and workTool.setTransport ~= nil and workTool.setSelection ~= nil then
+	elseif workTool.cp.isPoettingerX8 and workTool.x8 ~= nil and workTool.x8.mowers ~= nil and workTool.setTurnedOn ~= nil and workTool.setLiftUp ~= nil and workTool.setTransport ~= nil and workTool.setSelection ~= nil then
 		workTool:setSelection(3);
 		
 		local isFolded = workTool.x8.mowers[1].isTransport and workTool.x8.mowers[2].isTransport;
@@ -438,31 +531,33 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 end
 function courseplay:askForSpecialSettings(self,object)
 	
-	if Utils.endsWith(self.configFileName, "KirovetsK700A.xml") then
+	if self.cp.isKirovetsK700A then
 		self.cp.DirectionNode = self.rootNode
 		self.cp.isKasi = 2.5
-	elseif Utils.endsWith(object.configFileName, "grimmeSE75-55.xml") then
+	end;
+
+	if object.cp.isGrimmeSE7555 then
 		self.cp.aiTurnNoBackward = true
 		self.WpOffsetX = -2.1
 		print("Grimme SE 75-55 workwidth: 0.7 m");
-	elseif Utils.endsWith(object.configFileName, "grimmeRootster604.xml") then
+	elseif object.cp.isGrimmeRootster604 then
 		self.cp.aiTurnNoBackward = true
 		self.WpOffsetX = -0.9
 		print("Grimme Rootster 604 workwidth: 2.8 m");
-	elseif Utils.endsWith(object.configFileName, "poettingerMex6.xml") then
+	elseif object.cp.isPoettingerMex6 then
 		self.cp.aiTurnNoBackward = true
 		self.WpOffsetX = -2.5
 		print("Pöttinger Mex 6 workwidth: 2.0 m");
-	elseif Utils.endsWith(object.configFileName, "Abbey_AP900.xml") then
+	elseif object.cp.isAbbeyAP900 then
 		self.cp.aiTurnNoBackward = true
 		self.WpOffsetX = -4.1
 		print("Abbey AP900 workwidth: 5.8 m");
-	elseif Utils.endsWith(object.configFileName, "JF_1060.xml") then
+	elseif object.cp.isJF1060 then
 		self.cp.aiTurnNoBackward = true
 		self.WpOffsetX = -2.5
-	elseif Utils.endsWith(object.configFileName, "claasConspeed.xml") then
+	elseif object.cp.isClaasConspeedSFM then
 		object.cp.inversedFoldDirection = true;
-	elseif Utils.endsWith(object.configFileName, "ursusZ586.xml") then
+	elseif object.cp.isUrsusZ586 then
 		self.cp.aiTurnNoBackward = true
 		self.cp.noStopOnEdge = true
 		self.cp.noStopOnTurn = true

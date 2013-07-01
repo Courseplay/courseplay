@@ -55,7 +55,8 @@ function courseplay:load(xmlFile)
 	end
 
 	self.cp = {};
-	
+
+	courseplay:setNameVariable(self);
 	self.cp.isCombine = courseplay:isCombine(self);
 	self.cp.isChopper = courseplay:isChopper(self);
 	self.cp.isHarvesterSteerable = courseplay:isHarvesterSteerable(self);
