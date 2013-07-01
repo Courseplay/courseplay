@@ -144,7 +144,12 @@ function endswith(sbig, slittle) --TODO: always use Utils.endsWith
 end
 
 function nameNum(vehicle)
-	return tostring(vehicle.name) .. " (#" .. tostring(vehicle.working_course_player_num) .. ")";
+	if vehicle.working_course_player_num ~= nil then
+		return tostring(vehicle.name) .. " (#" .. tostring(vehicle.working_course_player_num) .. ")";
+	elseif vehicle.isHired then
+		return tostring(vehicle.name) .. " (helper)";
+	end;
+	return tostring(vehicle.name);
 end;
 
 function courseplay:isBetween(n, num1, num2, include)

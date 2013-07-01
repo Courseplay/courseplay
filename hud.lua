@@ -279,11 +279,10 @@ function courseplay:loadHud(self)
 			end
 
 			if self.cp.HUD4savedCombine then
-				
 				if self.cp.HUD4savedCombineName == nil then
 					self.cp.HUD4savedCombineName = courseplay:get_locale(self, "CPCombine");
 				end
-				self.hudpage[4][2][1] = self.cp.HUD4savedCombineName .. " (" .. string.format("%d", courseplay:distance_to_object(self, self.saved_combine)) .. "m)"
+				self.hudpage[4][2][1] = string.format("%s (%dm)", self.cp.HUD4savedCombineName, courseplay:distance_to_object(self, self.saved_combine));
 			else
 				self.hudpage[4][2][1] = courseplay:get_locale(self, "CPNone") -- "keiner"
 			end
@@ -526,6 +525,7 @@ function courseplay:showHud(self)
 			renderText(courseplay.hud.visibleArea.x2 - 0.008, courseplay.hud.infoBasePosY + 0.015, 0.012, "no");
 			renderText(courseplay.hud.visibleArea.x2 - 0.008, courseplay.hud.infoBasePosY + 0.003, 0.012, "version");
 		end;
+
 
 		--HUD TITLES
 		courseplay:setFontSettings("white", true, "left");

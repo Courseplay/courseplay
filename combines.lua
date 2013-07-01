@@ -23,11 +23,11 @@ end
 
 
 function courseplay:combine_allows_tractor(self, combine)
-	local num_allowed_courseplayers = 1
 	if combine.courseplayers == nil then
 		combine.courseplayers = {}
 	end
 
+	local num_allowed_courseplayers = 1
 	if combine.cp.isChopper or combine.cp.isSugarBeetLoader then
 		num_allowed_courseplayers = 2
 	else
@@ -95,9 +95,10 @@ function courseplay:update_combines(self)
 		local area2 = Utils.getDensity(terrain, 2, x, z, lx, lz, hx, hz)
 		local area3 = Utils.getDensity(terrain, 3, x, z, lx, lz, hx, hz)
 		local areaAll = area0 + area1 + area2 + area3
-		courseplay:debug(nameNum(self)..": channel0: "..tostring(area0).."  channel1: "..tostring(area1).."  channel2: "..tostring(area2).."  channel3: "..tostring(area3),4)
-		courseplay:debug(nameNum(self)..": area: "..tostring(area).."  field in area: "..tostring(areaAll),4)
-		if area * 0.999 <= areaAll and courseplay:combine_allows_tractor(self, combine) then
+		courseplay:debug(nameNum(self)..": channel0: "..tostring(area0).." / channel1: "..tostring(area1).." / channel2: "..tostring(area2).." / channel3: "..tostring(area3),4)
+		courseplay:debug(nameNum(self)..": area: "..tostring(area).." / field in area: "..tostring(areaAll),4)
+
+		if courseplay:isBetween(areaAll, area * 0.999, area * 1.1, true) and courseplay:combine_allows_tractor(self, combine) then
 			courseplay:debug(nameNum(self)..": adding "..tostring(combine.name).." to reachable combines list",4)
 			table.insert(self.reachable_combines, combine)
 		end

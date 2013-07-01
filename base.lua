@@ -757,7 +757,7 @@ end
 
 function courseplay:get_locale(self, key)
 	return Utils.getNoNil(courseplay.locales[key], key);
-end
+end;
 
 
 function courseplay:readStream(streamId, connection)

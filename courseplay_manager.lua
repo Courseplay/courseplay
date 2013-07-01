@@ -191,6 +191,45 @@ end
 function courseplay_manager:mouseEvent(posX, posY, isDown, isUp, button)
 end
 
+--remove courseplayers from combine before it is reset and/or sold
+function courseplay_manager:removeCourseplayerFromCombine(vehicle, callDelete)
+	local combine = vehicle;
+	--print(nameNum(combine) .. ": courseplay_manager:removeCourseplayerFromCombine(vehicle, callDelete)");
+	if combine.courseplayers ~= nil and table.getn(combine.courseplayers) > 0 then
+		--print(nameNum(combine) .. " has " .. table.getn(combine.courseplayers) .. " courseplayers");
+		for i,tractor in pairs(combine.courseplayers) do
+			--print(string.format("%s [before unregister]: combineID=%s, courseplay_position=%s, active_combine=%s, ai_state=%d, saved_combine=%s", nameNum(tractor), tostring(tractor.combineID), tostring(tractor.courseplay_position), tostring(tractor.active_combine), tractor.ai_state, tostring(tractor.saved_combine)));
+
+			--print(nameNum(combine) .. ": unregister " .. nameNum(tractor));
+			courseplay:unregister_at_combine(tractor, combine);
+			
+			if tractor.saved_combine ~= nil then
+				--print(string.format("tractor.saved_combine.id=%s, combine.id=%s", tostring(tractor.saved_combine.id), tostring(combine.id)));
+				if tractor.saved_combine == combine then
+					--print("setting tractor.saved_combine = nil");
+					tractor.saved_combine = nil;
+				end;
+			end;
+			tractor.reachable_combines = nil;
+
+			--print(string.format("%s [after unregister]: combineID=%s, courseplay_position=%s, active_combine=%s, ai_state=%d, saved_combine=%s", nameNum(tractor), tostring(tractor.combineID), tostring(tractor.courseplay_position), tostring(tractor.active_combine), tractor.ai_state, tostring(tractor.saved_combine)));
+
+			if tractor.reachable_combines ~= nil then
+				--print(nameNum(tractor) .. ": #reachable_combines = " .. table.getn(tractor.reachable_combines));
+			else
+				--print(nameNum(tractor) .. ": reachable_combines = nil");
+			end;
+		end;
+		--print(nameNum(combine) .. " has " .. table.getn(combine.courseplayers) .. " courseplayers");
+	end;
+end;
+BaseMission.removeVehicle = Utils.prependedFunction(BaseMission.removeVehicle, courseplay_manager.removeCourseplayerFromCombine);
+
+function courseplay_manager:removeReachableCombinesList(vehicle, callDelete)
+	vehicle.reachable_combines = nil;
+	--print(nameNum(vehicle) .. ": removeReachableCombinesList() - reachable_combines = nil");
+end;
+BaseMission.removeVehicle = Utils.appendedFunction(BaseMission.removeVehicle, courseplay_manager.removeReachableCombinesList);
 
 
 stream_debug_counter = 0

@@ -123,6 +123,8 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		if workTool.isTurnedOn ~= turnOn then
 			workTool:setIsTurnedOn(turnOn);
 		end
+
+		--custom isFolding for Kverneland mowers
 		if workTool.mowerFoldingParts ~= nil then
 			for partIdx, foldingPart in pairs(workTool.mowerFoldingParts) do
 				local mainPart = foldingPart.mainPart;
@@ -131,8 +133,8 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 				--print(string.format("part %d: minRot=%f,%f,%f, maxRot=%f,%f,%f, curRot=%f,%f,%f", partIdx, mainPart.minRot[1], mainPart.minRot[2], mainPart.minRot[3], mainPart.maxRot[1], mainPart.maxRot[2], mainPart.maxRot[3], curRot.x, curRot.y, curRot.z));
 				for i,axis in pairs(axes) do
 					if courseplay:isBetween(curRot[axis], mainPart.minRot[i], mainPart.maxRot[i], false) then
-						print(string.format("isFolding: curRot.%s is between mainPart.minRot[%d] and mainPart.maxRot[%d]", axis, i, i));
-						allowedToDrive = false
+						--print(string.format("isFolding: curRot.%s is between mainPart.minRot[%d] and mainPart.maxRot[%d]", axis, i, i));
+						allowedToDrive = false;
 					end;
 				end;
 			end;
