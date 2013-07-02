@@ -168,11 +168,11 @@ function courseplay:drive(self, dt)
 	-- this should never happen
 	--   self.recordnumber = self.maxnumber
 	-- end
-	local last_recordnumber = nil
+	
 	if self.recordnumber > 1 then
-		last_recordnumber = self.recordnumber - 1
+		self.cp.last_recordnumber = self.recordnumber - 1
 	else
-		last_recordnumber = 1
+		self.cp.last_recordnumber = 1
 	end
 	if self.recordnumber > self.maxnumber then
 		courseplay:debug(string.format("drive %i: %s: self.recordnumber (%s) > self.maxnumber (%s)", debug.getinfo(1).currentline, self.name, tostring(self.recordnumber), tostring(self.maxnumber)), 12); --this should never happen
@@ -204,12 +204,12 @@ function courseplay:drive(self, dt)
 				vcx = self.Waypoints[2].cx - cx
 				vcz = self.Waypoints[2].cz - cz
 			else
-				if self.Waypoints[last_recordnumber].rev then
-					vcx = self.Waypoints[last_recordnumber].cx - cx
-					vcz = self.Waypoints[last_recordnumber].cz - cz
+				if self.Waypoints[self.cp.last_recordnumber].rev then
+					vcx = self.Waypoints[self.cp.last_recordnumber].cx - cx
+					vcz = self.Waypoints[self.cp.last_recordnumber].cz - cz
 				else
-					vcx = cx - self.Waypoints[last_recordnumber].cx
-					vcz = cz - self.Waypoints[last_recordnumber].cz
+					vcx = cx - self.Waypoints[self.cp.last_recordnumber].cx
+					vcz = cz - self.Waypoints[self.cp.last_recordnumber].cz
 				end
 			end
 			-- length of vector
@@ -283,7 +283,7 @@ function courseplay:drive(self, dt)
 	local active_tipper = nil
 
 	--### WAITING POINTS - START
-	if self.Waypoints[last_recordnumber].wait and self.wait then
+	if self.Waypoints[self.cp.last_recordnumber].wait and self.wait then
 		if self.waitTimer == nil and self.waitTime > 0 then
 			self.waitTimer = self.timer + self.waitTime * 1000
 		end
@@ -308,11 +308,11 @@ function courseplay:drive(self, dt)
 			end
 		elseif self.ai_mode == 4 then
 			local drive_on = false
-			if last_recordnumber == self.startWork and fill_level ~= 0 then
+			if self.cp.last_recordnumber == self.startWork and fill_level ~= 0 then
 				self.wait = false
-			elseif last_recordnumber == self.stopWork and self.abortWork ~= nil then
+			elseif self.cp.last_recordnumber == self.stopWork and self.abortWork ~= nil then
 				self.wait = false
-			elseif last_recordnumber == self.stopWork and self.abortWork == nil then
+			elseif self.cp.last_recordnumber == self.stopWork and self.abortWork == nil then
 				courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPWorkEnd"), 1);
 			else
 				if self.timeout < self.timer or self.last_fill_level == nil then
@@ -329,20 +329,20 @@ function courseplay:drive(self, dt)
 				self.cp.infoText = string.format(courseplay:get_locale(self, "CPloading"), self.cp.tipperFillLevel, self.cp.tipperCapacity)
 			end
 		elseif self.ai_mode == 6 then
-			if last_recordnumber == self.startWork then
+			if self.cp.last_recordnumber == self.startWork then
 				self.wait = false
-			elseif last_recordnumber == self.stopWork and self.abortWork ~= nil then
+			elseif self.cp.last_recordnumber == self.stopWork and self.abortWork ~= nil then
 				self.wait = false
-			elseif last_recordnumber == self.stopWork and self.abortWork == nil then
+			elseif self.cp.last_recordnumber == self.stopWork and self.abortWork == nil then
 				courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPWorkEnd"), 1);
-			elseif last_recordnumber ~= self.startWork and last_recordnumber ~= self.stopWork then 
+			elseif self.cp.last_recordnumber ~= self.startWork and self.cp.last_recordnumber ~= self.stopWork then 
 				courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPUnloadBale"));
 				if fill_level == 0 or drive_on then
 					self.wait = false
 				end;
 			end;
 		elseif self.ai_mode == 7 then
-			if last_recordnumber == self.startWork then
+			if self.cp.last_recordnumber == self.startWork then
 				if self.grainTankFillLevel > 0 then
 					self:setPipeState(2)
 					courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPReachedOverloadPoint"));
@@ -509,7 +509,7 @@ function courseplay:drive(self, dt)
 	local workSpeed = 0;
 
 	if self.ai_mode == 4 and self.tipper_attached and self.startWork ~= nil and self.stopWork ~= nil then
-		allowedToDrive, workArea, workSpeed = courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill_level, last_recordnumber)
+		allowedToDrive, workArea, workSpeed = courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill_level)
 	end
 
 	
@@ -517,7 +517,7 @@ function courseplay:drive(self, dt)
 
 	-- Mode 6 Fieldwork for balers and foragewagon
 	if self.ai_mode == 6 and self.startWork ~= nil and self.stopWork ~= nil then
-		allowedToDrive, workArea, workSpeed, active_tipper = courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill_level, last_recordnumber, lx , lz )
+		allowedToDrive, workArea, workSpeed, active_tipper = courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill_level, lx , lz )
 		if not workArea and self.grainTankCapacity == nil and self.tipRefOffset ~= nil then
 			if self.cp.currentTipTrigger == nil and self.cp.tipperFillLevel > 0 then
 				-- is there a tipTrigger within 10 meters?
@@ -558,7 +558,7 @@ function courseplay:drive(self, dt)
 		end;
 	end
 	if self.ai_mode == 9 then
-		allowedToDrive = courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToDrive, dt);
+		allowedToDrive = courseplay:handle_mode9(self, fill_level, allowedToDrive, dt);
 	end;
 
 	
@@ -756,7 +756,7 @@ function courseplay:drive(self, dt)
 		distToChange = 0.5
 	elseif self.recordnumber + 1 <= self.maxnumber then
 		local beforeReverse = (self.Waypoints[self.recordnumber + 1].rev and (self.Waypoints[self.recordnumber].rev == false))
-		local afterReverse = (not self.Waypoints[self.recordnumber + 1].rev and self.Waypoints[last_recordnumber].rev)
+		local afterReverse = (not self.Waypoints[self.recordnumber + 1].rev and self.Waypoints[self.cp.last_recordnumber].rev)
 		if (self.Waypoints[self.recordnumber].wait or beforeReverse) and self.Waypoints[self.recordnumber].rev == false then -- or afterReverse or self.recordnumber == 1
 			distToChange = 1
 		elseif (self.Waypoints[self.recordnumber].rev and self.Waypoints[self.recordnumber].wait) or afterReverse then

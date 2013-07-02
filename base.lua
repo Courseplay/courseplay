@@ -698,8 +698,8 @@ function courseplay:update(dt)
 				self.cp.HUD0tractor = false
 			end
 		elseif self.showHudInfoBase == 1 then
-			if self.Waypoints ~= nil and last_recordnumber ~= nil then
-				self.cp.HUD1goON = (self.Waypoints[last_recordnumber].wait and self.wait) or (self.StopEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil))
+			if self.Waypoints ~= nil and self.cp.last_recordnumber ~= nil then
+				self.cp.HUD1goOn = (self.Waypoints[self.cp.last_recordnumber].wait and self.wait) or (self.StopEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil))
 			end
 			self.cp.HUD1noWaitforFill = not self.loaded and self.ai_mode ~= 5
 		elseif self.showHudInfoBase == 4 then

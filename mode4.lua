@@ -1,10 +1,10 @@
-function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill_level, last_recordnumber)
+function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill_level)
 	local workTool; -- = self.tippers[1] -- to do, quick, dirty and unsafe
 
 	workArea = (self.recordnumber > self.startWork) and (self.recordnumber <= self.stopWork)
 
 	-- Begin Work
-	if last_recordnumber == self.startWork and fill_level ~= 0 then
+	if self.cp.last_recordnumber == self.startWork and fill_level ~= 0 then
 		if self.abortWork ~= nil then
 			if self.abortWork < 5 then
 				self.abortWork = 6
@@ -14,10 +14,10 @@ function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill
 	end
 	-- last point reached restart
 	if self.abortWork ~= nil then
-		if last_recordnumber == self.abortWork and fill_level ~= 0 then
+		if self.cp.last_recordnumber == self.abortWork and fill_level ~= 0 then
 			self.recordnumber = self.abortWork +2
 		end
-		if last_recordnumber == self.abortWork + 8 then
+		if self.cp.last_recordnumber == self.abortWork + 8 then
 			self.abortWork = nil
 		end
 	end
@@ -41,8 +41,8 @@ function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill
 		returnToStartPoint = true;
 	end;
 	
-	local firstPoint = last_recordnumber == 1;
-	local prevPoint = self.Waypoints[last_recordnumber];
+	local firstPoint = self.cp.last_recordnumber == 1;
+	local prevPoint = self.Waypoints[self.cp.last_recordnumber];
 	local nextPoint = self.Waypoints[self.recordnumber];
 	
 	local ridgeMarker = prevPoint.ridgeMarker;

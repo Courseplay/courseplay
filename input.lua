@@ -132,16 +132,8 @@ function courseplay:deal_with_mouse_input(self, func, value)
 					end
 
 				else -- driving
-					local last_recordnumber = Utils.clamp(self.recordnumber-1, 1, self.recordnumber);
-					--[[
-					local last_recordnumber = nil;
-					if self.recordnumber > 1 then
-						last_recordnumber = self.recordnumber - 1
-					else
-						last_recordnumber = 1
-					end]]
-
-					if last_recordnumber ~= nil and self.Waypoints[last_recordnumber].wait and self.wait and func == "row2" then
+					
+					if self.cp.last_recordnumber ~= nil and self.Waypoints[self.cp.last_recordnumber].wait and self.wait and func == "row2" then
 						self.wait = false
 					end
 

@@ -1,4 +1,4 @@
-function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill_level, last_recordnumber, lx , lz )
+function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill_level, lx , lz )
 	local workTool --= self.tippers[1] -- to do, quick, dirty and unsafe
 	local active_tipper = nil
 	local specialTool = false
@@ -16,7 +16,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 	if workArea then
 		workSpeed = 1;
 	end
-	if (self.recordnumber == self.stopWork or last_recordnumber == self.stopWork) and self.abortWork == nil and not self.loaded then
+	if (self.recordnumber == self.stopWork or self.cp.last_recordnumber == self.stopWork) and self.abortWork == nil and not self.loaded then
 		allowedToDrive = false
 		courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPWorkEnd"), 1);
 	end
@@ -86,7 +86,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 					end
 				end
 				
-				if last_recordnumber == self.stopWork -1  and workTool.isTurnedOn and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
+				if self.cp.last_recordnumber == self.stopWork -1  and workTool.isTurnedOn and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,nil)
 					if not specialTool then
 						workTool:setIsTurnedOn(false, false);
@@ -121,7 +121,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 					end
 
 					-- automatic unload
-					if self.Waypoints[last_recordnumber].wait and (self.wait or fill_level == 0) then
+					if self.Waypoints[self.cp.last_recordnumber].wait and (self.wait or fill_level == 0) then
 						if not courseplay:isUBT(workTool) then
 							if workTool.emptyState ~= BaleLoader.EMPTY_NONE then
 								if workTool.emptyState == BaleLoader.EMPTY_WAIT_TO_DROP then
@@ -179,7 +179,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 						end;
 
 						-- automatic unload
-						if self.Waypoints[last_recordnumber].wait and (self.wait or fill_level == 0 or workTool.fillLevel == 0) then
+						if self.Waypoints[self.cp.last_recordnumber].wait and (self.wait or fill_level == 0 or workTool.fillLevel == 0) then
 							--call unload function
 							for i=1, workTool.numAttachers[workTool.typeOnTrailer] do
 								if workTool.attacher[workTool.typeOnTrailer][i].attachedObject ~= nil then
@@ -224,7 +224,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 
 			-- other worktools, tippers, e.g. forage wagon	
 			else
-				if workArea and fill_level ~= 100 and ((self.abortWork == nil) or (self.abortWork ~= nil and last_recordnumber == self.abortWork) or (self.runOnceStartCourse)) and self.cp.turnStage == 0  and not returnToStartPoint then
+				if workArea and fill_level ~= 100 and ((self.abortWork == nil) or (self.abortWork ~= nil and self.cp.last_recordnumber == self.abortWork) or (self.runOnceStartCourse)) and self.cp.turnStage == 0  and not returnToStartPoint then
 								--courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,true,true,true,allowedToDrive,nil,nil)
 					if allowedToDrive then
@@ -272,7 +272,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 							end;
 						end;
 					end
-				elseif not workArea or self.abortWork ~= nil or self.loaded or last_recordnumber == self.stopWork or returnToStartPoint then
+				elseif not workArea or self.abortWork ~= nil or self.loaded or self.cp.last_recordnumber == self.stopWork or returnToStartPoint then
 					workSpeed = 0;
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,nil)
 					if not specialTool then
@@ -341,7 +341,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 			end; --END other tools
 
 			-- Begin Work   or goto abortWork
-			if last_recordnumber == self.startWork and fill_level ~= 100 then
+			if self.cp.last_recordnumber == self.startWork and fill_level ~= 100 then
 				if self.abortWork ~= nil then
 					if self.abortWork < 5 then
 						self.abortWork = 6
@@ -354,7 +354,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 			end
 			-- last point reached restart
 			if self.abortWork ~= nil then
-				if (last_recordnumber == self.abortWork ) and fill_level ~= 100 then
+				if (self.cp.last_recordnumber == self.abortWork ) and fill_level ~= 100 then
 					self.recordnumber = self.abortWork + 2  -- drive to waypoint after next waypoint
 					self.abortWork = nil
 				end
@@ -362,7 +362,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 			-- safe last point
 			if (fill_level == 100 or self.loaded) and workArea and not courseplay:isBaler(workTool) then
 				if self.cp.hasUnloadingRefillingCourse and self.abortWork == nil then
-					self.abortWork = last_recordnumber - 10
+					self.abortWork = self.cp.last_recordnumber - 10
 					self.recordnumber = self.stopWork - 4
 					if self.recordnumber < 1 then
 						self.recordnumber = 1

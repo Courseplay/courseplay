@@ -17,7 +17,7 @@ handles "mode9": Fill and empty shovel
 5)  drive course with recorded direction (most likely in reverse) until end - continue and repeat to 1)
 ]]
 
-function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToDrive, dt)
+function courseplay:handle_mode9(self, fill_level, allowedToDrive,dt)
 	--state 1: goto BunkerSilo 
 	--state 2: get ready to load / loading
 	--state 3: transport to BGA 
@@ -107,7 +107,7 @@ function courseplay:handle_mode9(self, last_recordnumber, fill_level, allowedToD
 		end
 
 	elseif self.cp.shovelState == 3 then
-		if last_recordnumber + 4 > self.cp.shovelEmptyPoint then
+		if self.cp.last_recordnumber + 4 > self.cp.shovelEmptyPoint then
 			local hasTargetRotation = courseplay:hasTargetRotation(self, mt, secondary, self.cp.shovelStateRot["4"]);
 			if hasTargetRotation ~= nil and not hasTargetRotation then
 				courseplay:setMovingToolsRotation(self, dt, mt, secondary, self.cp.shovelStateRot["4"]);

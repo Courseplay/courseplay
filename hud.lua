@@ -93,14 +93,6 @@ function courseplay:loadHud(self)
 
 					self.hudpage[1][1][4] = courseplay:get_locale(self, "CourseReset")
 				else
-					local last_recordnumber = nil
-
-					if self.recordnumber > 1 then
-						last_recordnumber = self.recordnumber - 1
-					else
-						last_recordnumber = 1
-					end
-
 					if self.cp.HUD1goOn then
 						self.hudpage[1][1][2] = courseplay:get_locale(self, "CourseWaitpointStart")
 					end
@@ -547,14 +539,6 @@ function courseplay:showHud(self)
 				if InputBinding.hasEvent(InputBinding.AHInput3) then
 					self.loaded = true;
 				end;
-			end
-
-			local last_recordnumber = nil
-
-			if self.recordnumber > 1 then
-				last_recordnumber = self.recordnumber - 1
-			else
-				last_recordnumber = 1
 			end
 
 			if --[[self.Waypoints[last_recordnumber].wait and]] self.wait then
