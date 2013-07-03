@@ -1,5 +1,8 @@
 function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
-	if isDown and button == 3 and self.isEntered then
+	local mouseKey = button;
+
+	--if isDown and mouseKey == 3 and self.isEntered then
+	if self.isEntered and Input.isMouseButtonPressed(Input.MOUSE_BUTTON_RIGHT) then
 		if self.show_hud then
 			self.mouse_enabled = not self.mouse_enabled;
 			InputBinding.setShowMouseCursor(self.mouse_enabled);
@@ -8,51 +11,118 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 			courseplay:buttonsActiveEnabled(self, "all");
 		end
 	end;
-	
+
 	local hudGfx = courseplay.hud.visibleArea;
 	local mouseIsInHudArea = self.mouse_enabled and posX > hudGfx.x1 and posX < hudGfx.x2 and posY > hudGfx.y1 and posY < hudGfx.y2;
-	
-	if self.mouse_enabled and isDown and button == 1 and self.show_hud and self.isEntered and mouseIsInHudArea then
-		for _, button in pairs(self.cp.buttons) do
-			button.isClicked = false;
 
-			if (button.page == self.showHudInfoBase or button.page == nil or button.page == self.showHudInfoBase * -1) and (button.show == nil or (button.show ~= nil and button.show)) then
-				if posX > button.x and posX < button.x2 and posY > button.y and posY < button.y2 then
-					local parameter = button.parameter;
-					if InputBinding.isPressed(InputBinding.CP_Modifier_1) and button.modifiedParameter ~= nil then --for some reason InputBinding works in :mouseEvent
-						courseplay:debug("button.modifiedParameter = " .. tostring(button.modifiedParameter), 12);
-						parameter = button.modifiedParameter;
-					end;
+	--CLICK
+	if self.mouse_enabled and self.show_hud and self.isEntered and mouseIsInHudArea and Input.isMouseButtonPressed(Input.MOUSE_BUTTON_LEFT) then
+		local continueSearchingButton = true;
+		for _,button in pairs(self.cp.buttons.global) do
+			if courseplay:nilOrBool(button.show, true) and courseplay:mouseIsInButtonArea(posX, posY, button) then
+				continueSearchingButton = false;
+				courseplay:handleMouseClickForButton(self, button);
+				break;
+			end;
+		end;
 
-					--if (button.show == nil or (button.show ~= nil and button.show)) and (button.canBeClicked == nil or (button.canBeClicked ~= nil and button.canBeClicked)) then
-					if courseplay:nilOrBool(button.show, true) and courseplay:nilOrBool(button.canBeClicked, true) then
-						button.isClicked = true;
-						if button.function_to_call == "showSaveCourseForm" then
-							self.cp.imWriting = true
-						end
-						self:setCourseplayFunc(button.function_to_call, parameter);
-					end;
-				end
-			end
-		end
-		
-	--hover
-	elseif self.mouse_enabled and not isDown and self.show_hud and self.isEntered then
-		--if mouseIsInHudArea then
-			for _, button in pairs(self.cp.buttons) do
-				if (button.page == self.showHudInfoBase or button.page == nil or button.page == self.showHudInfoBase * -1) and courseplay:nilOrBool(button.show, true) then
-					if posX > button.x and posX < button.x2 and posY > button.y and posY < button.y2 then
-						button.isHovered = true;
-					else
-						button.isHovered = false;
+		if continueSearchingButton then
+			for _,button in pairs(self.cp.buttons[tostring(self.showHudInfoBase)]) do
+				if button.canBeClicked and courseplay:nilOrBool(button.show, true) and courseplay:mouseIsInButtonArea(posX, posY, button) then
+					continueSearchingButton = false;
+					courseplay:handleMouseClickForButton(self, button);
+					break;
+				end;
+			end;
+		end;
+
+		if continueSearchingButton then
+			if self.showHudInfoBase == 2 then
+				for _,button in pairs(self.cp.buttons["-2"]) do
+					if courseplay:nilOrBool(button.show, true) and courseplay:mouseIsInButtonArea(posX, posY, button) then
+						courseplay:handleMouseClickForButton(self, button);
+						break;
 					end;
 				end;
-				button.isClicked = false;
 			end;
-		--end;
+		end;
+
+	--HOVER
+	elseif self.mouse_enabled and not isDown and self.show_hud and self.isEntered then
+		for _,button in pairs(self.cp.buttons.global) do
+			button.isClicked = false;
+			if courseplay:nilOrBool(button.show, true) then
+				button.isHovered = false;
+				if courseplay:mouseIsInButtonArea(posX, posY, button) then
+					button.isClicked = false;
+					button.isHovered = true;
+				end;
+			end;
+		end;
+
+		for _,button in pairs(self.cp.buttons[tostring(self.showHudInfoBase)]) do
+			button.isClicked = false;
+			if courseplay:nilOrBool(button.show, true) then
+				button.isHovered = false;
+				if courseplay:mouseIsInButtonArea(posX, posY, button) then
+					button.isHovered = true;
+
+					if button.isMouseWheelArea then
+						local parameter = button.parameter;
+						if InputBinding.isPressed(InputBinding.CP_Modifier_1) and button.modifiedParameter ~= nil then
+							parameter = button.modifiedParameter;
+						end;
+
+						local upParameter = parameter;
+						local downParameter = upParameter * -1;
+
+						if Input.isMouseButtonPressed(Input.MOUSE_BUTTON_WHEEL_UP) and button.canScrollUp then
+							courseplay:debug(string.format("%s: MOUSE_BUTTON_WHEEL_UP: %s(%s)", nameNum(self), tostring(button.function_to_call), tostring(upParameter)), 12);
+							self:setCourseplayFunc(button.function_to_call, upParameter);
+						elseif Input.isMouseButtonPressed(Input.MOUSE_BUTTON_WHEEL_DOWN) and button.canScrollDown then
+							courseplay:debug(string.format("%s: MOUSE_BUTTON_WHEEL_DOWN: %s(%s)", nameNum(self), tostring(button.function_to_call), tostring(downParameter)), 12);
+							self:setCourseplayFunc(button.function_to_call, downParameter);
+						end;
+					end;
+				end;
+			end;
+		end;
+
+		if self.showHudInfoBase == 2 then
+			for _,button in pairs(self.cp.buttons["-2"]) do
+				button.isClicked = false;
+				if courseplay:nilOrBool(button.show, true) then
+					button.isHovered = false;
+					if courseplay:mouseIsInButtonArea(posX, posY, button) then
+						button.isClicked = false;
+						button.isHovered = true;
+					end;
+				end;
+			end;
+		end;
 	end;
 end; --END mouseEvent()
 
+function courseplay:mouseIsInButtonArea(x, y, button)
+	return x > button.x and x < button.x2 and y > button.y and y < button.y2;
+end;
+
+function courseplay:handleMouseClickForButton(self, button)
+	local parameter = button.parameter;
+	if InputBinding.isPressed(InputBinding.CP_Modifier_1) and button.modifiedParameter ~= nil then --for some reason InputBinding works in :mouseEvent
+		courseplay:debug("button.modifiedParameter = " .. tostring(button.modifiedParameter), 12);
+		parameter = button.modifiedParameter;
+	end;
+
+	if button.show and button.canBeClicked and not button.isDisabled then
+		button.isClicked = true;
+		if button.function_to_call == "showSaveCourseForm" then
+			self.cp.imWriting = true
+		end
+		self:setCourseplayFunc(button.function_to_call, parameter);
+		button.isClicked = false;
+	end;
+end;
 
 function courseplay:setCourseplayFunc(func, value, noEventSend)
 	if noEventSend ~= true then
@@ -132,7 +202,6 @@ function courseplay:deal_with_mouse_input(self, func, value)
 					end
 
 				else -- driving
-					
 					if self.cp.last_recordnumber ~= nil and self.Waypoints[self.cp.last_recordnumber].wait and self.wait and func == "row2" then
 						self.wait = false
 					end
@@ -152,7 +221,7 @@ function courseplay:deal_with_mouse_input(self, func, value)
 					if not self.StopEnd and func == "row4" then
 						self.StopEnd = true
 					end
-					
+
 					if self.ai_mode == 4 and func == "row5" then
 						self.cp.ridgeMarkersAutomatic = not self.cp.ridgeMarkersAutomatic;
 					end;

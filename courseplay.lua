@@ -177,9 +177,10 @@ function courseplay:setGlobalData()
 	courseplay.confirmedNoneTriggers = {};
 	courseplay.confirmedNoneTriggersCounter = 0;
 
+	courseplay.numAvailableDebugChannels = 16;
 	courseplay.numDebugChannels = 12;
 	courseplay.debugChannels = {};
-	for channel=1, courseplay.numDebugChannels do
+	for channel=1, courseplay.numAvailableDebugChannels do
 		courseplay.debugChannels[channel] = false;
 	end;
 	--[[
@@ -221,7 +222,7 @@ function courseplay:setGlobalData()
 		"HUD4hasActiveCombine",
 		"HUD4savedCombine",
 		"HUD4savedCombineName"
-	}
+	};
 
 	--print("\t### Courseplay: setGlobalData() finished");
 end;

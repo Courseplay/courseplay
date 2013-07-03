@@ -1,6 +1,12 @@
-function courseplay:register_button(self, hud_page, img, function_to_call, parameter, x, y, width, height, hud_row, modifiedParameter, showHideVariable)
-	local overlay_path = Utils.getFilename("img/" .. img, courseplay.path);
-	local overlay = Overlay:new(img, overlay_path, x, y, width, height);
+function courseplay:register_button(self, hud_page, img, function_to_call, parameter, x, y, width, height, hud_row, modifiedParameter, showHideVariable, isMouseWheelArea)
+	local overlay = nil;
+	if img and img ~= "blank.dds" then
+		overlay = Overlay:new(img, Utils.getFilename("img/" .. img, courseplay.path), x, y, width, height);
+	end;
+
+	if isMouseWheelArea == nil then
+		isMouseWheelArea = false;
+	end;
 
 	button = { 
 		page = hud_page, 
@@ -13,7 +19,9 @@ function courseplay:register_button(self, hud_page, img, function_to_call, param
 		y2 = (y + height), 
 		row = hud_row,
 		color = courseplay.hud.colors.white,
-		canBeClicked = true,
+		isMouseWheelArea = isMouseWheelArea,
+		canBeClicked = not isMouseWheelArea,
+		show = true,
 		isClicked = false,
 		isActive = false,
 		isDisabled = false,
@@ -22,107 +30,221 @@ function courseplay:register_button(self, hud_page, img, function_to_call, param
 	if modifiedParameter then 
 		button.modifiedParameter = modifiedParameter;
 	end
-	
-	--NOTE: showHideVariable MUST be in self namespace, since self isn't global (can't be called as _G[self] or _G["self"])
-	if showHideVariable then
-		if string.find(showHideVariable, "<=") then
-			button.compare = "<=";
-		elseif string.find(showHideVariable, ">=") then
-			button.compare = ">=";
-		elseif string.find(showHideVariable, "<") then
-			button.compare = "<";
-		elseif string.find(showHideVariable, ">") then
-			button.compare = ">";
-		elseif string.find(showHideVariable, "!=") then
-			button.compare = "!=";
-		else
-			button.compare = "=";
-		end;
-		
-		local split = Utils.splitString(button.compare, showHideVariable);
-		button.showWhat = split[1];
-		button.showIs = split[2];
-		
-		if button.compare == "<=" or button.compare == ">=" or button.compare == "<" or button.compare == ">" then
-			button.showIs = courseplay:stringToMath(button.showIs);
-		end;
+	if isMouseWheelArea then
+		button.canScrollUp   = true;
+		button.canScrollDown = true;
 	end;
 
-	table.insert(self.cp.buttons, button)
+	table.insert(self.cp.buttons[tostring(hud_page)], button);
 end
 
-function courseplay:render_buttons(self, page)
-	local colors = courseplay.hud.colors;
-	for _, button in pairs(self.cp.buttons) do
-		if button.page == nil or button.page == page or button.page == -page then
-			if button.showWhat ~= nil and button.showIs ~= nil then
-				local whatObj = courseplay:getVarValueFromString(self, button.showWhat);
-				
-				if button.compare == "=" then
-					button.show = tostring(whatObj) == button.showIs;
-				elseif button.compare == "!=" then
-					button.show = not tostring(whatObj) == button.showIs;
-				elseif button.compare == ">" then
-					button.show = whatObj > button.showIs;
-				elseif button.compare == "<" then
-					button.show = whatObj < button.showIs;
-				elseif button.compare == ">=" then
-					button.show = whatObj >= button.showIs;
-				elseif button.compare == "<=" then
-					button.show = whatObj <= button.showIs;
-				else 
-					button.show = false;
-				end;
-			end;
+function courseplay:renderButtons(self, page)
+	for _,button in pairs(self.cp.buttons.global) do
+		courseplay:renderButton(self, button);
+	end;
 
-			--SPECIAL CONDITIONAL DISPLAY
-			--course management buttons
-			if button.page == -2 then
-				button.show = self.hudpage[2][1][button.parameter] ~= nil;
-			
-			--save course button
-			elseif button.function_to_call == "showSaveCourseForm" then
-				button.show = self.play and not self.record and not self.record_pause and self.Waypoints ~= nil and table.getn(self.Waypoints) ~= 0;
-			
-			--offset
-			elseif button.function_to_call == "changeWpOffsetX" or button.function_to_call == "changeWpOffsetZ" then
-				button.show = self.ai_mode == 4 or self.ai_mode == 6;
-			end;
+	for _,button in pairs(self.cp.buttons[tostring(page)]) do
+		courseplay:renderButton(self, button);
+	end;
 
-
-			if courseplay:nilOrBool(button.show, true) then
-				local currentColor = courseplay:getButtonColor(button);
-				local targetColor = currentColor;
-
-				if not button.isDisabled and not button.isActive and not button.isHovered and button.canBeClicked and not button.isClicked and not courseplay:colorsMatch(currentColor, colors.white) then
-					targetColor = colors.white;
-				elseif button.isDisabled and not courseplay:colorsMatch(currentColor, colors.whiteDisabled) then
-					targetColor = colors.whiteDisabled;
-				elseif not button.isDisabled and button.canBeClicked and button.isClicked and not button.function_to_call == "openCloseHud" then
-					targetColor = colors.activeRed;
-				elseif button.isActive and not courseplay:colorsMatch(currentColor, colors.activeGreen) then
-					targetColor = colors.activeGreen;
-				elseif not button.isDisabled and not button.isActive and button.isHovered and button.canBeClicked and not button.isClicked then
-					local hoverColor = colors.hover;
-					if button.function_to_call == "openCloseHud" then
-						hoverColor = colors.closeRed;
-					end;
-					
-					if not courseplay:colorsMatch(currentColor, hoverColor) then
-						targetColor = hoverColor;
-					end;
-				end;
-				
-				-- set colors
-				if not courseplay:colorsMatch(currentColor, targetColor) then
-					courseplay:setButtonColor(button, targetColor)
-				end;
-
-				button.overlay:render();
-			end;
-		end
-	end
+	if page == 2 then 
+		for _,button in pairs(self.cp.buttons["-2"]) do
+			courseplay:renderButton(self, button);
+		end;
+	end;
 end;
+
+function courseplay:renderButton(self, button)
+	local pg, fn, prm = button.page, button.function_to_call, button.parameter;
+
+	--mouseWheelAreas conditionals
+	if button.isMouseWheelArea then
+		if pg == 2 then
+			if fn == "change_selected_course" then
+				button.canScrollUp =   self.cp.courseListPrev == true;
+				button.canScrollDown = self.cp.courseListNext == true;
+			end;
+		elseif pg == 3 then
+			if fn == "change_turn_radius" then
+				button.canScrollUp =   true;
+				button.canScrollDown = self.turn_radius > 0;
+			elseif fn == "change_required_fill_level" then
+				button.canScrollUp =   self.required_fill_level_for_follow < 100;
+				button.canScrollDown = self.required_fill_level_for_follow > 0;
+			elseif fn == "change_required_fill_level_for_drive_on" then
+				button.canScrollUp =   self.required_fill_level_for_drive_on < 100;
+				button.canScrollDown = self.required_fill_level_for_drive_on > 0;
+			end;
+		elseif pg == 5 then
+			if fn == "change_turn_speed" then
+				button.canScrollUp =   self.turn_speed < 60/3600;
+				button.canScrollDown = self.turn_speed >  5/3600;
+			elseif fn == "change_field_speed" then
+				button.canScrollUp =   self.field_speed < 60/3600;
+				button.canScrollDown = self.field_speed >  5/3600;
+			elseif fn == "change_max_speed" then
+				button.canScrollUp =   self.use_speed == false and self.max_speed < 60/3600;
+				button.canScrollDown = self.use_speed == false and self.max_speed >  5/3600;
+			elseif fn == "change_unload_speed" then
+				button.canScrollUp =   self.unload_speed < 60/3600;
+				button.canScrollDown = self.unload_speed >  3/3600;
+			end;
+
+		elseif pg == 7 then
+			if fn == "change_wait_time" then
+				button.canScrollUp =   true;
+				button.canScrollDown = self.waitTime > 0;
+			end;
+
+		elseif pg == 8 then
+			if fn == "changeWorkWidth" then
+				button.canScrollUp =   true;
+				button.canScrollDown = self.toolWorkWidht > 0.1;
+			end;
+		end;
+
+	elseif button.overlay ~= nil then
+		button.show = true;
+
+		--CONDITIONAL DISPLAY
+		--Global
+		if pg == "global" then
+			if fn == "showSaveCourseForm" then
+				button.show = self.play and not self.record and not self.record_pause and self.Waypoints ~= nil and table.getn(self.Waypoints) ~= 0;
+			end;
+
+		--Page 1
+		elseif pg == 1 then
+			if fn == "setAiMode" then
+				button.show = self.cp.canSwitchMode;
+			end;
+
+		--Page 2
+		elseif pg == 2 then
+			if fn == "reloadCoursesFromXML" then
+				button.show = g_server ~= nil;
+			elseif fn == "change_selected_course" then
+				if prm == -courseplay.hud.numLines then
+					button.show = self.cp.courseListPrev;
+				elseif prm == courseplay.hud.numLines then
+					button.show = self.cp.courseListNext;
+				end;
+			elseif pg == -2 then
+				button.show = self.hudpage[2][1][p] ~= nil;
+			end;
+
+		--Page 3
+		elseif pg == 3 then
+			if fn == "change_turn_radius" and prm < 0 then
+				button.show = self.turn_radius > 0;
+			elseif fn == "change_required_fill_level" and prm < 0 then
+				button.show = self.required_fill_level_for_follow > 0;
+			elseif fn == "change_required_fill_level" and prm > 0 then
+				button.show = self.required_fill_level_for_follow < 100;
+			elseif fn == "change_required_fill_level_for_drive_on" and prm < 0 then
+				button.show = self.required_fill_level_for_drive_on > 0;
+			elseif fn == "change_required_fill_level_for_drive_on" and prm > 0 then
+				button.show = self.required_fill_level_for_drive_on < 100;
+			end;
+
+		--Page 4
+		elseif pg == 4 then
+			if fn == "switch_combine" and prm < 0 then
+				button.show = self.selected_combine_number > 0;
+			end;
+
+		--Page 5
+		elseif pg == 5 then
+			if fn == "change_turn_speed" and prm < 0 then
+				button.show = self.turn_speed >  5/3600;
+			elseif fn == "change_turn_speed" and prm > 0 then
+				button.show = self.turn_speed < 60/3600;
+			elseif fn == "change_field_speed" and prm < 0 then
+				button.show = self.field_speed >  5/3600;
+			elseif fn == "change_field_speed" and prm > 0 then
+				button.show = self.field_speed < 60/3600;
+			elseif fn == "change_max_speed" and prm < 0 then
+				button.show = not self.use_speed and self.max_speed >  5/3600;
+			elseif fn == "change_max_speed" and prm > 0 then
+				button.show = not self.use_speed and self.max_speed < 60/3600;
+			elseif fn == "change_unload_speed" and prm < 0 then
+				button.show = self.unload_speed >  3/3600;
+			elseif fn == "change_unload_speed" and prm > 0 then
+				button.show = self.unload_speed < 60/3600;
+			end;
+
+		--Page 6
+		elseif pg == 6 then
+			if fn == "setFieldEdgePath" and self.cp.selectedFieldEdgePathNumber ~= nil then
+				if prm < 0 then
+					button.show = self.cp.selectedFieldEdgePathNumber > 0;
+				elseif prm > 0 then
+					button.show = self.cp.selectedFieldEdgePathNumber < courseplay.fields.highestFieldNumber;
+				end;
+			end;
+
+		--Page 7
+		elseif pg == 7 then
+			if fn == "change_wait_time" and prm < 0 then
+				button.show = self.waitTime > 0;
+			elseif fn == "changeWpOffsetX" or fn == "changeWpOffsetZ" then
+				button.show = self.ai_mode == 4 or self.ai_mode == 6;
+			elseif fn == "switchDriverCopy" and prm < 0 then
+				button.show = self.cp.selectedDriverNumber > 0;
+			elseif fn == "copyCourse" then
+				button.show = self.cp.hasFoundCopyDriver;
+			end;
+
+		--Page 8
+		elseif pg == 8 then
+			if fn == "changeWorkWidth" and prm < 0 then
+				button.show = self.toolWorkWidht > 0.1;
+			elseif fn == "switchStartingDirection" then
+				button.show = self.cp.hasStartingCorner;
+			elseif fn == "setHeadlandLanes" and prm < 0 then
+				button.show = self.cp.headland.numLanes > -1;
+			elseif fn == "setHeadlandLanes" and prm > 0 then
+				button.show = self.cp.headland.numLanes <  1;
+			elseif fn == "generateCourse" then
+				button.show = self.cp.hasValidCourseGenerationData;
+			end;
+		end;
+
+
+		if button.show then
+			local colors = courseplay.hud.colors;
+			local currentColor = courseplay:getButtonColor(button);
+			local targetColor = currentColor;
+
+			if not button.isDisabled and not button.isActive and not button.isHovered and button.canBeClicked and not button.isClicked and not courseplay:colorsMatch(currentColor, colors.white) then
+				targetColor = colors.white;
+			elseif button.isDisabled and not courseplay:colorsMatch(currentColor, colors.whiteDisabled) then
+				targetColor = colors.whiteDisabled;
+			elseif not button.isDisabled and button.canBeClicked and button.isClicked and not fn == "openCloseHud" then
+				targetColor = colors.activeRed;
+			elseif button.isActive and not courseplay:colorsMatch(currentColor, colors.activeGreen) then
+				targetColor = colors.activeGreen;
+			elseif not button.isDisabled and not button.isActive and button.isHovered and button.canBeClicked and not button.isClicked then
+				local hoverColor = colors.hover;
+				if fn == "openCloseHud" then
+					hoverColor = colors.closeRed;
+				end;
+
+				if not courseplay:colorsMatch(currentColor, hoverColor) then
+					targetColor = hoverColor;
+				end;
+			end;
+
+			-- set colors
+			if not courseplay:colorsMatch(currentColor, targetColor) then
+				courseplay:setButtonColor(button, targetColor)
+			end;
+
+			button.overlay:render();
+		end;
+	end;
+end;
+
 
 function courseplay:setButtonColor(button, color)
 	if button == nil or button.overlay == nil or color == nil or table.getn(color) ~= 4 then

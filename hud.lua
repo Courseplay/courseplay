@@ -315,28 +315,42 @@ function courseplay:loadHud(self)
 
 		--Page 6: General settings
 		elseif self.showHudInfoBase == 6 then
-			self.hudpage[6][1][1] = courseplay:get_locale(self, "CPaStar")
-			self.hudpage[6][1][2] = courseplay:get_locale(self, "CPopenHud")
-			self.hudpage[6][1][3] = courseplay:get_locale(self, "CPWPs")
-			self.hudpage[6][1][4] = courseplay:get_locale(self, "Rul")
-			self.hudpage[6][1][5] = courseplay:get_locale(self, "CPDebugChannels")
-
+			self.hudpage[6][1][1] = courseplay:get_locale(self, "CPaStar");
 			if self.realistic_driving then
-				self.hudpage[6][2][1] = courseplay:get_locale(self, "CPactivated")
+				self.hudpage[6][2][1] = courseplay:get_locale(self, "CPactivated");
 			else
 				self.hudpage[6][2][1] = courseplay:get_locale(self, "CPdeactivated");
-			end
+			end;
 
+			self.hudpage[6][1][2] = courseplay:get_locale(self, "CPopenHud");
 			if self.mouse_right_key_enabled then
-				self.hudpage[6][2][2] = courseplay:get_locale(self, "CPopenHudMouse")
+				self.hudpage[6][2][2] = courseplay:get_locale(self, "CPopenHudMouse");
 			else
-				local hudMod = string.lower(tostring(InputBinding.getKeyNamesOfDigitalAction(InputBinding.CP_Modifier_1)):split(" ")[2])
-				local hudKey = string.lower(tostring(InputBinding.getKeyNamesOfDigitalAction(InputBinding.CP_Hud)):split(" ")[2])
-				self.hudpage[6][2][2] = hudMod:gsub("^%l", string.upper) .. " + " .. hudKey:gsub("^%l", string.upper)
-			end
+				local hudMod = string.lower(tostring(InputBinding.getKeyNamesOfDigitalAction(InputBinding.CP_Modifier_1)):split(" ")[2]);
+				local hudKey = string.lower(tostring(InputBinding.getKeyNamesOfDigitalAction(InputBinding.CP_Hud)):split(" ")[2]);
+				self.hudpage[6][2][2] = hudMod:gsub("^%l", string.upper) .. " + " .. hudKey:gsub("^%l", string.upper);
+			end;
 
+			self.hudpage[6][1][3] = courseplay:get_locale(self, "CPWPs");
 			self.hudpage[6][2][3] = courseplay:get_locale(self, string.format("WaypointMode%d", self.waypointMode));
+
+			self.hudpage[6][1][4] = courseplay:get_locale(self, "Rul");
 			self.hudpage[6][2][4] = courseplay:get_locale(self, "RulMode" .. string.format("%d", self.RulMode));
+
+			self.hudpage[6][1][5] = "";
+			self.hudpage[6][2][5] = "";
+			if courseplay.fields ~= nil and courseplay.fields.fieldDefs ~= nil and courseplay.fields.numberOfFields > 0 then
+				self.hudpage[6][1][5] = courseplay:get_locale(self, "CPfieldEdgePath");
+				if self.cp.selectedFieldEdgePathNumber > 0 then
+					self.hudpage[6][2][5] = string.format("%s %d", courseplay:get_locale(self, "CPfield"), self.cp.selectedFieldEdgePathNumber);
+				else
+					self.hudpage[6][2][5] = "---";
+				end;
+			end;
+
+			self.hudpage[6][1][6] = courseplay:get_locale(self, "CPDebugChannels");
+
+
 
 		--Page 7: Driving settings
 		elseif self.showHudInfoBase == 7 then
@@ -475,7 +489,7 @@ end
 function courseplay:showHud(self)
 	-- HUD
 	if self.show_hud and self.isEntered then
-		courseplay:render_buttons(self, self.showHudInfoBase)
+		courseplay:renderButtons(self, self.showHudInfoBase);
 
 		if self.ai_mode > 0 and self.ai_mode <= courseplay.numAiModes then
 			self.hudinfo[1] = courseplay:get_locale(self, "CourseMode" .. string.format("%d", self.ai_mode))

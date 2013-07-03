@@ -3,6 +3,12 @@ function courseplay:openCloseHud(self, open)
 	self.show_hud = open;
 	InputBinding.setShowMouseCursor(self.mouse_enabled);
 
+	--Cameras: deactivate/reactivate zoom function in order to allow CP mouse wheel
+	for camIndex,allowTranslation in pairs(self.cp.camerasBackup) do
+		self.cameras[camIndex].allowTranslation = not open;
+		--print(string.format("%s: openCloseHud(%s): camera %d allowTranslation=%s", nameNum(self), tostring(open), camIndex, tostring(self.cameras[camIndex].allowTranslation)));
+	end;
+
 	--set ESLimiter
 	if self.cp.ESLimiterOrigPosY == nil and open and self.ESLimiter ~= nil then
 		if self.ESLimiter.xPos ~= nil and self.ESLimiter.yPos ~= nil then
@@ -201,8 +207,8 @@ function courseplay:minMaxPage(self, pageNum)
 end;
 
 function courseplay:buttonsActiveEnabled(self, section)
-	for _,button in pairs(self.cp.buttons) do
-		if section == nil or section == "all" or section == "pageNav" then
+	if section == nil or section == "all" or section == "pageNav" then
+		for _,button in pairs(self.cp.buttons.global) do
 			if button.function_to_call == "setHudPage" then
 				local pageNum = button.parameter;
 				button.isActive = pageNum == self.showHudInfoBase;
@@ -222,31 +228,36 @@ function courseplay:buttonsActiveEnabled(self, section)
 				button.canBeClicked = not button.isDisabled and not button.isActive;
 			end;
 		end;
-		
-		if section == nil or section == "all" or section == "quickModes" then
-			if self.showHudInfoBase == 1 and button.function_to_call == "setAiMode" then
+	end;
+
+
+	if self.showHudInfoBase == 1 and (section == nil or section == "all" or section == "quickModes") then
+		for _,button in pairs(self.cp.buttons["1"]) do
+			if button.function_to_call == "setAiMode" then
 				button.isActive = self.ai_mode == button.parameter;
-				button.canBeClicked = not button.isActive;
+				button.isDisabled = button.parameter == 7 and not self.cp.isCombine and not self.cp.isChopper and not self.cp.isHarvesterSteerable;
+				button.canBeClicked = not button.isDisabled and not button.isActive;
 			end;
 		end;
 
-		if section == nil or section == "all" or section == "shovel" then
-			if self.showHudInfoBase == 9 and button.function_to_call == "saveShovelStatus" then
+	elseif self.showHudInfoBase == 6 and (section == nil or section == "all" or section == "debug") then
+		for _,button in pairs(self.cp.buttons["6"]) do
+			if button.function_to_call == "toggleDebugChannel" then
+				button.isDisabled = button.parameter > courseplay.numDebugChannels;
+				button.isActive = courseplay.debugChannels[button.parameter] == true;
+				button.canBeClicked = not button.isDisabled;
+			end;
+		end;
+
+	elseif self.showHudInfoBase == 9 and (section == nil or section == "all" or section == "shovel") then
+		for _,button in pairs(self.cp.buttons["9"]) do
+			if button.function_to_call == "saveShovelStatus" then
 				button.isActive = self.cp.shovelStateRot[tostring(button.parameter)] ~= nil;
 				button.canBeClicked = true;
 			end;
 		end;
-
-		if section == nil or section == "all" or section == "debug" then
-			if self.showHudInfoBase == 6 and button.function_to_call == "toggleDebugChannel" then
-				button.isActive = courseplay.debugChannels[button.parameter] == true;
-				button.canBeClicked = true;
-				--button.canBeClicked = button.parameter ~= 5;
-			end;
-		end;
 	end;
 end;
-
 
 function courseplay:change_combine_offset(self, change_by)
 	local previousOffset = self.combine_offset
@@ -327,12 +338,9 @@ end
 
 
 function courseplay:change_turn_speed(self, change_by)
-	local speed = self.turn_speed * 3600
-	speed = speed + change_by
-	if speed < 5 then
-		speed = 5
-	end
-	self.turn_speed = speed / 3600
+	local speed = self.turn_speed * 3600;
+	speed = Utils.clamp(speed + change_by, 5, 60);
+	self.turn_speed = speed / 3600;
 end
 
 function courseplay:change_wait_time(self, change_by)
@@ -347,31 +355,22 @@ function courseplay:change_wait_time(self, change_by)
 end
 
 function courseplay:change_field_speed(self, change_by)
-	local speed = self.field_speed * 3600
-	speed = speed + change_by
-	if speed < 5 then
-		speed = 5
-	end
-	self.field_speed = speed / 3600
+	local speed = self.field_speed * 3600;
+	speed = Utils.clamp(speed + change_by, 5, 60);
+	self.field_speed = speed / 3600;
 end
 
 function courseplay:change_max_speed(self, change_by)
 	if not self.use_speed then
 		local speed = self.max_speed * 3600;
-		speed = speed + change_by;
-		if speed < 5 then
-			speed = 5;
-		end
+		speed = Utils.clamp(speed + change_by, 5, 60);
 		self.max_speed = speed / 3600;
 	end;
 end
 
 function courseplay:change_unload_speed(self, change_by)
 	local speed = self.unload_speed * 3600;
-	speed = speed + change_by;
-	if speed < 3 then
-		speed = 3;
-	end
+	speed = Utils.clamp(speed + change_by, 3, 60);
 	self.unload_speed = speed / 3600;
 end
 

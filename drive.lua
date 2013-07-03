@@ -438,10 +438,10 @@ function courseplay:drive(self, dt)
 				if self.tippers ~= nil then
 					allowedToDrive = courseplay:refillSprayer(self, fill_level, 100, allowedToDrive);
 				end
-			end
-		elseif self.ai_mode == 4 and (self.startWork == nil or self.stopWork == nil) then
-			allowedToDrive = false
-			self.cp.infoText = courseplay.locales.CPNoWorkArea
+			elseif self.startWork == nil or self.stopWork == nil then
+				self.cp.infoText = courseplay.locales.CPNoWorkArea;
+				allowedToDrive = false;
+			end;
 		end
 
 		if self.ai_mode ~= 5 and self.ai_mode ~= 6 and self.ai_mode ~= 7 and not self.tipper_attached then
@@ -713,7 +713,7 @@ function courseplay:drive(self, dt)
 
 	-- Speed Control
 	if self.cp.maxFieldSpeed ~= 0 then
-		refSpeed = self.cp.maxFieldSpeed
+		refSpeed = math.min(self.cp.maxFieldSpeed, refSpeed);
 	end
 
 	courseplay:setSpeed(self, refSpeed, self.sl)
