@@ -95,12 +95,11 @@ function courseplay:loadHud(self)
 
 					self.hudpage[1][1][4] = courseplay:get_locale(self, "CourseReset")
 				else
+					self.hudpage[1][1][1] = courseplay:get_locale(self, "CoursePlayStop")
+
 					if self.cp.HUD1goOn then
 						self.hudpage[1][1][2] = courseplay:get_locale(self, "CourseWaitpointStart")
 					end
-
-					self.hudpage[1][1][1] = courseplay:get_locale(self, "CoursePlayStop")
-
 
 					if self.cp.HUD1noWaitforFill then
 						self.hudpage[1][1][3] = courseplay:get_locale(self, "NoWaitforfill")
@@ -153,7 +152,6 @@ function courseplay:loadHud(self)
 					end;
 				end;
 			end;
-
 
 
 		--Page 2 (course list)

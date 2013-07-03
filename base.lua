@@ -86,6 +86,7 @@ function courseplay:load(xmlFile)
 	self.calculated_course = false
 
 	self.recordnumber = 1
+	self.cp.last_recordnumber = 1;
 	self.tmr = 1
 	self.startlastload = 1
 	self.timeout = 1
@@ -374,15 +375,30 @@ function courseplay:load(xmlFile)
 	};
 	
 	self.mouse_enabled = false
-	
+
+	-- HUD
+	--default hud conditional variables
+	self.cp.HUD0noCourseplayer = false;
+	self.cp.HUD0wantsCourseplayer = false;
+	self.cp.HUD0tractorName = "";
+	self.cp.HUD0tractorForcedToStop = false;
+	self.cp.HUD0tractor = false;
+	self.cp.HUD0combineForcedSide = nil;
+	self.cp.HUD0isManual = false;
+	self.cp.HUD0turnStage = 0;
+	self.cp.HUD1notDrive = false;
+	self.cp.HUD1goOn = false;
+	self.cp.HUD1noWaitforFill = false;
+	self.cp.HUD4combineName = "";
+	self.cp.HUD4hasActiveCombine = false;
+	self.cp.HUD4savedCombine = nil;
+	self.cp.HUD4savedCombineName = "";
+
+	--3rd party huds backup
 	self.cp.ESLimiterOrigPosY = nil; --[table]
 	self.cp.ThreshingCounterOrigPosY = nil; --[table]
 	self.cp.OdometerOrigPosY = nil; --[table]
 	self.cp.AllradOrigPosY = nil; --[table]
-
-	-- HUD  	-- Function in Signs
-	self.hudInfoBaseWidth = 0.512; --try: 512/1920
-	self.hudInfoBaseHeight = 0.512; --try: 512/1080
 
 	self.infoPanelPath = Utils.getFilename("img/hud_bg.dds", courseplay.path);
 	self.hudInfoBaseOverlay = Overlay:new("hudInfoBaseOverlay", self.infoPanelPath, courseplay.hud.infoBasePosX - 10/1920, courseplay.hud.infoBasePosY - 10/1920, courseplay.hud.infoBaseWidth, courseplay.hud.infoBaseHeight);
@@ -398,7 +414,7 @@ function courseplay:load(xmlFile)
 		end;
 	end;
 	
-	--HUD TITLES
+	--Hud titles
 	if courseplay.hud.hudTitles == nil then
 		courseplay.hud.hudTitles = {
 			courseplay:get_locale(self, "CPCombineMangament"), -- Combine Controls
@@ -745,10 +761,10 @@ function courseplay:update(dt)
 				self.cp.HUD0tractor = false
 			end
 		elseif self.showHudInfoBase == 1 then
-			if self.Waypoints ~= nil and self.cp.last_recordnumber ~= nil then
+			if self.drive then
 				self.cp.HUD1goOn = (self.Waypoints[self.cp.last_recordnumber].wait and self.wait) or (self.StopEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil))
+				self.cp.HUD1noWaitforFill = not self.loaded and self.ai_mode ~= 5
 			end
-			self.cp.HUD1noWaitforFill = not self.loaded and self.ai_mode ~= 5
 		elseif self.showHudInfoBase == 4 then
 			self.cp.HUD4hasActiveCombine = self.active_combine ~= nil
 			if self.cp.HUD4hasActiveCombine == true then
