@@ -64,7 +64,7 @@ function courseplay:load(xmlFile)
 	self.cp.isSugarBeetLoader = courseplay:isSpecialCombine(self, "sugarBeetLoader");
 	if self.cp.isCombine then
 		self.cp.mode7Unloading = false
-	end	
+	end
 
 	--turn maneuver
 	self.cp.waitForTurnTime = 0.00   --float
@@ -391,10 +391,10 @@ function courseplay:load(xmlFile)
 	courseplay:setMinHudPage(self, nil);
 
 	self.hudpage = {}
-	for a=0,courseplay.hud.numPages do
-		self.hudpage[a] = {};
-		for b=1,courseplay.hud.numLines do
-			self.hudpage[a][b] = {};
+	for page=0,courseplay.hud.numPages do
+		self.hudpage[page] = {};
+		for column=1,2 do
+			self.hudpage[page][column] = {};
 		end;
 	end;
 	
@@ -455,12 +455,11 @@ function courseplay:load(xmlFile)
 
 	for i=1, courseplay.hud.numLines do
 		--Page 0: Combine controls
-		courseplay:register_button(self, 0, "blank.dds", string.format("row%d", i), nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[i], lineButtonWidth, 0.015);
+		courseplay:register_button(self, 0, "blank.dds", "rowButton", i, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[i], lineButtonWidth, 0.015);
 		
 		--Page 1
-		courseplay:register_button(self, 1, "blank.dds", string.format("row%d", i), nil, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[i], lineButtonWidth-0.08, 0.015);
+		courseplay:register_button(self, 1, "blank.dds", "rowButton", i, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[i], lineButtonWidth-0.08, 0.015);
 	end;
-	courseplay:register_button(self, 1, "blank.dds", "change_DriveDirection", 1, courseplay.hud.infoBasePosX - 0.05, courseplay.hud.linesPosY[5], lineButtonWidth, 0.015, nil, nil, "self.record=true");
 
 
 	--Page 1: ai_mode quickSwitch
@@ -575,6 +574,7 @@ function courseplay:load(xmlFile)
 		local icon = string.format("debugChannels_%02d.dds", dbg);
 		courseplay:register_button(self, 6, icon, "toggleDebugChannel", dbg, dbgPosX, dbgPosY, dbgW, dbgH);
 	end;
+
 	--Page 7: Driving settings
 	courseplay:register_button(self, 7, "navigate_minus.dds", "change_wait_time",  -5, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], w16px, h16px, nil, -10);
 	courseplay:register_button(self, 7, "navigate_plus.dds",  "change_wait_time",   5, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[1], w16px, h16px, nil,  10);
@@ -726,6 +726,7 @@ function courseplay:update(dt)
 			end;
 			if combine.courseplayers == nil then
 				self.cp.HUD0noCourseplayer = true
+				combine.courseplayers = {};
 			else
 				self.cp.HUD0noCourseplayer = table.getn(combine.courseplayers) == 0
 			end

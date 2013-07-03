@@ -130,21 +130,25 @@ function courseplay:renderButton(self, button)
 					button.show = self.cp.courseListNext;
 				end;
 			elseif pg == -2 then
-				button.show = self.hudpage[2][1][p] ~= nil;
+				button.show = self.hudpage[2][1][prm] ~= nil;
 			end;
 
 		--Page 3
 		elseif pg == 3 then
 			if fn == "change_turn_radius" and prm < 0 then
 				button.show = self.turn_radius > 0;
-			elseif fn == "change_required_fill_level" and prm < 0 then
-				button.show = self.required_fill_level_for_follow > 0;
-			elseif fn == "change_required_fill_level" and prm > 0 then
-				button.show = self.required_fill_level_for_follow < 100;
-			elseif fn == "change_required_fill_level_for_drive_on" and prm < 0 then
-				button.show = self.required_fill_level_for_drive_on > 0;
-			elseif fn == "change_required_fill_level_for_drive_on" and prm > 0 then
-				button.show = self.required_fill_level_for_drive_on < 100;
+			elseif fn == "change_required_fill_level" then
+				if prm < 0 then
+					button.show = self.required_fill_level_for_follow > 0;
+				elseif prm > 0 then
+					button.show = self.required_fill_level_for_follow < 100;
+				end;
+			elseif fn == "change_required_fill_level_for_drive_on" then 
+				if prm < 0 then
+					button.show = self.required_fill_level_for_drive_on > 0;
+				elseif prm > 0 then
+					button.show = self.required_fill_level_for_drive_on < 100;
+				end;
 			end;
 
 		--Page 4
@@ -155,22 +159,30 @@ function courseplay:renderButton(self, button)
 
 		--Page 5
 		elseif pg == 5 then
-			if fn == "change_turn_speed" and prm < 0 then
-				button.show = self.turn_speed >  5/3600;
-			elseif fn == "change_turn_speed" and prm > 0 then
-				button.show = self.turn_speed < 60/3600;
-			elseif fn == "change_field_speed" and prm < 0 then
-				button.show = self.field_speed >  5/3600;
-			elseif fn == "change_field_speed" and prm > 0 then
-				button.show = self.field_speed < 60/3600;
-			elseif fn == "change_max_speed" and prm < 0 then
-				button.show = not self.use_speed and self.max_speed >  5/3600;
-			elseif fn == "change_max_speed" and prm > 0 then
-				button.show = not self.use_speed and self.max_speed < 60/3600;
-			elseif fn == "change_unload_speed" and prm < 0 then
-				button.show = self.unload_speed >  3/3600;
-			elseif fn == "change_unload_speed" and prm > 0 then
-				button.show = self.unload_speed < 60/3600;
+			if fn == "change_turn_speed" then
+				if prm < 0 then
+					button.show = self.turn_speed >  5/3600;
+				elseif prm > 0 then
+					button.show = self.turn_speed < 60/3600;
+				end;
+			elseif fn == "change_field_speed" then
+				if prm < 0 then
+					button.show = self.field_speed >  5/3600;
+				elseif prm > 0 then
+					button.show = self.field_speed < 60/3600;
+				end;
+			elseif fn == "change_max_speed" then
+				if prm < 0 then
+					button.show = not self.use_speed and self.max_speed >  5/3600;
+				elseif prm > 0 then
+					button.show = not self.use_speed and self.max_speed < 60/3600;
+				end;
+			elseif fn == "change_unload_speed" then
+				if prm < 0 then
+					button.show = self.unload_speed >  3/3600;
+				elseif prm > 0 then
+					button.show = self.unload_speed < 60/3600;
+				end;
 			end;
 
 		--Page 6

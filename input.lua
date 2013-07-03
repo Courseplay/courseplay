@@ -115,6 +115,10 @@ function courseplay:handleMouseClickForButton(self, button)
 	end;
 
 	if button.show and button.canBeClicked and not button.isDisabled then
+		if button.function_to_call == "rowButton" and self.hudpage[self.showHudInfoBase][1][button.parameter] == nil then
+			return;
+		end;
+
 		button.isClicked = true;
 		if button.function_to_call == "showSaveCourseForm" then
 			self.cp.imWriting = true
@@ -144,13 +148,9 @@ function courseplay:deal_with_mouse_input(self, func, value)
 	playSample(courseplay.hud.clickSound, 1, 1, 0);
 	courseplay:debug(nameNum(self) .. ": calling function \"" .. tostring(func) .. "(" .. tostring(value) .. ")\"", 12);
 
-	local str1,str2 = string.find(func, "row%d");
-	local isRowFunction = str1 ~= nil and str2 ~= nil and str1 == 1 and str2 == string.len(func);
-
-	if not isRowFunction then
+	if func ~= "rowButton" then
 		--@source: http://stackoverflow.com/questions/1791234/lua-call-function-from-a-string-with-function-name
 		assert(loadstring('courseplay:' .. func .. '(...)'))(self, value);
-		
 
 	else
 		if self.showHudInfoBase == 0 then
@@ -160,113 +160,90 @@ function courseplay:deal_with_mouse_input(self, func, value)
 			end;
 			
 			if combine.courseplayers == nil or table.getn(combine.courseplayers) == 0 then
-				if func == "row1" then
-					courseplay:call_player(combine)
-				end
+				if value == 1 then
+					courseplay:call_player(combine);
+				end;
 			else
-				if func == "row2" then
-					courseplay:start_stop_player(combine)
-				end
-
-				if func == "row3" then
-					courseplay:send_player_home(combine)
-				end
-
-				if func == "row4" then
-					courseplay:switch_player_side(combine)
-				end
-				
-				--manual chopping: initiate/end turning maneuver
-				if func == "row5" and combine.cp.isChopper and not self.drive and not self.isAIThreshing then
+				if value == 2 then
+					courseplay:start_stop_player(combine);
+				elseif value == 3 then
+					courseplay:send_player_home(combine);
+				elseif value == 4 then
+					courseplay:switch_player_side(combine);
+				elseif value == 5 and combine.cp.isChopper and not self.drive and not self.isAIThreshing then --manual chopping: initiate/end turning maneuver
 					if self.cp.turnStage == 0 then
 						self.cp.turnStage = 1;
 					elseif self.cp.turnStage == 1 then
 						self.cp.turnStage = 0;
 					end;
-				end
-			end
+				end;
+			end;
 
 		elseif self.showHudInfoBase == 1 then
 			if self.play then
 				if not self.drive then
-					if func == "row1" then
-						courseplay:start(self)
-					end
-
-					if func == "row3" and self.ai_mode ~= 9 then
-						courseplay:setStartAtFirstPoint(self)
-					end
-
-					if func == "row4" then
-						courseplay:reset_course(self)
-					end
+					if value == 1 then
+						courseplay:start(self);
+					elseif value == 3 and self.ai_mode ~= 9 then
+						courseplay:setStartAtFirstPoint(self);
+					elseif value == 4 then
+						courseplay:reset_course(self);
+					end;
 
 				else -- driving
-					if self.cp.last_recordnumber ~= nil and self.Waypoints[self.cp.last_recordnumber].wait and self.wait and func == "row2" then
-						self.wait = false
-					end
-
-					if func == "row2" and self.StopEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil) then
-						self.StopEnd = false
-					end
-
-					if func == "row1" then
-						courseplay:stop(self)
-					end
-
-					if not self.loaded and func == "row3" then
-						self.loaded = true
-					end
-
-					if not self.StopEnd and func == "row4" then
+					if value == 1 then
+						courseplay:stop(self);
+					elseif value == 2 and self.cp.last_recordnumber ~= nil and self.Waypoints[self.cp.last_recordnumber].wait and self.wait then
+						self.wait = false;
+					elseif value == 2 and self.StopEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil) then
+						self.StopEnd = false;
+					elseif value == 3 and not self.loaded then
+						self.loaded = true;
+					elseif value == 4 and not self.StopEnd then
 						self.StopEnd = true
-					end
-
-					if self.ai_mode == 4 and func == "row5" then
-						self.cp.ridgeMarkersAutomatic = not self.cp.ridgeMarkersAutomatic;
+					elseif value == 5 then
+						if self.ai_mode == 1 or self.ai_mode == 2 then
+							self.cp.unloadAtSiloStart = not self.cp.unloadAtSiloStart;
+						elseif self.ai_mode == 4 then
+							self.cp.ridgeMarkersAutomatic = not self.cp.ridgeMarkersAutomatic;
+						end;
 					end;
-				end -- end driving
+				end; -- end driving
 
 
 			elseif not self.drive then
-				if (not self.record and not self.record_pause) and not self.play then --- - and (table.getn(self.Waypoints) == 0) then
-					if (table.getn(self.Waypoints) == 0) and not self.createCourse then
-						if func == "row1" then
-							courseplay:start_record(self)
-						end
-					end
-
-				elseif self.record or self.record_pause then
-					if func == "row1" then
-						courseplay:stop_record(self)
+				if not self.record and not self.record_pause and not self.play and table.getn(self.Waypoints) == 0 and not self.createCourse then
+					if value == 1 then
+						courseplay:start_record(self);
 					end;
 
-					if not self.record_pause then
-						if func == "row2" then --and self.recordnumber > 3
-							courseplay:set_waitpoint(self)
-						end
-
-						if func == "row4" then --and self.recordnumber > 3
-							courseplay:set_crossing(self)
-						end
-
-						if func == "row3" and self.recordnumber > 3 then
-							courseplay:interrupt_record(self)
-						end
+				elseif self.record or self.record_pause then
+					if value == 1 then
+						courseplay:stop_record(self);
+					
+					elseif not self.record_pause then
+						if value == 2 then --and self.recordnumber > 3
+							courseplay:set_waitpoint(self);
+						elseif value == 3 and self.recordnumber > 3 then
+							courseplay:interrupt_record(self);
+						elseif value == 4 then --and self.recordnumber > 3
+							courseplay:set_crossing(self);
+						elseif value == 5 then
+							courseplay:change_DriveDirection(self);
+						end;
 
 					else
-						if func == "row2" then
-							courseplay:delete_waypoint(self)
-						end
-						if func == "row3" then
-							courseplay:continue_record(self)
-						end
-					end
-				end
-			end --END if not self.drive
-		end --END is page 0 or 1
-	end --END isRowFunction
-end
+						if value == 2 then
+							courseplay:delete_waypoint(self);
+						elseif value == 3 then
+							courseplay:continue_record(self);
+						end;
+					end;
+				end;
+			end; --END if not self.drive
+		end; --END is page 0 or 1
+	end; --END isRowFunction
+end;
 
 function courseplay:keyEvent(unicode, sym, modifier, isDown)
 end

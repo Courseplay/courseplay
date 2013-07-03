@@ -4,7 +4,7 @@ function courseplay:openCloseHud(self, open)
 	InputBinding.setShowMouseCursor(self.mouse_enabled);
 
 	--Cameras: deactivate/reactivate zoom function in order to allow CP mouse wheel
-	for camIndex,allowTranslation in pairs(self.cp.camerasBackup) do
+	for camIndex,_ in pairs(self.cp.camerasBackup) do
 		self.cameras[camIndex].allowTranslation = not open;
 		--print(string.format("%s: openCloseHud(%s): camera %d allowTranslation=%s", nameNum(self), tostring(open), camIndex, tostring(self.cameras[camIndex].allowTranslation)));
 	end;

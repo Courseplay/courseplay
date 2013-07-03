@@ -2,29 +2,31 @@
 function courseplay:HudPage(self)
 	courseplay:setFontSettings("white", false);
 	
-	local Page = self.showHudInfoBase;
+	local page = self.showHudInfoBase;
 	for column=1, 2 do
-		for line, name in pairs(self.hudpage[Page][column]) do
+		for line, text in pairs(self.hudpage[page][column]) do
 			if column == 1 then
-				renderText(courseplay.hud.infoBasePosX + 0.005, courseplay.hud.linesPosY[line], 0.019, name);
+				renderText(courseplay.hud.infoBasePosX + 0.005, courseplay.hud.linesPosY[line], 0.019, text);
 			elseif column == 2 then
 				local posX = courseplay.hud.infoBasePosX + 0.122;
-				if Page == 6 or Page == 8 then
+				if page == 6 or page == 8 then
 					posX = courseplay.hud.infoBasePosX + 0.182;
-				elseif Page == 9 then
+				elseif page == 9 then
 					posX = courseplay.hud.infoBasePosX + 0.230;
 				end;
 				
-				renderText(posX, courseplay.hud.linesPosY[line], 0.017, name);
+				renderText(posX, courseplay.hud.linesPosY[line], 0.017, text);
 			end;
 		end;
 	end;
 end;
 
 function courseplay:loadHud(self)
-	for page=0,1 do
-		for line=1, courseplay.hud.numLines do
-			self.hudpage[page][line] = {};
+	for page=0,2 do
+		for column=1,2 do
+			for line=1,courseplay.hud.numLines do
+				self.hudpage[page][column][line] = nil;
+			end;
 		end;
 	end;
 
@@ -156,39 +158,27 @@ function courseplay:loadHud(self)
 
 		--Page 2 (course list)
 		elseif self.showHudInfoBase == 2 then
-			local number_of_courses = 0;
+			local numTotalCourses = 0;
 			if g_currentMission.courseplay_courses ~= nil then
-				number_of_courses = table.getn(g_currentMission.courseplay_courses);
-			end
-			local start_course_num = self.selected_course_number
-			local end_course_num = start_course_num + (courseplay.hud.numLines - 1)
+				numTotalCourses = table.getn(g_currentMission.courseplay_courses);
+			end;
+			local startCourseNum = self.selected_course_number;
+			local endCourseNum = startCourseNum + (courseplay.hud.numLines - 1);
 
-			if end_course_num >= number_of_courses then
-				end_course_num = number_of_courses - 1
-			end
+			if endCourseNum >= numTotalCourses then
+				endCourseNum = numTotalCourses - 1;
+			end;
 
-			for i = 0, 12, 1 do
-				self.hudpage[2][1][i] = nil
-			end
-
-
-			local row = 1
-			for i = start_course_num, end_course_num, 1 do
-				--[[for _, button in pairs(self.cp.buttons) do
-					if button.page == -2 and button.row == row then
-						button.overlay:render()
-					end
-				end]]
-				local course_name = g_currentMission.courseplay_courses[i + 1].name
-
+			local line = 1;
+			for i=startCourseNum, endCourseNum, 1 do
+				local course_name = g_currentMission.courseplay_courses[i + 1].name;
 				if course_name == nil or course_name == "" then
-					course_name = "-"
-				end
+					course_name = "-";
+				end;
 
-				self.hudpage[2][1][row] = course_name
-				row = row + 1
-			end
-
+				self.hudpage[2][1][line] = course_name;
+				line = line + 1;
+			end;
 
 
 		--Page 3
