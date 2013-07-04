@@ -498,7 +498,7 @@ function courseplay:unload_combine(self, dt)
 						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, -4, 0, -self.turn_radius-trailer_offset);
 						courseplay:set_next_target(self, 3*offset ,  -self.turn_radius-trailer_offset);
 						fx,fy,fz = localToWorld(self.rootNode, 3*offset, 0, 0)
-						sx,sy,sz = localToWorld(self.rootNode, 3*offset,  -(2*self.turn_radius)-trailer_offset)
+						sx,sy,sz = localToWorld(self.rootNode, 3*offset, 0, -(2*self.turn_radius)-trailer_offset)
 						if courseplay:is_field(fx, fz) then
 							courseplay:debug(nameNum(self) .. ": 1st target is on field", 4)
 							courseplay:set_next_target(self, 3*offset,0);
