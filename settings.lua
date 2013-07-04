@@ -1,13 +1,6 @@
 function courseplay:openCloseHud(self, open)
-	self.mouse_enabled = open;
+	courseplay:setMouseCursor(self, open);
 	self.show_hud = open;
-	InputBinding.setShowMouseCursor(self.mouse_enabled);
-
-	--Cameras: deactivate/reactivate zoom function in order to allow CP mouse wheel
-	for camIndex,_ in pairs(self.cp.camerasBackup) do
-		self.cameras[camIndex].allowTranslation = not open;
-		--print(string.format("%s: openCloseHud(%s): camera %d allowTranslation=%s", nameNum(self), tostring(open), camIndex, tostring(self.cameras[camIndex].allowTranslation)));
-	end;
 
 	--set ESLimiter
 	if self.cp.ESLimiterOrigPosY == nil and open and self.ESLimiter ~= nil then
@@ -18,7 +11,7 @@ function courseplay:openCloseHud(self, open)
 					self.ESLimiter.overlay.y,
 					self.ESLimiter.overlayBg.y,
 					self.ESLimiter.overlayBar.y
-				}
+				};
 			end;
 		end;
 	end;
@@ -670,4 +663,15 @@ function courseplay:reloadCoursesFromXML(self)
 			courseplay:debug("courseplay:reload_courses(self, true)", 8);
 		end;
 	end
+end;
+
+function courseplay:setMouseCursor(self, show)
+	self.mouse_enabled = show;
+	InputBinding.setShowMouseCursor(show);
+
+	--Cameras: deactivate/reactivate zoom function in order to allow CP mouse wheel
+	for camIndex,_ in pairs(self.cp.camerasBackup) do
+		self.cameras[camIndex].allowTranslation = not show;
+		--print(string.format("%s: right mouse key (mouse cursor=%s): camera %d allowTranslation=%s", nameNum(self), tostring(self.mouse_enabled), camIndex, tostring(self.cameras[camIndex].allowTranslation)));
+	end;
 end;

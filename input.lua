@@ -1,22 +1,22 @@
 function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 	local mouseKey = button;
 
-	--if isDown and mouseKey == 3 and self.isEntered then
-	if self.isEntered and Input.isMouseButtonPressed(Input.MOUSE_BUTTON_RIGHT) then
+	--RIGHT CLICK
+	if isDown and mouseKey == 3 and self.isEntered then
+	--if self.isEntered and Input.isMouseButtonPressed(Input.MOUSE_BUTTON_RIGHT) then
 		if self.show_hud then
-			self.mouse_enabled = not self.mouse_enabled;
-			InputBinding.setShowMouseCursor(self.mouse_enabled);
+			courseplay:setMouseCursor(self, not self.mouse_enabled);
+
 		elseif not self.show_hud and self.mouse_right_key_enabled then
 			courseplay:openCloseHud(self, true)
 			courseplay:buttonsActiveEnabled(self, "all");
-		end
+		end;
 	end;
-
 	local hudGfx = courseplay.hud.visibleArea;
 	local mouseIsInHudArea = self.mouse_enabled and posX > hudGfx.x1 and posX < hudGfx.x2 and posY > hudGfx.y1 and posY < hudGfx.y2;
 
-	--CLICK
-	if self.mouse_enabled and self.show_hud and self.isEntered and mouseIsInHudArea and Input.isMouseButtonPressed(Input.MOUSE_BUTTON_LEFT) then
+	--LEFT CLICK
+	if isDown and mouseKey == 1 and self.mouse_enabled and self.show_hud and self.isEntered and mouseIsInHudArea then
 		local continueSearchingButton = true;
 		for _,button in pairs(self.cp.buttons.global) do
 			if courseplay:nilOrBool(button.show, true) and courseplay:mouseIsInButtonArea(posX, posY, button) then
