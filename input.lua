@@ -6,12 +6,12 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 	--if self.isEntered and Input.isMouseButtonPressed(Input.MOUSE_BUTTON_RIGHT) then
 		if self.show_hud then
 			courseplay:setMouseCursor(self, not self.mouse_enabled);
-
 		elseif not self.show_hud and self.mouse_right_key_enabled then
 			courseplay:openCloseHud(self, true)
 			courseplay:buttonsActiveEnabled(self, "all");
 		end;
 	end;
+
 	local hudGfx = courseplay.hud.visibleArea;
 	local mouseIsInHudArea = self.mouse_enabled and posX > hudGfx.x1 and posX < hudGfx.x2 and posY > hudGfx.y1 and posY < hudGfx.y2;
 
@@ -85,6 +85,10 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 						end;
 					end;
 				end;
+
+				if button.hoverText then
+					self.cp.hoverTextItems[tostring(button.page)][button.row][1] = button.isHovered;
+				end;
 			end;
 		end;
 
@@ -96,6 +100,10 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 					if courseplay:mouseIsInButtonArea(posX, posY, button) then
 						button.isClicked = false;
 						button.isHovered = true;
+					end;
+
+					if button.hoverText then
+						self.cp.hoverTextItems["2"][button.row][1] = button.isHovered;
 					end;
 				end;
 			end;

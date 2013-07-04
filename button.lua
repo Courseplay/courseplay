@@ -1,4 +1,4 @@
-function courseplay:register_button(self, hud_page, img, function_to_call, parameter, x, y, width, height, hud_row, modifiedParameter, showHideVariable, isMouseWheelArea)
+function courseplay:register_button(self, hudPage, img, function_to_call, parameter, x, y, width, height, hudRow, modifiedParameter, hoverText, isMouseWheelArea)
 	local overlay = nil;
 	if img and img ~= "blank.dds" then
 		overlay = Overlay:new(img, Utils.getFilename("img/" .. img, courseplay.path), x, y, width, height);
@@ -7,9 +7,12 @@ function courseplay:register_button(self, hud_page, img, function_to_call, param
 	if isMouseWheelArea == nil then
 		isMouseWheelArea = false;
 	end;
+	if hoverText == nil then
+		hoverText = false;
+	end;
 
 	button = { 
-		page = hud_page, 
+		page = hudPage, 
 		overlay = overlay, 
 		function_to_call = function_to_call, 
 		parameter = parameter, 
@@ -17,10 +20,11 @@ function courseplay:register_button(self, hud_page, img, function_to_call, param
 		x2 = (x + width), 
 		y = y, 
 		y2 = (y + height), 
-		row = hud_row,
+		row = hudRow,
+		hoverText = hoverText,
 		color = courseplay.hud.colors.white,
-		isMouseWheelArea = isMouseWheelArea,
-		canBeClicked = not isMouseWheelArea,
+		isMouseWheelArea = isMouseWheelArea and function_to_call ~= nil,
+		canBeClicked = not isMouseWheelArea and function_to_call ~= nil,
 		show = true,
 		isClicked = false,
 		isActive = false,
@@ -35,7 +39,7 @@ function courseplay:register_button(self, hud_page, img, function_to_call, param
 		button.canScrollDown = true;
 	end;
 
-	table.insert(self.cp.buttons[tostring(hud_page)], button);
+	table.insert(self.cp.buttons[tostring(hudPage)], button);
 end
 
 function courseplay:renderButtons(self, page)

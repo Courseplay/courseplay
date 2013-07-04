@@ -6,15 +6,21 @@ function courseplay:HudPage(self)
 	for column=1, 2 do
 		for line, text in pairs(self.hudpage[page][column]) do
 			if column == 1 then
+				if self.cp.hoverTextItems[tostring(page)][line][column] then
+					courseplay:setFontSettings("hover", false);
+				end;
 				renderText(courseplay.hud.infoBasePosX + 0.005, courseplay.hud.linesPosY[line], 0.019, text);
+				courseplay:setFontSettings("white", false);
 			elseif column == 2 then
 				local posX = courseplay.hud.infoBasePosX + 0.122;
-				if page == 6 or page == 8 then
+				if page == 1 then
+					posX = courseplay.hud.infoBasePosX + 0.142;
+				elseif page == 6 or page == 8 then
 					posX = courseplay.hud.infoBasePosX + 0.182;
 				elseif page == 9 then
 					posX = courseplay.hud.infoBasePosX + 0.230;
 				end;
-				
+
 				renderText(posX, courseplay.hud.linesPosY[line], 0.017, text);
 			end;
 		end;
