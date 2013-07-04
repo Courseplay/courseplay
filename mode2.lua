@@ -961,12 +961,11 @@ function courseplay:unload_combine(self, dt)
 			self.motor:setSpeedLevel(0, false);
 			AIVehicleUtil.driveInDirection(self, dt, self.steering_angle, 0, 0, 28, false, moveForwards, lx, lz)
 		end
-		if self.movingDirection == 0 then
-			self.cpTrafficBrake = false
-		end
-		if self.cpTrafficBrake then
+		
+		if self.cp.TrafficBrake then
 			moveForwards = false
 		end
+		self.cp.TrafficBrake = false
 
 		courseplay:set_traffc_collision(self, target_x, target_z)
 		AIVehicleUtil.driveInDirection(self, dt, self.steering_angle, 0.5, 0.5, 8, allowedToDrive, moveForwards, target_x, target_z, self.sl, 0.4)

@@ -635,6 +635,7 @@ function courseplay:drive(self, dt)
 	-- stop or hold position
 	if not allowedToDrive then
 		--self.motor:setSpeedLevel(0, false);
+		self.cp.TrafficBrake = false
 		AIVehicleUtil.driveInDirection(self, dt, 30, 0, 0, 28, false, moveForwards, nil, nil)
 		if g_server ~= nil then
 			AIVehicleUtil.driveInDirection(self, dt, self.steering_angle, 0.5, 0.5, 28, false, moveForwards, 0, 1)
@@ -642,10 +643,6 @@ function courseplay:drive(self, dt)
 
 		-- unload active tipper if given
 		return;
-	end
-
-	if self.cpTrafficBrake and self.lastSpeedReal < 1/3600 then
-		self.cpTrafficBrake = false
 	end
 
 	if self.cp.isTurning ~= nil then
@@ -741,9 +738,11 @@ function courseplay:drive(self, dt)
 		fwd = true
 	end
 
-	if self.cpTrafficBrake then
+	if self.cp.TrafficBrake then
 		fwd = false
 	end  	
+	self.cp.TrafficBrake = false
+	self.cp.TrafficHasStopped = false
 
 	if self.cp.mode7GoBackBeforeUnloading then
 		fwd = false
@@ -1052,9 +1051,6 @@ function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive)
 end;
 
 function courseplay:regulateTrafficSpeed(self,refSpeed,allowedToDrive)
-	if not allowedToDrive then
-		self.cpTrafficBrake = false
-	end
 	if self.traffic_vehicle_in_front ~= nil then
 		local vehicle_in_front = g_currentMission.nodeToVehicle[self.traffic_vehicle_in_front];
 		local vehicleBehind = false
@@ -1073,9 +1069,8 @@ function courseplay:regulateTrafficSpeed(self,refSpeed,allowedToDrive)
 		else
 			if allowedToDrive and not (self.ai_mode == 9 and vehicle_in_front.allowFillFromAir) then
 				if (self.lastSpeed*3600) - (vehicle_in_front.lastSpeedReal*3600) > 15 or z1 < 3 then
-					self.cpTrafficBrake = true
+					self.cp.TrafficBrake = true
 				else
-					self.cpTrafficBrake = false
 					return math.min(vehicle_in_front.lastSpeedReal,refSpeed)
 				end
 			end
@@ -1085,11 +1080,11 @@ function courseplay:regulateTrafficSpeed(self,refSpeed,allowedToDrive)
 end
 
 function courseplay:brakeToStop(self)
-	if self.lastSpeedReal > 1/3600 then
-		self.cpTrafficBrake = true
+	if self.lastSpeedReal > 1/3600 and not self.cp.TrafficHasStopped then
+		self.cp.TrafficBrake = true
 		return true
 	else
-		self.cpTrafficBrake = false
+		self.cp.TrafficHasStopped = true
 		return false
 	end
 end

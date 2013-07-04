@@ -291,7 +291,7 @@ function courseplay:load(xmlFile)
 	--	self.numToolsCollidingVehicles = {};
 	--	self.trafficCollisionIgnoreList = {};
 	self.cpTrafficCollisionIgnoreList = {};
-	self.cpTrafficBrake = false
+	self.cp.TrafficBrake = false
 	-- tipTrigger
 	self.findTipTriggerCallback = courseplay.findTipTriggerCallback;
 	

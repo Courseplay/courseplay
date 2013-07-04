@@ -211,7 +211,7 @@ function courseplay:turn(self, dt) --!!!
 			self.cp.turnStage = 4;
 			moveForwards = true;
 		end;
-		if self.cpTrafficBrake then
+		if self.cp.TrafficBrake then
 			moveForwards = false;
 		end
 
