@@ -596,24 +596,33 @@ function courseplay:setHeadlandLanes(self, change_by)
 end;
 
 function courseplay:validateCourseGenerationData(self)
-	local hasEnoughWaypoints = table.getn(self.Waypoints) > 4;
-	if self.cp.headland.numLanes ~= 0 then
-		hasEnoughWaypoints = table.getn(self.Waypoints) >= 20;
+	local hasEnoughWaypoints = false;
+	if self.Waypoints ~= nil then
+		hasEnoughWaypoints = table.getn(self.Waypoints) > 4;
+		if self.cp.headland.numLanes ~= 0 then
+			hasEnoughWaypoints = table.getn(self.Waypoints) >= 20;
+		end;
+	end;
+	if self.cp.selectedFieldEdgePathNumber > 0 then
+		local waypoints = courseplay.fields.fieldDefs[self.cp.selectedFieldEdgePathNumber].edgePointsCalculated;
+		hasEnoughWaypoints = table.getn(waypoints) > 4
+		if self.cp.headland.numLanes ~= 0 then
+			hasEnoughWaypoints = table.getn(waypoints) >= 20;
+		end;
 	end;
 
 	if not self.cp.hasGeneratedCourse
-	and self.Waypoints ~= nil 
 	and hasEnoughWaypoints
 	and self.cp.hasStartingCorner == true 
 	and self.cp.hasStartingDirection == true 
-	and (self.numCourses == nil or (self.numCourses ~= nil and self.numCourses == 1)) 
+	and (self.numCourses == nil or (self.numCourses ~= nil and self.numCourses == 1) or self.cp.selectedFieldEdgePathNumber > 0) 
 	then
 		self.cp.hasValidCourseGenerationData = true;
 	else
 		self.cp.hasValidCourseGenerationData = false;
 	end;
 
-	courseplay:debug(string.format("%s: hasGeneratedCourse=%s, #Waypoints=%s, hasStartingCorner=%s, hasStartingDirection=%s, numCourses=%s ==> hasValidCourseGenerationData=%s", nameNum(self), tostring(self.cp.hasGeneratedCourse), tostring(#self.Waypoints), tostring(self.cp.hasStartingCorner), tostring(self.cp.hasStartingDirection), tostring(self.numCourses), tostring(self.cp.hasValidCourseGenerationData)), 7);
+	courseplay:debug(string.format("%s: hasGeneratedCourse=%s, hasEnoughWaypoints=%s, hasStartingCorner=%s, hasStartingDirection=%s, numCourses=%s, self.cp.selectedFieldEdgePathNumber=%s ==> hasValidCourseGenerationData=%s", nameNum(self), tostring(self.cp.hasGeneratedCourse), tostring(hasEnoughWaypoints), tostring(self.cp.hasStartingCorner), tostring(self.cp.hasStartingDirection), tostring(self.numCourses), tostring(self.cp.selectedFieldEdgePathNumber), tostring(self.cp.hasValidCourseGenerationData)), 7);
 end;
 
 function courseplay:validateCanSwitchMode(self)
@@ -663,6 +672,33 @@ function courseplay:reloadCoursesFromXML(self)
 			courseplay:debug("courseplay:reload_courses(self, true)", 8);
 		end;
 	end
+end;
+
+function courseplay:setFieldEdgePath(self, changeDir)
+	--print("setFieldEdgePath()");
+	--print("\\___ currentNum = " .. tostring(self.cp.selectedFieldEdgePathNumber));
+	local newFieldNum = self.cp.selectedFieldEdgePathNumber + changeDir;
+	--print("\\___ newFieldNum = " .. tostring(newFieldNum));
+
+	if newFieldNum == 0 then
+		self.cp.selectedFieldEdgePathNumber = newFieldNum;
+		return;
+	end;
+
+	while courseplay.fields.fieldDefs[newFieldNum] == nil do
+		--print("\\___ courseplay.fields.fieldDefs[newFieldNum] == nil");
+		if newFieldNum == 0 then
+			self.cp.selectedFieldEdgePathNumber = newFieldNum;
+			return;
+		end;
+		newFieldNum = Utils.clamp(newFieldNum + changeDir, 0, courseplay.fields.highestFieldNumber);
+		--print("     \\___ newFieldNum = " .. tostring(newFieldNum));
+	end;
+
+	self.cp.selectedFieldEdgePathNumber = newFieldNum;
+	--print("\\___ self.cp.selectedFieldEdgePathNumber = " .. tostring(newFieldNum));
+
+	courseplay:validateCourseGenerationData(self);
 end;
 
 function courseplay:setMouseCursor(self, show)

@@ -1,3 +1,13 @@
+--COURSEPLAY FIELDS
+local cpfPath = g_currentModDirectory .. "CourseplayFields.lua";
+if fileExists(cpfPath) then
+	source(cpfPath);
+else
+	print("Error: " .. cpfPath .. " could not be loaded!");
+end;
+
+
+--COURSEPLAY
 SpecializationUtil.registerSpecialization("courseplay", "courseplay", g_currentModDirectory .. "courseplay.lua")
 SpecializationUtil.registerSpecialization("autoovercharge", "AutoOvercharge", g_currentModDirectory .. "AutoOvercharge.lua")
 SpecializationUtil.registerSpecialization("perard", "perard", g_currentModDirectory .. "AutoOvercharge.lua")

@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="12">
-	<version>3.41.0079</version>
+	<version>3.41.0080</version>
 	<author>Hummel (modhoster.de) / Lautschreier / Wolverin0815 / Bastian82 / Jakob Tischler / Thomas Gärtner</author>
 	<title>
 		<de>Courseplay</de>        
@@ -1530,6 +1530,22 @@ Italský překlad: JD7530
 			<fr>point le plus proche</fr>
 			<it>punto più vicino</it>
 			<cz>na nejbližším bodě</cz>
+		</text>
+		<text name="CPfieldEdgePath">
+			<de>Feldrandkurs</de>
+			<en>Field edge path</en>
+			<es>Camino de aristas del campo</es> <!-- !!! -->
+			<fr>Voie de bord de champ</fr> <!-- !!! -->
+			<it>Percorso bordo di campo</it> <!-- !!! -->
+			<cz>Pole cesta na okraji</cz> <!-- !!! -->
+		</text>
+		<text name="CPfield">
+			<de>Feld</de>
+			<en>Field</en>
+			<es>Campo</es> <!-- !!! -->
+			<fr>Champ</fr> <!-- !!! -->
+			<it>Camp</it> <!-- !!! -->
+			<cz>Pole</cz> <!-- !!! -->
 		</text>
 	</l10n>
 

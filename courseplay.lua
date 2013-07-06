@@ -3,7 +3,9 @@
 -- Specialization for Courseplay
 --
 -- @author  	Lautschreier / Hummel / Wolverin0815 / Bastian82 / skydancer / Jakob Tischler / Thomas Gärtner
+-- @website:	http://courseplay.github.io/courseplay/
 -- @version:	v3.41
+-- @changelog:	http://courseplay.github.io/courseplay/en/changelog/index.html
 
 courseplay = {
 	path = g_currentModDirectory;

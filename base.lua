@@ -384,6 +384,7 @@ function courseplay:load(xmlFile)
 	self.cp.headland = {
 		numLanes = 0;
 	};
+	self.cp.selectedFieldEdgePathNumber = 0;
 	
 	self.mouse_enabled = false
 

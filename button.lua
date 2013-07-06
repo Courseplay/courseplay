@@ -133,9 +133,9 @@ function courseplay:renderButton(self, button)
 				elseif prm == courseplay.hud.numLines then
 					button.show = self.cp.courseListNext;
 				end;
-			elseif pg == -2 then
-				button.show = self.hudpage[2][1][prm] ~= nil;
 			end;
+		elseif pg == -2 then
+			button.show = self.hudpage[2][1][prm] ~= nil;
 
 		--Page 3
 		elseif pg == 3 then
