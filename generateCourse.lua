@@ -1,7 +1,7 @@
 --[[
 @title:     Course Generation for Courseplay
 @authors:   Jakob Tischler, skyDancer
-@version:   0.61
+@version:   0.62
 @date:      09 Feb 2013
 @updated:   08 Jun 2013
 
@@ -12,7 +12,11 @@ TODO:
 ]]
 
 function courseplay:generateCourse(self)
-	courseplay:debug(string.format("generateCourse() called for %s", tostring(self.current_course_name)), 7);
+	local fieldCourseName = tostring(self.current_course_name);
+	if self.cp.selectedFieldEdgePathNumber > 0 then
+		fieldCourseName = string.format("Field %d", self.cp.selectedFieldEdgePathNumber);
+	end;
+	courseplay:debug(string.format("generateCourse() called for %s", fieldCourseName), 7);
 
 	-- Make sure everything's set and in order
 	courseplay:validateCourseGenerationData(self);
@@ -21,7 +25,12 @@ function courseplay:generateCourse(self)
 	end;
 	
 	local poly = {};
-	poly.points = self.Waypoints
+	if self.cp.selectedFieldEdgePathNumber > 0 then
+		poly.points = courseplay.fields.fieldDefs[self.cp.selectedFieldEdgePathNumber].edgePointsCalculated;
+	else
+		poly.points = self.Waypoints;
+	end;
+
 	poly.numPoints = table.getn(poly.points);
 	poly.xValues, poly.zValues = {}, {};
 	
@@ -657,6 +666,7 @@ function courseplay:generateCourse(self)
 	courseplay:RefreshSigns(self);
 	
 	self.cp.hasGeneratedCourse = true;
+	self.cp.selectedFieldEdgePathNumber = 0;
 	courseplay:validateCourseGenerationData(self);
 	courseplay:validateCanSwitchMode(self);
 
