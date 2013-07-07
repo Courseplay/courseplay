@@ -32,6 +32,12 @@ function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill
 			courseplay:setGlobalInfoText(self, ": " .. courseplay:get_locale(self, "CPworkToolNeedsToBeRefilled"), -1);
 		end;
 	end
+	--
+	if ((self.recordnumber == self.stopWork and not self.cp.hasUnloadingRefillingCourse) or self.cp.last_recordnumber == self.stopWork) and self.abortWork == nil then
+		allowedToDrive = courseplay:brakeToStop(self)
+		courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPWorkEnd"), 1);
+	end
+	
 	
 	local returnToStartPoint = false;
 	if  self.Waypoints[self.stopWork].cx == self.Waypoints[self.startWork].cx 
