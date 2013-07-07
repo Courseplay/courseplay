@@ -68,6 +68,7 @@ function courseplay:renderButton(self, button)
 				button.canScrollUp =   self.cp.courseListPrev == true;
 				button.canScrollDown = self.cp.courseListNext == true;
 			end;
+
 		elseif pg == 3 then
 			if fn == "change_turn_radius" then
 				button.canScrollUp =   true;
@@ -79,6 +80,7 @@ function courseplay:renderButton(self, button)
 				button.canScrollUp =   self.required_fill_level_for_drive_on < 100;
 				button.canScrollDown = self.required_fill_level_for_drive_on > 0;
 			end;
+
 		elseif pg == 5 then
 			if fn == "change_turn_speed" then
 				button.canScrollUp =   self.turn_speed < 60/3600;
@@ -98,6 +100,9 @@ function courseplay:renderButton(self, button)
 			if fn == "change_wait_time" then
 				button.canScrollUp =   true;
 				button.canScrollDown = self.waitTime > 0;
+			elseif fn == "changeWpOffsetX" or fn == "changeWpOffsetZ" then
+				button.canScrollUp = self.ai_mode == 4 or self.ai_mode == 6;
+				button.canScrollDown = button.canScrollUp;
 			end;
 
 		elseif pg == 8 then
@@ -135,7 +140,7 @@ function courseplay:renderButton(self, button)
 				end;
 			end;
 		elseif pg == -2 then
-			button.show = self.hudpage[2][1][prm] ~= nil;
+			button.show = self.cp.hud.content.pages[2][prm][1].text ~= nil;
 
 		--Page 3
 		elseif pg == 3 then
@@ -231,6 +236,10 @@ function courseplay:renderButton(self, button)
 			local colors = courseplay.hud.colors;
 			local currentColor = courseplay:getButtonColor(button);
 			local targetColor = currentColor;
+			local hoverColor = colors.hover;
+			if fn == "openCloseHud" then
+				hoverColor = colors.closeRed;
+			end;
 
 			if not button.isDisabled and not button.isActive and not button.isHovered and button.canBeClicked and not button.isClicked and not courseplay:colorsMatch(currentColor, colors.white) then
 				targetColor = colors.white;
@@ -238,17 +247,10 @@ function courseplay:renderButton(self, button)
 				targetColor = colors.whiteDisabled;
 			elseif not button.isDisabled and button.canBeClicked and button.isClicked and not fn == "openCloseHud" then
 				targetColor = colors.activeRed;
-			elseif button.isActive and not courseplay:colorsMatch(currentColor, colors.activeGreen) then
+			elseif ((button.page == 9 and button.isActive and button.canBeClicked and not button.isClicked) or (not button.isDisabled and not button.isActive and button.isHovered and button.canBeClicked and not button.isClicked)) and not courseplay:colorsMatch(currentColor, hoverColor) then
+				targetColor = hoverColor;
+			elseif button.isActive and (button.page ~= 9 or (button.page == 9 and not button.isHovered)) and not courseplay:colorsMatch(currentColor, colors.activeGreen) then
 				targetColor = colors.activeGreen;
-			elseif not button.isDisabled and not button.isActive and button.isHovered and button.canBeClicked and not button.isClicked then
-				local hoverColor = colors.hover;
-				if fn == "openCloseHud" then
-					hoverColor = colors.closeRed;
-				end;
-
-				if not courseplay:colorsMatch(currentColor, hoverColor) then
-					targetColor = hoverColor;
-				end;
 			end;
 
 			-- set colors

@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="12">
-	<version>3.41.0081</version>
+	<version>3.41.0082</version>
 	<author>Hummel (modhoster.de) / Lautschreier / Wolverin0815 / Bastian82 / Jakob Tischler / Thomas Gärtner</author>
 	<title>
 		<de>Courseplay</de>        
@@ -916,7 +916,7 @@ Italský překlad: JD7530
 			<it>Controlli del Courseplay</it>
 			<cz>Nastavení odvozce</cz>
 		</text>
-		<text name="CPCombineMangament">
+		<text name="CPCombineManagement">
 			<en>Combine controls</en>
 			<de>Drescher steuern</de>
 			<fr>Gestion de la conduite</fr>

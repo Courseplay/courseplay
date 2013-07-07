@@ -19,7 +19,7 @@ function courseplay:renderInfoText(self)
 			renderText(courseplay.hud.infoBasePosX + 0.005, courseplay.hud.infoBasePosY + 0.0035, 0.02, self.cp.infoText); --ORIG: +0.002
 		end;
 	end;
-	
+
 
 	local bg = self.cp.globalInfoTextOverlay;
 	bg.isRendering = false;
@@ -30,13 +30,13 @@ function courseplay:renderInfoText(self)
 		--Background overlay
 		local level = self.cp.globalInfoTextLevel;
 		local bgColor = nil;
-		
+
 		if level ~= nil then
 			bgColor = courseplay.globalInfoText.levelColors[tostring(level)];
-			bgColor[4] = 0.85;
 		end;
 
 		if bgColor ~= nil then
+			bgColor[4] = 0.85;
 			local currentColor = { bg.r, bg.g, bg.b, bg.a };
 			if currentColor == nil or not courseplay:colorsMatch(currentColor, bgColor) then
 				bg:setColor(unpack(bgColor))
@@ -47,7 +47,7 @@ function courseplay:renderInfoText(self)
 
 			bg.isRendering = true; --NOTE: render() happens in courseplay_manager:draw()
 		end;
-		
+
 		courseplay:setFontSettings("white", false);
 		renderText(courseplay.globalInfoText.posX, posY, courseplay.globalInfoText.fontSize, msg);
 	end;
@@ -63,7 +63,7 @@ function courseplay:setFontSettings(color, fontBold, align)
 	else --Backup
 		setTextColor(unpack(courseplay.hud.colors.white));
 	end;
-	
+
 	if fontBold ~= nil and type(fontBold) == "boolean" then
 		setTextBold(fontBold);
 	else

@@ -1,12 +1,12 @@
 function courseplay:openCloseHud(self, open)
 	courseplay:setMouseCursor(self, open);
-	self.show_hud = open;
+	self.cp.hud.show = open;
 
 	--set ESLimiter
-	if self.cp.ESLimiterOrigPosY == nil and open and self.ESLimiter ~= nil then
+	if self.cp.hud.ESLimiterOrigPosY == nil and open and self.ESLimiter ~= nil then
 		if self.ESLimiter.xPos ~= nil and self.ESLimiter.yPos ~= nil then
 			if self.ESLimiter.xPos > courseplay.hud.visibleArea.x1 and self.ESLimiter.xPos < courseplay.hud.visibleArea.x2 and self.ESLimiter.yPos > courseplay.hud.visibleArea.y1 and self.ESLimiter.yPos < courseplay.hud.visibleArea.y2 then
-				self.cp.ESLimiterOrigPosY = { 
+				self.cp.hud.ESLimiterOrigPosY = { 
 					self.ESLimiter.yPos,
 					self.ESLimiter.overlay.y,
 					self.ESLimiter.overlayBg.y,
@@ -17,26 +17,26 @@ function courseplay:openCloseHud(self, open)
 	end;
 
 	--hide/show ESLimiter
-	if self.cp.ESLimiterOrigPosY ~= nil then
+	if self.cp.hud.ESLimiterOrigPosY ~= nil then
 		if open then
 			self.ESLimiter.yPos = -1;
 			self.ESLimiter.overlay:setPosition(self.ESLimiter.overlay.x, -1);
 			self.ESLimiter.overlayBg:setPosition(self.ESLimiter.overlayBg.x, -1);
 			self.ESLimiter.overlayBar:setPosition(self.ESLimiter.overlayBar.x, -1);
 		else
-			self.ESLimiter.yPos = self.cp.ESLimiterOrigPosY[1];
-			self.ESLimiter.overlay:setPosition(self.ESLimiter.overlay.x, self.cp.ESLimiterOrigPosY[2]);
-			self.ESLimiter.overlayBg:setPosition(self.ESLimiter.overlayBg.x, self.cp.ESLimiterOrigPosY[3]);
-			self.ESLimiter.overlayBar:setPosition(self.ESLimiter.overlayBar.x, self.cp.ESLimiterOrigPosY[4]);
+			self.ESLimiter.yPos = self.cp.hud.ESLimiterOrigPosY[1];
+			self.ESLimiter.overlay:setPosition(self.ESLimiter.overlay.x, self.cp.hud.ESLimiterOrigPosY[2]);
+			self.ESLimiter.overlayBg:setPosition(self.ESLimiter.overlayBg.x, self.cp.hud.ESLimiterOrigPosY[3]);
+			self.ESLimiter.overlayBar:setPosition(self.ESLimiter.overlayBar.x, self.cp.hud.ESLimiterOrigPosY[4]);
 		end;
 	end;
 
 
 	--set ThreshingCounter
-	if self.cp.ThreshingCounterOrigPosY == nil and open and self.sessionHectars ~= nil and self.totalHectars ~= nil and self.tcOverlay ~= nil then
+	if self.cp.hud.ThreshingCounterOrigPosY == nil and open and self.sessionHectars ~= nil and self.totalHectars ~= nil and self.tcOverlay ~= nil then
 		if self.tcX ~= nil and self.tcY ~= nil then
 			if self.tcX > courseplay.hud.visibleArea.x1 and self.tcX < courseplay.hud.visibleArea.x2 and self.tcY > courseplay.hud.visibleArea.y1 and self.tcY < courseplay.hud.visibleArea.y2 then
-				self.cp.ThreshingCounterOrigPosY = { 
+				self.cp.hud.ThreshingCounterOrigPosY = { 
 					self.tcY,
 					self.tcOverlay.y,
 				};
@@ -45,23 +45,23 @@ function courseplay:openCloseHud(self, open)
 	end;
 
 	--hide/show ThreshingCounter
-	if self.cp.ThreshingCounterOrigPosY ~= nil then
+	if self.cp.hud.ThreshingCounterOrigPosY ~= nil then
 		if open then
 			self.tcY = -1;
 			self.tcOverlay:setPosition(self.tcOverlay.x, -1);
 		else
-			self.tcY = self.cp.ThreshingCounterOrigPosY[1];
-			self.tcOverlay:setPosition(self.tcOverlay.x, self.cp.ThreshingCounterOrigPosY[2]);
+			self.tcY = self.cp.hud.ThreshingCounterOrigPosY[1];
+			self.tcOverlay:setPosition(self.tcOverlay.x, self.cp.hud.ThreshingCounterOrigPosY[2]);
 		end;
 	end;
 
 
 	--set Odometer
-	if self.cp.OdometerOrigPosY == nil and open and self.Odometer ~= nil and self.Odometer.HUD ~= nil then
+	if self.cp.hud.OdometerOrigPosY == nil and open and self.Odometer ~= nil and self.Odometer.HUD ~= nil then
 		if self.Odometer.posX ~= nil and self.Odometer.posY ~= nil then
 			if self.Odometer.posX > courseplay.hud.visibleArea.x1 and self.Odometer.posX < courseplay.hud.visibleArea.x2 and self.Odometer.posY > courseplay.hud.visibleArea.y1 and self.Odometer.posY < courseplay.hud.visibleArea.y2 then
 			--if courseplay:numberInSpan(self.Odometer.posX, courseplay.hud.visibleArea.x1, courseplay.hud.visibleArea.x2) and courseplay:numberInSpan(self.Odometer.posY, courseplay.hud.visibleArea.y1, courseplay.hud.visibleArea.y2) then
-				self.cp.OdometerOrigPosY = { 
+				self.cp.hud.OdometerOrigPosY = { 
 					self.Odometer.posY,
 					self.Odometer.HUD.y,
 				};
@@ -70,23 +70,23 @@ function courseplay:openCloseHud(self, open)
 	end;
 
 	--hide/show Odometer
-	if self.cp.OdometerOrigPosY ~= nil then
+	if self.cp.hud.OdometerOrigPosY ~= nil then
 		if open then
 			self.Odometer.posY = -1;
 			self.Odometer.HUD:setPosition(self.Odometer.HUD.x, -1);
 		else
-			self.Odometer.posY = self.cp.OdometerOrigPosY[1];
-			self.Odometer.HUD:setPosition(self.Odometer.HUD.x, self.cp.OdometerOrigPosY[2]);
+			self.Odometer.posY = self.cp.hud.OdometerOrigPosY[1];
+			self.Odometer.HUD:setPosition(self.Odometer.HUD.x, self.cp.hud.OdometerOrigPosY[2]);
 		end;
 	end;
 
 
 
 	--set 4WD/Allrad
-	if self.cp.AllradOrigPosY == nil and open and self.AllradV4Active ~= nil and self.hudAllradONOverlay ~= nil and self.hudAllradOFFOverlay ~= nil then
+	if self.cp.hud.AllradOrigPosY == nil and open and self.AllradV4Active ~= nil and self.hudAllradONOverlay ~= nil and self.hudAllradOFFOverlay ~= nil then
 		if self.hudAllradPosX ~= nil and self.hudAllradPosY ~= nil then
 			if self.hudAllradPosX > courseplay.hud.visibleArea.x1 and self.hudAllradPosX < courseplay.hud.visibleArea.x2 and self.hudAllradPosY > courseplay.hud.visibleArea.y1 and self.hudAllradPosY < courseplay.hud.visibleArea.y2 then
-				self.cp.OdometerOrigPosY = { 
+				self.cp.hud.AllradOrigPosY = { 
 					self.hudAllradPosY,
 					self.hudAllradONOverlay.y,
 					self.hudAllradOFFOverlay.y,
@@ -96,15 +96,15 @@ function courseplay:openCloseHud(self, open)
 	end;
 
 	--4WD/Allrad
-	if self.cp.AllradOrigPosY ~= nil then
+	if self.cp.hud.AllradOrigPosY ~= nil then
 		if open then
 			self.hudAllradPosY = -1;
 			self.hudAllradONOverlay:setPosition(self.hudAllradONOverlay.x, -1);
 			self.hudAllradOFFOverlay:setPosition(self.hudAllradOFFOverlay.x, -1);
 		else
 			self.hudAllradPosY = self.cp.OdometerOrigPosY[1];
-			self.hudAllradONOverlay:setPosition(self.hudAllradONOverlay.x, self.cp.OdometerOrigPosY[2]);
-			self.hudAllradOFFOverlay:setPosition(self.hudAllradOFFOverlay.x, self.cp.OdometerOrigPosY[3]);
+			self.hudAllradONOverlay:setPosition(self.hudAllradONOverlay.x, self.cp.AllradOrigPosY[2]);
+			self.hudAllradOFFOverlay:setPosition(self.hudAllradOFFOverlay.x, self.cp.AllradOrigPosY[3]);
 		end;
 	end;
 end;
@@ -132,7 +132,12 @@ function courseplay:start_stop_player(combine)
 end;
 
 function courseplay:drive_on(self)
-	self.wait = false;
+	if self.wait then
+		self.wait = false;
+	end;
+	if self.StopEnd then
+		self.StopEnd = false;
+	end;
 end;
 
 function courseplay:send_player_home(combine)
@@ -161,14 +166,14 @@ end;
 
 function courseplay:setHudPage(self, pageNum)
 	if self.ai_mode == nil then
-		self.showHudInfoBase = pageNum;
+		self.cp.hud.currentPage = pageNum;
 	elseif courseplay.hud.pagesPerMode[self.ai_mode] ~= nil and courseplay.hud.pagesPerMode[self.ai_mode][pageNum+1] then
 		if pageNum == 0 then
 			if self.cp.minHudPage == 0 or self.cp.isCombine or self.cp.isChopper or self.cp.isHarvesterSteerable or self.cp.isSugarBeetLoader then
-				self.showHudInfoBase = pageNum;
+				self.cp.hud.currentPage = pageNum;
 			end;
 		else
-			self.showHudInfoBase = pageNum;
+			self.cp.hud.currentPage = pageNum;
 		end;
 	end;
 
@@ -176,15 +181,15 @@ function courseplay:setHudPage(self, pageNum)
 end;
 
 function courseplay:switch_hud_page(self, change_by)
-	newPage = courseplay:minMaxPage(self, self.showHudInfoBase + change_by);
+	newPage = courseplay:minMaxPage(self, self.cp.hud.currentPage + change_by);
 
 	if self.ai_mode == nil then
-		self.showHudInfoBase = newPage;
+		self.cp.hud.currentPage = newPage;
 	elseif courseplay.hud.pagesPerMode[self.ai_mode] ~= nil then
 		while courseplay.hud.pagesPerMode[self.ai_mode][newPage+1] == false do
 			newPage = courseplay:minMaxPage(self, newPage + change_by);
 		end;
-		self.showHudInfoBase = newPage;
+		self.cp.hud.currentPage = newPage;
 	end;
 
 	courseplay:buttonsActiveEnabled(self, "all");
@@ -204,8 +209,8 @@ function courseplay:buttonsActiveEnabled(self, section)
 		for _,button in pairs(self.cp.buttons.global) do
 			if button.function_to_call == "setHudPage" then
 				local pageNum = button.parameter;
-				button.isActive = pageNum == self.showHudInfoBase;
-				
+				button.isActive = pageNum == self.cp.hud.currentPage;
+
 				if self.ai_mode == nil then
 					button.isDisabled = false;
 				elseif courseplay.hud.pagesPerMode[self.ai_mode] ~= nil and courseplay.hud.pagesPerMode[self.ai_mode][pageNum+1] then
@@ -217,14 +222,14 @@ function courseplay:buttonsActiveEnabled(self, section)
 				else
 					button.isDisabled = true;
 				end;
-				
+
 				button.canBeClicked = not button.isDisabled and not button.isActive;
 			end;
 		end;
 	end;
 
 
-	if self.showHudInfoBase == 1 and (section == nil or section == "all" or section == "quickModes") then
+	if self.cp.hud.currentPage == 1 and (section == nil or section == "all" or section == "quickModes") then
 		for _,button in pairs(self.cp.buttons["1"]) do
 			if button.function_to_call == "setAiMode" then
 				button.isActive = self.ai_mode == button.parameter;
@@ -233,7 +238,7 @@ function courseplay:buttonsActiveEnabled(self, section)
 			end;
 		end;
 
-	elseif self.showHudInfoBase == 6 and (section == nil or section == "all" or section == "debug") then
+	elseif self.cp.hud.currentPage == 6 and (section == nil or section == "all" or section == "debug") then
 		for _,button in pairs(self.cp.buttons["6"]) do
 			if button.function_to_call == "toggleDebugChannel" then
 				button.isDisabled = button.parameter > courseplay.numDebugChannels;
@@ -242,7 +247,7 @@ function courseplay:buttonsActiveEnabled(self, section)
 			end;
 		end;
 
-	elseif self.showHudInfoBase == 9 and (section == nil or section == "all" or section == "shovel") then
+	elseif self.cp.hud.currentPage == 9 and (section == nil or section == "all" or section == "shovel") then
 		for _,button in pairs(self.cp.buttons["9"]) do
 			if button.function_to_call == "saveShovelStatus" then
 				button.isActive = self.cp.shovelStateRot[tostring(button.parameter)] ~= nil;
@@ -254,14 +259,14 @@ end;
 
 function courseplay:change_combine_offset(self, change_by)
 	local previousOffset = self.combine_offset
-	
+
 	self.auto_combine_offset = false
 	self.combine_offset = courseplay:round(self.combine_offset, 1) + change_by
 	if self.combine_offset < 0.1 and self.combine_offset > -0.1 then
 		self.combine_offset = 0.0
 		self.auto_combine_offset = true
 	end
-	
+
 	courseplay:debug(nameNum(self) .. ": manual combine_offset change: prev " .. previousOffset .. " // new " .. self.combine_offset .. " // auto = " .. tostring(self.auto_combine_offset), 4)
 end
 
@@ -322,7 +327,7 @@ function courseplay:change_turn_radius(self, change_by)
 	if self.turn_radius < 0.5 then
 		self.turn_radius = 0;
 	end;
-	
+
 	if self.turn_radius <= 0 then
 		self.turnRadiusAutoMode = true;
 		self.turn_radius = self.autoTurnRadius
@@ -451,7 +456,7 @@ end;
 function courseplay:copyCourse(self)
 	if self.cp.hasFoundCopyDriver ~= nil and self.cp.copyCourseFromDriver ~= nil then
 		local src = self.cp.copyCourseFromDriver;
-		
+
 		self.Waypoints = src.Waypoints;
 		self.current_course_name = src.current_course_name;
 		self.loaded_courses = src.loaded_courses;
@@ -471,17 +476,17 @@ function courseplay:copyCourse(self)
 		if self.active_combine ~= nil then
 			courseplay:unregister_at_combine(self, self.active_combine);
 		end
-		
+
 		self.ai_state = 1;
 		self.tmr = 1;
 
 		courseplay:RefreshSigns(self);
-		
+
 		--reset variables
 		self.cp.selectedDriverNumber = 0;
 		self.cp.hasFoundCopyDriver = false;
 		self.cp.copyCourseFromDriver = nil;
-		
+
 		courseplay:validateCanSwitchMode(self);
 	end;
 end;
@@ -503,7 +508,7 @@ function courseplay:change_selected_course(self, change_by)
 	if selected_course_number < 0 then
 		selected_course_number = 0
 	end
-	
+
 	if selected_course_number == 0 then 
 		self.cp.courseListPrev = false;
 	end;
@@ -582,7 +587,7 @@ function courseplay:switchStartingDirection(self)
 		end;
 		self.cp.hasStartingDirection = true;
 	end;
-	
+
 	courseplay:validateCourseGenerationData(self);
 end;
 
@@ -638,7 +643,7 @@ function courseplay:saveShovelStatus(self, stage)
 	if stage == nil then
 		return;
 	end;
-	
+
 	local mt, secondary = courseplay:getMovingTools(self)
 
 	if stage >= 2 and stage <= 5 then
@@ -709,5 +714,23 @@ function courseplay:setMouseCursor(self, show)
 	for camIndex,_ in pairs(self.cp.camerasBackup) do
 		self.cameras[camIndex].allowTranslation = not show;
 		--print(string.format("%s: right mouse key (mouse cursor=%s): camera %d allowTranslation=%s", nameNum(self), tostring(self.mouse_enabled), camIndex, tostring(self.cameras[camIndex].allowTranslation)));
+	end;
+
+	if not show then
+		for i,button in pairs(self.cp.buttons.global) do
+			button.isHovered = false;
+		end;
+		for i,button in pairs(self.cp.buttons[tostring(self.cp.hud.currentPage)]) do
+			button.isHovered = false;
+		end;
+		if self.cp.hud.currentPage == 2 then
+			for i,button in pairs(self.cp.buttons["-2"]) do
+				button.isHovered = false;
+			end;
+		end;
+
+		for line=1,courseplay.hud.numLines do
+			self.cp.hud.content.pages[self.cp.hud.currentPage][line][1].isHovered = false;
+		end;
 	end;
 end;

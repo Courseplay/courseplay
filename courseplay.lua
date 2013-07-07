@@ -67,12 +67,12 @@ function courseplay:initialize()
 	local numFiles, numFilesLoaded = table.getn(fileList), 0;
 	for _,file in ipairs(fileList) do
 		local filePath = courseplay.path .. file .. ".lua";
-		
+
 		if fileExists(filePath) then
 			source(filePath);
 			--print("\t### Courseplay: " .. filePath .. " has been loaded");
 			numFilesLoaded = numFilesLoaded + 1;
-			
+
 			if file == "inputCourseNameDialogue" then
 				g_inputCourseNameDialogue = inputCourseNameDialogue:new();
 				g_gui:loadGui(courseplay.path .. "inputCourseNameDialogue.xml", "inputCourseNameDialogue", g_inputCourseNameDialogue);
@@ -148,7 +148,7 @@ function courseplay:setGlobalData()
 	};
 	courseplay.hud.visibleArea.width = courseplay.hud.visibleArea.x2 - courseplay.hud.visibleArea.x1;
 	courseplay.hud.infoBaseCenter = (courseplay.hud.visibleArea.x1 + courseplay.hud.visibleArea.x2)/2;
-	
+
 	--print(string.format("\t\tposX=%f,posY=%f, visX1=%f,visX2=%f, visY1=%f,visY2=%f, visCenter=%f", courseplay.hud.infoBasePosX, courseplay.hud.infoBasePosY, courseplay.hud.visibleArea.x1, courseplay.hud.visibleArea.x2, courseplay.hud.visibleArea.y1, courseplay.hud.visibleArea.y2, courseplay.hud.infoBaseCenter));
 
 	for l=1,courseplay.hud.numLines do
@@ -161,6 +161,19 @@ function courseplay:setGlobalData()
 		end;
 		courseplay.hud.linesButtonPosY[l] = courseplay.hud.linesPosY[l] + 0.0020; --0.0045
 	end;
+
+	courseplay.hud.col2posX = {
+		courseplay.hud.infoBasePosX + 0.122,
+		courseplay.hud.infoBasePosX + 0.142,
+		courseplay.hud.infoBasePosX + 0.122,
+		courseplay.hud.infoBasePosX + 0.122,
+		courseplay.hud.infoBasePosX + 0.122,
+		courseplay.hud.infoBasePosX + 0.122,
+		courseplay.hud.infoBasePosX + 0.182,
+		courseplay.hud.infoBasePosX + 0.122,
+		courseplay.hud.infoBasePosX + 0.182,
+		courseplay.hud.infoBasePosX + 0.230,
+	};
 
 	courseplay.globalInfoText = {
 		fontSize = 0.02,

@@ -68,7 +68,6 @@ end
 
 function courseplay:setLocales()
 	courseplay.locales = {};
-
 	local i=0;
 	while true do
 		local key = string.format("modDesc.l10n.text(%d)", i);

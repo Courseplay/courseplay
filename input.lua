@@ -4,9 +4,9 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 	--RIGHT CLICK
 	if isDown and mouseKey == 3 and self.isEntered then
 	--if self.isEntered and Input.isMouseButtonPressed(Input.MOUSE_BUTTON_RIGHT) then
-		if self.show_hud then
+		if self.cp.hud.show then
 			courseplay:setMouseCursor(self, not self.mouse_enabled);
-		elseif not self.show_hud and self.mouse_right_key_enabled then
+		elseif not self.cp.hud.show and self.mouse_right_key_enabled then
 			courseplay:openCloseHud(self, true)
 			courseplay:buttonsActiveEnabled(self, "all");
 		end;
@@ -16,10 +16,10 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 	local mouseIsInHudArea = self.mouse_enabled and posX > hudGfx.x1 and posX < hudGfx.x2 and posY > hudGfx.y1 and posY < hudGfx.y2;
 
 	--LEFT CLICK
-	if isDown and mouseKey == 1 and self.mouse_enabled and self.show_hud and self.isEntered and mouseIsInHudArea then
+	if isDown and mouseKey == 1 and self.mouse_enabled and self.cp.hud.show and self.isEntered and mouseIsInHudArea then
 		local continueSearchingButton = true;
 		for _,button in pairs(self.cp.buttons.global) do
-			if courseplay:nilOrBool(button.show, true) and courseplay:mouseIsInButtonArea(posX, posY, button) then
+			if button.show and courseplay:mouseIsInButtonArea(posX, posY, button) then
 				continueSearchingButton = false;
 				courseplay:handleMouseClickForButton(self, button);
 				break;
@@ -27,8 +27,8 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 		end;
 
 		if continueSearchingButton then
-			for _,button in pairs(self.cp.buttons[tostring(self.showHudInfoBase)]) do
-				if button.canBeClicked and courseplay:nilOrBool(button.show, true) and courseplay:mouseIsInButtonArea(posX, posY, button) then
+			for _,button in pairs(self.cp.buttons[tostring(self.cp.hud.currentPage)]) do
+				if button.canBeClicked and button.show and courseplay:mouseIsInButtonArea(posX, posY, button) then
 					continueSearchingButton = false;
 					courseplay:handleMouseClickForButton(self, button);
 					break;
@@ -37,9 +37,9 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 		end;
 
 		if continueSearchingButton then
-			if self.showHudInfoBase == 2 then
+			if self.cp.hud.currentPage == 2 then
 				for _,button in pairs(self.cp.buttons["-2"]) do
-					if courseplay:nilOrBool(button.show, true) and courseplay:mouseIsInButtonArea(posX, posY, button) then
+					if button.show and courseplay:mouseIsInButtonArea(posX, posY, button) then
 						courseplay:handleMouseClickForButton(self, button);
 						break;
 					end;
@@ -48,10 +48,10 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 		end;
 
 	--HOVER
-	elseif self.mouse_enabled and not isDown and self.show_hud and self.isEntered then
+	elseif self.mouse_enabled and not isDown and self.cp.hud.show and self.isEntered then
 		for _,button in pairs(self.cp.buttons.global) do
 			button.isClicked = false;
-			if courseplay:nilOrBool(button.show, true) then
+			if button.show then
 				button.isHovered = false;
 				if courseplay:mouseIsInButtonArea(posX, posY, button) then
 					button.isClicked = false;
@@ -60,14 +60,20 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 			end;
 		end;
 
-		for _,button in pairs(self.cp.buttons[tostring(self.showHudInfoBase)]) do
+		self.cp.hud.mouseWheel.render = false;
+		for _,button in pairs(self.cp.buttons[tostring(self.cp.hud.currentPage)]) do
 			button.isClicked = false;
-			if courseplay:nilOrBool(button.show, true) then
+			if button.show then
 				button.isHovered = false;
 				if courseplay:mouseIsInButtonArea(posX, posY, button) then
 					button.isHovered = true;
 
-					if button.isMouseWheelArea then
+					if button.isMouseWheelArea and (button.canScrollUp or button.canScrollDown) then
+						--Mouse wheel icon
+						self.cp.hud.mouseWheel.render = true;
+						self.cp.hud.mouseWheel.icon:setPosition(posX + 3/1920, posY - 16/1080);
+
+						--action
 						local parameter = button.parameter;
 						if InputBinding.isPressed(InputBinding.CP_Modifier_1) and button.modifiedParameter ~= nil then
 							parameter = button.modifiedParameter;
@@ -87,15 +93,15 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 				end;
 
 				if button.hoverText then
-					self.cp.hoverTextItems[tostring(button.page)][button.row][1] = button.isHovered;
+					self.cp.hud.content.pages[button.page][button.row][1].isHovered = button.isHovered;
 				end;
 			end;
 		end;
 
-		if self.showHudInfoBase == 2 then
+		if self.cp.hud.currentPage == 2 then
 			for _,button in pairs(self.cp.buttons["-2"]) do
 				button.isClicked = false;
-				if courseplay:nilOrBool(button.show, true) then
+				if button.show then
 					button.isHovered = false;
 					if courseplay:mouseIsInButtonArea(posX, posY, button) then
 						button.isClicked = false;
@@ -103,7 +109,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 					end;
 
 					if button.hoverText then
-						self.cp.hoverTextItems["2"][button.row][1] = button.isHovered;
+						self.cp.hud.content.pages[2][button.row][1].isHovered = button.isHovered;
 					end;
 				end;
 			end;
@@ -123,7 +129,7 @@ function courseplay:handleMouseClickForButton(self, button)
 	end;
 
 	if button.show and button.canBeClicked and not button.isDisabled then
-		if button.function_to_call == "rowButton" and self.hudpage[self.showHudInfoBase][1][button.parameter] == nil then
+		if button.function_to_call == "rowButton" and self.cp.hud.content.pages[self.cp.hud.currentPage][button.parameter][1].text == nil then
 			return;
 		end;
 
@@ -143,10 +149,10 @@ function courseplay:setCourseplayFunc(func, value, noEventSend)
 	if value == "nil" then
 		value = nil
 	end
-	courseplay:deal_with_mouse_input(self, func, value)
+	courseplay:executeFunction(self, func, value)
 end
 
-function courseplay:deal_with_mouse_input(self, func, value)
+function courseplay:executeFunction(self, func, value, overwrittenPage)
 	if Utils.startsWith(func,"self") or Utils.startsWith(func,"courseplay") then
 		courseplay:debug("					setting value",5)
 		courseplay:setVarValueFromString(self, func, value)
@@ -161,24 +167,26 @@ function courseplay:deal_with_mouse_input(self, func, value)
 		assert(loadstring('courseplay:' .. func .. '(...)'))(self, value);
 
 	else
-		if self.showHudInfoBase == 0 then
+		local page = Utils.getNoNil(overwrittenPage, self.cp.hud.currentPage);
+		local line = value;
+		if page == 0 then
 			local combine = self;
 			if self.cp.attachedCombineIdx ~= nil and self.tippers ~= nil and self.tippers[self.cp.attachedCombineIdx] ~= nil then
 				combine = self.tippers[self.cp.attachedCombineIdx];
 			end;
-			
+
 			if combine.courseplayers == nil or table.getn(combine.courseplayers) == 0 then
-				if value == 1 then
+				if line == 1 then
 					courseplay:call_player(combine);
 				end;
 			else
-				if value == 2 then
+				if line == 2 then
 					courseplay:start_stop_player(combine);
-				elseif value == 3 then
+				elseif line == 3 then
 					courseplay:send_player_home(combine);
-				elseif value == 4 then
+				elseif line == 4 then
 					courseplay:switch_player_side(combine);
-				elseif value == 5 and combine.cp.isChopper and not self.drive and not self.isAIThreshing then --manual chopping: initiate/end turning maneuver
+				elseif line == 5 and combine.cp.isChopper and not self.drive and not self.isAIThreshing then --manual chopping: initiate/end turning maneuver
 					if self.cp.turnStage == 0 then
 						self.cp.turnStage = 1;
 					elseif self.cp.turnStage == 1 then
@@ -187,29 +195,29 @@ function courseplay:deal_with_mouse_input(self, func, value)
 				end;
 			end;
 
-		elseif self.showHudInfoBase == 1 then
+		elseif page == 1 then
 			if self.play then
 				if not self.drive then
-					if value == 1 then
+					if line == 1 then
 						courseplay:start(self);
-					elseif value == 3 and self.ai_mode ~= 9 then
+					elseif line == 3 and self.ai_mode ~= 9 then
 						courseplay:setStartAtFirstPoint(self);
-					elseif value == 4 then
+					elseif line == 4 then
 						courseplay:reset_course(self);
 					end;
 
 				else -- driving
-					if value == 1 then
+					if line == 1 then
 						courseplay:stop(self);
-					elseif value == 2 and self.cp.last_recordnumber ~= nil and self.Waypoints[self.cp.last_recordnumber].wait and self.wait then
+					elseif line == 2 and self.cp.last_recordnumber ~= nil and self.Waypoints[self.cp.last_recordnumber].wait and self.wait then
 						self.wait = false;
-					elseif value == 2 and self.StopEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil) then
+					elseif line == 2 and self.StopEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil) then
 						self.StopEnd = false;
-					elseif value == 3 and not self.loaded then
+					elseif line == 3 and not self.loaded then
 						self.loaded = true;
-					elseif value == 4 and not self.StopEnd then
+					elseif line == 4 and not self.StopEnd then
 						self.StopEnd = true
-					elseif value == 5 then
+					elseif line == 5 then
 						if self.ai_mode == 1 or self.ai_mode == 2 then
 							self.cp.unloadAtSiloStart = not self.cp.unloadAtSiloStart;
 						elseif self.ai_mode == 4 then
@@ -221,29 +229,29 @@ function courseplay:deal_with_mouse_input(self, func, value)
 
 			elseif not self.drive then
 				if not self.record and not self.record_pause and not self.play and table.getn(self.Waypoints) == 0 and not self.createCourse then
-					if value == 1 then
+					if line == 1 then
 						courseplay:start_record(self);
 					end;
 
 				elseif self.record or self.record_pause then
-					if value == 1 then
+					if line == 1 then
 						courseplay:stop_record(self);
-					
+
 					elseif not self.record_pause then
-						if value == 2 then --and self.recordnumber > 3
+						if line == 2 then --and self.recordnumber > 3
 							courseplay:set_waitpoint(self);
-						elseif value == 3 and self.recordnumber > 3 then
+						elseif line == 3 and self.recordnumber > 3 then
 							courseplay:interrupt_record(self);
-						elseif value == 4 then --and self.recordnumber > 3
+						elseif line == 4 then --and self.recordnumber > 3
 							courseplay:set_crossing(self);
-						elseif value == 5 then
+						elseif line == 5 then
 							courseplay:change_DriveDirection(self);
 						end;
 
 					else
-						if value == 2 then
+						if line == 2 then
 							courseplay:delete_waypoint(self);
-						elseif value == 3 then
+						elseif line == 3 then
 							courseplay:continue_record(self);
 						end;
 					end;
