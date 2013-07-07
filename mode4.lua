@@ -10,6 +10,9 @@ function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill
 				self.abortWork = 6
 			end
 			self.recordnumber = self.abortWork
+			if self.Waypoints[self.recordnumber].turn ~= nil or self.Waypoints[self.recordnumber+1].turn ~= nil  then
+				self.recordnumber = self.recordnumber -2
+			end
 		end
 	end
 	-- last point reached restart

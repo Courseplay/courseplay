@@ -95,18 +95,15 @@ function courseplay:start(self)
 		self.cp.shovelFillStartPoint = nil
 		self.cp.shovelFillEndPoint = nil
 		self.cp.shovelEmptyPoint = nil
+		local recordNumber = 0
 		-- search nearest Waypoint
 		for i = 1, self.maxnumber do
 			local cx, cz = self.Waypoints[i].cx, self.Waypoints[i].cz
 			local wait = self.Waypoints[i].wait
 			dist = courseplay:distance(ctx, ctz, cx, cz)
-			if dist < nearestpoint then
+			if dist <= nearestpoint then
 				nearestpoint = dist
-				if self.Waypoints[i].turn ~= nil then
-					self.recordnumber = i + 2
-				else 
-					self.recordnumber = i + 1
-				end
+				recordNumber = i
 			end
 			-- specific Workzone
 			if self.ai_mode == 4 or self.ai_mode == 6 or self.ai_mode == 7 then
@@ -139,6 +136,17 @@ function courseplay:start(self)
 				end;
 			end;
 		end;
+		local changed = false
+		for i=recordNumber,recordNumber+3 do
+			if self.Waypoints[i]~= nil and self.Waypoints[i].turn ~= nil then
+				self.recordnumber = i + 2
+				changed = true
+				break
+			end	
+		end
+		if changed == false then
+			self.recordnumber = recordNumber
+		end
 
 		-- mode 6 without start and stop point, set them at start and end, for only-on-field-courses
 		if (self.ai_mode == 4 or self.ai_mode == 6) then

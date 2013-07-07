@@ -350,6 +350,9 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 					if self.recordnumber < 2 then
 						self.recordnumber = 2
 					end
+					if self.Waypoints[self.recordnumber].turn ~= nil or self.Waypoints[self.recordnumber+1].turn ~= nil  then
+						self.recordnumber = self.recordnumber -2
+					end
 				end
 			end
 			-- last point reached restart

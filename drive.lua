@@ -312,8 +312,6 @@ function courseplay:drive(self, dt)
 				self.wait = false
 			elseif self.cp.last_recordnumber == self.stopWork and self.abortWork ~= nil then
 				self.wait = false
-			elseif self.cp.last_recordnumber == self.stopWork and self.abortWork == nil then
-				courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPWorkEnd"), 1);
 			else
 				if self.timeout < self.timer or self.last_fill_level == nil then
 					if self.last_fill_level ~= nil and fill_level == self.last_fill_level and fill_level > self.required_fill_level_for_drive_on then
@@ -333,8 +331,6 @@ function courseplay:drive(self, dt)
 				self.wait = false
 			elseif self.cp.last_recordnumber == self.stopWork and self.abortWork ~= nil then
 				self.wait = false
-			elseif self.cp.last_recordnumber == self.stopWork and self.abortWork == nil then
-				courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPWorkEnd"), 1);
 			elseif self.cp.last_recordnumber ~= self.startWork and self.cp.last_recordnumber ~= self.stopWork then 
 				courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPUnloadBale"));
 				if fill_level == 0 or drive_on then
