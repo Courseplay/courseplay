@@ -660,7 +660,7 @@ function courseplay:load(xmlFile)
 
 	self.fold_move_direction = 1;
 
-	--courseplay:register();
+	courseplay:buttonsActiveEnabled(self, "all");
 end
 
 function courseplay:onLeave()
@@ -688,22 +688,66 @@ function courseplay:draw()
 	if self.workWidthChanged > self.timer then
 		courseplay:show_work_witdh(self)
 	elseif self.work_with_shown then
-		--setVisibility(self.workMarkerRight, false)
-		--setVisibility(self.workMarkerLeft, false)
 		self.work_with_shown = false
 	end
 
+	--KEYBOARD FUNCTIONS
+	--Note: located in draw() instead of update() so they're not displayed/executed for *all* vehicles but rather only for *self*
+	if self:getIsActive() and self.isEntered then
+		if InputBinding.hasEvent(InputBinding.CP_Hud) and InputBinding.isPressed(InputBinding.CP_Modifier_2) then
+			initialize_courseplay();
+		elseif InputBinding.isPressed(InputBinding.CP_Modifier_1) then
+			--Keyboard open/close hud
+			if not self.mouse_right_key_enabled then
+				if self.cp.hud.show then
+					g_currentMission:addHelpButtonText(courseplay:get_locale(self, "CPHudClose"), InputBinding.CP_Hud);
+				else
+					g_currentMission:addHelpButtonText(courseplay:get_locale(self, "CPHudOpen"), InputBinding.CP_Hud);
+				end;
+				if InputBinding.hasEvent(InputBinding.CP_Hud) then
+					courseplay:openCloseHud(self, not self.cp.hud.show);
+				end;
+			end;
+
+			if self.play then
+				if self.drive then
+					g_currentMission:addHelpButtonText(courseplay:get_locale(self, "CoursePlayStop"), InputBinding.AHInput1)
+					if InputBinding.hasEvent(InputBinding.AHInput1) then
+						self:setCourseplayFunc("stop", nil);
+					end;
+
+					if self.cp.HUD1goOn then
+						g_currentMission:addHelpButtonText(courseplay:get_locale(self, "CourseWaitpointStart"), InputBinding.AHInput2)
+						if InputBinding.hasEvent(InputBinding.AHInput2) then
+							self:setCourseplayFunc("drive_on", nil);
+						end;
+					end;
+
+					if self.cp.HUD1noWaitforFill then
+						g_currentMission:addHelpButtonText(courseplay:get_locale(self, "NoWaitforfill"), InputBinding.AHInput3);
+						if InputBinding.hasEvent(InputBinding.AHInput3) then
+							courseplay:setCourseplayFunc("rowButton", 3, false, 1);
+						end;
+					end;
+
+				else
+					g_currentMission:addHelpButtonText(courseplay:get_locale(self, "CoursePlayStart"), InputBinding.AHInput1);
+					if InputBinding.hasEvent(InputBinding.AHInput1) then
+						self:setCourseplayFunc("start", nil);
+					end;
+				end;
+			end;
+		end;
+	end;
+
+
 	--RENDER
-	if self.isEntered then
-		courseplay:renderHelpMenuContent(self);
+	if self:getIsActive() and self.cp.hud.show then
+		courseplay:setHudContent(self);
+		courseplay:renderHud(self);
 
-		if self.cp.hud.show then
-			courseplay:setHudContent(self);
-			courseplay:renderHud(self);
-
-			if self.mouse_enabled then
-				InputBinding.setShowMouseCursor(self.mouse_enabled)
-			end
+		if self.mouse_enabled then
+			InputBinding.setShowMouseCursor(self.mouse_enabled);
 		end;
 	end;
 end; --END draw()
@@ -726,25 +770,6 @@ end
 
 -- is been called everey frame
 function courseplay:update(dt)
-	if self:getIsActive() then
-		if InputBinding.isPressed(InputBinding.CP_Modifier_1) and not self.mouse_right_key_enabled then
-			if self.cp.hud.show then
-				g_currentMission:addHelpButtonText(g_i18n:getText("CPHudClose"), InputBinding.CP_Hud)
-			elseif not self.cp.hud.show then
-				g_currentMission:addHelpButtonText(g_i18n:getText("CPHudOpen"), InputBinding.CP_Hud)
-			end
-		end
-
-		-- inspired by knagsted's 8400 MouseOverride
-		if InputBinding.hasEvent(InputBinding.CP_Hud) and InputBinding.isPressed(InputBinding.CP_Modifier_1) and self.isEntered and not self.mouse_right_key_enabled then
-			courseplay:openCloseHud(self, not self.cp.hud.show);
-		end;
-
-		if InputBinding.hasEvent(InputBinding.CP_Hud) and InputBinding.isPressed(InputBinding.CP_Modifier_2) and self.isEntered then
-			initialize_courseplay();
-		end;
-	end
-
 	-- we are in record mode
 	if self.record then
 		courseplay:record(self);
@@ -809,32 +834,6 @@ function courseplay:update(dt)
 			self.cp[v .. "Memory"] = courseplay:checkForChangeAndBroadcast(self, "self.cp." .. v , self.cp[v], self.cp[v .. "Memory"]);
 		end
 	end
-
-	--KEYBOARD FUNCTIONS
-	if self.play and InputBinding.isPressed(InputBinding.CP_Modifier_1) then
-		if self.drive then
-			if InputBinding.hasEvent(InputBinding.AHInput1) then
-				self:setCourseplayFunc("stop", nil);
-			end;
-
-			if self.cp.HUD1goOn then
-				if InputBinding.hasEvent(InputBinding.AHInput2) then
-					self:setCourseplayFunc("drive_on", nil);
-				end;
-			end;
-
-			if self.cp.HUD1noWaitforFill then
-				if InputBinding.hasEvent(InputBinding.AHInput3) then
-					courseplay:setCourseplayFunc("rowButton", 3, false, 1);
-				end;
-			end;
-		else
-			if InputBinding.hasEvent(InputBinding.AHInput1) then
-				self:setCourseplayFunc("start", nil);
-			end
-		end;
-	end;
-
 
 	courseplay:renderInfoText(self);
 	if g_server ~= nil then

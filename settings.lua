@@ -732,5 +732,7 @@ function courseplay:setMouseCursor(self, show)
 		for line=1,courseplay.hud.numLines do
 			self.cp.hud.content.pages[self.cp.hud.currentPage][line][1].isHovered = false;
 		end;
+
+		self.cp.hud.mouseWheel.render = false;
 	end;
 end;

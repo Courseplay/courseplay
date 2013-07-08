@@ -247,7 +247,7 @@ function courseplay:renderButton(self, button)
 				targetColor = colors.whiteDisabled;
 			elseif not button.isDisabled and button.canBeClicked and button.isClicked and not fn == "openCloseHud" then
 				targetColor = colors.activeRed;
-			elseif ((button.page == 9 and button.isActive and button.canBeClicked and not button.isClicked) or (not button.isDisabled and not button.isActive and button.isHovered and button.canBeClicked and not button.isClicked)) and not courseplay:colorsMatch(currentColor, hoverColor) then
+			elseif button.isHovered and ((button.page == 9 and button.isActive and button.canBeClicked and not button.isClicked) or (not button.isDisabled and not button.isActive and button.canBeClicked and not button.isClicked)) and not courseplay:colorsMatch(currentColor, hoverColor) then
 				targetColor = hoverColor;
 			elseif button.isActive and (button.page ~= 9 or (button.page == 9 and not button.isHovered)) and not courseplay:colorsMatch(currentColor, colors.activeGreen) then
 				targetColor = colors.activeGreen;

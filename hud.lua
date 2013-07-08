@@ -522,25 +522,6 @@ function courseplay:renderHud(self)
 	end;
 end;
 
-function courseplay:renderHelpMenuContent(self)
-	--HELP MENU TEXTS
-	if self.play and InputBinding.isPressed(InputBinding.CP_Modifier_1) then
-		if self.drive then
-			g_currentMission:addHelpButtonText(courseplay:get_locale(self, "CoursePlayStop"), InputBinding.AHInput1)
-
-			if self.cp.HUD1goOn then
-				g_currentMission:addHelpButtonText(courseplay:get_locale(self, "CourseWaitpointStart"), InputBinding.AHInput2)
-			end
-
-			if self.cp.HUD1noWaitforFill then
-				g_currentMission:addHelpButtonText(courseplay:get_locale(self, "NoWaitforfill"), InputBinding.AHInput3);
-			end;
-		else
-			g_currentMission:addHelpButtonText(courseplay:get_locale(self, "CoursePlayStart"), InputBinding.AHInput1);
-		end;
-	end;
-end;
-
 function courseplay:setMinHudPage(self, workTool)
 	self.cp.minHudPage = 1;
 
