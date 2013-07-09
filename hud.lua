@@ -307,10 +307,8 @@ function courseplay:setHudContent(self)
 		self.cp.hud.content.pages[6][2][1].text = courseplay:get_locale(self, "CPopenHud");
 		if self.mouse_right_key_enabled then
 			self.cp.hud.content.pages[6][2][2].text = courseplay:get_locale(self, "CPopenHudMouse");
-		else --TODO: move the split to base.lua (only execute once)
-			local hudMod = string.lower(tostring(InputBinding.getKeyNamesOfDigitalAction(InputBinding.CP_Modifier_1)):split(" ")[2]);
-			local hudKey = string.lower(tostring(InputBinding.getKeyNamesOfDigitalAction(InputBinding.CP_Hud)):split(" ")[2]);
-			self.cp.hud.content.pages[6][2][2].text = hudMod:gsub("^%l", string.upper) .. " + " .. hudKey:gsub("^%l", string.upper);
+		else
+			self.cp.hud.content.pages[6][2][2].text = self.cp.hud.modKey .. " + " .. self.cp.hud.hudKey;
 		end;
 
 		self.cp.hud.content.pages[6][3][1].text = courseplay:get_locale(self, "CPWPs");

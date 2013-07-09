@@ -12,47 +12,21 @@ function courseplay:load(xmlFile)
 
 	self.setCourseplayFunc = SpecializationUtil.callSpecializationsFunction("setCourseplayFunc");
 
-	local aNameSearch = { "vehicle.name." .. g_languageShort, "vehicle.name.en", "vehicle.name", "vehicle#type" };
-
-	if not steerable_overwritten then
-		steerable_overwritten = true
-		if Steerable.load ~= nil then
-			local orgSteerableLoad = Steerable.load
-			courseplay:debug("overwriting steerable.load", 12)
-			Steerable.load = function(self, xmlFile)
-				orgSteerableLoad(self, xmlFile)
-
-				for nIndex, sXMLPath in pairs(aNameSearch) do
-					self.name = getXMLString(xmlFile, sXMLPath);
-					if self.name ~= nil then break; end;
-				end;
-				if self.name == nil then self.name = g_i18n:getText("UNKNOWN") end;
+	--SEARCH AND SET self.name IF NOT EXISTING
+	if self.name == nil then
+		local nameSearch = { "vehicle.name." .. g_languageShort, "vehicle.name.en", "vehicle.name", "vehicle#type" };
+		for i,xmlPath in pairs(nameSearch) do
+			self.name = getXMLString(xmlFile, xmlPath);
+			if self.name ~= nil then
+				courseplay:debug(nameNum(self) .. ": self.name was nil, got new name from " .. xmlPath .. " in XML", 12);
+				break;
 			end;
 		end;
-
-		if Attachable.load ~= nil then
-			courseplay:debug("overwriting Attachable.load", 12)
-			local orgAttachableLoad = Attachable.load
-
-			Attachable.load = function(self, xmlFile)
-				orgAttachableLoad(self, xmlFile)
-
-				for nIndex, sXMLPath in pairs(aNameSearch) do
-					self.name = getXMLString(xmlFile, sXMLPath);
-					if self.name ~= nil then break; end;
-				end;
-				if self.name == nil then self.name = g_i18n:getText("UNKNOWN") end;
-			end
+		if self.name == nil then
+			self.name = g_i18n:getText("UNKNOWN");
+			courseplay:debug(tostring(self.configFileName) .. ": self.name was nil, new name is " .. self.name, 12);
 		end;
-	end
-
-	if self.name == nil then
-		for nIndex, sXMLPath in pairs(aNameSearch) do
-			self.name = getXMLString(xmlFile, sXMLPath);
-			if self.name ~= nil then break; end;
-		end;
-		if self.name == nil then self.name = g_i18n:getText("UNKNOWN") end;
-	end
+	end;
 
 	self.cp = {};
 
@@ -384,12 +358,16 @@ function courseplay:load(xmlFile)
 			render = false;
 		};
 
+		modKey = string.lower(Utils.splitString(" ", tostring(InputBinding.getKeyNamesOfDigitalAction(InputBinding.CP_Modifier_1)))[2]):gsub("^%l", string.upper);
+		hudKey = string.lower(Utils.splitString(" ", tostring(InputBinding.getKeyNamesOfDigitalAction(InputBinding.CP_Hud)))[2]):gsub("^%l", string.upper);
+
 		--3rd party huds backup
 		ESLimiterOrigPosY = nil; --[table]
 		ThreshingCounterOrigPosY = nil; --[table]
 		OdometerOrigPosY = nil; --[table]
 		AllradOrigPosY = nil; --[table]
 	};
+
 	for page=0,courseplay.hud.numPages do
 		self.cp.hud.content.pages[page] = {};
 		for line=1,courseplay.hud.numLines do
@@ -956,7 +934,7 @@ function courseplay:readStream(streamId, connection)
 	-- kurs daten
 	local courses = streamDebugReadString(streamId) -- 60.
 	if courses ~= nil then
-		self.loaded_courses = courses:split(",")
+		self.loaded_courses = Utils.splitString(",", courses);
 		courseplay:reload_courses(self, true)
 	end
 
@@ -1071,7 +1049,7 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		local courses                         = Utils.getNoNil(getXMLString(xmlFile, key .. "#courses"                ), "");
 		self.toolWorkWidht                    = Utils.getNoNil(getXMLFloat( xmlFile, key .. "#toolWorkWidht"          ), 3);
 		self.cp.ridgeMarkersAutomatic         = Utils.getNoNil(getXMLBool(  xmlFile, key .. "#ridgeMarkersAutomatic"  ), true);
-		self.loaded_courses = courses:split(",")
+		self.loaded_courses = Utils.splitString(",", courses);
 		self.selected_course_number = 0
 
 		courseplay:reload_courses(self, true)
@@ -1122,7 +1100,7 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 		end;
 		if table.getn(shovelRotsTmp) > 0 then
 			shovelRotsAttr = ' shovelRots="' .. tostring(table.concat(shovelRotsTmp, ";")) .. '"';
-			courseplay:debug(nameNum(self) .. ":" .. shovelRotsAttr, 10);
+			courseplay:debug(nameNum(self) .. ": shovelRotsAttr=" .. shovelRotsAttr, 10);
 		end;
 	end;
 
@@ -1152,10 +1130,3 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 	return attributes, nil;
 end
 
-
-function string:split(sep)
-	local sep, fields = sep or ":", {}
-	local pattern = string.format("([^%s]+)", sep)
-	self:gsub(pattern, function(c) fields[#fields + 1] = c end)
-	return fields
-end

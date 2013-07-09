@@ -91,5 +91,24 @@ function courseplay:setLocales()
 	--print("\t### Courseplay: setLocales() finished");
 end;
 
+--SEARCH AND SET ATTACHABLE'S self.name IF NOT EXISTING
+function courseplay:setAttachablesName(xmlFile)
+	if self.name == nil then
+		local nameSearch = { "vehicle.name." .. g_languageShort, "vehicle.name.en", "vehicle.name", "vehicle#type" };
+		for i,xmlPath in pairs(nameSearch) do
+			self.name = getXMLString(xmlFile, xmlPath);
+			if self.name ~= nil then 
+				--print(self.name .. ": self.name was nil, got new name from " .. xmlPath .. " in XML");
+				break; 
+			end;
+		end;
+		if self.name == nil then 
+			self.name = g_i18n:getText("UNKNOWN");
+			--print(tostring(self.configFileName) .. ": self.name was nil, new name is " .. self.name);
+		end;
+	end;
+end;
+Attachable.load = Utils.appendedFunction(Attachable.load, courseplay.setAttachablesName);
+
 courseplay:setLocales();
 courseplay:register();
