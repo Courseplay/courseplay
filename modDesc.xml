@@ -1502,7 +1502,7 @@ Italský překlad: JD7530
 			<de>Stop + Go Laden</de>
 			<en>Stop + go loading</en>
 			<es>Stop + go loading</es> <!-- !! -->
-			<fr>Stop + go loading</fr> <!-- !! -->
+			<fr>Arreter et aller charger</fr>
 			<it>Stop + go loading</it> <!-- !! -->
 			<cz>Zastavit a jet nákládat:</cz>
 		</text>
@@ -1535,7 +1535,7 @@ Italský překlad: JD7530
 			<de>Feldrandkurs</de>
 			<en>Field edge path</en>
 			<es>Camino de aristas del campo</es> <!-- !!! -->
-			<fr>Voie de bord de champ</fr> <!-- !!! -->
+			<fr>Voie de bord de champ</fr>
 			<it>Percorso bordo di campo</it> <!-- !!! -->
 			<cz>Pole cesta na okraji</cz> <!-- !!! -->
 		</text>
@@ -1543,7 +1543,7 @@ Italský překlad: JD7530
 			<de>Feld</de>
 			<en>Field</en>
 			<es>Campo</es> <!-- !!! -->
-			<fr>Champ</fr> <!-- !!! -->
+			<fr>Champ</fr>
 			<it>Camp</it> <!-- !!! -->
 			<cz>Pole</cz> <!-- !!! -->
 		</text>
