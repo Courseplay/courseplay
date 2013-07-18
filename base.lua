@@ -51,6 +51,7 @@ function courseplay:load(xmlFile)
 	self.cp.noStopOnTurn = false --bool
 
 	self.toggledTipState = 0;
+	self.cp.closestTipDistance = math.huge
 
 	self.auto_combine_offset = true
 	self.mouse_right_key_enabled = true

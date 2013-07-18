@@ -652,12 +652,20 @@ function courseplay:unload_tippers(self)
 
 				if tipper.tipState == Trailer.TIPSTATE_CLOSED then
 					self.toggledTipState = bestTipReferencePoint;
-					if distanceToTrigger == 0 or isBGA then
+					local isNearestPoint = false
+					if distanceToTrigger > self.cp.closestTipDistance then
+						isNearestPoint = true
+						courseplay:debug(nameNum(self) .. ": isNearestPoint = true ", 2);
+					else
+						self.cp.closestTipDistance = distanceToTrigger
+					end
+					if distanceToTrigger == 0 or isBGA or isNearestPoint then
 						tipper:toggleTipState(ctt,self.toggledTipState);
 						self.unloading_tipper = tipper
 						courseplay:debug(nameNum(self)..": toggleTipState: "..tostring(self.toggledTipState).."  /unloading_tipper= "..tostring(self.unloading_tipper.name), 2);
-					end
+					end					
 				elseif tipper.tipState ~= Trailer.TIPSTATE_CLOSING then 
+					self.cp.closestTipDistance = math.huge
 					allowedToDrive = false;
 				end;
 
