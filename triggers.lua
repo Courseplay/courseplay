@@ -58,7 +58,6 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 
 	local triggerObjects, triggerObjectsCount = courseplay.triggerObjects, courseplay.triggerObjectsCount
 	local name = getName(transformId)	
-
 	if triggerObjects ~= nil and triggerObjectsCount > 0 then
 		courseplay:debug(nameNum(self) .. " transformId = ".. tostring(transformId)..": "..tostring(name), 1);
 		local fruitType = self.tippers[1].currentFillType;
@@ -70,9 +69,12 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 				if trigger.bunkerSilo ~= nil and trigger.bunkerSilo.state ~= 0 then 
 					courseplay:debug(nameNum(self) .. ": bunkerSilo.state ~= 0 -> ignoring trigger", 1);
 					return true
+				end
+				if self.cp.hasShield and trigger.bunkerSilo == nil then
+					courseplay:debug(nameNum(self) .. ": has silage shield and trigger is not BGA -> ignoring trigger", 1);
+					return true
 				end	
-
-
+						
 				local triggerId = trigger.triggerId;
 				if triggerId == nil then
 					triggerId = trigger.tipTriggerId;

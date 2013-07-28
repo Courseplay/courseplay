@@ -2,9 +2,12 @@ function courseplay:setNameVariable(workTool)
 	if workTool.cp == nil then
 		workTool.cp = {};
 	end;
+	-- Holeras Silage shield
+	if Utils.endsWith(workTool.configFileName, "holaras.xml") then
+		workTool.cp.isSilageShield = true
 
 	--Abbey Sprayer Pack [FS-UK Modteam]
-	if Utils.endsWith(workTool.configFileName, "Abbey_AP900.xml") then
+	elseif Utils.endsWith(workTool.configFileName, "Abbey_AP900.xml") then
 		workTool.cp.isAbbeySprayerPack = true;
 		workTool.cp.isAbbeyAP900 = true;
 	elseif Utils.endsWith(workTool.configFileName, "Abbey_3000R.xml") then
@@ -562,6 +565,8 @@ function courseplay:askForSpecialSettings(self,object)
 		self.cp.noStopOnEdge = true
 		self.cp.noStopOnTurn = true
 		self.WpOffsetX = -2.5
+	elseif object.cp.isSilageShield then
+		self.cp.hasShield = true
 	end
 
 end
