@@ -53,7 +53,7 @@ function courseplay:setHudContent(self)
 			self.cp.hud.content.pages[0][3][1].text = courseplay:get_locale(self, "CoursePlayPlayerSendHome")
 
 			--chopper
-			if combine.cp.isChopper then
+			if combine.cp.isChopper or self.tippers[1].cp.isChopper then
 				if self.cp.HUD0tractor then
 					self.cp.hud.content.pages[0][4][1].text = courseplay:get_locale(self, "CoursePlayPlayerSwitchSide")
 					if self.cp.HUD0combineForcedSide == "left" then

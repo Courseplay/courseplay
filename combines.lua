@@ -147,11 +147,12 @@ function courseplay:register_at_combine(self, combine)
 	end
 
 	--THOMAS' best_combine START
-	if combine.cp.isCombine or courseplay:isAttachedCombine(combine) then
+	if combine.cp.isCombine or (courseplay:isAttachedCombine(combine) and not courseplay:isSpecialChopper(combine)) then
 		local distance = 9999999
 		local vehicle_ID = 0
 		for k, vehicle in pairs(g_currentMission.vehicles) do --TODO: Liste einengen, nur Courseplayers
 			if vehicle.combineID ~= nil then
+				print(tostring(vehicle.name).." is calling for "..tostring(vehicle.combineID).."  combine.id= "..tostring(combine.id))
 				if vehicle.combineID == combine.id and vehicle.active_combine == nil then
 					courseplay:debug(tostring(vehicle.id).." : distanceToCombine:"..tostring(vehicle.distanceToCombine).." for combine.id:"..tostring(combine.id), 4)
 					if distance > vehicle.distanceToCombine then
