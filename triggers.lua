@@ -107,6 +107,10 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 					else
 						courseplay:debug(string.format("%s: trigger %s does not accept fruit (%s)", nameNum(self), tostring(triggerId), tostring(fruitType)), 1);
 					end;
+					courseplay:debug(string.format("%s: trigger %s does only accept fruit:", nameNum(self), tostring(triggerId)), 1);
+					if courseplay.debugChannels[1] then
+						courseplay:printTipTriggersFruits(trigger)
+					end
 				else
 					courseplay:debug(string.format("%s: trigger %s does not have acceptedFillTypes (fruitType=%s)", nameNum(self), tostring(triggerId), tostring(fruitType)), 1);
 				end;
@@ -176,3 +180,9 @@ function courseplay:isValidTipTrigger(trigger)
 	return trigger.className and (trigger.className == "SiloTrigger" or trigger.isPlaceableHeapTrigger or trigger.isAlternativeTipTrigger or Utils.endsWith(trigger.className, "TipTrigger") or Utils.endsWith(trigger.className, "PlaceableHeap"));
 end;
 
+
+function courseplay:printTipTriggersFruits(trigger)
+	for k,v in pairs(trigger.acceptedFillTypes) do
+		print("											"..tostring(k).." : "..tostring(Fillable.fillTypeIntToName[k]))
+	end
+end
