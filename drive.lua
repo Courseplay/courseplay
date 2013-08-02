@@ -812,7 +812,10 @@ function courseplay:drive(self, dt)
 				self.recordnumber = self.recordnumber + 1
 			end
 		else -- reset some variables
-			self.recordnumber = 1
+			if (self.ai_mode == 4 or self.ai_mode == 6) and not self.cp.hasUnloadingRefillingCourse then
+			else
+				self.recordnumber = 1
+			end
 			self.unloaded = false
 			self.StopEnd = false
 			self.loaded = false
@@ -846,10 +849,10 @@ function courseplay:set_traffc_collision(self, lx, lz)
 		drawDebugPoint(x3, y, z3, 1, 1, 0, 1);
 		drawDebugLine(x, y, z, 1, 0, 0, x1, y, z1, 1, 0, 0);
 	end;
-
 	if self.aiTrafficCollisionTrigger ~= nil and g_server ~= nil then
 		AIVehicleUtil.setCollisionDirection(self.cp.DirectionNode, self.aiTrafficCollisionTrigger, colDirX, colDirZ);
 	end
+
 end
 
 

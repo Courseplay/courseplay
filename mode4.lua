@@ -1,7 +1,7 @@
 function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill_level)
 	local workTool; -- = self.tippers[1] -- to do, quick, dirty and unsafe
 
-	workArea = (self.recordnumber > self.startWork) and (self.recordnumber <= self.stopWork)
+	workArea = (self.recordnumber > self.startWork) and (self.recordnumber < self.stopWork)
 
 	-- Begin Work
 	if self.cp.last_recordnumber == self.startWork and fill_level ~= 0 then
