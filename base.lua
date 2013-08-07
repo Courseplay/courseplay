@@ -9,7 +9,7 @@ function courseplay:load(xmlFile)
 	--elseif not courseplay_courses then
 	--  courseplay_courses = {}
 	--end
-
+	
 	self.setCourseplayFunc = SpecializationUtil.callSpecializationsFunction("setCourseplayFunc");
 
 	--SEARCH AND SET self.name IF NOT EXISTING
@@ -674,7 +674,7 @@ function courseplay:draw()
 	--Note: located in draw() instead of update() so they're not displayed/executed for *all* vehicles but rather only for *self*
 	if self:getIsActive() and self.isEntered then
 		if InputBinding.hasEvent(InputBinding.CP_Hud) and InputBinding.isPressed(InputBinding.CP_Modifier_2) then
-			initialize_courseplay();
+			courseplay:initialize();
 		elseif InputBinding.isPressed(InputBinding.CP_Modifier_1) then
 			--Keyboard open/close hud
 			if not self.mouse_right_key_enabled then
