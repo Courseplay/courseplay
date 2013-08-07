@@ -8,6 +8,7 @@ function courseplay:find_combines(self)
 		
 		if vehicle.cp == nil then
 			vehicle.cp = {};
+			courseplay:setNameVariable(vehicle)
 		end;
 		
 		if vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable or vehicle.cp.isSugarBeetLoader or courseplay:isAttachedCombine(vehicle) then
