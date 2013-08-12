@@ -590,7 +590,6 @@ function courseplay:unload_tippers(self)
 					local endDistance = Utils.vector2Length(ex, ez)
 					local dist = courseplay:distance(sx, sz, ex, ez) 
 					positionInSilo = startDistance*100/dist
-
 					if self.runonce == 0 then
 						local bgaSections = {
 							fillLevel = { 0, 0, 0 },
@@ -627,7 +626,7 @@ function courseplay:unload_tippers(self)
 						self.runonce = 1;
 					end
 
-					goForTipping = trailerInTipRange and positionInSilo >= bgaSectionPositions[self.cp.tipLocation].from and positionInSilo <= bgaSectionPositions[self.cp.tipLocation].to;
+					goForTipping = trailerInTipRange and ((positionInSilo >= bgaSectionPositions[self.cp.tipLocation].from and positionInSilo <= bgaSectionPositions[self.cp.tipLocation].to) or dist == 0) ;
 
 					--TODO after v3.40: if section == 1 is full, check 2 and 3 / if section == 2 is full, check 1 and 3 etc.
 				end;
