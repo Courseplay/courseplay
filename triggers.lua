@@ -82,7 +82,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 				courseplay:debug(string.format("%s: transformId %s is in triggerObjects (#%s) (triggerId=%s)", nameNum(self), tostring(transformId), tostring(triggerObjectsCount), tostring(triggerId)), 1);
 
 				if trigger.isAlternativeTipTrigger then
-					fruitType = FruitUtil.fillTypeToFruitType[fruitType];
+					--fruitType = FruitUtil.fillTypeToFruitType[fruitType];
 				end;
 
 				if trigger.acceptedFillTypes ~= nil and trigger.acceptedFillTypes[fruitType] then
