@@ -5,7 +5,6 @@ function courseplay:find_combines(self)
 	local all_vehicles = g_currentMission.vehicles
 	for k, vehicle in pairs(all_vehicles) do
 		-- trying to identify combines
-		
 		if vehicle.cp == nil then
 			vehicle.cp = {};
 			courseplay:setNameVariable(vehicle)

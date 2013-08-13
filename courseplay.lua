@@ -61,7 +61,8 @@ function courseplay:initialize()
 		"start_stop", 
 		"tippers", 
 		"triggers", 
-		"turn"
+		"turn",
+		"reverse"
 	};
 
 	local numFiles, numFilesLoaded = table.getn(fileList), 0;
@@ -213,7 +214,7 @@ function courseplay:setGlobalData()
 	10	mode9
 	11	mode7
 	12	all other debugs (uncategorized)
-	13	[empty]
+	13	reverse
 	14	[empty]
 	15	[empty]
 	16	[empty]

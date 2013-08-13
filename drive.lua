@@ -727,9 +727,7 @@ function courseplay:drive(self, dt)
 
 
 	if self.Waypoints[self.recordnumber].rev then
-		lz = lz * -1
-		lx = lx * -1
-		fwd = false
+		lx,lz,fwd = courseplay:goReverse(self,lx,lz)
 	else
 		fwd = true
 	end

@@ -150,7 +150,9 @@ function courseplay:update_tools(self, tractor_or_implement)
 			if object.allowTipDischarge then
 				tipper_attached = true
 				table.insert(self.tippers, object)
+				courseplay:getReverseProperties(self, object)
 			end
+			
 		elseif self.ai_mode == 3 then -- Overlader
 			if SpecializationUtil.hasSpecialization(Trailer, object.specializations) then --to do 
 				tipper_attached = true
@@ -757,4 +759,38 @@ function courseplay:getAutoTurnradius(self, tipper_attached)
 			self.turn_radius = 15
 		end
 	end;
+end
+
+function courseplay:getReverseProperties(self, tipper)
+	if tipper.attacherVehicle == self then
+		tipper.cp.frontNode = getParent(tipper.attacherJoint.node)
+	else
+		tipper.cp.frontNode = getParent(tipper.attacherVehicle.attacherJoint.node)
+		courseplay:debug(" tipper has dolly ",13)
+	end
+	if SpecializationUtil.hasSpecialization(Shovel, tipper.specializations) then
+		tipper.cp.isShovel = true
+	end
+	local x,y,z = getWorldTranslation(self.rootNode)
+	local_,_,tz = worldToLocal(tipper.rootNode, x,y,z)
+	tipper.cp.nodeDistance = math.abs(tz)
+							courseplay:debug(nameNum(self) .. "tz: "..tostring(tz).."  tipper.rootNode: "..tostring(tipper.rootNode),13)
+	if tz > 0 then
+		tipper.cp.inversedNodes = false
+	else
+		tipper.cp.inversedNodes = true
+	end
+	local xTipper,yTipper,zTipper = getWorldTranslation(tipper.rootNode)
+	local lxFrontNode, lzFrontNode = AIVehicleUtil.getDriveDirection(tipper.cp.frontNode, xTipper,yTipper,zTipper);
+							courseplay:debug(nameNum(self) .. "lxFrontNode: "..tostring(lxFrontNode),13)
+	if math.abs(lxFrontNode) <= 0.001 or tipper.rootNode == tipper.cp.frontNode then
+		tipper.cp.isPivot = false
+	else
+		tipper.cp.isPivot = true
+	end
+							if tipper.rootNode == tipper.cp.frontNode then
+								courseplay:debug(nameNum(self) .. "tipper.rootNode == tipper.cp.frontNode",13)
+							end
+
+	courseplay:debug(nameNum(self) .. "tipper.cp.inversedNodes: "..tostring(tipper.cp.inversedNodes).."  tipper.cp.isPivot: "..tostring(tipper.cp.isPivot).."  tipper.cp.frontNode: "..tostring(tipper.cp.frontNode),13)
 end
