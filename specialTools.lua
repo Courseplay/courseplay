@@ -2,8 +2,10 @@ function courseplay:setNameVariable(workTool)
 	if workTool.cp == nil then
 		workTool.cp = {};
 	end;
-	-- Holeras Silage shield
+	-- Holaras Silage shield
 	if Utils.endsWith(workTool.configFileName, "holaras.xml") then
+		workTool.cp.isSilageShield = true
+	elseif Utils.endsWith(workTool.configFileName, "Stegemann.xml") then
 		workTool.cp.isSilageShield = true
 
 	--Abbey Sprayer Pack [FS-UK Modteam]
@@ -542,7 +544,7 @@ function courseplay:askForSpecialSettings(self,object)
 	if object.cp.isGrimmeSE7555 then
 		self.cp.aiTurnNoBackward = true
 		self.WpOffsetX = -2.1
-		print("Grimme SE 75-55 workwidth: 0.7 m");
+		print("Grimme SE 75-55 workwidth: 1 m");
 	elseif object.cp.isGrimmeRootster604 then
 		self.cp.aiTurnNoBackward = true
 		self.WpOffsetX = -0.9
