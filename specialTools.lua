@@ -89,6 +89,10 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.isRopaEuroMaus = true;
 	elseif Utils.endsWith(workTool.configFileName, "HolmerTerraFelis.xml") then
 		workTool.cp.isHolmerTerraFelis = true;
+	
+	--Harvesters (steerable)
+	elseif Utils.endsWith(workTool.configFileName, "RopaEuroTiger_V8_3_XL.xml") then
+		workTool.cp.isRopaEuroTiger = true;
 
 	--Harvesters (steerable) [Giants]
 	elseif Utils.endsWith(workTool.configFileName, "grimmeMaxtron620.xml") then
@@ -175,9 +179,27 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 	if workTool.PTOId then
 		workTool:setPTO(false)
 	end
-	
+	--RopaEuroTiger
+	if self.cp.isRopaEuroTiger then
+		local fold = self:getToggledFoldDirection()
+		if unfold then
+			if  fold == -1 then
+				self:setFoldState(fold, false);
+			end
+		else
+			if  fold == 1 and self.grainTankFillLevel == 0 then
+				self:setFoldState(fold, false);
+			end
+		end
+		if self.foldAnimTime > 0 and self.foldAnimTime < 1 then
+			return true, false
+		end;
+
+		
+		return false, allowedToDrive
+
 	--KvernelandMowerPack
-	if workTool.cp.isKvernelandMowerPack then
+	elseif workTool.cp.isKvernelandMowerPack then
 		if workTool.cp.isKvernelandKD240 then
 			if workTool.TransRot ~= nil and workTool.TransRot ~= down then
 				workTool:setTransRot(not unfold);
@@ -539,6 +561,9 @@ function courseplay:askForSpecialSettings(self,object)
 	if self.cp.isKirovetsK700A then
 		self.cp.DirectionNode = self.rootNode
 		self.cp.isKasi = 2.5
+	elseif self.cp.isRopaEuroTiger then
+		self:setSteeringMode(5)
+		self.cp.offset = 5.2
 	end;
 
 	if object.cp.isGrimmeSE7555 then
