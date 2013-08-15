@@ -4,7 +4,7 @@ function courseplay:goReverse(self,lx,lz)
 		local inverse = 1
 		local tipper = self.tippers[1]
 		local debugActive = courseplay.debugChannels[13]
-		if table.getn(self.tippers) == 0 or tipper.cp.isShovel then
+		if table.getn(self.tippers) == 0 or tipper.cp.isShovel or self.cp.shovel == self then
 			return -lx,-lz,fwd
 		end
 		
