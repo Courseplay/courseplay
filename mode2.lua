@@ -260,13 +260,17 @@ function courseplay:unload_combine(self, dt)
 		tractor = combine.attacherVehicle
 	end
 
+	local combineIsHelperTurning = false
+	if tractor.turnStage ~= nil and tractor.turnStage ~= 0 then
+		combineIsHelperTurning = true
+	end
+
 	-- is combine turning ?
 	local aiTurn = combine.isAIThreshing and (combine.turnStage == 1 or combine.turnStage == 2 or combine.turnStage == 4 or combine.turnStage == 5)
 	if tractor ~= nil and (aiTurn or (tractor.cp.turnStage > 0)) then
 		self.cp.infoText = courseplay:get_locale(self, "CPCombineTurning") -- "Drescher wendet. "
 		combine_turning = true
 	end
-	
 	if mode == 2 or mode == 3 or mode == 4 then
 		if combine == nil then
 			self.cp.infoText = "this should never happen";
@@ -277,7 +281,7 @@ function courseplay:unload_combine(self, dt)
 
 
 	local offset_to_chopper = self.combine_offset
-	if tractor.turnStage ~= 0 or tractor.cp.turnStage ~= 0 then
+	if combineIsHelperTurning or tractor.cp.turnStage ~= 0 then
 		offset_to_chopper = self.combine_offset * 1.6 --1,3
 	end
 
@@ -610,7 +614,7 @@ function courseplay:unload_combine(self, dt)
 				refSpeed = math.max(combine_speed,3/3600)
 			end
 			
-			if ((tractor.turnStage ~= 0 or tractor.cp.turnStage ~= 0) and lz < 20) or (combine.movingDirection == 0 and lz < 5) then
+			if ((combineIsHelperTurning or tractor.cp.turnStage ~= 0) and lz < 20) or (combine.movingDirection == 0 and lz < 5) then
 				refSpeed = 4 / 3600
 				self.sl = 1
 				if self.ESLimiter == nil then
@@ -628,13 +632,13 @@ function courseplay:unload_combine(self, dt)
 			else
 				refSpeed = combine_speed
 			end
-			if ((tractor.turnStage ~= 0 or tractor.cp.turnStage ~= 0) and lz < 20) or (self.timer < self.drive_slow_timer) or (combine.movingDirection == 0 and lz < 15) then
+			if ((combineIsHelperTurning or tractor.cp.turnStage ~= 0) and lz < 20) or (self.timer < self.drive_slow_timer) or (combine.movingDirection == 0 and lz < 15) then
 				refSpeed = 4 / 3600
 				self.sl = 1
 				if self.ESLimiter == nil then
 					self.motor.maxRpm[self.sl] = 200
 				end 
-				if tractor.turnStage ~= 0 or tractor.cp.turnStage ~= 0 then
+				if combineIsHelperTurning or tractor.cp.turnStage ~= 0 then
 					self.drive_slow_timer = self.timer + 2000
 				end
 			end
