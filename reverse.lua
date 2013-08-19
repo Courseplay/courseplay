@@ -4,7 +4,8 @@ function courseplay:goReverse(self,lx,lz)
 		local inverse = 1
 		local tipper = self.tippers[1]
 		local debugActive = courseplay.debugChannels[13]
-		if table.getn(self.tippers) == 0 or tipper.cp.isShovel or self.cp.shovel == self then
+		local isNotValid = table.getn(self.tippers) == 0 or tipper.cp.inversedNodes == nil or tipper.cp.isPivot == nil or tipper.cp.frontNode == nil or self.ai_mode == 9 
+		if isNotValid then
 			return -lx,-lz,fwd
 		end
 		

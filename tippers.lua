@@ -768,8 +768,9 @@ function courseplay:getReverseProperties(self, tipper)
 		tipper.cp.frontNode = getParent(tipper.attacherVehicle.attacherJoint.node)
 		courseplay:debug(" tipper has dolly ",13)
 	end
-	if SpecializationUtil.hasSpecialization(Shovel, tipper.specializations) then
-		tipper.cp.isShovel = true
+	if SpecializationUtil.hasSpecialization(Shovel, tipper.specializations) or SpecializationUtil.hasSpecialization(Shovel, self.specializations) then
+		courseplay:debug(nameNum(self) .. "return because its a shovel",13)
+		return
 	end
 	local x,y,z = getWorldTranslation(self.rootNode)
 	local_,_,tz = worldToLocal(tipper.rootNode, x,y,z)
