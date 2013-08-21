@@ -25,7 +25,8 @@ function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill
 		end
 	end
 	-- safe last point
-	if fill_level == 0 and workArea then
+	if (fill_level == 0 or self.cp.urfStop) and workArea then
+		self.cp.urfStop = false
 		if self.cp.hasUnloadingRefillingCourse and self.abortWork == nil then
 			self.abortWork = self.recordnumber -10
 			self.recordnumber = self.stopWork - 4

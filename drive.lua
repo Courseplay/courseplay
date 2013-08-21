@@ -998,11 +998,14 @@ function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive)
 	for i = 1, table.getn(self.tippers) do
 		local activeTool = self.tippers[i];
 		
-		if courseplay:isSprayer(activeTool) then --sprayer
+		if courseplay:isSprayer(activeTool) or activeTool.cp.hasUrfSpec then --sprayer
 			local activeToolFillLevel = nil;
 			if activeTool.fillLevel ~= nil and activeTool.capacity ~= nil then
 				activeToolFillLevel = (activeTool.fillLevel / activeTool.capacity) * 100;
 			end;
+			if activeTool.cp.hasUrfSpec then
+				activeToolFillLevel = (activeTool.sprayFillLevel / activeTool.sprayCapacity) * 100;
+			end
 			local canRefill = (activeToolFillLevel ~= nil and activeToolFillLevel < driveOn) and (activeTool.sprayerFillTriggers ~= nil and table.getn(activeTool.sprayerFillTriggers) > 0);
 			--ManureLager: activeTool.ReFillTrigger has to be nil so it doesn't refill
 			if self.ai_mode == 8 then
@@ -1031,7 +1034,8 @@ function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive)
 				activeTool:setIsSprayerFilling(false, false);
 				courseplay:handleSpecialTools(self,activeTool,nil,nil,nil,allowedToDrive,false,false)
 			end;
-		elseif courseplay:is_sowingMachine(activeTool) then --sowing machine
+		end
+		if courseplay:is_sowingMachine(activeTool) then --sowing machine
 			if fill_level < driveOn and activeTool.sowingMachineFillTriggers[1] ~= nil then
 				activeTool:setIsSowingMachineFilling(true, activeTool.sowingMachineFillTriggers[1].isEnabled, false);
 				allowedToDrive = false;

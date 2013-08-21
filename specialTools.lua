@@ -2,8 +2,13 @@ function courseplay:setNameVariable(workTool)
 	if workTool.cp == nil then
 		workTool.cp = {};
 	end;
+
+	--Urf-Specialisation
+	if workTool.sprayFillLevel ~= nil and workTool.sprayCapacity ~= nil then
+		workTool.cp.hasUrfSpec = true
+
 	-- Holaras Silage shield
-	if Utils.endsWith(workTool.configFileName, "holaras.xml") then
+	elseif Utils.endsWith(workTool.configFileName, "holaras.xml") then
 		workTool.cp.isSilageShield = true
 	elseif Utils.endsWith(workTool.configFileName, "Stegemann.xml") then
 		workTool.cp.isSilageShield = true
@@ -179,6 +184,8 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 	if workTool.PTOId then
 		workTool:setPTO(false)
 	end
+
+
 	--RopaEuroTiger
 	if self.cp.isRopaEuroTiger then
 		local fold = self:getToggledFoldDirection()
@@ -196,6 +203,14 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		end;
 
 		
+		return false, allowedToDrive
+	end
+
+	--Urf-specialisation
+	if workTool.cp.hasUrfSpec then
+		if workTool.sprayFillLevel == 0 then
+			self.cp.urfStop = true
+		end
 		return false, allowedToDrive
 
 	--KvernelandMowerPack
