@@ -1070,6 +1070,8 @@ function courseplay:calculateCombineOffset(self, combine)
 		offs =  4.4;
 	elseif self.auto_combine_offset and Utils.endsWith(combine.configFileName, "JF_1060.xml") then
 		offs =  7
+	elseif self.auto_combine_offset and Utils.endsWith(combine.configFileName, "RopaEuroTiger_V8_3_XL.xml") then
+		offs =  5.2
 	
 	--Sugarbeet Loaders (e.g. Ropa Euro Maus, Holmer Terra Felis)
 	elseif self.auto_combine_offset and combine.cp.isSugarBeetLoader then

@@ -201,8 +201,13 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		if self.foldAnimTime > 0 and self.foldAnimTime < 1 then
 			return true, false
 		end;
+		if self.steeringMode ~= 5 and lower then
+			self:setSteeringMode(5)
+		end
+		if not lower then
+			self:setSteeringMode(4)
+		end
 
-		
 		return false, allowedToDrive
 	end
 
@@ -579,6 +584,8 @@ function courseplay:askForSpecialSettings(self,object)
 	elseif self.cp.isRopaEuroTiger then
 		self:setSteeringMode(5)
 		self.cp.offset = 5.2
+		self.cp.noStopOnTurn = true
+		self.cp.noStopOnEdge = true
 	end;
 
 	if object.cp.isGrimmeSE7555 then
