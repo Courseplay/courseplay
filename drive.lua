@@ -734,6 +734,8 @@ function courseplay:drive(self, dt)
 
 	if self.cp.TrafficBrake then
 		fwd = false
+		lx = 0
+		lz = 1
 	end  	
 	self.cp.TrafficBrake = false
 	self.cp.TrafficHasStopped = false

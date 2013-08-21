@@ -213,6 +213,8 @@ function courseplay:turn(self, dt) --!!!
 		end;
 		if self.cp.TrafficBrake then
 			moveForwards = false;
+			lx = 0
+			lz = 1
 		end
 
 		AIVehicleUtil.driveInDirection(self, dt, 25, 0.5, 0.5, 20, true, moveForwards, lx, lz, self.sl, 0.9);
