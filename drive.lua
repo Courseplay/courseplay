@@ -432,7 +432,7 @@ function courseplay:drive(self, dt)
 		if self.ai_mode == 4 then
 			if self.tipper_attached and self.startWork ~= nil and self.stopWork ~= nil then
 				if self.tippers ~= nil then
-					allowedToDrive = courseplay:refillSprayer(self, fill_level, 100, allowedToDrive);
+					allowedToDrive,lx,lz = courseplay:refillSprayer(self, fill_level, 100, allowedToDrive,lx,lz);
 				end
 			elseif self.startWork == nil or self.stopWork == nil then
 				self.cp.infoText = courseplay.locales.CPNoWorkArea;
@@ -996,9 +996,14 @@ function courseplay:openCloseCover(self, dt, showCover)
 	end; --END for i in self.cp.tippersWithCovers
 end;
 
-function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive)
+function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive,lx,lz)
 	for i = 1, table.getn(self.tippers) do
 		local activeTool = self.tippers[i];
+		local isSpecialSprayer = false
+		isSpecialSprayer, allowedToDrive ,lx,lz = courseplay:handleSpecialSprayer(self,activeTool, fill_level, driveOn, allowedToDrive,lx,lz)
+		if isSpecialSprayer then
+			return allowedToDrive,lx,lz
+		end
 		
 		if courseplay:isSprayer(activeTool) or activeTool.cp.hasUrfSpec then --sprayer
 			local activeToolFillLevel = nil;
@@ -1050,7 +1055,7 @@ function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive)
 		end
 	end;
 	
-	return allowedToDrive;
+	return allowedToDrive,lx,lz
 end;
 
 function courseplay:regulateTrafficSpeed(self,refSpeed,allowedToDrive)

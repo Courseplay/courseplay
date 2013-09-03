@@ -1,10 +1,17 @@
 function courseplay:setNameVariable(workTool)
+	
 	if workTool.cp == nil then
 		workTool.cp = {};
 	end;
 
+	--Guellepack V2 by Bayerbua
+	if workTool.fillerArmInRange ~= nil  then
+		workTool.cp.isFeldbinder = true
+	elseif Utils.endsWith(workTool.configFileName, "KotteGARANTProfiVQ32000.xml") and workTool.fillerArmNode ~= nil then
+		workTool.cp.isKotteGARANTProfiVQ32000 = true
+
 	--Urf-Specialisation
-	if workTool.sprayFillLevel ~= nil and workTool.sprayCapacity ~= nil then
+	elseif workTool.sprayFillLevel ~= nil and workTool.sprayCapacity ~= nil then
 		workTool.cp.hasUrfSpec = true
 
 	-- Holaras Silage shield
@@ -185,7 +192,6 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		workTool:setPTO(false)
 	end
 
-
 	--RopaEuroTiger
 	if self.cp.isRopaEuroTiger then
 		local fold = self:getToggledFoldDirection()
@@ -211,8 +217,28 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		return false, allowedToDrive
 	end
 
+	--KotteGARANTProfiVQ32000
+	if workTool.cp.isKotteGARANTProfiVQ32000 then
+		if workTool.cp.crabSteerMode ~= 0 then
+			local ridgeMarker = self.Waypoints[self.recordnumber].ridgeMarker
+			if not implementsDown then
+				workTool.crabSteerMode = 0
+			else
+				workTool.crabSteerMode = workTool.cp.crabSteerMode
+				if ridgeMarker == 1 then
+					workTool.HGdirection = 1;
+					self.WpOffsetX = 3
+				elseif ridgeMarker == 2 then
+					workTool.HGdirection = -1;
+					self.WpOffsetX = -3
+				end
+			end
+		end
+
+		return false, allowedToDrive
+
 	--Urf-specialisation
-	if workTool.cp.hasUrfSpec then
+	elseif workTool.cp.hasUrfSpec then
 		if workTool.sprayFillLevel == 0 then
 			self.cp.urfStop = true
 		end
@@ -587,8 +613,17 @@ function courseplay:askForSpecialSettings(self,object)
 		self.cp.noStopOnTurn = true
 		self.cp.noStopOnEdge = true
 	end;
-
-	if object.cp.isGrimmeSE7555 then
+	
+	if object.cp.isKotteGARANTProfiVQ32000 then
+		object.cp.feldbinders = {}
+		for i=1, table.getn(g_currentMission.attachables) do
+			if g_currentMission.attachables[i].fillerArmInRange ~= nil then
+				table.insert(object.cp.feldbinders,i)
+			end
+		end
+		object.cp.crabSteerMode = object.crabSteerMode
+		object.cp.tankerId = 0
+	elseif object.cp.isGrimmeSE7555 then
 		self.cp.aiTurnNoBackward = true
 		self.WpOffsetX = -2.1
 		print("Grimme SE 75-55 workwidth: 1 m");
@@ -617,6 +652,115 @@ function courseplay:askForSpecialSettings(self,object)
 	elseif object.cp.isSilageShield then
 		self.cp.hasShield = true
 	end
+
+end
+
+function courseplay:handleSpecialSprayer(self,activeTool, fill_level, driveOn, allowedToDrive,lx,lz)
+
+	if activeTool.cp.isKotteGARANTProfiVQ32000 then
+		for _,v in pairs(activeTool.cp.feldbinders) do
+			local tanker = g_currentMission.attachables[v]
+			local moveDone = false
+			if tanker.manschetteDrawLine and (activeTool.cp.tankerId == 0 or activeTool.cp.tankerId == v) then
+					if tanker.fillerArm.vehicle == activeTool then
+					activeTool.cp.tankerId = v
+					local tx,ty,tz = getWorldTranslation(tanker.manschetteNode1);
+					local fdx, _, _ = worldToLocal(activeTool.rootNode,tx,ty,tz);
+					if fdx < 0 then -- is the tanker on the valid side ?
+						local vx, vy, vz = getWorldTranslation(tanker.fillerArm.fillerArmNode);
+						local fx, fy, fz = worldToLocal(tanker.manschetteNode1,vx,vy,vz);
+						local offsetX = 3.1  --will be read out of the Feldbinder in future
+						local tx,ty,tz = localToWorld(tanker.manschetteNode1,offsetX,0,fz+10)
+						drawDebugPoint(tx,ty+3,tz, 1, 0 , 1, 1);
+						lx, lz = AIVehicleUtil.getDriveDirection(self.cp.DirectionNode,tx,ty,tz);
+						fz = -fz
+						if fz > 5 then
+							if self.lastSpeedReal > 20/3600 then
+								courseplay:brakeToStop(self)
+							else
+								self.cp.maxFieldSpeed = 10/3600
+							end
+						elseif fz > 0.1 then
+							self.cp.maxFieldSpeed = 5/3600
+						else   -- fill up
+							allowedToDrive = false
+							if fill_level < 100 then
+								if not activeTool.manschetteInRange then
+									local done = courseplay:moveSingleTool(self,activeTool, 9, 0,0,1.2180819906372)
+									if done then
+										if not activeTool.cp.moveArmBackward then
+											activeTool.cp.moveArmBackward = courseplay:moveSingleTool(self,activeTool, 11, 0.17,0,0) and courseplay:moveSingleTool(self,activeTool, 12, -0.17,0,0)
+										else
+											local movedone = courseplay:moveSingleTool(self,activeTool, 11, -0.17,0,0) and courseplay:moveSingleTool(self,activeTool, 12, 0.17,0,0)
+											if movedone then
+												activeTool.cp.moveArmBackward = false	
+											end
+										end
+									end
+								end
+							end
+							if activeTool.fillerArmReadyToOverload then
+								activeTool.fillerArmOverloadActive = true
+							end
+						end
+					end
+					if fill_level == 100 then
+						moveDone = courseplay:moveSingleTool(self,activeTool, 9, 0,0,0)
+						courseplay:moveSingleTool(self,activeTool, 11, 0,0,0)
+						courseplay:moveSingleTool(self,activeTool, 12, 0,0,0)
+						if moveDone then
+							activeTool.cp.moveArmBackward = false
+							self.cp.maxFieldSpeed = 0
+							allowedToDrive = true
+						end
+					end
+				end
+			elseif activeTool.cp.tankerId == v then
+				activeTool.cp.tankerId = 0
+			end
+		end
+		return true, allowedToDrive,lx,lz;
+	end
+
+
+
+	return false, allowedToDrive,lx,lz;
+end
+
+function courseplay:moveSingleTool(self,activeTool, toolIndex,x,y,z)
+	--local toolRot = activeTool.movingTools[9].curRot[3]
+	local tool = activeTool.movingTools[toolIndex];
+	local rotSpeed = 0.0033;
+	local targetRot = {x,y,z}
+	local done = true
+	if tool.rotSpeed ~= nil then
+		rotSpeed = tool.rotSpeed * 60;
+	end;
+	for i=1, 3 do
+		local oldRot = tool.curRot[i];
+		local target = targetRot[i]
+		local newRot = nil;
+		if target ~= oldRot then
+			done = false
+		end
+		local dir = targetRot[i] - oldRot;
+		dir = math.abs(dir)/dir;
+		
+		if tool.node ~= nil and tool.rotMin ~= nil and tool.rotMax ~= nil and dir ~= nil and dir ~= 0 then
+			newRot = Utils.clamp(oldRot + (rotSpeed * dir), tool.rotMin, tool.rotMax);
+			if (dir == 1 and newRot > targetRot[i]) or (dir == -1 and newRot < targetRot[i]) then
+				newRot = targetRot[i];
+			end;
+			if newRot ~= oldRot and newRot >= tool.rotMin and newRot <= tool.rotMax then
+				tool.curRot[i] = newRot;
+				setRotation(tool.node, unpack(tool.curRot));
+				Cylindered.setDirty(self, tool);
+				self:raiseDirtyFlags(self.cylinderedDirtyFlag);
+				changed = true;
+			end;
+		end;
+	end;
+	return done
 
 end
 
