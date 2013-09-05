@@ -102,7 +102,7 @@ function courseplay:openCloseHud(self, open)
 			self.hudAllradONOverlay:setPosition(self.hudAllradONOverlay.x, -1);
 			self.hudAllradOFFOverlay:setPosition(self.hudAllradOFFOverlay.x, -1);
 		else
-			self.hudAllradPosY = self.cp.OdometerOrigPosY[1];
+			self.hudAllradPosY = self.cp.hud.AllradOrigPosY[1];
 			self.hudAllradONOverlay:setPosition(self.hudAllradONOverlay.x, self.cp.AllradOrigPosY[2]);
 			self.hudAllradOFFOverlay:setPosition(self.hudAllradOFFOverlay.x, self.cp.AllradOrigPosY[3]);
 		end;
