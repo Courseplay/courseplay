@@ -1151,7 +1151,7 @@ function courseplay:setMRSpeed(self, refSpeed, sl,allowedToDrive)
 		newLimit = -10
 		trailerPushes = true
 	end
-	-if deltaMinus > 5 or self.cp.isTurning ~= nil or self.cp.fillTrigger then
+	if deltaMinus > 5 or self.cp.isTurning ~= nil or self.cp.fillTrigger then
 		self.cp.isRealRegulated = false
 	else
 		self.cp.isRealRegulated = true
