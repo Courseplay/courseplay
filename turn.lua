@@ -5,11 +5,11 @@ function courseplay:turn(self, dt) --!!!
 	local turnOutTimer = 1500
 	local frontMarker = Utils.getNoNil(self.cp.aiFrontMarker,-3)
 	local backMarker = Utils.getNoNil(self.cp.backMarkerOffset, 0)
+	self.sl = 1
 	if self.cp.noStopOnEdge then 
 		turnOutTimer = 0
 	end
 	self.cp.turnTimer = self.cp.turnTimer - dt;
-
 	if self.cp.turnTimer < 0 or self.cp.turnStage > 0 then
 		if self.cp.turnStage > 1 then
 			local x,y,z = getWorldTranslation(self.rootNode);
@@ -206,18 +206,31 @@ function courseplay:turn(self, dt) --!!!
 	end;
 
 	if updateWheels then
+		if self.isRealistic then
+			courseplay:setMRSpeed(self, self.turn_speed, 1,false)
+		end
 		local lx, lz = AIVehicleUtil.getDriveDirection(self.cp.DirectionNode, newTargetX, newTargetY, newTargetZ);
 		if self.cp.turnStage == 3 and math.abs(lx) < 0.1 then
 			self.cp.turnStage = 4;
 			moveForwards = true;
 		end;
 		if self.cp.TrafficBrake then
-			moveForwards = false;
-			lx = 0
-			lz = 1
+			if self.isRealistic then
+				Steerable.updateVehiclePhysics(self, 1 , true, 0, true, dt);
+			else
+				moveForwards = false;
+				lx = 0
+				lz = 1
+			end
 		end
 
-		AIVehicleUtil.driveInDirection(self, dt, 25, 0.5, 0.5, 20, true, moveForwards, lx, lz, self.sl, 0.9);
+		if self.isRealistic then
+			courseplay:driveInMRDirection(self, lx,lz,moveForwards,dt)
+			--AIVehicleUtil.driveInDirection(self, dt, 25, 0.5, 0.5, 20, true, moveForwards, lx, lz, self.sl, 0.9);
+		else
+			AIVehicleUtil.driveInDirection(self, dt, 25, 0.5, 0.5, 20, true, moveForwards, lx, lz, self.sl, 0.9);
+		end
+		
 		
 		local maxlx = 0.7071067; --math.sin(maxAngle);
 		local colDirX = lx;

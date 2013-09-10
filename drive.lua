@@ -4,6 +4,19 @@ function courseplay:drive(self, dt)
 		return
 	end
 
+	if self.isRealistic then
+		--set gearbox to mode1 to handle both directions properly
+		if self.realTransmissionMode.currentMode ~= 1 then
+			self:realSetNextTransmissionMode();
+		end
+
+		--necessary 2 restart to drive if not entered
+		if self.movingDirection == 0 and self.cp.throttlePosition[self.sl] > 0 then
+			self.isControlled = true
+		elseif self.lastSpeedReal*3600 > 0.5 then
+			self.isControlled = self.isEntered
+		end
+	end
 	local refSpeed = 0
 	local cx,cy,cz = 0,0,0
 	-- may i drive or should i hold position for some reason?
@@ -512,9 +525,9 @@ function courseplay:drive(self, dt)
 
 
 	-- Mode 6 Fieldwork for balers and foragewagon
-	if self.ai_mode == 6 and self.startWork ~= nil and self.stopWork ~= nil then
+	if (self.ai_mode == 6 or self.ai_mode == 4) and self.startWork ~= nil and self.stopWork ~= nil then
 		allowedToDrive, workArea, workSpeed, active_tipper = courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill_level, lx , lz )
-		if not workArea and self.grainTankCapacity == nil and self.tipRefOffset ~= nil then
+		if not workArea and (self.grainTankCapacity == nil and self.tipRefOffset ~= nil) or  self.cp.hasMachinetoFill then
 			if self.cp.currentTipTrigger == nil and self.cp.tipperFillLevel > 0 then
 				-- is there a tipTrigger within 10 meters?
 				courseplay:debug(nameNum(self) .. ": call 1st raycast", 1);
@@ -630,13 +643,18 @@ function courseplay:drive(self, dt)
 
 	-- stop or hold position
 	if not allowedToDrive then
-		--self.motor:setSpeedLevel(0, false);
+		self.motor:setSpeedLevel(0, false);
 		self.cp.TrafficBrake = false
-		AIVehicleUtil.driveInDirection(self, dt, 30, 0, 0, 28, false, moveForwards, nil, nil)
-		if g_server ~= nil then
-			AIVehicleUtil.driveInDirection(self, dt, self.steering_angle, 0.5, 0.5, 28, false, moveForwards, 0, 1)
+		if self.isRealistic then
+			AIVehicleUtil.driveInDirection(self, dt, 30, 0, 0, 28, false, moveForwards, 0, 1)
+			self.isControlled = self.isEntered
+		else
+			AIVehicleUtil.driveInDirection(self, dt, 30, 0, 0, 28, false, moveForwards, 0, 1)
+			if g_server ~= nil then
+				AIVehicleUtil.driveInDirection(self, dt, self.steering_angle, 0.5, 0.5, 28, false, moveForwards, 0, 1)
+			end
+			
 		end
-
 		-- unload active tipper if given
 		return;
 	end
@@ -708,9 +726,16 @@ function courseplay:drive(self, dt)
 	if self.cp.maxFieldSpeed ~= 0 then
 		refSpeed = math.min(self.cp.maxFieldSpeed, refSpeed);
 	end
-
-	courseplay:setSpeed(self, refSpeed, self.sl)
-
+	if self.cp.fillTrigger then
+		refSpeed = self.turn_speed
+	end
+	
+	if self.isRealistic then
+		courseplay:setMRSpeed(self, refSpeed, self.sl,allowedToDrive)
+	else
+		courseplay:setSpeed(self, refSpeed, self.sl)
+	end
+	
 	if self.ESLimiter ~= nil and self.ESLimiter.maxRPM[5] == nil then
 		self.cp.infoText = courseplay:get_locale(self, "CPWrongESLversion")
 	end
@@ -733,9 +758,13 @@ function courseplay:drive(self, dt)
 	end
 
 	if self.cp.TrafficBrake then
-		fwd = false
-		lx = 0
-		lz = 1
+		if self.isRealistic then
+			Steerable.updateVehiclePhysics(self, 1 , true, 0, true, dt);
+		else
+			fwd = false
+			lx = 0
+			lz = 1
+		end
 	end  	
 	self.cp.TrafficBrake = false
 	self.cp.TrafficHasStopped = false
@@ -789,7 +818,11 @@ function courseplay:drive(self, dt)
 
 	if self.dist > distToChange or WpUnload or WpLoadEnd then
 		if g_server ~= nil then
-			AIVehicleUtil.driveInDirection(self, dt, self.steering_angle, 0.5, 0.5, 8, true, fwd, lx, lz, self.sl, 0.5);
+			if self.isRealistic then --!!!
+				courseplay:driveInMRDirection(self, lx,lz,fwd, dt);
+			else
+				AIVehicleUtil.driveInDirection(self, dt, self.steering_angle, 0.5, 0.5, 8, true, fwd, lx, lz, self.sl, 0.5);
+			end
 			courseplay:set_traffc_collision(self, lx, lz)
 		end
 	else
@@ -1040,6 +1073,7 @@ function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive,lx,l
 			elseif self.loaded or not self.cp.stopForLoading then
 				activeTool:setIsSprayerFilling(false, false);
 				courseplay:handleSpecialTools(self,activeTool,nil,nil,nil,allowedToDrive,false,false)
+				self.cp.fillTrigger = false
 			end;
 		end
 		if courseplay:is_sowingMachine(activeTool) then --sowing machine
@@ -1047,6 +1081,8 @@ function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive,lx,l
 				activeTool:setIsSowingMachineFilling(true, activeTool.sowingMachineFillTriggers[1].isEnabled, false);
 				allowedToDrive = false;
 				self.cp.infoText = string.format(courseplay:get_locale(self, "CPloading"), activeTool.fillLevel, activeTool.capacity);
+			elseif activeTool.sowingMachineFillTriggers[1] ~= nil then
+				self.cp.fillTrigger = false
 			end;
 		end;
 		if self.cp.stopForLoading then
@@ -1088,6 +1124,9 @@ function courseplay:regulateTrafficSpeed(self,refSpeed,allowedToDrive)
 end
 
 function courseplay:brakeToStop(self)
+	if self.isRealistic then
+		return false
+	end
 	if self.lastSpeedReal > 1/3600 and not self.cp.TrafficHasStopped then
 		self.cp.TrafficBrake = true
 		return true
@@ -1095,4 +1134,159 @@ function courseplay:brakeToStop(self)
 		self.cp.TrafficHasStopped = true
 		return false
 	end
+end
+
+function courseplay:setMRSpeed(self, refSpeed, sl,allowedToDrive)
+	if self.cp.trailerPushSpeed ~= 0 then
+		refSpeed = self.cp.trailerPushSpeed
+	end
+	local trailerPushes = false
+	local currentSpeed = self.lastSpeedReal
+	local deltaMinus = currentSpeed*3600 - refSpeed*3600
+	local deltaPlus = refSpeed*3600 - currentSpeed*3600
+	
+	if self.lastRealAcceleration < 0.1 and currentSpeed*3600 > 20 and self.movingDirection > 0 and deltaMinus > 10 then
+		newLimit = -10
+		trailerPushes = true
+	end
+	-if deltaMinus > 5 or self.cp.isTurning ~= nil or self.cp.fillTrigger then
+		self.cp.isRealRegulated = false
+	else
+		self.cp.isRealRegulated = true
+	end
+	if trailerPushes then
+		if self.cp.trailerPushSpeed == 0 then 
+			self.cp.trailerPushSpeed = refSpeed 
+		end 
+		--print("		trailer pushes")
+		self.cp.isRealRegulated = false
+	else
+		self.cp.trailerPushSpeed = 0
+	end
+	if self.ai_mode == 9 and not self.cp.fwd then
+		self.cp.isRealRegulated = false
+	end
+
+	if self.cp.isRealRegulated then
+		self.motor.speedLevel = sl
+		self.motor.realSpeedLevels[self.motor.speedLevel] = refSpeed*3600
+	else
+		if self.cp.lastSpeedSave ~= self.lastSpeedReal*3600 then		
+			if refSpeed*3600 == 1 then
+				refSpeed = 1.6 / 3600
+			end
+			
+			local newLimit = 0
+			local oldLimit = self.cp.throttlePosition[sl]*100
+					
+			
+			-- accelerating
+			if deltaPlus > 15 then
+				if oldLimit < 0 then
+					newLimit = 20
+				else
+					if sl == 2 then
+						newLimit = 75
+					else
+						newLimit = 100
+					end
+				end
+			elseif deltaPlus > 4 then
+				if oldLimit < 0 then
+					newLimit = 20
+				else
+					newLimit = oldLimit + 1
+				end
+			elseif deltaPlus > 0.5 then
+				newLimit = oldLimit + 0.1
+			elseif deltaPlus > 0 then	
+				newLimit = oldLimit
+			end
+
+			--retarding
+			if deltaMinus  > 8 then
+				if currentSpeed < 25/3600 then
+					if sl == 1 then
+						newLimit = 30
+					else			
+						newLimit = oldLimit -3
+					end
+				else
+					newLimit = (deltaPlus*10)+20
+				end
+			elseif deltaMinus  > 1 then
+				newLimit = oldLimit -0.75
+			elseif deltaMinus  > 0.5 then
+				newLimit = oldLimit -0.25
+			elseif deltaMinus  > 0 then
+				newLimit = oldLimit
+			end
+
+
+			
+			
+			if newLimit > 100 then
+				newLimit = 100
+			elseif newLimit < -100 then
+				newLimit = -100
+			end
+
+			--print("new limit: "..tostring(newLimit))
+			self.cp.throttlePosition[sl] = (newLimit/100)
+
+			self.cp.lastSpeedSave = self.lastSpeedReal*3600
+			
+		end
+	end
+
+	-- setting AWD if necessary
+	if self.realDisplaySlipPercent > 25 and self.realAWDModeOn == false then 
+		self:realSetAwdActive(true);
+	elseif self.realDisplaySlipPercent < 1 and self.realAWDModeOn == true then 
+		self:realSetAwdActive(false);		
+	end
+
+end;
+
+function courseplay:driveInMRDirection(self, lx,lz,fwd,dt)
+			local thottlePosition = self.cp.throttlePosition[self.sl]
+			self.cp.fwd = fwd
+
+			-- toggle forward/reverse if needed
+			if self.realShuttleDirection ~= -1 and not fwd then
+				thottlePosition = 0
+				self.motor.speedLevel = 0
+				self:realSetNextShuttleDirection()
+			elseif self.realShuttleDirection ~= 1 and fwd then
+				self:realSetNextShuttleDirection()
+			end
+
+			--turn arround if waypoint behind
+			if lz < 0 then
+				if lx < 0 then
+					lx = -1
+				else
+					lx = 1
+				end
+			end
+			if not fwd then
+				lx = -lx
+			end
+
+			--when I'm 2Fast in a curve then brake
+			if math.abs(lx) > 0.25 and self.lastSpeedReal*3600 > 25 then
+				thottlePosition = - 0.3
+				self.cp.isRealRegulated = false
+				--print("emergency brake")
+			end
+			
+			--bypass Throttle while on MR-Regulation
+			if self.cp.isRealRegulated then
+				thottlePosition = 0
+			end
+
+
+			--send the thottlePosition and the direction to MR
+			Steerable.updateVehiclePhysics(self, -thottlePosition , true, -lx, true, dt);
+			
 end

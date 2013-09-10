@@ -946,9 +946,16 @@ function courseplay:unload_combine(self, dt)
 		if refSpeed == nil then
 			refSpeed = real_speed
 		end
-		courseplay:setSpeed(self, refSpeed, self.sl)
+		
+		if self.isRealistic then
+			if self.isChopperTurning then
+				refSpeed = self.turn_speed
+			end
+			courseplay:setMRSpeed(self, refSpeed, self.sl,allowedToDrive)
+		else
+			courseplay:setSpeed(self, refSpeed, self.sl)
+		end
 	end
-
 
 
 	if g_server ~= nil then
@@ -972,7 +979,12 @@ function courseplay:unload_combine(self, dt)
 		self.cp.TrafficBrake = false
 
 		courseplay:set_traffc_collision(self, target_x, target_z)
-		AIVehicleUtil.driveInDirection(self, dt, self.steering_angle, 0.5, 0.5, 8, allowedToDrive, moveForwards, target_x, target_z, self.sl, 0.4)
+		
+		if self.isRealistic then 
+			courseplay:driveInMRDirection(self, target_x, target_z,moveForwards, dt);
+		else
+			AIVehicleUtil.driveInDirection(self, dt, self.steering_angle, 0.5, 0.5, 8, allowedToDrive, moveForwards, target_x, target_z, self.sl, 0.4)
+		end
 
 		-- new
 	end

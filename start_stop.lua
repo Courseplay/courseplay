@@ -190,6 +190,13 @@ function courseplay:start(self)
 	self.record = false
 	self.dcheck = false
 	
+	if self.isRealistic then
+		self.cp.savedTransmissionMode = self.realTransmissionMode.currentMode
+		self.cpSavedRealAWDModeOn = self.realAWDModeOn
+		
+	end
+
+	
 	
 	--validation: can switch ai_mode?
 	courseplay:validateCanSwitchMode(self);
@@ -229,8 +236,16 @@ function courseplay:stop(self)
 	self.cp.aiFrontMarker = nil
 	self.cp.aiTurnNoBackward = false
 	self.cp.noStopOnEdge = false
-
-
+	if self.isRealistic then
+		self.motor.speedLevel = 0 
+		self:realSetAwdActive(self.cpSavedRealAWDModeOn)
+		for i = 1,3 do
+			if self.realTransmissionMode.currentMode ~= self.cp.savedTransmissionMode  then
+				self:realSetNextTransmissionMode();
+			end
+		end
+	end
+	
 	AITractor.removeCollisionTrigger(self, self);
 
 
@@ -262,10 +277,6 @@ function courseplay:stop(self)
 	self.StopEnd = false
 	self.unloaded = false
 
-	if g_server ~= nil then
-		AIVehicleUtil.driveInDirection(self, 0, self.steering_angle, 0, 0, 28, false, moveForwards, 0, 1)
-	end
-	
 	--validation: can switch ai_mode?
 	courseplay:validateCanSwitchMode(self);
 end
