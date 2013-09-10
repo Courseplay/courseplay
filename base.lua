@@ -39,7 +39,11 @@ function courseplay:load(xmlFile)
 	if self.cp.isCombine then
 		self.cp.mode7Unloading = false
 	end
-
+	if self.isRealistic then
+		self.cp.throttlePosition = {0.2,0.5,1}
+		self.cp.trailerPushSpeed = 0
+	end
+	self.cp.fillTrigger = false
 	--turn maneuver
 	self.cp.waitForTurnTime = 0.00   --float
 	self.cp.turnStage = 0 --int
