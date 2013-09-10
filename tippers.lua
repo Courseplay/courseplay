@@ -165,6 +165,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 				courseplay:setMarkers(self, object)
 				self.cp.noStopOnEdge = courseplay:isSprayer(object);
 				self.cp.noStopOnTurn = courseplay:isSprayer(object);
+				self.cp.hasMachinetoFill = true
 			end
 		elseif self.ai_mode == 5 then -- Transfer
 			if object.setPlane ~= nil then --open/close cover
@@ -296,6 +297,8 @@ function courseplay:update_tools(self, tractor_or_implement)
 		else 
 			self.tipRefOffset = 0;
 		end;
+	elseif self.cp.hasMachinetoFill then
+		self.tipRefOffset = 1.5
 	end;
 
 
