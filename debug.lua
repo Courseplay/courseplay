@@ -70,7 +70,7 @@ end
 						local fname = string.format("%s[%s]", name, k)
 						field = string.format("[%s]", k)
 						-- three spaces between levels
-						addtocart(v, fname, indent .. "   ", saved, field)
+						addtocart(v, fname, indent .. "\t", saved, field)
 					end
 					cart = cart .. indent .. "};\n"
 				end

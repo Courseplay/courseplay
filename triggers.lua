@@ -27,7 +27,7 @@ function courseplay:cponTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 					if g_currentMission.nodeToVehicle[a].id == vehicle.id then
 						courseplay:debug(string.format("%s: %s is on list", nameNum(self), tostring(vehicle.name)), 3);
 						vehicleOnList = true
-						break		
+						break
 					end
 				end
 			end
@@ -56,15 +56,15 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 		return true
 	end
 
-	local triggerObjects, triggerObjectsCount = courseplay.triggerObjects, courseplay.triggerObjectsCount
+	local tipTriggers, tipTriggersCount = courseplay.triggers.tipTriggers, courseplay.triggers.tipTriggersCount
 	local name = getName(transformId)
 	courseplay:debug(nameNum(self)..": found "..tostring(name),1)
-	if triggerObjects ~= nil and triggerObjectsCount > 0 then
+	if tipTriggers ~= nil and tipTriggersCount > 0 then
 		courseplay:debug(nameNum(self) .. " transformId = ".. tostring(transformId)..": "..tostring(name), 1);
 		local fruitType = self.tippers[1].currentFillType;
 
 		if transformId ~= nil then
-			local trigger = triggerObjects[transformId];
+			local trigger = tipTriggers[transformId];
 
 			if trigger ~= nil then
 				if trigger.bunkerSilo ~= nil and trigger.bunkerSilo.state ~= 0 then 
@@ -74,13 +74,13 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 				if self.cp.hasShield and trigger.bunkerSilo == nil then
 					courseplay:debug(nameNum(self) .. ": has silage shield and trigger is not BGA -> ignoring trigger", 1);
 					return true
-				end	
-						
+				end
+
 				local triggerId = trigger.triggerId;
 				if triggerId == nil then
 					triggerId = trigger.tipTriggerId;
 				end;
-				courseplay:debug(string.format("%s: transformId %s is in triggerObjects (#%s) (triggerId=%s)", nameNum(self), tostring(transformId), tostring(triggerObjectsCount), tostring(triggerId)), 1);
+				courseplay:debug(string.format("%s: transformId %s is in tipTriggers (#%s) (triggerId=%s)", nameNum(self), tostring(transformId), tostring(tipTriggersCount), tostring(triggerId)), 1);
 
 				if trigger.isAlternativeTipTrigger then
 					--fruitType = FruitUtil.fillTypeToFruitType[fruitType];
@@ -127,29 +127,94 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 			end;
 		end;
 	end
-		
+
 		if Utils.endsWith(name, "Trigger") and not Utils.endsWith(name, "ollisionTrigger") then
-			self.cp.fillTrigger = true
+			--self.cp.fillTrigger = true
 		end
 
 	return true
 end;
 
-function courseplay:getAllTipTriggers()
-	local triggerObjects = {};
-	local triggerObjectsCount = 0;
-	
+function courseplay:updateAllTriggers()
+	courseplay.triggers = {
+		tipTriggers = {};
+		gasStationTriggers = {};
+		liquidManureFillTriggers = {};
+		sowingMachineFillTriggers = {};
+		sprayerFillTriggers = {};
+		allNonUpdateables = {};
+		all = {};
+	};
+	local tipTriggersCount, gasStationTriggersCount, liquidManureFillTriggersCount, sowingMachineFillTriggersCount, sprayerFillTriggersCount, allNonUpdateablesCount, allCount = 0, 0, 0, 0, 0, 0, 0;
+
+	--nonUpdateable objects
+	if g_currentMission.nonUpdateables ~= nil then
+		for k,v in pairs(g_currentMission.nonUpdateables) do
+			if g_currentMission.nonUpdateables[k] ~= nil then
+				local trigger = g_currentMission.nonUpdateables[k];
+				local triggerId = trigger.triggerId;
+				if triggerId ~= nil then
+					--GasStationTriggers
+					if trigger.mapHotspot ~= nil and trigger.mapHotspot.name ~= nil and trigger.mapHotspot.name == "FuelStation" then
+						trigger.isGasStationTrigger = true;
+						courseplay.triggers.gasStationTriggers[triggerId] = trigger;
+						courseplay.triggers.allNonUpdateables[triggerId] = trigger;
+						courseplay.triggers.all[triggerId] = trigger;
+						gasStationTriggersCount = gasStationTriggersCount + 1;
+						allNonUpdateablesCount = allNonUpdateablesCount + 1;
+						allCount = allCount + 1;
+
+					--SowingMachineFillTriggers
+					--elseif trigger.fillType ~= nil and trigger.fillType == 17 then --17 = seeds
+					elseif trigger.fillType ~= nil and Fillable.fillTypeIntToName[trigger.fillType] == "seeds" then
+						trigger.isSowingMachineFillTrigger = true;
+						courseplay.triggers.sowingMachineFillTriggers[triggerId] = trigger;
+						courseplay.triggers.allNonUpdateables[triggerId] = trigger;
+						courseplay.triggers.all[triggerId] = trigger;
+						sowingMachineFillTriggersCount = sowingMachineFillTriggersCount + 1;
+						allNonUpdateablesCount = allNonUpdateablesCount + 1;
+						allCount = allCount + 1;
+
+					--SprayerFillTriggers
+					--elseif (trigger.sprayTypeDesc ~= nil and trigger.sprayTypeDesc.name == "fertilizer") or (trigger.fillType ~= nil and trigger.fillType == 23) then --23 = fertilizer
+					elseif (trigger.sprayTypeDesc ~= nil and trigger.sprayTypeDesc.name == "fertilizer") or (Fillable.fillTypeIntToName[trigger.fillType] == "fertilizer") then
+						trigger.isSprayerFillTrigger = true;
+						courseplay.triggers.sprayerFillTriggers[triggerId] = trigger;
+						courseplay.triggers.allNonUpdateables[triggerId] = trigger;
+						courseplay.triggers.all[triggerId] = trigger;
+						sprayerFillTriggersCount = sprayerFillTriggersCount + 1;
+						allNonUpdateablesCount = allNonUpdateablesCount + 1;
+						allCount = allCount + 1;
+					end;
+				end;
+			end;
+		end;
+	end;
+
 	--onCreate objects
 	if g_currentMission.onCreateLoadedObjects ~= nil then
 		for k, trigger in pairs(g_currentMission.onCreateLoadedObjects) do
 			local triggerId = trigger.triggerId;
-			if triggerId ~= nil and courseplay:isValidTipTrigger(trigger) then
-				triggerObjects[triggerId] = trigger;
-				triggerObjectsCount = triggerObjectsCount + 1;
+			if triggerId ~= nil then
+				if courseplay:isValidTipTrigger(trigger) then
+					courseplay.triggers.tipTriggers[triggerId] = trigger;
+					courseplay.triggers.all[triggerId] = trigger;
+					tipTriggersCount = tipTriggersCount + 1;
+					allCount = allCount + 1;
+				elseif trigger.ManureLagerDirtyFlag ~= nil or Utils.endsWith(trigger.className, "ManureLager") then
+					trigger.isManureLager = true;
+					trigger.isLiquidManureFillTrigger = true;
+					courseplay.triggers.liquidManureFillTriggers[triggerId] = trigger;
+					courseplay.triggers.allNonUpdateables[triggerId] = trigger;
+					courseplay.triggers.all[triggerId] = trigger;
+					liquidManureFillTriggersCount = liquidManureFillTriggersCount + 1;
+					allNonUpdateablesCount = allNonUpdateablesCount + 1;
+					allCount = allCount + 1;
+				end;
 			end;
 		end
 	end
-	
+
 	--placeables objects
 	if g_currentMission.placeables ~= nil then
 		for xml, placeable in pairs(g_currentMission.placeables) do
@@ -159,11 +224,14 @@ function courseplay:getAllTipTriggers()
 						trigger.isPlaceableHeapTrigger = true;
 						local triggerId = trigger.tipTriggerId;
 						if triggerId ~= nil then
-							triggerObjects[triggerId] = trigger;
-							triggerObjectsCount = triggerObjectsCount + 1;
+							courseplay.triggers.tipTriggers[triggerId] = trigger;
+							tipTriggersCount = tipTriggersCount + 1;
+							allCount = allCount + 1;
 						end;
 					end;
 				end;
+			else
+				--TODO: placeable seed/fertilizer triggers
 			end;
 		end
 	end
@@ -171,19 +239,46 @@ function courseplay:getAllTipTriggers()
 	--tipTriggers objects
 	if g_currentMission.tipTriggers ~= nil then
 		for k, trigger in pairs(g_currentMission.tipTriggers) do
+			--Regular tipTriggers
 			if trigger.isExtendedTrigger and courseplay:isValidTipTrigger(trigger) then
 				trigger.isAlternativeTipTrigger = Utils.endsWith(trigger.className, "ExtendedTipTrigger");
 				local triggerId = trigger.triggerId;
 				if triggerId ~= nil then
-					triggerObjects[triggerId] = trigger;
-					triggerObjectsCount = triggerObjectsCount + 1;
+					courseplay.triggers.tipTriggers[triggerId] = trigger;
+					tipTriggersCount = tipTriggersCount + 1;
+					allCount = allCount + 1;
 				end;
+
+			--LiquidManureSiloTriggers [BGA]
+			elseif trigger.bga and trigger.bga.liquidManureSiloTrigger then
+				local t = trigger.bga.liquidManureSiloTrigger;
+				local triggerId = t.triggerId;
+				t.isLiquidManureFillTrigger = true;
+				t.isBGAliquidManureFillTrigger = true;
+				courseplay.triggers.liquidManureFillTriggers[triggerId] = t;
+				courseplay.triggers.allNonUpdateables[triggerId] = t;
+				courseplay.triggers.all[triggerId] = t;
+				liquidManureFillTriggersCount = liquidManureFillTriggersCount + 1;
+				allNonUpdateablesCount = allNonUpdateablesCount + 1;
+				allCount = allCount + 1;
+
+			--LiquidManureSiloTriggers [Cows]
+			elseif trigger.animalHusbandry ~= nil and trigger.animalHusbandry.liquidManureTrigger ~= nil then
+				local t = trigger.animalHusbandry.liquidManureTrigger;
+				local triggerId = t.triggerId;
+				t.isLiquidManureFillTrigger = true;
+				t.isCowsLiquidManureFillTrigger = true;
+				courseplay.triggers.liquidManureFillTriggers[triggerId] = t;
+				courseplay.triggers.allNonUpdateables[triggerId] = t;
+				courseplay.triggers.all[triggerId] = t;
+				liquidManureFillTriggersCount = liquidManureFillTriggersCount + 1;
+				allNonUpdateablesCount = allNonUpdateablesCount + 1;
+				allCount = allCount + 1;
 			end;
 		end
 	end;
-	courseplay.triggerObjects = {}
-	courseplay.triggerObjects = triggerObjects 
-	courseplay.triggerObjectsCount = triggerObjectsCount
+
+	courseplay.triggers.tipTriggersCount, courseplay.triggers.gasStationTriggersCount, courseplay.triggers.liquidManureFillTriggersCount, courseplay.triggers.sowingMachineFillTriggersCount, courseplay.triggers.sprayerFillTriggersCount, courseplay.triggers.allNonUpdateablesCount, courseplay.triggers.allCount = tipTriggersCount, gasStationTriggersCount, liquidManureFillTriggersCount, sowingMachineFillTriggersCount, sprayerFillTriggersCount, allNonUpdateablesCount, allCount;
 end;
 
 function courseplay:isValidTipTrigger(trigger)

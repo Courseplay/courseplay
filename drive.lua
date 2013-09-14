@@ -529,7 +529,7 @@ function courseplay:drive(self, dt)
 		if self.ai_mode == 6 then
 			allowedToDrive, workArea, workSpeed, active_tipper = courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill_level, lx , lz )
 		end
-		if not workArea and (self.grainTankCapacity == nil and self.tipRefOffset ~= nil) or  self.cp.hasMachinetoFill then
+		if not workArea and self.cp.tipperFillLevel ~= nil and ((self.grainTankCapacity == nil and self.tipRefOffset ~= nil) or self.cp.hasMachinetoFill) then
 			if self.cp.currentTipTrigger == nil and self.cp.tipperFillLevel > 0 then
 				-- is there a tipTrigger within 10 meters?
 				courseplay:debug(nameNum(self) .. ": call 1st raycast", 1);
