@@ -4,7 +4,7 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp = {};
 	end;
 
-	--Guellepack V2 by Bayerbua
+	--Guellepack v2 [Bayerbua]
 	if workTool.fillerArmInRange ~= nil  then
 		workTool.cp.isFeldbinder = true
 	elseif Utils.endsWith(workTool.configFileName, "KotteGARANTProfiVQ32000.xml") and workTool.fillerArmNode ~= nil then
@@ -14,7 +14,7 @@ function courseplay:setNameVariable(workTool)
 	elseif workTool.sprayFillLevel ~= nil and workTool.sprayCapacity ~= nil then
 		workTool.cp.hasUrfSpec = true
 
-	-- Holaras Silage shield
+	--Silage shields
 	elseif Utils.endsWith(workTool.configFileName, "holaras.xml") then
 		workTool.cp.isSilageShield = true
 	elseif Utils.endsWith(workTool.configFileName, "Stegemann.xml") then
@@ -101,6 +101,8 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.isRopaEuroMaus = true;
 	elseif Utils.endsWith(workTool.configFileName, "HolmerTerraFelis.xml") then
 		workTool.cp.isHolmerTerraFelis = true;
+	elseif Utils.endsWith(workTool.configFileName, "RopaNawaRoMaus.xml") then
+		workTool.cp.isRopaNawaRoMaus = true;
 	
 	--Harvesters (steerable)
 	elseif Utils.endsWith(workTool.configFileName, "RopaEuroTiger_V8_3_XL.xml") then
@@ -122,6 +124,11 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.isHarvesterAttachable = true;
 		workTool.cp.isGrimmeSE7555 = true;
 
+	--Combines [Giants]
+	elseif Utils.endsWith(workTool.configFileName, "fahrM66.xml") then
+		workTool.cp.isFahrM66 = true;
+
+	--Others
 	elseif Utils.endsWith(workTool.configFileName, "KirovetsK700A.xml") then
 		workTool.cp.isKirovetsK700A = true;
 	end;
@@ -161,7 +168,7 @@ end
 function courseplay:isSpecialCombine(workTool, specialType, fileNames)
 	if specialType ~= nil then
 		if specialType == "sugarBeetLoader" then
-			if (workTool.cp.isRopaEuroMaus or workTool.cp.isHolmerTerraFelis) and workTool.unloadingTrigger ~= nil and workTool.unloadingTrigger.node ~= nil then
+			if (workTool.cp.isRopaEuroMaus or workTool.cp.isHolmerTerraFelis or workTool.cp.isRopaNawaRoMaus) and workTool.unloadingTrigger ~= nil and workTool.unloadingTrigger.node ~= nil then
 				if workTool.grainTankFillLevel == nil then
 					workTool.grainTankFillLevel = 0;
 				end;
