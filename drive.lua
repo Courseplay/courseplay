@@ -1048,7 +1048,14 @@ function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive,lx,l
 			if activeTool.cp.hasUrfSpec then
 				activeToolFillLevel = (activeTool.sprayFillLevel / activeTool.sprayCapacity) * 100;
 			end
-			local canRefill = (activeToolFillLevel ~= nil and activeToolFillLevel < driveOn) and (activeTool.sprayerFillTriggers ~= nil and table.getn(activeTool.sprayerFillTriggers) > 0);
+
+			local fillTrigger = nil;
+			if activeTool.sprayerFillTriggers ~= nil and table.getn(activeTool.sprayerFillTriggers) > 0 then
+				fillTrigger = activeTool.sprayerFillTriggers[1];
+			end;
+			local fillTypesMatch = fillTrigger ~= nil and ((not activeTool.cp.hasUrfSpec and activeTool:allowFillType(fillTrigger.fillType, false)) or (activeTool.cp.hasUrfSpec and activeTool.currentSprayFillType == fillTrigger.fillType));
+
+			local canRefill = (activeToolFillLevel ~= nil and activeToolFillLevel < driveOn) and fillTypesMatch;
 			--ManureLager: activeTool.ReFillTrigger has to be nil so it doesn't refill
 			if self.ai_mode == 8 then
 				canRefill = canRefill and activeTool.ReFillTrigger == nil and not self.Waypoints[self.recordnumber].wait and not self.Waypoints[self.recordnumber-1].wait and not self.Waypoints[self.recordnumber-2].wait;
