@@ -128,25 +128,36 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 		end;
 	end
 
-		if Utils.endsWith(name, "Trigger") and not Utils.endsWith(name, "ollisionTrigger") then
-			--self.cp.fillTrigger = true
-		end
+	--[[
+	if courseplay.triggers.allNonUpdateables[transformId] then
+		self.cp.fillTrigger = true;
+	end;
+	--]]
 
 	return true
 end;
 
 function courseplay:updateAllTriggers()
+	--RESET
+	if courseplay.triggers ~= nil then
+		for k,triggerGroup in pairs(courseplay.triggers) do
+			triggerGroup = nil;
+		end;
+		courseplay.triggers = nil;
+	end;
 	courseplay.triggers = {
 		tipTriggers = {};
 		gasStationTriggers = {};
 		liquidManureFillTriggers = {};
 		sowingMachineFillTriggers = {};
 		sprayerFillTriggers = {};
+		waterTrailerFillTriggers = {};
 		allNonUpdateables = {};
 		all = {};
 	};
-	local tipTriggersCount, gasStationTriggersCount, liquidManureFillTriggersCount, sowingMachineFillTriggersCount, sprayerFillTriggersCount, allNonUpdateablesCount, allCount = 0, 0, 0, 0, 0, 0, 0;
+	local tipTriggersCount, gasStationTriggersCount, liquidManureFillTriggersCount, sowingMachineFillTriggersCount, sprayerFillTriggersCount, waterTrailerFillTriggersCount, allNonUpdateablesCount, allCount = 0, 0, 0, 0, 0, 0, 0, 0;
 
+	--UPDATE
 	--nonUpdateable objects
 	if g_currentMission.nonUpdateables ~= nil then
 		for k,v in pairs(g_currentMission.nonUpdateables) do
@@ -155,7 +166,7 @@ function courseplay:updateAllTriggers()
 				local triggerId = trigger.triggerId;
 				if triggerId ~= nil then
 					--GasStationTriggers
-					if trigger.mapHotspot ~= nil and trigger.mapHotspot.name ~= nil and trigger.mapHotspot.name == "FuelStation" then
+					if trigger.mapHotspot and trigger.mapHotspot.name and trigger.mapHotspot.name == "FuelStation" then
 						trigger.isGasStationTrigger = true;
 						courseplay.triggers.gasStationTriggers[triggerId] = trigger;
 						courseplay.triggers.allNonUpdateables[triggerId] = trigger;
@@ -166,7 +177,7 @@ function courseplay:updateAllTriggers()
 
 					--SowingMachineFillTriggers
 					--elseif trigger.fillType ~= nil and trigger.fillType == 17 then --17 = seeds
-					elseif trigger.fillType ~= nil and Fillable.fillTypeIntToName[trigger.fillType] == "seeds" then
+					elseif trigger.fillType and Fillable.fillTypeIntToName[trigger.fillType] == "seeds" then
 						trigger.isSowingMachineFillTrigger = true;
 						courseplay.triggers.sowingMachineFillTriggers[triggerId] = trigger;
 						courseplay.triggers.allNonUpdateables[triggerId] = trigger;
@@ -177,7 +188,7 @@ function courseplay:updateAllTriggers()
 
 					--SprayerFillTriggers
 					--elseif (trigger.sprayTypeDesc ~= nil and trigger.sprayTypeDesc.name == "fertilizer") or (trigger.fillType ~= nil and trigger.fillType == 23) then --23 = fertilizer
-					elseif (trigger.sprayTypeDesc ~= nil and trigger.sprayTypeDesc.name == "fertilizer") or (Fillable.fillTypeIntToName[trigger.fillType] == "fertilizer") then
+					elseif (trigger.sprayTypeDesc and trigger.sprayTypeDesc.name == "fertilizer") or (Fillable.fillTypeIntToName[trigger.fillType] == "fertilizer") then
 						trigger.isSprayerFillTrigger = true;
 						courseplay.triggers.sprayerFillTriggers[triggerId] = trigger;
 						courseplay.triggers.allNonUpdateables[triggerId] = trigger;
@@ -185,6 +196,19 @@ function courseplay:updateAllTriggers()
 						sprayerFillTriggersCount = sprayerFillTriggersCount + 1;
 						allNonUpdateablesCount = allNonUpdateablesCount + 1;
 						allCount = allCount + 1;
+
+					--[[
+					--WaterTrailerFillTriggers
+					--Note: priceScale seems to only exist with WaterTrailerFillTriggers, which in turn don't have fillTypes to check against
+					elseif trigger.priceScale then
+						trigger.isWaterTrailerFillTrigger = true;
+						courseplay.triggers.waterTrailerFillTriggers[triggerId] = trigger;
+						courseplay.triggers.allNonUpdateables[triggerId] = trigger;
+						courseplay.triggers.all[triggerId] = trigger;
+						sprayerFillTriggersCount = waterTrailerFillTriggersCount + 1;
+						allNonUpdateablesCount = allNonUpdateablesCount + 1;
+						allCount = allCount + 1;
+					--]]
 					end;
 				end;
 			end;
@@ -201,7 +225,7 @@ function courseplay:updateAllTriggers()
 					courseplay.triggers.all[triggerId] = trigger;
 					tipTriggersCount = tipTriggersCount + 1;
 					allCount = allCount + 1;
-				elseif trigger.ManureLagerDirtyFlag ~= nil or Utils.endsWith(trigger.className, "ManureLager") then
+				elseif trigger.ManureLagerDirtyFlag or Utils.endsWith(trigger.className, "ManureLager") then
 					trigger.isManureLager = true;
 					trigger.isLiquidManureFillTrigger = true;
 					courseplay.triggers.liquidManureFillTriggers[triggerId] = trigger;
@@ -212,26 +236,54 @@ function courseplay:updateAllTriggers()
 					allCount = allCount + 1;
 				end;
 			end;
-		end
-	end
+		end;
+	end;
 
 	--placeables objects
 	if g_currentMission.placeables ~= nil then
 		for xml, placeable in pairs(g_currentMission.placeables) do
-			if Utils.endsWith(xml, "placeableheap.xml") then
-				for k, trigger in pairs(placeable) do
-					if courseplay:isValidTipTrigger(trigger) and Utils.endsWith(trigger.className, "PlaceableHeap") then
-						trigger.isPlaceableHeapTrigger = true;
-						local triggerId = trigger.tipTriggerId;
-						if triggerId ~= nil then
-							courseplay.triggers.tipTriggers[triggerId] = trigger;
-							tipTriggersCount = tipTriggersCount + 1;
-							allCount = allCount + 1;
-						end;
+			for k, trigger in pairs(placeable) do
+				--PlaceableHeap
+				if Utils.endsWith(xml, "placeableheap.xml") and courseplay:isValidTipTrigger(trigger) and Utils.endsWith(trigger.className, "PlaceableHeap") then
+					trigger.isPlaceableHeapTrigger = true;
+					local triggerId = trigger.tipTriggerId;
+					if triggerId ~= nil then
+						courseplay.triggers.tipTriggers[triggerId] = trigger;
+						courseplay.triggers.all[triggerId] = trigger;
+						tipTriggersCount = tipTriggersCount + 1;
+						allCount = allCount + 1;
 					end;
+
+				--SowingMachineFillTriggers (placeable)
+				elseif trigger.SowingMachineFillTriggerId then
+					local data = {
+						triggerId = trigger.SowingMachineFillTriggerId;
+						nodeId = trigger.nodeId;
+						isSowingMachineFillTrigger = true;
+						isSowingMachineFillTriggerPlaceable = true;
+					};
+					courseplay.triggers.sowingMachineFillTriggers[trigger.SowingMachineFillTriggerId] = data;
+					courseplay.triggers.allNonUpdateables[trigger.SowingMachineFillTriggerId] = data;
+					courseplay.triggers.all[trigger.SowingMachineFillTriggerId] = data;
+					sowingMachineFillTriggersCount = sowingMachineFillTriggersCount + 1;
+					allNonUpdateablesCount = allNonUpdateablesCount + 1;
+					allCount = allCount + 1;
+
+				--SprayerFillTriggers (placeable)
+				elseif trigger.SprayerFillTriggerId then
+					local data = {
+						triggerId = trigger.SprayerFillTriggerId;
+						nodeId = trigger.nodeId;
+						isSprayerFillTrigger = true;
+						isSprayerFillTriggerPlaceable = true;
+					};
+					courseplay.triggers.sprayerFillTriggers[trigger.SprayerFillTriggerId] = data;
+					courseplay.triggers.allNonUpdateables[trigger.SprayerFillTriggerId] = data;
+					courseplay.triggers.all[trigger.SprayerFillTriggerId] = data;
+					sprayerFillTriggersCount = sprayerFillTriggersCount + 1;
+					allNonUpdateablesCount = allNonUpdateablesCount + 1;
+					allCount = allCount + 1;
 				end;
-			else
-				--TODO: placeable seed/fertilizer triggers
 			end;
 		end
 	end
@@ -245,6 +297,7 @@ function courseplay:updateAllTriggers()
 				local triggerId = trigger.triggerId;
 				if triggerId ~= nil then
 					courseplay.triggers.tipTriggers[triggerId] = trigger;
+					courseplay.triggers.all[triggerId] = trigger;
 					tipTriggersCount = tipTriggersCount + 1;
 					allCount = allCount + 1;
 				end;
@@ -263,7 +316,7 @@ function courseplay:updateAllTriggers()
 				allCount = allCount + 1;
 
 			--LiquidManureSiloTriggers [Cows]
-			elseif trigger.animalHusbandry ~= nil and trigger.animalHusbandry.liquidManureTrigger ~= nil then
+			elseif trigger.animalHusbandry and trigger.animalHusbandry.liquidManureTrigger then
 				local t = trigger.animalHusbandry.liquidManureTrigger;
 				local triggerId = t.triggerId;
 				t.isLiquidManureFillTrigger = true;
@@ -278,8 +331,26 @@ function courseplay:updateAllTriggers()
 		end
 	end;
 
-	courseplay.triggers.tipTriggersCount, courseplay.triggers.gasStationTriggersCount, courseplay.triggers.liquidManureFillTriggersCount, courseplay.triggers.sowingMachineFillTriggersCount, courseplay.triggers.sprayerFillTriggersCount, courseplay.triggers.allNonUpdateablesCount, courseplay.triggers.allCount = tipTriggersCount, gasStationTriggersCount, liquidManureFillTriggersCount, sowingMachineFillTriggersCount, sprayerFillTriggersCount, allNonUpdateablesCount, allCount;
+	courseplay.triggers.tipTriggersCount, courseplay.triggers.gasStationTriggersCount, courseplay.triggers.liquidManureFillTriggersCount, courseplay.triggers.sowingMachineFillTriggersCount, courseplay.triggers.sprayerFillTriggersCount, courseplay.triggers.waterTrailerFillTriggersCount, courseplay.triggers.allNonUpdateablesCount, courseplay.triggers.allCount = tipTriggersCount, gasStationTriggersCount, liquidManureFillTriggersCount, sowingMachineFillTriggersCount, sprayerFillTriggersCount, waterTrailerFillTriggersCount, allNonUpdateablesCount, allCount;
 end;
+
+--[[
+--ALTERNATIVE APPENDING FUNCTION (when trigger is created)
+local oldGasStationNew = GasStation.new;
+GasStation.new = function(self, id, trailer, customMt)
+	local data = {
+		triggerId = id;
+		isGasStationTrigger = true;
+	};
+	courseplay.tempTriggers.gasStationTriggers[id] = data;
+	courseplay.tempTriggers.allNonUpdateables[id] = data;
+	courseplay.tempTriggers.all[id] = data;
+	return oldGasStationNew(self, id, trailer, customMt);
+end;
+--]]
+
+
+
 
 function courseplay:isValidTipTrigger(trigger)
 	return trigger.className and (trigger.className == "SiloTrigger" or trigger.isPlaceableHeapTrigger or trigger.isAlternativeTipTrigger or Utils.endsWith(trigger.className, "TipTrigger") or Utils.endsWith(trigger.className, "PlaceableHeap"));
