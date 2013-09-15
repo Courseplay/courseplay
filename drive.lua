@@ -1053,7 +1053,28 @@ function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive,lx,l
 			if activeTool.sprayerFillTriggers ~= nil and table.getn(activeTool.sprayerFillTriggers) > 0 then
 				fillTrigger = activeTool.sprayerFillTriggers[1];
 			end;
-			local fillTypesMatch = fillTrigger ~= nil and ((not activeTool.cp.hasUrfSpec and activeTool:allowFillType(fillTrigger.fillType, false)) or (activeTool.cp.hasUrfSpec and activeTool.currentSprayFillType == fillTrigger.fillType));
+
+			local fillTypesMatch = false;
+			if fillTrigger ~= nil then
+				if not activeTool.cp.hasUrfSpec then
+					if fillTrigger.fillType then
+						fillTypesMatch = activeTool:allowFillType(fillTrigger.fillType, false);
+					elseif fillTrigger.currentFillType then
+						fillTypesMatch = activeTool:allowFillType(fillTrigger.currentFillType, false);
+					--[[
+					elseif fillTrigger.fillTypes and #fillTrigger.fillTypes > 0 then
+						for k,fillType in pairs(fillTrigger.fillTypes) do
+							if activeTool:allowFillType(fillType, false) then
+								fillTypesMatch = true;
+								break;
+							end;
+						end;
+					--]]
+					end;
+				elseif activeTool.cp.hasUrfSpec and activeTool.isFertilizing > 1 then
+					fillTypesMatch = fillTrigger.fillType and activeTool.currentSprayFillType == fillTrigger.fillType;
+				end;
+			end;
 
 			local canRefill = (activeToolFillLevel ~= nil and activeToolFillLevel < driveOn) and fillTypesMatch;
 			--ManureLager: activeTool.ReFillTrigger has to be nil so it doesn't refill
