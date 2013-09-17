@@ -246,7 +246,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 
 	--Urf-specialisation
 	elseif workTool.cp.hasUrfSpec then
-		if workTool.sprayFillLevel == 0 then
+		if workTool.sprayFillLevel == 0 and activeTool.isFertilizing > 1 then
 			self.cp.urfStop = true
 		end
 		return false, allowedToDrive

@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="12">
-	<version>3.41.0120</version>
+	<version>3.41.0121</version>
 	<author>Hummel (modhoster.de) / Lautschreier / Wolverin0815 / Bastian82 / Jakob Tischler / Thomas Gärtner</author>
 	<title>
 		<de>Courseplay</de>        
@@ -12,9 +12,8 @@
 	</title>
 	<description>
 		<de>
-<![CDATA[www.modhoster.de
-Script: Lautschreier, Hummel, Wolverin0815, Bastian82 
-Skydancer, Jakob Tischler, Thomas Gärtner
+<![CDATA[Entwickler: Jakob Tischler, Thomas Gärtner
+Ehemalige Entwickler: Lautschreier, Hummel, Wolverin0815, Bastian82, Skydancer
 Französische Übersetzung: Guillaume Dupuy
 Italienische Übersetzung: JD7530
 Spanische Übersetzung: JFMtb
@@ -22,9 +21,8 @@ Tschechische Übersetzung: Albi
 ]]>
 		</de>
 		<en>
-<![CDATA[www.modhoster.de
-Script: Lautschreier, Hummel, Wolverin0815, Bastian82 
-Skydancer, Jakob Tischler, Thomas Gärtner
+<![CDATA[Developers: Jakob Tischler, Thomas Gärtner
+Former developers: Lautschreier, Hummel, Wolverin0815, Bastian82, Skydancer
 French translation: Guillaume Dupuy
 Italian translation: JD7530
 Spanish translation: JFMtb
@@ -32,9 +30,8 @@ Czech translation: Albi
 ]]>
 		</en>
 		<es>
-<![CDATA[www.modhoster.de
-Script: Lautschreier, Hummel, Wolverin0815, Bastian82 
-Skydancer, Jakob Tischler, Thomas Gärtner
+<![CDATA[Desarrolladores: Jakob Tischler, Thomas Gärtner
+Desarrolladores antiguos: Lautschreier, Hummel, Wolverin0815, Bastian82, Skydancer
 Traddución en francés: Guillaume Dupuy
 Traddución en italiano: JD7530
 Traddución en español: JFMtb
@@ -42,9 +39,8 @@ Traddución en checo: Albi
 ]]>
 		</es>
 		<fr>
-<![CDATA[www.modhoster.de
-Script: Lautschreier, Hummel, Wolverin0815, Bastian82 
-Skydancer, Jakob Tischler, Thomas Gärtner
+<![CDATA[Développeurs: Jakob Tischler, Thomas Gärtner
+Développeurs anciens: Lautschreier, Hummel, Wolverin0815, Bastian82, Skydancer
 Traduction français: Guillaume Dupuy
 Traduction italien: JD7530
 Traduction espagnol: JFMtb
@@ -52,9 +48,8 @@ Traduction tchèque: Albi
 ]]>
 		</fr>
 		<it>
-<![CDATA[www.modhoster.de
-Script: Lautschreier, Hummel, Wolverin0815, Bastian82 
-Skydancer, Jakob Tischler, Thomas Gärtner
+<![CDATA[Sviluppatori: Jakob Tischler, Thomas Gärtner
+Ex sviluppatori: Lautschreier, Hummel, Wolverin0815, Bastian82, Skydancer
 Traduzione francese: Guillaume Dupuy
 Traduzione italiano: JD7530
 Traduzione spagnolo: JFMtb
@@ -62,9 +57,8 @@ Traduzione ceco: Albi
 ]]>
 		</it>
 		<cz>
-<![CDATA[www.modhoster.de
-Script: Lautschreier, Hummel, Wolverin0815, Bastian82 
-Skydancer, Jakob Tischler, Thomas Gärtner
+<![CDATA[Vývojáři: Jakob Tischler, Thomas Gärtner
+Bývalí vývojáři: Lautschreier, Hummel, Wolverin0815, Bastian82, Skydancer
 Francouzký překlad: Guillaume Dupuy
 Italský překlad: JD7530
 Španělský překlad: JFMtb
@@ -1551,7 +1545,7 @@ Italský překlad: JD7530
 
 	<extraSourceFiles>
 		<sourceFile filename="register.lua" />
-    </extraSourceFiles>   
+	</extraSourceFiles>   
 
 	<inputBindings>
 		<input name="AHInput1" category="VEHICLE" key1="KEY_KP_7"   key2="" button="" device="0" mouse="" />
@@ -1560,6 +1554,6 @@ Italský překlad: JD7530
 		<input name="CP_Hud"                      key1="KEY_delete" key2="" button="" device="0" mouse="" />
 		<input name="CP_Modifier_1"               key1="KEY_lctrl"  key2="" button="" device="0" mouse="" />
 		<input name="CP_Modifier_2"               key1="KEY_lalt"   key2="" button="" device="0" mouse="" />
-    </inputBindings>
+	</inputBindings>
     
 </modDesc>
