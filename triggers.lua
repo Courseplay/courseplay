@@ -59,7 +59,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 	local tipTriggers, tipTriggersCount = courseplay.triggers.tipTriggers, courseplay.triggers.tipTriggersCount
 	local name = getName(transformId)
 	courseplay:debug(nameNum(self)..": found "..tostring(name),1)
-	if tipTriggers ~= nil and tipTriggersCount > 0 then
+	if self.tippers[1] ~= nil and tipTriggers ~= nil and tipTriggersCount > 0 then
 		courseplay:debug(nameNum(self) .. " transformId = ".. tostring(transformId)..": "..tostring(name), 1);
 		local fruitType = self.tippers[1].currentFillType;
 
@@ -119,21 +119,21 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 				else
 					courseplay:debug(string.format("%s: trigger %s does not have acceptedFillTypes (fruitType=%s)", nameNum(self), tostring(triggerId), tostring(fruitType)), 1);
 				end;
-			else
-				courseplay.confirmedNoneTriggers[transformId] = true
-				courseplay.confirmedNoneTriggersCounter = courseplay.confirmedNoneTriggersCounter +1
-				courseplay:debug(string.format("%s: added %s to blacklist", nameNum(self), tostring(name)), 1);
-				courseplay:debug("courseplay.confirmedNoneTriggers:  "..tostring(courseplay.confirmedNoneTriggersCounter),1);
+			return true
 			end;
 		end;
 	end
-
-	--[[
 	if courseplay.triggers.allNonUpdateables[transformId] then
-		self.cp.fillTrigger = true;
-	end;
-	--]]
-
+		courseplay:debug(nameNum(self) .. " transformId = ".. tostring(transformId)..": "..tostring(name).." is allNonUpdateables", 1);
+		self.cp.fillTrigger = transformId;
+		return true
+	end
+				
+	courseplay.confirmedNoneTriggers[transformId] = true
+	courseplay.confirmedNoneTriggersCounter = courseplay.confirmedNoneTriggersCounter +1
+	courseplay:debug(string.format("%s: added %s to blacklist", nameNum(self), tostring(name)), 1);
+	courseplay:debug("courseplay.confirmedNoneTriggers:  "..tostring(courseplay.confirmedNoneTriggersCounter),1);
+	
 	return true
 end;
 

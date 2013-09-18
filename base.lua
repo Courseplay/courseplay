@@ -43,7 +43,7 @@ function courseplay:load(xmlFile)
 		self.cp.throttlePosition = {0.2,0.5,1}
 		self.cp.trailerPushSpeed = 0
 	end
-	self.cp.fillTrigger = false
+	
 	--turn maneuver
 	self.cp.waitForTurnTime = 0.00   --float
 	self.cp.turnStage = 0 --int

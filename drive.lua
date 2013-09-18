@@ -478,6 +478,7 @@ function courseplay:drive(self, dt)
 		end;
 
 		if self.ai_mode == 8 then
+			raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
 			if self.tipper_attached then
 				if self.tippers ~= nil then
 					allowedToDrive = courseplay:refillSprayer(self, fill_level, 100, allowedToDrive);
@@ -491,6 +492,14 @@ function courseplay:drive(self, dt)
 				allowedToDrive = false;
 				courseplay:setGlobalInfoText(self, courseplay:get_locale(self, courseplay.locales.CPNoFuelStop), -2);
 			elseif currentFuelPercentage < 20 and not self.isFuelFilling then
+				raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
+				if self.cp.fillTrigger ~= nil then
+					local trigger = courseplay.triggers.all[self.cp.fillTrigger]
+					if trigger.isGasStationTrigger then
+						--print("slow down , its a gasstation")
+						self.cp.isInFilltrigger = true
+					end
+				end
 				courseplay:setGlobalInfoText(self, courseplay:get_locale(self, courseplay.locales.CPFuelWarning), -1);
 				if self.fuelFillTriggers[1] then
 					allowedToDrive = courseplay:brakeToStop(self);
@@ -530,7 +539,7 @@ function courseplay:drive(self, dt)
 			allowedToDrive, workArea, workSpeed, active_tipper = courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill_level, lx , lz )
 		end
 		if not workArea and self.cp.tipperFillLevel ~= nil and ((self.grainTankCapacity == nil and self.tipRefOffset ~= nil) or self.cp.hasMachinetoFill) then
-			if self.cp.currentTipTrigger == nil and self.cp.tipperFillLevel > 0 then
+			if self.cp.currentTipTrigger == nil and self.cp.fillTrigger == nil then
 				-- is there a tipTrigger within 10 meters?
 				courseplay:debug(nameNum(self) .. ": call 1st raycast", 1);
 				local num = raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
@@ -715,8 +724,11 @@ function courseplay:drive(self, dt)
 		if self.cp.currentTipTrigger.bunkerSilo ~= nil then
 			refSpeed = Utils.getNoNil(self.unload_speed, 3/3600);
 		else
-			refSpeed = 9 / 3600;
+			refSpeed = self.turn_speed
 		end
+	elseif self.cp.isInFilltrigger then
+		refSpeed = self.turn_speed
+		self.cp.isInFilltrigger = false
 	else
 		if self.runonce ~= nil then
 			self.runonce = nil;
@@ -728,10 +740,7 @@ function courseplay:drive(self, dt)
 	if self.cp.maxFieldSpeed ~= 0 then
 		refSpeed = math.min(self.cp.maxFieldSpeed, refSpeed);
 	end
-	if self.cp.fillTrigger then
-		refSpeed = self.turn_speed
-	end
-	
+
 	if self.isRealistic then
 		courseplay:setMRSpeed(self, refSpeed, self.sl,allowedToDrive)
 	else
@@ -1041,6 +1050,13 @@ function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive,lx,l
 		end
 		
 		if courseplay:isSprayer(activeTool) or activeTool.cp.hasUrfSpec then --sprayer
+			if self.cp.fillTrigger ~= nil then
+				local trigger = courseplay.triggers.all[self.cp.fillTrigger]
+				if activeTool:allowFillType(trigger.fillType, false) then --trigger.fillType ~= nil and trigger.fillType == activeTool.currentFillType then
+					--print("slow down , its a fertilizerFillTrigger")
+					self.cp.isInFilltrigger = true
+				end
+			end
 			local activeToolFillLevel = nil;
 			if activeTool.fillLevel ~= nil and activeTool.capacity ~= nil then
 				activeToolFillLevel = (activeTool.fillLevel / activeTool.capacity) * 100;
@@ -1052,6 +1068,7 @@ function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive,lx,l
 			local fillTrigger = nil;
 			if activeTool.sprayerFillTriggers ~= nil and table.getn(activeTool.sprayerFillTriggers) > 0 then
 				fillTrigger = activeTool.sprayerFillTriggers[1];
+				self.cp.fillTrigger = nil
 			end;
 
 			local fillTypesMatch = false;
@@ -1103,16 +1120,23 @@ function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive,lx,l
 			elseif self.loaded or not self.cp.stopForLoading then
 				activeTool:setIsSprayerFilling(false, false);
 				courseplay:handleSpecialTools(self,activeTool,nil,nil,nil,allowedToDrive,false,false)
-				self.cp.fillTrigger = false
+				self.cp.fillTrigger = nil
 			end;
 		end
 		if courseplay:is_sowingMachine(activeTool) then --sowing machine
+			if self.cp.fillTrigger ~= nil then
+				local trigger = courseplay.triggers.all[self.cp.fillTrigger]
+				if trigger.isSowingMachineFillTrigger then
+					--print("slow down , its a SowingMachineFillTrigger")
+					self.cp.isInFilltrigger = true
+				end
+			end
 			if fill_level < driveOn and activeTool.sowingMachineFillTriggers[1] ~= nil then
 				activeTool:setIsSowingMachineFilling(true, activeTool.sowingMachineFillTriggers[1].isEnabled, false);
 				allowedToDrive = false;
 				self.cp.infoText = string.format(courseplay:get_locale(self, "CPloading"), activeTool.fillLevel, activeTool.capacity);
 			elseif activeTool.sowingMachineFillTriggers[1] ~= nil then
-				self.cp.fillTrigger = false
+				self.cp.fillTrigger = nil
 			end;
 		end;
 		if self.cp.stopForLoading then

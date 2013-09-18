@@ -244,9 +244,8 @@ function courseplay:stop(self)
 				self:realSetNextTransmissionMode();
 			end
 		end
-		self.cp.fillTrigger = false
 	end
-	
+	self.cp.fillTrigger = nil
 	AITractor.removeCollisionTrigger(self, self);
 
 
