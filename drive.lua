@@ -727,7 +727,11 @@ function courseplay:drive(self, dt)
 			refSpeed = self.turn_speed
 		end
 	elseif self.cp.isInFilltrigger then
-		refSpeed = self.turn_speed
+		if self.lastSpeedReal > self.turn_speed then
+			courseplay:brakeToStop(self)
+		else
+			refSpeed = self.turn_speed
+		end
 		self.cp.isInFilltrigger = false
 	else
 		if self.runonce ~= nil then
@@ -1052,7 +1056,18 @@ function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive,lx,l
 		if courseplay:isSprayer(activeTool) or activeTool.cp.hasUrfSpec then --sprayer
 			if self.cp.fillTrigger ~= nil then
 				local trigger = courseplay.triggers.all[self.cp.fillTrigger]
-				if activeTool:allowFillType(trigger.fillType, false) then --trigger.fillType ~= nil and trigger.fillType == activeTool.currentFillType then
+				local validForFill = false
+				if not activeTool.cp.hasUrfSpec then
+					if trigger.fillType then
+						validForFill = activeTool:allowFillType(trigger.fillType, false);
+					elseif trigger.currentFillType then
+						validForFill = activeTool:allowFillType(trigger.currentFillType, false);
+					end
+				elseif activeTool.cp.hasUrfSpec and activeTool.isFertilizing > 1 then
+					validForFill = trigger.fillType and activeTool.currentSprayFillType == trigger.fillType;
+				end;
+
+				if validForFill then 
 					--print("slow down , its a fertilizerFillTrigger")
 					self.cp.isInFilltrigger = true
 				end
@@ -1078,15 +1093,6 @@ function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive,lx,l
 						fillTypesMatch = activeTool:allowFillType(fillTrigger.fillType, false);
 					elseif fillTrigger.currentFillType then
 						fillTypesMatch = activeTool:allowFillType(fillTrigger.currentFillType, false);
-					--[[
-					elseif fillTrigger.fillTypes and #fillTrigger.fillTypes > 0 then
-						for k,fillType in pairs(fillTrigger.fillTypes) do
-							if activeTool:allowFillType(fillType, false) then
-								fillTypesMatch = true;
-								break;
-							end;
-						end;
-					--]]
 					end;
 				elseif activeTool.cp.hasUrfSpec and activeTool.isFertilizing > 1 then
 					fillTypesMatch = fillTrigger.fillType and activeTool.currentSprayFillType == fillTrigger.fillType;
