@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="12">
-	<version>3.41.0126</version>
+	<version>3.41.0127</version>
 	<author>Hummel (modhoster.de) / Lautschreier / Wolverin0815 / Bastian82 / Jakob Tischler / Thomas Gärtner</author>
 	<title>
 		<de>Courseplay</de>        
@@ -242,7 +242,8 @@ Italský překlad: JD7530
 			<cz>Zastavit odvozce</cz>
 		</text>
 		<text name="CourseMode1">
-			<en>Type: Driving helper (Load at start)</en>
+			<!--<en>Type: Driving helper (Load at start)</en>-->
+			<en>Type: Grain transport (Load at start)</en>
 			<de>Typ: Abfahrer (Beladung am Startpunkt)</de>
 			<fr>Type: Aide à la conduite (Chargement au démarrage)</fr>
 			<es>Tipo: Ayudante (cargar y conducir)</es>
@@ -281,7 +282,8 @@ Italský překlad: JD7530
 			<it>Modo: Trasferimento (vai dall'inizio alla fine)</it>
 			<cz>Mod: Průjezd (projede trasu bez zastavení)</cz>
 		</text>
-		<text name="CourseMode6">
+		<!--
+		<text name="CourseMode6_ORIGINAL">
 			<en>Type: Fieldwork for balers, forage wagons, baleloaders</en>
 			<de>Typ: Feldarbeit, Ballen pressen, Heu und Ballen sammeln</de>
 			<fr>Type: Travail des champs: Presse, chargeur à ballots, ...</fr>
@@ -289,8 +291,18 @@ Italský překlad: JD7530
 			<it>Modo: Lavori in campo: imballatrici, raccogliforaggio, ...</it>
 			<cz>Mod: Polní práce (lisování, sběr sena, slámy)</cz>
 		</text>
+		-->
+		<text name="CourseMode6">
+			<en>Type: Fieldwork</en>
+			<de>Typ: Feldarbeit</de>
+			<fr>Type: Travail des champs</fr>
+			<es>Tipo: Trabajo campo</es>
+			<it>Modo: Lavori in campo</it>
+			<cz>Mod: Polní práce</cz>
+		</text>
 		<text name="CourseMode7">
-			<en>Type: Combine drives to trailer and unloads</en>
+			<!--<en>Type: Combine drives to trailer and unloads</en>-->
+			<en>Type: Combine self-unloading</en>
 			<de>Typ: Drescher fährt selbst abtanken</de>
 			<fr>Type: Batteuse va à la remorque pour vider</fr>
 			<es>Tipo: Cosechadora ir a remolque y descargar</es>
