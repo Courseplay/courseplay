@@ -233,10 +233,10 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 
 					-- damn, i missed the trigger!
 					if self.cp.currentTipTrigger ~= nil then
-						local trigger_id = self.cp.currentTipTrigger.triggerId
+						local triggerId = self.cp.currentTipTrigger.triggerId
 
 						if self.cp.currentTipTrigger.specialTriggerId ~= nil then
-							trigger_id = self.cp.currentTipTrigger.specialTriggerId
+							triggerId = self.cp.currentTipTrigger.specialTriggerId
 						end
 						local trigger_x, trigger_y, trigger_z = getWorldTranslation(triggerId);
 						local ctx, cty, ctz = getWorldTranslation(self.rootNode);
