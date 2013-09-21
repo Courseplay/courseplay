@@ -20,29 +20,14 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 		allowedToDrive = false
 		courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPWorkEnd"), 1);
 	end
-	
+
 	local returnToStartPoint = false;
-	if  self.Waypoints[self.stopWork].cx == self.Waypoints[self.startWork].cx 
-	and self.Waypoints[self.stopWork].cz == self.Waypoints[self.startWork].cz 
+	if  self.Waypoints[self.stopWork].cx == self.Waypoints[self.startWork].cx
+	and self.Waypoints[self.stopWork].cz == self.Waypoints[self.startWork].cz
 	and self.recordnumber > self.stopWork - 5
 	and self.recordnumber <= self.stopWork then
 		returnToStartPoint = true;
 	end;
-	
-	--calculate total fillLevel for UBT (in case of multiple trailers)
-	local hasUBT = false;
-	local fillLevelUBT = 0;
-	for i=1, table.getn(self.tippers) do
-		if courseplay:isUBT(self.tippers[i]) then
-			hasUBT = true;
-			fillLevelUBT = fillLevelUBT + (self.tippers[i].fillLevel * 100 / self.tippers[i].fillLevelMax);
-		end;
-	end;
-	if hasUBT then 
-		fill_level = fillLevelUBT;
-	end;
-	--END UBT fillLevel
-
 
 	for i=1, table.getn(self.tippers) do
 		workTool = self.tippers[i];
@@ -50,9 +35,9 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 		if courseplay:isAttachedCombine(workTool) then
 			tool = workTool
 		end
-		
+
 		-- stop while folding
-		if courseplay:isFolding(workTool) and self.cp.turnStage == 0 then 
+		if courseplay:isFolding(workTool) and self.cp.turnStage == 0 then
 			allowedToDrive = courseplay:brakeToStop(self);
 			--courseplay:debug(tostring(workTool.name) .. ": isFolding -> allowedToDrive == false", 12);
 		end;
@@ -85,17 +70,19 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 						end
 					end
 				end
-				
+
 				if self.cp.last_recordnumber == self.stopWork -1  and workTool.isTurnedOn and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,nil)
 					if not specialTool then
 						workTool:setIsTurnedOn(false, false);
 					end
 				end
-			-- baleloader, copied original code parts				
-			elseif courseplay:is_baleLoader(workTool) or courseplay:isUBT(workTool) then
-				if not courseplay:isUBT(workTool) then
-					if workArea then
+
+			-- baleloader, copied original code parts
+			elseif courseplay:is_baleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool) then
+				if workArea and fill_level ~= 100 then
+					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,true,true,true,allowedToDrive,nil,nil);
+					if not specialTool then
 						-- automatic stop for baleloader
 						if workTool.grabberIsMoving or workTool:getIsAnimationPlaying("rotatePlatform") then
 							allowedToDrive = false
@@ -106,123 +93,52 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 							workTool.isInWorkPosition = true
 							BaleLoader.moveToWorkPosition(workTool)
 						end
-					end
+					end;
+				end
 
-					if (fill_level == 100 and self.maxnumber ~= self.stopWork or self.recordnumber == self.stopWork) and workTool.isInWorkPosition and not workTool:getIsAnimationPlaying("rotatePlatform") then
+				if (fill_level == 100 and self.cp.hasUnloadingRefillingCourse or self.recordnumber == self.stopWork) and workTool.isInWorkPosition and not workTool:getIsAnimationPlaying("rotatePlatform") then
+					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,nil);
+					if not specialTool then
 						workTool.grabberIsMoving = true
 						workTool.isInWorkPosition = false
 						-- move to transport position
 						BaleLoader.moveToTransportPosition(workTool)
-					end
+					end;
+				end
 
-					if fill_level == 100 and self.maxnumber == self.stopWork then
-						allowedToDrive = false
-						courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPUnloadBale"));
-					end
+				if fill_level == 100 and not self.cp.hasUnloadingRefillingCourse then
+					allowedToDrive = false
+					courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPUnloadBale"));
+					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,nil); --TODO: unclear
+				end
 
-					-- automatic unload
-					if self.Waypoints[self.cp.last_recordnumber].wait and (self.wait or fill_level == 0) then
-						if not courseplay:isUBT(workTool) then
-							if workTool.emptyState ~= BaleLoader.EMPTY_NONE then
-								if workTool.emptyState == BaleLoader.EMPTY_WAIT_TO_DROP then
-									-- BaleLoader.CHANGE_DROP_BALES
-									g_server:broadcastEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_DROP_BALES), true, nil, workTool)
-								elseif workTool.emptyState == BaleLoader.EMPTY_WAIT_TO_SINK then
-									-- BaleLoader.CHANGE_SINK
-									g_server:broadcastEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_SINK), true, nil, workTool)
-								elseif workTool.emptyState == BaleLoader.EMPTY_WAIT_TO_REDO then
-									-- BaleLoader.CHANGE_EMPTY_REDO
-									g_server:broadcastEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_EMPTY_REDO), true, nil, workTool);
-								end
-							else
-								--BaleLoader.CHANGE_EMPTY_START
-								if BaleLoader.getAllowsStartUnloading(workTool) then
-									g_server:broadcastEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_EMPTY_START), true, nil, workTool)
-								end
+				-- automatic unload
+				if not workArea and self.Waypoints[self.cp.last_recordnumber].wait and (self.wait or fill_level == 0) then
+					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,true);
+					if not specialTool then
+						if workTool.emptyState ~= BaleLoader.EMPTY_NONE then
+							if workTool.emptyState == BaleLoader.EMPTY_WAIT_TO_DROP then
+								-- BaleLoader.CHANGE_DROP_BALES
+								g_server:broadcastEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_DROP_BALES), true, nil, workTool)
+							elseif workTool.emptyState == BaleLoader.EMPTY_WAIT_TO_SINK then
+								-- BaleLoader.CHANGE_SINK
+								g_server:broadcastEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_SINK), true, nil, workTool)
+							elseif workTool.emptyState == BaleLoader.EMPTY_WAIT_TO_REDO then
+								-- BaleLoader.CHANGE_EMPTY_REDO
+								g_server:broadcastEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_EMPTY_REDO), true, nil, workTool);
 							end
-						end;
-					end;				
-				
-				elseif courseplay:isUBT(workTool) then
-					if not workTool.fillLevelMax == workTool.numAttachers[workTool.typeOnTrailer] then
-						workTool.fillLevelMax = workTool.numAttachers[workTool.typeOnTrailer];
-					end;
-					if workTool.capacity == nil or (workTool.capacity ~= nil and workTool.capacity ~= workTool.fillLevelMax) then
-						workTool.capacity = workTool.fillLevelMax;
-					end;
-					
-					if workArea then
-						if (workTool.fillLevel == workTool.fillLevelMax or (workTool.capacity ~= nil and workTool.fillLevel == workTool.capacity) or fill_level == 100) then
-							if self.maxnumber == self.stopWork then
-								if workTool.loadingIsActive then
-									workTool.loadingIsActive = false;
-								end;
-
-								allowedToDrive = false;
-								courseplay:setGlobalInfoText(self, "UBT " .. courseplay:get_locale(self, "CPUnloadBale"));
-							end;
-							--print("UBT is full (" .. tostring(workTool.fillLevel) .. "/" .. tostring(workTool.fillLevelMax) .. ")"); -- WORKS
 						else
-							if not workTool.loadingIsActive then
-								--print("UBT activating loadingIsActive"); -- WORKS
-								workTool.loadingIsActive = true;
-							end;
-						end;
-						
-						if not workTool.autoLoad then
-							--print("UBT activating autoLoad"); -- WORKS
-							workTool.autoLoad = true;
-						end;
-					else
-						if workTool.loadingIsActive then
-							workTool.loadingIsActive = false;
-						end;
-
-						-- automatic unload
-						if self.Waypoints[self.cp.last_recordnumber].wait and (self.wait or fill_level == 0 or workTool.fillLevel == 0) then
-							--call unload function
-							for i=1, workTool.numAttachers[workTool.typeOnTrailer] do
-								if workTool.attacher[workTool.typeOnTrailer][i].attachedObject ~= nil then
-
-									--ORIG: if workTool.ulRef[workTool.ulMode][1] == g_i18n:getText("UNLOAD_TRAILER") then
-									if workTool.ulRef[workTool.ulMode][3] == 0 then --verrrrry dirty: unload on trailer
-										local x,y,z = getWorldTranslation(workTool.attacher[workTool.typeOnTrailer][i].attachedObject);
-										local rx,ry,rz = getWorldRotation(workTool.attacher[workTool.typeOnTrailer][i].attachedObject);
-										local root = getRootNode();
-										setRigidBodyType(workTool.attacher[workTool.typeOnTrailer][i].attachedObject,"Dynamic");
-										setTranslation(workTool.attacher[workTool.typeOnTrailer][i].attachedObject,x,y,z);
-										setRotation(workTool.attacher[workTool.typeOnTrailer][i].attachedObject,rx,ry,rz);
-										link(root,workTool.attacher[workTool.typeOnTrailer][i].attachedObject);
-										workTool.attacher[workTool.typeOnTrailer][i].attachedObject = nil;
-										workTool.fillLevel = workTool.fillLevel - 1;
-									else
-										local x,y,z = getWorldTranslation(workTool.attacher[workTool.typeOnTrailer][i].attachedObject);
-										local rx,ry,rz = getWorldRotation(workTool.attacher[workTool.typeOnTrailer][i].attachedObject);
-										local nx,ny,nz = getWorldTranslation(workTool.attacherLevel[workTool.typeOnTrailer]);
-										local tx,ty,tz = getWorldTranslation(workTool.ulRef[workTool.ulMode][3]);
-										local x = x + (tx - nx);
-										local y = y + (ty - ny);
-										local z = z + (tz - nz);
-										local tH = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, x, 0, z);
-										local relHeight = ny - tH;
-										local root = getRootNode();
-										setRigidBodyType(workTool.attacher[workTool.typeOnTrailer][i].attachedObject,"Dynamic");
-										setTranslation(workTool.attacher[workTool.typeOnTrailer][i].attachedObject,x,(y - relHeight),z);
-										setRotation(workTool.attacher[workTool.typeOnTrailer][i].attachedObject,rx,ry,rz);
-										link(root,workTool.attacher[workTool.typeOnTrailer][i].attachedObject);
-										workTool.attacher[workTool.typeOnTrailer][i].attachedObject = nil;
-										workTool.fillLevel = workTool.fillLevel - 1;
-									end;
-								end;
-							end;
-						end;				
-					
+							--BaleLoader.CHANGE_EMPTY_START
+							if BaleLoader.getAllowsStartUnloading(workTool) then
+								g_server:broadcastEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_EMPTY_START), true, nil, workTool)
+							end
+						end
 					end;
 				end;
-			--END baleloader	
+			--END baleloader
 
 
-			-- other worktools, tippers, e.g. forage wagon	
+			-- other worktools, tippers, e.g. forage wagon
 			else
 				if workArea and fill_level ~= 100 and ((self.abortWork == nil) or (self.abortWork ~= nil and self.cp.last_recordnumber == self.abortWork) or (self.runOnceStartCourse)) and self.cp.turnStage == 0  and not returnToStartPoint then
 								--courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
@@ -237,7 +153,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 							if courseplay:isFoldable(workTool) and not courseplay:isFolding(workTool) then
 								if not SpecializationUtil.hasSpecialization(Plough, workTool.specializations) then
 									workTool:setFoldDirection(-1);
-									self.runOnceStartCourse = false; 
+									self.runOnceStartCourse = false;
 								elseif waypoint == 2 and self.runOnceStartCourse then --wegpunkte finden und richtung setzen...
 									workTool:setFoldDirection(-1);
 									if workTool:getIsPloughRotationAllowed() then
@@ -246,17 +162,17 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 									end
 								elseif self.runOnceStartCourse then
 									workTool:setFoldDirection(-1);
-									self.runOnceStartCourse = false; 
+									self.runOnceStartCourse = false;
 								end
 							end;
-							
 
-							if not courseplay:isFolding(workTool) and not waitForSpecialTool then
+
+							if not courseplay:isFolding(workTool) and not waitForSpecialTool then --TODO: where does "waitForSpecialTool" come from? what does it do?
 								--lower
 								if workTool.needsLowering and workTool.aiNeedsLowering then
 									self:setAIImplementsMoveDown(true);
 								end;
-							
+
 								--turn on
 								if workTool.setIsTurnedOn ~= nil and not workTool.isTurnedOn then
 									workTool:setIsTurnedOn(true, false);
@@ -322,11 +238,9 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 						if self.cp.currentTipTrigger.specialTriggerId ~= nil then
 							trigger_id = self.cp.currentTipTrigger.specialTriggerId
 						end
-
-						local trigger_x, trigger_y, trigger_z = getWorldTranslation(trigger_id)
+						local trigger_x, trigger_y, trigger_z = getWorldTranslation(triggerId);
 						local ctx, cty, ctz = getWorldTranslation(self.rootNode);
-						local distance_to_trigger = courseplay:distance(ctx, ctz, trigger_x, trigger_z)
-						if distance_to_trigger > 60 then
+						if courseplay:distance(ctx, ctz, trigger_x, trigger_z) > 60 then
 							self.cp.currentTipTrigger = nil
 						end
 					end
@@ -335,7 +249,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 					if tipper_fill_level > 0 and self.cp.currentTipTrigger ~= nil and self.recordnumber > 3 then
 						self.max_speed_level = 1
 						allowedToDrive, active_tipper = courseplay:unload_tippers(self)
-						self.cp.infoText = courseplay:get_locale(self, "CPTriggerReached") -- "Abladestelle erreicht"		
+						self.cp.infoText = courseplay:get_locale(self, "CPTriggerReached") -- "Abladestelle erreicht"
 					end
 				end;
 			end; --END other tools
@@ -346,7 +260,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 					if self.abortWork < 5 then
 						self.abortWork = 6
 					end
-					self.recordnumber = self.abortWork 
+					self.recordnumber = self.abortWork
 					if self.recordnumber < 2 then
 						self.recordnumber = 2
 					end
@@ -376,9 +290,9 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 					courseplay:setGlobalInfoText(self, string.format(": %s %s", tostring(workTool.name), courseplay:get_locale(self, "CPneedsToBeUnloaded")), -1);
 				end;
 			end;
-			
+
 		else  --COMBINES
-		
+
 			--Start combine
 			local pipeState = 0;
 			if tool.getCombineTrailerInRangePipeState ~= nil then
@@ -418,7 +332,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 						if not courseplay:isFolding(workTool) and tool.grainTankFillLevel < tool.grainTankCapacity and not tool.waitingForDischarge and not tool.isThreshing and not weatherStop then
 							tool:setIsThreshing(true);
 						end
-						
+
 						if tool.grainTankFillLevel >= tool.grainTankCapacity or tool.waitingForDischarge then
 							tool.waitingForDischarge = true
 							allowedToDrive = false;
@@ -433,11 +347,11 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 							tool:setIsThreshing(false);
 							courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPwaitingForWeather"));
 						end
-							
+
 					end
 				end
 			 --Stop combine
-			elseif self.recordnumber == self.stopWork then 
+			elseif self.recordnumber == self.stopWork then
 				local isEmpty = tool.grainTankFillLevel == 0
 				if self.abortWork == nil then
 					allowedToDrive = false;
@@ -459,10 +373,10 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 					tool:setPipeState(1)
 				end
 			end
-			
+
 			if tool.cp.isCombine and tool.isThreshing and tool.grainTankFillLevel >= tool.grainTankCapacity*0.8  or pipeState > 0 or courseplay:isAttachedCombine(workTool) then
 				tool:setPipeState(2)
-			elseif  pipeState == 0 and tool.cp.isCombine and tool.grainTankFillLevel < tool.grainTankCapacity then 
+			elseif  pipeState == 0 and tool.cp.isCombine and tool.grainTankFillLevel < tool.grainTankCapacity then
 				tool:setPipeState(1)
 			end
 			if tool.cp.waitingForTrailerToUnload then
@@ -486,10 +400,10 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 			else
 				self.aiThreshingDirectionX = -(dx/length);
 				self.aiThreshingDirectionZ = -(dz/length);
-			end				
-			
+			end
+
 		end
 	end; --END for i in self.tippers
-	
+
 	return allowedToDrive, workArea, workSpeed, active_tipper
 end

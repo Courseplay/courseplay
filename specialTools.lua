@@ -4,8 +4,12 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp = {};
 	end;
 
+	--Universal Bale Trailer (UBT)
+	if workTool.numAttacherParts ~= nil and workTool.autoLoad ~= nil and workTool.loadingIsActive ~= nil and workTool.unloadLeft ~= nil and workTool.unloadRight ~= nil and workTool.unloadBack ~= nil and workTool.typeOnTrailer ~= nil and workTool.fillLevelMax ~= nil then
+		workTool.cp.isUBT = true;
+
 	--Guellepack v2 [Bayerbua]
-	if workTool.fillerArmInRange ~= nil  then
+	elseif workTool.fillerArmInRange ~= nil  then
 		workTool.cp.isFeldbinder = true
 	elseif Utils.endsWith(workTool.configFileName, "KotteGARANTProfiVQ32000.xml") and workTool.fillerArmNode ~= nil then
 		workTool.cp.isKotteGARANTProfiVQ32000 = true
@@ -162,8 +166,11 @@ end
 
 function courseplay:isSpecialBaler(workTool)
 	return workTool.cp.isClaasQuadrant1200;
-end
+end;
 
+function courseplay:isSpecialBaleLoader(workTool)
+	return workTool.cp.isUBT;
+end;
 
 function courseplay:isSpecialCombine(workTool, specialType, fileNames)
 	if specialType ~= nil then
@@ -193,14 +200,68 @@ function courseplay:isSpecialCombine(workTool, specialType, fileNames)
 end
 
 
-function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
+function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload,ridgeMarker)
 	local implementsDown = lower and turnOn
 	if workTool.PTOId then
 		workTool:setPTO(false)
 	end
 
+	--Universal Bale Trailer
+	if workTool.cp.isUBT then
+		if not workTool.fillLevelMax == workTool.numAttachers[workTool.typeOnTrailer] then
+			workTool.fillLevelMax = workTool.numAttachers[workTool.typeOnTrailer];
+		end;
+		if workTool.capacity == nil or (workTool.capacity ~= nil and workTool.capacity ~= workTool.fillLevelMax) then
+			workTool.capacity = workTool.fillLevelMax;
+		end;
+
+		if not workTool.autoLoad then
+			workTool.autoLoad = true;
+		end;
+		if workTool.loadingIsActive ~= turnOn then
+			workTool.loadingIsActive = turnOn;
+		end;
+
+		if unload then
+			for i=1, workTool.numAttachers[workTool.typeOnTrailer] do
+				if workTool.attacher[workTool.typeOnTrailer][i].attachedObject ~= nil then
+
+					--ORIG: if workTool.ulRef[workTool.ulMode][1] == g_i18n:getText("UNLOAD_TRAILER") then
+					if workTool.ulRef[workTool.ulMode][3] == 0 then --verrrrry dirty: unload on trailer
+						local x,y,z = getWorldTranslation(workTool.attacher[workTool.typeOnTrailer][i].attachedObject);
+						local rx,ry,rz = getWorldRotation(workTool.attacher[workTool.typeOnTrailer][i].attachedObject);
+						local root = getRootNode();
+						setRigidBodyType(workTool.attacher[workTool.typeOnTrailer][i].attachedObject,"Dynamic");
+						setTranslation(workTool.attacher[workTool.typeOnTrailer][i].attachedObject,x,y,z);
+						setRotation(workTool.attacher[workTool.typeOnTrailer][i].attachedObject,rx,ry,rz);
+						link(root,workTool.attacher[workTool.typeOnTrailer][i].attachedObject);
+						workTool.attacher[workTool.typeOnTrailer][i].attachedObject = nil;
+						workTool.fillLevel = workTool.fillLevel - 1;
+					else
+						local x,y,z = getWorldTranslation(workTool.attacher[workTool.typeOnTrailer][i].attachedObject);
+						local rx,ry,rz = getWorldRotation(workTool.attacher[workTool.typeOnTrailer][i].attachedObject);
+						local nx,ny,nz = getWorldTranslation(workTool.attacherLevel[workTool.typeOnTrailer]);
+						local tx,ty,tz = getWorldTranslation(workTool.ulRef[workTool.ulMode][3]);
+						local x = x + (tx - nx);
+						local y = y + (ty - ny);
+						local z = z + (tz - nz);
+						local tH = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, x, 0, z);
+						local relHeight = ny - tH;
+						local root = getRootNode();
+						setRigidBodyType(workTool.attacher[workTool.typeOnTrailer][i].attachedObject,"Dynamic");
+						setTranslation(workTool.attacher[workTool.typeOnTrailer][i].attachedObject,x,(y - relHeight),z);
+						setRotation(workTool.attacher[workTool.typeOnTrailer][i].attachedObject,rx,ry,rz);
+						link(root,workTool.attacher[workTool.typeOnTrailer][i].attachedObject);
+						workTool.attacher[workTool.typeOnTrailer][i].attachedObject = nil;
+						workTool.fillLevel = workTool.fillLevel - 1;
+					end;
+				end;
+			end;
+		end;
+		return true, allowedToDrive;
+
 	--RopaEuroTiger
-	if self.cp.isRopaEuroTiger then
+	elseif self.cp.isRopaEuroTiger then
 		local fold = self:getToggledFoldDirection()
 		if unfold then
 			if  fold == -1 then
@@ -222,7 +283,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		end
 
 		return false, allowedToDrive
-	end
+	end;
 
 	--KotteGARANTProfiVQ32000
 	if workTool.cp.isKotteGARANTProfiVQ32000 then
@@ -246,7 +307,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 
 	--Urf-specialisation
 	elseif workTool.cp.hasUrfSpec then
-		if workTool.sprayFillLevel == 0 and activeTool.isFertilizing > 1 then
+		if workTool.sprayFillLevel == 0 and workTool.isFertilizing > 1 then
 			self.cp.urfStop = true
 		end
 		return false, allowedToDrive
@@ -664,12 +725,14 @@ end
 
 function courseplay:handleSpecialSprayer(self,activeTool, fill_level, driveOn, allowedToDrive,lx,lz)
 
-	if activeTool.cp.isKotteGARANTProfiVQ32000 then
+	if activeTool.cp.isKotteGARANTProfiVQ32000 and #activeTool.cp.feldbinders > 0 then
+		local hasFeldbinderOrStation = false;
 		for _,v in pairs(activeTool.cp.feldbinders) do
 			local tanker = g_currentMission.attachables[v]
 			local moveDone = false
 			if tanker.manschetteDrawLine and (activeTool.cp.tankerId == 0 or activeTool.cp.tankerId == v) then
-					if tanker.fillerArm.vehicle == activeTool then
+				if tanker.fillerArm.vehicle == activeTool then
+					hasFeldbinderOrStation = true;
 					activeTool.cp.tankerId = v
 					local tx,ty,tz = getWorldTranslation(tanker.manschetteNode1);
 					local fdx, _, _ = worldToLocal(activeTool.rootNode,tx,ty,tz);
@@ -681,7 +744,7 @@ function courseplay:handleSpecialSprayer(self,activeTool, fill_level, driveOn, a
 						drawDebugPoint(tx,ty+3,tz, 1, 0 , 1, 1);
 						lx, lz = AIVehicleUtil.getDriveDirection(self.cp.DirectionNode,tx,ty,tz);
 						fz = -fz
-						if fz > 5 then
+						if fz > 15 then
 							if self.lastSpeedReal > 20/3600 then
 								courseplay:brakeToStop(self)
 							else
@@ -696,11 +759,11 @@ function courseplay:handleSpecialSprayer(self,activeTool, fill_level, driveOn, a
 									local done = courseplay:moveSingleTool(self,activeTool, 9, 0,0,1.2180819906372)
 									if done then
 										if not activeTool.cp.moveArmBackward then
-											activeTool.cp.moveArmBackward = courseplay:moveSingleTool(self,activeTool, 11, 0.17,0,0) and courseplay:moveSingleTool(self,activeTool, 12, -0.17,0,0)
+											activeTool.cp.moveArmBackward = courseplay:moveSingleTool(self,activeTool, 11, math.rad(10),0,0) and courseplay:moveSingleTool(self,activeTool, 12, -math.rad(10),0,0)
 										else
-											local movedone = courseplay:moveSingleTool(self,activeTool, 11, -0.17,0,0) and courseplay:moveSingleTool(self,activeTool, 12, 0.17,0,0)
+											local movedone = courseplay:moveSingleTool(self,activeTool, 11, -math.rad(10),0,0) and courseplay:moveSingleTool(self,activeTool, 12, math.rad(10),0,0)
 											if movedone then
-												activeTool.cp.moveArmBackward = false	
+												activeTool.cp.moveArmBackward = false
 											end
 										end
 									end
@@ -721,12 +784,13 @@ function courseplay:handleSpecialSprayer(self,activeTool, fill_level, driveOn, a
 							allowedToDrive = true
 						end
 					end
+					break;
 				end
 			elseif activeTool.cp.tankerId == v then
 				activeTool.cp.tankerId = 0
 			end
 		end
-		return true, allowedToDrive,lx,lz;
+		return hasFeldbinderOrStation, allowedToDrive,lx,lz;
 	end
 
 

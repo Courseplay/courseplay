@@ -38,9 +38,6 @@ end;
 function courseplay:isFoldable(workTool) --is the tool foldable?
 	return SpecializationUtil.hasSpecialization(Foldable, workTool.specializations) or SpecializationUtil.hasSpecialization(foldable, workTool.specializations) or workTool.foldingParts ~= nil;
 end;
-function courseplay:isUBT(workTool) --is the tool a UBT?
-	return SpecializationUtil.hasSpecialization(ubt, workTool.specializations) or SpecializationUtil.hasSpecialization(Ubt, workTool.specializations) or workTool.name == "UniversalBaleTrailer" or (workTool.numAttacherParts ~= nil and workTool.autoLoad ~= nil and workTool.loadingIsActive ~= nil and workTool.unloadLeft ~= nil and workTool.unloadRight ~= nil and workTool.unloadBack ~= nil and workTool.typeOnTrailer ~= nil);
-end;
 function courseplay:isMower(workTool)
 	return SpecializationUtil.hasSpecialization(Mower, workTool.specializations) or courseplay:isSpecialMower(workTool);
 end;
@@ -98,24 +95,19 @@ function courseplay:update_tools(self, tractor_or_implement)
 		elseif self.ai_mode == 6 then -- Baler, foragewagon, baleloader
 			if courseplay:isBaler(object) 
 			or courseplay:is_baleLoader(object) 
+			or courseplay:isSpecialBaleLoader(object) 
 			or SpecializationUtil.hasSpecialization(Tedder, object.specializations) 
 			or SpecializationUtil.hasSpecialization(Windrower, object.specializations) 
 			or SpecializationUtil.hasSpecialization(Cultivator, object.specializations) 
 			or SpecializationUtil.hasSpecialization(Plough, object.specializations)
 			or SpecializationUtil.hasSpecialization(FruitPreparer, self.specializations) or SpecializationUtil.hasSpecialization(fruitPreparer, self.specializations) 
 			or object.allowTipDischarge 
-			or courseplay:isUBT(object) 
 			or courseplay:isFoldable(object) then
-				if courseplay:isUBT(object) and object.fillLevelMax ~= nil then
-					self.cp.hasUBT = true;
-					courseplay:debug(string.format("%s: implement %s: setting UBT capacity to fillLevelMax (=%s)", nameNum(self), tostring(object.name), tostring(object.fillLevelMax)), 6);
-					object.capacity = object.fillLevelMax;
-				end;
 				tipper_attached = true;
 				table.insert(self.tippers, object);
 				courseplay:setMarkers(self, object);
-				self.cp.noStopOnTurn = courseplay:isBaler(object) or courseplay:is_baleLoader(object) or courseplay:isUBT(object) or courseplay:isMower(object);
-				self.cp.noStopOnEdge = courseplay:isBaler(object) or courseplay:is_baleLoader(object) or courseplay:isUBT(object);
+				self.cp.noStopOnTurn = courseplay:isBaler(object) or courseplay:is_baleLoader(object) or courseplay:isSpecialBaleLoader(object) or courseplay:isMower(object);
+				self.cp.noStopOnEdge = courseplay:isBaler(object) or courseplay:is_baleLoader(object) or courseplay:isSpecialBaleLoader(object);
 			end
 		elseif self.ai_mode == 8 then -- Liquid manure transfer
 			--if SpecializationUtil.hasSpecialization(RefillTrigger, object.specializations) then
@@ -175,26 +167,21 @@ function courseplay:update_tools(self, tractor_or_implement)
 		elseif self.ai_mode == 6 then -- Baler, foragewagon, baleloader
 			if courseplay:isBaler(object) 
 			or courseplay:is_baleLoader(object) 
+			or courseplay:isSpecialBaleLoader(object) 
 			or SpecializationUtil.hasSpecialization(Tedder, object.specializations) 
 			or SpecializationUtil.hasSpecialization(Windrower, object.specializations) 
 			or SpecializationUtil.hasSpecialization(Cultivator, object.specializations) 
 			or SpecializationUtil.hasSpecialization(Plough, object.specializations) 
 			or SpecializationUtil.hasSpecialization(FruitPreparer, self.specializations) or SpecializationUtil.hasSpecialization(fruitPreparer, self.specializations) 
 			or object.allowTipDischarge 
-			or courseplay:isUBT(object) 
 			or courseplay:isMower(object)
 			or courseplay:isAttachedCombine(object) 
 			or courseplay:isFoldable(object) then
-				if courseplay:isUBT(object) and object.fillLevelMax ~= nil then
-					self.cp.hasUBT = true;
-					courseplay:debug(string.format("%s: implement %s: setting UBT capacity to fillLevelMax (=%s)", nameNum(self), tostring(object.name), tostring(object.fillLevelMax)), 6);
-					object.capacity = object.fillLevelMax;
-				end;
 				tipper_attached = true
 				table.insert(self.tippers, object)
 				courseplay:setMarkers(self, object)
-				self.cp.noStopOnTurn = courseplay:isBaler(object) or courseplay:is_baleLoader(object) or courseplay:isUBT(object);
-				self.cp.noStopOnEdge = courseplay:isBaler(object) or courseplay:is_baleLoader(object) or courseplay:isUBT(object);
+				self.cp.noStopOnTurn = courseplay:isBaler(object) or courseplay:is_baleLoader(object) or courseplay:isSpecialBaleLoader(object);
+				self.cp.noStopOnEdge = courseplay:isBaler(object) or courseplay:is_baleLoader(object) or courseplay:isSpecialBaleLoader(object);
 			end;
 		elseif self.ai_mode == 8 then --Liquid manure transfer
 			--if SpecializationUtil.hasSpecialization(RefillTrigger, object.specializations) then
