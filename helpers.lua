@@ -264,3 +264,17 @@ function courseplay:boolToInt(bool)
 	end;
 end;
 
+function courseplay:loopedTable(tab, idx)
+	local maxIdx = #tab;
+	if idx > maxIdx then
+		while idx > maxIdx do
+			idx = maxIdx - idx;
+		end;
+	elseif idx < 1 then
+		while idx < 1 do
+			idx = maxIdx + idx;
+		end;
+	end;
+
+	return tab[idx]
+end;

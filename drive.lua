@@ -1102,7 +1102,7 @@ function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive,lx,l
 			local canRefill = (activeToolFillLevel ~= nil and activeToolFillLevel < driveOn) and fillTypesMatch;
 			--ManureLager: activeTool.ReFillTrigger has to be nil so it doesn't refill
 			if self.ai_mode == 8 then
-				canRefill = canRefill and activeTool.ReFillTrigger == nil and not self.Waypoints[self.recordnumber].wait and not self.Waypoints[self.recordnumber-1].wait and not self.Waypoints[self.recordnumber-2].wait;
+				canRefill = canRefill and activeTool.ReFillTrigger == nil and not (courseplay:loopedTable(self.Waypoints, self.recordnumber).wait or courseplay:loopedTable(self.Waypoints, self.recordnumber-1).wait or courseplay:loopedTable(self.Waypoints, self.recordnumber-2).wait);
 
 				if activeTool.isSpreaderInRange ~= nil and activeTool.isSpreaderInRange.manureTriggerc ~= nil then
 					canRefill = false;
