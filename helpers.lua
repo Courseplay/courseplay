@@ -86,6 +86,32 @@ function courseplay:isFolding(workTool) --TODO: use getIsAnimationPlaying(animat
 	end;
 end;
 
+function courseplay:isAnimationPartPlaying(workTool, index)
+	if type(index) == "number" then
+		local animPart = workTool.animationParts[index];
+		if animPart == nil then
+			print(nameNum(workTool) .. ": animationParts[" .. tostring(index) .. "] doesn't exist! isAnimationPartPlaying() returns nil");
+			return nil;
+		end;
+		return animPart.clipStartTime == false and animPart.clipEndTime == false;
+	elseif type(index) == "table" then
+		for i,singleIndex in pairs(index) do
+			local animPart = workTool.animationParts[singleIndex];
+			if animPart == nil then
+				print(nameNum(workTool) .. ": animationParts[" .. tostring(singleIndex) .. "] doesn't exist! isAnimationPartPlaying() returns nil");
+				return nil;
+			end;
+			if animPart.clipStartTime == false and animPart.clipEndTime == false then
+				return true;
+			end;
+		end;
+		return false;
+	else
+		print(nameNum(workTool) .. ": type of index doesn't work with animationParts! isAnimationPartPlaying() returns nil");
+		return nil;
+	end;
+end;
+
 function courseplay:round(num, decimals)
 	if num == nil or type(num) ~= "number" then
 		return nil;
@@ -179,19 +205,19 @@ function courseplay:setVarValueFromString(self, str, value)
 
 	if baseVar ~= nil then
 		local result = nil;
-		if whatDepth == 1 then
+		if whatDepth == 1 then --self
 			baseVar = value;
 			result = value;
-		elseif whatDepth == 2 then
+		elseif whatDepth == 2 then --self.cp or self.var
 			baseVar[what[2]] = value;
 			result = value;
-		elseif whatDepth == 3 then
+		elseif whatDepth == 3 then --self.cp.var
 			baseVar[what[2]][what[3]] = value;
 			result = value;
-		elseif whatDepth == 4 then
+		elseif whatDepth == 4 then --self.cp.table.var
 			baseVar[what[2]][what[3]][what[4]] = value;
 			result = value;
-		elseif whatDepth == 5 then
+		elseif whatDepth == 5 then --self.cp.table1.table2.var
 			baseVar[what[2]][what[3]][what[4]][what[5]] = value;
 			result = value;
 		end;
@@ -217,7 +243,7 @@ function courseplay:getVarValueFromString(self, str)
 			whatObj = whatObj[key];
 			
 			if i ~= whatDepth and type(whatObj) ~= "table" then
-				print(nameNum(self) .. ": error in string [" .. str .. "] @".. key .. ": traversal failed");
+				print(nameNum(self) .. ": error in string \"" .. str .. "\" @ \"".. key .. "\": traversal failed");
 				whatObj = nil;
 				break;
 			end;

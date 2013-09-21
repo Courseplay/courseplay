@@ -4,8 +4,12 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp = {};
 	end;
 
+	--Rolmasz S061 "Pomorzanin" [Maciusboss1 & Burner]
+	if Utils.endsWith(workTool.configFileName, "S061.xml") and workTool.setTramlinesOn ~= nil and workTool.leftMarkerRope ~= nil and workTool.leftMarkerSpeedRotatingParts ~= nil then
+		workTool.cp.isRolmaszS061 = true;
+
 	--Universal Bale Trailer (UBT)
-	if workTool.numAttacherParts ~= nil and workTool.autoLoad ~= nil and workTool.loadingIsActive ~= nil and workTool.unloadLeft ~= nil and workTool.unloadRight ~= nil and workTool.unloadBack ~= nil and workTool.typeOnTrailer ~= nil and workTool.fillLevelMax ~= nil then
+	elseif workTool.numAttacherParts ~= nil and workTool.autoLoad ~= nil and workTool.loadingIsActive ~= nil and workTool.unloadLeft ~= nil and workTool.unloadRight ~= nil and workTool.unloadBack ~= nil and workTool.typeOnTrailer ~= nil and workTool.fillLevelMax ~= nil then
 		workTool.cp.isUBT = true;
 
 	--Guellepack v2 [Bayerbua]
@@ -206,8 +210,107 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		workTool:setPTO(false)
 	end
 
+	--Rolmasz S061 "Pomorzanin"
+	if workTool.cp.isRolmaszS061 then
+		-- 1 = lower/raise, 2/3 = left/right arm, 4 = cover, 5/6 = left/right ridgeMarker (fold and extend), 7/8 = left/right ridgeMarker (up and down)
+		local animParts = workTool.animationParts;
+
+		local isLoweringRaising = courseplay:isAnimationPartPlaying(workTool, 1);
+		local isRaised = animParts[1].clipEndTime == false;
+		local isLowered = animParts[1].clipEndTime;
+		local isFolded = animParts[2].clipStartTime and animParts[3].clipStartTime;
+		local isUnfolded = animParts[2].clipEndTime and animParts[3].clipEndTime;
+		--local isFolding = courseplay:isAnimationPartPlaying(workTool, { 2, 3, 5, 6, 7, 8 });
+		local isFolding = courseplay:isAnimationPartPlaying(workTool, { 2, 3 });
+		local isMovingRidgeMarkers = courseplay:isAnimationPartPlaying(workTool, { 5, 6, 7, 8 });
+		local leftRidgeMarkerExtended = animParts[5].clipEndTime;
+		local rightRidgeMarkerExtended = animParts[6].clipEndTime;
+
+		if unfold then
+			if isRaised and isFolded and not isMovingRidgeMarkers and not (leftRidgeMarkerExtended or rightRidgeMarkerExtended) then
+				workTool:setAnimationTime(2, animParts[2].animDuration); --unfold left arm
+				workTool:setAnimationTime(3, animParts[3].animDuration); --unfold right arm
+			end;
+		else
+			if isRaised and isUnfolded and not isMovingRidgeMarkers then
+				if not (leftRidgeMarkerExtended or rightRidgeMarkerExtended) then
+					workTool:setAnimationTime(2, animParts[2].startPosition); --fold left arm
+					workTool:setAnimationTime(3, animParts[3].startPosition); --fold right arm
+				end;
+
+				--stow ridgeMarkers
+				for i=5,8 do
+					if animParts[i].clipEndTime then
+						workTool:setAnimationTime(i, animParts[i].startPosition);
+					end;
+				end;
+			end;
+		end;
+
+		if self.cp.ridgeMarkersAutomatic and ridgeMarker and isUnfolded then
+			if not leftRidgeMarkerExtended then
+				workTool:setAnimationTime(5, animParts[5].animDuration);
+			end;
+			if not rightRidgeMarkerExtended then
+				workTool:setAnimationTime(6, animParts[6].animDuration);
+			end;
+			
+			--Note: for some reason, startPosition = down and animDuration = up
+			if ridgeMarker == 0 then --none
+				--raise ridgeMarkers
+				if animParts[7].clipStartTime then
+					workTool:setAnimationTime(7, animParts[7].animDuration);
+					--print("raise left ridgeMarker (both)");
+				end;
+				if animParts[8].clipStartTime then
+					workTool:setAnimationTime(8, animParts[8].animDuration);
+					--print("raise right ridgeMarker (both)");
+				end;
+			elseif ridgeMarker == 1 then --left
+				if animParts[8].clipStartTime then
+					workTool:setAnimationTime(8, animParts[8].animDuration);
+					--print("raise right ridgeMarker");
+				end;
+				if animParts[7].clipEndTime then
+					workTool:setAnimationTime(7, animParts[7].startPosition);
+					--print("lower left ridgeMarker");
+				end;
+			elseif ridgeMarker == 2 then --right
+				if animParts[7].clipStartTime then
+					workTool:setAnimationTime(7, animParts[7].animDuration);
+					--print("raise left ridgeMarker");
+				end;
+				if animParts[8].clipEndTime then
+					workTool:setAnimationTime(8, animParts[8].startPosition);
+					--print("lower right ridgeMarker");
+				end;
+			end;
+		end;
+
+		if isFolding or isLoweringRaising then
+			allowedToDrive = false;
+		end;
+
+		if lower then
+			if isUnfolded and not isLowered and not isLoweringRaising then
+				workTool:aiLower();
+			end;
+		else
+			workTool:aiRaise();
+		end;
+
+		if turnOn then
+			if isLowered and not workTool.isTurnedOn then
+				workTool:aiTurnOn();
+			end;
+		else
+			workTool:aiTurnOff();
+		end;
+
+		return false, allowedToDrive;
+
 	--Universal Bale Trailer
-	if workTool.cp.isUBT then
+	elseif workTool.cp.isUBT then
 		if not workTool.fillLevelMax == workTool.numAttachers[workTool.typeOnTrailer] then
 			workTool.fillLevelMax = workTool.numAttachers[workTool.typeOnTrailer];
 		end;

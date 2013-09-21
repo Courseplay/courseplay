@@ -74,8 +74,8 @@ function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill
 		if workArea and fill_level ~= 0 and (self.abortWork == nil or self.runOnceStartCourse) and self.cp.turnStage == 0 and not returnToStartPoint then
 			self.runOnceStartCourse = false;
 			workSpeed = 1;
-			--turn On                     courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
-			specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,true,true,true,allowedToDrive,nil,nil)
+			--turn On                     courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload,ridgeMarker)
+			specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,true,true,true,allowedToDrive,nil,nil, ridgeMarker)
 			if allowedToDrive then
 				if not specialTool then
 					--unfold
@@ -131,7 +131,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill
 		elseif self.cp.turnStage == 0 then
 			workSpeed = 0;
 			--turn off
-			specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,nil)
+			specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,nil, ridgeMarker)
 			if not specialTool then
 				if workTool.setIsTurnedOn ~= nil and workTool.isTurnedOn then
 					workTool:setIsTurnedOn(false, false);
