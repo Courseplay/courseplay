@@ -53,7 +53,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 						if workTool.balerUnloadingState ~= nil then
 							if courseplay:isRoundbaler(workTool) and fill_level > 95 and fill_level < 100 and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
 								workSpeed = 0.5;
-							elseif fill_level == 100 and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
+							elseif fill_level >= 100 and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
 								allowedToDrive = false
 								workTool:setIsTurnedOn(false, false);
 								if table.getn(workTool.bales) > 0 then
@@ -152,7 +152,11 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 							local waypoint = math.max(marker,forecast)
 							if courseplay:isFoldable(workTool) and not courseplay:isFolding(workTool) then
 								if not SpecializationUtil.hasSpecialization(Plough, workTool.specializations) then
-									workTool:setFoldDirection(-1);
+									if workTool.cp.inversedFoldDirection then
+										workTool:setFoldDirection(1);
+									else
+										workTool:setFoldDirection(-1);
+									end
 									self.runOnceStartCourse = false;
 								elseif waypoint == 2 and self.runOnceStartCourse then --wegpunkte finden und richtung setzen...
 									workTool:setFoldDirection(-1);
@@ -211,7 +215,11 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 
 						--fold
 						if courseplay:isFoldable(workTool) then
-							workTool:setFoldDirection(1);
+							if workTool.cp.inversedFoldDirection then
+								workTool:setFoldDirection(-1);
+							else
+								workTool:setFoldDirection(1);
+							end
 							--workTool:setFoldDirection(-workTool.turnOnFoldDirection);
 						end;
 					end;

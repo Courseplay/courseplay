@@ -3,9 +3,12 @@ function courseplay:setNameVariable(workTool)
 	if workTool.cp == nil then
 		workTool.cp = {};
 	end;
+	--Mchale998 bale wrapper [Bergwout]
+	if Utils.endsWith(workTool.configFileName, "Mchale998.xml") then
+		workTool.cp.isMchale998 = true
 
 	--Rolmasz S061 "Pomorzanin" [Maciusboss1 & Burner]
-	if Utils.endsWith(workTool.configFileName, "S061.xml") and workTool.setTramlinesOn ~= nil and workTool.leftMarkerRope ~= nil and workTool.leftMarkerSpeedRotatingParts ~= nil then
+	elseif Utils.endsWith(workTool.configFileName, "S061.xml") and workTool.setTramlinesOn ~= nil and workTool.leftMarkerRope ~= nil and workTool.leftMarkerSpeedRotatingParts ~= nil then
 		workTool.cp.isRolmaszS061 = true;
 
 	--Universal Bale Trailer (UBT)
@@ -210,8 +213,18 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		workTool:setPTO(false)
 	end
 
+	--Mchale998 bale wrapper
+	if workTool.cp.isMchale998 then
+		if workTool.baleWrapperState == 3 then
+			allowedToDrive = false
+		elseif workTool.baleWrapperState == 4 then
+			workTool:doStateChange(8)
+		end
+
+		return false, allowedToDrive;
+
 	--Rolmasz S061 "Pomorzanin"
-	if workTool.cp.isRolmaszS061 then
+	elseif workTool.cp.isRolmaszS061 then
 		-- 1 = lower/raise, 2/3 = left/right arm, 4 = cover, 5/6 = left/right ridgeMarker (fold and extend), 7/8 = left/right ridgeMarker (up and down)
 		local animParts = workTool.animationParts;
 
@@ -785,7 +798,14 @@ function courseplay:askForSpecialSettings(self,object)
 		self.cp.noStopOnEdge = true
 	end;
 	
-	if object.cp.isKotteGARANTProfiVQ32000 then
+	if object.cp.isMchale998 then
+		self.cp.aiTurnNoBackward = true
+		self.cp.noStopOnEdge = true
+		self.cp.noStopOnTurn = true
+		self.WpOffsetX = -2.4
+		object.cp.inversedFoldDirection = true
+
+	elseif object.cp.isKotteGARANTProfiVQ32000 then
 		object.cp.feldbinders = {}
 		for i=1, table.getn(g_currentMission.attachables) do
 			if g_currentMission.attachables[i].fillerArmInRange ~= nil then
