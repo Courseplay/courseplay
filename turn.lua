@@ -188,7 +188,6 @@ function courseplay:turn(self, dt) --!!!
 		end		
 		x,y,z = localToWorld(self.cp.DirectionNode, 0, 0, 1)
 		self.aiTractorTargetX, self.aiTractorTargetZ = x,z
-		local dirX, dirZ = self.aiTractorDirectionX, self.aiTractorDirectionZ;
 		
 		x,y,z = getWorldTranslation(self.rootNode);
 		local dirX, dirZ = self.aiTractorDirectionX, self.aiTractorDirectionZ;
@@ -223,7 +222,9 @@ function courseplay:turn(self, dt) --!!!
 				lz = 1
 			end
 		end
-
+		if self.invertedDrivingDirection then
+			lx = -lx
+		end
 		if self.isRealistic then
 			courseplay:driveInMRDirection(self, lx,lz,moveForwards,dt)
 			--AIVehicleUtil.driveInDirection(self, dt, 25, 0.5, 0.5, 20, true, moveForwards, lx, lz, self.sl, 0.9);

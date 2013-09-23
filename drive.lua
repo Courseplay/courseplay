@@ -1,6 +1,6 @@
 -- drives recored course
 function courseplay:drive(self, dt)
-	if g_server == nil then
+	if g_server == nil or not self.isMotorStarted then
 		return
 	end
 
@@ -824,6 +824,11 @@ function courseplay:drive(self, dt)
 
 	if beforeReverse then
 		self.shortest_dist = nil
+	end
+
+	if self.invertedDrivingDirection then
+		lx = -lx
+		lz = -lz
 	end
 
 	-- if distance grows i must be circling
