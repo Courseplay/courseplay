@@ -84,7 +84,7 @@ function courseplay:turn(self, dt) --!!!
 				if -dot < moveback  then
 					self.cp.turnStage = 0;
 					local _,_,z1 = worldToLocal(self.rootNode,self.Waypoints[self.recordnumber+1].cx, backY, self.Waypoints[self.recordnumber+1].cz)
-					local _,_,z2 = worldToLocal(self.rootNode,self.Waypoints[self.recordnumber+1].cx, backY, self.Waypoints[self.recordnumber+1].cz)
+					local _,_,z2 = worldToLocal(self.rootNode,self.Waypoints[self.recordnumber+2].cx, backY, self.Waypoints[self.recordnumber+2].cz)
 					if z1 > 0 then
 						self.recordnumber = self.recordnumber +1
 					elseif z2 > 0 then
@@ -207,6 +207,8 @@ function courseplay:turn(self, dt) --!!!
 	if updateWheels then
 		if self.isRealistic then
 			courseplay:setMRSpeed(self, self.turn_speed, 1,false)
+		else
+			courseplay:setSpeed(self, self.turn_speed, 1)
 		end
 		local lx, lz = AIVehicleUtil.getDriveDirection(self.cp.DirectionNode, newTargetX, newTargetY, newTargetZ);
 		if self.cp.turnStage == 3 and math.abs(lx) < 0.1 then

@@ -972,7 +972,7 @@ function courseplay:setSpeed(self, refSpeed, sl)
 			
 			end
 		end
-		if self.lastSpeed*3600 - refSpeed*3600 > 8 then
+		if self.lastSpeed*3600 - refSpeed*3600 > 8 and self.cp.isTurning == nil then
 			if sl == 1 then
 				newLimit = 20
 			else			
