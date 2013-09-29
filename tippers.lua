@@ -12,52 +12,52 @@ function courseplay:reset_tools(self)
 end
 
 function courseplay:isCombine(workTool)
-	return (SpecializationUtil.hasSpecialization(Combine, workTool.specializations) or SpecializationUtil.hasSpecialization(AICombine, workTool.specializations)) and workTool.grainTankCapacity ~= nil and workTool.grainTankCapacity > 0;
+	return (workTool.cp.hasSpecializationCombine or workTool.cp.hasSpecializationAICombine) and workTool.grainTankCapacity ~= nil and workTool.grainTankCapacity > 0;
 end;
 function courseplay:isChopper(workTool)
-	return (SpecializationUtil.hasSpecialization(Combine, workTool.specializations) or SpecializationUtil.hasSpecialization(AICombine, workTool.specializations)) and workTool.grainTankCapacity ~= nil and workTool.grainTankCapacity == 0 or courseplay:isSpecialChopper(workTool);
+	return (workTool.cp.hasSpecializationCombine or workTool.cp.hasSpecializationAICombine) and workTool.grainTankCapacity ~= nil and workTool.grainTankCapacity == 0 or courseplay:isSpecialChopper(workTool);
 end;
 function courseplay:isHarvesterSteerable(workTool)
 	return workTool.typeName == "selfPropelledPotatoHarvester" or workTool.cp.isGrimmeMaxtron620 or workTool.cp.isGrimmeTectron415;
 end;
 function courseplay:isBaler(workTool) -- is the tool a baler?
-	return (SpecializationUtil.hasSpecialization(Baler, workTool.specializations) or workTool.balerUnloadingState ~= nil or courseplay:isSpecialBaler(workTool));
+	return workTool.cp.hasSpecializationBaler or workTool.balerUnloadingState ~= nil or courseplay:isSpecialBaler(workTool);
 end;
 function courseplay:isRoundbaler(workTool) -- is the tool a roundbaler?
 	return courseplay:isBaler(workTool) and workTool.baleCloseAnimationName ~= nil and workTool.baleUnloadAnimationName ~= nil;
 end;
 function courseplay:is_baleLoader(workTool) -- is the tool a bale loader?
-	return (SpecializationUtil.hasSpecialization(baleLoader, workTool.specializations) or SpecializationUtil.hasSpecialization(BaleLoader, workTool.specializations) or (workTool.balesToLoad ~= nil and workTool.baleGrabber ~=nil and workTool.grabberIsMoving~= nil));
+	return workTool.cp.hasSpecializationBaleLoader or (workTool.balesToLoad ~= nil and workTool.baleGrabber ~=nil and workTool.grabberIsMoving~= nil);
 end;
 function courseplay:isSprayer(workTool) -- is the tool a sprayer/spreader?
-	return SpecializationUtil.hasSpecialization(Sprayer, workTool.specializations) or SpecializationUtil.hasSpecialization(sprayer, workTool.specializations) or courseplay:isSpecialSprayer(workTool)
+	return workTool.cp.hasSpecializationSprayer or courseplay:isSpecialSprayer(workTool)
 end;
 function courseplay:is_sowingMachine(workTool) -- is the tool a sowing machine?
-	return (SpecializationUtil.hasSpecialization(sowingMachine, workTool.specializations) or SpecializationUtil.hasSpecialization(SowingMachine, workTool.specializations));
+	return workTool.cp.hasSpecializationSowingMachine;
 end;
 function courseplay:isFoldable(workTool) --is the tool foldable?
-	return SpecializationUtil.hasSpecialization(Foldable, workTool.specializations) or SpecializationUtil.hasSpecialization(foldable, workTool.specializations) or workTool.foldingParts ~= nil;
+	return workTool.cp.hasSpecializationFoldable or workTool.foldingParts ~= nil;
 end;
 function courseplay:isMower(workTool)
-	return SpecializationUtil.hasSpecialization(Mower, workTool.specializations) or courseplay:isSpecialMower(workTool);
+	return workTool.cp.hasSpecializationMower or courseplay:isSpecialMower(workTool);
 end;
 function courseplay:isBigM(workTool)
-	return (SpecializationUtil.hasSpecialization(Steerable, workTool.specializations) or SpecializationUtil.hasSpecialization(steerable, workTool.specializations)) and courseplay:isMower(workTool);
+	return workTool.cp.hasSpecializationSteerable and courseplay:isMower(workTool);
 end;
 function courseplay:isAttachedCombine(workTool)
-	return (workTool.typeName~= nil and workTool.typeName == "attachableCombine") or (not SpecializationUtil.hasSpecialization(Steerable, workTool.specializations) and  workTool.grainTankCapacity ~= nil) or courseplay:isSpecialChopper(workTool)
+	return (workTool.typeName~= nil and workTool.typeName == "attachableCombine") or (not workTool.cp.hasSpecializationSteerable and  workTool.grainTankCapacity ~= nil) or courseplay:isSpecialChopper(workTool)
 end;
 function courseplay:isAttachedMixer(workTool)
-	return workTool.typeName == "mixerWagon" or (not SpecializationUtil.hasSpecialization(Steerable, workTool.specializations) and  SpecializationUtil.hasSpecialization(MixerWagon, workTool.specializations))
+	return workTool.typeName == "mixerWagon" or (not workTool.cp.hasSpecializationSteerable and  workTool.cp.hasSpecializationMixerWagon)
 end;
 function courseplay:isMixer(workTool)
-	return workTool.typeName == "selfPropelledMixerWagon" or (SpecializationUtil.hasSpecialization(Steerable, workTool.specializations) and  SpecializationUtil.hasSpecialization(MixerWagon, workTool.specializations))
+	return workTool.typeName == "selfPropelledMixerWagon" or (workTool.cp.hasSpecializationSteerable and  workTool.cp.hasSpecializationMixerWagon)
 end;
 function courseplay:isFrontloader(workTool)
-	return SpecializationUtil.hasSpecialization(Cylindered, workTool.specializations) and SpecializationUtil.hasSpecialization(AnimatedVehicle, workTool.specializations) and not SpecializationUtil.hasSpecialization(Shovel, workTool.specializations);
+	return workTool.cp.hasSpecializationCylindered  and workTool.cp.hasSpecializationAnimatedVehicle and not workTool.cp.hasSpecializationShovel;
 end;
 function courseplay:isWheelloader(workTool)
-	return workTool.typeName == "wheelLoader" or (SpecializationUtil.hasSpecialization(Steerable, workTool.specializations) and SpecializationUtil.hasSpecialization(Shovel, workTool.specializations) and SpecializationUtil.hasSpecialization(BunkerSiloCompacter, workTool.specializations));
+	return workTool.typeName == "wheelLoader" or (workTool.cp.hasSpecializationSteerable and workTool.cp.hasSpecializationShovel and workTool.cp.hasSpecializationBunkerSiloCompacter);
 end;
 
 -- update implements to find attached tippers
@@ -66,7 +66,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 
 	--steerable (tractor, combine etc.)
 	local tipper_attached = false
-	if SpecializationUtil.hasSpecialization(AITractor, tractor_or_implement.specializations) 
+	if tractor_or_implement.cp.hasSpecializationAITractor 
 	or tractor_or_implement.cp.isHarvesterSteerable 
 	or courseplay:isBigM(tractor_or_implement) 
 	or courseplay:isMixer(tractor_or_implement)
@@ -74,13 +74,13 @@ function courseplay:update_tools(self, tractor_or_implement)
 	or tractor_or_implement.typeName == "frontloader" then
 		local object = tractor_or_implement
 		if self.ai_mode == 1 or self.ai_mode == 2 then
-			-- if SpecializationUtil.hasSpecialization(Trailer, object.specializations) then
+			-- if object.cp.hasSpecializationTrailer then
 			if object.allowTipDischarge then
 				tipper_attached = true
 				table.insert(self.tippers, object)
 			end
 		elseif self.ai_mode == 3 then -- Overlader
-			if SpecializationUtil.hasSpecialization(Trailer, object.specializations) then --to do
+			if object.cp.hasSpecializationTrailer then --to do
 				tipper_attached = true
 				table.insert(self.tippers, object)
 			end
@@ -96,11 +96,11 @@ function courseplay:update_tools(self, tractor_or_implement)
 			if courseplay:isBaler(object) 
 			or courseplay:is_baleLoader(object) 
 			or courseplay:isSpecialBaleLoader(object) 
-			or SpecializationUtil.hasSpecialization(Tedder, object.specializations) 
-			or SpecializationUtil.hasSpecialization(Windrower, object.specializations) 
-			or SpecializationUtil.hasSpecialization(Cultivator, object.specializations) 
-			or SpecializationUtil.hasSpecialization(Plough, object.specializations)
-			or SpecializationUtil.hasSpecialization(FruitPreparer, self.specializations) or SpecializationUtil.hasSpecialization(fruitPreparer, self.specializations) 
+			or object.cp.hasSpecializationTedder
+			or object.cp.hasSpecializationWindrower
+			or object.cp.hasSpecializationCultivator
+			or object.cp.hasSpecializationPlough
+			or object.cp.hasSpecializationFruitPreparer
 			or object.allowTipDischarge 
 			or courseplay:isFoldable(object) then
 				tipper_attached = true;
@@ -138,7 +138,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 		courseplay:setNameVariable(object);
 
 		if self.ai_mode == 1 or self.ai_mode == 2 then
-			--	if SpecializationUtil.hasSpecialization(Trailer, object.specializations) then
+			--	if object.cp.hasSpecializationTrailer then
 			if object.allowTipDischarge then
 				tipper_attached = true
 				table.insert(self.tippers, object)
@@ -146,7 +146,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 			end
 			
 		elseif self.ai_mode == 3 then -- Overlader
-			if SpecializationUtil.hasSpecialization(Trailer, object.specializations) then --to do 
+			if object.cp.hasSpecializationTrailer then --to do 
 				tipper_attached = true
 				table.insert(self.tippers, object)
 			end
@@ -168,11 +168,11 @@ function courseplay:update_tools(self, tractor_or_implement)
 			if courseplay:isBaler(object) 
 			or courseplay:is_baleLoader(object) 
 			or courseplay:isSpecialBaleLoader(object) 
-			or SpecializationUtil.hasSpecialization(Tedder, object.specializations) 
-			or SpecializationUtil.hasSpecialization(Windrower, object.specializations) 
-			or SpecializationUtil.hasSpecialization(Cultivator, object.specializations) 
-			or SpecializationUtil.hasSpecialization(Plough, object.specializations) 
-			or SpecializationUtil.hasSpecialization(FruitPreparer, self.specializations) or SpecializationUtil.hasSpecialization(fruitPreparer, self.specializations) 
+			or object.cp.hasSpecializationTedder
+			or object.cp.hasSpecializationWindrower
+			or object.cp.hasSpecializationCultivator
+			or object.cp.hasSpecializationPlough
+			or object.cp.hasSpecializationFruitPreparer 
 			or object.allowTipDischarge 
 			or courseplay:isMower(object)
 			or courseplay:isAttachedCombine(object) 
@@ -189,7 +189,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 			table.insert(self.tippers, object)
 			--		end
 		elseif self.ai_mode == 9 then --Fill and empty shovel
-			if courseplay:isFrontloader(object) or SpecializationUtil.hasSpecialization(Shovel, object.specializations) then 
+			if courseplay:isFrontloader(object) or object.cp.hasSpecializationShovel then 
 				tipper_attached = true;
 				table.insert(self.tippers, object);
 				object.attacherVehicle.cp.shovelState = 1
@@ -758,7 +758,7 @@ function courseplay:getReverseProperties(self, tipper)
 		tipper.cp.frontNode = getParent(tipper.attacherVehicle.attacherJoint.node)
 		courseplay:debug(" tipper has dolly ",13)
 	end
-	if SpecializationUtil.hasSpecialization(Shovel, tipper.specializations) or SpecializationUtil.hasSpecialization(Shovel, self.specializations) then
+	if tipper.cp.hasSpecializationShovel or self.cp.hasSpecializationShovel then
 		courseplay:debug(nameNum(self) .. "return because its a shovel",13)
 		return
 	end

@@ -1,8 +1,43 @@
 function courseplay:setNameVariable(workTool)
-	
+	--print("	base: CPloading: "..tostring(workTool.name))
 	if workTool.cp == nil then
 		workTool.cp = {};
 	end;
+	--replace cyclic Utils scanning
+	workTool.cp.hasSpecializationSteerable = (SpecializationUtil.hasSpecialization(Steerable, workTool.specializations) or SpecializationUtil.hasSpecialization(steerable, workTool.specializations))
+	workTool.cp.hasSpecializationCombine = SpecializationUtil.hasSpecialization(Combine, workTool.specializations)
+	workTool.cp.hasSpecializationAICombine = SpecializationUtil.hasSpecialization(AICombine, workTool.specializations)
+	workTool.cp.hasSpecializationAITractor = SpecializationUtil.hasSpecialization(AITractor, workTool.specializations)
+	workTool.cp.hasSpecializationSprayer = SpecializationUtil.hasSpecialization(Sprayer, workTool.specializations) or SpecializationUtil.hasSpecialization(sprayer, workTool.specializations)
+	workTool.cp.hasSpecializationFoldable = SpecializationUtil.hasSpecialization(Foldable, workTool.specializations) or SpecializationUtil.hasSpecialization(foldable, workTool.specializations)
+	workTool.cp.hasSpecializationMower = SpecializationUtil.hasSpecialization(Mower, workTool.specializations)
+	workTool.cp.hasSpecializationMixerWagon = SpecializationUtil.hasSpecialization(MixerWagon, workTool.specializations)
+	workTool.cp.hasSpecializationCylindered = SpecializationUtil.hasSpecialization(Cylindered, workTool.specializations)
+	workTool.cp.hasSpecializationAnimatedVehicle =  SpecializationUtil.hasSpecialization(AnimatedVehicle, workTool.specializations)
+	workTool.cp.hasSpecializationShovel = SpecializationUtil.hasSpecialization(Shovel, workTool.specializations)
+	workTool.cp.hasSpecializationBunkerSiloCompacter = SpecializationUtil.hasSpecialization(BunkerSiloCompacter, workTool.specializations)
+	workTool.cp.hasSpecializationTedder = SpecializationUtil.hasSpecialization(Tedder, workTool.specializations) 
+	workTool.cp.hasSpecializationWindrower = SpecializationUtil.hasSpecialization(Windrower, workTool.specializations) 
+	workTool.cp.hasSpecializationCultivator = SpecializationUtil.hasSpecialization(Cultivator, workTool.specializations)
+	workTool.cp.hasSpecializationFruitPreparer = SpecializationUtil.hasSpecialization(FruitPreparer, workTool.specializations) or SpecializationUtil.hasSpecialization(fruitPreparer, workTool.specializations)
+	--[[ Debugs:
+	if workTool.cp.hasSpecializationFruitPreparer then print("		FruitPreparer")end
+	if workTool.cp.hasSpecializationTedder then print("		Tedder")end
+	if workTool.cp.hasSpecializationWindrower then print("		Windrower")end
+	if workTool.cp.hasSpecializationCultivator then print("		Cultivator")end
+	if workTool.cp.hasSpecializationBunkerSiloCompacter then print("		BunkerSiloCompacter")end
+	if workTool.cp.hasSpecializationShovel then print("		Shovel")end
+	if workTool.cp.hasSpecializationAnimatedVehicle then print("		AnimatedVehicle")end
+	if workTool.cp.hasSpecializationCylindered then print("		Cylindered")end
+	if workTool.cp.hasSpecializationMixerWagon then print("		MixerWagon")end
+	if workTool.cp.hasSpecializationMower then print("		Mower")end
+	if workTool.cp.hasSpecializationFoldable then print("		Foldable")end
+	if workTool.cp.hasSpecializationSprayer then print("		Sprayer")end
+	if workTool.cp.hasSpecializationAITractor then print("		AITractor")end
+	if workTool.cp.hasSpecializationAICombine then print("		AICombine")end
+	if workTool.cp.hasSpecializationCombine then print("		Combine")end
+	if workTool.cp.hasSpecializationSteerable then print("		Steerable")end
+	]]
 	--Mchale998 bale wrapper [Bergwout]
 	if Utils.endsWith(workTool.configFileName, "Mchale998.xml") then
 		workTool.cp.isMchale998 = true

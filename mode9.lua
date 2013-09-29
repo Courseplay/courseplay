@@ -305,7 +305,7 @@ function courseplay:getMovingTools(self)
 	local mt, secondary = nil, nil
 	local frontLoader, shovel = 0,0
 	for i=1, table.getn(self.attachedImplements) do
-		if SpecializationUtil.hasSpecialization(Shovel, self.attachedImplements[i].object.specializations) then 
+		if self.attachedImplements[i].object.cp.hasSpecializationShovel then 
 			shovel = i
 		elseif courseplay:isFrontloader(self.attachedImplements[i].object) then 
 			frontLoader = i

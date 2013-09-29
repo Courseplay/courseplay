@@ -151,7 +151,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 							local marker = Utils.getNoNil(self.Waypoints[self.recordnumber].ridgeMarker,0)
 							local waypoint = math.max(marker,forecast)
 							if courseplay:isFoldable(workTool) and not courseplay:isFolding(workTool) then
-								if not SpecializationUtil.hasSpecialization(Plough, workTool.specializations) then
+								if not self.cp.hasSpecializationPlough then
 									if workTool.cp.inversedFoldDirection then
 										workTool:setFoldDirection(1);
 									else
