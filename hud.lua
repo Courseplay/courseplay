@@ -116,10 +116,17 @@ function courseplay:setHudContent(self)
 					self.cp.hud.content.pages[1][4][1].text = courseplay:get_locale(self, "CoursePlayStopEnd")
 				end
 
-				if self.ai_mode == 4 then
+				if self.ai_mode == 4 and self.cp.hasSowingMachine then
 					self.cp.hud.content.pages[1][5][1].text = courseplay:get_locale(self, "CPridgeMarkers");
 
 					if self.cp.ridgeMarkersAutomatic then
+						self.cp.hud.content.pages[1][5][2].text = courseplay:get_locale(self, "CPautomatic");
+					else
+						self.cp.hud.content.pages[1][5][2].text = courseplay:get_locale(self, "CPmanual");
+					end;
+				elseif self.ai_mode == 6 and self.cp.hasBaleLoader and not self.cp.hasUnloadingRefillingCourse then
+					self.cp.hud.content.pages[1][5][1].text = courseplay:get_locale(self, "CPunloadingOnField");
+					if self.cp.automaticUnloadingOnField then
 						self.cp.hud.content.pages[1][5][2].text = courseplay:get_locale(self, "CPautomatic");
 					else
 						self.cp.hud.content.pages[1][5][2].text = courseplay:get_locale(self, "CPmanual");

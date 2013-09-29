@@ -276,6 +276,8 @@ function courseplay:stop(self)
 	self.cp.hasUnloadingRefillingCourse = false;
 	self.StopEnd = false
 	self.unloaded = false
+	self.cp.hasBaleLoader = false;
+	self.cp.hasSowingMachine = false;
 
 	--validation: can switch ai_mode?
 	courseplay:validateCanSwitchMode(self);

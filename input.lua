@@ -220,8 +220,10 @@ function courseplay:executeFunction(self, func, value, overwrittenPage)
 					elseif line == 5 then
 						if self.ai_mode == 1 or self.ai_mode == 2 then
 							self.cp.unloadAtSiloStart = not self.cp.unloadAtSiloStart;
-						elseif self.ai_mode == 4 then
+						elseif self.ai_mode == 4 and self.cp.hasSowingMachine then
 							self.cp.ridgeMarkersAutomatic = not self.cp.ridgeMarkersAutomatic;
+						elseif self.ai_mode == 6 and self.cp.hasBaleLoader and not self.hasUnloadingRefillingCourse then
+							self.cp.automaticUnloadingOnField = not self.cp.automaticUnloadingOnField;
 						end;
 					end;
 				end; -- end driving

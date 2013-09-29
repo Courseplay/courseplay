@@ -91,6 +91,9 @@ function courseplay:update_tools(self, tractor_or_implement)
 				courseplay:setMarkers(self, object)
 				self.cp.noStopOnEdge = courseplay:isSprayer(object);
 				self.cp.noStopOnTurn = courseplay:isSprayer(object);
+				if courseplay:is_sowingMachine(object) then
+					self.cp.hasSowingMachine = true;
+				end;
 			end
 		elseif self.ai_mode == 6 then -- Baler, foragewagon, baleloader
 			if courseplay:isBaler(object) 
@@ -158,6 +161,9 @@ function courseplay:update_tools(self, tractor_or_implement)
 				self.cp.noStopOnEdge = courseplay:isSprayer(object);
 				self.cp.noStopOnTurn = courseplay:isSprayer(object);
 				self.cp.hasMachinetoFill = true
+				if courseplay:is_sowingMachine(object) then
+					self.cp.hasSowingMachine = true;
+				end;
 			end
 		elseif self.ai_mode == 5 then -- Transfer
 			if object.setPlane ~= nil then --open/close cover

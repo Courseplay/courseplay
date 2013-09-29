@@ -1432,6 +1432,14 @@ Italský překlad: JD7530
 			<it>Segnafile</it>
 			<cz>Znamenák stop:</cz>
 		</text>
+		<text name="CPunloadingOnField">
+			<de>Abladen auf dem Feld</de>
+			<en>Unloading on field</en>
+			<es>Unloading on field</es> <!-- !!! -->
+			<fr>Unloading on field</fr> <!-- !!! -->
+			<it>Unloading on field</it> <!-- !!! -->
+			<cz>Unloading on field</cz> <!-- !!! -->
+		</text>
 		<text name="CPautomatic">
 			<en>automatic</en>
 			<de>automatisch</de>
