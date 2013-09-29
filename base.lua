@@ -69,7 +69,7 @@ function courseplay:load(xmlFile)
 	self.waitPoints = 0
 	self.waitTime = 0
 	self.crossPoints = 0
-	self.waypointMode = 1
+	self.cp.visualWaypointsMode = 1
 	self.RulMode = 1
 	self.cp.workWidthChanged = 0
 	-- saves the shortest distance to the next waypoint (for recocnizing circling)
@@ -125,61 +125,12 @@ function courseplay:load(xmlFile)
 	self.ArrowOverlay = Overlay:new("Arrow", self.ArrowPath, 0.55, 0.05, 0.250, 0.250);
 	--self.ArrowOverlay:render()
 
-	-- kegel der route
-	local baseDirectory = getAppBasePath()
-	local i3dNode = Utils.loadSharedI3DFile("data/maps/models/objects/egg/egg.i3d", baseDirectory)
-	local itemNode = getChildAt(i3dNode, 0)
-	link(getRootNode(), itemNode)
-	setRigidBodyType(itemNode, "NoRigidBody")
-	setTranslation(itemNode, 0, 0, 0)
-	setVisibility(itemNode, false)
-	delete(i3dNode)
-	self.sign = itemNode
-
-	local i3dNode2 = Utils.loadSharedI3DFile("img/NurGerade/NurGerade.i3d", courseplay.path)
-	local itemNode2 = getChildAt(i3dNode2, 0)
-	link(getRootNode(), itemNode2)
-	setRigidBodyType(itemNode2, "NoRigidBody")
-	setTranslation(itemNode2, 0, 0, 0)
-	setVisibility(itemNode2, false)
-	delete(i3dNode2)
-	self.start_sign = itemNode2
-
-	local i3dNode3 = Utils.loadSharedI3DFile("img/STOP/STOP.i3d", courseplay.path)
-	local itemNode3 = getChildAt(i3dNode3, 0)
-	link(getRootNode(), itemNode3)
-	setRigidBodyType(itemNode3, "NoRigidBody")
-	setTranslation(itemNode3, 0, 0, 0)
-	setVisibility(itemNode3, false)
-	delete(i3dNode3)
-	self.stop_sign = itemNode3
-
-	local i3dNode4 = Utils.loadSharedI3DFile("img/VorfahrtAnDieserKreuzung/VorfahrtAnDieserKreuzung.i3d", courseplay.path)
-	local itemNode4 = getChildAt(i3dNode4, 0)
-	link(getRootNode(), itemNode4)
-	setRigidBodyType(itemNode4, "NoRigidBody")
-	setTranslation(itemNode4, 0, 0, 0)
-	setVisibility(itemNode4, false)
-	delete(i3dNode4)
-	self.cross_sign = itemNode4
-
-	local i3dNode5 = Utils.loadSharedI3DFile("img/Parkplatz/Parkplatz.i3d", courseplay.path)
-	local itemNode5 = getChildAt(i3dNode5, 0)
-	link(getRootNode(), itemNode5)
-	setRigidBodyType(itemNode5, "NoRigidBody")
-	setTranslation(itemNode5, 0, 0, 0)
-	setVisibility(itemNode5, false)
-	delete(i3dNode5)
-	self.wait_sign = itemNode5
-
-	-- visual waypoints saved in this
-	self.signs = {}
-	courseplay:RefreshGlobalSigns(self) -- Global Signs Crosspoints
-
-	self.workMarkerLeft = clone(self.sign, true)
-	setVisibility(self.workMarkerLeft, false)
-	self.workMarkerRight = clone(self.sign, true)
-	setVisibility(self.workMarkerRight, false)
+	-- Visual i3D waypoint signs
+	self.cp.signs = {
+		crossing = {};
+		current = {};
+	};
+	courseplay:updateWaypointSigns(self);
 
 	-- course name for saving
 	self.current_course_name = nil
@@ -539,17 +490,18 @@ function courseplay:load(xmlFile)
 	end;
 	for i=1, courseplay.hud.numLines do
 		local expandButtonIndex = courseplay:register_button(self, -2, "folder_expand.png", "expandFolder", i, buttonX[0], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
-		courseplay.button.addOverlay(self.cp.buttons["-2"][expandButtonIndex], 2, "folder_reduce.png")
+		courseplay.button.addOverlay(self.cp.buttons["-2"][expandButtonIndex], 2, "folder_reduce.png");
 		courseplay:register_button(self, -2, "folder.png",      "load_sorted_course", i, buttonX[1], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
 		courseplay:register_button(self, -2, "folder_into.png", "add_sorted_course",  i, buttonX[2], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
-		courseplay:register_button(self, -2, "folder_parent.png", "link_parent",      i, buttonX[3], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
+		local linkParentButtonIndex = courseplay:register_button(self, -2, "folder_parent_from.png", "link_parent", i, buttonX[3], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
+		courseplay.button.addOverlay(self.cp.buttons["-2"][linkParentButtonIndex], 2, "folder_parent_to.png");
 		if g_server ~= nil then
 			courseplay:register_button(self, -2, "delete.png", "delete_sorted_item", i, buttonX[4], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
 		end;
 		courseplay:register_button(self, -2, nil, nil, nil, buttonX[1], courseplay.hud.linesButtonPosY[i], hoverAreaWidth, mouseWheelArea.h, i, nil, true, false);
 	end
 	self.cp.hud.filterButtonIndex = courseplay:register_button(self, 2, "searchGlass.png", "showSaveCourseForm", "filter", buttonX[2], courseplay.hud.infoBasePosY + 0.2395, w24px, h24px);
-	courseplay.button.addOverlay(self.cp.buttons["2"][self.cp.hud.filterButtonIndex], 2, "cancel.png")
+	courseplay.button.addOverlay(self.cp.buttons["2"][self.cp.hud.filterButtonIndex], 2, "cancel.png");
 	courseplay:register_button(self, 2, "folder_new.png", "showSaveCourseForm", 'folder', listArrowX, courseplay.hud.infoBasePosY + 0.056, w24px, h24px);
 
 	--Page 3
@@ -674,6 +626,9 @@ function courseplay:onLeave()
 	if self.mouse_enabled then
 		courseplay:setMouseCursor(self, false);
 	end
+
+	--hide visual i3D waypoint signs only when in vehicle
+	courseplay:setSignsVisibility(self, false);
 end
 
 function courseplay:onEnter()
@@ -684,6 +639,9 @@ function courseplay:onEnter()
 	if self.drive and self.steeringEnabled then
 	  self.steeringEnabled = false
 	end
+
+	--show visual i3D waypoint signs only when in vehicle
+	courseplay:setSignsVisibility(self);
 end
 
 function courseplay:draw()
@@ -846,13 +804,6 @@ function courseplay:updateTick(dt)
 		courseplay:reset_tools(self)
 	end
 
-	-- show visual waypoints only when in vehicle
-	if self.isEntered and self.waypointMode ~= 5 then
-		courseplay:sign_visibility(self, true)
-	else
-		courseplay:sign_visibility(self, false);
-	end
-
 	self.timer = self.timer + dt
 	--courseplay:debug(string.format("timer: %f", self.timer ), 2)
 end
@@ -869,6 +820,13 @@ function courseplay:delete()
 			end;
 		end;
 	end;
+
+	for _,section in pairs(self.cp.signs) do
+		for k,signData in pairs(section) do
+			courseplay.utils.signs.deleteSign(signData.sign);
+		end;
+	end;
+	self.cp.signs = nil;
 end;
 
 function courseplay:set_timeout(self, interval)
