@@ -453,26 +453,15 @@ function courseplay:change_use_speed(self)
 	self.use_speed = not self.use_speed
 end
 
-function courseplay:switch_combine(self, change_by)
-	local combines = courseplay:find_combines(self)
+function courseplay:switch_combine(vehicle, change_by)
+	local combines = courseplay:find_combines(vehicle);
+	vehicle.selected_combine_number = Utils.clamp(vehicle.selected_combine_number + change_by, 0, #combines);
 
-	local selected_combine_number = self.selected_combine_number + change_by
-
-	if selected_combine_number < 0 then
-		selected_combine_number = 0
-	end
-
-	if selected_combine_number > table.getn(combines) then
-		selected_combine_number = table.getn(combines)
-	end
-
-	self.selected_combine_number = selected_combine_number
-
-	if self.selected_combine_number == 0 then
-		self.saved_combine = nil
+	if vehicle.selected_combine_number == 0 then
+		vehicle.saved_combine = nil;
 	else
-		self.saved_combine = combines[self.selected_combine_number]
-	end
+		vehicle.saved_combine = combines[vehicle.selected_combine_number];
+	end;
 end
 
 function courseplay:switchDriverCopy(self, change_by)
