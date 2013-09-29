@@ -19,6 +19,13 @@ function courseplay_manager:deleteMap()
 	g_currentMission.cp_courses = nil
 	g_currentMission.cp_folders = nil
 	g_currentMission.cp_sorted = nil
+
+	for section,signDatas in pairs(courseplay.signs.buffer) do
+		for k,signData in pairs(signDatas) do
+			courseplay.utils.signs.deleteSign(signData.sign);
+		end;
+		courseplay.signs.buffer[section] = {};
+	end;
 end
 
 function courseplay_manager:draw()

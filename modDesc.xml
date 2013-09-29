@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="12">
-	<version>3.41.0138</version>
+	<version>3.41.0139</version>
 	<author>Jakob Tischler / Thomas Gärtner / Horoman</author>
 	<title>
 		<de>Courseplay</de>        
@@ -868,22 +868,14 @@ Italský překlad: JD7530
 			<cz>zatím žádné orientační body</cz>
 		</text>
 		<text name="WaypointMode1">
-			<en>only when recording</en>
-			<de>nur bei Aufnahme</de>
-			<fr>lors de l'enregistrement</fr>
-			<es>solo durante la grabación</es>
-			<it>solo durante la registrazione</it>
-			<cz>jen při nahrávání</cz>
+			<en>Start and end</en>
+			<de>Anfang und Ende</de>
+			<fr>le début et la fin</fr>
+			<es>el principio y el fin</es>
+			<it>l'inizio e la fine</it>
+			<cz>Začátek a konec</cz>
 		</text>
 		<text name="WaypointMode2">
-			<en>own waypoints</en>
-			<de>eigene Wegpunkte</de>
-			<fr>mes propres points</fr>
-			<es>mis propios puntos</es>
-			<it>solo punti di passaggio propri</it>
-			<cz>vždy</cz>
-		</text>
-		<text name="WaypointMode3">
 			<en>without crosspoints</en>
 			<de>ohne Kreuzungspunkte</de>
 			<fr>sans les croisements</fr>
@@ -891,15 +883,15 @@ Italský překlad: JD7530
 			<it>senza incroci</it>
 			<cz>všechny body (bez křížení)</cz>
 		</text>
-		<text name="WaypointMode4">
-			<en>show all</en>
-			<de>alle</de>
+		<text name="WaypointMode3">
+			<en>show all own</en>
+			<de>alle eigenen</de>
 			<fr>montrer les tous</fr>
 			<es>mostrar todos</es>
 			<it>mostra tutti</it>
 			<cz>všechny body</cz>
 		</text>
-		<text name="WaypointMode5">
+		<text name="WaypointMode4">
 			<en>none</en>
 			<de>keine</de>
 			<fr>aucun</fr>

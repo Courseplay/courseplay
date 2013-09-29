@@ -376,12 +376,9 @@ function courseplay:calculateWorkWidthDisplayPoints(vehicle)
 	};
 end;
 
-function courseplay:change_WaypointMode(self, change_by)
-	self.waypointMode = self.waypointMode + change_by
-	if self.waypointMode == 6 then
-		self.waypointMode = 1
-	end
-	courseplay:RefreshSigns(self)
+function courseplay:change_WaypointMode(self, changeBy)
+	self.cp.visualWaypointsMode = courseplay:varLoop(self.cp.visualWaypointsMode, changeBy, 4, 1);
+	courseplay:setSignsVisibility(self);
 end
 
 
@@ -544,7 +541,7 @@ function courseplay:copyCourse(self)
 		self.ai_state = 1;
 		self.tmr = 1;
 
-		courseplay:RefreshSigns(self);
+		courseplay:updateWaypointSigns(self, "current");
 
 		--reset variables
 		self.cp.selectedDriverNumber = 0;
@@ -634,15 +631,6 @@ function courseplay.settings.setReloadCourseItems(vehicle)
 				v.cp.hud.reloadPage[2] = true
 			end
 		end
-	end
-end
-
-function courseplay.hud.filter(vehicle)
-	if vehicle.cp.hud.filter == '' then
-		courseplay.showSaveCourseForm(nil, vehicle, 'filter')
-	else
-		vehicle.cp.hud.filter = ''
-		courseplay.settings.setReloadCourseItems(vehicle)
 	end
 end
 

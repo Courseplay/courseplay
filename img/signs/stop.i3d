@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<i3D name="Stop" version="1.6" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://i3d.giants.ch/schema/i3d-1.6.xsd">
+  <Asset>
+    <Export program="GIANTS Editor 64bit" version="5.0.3"/>
+  </Asset>
+
+  <Files>
+    <File fileId="1" filename="stop.png" relativePath="true"/>
+  </Files>
+
+
+  <Materials>
+    <Material name="Sign" materialId="6" ambientColor="1 1 1" cosPower="20" specularColor="0.5 0.5 0.5">
+      <Texture fileId="1"/>
+    </Material>
+  </Materials>
+
+
+  <Shapes externalShapesFile="squareSign.shapes">
+  </Shapes>
+
+
+  <Dynamics>
+  </Dynamics>
+
+  <Scene>
+    <TransformGroup name="StopSign" clipDistance="175" nodeId="12">
+      <Shape name="Front" nodeId="13" materialIds="6" shapeId="1" castsShadows="true" receiveShadows="true"/>
+      <Shape name="Back" nodeId="14" materialIds="6" shapeId="2" castsShadows="true" receiveShadows="true"/>
+    </TransformGroup>
+  </Scene>
+
+</i3D>

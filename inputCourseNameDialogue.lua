@@ -150,7 +150,7 @@ function inputCourseNameDialogue:onSaveClick()
 
 		courseplay.courses.save_course(vehicle.courseID)
 		courseplay.settings.setReloadCourseItems()
-		courseplay:RefreshGlobalSigns(vehicle)
+		courseplay:updateWaypointSigns(vehicle);
 		
 	elseif vehicle.cp.saveWhat == 'folder' then
 		local maxID = courseplay.courses.getMaxFolderID()
@@ -167,7 +167,7 @@ function inputCourseNameDialogue:onSaveClick()
 		courseplay.courses.save_folder(folderID)
 		courseplay.settings.add_folder(folderID)
 		courseplay.settings.setReloadCourseItems()
-		courseplay:RefreshGlobalSigns(vehicle)
+		courseplay:updateWaypointSigns(vehicle);
 		
 	elseif vehicle.cp.saveWhat == 'filter' then
 		vehicle.cp.hud.filter = self.textInputElement.text;

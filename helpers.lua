@@ -263,6 +263,12 @@ function courseplay:boolToInt(bool)
 		return 0; 
 	end;
 end;
+function courseplay:intToBool(int)
+	if int == nil or type(int) ~= "number" then
+		return nil;
+	end;
+	return int == 1;
+end;
 
 function courseplay:loopedTable(tab, idx)
 	local maxIdx = #tab;
@@ -277,6 +283,18 @@ function courseplay:loopedTable(tab, idx)
 	end;
 
 	return tab[idx]
+end;
+
+function courseplay:varLoop(var, changeBy, max, min)
+	local min = min or 1;
+	local var = var + changeBy;
+	if var > max then
+		var = min;
+	end;
+	if var < min then
+		var = max;
+	end;
+	return var;
 end;
 
 -- by horoman
@@ -343,6 +361,25 @@ function courseplay.utils.table.merge(t1, t2, overwrite)
 	end
 	return t1
 end
+
+function courseplay.utils.table.move(t1, t2, t1_index, t2_index)
+	t1_index = t1_index or (#t1);
+	t2_index = t2_index or (#t2 + 1);
+	if t1[t1_index] == nil then
+		return false;
+	end;
+
+	t2[t2_index] = t1[t1_index];
+	t1[t1_index] = nil;
+	return t2[t2_index] ~= nil;
+end;
+
+function courseplay.utils.table.last(tab)
+	if #tab == 0 then
+		return nil;
+	end;
+	return tab[#tab];
+end;
 
 function courseplay.utils.table.getMax(tab, field)
 	local max = nil

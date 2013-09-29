@@ -663,7 +663,7 @@ function courseplay:generateCourse(self)
 	self.Waypoints[1].wait = true
 	self.Waypoints[self.maxnumber].wait = true
 	self.numCourses = 1;
-	courseplay:RefreshSigns(self);
+	courseplay:updateWaypointSigns(self);
 	
 	self.cp.hasGeneratedCourse = true;
 	self.cp.selectedFieldEdgePathNumber = 0;

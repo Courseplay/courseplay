@@ -248,6 +248,36 @@ function courseplay:setGlobalData()
 		"HUD4savedCombineName"
 	};
 
+	local signData = {
+		normal = { 10000, "current",  5 },
+		start =  {   500, "current",  3 },
+		stop =   {   500, "current",  3 },
+		wait =   {  1000, "current",  3 },
+		cross =  {  2000, "crossing", 4 }
+	};
+	local globalRootNode = getRootNode();
+	courseplay.signs = {
+		buffer = {};
+		bufferMax = {};
+		sections = {};
+		heightPos = {};
+		protoTypes = {};
+	};
+	for signType,data in pairs(signData) do
+		courseplay.signs.buffer[signType] =    {};
+		courseplay.signs.bufferMax[signType] = data[1];
+		courseplay.signs.sections[signType] =  data[2];
+		courseplay.signs.heightPos[signType] = data[3];
+
+		local i3dNode = Utils.loadSharedI3DFile("img/signs/" .. signType .. ".i3d", courseplay.path);
+		local itemNode = getChildAt(i3dNode, 0);
+		link(globalRootNode, itemNode);
+		setRigidBodyType(itemNode, "NoRigidBody");
+		setTranslation(itemNode, 0, 0, 0);
+		setVisibility(itemNode, false);
+		delete(i3dNode);
+		courseplay.signs.protoTypes[signType] = itemNode;
+	end;
 	--print("\t### Courseplay: setGlobalData() finished");
 end;
 

@@ -313,7 +313,7 @@ function courseplay:setHudContent(self)
 		end;
 
 		self.cp.hud.content.pages[6][3][1].text = courseplay:get_locale(self, "CPWPs");
-		self.cp.hud.content.pages[6][3][2].text = courseplay:get_locale(self, string.format("WaypointMode%d", self.waypointMode));
+		self.cp.hud.content.pages[6][3][2].text = courseplay:get_locale(self, string.format("WaypointMode%d", self.cp.visualWaypointsMode));
 
 		self.cp.hud.content.pages[6][4][1].text = courseplay:get_locale(self, "Rul");
 		self.cp.hud.content.pages[6][4][2].text = courseplay:get_locale(self, "RulMode" .. string.format("%d", self.RulMode));

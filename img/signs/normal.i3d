@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<i3D name="diamont" version="1.6" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://i3d.giants.ch/schema/i3d-1.6.xsd">
+  <Asset>
+    <Export program="GIANTS Editor 64bit" version="5.0.3"/>
+  </Asset>
+
+  <Files>
+    <File fileId="1" filename="normal.png" relativePath="true"/>
+  </Files>
+
+
+  <Materials>
+    <Material name="normal" materialId="6" ambientColor="1 1 1" cosPower="20" specularColor="0.25 0.25 0.25" alphaBlending="true">
+      <Texture fileId="1"/>
+    </Material>
+  </Materials>
+
+
+  <Shapes externalShapesFile="normal.i3d.shapes">
+  </Shapes>
+
+
+  <Dynamics>
+  </Dynamics>
+
+  <Scene>
+    <Shape name="normal" clipDistance="75" nodeId="10" materialIds="6" shapeId="1" castsShadows="true" receiveShadows="true"/>
+  </Scene>
+
+</i3D>

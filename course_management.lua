@@ -167,7 +167,7 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
 		end
 		
 		self.recordnumber = 1  -- Waypoint number
-		courseplay:RefreshSigns(self) -- this adds the signs to the course
+		courseplay:updateWaypointSigns(self, "current");
 
 		self.cp.hasGeneratedCourse = false;
 		courseplay:validateCourseGenerationData(self);
@@ -337,7 +337,7 @@ function courseplay:delete_sorted_item(vehicle, index)
 	courseplay.courses.save_all()
 	courseplay.settings.setReloadCourseItems()
 	--courseplay.hud.reloadCourses()
-	courseplay:RefreshGlobalSigns(vehicle)
+	courseplay:updateWaypointSigns(vehicle);
 end
 
 function courseplay.courses.save_course(course_id, File, append)
