@@ -3,20 +3,17 @@ function courseplay:openCloseHud(self, open)
 	self.cp.hud.show = open;
 
 	--set ESLimiter
-	if self.cp.hud.ESLimiterOrigPosY == nil and open and self.ESLimiter ~= nil then
-		if self.ESLimiter.xPos ~= nil and self.ESLimiter.yPos ~= nil then
-			if self.ESLimiter.xPos > courseplay.hud.visibleArea.x1 and self.ESLimiter.xPos < courseplay.hud.visibleArea.x2 and self.ESLimiter.yPos > courseplay.hud.visibleArea.y1 and self.ESLimiter.yPos < courseplay.hud.visibleArea.y2 then
-				self.cp.hud.ESLimiterOrigPosY = { 
-					self.ESLimiter.yPos,
-					self.ESLimiter.overlay.y,
-					self.ESLimiter.overlayBg.y,
-					self.ESLimiter.overlayBar.y
-				};
-			end;
+	if self.cp.hud.ESLimiterOrigPosY == nil and open and self.ESLimiter ~= nil and self.ESLimiter.xPos ~= nil and self.ESLimiter.yPos ~= nil and self.ESLimiter.overlay ~= nil and self.ESLimiter.overlayBg ~= nil and self.ESLimiter.overlayBar ~= nil then
+		if self.ESLimiter.xPos > courseplay.hud.visibleArea.x1 and self.ESLimiter.xPos < courseplay.hud.visibleArea.x2 and self.ESLimiter.yPos > courseplay.hud.visibleArea.y1 and self.ESLimiter.yPos < courseplay.hud.visibleArea.y2 then
+			self.cp.hud.ESLimiterOrigPosY = { 
+				self.ESLimiter.yPos,
+				self.ESLimiter.overlay.y,
+				self.ESLimiter.overlayBg.y,
+				self.ESLimiter.overlayBar.y
+			};
 		end;
 	end;
-
-	--hide/show ESLimiter
+	--toggle ESLimiter
 	if self.cp.hud.ESLimiterOrigPosY ~= nil then
 		if open then
 			self.ESLimiter.yPos = -1;
@@ -33,43 +30,55 @@ function courseplay:openCloseHud(self, open)
 
 
 	--set ThreshingCounter
-	if self.cp.hud.ThreshingCounterOrigPosY == nil and open and self.sessionHectars ~= nil and self.totalHectars ~= nil and self.tcOverlay ~= nil then
-		if self.tcX ~= nil and self.tcY ~= nil then
-			if self.tcX > courseplay.hud.visibleArea.x1 and self.tcX < courseplay.hud.visibleArea.x2 and self.tcY > courseplay.hud.visibleArea.y1 and self.tcY < courseplay.hud.visibleArea.y2 then
-				self.cp.hud.ThreshingCounterOrigPosY = { 
-					self.tcY,
-					self.tcOverlay.y,
-				};
-			end;
+	local isManualThreshingCounter = self.sessionHectars ~= nil and self.tcOverlay ~= nil and self.tcX ~= nil and self.tcY ~= nil;
+	local isGlobalThreshingCounter = self.ThreshingCounter ~= nil and self.tcOverlay ~= nil and self.xPos ~= nil and self.yPos ~= nil;
+	if self.cp.hud.ThreshingCounterOrigPosY == nil and open and (isManualThreshingCounter or isGlobalThreshingCounter) then
+		local x, y = nil, nil;
+		if isManualThreshingCounter then
+			x, y = self.tcX, self.tcY;
+		elseif isGlobalThreshingCounter then
+			x, y = self.xPos, self.yPos;
+		end;
+		if x and y and x > courseplay.hud.visibleArea.x1 and x < courseplay.hud.visibleArea.x2 and y > courseplay.hud.visibleArea.y1 and y < courseplay.hud.visibleArea.y2 then
+			self.cp.hud.ThreshingCounterOrigPosY = { 
+				y,
+				self.tcOverlay.y,
+			};
 		end;
 	end;
-
-	--hide/show ThreshingCounter
+	--toggle ThreshingCounter
 	if self.cp.hud.ThreshingCounterOrigPosY ~= nil then
-		if open then
-			self.tcY = -1;
-			self.tcOverlay:setPosition(self.tcOverlay.x, -1);
-		else
-			self.tcY = self.cp.hud.ThreshingCounterOrigPosY[1];
-			self.tcOverlay:setPosition(self.tcOverlay.x, self.cp.hud.ThreshingCounterOrigPosY[2]);
+		if isManualThreshingCounter then
+			if open then
+				self.tcY = -1;
+				self.tcOverlay:setPosition(self.tcOverlay.x, -1);
+			else
+				self.tcY = self.cp.hud.ThreshingCounterOrigPosY[1];
+				self.tcOverlay:setPosition(self.tcOverlay.x, self.cp.hud.ThreshingCounterOrigPosY[2]);
+			end;
+		elseif isGlobalThreshingCounter then
+			if open then
+				self.yPos = -1;
+				self.tcOverlay:setPosition(self.tcOverlay.x, -1);
+			else
+				self.yPos = self.cp.hud.ThreshingCounterOrigPosY[1];
+				self.tcOverlay:setPosition(self.tcOverlay.x, self.cp.hud.ThreshingCounterOrigPosY[2]);
+			end;
 		end;
 	end;
 
 
 	--set Odometer
-	if self.cp.hud.OdometerOrigPosY == nil and open and self.Odometer ~= nil and self.Odometer.HUD ~= nil then
-		if self.Odometer.posX ~= nil and self.Odometer.posY ~= nil then
-			if self.Odometer.posX > courseplay.hud.visibleArea.x1 and self.Odometer.posX < courseplay.hud.visibleArea.x2 and self.Odometer.posY > courseplay.hud.visibleArea.y1 and self.Odometer.posY < courseplay.hud.visibleArea.y2 then
-			--if courseplay:numberInSpan(self.Odometer.posX, courseplay.hud.visibleArea.x1, courseplay.hud.visibleArea.x2) and courseplay:numberInSpan(self.Odometer.posY, courseplay.hud.visibleArea.y1, courseplay.hud.visibleArea.y2) then
-				self.cp.hud.OdometerOrigPosY = { 
-					self.Odometer.posY,
-					self.Odometer.HUD.y,
-				};
-			end;
+	if self.cp.hud.OdometerOrigPosY == nil and open and self.Odometer ~= nil and self.Odometer.HUD ~= nil and self.Odometer.posX ~= nil and self.Odometer.posY ~= nil then
+		if self.Odometer.posX > courseplay.hud.visibleArea.x1 and self.Odometer.posX < courseplay.hud.visibleArea.x2 and self.Odometer.posY > courseplay.hud.visibleArea.y1 and self.Odometer.posY < courseplay.hud.visibleArea.y2 then
+		--if courseplay:numberInSpan(self.Odometer.posX, courseplay.hud.visibleArea.x1, courseplay.hud.visibleArea.x2) and courseplay:numberInSpan(self.Odometer.posY, courseplay.hud.visibleArea.y1, courseplay.hud.visibleArea.y2) then
+			self.cp.hud.OdometerOrigPosY = { 
+				self.Odometer.posY,
+				self.Odometer.HUD.y,
+			};
 		end;
 	end;
-
-	--hide/show Odometer
+	--toggle Odometer
 	if self.cp.hud.OdometerOrigPosY ~= nil then
 		if open then
 			self.Odometer.posY = -1;
@@ -81,21 +90,17 @@ function courseplay:openCloseHud(self, open)
 	end;
 
 
-
 	--set 4WD/Allrad
-	if self.cp.hud.AllradOrigPosY == nil and open and self.AllradV4Active ~= nil and self.hudAllradONOverlay ~= nil and self.hudAllradOFFOverlay ~= nil then
-		if self.hudAllradPosX ~= nil and self.hudAllradPosY ~= nil then
-			if self.hudAllradPosX > courseplay.hud.visibleArea.x1 and self.hudAllradPosX < courseplay.hud.visibleArea.x2 and self.hudAllradPosY > courseplay.hud.visibleArea.y1 and self.hudAllradPosY < courseplay.hud.visibleArea.y2 then
-				self.cp.hud.AllradOrigPosY = { 
-					self.hudAllradPosY,
-					self.hudAllradONOverlay.y,
-					self.hudAllradOFFOverlay.y,
-				};
-			end;
+	if self.cp.hud.AllradOrigPosY == nil and open and self.AllradV4Active ~= nil and self.hudAllradONOverlay ~= nil and self.hudAllradOFFOverlay ~= nil and self.hudAllradPosX ~= nil and self.hudAllradPosY ~= nil then
+		if self.hudAllradPosX > courseplay.hud.visibleArea.x1 and self.hudAllradPosX < courseplay.hud.visibleArea.x2 and self.hudAllradPosY > courseplay.hud.visibleArea.y1 and self.hudAllradPosY < courseplay.hud.visibleArea.y2 then
+			self.cp.hud.AllradOrigPosY = { 
+				self.hudAllradPosY,
+				self.hudAllradONOverlay.y,
+				self.hudAllradOFFOverlay.y,
+			};
 		end;
 	end;
-
-	--4WD/Allrad
+	--toggle 4WD/Allrad
 	if self.cp.hud.AllradOrigPosY ~= nil then
 		if open then
 			self.hudAllradPosY = -1;
