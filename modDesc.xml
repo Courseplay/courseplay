@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="12">
-	<version>3.41.0132</version>
-	<author>Hummel (modhoster.de) / Lautschreier / Wolverin0815 / Bastian82 / Jakob Tischler / Thomas Gärtner</author>
+	<version>3.41.0133</version>
+	<author>Jakob Tischler / Thomas Gärtner / Horoman</author>
 	<title>
 		<de>Courseplay</de>        
 		<en>Courseplay</en>
@@ -12,7 +12,7 @@
 	</title>
 	<description>
 		<de>
-<![CDATA[Entwickler: Jakob Tischler, Thomas Gärtner
+<![CDATA[Entwickler: Jakob Tischler, Thomas Gärtner, Horoman
 Ehemalige Entwickler: Lautschreier, Hummel, Wolverin0815, Bastian82, Skydancer
 Französische Übersetzung: Guillaume Dupuy
 Italienische Übersetzung: JD7530
@@ -21,7 +21,7 @@ Tschechische Übersetzung: Albi
 ]]>
 		</de>
 		<en>
-<![CDATA[Developers: Jakob Tischler, Thomas Gärtner
+<![CDATA[Developers: Jakob Tischler, Thomas Gärtner, Horoman
 Former developers: Lautschreier, Hummel, Wolverin0815, Bastian82, Skydancer
 French translation: Guillaume Dupuy
 Italian translation: JD7530
@@ -30,7 +30,7 @@ Czech translation: Albi
 ]]>
 		</en>
 		<es>
-<![CDATA[Desarrolladores: Jakob Tischler, Thomas Gärtner
+<![CDATA[Desarrolladores: Jakob Tischler, Thomas Gärtner, Horoman
 Desarrolladores antiguos: Lautschreier, Hummel, Wolverin0815, Bastian82, Skydancer
 Traddución en francés: Guillaume Dupuy
 Traddución en italiano: JD7530
@@ -39,7 +39,7 @@ Traddución en checo: Albi
 ]]>
 		</es>
 		<fr>
-<![CDATA[Développeurs: Jakob Tischler, Thomas Gärtner
+<![CDATA[Développeurs: Jakob Tischler, Thomas Gärtner, Horoman
 Développeurs anciens: Lautschreier, Hummel, Wolverin0815, Bastian82, Skydancer
 Traduction français: Guillaume Dupuy
 Traduction italien: JD7530
@@ -48,7 +48,7 @@ Traduction tchèque: Albi
 ]]>
 		</fr>
 		<it>
-<![CDATA[Sviluppatori: Jakob Tischler, Thomas Gärtner
+<![CDATA[Sviluppatori: Jakob Tischler, Thomas Gärtner, Horoman
 Ex sviluppatori: Lautschreier, Hummel, Wolverin0815, Bastian82, Skydancer
 Traduzione francese: Guillaume Dupuy
 Traduzione italiano: JD7530
@@ -57,7 +57,7 @@ Traduzione ceco: Albi
 ]]>
 		</it>
 		<cz>
-<![CDATA[Vývojáři: Jakob Tischler, Thomas Gärtner
+<![CDATA[Vývojáři: Jakob Tischler, Thomas Gärtner, Horoman
 Bývalí vývojáři: Lautschreier, Hummel, Wolverin0815, Bastian82, Skydancer
 Francouzký překlad: Guillaume Dupuy
 Italský překlad: JD7530
@@ -505,7 +505,32 @@ Italský překlad: JD7530
 			<de>Name des Kurses:</de>
 			<fr>Nom de la course:</fr>
 			<es>Nombre de ruta:</es>
+			<it>Nome del percorso:</it>
 			<cz>Jméno trasy:</cz>
+		</text>
+		<text name="CPFolderName">
+			<en>Folder name:</en>
+			<de>Name des Ordners:</de>
+			<fr>Nom du dossier:</fr>
+			<es>Nombre de la carpeta:</es>
+			<it>Nome della cartella:</it>
+			<cz>Jméno složky:</cz>
+		</text>
+		<text name="CPFilterFor">
+			<en>Filter courses:</en>
+			<de>Kurse filtern:</de>
+			<fr>Filter courses:</fr> <!-- !!! -->
+			<es>Filter courses:</es> <!-- !!! -->
+			<it>Filter courses:</it> <!-- !!! -->
+			<cz>Filter courses:</cz> <!-- !!! -->
+		</text>
+		<text name="CPcoursesFilterTitle">
+			<en>Courses: "%s"</en>
+			<de>Kurse: "%s"</de>
+			<fr>Courses: "%s"</fr>
+			<es>Rutas: "%s"</es>
+			<it>Percorsos: "%s"</it>
+			<cz>Trasy: "%s"</cz>
 		</text>
 		<text name="CPReachedOverloadPoint">
 			<en>has reached overload point.</en>
@@ -937,6 +962,14 @@ Italský překlad: JD7530
 			<es>Gestión de cursos</es>
 			<it>Gestione percorsi</it>
 			<cz>Správa tras</cz>
+		</text>
+		<text name="CPchooseFolder">
+			<en>Choose folder</en>
+			<de>Ordner auswählen</de>
+			<fr>Choisir le dossier</fr>
+			<es>Elegir la carpeta</es>
+			<it>Scegliere la cartella</it>
+			<cz>Vybrat složku</cz>
 		</text>
 		<text name="CPNoWorkArea">
 			<en>no work area at this course</en>

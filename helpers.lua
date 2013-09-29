@@ -278,3 +278,293 @@ function courseplay:loopedTable(tab, idx)
 
 	return tab[idx]
 end;
+
+-- by horoman
+courseplay.utils.table = {}
+
+function courseplay.utils.table.compare(t1,t2,field)
+	local result = false
+	local C1 = t1[field]
+	local C2 = t2[field]
+	
+	if type(C1) == 'string' or type(C2) == 'string' then
+		local c1 = string.lower(C1)
+		local c2 = string.lower(C2)
+		if c1 == c2 then
+			result = C1 < C2
+		else
+			result = c1 < c2
+		end
+	else
+		result = C1 < C2
+	end
+
+	return result
+end
+
+function courseplay.utils.table.compare_name(t1,t2)
+	return courseplay.utils.table.compare(t1,t2,'name')
+end
+
+function courseplay.utils.table.search_in_field(tab, field, term)
+	local result = {}
+	for k,v in pairs(tab) do
+		if v[field] == term then
+			table.insert(result, v)
+		end
+	end
+	return result
+end
+
+function courseplay.utils.table.copy(tab)
+-- note that only tab is copied. if tab contains tables itself again, these tables are not copied but referenced again (the reference is copied).
+	local result = {}
+	for k,v in pairs(tab) do
+		result[k]=v
+	end
+	return result
+end
+
+function courseplay.utils.table.append(t1,t2)
+	for k,v in pairs(t2) do
+		table.insert(t1,v)
+	end
+	return t1
+end
+
+function courseplay.utils.table.merge(t1, t2, overwrite)
+	if overwrite == nil then
+		overwrite = false
+	end
+	for k, v in pairs(t2) do
+		if overwrite or t1[k] == nil then
+			t1[k] = v		
+		end
+	end
+	return t1
+end
+
+function courseplay.utils.table.getMax(tab, field)
+	local max = nil
+	if tab ~= nil and field ~= nil then
+		max = false
+		for k, v in pairs(tab) do
+			if v[field] ~= nil then
+				max = v[field]
+				break
+			end
+		end
+		for k, v in pairs(tab) do
+			if v[field] ~= nil then
+				if v[field] > max then
+					max = v[field]
+				end
+			end
+		end
+	end
+	return max
+end
+
+function courseplay.utils.findXMLNodeByAttr(File, node, attr, value, val_type)
+	-- returns the node number in case of success
+	-- else it returns the negative value of the next unused node (if there are 6 nodes with the name defined by the node parameter and none matches the search, the function returns -7)
+	val_type = val_type or 'Int'
+	local i = -1
+	local done = false
+	local dummy
+	
+	-- this solution does not look very nice but has no unnecessary statements in the loops which should make them as fast as possible
+	if val_type == 'Int' then
+		repeat
+			i = i + 1
+			dummy = ''				
+			dummy = getXMLInt(File, string.format(node .. '(%d)' .. "#" .. attr, i))			
+			if dummy == value then
+				done = true
+			elseif dummy == nil then
+				--the attribute seems not to exist. Does the node?
+				if not hasXMLProperty(File, string.format(node .. '(%d)', i)) then
+					-- if the node does not exist, we are at the end and done
+					done = true
+				end
+			end
+		until done
+	elseif val_type == 'String' then
+		repeat
+			i = i + 1
+			dummy = ''				
+			dummy = getXMLString(File, string.format(node .. '(%d)' .. "#" .. attr, i))
+			if dummy == value then
+				done = true
+			elseif dummy == nil then
+				--the attribute seems not to exist. Does the node?
+				if not hasXMLProperty(File, string.format(node .. '(%d)', i)) then
+					-- if the node does not exist, we are at the end and done
+					done = true
+				end
+			end
+		until done
+	elseif val_type == 'Float' then
+		repeat
+			i = i + 1
+			dummy = ''				
+			dummy = getXMLFloat(File, string.format(node .. '(%d)' .. "#" .. attr, i))
+			if dummy == value then
+				done = true
+			elseif dummy == nil then
+				--the attribute seems not to exist. Does the node?
+				if not hasXMLProperty(File, string.format(node .. '(%d)', i)) then
+					-- if the node does not exist, we are at the end and done
+					done = true
+				end
+			end
+		until done		
+	elseif val_type == 'Bool' then
+		repeat
+			i = i + 1
+			dummy = ''				
+			dummy = getXMLBool(File, string.format(node .. '(%d)' .. "#" .. attr, i))
+			if dummy == value then
+				done = true
+			elseif dummy == nil then
+				--the attribute seems not to exist. Does the node?
+				if not hasXMLProperty(File, string.format(node .. '(%d)', i)) then
+					-- if the node does not exist, we are at the end and done
+					done = true
+				end
+			end
+		until done		
+	else
+		-- Error?!
+	end	
+	
+	if dummy ~= nil then
+		return i
+	else
+		return -1*i
+	end
+end
+
+function courseplay.utils.findFreeXMLNode(File, node)
+	-- returns the node number in case of success
+	local i = -1
+	local done = false
+	local exists
+	
+	repeat
+		i = i+1
+		exists = hasXMLProperty(File, string.format(node .. '(%d)', i))
+		if not exists then
+			done = true
+		end
+	until done
+	
+	return i
+end
+
+function courseplay.utils.setXML(File, node, attribute, value, val_type, match_attr, match_attr_value, match_attr_type)
+	-- this function is not meant do be called in loops as it is rather slow: 
+	-- 1) due to the loadstring function.
+	-- 2) it is searched for the node everytime the function is called.
+	-- Use setMultipleXML instead.
+	attribute = attribute or ''
+	val_type = val_type or 'Int'
+	match_attr = match_attr or ''
+	match_attr_value = match_attr_value or ''
+	match_attr_type = match_attr_type or 'Int'
+	
+	if attribute ~= '' then
+		attribute = '#' .. attribute
+	end
+	if match_attr ~= '' and match_attr_value ~= '' then
+		local i = courseplay.utils.findXMLNodeByAttr(File, node, match_attr, match_attr_value, match_attr_type)
+		if i < 0 then i = -i end
+		assert(loadstring('setXML' .. val_type .. '(...)'))(File, string.format(node .. '(%d)' .. attribute, i), value)
+	else
+		assert(loadstring('setXML' .. val_type .. '(...)'))(File, node .. attribute, value)
+	end
+end
+
+function courseplay.utils.setMultipleXML(File, node, values, types, skip_attr)
+-- function to save multiple attributes (and to the node itself) of one node
+--
+-- File: File got by loadXML(...)
+-- node (string)
+-- values has to be a table of the form:
+-- {attribute1 = value1, attribute2 = value2, ...}
+-- to write into the node directly set attribute = '_node_'
+-- types is a table of the form:
+-- {attribute1 = type1, attribute2 = type2, ...}; type1 is a string (e.g. 'Int')
+-- skip_attr (table): contains attributes to be skipped as strings
+	if skip_attr == nil then
+		skip_attr = false
+	end
+	
+	local skip = false
+	local attribute, value, val_type
+	
+	for k, v in pairs(values) do
+		attribute = k
+		
+		if skip_attr ~= false then
+			if Utils.hasListElement(skip_attr, k) then
+				skip = true
+			else
+				skip = false
+			end
+		end
+		
+		if not skip then
+			value = v
+			val_type = types[k]
+	
+			if attribute ~= '_node_' then
+				attribute = '#' .. attribute
+			else
+				attribute = ''
+			end
+		
+			if val_type == 'Int' then
+				setXMLInt(File, node .. attribute, value)
+			elseif val_type == 'String' then
+				setXMLString(File, node .. attribute, value)
+			elseif val_type == 'Float' then
+				setXMLFloat(File, node .. attribute, value)
+			elseif val_type == 'Bool' then
+				setXMLBool(File, node .. attribute, value)
+			else
+				-- Error?!
+			end
+		end -- end if not skip then
+	end	 -- end for k, v in pairs(values) do
+end
+
+function courseplay.utils.setMultipleXMLNodes(File, root_node, node_name , values, types, skip_attr, unique_nodes)
+	-- values has to be a table of the form:
+	-- {attribute1 = value1, attribute2 = value2, ...}
+	-- types a table of the form:
+	-- {attribute1 = type1, attribute2 = type2, ...}
+	-- to write into the node directly set attribute = '_node_'
+
+	if skip_attr == nil then
+		skip_attr = false
+	end
+	if unique_nodes == nil then
+		unique_nodes = true
+	end
+	
+	local skip = false
+	local j = 0
+	local node = ''
+
+	
+	for k, v in pairs(values) do
+		if unique_nodes then
+			node = root_node .. '.' .. node_name .. k
+		else
+			node = string.format(root_node .. '.' .. node_name .. '(%d)', j)
+			j = j+1
+		end		
+		courseplay.utils.setMultipleXML(File, node, v, types, skip_attr)
+	end
+end

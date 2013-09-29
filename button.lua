@@ -14,12 +14,15 @@ function courseplay:register_button(self, hudPage, img, function_to_call, parame
 	button = { 
 		page = hudPage, 
 		overlay = overlay, 
+		overlays = { overlay }, 
 		function_to_call = function_to_call, 
 		parameter = parameter, 
-		x = x, 
-		x2 = (x + width), 
-		y = y, 
-		y2 = (y + height), 
+		x_init = x,
+		x = x,
+		x2 = (x + width),
+		y_init = y,
+		y = y,
+		y2 = (y + height),
 		row = hudRow,
 		hoverText = hoverText,
 		color = courseplay.hud.colors.white,
@@ -29,7 +32,8 @@ function courseplay:register_button(self, hudPage, img, function_to_call, parame
 		isClicked = false,
 		isActive = false,
 		isDisabled = false,
-		isHovered = false
+		isHovered = false,
+		isHidden = false
 	};
 	if modifiedParameter then 
 		button.modifiedParameter = modifiedParameter;
@@ -40,6 +44,7 @@ function courseplay:register_button(self, hudPage, img, function_to_call, parame
 	end;
 
 	table.insert(self.cp.buttons[tostring(hudPage)], button);
+	return #(self.cp.buttons[tostring(hudPage)]);
 end
 
 function courseplay:renderButtons(self, page)
@@ -64,9 +69,9 @@ function courseplay:renderButton(self, button)
 	--mouseWheelAreas conditionals
 	if button.isMouseWheelArea then
 		if pg == 2 then
-			if fn == "change_selected_course" then
-				button.canScrollUp =   self.cp.courseListPrev == true;
-				button.canScrollDown = self.cp.courseListNext == true;
+			if fn == "shiftHudCourses" then
+				button.canScrollUp =   self.cp.hud.courseListPrev == true;
+				button.canScrollDown = self.cp.hud.courseListNext == true;
 			end;
 
 		elseif pg == 3 then
@@ -132,11 +137,13 @@ function courseplay:renderButton(self, button)
 		elseif pg == 2 then
 			if fn == "reloadCoursesFromXML" then
 				button.show = g_server ~= nil;
-			elseif fn == "change_selected_course" then
-				if prm == -courseplay.hud.numLines then
-					button.show = self.cp.courseListPrev;
-				elseif prm == courseplay.hud.numLines then
-					button.show = self.cp.courseListNext;
+			elseif fn == "showSaveCourseForm" and prm == "filter" then
+				button.show = not self.cp.hud.choose_parent;
+			elseif fn == "shiftHudCourses" then
+				if prm < 0 then
+					button.show = self.cp.hud.courseListPrev;
+				elseif prm > 0 then
+					button.show = self.cp.hud.courseListNext;
 				end;
 			end;
 		elseif pg == -2 then
@@ -231,8 +238,8 @@ function courseplay:renderButton(self, button)
 			end;
 		end;
 
-
-		if button.show then
+		
+		if button.show and not button.isHidden then
 			local colors = courseplay.hud.colors;
 			local currentColor = courseplay:getButtonColor(button);
 			local targetColor = currentColor;
@@ -260,7 +267,7 @@ function courseplay:renderButton(self, button)
 
 			button.overlay:render();
 		end;
-	end;
+	end;	--elseif button.overlay ~= nil
 end;
 
 
@@ -288,3 +295,30 @@ function courseplay:colorsMatch(color1, color2)
 	end;
 	return Utils.areListsEqual(color1, color2, false);
 end;
+
+function courseplay.button.setOffset(button, x_off, y_off)
+	x_off = x_off or 0
+	y_off = y_off or 0
+	
+	local width = button.x2 - button.x
+	local height = button.y2 - button.y
+	button.x = button.x_init + x_off
+	button.y = button.y_init + y_off
+	button.x2 = button.x + width
+	button.y2 = button.y + height
+	button.overlay.x = button.x_init + x_off
+	button.overlay.y = button.y_init + y_off
+end
+
+function courseplay.button.addOverlay(button, index, img)
+	local width = button.x2 - button.x
+	local height = button.y2 - button.y
+	button.overlays[index] = Overlay:new(img, Utils.getFilename("img/" .. img, courseplay.path), button.x, button.y, width, height);
+end
+
+function courseplay.button.setOverlay(button, index)
+	button.overlay = button.overlays[index]
+	-- the offset of the button might have changed...
+	button.overlay.x = button.x
+	button.overlay.y = button.y
+end

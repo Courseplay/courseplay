@@ -9,6 +9,13 @@
 
 courseplay = {
 	path = g_currentModDirectory;
+	
+	-- place them here in order to get an overview of the contents of the courseplay object
+	utils = {};
+	courses = {};
+	settings = {};
+	hud = {};
+	button = {};
 };
 if courseplay.path ~= nil then
 	if not Utils.endsWith(courseplay.path, "/") then
@@ -105,50 +112,50 @@ function courseplay:setGlobalData()
 	end;
 
 	courseplay.numAiModes = 9;
-	courseplay.hud = {
-		infoBasePosX = Utils.getNoNil(customPosX, 0.433);
-		infoBasePosY = Utils.getNoNil(customPosY, 0.002);
-		infoBaseWidth = 0.512; --try: 512/1920
-		infoBaseHeight = 0.512; --try: 512/1080
-		linesPosY = {};
-		linesBottomPosY = {};
-		linesButtonPosY = {};
-		numPages = 9,
-		numLines = 6;
-		lineHeight = 0.021;
-		colors = {
-			white =         {       1,       1,       1, 1    };
-			whiteInactive = {       1,       1,       1, 0.75 };
-			whiteDisabled = {       1,       1,       1, 0.15 };
-			hover =         {  32/255, 168/255, 219/255, 1    };
-			activeGreen =   { 110/255, 235/255,  56/255, 1    };
-			activeRed =     { 206/255,  83/255,  77/255, 1    };
-			closeRed =      { 180/255,       0,       0, 1    };
-			warningRed =    { 240/255,  25/255,  25/255, 1    };
-			shadow =        {  35/255,  35/255,  35/255, 1    };
-		};
-		clickSound = createSample("clickSound");
-		pagesPerMode = {
-			--Pg 0  Pg 1  Pg 2  Pg 3   Pg 4   Pg 5  Pg 6  Pg 7  Pg 8   Pg 9
-			{ true, true, true, true,  false, true, true, true, false, false }; --Mode 1
-			{ true, true, true, true,  true,  true, true, true, false, false }; --Mode 2
-			{ true, true, true, true,  true,  true, true, true, false, false }; --Mode 3
-			{ true, true, true, true,  false, true, true, true, true,  false }; --Mode 4
-			{ true, true, true, false, false, true, true, true, false, false }; --Mode 5
-			{ true, true, true, false, false, true, true, true, true,  false }; --Mode 6
-			{ true, true, true, true,  false, true, true, true, false, false }; --Mode 7
-			{ true, true, true, true,  false, true, true, true, false, false }; --Mode 8
-			{ true, true, true, false, false, true, true, true, false, true  }; --Mode 9
-		};
+	local ch = courseplay.hud
+	ch.infoBasePosX = Utils.getNoNil(customPosX, 0.433);
+	ch.infoBasePosY = Utils.getNoNil(customPosY, 0.002);
+	ch.infoBaseWidth = 0.512; --try: 512/1920
+	ch.infoBaseHeight = 0.512; --try: 512/1080
+	ch.linesPosY = {};
+	ch.linesBottomPosY = {};
+	ch.linesButtonPosY = {};
+	ch.numPages = 9;
+	ch.numLines = 6;
+	ch.lineHeight = 0.021;
+	ch.offset = 16/1920;  --0.006 (button width)
+	ch.colors = {
+		white =         {       1,       1,       1, 1    };
+		whiteInactive = {       1,       1,       1, 0.75 };
+		whiteDisabled = {       1,       1,       1, 0.15 };
+		hover =         {  32/255, 168/255, 219/255, 1    };
+		activeGreen =   { 110/255, 235/255,  56/255, 1    };
+		activeRed =     { 206/255,  83/255,  77/255, 1    };
+		closeRed =      { 180/255,       0,       0, 1    };
+		warningRed =    { 240/255,  25/255,  25/255, 1    };
+		shadow =        {  35/255,  35/255,  35/255, 1    };
 	};
-	courseplay.hud.visibleArea = {
+	ch.clickSound = createSample("clickSound");
+	ch.pagesPerMode = {
+		--Pg 0  Pg 1  Pg 2  Pg 3   Pg 4   Pg 5  Pg 6  Pg 7  Pg 8   Pg 9
+		{ true, true, true, true,  false, true, true, true, false, false }; --Mode 1
+		{ true, true, true, true,  true,  true, true, true, false, false }; --Mode 2
+		{ true, true, true, true,  true,  true, true, true, false, false }; --Mode 3
+		{ true, true, true, true,  false, true, true, true, true,  false }; --Mode 4
+		{ true, true, true, false, false, true, true, true, false, false }; --Mode 5
+		{ true, true, true, false, false, true, true, true, true,  false }; --Mode 6
+		{ true, true, true, true,  false, true, true, true, false, false }; --Mode 7
+		{ true, true, true, true,  false, true, true, true, false, false }; --Mode 8
+		{ true, true, true, false, false, true, true, true, false, true  }; --Mode 9
+	};
+	ch.visibleArea = {
 		x1 = courseplay.hud.infoBasePosX;
 		x2 = courseplay.hud.infoBasePosX + 0.320;
 		y1 = courseplay.hud.infoBasePosY;
 		y2 = --[[0.30463;]] --[[0.002 + 0.271 + 32/1080 + 0.002;]] courseplay.hud.infoBasePosY + 0.271 + 32/1080 + 0.002;
 	};
-	courseplay.hud.visibleArea.width = courseplay.hud.visibleArea.x2 - courseplay.hud.visibleArea.x1;
-	courseplay.hud.infoBaseCenter = (courseplay.hud.visibleArea.x1 + courseplay.hud.visibleArea.x2)/2;
+	ch.visibleArea.width = courseplay.hud.visibleArea.x2 - courseplay.hud.visibleArea.x1;
+	ch.infoBaseCenter = (courseplay.hud.visibleArea.x1 + courseplay.hud.visibleArea.x2)/2;
 
 	--print(string.format("\t\tposX=%f,posY=%f, visX1=%f,visX2=%f, visY1=%f,visY2=%f, visCenter=%f", courseplay.hud.infoBasePosX, courseplay.hud.infoBasePosY, courseplay.hud.visibleArea.x1, courseplay.hud.visibleArea.x2, courseplay.hud.visibleArea.y1, courseplay.hud.visibleArea.y2, courseplay.hud.infoBaseCenter));
 

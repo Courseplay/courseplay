@@ -237,6 +237,63 @@ function courseplay:buttonsActiveEnabled(self, section)
 				button.canBeClicked = not button.isDisabled and not button.isActive;
 			end;
 		end;
+		
+	elseif self.cp.hud.currentPage == 2 and section == 'page2' then
+		local enable, hide = true, false
+		local n_courses = #(self.cp.hud.courses)
+		local nofolders = nil == next(g_currentMission.cp_folders);
+		local offset = courseplay.hud.offset  --0.006 (button width)
+		local row
+		for _, button in pairs(self.cp.buttons['-2']) do
+			row = button.row
+			enable = true
+			hide = false
+					
+			if row > n_courses then
+				hide = true
+			else
+				if button.function_to_call == "expandFolder" then
+					if self.cp.hud.courses[row].type == 'course' then
+						hide = true
+					else
+						-- position the expandFolder buttons
+						courseplay.button.setOffset(button, self.cp.hud.courses[row].level * offset, 0)
+						
+						if self.cp.hud.courses[row].id == 0 then
+							hide = true --hide for level 0 "folder"
+						else
+							-- check if plus or minus should show up
+							if self.cp.folder_settings[self.cp.hud.courses[row].id].showChildren then
+								courseplay.button.setOverlay(button,2)
+							else
+								courseplay.button.setOverlay(button,1)
+							end
+							if g_currentMission.cp_sorted.info[ self.cp.hud.courses[row].uid ].lastChild == 0 then
+								enable = false	-- button has no children
+							end
+						end
+					end
+				else
+					if self.cp.hud.courses[row].type == 'folder' and (button.function_to_call == "load_sorted_course" or button.function_to_call == "add_sorted_course") then
+						hide = true
+					elseif self.cp.hud.choose_parent ~= true then
+						if button.function_to_call == 'delete_sorted_item' and self.cp.hud.courses[row].type == 'folder' and g_currentMission.cp_sorted.info[ self.cp.hud.courses[row].uid ].lastChild ~= 0 then
+							enable = false
+						elseif nofolders and button.function_to_call == 'link_parent' then
+							enable = false
+						end
+					else
+						if button.function_to_call ~= 'link_parent' then
+							enable = false
+						end
+					end
+				end
+			end
+			
+			button.isDisabled = (not enable) or hide
+			button.isHidden = hide
+		end -- for buttons
+		courseplay.settings.validateCourseListArrows(self)
 
 	elseif self.cp.hud.currentPage == 6 and (section == nil or section == "all" or section == "debug") then
 		for _,button in pairs(self.cp.buttons["6"]) do
@@ -491,32 +548,311 @@ function courseplay:copyCourse(self)
 	end;
 end;
 
-function courseplay:change_selected_course(self, change_by)
+function courseplay.settings.add_folder_settings(folder)
+	folder.showChildren = false
+	folder.skipMe = false
+end
 
-	local selected_course_number = self.selected_course_number
-	selected_course_number = selected_course_number + change_by
+function courseplay.settings.add_folder(input1, input2)
+-- function might be called like add_folder(vehicle, id) or like add_folder(id)
+	local vehicle, id
+	
+	if input2 ~= nil then
+		vehicle = input1
+		id = input2
+	else
+		vehicle = false
+		id = input1
+	end
+	
+	if vehicle == false then
+	-- no vehicle given -> add folder to all vehicles
+		for k,v in pairs(g_currentMission.steerables) do
+			if v.cp ~= nil then 		-- alternative way to check if SpecializationUtil.hasSpecialization(courseplay, v.specializations)
+				v.cp.folder_settings[id] = {}
+				courseplay.settings.add_folder_settings(v.cp.folder_settings[id])
+			end	
+		end
+	else
+	-- vehicle given -> add folder to that vehicle
+		vehicle.cp.folder_settings[id] = {}
+		courseplay.settings.add_folder_settings(vehicle.cp.folder_settings[id])
+	end
+end
 
-	self.cp.courseListPrev = true;
-	self.cp.courseListNext = true;
+function courseplay.settings.update_folders(vehicle)
+	local old_settings
+	
+	if vehicle == nil then
+	-- no vehicle given -> update all folders in all vehicles
+		for k,v in pairs(g_currentMission.steerables) do
+			if v.cp ~= nil then 		-- alternative way to check if SpecializationUtil.hasSpecialization(courseplay, v.specializations)
+				old_settings = v.cp.folder_settings
+				v.cp.folder_settings = {}
+				for _,f in pairs(g_currentMission.cp_folders) do
+					if old_settings[f.id] ~= nil then
+						v.cp.folder_settings[f.id] = old_settings[f.id]
+					else
+						v.cp.folder_settings[f.id] = {}
+						courseplay.settings.add_folder_settings(v.cp.folder_settings[f.id])
+					end
+				end
+				old_settings = nil
+			end	
+		end
+	else
+	-- vehicle given -> update all folders in that vehicle
+		old_settings = vehicle.cp.folder_settings
+		vehicle.cp.folder_settings = {}
+		for _,f in pairs(g_currentMission.cp_folders) do
+			if old_settings[f.id] ~= nil then
+				vehicle.cp.folder_settings[f.id] = old_settings[f.id]
+			else
+				vehicle.cp.folder_settings[f.id] = {}
+				courseplay.settings.add_folder_settings(vehicle.cp.folder_settings[f.id])
+			end
+		end
+	end
+	old_settings = nil
+end
 
-	local number_of_courses = table.getn(g_currentMission.courseplay_courses);
+function courseplay.settings.setReloadCourseItems(vehicle)
+	if vehicle ~= nil then
+		vehicle.cp.reloadCourseItems = true
+		vehicle.cp.hud.reloadPage[2] = true
+	else
+		for k,v in pairs(g_currentMission.steerables) do
+			if v.cp ~= nil then 		-- alternative way to check if SpecializationUtil.hasSpecialization(courseplay, v.specializations)
+				v.cp.reloadCourseItems = true
+				v.cp.hud.reloadPage[2] = true
+			end
+		end
+	end
+end
 
-	if selected_course_number >= number_of_courses - (courseplay.hud.numLines - 1) then
-		selected_course_number = number_of_courses - courseplay.hud.numLines;
+function courseplay.hud.filter(vehicle)
+	if vehicle.cp.hud.filter == '' then
+		courseplay.showSaveCourseForm(nil, vehicle, 'filter')
+	else
+		vehicle.cp.hud.filter = ''
+		courseplay.settings.setReloadCourseItems(vehicle)
+	end
+end
+
+function courseplay.hud.setCourses(self, start_index)
+	start_index = start_index or 1
+	if start_index < 1 then 
+		start_index = 1
+	elseif start_index > #self.cp.sorted.item then
+		start_index = #self.cp.sorted.item
+	end
+	
+	-- delete content of hud.courses
+	self.cp.hud.courses = {}
+	
+	local index = start_index
+	local hudLines = courseplay.hud.numLines
+	local i = 1
+	
+	if index == 1 and self.cp.hud.showZeroLevelFolder then
+		table.insert(self.cp.hud.courses, { id=0, uid=0, name='Level 0', displayname='Level 0', parent=0, type='folder', level=0})
+		i = 2	-- = i+1
+	end
+	
+	-- is start_index even showed?
+	index = courseplay.courses.getMeOrBestFit(self, index)
+	
+	if index ~= 0 then
+		-- insert first entry
+		table.insert(self.cp.hud.courses, self.cp.sorted.item[index])
+		i = i+1
+		
+		-- now search for the next entries
+		while i <= hudLines do
+			index = courseplay.courses.getNextCourse(self,index)
+			if index == 0 then
+				-- no next item found: fill table with previous items and abort the loop
+				if start_index > 1 then
+					-- shift up
+					courseplay:shiftHudCourses(self, -(hudLines - i + 1))
+				end
+				i = hudLines+1 -- abort the loop
+			else
+				table.insert(self.cp.hud.courses, self.cp.sorted.item[index])
+				i = i + 1
+			end
+		end --while
+	end -- i<3
+	
+	self.cp.hud.reloadPage[2] = true
+end
+
+function courseplay.hud.reloadCourses(vehicle)
+	local index = 1
+	local i = 1
+	if vehicle ~= nil then
+		while i <= #vehicle.cp.hud.courses and vehicle.cp.sorted.info[ vehicle.cp.hud.courses[i].uid ] == nil do
+			i = i + 1
+		end		
+		if i <= #vehicle.cp.hud.courses then 
+			index = vehicle.cp.sorted.info[ vehicle.cp.hud.courses[i].uid ].sorted_index
+		end
+		courseplay.hud.setCourses(vehicle, index)
+	else
+		for k,v in pairs(g_currentMission.steerables) do
+			if v.cp ~= nil then 		-- alternative way to check if SpecializationUtil.hasSpecialization(courseplay, v.specializations)
+				i = 1
+				-- course/folder in the hud might have been deleted -> info no longer available				
+				while i <= #v.cp.hud.courses and v.cp.sorted.info[ v.cp.hud.courses[i].uid ] == nil do
+					i = i + 1
+				end
+				if i > #v.cp.hud.courses then
+					index = 1
+				else
+					index = v.cp.sorted.info[ v.cp.hud.courses[i].uid ].sorted_index
+				end
+				courseplay.hud.setCourses(v,index)
+			end
+		end
+	end
+end
+
+function courseplay:shiftHudCourses(vehicle, change_by)	
+	local hudLines = courseplay.hud.numLines
+	local index = hudLines
+	
+	while change_by > 0 do
+		-- get the index of the last showed item
+		index = vehicle.cp.sorted.info[vehicle.cp.hud.courses[#(vehicle.cp.hud.courses)].uid].sorted_index
+		
+		-- search for the next item
+		index = courseplay.courses.getNextCourse(vehicle,index)
+		if index == 0 then
+			-- there is no next item: abort
+			change_by = 0
+		else
+			if #(vehicle.cp.hud.courses) == hudLines then
+				-- remove first entry...
+				table.remove(vehicle.cp.hud.courses, 1)
+			end
+			-- ... and add one at the end
+			table.insert(vehicle.cp.hud.courses, vehicle.cp.sorted.item[index])
+			change_by = change_by - 1
+		end		
 	end
 
-	if selected_course_number < 0 then
-		selected_course_number = 0
+	while change_by < 0 do
+		-- get the index of the first showed item
+		index = vehicle.cp.sorted.info[vehicle.cp.hud.courses[1].uid].sorted_index
+		
+		-- search reverse for the next item
+		index = courseplay.courses.getNextCourse(vehicle, index, true)
+		if index == 0 then
+			-- there is no next item: abort
+			change_by = 0
+			
+			-- show LevelZeroFolder?
+			if vehicle.cp.hud.showZeroLevelFolder then
+				if #(vehicle.cp.hud.courses) >= hudLines then
+					-- remove last entry...
+					table.remove(vehicle.cp.hud.courses)
+				end
+				table.insert(vehicle.cp.hud.courses, 1, { id=0, uid=0, name='Level 0', displayname='Level 0', parent=0, type='folder', level=0})
+			end
+			
+		else
+			if #(vehicle.cp.hud.courses) >= hudLines then
+				-- remove last entry...
+				table.remove(vehicle.cp.hud.courses)
+			end
+			-- ... and add one at the beginning:	
+			table.insert(vehicle.cp.hud.courses, 1, vehicle.cp.sorted.item[index])
+			change_by = change_by + 1
+		end		
 	end
+	
+	vehicle.cp.hud.reloadPage[2] = true
+end
 
-	if selected_course_number == 0 then 
-		self.cp.courseListPrev = false;
-	end;
-	if selected_course_number == (number_of_courses - courseplay.hud.numLines) then
-		self.cp.courseListNext = false;
-	end;
+--Update all vehicles' course list arrow displays
+function courseplay.settings.validateCourseListArrows(vehicle)
+	local n_courses = #(vehicle.cp.sorted.item)
+	local n_hudcourses, prev, next
+	
+	if vehicle then
+		-- update vehicle only
+		prev = true
+		next = true
+		n_hudcourses = #(vehicle.cp.hud.courses)
+		if not (n_hudcourses > 0) then
+			prev = false
+			next = false
+		else
+			-- update prev
+			if vehicle.cp.hud.showZeroLevelFolder then
+				if vehicle.cp.hud.courses[1].uid == 0 then
+					prev = false
+				end
+			elseif vehicle.cp.sorted.info[ vehicle.cp.hud.courses[1].uid ].sorted_index == 1 then
+				prev = false
+			end
+			-- update next
+			if n_hudcourses < courseplay.hud.numLines then
+				next = false
+			elseif vehicle.cp.hud.showZeroLevelFolder and vehicle.cp.hud.courses[n_hudcourses].uid == 0 then
+				next = false
+			elseif 0 == courseplay.courses.getNextCourse(vehicle, vehicle.cp.sorted.info[ vehicle.cp.hud.courses[n_hudcourses].uid ].sorted_index) then
+				next = false
+			end
+		end
+		vehicle.cp.hud.courseListPrev = prev
+		vehicle.cp.hud.courseListNext = next
+	else
+		-- update all vehicles
+		for k,v in pairs(g_currentMission.steerables) do
+			if v.cp ~= nil then 		-- alternative way to check if SpecializationUtil.hasSpecialization(courseplay, v.specializations)
+				prev = true
+				next = true
+				n_hudcourses = #(v.cp.hud.courses)
+				if not (n_hudcourses > 0) then
+					prev = false
+					next = false
+				else
+					-- update prev
+					if v.cp.hud.showZeroLevelFolder then
+						if v.cp.hud.courses[1].uid == 0 then
+							prev = false
+						end
+					elseif v.cp.sorted.info[v.cp.hud.courses[1].uid].sorted_index == 1 then
+						prev = false
+					end
+					-- update next
+					if n_hudcourses < coursplay.hud.numLines then
+						next = false
+					elseif 0 == courseplay.courses.getNextCourse(v, v.cp.sorted.info[v.cp.hud.courses[n_hudcourses].uid].sorted_index) then
+						next = false
+					end
+				end
+				v.cp.hud.courseListPrev = prev
+				v.cp.hud.courseListNext = next
+			end -- if hasSpecialization
+		end -- in pairs(steerables)
+	end -- if vehicle
+end;
 
-	self.selected_course_number = selected_course_number
+function courseplay:expandFolder(vehicle, index)
+-- expand/reduce a folder in the hud
+	if vehicle.cp.hud.courses[index].type == 'folder' then
+		local f = vehicle.cp.folder_settings[ vehicle.cp.hud.courses[index].id ]
+		f.showChildren = not f.showChildren
+		if f.showChildren then
+		-- from not showing to showing -> put it on top to see as much of the content as possible
+			courseplay.hud.setCourses(vehicle, vehicle.cp.sorted.info[vehicle.cp.hud.courses[index].uid].sorted_index)
+		else
+		-- from showing to not showing -> stay where it was
+			courseplay.hud.reloadCourses(vehicle)
+		end
+	end
 end
 
 function courseplay:change_num_ai_helpers(self, change_by)
@@ -662,13 +998,10 @@ end;
 
 function courseplay:reloadCoursesFromXML(self)
 	courseplay:debug("reloadCoursesFromXML()", 8);
-	g_currentMission.courseplay_courses = nil;
-	g_currentMission.courseplay_courses = {};
-	courseplay_coursesUnsort = {};
 	if g_server ~= nil then
-		g_currentMission.courseplay_courses = courseplay_manager:load_courses();
-		courseplay:debug(tableShow(g_currentMission.courseplay_courses, "g_cM courseplay_courses", 8), 8);
-		courseplay:debug("g_currentMission.courseplay_courses = courseplay_manager:load_courses()", 8);
+		courseplay_manager:load_courses();
+		courseplay:debug(tableShow(g_currentMission.cp_courses, "g_cM cp_courses", 8), 8);
+		courseplay:debug("g_currentMission.cp_courses = courseplay_manager:load_courses()", 8);
 		if not self.drive then
 			local loadedCoursesBackup = self.loaded_courses;
 			courseplay:reset_course(self);
@@ -676,6 +1009,9 @@ function courseplay:reloadCoursesFromXML(self)
 			courseplay:reload_courses(self, true);
 			courseplay:debug("courseplay:reload_courses(self, true)", 8);
 		end;
+		courseplay.settings.update_folders()
+		courseplay.settings.setReloadCourseItems()
+		--courseplay.hud.reloadCourses()
 	end
 end;
 

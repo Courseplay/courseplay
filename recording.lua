@@ -198,7 +198,6 @@ function courseplay:reset_course(self)
 	self.ai_state = 1
 	self.tmr = 1
 	self.Waypoints = {}
-	self.loaded_courses = {}
 	courseplay:RefreshSigns(self)
 	self.play = false
 	self.back = false

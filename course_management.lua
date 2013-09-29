@@ -1,40 +1,72 @@
--- saving // loading coures
-
+-- saving // loading courses
 
 -- enables input for course name
-function courseplay:showSaveCourseForm(self)
-	if table.getn(self.Waypoints) > 0 then
+function courseplay:showSaveCourseForm(self, saveWhat)
+	saveWhat = saveWhat or 'course'
+	
+	if saveWhat == 'course' then
+		if table.getn(self.Waypoints) > 0 then
+			courseplay.vehicleToSaveCourseIn = self;
+			if self.cp.imWriting then
+				self.cp.saveWhat = 'course'
+				g_gui:showGui("inputCourseNameDialogue");
+				self.cp.imWriting = false
+			end
+		end;
+		
+	elseif saveWhat == 'folder' then
 		courseplay.vehicleToSaveCourseIn = self;
 		if self.cp.imWriting then
+			self.cp.saveWhat = 'folder'
 			g_gui:showGui("inputCourseNameDialogue");
 			self.cp.imWriting = false
 		end
-	end;
+	
+	elseif saveWhat == 'filter' then
+		if self.cp.hud.filter == '' then
+			courseplay.vehicleToSaveCourseIn = self;
+			if self.cp.imWriting then
+				self.cp.saveWhat = 'filter';
+				g_gui:showGui("inputCourseNameDialogue");
+				self.cp.imWriting = false;
+			end;
+		else
+			self.cp.hud.filter = '';
+			local button = self.cp.buttons["2"][self.cp.hud.filterButtonIndex];
+			courseplay.button.setOverlay(button, 1);
+			courseplay.settings.setReloadCourseItems(self);
+		end;
+	end
 end;
 
 function courseplay:reload_courses(self, use_real_id)
-	for k, v in pairs(self.loaded_courses) do
-
+	local courses = self.loaded_courses
+	self.loaded_courses = {}
+	for k, v in pairs(courses) do
 		courseplay:load_course(self, v, use_real_id)
 	end
 end
 
-function courseplay:add_course(self, id, use_real_id)
-	courseplay:load_course(self, id, use_real_id, true)
+function courseplay:reinit_courses(self)
+	if g_currentMission.cp_courses == nil then
+		courseplay:debug("cp_courses is empty", 8)
+		if g_server ~= nil then
+			courseplay_manager:load_courses();
+		end
+		return
+	end
 end
 
-function courseplay:reinit_courses(self)
-	if g_currentMission.courseplay_courses == nil then
-		if self.courseplay_courses ~= nil then
-			g_currentMission.courseplay_courses = self.courseplay_courses
-		else
-			courseplay:debug("courseplay_courses is empty", 8)
-			if g_server ~= nil then
-				courseplay_manager:load_courses();
-			end
-			return
-		end
-	end
+function courseplay:add_sorted_course(vehicle, index)
+	local id = vehicle.cp.hud.courses[index].id
+	courseplay:load_course(vehicle, id, true, true)	
+end
+
+function courseplay:load_sorted_course(vehicle, index)
+	if type(vehicle.cp.hud.courses[index]) ~= nil then
+		local id = vehicle.cp.hud.courses[index].id
+		courseplay:load_course(vehicle, id, true)
+	end	
 end
 
 function courseplay:load_course(self, id, use_real_id, add_course_at_end)
@@ -42,18 +74,8 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
 	courseplay:reinit_courses(self);
 
 	if id ~= nil and id ~= "" then
-		local searchID = id * 1
 		if not use_real_id then
-			id = self.selected_course_number + id
-		else
-			for i = 1, table.getn(g_currentMission.courseplay_courses) do
-				if g_currentMission.courseplay_courses[i].id ~= nil then
-					if g_currentMission.courseplay_courses[i].id == searchID then
-						id = i
-						break
-					end
-				end
-			end
+			return -- not supported any more
 		end
 		id = id * 1 -- equivalent to tonumber()
 
@@ -63,23 +85,18 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
 			add_course_at_end = true
 		end
 
-
-
-
-
-		local course = g_currentMission.courseplay_courses[id]
+		local course = g_currentMission.cp_courses[id]
 		if course == nil then
 			courseplay:debug("no course found", 8)
 			return
 		end
-		if not use_real_id then
 
-			if add_course_at_end == true then
-				table.insert(self.loaded_courses, g_currentMission.courseplay_courses[id].id * -1)
-			else
-				table.insert(self.loaded_courses, g_currentMission.courseplay_courses[id].id)
-			end
+		if add_course_at_end == true then
+			table.insert(self.loaded_courses, id * -1)
+		else
+			table.insert(self.loaded_courses, id)
 		end
+
 		--	courseplay:reset_course(self)
 		if table.getn(self.Waypoints) == 0 then
 			self.numCourses = 1;
@@ -122,7 +139,7 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
 						end
 					end
 				end
-			end
+			end -- comment by horoman: this loop looks strange to me. All the distance comparing, but if once wp_found is true, the loops will just go through all and do no comparing no more...
 
 			if wp_found == false then
 				courseplay:debug(nameNum(self) .. ": no waypoint found", 8)
@@ -149,7 +166,7 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
 			self.play = true
 		end
 		
-		self.recordnumber = 1
+		self.recordnumber = 1  -- Waypoint number
 		courseplay:RefreshSigns(self) -- this adds the signs to the course
 
 		self.cp.hasGeneratedCourse = false;
@@ -159,38 +176,354 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
 	end
 end
 
+function courseplay.courses.sort(courses_to_sort, folders_to_sort, parent_id, level, make_copies)
+--Note: this function is recursive.
+	courses_to_sort = courses_to_sort or g_currentMission.cp_courses
+	folders_to_sort = folders_to_sort or g_currentMission.cp_folders
+	parent_id = parent_id or 0
+	level = level or 0	
+	if make_copies == nil then
+		make_copies = true
+	end
+	
+	if make_copies then
+		-- Tables are pointers. The sort function will delete entries in the tables. In order to preserve the original tables a copy is made in the first execution.
+		-- note that only courses_to_sort and folders_to_sort are copied. if those contain tables themselves again, these tables are referenced again (the reference is copied).
+		courses_to_sort = courseplay.utils.table.copy(courses_to_sort)
+		folders_to_sort = courseplay.utils.table.copy(folders_to_sort)
+	end
+	
+	local sorted = {}
+	sorted.item = {}
+	sorted.info = {}
+	local last_child = 0
+	
+	-- search for folder children with this parent
+	local folders = {}
+	local temp_sorted, temp_sorted_items, temp_last_child
+	folders = courseplay.utils.table.search_in_field(folders_to_sort, 'parent', parent_id)
+	table.sort(folders, courseplay.utils.table.compare_name)
+	
+	-- search for course children with this parent
+	local courses = {}
+	courses = courseplay.utils.table.search_in_field(courses_to_sort, 'parent', parent_id)
+	table.sort(courses, courseplay.utils.table.compare_name)
+	
+	-- handle the folders first
+	-- first delete the found entries in the folders_to_sort
+	--	this has to be done in a separate loop as folders_to_sort is used in the loop and should then not contain the already found folders anymore.
+	for i = 1, #folders do
+		folders_to_sort[folders[i].id] = nil
+	end
+	for i = 1, #folders do
+		-- find child's children
+		temp_sorted, temp_last_child = courseplay.courses.sort(courses_to_sort, folders_to_sort, folders[i].id, level+1, false)
+		temp_sorted_items = temp_sorted.item
+		
+		folders[i].level = level
+		folders[i].displayname = folders[i].name
+		sorted.info[ folders[i].uid ] = {}
+		if #courses ~= 0 or i ~= #folders then
+			-- there are courses after the last folder or it's not the last folder
+			sorted.info[ folders[i].uid ].next_neighbour = #temp_sorted_items + 1		-- relative index to next neighbour
+		else
+			-- it's the last folder and there are no courses afterwards
+			sorted.info[folders[i].uid].next_neighbour = 0
+		end
+		sorted.info[folders[i].uid].lastChild = temp_last_child 						-- relative index to the last direct child
+		sorted.info[folders[i].uid].parent_ridx = -(#sorted.item + 1)					-- relative index to the parent
+		if i > 1 then
+			sorted.info[folders[i].uid].leading_neighbour = -sorted.info[folders[i-1].uid].next_neighbour	-- relative index to the leading neighbour
+		else
+			sorted.info[folders[i].uid].leading_neighbour = 0
+		end
+		
+		-- append folder
+		table.insert(sorted.item, folders[i])
+		-- append children
+		sorted.item = courseplay.utils.table.append(sorted.item, temp_sorted_items)
+		-- add children's info
+		sorted.info = courseplay.utils.table.merge(sorted.info, temp_sorted.info)
+	end
+	
+	-- now handle the found courses:
+	for i = 1, #courses do
+		-- first delete the course form courses_to_sort
+		courses_to_sort[courses[i].id] = nil
+		
+		courses[i].level = level
+		courses[i].displayname = courses[i].name
+		sorted.info[ courses[i].uid ] = {}
+		if i ~= #courses then
+			-- it's not the last entry
+			sorted.info[courses[i].uid].next_neighbour = 1
+		else
+			sorted.info[courses[i].uid].next_neighbour = 0
+		end
+		sorted.info[courses[i].uid].parent_ridx = -(#sorted.item + 1)
+		if i ~= 1 then
+			-- it's not the first course, so there is one before
+			sorted.info[courses[i].uid].leading_neighbour = -1
+		elseif #folders ~= 0 then
+			-- it is the first course, but there are folders before
+			sorted.info[courses[i].uid].leading_neighbour = -(#temp_sorted_items + 1)			
+		else
+			-- first course and no folders, so it is the very first one
+			sorted.info[courses[i].uid].leading_neighbour = 0
+		end
+		table.insert(sorted.item, courses[i])
+	end
+	
+	if #courses > 0 then
+		last_child = #(sorted.item)		-- relative index to the last direct child
+	elseif #folders > 0 then
+		last_child = #(sorted.item) - #temp_sorted_items
+	else
+		last_child = 0
+	end
+	
+	if level == 0 then
+		-- all courses and folders should be handled now (we are done)
+		local n = #sorted.item
+		for i=1, n do
+			sorted.info[ sorted.item[i].uid ].sorted_index = i
+		end
+		
+		-- are we really done? -> add any corrupted folders and courses:	
+		for k,v in pairs(folders_to_sort) do
+			v.level = level
+			v.displayname = v.name .. ' (corrupted)'
+			table.insert(sorted.item, v)
+		end
+		for k,v in pairs(courses_to_sort) do
+			v.level = level
+			v.displayname = v.name .. ' (corrupted)'
+			table.insert(sorted.item, v)
+		end
+		for i = n+1, #sorted.item do
+			sorted.info[ sorted.item[i].uid ] = {sorted_index=i}
+		end
+		
+	end
+	
+	return sorted, last_child
+end
+
 function courseplay:reset_merged(self)
-	for i = 1, table.getn(g_currentMission.courseplay_courses) do
-		for num, wp in pairs(g_currentMission.courseplay_courses[i].waypoints) do
+	for _,course in pairs(g_currentMission.cp_courses) do
+		for num, wp in pairs(course.waypoints) do
 			wp.merged = nil
 		end
 	end
 end
 
-function courseplay:clear_course(self, id)
-	if id ~= nil then
-		id = self.selected_course_number + id
-		local course = g_currentMission.courseplay_courses[id]
-		if course == nil then
-			return
+function courseplay:delete_sorted_item(vehicle, index)
+	local id = vehicle.cp.hud.courses[index].id
+	local type = vehicle.cp.hud.courses[index].type
+	
+	if type == 'course' then
+		g_currentMission.cp_courses[id] = nil
+		
+	elseif type == 'folder' then
+		-- check for children: delete only if folder has no children
+		if g_currentMission.cp_sorted.info['f'..id].lastChild == 0 then
+			g_currentMission.cp_folders[id] = nil
 		end
-		table.remove(g_currentMission.courseplay_courses, id)
-		courseplay:save_courses(self)
-		courseplay:RefreshGlobalSigns(self)
+	else
+		--Error?!
+	end
+	
+	g_currentMission.cp_sorted = courseplay.courses.sort()
+	courseplay.courses.save_all()
+	courseplay.settings.setReloadCourseItems()
+	--courseplay.hud.reloadCourses()
+	courseplay:RefreshGlobalSigns(vehicle)
+end
+
+function courseplay.courses.save_course(course_id, File, append)
+-- save course to xml file
+--
+-- append (bool,integer): append can be a bool or an integer
+--		if it's false, the function will check if the id exists in the file. if it exists, it will overwrite it otherwise it will append
+--		if append is true, the function will search for the next free position and save there
+--		if append is an integer, the function will save at this position (without checking if it is the end or what there was before)
+	if append == nil then
+		append = false  -- slow but secure
+	end
+	
+	if File == nil then
+		File = courseplay.courses.openOrCreateXML()
+	end
+	
+	-- { id = id, type = 'course', name = name, waypoints = tempCourse, parent = parent }
+	local types = { id = 'Int', type = 'String', name = 'String', parent = 'Int'}
+	local skip = { 'type', 'uid', 'waypoints' }
+	local i = 0
+	
+	-- find the node position and save the attributes
+	if append ~= false then
+		if append == true then
+			i = courseplay.utils.findFreeXMLNode(File,'XML.courses.course')
+		else
+			i = append
+		end
+	else
+		i = courseplay.utils.findXMLNodeByAttr(File, 'XML.courses.course', 'id', course_id, 'Int')
+		if i < 0 then i = -i end
+	end
+	courseplay.utils.setMultipleXML(File, string.format('XML.courses.course(%d)', i), g_currentMission.cp_courses[course_id], types, skip)
+	
+	-- save waypoint: rev, wait, crossing, generated, turnstart, turned are bools; turn is a string; turn, speed may be nil!
+	-- from xml: rev=int wait=int crossing=int generated=bool, turn=string!!, turnstart=int turned=int ridgemarker=int
+	-- xml: pos="float float" angle=float rev=0/1 wait=0/1 crossing=0/1 speed=float generated="true/false" turn="true/false" turnstart=0/1 turned=0/1 ridgemarker=0/1/2
+	local waypoints = {}
+	-- setXMLFloat seems imprecise...
+	types = { pos='String', angle='String', rev='Int', wait='Int', crossing='Int', speed='String', generated='Bool', turn='String', turnstart='Int', turned='Int', ridgemarker='Int'}
+	skip = false
+	for k, v in pairs(g_currentMission.cp_courses[course_id].waypoints) do
+		local waypoint = {} --create a new table on every call
+		waypoint.pos = tostring(v.cx) .. ' ' .. tostring(v.cz)
+		waypoint.angle = tostring(v.angle)
+		if v.rev then  -- the following would not be necessary if bools would be saved as bools instead of converting them to integers...
+			waypoint.rev = 1
+		else 
+			waypoint.rev = 0
+		end
+		if v.wait then
+			waypoint.wait = 1
+		else 
+			waypoint.wait = 0
+		end
+		if v.crossing then
+			waypoint.crossing = 1
+		else 
+			waypoint.crossing = 0
+		end	
+		if v.speed == nil then
+			 waypoint.speed = '0'
+		else
+			waypoint.speed = tostring(v.speed)
+		end 
+		waypoint.generated = v.generated
+		if v.turn == nil then
+			waypoint.turn = 'false'
+		else
+			waypoint.turn = v.turn
+		end
+		if v.trunstart then
+			waypoint.turnstart = 1
+		else
+			waypoint.turnstart = 0
+		end
+		if v.turned then
+			waypoint.turned = 1
+		else
+			waypoint.turned = 0
+		end
+		waypoint.ridgemarker = v.ridgemarker
+		
+		waypoints[k] = waypoint
+	end
+	
+	courseplay.utils.setMultipleXMLNodes(File, string.format('XML.courses.course(%d)', i), 'waypoint', waypoints, types, skip, true)
+	
+	saveXMLFile(File)
+end
+
+function courseplay.courses.save_folder(folder_id, File, append)
+-- saves a folder to the courseplay xml file
+--
+-- append (bool,integer): append can be a bool or an integer
+--		if it's false, the function will check if the id exists in the file. if it exists, it will overwrite it otherwise it will append
+--		if append is true, the function will search for the next free position and save there
+--		if append is an integer, the function will save at this position (without checking if it is the end or what there was before)
+	if append == nil then
+		append = false  -- slow but secure
+	end
+	
+	if File == nil then
+		File = courseplay.courses.openOrCreateXML()
+	end
+
+	-- { id = id, type = 'folder', name = name, parent = parent }
+	local types = { id = 'Int', uid = 'String', type = 'String', name = 'String', parent = 'Int'}
+	local skip = { 'type', 'uid' }
+	local i = 0
+	
+	-- find the node position and save the attributes
+	if append ~= false then
+		if append == true then
+			i = courseplay.utils.findFreeXMLNode(File,'XML.folders.folder')
+		else
+			i = append
+		end
+	else
+		i = courseplay.utils.findXMLNodeByAttr(File, 'XML.folders.folder', 'id', folder_id, 'Int')
+		if i < 0 then i = -i end
+	end
+	courseplay.utils.setMultipleXML(File, string.format('XML.folders.folder(%d)', i), g_currentMission.cp_folders[folder_id], types, skip)
+	
+	saveXMLFile(File)
+end
+
+function courseplay.courses.save_folders(File, append)
+--	function to save all folders by once
+--	append (bool): whether to append to the file (true) or check if the id exists (false)
+	if append == nil then
+		append = false
+	end
+	
+	if File == nil then
+		File = courseplay.courses.openOrCreateXML()
+	end
+	
+	if append then
+		append = courseplay.utils.findFreeXMLNode(File,'XML.folders.folder')
+	end
+	
+	for k,_ in pairs(g_currentMission.cp_folders) do
+		courseplay.courses.save_folder(k, File, append)
+		if append ~= false then
+			append = append + 1
+		end
 	end
 end
 
--- saves coures to xml-file
-function courseplay:save_courses(self)
+function courseplay.courses.save_courses(File, append)
+--	function to save all courses by once
+--	append (bool): whether to append to the file (true) or check if the id exists (false)
+	if append == nil then
+		append = false
+	end
+	
+	if File == nil then
+		File = courseplay.courses.openOrCreateXML()
+	end
+	
+	if append then
+		append = courseplay.utils.findFreeXMLNode(File,'XML.courses.course')
+	end
+	
+	for k,_ in pairs(g_currentMission.cp_courses) do
+		courseplay.courses.save_course(k, File, append) -- append is either false or an integer here
+		if append ~= false then
+			append = append + 1
+		end
+	end
+end
+
+function courseplay.courses.delete_save_courses(self)
+-- saves courses to xml-file
+-- opening the file with io.open will delete its content...
 	if g_server ~= nil then
 		local savegame = g_careerScreen.savegames[g_careerScreen.selectedIndex];
-		if savegame ~= nil and g_currentMission.courseplay_courses ~= nil and table.getn(g_currentMission.courseplay_courses) > 0 then
+		if savegame ~= nil and g_currentMission.cp_courses ~= nil then
 			local file = io.open(savegame.savegameDirectory .. "/courseplay.xml", "w");
 			if file ~= nil then
 				file:write('<?xml version="1.0" encoding="utf-8" standalone="no" ?>\n<XML>\n\t<courseplayHud posX="' .. courseplay.hud.infoBasePosX .. '" posY="' .. courseplay.hud.infoBasePosY .. '" />\n\t<courses>\n');
 
-				for i,course in ipairs(g_currentMission.courseplay_courses) do
-					file:write('\t\t<course name="' .. course.name .. '" id="' .. course.id .. '" numWaypoints="' .. table.getn(course.waypoints) .. '">\n');
+				for i,course in pairs(g_currentMission.cp_courses) do
+					file:write('\t\t<course name="' .. course.name .. '" id="' .. course.id .. '" numWaypoints="' .. #(course.waypoints) .. '" parent="' .. course.parent ..'">\n');
 					for wpNum,wp in ipairs(course.waypoints) do
 						local wpContent = '\t\t\t<waypoint' .. wpNum .. ' ';
 						wpContent = wpContent .. 'pos="' .. tostring(Utils.getNoNil(courseplay:round(wp.cx, 4), 0)) .. ' ' .. tostring(Utils.getNoNil(courseplay:round(wp.cz, 4), 0)) .. '" ';
@@ -219,13 +552,420 @@ function courseplay:save_courses(self)
 	end;
 end;
 
+function courseplay.courses.save_all(recreateXML)
+-- saves all the courses and folders
+-- recreateXML (bool): 	if nil or true the xml file will be overwritten. While saving each course/folder it is saved without 
+--							checking if the id already exists in the file (it should not as the file was deleted and therefore empty).  This is faster than
+--						if false, the xml file will only be created if it doesn't exist. If there exists already a course/folder with the specific id in the xml, it will be overwritten
+	if recreateXML == nil then
+		recreateXML = true
+	end
+	
+	if recreateXML then
+	-- new version (better performance):
+		courseplay.courses.delete_save_courses()
+		
+		local f = courseplay.courses.openOrCreateXML(false)
+		courseplay.courses.save_folders(f, recreateXML)
+	else
+	-- old version:
+		local f = courseplay.courses.openOrCreateXML(recreateXML)
+		saveXMLFile(f)
+		
+		courseplay.courses.save_folders(f, recreateXML)			 -- append and don't check for id if recreateXML is true
+		courseplay.courses.save_courses(f, recreateXML)
+	end
+end
 
---Update all vehicles' course list arrow displays
-function courseplay:validateCourseListArrows(numCourses)
-	for _,vehicle in pairs(g_currentMission.steerables) do
-		if vehicle.cp ~= nil and vehicle.cp.courseListPrev ~= nil and vehicle.cp.courseListNext ~= nil and vehicle.selected_course_number ~= nil then
-			vehicle.cp.courseListPrev = vehicle.selected_course_number > 0;
-			vehicle.cp.courseListNext = vehicle.selected_course_number < (numCourses - courseplay.hud.numLines);
-		end;
-	end;
-end;
+function courseplay.courses.openOrCreateXML(forceCreation)
+-- returns the file if success, nil else
+	forceCreation = forceCreation or false
+	
+	local File = nil
+	local savegame = g_careerScreen.savegames[g_careerScreen.selectedIndex];
+	
+	if savegame ~= nil then
+		local filePath = savegame.savegameDirectory .. "/courseplay.xml"
+		if fileExists(filePath) and (not forceCreation) then
+			File = loadXMLFile("courseFile", filePath)
+		else
+			File = createXMLFile("courseFile", filePath, 'XML')
+		end
+	else
+		--this is a problem...
+		-- File stays nil
+	end	
+	return File
+end
+
+function courseplay.courses.getMaxCourseID()
+	local maxID = nil
+	if g_currentMission.cp_courses ~= nil then
+		maxID = courseplay.utils.table.getMax(g_currentMission.cp_courses, 'id')
+		if  maxID == false then
+			maxID = 0
+		end
+	end	
+	return maxID
+end
+
+function courseplay.courses.getMaxFolderID()
+	local maxID = nil
+	if g_currentMission.cp_folders ~= nil then
+		maxID = courseplay.utils.table.getMax(g_currentMission.cp_folders, 'id')
+		if  maxID == false then
+			maxID = 0
+		end
+	end
+	return maxID
+end
+
+function courseplay:link_parent(vehicle, index)	
+	if type(vehicle.cp.hud.courses[index]) ~= nil then
+		local id = vehicle.cp.hud.courses[index].id
+		local type = vehicle.cp.hud.courses[index].type
+				
+		if vehicle.cp.hud.choose_parent ~= true then
+			vehicle.cp.hud.selected_child = { type = type, id = id }
+			
+			-- show folders:
+			vehicle.cp.hud.showFoldersOnly = true
+			vehicle.cp.hud.showZeroLevelFolder = true
+			if type == 'folder' then
+				vehicle.cp.folder_settings[id].skipMe = true
+			end
+			courseplay.hud.setCourses(vehicle,1)
+			
+			vehicle.cp.hud.choose_parent = true
+			
+		else -- choose_parent is true
+			if	type == 'folder' then --parent must be a folder!
+				if vehicle.cp.hud.selected_child.type == 'folder' then
+					g_currentMission.cp_folders[vehicle.cp.hud.selected_child.id].parent = id
+					courseplay.courses.save_folder(vehicle.cp.hud.selected_child.id)
+				else
+					g_currentMission.cp_courses[vehicle.cp.hud.selected_child.id].parent = id
+					courseplay.courses.save_course(vehicle.cp.hud.selected_child.id)
+				end
+				g_currentMission.cp_sorted = courseplay.courses.sort()
+				courseplay.settings.setReloadCourseItems()
+			end
+			-- show courses:
+			vehicle.cp.hud.showFoldersOnly = false
+			vehicle.cp.hud.showZeroLevelFolder = false
+			if vehicle.cp.hud.selected_child.type == 'folder' then
+				vehicle.cp.folder_settings[vehicle.cp.hud.selected_child.id].skipMe = false
+			end
+			courseplay.hud.setCourses(vehicle,1)
+			
+			vehicle.cp.hud.choose_parent = false
+		end
+	else
+		if vehicle.cp.hud.choose_parent then
+			print('folder not available')
+			-- maybe there are no folders?
+			-- go back
+			vehicle.cp.hud.showFoldersOnly = false
+			vehicle.cp.hud.showZeroLevelFolder = false
+			if vehicle.cp.hud.selected_child.type == 'folder' then
+				vehicle.cp.folder_settings[vehicle.cp.hud.selected_child.id].skipMe = false
+			end
+			courseplay.hud.setCourses(vehicle,1)
+			
+			vehicle.cp.hud.choose_parent = false
+		end
+	end
+	
+end
+
+function courseplay.courses.getNextCourse(vehicle, index, rev)
+-- returns the next entry to be showed in the hud from index onwards (assuming index is item that is shown!)
+-- if rev is true it is searchd reversely, the next item before index is returned
+-- returns 0 if no item is found
+
+	if vehicle == nil or index == nil then
+		return 0
+	end
+	
+	rev = rev or false
+	local sorted_item = vehicle.cp.sorted.item
+	local sorted_info = vehicle.cp.sorted.info
+	local num_courses = #sorted_item
+		
+	if not rev then
+		-- search forwards
+		-- show child or next neighbour
+		local no_next_entry = false
+		local search_neighbour = false
+		
+		if sorted_item[index].type == "folder" then
+			if vehicle.cp.folder_settings[ sorted_item[index].id ].showChildren then
+				-- this should be fine even if the folder doesn't have a child
+				index = index + 1
+				
+				-- Exceptions:
+				while vehicle.cp.hud.showFoldersOnly and index <= num_courses and sorted_item[index].type ~= 'folder' do
+					index = index + 1
+				end
+				if index <= num_courses and sorted_item[index].type == 'folder' and vehicle.cp.folder_settings[ sorted_item[index].id ].skipMe then
+					-- show next neighbour or next neighbour of parent if there is none
+					search_neighbour = true
+				end
+			else
+				-- children aren't shown, show next neighbour though (if there is one)
+				search_neighbour = true
+			end				
+		else
+			-- index is a course, the next item in the list can not be a child but either 1)another course on the same level 2)course or a folder on a lower level
+			-- therefore if next item was hidden, the current item would be hidden as well. As the current item is shown, the next item is shown as well:
+			index = index + 1
+			while (vehicle.cp.hud.showFoldersOnly and index <= num_courses) and sorted_item[index].type ~= 'folder' do
+				-- folders only: skip courses until end reached or folder found
+				index = index + 1
+			end
+			if index <= num_courses and sorted_item[index].type == 'folder' and vehicle.cp.folder_settings[ sorted_item[index].id ].skipMe then
+				-- show next neighbour or next neighbour of parent (if there is none)
+				search_neighbour = true
+			end
+		end
+		
+		-- search for next neighbour
+		while search_neighbour and (not no_next_entry) do
+			search_neighbour = false
+			
+			-- show next neighbour (if there is one)
+			while ((sorted_info[ sorted_item[index].uid ].next_neighbour == 0) and (not no_next_entry)) do
+				if sorted_item[index].level > 0 then
+					index = index + sorted_info[ sorted_item[index].uid ].parent_ridx
+				else
+					no_next_entry = true
+				end
+			end
+			index = index + sorted_info[sorted_item[index].uid].next_neighbour
+				
+			-- Exceptions
+			if vehicle.cp.hud.showFoldersOnly and sorted_item[index].type ~= 'folder' then
+				-- index is a course, all next neighbours (if there are) will be courses -> get next neighbour of parent
+				search_neighbour = true
+				if sorted_item[index].parent ~= 0 then
+					index = index + sorted_info[ sorted_item[index].uid ].parent_ridx
+				else
+					no_next_entry = true
+				end
+			elseif sorted_item[index].type == 'folder' and vehicle.cp.folder_settings[ sorted_item[index].id ].skipMe then
+				-- show next neighbour or next neighbour of parent (if there is none)
+				search_neighbour = true
+			end
+		end -- while search_neighbour
+			
+		if index > num_courses or no_next_entry then
+			-- we are over the end -> there is no next item
+			index = 0
+		end
+	else
+		-- reverse search
+		-- go up to the next neighbour and search for the last shown child
+		local search_neighbour = true
+		local search_child = true
+		
+		while search_neighbour do
+			search_neighbour = false
+			if sorted_info[ sorted_item[index].uid ].leading_neighbour ~= 0 then
+				-- if index is showen, also it's neightbours are:
+				index = index + sorted_info[sorted_item[index].uid].leading_neighbour
+				
+				while search_child do
+					-- let's see if the leading neighbour has children to show
+					if sorted_item[index].type == "folder" then
+						if vehicle.cp.folder_settings[ sorted_item[index].id ].showChildren and (sorted_info[ sorted_item[index].uid ].lastChild ~= 0) then
+							-- there are children to show. Let's do the testing again with the last child
+							index = index + sorted_info[ sorted_item[index].uid ].lastChild
+						else
+							-- children aren't shown, show folder itself though
+							search_child = false
+							
+							-- Exceptions:
+							if vehicle.cp.folder_settings[ sorted_item[index].id ].skipMe then
+								search_neighbour = true
+							end
+						end
+					else
+						-- index is a course - no children to show - show corse itself though
+						search_child = false
+						
+						-- Exceptions
+						if vehicle.cp.hud.showFoldersOnly then
+							search_neighbour = true
+						end	
+					end
+				end
+				
+			else
+				-- there is no leading neighbour. show parent folder if there is one
+				if sorted_info[ sorted_item[index].uid ].parent_ridx ~= 0 then
+					-- for entries with level=0, this returns 0 (level=0 entries don't have parents)
+					index = index + sorted_info[ sorted_item[index].uid ].parent_ridx
+					
+					-- Exceptions:
+					if index ~= 0 and vehicle.cp.folder_settings[ sorted_item[index].id ].skipMe then
+						-- search again
+						search_neighbour = true
+					end
+				else
+					index = 0
+				end			
+			end
+		end -- while search_neighbour
+	end -- end of reverse search
+	
+	return index
+end -- end of function
+
+function courseplay.courses.getMeOrBestFit(self, index)
+-- if parent doesn't show its children: parent is returned
+-- if it's a course and showFoldersOnly is on: parent is returned
+-- if it's a skipped folder or an item of one: next neighbour is returned
+-- if no fit is found: zero is returned
+	local parent_id = 0
+	local done = false
+	local s_item = self.cp.sorted.item
+	local s_info = self.cp.sorted.info
+	local n_s_item = #s_item
+	
+	if n_s_item == 0 then
+		done = true
+		index = 0
+	elseif index < 1 then
+		index = 1
+	elseif index > n_s_item then
+		index = n_s_item
+	end
+
+	while not done do	
+		if s_item[index].parent == 0 then
+			-- course or folder does not have a parent -> show it
+			done = true
+			
+			-- Exceptions:
+			if self.cp.hud.showFoldersOnly and (not s_item[index].type == 'folder') then
+				-- nothing to show!
+				index = 0
+			elseif s_item[index].type == 'folder' and self.cp.folder_settings[s_item[index].id].skipMe then
+				if s_info[ s_item[index].uid ].next_neighbour ~= 0 then
+					index = index + s_info[ s_item[index].uid ].next_neighbour
+					done = false
+				else
+					-- nothing to show!
+					index = 0
+				end
+			end
+			
+		else
+			-- get parent id
+			parent_id = s_item[index].parent
+			
+			-- does the parent of the parent of the parent show its children?
+			local finished = false
+			while not finished do
+				
+				if self.cp.folder_settings[parent_id].showChildren and (not self.cp.folder_settings[parent_id].skipMe) then
+					-- parent shows children, but does parent have a parent itself?
+					if g_currentMission.cp_folders[parent_id].parent ~= 0 then
+						parent_id = g_currentMission.cp_folders[parent_id].parent
+					else
+						-- no parent anymore -> all of index's parent show it's children: we are done done!
+						done = true
+						finished = true
+						
+						-- Exceptions: 
+						if self.cp.hud.showFoldersOnly and (not s_item[index].type == 'folder') then
+						-- index is not a folder, but it's parent will be one (and it has a parent, otherwise code would not arrive here)
+							index = index + s_info[ s_item[index].uid ].parent_ridx
+							done = false
+						elseif s_item[index].type == 'folder' and self.cp.folder_settings[s_item[index].id].skipMe then				
+							-- folder is skipped
+							local continue = true
+							while continue do
+								if s_info[ s_item[index].uid ].next_neighbour ~= 0 then
+								-- if it has a neighbour, try to show this
+									index = index + s_info[ s_item[index].uid ].next_neighbour
+									continue = false
+									done = false
+								elseif s_item[index].parent ~= 0 then
+								-- no neighbour but a parent: use parent in the next loop to see if the parent has a neighbour
+									index = index + s_info[ s_item[index].uid ].parent_ridx
+								else
+								-- none of the parents has a neighbour! -> nothing to show
+									index = 0
+									continue = false
+								end
+							end
+						end -- Exceptions
+						
+					end
+				elseif self.cp.folder_settings[parent_id].skipMe then
+				-- parent is skipped -> try to show neighbour of parent
+					index = s_info['f'.. parent_id].sorted_index
+					local continue = true
+					while continue do
+						if s_info[ s_item[index].uid ].next_neighbour ~= 0 then
+						-- if it has a neighbour, try to show this
+							index = index + s_info[ s_item[index].uid ].next_neighbour
+							continue = false
+							finished = true
+						elseif s_item[index].parent ~= 0 then
+						-- no neighbour but a parent: use parent in the next loop to see if the parent has a neighbour
+							index = index + s_info[ s_item[index].uid ].parent_ridx
+						else
+						-- none of the parents has a neighbour! -> nothing to show
+							index = 0
+							continue = false
+							finished = true
+							done = true
+						end
+					end
+				else
+					-- parent doesn't show children (index is hidden) -> search next shown parent
+					index = index + s_info[ s_item[index].uid ].parent_ridx		--index of parent
+					finished = true
+				end
+			end -- while not finished
+		end -- if has parent (end of else)
+	end -- while not done
+	return index
+end
+
+function courseplay.courses.reload(vehicle)
+	if vehicle ~= nil then
+		-- reload courses (sort)
+		if vehicle.cp.hud.filter == '' then
+			vehicle.cp.sorted = g_currentMission.cp_sorted
+		else
+			local parent
+			local courses, folders = {}, {}
+			-- filter courses
+			for k, course in pairs(g_currentMission.cp_courses) do
+				if string.match(course.name, vehicle.cp.hud.filter) ~= nil then
+					courses[k] = course
+					-- add parents
+					parent = course.parent
+					while parent ~= 0 and folders[parent] == nil do	-- if folder[parent] is not nil, the folder was already added and therefore also it's parents
+						folders[parent] = g_currentMission.cp_folders[parent]
+						parent = g_currentMission.cp_folders[parent].parent
+					end
+				end
+			end
+
+			-- sort
+			-- sort(courses_to_sort, folders_to_sort, parent_id, level, make_copies)
+			vehicle.cp.sorted = courseplay.courses.sort(courses, folders, 0, 0, false)
+		end
+		
+		-- update folder settings here??
+		
+		-- update items for the hud
+		courseplay.hud.reloadCourses()
+		
+		vehicle.cp.reloadCourseItems = false
+	end -- end vehicle ~= nil
+end

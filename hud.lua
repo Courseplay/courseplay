@@ -22,12 +22,19 @@ function courseplay:setHudContent(self)
 		self.cp.hud.content.global[3] = courseplay:get_locale(self, "CPNoWaypoint");
 	end
 
-
-
+	if self.cp.hud.reloadPage[-1] then
+		for page=0,courseplay.hud.numPages do
+			self.cp.hud.reloadPage[page] = true
+		end
+		self.cp.hud.reloadPage[-1] = false
+	end
+	
 	--CURRENT PAGE
-	for line=1,courseplay.hud.numLines do
-		for column=1,2 do
-			self.cp.hud.content.pages[self.cp.hud.currentPage][line][column].text = nil;
+	if self.cp.hud.currentPage ~= 2 or (self.cp.hud.reloadPage[ self.cp.hud.currentPage ]) then
+		for line=1,courseplay.hud.numLines do
+			for column=1,2 do
+				self.cp.hud.content.pages[self.cp.hud.currentPage][line][column].text = nil;
+			end;
 		end;
 	end;
 
@@ -155,28 +162,14 @@ function courseplay:setHudContent(self)
 
 	--Page 2 (course list)
 	elseif self.cp.hud.currentPage == 2 then
-		local numTotalCourses = 0;
-		if g_currentMission.courseplay_courses ~= nil then
-			numTotalCourses = table.getn(g_currentMission.courseplay_courses);
-		end;
-		local startCourseNum = self.selected_course_number;
-		local endCourseNum = startCourseNum + (courseplay.hud.numLines - 1);
-
-		if endCourseNum >= numTotalCourses then
-			endCourseNum = numTotalCourses - 1;
-		end;
-
-		local line = 1;
-		for i=startCourseNum, endCourseNum, 1 do
-			local courseName = g_currentMission.courseplay_courses[i + 1].name;
-			if courseName == nil or courseName == "" then
-				courseName = "-";
-			end;
-
-			self.cp.hud.content.pages[2][line][1].text = courseName;
-			line = line + 1;
-		end;
-
+		-- this function is called every time draw is called
+		-- on page 2 there is nothing to update that frequent, like a distance to some target
+		-- (else I'd place it right here)
+		
+		-- it is updated when its content changes:
+		if self.cp.hud.reloadPage[2] then
+			courseplay.hud.loadPage(self, 2)
+		end
 
 	--Page 3
 	elseif self.cp.hud.currentPage == 3 then
@@ -500,6 +493,15 @@ function courseplay:renderHud(self)
 	--HUD TITLES
 	courseplay:setFontSettings("white", true, "left");
 	local hudPageTitle = courseplay.hud.hudTitles[self.cp.hud.currentPage + 1];
+	if self.cp.hud.currentPage == 2 then
+		if not self.cp.hud.choose_parent and self.cp.hud.filter == '' then
+			hudPageTitle = courseplay.hud.hudTitles[self.cp.hud.currentPage + 1][1];
+		elseif self.cp.hud.choose_parent then
+			hudPageTitle = courseplay.hud.hudTitles[self.cp.hud.currentPage + 1][2];
+		elseif self.cp.hud.filter ~= '' then
+			hudPageTitle = string.format(courseplay.hud.hudTitles[self.cp.hud.currentPage + 1][3], self.cp.hud.filter);
+		end;
+	end;
 	renderText(courseplay.hud.infoBasePosX + 0.060, courseplay.hud.infoBasePosY + 0.240, 0.021, hudPageTitle);
 
 
@@ -512,7 +514,7 @@ function courseplay:renderHud(self)
 				if entry.isHovered then
 					courseplay:setFontSettings("hover", false);
 				end;
-				renderText(courseplay.hud.infoBasePosX + 0.005, courseplay.hud.linesPosY[line], 0.019, entry.text);
+				renderText(courseplay.hud.infoBasePosX + 0.005 + entry.indention, courseplay.hud.linesPosY[line], 0.019, entry.text);
 				courseplay:setFontSettings("white", false);
 			elseif column == 2 and entry.text ~= nil and entry.text ~= "" then
 				renderText(courseplay.hud.col2posX[page + 1], courseplay.hud.linesPosY[line], 0.017, entry.text);
@@ -532,4 +534,42 @@ function courseplay:setMinHudPage(self, workTool)
 	self.cp.hud.currentPage = math.max(self.cp.hud.currentPage, self.cp.minHudPage);
 	courseplay:debug(string.format("setMinHudPage: minHudPage=%s, currentPage=%s", tostring(self.cp.minHudPage), tostring(self.cp.hud.currentPage)), 12);
 	courseplay:buttonsActiveEnabled(self, "pageNav");
+end;
+
+function courseplay.hud.loadPage(vehicle, page)
+	if page == 2 then
+	
+		-- update courses?
+		if vehicle.cp.reloadCourseItems then
+			courseplay.courses.reload(vehicle)
+		end
+		-- end update courses
+	
+		local n_courses = #(vehicle.cp.hud.courses)
+		local offset = courseplay.hud.offset; --0.006 (button width)
+		
+		-- set line text
+		local courseName = ""
+		for line = 1, n_courses do
+			courseName = vehicle.cp.hud.courses[line].displayname
+			if courseName == nil or courseName == "" then
+				courseName = "-";
+			end;
+			vehicle.cp.hud.content.pages[2][line][1].text = courseName;
+			if vehicle.cp.hud.courses[line].type == "course" then
+				vehicle.cp.hud.content.pages[2][line][1].indention = vehicle.cp.hud.courses[line].level * offset
+			else
+				vehicle.cp.hud.content.pages[2][line][1].indention = (vehicle.cp.hud.courses[line].level + 1) * offset
+			end
+		end;
+		for line = n_courses+1, courseplay.hud.numLines do
+			vehicle.cp.hud.content.pages[2][line][1].text = nil;
+		end
+	
+		-- enable and disable buttons:
+		courseplay.buttonsActiveEnabled(nil, vehicle, 'page2')
+		
+	end -- if page == 2
+	
+	vehicle.cp.hud.reloadPage[page] = false
 end;

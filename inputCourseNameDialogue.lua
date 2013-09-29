@@ -26,12 +26,6 @@ function inputCourseNameDialogue.setModImages(element, xmlFile, key)
 	local MOD_imageFocusedFilename =  getXMLString(xmlFile, key .. "#MOD_imageFocusedFilename");
 	local MOD_imagePressedFilename =  getXMLString(xmlFile, key .. "#MOD_imagePressedFilename");
 	local MOD_imageDisabledFilename = getXMLString(xmlFile, key .. "#MOD_imageDisabledFilename");
-	--[[
-	print("\\___MOD_imageFilename from xml = " .. tostring(MOD_imageFilename));
-	print("\\___MOD_imageFocusedFilename from xml = " .. tostring(MOD_imageFocusedFilename));
-	print("\\___MOD_imagePressedFilename from xml = " .. tostring(MOD_imagePressedFilename));
-	print("\\___MOD_imageDisabledFilename from xml = " .. tostring(MOD_imageDisabledFilename));
-	--]]
 
 	if MOD_imageFilename ~= nil then
 		element:setImageFilename(modDir .. MOD_imageFilename, element);
@@ -45,7 +39,7 @@ function inputCourseNameDialogue.setModImages(element, xmlFile, key)
 	if MOD_imageDisabledFilename ~= nil then
 		element:setImageDisabledFilename(modDir .. MOD_imageDisabledFilename, element);
 	end;
-	
+
 	--[[
 	print("\\___new imageFilename = " .. tostring(element.imageFilename));
 	print("\\___new imageFocusedFilename = " .. tostring(element.imageFocusedFilename));
@@ -59,7 +53,6 @@ ButtonElement.loadFromXML =    Utils.appendedFunction(ButtonElement.loadFromXML,
 
 function inputCourseNameDialogue:onCreateTitleText(element)
 	self.titleTextElement = element;
-	self.titleTextElement.textCP = string.sub(element.text, 5);
 end; --END onCreateTitleText()
 
 function inputCourseNameDialogue:onCreateSaveButton(element)
@@ -72,7 +65,7 @@ end; --END onCreateCancelButton()
 
 function inputCourseNameDialogue:onCreateTextInput(element)
 	self.textInputElement = element;
-	
+
 	--src: ASCII Table - Decimal (Base 10) Values @ http://www.parse-o-matic.com/parse/pskb/ASCII-Chart.htm
 	local allowedCharacterSpans = {
 		{ 32,  32 },
@@ -83,7 +76,7 @@ function inputCourseNameDialogue:onCreateTextInput(element)
 		{ 97, 122 }
 	};
 	self.textInputElement.allowedCharacters = {};
-	
+
 	for _,span in pairs(allowedCharacterSpans) do
 		for i=span[1],span[2] do
 			self.textInputElement.allowedCharacters[i] = true;
@@ -94,18 +87,28 @@ end; --END onCreateTextInput()
 function inputCourseNameDialogue:onOpen(element)
 	g_currentMission.isPlayerFrozen = true;
 	InputBinding.setShowMouseCursor(true);
-	
-	if self.titleTextElement.textCP ~= nil and courseplay.locales[self.titleTextElement.textCP] ~= nil then
-		self.titleTextElement.text = courseplay.locales[self.titleTextElement.textCP];
-		self.titleTextElement.textCP = nil;
+
+	if self.titleTextElement.courseText == nil or self.titleTextElement.folderText == nil or self.titleTextElement.filterText == nil then
+		local cpTitleParts = Utils.splitString(",", self.titleTextElement.text);
+		local courseTitle = string.sub(cpTitleParts[1], 5);
+		local folderTitle = string.sub(cpTitleParts[2], 5);
+		local filterTitle = string.sub(cpTitleParts[3], 5);
+		self.titleTextElement.courseText =  courseplay.locales[courseTitle] or "Course name:";
+		self.titleTextElement.folderText =  courseplay.locales[folderTitle] or "Folder name:";
+		self.titleTextElement.filterText =  courseplay.locales[filterTitle] or "Filter courses:";
 	end;
-	
-	
+
+	self.titleTextElement.text = self.titleTextElement[courseplay.vehicleToSaveCourseIn.cp.saveWhat .. "Text"];
+
 	self:validateCourseName();
 
+	--TODO: automatically setting focus doesn't work
 	FocusManager:setFocus(self.textInputElement);
-	InputBinding.hasEvent(InputBinding.MENU_ACCEPT, true); --set focus
-	
+	self.textInputElement.mouseDown = false;
+	self.textInputElement.state = TextInputElement.STATE_PRESSED;
+	self.textInputElement:setForcePressed(true);
+	--InputBinding.hasEvent(InputBinding.MENU_ACCEPT, true); --set focus
+
 	--print(inputCourseNameDialogue:tableShow(element, "element"));
 end; --END onOpen()
 
@@ -120,47 +123,71 @@ end; --END onIsUnicodeAllowed()
 
 function inputCourseNameDialogue:onSaveClick()
 	--print("inputCourseNameDialogue:onSaveClick()");
-	if self.textInputElement ~= nil then
-		--print("self.textInputElement.text= "..tostring(self.textInputElement.text).."  courseplay.vehicleToSaveCourseIn.current_course_name= "..tostring(courseplay.vehicleToSaveCourseIn.current_course_name));
-		courseplay.vehicleToSaveCourseIn.current_course_name = self.textInputElement.text;
-		CourseplayEvent.sendEvent(courseplay.vehicleToSaveCourseIn, "self.current_course_name", self.textInputElement.text)
-		courseplay.vehicleToSaveCourseIn.cp.doNotOnSaveClick = true
-	else
-		--print("self.textInputElement.text= "..tostring(self.textInputElement).."  courseplay.vehicleToSaveCourseIn.current_course_name= "..tostring(courseplay.vehicleToSaveCourseIn.current_course_name));
-	end
-	if g_currentMission.courseplay_courses == nil then
-		g_currentMission.courseplay_courses = {};
-	end
-	local numExistingCourses = table.getn(g_currentMission.courseplay_courses);
-	local maxId = 0;
-	if numExistingCourses > 0 then
-		for i=1, numExistingCourses do
-			local curCourseId = g_currentMission.courseplay_courses[i].id;
-			if curCourseId ~= nil and curCourseId > maxId then
-				maxId = curCourseId;
-			end;
-		end;
-	end;
-	courseplay.vehicleToSaveCourseIn.courseID = maxId + 1;
-	courseplay.vehicleToSaveCourseIn.numCourses = 1;
+	local vehicle = courseplay.vehicleToSaveCourseIn
 
-	local course = { name = courseplay.vehicleToSaveCourseIn.current_course_name, id = courseplay.vehicleToSaveCourseIn.courseID, waypoints = courseplay.vehicleToSaveCourseIn.Waypoints };
-	table.insert(g_currentMission.courseplay_courses, course);
+	if vehicle.cp.saveWhat == 'course' then
+		if self.textInputElement ~= nil then
+			--print("self.textInputElement.text= "..tostring(self.textInputElement.text).."  courseplay.vehicleToSaveCourseIn.current_course_name= "..tostring(courseplay.vehicleToSaveCourseIn.current_course_name));
+			vehicle.current_course_name = self.textInputElement.text;
+			CourseplayEvent.sendEvent(vehicle, "self.current_course_name", self.textInputElement.text)
+			vehicle.cp.doNotOnSaveClick = true
+		else
+			--print("self.textInputElement.text= "..tostring(self.textInputElement).."  courseplay.vehicleToSaveCourseIn.current_course_name= "..tostring(courseplay.vehicleToSaveCourseIn.current_course_name));
+		end
 
-	courseplay:save_courses(courseplay.vehicleToSaveCourseIn);
-	
+		local maxID = courseplay.courses.getMaxCourseID() -- horoman: made maxID local, should not make a difference as it is used nowhere (at least Eclipse file search doesn't find it in any of the courseplay files)
+		if maxID == nil then
+			g_currentMission.cp_courses = {};
+			maxID = 0
+		end
+
+		vehicle.courseID = maxID + 1;
+		vehicle.numCourses = 1;
+
+		local course = { id = vehicle.courseID, uid = 'c'..vehicle.courseID, type = 'course', name = vehicle.current_course_name,  waypoints = vehicle.Waypoints, parent = 0}
+		g_currentMission.cp_courses[vehicle.courseID] = course
+		g_currentMission.cp_sorted = courseplay.courses.sort()
+
+		courseplay.courses.save_course(vehicle.courseID)
+		courseplay.settings.setReloadCourseItems()
+		courseplay:RefreshGlobalSigns(vehicle)
+		
+	elseif vehicle.cp.saveWhat == 'folder' then
+		local maxID = courseplay.courses.getMaxFolderID()
+		if maxID == nil then
+			g_currentMission.cp_folders = {}
+			maxID = 0
+		end
+		local folderID = maxID+1
+		folder = { id = folderID, uid = 'f'..folderID, type = 'folder', name = self.textInputElement.text, parent = 0 }
+
+		g_currentMission.cp_folders[folderID] = folder
+		g_currentMission.cp_sorted = courseplay.courses.sort(g_currentMission.cp_courses, g_currentMission.cp_folders, 0, 0)
+
+		courseplay.courses.save_folder(folderID)
+		courseplay.settings.add_folder(folderID)
+		courseplay.settings.setReloadCourseItems()
+		courseplay:RefreshGlobalSigns(vehicle)
+		
+	elseif vehicle.cp.saveWhat == 'filter' then
+		vehicle.cp.hud.filter = self.textInputElement.text;
+		local button = vehicle.cp.buttons["2"][vehicle.cp.hud.filterButtonIndex];
+		courseplay.button.setOverlay(button, 2);
+		courseplay.settings.setReloadCourseItems(vehicle);
+	end
+
 	if self.textInputElement ~= nil then
 		CourseplayEvent.sendEvent(courseplay.vehicleToSaveCourseIn, "self.cp.onSaveClick",true)
 		self:onCancelClick();
 	end
-end; --END onStartClick()
+end; --END onSaveClick()
 
 function inputCourseNameDialogue:onCancelClick()
 	self.textInputElement.text = "";
 	self.textInputElement.visibleTextPart1 = "";
 	self.textInputElement.cursorPosition = 1;
 	self.textInputElement.cursorBlinkTime = 0;
-	
+
 	g_gui:showGui("");
 	courseplay.vehicleToSaveCourseIn = nil;
 	self:onClose();

@@ -3,12 +3,6 @@ function courseplay.prerequisitesPresent(specializations)
 end
 
 function courseplay:load(xmlFile)
-	-- global array for courses, no refreshing needed any more
-	--if courseplay_courses == nil and g_server ~= nil then
-	--  courseplay_courses = courseplay:load_courses()
-	--elseif not courseplay_courses then
-	--  courseplay_courses = {}
-	--end
 	
 	self.setCourseplayFunc = SpecializationUtil.callSpecializationsFunction("setCourseplayFunc");
 
@@ -211,9 +205,11 @@ function courseplay:load(xmlFile)
 
 	self.cp.orgRpm = nil;
 
-	-- Course list
-	self.cp.courseListPrev = false;
-	self.cp.courseListNext = table.getn(g_currentMission.courseplay_courses) > courseplay.hud.numLines;
+	-- data basis for the Course list
+	self.cp.reloadCourseItems = true
+	self.cp.sorted = {item={}, info={}}	
+	self.cp.folder_settings = {}
+	courseplay.settings.update_folders(self)
 
 	--Direction 
 	local DirectionNode = nil;
@@ -372,16 +368,27 @@ function courseplay:load(xmlFile)
 		OdometerOrigPosY = nil; --[table]
 		AllradOrigPosY = nil; --[table]
 	};
-
+	
 	for page=0,courseplay.hud.numPages do
 		self.cp.hud.content.pages[page] = {};
 		for line=1,courseplay.hud.numLines do
 			self.cp.hud.content.pages[page][line] = {
-				{ text = nil, isHovered = false },
+				{ text = nil, isHovered = false, indention = 0 },
 				{ text = nil }
 			};
 		end;
 	end;
+	
+	-- course list
+	self.cp.hud.filter = "";
+	self.cp.hud.choose_parent = false
+	self.cp.hud.showFoldersOnly = false
+	self.cp.hud.showZeroLevelFolder = false
+	self.cp.hud.courses = {}
+	self.cp.hud.courseListPrev = false;
+	self.cp.hud.courseListNext = false; -- will be updated after loading courses into the hud
+	self.cp.hud.reloadPage = {}
+	self.cp.hud.reloadPage[-1] = true -- reload all
 
 	-- clickable buttons
 	self.cp.buttons = {};
@@ -423,7 +430,7 @@ function courseplay:load(xmlFile)
 		courseplay.hud.hudTitles = {
 			courseplay:get_locale(self, "CPCombineManagement"), -- Combine Controls
 			courseplay:get_locale(self, "CPSteering"), -- "Abfahrhelfer Steuerung"
-			courseplay:get_locale(self, "CPManageCourses"), -- "Kurse verwalten"
+			{ courseplay:get_locale(self, "CPManageCourses"), courseplay:get_locale(self, "CPchooseFolder"), courseplay:get_locale(self, "CPcoursesFilterTitle") }, -- "Kurse verwalten"
 			courseplay:get_locale(self, "CPCombiSettings"), -- "Einstellungen Combi Modus"
 			courseplay:get_locale(self, "CPManageCombines"), -- "Drescher verwalten"
 			courseplay:get_locale(self, "CPSpeedLimit"), -- "Speeds"
@@ -441,6 +448,8 @@ function courseplay:load(xmlFile)
 		w = courseplay.hud.visibleArea.x2 - courseplay.hud.visibleArea.x1 - (2 * 0.005),
 		h = courseplay.hud.lineHeight
 	};
+
+	local listArrowX = courseplay.hud.visibleArea.x2 - (2 * 0.005) - w24px;
 
 	-- Page nav
 	local pageNav = {
@@ -461,7 +470,7 @@ function courseplay:load(xmlFile)
 
 	courseplay:register_button(self, "global", "close.dds", "openCloseHud", false, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.infoBasePosY + 0.255, w24px, h24px);
 
-	courseplay:register_button(self, "global", "disk.dds", "showSaveCourseForm", 1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.infoBasePosY + 0.056, w24px, h24px);
+	courseplay:register_button(self, "global", "disk.dds", "showSaveCourseForm", 'course', listArrowX - 15/1920 - w24px, courseplay.hud.infoBasePosY + 0.056, w24px, h24px);
 
 	--Page 0: Combine controls
 	for i=1, courseplay.hud.numLines do
@@ -500,8 +509,8 @@ function courseplay:load(xmlFile)
 
 	--Page 2: Course management
 	--course navigation
-	courseplay:register_button(self, 2, "navigate_up.dds",   "change_selected_course", -courseplay.hud.numLines, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesPosY[1] - 0.003,                       w24px, h24px, nil, -courseplay.hud.numLines*2);
-	courseplay:register_button(self, 2, "navigate_down.dds", "change_selected_course",  courseplay.hud.numLines, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesPosY[courseplay.hud.numLines] - 0.003, w24px, h24px, nil,  courseplay.hud.numLines*2);
+	courseplay:register_button(self, 2, "navigate_up.dds",   "shiftHudCourses", -courseplay.hud.numLines, listArrowX, courseplay.hud.linesPosY[1] - 0.003,                       w24px, h24px, nil, -courseplay.hud.numLines*2);
+	courseplay:register_button(self, 2, "navigate_down.dds", "shiftHudCourses",  courseplay.hud.numLines, listArrowX, courseplay.hud.linesPosY[courseplay.hud.numLines] - 0.003, w24px, h24px, nil,  courseplay.hud.numLines*2);
 
 	local courseListMouseWheelArea = {
 		x = mouseWheelArea.x,
@@ -509,24 +518,39 @@ function courseplay:load(xmlFile)
 		width = mouseWheelArea.w,
 		height = courseplay.hud.linesPosY[1] + courseplay.hud.lineHeight - courseplay.hud.linesPosY[courseplay.hud.numLines]
 	};
-	courseplay:register_button(self, 2, nil, "change_selected_course",  -1, courseListMouseWheelArea.x, courseListMouseWheelArea.y, courseListMouseWheelArea.width, courseListMouseWheelArea.height, nil, -courseplay.hud.numLines, nil, true);
+	courseplay:register_button(self, 2, nil, "shiftHudCourses",  -1, courseListMouseWheelArea.x, courseListMouseWheelArea.y, courseListMouseWheelArea.width, courseListMouseWheelArea.height, nil, -courseplay.hud.numLines, nil, true);
 
 	--reload courses
 	if g_server ~= nil then
-		courseplay:register_button(self, 2, "refresh.dds", "reloadCoursesFromXML", nil, courseplay.hud.infoBasePosX + 0.258, courseplay.hud.infoBasePosY + 0.24, w16px, h16px);
+		--courseplay:register_button(self, 2, "refresh.dds", "reloadCoursesFromXML", nil, courseplay.hud.infoBasePosX + 0.258, courseplay.hud.infoBasePosY + 0.24, w16px, h16px);
 	end;
 
 	--course actions
+	local pad = w16px*10/16 --old padding = 0.009667 ~ 18.5px
+	local buttonX = {};
+	buttonX[0] = courseplay.hud.infoBasePosX + 0.005;
+	buttonX[4] = listArrowX - (2 * pad) - w16px;
+	buttonX[3] = buttonX[4] - pad - w16px;
+	buttonX[2] = buttonX[3] - pad - w16px;
+	buttonX[1] = buttonX[2] - pad - w16px;
+	local hoverAreaWidth = buttonX[3] + w16px - buttonX[1];
+	if g_server ~= nil then
+		hoverAreaWidth = buttonX[4] + w16px - buttonX[1];
+	end;
 	for i=1, courseplay.hud.numLines do
-		courseplay:register_button(self, -2, "folder.dds",      "load_course", i, courseplay.hud.infoBasePosX + 0.212, courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
-		courseplay:register_button(self, -2, "folder_into.dds", "add_course",  i, courseplay.hud.infoBasePosX + 0.235, courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
+		local expandButtonIndex = courseplay:register_button(self, -2, "folder_expand.png", "expandFolder", i, buttonX[0], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
+		courseplay.button.addOverlay(self.cp.buttons["-2"][expandButtonIndex], 2, "folder_reduce.png")
+		courseplay:register_button(self, -2, "folder.png",      "load_sorted_course", i, buttonX[1], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
+		courseplay:register_button(self, -2, "folder_into.png", "add_sorted_course",  i, buttonX[2], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
+		courseplay:register_button(self, -2, "folder_parent.png", "link_parent",      i, buttonX[3], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
 		if g_server ~= nil then
-			courseplay:register_button(self, -2, "delete.dds", "clear_course", i, courseplay.hud.infoBasePosX + 0.258, courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
-			courseplay:register_button(self, -2, nil, nil, nil, courseplay.hud.infoBasePosX + 0.212, courseplay.hud.linesButtonPosY[i], 0.046 + w16px, mouseWheelArea.h, i, nil, true, false);
-		else
-			courseplay:register_button(self, -2, nil, nil, nil, courseplay.hud.infoBasePosX + 0.212, courseplay.hud.linesButtonPosY[i], 0.023 + w16px, mouseWheelArea.h, i, nil, true, false);
+			courseplay:register_button(self, -2, "delete.png", "delete_sorted_item", i, buttonX[4], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
 		end;
+		courseplay:register_button(self, -2, nil, nil, nil, buttonX[1], courseplay.hud.linesButtonPosY[i], hoverAreaWidth, mouseWheelArea.h, i, nil, true, false);
 	end
+	self.cp.hud.filterButtonIndex = courseplay:register_button(self, 2, "searchGlass.png", "showSaveCourseForm", "filter", buttonX[2], courseplay.hud.infoBasePosY + 0.2395, w24px, h24px);
+	courseplay.button.addOverlay(self.cp.buttons["2"][self.cp.hud.filterButtonIndex], 2, "cancel.png")
+	courseplay:register_button(self, 2, "folder_new.png", "showSaveCourseForm", 'folder', listArrowX, courseplay.hud.infoBasePosY + 0.056, w24px, h24px);
 
 	--Page 3
 	courseplay:register_button(self, 3, "navigate_minus.dds", "change_combine_offset", -0.1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, -0.5, false);
@@ -679,6 +703,7 @@ function courseplay:draw()
 	if self:getIsActive() and self.isEntered then
 		if InputBinding.hasEvent(InputBinding.CP_Hud) and InputBinding.isPressed(InputBinding.CP_Modifier_2) then
 			courseplay:initialize();
+		
 		elseif InputBinding.isPressed(InputBinding.CP_Modifier_1) then
 			--Keyboard open/close hud
 			if not self.mouse_right_key_enabled then
@@ -718,11 +743,10 @@ function courseplay:draw()
 					if InputBinding.hasEvent(InputBinding.AHInput1) then
 						self:setCourseplayFunc("start", nil);
 					end;
-				end;
-			end;
-		end;
-	end;
-
+				end; -- self.drive
+			end; -- self.play			
+		end; -- CP_Modifier_1
+	end; -- self:getIsActive() and self.isEntered
 
 	--RENDER
 	if self:getIsActive() and self.cp.hud.show then

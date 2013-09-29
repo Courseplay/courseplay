@@ -2,22 +2,24 @@ courseplay_manager = {};
 local courseplay_manager_mt = Class(courseplay_manager);
 
 function courseplay_manager:loadMap(name)
-	if g_currentMission.courseplay_courses == nil then
-		--courseplay:debug("courseplay courses was nil and initialized", 8);
-		g_currentMission.courseplay_courses = {};
+	if g_currentMission.cp_courses == nil then
+		--courseplay:debug("cp courses was nil and initialized", 8);
+		g_currentMission.cp_courses = {};
+		g_currentMission.cp_folders = {};
+		g_currentMission.cp_sorted = {item={}, info={}};
 
-		courseplay.coursesUnsorted = {}
-		if g_server ~= nil and table.getn(g_currentMission.courseplay_courses) == 0 then
-			g_currentMission.courseplay_courses = courseplay_manager:load_courses()
-			courseplay:debug(tableShow(g_currentMission.courseplay_courses, "g_cM courseplay_courses", 8), 8);
+		if g_server ~= nil and next(g_currentMission.cp_courses) == nil then
+			courseplay_manager:load_courses()
+			courseplay:debug(tableShow(g_currentMission.cp_courses, "g_cM cp_courses", 8), 8);
 		end
 	end
 end
 
 function courseplay_manager:deleteMap()
-	g_currentMission.courseplay_courses = nil
+	g_currentMission.cp_courses = nil
+	g_currentMission.cp_folders = nil
+	g_currentMission.cp_sorted = nil
 end
-
 
 function courseplay_manager:draw()
 	if not g_currentMission.missionPDA.showPDA then
@@ -50,21 +52,26 @@ function courseplay_manager:load_courses()
 
 		if fileExists(filePath) then
 			local cpFile = loadXMLFile("courseFile", filePath);
-			
+			g_currentMission.cp_courses = nil -- make sure it's empty (especially in case of a reload)
+			g_currentMission.cp_courses = {}
+			local courses_by_id = g_currentMission.cp_courses
+			local courses_without_id = {}
 			local i = 0
+			
+			local tempCourse
 			repeat
 
 				--current course
 				local currentCourse = string.format("XML.courses.course(%d)", i)
-				if not hasXMLProperty(cpFile, currentCourse) then 
+				if not hasXMLProperty(cpFile, currentCourse) then
+					finish_all = true;
 					break;
 				end;
 
 				--course name
 				local courseName = getXMLString(cpFile, currentCourse .. "#name");
 				if courseName == nil then
-					finish_all = true;
-					break;
+					courseName = string.format('NO_NAME%d',i)
 				end;
 
 				--course ID
@@ -72,14 +79,20 @@ function courseplay_manager:load_courses()
 				if id == nil then
 					id = 0;
 				end;
+				
+				--course parent
+				local parent = getXMLInt(cpFile, currentCourse .. "#parent")
+				if parent == nil then
+					parent = 0
+				end
 
 				--course waypoints
-				local tempCourse = {};
-				local finish_wp = false;
+				tempCourse = {};
 				local wpNum = 1;
-				repeat
-					local key = currentCourse .. ".waypoint" .. wpNum;
-
+				local key = currentCourse .. ".waypoint" .. wpNum;
+				local finish_wp = not hasXMLProperty(cpFile, key);
+				
+				while not finish_wp do
 					local x, z = Utils.getVectorFromString(getXMLString(cpFile, key .. "#pos"));
 					if x ~= nil then
 						if z == nil then
@@ -129,57 +142,110 @@ function courseplay_manager:load_courses()
 							turnEnd = turnEnd,
 							ridgeMarker = ridgeMarker
 						};
+						
+						-- prepare next waypoint
 						wpNum = wpNum + 1;
+						key = currentCourse .. ".waypoint" .. wpNum;
+						finish_wp = not hasXMLProperty(cpFile, key);
 					else
-						local course = { name = courseName, id = id, waypoints = tempCourse };
-						table.insert(courseplay.coursesUnsorted, course);
-						i = i + 1;
 						finish_wp = true;
 						break;
 					end;
-				until finish_wp == true;
+				end -- while finish_wp == false;
+				
+				local course = { id = id, uid = 'c' .. id , type = 'course', name = courseName, waypoints = tempCourse, parent = parent }
+				if id ~= 0 then
+					courses_by_id[id] = course
+				else
+					table.insert(courses_without_id, course)
+				end
+				
+				tempCourse = nil;
+				i = i + 1;
+				
 			until finish_all == true;
+			
+			local j = 0
+			local currentFolder, FolderName, id, parent, folder
+			finish_all = false
+			g_currentMission.cp_folders = nil
+			g_currentMission.cp_folders = {}
+			local folders_by_id = g_currentMission.cp_folders
+			local folders_without_id = {}
+			repeat
+				-- current folder
+				currentFolder = string.format("XML.folders.folder(%d)", j)
+				if not hasXMLProperty(cpFile, currentFolder) then
+					finish_all = true;
+					break;
+				end;
+				
+				-- folder name
+				FolderName = getXMLString(cpFile, currentFolder .. "#name")
+				if FolderName == nil then
+					FolderName = sting.format('NO_NAME%d',j)
+				end
+				
+				-- folder id
+				id = getXMLInt(cpFile, currentFolder .. "#id")
+				if id == nil then
+					id = 0
+				end
+				
+				-- folder parent
+				parent = getXMLInt(cpFile, currentFolder .. "#parent")
+				if parent == nil then
+					parent = 0
+				end
+				
+				-- "save" current folder
+				folder = { id = id, uid = 'f' .. id ,type = 'folder', name = FolderName, parent = parent }
+				if id ~= 0 then
+					folders_by_id[id] = folder
+				else
+					table.insert(folders_without_id, folder)
+				end
+				j = j + 1
+			until finish_all == true
+			
+			local save = false
+			if #courses_without_id > 0 then
+				-- give a new ID and save
+				local maxID = courseplay.courses.getMaxCourseID()
+				for i = 1, #courses_without_id do
+					maxID = maxID + 1
+					courses_without_id[i].id = maxID
+					courses_without_id[i].uid = 'c' .. maxID
+					courses_by_id[maxID] = courses_without_id[i]
+				end
+				save = true
+			end
+			if #folders_without_id > 0 then
+				-- give a new ID and save
+				local maxID = courseplay.courses.getMaxFolderID()
+				for i = #folders_without_id, 1, -1 do
+					maxID = maxID + 1
+					folders_without_id[i].id = maxID
+					folders_without_id[i].uid = 'f' .. maxID
+					folders_by_id[maxID] = table.remove(folders_without_id)
+				end
+				save = true
+			end		
+			if save then
+				-- this will overwrite the courseplay file and therefore delete the courses without ids and add them again with ids as they are now stored in g_currentMission with an id
+				courseplay.courses.save_all()
+			end
+			
+			g_currentMission.cp_sorted = courseplay.courses.sort(courses_by_id, folders_by_id, 0, 0)
+						
 			delete(cpFile);
 		else
 			--print("\t \"courseplay.xml\" missing from \"savegame" .. g_careerScreen.selectedIndex .. "\" folder");
 		end; --END if fileExists
 		
-		g_currentMission.courseplay_courses = {}
+		courseplay:debug(tableShow(g_currentMission.cp_sorted.item, "cp_sorted.item", 8), 8);
 
-		for i = 1, table.getn(courseplay.coursesUnsorted) do
-			local name = courseplay.coursesUnsorted[i].name
-			table.insert(g_currentMission.courseplay_courses, name)
-		end
-
-		table.sort(g_currentMission.courseplay_courses);
-
-		--TODO: use course name as index instead of doing double for-loops
-		for i = 1, table.getn(g_currentMission.courseplay_courses) do
-			for k, v in pairs(courseplay.coursesUnsorted) do
-				if g_currentMission.courseplay_courses[i] == courseplay.coursesUnsorted[k].name then
-					local waypoints = courseplay.coursesUnsorted[k].waypoints
-					local name = g_currentMission.courseplay_courses[i]
-					local id = courseplay.coursesUnsorted[k].id
-					local course = { name = name, id = id, waypoints = waypoints }
-					g_currentMission.courseplay_courses[i] = course
-					break
-				end
-			end
-		end
-		-- search highest ID
-		local maxID = 0
-		for i = 1, table.getn(g_currentMission.courseplay_courses) do
-			if g_currentMission.courseplay_courses[i].id ~= nil then
-				if g_currentMission.courseplay_courses[i].id > maxID then
-					maxID = g_currentMission.courseplay_courses[i].id
-				end
-			end
-		end
-
-		courseplay:debug(tableShow(courseplay_courses, "courseplay_courses", 8), 8);
-
-		courseplay.coursesUnsorted = {};
-		return g_currentMission.courseplay_courses;
+		return g_currentMission.cp_courses;
 	else
 		print("Error: [Courseplay] current savegame could not be found.");
 	end; --END if savegame ~= nil
@@ -261,27 +327,30 @@ function CourseplayJoinFixEvent:writeStream(streamId, connection)
 	if not connection:getIsServer() then
 		--courseplay:debug("manager transfering courses", 8);
 		--transfer courses
-		local course_count = table.getn(g_currentMission.courseplay_courses)
-
+		local course_count = 0
+		for k, v in pairs(g_currentMission.cp_courses) do
+			course_count = course_count + 1
+		end
 		streamDebugWriteInt32(streamId, course_count)
-		for i = 1, course_count do
-			streamDebugWriteString(streamId, g_currentMission.courseplay_courses[i].name)
-			streamDebugWriteInt32(streamId, g_currentMission.courseplay_courses[i].id)
-			streamDebugWriteInt32(streamId, table.getn(g_currentMission.courseplay_courses[i].waypoints))
-			for w = 1, table.getn(g_currentMission.courseplay_courses[i].waypoints) do
-				streamDebugWriteFloat32(streamId, g_currentMission.courseplay_courses[i].waypoints[w].cx)
-				streamDebugWriteFloat32(streamId, g_currentMission.courseplay_courses[i].waypoints[w].cz)
-				streamDebugWriteFloat32(streamId, g_currentMission.courseplay_courses[i].waypoints[w].angle)
-				streamDebugWriteBool(streamId, g_currentMission.courseplay_courses[i].waypoints[w].wait)
-				streamDebugWriteBool(streamId, g_currentMission.courseplay_courses[i].waypoints[w].rev)
-				streamDebugWriteBool(streamId, g_currentMission.courseplay_courses[i].waypoints[w].crossing)
-				streamDebugWriteInt32(streamId, g_currentMission.courseplay_courses[i].waypoints[w].speed)
+		
+		for id, course in pairs(g_currentMission.cp_courses) do
+			streamDebugWriteString(streamId, course.name)
+			streamDebugWriteInt32(streamId, course.id)
+			streamDebugWriteInt32(streamId, table.getn(course.waypoints))
+			for w = 1, table.getn(course.waypoints) do
+				streamDebugWriteFloat32(streamId, course.waypoints[w].cx)
+				streamDebugWriteFloat32(streamId, course.waypoints[w].cz)
+				streamDebugWriteFloat32(streamId, course.waypoints[w].angle)
+				streamDebugWriteBool(streamId, course.waypoints[w].wait)
+				streamDebugWriteBool(streamId, course.waypoints[w].rev)
+				streamDebugWriteBool(streamId, course.waypoints[w].crossing)
+				streamDebugWriteInt32(streamId, course.waypoints[w].speed)
 
-				streamDebugWriteBool(streamId, g_currentMission.courseplay_courses[i].waypoints[w].generated)
-				streamDebugWriteString(streamId, g_currentMission.courseplay_courses[i].waypoints[w].turn)
-				streamDebugWriteBool(streamId, g_currentMission.courseplay_courses[i].waypoints[w].turnStart)
-				streamDebugWriteBool(streamId, g_currentMission.courseplay_courses[i].waypoints[w].turnEnd)
-				streamDebugWriteInt32(streamId, g_currentMission.courseplay_courses[i].waypoints[w].ridgeMarker)
+				streamDebugWriteBool(streamId, course.waypoints[w].generated)
+				streamDebugWriteString(streamId, course.waypoints[w].turn)
+				streamDebugWriteBool(streamId, course.waypoints[w].turnStart)
+				streamDebugWriteBool(streamId, course.waypoints[w].turnEnd)
+				streamDebugWriteInt32(streamId, course.waypoints[w].ridgeMarker)
 			end
 		end
 	end;
@@ -294,7 +363,7 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 		local course_count = streamDebugReadInt32(streamId)
 		--courseplay:debug("manager reading stream", 8);
 		--courseplay:debug(course_count, 8);
-		g_currentMission.courseplay_courses = {}
+		g_currentMission.cp_courses = {}
 		for i = 1, course_count do
 			--courseplay:debug("got course", 8);
 			local course_name = streamDebugReadString(streamId)
@@ -334,13 +403,11 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 				table.insert(waypoints, wp)
 			end
 			local course = { name = course_name, waypoints = waypoints, id = course_id }
-			table.insert(g_currentMission.courseplay_courses, course)
+			g_currentMission.cp_courses[course_id] = course
 		end
 	end;
 end
 
 function CourseplayJoinFixEvent:run(connection)
 	--courseplay:debug("CourseplayJoinFixEvent Run function should never be called", 8);
-end
-
-;
+end;

@@ -9,12 +9,12 @@
 			position="0.006 0.065" 
 			onCreate="onCreateTitleText" 
 			size="0.8 1" 
-			textSize="0.0125" 
+			textSize="0.015" 
 			text2Size="0" 
 			textOffset="0 0" 
 			textColor="0.95 0.95 0.95 1" 
 			textBold="false" 
-			text="$CP_CPCourseName" 
+			text="$CP_CPCourseName,$CP_CPFolderName,$CP_CPFilterFor" 
 			textWrapWidth="0.8" 
 			alignment="left"
 		/>
@@ -38,7 +38,7 @@
 			focusInit="onOpen"
 
 			textColor="0.15 0.15 0.15 1" 
-			textSize="0.0225"
+			textSize="0.02"
 			textBold="false" 
 			textOffset="0.0085 0.038" 
 
