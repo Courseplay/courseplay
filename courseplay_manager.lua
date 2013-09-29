@@ -31,10 +31,7 @@ end
 function courseplay_manager:draw()
 	if not g_currentMission.missionPDA.showPDA then
 		for k,v in pairs(g_currentMission.steerables) do
-			if v.cp == nil then
-				break
-			end
-			if v.cp.globalInfoTextOverlay.isRendering then
+			if v.cp ~= nil and v.cp.globalInfoTextOverlay ~= nil and v.cp.globalInfoTextOverlay.isRendering then
 				v.cp.globalInfoTextOverlay:render();
 			end;
 		end;
