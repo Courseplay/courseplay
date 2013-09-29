@@ -378,7 +378,7 @@ function courseplay.courses.save_course(course_id, File, append)
 	-- xml: pos="float float" angle=float rev=0/1 wait=0/1 crossing=0/1 speed=float generated="true/false" turn="true/false" turnstart=0/1 turned=0/1 ridgemarker=0/1/2
 	local waypoints = {}
 	-- setXMLFloat seems imprecise...
-	types = { pos='String', angle='String', rev='Int', wait='Int', crossing='Int', speed='String', generated='Bool', dir='String', turn='String', turnStart='Int', turnEnd='Int', ridgemarker='Int' };
+	types = { pos='String', angle='String', rev='Int', wait='Int', crossing='Int', speed='String', generated='Bool', dir='String', turn='String', turnstart='Int', turnend='Int', ridgemarker='Int' };
 	skip = false
 	for k, v in pairs(g_currentMission.cp_courses[course_id].waypoints) do
 		local waypoint = {} --create a new table on every call
@@ -392,8 +392,8 @@ function courseplay.courses.save_course(course_id, File, append)
 		waypoint.generated = v.generated;
 		waypoint.dir = v.laneDir or "";
 		waypoint.turn = v.turn or "false";
-		waypoint.turnStart = courseplay:boolToInt(v.turnStart);
-		waypoint.turnEnd = courseplay:boolToInt(v.turnEnd);
+		waypoint.turnstart = courseplay:boolToInt(v.turnStart);
+		waypoint.turnend = courseplay:boolToInt(v.turnEnd);
 		waypoint.ridgemarker = v.ridgemarker
 
 		waypoints[k] = waypoint;
@@ -652,7 +652,7 @@ function courseplay:link_parent(vehicle, index)
 			vehicle.cp.hud.choose_parent = false
 		end
 	end
-	
+	courseplay:buttonsActiveEnabled(vehicle, "page2");
 end
 
 function courseplay.courses.getNextCourse(vehicle, index, rev)

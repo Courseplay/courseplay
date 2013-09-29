@@ -10,4 +10,7 @@ Icons
 * Floppy disk icon by Cor Tiemens - under "CC BY 3.0" license
 * Copy icon part of "Font Awesome" by Dave Gandy - under "CC BY 3.0" license
 
+
+* "Diamond", start, stop, wait and cross sign i3Ds by Claus Pedersen (Satissis)
+
 * All other icons and graphics by Jakob Tischler

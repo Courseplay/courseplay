@@ -284,12 +284,17 @@ function courseplay:buttonsActiveEnabled(self, section)
 					elseif self.cp.hud.choose_parent ~= true then
 						if button.function_to_call == 'delete_sorted_item' and self.cp.hud.courses[row].type == 'folder' and g_currentMission.cp_sorted.info[ self.cp.hud.courses[row].uid ].lastChild ~= 0 then
 							enable = false
-						elseif nofolders and button.function_to_call == 'link_parent' then
-							enable = false
+						elseif button.function_to_call == 'link_parent' then
+							courseplay.button.setOverlay(button, 1);
+							if nofolders then
+								enable = false;
+							end;
 						end
 					else
 						if button.function_to_call ~= 'link_parent' then
 							enable = false
+						else
+							courseplay.button.setOverlay(button, 2);
 						end
 					end
 				end
