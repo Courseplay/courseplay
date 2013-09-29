@@ -378,51 +378,25 @@ function courseplay.courses.save_course(course_id, File, append)
 	-- xml: pos="float float" angle=float rev=0/1 wait=0/1 crossing=0/1 speed=float generated="true/false" turn="true/false" turnstart=0/1 turned=0/1 ridgemarker=0/1/2
 	local waypoints = {}
 	-- setXMLFloat seems imprecise...
-	types = { pos='String', angle='String', rev='Int', wait='Int', crossing='Int', speed='String', generated='Bool', turn='String', turnstart='Int', turned='Int', ridgemarker='Int'}
+	types = { pos='String', angle='String', rev='Int', wait='Int', crossing='Int', speed='String', generated='Bool', dir='String', turn='String', turnStart='Int', turnEnd='Int', ridgemarker='Int' };
 	skip = false
 	for k, v in pairs(g_currentMission.cp_courses[course_id].waypoints) do
 		local waypoint = {} --create a new table on every call
-		waypoint.pos = tostring(v.cx) .. ' ' .. tostring(v.cz)
-		waypoint.angle = tostring(v.angle)
-		if v.rev then  -- the following would not be necessary if bools would be saved as bools instead of converting them to integers...
-			waypoint.rev = 1
-		else 
-			waypoint.rev = 0
-		end
-		if v.wait then
-			waypoint.wait = 1
-		else 
-			waypoint.wait = 0
-		end
-		if v.crossing then
-			waypoint.crossing = 1
-		else 
-			waypoint.crossing = 0
-		end	
-		if v.speed == nil then
-			 waypoint.speed = '0'
-		else
-			waypoint.speed = tostring(v.speed)
-		end 
-		waypoint.generated = v.generated
-		if v.turn == nil then
-			waypoint.turn = 'false'
-		else
-			waypoint.turn = v.turn
-		end
-		if v.trunstart then
-			waypoint.turnstart = 1
-		else
-			waypoint.turnstart = 0
-		end
-		if v.turned then
-			waypoint.turned = 1
-		else
-			waypoint.turned = 0
-		end
+		waypoint.pos = tostring(courseplay:round(v.cx, 4)) .. ' ' .. tostring(courseplay:round(v.cz, 4));
+		waypoint.angle = tostring(courseplay:round(v.angle, 4));
+		-- the following would not be necessary if bools would be saved as bools instead of converting them to integers...
+		waypoint.rev = courseplay:boolToInt(v.rev);
+		waypoint.wait = courseplay:boolToInt(v.wait);
+		waypoint.crossing = courseplay:boolToInt(v.crossing);
+		waypoint.speed = tostring(courseplay:round(v.speed or 0, 5));
+		waypoint.generated = v.generated;
+		waypoint.dir = v.laneDir or "";
+		waypoint.turn = v.turn or "false";
+		waypoint.turnStart = courseplay:boolToInt(v.turnStart);
+		waypoint.turnEnd = courseplay:boolToInt(v.turnEnd);
 		waypoint.ridgemarker = v.ridgemarker
-		
-		waypoints[k] = waypoint
+
+		waypoints[k] = waypoint;
 	end
 	
 	courseplay.utils.setMultipleXMLNodes(File, string.format('XML.courses.course(%d)', i), 'waypoint', waypoints, types, skip, true)
@@ -532,6 +506,9 @@ function courseplay.courses.delete_save_courses(self)
 						wpContent = wpContent .. 'crossing="' .. tostring(Utils.getNoNil(courseplay:boolToInt(wp.crossing), 0)) .. '" ';
 						wpContent = wpContent .. 'rev="' .. tostring(Utils.getNoNil(courseplay:boolToInt(wp.rev), 0)) .. '" ';
 						wpContent = wpContent .. 'speed="' .. tostring(courseplay:round(Utils.getNoNil(wp.speed, 0), 5)) .. '" ';
+						if wp.laneDir then
+							wpContent = wpContent .. 'dir="' .. tostring(wp.laneDir) .. '" '; --no getNoNil as we want it to be nil if it doesn't exist during loading
+						end;
 						wpContent = wpContent .. 'turn="' .. tostring(Utils.getNoNil(wp.turn, false)) .. '" ';
 						wpContent = wpContent .. 'turnstart="' .. tostring(Utils.getNoNil(courseplay:boolToInt(wp.turnStart), 0)) .. '" ';
 						wpContent = wpContent .. 'turnend="' .. tostring(Utils.getNoNil(courseplay:boolToInt(wp.turnEnd), 0)) .. '" ';

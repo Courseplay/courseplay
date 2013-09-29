@@ -107,6 +107,7 @@ function courseplay_manager:load_courses()
 
 						--course generation
 						local generated =   Utils.getNoNil(getXMLBool(cpFile, key .. "#generated"), false);
+						local dir =         getXMLString(cpFile, key .. "#dir");
 						local turn =        Utils.getNoNil(getXMLString(cpFile, key .. "#turn"), "false");
 						local turnStart =   Utils.getNoNil(getXMLInt(cpFile, key .. "#turnstart"), 0);
 						local turnEnd =     Utils.getNoNil(getXMLInt(cpFile, key .. "#turnend"), 0);
@@ -137,6 +138,7 @@ function courseplay_manager:load_courses()
 							crossing = crossing, 
 							speed = speed,
 							generated = generated,
+							laneDir = dir,
 							turn = turn,
 							turnStart = turnStart,
 							turnEnd = turnEnd,
@@ -183,7 +185,7 @@ function courseplay_manager:load_courses()
 				-- folder name
 				FolderName = getXMLString(cpFile, currentFolder .. "#name")
 				if FolderName == nil then
-					FolderName = sting.format('NO_NAME%d',j)
+					FolderName = string.format('NO_NAME%d',j)
 				end
 				
 				-- folder id
@@ -347,6 +349,7 @@ function CourseplayJoinFixEvent:writeStream(streamId, connection)
 				streamDebugWriteInt32(streamId, course.waypoints[w].speed)
 
 				streamDebugWriteBool(streamId, course.waypoints[w].generated)
+				streamDebugWriteString(streamId, (course.waypoints[w].laneDir or ""))
 				streamDebugWriteString(streamId, course.waypoints[w].turn)
 				streamDebugWriteBool(streamId, course.waypoints[w].turnStart)
 				streamDebugWriteBool(streamId, course.waypoints[w].turnEnd)
@@ -381,6 +384,7 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 				local speeed = streamDebugReadInt32(streamId)
 
 				local generated = streamDebugReadBool(streamId)
+				local dir = streamDebugReadString(streamId)
 				local turn = streamDebugReadString(streamId)
 				local turnStart = streamDebugReadBool(streamId)
 				local turnEnd = streamDebugReadBool(streamId)
@@ -395,6 +399,7 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 					crossing = crossing, 
 					speed = speed,
 					generated = generated,
+					laneDir = dir,
 					turn = turn,
 					turnStart = turnStart,
 					turnEnd = turnEnd,
