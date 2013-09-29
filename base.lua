@@ -71,7 +71,7 @@ function courseplay:load(xmlFile)
 	self.crossPoints = 0
 	self.waypointMode = 1
 	self.RulMode = 1
-	self.workWidthChanged = 0
+	self.cp.workWidthChanged = 0
 	-- saves the shortest distance to the next waypoint (for recocnizing circling)
 	self.shortest_dist = nil
 	self.use_speed = true
@@ -692,11 +692,9 @@ function courseplay:draw()
 	end
 
 	--WORKWIDTH DISPLAY
-	if self.workWidthChanged > self.timer then
-		courseplay:show_work_witdh(self)
-	elseif self.work_with_shown then
-		self.work_with_shown = false
-	end
+	if self.cp.workWidthChanged > self.timer then
+		courseplay:showWorkWidth(self);
+	end;
 
 	--KEYBOARD FUNCTIONS
 	--Note: located in draw() instead of update() so they're not displayed/executed for *all* vehicles but rather only for *self*
@@ -759,21 +757,13 @@ function courseplay:draw()
 	end;
 end; --END draw()
 
-function courseplay:show_work_witdh(self)
-	local x, y, z = getWorldTranslation(self.rootNode)
-	local left =  self.toolWorkWidht *  0.5;
-	local right = self.toolWorkWidht * -0.5;
-	if self.WpOffsetX ~= nil and self.WpOffsetX ~= 0 then
-		left =  left +  self.WpOffsetX;
-		right = right + self.WpOffsetX;
-	end;
-	local pointLx, pointLy, pointLz = localToWorld(self.rootNode, left,  1, -6);
-	local pointRx, pointRy, pointRz = localToWorld(self.rootNode, right, 1, -6);
-	drawDebugPoint(pointLx, pointLy, pointLz, 1, 1, 0, 1);
-	drawDebugPoint(pointRx, pointRy, pointRz, 1, 1, 0, 1);
-	drawDebugLine(pointLx, pointLy, pointLz, 1, 0, 0, pointRx, pointRy, pointRz, 1, 0, 0);
-	self.work_with_shown = true
-end
+function courseplay:showWorkWidth(vehicle)
+	local left =  vehicle.cp.workWidthDisplayPoints.left;
+	local right = vehicle.cp.workWidthDisplayPoints.right;
+	drawDebugPoint(left.x, left.y, left.z, 1, 1, 0, 1);
+	drawDebugPoint(right.x, right.y, right.z, 1, 1, 0, 1);
+	drawDebugLine(left.x, left.y, left.z, 1, 0, 0, right.x, right.y, right.z, 1, 0, 0);
+end;
 
 -- is been called everey frame
 function courseplay:update(dt)

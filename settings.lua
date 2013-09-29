@@ -335,28 +335,41 @@ function courseplay:change_tipper_offset(self, change_by)
 end
 
 
-function courseplay:changeWpOffsetX(self, change_by)
-	self.WpOffsetX = self.WpOffsetX + change_by
-end
+function courseplay:changeWpOffsetX(vehicle, change_by)
+	vehicle.WpOffsetX = vehicle.WpOffsetX + change_by
+	courseplay:calculateWorkWidthDisplayPoints(vehicle);
+	vehicle.cp.workWidthChanged = vehicle.timer + 2000;
+end;
 
-function courseplay:changeWpOffsetZ(self, change_by)
-	self.WpOffsetZ = self.WpOffsetZ + change_by
-end
+function courseplay:changeWpOffsetZ(vehicle, change_by)
+	vehicle.WpOffsetZ = vehicle.WpOffsetZ + change_by;
+end;
 
-function courseplay:changeWorkWidth(self, change_by)
-	if self.toolWorkWidht + change_by > 10 then
+function courseplay:changeWorkWidth(vehicle, change_by)
+	if vehicle.toolWorkWidht + change_by > 10 then
 		if math.abs(change_by) == 0.1 then
 			change_by = 0.5 * Utils.sign(change_by);
 		elseif math.abs(change_by) == 0.5 then
 			change_by = 2 * Utils.sign(change_by);
 		end;
 	end;
-	self.toolWorkWidht = self.toolWorkWidht + change_by;
-	self.workWidthChanged = self.timer + 2000
-	if self.toolWorkWidht < 0.1 then
-		self.toolWorkWidht = 0.1
-	end
-end
+	vehicle.toolWorkWidht = math.max(vehicle.toolWorkWidht + change_by, 0.1);
+	courseplay:calculateWorkWidthDisplayPoints(vehicle);
+	vehicle.cp.workWidthChanged = vehicle.timer + 2000;
+end;
+
+function courseplay:calculateWorkWidthDisplayPoints(vehicle)
+	--calculate points for display
+	local x, y, z = getWorldTranslation(vehicle.rootNode)
+	local left =  (vehicle.toolWorkWidht *  0.5) + (vehicle.WpOffsetX or 0);
+	local right = (vehicle.toolWorkWidht * -0.5) + (vehicle.WpOffsetX or 0);
+	local pointLx, pointLy, pointLz = localToWorld(vehicle.rootNode, left,  1, -6);
+	local pointRx, pointRy, pointRz = localToWorld(vehicle.rootNode, right, 1, -6);
+	vehicle.cp.workWidthDisplayPoints = {
+		left =  { x = pointLx; y = pointLy, z = pointLz; };
+		right = { x = pointRx; y = pointRy, z = pointRz; };
+	};
+end;
 
 function courseplay:change_WaypointMode(self, change_by)
 	self.waypointMode = self.waypointMode + change_by
