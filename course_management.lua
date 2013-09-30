@@ -545,7 +545,7 @@ function courseplay.courses.delete_save_all(self)
 				
 				file:write('\t<folders>\n')
 				for i,folder in pairs(g_currentMission.cp_folders) do
-					file:write('\t\t<folder name="' .. folder.name .. '" id="' .. folder.id .. '" parent="' .. folder.parent ..'">\n');
+					file:write('\t\t<folder name="' .. folder.name .. '" id="' .. folder.id .. '" parent="' .. folder.parent ..'" />\n');
 				end
 				file:write('\t</folders>\n')
 				
