@@ -364,6 +364,7 @@ function courseplay.courses.save_parent(type, id)
 			setXMLInt(File, node .. '#parent', value)
 			saveXMLFile(File)
 		end
+		delete(File)
 	end
 end
 
@@ -374,12 +375,14 @@ function courseplay.courses.save_course(course_id, File, append)
 --		if it's false, the function will check if the id exists in the file. if it exists, it will overwrite it otherwise it will append
 --		if append is true, the function will search for the next free position and save there
 --		if append is an integer, the function will save at this position (without checking if it is the end or what there was before)
+	local deleteFile = false
 	if append == nil then
 		append = false  -- slow but secure
 	end
 	
 	if File == nil then
 		File = courseplay.courses.openOrCreateXML()
+		deleteFile = true
 	end
 	
 	-- { id = id, type = 'course', name = name, waypoints = tempCourse, parent = parent }
@@ -428,6 +431,9 @@ function courseplay.courses.save_course(course_id, File, append)
 	courseplay.utils.setMultipleXMLNodes(File, string.format('XML.courses.course(%d)', i), 'waypoint', waypoints, types, true)
 	
 	saveXMLFile(File)
+	if deleteFile then
+		delete(File)
+	end
 end
 
 function courseplay.courses.save_folder(folder_id, File, append)
@@ -437,12 +443,14 @@ function courseplay.courses.save_folder(folder_id, File, append)
 --		if it's false, the function will check if the id exists in the file. if it exists, it will overwrite it otherwise it will append
 --		if append is true, the function will search for the next free position and save there
 --		if append is an integer, the function will save at this position (without checking if it is the end or what there was before)
+	local deleteFile = false
 	if append == nil then
 		append = false  -- slow but secure
 	end
 	
 	if File == nil then
 		File = courseplay.courses.openOrCreateXML()
+		deleteFile = true
 	end
 
 	-- { id = id, type = 'folder', name = name, parent = parent }
@@ -463,17 +471,22 @@ function courseplay.courses.save_folder(folder_id, File, append)
 	courseplay.utils.setMultipleXML(File, string.format('XML.folders.folder(%d)', i), g_currentMission.cp_folders[folder_id], types)
 	
 	saveXMLFile(File)
+	if deleteFile then
+		delete(File)
+	end
 end
 
 function courseplay.courses.save_folders(File, append)
 --	function to save all folders by once
 --	append (bool): whether to append to the file (true) or check if the id exists (false)
+	local deleteFile = false
 	if append == nil then
 		append = false
 	end
 	
 	if File == nil then
 		File = courseplay.courses.openOrCreateXML()
+		deleteFile = true
 	end
 	
 	if append then
@@ -486,17 +499,22 @@ function courseplay.courses.save_folders(File, append)
 			append = append + 1
 		end
 	end
+	if deleteFile then
+		delete(File)
+	end
 end
 
 function courseplay.courses.save_courses(File, append)
 --	function to save all courses by once
 --	append (bool): whether to append to the file (true) or check if the id exists (false)
+	local deleteFile = false
 	if append == nil then
 		append = false
 	end
 	
 	if File == nil then
 		File = courseplay.courses.openOrCreateXML()
+		deleteFile = true
 	end
 	
 	if append then
@@ -508,6 +526,10 @@ function courseplay.courses.save_courses(File, append)
 		if append ~= false then
 			append = append + 1
 		end
+	end
+	
+	if deleteFile then
+		delete(File)
 	end
 end
 
@@ -523,7 +545,7 @@ function courseplay.courses.delete_save_all(self)
 				
 				file:write('\t<folders>\n')
 				for i,folder in pairs(g_currentMission.cp_folders) do
-					file:write('\t\t<folder name="' .. folder.name .. '" id="' .. folder.id .. '" parent="' .. course.parent ..'">\n');
+					file:write('\t\t<folder name="' .. folder.name .. '" id="' .. folder.id .. '" parent="' .. folder.parent ..'">\n');
 				end
 				file:write('\t</folders>\n')
 				
@@ -580,6 +602,7 @@ function courseplay.courses.save_all(recreateXML)
 		
 		courseplay.courses.save_folders(f, recreateXML)			 -- append and don't check for id if recreateXML is true
 		courseplay.courses.save_courses(f, recreateXML)
+		delete(f)
 	end
 end
 
