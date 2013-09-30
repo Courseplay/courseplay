@@ -978,7 +978,7 @@ function courseplay:unload_combine(self, dt)
 		end
 		self.cp.TrafficBrake = false
 
-		courseplay:set_traffc_collision(self, target_x, target_z)
+		courseplay:setTrafficCollision(self, target_x, target_z)
 		
 		if self.isRealistic then 
 			courseplay:driveInMRDirection(self, target_x, target_z,moveForwards, dt);

@@ -115,6 +115,7 @@ function courseplay:setHudContent(self)
 				if not self.StopEnd then
 					self.cp.hud.content.pages[1][4][1].text = courseplay:get_locale(self, "CoursePlayStopEnd")
 				end
+
 				if self.ai_mode == 4 and self.cp.hasSowingMachine then
 					self.cp.hud.content.pages[1][5][1].text = courseplay:get_locale(self, "CPridgeMarkers");
 
