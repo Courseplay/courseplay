@@ -674,7 +674,7 @@ function courseplay:unload_combine(self, dt)
 			if combine.cp.isChopper then
 				local fruitSide = courseplay:side_to_drive(self, combine, -10,true);
 				
-				--new chopper turn maneuver by Thomas Gärtner  
+				--new chopper turn maneuver by Thomas Gï¿½rtner  
 				if fruitSide == "left" then -- chopper will turn left
 
 					if self.combine_offset > 0 then -- I'm left of chopper
@@ -978,7 +978,7 @@ function courseplay:unload_combine(self, dt)
 		end
 		self.cp.TrafficBrake = false
 
-		courseplay:set_traffc_collision(self, target_x, target_z)
+		courseplay:set_traffic_collision(self, target_x, target_z)
 		
 		if self.isRealistic then 
 			courseplay:driveInMRDirection(self, target_x, target_z,moveForwards, dt);
