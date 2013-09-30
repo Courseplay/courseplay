@@ -23,17 +23,16 @@ function courseplay:showSaveCourseForm(self, saveWhat)
 		end
 	
 	elseif saveWhat == 'filter' then
-		local button = self.cp.buttons["2"][self.cp.hud.filterButtonIndex];
 		if self.cp.hud.filter == '' then
 			courseplay.vehicleToSaveCourseIn = self;
 			if self.cp.imWriting then
 				self.cp.saveWhat = 'filter';
 				g_gui:showGui("inputCourseNameDialogue");
-				courseplay.button.setOverlay(button, 2);
 				self.cp.imWriting = false;
 			end;
 		else
 			self.cp.hud.filter = '';
+			local button = self.cp.buttons["2"][self.cp.hud.filterButtonIndex];
 			courseplay.button.setOverlay(button, 1);
 			courseplay.settings.setReloadCourseItems(self);
 		end;
