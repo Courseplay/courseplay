@@ -196,7 +196,7 @@ function courseplay:load(xmlFile)
 	self.onTrafficCollisionTrigger = courseplay.cponTrafficCollisionTrigger;
 	--self.aiTrafficCollisionTrigger = Utils.indexToObject(self.components, getXMLString(xmlFile, "vehicle.aiTrafficCollisionTrigger#index"));
 	self.steering_angle = Utils.getNoNil(getXMLFloat(xmlFile, "vehicle.wheels.wheel(1)" .. "#rotMax"), 30)
-
+	self.cp.tempCollis = {}
 	self.CPnumCollidingVehicles = 0;
 	--	self.numToolsCollidingVehicles = {};
 	--	self.trafficCollisionIgnoreList = {};
@@ -204,6 +204,7 @@ function courseplay:load(xmlFile)
 	self.cp.TrafficBrake = false
 	-- tipTrigger
 	self.findTipTriggerCallback = courseplay.findTipTriggerCallback;
+	self.findTrafficCollisionCallback = courseplay.findTrafficCollisionCallback;
 
 	if self.numCollidingVehicles == nil then
 		self.numCollidingVehicles = {};

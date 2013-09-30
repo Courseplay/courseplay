@@ -2,9 +2,51 @@
 
 -- traffic collision
 function courseplay:cponTrafficCollisionTrigger(triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
+	if self.cp.trafficCollisionTriggerId == nil then
+		self.cp.trafficCollisionTriggerId = triggerId
+	end
 	if otherId == self.rootNode then
 		return
 	end
+	if onLeave then
+		courseplay:debug(nameNum(self)..": Trigger: call handleTrafficCollisions onLeave" ,3)
+		courseplay:handleTrafficCollisions(self, triggerId, otherId, onEnter, onLeave)
+	elseif onEnter then
+		local name = getName(otherId)
+		local idsMatch = false
+		for transformId,_ in pairs (self.cp.tempCollis) do
+			if transformId == otherId then
+				idsMatch = true
+				break
+			end
+		end
+		if idsMatch then
+			courseplay:debug(nameNum(self)..": Trigger: onEnter raycast already found ["..tostring(otherId).."]-> do nothing " ,3)
+		else
+			courseplay:debug(nameNum(self)..": Trigger: call handleTrafficCollisions onEnter ["..tostring(otherId).."]" ,3)
+			courseplay:handleTrafficCollisions(self, triggerId, otherId, onEnter, onLeave)
+		end
+	end
+	
+
+end
+
+function courseplay:findTrafficCollisionCallback(transformId, x, y, z, distance)
+	local name = getName(transformId)
+	drawDebugPoint(x, y, z, 1, 1, 0, 1);
+	courseplay:debug(nameNum(self)..": raycast callback response: ["..tostring(transformId).."] in "..tostring(distance),3)
+	local triggerId = Utils.getNoNil(self.cp.trafficCollisionTriggerId,0)
+	if self.cp.tempCollis[transformId] == nil then
+		self.cp.tempCollis[transformId] = true
+		courseplay:debug(nameNum(self)..": raycast callback: found \""..tostring(name).."\" -> call handleTrafficCollisions onEnter",3)
+		courseplay:handleTrafficCollisions(self, triggerId, transformId, true, false)
+		
+	end
+	return false
+end
+
+function courseplay:handleTrafficCollisions(self, triggerId, otherId, onEnter, onLeave)
+	courseplay:debug(string.format("%s: handleTrafficCollisions:", nameNum(self)), 3);
 	if onEnter or onLeave then
 		if otherId == Player.rootNode then
 			if onEnter then
@@ -16,16 +58,16 @@ function courseplay:cponTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
  
 			end;
 		else
-			courseplay:debug(string.format("%s: found collision trigger", nameNum(self)), 3);
+			courseplay:debug(string.format("%s: 	found collision trigger", nameNum(self)), 3);
 			local vehicle = g_currentMission.nodeToVehicle[otherId];
 			local vehicleOnList = false
 
-			if vehicle ~= nil then
-				courseplay:debug(string.format("%s: checking CollisionIgnoreList", nameNum(self)), 3);
+			if vehicle ~= nil and onEnter then
+				courseplay:debug(string.format("%s: 	checking CollisionIgnoreList", nameNum(self)), 3);
 				for a,b in pairs (self.cpTrafficCollisionIgnoreList) do
-					courseplay:debug(string.format("%s: %s vs %s", nameNum(self), tostring(g_currentMission.nodeToVehicle[a].name), tostring(vehicle.name)), 3);
+					courseplay:debug(string.format("%s: 	%s vs \"%s\"", nameNum(self), tostring(g_currentMission.nodeToVehicle[a].name), tostring(vehicle.name)), 3);
 					if g_currentMission.nodeToVehicle[a].id == vehicle.id then
-						courseplay:debug(string.format("%s: %s is on list", nameNum(self), tostring(vehicle.name)), 3);
+						courseplay:debug(string.format("%s: 	\"%s\" is on list", nameNum(self), tostring(vehicle.name)), 3);
 						vehicleOnList = true
 						break
 					end
@@ -33,15 +75,19 @@ function courseplay:cponTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 			end
 			if vehicle ~= nil and self.trafficCollisionIgnoreList[otherId] == nil and vehicleOnList == false then
 				if onEnter then
-					courseplay:debug(string.format("%s: %s is not on list", nameNum(self), tostring(vehicle.name)), 3);
+					courseplay:debug(string.format("%s: 	\"%s\" is not on list, setting \"self.traffic_vehicle_in_front\"", nameNum(self), tostring(vehicle.name)), 3);
 					self.traffic_vehicle_in_front = otherId
 					self.CPnumCollidingVehicles = self.CPnumCollidingVehicles + 1;
 					self.numCollidingVehicles[triggerId] = self.numCollidingVehicles[triggerId]+1;
 				elseif onLeave then
+					self.cp.tempCollis[otherId] = nil
+					courseplay:debug(string.format("%s: 	onLeave - remove one of \"self.CPnumCollidingVehicles\"", nameNum(self)), 3);
 					self.CPnumCollidingVehicles = math.max(self.CPnumCollidingVehicles - 1, 0);
 					self.numCollidingVehicles[triggerId] = math.max(self.numCollidingVehicles[triggerId]-1, 0);
  				end;
-			end;
+			else
+				courseplay:debug(string.format("%s: 	Vehicle == nil - do nothing", nameNum(self)), 3);
+			end
 		end;
 	end;
 end

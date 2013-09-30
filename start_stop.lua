@@ -36,7 +36,7 @@ function courseplay:start(self)
 	self.record = false
 	self.record_pause = false
 	self.calculated_course = false
-	
+	self.cp.tempWpOffsetX = self.WpOffsetX
 	
 
 	AITractor.addCollisionTrigger(self, self);
@@ -262,7 +262,7 @@ function courseplay:stop(self)
 	-- resetting variables
 	courseplay:setMinHudPage(self, nil);
 	self.cp.attachedCombineIdx = nil;
-
+	self.cp.tempCollis = {}
 	self.checkSpeedLimit = true
 	self.cp.currentTipTrigger = nil
 	self.drive = false
@@ -276,6 +276,7 @@ function courseplay:stop(self)
 	self.cp.hasUnloadingRefillingCourse = false;
 	self.StopEnd = false
 	self.unloaded = false
+	self.WpOffsetX = self.cp.tempWpOffsetX
 	self.cp.hasBaleLoader = false;
 	self.cp.hasSowingMachine = false;
 
