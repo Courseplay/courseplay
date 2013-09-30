@@ -282,19 +282,34 @@ function courseplay:loopedTable(tab, idx)
 		end;
 	end;
 
-	return tab[idx]
+	return tab[idx];
 end;
 
 function courseplay:varLoop(var, changeBy, max, min)
-	local min = min or 1;
-	local var = var + changeBy;
+	min = min or 1;
+	var = var + changeBy;
 	if var > max then
 		var = min;
-	end;
-	if var < min then
+	elseif var < min then
 		var = max;
 	end;
 	return var;
+end;
+
+function courseplay:fillTypesMatch(fillTrigger, workTool)
+	if fillTrigger ~= nil then
+		if not workTool.cp.hasUrfSpec then
+			if fillTrigger.fillType then
+				return workTool:allowFillType(fillTrigger.fillType, false);
+			elseif fillTrigger.currentFillType then
+				return workTool:allowFillType(fillTrigger.currentFillType, false);
+			end;
+		elseif workTool.cp.hasUrfSpec and workTool.isFertilizing > 1 then
+			return fillTrigger.fillType and workTool.currentSprayFillType == fillTrigger.fillType;
+		end;
+	end;
+
+	return false;
 end;
 
 -- by horoman

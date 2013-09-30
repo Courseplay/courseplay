@@ -492,8 +492,8 @@ function courseplay:load(xmlFile)
 	for i=1, courseplay.hud.numLines do
 		local expandButtonIndex = courseplay:register_button(self, -2, "folder_expand.png", "expandFolder", i, buttonX[0], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
 		courseplay.button.addOverlay(self.cp.buttons["-2"][expandButtonIndex], 2, "folder_reduce.png");
-		courseplay:register_button(self, -2, "folder.png",      "load_sorted_course", i, buttonX[1], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
-		courseplay:register_button(self, -2, "folder_into.png", "add_sorted_course",  i, buttonX[2], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
+		courseplay:register_button(self, -2, "courseLoadAppend.png", "load_sorted_course", i, buttonX[1], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
+		courseplay:register_button(self, -2, "courseAdd.png", "add_sorted_course", i, buttonX[2], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
 		local linkParentButtonIndex = courseplay:register_button(self, -2, "folder_parent_from.png", "link_parent", i, buttonX[3], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
 		courseplay.button.addOverlay(self.cp.buttons["-2"][linkParentButtonIndex], 2, "folder_parent_to.png");
 		if g_server ~= nil then
@@ -589,7 +589,7 @@ function courseplay:load(xmlFile)
 	courseplay:register_button(self, 7, "navigate_up.dds",   "switchDriverCopy", -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[5], w16px, h16px, 5, nil, false);
 	courseplay:register_button(self, 7, "navigate_down.dds", "switchDriverCopy",  1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[5], w16px, h16px, 5, nil, false);
 	courseplay:register_button(self, 7, nil, nil, nil, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[5], 0.015 + w16px, mouseWheelArea.h, 5, nil, true, false);
-	courseplay:register_button(self, 7, "copy3.dds",         "copyCourse",      nil, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[6], w16px, h16px);
+	courseplay:register_button(self, 7, "copy.png",          "copyCourse",      nil, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[6], w16px, h16px);
 
 	--Page 8: Course generation
 	courseplay:register_button(self, 8, "navigate_minus.dds", "changeWorkWidth", -0.1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1,  -0.5, false);

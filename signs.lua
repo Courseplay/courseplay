@@ -6,7 +6,7 @@
 courseplay.utils.signs = {};
 
 function courseplay:addSign(vehicle, x, z, rotationY, signType, insertIndex)
-	local signType = signType or "normal";
+	signType = signType or "normal";
 
 	local sign;
 	local signFromBuffer = {};
@@ -22,7 +22,7 @@ function courseplay:addSign(vehicle, x, z, rotationY, signType, insertIndex)
 	end;
 
 	courseplay.utils.signs.setTranslation(sign, signType, x, z);
-	local rotationY = rotationY or 0;
+	rotationY = rotationY or 0;
 	setRotation(sign, 0, rotationY, 0); --TODO (1)
 	setVisibility(sign, true);
 
