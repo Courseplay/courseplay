@@ -815,12 +815,8 @@ function courseplay:delete()
 		removeTrigger(self.aiTrafficCollisionTrigger);
 	end;
 
-	for k,buttonSection in pairs(self.cp.buttons) do
-		for i,buttons in pairs(buttonSection) do
-			if button.overlay ~= nil then
-				delete(button.overlay);
-			end;
-		end;
+	if self.cp ~= nil and self.cp.buttons ~= nil then
+		courseplay.button.deleteButtonOverlays(self);
 	end;
 
 	for _,section in pairs(self.cp.signs) do

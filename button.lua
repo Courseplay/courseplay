@@ -123,7 +123,7 @@ function courseplay:renderButton(self, button)
 		--CONDITIONAL DISPLAY
 		--Global
 		if pg == "global" then
-			if fn == "showSaveCourseForm" then
+			if fn == "showSaveCourseForm" and prm == "course" then
 				button.show = self.play and not self.record and not self.record_pause and self.Waypoints ~= nil and table.getn(self.Waypoints) ~= 0;
 			end;
 
@@ -322,3 +322,20 @@ function courseplay.button.setOverlay(button, index)
 	button.overlay.x = button.x
 	button.overlay.y = button.y
 end
+
+function courseplay.button.deleteButtonOverlays(vehicle)
+	for k,buttonSection in pairs(vehicle.cp.buttons) do
+		for i,buttons in pairs(buttonSection) do
+			if button.overlay ~= nil and button.overlay.overlayId ~= nil then
+				button.overlay:delete();
+			end;
+			if button.overlays ~= nil then
+				for j,overlay in pairs(button.overlays) do
+					if overlay.overlayId ~= nil then
+						overlay:delete();
+					end;
+				end;
+			end;
+		end;
+	end;
+end;
