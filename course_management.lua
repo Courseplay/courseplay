@@ -23,16 +23,17 @@ function courseplay:showSaveCourseForm(self, saveWhat)
 		end
 	
 	elseif saveWhat == 'filter' then
+		local button = self.cp.buttons["2"][self.cp.hud.filterButtonIndex];
 		if self.cp.hud.filter == '' then
 			courseplay.vehicleToSaveCourseIn = self;
 			if self.cp.imWriting then
 				self.cp.saveWhat = 'filter';
 				g_gui:showGui("inputCourseNameDialogue");
+				courseplay.button.setOverlay(button, 2);
 				self.cp.imWriting = false;
 			end;
 		else
 			self.cp.hud.filter = '';
-			local button = self.cp.buttons["2"][self.cp.hud.filterButtonIndex];
 			courseplay.button.setOverlay(button, 1);
 			courseplay.settings.setReloadCourseItems(self);
 		end;
@@ -608,6 +609,7 @@ function courseplay:link_parent(vehicle, index)
 			-- show folders:
 			vehicle.cp.hud.showFoldersOnly = true
 			vehicle.cp.hud.showZeroLevelFolder = true
+			courseplay.settings.disableFilter(vehicle)
 			if type == 'folder' then
 				vehicle.cp.folder_settings[id].skipMe = true
 			end
@@ -616,6 +618,16 @@ function courseplay:link_parent(vehicle, index)
 			vehicle.cp.hud.choose_parent = true
 			
 		else -- choose_parent is true
+			-- prepare showing courses:		
+			vehicle.cp.hud.showFoldersOnly = false
+			vehicle.cp.hud.showZeroLevelFolder = false
+			courseplay.settings.enableFilter(vehicle)
+			if vehicle.cp.hud.selected_child.type == 'folder' then
+				vehicle.cp.folder_settings[vehicle.cp.hud.selected_child.id].skipMe = false
+			end
+			vehicle.cp.hud.choose_parent = false	
+			
+			-- link if possible and show courses anyway
 			if	type == 'folder' then --parent must be a folder!
 				if vehicle.cp.hud.selected_child.type == 'folder' then
 					g_currentMission.cp_folders[vehicle.cp.hud.selected_child.id].parent = id
@@ -626,16 +638,9 @@ function courseplay:link_parent(vehicle, index)
 				end
 				g_currentMission.cp_sorted = courseplay.courses.sort()
 				courseplay.settings.setReloadCourseItems()
+			else
+				courseplay.hud.setCourses(vehicle,1)
 			end
-			-- show courses:
-			vehicle.cp.hud.showFoldersOnly = false
-			vehicle.cp.hud.showZeroLevelFolder = false
-			if vehicle.cp.hud.selected_child.type == 'folder' then
-				vehicle.cp.folder_settings[vehicle.cp.hud.selected_child.id].skipMe = false
-			end
-			courseplay.hud.setCourses(vehicle,1)
-			
-			vehicle.cp.hud.choose_parent = false
 		end
 	else
 		if vehicle.cp.hud.choose_parent then
@@ -644,6 +649,7 @@ function courseplay:link_parent(vehicle, index)
 			-- go back
 			vehicle.cp.hud.showFoldersOnly = false
 			vehicle.cp.hud.showZeroLevelFolder = false
+			courseplay.settings.enableFilter(vehicle)
 			if vehicle.cp.hud.selected_child.type == 'folder' then
 				vehicle.cp.folder_settings[vehicle.cp.hud.selected_child.id].skipMe = false
 			end

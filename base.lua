@@ -331,6 +331,7 @@ function courseplay:load(xmlFile)
 	end;
 	
 	-- course list
+	self.cp.hud.filterEnabled = true;
 	self.cp.hud.filter = "";
 	self.cp.hud.choose_parent = false
 	self.cp.hud.showFoldersOnly = false
