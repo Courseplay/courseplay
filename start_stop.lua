@@ -36,9 +36,7 @@ function courseplay:start(self)
 	self.record = false
 	self.record_pause = false
 	self.calculated_course = false
-	self.cp.tempWpOffsetX = self.WpOffsetX
 	
-
 	AITractor.addCollisionTrigger(self, self);
 
 	self.orig_maxnumber = self.maxnumber
@@ -276,10 +274,13 @@ function courseplay:stop(self)
 	self.cp.hasUnloadingRefillingCourse = false;
 	self.StopEnd = false
 	self.unloaded = false
-	self.WpOffsetX = self.cp.tempWpOffsetX
+	
 	self.cp.hasBaleLoader = false;
 	self.cp.hasSowingMachine = false;
-
+	if self.cp.tempWpOffsetX ~= nil then
+		self.WpOffsetX = self.cp.tempWpOffsetX
+		self.cp.tempWpOffsetX = nil
+	end
 	--validation: can switch ai_mode?
 	courseplay:validateCanSwitchMode(self);
 end

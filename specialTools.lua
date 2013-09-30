@@ -822,7 +822,8 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 	return false, allowedToDrive;
 end
 function courseplay:askForSpecialSettings(self,object)
-	
+	local offsetChanged = false
+	local tempOffset = self.WpOffsetX
 	if self.cp.isKirovetsK700A then
 		self.cp.DirectionNode = self.rootNode
 		self.cp.isKasi = 2.5
@@ -838,6 +839,7 @@ function courseplay:askForSpecialSettings(self,object)
 		self.cp.noStopOnEdge = true
 		self.cp.noStopOnTurn = true
 		self.WpOffsetX = -2.4
+		offsetChanged = true
 		object.cp.inversedFoldDirection = true
 
 	elseif object.cp.isKotteGARANTProfiVQ32000 then
@@ -852,22 +854,27 @@ function courseplay:askForSpecialSettings(self,object)
 	elseif object.cp.isGrimmeSE7555 then
 		self.cp.aiTurnNoBackward = true
 		self.WpOffsetX = -2.1
+		offsetChanged = true
 		print("Grimme SE 75-55 workwidth: 1 m");
 	elseif object.cp.isGrimmeRootster604 then
 		self.cp.aiTurnNoBackward = true
 		self.WpOffsetX = -0.9
+		offsetChanged = true
 		print("Grimme Rootster 604 workwidth: 2.8 m");
 	elseif object.cp.isPoettingerMex6 then
 		self.cp.aiTurnNoBackward = true
 		self.WpOffsetX = -2.5
+		offsetChanged = true
 		print("Pöttinger Mex 6 workwidth: 2.0 m");
 	elseif object.cp.isAbbeyAP900 then
 		self.cp.aiTurnNoBackward = true
 		self.WpOffsetX = -4.1
+		offsetChanged = true
 		print("Abbey AP900 workwidth: 5.8 m");
 	elseif object.cp.isJF1060 then
 		self.cp.aiTurnNoBackward = true
 		self.WpOffsetX = -2.5
+		offsetChanged = true
 	elseif object.cp.isClaasConspeedSFM then
 		object.cp.inversedFoldDirection = true;
 	elseif object.cp.isUrsusZ586 then
@@ -875,8 +882,12 @@ function courseplay:askForSpecialSettings(self,object)
 		self.cp.noStopOnEdge = true
 		self.cp.noStopOnTurn = true
 		self.WpOffsetX = -2.5
+		offsetChanged = true
 	elseif object.cp.isSilageShield then
 		self.cp.hasShield = true
+	end
+	if offsetChanged then
+		self.cp.tempWpOffsetX = tempOffset
 	end
 
 end
