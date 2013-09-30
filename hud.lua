@@ -277,20 +277,15 @@ function courseplay:setHudContent(self)
 		self.cp.hud.content.pages[5][4][1].text = courseplay:get_locale(self, "CPUnloadSpeed") -- "Abladen (BGA):"
 		self.cp.hud.content.pages[5][5][1].text = courseplay:get_locale(self, "CPuseSpeed") -- "Geschwindigkeit:"
 
-		local localeSpeedMulti = 1; --kph
-		if g_languageShort == "en" then
-			localeSpeedMulti = 0.621371; --mph
-		end;
-
-		self.cp.hud.content.pages[5][1][2].text = string.format("%d %s", self.turn_speed   * 3600 * localeSpeedMulti, courseplay.locales.CPspeedUnit);
-		self.cp.hud.content.pages[5][2][2].text = string.format("%d %s", self.field_speed  * 3600 * localeSpeedMulti, courseplay.locales.CPspeedUnit);
-		self.cp.hud.content.pages[5][4][2].text = string.format("%d %s", self.unload_speed * 3600 * localeSpeedMulti, courseplay.locales.CPspeedUnit);
+		self.cp.hud.content.pages[5][1][2].text = string.format("%d %s", g_i18n:getSpeed(self.turn_speed   * 3600), g_i18n:getText("speedometer"));
+		self.cp.hud.content.pages[5][2][2].text = string.format("%d %s", g_i18n:getSpeed(self.field_speed  * 3600), g_i18n:getText("speedometer"));
+		self.cp.hud.content.pages[5][4][2].text = string.format("%d %s", g_i18n:getSpeed(self.unload_speed * 3600), g_i18n:getText("speedometer"));
 
 		if self.use_speed then
 			self.cp.hud.content.pages[5][3][2].text = courseplay:get_locale(self, "CPautomaticSpeed");
 			self.cp.hud.content.pages[5][5][2].text = courseplay:get_locale(self, "CPuseSpeed1") -- "wie beim einfahren"
 		else
-			self.cp.hud.content.pages[5][3][2].text = string.format("%d %s", self.max_speed * 3600 * localeSpeedMulti, courseplay.locales.CPspeedUnit);
+			self.cp.hud.content.pages[5][3][2].text = string.format("%d %s", g_i18n:getSpeed(self.max_speed * 3600), g_i18n:getText("speedometer"));
 			self.cp.hud.content.pages[5][5][2].text = courseplay:get_locale(self, "CPuseSpeed2") -- "maximale Geschwindigkeit"
 		end;
 

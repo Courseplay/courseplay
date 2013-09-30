@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="13">
-	<version>3.41.0148</version>
+	<version>3.41.0149</version>
 	<author>Jakob Tischler / Thomas Gärtner / Horoman</author>
 	<title>
 		<de>Courseplay</de>        
@@ -818,14 +818,6 @@ Italský překlad: JD7530
 			<es>maxima velocidad</es>
 			<it>velocita' massima</it>
 			<cz>maximální rychlost</cz>
-		</text>
-		<text name="CPspeedUnit">
-			<en>mph</en>
-			<de>km/h</de>
-			<fr>km/h</fr>
-			<es>km/h</es>
-			<it>km/h</it>
-			<cz>km/h</cz>
 		</text>
 		<text name="CPautomaticSpeed">
 			<en>automatic (from course)</en>
