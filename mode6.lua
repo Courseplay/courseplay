@@ -107,13 +107,16 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 				end
 
 				if fill_level == 100 and not self.cp.hasUnloadingRefillingCourse then
-					allowedToDrive = false
-					courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPUnloadBale"));
-					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,nil); --TODO: unclear
+					if self.cp.automaticUnloadingOnField then
+						self.cp.unloadOrder = true
+						courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPUnloadBale"));
+					else
+						specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,nil); --TODO: unclear
+					end
 				end
 
 				-- automatic unload
-				if not workArea and self.Waypoints[self.cp.last_recordnumber].wait and (self.wait or fill_level == 0) then
+				if (not workArea and self.Waypoints[self.cp.last_recordnumber].wait and (self.wait or fill_level == 0))or self.cp.unloadOrder then
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,true);
 					if not specialTool then
 						if workTool.emptyState ~= BaleLoader.EMPTY_NONE then
@@ -132,6 +135,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 							if BaleLoader.getAllowsStartUnloading(workTool) then
 								g_server:broadcastEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_EMPTY_START), true, nil, workTool)
 							end
+							self.cp.unloadOrder = false
 						end
 					end;
 				end;
@@ -151,7 +155,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 							local marker = Utils.getNoNil(self.Waypoints[self.recordnumber].ridgeMarker,0)
 							local waypoint = math.max(marker,forecast)
 							if courseplay:isFoldable(workTool) and not courseplay:isFolding(workTool) then
-								if not self.cp.hasSpecializationPlough then
+								if not workTool.cp.hasSpecializationPlough then
 									if workTool.cp.inversedFoldDirection then
 										workTool:setFoldDirection(1);
 									else
@@ -293,9 +297,11 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 						self.recordnumber = 1
 					end
 					--courseplay:debug(string.format("Abort: %d StopWork: %d",self.abortWork,self.stopWork), 12)
-				elseif not self.cp.hasUnloadingRefillingCourse then
+				elseif not self.cp.hasUnloadingRefillingCourse and not self.cp.automaticUnloadingOnField then
 					allowedToDrive = false;
 					courseplay:setGlobalInfoText(self, string.format(": %s %s", tostring(workTool.name), courseplay:get_locale(self, "CPneedsToBeUnloaded")), -1);
+				elseif not self.cp.hasUnloadingRefillingCourse and self.cp.automaticUnloadingOnField then
+					allowedToDrive = false;
 				end;
 			end;
 
