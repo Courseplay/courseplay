@@ -148,7 +148,7 @@ function inputCourseNameDialogue:onSaveClick()
 		g_currentMission.cp_courses[vehicle.courseID] = course
 		g_currentMission.cp_sorted = courseplay.courses.sort()
 
-		courseplay.courses.save_course(vehicle.courseID)
+		courseplay.courses.save_course(vehicle.courseID, nil, true)
 		courseplay.settings.setReloadCourseItems()
 		courseplay:updateWaypointSigns(vehicle);
 		
@@ -164,7 +164,7 @@ function inputCourseNameDialogue:onSaveClick()
 		g_currentMission.cp_folders[folderID] = folder
 		g_currentMission.cp_sorted = courseplay.courses.sort(g_currentMission.cp_courses, g_currentMission.cp_folders, 0, 0)
 
-		courseplay.courses.save_folder(folderID)
+		courseplay.courses.save_folder(folderID, nil, true)
 		courseplay.settings.add_folder(folderID)
 		courseplay.settings.setReloadCourseItems()
 		courseplay:updateWaypointSigns(vehicle);

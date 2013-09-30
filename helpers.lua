@@ -522,7 +522,7 @@ function courseplay.utils.setXML(File, node, attribute, value, val_type, match_a
 	end
 end
 
-function courseplay.utils.setMultipleXML(File, node, values, types, skip_attr)
+function courseplay.utils.setMultipleXML(File, node, values, types)
 -- function to save multiple attributes (and to the node itself) of one node
 --
 -- File: File got by loadXML(...)
@@ -532,29 +532,12 @@ function courseplay.utils.setMultipleXML(File, node, values, types, skip_attr)
 -- to write into the node directly set attribute = '_node_'
 -- types is a table of the form:
 -- {attribute1 = type1, attribute2 = type2, ...}; type1 is a string (e.g. 'Int')
--- skip_attr (table): contains attributes to be skipped as strings
-	if skip_attr == nil then
-		skip_attr = false
-	end
-	
-	local skip = false
-	local attribute, value, val_type
-	
-	for k, v in pairs(values) do
-		attribute = k
+-- attributes with no type in the types table will be skipped.	
+	for attribute, value in pairs(values) do
+		val_type = types[attribute]
 		
-		if skip_attr ~= false then
-			if Utils.hasListElement(skip_attr, k) then
-				skip = true
-			else
-				skip = false
-			end
-		end
-		
-		if not skip then
-			value = v
-			val_type = types[k]
-	
+		if val_type ~= nil then
+			
 			if attribute ~= '_node_' then
 				attribute = '#' .. attribute
 			else
@@ -571,21 +554,19 @@ function courseplay.utils.setMultipleXML(File, node, values, types, skip_attr)
 				setXMLBool(File, node .. attribute, value)
 			else
 				-- Error?!
+				print('could not save attribute: ' .. attribute)
 			end
 		end -- end if not skip then
 	end	 -- end for k, v in pairs(values) do
 end
 
-function courseplay.utils.setMultipleXMLNodes(File, root_node, node_name , values, types, skip_attr, unique_nodes)
+function courseplay.utils.setMultipleXMLNodes(File, root_node, node_name , values, types, unique_nodes)
 	-- values has to be a table of the form:
 	-- {attribute1 = value1, attribute2 = value2, ...}
 	-- types a table of the form:
 	-- {attribute1 = type1, attribute2 = type2, ...}
 	-- to write into the node directly set attribute = '_node_'
 
-	if skip_attr == nil then
-		skip_attr = false
-	end
 	if unique_nodes == nil then
 		unique_nodes = true
 	end
@@ -602,6 +583,6 @@ function courseplay.utils.setMultipleXMLNodes(File, root_node, node_name , value
 			node = string.format(root_node .. '.' .. node_name .. '(%d)', j)
 			j = j+1
 		end		
-		courseplay.utils.setMultipleXML(File, node, v, types, skip_attr)
+		courseplay.utils.setMultipleXML(File, node, v, types)
 	end
 end

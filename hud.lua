@@ -551,7 +551,7 @@ function courseplay.hud.loadPage(vehicle, page)
 			courseplay.courses.reload(vehicle)
 		end
 		-- end update courses
-	
+		
 		local n_courses = #(vehicle.cp.hud.courses)
 		local offset = courseplay.hud.offset; --0.006 (button width)
 		

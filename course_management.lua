@@ -336,8 +336,35 @@ function courseplay:delete_sorted_item(vehicle, index)
 	g_currentMission.cp_sorted = courseplay.courses.sort()
 	courseplay.courses.save_all()
 	courseplay.settings.setReloadCourseItems()
-	--courseplay.hud.reloadCourses()
 	courseplay:updateWaypointSigns(vehicle);
+end
+
+function courseplay.courses.save_parent(type, id)
+	if id ~= nil and id > 0 then
+		local File = courseplay.courses.openOrCreateXML()
+		local i = 0
+		local node=''
+		local value
+		
+		if type == 'course' then
+			i = courseplay.utils.findXMLNodeByAttr(File, 'XML.courses.course', 'id', id, 'Int')
+			if i >= 0 then
+				node = string.format('XML.courses.course(%d)',i)
+				value = g_currentMission.cp_courses[id].parent
+			end
+		elseif type == 'folder' then
+			i = courseplay.utils.findXMLNodeByAttr(File, 'XML.folders.folder', 'id', id, 'Int')
+			if i >= 0 then
+				node = string.format('XML.folders.folder(%d)',i)
+				value = g_currentMission.cp_folders[id].parent
+			end
+		end
+		
+		if node ~= '' then
+			setXMLInt(File, node .. '#parent', value)
+			saveXMLFile(File)
+		end
+	end
 end
 
 function courseplay.courses.save_course(course_id, File, append)
@@ -356,8 +383,7 @@ function courseplay.courses.save_course(course_id, File, append)
 	end
 	
 	-- { id = id, type = 'course', name = name, waypoints = tempCourse, parent = parent }
-	local types = { id = 'Int', type = 'String', name = 'String', parent = 'Int'}
-	local skip = { 'type', 'uid', 'waypoints' }
+	local types = { id = 'Int', name = 'String', parent = 'Int'}
 	local i = 0
 	
 	-- find the node position and save the attributes
@@ -371,7 +397,7 @@ function courseplay.courses.save_course(course_id, File, append)
 		i = courseplay.utils.findXMLNodeByAttr(File, 'XML.courses.course', 'id', course_id, 'Int')
 		if i < 0 then i = -i end
 	end
-	courseplay.utils.setMultipleXML(File, string.format('XML.courses.course(%d)', i), g_currentMission.cp_courses[course_id], types, skip)
+	courseplay.utils.setMultipleXML(File, string.format('XML.courses.course(%d)', i), g_currentMission.cp_courses[course_id], types)
 	
 	-- save waypoint: rev, wait, crossing, generated, turnstart, turned are bools; turn is a string; turn, speed may be nil!
 	-- from xml: rev=int wait=int crossing=int generated=bool, turn=string!!, turnstart=int turned=int ridgemarker=int
@@ -379,7 +405,7 @@ function courseplay.courses.save_course(course_id, File, append)
 	local waypoints = {}
 	-- setXMLFloat seems imprecise...
 	types = { pos='String', angle='String', rev='Int', wait='Int', crossing='Int', speed='String', generated='Bool', dir='String', turn='String', turnstart='Int', turnend='Int', ridgemarker='Int' };
-	skip = false
+
 	for k, v in pairs(g_currentMission.cp_courses[course_id].waypoints) do
 		local waypoint = {} --create a new table on every call
 		waypoint.pos = tostring(courseplay:round(v.cx, 4)) .. ' ' .. tostring(courseplay:round(v.cz, 4));
@@ -399,7 +425,7 @@ function courseplay.courses.save_course(course_id, File, append)
 		waypoints[k] = waypoint;
 	end
 	
-	courseplay.utils.setMultipleXMLNodes(File, string.format('XML.courses.course(%d)', i), 'waypoint', waypoints, types, skip, true)
+	courseplay.utils.setMultipleXMLNodes(File, string.format('XML.courses.course(%d)', i), 'waypoint', waypoints, types, true)
 	
 	saveXMLFile(File)
 end
@@ -420,8 +446,7 @@ function courseplay.courses.save_folder(folder_id, File, append)
 	end
 
 	-- { id = id, type = 'folder', name = name, parent = parent }
-	local types = { id = 'Int', uid = 'String', type = 'String', name = 'String', parent = 'Int'}
-	local skip = { 'type', 'uid' }
+	local types = { id = 'Int', name = 'String', parent = 'Int'}
 	local i = 0
 	
 	-- find the node position and save the attributes
@@ -435,7 +460,7 @@ function courseplay.courses.save_folder(folder_id, File, append)
 		i = courseplay.utils.findXMLNodeByAttr(File, 'XML.folders.folder', 'id', folder_id, 'Int')
 		if i < 0 then i = -i end
 	end
-	courseplay.utils.setMultipleXML(File, string.format('XML.folders.folder(%d)', i), g_currentMission.cp_folders[folder_id], types, skip)
+	courseplay.utils.setMultipleXML(File, string.format('XML.folders.folder(%d)', i), g_currentMission.cp_folders[folder_id], types)
 	
 	saveXMLFile(File)
 end
@@ -486,7 +511,7 @@ function courseplay.courses.save_courses(File, append)
 	end
 end
 
-function courseplay.courses.delete_save_courses(self)
+function courseplay.courses.delete_save_all(self)
 -- saves courses to xml-file
 -- opening the file with io.open will delete its content...
 	if g_server ~= nil then
@@ -494,8 +519,15 @@ function courseplay.courses.delete_save_courses(self)
 		if savegame ~= nil and g_currentMission.cp_courses ~= nil then
 			local file = io.open(savegame.savegameDirectory .. "/courseplay.xml", "w");
 			if file ~= nil then
-				file:write('<?xml version="1.0" encoding="utf-8" standalone="no" ?>\n<XML>\n\t<courseplayHud posX="' .. courseplay.hud.infoBasePosX .. '" posY="' .. courseplay.hud.infoBasePosY .. '" />\n\t<courses>\n');
-
+				file:write('<?xml version="1.0" encoding="utf-8" standalone="no" ?>\n<XML>\n\t<courseplayHud posX="' .. courseplay.hud.infoBasePosX .. '" posY="' .. courseplay.hud.infoBasePosY .. '" />\n');
+				
+				file:write('\t<folders>\n')
+				for i,folder in pairs(g_currentMission.cp_folders) do
+					file:write('\t\t<folder name="' .. folder.name .. '" id="' .. folder.id .. '" parent="' .. course.parent ..'">\n');
+				end
+				file:write('\t<folders>\n')
+				
+				file:write('\t<courses>\n')
 				for i,course in pairs(g_currentMission.cp_courses) do
 					file:write('\t\t<course name="' .. course.name .. '" id="' .. course.id .. '" numWaypoints="' .. #(course.waypoints) .. '" parent="' .. course.parent ..'">\n');
 					for wpNum,wp in ipairs(course.waypoints) do
@@ -540,10 +572,7 @@ function courseplay.courses.save_all(recreateXML)
 	
 	if recreateXML then
 	-- new version (better performance):
-		courseplay.courses.delete_save_courses()
-		
-		local f = courseplay.courses.openOrCreateXML(false)
-		courseplay.courses.save_folders(f, recreateXML)
+		courseplay.courses.delete_save_all()
 	else
 	-- old version:
 		local f = courseplay.courses.openOrCreateXML(recreateXML)
@@ -624,7 +653,7 @@ function courseplay:link_parent(vehicle, index)
 			if vehicle.cp.hud.selected_child.type == 'folder' then
 				vehicle.cp.folder_settings[vehicle.cp.hud.selected_child.id].skipMe = false
 			end
-			vehicle.cp.hud.choose_parent = false	
+			vehicle.cp.hud.choose_parent = false
 			
 			-- link if possible and show courses anyway
 			if	type == 'folder' then --parent must be a folder!
@@ -640,8 +669,9 @@ function courseplay:link_parent(vehicle, index)
 			else
 				courseplay.hud.setCourses(vehicle,1)
 			end
-		end
+		end -- if choose parent
 	else
+		-- type(vehicle.cp.hud.courses[index]) == nil
 		if vehicle.cp.hud.choose_parent then
 			print('folder not available')
 			-- maybe there are no folders?
@@ -656,8 +686,8 @@ function courseplay:link_parent(vehicle, index)
 			
 			vehicle.cp.hud.choose_parent = false
 		end
-	end
-	courseplay:buttonsActiveEnabled(vehicle, "page2");
+	end -- if type(vehicle.cp.hud.courses[index]) ~= nil
+	--courseplay:buttonsActiveEnabled(vehicle, "page2");
 end
 
 function courseplay.courses.getNextCourse(vehicle, index, rev)
