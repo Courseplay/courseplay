@@ -637,7 +637,7 @@ function courseplay:link_parent(vehicle, index)
 			-- show folders:
 			vehicle.cp.hud.showFoldersOnly = true
 			vehicle.cp.hud.showZeroLevelFolder = true
-			courseplay.settings.disableFilter(vehicle)
+			courseplay.settings.toggleFilter(vehicle, false);
 			if type == 'folder' then
 				vehicle.cp.folder_settings[id].skipMe = true
 			end
@@ -649,7 +649,7 @@ function courseplay:link_parent(vehicle, index)
 			-- prepare showing courses:		
 			vehicle.cp.hud.showFoldersOnly = false
 			vehicle.cp.hud.showZeroLevelFolder = false
-			courseplay.settings.enableFilter(vehicle)
+			courseplay.settings.toggleFilter(vehicle, true);
 			if vehicle.cp.hud.selected_child.type == 'folder' then
 				vehicle.cp.folder_settings[vehicle.cp.hud.selected_child.id].skipMe = false
 			end
@@ -678,7 +678,7 @@ function courseplay:link_parent(vehicle, index)
 			-- go back
 			vehicle.cp.hud.showFoldersOnly = false
 			vehicle.cp.hud.showZeroLevelFolder = false
-			courseplay.settings.enableFilter(vehicle)
+			courseplay.settings.toggleFilter(vehicle, true);
 			if vehicle.cp.hud.selected_child.type == 'folder' then
 				vehicle.cp.folder_settings[vehicle.cp.hud.selected_child.id].skipMe = false
 			end

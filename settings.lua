@@ -639,20 +639,16 @@ function courseplay.settings.setReloadCourseItems(vehicle)
 	end
 end
 
-function courseplay.settings.enableFilter(vehicle)
-	if not vehicle.cp.hud.filterEnabled then
-		vehicle.cp.sorted = vehicle.cp.filtered
-		vehicle.cp.hud.filterEnabled = true
-	end
-end
-
-function courseplay.settings.disableFilter(vehicle)
-	if vehicle.cp.hud.filterEnabled then
-		vehicle.cp.filtered = vehicle.cp.sorted
-		vehicle.cp.sorted = g_currentMission.cp_sorted
-		vehicle.cp.hud.filterEnabled = false
-	end
-end
+function courseplay.settings.toggleFilter(vehicle, enable)
+	if enable and not vehicle.cp.hud.filterEnabled then
+		vehicle.cp.sorted = vehicle.cp.filtered;
+		vehicle.cp.hud.filterEnabled = true;
+	elseif not enable and vehicle.cp.hud.filterEnabled then
+		vehicle.cp.filtered = vehicle.cp.sorted;
+		vehicle.cp.sorted = g_currentMission.cp_sorted;
+		vehicle.cp.hud.filterEnabled = false;
+	end;
+end;
 
 function courseplay.hud.setCourses(self, start_index)
 	start_index = start_index or 1
