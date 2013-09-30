@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <GUI onOpen="onOpen" onClose="onClose" onEnterPressed="onEnterPressed">
-	<GuiElement name="background" type="bitmap" position="0.4096 0.8" size="0.2667 0.1185" imageFilename="dataS2/menu/dialog_bg.png" MOD_imageFilename="img/inputCourseNameGUI/inputCourseName_bg.png" imageColor="1 1 1 1">
+	<GuiElement name="background" type="bitmap" position="0.4096 0.8" size="0.2667 0.1185" imageFilename="dataS2/menu/dialog_bg.png" MOD_imageDir="img/inputCourseNameGUI/" MOD_imageFilename="inputCourseName_bg.png" imageColor="1 1 1 1">
 		<!-- Title text -->
 		<GuiElement 
 			name="titleText" 
@@ -44,9 +44,10 @@
 
 			text2Size="0" 
 
-			MOD_imageFilename="img/inputCourseNameGUI/inputCourseName_input_normal.png" 
-			MOD_imageFocusedFilename="img/inputCourseNameGUI/inputCourseName_input_focused.png" 
-			MOD_imagePressedFilename="img/inputCourseNameGUI/inputCourseName_input_focused.png" 
+			MOD_imageDir="img/inputCourseNameGUI/" 
+			MOD_imageFilename="inputCourseName_input_normal.png" 
+			MOD_imageFocusedFilename="inputCourseName_input_focused.png" 
+			MOD_imagePressedFilename="inputCourseName_input_focused.png" 
 		/>
 
 		<!-- Cancel button -->
@@ -72,9 +73,10 @@
 
 			text2Size="0" 
 
-			MOD_imageFilename="img/inputCourseNameGUI/inputCourseName_cancelButton_normal.png" 
-			MOD_imageFocusedFilename="img/inputCourseNameGUI/inputCourseName_cancelButton_focused.png" 
-			MOD_imagePressedFilename="img/inputCourseNameGUI/inputCourseName_cancelButton_pressed.png" 
+			MOD_imageDir="img/inputCourseNameGUI/" 
+			MOD_imageFilename="inputCourseName_cancelButton_normal.png" 
+			MOD_imageFocusedFilename="inputCourseName_cancelButton_focused.png" 
+			MOD_imagePressedFilename="inputCourseName_cancelButton_pressed.png" 
 		/>
 
 		<!-- Save button -->
@@ -100,10 +102,11 @@
 
 			text2Size="0" 
 
-			MOD_imageFilename="img/inputCourseNameGUI/inputCourseName_saveButton_normal.png" 
-			MOD_imageFocusedFilename="img/inputCourseNameGUI/inputCourseName_saveButton_focused.png" 
-			MOD_imagePressedFilename="img/inputCourseNameGUI/inputCourseName_saveButton_pressed.png" 
-			MOD_imageDisabledFilename="img/inputCourseNameGUI/inputCourseName_saveButton_disabled.png" 
+			MOD_imageDir="img/inputCourseNameGUI/" 
+			MOD_imageFilename="$course:inputCourseName_saveButton_normal.png,$folder:$course,$filter:inputCourseName_searchButton_normal.png" 
+			MOD_imageFocusedFilename="$course:inputCourseName_saveButton_focused.png,$folder:$course,$filter:inputCourseName_searchButton_focused.png" 
+			MOD_imagePressedFilename="$course:inputCourseName_saveButton_pressed.png,$folder:$course,$filter:inputCourseName_searchButton_pressed.png" 
+			MOD_imageDisabledFilename="$course:inputCourseName_saveButton_disabled.png,$folder:$course,$filter:inputCourseName_searchButton_disabled.png" 
 		/>
 	</GuiElement>
 </GUI>

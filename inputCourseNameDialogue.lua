@@ -2,14 +2,21 @@
 @name:    inputCourseNameDialogue
 @desc:    Dialogue settings for the Courseplay course saving form
 @author:  Jakob Tischler
-@version: 1.2
-@date:    15 Jun 2013
+@version: 1.4
+@date:    30 Sep 2013
 --]]
 
 local modDir = g_currentModDirectory;
 
 inputCourseNameDialogue = {}
 local inputCourseNameDialogue_mt = Class(inputCourseNameDialogue)
+inputCourseNameDialogue.stateData = {
+	normal =   { stateNum = 1, fileNameVar = "imageFilename" };
+	pressed =  { stateNum = 2, fileNameVar = "imagePressedFilename" };
+	focused =  { stateNum = 3, fileNameVar = "imageFocusedFilename" };
+	disabled = { stateNum = 4, fileNameVar = "imageDisabledFilename" };
+};
+inputCourseNameDialogue.types = { "course", "folder", "filter" };
 
 function inputCourseNameDialogue:new()
 	local instance = {};
@@ -17,35 +24,81 @@ function inputCourseNameDialogue:new()
 	return instance;
 end; --END new()
 
+function inputCourseNameDialogue:setImageOverlay(element, state, filePath, type)
+	local stateLower = state:lower();
+	local stateNum = inputCourseNameDialogue.stateData[stateLower].stateNum;
+	local fileNameVar = inputCourseNameDialogue.stateData[stateLower].fileNameVar;
+
+	if element.overlays == nil and state == "normal" then --one overlay, state "normal"
+		if element.overlay ~= nil then
+			delete(element.overlay);
+		end;
+		element[fileNameVar] = filePath;
+		if element[fileNameVar] ~= nil then
+			element.overlay = createImageOverlay(element[fileNameVar]);
+		end;
+	elseif type == nil then
+		if element.overlays[stateNum] ~= nil then
+			delete(element.overlays[stateNum]);
+		end;
+		element[fileNameVar] = filePath;
+		if element[fileNameVar] ~= nil then
+			element.overlays[stateNum] = createImageOverlay(element[fileNameVar]);
+		end;
+	else
+		type = type:sub(2);
+		if element[type] == nil then
+			element[type] = {
+				overlays = {};
+			};
+		end;
+
+		if Utils.startsWith(filePath, "$") then
+			local copyFromType = filePath:sub(2);
+			if element[copyFromType].overlays[stateNum] ~= nil then
+				element[type].overlays[stateNum] = element[copyFromType].overlays[stateNum];
+			end;
+		else
+			if element[type].overlays[stateNum] ~= nil then
+				delete(element[type].overlays[stateNum]);
+			end;
+			element[type][fileNameVar] = filePath;
+			if element[type][fileNameVar] ~= nil then
+				element[type].overlays[stateNum] = createImageOverlay(element[type][fileNameVar]);
+			end;
+
+			--set "normal" overlay
+			if stateLower == "normal" and element.normal ~= nil and element.normal.overlays[stateNum] ~= nil then
+				element.overlays[stateNum] = element.normal.overlays[stateNum];
+			end;
+		end;
+	end;
+end;
 function inputCourseNameDialogue.setModImages(element, xmlFile, key)
-	local name = Utils.getNoNil(getXMLString(xmlFile, key .. "#name", "[no name]"));
-	--print("inputCourseNameDialogue.setModImages() for element " .. tostring(key) .. " (\"" .. name .. "\")");
-	--print(string.format("inputCourseNameDialogue.setModImages() for element %s (\"%s\")", tostring(key), name));
+	element.modImgDir = modDir .. (getXMLString(xmlFile, key .. "#MOD_imageDir") or "");
 
-	local MOD_imageFilename =         getXMLString(xmlFile, key .. "#MOD_imageFilename");
-	local MOD_imageFocusedFilename =  getXMLString(xmlFile, key .. "#MOD_imageFocusedFilename");
-	local MOD_imagePressedFilename =  getXMLString(xmlFile, key .. "#MOD_imagePressedFilename");
-	local MOD_imageDisabledFilename = getXMLString(xmlFile, key .. "#MOD_imageDisabledFilename");
+	for state,data in pairs(inputCourseNameDialogue.stateData) do
+		local filePaths = getXMLString(xmlFile, key .. "#MOD_" .. data.fileNameVar);
+		if filePaths ~= nil then
+			local split = Utils.splitString(",", filePaths);
+			if #split == 1 then
+				inputCourseNameDialogue:setImageOverlay(element, state, element.modImgDir .. filePaths);
+			elseif #split == #inputCourseNameDialogue.types then
+				for _,data in pairs(split) do
+					local kv = Utils.splitString(":", data);
+					local type, filePath = unpack(kv);
+					local realFilePath = filePath;
+					if not Utils.startsWith(filePath, "$") then
+						realFilePath = element.modImgDir .. filePath;
+					end;
 
-	if MOD_imageFilename ~= nil then
-		element:setImageFilename(modDir .. MOD_imageFilename, element);
+					inputCourseNameDialogue:setImageOverlay(element, state, realFilePath, type);
+				end;
+			else
+				--ERROR
+			end;
+		end;
 	end;
-	if MOD_imageFocusedFilename ~= nil then
-		element:setImageFocusedFilename(modDir .. MOD_imageFocusedFilename, element);
-	end;
-	if MOD_imagePressedFilename ~= nil then
-		element:setImagePressedFilename(modDir .. MOD_imagePressedFilename, element);
-	end;
-	if MOD_imageDisabledFilename ~= nil then
-		element:setImageDisabledFilename(modDir .. MOD_imageDisabledFilename, element);
-	end;
-
-	--[[
-	print("\\___new imageFilename = " .. tostring(element.imageFilename));
-	print("\\___new imageFocusedFilename = " .. tostring(element.imageFocusedFilename));
-	print("\\___new imagePressedFilename = " .. tostring(element.imagePressedFilename));
-	print("\\___new imageDisabledFilename = " .. tostring(element.imageDisabledFilename));
-	--]]
 end; --END setModImages()
 BitmapElement.loadFromXML =    Utils.appendedFunction(BitmapElement.loadFromXML,    inputCourseNameDialogue.setModImages);
 TextInputElement.loadFromXML = Utils.appendedFunction(TextInputElement.loadFromXML, inputCourseNameDialogue.setModImages);
@@ -88,6 +141,12 @@ function inputCourseNameDialogue:onOpen(element)
 	g_currentMission.isPlayerFrozen = true;
 	InputBinding.setShowMouseCursor(true);
 
+	local saveWhat = courseplay.vehicleToSaveCourseIn.cp.saveWhat;
+
+	--SET SAVE BUTTON IMAGE
+	self.saveButtonElement.overlays = self.saveButtonElement[saveWhat].overlays;
+
+	--SET TITLE TEXT
 	if self.titleTextElement.courseText == nil or self.titleTextElement.folderText == nil or self.titleTextElement.filterText == nil then
 		local cpTitleParts = Utils.splitString(",", self.titleTextElement.text);
 		local courseTitle = string.sub(cpTitleParts[1], 5);
@@ -97,19 +156,15 @@ function inputCourseNameDialogue:onOpen(element)
 		self.titleTextElement.folderText =  courseplay.locales[folderTitle] or "Folder name:";
 		self.titleTextElement.filterText =  courseplay.locales[filterTitle] or "Filter courses:";
 	end;
-
-	self.titleTextElement.text = self.titleTextElement[courseplay.vehicleToSaveCourseIn.cp.saveWhat .. "Text"];
+	self.titleTextElement.text = self.titleTextElement[saveWhat .. "Text"];
 
 	self:validateCourseName();
 
-	--TODO: automatically setting focus doesn't work
+	--SET FOCUS
 	FocusManager:setFocus(self.textInputElement);
 	self.textInputElement.mouseDown = false;
 	self.textInputElement.state = TextInputElement.STATE_PRESSED;
 	self.textInputElement:setForcePressed(true);
-	--InputBinding.hasEvent(InputBinding.MENU_ACCEPT, true); --set focus
-
-	--print(inputCourseNameDialogue:tableShow(element, "element"));
 end; --END onOpen()
 
 function inputCourseNameDialogue:onClose(element)
@@ -227,33 +282,3 @@ function inputCourseNameDialogue:update(dt)
 	end;
 end; --END update()
 
-function TextInputElement:setImageFilename(filename, element)
-	if element.overlays[TextInputElement.STATE_NORMAL] ~= nil then
-		delete(element.overlays[TextInputElement.STATE_NORMAL]);
-	end;
-	element.imageFilename = filename;
-	if element.imageFilename ~= nil then
-		local overlay = createImageOverlay(element.imageFilename)
-		element.overlays[TextInputElement.STATE_NORMAL] = overlay;
-	end;
-end;
-function TextInputElement:setImageFocusedFilename(filename, element)
-	if element.overlays[TextInputElement.STATE_FOCUSED] ~= nil then
-		delete(element.overlays[TextInputElement.STATE_FOCUSED]);
-	end;
-	element.imageFocusedFilename = filename;
-	if element.imageFocusedFilename ~= nil then
-		local overlay = createImageOverlay(element.imageFocusedFilename)
-		element.overlays[TextInputElement.STATE_FOCUSED] = overlay;
-	end;
-end;
-function TextInputElement:setImagePressedFilename(filename, element)
-	if element.overlays[TextInputElement.STATE_PRESSED] ~= nil then
-		delete(element.overlays[TextInputElement.STATE_PRESSED]);
-	end;
-	element.imagePressedFilename = filename;
-	if element.imagePressedFilename ~= nil then
-		local overlay = createImageOverlay(element.imagePressedFilename)
-		element.overlays[TextInputElement.STATE_PRESSED] = overlay;
-	end;
-end;
