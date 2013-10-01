@@ -37,15 +37,15 @@ function courseplay:dcheck(self)
 
 	setOverlayUVs(self.ArrowOverlay.overlayId, arrowUV[1], arrowUV[2], arrowUV[3], arrowUV[4], arrowUV[5], arrowUV[6], arrowUV[7], arrowUV[8])
 	self.ArrowOverlay:render()
-	local ctx, cty, ctz = getWorldTranslation(self.rootNode);
 	if self.record or self.record_pause then
 		return
 	end
 
+	local ctx, cty, ctz = getWorldTranslation(self.rootNode);
 	local cx, cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
-	dist = courseplay:distance(ctx, ctz, cx, cz)
+	local dist = courseplay:distance(ctx, ctz, cx, cz)
 
-	self.cp.infoText = string.format(courseplay:get_locale(self, "CPDistance") .. ": %d ", dist)
+	self.cp.infoText = string.format(courseplay:get_locale(self, "CPDistance") .. ": %dm", dist)
 end
 
 

@@ -181,19 +181,26 @@ function courseplay:generateCourse(self)
 				end;
 			end;
 			
-			for j=1, table.getn(fixedLane) do
-				local p = fixedLane[j];
-				p.angle = 0;
-				p.wait = false;
-				p.rev = false;
-				p.crossing = false;
-				p.generated = true;
-				p.lane = curLane * -1; --negative lane = headland
-				p.firstInLane = false;
-				p.turn = nil;
-				p.turnStart = false;
-				p.turnEnd = false;
-				p.ridgeMarker = laneRidgeMarker;
+			for j,curPoint in pairs(fixedLane) do
+				local prevPoint = fixedLane[j-1];
+				local angle;
+				if j == 1 then
+					local nextPoint = fixedLane[j+1];
+					angle = math.deg(math.atan2(nextPoint.cx - curPoint.cx, nextPoint.cz - curPoint.cz));
+				else
+					angle = math.deg(math.atan2(curPoint.cx - prevPoint.cx, curPoint.cz - prevPoint.cz));
+				end;
+				curPoint.angle = angle;
+				curPoint.wait = false;
+				curPoint.rev = false;
+				curPoint.crossing = false;
+				curPoint.generated = true;
+				curPoint.lane = curLane * -1; --negative lane = headland
+				curPoint.firstInLane = false;
+				curPoint.turn = nil;
+				curPoint.turnStart = false;
+				curPoint.turnEnd = false;
+				curPoint.ridgeMarker = laneRidgeMarker;
 			end;
 			
 			fieldEdgePath = fixedLane;
@@ -425,14 +432,15 @@ function courseplay:generateCourse(self)
 		local isLastLane = cp.lane == numLanes;
 		
 		
-		--right = 0deg, top = 90deg, left = 180deg, bottom = 270deg
+		--OLD: right = 0deg, top = 90deg, left = 180deg, bottom = 270deg
+		--NEW: N=180, E=90, S=0, W=270
 		local angleDeg;
 		if cp.firstInLane or i == 1 then
-			--angleDeg = math.deg(math.atan2(np.x - cp.x, np.z - cp.z));
-			angleDeg = math.deg(math.atan2(np.z - cp.z, np.x - cp.x));
+			angleDeg = math.deg(math.atan2(np.x - cp.x, np.z - cp.z));
+			--angleDeg = math.deg(math.atan2(np.z - cp.z, np.x - cp.x));
 		else
-			--angleDeg = math.deg(math.atan2(cp.x - pp.x, cp.z - pp.z));
-			angleDeg = math.deg(math.atan2(cp.z - pp.z, cp.x - pp.x));
+			angleDeg = math.deg(math.atan2(cp.x - pp.x, cp.z - pp.z));
+			--angleDeg = math.deg(math.atan2(cp.z - pp.z, cp.x - pp.x));
 		end;
 		
 		if cp.firstInLane or i == 1 or isLastLane then 
@@ -443,7 +451,7 @@ function courseplay:generateCourse(self)
 			cx = cp.x, 
 			cz = cp.z,
 			angle = angleDeg,
-			wait = false, --i == 1 or (i == numPoints and not self.cp.returnToFirstPoint), --will be set to true for first and last after all is set and done
+			wait = false, --will be set to true for first and last after all is set and done
 			rev = false, 
 			crossing = false,
 			lane = cp.lane,
@@ -472,6 +480,7 @@ function courseplay:generateCourse(self)
 				newFirstInLane.angle = point.angle;
 				newFirstInLane.wait = point.wait;
 				newFirstInLane.crossing = point.crossing;
+				newFirstInLane.rev = point.rev;
 				newFirstInLane.lane = point.lane;
 				newFirstInLane.laneDir = point.laneDir;
 				newFirstInLane.firstInLane = true;				
@@ -530,6 +539,7 @@ function courseplay:generateCourse(self)
 				newLastInLane.angle = point.angle;
 				newLastInLane.wait = point.wait;
 				newLastInLane.crossing = point.crossing;
+				newLastInLane.rev = point.rev;
 				newLastInLane.lane = point.lane;
 				newLastInLane.laneDir = point.laneDir;
 				newLastInLane.lastInLane = true;

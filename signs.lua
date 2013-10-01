@@ -1,6 +1,5 @@
 --[[ TODO
-	- give start, stop, wait the waypoints angle as rotation
-	- run updateWaypointSigns() when course have been saved
+	- run updateWaypointSigns() when course has been saved
 ]]
 
 courseplay.utils.signs = {};
@@ -14,16 +13,16 @@ function courseplay:addSign(vehicle, x, z, rotationY, signType, insertIndex)
 
 	if receivedSignFromBuffer then
 		sign = signFromBuffer[1].sign;
-		--print(string.format("%s: addSign() signType=%s, sign=%s, move from buffer, #buffer[\"%s\"]=%s", nameNum(vehicle), signType, tostring(sign), signType, tostring(#courseplay.signs.buffer[signType])));
 	else
 		local rootSign = courseplay.signs.protoTypes[signType];
 		sign = clone(rootSign, true);
-		--print(string.format("%s: addSign() signType=%s, sign=%s, clone", nameNum(vehicle), signType, tostring(sign)));
 	end;
 
 	courseplay.utils.signs.setTranslation(sign, signType, x, z);
 	rotationY = rotationY or 0;
-	setRotation(sign, 0, rotationY, 0); --TODO (1)
+	if signType ~= "normal" then
+		setRotation(sign, 0, math.rad(rotationY), 0);
+	end;
 	setVisibility(sign, true);
 
 	local signData = { type = signType, sign = sign, posX = x, posZ = z, rotY = rotationY };
@@ -39,9 +38,7 @@ function courseplay.utils.signs.moveToBuffer(vehicle, vehicleIndex, signData)
 	if #courseplay.signs.buffer[signType] < courseplay.signs.bufferMax[signType] then
 		setVisibility(signData.sign, false);
 		courseplay.utils.table.move(vehicle.cp.signs[section], courseplay.signs.buffer[signType], vehicleIndex);
-		--print(string.format("%s: move sign#%s to buffer, #buffer[\"%s\"]=%s", nameNum(vehicle), tostring(vehicleIndex), signType, tostring(#courseplay.signs.buffer[signType])));
 	else
-		--print(string.format("%s: buffer[\"%s\"] is full -> deleting sign #%s", nameNum(vehicle), signType, tostring(vehicleIndex)));
 		courseplay.utils.signs.deleteSign(signData.sign);
 		vehicle.cp.signs[section][vehicleIndex] = nil;
 	end;
@@ -57,11 +54,10 @@ function courseplay.utils.signs.changeSignType(vehicle, vehicleIndex, oldType, n
 	local section = courseplay.signs.sections[oldType];
 	local signData = vehicle.cp.signs[section][vehicleIndex];
 	courseplay.utils.signs.moveToBuffer(vehicle, vehicleIndex, signData);
-	courseplay:addSign(vehicle, signData.sign.posX, signData.sign.posZ, signData.sign.rotY, newType, vehicleIndex);
+	courseplay:addSign(vehicle, signData.posX, signData.posZ, signData.rotY, newType, vehicleIndex);
 end;
 
 function courseplay:updateWaypointSigns(vehicle, section)
-	--print(nameNum(vehicle) .. ": updateWaypointSigns([section] " .. tostring(section) .. ")");
 	section = section or "all"; --section: "all", "crossing", "current"
 
 	vehicle.waitPoints = 0;
@@ -91,20 +87,16 @@ function courseplay:updateWaypointSigns(vehicle, section)
 
 			local existingSignData = vehicle.cp.signs.current[i];
 			if existingSignData ~= nil then
-				--print(nameNum(vehicle) .. ": sign exists at #" .. i .. ", type=" .. tostring(existingSignData.type) .. ", needed type=" .. tostring(neededSignType));
 				if existingSignData.type == neededSignType then
-					--print("\tsign at #" .. i .. " has needed type");
 					courseplay.utils.signs.setTranslation(existingSignData.sign, existingSignData.type, wp.cx, wp.cz);
-					if wp.angle then
-						setRotation(existingSignData.sign, 0, wp.angle, 0);
+					if existingSignData.type ~= "normal" and wp.angle then
+						setRotation(existingSignData.sign, 0, math.rad(wp.angle), 0);
 					end;
 				else
-					--print("\tsign at #" .. i .. " doesn't have needed type - moveToBuffer");
 					courseplay.utils.signs.moveToBuffer(vehicle, i, existingSignData);
 					courseplay:addSign(vehicle, wp.cx, wp.cz, wp.angle, neededSignType, i);
 				end;
 			else
-				--print(nameNum(vehicle) .. ": sign doesn't exist at #" .. i .. " - addSign");
 				courseplay:addSign(vehicle, wp.cx, wp.cz, wp.angle, neededSignType, i);
 			end;
 
@@ -139,7 +131,6 @@ function courseplay:updateWaypointSigns(vehicle, section)
 	end;
 
 	courseplay:setSignsVisibility(vehicle);
-	--print(nameNum(vehicle) .. ": updateWaypointSigns([section] " .. tostring(section) .. ") done");
 end;
 
 
@@ -149,7 +140,6 @@ function courseplay.utils.signs.deleteSign(sign)
 end;
 
 function courseplay:setSignsVisibility(vehicle, forceHide)
-	--print(nameNum(vehicle) .. ": setSignsVisibility(vehicle, [forceHide] " .. tostring(forceHide) .. ")");
 	if vehicle.cp == nil or vehicle.cp.signs == nil or (#vehicle.cp.signs.current == 0 and #vehicle.cp.signs.crossing == 0) then
 		return;
 	end;

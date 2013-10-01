@@ -1,18 +1,14 @@
 -- records waypoints for course
 function courseplay:record(vehicle)
 	local cx, cy, cz = getWorldTranslation(vehicle.rootNode);
-	local x, y, z = localDirectionToWorld(vehicle.rootNode, 0, 0, 1);
-	local length = Utils.vector2Length(x, z);
-	local dX = x / length
-	local dZ = z / length
-	local newangle = math.deg(math.atan2(dX, dZ))
+	local newAngle = courseplay:currentVehAngle(vehicle);
 	local fwd = vehicle.direction
 	if vehicle.recordnumber < 2 then
 		vehicle.rotatedTime = 0
 	end
 	if vehicle.recordnumber > 2 then
-		local oldcx, oldcz, oldangle = vehicle.Waypoints[vehicle.recordnumber - 1].cx, vehicle.Waypoints[vehicle.recordnumber - 1].cz, vehicle.Waypoints[vehicle.recordnumber - 1].angle
-		local anglediff = math.abs(newangle - oldangle)
+		local oldcx, oldcz, oldAngle = vehicle.Waypoints[vehicle.recordnumber - 1].cx, vehicle.Waypoints[vehicle.recordnumber - 1].cz, vehicle.Waypoints[vehicle.recordnumber - 1].angle
+		local anglediff = math.abs(newAngle - oldAngle)
 		local dist = courseplay:distance(cx, cz, oldcx, oldcz)
 		if vehicle.direction == true then
 			if dist > 2 and (anglediff > 1.5 or dist > 10) then
@@ -45,11 +41,11 @@ function courseplay:record(vehicle)
 
 	local set_crossing = vehicle.recordnumber == 1;
 	if vehicle.tmr > 100 then
-		vehicle.Waypoints[vehicle.recordnumber] = { cx = cx, cz = cz, angle = newangle, wait = false, rev = vehicle.direction, crossing = set_crossing, speed = vehicle.lastSpeedReal }
+		vehicle.Waypoints[vehicle.recordnumber] = { cx = cx, cz = cz, angle = newAngle, wait = false, rev = vehicle.direction, crossing = set_crossing, speed = vehicle.lastSpeedReal }
 		if vehicle.recordnumber == 1 then
-			courseplay:addSign(vehicle, cx, cz, newangle, "start");
+			courseplay:addSign(vehicle, cx, cz, newAngle, "start");
 		else
-			courseplay:addSign(vehicle, cx, cz, newangle);
+			courseplay:addSign(vehicle, cx, cz, newAngle);
 		end
 		vehicle.tmr = 1
 		vehicle.recordnumber = vehicle.recordnumber + 1
@@ -64,51 +60,40 @@ end
 
 function courseplay:set_waitpoint(vehicle)
 	local cx, cy, cz = getWorldTranslation(vehicle.rootNode);
-	local x, y, z = localDirectionToWorld(vehicle.rootNode, 0, 0, 1);
-	local length = Utils.vector2Length(x, z);
-	local dX = x / length
-	local dZ = z / length
-	local newangle = math.deg(math.atan2(dX, dZ))
-	vehicle.Waypoints[vehicle.recordnumber] = { cx = cx, cz = cz, angle = newangle, wait = true, rev = vehicle.direction, crossing = false, speed = 0 }
+	local newAngle = courseplay:currentVehAngle(vehicle);
+	vehicle.Waypoints[vehicle.recordnumber] = { cx = cx, cz = cz, angle = newAngle, wait = true, rev = vehicle.direction, crossing = false, speed = 0 }
 	vehicle.tmr = 1
 	vehicle.recordnumber = vehicle.recordnumber + 1
 	vehicle.waitPoints = vehicle.waitPoints + 1
-	courseplay:addSign(vehicle, cx, cz, newangle, "wait");
+	courseplay:addSign(vehicle, cx, cz, newAngle, "wait");
 end
 
 
 function courseplay:set_crossing(vehicle, stop)
 	local cx, cy, cz = getWorldTranslation(vehicle.rootNode);
-	local x, y, z = localDirectionToWorld(vehicle.rootNode, 0, 0, 1);
-	local length = Utils.vector2Length(x, z);
-	local dX = x / length
-	local dZ = z / length
-	local newangle = math.deg(math.atan2(dX, dZ))
-	vehicle.Waypoints[vehicle.recordnumber] = { cx = cx, cz = cz, angle = newangle, wait = false, rev = vehicle.direction, crossing = true, speed = nil }
+	local newAngle = courseplay:currentVehAngle(vehicle);
+	vehicle.Waypoints[vehicle.recordnumber] = { cx = cx, cz = cz, angle = newAngle, wait = false, rev = vehicle.direction, crossing = true, speed = nil }
 	vehicle.tmr = 1
 	vehicle.recordnumber = vehicle.recordnumber + 1
 	vehicle.crossPoints = vehicle.crossPoints + 1
 	if stop ~= nil then
-		courseplay:addSign(vehicle, cx, cz, newangle, "stop");
+		courseplay:addSign(vehicle, cx, cz, newAngle, "stop");
 	else
-		courseplay:addSign(vehicle, cx, cz, newangle, "cross");
+		courseplay:addSign(vehicle, cx, cz, newAngle, "cross");
+		courseplay:addSign(vehicle, cx, cz, newAngle, "normal");
 	end
 end
 
 -- set Waypoint before change direction
 function courseplay:change_DriveDirection(vehicle)
 	local cx, cy, cz = getWorldTranslation(vehicle.rootNode);
-	local x, y, z = localDirectionToWorld(vehicle.rootNode, 0, 0, 1);
-	local length = Utils.vector2Length(x, z);
-	local dX = x / length
-	local dZ = z / length
-	local newangle = math.deg(math.atan2(dX, dZ))
+	local newAngle = courseplay:currentVehAngle(vehicle);
 	local fwd = nil
-	vehicle.Waypoints[vehicle.recordnumber] = { cx = cx, cz = cz, angle = newangle, wait = false, rev = vehicle.direction, crossing = false, speed = nil }
+	vehicle.Waypoints[vehicle.recordnumber] = { cx = cx, cz = cz, angle = newAngle, wait = false, rev = vehicle.direction, crossing = false, speed = nil }
 	vehicle.direction = not vehicle.direction
 	vehicle.tmr = 1
 	vehicle.recordnumber = vehicle.recordnumber + 1
-	courseplay:addSign(vehicle, cx, cz, newangle);
+	courseplay:addSign(vehicle, cx, cz, newAngle);
 end
 
 -- starts course recording -- just setting variables
@@ -152,7 +137,7 @@ function courseplay:interrupt_record(vehicle)
 		--change last sign to "stop"
 		local oldSignIndex = #vehicle.cp.signs.current;
 		local oldSignType = vehicle.cp.signs.current[oldSignIndex].type;
-		courseplay.utils.signs.changeSignType(vehicle, #vehicle.Waypoints, oldSignType, "stop");
+		courseplay.utils.signs.changeSignType(vehicle, oldSignIndex, oldSignType, "stop");
 	end
 end
 
@@ -165,7 +150,7 @@ function courseplay:continue_record(vehicle)
 	--change last sign back to "normal"
 	local oldSignIndex = #vehicle.cp.signs.current;
 	local oldSignType = vehicle.cp.signs.current[oldSignIndex].type;
-	courseplay.utils.signs.changeSignType(vehicle, #vehicle.Waypoints, oldSignType, "normal");
+	courseplay.utils.signs.changeSignType(vehicle, oldSignIndex, oldSignType, "normal");
 end;
 
 -- delete last waypoint
@@ -215,3 +200,10 @@ function courseplay:reset_course(vehicle)
 
 	courseplay:updateWaypointSigns(vehicle, "current");
 end
+
+function courseplay:currentVehAngle(vehicle)
+	local x, y, z = localDirectionToWorld(vehicle.rootNode, 0, 0, 1);
+	local length = Utils.vector2Length(x, z);
+	local dX, dZ = x/length, z/length;
+	return math.deg(math.atan2(dX, dZ))
+end;
