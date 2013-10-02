@@ -2,9 +2,6 @@
 
 -- traffic collision
 function courseplay:cponTrafficCollisionTrigger(triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
-	if self.cp.trafficCollisionTriggerId == nil then
-		self.cp.trafficCollisionTriggerId = triggerId
-	end
 	if otherId == self.rootNode then
 		return
 	end
@@ -33,9 +30,9 @@ end
 
 function courseplay:findTrafficCollisionCallback(transformId, x, y, z, distance)
 	local name = getName(transformId)
-	drawDebugPoint(x, y, z, 1, 1, 0, 1);
+	if courseplay.debugChannels[3] then  drawDebugPoint(x, y, z, 1, 1, 0, 1); end
 	courseplay:debug(nameNum(self)..": raycast callback response: ["..tostring(transformId).."] in "..tostring(distance),3)
-	local triggerId = Utils.getNoNil(self.cp.trafficCollisionTriggerId,0)
+	local triggerId = self.aiTrafficCollisionTrigger 
 	if self.cp.tempCollis[transformId] == nil then
 		self.cp.tempCollis[transformId] = true
 		courseplay:debug(nameNum(self)..": raycast callback: found \""..tostring(name).."\" -> call handleTrafficCollisions onEnter",3)

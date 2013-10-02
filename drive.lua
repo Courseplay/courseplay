@@ -931,8 +931,8 @@ function courseplay:check_traffic(self, display_warnings, allowedToDrive)
 	local ahead = false
 	local vehicle_in_front = g_currentMission.nodeToVehicle[self.traffic_vehicle_in_front]
 	local vx, vy, vz = getWorldTranslation(self.traffic_vehicle_in_front)
-	local tx, ty, tz = worldToLocal(self.cp.trafficCollisionTriggerId, vx, vy, vz)
-	local xvx, xvy, xvz = getWorldTranslation(self.cp.trafficCollisionTriggerId)
+	local tx, ty, tz = worldToLocal(self.aiTrafficCollisionTrigger, vx, vy, vz)
+	local xvx, xvy, xvz = getWorldTranslation(self.aiTrafficCollisionTrigger)
 	local x, y, z = getWorldTranslation(self.cp.DirectionNode)
 	local x1, y1, z1 = 0,0,0
 	
