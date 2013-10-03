@@ -56,22 +56,34 @@ function courseplay:handleTrafficCollisions(self, triggerId, otherId, onEnter, o
 			end;
 		else
 			courseplay:debug(string.format("%s: 	found collision trigger", nameNum(self)), 3);
-			local vehicle = g_currentMission.nodeToVehicle[otherId];
 			local vehicleOnList = false
-
+			local OtherIdisCloser = true
+			local vehicle = g_currentMission.nodeToVehicle[otherId];
+			local vehicleInFront = g_currentMission.nodeToVehicle[self.traffic_vehicle_in_front];
+			if onEnter and self.traffic_vehicle_in_front ~= nil and vehicleInFront ~= nil then
+				local distanceToOtherId = courseplay:distance_to_object(self, vehicle)
+				local distanceToVehicleInFront = courseplay:distance_to_object(self, vehicleInFront)
+				courseplay:debug(nameNum(self)..": 	checking Distances: new: "..tostring(distanceToOtherId).." vs. current: "..tostring(distanceToVehicleInFront),3);
+				if distanceToVehicleInFront < distanceToOtherId then
+					OtherIdisCloser = false
+					courseplay:debug(string.format("%s: 	target is not closer than existing target -> do not change \"self.traffic_vehicle_in_front\"", nameNum(self)), 3);
+				else
+					courseplay:debug(string.format("%s: 	target is closer than existing target -> change \"self.traffic_vehicle_in_front\"", nameNum(self)), 3);
+				end
+			end
 			if vehicle ~= nil and onEnter then
 				courseplay:debug(string.format("%s: 	checking CollisionIgnoreList", nameNum(self)), 3);
 				for a,b in pairs (self.cpTrafficCollisionIgnoreList) do
-					courseplay:debug(string.format("%s: 	%s vs \"%s\"", nameNum(self), tostring(g_currentMission.nodeToVehicle[a].name), tostring(vehicle.name)), 3);
+					courseplay:debug(string.format("%s:		%s vs \"%s\"", nameNum(self), tostring(g_currentMission.nodeToVehicle[a].name), tostring(vehicle.name)), 3);
 					if g_currentMission.nodeToVehicle[a].id == vehicle.id then
-						courseplay:debug(string.format("%s: 	\"%s\" is on list", nameNum(self), tostring(vehicle.name)), 3);
+						courseplay:debug(string.format("%s:		\"%s\" is on list", nameNum(self), tostring(vehicle.name)), 3);
 						vehicleOnList = true
 						break
 					end
 				end
 			end
 			if vehicle ~= nil and self.trafficCollisionIgnoreList[otherId] == nil and vehicleOnList == false then
-				if onEnter then
+				if onEnter and OtherIdisCloser then
 					courseplay:debug(string.format("%s: 	\"%s\" is not on list, setting \"self.traffic_vehicle_in_front\"", nameNum(self), tostring(vehicle.name)), 3);
 					self.traffic_vehicle_in_front = otherId
 					self.CPnumCollidingVehicles = self.CPnumCollidingVehicles + 1;
@@ -83,7 +95,7 @@ function courseplay:handleTrafficCollisions(self, triggerId, otherId, onEnter, o
 					self.numCollidingVehicles[triggerId] = math.max(self.numCollidingVehicles[triggerId]-1, 0);
  				end;
 			else
-				courseplay:debug(string.format("%s: 	Vehicle == nil - do nothing", nameNum(self)), 3);
+				courseplay:debug(string.format("%s: 	Vehicle is nil - do nothing", nameNum(self)), 3);
 			end
 		end;
 	end;
