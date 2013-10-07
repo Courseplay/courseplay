@@ -212,10 +212,19 @@ function courseplay:load(xmlFile)
 	if self.trafficCollisionIgnoreList == nil then
 		self.trafficCollisionIgnoreList = {}
 	end
-	if self.aiTrafficCollisionTrigger == nil and getChild(self.rootNode, "trafficCollisionTrigger") ~= 0 then
-		self.aiTrafficCollisionTrigger = getChild(self.rootNode, "trafficCollisionTrigger");
+	if self.aiTrafficCollisionTrigger == nil and getNumOfChildren(self.rootNode) > 0 then
+		if getChild(self.rootNode, "trafficCollisionTrigger") ~= 0 then
+			self.aiTrafficCollisionTrigger = getChild(self.rootNode, "trafficCollisionTrigger");
+		else
+			for i=0,getNumOfChildren(self.rootNode)-1 do
+				local child = getChildAt(self.rootNode, i);
+				if getChild(child, "trafficCollisionTrigger") ~= 0 then
+					self.aiTrafficCollisionTrigger = getChild(child, "trafficCollisionTrigger");
+					break;
+				end;
+			end;
+		end;
 	end;
-
 	courseplay:askForSpecialSettings(self,self)
 
 
@@ -289,13 +298,9 @@ function courseplay:load(xmlFile)
 	self.mouse_enabled = false
 
 
-	local w16px = 16/1920;
-	local h16px = 16/1080;
-	local w24px = 24/1920;
-	local h24px = 24/1080;
-	local w32px = 32/1920;
-	local h32px = 32/1080;
-
+	local w16px, h16px = 16/1920, 16/1080;
+	local w24px, h24px = 24/1920, 24/1080;
+	local w32px, h32px = 32/1920, 32/1080;
 
 	-- HUD
 	self.cp.hud = {
