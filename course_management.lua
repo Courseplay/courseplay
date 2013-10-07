@@ -555,7 +555,7 @@ function courseplay.courses.delete_save_all(self)
 					for wpNum,wp in ipairs(course.waypoints) do
 						local wpContent = '\t\t\t<waypoint' .. wpNum .. ' ';
 						wpContent = wpContent .. 'pos="' .. tostring(Utils.getNoNil(courseplay:round(wp.cx, 4), 0)) .. ' ' .. tostring(Utils.getNoNil(courseplay:round(wp.cz, 4), 0)) .. '" ';
-						wpContent = wpContent .. 'angle="' .. tostring(Utils.getNoNil(wp.angle, 0)) .. '" ';
+						wpContent = wpContent .. 'angle="' .. tostring(Utils.getNoNil(courseplay:round(wp.angle, 2), 0)) .. '" ';
 						wpContent = wpContent .. 'wait="' .. tostring(Utils.getNoNil(courseplay:boolToInt(wp.wait), 0)) .. '" ';
 						wpContent = wpContent .. 'crossing="' .. tostring(Utils.getNoNil(courseplay:boolToInt(wp.crossing), 0)) .. '" ';
 						wpContent = wpContent .. 'rev="' .. tostring(Utils.getNoNil(courseplay:boolToInt(wp.rev), 0)) .. '" ';
