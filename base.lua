@@ -225,6 +225,7 @@ function courseplay:load(xmlFile)
 			end;
 		end;
 	end;
+
 	courseplay:askForSpecialSettings(self,self)
 
 
@@ -316,8 +317,8 @@ function courseplay:load(xmlFile)
 			render = false;
 		};
 
-		modKey = string.lower(Utils.splitString(" ", tostring(InputBinding.getKeyNamesOfDigitalAction(InputBinding.CP_Modifier_1)))[2]):gsub("^%l", string.upper);
-		hudKey = string.lower(Utils.splitString(" ", tostring(InputBinding.getKeyNamesOfDigitalAction(InputBinding.CP_Hud)))[2]):gsub("^%l", string.upper);
+		modKey = KeyboardHelper.getKeyNames(InputBinding.actions[InputBinding.CP_Modifier_1].keys1);
+		hudKey = KeyboardHelper.getKeyNames(InputBinding.actions[InputBinding.CP_Hud].keys1);
 
 		--3rd party huds backup
 		ESLimiterOrigPosY = nil; --[table]
@@ -325,7 +326,7 @@ function courseplay:load(xmlFile)
 		OdometerOrigPosY = nil; --[table]
 		AllradOrigPosY = nil; --[table]
 	};
-	
+
 	for page=0,courseplay.hud.numPages do
 		self.cp.hud.content.pages[page] = {};
 		for line=1,courseplay.hud.numLines do
@@ -664,10 +665,7 @@ function courseplay:draw()
 	--KEYBOARD FUNCTIONS
 	--Note: located in draw() instead of update() so they're not displayed/executed for *all* vehicles but rather only for *self*
 	if self:getIsActive() and self.isEntered then
-		if InputBinding.hasEvent(InputBinding.CP_Hud) and InputBinding.isPressed(InputBinding.CP_Modifier_2) then
-			courseplay:initialize();
-		
-		elseif InputBinding.isPressed(InputBinding.CP_Modifier_1) then
+		if InputBinding.isPressed(InputBinding.CP_Modifier_1) then
 			--Keyboard open/close hud
 			if not self.mouse_right_key_enabled then
 				if self.cp.hud.show then
@@ -681,33 +679,33 @@ function courseplay:draw()
 			end;
 
 			if self.play then
-				if self.drive then
-					g_currentMission:addHelpButtonText(courseplay:get_locale(self, "CoursePlayStop"), InputBinding.AHInput1)
-					if InputBinding.hasEvent(InputBinding.AHInput1) then
+				if self.drive then --stop driving
+					g_currentMission:addHelpButtonText(courseplay:get_locale(self, "CoursePlayStop"), InputBinding.courseplayInput1)
+					if InputBinding.hasEvent(InputBinding.courseplayInput1) then
 						self:setCourseplayFunc("stop", nil);
 					end;
 
-					if self.cp.HUD1goOn then
-						g_currentMission:addHelpButtonText(courseplay:get_locale(self, "CourseWaitpointStart"), InputBinding.AHInput2)
-						if InputBinding.hasEvent(InputBinding.AHInput2) then
+					if self.cp.HUD1goOn then --go on driving
+						g_currentMission:addHelpButtonText(courseplay:get_locale(self, "CourseWaitpointStart"), InputBinding.courseplayInput2)
+						if InputBinding.hasEvent(InputBinding.courseplayInput2) then
 							self:setCourseplayFunc("drive_on", nil);
 						end;
 					end;
 
-					if self.cp.HUD1noWaitforFill then
-						g_currentMission:addHelpButtonText(courseplay:get_locale(self, "NoWaitforfill"), InputBinding.AHInput3);
-						if InputBinding.hasEvent(InputBinding.AHInput3) then
+					if self.cp.HUD1noWaitforFill then --drive now
+						g_currentMission:addHelpButtonText(courseplay:get_locale(self, "NoWaitforfill"), InputBinding.courseplayInput3);
+						if InputBinding.hasEvent(InputBinding.courseplayInput3) then
 							courseplay:setCourseplayFunc("rowButton", 3, false, 1);
 						end;
 					end;
 
-				else
-					g_currentMission:addHelpButtonText(courseplay:get_locale(self, "CoursePlayStart"), InputBinding.AHInput1);
-					if InputBinding.hasEvent(InputBinding.AHInput1) then
+				else --start driving
+					g_currentMission:addHelpButtonText(courseplay:get_locale(self, "CoursePlayStart"), InputBinding.courseplayInput1);
+					if InputBinding.hasEvent(InputBinding.courseplayInput1) then
 						self:setCourseplayFunc("start", nil);
 					end;
 				end; -- self.drive
-			end; -- self.play			
+			end; -- self.play
 		end; -- CP_Modifier_1
 	end; -- self:getIsActive() and self.isEntered
 

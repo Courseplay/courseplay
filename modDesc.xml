@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="13">
-	<version>3.41.0160</version>
+	<version>3.41.0161</version>
 	<author>Jakob Tischler / Thomas Gärtner / Horoman</author>
 	<title>
 		<de>Courseplay</de>        
@@ -436,7 +436,7 @@ Italský překlad: JD7530
 			<it>Avvia a %</it>
 			<cz>Odvézt při %:</cz>
 		</text>
-		<text name="AHInput1">
+		<text name="courseplayInput1">
 			<en>CP Input 1</en>
 			<de>CP Taste 1</de>
 			<fr>CP entrée 1</fr>
@@ -444,7 +444,7 @@ Italský překlad: JD7530
 			<it>CP Tasto 1</it>
 			<cz>CP Tlačítko 1</cz>
 		</text>
-		<text name="AHInput2">
+		<text name="courseplayInput2">
 			<en>CP Input 2</en>
 			<de>CP Taste 2</de>
 			<fr>CP entrée 2</fr>
@@ -452,7 +452,7 @@ Italský překlad: JD7530
 			<it>CP Tasto 2</it>
 			<cz>CP Tlačítko 2</cz>
 		</text>
-		<text name="AHInput3">
+		<text name="courseplayInput3">
 			<en>CP Input 3</en>
 			<de>CP Taste 3</de>
 			<fr>CP entrée 3</fr>
@@ -460,7 +460,7 @@ Italský překlad: JD7530
 			<it>CP Tasto 3</it>
 			<cz>CP Tlačítko 3</cz>
 		</text>
-		<text name="AHInput4">
+		<text name="courseplayInput4">
 			<en>CP Input 4</en>
 			<de>CP Taste 4</de>
 			<fr>CP entrée 4</fr>
@@ -1252,12 +1252,12 @@ Italský překlad: JD7530
 			<cz>Courseplay nastavení</cz>
 		</text>
 		<text name="CP_Hud">
-			<en>Courseplay HUD</en>
-			<de>Courseplay HUD</de>
-			<fr>Courseplay HUD</fr>
-			<es>Courseplay HUD</es>
-			<it>Courseplay HUD</it>
-			<cz>Courseplay HUD</cz>
+			<en>Show/hide Courseplay HUD</en>
+			<de>Courseplay HUD öffnen/schließen</de>
+			<fr>Montrer/cacher le Courseplay HUD</fr>
+			<es>Mostrar/ocultar Courseplay HUD</es>
+			<it>Mostra/nascondi Courseplay HUD</it>
+			<cz>Zobrazit/skrýt Courseplay HUD</cz>
 		</text>
 		<text name="CP_Modifier_1">
 			<en>Courseplay key modifier 1</en>
@@ -1265,7 +1265,7 @@ Italský překlad: JD7530
 			<fr>Courseplay touche extra 1</fr>
 			<es>Courseplay modificar tecla 1</es>
 			<it>Courseplay tasto extra 1</it>
-			<cz>CP extra klávesa 1</cz>
+			<cz>Courseplay extra klávesa 1</cz>
 		</text>
 		<text name="CP_Modifier_2">
 			<en>Courseplay key modifier 2</en>
@@ -1273,7 +1273,7 @@ Italský překlad: JD7530
 			<fr>Courseplay touche extra 2</fr>
 			<es>Courseplay modificar tecla 2</es>
 			<it>Courseplay tasto extra 2</it>
-			<cz>CP extra klávesa 2</cz>
+			<cz>Courseplay extra klávesa 2</cz>
 		</text>
 
 		<!-- Course Generation -->
