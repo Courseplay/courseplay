@@ -305,12 +305,12 @@ function courseplay:drive(self, dt)
 			if self.tipper_attached then
 				-- drive on if fill_level doesn't change and fill level is < self.required_fill_level_for_follow
 				local drive_on = false
-				if self.timeout < self.timer or self.last_fill_level == nil then
+				if courseplay:timerIsThrough(self, "fillLevelChange") or self.last_fill_level == nil then
 					if self.last_fill_level ~= nil and fill_level == self.last_fill_level and fill_level < self.required_fill_level_for_follow then
 						drive_on = true
 					end
 					self.last_fill_level = fill_level
-					courseplay:set_timeout(self, 7000)
+					courseplay:setCustomTimer(self, "fillLevelChange", 7);
 				end
 
 				if fill_level == 0 or drive_on then
@@ -326,12 +326,16 @@ function courseplay:drive(self, dt)
 			elseif self.cp.last_recordnumber == self.stopWork and self.abortWork ~= nil then
 				self.wait = false
 			else
-				if self.timeout < self.timer or self.last_fill_level == nil then
+				local isInWorkArea = self.recordnumber > self.startWork and self.recordnumber <= self.stopWork;
+				if self.tipper_attached and self.startWork ~= nil and self.stopWork ~= nil and self.tippers ~= nil and not isInWorkArea then
+					allowedToDrive,lx,lz = courseplay:refillSprayer(self, fill_level, 100, allowedToDrive, lx, lz, dt);
+				end;
+				if not self.cp.hasEifokZunhammer18500PU and (courseplay:timerIsThrough(self, "fillLevelChange") or self.last_fill_level == nil) then --TODO: keep excluding Zunhammer?
 					if self.last_fill_level ~= nil and fill_level == self.last_fill_level and fill_level > self.required_fill_level_for_drive_on then
 						drive_on = true
 					end
 					self.last_fill_level = fill_level
-					courseplay:set_timeout(self, 7000)
+					courseplay:setCustomTimer(self, "fillLevelChange", 7);
 				end
 
 				if fill_level == 100 or drive_on then
@@ -366,12 +370,12 @@ function courseplay:drive(self, dt)
 				-- drive on if fill_level doesn't change and fill level is < 100-self.required_fill_level_for_follow
 				courseplay:handle_mode8(self)
 				local drive_on = false
-				if self.timeout < self.timer or self.last_fill_level == nil then
+				if courseplay:timerIsThrough(self, "fillLevelChange") or self.last_fill_level == nil then
 					if self.last_fill_level ~= nil and fill_level == self.last_fill_level and fill_level < self.required_fill_level_for_follow then
 						drive_on = true
 					end
 					self.last_fill_level = fill_level
-					courseplay:set_timeout(self, 7000)
+					courseplay:setCustomTimer(self, "fillLevelChange", 7);
 				end
 				if fill_level == 0 or drive_on then
 					self.wait = false
@@ -444,8 +448,9 @@ function courseplay:drive(self, dt)
 		-- Fertilice loading --only for one Implement !
 		if self.ai_mode == 4 then
 			if self.tipper_attached and self.startWork ~= nil and self.stopWork ~= nil then
-				if self.tippers ~= nil then
-					allowedToDrive,lx,lz = courseplay:refillSprayer(self, fill_level, 100, allowedToDrive,lx,lz);
+				local isInWorkArea = self.recordnumber > self.startWork and self.recordnumber <= self.stopWork;
+				if self.tippers ~= nil and not isInWorkArea then
+					allowedToDrive,lx,lz = courseplay:refillSprayer(self, fill_level, 100, allowedToDrive, lx, lz, dt);
 				end
 			elseif self.startWork == nil or self.stopWork == nil then
 				self.cp.infoText = courseplay.locales.CPNoWorkArea;
@@ -478,10 +483,18 @@ function courseplay:drive(self, dt)
 		end;
 
 		if self.ai_mode == 8 then
-			raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
-			if self.tipper_attached then
-				if self.tippers ~= nil then
-					allowedToDrive = courseplay:refillSprayer(self, fill_level, 100, allowedToDrive);
+			if self.cp.numWaitPoints > 1 then
+				self.cp.infoText = string.format(courseplay.locales.CPTooManyWaitingPoints, 1);
+				allowedToDrive = false;
+			elseif self.cp.numWaitPoints < 1 then
+				self.cp.infoText = string.format(courseplay.locales.CPTooFewWaitingPoints, 1);
+				allowedToDrive = false;
+			else
+				raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
+				if self.tipper_attached then
+					if self.tippers ~= nil then
+						allowedToDrive,lx,lz = courseplay:refillSprayer(self, fill_level, 100, allowedToDrive, lx, lz, dt);
+					end;
 				end;
 			end;
 		end;
@@ -1078,31 +1091,21 @@ function courseplay:openCloseCover(self, dt, showCover)
 	end; --END for i in self.cp.tippersWithCovers
 end;
 
-function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive,lx,lz)
+function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive, lx ,lz, dt)
 	for i = 1, table.getn(self.tippers) do
 		local activeTool = self.tippers[i];
 		local isSpecialSprayer = false
-		isSpecialSprayer, allowedToDrive ,lx,lz = courseplay:handleSpecialSprayer(self,activeTool, fill_level, driveOn, allowedToDrive,lx,lz)
+		local fillTrigger = nil;
+		isSpecialSprayer, allowedToDrive, lx, lz = courseplay:handleSpecialSprayer(self,activeTool, fill_level, driveOn, allowedToDrive, lx, lz, dt, "pull");
 		if isSpecialSprayer then
 			return allowedToDrive,lx,lz
 		end
 		
 		if courseplay:isSprayer(activeTool) or activeTool.cp.hasUrfSpec then --sprayer
 			if self.cp.fillTrigger ~= nil then
-				local trigger = courseplay.triggers.all[self.cp.fillTrigger]
-				local validForFill = false
-				if not activeTool.cp.hasUrfSpec then
-					if trigger.fillType then
-						validForFill = activeTool:allowFillType(trigger.fillType, false);
-					elseif trigger.currentFillType then
-						validForFill = activeTool:allowFillType(trigger.currentFillType, false);
-					end
-				elseif activeTool.cp.hasUrfSpec and activeTool.isFertilizing > 1 then
-					validForFill = trigger.fillType and activeTool.currentSprayFillType == trigger.fillType;
-				end;
-
-				if validForFill then 
-					--print("slow down , its a fertilizerFillTrigger")
+				local trigger = courseplay.triggers.all[self.cp.fillTrigger];
+				if courseplay:fillTypesMatch(trigger, activeTool) then 
+					--print(nameNum(activeTool) .. ": slow down, it's a sprayerFillTrigger")
 					self.cp.isInFilltrigger = true
 				end
 			end
@@ -1114,29 +1117,19 @@ function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive,lx,l
 				activeToolFillLevel = (activeTool.sprayFillLevel / activeTool.sprayCapacity) * 100;
 			end
 
-			local fillTrigger = nil;
-			if activeTool.sprayerFillTriggers ~= nil and table.getn(activeTool.sprayerFillTriggers) > 0 then
-				fillTrigger = activeTool.sprayerFillTriggers[1];
-				self.cp.fillTrigger = nil
-			end;
-
-			local fillTypesMatch = false;
-			if fillTrigger ~= nil then
-				if not activeTool.cp.hasUrfSpec then
-					if fillTrigger.fillType then
-						fillTypesMatch = activeTool:allowFillType(fillTrigger.fillType, false);
-					elseif fillTrigger.currentFillType then
-						fillTypesMatch = activeTool:allowFillType(fillTrigger.currentFillType, false);
-					end;
-				elseif activeTool.cp.hasUrfSpec and activeTool.isFertilizing > 1 then
-					fillTypesMatch = fillTrigger.fillType and activeTool.currentSprayFillType == fillTrigger.fillType;
+			if fillTrigger == nil then
+				if activeTool.sprayerFillTriggers ~= nil and table.getn(activeTool.sprayerFillTriggers) > 0 then
+					fillTrigger = activeTool.sprayerFillTriggers[1];
+					self.cp.fillTrigger = nil
 				end;
 			end;
+
+			local fillTypesMatch = courseplay:fillTypesMatch(fillTrigger, activeTool);
 
 			local canRefill = (activeToolFillLevel ~= nil and activeToolFillLevel < driveOn) and fillTypesMatch;
 			--ManureLager: activeTool.ReFillTrigger has to be nil so it doesn't refill
 			if self.ai_mode == 8 then
-				canRefill = canRefill and activeTool.ReFillTrigger == nil and not (courseplay:loopedTable(self.Waypoints, self.recordnumber).wait or courseplay:loopedTable(self.Waypoints, self.recordnumber-1).wait or courseplay:loopedTable(self.Waypoints, self.recordnumber-2).wait);
+				canRefill = canRefill and activeTool.ReFillTrigger == nil and not courseplay:waypointsHaveAttr(vehicle, self.recordnumber, -2, 2, "wait", true, false);
 
 				if activeTool.isSpreaderInRange ~= nil and activeTool.isSpreaderInRange.manureTriggerc ~= nil then
 					canRefill = false;

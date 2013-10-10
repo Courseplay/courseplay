@@ -64,6 +64,7 @@ function courseplay:load(xmlFile)
 	self.startlastload = 1
 	self.timeout = 1
 	self.timer = 0.00
+	self.cp.timers = {}; 
 	self.drive_slow_timer = 0
 	self.courseplay_position = nil
 	self.waitPoints = 0
@@ -276,7 +277,14 @@ function courseplay:load(xmlFile)
 	self.search_combine = true
 	self.saved_combine = nil
 	self.selected_combine_number = 0
-
+	
+	self.cp.EifokLiquidManure = {
+		targetRefillObject = {};
+		searchMapHoseRefStation = {
+			pull = true;
+			push = true;
+		};
+	};
 	--Copy course
 	self.cp.hasFoundCopyDriver = false;
 	self.cp.copyCourseFromDriver = nil;

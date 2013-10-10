@@ -290,6 +290,16 @@ function courseplay:updateAllTriggers()
 					allNonUpdateablesCount = allNonUpdateablesCount + 1;
 					allCount = allCount + 1;
 				end;
+			elseif trigger.numSchweine ~= nil and trigger.liquidManureSiloTrigger ~= nil and trigger.liquidManureSiloTrigger.triggerId ~= nil then
+				triggerId = trigger.liquidManureSiloTrigger.triggerId;
+				trigger.isSchweinemastLiquidManureTrigger = true;
+				trigger.isLiquidManureFillTrigger = true;
+				courseplay.triggers.liquidManureFillTriggers[triggerId] = trigger;
+				courseplay.triggers.allNonUpdateables[triggerId] = trigger;
+				courseplay.triggers.all[triggerId] = trigger;
+				liquidManureFillTriggersCount = liquidManureFillTriggersCount + 1;
+				allNonUpdateablesCount = allNonUpdateablesCount + 1;
+				allCount = allCount + 1;
 			end;
 		end;
 	end;

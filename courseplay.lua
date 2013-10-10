@@ -16,6 +16,14 @@ courseplay = {
 	settings = {};
 	hud = {};
 	button = {};
+	thirdParty = {
+		EifokLiquidManure = {
+			dockingStations = {};
+			KotteContainers = {};
+			KotteZubringers = {};
+			hoses = {};
+		};
+	};
 };
 if courseplay.path ~= nil then
 	if not Utils.endsWith(courseplay.path, "/") then
@@ -202,7 +210,7 @@ function courseplay:setGlobalData()
 	courseplay.confirmedNoneTriggersCounter = 0;
 
 	courseplay.numAvailableDebugChannels = 16;
-	courseplay.numDebugChannels = 12;
+	courseplay.numDebugChannels = 14;
 	courseplay.debugChannels = {};
 	for channel=1, courseplay.numAvailableDebugChannels do
 		courseplay.debugChannels[channel] = false;
@@ -222,7 +230,7 @@ function courseplay:setGlobalData()
 	11	mode7
 	12	all other debugs (uncategorized)
 	13	reverse
-	14	[empty]
+	14	EifokLiquidManure
 	15	[empty]
 	16	[empty]
 	--]]
@@ -278,6 +286,7 @@ function courseplay:setGlobalData()
 		delete(i3dNode);
 		courseplay.signs.protoTypes[signType] = itemNode;
 	end;
+
 	--print("\t### Courseplay: setGlobalData() finished");
 end;
 

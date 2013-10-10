@@ -272,17 +272,34 @@ end;
 
 function courseplay:loopedTable(tab, idx)
 	local maxIdx = #tab;
-	if idx > maxIdx then
-		while idx > maxIdx do
-			idx = maxIdx - idx;
-		end;
-	elseif idx < 1 then
-		while idx < 1 do
-			idx = maxIdx + idx;
-		end;
+	while idx > maxIdx do
+		--idx = maxIdx - idx;
+		idx = idx - maxIdx;
+	end;
+	while idx < 1 do
+		idx = idx + maxIdx;
 	end;
 
 	return tab[idx];
+end;
+
+function courseplay:waypointsHaveAttr(vehicle, curRecordNumber, back, forward, attr, value, all)
+	for i=curRecordNumber+back, curRecordNumber+forward do
+		local wp = courseplay:loopedTable(vehicle.Waypoints, i);
+		if wp[attr] ~= nil and wp[attr] == value then
+			if not all then --waypoint has met condition, only one needs to -> return true
+				return true;
+			end;
+		elseif all then --condition not met, but all waypoints should meet condition -> return false
+			return false;
+		end;
+	end;
+
+	if all then --all waypoints have met condition (no return false in loop) -> return true
+		return true;
+	else --none of the waypoints have met condition (no return true in loop) -> return false
+		return false;
+	end;
 end;
 
 function courseplay:varLoop(var, changeBy, max, min)
@@ -601,3 +618,26 @@ function courseplay.utils.setMultipleXMLNodes(File, root_node, node_name , value
 		courseplay.utils.setMultipleXML(File, node, v, types)
 	end
 end
+
+---------------------------
+
+function courseplay.utils.normalizeAngle(angle)
+	local newAngle = angle;
+	while newAngle >= 360 do
+		newAngle = newAngle - 360;
+	end;
+	while newAngle < 0 do
+		newAngle = newAngle + 360;
+	end;
+	return newAngle;
+end;
+
+function courseplay:setCustomTimer(vehicle, timerName, seconds)
+	vehicle.cp.timers[timerName] = vehicle.timer + (seconds * 1000);
+end;
+function courseplay:timerIsThrough(vehicle, timerName)
+	if vehicle.cp.timers[timerName] == nil then
+		vehicle.cp.timers[timerName] = 0;
+	end;
+	return vehicle.timer > vehicle.cp.timers[timerName];
+end;

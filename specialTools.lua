@@ -38,8 +38,32 @@ function courseplay:setNameVariable(workTool)
 	if workTool.cp.hasSpecializationCombine then print("		Combine")end
 	if workTool.cp.hasSpecializationSteerable then print("		Steerable")end
 	]]
+
+
+	--Case IH 3162 Cutter [Giants]
+	if Utils.endsWith(workTool.configFileName, "caseIH3162Cutter.xml") then
+		workTool.cp.isCaseIH3162Cutter = true;
+
+	--Zunhammer/Kotte liquid manure pack [Eifok Team]
+	elseif Utils.endsWith(workTool.configFileName, "zunhammer18500pu.xml") then
+		workTool.cp.isEifokZunhammer18500PU = true;
+		workTool.cp.hasEifokZunhammerAttachable = false;
+		workTool.cp.eifokZunhammerAttachable = nil;
+	elseif Utils.endsWith(workTool.configFileName, "moescha.xml") and workTool.moescha ~= nil then
+		workTool.cp.isEifokZunhammerMoescha = true;
+		workTool.cp.isEifokZunhammerAttachable = true;
+	elseif Utils.endsWith(workTool.configFileName, "vogelsang.xml") then
+		workTool.cp.isEifokZunhammerVogelsang = true;
+		workTool.cp.isEifokZunhammerAttachable = true;
+	elseif Utils.endsWith(workTool.configFileName, "zunhammerVibro.xml") and workTool.vibro ~= nil then
+		workTool.cp.isEifokZunhammerVibro = true;
+		workTool.cp.isEifokZunhammerAttachable = true;
+	elseif Utils.endsWith(workTool.configFileName, "zubringer.xml") and workTool.hoseRef ~= nil then
+		workTool.cp.isEifokKotteZubringer = true;
+		workTool.cp.hasEifokZunhammerAttachable = false;
+
 	--Mchale998 bale wrapper [Bergwout]
-	if Utils.endsWith(workTool.configFileName, "Mchale998.xml") then
+	elseif Utils.endsWith(workTool.configFileName, "Mchale998.xml") then
 		workTool.cp.isMchale998 = true
 
 	--Rolmasz S061 "Pomorzanin" [Maciusboss1 & Burner]
@@ -149,7 +173,7 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.isHolmerTerraFelis = true;
 	elseif Utils.endsWith(workTool.configFileName, "RopaNawaRoMaus.xml") then
 		workTool.cp.isRopaNawaRoMaus = true;
-	
+
 	--Harvesters (steerable)
 	elseif Utils.endsWith(workTool.configFileName, "RopaEuroTiger_V8_3_XL.xml") then
 		workTool.cp.isRopaEuroTiger = true;
@@ -228,7 +252,7 @@ function courseplay:isSpecialCombine(workTool, specialType, fileNames)
 			end;
 		end;
 	end;
-	
+
 	--[[if fileNames ~= nil and table.getn(fileNames) > 0 then
 		for i=1, table.getn(fileNames) do
 			if Utils.endsWith(workTool.configFileName, fileNames[i] .. ".xml") then
@@ -237,7 +261,7 @@ function courseplay:isSpecialCombine(workTool, specialType, fileNames)
 		end;
 		return false;
 	end;]]
-	
+
 	return workTool.cp.isJF1060;
 end
 
@@ -248,8 +272,46 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		workTool:setPTO(false)
 	end
 
+	--Zunhammer Liquid Manure Pack [Eifok Team]
+	if workTool.cp.isEifokZunhammer18500PU then
+		if workTool.cp.hasEifokZunhammerAttachable then
+			local attachable = workTool.cp.eifokZunhammerAttachable;
+
+			if attachable.cp.isEifokZunhammerMoescha then
+				--no special handling needed
+
+			elseif attachable.cp.isEifokZunhammerVogelsang then
+				if unfold ~= nil and unfold ~= attachable.setUnfold then
+					attachable:setFoldingDir(unfold);
+				end;
+
+				if allowedToDrive then
+					allowedToDrive = attachable.isFold or attachable.isUnfold; --basic isFolding for Vogelsang
+				end;
+			elseif attachable.cp.isEifokZunhammerVibro then
+				if unfold ~= nil and unfold ~= attachable.setUnfold then
+					attachable:setFoldingDir(unfold);
+				end;
+
+				if implementsDown ~= nil and attachable:isLowered() ~= implementsDown and attachable.attacherVehicleJointIndex ~= nil then
+					workTool:setJointMoveDown(attachable.attacherVehicleJointIndex, implementsDown, false);
+				end;
+
+				if allowedToDrive then
+					allowedToDrive = attachable.isFold or attachable.isUnfold; --basic isFolding for Vibro
+				end;
+			end;
+		end;
+
+		return false, allowedToDrive;
+	
+	elseif workTool.cp.isEifokKotteZubringer then
+		if unload then
+			return courseplay:handleSpecialSprayer(self, workTool, workTool.fillLevel, nil, allowedToDrive, nil, nil, nil, "push");
+		end;
+
 	--Mchale998 bale wrapper
-	if workTool.cp.isMchale998 then
+	elseif workTool.cp.isMchale998 then
 		if workTool.baleWrapperState == 3 then
 			allowedToDrive = false
 		elseif workTool.baleWrapperState == 4 then
@@ -302,7 +364,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 			if not rightRidgeMarkerExtended then
 				workTool:setAnimationTime(6, animParts[6].animDuration);
 			end;
-			
+
 			--Note: for some reason, startPosition = down and animDuration = up
 			if ridgeMarker == 0 then --none
 				--raise ridgeMarkers
@@ -525,7 +587,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 				end;
 			end;
 		end
-		
+
 		return true, allowedToDrive
 
 	--Claas Quadrant 1200
@@ -568,7 +630,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 			--speed regulation END
 
 		end
-		
+
 		return true ,allowedToDrive
 
 	--Ursus Z586 BaleWrapper
@@ -581,7 +643,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		end
 
 		return false ,allowedToDrive
-	
+
 	--JF_FCT1060_ProTec
 	elseif workTool.cp.isJF1060 then
 		if unfold ~= nil and turnOn ~= nil and lower ~= nil then
@@ -601,8 +663,8 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		local targetTrailer = workTool:findAutoAimTrailerToUnload(workTool.currentFruitType);
 		if targetTrailer == nil then
 			allowedToDrive = false
-		end		
-		
+		end
+
 		return true ,allowedToDrive
 
 	--Abbey 3000 NurseTanker
@@ -611,13 +673,13 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		local a,b,c = getRotation(workTool.boomArmX)
 		if unload ~= nil then
 			if unload then
-				
+
 				if y >= -1.56 then
 					workTool.isEntered = true
 					InputBinding.actions[InputBinding.BOOM_RIGHT].lastIsPressed = true 
 				else
 					workTool.isEntered = false
-				end				
+				end
 				if workTool.isSpreaderInRange ~= nil then
 					local fillable = workTool.isSpreaderInRange
 					local fillableHasAttacherVehicle = fillable.attacherVehicle ~= nil;
@@ -649,7 +711,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 				end
 			end
 		end
-		
+
 		return true, allowedToDrive
 
 	--Abbey 2000/3000R
@@ -692,11 +754,11 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		end
 
 		return false, allowedToDrive
-		
+
 	--gueldnerG40Frontloader free DLC classics
 	elseif workTool.animatedFrontloader ~= nil then
 		workTool:releaseShovel(unfold);
-	
+
 
 	-- Claas liner 4000
 	elseif workTool.cp.isClaasLiner4000 then
@@ -724,19 +786,19 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		else
 			allowedToDrive = false
 		end
-		--unfold			
+		--unfold
 		if (unfold and workTool.isTransport) or (workTool.cp.foldOrderIsGiven and isReadyToWork)  then
 			workTool:setTransport(not unfold)
 			if workTool.isReadyToTransport or workTool.cp.foldOrderIsGiven then
 				if workTool.foldMoveDirection > 0.1 or (workTool.foldMoveDirection == 0 and workTool.foldAnimTime > 0.5) then
-					workTool:setFoldDirection(-1)	
+					workTool:setFoldDirection(-1)
 				else
 					workTool:setFoldDirection(1)
 				end;
 				workTool.cp.foldOrderIsGiven = false
 			end;
 			workTool.cp.unfoldOrderIsGiven = true
-			
+
 		end
 		if workTool.foldAnimTime == 0 then
 			allowedToDrive = true
@@ -776,7 +838,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 				allowedToDrive = false;
 			end;
 		end;
-		
+
 		--lower/raise
 		workTool:setLiftUp(not lower);
 		if workTool.alpMot.isLiftUp ~= nil and workTool.alpMot.isLiftDown ~= nil then
@@ -787,7 +849,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 
 		--turn on/off
 		workTool:setTurnedOn(turnOn);
-		
+
 		return true, allowedToDrive;
 
 
@@ -795,16 +857,16 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 	--Poettinger X8
 	elseif workTool.cp.isPoettingerX8 and workTool.x8 ~= nil and workTool.x8.mowers ~= nil and workTool.setTurnedOn ~= nil and workTool.setLiftUp ~= nil and workTool.setTransport ~= nil and workTool.setSelection ~= nil then
 		workTool:setSelection(3);
-		
+
 		local isFolded = workTool.x8.mowers[1].isTransport and workTool.x8.mowers[2].isTransport;
 		local isRaised = workTool.x8.mowers[1].isLiftUp and workTool.x8.mowers[2].isLiftUp;
-		
+
 		--fold/unfold
 		workTool:setTransport(not unfold);
 		if (unfold and isFolded) or (not unfold and not isFolded) then
 			allowedToDrive = false;
 		end;
-		
+
 		--lower/raise
 		workTool:setLiftUp(not lower);
 		if (lower and isRaised) or (not lower and not isRaised) then
@@ -813,7 +875,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 
 		--turn on/off
 		workTool:setTurnedOn(turnOn);
-		
+
 		return true, allowedToDrive;
 	end;
 
@@ -833,8 +895,25 @@ function courseplay:askForSpecialSettings(self,object)
 		self.cp.noStopOnTurn = true
 		self.cp.noStopOnEdge = true
 	end;
-	
-	if object.cp.isMchale998 then
+
+	if object.cp.isEifokZunhammer18500PU or object.cp.isEifokKotteZubringer then
+		self.cp.hasEifokZunhammer18500PU = object.cp.isEifokZunhammer18500PU;
+
+		if object.cp.hoseRefs == nil then
+			courseplay.thirdParty.EifokLiquidManure.setCustomHoseRefs(object);
+		end;
+
+	elseif object.cp.isEifokZunhammerAttachable then
+		for i,tipper in pairs(self.tippers) do
+			if tipper.cp.isEifokZunhammer18500PU then
+				tipper.cp.hasEifokZunhammerAttachable = true;
+				tipper.cp.eifokZunhammerAttachable = object;
+				--object.cp.eifokZunhammer18500PU = tipper; --basically equivalent to object.attacherVehicle
+				break;
+			end;
+		end;
+
+	elseif object.cp.isMchale998 then
 		self.cp.aiTurnNoBackward = true
 		self.cp.noStopOnEdge = true
 		self.cp.noStopOnTurn = true
@@ -875,7 +954,7 @@ function courseplay:askForSpecialSettings(self,object)
 		self.cp.aiTurnNoBackward = true
 		self.WpOffsetX = -2.5
 		offsetChanged = true
-	elseif object.cp.isClaasConspeedSFM then
+	elseif object.cp.isClaasConspeedSFM or object.cp.isCaseIH3162Cutter then
 		object.cp.inversedFoldDirection = true;
 	elseif object.cp.isUrsusZ586 then
 		self.cp.aiTurnNoBackward = true
@@ -889,12 +968,78 @@ function courseplay:askForSpecialSettings(self,object)
 	if offsetChanged then
 		self.cp.tempWpOffsetX = tempOffset
 	end
-
 end
 
-function courseplay:handleSpecialSprayer(self,activeTool, fill_level, driveOn, allowedToDrive,lx,lz)
+function courseplay:handleSpecialSprayer(self, activeTool, fill_level, driveOn, allowedToDrive, lx, lz, dt, pumpDir)
+	local vehicle = self;
+	pumpDir = pumpDir or "pull";
+	local isDone = (pumpDir == "pull" and fill_level == driveOn) or (pumpDir == "push" and fill_level == 0);
 
-	if activeTool.cp.isKotteGARANTProfiVQ32000 and #activeTool.cp.feldbinders > 0 then
+	--Zunhammer 18500 PU [Eifok Team]
+	if activeTool.cp.isEifokZunhammer18500PU then
+		if vehicle.cp.EifokLiquidManure.searchMapHoseRefStation[pumpDir] and vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir] == nil and not isDone then
+			courseplay.thirdParty.EifokLiquidManure.findRefillObject(vehicle, activeTool, "MapHoseRefStation", pumpDir); --find MapHoseRefStations
+		end;
+		if vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir] ~= nil and vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir].type == "MapHoseRefStation" then
+			allowedToDrive = courseplay.thirdParty.EifokLiquidManure.refillViaHose(vehicle, activeTool, fill_level, driveOn, allowedToDrive, lx, lz, dt, pumpDir);
+		end;
+
+		if vehicle.cp.waitPoints[3] ~= nil and (vehicle.recordnumber == vehicle.cp.waitPoints[3] or vehicle.cp.last_recordnumber == vehicle.cp.waitPoints[3]) and vehicle.wait then
+			if vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir] == nil and courseplay:timerIsThrough(vehicle, "findRefillObject") and not isDone then
+				courseplay.thirdParty.EifokLiquidManure.findRefillObject(vehicle, activeTool, "Kotte", pumpDir); --find KotteZubringers and KotteContainers
+				if vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir] == nil then
+					courseplay:setCustomTimer(vehicle, "findRefillObject", 6);
+				end;
+			end;
+			if vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir] ~= nil then
+				if vehicle.cp.timers.findRefillObject ~= 0 then --reset timer
+					vehicle.cp.timers.findRefillObject = 0;
+				end;
+				allowedToDrive = courseplay.thirdParty.EifokLiquidManure.refillViaHose(vehicle, activeTool, fill_level, driveOn, allowedToDrive, lx, lz, dt, pumpDir);
+			end;
+
+		elseif pumpDir == "pull" and vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir] == nil then
+			allowedToDrive = courseplay.thirdParty.EifokLiquidManure.refillAtLiquidManureTrigger(vehicle, activeTool, fill_level, driveOn, allowedToDrive, lx, lz, dt);
+		end;
+
+		return true, allowedToDrive, lx, lz;
+
+	--Kotte Zubringer [Eifok Team]
+	elseif activeTool.cp.isEifokKotteZubringer then
+		if vehicle.cp.EifokLiquidManure.searchMapHoseRefStation[pumpDir] and vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir] == nil and not isDone then
+			courseplay.thirdParty.EifokLiquidManure.findRefillObject(vehicle, activeTool, "MapHoseRefStation", pumpDir);
+		end;
+		if vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir] ~= nil and vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir].type == "MapHoseRefStation" then
+			allowedToDrive = courseplay.thirdParty.EifokLiquidManure.refillViaHose(vehicle, activeTool, fill_level, driveOn, allowedToDrive, lx, lz, dt, pumpDir);
+		end;
+
+		if (vehicle.Waypoints[vehicle.recordnumber].wait or vehicle.Waypoints[vehicle.cp.last_recordnumber].wait) and vehicle.wait and pumpDir == "push" then
+			if vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir] == nil and courseplay:timerIsThrough(vehicle, "findRefillObject") and not (activeTool.fill or activeTool.isReFilling) and not isDone then
+				courseplay.thirdParty.EifokLiquidManure.findRefillObject(vehicle, activeTool, "Kotte", pumpDir); --find KotteZubringers and KotteContainers
+				if vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir] == nil then
+					courseplay:setCustomTimer(vehicle, "findRefillObject", 6); --set timer
+				end;
+			end;
+			if vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir] ~= nil then
+				if vehicle.cp.timers.findRefillObject ~= 0 then --reset timer
+					vehicle.cp.timers.findRefillObject = 0;
+				end;
+				allowedToDrive = courseplay.thirdParty.EifokLiquidManure.refillViaHose(vehicle, activeTool, fill_level, driveOn, allowedToDrive, lx, lz, dt, pumpDir);
+			else
+				return false, allowedToDrive, lx, lz; --regular liquidManure / ManureLager trigger, handle as usual [PUSH]
+			end;
+
+		elseif pumpDir == "pull" and vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir] == nil then
+			if not (vehicle.recordnumber >= vehicle.cp.waitPoints[1] - 4 and vehicle.recordnumber <= vehicle.cp.waitPoints[1] + 3) then
+				allowedToDrive = courseplay.thirdParty.EifokLiquidManure.refillAtLiquidManureTrigger(vehicle, activeTool, fill_level, driveOn, allowedToDrive, lx, lz, dt);
+				--return false, allowedToDrive, lx, lz; ----regular liquidManure / ManureLager trigger, handle as usual [pull]
+			end;
+		end;
+
+		return true, allowedToDrive, lx, lz;
+
+	--Kotte Garant Profi VQ 32000 [Güllepack v2 / bayerbua]
+	elseif activeTool.cp.isKotteGARANTProfiVQ32000 and #activeTool.cp.feldbinders > 0 then
 		local hasFeldbinderOrStation = false;
 		for _,v in pairs(activeTool.cp.feldbinders) do
 			local tanker = g_currentMission.attachables[v]
@@ -985,7 +1130,7 @@ function courseplay:moveSingleTool(self,activeTool, toolIndex,x,y,z)
 		end
 		local dir = targetRot[i] - oldRot;
 		dir = math.abs(dir)/dir;
-		
+
 		if tool.node ~= nil and tool.rotMin ~= nil and tool.rotMax ~= nil and dir ~= nil and dir ~= 0 then
 			newRot = Utils.clamp(oldRot + (rotSpeed * dir), tool.rotMin, tool.rotMax);
 			if (dir == 1 and newRot > targetRot[i]) or (dir == -1 and newRot < targetRot[i]) then
@@ -1004,3 +1149,489 @@ function courseplay:moveSingleTool(self,activeTool, toolIndex,x,y,z)
 
 end
 
+
+
+-------------------------
+-- EIFOK LIQUID MANURE --
+-------------------------
+function courseplay.thirdParty.EifokLiquidManure.findRefillObject(vehicle, activeTool, where, pumpDir)
+	--where: "MapHoseRefStation" / "Kotte"
+	local startPoint, endPoint = 1, vehicle.maxnumber;
+	if vehicle.ai_mode == 4 then
+		if where == "MapHoseRefStation" then
+			startPoint, endPoint = vehicle.stopWork, vehicle.maxnumber;
+		else
+			startPoint, endPoint = vehicle.recordnumber - 5, vehicle.recordnumber;
+		end;
+	elseif vehicle.ai_mode == 8 then
+		if where == "MapHoseRefStation" then
+			startPoint, endPoint = 1, vehicle.maxnumber;
+		else
+			startPoint, endPoint = vehicle.recordnumber - 5, vehicle.recordnumber;
+		end;
+	end;
+
+	courseplay:debug(string.format("%s: findRefillObject(%s) (%s) START", nameNum(activeTool), where, pumpDir), 14);
+	local maxDistance = 5.2;
+	local targetObject, targetObjectType, closestWaypoint, closestDistance, side, containerSide = nil, nil, nil, math.huge, nil, nil;
+
+	local mapHoseRefStationsExist = MapHoseRefStation ~= nil and MapHoseRefStation.MapHoseRefStation ~= nil and #MapHoseRefStation.MapHoseRefStation.stations > 0;
+	local kotteZubringersExist = table.maxn(courseplay.thirdParty.EifokLiquidManure.KotteZubringers) > 0;
+	local kotteContainersExist = table.maxn(courseplay.thirdParty.EifokLiquidManure.KotteContainers) > 0;
+
+	--MapHoseRefStations
+	if where == "MapHoseRefStation" then
+		if mapHoseRefStationsExist then
+			local targetRefillObject = vehicle.cp.EifokLiquidManure.targetRefillObject;
+
+			for i,station in pairs(MapHoseRefStation.MapHoseRefStation.stations) do
+				local skipStation = (pumpDir == "push" and targetRefillObject.pull ~= nil and targetRefillObject.pull.object == station) or (pumpDir == "pull" and targetRefillObject.push ~= nil and targetRefillObject.push.object == station); --don't refill from the same station/vehicle you've already filled
+				if station.worldTranslation == nil then
+					local srX,srY,srZ = getWorldTranslation(station.ref1);
+					station.worldTranslation = { x=srX; y=srY; z=srZ; };
+				end;
+				local srX,srY,srZ = station.worldTranslation.x,station.worldTranslation.y,station.worldTranslation.z;
+				if skipStation then
+					break;
+				end;
+				for n=startPoint, endPoint do
+					local wp = vehicle.Waypoints[n];
+					local dist = Utils.vector2Length(wp.cx-srX, wp.cz-srZ);
+					local inWaitingPointArea = courseplay:waypointsHaveAttr(vehicle, n, -2, 3, "wait", true, false);
+					local skipWP = (pumpDir == "pull" and inWaitingPointArea) or (pumpDir == "push" and not inWaitingPointArea); 
+					--courseplay:debug(string.format("\twaypoint %d - skipWP=%s, dist=%.3f/maxDist=%.1f, closestDist=%.3f", n, tostring(skipWP), dist, maxDistance, closestDistance), 14);
+					if not skipWP and dist < maxDistance and dist < closestDistance then
+						closestWaypoint = n;
+						closestDistance = dist;
+						targetObject = station;
+						targetObjectType = "MapHoseRefStation";
+
+						--set side relative to course/vehicle
+						local angleToRefNormal = courseplay.utils.normalizeAngle(math.deg(math.atan2(srX - wp.cx, srZ - wp.cz)));
+						local wpAngleNormal = courseplay.utils.normalizeAngle(wp.angle);
+						local angleDiffNormal = courseplay.utils.normalizeAngle(wpAngleNormal - angleToRefNormal);
+						if angleDiffNormal > 180 then
+							side = "left";
+						else
+							side = "right";
+						end;
+						courseplay:debug(string.format("\t\t[MAPHOSEREFSTATION] set waypoint %d - dist=%.3f/maxDist=%.1f, closestDist=%.3f, wpAngleNormal=%.3f, angleToRefNormal=%.3f, angleDiffNormal=%.3f, side=%s", n, dist, maxDistance, closestDistance, wpAngleNormal, angleToRefNormal, angleDiffNormal, side), 14);
+						break;
+					end;
+				end; --END for waypoints
+				if targetObject ~= nil then
+					break;
+				end;
+			end; --END for MapHoseRefStations
+		end; --END mapHoseRefStationsExist
+		if targetObject == nil then
+			vehicle.cp.EifokLiquidManure.searchMapHoseRefStation[pumpDir] = false;
+		end;
+
+	--Containers & Zubringers
+	elseif where == "Kotte" then
+		--Containers
+		if targetObject == nil and kotteContainersExist then
+			for i,container in pairs(courseplay.thirdParty.EifokLiquidManure.KotteContainers) do
+				if container ~= nil then
+					if container.cp.hoseRefs == nil then --first time: set cp.hoseRefs
+						courseplay.thirdParty.EifokLiquidManure.setCustomHoseRefs(container)
+					end;
+
+					for connSide,connRef in pairs(activeTool.cp.hoseRefs.conn) do
+						local x,y,z = getWorldTranslation(connRef.node);
+						for contConnSide,contConnRef in pairs(container.cp.hoseRefs.conn) do
+							local crX,crY,crZ = getWorldTranslation(contConnRef.node);
+							local dist = Utils.vector3Length(x-crX,y-crY,z-crZ);
+							if dist < maxDistance and dist < closestDistance and ((pumpDir == "pull" and container.fillLevel > 0) or (pumpDir == "push" and container.fillLevel < container.capacity)) then
+								closestWaypoint = nil;
+								closestDistance = dist;
+								targetObject = container;
+								targetObjectType = "KotteContainer";
+								side = connSide;
+								containerSide = contConnSide;
+								courseplay:debug(string.format("\t\t[KOTTECONTAINER] set targetObject (KotteContainerId=%d) - closestDist=%.3f, side=%s, containerSide=%s", container.cp.KotteContainerId, closestDistance, side, containerSide), 14);
+							end;
+						end;
+					end;
+					if targetObject ~= nil then
+						break;
+					end;
+				end; --END if container ~= nil
+			end; --END for containers
+		end; --END if kotteContainersExist
+
+		--Zubringers
+		if targetObject == nil and not activeTool.cp.isEifokKotteZubringer and kotteZubringersExist then
+			for i,zubringer in pairs(courseplay.thirdParty.EifokLiquidManure.KotteZubringers) do
+				if zubringer ~= nil then
+					if zubringer.cp.hoseRefs == nil then --first time: set cp.hoseRefs
+						courseplay.thirdParty.EifokLiquidManure.setCustomHoseRefs(zubringer)
+					end;
+					local attVeh = zubringer.attacherVehicle;
+					while attVeh.attacherVehicle ~= nil do
+						attVeh = attVeh.attacherVehicle;
+					end;
+					local zubringerConnRef = zubringer.cp.hoseRefs.conn.right;
+					--courseplay:debug(string.format("\tZubringer id=%d, attVeh name=%s, connRef.node=%d", zubringer.cp.KotteZubringerId, nameNum(attVeh), zubringerConnRef.node), 14);
+					if attVeh.drive and attVeh.Waypoints[attVeh.cp.last_recordnumber].wait and attVeh.wait then
+						local zrX,zrY,zrZ = getWorldTranslation(zubringerConnRef.node);
+						for connSide,connRef in pairs(activeTool.cp.hoseRefs.conn) do
+							local x,y,z = getWorldTranslation(connRef.node);
+							local dist = Utils.vector3Length(x-zrX,y-zrY,z-zrZ);
+							if dist < maxDistance and dist < closestDistance and ((pumpDir == "pull" and zubringer.fillLevel > 0) or (pumpDir == "push" and zubringer.fillLevel < zubringer.capacity)) then
+								closestWaypoint = nil;
+								closestDistance = dist;
+								targetObject = zubringer;
+								targetObjectType = "KotteZubringer";
+								side = connSide;
+								courseplay:debug(string.format("\t\t[KOTTEZUBRINGER] set targetObject (KotteZubringerId=%d) - closestDist=%.3f, side=%s", zubringer.cp.KotteZubringerId, closestDistance, side), 14);
+							end;
+						end;
+						if targetObject ~= nil then
+							break;
+						end;
+					end; --END if Zubringer is at wait point
+				end; --END if zubringer ~= nil
+			end; --END for zubringers
+		end; --END if not activeTool.cp.isEifokKotteZubringer and targetObject == nil and kotteZubringersExist
+	end;
+
+	if targetObject == nil then
+		vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir] = nil;
+		courseplay:debug(string.format("%s: findRefillObject(%s) (%s) END - targetObject == nil", nameNum(activeTool), where, pumpDir), 14);
+	else
+		vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir] = {
+			object = targetObject;
+			type = targetObjectType;
+			closestWaypoint = closestWaypoint;
+			side = side;
+			containerSide = containerSide;
+		};
+		courseplay:debug(string.format("%s: findRefillObject(%s) (%s) END - targetObjectType=%s, closestWaypoint=%s, closestDistance=%.3f, side=%s, containerSide=%s", nameNum(activeTool), where, pumpDir, targetObjectType, tostring(closestWaypoint), closestDistance, side, tostring(containerSide)), 14);
+	end;
+end;
+function courseplay.thirdParty.EifokLiquidManure.refillViaHose(vehicle, activeTool, fill_level, driveOn, allowedToDrive, lx, lz, dt, pumpDir)
+	if vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir] ~= nil then --object found
+		local targetRefillObject = vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir];
+		local object, type, closestWaypoint, side, containerSide = targetRefillObject.object, targetRefillObject.type, targetRefillObject.closestWaypoint, targetRefillObject.side, targetRefillObject.containerSide;
+		local isDone = fill_level == driveOn;
+		if pumpDir == "push" then
+			isDone = fill_level == 0;
+		end;
+
+		local proceedWithFilling = false;
+		if type == "MapHoseRefStation" and closestWaypoint ~= nil then
+			if vehicle.recordnumber >= closestWaypoint - 1 and vehicle.recordnumber < closestWaypoint + 4 then
+				--SLOW DOWN
+				if not isDone then 
+					if vehicle.lastSpeedReal > 15/3600 then
+						courseplay:brakeToStop(vehicle);
+					elseif vehicle.lastSpeedReal > 5/3600 then
+						vehicle.cp.maxFieldSpeed = 5/3600;
+						--courseplay:debug(string.format("%s: set maxFieldSpeed to 5/3600", nameNum(activeTool)), 14);
+					end;
+				end;
+
+				if vehicle.recordnumber >= closestWaypoint then
+					proceedWithFilling = true;
+				end;
+
+			elseif vehicle.recordnumber > closestWaypoint + 6 then
+				proceedWithFilling = false;
+			end;
+
+		elseif type == "KotteZubringer" or type == "KotteContainer" then
+			proceedWithFilling = true;
+		end; --END if type == "MapHoseRefStation"/"KotteZubringer"/"KotteContainer"
+
+		if proceedWithFilling then
+			if vehicle.cp.EifokLiquidManure.sId1 == nil and vehicle.cp.EifokLiquidManure.sId2 == nil then
+				vehicle.cp.EifokLiquidManure.sId1,vehicle.cp.EifokLiquidManure.sId2 = 1, 2; --NOTE: sId1 is always at activeTool, sId2 is always at object. Their values (1, 2) can switch, though.
+			end;
+
+			local vehicleConnectionRef = activeTool.cp.hoseRefs.conn[side];
+			if vehicleConnectionRef == nil then
+				vehicle.cp.infoText = string.format("no connection ref found on %s side", side);
+				return true, false, lx, lz;
+			end;
+
+			--CHOOSE TRAILER'S SIDE REF
+			local checkOrder = {
+				right = { "right", "left" };
+				left = { "left", "right" };
+			};
+			local correctSideRef = activeTool.cp.hoseRefs.park[checkOrder[side][1]];
+			local otherSideRef =   activeTool.cp.hoseRefs.park[checkOrder[side][2]];
+
+			--FIND HOSE TO USE
+			courseplay.thirdParty.EifokLiquidManure.findHoseToUse(vehicle, activeTool, object, correctSideRef, otherSideRef, checkOrder, side, pumpDir);
+
+			if vehicle.cp.EifokLiquidManure.hoseToUse == nil then
+				vehicle.cp.infoText = "No hose could be found - cancel refill";
+				return false;
+
+			--GO FOR GLORY
+			else
+				allowedToDrive = courseplay.thirdParty.EifokLiquidManure.connectRefillDisconnect(vehicle, activeTool, allowedToDrive, vehicleConnectionRef, correctSideRef, isDone, pumpDir);
+			end;
+		end; --END if proceedWithFilling
+	end;
+
+	return allowedToDrive;
+end;
+function courseplay.thirdParty.EifokLiquidManure.findHoseToUse(vehicle, activeTool, object, correctSideRef, otherSideRef, checkOrder, side, pumpDir) --TODO: delete checkOrder, side from variables, as they're only needed for debug
+	if vehicle.cp.EifokLiquidManure.hoseToUse == nil and vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir].type == "MapHoseRefStation" and object.isUsed then
+		local sId1,sId2 = vehicle.cp.EifokLiquidManure.sId1,vehicle.cp.EifokLiquidManure.sId2;
+		for i,hose in pairs(courseplay.thirdParty.EifokLiquidManure.hoses) do
+			if (hose.ctors[sId1].isAttached and hose.ctors[sId1].station == object and not hose.ctors[sId2].isAttached) then
+				vehicle.cp.EifokLiquidManure.hoseToUse = hose;
+				vehicle.cp.EifokLiquidManure.sId1,vehicle.cp.EifokLiquidManure.sId2 = sId1, sId2;
+				vehicle.cp.EifokLiquidManure.leaveHoseAtStation = true;
+				courseplay:debug(string.format("\t%s: hose attached to station, set hose, sId1=%d, sId2=%d", nameNum(activeTool), vehicle.cp.EifokLiquidManure.sId1, vehicle.cp.EifokLiquidManure.sId2), 14);
+				break;
+			elseif (hose.ctors[sId2].isAttached and hose.ctors[sId2].station == object and not hose.ctors[sId1].isAttached) then
+				vehicle.cp.EifokLiquidManure.hoseToUse = hose;
+				vehicle.cp.EifokLiquidManure.sId1,vehicle.cp.EifokLiquidManure.sId2 = sId2, sId1;
+				vehicle.cp.EifokLiquidManure.leaveHoseAtStation = true;
+				courseplay:debug(string.format("\t%s: hose attached to station, set hose, sId1=%d, sId2=%d", nameNum(activeTool), vehicle.cp.EifokLiquidManure.sId1, vehicle.cp.EifokLiquidManure.sId2), 14);
+				break;
+			end;
+		end;
+	end;
+
+	if vehicle.cp.EifokLiquidManure.hoseToUse == nil then
+		if correctSideRef.isUsed and correctSideRef.hose ~= nil then
+			vehicle.cp.EifokLiquidManure.hoseToUse = correctSideRef.hose;
+			courseplay:debug(string.format("\t%s: [side %s] hoseToUse is hose at park.%s ref (correct side)", nameNum(activeTool), side, checkOrder[side][1]), 14);
+		elseif otherSideRef.isUsed and otherSideRef.hose ~= nil then
+			vehicle.cp.EifokLiquidManure.hoseToUse = otherSideRef.hose;
+			courseplay:debug(string.format("\t%s: [side %s] hoseToUse is hose at park.%s ref (other side)", nameNum(activeTool), side, checkOrder[side][2]), 14);
+		end;
+	end;
+end;
+function courseplay.thirdParty.EifokLiquidManure.connectRefillDisconnect(vehicle, activeTool, allowedToDrive, vehicleConnectionRef, correctSideRef, isDone, pumpDir)
+	local targetRefillObject = vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir];
+	local object, type, closestWaypoint, side, containerSide = targetRefillObject.object, targetRefillObject.type, targetRefillObject.closestWaypoint, targetRefillObject.side, targetRefillObject.containerSide;
+
+	local hose = vehicle.cp.EifokLiquidManure.hoseToUse;
+	local sId1,sId2 = vehicle.cp.EifokLiquidManure.sId1,vehicle.cp.EifokLiquidManure.sId2;
+	local hoseTargetType = "veh";
+	local maxConnectionDistance = 3.9;
+	if hose.hoseLength ~= nil then
+		maxConnectionDistance = hose.hoseLength * 0.9;
+	end;
+	local vehConnX,vehConnY,vehConnZ = getWorldTranslation(vehicleConnectionRef.node);
+	local distVehConnToOtherConn = 0;
+	local tx,ty,tz;
+	if type == "MapHoseRefStation" then
+		tx,ty,tz = object.worldTranslation.x, object.worldTranslation.y, object.worldTranslation.z;
+		hoseTargetType = "station";
+	elseif type == "KotteContainer" then
+		tx,ty,tz = getWorldTranslation(object.cp.hoseRefs.conn[containerSide].node);
+	elseif type == "KotteZubringer" then
+		tx,ty,tz = getWorldTranslation(object.cp.hoseRefs.conn.right.node);
+	end;
+	distVehConnToOtherConn = Utils.vector3Length(vehConnX - tx, vehConnY - ty, vehConnZ - tz);
+
+	if distVehConnToOtherConn <= maxConnectionDistance then
+		allowedToDrive = false; --TODO: only continue if speed == 0
+
+		if not isDone then
+			--DETACH HOSE FROM PARK
+			if hose.ctors[sId1].isAttached and hose.ctors[sId1].veh == activeTool --[[and activeTool.hoseRef.refs[hose.ctors[sId1].refId].rt == "park"]] then --connected to vehicle (park)
+				courseplay:debug(string.format("\t%s: distVehConnToOtherConn=%.3f/%.3f, allowedToDrive=false", nameNum(activeTool), distVehConnToOtherConn, maxConnectionDistance), 14);
+				--courseplay:debug(string.format("\t\those.ctors[%d].isAttached=%s, hose.ctors[%d].isAttached=%s", sId1, tostring(hose.ctors[sId1].isAttached), sId2, tostring(hose.ctors[sId2].isAttached)), 14);
+				hose:setRelease(hose.ctors[sId1].veh, sId1, hose.ctors[sId1].refId); --WORKS
+				courseplay:debug(string.format("\t\those:setRelease(hose.ctors[%d].veh, %d, %d) [DETACH HOSE FROM PARK]", sId1, sId1, hose.ctors[sId1].refId), 14);
+			end;
+
+			--CONNECT HOSE TO OBJECT
+			if not hose.ctors[sId1].isAttached and not hose.ctors[sId2].isAttached then --not connected to anything
+				if type == "MapHoseRefStation" then
+					hose:setAttachStation(object, sId1); --WORKS
+					courseplay:debug(string.format("\t\those:setAttachStation(object, %d) [CONNECT HOSE TO STATION]", sId1), 14);
+				elseif type == "KotteZubringer" then
+					hose:setAttach(object, sId1, object.cp.hoseRefs.conn.right.id);
+					courseplay:debug(string.format("\t\those:setAttach(object, %d, %d) [CONNECT HOSE TO ZUBRINGER]", sId1, object.cp.hoseRefs.conn.right.id), 14);
+				elseif type == "KotteContainer" then
+					hose:setAttach(object, sId1, object.cp.hoseRefs.conn[containerSide].id);
+					courseplay:debug(string.format("\t\those:setAttach(object, %d, %d) [CONNECT HOSE TO CONTAINER]", sId1, object.cp.hoseRefs.conn[containerSide].id), 14);
+				end;
+			end;
+			
+			--CONNECT HOSE TO ACTIVETOOL
+			if hose.ctors[sId1][hoseTargetType] == object and not hose.ctors[sId2].isAttached then --connected to object
+				hose:setAttach(activeTool, sId2, vehicleConnectionRef.id); --WORKS
+				courseplay:debug(string.format("\t\those:setAttach(activeTool, %d, %d) [CONNECT HOSE TO ACTIVETOOL]", sId2, vehicleConnectionRef.id), 14);
+			end;
+
+			--START FILL
+			if hose.ctors[sId1][hoseTargetType] == object and hose.ctors[sId2].veh == activeTool and not isDone then --connected to object and vehicle (conn)
+				local pumpDirNum = 1;
+				if pumpDir == "push" then
+					pumpDirNum = -1;
+				end;
+				if activeTool.pumpDir ~= pumpDirNum then
+					activeTool:setPumpDir(pumpDirNum); --WORKS
+					courseplay:debug(string.format("\t\tactiveTool:setPumpDir(%d) [START FILL]", pumpDirNum), 14);
+				end;
+			end;
+		end; --END not isDone
+
+		--ZUBRINGER EMPTY
+		if not isDone and type == "KotteZubringer" and pumpDir == "pull" and object.fillLevel == 0 then
+			courseplay:debug(string.format("\t%s empty -> call stopAndDisconnect(), empty EifokLiquidManure table", nameNum(object)), 14);
+			courseplay.thirdParty.EifokLiquidManure.stopAndDisconnect(vehicle, activeTool, hoseTargetType, object, hose, correctSideRef);
+			courseplay.thirdParty.EifokLiquidManure.resetData(vehicle, pumpDir, false, false);
+		end;
+
+		--STOP FILL
+		if isDone then
+			courseplay:debug(string.format("\t%s full -> call stopAndDisconnect()", nameNum(activeTool)), 14);
+			courseplay.thirdParty.EifokLiquidManure.stopAndDisconnect(vehicle, activeTool, hoseTargetType, object, hose, correctSideRef);
+
+			--ALLOW DRIVING
+			if (vehicle.cp.EifokLiquidManure.leaveHoseAtStation and hose.ctors[sId1][hoseTargetType] == object and hose.ctors[sId2].veh == 0) or (not vehicle.cp.EifokLiquidManure.leaveHoseAtStation and hose.ctors[sId1].isAttached and hose.ctors[sId1].veh == activeTool) then --disconnected from connRef OR connected to vehicle (park)
+				courseplay.thirdParty.EifokLiquidManure.resetData(vehicle, pumpDir, pumpDir, false);
+				allowedToDrive = true;
+			end;
+		end; --END isDone
+	end; --END distVehConnToOtherConn <= maxConnectionDistance
+
+	return allowedToDrive;
+end;
+function courseplay.thirdParty.EifokLiquidManure.stopAndDisconnect(vehicle, activeTool, hoseTargetType, object, hose, correctSideRef)
+	local sId1,sId2 = vehicle.cp.EifokLiquidManure.sId1,vehicle.cp.EifokLiquidManure.sId2;
+
+	if hose.ctors[sId1][hoseTargetType] == object and hose.ctors[sId2].veh == activeTool then 
+		if activeTool.pumpDir ~= 0 then --still filling
+			activeTool:setPumpDir(0); --WORKS
+			courseplay:debug(string.format("\t\tactiveTool:setPumpDir(0) [STOP FILL]"), 14);
+		end;
+
+		--DETACH HOSE FROM ACTIVETOOL
+		if activeTool.pumpDir == 0 then --filling stopped
+			hose:setRelease(hose.ctors[sId2].veh, sId2, hose.ctors[sId2].refId); --WORKS
+			courseplay:debug(string.format("\t\those:setRelease(hose.ctors[%d].veh, %d, hose.ctors[%d].refId) [DETACH HOSE FROM ACTIVETOOL (conn)]", sId2, sId2, sId2), 14);
+		end;
+	end;
+
+	if not vehicle.cp.EifokLiquidManure.leaveHoseAtStation then
+		--DETACH HOSE FROM OBJECT
+		if hose.ctors[sId1][hoseTargetType] == object and hose.ctors[sId2].veh == 0 and not hose.ctors[sId2].isAttached then
+			local refId = hose.ctors[sId1].refId;
+			if hoseTargetType == "station" then
+				refId = 0;
+			end;
+			hose:setRelease(hose.ctors[sId1][hoseTargetType], sId1, refId); --WORKS
+			courseplay:debug(string.format("\t\those:setRelease(hose.ctors[%d].%s, %d, %d) [DETACH HOSE FROM OBJECT]", sId1, hoseTargetType, sId1, refId), 14);
+		end;
+
+		--ATTACH HOSE TO ACTIVETOOL (park)
+		if not hose.ctors[sId1].isAttached and not hose.ctors[sId2].isAttached then --not connected to anything
+			hose:setAttach(activeTool, sId1, correctSideRef.id); --WORKS
+			courseplay:debug(string.format("\t\those:setAttach(activeTool, %d, %d) [ATTACH HOSE TO ACTIVETOOL (park)]", sId1, correctSideRef.id), 14);
+		end;
+	end;
+	vehicle.cp.maxFieldSpeed = 0;
+	vehicle.cp.fillTrigger = nil;
+	courseplay:debug(string.format("\t\tset maxFieldSpeed to 0, fillTrigger set to nil", nameNum(activeTool)), 14);
+end;
+
+
+function courseplay.thirdParty.EifokLiquidManure.refillAtLiquidManureTrigger(vehicle, activeTool, fill_level, driveOn, allowedToDrive, lx, lz, dt)
+	--in front on trigger
+	if vehicle.cp.fillTrigger ~= nil then
+		local trigger = courseplay.triggers.all[vehicle.cp.fillTrigger];
+		if courseplay:fillTypesMatch(trigger, activeTool) then 
+			vehicle.cp.isInFilltrigger = true;
+		end;
+	end;
+
+	--NOTE: fillArm center (when extended) is 2.26m left and 3.428m front of the rootNode, and 0.768m above ground --> docking station needs to be 2.816m left and 3.428m front of Zunhammer rootNode
+
+	--in trigger
+	--Default liquidManureFillTrigger
+	local trigger = activeTool.lastSprayerFillTrigger or activeTool.sprayerFillTriggers[1];
+	local fillTypesMatch = courseplay:fillTypesMatch(trigger, activeTool);
+	if trigger ~= nil and trigger.vehiclesInRange ~= nil and trigger.vehiclesInRange[activeTool] and fillTypesMatch then
+		if activeTool.cp.isEifokZunhammer18500PU then --Zunhammer
+			local fillArmAnim = activeTool.fillarm.anim;
+			local fillArmIsClosed = fillArmAnim.curTime == 0;
+			local fillArmIsOpen = activeTool.fillarm.bIsOpen;
+			if fill_level < driveOn then --stop, extend arm and fill
+				allowedToDrive = false;
+				if not fillArmIsOpen then --if arm is not fully extended
+					local fillArmAnimNewTime = math.min(fillArmAnim.curTime + dt*fillArmAnim.speed, fillArmAnim.duration);
+					activeTool:setFillarm(fillArmAnimNewTime);
+				else
+					activeTool:setIsSprayerFilling(true, false);
+					vehicle.cp.infoText = string.format(courseplay:get_locale(vehicle, "CPloading"), vehicle.cp.tipperFillLevel, vehicle.cp.tipperCapacity);
+				end;
+			elseif fill_level >= driveOn then
+				activeTool:setIsSprayerFilling(false, false);
+				vehicle.cp.fillTrigger = nil;
+				if not fillArmIsClosed then
+					allowedToDrive = false;
+					local fillArmAnimNewTime = math.max(fillArmAnim.curTime - dt*fillArmAnim.speed, 0);
+					activeTool:setFillarm(fillArmAnimNewTime);
+				end;
+			end;
+
+		elseif activeTool.cp.isEifokKotteZubringer then --Kotte Zubringer
+			if fill_level < driveOn then
+				allowedToDrive = false;
+				activeTool:setIsSprayerFilling(true, false);
+				vehicle.cp.infoText = string.format(courseplay:get_locale(vehicle, "CPloading"), vehicle.cp.tipperFillLevel, vehicle.cp.tipperCapacity);
+			elseif fill_level >= driveOn then
+				activeTool:setIsSprayerFilling(false, false);
+				vehicle.cp.fillTrigger = nil;
+			end;
+		end;
+	end;
+	return allowedToDrive;
+end;
+
+function courseplay.thirdParty.EifokLiquidManure.setCustomHoseRefs(workTool)
+	if workTool.hoseRef == nil or workTool.cp.hoseRefs ~= nil then return; end;
+
+	workTool.cp.hoseRefs = {
+		conn = {};
+		park = {};
+		dock = {};
+	};
+	for i,ref in pairs(workTool.hoseRef.refs) do
+		local refX, refY, refZ = getWorldTranslation(ref.node);
+		local rootNodeToRefX,_,_ = worldToLocal(workTool.rootNode, refX, refY, refZ);
+		if rootNodeToRefX >= 0 then
+			workTool.cp.hoseRefs[ref.rt].left = ref;
+		else
+			workTool.cp.hoseRefs[ref.rt].right = ref;
+		end;
+	end;
+end;
+function courseplay.thirdParty.EifokLiquidManure.resetData(vehicle, targetObjectDir, searchDir, hasZunhammer)
+	vehicle.cp.EifokLiquidManure.hoseToUse = nil;
+	vehicle.cp.EifokLiquidManure.sId1, vehicle.cp.EifokLiquidManure.sId2 = nil, nil;
+	vehicle.cp.EifokLiquidManure.leaveHoseAtStation = false;
+
+	if courseplay:nilOrBool(hasZunhammer, true) then
+		vehicle.cp.hasEifokZunhammer18500PU = false;
+	end;
+
+	if targetObjectDir ~= nil and targetObjectDir ~= false then
+		vehicle.cp.EifokLiquidManure.targetRefillObject[targetObjectDir] = nil;
+	elseif targetObjectDir == nil then
+		vehicle.cp.EifokLiquidManure.targetRefillObject.pull = nil;
+		vehicle.cp.EifokLiquidManure.targetRefillObject.push = nil;
+	end;
+
+	if searchDir ~= nil and searchDir ~= false then
+		vehicle.cp.EifokLiquidManure.searchMapHoseRefStation[searchDir] = true;
+	elseif searchDir == nil then
+		vehicle.cp.EifokLiquidManure.searchMapHoseRefStation.pull = true;
+		vehicle.cp.EifokLiquidManure.searchMapHoseRefStation.push = true;
+	end;
+
+	end;

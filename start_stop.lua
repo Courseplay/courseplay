@@ -36,7 +36,7 @@ function courseplay:start(self)
 	self.record = false
 	self.record_pause = false
 	self.calculated_course = false
-	
+
 	AITractor.addCollisionTrigger(self, self);
 
 	self.orig_maxnumber = self.maxnumber
@@ -71,10 +71,10 @@ function courseplay:start(self)
 	self.dcheck = true
 	-- current position
 	local ctx, cty, ctz = getWorldTranslation(self.rootNode);
-	-- positoin of next waypoint
+	-- position of next waypoint
 	local cx, cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
 	-- distance
-	dist = courseplay:distance(ctx, ctz, cx, cz)
+	local dist = courseplay:distance(ctx, ctz, cx, cz)
 	
 
 	for k,workTool in pairs(self.tippers) do    --TODO temporary solution (better would be Tool:getIsAnimationPlaying(animationName))
@@ -89,7 +89,8 @@ function courseplay:start(self)
 
 	if self.ai_state == 0 then
 		local nearestpoint = dist
-		local wpanz = 0
+		local numWaitPoints = 0
+		self.cp.waitPoints = {};
 		self.cp.shovelFillStartPoint = nil
 		self.cp.shovelFillEndPoint = nil
 		self.cp.shovelEmptyPoint = nil
@@ -106,30 +107,38 @@ function courseplay:start(self)
 			-- specific Workzone
 			if self.ai_mode == 4 or self.ai_mode == 6 or self.ai_mode == 7 then
 				if wait then
-					wpanz = wpanz + 1
+					numWaitPoints = numWaitPoints + 1
+					self.cp.waitPoints[numWaitPoints] = i;
 				end
 
-				if wpanz == 1 and (self.startWork == nil or self.startWork == 0) then
+				if numWaitPoints == 1 and (self.startWork == nil or self.startWork == 0) then
 					self.startWork = i
 				end
-				if wpanz > 1 and (self.stopWork == nil or self.stopWork ==0)  then
+				if numWaitPoints > 1 and (self.stopWork == nil or self.stopWork == 0) then
 					self.stopWork = i
 				end
-			end;
-			
-			--work points for shovel
-			if self.ai_mode == 9 then
+
+			--unloading point for transporter
+			elseif self.ai_mode == 8 then
 				if wait then
-					wpanz = wpanz + 1;
+					numWaitPoints = numWaitPoints + 1;
+					self.cp.waitPoints[numWaitPoints] = i;
+				end;
+
+			--work points for shovel
+			elseif self.ai_mode == 9 then
+				if wait then
+					numWaitPoints = numWaitPoints + 1;
+					self.cp.waitPoints[numWaitPoints] = i;
 				end;
 				
-				if wpanz == 1 and self.cp.shovelFillStartPoint == nil then
+				if numWaitPoints == 1 and self.cp.shovelFillStartPoint == nil then
 					self.cp.shovelFillStartPoint = i;
 				end;
-				if wpanz == 2 and self.cp.shovelFillEndPoint == nil then
+				if numWaitPoints == 2 and self.cp.shovelFillEndPoint == nil then
 					self.cp.shovelFillEndPoint = i;
 				end;
-				if wpanz == 3 and self.cp.shovelEmptyPoint == nil then
+				if numWaitPoints == 3 and self.cp.shovelEmptyPoint == nil then
 					self.cp.shovelEmptyPoint = i;
 				end;
 			end;
@@ -148,17 +157,19 @@ function courseplay:start(self)
 
 		-- mode 6 without start and stop point, set them at start and end, for only-on-field-courses
 		if (self.ai_mode == 4 or self.ai_mode == 6) then
-			if wpanz == 0 or self.startWork == nil then
+			if numWaitPoints == 0 or self.startWork == nil then
 				self.startWork = 1;
 			end;
-			if wpanz == 0 or self.stopWork == nil then
+			if numWaitPoints == 0 or self.stopWork == nil then
 				self.stopWork = self.maxnumber;
 			end;
 		end
 		if self.recordnumber > self.maxnumber then
 			self.recordnumber = 1
 		end
-	end
+
+		self.cp.numWaitPoints = numWaitPoints;
+	end --END if ai_state == 0
 
 	if self.recordnumber > 2 and self.ai_mode ~= 4 and self.ai_mode ~= 6 then
 		self.loaded = true
@@ -194,9 +205,10 @@ function courseplay:start(self)
 		
 	end
 
-	
-	
-	--validation: can switch ai_mode?
+	--EifokLiquidManure
+	self.cp.EifokLiquidManure.searchMapHoseRefStation.pull = true;
+	self.cp.EifokLiquidManure.searchMapHoseRefStation.push = true;
+
 	courseplay:validateCanSwitchMode(self);
 end
 
@@ -266,6 +278,8 @@ function courseplay:stop(self)
 	self.drive = false
 	self.play = true
 	self.dcheck = false
+	self.cp.numWaitPoints = 0;
+	self.cp.waitPoints = {};
 
 	self.motor:setSpeedLevel(0, false);
 	self.motor.maxRpmOverride = nil;
@@ -281,6 +295,10 @@ function courseplay:stop(self)
 		self.WpOffsetX = self.cp.tempWpOffsetX
 		self.cp.tempWpOffsetX = nil
 	end
+
+	--reset EifokLiquidManure
+	courseplay.thirdParty.EifokLiquidManure.resetData(self);
+
 	--validation: can switch ai_mode?
 	courseplay:validateCanSwitchMode(self);
 end

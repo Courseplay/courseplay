@@ -91,8 +91,8 @@ function courseplay:setLocales()
 	--print("\t### Courseplay: setLocales() finished");
 end;
 
---SEARCH AND SET ATTACHABLE'S self.name IF NOT EXISTING
-function courseplay:setAttachablesName(xmlFile)
+function courseplay:attachableLoad(xmlFile)
+	--SEARCH AND SET ATTACHABLE'S self.name IF NOT EXISTING
 	if self.name == nil then
 		local nameSearch = { "vehicle.name." .. g_languageShort, "vehicle.name.en", "vehicle.name", "vehicle#type" };
 		for i,xmlPath in pairs(nameSearch) do
@@ -107,6 +107,8 @@ function courseplay:setAttachablesName(xmlFile)
 			--print(tostring(self.configFileName) .. ": self.name was nil, new name is " .. self.name);
 		end;
 	end;
+
+	--SET SPECIALIZATION VARIABLE
 	if self.cp == nil then
 		self.cp = {}
 	end
@@ -128,6 +130,7 @@ function courseplay:setAttachablesName(xmlFile)
 	self.cp.hasSpecializationWindrower = SpecializationUtil.hasSpecialization(Windrower, self.specializations) 
 	self.cp.hasSpecializationCultivator = SpecializationUtil.hasSpecialization(Cultivator, self.specializations)
 	self.cp.hasSpecializationFruitPreparer = SpecializationUtil.hasSpecialization(FruitPreparer, self.specializations) or SpecializationUtil.hasSpecialization(fruitPreparer, self.specializations)
+	self.cp.hasSpecializationAugerWagon = SpecializationUtil.hasSpecialization(AugerWagon, self.specializations);
 	--[[ Debugs:
 	if self.cp.hasSpecializationFruitPreparer then print("		FruitPreparer")end
 	if self.cp.hasSpecializationTedder then print("		Tedder")end
@@ -147,8 +150,74 @@ function courseplay:setAttachablesName(xmlFile)
 	if self.cp.hasSpecializationBaleLoader then print("		BaleLoader") end
 	if self.cp.hasSpecializationPlough then print("		Plough") end
 	]]
+
+
+	--ADD ATTACHABLES TO GLOBAL REFERENCE LIST
+	--Zunhammer Docking Station (zunhammerDocking.i3d / ManureDocking.lua) [Eifok Team]
+	if Utils.endsWith(self.typeName, "zhAndock") and Utils.endsWith(self.configFileName, "zunhammerDocking.xml") then
+		if courseplay.thirdParty.EifokLiquidManure == nil then courseplay.thirdParty.EifokLiquidManure = {}; end;
+		if courseplay.thirdParty.EifokLiquidManure.dockingStations == nil then courseplay.thirdParty.EifokLiquidManure.dockingStations = {}; end;
+
+		self.cp.isEifokZunhammerDockingStation = true;
+		courseplay.thirdParty.EifokLiquidManure.dockingStations[self.rootNode] = self;
+
+	--Kotte Containers (KotteContainer.i3d) [Eifok Team]
+	elseif Utils.endsWith(self.typeName, "kotte") and Utils.endsWith(self.configFileName, "kotte.xml") then
+		if courseplay.thirdParty.EifokLiquidManure == nil then courseplay.thirdParty.EifokLiquidManure = {}; end;
+		if courseplay.thirdParty.EifokLiquidManure.KotteContainers == nil then courseplay.thirdParty.EifokLiquidManure.KotteContainers = {}; end;
+
+		self.cp.isEifokKotteContainer = true;
+		courseplay.thirdParty.EifokLiquidManure.KotteContainers[self.rootNode] = self;
+
+	--Kotte Zubringer (KotteZubringer.i3d) [Eifok Team]
+	elseif Utils.endsWith(self.typeName, "zubringer") and Utils.endsWith(self.configFileName, "zubringer.xml") then
+		if courseplay.thirdParty.EifokLiquidManure == nil then courseplay.thirdParty.EifokLiquidManure = {}; end;
+		if courseplay.thirdParty.EifokLiquidManure.KotteZubringers == nil then courseplay.thirdParty.EifokLiquidManure.KotteZubringers = {}; end;
+
+		courseplay.thirdParty.EifokLiquidManure.KotteZubringers[self.rootNode] = self;
+	end;
 end;
-Attachable.load = Utils.appendedFunction(Attachable.load, courseplay.setAttachablesName);
+Attachable.load = Utils.appendedFunction(Attachable.load, courseplay.attachableLoad);
+
+function courseplay:attachableDelete()
+	if self.cp ~= nil then
+		if self.cp.isEifokZunhammerDockingStation then
+			courseplay.thirdParty.EifokLiquidManure.dockingStations[self.rootNode] = nil;
+		elseif self.cp.isEifokKotteZubringer then
+			courseplay.thirdParty.EifokLiquidManure.KotteContainers[self.rootNode] = nil;
+		elseif self.cp.isEifokKotteContainer then
+			courseplay.thirdParty.EifokLiquidManure.KotteZubringers[self.rootNode] = nil;
+		end;
+	end;
+end;
+Attachable.delete = Utils.prependedFunction(Attachable.delete, courseplay.attachableDelete);
+
+function courseplay:vehicleLoad(xmlFile)
+	--Zunhammer Hose (zunhammerHose.i3d / Hose.lua) [Eifok Team]
+	if Utils.endsWith(self.typeName, "zhHose") or Utils.endsWith(self.configFileName, "zunhammerHose.xml") then
+		if self.cp == nil then self.cp = {}; end;
+		if courseplay.thirdParty.EifokLiquidManure == nil then courseplay.thirdParty.EifokLiquidManure = {}; end;
+		if courseplay.thirdParty.EifokLiquidManure.hoses == nil then courseplay.thirdParty.EifokLiquidManure.hoses = {}; end;
+
+		self.cp.isEifokZunhammerHose = true;
+		table.insert(courseplay.thirdParty.EifokLiquidManure.hoses, self);
+		--courseplay.thirdParty.EifokLiquidManure.hoses[self.msh] = self;
+	end;
+end;
+Vehicle.load = Utils.appendedFunction(Vehicle.load, courseplay.vehicleLoad);
+
+function courseplay:vehicleDelete()
+	if self.cp ~= nil and self.cp.isEifokZunhammerHose then
+		for i,hose in pairs(courseplay.thirdParty.EifokLiquidManure.hoses) do
+			if hose.msh == self.msh then
+				table.remove(courseplay.thirdParty.EifokLiquidManure.hoses, i);
+				break;
+			end;
+		end;
+		--courseplay.thirdParty.EifokLiquidManure.hoses[self.msh] = nil;
+	end;
+end;
+Vehicle.delete = Utils.prependedFunction(Vehicle.delete, courseplay.vehicleDelete);
 
 courseplay:setLocales();
 courseplay:register();
