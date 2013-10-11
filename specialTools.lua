@@ -307,7 +307,11 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 	
 	elseif workTool.cp.isEifokKotteZubringer then
 		if unload then
-			return courseplay:handleSpecialSprayer(self, workTool, workTool.fillLevel, nil, allowedToDrive, nil, nil, nil, "push");
+			local fill_level = workTool.fillLevel * 100 / workTool.capacity;
+			if self.cp.tipperFillLevel ~= nil then
+				fill_level = self.cp.tipperFillLevel * 100 / self.cp.tipperCapacity;
+			end;
+			return courseplay:handleSpecialSprayer(self, workTool, fill_level, nil, allowedToDrive, nil, nil, nil, "push");
 		end;
 
 	--Mchale998 bale wrapper
@@ -1250,7 +1254,7 @@ function courseplay.thirdParty.EifokLiquidManure.findRefillObject(vehicle, activ
 								targetObjectType = "KotteContainer";
 								side = connSide;
 								containerSide = contConnSide;
-								courseplay:debug(string.format("\t\t[KOTTECONTAINER] set targetObject (KotteContainerId=%d) - closestDist=%.3f, side=%s, containerSide=%s", container.cp.KotteContainerId, closestDistance, side, containerSide), 14);
+								courseplay:debug(string.format("\t\t[KOTTECONTAINER] set targetObject (KotteContainerId=%s) - closestDist=%.3f, side=%s, containerSide=%s", tostring(container.rootNode), closestDistance, side, containerSide), 14);
 							end;
 						end;
 					end;
@@ -1285,7 +1289,7 @@ function courseplay.thirdParty.EifokLiquidManure.findRefillObject(vehicle, activ
 								targetObject = zubringer;
 								targetObjectType = "KotteZubringer";
 								side = connSide;
-								courseplay:debug(string.format("\t\t[KOTTEZUBRINGER] set targetObject (KotteZubringerId=%d) - closestDist=%.3f, side=%s", zubringer.cp.KotteZubringerId, closestDistance, side), 14);
+								courseplay:debug(string.format("\t\t[KOTTEZUBRINGER] set targetObject (KotteZubringerId=%s) - closestDist=%.3f, side=%s", tostring(zubringer.rootNode), closestDistance, side), 14);
 							end;
 						end;
 						if targetObject ~= nil then
@@ -1315,9 +1319,16 @@ function courseplay.thirdParty.EifokLiquidManure.refillViaHose(vehicle, activeTo
 	if vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir] ~= nil then --object found
 		local targetRefillObject = vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir];
 		local object, type, closestWaypoint, side, containerSide = targetRefillObject.object, targetRefillObject.type, targetRefillObject.closestWaypoint, targetRefillObject.side, targetRefillObject.containerSide;
-		local isDone = fill_level == driveOn;
+
+		local objectIsFull =  object.fillLevel ~= nil and object.capacity ~= nil and object.fillLevel >= object.capacity;
+		local objectIsEmpty = object.fillLevel ~= nil and object.fillLevel == 0;
+		local iAmFull =  fill_level == driveOn;
+		local iAmEmpty = fill_level == 0;
+
+		local isDone = iAmFull or (objectIsEmpty and fill_level > vehicle.required_fill_level_for_drive_on);
 		if pumpDir == "push" then
-			isDone = fill_level == 0;
+			isDone = iAmEmpty or (objectIsFull and fill_level < vehicle.required_fill_level_for_follow);
+			--courseplay:debug(string.format("%s: isDone=%s, fill_level=%.1f, objectIsFull=%s (%s/%s), required_fill_level_for_follow=%d", nameNum(activeTool), tostring(isDone), fill_level, tostring(objectIsFull), tostring(object.fillLevel), tostring(object.capacity), vehicle.required_fill_level_for_follow), 14);
 		end;
 
 		local proceedWithFilling = false;
@@ -1469,26 +1480,41 @@ function courseplay.thirdParty.EifokLiquidManure.connectRefillDisconnect(vehicle
 			--START FILL
 			if hose.ctors[sId1][hoseTargetType] == object and hose.ctors[sId2].veh == activeTool and not isDone then --connected to object and vehicle (conn)
 				local pumpDirNum = 1;
+				local objectIsReady = object.fillLevel > 0;
 				if pumpDir == "push" then
 					pumpDirNum = -1;
+					objectIsReady = object.capacity == nil or (object.capacity ~= nil and object.fillLevel < object.capacity);
 				end;
-				if activeTool.pumpDir ~= pumpDirNum then
+				
+				if objectIsReady and activeTool.pumpDir ~= pumpDirNum then
 					activeTool:setPumpDir(pumpDirNum); --WORKS
 					courseplay:debug(string.format("\t\tactiveTool:setPumpDir(%d) [START FILL]", pumpDirNum), 14);
 				end;
 			end;
 		end; --END not isDone
 
+		--[[
 		--ZUBRINGER EMPTY
-		if not isDone and type == "KotteZubringer" and pumpDir == "pull" and object.fillLevel == 0 then
+		if not isDone and (type == "KotteZubringer" or type == "KotteContainer") and pumpDir == "pull" and object.fillLevel == 0 then
 			courseplay:debug(string.format("\t%s empty -> call stopAndDisconnect(), empty EifokLiquidManure table", nameNum(object)), 14);
 			courseplay.thirdParty.EifokLiquidManure.stopAndDisconnect(vehicle, activeTool, hoseTargetType, object, hose, correctSideRef);
 			courseplay.thirdParty.EifokLiquidManure.resetData(vehicle, pumpDir, false, false);
 		end;
+		]]
 
 		--STOP FILL
 		if isDone then
-			courseplay:debug(string.format("\t%s full -> call stopAndDisconnect()", nameNum(activeTool)), 14);
+			if courseplay.debugChannels[14] then
+				local objectIsFull  = object.fillLevel ~= nil and object.capacity ~= nil and object.fillLevel >= object.capacity;
+				local objectIsEmpty = object.fillLevel ~= nil and object.fillLevel == 0;
+				local iAmFull  = activeTool.fillLevel == activeTool.capacity;
+				local iAmEmpty = activeTool.fillLevel == 0;
+				if pumpDir == "push" then
+					print(string.format("\t%s isDone=true, iAmEmpty=%s, objectIsFull=%s -> call stopAndDisconnect()", nameNum(activeTool), tostring(iAmEmpty), tostring(objectIsFull)));
+				else
+					print(string.format("\t%s isDone=true, iAmFull=%s, objectIsEmpty=%s -> call stopAndDisconnect()", nameNum(activeTool), tostring(iAmFull), tostring(objectIsEmpty)));
+				end;
+			end;
 			courseplay.thirdParty.EifokLiquidManure.stopAndDisconnect(vehicle, activeTool, hoseTargetType, object, hose, correctSideRef);
 
 			--ALLOW DRIVING

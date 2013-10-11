@@ -330,7 +330,7 @@ function courseplay:drive(self, dt)
 				if self.tipper_attached and self.startWork ~= nil and self.stopWork ~= nil and self.tippers ~= nil and not isInWorkArea then
 					allowedToDrive,lx,lz = courseplay:refillSprayer(self, fill_level, 100, allowedToDrive, lx, lz, dt);
 				end;
-				if not self.cp.hasEifokZunhammer18500PU and (courseplay:timerIsThrough(self, "fillLevelChange") or self.last_fill_level == nil) then --TODO: keep excluding Zunhammer?
+				if courseplay:timerIsThrough(self, "fillLevelChange") or self.last_fill_level == nil then
 					if self.last_fill_level ~= nil and fill_level == self.last_fill_level and fill_level > self.required_fill_level_for_drive_on then
 						drive_on = true
 					end
@@ -604,7 +604,7 @@ function courseplay:drive(self, dt)
 	end
 
 	--Open/close cover
-	if self.cp.tipperHasCover and self.ai_mode == 1 or self.ai_mode == 2 or self.ai_mode == 5 or self.ai_mode == 6 then
+	if self.cp.tipperHasCover and (self.ai_mode == 1 or self.ai_mode == 2 or self.ai_mode == 5 or self.ai_mode == 6) then
 		local showCover = false;
 
 		if self.ai_mode ~= 6 then
