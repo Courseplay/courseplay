@@ -34,7 +34,6 @@ function courseplay:load(xmlFile)
 		self.cp.mode7Unloading = false
 	end
 	if self.isRealistic then
-		self.cp.throttlePosition = {0.2,0.5,1}
 		self.cp.trailerPushSpeed = 0
 	end
 	

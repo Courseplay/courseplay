@@ -205,6 +205,7 @@ function courseplay:turn(self, dt) --!!!
 	end;
 
 	if updateWheels then
+		local allowedToDrive = true
 		if self.isRealistic then
 			courseplay:setMRSpeed(self, self.turn_speed, 1,false)
 		else
@@ -217,7 +218,7 @@ function courseplay:turn(self, dt) --!!!
 		end;
 		if self.cp.TrafficBrake then
 			if self.isRealistic then
-				Steerable.updateVehiclePhysics(self, 1 , true, 0, true, dt);
+				allowedToDrive = false
 			else
 				moveForwards = false;
 				lx = 0
@@ -228,8 +229,11 @@ function courseplay:turn(self, dt) --!!!
 			lx = -lx
 		end
 		if self.isRealistic then
-			courseplay:driveInMRDirection(self, lx,lz,moveForwards,dt)
-			--AIVehicleUtil.driveInDirection(self, dt, 25, 0.5, 0.5, 20, true, moveForwards, lx, lz, self.sl, 0.9);
+			if self.cp.turnStage < 1 then
+				lx = 0
+				lz = 1
+			end
+ 			courseplay:driveInMRDirection(self, lx,lz,moveForwards,dt,allowedToDrive)
 		else
 			AIVehicleUtil.driveInDirection(self, dt, 25, 0.5, 0.5, 20, true, moveForwards, lx, lz, self.sl, 0.9);
 		end

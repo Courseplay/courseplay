@@ -188,6 +188,7 @@ function courseplay:register_at_combine(self, combine)
 	table.insert(combine.courseplayers, self)
 	self.courseplay_position = table.getn(combine.courseplayers)
 	self.active_combine = combine
+	courseplay:askForSpecialSettings(combine, combine)
 
 	--OFFSET
 	if combine.cp == nil then

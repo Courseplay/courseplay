@@ -200,7 +200,6 @@ function courseplay:start(self)
 	self.dcheck = false
 	
 	if self.isRealistic then
-		self.cp.savedTransmissionMode = self.realTransmissionMode.currentMode
 		self.cpSavedRealAWDModeOn = self.realAWDModeOn
 		
 	end
@@ -249,13 +248,12 @@ function courseplay:stop(self)
 	if self.isRealistic then
 		self.motor.speedLevel = 0 
 		self:realSetAwdActive(self.cpSavedRealAWDModeOn)
-		for i = 1,3 do
-			if self.realTransmissionMode.currentMode ~= self.cp.savedTransmissionMode  then
-				self:realSetNextTransmissionMode();
-			end
+		if self.realForceAiDriven then
+			self.realForceAiDriven = false
 		end
 	end
 	self.cp.fillTrigger = nil
+	self.cp.unloadOrder = false
 	AITractor.removeCollisionTrigger(self, self);
 
 

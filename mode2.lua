@@ -966,22 +966,41 @@ function courseplay:unload_combine(self, dt)
 		else
 			allowedToDrive = false
 		end
-		
+
 		if not allowedToDrive then
-			target_x, target_z = 0, 1
-			self.motor:setSpeedLevel(0, false);
-			AIVehicleUtil.driveInDirection(self, dt, self.steering_angle, 0, 0, 28, false, moveForwards, lx, lz)
+			if self.isRealistic then
+				courseplay:driveInMRDirection(self, 0,1,true,dt,false)
+			else
+				AIVehicleUtil.driveInDirection(self, dt, 30, 0, 0, 28, false, moveForwards, 0, 1)
+				if g_server ~= nil then
+					AIVehicleUtil.driveInDirection(self, dt, self.steering_angle, 0.5, 0.5, 28, false, moveForwards, 0, 1)
+				end
+				
+			end
+			-- unload active tipper if given
+			return;
 		end
 		
 		if self.cp.TrafficBrake then
-			moveForwards = false
+			if self.isRealistic then
+				AIVehicleUtil.mrDriveInDirection(self, dt, 1, false, true, 0, 1, Self.sl, true, true)
+			else
+				fwd = false
+				lx = 0
+				lz = 1
+			end
 		end
-		self.cp.TrafficBrake = false
 
+		self.cp.TrafficBrake = false
+		if mode == 5 or mode == 2 then
+			--target_x, target_z = courseplay:isTheWayToTargetFree(self,target_x, target_z)
+		end
+		
 		courseplay:setTrafficCollision(self, target_x, target_z)
 		
-		if self.isRealistic then 
-			courseplay:driveInMRDirection(self, target_x, target_z,moveForwards, dt);
+		if self.isRealistic then
+		
+			courseplay:driveInMRDirection(self, target_x, target_z,moveForwards, dt, allowedToDrive);
 		else
 			AIVehicleUtil.driveInDirection(self, dt, self.steering_angle, 0.5, 0.5, 8, allowedToDrive, moveForwards, target_x, target_z, self.sl, 0.4)
 		end
@@ -1078,7 +1097,7 @@ function courseplay:calculateCombineOffset(self, combine)
 		offs = -4.3;
 	elseif self.auto_combine_offset and combine.name == "Grimme SE 75-55" then
 		offs =  4.3;
-	elseif self.auto_combine_offset and combine.name == "Fahr M66" then
+	elseif self.auto_combine_offset and (combine.name == "Fahr M66" or combine.name == "Fahr M66 EX") then
 		offs =  4.4;
 	elseif self.auto_combine_offset and Utils.endsWith(combine.configFileName, "JF_1060.xml") then
 		offs =  7

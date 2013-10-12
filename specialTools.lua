@@ -1660,4 +1660,4 @@ function courseplay.thirdParty.EifokLiquidManure.resetData(vehicle, targetObject
 		vehicle.cp.EifokLiquidManure.searchMapHoseRefStation.push = true;
 	end;
 
-	end;
+end;
