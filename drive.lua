@@ -889,32 +889,37 @@ end
 
 
 function courseplay:setTrafficCollision(self, lx, lz)
-	local nx, ny, nz = localDirectionToWorld(self.cp.DirectionNode, lx, 0, lz)
-	local tx, ty, tz = localToWorld(self.cp.DirectionNode, 0,1,4)
 	local distance = 15
-	if self.isRealistic then
-		distance = 20
+	if self.isRealistic and math.abs(lx) < 0.1 then
+		local brakingDistance = self.realGroundSpeed/5
+		distance = math.max(distance, distance * brakingDistance)
 	end
-	if self.traffic_vehicle_in_front == nil and math.abs(lx) <= 0.1 then
-		courseplay:debug(nameNum(self)..": call traffic raycast",3)
-		raycastAll(tx, ty, tz, nx, ny, nz, "findTrafficCollisionCallback", distance, self)
-	end
-
-	--local maxlx = 0.5; --math.sin(maxAngle); --sin30°  old was : 0.7071067 sin 45°
+	local factor = 1-math.abs(lx)
+	distance = distance * factor
+	--print("lx: "..tostring(lx).."	distance: "..tostring(distance))
+	local maxlx = 0.5; --math.sin(maxAngle); --sin30°  old was : 0.7071067 sin 45°
 	local colDirX = lx;
 	local colDirZ = lz;
-	--[[if colDirX > maxlx then
+	if colDirX > maxlx then
 		colDirX = maxlx;
 	elseif colDirX < -maxlx then
 		colDirX = -maxlx;
 	end;
 	if colDirZ < -0.4 then
 		colDirZ = 0.4;
-	end;]]
+	end;
 	--courseplay:debug(string.format("colDirX: %f colDirZ %f ",colDirX,colDirZ ), 3)
+	local nx, ny, nz = localDirectionToWorld(self.cp.DirectionNode, colDirX, 0, colDirZ)
+	if self.traffic_vehicle_in_front == nil then
+		for i=1,2 do
+			local tx, ty, tz = localToWorld(self.cp.DirectionNode, 0,i,4)
+			courseplay:debug(nameNum(self)..": call traffic raycast["..tostring(i).."]",3)
+			raycastAll(tx, ty, tz, nx, ny, nz, "findTrafficCollisionCallback", distance, self)
+			if courseplay.debugChannels[3] then drawDebugLine(tx, ty, tz, 1, 1, 1, tx +(distance*nx), ty +(distance*ny), tz +(distance*nz), 1, 1, 1) end
+		end
+	end
 
 	if courseplay.debugChannels[3] then
-		drawDebugLine(tx, ty, tz, 1, 1, 1, tx +(distance*nx), ty +(distance*ny), tz +(distance*nz), 1, 1, 1);
 		local x,y,z = getWorldTranslation(self.aiTrafficCollisionTrigger)
 		local x1,y1,z1 = localToWorld(self.aiTrafficCollisionTrigger, colDirX*5, 0, colDirZ*5 )
 		local x2,y2,z2 = localToWorld(self.aiTrafficCollisionTrigger, (colDirX*5)+ 1.5 , 0, colDirZ*5 )
@@ -939,18 +944,18 @@ function courseplay:check_traffic(self, display_warnings, allowedToDrive)
 	local xvx, xvy, xvz = getWorldTranslation(self.aiTrafficCollisionTrigger)
 	local x, y, z = getWorldTranslation(self.cp.DirectionNode)
 	local x1, y1, z1 = 0,0,0
-	
 	--courseplay:debug(tableShow(self, nameNum(self), 4), 4)
 	if self.CPnumCollidingVehicles ~= nil and self.CPnumCollidingVehicles > 0 then
 		if vehicle_in_front ~= nil and not (self.ai_mode == 9 and vehicle_in_front.allowFillFromAir) then
+			local halfLength = Utils.getNoNil(vehicle_in_front.sizeLength,5)/2
 			x1,z1 = AIVehicleUtil.getDriveDirection(self.traffic_vehicle_in_front, x, y, z);
 			if z1 > -0.9 then -- tractor in front of vehicle face2face or beside < 4 o'clock
 				ahead = true
 			end
 			if vehicle_in_front.lastSpeedReal == nil or vehicle_in_front.lastSpeedReal*3600 < 5 or ahead then
 				--courseplay:debug(nameNum(self) .. ": colliding", 4)
-				courseplay:debug(nameNum(self)..": check_traffic:	tz: "..tostring(tz),3)
-				if tz <= 4 then
+				courseplay:debug(nameNum(self)..": check_traffic:	distance: "..tostring(tz-halfLength),3)
+				if tz <= 2 + halfLength then
 					allowedToDrive = false;
 					in_traffic = true
 					courseplay:debug(nameNum(self)..": check_traffic:	Stop",3)
@@ -1242,7 +1247,6 @@ function courseplay:driveInMRDirection(self, lx,lz,fwd,dt,allowedToDrive)
 		lx = -lx
 		lz = -lz
 	end
-	print("driveInMRDirection: allowedToDrive = "..tostring(allowedToDrive))
 	--AIVehicleUtil.mrDriveInDirection(self, dt, acceleration, allowedToDrive, moveForwards, lx, lz, speedLevel, useReduceSpeed, noDefaultHiredWorker)
 	AIVehicleUtil.mrDriveInDirection(self, dt, 1, allowedToDrive, fwd, lx, lz, self.sl, true, true)
 			

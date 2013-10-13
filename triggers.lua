@@ -37,7 +37,8 @@ function courseplay:findTrafficCollisionCallback(transformId, x, y, z, distance)
 		self.cp.tempCollis[transformId] = true
 		courseplay:debug(nameNum(self)..": raycast callback: found \""..tostring(name).."\" -> call handleTrafficCollisions onEnter",3)
 		courseplay:handleTrafficCollisions(self, triggerId, transformId, true, false)
-		
+	else
+		return true
 	end
 	return false
 end
@@ -60,7 +61,7 @@ function courseplay:handleTrafficCollisions(self, triggerId, otherId, onEnter, o
 			local OtherIdisCloser = true
 			local vehicle = g_currentMission.nodeToVehicle[otherId];
 			local vehicleInFront = g_currentMission.nodeToVehicle[self.traffic_vehicle_in_front];
-			if onEnter and self.traffic_vehicle_in_front ~= nil and vehicleInFront ~= nil then
+			if onEnter and self.traffic_vehicle_in_front ~= nil and vehicleInFront ~= nil and vehicle ~= nil then
 				local distanceToOtherId = courseplay:distance_to_object(self, vehicle)
 				local distanceToVehicleInFront = courseplay:distance_to_object(self, vehicleInFront)
 				courseplay:debug(nameNum(self)..": 	checking Distances: new: "..tostring(distanceToOtherId).." vs. current: "..tostring(distanceToVehicleInFront),3);
