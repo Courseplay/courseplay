@@ -1,4 +1,4 @@
-Icons
+Icons et al.
 ------------------------------------
 * Tractor icon by Olivier Guin - under "CC BY 3.0" license
 * Globe icon by Nicholas Menghini - under "CC BY 3.0" license
@@ -14,3 +14,22 @@ Icons
 * "Diamond", start, stop, wait and cross sign i3Ds by Claus Pedersen (Satissis)
 
 * All other icons and graphics by Jakob Tischler
+
+====================================
+
+Translations
+------------------------------------
+* Czech: Albi
+* Spanish: JFMtb
+* French: Guillaume Dupuy
+* Italian: JD7530
+
+====================================
+
+Former Developers
+------------------------------------
+* Lautschreier
+* Hummel
+* Wolverin0815
+* Bastian82
+* Skydancer

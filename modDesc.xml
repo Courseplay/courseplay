@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="13">
-	<version>3.41.0166</version>
+	<version>3.41.0167</version>
 	<author>Jakob Tischler / Thomas Gärtner / Horoman</author>
 	<title>
 		<de>Courseplay</de>        
@@ -13,56 +13,32 @@
 	<description>
 		<de>
 <![CDATA[Entwickler: Jakob Tischler, Thomas Gärtner, Horoman
-Ehemalige Entwickler: Lautschreier, Hummel, Wolverin0815, Bastian82, Skydancer
-Französische Übersetzung: Guillaume Dupuy
-Italienische Übersetzung: JD7530
-Spanische Übersetzung: JFMtb
-Tschechische Übersetzung: Albi
+Übersetzungen: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530
 ]]>
 		</de>
 		<en>
 <![CDATA[Developers: Jakob Tischler, Thomas Gärtner, Horoman
-Former developers: Lautschreier, Hummel, Wolverin0815, Bastian82, Skydancer
-French translation: Guillaume Dupuy
-Italian translation: JD7530
-Spanish translation: JFMtb
-Czech translation: Albi
+Translations: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530
 ]]>
 		</en>
 		<es>
 <![CDATA[Desarrolladores: Jakob Tischler, Thomas Gärtner, Horoman
-Desarrolladores antiguos: Lautschreier, Hummel, Wolverin0815, Bastian82, Skydancer
-Traddución en francés: Guillaume Dupuy
-Traddución en italiano: JD7530
-Traddución en español: JFMtb
-Traddución en checo: Albi
+Tradduciónes: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530
 ]]>
 		</es>
 		<fr>
 <![CDATA[Développeurs: Jakob Tischler, Thomas Gärtner, Horoman
-Développeurs anciens: Lautschreier, Hummel, Wolverin0815, Bastian82, Skydancer
-Traduction français: Guillaume Dupuy
-Traduction italien: JD7530
-Traduction espagnol: JFMtb
-Traduction tchèque: Albi
+Traductions: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530
 ]]>
 		</fr>
 		<it>
 <![CDATA[Sviluppatori: Jakob Tischler, Thomas Gärtner, Horoman
-Ex sviluppatori: Lautschreier, Hummel, Wolverin0815, Bastian82, Skydancer
-Traduzione francese: Guillaume Dupuy
-Traduzione italiano: JD7530
-Traduzione spagnolo: JFMtb
-Traduzione ceco: Albi
+Traduzioni: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530
 ]]>
 		</it>
 		<cz>
 <![CDATA[Vývojáři: Jakob Tischler, Thomas Gärtner, Horoman
-Bývalí vývojáři: Lautschreier, Hummel, Wolverin0815, Bastian82, Skydancer
-Francouzký překlad: Guillaume Dupuy
-Italský překlad: JD7530
-Španělský překlad: JFMtb
-Český překlad: Albi
+Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530
 ]]>
 		</cz>
  	</description>
