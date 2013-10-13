@@ -1125,7 +1125,7 @@ function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive, lx,
 			local canRefill = (activeToolFillLevel ~= nil and activeToolFillLevel < driveOn) and fillTypesMatch;
 			--ManureLager: activeTool.ReFillTrigger has to be nil so it doesn't refill
 			if self.ai_mode == 8 then
-				canRefill = canRefill and activeTool.ReFillTrigger == nil and not courseplay:waypointsHaveAttr(vehicle, self.recordnumber, -2, 2, "wait", true, false);
+				canRefill = canRefill and activeTool.ReFillTrigger == nil and not courseplay:waypointsHaveAttr(self, self.recordnumber, -2, 2, "wait", true, false);
 
 				if activeTool.isSpreaderInRange ~= nil and activeTool.isSpreaderInRange.manureTriggerc ~= nil then
 					canRefill = false;
