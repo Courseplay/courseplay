@@ -230,7 +230,7 @@ function courseplay:unload_combine(self, dt)
 	if self.currentTrailerToFill ~= nil then
 		xt, yt, zt = worldToLocal(self.tippers[self.currentTrailerToFill].fillRootNode, x, y, z)
 	else
-		courseplay:debug(nameNum(self) .. ": no currentTrailerToFillSet", 4);
+		--courseplay:debug(nameNum(self) .. ": no currentTrailerToFillSet", 4);
 		xt, yt, zt = worldToLocal(self.tippers[1].rootNode, x, y, z)
 	end
 

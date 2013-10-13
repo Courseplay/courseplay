@@ -33,17 +33,21 @@ function courseplay:combine_allows_tractor(self, combine)
 	else
 		if self.realistic_driving then
 			if combine.wants_courseplayer == true then
+				courseplay:debug(nameNum(self)..": combine full or manual call -> allow tractor",4)
 				return true
 			end
 			-- force unload when combine is full
 			if combine.grainTankFillLevel == combine.grainTankCapacity then
+				courseplay:debug(nameNum(self)..": set fill level reached -> allow tractor",4)
 				return true
 			end
 			-- is the pipe on the correct side?
 			if combine.turnStage == 1 or combine.turnStage == 2 or combine.cp.turnStage ~= 0 then
+				courseplay:debug(nameNum(self)..": combine is turning -> refuse tractor",4)
 				return false
 			end
 			if courseplay:side_to_drive(self, combine, -10) == "left" then
+				courseplay:debug(nameNum(self)..": path finding active and pipe in fruit -> refuse tractor",4)
 				return false
 			end
 		end
@@ -66,6 +70,7 @@ function courseplay:update_combines(self)
 	self.reachable_combines = {}
 
 	if not self.search_combine and self.saved_combine then
+		courseplay:debug(nameNum(self)..": combine is manual set",4)
 		table.insert(self.reachable_combines, self.saved_combine)
 		return
 	end
@@ -132,9 +137,13 @@ function courseplay:register_at_combine(self, combine)
 				-- force unload when combine is full
 				-- is the pipe on the correct side?
 				if combine.turnStage == 1 or combine.turnStage == 2 or combine.cp.turnStage ~= 0 then
+					courseplay:debug(nameNum(self)..": combine is turning -> don't register tractor",4)
 					return false
 				end
-				if courseplay:side_to_drive(self, combine, -10) == "left" then
+				local sideToDrive = courseplay:side_to_drive(self, combine, -10)
+				courseplay:debug(nameNum(self)..": courseplay:side_to_drive = "..tostring(sideToDrive),4)
+				if sideToDrive == "left" then
+					courseplay:debug(nameNum(self)..": path finding active and pipe in fruit -> don't register tractor",4)
 					return false
 				end
 			end
