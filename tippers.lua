@@ -132,7 +132,6 @@ function courseplay:update_tools(self, tractor_or_implement)
 		self.cp.hasUBT = false;
 	end;
 	-- go through all implements
-	self.cpTrafficCollisionIgnoreList = {}
 	self.cp.aiBackMarker = nil
 
 	for k, implement in pairs(tractor_or_implement.attachedImplements) do
