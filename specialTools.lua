@@ -38,10 +38,14 @@ function courseplay:setNameVariable(workTool)
 	if workTool.cp.hasSpecializationCombine then print("		Combine")end
 	if workTool.cp.hasSpecializationSteerable then print("		Steerable")end
 	]]
+	
 
+	--Weidemann4270CX100T
+	if Utils.endsWith(workTool.configFileName, "weidemann4270CX100T.xml") then
+		workTool.cp.isWeidemann4270CX100T = true
 
 	--Case IH 3162 Cutter [Giants]
-	if Utils.endsWith(workTool.configFileName, "caseIH3162Cutter.xml") then
+	elseif Utils.endsWith(workTool.configFileName, "caseIH3162Cutter.xml") then
 		workTool.cp.isCaseIH3162Cutter = true;
 
 	--Zunhammer/Kotte liquid manure pack [Eifok Team]
@@ -890,7 +894,13 @@ end
 function courseplay:askForSpecialSettings(self,object)
 	local offsetChanged = false
 	local tempOffset = self.WpOffsetX
-	if self.cp.isKirovetsK700A then
+	if self.cp.isWeidemann4270CX100T  then
+		local frontPart_vis = getParent(self.movingTools[1].node)
+		local frontPart = getParent(frontPart_vis)
+		self.aiTrafficCollisionTrigger = getChild(frontPart, "trafficCollisionTrigger");
+		self.cp.DirectionNode = frontPart
+
+	elseif self.cp.isKirovetsK700A then
 		self.cp.DirectionNode = self.rootNode
 		self.cp.isKasi = 2.5
 	elseif self.cp.isRopaEuroTiger then
