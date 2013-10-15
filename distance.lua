@@ -9,44 +9,38 @@ function courseplay:distance(x1, z1, x2, z2)
 	return math.sqrt(math.abs(xd + zd));
 end
 
--- displays arrow and distance to start point
-function courseplay:dcheck(self)
-	local ctx, cty, ctz = getWorldTranslation(self.rootNode);
-	if self.back then
-		number = self.maxnumber - 2
-	else
-		number = 1
+-- displays arrow and distance to previous point
+function courseplay:dcheck(vehicle)
+	local number = 1;
+	if vehicle.back then
+		number = vehicle.maxnumber - 2;
+	end;
+	if vehicle.record_pause then
+		number = vehicle.recordnumber - 1;
 	end
 
-	if self.record_pause then
-		number = self.recordnumber - 1
-	end
+	local ctx, cty, ctz = getWorldTranslation(vehicle.rootNode);
+	local cx, cz = vehicle.Waypoints[number].cx, vehicle.Waypoints[number].cz;
+	local lx, ly, lz = worldToLocal(vehicle.rootNode, cx, 0, cz);
+	local arrowRotation = Utils.getYRotationFromDirection(lx, lz);
 
-	local arrowUV = {}
-	local lx, ly, lz = worldToLocal(self.rootNode, self.Waypoints[number].cx, 0, self.Waypoints[number].cz)
-	local arrowRotation = Utils.getYRotationFromDirection(lx, lz)
+	local cosAR, sinAR = math.cos(-arrowRotation), math.sin(-arrowRotation);
+	local arrowUV = {
+		[1] = -0.5 * cosAR + 0.5 * sinAR + 0.5;
+		[2] = -0.5 * sinAR - 0.5 * cosAR + 0.5;
+		[3] = -0.5 * cosAR - 0.5 * sinAR + 0.5;
+		[4] = -0.5 * sinAR + 0.5 * cosAR + 0.5;
+		[5] =  0.5 * cosAR + 0.5 * sinAR + 0.5;
+		[6] =  0.5 * sinAR - 0.5 * cosAR + 0.5;
+		[7] =  0.5 * cosAR - 0.5 * sinAR + 0.5;
+		[8] =  0.5 * sinAR + 0.5 * cosAR + 0.5;
+	};
 
-	arrowUV[1] = -0.5 * math.cos(-arrowRotation) + 0.5 * math.sin(-arrowRotation) + 0.5
-	arrowUV[2] = -0.5 * math.sin(-arrowRotation) - 0.5 * math.cos(-arrowRotation) + 0.5
-	arrowUV[3] = -0.5 * math.cos(-arrowRotation) - 0.5 * math.sin(-arrowRotation) + 0.5
-	arrowUV[4] = -0.5 * math.sin(-arrowRotation) + 0.5 * math.cos(-arrowRotation) + 0.5
-	arrowUV[5] = 0.5 * math.cos(-arrowRotation) + 0.5 * math.sin(-arrowRotation) + 0.5
-	arrowUV[6] = 0.5 * math.sin(-arrowRotation) - 0.5 * math.cos(-arrowRotation) + 0.5
-	arrowUV[7] = 0.5 * math.cos(-arrowRotation) - 0.5 * math.sin(-arrowRotation) + 0.5
-	arrowUV[8] = 0.5 * math.sin(-arrowRotation) + 0.5 * math.cos(-arrowRotation) + 0.5
+	setOverlayUVs(vehicle.ArrowOverlay.overlayId, arrowUV[1], arrowUV[2], arrowUV[3], arrowUV[4], arrowUV[5], arrowUV[6], arrowUV[7], arrowUV[8]);
+	vehicle.ArrowOverlay:render();
 
-	setOverlayUVs(self.ArrowOverlay.overlayId, arrowUV[1], arrowUV[2], arrowUV[3], arrowUV[4], arrowUV[5], arrowUV[6], arrowUV[7], arrowUV[8])
-	self.ArrowOverlay:render()
-	if self.record or self.record_pause then
-		return
-	end
-
-	local ctx, cty, ctz = getWorldTranslation(self.rootNode);
-	local cx, cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
-	local dist = courseplay:distance(ctx, ctz, cx, cz)
-
-	self.cp.infoText = string.format(courseplay:get_locale(self, "CPDistance") .. ": %dm", dist)
-end
+	vehicle.cp.infoText = string.format("%s: %.1fm", courseplay:get_locale(vehicle, "CPDistance"), courseplay:distance(ctx, ctz, cx, cz));
+end;
 
 
 function courseplay:distance_to_object(self, object)
