@@ -46,7 +46,12 @@ function courseplay:combine_allows_tractor(self, combine)
 				courseplay:debug(nameNum(self)..": combine is turning -> refuse tractor",4)
 				return false
 			end
-			if courseplay:side_to_drive(self, combine, -10) == "left" then
+			local fruitSide = courseplay:side_to_drive(self, combine, -10)
+			if fruitSide == "none" then
+				courseplay:debug(nameNum(self)..": fruitSide is none -> try again with offset 0",4)
+				fruitSide = courseplay:side_to_drive(self, combine, 0)
+			end
+			if fruitSide == "left" then
 				courseplay:debug(nameNum(self)..": path finding active and pipe in fruit -> refuse tractor",4)
 				return false
 			end
@@ -140,9 +145,13 @@ function courseplay:register_at_combine(self, combine)
 					courseplay:debug(nameNum(self)..": combine is turning -> don't register tractor",4)
 					return false
 				end
-				local sideToDrive = courseplay:side_to_drive(self, combine, -10)
-				courseplay:debug(nameNum(self)..": courseplay:side_to_drive = "..tostring(sideToDrive),4)
-				if sideToDrive == "left" then
+				local fruitSide = courseplay:side_to_drive(self, combine, -10)
+				if fruitSide == "none" then
+					courseplay:debug(nameNum(self)..": fruitSide is none -> try again with offset 0",4)
+					fruitSide = courseplay:side_to_drive(self, combine, 0)
+				end
+				courseplay:debug(nameNum(self)..": courseplay:side_to_drive = "..tostring(fruitSide),4)
+				if fruitSide == "left" then
 					courseplay:debug(nameNum(self)..": path finding active and pipe in fruit -> don't register tractor",4)
 					return false
 				end
