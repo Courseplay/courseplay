@@ -82,8 +82,8 @@ function courseplay:update_combines(self)
 
 	courseplay:debug(string.format("%s: combines total: %d", nameNum(self), table.getn(self.reachable_combines)), 4)
 
-	local x, y, z = getWorldTranslation(self.aiTractorDirectionNode)
-	local hx, hy, hz = localToWorld(self.aiTractorDirectionNode, -2, 0, 0)
+	local x, y, z = getWorldTranslation(self.cp.DirectionNode)
+	local hx, hy, hz = localToWorld(self.cp.DirectionNode, -2, 0, 0)
 	local lx, ly, lz = nil, nil, nil
 	local terrain = g_currentMission.terrainDetailId
 
@@ -93,13 +93,13 @@ function courseplay:update_combines(self)
 	-- go throuh found
 	for k, combine in pairs(found_combines) do
 		lx, ly, lz = getWorldTranslation(combine.rootNode)
-		local dlx, dly, dlz = worldToLocal(self.aiTractorDirectionNode, lx, y, lz)
+		local dlx, dly, dlz = worldToLocal(self.cp.DirectionNode, lx, y, lz)
 		local dnx = dlz * -1
 		local dnz = dlx
 		local angle = math.atan(dnz / dnx)
 		dnx = math.cos(angle) * -2
 		dnz = math.sin(angle) * -2
-		hx, hy, hz = localToWorld(self.aiTractorDirectionNode, dnx, 0, dnz)
+		hx, hy, hz = localToWorld(self.cp.DirectionNode, dnx, 0, dnz)
 		local area0, area = Utils.getDensity(terrain, 0, x, z, lx, lz, hx, hz)
 		local area1 = Utils.getDensity(terrain, 1, x, z, lx, lz, hx, hz)
 		local area2 = Utils.getDensity(terrain, 2, x, z, lx, lz, hx, hz)

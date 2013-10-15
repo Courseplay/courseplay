@@ -54,7 +54,7 @@ end;
 
 function courseplay:check_for_fruit(self, distance)
 
-	local x, y, z = localToWorld(self.aiTractorDirectionNode, 0, 0, distance) --getWorldTranslation(combine.aiTreshingDirectionNode);
+	local x, y, z = localToWorld(self.cp.DirectionNode, 0, 0, distance) --getWorldTranslation(combine.aiTreshingDirectionNode);
 
 	local length = Utils.vector2Length(x, z);
 	local aiThreshingDirectionX = x / length;

@@ -162,6 +162,20 @@ function courseplay:load(xmlFile)
 	self.cp.folder_settings = {}
 	courseplay.settings.update_folders(self)
 
+	if self.aiTrafficCollisionTrigger == nil and getNumOfChildren(self.rootNode) > 0 then
+		if getChild(self.rootNode, "trafficCollisionTrigger") ~= 0 then
+			self.aiTrafficCollisionTrigger = getChild(self.rootNode, "trafficCollisionTrigger");
+		else
+			for i=0,getNumOfChildren(self.rootNode)-1 do
+				local child = getChildAt(self.rootNode, i);
+				if getChild(child, "trafficCollisionTrigger") ~= 0 then
+					self.aiTrafficCollisionTrigger = getChild(child, "trafficCollisionTrigger");
+					break;
+				end;
+			end;
+		end;
+	end;
+
 	--Direction 
 	local DirectionNode = nil;
 	if self.aiTractorDirectionNode ~= nil then
@@ -183,12 +197,12 @@ function courseplay:load(xmlFile)
 				end
 			end
 		end
+		if DirectionNode == nil and self.aiTrafficCollisionTrigger ~= nil then
+			DirectionNode = self.aiTrafficCollisionTrigger
+		end;
 		if DirectionNode == nil then
 			DirectionNode = self.rootNode;
 		end
-		if getChild(self.rootNode, "trafficCollisionTrigger") ~= 0 then
-			self.aiTractorDirectionNode = getChild(self.rootNode, "trafficCollisionTrigger");
-		end;
 	end;
 	self.cp.DirectionNode = DirectionNode;
 
@@ -212,19 +226,6 @@ function courseplay:load(xmlFile)
 	if self.trafficCollisionIgnoreList == nil then
 		self.trafficCollisionIgnoreList = {}
 	end
-	if self.aiTrafficCollisionTrigger == nil and getNumOfChildren(self.rootNode) > 0 then
-		if getChild(self.rootNode, "trafficCollisionTrigger") ~= 0 then
-			self.aiTrafficCollisionTrigger = getChild(self.rootNode, "trafficCollisionTrigger");
-		else
-			for i=0,getNumOfChildren(self.rootNode)-1 do
-				local child = getChildAt(self.rootNode, i);
-				if getChild(child, "trafficCollisionTrigger") ~= 0 then
-					self.aiTrafficCollisionTrigger = getChild(child, "trafficCollisionTrigger");
-					break;
-				end;
-			end;
-		end;
-	end;
 
 	courseplay:askForSpecialSettings(self,self)
 

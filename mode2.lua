@@ -211,7 +211,7 @@ function courseplay:unload_combine(self, dt)
 	local curFile = "mode2.lua"
 	local allowedToDrive = true
 	local combine = self.active_combine
-	local x, y, z = getWorldTranslation(self.aiTractorDirectionNode)
+	local x, y, z = getWorldTranslation(self.cp.DirectionNode)
 	local currentX, currentY, currentZ = nil, nil, nil
 
 	--local sl = nil --kann die weg??
@@ -313,10 +313,10 @@ function courseplay:unload_combine(self, dt)
 			local cx_left, cy_left, cz_left = localToWorld(tractor.rootNode, 20, 0, -30) 
 			-- righ side of combine
 			local cx_right, cy_right, cz_right = localToWorld(tractor.rootNode, -20, 0, -30) 
-			local lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, cx_left, y, cz_left)
+			local lx, ly, lz = worldToLocal(self.cp.DirectionNode, cx_left, y, cz_left)
 			-- distance to left position
 			local disL = Utils.vector2Length(lx, lz)
-			local rx, ry, rz = worldToLocal(self.aiTractorDirectionNode, cx_right, y, cz_right)
+			local rx, ry, rz = worldToLocal(self.cp.DirectionNode, cx_right, y, cz_right)
 			-- distance to right position
 			local disR = Utils.vector2Length(rx, rz)
 
@@ -345,7 +345,7 @@ function courseplay:unload_combine(self, dt)
 
 		--	end
 
-		local lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, currentX, currentY, currentZ)
+		local lx, ly, lz = worldToLocal(self.cp.DirectionNode, currentX, currentY, currentZ)
 		dod = Utils.vector2Length(lx, lz)
 		-- near point
 		if dod < 3 then -- change to mode 4 == drive behind combine or cornChopper
@@ -396,10 +396,10 @@ function courseplay:unload_combine(self, dt)
 
 		local lx, ly, lz = nil, nil, nil
 
-		lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, tX, y, tZ)
+		lx, ly, lz = worldToLocal(self.cp.DirectionNode, tX, y, tZ)
 
 		if currentX ~= nil and currentZ ~= nil then
-			local lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, currentX, y, currentZ)
+			local lx, ly, lz = worldToLocal(self.cp.DirectionNode, currentX, y, currentZ)
 			dod = Utils.vector2Length(lx, lz)
 		else
 			dod = Utils.vector2Length(lx, lz)
@@ -574,7 +574,7 @@ function courseplay:unload_combine(self, dt)
 		--SET TARGET UNLOADING COORDINATES @ COMBINE
 		local ttX, ttZ = courseplay:setTargetUnloadingCoords(self, combine, trailer_offset, prnToCombineZ);
 		
-		local lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, ttX, y, ttZ)
+		local lx, ly, lz = worldToLocal(self.cp.DirectionNode, ttX, y, ttZ)
 		dod = Utils.vector2Length(lx, lz)
 		if dod > 40 or self.isChopperTurning == true then
 			mode = 2
@@ -742,7 +742,7 @@ function courseplay:unload_combine(self, dt)
 		self.cp.infoText = string.format(courseplay:get_locale(self, "CPTurningTo"), self.target_x, self.target_z)
 		allowedToDrive = false
 		local mx, mz = self.target_x, self.target_z
-		local lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, mx, y, mz)
+		local lx, ly, lz = worldToLocal(self.cp.DirectionNode, mx, y, mz)
 		self.sl = 1
 		refSpeed = self.field_speed --self.turn_speed
 
@@ -769,7 +769,7 @@ function courseplay:unload_combine(self, dt)
 				end
 			end
 		else
-			currentX, currentY, currentZ = localToWorld(self.aiTractorDirectionNode, self.turn_factor, 0, 5)
+			currentX, currentY, currentZ = localToWorld(self.cp.DirectionNode, self.turn_factor, 0, 5)
 			allowedToDrive = true
 		end
 	end
@@ -875,10 +875,10 @@ function courseplay:unload_combine(self, dt)
 			local cx_left, cy_left, cz_left = localToWorld(frontTractor.rootNode, 30, 0, -backDistance-20)
 			-- righ side of tractor
 			local cx_right, cy_right, cz_right = localToWorld(frontTractor.rootNode, -30, 0, -backDistance-20)
-			local lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, cx_left, y, cz_left)
+			local lx, ly, lz = worldToLocal(self.cp.DirectionNode, cx_left, y, cz_left)
 			-- distance to left position
 			local disL = Utils.vector2Length(lx, lz)
-			local rx, ry, rz = worldToLocal(self.aiTractorDirectionNode, cx_right, y, cz_right)
+			local rx, ry, rz = worldToLocal(self.cp.DirectionNode, cx_right, y, cz_right)
 			-- distance to right position
 			local disR = Utils.vector2Length(rx, rz)
 			if disL < disR then
@@ -892,7 +892,7 @@ function courseplay:unload_combine(self, dt)
 			currentX, currentY, currentZ = localToWorld(frontTractor.rootNode, 0, 0, -backDistance)
 		end
 
-		local lx, ly, lz = worldToLocal(self.aiTractorDirectionNode, currentX, currentY, currentZ)
+		local lx, ly, lz = worldToLocal(self.cp.DirectionNode, currentX, currentY, currentZ)
 		dod = Utils.vector2Length(lx, lz)
 		if dod < 2 or frontTractor.ai_state ~= 3 then
 			allowedToDrive = courseplay:brakeToStop(self)
@@ -962,7 +962,7 @@ function courseplay:unload_combine(self, dt)
 		local target_x, target_z = nil, nil
 		local moveForwards = true
 		if currentX ~= nil and currentZ ~= nil then
-			target_x, target_z = AIVehicleUtil.getDriveDirection(self.aiTractorDirectionNode, currentX, y, currentZ)
+			target_x, target_z = AIVehicleUtil.getDriveDirection(self.cp.DirectionNode, currentX, y, currentZ)
 		else
 			allowedToDrive = false
 		end
@@ -1014,12 +1014,7 @@ function courseplay:calculate_course_to(self, target_x, target_z)
 
 	self.calculated_course = true
 	-- check if there is fruit between me and the target, return false if not to avoid the calculating
-	local node = nil
-	if self.aiTractorDirectionNode ~= nil then
-		node = self.aiTractorDirectionNode
-	else
-		node = self.aiTreshingDirectionNode
-	end
+	local node = self.cp.DirectionNode
 	local x, y, z = getWorldTranslation(node)
 	local hx, hy, hz = localToWorld(node, -2, 0, 0)
 	local lx, ly, lz = nil, nil, nil

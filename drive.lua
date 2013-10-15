@@ -910,14 +910,6 @@ function courseplay:setTrafficCollision(self, lx, lz)
 	end;
 	--courseplay:debug(string.format("colDirX: %f colDirZ %f ",colDirX,colDirZ ), 3)
 	local nx, ny, nz = localDirectionToWorld(self.cp.DirectionNode, colDirX, 0, colDirZ)
-	if self.traffic_vehicle_in_front == nil then
-		for i=1,2 do
-			local tx, ty, tz = localToWorld(self.cp.DirectionNode, 0,i,4)
-			courseplay:debug(nameNum(self)..": call traffic raycast["..tostring(i).."]",3)
-			raycastAll(tx, ty, tz, nx, ny, nz, "findTrafficCollisionCallback", distance, self)
-			if courseplay.debugChannels[3] then drawDebugLine(tx, ty, tz, 1, 1, 1, tx +(distance*nx), ty +(distance*ny), tz +(distance*nz), 1, 1, 1) end
-		end
-	end
 
 	if courseplay.debugChannels[3] then
 		local x,y,z = getWorldTranslation(self.aiTrafficCollisionTrigger)
@@ -930,6 +922,14 @@ function courseplay:setTrafficCollision(self, lx, lz)
 	end;
 	if self.aiTrafficCollisionTrigger ~= nil and g_server ~= nil then
 		AIVehicleUtil.setCollisionDirection(self.cp.DirectionNode, self.aiTrafficCollisionTrigger, colDirX, colDirZ);
+		if self.traffic_vehicle_in_front == nil then
+			for i=1,2 do
+				local tx, ty, tz = localToWorld(self.cp.DirectionNode, 0,i,4)
+				courseplay:debug(nameNum(self)..": call traffic raycast["..tostring(i).."]",3)
+				raycastAll(tx, ty, tz, nx, ny, nz, "findTrafficCollisionCallback", distance, self)
+				if courseplay.debugChannels[3] then drawDebugLine(tx, ty, tz, 1, 1, 1, tx +(distance*nx), ty +(distance*ny), tz +(distance*nz), 1, 1, 1) end
+			end
+		end
 	end
 
 end
