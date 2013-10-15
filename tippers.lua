@@ -370,7 +370,8 @@ function courseplay:update_tools(self, tractor_or_implement)
 				self.cp.tipperHasCover = true;
 				local data = {
 					coverType = "setPlane",
-					tipperIndex = i
+					tipperIndex = i,
+					showCoverWhenTipping = Utils.endsWith(t.configFileName, 'SMK34.xml')
 				};
 				table.insert(self.cp.tippersWithCovers, data);
 			

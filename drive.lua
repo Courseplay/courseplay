@@ -613,7 +613,7 @@ function courseplay:drive(self, dt)
 			showCover = not workArea and self.cp.currentTipTrigger == nil;
 		end;
 
-		courseplay:openCloseCover(self, dt, showCover);
+		courseplay:openCloseCover(self, dt, showCover, self.cp.currentTipTrigger ~= nil);
 	end;
 
 	allowedToDrive = courseplay:check_traffic(self, true, allowedToDrive)
@@ -1054,16 +1054,19 @@ function courseplay:setSpeed(self, refSpeed, sl)
 	end
 end;
 
-function courseplay:openCloseCover(self, dt, showCover)
+function courseplay:openCloseCover(self, dt, showCover, isAtTipTrigger)
 	for i=1, table.getn(self.cp.tippersWithCovers) do
 		local twc = self.cp.tippersWithCovers[i];
-		local tIdx, coverType, coverItems = twc.tipperIndex, twc.coverType, twc.coverItems;
+		local tIdx, coverType, showCoverWhenTipping, coverItems = twc.tipperIndex, twc.coverType, twc.showCoverWhenTipping, twc.coverItems;
 		local tipper = self.tippers[tIdx];
 
 		--SMK-34 et al.
 		if coverType == "setPlane" and tipper.plane.bOpen == showCover then
-			tipper:setPlane(not showCover);
-
+			if showCoverWhenTipping and isAtTipTrigger and not showCover then
+				--
+			else
+				tipper:setPlane(not showCover);
+			end;
 		--Hobein 18t et al.
 		elseif coverType == "setCoverState" and tipper.cover.state ~= showCover then
 			tipper:setCoverState(showCover);
