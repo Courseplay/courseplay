@@ -402,9 +402,9 @@ function courseplay.courses.save_course(course_id, File, append)
 	end
 	courseplay.utils.setMultipleXML(File, string.format('XML.courses.course(%d)', i), g_currentMission.cp_courses[course_id], types)
 	
-	-- save waypoint: rev, wait, crossing, generated, turnstart, turned are bools; turn is a string; turn, speed may be nil!
-	-- from xml: rev=int wait=int crossing=int generated=bool, turn=string!!, turnstart=int turned=int ridgemarker=int
-	-- xml: pos="float float" angle=float rev=0/1 wait=0/1 crossing=0/1 speed=float generated="true/false" turn="true/false" turnstart=0/1 turned=0/1 ridgemarker=0/1/2
+	-- save waypoint: rev, wait, crossing, generated, turnstart, turnend are bools; turn is a string; turn, speed may be nil!
+	-- from xml: rev=int wait=int crossing=int generated=bool, turn=string!!, turnstart=int turnend=int ridgemarker=int
+	-- xml: pos="float float" angle=float rev=0/1 wait=0/1 crossing=0/1 speed=float generated="true/false" turn="true/false" turnstart=0/1 turnend=0/1 ridgemarker=0/1/2
 	local waypoints = {}
 	-- setXMLFloat seems imprecise...
 	types = { pos='String', angle='String', rev='Int', wait='Int', crossing='Int', speed='String', generated='Bool', dir='String', turn='String', turnstart='Int', turnend='Int', ridgemarker='Int' };
@@ -418,12 +418,12 @@ function courseplay.courses.save_course(course_id, File, append)
 		waypoint.wait = courseplay:boolToInt(v.wait);
 		waypoint.crossing = courseplay:boolToInt(v.crossing);
 		waypoint.speed = tostring(courseplay:round(v.speed or 0, 5));
-		waypoint.generated = v.generated;
+		waypoint.generated = Utils.getNoNil(v.generated,false);
 		waypoint.dir = v.laneDir or "";
 		waypoint.turn = v.turn or "false";
-		waypoint.turnstart = courseplay:boolToInt(v.turnStart);
-		waypoint.turnend = courseplay:boolToInt(v.turnEnd);
-		waypoint.ridgemarker = v.ridgemarker
+		waypoint.turnstart = Utils.getNoNil(courseplay:boolToInt(v.turnStart),0);
+		waypoint.turnend = Utils.getNoNil(courseplay:boolToInt(v.turnEnd),0);
+		waypoint.ridgemarker = Utils.getNoNil(v.ridgeMarker,0);
 
 		waypoints[k] = waypoint;
 	end
