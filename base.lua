@@ -197,8 +197,10 @@ function courseplay:load(xmlFile)
 				end
 			end
 		end
-		if DirectionNode == nil and self.aiTrafficCollisionTrigger ~= nil then
-			DirectionNode = self.aiTrafficCollisionTrigger
+		if DirectionNode == nil then
+			if getChild(self.rootNode, "trafficCollisionTrigger") ~= 0 then
+				self.aiTrafficCollisionTrigger = getChild(self.rootNode, "trafficCollisionTrigger");
+			end
 		end;
 		if DirectionNode == nil then
 			DirectionNode = self.rootNode;
