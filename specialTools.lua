@@ -444,23 +444,24 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		end;
 
 		if unload then
+			local root = getRootNode();
 			for i=1, workTool.numAttachers[workTool.typeOnTrailer] do
-				if workTool.attacher[workTool.typeOnTrailer][i].attachedObject ~= nil then
+				local attacher = workTool.attacher[workTool.typeOnTrailer][i];
+				if attacher.attachedObject ~= nil then
 
 					--ORIG: if workTool.ulRef[workTool.ulMode][1] == g_i18n:getText("UNLOAD_TRAILER") then
 					if workTool.ulRef[workTool.ulMode][3] == 0 then --verrrrry dirty: unload on trailer
-						local x,y,z = getWorldTranslation(workTool.attacher[workTool.typeOnTrailer][i].attachedObject);
-						local rx,ry,rz = getWorldRotation(workTool.attacher[workTool.typeOnTrailer][i].attachedObject);
-						local root = getRootNode();
-						setRigidBodyType(workTool.attacher[workTool.typeOnTrailer][i].attachedObject,"Dynamic");
-						setTranslation(workTool.attacher[workTool.typeOnTrailer][i].attachedObject,x,y,z);
-						setRotation(workTool.attacher[workTool.typeOnTrailer][i].attachedObject,rx,ry,rz);
-						link(root,workTool.attacher[workTool.typeOnTrailer][i].attachedObject);
-						workTool.attacher[workTool.typeOnTrailer][i].attachedObject = nil;
+						local x,y,z = getWorldTranslation(attacher.attachedObject);
+						local rx,ry,rz = getWorldRotation(attacher.attachedObject);
+						setRigidBodyType(attacher.attachedObject,"Dynamic");
+						setTranslation(attacher.attachedObject,x,y,z);
+						setRotation(attacher.attachedObject,rx,ry,rz);
+						link(root,attacher.attachedObject);
+						attacher.attachedObject = nil;
 						workTool.fillLevel = workTool.fillLevel - 1;
 					else
-						local x,y,z = getWorldTranslation(workTool.attacher[workTool.typeOnTrailer][i].attachedObject);
-						local rx,ry,rz = getWorldRotation(workTool.attacher[workTool.typeOnTrailer][i].attachedObject);
+						local x,y,z = getWorldTranslation(attacher.attachedObject);
+						local rx,ry,rz = getWorldRotation(attacher.attachedObject);
 						local nx,ny,nz = getWorldTranslation(workTool.attacherLevel[workTool.typeOnTrailer]);
 						local tx,ty,tz = getWorldTranslation(workTool.ulRef[workTool.ulMode][3]);
 						local x = x + (tx - nx);
@@ -468,12 +469,11 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 						local z = z + (tz - nz);
 						local tH = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, x, 0, z);
 						local relHeight = ny - tH;
-						local root = getRootNode();
-						setRigidBodyType(workTool.attacher[workTool.typeOnTrailer][i].attachedObject,"Dynamic");
-						setTranslation(workTool.attacher[workTool.typeOnTrailer][i].attachedObject,x,(y - relHeight),z);
-						setRotation(workTool.attacher[workTool.typeOnTrailer][i].attachedObject,rx,ry,rz);
-						link(root,workTool.attacher[workTool.typeOnTrailer][i].attachedObject);
-						workTool.attacher[workTool.typeOnTrailer][i].attachedObject = nil;
+						setRigidBodyType(attacher.attachedObject,"Dynamic");
+						setTranslation(attacher.attachedObject,x,(y - relHeight),z);
+						setRotation(attacher.attachedObject,rx,ry,rz);
+						link(root,attacher.attachedObject);
+						attacher.attachedObject = nil;
 						workTool.fillLevel = workTool.fillLevel - 1;
 					end;
 				end;
@@ -1490,10 +1490,10 @@ function courseplay.thirdParty.EifokLiquidManure.connectRefillDisconnect(vehicle
 			--START FILL
 			if hose.ctors[sId1][hoseTargetType] == object and hose.ctors[sId2].veh == activeTool and not isDone then --connected to object and vehicle (conn)
 				local pumpDirNum = 1;
-				local objectIsReady = object.fillLevel > 0;
+				local objectIsReady = (object.fillLevel or 1) > 0;
 				if pumpDir == "push" then
 					pumpDirNum = -1;
-					objectIsReady = object.capacity == nil or (object.capacity ~= nil and object.fillLevel < object.capacity);
+					objectIsReady = (object.fillLevel or 0) < (object.capacity or 1);
 				end;
 				
 				if objectIsReady and activeTool.pumpDir ~= pumpDirNum then
