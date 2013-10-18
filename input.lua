@@ -2,8 +2,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 	local mouseKey = button;
 
 	--RIGHT CLICK
-	if isDown and mouseKey == 3 and self.isEntered then
-	--if self.isEntered and Input.isMouseButtonPressed(Input.MOUSE_BUTTON_RIGHT) then
+	if isDown and mouseKey == Input[courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION_SECONDARY.keyName] and self.isEntered then
 		if self.cp.hud.show then
 			courseplay:setMouseCursor(self, not self.mouse_enabled);
 		elseif not self.cp.hud.show and self.mouse_right_key_enabled then
@@ -16,7 +15,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 	local mouseIsInHudArea = self.mouse_enabled and posX > hudGfx.x1 and posX < hudGfx.x2 and posY > hudGfx.y1 and posY < hudGfx.y2;
 
 	--LEFT CLICK
-	if isDown and mouseKey == 1 and self.mouse_enabled and self.cp.hud.show and self.isEntered and mouseIsInHudArea then
+	if isDown and mouseKey == Input[courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION.keyName] and self.mouse_enabled and self.cp.hud.show and self.isEntered and mouseIsInHudArea then
 		local continueSearchingButton = true;
 		for _,button in pairs(self.cp.buttons.global) do
 			if button.show and courseplay:mouseIsInButtonArea(posX, posY, button) then
@@ -51,7 +50,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 	elseif self.mouse_enabled and not isDown and self.cp.hud.show and self.isEntered then
 		for _,button in pairs(self.cp.buttons.global) do
 			button.isClicked = false;
-			if button.show then
+			if button.show and not button.isHidden then
 				button.isHovered = false;
 				if courseplay:mouseIsInButtonArea(posX, posY, button) then
 					button.isClicked = false;
@@ -63,7 +62,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 		self.cp.hud.mouseWheel.render = false;
 		for _,button in pairs(self.cp.buttons[tostring(self.cp.hud.currentPage)]) do
 			button.isClicked = false;
-			if button.show then
+			if button.show and not button.isHidden then
 				button.isHovered = false;
 				if courseplay:mouseIsInButtonArea(posX, posY, button) then
 					button.isHovered = true;
@@ -75,7 +74,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 
 						--action
 						local parameter = button.parameter;
-						if InputBinding.isPressed(InputBinding.CP_Modifier_1) and button.modifiedParameter ~= nil then
+						if InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER) and button.modifiedParameter ~= nil then
 							parameter = button.modifiedParameter;
 						end;
 
@@ -101,7 +100,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 		if self.cp.hud.currentPage == 2 then
 			for _,button in pairs(self.cp.buttons["-2"]) do
 				button.isClicked = false;
-				if button.show then
+				if button.show and not button.isHidden then
 					button.isHovered = false;
 					if courseplay:mouseIsInButtonArea(posX, posY, button) then
 						button.isClicked = false;
@@ -123,12 +122,12 @@ end;
 
 function courseplay:handleMouseClickForButton(self, button)
 	local parameter = button.parameter;
-	if InputBinding.isPressed(InputBinding.CP_Modifier_1) and button.modifiedParameter ~= nil then --for some reason InputBinding works in :mouseEvent
+	if InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER) and button.modifiedParameter ~= nil then --for some reason InputBinding works in :mouseEvent
 		courseplay:debug("button.modifiedParameter = " .. tostring(button.modifiedParameter), 12);
 		parameter = button.modifiedParameter;
 	end;
 
-	if button.show and button.canBeClicked and not button.isDisabled then
+	if button.show and not button.isHidden and button.canBeClicked and not button.isDisabled then
 		if button.function_to_call == "rowButton" and self.cp.hud.content.pages[self.cp.hud.currentPage][button.parameter][1].text == nil then
 			return;
 		end;
@@ -142,14 +141,14 @@ function courseplay:handleMouseClickForButton(self, button)
 	end;
 end;
 
-function courseplay:setCourseplayFunc(func, value, noEventSend)
+function courseplay:setCourseplayFunc(func, value, noEventSend, overwrittenPage)
 	if noEventSend ~= true then
 		CourseplayEvent.sendEvent(self, func, value); -- Die Funktion ruft sendEvent auf und übergibt 3 Werte   (self "also mein ID", action, "Ist eine Zahl an der ich festmache welches Fenster ich aufmachen will", state "Ist der eigentliche Wert also true oder false"
 	end;
 	if value == "nil" then
 		value = nil
 	end
-	courseplay:executeFunction(self, func, value)
+	courseplay:executeFunction(self, func, value, overwrittenPage)
 end
 
 function courseplay:executeFunction(self, func, value, overwrittenPage)
@@ -214,7 +213,7 @@ function courseplay:executeFunction(self, func, value, overwrittenPage)
 					elseif line == 2 and self.StopEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil) then
 						self.StopEnd = false;
 					elseif line == 3 and not self.loaded then
-						self.loaded = true;
+						courseplay:setIsLoaded(self, true);
 					elseif line == 4 and not self.StopEnd then
 						self.StopEnd = true
 					elseif line == 5 then
@@ -264,4 +263,78 @@ function courseplay:executeFunction(self, func, value, overwrittenPage)
 end;
 
 function courseplay:keyEvent(unicode, sym, modifier, isDown)
-end
+end;
+
+function courseplay:setInputBindings()
+	courseplay.inputBindings = {
+		keyboard = {};
+		mouse = {};
+	};
+
+	--MODIFIER
+	local modifierAction = InputBinding.actions[InputBinding.COURSEPLAY_MODIFIER];
+	courseplay.inputBindings.modifier = {
+		inputBinding = InputBinding.COURSEPLAY_MODIFIER;
+		actionIndex = modifierAction.actionIndex;
+		keyId = modifierAction.keys1[1];
+		isRealModifier = Input.keyIdIsModifier[modifierAction.keys1[1]];
+		keyName = Input.keyIdToIdName[modifierAction.keys1[1]];
+		displayName = KeyboardHelper.getKeyNames(modifierAction.keys1)
+	};
+	if not courseplay.inputBindings.modifier.isRealModifier then
+		print(string.format("Warning: Courseplay InputBinding modifier \"%s\" (%s) is not a real modifier. Conflicts with other mods may arise.", courseplay.inputBindings.modifier.keyName, courseplay.inputBindings.modifier.displayName));
+	end;
+
+	--KEYBOARD
+	local courseplayKeyboardInputs = { "COURSEPLAY_HUD", "COURSEPLAY_START_STOP", "COURSEPLAY_DRIVEON", "COURSEPLAY_DRIVENOW" };
+	for i,name in pairs(courseplayKeyboardInputs) do
+		courseplay:createNewCombinedInputBinding(name);
+	end;
+	--print(tableShow(courseplay.inputBindings.keyboard, "courseplay.inputBindings.keyboard"));
+
+
+	--MOUSE
+	local courseplayMouseInputs = { "COURSEPLAY_MOUSEACTION", "COURSEPLAY_MOUSEACTION_SECONDARY" };
+	for i,name in pairs(courseplayMouseInputs) do
+		local action = InputBinding.actions[InputBinding[name]];
+		local mouseButtonId = action.mouseButtons[1]; --can there be more than 1 mouseButton for 1 action?
+		if mouseButtonId == nil then
+			print(string.format("Warning: Courseplay InputBinding \"%s\" has no mouse button attached to it. Functionality will not be guaranteed.", name));
+		end;
+
+		courseplay.inputBindings.mouse[name] = {
+			name = name;
+			buttonId = mouseButtonId;
+			keyName = Input.mouseButtonIdToIdName[mouseButtonId];
+			displayName = g_i18n:getText("mouse") .. " " .. MouseHelper.getButtonNames(action.mouseButtons);
+			actionIndex = action.actionIndex;
+			inputBinding = InputBinding[name];
+		};
+	end;
+	--print(tableShow(courseplay.inputBindings.mouse, "courseplay.inputBindings.mouse"));
+end;
+
+function courseplay:createNewCombinedInputBinding(name)
+	local originalAction = InputBinding.actions[InputBinding[name]];
+
+	if #(originalAction.keys1) == 1 then
+		local action = courseplay.utils.table.copy(originalAction);
+		local actionIndex = #(InputBinding.actions) + 1;
+
+		action.name = name .. "_COMBINED";
+		local keyNameList = courseplay.inputBindings.modifier.keyName .. " " .. Input.keyIdToIdName[originalAction.keys1[1]];
+		action.keys1 = InputBinding.loadKeyList(keyNameList, action.name);
+		action.keys1Set = Utils.listToSet(action.keys1);
+		action.actionIndex = actionIndex;
+		InputBinding[action.name] = actionIndex;
+		table.insert(InputBinding.actions, action);
+
+		courseplay.inputBindings.keyboard[action.name] = {
+			originalKeyActionName = name;
+			originalKeyInputBinding = InputBinding[name];
+			originalModifierInputBinding = courseplay.inputBindings.modifier.inputBinding;
+			actionIndex = actionIndex;
+			displayName = courseplay.inputBindings.modifier.displayName .. " + " .. KeyboardHelper.getKeyNames(originalAction.keys1);
+		};
+	end;
+end;

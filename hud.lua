@@ -302,9 +302,9 @@ function courseplay:setHudContent(self)
 
 		self.cp.hud.content.pages[6][2][1].text = courseplay:get_locale(self, "CPopenHud");
 		if self.mouse_right_key_enabled then
-			self.cp.hud.content.pages[6][2][2].text = courseplay:get_locale(self, "CPopenHudMouse");
+			self.cp.hud.content.pages[6][2][2].text = courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION_SECONDARY.displayName;
 		else
-			self.cp.hud.content.pages[6][2][2].text = self.cp.hud.modKey .. " + " .. self.cp.hud.hudKey;
+			self.cp.hud.content.pages[6][2][2].text = courseplay.inputBindings.keyboard.COURSEPLAY_HUD_COMBINED.displayName;
 		end;
 
 		self.cp.hud.content.pages[6][3][1].text = courseplay:get_locale(self, "CPWPs");

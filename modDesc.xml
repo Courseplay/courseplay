@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="13">
-	<version>3.41.0180</version>
+	<version>3.41.0181</version>
 	<author>Jakob Tischler / Thomas Gärtner / Horoman</author>
 	<title>
-		<de>Courseplay</de>        
+		<de>Courseplay</de>
 		<en>Courseplay</en>
 		<es>Courseplay</es>
 		<fr>Courseplay</fr>
@@ -411,38 +411,6 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530
 			<es>Conducir a %</es>
 			<it>Avvia a %</it>
 			<cz>Odvézt při %:</cz>
-		</text>
-		<text name="courseplayInput1">
-			<en>CP Input 1</en>
-			<de>CP Taste 1</de>
-			<fr>CP entrée 1</fr>
-			<es>CP tecla 1</es>
-			<it>CP Tasto 1</it>
-			<cz>CP Tlačítko 1</cz>
-		</text>
-		<text name="courseplayInput2">
-			<en>CP Input 2</en>
-			<de>CP Taste 2</de>
-			<fr>CP entrée 2</fr>
-			<es>CP tecla 2</es>
-			<it>CP Tasto 2</it>
-			<cz>CP Tlačítko 2</cz>
-		</text>
-		<text name="courseplayInput3">
-			<en>CP Input 3</en>
-			<de>CP Taste 3</de>
-			<fr>CP entrée 3</fr>
-			<es>CP tecla 3</es>
-			<it>CP Tasto 3</it>
-			<cz>CP Tlačítko 3</cz>
-		</text>
-		<text name="courseplayInput4">
-			<en>CP Input 4</en>
-			<de>CP Taste 4</de>
-			<fr>CP entrée 4</fr>
-			<es>CP tecla 4</es>
-			<it>CP Tasto 4</it>
-			<cz>CP Tlačítko 4</cz>
 		</text>
 		<text name="UNKNOWN">
 			<en>unknown</en>
@@ -1219,22 +1187,6 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530
 			<it>Canali di messa a punto</it>
 			<cz>Kanálů ladění:</cz>
 		</text>
-		<text name="CPHudOpen">
-			<en>Show Courseplay HUD</en>
-			<de>Courseplay HUD öffnen</de>
-			<fr>Montrer le Courseplay HUD</fr>
-			<es>Mostrar Courseplay HUD</es>
-			<it>Mostra il Courseplay HUD</it>
-			<cz>Zobrazit Courseplay HUD</cz>
-		</text>
-		<text name="CPHudClose">
-			<en>Hide Courseplay HUD</en>
-			<de>Courseplay HUD schließen</de>
-			<fr>Cacher le Courseplay HUD</fr>
-			<es>Ocultar Courseplay HUD</es>
-			<it>Nascondi Courseplay HUD</it>
-			<cz>Skrýt Courseplay HUD</cz>
-		</text>
 		<text name="CPOptions">
 			<en>Courseplay options</en>
 			<de>Courseplay-Optionen</de>
@@ -1242,30 +1194,6 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530
 			<es>Opciones de Courseplay</es>
 			<it>Opzioni del Courseplay</it>
 			<cz>Courseplay nastavení</cz>
-		</text>
-		<text name="CP_Hud">
-			<en>Show/hide Courseplay HUD</en>
-			<de>Courseplay HUD öffnen/schließen</de>
-			<fr>Montrer/cacher le Courseplay HUD</fr>
-			<es>Mostrar/ocultar Courseplay HUD</es>
-			<it>Mostra/nascondi Courseplay HUD</it>
-			<cz>Zobrazit/skrýt Courseplay HUD</cz>
-		</text>
-		<text name="CP_Modifier_1">
-			<en>Courseplay key modifier 1</en>
-			<de>Courseplay Extrataste 1</de>
-			<fr>Courseplay touche extra 1</fr>
-			<es>Courseplay modificar tecla 1</es>
-			<it>Courseplay tasto extra 1</it>
-			<cz>Courseplay extra klávesa 1</cz>
-		</text>
-		<text name="CP_Modifier_2">
-			<en>Courseplay key modifier 2</en>
-			<de>Courseplay Extrataste 2</de>
-			<fr>Courseplay touche extra 2</fr>
-			<es>Courseplay modificar tecla 2</es>
-			<it>Courseplay tasto extra 2</it>
-			<cz>Courseplay extra klávesa 2</cz>
 		</text>
 
 		<!-- Course Generation -->
@@ -1399,7 +1327,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530
 			<it>dopo</it> <!-- !!! -->
 			<cz>po</cz>
 		</text>
-		
+
 		<text name="CPridgeMarkers">
 			<de>Spurreißer</de>
 			<en>Ridge markers</en>
@@ -1529,7 +1457,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530
 			<it>Stop + go loading</it> <!-- !! -->
 			<cz>Zastavit a jet nákládat:</cz>
 		</text>
-		
+
 		<text name="cpStartAtFirstPoint">
 			<de>Kurs beginnen am</de>
 			<en>Start course at</en>
@@ -1570,19 +1498,119 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530
 			<it>Camp</it> <!-- !!! -->
 			<cz>Pole</cz> <!-- !!! -->
 		</text>
+
+
+		<!-- INPUTBINDINGS -->
+		<text name="COURSEPLAY_HUD_OPEN">
+			<en>Show Courseplay HUD</en>
+			<de>Courseplay HUD öffnen</de>
+			<fr>Montrer le Courseplay HUD</fr>
+			<es>Mostrar Courseplay HUD</es>
+			<it>Mostra il Courseplay HUD</it>
+			<cz>Zobrazit Courseplay HUD</cz>
+		</text>
+		<text name="COURSEPLAY_HUD_CLOSE">
+			<en>Hide Courseplay HUD</en>
+			<de>Courseplay HUD schließen</de>
+			<fr>Cacher le Courseplay HUD</fr>
+			<es>Ocultar Courseplay HUD</es>
+			<it>Nascondi Courseplay HUD</it>
+			<cz>Skrýt Courseplay HUD</cz>
+		</text>
+		<text name="COURSEPLAY_FUNCTIONS">
+			<en>Courseplay functions</en>
+			<de>Courseplay-Funktionen</de>
+			<fr>Fonctions de Courseplay</fr>
+			<es>Funciones Courseplay</es>
+			<it>Funzioni Courseplay</it>
+			<cz>Courseplay funkce</cz>
+		</text>
+
+		<!-- Keyboard -->
+		<text name="COURSEPLAY_MODIFIER">
+			<en>Courseplay: modifier</en>
+			<de>Courseplay: Modifikator</de>
+		</text>
+		<text name="COURSEPLAY_HUD">
+			<en>Show/hide Courseplay HUD</en>
+			<de>Courseplay HUD öffnen/schließen</de>
+			<fr>Montrer/cacher le Courseplay HUD</fr>
+			<es>Mostrar/ocultar Courseplay HUD</es>
+			<it>Mostra/nascondi Courseplay HUD</it>
+			<cz>Zobrazit/skrýt Courseplay HUD</cz>
+		</text>
+		<text name="COURSEPLAY_START_STOP">
+			<en>Courseplay: drive course/stop driver</en>
+			<de>Courseplay: Abfahrer einstellen/entlassen</de>
+			<fr>Courseplay: démarrer/arrêter la course</fr>
+			<es>Courseplay: conducir/detener ruta</es>
+			<it>Courseplay: usa/ferma percorso</it>
+			<cz>Courseplay: aktivovat/zastavit odvozce</cz>
+		</text>
+		<text name="COURSEPLAY_DRIVEON">
+			<en>Courseplay: stop at last point or at next trigger</en>
+			<de>Courseplay: Warten am letzten Wegpunkt oder Trigger</de>
+			<fr>Courseplay: arrêter au prochain point ou trigger</fr>
+			<es>Courseplay: parar en último punto o siguiente trigger</es>
+			<it>Courseplay: ferma all'ultimo punto o al prossimo trigger</it>
+			<cz>Courseplay: Čekat na posledním bodě nebo triggeru</cz>
+		</text>
+		<text name="COURSEPLAY_DRIVENOW">
+			<en>Courseplay: drive now</en>
+			<de>Courseplay: sofort abfahren</de>
+			<fr>Courseplay: démarrer maintenant</fr>
+			<es>Courseplay: conducir ahora</es>
+			<it>Courseplay: avvia ora</it>
+			<cz>Courseplay: odvézt bez čekání na doplnění</cz>
+		</text>
+
+		<!-- Mouse -->
+		<text name="COURSEPLAY_MOUSEACTION">
+			<en>Courseplay: mouse action</en>
+			<de>Courseplay: Maus-Aktion</de>
+			<fr>Courseplay: action de la souris</fr>
+			<es>Courseplay: acción del ratón</es>
+			<it>Courseplay: azione del mouse</it>
+			<cz>Courseplay: myš akce</cz>
+		</text>
+		<text name="COURSEPLAY_MOUSEACTION_SECONDARY">
+			<en>Courseplay: secondary mouse action</en>
+			<de>Courseplay: sekundäre Maus-Aktion</de>
+			<fr>Courseplay: action secondaire de la souris</fr>
+			<es>Courseplay: acción secondaria del ratón</es>
+			<it>Courseplay: azione secondaria del mouse</it>
+			<cz>Courseplay: myš sekundární akce</cz>
+		</text>
+		<text name="COURSEPLAY_MOUSEARROW_SHOW">
+			<en>show mouse cursor</en>
+			<de>Mauszeiger anzeigen</de>
+			<fr>afficher le curseur</fr>
+			<es>mostrar el cursor</es>
+			<it>mostra il cursore</it>
+			<cz>skrýt kurzor</cz>
+		</text>
+		<text name="COURSEPLAY_MOUSEARROW_HIDE">
+			<en>hide mouse cursor</en>
+			<de>Mauszeiger verstecken</de>
+			<fr>cacher le curseur</fr>
+			<es>ocultar el cursor</es>
+			<it>nascondere il cursore</it>
+			<cz>zobrazit kurzor</cz>
+		</text>
 	</l10n>
 
 	<extraSourceFiles>
 		<sourceFile filename="register.lua" />
-	</extraSourceFiles>   
+	</extraSourceFiles>
 
 	<inputBindings>
-		<input name="courseplayInput1" category="VEHICLE" key1="KEY_KP_7"   key2="" button="" device="0" mouse="" />
-		<input name="courseplayInput2" category="VEHICLE" key1="KEY_KP_8"   key2="" button="" device="0" mouse="" />
-		<input name="courseplayInput3" category="VEHICLE" key1="KEY_KP_9"   key2="" button="" device="0" mouse="" />
-		<input name="CP_Hud"                              key1="KEY_delete" key2="" button="" device="0" mouse="" />
-		<input name="CP_Modifier_1"                       key1="KEY_lctrl"  key2="" button="" device="0" mouse="" />
-		<input name="CP_Modifier_2"                       key1="KEY_lalt"   key2="" button="" device="0" mouse="" />
+		<input name="COURSEPLAY_MODIFIER"              category="VEHICLE" key1="KEY_lctrl"  key2="" button="" device="0" mouse=""                   />
+		<input name="COURSEPLAY_HUD"                   category="VEHICLE" key1="KEY_delete" key2="" button="" device="0" mouse=""                   />
+		<input name="COURSEPLAY_START_STOP"            category="VEHICLE" key1="KEY_KP_7"   key2="" button="" device="0" mouse=""                   />
+		<input name="COURSEPLAY_DRIVEON"               category="VEHICLE" key1="KEY_KP_8"   key2="" button="" device="0" mouse=""                   />
+		<input name="COURSEPLAY_DRIVENOW"              category="VEHICLE" key1="KEY_KP_9"   key2="" button="" device="0" mouse=""                   />
+		<input name="COURSEPLAY_MOUSEACTION"           category="VEHICLE" key1=""           key2="" button="" device="0" mouse="MOUSE_BUTTON_LEFT"  />
+		<input name="COURSEPLAY_MOUSEACTION_SECONDARY" category="VEHICLE" key1=""           key2="" button="" device="0" mouse="MOUSE_BUTTON_RIGHT" />
 	</inputBindings>
-    
+
 </modDesc>

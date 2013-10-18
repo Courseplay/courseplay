@@ -145,6 +145,10 @@ function courseplay:drive_on(self)
 	end;
 end;
 
+function courseplay:setIsLoaded(vehicle, bool)
+	vehicle.loaded = bool;
+end;
+
 function courseplay:send_player_home(combine)
 	local tractor = combine.courseplayers[1];
 	tractor.loaded = true;
@@ -346,7 +350,10 @@ end
 
 
 function courseplay:changeWpOffsetX(vehicle, change_by)
-	vehicle.WpOffsetX = vehicle.WpOffsetX + change_by
+	vehicle.WpOffsetX = vehicle.WpOffsetX + change_by;
+	if vehicle.WpOffsetX > -0.1 and vehicle.WpOffsetX < 0.1 then
+		vehicle.WpOffsetX = 0;
+	end;
 	courseplay:calculateWorkWidthDisplayPoints(vehicle);
 	vehicle.cp.workWidthChanged = vehicle.timer + 2000;
 end;
@@ -419,14 +426,7 @@ function courseplay:change_turn_speed(self, change_by)
 end
 
 function courseplay:change_wait_time(self, change_by)
-	local speed = self.waitTime
-
-	speed = speed + change_by
-
-	if speed < 0 then
-		speed = 0
-	end
-	self.waitTime = speed
+	self.waitTime = math.max(0, self.waitTime + change_by);
 end
 
 function courseplay:change_field_speed(self, change_by)
@@ -449,6 +449,10 @@ function courseplay:change_unload_speed(self, change_by)
 	self.unload_speed = speed / 3600;
 end
 
+function courseplay:change_use_speed(self)
+	self.use_speed = not self.use_speed
+end
+
 function courseplay:change_RulMode(self, change_by)
 	self.RulMode = self.RulMode + change_by
 	if self.RulMode == 4 then
@@ -466,11 +470,6 @@ end
 
 function courseplay:switch_realistic_driving(self)
 	self.realistic_driving = not self.realistic_driving
-end
-
-
-function courseplay:change_use_speed(self)
-	self.use_speed = not self.use_speed
 end
 
 function courseplay:switch_combine(vehicle, change_by)

@@ -98,6 +98,8 @@ function courseplay:initialize()
 		end;
 	end;
 
+	courseplay:setInputBindings();
+
 	courseplay:setGlobalData();
 
 	print(string.format("\t### Courseplay: initialized %d/%d files (v%s)", numFilesLoaded, numFiles, courseplay.version));
