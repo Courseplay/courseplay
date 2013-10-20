@@ -169,9 +169,13 @@ function endswith(sbig, slittle) --TODO: always use Utils.endsWith
 	return string.sub(sbig, string.len(sbig) - string.len(slittle) + 1) == slittle
 end
 
-function nameNum(vehicle)
+function nameNum(vehicle, hideNum)
 	if vehicle.working_course_player_num ~= nil then
-		return tostring(vehicle.name) .. " (#" .. tostring(vehicle.working_course_player_num) .. ")";
+		if hideNum == nil or hideNum == false then
+			return tostring(vehicle.name) .. " (#" .. tostring(vehicle.working_course_player_num) .. ")";
+		else
+			return tostring(vehicle.name);
+		end;
 	elseif vehicle.isHired then
 		return tostring(vehicle.name) .. " (helper)";
 	end;

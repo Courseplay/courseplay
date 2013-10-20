@@ -21,8 +21,13 @@ function courseplay_manager:deleteMap()
 	g_currentMission.cp_sorted = nil
 
 	for i,vehicle in pairs(g_currentMission.steerables) do
-		if vehicle.cp ~= nil and vehicle.cp.buttons ~= nil then
-			courseplay.button.deleteButtonOverlays(vehicle);
+		if vehicle.cp ~= nil then
+			if vehicle.cp.globalInfoTextOverlay ~= nil then
+				vehicle.cp.globalInfoTextOverlay:delete();
+			end;
+			if vehicle.cp.buttons ~= nil then
+				courseplay.button.deleteButtonOverlays(vehicle);
+			end;
 		end;
 	end;
 
@@ -36,10 +41,23 @@ end
 
 function courseplay_manager:draw()
 	if not g_currentMission.missionPDA.showPDA then
-		for k,v in pairs(g_currentMission.steerables) do
-			if v.cp ~= nil and v.cp.globalInfoTextOverlay ~= nil and v.cp.globalInfoTextOverlay.isRendering then
-				v.cp.globalInfoTextOverlay:render();
+		if table.maxn(courseplay.globalInfoText.content) > 0 then
+			for coursePlayerNum,data in pairs(courseplay.globalInfoText.content) do
+				local bg = data.vehicle.cp.globalInfoTextOverlay;
+				local bgColor = courseplay.globalInfoText.levelColors[tostring(data.level)];
+				bgColor[4] = 0.85;
+				bg:setColor(unpack(bgColor));
+
+				local posY = coursePlayerNum * courseplay.globalInfoText.lineHeight;
+				bg:setPosition(bg.x, posY)
+				bg:setDimension(getTextWidth(courseplay.globalInfoText.fontSize, data.text) + courseplay.globalInfoText.backgroundPadding * 2.5, bg.height)
+
+				bg:render();
+				courseplay:setFontSettings("white", false);
+				renderText(courseplay.globalInfoText.posX, posY, courseplay.globalInfoText.fontSize, data.text);
 			end;
+
+			courseplay.globalInfoText.content = {}; --empty the table for next runthrough
 		end;
 	end;
 end;

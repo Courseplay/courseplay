@@ -6,50 +6,18 @@ function courseplay:add_working_player(self)
 	return numPlayers
 end
 
-function courseplay:setGlobalInfoText(self, text, level)
-	self.cp.globalInfoText = text;
-	self.cp.globalInfoTextLevel = Utils.getNoNil(level, 0);
+function courseplay:setGlobalInfoText(vehicle, text, level)
+	courseplay.globalInfoText.content[vehicle.working_course_player_num] = {
+		level = level or 0,
+		text = nameNum(vehicle, true) .. " " .. text,
+		vehicle = vehicle
+	};
 end;
 
--- renders info_text and global text for courseplaying tractors
-function courseplay:renderInfoText(self)
-	if self.isEntered then
-		if self.cp.infoText ~= nil then
-			courseplay:setFontSettings("white", false);
-			renderText(courseplay.hud.infoBasePosX + 0.005, courseplay.hud.infoBasePosY + 0.0035, 0.02, self.cp.infoText); --ORIG: +0.002
-		end;
-	end;
-
-
-	local bg = self.cp.globalInfoTextOverlay;
-	bg.isRendering = false;
-	if self.cp.globalInfoText ~= nil and not g_currentMission.missionPDA.showPDA then
-		local posY = self.working_course_player_num * 0.022;
-		local msg = Utils.getNoNil(self.name, g_i18n:getText("UNKNOWN")) .. " " .. self.cp.globalInfoText;
-
-		--Background overlay
-		local level = self.cp.globalInfoTextLevel;
-		local bgColor = nil;
-
-		if level ~= nil then
-			bgColor = courseplay.globalInfoText.levelColors[tostring(level)];
-		end;
-
-		if bgColor ~= nil then
-			bgColor[4] = 0.85;
-			local currentColor = { bg.r, bg.g, bg.b, bg.a };
-			if currentColor == nil or not courseplay:colorsMatch(currentColor, bgColor) then
-				bg:setColor(unpack(bgColor))
-			end;
-
-			bg:setPosition(bg.x, posY)
-			bg:setDimension(getTextWidth(courseplay.globalInfoText.fontSize, msg) + courseplay.globalInfoText.backgroundPadding * 2.5, bg.height)
-
-			bg.isRendering = true; --NOTE: render() happens in courseplay_manager:draw()
-		end;
-
+function courseplay:renderInfoText(vehicle)
+	if vehicle.isEntered and vehicle.cp.infoText ~= nil then
 		courseplay:setFontSettings("white", false);
-		renderText(courseplay.globalInfoText.posX, posY, courseplay.globalInfoText.fontSize, msg);
+		renderText(courseplay.hud.infoBasePosX + 0.005, courseplay.hud.infoBasePosY + 0.0035, 0.02, vehicle.cp.infoText); --ORIG: +0.002
 	end;
 end;
 

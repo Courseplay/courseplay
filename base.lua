@@ -84,11 +84,8 @@ function courseplay:load(xmlFile)
 	self.cp.infoText = nil -- info text on tractor
 
 	-- global info text - also displayed when not in vehicle
-	self.cp.globalInfoText = nil;
-	self.cp.globalInfoTextLevel = 0;
 	local git = courseplay.globalInfoText;
 	self.cp.globalInfoTextOverlay = Overlay:new(string.format("globalInfoTextOverlay%d", self.rootNode), git.backgroundImg, git.backgroundX, 0, 0.1, git.fontSize);
-	self.cp.globalInfoTextOverlay.isRendering = false;
 	self.testhe = false
 
 	-- ai mode: 1 abfahrer, 2 kombiniert
@@ -733,12 +730,16 @@ function courseplay:draw()
 	end; -- self:getIsActive() and self.isEntered
 
 	--RENDER
-	if self:getIsActive() and self.cp.hud.show then
-		courseplay:setHudContent(self);
-		courseplay:renderHud(self);
+	if self:getIsActive() then
+		courseplay:renderInfoText(self);
 
-		if self.mouse_enabled then
-			InputBinding.setShowMouseCursor(self.mouse_enabled);
+		if self.cp.hud.show then
+			courseplay:setHudContent(self);
+			courseplay:renderHud(self);
+
+			if self.mouse_enabled then
+				InputBinding.setShowMouseCursor(self.mouse_enabled);
+			end;
 		end;
 	end;
 end; --END draw()
@@ -818,10 +819,8 @@ function courseplay:update(dt)
 		end
 	end
 
-	courseplay:renderInfoText(self);
 	if g_server ~= nil then
 		self.cp.infoText = nil;
-		courseplay:setGlobalInfoText(self, nil, nil);
 	end
 
 end; --END update()
@@ -841,16 +840,28 @@ function courseplay:delete()
 		removeTrigger(self.aiTrafficCollisionTrigger);
 	end;
 
-	if self.cp ~= nil and self.cp.buttons ~= nil then
-		courseplay.button.deleteButtonOverlays(self);
-	end;
-
-	for _,section in pairs(self.cp.signs) do
-		for k,signData in pairs(section) do
-			courseplay.utils.signs.deleteSign(signData.sign);
+	if self.cp ~= nil then
+		if self.cp.hud.background ~= nil then
+			self.cp.hud.background:delete();
+		end;
+		if self.ArrowOverlay ~= nil then
+			self.ArrowOverlay:delete();
+		end;
+		if self.cp.buttons ~= nil then
+			courseplay.button.deleteButtonOverlays(self);
+		end;
+		if self.cp.globalInfoTextOverlay ~= nil then
+			self.cp.globalInfoTextOverlay:delete();
+		end;
+		if self.cp.signs ~= nil then
+			for _,section in pairs(self.cp.signs) do
+				for k,signData in pairs(section) do
+					courseplay.utils.signs.deleteSign(signData.sign);
+				end;
+			end;
+			self.cp.signs = nil;
 		end;
 	end;
-	self.cp.signs = nil;
 end;
 
 function courseplay:set_timeout(self, interval)
@@ -870,8 +881,6 @@ function courseplay:readStream(streamId, connection)
 	self.autoTurnRadius = streamDebugReadFloat32(streamId)
 	self.auto_combine_offset = streamDebugReadBool(streamId);
 	self.combine_offset = streamDebugReadFloat32(streamId)
-	self.cp.globalInfoTextLevel = streamReadFloat32(streamId)
-	self.cp.globalInfoTextOverlay.isRendering = streamReadBool(streamId);
 	self.cp.hasStartingCorner = streamDebugReadBool(streamId);
 	self.cp.hasStartingDirection = streamDebugReadBool(streamId);
 	self.cp.hasValidCourseGenerationData = streamDebugReadBool(streamId);
@@ -953,7 +962,6 @@ function courseplay:writeStream(streamId, connection)
 	streamWriteBool(streamId, self.auto_combine_offset);
 	streamDebugWriteFloat32(streamId,self.combine_offset)
 	streamWriteFloat32(streamId, self.cp.globalInfoTextLevel);
-	streamWriteBool(streamId, self.cp.globalInfoTextOverlay.isRendering);
 	streamDebugWriteBool(streamId, self.cp.hasStartingCorner);
 	streamDebugWriteBool(streamId, self.cp.hasStartingDirection);
 	streamDebugWriteBool(streamId, self.cp.hasValidCourseGenerationData);

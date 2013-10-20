@@ -199,8 +199,10 @@ function courseplay:setGlobalData()
 		backgroundImg = "dataS2/menu/white.png",
 		backgroundPadding = 0.005,
 		backgroundX = 0.035 - 0.005,
-		levelColors = {}
+		levelColors = {},
+		content = {}
 	};
+	courseplay.globalInfoText.lineHeight = courseplay.globalInfoText.fontSize * 1.1;
 	courseplay.globalInfoText.levelColors["0"]  = courseplay.hud.colors.hover;
 	courseplay.globalInfoText.levelColors["1"]  = courseplay.hud.colors.activeGreen;
 	courseplay.globalInfoText.levelColors["-1"] = courseplay.hud.colors.activeRed;
@@ -239,8 +241,6 @@ function courseplay:setGlobalData()
 
 	courseplay.checkValues = {
 		"infoText",
-		"globalInfoText",
-		"globalInfoTextLevel",
 		"HUD0noCourseplayer",
 		"HUD0wantsCourseplayer",
 		"HUD0tractorName",
