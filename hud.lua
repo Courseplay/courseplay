@@ -334,7 +334,7 @@ function courseplay:setHudContent(self)
 		self.cp.hud.content.pages[7][1][2].text = string.format("%.1f sec", self.waitTime);
 
 		self.cp.hud.content.pages[7][2][1].text, self.cp.hud.content.pages[7][2][2].text, self.cp.hud.content.pages[7][3][1].text, self.cp.hud.content.pages[7][3][2].text = "", "", "", "";
-		if self.ai_mode == 4 or self.ai_mode == 6 then
+		if self.ai_mode == 4 or self.ai_mode == 6 or self.ai_mode == 7 then
 			self.cp.hud.content.pages[7][2][1].text = courseplay:get_locale(self, "CPWpOffsetX") -- X-Offset
 			if self.WpOffsetX ~= nil then
 				self.cp.hud.content.pages[7][2][2].text = string.format("%.1fm (l/r)", self.WpOffsetX)

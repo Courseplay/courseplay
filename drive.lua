@@ -197,8 +197,15 @@ function courseplay:drive(self, dt)
 	end;
 
 	-- offset - endlich lohnt sich der mathe-lk von vor 1000 Jahren ;)
-	if (self.ai_mode == 4 or self.ai_mode == 6 ) and self.startWork ~= nil and self.stopWork ~=nil and self.WpOffsetX ~= nil and self.WpOffsetZ ~= nil then
-		if self.recordnumber > self.startWork and self.recordnumber < self.stopWork and self.recordnumber > 1  and (self.WpOffsetX ~= 0 or self.WpOffsetZ ~= 0) then
+	
+	local goMode7Offset = false
+	local recordnumber = self.recordnumber
+	if self.ai_mode == 7 and recordnumber > 3 and recordnumber + 6 > self.cp.waitPoints[1] and not (recordnumber -3 > self.cp.waitPoints[1]) and not self.cp.mode7GoBackBeforeUnloading then
+			goMode7Offset = true
+	end
+
+	if (((self.ai_mode == 4 or self.ai_mode == 6 ) and self.startWork ~= nil and self.stopWork ~=nil)or goMode7Offset) and self.WpOffsetX ~= nil and self.WpOffsetZ ~= nil then
+		if (goMode7Offset or (self.recordnumber > self.startWork and self.recordnumber < self.stopWork and self.recordnumber > 1))  and (self.WpOffsetX ~= 0 or self.WpOffsetZ ~= 0) then
 			--courseplay:addsign(self, cx, 10, cz)
 			--courseplay:debug(string.format("old WP: %d x %d ", cx, cz ), 2)
 
