@@ -730,9 +730,12 @@ function courseplay:draw()
 	end; -- self:getIsActive() and self.isEntered
 
 	--RENDER
-	if self:getIsActive() then
-		courseplay:renderInfoText(self);
+	courseplay:renderInfoText(self);
+	if g_server ~= nil then
+		self.cp.infoText = nil;
+	end
 
+	if self:getIsActive() then
 		if self.cp.hud.show then
 			courseplay:setHudContent(self);
 			courseplay:renderHud(self);
@@ -818,11 +821,6 @@ function courseplay:update(dt)
 			self.cp[v .. "Memory"] = courseplay:checkForChangeAndBroadcast(self, "self.cp." .. v , self.cp[v], self.cp[v .. "Memory"]);
 		end
 	end
-
-	if g_server ~= nil then
-		self.cp.infoText = nil;
-	end
-
 end; --END update()
 
 function courseplay:updateTick(dt)
