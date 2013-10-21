@@ -148,7 +148,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 			end
 			
 		elseif self.ai_mode == 3 then -- Overlader
-			if object.cp.hasSpecializationTrailer then --to do 
+			if object.cp.hasSpecializationTrailer and object.cp.isAugerWagon then --to do 
 				tipper_attached = true
 				table.insert(self.tippers, object)
 			end

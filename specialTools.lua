@@ -20,6 +20,7 @@ function courseplay:setNameVariable(workTool)
 	workTool.cp.hasSpecializationWindrower = SpecializationUtil.hasSpecialization(Windrower, workTool.specializations) 
 	workTool.cp.hasSpecializationCultivator = SpecializationUtil.hasSpecialization(Cultivator, workTool.specializations)
 	workTool.cp.hasSpecializationFruitPreparer = SpecializationUtil.hasSpecialization(FruitPreparer, workTool.specializations) or SpecializationUtil.hasSpecialization(fruitPreparer, workTool.specializations)
+
 	--[[ Debugs:
 	if workTool.cp.hasSpecializationFruitPreparer then print("		FruitPreparer")end
 	if workTool.cp.hasSpecializationTedder then print("		Tedder")end
@@ -37,11 +38,47 @@ function courseplay:setNameVariable(workTool)
 	if workTool.cp.hasSpecializationAICombine then print("		AICombine")end
 	if workTool.cp.hasSpecializationCombine then print("		Combine")end
 	if workTool.cp.hasSpecializationSteerable then print("		Steerable")end
-	]]
-	
+	--]]
+
+	--AugerWagons
+	if workTool.cp.hasSpecializationAugerWagon then
+		workTool.cp.isAugerWagon = true;
+		if Utils.endsWith(workTool.configFileName, "horschTitan34UW.xml") then
+			workTool.cp.isHorschTitan34UWTitaniumAddon = true;
+			workTool.cp.foldPipeAtWaitPoint = true;
+		end;
+	elseif workTool.cp.hasSpecializationOverloader then
+		workTool.cp.isAugerWagon = true;
+		workTool.cp.hasSpecializationOverloaderV2 = workTool.overloaderVersion ~= nil and workTool.overloaderVersion >= 2;
+	elseif workTool.cp.hasSpecializationAgrolinerTUW20 then
+		workTool.cp.isAugerWagon = true;
+		if Utils.endsWith(workTool.configFileName, "AgrolinerTUW20.xml") then
+			workTool.cp.isAgrolinerTUW20 = true;
+			workTool.cp.foldPipeAtWaitPoint = true;
+		end;
+	elseif workTool.cp.hasSpecializationOvercharge then
+		workTool.cp.isAugerWagon = true;
+		if workTool.pipe ~= nil and workTool.unloadingCapacity ~= nil and workTool.toggleUnloadingState == nil and workTool.setUnloadingState ~= nil and workTool.trailerFoundId ~= nil and workTool.isDrumActivated ~= nil then
+			workTool.cp.isHaweSUW5000 = true;
+		elseif Utils.endsWith(workTool.configFileName, "AgrolinerTUW20.xml") then
+			workTool.cp.isAgrolinerTUW20 = true;
+			workTool.cp.foldPipeAtWaitPoint = true;
+		elseif Utils.endsWith(workTool.configFileName, "HaweULW2600T.xml") then
+			workTool.cp.isHaweULW2600T = true;
+			workTool.cp.foldPipeAtWaitPoint = true;
+		elseif Utils.endsWith(workTool.configFileName, "HaweULW3000T.xml") then
+			workTool.cp.isHaweULW3000T = true;
+			workTool.cp.foldPipeAtWaitPoint = true;
+		end;
+	elseif workTool.turnOn ~= nil and workTool.inRangeDraw ~= nil and workTool.Go ~= nil and workTool.Go.trsp ~= nil and workTool.CheckDone ~= nil and workTool.CheckDone.trsp then
+		--workTool.cp.isAugerWagon = true;
+		--workTool.cp.isBrentAvalanche = true;
+	elseif workTool.animationParts ~= nil and workTool.animationParts[2] ~= nil and workTool.toggleUnloadingState ~= nil and workTool.setUnloadingState ~= nil then
+		workTool.cp.isAugerWagon = true;
+		workTool.cp.isTaarupShuttle = true;
 
 	--Weidemann4270CX100T
-	if Utils.endsWith(workTool.configFileName, "weidemann4270CX100T.xml") then
+	elseif Utils.endsWith(workTool.configFileName, "weidemann4270CX100T.xml") then
 		workTool.cp.isWeidemann4270CX100T = true
 
 	--Case IH 3162 Cutter [Giants]
@@ -910,7 +947,18 @@ function courseplay:askForSpecialSettings(self,object)
 		self.cp.noStopOnEdge = true
 	end;
 
-	if object.cp.isEifokZunhammer18500PU or object.cp.isEifokKotteZubringer then
+
+	if object.cp.isAugerWagon then
+		if object.cp.foldPipeAtWaitPoint then
+			--object.cp.backPointsUnfoldPipe = 1;
+			object.cp.forwardPointsFoldPipe = 0;
+			if object.foldAnimTime ~= nil then
+				object.cp.lastFoldAnimTime = object.foldAnimTime;
+			end;
+		end;
+		object.cp.lastFillLevel = object.fillLevel;
+
+	elseif object.cp.isEifokZunhammer18500PU or object.cp.isEifokKotteZubringer then
 		self.cp.hasEifokZunhammer18500PU = object.cp.isEifokZunhammer18500PU;
 
 		if object.cp.hoseRefs == nil then

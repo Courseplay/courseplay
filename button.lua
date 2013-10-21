@@ -106,7 +106,7 @@ function courseplay:renderButton(self, button)
 				button.canScrollUp =   true;
 				button.canScrollDown = self.waitTime > 0;
 			elseif fn == "changeWpOffsetX" or fn == "changeWpOffsetZ" then
-				button.canScrollUp = self.ai_mode == 4 or self.ai_mode == 6 or self.ai_mode == 7;
+				button.canScrollUp = self.ai_mode == 3 or self.ai_mode == 4 or self.ai_mode == 6 or self.ai_mode == 7;
 				button.canScrollDown = button.canScrollUp;
 			end;
 
@@ -216,7 +216,7 @@ function courseplay:renderButton(self, button)
 			if fn == "change_wait_time" and prm < 0 then
 				button.show = self.waitTime > 0;
 			elseif fn == "changeWpOffsetX" or fn == "changeWpOffsetZ" then
-				button.show = self.ai_mode == 4 or self.ai_mode == 6 or self.ai_mode == 7;
+				button.show = self.ai_mode == 3 or self.ai_mode == 4 or self.ai_mode == 6 or self.ai_mode == 7;
 			elseif fn == "switchDriverCopy" and prm < 0 then
 				button.show = self.cp.selectedDriverNumber > 0;
 			elseif fn == "copyCourse" then

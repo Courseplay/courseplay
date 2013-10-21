@@ -65,6 +65,7 @@ function courseplay:initialize()
 		"inputCourseNameDialogue", 
 		"mode1", 
 		"mode2", 
+		"mode3", 
 		"mode4", 
 		"mode6", 
 		"mode8", 
@@ -214,7 +215,7 @@ function courseplay:setGlobalData()
 	courseplay.confirmedNoneTriggersCounter = 0;
 
 	courseplay.numAvailableDebugChannels = 16;
-	courseplay.numDebugChannels = 14;
+	courseplay.numDebugChannels = 15;
 	courseplay.debugChannels = {};
 	for channel=1, courseplay.numAvailableDebugChannels do
 		courseplay.debugChannels[channel] = false;
@@ -235,7 +236,7 @@ function courseplay:setGlobalData()
 	12	all other debugs (uncategorized)
 	13	reverse
 	14	EifokLiquidManure
-	15	[empty]
+	15	mode3 (AugerWagon)
 	16	[empty]
 	--]]
 

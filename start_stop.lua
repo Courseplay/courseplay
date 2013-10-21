@@ -87,62 +87,69 @@ function courseplay:start(self)
 		end
 	end
 
-	if self.ai_state == 0 then
-		local nearestpoint = dist
-		local numWaitPoints = 0
-		self.cp.waitPoints = {};
-		self.cp.shovelFillStartPoint = nil
-		self.cp.shovelFillEndPoint = nil
-		self.cp.shovelEmptyPoint = nil
-		local recordNumber = 0
-		-- search nearest Waypoint
-		for i = 1, self.maxnumber do
-			local cx, cz = self.Waypoints[i].cx, self.Waypoints[i].cz
-			local wait = self.Waypoints[i].wait
+	local numWaitPoints = 0
+	self.cp.waitPoints = {};
+	self.cp.shovelFillStartPoint = nil
+	self.cp.shovelFillEndPoint = nil
+	self.cp.shovelEmptyPoint = nil
+	local nearestpoint = dist
+	local recordNumber = 0
+	for i,wp in pairs(self.Waypoints) do
+		local cx, cz = wp.cx, wp.cz
+
+		if self.ai_state == 0 then
 			dist = courseplay:distance(ctx, ctz, cx, cz)
 			if dist <= nearestpoint then
 				nearestpoint = dist
 				recordNumber = i
-			end
-			-- specific Workzone
-			if self.ai_mode == 4 or self.ai_mode == 6 or self.ai_mode == 7 then
-				if wait then
-					numWaitPoints = numWaitPoints + 1
-					self.cp.waitPoints[numWaitPoints] = i;
-				end
-
-				if numWaitPoints == 1 and (self.startWork == nil or self.startWork == 0) then
-					self.startWork = i
-				end
-				if numWaitPoints > 1 and (self.stopWork == nil or self.stopWork == 0) then
-					self.stopWork = i
-				end
-
-			--unloading point for transporter
-			elseif self.ai_mode == 8 then
-				if wait then
-					numWaitPoints = numWaitPoints + 1;
-					self.cp.waitPoints[numWaitPoints] = i;
-				end;
-
-			--work points for shovel
-			elseif self.ai_mode == 9 then
-				if wait then
-					numWaitPoints = numWaitPoints + 1;
-					self.cp.waitPoints[numWaitPoints] = i;
-				end;
-				
-				if numWaitPoints == 1 and self.cp.shovelFillStartPoint == nil then
-					self.cp.shovelFillStartPoint = i;
-				end;
-				if numWaitPoints == 2 and self.cp.shovelFillEndPoint == nil then
-					self.cp.shovelFillEndPoint = i;
-				end;
-				if numWaitPoints == 3 and self.cp.shovelEmptyPoint == nil then
-					self.cp.shovelEmptyPoint = i;
-				end;
 			end;
 		end;
+
+		if wp.wait then
+			numWaitPoints = numWaitPoints + 1;
+			self.cp.waitPoints[numWaitPoints] = i;
+		end
+
+		-- specific Workzone
+		if self.ai_mode == 4 or self.ai_mode == 6 or self.ai_mode == 7 then
+			if numWaitPoints == 1 and (self.startWork == nil or self.startWork == 0) then
+				self.startWork = i
+			end
+			if numWaitPoints > 1 and (self.stopWork == nil or self.stopWork == 0) then
+				self.stopWork = i
+			end
+
+		--unloading point for transporter
+		elseif self.ai_mode == 8 then
+			--
+
+		--work points for shovel
+		elseif self.ai_mode == 9 then
+			if numWaitPoints == 1 and self.cp.shovelFillStartPoint == nil then
+				self.cp.shovelFillStartPoint = i;
+			end;
+			if numWaitPoints == 2 and self.cp.shovelFillEndPoint == nil then
+				self.cp.shovelFillEndPoint = i;
+			end;
+			if numWaitPoints == 3 and self.cp.shovelEmptyPoint == nil then
+				self.cp.shovelEmptyPoint = i;
+			end;
+		end;
+	end;
+	-- mode 6 without start and stop point, set them at start and end, for only-on-field-courses
+	if (self.ai_mode == 4 or self.ai_mode == 6) then
+		if numWaitPoints == 0 or self.startWork == nil then
+			self.startWork = 1;
+		end;
+		if numWaitPoints == 0 or self.stopWork == nil then
+			self.stopWork = self.maxnumber;
+		end;
+	end;
+	self.cp.numWaitPoints = numWaitPoints;
+	print(string.format("%s: numWaitPoints=%d, waitPoints[1]=%s", nameNum(self), self.cp.numWaitPoints, tostring(self.cp.waitPoints[1])));
+
+
+	if self.ai_state == 0 then
 		local changed = false
 		for i=recordNumber,recordNumber+3 do
 			if self.Waypoints[i]~= nil and self.Waypoints[i].turn ~= nil then
@@ -155,20 +162,9 @@ function courseplay:start(self)
 			self.recordnumber = recordNumber
 		end
 
-		-- mode 6 without start and stop point, set them at start and end, for only-on-field-courses
-		if (self.ai_mode == 4 or self.ai_mode == 6) then
-			if numWaitPoints == 0 or self.startWork == nil then
-				self.startWork = 1;
-			end;
-			if numWaitPoints == 0 or self.stopWork == nil then
-				self.stopWork = self.maxnumber;
-			end;
-		end
 		if self.recordnumber > self.maxnumber then
 			self.recordnumber = 1
 		end
-
-		self.cp.numWaitPoints = numWaitPoints;
 	end --END if ai_state == 0
 
 	if self.recordnumber > 2 and self.ai_mode ~= 4 and self.ai_mode ~= 6 then

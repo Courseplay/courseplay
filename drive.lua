@@ -196,45 +196,45 @@ function courseplay:drive(self, dt)
 		drawDebugPoint(cx, cty+3, cz, 1, 0 , 1, 1);
 	end;
 
-	-- offset - endlich lohnt sich der mathe-lk von vor 1000 Jahren ;)
-	
-	local goMode7Offset = false
-	local recordnumber = self.recordnumber
-	if self.ai_mode == 7 and recordnumber > 3 and recordnumber + 6 > self.cp.waitPoints[1] and not (recordnumber -3 > self.cp.waitPoints[1]) and not self.cp.mode7GoBackBeforeUnloading then
-			goMode7Offset = true
-	end
-
-	if (((self.ai_mode == 4 or self.ai_mode == 6 ) and self.startWork ~= nil and self.stopWork ~=nil)or goMode7Offset) and self.WpOffsetX ~= nil and self.WpOffsetZ ~= nil then
-		if (goMode7Offset or (self.recordnumber > self.startWork and self.recordnumber < self.stopWork and self.recordnumber > 1))  and (self.WpOffsetX ~= 0 or self.WpOffsetZ ~= 0) then
-			--courseplay:addsign(self, cx, 10, cz)
-			--courseplay:debug(string.format("old WP: %d x %d ", cx, cz ), 2)
-
-			-- direction vector
-			local vcx, vcz
-			if self.recordnumber == 1 then
-				vcx = self.Waypoints[2].cx - cx
-				vcz = self.Waypoints[2].cz - cz
+	--HORIZONTAL/VERTICAL OFFSET
+	local offsetValid = self.WpOffsetX ~= nil and self.WpOffsetZ ~= nil and (self.WpOffsetX ~= 0 or self.WpOffsetZ ~= 0);
+	if offsetValid then
+		if self.ai_mode == 3 then
+			offsetValid = offsetValid and self.recordnumber > 2 and self.recordnumber > self.cp.waitPoints[1] - 6 and self.recordnumber <= self.cp.waitPoints[1] + 3;
+		elseif self.ai_mode == 4 or self.ai_mode == 6 then
+			offsetValid = offsetValid and self.recordnumber > self.startWork and self.recordnumber < self.stopWork and self.recordnumber > 1; --TODO: recordnumber incl startWork/stopWork?
+		elseif self.ai_mode == 7 then
+			offsetValid = offsetValid and self.recordnumber > 3 and self.recordnumber > self.cp.waitPoints[1] - 6 and self.recordnumber <= self.cp.waitPoints[1] + 3 and not self.cp.mode7GoBackBeforeUnloading;
+		else 
+			offsetValid = false;
+		end;
+	end;
+	if offsetValid then
+		--courseplay:debug(string.format("old WP: %d x %d ", cx, cz ), 2)
+		-- direction vector
+		local vcx, vcz
+		if self.recordnumber == 1 then
+			vcx = self.Waypoints[2].cx - cx
+			vcz = self.Waypoints[2].cz - cz
+		else
+			if self.Waypoints[self.cp.last_recordnumber].rev then
+				vcx = self.Waypoints[self.cp.last_recordnumber].cx - cx
+				vcz = self.Waypoints[self.cp.last_recordnumber].cz - cz
 			else
-				if self.Waypoints[self.cp.last_recordnumber].rev then
-					vcx = self.Waypoints[self.cp.last_recordnumber].cx - cx
-					vcz = self.Waypoints[self.cp.last_recordnumber].cz - cz
-				else
-					vcx = cx - self.Waypoints[self.cp.last_recordnumber].cx
-					vcz = cz - self.Waypoints[self.cp.last_recordnumber].cz
-				end
-			end
-			-- length of vector
-			local vl = Utils.vector2Length(vcx, vcz)
-			-- if not too short: normalize and add offsets
-			if vl ~= nil and vl > 0.01 then
-				vcx = vcx / vl
-				vcz = vcz / vl
-				cx = cx - vcz * self.WpOffsetX + vcx * self.WpOffsetZ
-				cz = cz + vcx * self.WpOffsetX + vcz * self.WpOffsetZ
+				vcx = cx - self.Waypoints[self.cp.last_recordnumber].cx
+				vcz = cz - self.Waypoints[self.cp.last_recordnumber].cz
 			end
 		end
+		-- length of vector
+		local vl = Utils.vector2Length(vcx, vcz)
+		-- if not too short: normalize and add offsets
+		if vl ~= nil and vl > 0.01 then
+			vcx = vcx / vl
+			vcz = vcz / vl
+			cx = cx - vcz * self.WpOffsetX + vcx * self.WpOffsetZ
+			cz = cz + vcx * self.WpOffsetX + vcz * self.WpOffsetZ
+		end
 		--courseplay:debug(string.format("new WP: %d x %d (angle) %d ", cx, cz, angle ), 2)
-		--courseplay:addsign(self, cx, 10, cz)
 	end
 
 	if courseplay.debugChannels[12] then
@@ -298,25 +298,15 @@ function courseplay:drive(self, dt)
 		if self.waitTimer == nil and self.waitTime > 0 then
 			self.waitTimer = self.timer + self.waitTime * 1000
 		end
-		if self.ai_mode == 3 then
-			courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPReachedOverloadPoint"));
-			if self.tipper_attached then
-				-- drive on if fill_level doesn't change and fill level is < self.required_fill_level_for_follow
-				local drive_on = false
-				if courseplay:timerIsThrough(self, "fillLevelChange") or self.last_fill_level == nil then
-					if self.last_fill_level ~= nil and fill_level == self.last_fill_level and fill_level < self.required_fill_level_for_follow then
-						drive_on = true
-					end
-					self.last_fill_level = fill_level
-					courseplay:setCustomTimer(self, "fillLevelChange", 7);
-				end
+		if self.ai_mode == 3 and self.tipper_attached then
+			if self.tippers[1].cp == nil or not self.tippers[1].cp.isAugerWagon then
+				self.cp.infoText = courseplay.locales.CPWrongTrailer;
+				allowedToDrive = false;
+			else
+				--allowedToDrive = courseplay:handleMode3(self, true, fill_level, allowedToDrive, dt);
+				courseplay:handleMode3(self, fill_level, allowedToDrive, dt);
+			end;
 
-				if fill_level == 0 or drive_on then
-					self.wait = false
-					self.last_fill_level = nil
-					self.unloaded = true
-				end
-			end
 		elseif self.ai_mode == 4 then
 			local drive_on = false
 			if self.cp.last_recordnumber == self.startWork and fill_level ~= 0 then
@@ -442,7 +432,20 @@ function courseplay:drive(self, dt)
 			return courseplay:handle_mode2(self, dt)
 		elseif self.ai_mode ~= 7 then
 			self.ai_state = 0
-		end
+		end;
+
+		if self.ai_mode == 3 and self.tipper_attached and self.recordnumber >= 2 and self.ai_state == 0 then
+			if self.cp.numWaitPoints < 1 then
+				self.cp.infoText = string.format(courseplay.locales.CPTooFewWaitingPoints, 1);
+				allowedToDrive = false;
+			elseif self.tippers[1].cp == nil or not self.tippers[1].cp.isAugerWagon then
+				self.cp.infoText = courseplay.locales.CPWrongTrailer;
+				allowedToDrive = false;
+			else
+				courseplay:handleMode3(self, fill_level, allowedToDrive, dt);
+			end;
+		end;
+
 		-- Fertilice loading --only for one Implement !
 		if self.ai_mode == 4 then
 			if self.tipper_attached and self.startWork ~= nil and self.stopWork ~= nil then
@@ -897,7 +900,7 @@ end
 
 function courseplay:setTrafficCollision(self, lx, lz)
 	local distance = 15
-	local goForRaycast = self.ai_mode == 1 or self.ai_mode == 3 or self.ai_mode == 5 or self.ai_mode == 8 or ((self.ai_mode == 4 or self.ai_mode == 6) and self.recordnumber > self.stopWork) or (self.ai_mode == 2 and self.recordnumber > 3)
+	local goForRaycast = self.ai_mode == 1 or (self.ai_mode == 3 and self.recordnumber > 3) or self.ai_mode == 5 or self.ai_mode == 8 or ((self.ai_mode == 4 or self.ai_mode == 6) and self.recordnumber > self.stopWork) or (self.ai_mode == 2 and self.recordnumber > 3)
 	if self.isRealistic and math.abs(lx) < 0.1 then
 		local brakingDistance = self.realGroundSpeed/5
 		distance = math.max(distance, distance * brakingDistance)

@@ -9,61 +9,28 @@ end;
 
 --COURSEPLAY
 SpecializationUtil.registerSpecialization("courseplay", "courseplay", g_currentModDirectory .. "courseplay.lua")
-SpecializationUtil.registerSpecialization("autoovercharge", "AutoOvercharge", g_currentModDirectory .. "AutoOvercharge.lua")
-SpecializationUtil.registerSpecialization("perard", "perard", g_currentModDirectory .. "AutoOvercharge.lua")
 
 -- adding courseplay to default vehicles and vehicles that are loaded after courseplay in multiplayer
 -- thanks to donner!
 
 function courseplay:register()
 	local numInstallationsVehicles = 0;
-	local numInstallationsOverchargers = 0;
-	for k, v in pairs(VehicleTypeUtil.vehicleTypes) do
-		if v ~= nil then
-			if v.name == "perard.perard" then
-				--courseplay:debug("renew perard interbenne 25", 2);
-				for l, w in pairs(v.specializations) do
-					v.specializations[l] = nil
-				end;
-
-				if not SpecializationUtil.hasSpecialization(Fillable, v.specializations) then
-					table.insert(v.specializations, SpecializationUtil.getSpecialization("fillable"));
-				end;
-				if not SpecializationUtil.hasSpecialization(Attachable, v.specializations) then
-					table.insert(v.specializations, SpecializationUtil.getSpecialization("attachable"));
-				end;
-				if not SpecializationUtil.hasSpecialization(Trailer, v.specializations) then
-					table.insert(v.specializations, SpecializationUtil.getSpecialization("trailer"));
-				end;
-				if not SpecializationUtil.hasSpecialization(perard, v.specializations) then
-					table.insert(v.specializations, SpecializationUtil.getSpecialization("perard"));
-				end;
-			else
-				for a = 1, table.maxn(v.specializations) do
-					local s = v.specializations[a];
-					if s ~= nil then
-						if s == SpecializationUtil.getSpecialization("steerable") then
-							if not SpecializationUtil.hasSpecialization(courseplay, v.specializations) then
-								--courseplay:debug("adding courseplay to:"..tostring(v.name), 3);
-								table.insert(v.specializations, SpecializationUtil.getSpecialization("courseplay"));
-								numInstallationsVehicles = numInstallationsVehicles + 1;
-							end
-						end;
-						if s == SpecializationUtil.getSpecialization("fillable") then
-							--if not SpecializationUtil.hasSpecialization(autoovercharge, v.specializations) then
-							if not SpecializationUtil.hasSpecialization(AutoOvercharge, v.specializations) then
-								--courseplay:debug("adding autoovercharge to:"..tostring(v.name), 3);
-								table.insert(v.specializations, SpecializationUtil.getSpecialization("autoovercharge"));
-								numInstallationsOverchargers = numInstallationsOverchargers + 1;
-							end
-						end
-					end;
+	for k,vehicleType in pairs(VehicleTypeUtil.vehicleTypes) do
+		if vehicleType ~= nil then
+			for a=1, table.maxn(vehicleType.specializations) do
+				local spec = vehicleType.specializations[a];
+				if spec ~= nil and spec == SpecializationUtil.getSpecialization("steerable") then
+					if not SpecializationUtil.hasSpecialization(courseplay, vehicleType.specializations) then
+						--courseplay:debug("adding courseplay to:"..tostring(vehicleType.name), 3);
+						table.insert(vehicleType.specializations, SpecializationUtil.getSpecialization("courseplay"));
+						numInstallationsVehicles = numInstallationsVehicles + 1;
+					end
 				end;
 			end;
 		end;
 	end;
 
-	print(string.format("\t### Courseplay: installed into %d vehicles and %d fillables", numInstallationsVehicles, numInstallationsOverchargers));
+	print(string.format("\t### Courseplay: installed into %d vehicles", numInstallationsVehicles));
 end
 
 function courseplay:setLocales()
@@ -108,11 +75,11 @@ function courseplay:attachableLoad(xmlFile)
 		end;
 	end;
 
-	--SET SPECIALIZATION VARIABLE
 	if self.cp == nil then
 		self.cp = {}
 	end
-	--print("	regst: CPloading: "..tostring(self.name))
+	--SET SPECIALIZATION VARIABLE
+	--Default specializations
 	self.cp.hasSpecializationTrailer = SpecializationUtil.hasSpecialization(Trailer, self.specializations)
 	self.cp.hasSpecializationBaler = SpecializationUtil.hasSpecialization(Baler, self.specializations)
 	self.cp.hasSpecializationBaleLoader = SpecializationUtil.hasSpecialization(baleLoader, self.specializations) or SpecializationUtil.hasSpecialization(BaleLoader, self.specializations)
@@ -130,7 +97,13 @@ function courseplay:attachableLoad(xmlFile)
 	self.cp.hasSpecializationWindrower = SpecializationUtil.hasSpecialization(Windrower, self.specializations) 
 	self.cp.hasSpecializationCultivator = SpecializationUtil.hasSpecialization(Cultivator, self.specializations)
 	self.cp.hasSpecializationFruitPreparer = SpecializationUtil.hasSpecialization(FruitPreparer, self.specializations) or SpecializationUtil.hasSpecialization(fruitPreparer, self.specializations)
-	self.cp.hasSpecializationAugerWagon = SpecializationUtil.hasSpecialization(AugerWagon, self.specializations);
+
+	--Custom (mod) specializations
+	self.cp.hasSpecializationAugerWagon = courseplay:hasSpecialization(self, "AugerWagon");
+	self.cp.hasSpecializationOverloader = courseplay:hasSpecialization(self, "overloader");
+	self.cp.hasSpecializationAgrolinerTUW20 = courseplay:hasSpecialization(self, "AgrolinerTUW20");
+	self.cp.hasSpecializationOvercharge = courseplay:hasSpecialization(self, "Overcharge");
+
 	--[[ Debugs:
 	if self.cp.hasSpecializationFruitPreparer then print("		FruitPreparer")end
 	if self.cp.hasSpecializationTedder then print("		Tedder")end
@@ -149,7 +122,11 @@ function courseplay:attachableLoad(xmlFile)
 	if self.cp.hasSpecializationBaler then print("		Baler") end
 	if self.cp.hasSpecializationBaleLoader then print("		BaleLoader") end
 	if self.cp.hasSpecializationPlough then print("		Plough") end
-	]]
+	if self.cp.hasSpecializationAugerWagon then print("\t\tload(): AugerWagon"); end;
+	if self.cp.hasSpecializationOverloader then print("\t\tload(): overloader"); end;
+	if self.cp.hasSpecializationAgrolinerTUW20 then print("\t\tload(): AgrolinerTUW20"); end;
+	if self.cp.hasSpecializationOvercharge then print("\t\tload(): Overcharge"); end;
+	--]]
 
 
 	--ADD ATTACHABLES TO GLOBAL REFERENCE LIST
@@ -221,3 +198,4 @@ Vehicle.delete = Utils.prependedFunction(Vehicle.delete, courseplay.vehicleDelet
 
 courseplay:setLocales();
 courseplay:register();
+

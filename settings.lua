@@ -354,7 +354,7 @@ function courseplay:changeWpOffsetX(vehicle, change_by)
 	if vehicle.WpOffsetX > -0.1 and vehicle.WpOffsetX < 0.1 then
 		vehicle.WpOffsetX = 0;
 	end;
-	if vehicle.ai_mode ~= 7 then
+	if vehicle.ai_mode ~= 3 and vehicle.ai_mode ~= 7 then
 		courseplay:calculateWorkWidthDisplayPoints(vehicle);
 		vehicle.cp.workWidthChanged = vehicle.timer + 2000;
 	end

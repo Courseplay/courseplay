@@ -639,9 +639,31 @@ end;
 function courseplay:setCustomTimer(vehicle, timerName, seconds)
 	vehicle.cp.timers[timerName] = vehicle.timer + (seconds * 1000);
 end;
-function courseplay:timerIsThrough(vehicle, timerName)
+function courseplay:timerIsThrough(vehicle, timerName, defaultToBool)
 	if vehicle.cp.timers[timerName] == nil then
-		vehicle.cp.timers[timerName] = 0;
+		return Utils.getNoNil(defaultToBool, true);
 	end;
 	return vehicle.timer > vehicle.cp.timers[timerName];
 end;
+
+function courseplay:hasSpecialization(vehicle, specClassName) --courtesy of Satissis, TYVM!
+	if vehicle.customEnvironment ~= nil then
+		specClassName = string.format("%s.%s", vehicle.customEnvironment, specClassName);
+	end;
+
+	local spec = nil;
+	for k,v in pairs(SpecializationUtil.specializations) do
+		if v.className == specClassName then
+			spec = SpecializationUtil.getSpecialization(k);
+			break;
+		end;
+	end;
+
+	if spec ~= nil then
+		if SpecializationUtil.hasSpecialization(spec, VehicleTypeUtil.vehicleTypes[vehicle.typeName].specializations) then -- We got the specialization class now, now checking if it's on the vehicle
+			return true;
+		end;
+	end;
+
+	return false;
+end
