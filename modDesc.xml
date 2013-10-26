@@ -463,7 +463,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530
 		<text name="CPFilterFor">
 			<en>Filter courses:</en>
 			<de>Kurse filtern:</de>
-			<fr>Filter courses:</fr> <!-- !!! -->
+			<fr>Filtrer les courses:</fr>
 			<es>Filter courses:</es> <!-- !!! -->
 			<it>Filter courses:</it> <!-- !!! -->
 			<cz>Filter courses:</cz> <!-- !!! -->
@@ -1070,7 +1070,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530
 		<text name="CPTooManyWaitingPoints">
 			<en>Too many waiting points! Only %d allowed.</en>
 			<de>Zu viele Wartepunkte! Nur %d erlaubt.</de>
-			<fr>Trop de points d'attente! Seulement %d permitté.</fr> <!-- !!! -->
+			<fr>Trop de points d'attente! Seulement %d permits.</fr>
 			<es>Demasiados puntos de espera! Sólo %d permitido.</es>
 			<it>Troppi punti d'attesa! Permesso solo %d.</it> <!-- !!! -->
 			<cz>Příliš mnoho bod čekají! Pouze %d povoleno.</cz> <!-- !!! -->
@@ -1340,7 +1340,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530
 			<de>Abladen auf dem Feld</de>
 			<en>Unloading on field</en>
 			<es>Unloading on field</es> <!-- !!! -->
-			<fr>Unloading on field</fr> <!-- !!! -->
+			<fr>Déchargement aux champs</fr> <!-- !!! -->
 			<it>Unloading on field</it> <!-- !!! -->
 			<cz>Unloading on field</cz> <!-- !!! -->
 		</text>
