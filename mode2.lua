@@ -993,11 +993,10 @@ function courseplay:unload_combine(self, dt)
 
 		self.cp.TrafficBrake = false
 		if mode == 5 or mode == 2 then
-			--target_x, target_z = courseplay:isTheWayToTargetFree(self,target_x, target_z)
+			target_x, target_z = courseplay:isTheWayToTargetFree(self,target_x, target_z)
+		else
+			courseplay:setTrafficCollision(self, target_x, target_z)
 		end
-		
-		courseplay:setTrafficCollision(self, target_x, target_z)
-		
 		if self.isRealistic then
 		
 			courseplay:driveInMRDirection(self, target_x, target_z,moveForwards, dt, allowedToDrive);
@@ -1092,6 +1091,8 @@ function courseplay:calculateCombineOffset(self, combine)
 	if self.auto_combine_offset and combine.cp.isCaseIH7130 then
 		offs = 8.0;
 	elseif self.auto_combine_offset and combine.cp.isCaseIH9230 then
+		offs = 11.5;
+	elseif self.auto_combine_offset and combine.cp.iscaseIH9230Crawler then
 		offs = 11.5;
 	elseif self.auto_combine_offset and (combine.cp.isGrimmeRootster604 or Utils.endsWith(combine.configFileName, "grimmeRootster604.xml")) then
 		offs = -4.3;

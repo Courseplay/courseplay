@@ -78,7 +78,8 @@ function courseplay:initialize()
 		"tippers", 
 		"triggers", 
 		"turn",
-		"reverse"
+		"reverse",
+		"bypass"
 	};
 
 	local numFiles, numFilesLoaded = table.getn(fileList), 0;

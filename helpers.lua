@@ -667,3 +667,14 @@ function courseplay:hasSpecialization(vehicle, specClassName) --courtesy of Sati
 
 	return false;
 end
+
+function courseplay:getDriveDirection(node, x, y, z)
+  local lx, ly, lz = worldToLocal(node, x, y, z)
+  local length = Utils.vector3Length(lx,ly,lz)
+  if length > 0 then
+    lx = lx / length
+    lz = lz / length
+	ly = ly /length
+  end
+  return lx,ly,lz
+end
