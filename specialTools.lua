@@ -238,6 +238,8 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.isCaseIH7130 = true;
 	elseif Utils.endsWith(workTool.configFileName, "caseIH9230.xml") then
 		workTool.cp.isCaseIH9230 = true;
+	elseif Utils.endsWith(workTool.configFileName, "caseIH9230Crawler.xml") then
+		workTool.cp.iscaseIH9230Crawler = true;
 
 	--Cutters [Giants]
 	elseif Utils.endsWith(workTool.configFileName, "caseIH3162Cutter.xml") then

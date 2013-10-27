@@ -323,6 +323,8 @@ function courseplay:calculateInitialCombineOffset(self, combine)
 		self.combine_offset = 8.0;
 	elseif combine.cp.isCaseIH9230 then
 		self.combine_offset = 11.5;
+	elseif combine.cp.iscaseIH9230Crawler then
+		self.combine_offset = 11.5;
 	elseif combine.cp.isGrimmeRootster604 or Utils.endsWith(combine.configFileName, "grimmeRootster604.xml") then
 		self.combine_offset = -4.3;
 	elseif combine.cp.isGrimmeSE7555 or Utils.endsWith(combine.configFileName, "grimmeSE75-55.xml") then
