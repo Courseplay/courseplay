@@ -81,10 +81,6 @@ function courseplay:setNameVariable(workTool)
 	elseif Utils.endsWith(workTool.configFileName, "weidemann4270CX100T.xml") then
 		workTool.cp.isWeidemann4270CX100T = true
 
-	--Case IH 3162 Cutter [Giants]
-	elseif Utils.endsWith(workTool.configFileName, "caseIH3162Cutter.xml") then
-		workTool.cp.isCaseIH3162Cutter = true;
-
 	--Zunhammer/Kotte liquid manure pack [Eifok Team]
 	elseif Utils.endsWith(workTool.configFileName, "zunhammer18500pu.xml") then
 		workTool.cp.isEifokZunhammer18500PU = true;
@@ -238,6 +234,14 @@ function courseplay:setNameVariable(workTool)
 	--Combines [Giants]
 	elseif Utils.endsWith(workTool.configFileName, "fahrM66.xml") then
 		workTool.cp.isFahrM66 = true;
+	elseif Utils.endsWith(workTool.configFileName, "caseIH7130.xml") then
+		workTool.cp.isCaseIH7130 = true;
+	elseif Utils.endsWith(workTool.configFileName, "caseIH9230.xml") then
+		workTool.cp.isCaseIH9230 = true;
+
+	--Cutters [Giants]
+	elseif Utils.endsWith(workTool.configFileName, "caseIH3162Cutter.xml") then
+		workTool.cp.isCaseIH3162Cutter = true;
 
 	--Others
 	elseif Utils.endsWith(workTool.configFileName, "KirovetsK700A.xml") then

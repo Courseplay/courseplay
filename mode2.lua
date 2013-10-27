@@ -1087,16 +1087,21 @@ function courseplay:calculateCombineOffset(self, combine)
 			--print("pipe is right")		
 		end;
 	end;
+
 	--special tools, special cases
-	if self.auto_combine_offset and combine.name == "Grimme Rootster 604" then
+	if self.auto_combine_offset and combine.cp.isCaseIH7130 then
+		offs = 8.0;
+	elseif self.auto_combine_offset and combine.cp.isCaseIH9230 then
+		offs = 11.5;
+	elseif self.auto_combine_offset and (combine.cp.isGrimmeRootster604 or Utils.endsWith(combine.configFileName, "grimmeRootster604.xml")) then
 		offs = -4.3;
-	elseif self.auto_combine_offset and combine.name == "Grimme SE 75-55" then
+	elseif self.auto_combine_offset and (combine.cp.isGrimmeSE7555 or Utils.endsWith(combine.configFileName, "grimmeSE75-55.xml")) then
 		offs =  4.3;
-	elseif self.auto_combine_offset and (combine.name == "Fahr M66" or combine.name == "Fahr M66 EX") then
+	elseif self.auto_combine_offset and combine.cp.isFahrM66 then
 		offs =  4.4;
-	elseif self.auto_combine_offset and Utils.endsWith(combine.configFileName, "JF_1060.xml") then
+	elseif self.auto_combine_offset and (combine.cp.isJF1060 or Utils.endsWith(combine.configFileName, "JF_1060.xml")) then
 		offs =  7
-	elseif self.auto_combine_offset and Utils.endsWith(combine.configFileName, "RopaEuroTiger_V8_3_XL.xml") then
+	elseif self.auto_combine_offset and (combine.cp.isRopaEuroTiger or Utils.endsWith(combine.configFileName, "RopaEuroTiger_V8_3_XL.xml")) then
 		offs =  5.2
 	
 	--Sugarbeet Loaders (e.g. Ropa Euro Maus, Holmer Terra Felis)

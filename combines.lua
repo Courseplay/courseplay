@@ -319,15 +319,21 @@ function courseplay:calculateInitialCombineOffset(self, combine)
 	end;
 
 	--special tools, special cases
-	if combine.name == "Grimme Rootster 604" then
+	if combine.cp.isCaseIH7130 then
+		self.combine_offset = 8.0;
+	elseif combine.cp.isCaseIH9230 then
+		self.combine_offset = 11.5;
+	elseif combine.cp.isGrimmeRootster604 or Utils.endsWith(combine.configFileName, "grimmeRootster604.xml") then
 		self.combine_offset = -4.3;
-	elseif combine.name == "Grimme SE 75-55" then
+	elseif combine.cp.isGrimmeSE7555 or Utils.endsWith(combine.configFileName, "grimmeSE75-55.xml") then
 		self.combine_offset =  4.3;
-	elseif combine.name == "Fahr M66" then
+	elseif combine.cp.isFahrM66 then
 		self.combine_offset =  4.4;
-	elseif self.auto_combine_offset and Utils.endsWith(combine.configFileName, "JF_1060.xml") then
-		self.combine_offset =  -7
-		combine.cp.offset = 7
+	elseif self.auto_combine_offset and (combine.cp.isJF1060 or Utils.endsWith(combine.configFileName, "JF_1060.xml")) then
+		self.combine_offset =  -7;
+		combine.cp.offset = 7;
+	elseif self.auto_combine_offset and (combine.cp.isRopaEuroTiger or Utils.endsWith(combine.configFileName, "RopaEuroTiger_V8_3_XL.xml")) then
+		self.combine_offset =  5.2;
 	elseif combine.cp.isSugarBeetLoader then
 		local utwX,utwY,utwZ = getWorldTranslation(combine.unloadingTrigger.node);
 		local combineToUtwX,_,_ = worldToLocal(combine.rootNode, utwX,utwY,utwZ);
