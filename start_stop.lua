@@ -146,7 +146,7 @@ function courseplay:start(self)
 		end;
 	end;
 	self.cp.numWaitPoints = numWaitPoints;
-	print(string.format("%s: numWaitPoints=%d, waitPoints[1]=%s", nameNum(self), self.cp.numWaitPoints, tostring(self.cp.waitPoints[1])));
+	courseplay:debug(string.format("%s: numWaitPoints=%d, waitPoints[1]=%s", nameNum(self), self.cp.numWaitPoints, tostring(self.cp.waitPoints[1])), 12);
 
 
 	if self.ai_state == 0 then
@@ -205,7 +205,49 @@ function courseplay:start(self)
 	self.cp.EifokLiquidManure.searchMapHoseRefStation.push = true;
 
 	courseplay:validateCanSwitchMode(self);
-end
+end;
+
+function courseplay:getCanUseAiMode(vehicle)
+	local mode = vehicle.ai_mode;
+
+	if mode ~= 5 and mode ~= 6 and mode ~= 7 and not vehicle.tipper_attached then
+		vehicle.cp.infoText = courseplay.locales.CPWrongTrailer;
+		return false;
+	end;
+
+	if mode == 3 or mode == 7 or mode == 8 then
+		if vehicle.cp.numWaitPoints < 1 then
+			vehicle.cp.infoText = string.format(courseplay.locales.CPTooFewWaitingPoints, 1);
+			return false;
+		elseif vehicle.cp.numWaitPoints > 1 then
+			vehicle.cp.infoText = string.format(courseplay.locales.CPTooManyWaitingPoints, 1);
+			return false;
+		end;
+		if mode == 3 then
+			if vehicle.tippers[1] == nil or vehicle.tippers[1].cp == nil or not vehicle.tippers[1].cp.isAugerWagon then
+				vehicle.cp.infoText = courseplay.locales.CPWrongTrailer;
+				return false;
+			end;
+		end;
+
+	elseif mode == 4 or mode == 6 then
+		if vehicle.startWork == nil or vehicle.stopWork == nil then
+			vehicle.cp.infoText = courseplay.locales.CPNoWorkArea;
+			return false;
+		end;
+
+	elseif mode == 9 then
+		if vehicle.cp.numWaitPoints < 3 then
+			vehicle.cp.infoText = string.format(courseplay.locales.CPTooFewWaitingPoints, 3);
+			return false;
+		elseif vehicle.cp.numWaitPoints > 3 then
+			vehicle.cp.infoText = string.format(courseplay.locales.CPTooManyWaitingPoints, 3);
+			return false;
+		end;
+	end;
+
+	return true;
+end;
 
 -- stops driving the course
 function courseplay:stop(self)

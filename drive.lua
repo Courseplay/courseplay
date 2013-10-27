@@ -1,17 +1,14 @@
 -- drives recored course
 function courseplay:drive(self, dt)
-	if g_server == nil or not self.isMotorStarted then
-		return
-	end
-
-	if self.isRealistic then
-
-	end
+	if g_server == nil or not self.isMotorStarted or not courseplay:getCanUseAiMode(self) then
+		return;
+	end;
 
 	local refSpeed = 0
 	local cx,cy,cz = 0,0,0
 	-- may i drive or should i hold position for some reason?
 	local allowedToDrive = true
+
 	-- combine self unloading
 	if self.ai_mode == 7 then
 		if self.isAIThreshing then
@@ -200,11 +197,11 @@ function courseplay:drive(self, dt)
 	local offsetValid = self.WpOffsetX ~= nil and self.WpOffsetZ ~= nil and (self.WpOffsetX ~= 0 or self.WpOffsetZ ~= 0);
 	if offsetValid then
 		if self.ai_mode == 3 then
-			offsetValid = offsetValid and self.recordnumber > 2 and self.recordnumber > self.cp.waitPoints[1] - 6 and self.recordnumber <= self.cp.waitPoints[1] + 3;
+			offsetValid = self.recordnumber > 2 and self.recordnumber > self.cp.waitPoints[1] - 6 and self.recordnumber <= self.cp.waitPoints[1] + 3;
 		elseif self.ai_mode == 4 or self.ai_mode == 6 then
-			offsetValid = offsetValid and self.recordnumber > self.startWork and self.recordnumber < self.stopWork and self.recordnumber > 1; --TODO: recordnumber incl startWork/stopWork?
+			offsetValid = self.recordnumber > self.startWork and self.recordnumber < self.stopWork and self.recordnumber > 1; --TODO: recordnumber incl startWork/stopWork?
 		elseif self.ai_mode == 7 then
-			offsetValid = offsetValid and self.recordnumber > 3 and self.recordnumber > self.cp.waitPoints[1] - 6 and self.recordnumber <= self.cp.waitPoints[1] + 3 and not self.cp.mode7GoBackBeforeUnloading;
+			offsetValid = self.recordnumber > 3 and self.recordnumber > self.cp.waitPoints[1] - 6 and self.recordnumber <= self.cp.waitPoints[1] + 3 and not self.cp.mode7GoBackBeforeUnloading;
 		else 
 			offsetValid = false;
 		end;
@@ -299,13 +296,7 @@ function courseplay:drive(self, dt)
 			self.waitTimer = self.timer + self.waitTime * 1000
 		end
 		if self.ai_mode == 3 and self.tipper_attached then
-			if self.tippers[1].cp == nil or not self.tippers[1].cp.isAugerWagon then
-				self.cp.infoText = courseplay.locales.CPWrongTrailer;
-				allowedToDrive = false;
-			else
-				--allowedToDrive = courseplay:handleMode3(self, true, fill_level, allowedToDrive, dt);
-				courseplay:handleMode3(self, fill_level, allowedToDrive, dt);
-			end;
+			courseplay:handleMode3(self, fill_level, allowedToDrive, dt);
 
 		elseif self.ai_mode == 4 then
 			local drive_on = false
@@ -435,15 +426,7 @@ function courseplay:drive(self, dt)
 		end;
 
 		if self.ai_mode == 3 and self.tipper_attached and self.recordnumber >= 2 and self.ai_state == 0 then
-			if self.cp.numWaitPoints < 1 then
-				self.cp.infoText = string.format(courseplay.locales.CPTooFewWaitingPoints, 1);
-				allowedToDrive = false;
-			elseif self.tippers[1].cp == nil or not self.tippers[1].cp.isAugerWagon then
-				self.cp.infoText = courseplay.locales.CPWrongTrailer;
-				allowedToDrive = false;
-			else
-				courseplay:handleMode3(self, fill_level, allowedToDrive, dt);
-			end;
+			courseplay:handleMode3(self, fill_level, allowedToDrive, dt);
 		end;
 
 		-- Fertilice loading --only for one Implement !
@@ -453,15 +436,7 @@ function courseplay:drive(self, dt)
 				if self.tippers ~= nil and not isInWorkArea then
 					allowedToDrive,lx,lz = courseplay:refillSprayer(self, fill_level, 100, allowedToDrive, lx, lz, dt);
 				end
-			elseif self.startWork == nil or self.stopWork == nil then
-				self.cp.infoText = courseplay.locales.CPNoWorkArea;
-				allowedToDrive = false;
 			end;
-		end
-
-		if self.ai_mode ~= 5 and self.ai_mode ~= 6 and self.ai_mode ~= 7 and not self.tipper_attached then
-			self.cp.infoText = courseplay.locales.CPWrongTrailer
-			allowedToDrive = false
 		end
 
 		if self.ai_mode == 7 then
@@ -484,18 +459,10 @@ function courseplay:drive(self, dt)
 		end;
 
 		if self.ai_mode == 8 then
-			if self.cp.numWaitPoints > 1 then
-				self.cp.infoText = string.format(courseplay.locales.CPTooManyWaitingPoints, 1);
-				allowedToDrive = false;
-			elseif self.cp.numWaitPoints < 1 then
-				self.cp.infoText = string.format(courseplay.locales.CPTooFewWaitingPoints, 1);
-				allowedToDrive = false;
-			else
-				raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
-				if self.tipper_attached then
-					if self.tippers ~= nil then
-						allowedToDrive,lx,lz = courseplay:refillSprayer(self, fill_level, 100, allowedToDrive, lx, lz, dt);
-					end;
+			raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
+			if self.tipper_attached then
+				if self.tippers ~= nil then
+					allowedToDrive,lx,lz = courseplay:refillSprayer(self, fill_level, 100, allowedToDrive, lx, lz, dt);
 				end;
 			end;
 		end;
