@@ -131,7 +131,9 @@ function courseplay:handle_mode9(self, fill_level, allowedToDrive,dt)
 				drawDebugLine(x, y, z, 1, 0, 0, x+lx*10, y-10, z+lz*10, 1, 0, 0);
 			end;
 		end
-		local distance = courseplay:distance_to_point(self, self.Waypoints[p].cx, ry, self.Waypoints[p].cz)
+		
+		local ox, _, oz = worldToLocal(self.rootNode, self.Waypoints[p].cx, ry, self.Waypoints[p].cz)
+		local distance = Utils.vector2Length(ox, oz)
 		if self.cp.shovel.trailerFound == nil and self.cp.shovel.objectFound == nil and distance < 10 then 
 			allowedToDrive = false
 		elseif distance < 10 then
