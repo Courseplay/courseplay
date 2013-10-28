@@ -10,7 +10,6 @@ function courseplay:isTheWayToTargetFree(self,lx,lz)
 	local nx, _, nz = localDirectionToWorld(self.cp.DirectionNode, lx, 0, lz)
 	local terrainHeight = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, tx+(nx*distance), 0, tz+(nz*distance))
 	local _, ly,_ = courseplay:getDriveDirection(self.cp.DirectionNode, tx+(nx*distance), terrainHeight, tz+(nz*distance))
-	local angle = math.asin(((terrainHeight+heigth)-ty)/distance)
 	nx, ny, nz = localDirectionToWorld(self.cp.DirectionNode, lx, ly, lz)
 	if self.cp.foundColli ~= nil and table.getn(self.cp.foundColli) > 0  then
 		local vehicle = g_currentMission.nodeToVehicle[self.cp.foundColli[1].id];

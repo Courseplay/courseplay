@@ -484,13 +484,16 @@ function courseplay:drive(self, dt)
 				courseplay:setGlobalInfoText(self, courseplay:get_locale(self, courseplay.locales.CPFuelWarning), -1);
 				if self.fuelFillTriggers[1] then
 					allowedToDrive = courseplay:brakeToStop(self);
-					self.cp.fillTrigger = nil
 					self:setIsFuelFilling(true, self.fuelFillTriggers[1].isEnabled, false);
 				end
 			elseif self.isFuelFilling and currentFuelPercentage < 99.9 then
 				allowedToDrive = courseplay:brakeToStop(self);
 				courseplay:setGlobalInfoText(self, courseplay:get_locale(self, courseplay.locales.CPRefueling));
 			end;
+			if self.fuelFillTriggers[1] then
+				courseplay:debug(nameNum(self) .. ": resetting \"self.cp.fillTrigger\"",1)
+				self.cp.fillTrigger = nil
+			end
 		end;
 
 		if self.showWaterWarning then
