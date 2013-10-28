@@ -983,7 +983,7 @@ function courseplay:unload_combine(self, dt)
 		
 		if self.cp.TrafficBrake then
 			if self.isRealistic then
-				AIVehicleUtil.mrDriveInDirection(self, dt, 1, false, true, 0, 1, Self.sl, true, true)
+				AIVehicleUtil.mrDriveInDirection(self, dt, 1, false, true, 0, 1, self.sl, true, true)
 			else
 				fwd = false
 				lx = 0
