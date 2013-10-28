@@ -321,9 +321,7 @@ function courseplay:calculateInitialCombineOffset(self, combine)
 	--special tools, special cases
 	if combine.cp.isCaseIH7130 then
 		self.combine_offset = 8.0;
-	elseif combine.cp.isCaseIH9230 then
-		self.combine_offset = 11.5;
-	elseif combine.cp.iscaseIH9230Crawler then
+	elseif combine.cp.isCaseIH9230 or combine.cp.isCaseIH9230Crawler then
 		self.combine_offset = 11.5;
 	elseif combine.cp.isGrimmeRootster604 or Utils.endsWith(combine.configFileName, "grimmeRootster604.xml") then
 		self.combine_offset = -4.3;
@@ -353,7 +351,7 @@ function courseplay:calculateInitialCombineOffset(self, combine)
 			local pipeX, pipeY, pipeZ = getTranslation(getParent(combine.pipeRaycastNode))
 			self.combine_offset = pipeX - prnZ;
 
-			if prnZ == 0 or combine.name == "Grimme Rootster 604" then
+			if prnZ == 0 or combine.cp.isGrimmeRootster604 then
 				self.combine_offset = pipeX - prnY;
 			end
 			courseplay:debug(string.format("%s(%i): %s @ %s: combine.root > pipe > pipeRaycastNode / self.combine_offset=pipeX-prnX=%f", curFile, debug.getinfo(1).currentline, nameNum(self), tostring(combine.name), self.combine_offset), 4)

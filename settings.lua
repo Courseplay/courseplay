@@ -1084,3 +1084,9 @@ function courseplay:setMouseCursor(self, show)
 		self.cp.hud.mouseWheel.render = false;
 	end;
 end;
+
+function courseplay:changeDebugChannelSection(self, changeBy)
+	courseplay.debugChannelSection = Utils.clamp(courseplay.debugChannelSection + changeBy, 1, math.ceil(courseplay.numAvailableDebugChannels / courseplay.numDebugChannelButtonsPerLine));
+	courseplay.debugChannelSectionEnd = courseplay.numDebugChannelButtonsPerLine * courseplay.debugChannelSection;
+	courseplay.debugChannelSectionStart = courseplay.debugChannelSectionEnd - courseplay.numDebugChannelButtonsPerLine + 1;
+end;

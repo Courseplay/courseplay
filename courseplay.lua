@@ -215,8 +215,13 @@ function courseplay:setGlobalData()
 	courseplay.confirmedNoneTriggers = {};
 	courseplay.confirmedNoneTriggersCounter = 0;
 
-	courseplay.numAvailableDebugChannels = 16;
+	--DEBUG CHANNELS
+	courseplay.numAvailableDebugChannels = 24;
 	courseplay.numDebugChannels = 15;
+	courseplay.numDebugChannelButtonsPerLine = 12;
+	courseplay.debugChannelSection = 1;
+	courseplay.debugChannelSectionStart = 1;
+	courseplay.debugChannelSectionEnd = courseplay.numDebugChannelButtonsPerLine;
 	courseplay.debugChannels = {};
 	for channel=1, courseplay.numAvailableDebugChannels do
 		courseplay.debugChannels[channel] = false;
@@ -240,6 +245,7 @@ function courseplay:setGlobalData()
 	15	mode3 (AugerWagon)
 	16	[empty]
 	--]]
+
 
 	courseplay.checkValues = {
 		"infoText",

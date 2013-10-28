@@ -1090,9 +1090,7 @@ function courseplay:calculateCombineOffset(self, combine)
 	--special tools, special cases
 	if self.auto_combine_offset and combine.cp.isCaseIH7130 then
 		offs = 8.0;
-	elseif self.auto_combine_offset and combine.cp.isCaseIH9230 then
-		offs = 11.5;
-	elseif self.auto_combine_offset and combine.cp.iscaseIH9230Crawler then
+	elseif self.auto_combine_offset and (combine.cp.isCaseIH9230 or combine.cp.isCaseIH9230Crawler) then
 		offs = 11.5;
 	elseif self.auto_combine_offset and (combine.cp.isGrimmeRootster604 or Utils.endsWith(combine.configFileName, "grimmeRootster604.xml")) then
 		offs = -4.3;
@@ -1116,9 +1114,9 @@ function courseplay:calculateCombineOffset(self, combine)
 		if getParent(combine.pipeRaycastNode) == combine.rootNode then -- pipeRaycastNode is direct child of combine.root
 			--safety distance so the trailer doesn't crash into the pipe (sidearm)
 			local additionalSafetyDistance = 0;
-			if combine.name == "Grimme Maxtron 620" then
+			if combine.cp.isGrimmeMaxtron620 then
 				additionalSafetyDistance = 0.9;
-			elseif combine.name == "Grimme Tectron 415" then
+			elseif combine.cp.isGrimmeTectron415 then
 				additionalSafetyDistance = -0.5;
 			end;
 
@@ -1128,7 +1126,7 @@ function courseplay:calculateCombineOffset(self, combine)
 			local pipeX, pipeY, pipeZ = getTranslation(getParent(combine.pipeRaycastNode))
 			offs = pipeX - prnZ;
 			
-			if prnZ == 0 or combine.name == "Grimme Rootster 604" then
+			if prnZ == 0 or combine.cp.isGrimmeRootster604 then
 				offs = pipeX - prnY;
 			end;
 			--courseplay:debug(string.format("%s(%i): %s @ %s: root > pipe > pipeRaycastNode // offs = %f", curFile, debug.getinfo(1).currentline, self.name, combine.name, offs), 4)

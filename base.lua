@@ -573,11 +573,14 @@ function courseplay:load(xmlFile)
 
 	local dbgW, dbgH = 22/1920, 22/1080;
 	local dbgPosY = courseplay.hud.linesPosY[6] - 0.004;
+	local dbgMaxX = courseplay.hud.infoBasePosX + 0.285 - 0.01;
 	for dbg=1, courseplay.numAvailableDebugChannels do
-		local dbgPosX = courseplay.hud.visibleArea.x2 - 0.01 - (courseplay.numAvailableDebugChannels * dbgW) + ((dbg-1) * dbgW);
-		local icon = string.format("debugChannels_%02d.dds", dbg);
-		courseplay:register_button(self, 6, icon, "toggleDebugChannel", dbg, dbgPosX, dbgPosY, dbgW, dbgH);
+		local col = ((dbg-1) % courseplay.numDebugChannelButtonsPerLine) + 1;
+		local dbgPosX = dbgMaxX - (courseplay.numDebugChannelButtonsPerLine * dbgW) + ((col-1) * dbgW);
+		courseplay:register_button(self, 6, "debugChannelButtons.png", "toggleDebugChannel", dbg, dbgPosX, dbgPosY, dbgW, dbgH);
 	end;
+	courseplay:register_button(self, 6, "navigate_up.png",   "changeDebugChannelSection", -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[6], w16px, h16px, -1, nil, false);
+	courseplay:register_button(self, 6, "navigate_down.png", "changeDebugChannelSection",  1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[6], w16px, h16px,  1, nil, false);
 
 	--Page 7: Driving settings
 	courseplay:register_button(self, 7, "navigate_minus.dds", "change_wait_time",  -5, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, -10, false);
@@ -775,7 +778,7 @@ function courseplay:update(dt)
 
 	if g_server ~= nil  then 
 		if self.drive then
-			self.cp.HUD1goOn = (self.Waypoints[self.cp.last_recordnumber].wait and self.wait) or (self.StopEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil));
+			self.cp.HUD1goOn = (self.Waypoints[self.cp.last_recordnumber] ~= nil and self.Waypoints[self.cp.last_recordnumber].wait and self.wait) or (self.StopEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil));
 			self.cp.HUD1noWaitforFill = not self.loaded and self.ai_mode ~= 5;
 		end;
 

@@ -42,6 +42,16 @@ function courseplay:register_button(self, hudPage, img, function_to_call, parame
 		button.canScrollUp   = true;
 		button.canScrollDown = true;
 	end;
+	if function_to_call == "toggleDebugChannel" then
+		local col = ((button.parameter-1) % courseplay.numDebugChannelButtonsPerLine) + 1;
+		local line = math.ceil(button.parameter / courseplay.numDebugChannelButtonsPerLine);
+
+		--space in dds: 16 x, 2 y
+		local uvX1,uvX2 = (col-1)/16, col/16;
+		local uvY1 = 1 - (line * (courseplay.numDebugChannelButtonsPerLine/courseplay.numAvailableDebugChannels));
+		local uvY2 = uvY1 + (courseplay.numDebugChannelButtonsPerLine/courseplay.numAvailableDebugChannels);
+		setOverlayUVs(button.overlay.overlayId, uvX1,uvY1, uvX1,uvY2, uvX2,uvY1, uvX2,uvY2);
+	end;
 
 	table.insert(self.cp.buttons[tostring(hudPage)], button);
 	return #(self.cp.buttons[tostring(hudPage)]);
@@ -208,6 +218,14 @@ function courseplay:renderButton(self, button)
 					button.show = self.cp.selectedFieldEdgePathNumber > 0;
 				elseif prm > 0 then
 					button.show = self.cp.selectedFieldEdgePathNumber < courseplay.fields.highestFieldNumber;
+				end;
+			elseif fn == "toggleDebugChannel" then
+				button.show = prm >= courseplay.debugChannelSectionStart and prm <= courseplay.debugChannelSectionEnd;
+			elseif fn == "changeDebugChannelSection" then
+				if prm < 0 then
+					button.show = courseplay.debugChannelSection > 1;
+				elseif prm > 0 then
+					button.show = courseplay.debugChannelSection < math.ceil(courseplay.numAvailableDebugChannels / courseplay.numDebugChannelButtonsPerLine);
 				end;
 			end;
 
