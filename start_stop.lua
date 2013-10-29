@@ -16,6 +16,10 @@ function courseplay:start(self)
     end;
     --END manual ignition
 	
+	if not self.isMotorStarted then
+		self:startMotor(true);
+	end
+	
 	if self.cp.orgRpm == nil then
 		self.cp.orgRpm = {}
 		self.cp.orgRpm[1] = self.motor.maxRpm[1]
@@ -316,6 +320,7 @@ function courseplay:stop(self)
 	self.dcheck = false
 	self.cp.numWaitPoints = 0;
 	self.cp.waitPoints = {};
+	self.cp.mode7GoBackBeforeUnloading = false
 
 	self.motor:setSpeedLevel(0, false);
 	self.motor.maxRpmOverride = nil;
