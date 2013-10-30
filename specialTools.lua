@@ -232,7 +232,7 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.isGrimmeSE7555 = true;
 
 	--Combines [Giants]
-	elseif Utils.endsWith(workTool.configFileName, "fahrM66.xml") then
+	elseif Utils.endsWith(workTool.configFileName, "fahrM66.xml") or Utils.endsWith(workTool.configFileName, "fahrM66EX.xml") then
 		workTool.cp.isFahrM66 = true;
 	elseif Utils.endsWith(workTool.configFileName, "caseIH7130.xml") then
 		workTool.cp.isCaseIH7130 = true;
