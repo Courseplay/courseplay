@@ -276,26 +276,30 @@ function courseplay:update_tools(self, tractor_or_implement)
 	
 	--tipreferencepoints 
 	self.tipRefOffset = nil;
-	if tipper_attached and self.tippers[1].rootNode ~= nil and self.tippers[1].tipReferencePoints ~= nil then
-		local tipperX, tipperY, tipperZ = getWorldTranslation(self.tippers[1].rootNode);
-		if tipper_attached and table.getn(self.tippers[1].tipReferencePoints) > 1 then
-			for n=1 ,table.getn(self.tippers[1].tipReferencePoints) do
-				local tipRefPointX, tipRefPointY, tipRefPointZ = worldToLocal(self.tippers[1].tipReferencePoints[n].node, tipperX, tipperY, tipperZ);
-				tipRefPointX = math.abs(tipRefPointX);
-				if tipRefPointX > 0.1 then
-					self.tipRefOffset = tipRefPointX;
-					break;
-				else
-					self.tipRefOffset = 0
+	for i=1, #(self.tippers) do
+		if tipper_attached and self.tippers[i].rootNode ~= nil and self.tippers[i].tipReferencePoints ~= nil then
+			local tipperX, tipperY, tipperZ = getWorldTranslation(self.tippers[i].rootNode);
+			if tipper_attached and table.getn(self.tippers[i].tipReferencePoints) > 1 then
+				for n=1 ,table.getn(self.tippers[i].tipReferencePoints) do
+					local tipRefPointX, tipRefPointY, tipRefPointZ = worldToLocal(self.tippers[i].tipReferencePoints[n].node, tipperX, tipperY, tipperZ);
+					tipRefPointX = math.abs(tipRefPointX);
+					if tipRefPointX > 0.1 then
+						self.tipRefOffset = tipRefPointX;
+						break;
+					else
+						self.tipRefOffset = 0
+					end;
 				end;
+			else 
+				self.tipRefOffset = 0;
 			end;
-		else 
-			self.tipRefOffset = 0;
+		elseif self.cp.hasMachinetoFill then
+			self.tipRefOffset = 1.5
 		end;
-	elseif self.cp.hasMachinetoFill then
-		self.tipRefOffset = 1.5
-	end;
-
+		if self.tipRefOffset ~= nil then
+			break
+		end		
+	end
 
 	--tippers with covers
 	self.cp.tipperHasCover = false;
