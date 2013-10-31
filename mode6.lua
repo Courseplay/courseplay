@@ -365,7 +365,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 					end
 				end
 			 --Stop combine
-			elseif self.recordnumber == self.stopWork then
+			elseif self.recordnumber == self.stopWork or self.abortWork ~= nil then
 				local isEmpty = tool.grainTankFillLevel == 0
 				if self.abortWork == nil then
 					allowedToDrive = false;
@@ -388,7 +388,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 				end
 			end
 
-			if tool.cp.isCombine and tool.isThreshing and tool.grainTankFillLevel >= tool.grainTankCapacity*0.8  or pipeState > 0 or courseplay:isAttachedCombine(workTool) then
+			if tool.cp.isCombine and tool.isThreshing and tool.grainTankFillLevel >= tool.grainTankCapacity*0.8  or ((pipeState > 0 or courseplay:isAttachedCombine(workTool))and not courseplay:isSpecialChopper(workTool))then
 				tool:setPipeState(2)
 			elseif  pipeState == 0 and tool.cp.isCombine and tool.grainTankFillLevel < tool.grainTankCapacity then
 				tool:setPipeState(1)

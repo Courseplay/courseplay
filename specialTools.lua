@@ -258,7 +258,7 @@ function courseplay:isSpecialSprayer(workTool)
 end;
 
 function courseplay:isSpecialChopper(workTool)
-	if workTool.cp.isJF1060 then
+	if workTool.cp.isJF1060 or workTool.cp.isPoettingerMex6 then
 		if workTool.grainTankFillLevel == nil then
 			workTool.grainTankFillLevel = 0;
 		end;

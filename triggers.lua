@@ -118,7 +118,14 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 	if self.tippers[1] ~= nil and tipTriggers ~= nil and tipTriggersCount > 0 then
 		courseplay:debug(nameNum(self) .. " transformId = ".. tostring(transformId)..": "..tostring(name), 1);
 		local fruitType = self.tippers[1].currentFillType;
-
+		if fruitType == nil then
+			for i=2,#(self.tippers) do
+				fruitType = self.tippers[i].currentFillType;
+				if fruitType ~= nil then 
+					break
+				end
+			end
+		end
 		if transformId ~= nil then
 			local trigger = tipTriggers[transformId];
 
@@ -180,8 +187,18 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 		end;
 	end
 	if courseplay.triggers.allNonUpdateables[transformId] then
+		local trigger = courseplay.triggers.allNonUpdateables[transformId]
 		courseplay:debug(nameNum(self) .. " transformId = ".. tostring(transformId)..": "..tostring(name).." is allNonUpdateables", 1);
-		self.cp.fillTrigger = transformId;
+		if self.ai_mode == 4 then
+			self.cp.fillTrigger = transformId;
+		elseif self.ai_mode == 8 and (trigger.isSprayerFillTrigger 
+								  or trigger.isLiquidManureFillTrigger
+								  or trigger.isSchweinemastLiquidManureTrigger 
+								  or trigger.isGasStationTrigger) then
+			self.cp.fillTrigger = transformId;									
+		elseif trigger.isGasStationTrigger then
+			self.cp.fillTrigger = transformId;
+		end
 		return true
 	end
 				
