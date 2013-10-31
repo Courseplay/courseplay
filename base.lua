@@ -213,6 +213,9 @@ function courseplay:load(xmlFile)
 	-- tipTrigger
 	self.findTipTriggerCallback = courseplay.findTipTriggerCallback;
 	self.findTrafficCollisionCallback = courseplay.findTrafficCollisionCallback;
+	self.findBlockingObjectCallbackLeft = courseplay.findBlockingObjectCallbackLeft
+	self.findBlockingObjectCallbackRight = courseplay.findBlockingObjectCallbackRight
+	
 
 	if self.numCollidingVehicles == nil then
 		self.numCollidingVehicles = {};
