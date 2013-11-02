@@ -937,14 +937,14 @@ function courseplay:check_traffic(self, display_warnings, allowedToDrive)
 	local in_traffic = false;
 	local ahead = false
 	local vehicle_in_front = g_currentMission.nodeToVehicle[self.traffic_vehicle_in_front]
-	local vx, vy, vz = getWorldTranslation(self.traffic_vehicle_in_front)
-	local tx, ty, tz = worldToLocal(self.aiTrafficCollisionTrigger, vx, vy, vz)
-	local xvx, xvy, xvz = getWorldTranslation(self.aiTrafficCollisionTrigger)
-	local x, y, z = getWorldTranslation(self.cp.DirectionNode)
-	local x1, y1, z1 = 0,0,0
 	--courseplay:debug(tableShow(self, nameNum(self), 4), 4)
 	if self.CPnumCollidingVehicles ~= nil and self.CPnumCollidingVehicles > 0 then
 		if vehicle_in_front ~= nil and not (self.ai_mode == 9 and vehicle_in_front.allowFillFromAir) then
+			local vx, vy, vz = getWorldTranslation(self.traffic_vehicle_in_front)
+			local tx, ty, tz = worldToLocal(self.aiTrafficCollisionTrigger, vx, vy, vz)
+			local xvx, xvy, xvz = getWorldTranslation(self.aiTrafficCollisionTrigger)
+			local x, y, z = getWorldTranslation(self.cp.DirectionNode)
+			local x1, y1, z1 = 0,0,0
 			local halfLength = Utils.getNoNil(vehicle_in_front.sizeLength,5)/2
 			x1,z1 = AIVehicleUtil.getDriveDirection(self.traffic_vehicle_in_front, x, y, z);
 			if z1 > -0.9 then -- tractor in front of vehicle face2face or beside < 4 o'clock
@@ -1184,14 +1184,15 @@ function courseplay:regulateTrafficSpeed(self,refSpeed,allowedToDrive)
 	end
 	if self.traffic_vehicle_in_front ~= nil then
 		local vehicle_in_front = g_currentMission.nodeToVehicle[self.traffic_vehicle_in_front];
-		local name = getName(self.traffic_vehicle_in_front)
-		courseplay:debug(nameNum(self)..": regulateTrafficSpeed:	 "..tostring(name),3)		
 		local vehicleBehind = false
 		if vehicle_in_front == nil then
-			courseplay:debug(nameNum(self)..": regulateTrafficSpeed(1178):	setting self.traffic_vehicle_in_front nil",3)
+			courseplay:debug(nameNum(self)..": regulateTrafficSpeed(1190):	setting self.traffic_vehicle_in_front nil",3)
 			self.traffic_vehicle_in_front = nil
 			self.CPnumCollidingVehicles = math.max(self.CPnumCollidingVehicles-1, 0);
 			return refSpeed
+		else
+			local name = getName(self.traffic_vehicle_in_front)
+			courseplay:debug(nameNum(self)..": regulateTrafficSpeed:	 "..tostring(name),3)
 		end
 		local x, y, z = getWorldTranslation(self.traffic_vehicle_in_front)
 		local x1, y1, z1 = worldToLocal(self.rootNode, x, y, z)
@@ -1199,7 +1200,7 @@ function courseplay:regulateTrafficSpeed(self,refSpeed,allowedToDrive)
 			vehicleBehind = true
 		end
 		if vehicle_in_front.rootNode == nil or vehicle_in_front.lastSpeedReal == nil or (vehicle_in_front.rootNode ~= nil and courseplay:distance_to_object(self, vehicle_in_front) > 40) or vehicleBehind then
-			courseplay:debug(nameNum(self)..": regulateTrafficSpeed(1204):	setting self.traffic_vehicle_in_front nil",3)
+			courseplay:debug(nameNum(self)..": regulateTrafficSpeed(1205):	setting self.traffic_vehicle_in_front nil",3)
 			self.cp.tempCollis[self.traffic_vehicle_in_front] = nil
 			self.traffic_vehicle_in_front = nil
 		else
