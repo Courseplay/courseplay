@@ -265,7 +265,39 @@ function courseplay:unload_combine(self, dt)
 		combineIsHelperTurning = true
 	end
 
+	-- auto combine
+	if self.cp.turnCounter == nil then
+			self.cp.turnCounter = 0
+	end
+	--print("combine.turnDirection: "..tostring(combine.turnDirection))
+	local AutoCombineIsTurning = false
+	local combineIsAutoCombine = false
+	local autoCombineExtraMoveBack = 0
+	if combine.turnDirection ~= nil then
+		combineIsAutoCombine = true
+		if combine.cp.turnStage == nil then
+			combine.cp.turnStage = 0
+		end
+		if math.abs(combine.turnDirection) > 19 then
+			--if self.active_combine.cp.isChopper and   then
+			self.cp.turnCounter = self.cp.turnCounter +1	
+			if self.cp.turnCounter >= 40 then
+				combine.cp.turnStage = 2
+				autoCombineExtraMoveBack = self.turn_radius*1.5
+				AutoCombineIsTurning = true
+			end						
+		else
+			if self.cp.turnCounter > 0 then
+				--print("self.cp.turnCounter: "..tostring(self.cp.turnCounter))
+				self.cp.turnCounter = 0
+			end
+			combine.acNumCollidingVehicles = math.min(combine.acNumCollidingVehicles -1,0)
+			combine.cp.turnStage = 0
+		end
+	end
+	
 	-- is combine turning ?
+	
 	local aiTurn = combine.isAIThreshing and (combine.turnStage == 1 or combine.turnStage == 2 or combine.turnStage == 4 or combine.turnStage == 5)
 	if tractor ~= nil and (aiTurn or (tractor.cp.turnStage > 0)) then
 		self.cp.infoText = courseplay:get_locale(self, "CPCombineTurning") -- "Drescher wendet. "
@@ -349,7 +381,7 @@ function courseplay:unload_combine(self, dt)
 		dod = Utils.vector2Length(lx, lz)
 		-- near point
 		if dod < 3 then -- change to mode 4 == drive behind combine or cornChopper
-			if combine.cp.isChopper and not self.isChopperTurning  then -- decide on which side to drive based on ai-combine
+			if combine.cp.isChopper and (not self.isChopperTurning or combineIsAutoCombine) then -- decide on which side to drive based on ai-combine
 				courseplay:side_to_drive(self, combine, 10);
 				if self.sideToDrive == "right" then
 						self.combine_offset = math.abs(self.combine_offset) * -1;
@@ -441,15 +473,15 @@ function courseplay:unload_combine(self, dt)
 				if fruitSide == "right" or fruitSide == "none" then 
 					courseplay:debug(nameNum(self) .. ": I'm left, fruit is right", 4)
 					local fx,fy,fz = localToWorld(self.rootNode, 0, 0, 8)
-					local sx,sy,sz = localToWorld(self.rootNode, 0 , 0, -self.turn_radius-trailer_offset)
-					if courseplay:is_field(fx, fz) then
+					local sx,sy,sz = localToWorld(self.rootNode, 0 , 0, -self.turn_radius-trailer_offset-autoCombineExtraMoveBack)
+					if courseplay:is_field(fx, fz) and not AutoCombineIsTurning then
 						courseplay:debug(nameNum(self) .. ": 1st target is on field", 4)
 						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 0 , 0, 5);	
 						mode = 5
 					elseif courseplay:is_field(sx, sz) then
 						courseplay:debug(nameNum(self) .. ": 2nd target is on field", 4)
 						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 2 , 0, -self.turn_radius);
-						courseplay:set_next_target(self, 0 ,  -self.turn_radius-trailer_offset);
+						courseplay:set_next_target(self, 0 ,  -self.turn_radius-trailer_offset-autoCombineExtraMoveBack);
 						mode = 5
 					else
 						courseplay:debug(nameNum(self) .. ": backup- back to start", 4)
@@ -664,6 +696,9 @@ function courseplay:unload_combine(self, dt)
 				combine.waitForTurnTime = combine.time + 100
 			elseif tractor.drive == true and not (combine_fill_level == 0 and combine:getCombineTrailerInRangePipeState()==0) then
 				combine.cp.waitingForTrailerToUnload = true
+			elseif combineIsAutoCombine and not (combine_fill_level == 0 and combine:getCombineTrailerInRangePipeState()==0) then
+				local delay = (combine.acDelayTimeToMoveBack - combine.acDelayTimeToStopMovement)/2 + combine.acDelayTimeToStopMovement
+				combine.acDelay = delay
 			end
 		elseif distance < 100 and mode == 2 then
 			allowedToDrive = courseplay:brakeToStop(self)
