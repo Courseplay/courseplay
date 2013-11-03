@@ -70,12 +70,12 @@ function courseplay:handleAugerWagon(vehicle, workTool, unfold, unload, orderNam
 
 		if unload and not workTool.isUnloading and workTool.trailerFoundId ~= 0 then
 			workTool:setUnloadingState(true);
-			if workTool.cp.isHaweSUW5000 then
+			if workTool.isDrumActivated ~= nil then
 				workTool.isDrumActivated = workTool.isUnloading;
 			end;
 		elseif not unload and workTool.isUnloading then
 			workTool:setUnloadingState(false);
-			if workTool.cp.isHaweSUW5000 then
+			if workTool.isDrumActivated ~= nil then
 				workTool.isDrumActivated = workTool.isUnloading;
 			end;
 		end;
@@ -97,8 +97,10 @@ function courseplay:handleAugerWagon(vehicle, workTool, unfold, unload, orderNam
 				setVisibility(workTool.pipeLight, unfold);
 			end;
 		end;
+		local hasTrailer = workTool.trailerToOverload ~= nil;
+		local trailerIsFull = hasTrailer and workTool.trailerToOverload.fillLevel and workTool.trailerToOverload.capacity and workTool.trailerToOverload.fillLevel >= workTool.trailerToOverload.capacity;
 
-		if (unload and workTool.trailerToOverload ~= nil and not workTool.isCharging) or (not unload and workTool.isCharging) then
+		if (unload and hasTrailer and not trailerIsFull and not workTool.isCharging) or (not unload and workTool.isCharging) then
 			workTool.isCharging = unload;
 		end;
 
