@@ -289,7 +289,7 @@ function courseplay:drive(self, dt)
 
 	-- the tipper that is currently loaded/unloaded
 	local active_tipper = nil
-
+	local isBypassing = false
 	--### WAITING POINTS - START
 	if self.Waypoints[self.cp.last_recordnumber].wait and self.wait then
 		if self.waitTimer == nil and self.waitTime > 0 then
@@ -421,6 +421,9 @@ function courseplay:drive(self, dt)
 		-- combi-mode
 		if (((self.ai_mode == 2 or self.ai_mode == 3) and self.recordnumber < 2) or self.active_combine) and self.tipper_attached then
 			return courseplay:handle_mode2(self, dt)
+		elseif (self.ai_mode == 2 or self.ai_mode == 3) and self.recordnumber < 3 then
+			isBypassing = true
+			lx, lz = courseplay:isTheWayToTargetFree(self,lx, lz)
 		elseif self.ai_mode ~= 7 then
 			self.ai_state = 0
 		end;
@@ -832,7 +835,9 @@ function courseplay:drive(self, dt)
 			else
 				AIVehicleUtil.driveInDirection(self, dt, self.steering_angle, 0.5, 0.5, 8, true, fwd, lx, lz, self.sl, 0.5);
 			end
-			courseplay:setTrafficCollision(self, lx, lz)
+			if not isBypassing then
+				courseplay:setTrafficCollision(self, lx, lz)
+			end
 		end
 	else
 		-- reset distance to waypoint
