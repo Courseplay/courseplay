@@ -139,6 +139,13 @@ function courseplay:update_tools(self, tractor_or_implement)
 
 		courseplay:setNameVariable(object);
 
+		--FRONT or BACK?
+		local implX,implY,implZ = getWorldTranslation(object.rootNode);
+		local _,_,tractorToImplZ = worldToLocal(self.rootNode, implX,implY,implZ);
+		object.cp.positionAtTractor = Utils.sign(tractorToImplZ);
+		courseplay:debug(string.format("%s: tractorToImplZ=%.4f, positionAtTractor=%d", nameNum(object), tractorToImplZ, object.cp.positionAtTractor), 6);
+
+		--ADD TO self.tippers
 		if self.ai_mode == 1 or self.ai_mode == 2 then
 			--	if object.cp.hasSpecializationTrailer then
 			if object.allowTipDischarge then
@@ -206,8 +213,10 @@ function courseplay:update_tools(self, tractor_or_implement)
 
 		if object.aiLeftMarker ~= nil and object.aiForceTurnNoBackward == true then 
 			self.cp.aiTurnNoBackward = true
-		elseif object.aiLeftMarker == nil and table.getn(object.wheels) > 0 then
+			courseplay:debug(string.format("%s: object.aiLeftMarker ~= nil and object.aiForceTurnNoBackward == true --> self.cp.aiTurnNoBackward = true", nameNum(object)), 6);
+		elseif object.aiLeftMarker == nil and table.getn(object.wheels) > 0 and object.cp.positionAtTractor <= 0 then
 			self.cp.aiTurnNoBackward = true
+			courseplay:debug(string.format("%s: object.aiLeftMarker == nil and table.getn(object.wheels) > 0 and object.cp.positionAtTractor <= 0 --> self.cp.aiTurnNoBackward = true", nameNum(object)), 6);
 		end
 		courseplay:askForSpecialSettings(self,object)
 		
