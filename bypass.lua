@@ -91,7 +91,11 @@ function courseplay:AnalyseRaycastResponse(self,side,transformId, x, y, z, dista
 	then
 		return true
 	end
-	courseplay:debug(nameNum(self) .."found : "..tostring(getName(transformId)).."["..tostring(transformId).."]	self.rootNode: "..tostring(self.rootNode).."	parent: "..tostring(parent).."	self.active_combine.rootNode: "..tostring(self.active_combine.rootNode).."  self.cpTrafficCollisionIgnoreList: "..tostring(self.cpTrafficCollisionIgnoreList[transformId] or self.cpTrafficCollisionIgnoreList[parent]),3)	
+	if self.active_combine ~= nil then
+		courseplay:debug(nameNum(self) .."found : "..tostring(getName(transformId)).."["..tostring(transformId).."]	self.rootNode: "..tostring(self.rootNode).."	parent: "..tostring(parent).."	self.active_combine.rootNode: "..tostring(self.active_combine.rootNode).."  self.cpTrafficCollisionIgnoreList: "..tostring(self.cpTrafficCollisionIgnoreList[transformId] or self.cpTrafficCollisionIgnoreList[parent]),3)	
+	else
+		courseplay:debug(nameNum(self) .."found : "..tostring(getName(transformId)).."["..tostring(transformId).."]	self.rootNode: "..tostring(self.rootNode).."	parent: "..tostring(parent).."  self.cpTrafficCollisionIgnoreList: "..tostring(self.cpTrafficCollisionIgnoreList[transformId] or self.cpTrafficCollisionIgnoreList[parent]),3)	
+	end
 	self.cp.foundColli ={}
 	self.cp.foundColli[1] = {}
 	self.cp.foundColli[1].x = x
