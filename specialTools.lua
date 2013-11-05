@@ -253,6 +253,10 @@ end;
 
 ------------------------------------------------------------------------------------------
 
+function courseplay:isSpecialSowingMachine(workTool)
+	return workTool.cp.hasSpecializationSowingMachineWithTank;
+end;
+
 function courseplay:isSpecialSprayer(workTool)
 	return workTool.cp.isAbbeySprayerPack;
 end;

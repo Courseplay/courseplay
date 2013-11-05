@@ -33,7 +33,7 @@ function courseplay:isSprayer(workTool) -- is the tool a sprayer/spreader?
 	return workTool.cp.hasSpecializationSprayer or courseplay:isSpecialSprayer(workTool)
 end;
 function courseplay:is_sowingMachine(workTool) -- is the tool a sowing machine?
-	return workTool.cp.hasSpecializationSowingMachine;
+	return workTool.cp.hasSpecializationSowingMachine or courseplay:isSpecialSowingMachine(workTool);
 end;
 function courseplay:isFoldable(workTool) --is the tool foldable?
 	return workTool.cp.hasSpecializationFoldable or workTool.foldingParts ~= nil;
