@@ -541,7 +541,9 @@ function courseplay.courses.delete_save_all(self)
 		if savegame ~= nil and g_currentMission.cp_courses ~= nil then
 			local file = io.open(savegame.savegameDirectory .. "/courseplay.xml", "w");
 			if file ~= nil then
-				file:write('<?xml version="1.0" encoding="utf-8" standalone="no" ?>\n<XML>\n\t<courseplayHud posX="' .. courseplay:round(courseplay.hud.infoBasePosX, 3) .. '" posY="' .. courseplay:round(courseplay.hud.infoBasePosY, 3) .. '" />\n');
+				file:write('<?xml version="1.0" encoding="utf-8" standalone="no" ?>\n<XML>\n');
+				file:write('\t<courseplayHud posX="' .. courseplay:round(courseplay.hud.infoBasePosX, 3) .. '" posY="' .. courseplay:round(courseplay.hud.infoBasePosY, 3) .. '" />\n');
+				file:write('\t<courseplayGlobalInfoText posX="' .. courseplay:round(courseplay.globalInfoText.posX, 3) .. '" posY="' .. courseplay:round(courseplay.globalInfoText.posY, 3) .. '" />\n');
 				
 				file:write('\t<folders>\n')
 				for i,folder in pairs(g_currentMission.cp_folders) do

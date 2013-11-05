@@ -85,7 +85,7 @@ function courseplay:load(xmlFile)
 
 	-- global info text - also displayed when not in vehicle
 	local git = courseplay.globalInfoText;
-	self.cp.globalInfoTextOverlay = Overlay:new(string.format("globalInfoTextOverlay%d", self.rootNode), git.backgroundImg, git.backgroundX, 0, 0.1, git.fontSize);
+	self.cp.globalInfoTextOverlay = Overlay:new(string.format("globalInfoTextOverlay%d", self.rootNode), git.backgroundImg, git.backgroundX, git.backgroundY, 0.1, git.fontSize);
 	self.testhe = false
 
 	-- ai mode: 1 abfahrer, 2 kombiniert

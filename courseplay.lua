@@ -109,15 +109,21 @@ end;
 
 function courseplay:setGlobalData()
 	local customPosX, customPosY = nil, nil;
+	local customGitPosX, customGitPosY = nil, nil;
 	local savegame = g_careerScreen.savegames[g_careerScreen.selectedIndex];
 	if savegame ~= nil then
 		local cpFilePath = savegame.savegameDirectory .. "/courseplay.xml";
 		if fileExists(cpFilePath) then
 			local cpFile = loadXMLFile("cpFile", cpFilePath);
-			local hudKey = "XML.courseplayHud"
+			local hudKey = "XML.courseplayHud";
 			if hasXMLProperty(cpFile, hudKey) then
 				customPosX = getXMLFloat(cpFile, hudKey .. "#posX");
 				customPosY = getXMLFloat(cpFile, hudKey .. "#posY");
+			end;
+			local gitKey = "XML.courseplayGlobalInfoText";
+			if hasXMLProperty(cpFile, gitKey) then
+				customGitPosX = getXMLFloat(cpFile, gitKey .. "#posX");
+				customGitPosY = getXMLFloat(cpFile, gitKey .. "#posY");
 			end;
 			delete(cpFile);
 		end;
@@ -195,16 +201,19 @@ function courseplay:setGlobalData()
 		courseplay.hud.infoBasePosX + 0.230,
 	};
 
-	courseplay.globalInfoText = {
-		fontSize = 0.02,
-		posX = 0.035,
-		backgroundImg = "dataS2/menu/white.png",
-		backgroundPadding = 0.005,
-		backgroundX = 0.035 - 0.005,
-		levelColors = {},
-		content = {}
-	};
+	courseplay.globalInfoText = {};
+	courseplay.globalInfoText.fontSize = 0.02;
 	courseplay.globalInfoText.lineHeight = courseplay.globalInfoText.fontSize * 1.1;
+	courseplay.globalInfoText.posX = Utils.getNoNil(customGitPosX, 0.035);
+	courseplay.globalInfoText.posY = Utils.getNoNil(customGitPosY, 0);
+	local pdaHeight = 0.3375;
+	courseplay.globalInfoText.hideWhenPdaActive = courseplay.globalInfoText.posY < pdaHeight; --g_currentMission.MissionPDA.hudPDABaseHeight;
+	courseplay.globalInfoText.backgroundImg = "dataS2/menu/white.png";
+	courseplay.globalInfoText.backgroundPadding = 0.005;
+	courseplay.globalInfoText.backgroundX = courseplay.globalInfoText.posX - courseplay.globalInfoText.backgroundPadding;
+	courseplay.globalInfoText.backgroundY = courseplay.globalInfoText.posY;
+	courseplay.globalInfoText.content = {};
+	courseplay.globalInfoText.levelColors = {};
 	courseplay.globalInfoText.levelColors["0"]  = courseplay.hud.colors.hover;
 	courseplay.globalInfoText.levelColors["1"]  = courseplay.hud.colors.activeGreen;
 	courseplay.globalInfoText.levelColors["-1"] = courseplay.hud.colors.activeRed;
@@ -296,6 +305,9 @@ function courseplay:setGlobalData()
 		delete(i3dNode);
 		courseplay.signs.protoTypes[signType] = itemNode;
 	end;
+
+
+	courseplay.pathfinding = {};
 
 	--print("\t### Courseplay: setGlobalData() finished");
 end;

@@ -7,9 +7,9 @@ function courseplay:add_working_player(self)
 end
 
 function courseplay:setGlobalInfoText(vehicle, text, level)
-	courseplay.globalInfoText.content[vehicle.working_course_player_num] = {
+	courseplay.globalInfoText.content[#courseplay.globalInfoText.content + 1] = {
 		level = level or 0,
-		text = nameNum(vehicle, true) .. " " .. text,
+		text = nameNum(vehicle) .. " " .. text,
 		vehicle = vehicle
 	};
 end;
