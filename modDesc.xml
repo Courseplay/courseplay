@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="13">
-	<version>3.41.0206</version>
+	<version>3.41.0207</version>
 	<author>Jakob Tischler / Thomas Gärtner / Horoman</author>
 	<title>
 		<de>Courseplay</de>
@@ -1498,8 +1498,14 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530
 			<it>Camp</it> <!-- !!! -->
 			<cz>Pole</cz> <!-- !!! -->
 		</text>
-
-
+		<text name="COURSEPLAY_HOSEMISSING">
+			<de>Schlauch fehlt - Befüllung abgebrochen</de>
+			<en>No hose could be found - cancel refill</en>
+			<es>Falta una manguera - cancelar la recarga</es>
+			<fr>Manque un tuyau - annuler la recharge</fr> <!-- !!! -->
+			<it>Manca un tubo - annullare la ricarica</it> <!-- !!! -->
+			<cz>No hose could be found - cancel refill</cz> <!-- !!! -->
+		</text>
 		<!-- INPUTBINDINGS -->
 		<text name="COURSEPLAY_HUD_OPEN">
 			<en>Show Courseplay HUD</en>
