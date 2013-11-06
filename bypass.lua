@@ -84,7 +84,7 @@ function courseplay:AnalyseRaycastResponse(self,side,transformId, x, y, z, dista
 	
 	if transformId == g_currentMission.terrainRootNode or parent == g_currentMission.terrainRootNode 
 	or (self.active_combine ~= nil and (self.active_combine.rootNode == transformId or self.active_combine.rootNode == parent or self.active_combine.rootNode == parentParent ))
-	or self.cpTrafficCollisionIgnoreList[transformId] or self.cpTrafficCollisionIgnoreList[parent]
+	or self.cpTrafficCollisionIgnoreList[transformId] or self.cpTrafficCollisionIgnoreList[parent] or self.cpTrafficCollisionIgnoreList[parentParent]
 	or (self.cp.foundColli ~= nil and table.getn(self.cp.foundColli) > 0 and (self.cp.foundColli[1].id == transformId 
 									      or (self.cp.foundColli[1].vehicleId ~= nil and vehicleId ~= nil
 									      and self.cp.foundColli[1].vehicleId == vehicle.id)))
