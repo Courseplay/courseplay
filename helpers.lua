@@ -170,7 +170,7 @@ function endswith(sbig, slittle) --TODO: always use Utils.endsWith
 end
 
 function nameNum(vehicle, hideNum)
-	if vehicle.cp.coursePlayerNum ~= nil then
+	if vehicle.cp ~= nil and vehicle.cp.coursePlayerNum ~= nil then
 		if hideNum == nil or hideNum == false then
 			return tostring(vehicle.name) .. " (#" .. tostring(vehicle.cp.coursePlayerNum) .. ")";
 		else
