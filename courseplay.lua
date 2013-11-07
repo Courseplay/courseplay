@@ -42,7 +42,9 @@ if fileExists(modDescPath) then
 end;
 
 -- working tractors saved in this
-working_course_players = {};
+courseplay.totalCoursePlayers = {};
+courseplay.activeCoursePlayers = {};
+courseplay.numActiveCoursePlayers = 0;
 
 function courseplay:initialize()
 	local fileList = {
@@ -213,6 +215,7 @@ function courseplay:setGlobalData()
 	courseplay.globalInfoText.backgroundX = courseplay.globalInfoText.posX - courseplay.globalInfoText.backgroundPadding;
 	courseplay.globalInfoText.backgroundY = courseplay.globalInfoText.posY;
 	courseplay.globalInfoText.content = {};
+	courseplay.globalInfoText.vehicleHasText = {};
 	courseplay.globalInfoText.levelColors = {};
 	courseplay.globalInfoText.levelColors["0"]  = courseplay.hud.colors.hover;
 	courseplay.globalInfoText.levelColors["1"]  = courseplay.hud.colors.activeGreen;

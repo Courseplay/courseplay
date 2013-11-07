@@ -64,9 +64,12 @@ function courseplay:start(self)
 	end
 
 	-- add do working players if not already added
-	if self.working_course_player_num == nil then
-		self.working_course_player_num = courseplay:add_working_player(self)
-	end
+	if self.cp.coursePlayerNum == nil then
+		self.cp.coursePlayerNum = courseplay:addToTotalCoursePlayers(self)
+	end;
+	--add to activeCoursePlayers
+	courseplay:addToActiveCoursePlayers(self);
+
 	self.cp.backMarkerOffset = nil
 	self.cp.aiFrontMarker = nil
 
@@ -339,6 +342,9 @@ function courseplay:stop(self)
 
 	--reset EifokLiquidManure
 	courseplay.thirdParty.EifokLiquidManure.resetData(self);
+
+	--remove from activeCoursePlayers
+	courseplay:removeFromActiveCoursePlayers(self);
 
 	--validation: can switch ai_mode?
 	courseplay:validateCanSwitchMode(self);

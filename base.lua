@@ -79,7 +79,7 @@ function courseplay:load(xmlFile)
 	self.Waypoints = {}
 
 	self.play = false --can drive course (has >4 waypoints, is not recording)
-	self.working_course_player_num = nil; -- total number of course players
+	self.cp.coursePlayerNum = nil;
 
 	self.cp.infoText = nil -- info text on tractor
 
@@ -903,7 +903,7 @@ function courseplay:readStream(streamId, connection)
 	self.turnRadiusAutoMode = streamDebugReadBool(streamId);
 	self.turn_radius = streamDebugReadFloat32(streamId)
 	self.use_speed = streamDebugReadBool(streamId) 
-	self.working_course_player_num = streamReadFloat32(streamId)
+	self.cp.coursePlayerNum = streamReadFloat32(streamId)
 	self.WpOffsetX = streamDebugReadFloat32(streamId)
 	self.WpOffsetZ = streamDebugReadFloat32(streamId)
 	self.cp.hud.currentPage = streamDebugReadInt32(streamId)
@@ -984,7 +984,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteBool(streamId,self.turnRadiusAutoMode)
 	streamDebugWriteFloat32(streamId,self.turn_radius)
 	streamDebugWriteBool(streamId,self.use_speed)
-	streamDebugWriteFloat32(streamId,self.working_course_player_num);
+	streamDebugWriteFloat32(streamId,self.cp.coursePlayerNum);
 	streamDebugWriteFloat32(streamId,self.WpOffsetX)
 	streamDebugWriteFloat32(streamId,self.WpOffsetZ)
 	streamDebugWriteInt32(streamId,self.cp.hud.currentPage)

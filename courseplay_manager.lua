@@ -41,14 +41,14 @@ end
 
 function courseplay_manager:draw()
 	if not courseplay.globalInfoText.hideWhenPdaActive or (courseplay.globalInfoText.hideWhenPdaActive and not g_currentMission.missionPDA.showPDA) then
-		if table.maxn(courseplay.globalInfoText.content) > 0 then
-			for coursePlayerNum,data in pairs(courseplay.globalInfoText.content) do
+		if #(courseplay.globalInfoText.content) > 0 then
+			for i,data in pairs(courseplay.globalInfoText.content) do
 				local bg = data.vehicle.cp.globalInfoTextOverlay;
 				local bgColor = courseplay.globalInfoText.levelColors[tostring(data.level)];
 				bgColor[4] = 0.85;
 				bg:setColor(unpack(bgColor));
 
-				local posY = courseplay.globalInfoText.posY + ((coursePlayerNum - 1) * courseplay.globalInfoText.lineHeight);
+				local posY = courseplay.globalInfoText.posY + ((i - 1) * courseplay.globalInfoText.lineHeight);
 				bg:setPosition(bg.x, posY)
 				bg:setDimension(getTextWidth(courseplay.globalInfoText.fontSize, data.text) + courseplay.globalInfoText.backgroundPadding * 2.5, bg.height)
 
@@ -57,7 +57,9 @@ function courseplay_manager:draw()
 				renderText(courseplay.globalInfoText.posX, posY, courseplay.globalInfoText.fontSize, data.text);
 			end;
 
-			courseplay.globalInfoText.content = {}; --empty the table for next runthrough
+			--empty the tables for next runthrough
+			courseplay.globalInfoText.content = {};
+			courseplay.globalInfoText.vehicleHasText = {};
 		end;
 	end;
 end;

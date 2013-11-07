@@ -1,17 +1,29 @@
 -- adds courseplayer to global table, so that the system knows all of them
-function courseplay:add_working_player(self)
-	table.insert(working_course_players, self)
-	local numPlayers = table.getn(working_course_players)
-	CourseplayEvent.sendEvent(self, "self.working_course_player_num", numPlayers)
-	return numPlayers
-end
+function courseplay:addToTotalCoursePlayers(self)
+	local vehicleNum = (table.maxn(courseplay.totalCoursePlayers) or 0) + 1;
+	courseplay.totalCoursePlayers[vehicleNum] = self;
+	CourseplayEvent.sendEvent(self, "self.cp.coursePlayerNum", vehicleNum)
+	return vehicleNum;
+end;
+
+function courseplay:addToActiveCoursePlayers(vehicle)
+	courseplay.numActiveCoursePlayers = courseplay.numActiveCoursePlayers + 1;
+	courseplay.activeCoursePlayers[vehicle.rootNode] = vehicle;
+end;
+function courseplay:removeFromActiveCoursePlayers(vehicle)
+	courseplay.activeCoursePlayers[vehicle.rootNode] = nil;
+	courseplay.numActiveCoursePlayers = math.max(courseplay.numActiveCoursePlayers - 1, 0);
+end;
 
 function courseplay:setGlobalInfoText(vehicle, text, level)
-	courseplay.globalInfoText.content[#courseplay.globalInfoText.content + 1] = {
-		level = level or 0,
-		text = nameNum(vehicle) .. " " .. text,
-		vehicle = vehicle
-	};
+	if not courseplay.globalInfoText.vehicleHasText[vehicle.cp.coursePlayerNum] then
+		table.insert(courseplay.globalInfoText.content, {
+			level = level or 0,
+			text = nameNum(vehicle) .. " " .. text,
+			vehicle = vehicle
+		});
+		courseplay.globalInfoText.vehicleHasText[vehicle.cp.coursePlayerNum] = true;
+	end;
 end;
 
 function courseplay:renderInfoText(vehicle)
@@ -23,9 +35,9 @@ end;
 
 function courseplay:setFontSettings(color, fontBold, align)
 	if color ~= nil and (type(color) == "string" or type(color) == "table") then
-		if type(color) == "string" and courseplay.hud.colors[color] ~= nil and table.getn(courseplay.hud.colors[color]) == 4 then
+		if type(color) == "string" and courseplay.hud.colors[color] ~= nil and #(courseplay.hud.colors[color]) == 4 then
 			setTextColor(unpack(courseplay.hud.colors[color]));
-		elseif type(color) == "table" and table.getn(color) == 4 then
+		elseif type(color) == "table" and #(color) == 4 then
 			setTextColor(unpack(color));
 		end;
 	else --Backup
