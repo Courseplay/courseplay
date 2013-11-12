@@ -1,4 +1,4 @@
---[[
+﻿--[[
 @name:    inputCourseNameDialogue
 @desc:    Dialogue settings for the Courseplay course saving form
 @author:  Jakob Tischler
@@ -118,23 +118,6 @@ end; --END onCreateCancelButton()
 
 function inputCourseNameDialogue:onCreateTextInput(element)
 	self.textInputElement = element;
-
-	--src: ASCII Table - Decimal (Base 10) Values @ http://www.parse-o-matic.com/parse/pskb/ASCII-Chart.htm
-	local allowedCharacterSpans = {
-		{ 32,  32 },
-		{ 40,  41 },
-		{ 43,  43 },
-		{ 45,  57 },
-		{ 65,  90 },
-		{ 97, 122 }
-	};
-	self.textInputElement.allowedCharacters = {};
-
-	for _,span in pairs(allowedCharacterSpans) do
-		for i=span[1],span[2] do
-			self.textInputElement.allowedCharacters[i] = true;
-		end;
-	end;
 end; --END onCreateTextInput()
 
 function inputCourseNameDialogue:onOpen(element)
@@ -173,7 +156,7 @@ function inputCourseNameDialogue:onClose(element)
 end; --END onClose()
 
 function inputCourseNameDialogue:onIsUnicodeAllowed(unicode)
-	return self.textInputElement.allowedCharacters[unicode] == true;
+	return courseplay.allowedCharacters[unicode] == true;
 end; --END onIsUnicodeAllowed()
 
 function inputCourseNameDialogue:onSaveClick()
@@ -199,7 +182,7 @@ function inputCourseNameDialogue:onSaveClick()
 		vehicle.courseID = maxID + 1;
 		vehicle.numCourses = 1;
 
-		local course = { id = vehicle.courseID, uid = 'c'..vehicle.courseID, type = 'course', name = vehicle.current_course_name,  waypoints = vehicle.Waypoints, parent = 0}
+		local course = { id = vehicle.courseID, uid = 'c'..vehicle.courseID, type = 'course', name = vehicle.current_course_name, nameClean = courseplay:normalizeUTF8(vehicle.current_course_name), waypoints = vehicle.Waypoints, parent = 0 }
 		g_currentMission.cp_courses[vehicle.courseID] = course
 		g_currentMission.cp_sorted = courseplay.courses.sort()
 
@@ -214,7 +197,7 @@ function inputCourseNameDialogue:onSaveClick()
 			maxID = 0
 		end
 		local folderID = maxID+1
-		folder = { id = folderID, uid = 'f'..folderID, type = 'folder', name = self.textInputElement.text, parent = 0 }
+		folder = { id = folderID, uid = 'f'..folderID, type = 'folder', name = self.textInputElement.text, nameClean = courseplay:normalizeUTF8(self.textInputElement.text), parent = 0 }
 
 		g_currentMission.cp_folders[folderID] = folder
 		g_currentMission.cp_sorted = courseplay.courses.sort(g_currentMission.cp_courses, g_currentMission.cp_folders, 0, 0)

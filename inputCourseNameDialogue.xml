@@ -31,14 +31,14 @@
 			onEnterPressed="onEnterPressed" 
 			onTextChanged="onTextChanged" 
 			onIsUnicodeAllowed="onIsUnicodeAllowed" 
-			maxCharacters="20" 
+			maxCharacters="25" 
 			focusId="1" 
 			focusChangeRight="2" 
 			focusChangeBottom="2" 
 			focusInit="onOpen"
 
 			textColor="0.15 0.15 0.15 1" 
-			textSize="0.02"
+			textSize="0.017"
 			textBold="false" 
 			textOffset="0.0085 0.038" 
 

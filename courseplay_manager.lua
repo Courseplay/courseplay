@@ -1,4 +1,4 @@
-courseplay_manager = {};
+﻿courseplay_manager = {};
 local courseplay_manager_mt = Class(courseplay_manager);
 
 function courseplay_manager:loadMap(name)
@@ -12,7 +12,7 @@ function courseplay_manager:loadMap(name)
 			courseplay_manager:load_courses()
 			courseplay:debug(tableShow(g_currentMission.cp_courses, "g_cM cp_courses", 8), 8);
 		end
-	end
+	end;
 end
 
 function courseplay_manager:deleteMap()
@@ -103,6 +103,7 @@ function courseplay_manager:load_courses()
 				if courseName == nil then
 					courseName = string.format('NO_NAME%d',i)
 				end;
+				local courseNameClean = courseplay:normalizeUTF8(courseName);
 
 				--course ID
 				local id = getXMLInt(cpFile, currentCourse .. "#id")
@@ -185,7 +186,7 @@ function courseplay_manager:load_courses()
 					end;
 				end -- while finish_wp == false;
 				
-				local course = { id = id, uid = 'c' .. id , type = 'course', name = courseName, waypoints = tempCourse, parent = parent }
+				local course = { id = id, uid = 'c' .. id , type = 'course', name = courseName, nameClean = courseNameClean, waypoints = tempCourse, parent = parent }
 				if id ~= 0 then
 					courses_by_id[id] = course
 				else
@@ -217,6 +218,7 @@ function courseplay_manager:load_courses()
 				if FolderName == nil then
 					FolderName = string.format('NO_NAME%d',j)
 				end
+				local folderNameClean = courseplay:normalizeUTF8(FolderName);
 				
 				-- folder id
 				id = getXMLInt(cpFile, currentFolder .. "#id")
@@ -231,7 +233,7 @@ function courseplay_manager:load_courses()
 				end
 				
 				-- "save" current folder
-				folder = { id = id, uid = 'f' .. id ,type = 'folder', name = FolderName, parent = parent }
+				folder = { id = id, uid = 'f' .. id ,type = 'folder', name = FolderName, nameClean = folderNameClean, parent = parent }
 				if id ~= 0 then
 					folders_by_id[id] = folder
 				else

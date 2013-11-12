@@ -1,4 +1,4 @@
--- saving // loading courses
+﻿-- saving // loading courses
 
 -- enables input for course name
 function courseplay:showSaveCourseForm(self, saveWhat)
@@ -980,9 +980,13 @@ function courseplay.courses.reload(vehicle)
 		else
 			local parent
 			local courses, folders = {}, {}
+			local searchTermClean = courseplay:normalizeUTF8(vehicle.cp.hud.filter);
+			courseplay:debug(string.format("%s: [filter] searchTermClean = %q", nameNum(vehicle), tostring(searchTermClean)), 8);
+
 			-- filter courses
 			for k, course in pairs(g_currentMission.cp_courses) do
-				if string.match(course.name, vehicle.cp.hud.filter) ~= nil then
+				if string.match(course.nameClean, searchTermClean) ~= nil then
+					courseplay:debug(string.format("\tmatch: course.nameClean=%q / searchTermClean = %q", tostring(course.nameClean), tostring(searchTermClean)), 8);
 					courses[k] = course
 					-- add parents
 					parent = course.parent

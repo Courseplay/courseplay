@@ -312,6 +312,9 @@ function courseplay:setGlobalData()
 
 	courseplay.pathfinding = {};
 
+	courseplay.allowedCharacters = courseplay:getAllowedCharacters();
+	courseplay.utf8normalization = courseplay:getUtf8normalization();
+
 	--print("\t### Courseplay: setGlobalData() finished");
 end;
 
