@@ -1134,7 +1134,9 @@ function courseplay:handleSpecialSprayer(self, activeTool, fill_level, driveOn, 
 						fz = -fz
 						if fz > 15 then
 							if self.lastSpeedReal > 20/3600 then
-								courseplay:brakeToStop(self)
+								if allowedToDrive then
+									allowedToDrive = courseplay:brakeToStop(self)
+								end;
 							else
 								self.cp.maxFieldSpeed = 10/3600
 							end
@@ -1404,14 +1406,15 @@ function courseplay.thirdParty.EifokLiquidManure.refillViaHose(vehicle, activeTo
 
 		local proceedWithFilling = false;
 		if type == "MapHoseRefStation" and closestWaypoint ~= nil then
-			if vehicle.recordnumber >= closestWaypoint - 1 and vehicle.recordnumber < closestWaypoint + 4 then
+			if vehicle.recordnumber >= closestWaypoint - 1 and vehicle.recordnumber <= closestWaypoint + 4 then
 				--SLOW DOWN
 				if not isDone then 
 					if vehicle.lastSpeedReal > 15/3600 then
-						courseplay:brakeToStop(vehicle);
+						if allowedToDrive then
+							allowedToDrive = courseplay:brakeToStop(vehicle);
+						end;
 					elseif vehicle.lastSpeedReal > 5/3600 then
 						vehicle.cp.maxFieldSpeed = 5/3600;
-						--courseplay:debug(string.format("%s: set maxFieldSpeed to 5/3600", nameNum(activeTool)), 14);
 					end;
 				end;
 
