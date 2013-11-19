@@ -11,7 +11,7 @@ function courseplay:register_button(self, hudPage, img, function_to_call, parame
 		hoverText = false;
 	end;
 
-	button = { 
+	local button = { 
 		page = hudPage, 
 		overlay = overlay, 
 		overlays = { overlay }, 
@@ -343,7 +343,7 @@ end
 
 function courseplay.button.deleteButtonOverlays(vehicle)
 	for k,buttonSection in pairs(vehicle.cp.buttons) do
-		for i,buttons in pairs(buttonSection) do
+		for i,button in pairs(buttonSection) do
 			if button.overlay ~= nil and button.overlay.overlayId ~= nil then
 				button.overlay:delete();
 			end;
