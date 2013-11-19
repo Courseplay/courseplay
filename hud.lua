@@ -346,8 +346,16 @@ function courseplay:setHudContent(self)
 			if self.WpOffsetZ ~= nil then
 				self.cp.hud.content.pages[7][3][2].text = string.format("%.1fm (h/v)", self.WpOffsetZ);
 			else
-				self.cp.hud.content.pages[7][3][2].text = "---"
-			end
+				self.cp.hud.content.pages[7][3][2].text = "---";
+			end;
+
+			if self.ai_mode == 4 or self.ai_mode == 6 and self.WpOffsetX ~= 0 then
+				if self.cp.symmetricLaneChange then
+					self.cp.hud.content.pages[7][4][1].text = courseplay:get_locale(self, "COURSEPLAY_SYMMETRIC_LANE_CHANGE") .. " " .. courseplay:get_locale(self, "CPactivated");
+				else
+					self.cp.hud.content.pages[7][4][1].text = courseplay:get_locale(self, "COURSEPLAY_SYMMETRIC_LANE_CHANGE") .. " " .. courseplay:get_locale(self, "CPdeactivated");
+				end;
+			end;
 		end;
 
 		--Copy course from driver

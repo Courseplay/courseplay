@@ -125,19 +125,26 @@ function courseplay:turn(self, dt) --!!!
 				drawDebugPoint(newTargetX, y+3, newTargetZ, 1, 1, 0, 1);
 			end;
 		elseif self.cp.turnStage == 1 then
+			--SYMMETRIC LANE CHANGE
+			if self.cp.symmetricLaneChange then
+				if self.cp.switchHorizontalOffset then
+					self.WpOffsetX = (self.WpOffsetX or 0) * -1;
+					self.cp.switchHorizontalOffset = false;
+					courseplay:debug(string.format("%s: cp.turnStage == 1, switchHorizontalOffset=true -> new WpOffsetX=%.1f, set switchHorizontalOffset to false", nameNum(self), self.WpOffsetX), 12);
+				end;
+			end;
+
 			-- turn
 			local dirX, dirZ = self.aiTractorDirectionX, self.aiTractorDirectionZ;
 			if self.cp.isTurning == "right" then
 				self.aiTractorTurnLeft = false;
 			else
 				self.aiTractorTurnLeft = true;
-			end
+			end;
+			local cx,cz = self.Waypoints[self.recordnumber+1].cx, self.Waypoints[self.recordnumber+1].cz;
 			if self.WpOffsetX ~= nil and self.WpOffsetZ ~= nil and (self.WpOffsetX ~= 0 or self.WpOffsetZ ~= 0 ) then
 				cx,cz = courseplay:turnWithOffset(self)
-			else
-				cx = self.Waypoints[self.recordnumber+1].cx		
-				cz = self.Waypoints[self.recordnumber+1].cz
-			end
+			end;
 			newTargetX = cx
 			newTargetY = y;
 			newTargetZ = cz

@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="13">
-	<version>3.41.0214</version>
+	<version>3.41.0215</version>
 	<author>Jakob Tischler / Thomas Gärtner / Horoman</author>
 	<title>
 		<de>Courseplay</de>
@@ -1009,7 +1009,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530
 			<fr>Attend que le niveau soit atteint</fr>
 			<es>Esperar hasta llegue al nivel de llenado</es>
 			<it>Aspettando che il livello di riempimento sia raggiunto</it>
-			<cz>Čekám než se kombajn/rezačka otočí</cz>
+			<cz>Waiting until fill level is reached</cz> <!-- !!! -->
 		</text>
 		<text name="CPnoCombineInReach">
 			<en>No combine in reach</en>
@@ -1505,6 +1505,14 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530
 			<fr>Manque un tuyau - annuler la recharge</fr> <!-- !!! -->
 			<it>Manca un tubo - annullare la ricarica</it> <!-- !!! -->
 			<cz>No hose could be found - cancel refill</cz> <!-- !!! -->
+		</text>
+		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE">
+			<de>Symmetrischer Bahnwechsel</de>
+			<en>Symmetric lane change</en>
+			<es>Symmetric lane change</es> <!-- !!! -->
+			<fr>Symmetric lane change</fr> <!-- !!! -->
+			<it>Symmetric lane change</it> <!-- !!! -->
+			<cz>Symmetric lane change</cz> <!-- !!! -->
 		</text>
 		<!-- INPUTBINDINGS -->
 		<text name="COURSEPLAY_HUD_OPEN">

@@ -257,7 +257,13 @@ function courseplay:drive(self, dt)
 		if self.abortWork ~= nil and fill_level == 0 then
 			self.cp.isTurning = nil
 		end
-	end
+
+		--SYMMETRIC LANE CHANGE
+		if self.cp.symmetricLaneChange and not self.cp.isTurning and not self.cp.switchHorizontalOffset then
+			self.cp.switchHorizontalOffset = true;
+			courseplay:debug(string.format("%s: isTurning=false, switchHorizontalOffset=false -> set switchHorizontalOffset to true", nameNum(self)), 12);
+		end;
+	end;
 
 	if self.ai_mode == 4 or self.ai_mode == 8 then
 		self.implementIsFull = (fill_level ~= nil and fill_level == 100);

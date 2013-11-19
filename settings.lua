@@ -1090,3 +1090,8 @@ function courseplay:changeDebugChannelSection(self, changeBy)
 	courseplay.debugChannelSectionEnd = courseplay.numDebugChannelButtonsPerLine * courseplay.debugChannelSection;
 	courseplay.debugChannelSectionStart = courseplay.debugChannelSectionEnd - courseplay.numDebugChannelButtonsPerLine + 1;
 end;
+
+function courseplay:toggleSymmetricLaneChange(vehicle)
+	vehicle.cp.symmetricLaneChange = not vehicle.cp.symmetricLaneChange;
+	vehicle.cp.switchHorizontalOffset = vehicle.cp.symmetricLaneChange;
+end;
