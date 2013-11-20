@@ -346,16 +346,14 @@ end
 function courseplay.button.deleteButtonOverlays(vehicle)
 	for k,buttonSection in pairs(vehicle.cp.buttons) do
 		for i,button in pairs(buttonSection) do
-			if button.overlay ~= nil and button.overlay.overlayId ~= nil then
-				button.overlay:delete();
-			end;
 			if button.overlays ~= nil then
 				for j,overlay in pairs(button.overlays) do
-					if overlay.overlayId ~= nil then
+					if overlay.overlayId ~= nil and overlay.delete ~= nil then
 						overlay:delete();
 					end;
 				end;
 			end;
+			--NOTE: deleting single overlays not necessary since all overlay in button.overlays have already been deleted.
 		end;
 	end;
 end;
