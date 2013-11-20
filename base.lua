@@ -269,6 +269,7 @@ function courseplay:load(xmlFile)
 
 	self.WpOffsetX = 0
 	self.WpOffsetZ = 0
+	self.cp.symmetricLaneChange = false;
 	self.cp.switchHorizontalOffset = false;
 	self.toolWorkWidht = 3
 	-- loading saved courses from xml
@@ -599,6 +600,8 @@ function courseplay:load(xmlFile)
 	courseplay:register_button(self, 7, "navigate_minus.dds", "changeWpOffsetZ", -0.5, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[3], w16px, h16px, 3,  -1, false);
 	courseplay:register_button(self, 7, "navigate_plus.dds",  "changeWpOffsetZ",  0.5, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[3], w16px, h16px, 3,   1, false);
 	courseplay:register_button(self, 7, nil, "changeWpOffsetZ", 0.1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[3], mouseWheelArea.w, mouseWheelArea.h, 3, 0.5, true, true);
+
+	courseplay:register_button(self, 7, "blank.dds", "toggleSymmetricLaneChange", nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[4], courseplay.hud.visibleArea.width, 0.015, 4, nil, true);
 
 	courseplay:register_button(self, 7, "navigate_up.dds",   "switchDriverCopy", -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[5], w16px, h16px, 5, nil, false);
 	courseplay:register_button(self, 7, "navigate_down.dds", "switchDriverCopy",  1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[5], w16px, h16px, 5, nil, false);
@@ -1058,22 +1061,26 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		self.mouse_right_key_enabled          = Utils.getNoNil(getXMLBool(  xmlFile, key .. "#mouse_right_key_enabled"), true);
 		self.WpOffsetZ                        = Utils.getNoNil(getXMLFloat( xmlFile, key .. "#OffsetZ"                ), 0);
 		self.waitTime                         = Utils.getNoNil(getXMLFloat( xmlFile, key .. "#waitTime"               ), 0);
-		self.abortWork                        = Utils.getNoNil(getXMLInt(   xmlFile, key .. "#AbortWork"              ), nil);
 		self.turn_radius                      = Utils.getNoNil(getXMLInt(   xmlFile, key .. "#turn_radius"            ), 10);
 		self.RulMode                          = Utils.getNoNil(getXMLInt(   xmlFile, key .. "#rul_mode"               ), 1);
-		local courses                         = Utils.getNoNil(getXMLString(xmlFile, key .. "#courses"                ), "");
 		self.toolWorkWidht                    = Utils.getNoNil(getXMLFloat( xmlFile, key .. "#toolWorkWidht"          ), 3);
 		self.cp.ridgeMarkersAutomatic         = Utils.getNoNil(getXMLBool(  xmlFile, key .. "#ridgeMarkersAutomatic"  ), true);
+		self.ai_mode                          = Utils.getNoNil(getXMLInt(   xmlFile, key .. "#ai_mode"                ), 1);
+
+		self.abortWork = getXMLInt(xmlFile, key .. "#AbortWork");
+		if self.abortWork == 0 then
+			self.abortWork = nil;
+		end;
+
+		if self.cp.isCombine then
+			self.cp.driverPriorityUseFillLevel = Utils.getNoNil(getXMLBool(xmlFile, key .. "#driverPriorityUseFillLevel"), false);
+		end;
+
+		local courses                         = Utils.getNoNil(getXMLString(xmlFile, key .. "#courses"                ), "");
 		self.loaded_courses = Utils.splitString(",", courses);
 		self.selected_course_number = 0
-
 		courseplay:reload_courses(self, true)
 
-		self.ai_mode = Utils.getNoNil(getXMLInt(xmlFile, key .. string.format("#ai_mode")), 1);
-
-		if self.abortWork == 0 then
-			self.abortWork = nil
-		end
 
 		--Shovel positions
 		local shovelRots = getXMLString(xmlFile, key .. string.format("#shovelRots"));
@@ -1091,13 +1098,8 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 				courseplay:buttonsActiveEnabled(self, "shovel");
 			end;
 		end;
-		
-		if self.cp.isCombine then
-			self.cp.driverPriorityUseFillLevel = Utils.getNoNil(getXMLBool(xmlFile, key .. "#driverPriorityUseFillLevel"), false);
-		end;
 
 		courseplay:validateCanSwitchMode(self);
-
 	end
 	return BaseMission.VEHICLE_LOAD_OK;
 end
@@ -1146,9 +1148,11 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 		' ridgeMarkersAutomatic="'   .. tostring(self.cp.ridgeMarkersAutomatic)          .. '"' ..
 		shovelRotsAttr .. 
 		' ai_mode="'                 .. tostring(self.ai_mode) .. '"';
-		if self.cp.isCombine then
-			attributes = attributes .. ' driverPriorityUseFillLevel="' .. tostring(self.cp.driverPriorityUseFillLevel) .. '"';
-		end;
+
+	if self.cp.isCombine then
+		attributes = attributes .. ' driverPriorityUseFillLevel="' .. tostring(self.cp.driverPriorityUseFillLevel) .. '"';
+	end;
+
 	return attributes, nil;
 end
 

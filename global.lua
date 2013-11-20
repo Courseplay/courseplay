@@ -17,12 +17,12 @@ end;
 
 function courseplay:setGlobalInfoText(vehicle, text, level)
 	if not courseplay.globalInfoText.vehicleHasText[vehicle.cp.coursePlayerNum] then
+		vehicle.cp.currentGlobalInfoTextLevel = level or 0;
 		table.insert(courseplay.globalInfoText.content, {
-			level = level or 0,
+			level = vehicle.cp.currentGlobalInfoTextLevel,
 			text = nameNum(vehicle) .. " " .. text,
 			vehicle = vehicle
 		});
-		vehicle.cp.currentGlobalInfoTextLevel = level;
 		courseplay.globalInfoText.vehicleHasText[vehicle.cp.coursePlayerNum] = true;
 	end;
 end;
