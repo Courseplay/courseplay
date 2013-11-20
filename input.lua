@@ -174,7 +174,12 @@ function courseplay:executeFunction(self, func, value, overwrittenPage)
 				combine = self.tippers[self.cp.attachedCombineIdx];
 			end;
 
-			if combine.courseplayers == nil or table.getn(combine.courseplayers) == 0 then
+			if combine.cp.isCombine then
+				if line == 4 then
+					courseplay:toggleDriverPriority(combine);
+				end;
+			end;
+			if combine.courseplayers == nil or #(combine.courseplayers) == 0 then
 				if line == 1 then
 					courseplay:call_player(combine);
 				end;
@@ -183,7 +188,7 @@ function courseplay:executeFunction(self, func, value, overwrittenPage)
 					courseplay:start_stop_player(combine);
 				elseif line == 3 then
 					courseplay:send_player_home(combine);
-				elseif line == 4 then
+				elseif line == 4 and combine.cp.isChopper then
 					courseplay:switch_player_side(combine);
 				elseif line == 5 and combine.cp.isChopper and not self.drive and not self.isAIThreshing then --manual chopping: initiate/end turning maneuver
 					if self.cp.turnStage == 0 then

@@ -166,25 +166,47 @@ function courseplay:register_at_combine(self, combine)
 
 	--THOMAS' best_combine START
 	if combine.cp.isCombine or (courseplay:isAttachedCombine(combine) and not courseplay:isSpecialChopper(combine)) then
-		local distance = 9999999
-		local vehicle_ID = 0
-		for k, vehicle in pairs(g_currentMission.vehicles) do --TODO: Liste einengen, nur Courseplayers
-			if vehicle.combineID ~= nil then
-				--print(tostring(vehicle.name).." is calling for "..tostring(vehicle.combineID).."  combine.id= "..tostring(combine.id))
-				if vehicle.combineID == combine.id and vehicle.active_combine == nil then
-					courseplay:debug(tostring(vehicle.id).." : distanceToCombine:"..tostring(vehicle.distanceToCombine).." for combine.id:"..tostring(combine.id), 4)
-					if distance > vehicle.distanceToCombine then
-						distance = vehicle.distanceToCombine
-						vehicle_ID = vehicle.id
+		if combine.cp.driverPriorityUseFillLevel then
+			local fillLevel = 0
+			local vehicle_ID = 0
+			for k, vehicle in pairs(courseplay.activeCoursePlayers) do
+				if vehicle.combineID ~= nil then
+					if vehicle.combineID == combine.id and vehicle.active_combine == nil then
+						courseplay:debug(tostring(vehicle.id).." : callCombineFillLevel:"..tostring(vehicle.callCombineFillLevel).." for combine.id:"..tostring(combine.id), 4)
+						if fillLevel <= vehicle.callCombineFillLevel then
+							fillLevel = math.min(vehicle.callCombineFillLevel,0.1)
+							vehicle_ID = vehicle.id
+						end
 					end
 				end
 			end
-		end
-		if vehicle_ID ~= self.id then
-			courseplay:debug(nameNum(self) .. " (id " .. tostring(self.id) .. "): there's a closer tractor that's trying to register: "..tostring(vehicle_ID), 4)
-			return false
+			if vehicle_ID ~= self.id then
+				courseplay:debug(nameNum(self) .. " (id " .. tostring(self.id) .. "): there's a tractor with more fillLevel that's trying to register: "..tostring(vehicle_ID), 4)
+				return false
+			else
+				courseplay:debug(nameNum(self) .. " (id " .. tostring(self.id) .. "): it's my turn", 4);
+			end
 		else
-			courseplay:debug(nameNum(self) .. " (id " .. tostring(self.id) .. "): it's my turn", 4);
+			local distance = 9999999
+			local vehicle_ID = 0
+			for k, vehicle in pairs(courseplay.activeCoursePlayers) do
+				if vehicle.combineID ~= nil then
+					--print(tostring(vehicle.name).." is calling for "..tostring(vehicle.combineID).."  combine.id= "..tostring(combine.id))
+					if vehicle.combineID == combine.id and vehicle.active_combine == nil then
+						courseplay:debug(tostring(vehicle.id).." : distanceToCombine:"..tostring(vehicle.distanceToCombine).." for combine.id:"..tostring(combine.id), 4)
+						if distance > vehicle.distanceToCombine then
+							distance = vehicle.distanceToCombine
+							vehicle_ID = vehicle.id
+						end
+					end
+				end
+			end
+			if vehicle_ID ~= self.id then
+				courseplay:debug(nameNum(self) .. " (id " .. tostring(self.id) .. "): there's a closer tractor that's trying to register: "..tostring(vehicle_ID), 4)
+				return false
+			else
+				courseplay:debug(nameNum(self) .. " (id " .. tostring(self.id) .. "): it's my turn", 4);
+			end
 		end
 	end
 	--THOMAS' best_combine END
@@ -201,6 +223,7 @@ function courseplay:register_at_combine(self, combine)
 
 	courseplay:debug(string.format("%s is being checked in with %s", nameNum(self), tostring(combine.name)), 4)
 	combine.isCheckedIn = 1;
+	self.callCombineFillLevel = nil
 	self.distanceToCombine = nil
 	self.combineID = nil
 	table.insert(combine.courseplayers, self)

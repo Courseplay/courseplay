@@ -55,6 +55,9 @@ function courseplay_manager:draw()
 				bg:render();
 				courseplay:setFontSettings("white", false);
 				renderText(courseplay.globalInfoText.posX, posY, courseplay.globalInfoText.fontSize, data.text);
+
+				--reset for next runthrough
+				data.vehicle.cp.currentGlobalInfoTextLevel = nil;
 			end;
 
 			--empty the tables for next runthrough

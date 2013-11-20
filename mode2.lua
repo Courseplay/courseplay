@@ -189,6 +189,7 @@ function courseplay:handle_mode2(self, dt)
 							local sx, sy, sz = getWorldTranslation(self.rootNode)
 							distance = courseplay:distance(sx, sz, cx, cz)
 							self.distanceToCombine = distance
+							self.callCombineFillLevel = fill_level
 							self.combineID = combine.id
 						end
 					end

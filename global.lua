@@ -22,6 +22,7 @@ function courseplay:setGlobalInfoText(vehicle, text, level)
 			text = nameNum(vehicle) .. " " .. text,
 			vehicle = vehicle
 		});
+		vehicle.cp.currentGlobalInfoTextLevel = level;
 		courseplay.globalInfoText.vehicleHasText[vehicle.cp.coursePlayerNum] = true;
 	end;
 end;
