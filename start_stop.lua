@@ -104,7 +104,7 @@ function courseplay:start(self)
 	for i,wp in pairs(self.Waypoints) do
 		local cx, cz = wp.cx, wp.cz
 
-		if self.ai_state == 0 then
+		if self.ai_state == 0 or self.ai_state == 1 then
 			dist = courseplay:distance(ctx, ctz, cx, cz)
 			if dist <= nearestpoint then
 				nearestpoint = dist
