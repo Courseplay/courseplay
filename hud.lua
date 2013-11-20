@@ -41,6 +41,18 @@ function courseplay:setHudContent(self)
 	self.cp.hud.background:render();
 	if self.cp.hud.currentPage == 0 then
 		local combine = self;
+
+		--DRIVER PRIORITY
+		if self.cp.isCombine then
+			self.cp.hud.content.pages[0][4][1].text = courseplay:get_locale(self, "COURSEPLAY_DRIVERPRIOTITY");
+
+			if self.cp.driverPriorityUseFillLevel then
+				self.cp.hud.content.pages[0][4][2].text = courseplay:get_locale(self, "COURSEPLAY_FILLEVEL");
+			else
+				self.cp.hud.content.pages[0][4][2].text = courseplay:get_locale(self, "CPDistance");
+			end;
+		end;
+
 		-- no courseplayer!
 		if self.cp.HUD0noCourseplayer then
 			if self.cp.HUD0wantsCourseplayer then

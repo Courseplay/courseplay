@@ -1095,3 +1095,7 @@ function courseplay:toggleSymmetricLaneChange(vehicle)
 	vehicle.cp.symmetricLaneChange = not vehicle.cp.symmetricLaneChange;
 	vehicle.cp.switchHorizontalOffset = vehicle.cp.symmetricLaneChange;
 end;
+
+function courseplay:toggleDriverPriority(combine)
+	combine.cp.driverPriorityUseFillLevel = not combine.cp.driverPriorityUseFillLevel;
+end;
