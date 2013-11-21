@@ -13,7 +13,43 @@ function courseplay_manager:loadMap(name)
 			courseplay:debug(tableShow(g_currentMission.cp_courses, "g_cM cp_courses", 8), 8);
 		end
 	end;
-end
+
+	--GlobalInfoText buttons
+	self.buttons = {
+		globalInfoText = {};
+		registerButton = courseplay_manager.registerButton;
+	};
+	self.playerOnFootMouseEnabled = false;
+	self.wasPlayerFrozen = false;
+end;
+
+function courseplay_manager:registerButton(section, fn, prm, img, x, y, w, h)
+	local overlay = Overlay:new(img, Utils.getFilename("img/" .. img, courseplay.path), x, y, w, h);
+	local button = { 
+		section = section, 
+		overlay = overlay, 
+		overlays = { overlay }, 
+		function_to_call = fn, 
+		parameter = prm, 
+		x_init = x,
+		x = x,
+		x2 = (x + w),
+		y_init = y,
+		y = y,
+		y2 = (y + h),
+		color = courseplay.hud.colors.white,
+		canBeClicked = fn ~= nil,
+		show = true,
+		isClicked = false,
+		isActive = false,
+		isDisabled = false,
+		isHovered = false,
+		isHidden = false
+	};
+	--print(string.format("courseplay_manager:registerButton(%q, %q, %s, %q, %.3f, %.3f, %.3f, %.3f)", section, fn, prm, img, x, y, w, h));
+	table.insert(courseplay_manager.buttons[tostring(section)], button);
+	--return #(courseplay_manager.buttons[tostring(section)]);
+end;
 
 function courseplay_manager:deleteMap()
 	g_currentMission.cp_courses = nil
@@ -31,6 +67,16 @@ function courseplay_manager:deleteMap()
 		end;
 	end;
 
+	for i,button in pairs(self.buttons.globalInfoText) do
+		if button.overlays ~= nil then
+			for j,overlay in pairs(button.overlays) do
+				if overlay.overlayId ~= nil and overlay.delete ~= nil then
+					overlay:delete();
+				end;
+			end;
+		end;
+	end;
+
 	for section,signDatas in pairs(courseplay.signs.buffer) do
 		for k,signData in pairs(signDatas) do
 			courseplay.utils.signs.deleteSign(signData.sign);
@@ -40,8 +86,10 @@ function courseplay_manager:deleteMap()
 end
 
 function courseplay_manager:draw()
+	courseplay.globalInfoText.hasContent = false;
 	if not courseplay.globalInfoText.hideWhenPdaActive or (courseplay.globalInfoText.hideWhenPdaActive and not g_currentMission.missionPDA.showPDA) then
 		if #(courseplay.globalInfoText.content) > 0 then
+			courseplay.globalInfoText.hasContent = true;
 			for i,data in pairs(courseplay.globalInfoText.content) do
 				local bg = data.vehicle.cp.globalInfoTextOverlay;
 				local bgColor = courseplay.globalInfoText.levelColors[tostring(data.level)];
@@ -49,8 +97,30 @@ function courseplay_manager:draw()
 				bg:setColor(unpack(bgColor));
 
 				local posY = courseplay.globalInfoText.posY + ((i - 1) * courseplay.globalInfoText.lineHeight);
-				bg:setPosition(bg.x, posY)
-				bg:setDimension(getTextWidth(courseplay.globalInfoText.fontSize, data.text) + courseplay.globalInfoText.backgroundPadding * 2.5, bg.height)
+				bg:setPosition(bg.x, posY);
+				bg:setDimension(getTextWidth(courseplay.globalInfoText.fontSize, data.text) + courseplay.globalInfoText.backgroundPadding * 2.5, bg.height);
+
+				local button = self.buttons.globalInfoText[i];
+				if button ~= nil then
+					button.canBeClicked = true;
+					button.isDisabled = data.vehicle.isBroken or data.vehicle.isControlled;
+					--courseplay.button.setOffset(button, 0, posY - courseplay.globalInfoText.posY);
+					button.parameter = data.vehicle;
+					if g_currentMission.controlledVehicle == data.vehicle then
+						courseplay:setButtonColor(button, courseplay.hud.colors.activeGreen);
+						button.canBeClicked = false;
+					elseif button.isDisabled then
+						courseplay:setButtonColor(button, courseplay.hud.colors.whiteDisabled);
+					elseif button.isHovered then
+						courseplay:setButtonColor(button, courseplay.hud.colors.hover);
+					elseif button.isClicked then
+						courseplay:setButtonColor(button, courseplay.hud.colors.activeRed);
+					else
+						courseplay:setButtonColor(button, button.color);
+					end;
+					button.overlay:render();
+				end;
+
 
 				bg:render();
 				courseplay:setFontSettings("white", false);
@@ -67,9 +137,65 @@ function courseplay_manager:draw()
 	end;
 end;
 
+function courseplay_manager:mouseEvent(posX, posY, isDown, isUp, button)
+	local mouseKey = button;
+	local area = self.buttons.globalInfoTextClickArea;
+	local mouseIsInHudArea = posX > area.x1 and posX < area.x2 and posY > area.y1 and posY < area.y2;
+
+	--LEFT CLICK
+	if isDown and mouseKey == Input[courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION.keyName] and mouseIsInHudArea then
+		if courseplay.globalInfoText.hasContent then
+			for i,button in pairs(self.buttons.globalInfoText) do
+				if button.show and courseplay:mouseIsInButtonArea(posX, posY, button) then
+					local sourceVehicle = g_currentMission.controlledVehicle or button.parameter;
+					--print(string.format("handleMouseClickForButton(%q, button)", nameNum(sourceVehicle)));
+					courseplay:handleMouseClickForButton(sourceVehicle, button);
+					break;
+				end;
+			end;
+		end;
+
+	--RIGHT CLICK
+	elseif isDown and mouseKey == Input[courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION_SECONDARY.keyName] and g_currentMission.controlledVehicle == nil then
+		if courseplay.globalInfoText.hasContent and not self.playerOnFootMouseEnabled then
+			self.playerOnFootMouseEnabled = true;
+			self.wasPlayerFrozen = g_currentMission.isPlayerFrozen;
+			g_currentMission.isPlayerFrozen = true;
+		elseif self.playerOnFootMouseEnabled then
+			self.playerOnFootMouseEnabled = false;
+			if not self.wasPlayerFrozen then
+				g_currentMission.isPlayerFrozen = false;
+			end;
+		end;
+		--print(string.format("right mouse click: playerOnFootMouseEnabled=%s, wasPlayerFrozen=%s, isPlayerFrozen=%s", tostring(self.playerOnFootMouseEnabled), tostring(self.wasPlayerFrozen), tostring(g_currentMission.isPlayerFrozen)));
+		InputBinding.setShowMouseCursor(self.playerOnFootMouseEnabled);
+
+	--HOVER
+	elseif not isDown then
+		for _,button in pairs(self.buttons.globalInfoText) do
+			button.isClicked = false;
+			if button.show and not button.isHidden then
+				button.isHovered = false;
+				if courseplay:mouseIsInButtonArea(posX, posY, button) then
+					button.isClicked = false;
+					button.isHovered = true;
+				end;
+			end;
+		end;
+	end;
+end;
+
 function courseplay_manager:update()
 	--courseplay:debug(table.getn(g_currentMission.courseplay_courses), 8);
-end
+
+	if g_currentMission.controlledVehicle == nil then
+		if self.playerOnFootMouseEnabled then
+			g_currentMission:addExtraPrintText(courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION_SECONDARY.displayName .. ": " .. courseplay:get_locale(self, "COURSEPLAY_MOUSEARROW_HIDE"));
+		elseif courseplay.globalInfoText.hasContent then
+			g_currentMission:addExtraPrintText(courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION_SECONDARY.displayName .. ": " .. courseplay:get_locale(self, "COURSEPLAY_MOUSEARROW_SHOW"));
+		end;
+	end;
+end;
 
 function courseplay_manager:keyEvent()
 end
@@ -291,9 +417,6 @@ function courseplay_manager:load_courses()
 end
 
 
-function courseplay_manager:mouseEvent(posX, posY, isDown, isUp, button)
-end
-
 --remove courseplayers from combine before it is reset and/or sold
 function courseplay_manager:removeCourseplayersFromCombine(vehicle, callDelete)
 	if vehicle.courseplayers ~= nil then
@@ -315,6 +438,8 @@ function courseplay_manager:removeCourseplayersFromCombine(vehicle, callDelete)
 	end;
 end;
 BaseMission.removeVehicle = Utils.prependedFunction(BaseMission.removeVehicle, courseplay_manager.removeCourseplayersFromCombine);
+
+
 
 
 stream_debug_counter = 0

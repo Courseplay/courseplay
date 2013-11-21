@@ -215,6 +215,7 @@ function courseplay:setGlobalData()
 	courseplay.globalInfoText.backgroundX = courseplay.globalInfoText.posX - courseplay.globalInfoText.backgroundPadding;
 	courseplay.globalInfoText.backgroundY = courseplay.globalInfoText.posY;
 	courseplay.globalInfoText.content = {};
+	courseplay.globalInfoText.hasContent = false;
 	courseplay.globalInfoText.vehicleHasText = {};
 	courseplay.globalInfoText.levelColors = {};
 	courseplay.globalInfoText.levelColors["0"]  = courseplay.hud.colors.hover;

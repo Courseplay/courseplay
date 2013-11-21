@@ -87,7 +87,19 @@ function courseplay:load(xmlFile)
 	-- global info text - also displayed when not in vehicle
 	local git = courseplay.globalInfoText;
 	self.cp.globalInfoTextOverlay = Overlay:new(string.format("globalInfoTextOverlay%d", self.rootNode), git.backgroundImg, git.backgroundX, git.backgroundY, 0.1, git.fontSize);
-	self.testhe = false
+	local buttonHeight = git.fontSize;
+	local buttonWidth = buttonHeight * 1080 / 1920;
+	local buttonX = git.backgroundX - git.backgroundPadding - buttonWidth;
+	local buttonIdx = #courseplay_manager.buttons.globalInfoText + 1;
+	local buttonY = git.posY + ((buttonIdx - 1) * git.lineHeight);
+	courseplay_manager.buttons:registerButton('globalInfoText', 'goToVehicle', buttonIdx, 'pageNav_7.png', buttonX, buttonY, buttonWidth, buttonHeight);
+	courseplay_manager.buttons.globalInfoTextClickArea = {
+		x1 = buttonX;
+		x2 = buttonX + buttonWidth;
+		y1 = git.posY,
+		y2 = git.posY + (buttonIdx * git.lineHeight);
+	};
+	
 
 	-- ai mode: 1 abfahrer, 2 kombiniert
 	self.ai_mode = 1
