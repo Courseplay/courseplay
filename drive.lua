@@ -194,13 +194,19 @@ function courseplay:drive(self, dt)
 	end;
 
 	--HORIZONTAL/VERTICAL OFFSET
-	local offsetValid = self.WpOffsetX ~= nil and self.WpOffsetZ ~= nil and (self.WpOffsetX ~= 0 or self.WpOffsetZ ~= 0);
+	local offsetValid = self.cp.totalOffsetX ~= nil and self.cp.toolOffsetZ ~= nil and (self.cp.totalOffsetX ~= 0 or self.cp.toolOffsetZ ~= 0);
 	if offsetValid then
 		if self.ai_mode == 3 then
+			if self.cp.laneOffset ~= 0 then
+				courseplay:changeLaneOffset(self, nil, 0);
+			end;
 			offsetValid = self.recordnumber > 2 and self.recordnumber > self.cp.waitPoints[1] - 6 and self.recordnumber <= self.cp.waitPoints[1] + 3;
 		elseif self.ai_mode == 4 or self.ai_mode == 6 then
 			offsetValid = self.recordnumber > self.startWork and self.recordnumber < self.stopWork and self.recordnumber > 1; --TODO: recordnumber incl startWork/stopWork?
 		elseif self.ai_mode == 7 then
+			if self.cp.laneOffset ~= 0 then
+				courseplay:changeLaneOffset(self, nil, 0);
+			end;
 			offsetValid = self.recordnumber > 3 and self.recordnumber > self.cp.waitPoints[1] - 6 and self.recordnumber <= self.cp.waitPoints[1] + 3 and not self.cp.mode7GoBackBeforeUnloading;
 		else 
 			offsetValid = false;
@@ -228,8 +234,8 @@ function courseplay:drive(self, dt)
 		if vl ~= nil and vl > 0.01 then
 			vcx = vcx / vl
 			vcz = vcz / vl
-			cx = cx - vcz * self.WpOffsetX + vcx * self.WpOffsetZ
-			cz = cz + vcx * self.WpOffsetX + vcz * self.WpOffsetZ
+			cx = cx - vcz * self.cp.totalOffsetX + vcx * self.cp.toolOffsetZ
+			cz = cz + vcx * self.cp.totalOffsetX + vcz * self.cp.toolOffsetZ
 		end
 		--courseplay:debug(string.format("new WP: %d x %d (angle) %d ", cx, cz, angle ), 2)
 	end
@@ -258,10 +264,16 @@ function courseplay:drive(self, dt)
 			self.cp.isTurning = nil
 		end
 
-		--SYMMETRIC LANE CHANGE
-		if self.cp.symmetricLaneChange and not self.cp.isTurning and not self.cp.switchHorizontalOffset then
-			self.cp.switchHorizontalOffset = true;
-			courseplay:debug(string.format("%s: isTurning=false, switchHorizontalOffset=false -> set switchHorizontalOffset to true", nameNum(self)), 12);
+		--RESET OFFSET TOGGLES
+		if not self.cp.isTurning then
+			if self.cp.symmetricLaneChange and not self.cp.switchLaneOffset then
+				self.cp.switchLaneOffset = true;
+				courseplay:debug(string.format("%s: isTurning=false, switchLaneOffset=false -> set switchLaneOffset to true", nameNum(self)), 12);
+			end;
+			if self.cp.hasPlough and not self.cp.switchToolOffset then
+				self.cp.switchToolOffset = true;
+				courseplay:debug(string.format("%s: isTurning=false, switchToolOffset=false -> set switchToolOffset to true", nameNum(self)), 12);
+			end;
 		end;
 	end;
 

@@ -279,12 +279,16 @@ function courseplay:load(xmlFile)
 	self.autoTurnRadius = 10;
 	self.turnRadiusAutoMode = true;
 
-	self.WpOffsetX = 0
-	self.WpOffsetZ = 0
+	--Offset
+	self.cp.laneOffset = 0;
+	self.cp.toolOffsetX = 0;
+	self.cp.toolOffsetZ = 0;
+	self.cp.totalOffsetX = 0;
 	self.cp.symmetricLaneChange = false;
-	self.cp.switchHorizontalOffset = false;
-	self.toolWorkWidht = 3
-	-- loading saved courses from xml
+	self.cp.switchLaneOffset = false;
+	self.cp.switchToolOffset = false;
+
+	self.cp.workWidth = 3
 
 	self.search_combine = true
 	self.saved_combine = nil
@@ -349,8 +353,11 @@ function courseplay:load(xmlFile)
 		for line=1,courseplay.hud.numLines do
 			self.cp.hud.content.pages[page][line] = {
 				{ text = nil, isHovered = false, indention = 0 },
-				{ text = nil }
+				{ text = nil, posX = courseplay.hud.col2posX[page] }
 			};
+			if courseplay.hud.col2posXforce[page] ~= nil and courseplay.hud.col2posXforce[page][line] ~= nil then
+				self.cp.hud.content.pages[page][line][2].posX = courseplay.hud.col2posXforce[page][line];
+			end;
 		end;
 	end;
 	
@@ -404,16 +411,16 @@ function courseplay:load(xmlFile)
 	--Hud titles
 	if courseplay.hud.hudTitles == nil then
 		courseplay.hud.hudTitles = {
-			courseplay:get_locale(self, "CPCombineManagement"), -- Combine Controls
-			courseplay:get_locale(self, "CPSteering"), -- "Abfahrhelfer Steuerung"
-			{ courseplay:get_locale(self, "CPManageCourses"), courseplay:get_locale(self, "CPchooseFolder"), courseplay:get_locale(self, "CPcoursesFilterTitle") }, -- "Kurse verwalten"
-			courseplay:get_locale(self, "CPCombiSettings"), -- "Einstellungen Combi Modus"
-			courseplay:get_locale(self, "CPManageCombines"), -- "Drescher verwalten"
-			courseplay:get_locale(self, "CPSpeedLimit"), -- "Speeds"
-			courseplay:get_locale(self, "CPSettings"), -- "General settings"
-			courseplay:get_locale(self, "CPHud7"), -- "Driving settings"
-			courseplay:get_locale(self, "CPcourseGeneration"), -- "Course Generation"
-			courseplay:get_locale(self, "CPShovelPositions") --Schaufel progammieren
+			[0] = courseplay:get_locale(self, "CPCombineManagement"), -- Combine Controls
+			[1] = courseplay:get_locale(self, "CPSteering"), -- "Abfahrhelfer Steuerung"
+			[2] = { courseplay:get_locale(self, "CPManageCourses"), courseplay:get_locale(self, "CPchooseFolder"), courseplay:get_locale(self, "CPcoursesFilterTitle") }, -- "Kurse verwalten"
+			[3] = courseplay:get_locale(self, "CPCombiSettings"), -- "Einstellungen Combi Modus"
+			[4] = courseplay:get_locale(self, "CPManageCombines"), -- "Drescher verwalten"
+			[5] = courseplay:get_locale(self, "CPSpeedLimit"), -- "Speeds"
+			[6] = courseplay:get_locale(self, "CPSettings"), -- "General settings"
+			[7] = courseplay:get_locale(self, "CPHud7"), -- "Driving settings"
+			[8] = courseplay:get_locale(self, "CPcourseGeneration"), -- "Course Generation"
+			[9] = courseplay:get_locale(self, "CPShovelPositions") --Schaufel progammieren
 		};
 	end;
 
@@ -583,11 +590,9 @@ function courseplay:load(xmlFile)
 	courseplay:register_button(self, 6, "blank.dds", "change_WaypointMode",            1,   courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[3], courseplay.hud.visibleArea.width, 0.015, 3, nil, true);
 	courseplay:register_button(self, 6, "blank.dds", "change_RulMode",                 1,   courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[4], courseplay.hud.visibleArea.width, 0.015, 4, nil, true);
 
-	if courseplay.fields ~= nil and courseplay.fields.fieldDefs ~= nil and courseplay.fields.numberOfFields > 0 then
-		courseplay:register_button(self, 6, "navigate_up.dds",   "setFieldEdgePath", -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[5], w16px, h16px, 5, nil, false);
-		courseplay:register_button(self, 6, "navigate_down.dds", "setFieldEdgePath",  1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[5], w16px, h16px, 5, nil, false);
-		courseplay:register_button(self, 6, nil, nil, nil, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[5], 0.015 + w16px, mouseWheelArea.h, 5, nil, true, false);
-	end;
+	courseplay:register_button(self, 6, "navigate_minus.dds", "change_wait_time",  -5, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[5], w16px, h16px, 5, -10, false);
+	courseplay:register_button(self, 6, "navigate_plus.dds",  "change_wait_time",   5, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[5], w16px, h16px, 5,  10, false);
+	courseplay:register_button(self, 6, nil, "change_wait_time", 5, mouseWheelArea.x, courseplay.hud.linesButtonPosY[5], mouseWheelArea.w, mouseWheelArea.h, 5, 10, true, true);
 
 	local dbgW, dbgH = 22/1920, 22/1080;
 	local dbgPosY = courseplay.hud.linesPosY[6] - 0.004;
@@ -601,17 +606,17 @@ function courseplay:load(xmlFile)
 	courseplay:register_button(self, 6, "navigate_down.png", "changeDebugChannelSection",  1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[6], w16px, h16px,  1, nil, false);
 
 	--Page 7: Driving settings
-	courseplay:register_button(self, 7, "navigate_minus.dds", "change_wait_time",  -5, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, -10, false);
-	courseplay:register_button(self, 7, "navigate_plus.dds",  "change_wait_time",   5, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1,  10, false);
-	courseplay:register_button(self, 7, nil, "change_wait_time", 5, mouseWheelArea.x, courseplay.hud.linesButtonPosY[1], mouseWheelArea.w, mouseWheelArea.h, 1, 10, true, true);
+	courseplay:register_button(self, 7, "navigate_left.dds", "changeLaneOffset", -0.1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, -0.5, false);
+	courseplay:register_button(self, 7, "navigate_right.dds",  "changeLaneOffset",  0.1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1,  0.5, false);
+	courseplay:register_button(self, 7, nil, "changeLaneOffset", 0.1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[1], mouseWheelArea.w, mouseWheelArea.h, 1, 0.5, true, true);
 
-	courseplay:register_button(self, 7, "navigate_minus.dds", "changeWpOffsetX", -0.1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[2], w16px, h16px, 2,  -0.5, false);
-	courseplay:register_button(self, 7, "navigate_plus.dds",  "changeWpOffsetX",  0.1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[2], w16px, h16px, 2,   0.5, false);
-	courseplay:register_button(self, 7, nil, "changeWpOffsetX", 0.1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[2], mouseWheelArea.w, mouseWheelArea.h, 2, 0.5, true, true);
+	courseplay:register_button(self, 7, "navigate_left.dds", "changeToolOffsetX", -0.1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[2], w16px, h16px, 2,  -0.5, false);
+	courseplay:register_button(self, 7, "navigate_right.dds",  "changeToolOffsetX",  0.1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[2], w16px, h16px, 2,   0.5, false);
+	courseplay:register_button(self, 7, nil, "changeToolOffsetX", 0.1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[2], mouseWheelArea.w, mouseWheelArea.h, 2, 0.5, true, true);
 
-	courseplay:register_button(self, 7, "navigate_minus.dds", "changeWpOffsetZ", -0.5, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[3], w16px, h16px, 3,  -1, false);
-	courseplay:register_button(self, 7, "navigate_plus.dds",  "changeWpOffsetZ",  0.5, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[3], w16px, h16px, 3,   1, false);
-	courseplay:register_button(self, 7, nil, "changeWpOffsetZ", 0.1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[3], mouseWheelArea.w, mouseWheelArea.h, 3, 0.5, true, true);
+	courseplay:register_button(self, 7, "navigate_down.dds", "changeToolOffsetZ", -0.1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[3], w16px, h16px, 3,  -0.5, false);
+	courseplay:register_button(self, 7, "navigate_up.dds",  "changeToolOffsetZ",  0.1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[3], w16px, h16px, 3,   0.5, false);
+	courseplay:register_button(self, 7, nil, "changeToolOffsetZ", 0.1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[3], mouseWheelArea.w, mouseWheelArea.h, 3, 0.5, true, true);
 
 	courseplay:register_button(self, 7, "blank.dds", "toggleSymmetricLaneChange", nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[4], courseplay.hud.visibleArea.width, 0.015, 4, nil, true);
 
@@ -621,19 +626,26 @@ function courseplay:load(xmlFile)
 	courseplay:register_button(self, 7, "copy.png",          "copyCourse",      nil, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[6], w16px, h16px);
 
 	--Page 8: Course generation
-	courseplay:register_button(self, 8, "navigate_minus.dds", "changeWorkWidth", -0.1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1,  -0.5, false);
-	courseplay:register_button(self, 8, "navigate_plus.dds",  "changeWorkWidth",  0.1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1,   0.5, false);
-	courseplay:register_button(self, 8, nil, "changeWorkWidth", 0.1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[1], mouseWheelArea.w, mouseWheelArea.h, 1, 0.5, true, true);
+	if courseplay.fields ~= nil and courseplay.fields.fieldDefs ~= nil and courseplay.fields.numberOfFields > 0 then
+		courseplay:register_button(self, 8, "navigate_up.dds",   "setFieldEdgePath", -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, nil, false);
+		courseplay:register_button(self, 8, "navigate_down.dds", "setFieldEdgePath",  1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, nil, false);
+		courseplay:register_button(self, 8, nil, nil, nil, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], 0.015 + w16px, mouseWheelArea.h, 1, nil, true, false);
+	end;
 
-	courseplay:register_button(self, 8, "blank.dds", "switchStartingCorner",     nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[2], courseplay.hud.visibleArea.width, 0.015, 2, nil, true);
-	courseplay:register_button(self, 8, "blank.dds", "switchStartingDirection",  nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[3], courseplay.hud.visibleArea.width, 0.015, 3, nil, true);
-	courseplay:register_button(self, 8, "blank.dds", "switchReturnToFirstPoint", nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[4], courseplay.hud.visibleArea.width, 0.015, 4, nil, true);
+	courseplay:register_button(self, 8, "navigate_minus.dds", "changeWorkWidth", -0.1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[2], w16px, h16px, 2,  -0.5, false);
+	courseplay:register_button(self, 8, "navigate_plus.dds",  "changeWorkWidth",  0.1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[2], w16px, h16px, 2,   0.5, false);
+	courseplay:register_button(self, 8, nil, "changeWorkWidth", 0.1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[2], mouseWheelArea.w, mouseWheelArea.h, 2, 0.5, true, true);
 
-	courseplay:register_button(self, 8, "navigate_up.dds",   "setHeadlandLanes",   1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[5], w16px, h16px, 5, nil, false);
-	courseplay:register_button(self, 8, "navigate_down.dds", "setHeadlandLanes",  -1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[5], w16px, h16px, 5, nil, false);
-	courseplay:register_button(self, 8, nil, nil, nil, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[5], 0.015 + w16px, mouseWheelArea.h, 5, nil, true, false);
+	courseplay:register_button(self, 8, "blank.dds", "switchStartingCorner",     nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[3], courseplay.hud.visibleArea.width, 0.015, 3, nil, true);
+	courseplay:register_button(self, 8, "blank.dds", "switchStartingDirection",  nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[4], courseplay.hud.visibleArea.width, 0.015, 4, nil, true);
+	courseplay:register_button(self, 8, "blank.dds", "switchReturnToFirstPoint", nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[5], courseplay.hud.visibleArea.width, 0.015, 5, nil, true);
 
-	courseplay:register_button(self, 8, "blank.dds", "generateCourse",           nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[6], courseplay.hud.visibleArea.width, 0.015, 6, nil, true);
+	courseplay:register_button(self, 8, "navigate_up.dds",   "setHeadlandLanes",   1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[6], w16px, h16px, 5, nil, false);
+	courseplay:register_button(self, 8, "navigate_down.dds", "setHeadlandLanes",  -1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[6], w16px, h16px, 6, nil, false);
+	courseplay:register_button(self, 8, nil, nil, nil, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[6], 0.015 + w16px, mouseWheelArea.h, 6, nil, true, false);
+
+	--courseplay:register_button(self, 8, "blank.dds", "generateCourse",           nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[6], courseplay.hud.visibleArea.width, 0.015, 6, nil, true);
+	courseplay:register_button(self, 8, "pageNav_8.png", "generateCourse", nil, listArrowX - 15/1920 - w24px - 15/1920 - w24px, courseplay.hud.infoBasePosY + 0.056, w24px, h24px, nil, nil, false);
 
 	--Page 9: Shovel settings
 	local wTemp = 22/1920;
@@ -916,13 +928,14 @@ function courseplay:readStream(streamId, connection)
 	self.required_fill_level_for_drive_on = streamDebugReadFloat32(streamId)
 	self.required_fill_level_for_follow = streamDebugReadFloat32(streamId)
 	self.tipper_offset = streamDebugReadFloat32(streamId)
-	self.toolWorkWidht = streamDebugReadFloat32(streamId) 
+	self.cp.workWidth = streamDebugReadFloat32(streamId) 
 	self.turnRadiusAutoMode = streamDebugReadBool(streamId);
 	self.turn_radius = streamDebugReadFloat32(streamId)
 	self.use_speed = streamDebugReadBool(streamId) 
 	self.cp.coursePlayerNum = streamReadFloat32(streamId)
-	self.WpOffsetX = streamDebugReadFloat32(streamId)
-	self.WpOffsetZ = streamDebugReadFloat32(streamId)
+	self.cp.laneOffset = streamDebugReadFloat32(streamId)
+	self.cp.toolOffsetX = streamDebugReadFloat32(streamId)
+	self.cp.toolOffsetZ = streamDebugReadFloat32(streamId)
 	self.cp.hud.currentPage = streamDebugReadInt32(streamId)
 	self.cp.HUD0noCourseplayer = streamDebugReadBool(streamId)
 	self.cp.HUD0wantsCourseplayer = streamDebugReadBool(streamId)
@@ -997,13 +1010,14 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteFloat32(streamId,self.required_fill_level_for_drive_on)
 	streamDebugWriteFloat32(streamId,self.required_fill_level_for_follow)
 	streamDebugWriteFloat32(streamId,self.tipper_offset)
-	streamDebugWriteFloat32(streamId,self.toolWorkWidht);
+	streamDebugWriteFloat32(streamId,self.cp.workWidth);
 	streamDebugWriteBool(streamId,self.turnRadiusAutoMode)
 	streamDebugWriteFloat32(streamId,self.turn_radius)
 	streamDebugWriteBool(streamId,self.use_speed)
 	streamDebugWriteFloat32(streamId,self.cp.coursePlayerNum);
-	streamDebugWriteFloat32(streamId,self.WpOffsetX)
-	streamDebugWriteFloat32(streamId,self.WpOffsetZ)
+	streamDebugWriteFloat32(streamId,self.cp.laneOffset)
+	streamDebugWriteFloat32(streamId,self.cp.toolOffsetX)
+	streamDebugWriteFloat32(streamId,self.cp.toolOffsetZ)
 	streamDebugWriteInt32(streamId,self.cp.hud.currentPage)
 	streamDebugWriteBool(streamId,self.cp.HUD0noCourseplayer)
 	streamDebugWriteBool(streamId,self.cp.HUD0wantsCourseplayer)
@@ -1069,25 +1083,36 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 
 		self.required_fill_level_for_follow   = Utils.getNoNil(getXMLInt(   xmlFile, key .. "#fill_follow"            ), 50);
 		self.required_fill_level_for_drive_on = Utils.getNoNil(getXMLInt(   xmlFile, key .. "#fill_drive"             ), 90);
-		self.WpOffsetX                        = Utils.getNoNil(getXMLFloat( xmlFile, key .. "#OffsetX"                ), 0);
 		self.mouse_right_key_enabled          = Utils.getNoNil(getXMLBool(  xmlFile, key .. "#mouse_right_key_enabled"), true);
-		self.WpOffsetZ                        = Utils.getNoNil(getXMLFloat( xmlFile, key .. "#OffsetZ"                ), 0);
 		self.waitTime                         = Utils.getNoNil(getXMLFloat( xmlFile, key .. "#waitTime"               ), 0);
 		self.turn_radius                      = Utils.getNoNil(getXMLInt(   xmlFile, key .. "#turn_radius"            ), 10);
 		self.RulMode                          = Utils.getNoNil(getXMLInt(   xmlFile, key .. "#rul_mode"               ), 1);
-		self.toolWorkWidht                    = Utils.getNoNil(getXMLFloat( xmlFile, key .. "#toolWorkWidht"          ), 3);
+		self.cp.workWidth                    =  Utils.getNoNil(getXMLFloat( xmlFile, key .. "#workWidth"              ), 3);
 		self.cp.ridgeMarkersAutomatic         = Utils.getNoNil(getXMLBool(  xmlFile, key .. "#ridgeMarkersAutomatic"  ), true);
 		self.ai_mode                          = Utils.getNoNil(getXMLInt(   xmlFile, key .. "#ai_mode"                ), 1);
 
+		--Offset data: 1=laneOffset, 2=toolOffsetX, 3=toolOffsetZ, 4=symmetricalLaneChange
+		local offsetData = Utils.getNoNil(getXMLString(xmlFile, key .. "#offsetData"), "0;0;0;false");
+		offsetData = Utils.splitString(";", offsetData);
+		courseplay:changeLaneOffset(self, nil, tonumber(offsetData[1]));
+		courseplay:changeToolOffsetX(self, nil, tonumber(offsetData[2]), true);
+		courseplay:changeToolOffsetZ(self, nil, tonumber(offsetData[3]));
+		--self.cp.totalOffsetX = self.cp.laneOffset + self.cp.toolOffsetX;
+		courseplay:toggleSymmetricLaneChange(self, offsetData[4] == "true");
+		--print(string.format("%s (loadFromXML): laneOffset=%s, toolOffset x,z=%s,%s, totalOffsetX=%s, symmetricalLaneChange=%s", nameNum(self), self.cp.laneOffset, self.cp.toolOffsetX, self.cp.toolOffsetZ, self.cp.totalOffsetX, tostring(self.cp.symmetricLaneChange)));
+
+		--abortWork
 		self.abortWork = getXMLInt(xmlFile, key .. "#AbortWork");
 		if self.abortWork == 0 then
 			self.abortWork = nil;
 		end;
 
+		--Combine register priority
 		if self.cp.isCombine then
 			self.cp.driverPriorityUseFillLevel = Utils.getNoNil(getXMLBool(xmlFile, key .. "#driverPriorityUseFillLevel"), false);
 		end;
 
+		--courses
 		local courses                         = Utils.getNoNil(getXMLString(xmlFile, key .. "#courses"                ), "");
 		self.loaded_courses = Utils.splitString(",", courses);
 		self.selected_course_number = 0
@@ -1118,6 +1143,7 @@ end
 
 
 function courseplay:getSaveAttributesAndNodes(nodeIdent)
+	--Shovel positions
 	local shovelRotsTmp, shovelRotsAttr = {}, "";
 	local hasAllShovelRots = self.cp.shovelStateRot ~= nil and self.cp.shovelStateRot["2"] ~= nil and self.cp.shovelStateRot["3"] ~= nil and self.cp.shovelStateRot["4"] ~= nil and self.cp.shovelStateRot["5"] ~= nil;
 	if hasAllShovelRots then
@@ -1137,6 +1163,10 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 		end;
 	end;
 
+	--Offset data
+	local offsetData = string.format(' offsetData="%.1f;%.1f;%.1f;%s"', self.cp.laneOffset, self.cp.toolOffsetX, self.cp.toolOffsetZ, tostring(self.cp.symmetricLaneChange));
+
+	--Final attributes
 	local attributes =
 		' max_speed="'               .. tostring(self.max_speed)                         .. '"' ..
 		' use_speed="'               .. tostring(self.use_speed)                         .. '"' ..
@@ -1147,18 +1177,17 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 		' combine_offset="'          .. tostring(self.combine_offset)                    .. '"' ..
 		' fill_follow="'             .. tostring(self.required_fill_level_for_follow)    .. '"' ..
 		' fill_drive="'              .. tostring(self.required_fill_level_for_drive_on)  .. '"' ..
-		' OffsetX="'                 .. tostring(self.WpOffsetX)                         .. '"' ..
-		' OffsetZ="'                 .. tostring(self.WpOffsetZ)                         .. '"' ..
 		' AbortWork="'               .. tostring(self.abortWork)                         .. '"' ..
 		' turn_radius="'             .. tostring(self.turn_radius)                       .. '"' ..
 		' waitTime="'                .. tostring(self.waitTime)                          .. '"' ..
 		' courses="'                 .. tostring(table.concat(self.loaded_courses, ",")) .. '"' ..
 		' mouse_right_key_enabled="' .. tostring(self.mouse_right_key_enabled)           .. '"' .. --should save as bool string ("true"/"false")
 		' rul_mode="'                .. tostring(self.RulMode)                           .. '"' ..
-		' toolWorkWidht="'           .. tostring(self.toolWorkWidht)                     .. '"' ..
+		' workWidth="'               .. tostring(self.cp.workWidth)                      .. '"' ..
 		' realistic_driving="'       .. tostring(self.realistic_driving)                 .. '"' ..
 		' ridgeMarkersAutomatic="'   .. tostring(self.cp.ridgeMarkersAutomatic)          .. '"' ..
 		shovelRotsAttr .. 
+		offsetData .. 
 		' ai_mode="'                 .. tostring(self.ai_mode) .. '"';
 
 	if self.cp.isCombine then

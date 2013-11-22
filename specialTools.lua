@@ -563,10 +563,10 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 				workTool.crabSteerMode = workTool.cp.crabSteerMode
 				if ridgeMarker == 1 then
 					workTool.HGdirection = 1;
-					self.WpOffsetX = 3
+					self.cp.toolOffsetX = 3
 				elseif ridgeMarker == 2 then
 					workTool.HGdirection = -1;
-					self.WpOffsetX = -3
+					self.cp.toolOffsetX = -3
 				end
 			end
 		end
@@ -940,7 +940,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 end
 function courseplay:askForSpecialSettings(self,object)
 	local offsetChanged = false
-	local tempOffset = self.WpOffsetX
+	local tempOffset = self.cp.toolOffsetX
 	if self.cp.isWeidemann4270CX100T  then
 		local frontPart_vis = getParent(self.movingTools[1].node)
 		local frontPart = getParent(frontPart_vis)
@@ -989,7 +989,7 @@ function courseplay:askForSpecialSettings(self,object)
 		self.cp.aiTurnNoBackward = true
 		self.cp.noStopOnEdge = true
 		self.cp.noStopOnTurn = true
-		self.WpOffsetX = -2.4
+		self.cp.toolOffsetX = -2.4
 		offsetChanged = true
 		object.cp.inversedFoldDirection = true
 
@@ -1004,27 +1004,27 @@ function courseplay:askForSpecialSettings(self,object)
 		object.cp.tankerId = 0
 	elseif object.cp.isGrimmeSE7555 then
 		self.cp.aiTurnNoBackward = true
-		self.WpOffsetX = -2.1
+		self.cp.toolOffsetX = -2.1
 		offsetChanged = true
 		print("Grimme SE 75-55 workwidth: 1 m");
 	elseif object.cp.isGrimmeRootster604 then
 		self.cp.aiTurnNoBackward = true
-		self.WpOffsetX = -0.9
+		self.cp.toolOffsetX = -0.9
 		offsetChanged = true
 		print("Grimme Rootster 604 workwidth: 2.8 m");
 	elseif object.cp.isPoettingerMex6 then
 		self.cp.aiTurnNoBackward = true
-		self.WpOffsetX = -2.5
+		self.cp.toolOffsetX = -2.5
 		offsetChanged = true
 		print("Pöttinger Mex 6 workwidth: 2.0 m");
 	elseif object.cp.isAbbeyAP900 then
 		self.cp.aiTurnNoBackward = true
-		self.WpOffsetX = -4.1
+		self.cp.toolOffsetX = -4.1
 		offsetChanged = true
 		print("Abbey AP900 workwidth: 5.8 m");
 	elseif object.cp.isJF1060 then
 		self.cp.aiTurnNoBackward = true
-		self.WpOffsetX = -2.5
+		self.cp.toolOffsetX = -2.5
 		offsetChanged = true
 	elseif object.cp.isClaasConspeedSFM or object.cp.isCaseIH3162Cutter then
 		object.cp.inversedFoldDirection = true;
@@ -1032,13 +1032,13 @@ function courseplay:askForSpecialSettings(self,object)
 		self.cp.aiTurnNoBackward = true
 		self.cp.noStopOnEdge = true
 		self.cp.noStopOnTurn = true
-		self.WpOffsetX = -2.5
+		self.cp.toolOffsetX = -2.5
 		offsetChanged = true
 	elseif object.cp.isSilageShield then
 		self.cp.hasShield = true
 	end
 	if offsetChanged then
-		self.cp.tempWpOffsetX = tempOffset
+		self.cp.tempToolOffsetX = tempOffset
 	end
 end
 

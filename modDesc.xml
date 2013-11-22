@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="13">
-	<version>3.41.0221</version>
+	<version>3.41.0222</version>
 	<author>Jakob Tischler / Thomas Gärtner / Horoman</author>
 	<title>
 		<de>Courseplay</de>
@@ -161,7 +161,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530
 			<it>automatico</it>
 			<cz>automaticky</cz>
 		</text>
-		<text name="CoursePlayPlayerSideLeft">
+		<text name="COURSEPLAY_LEFT">
 			<en>left</en>
 			<de>links</de>
 			<fr>gauche</fr>
@@ -169,7 +169,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530
 			<it>sinistra</it>
 			<cz>vlevo</cz>
 		</text>
-		<text name="CoursePlayPlayerSideRight">
+		<text name="COURSEPLAY_RIGHT">
 			<en>right</en>
 			<de>rechts</de>
 			<fr>droite</fr>
@@ -363,14 +363,6 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530
 			<es>Reiniciar ruta</es>
 			<it>Azzera percorso</it>
 			<cz>Odstranit orientační body</cz>
-		</text>
-		<text name="CourseGenerate">
-			<en>Generate course</en>
-			<de>Kurs generieren</de>
-			<fr>Générer la course</fr>
-			<es>Generar ruta</es>
-			<it>Genera percorso</it>
-			<cz>Generovat trasu</cz>
 		</text>
 		<text name="HudControl">
 			<en>Courseplay HUD</en>
@@ -835,7 +827,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530
 			<it>nessuno</it>
 			<cz>nezobrazovat</cz>
 		</text>
-		<text name="Rul">
+		<text name="COURSEPLAY_BEACON_LIGHTS">
 			<en>Beacon lights:</en>
 			<de>Rundumleuchte:</de>
 			<fr>Girophares:</fr>
@@ -843,7 +835,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530
 			<it>Lampeggianti:</it>
 			<cz>Maják:</cz>
 		</text>
-		<text name="RulMode1">
+		<text name="COURSEPLAY_BEACON_LIGHTS_MODE_1">
 			<en>only on the road</en>
 			<de>Auf der Straße</de>
 			<fr>seulement sur la route</fr>
@@ -851,7 +843,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530
 			<it>solo su strada</it>
 			<cz>zapnout jen na silnici</cz>
 		</text>
-		<text name="RulMode2">
+		<text name="COURSEPLAY_BEACON_LIGHTS_MODE_2">
 			<en>always turn on</en>
 			<de>eingeschaltet</de>
 			<fr>toujours allumés</fr>
@@ -859,7 +851,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530
 			<it>sempre accesi</it>
 			<cz>vždy zapnout</cz>
 		</text>
-		<text name="RulMode3">
+		<text name="COURSEPLAY_BEACON_LIGHTS_MODE_3">
 			<en>never turn on</en>
 			<de>ausgeschaltet</de>
 			<fr>jamais allumés</fr>
@@ -1115,28 +1107,52 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530
 			<it>Parametri</it>
 			<cz>Nastavení</cz>
 		</text>
-		<text name="CPWpOffsetX">
-			<en>horizontal offset</en>
-			<de>horiz. Versatz</de>
-			<fr>décalage latéral</fr>
-			<es>Mov. horizontal</es>
-			<it>distanza orizzontale</it>
-			<cz>Horiz. posunutí:</cz>
+		<text name="COURSEPLAY_LANE_OFFSET">
+			<en>Lane offset</en>
+			<de>Bahnversatz</de>
+			<fr>Décalage de la voie</fr>
+			<es>Mov. de la calzada</es>
+			<it>Lane offset</it> <!-- !!! -->
+			<cz>Lane offset</cz> <!-- !!! -->
 		</text>
-		<text name="CPWpOffsetZ">
-			<en>vertical offset</en>
-			<de>vertik. Versatz</de>
-			<fr>décalage Av/Ar</fr>
-			<es>Mov. vertical</es>
-			<it>distanza verticale</it>
-			<cz>Vertik. posunutí:</cz>
+		<text name="COURSEPLAY_TOOL_OFFSET_X">
+			<en>Tool offset horizontal</en>
+			<de>Gerät-Versatz (horizontal)</de>
+			<fr>Outil: décalage latéral</fr>
+			<es>Herramienta: mov. horiz.</es>
+			<it>Utensile: distanza orizz.</it>
+			<cz>Horiz. posunutí nástroje</cz>
 		</text>
-		<text name="CPWorkingWidht">
-			<en>working width</en>
+		<text name="COURSEPLAY_TOOL_OFFSET_Z">
+			<en>Tool offset vertical</en>
+			<de>Gerät-Versatz (vertikal)</de>
+			<fr>Outil: décalage av/ar</fr>
+			<es>Herramienta: mov. vert.</es>
+			<it>Utensile: distanza vert.</it>
+			<cz>Vertik. posunutí nástroje</cz>
+		</text>
+		<text name="COURSEPLAY_FRONT">
+			<en>front</en>
+			<de>vorne</de>
+			<fr>avant</fr>
+			<es>delante</es>
+			<it>anteriore</it>
+			<cz>přední</cz>
+		</text>
+		<text name="COURSEPLAY_BACK">
+			<en>back</en>
+			<de>hinten</de>
+			<fr>arrière</fr>
+			<es>detrás</es>
+			<it>posteriore</it>
+			<cz>zadní</cz>
+		</text>
+		<text name="COURSEPLAY_WORK_WIDTH">
+			<en>Working width</en>
 			<de>Arbeitsbreite</de>
-			<fr>largeur de travail</fr>
-			<es>ancho de trabajo</es>
-			<it>larghezza di lavoro</it>
+			<fr>Largeur de travail</fr>
+			<es>Ancho de trabajo</es>
+			<it>Larghezza di lavoro</it>
 			<cz>Pracovní šířka:</cz>
 		</text>
 		<text name="CPWaterDrive">
@@ -1509,9 +1525,9 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530
 		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE">
 			<de>Symmetrischer Bahnwechsel</de>
 			<en>Symmetric lane change</en>
-			<es>Symmetric lane change</es> <!-- !!! -->
-			<fr>Symmetric lane change</fr> <!-- !!! -->
-			<it>Symmetric lane change</it> <!-- !!! -->
+			<es>Cambio de carril simétrico</es>
+			<fr>Changement de voie symétrique</fr>
+			<it>Cambio di corsia simmetrica</it>
 			<cz>Symmetric lane change</cz> <!-- !!! -->
 		</text>
 		<text name="COURSEPLAY_DRIVERPRIOTITY">

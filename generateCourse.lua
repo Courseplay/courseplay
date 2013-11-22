@@ -44,7 +44,7 @@ function courseplay:generateCourse(self)
 	---#################################################################
 	-- (1) SET UP CORNERS AND DIRECTIONS --
 	--------------------------------------------------------------------
-	local workWidth = self.toolWorkWidht;
+	local workWidth = self.cp.workWidth;
 	local corners = {
 		[1] = "SW",
 		[2] = "NW",
@@ -97,9 +97,9 @@ function courseplay:generateCourse(self)
 				table.insert(fieldEdgePathXvalues, wp.cx);
 				table.insert(fieldEdgePathZvalues, wp.cz);
 			end;
-			local width = self.toolWorkWidht;
+			local width = self.cp.workWidth;
 			if curLane == 1 then
-				width = self.toolWorkWidht / 2;
+				width = self.cp.workWidth / 2;
 			end;
 
 			for i=1, polyLength do
@@ -155,7 +155,7 @@ function courseplay:generateCourse(self)
 					change = false;
 					local lastPoint = table.getn(fixedLane);
 					local distance = courseplay:distance(fixedLane[1].cx, fixedLane[1].cz, fixedLane[lastPoint].cx, fixedLane[lastPoint].cz);
-					if distance <= self.toolWorkWidht then --TODO: self.toolWorkWidht or self.toolWorkWidht/2 ???
+					if distance <= self.cp.workWidth then --TODO: self.cp.workWidth or self.cp.workWidth/2 ???
 						table.remove(fixedLane, lastPoint);
 						change = true;
 					end

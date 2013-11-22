@@ -77,9 +77,9 @@ function courseplay:setHudContent(self)
 				if self.cp.HUD0tractor then
 					self.cp.hud.content.pages[0][4][1].text = courseplay:get_locale(self, "CoursePlayPlayerSwitchSide")
 					if self.cp.HUD0combineForcedSide == "left" then
-						self.cp.hud.content.pages[0][4][2].text = courseplay:get_locale(self, "CoursePlayPlayerSideLeft")
+						self.cp.hud.content.pages[0][4][2].text = courseplay:get_locale(self, "COURSEPLAY_LEFT")
 					elseif self.cp.HUD0combineForcedSide == "right" then
-						self.cp.hud.content.pages[0][4][2].text = courseplay:get_locale(self, "CoursePlayPlayerSideRight")
+						self.cp.hud.content.pages[0][4][2].text = courseplay:get_locale(self, "COURSEPLAY_RIGHT")
 					else
 						self.cp.hud.content.pages[0][4][2].text = courseplay:get_locale(self, "CoursePlayPlayerSideNone")
 					end
@@ -305,72 +305,93 @@ function courseplay:setHudContent(self)
 
 	--Page 6: General settings
 	elseif self.cp.hud.currentPage == 6 then
+		--ASTAR
 		self.cp.hud.content.pages[6][1][1].text = courseplay:get_locale(self, "CPaStar");
-		if self.realistic_driving then
-			self.cp.hud.content.pages[6][1][2].text = courseplay:get_locale(self, "CPactivated");
-		else
-			self.cp.hud.content.pages[6][1][2].text = courseplay:get_locale(self, "CPdeactivated");
-		end;
+		self.cp.hud.content.pages[6][1][2].text = self.realistic_driving and courseplay:get_locale(self, "CPactivated") or courseplay:get_locale(self, "CPdeactivated");
 
+		--OPEN HUD KEY
 		self.cp.hud.content.pages[6][2][1].text = courseplay:get_locale(self, "CPopenHud");
-		if self.mouse_right_key_enabled then
-			self.cp.hud.content.pages[6][2][2].text = courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION_SECONDARY.displayName;
-		else
-			self.cp.hud.content.pages[6][2][2].text = courseplay.inputBindings.keyboard.COURSEPLAY_HUD_COMBINED.displayName;
-		end;
+		self.cp.hud.content.pages[6][2][2].text = self.mouse_right_key_enabled and courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION_SECONDARY.displayName or courseplay.inputBindings.keyboard.COURSEPLAY_HUD_COMBINED.displayName;
 
+		--WAYPOINT MODE
 		self.cp.hud.content.pages[6][3][1].text = courseplay:get_locale(self, "CPWPs");
 		self.cp.hud.content.pages[6][3][2].text = courseplay:get_locale(self, string.format("WaypointMode%d", self.cp.visualWaypointsMode));
 
-		self.cp.hud.content.pages[6][4][1].text = courseplay:get_locale(self, "Rul");
-		self.cp.hud.content.pages[6][4][2].text = courseplay:get_locale(self, "RulMode" .. string.format("%d", self.RulMode));
+		--BEACON LIGHT
+		self.cp.hud.content.pages[6][4][1].text = courseplay:get_locale(self, "COURSEPLAY_BEACON_LIGHTS");
+		self.cp.hud.content.pages[6][4][2].text = courseplay:get_locale(self, string.format("COURSEPLAY_BEACON_LIGHTS_MODE_%d", self.RulMode));
 
-		self.cp.hud.content.pages[6][5][1].text = "";
-		self.cp.hud.content.pages[6][5][2].text = "";
-		if courseplay.fields ~= nil and courseplay.fields.fieldDefs ~= nil and courseplay.fields.numberOfFields > 0 then
-			self.cp.hud.content.pages[6][5][1].text = courseplay:get_locale(self, "CPfieldEdgePath");
-			if self.cp.selectedFieldEdgePathNumber > 0 then
-				self.cp.hud.content.pages[6][5][2].text = string.format("%s %d", courseplay:get_locale(self, "CPfield"), self.cp.selectedFieldEdgePathNumber);
-			else
-				self.cp.hud.content.pages[6][5][2].text = "---";
-			end;
+		--WAITING POINT: WAIT TIME
+		if not (self.ai_mode == 3 or self.ai_mode == 4 or self.ai_mode == 6 or self.ai_mode == 7) then
+			self.cp.hud.content.pages[6][5][1].text = courseplay:get_locale(self, "CPWaitTime");
+			self.cp.hud.content.pages[6][5][2].text = string.format("%.1f sec", self.waitTime);
 		end;
 
+		--DEBUG CHANNELS
 		self.cp.hud.content.pages[6][6][1].text = courseplay:get_locale(self, "CPDebugChannels");
 
 
 
 	--Page 7: Driving settings
 	elseif self.cp.hud.currentPage == 7 then
-		self.cp.hud.content.pages[7][1][1].text = courseplay:get_locale(self, "CPWaitTime"); -- Wartezeit am Haltepunkt
-		self.cp.hud.content.pages[7][1][2].text = string.format("%.1f sec", self.waitTime);
+		for line=1,4 do
+			self.cp.hud.content.pages[7][line][1].text = "";
+			self.cp.hud.content.pages[7][line][2].text = "";
+		end;
 
-		self.cp.hud.content.pages[7][2][1].text, self.cp.hud.content.pages[7][2][2].text, self.cp.hud.content.pages[7][3][1].text, self.cp.hud.content.pages[7][3][2].text = "", "", "", "";
 		if self.ai_mode == 3 or self.ai_mode == 4 or self.ai_mode == 6 or self.ai_mode == 7 then
-			self.cp.hud.content.pages[7][2][1].text = courseplay:get_locale(self, "CPWpOffsetX") -- X-Offset
-			if self.WpOffsetX ~= nil then
-				self.cp.hud.content.pages[7][2][2].text = string.format("%.1fm (l/r)", self.WpOffsetX)
-			else
-				self.cp.hud.content.pages[7][2][2].text = "---"
-			end
+			--LANE OFFSET
+			if self.ai_mode == 4 or self.ai_mode == 6 then
+				self.cp.hud.content.pages[7][1][1].text = courseplay:get_locale(self, "COURSEPLAY_LANE_OFFSET");
+				if self.cp.laneOffset ~= nil then
+					local descrStr = "";
+					if self.cp.laneOffset > 0 then
+						descrStr = string.format("(%s)", courseplay:get_locale(self, "COURSEPLAY_RIGHT"));
+					elseif self.cp.laneOffset < 0 then
+						descrStr = string.format("(%s)", courseplay:get_locale(self, "COURSEPLAY_LEFT"));
+					end;
+					self.cp.hud.content.pages[7][1][2].text = string.format("%.1fm %s", math.abs(self.cp.laneOffset), descrStr);
+				else
+					self.cp.hud.content.pages[7][1][2].text = "---";
+				end;
+			end;
 
-			self.cp.hud.content.pages[7][3][1].text = courseplay:get_locale(self, "CPWpOffsetZ") -- X-Offset
-			if self.WpOffsetZ ~= nil then
-				self.cp.hud.content.pages[7][3][2].text = string.format("%.1fm (h/v)", self.WpOffsetZ);
+			--TOOL HORIZONTAL OFFSET
+			self.cp.hud.content.pages[7][2][1].text = courseplay:get_locale(self, "COURSEPLAY_TOOL_OFFSET_X");
+			if self.cp.toolOffsetX ~= nil then
+				local descrStr = "";
+				if self.cp.toolOffsetX > 0 then
+					descrStr = string.format("(%s)", courseplay:get_locale(self, "COURSEPLAY_RIGHT"));
+				elseif self.cp.toolOffsetX < 0 then
+					descrStr = string.format("(%s)", courseplay:get_locale(self, "COURSEPLAY_LEFT"));
+				end;
+				self.cp.hud.content.pages[7][2][2].text = string.format("%.1fm %s", math.abs(self.cp.toolOffsetX), descrStr);
+			else
+				self.cp.hud.content.pages[7][2][2].text = "---";
+			end;
+
+			--TOOL VERTICAL OFFSET
+			self.cp.hud.content.pages[7][3][1].text = courseplay:get_locale(self, "COURSEPLAY_TOOL_OFFSET_Z");
+			if self.cp.toolOffsetZ ~= nil then
+				local descrStr = "";
+				if self.cp.toolOffsetZ > 0 then
+					descrStr = string.format("(%s)", courseplay:get_locale(self, "COURSEPLAY_FRONT"));
+				elseif self.cp.toolOffsetZ < 0 then
+					descrStr = string.format("(%s)", courseplay:get_locale(self, "COURSEPLAY_BACK"));
+				end;
+				self.cp.hud.content.pages[7][3][2].text = string.format("%.1fm %s", math.abs(self.cp.toolOffsetZ), descrStr);
 			else
 				self.cp.hud.content.pages[7][3][2].text = "---";
 			end;
 
-			if self.ai_mode == 4 or self.ai_mode == 6 and self.WpOffsetX ~= 0 then
-				if self.cp.symmetricLaneChange then
-					self.cp.hud.content.pages[7][4][1].text = courseplay:get_locale(self, "COURSEPLAY_SYMMETRIC_LANE_CHANGE") .. " " .. courseplay:get_locale(self, "CPactivated");
-				else
-					self.cp.hud.content.pages[7][4][1].text = courseplay:get_locale(self, "COURSEPLAY_SYMMETRIC_LANE_CHANGE") .. " " .. courseplay:get_locale(self, "CPdeactivated");
-				end;
+			--SYMMETRIC LANE CHANGE
+			if self.ai_mode == 4 or self.ai_mode == 6 and self.cp.laneOffset ~= 0 then
+				self.cp.hud.content.pages[7][4][1].text = courseplay:get_locale(self, "COURSEPLAY_SYMMETRIC_LANE_CHANGE");
+				self.cp.hud.content.pages[7][4][2].text = self.cp.symmetricLaneChange and courseplay:get_locale(self, "CPactivated") or courseplay:get_locale(self, "CPdeactivated");
 			end;
 		end;
 
-		--Copy course from driver
+		--COPY COURSE FROM DRIVER
 		self.cp.hud.content.pages[7][5][1].text = courseplay:get_locale(self, "CPcopyCourse");
 		if self.cp.copyCourseFromDriver ~= nil then
 			local driverName = self.cp.copyCourseFromDriver.name;
@@ -393,44 +414,56 @@ function courseplay:setHudContent(self)
 
 	--Page 8 (Course generation)
 	elseif self.cp.hud.currentPage == 8 then
-		--line 1 = work width
-		self.cp.hud.content.pages[8][1][1].text = courseplay:get_locale(self, "CPWorkingWidht"); -- Arbeitsbreite
-		if self.toolWorkWidht ~= nil then
-			self.cp.hud.content.pages[8][1][2].text = string.format("%.1fm", self.toolWorkWidht)
-		else
-			self.cp.hud.content.pages[8][1][2].text = "---"
-		end
-
-		--line 2 = starting corner
-		self.cp.hud.content.pages[8][2][1].text = courseplay:get_locale(self, "CPstartingCorner");
-		-- 1 = SW, 2 = NW, 3 = NE, 4 = SE
-		if self.cp.hasStartingCorner then
-			self.cp.hud.content.pages[8][2][2].text = courseplay:get_locale(self, string.format("CPcorner%d", self.cp.startingCorner)); -- NE/SE/SW/NW
-		else
-			self.cp.hud.content.pages[8][2][2].text = "---";
+		--line 1 = CourseplayFields
+		self.cp.hud.content.pages[8][1][1].text = "";
+		self.cp.hud.content.pages[8][1][2].text = "";
+		if courseplay.fields ~= nil and courseplay.fields.fieldDefs ~= nil and courseplay.fields.numberOfFields > 0 then
+			self.cp.hud.content.pages[8][1][1].text = courseplay:get_locale(self, "CPfieldEdgePath");
+			if self.cp.selectedFieldEdgePathNumber > 0 then
+				self.cp.hud.content.pages[8][1][2].text = string.format("%s %d", courseplay:get_locale(self, "CPfield"), self.cp.selectedFieldEdgePathNumber);
+			else
+				self.cp.hud.content.pages[8][1][2].text = "---";
+			end;
 		end;
 
-		--line 3 = starting direction
-		self.cp.hud.content.pages[8][3][1].text = courseplay:get_locale(self, "CPstartingDirection");
-		-- 1 = North, 2 = East, 3 = South, 4 = West
-		if self.cp.hasStartingDirection then
-			self.cp.hud.content.pages[8][3][2].text = courseplay:get_locale(self, string.format("CPdirection%d", self.cp.startingDirection)); -- East/South/West/North
+		--line 2 = work width
+		self.cp.hud.content.pages[8][2][1].text = courseplay:get_locale(self, "COURSEPLAY_WORK_WIDTH"); -- Arbeitsbreite
+		if self.cp.workWidth ~= nil then
+			self.cp.hud.content.pages[8][2][2].text = string.format("%.1fm", self.cp.workWidth)
+		else
+			self.cp.hud.content.pages[8][2][2].text = "---"
+		end
+
+		--line 3 = starting corner
+		self.cp.hud.content.pages[8][3][1].text = courseplay:get_locale(self, "CPstartingCorner");
+		-- 1 = SW, 2 = NW, 3 = NE, 4 = SE
+		if self.cp.hasStartingCorner then
+			self.cp.hud.content.pages[8][3][2].text = courseplay:get_locale(self, string.format("CPcorner%d", self.cp.startingCorner)); -- NE/SE/SW/NW
 		else
 			self.cp.hud.content.pages[8][3][2].text = "---";
 		end;
 
-		--line 4 = return to first point
-		self.cp.hud.content.pages[8][4][1].text = courseplay:get_locale(self, "CPreturnToFirstPoint");
-		if self.cp.returnToFirstPoint then
-			self.cp.hud.content.pages[8][4][2].text = courseplay:get_locale(self, "CPactivated");
+		--line 4 = starting direction
+		self.cp.hud.content.pages[8][4][1].text = courseplay:get_locale(self, "CPstartingDirection");
+		-- 1 = North, 2 = East, 3 = South, 4 = West
+		if self.cp.hasStartingDirection then
+			self.cp.hud.content.pages[8][4][2].text = courseplay:get_locale(self, string.format("CPdirection%d", self.cp.startingDirection)); -- East/South/West/North
 		else
-			self.cp.hud.content.pages[8][4][2].text = courseplay:get_locale(self, "CPdeactivated");
+			self.cp.hud.content.pages[8][4][2].text = "---";
 		end;
 
-		--line 5 = headland
-		self.cp.hud.content.pages[8][5][1].text = courseplay:get_locale(self, "CPheadland");
-		if self.cp.headland.numLanes == 0 then
+		--line 5 = return to first point
+		self.cp.hud.content.pages[8][5][1].text = courseplay:get_locale(self, "CPreturnToFirstPoint");
+		if self.cp.returnToFirstPoint then
+			self.cp.hud.content.pages[8][5][2].text = courseplay:get_locale(self, "CPactivated");
+		else
 			self.cp.hud.content.pages[8][5][2].text = courseplay:get_locale(self, "CPdeactivated");
+		end;
+
+		--line 6 = headland
+		self.cp.hud.content.pages[8][6][1].text = courseplay:get_locale(self, "CPheadland");
+		if self.cp.headland.numLanes == 0 then
+			self.cp.hud.content.pages[8][6][2].text = courseplay:get_locale(self, "CPdeactivated");
 		elseif self.cp.headland.numLanes ~= 0 then
 			local lanesString;
 			local order;
@@ -446,14 +479,7 @@ function courseplay:setHudContent(self)
 				order = courseplay:get_locale(self, "CPafter");
 			end;
 
-			self.cp.hud.content.pages[8][5][2].text = string.format("%d %s (%s)", math.abs(self.cp.headland.numLanes), lanesStr, order);
-		end;
-
-		--line 6 = generate course action
-		if self.cp.hasValidCourseGenerationData then
-			self.cp.hud.content.pages[8][6][1].text = courseplay:get_locale(self, "CourseGenerate");
-		else
-			self.cp.hud.content.pages[8][6][1].text = "";
+			self.cp.hud.content.pages[8][6][2].text = string.format("%d %s (%s)", math.abs(self.cp.headland.numLanes), lanesStr, order);
 		end;
 
 	--Page 9 (Shovel positions)
@@ -501,7 +527,7 @@ function courseplay:renderHud(self)
 	courseplay:setFontSettings("white", false, "right");
 	if courseplay.versionDisplay ~= nil then
 		renderText(courseplay.hud.visibleArea.x2 - 0.008, courseplay.hud.infoBasePosY + 0.015, 0.012, "v" .. courseplay.versionDisplay[1] .. "." .. courseplay.versionDisplay[2]);
-		if table.getn(courseplay.versionDisplay) < 3 then
+		if #(courseplay.versionDisplay) < 3 then
 			renderText(courseplay.hud.visibleArea.x2 - 0.008, courseplay.hud.infoBasePosY + 0.003, 0.012, ".0000");
 		else
 			renderText(courseplay.hud.visibleArea.x2 - 0.008, courseplay.hud.infoBasePosY + 0.003, 0.012, "." .. courseplay.versionDisplay[3]);
@@ -514,14 +540,14 @@ function courseplay:renderHud(self)
 
 	--HUD TITLES
 	courseplay:setFontSettings("white", true, "left");
-	local hudPageTitle = courseplay.hud.hudTitles[self.cp.hud.currentPage + 1];
+	local hudPageTitle = courseplay.hud.hudTitles[self.cp.hud.currentPage];
 	if self.cp.hud.currentPage == 2 then
 		if not self.cp.hud.choose_parent and self.cp.hud.filter == '' then
-			hudPageTitle = courseplay.hud.hudTitles[self.cp.hud.currentPage + 1][1];
+			hudPageTitle = courseplay.hud.hudTitles[self.cp.hud.currentPage][1];
 		elseif self.cp.hud.choose_parent then
-			hudPageTitle = courseplay.hud.hudTitles[self.cp.hud.currentPage + 1][2];
+			hudPageTitle = courseplay.hud.hudTitles[self.cp.hud.currentPage][2];
 		elseif self.cp.hud.filter ~= '' then
-			hudPageTitle = string.format(courseplay.hud.hudTitles[self.cp.hud.currentPage + 1][3], self.cp.hud.filter);
+			hudPageTitle = string.format(courseplay.hud.hudTitles[self.cp.hud.currentPage][3], self.cp.hud.filter);
 		end;
 	end;
 	renderText(courseplay.hud.infoBasePosX + 0.060, courseplay.hud.infoBasePosY + 0.240, 0.021, hudPageTitle);
@@ -539,7 +565,7 @@ function courseplay:renderHud(self)
 				renderText(courseplay.hud.infoBasePosX + 0.005 + entry.indention, courseplay.hud.linesPosY[line], 0.019, entry.text);
 				courseplay:setFontSettings("white", false);
 			elseif column == 2 and entry.text ~= nil and entry.text ~= "" then
-				renderText(courseplay.hud.col2posX[page + 1], courseplay.hud.linesPosY[line], 0.017, entry.text);
+				renderText(self.cp.hud.content.pages[page][line][2].posX, courseplay.hud.linesPosY[line], 0.017, entry.text);
 			end;
 		end;
 	end;

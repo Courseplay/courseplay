@@ -335,9 +335,10 @@ function courseplay:stop(self)
 	
 	self.cp.hasBaleLoader = false;
 	self.cp.hasSowingMachine = false;
-	if self.cp.tempWpOffsetX ~= nil then
-		self.WpOffsetX = self.cp.tempWpOffsetX
-		self.cp.tempWpOffsetX = nil
+	self.cp.hasPlough = false;
+	if self.cp.tempToolOffsetX ~= nil then
+		self.cp.toolOffsetX = self.cp.tempToolOffsetX 
+		self.cp.tempToolOffsetX = nil
 	end
 
 	--reset EifokLiquidManure

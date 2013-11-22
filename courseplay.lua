@@ -191,16 +191,22 @@ function courseplay:setGlobalData()
 	end;
 
 	courseplay.hud.col2posX = {
-		courseplay.hud.infoBasePosX + 0.122,
-		courseplay.hud.infoBasePosX + 0.142,
-		courseplay.hud.infoBasePosX + 0.122,
-		courseplay.hud.infoBasePosX + 0.122,
-		courseplay.hud.infoBasePosX + 0.122,
-		courseplay.hud.infoBasePosX + 0.122,
-		courseplay.hud.infoBasePosX + 0.182,
-		courseplay.hud.infoBasePosX + 0.122,
-		courseplay.hud.infoBasePosX + 0.182,
-		courseplay.hud.infoBasePosX + 0.230,
+		[0] = courseplay.hud.infoBasePosX + 0.122,
+		[1] = courseplay.hud.infoBasePosX + 0.142,
+		[2] = courseplay.hud.infoBasePosX + 0.122,
+		[3] = courseplay.hud.infoBasePosX + 0.122,
+		[4] = courseplay.hud.infoBasePosX + 0.122,
+		[5] = courseplay.hud.infoBasePosX + 0.122,
+		[6] = courseplay.hud.infoBasePosX + 0.182,
+		[7] = courseplay.hud.infoBasePosX + 0.192,
+		[8] = courseplay.hud.infoBasePosX + 0.182,
+		[9] = courseplay.hud.infoBasePosX + 0.230,
+	};
+	courseplay.hud.col2posXforce = {
+		[7] = {
+			[5] = courseplay.hud.infoBasePosX + 0.105;
+			[6] = courseplay.hud.infoBasePosX + 0.105;
+		};
 	};
 
 	courseplay.globalInfoText = {};

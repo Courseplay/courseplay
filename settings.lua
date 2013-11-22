@@ -348,31 +348,44 @@ function courseplay:change_tipper_offset(self, change_by)
 	end
 end
 
-
-function courseplay:changeWpOffsetX(vehicle, change_by)
-	vehicle.WpOffsetX = vehicle.WpOffsetX + change_by;
-	if vehicle.WpOffsetX > -0.1 and vehicle.WpOffsetX < 0.1 then
-		vehicle.WpOffsetX = 0;
+function courseplay:changeLaneOffset(vehicle, changeBy, force)
+	vehicle.cp.laneOffset = force or (vehicle.cp.laneOffset + changeBy);
+	if math.abs(vehicle.cp.laneOffset) < 0.1 then
+		vehicle.cp.laneOffset = 0.0;
 	end;
-	if vehicle.ai_mode ~= 3 and vehicle.ai_mode ~= 7 then
+	vehicle.cp.totalOffsetX = vehicle.cp.laneOffset + vehicle.cp.toolOffsetX;
+end;
+
+function courseplay:changeToolOffsetX(vehicle, changeBy, force, noDraw)
+	vehicle.cp.toolOffsetX = force or (vehicle.cp.toolOffsetX + changeBy);
+	if math.abs(vehicle.cp.toolOffsetX) < 0.1 then
+		vehicle.cp.toolOffsetX = 0.0;
+	end;
+	vehicle.cp.totalOffsetX = vehicle.cp.laneOffset + vehicle.cp.toolOffsetX;
+
+	noDraw = noDraw or false;
+	if not noDraw and vehicle.ai_mode ~= 3 and vehicle.ai_mode ~= 7 then
 		courseplay:calculateWorkWidthDisplayPoints(vehicle);
 		vehicle.cp.workWidthChanged = vehicle.timer + 2000;
 	end
 end;
 
-function courseplay:changeWpOffsetZ(vehicle, change_by)
-	vehicle.WpOffsetZ = vehicle.WpOffsetZ + change_by;
+function courseplay:changeToolOffsetZ(vehicle, changeBy, force)
+	vehicle.cp.toolOffsetZ = force or (vehicle.cp.toolOffsetZ + changeBy);
+	if math.abs(vehicle.cp.toolOffsetZ) < 0.1 then
+		vehicle.cp.toolOffsetZ = 0.0;
+	end;
 end;
 
-function courseplay:changeWorkWidth(vehicle, change_by)
-	if vehicle.toolWorkWidht + change_by > 10 then
-		if math.abs(change_by) == 0.1 then
-			change_by = 0.5 * Utils.sign(change_by);
-		elseif math.abs(change_by) == 0.5 then
-			change_by = 2 * Utils.sign(change_by);
+function courseplay:changeWorkWidth(vehicle, changeBy)
+	if vehicle.cp.workWidth + changeBy > 10 then
+		if math.abs(changeBy) == 0.1 then
+			changeBy = 0.5 * Utils.sign(changeBy);
+		elseif math.abs(changeBy) == 0.5 then
+			changeBy = 2 * Utils.sign(changeBy);
 		end;
 	end;
-	vehicle.toolWorkWidht = math.max(vehicle.toolWorkWidht + change_by, 0.1);
+	vehicle.cp.workWidth = math.max(vehicle.cp.workWidth + changeBy, 0.1);
 	courseplay:calculateWorkWidthDisplayPoints(vehicle);
 	vehicle.cp.workWidthChanged = vehicle.timer + 2000;
 end;
@@ -380,8 +393,8 @@ end;
 function courseplay:calculateWorkWidthDisplayPoints(vehicle)
 	--calculate points for display
 	local x, y, z = getWorldTranslation(vehicle.rootNode)
-	local left =  (vehicle.toolWorkWidht *  0.5) + (vehicle.WpOffsetX or 0);
-	local right = (vehicle.toolWorkWidht * -0.5) + (vehicle.WpOffsetX or 0);
+	local left =  (vehicle.cp.workWidth *  0.5) + (vehicle.cp.toolOffsetX or 0);
+	local right = (vehicle.cp.workWidth * -0.5) + (vehicle.cp.toolOffsetX or 0);
 	local pointLx, pointLy, pointLz = localToWorld(vehicle.rootNode, left,  1, -6);
 	local pointRx, pointRy, pointRz = localToWorld(vehicle.rootNode, right, 1, -6);
 	vehicle.cp.workWidthDisplayPoints = {
@@ -1091,9 +1104,9 @@ function courseplay:changeDebugChannelSection(self, changeBy)
 	courseplay.debugChannelSectionStart = courseplay.debugChannelSectionEnd - courseplay.numDebugChannelButtonsPerLine + 1;
 end;
 
-function courseplay:toggleSymmetricLaneChange(vehicle)
-	vehicle.cp.symmetricLaneChange = not vehicle.cp.symmetricLaneChange;
-	vehicle.cp.switchHorizontalOffset = vehicle.cp.symmetricLaneChange;
+function courseplay:toggleSymmetricLaneChange(vehicle, force)
+	vehicle.cp.symmetricLaneChange = Utils.getNoNil(force, not vehicle.cp.symmetricLaneChange);
+	vehicle.cp.switchLaneOffset = vehicle.cp.symmetricLaneChange;
 end;
 
 function courseplay:toggleDriverPriority(combine)
