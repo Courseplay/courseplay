@@ -1283,7 +1283,7 @@ function courseplay:setMRSpeed(self, refSpeed, sl,allowedToDrive)
 	local deltaMinus = currentSpeed*3600 - refSpeed*3600
 	local deltaPlus = refSpeed*3600 - currentSpeed*3600
 
-	if deltaMinus > 10 then
+	if deltaMinus > 5 then
 		self.cp.speedBrake = true
 	else 
 		self.cp.speedBrake = false
