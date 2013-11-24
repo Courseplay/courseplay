@@ -43,6 +43,267 @@
 
 	<section id="changelog" class="content">
 		<h2>Changelog</h2>
+		<div id="cl_dev" class="changelogVersion" data-version="3.41.dev">
+			<h3>Changes in the current developer version</h3>
+			<dl class="changelogContent">
+				<!-- FIX -->
+				<dt class="fix">fix</dt>
+				<dd>
+					Course generation:
+					<ul>
+						<li>position for the last lanes fixed</li>
+						<li>fixed order of last 5 points if headland is active</li>
+					</ul>
+				</dd>
+
+				<dt class="fix">fix</dt>
+				<dd>improved detection of attached combines</dd>
+
+				<dt class="fix">fix</dt>
+				<dd>relocated recording pause arrow for better visibility</dd>
+
+				<dt class="fix">fix</dt>
+				<dd>fixed crash when resetting or selling an active combine</dd>
+
+				<dt class="fix">fix</dt>
+				<dd>improved tipping for very low tip triggers</dd>
+
+				<dt class="fix">fix</dt>
+				<dd>Field course lane direction are now saved in/loaded from the XML</dd>
+
+				<!-- mod specific -->
+				<dt class="fix">fix</dt>
+				<dd>improved unloading of Grimme SE 75</dd>
+
+				<dt class="fix">fix</dt>
+				<dd>fixed traffic collision for Weidemann loader</dd>
+
+				<dt class="fix">fix</dt>
+				<dd>improved Abbey nurse tanker / field container interaction</dd>
+
+				<dt class="fix">fix</dt>
+				<dd>fixed turn maneuver for Fuchs liquid manure tanker</dd>
+
+				<dt class="fix">fix</dt>
+				<dd>Self-unloading combine: in order to not drive through the fruit, the combine will reverse a bit before driving to unloading spot</dd>
+
+				<!-- TODO: 
+				<dt class="fix">fix</dt>
+				<dd>[TODO] it's supposed to be MP ready&hellip;</dd>
+
+				<dt class="fix">fix</dt>
+				<dd>[TODO] fix for silos with identical moving planes</dd>
+				-->
+
+				<!-- CHANGE -->
+				<dt class="change">change</dt>
+				<dd>Beacon lights are now turned off when stopping the driver</dd>
+
+				<dt class="change">change</dt>
+				<dd>Notification if tool needs to be refilled/unloaded in fertilizer/field work modes</dd>
+
+				<dt class="change">change</dt>
+				<dd>Debug levels have been changed to debug channels for vastly improved specific debug possibilities</dd>
+
+				<dt class="change">change</dt>
+				<dd>removed &ldquo;change mode&rdquo; line, as it's not needed anymore</dd>
+
+				<dt class="change">change</dt>
+				<dd>Offset inputs are only shown in overloader, fertilizer/seeding, field work and combine self-unloading modes</dd>
+
+				<dt class="change">change</dt>
+				<dd>Speed units are now displayed correctly for every single language</dd>
+
+				<dt class="change">change</dt>
+				<dd>
+					<h4>New inputBinding system</h4>
+					<ul>
+						<li>mouse buttons can now be changed in the game's option menu</li>
+						<li>far better compatibility with other mods that may use the same keys</li>
+					</ul>
+				</dd>
+
+				<dt class="change">change</dt>
+				<dd>
+					<h4>New auger wagon system</h4>
+					<ul>
+						<li>auger wagons no longer use their own specialization, but now are handled as special tools</li>
+						<li>most auger wagons will only unload when at the waiting point, not already when still driving</li>
+						<li>offset can now be used with the overloading course, allowing different auger wagons to use the same course</li>
+					</ul>
+				</dd>
+
+				<dt class="change">change</dt>
+				<dd>
+					<h4>Offsets</h4>
+					<ul>
+						<li>lane and tool offsets are now separated, allowing for better control</li>
+						<li>plough offsets are inverted at the end of the lane, resulting in correct lane positions</li>
+						<li>self-unloading combine: offset can now be used with the offloading course, allowing different combines to use the same course</li>
+					</ul>
+				</dd>
+
+				<dt class="change">change</dt>
+				<dd>the Agroliner SMK 34 will keep the cover on top when tipping</dd>
+
+
+				<!-- NEW -->
+				<dt class="new">new</dt>
+				<dd>4WD huds are now hidden when the Courseplay hud is active</dd>
+
+				<dt class="new">new</dt>
+				<dd>Auto ridgemarkers settings are now saved in/loaded from the vehicles.xml</dd>
+
+				<dt class="new">new</dt>
+				<dd>Shovel positions are now saved in/loaded from the vehicles.xml</dd>
+
+				<dt class="new">new</dt>
+				<dd>the Courseplay version is now displayed in the hud, allowing everyone to easily report it when needed</dd>
+
+				<dt class="new">new</dt>
+				<dd>
+					<h4>Customizable positions</h4>
+					<ul>
+						<li>the hud position can now be easily set by the user in the courseplay.xml<br />(<code>&lt;courseplayHud posX="0.433" posY="0.002" /&gt;</code>)</li>
+						<li>the global info text position can now be easily set by the user in the courseplay.xml<br />(<code>&lt;courseplayGlobalInfoText posX="0.035" posY="0.35" /&gt;</code>)</li>
+					</ul>
+				</dd>
+
+				<dt class="new">new</dt>
+				<dd>
+					<h4>Mouse wheel usage</h4>
+					Any number and list values can now be set by using the mouse wheel (when hovering over the value or list). <br />
+					<span class="emphasize2">Note: while the mouse cursor is active, the vehicle's zoom function is disabled.</span>
+				</dd>
+
+				<!--
+				<dt class="new">new</dt>
+				<dd>[TODO] course generation with CourseplayFields</dd>
+				-->
+
+				<dt class="new">new</dt>
+				<dd>
+					<h4>Driving backwards with trailers in grain transport and combi modes</h4>
+					<ul>
+						<li>Tandem trailers can be driven around a curve; bogy trailers can only be driven straight on.</li>
+						<li>Only one trailer is supported, not multiple simultaneously.</li>
+						<li>The tractor will align the trailer according to the next waypoint, so there should be enough lateral space.</li>
+						<li>If the tractor/trailer gets stuck, it will drive forwards and retry.</li>
+						<!-- TODO: move to manual --> <li>The course should be recorded without a trailer attached, so the real intended course is recorded instead of the tractor's steering.</li>
+						<!-- TODO: move to manual --> <li>Be aware of the trailer's length; the radius around curves shouldn't be too narrow.</li>
+						<li>When driving backwards, the tip trigger will found <span class="emphasize2">behind the trailer</span>.</li>
+
+						<!-- DE --
+						<li>Tandemhänger à la Krampe & Co können rückwärts auch um die Kurve in z.B. einen Abladetrigger geschoben werden; Drehschemelanhänger nur geradeaus.</li>
+						<li>Es wird nur ein (1) Anhänger beim rückwärtsfahren unterstützt, nicht mehrere zugleich.</li>
+						<li>Der Traktor wird den Hänger immer in Richtung des nächsten Wegpunktes hinter dem Hänger ausrichten, daher sollte rechts und links genügend Platz zum rangieren sein.</li>
+						<li>Sollte er sich dabei verhaken, wird er wieder geradeziehen und neu versuchen.</li>
+						<!-- TODO: move to manual -- <li>Der Kurs sollte ohne Anhänger aufgezeichnet werden, um nicht die Lenkbewegungen sondern nur den reinen Kurs mit aufzuzeichnen.</li>
+						<!-- TODO: move to manual -- <li>Beachtet aber die Anhängerlänge am Ende des Kurses. Der Radius bei Kurven sollte nicht zu eng sein.</li>
+						<li>Beim Rückwärtsfahren wird der Abladetrigger <span class="emphasize2">hinter dem Hänger</span> gesucht.</li>
+						<!-- -->
+					</ul>
+				</dd>
+
+				<dt class="new">new</dt>
+				<dd>When approaching refill triggers (e.g. seed, fuel, liquid manure, &hellip;), the vehicle now slows down to avoid hard braked stops</dd>
+
+				<dt class="new">new</dt>
+				<dd>
+					<h4>Completely new course management system</h4>
+					<ul>
+						<li>Folders, baby! Courses (and folders) can now be moved into folders for better overview</li>
+						<li>Searchable courses and folders: use a filter to quickly find the course you want</li>
+						<li>Faster XML saving and loading</li>
+						<li>Much improved sorting of courses</li>
+					</ul>
+				</dd>
+
+				<dt class="new">new</dt>
+				<dd>
+					<h4>New course save/filter form GUI</h4>
+					<ul>
+						<li>New interface for better visibility and usability&hellip; and beauty</li>
+						<li>Support for UTF8 in course and folder names <span class="emphasize2">(&auml;, &ouml;, &uuml;, &szlig;, &eacute;, &ntilde;, &yacute; etc.)</span></li>
+						<li>Increased maximum name length to 25 characters</li>
+					</ul>
+				</dd>
+
+				<dt class="new">new</dt>
+				<dd>
+					<h4>Completely new waypoint sign system</h4>
+					<ul>
+						<li>vastly improved performance: unused signs are moved into a cache</li>
+						<li>signs are actually deleted, freeing up memory</li>
+						<li>new low-poly signs with new textures</li>
+					</ul>
+				</dd>
+
+				<dt class="new">new</dt>
+				<dd>
+					<h4>Unloading on field</h4>
+					Baleloaders can now automatically unload on the field if no unloading course has been appended to 
+				</dd>
+
+				<dt class="new">new</dt>
+				<dd>
+					<h4>Full support for MoreRealistic v1.1.0.7</h4>
+					<ul>
+						<li>4WD will be activated when slip is above 25% / deactivated when below 1%</li>
+						<li>Tractors will brake if going downhill at a too fast speed</li>
+					</ul>
+				</dd>
+
+				<dt class="new">new</dt>
+				<dd>
+					<h4>Traffic collision raycast</h4>
+					<ul>
+						<li>Earlier recognition of traffic ahead, meaning early enough braking</li>
+						<li>Traffic will not only be recognized straight ahead, but actually around the corner (where your vehicle is going)</li>
+						<li><span class="emphasize2">(Only in combi mode)</span> On the way to and from the combine, objects with a collision (bales, trees, other vehicles) will be bypassed by swerving left or right</li>
+					</ul>
+				</dd>
+
+				<dt class="new">new</dt>
+				<dd>
+					<h4>Optional symmetric lane change</h4>
+					<span class="emphasize1">Please see the <a href="../faq/index.html">FAQ</a></span> for further information <span class="emphasize2">(&ldquo;How to use the offset? — a.k.a. how do I let multiple vehicles drive a fieldwork course?&rdquo;)</span>.
+				</dd>
+
+				<dt class="new">new</dt>
+				<dd>
+					<h4>Optional switch in the combine for offloading driver priority</h4>
+					Choose between fill level (the fullest one will be called) and distance (the closest one will be called)
+				</dd>
+
+				<dt class="new">new</dt>
+				<dd>
+					<h4>Jump buttons for global info text notifications</h4>
+					Jump directly into the corresponding vehicle from your current tractor, or when being on foot by using the mouse cursor
+				</dd>
+
+				<!-- mod specific -->
+				<dt class="new">new</dt>
+				<dd>
+					<h4>Added support for the following mods</h4>
+					<ul>
+						<li>Claas Quadrant 1200 baler <span class="emphasize2">(Eifok-Team)</span></li>
+						<li>Kverneland/Taarup mower pack <span class="emphasize2">(NI modding)</span></li>
+						<li>Holaras silage shield <span class="emphasize2">([TODO: author])</span></li>
+						<li>Stegemann silage shield <span class="emphasize2">(Kyosho's Modfactory)</span></li>
+						<li>URF specialization <span class="emphasize2">(webalizer)</span></li>
+						<li>Feldbinder/Kotte liquid manure pack v2 <span class="emphasize2">(Bayerbua &amp; upsidedown)</span></li>
+						<li>Ropa Euro Tiger pack <span class="emphasize2">(Maciusboss1 &amp; Burner)</span></li>
+						<li>Ropa NawaRo Maus <span class="emphasize2">(Maciusboss1 &amp; Burner)</span></li>
+						<li>Rolmasz S061 seeder <span class="emphasize2">(Maciusboss1 &amp; Burner)</span></li>
+						<li>McHale 988 <span class="emphasize2">(Bergwout)</span></li>
+						<li>Zunhammer liquid manure pack <span class="emphasize2">(Eifok-Team)</span></li>
+						<li>AutoCombine <span class="emphasize2">(biedens)</span></li>
+					</ul>
+				</dd>
+			</dl>
+		</div>
+
 		<div id="cl_341" class="changelogVersion" data-version="3.41">
 			<h3>Changes in version 3.41</h3>
 			<!--<span class="emphasize1 emphasize2">This is a pure bugfix release.</span>-->
