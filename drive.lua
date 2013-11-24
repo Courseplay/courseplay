@@ -3,7 +3,6 @@ function courseplay:drive(self, dt)
 	if g_server == nil or not self.isMotorStarted or not courseplay:getCanUseAiMode(self) then
 		return;
 	end;
-
 	local refSpeed = 0
 	local cx,cy,cz = 0,0,0
 	-- may i drive or should i hold position for some reason?
@@ -677,6 +676,7 @@ function courseplay:drive(self, dt)
 
 	if self.cp.isTurning ~= nil then
 		courseplay:turn(self, dt);
+		self.cp.TrafficBrake = false
 		return
 	end
 
