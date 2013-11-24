@@ -31,7 +31,7 @@
 	<header>
 		<h1><a class="imgLink" href="../index.html"><img src="../../res/img/cp_logo.png" alt="Courseplay"></a></h1>
 	</header>
-	
+
 	<section id="navSection">
 		<nav id="mainNav">
 			<li><a href="../installation/index.html">Installation<span class="info">How? What? Where?</span></a></li>
@@ -45,7 +45,7 @@
 	<section id="faq" class="content">
 		<h2>Frequently Asked Questions</h2>
 		<!--<p>These are not the questions you are looking for. Check out the <a href="../manual/index.html" title="Go to the Courseplay manual">manual</a> for a detailed&hellip; well &hellip; manual.</p>-->
-		
+
 		<!--
 		<div id="faqNav">
 			<ul>
@@ -59,7 +59,7 @@
 			<h3>Which tools and vehicles does Courseplay support?</h3>
 			<div class="faqContent">
 				<p>Courseplay supports all default game vehicles and tools, with the exception of the <span class="emphasize2">Pöttinger Mex6</span> corn chopper and the <span class="emphasize2">water trailer</span>. We also support all modifications which use the default game scripts.</p>
-				
+
 				<p>In addition, we specifically support the following modifications:</p>
 				<ul>
 					<li><span class="emphasize1">Giants DLC Free Classics pack</span> &mdash; with the exception of the <span class="emphasize2">Fahr MH 650</span> corn chopper and the <span class="emphasize2">water trailer</span></li>
@@ -76,7 +76,7 @@
 				<p class="annotations"><span class="emphasize1">*</span> those two sugarbeet loaders are handled as combines. You'll still have to control them manually, but Courseplay drivers will approach and unload them.</p>
 			</div>
 		</article>
-		
+
 		<article id="faq02" class="singleFaq">
 			<h3>After loading my old savegame, I can't open the Courseplay hud anymore</h3>
 			<div class="faqContent">
@@ -84,51 +84,60 @@
 				<p>To remedy this, you will need to open the hud <span class="emphasize1">for each vehicle</span> with the keyboard (by default <kbd title="Control">CTRL</kbd> + <kbd title="Delete">Del</kbd>) and switch the setting to <code>mouse</code>. This needs to be done only once &mdash; after you save the game all will be saved and loaded correctly henceforth.</p>
 			</div>
 		</article>
-		
+
 		<article id="faq03" class="singleFaq">
 			<h3>How to use the offset? &mdash; a.k.a. how do I let multiple vehicles drive a fieldwork course?</h3>
 			<div class="faqContent">
 				<p>The <span class="emphasize1">horizontal offset</span> can be used for two different situations:</p>
-				
+
 				<ol>
-					<li>The work tool you're using isn't symmetrical, so you need to drive slightly off course (left or right) to have the tool in the path's center. This applies to, e.g., a bale loader, or a side mower.</li>
-					<li>You want to use a group of vehicles to drive side by side, in order to work the field faster.</li>
+					<li>The work tool you're using isn't symmetrical, so you need to drive slightly off course (left or right) to have the tool in the path's center. This applies to, e.g., a bale loader, or a side mower. In this case, use the tool offset setting.</li>
+					<li>You want to use a group of vehicles to drive side by side, in order to work the field faster. In this case, use the lane offset setting.</li>
 				</ol>
 				<br />
-					
-				<h4>The asymmetrical tool</h4>
+
+				<h4>The asymmetrical tool (tool offset)</h4>
 				<p>On the X axis, calculate (or at least estimate) the distance between the point where the tool should "hit" the path and the vehicle's center. Use that distance as the horizontal offset. For example, the default bale loader (Arcusin) needs an offset of approximately <span class="serif">1.5</span> to <span class="serif">2</span> metres to the <span class="emphasize2">left</span> (as the grabber is on the <span class="emphasize2">right</span> side of the tool).</p>
 				<br />
-				
-				
-				<h4>The groupies</h4>
+
+
+				<h4>The groupies (lane offset)</h4>
 				<p>In order to have multiple vehicles drive in a group, make sure of the following:</p>
 				<ol>
 					<li>Each vehicle uses the same tool, with the same work width.</li>
 					<li>Don't start all vehicles at once. If you do so, they will get stuck with another vehicle of the group at one point or the other.</li>
 					<li>If the tool's work width is not an integer (whole number like <span class="serif">6</span>, <span class="serif">8</span>, <span class="serif">12</span>) but instead is in the decimal area (e.g. <span class="serif">7.5</span>, <span class="serif">3.4</span>), use the next lower work width to calculate the offset. The reason for this is our limitation of setting the offset, which allows only for <span class="serif">.5</span> steps.</li>
 				</ol>
-				
+
 				<p>Each vehicle must use the same generated course. The course's work width needs to be tool's work width multiplied with the amount of vehicles. For example, when you use two 6m seeders, the course's work width has to be <span class="serif">12</span> &ndash; again: each tool needs to use this 12m <span class="emphasize1">(total work width)</span> course.</p>
-				
+
 				<p>Staying with the seeder example, vehicle #1 will drive on the <span class="emphasize2">left</span> side of the course with an offset of <span class="emphasize1">-3 metres</span>, vehicle #2 will drive on the <span class="emphasize2">right</span> side of the course with an offset of <span class="emphasize1">3 metres</span>.</p>
-				
-				<p>While in the first lane they will drive side by side, remember that their position, relative to the path, will <span class="emphasize2">always</span> be left/right of the course. So in the next lane, they will appear to switch the positions, but in reality they will still be left/right of the path.</p>
-				
+
+				<p>There are two methods for setting up the lane usage: <span class="emphasize1">regular lane change</span> and <span class="emphasize1">symmetrical lane change</span>.</p>
+				<ul>
+					<li><span class="emphasize1">Regular lane change</span>: while in the first lane they will drive side by side, remember that their position, relative to the path, will <span class="emphasize2">always</span> be left/right of the course. So in the next lane, they will appear to switch the positions, but in reality they will still be left/right of the path.</li>
+					<li><span class="emphasize1">Symmetrical lane change</span>: the vehicles will effectively leave a free lane for the following vehicle.</li>
+				</ul>
+				<figure>
+					<img src="../../res/img/faq_symmetricalLaneChange_en.png" alt="Regular vs. symmetrical lane change" class="infoImg">
+					<figcaption>Fig. 1: Regular vs. symmetrical lane change</figcaption>
+				</figure>
+
+
 				<p>The formula for calculating the offset is:</p>
 				<figure>
 					<img src="../../res/img/faq_offset_en.png" alt="Calculating the tool's offset" class="infoImg">
-					<figcaption>Fig. 1: Calculating the tool's offset</figcaption>
+					<figcaption>Fig. 2: Calculating the lane offset</figcaption>
 				</figure>
-				
-				
+
+
 				<p>But, we have also built a tool for calculating the correct offset settings for multiple tools:</p>
 
 				<noscript>Please enable Javascript to proceed.</noscript>
-				
+
 				<div id="offsetCalculator">
-					<h5>The offset calculator</h5>
-					
+					<h5>The lane offset calculator</h5>
+
 					<div id="textElements">
 						<sub data-lang="en" data-text="courseWorkWidth">Course work width</sub>
 						<sub data-lang="en" data-text="tool">Tool</sub>
@@ -150,12 +159,12 @@
 							<span id="amountText">2</span>
 							<span id="amountplus" class="hudIcon plus inline">+</span>&nbsp;<span id="amountminus" class="hudIcon minus inline hidden">-</span>
 						</fieldset>
-						
+
 						<fieldset>
 							<label for="workWidth">Work width</label>
 							<input id="workWidth" name="workWidth" type="number" min="1" step="0.5" value="6">
 						</fieldset>
-						
+
 						<div class="clearfix"></div>
 					</form>
 
@@ -178,7 +187,7 @@
 			<li><a href="../../de/faq/index.html">Deutsche Version</a></li>
 			<li><a href="../..">Home</a></li>
 		</nav>
-	</footer>	
+	</footer>
 </div> <!-- #container -->
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
