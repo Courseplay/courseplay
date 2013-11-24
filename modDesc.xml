@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="13">
-	<version>3.41.0223</version>
+	<version>3.41.0224</version>
 	<author>Jakob Tischler / Thomas Gärtner / Horoman</author>
 	<title>
 		<de>Courseplay</de>
@@ -13,32 +13,32 @@
 	<description>
 		<de>
 <![CDATA[Entwickler: Jakob Tischler, Thomas Gärtner, Horoman
-Übersetzungen: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530
+Übersetzungen: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro
 ]]>
 		</de>
 		<en>
 <![CDATA[Developers: Jakob Tischler, Thomas Gärtner, Horoman
-Translations: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530
+Translations: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro
 ]]>
 		</en>
 		<es>
 <![CDATA[Desarrolladores: Jakob Tischler, Thomas Gärtner, Horoman
-Tradduciónes: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530
+Tradduciónes: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro
 ]]>
 		</es>
 		<fr>
 <![CDATA[Développeurs: Jakob Tischler, Thomas Gärtner, Horoman
-Traductions: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530
+Traductions: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro
 ]]>
 		</fr>
 		<it>
 <![CDATA[Sviluppatori: Jakob Tischler, Thomas Gärtner, Horoman
-Traduzioni: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530
+Traduzioni: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro
 ]]>
 		</it>
 		<cz>
 <![CDATA[Vývojáři: Jakob Tischler, Thomas Gärtner, Horoman
-Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530
+Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro
 ]]>
 		</cz>
  	</description>
