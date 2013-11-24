@@ -744,19 +744,8 @@ function courseplay:drive(self, dt)
 			self.runonce = nil;
 		end
 	end
-
-
-	-- Speed Control
-	if self.cp.maxFieldSpeed ~= 0 then
-		refSpeed = math.min(self.cp.maxFieldSpeed, refSpeed);
-	end
-
-	if self.isRealistic then
-		courseplay:setMRSpeed(self, refSpeed, self.sl,allowedToDrive)
-	else
-		courseplay:setSpeed(self, refSpeed, self.sl)
-	end
 	
+	--checking ESLimiter version
 	if self.ESLimiter ~= nil and self.ESLimiter.maxRPM[5] == nil then
 		self.cp.infoText = courseplay:get_locale(self, "CPWrongESLversion")
 	end
@@ -770,10 +759,10 @@ function courseplay:drive(self, dt)
 		end
 	end
 
-
-
+	--reverse
 	if self.Waypoints[self.recordnumber].rev then
 		lx,lz,fwd = courseplay:goReverse(self,lx,lz)
+		refSpeed = Utils.getNoNil(self.unload_speed, 3/3600)
 	else
 		fwd = true
 	end
@@ -800,7 +789,18 @@ function courseplay:drive(self, dt)
 		lz = lz * -1
 		lx = lx * -1
 	end
+	
+	-- Speed Control
+	if self.cp.maxFieldSpeed ~= 0 then
+		refSpeed = math.min(self.cp.maxFieldSpeed, refSpeed);
+	end
 
+	if self.isRealistic then
+		courseplay:setMRSpeed(self, refSpeed, self.sl,allowedToDrive)
+	else
+		courseplay:setSpeed(self, refSpeed, self.sl)
+	end
+	
 	-- go, go, go!
 	if self.recordnumber == 1 or self.recordnumber == self.maxnumber - 1 or self.Waypoints[self.recordnumber].turn then
 		distToChange = 0.5

@@ -129,6 +129,19 @@ function courseplay:goReverse(self,lx,lz)
 			drawDebugLine(xTipper,yTipper,zTipper, 1, 1, 0, xTipper+(nx*10), yTipper+(ny*10), zTipper+(nz*10), 1, 1, 0);
 		end;
 		courseplay:showDirection(self.rootNode,lx,lz)
+		if ((self.ai_mode == 1 or self.ai_mode == 2) and self.cp.tipperFillLevel == 0) or ((self.ai_mode == 4 or self.ai_mode == 6) and self.cp.tipperFillLevel == 100) then
+			for i = self.recordnumber, self.maxnumber do
+				if  not self.Waypoints[i].rev then
+					local _,_,lz = worldToLocal(self.cp.DirectionNode, self.Waypoints[i].cx , y , self.Waypoints[i].cz)
+					if lz > 3 then
+						self.recordnumber = i
+						break
+					end					
+				end
+			end
+		end
+		
+		
 
 		return lx,lz,fwd
 end
