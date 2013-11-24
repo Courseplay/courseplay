@@ -302,6 +302,7 @@ function courseplay:stop(self)
 	AITractor.removeCollisionTrigger(self, self);
 	self.cpTrafficCollisionIgnoreList = {}
 	self.cp.foundColli = {}
+	self.cp.inTraffic = false
 	--deactivate beacon lights
 	if self.beaconLightsActive then
 		self:setBeaconLightsVisibility(false);

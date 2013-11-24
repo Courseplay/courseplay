@@ -223,6 +223,7 @@ function courseplay:load(xmlFile)
 	--	self.trafficCollisionIgnoreList = {};
 	self.cpTrafficCollisionIgnoreList = {};
 	self.cp.TrafficBrake = false
+	self.cp.inTraffic = false
 	-- tipTrigger
 	self.findTipTriggerCallback = courseplay.findTipTriggerCallback;
 	self.findTrafficCollisionCallback = courseplay.findTrafficCollisionCallback;

@@ -586,7 +586,7 @@ function courseplay:drive(self, dt)
 	if self.ai_mode == 9 then
 		allowedToDrive = courseplay:handle_mode9(self, fill_level, allowedToDrive, dt);
 	end;
-
+	self.cp.inTraffic = false
 	
 	local dx,_,dz = localDirectionToWorld(self.cp.DirectionNode, 0, 0, 1);
 	local length = Utils.vector2Length(dx,dz);
@@ -957,7 +957,6 @@ end
 
 
 function courseplay:check_traffic(self, display_warnings, allowedToDrive)
-	local in_traffic = false;
 	local ahead = false
 	local vehicle_in_front = g_currentMission.nodeToVehicle[self.traffic_vehicle_in_front]
 	--courseplay:debug(tableShow(self, nameNum(self), 4), 4)
@@ -978,7 +977,7 @@ function courseplay:check_traffic(self, display_warnings, allowedToDrive)
 				courseplay:debug(nameNum(self)..": check_traffic:	distance: "..tostring(tz-halfLength),3)
 				if tz <= 2 + halfLength then
 					allowedToDrive = false;
-					in_traffic = true
+					self.cp.inTraffic = true
 					courseplay:debug(nameNum(self)..": check_traffic:	Stop",3)
 				elseif self.lastSpeedReal*3600 > 10 then
 					courseplay:debug(nameNum(self)..": check_traffic:	brake",3)
@@ -991,7 +990,7 @@ function courseplay:check_traffic(self, display_warnings, allowedToDrive)
 		end
 	end
 	
-	if display_warnings and in_traffic then
+	if display_warnings and self.cp.inTraffic then
 		courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPInTraffic"), -1);
 	end
 	return allowedToDrive
