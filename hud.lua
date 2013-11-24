@@ -356,8 +356,14 @@ function courseplay:setHudContent(self)
 				end;
 			end;
 
+			--SYMMETRIC LANE CHANGE
+			if self.ai_mode == 4 or self.ai_mode == 6 and self.cp.laneOffset ~= 0 then
+				self.cp.hud.content.pages[7][2][1].text = courseplay:get_locale(self, "COURSEPLAY_SYMMETRIC_LANE_CHANGE");
+				self.cp.hud.content.pages[7][2][2].text = self.cp.symmetricLaneChange and courseplay:get_locale(self, "CPactivated") or courseplay:get_locale(self, "CPdeactivated");
+			end;
+
 			--TOOL HORIZONTAL OFFSET
-			self.cp.hud.content.pages[7][2][1].text = courseplay:get_locale(self, "COURSEPLAY_TOOL_OFFSET_X");
+			self.cp.hud.content.pages[7][3][1].text = courseplay:get_locale(self, "COURSEPLAY_TOOL_OFFSET_X");
 			if self.cp.toolOffsetX ~= nil then
 				local descrStr = "";
 				if self.cp.toolOffsetX > 0 then
@@ -365,13 +371,13 @@ function courseplay:setHudContent(self)
 				elseif self.cp.toolOffsetX < 0 then
 					descrStr = string.format("(%s)", courseplay:get_locale(self, "COURSEPLAY_LEFT"));
 				end;
-				self.cp.hud.content.pages[7][2][2].text = string.format("%.1fm %s", math.abs(self.cp.toolOffsetX), descrStr);
+				self.cp.hud.content.pages[7][3][2].text = string.format("%.1fm %s", math.abs(self.cp.toolOffsetX), descrStr);
 			else
-				self.cp.hud.content.pages[7][2][2].text = "---";
+				self.cp.hud.content.pages[7][3][2].text = "---";
 			end;
 
 			--TOOL VERTICAL OFFSET
-			self.cp.hud.content.pages[7][3][1].text = courseplay:get_locale(self, "COURSEPLAY_TOOL_OFFSET_Z");
+			self.cp.hud.content.pages[7][4][1].text = courseplay:get_locale(self, "COURSEPLAY_TOOL_OFFSET_Z");
 			if self.cp.toolOffsetZ ~= nil then
 				local descrStr = "";
 				if self.cp.toolOffsetZ > 0 then
@@ -379,15 +385,9 @@ function courseplay:setHudContent(self)
 				elseif self.cp.toolOffsetZ < 0 then
 					descrStr = string.format("(%s)", courseplay:get_locale(self, "COURSEPLAY_BACK"));
 				end;
-				self.cp.hud.content.pages[7][3][2].text = string.format("%.1fm %s", math.abs(self.cp.toolOffsetZ), descrStr);
+				self.cp.hud.content.pages[7][4][2].text = string.format("%.1fm %s", math.abs(self.cp.toolOffsetZ), descrStr);
 			else
-				self.cp.hud.content.pages[7][3][2].text = "---";
-			end;
-
-			--SYMMETRIC LANE CHANGE
-			if self.ai_mode == 4 or self.ai_mode == 6 and self.cp.laneOffset ~= 0 then
-				self.cp.hud.content.pages[7][4][1].text = courseplay:get_locale(self, "COURSEPLAY_SYMMETRIC_LANE_CHANGE");
-				self.cp.hud.content.pages[7][4][2].text = self.cp.symmetricLaneChange and courseplay:get_locale(self, "CPactivated") or courseplay:get_locale(self, "CPdeactivated");
+				self.cp.hud.content.pages[7][4][2].text = "---";
 			end;
 		end;
 

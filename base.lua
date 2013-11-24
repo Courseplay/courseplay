@@ -99,8 +99,6 @@ function courseplay:load(xmlFile)
 		y1 = git.posY,
 		y2 = git.posY + (buttonIdx * git.lineHeight);
 	};
-	
-
 	-- ai mode: 1 abfahrer, 2 kombiniert
 	self.ai_mode = 1
 	self.follow_mode = 1
@@ -607,19 +605,20 @@ function courseplay:load(xmlFile)
 	courseplay:register_button(self, 6, "navigate_down.png", "changeDebugChannelSection",  1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[6], w16px, h16px,  1, nil, false);
 
 	--Page 7: Driving settings
-	courseplay:register_button(self, 7, "navigate_left.dds", "changeLaneOffset", -0.1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, -0.5, false);
-	courseplay:register_button(self, 7, "navigate_right.dds",  "changeLaneOffset",  0.1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1,  0.5, false);
+	courseplay:register_button(self, 7, "navigate_left.dds",  "changeLaneOffset", -0.1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, -0.5, false);
+	courseplay:register_button(self, 7, "navigate_right.dds", "changeLaneOffset",  0.1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1,  0.5, false);
 	courseplay:register_button(self, 7, nil, "changeLaneOffset", 0.1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[1], mouseWheelArea.w, mouseWheelArea.h, 1, 0.5, true, true);
 
-	courseplay:register_button(self, 7, "navigate_left.dds", "changeToolOffsetX", -0.1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[2], w16px, h16px, 2,  -0.5, false);
-	courseplay:register_button(self, 7, "navigate_right.dds",  "changeToolOffsetX",  0.1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[2], w16px, h16px, 2,   0.5, false);
-	courseplay:register_button(self, 7, nil, "changeToolOffsetX", 0.1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[2], mouseWheelArea.w, mouseWheelArea.h, 2, 0.5, true, true);
+	courseplay:register_button(self, 7, "blank.dds", "toggleSymmetricLaneChange", nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[2], courseplay.hud.visibleArea.width, 0.015, 2, nil, true);
 
-	courseplay:register_button(self, 7, "navigate_down.dds", "changeToolOffsetZ", -0.1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[3], w16px, h16px, 3,  -0.5, false);
-	courseplay:register_button(self, 7, "navigate_up.dds",  "changeToolOffsetZ",  0.1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[3], w16px, h16px, 3,   0.5, false);
-	courseplay:register_button(self, 7, nil, "changeToolOffsetZ", 0.1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[3], mouseWheelArea.w, mouseWheelArea.h, 3, 0.5, true, true);
+	courseplay:register_button(self, 7, "navigate_left.dds",  "changeToolOffsetX", -0.1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[3], w16px, h16px, 3,  -0.5, false);
+	courseplay:register_button(self, 7, "navigate_right.dds", "changeToolOffsetX",  0.1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[3], w16px, h16px, 3,   0.5, false);
+	courseplay:register_button(self, 7, nil, "changeToolOffsetX", 0.1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[3], mouseWheelArea.w, mouseWheelArea.h, 3, 0.5, true, true);
 
-	courseplay:register_button(self, 7, "blank.dds", "toggleSymmetricLaneChange", nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[4], courseplay.hud.visibleArea.width, 0.015, 4, nil, true);
+	courseplay:register_button(self, 7, "navigate_down.dds", "changeToolOffsetZ", -0.1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[4], w16px, h16px, 4,  -0.5, false);
+	courseplay:register_button(self, 7, "navigate_up.dds",   "changeToolOffsetZ",  0.1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[4], w16px, h16px, 4,   0.5, false);
+	courseplay:register_button(self, 7, nil, "changeToolOffsetZ", 0.1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[4], mouseWheelArea.w, mouseWheelArea.h, 4, 0.5, true, true);
+
 
 	courseplay:register_button(self, 7, "navigate_up.dds",   "switchDriverCopy", -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[5], w16px, h16px, 5, nil, false);
 	courseplay:register_button(self, 7, "navigate_down.dds", "switchDriverCopy",  1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[5], w16px, h16px, 5, nil, false);

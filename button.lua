@@ -238,10 +238,10 @@ function courseplay:renderButton(self, button)
 		elseif pg == 7 then
 			if fn == "changeLaneOffset" then
 				button.show = self.ai_mode == 4 or self.ai_mode == 6;
-			elseif fn == "changeToolOffsetX" or fn == "changeToolOffsetZ" then
-				button.show = self.ai_mode == 3 or self.ai_mode == 4 or self.ai_mode == 6 or self.ai_mode == 7;
 			elseif fn == "toggleSymmetricLaneChange" then
 				button.show = self.ai_mode == 4 or self.ai_mode == 6 and self.cp.laneOffset ~= 0;
+			elseif fn == "changeToolOffsetX" or fn == "changeToolOffsetZ" then
+				button.show = self.ai_mode == 3 or self.ai_mode == 4 or self.ai_mode == 6 or self.ai_mode == 7;
 			elseif fn == "switchDriverCopy" and prm < 0 then
 				button.show = self.cp.selectedDriverNumber > 0;
 			elseif fn == "copyCourse" then
