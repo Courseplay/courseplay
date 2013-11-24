@@ -3,6 +3,7 @@ function courseplay:drive(self, dt)
 	if g_server == nil or not self.isMotorStarted or not courseplay:getCanUseAiMode(self) then
 		return;
 	end;
+
 	local refSpeed = 0
 	local cx,cy,cz = 0,0,0
 	-- may i drive or should i hold position for some reason?

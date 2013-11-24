@@ -235,6 +235,11 @@ function courseplay:getCanUseAiMode(vehicle)
 				vehicle.cp.infoText = courseplay.locales.CPWrongTrailer;
 				return false;
 			end;
+		elseif mode == 7 then
+			if vehicle.isAutoCombineActivated ~= nil and vehicle.isAutoCombineActivated then
+				vehicle.cp.infoText = courseplay.locales.COURSEPLAY_NO_AUTOCOMBINE_MODE_7;
+				return false;
+			end;
 		end;
 
 	elseif mode == 4 or mode == 6 then

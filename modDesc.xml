@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="13">
-	<version>3.41.0226</version>
+	<version>3.41.0227</version>
 	<author>Jakob Tischler / Thomas Gärtner / Horoman</author>
 	<title>
 		<de>Courseplay</de>
@@ -1544,10 +1544,10 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 		<text name="COURSEPLAY_DRIVERPRIOTITY">
 			<de>Abfahrer-Priorität</de>
 			<en>Driver priority</en>
-			<es>Driver priority</es> <!-- !!! -->
-			<fr>Driver priority</fr> <!-- !!! -->
-			<it>Priorità autista</it>
-			<cz>Driver priority</cz> <!-- !!! -->
+			<es>Prioridad del conductor</es>
+			<fr>Priorité du chauffeur</fr>
+			<it>Priorità del autista</it>
+			<cz>Priority odvozce</cz>
 		</text>
 		<text name="COURSEPLAY_FILLEVEL">
 			<en>fill level</en>
@@ -1556,6 +1556,14 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<es>nivel de llenado</es>
 			<it>livello di riempimento</it>
 			<cz>vyplnit úrovně</cz>
+		</text>
+		<text name="COURSEPLAY_NO_AUTOCOMBINE_MODE_7">
+			<en>AutoCombine is not supported</en>
+			<de>AutoCombine wird nicht unterstützt</de>
+			<fr>AutoCombine n'est pas supporté</fr> <!-- !!! -->
+			<es>AutoCombine no está soportado</es> <!-- !!! -->
+			<it>AutoCombine non è supportato</it> <!-- !!! -->
+			<cz>AutoCombine není podporován</cz> <!-- !!! -->
 		</text>
 
 
