@@ -138,8 +138,11 @@ function courseplay_manager:draw()
 end;
 
 function courseplay_manager:mouseEvent(posX, posY, isDown, isUp, button)
+	local area = courseplay_manager.buttons.globalInfoTextClickArea;
+	if area == nil then
+		return;
+	end;
 	local mouseKey = button;
-	local area = self.buttons.globalInfoTextClickArea;
 	local mouseIsInHudArea = posX > area.x1 and posX < area.x2 and posY > area.y1 and posY < area.y2;
 
 	--LEFT CLICK
