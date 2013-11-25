@@ -765,10 +765,14 @@ function courseplay:getAutoTurnradius(self, tipper_attached)
 	--if tipper_attached and self.ai_mode == 2 then
 	if tipper_attached and (self.ai_mode == 2 or self.ai_mode == 3 or self.ai_mode == 4 or self.ai_mode == 6) then --JT: I've added modes 3, 4 & 6 - needed?
 		self.autoTurnRadius = turnRadius;
-		local n = table.getn(self.tippers);
-		if (n == 1 and self.tippers[1].attacherVehicle ~= self) or (n > 1) then
-			self.autoTurnRadius = turnRadius * 1.5;
+		local n = #(self.tippers);
+		--print(string.format("self.tippers[1].sizeLength = %s  turnRadius = %s", tostring(self.tippers[1].sizeLength),tostring( turnRadius)))
+		if n == 1 and self.tippers[1].attacherVehicle ~= self and (self.tippers[1].sizeLength > turnRadius) then
+			self.autoTurnRadius = self.tippers[1].sizeLength;
 		end;
+		if (n > 1) then
+			self.autoTurnRadius = turnRadius * 1.5;
+		end
 	end;
 
 	if self.turnRadiusAutoMode then
