@@ -213,7 +213,7 @@ function courseplay:setGlobalData()
 	courseplay.globalInfoText.fontSize = 0.02;
 	courseplay.globalInfoText.lineHeight = courseplay.globalInfoText.fontSize * 1.1;
 	courseplay.globalInfoText.posX = Utils.getNoNil(customGitPosX, 0.035);
-	courseplay.globalInfoText.posY = Utils.getNoNil(customGitPosY, 0);
+	courseplay.globalInfoText.posY = Utils.getNoNil(customGitPosY, 0.01238);
 	local pdaHeight = 0.3375;
 	courseplay.globalInfoText.hideWhenPdaActive = courseplay.globalInfoText.posY < pdaHeight; --g_currentMission.MissionPDA.hudPDABaseHeight;
 	courseplay.globalInfoText.backgroundImg = "dataS2/menu/white.png";
