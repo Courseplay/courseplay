@@ -58,9 +58,7 @@ function courseplay:setNameVariable(workTool)
 		end;
 	elseif workTool.cp.hasSpecializationOvercharge then
 		workTool.cp.isAugerWagon = true;
-		if workTool.pipe ~= nil and workTool.unloadingCapacity ~= nil and workTool.toggleUnloadingState == nil and workTool.setUnloadingState ~= nil and workTool.trailerFoundId ~= nil and workTool.isDrumActivated ~= nil then
-			workTool.cp.isHaweSUW5000 = true;
-		elseif Utils.endsWith(workTool.configFileName, "AgrolinerTUW20.xml") then
+		if Utils.endsWith(workTool.configFileName, "AgrolinerTUW20.xml") then
 			workTool.cp.isAgrolinerTUW20 = true;
 			workTool.cp.foldPipeAtWaitPoint = true;
 		elseif Utils.endsWith(workTool.configFileName, "HaweULW2600T.xml") then
@@ -70,9 +68,18 @@ function courseplay:setNameVariable(workTool)
 			workTool.cp.isHaweULW3000T = true;
 			workTool.cp.foldPipeAtWaitPoint = true;
 		end;
+	elseif workTool.cp.hasSpecializationHaweSUW then
+		workTool.cp.isAugerWagon = true;
+		if Utils.endsWith(workTool.configFileName, "Hawe_SUW_4000.xml") then
+			workTool.cp.isHaweSUW4000 = true;
+		elseif Utils.endsWith(workTool.configFileName, "Hawe_SUW_5000.xml") then
+			workTool.cp.isHaweSUW5000 = true;
+		end;
+	--[[
 	elseif workTool.turnOn ~= nil and workTool.inRangeDraw ~= nil and workTool.Go ~= nil and workTool.Go.trsp ~= nil and workTool.CheckDone ~= nil and workTool.CheckDone.trsp then
-		--workTool.cp.isAugerWagon = true;
-		--workTool.cp.isBrentAvalanche = true;
+		workTool.cp.isAugerWagon = true;
+		workTool.cp.isBrentAvalanche = true;
+	]]
 	elseif workTool.animationParts ~= nil and workTool.animationParts[2] ~= nil and workTool.toggleUnloadingState ~= nil and workTool.setUnloadingState ~= nil then
 		workTool.cp.isAugerWagon = true;
 		workTool.cp.isTaarupShuttle = true;
@@ -967,6 +974,13 @@ function courseplay:askForSpecialSettings(self,object)
 			end;
 		end;
 		object.cp.lastFillLevel = object.fillLevel;
+
+		if object.cp.isHaweSUW4000 or object.cp.isHaweSUW5000 or object.cp.isHaweULW2600T or object.cp.isHaweULW3000T then
+			object.cp.hasPipeLight = object.B3 and object.B3.work and object.B3.work[1];
+			if object.cp.hasPipeLight then
+				object.cp.pipeLight = object.B3.work[1];
+			end;
+		end;
 
 	elseif object.cp.isEifokZunhammer18500PU or object.cp.isEifokKotteZubringer then
 		self.cp.hasEifokZunhammer18500PU = object.cp.isEifokZunhammer18500PU;

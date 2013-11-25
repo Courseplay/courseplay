@@ -101,9 +101,12 @@ function courseplay:attachableLoad(xmlFile)
 	--Custom (mod) specializations
 	self.cp.hasSpecializationAugerWagon = courseplay:hasSpecialization(self, "AugerWagon");
 	self.cp.hasSpecializationOverloader = courseplay:hasSpecialization(self, "overloader");
+	self.cp.hasSpecializationHaweSUW = courseplay:hasSpecialization(self, "Hawe_SUW");
+	self.cp.hasSpecializationOverloader = courseplay:hasSpecialization(self, "overloader");
 	self.cp.hasSpecializationAgrolinerTUW20 = courseplay:hasSpecialization(self, "AgrolinerTUW20");
 	self.cp.hasSpecializationOvercharge = courseplay:hasSpecialization(self, "Overcharge");
 	self.cp.hasSpecializationSowingMachineWithTank = courseplay:hasSpecialization(self, "SowingMachineWithTank");
+
 	--[[ Debugs:
 	if self.cp.hasSpecializationFruitPreparer then print("		FruitPreparer")end
 	if self.cp.hasSpecializationTedder then print("		Tedder")end
