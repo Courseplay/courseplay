@@ -53,7 +53,7 @@ function courseplay:handleAugerWagon(vehicle, workTool, unfold, unload, orderNam
 	courseplay:debug(string.format("\thandleAugerWagon(vehicle, %s, unfold=%s, unload=%s, orderName=%s)", nameNum(workTool), tostring(unfold), tostring(unload), tostring(orderName)), 15);
 	local pipeOrderExists = unfold ~= nil;
 	local unloadOrderExists = unload ~= nil;
-	local needsPipeLight = true; --g_currentMission.environment.needsLights or (g_currentMission.environment.lastRainScale > 0.1 and g_currentMission.environment.timeSinceLastRain < 30);
+	local needsPipeLight = g_currentMission.environment.needsLights or (g_currentMission.environment.lastRainScale > 0.1 and g_currentMission.environment.timeSinceLastRain < 30);
 
 	--Taarup Shuttle
 	if workTool.cp.isTaarupShuttle then
