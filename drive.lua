@@ -682,48 +682,32 @@ function courseplay:drive(self, dt)
 	end
 
 
-	-- which speed?
-	local slowEnd = self.ai_mode == 2 and self.recordnumber > self.maxnumber - 3;
-	local slowStart_lvl2 = (self.ai_mode == 2 or self.ai_mode == 3) and self.recordnumber < 3;
-	local slowStartEnd = self.ai_mode ~= 2 and self.ai_mode ~= 3 and self.ai_mode ~= 4 and self.ai_mode ~= 6 and self.ai_mode ~= 9 and (self.recordnumber > self.maxnumber - 3 or self.recordnumber < 3)
-	local slowDownWP = false
-	local slowDownRev = false
-	local real_speed = self.lastSpeedReal
-	local maxRpm = self.motor.maxRpm[self.sl]
-
-	if self.recordnumber < (self.maxnumber - 3) then
-		slowDownWP = (self.Waypoints[self.recordnumber + 2].wait or self.Waypoints[self.recordnumber + 1].wait or self.Waypoints[self.recordnumber].wait) --if mode4 or 6: last 3 points before stop or before start
-		slowDownRev = (self.Waypoints[self.recordnumber + 2].rev or self.Waypoints[self.recordnumber + 1].rev or self.Waypoints[self.recordnumber].rev)
+	--SPEED SETTING
+	local isAtEnd   = self.recordnumber > self.maxnumber - 3;
+	local isAtStart = self.recordnumber < 3;
+	if 	((self.ai_mode == 1 or self.ai_mode == 5 or self.ai_mode == 7 or self.ai_mode == 8) and (isAtStart or isAtEnd)) or
+		((self.ai_mode == 2 or self.ai_mode == 3) and isAtEnd) or
+		(self.ai_mode == 9 and self.recordnumber > self.cp.waitPoints[1] and self.recordnumber <= self.cp.waitPoints[2]) or
+		(not workArea and self.wait and ((isAtEnd and self.Waypoints[self.recordnumber].wait) or courseplay:waypointsHaveAttr(self, self.recordnumber, 0, 2, "wait", true, false))) or 
+		((isAtEnd and self.Waypoints[self.recordnumber].rev) or courseplay:waypointsHaveAttr(self, self.recordnumber, 0, 2, "rev", true, false)) or --TODO: will later be set to unload_speed - why?
+		(workSpeed ~= nil and workSpeed == 0.5) 
+	then
+		self.sl = 1;
+		refSpeed = self.turn_speed;
+	elseif ((self.ai_mode == 2 or self.ai_mode == 3) and isAtStart) or (workSpeed ~= nil and workSpeed == 1) then
+		self.sl = 2;
+		refSpeed = self.field_speed;
 	else
-		slowDownWP = self.Waypoints[self.recordnumber].wait;
-		slowDownRev = self.Waypoints[self.recordnumber].rev;
-	end
+		self.sl = 3
+		refSpeed = self.max_speed;
+	end;
+	if self.use_speed and self.Waypoints[self.recordnumber].speed ~= nil then
+		refSpeed = Utils.clamp(refSpeed, 3/3600, self.Waypoints[self.recordnumber].speed);
+	end;
+	refSpeed = courseplay:regulateTrafficSpeed(self, refSpeed, allowedToDrive);
 
-	if self.ai_mode ~= 7 then
-		if (workSpeed ~= nil and workSpeed == 0.5) or ((slowDownWP and not workArea) or slowDownRev or self.max_speed_level == 1 or slowStartEnd or slowEnd) then
-			self.sl = 1
-			refSpeed = self.turn_speed
-		elseif (workSpeed ~= nil and workSpeed == 1) or slowStart_lvl2 then
-			self.sl = 2
-			refSpeed = self.field_speed
-		else
-			self.sl = 3
-			refSpeed = self.max_speed
-		end
-	elseif slowDownWP then
-		self.sl = 1
-		refSpeed = self.turn_speed
-	end
-	
-	if self.Waypoints[self.recordnumber].speed ~= nil and self.use_speed and self.recordnumber > 3 then
-		refSpeed = math.max(self.Waypoints[self.recordnumber].speed, 3/3600)
-	end
-
-	if slowDownRev and refSpeed > self.turn_speed then
-		refSpeed = self.turn_speed
-	end
-
-	refSpeed = courseplay:regulateTrafficSpeed(self,refSpeed,allowedToDrive)
+	local real_speed = self.lastSpeedReal;
+	local maxRpm = self.motor.maxRpm[self.sl];
 
 	--bunkerSilo speed by Thomas Gärtner
 	if self.cp.currentTipTrigger ~= nil then
