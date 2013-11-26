@@ -24,7 +24,7 @@ function courseplay:isBaler(workTool) -- is the tool a baler?
 	return workTool.cp.hasSpecializationBaler or workTool.balerUnloadingState ~= nil or courseplay:isSpecialBaler(workTool);
 end;
 function courseplay:isRoundbaler(workTool) -- is the tool a roundbaler?
-	return courseplay:isBaler(workTool) and workTool.baleCloseAnimationName ~= nil and workTool.baleUnloadAnimationName ~= nil;
+	return courseplay:isBaler(workTool) and (workTool.baleCloseAnimationName ~= nil and workTool.baleUnloadAnimationName ~= nil or courseplay:isSpecialRoundBaler(workTool));
 end;
 function courseplay:is_baleLoader(workTool) -- is the tool a bale loader?
 	return workTool.cp.hasSpecializationBaleLoader or (workTool.balesToLoad ~= nil and workTool.baleGrabber ~=nil and workTool.grabberIsMoving~= nil);
@@ -96,7 +96,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 				end;
 			end
 		elseif self.ai_mode == 6 then -- Baler, foragewagon, baleloader
-			if courseplay:isBaler(object) 
+			if (courseplay:isBaler(object) 
 			or courseplay:is_baleLoader(object) 
 			or courseplay:isSpecialBaleLoader(object) 
 			or object.cp.hasSpecializationTedder
@@ -105,7 +105,10 @@ function courseplay:update_tools(self, tractor_or_implement)
 			or object.cp.hasSpecializationPlough
 			or object.cp.hasSpecializationFruitPreparer
 			or object.allowTipDischarge 
-			or courseplay:isFoldable(object) then
+			or courseplay:isFoldable(object)) 
+			and not object.cp.isCaseIHMagnum340Titanium 
+			and not object.cp.cp.isCaseIHPuma160Titanium 
+			then
 				tipper_attached = true;
 				table.insert(self.tippers, object);
 				courseplay:setMarkers(self, object);

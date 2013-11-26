@@ -40,8 +40,20 @@ function courseplay:setNameVariable(workTool)
 	if workTool.cp.hasSpecializationSteerable then print("		Steerable")end
 	--]]
 
+	--Case IH Magnum 340 [Giants Titanium]
+	if Utils.endsWith(workTool.configFileName, "caseIHMagnum340.xml") or Utils.endsWith(workTool.configFileName, "caseIHMagnum340TwinWheel.xml") then
+		workTool.cp.isCaseIHMagnum340Titanium = true;
+
+	--Case IH Magnum 340 [Giants Titanium]
+	elseif Utils.endsWith(workTool.configFileName, "caseIHPuma160.xml") then
+		workTool.cp.isCaseIHPuma160Titanium = true;
+
+	--John Deere 864 Premium [BJR]
+	elseif Utils.endsWith(workTool.configFileName, "JohnDeere864Premium.xml") then
+		workTool.cp.isJohnDeere864Premium = true;
+
 	--AugerWagons
-	if workTool.cp.hasSpecializationAugerWagon then
+	elseif workTool.cp.hasSpecializationAugerWagon then
 		workTool.cp.isAugerWagon = true;
 		if Utils.endsWith(workTool.configFileName, "horschTitan34UW.xml") then
 			workTool.cp.isHorschTitan34UWTitaniumAddon = true;
@@ -289,7 +301,11 @@ function courseplay:isSpecialMower(workTool)
 end
 
 function courseplay:isSpecialBaler(workTool)
-	return workTool.cp.isClaasQuadrant1200;
+	return workTool.cp.isClaasQuadrant1200 or workTool.cp.isJohnDeere864Premium;
+end;
+
+function courseplay:isSpecialRoundBaler(workTool)
+	return workTool.cp.isJohnDeere864Premium;
 end;
 
 function courseplay:isSpecialBaleLoader(workTool)
@@ -652,22 +668,90 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 
 		return true, allowedToDrive
 
-	--Claas Quadrant 1200
-	elseif workTool.cp.isClaasQuadrant1200 then
+	--Claas Quadrant 1200 / John Deere 864 Premium
+	elseif workTool.cp.isClaasQuadrant1200 or workTool.cp.isJohnDeere864Premium then
 		if unfold ~= nil and turnOn ~= nil and lower ~= nil then
-			if not unfold then
-				workTool:emptyBaler(true);
-				workTool:setPTO(true)
-			end
-			if workTool.sl.isOpen ~= unfold then
-				workTool:openSlide(unfold);
-			end
-			if workTool.pu.bDown ~= implementsDown then
-				workTool:releasePickUp(implementsDown)
-			end
-			if workTool.isTurnedOn ~= unfold then
-				workTool.isTurnedOn = unfold
-			end
+			if workTool.cp.isClaasQuadrant1200 then
+				if not unfold then
+					workTool:emptyBaler(true);
+					workTool:setPTO(true)
+				end
+				if workTool.sl.isOpen ~= unfold then
+					workTool:openSlide(unfold);
+				end
+				if workTool.pu.bDown ~= implementsDown then
+					workTool:releasePickUp(implementsDown)
+				end
+				if workTool.isTurnedOn ~= unfold then
+					workTool.isTurnedOn = unfold
+				end
+
+			elseif workTool.cp.isJohnDeere864Premium then
+				--EMPTY BALER
+				if not unfold then
+					if #(workTool.bales) == 0 and workTool.fillLevel > 200 and workTool.coverEdge.isLoaded and workTool.shouldNet == false and not workTool.isNetting then
+						workTool:setShouldNet(true);
+					elseif #(workTool.bales) > 0 then
+						if workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then --unload bale
+							workTool:setIsUnloadingBale(true);
+						end;
+					elseif workTool.fillLevel == 0 and workTool.balerUnloadingState == Baler.UNLOADING_OPEN then
+						workTool:setIsUnloadingBale(false);
+						if workTool.isTurnedOn then
+							workTool:setIsTurnedOn(false, false);
+						end;
+					elseif workTool.fillLevel <= 200 and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED and not workTool.isNetting then
+						if workTool.isTurnedOn then
+							workTool:setIsTurnedOn(false, false);
+						end;
+					end;
+				end;
+
+				if workTool.isPickupDown ~= implementsDown then
+					workTool:setPickup(implementsDown)
+				end;
+				if not workTool.attachablePTO.attached then
+					workTool:togglePTOAttach(true);
+				end;
+				if workTool.isSupportDown then
+					workTool:toggleSupport(false);
+				end;
+
+				--SPARE NETS
+				if not workTool.coverEdge.isLoaded then
+					allowedToDrive = false;
+
+					if workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
+						if workTool.coverEdge.hasSpareNet then --set spare net to current net
+							if not workTool.doors.rear.isOpen then
+								courseplay.thirdParty.JD864PremiumOpenRearDoor(workTool, true);
+							else
+								workTool:setHasNet(true);
+								courseplay.thirdParty.JD864PremiumOpenRearDoor(workTool, false, true);
+							end;
+
+						else --open doors for additional net supply
+							if workTool.isTurnedOn then
+								workTool:setIsTurnedOn(false);
+							end;
+							courseplay:setGlobalInfoText(self, courseplay.locales.COURSEPLAY_BALER_NEEDS_NETS:format(nameNum(workTool)), -2);
+							if not workTool.doors.rear.isOpen then
+								courseplay.thirdParty.JD864PremiumOpenRearDoor(workTool, true);
+							elseif workTool.coverEdge.palletInRange ~= nil and workTool.coverEdge.palletInRange.rollsLeft > 0 then
+								workTool:setHasSpareNet(true); --1st spare roll
+								workTool.coverEdge.palletInRange:removeRoll(workTool.coverEdge.palletInRange.rollsLeft-1);
+								workTool:setHasNet(true); --move spare to active
+								if workTool.coverEdge.palletInRange.rollsLeft > 0 then
+									workTool:setHasSpareNet(true); --2nd spare roll
+									workTool.coverEdge.palletInRange:removeRoll(workTool.coverEdge.palletInRange.rollsLeft-1);
+								end;
+								courseplay.thirdParty.JD864PremiumOpenRearDoor(workTool, false, true);
+							end;
+							return true, allowedToDrive;
+						end;
+					end;
+				end;
+			end;
 
 			--speed regulation
 			if workTool.isBlocked then 
@@ -680,20 +764,36 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 					allowedToDrive = false
 				end
 			end
-			if workTool.actLoad_IntSend < 0.8 and not workTool.isBlocked and workTool.actLoad_IntSend ~= 0 then
-				self.cp.maxFieldSpeed = self.cp.maxFieldSpeed + 0.02/3600
-			end
-			if workTool.actLoad_IntSend == 0 and self.cp.maxFieldSpeed == 0 then
-				self.cp.maxFieldSpeed = 4/3600
-			end
-			if workTool.actLoad_IntSend > 0.9 and self.cp.maxFieldSpeed > 1/3600 then
-				self.cp.maxFieldSpeed = self.cp.maxFieldSpeed - 0.05/3600
-			end
+			local actLoadSend;
+			if workTool.actLoad_IntSend ~= nil then
+				actLoadSend = workTool.actLoad_IntSend;
+			elseif workTool.actLoad_Send ~= nil then
+				actLoadSend = workTool.actLoad_Send;
+			end;
+
+			if actLoadSend ~= nil then
+				if actLoadSend < 0.8 and not workTool.isBlocked and actLoadSend ~= 0 then
+					self.cp.maxFieldSpeed = self.cp.maxFieldSpeed + 0.02/3600
+				end
+				if actLoadSend == 0 and self.cp.maxFieldSpeed == 0 then
+					self.cp.maxFieldSpeed = 4/3600
+				end
+				if actLoadSend > 0.9 and self.cp.maxFieldSpeed > 1/3600 then
+					self.cp.maxFieldSpeed = self.cp.maxFieldSpeed - 0.05/3600
+				end
+			end;
 			--speed regulation END
+		end;
 
-		end
-
-		return true ,allowedToDrive
+		if workTool.cp.isClaasQuadrant1200 then
+			return true, allowedToDrive;
+		else
+			if not unfold then
+				return true, allowedToDrive;
+			else
+				return false, allowedToDrive;
+			end;
+		end;
 
 	--Ursus Z586 BaleWrapper
 	elseif workTool.cp.isUrsusZ586 then
@@ -1755,5 +1855,19 @@ function courseplay.thirdParty.EifokLiquidManure.resetData(vehicle, targetObject
 		vehicle.cp.EifokLiquidManure.searchMapHoseRefStation.pull = true;
 		vehicle.cp.EifokLiquidManure.searchMapHoseRefStation.push = true;
 	end;
+end;
 
+function courseplay.thirdParty.JD864PremiumOpenRearDoor(workTool, open, forceState)
+	local dir = open and 1 or -1;
+	local targetAnimTime = open and 1 or 0;
+	local curAnimTime = workTool:getAnimationTime(workTool.doors.rear.animation);
+	local animIsPlaying = workTool:getIsAnimationPlaying(workTool.doors.rear.animation);
+
+	if not animIsPlaying and curAnimTime ~= targetAnimTime and workTool.doors.rear.isOpen ~= open then
+		workTool:playAnimation(workTool.doors.rear.animation, dir, nil);
+	end;
+	if curAnimTime == targetAnimTime or forceState then
+		workTool.doors.rear.isOpen = open;
+		workTool:raiseDirtyFlags(workTool.doors.rear.dirtyFlag);
+	end;
 end;

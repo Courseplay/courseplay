@@ -47,16 +47,19 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 			-- balers
 			if courseplay:isBaler(workTool) then
 				if self.recordnumber >= self.startWork + 1 and self.recordnumber < self.stopWork and self.cp.turnStage == 0 then
-					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,true,true,true,allowedToDrive,nil,nil)
+																			--  self, workTool, unfold, lower, turnOn, allowedToDrive, cover, unload, ridgeMarker)
+					specialTool, allowedToDrive = courseplay:handleSpecialTools(self, workTool, true,   true,  true,   allowedToDrive, nil,   nil);
 					if not specialTool then
 						-- automatic opening for balers
 						if workTool.balerUnloadingState ~= nil then
-							if courseplay:isRoundbaler(workTool) and fill_level > 95 and fill_level < 100 and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
+							if courseplay:isRoundbaler(workTool) and fill_level > 90 and fill_level < 100 and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
+								if not workTool.isTurnedOn then
+									workTool:setIsTurnedOn(true, false);
+								end;
 								workSpeed = 0.5;
 							elseif fill_level >= 100 and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
-								allowedToDrive = false
-								workTool:setIsTurnedOn(false, false);
-								if table.getn(workTool.bales) > 0 then
+								allowedToDrive = false;
+								if #(workTool.bales) > 0 then
 									workTool:setIsUnloadingBale(true, false)
 								end
 							elseif workTool.balerUnloadingState ~= Baler.UNLOADING_CLOSED then
@@ -71,9 +74,9 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 					end
 				end
 
-				if self.cp.last_recordnumber == self.stopWork -1  and workTool.isTurnedOn and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
+				if self.cp.last_recordnumber == self.stopWork -1 and workTool.isTurnedOn then
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,nil)
-					if not specialTool then
+					if not specialTool and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
 						workTool:setIsTurnedOn(false, false);
 					end
 				end

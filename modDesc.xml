@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="13">
-	<version>3.41.0241</version>
+	<version>3.41.0242</version>
 	<author>Jakob Tischler / Thomas Gärtner / Horoman</author>
 	<title>
 		<de>Courseplay</de>
@@ -1564,6 +1564,14 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<es>AutoCombine no está soportado</es> <!-- !!! -->
 			<it>AutoCombine non è supportato</it> <!-- !!! -->
 			<cz>AutoCombine není podporován</cz> <!-- !!! -->
+		</text>
+		<text name="COURSEPLAY_BALER_NEEDS_NETS">
+			<en>: %s needs new net rolls</en>
+			<de>: %s braucht neue Wickelnetze</de>
+			<fr>: %s needs new net rolls</fr> <!-- !!! -->
+			<es>: %s needs new net rolls</es> <!-- !!! -->
+			<it>: %s needs new net rolls</it> <!-- !!! -->
+			<cz>: %s needs new net rolls</cz> <!-- !!! -->
 		</text>
 
 
