@@ -3,7 +3,6 @@ function courseplay:drive(self, dt)
 	if g_server == nil or not self.isMotorStarted or not courseplay:getCanUseAiMode(self) then
 		return;
 	end;
-
 	local refSpeed = 0
 	local cx,cy,cz = 0,0,0
 	-- may i drive or should i hold position for some reason?
@@ -189,7 +188,7 @@ function courseplay:drive(self, dt)
 		end
 	end
 
-	if courseplay.debugChannels[12] then
+	if courseplay.debugChannels[12] and self.cp.isTurning == nil then
 		drawDebugPoint(cx, cty+3, cz, 1, 0 , 1, 1);
 	end;
 
@@ -240,7 +239,7 @@ function courseplay:drive(self, dt)
 		--courseplay:debug(string.format("new WP: %d x %d (angle) %d ", cx, cz, angle ), 2)
 	end
 
-	if courseplay.debugChannels[12] then
+	if courseplay.debugChannels[12] and self.cp.isTurning == nil then
 		drawDebugPoint(cx, cty+3, cz, 0, 1 , 1, 1);
 	end;
 

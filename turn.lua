@@ -85,9 +85,9 @@ function courseplay:turn(self, dt) --!!!
 					self.cp.turnStage = 0;
 					local _,_,z1 = worldToLocal(self.rootNode,self.Waypoints[self.recordnumber+1].cx, backY, self.Waypoints[self.recordnumber+1].cz)
 					local _,_,z2 = worldToLocal(self.rootNode,self.Waypoints[self.recordnumber+2].cx, backY, self.Waypoints[self.recordnumber+2].cz)
-					if z1 > 0 then
+					if z1 > 6 then
 						self.recordnumber = self.recordnumber +1
-					elseif z2 > 0 then
+					elseif z2 > 6 then
 						self.recordnumber = self.recordnumber +2
 					else
 						self.recordnumber = self.recordnumber +3
@@ -311,7 +311,7 @@ function courseplay:turnWithOffset(self)
 	if curPoint.turnEnd and curPoint.laneDir ~= nil then
 		local dir = curPoint.laneDir;
 		local turnDir = curPoint.turn;
-		
+		print("curPoint.laneDir: "..tostring(curPoint.laneDir))
 		if dir == "E" then
 			cz = curPoint.cz + offsetX;
 		elseif dir == "W" then
