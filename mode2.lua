@@ -139,7 +139,16 @@ function courseplay:handle_mode2(self, dt)
 
 		-- are there any combines out there that need my help?
 		if self.timeout < self.timer then
-			courseplay:update_combines(self)
+			if self.cp.lastActiveCombine ~= nil then
+				local distance = courseplay:distance_to_object(self, self.cp.lastActiveCombine)
+				if distance > 20 then
+					self.cp.lastActiveCombine = nil
+				else
+					courseplay:debug(string.format("%s (%s): last combine is just %.0f away, so wait", nameNum(self), tostring(self.id), distance), 4);
+				end
+			else 
+				courseplay:update_combines(self)
+			end
 			courseplay:set_timeout(self, 5000)
 		end
 
@@ -701,7 +710,7 @@ function courseplay:unload_combine(self, dt)
 				local delay = (combine.acDelayTimeToMoveBack - combine.acDelayTimeToStopMovement)/2 + combine.acDelayTimeToStopMovement
 				combine.acDelay = delay
 			end
-		elseif distance < 100 and mode == 2 then
+		elseif distance >= 50 and mode == 2 then
 			allowedToDrive = courseplay:brakeToStop(self)
 		end
 	end

@@ -274,6 +274,7 @@ function courseplay:unregister_at_combine(self, combine)
 
 	self.allow_follwing = false
 	self.courseplay_position = nil
+	self.cp.lastActiveCombine = self.active_combine
 	self.active_combine = nil
 	self.ai_state = 1
 
