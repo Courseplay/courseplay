@@ -24,9 +24,30 @@ function courseplay:goReverse(self,lx,lz)
 		local frontNode = tipper.cp.frontNode
 		local xFrontNode,yFrontNode,zFrontNode = getWorldTranslation(frontNode)
 		local tipperFillLevel, tipperCapacity = self:getAttachedTrailersFillLevelAndCapacity();
-		if debugActive then drawDebugPoint(xFrontNode,yFrontNode+3,zFrontNode, 1, 0 , 0, 1)end;
 		local tcx,tcy,tcz =0,0,0
 		local index = self.recordnumber +1
+		if debugActive then drawDebugPoint(xFrontNode,yFrontNode+3,zFrontNode, 1, 0 , 0, 1)
+			if not self.cp.checkReverseValdityPrinted then
+				local checkValdity = false
+				for i=index, self.maxnumber do
+					if self.Waypoints[i].rev then 
+						tcx = self.Waypoints[i].cx
+						tcz = self.Waypoints[i].cz
+						local _,_,z = worldToLocal(node, tcx,yTipper,tcz)
+						if z*inverse < 0 then
+							checkValdity = true
+							break
+						end
+					else
+						break
+					end		
+				end
+				if not checkValdity then
+					print(nameNum(self) ..": reverse course is not valid")
+				end
+				self.cp.checkReverseValdityPrinted = true
+			end
+		end;
 		for i= index, self.maxnumber do
 			if self.Waypoints[i].rev then
 				tcx = self.Waypoints[i].cx
@@ -46,6 +67,7 @@ function courseplay:goReverse(self,lx,lz)
 		srX,srZ = self.Waypoints[self.recordnumber].cx,self.Waypoints[self.recordnumber].cz
 		local _,_,tsrZ = worldToLocal(self.rootNode,srX,yTipper,srZ)
 		if tsrZ > 0 then
+			self.cp.checkReverseValdityPrinted = false
 			self.recordnumber = self.recordnumber +1 
 		end 
 

@@ -329,7 +329,10 @@ function courseplay:stop(self)
 	self.cp.numWaitPoints = 0;
 	self.cp.waitPoints = {};
 	self.cp.mode7GoBackBeforeUnloading = false
-
+	if self.cp.checkReverseValdityPrinted then
+		self.cp.checkReverseValdityPrinted = false
+	end
+	
 	self.motor:setSpeedLevel(0, false);
 	self.motor.maxRpmOverride = nil;
 	self.startWork = nil
