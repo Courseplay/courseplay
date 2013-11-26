@@ -85,12 +85,23 @@ function courseplay:turn(self, dt) --!!!
 					self.cp.turnStage = 0;
 					local _,_,z1 = worldToLocal(self.rootNode,self.Waypoints[self.recordnumber+1].cx, backY, self.Waypoints[self.recordnumber+1].cz)
 					local _,_,z2 = worldToLocal(self.rootNode,self.Waypoints[self.recordnumber+2].cx, backY, self.Waypoints[self.recordnumber+2].cz)
-					if z1 > 6 then
-						self.recordnumber = self.recordnumber +1
-					elseif z2 > 6 then
-						self.recordnumber = self.recordnumber +2
+					local _,_,z3 = worldToLocal(self.rootNode,self.Waypoints[self.recordnumber+3].cx, backY, self.Waypoints[self.recordnumber+3].cz)
+					if self.cp.isCombine then
+						if z2 > 6 then
+							self.recordnumber = self.recordnumber +2
+						elseif z3 > 6 then
+							self.recordnumber = self.recordnumber +3
+						else
+							self.recordnumber = self.recordnumber +4
+						end
 					else
-						self.recordnumber = self.recordnumber +3
+						if z1 > 0 then
+							self.recordnumber = self.recordnumber +1
+						elseif z2 > 0 then
+							self.recordnumber = self.recordnumber +2
+						else
+							self.recordnumber = self.recordnumber +3
+						end
 					end
 					courseplay:lowerImplements(self, true, true)
 					self.cp.turnTimer = 8000
@@ -311,7 +322,7 @@ function courseplay:turnWithOffset(self)
 	if curPoint.turnEnd and curPoint.laneDir ~= nil then
 		local dir = curPoint.laneDir;
 		local turnDir = curPoint.turn;
-		print("curPoint.laneDir: "..tostring(curPoint.laneDir))
+		
 		if dir == "E" then
 			cz = curPoint.cz + offsetX;
 		elseif dir == "W" then
