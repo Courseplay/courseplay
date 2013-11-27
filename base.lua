@@ -317,11 +317,22 @@ function courseplay:load(xmlFile)
 	self.cp.headland = {
 		numLanes = 0;
 	};
-	self.cp.selectedFieldEdgePathNumber = 0;
-	self.cp.fieldEdgeButtonsCreated = false;
-	self.cp.customSingleFieldEdge = nil;
-	self.cp.customFieldScanned = false;
-	self.cp.customFieldNumber = 0;
+
+	self.cp.fieldEdge = {
+		selectedField = {
+			fieldNum = 0;
+			numPoints = 0;
+			buttonsCreated = false;
+		};
+		customField = {
+			points = nil;
+			numPoints = 0;
+			isCreated = false;
+			show = false;
+			fieldNum = 0;
+			selectedFieldNumExists = false;
+		};
+	};
 
 	self.mouse_enabled = false
 
@@ -492,9 +503,11 @@ function courseplay:load(xmlFile)
 		courseplay:register_button(self, 1, "blank.dds", "rowButton", i, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[i], aiModeQuickSwitch.minX - courseplay.hud.infoBasePosX - 0.005, 0.015, i, nil, true);
 	end;
 
-	--Custom field edge path number
-	courseplay:register_button(self, 1, "navigate_minus.dds", "setCustomFieldEdgePathNumber", -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[4], w16px, h16px, 4, -5, false);
-	courseplay:register_button(self, 1, "navigate_plus.dds",  "setCustomFieldEdgePathNumber",  1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[4], w16px, h16px, 4,  5, false);
+	--Custom field edge path
+	courseplay:register_button(self, 1, "eye.png", "toggleCustomFieldEdgePathShow", nil, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[3], w16px, h16px, 3, nil, false);
+
+	courseplay:register_button(self, 1, "navigate_minus.png", "setCustomFieldEdgePathNumber", -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[4], w16px, h16px, 4, -5, false);
+	courseplay:register_button(self, 1, "navigate_plus.png",  "setCustomFieldEdgePathNumber",  1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[4], w16px, h16px, 4,  5, false);
 	courseplay:register_button(self, 1, nil, "setCustomFieldEdgePathNumber", 1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[4], mouseWheelArea.w, mouseWheelArea.h, 4, 5, true, true);
 
 
@@ -844,6 +857,12 @@ function courseplay:update(dt)
 				self.cp.HUD0tractorName = nil
 				self.cp.HUD0tractor = false
 			end
+
+		elseif self.cp.hud.currentPage == 1 then
+			if not self.play and self.cp.fieldEdge.customField.show and self.cp.fieldEdge.customField.points ~= nil then
+				courseplay:showFieldEdgePath(self, "customField");
+			end;
+
 		elseif self.cp.hud.currentPage == 4 then
 			self.cp.HUD4hasActiveCombine = self.active_combine ~= nil
 			if self.cp.HUD4hasActiveCombine == true then
@@ -853,18 +872,24 @@ function courseplay:update(dt)
 			if self.saved_combine ~= nil then
 			 self.cp.HUD4savedCombineName = self.saved_combine.name
 			end
-		end
-	end
+
+		elseif self.cp.hud.currentPage == 8 then
+			if self.cp.fieldEdge.selectedField.show and self.cp.fieldEdge.selectedField.fieldNum > 0 then
+				courseplay:showFieldEdgePath(self, "selectedField");
+			end;
+		end;
+	end;
+
 
 	if g_server ~= nil and g_currentMission.missionDynamicInfo.isMultiplayer then 
 		for _,v in pairs(courseplay.checkValues) do
 			self.cp[v .. "Memory"] = courseplay:checkForChangeAndBroadcast(self, "self.cp." .. v , self.cp[v], self.cp[v .. "Memory"]);
-		end
-	end
+		end;
+	end;
 end; --END update()
 
 function courseplay:updateTick(dt)
-	if not self.cp.fieldEdgeButtonsCreated and courseplay.fields.numAvailableFields > 0 then
+	if not self.cp.fieldEdge.selectedField.buttonsCreated and courseplay.fields.numAvailableFields > 0 then
 		courseplay:createFieldEdgeButtons(self);
 	end;
 
@@ -1106,12 +1131,10 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		courseplay:changeLaneOffset(self, nil, tonumber(offsetData[1]));
 		courseplay:changeToolOffsetX(self, nil, tonumber(offsetData[2]), true);
 		courseplay:changeToolOffsetZ(self, nil, tonumber(offsetData[3]));
-		--self.cp.totalOffsetX = self.cp.laneOffset + self.cp.toolOffsetX;
 		courseplay:toggleSymmetricLaneChange(self, offsetData[4] == "true");
-		--print(string.format("%s (loadFromXML): laneOffset=%s, toolOffset x,z=%s,%s, totalOffsetX=%s, symmetricalLaneChange=%s", nameNum(self), self.cp.laneOffset, self.cp.toolOffsetX, self.cp.toolOffsetZ, self.cp.totalOffsetX, tostring(self.cp.symmetricLaneChange)));
 
 		--abortWork
-		self.abortWork = getXMLInt(xmlFile, key .. "#AbortWork");
+		self.abortWork = Utils.getNoNil(getXMLInt(xmlFile, key .. "#abortWork"), 0);
 		if self.abortWork == 0 then
 			self.abortWork = nil;
 		end;
@@ -1186,7 +1209,6 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 		' combine_offset="'          .. tostring(self.combine_offset)                    .. '"' ..
 		' fill_follow="'             .. tostring(self.required_fill_level_for_follow)    .. '"' ..
 		' fill_drive="'              .. tostring(self.required_fill_level_for_drive_on)  .. '"' ..
-		' AbortWork="'               .. tostring(self.abortWork)                         .. '"' ..
 		' turn_radius="'             .. tostring(self.turn_radius)                       .. '"' ..
 		' waitTime="'                .. tostring(self.waitTime)                          .. '"' ..
 		' courses="'                 .. tostring(table.concat(self.loaded_courses, ",")) .. '"' ..
@@ -1199,6 +1221,9 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 		offsetData .. 
 		' ai_mode="'                 .. tostring(self.ai_mode) .. '"';
 
+	if self.abortWork then
+		attributes = attributes .. ' abortWork="' .. tostring(self.abortWork) .. '"';
+	end;
 	if self.cp.isCombine then
 		attributes = attributes .. ' driverPriorityUseFillLevel="' .. tostring(self.cp.driverPriorityUseFillLevel) .. '"';
 	end;

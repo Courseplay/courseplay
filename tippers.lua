@@ -107,7 +107,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 			or object.allowTipDischarge 
 			or courseplay:isFoldable(object)) 
 			and not object.cp.isCaseIHMagnum340Titanium 
-			and not object.cp.cp.isCaseIHPuma160Titanium 
+			and not object.cp.isCaseIHPuma160Titanium 
 			then
 				tipper_attached = true;
 				table.insert(self.tippers, object);

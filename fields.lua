@@ -3,7 +3,7 @@
 
 function courseplay:setUpFieldsIngameData()
 	--print("call setUpIngameData()");
-	courseplay.fields.fieldChannels = { g_currentMission.sowingChannel, g_currentMission.cultivatorChannel, g_currentMission.ploughChannel };
+	courseplay.fields.fieldChannels = { g_currentMission.cultivatorChannel, g_currentMission.ploughChannel, g_currentMission.sowingChannel, g_currentMission.sowingWidthChannel };
 	courseplay.fields.lastChannel = g_currentMission.cultivatorChannel;
 	courseplay.fields.ingameDataSetUp = true;
 end;
@@ -30,6 +30,7 @@ function courseplay:setAllFieldEdges()
 					result[fieldNum] = {
 						fieldNum = fieldNum;
 						points = edgePoints;
+						numPoints = #edgePoints;
 						name = string.format("%s %d", courseplay.locales.COURSEPLAY_FIELD, fieldNum);
 					};
 					--print(string.format("Field %d: >= 30 edge points found --> valid, no retry", fieldNum));
@@ -162,7 +163,7 @@ function courseplay:getSingleFieldEdge(initObject, scanStep, maxN, randomDir)
 			end;
 
 			--print("found")
-			table.insert(coordinates, { cx = px, cz = pz });
+			table.insert(coordinates, { cx = px, cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, px, 1, pz), cz = pz });
 
 			if #coordinates > 5 then
 				local dis0 = Utils.vector2Length(px-coordinates[1].cx, pz-coordinates[1].cz) --doch [1]?

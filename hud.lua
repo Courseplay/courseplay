@@ -159,11 +159,15 @@ function courseplay:setHudContent(self)
 				self.cp.hud.content.pages[1][4][1].text = "";
 				self.cp.hud.content.pages[1][4][2].text = "";
 				self.cp.hud.content.pages[1][5][1].text = "";
-				if self.cp.customFieldScanned then
+				if self.cp.fieldEdge.customField.isCreated then
 					self.cp.hud.content.pages[1][4][1].text = courseplay:get_locale(self, "COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER");
-					if self.cp.customFieldNumber > 0 then
-						self.cp.hud.content.pages[1][4][2].text = tostring(self.cp.customFieldNumber);
-						self.cp.hud.content.pages[1][5][1].text = string.format(courseplay:get_locale(self, "COURSEPLAY_ADD_CURRENT_FIELD_EDGE_PATH_TO_LIST"), self.cp.customFieldNumber);
+					if self.cp.fieldEdge.customField.fieldNum > 0 then
+						self.cp.hud.content.pages[1][4][2].text = tostring(self.cp.fieldEdge.customField.fieldNum);
+						if self.cp.fieldEdge.customField.selectedFieldNumExists then
+							self.cp.hud.content.pages[1][5][1].text = string.format(courseplay:get_locale(self, "COURSEPLAY_OVERWRITE_CUSTOM_FIELD_EDGE_PATH_IN_LIST"), self.cp.fieldEdge.customField.fieldNum);
+						else
+							self.cp.hud.content.pages[1][5][1].text = string.format(courseplay:get_locale(self, "COURSEPLAY_ADD_CUSTOM_FIELD_EDGE_PATH_TO_LIST"), self.cp.fieldEdge.customField.fieldNum);
+						end;
 					else
 						self.cp.hud.content.pages[1][4][2].text = "---";
 					end;
@@ -435,8 +439,8 @@ function courseplay:setHudContent(self)
 		self.cp.hud.content.pages[8][1][1].text, self.cp.hud.content.pages[8][1][2].text = "", "";
 		if courseplay.fields.numAvailableFields > 0 then
 			self.cp.hud.content.pages[8][1][1].text = courseplay:get_locale(self, "COURSEPLAY_FIELD_EDGE_PATH");
-			if self.cp.selectedFieldEdgePathNumber > 0 then
-				self.cp.hud.content.pages[8][1][2].text = courseplay.fields.fieldData[self.cp.selectedFieldEdgePathNumber].name;
+			if self.cp.fieldEdge.selectedField.fieldNum > 0 then
+				self.cp.hud.content.pages[8][1][2].text = courseplay.fields.fieldData[self.cp.fieldEdge.selectedField.fieldNum].name;
 			else
 				self.cp.hud.content.pages[8][1][2].text = "---";
 			end;

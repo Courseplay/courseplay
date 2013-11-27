@@ -239,7 +239,7 @@ function courseplay:executeFunction(self, func, value, overwrittenPage)
 						courseplay:start_record(self);
 					elseif line == 3 then
 						courseplay:setCustomSingleFieldEdge(self);
-					elseif line == 5 and self.cp.customFieldNumber > 0 then
+					elseif line == 5 and self.cp.fieldEdge.customField.fieldNum > 0 then
 						courseplay:addCustomSingleFieldEdgeToList(self);
 					end;
 

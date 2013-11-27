@@ -80,8 +80,8 @@ function courseplay:renderButton(self, button)
 	if button.isMouseWheelArea then
 		if pg == 1 then
 			if fn == "setCustomFieldEdgePathNumber" then
-				button.canScrollUp =   self.cp.customFieldScanned and self.cp.customFieldNumber < courseplay.fields.customFieldMaxNum;
-				button.canScrollDown = self.cp.customFieldScanned and self.cp.customFieldNumber > 0;
+				button.canScrollUp =   self.cp.fieldEdge.customField.isCreated and self.cp.fieldEdge.customField.fieldNum < courseplay.fields.customFieldMaxNum;
+				button.canScrollDown = self.cp.fieldEdge.customField.isCreated and self.cp.fieldEdge.customField.fieldNum > 0;
 			end;
 
 		elseif pg == 2 then
@@ -134,8 +134,8 @@ function courseplay:renderButton(self, button)
 
 		elseif pg == 8 then
 			if fn == "setFieldEdgePath" then
-				button.canScrollUp   = courseplay.fields.numAvailableFields > 0 and self.cp.selectedFieldEdgePathNumber > 0;
-				button.canScrollDown = courseplay.fields.numAvailableFields > 0 and self.cp.selectedFieldEdgePathNumber < courseplay.fields.numAvailableFields;
+				button.canScrollUp   = courseplay.fields.numAvailableFields > 0 and self.cp.fieldEdge.selectedField.fieldNum > 0;
+				button.canScrollDown = courseplay.fields.numAvailableFields > 0 and self.cp.fieldEdge.selectedField.fieldNum < courseplay.fields.numAvailableFields;
 			elseif fn == "changeWorkWidth" then
 				button.canScrollUp =   true;
 				button.canScrollDown = self.cp.workWidth > 0.1;
@@ -156,11 +156,13 @@ function courseplay:renderButton(self, button)
 		elseif pg == 1 then
 			if fn == "setAiMode" then
 				button.show = self.cp.canSwitchMode;
+			elseif fn == "toggleCustomFieldEdgePathShow" then
+				button.show = not self.play and self.cp.fieldEdge.customField.isCreated;
 			elseif fn == "setCustomFieldEdgePathNumber" then
 				if prm < 0 then
-					button.show = self.cp.customFieldScanned and self.cp.customFieldNumber > 0;
+					button.show = not self.play and self.cp.fieldEdge.customField.isCreated and self.cp.fieldEdge.customField.fieldNum > 0;
 				elseif prm > 0 then
-					button.show = self.cp.customFieldScanned and self.cp.customFieldNumber < courseplay.fields.customFieldMaxNum;
+					button.show = not self.play and self.cp.fieldEdge.customField.isCreated and self.cp.fieldEdge.customField.fieldNum < courseplay.fields.customFieldMaxNum;
 				end;
 			end;
 
@@ -265,13 +267,15 @@ function courseplay:renderButton(self, button)
 
 		--Page 8
 		elseif pg == 8 then
-			if fn == "setFieldEdgePath" then
+			if fn == "toggleSelectedFieldEdgePathShow" then
+				button.show = courseplay.fields.numAvailableFields > 0 and self.cp.fieldEdge.selectedField.fieldNum > 0;
+			elseif fn == "setFieldEdgePath" then
 				button.show = courseplay.fields.numAvailableFields > 0;
 				if button.show then
 					if prm < 0 then
-						button.show = self.cp.selectedFieldEdgePathNumber > 0;
+						button.show = self.cp.fieldEdge.selectedField.fieldNum > 0;
 					elseif prm > 0 then
-						button.show = self.cp.selectedFieldEdgePathNumber < courseplay.fields.numAvailableFields;
+						button.show = self.cp.fieldEdge.selectedField.fieldNum < courseplay.fields.numAvailableFields;
 					end;
 				end;
 			elseif fn == "changeWorkWidth" and prm < 0 then

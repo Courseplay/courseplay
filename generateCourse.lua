@@ -13,8 +13,8 @@ TODO:
 
 function courseplay:generateCourse(self)
 	local fieldCourseName = tostring(self.current_course_name);
-	if self.cp.selectedFieldEdgePathNumber > 0 then
-		fieldCourseName = courseplay.fields.fieldData[self.cp.selectedFieldEdgePathNumber].name;
+	if self.cp.fieldEdge.selectedField.fieldNum > 0 then
+		fieldCourseName = courseplay.fields.fieldData[self.cp.fieldEdge.selectedField.fieldNum].name;
 	end;
 	courseplay:debug(string.format("generateCourse() called for %q", fieldCourseName), 7);
 
@@ -25,8 +25,8 @@ function courseplay:generateCourse(self)
 	end;
 
 	local poly = {};
-	if self.cp.selectedFieldEdgePathNumber > 0 then
-		poly.points = courseplay.fields.fieldData[self.cp.selectedFieldEdgePathNumber].points;
+	if self.cp.fieldEdge.selectedField.fieldNum > 0 then
+		poly.points = courseplay.fields.fieldData[self.cp.fieldEdge.selectedField.fieldNum].points;
 	else
 		poly.points = self.Waypoints;
 	end;
@@ -681,7 +681,7 @@ function courseplay:generateCourse(self)
 	courseplay:updateWaypointSigns(self);
 
 	self.cp.hasGeneratedCourse = true;
-	self.cp.selectedFieldEdgePathNumber = 0;
+	courseplay:setFieldEdgePath(self, nil, 0);
 	courseplay:validateCourseGenerationData(self);
 	courseplay:validateCanSwitchMode(self);
 
