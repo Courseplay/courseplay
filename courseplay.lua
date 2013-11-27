@@ -58,6 +58,7 @@ function courseplay:initialize()
 		"debug", 
 		"distance", 
 		"drive", 
+		"fields", 
 		"fruit", 
 		"generateCourse", 
 		"global", 
@@ -110,6 +111,7 @@ function courseplay:initialize()
 end;
 
 function courseplay:setGlobalData()
+	--HUD
 	local customPosX, customPosY = nil, nil;
 	local customGitPosX, customGitPosY = nil, nil;
 	local savegame = g_careerScreen.savegames[g_careerScreen.selectedIndex];
@@ -155,7 +157,7 @@ function courseplay:setGlobalData()
 		warningRed =    { 240/255,  25/255,  25/255, 1    };
 		shadow =        {  35/255,  35/255,  35/255, 1    };
 	};
-	ch.clickSound = createSample("clickSound");
+
 	ch.pagesPerMode = {
 		--Pg 0  Pg 1  Pg 2  Pg 3   Pg 4   Pg 5  Pg 6  Pg 7  Pg 8   Pg 9
 		{ true, true, true, true,  false, true, true, true, false, false }; --Mode 1
@@ -203,12 +205,20 @@ function courseplay:setGlobalData()
 		[9] = courseplay.hud.infoBasePosX + 0.230,
 	};
 	courseplay.hud.col2posXforce = {
+		[1] = {
+			[4] = courseplay.hud.infoBasePosX + 0.182;
+		};
 		[7] = {
 			[5] = courseplay.hud.infoBasePosX + 0.105;
 			[6] = courseplay.hud.infoBasePosX + 0.105;
 		};
 	};
 
+	ch.clickSound = createSample("clickSound");
+	loadSample(courseplay.hud.clickSound, Utils.getFilename("sounds/cpClickSound.wav", courseplay.path), false);
+
+
+	--GLOBALINFOTEXT
 	courseplay.globalInfoText = {};
 	courseplay.globalInfoText.fontSize = 0.02;
 	courseplay.globalInfoText.lineHeight = courseplay.globalInfoText.fontSize * 1.1;
@@ -229,8 +239,8 @@ function courseplay:setGlobalData()
 	courseplay.globalInfoText.levelColors["-1"] = courseplay.hud.colors.activeRed;
 	courseplay.globalInfoText.levelColors["-2"] = courseplay.hud.colors.closeRed;
 
-	loadSample(courseplay.hud.clickSound, Utils.getFilename("sounds/cpClickSound.wav", courseplay.path), false);
 
+	--TRIGGERS
 	courseplay.confirmedNoneTriggers = {};
 	courseplay.confirmedNoneTriggersCounter = 0;
 
@@ -265,7 +275,7 @@ function courseplay:setGlobalData()
 	16	[empty]
 	--]]
 
-
+	--MULTIPLAYER
 	courseplay.checkValues = {
 		"infoText",
 		"HUD0noCourseplayer",
@@ -285,6 +295,7 @@ function courseplay:setGlobalData()
 		"HUD4savedCombineName"
 	};
 
+	--SIGNS
 	local signData = {
 		normal = { 10000, "current",  5 },
 		start =  {   500, "current",  3 },
@@ -316,9 +327,21 @@ function courseplay:setGlobalData()
 		courseplay.signs.protoTypes[signType] = itemNode;
 	end;
 
+	--FIELDS
+	courseplay.fields = {
+		fieldData = {};
+		numAvailableFields = 0;
+		fieldChannels = {};
+		lastChannel = 0;
+		allFieldsScanned = false;
+		ingameDataSetUp = false;
+		customFieldMaxNum = 150;
+	};
 
+	--PATHFINDING
 	courseplay.pathfinding = {};
 
+	--UTF8
 	courseplay.allowedCharacters = courseplay:getAllowedCharacters();
 	courseplay.utf8normalization = courseplay:getUtf8normalization();
 

@@ -234,9 +234,13 @@ function courseplay:executeFunction(self, func, value, overwrittenPage)
 
 
 			elseif not self.drive then
-				if not self.record and not self.record_pause and not self.play and table.getn(self.Waypoints) == 0 and not self.createCourse then
+				if not self.record and not self.record_pause and not self.play and #(self.Waypoints) == 0 and not self.createCourse then
 					if line == 1 then
 						courseplay:start_record(self);
+					elseif line == 3 then
+						courseplay:setCustomSingleFieldEdge(self);
+					elseif line == 5 and self.cp.customFieldNumber > 0 then
+						courseplay:addCustomSingleFieldEdgeToList(self);
 					end;
 
 				elseif self.record or self.record_pause then
@@ -341,5 +345,12 @@ function courseplay:createNewCombinedInputBinding(name)
 			actionIndex = actionIndex;
 			displayName = courseplay.inputBindings.modifier.displayName .. " + " .. KeyboardHelper.getKeyNames(originalAction.keys1);
 		};
+
+		if g_i18n:hasText(name) then
+			local text = g_i18n:getText(name) .. " (COMBINED)";
+			g_i18n:setText(action.name, text);
+			g_i18n.globalI18N.texts[action.name] = text;
+			print(string.format("CP: set newly created inputbinding text for \"%s\" to \"%s\"", tostring(action.name), tostring(text)));
+		end;
 	end;
 end;

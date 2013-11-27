@@ -318,6 +318,10 @@ function courseplay:load(xmlFile)
 		numLanes = 0;
 	};
 	self.cp.selectedFieldEdgePathNumber = 0;
+	self.cp.fieldEdgeButtonsCreated = false;
+	self.cp.customSingleFieldEdge = nil;
+	self.cp.customFieldScanned = false;
+	self.cp.customFieldNumber = 0;
 
 	self.mouse_enabled = false
 
@@ -488,6 +492,11 @@ function courseplay:load(xmlFile)
 		courseplay:register_button(self, 1, "blank.dds", "rowButton", i, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[i], aiModeQuickSwitch.minX - courseplay.hud.infoBasePosX - 0.005, 0.015, i, nil, true);
 	end;
 
+	--Custom field edge path number
+	courseplay:register_button(self, 1, "navigate_minus.dds", "setCustomFieldEdgePathNumber", -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[4], w16px, h16px, 4, -5, false);
+	courseplay:register_button(self, 1, "navigate_plus.dds",  "setCustomFieldEdgePathNumber",  1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[4], w16px, h16px, 4,  5, false);
+	courseplay:register_button(self, 1, nil, "setCustomFieldEdgePathNumber", 1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[4], mouseWheelArea.w, mouseWheelArea.h, 4, 5, true, true);
+
 
 	--Page 2: Course management
 	--course navigation
@@ -626,11 +635,7 @@ function courseplay:load(xmlFile)
 	courseplay:register_button(self, 7, "copy.png",          "copyCourse",      nil, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[6], w16px, h16px);
 
 	--Page 8: Course generation
-	if courseplay.fields ~= nil and courseplay.fields.fieldDefs ~= nil and courseplay.fields.numberOfFields > 0 then
-		courseplay:register_button(self, 8, "navigate_up.dds",   "setFieldEdgePath", -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, nil, false);
-		courseplay:register_button(self, 8, "navigate_down.dds", "setFieldEdgePath",  1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, nil, false);
-		courseplay:register_button(self, 8, nil, nil, nil, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], 0.015 + w16px, mouseWheelArea.h, 1, nil, true, false);
-	end;
+	--Note: line 1 (field edges) will be applied in first updateTick() runthrough
 
 	courseplay:register_button(self, 8, "navigate_minus.dds", "changeWorkWidth", -0.1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[2], w16px, h16px, 2,  -0.5, false);
 	courseplay:register_button(self, 8, "navigate_plus.dds",  "changeWorkWidth",  0.1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[2], w16px, h16px, 2,   0.5, false);
@@ -859,6 +864,10 @@ function courseplay:update(dt)
 end; --END update()
 
 function courseplay:updateTick(dt)
+	if not self.cp.fieldEdgeButtonsCreated and courseplay.fields.numAvailableFields > 0 then
+		courseplay:createFieldEdgeButtons(self);
+	end;
+
 	--attached or detached implement?
 	if self.tools_dirty then
 		courseplay:reset_tools(self)

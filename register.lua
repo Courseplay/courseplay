@@ -1,10 +1,11 @@
---COURSEPLAY FIELDS
+--[[COURSEPLAY FIELDS
 local cpfPath = g_currentModDirectory .. "CourseplayFields.lua";
 if fileExists(cpfPath) then
 	source(cpfPath);
 else
 	print("Error: " .. cpfPath .. " could not be loaded!");
 end;
+]]
 
 
 --COURSEPLAY

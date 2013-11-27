@@ -83,6 +83,9 @@ function courseplay_manager:deleteMap()
 		end;
 		courseplay.signs.buffer[section] = {};
 	end;
+
+	courseplay.fields.allFieldsScanned = false;
+	courseplay.fields.ingameDataSetUp = false;
 end
 
 function courseplay_manager:draw()
@@ -188,7 +191,7 @@ function courseplay_manager:mouseEvent(posX, posY, isDown, isUp, button)
 	end;
 end;
 
-function courseplay_manager:update()
+function courseplay_manager:update(dt)
 	--courseplay:debug(table.getn(g_currentMission.courseplay_courses), 8);
 
 	if g_currentMission.controlledVehicle == nil then
@@ -198,6 +201,19 @@ function courseplay_manager:update()
 			g_currentMission:addExtraPrintText(courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION_SECONDARY.displayName .. ": " .. courseplay:get_locale(self, "COURSEPLAY_MOUSEARROW_SHOW"));
 		end;
 	end;
+
+	--SETUP INGAME FIELD DATA
+	if not courseplay.fields.ingameDataSetUp then
+		courseplay:setUpFieldsIngameData();
+	end;
+
+	--SCAN ALL FIELD EDGES
+	if not courseplay.fields.allFieldsScanned then
+		courseplay:setAllFieldEdges();
+	end;
+end;
+
+function courseplay_manager:updateTick(dt)
 end;
 
 function courseplay_manager:keyEvent()

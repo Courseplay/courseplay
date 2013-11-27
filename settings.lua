@@ -961,34 +961,36 @@ function courseplay:setHeadlandLanes(self, change_by)
 	courseplay:validateCourseGenerationData(self);
 end;
 
-function courseplay:validateCourseGenerationData(self)
+function courseplay:validateCourseGenerationData(vehicle)
+	local numWaypoints = 0;
 	local hasEnoughWaypoints = false;
-	if self.Waypoints ~= nil then
-		hasEnoughWaypoints = table.getn(self.Waypoints) > 4;
-		if self.cp.headland.numLanes ~= 0 then
-			hasEnoughWaypoints = table.getn(self.Waypoints) >= 20;
+	
+	if vehicle.cp.selectedFieldEdgePathNumber > 0 then
+		numWaypoints = #(courseplay.fields.fieldData[vehicle.cp.selectedFieldEdgePathNumber].points);
+		hasEnoughWaypoints = numWaypoints > 4
+		if vehicle.cp.headland.numLanes ~= 0 then
+			hasEnoughWaypoints = numWaypoints >= 20;
 		end;
-	end;
-	if self.cp.selectedFieldEdgePathNumber > 0 then
-		local waypoints = courseplay.fields.fieldDefs[self.cp.selectedFieldEdgePathNumber].edgePointsCalculated;
-		hasEnoughWaypoints = table.getn(waypoints) > 4
-		if self.cp.headland.numLanes ~= 0 then
-			hasEnoughWaypoints = table.getn(waypoints) >= 20;
+	elseif vehicle.Waypoints ~= nil then
+		numWaypoints = #(vehicle.Waypoints);
+		hasEnoughWaypoints = numWaypoints > 4;
+		if vehicle.cp.headland.numLanes ~= 0 then
+			hasEnoughWaypoints = numWaypoints >= 20;
 		end;
 	end;
 
-	if not self.cp.hasGeneratedCourse
+	if (vehicle.cp.selectedFieldEdgePathNumber > 0 or not vehicle.cp.hasGeneratedCourse)
 	and hasEnoughWaypoints
-	and self.cp.hasStartingCorner == true 
-	and self.cp.hasStartingDirection == true 
-	and (self.numCourses == nil or (self.numCourses ~= nil and self.numCourses == 1) or self.cp.selectedFieldEdgePathNumber > 0) 
+	and vehicle.cp.hasStartingCorner == true 
+	and vehicle.cp.hasStartingDirection == true 
+	and (vehicle.numCourses == nil or (vehicle.numCourses ~= nil and vehicle.numCourses == 1) or vehicle.cp.selectedFieldEdgePathNumber > 0) 
 	then
-		self.cp.hasValidCourseGenerationData = true;
+		vehicle.cp.hasValidCourseGenerationData = true;
 	else
-		self.cp.hasValidCourseGenerationData = false;
+		vehicle.cp.hasValidCourseGenerationData = false;
 	end;
 
-	courseplay:debug(string.format("%s: hasGeneratedCourse=%s, hasEnoughWaypoints=%s, hasStartingCorner=%s, hasStartingDirection=%s, numCourses=%s, self.cp.selectedFieldEdgePathNumber=%s ==> hasValidCourseGenerationData=%s", nameNum(self), tostring(self.cp.hasGeneratedCourse), tostring(hasEnoughWaypoints), tostring(self.cp.hasStartingCorner), tostring(self.cp.hasStartingDirection), tostring(self.numCourses), tostring(self.cp.selectedFieldEdgePathNumber), tostring(self.cp.hasValidCourseGenerationData)), 7);
+	courseplay:debug(string.format("%s: hasGeneratedCourse=%s, hasEnoughWaypoints=%s, hasStartingCorner=%s, hasStartingDirection=%s, numCourses=%s, selectedFieldEdgePathNumber=%s ==> hasValidCourseGenerationData=%s", nameNum(vehicle), tostring(vehicle.cp.hasGeneratedCourse), tostring(hasEnoughWaypoints), tostring(vehicle.cp.hasStartingCorner), tostring(vehicle.cp.hasStartingDirection), tostring(vehicle.numCourses), tostring(vehicle.cp.selectedFieldEdgePathNumber), tostring(vehicle.cp.hasValidCourseGenerationData)), 7);
 end;
 
 function courseplay:validateCanSwitchMode(self)
@@ -1040,31 +1042,31 @@ function courseplay:reloadCoursesFromXML(self)
 	end
 end;
 
-function courseplay:setFieldEdgePath(self, changeDir)
+function courseplay:setFieldEdgePath(vehicle, changeDir)
 	--print("setFieldEdgePath()");
-	--print("\\___ currentNum = " .. tostring(self.cp.selectedFieldEdgePathNumber));
-	local newFieldNum = self.cp.selectedFieldEdgePathNumber + changeDir;
+	--print("\\___ currentNum = " .. tostring(vehicle.cp.selectedFieldEdgePathNumber));
+	local newFieldNum = vehicle.cp.selectedFieldEdgePathNumber + changeDir;
 	--print("\\___ newFieldNum = " .. tostring(newFieldNum));
 
 	if newFieldNum == 0 then
-		self.cp.selectedFieldEdgePathNumber = newFieldNum;
+		vehicle.cp.selectedFieldEdgePathNumber = newFieldNum;
 		return;
 	end;
 
-	while courseplay.fields.fieldDefs[newFieldNum] == nil do
+	while courseplay.fields.fieldData[newFieldNum] == nil do
 		--print("\\___ courseplay.fields.fieldDefs[newFieldNum] == nil");
 		if newFieldNum == 0 then
-			self.cp.selectedFieldEdgePathNumber = newFieldNum;
+			vehicle.cp.selectedFieldEdgePathNumber = newFieldNum;
 			return;
 		end;
-		newFieldNum = Utils.clamp(newFieldNum + changeDir, 0, courseplay.fields.highestFieldNumber);
+		newFieldNum = Utils.clamp(newFieldNum + changeDir, 0, courseplay.fields.numAvailableFields);
 		--print("     \\___ newFieldNum = " .. tostring(newFieldNum));
 	end;
 
-	self.cp.selectedFieldEdgePathNumber = newFieldNum;
-	--print("\\___ self.cp.selectedFieldEdgePathNumber = " .. tostring(newFieldNum));
+	vehicle.cp.selectedFieldEdgePathNumber = newFieldNum;
+	--print("\\___ vehicle.cp.selectedFieldEdgePathNumber = " .. tostring(newFieldNum));
 
-	courseplay:validateCourseGenerationData(self);
+	courseplay:validateCourseGenerationData(vehicle);
 end;
 
 function courseplay:setMouseCursor(self, show)
@@ -1121,3 +1123,80 @@ function courseplay:goToVehicle(curVehicle, targetVehicle)
 	InputBinding.setShowMouseCursor(targetVehicle.mouse_enabled);
 end;
 
+
+--FIELD EDGE PATHS
+function courseplay:createFieldEdgeButtons(vehicle)
+	if not vehicle.cp.fieldEdgeButtonsCreated and courseplay.fields.numAvailableFields > 0 then
+		local w16px, h16px = 16/1920, 16/1080;
+		local mouseWheelArea = {
+			x = courseplay.hud.infoBasePosX + 0.005,
+			w = courseplay.hud.visibleArea.x2 - courseplay.hud.visibleArea.x1 - (2 * 0.005),
+			h = courseplay.hud.lineHeight
+		};
+		courseplay:register_button(vehicle, 8, "navigate_up.dds",   "setFieldEdgePath", -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, -5, false);
+		courseplay:register_button(vehicle, 8, "navigate_down.dds", "setFieldEdgePath",  1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1,  5, false);
+		courseplay:register_button(vehicle, 8, nil, "setFieldEdgePath", -1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[1], mouseWheelArea.w, mouseWheelArea.h, 1, -5, true, true);
+		vehicle.cp.fieldEdgeButtonsCreated = true;
+	end;
+end;
+
+--CUSTOM SINGLE FIELD EDGE PATH
+function courseplay:setCustomSingleFieldEdge(vehicle)
+	--print(string.format("%s: call setCustomSingleFieldEdge()", nameNum(vehicle)));
+
+	local x,y,z = getWorldTranslation(vehicle.rootNode);
+	--print(string.format("\t rootNode x,y,z=%s,%s,%s", tostring(x), tostring(y), tostring(z)));
+	vehicle.cp.customSingleFieldEdge = nil;
+	local numDirectionTries = 10;
+	if x and z and courseplay:is_field(x, z) then
+		--print(string.format("\t\tisField=true"));
+		for try=1,numDirectionTries do
+			local edgePoints = courseplay:getSingleFieldEdge(vehicle.rootNode, 5, 2000, try > 1);
+			if #edgePoints >= 30 then
+				vehicle.cp.customSingleFieldEdge = edgePoints;
+				--print(string.format("\t\t\tcustom field: >= 30 edge points found --> valid, no retry"));
+				break;
+			else
+				--print(string.format("\t\t\tcustom field: less than 30 edge points found --> not valid, retry=%s", tostring(try<numDirectionTries)));
+			end;
+		end;
+	end;
+
+	vehicle.cp.customFieldScanned = vehicle.cp.customSingleFieldEdge ~= nil;
+	--print(tableShow(vehicle.cp.customSingleFieldEdge, nameNum(vehicle) .. " customSingleFieldEdge"));
+end;
+
+function courseplay:setCustomFieldEdgePathNumber(vehicle, changeBy)
+	local newFieldNum = vehicle.cp.customFieldNumber + changeBy;
+	if newFieldNum == 0 then
+		vehicle.cp.customFieldNumber = newFieldNum;
+		return;
+	end;
+	while courseplay.fields.fieldData[newFieldNum] ~= nil do
+		newFieldNum = Utils.clamp(newFieldNum + changeBy, 0, courseplay.fields.customFieldMaxNum);
+		if newFieldNum == courseplay.fields.customFieldMaxNum and courseplay.fields.fieldData[newFieldNum] ~= nil then
+			vehicle.cp.customFieldNumber = 0;
+			return;
+		end;
+	end;
+
+	vehicle.cp.customFieldNumber = newFieldNum;
+end;
+
+function courseplay:addCustomSingleFieldEdgeToList(vehicle)
+	--print(string.format("%s: call addCustomSingleFieldEdgeToList()", nameNum(vehicle)));
+	courseplay.fields.fieldData[vehicle.cp.customFieldNumber] = {
+		fieldNum = vehicle.cp.customFieldNumber;
+		points = vehicle.cp.customSingleFieldEdge;
+		name = string.format("%s %d", courseplay.locales.COURSEPLAY_FIELD, vehicle.cp.customFieldNumber);
+		isCustom = true;
+	};
+	courseplay.fields.numAvailableFields = #courseplay.fields.fieldData;
+	--print(string.format("\tfieldNum=%d, name=%s, #points=%d", courseplay.fields.fieldData[vehicle.cp.customFieldNumber].fieldNum, courseplay.fields.fieldData[vehicle.cp.customFieldNumber].name, #courseplay.fields.fieldData[vehicle.cp.customFieldNumber].points));
+
+	--RESET
+	vehicle.cp.customFieldNumber = 0;
+	vehicle.cp.customSingleFieldEdge = nil;
+	vehicle.cp.customFieldScanned = false;
+	--print(string.format("\t[AFTER RESET] fieldNum=%d, points=%s, customFieldScanned=%s", vehicle.cp.customFieldNumber, tostring(vehicle.cp.customSingleFieldEdge), tostring(vehicle.cp.customFieldScanned)));
+end;
