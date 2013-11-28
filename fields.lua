@@ -1,16 +1,17 @@
 -- Field scanner
--- original algorithm by upsidedown, 24 Nov 2013
+-- original algorithm by upsidedown, 24 Nov 2013 / incorporation into Courseplay by Jakob Tischler, 27 Nov 2013
 
-function courseplay:setUpFieldsIngameData()
+function courseplay.fields:setUpFieldsIngameData()
+	--self = courseplay.fields
 	--print("call setUpIngameData()");
-	courseplay.fields.fieldChannels = { g_currentMission.cultivatorChannel, g_currentMission.ploughChannel, g_currentMission.sowingChannel, g_currentMission.sowingWidthChannel };
-	courseplay.fields.lastChannel = g_currentMission.cultivatorChannel;
-	courseplay.fields.ingameDataSetUp = true;
+	self.fieldChannels = { g_currentMission.cultivatorChannel, g_currentMission.ploughChannel, g_currentMission.sowingChannel, g_currentMission.sowingWidthChannel };
+	self.lastChannel = g_currentMission.cultivatorChannel;
+	self.ingameDataSetUp = true;
 end;
 
-function courseplay:setAllFieldEdges()
-	--print("call getAllFieldEdges()");
-	local result = {};
+function courseplay.fields:setAllFieldEdges()
+	--self = courseplay.fields
+	--print("call setAllFieldEdges()");
 	local scanStep = 5;
 	local maxN = 2000;
 	local numDirectionTries = 10;
@@ -25,15 +26,18 @@ function courseplay:setAllFieldEdges()
 
 		if isField then
 			for try=1,numDirectionTries do
-				local edgePoints = courseplay:getSingleFieldEdge(fieldDef.fieldBuyTrigger, scanStep, maxN, try > 1);
+				local edgePoints = self:getSingleFieldEdge(fieldDef.fieldBuyTrigger, scanStep, maxN, try > 1);
 				if #edgePoints >= 30 then
-					result[fieldNum] = {
-						fieldNum = fieldNum;
-						points = edgePoints;
-						numPoints = #edgePoints;
-						name = string.format("%s %d", courseplay.locales.COURSEPLAY_FIELD, fieldNum);
-					};
-					--print(string.format("Field %d: >= 30 edge points found --> valid, no retry", fieldNum));
+					--print(string.format('setAllFieldEdges(): courseplay.fields.fieldData[%d] == nil = %s', fieldNum, tostring(self.fieldData[fieldNum] == nil)));
+					if self.fieldData[fieldNum] == nil then
+						self.fieldData[fieldNum] = {
+							fieldNum = fieldNum;
+							points = edgePoints;
+							numPoints = #edgePoints;
+							name = string.format("%s %d", courseplay.locales.COURSEPLAY_FIELD, fieldNum);
+						};
+						--print(string.format("Field %d: >= 30 edge points found --> valid, no retry", fieldNum));
+					end;
 					break;
 				else
 					--print(string.format("Field %d: less than 30 edge points found --> not valid, retry=%s", fieldNum, tostring(try<numDirectionTries)));
@@ -41,10 +45,8 @@ function courseplay:setAllFieldEdges()
 			end;
 		end;
 	end;
-	courseplay.fields.allFieldsScanned = true;
-
-	courseplay.fields.fieldData = result;
-	courseplay.fields.numAvailableFields = #courseplay.fields.fieldData;
+	self.allFieldsScanned = true;
+	self.numAvailableFields = table.maxn(self.fieldData);
 
 	--[[
 	--Debug
@@ -54,7 +56,8 @@ function courseplay:setAllFieldEdges()
 
 end;
 
-function courseplay:getSingleFieldEdge(initObject, scanStep, maxN, randomDir)
+function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, randomDir)
+	--self = courseplay.fields
 	scanStep = scanStep or 5;
 	maxN = maxN or math.floor(10000/scanStep); --10 km circumference should be enough. otherwise state maxN as parameter
 	randomDir = randomDir or false;
@@ -104,7 +107,7 @@ function courseplay:getSingleFieldEdge(initObject, scanStep, maxN, randomDir)
 
 		--now we have a point very close to the field boundary but definitely inside :)
 
-		local yy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, xx, 1, zz);
+		--local yy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, xx, 1, zz); --TODO: not needed?
 		local tg = createTransformGroup("scanner");
 		link(getRootNode(), tg);
 		local probe1 = createTransformGroup("probe1");
@@ -180,5 +183,102 @@ function courseplay:getSingleFieldEdge(initObject, scanStep, maxN, randomDir)
 		delete(tg);
 
 		return coordinates;
+	end;
+end;
+
+--XML SAVING
+function courseplay.fields:openOrCreateXML(forceCreation)
+	--self = courseplay.fields
+	-- returns the file if success, nil else
+	forceCreation = forceCreation or false;
+
+	local xmlFile;
+	local savegame = g_careerScreen.savegames[g_careerScreen.selectedIndex];
+	if savegame ~= nil then
+		local filePath = savegame.savegameDirectory .. "/courseplayFields.xml"
+		if fileExists(filePath) and (not forceCreation) then
+			xmlFile = loadXMLFile("fieldsFile", filePath);
+		else
+			xmlFile = createXMLFile("fieldsFile", filePath, 'XML');
+		end;
+	else
+		--this is a problem... xmlFile stays nil
+	end;
+	return xmlFile;
+end;
+
+function courseplay.fields:saveAllCustomFields()
+	--self = courseplay.fields
+	-- saves fields to xml-file
+	-- opening the file with io.open will delete its content...
+	if g_server ~= nil then
+		local savegame = g_careerScreen.savegames[g_careerScreen.selectedIndex];
+		if savegame ~= nil and self.numAvailableFields > 0 then
+			local file = io.open(savegame.savegameDirectory .. '/courseplayFields.xml', 'w');
+			if file ~= nil then
+				file:write('<?xml version="1.0" encoding="utf-8" standalone="no" ?>\n<XML>\n');
+
+				file:write('\t<fields>\n')
+				for i,fieldData in pairs(self.fieldData) do
+					if fieldData.isCustom then
+						file:write(string.format('\t\t<field fieldNum="%d" numPoints="%d">\n', fieldData.fieldNum, fieldData.numPoints));
+						for j,point in ipairs(fieldData.points) do
+							file:write(string.format('\t\t\t<point%d pos="%.2f %.2f %.2f" />\n', j, point.cx, point.cy, point.cz));
+						end;
+						file:write('\t\t</field>\n');
+					end;
+				end;
+				file:write('\t</fields>\n</XML>');
+				file:close();
+			else
+				print("Error: Courseplay's custom fields could not be saved to " .. tostring(savegame.savegameDirectory) .. "/courseplayFields.xml"); 
+			end;
+		end;
+	end;
+end;
+
+--XML LOADING
+function courseplay.fields:loadAllCustomFields()
+	--self = courseplay.fields
+	if g_server ~= nil then
+		local savegame = g_careerScreen.savegames[g_careerScreen.selectedIndex];
+		if savegame ~= nil then
+			local filePath = savegame.savegameDirectory .. "/courseplayFields.xml"
+			if fileExists(filePath) then
+				local xmlFile = loadXMLFile("fieldsFile", filePath);
+				local i = 0;
+				while true do
+					local key = string.format('XML.fields.field(%d)', i);
+					if not hasXMLProperty(xmlFile, key) then
+						break;
+					end;
+
+					local fieldNum = getXMLInt(xmlFile, key .. '#fieldNum');
+					local numPoints = getXMLInt(xmlFile, key .. '#numPoints');
+
+					if fieldNum and numPoints and numPoints > 0 then
+						local fieldData = {
+							fieldNum = fieldNum;
+							points = {};
+							numPoints = numPoints;
+							name = string.format("%s %d (%s)", courseplay.locales.COURSEPLAY_FIELD, fieldNum, courseplay.locales.COURSEPLAY_USER);
+							isCustom = true;
+						};
+						for j=1,numPoints do
+							local pointKey = key .. '.point' .. j;
+							if hasXMLProperty(xmlFile, pointKey) then
+								local x,y,z = Utils.getVectorFromString(getXMLString(xmlFile, pointKey .. '#pos'));
+								if x and y and z then
+									table.insert(fieldData.points, { cx = x, cy = y, cz = z });
+								end;
+							end;
+						end;
+						self.fieldData[fieldNum] = fieldData;
+						self.numAvailableFields = table.maxn(self.fieldData);
+					end;
+					i = i + 1;
+				end;
+			end;
+		end;
 	end;
 end;

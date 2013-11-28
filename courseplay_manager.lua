@@ -21,6 +21,10 @@ function courseplay_manager:loadMap(name)
 	};
 	self.playerOnFootMouseEnabled = false;
 	self.wasPlayerFrozen = false;
+
+	if g_server ~= nil then
+		courseplay.fields:loadAllCustomFields();
+	end;
 end;
 
 function courseplay_manager:registerButton(section, fn, prm, img, x, y, w, h)
@@ -204,12 +208,12 @@ function courseplay_manager:update(dt)
 
 	--SETUP INGAME FIELD DATA
 	if not courseplay.fields.ingameDataSetUp then
-		courseplay:setUpFieldsIngameData();
+		courseplay.fields:setUpFieldsIngameData();
 	end;
 
 	--SCAN ALL FIELD EDGES
 	if not courseplay.fields.allFieldsScanned then
-		courseplay:setAllFieldEdges();
+		courseplay.fields:setAllFieldEdges();
 	end;
 end;
 

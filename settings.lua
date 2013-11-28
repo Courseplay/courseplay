@@ -997,7 +997,7 @@ end;
 
 function courseplay:validateCanSwitchMode(vehicle)
 	vehicle.cp.canSwitchMode = not vehicle.drive and not vehicle.record and not vehicle.record_pause and not vehicle.cp.fieldEdge.customField.isCreated;
-	courseplay:debug(string.format("%s: validateCanSwitchMode(): play=%s, drive=%s, record=%s, record_pause=%s ==> canSwitchMode=%s", nameNum(vehicle), tostring(vehicle.play), tostring(vehicle.drive), tostring(vehicle.record), tostring(vehicle.record_pause), tostring(vehicle.cp.canSwitchMode)), 12);
+	courseplay:debug(string.format("%s: validateCanSwitchMode(): play=%s, drive=%s, record=%s, record_pause=%s, customField.isCreated=%s ==> canSwitchMode=%s", nameNum(vehicle), tostring(vehicle.play), tostring(vehicle.drive), tostring(vehicle.record), tostring(vehicle.record_pause), tostring(vehicle.cp.fieldEdge.customField.isCreated), tostring(vehicle.cp.canSwitchMode)), 12);
 end;
 
 function courseplay:saveShovelStatus(self, stage)
@@ -1152,7 +1152,7 @@ function courseplay:setCustomSingleFieldEdge(vehicle)
 	local numDirectionTries = 10;
 	if x and z and courseplay:is_field(x, z) then
 		for try=1,numDirectionTries do
-			local edgePoints = courseplay:getSingleFieldEdge(vehicle.rootNode, 5, 2000, try > 1);
+			local edgePoints = courseplay.fields:getSingleFieldEdge(vehicle.rootNode, 5, 2000, try > 1);
 			if #edgePoints >= 30 then
 				vehicle.cp.fieldEdge.customField.points = edgePoints;
 				vehicle.cp.fieldEdge.customField.numPoints = #edgePoints;
@@ -1166,6 +1166,15 @@ function courseplay:setCustomSingleFieldEdge(vehicle)
 
 	--print(tableShow(vehicle.cp.fieldEdge.customField.points, nameNum(vehicle) .. " fieldEdge.customField.points"));
 	vehicle.cp.fieldEdge.customField.isCreated = vehicle.cp.fieldEdge.customField.points ~= nil;
+	courseplay:toggleCustomFieldEdgePathShow(vehicle, vehicle.cp.fieldEdge.customField.isCreated);
+	courseplay:validateCanSwitchMode(vehicle);
+end;
+
+function courseplay:clearCustomFieldEdge(vehicle)
+	vehicle.cp.fieldEdge.customField.points = nil;
+	vehicle.cp.fieldEdge.customField.numPoints = 0;
+	vehicle.cp.fieldEdge.customField.isCreated = false;
+	courseplay:setCustomFieldEdgePathNumber(vehicle, nil, 0);
 	courseplay:toggleCustomFieldEdgePathShow(vehicle, false);
 	courseplay:validateCanSwitchMode(vehicle);
 end;
@@ -1188,20 +1197,19 @@ function courseplay:addCustomSingleFieldEdgeToList(vehicle)
 		fieldNum = vehicle.cp.fieldEdge.customField.fieldNum;
 		points = vehicle.cp.fieldEdge.customField.points;
 		numPoints = vehicle.cp.fieldEdge.customField.numPoints;
-		name = string.format("%s %d", courseplay.locales.COURSEPLAY_FIELD, vehicle.cp.fieldEdge.customField.fieldNum);
+		name = string.format("%s %d (%s)", courseplay.locales.COURSEPLAY_FIELD, vehicle.cp.fieldEdge.customField.fieldNum, courseplay.locales.COURSEPLAY_USER);
 		isCustom = true;
 	};
-	courseplay.fields.numAvailableFields = #courseplay.fields.fieldData;
+	courseplay.fields.numAvailableFields = table.maxn(courseplay.fields.fieldData);
 	--print(string.format("\tfieldNum=%d, name=%s, #points=%d", courseplay.fields.fieldData[vehicle.cp.fieldEdge.customField.fieldNum].fieldNum, courseplay.fields.fieldData[vehicle.cp.fieldEdge.customField.fieldNum].name, #courseplay.fields.fieldData[vehicle.cp.fieldEdge.customField.fieldNum].points));
+
+	--SAVE TO XML
+	courseplay.fields:saveAllCustomFields();
 
 	--RESET
 	courseplay:setCustomFieldEdgePathNumber(vehicle, nil, 0);
-	vehicle.cp.fieldEdge.customField.points = nil;
-	vehicle.cp.fieldEdge.customField.numPoints = 0;
-	vehicle.cp.fieldEdge.customField.isCreated = false;
-	courseplay:toggleCustomFieldEdgePathShow(vehicle, false);
+	courseplay:clearCustomFieldEdge(vehicle);
 	courseplay:toggleSelectedFieldEdgePathShow(vehicle, false);
-	courseplay:validateCanSwitchMode(vehicle);
 	--print(string.format("\t[AFTER RESET] fieldNum=%d, points=%s, fieldEdge.customField.isCreated=%s", vehicle.cp.fieldEdge.customField.fieldNum, tostring(vehicle.cp.fieldEdge.customField.points), tostring(vehicle.cp.fieldEdge.customField.isCreated)));
 end;
 

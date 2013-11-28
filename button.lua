@@ -156,7 +156,7 @@ function courseplay:renderButton(self, button)
 		elseif pg == 1 then
 			if fn == "setAiMode" then
 				button.show = self.cp.canSwitchMode;
-			elseif fn == "toggleCustomFieldEdgePathShow" then
+			elseif fn == "clearCustomFieldEdge" or fn == "toggleCustomFieldEdgePathShow" then
 				button.show = not self.play and self.cp.fieldEdge.customField.isCreated;
 			elseif fn == "setCustomFieldEdgePathNumber" then
 				if prm < 0 then

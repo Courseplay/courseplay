@@ -431,20 +431,12 @@ function courseplay:setHudContent(self)
 		self.cp.hud.content.pages[8][1][1].text, self.cp.hud.content.pages[8][1][2].text = "", "";
 		if courseplay.fields.numAvailableFields > 0 then
 			self.cp.hud.content.pages[8][1][1].text = courseplay:get_locale(self, "COURSEPLAY_FIELD_EDGE_PATH");
-			if self.cp.fieldEdge.selectedField.fieldNum > 0 then
-				self.cp.hud.content.pages[8][1][2].text = courseplay.fields.fieldData[self.cp.fieldEdge.selectedField.fieldNum].name;
-			else
-				self.cp.hud.content.pages[8][1][2].text = "---";
-			end;
+			self.cp.hud.content.pages[8][1][2].text = self.cp.fieldEdge.selectedField.fieldNum > 0 and courseplay.fields.fieldData[self.cp.fieldEdge.selectedField.fieldNum].name or '---';
 		end;
 
 		--line 2 = work width
 		self.cp.hud.content.pages[8][2][1].text = courseplay:get_locale(self, "COURSEPLAY_WORK_WIDTH"); -- Arbeitsbreite
-		if self.cp.workWidth ~= nil then
-			self.cp.hud.content.pages[8][2][2].text = string.format("%.1fm", self.cp.workWidth)
-		else
-			self.cp.hud.content.pages[8][2][2].text = "---"
-		end
+		self.cp.hud.content.pages[8][2][2].text = self.cp.workWidth ~= nil and string.format("%.1fm", self.cp.workWidth) or '---';
 
 		--line 3 = starting corner
 		self.cp.hud.content.pages[8][3][1].text = courseplay:get_locale(self, "CPstartingCorner");
@@ -466,31 +458,15 @@ function courseplay:setHudContent(self)
 
 		--line 5 = return to first point
 		self.cp.hud.content.pages[8][5][1].text = courseplay:get_locale(self, "CPreturnToFirstPoint");
-		if self.cp.returnToFirstPoint then
-			self.cp.hud.content.pages[8][5][2].text = courseplay:get_locale(self, "CPactivated");
-		else
-			self.cp.hud.content.pages[8][5][2].text = courseplay:get_locale(self, "CPdeactivated");
-		end;
+		self.cp.hud.content.pages[8][5][2].text = self.cp.returnToFirstPoint and  courseplay:get_locale(self, "CPactivated") or courseplay:get_locale(self, "CPdeactivated");
 
 		--line 6 = headland
 		self.cp.hud.content.pages[8][6][1].text = courseplay:get_locale(self, "CPheadland");
 		if self.cp.headland.numLanes == 0 then
 			self.cp.hud.content.pages[8][6][2].text = courseplay:get_locale(self, "CPdeactivated");
 		elseif self.cp.headland.numLanes ~= 0 then
-			local lanesString;
-			local order;
-
-			if math.abs(self.cp.headland.numLanes) == 1 then
-				lanesStr = courseplay:get_locale(self, "CPheadlandLane");
-			else
-				lanesStr = courseplay:get_locale(self, "CPheadlandLanes");
-			end;
-			if self.cp.headland.numLanes > 0 then
-				order = courseplay:get_locale(self, "CPbefore");
-			else
-				order = courseplay:get_locale(self, "CPafter");
-			end;
-
+			local lanesStr = math.abs(self.cp.headland.numLanes) == 1 and courseplay:get_locale(self, "CPheadlandLane") or courseplay:get_locale(self, "CPheadlandLanes");
+			local order = self.cp.headland.numLanes > 0 and courseplay:get_locale(self, "CPbefore") or courseplay:get_locale(self, "CPafter");
 			self.cp.hud.content.pages[8][6][2].text = string.format("%d %s (%s)", math.abs(self.cp.headland.numLanes), lanesStr, order);
 		end;
 

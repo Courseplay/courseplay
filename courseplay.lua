@@ -16,6 +16,7 @@ courseplay = {
 	settings = {};
 	hud = {};
 	button = {};
+	fields = {};
 	thirdParty = {
 		EifokLiquidManure = {
 			dockingStations = {};
@@ -201,7 +202,7 @@ function courseplay:setGlobalData()
 		[5] = courseplay.hud.infoBasePosX + 0.122,
 		[6] = courseplay.hud.infoBasePosX + 0.182,
 		[7] = courseplay.hud.infoBasePosX + 0.192,
-		[8] = courseplay.hud.infoBasePosX + 0.182,
+		[8] = courseplay.hud.infoBasePosX + 0.142,
 		[9] = courseplay.hud.infoBasePosX + 0.230,
 	};
 	courseplay.hud.col2posXforce = {
@@ -328,15 +329,13 @@ function courseplay:setGlobalData()
 	end;
 
 	--FIELDS
-	courseplay.fields = {
-		fieldData = {};
-		numAvailableFields = 0;
-		fieldChannels = {};
-		lastChannel = 0;
-		allFieldsScanned = false;
-		ingameDataSetUp = false;
-		customFieldMaxNum = 150;
-	};
+	courseplay.fields.fieldData = {};
+	courseplay.fields.numAvailableFields = 0;
+	courseplay.fields.fieldChannels = {};
+	courseplay.fields.lastChannel = 0;
+	courseplay.fields.allFieldsScanned = false;
+	courseplay.fields.ingameDataSetUp = false;
+	courseplay.fields.customFieldMaxNum = 150;
 
 	--PATHFINDING
 	courseplay.pathfinding = {};

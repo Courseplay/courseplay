@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="13">
-	<version>3.41.0249</version>
+	<version>3.41.0250</version>
 	<author>Jakob Tischler / Thomas Gärtner / Horoman</author>
 	<title>
 		<de>Courseplay</de>
@@ -1604,6 +1604,14 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<es>Overwrite field %d's edge path in list</es> <!-- !!! -->
 			<it>Sovrascrivi perimetro campo %d nella lista</it>
 			<cz>Overwrite field %d's edge path in list</cz> <!-- !!! -->
+		</text>
+		<text name="COURSEPLAY_USER">
+			<en>user</en>
+			<de>User</de>
+			<fr>utilisateur</fr>
+			<es>usuario</es>
+			<it>utente</it>
+			<cz>uživatel</cz>
 		</text>
 
 

@@ -504,6 +504,7 @@ function courseplay:load(xmlFile)
 	end;
 
 	--Custom field edge path
+	courseplay:register_button(self, 1, "cancel.png", "clearCustomFieldEdge", nil, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[3], w16px, h16px, 3, nil, false);
 	courseplay:register_button(self, 1, "eye.png", "toggleCustomFieldEdgePathShow", nil, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[3], w16px, h16px, 3, nil, false);
 
 	courseplay:register_button(self, 1, "navigate_minus.png", "setCustomFieldEdgePathNumber", -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[4], w16px, h16px, 4, -5, false);
