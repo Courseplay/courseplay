@@ -1003,13 +1003,9 @@ function courseplay:validateCourseGenerationData(vehicle)
 	courseplay:debug(string.format("%s: hasGeneratedCourse=%s, hasEnoughWaypoints=%s, hasStartingCorner=%s, hasStartingDirection=%s, numCourses=%s, fieldEdge.selectedField.fieldNum=%s ==> hasValidCourseGenerationData=%s", nameNum(vehicle), tostring(vehicle.cp.hasGeneratedCourse), tostring(hasEnoughWaypoints), tostring(vehicle.cp.hasStartingCorner), tostring(vehicle.cp.hasStartingDirection), tostring(vehicle.numCourses), tostring(vehicle.cp.fieldEdge.selectedField.fieldNum), tostring(vehicle.cp.hasValidCourseGenerationData)), 7);
 end;
 
-function courseplay:validateCanSwitchMode(self)
-	self.cp.canSwitchMode = self.play and not self.drive and not self.record and not self.record_pause and (self.Waypoints ~= nil and table.getn(self.Waypoints) ~= 0);
-	if self.Waypoints ~= nil then
-		courseplay:debug(string.format("%s: validateCanSwitchMode(): play=%s, drive=%s, record=%s, record_pause=%s, #Waypoints=%s ==> canSwitchMode=%s", nameNum(self), tostring(self.play), tostring(self.drive), tostring(self.record), tostring(self.record_pause), tostring(table.getn(self.Waypoints)), tostring(self.cp.canSwitchMode)), 12);
-	else
-		courseplay:debug(string.format("%s: validateCanSwitchMode(): play=%s, drive=%s, record=%s, record_pause=%s, Waypoints=nil ==> canSwitchMode=%s", nameNum(self), tostring(self.play), tostring(self.drive), tostring(self.record), tostring(self.record_pause), tostring(self.cp.canSwitchMode)), 12);
-	end;
+function courseplay:validateCanSwitchMode(vehicle)
+	vehicle.cp.canSwitchMode = not vehicle.drive and not vehicle.record and not vehicle.record_pause;
+	courseplay:debug(string.format("%s: validateCanSwitchMode(): play=%s, drive=%s, record=%s, record_pause=%s ==> canSwitchMode=%s", nameNum(vehicle), tostring(vehicle.play), tostring(vehicle.drive), tostring(vehicle.record), tostring(vehicle.record_pause), tostring(vehicle.cp.canSwitchMode)), 12);
 end;
 
 function courseplay:saveShovelStatus(self, stage)
