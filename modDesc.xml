@@ -1562,7 +1562,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<de>AutoCombine wird nicht unterstützt</de>
 			<fr>AutoCombine n'est pas supporté</fr> <!-- !!! -->
 			<es>AutoCombine no está soportado</es> <!-- !!! -->
-			<it>AutoCombine non è supportato</it> <!-- !!! -->
+			<it>AutoCombine non è supportato</it>
 			<cz>AutoCombine není podporován</cz> <!-- !!! -->
 		</text>
 		<text name="COURSEPLAY_BALER_NEEDS_NETS">
@@ -1570,7 +1570,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<de>: %s braucht neue Wickelnetze</de>
 			<fr>: %s needs new net rolls</fr> <!-- !!! -->
 			<es>: %s needs new net rolls</es> <!-- !!! -->
-			<it>: %s needs new net rolls</it> <!-- !!! -->
+			<it>: %s ha bisogno di nuovo rotolo di rete</it>
 			<cz>: %s needs new net rolls</cz> <!-- !!! -->
 		</text>
 		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES">
