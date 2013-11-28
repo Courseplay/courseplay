@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="13">
-	<version>3.41.0246</version>
+	<version>3.41.0247</version>
 	<author>Jakob Tischler / Thomas Gärtner / Horoman</author>
 	<title>
 		<de>Courseplay</de>
@@ -651,7 +651,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<it>Trova trebbia:</it>
 			<cz>Hledání:</cz>
 		</text>
-		<text name="CPActual">
+		<text name="COURSEPLAY_CURRENT">
 			<en>Current:</en>
 			<de>Aktuell:</de>
 			<fr>Actuelle:</fr>

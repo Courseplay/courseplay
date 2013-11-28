@@ -13,7 +13,6 @@ function courseplay:handle_mode1(self)
 		self.unloading_tipper = nil
 		if tipper_fill_level == 0 then
 			self.unloaded = true
-			self.max_speed_level = 3
 			self.cp.currentTipTrigger = nil
 		end
 	end
@@ -55,7 +54,6 @@ function courseplay:handle_mode1(self)
 
 	-- tipper is not empty and tractor reaches TipTrigger
 	if tipper_fill_level > 0 and self.cp.currentTipTrigger ~= nil and self.recordnumber > 3 then
-		self.max_speed_level = 1
 		allowedToDrive = courseplay:unload_tippers(self)
 
 

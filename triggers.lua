@@ -189,9 +189,9 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 	if courseplay.triggers.allNonUpdateables[transformId] then
 		local trigger = courseplay.triggers.allNonUpdateables[transformId]
 		courseplay:debug(nameNum(self) .. " transformId = ".. tostring(transformId)..": "..tostring(name).." is allNonUpdateables", 1);
-		if self.ai_mode == 4 then
+		if self.cp.aiMode == 4 then
 			self.cp.fillTrigger = transformId;
-		elseif self.ai_mode == 8 and (trigger.isSprayerFillTrigger 
+		elseif self.cp.aiMode == 8 and (trigger.isSprayerFillTrigger 
 								  or trigger.isLiquidManureFillTrigger
 								  or trigger.isSchweinemastLiquidManureTrigger 
 								  or trigger.isGasStationTrigger) then

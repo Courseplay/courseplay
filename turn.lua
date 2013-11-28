@@ -5,7 +5,7 @@ function courseplay:turn(self, dt) --!!!
 	local turnOutTimer = 1500
 	local frontMarker = Utils.getNoNil(self.cp.aiFrontMarker,-3)
 	local backMarker = Utils.getNoNil(self.cp.backMarkerOffset, 0)
-	self.sl = 1
+	self.cp.speeds.sl = 1
 	if self.cp.noStopOnEdge then 
 		turnOutTimer = 0
 	end
@@ -28,7 +28,7 @@ function courseplay:turn(self, dt) --!!!
 				end
 				if myDirX*dirX + myDirZ*dirZ > 0.2 or self.turnStageTimer < 0 then
 					if self.cp.aiTurnNoBackward or
-					(courseplay:distance(newTargetX, newTargetZ, self.Waypoints[self.recordnumber-1].cx, self.Waypoints[self.recordnumber-1].cz) > self.turn_radius * 1.2) then
+					(courseplay:distance(newTargetX, newTargetZ, self.Waypoints[self.recordnumber-1].cx, self.Waypoints[self.recordnumber-1].cz) > self.cp.turnRadius * 1.2) then
 						self.cp.turnStage = 4;
 					else
 						self.cp.turnStage = 3;
@@ -217,9 +217,9 @@ function courseplay:turn(self, dt) --!!!
 	if updateWheels then
 		local allowedToDrive = true
 		if self.isRealistic then
-			courseplay:setMRSpeed(self, self.turn_speed, 1,false)
+			courseplay:setMRSpeed(self, self.cp.speeds.turn, 1,false)
 		else
-			courseplay:setSpeed(self, self.turn_speed, 1)
+			courseplay:setSpeed(self, self.cp.speeds.turn, 1)
 		end
 		local lx, lz = AIVehicleUtil.getDriveDirection(self.cp.DirectionNode, newTargetX, newTargetY, newTargetZ);
 		if self.cp.turnStage == 3 and math.abs(lx) < 0.1 then
@@ -245,7 +245,7 @@ function courseplay:turn(self, dt) --!!!
 			end
  			courseplay:driveInMRDirection(self, lx,lz,moveForwards,dt,allowedToDrive)
 		else
-			AIVehicleUtil.driveInDirection(self, dt, 25, 0.5, 0.5, 20, true, moveForwards, lx, lz, self.sl, 0.9);
+			AIVehicleUtil.driveInDirection(self, dt, 25, 0.5, 0.5, 20, true, moveForwards, lx, lz, self.cp.speeds.sl, 0.9);
 		end
 		
 		

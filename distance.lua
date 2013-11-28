@@ -36,8 +36,8 @@ function courseplay:dcheck(vehicle)
 		[8] =  0.5 * sinAR + 0.5 * cosAR + 0.5;
 	};
 
-	setOverlayUVs(vehicle.ArrowOverlay.overlayId, arrowUV[1], arrowUV[2], arrowUV[3], arrowUV[4], arrowUV[5], arrowUV[6], arrowUV[7], arrowUV[8]);
-	vehicle.ArrowOverlay:render();
+	setOverlayUVs(vehicle.cp.directionArrowOverlay.overlayId, arrowUV[1], arrowUV[2], arrowUV[3], arrowUV[4], arrowUV[5], arrowUV[6], arrowUV[7], arrowUV[8]);
+	vehicle.cp.directionArrowOverlay:render();
 
 	vehicle.cp.infoText = string.format("%s: %.1fm", courseplay:get_locale(vehicle, "CPDistance"), courseplay:distance(ctx, ctz, cx, cz));
 end;

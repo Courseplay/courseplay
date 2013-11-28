@@ -1,53 +1,53 @@
 function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill_level)
 	local workTool; -- = self.tippers[1] -- to do, quick, dirty and unsafe
 
-	workArea = (self.recordnumber > self.startWork) and (self.recordnumber < self.stopWork)
+	workArea = (self.recordnumber > self.cp.startWork) and (self.recordnumber < self.cp.stopWork)
 
 	-- Begin Work
-	if self.cp.last_recordnumber == self.startWork and fill_level ~= 0 then
-		if self.abortWork ~= nil then
-			if self.abortWork < 5 then
-				self.abortWork = 6
+	if self.cp.last_recordnumber == self.cp.startWork and fill_level ~= 0 then
+		if self.cp.abortWork ~= nil then
+			if self.cp.abortWork < 5 then
+				self.cp.abortWork = 6
 			end
-			self.recordnumber = self.abortWork
+			self.recordnumber = self.cp.abortWork
 			if self.Waypoints[self.recordnumber].turn ~= nil or self.Waypoints[self.recordnumber+1].turn ~= nil  then
 				self.recordnumber = self.recordnumber -2
 			end
 		end
 	end
 	-- last point reached restart
-	if self.abortWork ~= nil then
-		if self.cp.last_recordnumber == self.abortWork and fill_level ~= 0 then
-			self.recordnumber = self.abortWork +2
+	if self.cp.abortWork ~= nil then
+		if self.cp.last_recordnumber == self.cp.abortWork and fill_level ~= 0 then
+			self.recordnumber = self.cp.abortWork +2
 		end
-		if self.cp.last_recordnumber == self.abortWork + 8 then
-			self.abortWork = nil
+		if self.cp.last_recordnumber == self.cp.abortWork + 8 then
+			self.cp.abortWork = nil
 		end
 	end
 	-- safe last point
 	if (fill_level == 0 or self.cp.urfStop) and workArea then
 		self.cp.urfStop = false
-		if self.cp.hasUnloadingRefillingCourse and self.abortWork == nil then
-			self.abortWork = self.recordnumber -10
-			self.recordnumber = self.stopWork - 4
-			--courseplay:debug(string.format("Abort: %d StopWork: %d",self.abortWork,self.stopWork), 12)
+		if self.cp.hasUnloadingRefillingCourse and self.cp.abortWork == nil then
+			self.cp.abortWork = self.recordnumber -10
+			self.recordnumber = self.cp.stopWork - 4
+			--courseplay:debug(string.format("Abort: %d StopWork: %d",self.cp.abortWork,self.cp.stopWork), 12)
 		elseif not self.cp.hasUnloadingRefillingCourse then
 			allowedToDrive = false;
 			courseplay:setGlobalInfoText(self, ": " .. courseplay:get_locale(self, "CPworkToolNeedsToBeRefilled"), -1);
 		end;
 	end
 	--
-	if ((self.recordnumber == self.stopWork and not self.cp.hasUnloadingRefillingCourse) or self.cp.last_recordnumber == self.stopWork) and self.abortWork == nil then
+	if ((self.recordnumber == self.cp.stopWork and not self.cp.hasUnloadingRefillingCourse) or self.cp.last_recordnumber == self.cp.stopWork) and self.cp.abortWork == nil then
 		allowedToDrive = courseplay:brakeToStop(self)
 		courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPWorkEnd"), 1);
 	end
 	
 	
 	local returnToStartPoint = false;
-	if  self.Waypoints[self.stopWork].cx == self.Waypoints[self.startWork].cx 
-	and self.Waypoints[self.stopWork].cz == self.Waypoints[self.startWork].cz 
-	and self.recordnumber > self.stopWork - 5
-	and self.recordnumber <= self.stopWork then
+	if  self.Waypoints[self.cp.stopWork].cx == self.Waypoints[self.cp.startWork].cx 
+	and self.Waypoints[self.cp.stopWork].cz == self.Waypoints[self.cp.startWork].cz 
+	and self.recordnumber > self.cp.stopWork - 5
+	and self.recordnumber <= self.cp.stopWork then
 		returnToStartPoint = true;
 	end;
 	
@@ -71,7 +71,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill
 			--courseplay:debug(string.format("%s: unfold: turnOnFoldDirection=%s, foldMoveDirection=%s", workTool.name, tostring(workTool.turnOnFoldDirection), tostring(workTool.foldMoveDirection)), 12);
 		end;
 
-		if workArea and fill_level ~= 0 and (self.abortWork == nil or self.runOnceStartCourse) and self.cp.turnStage == 0 and not returnToStartPoint and not self.cp.inTraffic then
+		if workArea and fill_level ~= 0 and (self.cp.abortWork == nil or self.runOnceStartCourse) and self.cp.turnStage == 0 and not returnToStartPoint and not self.cp.inTraffic then
 			self.runOnceStartCourse = false;
 			workSpeed = 1;
 			--turn On                     courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload,ridgeMarker)
@@ -79,7 +79,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill
 			if allowedToDrive then
 				if not specialTool then
 					--unfold
-					if courseplay:isFoldable(workTool) and workTool:getIsFoldAllowed() then -- and ((self.abortWork ~= nil and self.recordnumber == self.abortWork - 2) or (self.abortWork == nil and self.recordnumber == 2)) then
+					if courseplay:isFoldable(workTool) and workTool:getIsFoldAllowed() then -- and ((self.cp.abortWork ~= nil and self.recordnumber == self.cp.abortWork - 2) or (self.cp.abortWork == nil and self.recordnumber == 2)) then
 						if courseplay:is_sowingMachine(workTool) then
 							workTool:setFoldDirection(-1);
 						

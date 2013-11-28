@@ -31,7 +31,7 @@ function courseplay:combine_allows_tractor(self, combine)
 	if combine.cp.isChopper or combine.cp.isSugarBeetLoader then
 		num_allowed_courseplayers = 2
 	else
-		if self.realistic_driving then
+		if self.cp.realisticDriving then
 			if combine.wants_courseplayer == true then
 				courseplay:debug(nameNum(self)..": combine full or manual call -> allow tractor",4)
 				return true
@@ -135,7 +135,7 @@ function courseplay:register_at_combine(self, combine)
 		num_allowed_courseplayers = 2
 	else
 		
-		if self.realistic_driving then
+		if self.cp.realisticDriving then
 			if combine.wants_courseplayer == true or combine.grainTankFillLevel == combine.grainTankCapacity then
 
 			else
@@ -237,13 +237,13 @@ function courseplay:register_at_combine(self, combine)
 	end;
 	combine.cp.pipeSide = 1;
 
-	if self.auto_combine_offset == true or self.combine_offset == 0 then
+	if self.cp.combineOffsetAutoMode == true or self.cp.combineOffset == 0 then
 	  	if combine.cp.offset == nil then
 			--print("no saved offset - initialise")
 	   		courseplay:calculateInitialCombineOffset(self, combine);
 	  	else 
 			--print("take the saved cp.offset")
-	   		self.combine_offset = combine.cp.offset;
+	   		self.cp.combineOffset = combine.cp.offset;
 	  	end;
 	end;
 	--END OFFSET
@@ -344,51 +344,51 @@ function courseplay:calculateInitialCombineOffset(self, combine)
 
 	--special tools, special cases
 	if combine.cp.isCaseIH7130 then
-		self.combine_offset = 8.0;
+		self.cp.combineOffset = 8.0;
 	elseif combine.cp.isCaseIH9230 or combine.cp.isCaseIH9230Crawler then
-		self.combine_offset = 11.5;
+		self.cp.combineOffset = 11.5;
 	elseif combine.cp.isGrimmeRootster604 or Utils.endsWith(combine.configFileName, "grimmeRootster604.xml") then
-		self.combine_offset = -4.3;
+		self.cp.combineOffset = -4.3;
 	elseif combine.cp.isGrimmeSE7555 or Utils.endsWith(combine.configFileName, "grimmeSE75-55.xml") then
-		self.combine_offset =  4.3;
+		self.cp.combineOffset =  4.3;
 	elseif combine.cp.isFahrM66 then
-		self.combine_offset =  4.4;
-	elseif self.auto_combine_offset and (combine.cp.isJF1060 or Utils.endsWith(combine.configFileName, "JF_1060.xml")) then
-		self.combine_offset =  -7;
+		self.cp.combineOffset =  4.4;
+	elseif self.cp.combineOffsetAutoMode and (combine.cp.isJF1060 or Utils.endsWith(combine.configFileName, "JF_1060.xml")) then
+		self.cp.combineOffset =  -7;
 		combine.cp.offset = 7;
-	elseif self.auto_combine_offset and (combine.cp.isRopaEuroTiger or Utils.endsWith(combine.configFileName, "RopaEuroTiger_V8_3_XL.xml")) then
-		self.combine_offset =  5.2;
+	elseif self.cp.combineOffsetAutoMode and (combine.cp.isRopaEuroTiger or Utils.endsWith(combine.configFileName, "RopaEuroTiger_V8_3_XL.xml")) then
+		self.cp.combineOffset =  5.2;
 	elseif combine.cp.isSugarBeetLoader then
 		local utwX,utwY,utwZ = getWorldTranslation(combine.unloadingTrigger.node);
 		local combineToUtwX,_,_ = worldToLocal(combine.rootNode, utwX,utwY,utwZ);
-		self.combine_offset = combineToUtwX;
+		self.cp.combineOffset = combineToUtwX;
 	
 	--combine // combine_offset is in auto mode
 	elseif not combine.cp.isChopper and combine.currentPipeState == 2 and combine.pipeRaycastNode ~= nil then -- pipe is extended
-		self.combine_offset = combineToPrnX;
-		courseplay:debug(string.format("%s(%i): %s @ %s: using combineToPrnX=%f, self.combine_offset=%f", curFile, debug.getinfo(1).currentline, nameNum(self), tostring(combine.name), combineToPrnX, self.combine_offset), 4)
+		self.cp.combineOffset = combineToPrnX;
+		courseplay:debug(string.format("%s(%i): %s @ %s: using combineToPrnX=%f, self.cp.combineOffset=%f", curFile, debug.getinfo(1).currentline, nameNum(self), tostring(combine.name), combineToPrnX, self.cp.combineOffset), 4)
 	elseif not combine.cp.isChopper and combine.pipeRaycastNode ~= nil then --pipe is closed
 		if getParent(combine.pipeRaycastNode) == combine.rootNode then -- pipeRaycastNode is direct child of combine.root
-			self.combine_offset = prnX;
-			courseplay:debug(string.format("%s(%i): %s @ %s: combine.root > pipeRaycastNode / self.combine_offset=prnX=%f", curFile, debug.getinfo(1).currentline, nameNum(self), tostring(combine.name), self.combine_offset), 4)
+			self.cp.combineOffset = prnX;
+			courseplay:debug(string.format("%s(%i): %s @ %s: combine.root > pipeRaycastNode / self.cp.combineOffset=prnX=%f", curFile, debug.getinfo(1).currentline, nameNum(self), tostring(combine.name), self.cp.combineOffset), 4)
 		elseif getParent(getParent(combine.pipeRaycastNode)) == combine.rootNode then --pipeRaycastNode is direct child of pipe is direct child of combine.root
 			local pipeX, pipeY, pipeZ = getTranslation(getParent(combine.pipeRaycastNode))
-			self.combine_offset = pipeX - prnZ;
+			self.cp.combineOffset = pipeX - prnZ;
 
 			if prnZ == 0 or combine.cp.isGrimmeRootster604 then
-				self.combine_offset = pipeX - prnY;
+				self.cp.combineOffset = pipeX - prnY;
 			end
-			courseplay:debug(string.format("%s(%i): %s @ %s: combine.root > pipe > pipeRaycastNode / self.combine_offset=pipeX-prnX=%f", curFile, debug.getinfo(1).currentline, nameNum(self), tostring(combine.name), self.combine_offset), 4)
+			courseplay:debug(string.format("%s(%i): %s @ %s: combine.root > pipe > pipeRaycastNode / self.cp.combineOffset=pipeX-prnX=%f", curFile, debug.getinfo(1).currentline, nameNum(self), tostring(combine.name), self.cp.combineOffset), 4)
 		elseif combineToPrnX > combine.cp.lmX then
-			self.combine_offset = combineToPrnX + (5 * combine.cp.pipeSide);
-			courseplay:debug(string.format("%s(%i): %s @ %s: using combineToPrnX=%f, self.combine_offset=%f", curFile, debug.getinfo(1).currentline, nameNum(self), tostring(combine.name), combineToPrnX, self.combine_offset), 4)
+			self.cp.combineOffset = combineToPrnX + (5 * combine.cp.pipeSide);
+			courseplay:debug(string.format("%s(%i): %s @ %s: using combineToPrnX=%f, self.cp.combineOffset=%f", curFile, debug.getinfo(1).currentline, nameNum(self), tostring(combine.name), combineToPrnX, self.cp.combineOffset), 4)
 		elseif combine.cp.lmX ~= nil then
 			if combine.cp.lmX > 0 then --use leftMarker
-				self.combine_offset = combine.cp.lmX + 2.5;
-				courseplay:debug(string.format("%s(%i): %s @ %s: using leftMarker+2.5, self.combine_offset=%f", curFile, debug.getinfo(1).currentline, nameNum(self), tostring(combine.name), self.combine_offset), 4);
+				self.cp.combineOffset = combine.cp.lmX + 2.5;
+				courseplay:debug(string.format("%s(%i): %s @ %s: using leftMarker+2.5, self.cp.combineOffset=%f", curFile, debug.getinfo(1).currentline, nameNum(self), tostring(combine.name), self.cp.combineOffset), 4);
 			end;
 		else --BACKUP
-			self.combine_offset = 8 * combine.cp.pipeSide;
+			self.cp.combineOffset = 8 * combine.cp.pipeSide;
 		end;
 	elseif combine.cp.isChopper then
 		courseplay:debug(string.format("%s(%i): %s @ %s: combine.forced_side=%s", curFile, debug.getinfo(1).currentline, nameNum(self), combine.name, tostring(combine.forced_side)), 4);
@@ -397,16 +397,16 @@ function courseplay:calculateInitialCombineOffset(self, combine)
 			if combine.forced_side == "left" then
 				self.sideToDrive = "left";
 				if combine.cp.lmX ~= nil then
-					self.combine_offset = combine.cp.lmX + 2.5;
+					self.cp.combineOffset = combine.cp.lmX + 2.5;
 				else
-					self.combine_offset = 8;
+					self.cp.combineOffset = 8;
 				end;
 			elseif combine.forced_side == "right" then
 				self.sideToDrive = "right";
 				if combine.cp.lmX ~= nil then
-					self.combine_offset = (combine.cp.lmX + 2.5) * -1;
+					self.cp.combineOffset = (combine.cp.lmX + 2.5) * -1;
 				else
-					self.combine_offset = -8;
+					self.cp.combineOffset = -8;
 				end;
 			end
 		else
@@ -414,25 +414,25 @@ function courseplay:calculateInitialCombineOffset(self, combine)
 			local fruitSide = courseplay:side_to_drive(self, combine, 5);
 			if fruitSide == "right" then
 				if combine.cp.lmX ~= nil then
-					self.combine_offset = math.max(combine.cp.lmX + 2.5, 7);
+					self.cp.combineOffset = math.max(combine.cp.lmX + 2.5, 7);
 				else --attached chopper
-					self.combine_offset = 7;
+					self.cp.combineOffset = 7;
 				end;
 			elseif fruitSide == "left" then
 				if combine.cp.lmX ~= nil then
-					self.combine_offset = math.max(combine.cp.lmX + 2.5, 7) * -1;
+					self.cp.combineOffset = math.max(combine.cp.lmX + 2.5, 7) * -1;
 				else --attached chopper
-					self.combine_offset = -3;
+					self.cp.combineOffset = -3;
 				end;
 			elseif fruitSide == "none" then
 				if combine.cp.lmX ~= nil then
-					self.combine_offset = math.max(combine.cp.lmX + 2.5, 7);
+					self.cp.combineOffset = math.max(combine.cp.lmX + 2.5, 7);
 				else --attached chopper
-					self.combine_offset = 7;
+					self.cp.combineOffset = 7;
 				end;
 			end
 			--print("saving offset")
-			combine.cp.offset = math.abs(self.combine_offset)
+			combine.cp.offset = math.abs(self.cp.combineOffset)
 		end;
 	end;
 end;

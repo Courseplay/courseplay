@@ -114,17 +114,9 @@ function courseplay:openCloseHud(self, open)
 	end;
 end;
 
-function courseplay:change_ai_state(self, change_by)
-	self.ai_mode = self.ai_mode + change_by
-
-	if self.ai_mode > courseplay.numAiModes or self.ai_mode == 0 then
-		self.ai_mode = 1
-	end
-	courseplay:buttonsActiveEnabled(self, "all");
-end
-function courseplay:setAiMode(self, modeNum)
-	self.ai_mode = modeNum;
-	courseplay:buttonsActiveEnabled(self, "all");
+function courseplay:setAiMode(vehicle, modeNum)
+	vehicle.cp.aiMode = modeNum;
+	courseplay:buttonsActiveEnabled(vehicle, "all");
 end;
 
 function courseplay:call_player(combine)
@@ -140,8 +132,8 @@ function courseplay:drive_on(self)
 	if self.wait then
 		self.wait = false;
 	end;
-	if self.StopEnd then
-		self.StopEnd = false;
+	if self.cp.stopAtEnd then
+		self.cp.stopAtEnd = false;
 	end;
 end;
 
@@ -174,9 +166,9 @@ function courseplay:switch_player_side(combine)
 end;
 
 function courseplay:setHudPage(self, pageNum)
-	if self.ai_mode == nil then
+	if self.cp.aiMode == nil then
 		self.cp.hud.currentPage = pageNum;
-	elseif courseplay.hud.pagesPerMode[self.ai_mode] ~= nil and courseplay.hud.pagesPerMode[self.ai_mode][pageNum+1] then
+	elseif courseplay.hud.pagesPerMode[self.cp.aiMode] ~= nil and courseplay.hud.pagesPerMode[self.cp.aiMode][pageNum+1] then
 		if pageNum == 0 then
 			if self.cp.minHudPage == 0 or self.cp.isCombine or self.cp.isChopper or self.cp.isHarvesterSteerable or self.cp.isSugarBeetLoader then
 				self.cp.hud.currentPage = pageNum;
@@ -192,10 +184,10 @@ end;
 function courseplay:switch_hud_page(self, change_by)
 	newPage = courseplay:minMaxPage(self, self.cp.hud.currentPage + change_by);
 
-	if self.ai_mode == nil then
+	if self.cp.aiMode == nil then
 		self.cp.hud.currentPage = newPage;
-	elseif courseplay.hud.pagesPerMode[self.ai_mode] ~= nil then
-		while courseplay.hud.pagesPerMode[self.ai_mode][newPage+1] == false do
+	elseif courseplay.hud.pagesPerMode[self.cp.aiMode] ~= nil then
+		while courseplay.hud.pagesPerMode[self.cp.aiMode][newPage+1] == false do
 			newPage = courseplay:minMaxPage(self, newPage + change_by);
 		end;
 		self.cp.hud.currentPage = newPage;
@@ -220,9 +212,9 @@ function courseplay:buttonsActiveEnabled(self, section)
 				local pageNum = button.parameter;
 				button.isActive = pageNum == self.cp.hud.currentPage;
 
-				if self.ai_mode == nil then
+				if self.cp.aiMode == nil then
 					button.isDisabled = false;
-				elseif courseplay.hud.pagesPerMode[self.ai_mode] ~= nil and courseplay.hud.pagesPerMode[self.ai_mode][pageNum+1] then
+				elseif courseplay.hud.pagesPerMode[self.cp.aiMode] ~= nil and courseplay.hud.pagesPerMode[self.cp.aiMode][pageNum+1] then
 					if pageNum == 0 then
 						button.isDisabled = not (self.cp.minHudPage == 0 or self.cp.isCombine or self.cp.isChopper or self.cp.isHarvesterSteerable or self.cp.isSugarBeetLoader);
 					else
@@ -241,7 +233,7 @@ function courseplay:buttonsActiveEnabled(self, section)
 	if self.cp.hud.currentPage == 1 and (section == nil or section == "all" or section == "quickModes" or section == "customFieldShow") then
 		for _,button in pairs(self.cp.buttons["1"]) do
 			if button.function_to_call == "setAiMode" then
-				button.isActive = self.ai_mode == button.parameter;
+				button.isActive = self.cp.aiMode == button.parameter;
 				button.isDisabled = button.parameter == 7 and not self.cp.isCombine and not self.cp.isChopper and not self.cp.isHarvesterSteerable;
 				button.canBeClicked = not button.isDisabled and not button.isActive;
 			elseif button.function_to_call == "toggleCustomFieldEdgePathShow" then
@@ -339,22 +331,22 @@ function courseplay:buttonsActiveEnabled(self, section)
 end;
 
 function courseplay:change_combine_offset(self, change_by)
-	local previousOffset = self.combine_offset
+	local previousOffset = self.cp.combineOffset
 
-	self.auto_combine_offset = false
-	self.combine_offset = courseplay:round(self.combine_offset, 1) + change_by
-	if self.combine_offset < 0.1 and self.combine_offset > -0.1 then
-		self.combine_offset = 0.0
-		self.auto_combine_offset = true
+	self.cp.combineOffsetAutoMode = false
+	self.cp.combineOffset = courseplay:round(self.cp.combineOffset, 1) + change_by
+	if self.cp.combineOffset < 0.1 and self.cp.combineOffset > -0.1 then
+		self.cp.combineOffset = 0.0
+		self.cp.combineOffsetAutoMode = true
 	end
 
-	courseplay:debug(nameNum(self) .. ": manual combine_offset change: prev " .. previousOffset .. " // new " .. self.combine_offset .. " // auto = " .. tostring(self.auto_combine_offset), 4)
+	courseplay:debug(nameNum(self) .. ": manual combine_offset change: prev " .. previousOffset .. " // new " .. self.cp.combineOffset .. " // auto = " .. tostring(self.cp.combineOffsetAutoMode), 4)
 end
 
 function courseplay:change_tipper_offset(self, change_by)
-	self.tipper_offset = courseplay:round(self.tipper_offset, 1) + change_by
-	if self.tipper_offset > -0.1 and self.tipper_offset < 0.1 then
-		self.tipper_offset = 0.0
+	self.cp.tipperOffset = courseplay:round(self.cp.tipperOffset, 1) + change_by
+	if self.cp.tipperOffset > -0.1 and self.cp.tipperOffset < 0.1 then
+		self.cp.tipperOffset = 0.0
 	end
 end
 
@@ -374,7 +366,7 @@ function courseplay:changeToolOffsetX(vehicle, changeBy, force, noDraw)
 	vehicle.cp.totalOffsetX = vehicle.cp.laneOffset + vehicle.cp.toolOffsetX;
 
 	noDraw = noDraw or false;
-	if not noDraw and vehicle.ai_mode ~= 3 and vehicle.ai_mode ~= 7 then
+	if not noDraw and vehicle.cp.aiMode ~= 3 and vehicle.cp.aiMode ~= 7 then
 		courseplay:calculateWorkWidthDisplayPoints(vehicle);
 		vehicle.cp.workWidthChanged = vehicle.timer + 2000;
 	end
@@ -420,82 +412,82 @@ end
 
 
 function courseplay:change_required_fill_level_for_drive_on(self, change_by)
-	self.required_fill_level_for_drive_on = Utils.clamp(self.required_fill_level_for_drive_on + change_by, 0, 100);
+	self.cp.driveOnAtFillLevel = Utils.clamp(self.cp.driveOnAtFillLevel + change_by, 0, 100);
 end
 
 
 function courseplay:change_required_fill_level(self, change_by)
-	self.required_fill_level_for_follow = Utils.clamp(self.required_fill_level_for_follow + change_by, 0, 100);
+	self.cp.followAtFillLevel = Utils.clamp(self.cp.followAtFillLevel + change_by, 0, 100);
 end
 
 
-function courseplay:change_turn_radius(self, change_by)
-	self.turn_radius = self.turn_radius + change_by;
-	self.turnRadiusAutoMode = false;
+function courseplay:changeTurnRadius(vehicle, changeBy)
+	vehicle.cp.turnRadius = vehicle.cp.turnRadius + changeBy;
+	vehicle.cp.turnRadiusAutoMode = false;
 
-	if self.turn_radius < 0.5 then
-		self.turn_radius = 0;
+	if vehicle.cp.turnRadius < 0.5 then
+		vehicle.cp.turnRadius = 0;
 	end;
 
-	if self.turn_radius <= 0 then
-		self.turnRadiusAutoMode = true;
-		self.turn_radius = self.autoTurnRadius
+	if vehicle.cp.turnRadius <= 0 then
+		vehicle.cp.turnRadiusAutoMode = true;
+		vehicle.cp.turnRadius = vehicle.cp.turnRadiusAuto
 	end;
 end
 
 
 function courseplay:change_turn_speed(self, change_by)
-	local speed = self.turn_speed * 3600;
+	local speed = self.cp.speeds.turn * 3600;
 	speed = Utils.clamp(speed + change_by, 5, 60);
-	self.turn_speed = speed / 3600;
+	self.cp.speeds.turn = speed / 3600;
 end
 
-function courseplay:change_wait_time(self, change_by)
-	self.waitTime = math.max(0, self.waitTime + change_by);
+function courseplay:changeWaitTime(vehicle, changeBy)
+	vehicle.cp.waitTime = math.max(0, vehicle.cp.waitTime + changeBy);
 end
 
 function courseplay:change_field_speed(self, change_by)
-	local speed = self.field_speed * 3600;
+	local speed = self.cp.speeds.field * 3600;
 	speed = Utils.clamp(speed + change_by, 5, 60);
-	self.field_speed = speed / 3600;
+	self.cp.speeds.field = speed / 3600;
 end
 
 function courseplay:change_max_speed(self, change_by)
-	if not self.use_speed then
-		local speed = self.max_speed * 3600;
+	if not self.cp.speeds.useRecordingSpeed then
+		local speed = self.cp.speeds.max * 3600;
 		speed = Utils.clamp(speed + change_by, 5, 60);
-		self.max_speed = speed / 3600;
+		self.cp.speeds.max = speed / 3600;
 	end;
 end
 
 function courseplay:change_unload_speed(self, change_by)
-	local speed = self.unload_speed * 3600;
+	local speed = self.cp.speeds.unload * 3600;
 	speed = Utils.clamp(speed + change_by, 3, 60);
-	self.unload_speed = speed / 3600;
+	self.cp.speeds.unload = speed / 3600;
 end
 
 function courseplay:change_use_speed(self)
-	self.use_speed = not self.use_speed
+	self.cp.speeds.useRecordingSpeed = not self.cp.speeds.useRecordingSpeed
 end
 
-function courseplay:change_RulMode(self, change_by)
-	self.RulMode = self.RulMode + change_by
-	if self.RulMode == 4 then
-		self.RulMode = 1
-	end
-end
+function courseplay:changeBeaconLightsMode(vehicle, changeBy)
+	vehicle.cp.beaconLightsMode = vehicle.cp.beaconLightsMode + changeBy;
+	if vehicle.cp.beaconLightsMode == 4 then
+		vehicle.cp.beaconLightsMode = 1;
+	end;
+end;
 
-function courseplay:switch_mouse_right_key_enabled(self)
-	self.mouse_right_key_enabled = not self.mouse_right_key_enabled
-end
+function courseplay:toggleOpenHudWithMouse(vehicle)
+	vehicle.cp.hud.openWithMouse = not vehicle.cp.hud.openWithMouse;
+end;
 
 function courseplay:switch_search_combine(self)
 	self.search_combine = not self.search_combine
 end
 
-function courseplay:switch_realistic_driving(self)
-	self.realistic_driving = not self.realistic_driving
-end
+function courseplay:toggleRealisticDriving(vehicle)
+	vehicle.cp.realisticDriving = not vehicle.cp.realisticDriving;
+end;
 
 function courseplay:switch_combine(vehicle, change_by)
 	local combines = courseplay:find_combines(vehicle);
@@ -560,7 +552,7 @@ function courseplay:copyCourse(self)
 		self.dcheck = false;
 		self.play = true;
 		self.back = false;
-		self.abortWork = nil;
+		self.cp.abortWork = nil;
 
 		self.target_x, self.target_y, self.target_z = nil, nil, nil;
 		if self.active_combine ~= nil then
@@ -1049,13 +1041,13 @@ function courseplay:reloadCoursesFromXML(self)
 end;
 
 function courseplay:setMouseCursor(self, show)
-	self.mouse_enabled = show;
+	self.cp.mouseCursorActive = show;
 	InputBinding.setShowMouseCursor(show);
 
 	--Cameras: deactivate/reactivate zoom function in order to allow CP mouse wheel
 	for camIndex,_ in pairs(self.cp.camerasBackup) do
 		self.cameras[camIndex].allowTranslation = not show;
-		--print(string.format("%s: right mouse key (mouse cursor=%s): camera %d allowTranslation=%s", nameNum(self), tostring(self.mouse_enabled), camIndex, tostring(self.cameras[camIndex].allowTranslation)));
+		--print(string.format("%s: right mouse key (mouse cursor=%s): camera %d allowTranslation=%s", nameNum(self), tostring(self.cp.mouseCursorActive), camIndex, tostring(self.cameras[camIndex].allowTranslation)));
 	end;
 
 	if not show then
@@ -1099,7 +1091,7 @@ function courseplay:goToVehicle(curVehicle, targetVehicle)
 	g_client:getServerConnection():sendEvent(VehicleEnterRequestEvent:new(targetVehicle, g_settingsNickname));
 	g_currentMission.isPlayerFrozen = false;
 	courseplay_manager.playerOnFootMouseEnabled = false;
-	InputBinding.setShowMouseCursor(targetVehicle.mouse_enabled);
+	InputBinding.setShowMouseCursor(targetVehicle.cp.mouseCursorActive);
 end;
 
 

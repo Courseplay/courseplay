@@ -1347,13 +1347,13 @@ end
 function courseplay.thirdParty.EifokLiquidManure.findRefillObject(vehicle, activeTool, where, pumpDir)
 	--where: "MapHoseRefStation" / "Kotte"
 	local startPoint, endPoint = 1, vehicle.maxnumber;
-	if vehicle.ai_mode == 4 then
+	if vehicle.cp.aiMode == 4 then
 		if where == "MapHoseRefStation" then
-			startPoint, endPoint = vehicle.stopWork, vehicle.maxnumber;
+			startPoint, endPoint = vehicle.cp.stopWork, vehicle.maxnumber;
 		else
 			startPoint, endPoint = vehicle.recordnumber - 5, vehicle.recordnumber;
 		end;
-	elseif vehicle.ai_mode == 8 then
+	elseif vehicle.cp.aiMode == 8 then
 		if where == "MapHoseRefStation" then
 			startPoint, endPoint = 1, vehicle.maxnumber;
 		else
@@ -1512,10 +1512,10 @@ function courseplay.thirdParty.EifokLiquidManure.refillViaHose(vehicle, activeTo
 		local iAmFull =  fill_level == driveOn;
 		local iAmEmpty = fill_level == 0;
 
-		local isDone = iAmFull or (objectIsEmpty and fill_level > vehicle.required_fill_level_for_drive_on);
+		local isDone = iAmFull or (objectIsEmpty and fill_level > vehicle.cp.driveOnAtFillLevel);
 		if pumpDir == "push" then
-			isDone = iAmEmpty or (objectIsFull and fill_level < vehicle.required_fill_level_for_follow);
-			--courseplay:debug(string.format("%s: isDone=%s, fill_level=%.1f, objectIsFull=%s (%s/%s), required_fill_level_for_follow=%d", nameNum(activeTool), tostring(isDone), fill_level, tostring(objectIsFull), tostring(object.fillLevel), tostring(object.capacity), vehicle.required_fill_level_for_follow), 14);
+			isDone = iAmEmpty or (objectIsFull and fill_level < vehicle.cp.followAtFillLevel);
+			--courseplay:debug(string.format("%s: isDone=%s, fill_level=%.1f, objectIsFull=%s (%s/%s), required_fill_level_for_follow=%d", nameNum(activeTool), tostring(isDone), fill_level, tostring(objectIsFull), tostring(object.fillLevel), tostring(object.capacity), vehicle.cp.followAtFillLevel), 14);
 		end;
 
 		local proceedWithFilling = false;

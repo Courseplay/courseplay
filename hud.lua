@@ -1,7 +1,7 @@
 function courseplay:setHudContent(self)
 	--GLOBAL
-	if self.ai_mode > 0 and self.ai_mode <= courseplay.numAiModes then
-		self.cp.hud.content.global[1] = courseplay:get_locale(self, string.format("CourseMode%d", self.ai_mode));
+	if self.cp.aiMode > 0 and self.cp.aiMode <= courseplay.numAiModes then
+		self.cp.hud.content.global[1] = courseplay:get_locale(self, string.format("CourseMode%d", self.cp.aiMode));
 	else
 		self.cp.hud.content.global[1] = "---";
 	end;
@@ -105,7 +105,7 @@ function courseplay:setHudContent(self)
 			if not self.drive then
 				self.cp.hud.content.pages[1][1][1].text = courseplay:get_locale(self, "CoursePlayStart")
 
-				if self.ai_mode ~= 9 then
+				if self.cp.aiMode ~= 9 then
 					self.cp.hud.content.pages[1][3][1].text = courseplay:get_locale(self, "cpStartAtFirstPoint");
 					if self.cp.startAtFirstPoint then
 						self.cp.hud.content.pages[1][3][2].text = courseplay:get_locale(self, "cpFirstPoint");
@@ -126,11 +126,11 @@ function courseplay:setHudContent(self)
 					self.cp.hud.content.pages[1][3][1].text = courseplay:get_locale(self, "NoWaitforfill")
 				end
 
-				if not self.StopEnd then
+				if not self.cp.stopAtEnd then
 					self.cp.hud.content.pages[1][4][1].text = courseplay:get_locale(self, "CoursePlayStopEnd")
 				end
 
-				if self.ai_mode == 4 and self.cp.hasSowingMachine then
+				if self.cp.aiMode == 4 and self.cp.hasSowingMachine then
 					self.cp.hud.content.pages[1][5][1].text = courseplay:get_locale(self, "CPridgeMarkers");
 
 					if self.cp.ridgeMarkersAutomatic then
@@ -138,7 +138,7 @@ function courseplay:setHudContent(self)
 					else
 						self.cp.hud.content.pages[1][5][2].text = courseplay:get_locale(self, "CPmanual");
 					end;
-				elseif self.ai_mode == 6 and self.cp.hasBaleLoader and not self.cp.hasUnloadingRefillingCourse then
+				elseif self.cp.aiMode == 6 and self.cp.hasBaleLoader and not self.cp.hasUnloadingRefillingCourse then
 					self.cp.hud.content.pages[1][5][1].text = courseplay:get_locale(self, "CPunloadingOnField");
 					if self.cp.automaticUnloadingOnField then
 						self.cp.hud.content.pages[1][5][2].text = courseplay:get_locale(self, "CPautomatic");
@@ -185,7 +185,7 @@ function courseplay:setHudContent(self)
 						end;
 
 						self.cp.hud.content.pages[1][4][1].text = courseplay:get_locale(self, "CourseCrossingSet");
-						if not self.direction  then
+						if not self.cp.drivingDirReverse  then
 							self.cp.hud.content.pages[1][5][1].text = courseplay:get_locale(self, "CourseDriveDirection") .. " " .. courseplay:get_locale(self, "CourseDriveDirectionFor");
 						else
 							self.cp.hud.content.pages[1][5][1].text = courseplay:get_locale(self, "CourseDriveDirection") .. " " .. courseplay:get_locale(self, "CourseDriveDirectionBac");
@@ -220,12 +220,9 @@ function courseplay:setHudContent(self)
 		self.cp.hud.content.pages[3][5][1].text = courseplay:get_locale(self, "NoWaitforfillAt") --"abfahren bei %:"
 
 		if self.ai_state ~= nil then
-			if self.combine_offset ~= 0 then
-				local combine_offset_mode = "(mnl)";
-				if self.auto_combine_offset then
-					combine_offset_mode = "(auto)";
-				end;
-				self.cp.hud.content.pages[3][1][2].text = string.format("%s %.1f", combine_offset_mode, self.combine_offset)
+			if self.cp.combineOffset ~= 0 then
+				local combine_offset_mode = self.cp.combineOffsetAutoMode and "(auto)" or "(mnl)";
+				self.cp.hud.content.pages[3][1][2].text = string.format("%s %.1f", combine_offset_mode, self.cp.combineOffset)
 			else
 				self.cp.hud.content.pages[3][1][2].text = "auto"
 			end
@@ -233,40 +230,35 @@ function courseplay:setHudContent(self)
 			self.cp.hud.content.pages[3][1][2].text = "---"
 		end
 
-		if self.tipper_offset ~= nil then
+		if self.cp.tipperOffset ~= nil then
 			local tipperOffsetStr = ''
-			if self.tipper_offset == 0 then
+			if self.cp.tipperOffset == 0 then
 				tipperOffsetStr = "auto"
-			elseif self.tipper_offset > 0 then
-				tipperOffsetStr = string.format("auto+%.1f", self.tipper_offset)
-			elseif self.tipper_offset < 0 then
-				tipperOffsetStr = string.format("auto%.1f", self.tipper_offset)
+			elseif self.cp.tipperOffset > 0 then
+				tipperOffsetStr = string.format("auto+%.1f", self.cp.tipperOffset)
+			elseif self.cp.tipperOffset < 0 then
+				tipperOffsetStr = string.format("auto%.1f", self.cp.tipperOffset)
 			end
 			self.cp.hud.content.pages[3][2][2].text = tipperOffsetStr
 		else
 			self.cp.hud.content.pages[3][2][2].text = "---"
 		end
 
-		if self.autoTurnRadius ~= nil or self.turn_radius ~= nil then
-			local turnRadiusMode = ''
-			if self.turnRadiusAutoMode then
-				turnRadiusMode = "(auto)"
-			else
-				turnRadiusMode = "(mnl)"
-			end
-			self.cp.hud.content.pages[3][3][2].text = string.format("%s %d", turnRadiusMode, self.turn_radius)
+		if self.cp.turnRadiusAuto ~= nil or self.cp.turnRadius ~= nil then
+			local turnRadiusMode = self.cp.turnRadiusAutoMode and '(auto)' or '(mnl)';
+			self.cp.hud.content.pages[3][3][2].text = string.format("%s %d", turnRadiusMode, self.cp.turnRadius);
 		else
 			self.cp.hud.content.pages[3][3][2].text = "---"
 		end
 
-		if self.required_fill_level_for_follow ~= nil then
-			self.cp.hud.content.pages[3][4][2].text = string.format("%d", self.required_fill_level_for_follow)
+		if self.cp.followAtFillLevel ~= nil then
+			self.cp.hud.content.pages[3][4][2].text = string.format("%d", self.cp.followAtFillLevel)
 		else
 			self.cp.hud.content.pages[3][4][2].text = "---"
 		end
 
-		if self.required_fill_level_for_drive_on ~= nil then
-			self.cp.hud.content.pages[3][5][2].text = string.format("%d", self.required_fill_level_for_drive_on)
+		if self.cp.driveOnAtFillLevel ~= nil then
+			self.cp.hud.content.pages[3][5][2].text = string.format("%d", self.cp.driveOnAtFillLevel)
 		else
 			self.cp.hud.content.pages[3][5][2].text = "---"
 		end
@@ -278,7 +270,7 @@ function courseplay:setHudContent(self)
 
 		self.cp.hud.content.pages[4][1][1].text = courseplay:get_locale(self, "CPSelectCombine") -- "Drescher wählen:"
 		self.cp.hud.content.pages[4][2][1].text = courseplay:get_locale(self, "CPCombineSearch") -- "Dreschersuche:"
-		self.cp.hud.content.pages[4][3][1].text = courseplay:get_locale(self, "CPActual") -- "Aktuell:"
+		self.cp.hud.content.pages[4][3][1].text = courseplay:get_locale(self, "COURSEPLAY_CURRENT");
 
 		if self.cp.HUD4savedCombine then
 			if self.cp.HUD4savedCombineName == nil then
@@ -310,15 +302,15 @@ function courseplay:setHudContent(self)
 		self.cp.hud.content.pages[5][4][1].text = courseplay:get_locale(self, "CPUnloadSpeed") -- "Abladen (BGA):"
 		self.cp.hud.content.pages[5][5][1].text = courseplay:get_locale(self, "CPuseSpeed") -- "Geschwindigkeit:"
 
-		self.cp.hud.content.pages[5][1][2].text = string.format("%d %s", g_i18n:getSpeed(self.turn_speed   * 3600), g_i18n:getText("speedometer"));
-		self.cp.hud.content.pages[5][2][2].text = string.format("%d %s", g_i18n:getSpeed(self.field_speed  * 3600), g_i18n:getText("speedometer"));
-		self.cp.hud.content.pages[5][4][2].text = string.format("%d %s", g_i18n:getSpeed(self.unload_speed * 3600), g_i18n:getText("speedometer"));
+		self.cp.hud.content.pages[5][1][2].text = string.format("%d %s", g_i18n:getSpeed(self.cp.speeds.turn   * 3600), g_i18n:getText("speedometer"));
+		self.cp.hud.content.pages[5][2][2].text = string.format("%d %s", g_i18n:getSpeed(self.cp.speeds.field  * 3600), g_i18n:getText("speedometer"));
+		self.cp.hud.content.pages[5][4][2].text = string.format("%d %s", g_i18n:getSpeed(self.cp.speeds.unload * 3600), g_i18n:getText("speedometer"));
 
-		if self.use_speed then
+		if self.cp.speeds.useRecordingSpeed then
 			self.cp.hud.content.pages[5][3][2].text = courseplay:get_locale(self, "CPautomaticSpeed");
 			self.cp.hud.content.pages[5][5][2].text = courseplay:get_locale(self, "CPuseSpeed1") -- "wie beim einfahren"
 		else
-			self.cp.hud.content.pages[5][3][2].text = string.format("%d %s", g_i18n:getSpeed(self.max_speed * 3600), g_i18n:getText("speedometer"));
+			self.cp.hud.content.pages[5][3][2].text = string.format("%d %s", g_i18n:getSpeed(self.cp.speeds.max * 3600), g_i18n:getText("speedometer"));
 			self.cp.hud.content.pages[5][5][2].text = courseplay:get_locale(self, "CPuseSpeed2") -- "maximale Geschwindigkeit"
 		end;
 
@@ -328,11 +320,11 @@ function courseplay:setHudContent(self)
 	elseif self.cp.hud.currentPage == 6 then
 		--ASTAR
 		self.cp.hud.content.pages[6][1][1].text = courseplay:get_locale(self, "CPaStar");
-		self.cp.hud.content.pages[6][1][2].text = self.realistic_driving and courseplay:get_locale(self, "CPactivated") or courseplay:get_locale(self, "CPdeactivated");
+		self.cp.hud.content.pages[6][1][2].text = self.cp.realisticDriving and courseplay:get_locale(self, "CPactivated") or courseplay:get_locale(self, "CPdeactivated");
 
 		--OPEN HUD KEY
 		self.cp.hud.content.pages[6][2][1].text = courseplay:get_locale(self, "CPopenHud");
-		self.cp.hud.content.pages[6][2][2].text = self.mouse_right_key_enabled and courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION_SECONDARY.displayName or courseplay.inputBindings.keyboard.COURSEPLAY_HUD_COMBINED.displayName;
+		self.cp.hud.content.pages[6][2][2].text = self.cp.hud.openWithMouse and courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION_SECONDARY.displayName or courseplay.inputBindings.keyboard.COURSEPLAY_HUD_COMBINED.displayName;
 
 		--WAYPOINT MODE
 		self.cp.hud.content.pages[6][3][1].text = courseplay:get_locale(self, "CPWPs");
@@ -340,12 +332,12 @@ function courseplay:setHudContent(self)
 
 		--BEACON LIGHT
 		self.cp.hud.content.pages[6][4][1].text = courseplay:get_locale(self, "COURSEPLAY_BEACON_LIGHTS");
-		self.cp.hud.content.pages[6][4][2].text = courseplay:get_locale(self, string.format("COURSEPLAY_BEACON_LIGHTS_MODE_%d", self.RulMode));
+		self.cp.hud.content.pages[6][4][2].text = courseplay:get_locale(self, string.format("COURSEPLAY_BEACON_LIGHTS_MODE_%d", self.cp.beaconLightsMode));
 
 		--WAITING POINT: WAIT TIME
-		if not (self.ai_mode == 3 or self.ai_mode == 4 or self.ai_mode == 6 or self.ai_mode == 7) then
+		if not (self.cp.aiMode == 3 or self.cp.aiMode == 4 or self.cp.aiMode == 6 or self.cp.aiMode == 7) then
 			self.cp.hud.content.pages[6][5][1].text = courseplay:get_locale(self, "CPWaitTime");
-			self.cp.hud.content.pages[6][5][2].text = string.format("%.1f sec", self.waitTime);
+			self.cp.hud.content.pages[6][5][2].text = string.format("%.1f sec", self.cp.waitTime);
 		end;
 
 		--DEBUG CHANNELS
@@ -360,9 +352,9 @@ function courseplay:setHudContent(self)
 			self.cp.hud.content.pages[7][line][2].text = "";
 		end;
 
-		if self.ai_mode == 3 or self.ai_mode == 4 or self.ai_mode == 6 or self.ai_mode == 7 then
+		if self.cp.aiMode == 3 or self.cp.aiMode == 4 or self.cp.aiMode == 6 or self.cp.aiMode == 7 then
 			--LANE OFFSET
-			if self.ai_mode == 4 or self.ai_mode == 6 then
+			if self.cp.aiMode == 4 or self.cp.aiMode == 6 then
 				self.cp.hud.content.pages[7][1][1].text = courseplay:get_locale(self, "COURSEPLAY_LANE_OFFSET");
 				if self.cp.laneOffset ~= nil then
 					local descrStr = "";
@@ -378,7 +370,7 @@ function courseplay:setHudContent(self)
 			end;
 
 			--SYMMETRIC LANE CHANGE
-			if self.ai_mode == 4 or self.ai_mode == 6 and self.cp.laneOffset ~= 0 then
+			if self.cp.aiMode == 4 or self.cp.aiMode == 6 and self.cp.laneOffset ~= 0 then
 				self.cp.hud.content.pages[7][2][1].text = courseplay:get_locale(self, "COURSEPLAY_SYMMETRIC_LANE_CHANGE");
 				self.cp.hud.content.pages[7][2][2].text = self.cp.symmetricLaneChange and courseplay:get_locale(self, "CPactivated") or courseplay:get_locale(self, "CPdeactivated");
 			end;

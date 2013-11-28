@@ -73,18 +73,18 @@ function courseplay:update_tools(self, tractor_or_implement)
 	or courseplay:isWheelloader(tractor_or_implement)
 	or tractor_or_implement.typeName == "frontloader" then
 		local object = tractor_or_implement
-		if self.ai_mode == 1 or self.ai_mode == 2 then
+		if self.cp.aiMode == 1 or self.cp.aiMode == 2 then
 			-- if object.cp.hasSpecializationTrailer then
 			if object.allowTipDischarge then
 				tipper_attached = true
 				table.insert(self.tippers, object)
 			end
-		elseif self.ai_mode == 3 then -- Overlader
+		elseif self.cp.aiMode == 3 then -- Overlader
 			if object.cp.hasSpecializationTrailer then --to do
 				tipper_attached = true
 				table.insert(self.tippers, object)
 			end
-		elseif self.ai_mode == 4 then -- Fertilizer
+		elseif self.cp.aiMode == 4 then -- Fertilizer
 			if courseplay:isSprayer(object) or courseplay:is_sowingMachine(object) then
 				tipper_attached = true
 				table.insert(self.tippers, object)
@@ -95,7 +95,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 					self.cp.hasSowingMachine = true;
 				end;
 			end
-		elseif self.ai_mode == 6 then -- Baler, foragewagon, baleloader
+		elseif self.cp.aiMode == 6 then -- Baler, foragewagon, baleloader
 			if (courseplay:isBaler(object) 
 			or courseplay:is_baleLoader(object) 
 			or courseplay:isSpecialBaleLoader(object) 
@@ -118,12 +118,12 @@ function courseplay:update_tools(self, tractor_or_implement)
 					self.cp.hasPlough = true;
 				end;
 			end
-		elseif self.ai_mode == 8 then -- Liquid manure transfer
+		elseif self.cp.aiMode == 8 then -- Liquid manure transfer
 			--if SpecializationUtil.hasSpecialization(RefillTrigger, object.specializations) then
 			tipper_attached = true
 			table.insert(self.tippers, object)
 			-- end
-		elseif self.ai_mode == 9 then --Fill and empty shovel
+		elseif self.cp.aiMode == 9 then --Fill and empty shovel
 			if courseplay:isWheelloader(tractor_or_implement) 
 			or tractor_or_implement.typeName == "frontloader" 
 			or courseplay:isMixer(tractor_or_implement) then
@@ -152,7 +152,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 		courseplay:debug(string.format("%s: tractorToImplZ=%.4f, positionAtTractor=%d", nameNum(object), tractorToImplZ, object.cp.positionAtTractor), 6);
 
 		--ADD TO self.tippers
-		if self.ai_mode == 1 or self.ai_mode == 2 then
+		if self.cp.aiMode == 1 or self.cp.aiMode == 2 then
 			--	if object.cp.hasSpecializationTrailer then
 			if object.allowTipDischarge then
 				tipper_attached = true
@@ -160,12 +160,12 @@ function courseplay:update_tools(self, tractor_or_implement)
 				courseplay:getReverseProperties(self, object)
 			end
 			
-		elseif self.ai_mode == 3 then -- Overlader
+		elseif self.cp.aiMode == 3 then -- Overlader
 			if object.cp.hasSpecializationTrailer and object.cp.isAugerWagon then --to do 
 				tipper_attached = true
 				table.insert(self.tippers, object)
 			end
-		elseif self.ai_mode == 4 then -- Fertilizer and Seeding
+		elseif self.cp.aiMode == 4 then -- Fertilizer and Seeding
 			if courseplay:isSprayer(object) or courseplay:is_sowingMachine(object) then
 				tipper_attached = true
 				table.insert(self.tippers, object)
@@ -177,12 +177,12 @@ function courseplay:update_tools(self, tractor_or_implement)
 					self.cp.hasSowingMachine = true;
 				end;
 			end
-		elseif self.ai_mode == 5 then -- Transfer
+		elseif self.cp.aiMode == 5 then -- Transfer
 			if object.setPlane ~= nil then --open/close cover
 				tipper_attached = true;
 				table.insert(self.tippers, object);
 			end;
-		elseif self.ai_mode == 6 then -- Baler, foragewagon, baleloader
+		elseif self.cp.aiMode == 6 then -- Baler, foragewagon, baleloader
 			if courseplay:isBaler(object) 
 			or courseplay:is_baleLoader(object) 
 			or courseplay:isSpecialBaleLoader(object) 
@@ -207,12 +207,12 @@ function courseplay:update_tools(self, tractor_or_implement)
 			if courseplay:is_baleLoader(object) then
 				self.cp.hasBaleLoader = true;
 			end;
-		elseif self.ai_mode == 8 then --Liquid manure transfer
+		elseif self.cp.aiMode == 8 then --Liquid manure transfer
 			--if SpecializationUtil.hasSpecialization(RefillTrigger, object.specializations) then
 			tipper_attached = true
 			table.insert(self.tippers, object)
 			--		end
-		elseif self.ai_mode == 9 then --Fill and empty shovel
+		elseif self.cp.aiMode == 9 then --Fill and empty shovel
 			if courseplay:isFrontloader(object) or object.cp.hasSpecializationShovel then 
 				tipper_attached = true;
 				table.insert(self.tippers, object);
@@ -272,7 +272,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 					object.cp = {};
 				end;
 
-				if self.ai_mode == 6 then
+				if self.cp.aiMode == 6 then
 					tipper_attached = true;
 					table.insert(self.tippers, object);
 					courseplay:setMarkers(self, object)
@@ -509,7 +509,7 @@ function courseplay:load_tippers(self)
 	-- drive on when required fill level is reached
 	local drive_on = false
 	if self.timeout < self.timer or self.last_fill_level == nil then
-		if self.last_fill_level ~= nil and fill_level == self.last_fill_level and fill_level > self.required_fill_level_for_drive_on then
+		if self.last_fill_level ~= nil and fill_level == self.last_fill_level and fill_level > self.cp.driveOnAtFillLevel then
 			drive_on = true
 		end
 		self.last_fill_level = fill_level
@@ -762,26 +762,26 @@ function courseplay:getAutoTurnradius(self, tipper_attached)
 		turnRadius = 2*wheelbase/sinAlpha+track
 		self.foundWheels = {}	
 	else
-		turnRadius = self.turn_radius                  -- Kasi and Co are not supported. Nobody does hauling with a Kasi or Quadtrack !!! 
+		turnRadius = self.cp.turnRadius                  -- Kasi and Co are not supported. Nobody does hauling with a Kasi or Quadtrack !!! 
 	end;
 	
-	--if tipper_attached and self.ai_mode == 2 then
-	if tipper_attached and (self.ai_mode == 2 or self.ai_mode == 3 or self.ai_mode == 4 or self.ai_mode == 6) then --JT: I've added modes 3, 4 & 6 - needed?
-		self.autoTurnRadius = turnRadius;
+	--if tipper_attached and self.cp.aiMode == 2 then
+	if tipper_attached and (self.cp.aiMode == 2 or self.cp.aiMode == 3 or self.cp.aiMode == 4 or self.cp.aiMode == 6) then --JT: I've added modes 3, 4 & 6 - needed?
+		self.cp.turnRadiusAuto = turnRadius;
 		local n = #(self.tippers);
 		--print(string.format("self.tippers[1].sizeLength = %s  turnRadius = %s", tostring(self.tippers[1].sizeLength),tostring( turnRadius)))
 		if n == 1 and self.tippers[1].attacherVehicle ~= self and (self.tippers[1].sizeLength > turnRadius) then
-			self.autoTurnRadius = self.tippers[1].sizeLength;
+			self.cp.turnRadiusAuto = self.tippers[1].sizeLength;
 		end;
 		if (n > 1) then
-			self.autoTurnRadius = turnRadius * 1.5;
+			self.cp.turnRadiusAuto = turnRadius * 1.5;
 		end
 	end;
 
-	if self.turnRadiusAutoMode then
-		self.turn_radius = self.autoTurnRadius;
-		if math.abs(self.turn_radius) > 50 then
-			self.turn_radius = 15
+	if self.cp.turnRadiusAutoMode then
+		self.cp.turnRadius = self.cp.turnRadiusAuto;
+		if math.abs(self.cp.turnRadius) > 50 then
+			self.cp.turnRadius = 15
 		end
 	end;
 end

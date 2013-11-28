@@ -11,21 +11,21 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 	end;
 	--]]
 
-	workArea = (self.recordnumber > self.startWork) and (self.recordnumber < self.stopWork)
+	workArea = (self.recordnumber > self.cp.startWork) and (self.recordnumber < self.cp.stopWork)
 
 	if workArea then
 		workSpeed = 1;
 	end
-	if (self.recordnumber == self.stopWork or self.cp.last_recordnumber == self.stopWork) and self.abortWork == nil and not self.loaded then
+	if (self.recordnumber == self.cp.stopWork or self.cp.last_recordnumber == self.cp.stopWork) and self.cp.abortWork == nil and not self.loaded then
 		allowedToDrive = false
 		courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPWorkEnd"), 1);
 	end
 
 	local returnToStartPoint = false;
-	if  self.Waypoints[self.stopWork].cx == self.Waypoints[self.startWork].cx
-	and self.Waypoints[self.stopWork].cz == self.Waypoints[self.startWork].cz
-	and self.recordnumber > self.stopWork - 5
-	and self.recordnumber <= self.stopWork then
+	if  self.Waypoints[self.cp.stopWork].cx == self.Waypoints[self.cp.startWork].cx
+	and self.Waypoints[self.cp.stopWork].cz == self.Waypoints[self.cp.startWork].cz
+	and self.recordnumber > self.cp.stopWork - 5
+	and self.recordnumber <= self.cp.stopWork then
 		returnToStartPoint = true;
 	end;
 
@@ -46,7 +46,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 		if workTool ~= nil and tool.grainTankCapacity == nil then
 			-- balers
 			if courseplay:isBaler(workTool) then
-				if self.recordnumber >= self.startWork + 1 and self.recordnumber < self.stopWork and self.cp.turnStage == 0 then
+				if self.recordnumber >= self.cp.startWork + 1 and self.recordnumber < self.cp.stopWork and self.cp.turnStage == 0 then
 																			--  self, workTool, unfold, lower, turnOn, allowedToDrive, cover, unload, ridgeMarker)
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(self, workTool, true,   true,  true,   allowedToDrive, nil,   nil);
 					if not specialTool then
@@ -74,7 +74,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 					end
 				end
 
-				if self.cp.last_recordnumber == self.stopWork -1 and workTool.isTurnedOn then
+				if self.cp.last_recordnumber == self.cp.stopWork -1 and workTool.isTurnedOn then
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,nil)
 					if not specialTool and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
 						workTool:setIsTurnedOn(false, false);
@@ -99,7 +99,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 					end;
 				end
 
-				if (fill_level == 100 and self.cp.hasUnloadingRefillingCourse or self.recordnumber == self.stopWork) and workTool.isInWorkPosition and not workTool:getIsAnimationPlaying("rotatePlatform") then
+				if (fill_level == 100 and self.cp.hasUnloadingRefillingCourse or self.recordnumber == self.cp.stopWork) and workTool.isInWorkPosition and not workTool:getIsAnimationPlaying("rotatePlatform") then
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,nil);
 					if not specialTool then
 						workTool.grabberIsMoving = true
@@ -147,7 +147,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 
 			-- other worktools, tippers, e.g. forage wagon
 			else
-				if workArea and fill_level ~= 100 and ((self.abortWork == nil) or (self.abortWork ~= nil and self.cp.last_recordnumber == self.abortWork) or (self.runOnceStartCourse)) and self.cp.turnStage == 0  and not returnToStartPoint then
+				if workArea and fill_level ~= 100 and ((self.cp.abortWork == nil) or (self.cp.abortWork ~= nil and self.cp.last_recordnumber == self.cp.abortWork) or (self.runOnceStartCourse)) and self.cp.turnStage == 0  and not returnToStartPoint then
 								--courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,true,true,true,allowedToDrive,nil,nil)
 					if allowedToDrive then
@@ -199,7 +199,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 							end;
 						end;
 					end
-				elseif not workArea or self.abortWork ~= nil or self.loaded or self.cp.last_recordnumber == self.stopWork or returnToStartPoint then
+				elseif not workArea or self.cp.abortWork ~= nil or self.loaded or self.cp.last_recordnumber == self.cp.stopWork or returnToStartPoint then
 					workSpeed = 0;
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,nil)
 					if not specialTool then
@@ -241,7 +241,6 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 
 						if tipper_fill_level == 0 then
 							self.unloaded = true
-							self.max_speed_level = 3
 							self.cp.currentTipTrigger = nil
 						end
 					end
@@ -262,7 +261,6 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 
 					-- tipper is not empty and tractor reaches TipTrigger
 					if tipper_fill_level > 0 and self.cp.currentTipTrigger ~= nil and self.recordnumber > 3 then
-						self.max_speed_level = 1
 						allowedToDrive, active_tipper = courseplay:unload_tippers(self)
 						self.cp.infoText = courseplay:get_locale(self, "CPTriggerReached") -- "Abladestelle erreicht"
 					end
@@ -270,12 +268,12 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 			end; --END other tools
 
 			-- Begin Work   or goto abortWork
-			if self.cp.last_recordnumber == self.startWork and fill_level ~= 100 then
-				if self.abortWork ~= nil then
-					if self.abortWork < 5 then
-						self.abortWork = 6
+			if self.cp.last_recordnumber == self.cp.startWork and fill_level ~= 100 then
+				if self.cp.abortWork ~= nil then
+					if self.cp.abortWork < 5 then
+						self.cp.abortWork = 6
 					end
-					self.recordnumber = self.abortWork
+					self.recordnumber = self.cp.abortWork
 					if self.recordnumber < 2 then
 						self.recordnumber = 2
 					end
@@ -285,21 +283,21 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 				end
 			end
 			-- last point reached restart
-			if self.abortWork ~= nil then
-				if (self.cp.last_recordnumber == self.abortWork ) and fill_level ~= 100 then
-					self.recordnumber = self.abortWork + 2  -- drive to waypoint after next waypoint
-					self.abortWork = nil
+			if self.cp.abortWork ~= nil then
+				if (self.cp.last_recordnumber == self.cp.abortWork ) and fill_level ~= 100 then
+					self.recordnumber = self.cp.abortWork + 2  -- drive to waypoint after next waypoint
+					self.cp.abortWork = nil
 				end
 			end
 			-- safe last point
 			if (fill_level == 100 or self.loaded) and workArea and not courseplay:isBaler(workTool) then
-				if self.cp.hasUnloadingRefillingCourse and self.abortWork == nil then
-					self.abortWork = self.cp.last_recordnumber - 10
-					self.recordnumber = self.stopWork - 4
+				if self.cp.hasUnloadingRefillingCourse and self.cp.abortWork == nil then
+					self.cp.abortWork = self.cp.last_recordnumber - 10
+					self.recordnumber = self.cp.stopWork - 4
 					if self.recordnumber < 1 then
 						self.recordnumber = 1
 					end
-					--courseplay:debug(string.format("Abort: %d StopWork: %d",self.abortWork,self.stopWork), 12)
+					--courseplay:debug(string.format("Abort: %d StopWork: %d",self.cp.abortWork,self.cp.stopWork), 12)
 				elseif not self.cp.hasUnloadingRefillingCourse and not self.cp.automaticUnloadingOnField then
 					allowedToDrive = false;
 					courseplay:setGlobalInfoText(self, string.format(": %s %s", tostring(workTool.name), courseplay:get_locale(self, "CPneedsToBeUnloaded")), -1);
@@ -315,7 +313,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 			if tool.getCombineTrailerInRangePipeState ~= nil then
 				pipeState = tool:getCombineTrailerInRangePipeState();
 			end;
-			if workArea and not tool.isAIThreshing and self.abortWork == nil and self.cp.turnStage == 0 then
+			if workArea and not tool.isAIThreshing and self.cp.abortWork == nil and self.cp.turnStage == 0 then
 				specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,true,true,true,allowedToDrive,nil,nil)
 				if not specialTool then
 					local weatherStop = not tool:getIsThreshingAllowed(true)
@@ -368,9 +366,9 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 					end
 				end
 			 --Stop combine
-			elseif self.recordnumber == self.stopWork or self.abortWork ~= nil then
+			elseif self.recordnumber == self.cp.stopWork or self.cp.abortWork ~= nil then
 				local isEmpty = tool.grainTankFillLevel == 0
-				if self.abortWork == nil then
+				if self.cp.abortWork == nil then
 					allowedToDrive = false;
 				end
 				if isEmpty then

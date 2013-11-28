@@ -4,18 +4,18 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 	--RIGHT CLICK
 	if isDown and mouseKey == Input[courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION_SECONDARY.keyName] and self.isEntered then
 		if self.cp.hud.show then
-			courseplay:setMouseCursor(self, not self.mouse_enabled);
-		elseif not self.cp.hud.show and self.mouse_right_key_enabled then
+			courseplay:setMouseCursor(self, not self.cp.mouseCursorActive);
+		elseif not self.cp.hud.show and self.cp.hud.openWithMouse then
 			courseplay:openCloseHud(self, true)
 			courseplay:buttonsActiveEnabled(self, "all");
 		end;
 	end;
 
 	local hudGfx = courseplay.hud.visibleArea;
-	local mouseIsInHudArea = self.mouse_enabled and posX > hudGfx.x1 and posX < hudGfx.x2 and posY > hudGfx.y1 and posY < hudGfx.y2;
+	local mouseIsInHudArea = self.cp.mouseCursorActive and posX > hudGfx.x1 and posX < hudGfx.x2 and posY > hudGfx.y1 and posY < hudGfx.y2;
 
 	--LEFT CLICK
-	if isDown and mouseKey == Input[courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION.keyName] and self.mouse_enabled and self.cp.hud.show and self.isEntered and mouseIsInHudArea then
+	if isDown and mouseKey == Input[courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION.keyName] and self.cp.mouseCursorActive and self.cp.hud.show and self.isEntered and mouseIsInHudArea then
 		local continueSearchingButton = true;
 		for _,button in pairs(self.cp.buttons.global) do
 			if button.show and courseplay:mouseIsInButtonArea(posX, posY, button) then
@@ -47,7 +47,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 		end;
 
 	--HOVER
-	elseif self.mouse_enabled and not isDown and self.cp.hud.show and self.isEntered then
+	elseif self.cp.mouseCursorActive and not isDown and self.cp.hud.show and self.isEntered then
 		for _,button in pairs(self.cp.buttons.global) do
 			button.isClicked = false;
 			if button.show and not button.isHidden then
@@ -204,7 +204,7 @@ function courseplay:executeFunction(self, func, value, overwrittenPage)
 				if not self.drive then
 					if line == 1 then
 						courseplay:start(self);
-					elseif line == 3 and self.ai_mode ~= 9 then
+					elseif line == 3 and self.cp.aiMode ~= 9 then
 						courseplay:setStartAtFirstPoint(self);
 					elseif line == 4 then
 						courseplay:reset_course(self);
@@ -215,18 +215,18 @@ function courseplay:executeFunction(self, func, value, overwrittenPage)
 						courseplay:stop(self);
 					elseif line == 2 and self.cp.last_recordnumber ~= nil and self.Waypoints[self.cp.last_recordnumber].wait and self.wait then
 						self.wait = false;
-					elseif line == 2 and self.StopEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil) then
-						self.StopEnd = false;
+					elseif line == 2 and self.cp.stopAtEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil) then
+						self.cp.stopAtEnd = false;
 					elseif line == 3 and not self.loaded then
 						courseplay:setIsLoaded(self, true);
-					elseif line == 4 and not self.StopEnd then
-						self.StopEnd = true
+					elseif line == 4 and not self.cp.stopAtEnd then
+						self.cp.stopAtEnd = true
 					elseif line == 5 then
-						if self.ai_mode == 1 or self.ai_mode == 2 then
+						if self.cp.aiMode == 1 or self.cp.aiMode == 2 then
 							self.cp.unloadAtSiloStart = not self.cp.unloadAtSiloStart;
-						elseif self.ai_mode == 4 and self.cp.hasSowingMachine then
+						elseif self.cp.aiMode == 4 and self.cp.hasSowingMachine then
 							self.cp.ridgeMarkersAutomatic = not self.cp.ridgeMarkersAutomatic;
-						elseif self.ai_mode == 6 and self.cp.hasBaleLoader and not self.hasUnloadingRefillingCourse then
+						elseif self.cp.aiMode == 6 and self.cp.hasBaleLoader and not self.hasUnloadingRefillingCourse then
 							self.cp.automaticUnloadingOnField = not self.cp.automaticUnloadingOnField;
 						end;
 					end;
