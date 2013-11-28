@@ -206,7 +206,11 @@ function courseplay:update_tools(self, tractor_or_implement)
 			end;
 			if courseplay:is_baleLoader(object) then
 				self.cp.hasBaleLoader = true;
+				courseplay:getReverseProperties(self, object)
 			end;
+			if object.allowTipDischarge then
+				courseplay:getReverseProperties(self, object)
+			end
 		elseif self.cp.aiMode == 8 then --Liquid manure transfer
 			--if SpecializationUtil.hasSpecialization(RefillTrigger, object.specializations) then
 			tipper_attached = true
