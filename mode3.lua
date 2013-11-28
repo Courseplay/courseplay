@@ -1,6 +1,6 @@
 function courseplay:handleMode3(vehicle, fill_level, allowedToDrive, dt)
 	courseplay:debug(string.format("handleMode3(vehicle, fill_level=%s, allowedToDrive=%s, dt)", tostring(fill_level), tostring(allowedToDrive)), 15);
-	local workTool = vehicle.tippers[vehicle.currentTrailerToFill] or vehicle.tippers[1];
+	local workTool = vehicle.tippers[vehicle.cp.currentTrailerToFill] or vehicle.tippers[1];
 	local backPointsUnfoldPipe = 8; --[[workTool.cp.backPointsUnfoldPipe or 8;]] --NOTE: backPointsUnfoldPipe must not be 0! 
 	local forwardPointsFoldPipe = workTool.cp.forwardPointsFoldPipe or 2;
 	workTool.cp.isUnloading = workTool.fillLevel < workTool.cp.lastFillLevel;
@@ -17,21 +17,21 @@ function courseplay:handleMode3(vehicle, fill_level, allowedToDrive, dt)
 			if fill_level > 0 then
 				courseplay:handleAugerWagon(vehicle, workTool, true, true, "unload"); --unfold=true, unload=true
 			end;
-			if vehicle.last_fill_level ~= nil then
+			if vehicle.cp.prevFillLevel ~= nil then
 				if fill_level > 0 and workTool.cp.isUnloading then
 					courseplay:setCustomTimer(vehicle, "fillLevelChange", 7);
-				elseif fill_level == vehicle.last_fill_level and fill_level < vehicle.cp.followAtFillLevel and courseplay:timerIsThrough(vehicle, "fillLevelChange", false) then
+				elseif fill_level == vehicle.cp.prevFillLevel and fill_level < vehicle.cp.followAtFillLevel and courseplay:timerIsThrough(vehicle, "fillLevelChange", false) then
 					driveOn = true; -- drive on if fill_level doesn't change for 7 seconds and fill level is < required_fill_level_for_follow
 				end;
 			end;
 
-			vehicle.last_fill_level = fill_level;
+			vehicle.cp.prevFillLevel = fill_level;
 
 			if (fill_level == 0 or driveOn) and not workTool.cp.isUnloading then
 				courseplay:handleAugerWagon(vehicle, workTool, true, false, "stopUnload"); --unfold=true, unload=false
 				vehicle.wait = false;
-				vehicle.last_fill_level = nil;
-				vehicle.unloaded = true;
+				vehicle.cp.prevFillLevel = nil;
+				vehicle.cp.isUnloaded = true;
 			end;
 		end;
 
@@ -53,7 +53,6 @@ function courseplay:handleAugerWagon(vehicle, workTool, unfold, unload, orderNam
 	courseplay:debug(string.format("\thandleAugerWagon(vehicle, %s, unfold=%s, unload=%s, orderName=%s)", nameNum(workTool), tostring(unfold), tostring(unload), tostring(orderName)), 15);
 	local pipeOrderExists = unfold ~= nil;
 	local unloadOrderExists = unload ~= nil;
-	local needsPipeLight = g_currentMission.environment.needsLights or (g_currentMission.environment.lastRainScale > 0.1 and g_currentMission.environment.timeSinceLastRain < 30);
 
 	--Taarup Shuttle
 	if workTool.cp.isTaarupShuttle then
@@ -76,8 +75,8 @@ function courseplay:handleAugerWagon(vehicle, workTool, unfold, unload, orderNam
 		if pipeOrderExists then
 			if unfold and not workTool.pipe.out then
 				workTool:setAnimationTime(1, workTool.animationParts[1].animDuration, false);
-				if workTool.cp.hasPipeLight and workTool.cp.pipeLight.a ~= needsPipeLight then
-					workTool:setState("work:1", needsPipeLight);
+				if workTool.cp.hasPipeLight and workTool.cp.pipeLight.a ~= courseplay.lightsNeeded then
+					workTool:setState("work:1", courseplay.lightsNeeded);
 				end;
 			elseif not unfold and workTool.pipe.out then
 				workTool:setAnimationTime(1, workTool.animationParts[1].offSet, false);
@@ -113,8 +112,8 @@ function courseplay:handleAugerWagon(vehicle, workTool, unfold, unload, orderNam
 					workTool.cpAI = "in";
 				end;
 
-				if workTool.pipeLight ~= nil and getVisibility(workTool.pipeLight) ~= (unfold and needsPipeLight) then
-					setVisibility(workTool.pipeLight, unfold and needsPipeLight);
+				if workTool.pipeLight ~= nil and getVisibility(workTool.pipeLight) ~= (unfold and courseplay.lightsNeeded) then
+					setVisibility(workTool.pipeLight, unfold and courseplay.lightsNeeded);
 				end;
 			end;
 		end;

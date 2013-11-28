@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="13">
-	<version>3.41.0250</version>
+	<version>3.41.0251</version>
 	<author>Jakob Tischler / Thomas Gärtner / Horoman</author>
 	<title>
 		<de>Courseplay</de>
@@ -804,7 +804,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<cz>Začátek a konec</cz>
 		</text>
 		<text name="WaypointMode2">
-			<en>without crosspoints</en>
+			<en>without crossing points</en>
 			<de>ohne Kreuzungspunkte</de>
 			<fr>sans les croisements</fr>
 			<es>sin puntos de cruce</es>
@@ -1163,7 +1163,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<it>vorrebbe nuotare</it>
 			<cz>by si rád zaplaval</cz>
 		</text>
-		<text name="WaitPoints">
+		<text name="COURSEPLAY_WAITPOINTS">
 			<en>waiting points:</en>
 			<de>Wartepunkte:</de>
 			<fr>Points d'attente:</fr>
@@ -1171,7 +1171,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<it>punti d'attesa:</it>
 			<cz>Bod čekání:</cz>
 		</text>
-		<text name="CrossPoints">
+		<text name="COURSEPLAY_CROSSING_POINTS">
 			<en>crossing points:</en>
 			<de>Kreuzungspunkte:</de>
 			<fr>Points de croisement:</fr>

@@ -44,7 +44,7 @@ function courseplay:handle_mode9(self, fill_level, allowedToDrive,dt)
 			
 	if self.recordnumber == 1 and self.cp.shovelState ~= 6 then  --backup for missed approach
 		self.cp.shovelState = 1
-		self.loaded = false
+		self.cp.isLoaded = false
 		courseplay:debug(nameNum(self) .. ": set state 1 (backup)", 10);
 	end
 
@@ -78,15 +78,15 @@ function courseplay:handle_mode9(self, fill_level, allowedToDrive,dt)
 			self.cp.shovelLastFillLevel = fill_level;
 		end;
 
-		if fill_level == 100 or self.loaded then 
-			if not self.loaded then
+		if fill_level == 100 or self.cp.isLoaded then 
+			if not self.cp.isLoaded then
 				for i=self.recordnumber, self.maxnumber do
 					local _,ty,_ = getWorldTranslation(self.rootNode)
 					local _,_,z = worldToLocal(self.rootNode, self.Waypoints[i].cx , ty , self.Waypoints[i].cz)
 					if z < -3 and self.Waypoints[i].rev  then
 						--print("z taken:  "..tostring(z))
 						self.recordnumber = i+1 
-						self.loaded = true;
+						self.cp.isLoaded = true;
 						break	
 					end
 				end			
@@ -174,10 +174,10 @@ function courseplay:handle_mode9(self, fill_level, allowedToDrive,dt)
 		courseplay:handleSpecialTools(self,self,true,nil,nil,nil,nil,nil)
 		local stopUnloading = self.cp.shovel.trailerFound ~= nil and self.cp.shovel.trailerFound.fillLevel >= self.cp.shovel.trailerFound.capacity 
 		if fill_level == 0 or stopUnloading then
-			if self.loaded then
+			if self.cp.isLoaded then
 				for i = self.recordnumber,self.maxnumber do
 					if self.Waypoints[i].rev then
-						self.loaded = false
+						self.cp.isLoaded = false
 						self.recordnumber = i
 						break
 					end

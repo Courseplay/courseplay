@@ -60,16 +60,16 @@ function courseplay:handleTrafficCollisions(self, triggerId, otherId, onEnter, o
 			local vehicleOnList = false
 			local OtherIdisCloser = true
 			local vehicle = g_currentMission.nodeToVehicle[otherId];
-			local vehicleInFront = g_currentMission.nodeToVehicle[self.traffic_vehicle_in_front];
-			if onEnter and self.traffic_vehicle_in_front ~= nil and vehicleInFront ~= nil and vehicle ~= nil then
+			local vehicleInFront = g_currentMission.nodeToVehicle[self.cp.collidingVehicle];
+			if onEnter and self.cp.collidingVehicle ~= nil and vehicleInFront ~= nil and vehicle ~= nil then
 				local distanceToOtherId = courseplay:distance_to_object(self, vehicle)
 				local distanceToVehicleInFront = courseplay:distance_to_object(self, vehicleInFront)
 				courseplay:debug(nameNum(self)..": 	checking Distances: new: "..tostring(distanceToOtherId).." vs. current: "..tostring(distanceToVehicleInFront),3);
 				if distanceToVehicleInFront < distanceToOtherId then
 					OtherIdisCloser = false
-					courseplay:debug(string.format("%s: 	target is not closer than existing target -> do not change \"self.traffic_vehicle_in_front\"", nameNum(self)), 3);
+					courseplay:debug(string.format("%s: 	target is not closer than existing target -> do not change \"self.cp.collidingVehicle\"", nameNum(self)), 3);
 				else
-					courseplay:debug(string.format("%s: 	target is closer than existing target -> change \"self.traffic_vehicle_in_front\"", nameNum(self)), 3);
+					courseplay:debug(string.format("%s: 	target is closer than existing target -> change \"self.cp.collidingVehicle\"", nameNum(self)), 3);
 				end
 			end
 			if vehicle ~= nil and onEnter then
@@ -85,8 +85,8 @@ function courseplay:handleTrafficCollisions(self, triggerId, otherId, onEnter, o
 			end
 			if vehicle ~= nil and self.trafficCollisionIgnoreList[otherId] == nil and vehicleOnList == false then
 				if onEnter and OtherIdisCloser then
-					courseplay:debug(string.format("%s: 	\"%s\" is not on list, setting \"self.traffic_vehicle_in_front\"", nameNum(self), tostring(vehicle.name)), 3);
-					self.traffic_vehicle_in_front = otherId
+					courseplay:debug(string.format("%s: 	\"%s\" is not on list, setting \"self.cp.collidingVehicle\"", nameNum(self), tostring(vehicle.name)), 3);
+					self.cp.collidingVehicle = otherId
 					self.CPnumCollidingVehicles = self.CPnumCollidingVehicles + 1;
 					self.numCollidingVehicles[triggerId] = self.numCollidingVehicles[triggerId]+1;
 				elseif onLeave then
@@ -189,9 +189,9 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 	if courseplay.triggers.allNonUpdateables[transformId] then
 		local trigger = courseplay.triggers.allNonUpdateables[transformId]
 		courseplay:debug(nameNum(self) .. " transformId = ".. tostring(transformId)..": "..tostring(name).." is allNonUpdateables", 1);
-		if self.cp.aiMode == 4 then
+		if self.cp.mode == 4 then
 			self.cp.fillTrigger = transformId;
-		elseif self.cp.aiMode == 8 and (trigger.isSprayerFillTrigger 
+		elseif self.cp.mode == 8 and (trigger.isSprayerFillTrigger 
 								  or trigger.isLiquidManureFillTrigger
 								  or trigger.isSchweinemastLiquidManureTrigger 
 								  or trigger.isGasStationTrigger) then

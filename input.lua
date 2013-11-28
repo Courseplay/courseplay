@@ -200,11 +200,11 @@ function courseplay:executeFunction(self, func, value, overwrittenPage)
 			end;
 
 		elseif page == 1 then
-			if self.play then
+			if self.cp.canDrive then
 				if not self.drive then
 					if line == 1 then
 						courseplay:start(self);
-					elseif line == 3 and self.cp.aiMode ~= 9 then
+					elseif line == 3 and self.cp.mode ~= 9 then
 						courseplay:setStartAtFirstPoint(self);
 					elseif line == 4 then
 						courseplay:reset_course(self);
@@ -217,16 +217,16 @@ function courseplay:executeFunction(self, func, value, overwrittenPage)
 						self.wait = false;
 					elseif line == 2 and self.cp.stopAtEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil) then
 						self.cp.stopAtEnd = false;
-					elseif line == 3 and not self.loaded then
+					elseif line == 3 and not self.cp.isLoaded then
 						courseplay:setIsLoaded(self, true);
 					elseif line == 4 and not self.cp.stopAtEnd then
 						self.cp.stopAtEnd = true
 					elseif line == 5 then
-						if self.cp.aiMode == 1 or self.cp.aiMode == 2 then
+						if self.cp.mode == 1 or self.cp.mode == 2 then
 							self.cp.unloadAtSiloStart = not self.cp.unloadAtSiloStart;
-						elseif self.cp.aiMode == 4 and self.cp.hasSowingMachine then
+						elseif self.cp.mode == 4 and self.cp.hasSowingMachine then
 							self.cp.ridgeMarkersAutomatic = not self.cp.ridgeMarkersAutomatic;
-						elseif self.cp.aiMode == 6 and self.cp.hasBaleLoader and not self.hasUnloadingRefillingCourse then
+						elseif self.cp.mode == 6 and self.cp.hasBaleLoader and not self.hasUnloadingRefillingCourse then
 							self.cp.automaticUnloadingOnField = not self.cp.automaticUnloadingOnField;
 						end;
 					end;
@@ -234,7 +234,7 @@ function courseplay:executeFunction(self, func, value, overwrittenPage)
 
 
 			elseif not self.drive then
-				if not self.record and not self.record_pause and not self.play and #(self.Waypoints) == 0 and not self.createCourse then
+				if not self.record and not self.record_pause and not self.cp.canDrive and #(self.Waypoints) == 0 and not self.createCourse then
 					if line == 1 then
 						courseplay:start_record(self);
 					elseif line == 3 then

@@ -218,6 +218,7 @@ function courseplay:setGlobalData()
 	ch.clickSound = createSample("clickSound");
 	loadSample(courseplay.hud.clickSound, Utils.getFilename("sounds/cpClickSound.wav", courseplay.path), false);
 
+	courseplay.lightsNeeded = false;
 
 	--GLOBALINFOTEXT
 	courseplay.globalInfoText = {};

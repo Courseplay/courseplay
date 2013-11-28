@@ -60,8 +60,8 @@ end;
 function courseplay:updateWaypointSigns(vehicle, section)
 	section = section or "all"; --section: "all", "crossing", "current"
 
-	vehicle.waitPoints = 0;
-	vehicle.crossPoints = 0;
+	vehicle.cp.numWaitPoints = 0;
+	vehicle.cp.numCrossingPoints = 0;
 	vehicle.maxnumber = #vehicle.Waypoints;
 
 	if section == "all" or section == "current" then
@@ -101,10 +101,10 @@ function courseplay:updateWaypointSigns(vehicle, section)
 			end;
 
 			if wp.wait then
-				vehicle.waitPoints = vehicle.waitPoints + 1;
+				vehicle.cp.numWaitPoints = vehicle.cp.numWaitPoints + 1;
 			end;
 			if wp.crossing then
-				vehicle.crossPoints = vehicle.crossPoints + 1;
+				vehicle.cp.numCrossingPoints = vehicle.cp.numCrossingPoints + 1;
 			end;
 		end;
 	end;
@@ -145,7 +145,7 @@ function courseplay:setSignsVisibility(vehicle, forceHide)
 	end;
 
 	local mode = vehicle.cp.visualWaypointsMode;
-	--old waypointModes: 1 = only when recording, 2 = own waypoints, 3 = without crosspoints, 4 = show all, 5 = none
+	--old waypointModes: 1 = only when recording, 2 = own waypoints, 3 = without crossing points, 4 = show all, 5 = none
 	--new waypointModes: 1 = Start and end, 2 = Start and end [without crossing], 3 = all own waypoints [with crossing], 4 = none
 	local numSigns = #vehicle.cp.signs.current;
 	for k,signData in pairs(vehicle.cp.signs.current) do

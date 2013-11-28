@@ -180,7 +180,7 @@ function courseplay:side_to_drive(self, combine, distance,switchSide)
 	else
 		fruitSide = "none"
 	end
-	if combine.forced_side == nil then
+	if combine.cp.forcedSide == nil then
 		--print("	forced side == nil")
 		if not switchSide then
 			if fruitSide == "right" then
@@ -197,7 +197,7 @@ function courseplay:side_to_drive(self, combine, distance,switchSide)
 				self.sideToDrive = "left";
 			end;
 		end;
-	elseif combine.forced_side == "right" then
+	elseif combine.cp.forcedSide == "right" then
 		--print("	forced side right")
 		self.sideToDrive = "right";
 	else

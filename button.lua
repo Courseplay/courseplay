@@ -119,16 +119,16 @@ function courseplay:renderButton(self, button)
 
 		elseif pg == 6 then
 			if fn == "changeWaitTime" then
-				button.canScrollUp = not (self.cp.aiMode == 3 or self.cp.aiMode == 4 or self.cp.aiMode == 6 or self.cp.aiMode == 7);
+				button.canScrollUp = not (self.cp.mode == 3 or self.cp.mode == 4 or self.cp.mode == 6 or self.cp.mode == 7);
 				button.canScrollDown = button.canScrollUp and self.cp.waitTime > 0;
 			end;
 
 		elseif pg == 7 then
 			if fn == "changeLaneOffset" then
-				button.canScrollUp = self.cp.aiMode == 4 or self.cp.aiMode == 6;
+				button.canScrollUp = self.cp.mode == 4 or self.cp.mode == 6;
 				button.canScrollDown = button.canScrollUp;
 			elseif fn == "changeToolOffsetX" or fn == "changeToolOffsetZ" then
-				button.canScrollUp = self.cp.aiMode == 3 or self.cp.aiMode == 4 or self.cp.aiMode == 6 or self.cp.aiMode == 7;
+				button.canScrollUp = self.cp.mode == 3 or self.cp.mode == 4 or self.cp.mode == 6 or self.cp.mode == 7;
 				button.canScrollDown = button.canScrollUp;
 			end;
 
@@ -149,7 +149,7 @@ function courseplay:renderButton(self, button)
 		--Global
 		if pg == "global" then
 			if fn == "showSaveCourseForm" and prm == "course" then
-				button.show = self.play and not self.record and not self.record_pause and self.Waypoints ~= nil and #(self.Waypoints) ~= 0;
+				button.show = self.cp.canDrive and not self.record and not self.record_pause and self.Waypoints ~= nil and #(self.Waypoints) ~= 0;
 			end;
 
 		--Page 1
@@ -157,12 +157,12 @@ function courseplay:renderButton(self, button)
 			if fn == "setAiMode" then
 				button.show = self.cp.canSwitchMode;
 			elseif fn == "clearCustomFieldEdge" or fn == "toggleCustomFieldEdgePathShow" then
-				button.show = not self.play and self.cp.fieldEdge.customField.isCreated;
+				button.show = not self.cp.canDrive and self.cp.fieldEdge.customField.isCreated;
 			elseif fn == "setCustomFieldEdgePathNumber" then
 				if prm < 0 then
-					button.show = not self.play and self.cp.fieldEdge.customField.isCreated and self.cp.fieldEdge.customField.fieldNum > 0;
+					button.show = not self.cp.canDrive and self.cp.fieldEdge.customField.isCreated and self.cp.fieldEdge.customField.fieldNum > 0;
 				elseif prm > 0 then
-					button.show = not self.play and self.cp.fieldEdge.customField.isCreated and self.cp.fieldEdge.customField.fieldNum < courseplay.fields.customFieldMaxNum;
+					button.show = not self.cp.canDrive and self.cp.fieldEdge.customField.isCreated and self.cp.fieldEdge.customField.fieldNum < courseplay.fields.customFieldMaxNum;
 				end;
 			end;
 
@@ -237,7 +237,7 @@ function courseplay:renderButton(self, button)
 		--Page 6
 		elseif pg == 6 then
 			if fn == "changeWaitTime" then
-				button.show = not (self.cp.aiMode == 3 or self.cp.aiMode == 4 or self.cp.aiMode == 6 or self.cp.aiMode == 7);
+				button.show = not (self.cp.mode == 3 or self.cp.mode == 4 or self.cp.mode == 6 or self.cp.mode == 7);
 				if prm < 0 and button.show then
 					button.show = self.cp.waitTime > 0;
 				end;
@@ -254,11 +254,11 @@ function courseplay:renderButton(self, button)
 		--Page 7
 		elseif pg == 7 then
 			if fn == "changeLaneOffset" then
-				button.show = self.cp.aiMode == 4 or self.cp.aiMode == 6;
+				button.show = self.cp.mode == 4 or self.cp.mode == 6;
 			elseif fn == "toggleSymmetricLaneChange" then
-				button.show = self.cp.aiMode == 4 or self.cp.aiMode == 6 and self.cp.laneOffset ~= 0;
+				button.show = self.cp.mode == 4 or self.cp.mode == 6 and self.cp.laneOffset ~= 0;
 			elseif fn == "changeToolOffsetX" or fn == "changeToolOffsetZ" then
-				button.show = self.cp.aiMode == 3 or self.cp.aiMode == 4 or self.cp.aiMode == 6 or self.cp.aiMode == 7;
+				button.show = self.cp.mode == 3 or self.cp.mode == 4 or self.cp.mode == 6 or self.cp.mode == 7;
 			elseif fn == "switchDriverCopy" and prm < 0 then
 				button.show = self.cp.selectedDriverNumber > 0;
 			elseif fn == "copyCourse" then

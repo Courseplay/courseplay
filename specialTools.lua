@@ -1347,13 +1347,13 @@ end
 function courseplay.thirdParty.EifokLiquidManure.findRefillObject(vehicle, activeTool, where, pumpDir)
 	--where: "MapHoseRefStation" / "Kotte"
 	local startPoint, endPoint = 1, vehicle.maxnumber;
-	if vehicle.cp.aiMode == 4 then
+	if vehicle.cp.mode == 4 then
 		if where == "MapHoseRefStation" then
 			startPoint, endPoint = vehicle.cp.stopWork, vehicle.maxnumber;
 		else
 			startPoint, endPoint = vehicle.recordnumber - 5, vehicle.recordnumber;
 		end;
-	elseif vehicle.cp.aiMode == 8 then
+	elseif vehicle.cp.mode == 8 then
 		if where == "MapHoseRefStation" then
 			startPoint, endPoint = 1, vehicle.maxnumber;
 		else

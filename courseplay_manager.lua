@@ -142,6 +142,8 @@ function courseplay_manager:draw()
 			courseplay.globalInfoText.vehicleHasText = {};
 		end;
 	end;
+
+	courseplay.lightsNeeded = g_currentMission.environment.needsLights or (g_currentMission.environment.lastRainScale > 0.1 and g_currentMission.environment.timeSinceLastRain < 30);
 end;
 
 function courseplay_manager:mouseEvent(posX, posY, isDown, isUp, button)
@@ -454,7 +456,7 @@ function courseplay_manager:removeCourseplayersFromCombine(vehicle, callDelete)
 				if tractor.saved_combine ~= nil and tractor.saved_combine == combine then
 					tractor.saved_combine = nil;
 				end;
-				tractor.reachable_combines = nil;
+				tractor.cp.reachableCombines = nil;
 			end;
 			courseplay:debug(nameNum(combine) .. " has " .. table.getn(combine.courseplayers) .. " courseplayers", 4);
 		end;

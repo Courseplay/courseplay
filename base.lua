@@ -53,31 +53,34 @@ function courseplay:load(xmlFile)
 
 	self.cp.combineOffsetAutoMode = true
 	self.drive = false
-	self.runOnceStartCourse = false;
+	self.cp.runOnceStartCourse = false;
 	self.cp.stopAtEnd = false
-	self.calculated_course = false
+	self.cp.calculatedCourseToCombine = false
 
 	self.recordnumber = 1
 	self.cp.last_recordnumber = 1;
-	self.tmr = 1
+	self.cp.recordingTimer = 1
 	self.startlastload = 1
-	self.timeout = 1
+	self.cp.timeOut = 1
 	self.timer = 0.00
 	self.cp.timers = {}; 
-	self.drive_slow_timer = 0
-	self.courseplay_position = nil
-	self.waitPoints = 0
-	self.cp.waitTime = 0
-	self.crossPoints = 0
+	self.cp.driveSlowTimer = 0;
+	self.cp.positionWithCombine = nil;
+
+	self.cp.waitPoints = {};
+	self.cp.numWaitPoints = 0;
+	self.cp.waitTime = 0;
+	self.cp.numCrossingPoints = 0;
+
 	self.cp.visualWaypointsMode = 1
 	self.cp.beaconLightsMode = 1
 	self.cp.workWidthChanged = 0
 	-- saves the shortest distance to the next waypoint (for recocnizing circling)
-	self.shortest_dist = nil
+	self.cp.shortestDistToWp = nil
 
 	self.Waypoints = {}
 
-	self.play = false --can drive course (has >4 waypoints, is not recording)
+	self.cp.canDrive = false --can drive course (has >4 waypoints, is not recording)
 	self.cp.coursePlayerNum = nil;
 
 	self.cp.infoText = nil -- info text on tractor
@@ -98,10 +101,9 @@ function courseplay:load(xmlFile)
 		y2 = git.posY + (buttonIdx * git.lineHeight);
 	};
 	-- ai mode: 1 abfahrer, 2 kombiniert
-	self.cp.aiMode = 1
-	self.follow_mode = 1
-	self.ai_state = 0
-	self.next_ai_state = nil
+	self.cp.mode = 1
+	self.cp.modeState = 0
+	self.cp.mode2nextState = nil
 	self.cp.startWork = nil
 	self.cp.stopWork = nil
 	self.cp.abortWork = nil
@@ -136,17 +138,16 @@ function courseplay:load(xmlFile)
 	};
 	courseplay:updateWaypointSigns(self);
 
-	-- course name for saving
-	self.current_course_name = nil
-	self.courseID = 0
-	-- array for multiple courses
-	self.loaded_courses = {}
+	self.cp.currentCourseName = nil
+	self.cp.currentCourseId = 0
+
+	self.cp.loadedCourses = {}
 	self.cp.drivingDirReverse = false
+
 	-- forced waypoints
 	self.target_x = nil
 	self.target_y = nil
 	self.target_z = nil
-
 	self.next_targets = {}
 
 	-- speed limits
@@ -159,7 +160,7 @@ function courseplay:load(xmlFile)
 		sl = 3;
 	};
 
-	self.tools_dirty = false
+	self.cp.toolsDirty = false
 
 	self.cp.orgRpm = nil;
 
@@ -213,7 +214,7 @@ function courseplay:load(xmlFile)
 	-- traffic collision
 	self.onTrafficCollisionTrigger = courseplay.cponTrafficCollisionTrigger;
 	--self.aiTrafficCollisionTrigger = Utils.indexToObject(self.components, getXMLString(xmlFile, "vehicle.aiTrafficCollisionTrigger#index"));
-	self.steering_angle = Utils.getNoNil(getXMLFloat(xmlFile, "vehicle.wheels.wheel(1)" .. "#rotMax"), 30)
+	self.cp.steeringAngle = Utils.getNoNil(getXMLFloat(xmlFile, "vehicle.wheels.wheel(1)" .. "#rotMax"), 30)
 	self.cp.tempCollis = {}
 	self.CPnumCollidingVehicles = 0;
 	--	self.numToolsCollidingVehicles = {};
@@ -240,39 +241,36 @@ function courseplay:load(xmlFile)
 
 	-- tippers
 	self.tippers = {}
-	self.tipper_attached = false
-	self.currentTrailerToFill = nil
-	self.lastTrailerToFillDistance = nil
-	self.unloaded = false
-	self.loaded = false
-	self.unloading_tipper = nil
-	self.last_fill_level = nil
-	self.tipRefOffset = 0;
+	self.cp.tipperAttached = false
+	self.cp.currentTrailerToFill = nil
+	self.cp.lastTrailerToFillDistance = nil
+	self.cp.isUnloaded = false
+	self.cp.isLoaded = false
+	self.cp.unloadingTipper = nil
+	self.cp.prevFillLevel = nil
+	self.cp.tipRefOffset = 0;
 	self.cp.tipLocation = 1;
 	self.cp.tipperHasCover = false;
 	self.cp.tippersWithCovers = {};
 	self.cp.tipperFillLevel = nil;
 	self.cp.tipperCapacity = nil;
 
-	self.selected_course_number = 0
-	self.course_Del = false
-
 	-- combines
-	self.reachable_combines = {}
-	self.active_combine = nil
+	self.cp.reachableCombines = {};
+	self.cp.activeCombine = nil;
 
 	self.cp.offset = nil --self = combine [flt]
 	self.cp.combineOffset = 0.0
 	self.cp.tipperOffset = 0.0
 
-	self.forced_side = nil
-	self.forced_to_stop = false
+	self.cp.forcedSide = nil
+	self.cp.forcedToStop = false
 
-	self.allow_following = false
+	self.cp.allowFollowing = false
 	self.cp.followAtFillLevel = 50
 	self.cp.driveOnAtFillLevel = 90
 
-	self.turn_factor = nil
+	self.turn_factor = nil --TODO: is never set, but used in mode2:816 in localToWorld function
 	self.cp.turnRadius = 10;
 	self.cp.turnRadiusAuto = 10;
 	self.cp.turnRadiusAutoMode = true;
@@ -722,7 +720,7 @@ function courseplay:draw()
 		local kb = courseplay.inputBindings.keyboard;
 		local mouse = courseplay.inputBindings.mouse;
 
-		if (self.play or not self.cp.hud.openWithMouse) and not InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER) then
+		if (self.cp.canDrive or not self.cp.hud.openWithMouse) and not InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER) then
 			g_currentMission:addHelpButtonText(courseplay:get_locale(self, "COURSEPLAY_FUNCTIONS"), InputBinding.COURSEPLAY_MODIFIER);
 		end;
 
@@ -753,7 +751,7 @@ function courseplay:draw()
 			end;
 		end;
 
-		if self.play then
+		if self.cp.canDrive then
 			if self.drive then
 				if InputBinding.hasEvent(InputBinding.COURSEPLAY_START_STOP_COMBINED) then
 					self:setCourseplayFunc("stop", nil);
@@ -831,7 +829,7 @@ function courseplay:update(dt)
 	if g_server ~= nil  then 
 		if self.drive then
 			self.cp.HUD1goOn = (self.Waypoints[self.cp.last_recordnumber] ~= nil and self.Waypoints[self.cp.last_recordnumber].wait and self.wait) or (self.cp.stopAtEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil));
-			self.cp.HUD1noWaitforFill = not self.loaded and self.cp.aiMode ~= 5;
+			self.cp.HUD1noWaitforFill = not self.cp.isLoaded and self.cp.mode ~= 5;
 		end;
 
 		if self.cp.hud.currentPage == 0 then
@@ -846,12 +844,12 @@ function courseplay:update(dt)
 				self.cp.HUD0noCourseplayer = table.getn(combine.courseplayers) == 0
 			end
 			self.cp.HUD0wantsCourseplayer = combine.wants_courseplayer
-			self.cp.HUD0combineForcedSide = combine.forced_side
+			self.cp.HUD0combineForcedSide = combine.cp.forcedSide
 			self.cp.HUD0isManual = not self.drive and not combine.isAIThreshing 
 			self.cp.HUD0turnStage = self.cp.turnStage
 			local tractor = combine.courseplayers[1]
 			if tractor ~= nil then
-				self.cp.HUD0tractorForcedToStop = tractor.forced_to_stop
+				self.cp.HUD0tractorForcedToStop = tractor.cp.forcedToStop
 				self.cp.HUD0tractorName = tostring(tractor.name)
 				self.cp.HUD0tractor = true
 			else
@@ -861,14 +859,14 @@ function courseplay:update(dt)
 			end
 
 		elseif self.cp.hud.currentPage == 1 then
-			if not self.play and self.cp.fieldEdge.customField.show and self.cp.fieldEdge.customField.points ~= nil then
+			if not self.cp.canDrive and self.cp.fieldEdge.customField.show and self.cp.fieldEdge.customField.points ~= nil then
 				courseplay:showFieldEdgePath(self, "customField");
 			end;
 
 		elseif self.cp.hud.currentPage == 4 then
-			self.cp.HUD4hasActiveCombine = self.active_combine ~= nil
+			self.cp.HUD4hasActiveCombine = self.cp.activeCombine ~= nil
 			if self.cp.HUD4hasActiveCombine == true then
-				self.cp.HUD4combineName = self.active_combine.name
+				self.cp.HUD4combineName = self.cp.activeCombine.name
 			end
 			self.cp.HUD4savedCombine = self.saved_combine ~= nil and self.saved_combine.rootNode ~= nil
 			if self.saved_combine ~= nil then
@@ -896,7 +894,7 @@ function courseplay:updateTick(dt)
 	end;
 
 	--attached or detached implement?
-	if self.tools_dirty then
+	if self.cp.toolsDirty then
 		courseplay:reset_tools(self)
 	end
 
@@ -934,7 +932,7 @@ function courseplay:delete()
 end;
 
 function courseplay:set_timeout(self, interval)
-	self.timeout = self.timer + interval
+	self.cp.timeOut = self.timer + interval
 end
 
 
@@ -946,7 +944,7 @@ end;
 function courseplay:readStream(streamId, connection)
 	courseplay:debug("id: "..tostring(self.id).."  base: readStream", 5)
 
-	self.cp.aiMode = streamDebugReadInt32(streamId)
+	self.cp.mode = streamDebugReadInt32(streamId)
 	self.cp.turnRadiusAuto = streamDebugReadFloat32(streamId)
 	self.cp.combineOffsetAutoMode = streamDebugReadBool(streamId);
 	self.cp.combineOffset = streamDebugReadFloat32(streamId)
@@ -995,17 +993,17 @@ function courseplay:readStream(streamId, connection)
 
 	local active_combine_id = streamDebugReadInt32(streamId)
 	if active_combine_id then
-		self.active_combine = networkGetObject(active_combine_id)
+		self.cp.activeCombine = networkGetObject(active_combine_id)
 	end
 
 	local current_trailer_id = streamDebugReadInt32(streamId)
 	if current_trailer_id then
-		self.currentTrailerToFill = networkGetObject(current_trailer_id)
+		self.cp.currentTrailerToFill = networkGetObject(current_trailer_id)
 	end
 
 	local unloading_tipper_id = streamDebugReadInt32(streamId)
 	if unloading_tipper_id then
-		self.unloading_tipper = networkGetObject(unloading_tipper_id)
+		self.cp.unloadingTipper = networkGetObject(unloading_tipper_id)
 	end
 
 	courseplay:reinit_courses(self)
@@ -1014,7 +1012,7 @@ function courseplay:readStream(streamId, connection)
 	-- kurs daten
 	local courses = streamDebugReadString(streamId) -- 60.
 	if courses ~= nil then
-		self.loaded_courses = Utils.splitString(",", courses);
+		self.cp.loadedCourses = Utils.splitString(",", courses);
 		courseplay:reload_courses(self, true)
 	end
 
@@ -1027,7 +1025,7 @@ end
 function courseplay:writeStream(streamId, connection)
 	courseplay:debug("id: "..tostring(networkGetObjectId(self)).."  base: write stream", 5)
 
-	streamDebugWriteInt32(streamId,self.cp.aiMode)
+	streamDebugWriteInt32(streamId,self.cp.mode)
 	streamDebugWriteFloat32(streamId,self.cp.turnRadiusAuto)
 	streamWriteBool(streamId, self.cp.combineOffsetAutoMode);
 	streamDebugWriteFloat32(streamId,self.cp.combineOffset)
@@ -1077,28 +1075,28 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteInt32(streamId, saved_combine_id)
 
 	local active_combine_id = nil
-	if self.active_combine ~= nil then
-		active_combine_id = networkGetObject(self.active_combine)
+	if self.cp.activeCombine ~= nil then
+		active_combine_id = networkGetObject(self.cp.activeCombine)
 	end
 	streamDebugWriteInt32(streamId, active_combine_id)
 
 	local current_trailer_id = nil
-	if self.currentTrailerToFill ~= nil then
-		current_trailer_id = networkGetObject(self.currentTrailerToFill)
+	if self.cp.currentTrailerToFill ~= nil then
+		current_trailer_id = networkGetObject(self.cp.currentTrailerToFill)
 	end
 	streamDebugWriteInt32(streamId, current_trailer_id)
 
 	local unloading_tipper_id = nil
-	if self.unloading_tipper ~= nil then
-		unloading_tipper_id = networkGetObject(self.unloading_tipper)
+	if self.cp.unloadingTipper ~= nil then
+		unloading_tipper_id = networkGetObject(self.cp.unloadingTipper)
 	end
 	streamDebugWriteInt32(streamId, unloading_tipper_id)
 
-	local loaded_courses = nil
-	if table.getn(self.loaded_courses) then
-		loaded_courses = table.concat(self.loaded_courses, ",")
+	local loadedCourses = nil
+	if table.getn(self.cp.loadedCourses) then
+		loadedCourses = table.concat(self.cp.loadedCourses, ",")
 	end
-	streamDebugWriteString(streamId, loaded_courses) -- 60.
+	streamDebugWriteString(streamId, loadedCourses) -- 60.
 
 	local debugChannelsString = table.concat(table.map(courseplay.debugChannels, tostring), ",");
 	streamDebugWriteString(streamId, debugChannelsString) 
@@ -1115,8 +1113,7 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		self.cp.beaconLightsMode = Utils.getNoNil(getXMLInt(xmlFile, curKey .. "#beacon"), 1);
 		self.cp.waitTime = Utils.getNoNil(getXMLInt(xmlFile, curKey .. "#waitTime"), 0);
 		local courses = Utils.getNoNil(getXMLString(xmlFile, curKey .. '#courses'), '');
-		self.loaded_courses = Utils.splitString(",", courses);
-		self.selected_course_number = 0;
+		self.cp.loadedCourses = Utils.splitString(",", courses);
 		courseplay:reload_courses(self, true);
 
 		--speeds
@@ -1209,7 +1206,7 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 
 
 	--NODES
-	local cpOpen = string.format('<courseplay aiMode="%s" courses="%s" openHudWithMouse="%s" beacon="%s" waitTime="%s">', tostring(self.cp.aiMode), tostring(table.concat(self.loaded_courses, ",")), tostring(self.cp.hud.openWithMouse), tostring(self.cp.beaconLightsMode), tostring(self.cp.waitTime));
+	local cpOpen = string.format('<courseplay aiMode="%s" courses="%s" openHudWithMouse="%s" beacon="%s" waitTime="%s">', tostring(self.cp.mode), tostring(table.concat(self.cp.loadedCourses, ",")), tostring(self.cp.hud.openWithMouse), tostring(self.cp.beaconLightsMode), tostring(self.cp.waitTime));
 	local speeds = string.format('<speeds useRecordingSpeed="%s" unload="%.5f" turn="%.5f" field="%.5f" max="%.5f" />', tostring(self.cp.speeds.useRecordingSpeed), self.cp.speeds.unload, self.cp.speeds.turn, self.cp.speeds.field, self.cp.speeds.max);
 	local combi = string.format('<combi tipperOffset="%.1f" combineOffset="%.1f" fillFollow="%d" fillDriveOn="%d" turnRadius="%d" realisticDriving="%s" />', self.cp.tipperOffset, self.cp.combineOffset, self.cp.followAtFillLevel, self.cp.driveOnAtFillLevel, self.cp.turnRadius, tostring(self.cp.realisticDriving));
 	local fieldWork = string.format('<fieldWork workWidth="%.1f" ridgeMarkersAutomatic="%s" offsetData="%s" abortWork="%d" />', self.cp.workWidth, tostring(self.cp.ridgeMarkersAutomatic), offsetData, Utils.getNoNil(self.cp.abortWork, 0));

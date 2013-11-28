@@ -115,7 +115,7 @@ function courseplay:openCloseHud(self, open)
 end;
 
 function courseplay:setAiMode(vehicle, modeNum)
-	vehicle.cp.aiMode = modeNum;
+	vehicle.cp.mode = modeNum;
 	courseplay:buttonsActiveEnabled(vehicle, "all");
 end;
 
@@ -125,7 +125,7 @@ end;
 
 function courseplay:start_stop_player(combine)
 	local tractor = combine.courseplayers[1];
-	tractor.forced_to_stop = not tractor.forced_to_stop;
+	tractor.cp.forcedToStop = not tractor.cp.forcedToStop;
 end;
 
 function courseplay:drive_on(self)
@@ -138,12 +138,12 @@ function courseplay:drive_on(self)
 end;
 
 function courseplay:setIsLoaded(vehicle, bool)
-	vehicle.loaded = bool;
+	vehicle.cp.isLoaded = bool;
 end;
 
 function courseplay:send_player_home(combine)
 	local tractor = combine.courseplayers[1];
-	tractor.loaded = true;
+	tractor.cp.isLoaded = true;
 end
 
 function courseplay:switch_player_side(combine)
@@ -153,22 +153,22 @@ function courseplay:switch_player_side(combine)
 			return;
 		end;
 
-		tractor.ai_state = 10;
+		tractor.cp.modeState = 10;
 
-		if combine.forced_side == nil then
-			combine.forced_side = "left";
-		elseif combine.forced_side == "left" then
-			combine.forced_side = "right";
+		if combine.cp.forcedSide == nil then
+			combine.cp.forcedSide = "left";
+		elseif combine.cp.forcedSide == "left" then
+			combine.cp.forcedSide = "right";
 		else
-			combine.forced_side = nil;
+			combine.cp.forcedSide = nil;
 		end;
 	end;
 end;
 
 function courseplay:setHudPage(self, pageNum)
-	if self.cp.aiMode == nil then
+	if self.cp.mode == nil then
 		self.cp.hud.currentPage = pageNum;
-	elseif courseplay.hud.pagesPerMode[self.cp.aiMode] ~= nil and courseplay.hud.pagesPerMode[self.cp.aiMode][pageNum+1] then
+	elseif courseplay.hud.pagesPerMode[self.cp.mode] ~= nil and courseplay.hud.pagesPerMode[self.cp.mode][pageNum+1] then
 		if pageNum == 0 then
 			if self.cp.minHudPage == 0 or self.cp.isCombine or self.cp.isChopper or self.cp.isHarvesterSteerable or self.cp.isSugarBeetLoader then
 				self.cp.hud.currentPage = pageNum;
@@ -184,10 +184,10 @@ end;
 function courseplay:switch_hud_page(self, change_by)
 	newPage = courseplay:minMaxPage(self, self.cp.hud.currentPage + change_by);
 
-	if self.cp.aiMode == nil then
+	if self.cp.mode == nil then
 		self.cp.hud.currentPage = newPage;
-	elseif courseplay.hud.pagesPerMode[self.cp.aiMode] ~= nil then
-		while courseplay.hud.pagesPerMode[self.cp.aiMode][newPage+1] == false do
+	elseif courseplay.hud.pagesPerMode[self.cp.mode] ~= nil then
+		while courseplay.hud.pagesPerMode[self.cp.mode][newPage+1] == false do
 			newPage = courseplay:minMaxPage(self, newPage + change_by);
 		end;
 		self.cp.hud.currentPage = newPage;
@@ -212,9 +212,9 @@ function courseplay:buttonsActiveEnabled(self, section)
 				local pageNum = button.parameter;
 				button.isActive = pageNum == self.cp.hud.currentPage;
 
-				if self.cp.aiMode == nil then
+				if self.cp.mode == nil then
 					button.isDisabled = false;
-				elseif courseplay.hud.pagesPerMode[self.cp.aiMode] ~= nil and courseplay.hud.pagesPerMode[self.cp.aiMode][pageNum+1] then
+				elseif courseplay.hud.pagesPerMode[self.cp.mode] ~= nil and courseplay.hud.pagesPerMode[self.cp.mode][pageNum+1] then
 					if pageNum == 0 then
 						button.isDisabled = not (self.cp.minHudPage == 0 or self.cp.isCombine or self.cp.isChopper or self.cp.isHarvesterSteerable or self.cp.isSugarBeetLoader);
 					else
@@ -233,7 +233,7 @@ function courseplay:buttonsActiveEnabled(self, section)
 	if self.cp.hud.currentPage == 1 and (section == nil or section == "all" or section == "quickModes" or section == "customFieldShow") then
 		for _,button in pairs(self.cp.buttons["1"]) do
 			if button.function_to_call == "setAiMode" then
-				button.isActive = self.cp.aiMode == button.parameter;
+				button.isActive = self.cp.mode == button.parameter;
 				button.isDisabled = button.parameter == 7 and not self.cp.isCombine and not self.cp.isChopper and not self.cp.isHarvesterSteerable;
 				button.canBeClicked = not button.isDisabled and not button.isActive;
 			elseif button.function_to_call == "toggleCustomFieldEdgePathShow" then
@@ -366,7 +366,7 @@ function courseplay:changeToolOffsetX(vehicle, changeBy, force, noDraw)
 	vehicle.cp.totalOffsetX = vehicle.cp.laneOffset + vehicle.cp.toolOffsetX;
 
 	noDraw = noDraw or false;
-	if not noDraw and vehicle.cp.aiMode ~= 3 and vehicle.cp.aiMode ~= 7 then
+	if not noDraw and vehicle.cp.mode ~= 3 and vehicle.cp.mode ~= 7 then
 		courseplay:calculateWorkWidthDisplayPoints(vehicle);
 		vehicle.cp.workWidthChanged = vehicle.timer + 2000;
 	end
@@ -540,8 +540,8 @@ function courseplay:copyCourse(self)
 		local src = self.cp.copyCourseFromDriver;
 
 		self.Waypoints = src.Waypoints;
-		self.current_course_name = src.current_course_name;
-		self.loaded_courses = src.loaded_courses;
+		self.cp.currentCourseName = src.cp.currentCourseName;
+		self.cp.loadedCourses = src.cp.loadedCourses;
 		self.numCourses = src.numCourses;
 		self.recordnumber = 1;
 		self.maxnumber = table.getn(self.Waypoints);
@@ -550,17 +550,17 @@ function courseplay:copyCourse(self)
 		self.record_pause = false;
 		self.drive = false;
 		self.dcheck = false;
-		self.play = true;
+		self.cp.canDrive = true;
 		self.back = false;
 		self.cp.abortWork = nil;
 
 		self.target_x, self.target_y, self.target_z = nil, nil, nil;
-		if self.active_combine ~= nil then
-			courseplay:unregister_at_combine(self, self.active_combine);
+		if self.cp.activeCombine ~= nil then
+			courseplay:unregister_at_combine(self, self.cp.activeCombine);
 		end
 
-		self.ai_state = 1;
-		self.tmr = 1;
+		self.cp.modeState = 1;
+		self.cp.recordingTimer = 1;
 
 		courseplay:updateWaypointSigns(self, "current");
 
@@ -997,7 +997,7 @@ end;
 
 function courseplay:validateCanSwitchMode(vehicle)
 	vehicle.cp.canSwitchMode = not vehicle.drive and not vehicle.record and not vehicle.record_pause and not vehicle.cp.fieldEdge.customField.isCreated;
-	courseplay:debug(string.format("%s: validateCanSwitchMode(): play=%s, drive=%s, record=%s, record_pause=%s, customField.isCreated=%s ==> canSwitchMode=%s", nameNum(vehicle), tostring(vehicle.play), tostring(vehicle.drive), tostring(vehicle.record), tostring(vehicle.record_pause), tostring(vehicle.cp.fieldEdge.customField.isCreated), tostring(vehicle.cp.canSwitchMode)), 12);
+	courseplay:debug(string.format("%s: validateCanSwitchMode(): play=%s, drive=%s, record=%s, record_pause=%s, customField.isCreated=%s ==> canSwitchMode=%s", nameNum(vehicle), tostring(vehicle.cp.canDrive), tostring(vehicle.drive), tostring(vehicle.record), tostring(vehicle.record_pause), tostring(vehicle.cp.fieldEdge.customField.isCreated), tostring(vehicle.cp.canSwitchMode)), 12);
 end;
 
 function courseplay:saveShovelStatus(self, stage)
@@ -1028,9 +1028,9 @@ function courseplay:reloadCoursesFromXML(self)
 		courseplay:debug(tableShow(g_currentMission.cp_courses, "g_cM cp_courses", 8), 8);
 		courseplay:debug("g_currentMission.cp_courses = courseplay_manager:load_courses()", 8);
 		if not self.drive then
-			local loadedCoursesBackup = self.loaded_courses;
+			local loadedCoursesBackup = self.cp.loadedCourses;
 			courseplay:reset_course(self);
-			self.loaded_courses = loadedCoursesBackup;
+			self.cp.loadedCourses = loadedCoursesBackup;
 			courseplay:reload_courses(self, true);
 			courseplay:debug("courseplay:reload_courses(self, true)", 8);
 		end;

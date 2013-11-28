@@ -62,7 +62,7 @@ function courseplay:combine_allows_tractor(self, combine)
 		return false
 	end
 
-	if table.getn(combine.courseplayers) == 1 and not combine.courseplayers[1].allow_following then
+	if table.getn(combine.courseplayers) == 1 and not combine.courseplayers[1].cp.allowFollowing then
 		return false
 	end
 
@@ -72,15 +72,15 @@ end
 -- find combines on the same field (texture)
 function courseplay:update_combines(self)
 
-	self.reachable_combines = {}
+	self.cp.reachableCombines = {}
 
 	if not self.search_combine and self.saved_combine then
 		courseplay:debug(nameNum(self)..": combine is manual set",4)
-		table.insert(self.reachable_combines, self.saved_combine)
+		table.insert(self.cp.reachableCombines, self.saved_combine)
 		return
 	end
 
-	courseplay:debug(string.format("%s: combines total: %d", nameNum(self), table.getn(self.reachable_combines)), 4)
+	courseplay:debug(string.format("%s: combines total: %d", nameNum(self), table.getn(self.cp.reachableCombines)), 4)
 
 	local x, y, z = getWorldTranslation(self.cp.DirectionNode)
 	local hx, hy, hz = localToWorld(self.cp.DirectionNode, -2, 0, 0)
@@ -110,11 +110,11 @@ function courseplay:update_combines(self)
 
 		if courseplay:isBetween(areaAll, area * 0.999, area * 1.1, true) and courseplay:combine_allows_tractor(self, combine) then
 			courseplay:debug(nameNum(self)..": adding "..tostring(combine.name).." to reachable combines list",4)
-			table.insert(self.reachable_combines, combine)
+			table.insert(self.cp.reachableCombines, combine)
 		end
 	end
 
-	courseplay:debug(string.format("%s: combines reachable: %d ", nameNum(self), table.getn(self.reachable_combines)), 4)
+	courseplay:debug(string.format("%s: combines reachable: %d ", nameNum(self), table.getn(self.cp.reachableCombines)), 4)
 end
 
 
@@ -123,7 +123,7 @@ function courseplay:register_at_combine(self, combine)
 	courseplay:debug(string.format("%s: registering at combine %s", nameNum(self), tostring(combine.name)), 4)
 	--courseplay:debug(tableShow(combine, tostring(combine.name), 4), 4)
 	local num_allowed_courseplayers = 1
-	self.calculated_course = false
+	self.cp.calculatedCourseToCombine = false
 	if combine.courseplayers == nil then
 		combine.courseplayers = {};
 	end;
@@ -171,7 +171,7 @@ function courseplay:register_at_combine(self, combine)
 			local vehicle_ID = 0
 			for k, vehicle in pairs(courseplay.activeCoursePlayers) do
 				if vehicle.combineID ~= nil then
-					if vehicle.combineID == combine.id and vehicle.active_combine == nil then
+					if vehicle.combineID == combine.id and vehicle.cp.activeCombine == nil then
 						courseplay:debug(tostring(vehicle.id).." : callCombineFillLevel:"..tostring(vehicle.callCombineFillLevel).." for combine.id:"..tostring(combine.id), 4)
 						if fillLevel <= vehicle.callCombineFillLevel then
 							fillLevel = math.min(vehicle.callCombineFillLevel,0.1)
@@ -192,7 +192,7 @@ function courseplay:register_at_combine(self, combine)
 			for k, vehicle in pairs(courseplay.activeCoursePlayers) do
 				if vehicle.combineID ~= nil then
 					--print(tostring(vehicle.name).." is calling for "..tostring(vehicle.combineID).."  combine.id= "..tostring(combine.id))
-					if vehicle.combineID == combine.id and vehicle.active_combine == nil then
+					if vehicle.combineID == combine.id and vehicle.cp.activeCombine == nil then
 						courseplay:debug(tostring(vehicle.id).." : distanceToCombine:"..tostring(vehicle.distanceToCombine).." for combine.id:"..tostring(combine.id), 4)
 						if distance > vehicle.distanceToCombine then
 							distance = vehicle.distanceToCombine
@@ -212,7 +212,7 @@ function courseplay:register_at_combine(self, combine)
 	--THOMAS' best_combine END
 
 
-	if table.getn(combine.courseplayers) == 1 and not combine.courseplayers[1].allow_following then
+	if table.getn(combine.courseplayers) == 1 and not combine.courseplayers[1].cp.allowFollowing then
 		return false
 	end
 
@@ -227,8 +227,8 @@ function courseplay:register_at_combine(self, combine)
 	self.distanceToCombine = nil
 	self.combineID = nil
 	table.insert(combine.courseplayers, self)
-	self.courseplay_position = table.getn(combine.courseplayers)
-	self.active_combine = combine
+	self.cp.positionWithCombine = table.getn(combine.courseplayers)
+	self.cp.activeCombine = combine
 	courseplay:askForSpecialSettings(combine, combine)
 
 	--OFFSET
@@ -258,25 +258,25 @@ end
 
 
 function courseplay:unregister_at_combine(self, combine)
-	if self.active_combine == nil or combine == nil then
+	if self.cp.activeCombine == nil or combine == nil then
 		return true
 	end
 
-	self.calculated_course = false;
+	self.cp.calculatedCourseToCombine = false;
 	courseplay:remove_from_combines_ignore_list(self, combine)
 	combine.isCheckedIn = nil;
-	table.remove(combine.courseplayers, self.courseplay_position)
+	table.remove(combine.courseplayers, self.cp.positionWithCombine)
 
 	-- updating positions of tractors
 	for k, tractor in pairs(combine.courseplayers) do
-		tractor.courseplay_position = k
+		tractor.cp.positionWithCombine = k
 	end
 
 	self.allow_follwing = false
-	self.courseplay_position = nil
-	self.cp.lastActiveCombine = self.active_combine
-	self.active_combine = nil
-	self.ai_state = 1
+	self.cp.positionWithCombine = nil
+	self.cp.lastActiveCombine = self.cp.activeCombine
+	self.cp.activeCombine = nil
+	self.cp.modeState = 1
 
 	if self.trafficCollisionIgnoreList[combine.rootNode] == true then
 	   self.trafficCollisionIgnoreList[combine.rootNode] = nil
@@ -391,17 +391,17 @@ function courseplay:calculateInitialCombineOffset(self, combine)
 			self.cp.combineOffset = 8 * combine.cp.pipeSide;
 		end;
 	elseif combine.cp.isChopper then
-		courseplay:debug(string.format("%s(%i): %s @ %s: combine.forced_side=%s", curFile, debug.getinfo(1).currentline, nameNum(self), combine.name, tostring(combine.forced_side)), 4);
-		if combine.forced_side ~= nil then
-			courseplay:debug(string.format("%s(%i): %s @ %s: combine.forced_side=%s, going by forced_side", curFile, debug.getinfo(1).currentline, nameNum(self), tostring(combine.name), combine.forced_side), 4);
-			if combine.forced_side == "left" then
+		courseplay:debug(string.format("%s(%i): %s @ %s: combine.cp.forcedSide=%s", curFile, debug.getinfo(1).currentline, nameNum(self), combine.name, tostring(combine.cp.forcedSide)), 4);
+		if combine.cp.forcedSide ~= nil then
+			courseplay:debug(string.format("%s(%i): %s @ %s: combine.cp.forcedSide=%s, going by cp.forcedSide", curFile, debug.getinfo(1).currentline, nameNum(self), tostring(combine.name), combine.cp.forcedSide), 4);
+			if combine.cp.forcedSide == "left" then
 				self.sideToDrive = "left";
 				if combine.cp.lmX ~= nil then
 					self.cp.combineOffset = combine.cp.lmX + 2.5;
 				else
 					self.cp.combineOffset = 8;
 				end;
-			elseif combine.forced_side == "right" then
+			elseif combine.cp.forcedSide == "right" then
 				self.sideToDrive = "right";
 				if combine.cp.lmX ~= nil then
 					self.cp.combineOffset = (combine.cp.lmX + 2.5) * -1;
@@ -410,7 +410,7 @@ function courseplay:calculateInitialCombineOffset(self, combine)
 				end;
 			end
 		else
-			courseplay:debug(string.format("%s(%i): %s @ %s: combine.forced_side=%s, going by fruit", curFile, debug.getinfo(1).currentline, nameNum(self), tostring(combine.name), tostring(combine.forced_side)), 4);
+			courseplay:debug(string.format("%s(%i): %s @ %s: combine.cp.forcedSide=%s, going by fruit", curFile, debug.getinfo(1).currentline, nameNum(self), tostring(combine.name), tostring(combine.cp.forcedSide)), 4);
 			local fruitSide = courseplay:side_to_drive(self, combine, 5);
 			if fruitSide == "right" then
 				if combine.cp.lmX ~= nil then

@@ -1,14 +1,14 @@
 ﻿function courseplay:detachImplement(implementIndex)
-	self.tools_dirty = true;
+	self.cp.toolsDirty = true;
 end
 
 function courseplay:reset_tools(self)
 	self.tippers = {}
 	-- are there any tippers?
-	self.tipper_attached = courseplay:update_tools(self, self)
-	self.currentTrailerToFill = nil
-	self.lastTrailerToFillDistance = nil
-	self.tools_dirty = false;
+	self.cp.tipperAttached = courseplay:update_tools(self, self)
+	self.cp.currentTrailerToFill = nil
+	self.cp.lastTrailerToFillDistance = nil
+	self.cp.toolsDirty = false;
 end
 
 function courseplay:isCombine(workTool)
@@ -73,18 +73,18 @@ function courseplay:update_tools(self, tractor_or_implement)
 	or courseplay:isWheelloader(tractor_or_implement)
 	or tractor_or_implement.typeName == "frontloader" then
 		local object = tractor_or_implement
-		if self.cp.aiMode == 1 or self.cp.aiMode == 2 then
+		if self.cp.mode == 1 or self.cp.mode == 2 then
 			-- if object.cp.hasSpecializationTrailer then
 			if object.allowTipDischarge then
 				tipper_attached = true
 				table.insert(self.tippers, object)
 			end
-		elseif self.cp.aiMode == 3 then -- Overlader
+		elseif self.cp.mode == 3 then -- Overlader
 			if object.cp.hasSpecializationTrailer then --to do
 				tipper_attached = true
 				table.insert(self.tippers, object)
 			end
-		elseif self.cp.aiMode == 4 then -- Fertilizer
+		elseif self.cp.mode == 4 then -- Fertilizer
 			if courseplay:isSprayer(object) or courseplay:is_sowingMachine(object) then
 				tipper_attached = true
 				table.insert(self.tippers, object)
@@ -95,7 +95,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 					self.cp.hasSowingMachine = true;
 				end;
 			end
-		elseif self.cp.aiMode == 6 then -- Baler, foragewagon, baleloader
+		elseif self.cp.mode == 6 then -- Baler, foragewagon, baleloader
 			if (courseplay:isBaler(object) 
 			or courseplay:is_baleLoader(object) 
 			or courseplay:isSpecialBaleLoader(object) 
@@ -118,12 +118,12 @@ function courseplay:update_tools(self, tractor_or_implement)
 					self.cp.hasPlough = true;
 				end;
 			end
-		elseif self.cp.aiMode == 8 then -- Liquid manure transfer
+		elseif self.cp.mode == 8 then -- Liquid manure transfer
 			--if SpecializationUtil.hasSpecialization(RefillTrigger, object.specializations) then
 			tipper_attached = true
 			table.insert(self.tippers, object)
 			-- end
-		elseif self.cp.aiMode == 9 then --Fill and empty shovel
+		elseif self.cp.mode == 9 then --Fill and empty shovel
 			if courseplay:isWheelloader(tractor_or_implement) 
 			or tractor_or_implement.typeName == "frontloader" 
 			or courseplay:isMixer(tractor_or_implement) then
@@ -152,7 +152,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 		courseplay:debug(string.format("%s: tractorToImplZ=%.4f, positionAtTractor=%d", nameNum(object), tractorToImplZ, object.cp.positionAtTractor), 6);
 
 		--ADD TO self.tippers
-		if self.cp.aiMode == 1 or self.cp.aiMode == 2 then
+		if self.cp.mode == 1 or self.cp.mode == 2 then
 			--	if object.cp.hasSpecializationTrailer then
 			if object.allowTipDischarge then
 				tipper_attached = true
@@ -160,12 +160,12 @@ function courseplay:update_tools(self, tractor_or_implement)
 				courseplay:getReverseProperties(self, object)
 			end
 			
-		elseif self.cp.aiMode == 3 then -- Overlader
+		elseif self.cp.mode == 3 then -- Overlader
 			if object.cp.hasSpecializationTrailer and object.cp.isAugerWagon then --to do 
 				tipper_attached = true
 				table.insert(self.tippers, object)
 			end
-		elseif self.cp.aiMode == 4 then -- Fertilizer and Seeding
+		elseif self.cp.mode == 4 then -- Fertilizer and Seeding
 			if courseplay:isSprayer(object) or courseplay:is_sowingMachine(object) then
 				tipper_attached = true
 				table.insert(self.tippers, object)
@@ -177,12 +177,12 @@ function courseplay:update_tools(self, tractor_or_implement)
 					self.cp.hasSowingMachine = true;
 				end;
 			end
-		elseif self.cp.aiMode == 5 then -- Transfer
+		elseif self.cp.mode == 5 then -- Transfer
 			if object.setPlane ~= nil then --open/close cover
 				tipper_attached = true;
 				table.insert(self.tippers, object);
 			end;
-		elseif self.cp.aiMode == 6 then -- Baler, foragewagon, baleloader
+		elseif self.cp.mode == 6 then -- Baler, foragewagon, baleloader
 			if courseplay:isBaler(object) 
 			or courseplay:is_baleLoader(object) 
 			or courseplay:isSpecialBaleLoader(object) 
@@ -211,12 +211,12 @@ function courseplay:update_tools(self, tractor_or_implement)
 			if object.allowTipDischarge then
 				courseplay:getReverseProperties(self, object)
 			end
-		elseif self.cp.aiMode == 8 then --Liquid manure transfer
+		elseif self.cp.mode == 8 then --Liquid manure transfer
 			--if SpecializationUtil.hasSpecialization(RefillTrigger, object.specializations) then
 			tipper_attached = true
 			table.insert(self.tippers, object)
 			--		end
-		elseif self.cp.aiMode == 9 then --Fill and empty shovel
+		elseif self.cp.mode == 9 then --Fill and empty shovel
 			if courseplay:isFrontloader(object) or object.cp.hasSpecializationShovel then 
 				tipper_attached = true;
 				table.insert(self.tippers, object);
@@ -276,7 +276,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 					object.cp = {};
 				end;
 
-				if self.cp.aiMode == 6 then
+				if self.cp.mode == 6 then
 					tipper_attached = true;
 					table.insert(self.tippers, object);
 					courseplay:setMarkers(self, object)
@@ -297,7 +297,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 	courseplay:getAutoTurnradius(self, tipper_attached);
 	
 	--tipreferencepoints 
-	self.tipRefOffset = nil;
+	self.cp.tipRefOffset = nil;
 	for i=1, #(self.tippers) do
 		if tipper_attached and self.tippers[i].rootNode ~= nil and self.tippers[i].tipReferencePoints ~= nil then
 			local tipperX, tipperY, tipperZ = getWorldTranslation(self.tippers[i].rootNode);
@@ -306,19 +306,19 @@ function courseplay:update_tools(self, tractor_or_implement)
 					local tipRefPointX, tipRefPointY, tipRefPointZ = worldToLocal(self.tippers[i].tipReferencePoints[n].node, tipperX, tipperY, tipperZ);
 					tipRefPointX = math.abs(tipRefPointX);
 					if tipRefPointX > 0.1 then
-						self.tipRefOffset = tipRefPointX;
+						self.cp.tipRefOffset = tipRefPointX;
 						break;
 					else
-						self.tipRefOffset = 0
+						self.cp.tipRefOffset = 0
 					end;
 				end;
 			else 
-				self.tipRefOffset = 0;
+				self.cp.tipRefOffset = 0;
 			end;
 		elseif self.cp.hasMachinetoFill then
-			self.tipRefOffset = 1.5
+			self.cp.tipRefOffset = 1.5
 		end;
-		if self.tipRefOffset ~= nil then
+		if self.cp.tipRefOffset ~= nil then
 			break
 		end		
 	end
@@ -506,65 +506,65 @@ function courseplay:load_tippers(self)
 		fill_level = tipper_fill_level * 100 / tipper_capacity
 	end
 
-	if self.currentTrailerToFill == nil then
-		self.currentTrailerToFill = 1
+	if self.cp.currentTrailerToFill == nil then
+		self.cp.currentTrailerToFill = 1
 	end
 
 	-- drive on when required fill level is reached
 	local drive_on = false
-	if self.timeout < self.timer or self.last_fill_level == nil then
-		if self.last_fill_level ~= nil and fill_level == self.last_fill_level and fill_level > self.cp.driveOnAtFillLevel then
+	if self.cp.timeOut < self.timer or self.cp.prevFillLevel == nil then
+		if self.cp.prevFillLevel ~= nil and fill_level == self.cp.prevFillLevel and fill_level > self.cp.driveOnAtFillLevel then
 			drive_on = true
 		end
-		self.last_fill_level = fill_level
+		self.cp.prevFillLevel = fill_level
 		courseplay:set_timeout(self, 7000)
 	end
 
 	if fill_level == 100 or drive_on then
-		self.last_fill_level = nil
-		self.loaded = true
-		self.lastTrailerToFillDistance = nil
-		self.currentTrailerToFill = nil
+		self.cp.prevFillLevel = nil
+		self.cp.isLoaded = true
+		self.cp.lastTrailerToFillDistance = nil
+		self.cp.currentTrailerToFill = nil
 		return true
 	end
 
-	if self.lastTrailerToFillDistance == nil then
+	if self.cp.lastTrailerToFillDistance == nil then
 
-		local current_tipper = self.tippers[self.currentTrailerToFill]
+		local current_tipper = self.tippers[self.cp.currentTrailerToFill]
 
 		-- drive on if actual tipper is full
 		if current_tipper.fillLevel == current_tipper.capacity then
-			if table.getn(self.tippers) > self.currentTrailerToFill then
-				local tipper_x, tipper_y, tipper_z = getWorldTranslation(self.tippers[self.currentTrailerToFill].rootNode)
+			if table.getn(self.tippers) > self.cp.currentTrailerToFill then
+				local tipper_x, tipper_y, tipper_z = getWorldTranslation(self.tippers[self.cp.currentTrailerToFill].rootNode)
 
-				self.lastTrailerToFillDistance = courseplay:distance(cx, cz, tipper_x, tipper_z)
+				self.cp.lastTrailerToFillDistance = courseplay:distance(cx, cz, tipper_x, tipper_z)
 
-				self.currentTrailerToFill = self.currentTrailerToFill + 1
+				self.cp.currentTrailerToFill = self.cp.currentTrailerToFill + 1
 			else
-				self.currentTrailerToFill = nil
-				self.lastTrailerToFillDistance = nil
+				self.cp.currentTrailerToFill = nil
+				self.cp.lastTrailerToFillDistance = nil
 			end
 			allowedToDrive = true
 		end
 
 	else
-		local tipper_x, tipper_y, tipper_z = getWorldTranslation(self.tippers[self.currentTrailerToFill].rootNode)
+		local tipper_x, tipper_y, tipper_z = getWorldTranslation(self.tippers[self.cp.currentTrailerToFill].rootNode)
 
 		local distance = courseplay:distance(cx, cz, tipper_x, tipper_z)
 
-		if distance > self.lastTrailerToFillDistance and self.lastTrailerToFillDistance ~= nil then
+		if distance > self.cp.lastTrailerToFillDistance and self.cp.lastTrailerToFillDistance ~= nil then
 			allowedToDrive = true
 		else
 			allowedToDrive = false
-			local current_tipper = self.tippers[self.currentTrailerToFill]
+			local current_tipper = self.tippers[self.cp.currentTrailerToFill]
 			if current_tipper.fillLevel == current_tipper.capacity then
-				if table.getn(self.tippers) > self.currentTrailerToFill then
-					local tipper_x, tipper_y, tipper_z = getWorldTranslation(self.tippers[self.currentTrailerToFill].rootNode)
-					self.lastTrailerToFillDistance = courseplay:distance(cx, cz, tipper_x, tipper_z)
-					self.currentTrailerToFill = self.currentTrailerToFill + 1
+				if table.getn(self.tippers) > self.cp.currentTrailerToFill then
+					local tipper_x, tipper_y, tipper_z = getWorldTranslation(self.tippers[self.cp.currentTrailerToFill].rootNode)
+					self.cp.lastTrailerToFillDistance = courseplay:distance(cx, cz, tipper_x, tipper_z)
+					self.cp.currentTrailerToFill = self.cp.currentTrailerToFill + 1
 				else
-					self.currentTrailerToFill = nil
-					self.lastTrailerToFillDistance = nil
+					self.cp.currentTrailerToFill = nil
+					self.cp.lastTrailerToFillDistance = nil
 				end
 			end
 		end
@@ -687,8 +687,8 @@ function courseplay:unload_tippers(self)
 					end
 					if distanceToTrigger == 0 or isBGA or isNearestPoint then
 						tipper:toggleTipState(ctt,self.toggledTipState);
-						self.unloading_tipper = tipper
-						courseplay:debug(nameNum(self)..": toggleTipState: "..tostring(self.toggledTipState).."  /unloading_tipper= "..tostring(self.unloading_tipper.name), 2);
+						self.cp.unloadingTipper = tipper
+						courseplay:debug(nameNum(self)..": toggleTipState: "..tostring(self.toggledTipState).."  /unloadingTipper= "..tostring(self.cp.unloadingTipper.name), 2);
 					end					
 				elseif tipper.tipState ~= Trailer.TIPSTATE_CLOSING then 
 					self.cp.closestTipDistance = math.huge
@@ -769,8 +769,8 @@ function courseplay:getAutoTurnradius(self, tipper_attached)
 		turnRadius = self.cp.turnRadius                  -- Kasi and Co are not supported. Nobody does hauling with a Kasi or Quadtrack !!! 
 	end;
 	
-	--if tipper_attached and self.cp.aiMode == 2 then
-	if tipper_attached and (self.cp.aiMode == 2 or self.cp.aiMode == 3 or self.cp.aiMode == 4 or self.cp.aiMode == 6) then --JT: I've added modes 3, 4 & 6 - needed?
+	--if tipper_attached and self.cp.mode == 2 then
+	if tipper_attached and (self.cp.mode == 2 or self.cp.mode == 3 or self.cp.mode == 4 or self.cp.mode == 6) then --JT: I've added modes 3, 4 & 6 - needed?
 		self.cp.turnRadiusAuto = turnRadius;
 		local n = #(self.tippers);
 		--print(string.format("self.tippers[1].sizeLength = %s  turnRadius = %s", tostring(self.tippers[1].sizeLength),tostring( turnRadius)))
@@ -795,16 +795,16 @@ function courseplay:getReverseProperties(self, tipper)
 		tipper.cp.frontNode = getParent(tipper.attacherJoint.node)
 	else
 		tipper.cp.frontNode = getParent(tipper.attacherVehicle.attacherJoint.node)
-		courseplay:debug(" tipper has dolly ",13)
+		courseplay:debug(string.format('%s: tipper %q has dolly', nameNum(self), nameNum(tipper)), 13);
 	end
 	if tipper.cp.hasSpecializationShovel or self.cp.hasSpecializationShovel then
-		courseplay:debug(nameNum(self) .. "return because its a shovel",13)
+		courseplay:debug(string.format('%s: return because tipper %q is a shovel', nameNum(self), nameNum(tipper)), 13);
 		return
 	end
 	local x,y,z = getWorldTranslation(self.rootNode)
 	local_,_,tz = worldToLocal(tipper.rootNode, x,y,z)
 	tipper.cp.nodeDistance = math.abs(tz)
-							courseplay:debug(nameNum(self) .. "tz: "..tostring(tz).."  tipper.rootNode: "..tostring(tipper.rootNode),13)
+							courseplay:debug(nameNum(self) .. " tz: "..tostring(tz).."  tipper.rootNode: "..tostring(tipper.rootNode),13)
 	if tz > 0 then
 		tipper.cp.inversedNodes = false
 	else
@@ -812,15 +812,15 @@ function courseplay:getReverseProperties(self, tipper)
 	end
 	local xTipper,yTipper,zTipper = getWorldTranslation(tipper.rootNode)
 	local lxFrontNode, lzFrontNode = AIVehicleUtil.getDriveDirection(tipper.cp.frontNode, xTipper,yTipper,zTipper);
-							courseplay:debug(nameNum(self) .. "lxFrontNode: "..tostring(lxFrontNode),13)
+	courseplay:debug(nameNum(self) .. " lxFrontNode: "..tostring(lxFrontNode),13)
 	if math.abs(lxFrontNode) <= 0.001 or tipper.rootNode == tipper.cp.frontNode then
 		tipper.cp.isPivot = false
 	else
 		tipper.cp.isPivot = true
 	end
-							if tipper.rootNode == tipper.cp.frontNode then
-								courseplay:debug(nameNum(self) .. "tipper.rootNode == tipper.cp.frontNode",13)
-							end
+	if tipper.rootNode == tipper.cp.frontNode then
+		courseplay:debug(nameNum(self) .. "tipper.rootNode == tipper.cp.frontNode",13)
+	end
 
-	courseplay:debug(nameNum(self) .. "tipper.cp.inversedNodes: "..tostring(tipper.cp.inversedNodes).."  tipper.cp.isPivot: "..tostring(tipper.cp.isPivot).."  tipper.cp.frontNode: "..tostring(tipper.cp.frontNode),13)
+	courseplay:debug(nameNum(self) .. " tipper.cp.inversedNodes: "..tostring(tipper.cp.inversedNodes).."  tipper.cp.isPivot: "..tostring(tipper.cp.isPivot).."  tipper.cp.frontNode: "..tostring(tipper.cp.frontNode),13)
 end

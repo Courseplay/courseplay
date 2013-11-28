@@ -40,8 +40,8 @@ function courseplay:showSaveCourseForm(self, saveWhat)
 end;
 
 function courseplay:reload_courses(self, use_real_id)
-	local courses = self.loaded_courses
-	self.loaded_courses = {}
+	local courses = self.cp.loadedCourses
+	self.cp.loadedCourses = {}
 	for k, v in pairs(courses) do
 		courseplay:load_course(self, v, use_real_id)
 	end
@@ -92,21 +92,21 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
 		end
 
 		if add_course_at_end == true then
-			table.insert(self.loaded_courses, id * -1)
+			table.insert(self.cp.loadedCourses, id * -1)
 		else
-			table.insert(self.loaded_courses, id)
+			table.insert(self.cp.loadedCourses, id)
 		end
 
 		--	courseplay:reset_course(self)
 		if table.getn(self.Waypoints) == 0 then
 			self.numCourses = 1;
 			self.Waypoints = course.waypoints
-			self.current_course_name = course.name
+			self.cp.currentCourseName = course.name
 		else -- Add new course to old course
-			if self.current_course_name == nil then --recorded but not saved course
+			if self.cp.currentCourseName == nil then --recorded but not saved course
 				self.numCourses = 1;
 			end;
-			courseplay:debug(string.format("course_management 92: %s: self.current_course_name=%s, self.numCourses=%s", nameNum(self), tostring(self.current_course_name), tostring(self.numCourses)), 8);
+			courseplay:debug(string.format("course_management 92: %s: self.cp.currentCourseName=%s, self.numCourses=%s", nameNum(self), tostring(self.cp.currentCourseName), tostring(self.numCourses)), 8);
 			
 			local course1_waypoints = self.Waypoints
 			local course2_waypoints = course.waypoints
@@ -158,12 +158,12 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
 			end
 			self.Waypoints[lastWP + 1].merged = true
 			self.numCourses = self.numCourses + 1;
-			self.current_course_name = string.format("%d %s", self.numCourses, courseplay.locales.CPCourseAdded)
+			self.cp.currentCourseName = string.format("%d %s", self.numCourses, courseplay.locales.CPCourseAdded)
 		end
 		if table.getn(self.Waypoints) == 4 then
 			self.createCourse = true
 		else
-			self.play = true
+			self.cp.canDrive = true
 		end
 		
 		self.recordnumber = 1  -- Waypoint number

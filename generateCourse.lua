@@ -12,7 +12,7 @@ TODO:
 ]]
 
 function courseplay:generateCourse(self)
-	local fieldCourseName = tostring(self.current_course_name);
+	local fieldCourseName = tostring(self.cp.currentCourseName);
 	if self.cp.fieldEdge.selectedField.fieldNum > 0 then
 		fieldCourseName = courseplay.fields.fieldData[self.cp.fieldEdge.selectedField.fieldNum].name;
 	end;
@@ -672,7 +672,7 @@ function courseplay:generateCourse(self)
 	end;
 
 	self.recordnumber = 1;
-	self.play = true;
+	self.cp.canDrive = true;
 	self.Waypoints[1].wait = true;
 	self.Waypoints[1].crossing = true;
 	self.Waypoints[self.maxnumber].wait = true;
