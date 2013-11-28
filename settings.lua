@@ -1004,7 +1004,7 @@ function courseplay:validateCourseGenerationData(vehicle)
 end;
 
 function courseplay:validateCanSwitchMode(vehicle)
-	vehicle.cp.canSwitchMode = not vehicle.drive and not vehicle.record and not vehicle.record_pause;
+	vehicle.cp.canSwitchMode = not vehicle.drive and not vehicle.record and not vehicle.record_pause and not vehicle.cp.fieldEdge.customField.isCreated;
 	courseplay:debug(string.format("%s: validateCanSwitchMode(): play=%s, drive=%s, record=%s, record_pause=%s ==> canSwitchMode=%s", nameNum(vehicle), tostring(vehicle.play), tostring(vehicle.drive), tostring(vehicle.record), tostring(vehicle.record_pause), tostring(vehicle.cp.canSwitchMode)), 12);
 end;
 
@@ -1172,9 +1172,10 @@ function courseplay:setCustomSingleFieldEdge(vehicle)
 		end;
 	end;
 
+	--print(tableShow(vehicle.cp.fieldEdge.customField.points, nameNum(vehicle) .. " fieldEdge.customField.points"));
 	vehicle.cp.fieldEdge.customField.isCreated = vehicle.cp.fieldEdge.customField.points ~= nil;
 	courseplay:toggleCustomFieldEdgePathShow(vehicle, false);
-	--print(tableShow(vehicle.cp.fieldEdge.customField.points, nameNum(vehicle) .. " fieldEdge.customField.points"));
+	courseplay:validateCanSwitchMode(vehicle);
 end;
 
 function courseplay:toggleCustomFieldEdgePathShow(vehicle, force)
@@ -1208,6 +1209,7 @@ function courseplay:addCustomSingleFieldEdgeToList(vehicle)
 	vehicle.cp.fieldEdge.customField.isCreated = false;
 	courseplay:toggleCustomFieldEdgePathShow(vehicle, false);
 	courseplay:toggleSelectedFieldEdgePathShow(vehicle, false);
+	courseplay:validateCanSwitchMode(vehicle);
 	--print(string.format("\t[AFTER RESET] fieldNum=%d, points=%s, fieldEdge.customField.isCreated=%s", vehicle.cp.fieldEdge.customField.fieldNum, tostring(vehicle.cp.fieldEdge.customField.points), tostring(vehicle.cp.fieldEdge.customField.isCreated)));
 end;
 

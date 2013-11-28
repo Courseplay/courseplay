@@ -679,6 +679,7 @@ function courseplay:load(xmlFile)
 
 	self.fold_move_direction = 1;
 
+	courseplay:validateCanSwitchMode(self);
 	courseplay:buttonsActiveEnabled(self, "all");
 end
 
