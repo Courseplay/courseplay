@@ -29,7 +29,7 @@ end;
 
 function courseplay:renderInfoText(vehicle)
 	if vehicle.isEntered and vehicle.cp.infoText ~= nil then
-		courseplay:setFontSettings("white", false);
+		courseplay:setFontSettings("white", false, "left");
 		renderText(courseplay.hud.infoBasePosX + 0.005, courseplay.hud.infoBasePosY + 0.0035, 0.02, vehicle.cp.infoText); --ORIG: +0.002
 	end;
 end;
