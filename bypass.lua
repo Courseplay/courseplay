@@ -13,32 +13,44 @@ function courseplay:isTheWayToTargetFree(self,lx,lz)
 	nx, ny, nz = localDirectionToWorld(self.cp.DirectionNode, lx, ly, lz)
 	if self.cp.foundColli ~= nil and table.getn(self.cp.foundColli) > 0  then
 		local vehicle = g_currentMission.nodeToVehicle[self.cp.foundColli[1].id];
+		local vehicleSpeed = 0
+		local xC,yC,zC = 0,0,0
 		if vehicle == nil then
 			local parent = getParent(self.cp.foundColli[1].id)
 			vehicle = g_currentMission.nodeToVehicle[parent]
 		end
-		local x,y,z = 0,0,0
-		if vehicle ~= nil then
-			x,y,z = getWorldTranslation(vehicle.rootNode)
-			x,y,z = worldToLocal(self.cp.DirectionNode,x,y,z)
-		else
-			x,y,z = worldToLocal(self.cp.DirectionNode,self.cp.foundColli[1].x, self.cp.foundColli[1].y, self.cp.foundColli[1].z)
-		end
+		local x,y,z = worldToLocal(self.cp.DirectionNode,self.cp.foundColli[1].x, self.cp.foundColli[1].y, self.cp.foundColli[1].z)
 		local bypass = Utils.getNoNil(self.cp.foundColli[1].bp,5)
 		local sideStep = x +(bypass* self.cp.foundColli[1].s)
 		y = math.max(y,4)
-		local xC,yC,zC = localToWorld(self.cp.DirectionNode,sideStep,y,z)
+		xC,yC,zC = localToWorld(self.cp.DirectionNode,sideStep,y,z)
+		if vehicleSpeed ~= 0 then
+			if not self.cp.bypassWaypointsSet then
+				self.cp.bypassWaypointsSet = true
+				self.cp.bypassWaypoints = {}
+				self.cp.bypassWaypoints.x = xC
+				self.cp.bypassWaypoints.y = yC
+				self.cp.bypassWaypoints.z = zC
+			else
+				xC = self.cp.bypassWaypoints.x
+				yC = self.cp.bypassWaypoints.y
+				zC = self.cp.bypassWaypoints.z
+			end
+		else
+			if courseplay.debugChannels[3] then drawDebugLine(tx, ty, tz, 1, 0, 0, tx+(nx*distance), ty+(ny*distance), tz+(nz*distance), 1, 0, 0) end;
+			if self.cp.foundColli[1].s > 0 then
+				raycastAll(tx, ty, tz, nx, ny, nz, "findBlockingObjectCallbackRight", distance, self)
+			elseif self.cp.foundColli[1].s < 0 then
+				raycastAll(tx, ty, tz, nx, ny, nz, "findBlockingObjectCallbackLeft", distance, self)
+			end
+		end
 		if courseplay.debugChannels[3] then drawDebugPoint(xC,yC,zC, 1, 1, 1, 1) end;
 		local lxC, lzC = AIVehicleUtil.getDriveDirection(self.cp.DirectionNode,xC,yC,zC );
 		if z < 0 then
 			self.cp.foundColli = {}
+			self.cp.bypassWaypointsSet = false
+			self.cp.bypassWaypoints = {}
 			return lx,lz
-		end
-		if courseplay.debugChannels[3] then drawDebugLine(tx, ty, tz, 1, 0, 0, tx+(nx*distance), ty+(ny*distance), tz+(nz*distance), 1, 0, 0) end;
-		if self.cp.foundColli[1].s > 0 then
-			raycastAll(tx, ty, tz, nx, ny, nz, "findBlockingObjectCallbackRight", distance, self)
-		elseif self.cp.foundColli[1].s < 0 then
-			raycastAll(tx, ty, tz, nx, ny, nz, "findBlockingObjectCallbackLeft", distance, self)
 		end
 		lx,lz = lxC, lzC
 	else
@@ -54,8 +66,6 @@ function courseplay:isTheWayToTargetFree(self,lx,lz)
 	end
 
 	return lx,lz
-
-
 end
 
 function courseplay:findBlockingObjectCallbackRight(transformId, x, y, z, distance)

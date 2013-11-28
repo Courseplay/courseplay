@@ -440,6 +440,9 @@ function courseplay:drive(self, dt)
 		elseif (self.cp.aiMode == 2 or self.cp.aiMode == 3) and self.recordnumber < 3 then
 			isBypassing = true
 			lx, lz = courseplay:isTheWayToTargetFree(self,lx, lz)
+		elseif self.cp.aiMode == 6 and self.cp.hasBaleLoader and (self.recordnumber == self.cp.stopWork - 4 or (self.cp.abortWork ~= nil and self.recordnumber == self.cp.abortWork ))then
+			isBypassing = true
+			lx, lz = courseplay:isTheWayToTargetFree(self,lx, lz)			
 		elseif self.cp.aiMode ~= 7 then
 			self.ai_state = 0
 		end;

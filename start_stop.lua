@@ -307,6 +307,7 @@ function courseplay:stop(self)
 	self.cpTrafficCollisionIgnoreList = {}
 	self.cp.foundColli = {}
 	self.cp.inTraffic = false
+	self.cp.bypassWaypointsSet = false
 	--deactivate beacon lights
 	if self.beaconLightsActive then
 		self:setBeaconLightsVisibility(false);
