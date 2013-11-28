@@ -234,9 +234,13 @@ function courseplay:executeFunction(self, func, value, overwrittenPage)
 
 
 			elseif not self.drive then
-				if not self.record and not self.record_pause and not self.play and table.getn(self.Waypoints) == 0 and not self.createCourse then
+				if not self.record and not self.record_pause and not self.play and #(self.Waypoints) == 0 and not self.createCourse then
 					if line == 1 then
 						courseplay:start_record(self);
+					elseif line == 3 then
+						courseplay:setCustomSingleFieldEdge(self);
+					elseif line == 5 and self.cp.fieldEdge.customField.fieldNum > 0 then
+						courseplay:addCustomSingleFieldEdgeToList(self);
 					end;
 
 				elseif self.record or self.record_pause then

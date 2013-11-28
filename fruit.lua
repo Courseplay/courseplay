@@ -1,23 +1,14 @@
 -- inspired by fieldstatus of Alan R. (ls-uk.info: thebadtouch)
-function courseplay:area_has_fruit(x, z, fruit_type)
+function courseplay:area_has_fruit(x, z, fruit_type, widthX, widthZ)
 	if not courseplay:is_field(x, z) then
 		return false
 	end
-	local numFruits = table.getn(g_currentMission.fruits);
-	local getdenFunc = Utils.getDensity;
-	local getfruitFunc = Utils.getFruitArea;
-	local chnum = 0;
+
 	local density = 0
-	local startX, startZ, endX, endZ, widthX, widthZ, heightX, heightZ;
-
-	local widthX = 0.5;
-	local widthZ = 0.5;
-
-	--x = x - 2.5
-	--z = z - 2.5
+	widthX = widhtX or 0.5;
+	widthZ = widthZ or 0.5;
 	if fruit_type ~= nil then
 		density = Utils.getFruitArea(fruit_type, x, z, x - widthX, z - widthZ, x + widthX, z + widthZ);
-
 		if density > 0 then
 			--courseplay:debug(string.format("checking x: %d z %d - density: %d", x, z, density ), 3)
 			return true
@@ -41,11 +32,16 @@ function courseplay:area_has_fruit(x, z, fruit_type)
 end
 
 function courseplay:is_field(x, z)
-	local widthX = 0.5;
-	local widthZ = 0.5;
-	
-	for i=0,3 do
-		if Utils.getDensity(g_currentMission.terrainDetailId, i, x, z, x - widthX, z - widthZ, x + widthX, z + widthZ) ~= 0 then
+	local widthX, widthZ = 0.5, 0.5;
+	if courseplay.fields.lastChannel ~= nil then
+		if Utils.getDensity(g_currentMission.terrainDetailId, courseplay.fields.lastChannel, x, z, x - widthX, z - widthZ, x + widthX, z + widthZ) ~= 0 then
+			return true;
+		end;
+	end;
+
+	for i,channel in ipairs(courseplay.fields.fieldChannels) do
+		if Utils.getDensity(g_currentMission.terrainDetailId, channel, x, z, x - widthX, z - widthZ, x + widthX, z + widthZ) ~= 0 then
+			courseplay.fields.lastChannel = channel;
 			return true;
 		end;
 	end;

@@ -13,10 +13,10 @@ TODO:
 
 function courseplay:generateCourse(self)
 	local fieldCourseName = tostring(self.current_course_name);
-	if self.cp.selectedFieldEdgePathNumber > 0 then
-		fieldCourseName = string.format("Field %d", self.cp.selectedFieldEdgePathNumber);
+	if self.cp.fieldEdge.selectedField.fieldNum > 0 then
+		fieldCourseName = courseplay.fields.fieldData[self.cp.fieldEdge.selectedField.fieldNum].name;
 	end;
-	courseplay:debug(string.format("generateCourse() called for %s", fieldCourseName), 7);
+	courseplay:debug(string.format("generateCourse() called for %q", fieldCourseName), 7);
 
 	-- Make sure everything's set and in order
 	courseplay:validateCourseGenerationData(self);
@@ -25,16 +25,16 @@ function courseplay:generateCourse(self)
 	end;
 
 	local poly = {};
-	if self.cp.selectedFieldEdgePathNumber > 0 then
-		poly.points = courseplay.fields.fieldDefs[self.cp.selectedFieldEdgePathNumber].edgePointsCalculated;
+	if self.cp.fieldEdge.selectedField.fieldNum > 0 then
+		poly.points = courseplay.fields.fieldData[self.cp.fieldEdge.selectedField.fieldNum].points;
 	else
 		poly.points = self.Waypoints;
 	end;
 
-	poly.numPoints = table.getn(poly.points);
+	poly.numPoints = #(poly.points);
 	poly.xValues, poly.zValues = {}, {};
 
-	for _,wp in pairs(poly.points) do
+	for i,wp in pairs(poly.points) do
 		table.insert(poly.xValues, wp.cx);
 		table.insert(poly.zValues, wp.cz);
 	end;
@@ -681,7 +681,7 @@ function courseplay:generateCourse(self)
 	courseplay:updateWaypointSigns(self);
 
 	self.cp.hasGeneratedCourse = true;
-	self.cp.selectedFieldEdgePathNumber = 0;
+	courseplay:setFieldEdgePath(self, nil, 0);
 	courseplay:validateCourseGenerationData(self);
 	courseplay:validateCanSwitchMode(self);
 
