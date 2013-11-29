@@ -1,6 +1,6 @@
 function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill_level, lx , lz )
 	local workTool --= self.tippers[1] -- to do, quick, dirty and unsafe
-	local active_tipper = nil
+	local activeTipper = nil
 	local specialTool = false
 
 	--[[
@@ -261,7 +261,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 
 					-- tipper is not empty and tractor reaches TipTrigger
 					if tipper_fill_level > 0 and self.cp.currentTipTrigger ~= nil and self.recordnumber > 3 then
-						allowedToDrive, active_tipper = courseplay:unload_tippers(self)
+						allowedToDrive, activeTipper = courseplay:unload_tippers(self)
 						self.cp.infoText = courseplay:get_locale(self, "CPTriggerReached") -- "Abladestelle erreicht"
 					end
 				end;
@@ -420,5 +420,5 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 		end
 	end; --END for i in self.tippers
 
-	return allowedToDrive, workArea, workSpeed, active_tipper
+	return allowedToDrive, workArea, workSpeed, activeTipper
 end

@@ -494,9 +494,9 @@ function courseplay:switch_combine(vehicle, change_by)
 	vehicle.selected_combine_number = Utils.clamp(vehicle.selected_combine_number + change_by, 0, #combines);
 
 	if vehicle.selected_combine_number == 0 then
-		vehicle.saved_combine = nil;
+		vehicle.cp.savedCombine = nil;
 	else
-		vehicle.saved_combine = combines[vehicle.selected_combine_number];
+		vehicle.cp.savedCombine = combines[vehicle.selected_combine_number];
 	end;
 end
 

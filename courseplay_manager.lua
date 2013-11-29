@@ -453,8 +453,8 @@ function courseplay_manager:removeCourseplayersFromCombine(vehicle, callDelete)
 			for i,tractor in pairs(combine.courseplayers) do
 				courseplay:unregister_at_combine(tractor, combine);
 				
-				if tractor.saved_combine ~= nil and tractor.saved_combine == combine then
-					tractor.saved_combine = nil;
+				if tractor.cp.savedCombine ~= nil and tractor.cp.savedCombine == combine then
+					tractor.cp.savedCombine = nil;
 				end;
 				tractor.cp.reachableCombines = nil;
 			end;

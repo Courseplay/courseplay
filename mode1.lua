@@ -1,7 +1,7 @@
 -- handles "mode1" : waiting at start until tippers full - driving course and unloading on trigger
 function courseplay:handle_mode1(self)
 	local allowedToDrive = true
-	local active_tipper = nil
+	local activeTipper = nil
 	local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
 
 	if tipper_fill_level == nil then tipper_fill_level = 0 end

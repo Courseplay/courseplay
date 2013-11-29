@@ -79,7 +79,7 @@ function courseplay:handle_mode2(self, dt)
 	end
 
 	if (current_tipper.fillLevel == current_tipper.capacity) or self.cp.isLoaded or (fill_level >= self.cp.driveOnAtFillLevel and self.cp.modeState == 1) then
-		if table.getn(self.tippers) > self.cp.currentTrailerToFill then
+		if #(self.tippers) > self.cp.currentTrailerToFill then
 			self.cp.currentTrailerToFill = self.cp.currentTrailerToFill + 1
 		else
 			self.cp.currentTrailerToFill = nil
@@ -87,13 +87,13 @@ function courseplay:handle_mode2(self, dt)
 			if self.cp.modeState ~= 5 then
 				cx2, cz2 = self.Waypoints[1].cx, self.Waypoints[1].cz
 				local lx2, lz2 = AIVehicleUtil.getDriveDirection(self.rootNode, cx2, cty2, cz2);
-				if lz2 > 0 or (self.cp.activeCombine ~= nil and self.active_combine.cp.isChopper) then
+				if lz2 > 0 or (self.cp.activeCombine ~= nil and self.cp.activeCombine.cp.isChopper) then
 					if self.cp.combineOffset > 0 then
 						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, self.cp.turnRadius, 0, self.cp.turnRadius)
 					else
 						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, -self.cp.turnRadius, 0, self.cp.turnRadius)
 					end
-				elseif self.cp.activeCombine ~= nil and not self.active_combine.cp.isChopper then
+				elseif self.cp.activeCombine ~= nil and not self.cp.activeCombine.cp.isChopper then
 					if self.cp.combineOffset > 0 then
 						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 3, 0, -self.cp.turnRadius)
 					else

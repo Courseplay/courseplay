@@ -1,4 +1,4 @@
-function courseplay:setHudContent(self)
+﻿function courseplay:setHudContent(self)
 	--GLOBAL
 	if self.cp.mode > 0 and self.cp.mode <= courseplay.numAiModes then
 		self.cp.hud.content.global[1] = courseplay:get_locale(self, string.format("CourseMode%d", self.cp.mode));
@@ -275,7 +275,7 @@ function courseplay:setHudContent(self)
 			if self.cp.HUD4savedCombineName == nil then
 				self.cp.HUD4savedCombineName = courseplay:get_locale(self, "CPCombine");
 			end
-			self.cp.hud.content.pages[4][1][2].text = string.format("%s (%dm)", self.cp.HUD4savedCombineName, courseplay:distance_to_object(self, self.saved_combine));
+			self.cp.hud.content.pages[4][1][2].text = string.format("%s (%dm)", self.cp.HUD4savedCombineName, courseplay:distance_to_object(self, self.cp.savedCombine));
 		else
 			self.cp.hud.content.pages[4][1][2].text = courseplay:get_locale(self, "CPNone") -- "keiner"
 		end

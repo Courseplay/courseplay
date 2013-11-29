@@ -303,7 +303,7 @@ function courseplay:drive(self, dt)
 
 
 	-- the tipper that is currently loaded/unloaded
-	local active_tipper = nil
+	local activeTipper = nil
 	local isBypassing = false
 	--### WAITING POINTS - START
 	if self.Waypoints[self.cp.last_recordnumber].wait and self.wait then
@@ -543,7 +543,7 @@ function courseplay:drive(self, dt)
 	-- Mode 6 Fieldwork for balers and foragewagon
 	if (self.cp.mode == 6 or self.cp.mode == 4) and self.cp.startWork ~= nil and self.cp.stopWork ~= nil then
 		if self.cp.mode == 6 then
-			allowedToDrive, workArea, workSpeed, active_tipper = courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill_level, lx , lz )
+			allowedToDrive, workArea, workSpeed, activeTipper = courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill_level, lx , lz )
 		end
 		if not workArea and self.cp.tipperFillLevel ~= nil and ((self.grainTankCapacity == nil and self.cp.tipRefOffset ~= nil) or self.cp.hasMachinetoFill) then
 			if self.cp.currentTipTrigger == nil and self.cp.fillTrigger == nil then

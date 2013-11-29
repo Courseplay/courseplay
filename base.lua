@@ -287,7 +287,7 @@ function courseplay:load(xmlFile)
 	self.cp.workWidth = 3
 
 	self.search_combine = true
-	self.saved_combine = nil
+	self.cp.savedCombine = nil
 	self.selected_combine_number = 0
 	
 	self.cp.EifokLiquidManure = {
@@ -868,9 +868,9 @@ function courseplay:update(dt)
 			if self.cp.HUD4hasActiveCombine == true then
 				self.cp.HUD4combineName = self.cp.activeCombine.name
 			end
-			self.cp.HUD4savedCombine = self.saved_combine ~= nil and self.saved_combine.rootNode ~= nil
-			if self.saved_combine ~= nil then
-			 self.cp.HUD4savedCombineName = self.saved_combine.name
+			self.cp.HUD4savedCombine = self.cp.savedCombine ~= nil and self.cp.savedCombine.rootNode ~= nil
+			if self.cp.savedCombine ~= nil then
+			 self.cp.HUD4savedCombineName = self.cp.savedCombine.name
 			end
 
 		elseif self.cp.hud.currentPage == 8 then
@@ -986,14 +986,14 @@ function courseplay:readStream(streamId, connection)
 	self.cp.HUD4savedCombine = streamDebugReadBool(streamId)
 	self.cp.HUD4savedCombineName = streamDebugReadString(streamId);
 
-	local saved_combine_id = streamDebugReadInt32(streamId)
-	if saved_combine_id then
-		self.saved_combine = networkGetObject(saved_combine_id)
+	local savedCombineId = streamDebugReadInt32(streamId)
+	if savedCombineId then
+		self.cp.savedCombine = networkGetObject(savedCombineId)
 	end
 
-	local active_combine_id = streamDebugReadInt32(streamId)
-	if active_combine_id then
-		self.cp.activeCombine = networkGetObject(active_combine_id)
+	local activeCombineId = streamDebugReadInt32(streamId)
+	if activeCombineId then
+		self.cp.activeCombine = networkGetObject(activeCombineId)
 	end
 
 	local current_trailer_id = streamDebugReadInt32(streamId)
@@ -1068,17 +1068,17 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteBool(streamId,self.cp.HUD4savedCombine)
 	streamDebugWriteString(streamId,self.cp.HUD4savedCombineName)
 
-	local saved_combine_id = nil
-	if self.saved_combine ~= nil then
-		saved_combine_id = networkGetObject(self.saved_combine)
+	local savedCombineId = nil
+	if self.cp.savedCombine ~= nil then
+		savedCombineId = networkGetObject(self.cp.savedCombine)
 	end
-	streamDebugWriteInt32(streamId, saved_combine_id)
+	streamDebugWriteInt32(streamId, savedCombineId)
 
-	local active_combine_id = nil
+	local activeCombineId = nil
 	if self.cp.activeCombine ~= nil then
-		active_combine_id = networkGetObject(self.cp.activeCombine)
+		activeCombineId = networkGetObject(self.cp.activeCombine)
 	end
-	streamDebugWriteInt32(streamId, active_combine_id)
+	streamDebugWriteInt32(streamId, activeCombineId)
 
 	local current_trailer_id = nil
 	if self.cp.currentTrailerToFill ~= nil then

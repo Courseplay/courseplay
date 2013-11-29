@@ -74,9 +74,9 @@ function courseplay:update_combines(self)
 
 	self.cp.reachableCombines = {}
 
-	if not self.search_combine and self.saved_combine then
+	if not self.search_combine and self.cp.savedCombine then
 		courseplay:debug(nameNum(self)..": combine is manual set",4)
-		table.insert(self.cp.reachableCombines, self.saved_combine)
+		table.insert(self.cp.reachableCombines, self.cp.savedCombine)
 		return
 	end
 
