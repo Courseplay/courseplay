@@ -214,9 +214,9 @@ function courseplay:executeFunction(self, func, value, overwrittenPage)
 					if line == 1 then
 						courseplay:stop(self);
 					elseif line == 2 and self.cp.last_recordnumber ~= nil and self.Waypoints[self.cp.last_recordnumber].wait and self.wait then
-						self.wait = false;
+						courseplay:driveOn(self);
 					elseif line == 2 and self.cp.stopAtEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil) then
-						self.cp.stopAtEnd = false;
+						courseplay:setStopAtEnd(self, false);
 					elseif line == 3 and not self.cp.isLoaded then
 						courseplay:setIsLoaded(self, true);
 					elseif line == 4 and not self.cp.stopAtEnd then

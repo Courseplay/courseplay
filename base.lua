@@ -756,7 +756,7 @@ function courseplay:draw()
 				if InputBinding.hasEvent(InputBinding.COURSEPLAY_START_STOP_COMBINED) then
 					self:setCourseplayFunc("stop", nil);
 				elseif self.cp.HUD1goOn and InputBinding.hasEvent(InputBinding.COURSEPLAY_DRIVEON_COMBINED) then
-					self:setCourseplayFunc("drive_on", nil);
+					self:setCourseplayFunc("driveOn", true);
 				elseif self.cp.HUD1noWaitforFill and InputBinding.hasEvent(InputBinding.COURSEPLAY_DRIVENOW_COMBINED) then
 					self:setCourseplayFunc("setIsLoaded", true);
 				end;

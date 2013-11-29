@@ -128,13 +128,20 @@ function courseplay:start_stop_player(combine)
 	tractor.cp.forcedToStop = not tractor.cp.forcedToStop;
 end;
 
-function courseplay:drive_on(self)
-	if self.wait then
-		self.wait = false;
+function courseplay:driveOn(vehicle, cancelStopAtEnd)
+	if vehicle.wait then
+		vehicle.wait = false;
 	end;
-	if self.cp.stopAtEnd then
-		self.cp.stopAtEnd = false;
+	if vehicle.cp.mode == 3 then
+		vehicle.cp.isUnloaded = true;
 	end;
+	if cancelStopAtEnd then
+		courseplay:setStopAtEnd(vehicle, false);
+	end;
+end;
+
+function courseplay:setStopAtEnd(vehicle, bool)
+	vehicle.cp.stopAtEnd = bool;
 end;
 
 function courseplay:setIsLoaded(vehicle, bool)

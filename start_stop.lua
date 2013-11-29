@@ -350,8 +350,9 @@ function courseplay:stop(self)
 	self.cp.stopWork = nil
 	self.cp.hasUnloadingRefillingCourse = false;
 	self.cp.stopAtEnd = false
-	self.cp.isUnloaded = false
-	
+	self.cp.isUnloaded = false;
+	self.cp.prevFillLevel = nil;
+
 	self.cp.hasBaleLoader = false;
 	self.cp.hasSowingMachine = false;
 	self.cp.hasPlough = false;
