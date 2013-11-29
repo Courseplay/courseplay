@@ -2,7 +2,7 @@
 function courseplay:record(vehicle)
 	local cx, cy, cz = getWorldTranslation(vehicle.rootNode);
 	local newAngle = courseplay:currentVehAngle(vehicle);
-	local fwd = vehicle.direction
+	local fwd = vehicle.drivingDirReverse
 	if vehicle.recordnumber < 2 then
 		vehicle.rotatedTime = 0
 	end
@@ -10,7 +10,7 @@ function courseplay:record(vehicle)
 		local oldcx, oldcz, oldAngle = vehicle.Waypoints[vehicle.recordnumber - 1].cx, vehicle.Waypoints[vehicle.recordnumber - 1].cz, vehicle.Waypoints[vehicle.recordnumber - 1].angle
 		local anglediff = math.abs(newAngle - oldAngle)
 		local dist = courseplay:distance(cx, cz, oldcx, oldcz)
-		if vehicle.direction == true then
+		if vehicle.drivingDirReverse == true then
 			if dist > 2 and (anglediff > 1.5 or dist > 10) then
 				vehicle.tmr = 101
 			end
@@ -90,7 +90,7 @@ function courseplay:change_DriveDirection(vehicle)
 	local newAngle = courseplay:currentVehAngle(vehicle);
 	local fwd = nil
 	vehicle.Waypoints[vehicle.recordnumber] = { cx = cx, cz = cz, angle = newAngle, wait = false, rev = vehicle.cp.drivingDirReverse, crossing = false, speed = nil }
-	vehicle.direction = not vehicle.direction
+	vehicle.cp.drivingDirReverse = not vehicle.cp.drivingDirReverse
 	vehicle.tmr = 1
 	vehicle.recordnumber = vehicle.recordnumber + 1
 	courseplay:addSign(vehicle, cx, cz, newAngle);
@@ -106,7 +106,7 @@ function courseplay:start_record(vehicle)
 	vehicle.waitPoints = 0
 	vehicle.crossPoints = 0
 	vehicle.tmr = 101
-	vehicle.direction = false
+	vehicle.cp.drivingDirReverse = false
 	courseplay:updateWaypointSigns(vehicle, "current");
 end
 
