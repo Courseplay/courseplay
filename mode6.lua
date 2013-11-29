@@ -1,4 +1,4 @@
-function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill_level, lx , lz )
+function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx , lz )
 	local workTool --= self.tippers[1] -- to do, quick, dirty and unsafe
 	local activeTipper = nil
 	local specialTool = false
@@ -11,23 +11,27 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 	end;
 	--]]
 
-	workArea = (self.recordnumber > self.cp.startWork) and (self.recordnumber < self.cp.stopWork)
-
+	local workArea = (self.recordnumber > self.cp.startWork) and (self.recordnumber < self.cp.finishWork)
+	local isFinishingWork = false
+	if self.recordnumber == self.cp.finishWork then
+		local _,y,_ = getWorldTranslation(self.cp.DirectionNode)
+		local _,_,z = worldToLocal(self.cp.DirectionNode,self.Waypoints[self.cp.finishWork].cx,y,self.Waypoints[self.cp.finishWork].cz)
+		z = -z
+		local frontMarker = Utils.getNoNil(self.cp.aiFrontMarker,-3)
+		if frontMarker + z < 0 then
+			workArea = true
+			isFinishingWork = true
+		else
+			self.recordnumber = math.min(self.cp.finishWork+1,self.maxnumber)
+		end		
+	end	
 	if workArea then
 		workSpeed = 1;
 	end
-	if (self.recordnumber == self.cp.stopWork or self.cp.last_recordnumber == self.cp.stopWork) and self.cp.abortWork == nil and not self.cp.isLoaded then
+	if (self.recordnumber == self.cp.stopWork or self.cp.last_recordnumber == self.cp.stopWork) and self.cp.abortWork == nil and not self.cp.isLoaded and not isFinishingWork then
 		allowedToDrive = false
 		courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPWorkEnd"), 1);
 	end
-
-	local returnToStartPoint = false;
-	if  self.Waypoints[self.cp.stopWork].cx == self.Waypoints[self.cp.startWork].cx
-	and self.Waypoints[self.cp.stopWork].cz == self.Waypoints[self.cp.startWork].cz
-	and self.recordnumber > self.cp.stopWork - 5
-	and self.recordnumber <= self.cp.stopWork then
-		returnToStartPoint = true;
-	end;
 
 	for i=1, table.getn(self.tippers) do
 		workTool = self.tippers[i];
@@ -147,7 +151,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 
 			-- other worktools, tippers, e.g. forage wagon
 			else
-				if workArea and fill_level ~= 100 and ((self.cp.abortWork == nil) or (self.cp.abortWork ~= nil and self.cp.last_recordnumber == self.cp.abortWork) or (self.cp.runOnceStartCourse)) and self.cp.turnStage == 0  and not returnToStartPoint then
+				if workArea and fill_level ~= 100 and ((self.cp.abortWork == nil) or (self.cp.abortWork ~= nil and self.cp.last_recordnumber == self.cp.abortWork) or (self.cp.runOnceStartCourse)) and self.cp.turnStage == 0  then
 								--courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,true,true,true,allowedToDrive,nil,nil)
 					if allowedToDrive then
@@ -199,7 +203,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 							end;
 						end;
 					end
-				elseif not workArea or self.cp.abortWork ~= nil or self.cp.isLoaded or self.cp.last_recordnumber == self.cp.stopWork or returnToStartPoint then
+				elseif not workArea or self.cp.abortWork ~= nil or self.cp.isLoaded or self.cp.last_recordnumber == self.cp.stopWork then
 					workSpeed = 0;
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,nil)
 					if not specialTool then
@@ -420,5 +424,5 @@ function courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill
 		end
 	end; --END for i in self.tippers
 
-	return allowedToDrive, workArea, workSpeed, activeTipper
+	return allowedToDrive, workArea, workSpeed, activeTipper ,isFinishingWork
 end

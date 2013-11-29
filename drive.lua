@@ -532,9 +532,9 @@ function courseplay:drive(self, dt)
 	-- ai_mode 4 = fertilize
 	local workArea = false
 	local workSpeed = 0;
-
+	local isFinishingWork = false
 	if self.cp.mode == 4 and self.cp.tipperAttached and self.cp.startWork ~= nil and self.cp.stopWork ~= nil then
-		allowedToDrive, workArea, workSpeed = courseplay:handle_mode4(self, allowedToDrive, workArea, workSpeed, fill_level)
+		allowedToDrive, workArea, workSpeed ,isFinishingWork = courseplay:handle_mode4(self, allowedToDrive, workSpeed, fill_level)
 	end
 
 	
@@ -543,7 +543,7 @@ function courseplay:drive(self, dt)
 	-- Mode 6 Fieldwork for balers and foragewagon
 	if (self.cp.mode == 6 or self.cp.mode == 4) and self.cp.startWork ~= nil and self.cp.stopWork ~= nil then
 		if self.cp.mode == 6 then
-			allowedToDrive, workArea, workSpeed, activeTipper = courseplay:handle_mode6(self, allowedToDrive, workArea, workSpeed, fill_level, lx , lz )
+			allowedToDrive, workArea, workSpeed, activeTipper ,isFinishingWork = courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx , lz )
 		end
 		if not workArea and self.cp.tipperFillLevel ~= nil and ((self.grainTankCapacity == nil and self.cp.tipRefOffset ~= nil) or self.cp.hasMachinetoFill) then
 			if self.cp.currentTipTrigger == nil and self.cp.fillTrigger == nil then
@@ -743,7 +743,12 @@ function courseplay:drive(self, dt)
 			lz = lz2
 		end
 	end
-
+   --finishing field work
+	if isFinishingWork then
+		lx=0
+		lz=1
+	end
+	
 	--reverse
 	if self.Waypoints[self.recordnumber].rev then
 		lx,lz,fwd = courseplay:goReverse(self,lx,lz)
@@ -832,7 +837,7 @@ function courseplay:drive(self, dt)
 		distToChange = self.dist + 1
 	end
 
-	if self.dist > distToChange or WpUnload or WpLoadEnd then
+	if self.dist > distToChange or WpUnload or WpLoadEnd or isFinishingWork then
 		if g_server ~= nil then
 			if self.isRealistic then 
 				courseplay:driveInMRDirection(self, lx,lz,fwd, dt,allowedToDrive);

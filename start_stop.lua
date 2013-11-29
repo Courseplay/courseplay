@@ -178,13 +178,23 @@ function courseplay:start(self)
 	elseif self.cp.mode == 4 or self.cp.mode == 6 then
 		self.cp.isLoaded = false;
 		self.cp.hasUnloadingRefillingCourse = self.maxnumber > self.cp.stopWork + 7;
-		courseplay:debug(string.format("%s: maxnumber=%d, stopWork=%d, hasUnloadingRefillingCourse=%s", nameNum(self), self.maxnumber, self.cp.stopWork, tostring(self.cp.hasUnloadingRefillingCourse)), 12);
+		if  self.Waypoints[self.cp.stopWork].cx == self.Waypoints[self.cp.startWork].cx 
+		and self.Waypoints[self.cp.stopWork].cz == self.Waypoints[self.cp.startWork].cz then
+			self.cp.finishWork = self.cp.stopWork-5
+		else
+			self.cp.finishWork = self.cp.stopWork
+		end		
+		courseplay:debug(string.format("%s: maxnumber=%d, stopWork=%d, finishWork=%d, hasUnloadingRefillingCourse=%s", nameNum(self), self.maxnumber, self.cp.stopWork, self.cp.finishWork, tostring(self.cp.hasUnloadingRefillingCourse)), 12);
 	end
 
 	if self.cp.mode == 9 or self.cp.startAtFirstPoint then
 		self.recordnumber = 1;
 		self.cp.shovelState = 1;
 	end;
+	
+	if self.cp.finishWork ~= self.cp.stopWork and self.recordnumber > self.cp.finishWork then
+		self.recordnumber = 2
+	end
 
 	courseplay:updateAllTriggers();
 
