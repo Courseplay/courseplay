@@ -355,6 +355,12 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 				--no special handling needed
 
 			elseif attachable.cp.isEifokZunhammerVogelsang then
+				if not attachable.isTrans then --set to transport position
+					allowedToDrive = false;
+					if attachable.isPark then
+						attachable:setParking(false);
+					end;
+				end;
 				if unfold ~= nil and unfold ~= attachable.setUnfold then
 					attachable:setFoldingDir(unfold);
 				end;
