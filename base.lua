@@ -948,6 +948,7 @@ function courseplay:readStream(streamId, connection)
 	self.cp.turnRadiusAuto = streamDebugReadFloat32(streamId)
 	self.cp.combineOffsetAutoMode = streamDebugReadBool(streamId);
 	self.cp.combineOffset = streamDebugReadFloat32(streamId)
+	self.cp.globalInfoTextLevel = streamDebugReadInt32(streamId)
 	self.cp.hasStartingCorner = streamDebugReadBool(streamId);
 	self.cp.hasStartingDirection = streamDebugReadBool(streamId);
 	self.cp.hasValidCourseGenerationData = streamDebugReadBool(streamId);
@@ -1020,6 +1021,7 @@ function courseplay:readStream(streamId, connection)
 	for k,v in pairs(Utils.splitString(",", debugChannelsString)) do
 		courseplay.debugChannels[k] = v == "true";
 	end;
+	courseplay:debug("id: "..tostring(self.id).."  base: readStream end", 5)
 end
 
 function courseplay:writeStream(streamId, connection)
@@ -1027,9 +1029,9 @@ function courseplay:writeStream(streamId, connection)
 
 	streamDebugWriteInt32(streamId,self.cp.mode)
 	streamDebugWriteFloat32(streamId,self.cp.turnRadiusAuto)
-	streamWriteBool(streamId, self.cp.combineOffsetAutoMode);
+	streamDebugWriteBool(streamId, self.cp.combineOffsetAutoMode);
 	streamDebugWriteFloat32(streamId,self.cp.combineOffset)
-	streamWriteFloat32(streamId, self.cp.globalInfoTextLevel);
+	streamDebugWriteInt32(streamId, self.cp.globalInfoTextLevel);
 	streamDebugWriteBool(streamId, self.cp.hasStartingCorner);
 	streamDebugWriteBool(streamId, self.cp.hasStartingDirection);
 	streamDebugWriteBool(streamId, self.cp.hasValidCourseGenerationData);
@@ -1101,6 +1103,7 @@ function courseplay:writeStream(streamId, connection)
 	local debugChannelsString = table.concat(table.map(courseplay.debugChannels, tostring), ",");
 	streamDebugWriteString(streamId, debugChannelsString) 
 
+	courseplay:debug("id: "..tostring(networkGetObjectId(self)).."  base: write stream end", 5)
 end
 
 

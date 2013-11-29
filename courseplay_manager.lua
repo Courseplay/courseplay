@@ -519,7 +519,7 @@ function CourseplayJoinFixEvent:writeStream(streamId, connection)
 			course_count = course_count + 1
 		end
 		streamDebugWriteInt32(streamId, course_count)
-		
+		courseplay:debug(string.format("writing %d courses ", course_count ),5)
 		for id, course in pairs(g_currentMission.cp_courses) do
 			streamDebugWriteString(streamId, course.name)
 			streamDebugWriteInt32(streamId, course.id)
@@ -541,14 +541,18 @@ function CourseplayJoinFixEvent:writeStream(streamId, connection)
 				streamDebugWriteInt32(streamId, course.waypoints[w].ridgeMarker)
 			end
 		end
+		courseplay:debug("writing courses end",5)
 	end;
 end
 
 function CourseplayJoinFixEvent:readStream(streamId, connection)
+	courseplay:debug("CourseplayJoinFixEvent:readStream",5)
 	if connection:getIsServer() then
+		courseplay:debug("connection:getIsServer()",5)
 		--courseplay:debug("manager receiving courses", 8);
 		-- course count
 		local course_count = streamDebugReadInt32(streamId)
+		courseplay:debug(string.format("reading %d couses ", course_count ),5)
 		--courseplay:debug("manager reading stream", 8);
 		--courseplay:debug(course_count, 8);
 		g_currentMission.cp_courses = {}
@@ -595,6 +599,7 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 			local course = { name = course_name, waypoints = waypoints, id = course_id }
 			g_currentMission.cp_courses[course_id] = course
 		end
+		courseplay:debug("reading end",5)
 	end;
 end
 
