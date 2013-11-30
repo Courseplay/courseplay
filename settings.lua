@@ -558,7 +558,6 @@ function courseplay:copyCourse(self)
 		self.drive = false;
 		self.dcheck = false;
 		self.cp.canDrive = true;
-		self.back = false;
 		self.cp.abortWork = nil;
 
 		self.target_x, self.target_y, self.target_z = nil, nil, nil;

@@ -11,13 +11,7 @@ end
 
 -- displays arrow and distance to previous point
 function courseplay:dcheck(vehicle)
-	local number = 1;
-	if vehicle.back then
-		number = vehicle.maxnumber - 2;
-	end;
-	if vehicle.record_pause then
-		number = vehicle.recordnumber - 1;
-	end
+	local number = vehicle.record_pause and vehicle.recordnumber - 1 or 1;
 
 	local ctx, cty, ctz = getWorldTranslation(vehicle.rootNode);
 	local cx, cz = vehicle.Waypoints[number].cx, vehicle.Waypoints[number].cz;
