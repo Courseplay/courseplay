@@ -38,7 +38,13 @@ if fileExists(modDescPath) then
 
 	courseplay.version = Utils.getNoNil(getXMLString(courseplay.modDescFile, "modDesc.version"), " [no version specified]");
 	if courseplay.version ~= " [no version specified]" then
-		courseplay.versionDisplay = Utils.splitString(".", courseplay.version);
+		courseplay.versionSeparate = Utils.splitString(".", courseplay.version);
+		if #courseplay.versionSeparate == 2 then
+			courseplay.versionSeparate[3] = "0000";
+		end;
+		courseplay.versionDisplay = string.format('v%s.%s\n.%s', courseplay.versionSeparate[1], courseplay.versionSeparate[2], courseplay.versionSeparate[3]);
+	else
+		courseplay.versionDisplay = 'no\nversion';
 	end;
 end;
 

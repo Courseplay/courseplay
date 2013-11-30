@@ -511,17 +511,9 @@ function courseplay:renderHud(self)
 
 
 	--VERSION INFO
-	courseplay:setFontSettings("white", false, "right");
 	if courseplay.versionDisplay ~= nil then
-		renderText(courseplay.hud.visibleArea.x2 - 0.008, courseplay.hud.infoBasePosY + 0.015, 0.012, "v" .. courseplay.versionDisplay[1] .. "." .. courseplay.versionDisplay[2]);
-		if #(courseplay.versionDisplay) < 3 then
-			renderText(courseplay.hud.visibleArea.x2 - 0.008, courseplay.hud.infoBasePosY + 0.003, 0.012, ".0000");
-		else
-			renderText(courseplay.hud.visibleArea.x2 - 0.008, courseplay.hud.infoBasePosY + 0.003, 0.012, "." .. courseplay.versionDisplay[3]);
-		end;
-	else
-		renderText(courseplay.hud.visibleArea.x2 - 0.008, courseplay.hud.infoBasePosY + 0.015, 0.012, "no");
-		renderText(courseplay.hud.visibleArea.x2 - 0.008, courseplay.hud.infoBasePosY + 0.003, 0.012, "version");
+		courseplay:setFontSettings("white", false, "right");
+		renderText(courseplay.hud.visibleArea.x2 - 0.008, courseplay.hud.infoBasePosY + 0.016, 0.012, courseplay.versionDisplay);
 	end;
 
 
