@@ -916,20 +916,33 @@ function courseplay:setTrafficCollision(self, lx, lz)
 		AIVehicleUtil.setCollisionDirection(self.cp.DirectionNode, self.aiTrafficCollisionTrigger, colDirX, colDirZ);
 		if self.cp.collidingVehicle == nil and goForRaycast then
 			local straight = true
-			for k=1,5 do
-				if self.recordnumber+k > self.maxnumber then
+			for k=1,4 do
+				if self.recordnumber+k+1 > self.maxnumber then
+					straight = false
 					break
 				end
-				local tx, ty, tz = localToWorld(self.cp.DirectionNode, 0,1,4)
+				local cy1 = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, self.Waypoints[self.recordnumber+k].cx,0, self.Waypoints[self.recordnumber+k].cz)+1
+				local cy2 = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, self.Waypoints[self.recordnumber+k+1].cx,0, self.Waypoints[self.recordnumber+k+1].cz)+1
 				local cx1, cz1 = self.Waypoints[self.recordnumber+k].cx, self.Waypoints[self.recordnumber+k].cz
-				local dist = math.min(courseplay:distance_to_point(self, cx1,ty, cz1),25)
+				local cx2, cz2 = self.Waypoints[self.recordnumber+k+1].cx, self.Waypoints[self.recordnumber+k+1].cz
 				local lx1, lz1 = AIVehicleUtil.getDriveDirection(self.cp.DirectionNode, cx1, ty, cz1);
-				local nx, ny, nz = localDirectionToWorld(self.cp.DirectionNode, lx1, 0,lz1)
+				local nx,nz = 0
+				local vx = cx2 - cx1
+				local vz = cz2 - cz1
+				local vy = cy2 - cy1
+				dist = Utils.vector3Length(vx,vy, vz)
+				if dist and dist > 0.01 then
+					nx = vx / dist
+					nz = vz / dist
+					ny = vy / dist					
+				end				
 				if math.abs(lx1) > 0.1 then 
 					courseplay:debug(nameNum(self)..": call traffic raycast curve ["..tostring(k).."]",3)
-					raycastAll(tx, ty, tz, nx, ny, nz, "findTrafficCollisionCallback", dist, self)
-					if courseplay.debugChannels[3] then drawDebugLine(tx, ty, tz, 1, 1, 1, tx +(nx*dist) , ty+(ny*dist), tz+(nz*dist), 1, 1, 1) end
-					straight = false 
+					raycastAll(cx1, cy1, cz1, nx, ny, nz, "findTrafficCollisionCallback", dist, self)
+					if courseplay.debugChannels[3] then drawDebugLine(cx1, cy1, cz1, 1, 1, 1, cx1 +(nx*dist) , cy1+(ny*dist), cz1+(nz*dist), 1, 1, 1) end
+					if k <= 3 then
+						straight = false 
+					end
 				end
 			end
 			if straight then
@@ -1199,7 +1212,7 @@ function courseplay:regulateTrafficSpeed(self,refSpeed,allowedToDrive)
 		local vehicle_in_front = g_currentMission.nodeToVehicle[self.cp.collidingVehicle];
 		local vehicleBehind = false
 		if vehicle_in_front == nil then
-			courseplay:debug(nameNum(self)..": regulateTrafficSpeed(1190):	setting self.cp.collidingVehicle nil",3)
+			courseplay:debug(nameNum(self)..": regulateTrafficSpeed(1216):	setting self.cp.collidingVehicle nil",3)
 			self.cp.collidingVehicle = nil
 			self.CPnumCollidingVehicles = math.max(self.CPnumCollidingVehicles-1, 0);
 			return refSpeed
@@ -1209,11 +1222,16 @@ function courseplay:regulateTrafficSpeed(self,refSpeed,allowedToDrive)
 		end
 		local x, y, z = getWorldTranslation(self.cp.collidingVehicle)
 		local x1, y1, z1 = worldToLocal(self.rootNode, x, y, z)
-		if z1 < 0 or math.abs(x1) > 4 then -- vehicle behind tractor
+		if z1 < 0 or math.abs(x1) > 5 then -- vehicle behind tractor
 			vehicleBehind = true
 		end
-		if vehicle_in_front.rootNode == nil or vehicle_in_front.lastSpeedReal == nil or (vehicle_in_front.rootNode ~= nil and courseplay:distance_to_object(self, vehicle_in_front) > 40) or vehicleBehind then
-			courseplay:debug(nameNum(self)..": regulateTrafficSpeed(1205):	setting self.cp.collidingVehicle nil",3)
+		local distance = 0
+		if vehicle_in_front.rootNode ~= nil then
+			distance = courseplay:distance_to_object(self, vehicle_in_front)
+		end
+		if vehicle_in_front.rootNode == nil or vehicle_in_front.lastSpeedReal == nil or (distance > 40) or vehicleBehind then
+			courseplay:debug(string.format("%s: v.rootNode= %s,v.lastSpeedReal= %s, distance: %f, vehicleBehind= %s",nameNum(self),tostring(vehicle_in_front.rootNode),tostring(vehicle_in_front.lastSpeedReal),distance,tostring(vehicleBehind)),3)
+			courseplay:debug(nameNum(self)..": regulateTrafficSpeed(1230):	setting self.cp.collidingVehicle nil",3)
 			self.cp.tempCollis[self.cp.collidingVehicle] = nil
 			self.cp.collidingVehicle = nil
 		else
