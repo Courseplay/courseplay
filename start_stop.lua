@@ -103,7 +103,7 @@ function courseplay:start(self)
 	local recordNumber = 0
 	for i,wp in pairs(self.Waypoints) do
 		local cx, cz = wp.cx, wp.cz
-		if self.cp.modeState == 0 or self.cp.modeState == 1 then
+		if self.cp.modeState == 0 or self.cp.modeState == 99 then
 			dist = courseplay:distance(ctx, ctz, cx, cz)
 			if dist <= nearestpoint then
 				nearestpoint = dist
@@ -155,7 +155,7 @@ function courseplay:start(self)
 	courseplay:debug(string.format("%s: numWaitPoints=%d, waitPoints[1]=%s", nameNum(self), self.cp.numWaitPoints, tostring(self.cp.waitPoints[1])), 12);
 
 
-	if self.cp.modeState == 0 or self.cp.modeState == 1 then
+	if self.cp.modeState == 0 or self.cp.modeState == 99 then
 		local changed = false
 		for i=recordNumber,recordNumber+3 do
 			if self.Waypoints[i]~= nil and self.Waypoints[i].turn ~= nil then

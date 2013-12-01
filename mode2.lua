@@ -133,7 +133,7 @@ function courseplay:handle_mode2(self, dt)
 
 		if self.cp.isLoaded then
 			self.recordnumber = 2
-			self.cp.modeState = 1
+			self.cp.modeState = 99
 			return false
 		end
 
@@ -883,7 +883,7 @@ function courseplay:unload_combine(self, dt)
 
 					self.recordnumber = 2
 					courseplay:unregister_at_combine(self, self.cp.activeCombine)
-					self.cp.modeState = 0
+					self.cp.modeState = 99
 					self.cp.isLoaded = true
 
 				elseif self.cp.mode2nextState == 1 then
