@@ -3,6 +3,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fill_level)
 
 	local workArea = (self.recordnumber > self.cp.startWork) and (self.recordnumber < self.cp.finishWork)
 	local isFinishingWork = false
+	local hasFinishedWork = false
 	if self.recordnumber == self.cp.finishWork then
 		local _,y,_ = getWorldTranslation(self.cp.DirectionNode)
 		local _,_,z = worldToLocal(self.cp.DirectionNode,self.Waypoints[self.cp.finishWork].cx,y,self.Waypoints[self.cp.finishWork].cz)
@@ -12,7 +13,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fill_level)
 			workArea = true
 			isFinishingWork = true
 		else
-			self.recordnumber = math.min(self.cp.finishWork+1,self.maxnumber)
+			self.recordnumber = math.min(self.cp.finishWork+1,self.cp.stopWork)
 		end		
 	end	
 	-- Begin Work
@@ -49,9 +50,10 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fill_level)
 		end;
 	end
 	--
-	if ((self.recordnumber == self.cp.stopWork and not self.cp.hasUnloadingRefillingCourse) or self.cp.last_recordnumber == self.cp.stopWork) and self.cp.abortWork == nil and not isFinishingWork then
+	if (self.recordnumber == self.cp.stopWork or self.cp.last_recordnumber == self.cp.stopWork) and self.cp.abortWork == nil and not isFinishingWork then
 		allowedToDrive = courseplay:brakeToStop(self)
 		courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPWorkEnd"), 1);
+		hasFinishedWork = true
 	end
 	
 	local firstPoint = self.cp.last_recordnumber == 1;
@@ -172,6 +174,10 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fill_level)
 			workTool:setIsTurnedOn(false, false)
 		end]] --?? why am i here ??
 	end; --END for i in self.tippers
-
+	if hasFinishedWork then
+		isFinishingWork = true
+	end
+	
+	
 	return allowedToDrive, workArea, workSpeed,isFinishingWork
 end;

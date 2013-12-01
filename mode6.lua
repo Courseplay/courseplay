@@ -13,6 +13,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 
 	local workArea = (self.recordnumber > self.cp.startWork) and (self.recordnumber < self.cp.finishWork)
 	local isFinishingWork = false
+	local hasFinishedWork = false
 	if self.recordnumber == self.cp.finishWork then
 		local _,y,_ = getWorldTranslation(self.cp.DirectionNode)
 		local _,_,z = worldToLocal(self.cp.DirectionNode,self.Waypoints[self.cp.finishWork].cx,y,self.Waypoints[self.cp.finishWork].cz)
@@ -22,7 +23,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 			workArea = true
 			isFinishingWork = true
 		else
-			self.recordnumber = math.min(self.cp.finishWork+1,self.maxnumber)
+			self.recordnumber = math.min(self.cp.finishWork+1,self.cp.stopWork)
 		end		
 	end	
 	if workArea then
@@ -31,6 +32,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 	if (self.recordnumber == self.cp.stopWork or self.cp.last_recordnumber == self.cp.stopWork) and self.cp.abortWork == nil and not self.cp.isLoaded and not isFinishingWork then
 		allowedToDrive = false
 		courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPWorkEnd"), 1);
+		hasFinishedWork = true
 	end
 
 	for i=1, table.getn(self.tippers) do
@@ -424,5 +426,8 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 		end
 	end; --END for i in self.tippers
 
+	if hasFinishedWork then
+		isFinishingWork = true
+	end
 	return allowedToDrive, workArea, workSpeed, activeTipper ,isFinishingWork
 end
