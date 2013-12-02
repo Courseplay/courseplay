@@ -183,18 +183,18 @@ function courseplay:start(self)
 			self.cp.finishWork = self.cp.stopWork-5
 		else
 			self.cp.finishWork = self.cp.stopWork
-		end		
-		courseplay:debug(string.format("%s: maxnumber=%d, stopWork=%d, finishWork=%d, hasUnloadingRefillingCourse=%s", nameNum(self), self.maxnumber, self.cp.stopWork, self.cp.finishWork, tostring(self.cp.hasUnloadingRefillingCourse)), 12);
+		end
+
+		if self.cp.finishWork ~= self.cp.stopWork and self.recordnumber > self.cp.finishWork then --TODO: refine for refillingUnloadingCourses
+			self.recordnumber = 2
+		end
+		courseplay:debug(string.format("%s: maxnumber=%d, stopWork=%d, finishWork=%d, hasUnloadingRefillingCourse=%s, recordnumber=%d", nameNum(self), self.maxnumber, self.cp.stopWork, self.cp.finishWork, tostring(self.cp.hasUnloadingRefillingCourse), self.recordnumber), 12);
 	end
 
 	if self.cp.mode == 9 or self.cp.startAtFirstPoint then
 		self.recordnumber = 1;
 		self.cp.shovelState = 1;
 	end;
-	
-	if self.cp.finishWork ~= self.cp.stopWork and self.recordnumber > self.cp.finishWork then
-		self.recordnumber = 2
-	end
 
 	courseplay:updateAllTriggers();
 
