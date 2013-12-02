@@ -180,6 +180,8 @@ function courseplay:reset_course(vehicle)
 	vehicle.createCourse = false
 	vehicle.startlastload = 1
 	vehicle.numCourses = 0;
+	vehicle.cp.numWaitPoints = 0;
+	vehicle.cp.waitPoints = {};
 
 	vehicle.cp.hasGeneratedCourse = false;
 	courseplay:validateCourseGenerationData(vehicle);

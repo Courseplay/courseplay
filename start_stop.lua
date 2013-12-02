@@ -337,8 +337,6 @@ function courseplay:stop(self)
 	self.drive = false
 	self.cp.canDrive = true
 	self.dcheck = false
-	self.cp.numWaitPoints = 0;
-	self.cp.waitPoints = {};
 	self.cp.mode7GoBackBeforeUnloading = false
 	if self.cp.checkReverseValdityPrinted then
 		self.cp.checkReverseValdityPrinted = false
