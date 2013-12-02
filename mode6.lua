@@ -14,7 +14,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 	local workArea = (self.recordnumber > self.cp.startWork) and (self.recordnumber < self.cp.finishWork)
 	local isFinishingWork = false
 	local hasFinishedWork = false
-	if self.recordnumber == self.cp.finishWork then
+	if self.recordnumber == self.cp.finishWork and self.cp.abortWork == nil then
 		local _,y,_ = getWorldTranslation(self.cp.DirectionNode)
 		local _,_,z = worldToLocal(self.cp.DirectionNode,self.Waypoints[self.cp.finishWork].cx,y,self.Waypoints[self.cp.finishWork].cz)
 		z = -z
@@ -22,8 +22,8 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 		if frontMarker + z < 0 then
 			workArea = true
 			isFinishingWork = true
-		else
-			self.recordnumber = math.min(self.cp.finishWork+1,self.cp.stopWork)
+		elseif self.cp.finishWork ~= self.cp.stopWork then
+				self.recordnumber = math.min(self.cp.finishWork+1,self.cp.maxnumber)
 		end		
 	end	
 	if workArea then
