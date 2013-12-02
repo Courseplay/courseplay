@@ -542,9 +542,10 @@ function courseplay.courses.delete_save_all(self)
 			local file = io.open(savegame.savegameDirectory .. "/courseplay.xml", "w");
 			if file ~= nil then
 				file:write('<?xml version="1.0" encoding="utf-8" standalone="no" ?>\n<XML>\n');
-				file:write('\t<courseplayHud posX="' .. courseplay:round(courseplay.hud.infoBasePosX, 3) .. '" posY="' .. courseplay:round(courseplay.hud.infoBasePosY, 3) .. '" />\n');
-				file:write('\t<courseplayGlobalInfoText posX="' .. courseplay:round(courseplay.globalInfoText.posX, 3) .. '" posY="' .. courseplay:round(courseplay.globalInfoText.posY, 3) .. '" />\n');
-				
+				file:write(string.format('\t<courseplayHud posX="%.3f" posY="%.3f" />\n', courseplay.hud.infoBasePosX, courseplay.hud.infoBasePosY));
+				file:write(string.format('\t<courseplayGlobalInfoText posX="%.3f" posY="%.3f" />\n', courseplay.globalInfoText.posX, courseplay.globalInfoText.posY));
+				file:write(string.format('\t<courseplayFields debugScannedFields=%q debugCustomLoadedFields=%q />\n', tostring(courseplay.fields.debugScannedFields), tostring(courseplay.fields.debugCustomLoadedFields)));
+
 				file:write('\t<folders>\n')
 				for i,folder in pairs(g_currentMission.cp_folders) do
 					file:write('\t\t<folder name="' .. folder.name .. '" id="' .. folder.id .. '" parent="' .. folder.parent ..'" />\n');

@@ -3,7 +3,7 @@
 
 function courseplay.fields:setUpFieldsIngameData()
 	--self = courseplay.fields
-	--print("call setUpIngameData()");
+	self:dbg("call setUpIngameData()", 'scan');
 	self.fieldChannels = { g_currentMission.cultivatorChannel, g_currentMission.ploughChannel, g_currentMission.sowingChannel, g_currentMission.sowingWidthChannel };
 	self.lastChannel = g_currentMission.cultivatorChannel;
 	self.ingameDataSetUp = true;
@@ -11,7 +11,7 @@ end;
 
 function courseplay.fields:setAllFieldEdges()
 	--self = courseplay.fields
-	--print("call setAllFieldEdges()");
+	self:dbg(string.rep('-', 50) .. '\ncall setAllFieldEdges() START', 'scan');
 	local scanStep = 5;
 	local maxN = 2000;
 	local numDirectionTries = 10;
@@ -19,16 +19,17 @@ function courseplay.fields:setAllFieldEdges()
 	for i=1, g_currentMission.fieldDefinitionBase.numberOfFields do
 		local fieldDef = g_currentMission.fieldDefinitionBase.fieldDefs[i];
 		local fieldNum = fieldDef.fieldNumber;
-		--local x,z = fieldDef.fieldMapHotspot.xMapPos, fieldDef.fieldMapHotspot.yMapPos;
-		local x,_,z = getWorldTranslation(fieldDef.fieldBuyTrigger);
+		local initObject = fieldDef.fieldMapIndicator; --OLD: fieldDef.fieldBuyTrigger
+		local x,_,z = getWorldTranslation(initObject);
 		local isField = courseplay:is_field(x, z);
-		--print(string.format("fieldDef %d (fieldNum=%d): x,z=%.1f,%.1f, isField=%s", i, fieldNum, x, z, tostring(isField)));
+		self:dbg(string.format("fieldDef %d (fieldNum=%d): x,z=%.1f,%.1f, isField=%s", i, fieldNum, x, z, tostring(isField)), 'scan');
 
 		if isField then
 			for try=1,numDirectionTries do
-				local edgePoints = self:getSingleFieldEdge(fieldDef.fieldBuyTrigger, scanStep, maxN, try > 1);
-				if #edgePoints >= 30 then
-					--print(string.format('setAllFieldEdges(): courseplay.fields.fieldData[%d] == nil = %s', fieldNum, tostring(self.fieldData[fieldNum] == nil)));
+				local edgePoints = self:getSingleFieldEdge(initObject, scanStep, maxN, try > 1);
+				local numEdgePoints = #edgePoints;
+				if numEdgePoints >= 30 then
+					self:dbg(string.format("\ttry %d: %d edge points found --> valid, no retry", try, numEdgePoints), 'scan');
 					if self.fieldData[fieldNum] == nil then
 						self.fieldData[fieldNum] = {
 							fieldNum = fieldNum;
@@ -36,11 +37,13 @@ function courseplay.fields:setAllFieldEdges()
 							numPoints = #edgePoints;
 							name = string.format("%s %d", courseplay.locales.COURSEPLAY_FIELD, fieldNum);
 						};
-						--print(string.format("Field %d: >= 30 edge points found --> valid, no retry", fieldNum));
+						self:dbg(string.format('\t\tcourseplay.fields.fieldData[%d] == nil => set as .fieldData[%d], break', fieldNum, fieldNum), 'scan');
+					else
+						self:dbg(string.format('\t\tcourseplay.fields.fieldData[%d] ~= nil => ignore scan, break', fieldNum), 'scan');
 					end;
 					break;
 				else
-					--print(string.format("Field %d: less than 30 edge points found --> not valid, retry=%s", fieldNum, tostring(try<numDirectionTries)));
+					self:dbg(string.format("\ttry %d: %d edge points found --> invalid, retry=%s", try, numEdgePoints, tostring(try<numDirectionTries)), 'scan');
 				end;
 			end;
 		end;
@@ -48,12 +51,11 @@ function courseplay.fields:setAllFieldEdges()
 	self.allFieldsScanned = true;
 	self.numAvailableFields = table.maxn(self.fieldData);
 
-	--[[
 	--Debug
-	--print(tableShow(result, "fieldData"));
-	print(tableShow(result[1], "fieldData 1"));
-	]]
-
+	if self.debugScannedFields then
+		self:dbg(tableShow(courseplay.fields.fieldData, "fieldData"), 'scan');
+	end;
+	self:dbg('setAllFieldEdges() END\n' .. string.rep('-', 50), 'scan');
 end;
 
 function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, randomDir)
@@ -114,9 +116,9 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 		link(tg,probe1)
 		setTranslation(probe1,scanStep,0,0);
 
-		--rotate 90° against object
+		--rotate 90Â° against initObject
 
-		local _,ry,_ = getWorldRotation(object);
+		local _,ry,_ = getWorldRotation(initObject);
 		setRotation(tg,0,ry,0)
 		if randomDir then
 			rotate(tg,0,2*math.pi*math.random(),0)
@@ -125,7 +127,7 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 		end;
 
 		-- local dirX = dZ;
-		-- local dirZ = -dirX; --90° of search direction;
+		-- local dirZ = -dirX; --90Â° of search direction;
 		local px = xx;
 		local pz = zz;
 		while #coordinates < maxN do
@@ -274,11 +276,20 @@ function courseplay.fields:loadAllCustomFields()
 							end;
 						end;
 						self.fieldData[fieldNum] = fieldData;
+						if self.debugCustomLoadedFields then
+							self:dbg(tableShow(fieldData, 'fieldData[' .. fieldNum .. ']'), 'customLoad');
+						end;
 						self.numAvailableFields = table.maxn(self.fieldData);
 					end;
 					i = i + 1;
 				end;
 			end;
 		end;
+	end;
+end;
+
+function courseplay.fields:dbg(str, debugType)
+	if (debugType == 'scan' and self.debugScannedFields) or (debugType == 'customLoad' and self.debugCustomLoadedFields) then
+		print(tostring(str));
 	end;
 end;
