@@ -13,7 +13,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fill_level)
 			workArea = true
 			isFinishingWork = true
 		elseif self.cp.finishWork ~= self.cp.stopWork then
-				self.recordnumber = math.min(self.cp.finishWork+1,self.cp.maxnumber)
+				self.recordnumber = math.min(self.cp.finishWork+1,self.maxnumber)
 		end		
 	end	
 	-- Begin Work
