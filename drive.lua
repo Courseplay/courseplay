@@ -480,6 +480,7 @@ function courseplay:drive(self, dt)
 			end;
 		end;
 
+		--REFILL LIQUID MANURE TRANSPORT
 		if self.cp.mode == 8 then
 			raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
 			if self.cp.tipperAttached then
@@ -489,6 +490,17 @@ function courseplay:drive(self, dt)
 			end;
 		end;
 
+		--VEHICLE DAMAGE
+		if self.damageLevel then
+			if self.damageLevel >= 90 then
+				allowedToDrive = courseplay:brakeToStop(self);
+				courseplay:setGlobalInfoText(self, string.format(courseplay:get_locale(self, courseplay.locales.COURSEPLAY_DAMAGE_MUST_BE_REPAIRED), self.damageLevel), -2);
+			elseif self.damageLevel >= 50 then
+				courseplay:setGlobalInfoText(self, string.format(courseplay:get_locale(self, courseplay.locales.COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED, self.damageLevel), -1);
+			end;
+		end;
+
+		--FUEL LEVEL + REFILLING
 		if self.fuelCapacity > 0 then
 			local currentFuelPercentage = (self.fuelFillLevel / self.fuelCapacity + 0.0001) * 100;
 			if currentFuelPercentage < 5 then
@@ -518,6 +530,7 @@ function courseplay:drive(self, dt)
 			end
 		end;
 
+		--WATER WARNING
 		if self.showWaterWarning then
 			allowedToDrive = false
 			courseplay:setGlobalInfoText(self, courseplay:get_locale(self, courseplay.locales.CPWaterDrive), -2);
@@ -786,7 +799,7 @@ function courseplay:drive(self, dt)
 	end
 
 	if self.isRealistic then
-		courseplay:setMRSpeed(self, refSpeed, self.cp.speeds.sl,allowedToDrive,workArea)
+		courseplay:setMRSpeed(self, refSpeed, self.cp.speeds.sl,allowedToDrive)
 	else
 		courseplay:setSpeed(self, refSpeed, self.cp.speeds.sl)
 	end
@@ -1301,7 +1314,7 @@ function courseplay:setMRSpeed(self, refSpeed, sl,allowedToDrive,workArea)
 	self.motor.realSpeedLevelsAI[self.motor.speedLevel] = refSpeed*3600
 	
 	-- setting AWD if necessary
-	if workArea or self.realDisplaySlipPercent > 25 and self.realAWDModeOn == false then 
+	if (workArea or self.realDisplaySlipPercent > 25) and self.realAWDModeOn == false then 
 		self:realSetAwdActive(true);
 	elseif self.realDisplaySlipPercent < 1 and self.realAWDModeOn == true then 
 		self:realSetAwdActive(false);

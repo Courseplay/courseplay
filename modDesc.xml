@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="13">
-	<version>3.41.0270</version>
+	<version>3.41.0271</version>
 	<author>Jakob Tischler / Thomas Gärtner / Horoman</author>
 	<title>
 		<de>Courseplay</de>
@@ -1612,6 +1612,22 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<es>usuario</es>
 			<it>utente</it>
 			<cz>uživatel</cz>
+		</text>
+		<text name="COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED">
+			<en>should be repaired soon (%d%% damage)</en>
+			<de>sollte repariert werden (%d%% Schaden)</de>
+			<fr>doit bientôt réparer (%d%% dommage)</fr>
+			<es>debe repararse pronto (%d%% daño)</es>
+			<it>dev'essere riparato al piu' presto (%d%% danno)</it>
+			<cz>should be repaired soon (%d%% damage)</cz> <!-- !!! -->
+		</text>
+		<text name="COURSEPLAY_DAMAGE_MUST_BE_REPAIRED">
+			<en>must be repaired (%d%% damage)</en>
+			<de>muss repariert werden (%d%% Schaden)</de>
+			<fr>doit réparer (%d%% dommage)</fr>
+			<es>debe repararse (%d%% daño)</es>
+			<it>dev'essere riparato ora (%d%% danno)</it>
+			<cz>must be repaired (%d%% damage)</cz> <!-- !!! -->
 		</text>
 
 
