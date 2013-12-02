@@ -6,12 +6,15 @@
 		self.cp.hud.content.global[1] = "---";
 	end;
 
+	local courseName = '';
 	if self.cp.currentCourseName ~= nil then
-		--self.cp.hud.content.global[2] = courseplay:get_locale(self, "CPCourse") .. " " .. self.cp.currentCourseName;
-		self.cp.hud.content.global[2] = string.format("%s %s", courseplay:get_locale(self, "CPCourse"), self.cp.currentCourseName);
+		courseName = string.format("%s %s", courseplay:get_locale(self, "CPCourse"), self.cp.currentCourseName);
+	elseif self.Waypoints[1] ~= nil then
+		courseName = string.format("%s %s", courseplay:get_locale(self, "CPCourse"), courseplay:get_locale(self, "CPtempCourse"));
 	else
-		self.cp.hud.content.global[2] = courseplay:get_locale(self, "CPNoCourseLoaded");
+		courseName = courseplay:get_locale(self, "CPNoCourseLoaded");
 	end;
+	self.cp.hud.content.global[2] = courseName;
 
 	if self.Waypoints[self.recordnumber] ~= nil then
 		self.cp.hud.content.global[3] = string.format("%s%s/%s\t%s%s\t%s%s", courseplay:get_locale(self, "CPWaypoint"), tostring(self.recordnumber), tostring(self.maxnumber),  tostring(courseplay.locales.COURSEPLAY_WAITPOINTS), tostring(self.cp.numWaitPoints), tostring(courseplay.locales.COURSEPLAY_CROSSING_POINTS), tostring(self.cp.numCrossingPoints));
