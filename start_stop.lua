@@ -213,7 +213,6 @@ function courseplay:start(self)
 	
 	if self.isRealistic then
 		self.cpSavedRealAWDModeOn = self.realAWDModeOn
-		
 	end
 
 	--EifokLiquidManure
@@ -255,6 +254,17 @@ function courseplay:getCanUseAiMode(vehicle)
 		if vehicle.cp.startWork == nil or vehicle.cp.stopWork == nil then
 			vehicle.cp.infoText = courseplay.locales.CPNoWorkArea;
 			return false;
+		end;
+		if mode == 6 then
+			if vehicle.cp.hasBaleLoader then
+				if vehicle.cp.numWaitPoints < 3 then
+					vehicle.cp.infoText = string.format(courseplay.locales.CPTooFewWaitingPoints, 3);
+					return false;
+				elseif vehicle.cp.numWaitPoints > 3 then
+					vehicle.cp.infoText = string.format(courseplay.locales.CPTooManyWaitingPoints, 3);
+					return false;
+				end;
+			end;
 		end;
 
 	elseif mode == 9 then
