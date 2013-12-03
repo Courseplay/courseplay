@@ -496,7 +496,7 @@ function courseplay:drive(self, dt)
 				allowedToDrive = courseplay:brakeToStop(self);
 				courseplay:setGlobalInfoText(self, string.format(courseplay:get_locale(self, courseplay.locales.COURSEPLAY_DAMAGE_MUST_BE_REPAIRED), self.damageLevel), -2);
 			elseif self.damageLevel >= 50 then
-				courseplay:setGlobalInfoText(self, string.format(courseplay:get_locale(self, courseplay.locales.COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED, self.damageLevel), -1);
+				courseplay:setGlobalInfoText(self, string.format(courseplay:get_locale(self, courseplay.locales.COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED), self.damageLevel), -1);
 			end;
 		end;
 
