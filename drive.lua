@@ -498,7 +498,7 @@ function courseplay:drive(self, dt)
 			elseif self.damageLevel >= 50 then
 				courseplay:setGlobalInfoText(self, string.format(courseplay:get_locale(self, courseplay.locales.COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED), self.damageLevel), -1);
 			end;
-			if  self.damageLevel > 0 then
+			if  self.damageLevel > 70 then
 				raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
 				if self.cp.fillTrigger ~= nil then
 					local trigger = courseplay.triggers.all[self.cp.fillTrigger]
@@ -511,7 +511,7 @@ function courseplay:drive(self, dt)
 					self.cp.fillTrigger = nil 
 					allowedToDrive = false
 				end
-			end
+			end			
 		end;
 
 		--FUEL LEVEL + REFILLING
