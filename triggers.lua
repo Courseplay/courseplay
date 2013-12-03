@@ -196,7 +196,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 								  or trigger.isSchweinemastLiquidManureTrigger 
 								  or trigger.isGasStationTrigger) then
 			self.cp.fillTrigger = transformId;									
-		elseif trigger.isGasStationTrigger then
+		elseif trigger.isGasStationTrigger or trigger.isDamageModTrigger then
 			self.cp.fillTrigger = transformId;
 		end
 		return true
@@ -220,6 +220,7 @@ function courseplay:updateAllTriggers()
 	end;
 	courseplay.triggers = {
 		tipTriggers = {};
+		damageModTriggers = {};
 		gasStationTriggers = {};
 		liquidManureFillTriggers = {};
 		sowingMachineFillTriggers = {};
@@ -228,7 +229,7 @@ function courseplay:updateAllTriggers()
 		allNonUpdateables = {};
 		all = {};
 	};
-	local tipTriggersCount, gasStationTriggersCount, liquidManureFillTriggersCount, sowingMachineFillTriggersCount, sprayerFillTriggersCount, waterTrailerFillTriggersCount, allNonUpdateablesCount, allCount = 0, 0, 0, 0, 0, 0, 0, 0;
+	local tipTriggersCount, damageModTriggersCount, gasStationTriggersCount, liquidManureFillTriggersCount, sowingMachineFillTriggersCount, sprayerFillTriggersCount, waterTrailerFillTriggersCount, allNonUpdateablesCount, allCount = 0, 0, 0, 0, 0, 0, 0, 0, 0;
 
 	--UPDATE
 	--nonUpdateable objects
@@ -366,6 +367,20 @@ function courseplay:updateAllTriggers()
 					sprayerFillTriggersCount = sprayerFillTriggersCount + 1;
 					allNonUpdateablesCount = allNonUpdateablesCount + 1;
 					allCount = allCount + 1;
+
+				elseif trigger.customEnvironment == 'DamageMod' or Utils.endsWith(xml, 'garage.xml') then
+					local data = {
+						triggerId = trigger.triggerId;
+						nodeId = trigger.nodeId;
+						isDamageModTrigger = true;
+						isDamageModTriggerPlaceable = true;
+					};
+					courseplay.triggers.damageModTriggers[trigger.triggerId] = data;
+					courseplay.triggers.allNonUpdateables[trigger.triggerId] = data;
+					courseplay.triggers.all[trigger.triggerId] = data;
+					damageModTriggersCount = damageModTriggersCount + 1;
+					allNonUpdateablesCount = allNonUpdateablesCount + 1;
+					allCount = allCount + 1;
 				end;
 			end;
 		end
@@ -414,7 +429,7 @@ function courseplay:updateAllTriggers()
 		end
 	end;
 
-	courseplay.triggers.tipTriggersCount, courseplay.triggers.gasStationTriggersCount, courseplay.triggers.liquidManureFillTriggersCount, courseplay.triggers.sowingMachineFillTriggersCount, courseplay.triggers.sprayerFillTriggersCount, courseplay.triggers.waterTrailerFillTriggersCount, courseplay.triggers.allNonUpdateablesCount, courseplay.triggers.allCount = tipTriggersCount, gasStationTriggersCount, liquidManureFillTriggersCount, sowingMachineFillTriggersCount, sprayerFillTriggersCount, waterTrailerFillTriggersCount, allNonUpdateablesCount, allCount;
+	courseplay.triggers.tipTriggersCount, courseplay.triggers.damageModTriggersCount, courseplay.triggers.gasStationTriggersCount, courseplay.triggers.liquidManureFillTriggersCount, courseplay.triggers.sowingMachineFillTriggersCount, courseplay.triggers.sprayerFillTriggersCount, courseplay.triggers.waterTrailerFillTriggersCount, courseplay.triggers.allNonUpdateablesCount, courseplay.triggers.allCount = tipTriggersCount, damageModTriggersCount, gasStationTriggersCount, liquidManureFillTriggersCount, sowingMachineFillTriggersCount, sprayerFillTriggersCount, waterTrailerFillTriggersCount, allNonUpdateablesCount, allCount;
 end;
 
 --[[
