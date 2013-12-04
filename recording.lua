@@ -177,7 +177,6 @@ function courseplay:reset_course(vehicle)
 	vehicle.Waypoints = {}
 	vehicle.cp.canDrive = false
 	vehicle.cp.abortWork = nil
-	vehicle.createCourse = false
 	vehicle.startlastload = 1
 	vehicle.numCourses = 0;
 	vehicle.cp.numWaitPoints = 0;

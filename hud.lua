@@ -16,7 +16,7 @@
 
 	if vehicle.Waypoints[vehicle.recordnumber] ~= nil then
 		vehicle.cp.hud.content.global[3] = string.format("%s%s/%s\t%s%s\t%s%s", courseplay:loc("CPWaypoint"), tostring(vehicle.recordnumber), tostring(vehicle.maxnumber), courseplay:loc('COURSEPLAY_WAITPOINTS'), tostring(vehicle.cp.numWaitPoints), courseplay:loc('COURSEPLAY_CROSSING_POINTS'), tostring(vehicle.cp.numCrossingPoints));
-	elseif vehicle.record or vehicle.record_pause or vehicle.createCourse then
+	elseif vehicle.record or vehicle.record_pause then
 		vehicle.cp.hud.content.global[3] = string.format("%s%d\t%s%d\t%s%d", courseplay:loc("CPWaypoint"), vehicle.recordnumber, courseplay:loc('COURSEPLAY_WAITPOINTS'), vehicle.cp.numWaitPoints, courseplay:loc('COURSEPLAY_CROSSING_POINTS'), vehicle.cp.numCrossingPoints);
 	else
 		vehicle.cp.hud.content.global[3] = courseplay:loc("CPNoWaypoint");
@@ -265,7 +265,7 @@ function courseplay.hud:loadPage(vehicle, page)
 
 		elseif not vehicle.drive then
 			if (not vehicle.record and not vehicle.record_pause) and not vehicle.cp.canDrive then
-				if (#(vehicle.Waypoints) == 0) and not vehicle.createCourse then
+				if (#(vehicle.Waypoints) == 0) then
 					vehicle.cp.hud.content.pages[1][1][1].text = courseplay:loc("PointRecordStart");
 				end;
 

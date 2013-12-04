@@ -158,15 +158,11 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
 			end
 			self.Waypoints[lastWP + 1].merged = true
 			self.numCourses = self.numCourses + 1;
-			self.cp.currentCourseName = string.format("%d %s", self.numCourses, courseplay.locales.CPCourseAdded)
+			self.cp.currentCourseName = string.format("%d %s", self.numCourses, courseplay:loc('CPCourseAdded');
 		end
-		if table.getn(self.Waypoints) == 4 then
-			self.createCourse = true
-		else
-			self.cp.canDrive = true
-		end
+		self.cp.canDrive = true;
 		
-		self.recordnumber = 1  -- Waypoint number
+		self.recordnumber = 1;  -- Waypoint number
 		courseplay:updateWaypointSigns(self, "current");
 
 		self.cp.hasGeneratedCourse = false;
