@@ -1,6 +1,9 @@
-﻿function courseplay:detachImplement(implementIndex)
+function courseplay:attachImplement(implement)
+	--local impl = implement.object;
+end;
+function courseplay:detachImplement(implementIndex)
 	self.cp.toolsDirty = true;
-end
+end;
 
 function courseplay:reset_tools(self)
 	self.tippers = {}

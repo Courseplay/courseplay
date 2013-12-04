@@ -64,28 +64,11 @@ function courseplay:attachableLoad(xmlFile)
 	end;
 
 	if self.cp == nil then
-		self.cp = {}
-	end
-	--SET SPECIALIZATION VARIABLE
-	--Default specializations
-	self.cp.hasSpecializationTrailer = SpecializationUtil.hasSpecialization(Trailer, self.specializations)
-	self.cp.hasSpecializationBaler = SpecializationUtil.hasSpecialization(Baler, self.specializations)
-	self.cp.hasSpecializationBaleLoader = SpecializationUtil.hasSpecialization(baleLoader, self.specializations) or SpecializationUtil.hasSpecialization(BaleLoader, self.specializations)
-	self.cp.hasSpecializationPlough = SpecializationUtil.hasSpecialization(Plough, self.specializations)
-	self.cp.hasSpecializationSowingMachine =(SpecializationUtil.hasSpecialization(sowingMachine, self.specializations) or SpecializationUtil.hasSpecialization(SowingMachine, self.specializations))
-	self.cp.hasSpecializationCombine = SpecializationUtil.hasSpecialization(Combine, self.specializations)
-	self.cp.hasSpecializationSprayer = SpecializationUtil.hasSpecialization(Sprayer, self.specializations) or SpecializationUtil.hasSpecialization(sprayer, self.specializations)
-	self.cp.hasSpecializationFoldable = SpecializationUtil.hasSpecialization(Foldable, self.specializations) or SpecializationUtil.hasSpecialization(foldable, self.specializations)
-	self.cp.hasSpecializationMower = SpecializationUtil.hasSpecialization(Mower, self.specializations)
-	self.cp.hasSpecializationMixerWagon = SpecializationUtil.hasSpecialization(MixerWagon, self.specializations)
-	self.cp.hasSpecializationCylindered = SpecializationUtil.hasSpecialization(Cylindered, self.specializations)
-	self.cp.hasSpecializationAnimatedVehicle =  SpecializationUtil.hasSpecialization(AnimatedVehicle, self.specializations)
-	self.cp.hasSpecializationShovel = SpecializationUtil.hasSpecialization(Shovel, self.specializations)
-	self.cp.hasSpecializationTedder = SpecializationUtil.hasSpecialization(Tedder, self.specializations) 
-	self.cp.hasSpecializationWindrower = SpecializationUtil.hasSpecialization(Windrower, self.specializations) 
-	self.cp.hasSpecializationCultivator = SpecializationUtil.hasSpecialization(Cultivator, self.specializations)
-	self.cp.hasSpecializationFruitPreparer = SpecializationUtil.hasSpecialization(FruitPreparer, self.specializations) or SpecializationUtil.hasSpecialization(fruitPreparer, self.specializations)
+		self.cp = {};
+	end;
 
+	--SET SPECIALIZATION VARIABLE
+	--Default specializations -- not needed as they're set in setNameVariable()
 	--Custom (mod) specializations
 	self.cp.hasSpecializationAugerWagon = courseplay:hasSpecialization(self, "AugerWagon");
 	self.cp.hasSpecializationOverloader = courseplay:hasSpecialization(self, "overloader");
@@ -94,29 +77,7 @@ function courseplay:attachableLoad(xmlFile)
 	self.cp.hasSpecializationOvercharge = courseplay:hasSpecialization(self, "Overcharge");
 	self.cp.hasSpecializationSowingMachineWithTank = courseplay:hasSpecialization(self, "SowingMachineWithTank");
 
-	--[[ Debugs:
-	if self.cp.hasSpecializationFruitPreparer then print("		FruitPreparer")end
-	if self.cp.hasSpecializationTedder then print("		Tedder")end
-	if self.cp.hasSpecializationWindrower then print("		Windrower")end
-	if self.cp.hasSpecializationCultivator then print("		Cultivator")end
-	if self.cp.hasSpecializationShovel then print("		Shovel")end
-	if self.cp.hasSpecializationAnimatedVehicle then print("		AnimatedVehicle")end
-	if self.cp.hasSpecializationCylindered then print("		Cylindered")end
-	if self.cp.hasSpecializationMixerWagon then print("		MixerWagon")end
-	if self.cp.hasSpecializationMower then print("		Mower")end
-	if self.cp.hasSpecializationFoldable then print("		Foldable")end
-	if self.cp.hasSpecializationSprayer then print("		Sprayer")end
-	if self.cp.hasSpecializationCombine then print("		Combine")end
-	if self.cp.hasSpecializationSowingMachine then print("		SowingMachine") end
-	if self.cp.hasSpecializationTrailer then print("		Trailer")end
-	if self.cp.hasSpecializationBaler then print("		Baler") end
-	if self.cp.hasSpecializationBaleLoader then print("		BaleLoader") end
-	if self.cp.hasSpecializationPlough then print("		Plough") end
-	if self.cp.hasSpecializationAugerWagon then print("\t\tload(): AugerWagon"); end;
-	if self.cp.hasSpecializationOverloader then print("\t\tload(): overloader"); end;
-	if self.cp.hasSpecializationAgrolinerTUW20 then print("\t\tload(): AgrolinerTUW20"); end;
-	if self.cp.hasSpecializationOvercharge then print("\t\tload(): Overcharge"); end;
-	--]]
+	courseplay:setNameVariable(self);
 
 
 	--ADD ATTACHABLES TO GLOBAL REFERENCE LIST
