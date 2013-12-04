@@ -24,6 +24,8 @@ function courseplay:load(xmlFile)
 
 	self.cp = {};
 
+	self.cp.varMemory = {};
+
 	courseplay:setNameVariable(self);
 	self.cp.isCombine = courseplay:isCombine(self);
 	self.cp.isChopper = courseplay:isChopper(self);
@@ -360,6 +362,9 @@ function courseplay:load(xmlFile)
 		AllradOrigPosY = nil; --[table]
 	};
 
+	self.cp.hud.reloadPage = {};
+	courseplay.hud:setReloadPageOrder(self, -1, true); --reload all
+
 	for page=0,courseplay.hud.numPages do
 		self.cp.hud.content.pages[page] = {};
 		for line=1,courseplay.hud.numLines do
@@ -382,8 +387,6 @@ function courseplay:load(xmlFile)
 	self.cp.hud.courses = {}
 	self.cp.hud.courseListPrev = false;
 	self.cp.hud.courseListNext = false; -- will be updated after loading courses into the hud
-	self.cp.hud.reloadPage = {}
-	self.cp.hud.reloadPage[-1] = true -- reload all
 
 	-- clickable buttons
 	self.cp.buttons = {};
@@ -754,11 +757,11 @@ function courseplay:draw()
 		if self.cp.canDrive then
 			if self.drive then
 				if InputBinding.hasEvent(InputBinding.COURSEPLAY_START_STOP_COMBINED) then
-					self:setCourseplayFunc("stop", nil);
+					self:setCourseplayFunc("stop", nil, false, 1);
 				elseif self.cp.HUD1goOn and InputBinding.hasEvent(InputBinding.COURSEPLAY_DRIVEON_COMBINED) then
-					self:setCourseplayFunc("driveOn", true);
+					self:setCourseplayFunc("driveOn", true, false, 1);
 				elseif self.cp.HUD1noWaitforFill and InputBinding.hasEvent(InputBinding.COURSEPLAY_DRIVENOW_COMBINED) then
-					self:setCourseplayFunc("setIsLoaded", true);
+					self:setCourseplayFunc("setIsLoaded", true, false, 1);
 				end;
 
 				if InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER) then
@@ -772,7 +775,7 @@ function courseplay:draw()
 				end;
 			else
 				if InputBinding.hasEvent(InputBinding.COURSEPLAY_START_STOP_COMBINED) then
-					self:setCourseplayFunc("start", nil);
+					self:setCourseplayFunc("start", nil, false, 1);
 				end;
 
 				if InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER) then
@@ -827,7 +830,7 @@ function courseplay:update(dt)
 	end
 
 	if g_server ~= nil  then 
-		if self.drive then
+		if self.drive then --TODO: restrict to currentPage == 1
 			self.cp.HUD1goOn = (self.Waypoints[self.cp.last_recordnumber] ~= nil and self.Waypoints[self.cp.last_recordnumber].wait and self.wait) or (self.cp.stopAtEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil));
 			self.cp.HUD1noWaitforFill = not self.cp.isLoaded and self.cp.mode ~= 5;
 		end;
@@ -856,12 +859,13 @@ function courseplay:update(dt)
 				self.cp.HUD0tractorForcedToStop = nil
 				self.cp.HUD0tractorName = nil
 				self.cp.HUD0tractor = false
-			end
+			end;
 
 		elseif self.cp.hud.currentPage == 1 then
 			if not self.cp.canDrive and self.cp.fieldEdge.customField.show and self.cp.fieldEdge.customField.points ~= nil then
 				courseplay:showFieldEdgePath(self, "customField");
 			end;
+
 
 		elseif self.cp.hud.currentPage == 4 then
 			self.cp.HUD4hasActiveCombine = self.cp.activeCombine ~= nil
@@ -870,7 +874,7 @@ function courseplay:update(dt)
 			end
 			self.cp.HUD4savedCombine = self.cp.savedCombine ~= nil and self.cp.savedCombine.rootNode ~= nil
 			if self.cp.savedCombine ~= nil then
-			 self.cp.HUD4savedCombineName = self.cp.savedCombine.name
+				self.cp.HUD4savedCombineName = self.cp.savedCombine.name
 			end
 
 		elseif self.cp.hud.currentPage == 8 then
@@ -934,11 +938,6 @@ end;
 function courseplay:set_timeout(self, interval)
 	self.cp.timeOut = self.timer + interval
 end
-
-
-function courseplay:get_locale(self, key)
-	return Utils.getNoNil(courseplay.locales[key], key);
-end;
 
 
 function courseplay:readStream(streamId, connection)

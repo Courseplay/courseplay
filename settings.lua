@@ -172,42 +172,46 @@ function courseplay:switch_player_side(combine)
 	end;
 end;
 
-function courseplay:setHudPage(self, pageNum)
-	if self.cp.mode == nil then
-		self.cp.hud.currentPage = pageNum;
-	elseif courseplay.hud.pagesPerMode[self.cp.mode] ~= nil and courseplay.hud.pagesPerMode[self.cp.mode][pageNum+1] then
+function courseplay:setHudPage(vehicle, pageNum)
+	if vehicle.cp.mode == nil then
+		vehicle.cp.hud.currentPage = pageNum;
+	elseif courseplay.hud.pagesPerMode[vehicle.cp.mode] ~= nil and courseplay.hud.pagesPerMode[vehicle.cp.mode][pageNum+1] then
 		if pageNum == 0 then
-			if self.cp.minHudPage == 0 or self.cp.isCombine or self.cp.isChopper or self.cp.isHarvesterSteerable or self.cp.isSugarBeetLoader then
-				self.cp.hud.currentPage = pageNum;
+			if vehicle.cp.minHudPage == 0 or vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable or vehicle.cp.isSugarBeetLoader then
+				vehicle.cp.hud.currentPage = pageNum;
 			end;
 		else
-			self.cp.hud.currentPage = pageNum;
+			vehicle.cp.hud.currentPage = pageNum;
 		end;
 	end;
+
+	courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);
+
+	courseplay:buttonsActiveEnabled(vehicle, "all");
+end;
+
+function courseplay:switch_hud_page(vehicle, changeBy)
+	newPage = courseplay:minMaxPage(vehicle, vehicle.cp.hud.currentPage + changeBy);
+
+	if vehicle.cp.mode == nil then
+		vehicle.cp.hud.currentPage = newPage;
+	elseif courseplay.hud.pagesPerMode[vehicle.cp.mode] ~= nil then
+		while courseplay.hud.pagesPerMode[vehicle.cp.mode][newPage+1] == false do
+			newPage = courseplay:minMaxPage(vehicle, newPage + changeBy);
+		end;
+		vehicle.cp.hud.currentPage = newPage;
+	end;
+
+	courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);
 
 	courseplay:buttonsActiveEnabled(self, "all");
 end;
 
-function courseplay:switch_hud_page(self, change_by)
-	newPage = courseplay:minMaxPage(self, self.cp.hud.currentPage + change_by);
-
-	if self.cp.mode == nil then
-		self.cp.hud.currentPage = newPage;
-	elseif courseplay.hud.pagesPerMode[self.cp.mode] ~= nil then
-		while courseplay.hud.pagesPerMode[self.cp.mode][newPage+1] == false do
-			newPage = courseplay:minMaxPage(self, newPage + change_by);
-		end;
-		self.cp.hud.currentPage = newPage;
-	end;
-
-	courseplay:buttonsActiveEnabled(self, "all");
-end;
-
-function courseplay:minMaxPage(self, pageNum)
-	if pageNum < self.cp.minHudPage then
+function courseplay:minMaxPage(vehicle, pageNum)
+	if pageNum < vehicle.cp.minHudPage then
 		pageNum = courseplay.hud.numPages;
 	elseif pageNum > courseplay.hud.numPages then
-		pageNum = self.cp.minHudPage;
+		pageNum = vehicle.cp.minHudPage;
 	end;
 	return pageNum;
 end;
@@ -650,12 +654,12 @@ end
 function courseplay.settings.setReloadCourseItems(vehicle)
 	if vehicle ~= nil then
 		vehicle.cp.reloadCourseItems = true
-		vehicle.cp.hud.reloadPage[2] = true
+		courseplay.hud:setReloadPageOrder(vehicle, 2, true);
 	else
 		for k,v in pairs(g_currentMission.steerables) do
 			if v.cp ~= nil then 		-- alternative way to check if SpecializationUtil.hasSpecialization(courseplay, v.specializations)
 				v.cp.reloadCourseItems = true
-				v.cp.hud.reloadPage[2] = true
+				courseplay.hud:setReloadPageOrder(v, 2, true);
 			end
 		end
 	end
@@ -716,8 +720,8 @@ function courseplay.hud.setCourses(self, start_index)
 			end
 		end --while
 	end -- i<3
-	
-	self.cp.hud.reloadPage[2] = true
+
+	courseplay.hud:setReloadPageOrder(self, 2, true);
 end
 
 function courseplay.hud.reloadCourses(vehicle)
@@ -804,7 +808,7 @@ function courseplay:shiftHudCourses(vehicle, change_by)
 		end		
 	end
 	
-	vehicle.cp.hud.reloadPage[2] = true
+	courseplay.hud:setReloadPageOrder(vehicle, 2, true);
 end
 
 --Update all vehicles' course list arrow displays

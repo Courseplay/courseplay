@@ -806,4 +806,62 @@ function courseplay:checkAndPrintChange(vehicle, variable, VariableNameString)
 		print(string.format("%s: changed Variable: %s: %s",nameNum(vehicle),VariableNameString,tostring(variable)))
 		vehicle.cp.checkTable[VariableNameString] = variable
 	end
-end
+end;
+
+function courseplay.utils:hasVarChanged(vehicle, variableName)
+	if vehicle.cp.varMemory == nil then
+		vehicle.cp.varMemory = {};
+	end;
+
+	local variable = vehicle.cp[variableName];
+	local memory = vehicle.cp.varMemory[variableName];
+
+	if memory == nil then
+		if variable == nil then
+			return false;
+		else
+			courseplay:debug(string.format('%s: hasVarChanged(): changed variable %q - old="nil", new=%q', nameNum(vehicle), variableName, tostring(variable)), 12);
+			vehicle.cp.varMemory[variableName] = variable;
+			return true;
+		end;
+	else
+		if variable == nil then
+			courseplay:debug(string.format('%s: hasVarChanged(): changed variable %q - old=%q, new="nil"', nameNum(vehicle), variableName, tostring(memory)), 12);
+			vehicle.cp.varMemory[variableName] = nil;
+			return true;
+		elseif variable ~= vehicle.cp.varMemory[variableName] then
+			courseplay:debug(string.format('%s: hasVarChanged(): changed variable %q - old=%q, new=%q', nameNum(vehicle), variableName, tostring(memory), tostring(variable)), 12);
+			vehicle.cp.varMemory[variableName] = variable;
+			return true;
+		end;
+	end;
+	return false;
+end;
+
+function courseplay.utils:getFnCallSource(level)
+	level = (level or 1) + 1;
+	return tostring(debug.getinfo(level, "n").name);
+end;
+
+function courseplay.utils:getFnCallPath(numPathSteps)
+	numPathSteps = numPathSteps or 1;
+	if numPathSteps > 1 then
+		local ret = {};
+		for level=numPathSteps + 1, 2, -1 do
+			local fnAtLevel = debug.getinfo(level, "n").name;
+			if fnAtLevel then
+				table.insert(ret, string.format('[%d] %q', level - 1, fnAtLevel));
+			end;
+		end;
+		return table.concat(ret, ' -> ');
+	end;
+	return tostring('"' .. debug.getinfo(2, "n").name .. '"');
+end;
+
+function courseplay:get_locale(self, key) --TODO: remove this one
+	return Utils.getNoNil(courseplay.locales[key], key);
+end;
+function courseplay:loc(key)
+	return Utils.getNoNil(courseplay.locales[key], key);
+end;
+

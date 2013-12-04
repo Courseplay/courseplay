@@ -83,10 +83,10 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 
 						if Input.isMouseButtonPressed(Input.MOUSE_BUTTON_WHEEL_UP) and button.canScrollUp then
 							courseplay:debug(string.format("%s: MOUSE_BUTTON_WHEEL_UP: %s(%s)", nameNum(self), tostring(button.function_to_call), tostring(upParameter)), 12);
-							self:setCourseplayFunc(button.function_to_call, upParameter);
+							self:setCourseplayFunc(button.function_to_call, upParameter, false, button.page);
 						elseif Input.isMouseButtonPressed(Input.MOUSE_BUTTON_WHEEL_DOWN) and button.canScrollDown then
 							courseplay:debug(string.format("%s: MOUSE_BUTTON_WHEEL_DOWN: %s(%s)", nameNum(self), tostring(button.function_to_call), tostring(downParameter)), 12);
-							self:setCourseplayFunc(button.function_to_call, downParameter);
+							self:setCourseplayFunc(button.function_to_call, downParameter, false, button.page);
 						end;
 					end;
 				end;
@@ -136,22 +136,25 @@ function courseplay:handleMouseClickForButton(self, button)
 		if button.function_to_call == "showSaveCourseForm" then
 			self.cp.imWriting = true
 		end
-		self:setCourseplayFunc(button.function_to_call, parameter);
+		self:setCourseplayFunc(button.function_to_call, parameter, false, button.page);
 		button.isClicked = false;
 	end;
 end;
 
-function courseplay:setCourseplayFunc(func, value, noEventSend, overwrittenPage)
+function courseplay:setCourseplayFunc(func, value, noEventSend, page)
 	if noEventSend ~= true then
 		CourseplayEvent.sendEvent(self, func, value); -- Die Funktion ruft sendEvent auf und übergibt 3 Werte   (self "also mein ID", action, "Ist eine Zahl an der ich festmache welches Fenster ich aufmachen will", state "Ist der eigentliche Wert also true oder false"
 	end;
 	if value == "nil" then
 		value = nil
 	end
-	courseplay:executeFunction(self, func, value, overwrittenPage)
+	courseplay:executeFunction(self, func, value, page);
+	if page and self.cp.hud.reloadPage[page] ~= nil then
+		courseplay.hud:setReloadPageOrder(self, page, true);
+	end;
 end
 
-function courseplay:executeFunction(self, func, value, overwrittenPage)
+function courseplay:executeFunction(self, func, value, page)
 	if Utils.startsWith(func,"self") or Utils.startsWith(func,"courseplay") then
 		courseplay:debug("					setting value",5)
 		courseplay:setVarValueFromString(self, func, value)
@@ -166,7 +169,7 @@ function courseplay:executeFunction(self, func, value, overwrittenPage)
 		assert(loadstring('courseplay:' .. func .. '(...)'))(self, value);
 
 	else
-		local page = Utils.getNoNil(overwrittenPage, self.cp.hud.currentPage);
+		local page = Utils.getNoNil(page, self.cp.hud.currentPage);
 		local line = value;
 		if page == 0 then
 			local combine = self;

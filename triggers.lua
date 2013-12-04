@@ -368,6 +368,7 @@ function courseplay:updateAllTriggers()
 					allNonUpdateablesCount = allNonUpdateablesCount + 1;
 					allCount = allCount + 1;
 
+				--DamageMod (placeable)
 				elseif trigger.customEnvironment == 'DamageMod' or Utils.endsWith(xml, 'garage.xml') then
 					local data = {
 						triggerId = trigger.triggerId;
