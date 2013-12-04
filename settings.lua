@@ -1159,19 +1159,10 @@ function courseplay:setCustomSingleFieldEdge(vehicle)
 
 	local x,y,z = getWorldTranslation(vehicle.rootNode);
 	vehicle.cp.fieldEdge.customField.points = nil;
-	local numDirectionTries = 10;
-	if x and z and courseplay:is_field(x, z) then
-		for try=1,numDirectionTries do
-			local edgePoints = courseplay.fields:getSingleFieldEdge(vehicle.rootNode, 5, 2000, try > 1);
-			if #edgePoints >= 30 then
-				vehicle.cp.fieldEdge.customField.points = edgePoints;
-				vehicle.cp.fieldEdge.customField.numPoints = #edgePoints;
-				--print(string.format("\t\t\tcustom field: >= 30 edge points found --> valid, no retry"));
-				break;
-			else
-				--print(string.format("\t\t\tcustom field: less than 30 edge points found --> not valid, retry=%s", tostring(try<numDirectionTries)));
-			end;
-		end;
+	if x and z and courseplay:is_field(x, z, 0, 0) then
+		local edgePoints = courseplay.fields:setSingleFieldEdgePath(vehicle.rootNode, x, z, 5, 2000, 10, nil, true, 'customLoad');
+		vehicle.cp.fieldEdge.customField.points = edgePoints;
+		vehicle.cp.fieldEdge.customField.numPoints = edgePoints ~= nil and #edgePoints or 0;
 	end;
 
 	--print(tableShow(vehicle.cp.fieldEdge.customField.points, nameNum(vehicle) .. " fieldEdge.customField.points"));

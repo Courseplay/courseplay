@@ -22,30 +22,10 @@ function courseplay.fields:setAllFieldEdges()
 		local initObject = fieldDef.fieldMapIndicator; --OLD: fieldDef.fieldBuyTrigger
 		local x,_,z = getWorldTranslation(initObject);
 		local isField = courseplay:is_field(x, z);
-		self:dbg(string.format("fieldDef %d (fieldNum=%d): x,z=%.1f,%.1f, isField=%s", i, fieldNum, x, z, tostring(isField)), 'scan');
 
+		self:dbg(string.format("fieldDef %d (fieldNum=%d): x,z=%.1f,%.1f, isField=%s", i, fieldNum, x, z, tostring(isField)), 'scan');
 		if isField then
-			for try=1,numDirectionTries do
-				local edgePoints = self:getSingleFieldEdge(initObject, scanStep, maxN, try > 1);
-				local numEdgePoints = #edgePoints;
-				if numEdgePoints >= 30 then
-					self:dbg(string.format("\ttry %d: %d edge points found --> valid, no retry", try, numEdgePoints), 'scan');
-					if self.fieldData[fieldNum] == nil then
-						self.fieldData[fieldNum] = {
-							fieldNum = fieldNum;
-							points = edgePoints;
-							numPoints = #edgePoints;
-							name = string.format("%s %d", courseplay.locales.COURSEPLAY_FIELD, fieldNum);
-						};
-						self:dbg(string.format('\t\tcourseplay.fields.fieldData[%d] == nil => set as .fieldData[%d], break', fieldNum, fieldNum), 'scan');
-					else
-						self:dbg(string.format('\t\tcourseplay.fields.fieldData[%d] ~= nil => ignore scan, break', fieldNum), 'scan');
-					end;
-					break;
-				else
-					self:dbg(string.format("\ttry %d: %d edge points found --> invalid, retry=%s", try, numEdgePoints, tostring(try<numDirectionTries)), 'scan');
-				end;
-			end;
+			self:setSingleFieldEdgePath(initObject, x, z, scanStep, maxN, numDirectionTries, fieldNum, false, 'scan');
 		end;
 	end;
 	self.allFieldsScanned = true;
@@ -53,7 +33,7 @@ function courseplay.fields:setAllFieldEdges()
 
 	--Debug
 	if self.debugScannedFields then
-		self:dbg(tableShow(courseplay.fields.fieldData, "fieldData"), 'scan');
+		--self:dbg(tableShow(courseplay.fields.fieldData, "fieldData"), 'scan');
 	end;
 	self:dbg('setAllFieldEdges() END\n' .. string.rep('-', 50), 'scan');
 end;
@@ -78,12 +58,9 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 	local dZ = z/length;
 
 	local isField = courseplay:is_field(x0,z0);
-	-- print(x0,"  ",z0);
-	-- print(isField)
-	local coordinates = {};
+	local coordinates, xValues, zValues = {}, {}, {};
 
 	if isField then
-		--print("isField")
 		local dis = 0;
 		local isSearchPointOnField = true;
 		local stepA = 1;
@@ -109,17 +86,16 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 
 		--now we have a point very close to the field boundary but definitely inside :)
 
-		--local yy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, xx, 1, zz); --TODO: not needed?
 		local tg = createTransformGroup("scanner");
 		link(getRootNode(), tg);
 		local probe1 = createTransformGroup("probe1");
 		link(tg,probe1)
-		setTranslation(probe1,scanStep,0,0);
+		setTranslation(probe1,-scanStep,0,0);
 
-		--rotate 90° against initObject
+		--rotate 90° against initObject --unnecessary, as it's already been rotated in the above line (x coordinate)
 
-		local _,ry,_ = getWorldRotation(initObject);
-		setRotation(tg,0,ry,0)
+		--local _,ry,_ = getWorldRotation(initObject);
+		--setRotation(tg,0,ry,0)
 		if randomDir then
 			rotate(tg,0,2*math.pi*math.random(),0)
 		else
@@ -132,19 +108,29 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 		local pz = zz;
 		while #coordinates < maxN do
 			setTranslation(tg,px,y,pz)
-			setTranslation(probe1,scanStep,0,0); --reset scanstep
+			setTranslation(probe1,-scanStep,0,0); --reset scanstep (already rotated)
 			--local rx,ry,ry = getRotation(probe1);
 
-			px,_,pz = getWorldTranslation(probe1);
+			px,_,pz = getWorldTranslation(probe1); 
 			local rotAngle = 0.1;
-			local turnSign = -1.0;
-			while courseplay:is_field(px,pz) do
-				--rotate(tg,0,0.1,0)
+			local turnSign = 1.0;
+			
+			local return2field = not courseplay:is_field(px,pz); --there is NO guaranty that probe1 (px,pz) is in field just because tg is!!! 
+			
+			while courseplay:is_field(px,pz) or return2field do
+				
 				rotate(tg,0,rotAngle*turnSign,0)
-				rotAngle = rotAngle*1.05;
+				rotAngle = rotAngle*1.05;				
+				--rotAngle = rotAngle + 0.1; --alternative for performance tuning, don't know which one is better
+				
 				turnSign = -turnSign;
 				px,_,pz = getWorldTranslation(probe1);
-				--print("rotate")
+				
+				if return2field then
+					if courseplay:is_field(px,pz) then
+						return2field = false;
+					end;
+				end;
 			end;
 			local cnt, maxcnt = 0, 0;
 			while not courseplay:is_field(px,pz) do
@@ -159,7 +145,6 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 					if maxcnt > 2 then
 						break;
 					end;
-					--break; --translate and cnt=0!
 				end;
 			end;
 			if not courseplay:is_field(px,pz) then
@@ -169,11 +154,13 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 
 			--print("found")
 			table.insert(coordinates, { cx = px, cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, px, 1, pz), cz = pz });
+			table.insert(xValues, px);
+			table.insert(zValues, pz);
 
 			if #coordinates > 5 then
-				local dis0 = Utils.vector2Length(px-coordinates[1].cx, pz-coordinates[1].cz) --doch [1]?
+				local dis0 = Utils.vector2Length(px-coordinates[1].cx, pz-coordinates[1].cz) 
 				--print(dis0)
-				if dis0 < scanStep then
+				if dis0 < scanStep*1.25 then --otherwise start and end points can be very close together
 					break;
 				end;
 			end;
@@ -184,7 +171,51 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 		delete(probe1);
 		delete(tg);
 
-		return coordinates;
+		return coordinates, xValues, zValues;
+	end;
+end;
+
+function courseplay.fields:setSingleFieldEdgePath(initObject, initX, initZ, scanStep, maxN, numDirectionTries, fieldNum, returnPoints, dbgType)
+	if dbgType == 'customLoad' then
+		self:dbg(string.format("Custom field scan: x,z=%.1f,%.1f, isField=%s", x, z, tostring(isField)), 'customLoad');
+	end;
+
+	for try=1,numDirectionTries do
+		local edgePoints, xValues, zValues = self:getSingleFieldEdge(initObject, scanStep, maxN, try > 1);
+		local numEdgePoints = #edgePoints;
+		--self:dbg(string.format("\ttry %d: %d edge points found, #xValues=%s, #zValues=%s", try, numEdgePoints, tostring(#xValues), tostring(#zValues)), dbgType);
+		if numEdgePoints >= 30 then
+			local polyIsAroundInitObject = courseplay:pointInPolygon_v2(edgePoints, xValues, zValues, initX, initZ);
+			self:dbg(string.format('\ttry %d: polyIsAroundInitObject=%s', try, tostring(polyIsAroundInitObject)), dbgType);
+
+			if polyIsAroundInitObject then
+				self:dbg(string.format("\ttry %d: %d edge points found --> valid, no retry", try, numEdgePoints), dbgType);
+
+				if returnPoints then
+					return edgePoints;
+				end;
+
+				if fieldNum then
+					if self.fieldData[fieldNum] == nil then
+						self.fieldData[fieldNum] = {
+							fieldNum = fieldNum;
+							points = edgePoints;
+							numPoints = #edgePoints;
+							name = string.format("%s %d", courseplay:loc('COURSEPLAY_FIELD'), fieldNum);
+						};
+						self:dbg(string.format('\t\tcourseplay.fields.fieldData[%d] == nil => set as .fieldData[%d], break', fieldNum, fieldNum), dbgType);
+					else
+						self:dbg(string.format('\t\tcourseplay.fields.fieldData[%d] ~= nil => ignore scan, break', fieldNum), dbgType);
+					end;
+					break;
+				end;
+			end;
+		else
+			self:dbg(string.format("\ttry %d: %d edge points found --> invalid, retry=%s", try, numEdgePoints, tostring(try<numDirectionTries)), dbgType);
+		end;
+	end;
+	if returnPoints then
+		return nil;
 	end;
 end;
 
@@ -263,7 +294,7 @@ function courseplay.fields:loadAllCustomFields()
 							fieldNum = fieldNum;
 							points = {};
 							numPoints = numPoints;
-							name = string.format("%s %d (%s)", courseplay.locales.COURSEPLAY_FIELD, fieldNum, courseplay.locales.COURSEPLAY_USER);
+							name = string.format("%s %d (%s)", courseplay:loc('COURSEPLAY_FIELD'), fieldNum, courseplay:loc('COURSEPLAY_USER'));
 							isCustom = true;
 						};
 						for j=1,numPoints do
