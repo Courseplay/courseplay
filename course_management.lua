@@ -1006,7 +1006,7 @@ function courseplay.courses.reload(vehicle)
 		-- update folder settings here??
 		
 		-- update items for the hud
-		courseplay.hud.reloadCourses()
+		courseplay.hud.reloadCourses(vehicle);
 		
 		vehicle.cp.reloadCourseItems = false
 	end -- end vehicle ~= nil
