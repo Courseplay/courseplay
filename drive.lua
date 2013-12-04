@@ -1131,6 +1131,10 @@ function courseplay:openCloseCover(self, dt, showCover, isAtTipTrigger)
 				tipper:setAnimationTime(3, tipper.animationParts[3].animDuration, false);
 			end;
 
+		--Marston / setSheet
+		elseif coverType == "setSheet" and tipper.sheet.isActive ~= showCover then
+			tipper:setSheet(showCover);
+
 		--default Giants trailers
 		elseif coverType == "defaultGiants" then
 			for _,ci in pairs(coverItems) do
