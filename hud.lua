@@ -247,19 +247,16 @@ function courseplay.hud:loadPage(vehicle, page)
 
 				if vehicle.cp.mode == 4 and vehicle.cp.hasSowingMachine then
 					vehicle.cp.hud.content.pages[1][5][1].text = courseplay:loc("CPridgeMarkers");
+					vehicle.cp.hud.content.pages[1][5][2].text = vehicle.cp.ridgeMarkersAutomatic and courseplay:loc("CPautomatic") courseplay:loc("CPmanual");
 
-					if vehicle.cp.ridgeMarkersAutomatic then
-						vehicle.cp.hud.content.pages[1][5][2].text = courseplay:loc("CPautomatic");
-					else
-						vehicle.cp.hud.content.pages[1][5][2].text = courseplay:loc("CPmanual");
-					end;
 				elseif vehicle.cp.mode == 6 and vehicle.cp.hasBaleLoader and not vehicle.cp.hasUnloadingRefillingCourse then
 					vehicle.cp.hud.content.pages[1][5][1].text = courseplay:loc("CPunloadingOnField");
-					if vehicle.cp.automaticUnloadingOnField then
-						vehicle.cp.hud.content.pages[1][5][2].text = courseplay:loc("CPautomatic");
-					else
-						vehicle.cp.hud.content.pages[1][5][2].text = courseplay:loc("CPmanual");
-					end;
+					vehicle.cp.hud.content.pages[1][5][2].text = vehicle.cp.automaticUnloadingOnField and courseplay:loc("CPautomatic") or courseplay:loc("CPmanual");
+				end;
+
+				if vehicle.cp.tipperHasCover and (vehicle.cp.mode == 1 or vehicle.cp.mode == 2 or vehicle.cp.mode == 5 or vehicle.cp.mode == 6) then
+					vehicle.cp.hud.content.pages[1][6][1].text = courseplay:loc('COURSEPLAY_COVER_HANDLING');
+					vehicle.cp.hud.content.pages[1][6][2].text = vehicle.cp.automaticCoverHandling and courseplay:loc("CPautomatic") or courseplay:loc("CPmanual");
 				end;
 			end
 

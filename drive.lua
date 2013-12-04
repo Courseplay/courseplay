@@ -624,7 +624,7 @@ function courseplay:drive(self, dt)
 	end
 
 	--Open/close cover
-	if self.cp.tipperHasCover and (self.cp.mode == 1 or self.cp.mode == 2 or self.cp.mode == 5 or self.cp.mode == 6) then
+	if self.cp.tipperHasCover and self.cp.automaticCoverHandling and (self.cp.mode == 1 or self.cp.mode == 2 or self.cp.mode == 5 or self.cp.mode == 6) then
 		local showCover = false;
 
 		if self.cp.mode ~= 6 then
@@ -1118,6 +1118,7 @@ function courseplay:openCloseCover(self, dt, showCover, isAtTipTrigger)
 			else
 				tipper:setPlane(not showCover);
 			end;
+
 		--Hobein 18t et al.
 		elseif coverType == "setCoverState" and tipper.cover.state ~= showCover then
 			tipper:setCoverState(showCover);

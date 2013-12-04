@@ -252,10 +252,11 @@ function courseplay:load(xmlFile)
 	self.cp.prevFillLevel = nil
 	self.cp.tipRefOffset = 0;
 	self.cp.tipLocation = 1;
-	self.cp.tipperHasCover = false;
-	self.cp.tippersWithCovers = {};
 	self.cp.tipperFillLevel = nil;
 	self.cp.tipperCapacity = nil;
+	self.cp.tipperHasCover = false;
+	self.cp.tippersWithCovers = {};
+	self.cp.automaticCoverHandling = true;
 
 	-- combines
 	self.cp.reachableCombines = {};

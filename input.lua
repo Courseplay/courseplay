@@ -232,6 +232,10 @@ function courseplay:executeFunction(self, func, value, page)
 						elseif self.cp.mode == 6 and self.cp.hasBaleLoader and not self.hasUnloadingRefillingCourse then
 							self.cp.automaticUnloadingOnField = not self.cp.automaticUnloadingOnField;
 						end;
+					elseif line == 6 then
+						if self.cp.tipperHasCover and (self.cp.mode == 1 or self.cp.mode == 2 or self.cp.mode == 5 or self.cp.mode == 6) then
+							self.cp.automaticCoverHandling = not self.cp.automaticCoverHandling;
+						end;
 					end;
 				end; -- end driving
 

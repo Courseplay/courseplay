@@ -158,7 +158,7 @@ function courseplay:load_course(self, id, use_real_id, add_course_at_end)
 			end
 			self.Waypoints[lastWP + 1].merged = true
 			self.numCourses = self.numCourses + 1;
-			self.cp.currentCourseName = string.format("%d %s", self.numCourses, courseplay:loc('CPCourseAdded');
+			self.cp.currentCourseName = string.format("%d %s", self.numCourses, courseplay:loc('CPCourseAdded'));
 		end
 		self.cp.canDrive = true;
 		
