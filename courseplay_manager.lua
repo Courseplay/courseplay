@@ -202,9 +202,9 @@ function courseplay_manager:update(dt)
 
 	if g_currentMission.controlledVehicle == nil then
 		if self.playerOnFootMouseEnabled then
-			g_currentMission:addExtraPrintText(courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION_SECONDARY.displayName .. ": " .. courseplay:get_locale(self, "COURSEPLAY_MOUSEARROW_HIDE"));
+			g_currentMission:addExtraPrintText(courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION_SECONDARY.displayName .. ": " .. courseplay:loc("COURSEPLAY_MOUSEARROW_HIDE"));
 		elseif courseplay.globalInfoText.hasContent then
-			g_currentMission:addExtraPrintText(courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION_SECONDARY.displayName .. ": " .. courseplay:get_locale(self, "COURSEPLAY_MOUSEARROW_SHOW"));
+			g_currentMission:addExtraPrintText(courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION_SECONDARY.displayName .. ": " .. courseplay:loc("COURSEPLAY_MOUSEARROW_SHOW"));
 		end;
 	end;
 

@@ -1207,7 +1207,7 @@ function courseplay:addCustomSingleFieldEdgeToList(vehicle)
 		fieldNum = vehicle.cp.fieldEdge.customField.fieldNum;
 		points = vehicle.cp.fieldEdge.customField.points;
 		numPoints = vehicle.cp.fieldEdge.customField.numPoints;
-		name = string.format("%s %d (%s)", courseplay.locales.COURSEPLAY_FIELD, vehicle.cp.fieldEdge.customField.fieldNum, courseplay.locales.COURSEPLAY_USER);
+		name = string.format("%s %d (%s)", courseplay:loc('COURSEPLAY_FIELD'), vehicle.cp.fieldEdge.customField.fieldNum, courseplay:loc('COURSEPLAY_USER'));
 		isCustom = true;
 	};
 	courseplay.fields.numAvailableFields = table.maxn(courseplay.fields.fieldData);

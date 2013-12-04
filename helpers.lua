@@ -858,9 +858,6 @@ function courseplay.utils:getFnCallPath(numPathSteps)
 	return tostring('"' .. debug.getinfo(2, "n").name .. '"');
 end;
 
-function courseplay:get_locale(self, key) --TODO: remove this one
-	return Utils.getNoNil(courseplay.locales[key], key);
-end;
 function courseplay:loc(key)
 	return Utils.getNoNil(courseplay.locales[key], key);
 end;

@@ -426,16 +426,16 @@ function courseplay:load(xmlFile)
 	--Hud titles
 	if courseplay.hud.hudTitles == nil then
 		courseplay.hud.hudTitles = {
-			[0] = courseplay:get_locale(self, "CPCombineManagement"), -- Combine Controls
-			[1] = courseplay:get_locale(self, "CPSteering"), -- "Abfahrhelfer Steuerung"
-			[2] = { courseplay:get_locale(self, "CPManageCourses"), courseplay:get_locale(self, "CPchooseFolder"), courseplay:get_locale(self, "CPcoursesFilterTitle") }, -- "Kurse verwalten"
-			[3] = courseplay:get_locale(self, "CPCombiSettings"), -- "Einstellungen Combi Modus"
-			[4] = courseplay:get_locale(self, "CPManageCombines"), -- "Drescher verwalten"
-			[5] = courseplay:get_locale(self, "CPSpeedLimit"), -- "Speeds"
-			[6] = courseplay:get_locale(self, "CPSettings"), -- "General settings"
-			[7] = courseplay:get_locale(self, "CPHud7"), -- "Driving settings"
-			[8] = courseplay:get_locale(self, "CPcourseGeneration"), -- "Course Generation"
-			[9] = courseplay:get_locale(self, "CPShovelPositions") --Schaufel progammieren
+			[0] = courseplay:loc("CPCombineManagement"), -- Combine Controls
+			[1] = courseplay:loc("CPSteering"), -- "Abfahrhelfer Steuerung"
+			[2] = { courseplay:loc("CPManageCourses"), courseplay:loc("CPchooseFolder"), courseplay:loc("CPcoursesFilterTitle") }, -- "Kurse verwalten"
+			[3] = courseplay:loc("CPCombiSettings"), -- "Einstellungen Combi Modus"
+			[4] = courseplay:loc("CPManageCombines"), -- "Drescher verwalten"
+			[5] = courseplay:loc("CPSpeedLimit"), -- "Speeds"
+			[6] = courseplay:loc("CPSettings"), -- "General settings"
+			[7] = courseplay:loc("CPHud7"), -- "Driving settings"
+			[8] = courseplay:loc("CPcourseGeneration"), -- "Course Generation"
+			[9] = courseplay:loc("CPShovelPositions") --Schaufel progammieren
 		};
 	end;
 
@@ -724,27 +724,27 @@ function courseplay:draw()
 		local mouse = courseplay.inputBindings.mouse;
 
 		if (self.cp.canDrive or not self.cp.hud.openWithMouse) and not InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER) then
-			g_currentMission:addHelpButtonText(courseplay:get_locale(self, "COURSEPLAY_FUNCTIONS"), InputBinding.COURSEPLAY_MODIFIER);
+			g_currentMission:addHelpButtonText(courseplay:loc("COURSEPLAY_FUNCTIONS"), InputBinding.COURSEPLAY_MODIFIER);
 		end;
 
 		if self.cp.hud.show then
 			if self.cp.mouseCursorActive then
-				g_currentMission:addExtraPrintText(courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION_SECONDARY.displayName .. ": " .. courseplay:get_locale(self, "COURSEPLAY_MOUSEARROW_HIDE"));
+				g_currentMission:addExtraPrintText(courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION_SECONDARY.displayName .. ": " .. courseplay:loc("COURSEPLAY_MOUSEARROW_HIDE"));
 			else
-				g_currentMission:addExtraPrintText(courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION_SECONDARY.displayName .. ": " .. courseplay:get_locale(self, "COURSEPLAY_MOUSEARROW_SHOW"));
+				g_currentMission:addExtraPrintText(courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION_SECONDARY.displayName .. ": " .. courseplay:loc("COURSEPLAY_MOUSEARROW_SHOW"));
 			end;
 		end;
 
 		if self.cp.hud.openWithMouse then
 			if not self.cp.hud.show then
-				g_currentMission:addExtraPrintText(courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION_SECONDARY.displayName .. ": " .. courseplay:get_locale(self, "COURSEPLAY_HUD_OPEN"));
+				g_currentMission:addExtraPrintText(courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION_SECONDARY.displayName .. ": " .. courseplay:loc("COURSEPLAY_HUD_OPEN"));
 			end;
 		else
 			if InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER) then
 				if not self.cp.hud.show then
-					g_currentMission:addHelpButtonText(courseplay:get_locale(self, "COURSEPLAY_HUD_OPEN"), InputBinding.COURSEPLAY_HUD);
+					g_currentMission:addHelpButtonText(courseplay:loc("COURSEPLAY_HUD_OPEN"), InputBinding.COURSEPLAY_HUD);
 				else
-					g_currentMission:addHelpButtonText(courseplay:get_locale(self, "COURSEPLAY_HUD_CLOSE"), InputBinding.COURSEPLAY_HUD);
+					g_currentMission:addHelpButtonText(courseplay:loc("COURSEPLAY_HUD_CLOSE"), InputBinding.COURSEPLAY_HUD);
 				end;
 			end;
 
@@ -765,12 +765,12 @@ function courseplay:draw()
 				end;
 
 				if InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER) then
-					g_currentMission:addHelpButtonText(courseplay:get_locale(self, "CoursePlayStop"), InputBinding.COURSEPLAY_START_STOP);
+					g_currentMission:addHelpButtonText(courseplay:loc("CoursePlayStop"), InputBinding.COURSEPLAY_START_STOP);
 					if self.cp.HUD1goOn then
-						g_currentMission:addHelpButtonText(courseplay:get_locale(self, "CourseWaitpointStart"), InputBinding.COURSEPLAY_DRIVEON);
+						g_currentMission:addHelpButtonText(courseplay:loc("CourseWaitpointStart"), InputBinding.COURSEPLAY_DRIVEON);
 					end;
 					if self.cp.HUD1noWaitforFill then
-						g_currentMission:addHelpButtonText(courseplay:get_locale(self, "NoWaitforfill"), InputBinding.COURSEPLAY_DRIVENOW);
+						g_currentMission:addHelpButtonText(courseplay:loc("NoWaitforfill"), InputBinding.COURSEPLAY_DRIVENOW);
 					end;
 				end;
 			else
@@ -779,7 +779,7 @@ function courseplay:draw()
 				end;
 
 				if InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER) then
-					g_currentMission:addHelpButtonText(courseplay:get_locale(self, "CoursePlayStart"), InputBinding.COURSEPLAY_START_STOP);
+					g_currentMission:addHelpButtonText(courseplay:loc("CoursePlayStart"), InputBinding.COURSEPLAY_START_STOP);
 				end;
 			end;
 		end;

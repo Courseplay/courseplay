@@ -31,7 +31,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 	end
 	if (self.recordnumber == self.cp.stopWork or self.cp.last_recordnumber == self.cp.stopWork) and self.cp.abortWork == nil and not self.cp.isLoaded and not isFinishingWork then
 		allowedToDrive = false
-		courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPWorkEnd"), 1);
+		courseplay:setGlobalInfoText(self, courseplay:loc("CPWorkEnd"), 1);
 		hasFinishedWork = true
 	end
 
@@ -118,7 +118,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 				if fill_level == 100 and not self.cp.hasUnloadingRefillingCourse then
 					if self.cp.automaticUnloadingOnField then
 						self.cp.unloadOrder = true
-						courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPUnloadBale"));
+						courseplay:setGlobalInfoText(self, courseplay:loc("CPUnloadBale"));
 					else
 						specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,nil); --TODO: unclear
 					end
@@ -272,7 +272,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 					-- tipper is not empty and tractor reaches TipTrigger
 					if tipper_fill_level > 0 and self.cp.currentTipTrigger ~= nil and self.recordnumber > 3 then
 						allowedToDrive, activeTipper = courseplay:unload_tippers(self)
-						self.cp.infoText = courseplay:get_locale(self, "CPTriggerReached") -- "Abladestelle erreicht"
+						self.cp.infoText = courseplay:loc("CPTriggerReached") -- "Abladestelle erreicht"
 					end
 				end;
 			end; --END other tools
@@ -310,7 +310,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 					--courseplay:debug(string.format("Abort: %d StopWork: %d",self.cp.abortWork,self.cp.stopWork), 12)
 				elseif not self.cp.hasUnloadingRefillingCourse and not self.cp.automaticUnloadingOnField then
 					allowedToDrive = false;
-					courseplay:setGlobalInfoText(self, string.format(": %s %s", tostring(workTool.name), courseplay:get_locale(self, "CPneedsToBeUnloaded")), -1);
+					courseplay:setGlobalInfoText(self, string.format(": %s %s", tostring(workTool.name), courseplay:loc("CPneedsToBeUnloaded")), -1);
 				elseif not self.cp.hasUnloadingRefillingCourse and self.cp.automaticUnloadingOnField then
 					allowedToDrive = false;
 				end;
@@ -370,7 +370,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 						if weatherStop then
 							allowedToDrive = false;
 							tool:setIsThreshing(false);
-							courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPwaitingForWeather"));
+							courseplay:setGlobalInfoText(self, courseplay:loc("CPwaitingForWeather"));
 						end
 
 					end

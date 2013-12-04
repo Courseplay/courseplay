@@ -28,15 +28,15 @@ function courseplay:handle_mode9(self, fill_level, allowedToDrive,dt)
 	
 	local isValid = self.cp.shovelStateRot ~= nil and self.cp.shovelStateRot["2"] ~= nil and self.cp.shovelStateRot["3"] ~= nil and self.cp.shovelStateRot["4"] ~= nil and self.cp.shovelStateRot["5"] ~= nil;
 	if not isValid then
-		self.cp.infoText = courseplay.locales.CPAssignShovel
+		self.cp.infoText = courseplay:loc('CPAssignShovel');
 		return false
 	end
 	if self.cp.tipperCapacity == nil or self.cp.tipperCapacity == 0 then
-		self.cp.infoText = courseplay.locales.CPNoShovel
+		self.cp.infoText = courseplay:loc('CPNoShovel');
 		return false
 	end
 	if self.cp.shovelFillStartPoint == nil or self.cp.shovelFillEndPoint == nil or self.cp.shovelEmptyPoint == nil then 
-		self.cp.infoText = courseplay.locales.CPNoCourse
+		self.cp.infoText = courseplay:loc('CPNoCourse');
 		return false
 	end
 	

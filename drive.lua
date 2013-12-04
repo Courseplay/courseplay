@@ -60,13 +60,13 @@ function courseplay:drive(self, dt)
 			end
 		else
 			allowedToDrive = false
-			courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPWorkEnd"), 1);
+			courseplay:setGlobalInfoText(self, courseplay:loc("CPWorkEnd"), 1);
 		end
 		if self.cp.modeState == 5 then
 			local targets = table.getn(self.next_targets)
 			local aligned  = false
 			local ctx7, cty7, ctz7 = getWorldTranslation(self.rootNode);
-			self.cp.infoText = string.format(courseplay:get_locale(self, "CPDriveToWP"), self.target_x, self.target_z)
+			self.cp.infoText = string.format(courseplay:loc("CPDriveToWP"), self.target_x, self.target_z)
 			cx = self.target_x
 			cy = self.target_y
 			cz = self.target_z
@@ -335,7 +335,7 @@ function courseplay:drive(self, dt)
 				if fill_level == 100 or drive_on then
 					self.wait = false
 				end
-				self.cp.infoText = string.format(courseplay:get_locale(self, "CPloading"), self.cp.tipperFillLevel, self.cp.tipperCapacity)
+				self.cp.infoText = string.format(courseplay:loc("CPloading"), self.cp.tipperFillLevel, self.cp.tipperCapacity)
 			end
 		elseif self.cp.mode == 6 then
 			if self.cp.last_recordnumber == self.cp.startWork then
@@ -343,7 +343,7 @@ function courseplay:drive(self, dt)
 			elseif self.cp.last_recordnumber == self.cp.stopWork and self.cp.abortWork ~= nil then
 				self.wait = false
 			elseif self.cp.last_recordnumber ~= self.cp.startWork and self.cp.last_recordnumber ~= self.cp.stopWork then 
-				courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPUnloadBale"));
+				courseplay:setGlobalInfoText(self, courseplay:loc("CPUnloadBale"));
 				if fill_level == 0 or drive_on then
 					self.wait = false
 				end;
@@ -352,14 +352,14 @@ function courseplay:drive(self, dt)
 			if self.cp.last_recordnumber == self.cp.startWork then
 				if self.grainTankFillLevel > 0 then
 					self:setPipeState(2)
-					courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPReachedOverloadPoint"));
+					courseplay:setGlobalInfoText(self, courseplay:loc("CPReachedOverloadPoint"));
 				else
 					self.wait = false
 					self.cp.isUnloaded = true
 				end
 			end
 		elseif self.cp.mode == 8 then
-			courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPReachedOverloadPoint"));
+			courseplay:setGlobalInfoText(self, courseplay:loc("CPReachedOverloadPoint"));
 			if self.cp.tipperAttached then
 				-- drive on if fill_level doesn't change and fill level is < 100-self.cp.followAtFillLevel
 				courseplay:handle_mode8(self)
@@ -380,7 +380,7 @@ function courseplay:drive(self, dt)
 		elseif self.cp.mode == 9 then
 			self.wait = false;
 		else
-			courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPReachedWaitPoint"));
+			courseplay:setGlobalInfoText(self, courseplay:loc("CPReachedWaitPoint"));
 		end
 		-- wait untli a specific time
 		if self.waitTimer and self.timer > self.waitTimer then
@@ -494,9 +494,9 @@ function courseplay:drive(self, dt)
 		if self.damageLevel then
 			if self.damageLevel >= 90 then
 				allowedToDrive = courseplay:brakeToStop(self);
-				courseplay:setGlobalInfoText(self, string.format(courseplay:get_locale(self, courseplay.locales.COURSEPLAY_DAMAGE_MUST_BE_REPAIRED), self.damageLevel), -2);
+				courseplay:setGlobalInfoText(self, string.format(courseplay:loc("COURSEPLAY_DAMAGE_MUST_BE_REPAIRED"), self.damageLevel), -2);
 			elseif self.damageLevel >= 50 then
-				courseplay:setGlobalInfoText(self, string.format(courseplay:get_locale(self, courseplay.locales.COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED), self.damageLevel), -1);
+				courseplay:setGlobalInfoText(self, string.format(courseplay:loc("COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED"), self.damageLevel), -1);
 			end;
 			if  self.damageLevel > 70 then
 				raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
@@ -511,7 +511,7 @@ function courseplay:drive(self, dt)
 					self.cp.fillTrigger = nil 
 					allowedToDrive = false
 				end
-			end			
+			end
 		end;
 
 		--FUEL LEVEL + REFILLING
@@ -519,7 +519,7 @@ function courseplay:drive(self, dt)
 			local currentFuelPercentage = (self.fuelFillLevel / self.fuelCapacity + 0.0001) * 100;
 			if currentFuelPercentage < 5 then
 				allowedToDrive = false;
-				courseplay:setGlobalInfoText(self, courseplay:get_locale(self, courseplay.locales.CPNoFuelStop), -2);
+				courseplay:setGlobalInfoText(self, courseplay:loc('CPNoFuelStop'), -2);
 			elseif currentFuelPercentage < 20 and not self.isFuelFilling then
 				raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
 				if self.cp.fillTrigger ~= nil then
@@ -529,14 +529,14 @@ function courseplay:drive(self, dt)
 						self.cp.isInFilltrigger = true
 					end
 				end
-				courseplay:setGlobalInfoText(self, courseplay:get_locale(self, courseplay.locales.CPFuelWarning), -1);
+				courseplay:setGlobalInfoText(self, courseplay:loc('CPFuelWarning'), -1);
 				if self.fuelFillTriggers[1] then
 					allowedToDrive = courseplay:brakeToStop(self);
 					self:setIsFuelFilling(true, self.fuelFillTriggers[1].isEnabled, false);
 				end
 			elseif self.isFuelFilling and currentFuelPercentage < 99.9 then
 				allowedToDrive = courseplay:brakeToStop(self);
-				courseplay:setGlobalInfoText(self, courseplay:get_locale(self, courseplay.locales.CPRefueling));
+				courseplay:setGlobalInfoText(self, courseplay:loc('CPRefueling'));
 			end;
 			if self.fuelFillTriggers[1] then
 				courseplay:debug(nameNum(self) .. ": resetting \"self.cp.fillTrigger\"",1)
@@ -547,12 +547,12 @@ function courseplay:drive(self, dt)
 		--WATER WARNING
 		if self.showWaterWarning then
 			allowedToDrive = false
-			courseplay:setGlobalInfoText(self, courseplay:get_locale(self, courseplay.locales.CPWaterDrive), -2);
+			courseplay:setGlobalInfoText(self, courseplay:loc('CPWaterDrive'), -2);
 		end
 
 		if self.cp.stopAtEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil) then
 			allowedToDrive = false
-			courseplay:setGlobalInfoText(self, courseplay:get_locale(self, courseplay.locales.CPReachedEndPoint));
+			courseplay:setGlobalInfoText(self, courseplay:loc('CPReachedEndPoint'));
 		end
 	end
 
@@ -676,7 +676,7 @@ function courseplay:drive(self, dt)
 		if  ez < 0.2 then
 			if fill_level == 0 then
 				allowedToDrive = false
-				courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPWorkEnd"), 1);
+				courseplay:setGlobalInfoText(self, courseplay:loc("CPWorkEnd"), 1);
 			else
 				self.cp.isLoaded = true;
 				self.recordnumber = i + 2
@@ -759,7 +759,7 @@ function courseplay:drive(self, dt)
 	
 	--checking ESLimiter version
 	if self.ESLimiter ~= nil and self.ESLimiter.maxRPM[5] == nil then
-		self.cp.infoText = courseplay:get_locale(self, "CPWrongESLversion")
+		self.cp.infoText = courseplay:loc("CPWrongESLversion")
 	end
 
 	-- where to drive?
@@ -1022,7 +1022,7 @@ function courseplay:check_traffic(self, display_warnings, allowedToDrive)
 	end
 	
 	if display_warnings and self.cp.inTraffic then
-		courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPInTraffic"), -1);
+		courseplay:setGlobalInfoText(self, courseplay:loc("CPInTraffic"), -1);
 	end
 	return allowedToDrive
 end
@@ -1199,7 +1199,7 @@ function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive, lx,
 					sprayer.fill = true;
 				end;
 
-				self.cp.infoText = string.format(courseplay:get_locale(self, "CPloading"), self.cp.tipperFillLevel, self.cp.tipperCapacity);
+				self.cp.infoText = string.format(courseplay:loc("CPloading"), self.cp.tipperFillLevel, self.cp.tipperCapacity);
 			elseif self.cp.isLoaded or not self.cp.stopForLoading then
 				activeTool:setIsSprayerFilling(false, false);
 				courseplay:handleSpecialTools(self,activeTool,nil,nil,nil,allowedToDrive,false,false)
@@ -1217,7 +1217,7 @@ function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive, lx,
 			if fill_level < driveOn and activeTool.sowingMachineFillTriggers[1] ~= nil then
 				activeTool:setIsSowingMachineFilling(true, activeTool.sowingMachineFillTriggers[1].isEnabled, false);
 				allowedToDrive = false;
-				self.cp.infoText = string.format(courseplay:get_locale(self, "CPloading"), activeTool.fillLevel, activeTool.capacity);
+				self.cp.infoText = string.format(courseplay:loc("CPloading"), activeTool.fillLevel, activeTool.capacity);
 			elseif activeTool.sowingMachineFillTriggers[1] ~= nil then
 				self.cp.fillTrigger = nil
 			end;

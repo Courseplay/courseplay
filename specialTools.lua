@@ -740,7 +740,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 							if workTool.isTurnedOn then
 								workTool:setIsTurnedOn(false);
 							end;
-							courseplay:setGlobalInfoText(self, courseplay.locales.COURSEPLAY_BALER_NEEDS_NETS:format(nameNum(workTool)), -2);
+							courseplay:setGlobalInfoText(self, courseplay:loc('COURSEPLAY_BALER_NEEDS_NETS'):format(nameNum(workTool)), -2);
 							if not workTool.doors.rear.isOpen then
 								courseplay.thirdParty.JD864PremiumOpenRearDoor(workTool, true);
 							elseif workTool.coverEdge.palletInRange ~= nil and workTool.coverEdge.palletInRange.rollsLeft > 0 then
@@ -1573,7 +1573,7 @@ function courseplay.thirdParty.EifokLiquidManure.refillViaHose(vehicle, activeTo
 			courseplay.thirdParty.EifokLiquidManure.findHoseToUse(vehicle, activeTool, object, correctSideRef, otherSideRef, checkOrder, side, pumpDir);
 
 			if vehicle.cp.EifokLiquidManure.hoseToUse == nil then
-				courseplay:setGlobalInfoText(vehicle, courseplay.locales.COURSEPLAY_HOSEMISSING, -2);
+				courseplay:setGlobalInfoText(vehicle, courseplay:loc('COURSEPLAY_HOSEMISSING'), -2);
 				return false;
 
 			--GO FOR GLORY
@@ -1795,7 +1795,7 @@ function courseplay.thirdParty.EifokLiquidManure.refillAtLiquidManureTrigger(veh
 					activeTool:setFillarm(fillArmAnimNewTime);
 				else
 					activeTool:setIsSprayerFilling(true, false);
-					vehicle.cp.infoText = string.format(courseplay:get_locale(vehicle, "CPloading"), vehicle.cp.tipperFillLevel, vehicle.cp.tipperCapacity);
+					vehicle.cp.infoText = string.format(courseplay:loc("CPloading"), vehicle.cp.tipperFillLevel, vehicle.cp.tipperCapacity);
 				end;
 			elseif fill_level >= driveOn then
 				activeTool:setIsSprayerFilling(false, false);
@@ -1811,7 +1811,7 @@ function courseplay.thirdParty.EifokLiquidManure.refillAtLiquidManureTrigger(veh
 			if fill_level < driveOn then
 				allowedToDrive = false;
 				activeTool:setIsSprayerFilling(true, false);
-				vehicle.cp.infoText = string.format(courseplay:get_locale(vehicle, "CPloading"), vehicle.cp.tipperFillLevel, vehicle.cp.tipperCapacity);
+				vehicle.cp.infoText = string.format(courseplay:loc("CPloading"), vehicle.cp.tipperFillLevel, vehicle.cp.tipperCapacity);
 			elseif fill_level >= driveOn then
 				activeTool:setIsSprayerFilling(false, false);
 				vehicle.cp.fillTrigger = nil;

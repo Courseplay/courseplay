@@ -46,13 +46,13 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fill_level)
 			--courseplay:debug(string.format("Abort: %d StopWork: %d",self.cp.abortWork,self.cp.stopWork), 12)
 		elseif not self.cp.hasUnloadingRefillingCourse then
 			allowedToDrive = false;
-			courseplay:setGlobalInfoText(self, ": " .. courseplay:get_locale(self, "CPworkToolNeedsToBeRefilled"), -1);
+			courseplay:setGlobalInfoText(self, ": " .. courseplay:loc("CPworkToolNeedsToBeRefilled"), -1);
 		end;
 	end
 	--
 	if (self.recordnumber == self.cp.stopWork or self.cp.last_recordnumber == self.cp.stopWork) and self.cp.abortWork == nil and not isFinishingWork then
 		allowedToDrive = courseplay:brakeToStop(self)
-		courseplay:setGlobalInfoText(self, courseplay:get_locale(self, "CPWorkEnd"), 1);
+		courseplay:setGlobalInfoText(self, courseplay:loc("CPWorkEnd"), 1);
 		hasFinishedWork = true
 	end
 	
