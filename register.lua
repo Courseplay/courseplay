@@ -1,18 +1,5 @@
---[[COURSEPLAY FIELDS
-local cpfPath = g_currentModDirectory .. "CourseplayFields.lua";
-if fileExists(cpfPath) then
-	source(cpfPath);
-else
-	print("Error: " .. cpfPath .. " could not be loaded!");
-end;
-]]
-
-
 --COURSEPLAY
 SpecializationUtil.registerSpecialization("courseplay", "courseplay", g_currentModDirectory .. "courseplay.lua")
-
--- adding courseplay to default vehicles and vehicles that are loaded after courseplay in multiplayer
--- thanks to donner!
 
 function courseplay:register()
 	local numInstallationsVehicles = 0;
@@ -103,7 +90,6 @@ function courseplay:attachableLoad(xmlFile)
 	self.cp.hasSpecializationAugerWagon = courseplay:hasSpecialization(self, "AugerWagon");
 	self.cp.hasSpecializationOverloader = courseplay:hasSpecialization(self, "overloader");
 	self.cp.hasSpecializationHaweSUW = courseplay:hasSpecialization(self, "Hawe_SUW");
-	self.cp.hasSpecializationOverloader = courseplay:hasSpecialization(self, "overloader");
 	self.cp.hasSpecializationAgrolinerTUW20 = courseplay:hasSpecialization(self, "AgrolinerTUW20");
 	self.cp.hasSpecializationOvercharge = courseplay:hasSpecialization(self, "Overcharge");
 	self.cp.hasSpecializationSowingMachineWithTank = courseplay:hasSpecialization(self, "SowingMachineWithTank");
