@@ -736,9 +736,9 @@ function courseplay:drive(self, dt)
 	else
 		self.cp.speeds.sl = 3;
 		refSpeed = self.cp.speeds.max;
-	end;
-	if self.cp.speeds.useRecordingSpeed and self.Waypoints[self.recordnumber].speed ~= nil then
-		refSpeed = Utils.clamp(refSpeed, 3/3600, self.Waypoints[self.recordnumber].speed);
+		if self.cp.speeds.useRecordingSpeed and self.Waypoints[self.recordnumber].speed ~= nil then
+			refSpeed = Utils.clamp(refSpeed, 3/3600, self.Waypoints[self.recordnumber].speed);
+		end;
 	end;
 	refSpeed = courseplay:regulateTrafficSpeed(self, refSpeed, allowedToDrive);
 
