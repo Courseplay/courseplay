@@ -519,7 +519,7 @@ function CourseplayJoinFixEvent:writeStream(streamId, connection)
 			course_count = course_count + 1
 		end
 		streamDebugWriteInt32(streamId, course_count)
-		courseplay:debug(string.format("writing %d courses ", course_count ),5)
+		print(string.format("writing %d courses ", course_count ))
 		for id, course in pairs(g_currentMission.cp_courses) do
 			streamDebugWriteString(streamId, course.name)
 			streamDebugWriteString(streamId, course.uid)
@@ -544,20 +544,30 @@ function CourseplayJoinFixEvent:writeStream(streamId, connection)
 				streamDebugWriteInt32(streamId, course.waypoints[w].ridgeMarker)
 			end
 		end
-		courseplay:debug("writing courses end",5)
+		print("writing courses end")
+		local folderCount = 0
+		for k, v in pairs(g_currentMission.cp_folders) do
+			folderCount = folderCount + 1
+		end
+		streamDebugWriteInt32(streamId, folderCount)
+		print(string.format("writing %d folders ", folderCount ))
+		for id, folder in pairs(g_currentMission.cp_folders) do
+			streamDebugWriteString(streamId, folder.name)
+			streamDebugWriteString(streamId, folder.uid)
+			streamDebugWriteString(streamId, folder.type)
+			streamDebugWriteInt32(streamId, folder.id)
+			streamDebugWriteInt32(streamId, folder.parent)
+		end
+		print("writing folders end")
 	end;
 end
 
 function CourseplayJoinFixEvent:readStream(streamId, connection)
-	courseplay:debug("CourseplayJoinFixEvent:readStream",5)
+	print("CourseplayJoinFixEvent:readStream")
 	if connection:getIsServer() then
-		courseplay:debug("connection:getIsServer()",5)
-		--courseplay:debug("manager receiving courses", 8);
-		-- course count
+		print("connection:getIsServer()")
 		local course_count = streamDebugReadInt32(streamId)
-		courseplay:debug(string.format("reading %d couses ", course_count ),5)
-		--courseplay:debug("manager reading stream", 8);
-		--courseplay:debug(course_count, 8);
+		print(string.format("reading %d couses ", course_count ))
 		g_currentMission.cp_courses = {}
 		for i = 1, course_count do
 			--courseplay:debug("got course", 8);
@@ -604,9 +614,22 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 			end
 			local course = { id = course_id, uid = courseUid, type = courseType, name = course_name, nameClean = courseplay:normalizeUTF8(course_name), waypoints = waypoints, parent = courseParent }
 			g_currentMission.cp_courses[course_id] = course
-			g_currentMission.cp_sorted = courseplay.courses.sort()
 		end
-		courseplay:debug("reading end",5)
+		
+		local folderCount = streamDebugReadInt32(streamId)
+		print(string.format("reading %d folders ", folderCount ))
+		g_currentMission.cp_folders = {}
+		for i = 1, folderCount do
+			local folderName = streamDebugReadString(streamId)
+			local folderUid = streamDebugReadString(streamId)
+			local folderType = streamDebugReadString(streamId)
+			local folderId = streamDebugReadInt32(streamId)
+			local folderParent = streamDebugReadInt32(streamId)
+			folder = { id = folderId, uid = folderUid, type = folderType, name = folderName, nameClean = courseplay:normalizeUTF8(folderName), parent = folderParent }
+			g_currentMission.cp_folders[folderId] = folder
+			g_currentMission.cp_sorted = courseplay.courses.sort(g_currentMission.cp_courses, g_currentMission.cp_folders, 0, 0)
+		end
+		print("folders reading end")
 	end;
 end
 

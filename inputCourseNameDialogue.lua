@@ -162,15 +162,15 @@ end; --END onIsUnicodeAllowed()
 function inputCourseNameDialogue:onSaveClick()
 	--print("inputCourseNameDialogue:onSaveClick()");
 	local vehicle = courseplay.vehicleToSaveCourseIn
-	CourseplayEvent.sendEvent(vehicle, "self.cp.saveWhat", vehicle.cp.saveWhat)
 	if vehicle.cp.saveWhat == 'course' then
 		if self.textInputElement ~= nil then
-			print("self.textInputElement.text= "..tostring(self.textInputElement.text).."  courseplay.vehicleToSaveCourseIn.cp.currentCourseName= "..tostring(courseplay.vehicleToSaveCourseIn.cp.currentCourseName));
+			--print("self.textInputElement.text= "..tostring(self.textInputElement.text).."  courseplay.vehicleToSaveCourseIn.cp.currentCourseName= "..tostring(courseplay.vehicleToSaveCourseIn.cp.currentCourseName));
 			vehicle.cp.currentCourseName = self.textInputElement.text;
+			CourseplayEvent.sendEvent(vehicle, "self.cp.saveWhat", vehicle.cp.saveWhat)
 			CourseplayEvent.sendEvent(vehicle, "self.cp.currentCourseName", self.textInputElement.text)
 			vehicle.cp.doNotOnSaveClick = true
 		else
-			print("self.textInputElement= "..tostring(self.textInputElement).."  courseplay.vehicleToSaveCourseIn.cp.currentCourseName= "..tostring(courseplay.vehicleToSaveCourseIn.cp.currentCourseName));
+			--print("self.textInputElement= "..tostring(self.textInputElement).."  courseplay.vehicleToSaveCourseIn.cp.currentCourseName= "..tostring(courseplay.vehicleToSaveCourseIn.cp.currentCourseName));
 		end
 
 		local maxID = courseplay.courses.getMaxCourseID() -- horoman: made maxID local, should not make a difference as it is used nowhere (at least Eclipse file search doesn't find it in any of the courseplay files)
@@ -195,15 +195,22 @@ function inputCourseNameDialogue:onSaveClick()
 		courseplay:updateWaypointSigns(vehicle);
 		
 	elseif vehicle.cp.saveWhat == 'folder' then
+		if self.textInputElement ~= nil then
+			vehicle.cp.saveFolderName = self.textInputElement.text
+			CourseplayEvent.sendEvent(vehicle, "self.cp.saveWhat", vehicle.cp.saveWhat)
+			CourseplayEvent.sendEvent(vehicle, "self.cp.saveFolderName", self.textInputElement.text)
+		end
+	
 		local maxID = courseplay.courses.getMaxFolderID()
 		if maxID == nil then
 			g_currentMission.cp_folders = {}
 			maxID = 0
 		end
 		local folderID = maxID+1
-		folder = { id = folderID, uid = 'f'..folderID, type = 'folder', name = self.textInputElement.text, nameClean = courseplay:normalizeUTF8(self.textInputElement.text), parent = 0 }
+		folder = { id = folderID, uid = 'f'..folderID, type = 'folder', name = vehicle.cp.saveFolderName, nameClean = courseplay:normalizeUTF8(vehicle.cp.saveFolderName), parent = 0 }
 
 		g_currentMission.cp_folders[folderID] = folder
+		courseplay:dopairs(g_currentMission.cp_folders,1)
 		g_currentMission.cp_sorted = courseplay.courses.sort(g_currentMission.cp_courses, g_currentMission.cp_folders, 0, 0)
 
 		courseplay.courses.save_folder(folderID, nil, true)
@@ -212,7 +219,12 @@ function inputCourseNameDialogue:onSaveClick()
 		courseplay:updateWaypointSigns(vehicle);
 		
 	elseif vehicle.cp.saveWhat == 'filter' then
-		vehicle.cp.hud.filter = self.textInputElement.text;
+		if self.textInputElement ~= nil then
+			vehicle.cp.hud.filter = self.textInputElement.text;
+			CourseplayEvent.sendEvent(vehicle, "self.cp.saveWhat", vehicle.cp.saveWhat)
+			CourseplayEvent.sendEvent(vehicle, "self.cp.saveFolderName", self.textInputElement.text)
+		end
+		
 		local button = vehicle.cp.buttons["2"][vehicle.cp.hud.filterButtonIndex];
 		courseplay.button.setOverlay(button, 2);
 		courseplay.settings.setReloadCourseItems(vehicle);
@@ -221,6 +233,8 @@ function inputCourseNameDialogue:onSaveClick()
 	if self.textInputElement ~= nil then
 		CourseplayEvent.sendEvent(courseplay.vehicleToSaveCourseIn, "self.cp.onSaveClick",true)
 		self:onCancelClick();
+	else
+		vehicle.cp.saveFolderName = nil
 	end
 end; --END onSaveClick()
 
@@ -231,6 +245,7 @@ function inputCourseNameDialogue:onCancelClick()
 	self.textInputElement.cursorBlinkTime = 0;
 
 	g_gui:showGui("");
+	courseplay.vehicleToSaveCourseIn.cp.saveFolderName = nil
 	courseplay.vehicleToSaveCourseIn = nil;
 	self:onClose();
 end; --END onCancelClick()

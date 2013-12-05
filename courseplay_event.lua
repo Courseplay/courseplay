@@ -10,12 +10,13 @@ function CourseplayEvent:emptyNew()
 	return self;
 end
 
-function CourseplayEvent:new(vehicle, func, value)
+function CourseplayEvent:new(vehicle, func, value, page)
 	self.vehicle = vehicle;
 	self.messageNumber = Utils.getNoNil(self.messageNumber,0) +1
 	self.func = func
 	self.value = value;
 	self.type = type(value)
+	self.page = page
 	return self;
 end
 
@@ -24,6 +25,10 @@ function CourseplayEvent:readStream(streamId, connection) -- wird aufgerufen wen
 	self.vehicle = networkGetObject(id);
 	local messageNumber = streamReadFloat32(streamId);
 	self.func = streamReadString(streamId);
+	self.page = streamReadInt32(streamId);
+	if self.page == 999 then
+		self.page = "global"
+	end
 	self.type = streamReadString(streamId);
 	if self.type == "boolean" then
 		self.value = streamReadBool(streamId);
@@ -35,7 +40,7 @@ function CourseplayEvent:readStream(streamId, connection) -- wird aufgerufen wen
 		self.value = streamReadFloat32(streamId);
 	end
 	courseplay:debug("	readStream",5)
-	courseplay:debug("		id: "..tostring(networkGetObjectId(self.vehicle).."/"..tostring(messageNumber).."  function: "..tostring(self.func).."  self.value: "..tostring(self.value).."  self.type: "..self.type),5)
+	courseplay:debug("		id: "..tostring(networkGetObjectId(self.vehicle).."/"..tostring(messageNumber).."  function: "..tostring(self.func).."  self.value: "..tostring(self.value).."  self.page: "..tostring(self.page).."  self.type: "..self.type),5)
 
 	self:run(connection);
 end
@@ -46,6 +51,10 @@ function CourseplayEvent:writeStream(streamId, connection)  -- Wird aufgrufen we
 	streamWriteInt32(streamId, networkGetObjectId(self.vehicle));
 	streamWriteFloat32(streamId, self.messageNumber);
 	streamWriteString(streamId, self.func);
+	if self.page == "global" then
+		self.page = 999
+	end
+	streamWriteInt32(streamId, self.page);
 	streamWriteString(streamId, self.type);
 	if self.type == "boolean" then
 		streamWriteBool(streamId, self.value);
@@ -61,23 +70,23 @@ end
 function CourseplayEvent:run(connection) -- wir fuehren das empfangene event aus
 	courseplay:debug("			run",5)
 	courseplay:debug("				id: "..tostring(networkGetObjectId(self.vehicle).."  function: "..tostring(self.func).."  value: "..tostring(self.value)),5)
-	self.vehicle:setCourseplayFunc(self.func, self.value, true);
+	self.vehicle:setCourseplayFunc(self.func, self.value, true, self.page);
 	if not connection:getIsServer() then
 		courseplay:debug("broadcast event feedback",5)
-		g_server:broadcastEvent(CourseplayEvent:new(self.vehicle, self.func, self.value), nil, connection, self.object);
+		g_server:broadcastEvent(CourseplayEvent:new(self.vehicle, self.func, self.value, self.page), nil, connection, self.object);
 	end;
 end
 
-function CourseplayEvent.sendEvent(vehicle, func, value, noEventSend) -- hilfsfunktion, die Events anst��te (wirde von setRotateDirection in der Spezi aufgerufen) 
+function CourseplayEvent.sendEvent(vehicle, func, value, noEventSend, page) -- hilfsfunktion, die Events anst��te (wirde von setRotateDirection in der Spezi aufgerufen) 
 	if noEventSend == nil or noEventSend == false then
 		if g_server ~= nil then
 			courseplay:debug("broadcast event",5)
-			courseplay:debug("	id: "..tostring(networkGetObjectId(vehicle).."  function: "..tostring(func).."  value: "..tostring(value)),5)
-			g_server:broadcastEvent(CourseplayEvent:new(vehicle, func, value), nil, nil, vehicle);
+			courseplay:debug("	id: "..tostring(networkGetObjectId(vehicle).."  function: "..tostring(func).."  value: "..tostring(value).."  page: "..tostring(page)),5)
+			g_server:broadcastEvent(CourseplayEvent:new(vehicle, func, value, page), nil, nil, vehicle);
 		else
 			courseplay:debug("send event",5)
-			courseplay:debug("	id: "..tostring(networkGetObjectId(vehicle).."  function: "..tostring(func).."  value: "..tostring(value)),5)
-			g_client:getServerConnection():sendEvent(CourseplayEvent:new(vehicle, func, value));
+			courseplay:debug("	id: "..tostring(networkGetObjectId(vehicle).."  function: "..tostring(func).."  value: "..tostring(value).."  page: "..tostring(page)),5)
+			g_client:getServerConnection():sendEvent(CourseplayEvent:new(vehicle, func, value, page));
 		end;
 	end;
 end
