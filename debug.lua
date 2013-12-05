@@ -4,7 +4,7 @@ function courseplay:debug(str, channel)
 	end;
 end;
 
-function tableShow(t, name, channel, indent)
+function tableShow(t, name, channel, indent, maxDepth)
 	--important performance backup: the channel is checked first before proceeding with the compilation of the table
 	if channel ~= nil and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == false then
 		return;
@@ -13,6 +13,8 @@ function tableShow(t, name, channel, indent)
 
 	local cart -- a container
 	local autoref -- for self references
+	maxDepth = maxDepth or 50;
+	local depth = 0;
 
 	--[[ counts the number of elements in a table
 local function tablecount(t)
@@ -44,7 +46,7 @@ end
 		end
 	end
 
-	local function addtocart(value, name, indent, saved, field)
+	local function addtocart(value, name, indent, saved, field, curDepth)
 		indent = indent or ""
 		saved = saved or {}
 		field = field or name
@@ -64,18 +66,22 @@ end
 				if isemptytable(value) then
 					cart = cart .. " = {};\n"
 				else
-					cart = cart .. " = {\n"
-					for k, v in pairs(value) do
-						k = basicSerialize(k)
-						local fname = string.format("%s[%s]", name, k)
-						field = string.format("[%s]", k)
-						-- three spaces between levels
-						addtocart(v, fname, indent .. "\t", saved, field)
-					end
-					cart = cart .. indent .. "};\n"
+					if curDepth <= maxDepth then
+						cart = cart .. " = {\n"
+						for k, v in pairs(value) do
+							k = basicSerialize(k)
+							local fname = string.format("%s[%s]", name, k)
+							field = string.format("[%s]", k)
+							-- three spaces between levels
+							addtocart(v, fname, indent .. "\t", saved, field, curDepth + 1);
+						end
+						cart = cart .. indent .. "};\n"
+					else
+						cart = cart .. " = { ... };\n";
+					end;
 				end
 			end
-		end
+		end;
 	end
 
 	name = name or "__unnamed__"
@@ -83,7 +89,7 @@ end
 		return name .. " = " .. basicSerialize(t)
 	end
 	cart, autoref = "", ""
-	addtocart(t, name, indent)
+	addtocart(t, name, indent, nil, nil, depth + 1)
 	return cart .. autoref
 end;
 
