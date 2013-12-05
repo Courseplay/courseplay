@@ -492,26 +492,34 @@ function courseplay:drive(self, dt)
 
 		--VEHICLE DAMAGE
 		if self.damageLevel then
-			if self.damageLevel >= 90 then
+			if self.damageLevel >= 90 and not self.isInRepairTrigger then
 				allowedToDrive = courseplay:brakeToStop(self);
 				courseplay:setGlobalInfoText(self, string.format(courseplay:loc("COURSEPLAY_DAMAGE_MUST_BE_REPAIRED"), self.damageLevel), -2);
-			elseif self.damageLevel >= 50 then
+			elseif self.damageLevel >= 50 and not self.isInRepairTrigger then
 				courseplay:setGlobalInfoText(self, string.format(courseplay:loc("COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED"), self.damageLevel), -1);
 			end;
-			if  self.damageLevel > 70 then
-				raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
+			if self.damageLevel > 70 then
+				if not self.isInRepairTrigger then
+					raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self);
+				end;
 				if self.cp.fillTrigger ~= nil then
-					local trigger = courseplay.triggers.all[self.cp.fillTrigger]
-					if trigger.isDamageModTrigger then
+					if courseplay.triggers.all[self.cp.fillTrigger].isDamageModTrigger then
 						--print("slow down , its a garage")
 						self.cp.isInFilltrigger = true
 					end
 				end
 				if self.isInRepairTrigger then
-					self.cp.fillTrigger = nil 
-					allowedToDrive = false
-				end
-			end
+					allowedToDrive = false;
+					courseplay:setGlobalInfoText(self, string.format(courseplay:loc("COURSEPLAY_DAMAGE_IS_BEING_REPAIRED"), self.damageLevel), 0);
+				end;
+			elseif self.isInRepairTrigger and self.cp.fillTrigger and courseplay.triggers.all[self.cp.fillTrigger].isDamageModTrigger then
+				if self.damageLevel > 0 then
+					allowedToDrive = false;
+					courseplay:setGlobalInfoText(self, string.format(courseplay:loc("COURSEPLAY_DAMAGE_IS_BEING_REPAIRED"), self.damageLevel), 0);
+				else
+					self.cp.fillTrigger = nil;
+				end;
+			end;
 		end;
 
 		--FUEL LEVEL + REFILLING
