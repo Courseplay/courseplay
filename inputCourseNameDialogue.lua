@@ -162,15 +162,15 @@ end; --END onIsUnicodeAllowed()
 function inputCourseNameDialogue:onSaveClick()
 	--print("inputCourseNameDialogue:onSaveClick()");
 	local vehicle = courseplay.vehicleToSaveCourseIn
-
+	CourseplayEvent.sendEvent(vehicle, "self.cp.saveWhat", vehicle.cp.saveWhat)
 	if vehicle.cp.saveWhat == 'course' then
 		if self.textInputElement ~= nil then
-			--print("self.textInputElement.text= "..tostring(self.textInputElement.text).."  courseplay.vehicleToSaveCourseIn.cp.currentCourseName= "..tostring(courseplay.vehicleToSaveCourseIn.cp.currentCourseName));
+			print("self.textInputElement.text= "..tostring(self.textInputElement.text).."  courseplay.vehicleToSaveCourseIn.cp.currentCourseName= "..tostring(courseplay.vehicleToSaveCourseIn.cp.currentCourseName));
 			vehicle.cp.currentCourseName = self.textInputElement.text;
 			CourseplayEvent.sendEvent(vehicle, "self.cp.currentCourseName", self.textInputElement.text)
 			vehicle.cp.doNotOnSaveClick = true
 		else
-			--print("self.textInputElement.text= "..tostring(self.textInputElement).."  courseplay.vehicleToSaveCourseIn.cp.currentCourseName= "..tostring(courseplay.vehicleToSaveCourseIn.cp.currentCourseName));
+			print("self.textInputElement= "..tostring(self.textInputElement).."  courseplay.vehicleToSaveCourseIn.cp.currentCourseName= "..tostring(courseplay.vehicleToSaveCourseIn.cp.currentCourseName));
 		end
 
 		local maxID = courseplay.courses.getMaxCourseID() -- horoman: made maxID local, should not make a difference as it is used nowhere (at least Eclipse file search doesn't find it in any of the courseplay files)
@@ -184,8 +184,12 @@ function inputCourseNameDialogue:onSaveClick()
 
 		local course = { id = vehicle.cp.currentCourseId, uid = 'c'..vehicle.cp.currentCourseId, type = 'course', name = vehicle.cp.currentCourseName, nameClean = courseplay:normalizeUTF8(vehicle.cp.currentCourseName), waypoints = vehicle.Waypoints, parent = 0 }
 		g_currentMission.cp_courses[vehicle.cp.currentCourseId] = course
+		courseplay:dopairs(g_currentMission.cp_courses,1)
+		
 		g_currentMission.cp_sorted = courseplay.courses.sort()
-
+		
+		
+		
 		courseplay.courses.save_course(vehicle.cp.currentCourseId, nil, true)
 		courseplay.settings.setReloadCourseItems()
 		courseplay:updateWaypointSigns(vehicle);
