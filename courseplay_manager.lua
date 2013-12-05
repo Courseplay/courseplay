@@ -522,7 +522,10 @@ function CourseplayJoinFixEvent:writeStream(streamId, connection)
 		courseplay:debug(string.format("writing %d courses ", course_count ),5)
 		for id, course in pairs(g_currentMission.cp_courses) do
 			streamDebugWriteString(streamId, course.name)
+			streamDebugWriteString(streamId, course.uid)
+			streamDebugWriteString(streamId, course.type)
 			streamDebugWriteInt32(streamId, course.id)
+			streamDebugWriteInt32(streamId, course.parent)
 			streamDebugWriteInt32(streamId, table.getn(course.waypoints))
 			for w = 1, table.getn(course.waypoints) do
 				streamDebugWriteFloat32(streamId, course.waypoints[w].cx)
@@ -559,7 +562,10 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 		for i = 1, course_count do
 			--courseplay:debug("got course", 8);
 			local course_name = streamDebugReadString(streamId)
+			local courseUid = streamDebugReadString(streamId)
+			local courseType = streamDebugReadString(streamId)
 			local course_id = streamDebugReadInt32(streamId)
+			local courseParent = streamDebugReadInt32(streamId)
 			local wp_count = streamDebugReadInt32(streamId)
 			local waypoints = {}
 			for w = 1, wp_count do
@@ -596,8 +602,9 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 				};
 				table.insert(waypoints, wp)
 			end
-			local course = { name = course_name, waypoints = waypoints, id = course_id }
+			local course = { id = course_id, uid = courseUid, type = courseType, name = course_name, nameClean = courseplay:normalizeUTF8(course_name), waypoints = waypoints, parent = courseParent }
 			g_currentMission.cp_courses[course_id] = course
+			g_currentMission.cp_sorted = courseplay.courses.sort()
 		end
 		courseplay:debug("reading end",5)
 	end;
