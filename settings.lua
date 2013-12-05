@@ -1158,8 +1158,10 @@ function courseplay:setCustomSingleFieldEdge(vehicle)
 	--print(string.format("%s: call setCustomSingleFieldEdge()", nameNum(vehicle)));
 
 	local x,y,z = getWorldTranslation(vehicle.rootNode);
+	local isField = x and z and courseplay:is_field(x, z, 0, 0);
+	courseplay.fields:dbg(string.format("Custom field scan: x,z=%.1f,%.1f, isField=%s", x, z, tostring(isField)), 'customLoad');
 	vehicle.cp.fieldEdge.customField.points = nil;
-	if x and z and courseplay:is_field(x, z, 0, 0) then
+	if isField then
 		local edgePoints = courseplay.fields:setSingleFieldEdgePath(vehicle.rootNode, x, z, 5, 2000, 10, nil, true, 'customLoad');
 		vehicle.cp.fieldEdge.customField.points = edgePoints;
 		vehicle.cp.fieldEdge.customField.numPoints = edgePoints ~= nil and #edgePoints or 0;

@@ -21,7 +21,7 @@ function courseplay.fields:setAllFieldEdges()
 		local fieldNum = fieldDef.fieldNumber;
 		local initObject = fieldDef.fieldMapIndicator; --OLD: fieldDef.fieldBuyTrigger
 		local x,_,z = getWorldTranslation(initObject);
-		local isField = courseplay:is_field(x, z);
+		local isField = courseplay:is_field(x, z, 0, 0);
 
 		self:dbg(string.format("fieldDef %d (fieldNum=%d): x,z=%.1f,%.1f, isField=%s", i, fieldNum, x, z, tostring(isField)), 'scan');
 		if isField then
@@ -57,7 +57,7 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 	local dX = x/length;
 	local dZ = z/length;
 
-	local isField = courseplay:is_field(x0,z0);
+	local isField = courseplay:is_field(x0, z0, 0, 0);
 	local coordinates, xValues, zValues = {}, {}, {};
 
 	if isField then
@@ -71,7 +71,7 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 			dis = dis + stepA;
 			xx = x0 + dis*dX;
 			zz = z0 + dis*dZ;
-			isSearchPointOnField = courseplay:is_field(xx,zz);
+			isSearchPointOnField = courseplay:is_field(xx, zz, 0, 0);
 			if math.abs(dis) > 2000 then
 				break;
 			end;
@@ -81,7 +81,7 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 			dis = dis + stepB;
 			xx = x0 + dis*dX;
 			zz = z0 + dis*dZ;
-			isSearchPointOnField = courseplay:is_field(xx,zz);
+			isSearchPointOnField = courseplay:is_field(xx, zz, 0, 0);
 		end;
 
 		--now we have a point very close to the field boundary but definitely inside :)
@@ -115,9 +115,9 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 			local rotAngle = 0.1;
 			local turnSign = 1.0;
 			
-			local return2field = not courseplay:is_field(px,pz); --there is NO guaranty that probe1 (px,pz) is in field just because tg is!!! 
+			local return2field = not courseplay:is_field(px, pz, 0, 0); --there is NO guarantee that probe1 (px,pz) is in field just because tg is!!! 
 			
-			while courseplay:is_field(px,pz) or return2field do
+			while courseplay:is_field(px, pz, 0, 0) or return2field do
 				
 				rotate(tg,0,rotAngle*turnSign,0)
 				rotAngle = rotAngle*1.05;				
@@ -127,13 +127,13 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 				px,_,pz = getWorldTranslation(probe1);
 				
 				if return2field then
-					if courseplay:is_field(px,pz) then
+					if courseplay:is_field(px, pz, 0, 0) then
 						return2field = false;
 					end;
 				end;
 			end;
 			local cnt, maxcnt = 0, 0;
-			while not courseplay:is_field(px,pz) do
+			while not courseplay:is_field(px, pz, 0, 0) do
 				rotate(tg,0,0.01*turnSign,0)
 				px,_,pz = getWorldTranslation(probe1);
 				--print("rotate back")
@@ -147,7 +147,7 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 					end;
 				end;
 			end;
-			if not courseplay:is_field(px,pz) then
+			if not courseplay:is_field(px, pz, 0, 0) then
 				--print("lost it")
 				break;
 			end;
@@ -176,20 +176,15 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 end;
 
 function courseplay.fields:setSingleFieldEdgePath(initObject, initX, initZ, scanStep, maxN, numDirectionTries, fieldNum, returnPoints, dbgType)
-	if dbgType == 'customLoad' then
-		self:dbg(string.format("Custom field scan: x,z=%.1f,%.1f, isField=%s", x, z, tostring(isField)), 'customLoad');
-	end;
-
 	for try=1,numDirectionTries do
 		local edgePoints, xValues, zValues = self:getSingleFieldEdge(initObject, scanStep, maxN, try > 1);
 		local numEdgePoints = #edgePoints;
 		--self:dbg(string.format("\ttry %d: %d edge points found, #xValues=%s, #zValues=%s", try, numEdgePoints, tostring(#xValues), tostring(#zValues)), dbgType);
 		if numEdgePoints >= 30 then
-			local polyIsAroundInitObject = courseplay:pointInPolygon_v2(edgePoints, xValues, zValues, initX, initZ);
-			self:dbg(string.format('\ttry %d: polyIsAroundInitObject=%s', try, tostring(polyIsAroundInitObject)), dbgType);
+			self:dbg(string.format("\ttry %d: %d edge points found", try, numEdgePoints), dbgType);
 
-			if polyIsAroundInitObject then
-				self:dbg(string.format("\ttry %d: %d edge points found --> valid, no retry", try, numEdgePoints), dbgType);
+			if courseplay:pointInPolygon_v2(edgePoints, xValues, zValues, initX, initZ) then
+				self:dbg('\t\tinitObject is in poly --> valid, no retry', dbgType);
 
 				if returnPoints then
 					return edgePoints;
@@ -209,6 +204,8 @@ function courseplay.fields:setSingleFieldEdgePath(initObject, initX, initZ, scan
 					end;
 					break;
 				end;
+			else
+				self:dbg(string.format('\t\tinitObject is NOT in poly --> invalid, retry=%s', tostring(try<numDirectionTries)), dbgType);
 			end;
 		else
 			self:dbg(string.format("\ttry %d: %d edge points found --> invalid, retry=%s", try, numEdgePoints, tostring(try<numDirectionTries)), dbgType);
