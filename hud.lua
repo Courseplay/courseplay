@@ -97,9 +97,9 @@ function courseplay:renderHud(vehicle)
 
 
 	--VERSION INFO
-	if courseplay.versionDisplay ~= nil then
+	if courseplay.versionDisplayStr ~= nil then
 		courseplay:setFontSettings("white", false, "right");
-		renderText(courseplay.hud.visibleArea.x2 - 0.008, courseplay.hud.infoBasePosY + 0.016, 0.012, courseplay.versionDisplay);
+		renderText(courseplay.hud.visibleArea.x2 - 0.008, courseplay.hud.infoBasePosY + 0.016, 0.012, courseplay.versionDisplayStr);
 	end;
 
 

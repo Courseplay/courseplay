@@ -36,16 +36,24 @@ local modDescPath = courseplay.path .. "modDesc.xml";
 if fileExists(modDescPath) then
 	courseplay.modDescFile = loadXMLFile("cp_modDesc", modDescPath);
 
-	courseplay.version = Utils.getNoNil(getXMLString(courseplay.modDescFile, "modDesc.version"), " [no version specified]");
+	courseplay.version = Utils.getNoNil(getXMLString(courseplay.modDescFile, "modDesc.version"), " [no version specified]"); --single string
 	if courseplay.version ~= " [no version specified]" then
-		courseplay.versionSeparate = Utils.splitString(".", courseplay.version);
-		if #courseplay.versionSeparate == 2 then
-			courseplay.versionSeparate[3] = "0000";
+		courseplay.versionSplitStr = Utils.splitString(".", courseplay.version); --split as strings
+		if #courseplay.versionSplitStr == 2 then
+			courseplay.versionSplitStr[3] = "0000";
 		end;
-		courseplay.versionDisplay = string.format('v%s.%s\n.%s', courseplay.versionSeparate[1], courseplay.versionSeparate[2], courseplay.versionSeparate[3]);
+		courseplay.versionSplitFlt = { --split as floats
+			[1] = tonumber(courseplay.versionSplitStr[1]);
+			[2] = tonumber(courseplay.versionSplitStr[2]);
+			[3] = tonumber(courseplay.versionSplitStr[3]);
+		};
+		courseplay.versionDisplayStr = string.format('v%s.%s\n.%s', courseplay.versionSplitStr[1], courseplay.versionSplitStr[2], courseplay.versionSplitStr[3]); --multiline display string
 	else
-		courseplay.versionDisplay = 'no\nversion';
+		courseplay.versionSplitStr = { "0", "0", "0" };
+		courseplay.versionSplitFlt = { 0, 0, 0 };
+		courseplay.versionDisplayStr = 'no\nversion';
 	end;
+	courseplay.versionDisplay = courseplay.versionSplitFlt; --TODO: tmp solution until overloader script is changed - then delete
 end;
 
 -- working tractors saved in this
