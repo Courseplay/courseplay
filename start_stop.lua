@@ -185,7 +185,7 @@ function courseplay:start(self)
 			self.cp.finishWork = self.cp.stopWork
 		end
 
-		if self.cp.finishWork ~= self.cp.stopWork and self.recordnumber > self.cp.finishWork then --TODO: refine for refillingUnloadingCourses
+		if self.cp.finishWork ~= self.cp.stopWork and self.recordnumber > self.cp.finishWork and self.recordnumber <= self.cp.stopWork then --TODO: refine for refillingUnloadingCourses
 			self.recordnumber = 2
 		end
 		courseplay:debug(string.format("%s: maxnumber=%d, stopWork=%d, finishWork=%d, hasUnloadingRefillingCourse=%s, recordnumber=%d", nameNum(self), self.maxnumber, self.cp.stopWork, self.cp.finishWork, tostring(self.cp.hasUnloadingRefillingCourse), self.recordnumber), 12);
