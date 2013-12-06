@@ -120,7 +120,12 @@ function courseplay:load(xmlFile)
 	self.cp.shovel = {};
 	self.cp.shovelStopAndGo = false;
 	self.cp.shovelLastFillLevel = nil;
-
+	self.cp.hasShovelStateRot ={}
+	self.cp.hasShovelStateRot["2"] = false
+	self.cp.hasShovelStateRot["3"] = false
+	self.cp.hasShovelStateRot["4"] = false
+	self.cp.hasShovelStateRot["5"] = false
+	
 	-- our arrow is displaying dirction to waypoints
 	self.cp.directionArrowOverlay = Overlay:new("Arrow", Utils.getFilename("img/arrow.png", courseplay.path), 0.55, 0.05, 0.250, 0.250);
 
@@ -950,29 +955,42 @@ end
 
 function courseplay:readStream(streamId, connection)
 	courseplay:debug("id: "..tostring(self.id).."  base: readStream", 5)
-
+	
+	self.cp.automaticCoverHandling = streamDebugReadBool(streamId);
+	self.cp.automaticUnloadingOnField = streamDebugReadBool(streamId);
 	self.cp.mode = streamDebugReadInt32(streamId)
 	self.cp.turnRadiusAuto = streamDebugReadFloat32(streamId)
+	self.cp.canDrive = streamDebugReadBool(streamId);
 	self.cp.combineOffsetAutoMode = streamDebugReadBool(streamId);
 	self.cp.combineOffset = streamDebugReadFloat32(streamId)
 	self.cp.currentCourseName = streamDebugReadString(streamId);
 	self.cp.driverPriorityUseFillLevel = streamDebugReadBool(streamId);
+	self.cp.drivingDirReverse = streamDebugReadBool(streamId);
+	self.cp.fieldEdge.customField.isCreated = streamDebugReadBool(streamId);
+	self.cp.fieldEdge.customField.fieldNum = streamDebugReadInt32(streamId)
+	self.cp.fieldEdge.customField.selectedFieldNumExists = streamDebugReadBool(streamId)
+	self.cp.fieldEdge.selectedField.fieldNum = streamDebugReadInt32(streamId) 
 	self.cp.globalInfoTextLevel = streamDebugReadInt32(streamId)
+	self.cp.hasBaleLoader = streamDebugReadBool(streamId);
 	self.cp.hasStartingCorner = streamDebugReadBool(streamId);
 	self.cp.hasStartingDirection = streamDebugReadBool(streamId);
 	self.cp.hasValidCourseGenerationData = streamDebugReadBool(streamId);
 	self.cp.headland.numLanes = streamDebugReadInt32(streamId)
-	self.cp.hud.currentPage = streamDebugReadInt32(streamId) 
+	self.cp.hud.currentPage = streamDebugReadInt32(streamId)
+    self.cp.hasUnloadingRefillingCourse	 = streamDebugReadBool(streamId);
 	self.cp.infoText = streamDebugReadString(streamId);
 	self.cp.returnToFirstPoint = streamDebugReadBool(streamId);
 	self.cp.ridgeMarkersAutomatic = streamDebugReadBool(streamId);
 	self.cp.shovelStopAndGo = streamDebugReadBool(streamId);
+	self.cp.startAtFirstPoint = streamDebugReadBool(streamId);
+	self.cp.stopAtEnd = streamDebugReadBool(streamId);
 	self.drive = streamDebugReadBool(streamId)
 	self.cp.hud.openWithMouse = streamDebugReadBool(streamId)
 	self.cp.realisticDriving = streamDebugReadBool(streamId);
 	self.cp.driveOnAtFillLevel = streamDebugReadFloat32(streamId)
 	self.cp.followAtFillLevel = streamDebugReadFloat32(streamId)
 	self.cp.tipperOffset = streamDebugReadFloat32(streamId)
+	self.cp.tipperHasCover = streamDebugReadBool(streamId);
 	self.cp.workWidth = streamDebugReadFloat32(streamId) 
 	self.cp.turnRadiusAutoMode = streamDebugReadBool(streamId);
 	self.cp.turnRadius = streamDebugReadFloat32(streamId)
@@ -997,7 +1015,29 @@ function courseplay:readStream(streamId, connection)
 	self.cp.HUD4savedCombine = streamDebugReadBool(streamId)
 	self.cp.HUD4savedCombineName = streamDebugReadString(streamId);
 	self.recordnumber = streamDebugReadInt32(streamId)
-
+	self.record = streamDebugReadBool(streamId)
+	self.record_pause = streamDebugReadBool(streamId)
+	self.search_combine = streamDebugReadBool(streamId)
+	self.cp.speeds.turn = streamDebugReadFloat32(streamId)
+	self.cp.speeds.field = streamDebugReadFloat32(streamId)
+	self.cp.speeds.unload = streamDebugReadFloat32(streamId)
+	self.cp.speeds.max = streamDebugReadFloat32(streamId)
+	self.cp.visualWaypointsMode = streamDebugReadInt32(streamId)
+	self.cp.beaconLightsMode = streamDebugReadInt32(streamId)
+	self.cp.waitTime = streamDebugReadInt32(streamId)
+	self.cp.symmetricLaneChange = streamDebugReadBool(streamId)
+	self.cp.startingCorner = streamDebugReadInt32(streamId)
+	self.cp.startingDirection = streamDebugReadInt32(streamId)
+	self.cp.hasShovelStateRot["2"] = streamDebugReadBool(streamId)
+	self.cp.hasShovelStateRot["3"] = streamDebugReadBool(streamId)
+	self.cp.hasShovelStateRot["4"] = streamDebugReadBool(streamId)
+	self.cp.hasShovelStateRot["5"] = streamDebugReadBool(streamId) 
+	
+	local copyCourseFromDriverId = streamDebugReadInt32(streamId)
+	if copyCourseFromDriverId then
+		self.cp.copyCourseFromDriver = networkGetObject(copyCourseFromDriverId) 
+	end
+		
 	local savedCombineId = streamDebugReadInt32(streamId)
 	if savedCombineId then
 		self.cp.savedCombine = networkGetObject(savedCombineId)
@@ -1038,28 +1078,41 @@ end
 function courseplay:writeStream(streamId, connection)
 	courseplay:debug("id: "..tostring(networkGetObjectId(self)).."  base: write stream", 5)
 
+	streamDebugWriteBool(streamId, self.cp.automaticCoverHandling)
+	streamDebugWriteBool(streamId, self.cp.automaticUnloadingOnField)
 	streamDebugWriteInt32(streamId,self.cp.mode)
 	streamDebugWriteFloat32(streamId,self.cp.turnRadiusAuto)
+	streamDebugWriteBool(streamId, self.cp.canDrive)
 	streamDebugWriteBool(streamId, self.cp.combineOffsetAutoMode);
 	streamDebugWriteFloat32(streamId,self.cp.combineOffset)
 	streamDebugWriteString(streamId, self.cp.currentCourseName);
 	streamDebugWriteBool(streamId, self.cp.driverPriorityUseFillLevel);
+	streamDebugWriteBool(streamId, self.cp.drivingDirReverse)
+	streamDebugWriteBool(streamId, self.cp.fieldEdge.customField.isCreated)
+	streamDebugWriteInt32(streamId,self.cp.fieldEdge.customField.fieldNum)
+	streamDebugWriteBool(streamId, self.cp.fieldEdge.customField.selectedFieldNumExists)
+	streamDebugWriteInt32(streamId, self.cp.fieldEdge.selectedField.fieldNum)
 	streamDebugWriteInt32(streamId, self.cp.globalInfoTextLevel);
+	streamDebugWriteBool(streamId, self.cp.hasBaleLoader)
 	streamDebugWriteBool(streamId, self.cp.hasStartingCorner);
 	streamDebugWriteBool(streamId, self.cp.hasStartingDirection);
 	streamDebugWriteBool(streamId, self.cp.hasValidCourseGenerationData);
 	streamDebugWriteInt32(streamId,self.cp.headland.numLanes);
 	streamDebugWriteInt32(streamId,self.cp.hud.currentPage);
+	streamDebugWriteBool(streamId, sself.cp.hasUnloadingRefillingCourse)
 	streamDebugWriteString(streamId, self.cp.infoText);
 	streamDebugWriteBool(streamId, self.cp.returnToFirstPoint);
 	streamDebugWriteBool(streamId, self.cp.ridgeMarkersAutomatic);
 	streamDebugWriteBool(streamId, self.cp.shovelStopAndGo);
+	streamDebugWriteBool(streamId, self.cp.startAtFirstPoint)
+	streamDebugWriteBool(streamId, self.cp.stopAtEnd)
 	streamDebugWriteBool(streamId,self.drive)
 	streamDebugWriteBool(streamId,self.cp.hud.openWithMouse)
 	streamDebugWriteBool(streamId, self.cp.realisticDriving);
 	streamDebugWriteFloat32(streamId,self.cp.driveOnAtFillLevel)
 	streamDebugWriteFloat32(streamId,self.cp.followAtFillLevel)
 	streamDebugWriteFloat32(streamId,self.cp.tipperOffset)
+	streamDebugWriteBool(streamId, self.cp.tipperHasCover)
 	streamDebugWriteFloat32(streamId,self.cp.workWidth);
 	streamDebugWriteBool(streamId,self.cp.turnRadiusAutoMode)
 	streamDebugWriteFloat32(streamId,self.cp.turnRadius)
@@ -1084,6 +1137,30 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteBool(streamId,self.cp.HUD4savedCombine)
 	streamDebugWriteString(streamId,self.cp.HUD4savedCombineName)
 	streamDebugWriteInt32(streamId,self.recordnumber)
+	streamDebugWriteBool(streamId,self.record)
+	streamDebugWriteBool(streamId,self.record_pause)
+	streamDebugWriteBool(streamId,self.search_combine)
+	streamDebugWriteFloat32(streamId,self.cp.speeds.turn)
+	streamDebugWriteFloat32(streamId,self.cp.speeds.field)
+	streamDebugWriteFloat32(streamId,self.cp.speeds.unload)
+	streamDebugWriteFloat32(streamId,self.cp.speeds.max)
+	streamDebugWriteInt32(streamId,self.cp.visualWaypointsMode)
+	streamDebugWriteInt32(streamId,self.cp.beaconLightsMode)
+	streamDebugWriteInt32(streamId,self.cp.waitTime)
+	streamDebugWriteBool(streamId,self.cp.symmetricLaneChange)
+	streamDebugWriteInt32(streamId,self.cp.startingCorner)
+	streamDebugWriteInt32(streamId,self.cp.startingDirection)
+	streamDebugWriteBool(streamId,self.cp.hasShovelStateRot["2"])
+	streamDebugWriteBool(streamId,self.cp.hasShovelStateRot["3"])
+	streamDebugWriteBool(streamId,self.cp.hasShovelStateRot["4"])
+	streamDebugWriteBool(streamId,self.cp.hasShovelStateRot["5"])
+	
+	local copyCourseFromDriverID = nil
+	if self.cp.copyCourseFromDriver ~= nil then
+		copyCourseFromDriverID = = networkGetObject(self.cp.copyCourseFromDriver)
+	end
+	streamDebugWriteInt32(streamId, copyCourseFromDriverID)
+	
 	
 	local savedCombineId = nil
 	if self.cp.savedCombine ~= nil then

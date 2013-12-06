@@ -1019,6 +1019,11 @@ function courseplay:saveShovelStatus(self, stage)
 
 	if stage >= 2 and stage <= 5 then
 		self.cp.shovelStateRot[tostring(stage)] = courseplay:getCurrentRotation(self, mt, secondary);
+		if self.cp.shovelStateRot[tostring(stage)] ~= nil then
+			self.cp.hasShovelStateRot[tostring(stage)] = true
+		else
+			self.cp.hasShovelStateRot[tostring(stage)] = false
+		end
 	end;
 	courseplay:buttonsActiveEnabled(self, "shovel");
 end;

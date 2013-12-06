@@ -567,7 +567,7 @@ function courseplay.hud:loadPage(vehicle, page)
 		vehicle.cp.hud.content.pages[9][4][1].text = courseplay:loc("setUnload");  --"entladen"
 
 		for a=2,5 do
-			vehicle.cp.hud.content.pages[9][a-1][2].text = vehicle.cp.shovelStateRot[tostring(a)] ~= nil and 'OK' or '';
+			vehicle.cp.hud.content.pages[9][a-1][2].text = vehicle.cp.hasShovelStateRot[tostring(a)] ~= nil and 'OK' or '';
 		end;
 
 		vehicle.cp.hud.content.pages[9][5][1].text = courseplay:loc("cpShovelStopAndGo");
