@@ -13,11 +13,7 @@ function tableShow(t, name, channel, indent, maxDepth)
 
 	local cart -- a container
 	local autoref -- for self references
-<<<<<<< HEAD
-	maxDepth = maxDepth or 99;
-=======
 	maxDepth = maxDepth or 50;
->>>>>>> origin/master
 	local depth = 0;
 
 	--[[ counts the number of elements in a table

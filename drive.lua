@@ -503,7 +503,6 @@ function courseplay:drive(self, dt)
 				if self.cp.fillTrigger ~= nil then
 					if courseplay.triggers.all[self.cp.fillTrigger].isDamageModTrigger then
 						--print("slow down , its a garage")
-<<<<<<< HEAD
 						self.cp.isInFilltrigger = true
 					end
 				end
@@ -512,27 +511,13 @@ function courseplay:drive(self, dt)
 				end;
 			elseif self.damageLevel == 0 then
 					self.cp.isInRepairTrigger = false
-=======
-						self.cp.isInFilltrigger = true;
-					end;
-				end;
-				if self.isInRepairTrigger then
-					self.cp.isInRepairTrigger = true;
-				end;
-			elseif self.damageLevel == 0 then
-				self.cp.isInRepairTrigger = false;
+					self.cp.isInFilltrigger = true;
 			end;
 			if self.cp.isInRepairTrigger then
 				allowedToDrive = false;
 				self.cp.fillTrigger = nil;
 				courseplay:setGlobalInfoText(self, string.format(courseplay:loc("COURSEPLAY_DAMAGE_IS_BEING_REPAIRED"), self.damageLevel), 0, 'DAMAGE');
->>>>>>> origin/master
 			end;
-			if self.cp.isInRepairTrigger then
-				allowedToDrive = false;
-				self.cp.fillTrigger = nil;
-				courseplay:setGlobalInfoText(self, string.format(courseplay:loc("COURSEPLAY_DAMAGE_IS_BEING_REPAIRED"), self.damageLevel), 0);
-			end
 		end;
 
 		--FUEL LEVEL + REFILLING
