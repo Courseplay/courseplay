@@ -184,7 +184,7 @@ function inputCourseNameDialogue:onSaveClick()
 
 		local course = { id = vehicle.cp.currentCourseId, uid = 'c'..vehicle.cp.currentCourseId, type = 'course', name = vehicle.cp.currentCourseName, nameClean = courseplay:normalizeUTF8(vehicle.cp.currentCourseName), waypoints = vehicle.Waypoints, parent = 0 }
 		g_currentMission.cp_courses[vehicle.cp.currentCourseId] = course
-		courseplay:dopairs(g_currentMission.cp_courses,1)
+		--courseplay:dopairs(g_currentMission.cp_courses,1) replace it by tableshow
 		
 		g_currentMission.cp_sorted = courseplay.courses.sort()
 		
@@ -210,7 +210,7 @@ function inputCourseNameDialogue:onSaveClick()
 		folder = { id = folderID, uid = 'f'..folderID, type = 'folder', name = vehicle.cp.saveFolderName, nameClean = courseplay:normalizeUTF8(vehicle.cp.saveFolderName), parent = 0 }
 
 		g_currentMission.cp_folders[folderID] = folder
-		courseplay:dopairs(g_currentMission.cp_folders,1)
+		--courseplay:dopairs(g_currentMission.cp_folders,1)replace it by tableshow
 		g_currentMission.cp_sorted = courseplay.courses.sort(g_currentMission.cp_courses, g_currentMission.cp_folders, 0, 0)
 
 		courseplay.courses.save_folder(folderID, nil, true)

@@ -948,11 +948,14 @@ function courseplay:readStream(streamId, connection)
 	self.cp.turnRadiusAuto = streamDebugReadFloat32(streamId)
 	self.cp.combineOffsetAutoMode = streamDebugReadBool(streamId);
 	self.cp.combineOffset = streamDebugReadFloat32(streamId)
+	self.cp.currentCourseName = streamDebugReadString(streamId);
+	self.cp.driverPriorityUseFillLevel = streamDebugReadBool(streamId);
 	self.cp.globalInfoTextLevel = streamDebugReadInt32(streamId)
 	self.cp.hasStartingCorner = streamDebugReadBool(streamId);
 	self.cp.hasStartingDirection = streamDebugReadBool(streamId);
 	self.cp.hasValidCourseGenerationData = streamDebugReadBool(streamId);
 	self.cp.headland.numLanes = streamDebugReadInt32(streamId)
+	self.cp.hud.currentPage = streamDebugReadInt32(streamId) 
 	self.cp.infoText = streamDebugReadString(streamId);
 	self.cp.returnToFirstPoint = streamDebugReadBool(streamId);
 	self.cp.ridgeMarkersAutomatic = streamDebugReadBool(streamId);
@@ -986,6 +989,7 @@ function courseplay:readStream(streamId, connection)
 	self.cp.HUD4combineName = streamDebugReadString(streamId);
 	self.cp.HUD4savedCombine = streamDebugReadBool(streamId)
 	self.cp.HUD4savedCombineName = streamDebugReadString(streamId);
+	self.recordnumber = streamDebugReadInt32(streamId)
 
 	local savedCombineId = streamDebugReadInt32(streamId)
 	if savedCombineId then
@@ -1031,11 +1035,14 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteFloat32(streamId,self.cp.turnRadiusAuto)
 	streamDebugWriteBool(streamId, self.cp.combineOffsetAutoMode);
 	streamDebugWriteFloat32(streamId,self.cp.combineOffset)
+	streamDebugWriteString(streamId, self.cp.currentCourseName);
+	streamDebugWriteBool(streamId, self.cp.driverPriorityUseFillLevel);
 	streamDebugWriteInt32(streamId, self.cp.globalInfoTextLevel);
 	streamDebugWriteBool(streamId, self.cp.hasStartingCorner);
 	streamDebugWriteBool(streamId, self.cp.hasStartingDirection);
 	streamDebugWriteBool(streamId, self.cp.hasValidCourseGenerationData);
 	streamDebugWriteInt32(streamId,self.cp.headland.numLanes);
+	streamDebugWriteInt32(streamId,self.cp.hud.currentPage);
 	streamDebugWriteString(streamId, self.cp.infoText);
 	streamDebugWriteBool(streamId, self.cp.returnToFirstPoint);
 	streamDebugWriteBool(streamId, self.cp.ridgeMarkersAutomatic);
@@ -1069,7 +1076,8 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteString(streamId,self.cp.HUD4combineName)
 	streamDebugWriteBool(streamId,self.cp.HUD4savedCombine)
 	streamDebugWriteString(streamId,self.cp.HUD4savedCombineName)
-
+	streamDebugWriteInt32(streamId,self.recordnumber)
+	
 	local savedCombineId = nil
 	if self.cp.savedCombine ~= nil then
 		savedCombineId = networkGetObject(self.cp.savedCombine)

@@ -614,6 +614,7 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 			end
 			local course = { id = course_id, uid = courseUid, type = courseType, name = course_name, nameClean = courseplay:normalizeUTF8(course_name), waypoints = waypoints, parent = courseParent }
 			g_currentMission.cp_courses[course_id] = course
+			g_currentMission.cp_sorted = courseplay.courses.sort()
 		end
 		
 		local folderCount = streamDebugReadInt32(streamId)
