@@ -28,9 +28,9 @@ function courseplay:setNameVariable(workTool)
 	workTool.cp.hasSpecializationTrailer 			 = SpecializationUtil.hasSpecialization(Trailer, specs);
 	workTool.cp.hasSpecializationWindrower 			 = SpecializationUtil.hasSpecialization(Windrower, specs);
 
-	--[ DEBUG
+	--[[ DEBUG
 	local specList = { 'AICombine', 'AITractor', 'AnimatedVehicle', 'BaleLoader', 'Baler', 'BunkerSiloCompacter', 'Combine', 'Cultivator', 'Cylindered', 'Foldable', 'FruitPreparer', 'MixerWagon', 'Mower', 'Plough', 'Shovel', 'SowingMachine', 'Sprayer', 'Steerable', 'Tedder', 'Trailer', 'Windrower' };
-	print(nameNum(workTool) .. ': default spec^s list');
+	print(nameNum(workTool) .. ': default specs list');
 	for i,specName in pairs(specList) do
 		local var = 'hasSpecialization' .. specName;
 		if workTool.cp[var] then
