@@ -343,7 +343,7 @@ function courseplay:drive(self, dt)
 			elseif self.cp.last_recordnumber == self.cp.stopWork and self.cp.abortWork ~= nil then
 				self.wait = false
 			elseif self.cp.last_recordnumber ~= self.cp.startWork and self.cp.last_recordnumber ~= self.cp.stopWork then 
-				courseplay:setGlobalInfoText(self, courseplay:loc("COURSEPLAY_UNLOADING_BALES", 0, 'UNLOADING_BALE'));
+				courseplay:setGlobalInfoText(self, courseplay:loc("COURSEPLAY_UNLOADING_BALES"), 0, 'UNLOADING_BALE');
 				if fill_level == 0 or drive_on then
 					self.wait = false
 				end;
@@ -352,14 +352,14 @@ function courseplay:drive(self, dt)
 			if self.cp.last_recordnumber == self.cp.startWork then
 				if self.grainTankFillLevel > 0 then
 					self:setPipeState(2)
-					courseplay:setGlobalInfoText(self, courseplay:loc("COURSEPLAY_REACHED_OVERLOADING_POINT", 0, 'OVERLOADING_POINT'));
+					courseplay:setGlobalInfoText(self, courseplay:loc("COURSEPLAY_REACHED_OVERLOADING_POINT"), 0, 'OVERLOADING_POINT');
 				else
 					self.wait = false
 					self.cp.isUnloaded = true
 				end
 			end
 		elseif self.cp.mode == 8 then
-			courseplay:setGlobalInfoText(self, courseplay:loc("COURSEPLAY_REACHED_OVERLOADING_POINT", 0, 'OVERLOADING_POINT'));
+			courseplay:setGlobalInfoText(self, courseplay:loc("COURSEPLAY_REACHED_OVERLOADING_POINT"), 0, 'OVERLOADING_POINT');
 			if self.cp.tipperAttached then
 				-- drive on if fill_level doesn't change and fill level is < 100-self.cp.followAtFillLevel
 				courseplay:handle_mode8(self)

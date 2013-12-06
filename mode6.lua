@@ -118,7 +118,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 				if fill_level == 100 and not self.cp.hasUnloadingRefillingCourse then
 					if self.cp.automaticUnloadingOnField then
 						self.cp.unloadOrder = true
-						courseplay:setGlobalInfoText(self, courseplay:loc("COURSEPLAY_UNLOADING_BALES", 0, 'UNLOADING_BALE'));
+						courseplay:setGlobalInfoText(self, courseplay:loc("COURSEPLAY_UNLOADING_BALES"), 0, 'UNLOADING_BALE');
 					else
 						specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,nil); --TODO: unclear
 					end
@@ -370,7 +370,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 						if weatherStop then
 							allowedToDrive = false;
 							tool:setIsThreshing(false);
-							courseplay:setGlobalInfoText(self, courseplay:loc("COURSEPLAY_WEATHER_WARNING", 0, 'WEATHER'));
+							courseplay:setGlobalInfoText(self, courseplay:loc("COURSEPLAY_WEATHER_WARNING"), 0, 'WEATHER');
 						end
 
 					end
