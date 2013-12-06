@@ -60,7 +60,7 @@ function courseplay:drive(self, dt)
 			end
 		else
 			allowedToDrive = false
-			courseplay:setGlobalInfoText(self, courseplay:loc("COURSEPLAY_WORK_END"), 1, 'WORK_END');
+			courseplay:setGlobalInfoText(self, 'WORK_END');
 		end
 		if self.cp.modeState == 5 then
 			local targets = table.getn(self.next_targets)
@@ -343,7 +343,7 @@ function courseplay:drive(self, dt)
 			elseif self.cp.last_recordnumber == self.cp.stopWork and self.cp.abortWork ~= nil then
 				self.wait = false
 			elseif self.cp.last_recordnumber ~= self.cp.startWork and self.cp.last_recordnumber ~= self.cp.stopWork then 
-				courseplay:setGlobalInfoText(self, courseplay:loc("COURSEPLAY_UNLOADING_BALES"), 0, 'UNLOADING_BALE');
+				courseplay:setGlobalInfoText(self, 'UNLOADING_BALE');
 				if fill_level == 0 or drive_on then
 					self.wait = false
 				end;
@@ -352,14 +352,14 @@ function courseplay:drive(self, dt)
 			if self.cp.last_recordnumber == self.cp.startWork then
 				if self.grainTankFillLevel > 0 then
 					self:setPipeState(2)
-					courseplay:setGlobalInfoText(self, courseplay:loc("COURSEPLAY_REACHED_OVERLOADING_POINT"), 0, 'OVERLOADING_POINT');
+					courseplay:setGlobalInfoText(self, 'OVERLOADING_POINT');
 				else
 					self.wait = false
 					self.cp.isUnloaded = true
 				end
 			end
 		elseif self.cp.mode == 8 then
-			courseplay:setGlobalInfoText(self, courseplay:loc("COURSEPLAY_REACHED_OVERLOADING_POINT"), 0, 'OVERLOADING_POINT');
+			courseplay:setGlobalInfoText(self, 'OVERLOADING_POINT');
 			if self.cp.tipperAttached then
 				-- drive on if fill_level doesn't change and fill level is < 100-self.cp.followAtFillLevel
 				courseplay:handle_mode8(self)
@@ -380,7 +380,7 @@ function courseplay:drive(self, dt)
 		elseif self.cp.mode == 9 then
 			self.wait = false;
 		else
-			courseplay:setGlobalInfoText(self, courseplay:loc("COURSEPLAY_REACHED_WAITING_POINT"), 0, 'WAIT_POINT');
+			courseplay:setGlobalInfoText(self, 'WAIT_POINT');
 		end
 		-- wait untli a specific time
 		if self.waitTimer and self.timer > self.waitTimer then
@@ -494,9 +494,9 @@ function courseplay:drive(self, dt)
 		if self.damageLevel then
 			if self.damageLevel >= 90 and not self.isInRepairTrigger then
 				allowedToDrive = courseplay:brakeToStop(self);
-				courseplay:setGlobalInfoText(self, string.format(courseplay:loc("COURSEPLAY_DAMAGE_MUST_BE_REPAIRED"), self.damageLevel), -2, 'DAMAGE');
+				courseplay:setGlobalInfoText(self, 'DAMAGE_MUST');
 			elseif self.damageLevel >= 50 and not self.isInRepairTrigger then
-				courseplay:setGlobalInfoText(self, string.format(courseplay:loc("COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED"), self.damageLevel), -1, 'DAMAGE');
+				courseplay:setGlobalInfoText(self, 'DAMAGE_SHOULD');
 			end;
 			if self.damageLevel > 70 then
 				raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self);
@@ -516,7 +516,7 @@ function courseplay:drive(self, dt)
 			if self.cp.isInRepairTrigger then
 				allowedToDrive = false;
 				self.cp.fillTrigger = nil;
-				courseplay:setGlobalInfoText(self, string.format(courseplay:loc("COURSEPLAY_DAMAGE_IS_BEING_REPAIRED"), self.damageLevel), 0, 'DAMAGE');
+				courseplay:setGlobalInfoText(self, 'DAMAGE_IS');
 			end;
 		end;
 
@@ -525,7 +525,7 @@ function courseplay:drive(self, dt)
 			local currentFuelPercentage = (self.fuelFillLevel / self.fuelCapacity + 0.0001) * 100;
 			if currentFuelPercentage < 5 then
 				allowedToDrive = false;
-				courseplay:setGlobalInfoText(self, courseplay:loc('COURSEPLAY_MUST_BE_REFUELED'), -2, 'FUEL');
+				courseplay:setGlobalInfoText(self, 'FUEL_MUST');
 			elseif currentFuelPercentage < 20 and not self.isFuelFilling then
 				raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
 				if self.cp.fillTrigger ~= nil then
@@ -535,14 +535,14 @@ function courseplay:drive(self, dt)
 						self.cp.isInFilltrigger = true
 					end
 				end
-				courseplay:setGlobalInfoText(self, courseplay:loc('COURSEPLAY_SHOULD_BE_REFUELED'), -1, 'FUEL');
+				courseplay:setGlobalInfoText(self, 'FUELD_SHOULD');
 				if self.fuelFillTriggers[1] then
 					allowedToDrive = courseplay:brakeToStop(self);
 					self:setIsFuelFilling(true, self.fuelFillTriggers[1].isEnabled, false);
 				end
 			elseif self.isFuelFilling and currentFuelPercentage < 99.9 then
 				allowedToDrive = courseplay:brakeToStop(self);
-				courseplay:setGlobalInfoText(self, courseplay:loc('COURSEPLAY_IS_BEING_REFUELED'), 0, 'FUEL');
+				courseplay:setGlobalInfoText(self, 'FUEL_IS');
 			end;
 			if self.fuelFillTriggers[1] then
 				courseplay:debug(nameNum(self) .. ": resetting \"self.cp.fillTrigger\"",1)
@@ -553,12 +553,12 @@ function courseplay:drive(self, dt)
 		--WATER WARNING
 		if self.showWaterWarning then
 			allowedToDrive = false
-			courseplay:setGlobalInfoText(self, courseplay:loc('COURSEPLAY_WATER_WARNING'), -2, 'WATER');
+			courseplay:setGlobalInfoText(self, 'WATER');
 		end
 
 		if self.cp.stopAtEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil) then
 			allowedToDrive = false
-			courseplay:setGlobalInfoText(self, courseplay:loc('COURSEPLAY_REACHED_END_POINT'), 0, 'END_POINT');
+			courseplay:setGlobalInfoText(self, 'END_POINT');
 		end
 	end
 
@@ -682,7 +682,7 @@ function courseplay:drive(self, dt)
 		if  ez < 0.2 then
 			if fill_level == 0 then
 				allowedToDrive = false
-				courseplay:setGlobalInfoText(self, courseplay:loc("COURSEPLAY_WORK_END"), 1, 'WORK_END');
+				courseplay:setGlobalInfoText(self, 'WORK_END');
 			else
 				self.cp.isLoaded = true;
 				self.recordnumber = i + 2
@@ -1028,7 +1028,7 @@ function courseplay:check_traffic(self, display_warnings, allowedToDrive)
 	end
 	
 	if display_warnings and self.cp.inTraffic then
-		courseplay:setGlobalInfoText(self, courseplay:loc("COURSEPLAY_IS_IN_TRAFFIC"), -1, "TRAFFIC");
+		courseplay:setGlobalInfoText(self, 'TRAFFIC');
 	end
 	return allowedToDrive
 end
