@@ -741,7 +741,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 							if workTool.isTurnedOn then
 								workTool:setIsTurnedOn(false);
 							end;
-							courseplay:setGlobalInfoText(self, courseplay:loc('COURSEPLAY_BALER_NEEDS_NETS'):format(nameNum(workTool)), -2);
+							courseplay:setGlobalInfoText(self, courseplay:loc('COURSEPLAY_BALER_NEEDS_NETS'):format(nameNum(workTool)), -2, 'BALER_NETS');
 							if not workTool.doors.rear.isOpen then
 								courseplay.thirdParty.JD864PremiumOpenRearDoor(workTool, true);
 							elseif workTool.coverEdge.palletInRange ~= nil and workTool.coverEdge.palletInRange.rollsLeft > 0 then
@@ -1574,7 +1574,7 @@ function courseplay.thirdParty.EifokLiquidManure.refillViaHose(vehicle, activeTo
 			courseplay.thirdParty.EifokLiquidManure.findHoseToUse(vehicle, activeTool, object, correctSideRef, otherSideRef, checkOrder, side, pumpDir);
 
 			if vehicle.cp.EifokLiquidManure.hoseToUse == nil then
-				courseplay:setGlobalInfoText(vehicle, courseplay:loc('COURSEPLAY_HOSEMISSING'), -2);
+				courseplay:setGlobalInfoText(vehicle, courseplay:loc('COURSEPLAY_HOSEMISSING'), -2, 'HOSE_MISSING');
 				return false;
 
 			--GO FOR GLORY

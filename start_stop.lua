@@ -367,7 +367,15 @@ function courseplay:stop(self)
 	if self.cp.tempToolOffsetX ~= nil then
 		self.cp.toolOffsetX = self.cp.tempToolOffsetX 
 		self.cp.tempToolOffsetX = nil
-	end
+	end;
+
+	--remove any global info texts
+	for refIdx,_ in pairs(courseplay.globalInfoText.refIdxToLocaleName) do
+		if self.cp.activeGlobalInfoTexts[refIdx] ~= nil then
+			courseplay:setGlobalInfoText(self, nil, nil, refIdx, true);
+		end;
+	end;
+
 
 	--reset EifokLiquidManure
 	courseplay.thirdParty.EifokLiquidManure.resetData(self);

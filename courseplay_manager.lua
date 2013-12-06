@@ -14,11 +14,27 @@ function courseplay_manager:loadMap(name)
 		end
 	end;
 
-	--GlobalInfoText buttons
-	self.buttons = {
-		globalInfoText = {};
-		registerButton = courseplay_manager.registerButton;
+	self.buttons = {};
+
+	self.globalInfoTextMaxNum = 20;
+	self.globalInfoTextOverlays = {};
+	self.buttons.globalInfoText = {};
+	local git = courseplay.globalInfoText;
+	local buttonHeight = git.fontSize;
+	local buttonWidth = buttonHeight * 1080 / 1920;
+	local buttonX = git.backgroundX - git.backgroundPadding - buttonWidth;
+	for i=1,self.globalInfoTextMaxNum do
+		local posY = git.backgroundY + (i - 1) * git.lineHeight;
+		self.globalInfoTextOverlays[i] = Overlay:new(string.format("globalInfoTextOverlay%d", i), git.backgroundImg, git.backgroundX, posY, 0.1, git.fontSize);
+		self:registerButton('globalInfoText', 'goToVehicle', i, 'pageNav_7.png', buttonX, posY, buttonWidth, buttonHeight);
+	end;
+	self.buttons.globalInfoTextClickArea = {
+		x1 = buttonX;
+		x2 = buttonX + buttonWidth;
+		y1 = git.backgroundY,
+		y2 = git.backgroundY + (self.globalInfoTextMaxNum  * git.lineHeight);
 	};
+
 	self.playerOnFootMouseEnabled = false;
 	self.wasPlayerFrozen = false;
 
@@ -94,24 +110,27 @@ end
 
 function courseplay_manager:draw()
 	courseplay.globalInfoText.hasContent = false;
-	if not courseplay.globalInfoText.hideWhenPdaActive or (courseplay.globalInfoText.hideWhenPdaActive and not g_currentMission.missionPDA.showPDA) then
-		if #(courseplay.globalInfoText.content) > 0 then
-			courseplay.globalInfoText.hasContent = true;
-			for i,data in pairs(courseplay.globalInfoText.content) do
-				local bg = data.vehicle.cp.globalInfoTextOverlay;
-				local bgColor = courseplay.globalInfoText.levelColors[tostring(data.level)];
-				bgColor[4] = 0.85;
-				bg:setColor(unpack(bgColor));
+	line = 0;
+	if not courseplay.globalInfoText.hideWhenPdaActive or (courseplay.globalInfoText.hideWhenPdaActive and not g_currentMission.missionPDA.showPDA) and table.maxn(courseplay.globalInfoText.content) > 0 then
+		courseplay.globalInfoText.hasContent = true;
+		for _,refIndexes in pairs(courseplay.globalInfoText.content) do
+			if line >= self.globalInfoTextMaxNum then
+				break;
+			end;
 
-				local posY = courseplay.globalInfoText.posY + ((i - 1) * courseplay.globalInfoText.lineHeight);
+			for refIdx,data in pairs(refIndexes) do
+				line = line + 1;
+
+				local bg = self.globalInfoTextOverlays[line];
+				bg:setColor(unpack(courseplay.globalInfoText.levelColors[data.level]));
+				local posY = courseplay.globalInfoText.posY + ((line - 1) * courseplay.globalInfoText.lineHeight);
 				bg:setPosition(bg.x, posY);
-				bg:setDimension(getTextWidth(courseplay.globalInfoText.fontSize, data.text) + courseplay.globalInfoText.backgroundPadding * 2.5, bg.height);
+				bg:setDimension(data.backgroundWidth, bg.height);
 
-				local button = self.buttons.globalInfoText[i];
+				local button = self.buttons.globalInfoText[line];
 				if button ~= nil then
 					button.canBeClicked = true;
 					button.isDisabled = data.vehicle.isBroken or data.vehicle.isControlled;
-					--courseplay.button.setOffset(button, 0, posY - courseplay.globalInfoText.posY);
 					button.parameter = data.vehicle;
 					if g_currentMission.controlledVehicle == data.vehicle then
 						courseplay:setButtonColor(button, courseplay.hud.colors.activeGreen);
@@ -132,16 +151,10 @@ function courseplay_manager:draw()
 				bg:render();
 				courseplay:setFontSettings("white", false);
 				renderText(courseplay.globalInfoText.posX, posY, courseplay.globalInfoText.fontSize, data.text);
-
-				--reset for next runthrough
-				data.vehicle.cp.currentGlobalInfoTextLevel = nil;
 			end;
-
-			--empty the tables for next runthrough
-			courseplay.globalInfoText.content = {};
-			courseplay.globalInfoText.vehicleHasText = {};
 		end;
 	end;
+	self.buttons.globalInfoTextClickArea.y2 = courseplay.globalInfoText.backgroundY + (line  * courseplay.globalInfoText.lineHeight);
 
 	courseplay.lightsNeeded = g_currentMission.environment.needsLights or (g_currentMission.environment.lastRainScale > 0.1 and g_currentMission.environment.timeSinceLastRain < 30);
 end;
@@ -152,10 +165,10 @@ function courseplay_manager:mouseEvent(posX, posY, isDown, isUp, button)
 		return;
 	end;
 	local mouseKey = button;
-	local mouseIsInHudArea = posX > area.x1 and posX < area.x2 and posY > area.y1 and posY < area.y2;
+	local mouseIsInClickArea = posX > area.x1 and posX < area.x2 and posY > area.y1 and posY < area.y2;
 
 	--LEFT CLICK
-	if isDown and mouseKey == Input[courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION.keyName] and mouseIsInHudArea then
+	if isDown and mouseKey == Input[courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION.keyName] and mouseIsInClickArea then
 		if courseplay.globalInfoText.hasContent then
 			for i,button in pairs(self.buttons.globalInfoText) do
 				if button.show and courseplay:mouseIsInButtonArea(posX, posY, button) then

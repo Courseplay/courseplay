@@ -31,7 +31,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 	end
 	if (self.recordnumber == self.cp.stopWork or self.cp.last_recordnumber == self.cp.stopWork) and self.cp.abortWork == nil and not self.cp.isLoaded and not isFinishingWork then
 		allowedToDrive = false
-		courseplay:setGlobalInfoText(self, courseplay:loc("CPWorkEnd"), 1);
+		courseplay:setGlobalInfoText(self, courseplay:loc("COURSEPLAY_WORK_END"), 1, 'WORK_END');
 		hasFinishedWork = true
 	end
 
@@ -118,7 +118,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 				if fill_level == 100 and not self.cp.hasUnloadingRefillingCourse then
 					if self.cp.automaticUnloadingOnField then
 						self.cp.unloadOrder = true
-						courseplay:setGlobalInfoText(self, courseplay:loc("CPUnloadBale"));
+						courseplay:setGlobalInfoText(self, courseplay:loc("COURSEPLAY_UNLOADING_BALES"), 0, 'UNLOADING_BALE');
 					else
 						specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,nil); --TODO: unclear
 					end
@@ -310,7 +310,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 					--courseplay:debug(string.format("Abort: %d StopWork: %d",self.cp.abortWork,self.cp.stopWork), 12)
 				elseif not self.cp.hasUnloadingRefillingCourse and not self.cp.automaticUnloadingOnField then
 					allowedToDrive = false;
-					courseplay:setGlobalInfoText(self, string.format(": %s %s", tostring(workTool.name), courseplay:loc("CPneedsToBeUnloaded")), -1);
+					courseplay:setGlobalInfoText(self, string.format(": %s %s", tostring(workTool.name), courseplay:loc("COURSEPLAY_NEEDS_UNLOADING")), -1, 'NEEDS_UNLOADING');
 				elseif not self.cp.hasUnloadingRefillingCourse and self.cp.automaticUnloadingOnField then
 					allowedToDrive = false;
 				end;
@@ -370,7 +370,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 						if weatherStop then
 							allowedToDrive = false;
 							tool:setIsThreshing(false);
-							courseplay:setGlobalInfoText(self, courseplay:loc("CPwaitingForWeather"));
+							courseplay:setGlobalInfoText(self, courseplay:loc("COURSEPLAY_WEATHER_WARNING"), 0, 'WEATHER');
 						end
 
 					end

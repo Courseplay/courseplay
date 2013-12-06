@@ -88,20 +88,11 @@ function courseplay:load(xmlFile)
 	self.cp.infoText = nil -- info text on tractor
 
 	-- global info text - also displayed when not in vehicle
-	local git = courseplay.globalInfoText;
-	self.cp.globalInfoTextOverlay = Overlay:new(string.format("globalInfoTextOverlay%d", self.rootNode), git.backgroundImg, git.backgroundX, git.backgroundY, 0.1, git.fontSize);
-	local buttonHeight = git.fontSize;
-	local buttonWidth = buttonHeight * 1080 / 1920;
-	local buttonX = git.backgroundX - git.backgroundPadding - buttonWidth;
-	local buttonIdx = #courseplay_manager.buttons.globalInfoText + 1;
-	local buttonY = git.posY + ((buttonIdx - 1) * git.lineHeight);
-	courseplay_manager.buttons:registerButton('globalInfoText', 'goToVehicle', buttonIdx, 'pageNav_7.png', buttonX, buttonY, buttonWidth, buttonHeight);
-	courseplay_manager.buttons.globalInfoTextClickArea = {
-		x1 = buttonX;
-		x2 = buttonX + buttonWidth;
-		y1 = git.posY,
-		y2 = git.posY + (buttonIdx * git.lineHeight);
-	};
+	self.cp.hasSetGlobalInfoTextThisLoop = {};
+	self.cp.activeGlobalInfoTexts = {};
+	self.cp.numActiveGlobalInfoTexts = 0;
+
+
 	-- ai mode: 1 abfahrer, 2 kombiniert
 	self.cp.mode = 1
 	self.cp.modeState = 0
@@ -812,7 +803,7 @@ function courseplay:showWorkWidth(vehicle)
 	drawDebugLine(left.x, left.y, left.z, 1, 0, 0, right.x, right.y, right.z, 1, 0, 0);
 end;
 
--- is been called everey frame
+-- is being called every loop
 function courseplay:update(dt)
 	-- we are in record mode
 	if self.record then
@@ -821,7 +812,17 @@ function courseplay:update(dt)
 
 	-- we are in drive mode
 	if self.drive then
+		for refIdx,_ in pairs(courseplay.globalInfoText.refIdxToLocaleName) do
+			self.cp.hasSetGlobalInfoTextThisLoop[refIdx] = false;
+		end;
+
 		courseplay:drive(self, dt);
+
+		for refIdx,_ in pairs(courseplay.globalInfoText.refIdxToLocaleName) do
+			if self.cp.activeGlobalInfoTexts[refIdx] ~= nil and not self.cp.hasSetGlobalInfoTextThisLoop[refIdx] then
+				courseplay:setGlobalInfoText(self, nil, nil, refIdx, true);
+			end;
+		end;
 	end
 	 
 	if self.cp.onSaveClick and not self.cp.doNotOnSaveClick then
@@ -1235,7 +1236,7 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 	end;
 	local cpClose = '</courseplay>';
 
-	indent = '   ';
+	local indent = '   ';
 	local nodes = nodeIdent .. cpOpen .. '\n';
 	nodes = nodes .. nodeIdent .. indent .. speeds .. '\n';
 	nodes = nodes .. nodeIdent .. indent .. combi .. '\n';

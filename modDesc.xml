@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="13">
-	<version>3.41.0285</version>
+	<version>3.41.0295</version>
 	<author>Jakob Tischler / Thomas Gärtner / Horoman</author>
 	<title>
 		<de>Courseplay</de>
@@ -468,7 +468,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<it>Percorsi: "%s"</it>
 			<cz>Trasy: "%s"</cz>
 		</text>
-		<text name="CPReachedOverloadPoint">
+		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT">
 			<en>has reached overload point.</en>
 			<de>hat Überladepunkt erreicht.</de>
 			<fr>a atteint le point de déchargement.</fr>
@@ -476,23 +476,23 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<it>ha raggiunto il punto di scarico.</it>
 			<cz>přijel na místo překládky.</cz>
 		</text>
-		<text name="CPReachedWaitPoint">
-			<en>has reached waiting point.</en>
-			<de>hat Wartepunkt erreicht.</de>
-			<fr>a atteint le point d'attente.</fr>
-			<es>ha alcanzado el punto de espera.</es>
-			<it>ha raggiunto il punto d'attesa.</it>
-			<cz>přijel na místo čekání.</cz>
+		<text name="COURSEPLAY_REACHED_WAITING_POINT">
+			<en>has reached waiting point</en>
+			<de>hat Wartepunkt erreicht</de>
+			<fr>a atteint le point d'attente</fr>
+			<es>ha alcanzado el punto de espera</es>
+			<it>ha raggiunto il punto d'attesa</it>
+			<cz>přijel na místo čekání</cz>
 		</text>
-		<text name="CPReachedEndPoint">
-			<en>has reached end point.</en>
-			<de>hat den Tigger bzw. das Ende der Route erreicht.</de>
-			<fr>a atteint la fin de la course.</fr>
-			<es>ha alcanzado el punto final.</es>
+		<text name="COURSEPLAY_REACHED_END_POINT">
+			<en>has reached trigger/end point</en>
+			<de>hat den Trigger/das Ende der Route erreicht</de>
+			<fr>a atteint la fin de la course</fr>
+			<es>ha alcanzado el punto final</es>
 			<it>ha raggiunto la fine del percorso</it>
-			<cz>dojel na trigger nebo konec.</cz>
+			<cz>dojel na trigger nebo konec</cz>
 		</text>
-		<text name="CPWorkEnd">
+		<text name="COURSEPLAY_WORK_END">
 			<en>has finished work.</en>
 			<de>hat die Aufgabe erledigt.</de>
 			<fr>a terminé le travail.</fr>
@@ -508,7 +508,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<it>pronto per scaricare le balle</it>
 			<cz>je připraven skládat balíky.</cz>
 		</text>
-		<text name="CPneedsToBeUnloaded">
+		<text name="COURSEPLAY_NEEDS_UNLOADING">
 			<en>needs to be unloaded.</en>
 			<de>muss entladen werden.</de>
 			<fr>a besoin d'être vidé.</fr>
@@ -516,7 +516,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<it>necessita di essere scaricato.</it>
 			<cz>potřebuje vyložit.</cz>
 		</text>
-		<text name="CPworkToolNeedsToBeRefilled">
+		<text name="COURSEPLAY_NEEDS_REFILLING">
 			<en>work tool needs to be refilled.</en>
 			<de>Gerät muss aufgefüllt werden.</de>
 			<fr>l'outil a besoin d'être rechargé.</fr>
@@ -524,7 +524,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<it>attrezzo deve essere rifornito.</it> <!-- !!! -->
 			<cz>pracovní stroj musí být doplněn.</cz>
 		</text>
-		<text name="CPUnloadBale">
+		<text name="COURSEPLAY_UNLOADING_BALES">
 			<en>unloading bales.</en>
 			<de>Ballen werden entladen.</de>
 			<fr>decharge les ballots.</fr>
@@ -532,7 +532,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<it>scaricando le balle.</it>
 			<cz>skládá balíky.</cz>
 		</text>
-		<text name="CPInTraffic">
+		<text name="COURSEPLAY_IS_IN_TRAFFIC">
 			<en>is in traffic.</en>
 			<de>steckt im Verkehr fest</de>
 			<fr>est coincé.</fr>
@@ -1035,7 +1035,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<it>Segio il trattore</it>
 			<cz>Jedu za traktor</cz>
 		</text>
-		<text name="CPFuelWarning">
+		<text name="COURSEPLAY_SHOULD_BE_REFUELED">
 			<en>should be refueled soon</en>
 			<de>sollte aufgetankt werden</de>
 			<fr>doit bientôt faire le plein</fr>
@@ -1043,7 +1043,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<it>dev'essere rifornito al piu' presto</it>
 			<cz>bude potřebovat dotankovat</cz>
 		</text>
-		<text name="CPNoFuelStop">
+		<text name="COURSEPLAY_MUST_BE_REFUELED">
 			<en>must be refueled</en>
 			<de>muss aufgetankt werden</de>
 			<fr>doit faire le plein</fr>
@@ -1051,7 +1051,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<it>dev'essere rifornito ora</it>
 			<cz>musí tankovat</cz>
 		</text>
-		<text name="CPRefueling">
+		<text name="COURSEPLAY_IS_BEING_REFUELED">
 			<en>is being refueled</en>
 			<de>wird aufgetankt</de>
 			<fr>est en train d'être ravitailler</fr>
@@ -1091,7 +1091,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<it>la versione dell'ESLimiter non e' compatibile</it>
 			<cz>verze ESLimiter není podporována</cz>
 		</text>
-		<text name="CPwaitingForWeather">
+		<text name="COURSEPLAY_WEATHER_WARNING">
 			<en>is waiting for better weather</en>
 			<de>wartet auf besseres Wetter</de>
 			<fr>est en attente d'une meilleure météo</fr>
@@ -1155,7 +1155,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<it>Larghezza di lavoro</it>
 			<cz>Pracovní šířka:</cz>
 		</text>
-		<text name="CPWaterDrive">
+		<text name="COURSEPLAY_WATER_WARNING">
 			<en>would like to go swimming</en>
 			<de>möchte baden gehen</de>
 			<fr>a voulut prendre un bain</fr>
