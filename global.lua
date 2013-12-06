@@ -15,16 +15,66 @@ function courseplay:removeFromActiveCoursePlayers(vehicle)
 	courseplay.numActiveCoursePlayers = math.max(courseplay.numActiveCoursePlayers - 1, 0);
 end;
 
-function courseplay:setGlobalInfoText(vehicle, text, level)
-	if not courseplay.globalInfoText.vehicleHasText[vehicle.cp.coursePlayerNum] then
-		vehicle.cp.currentGlobalInfoTextLevel = level or 0;
-		table.insert(courseplay.globalInfoText.content, {
-			level = vehicle.cp.currentGlobalInfoTextLevel,
+function courseplay:setGlobalInfoText(vehicle, text, level, refIdx, forceRemove)
+--v3 multiple msgs per vehicle
+	--print(string.format('setGlobalInfoText(vehicle, %s, %s, %s, %s)', tostring(text), tostring(level), tostring(refIdx), tostring(forceRemove))); 
+	if forceRemove == true then
+		if courseplay.globalInfoText.content[vehicle.rootNode][refIdx] then
+			courseplay.globalInfoText.content[vehicle.rootNode][refIdx] = nil;
+		end;
+		vehicle.cp.activeGlobalInfoTexts[refIdx] = nil;
+		vehicle.cp.numActiveGlobalInfoTexts = vehicle.cp.numActiveGlobalInfoTexts - 1;
+		--print(string.format('\t%s: remove globalInfoText[%s] from global table, numActiveGlobalInfoTexts=%d', nameNum(vehicle), refIdx, vehicle.cp.numActiveGlobalInfoTexts));
+		if vehicle.cp.numActiveGlobalInfoTexts == 0 then
+			courseplay.globalInfoText.content[vehicle.rootNode] = nil;
+			--print(string.format('\t\tset globalInfoText.content[rootNode] to nil'));
+		end;
+		return;
+	end;
+
+
+	if courseplay.globalInfoText.content[vehicle.rootNode] == nil then
+		courseplay.globalInfoText.content[vehicle.rootNode] = {};
+	end;
+
+	level = level or 0;
+
+	vehicle.cp.hasSetGlobalInfoTextThisLoop[refIdx] = true;
+	if vehicle.cp.activeGlobalInfoTexts[refIdx] == nil or vehicle.cp.activeGlobalInfoTexts[refIdx] ~= level then
+		if vehicle.cp.activeGlobalInfoTexts[refIdx] == nil then
+			vehicle.cp.numActiveGlobalInfoTexts = vehicle.cp.numActiveGlobalInfoTexts + 1;
+		end;
+		--print(string.format('\t%s: setGlobalInfoText [%q] numActiveGlobalInfoTexts=%d, lvl %d, old lvl=%q, text=%q', nameNum(vehicle), refIdx, vehicle.cp.numActiveGlobalInfoTexts, level, tostring(vehicle.cp.activeGlobalInfoTexts[refIdx]), text));
+		vehicle.cp.activeGlobalInfoTexts[refIdx] = level;
+		courseplay.globalInfoText.content[vehicle.rootNode][refIdx] = {
+			level = level,
 			text = nameNum(vehicle) .. " " .. text,
 			vehicle = vehicle
-		});
-		courseplay.globalInfoText.vehicleHasText[vehicle.cp.coursePlayerNum] = true;
+		};
+		courseplay.globalInfoText.content[vehicle.rootNode][refIdx].backgroundWidth = getTextWidth(courseplay.globalInfoText.fontSize, courseplay.globalInfoText.content[vehicle.rootNode][refIdx].text) + courseplay.globalInfoText.backgroundPadding * 2.5;
 	end;
+
+--[[ v2 one msg per vehicle
+	if forceRemove == true then
+		courseplay.globalInfoText.content[vehicle.rootNode] = nil;
+		vehicle.cp.curGlobalInfoText = nil;
+		print(string.format('%s: remove globalInfoText from global table, curGlobalInfoText=nil', nameNum(vehicle)));
+		return;
+	end;
+
+	--print(string.format('%s: setGlobalInfoText(): curGlobalInfoText=%q, new text=%q, set hasSetGlobalInfoTextThisLoop to true', nameNum(vehicle), tostring(vehicle.cp.curGlobalInfoText), tostring(text)));
+	vehicle.cp.hasSetGlobalInfoTextThisLoop = true;
+	if vehicle.cp.curGlobalInfoText == nil or vehicle.cp.curGlobalInfoText ~= text then
+		print(string.format('%s: setGlobalInfoText lvl %d, old text=%q, new curGlobalInfoText=%q', nameNum(vehicle), level or 0, tostring(vehicle.cp.curGlobalInfoText), text));
+		vehicle.cp.curGlobalInfoText = text;
+		courseplay.globalInfoText.content[vehicle.rootNode] = {
+			level = level or 0,
+			text = nameNum(vehicle) .. " " .. text,
+			vehicle = vehicle
+		};
+	end;
+--]]
+
 end;
 
 function courseplay:renderInfoText(vehicle)

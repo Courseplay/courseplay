@@ -258,11 +258,39 @@ function courseplay:setGlobalData()
 	courseplay.globalInfoText.content = {};
 	courseplay.globalInfoText.hasContent = false;
 	courseplay.globalInfoText.vehicleHasText = {};
-	courseplay.globalInfoText.levelColors = {};
-	courseplay.globalInfoText.levelColors["0"]  = courseplay.hud.colors.hover;
-	courseplay.globalInfoText.levelColors["1"]  = courseplay.hud.colors.activeGreen;
-	courseplay.globalInfoText.levelColors["-1"] = courseplay.hud.colors.activeRed;
-	courseplay.globalInfoText.levelColors["-2"] = courseplay.hud.colors.closeRed;
+	courseplay.globalInfoText.levelColors = {
+		[-2] = courseplay.utils.table.copy(courseplay.hud.colors.closeRed);
+		[-1] = courseplay.utils.table.copy(courseplay.hud.colors.activeRed);
+		[0]  = courseplay.utils.table.copy(courseplay.hud.colors.hover);
+		[1]  = courseplay.utils.table.copy(courseplay.hud.colors.activeGreen);
+	};
+	for i=-2,1 do
+		courseplay.globalInfoText.levelColors[i][4] = 0.85;
+	end;
+	courseplay.globalInfoText.refIdxToLocaleName = {
+		BALER_NETS = { [-2] = "COURSEPLAY_BALER_NEEDS_NETS" };
+		DAMAGE = { 
+			[-2] = "COURSEPLAY_DAMAGE_MUST_BE_REPAIRED";
+			[-1] = "COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED";
+			[0] = "COURSEPLAY_DAMAGE_IS_BEING_REPAIRED";
+		};
+		END_POINT = { [0] = "COURSEPLAY_REACHED_END_POINT" };
+		FUEL = {
+			[-2] = "COURSEPLAY_MUST_BE_REFUELED";
+			[-1] = "COURSEPLAY_SHOULD_BE_REFUELED";
+			[0] = "COURSEPLAY_IS_BEING_REFUELED";
+		};
+		HOSE_MISSING = { [-2] = "COURSEPLAY_HOSEMISSING" };
+		NEEDS_REFILLING = { [-1] = "COURSEPLAY_NEEDS_REFILLING" };
+		NEEDS_UNLOADING = { [-1] = "COURSEPLAY_NEEDS_UNLOADING" };
+		OVERLOADING_POINT = { [0] = "COURSEPLAY_REACHED_OVERLOADING_POINT" };
+		TRAFFIC = { [-1] = "COURSEPLAY_IS_IN_TRAFFIC" };
+		UNLOADING_BALE = { [0] = "COURSEPLAY_UNLOADING_BALES" };
+		WAIT_POINT = { [0] = "COURSEPLAY_REACHED_WAITING_POINT" };
+		WATER = { [-2] = "COURSEPLAY_WATER_WARNING" };
+		WEATHER = { [0] = "COURSEPLAY_WEATHER_WARNING" };
+		WORK_END = { [1] = "COURSEPLAY_WORK_END" };
+	};
 
 
 	--TRIGGERS
