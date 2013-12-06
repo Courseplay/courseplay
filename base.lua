@@ -264,7 +264,7 @@ function courseplay:load(xmlFile)
 	self.cp.followAtFillLevel = 50
 	self.cp.driveOnAtFillLevel = 90
 
-	self.turn_factor = nil --TODO: is never set, but used in mode2:816 in localToWorld function
+	--self.turn_factor = nil --TODO: is never set, but used in mode2:816 in localToWorld function
 	self.cp.turnRadius = 10;
 	self.cp.turnRadiusAuto = 10;
 	self.cp.turnRadiusAutoMode = true;
@@ -818,8 +818,8 @@ function courseplay:update(dt)
 
 		courseplay:drive(self, dt);
 
-		for refIdx,_ in pairs(courseplay.globalInfoText.msgReference) do
-			if self.cp.activeGlobalInfoTexts[refIdx] ~= nil and not self.cp.hasSetGlobalInfoTextThisLoop[refIdx] then
+		for refIdx,_ in pairs(self.cp.activeGlobalInfoTexts) do
+			if not self.cp.hasSetGlobalInfoTextThisLoop[refIdx] then
 				courseplay:setGlobalInfoText(self, refIdx, true); --force remove
 			end;
 		end;
@@ -864,7 +864,7 @@ function courseplay:update(dt)
 			end;
 
 		elseif self.cp.hud.currentPage == 1 then
-			if not self.cp.canDrive and self.cp.fieldEdge.customField.show and self.cp.fieldEdge.customField.points ~= nil then
+			if self:getIsActive() and not self.cp.canDrive and self.cp.fieldEdge.customField.show and self.cp.fieldEdge.customField.points ~= nil then
 				courseplay:showFieldEdgePath(self, "customField");
 			end;
 
@@ -880,7 +880,7 @@ function courseplay:update(dt)
 			end
 
 		elseif self.cp.hud.currentPage == 8 then
-			if self.cp.fieldEdge.selectedField.show and self.cp.fieldEdge.selectedField.fieldNum > 0 then
+			if self:getIsActive() and self.cp.fieldEdge.selectedField.show and self.cp.fieldEdge.selectedField.fieldNum > 0 then
 				courseplay:showFieldEdgePath(self, "selectedField");
 			end;
 		end;

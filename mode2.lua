@@ -779,6 +779,7 @@ function courseplay:unload_combine(self, dt)
 	end
 
 
+	--[[ TODO: MODESTATE 99 - WTF?
 	-- wende man?ver
 	if self.cp.modeState == 9 and self.target_x ~= nil and self.target_z ~= nil then
 		--courseplay:remove_from_combines_ignore_list(self, combine)
@@ -816,6 +817,7 @@ function courseplay:unload_combine(self, dt)
 			allowedToDrive = true
 		end
 	end
+	--]]
 
 
 
