@@ -122,7 +122,11 @@ function courseplay:handleAugerWagon(vehicle, workTool, unfold, unload, orderNam
 				workTool.cpAI = newPipeState;
 
 				if workTool.pipeLight ~= nil and getVisibility(workTool.pipeLight) ~= (unfold and courseplay.lightsNeeded) then
-					setVisibility(workTool.pipeLight, unfold and courseplay.lightsNeeded);
+					if workTool.togglePipeLight then
+						workTool:togglePipeLight(unfold and courseplay.lightsNeeded);
+					else
+						setVisibility(workTool.pipeLight, unfold and courseplay.lightsNeeded);
+					end;
 				end;
 			end;
 		end;
