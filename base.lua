@@ -829,6 +829,11 @@ function courseplay:update(dt)
 		self.cp.onSaveClick = false
 		self.cp.doNotOnSaveClick = false
 	end
+	if self.cp.onMpSetCourses then
+		courseplay.courses.reload(self)
+		self.cp.onMpSetCourses = nil
+	end
+	
 
 	if g_server ~= nil  then 
 		if self.drive then --TODO: restrict to currentPage == 1
