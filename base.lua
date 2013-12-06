@@ -803,7 +803,7 @@ function courseplay:showWorkWidth(vehicle)
 	drawDebugLine(left.x, left.y, left.z, 1, 0, 0, right.x, right.y, right.z, 1, 0, 0);
 end;
 
--- is been called everey frame
+-- is being called every loop
 function courseplay:update(dt)
 	-- we are in record mode
 	if self.record then
@@ -1223,7 +1223,7 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 	end;
 	local cpClose = '</courseplay>';
 
-	indent = '   ';
+	local indent = '   ';
 	local nodes = nodeIdent .. cpOpen .. '\n';
 	nodes = nodes .. nodeIdent .. indent .. speeds .. '\n';
 	nodes = nodes .. nodeIdent .. indent .. combi .. '\n';

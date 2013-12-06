@@ -380,7 +380,7 @@ function courseplay:drive(self, dt)
 		elseif self.cp.mode == 9 then
 			self.wait = false;
 		else
-			courseplay:setGlobalInfoText(self, courseplay:loc("COURSEPLAY_REACHED_WAITING_POINT", 0, 'WAIT_POINT'));
+			courseplay:setGlobalInfoText(self, courseplay:loc("COURSEPLAY_REACHED_WAITING_POINT"), 0, 'WAIT_POINT');
 		end
 		-- wait untli a specific time
 		if self.waitTimer and self.timer > self.waitTimer then
