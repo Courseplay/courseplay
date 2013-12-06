@@ -779,10 +779,7 @@ function courseplay:draw()
 
 	--RENDER
 	courseplay:renderInfoText(self);
-	if g_server ~= nil then
-		self.cp.infoText = nil;
-	end
-
+	
 	if self:getIsActive() then
 		if self.cp.hud.show then
 			courseplay:setHudContent(self);
@@ -810,6 +807,11 @@ function courseplay:update(dt)
 		courseplay:record(self);
 	end
 
+	if g_server ~= nil then
+		self.cp.infoText = nil;
+	end
+	
+	
 	-- we are in drive mode
 	if self.drive then
 		for refIdx,_ in pairs(courseplay.globalInfoText.refIdxToLocaleName) do
@@ -891,9 +893,8 @@ function courseplay:update(dt)
 		end;
 	end;
 
-
 	if g_server ~= nil and g_currentMission.missionDynamicInfo.isMultiplayer then 
-		for _,v in pairs(courseplay.checkValues) do
+		for k,v in pairs(courseplay.checkValues) do
 			self.cp[v .. "Memory"] = courseplay:checkForChangeAndBroadcast(self, "self.cp." .. v , self.cp[v], self.cp[v .. "Memory"]);
 		end;
 	end;
