@@ -808,12 +808,13 @@ function courseplay:checkAndPrintChange(vehicle, variable, VariableNameString)
 	end
 end;
 
-function courseplay.utils:hasVarChanged(vehicle, variableName)
+function courseplay.utils:hasVarChanged(vehicle, variableName, direct)
+	direct = direct or false;
 	if vehicle.cp.varMemory == nil then
 		vehicle.cp.varMemory = {};
 	end;
 
-	local variable = vehicle.cp[variableName];
+	local variable = direct and vehicle[variableName] or vehicle.cp[variableName];
 	local memory = vehicle.cp.varMemory[variableName];
 
 	if memory == nil then

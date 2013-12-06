@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="13">
-	<version>3.41.0296</version>
+	<version>3.41.0297</version>
 	<author>Jakob Tischler / Thomas Gärtner / Horoman</author>
 	<title>
 		<de>Courseplay</de>
@@ -509,20 +509,20 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<cz>je připraven skládat balíky.</cz>
 		</text>
 		<text name="COURSEPLAY_NEEDS_UNLOADING">
-			<en>needs to be unloaded.</en>
-			<de>muss entladen werden.</de>
-			<fr>a besoin d'être vidé.</fr>
-			<es>needs to be unloaded.</es> <!-- !!! -->
-			<it>necessita di essere scaricato.</it>
-			<cz>potřebuje vyložit.</cz>
+			<en>: work tool needs to be unloaded.</en>
+			<de>: Gerät muss entladen werden.</de>
+			<fr>: l'outila besoin d'être vidé.</fr>
+			<es>: work tool needs to be unloaded.</es> <!-- !!! -->
+			<it>: attrezzo necessita di essere scaricato.</it>
+			<cz>: potřebuje vyložit.</cz> <!-- !!! -->
 		</text>
 		<text name="COURSEPLAY_NEEDS_REFILLING">
-			<en>work tool needs to be refilled.</en>
-			<de>Gerät muss aufgefüllt werden.</de>
-			<fr>l'outil a besoin d'être rechargé.</fr>
-			<es>work tool needs to be refilled.</es> <!-- !!! -->
-			<it>attrezzo deve essere rifornito.</it> <!-- !!! -->
-			<cz>pracovní stroj musí být doplněn.</cz>
+			<en>: work tool needs to be refilled.</en>
+			<de>: Gerät muss aufgefüllt werden.</de>
+			<fr>: l'outil a besoin d'être rechargé.</fr>
+			<es>: work tool needs to be refilled.</es> <!-- !!! -->
+			<it>: attrezzo deve essere rifornito.</it>
+			<cz>: pracovní stroj musí být doplněn.</cz>
 		</text>
 		<text name="COURSEPLAY_UNLOADING_BALES">
 			<en>unloading bales.</en>
@@ -1566,12 +1566,12 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<cz>AutoCombine není podporován</cz> <!-- !!! -->
 		</text>
 		<text name="COURSEPLAY_BALER_NEEDS_NETS">
-			<en>: %s needs new net rolls</en>
-			<de>: %s braucht neue Wickelnetze</de>
-			<fr>: %s needs new net rolls</fr> <!-- !!! -->
-			<es>: %s needs new net rolls</es> <!-- !!! -->
-			<it>: %s ha bisogno di nuovo rotolo di rete</it>
-			<cz>: %s needs new net rolls</cz> <!-- !!! -->
+			<en>: baler needs new net rolls</en>
+			<de>: Presse braucht neue Wickelnetze</de>
+			<fr>: baler needs new net rolls</fr> <!-- !!! -->
+			<es>: baler needs new net rolls</es> <!-- !!! -->
+			<it>: rotopressa ha bisogno di nuovo rotolo di rete</it>
+			<cz>: baler needs new net rolls</cz> <!-- !!! -->
 		</text>
 		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES">
 			<en>Calculate current field's edge path</en>
@@ -1614,28 +1614,28 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<cz>uživatel</cz>
 		</text>
 		<text name="COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED">
-			<en>should be repaired soon (%d%% damage)</en>
-			<de>sollte repariert werden (%d%% Schaden)</de>
-			<fr>doit bientôt réparer (%d%% dommage)</fr>
-			<es>debe repararse pronto (%d%% daño)</es>
-			<it>dev'essere riparato al piu' presto (%d%% danno)</it>
-			<cz>should be repaired soon (%d%% damage)</cz> <!-- !!! -->
+			<en>should be repaired soon</en>
+			<de>sollte repariert werden</de>
+			<fr>doit bientôt réparer</fr>
+			<es>debe repararse pronto</es>
+			<it>dev'essere riparato al piu' presto</it>
+			<cz>should be repaired soon</cz> <!-- !!! -->
 		</text>
 		<text name="COURSEPLAY_DAMAGE_MUST_BE_REPAIRED">
-			<en>must be repaired (%d%% damage)</en>
-			<de>muss repariert werden (%d%% Schaden)</de>
-			<fr>doit réparer (%d%% dommage)</fr>
-			<es>debe repararse (%d%% daño)</es>
-			<it>dev'essere riparato ora (%d%% danno)</it>
-			<cz>must be repaired (%d%% damage)</cz> <!-- !!! -->
+			<en>must be repaired</en>
+			<de>muss repariert werden</de>
+			<fr>doit réparer</fr>
+			<es>debe repararse</es>
+			<it>dev'essere riparato ora</it>
+			<cz>must be repaired</cz> <!-- !!! -->
 		</text>
 		<text name="COURSEPLAY_DAMAGE_IS_BEING_REPAIRED">
-			<en>is being repaired (%d%% damage)</en>
-			<de>wird repariert (%d%% Schaden)</de>
-			<fr>est en train d'être réparer (%d%% dommage)</fr>
-			<es>está repararando (%d%% daño)</es>
-			<it>si sta riparato (%d%% danno)</it>
-			<cz>is being repaired (%d%% damage)</cz> <!-- !!! -->
+			<en>is being repaired</en>
+			<de>wird repariert</de>
+			<fr>est en train d'être réparer</fr>
+			<es>está repararando</es>
+			<it>si sta riparato</it>
+			<cz>is being repaired</cz> <!-- !!! -->
 		</text>
 		<text name="COURSEPLAY_COVER_HANDLING">
 			<en>Covers</en>

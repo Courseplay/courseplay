@@ -812,15 +812,15 @@ function courseplay:update(dt)
 
 	-- we are in drive mode
 	if self.drive then
-		for refIdx,_ in pairs(courseplay.globalInfoText.refIdxToLocaleName) do
+		for refIdx,_ in pairs(courseplay.globalInfoText.msgReference) do
 			self.cp.hasSetGlobalInfoTextThisLoop[refIdx] = false;
 		end;
 
 		courseplay:drive(self, dt);
 
-		for refIdx,_ in pairs(courseplay.globalInfoText.refIdxToLocaleName) do
+		for refIdx,_ in pairs(courseplay.globalInfoText.msgReference) do
 			if self.cp.activeGlobalInfoTexts[refIdx] ~= nil and not self.cp.hasSetGlobalInfoTextThisLoop[refIdx] then
-				courseplay:setGlobalInfoText(self, nil, nil, refIdx, true);
+				courseplay:setGlobalInfoText(self, refIdx, true); --force remove
 			end;
 		end;
 	end

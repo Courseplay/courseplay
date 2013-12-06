@@ -267,29 +267,25 @@ function courseplay:setGlobalData()
 	for i=-2,1 do
 		courseplay.globalInfoText.levelColors[i][4] = 0.85;
 	end;
-	courseplay.globalInfoText.refIdxToLocaleName = {
-		BALER_NETS = { [-2] = "COURSEPLAY_BALER_NEEDS_NETS" };
-		DAMAGE = { 
-			[-2] = "COURSEPLAY_DAMAGE_MUST_BE_REPAIRED";
-			[-1] = "COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED";
-			[0] = "COURSEPLAY_DAMAGE_IS_BEING_REPAIRED";
-		};
-		END_POINT = { [0] = "COURSEPLAY_REACHED_END_POINT" };
-		FUEL = {
-			[-2] = "COURSEPLAY_MUST_BE_REFUELED";
-			[-1] = "COURSEPLAY_SHOULD_BE_REFUELED";
-			[0] = "COURSEPLAY_IS_BEING_REFUELED";
-		};
-		HOSE_MISSING = { [-2] = "COURSEPLAY_HOSEMISSING" };
-		NEEDS_REFILLING = { [-1] = "COURSEPLAY_NEEDS_REFILLING" };
-		NEEDS_UNLOADING = { [-1] = "COURSEPLAY_NEEDS_UNLOADING" };
-		OVERLOADING_POINT = { [0] = "COURSEPLAY_REACHED_OVERLOADING_POINT" };
-		TRAFFIC = { [-1] = "COURSEPLAY_IS_IN_TRAFFIC" };
-		UNLOADING_BALE = { [0] = "COURSEPLAY_UNLOADING_BALES" };
-		WAIT_POINT = { [0] = "COURSEPLAY_REACHED_WAITING_POINT" };
-		WATER = { [-2] = "COURSEPLAY_WATER_WARNING" };
-		WEATHER = { [0] = "COURSEPLAY_WEATHER_WARNING" };
-		WORK_END = { [1] = "COURSEPLAY_WORK_END" };
+	courseplay.globalInfoText.msgReference = {
+		BALER_NETS 		  = { level = -2, text = "COURSEPLAY_BALER_NEEDS_NETS" };
+		DAMAGE_IS 		  = { level =  0, text = "COURSEPLAY_DAMAGE_IS_BEING_REPAIRED" };
+		DAMAGE_MUST 	  = { level = -2, text = "COURSEPLAY_DAMAGE_MUST_BE_REPAIRED" };
+		DAMAGE_SHOULD 	  = { level = -1, text = "COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED" };
+		END_POINT 		  = { level =  0, text = "COURSEPLAY_REACHED_END_POINT" };
+		FUEL_IS 		  = { level =  0, text = "COURSEPLAY_IS_BEING_REFUELED" };
+		FUEL_MUST 		  = { level = -2, text = "COURSEPLAY_MUST_BE_REFUELED" };
+		FUEL_SHOULD 	  = { level = -1, text = "COURSEPLAY_SHOULD_BE_REFUELED" };
+		HOSE_MISSING 	  = { level = -2, text = "COURSEPLAY_HOSEMISSING" };
+		NEEDS_REFILLING   = { level = -1, text = "COURSEPLAY_NEEDS_REFILLING" };
+		NEEDS_UNLOADING   = { level = -1, text = "COURSEPLAY_NEEDS_UNLOADING" };
+		OVERLOADING_POINT = { level =  0, text = "COURSEPLAY_REACHED_OVERLOADING_POINT" };
+		TRAFFIC 		  = { level = -1, text = "COURSEPLAY_IS_IN_TRAFFIC" };
+		UNLOADING_BALE 	  = { level =  0, text = "COURSEPLAY_UNLOADING_BALES" };
+		WAIT_POINT 		  = { level =  0, text = "COURSEPLAY_REACHED_WAITING_POINT" };
+		WATER 			  = { level = -2, text = "COURSEPLAY_WATER_WARNING" };
+		WEATHER 		  = { level =  0, text = "COURSEPLAY_WEATHER_WARNING" };
+		WORK_END 		  = { level =  1, text = "COURSEPLAY_WORK_END" };
 	};
 
 

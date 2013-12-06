@@ -360,6 +360,7 @@ function courseplay:stop(self)
 	self.cp.stopAtEnd = false
 	self.cp.isUnloaded = false;
 	self.cp.prevFillLevel = nil;
+	self.cp.isInRepairTrigger = nil;
 
 	self.cp.hasBaleLoader = false;
 	self.cp.hasSowingMachine = false;
@@ -370,9 +371,9 @@ function courseplay:stop(self)
 	end;
 
 	--remove any global info texts
-	for refIdx,_ in pairs(courseplay.globalInfoText.refIdxToLocaleName) do
+	for refIdx,_ in pairs(courseplay.globalInfoText.msgReference) do
 		if self.cp.activeGlobalInfoTexts[refIdx] ~= nil then
-			courseplay:setGlobalInfoText(self, nil, nil, refIdx, true);
+			courseplay:setGlobalInfoText(self, refIdx, true);
 		end;
 	end;
 
