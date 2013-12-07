@@ -49,6 +49,14 @@
 			end;
 		end;
 
+	elseif vehicle.cp.hud.currentPage == 3 and vehicle.drive and (vehicle.cp.mode == 2 or vehicle.cp.mode == 3) then
+		for i,varName in pairs({ 'combineOffset', 'turnRadius' }) do
+			if courseplay.utils:hasVarChanged(vehicle, varName) then
+				courseplay.hud:setReloadPageOrder(vehicle, 3, true);
+				break;
+			end;
+		end;
+
 	elseif vehicle.cp.hud.currentPage == 4 then
 		if vehicle.cp.savedCombine ~= nil then --Force page 4 reload when combine distance is displayed
 			courseplay.hud:setReloadPageOrder(vehicle, 4, true);
