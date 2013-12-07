@@ -534,7 +534,7 @@ function courseplay:drive(self, dt)
 						self.cp.isInFilltrigger = true
 					end
 				end
-				courseplay:setGlobalInfoText(self, 'FUELD_SHOULD');
+				courseplay:setGlobalInfoText(self, 'FUEL_SHOULD');
 				if self.fuelFillTriggers[1] then
 					allowedToDrive = courseplay:brakeToStop(self);
 					self:setIsFuelFilling(true, self.fuelFillTriggers[1].isEnabled, false);

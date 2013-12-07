@@ -33,10 +33,6 @@ function courseplay:setGlobalInfoText(vehicle, refIdx, forceRemove)
 	end;
 
 
-	if courseplay.globalInfoText.content[vehicle.rootNode] == nil then
-		courseplay.globalInfoText.content[vehicle.rootNode] = {};
-	end;
-
 	vehicle.cp.hasSetGlobalInfoTextThisLoop[refIdx] = true;
 	local data = courseplay.globalInfoText.msgReference[refIdx];
 	--print(string.format('refIdx=%q, level=%s, text=%q, textLoc=%q', tostring(refIdx), tostring(data.level), tostring(data.text), tostring(courseplay:loc(data.text))));
@@ -47,6 +43,10 @@ function courseplay:setGlobalInfoText(vehicle, refIdx, forceRemove)
 		local text = nameNum(vehicle) .. " " .. courseplay:loc(data.text);
 		--print(string.format('\t%s: setGlobalInfoText [%q] numActiveGlobalInfoTexts=%d, lvl %d,  text=%q', nameNum(vehicle), refIdx, vehicle.cp.numActiveGlobalInfoTexts, data.level, tostring(text)));
 		vehicle.cp.activeGlobalInfoTexts[refIdx] = data.level;
+
+		if courseplay.globalInfoText.content[vehicle.rootNode] == nil then
+			courseplay.globalInfoText.content[vehicle.rootNode] = {};
+		end;
 		courseplay.globalInfoText.content[vehicle.rootNode][refIdx] = {
 			level = data.level,
 			text = text,
