@@ -402,6 +402,7 @@ function courseplay:load(xmlFile)
 	end;
 
 	--default hud conditional variables
+	self.cp.HUDrecordnumber = 0 
 	self.cp.HUD0noCourseplayer = false;
 	self.cp.HUD0wantsCourseplayer = false;
 	self.cp.HUD0tractorName = "";
@@ -812,19 +813,17 @@ function courseplay:update(dt)
 		courseplay:record(self);
 	end
 
-	if g_server ~= nil then
+	-- we are in drive mode and single player /MP server
+	if self.drive and g_server ~= nil then
+		
 		self.cp.infoText = nil;
-	end
-	
-	
-	-- we are in drive mode
-	if self.drive then
+		
 		for refIdx,_ in pairs(courseplay.globalInfoText.msgReference) do
 			self.cp.hasSetGlobalInfoTextThisLoop[refIdx] = false;
 		end;
 
 		courseplay:drive(self, dt);
-
+		
 		for refIdx,_ in pairs(courseplay.globalInfoText.msgReference) do
 			if self.cp.activeGlobalInfoTexts[refIdx] ~= nil and not self.cp.hasSetGlobalInfoTextThisLoop[refIdx] then
 				courseplay:setGlobalInfoText(self, refIdx, true); --force remove
@@ -841,9 +840,9 @@ function courseplay:update(dt)
 		courseplay.courses.reload(self)
 		self.cp.onMpSetCourses = nil
 	end
-	
 
 	if g_server ~= nil  then 
+	    self.cp.HUDrecordnumber = self.recordnumber
 		if self.drive then --TODO: restrict to currentPage == 1
 			self.cp.HUD1goOn = (self.Waypoints[self.cp.last_recordnumber] ~= nil and self.Waypoints[self.cp.last_recordnumber].wait and self.wait) or (self.cp.stopAtEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil));
 			self.cp.HUD1noWaitforFill = not self.cp.isLoaded and self.cp.mode ~= 5;
@@ -1000,6 +999,7 @@ function courseplay:readStream(streamId, connection)
 	self.cp.toolOffsetX = streamDebugReadFloat32(streamId)
 	self.cp.toolOffsetZ = streamDebugReadFloat32(streamId)
 	self.cp.hud.currentPage = streamDebugReadInt32(streamId)
+	self.cp.HUDrecordnumber = streamDebugReadInt32(streamId)
 	self.cp.HUD0noCourseplayer = streamDebugReadBool(streamId)
 	self.cp.HUD0wantsCourseplayer = streamDebugReadBool(streamId)
 	self.cp.HUD0combineForcedSide = streamDebugReadString(streamId);
@@ -1077,7 +1077,6 @@ end
 
 function courseplay:writeStream(streamId, connection)
 	courseplay:debug("id: "..tostring(networkGetObjectId(self)).."  base: write stream", 5)
-
 	streamDebugWriteBool(streamId, self.cp.automaticCoverHandling)
 	streamDebugWriteBool(streamId, self.cp.automaticUnloadingOnField)
 	streamDebugWriteInt32(streamId,self.cp.mode)
@@ -1099,7 +1098,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteBool(streamId, self.cp.hasValidCourseGenerationData);
 	streamDebugWriteInt32(streamId,self.cp.headland.numLanes);
 	streamDebugWriteInt32(streamId,self.cp.hud.currentPage);
-	streamDebugWriteBool(streamId, sself.cp.hasUnloadingRefillingCourse)
+	streamDebugWriteBool(streamId, self.cp.hasUnloadingRefillingCourse)
 	streamDebugWriteString(streamId, self.cp.infoText);
 	streamDebugWriteBool(streamId, self.cp.returnToFirstPoint);
 	streamDebugWriteBool(streamId, self.cp.ridgeMarkersAutomatic);
@@ -1122,6 +1121,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteFloat32(streamId,self.cp.toolOffsetX)
 	streamDebugWriteFloat32(streamId,self.cp.toolOffsetZ)
 	streamDebugWriteInt32(streamId,self.cp.hud.currentPage)
+	streamDebugWriteInt32(streamId,self.cp.HUDrecordnumber)
 	streamDebugWriteBool(streamId,self.cp.HUD0noCourseplayer)
 	streamDebugWriteBool(streamId,self.cp.HUD0wantsCourseplayer)
 	streamDebugWriteString(streamId,self.cp.HUD0combineForcedSide)
@@ -1157,7 +1157,7 @@ function courseplay:writeStream(streamId, connection)
 	
 	local copyCourseFromDriverID = nil
 	if self.cp.copyCourseFromDriver ~= nil then
-		copyCourseFromDriverID = = networkGetObject(self.cp.copyCourseFromDriver)
+		copyCourseFromDriverID = networkGetObject(self.cp.copyCourseFromDriver)
 	end
 	streamDebugWriteInt32(streamId, copyCourseFromDriverID)
 	

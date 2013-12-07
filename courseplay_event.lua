@@ -28,6 +28,10 @@ function CourseplayEvent:readStream(streamId, connection) -- wird aufgerufen wen
 	self.page = streamReadInt32(streamId);
 	if self.page == 999 then
 		self.page = "global"
+	elseif self.page == 998 then
+		self.page = true
+	elseif self.page == 997 then
+		self.page = false
 	end
 	self.type = streamReadString(streamId);
 	if self.type == "boolean" then
@@ -47,12 +51,16 @@ end
 
 function CourseplayEvent:writeStream(streamId, connection)  -- Wird aufgrufen wenn ich ein event verschicke (merke: reihenfolge der Daten muss mit der bei readStream uebereinstimmen 
 	courseplay:debug("		writeStream",5)
-	courseplay:debug("			id: "..tostring(networkGetObjectId(self.vehicle).."/"..tostring(self.messageNumber).."  function: "..tostring(self.func).."  value: "..tostring(self.value).."  type: "..tostring(self.type)),5)
+	courseplay:debug("			id: "..tostring(networkGetObjectId(self.vehicle).."/"..tostring(self.messageNumber).."  function: "..tostring(self.func).."  value: "..tostring(self.value).."  type: "..tostring(self.type).."  page: "..tostring(self.page)),5)
 	streamWriteInt32(streamId, networkGetObjectId(self.vehicle));
 	streamWriteFloat32(streamId, self.messageNumber);
 	streamWriteString(streamId, self.func);
 	if self.page == "global" then
 		self.page = 999
+	elseif self.page == true then
+		self.page = 998
+	elseif self.page == false then
+		self.page = 997
 	end
 	streamWriteInt32(streamId, self.page);
 	streamWriteString(streamId, self.type);

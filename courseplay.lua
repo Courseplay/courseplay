@@ -341,7 +341,8 @@ function courseplay:setGlobalData()
 		"HUD4combineName",
 		"HUD4hasActiveCombine",
 		"HUD4savedCombine",
-		"HUD4savedCombineName"
+		"HUD4savedCombineName",
+		"HUDrecordnumber"
 	};
 
 	--SIGNS

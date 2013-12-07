@@ -136,7 +136,11 @@ function courseplay:handleMouseClickForButton(self, button)
 		if button.function_to_call == "showSaveCourseForm" then
 			self.cp.imWriting = true
 		end
-		self:setCourseplayFunc(button.function_to_call, parameter, false, button.page);
+		if button.function_to_call == "goToVehicle" then
+			courseplay:executeFunction(self, "goToVehicle", parameter)
+		else
+			self:setCourseplayFunc(button.function_to_call, parameter, false, button.page);
+		end	
 		button.isClicked = false;
 	end;
 end;
@@ -156,7 +160,11 @@ function courseplay:setCourseplayFunc(func, value, noEventSend, page)
 end
 
 function courseplay:executeFunction(self, func, value, page)
-	if Utils.startsWith(func,"self") or Utils.startsWith(func,"courseplay") then
+	if func == "setMPGlobalInfoText" then
+		courseplay:setGlobalInfoText(self, value, page)
+		courseplay:debug("					setting infoText: "..value..", force remove: "..tostring(page),5)
+		return
+	elseif Utils.startsWith(func,"self") or Utils.startsWith(func,"courseplay") then
 		courseplay:debug("					setting value",5)
 		courseplay:setVarValueFromString(self, func, value)
 		--courseplay:debug("					"..tostring(func)..": "..tostring(value),5)

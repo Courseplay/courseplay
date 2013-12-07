@@ -13,11 +13,10 @@
 	else
 		vehicle.cp.hud.content.global[2] = courseplay:loc("CPNoCourseLoaded");
 	end;
-
-	if vehicle.Waypoints[vehicle.recordnumber] ~= nil then
-		vehicle.cp.hud.content.global[3] = string.format("%s%s/%s\t%s%s\t%s%s", courseplay:loc("CPWaypoint"), tostring(vehicle.recordnumber), tostring(vehicle.maxnumber), courseplay:loc('COURSEPLAY_WAITPOINTS'), tostring(vehicle.cp.numWaitPoints), courseplay:loc('COURSEPLAY_CROSSING_POINTS'), tostring(vehicle.cp.numCrossingPoints));
+	if vehicle.Waypoints[vehicle.cp.HUDrecordnumber] ~= nil then
+		vehicle.cp.hud.content.global[3] = string.format("%s%s/%s\t%s%s\t%s%s", courseplay:loc("CPWaypoint"), tostring(vehicle.cp.HUDrecordnumber), tostring(vehicle.maxnumber), courseplay:loc('COURSEPLAY_WAITPOINTS'), tostring(vehicle.cp.numWaitPoints), courseplay:loc('COURSEPLAY_CROSSING_POINTS'), tostring(vehicle.cp.numCrossingPoints));
 	elseif vehicle.record or vehicle.record_pause then
-		vehicle.cp.hud.content.global[3] = string.format("%s%d\t%s%d\t%s%d", courseplay:loc("CPWaypoint"), vehicle.recordnumber, courseplay:loc('COURSEPLAY_WAITPOINTS'), vehicle.cp.numWaitPoints, courseplay:loc('COURSEPLAY_CROSSING_POINTS'), vehicle.cp.numCrossingPoints);
+		vehicle.cp.hud.content.global[3] = string.format("%s%d\t%s%d\t%s%d", courseplay:loc("CPWaypoint"), vehicle.cp.HUDrecordnumber, courseplay:loc('COURSEPLAY_WAITPOINTS'), vehicle.cp.numWaitPoints, courseplay:loc('COURSEPLAY_CROSSING_POINTS'), vehicle.cp.numCrossingPoints);
 	else
 		vehicle.cp.hud.content.global[3] = courseplay:loc("CPNoWaypoint");
 	end
@@ -286,10 +285,10 @@ function courseplay.hud:loadPage(vehicle, page)
 				vehicle.cp.hud.content.pages[1][1][1].text = courseplay:loc("PointRecordStop");
 
 				if not vehicle.record_pause then
-					if vehicle.recordnumber > 1 then
+					if vehicle.cp.HUDrecordnumber > 1 then
 						vehicle.cp.hud.content.pages[1][2][1].text = courseplay:loc("CourseWaitpointSet");
 
-						if vehicle.recordnumber > 3 then
+						if vehicle.cp.HUDrecordnumber > 3 then
 							vehicle.cp.hud.content.pages[1][3][1].text = courseplay:loc("PointRecordInterrupt");
 						end;
 

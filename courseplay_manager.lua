@@ -528,7 +528,7 @@ function CourseplayJoinFixEvent:writeStream(streamId, connection)
 		--courseplay:debug("manager transfering courses", 8);
 		--transfer courses
 		local course_count = 0
-		for k, v in pairs(g_currentMission.cp_courses) do
+		for _,_ in pairs(g_currentMission.cp_courses) do
 			course_count = course_count + 1
 		end
 		streamDebugWriteInt32(streamId, course_count)
@@ -539,8 +539,8 @@ function CourseplayJoinFixEvent:writeStream(streamId, connection)
 			streamDebugWriteString(streamId, course.type)
 			streamDebugWriteInt32(streamId, course.id)
 			streamDebugWriteInt32(streamId, course.parent)
-			streamDebugWriteInt32(streamId, table.getn(course.waypoints))
-			for w = 1, table.getn(course.waypoints) do
+			streamDebugWriteInt32(streamId, #(course.waypoints))
+			for w = 1, #(course.waypoints) do
 				streamDebugWriteFloat32(streamId, course.waypoints[w].cx)
 				streamDebugWriteFloat32(streamId, course.waypoints[w].cz)
 				streamDebugWriteFloat32(streamId, course.waypoints[w].angle)
@@ -557,9 +557,9 @@ function CourseplayJoinFixEvent:writeStream(streamId, connection)
 				streamDebugWriteInt32(streamId, course.waypoints[w].ridgeMarker)
 			end
 		end
-		print("writing courses end")
+				
 		local folderCount = 0
-		for k, v in pairs(g_currentMission.cp_folders) do
+		for _,_ in pairs(g_currentMission.cp_folders) do
 			folderCount = folderCount + 1
 		end
 		streamDebugWriteInt32(streamId, folderCount)
@@ -571,14 +571,34 @@ function CourseplayJoinFixEvent:writeStream(streamId, connection)
 			streamDebugWriteInt32(streamId, folder.id)
 			streamDebugWriteInt32(streamId, folder.parent)
 		end
-		print("writing folders end")
+				
+		local fieldsCount = 0
+		for _, field in pairs(courseplay.fields.fieldData) do
+			if field.isCustom then
+				fieldsCount = fieldsCount+1
+			end
+		end
+		streamDebugWriteInt32(streamId, fieldsCount)
+		print(string.format("writing %d custom fields ", fieldsCount))
+		for id, course in pairs(courseplay.fields.fieldData) do
+			if course.isCustom then
+				streamDebugWriteString(streamId, course.name)
+				streamDebugWriteInt32(streamId, course.numPoints)
+				streamDebugWriteBool(streamId, course.isCustom)
+				streamDebugWriteInt32(streamId, course.fieldNum)
+				streamDebugWriteInt32(streamId, #(course.points))
+				for p = 1, #(course.points) do
+					streamDebugWriteFloat32(streamId, course.points[p].cx)
+					streamDebugWriteFloat32(streamId, course.points[p].cy)
+					streamDebugWriteFloat32(streamId, course.points[p].cz)
+				end
+			end
+		end
 	end;
 end
 
 function CourseplayJoinFixEvent:readStream(streamId, connection)
-	print("CourseplayJoinFixEvent:readStream")
 	if connection:getIsServer() then
-		print("connection:getIsServer()")
 		local course_count = streamDebugReadInt32(streamId)
 		print(string.format("reading %d couses ", course_count ))
 		g_currentMission.cp_courses = {}
@@ -643,7 +663,28 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 			g_currentMission.cp_folders[folderId] = folder
 			g_currentMission.cp_sorted = courseplay.courses.sort(g_currentMission.cp_courses, g_currentMission.cp_folders, 0, 0)
 		end
-		print("folders reading end")
+		
+		local fieldsCount = streamDebugReadInt32(streamId)		
+		print(string.format("reading %d custom fields ", fieldsCount))
+		courseplay.fields.fieldData = {}
+		for i = 1, fieldsCount do
+			local name = streamDebugReadString(streamId)
+			local numPoints = streamDebugReadInt32(streamId)
+			local isCustom = streamDebugReadBool(streamId)
+			local fieldNum = streamDebugReadInt32(streamId)
+			local ammountPoints = streamDebugReadInt32(streamId)
+			local waypoints = {}
+			for w = 1, ammountPoints do 
+				local cx = streamDebugReadFloat32(streamId)
+				local cy = streamDebugReadFloat32(streamId)
+				local cz = streamDebugReadFloat32(streamId)
+				local wp = { cx = cx, cy = cy, cz = cz}
+				table.insert(waypoints, wp)
+			end
+			local field = { name = name, numPoints = numPoints, isCustom = isCustom, fieldNum = fieldNum, points = waypoints}
+			courseplay.fields.fieldData[fieldNum] = field
+		end
+		print("courses/folders reading end")
 	end;
 end
 
