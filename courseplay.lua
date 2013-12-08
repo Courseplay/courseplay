@@ -48,10 +48,12 @@ if fileExists(modDescPath) then
 			[3] = tonumber(courseplay.versionSplitStr[3]);
 		};
 		courseplay.versionDisplayStr = string.format('v%s.%s\n.%s', courseplay.versionSplitStr[1], courseplay.versionSplitStr[2], courseplay.versionSplitStr[3]); --multiline display string
+		courseplay.versionFlt = tonumber(string.format('%s.%s%s', courseplay.versionSplitStr[1], courseplay.versionSplitStr[2], courseplay.versionSplitStr[3]));
 	else
-		courseplay.versionSplitStr = { "0", "0", "0" };
+		courseplay.versionSplitStr = { "0", "00", "0000" };
 		courseplay.versionSplitFlt = { 0, 0, 0 };
 		courseplay.versionDisplayStr = 'no\nversion';
+		courseplay.versionFlt = 0.00000;
 	end;
 	courseplay.versionDisplay = courseplay.versionSplitFlt; --TODO: tmp solution until overloader script is changed - then delete
 end;
@@ -382,6 +384,7 @@ function courseplay:setGlobalData()
 	courseplay.fields.numAvailableFields = 0;
 	courseplay.fields.fieldChannels = {};
 	courseplay.fields.lastChannel = 0;
+	courseplay.fields.curFieldScanIndex = 0;
 	courseplay.fields.allFieldsScanned = false;
 	courseplay.fields.ingameDataSetUp = false;
 	courseplay.fields.customFieldMaxNum = 150;

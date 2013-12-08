@@ -11,25 +11,35 @@ end;
 
 function courseplay.fields:setAllFieldEdges()
 	--self = courseplay.fields
-	self:dbg(string.rep('-', 50) .. '\ncall setAllFieldEdges() START', 'scan');
+
+	self.curFieldScanIndex = self.curFieldScanIndex + 1;
+	if self.curFieldScanIndex > g_currentMission.fieldDefinitionBase.numberOfFields then
+		self.allFieldsScanned = true;
+		self.numAvailableFields = table.maxn(self.fieldData);
+		self:dbg(string.format('%d fields scanned - done', self.curFieldScanIndex - 1), 'scan');
+		return;
+	end;
+
+	self:dbg(string.rep('-', 50) .. '\ncall setAllFieldEdges() START (curFieldScandIndex=' .. tostring(self.curFieldScanIndex) .. ')', 'scan');
+	
 	local scanStep = 5;
 	local maxN = 2000;
 	local numDirectionTries = 10;
 
-	for i=1, g_currentMission.fieldDefinitionBase.numberOfFields do
-		local fieldDef = g_currentMission.fieldDefinitionBase.fieldDefs[i];
+	local fieldDef = g_currentMission.fieldDefinitionBase.fieldDefs[self.curFieldScanIndex];
+	if fieldDef ~= nil then
 		local fieldNum = fieldDef.fieldNumber;
-		local initObject = fieldDef.fieldMapIndicator; --OLD: fieldDef.fieldBuyTrigger
+		local initObject = fieldDef.fieldMapIndicator;
 		local x,_,z = getWorldTranslation(initObject);
 		local isField = courseplay:is_field(x, z, 0, 0);
 
-		self:dbg(string.format("fieldDef %d (fieldNum=%d): x,z=%.1f,%.1f, isField=%s", i, fieldNum, x, z, tostring(isField)), 'scan');
+		self:dbg(string.format("fieldDef %d (fieldNum=%d): x,z=%.1f,%.1f, isField=%s", self.curFieldScanIndex, fieldNum, x, z, tostring(isField)), 'scan');
 		if isField then
 			self:setSingleFieldEdgePath(initObject, x, z, scanStep, maxN, numDirectionTries, fieldNum, false, 'scan');
 		end;
+
+		self.numAvailableFields = table.maxn(self.fieldData);
 	end;
-	self.allFieldsScanned = true;
-	self.numAvailableFields = table.maxn(self.fieldData);
 
 	--Debug
 	if self.debugScannedFields then

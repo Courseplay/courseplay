@@ -72,10 +72,12 @@ function courseplay_manager:registerButton(section, fn, prm, img, x, y, w, h)
 end;
 
 function courseplay_manager:deleteMap()
+	--courses & folders
 	g_currentMission.cp_courses = nil
 	g_currentMission.cp_folders = nil
 	g_currentMission.cp_sorted = nil
 
+	--buttons
 	for i,vehicle in pairs(g_currentMission.steerables) do
 		if vehicle.cp ~= nil then
 			if vehicle.cp.globalInfoTextOverlay ~= nil then
@@ -87,6 +89,7 @@ function courseplay_manager:deleteMap()
 		end;
 	end;
 
+	--global info text
 	for i,button in pairs(self.buttons.globalInfoText) do
 		if button.overlays ~= nil then
 			for j,overlay in pairs(button.overlays) do
@@ -95,8 +98,15 @@ function courseplay_manager:deleteMap()
 				end;
 			end;
 		end;
+		if self.globalInfoTextOverlays[i] then
+			local gitOverlay = self.globalInfoTextOverlays[i];
+			if gitOverlay.overlayId ~= nil and gitOverlay.delete ~= nil then
+				gitOverlay:delete();
+			end;
+		end;
 	end;
 
+	--signs
 	for section,signDatas in pairs(courseplay.signs.buffer) do
 		for k,signData in pairs(signDatas) do
 			courseplay.utils.signs.deleteSign(signData.sign);
@@ -104,6 +114,9 @@ function courseplay_manager:deleteMap()
 		courseplay.signs.buffer[section] = {};
 	end;
 
+	--fields
+	courseplay.fields.fieldData = {};
+	courseplay.fields.curFieldScanIndex = 0;
 	courseplay.fields.allFieldsScanned = false;
 	courseplay.fields.ingameDataSetUp = false;
 end
