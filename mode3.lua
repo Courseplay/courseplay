@@ -109,6 +109,53 @@ function courseplay:handleAugerWagon(vehicle, workTool, unfold, unload, orderNam
 			end;
 		end;
 
+	--Ropa Big Bear / 'bigBear' spec
+	elseif workTool.cp.hasSpecializationBigBear then
+		if pipeOrderExists then
+			if unfold and not workTool.activeWorkMode then
+				if not workTool.workMode then
+					courseplay:debug(string.format('%s: unfold=true, activeWorkMode=false, workMode=false -> setWorkMode(true)', nameNum(workTool)), 15);
+					if workTool.cp.hasSpecializationBigBearV2 then
+						workTool:setWorkMode(true);
+					else
+						workTool.workMode = true;
+					end;
+				else
+					courseplay:debug(string.format('%s: unfold=true, activeWorkMode=false, workMode=true -> setActiveWorkMode(true)', nameNum(workTool)), 15);
+					if workTool.cp.hasSpecializationBigBearV2 then
+						workTool:setActiveWorkMode(true);
+					else
+						workTool.activeWorkMode = true;
+					end;
+				end;
+			elseif not unfold then
+				if workTool.activeWorkMode then
+					courseplay:debug(string.format('%s: unfold=false, activeWorkMode=true -> setActiveWorkMode(false)', nameNum(workTool)), 15);
+					if workTool.cp.hasSpecializationBigBearV2 then
+						workTool:setActiveWorkMode(false);
+					else
+						workTool.activeWorkMode = false;
+					end;
+				end;
+			end;
+		end;
+
+		if unload and workTool.allowOverload and not workTool.isUnloading and workTool.trailerRaycastFound then
+			courseplay:debug(string.format('%s: unload=true, allowOverload=true, isUnloading=false, trailerRaycastFound=true -> setUnloading(true)', nameNum(workTool)), 15);
+			if workTool.cp.hasSpecializationBigBearV2 then
+				workTool:setUnloading(true);
+			else
+				workTool.isUnloading = true;
+			end;
+		elseif workTool.isUnloading and (not unload or not workTool.trailerRaycastFound or not workTool.allowOverload) then
+			courseplay:debug(string.format('%s: unload=%s, isUnloading=true, allowOverload=%s, trailerRaycastFound=%s -> setUnloading(false)', nameNum(workTool), tostring(unload), tostring(workTool.allowOverload), tostring(workTool.trailerRaycastFound)), 15);
+			if workTool.cp.hasSpecializationBigBearV2 then
+				workTool:setUnloading(false);
+			else
+				workTool.isUnloading = false;
+			end;
+		end;
+
 	--Brent Avalanche
 	elseif workTool.cp.isBrentAvalanche then
 		-- n/a in FS13

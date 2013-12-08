@@ -88,6 +88,11 @@ function courseplay:setNameVariable(workTool)
 		elseif Utils.endsWith(workTool.configFileName, "Hawe_SUW_5000.xml") then
 			workTool.cp.isHaweSUW5000 = true;
 		end;
+	elseif workTool.cp.hasSpecializationBigBear then
+		workTool.cp.isAugerWagon = true;
+		workTool.cp.isRopaBigBear = true;
+		workTool.cp.foldPipeAtWaitPoint = true;
+		workTool.cp.hasSpecializationBigBearV2 = workTool.setUnloading ~= nil and workTool.setWorkMode~= nil and workTool.setActiveWorkMode ~= nil;
 	--[[
 	elseif workTool.turnOn ~= nil and workTool.inRangeDraw ~= nil and workTool.Go ~= nil and workTool.Go.trsp ~= nil and workTool.CheckDone ~= nil and workTool.CheckDone.trsp then
 		workTool.cp.isAugerWagon = true;
@@ -1086,6 +1091,14 @@ function courseplay:askForSpecialSettings(self,object)
 			object.cp.hasPipeLight = object.B3 and object.B3.work and object.B3.work[1];
 			if object.cp.hasPipeLight then
 				object.cp.pipeLight = object.B3.work[1];
+			end;
+		elseif object.cp.hasSpecializationBigBear then
+			if (self.cp.mode == 2 or self.cp.mode == 3) and not object.workMode then
+				if object.cp.hasSpecializationBigBearV2 then
+					object:setWorkMode(true);
+				else
+					object.workMode = true;
+				end;
 			end;
 		end;
 
