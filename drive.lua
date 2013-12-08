@@ -511,7 +511,6 @@ function courseplay:drive(self, dt)
 				end;
 			elseif self.damageLevel == 0 then
 					self.cp.isInRepairTrigger = false
-					self.cp.isInFilltrigger = true;
 			end;
 			if self.cp.isInRepairTrigger then
 				allowedToDrive = false;
@@ -738,8 +737,9 @@ function courseplay:drive(self, dt)
 			refSpeed = Utils.clamp(refSpeed, 3/3600, self.Waypoints[self.recordnumber].speed);
 		end;
 	end;
+	
 	refSpeed = courseplay:regulateTrafficSpeed(self, refSpeed, allowedToDrive);
-
+	
 	local real_speed = self.lastSpeedReal;
 	local maxRpm = self.motor.maxRpm[self.cp.speeds.sl];
 
@@ -817,7 +817,7 @@ function courseplay:drive(self, dt)
 	if self.cp.maxFieldSpeed ~= 0 then
 		refSpeed = math.min(self.cp.maxFieldSpeed, refSpeed);
 	end
-
+	
 	if self.isRealistic then
 		courseplay:setMRSpeed(self, refSpeed, self.cp.speeds.sl, allowedToDrive, workArea);
 	else
