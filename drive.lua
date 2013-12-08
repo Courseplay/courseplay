@@ -819,7 +819,7 @@ function courseplay:drive(self, dt)
 	end
 
 	if self.isRealistic then
-		courseplay:setMRSpeed(self, refSpeed, self.cp.speeds.sl,allowedToDrive)
+		courseplay:setMRSpeed(self, refSpeed, self.cp.speeds.sl, allowedToDrive, workArea);
 	else
 		courseplay:setSpeed(self, refSpeed, self.cp.speeds.sl)
 	end
@@ -1324,7 +1324,7 @@ function courseplay:driveInMRDirection(self, lx,lz,fwd,dt,allowedToDrive)
 end
 
 
-function courseplay:setMRSpeed(self, refSpeed, sl,allowedToDrive,workArea)
+function courseplay:setMRSpeed(self, refSpeed, sl, allowedToDrive, workArea)
 	local currentSpeed = self.lastSpeedReal
 	local deltaMinus = currentSpeed*3600 - refSpeed*3600
 	local deltaPlus = refSpeed*3600 - currentSpeed*3600
@@ -1341,7 +1341,7 @@ function courseplay:setMRSpeed(self, refSpeed, sl,allowedToDrive,workArea)
 	-- setting AWD if necessary
 	if (workArea or self.realDisplaySlipPercent > 25) and self.realAWDModeOn == false then 
 		self:realSetAwdActive(true);
-	elseif self.realDisplaySlipPercent < 1 and self.realAWDModeOn == true then 
+	elseif not workArea and self.realDisplaySlipPercent < 1 and self.realAWDModeOn == true then 
 		self:realSetAwdActive(false);
 	end
 end;

@@ -814,27 +814,18 @@ function courseplay.utils:hasVarChanged(vehicle, variableName, direct)
 		vehicle.cp.varMemory = {};
 	end;
 
-	local variable = direct and vehicle[variableName] or vehicle.cp[variableName];
+	local variable;
+	if direct then
+		variable = vehicle[variableName];
+	else
+		variable = vehicle.cp[variableName];
+	end;
 	local memory = vehicle.cp.varMemory[variableName];
 
-	if memory == nil then
-		if variable == nil then
-			return false;
-		else
-			courseplay:debug(string.format('%s: hasVarChanged(): changed variable %q - old="nil", new=%q', nameNum(vehicle), variableName, tostring(variable)), 12);
-			vehicle.cp.varMemory[variableName] = variable;
-			return true;
-		end;
-	else
-		if variable == nil then
-			courseplay:debug(string.format('%s: hasVarChanged(): changed variable %q - old=%q, new="nil"', nameNum(vehicle), variableName, tostring(memory)), 12);
-			vehicle.cp.varMemory[variableName] = nil;
-			return true;
-		elseif variable ~= vehicle.cp.varMemory[variableName] then
-			courseplay:debug(string.format('%s: hasVarChanged(): changed variable %q - old=%q, new=%q', nameNum(vehicle), variableName, tostring(memory), tostring(variable)), 12);
-			vehicle.cp.varMemory[variableName] = variable;
-			return true;
-		end;
+	if (memory == nil and variable ~= nil) or (memory ~= nil and (variable == nil or variable ~= vehicle.cp.varMemory[variableName])) then
+		courseplay:debug(string.format('%s: hasVarChanged(): changed variable %q - old=%q, new=%q', nameNum(vehicle), variableName, tostring(memory), tostring(variable)), 12);
+		vehicle.cp.varMemory[variableName] = variable;
+		return true;
 	end;
 	return false;
 end;

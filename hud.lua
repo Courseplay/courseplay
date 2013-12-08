@@ -48,6 +48,14 @@
 			end;
 		end;
 
+	elseif vehicle.cp.hud.currentPage == 3 and vehicle.drive and (vehicle.cp.mode == 2 or vehicle.cp.mode == 3) then
+		for i,varName in pairs({ 'combineOffset', 'turnRadius' }) do
+			if courseplay.utils:hasVarChanged(vehicle, varName) then
+				courseplay.hud:setReloadPageOrder(vehicle, 3, true);
+				break;
+			end;
+		end;
+
 	elseif vehicle.cp.hud.currentPage == 4 then
 		if vehicle.cp.savedCombine ~= nil then --Force page 4 reload when combine distance is displayed
 			courseplay.hud:setReloadPageOrder(vehicle, 4, true);
@@ -246,7 +254,7 @@ function courseplay.hud:loadPage(vehicle, page)
 
 				if vehicle.cp.mode == 4 and vehicle.cp.hasSowingMachine then
 					vehicle.cp.hud.content.pages[1][5][1].text = courseplay:loc("CPridgeMarkers");
-					vehicle.cp.hud.content.pages[1][5][2].text = vehicle.cp.ridgeMarkersAutomatic and courseplay:loc("CPautomatic") courseplay:loc("CPmanual");
+					vehicle.cp.hud.content.pages[1][5][2].text = vehicle.cp.ridgeMarkersAutomatic and courseplay:loc("CPautomatic") or courseplay:loc("CPmanual");
 
 				elseif vehicle.cp.mode == 6 and vehicle.cp.hasBaleLoader and not vehicle.cp.hasUnloadingRefillingCourse then
 					vehicle.cp.hud.content.pages[1][5][1].text = courseplay:loc("CPunloadingOnField");
