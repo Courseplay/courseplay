@@ -532,7 +532,7 @@ function CourseplayJoinFixEvent:writeStream(streamId, connection)
 			course_count = course_count + 1
 		end
 		streamDebugWriteInt32(streamId, course_count)
-		print(string.format("writing %d courses ", course_count ))
+		print(string.format("\t### CourseplayMultiplayer: writing %d courses ", course_count ))
 		for id, course in pairs(g_currentMission.cp_courses) do
 			streamDebugWriteString(streamId, course.name)
 			streamDebugWriteString(streamId, course.uid)
@@ -563,7 +563,7 @@ function CourseplayJoinFixEvent:writeStream(streamId, connection)
 			folderCount = folderCount + 1
 		end
 		streamDebugWriteInt32(streamId, folderCount)
-		print(string.format("writing %d folders ", folderCount ))
+		print(string.format("\t### CourseplayMultiplayer: writing %d folders ", folderCount ))
 		for id, folder in pairs(g_currentMission.cp_folders) do
 			streamDebugWriteString(streamId, folder.name)
 			streamDebugWriteString(streamId, folder.uid)
@@ -579,7 +579,7 @@ function CourseplayJoinFixEvent:writeStream(streamId, connection)
 			end
 		end
 		streamDebugWriteInt32(streamId, fieldsCount)
-		print(string.format("writing %d custom fields ", fieldsCount))
+		print(string.format("\t### CourseplayMultiplayer: writing %d custom fields ", fieldsCount))
 		for id, course in pairs(courseplay.fields.fieldData) do
 			if course.isCustom then
 				streamDebugWriteString(streamId, course.name)
@@ -600,7 +600,7 @@ end
 function CourseplayJoinFixEvent:readStream(streamId, connection)
 	if connection:getIsServer() then
 		local course_count = streamDebugReadInt32(streamId)
-		print(string.format("reading %d couses ", course_count ))
+		print(string.format("\t### CourseplayMultiplayer: reading %d couses ", course_count ))
 		g_currentMission.cp_courses = {}
 		for i = 1, course_count do
 			--courseplay:debug("got course", 8);
@@ -651,7 +651,7 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 		end
 		
 		local folderCount = streamDebugReadInt32(streamId)
-		print(string.format("reading %d folders ", folderCount ))
+		print(string.format("\t### CourseplayMultiplayer: reading %d folders ", folderCount ))
 		g_currentMission.cp_folders = {}
 		for i = 1, folderCount do
 			local folderName = streamDebugReadString(streamId)
@@ -665,7 +665,7 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 		end
 		
 		local fieldsCount = streamDebugReadInt32(streamId)		
-		print(string.format("reading %d custom fields ", fieldsCount))
+		print(string.format("\t### CourseplayMultiplayer: reading %d custom fields ", fieldsCount))
 		courseplay.fields.fieldData = {}
 		for i = 1, fieldsCount do
 			local name = streamDebugReadString(streamId)
@@ -684,7 +684,7 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 			local field = { name = name, numPoints = numPoints, isCustom = isCustom, fieldNum = fieldNum, points = waypoints}
 			courseplay.fields.fieldData[fieldNum] = field
 		end
-		print("courses/folders reading end")
+		print("\t### CourseplayMultiplayer: courses/folders reading end")
 	end;
 end
 
