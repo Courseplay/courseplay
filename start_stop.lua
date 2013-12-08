@@ -371,11 +371,13 @@ function courseplay:stop(self)
 	end;
 
 	--remove any global info texts
-	for refIdx,_ in pairs(courseplay.globalInfoText.msgReference) do
-		if self.cp.activeGlobalInfoTexts[refIdx] ~= nil then
-			courseplay:setGlobalInfoText(self, refIdx, true);
+	if g_server ~= nil then
+		for refIdx,_ in pairs(courseplay.globalInfoText.msgReference) do
+			if self.cp.activeGlobalInfoTexts[refIdx] ~= nil then
+				courseplay:setGlobalInfoText(self, refIdx, true);
+			end;
 		end;
-	end;
+	end
 
 
 	--reset EifokLiquidManure
