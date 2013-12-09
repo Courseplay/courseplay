@@ -204,7 +204,7 @@ function courseplay:switch_hud_page(vehicle, changeBy)
 
 	courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);
 
-	courseplay:buttonsActiveEnabled(self, "all");
+	courseplay:buttonsActiveEnabled(vehicle, "all");
 end;
 
 function courseplay:minMaxPage(vehicle, pageNum)
