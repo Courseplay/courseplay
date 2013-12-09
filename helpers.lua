@@ -679,6 +679,20 @@ function courseplay:getDriveDirection(node, x, y, z)
 	return lx,ly,lz
 end
 
+function courseplay:get3dDirection(cx1,cy1,cz1,cx2,cy2,cz2)
+	local nx,nz,ny = 0
+	local vx = cx2 - cx1
+	local vz = cz2 - cz1
+	local vy = cy2 - cy1
+	dist = Utils.vector3Length(vx,vy, vz)
+	if dist and dist > 0.01 then
+		nx = vx / dist
+		nz = vz / dist
+		ny = vy / dist					
+	end
+	return nx,ny,nz,dist
+end
+
 
 --UTF-8: ALLOWED CHARACTERS and NORMALIZATION
 --src: ASCII Table - Decimal (Base 10) Values @ http://www.parse-o-matic.com/parse/pskb/ASCII-Chart.htm

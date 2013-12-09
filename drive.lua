@@ -915,7 +915,7 @@ function courseplay:drive(self, dt)
 end
 
 
-function courseplay:setTrafficCollision(self, lx, lz)
+function courseplay:setTrafficCollision(self, lx, lz) --!!!
 	local distance = 15
 	local goForRaycast = self.cp.mode == 1 or (self.cp.mode == 3 and self.recordnumber > 3) or self.cp.mode == 5 or self.cp.mode == 8 or ((self.cp.mode == 4 or self.cp.mode == 6) and self.recordnumber > self.cp.stopWork) or (self.cp.mode == 2 and self.recordnumber > 3)
 	if self.isRealistic and math.abs(lx) < 0.1 then
@@ -935,7 +935,10 @@ function courseplay:setTrafficCollision(self, lx, lz)
 		colDirZ = 0.4;
 	end;
 	--courseplay:debug(string.format("colDirX: %f colDirZ %f ",colDirX,colDirZ ), 3)
-	
+	local range = 3
+	if self.lastSpeedReal < 20/3600 then
+		range = 2
+	end
 	if courseplay.debugChannels[3] then
 		local x,y,z = getWorldTranslation(self.aiTrafficCollisionTrigger)
 		local x1,y1,z1 = localToWorld(self.aiTrafficCollisionTrigger, colDirX*5, 0, colDirZ*5 )
@@ -948,8 +951,8 @@ function courseplay:setTrafficCollision(self, lx, lz)
 	if self.aiTrafficCollisionTrigger ~= nil and g_server ~= nil then --!!!
 		AIVehicleUtil.setCollisionDirection(self.cp.DirectionNode, self.aiTrafficCollisionTrigger, colDirX, colDirZ);
 		if self.cp.collidingVehicle == nil and goForRaycast then
-			local straight = true
-			for k=1,4 do
+ 			local width = Utils.getNoNil(self.sizeWidth/2, 1.5)
+			for k=1,2 do
 				if self.recordnumber+k+1 > self.maxnumber then
 					straight = false
 					break
@@ -958,34 +961,31 @@ function courseplay:setTrafficCollision(self, lx, lz)
 				local cy2 = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, self.Waypoints[self.recordnumber+k+1].cx,0, self.Waypoints[self.recordnumber+k+1].cz)+1
 				local cx1, cz1 = self.Waypoints[self.recordnumber+k].cx, self.Waypoints[self.recordnumber+k].cz
 				local cx2, cz2 = self.Waypoints[self.recordnumber+k+1].cx, self.Waypoints[self.recordnumber+k+1].cz
-				local lx1, lz1 = AIVehicleUtil.getDriveDirection(self.cp.DirectionNode, cx1, ty, cz1);
-				local nx,nz = 0
-				local vx = cx2 - cx1
-				local vz = cz2 - cz1
-				local vy = cy2 - cy1
-				dist = Utils.vector3Length(vx,vy, vz)
-				if dist and dist > 0.01 then
-					nx = vx / dist
-					nz = vz / dist
-					ny = vy / dist					
-				end				
-				if math.abs(lx1) > 0.1 then 
-					courseplay:debug(nameNum(self)..": call traffic raycast curve ["..tostring(k).."]",3)
-					raycastAll(cx1, cy1, cz1, nx, ny, nz, "findTrafficCollisionCallback", dist, self)
-					if courseplay.debugChannels[3] then drawDebugLine(cx1, cy1, cz1, 1, 1, 1, cx1 +(nx*dist) , cy1+(ny*dist), cz1+(nz*dist), 1, 1, 1) end
-					if k <= 3 then
-						straight = false 
-					end
-				end
-			end
-			if straight then
-				local nx, ny, nz = localDirectionToWorld(self.cp.DirectionNode, colDirX, 0, colDirZ)
-				for i=1,2 do
-					local tx, ty, tz = localToWorld(self.cp.DirectionNode, 0,i,4)
-					courseplay:debug(nameNum(self)..": call traffic raycast straight["..tostring(i).."]",3)
-					raycastAll(tx, ty, tz, nx, ny, nz, "findTrafficCollisionCallback", distance, self)
-					if courseplay.debugChannels[3] then drawDebugLine(tx, ty, tz, 1, 1, 1, tx +(distance*nx), ty +(distance*ny), tz +(distance*nz), 1, 1, 1) end
-				end
+				nx,ny,nz,dist = courseplay:get3dDirection(cx1,cy1,cz1,cx2,cy2,cz2)
+					drawDebugLine(cx1, cy1, cz1, 1, 1, 1,cx1 +(nx*dist) , cy1+(ny*dist), cz1+(nz*dist), 1, 1, 1)
+					raycastAll(cx1, cy1, cz1, nx, ny,nz, "findTrafficCollisionCallback", dist, self)
+				bnx = nz
+				bnz = -nx
+					bcx1 = cx1+(bnx*width)
+					bcz1 = cz1+(bnz*width)
+								
+					drawDebugLine(bcx1, cy1, bcz1, 1, 1, 1,bcx1 +(nx*dist) , cy1+(ny*dist), bcz1+(nz*dist), 1, 1, 1)
+					raycastAll(bcx1, cy1, bcz1, nx, ny,nz, "findTrafficCollisionCallback", dist, self)					
+				bnx = -nz
+				bnz = nx
+					bcx1 = cx1+(bnx*width)
+					bcz1 = cz1+(bnz*width)
+								
+					drawDebugLine(bcx1, cy1, bcz1, 1, 1, 1, bcx1 +(nx*dist) , cy1+(ny*dist), bcz1+(nz*dist), 1, 1, 1) 
+					raycastAll(bcx1, cy1, bcz1, nx, ny,nz, "findTrafficCollisionCallback", dist, self)
+					
+		
+				
+				
+				
+						--[[courseplay:debug(nameNum(self)..": call traffic raycast curve ["..tostring(k).."]",3)
+						raycastAll(cx1, cy1, cz1, nx, ny,nz, "findTrafficCollisionCallback", dist, self)
+						if courseplay.debugChannels[3] then drawDebugLine(bcx, cy1, bcz, 1, 1, 1, bcx +(nx*dist) , cy1+(ny*dist), bcz+(nz*dist), 1, 1, 1) end]]
 			end
 		end
 	end
@@ -1268,7 +1268,7 @@ function courseplay:regulateTrafficSpeed(self,refSpeed,allowedToDrive)
 			distance = courseplay:distance_to_object(self, vehicle_in_front)
 		end
 		if vehicle_in_front.rootNode == nil or vehicle_in_front.lastSpeedReal == nil or (distance > 40) or vehicleBehind then
-			courseplay:debug(string.format("%s: v.rootNode= %s,v.lastSpeedReal= %s, distance: %f, vehicleBehind= %s",nameNum(self),tostring(vehicle_in_front.rootNode),tostring(vehicle_in_front.lastSpeedReal),distance,tostring(vehicleBehind)),3)
+			courseplay:debug(string.format("%s: v.rootNode= %s,v.lastSpeedReal= %s, distance: %f, vehicleBehind= %s",nameNum(self),tostring(vehicle_in_front.rootNode),tostring(vehicle_in_front.lastSpeedReal*3600),distance,tostring(vehicleBehind)),3)
 			courseplay:debug(nameNum(self)..": regulateTrafficSpeed(1230):	setting self.cp.collidingVehicle nil",3)
 			self.cp.tempCollis[self.cp.collidingVehicle] = nil
 			self.cp.collidingVehicle = nil
