@@ -961,7 +961,7 @@ function courseplay:setTrafficCollision(self, lx, lz) --!!!
 				local cy2 = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, self.Waypoints[self.recordnumber+k+1].cx,0, self.Waypoints[self.recordnumber+k+1].cz)+1
 				local cx1, cz1 = self.Waypoints[self.recordnumber+k].cx, self.Waypoints[self.recordnumber+k].cz
 				local cx2, cz2 = self.Waypoints[self.recordnumber+k+1].cx, self.Waypoints[self.recordnumber+k+1].cz
-				nx,ny,nz,dist = courseplay:get3dDirection(cx1,cy1,cz1,cx2,cy2,cz2)
+				local nx,ny,nz,dist = courseplay:get3dDirection(cx1,cy1,cz1,cx2,cy2,cz2)
 					drawDebugLine(cx1, cy1, cz1, 1, 1, 1,cx1 +(nx*dist) , cy1+(ny*dist), cz1+(nz*dist), 1, 1, 1)
 					raycastAll(cx1, cy1, cz1, nx, ny,nz, "findTrafficCollisionCallback", dist, self)
 				bnx = nz
