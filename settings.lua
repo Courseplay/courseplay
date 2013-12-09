@@ -204,7 +204,7 @@ function courseplay:switch_hud_page(vehicle, changeBy)
 
 	courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);
 
-	courseplay:buttonsActiveEnabled(self, "all");
+	courseplay:buttonsActiveEnabled(vehicle, "all");
 end;
 
 function courseplay:minMaxPage(vehicle, pageNum)
@@ -1248,4 +1248,16 @@ function courseplay:showFieldEdgePath(vehicle, pathType)
 			end;
 		end;
 	end;
+end;
+
+function courseplay:getNextWaypoints(vehicle, n)
+	if vehicle.Waypoints == nil or vehicle.Waypoints[vehicle.recordnumber] == nil then
+		return {};
+	end;
+
+	local ret = {};
+	for i=1, n do
+		ret[i+1] = courseplay:loopedTable(vehicle.Waypoints, vehicle.recordnumber + i, vehicle.maxnumber);
+	end;
+	return ret;
 end;

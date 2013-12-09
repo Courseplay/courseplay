@@ -3,6 +3,11 @@ function courseplay:drive(self, dt)
 	if  not self.isMotorStarted or not courseplay:getCanUseAiMode(self) then
 		return;
 	end;
+
+	if courseplay.utils:hasVarChanged(self, 'recordnumber', true) then
+		self.cp.nextWaypoints = courseplay:getNextWaypoints(self, 4);
+	end;
+
 	local refSpeed = 0
 	local cx,cy,cz = 0,0,0
 	-- may i drive or should i hold position for some reason?
@@ -953,45 +958,23 @@ function courseplay:setTrafficCollision(self, lx, lz) --!!!
 		drawDebugPoint(x3, y, z3, 1, 1, 0, 1);
 		drawDebugLine(x, y, z, 1, 0, 0, x1, y, z1, 1, 0, 0);
 	--end;
-	if self.aiTrafficCollisionTrigger ~= nil and g_server ~= nil then --!!!
-		AIVehicleUtil.setCollisionDirection(self.cp.DirectionNode, self.aiTrafficCollisionTrigger, colDirX, colDirZ);
+
+	if self.cp.trafficCollisionTriggers[1] ~= nil and g_server ~= nil then --!!!
+		AIVehicleUtil.setCollisionDirection(self.cp.DirectionNode, self.cp.trafficCollisionTriggers[1], colDirX, colDirZ);
 		--if self.cp.collidingVehicle == nil and goForRaycast then
-		x2,z2 = self.Waypoints[self.recordnumber+1].cx, self.Waypoints[self.recordnumber+1].cz
-		x3,z3 = self.Waypoints[self.recordnumber+2].cx, self.Waypoints[self.recordnumber+2].cz
-		x4,z4 = self.Waypoints[self.recordnumber+3].cx, self.Waypoints[self.recordnumber+3].cz
-		x4,z4 = self.Waypoints[self.recordnumber+4].cx, self.Waypoints[self.recordnumber+4].cz
-		
-		--setting aiTrafficCollisionTrigger2
-		nodeX,NodeY,nodeZ = getWorldTranslation(self.cp.aiTrafficCollisionTrigger2)
-		local nodeDirX,nodeDirY,nodeDirZ,distance = courseplay:get3dDirection(nodeX,NodeY,nodeZ,x2,NodeY,z2)
-		if distance < 5.5 then
-			nodeDirX,nodeDirY,nodeDirZ,distance = courseplay:get3dDirection(nodeX,NodeY,nodeZ,x3,NodeY,z3)
-		end
-		nodeDirX,nodeDirY,nodeDirZ = worldDirectionToLocal(self.aiTrafficCollisionTrigger, nodeDirX,nodeDirY,nodeDirZ)
- 		AIVehicleUtil.setCollisionDirection(self.aiTrafficCollisionTrigger, self.cp.aiTrafficCollisionTrigger2, nodeDirX, nodeDirZ );
-		
-		--setting aiTrafficCollisionTrigger3
-		nodeX,NodeY,nodeZ = getWorldTranslation(self.cp.aiTrafficCollisionTrigger3)
-		nodeDirX,nodeDirY,nodeDirZ,distance = courseplay:get3dDirection(nodeX,NodeY,nodeZ,x3,NodeY,z3)				
-		if distance < 5.5 then
-			nodeDirX,nodeDirY,nodeDirZ,distance = courseplay:get3dDirection(nodeX,NodeY,nodeZ,x4,NodeY,z4)
-		end	
-		nodeDirX,nodeDirY,nodeDirZ = worldDirectionToLocal(self.cp.aiTrafficCollisionTrigger2, nodeDirX,nodeDirY,nodeDirZ)
-		AIVehicleUtil.setCollisionDirection(self.cp.aiTrafficCollisionTrigger2, self.cp.aiTrafficCollisionTrigger3, nodeDirX, nodeDirZ );
-		
-		--setting aiTrafficCollisionTrigger3
-		nodeX,NodeY,nodeZ = getWorldTranslation(self.cp.aiTrafficCollisionTrigger4)
-		nodeDirX,nodeDirY,nodeDirZ,distance = courseplay:get3dDirection(nodeX,NodeY,nodeZ,x4,NodeY,z4)				
-		if distance < 5.5 then
-			nodeDirX,nodeDirY,nodeDirZ,distance = courseplay:get3dDirection(nodeX,NodeY,nodeZ,x5,NodeY,z5)
-		end	
-		nodeDirX,nodeDirY,nodeDirZ = worldDirectionToLocal(self.cp.aiTrafficCollisionTrigger3, nodeDirX,nodeDirY,nodeDirZ)
-		AIVehicleUtil.setCollisionDirection(self.cp.aiTrafficCollisionTrigger3, self.cp.aiTrafficCollisionTrigger4, nodeDirX, nodeDirZ );		
-				
-			
-		--end
-	end
-end
+
+		for i=2,self.cp.numTrafficCollisionTriggers do
+			local nodeX,nodeY,nodeZ = getWorldTranslation(self.cp.trafficCollisionTriggers[i]);
+			local nodeDirX,nodeDirY,nodeDirZ,distance = courseplay:get3dDirection(nodeX,nodeY,nodeZ, self.cp.nextWaypoints[i].cx,nodeY,self.cp.nextWaypoints[i].cz);
+
+			if distance < 5.5 then
+				nodeDirX,nodeDirY,nodeDirZ,distance = courseplay:get3dDirection(nodeX,nodeY,nodeZ, self.cp.nextWaypoints[i+1].cx,nodeY,self.cp.nextWaypoints[i+1].cz);
+			end;
+			nodeDirX,nodeDirY,nodeDirZ = worldDirectionToLocal(self.cp.trafficCollisionTriggers[i-1], nodeDirX,nodeDirY,nodeDirZ);
+			AIVehicleUtil.setCollisionDirection(self.cp.trafficCollisionTriggers[i-1], self.cp.trafficCollisionTriggers[i], nodeDirX, nodeDirZ);
+		end;
+	end;
+end;
 
 
 function courseplay:check_traffic(self, display_warnings, allowedToDrive)

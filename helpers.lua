@@ -274,8 +274,8 @@ function courseplay:intToBool(int)
 	return int == 1;
 end;
 
-function courseplay:loopedTable(tab, idx)
-	local maxIdx = #tab;
+function courseplay:loopedTable(tab, idx, maxIdx)
+	maxIdx = maxIdx or #tab;
 	while idx > maxIdx do
 		--idx = maxIdx - idx;
 		idx = idx - maxIdx;
@@ -684,7 +684,7 @@ function courseplay:get3dDirection(cx1,cy1,cz1,cx2,cy2,cz2)
 	local vx = cx2 - cx1
 	local vz = cz2 - cz1
 	local vy = cy2 - cy1
-	dist = Utils.vector3Length(vx,vy, vz)
+	local dist = Utils.vector3Length(vx,vy, vz)
 	if dist and dist > 0.01 then
 		nx = vx / dist
 		nz = vz / dist

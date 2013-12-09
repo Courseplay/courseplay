@@ -1,18 +1,27 @@
 -- triggers
 
 -- traffic collision
-function courseplay:cponTrafficCollisionTrigger(triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
-	if otherId == self.rootNode then
+function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
+	if not self.drive or otherId == self.rootNode then --Note: traffic collision doesn't need to run if we're not driving
 		return
-	end
+	end;
+
+	if otherId and courseplay.trafficCollisionIgnoreList[otherId] then --ignore objects on list
+		return;
+	end;
+
 	if onLeave then
+		local name = getName(otherId);
+		print(string.format('%s: traffic onLeave: trigger %s [id %s], object id=%s, name=%q', nameNum(self), tostring(self.cp.trafficCollisionTriggerToTriggerIndex[triggerId]), tostring(triggerId), tostring(otherId), tostring(name)));
+
 		courseplay:debug(nameNum(self)..": Trigger: call handleTrafficCollisions onLeave" ,3)
 		courseplay:handleTrafficCollisions(self, triggerId, otherId, onEnter, onLeave)
 	elseif onEnter then
-		print(" Trigger: "..tostring(triggerId))
-		local name = getName(otherId)
+		local name = getName(otherId);
+		print(string.format('%s: traffic onEnter: trigger %s [id %s], object id=%s, name=%q', nameNum(self), tostring(self.cp.trafficCollisionTriggerToTriggerIndex[triggerId]), tostring(triggerId), tostring(otherId), tostring(name)));
+
 		local idsMatch = false
-		for transformId,_ in pairs (self.cp.tempCollis) do
+		for transformId,_ in pairs (self.cp.tempCollis) do --TODO: "idsMatch = self.cp.tempCollis[otherId] == true" should suffice
 			if transformId == otherId then
 				idsMatch = true
 				break

@@ -295,6 +295,9 @@ function courseplay:setGlobalData()
 	courseplay.confirmedNoneTriggers = {};
 	courseplay.confirmedNoneTriggersCounter = 0;
 
+	--TRAFFIC
+	courseplay.trafficCollisionIgnoreList = {};
+
 	--DEBUG CHANNELS
 	courseplay.numAvailableDebugChannels = 24;
 	courseplay.numDebugChannels = 15;

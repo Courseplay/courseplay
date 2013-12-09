@@ -209,8 +209,11 @@ function courseplay:start(self)
 	self.drive = true;
 	self.cp.maxFieldSpeed = 0
 	self.record = false
-	self.dcheck = false
-	
+	self.dcheck = false;
+
+	self.cp.nextWaypoints = courseplay:getNextWaypoints(self, 4);
+
+
 	if self.isRealistic then
 		self.cpSavedRealAWDModeOn = self.realAWDModeOn
 	end

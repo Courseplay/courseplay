@@ -210,7 +210,7 @@ function courseplay:load(xmlFile)
 	self.cp.DirectionNode = DirectionNode;
 
 	-- traffic collision
-	self.onTrafficCollisionTrigger = courseplay.cponTrafficCollisionTrigger;
+	self.cpOnTrafficCollisionTrigger = courseplay.cpOnTrafficCollisionTrigger;
 	--self.aiTrafficCollisionTrigger = Utils.indexToObject(self.components, getXMLString(xmlFile, "vehicle.aiTrafficCollisionTrigger#index"));
 	self.cp.steeringAngle = Utils.getNoNil(getXMLFloat(xmlFile, "vehicle.wheels.wheel(1)" .. "#rotMax"), 30)
 	self.cp.tempCollis = {}
@@ -232,31 +232,26 @@ function courseplay:load(xmlFile)
 	if self.trafficCollisionIgnoreList == nil then
 		self.trafficCollisionIgnoreList = {}
 	end
-	
-	self.cp.aiTrafficCollisionTrigger2 = clone(self.aiTrafficCollisionTrigger, false)
-	unlink(self.cp.aiTrafficCollisionTrigger2);
-	link(self.aiTrafficCollisionTrigger, self.cp.aiTrafficCollisionTrigger2)
-	setTranslation(self.cp.aiTrafficCollisionTrigger2, 0, 0, 5)
-	addTrigger(self.cp.aiTrafficCollisionTrigger2, 'onTrafficCollisionTrigger', self)
-	
-	self.cp.aiTrafficCollisionTrigger3 = clone(self.cp.aiTrafficCollisionTrigger2, false)
-	unlink(self.cp.aiTrafficCollisionTrigger3);
-	link(self.cp.aiTrafficCollisionTrigger2, self.cp.aiTrafficCollisionTrigger3)
-	setTranslation(self.cp.aiTrafficCollisionTrigger3, 0, 0, 5)
-	addTrigger(self.cp.aiTrafficCollisionTrigger3, 'onTrafficCollisionTrigger', self)
-	
-	self.cp.aiTrafficCollisionTrigger4 = clone(self.cp.aiTrafficCollisionTrigger3, false)
-	unlink(self.cp.aiTrafficCollisionTrigger4);
-	link(self.cp.aiTrafficCollisionTrigger3, self.cp.aiTrafficCollisionTrigger4)
-	setTranslation(self.cp.aiTrafficCollisionTrigger4, 0, 0, 5)
-	addTrigger(self.cp.aiTrafficCollisionTrigger4, 'onTrafficCollisionTrigger', self)
-	
-	
-	self.numCollidingVehicles[self.cp.aiTrafficCollisionTrigger2] = 0
-	self.numCollidingVehicles[self.cp.aiTrafficCollisionTrigger3] = 0
-	self.numCollidingVehicles[self.cp.aiTrafficCollisionTrigger4] = 0
-	
-	
+
+	self.cp.numTrafficCollisionTriggers = 0;
+	self.cp.trafficCollisionTriggers = {};
+	self.cp.trafficCollisionTriggerToTriggerIndex = {};
+	if self.aiTrafficCollisionTrigger ~= nil then
+		self.cp.numTrafficCollisionTriggers = 4;
+		for i=1,self.cp.numTrafficCollisionTriggers do
+			self.cp.trafficCollisionTriggers[i] = clone(self.aiTrafficCollisionTrigger, true);
+			if i > 1 then
+				unlink(self.cp.trafficCollisionTriggers[i]);
+				link(self.cp.trafficCollisionTriggers[i-1], self.cp.trafficCollisionTriggers[i]);
+				setTranslation(self.cp.trafficCollisionTriggers[i], 0,0,5);
+			end;
+			addTrigger(self.cp.trafficCollisionTriggers[i], 'cpOnTrafficCollisionTrigger', self);
+			self.numCollidingVehicles[self.cp.trafficCollisionTriggers[i]] = 0;
+			self.cp.trafficCollisionTriggerToTriggerIndex[self.cp.trafficCollisionTriggers[i]] = i;
+			courseplay.trafficCollisionIgnoreList[self.cp.trafficCollisionTriggers[i]] = true; --add all traffic collision triggers to global ignore list
+		end;
+	end;
+
 
 	courseplay:askForSpecialSettings(self,self)
 
