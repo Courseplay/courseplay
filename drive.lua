@@ -738,7 +738,10 @@ function courseplay:drive(self, dt)
 		end;
 	end;
 	
-	refSpeed = courseplay:regulateTrafficSpeed(self, refSpeed, allowedToDrive);
+	 
+	if courseplay:validateCollision(self) then
+		refSpeed = courseplay:regulateTrafficSpeed(self, refSpeed, allowedToDrive);
+	end
 	
 	local real_speed = self.lastSpeedReal;
 	local maxRpm = self.motor.maxRpm[self.cp.speeds.sl];
@@ -939,57 +942,55 @@ function courseplay:setTrafficCollision(self, lx, lz) --!!!
 	if self.lastSpeedReal < 20/3600 then
 		range = 2
 	end
-	if courseplay.debugChannels[3] then
+	local x1,y1,z1 = 0,0,0
+	--if courseplay.debugChannels[3] then
 		local x,y,z = getWorldTranslation(self.aiTrafficCollisionTrigger)
-		local x1,y1,z1 = localToWorld(self.aiTrafficCollisionTrigger, colDirX*5, 0, colDirZ*5 )
+		x1,y1,z1 = localToWorld(self.aiTrafficCollisionTrigger, colDirX*5, 0, colDirZ*5 )
 		local x2,y2,z2 = localToWorld(self.aiTrafficCollisionTrigger, (colDirX*5)+ 1.5 , 0, colDirZ*5 )
 		local x3,y3,z3 = localToWorld(self.aiTrafficCollisionTrigger, (colDirX*5)-1.5 , 0, colDirZ*5 )
+		
 		drawDebugPoint(x2, y, z2, 1, 1, 0, 1);
 		drawDebugPoint(x3, y, z3, 1, 1, 0, 1);
 		drawDebugLine(x, y, z, 1, 0, 0, x1, y, z1, 1, 0, 0);
-	end;
+	--end;
 	if self.aiTrafficCollisionTrigger ~= nil and g_server ~= nil then --!!!
 		AIVehicleUtil.setCollisionDirection(self.cp.DirectionNode, self.aiTrafficCollisionTrigger, colDirX, colDirZ);
-		if self.cp.collidingVehicle == nil and goForRaycast then
- 			local width = Utils.getNoNil(self.sizeWidth/2, 1.5)
-			for k=1,2 do
-				if self.recordnumber+k+1 > self.maxnumber then
-					straight = false
-					break
-				end
-				local cy1 = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, self.Waypoints[self.recordnumber+k].cx,0, self.Waypoints[self.recordnumber+k].cz)+1
-				local cy2 = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, self.Waypoints[self.recordnumber+k+1].cx,0, self.Waypoints[self.recordnumber+k+1].cz)+1
-				local cx1, cz1 = self.Waypoints[self.recordnumber+k].cx, self.Waypoints[self.recordnumber+k].cz
-				local cx2, cz2 = self.Waypoints[self.recordnumber+k+1].cx, self.Waypoints[self.recordnumber+k+1].cz
-				local nx,ny,nz,dist = courseplay:get3dDirection(cx1,cy1,cz1,cx2,cy2,cz2)
-					drawDebugLine(cx1, cy1, cz1, 1, 1, 1,cx1 +(nx*dist) , cy1+(ny*dist), cz1+(nz*dist), 1, 1, 1)
-					raycastAll(cx1, cy1, cz1, nx, ny,nz, "findTrafficCollisionCallback", dist, self)
-				bnx = nz
-				bnz = -nx
-					bcx1 = cx1+(bnx*width)
-					bcz1 = cz1+(bnz*width)
-								
-					drawDebugLine(bcx1, cy1, bcz1, 1, 1, 1,bcx1 +(nx*dist) , cy1+(ny*dist), bcz1+(nz*dist), 1, 1, 1)
-					raycastAll(bcx1, cy1, bcz1, nx, ny,nz, "findTrafficCollisionCallback", dist, self)					
-				bnx = -nz
-				bnz = nx
-					bcx1 = cx1+(bnx*width)
-					bcz1 = cz1+(bnz*width)
-								
-					drawDebugLine(bcx1, cy1, bcz1, 1, 1, 1, bcx1 +(nx*dist) , cy1+(ny*dist), bcz1+(nz*dist), 1, 1, 1) 
-					raycastAll(bcx1, cy1, bcz1, nx, ny,nz, "findTrafficCollisionCallback", dist, self)
-					
+		--if self.cp.collidingVehicle == nil and goForRaycast then
+		x2,z2 = self.Waypoints[self.recordnumber+1].cx, self.Waypoints[self.recordnumber+1].cz
+		x3,z3 = self.Waypoints[self.recordnumber+2].cx, self.Waypoints[self.recordnumber+2].cz
+		x4,z4 = self.Waypoints[self.recordnumber+3].cx, self.Waypoints[self.recordnumber+3].cz
+		x4,z4 = self.Waypoints[self.recordnumber+4].cx, self.Waypoints[self.recordnumber+4].cz
 		
-				
-				
-				
-						--[[courseplay:debug(nameNum(self)..": call traffic raycast curve ["..tostring(k).."]",3)
-						raycastAll(cx1, cy1, cz1, nx, ny,nz, "findTrafficCollisionCallback", dist, self)
-						if courseplay.debugChannels[3] then drawDebugLine(bcx, cy1, bcz, 1, 1, 1, bcx +(nx*dist) , cy1+(ny*dist), bcz+(nz*dist), 1, 1, 1) end]]
-			end
+		--setting aiTrafficCollisionTrigger2
+		nodeX,NodeY,nodeZ = getWorldTranslation(self.cp.aiTrafficCollisionTrigger2)
+		local nodeDirX,nodeDirY,nodeDirZ,distance = courseplay:get3dDirection(nodeX,NodeY,nodeZ,x2,NodeY,z2)
+		if distance < 5.5 then
+			nodeDirX,nodeDirY,nodeDirZ,distance = courseplay:get3dDirection(nodeX,NodeY,nodeZ,x3,NodeY,z3)
 		end
+		nodeDirX,nodeDirY,nodeDirZ = worldDirectionToLocal(self.aiTrafficCollisionTrigger, nodeDirX,nodeDirY,nodeDirZ)
+ 		AIVehicleUtil.setCollisionDirection(self.aiTrafficCollisionTrigger, self.cp.aiTrafficCollisionTrigger2, nodeDirX, nodeDirZ );
+		
+		--setting aiTrafficCollisionTrigger3
+		nodeX,NodeY,nodeZ = getWorldTranslation(self.cp.aiTrafficCollisionTrigger3)
+		nodeDirX,nodeDirY,nodeDirZ,distance = courseplay:get3dDirection(nodeX,NodeY,nodeZ,x3,NodeY,z3)				
+		if distance < 5.5 then
+			nodeDirX,nodeDirY,nodeDirZ,distance = courseplay:get3dDirection(nodeX,NodeY,nodeZ,x4,NodeY,z4)
+		end	
+		nodeDirX,nodeDirY,nodeDirZ = worldDirectionToLocal(self.cp.aiTrafficCollisionTrigger2, nodeDirX,nodeDirY,nodeDirZ)
+		AIVehicleUtil.setCollisionDirection(self.cp.aiTrafficCollisionTrigger2, self.cp.aiTrafficCollisionTrigger3, nodeDirX, nodeDirZ );
+		
+		--setting aiTrafficCollisionTrigger3
+		nodeX,NodeY,nodeZ = getWorldTranslation(self.cp.aiTrafficCollisionTrigger4)
+		nodeDirX,nodeDirY,nodeDirZ,distance = courseplay:get3dDirection(nodeX,NodeY,nodeZ,x4,NodeY,z4)				
+		if distance < 5.5 then
+			nodeDirX,nodeDirY,nodeDirZ,distance = courseplay:get3dDirection(nodeX,NodeY,nodeZ,x5,NodeY,z5)
+		end	
+		nodeDirX,nodeDirY,nodeDirZ = worldDirectionToLocal(self.cp.aiTrafficCollisionTrigger3, nodeDirX,nodeDirY,nodeDirZ)
+		AIVehicleUtil.setCollisionDirection(self.cp.aiTrafficCollisionTrigger3, self.cp.aiTrafficCollisionTrigger4, nodeDirX, nodeDirZ );		
+				
+			
+		--end
 	end
-
 end
 
 
@@ -1031,6 +1032,17 @@ function courseplay:check_traffic(self, display_warnings, allowedToDrive)
 		courseplay:setGlobalInfoText(self, 'TRAFFIC');
 	end
 	return allowedToDrive
+end
+
+function courseplay:validateCollision(vehicle)
+	local isValid = true
+	
+	
+	
+	
+	
+
+	return isValid
 end
 
 function courseplay:setSpeed(self, refSpeed, sl)
@@ -1268,7 +1280,7 @@ function courseplay:regulateTrafficSpeed(self,refSpeed,allowedToDrive)
 			distance = courseplay:distance_to_object(self, vehicle_in_front)
 		end
 		if vehicle_in_front.rootNode == nil or vehicle_in_front.lastSpeedReal == nil or (distance > 40) or vehicleBehind then
-			courseplay:debug(string.format("%s: v.rootNode= %s,v.lastSpeedReal= %s, distance: %f, vehicleBehind= %s",nameNum(self),tostring(vehicle_in_front.rootNode),tostring(vehicle_in_front.lastSpeedReal*3600),distance,tostring(vehicleBehind)),3)
+			courseplay:debug(string.format("%s: v.rootNode= %s,v.lastSpeedReal= %s, distance: %f, vehicleBehind= %s",nameNum(self),tostring(vehicle_in_front.rootNode),tostring(vehicle_in_front.lastSpeedReal),distance,tostring(vehicleBehind)),3)
 			courseplay:debug(nameNum(self)..": regulateTrafficSpeed(1230):	setting self.cp.collidingVehicle nil",3)
 			self.cp.tempCollis[self.cp.collidingVehicle] = nil
 			self.cp.collidingVehicle = nil

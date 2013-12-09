@@ -9,6 +9,7 @@ function courseplay:cponTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 		courseplay:debug(nameNum(self)..": Trigger: call handleTrafficCollisions onLeave" ,3)
 		courseplay:handleTrafficCollisions(self, triggerId, otherId, onEnter, onLeave)
 	elseif onEnter then
+		print(" Trigger: "..tostring(triggerId))
 		local name = getName(otherId)
 		local idsMatch = false
 		for transformId,_ in pairs (self.cp.tempCollis) do

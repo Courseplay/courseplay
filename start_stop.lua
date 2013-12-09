@@ -4,7 +4,7 @@ function courseplay:start(self)
 	if self.maxnumber < 1 then
 		return
 	end
-	
+
 	--Manual ignition v3.01/3.04 (self-installing)
 	if self.setManualIgnitionMode ~= nil and self.ignitionMode ~= nil and self.ignitionMode ~= 2 then
 		self:setManualIgnitionMode(2);

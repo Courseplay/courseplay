@@ -226,13 +226,37 @@ function courseplay:load(xmlFile)
 	self.findBlockingObjectCallbackLeft = courseplay.findBlockingObjectCallbackLeft
 	self.findBlockingObjectCallbackRight = courseplay.findBlockingObjectCallbackRight
 	
-
 	if self.numCollidingVehicles == nil then
 		self.numCollidingVehicles = {};
 	end
 	if self.trafficCollisionIgnoreList == nil then
 		self.trafficCollisionIgnoreList = {}
 	end
+	
+	self.cp.aiTrafficCollisionTrigger2 = clone(self.aiTrafficCollisionTrigger, false)
+	unlink(self.cp.aiTrafficCollisionTrigger2);
+	link(self.aiTrafficCollisionTrigger, self.cp.aiTrafficCollisionTrigger2)
+	setTranslation(self.cp.aiTrafficCollisionTrigger2, 0, 0, 5)
+	addTrigger(self.cp.aiTrafficCollisionTrigger2, 'onTrafficCollisionTrigger', self)
+	
+	self.cp.aiTrafficCollisionTrigger3 = clone(self.cp.aiTrafficCollisionTrigger2, false)
+	unlink(self.cp.aiTrafficCollisionTrigger3);
+	link(self.cp.aiTrafficCollisionTrigger2, self.cp.aiTrafficCollisionTrigger3)
+	setTranslation(self.cp.aiTrafficCollisionTrigger3, 0, 0, 5)
+	addTrigger(self.cp.aiTrafficCollisionTrigger3, 'onTrafficCollisionTrigger', self)
+	
+	self.cp.aiTrafficCollisionTrigger4 = clone(self.cp.aiTrafficCollisionTrigger3, false)
+	unlink(self.cp.aiTrafficCollisionTrigger4);
+	link(self.cp.aiTrafficCollisionTrigger3, self.cp.aiTrafficCollisionTrigger4)
+	setTranslation(self.cp.aiTrafficCollisionTrigger4, 0, 0, 5)
+	addTrigger(self.cp.aiTrafficCollisionTrigger4, 'onTrafficCollisionTrigger', self)
+	
+	
+	self.numCollidingVehicles[self.cp.aiTrafficCollisionTrigger2] = 0
+	self.numCollidingVehicles[self.cp.aiTrafficCollisionTrigger3] = 0
+	self.numCollidingVehicles[self.cp.aiTrafficCollisionTrigger4] = 0
+	
+	
 
 	courseplay:askForSpecialSettings(self,self)
 
