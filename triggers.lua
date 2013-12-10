@@ -2,7 +2,7 @@
 
 -- traffic collision
 function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
-	if not self.drive or otherId == self.rootNode then --Note: traffic collision doesn't need to run if we're not driving
+	if otherId == self.rootNode then 
 		return
 	end;
 

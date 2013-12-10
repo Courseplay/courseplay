@@ -262,7 +262,7 @@ function courseplay:turn(self, dt) --!!!
 		end;
 
 		for triggerId,_ in pairs(self.numCollidingVehicles) do
-			AIVehicleUtil.setCollisionDirection(self.cp.DirectionNode, triggerId, colDirX, colDirZ);
+			AIVehicleUtil.setCollisionDirection(self.cp.DirectionNode, triggerId, colDirX, colDirZ, true);
 		end;
 	end;
 	

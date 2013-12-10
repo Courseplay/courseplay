@@ -211,9 +211,7 @@ function courseplay:start(self)
 	self.record = false
 	self.dcheck = false;
 
-	self.cp.nextWaypoints = courseplay:getNextWaypoints(self, 4);
-
-
+	
 	if self.isRealistic then
 		self.cpSavedRealAWDModeOn = self.realAWDModeOn
 	end

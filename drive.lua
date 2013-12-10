@@ -4,10 +4,6 @@ function courseplay:drive(self, dt)
 		return;
 	end;
 
-	if courseplay.utils:hasVarChanged(self, 'recordnumber', true) then
-		self.cp.nextWaypoints = courseplay:getNextWaypoints(self, 4);
-	end;
-
 	local refSpeed = 0
 	local cx,cy,cz = 0,0,0
 	-- may i drive or should i hold position for some reason?
@@ -886,7 +882,7 @@ function courseplay:drive(self, dt)
 				AIVehicleUtil.driveInDirection(self, dt, self.cp.steeringAngle, 0.5, 0.5, 8, true, fwd, lx, lz, self.cp.speeds.sl, 0.5);
 			end
 			if not isBypassing then
-				courseplay:setTrafficCollision(self, lx, lz)
+				courseplay:setTrafficCollision(self, lx, lz, workArea)
 			end
 		end
 	else
@@ -923,13 +919,8 @@ function courseplay:drive(self, dt)
 end
 
 
-function courseplay:setTrafficCollision(self, lx, lz) --!!!
-	local distance = 15
-	local goForRaycast = self.cp.mode == 1 or (self.cp.mode == 3 and self.recordnumber > 3) or self.cp.mode == 5 or self.cp.mode == 8 or ((self.cp.mode == 4 or self.cp.mode == 6) and self.recordnumber > self.cp.stopWork) or (self.cp.mode == 2 and self.recordnumber > 3)
-	if self.isRealistic and math.abs(lx) < 0.1 then
-		local brakingDistance = self.realGroundSpeed/5
-		distance = math.max(distance, distance * brakingDistance)
-	end
+function courseplay:setTrafficCollision(self, lx, lz, workArea) --!!!
+	--local goForRaycast = self.cp.mode == 1 or (self.cp.mode == 3 and self.recordnumber > 3) or self.cp.mode == 5 or self.cp.mode == 8 or ((self.cp.mode == 4 or self.cp.mode == 6) and self.recordnumber > self.cp.stopWork) or (self.cp.mode == 2 and self.recordnumber > 3)
 	--print("lx: "..tostring(lx).."	distance: "..tostring(distance))
 	local maxlx = 0.5; --math.sin(maxAngle); --sin30°  old was : 0.7071067 sin 45°
 	local colDirX = lx;
@@ -943,36 +934,24 @@ function courseplay:setTrafficCollision(self, lx, lz) --!!!
 		colDirZ = 0.4;
 	end;
 	--courseplay:debug(string.format("colDirX: %f colDirZ %f ",colDirX,colDirZ ), 3)
-	local range = 3
-	if self.lastSpeedReal < 20/3600 then
-		range = 2
-	end
-	local x1,y1,z1 = 0,0,0
-	--if courseplay.debugChannels[3] then
-		local x,y,z = getWorldTranslation(self.aiTrafficCollisionTrigger)
-		x1,y1,z1 = localToWorld(self.aiTrafficCollisionTrigger, colDirX*5, 0, colDirZ*5 )
-		local x2,y2,z2 = localToWorld(self.aiTrafficCollisionTrigger, (colDirX*5)+ 1.5 , 0, colDirZ*5 )
-		local x3,y3,z3 = localToWorld(self.aiTrafficCollisionTrigger, (colDirX*5)-1.5 , 0, colDirZ*5 )
-		
-		drawDebugPoint(x2, y, z2, 1, 1, 0, 1);
-		drawDebugPoint(x3, y, z3, 1, 1, 0, 1);
-		drawDebugLine(x, y, z, 1, 0, 0, x1, y, z1, 1, 0, 0);
-	--end;
-
-	if g_server ~= nil and self.cp.trafficCollisionTriggers[1] ~= nil and self.cp.nextWaypoints ~= nil then --!!!
+	if self.cp.trafficCollisionTriggers[1] ~= nil then 
 		AIVehicleUtil.setCollisionDirection(self.cp.DirectionNode, self.cp.trafficCollisionTriggers[1], colDirX, colDirZ);
-		--if self.cp.collidingVehicle == nil and goForRaycast then
-
-		for i=2,self.cp.numTrafficCollisionTriggers do
-			local nodeX,nodeY,nodeZ = getWorldTranslation(self.cp.trafficCollisionTriggers[i]);
-			local nodeDirX,nodeDirY,nodeDirZ,distance = courseplay:get3dDirection(nodeX,nodeY,nodeZ, self.cp.nextWaypoints[i].cx,nodeY,self.cp.nextWaypoints[i].cz);
-
-			if distance < 5.5 then
-				nodeDirX,nodeDirY,nodeDirZ,distance = courseplay:get3dDirection(nodeX,nodeY,nodeZ, self.cp.nextWaypoints[i+1].cx,nodeY,self.cp.nextWaypoints[i+1].cz);
-			end;
-			nodeDirX,nodeDirY,nodeDirZ = worldDirectionToLocal(self.cp.trafficCollisionTriggers[i-1], nodeDirX,nodeDirY,nodeDirZ);
-			AIVehicleUtil.setCollisionDirection(self.cp.trafficCollisionTriggers[i-1], self.cp.trafficCollisionTriggers[i], nodeDirX, nodeDirZ);
-		end;
+		local recordNumber = self.recordnumber
+		if self.cp.collidingVehicle == nil then
+			for i=2,self.cp.numTrafficCollisionTriggers do
+				if workArea or recordNumber + i > self.maxnumber or recordNumber < 2 then
+					AIVehicleUtil.setCollisionDirection(self.cp.trafficCollisionTriggers[i-1], self.cp.trafficCollisionTriggers[i], 0, -1);
+				else
+					local nodeX,nodeY,nodeZ = getWorldTranslation(self.cp.trafficCollisionTriggers[i]);
+					local nodeDirX,nodeDirY,nodeDirZ,distance = courseplay:get3dDirection(nodeX,nodeY,nodeZ, self.Waypoints[recordNumber+i].cx,nodeY,self.Waypoints[recordNumber+i].cz);
+					if distance < 5.5 then
+							nodeDirX,nodeDirY,nodeDirZ,distance = courseplay:get3dDirection(nodeX,nodeY,nodeZ, self.Waypoints[recordNumber+i+1].cx,nodeY,self.Waypoints[recordNumber+i+1].cz);
+					end;
+						nodeDirX,nodeDirY,nodeDirZ = worldDirectionToLocal(self.cp.trafficCollisionTriggers[i-1], nodeDirX,nodeDirY,nodeDirZ);
+						AIVehicleUtil.setCollisionDirection(self.cp.trafficCollisionTriggers[i-1], self.cp.trafficCollisionTriggers[i], nodeDirX, nodeDirZ);
+				end;
+			end
+		end
 	end;
 end;
 
