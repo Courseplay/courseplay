@@ -6,20 +6,30 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 		return
 	end;
 
-	if otherId and courseplay.trafficCollisionIgnoreList[otherId] then --ignore objects on list
+	if otherId and (courseplay.trafficCollisionIgnoreList[otherId] or self.cpTrafficCollisionIgnoreList[otherId]) then --ignore objects on list
 		return;
 	end;
 
 	if onLeave then
 		local name = getName(otherId);
-		print(string.format('%s: traffic onLeave: trigger %s [id %s], object id=%s, name=%q', nameNum(self), tostring(self.cp.trafficCollisionTriggerToTriggerIndex[triggerId]), tostring(triggerId), tostring(otherId), tostring(name)));
+		local triggerIndex = self.cp.trafficCollisionTriggerToTriggerIndex[triggerId];
 
 		courseplay:debug(nameNum(self)..": Trigger: call handleTrafficCollisions onLeave" ,3)
 		courseplay:handleTrafficCollisions(self, triggerId, otherId, onEnter, onLeave)
+
+		self.cp.collidingObjects.all[otherId] = nil;
+		self.cp.collidingObjects[triggerIndex][otherId] = nil;
+		self.cp.numCollidingObjects.all = math.max(self.cp.numCollidingObjects.all - 1, 0);
+		self.cp.numCollidingObjects[triggerIndex] = math.max(self.cp.numCollidingObjects[triggerIndex] - 1, 0);
+
+		courseplay:debug(string.format('%s: traffic onLeave: trigger %s, object id=%s, name=%q', nameNum(self), tostring(self.cp.trafficCollisionTriggerToTriggerIndex[triggerId]), tostring(otherId), tostring(name)), 3);
+		courseplay:debug(string.format('\tnumCollidingObjects all=%d, [%d]=%d', self.cp.numCollidingObjects.all, triggerIndex, self.cp.numCollidingObjects[triggerIndex]), 3);
 	elseif onEnter then
 		local name = getName(otherId);
-		print(string.format('%s: traffic onEnter: trigger %s [id %s], object id=%s, name=%q', nameNum(self), tostring(self.cp.trafficCollisionTriggerToTriggerIndex[triggerId]), tostring(triggerId), tostring(otherId), tostring(name)));
+		local triggerIndex = self.cp.trafficCollisionTriggerToTriggerIndex[triggerId];
+		courseplay:debug(string.format('%s: traffic onEnter: trigger %s, object id=%s, name=%q', nameNum(self), tostring(triggerIndex), tostring(otherId), tostring(name)), 3);
 
+		--[[
 		local idsMatch = false
 		for transformId,_ in pairs (self.cp.tempCollis) do --TODO: "idsMatch = self.cp.tempCollis[otherId] == true" should suffice
 			if transformId == otherId then
@@ -27,11 +37,19 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 				break
 			end
 		end
+		]]
+
+		local idsMatch = self.cp.tempCollis[otherId] == true;
 		if idsMatch then
 			courseplay:debug(nameNum(self)..": Trigger: onEnter raycast already found ["..tostring(otherId).."]-> do nothing " ,3)
 		else
 			courseplay:debug(nameNum(self)..": Trigger: call handleTrafficCollisions onEnter ["..tostring(otherId).."]" ,3)
-			courseplay:handleTrafficCollisions(self, triggerId, otherId, onEnter, onLeave)
+			courseplay:handleTrafficCollisions(self, triggerId, otherId, onEnter, onLeave);
+			self.cp.collidingObjects.all[otherId] = true;
+			self.cp.collidingObjects[triggerIndex][otherId] = true;
+			self.cp.numCollidingObjects.all = self.cp.numCollidingObjects.all + 1;
+			self.cp.numCollidingObjects[triggerIndex] = self.cp.numCollidingObjects[triggerIndex] + 1;
+			courseplay:debug(string.format('\tnumCollidingObjects all=%d, [%d]=%d', self.cp.numCollidingObjects.all, triggerIndex, self.cp.numCollidingObjects[triggerIndex]), 3);
 		end
 	end
 	

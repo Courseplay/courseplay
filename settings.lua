@@ -1252,10 +1252,11 @@ end;
 
 function courseplay:getNextWaypoints(vehicle, n)
 	if vehicle.Waypoints == nil or vehicle.Waypoints[vehicle.recordnumber] == nil then
-		return {};
+		return nil;
 	end;
 
 	local ret = {};
+	ret[1] = vehicle.Waypoints[vehicle.recordnumber];
 	for i=1, n do
 		ret[i+1] = courseplay:loopedTable(vehicle.Waypoints, vehicle.recordnumber + i, vehicle.maxnumber);
 	end;

@@ -959,7 +959,7 @@ function courseplay:setTrafficCollision(self, lx, lz) --!!!
 		drawDebugLine(x, y, z, 1, 0, 0, x1, y, z1, 1, 0, 0);
 	--end;
 
-	if self.cp.trafficCollisionTriggers[1] ~= nil and g_server ~= nil then --!!!
+	if g_server ~= nil and self.cp.trafficCollisionTriggers[1] ~= nil and self.cp.nextWaypoints ~= nil then --!!!
 		AIVehicleUtil.setCollisionDirection(self.cp.DirectionNode, self.cp.trafficCollisionTriggers[1], colDirX, colDirZ);
 		--if self.cp.collidingVehicle == nil and goForRaycast then
 

@@ -236,6 +236,12 @@ function courseplay:load(xmlFile)
 	self.cp.numTrafficCollisionTriggers = 0;
 	self.cp.trafficCollisionTriggers = {};
 	self.cp.trafficCollisionTriggerToTriggerIndex = {};
+	self.cp.collidingObjects = {
+		all = {};
+	};
+	self.cp.numCollidingObjects = {
+		all = 0;
+	};
 	if self.aiTrafficCollisionTrigger ~= nil then
 		self.cp.numTrafficCollisionTriggers = 4;
 		for i=1,self.cp.numTrafficCollisionTriggers do
@@ -248,8 +254,15 @@ function courseplay:load(xmlFile)
 			addTrigger(self.cp.trafficCollisionTriggers[i], 'cpOnTrafficCollisionTrigger', self);
 			self.numCollidingVehicles[self.cp.trafficCollisionTriggers[i]] = 0;
 			self.cp.trafficCollisionTriggerToTriggerIndex[self.cp.trafficCollisionTriggers[i]] = i;
+
 			courseplay.trafficCollisionIgnoreList[self.cp.trafficCollisionTriggers[i]] = true; --add all traffic collision triggers to global ignore list
+			self.cp.collidingObjects[i] = {};
+			self.cp.numCollidingObjects[i] = 0;
 		end;
+	end;
+
+	if not courseplay.trafficCollisionIgnoreList[g_currentMission.terrainRootNode] then
+		courseplay.trafficCollisionIgnoreList[g_currentMission.terrainRootNode] = true;
 	end;
 
 
@@ -941,6 +954,9 @@ end
 function courseplay:delete()
 	if self.aiTrafficCollisionTrigger ~= nil then
 		removeTrigger(self.aiTrafficCollisionTrigger);
+	end;
+	for i,trigger in pairs(self.cp.trafficCollisionTriggers) do
+		removeTrigger(trigger);
 	end;
 
 	if self.cp ~= nil then
