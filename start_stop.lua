@@ -4,7 +4,7 @@ function courseplay:start(self)
 	if self.maxnumber < 1 then
 		return
 	end
-	
+
 	--Manual ignition v3.01/3.04 (self-installing)
 	if self.setManualIgnitionMode ~= nil and self.ignitionMode ~= nil and self.ignitionMode ~= 2 then
 		self:setManualIgnitionMode(2);
@@ -209,7 +209,8 @@ function courseplay:start(self)
 	self.drive = true;
 	self.cp.maxFieldSpeed = 0
 	self.record = false
-	self.dcheck = false
+	self.dcheck = false;
+
 	
 	if self.isRealistic then
 		self.cpSavedRealAWDModeOn = self.realAWDModeOn
@@ -372,6 +373,8 @@ function courseplay:stop(self)
 
 	--remove any global info texts
 	if g_server ~= nil then
+		self.cp.infoText = nil;
+
 		for refIdx,_ in pairs(courseplay.globalInfoText.msgReference) do
 			if self.cp.activeGlobalInfoTexts[refIdx] ~= nil then
 				courseplay:setGlobalInfoText(self, refIdx, true);

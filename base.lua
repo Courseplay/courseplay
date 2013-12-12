@@ -808,23 +808,23 @@ end;
 
 -- is being called every loop
 function courseplay:update(dt)
+	if g_server ~= nil and (self.drive or self.record or self.record_pause) then
+		self.cp.infoText = nil;
+	end;
+
 	-- we are in record mode
 	if self.record then
 		courseplay:record(self);
-	end
+	end;
 
 	-- we are in drive mode and single player /MP server
 	if self.drive and g_server ~= nil then
-		
-		self.cp.infoText = nil;
-		
 		for refIdx,_ in pairs(courseplay.globalInfoText.msgReference) do
 			self.cp.hasSetGlobalInfoTextThisLoop[refIdx] = false;
 		end;
 
 		courseplay:drive(self, dt);
 
-		
 		for refIdx,_ in pairs(self.cp.activeGlobalInfoTexts) do
 			if not self.cp.hasSetGlobalInfoTextThisLoop[refIdx] then
 				courseplay:setGlobalInfoText(self, refIdx, true); --force remove
@@ -842,8 +842,8 @@ function courseplay:update(dt)
 		self.cp.onMpSetCourses = nil
 	end
 
-	if g_server ~= nil  then 
-	    self.cp.HUDrecordnumber = self.recordnumber
+	if g_server ~= nil then
+		self.cp.HUDrecordnumber = self.recordnumber
 		if self.drive then --TODO: restrict to currentPage == 1
 			self.cp.HUD1goOn = (self.Waypoints[self.cp.last_recordnumber] ~= nil and self.Waypoints[self.cp.last_recordnumber].wait and self.wait) or (self.cp.stopAtEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil));
 			self.cp.HUD1noWaitforFill = not self.cp.isLoaded and self.cp.mode ~= 5;
