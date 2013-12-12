@@ -975,20 +975,15 @@ end;
 
 function courseplay:validateCourseGenerationData(vehicle)
 	local numWaypoints = 0;
-	local hasEnoughWaypoints = false;
-	
 	if vehicle.cp.fieldEdge.selectedField.fieldNum > 0 then
 		numWaypoints = #(courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum].points);
-		hasEnoughWaypoints = numWaypoints > 4
-		if vehicle.cp.headland.numLanes ~= 0 then
-			hasEnoughWaypoints = numWaypoints >= 20;
-		end;
 	elseif vehicle.Waypoints ~= nil then
 		numWaypoints = #(vehicle.Waypoints);
-		hasEnoughWaypoints = numWaypoints > 4;
-		if vehicle.cp.headland.numLanes ~= 0 then
-			hasEnoughWaypoints = numWaypoints >= 20;
-		end;
+	end;
+
+	local hasEnoughWaypoints = numWaypoints > 4
+	if vehicle.cp.headland.numLanes ~= 0 then
+		hasEnoughWaypoints = numWaypoints >= 20;
 	end;
 
 	if (vehicle.cp.fieldEdge.selectedField.fieldNum > 0 or not vehicle.cp.hasGeneratedCourse)
