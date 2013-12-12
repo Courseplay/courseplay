@@ -258,29 +258,6 @@ function courseplay:executeFunction(self, func, value, page)
 					elseif line == 5 and self.cp.fieldEdge.customField.fieldNum > 0 then
 						courseplay:addCustomSingleFieldEdgeToList(self);
 					end;
-
-				elseif self.record or self.record_pause then
-					if line == 1 then
-						courseplay:stop_record(self);
-
-					elseif not self.record_pause then
-						if line == 2 then --and self.recordnumber > 3
-							courseplay:set_waitpoint(self);
-						elseif line == 3 and self.recordnumber > 3 then
-							courseplay:interrupt_record(self);
-						elseif line == 4 then --and self.recordnumber > 3
-							courseplay:set_crossing(self);
-						elseif line == 5 then
-							courseplay:change_DriveDirection(self);
-						end;
-
-					else
-						if line == 2 then
-							courseplay:delete_waypoint(self);
-						elseif line == 3 then
-							courseplay:continue_record(self);
-						end;
-					end;
 				end;
 			end; --END if not self.drive
 		end; --END is page 0 or 1

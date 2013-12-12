@@ -41,8 +41,9 @@
 		end;
 
 	elseif vehicle.cp.hud.currentPage == 1 then
-		if (vehicle.record or vehicle.record_pause) and vehicle.cp.HUDrecordnumber == 4 and courseplay.utils:hasVarChanged(vehicle, 'recordnumber', true) then --record pause action becomes available
-			courseplay.hud:setReloadPageOrder(vehicle, 1, true);
+		if (vehicle.record or vehicle.record_pause) and vehicle.cp.HUDrecordnumber == 4 and courseplay.utils:hasVarChanged(vehicle, 'HUDrecordnumber') then --record pause action becomes available
+			--courseplay.hud:setReloadPageOrder(vehicle, 1, true);
+			courseplay:buttonsActiveEnabled(vehicle, 'recording');
 		elseif vehicle.drive then
 			for i,varName in pairs({ --[['HUD1notDrive',]] 'HUD1goOn', 'HUD1noWaitforFill' }) do
 				if courseplay.utils:hasVarChanged(vehicle, varName) then
@@ -291,30 +292,6 @@ function courseplay.hud:loadPage(vehicle, page)
 					else
 						vehicle.cp.hud.content.pages[1][4][2].text = "---";
 					end;
-				end;
-
-			elseif vehicle.record or vehicle.record_pause then
-				vehicle.cp.hud.content.pages[1][1][1].text = courseplay:loc("PointRecordStop");
-
-				if not vehicle.record_pause then
-					if vehicle.cp.HUDrecordnumber > 1 then
-						vehicle.cp.hud.content.pages[1][2][1].text = courseplay:loc("CourseWaitpointSet");
-
-						if vehicle.cp.HUDrecordnumber > 3 then
-							vehicle.cp.hud.content.pages[1][3][1].text = courseplay:loc("PointRecordInterrupt");
-						end;
-
-						vehicle.cp.hud.content.pages[1][4][1].text = courseplay:loc("CourseCrossingSet");
-						if not vehicle.cp.drivingDirReverse  then
-							vehicle.cp.hud.content.pages[1][5][1].text = courseplay:loc("CourseDriveDirection") .. " " .. courseplay:loc("CourseDriveDirectionFor");
-						else
-							vehicle.cp.hud.content.pages[1][5][1].text = courseplay:loc("CourseDriveDirection") .. " " .. courseplay:loc("CourseDriveDirectionBac");
-						end;
-					end;
-				else
-					vehicle.cp.hud.content.pages[1][2][1].text = courseplay:loc("PointRecordDelete");
-
-					vehicle.cp.hud.content.pages[1][3][1].text = courseplay:loc("PointRecordContinue");
 				end;
 			end;
 		end;
@@ -578,7 +555,7 @@ function courseplay.hud:loadPage(vehicle, page)
 		vehicle.cp.hud.content.pages[9][4][1].text = courseplay:loc("setUnload");  --"entladen"
 
 		for a=2,5 do
-			vehicle.cp.hud.content.pages[9][a-1][2].text = vehicle.cp.hasShovelStateRot[tostring(a)] ~= nil and 'OK' or '';
+			vehicle.cp.hud.content.pages[9][a-1][2].text = vehicle.cp.hasShovelStateRot[tostring(a)] and 'OK' or '';
 		end;
 
 		vehicle.cp.hud.content.pages[9][5][1].text = courseplay:loc("cpShovelStopAndGo");

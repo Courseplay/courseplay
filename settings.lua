@@ -241,17 +241,40 @@ function courseplay:buttonsActiveEnabled(self, section)
 	end;
 
 
-	if self.cp.hud.currentPage == 1 and (section == nil or section == "all" or section == "quickModes" or section == "customFieldShow") then
+	if self.cp.hud.currentPage == 1 and (section == nil or section == "all" or section == "quickModes" or section == "recording" or section == "customFieldShow") then
 		for _,button in pairs(self.cp.buttons["1"]) do
-			if button.function_to_call == "setAiMode" then
+			local fn = button.function_to_call;
+			if fn == "setAiMode" then
 				button.isActive = self.cp.mode == button.parameter;
 				button.isDisabled = button.parameter == 7 and not self.cp.isCombine and not self.cp.isChopper and not self.cp.isHarvesterSteerable;
 				button.canBeClicked = not button.isDisabled and not button.isActive;
-			elseif button.function_to_call == "toggleCustomFieldEdgePathShow" then
+			elseif fn == "toggleCustomFieldEdgePathShow" then
 				button.isActive = self.cp.fieldEdge.customField.show;
+
+			elseif fn == 'stop_record' then
+				button.isDisabled = self.record_pause or self.cp.isRecordingTurnManeuver;
+				button.canBeClicked = not button.isDisabled;
+			elseif fn == 'setRecordingPause' then
+				button.isActive = self.record_pause;
+				button.isDisabled = self.cp.HUDrecordnumber < 4 or self.cp.isRecordingTurnManeuver;
+				button.canBeClicked = not button.isDisabled;
+			elseif fn == 'delete_waypoint' then
+				button.isDisabled = not self.record_pause;
+				button.canBeClicked = not button.isDisabled;
+			elseif fn == 'set_waitpoint' or fn == 'set_crossing' then
+				button.isDisabled = self.record_pause or self.cp.isRecordingTurnManeuver;
+				button.canBeClicked = not button.isDisabled;
+			elseif fn == 'setRecordingTurnManeuver' then --isToggleButton
+				button.isActive = self.cp.isRecordingTurnManeuver;
+				button.isDisabled = self.record_pause or self.cp.drivingDirReverse;
+				button.canBeClicked = not button.isDisabled;
+			elseif fn == 'change_DriveDirection' then --isToggleButton
+				button.isActive = self.cp.drivingDirReverse;
+				button.isDisabled = self.record_pause or self.cp.isRecordingTurnManeuver;
+				button.canBeClicked = not button.isDisabled;
 			end;
 		end;
-		
+
 	elseif self.cp.hud.currentPage == 2 and section == 'page2' then
 		local enable, hide = true, false
 		local n_courses = #(self.cp.hud.courses)
@@ -333,7 +356,7 @@ function courseplay:buttonsActiveEnabled(self, section)
 
 	elseif self.cp.hud.currentPage == 9 and (section == nil or section == "all" or section == "shovel") then
 		for _,button in pairs(self.cp.buttons["9"]) do
-			if button.function_to_call == "saveShovelStatus" then
+			if button.function_to_call == "saveShovelStatus" then --isToggleButton
 				button.isActive = self.cp.shovelStateRot[tostring(button.parameter)] ~= nil;
 				button.canBeClicked = true;
 			end;

@@ -498,6 +498,28 @@ function courseplay:load(xmlFile)
 		courseplay:register_button(self, 1, icon, "setAiMode", i, posX, posY, aiModeQuickSwitch.w, aiModeQuickSwitch.h);
 	end;
 
+	--recording
+	local recordingData = {
+		[1] = { 'recording_stop', 'stop_record' },
+		[2] = { 'recording_pause', 'setRecordingPause', true },
+		[3] = { 'recording_deleteWaypoint', 'delete_waypoint' },
+		[4] = { 'recording_setWait', 'set_waitpoint' },
+		[5] = { 'recording_setCrossing', 'set_crossing' },
+		[6] = { 'recording_turn', 'setRecordingTurnManeuver', true },
+		[7] = { 'recording_reverse', 'change_DriveDirection', true }
+	};
+	local w,h = w32px,h32px;
+	local padding = w/4;
+	local totalWidth = (#recordingData - 1) * (w + padding) + w;
+	local initX = courseplay.hud.infoBaseCenter - totalWidth/2;
+	
+	for i,data in pairs(recordingData) do
+		local posX = initX + ((w + padding) * (i-1));
+		local isToggleButton = data[3] or false;
+		courseplay:register_button(self, 1, data[1] .. '.png', data[2], nil, posX, courseplay.hud.linesButtonPosY[2], w, h, nil, nil, false, false, isToggleButton);
+	end;
+
+	--row buttons
 	for i=1, courseplay.hud.numLines do
 		courseplay:register_button(self, 1, "blank.dds", "rowButton", i, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[i], aiModeQuickSwitch.minX - courseplay.hud.infoBasePosX - 0.005, 0.015, i, nil, true);
 	end;
@@ -668,10 +690,10 @@ function courseplay:load(xmlFile)
 	--Page 9: Shovel settings
 	local wTemp = 22/1920;
 	local hTemp = 22/1080;
-	courseplay:register_button(self, 9, "shovelLoading.dds",      "saveShovelStatus", 2, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[1] - 0.003, wTemp, hTemp, 1, 2, true);
-	courseplay:register_button(self, 9, "shovelTransport.dds",    "saveShovelStatus", 3, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[2] - 0.003, wTemp, hTemp, 2, 3, true);
-	courseplay:register_button(self, 9, "shovelPreUnloading.dds", "saveShovelStatus", 4, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[3] - 0.003, wTemp, hTemp, 3, 4, true);
-	courseplay:register_button(self, 9, "shovelUnloading.dds",    "saveShovelStatus", 5, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[4] - 0.003, wTemp, hTemp, 4, 5, true);
+	courseplay:register_button(self, 9, "shovelLoading.dds",      "saveShovelStatus", 2, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[1] - 0.003, wTemp, hTemp, 1, 2, true, false, true);
+	courseplay:register_button(self, 9, "shovelTransport.dds",    "saveShovelStatus", 3, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[2] - 0.003, wTemp, hTemp, 2, 3, true, false, true);
+	courseplay:register_button(self, 9, "shovelPreUnloading.dds", "saveShovelStatus", 4, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[3] - 0.003, wTemp, hTemp, 3, 4, true, false, true);
+	courseplay:register_button(self, 9, "shovelUnloading.dds",    "saveShovelStatus", 5, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[4] - 0.003, wTemp, hTemp, 4, 5, true, false, true);
 
 	courseplay:register_button(self, 9, "blank.dds", "setShovelStopAndGo", nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[5], courseplay.hud.visibleArea.width, 0.015, 5, nil, true);
 	--END Page 9
