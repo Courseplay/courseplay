@@ -11,7 +11,7 @@
 
 
   <Materials>
-    <Material name="Sign" materialId="6" ambientColor="1 1 1" cosPower="20" specularColor="0.5 0.5 0.5">
+    <Material name="Sign" materialId="6" ambientColor="1 1 1" cosPower="20" specularColor="0.25 0.25 0.25">
       <Texture fileId="1"/>
     </Material>
   </Materials>
