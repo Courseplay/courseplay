@@ -97,6 +97,7 @@ function courseplay:start_record(vehicle)
 	vehicle.cp.recordingTimer = 101
 	vehicle.cp.drivingDirReverse = false
 	courseplay:updateWaypointSigns(vehicle, "current");
+	courseplay:validateCanSwitchMode(vehicle);
 end
 
 -- stops course recording -- just setting variables
@@ -126,6 +127,7 @@ function courseplay:interrupt_record(vehicle)
 		local oldSignIndex = #vehicle.cp.signs.current;
 		local oldSignType = vehicle.cp.signs.current[oldSignIndex].type;
 		courseplay.utils.signs.changeSignType(vehicle, oldSignIndex, oldSignType, "stop");
+		courseplay:validateCanSwitchMode(vehicle);
 	end
 end
 
@@ -139,6 +141,7 @@ function courseplay:continue_record(vehicle)
 	local oldSignIndex = #vehicle.cp.signs.current;
 	local oldSignType = vehicle.cp.signs.current[oldSignIndex].type;
 	courseplay.utils.signs.changeSignType(vehicle, oldSignIndex, oldSignType, "normal");
+	courseplay:validateCanSwitchMode(vehicle);
 end;
 
 -- delete last waypoint

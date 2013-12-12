@@ -40,11 +40,15 @@
 			end;
 		end;
 
-	elseif vehicle.cp.hud.currentPage == 1 and vehicle.drive then
-		for i,varName in pairs({ --[['HUD1notDrive',]] 'HUD1goOn', 'HUD1noWaitforFill' }) do
-			if courseplay.utils:hasVarChanged(vehicle, varName) then
-				courseplay.hud:setReloadPageOrder(vehicle, 1, true);
-				break;
+	elseif vehicle.cp.hud.currentPage == 1 then
+		if (vehicle.record or vehicle.record_pause) and vehicle.cp.HUDrecordnumber == 4 and courseplay.utils:hasVarChanged(vehicle, 'recordnumber', true) then --record pause action becomes available
+			courseplay.hud:setReloadPageOrder(vehicle, 1, true);
+		elseif vehicle.drive then
+			for i,varName in pairs({ --[['HUD1notDrive',]] 'HUD1goOn', 'HUD1noWaitforFill' }) do
+				if courseplay.utils:hasVarChanged(vehicle, varName) then
+					courseplay.hud:setReloadPageOrder(vehicle, 1, true);
+					break;
+				end;
 			end;
 		end;
 
