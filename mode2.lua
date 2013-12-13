@@ -1132,19 +1132,21 @@ function courseplay:calculateCombineOffset(self, combine)
 
 	--special tools, special cases
 	if self.cp.combineOffsetAutoMode and combine.cp.isCaseIH7130 then
-		offs = 8.0;
+		offs =  8.0;
 	elseif self.cp.combineOffsetAutoMode and (combine.cp.isCaseIH9230 or combine.cp.isCaseIH9230Crawler) then
 		offs = 11.5;
-	elseif self.cp.combineOffsetAutoMode and (combine.cp.isGrimmeRootster604 or Utils.endsWith(combine.configFileName, "grimmeRootster604.xml")) then
+	elseif self.cp.combineOffsetAutoMode and combine.cp.isDeutz5465H then
+		offs =  5.1;
+	elseif self.cp.combineOffsetAutoMode and combine.cp.isGrimmeRootster604 then
 		offs = -4.3;
-	elseif self.cp.combineOffsetAutoMode and (combine.cp.isGrimmeSE7555 or Utils.endsWith(combine.configFileName, "grimmeSE75-55.xml")) then
+	elseif self.cp.combineOffsetAutoMode and combine.cp.isGrimmeSE7555 then
 		offs =  4.3;
 	elseif self.cp.combineOffsetAutoMode and combine.cp.isFahrM66 then
 		offs =  4.4;
-	elseif self.cp.combineOffsetAutoMode and (combine.cp.isJF1060 or Utils.endsWith(combine.configFileName, "JF_1060.xml")) then
-		offs =  7
-	elseif self.cp.combineOffsetAutoMode and (combine.cp.isRopaEuroTiger or Utils.endsWith(combine.configFileName, "RopaEuroTiger_V8_3_XL.xml")) then
-		offs =  5.2
+	elseif self.cp.combineOffsetAutoMode and combine.cp.isJF1060 then
+		offs =  7.0;
+	elseif self.cp.combineOffsetAutoMode and combine.cp.isRopaEuroTiger then
+		offs =  5.2;
 	
 	--Sugarbeet Loaders (e.g. Ropa Euro Maus, Holmer Terra Felis)
 	elseif self.cp.combineOffsetAutoMode and combine.cp.isSugarBeetLoader then

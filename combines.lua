@@ -344,19 +344,21 @@ function courseplay:calculateInitialCombineOffset(self, combine)
 
 	--special tools, special cases
 	if combine.cp.isCaseIH7130 then
-		self.cp.combineOffset = 8.0;
+		self.cp.combineOffset =  8.0;
 	elseif combine.cp.isCaseIH9230 or combine.cp.isCaseIH9230Crawler then
 		self.cp.combineOffset = 11.5;
-	elseif combine.cp.isGrimmeRootster604 or Utils.endsWith(combine.configFileName, "grimmeRootster604.xml") then
+	elseif combine.cp.isDeutz5465H then
+		self.cp.combineOffset =  5.1;
+	elseif combine.cp.isGrimmeRootster604 then
 		self.cp.combineOffset = -4.3;
-	elseif combine.cp.isGrimmeSE7555 or Utils.endsWith(combine.configFileName, "grimmeSE75-55.xml") then
+	elseif combine.cp.isGrimmeSE7555 then
 		self.cp.combineOffset =  4.3;
 	elseif combine.cp.isFahrM66 then
 		self.cp.combineOffset =  4.4;
-	elseif self.cp.combineOffsetAutoMode and (combine.cp.isJF1060 or Utils.endsWith(combine.configFileName, "JF_1060.xml")) then
-		self.cp.combineOffset =  -7;
+	elseif combine.cp.isJF1060 then
+		self.cp.combineOffset = -7;
 		combine.cp.offset = 7;
-	elseif self.cp.combineOffsetAutoMode and (combine.cp.isRopaEuroTiger or Utils.endsWith(combine.configFileName, "RopaEuroTiger_V8_3_XL.xml")) then
+	elseif combine.cp.isRopaEuroTiger then
 		self.cp.combineOffset =  5.2;
 	elseif combine.cp.isSugarBeetLoader then
 		local utwX,utwY,utwZ = getWorldTranslation(combine.unloadingTrigger.node);
