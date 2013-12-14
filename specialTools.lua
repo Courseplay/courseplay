@@ -768,9 +768,10 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 			end;
 
 			--speed regulation
-			if workTool.isBlocked then 
-				allowedToDrive = false
-			end
+			if workTool.isBlocked then
+				allowedToDrive = false;
+				courseplay:setGlobalInfoText(self, 'PICKUP_JAMMED');
+			end;
 			workTool.blockMaxTime = 10000
 			if workTool.actLoad2 == 1 then
 				if workTool.blockTimer > workTool.blockMaxTime *0.8 then
