@@ -1,38 +1,38 @@
 -- inspired by fieldstatus of Alan R. (ls-uk.info: thebadtouch)
-function courseplay:area_has_fruit(x, z, fruit_type, widthX, widthZ)
-	if not courseplay:is_field(x, z) then
-		return false
-	end
-
-	local density = 0
-	widthX = widhtX or 0.5;
+function courseplay:area_has_fruit(x, z, fruitType, widthX, widthZ)
+	widthX = widthX or 0.5;
 	widthZ = widthZ or 0.5;
-	if fruit_type ~= nil then
-		density = Utils.getFruitArea(fruit_type, x, z, x - widthX, z - widthZ, x + widthX, z + widthZ);
+	if not courseplay:is_field(x, z, widthX, widthZ) then
+		return false;
+	end;
+
+	local density = 0;
+	if fruitType ~= nil then
+		density = Utils.getFruitArea(fruitType, x, z, x - widthX, z - widthZ, x + widthX, z + widthZ);
 		if density > 0 then
 			--courseplay:debug(string.format("checking x: %d z %d - density: %d", x, z, density ), 3)
-			return true
-		end
+			return true;
+		end;
 	else
 		for i = 1, FruitUtil.NUM_FRUITTYPES do
 			if i ~= FruitUtil.FRUITTYPE_GRASS then
-
 				density = Utils.getFruitArea(i, x, z, x - widthX, z - widthZ, x + widthX, z + widthZ);
-
 				if density > 0 then
 					--courseplay:debug(string.format("checking x: %d z %d - density: %d", x, z, density ), 3)
-					return true
-				end
-			end
-		end
-	end
+					return true;
+				end;
+			end;
+		end;
+	end;
 
 	--courseplay:debug(string.format(" x: %d z %d - is really cut!", x, z ), 3)
-	return false
-end
+	return false;
+end;
 
-function courseplay:is_field(x, z)
-	local widthX, widthZ = 0.5, 0.5;
+function courseplay:is_field(x, z, widthX, widthZ)
+	widthX = widthX or 0.5;
+	widthZ = widthZ or 0.5;
+
 	if courseplay.fields.lastChannel ~= nil then
 		if Utils.getDensity(g_currentMission.terrainDetailId, courseplay.fields.lastChannel, x, z, x - widthX, z - widthZ, x + widthX, z + widthZ) ~= 0 then
 			return true;
