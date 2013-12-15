@@ -277,29 +277,20 @@ function courseplay:unload_combine(self, dt)
 	if self.cp.turnCounter == nil then
 			self.cp.turnCounter = 0
 	end
-	--print("combine.turnDirection: "..tostring(combine.turnDirection))
+	
 	local AutoCombineIsTurning = false
 	local combineIsAutoCombine = false
 	local autoCombineExtraMoveBack = 0
-	if combine.turnDirection ~= nil and not combine.drive then
+	if combine.acParameters ~= nil and not combine.drive then
 		combineIsAutoCombine = true
 		if combine.cp.turnStage == nil then
 			combine.cp.turnStage = 0
 		end
-		if math.abs(combine.turnDirection) > 19 then
-			--if self.cp.activeCombine.cp.isChopper and   then
-			self.cp.turnCounter = self.cp.turnCounter +1	
-			if self.cp.turnCounter >= 40 then
-				combine.cp.turnStage = 2
-				autoCombineExtraMoveBack = self.cp.turnRadius*1.5
-				AutoCombineIsTurning = true
-			end						
+		if combine.acTurnStage ~= 0 then 
+			combine.cp.turnStage = 2
+			autoCombineExtraMoveBack = self.cp.turnRadius*1.5
+			AutoCombineIsTurning = true
 		else
-			if self.cp.turnCounter > 0 then
-				--print("self.cp.turnCounter: "..tostring(self.cp.turnCounter))
-				self.cp.turnCounter = 0
-			end
-			combine.acNumCollidingVehicles = math.min(combine.acNumCollidingVehicles -1,0)
 			combine.cp.turnStage = 0
 		end
 	end
@@ -482,7 +473,7 @@ function courseplay:unload_combine(self, dt)
 					courseplay:debug(nameNum(self) .. ": I'm left, fruit is right", 4)
 					local fx,fy,fz = localToWorld(self.rootNode, 0, 0, 8)
 					local sx,sy,sz = localToWorld(self.rootNode, 0 , 0, -self.cp.turnRadius-trailer_offset-autoCombineExtraMoveBack)
-					if courseplay:is_field(fx, fz) and not AutoCombineIsTurning then
+					if courseplay:is_field(fx, fz) and not combineIsAutoCombine then
 						courseplay:debug(nameNum(self) .. ": 1st target is on field", 4)
 						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 0 , 0, 5);	
 						self.cp.modeState = 5
@@ -704,9 +695,6 @@ function courseplay:unload_combine(self, dt)
 				combine.waitForTurnTime = combine.time + 100
 			elseif tractor.drive == true and not (combine_fill_level == 0 and combine:getCombineTrailerInRangePipeState()==0) then
 				combine.cp.waitingForTrailerToUnload = true
-			elseif combineIsAutoCombine and not (combine_fill_level == 0 and combine:getCombineTrailerInRangePipeState()==0) then
-				local delay = (combine.acDelayTimeToMoveBack - combine.acDelayTimeToStopMovement)/2 + combine.acDelayTimeToStopMovement
-				combine.acDelay = delay
 			end
 		elseif distance >= 50 and self.cp.modeState == 2 then
 			allowedToDrive = courseplay:brakeToStop(self)
