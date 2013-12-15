@@ -199,8 +199,8 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 									courseplay:setMarkers(self, workTool);
 								end;
 
-								if workTool.setIsPickupDown ~= nil then
-									if self.pickup.isDown == nil or (self.pickup.isDown ~= nil and not self.pickup.isDown) then
+								if workTool.setIsPickupDown ~= nil and workTool.pickup then
+									if workTool.pickup.isDown == nil or (workTool.pickup.isDown ~= nil and not workTool.pickup.isDown) then
 										workTool:setIsPickupDown(true, false);
 									end;
 								end;
@@ -216,8 +216,8 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 							if workTool.setIsTurnedOn ~= nil and workTool.isTurnedOn then
 								workTool:setIsTurnedOn(false, false);
 							end;
-							if workTool.setIsPickupDown ~= nil then
-								if self.pickup.isDown == nil or (self.pickup.isDown ~= nil and self.pickup.isDown) then
+							if workTool.setIsPickupDown ~= nil and workTool.pickup then
+								if workTool.pickup.isDown == nil or (workTool.pickup.isDown ~= nil and workTool.pickup.isDown) then
 									workTool:setIsPickupDown(false, false);
 								end;
 							end;
