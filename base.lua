@@ -168,18 +168,35 @@ function courseplay:load(xmlFile)
 	self.cp.folder_settings = {}
 	courseplay.settings.update_folders(self)
 
+	--aiTrafficCollisionTrigger
+	if self.aiTrafficCollisionTrigger == nil then
+		print(string.format('%s: aiTrafficCollisionTrigger=nil', nameNum(self)));
+		local index = getXMLString(xmlFile, "vehicle.aiTrafficCollisionTrigger#index");
+		if index then
+			local triggerObject = Utils.indexToObject(self.components, index);
+			if triggerObject then
+				self.aiTrafficCollisionTrigger = triggerObject;
+				print(string.format('\taiTrafficCollisionTrigger found in xml -> %s', tostring(self.aiTrafficCollisionTrigger)));
+			end;
+		end;
+	end;
 	if self.aiTrafficCollisionTrigger == nil and getNumOfChildren(self.rootNode) > 0 then
 		if getChild(self.rootNode, "trafficCollisionTrigger") ~= 0 then
 			self.aiTrafficCollisionTrigger = getChild(self.rootNode, "trafficCollisionTrigger");
+			print(string.format('\taiTrafficCollisionTrigger found in first level under rootNode -> %s', tostring(self.aiTrafficCollisionTrigger)));
 		else
 			for i=0,getNumOfChildren(self.rootNode)-1 do
 				local child = getChildAt(self.rootNode, i);
 				if getChild(child, "trafficCollisionTrigger") ~= 0 then
 					self.aiTrafficCollisionTrigger = getChild(child, "trafficCollisionTrigger");
+					print(string.format('\taiTrafficCollisionTrigger found in second level under rootNode -> %s', tostring(self.aiTrafficCollisionTrigger)));
 					break;
 				end;
 			end;
 		end;
+	end;
+	if self.aiTrafficCollisionTrigger == nil then
+		print(string.format('%s: aiTrafficCollisionTrigger=nil', nameNum(self)));
 	end;
 
 	--Direction 
@@ -211,7 +228,6 @@ function courseplay:load(xmlFile)
 
 	-- traffic collision
 	self.onTrafficCollisionTrigger = courseplay.cponTrafficCollisionTrigger;
-	--self.aiTrafficCollisionTrigger = Utils.indexToObject(self.components, getXMLString(xmlFile, "vehicle.aiTrafficCollisionTrigger#index"));
 	self.cp.steeringAngle = Utils.getNoNil(getXMLFloat(xmlFile, "vehicle.wheels.wheel(1)" .. "#rotMax"), 30)
 	self.cp.tempCollis = {}
 	self.CPnumCollidingVehicles = 0;
