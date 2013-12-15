@@ -263,8 +263,8 @@ function courseplay:getCanUseAiMode(vehicle)
 		end;
 		if mode == 6 then
 			if vehicle.cp.hasBaleLoader then
-				if vehicle.cp.numWaitPoints < 3 then
-					vehicle.cp.infoText = string.format(courseplay:loc('CPTooFewWaitingPoints'), 3);
+				if vehicle.cp.numWaitPoints < 2 then
+					vehicle.cp.infoText = string.format(courseplay:loc('CPTooFewWaitingPoints'), 2);
 					return false;
 				elseif vehicle.cp.numWaitPoints > 3 then
 					vehicle.cp.infoText = string.format(courseplay:loc('CPTooManyWaitingPoints'), 3);
