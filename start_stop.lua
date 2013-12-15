@@ -224,11 +224,6 @@ function courseplay:start(self)
 end;
 
 function courseplay:getCanUseAiMode(vehicle)
-	if vehicle.aiTrafficCollisionTrigger == nil then
-		vehicle.cp.infoText = courseplay:loc('COURSEPLAY_AITRAFFICCOLLISIONTRIGGER_MISSING');
-		return false;
-	end;
-
 	local mode = vehicle.cp.mode;
 
 	if mode ~= 5 and mode ~= 6 and mode ~= 7 and not vehicle.cp.tipperAttached then

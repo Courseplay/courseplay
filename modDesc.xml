@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="13">
-	<version>3.41.0322</version>
+	<version>3.41.0323</version>
 	<author>Jakob Tischler / Thomas Gärtner / Horoman</author>
 	<title>
 		<de>Courseplay</de>
@@ -1652,14 +1652,6 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<es>Cubiertas</es>
 			<it>Coperturas</it>
 			<cz>Kryty</cz>
-		</text>
-		<text name="COURSEPLAY_AITRAFFICCOLLISIONTRIGGER_MISSING">
-			<en>aiTrafficCollisionTrigger missing</en>
-			<de>aiTrafficCollisionTrigger fehlt</de>
-			<fr>aiTrafficCollisionTrigger est manquant</fr>
-			<es>falta aiTrafficCollisionTrigger</es>
-			<it>manca aiTrafficCollisionTrigger</it>
-			<cz>aiTrafficCollisionTrigger chybí</cz>
 		</text>
 
 
