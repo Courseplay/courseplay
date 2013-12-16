@@ -42,14 +42,15 @@ function courseplay:combine_allows_tractor(self, combine)
 				return true
 			end
 			-- is the pipe on the correct side?
-			if combine.turnStage == 1 or combine.turnStage == 2 or combine.cp.turnStage ~= 0 then
+			--print(string.format(" combine.turnStage = %d, combine.cp.turnStage = %d, combine.acTurnStage = %s ",combine.turnStage,combine.cp.turnStage,tostring(combine.acTurnStage)))
+			if combine.turnStage == 1 or combine.turnStage == 2 or combine.cp.turnStage ~= 0 or combine.acTurnStage ~=0 then
 				courseplay:debug(nameNum(self)..": combine is turning -> refuse tractor",4)
 				return false
 			end
-			local fruitSide = courseplay:side_to_drive(self, combine, -10)
+			local fruitSide = courseplay:sideToDrive(self, combine, -10)
 			if fruitSide == "none" then
 				courseplay:debug(nameNum(self)..": fruitSide is none -> try again with offset 0",4)
-				fruitSide = courseplay:side_to_drive(self, combine, 0)
+				fruitSide = courseplay:sideToDrive(self, combine, 0)
 			end
 			if fruitSide == "left" then
 				courseplay:debug(nameNum(self)..": path finding active and pipe in fruit -> refuse tractor",4)
@@ -145,12 +146,12 @@ function courseplay:register_at_combine(self, combine)
 					courseplay:debug(nameNum(self)..": combine is turning -> don't register tractor",4)
 					return false
 				end
-				local fruitSide = courseplay:side_to_drive(self, combine, -10)
+				local fruitSide = courseplay:sideToDrive(self, combine, -10)
 				if fruitSide == "none" then
 					courseplay:debug(nameNum(self)..": fruitSide is none -> try again with offset 0",4)
-					fruitSide = courseplay:side_to_drive(self, combine, 0)
+					fruitSide = courseplay:sideToDrive(self, combine, 0)
 				end
-				courseplay:debug(nameNum(self)..": courseplay:side_to_drive = "..tostring(fruitSide),4)
+				courseplay:debug(nameNum(self)..": courseplay:sideToDrive = "..tostring(fruitSide),4)
 				if fruitSide == "left" then
 					courseplay:debug(nameNum(self)..": path finding active and pipe in fruit -> don't register tractor",4)
 					return false
@@ -280,6 +281,12 @@ function courseplay:unregister_at_combine(self, combine)
 
 	if self.trafficCollisionIgnoreList[combine.rootNode] == true then
 	   self.trafficCollisionIgnoreList[combine.rootNode] = nil
+	end
+	
+	if combine.acParameters ~= nil then
+		if combine.cp.turnStage ~= 0 then
+			combine.cp.turnStage = 0
+		end
 	end
 
 	return true
@@ -413,7 +420,7 @@ function courseplay:calculateInitialCombineOffset(self, combine)
 			end
 		else
 			courseplay:debug(string.format("%s(%i): %s @ %s: combine.cp.forcedSide=%s, going by fruit", curFile, debug.getinfo(1).currentline, nameNum(self), tostring(combine.name), tostring(combine.cp.forcedSide)), 4);
-			local fruitSide = courseplay:side_to_drive(self, combine, 5);
+			local fruitSide = courseplay:sideToDrive(self, combine, 5);
 			if fruitSide == "right" then
 				if combine.cp.lmX ~= nil then
 					self.cp.combineOffset = math.max(combine.cp.lmX + 2.5, 7);
