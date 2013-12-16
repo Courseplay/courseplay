@@ -170,7 +170,7 @@ function courseplay:load(xmlFile)
 
 	--aiTrafficCollisionTrigger
 	if self.aiTrafficCollisionTrigger == nil then
-		print(string.format('%s: aiTrafficCollisionTrigger=nil', nameNum(self)));
+		print(string.format('## Courseplay: %s: aiTrafficCollisionTrigger=nil', nameNum(self)));
 		local index = getXMLString(xmlFile, "vehicle.aiTrafficCollisionTrigger#index");
 		if index then
 			local triggerObject = Utils.indexToObject(self.components, index);
@@ -196,7 +196,7 @@ function courseplay:load(xmlFile)
 		end;
 	end;
 	if self.aiTrafficCollisionTrigger == nil then
-		print(string.format('%s: aiTrafficCollisionTrigger=nil', nameNum(self)));
+		print(string.format('## Courseplay: %s: aiTrafficCollisionTrigger=nil', nameNum(self)));
 	end;
 
 	--Direction 

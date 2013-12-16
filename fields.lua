@@ -31,14 +31,20 @@ function courseplay.fields:setAllFieldEdges()
 		local fieldNum = fieldDef.fieldNumber;
 		local initObject = fieldDef.fieldMapIndicator;
 		local x,_,z = getWorldTranslation(initObject);
-		local isField = courseplay:is_field(x, z, 0, 0);
+		if fieldNum and initObject and x and z then
+			local isField = courseplay:is_field(x, z, 0, 0);
 
-		self:dbg(string.format("fieldDef %d (fieldNum=%d): x,z=%.1f,%.1f, isField=%s", self.curFieldScanIndex, fieldNum, x, z, tostring(isField)), 'scan');
-		if isField then
-			self:setSingleFieldEdgePath(initObject, x, z, scanStep, maxN, numDirectionTries, fieldNum, false, 'scan');
+			self:dbg(string.format("fieldDef %d (fieldNum=%d): x,z=%.1f,%.1f, isField=%s", self.curFieldScanIndex, fieldNum, x, z, tostring(isField)), 'scan');
+			if isField then
+				self:setSingleFieldEdgePath(initObject, x, z, scanStep, maxN, numDirectionTries, fieldNum, false, 'scan');
+			end;
+
+			self.numAvailableFields = table.maxn(self.fieldData);
+		else
+			self:dbg(string.format('fieldDef %s: fieldNum=%s, initObject=%s, x,z=%s,%s -> cancel', tostring(self.curFieldScanIndex), tostring(fieldNum), tostring(initObject), tostring(x), tostring(z)), 'scan');
 		end;
-
-		self.numAvailableFields = table.maxn(self.fieldData);
+	else
+		self:dbg(string.format('fieldDef %s is nil', tostring(self.curFieldScanIndex)), 'scan');
 	end;
 
 	--Debug
@@ -181,6 +187,12 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 		delete(probe1);
 		delete(tg);
 
+		if coordinates and xValues and zValues then
+			self:dbg(string.format('\t\tget: #coordinates=%d, #xValues=%d, #zValues=%d', #coordinates, #xValues, #zValues), 'scan');
+		else
+			self:dbg(string.format('\t\tget: coordinates=%s, xValues=%s, zValues=%s', tostring(coordinates), tostring(xValues), tostring(zValues)), 'scan');
+		end;
+
 		return coordinates, xValues, zValues;
 	end;
 end;
@@ -188,37 +200,42 @@ end;
 function courseplay.fields:setSingleFieldEdgePath(initObject, initX, initZ, scanStep, maxN, numDirectionTries, fieldNum, returnPoints, dbgType)
 	for try=1,numDirectionTries do
 		local edgePoints, xValues, zValues = self:getSingleFieldEdge(initObject, scanStep, maxN, try > 1);
-		local numEdgePoints = #edgePoints;
-		--self:dbg(string.format("\ttry %d: %d edge points found, #xValues=%s, #zValues=%s", try, numEdgePoints, tostring(#xValues), tostring(#zValues)), dbgType);
-		if numEdgePoints >= 30 then
-			self:dbg(string.format("\ttry %d: %d edge points found", try, numEdgePoints), dbgType);
 
-			if courseplay:pointInPolygon_v2(edgePoints, xValues, zValues, initX, initZ) then
-				self:dbg('\t\tinitObject is in poly --> valid, no retry', dbgType);
+		if edgePoints then
+			local numEdgePoints = #edgePoints;
+			--self:dbg(string.format("\ttry %d: %d edge points found, #xValues=%s, #zValues=%s", try, numEdgePoints, tostring(#xValues), tostring(#zValues)), dbgType);
+			if numEdgePoints >= 30 then
+				self:dbg(string.format("\ttry %d: %d edge points found", try, numEdgePoints), dbgType);
 
-				if returnPoints then
-					return edgePoints;
-				end;
+				if courseplay:pointInPolygon_v2(edgePoints, xValues, zValues, initX, initZ) then
+					self:dbg('\t\tinitObject is in poly --> valid, no retry', dbgType);
 
-				if fieldNum then
-					if self.fieldData[fieldNum] == nil then
-						self.fieldData[fieldNum] = {
-							fieldNum = fieldNum;
-							points = edgePoints;
-							numPoints = #edgePoints;
-							name = string.format("%s %d", courseplay:loc('COURSEPLAY_FIELD'), fieldNum);
-						};
-						self:dbg(string.format('\t\tcourseplay.fields.fieldData[%d] == nil => set as .fieldData[%d], break', fieldNum, fieldNum), dbgType);
-					else
-						self:dbg(string.format('\t\tcourseplay.fields.fieldData[%d] ~= nil => ignore scan, break', fieldNum), dbgType);
+					if returnPoints then
+						return edgePoints;
 					end;
-					break;
+
+					if fieldNum then
+						if self.fieldData[fieldNum] == nil then
+							self.fieldData[fieldNum] = {
+								fieldNum = fieldNum;
+								points = edgePoints;
+								numPoints = #edgePoints;
+								name = string.format("%s %d", courseplay:loc('COURSEPLAY_FIELD'), fieldNum);
+							};
+							self:dbg(string.format('\t\tcourseplay.fields.fieldData[%d] == nil => set as .fieldData[%d], break', fieldNum, fieldNum), dbgType);
+						else
+							self:dbg(string.format('\t\tcourseplay.fields.fieldData[%d] ~= nil => ignore scan, break', fieldNum), dbgType);
+						end;
+						break;
+					end;
+				else
+					self:dbg(string.format('\t\tinitObject is NOT in poly --> invalid, retry=%s', tostring(try<numDirectionTries)), dbgType);
 				end;
 			else
-				self:dbg(string.format('\t\tinitObject is NOT in poly --> invalid, retry=%s', tostring(try<numDirectionTries)), dbgType);
+				self:dbg(string.format("\ttry %d: %d edge points found --> invalid, retry=%s", try, numEdgePoints, tostring(try<numDirectionTries)), dbgType);
 			end;
 		else
-			self:dbg(string.format("\ttry %d: %d edge points found --> invalid, retry=%s", try, numEdgePoints, tostring(try<numDirectionTries)), dbgType);
+			self:dbg(string.format('\ttry %d: edgePoints is nil -> invalid, retry=%s', try, tostring(try<numDirectionTries)), dbgType);
 		end;
 	end;
 	if returnPoints then
