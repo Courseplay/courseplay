@@ -224,6 +224,10 @@ function courseplay:start(self)
 end;
 
 function courseplay:getCanUseAiMode(vehicle)
+	if not vehicle.isMotorStarted or (vehicle.motorStartTime and vehicle.motorStartTime > vehicle.time) then
+		return false;
+	end;
+
 	local mode = vehicle.cp.mode;
 
 	if mode ~= 5 and mode ~= 6 and mode ~= 7 and not vehicle.cp.tipperAttached then
