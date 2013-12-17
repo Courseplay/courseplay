@@ -32,7 +32,7 @@ function courseplay.fields:setAllFieldEdges()
 		local initObject = fieldDef.fieldMapIndicator;
 		local x,_,z = getWorldTranslation(initObject);
 		if fieldNum and initObject and x and z then
-			local isField = courseplay:is_field(x, z, 0, 0);
+			local isField = courseplay:is_field(x, z, 0.1, 0.1);
 
 			self:dbg(string.format("fieldDef %d (fieldNum=%d): x,z=%.1f,%.1f, isField=%s", self.curFieldScanIndex, fieldNum, x, z, tostring(isField)), 'scan');
 			if isField then
@@ -73,7 +73,7 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 	local dX = x/length;
 	local dZ = z/length;
 
-	local isField = courseplay:is_field(x0, z0, 0, 0);
+	local isField = courseplay:is_field(x0, z0, 0.1, 0.1);
 	local coordinates, xValues, zValues = {}, {}, {};
 
 	if isField then
@@ -87,7 +87,7 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 			dis = dis + stepA;
 			xx = x0 + dis*dX;
 			zz = z0 + dis*dZ;
-			isSearchPointOnField = courseplay:is_field(xx, zz, 0, 0);
+			isSearchPointOnField = courseplay:is_field(xx, zz, 0.1, 0.1);
 			if math.abs(dis) > 2000 then
 				break;
 			end;
@@ -98,7 +98,7 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 			dis = dis + stepB;
 			xx = x0 + dis*dX;
 			zz = z0 + dis*dZ;
-			isSearchPointOnField = courseplay:is_field(xx, zz, 0, 0);
+			isSearchPointOnField = courseplay:is_field(xx, zz, 0.1, 0.1);
 		end;
 		self:dbg(string.format('\ttrace back, border point found: xx=%s, zz=%s, dis=%s', tostring(xx), tostring(zz), tostring(dis)), 'scan');
 
@@ -134,9 +134,9 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 			local rotAngle = 0.1;
 			local turnSign = 1.0;
 			
-			local return2field = not courseplay:is_field(px, pz, 0, 0); --there is NO guarantee that probe1 (px,pz) is in field just because tg is!!! 
+			local return2field = not courseplay:is_field(px, pz, 0.1, 0.1); --there is NO guarantee that probe1 (px,pz) is in field just because tg is!!! 
 			
-			while courseplay:is_field(px, pz, 0, 0) or return2field do
+			while courseplay:is_field(px, pz, 0.1, 0.1) or return2field do
 				rotate(tg,0,rotAngle*turnSign,0)
 				rotAngle = rotAngle*1.05;				
 				--rotAngle = rotAngle + 0.1; --alternative for performance tuning, don't know which one is better
@@ -145,14 +145,14 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 				px,_,pz = getWorldTranslation(probe1);
 				
 				if return2field then
-					if courseplay:is_field(px, pz, 0, 0) then
+					if courseplay:is_field(px, pz, 0.1, 0.1) then
 						return2field = false;
 					end;
 				end;
 			end;
 
 			local cnt, maxcnt = 0, 0;
-			while not courseplay:is_field(px, pz, 0, 0) do
+			while not courseplay:is_field(px, pz, 0.1, 0.1) do
 				rotate(tg,0,0.01*turnSign,0)
 				px,_,pz = getWorldTranslation(probe1);
 				--self:dbg('\t\trotate back', 'scan');
@@ -166,7 +166,7 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 					end;
 				end;
 			end;
-			if not courseplay:is_field(px, pz, 0, 0) then
+			if not courseplay:is_field(px, pz, 0.1, 0.1) then
 				self:dbg('\tlost point', 'scan');
 				break;
 			end;
