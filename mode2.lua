@@ -281,7 +281,7 @@ function courseplay:unload_combine(self, dt)
 	local AutoCombineIsTurning = false
 	local combineIsAutoCombine = false
 	local autoCombineExtraMoveBack = 0
-	if combine.acParameters ~= nil and combine.acParameters.enabled then
+	if combine.acParameters ~= nil and combine.acParameters.enabled and combine.isAIThreshing then
 		combineIsAutoCombine = true
 		if combine.cp.turnStage == nil then
 			combine.cp.turnStage = 0
