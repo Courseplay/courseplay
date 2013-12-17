@@ -1,8 +1,9 @@
 -- drives recored course
 function courseplay:drive(self, dt)
-	if  not self.isMotorStarted or not courseplay:getCanUseAiMode(self) then
+	if not courseplay:getCanUseAiMode(self) then
 		return;
 	end;
+
 	local refSpeed = 0
 	local cx,cy,cz = 0,0,0
 	-- may i drive or should i hold position for some reason?

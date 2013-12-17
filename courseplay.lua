@@ -298,7 +298,7 @@ function courseplay:setGlobalData()
 
 	--DEBUG CHANNELS
 	courseplay.numAvailableDebugChannels = 24;
-	courseplay.numDebugChannels = 16;
+	courseplay.numDebugChannels = 17;
 	courseplay.numDebugChannelButtonsPerLine = 12;
 	courseplay.debugChannelSection = 1;
 	courseplay.debugChannelSectionStart = 1;
@@ -325,6 +325,7 @@ function courseplay:setGlobalData()
 	14	EifokLiquidManure
 	15	mode3 (AugerWagon)
 	16	recording
+	17	mode4/6
 	--]]
 
 	--MULTIPLAYER

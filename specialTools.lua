@@ -41,8 +41,11 @@ function courseplay:setNameVariable(workTool)
 
 	--------------------------------------------------------------
 
+	if workTool.typeName == 'moreRealistic.mower_animated' and Utils.endsWith(workTool.configFileName, 'poettingerEurocat315H.xml') then
+		workTool.cp.isMRpoettingerEurocat315H = true;
+
 	--Case IH Magnum 340 [Giants Titanium]
-	if Utils.endsWith(workTool.configFileName, "caseIHMagnum340.xml") or Utils.endsWith(workTool.configFileName, "caseIHMagnum340TwinWheel.xml") then
+	elseif Utils.endsWith(workTool.configFileName, "caseIHMagnum340.xml") or Utils.endsWith(workTool.configFileName, "caseIHMagnum340TwinWheel.xml") then
 		workTool.cp.isCaseIHMagnum340Titanium = true;
 
 	--Case IH Magnum 340 [Giants Titanium]

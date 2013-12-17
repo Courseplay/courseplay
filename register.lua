@@ -47,6 +47,8 @@ function courseplay:setLocales()
 end;
 
 function courseplay:attachableLoad(xmlFile)
+	if self.cp == nil then self.cp = {}; end;
+
 	--SEARCH AND SET ATTACHABLE'S self.name IF NOT EXISTING
 	if self.name == nil then
 		local nameSearch = { "vehicle.name." .. g_languageShort, "vehicle.name.en", "vehicle.name", "vehicle#type" };
@@ -61,10 +63,6 @@ function courseplay:attachableLoad(xmlFile)
 			self.name = g_i18n:getText("UNKNOWN");
 			--print(tostring(self.configFileName) .. ": self.name was nil, new name is " .. self.name);
 		end;
-	end;
-
-	if self.cp == nil then
-		self.cp = {};
 	end;
 
 	--SET SPECIALIZATION VARIABLE
@@ -122,9 +120,10 @@ end;
 Attachable.delete = Utils.prependedFunction(Attachable.delete, courseplay.attachableDelete);
 
 function courseplay:vehicleLoad(xmlFile)
+	if self.cp == nil then self.cp = {}; end;
+
 	--Zunhammer Hose (zunhammerHose.i3d / Hose.lua) [Eifok Team]
 	if Utils.endsWith(self.typeName, "zhHose") or Utils.endsWith(self.configFileName, "zunhammerHose.xml") then
-		if self.cp == nil then self.cp = {}; end;
 		if courseplay.thirdParty.EifokLiquidManure == nil then courseplay.thirdParty.EifokLiquidManure = {}; end;
 		if courseplay.thirdParty.EifokLiquidManure.hoses == nil then courseplay.thirdParty.EifokLiquidManure.hoses = {}; end;
 
@@ -147,6 +146,15 @@ function courseplay:vehicleDelete()
 	end;
 end;
 Vehicle.delete = Utils.prependedFunction(Vehicle.delete, courseplay.vehicleDelete);
+
+function courseplay:foldableLoad(xmlFile)
+	if self.cp == nil then self.cp = {}; end;
+
+	--FOLDING PARTS STARTMOVEDIRECTION
+	self.cp.foldingPartsStartMoveDirection = Utils.getNoNil(getXMLInt(xmlFile, 'vehicle.foldingParts#startMoveDirection'), 0);
+	--print(string.format('%s foldableLoad(): foldingPartsStartMoveDirection=%s', nameNum(self), tostring(self.cp.foldingPartsStartMoveDirection)));
+end;
+Foldable.load = Utils.appendedFunction(Foldable.load, courseplay.foldableLoad);
 
 courseplay:setLocales();
 courseplay:register();

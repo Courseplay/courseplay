@@ -64,12 +64,14 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fill_level)
 	local turnStart = prevPoint.turnStart;
 	local turnEnd = prevPoint.turnEnd;
 
-	for i=1, table.getn(self.tippers) do
+	for i=1, #(self.tippers) do
 		workTool = self.tippers[i];
+
+		local isFolding, isFolded, isUnfolded = courseplay:isFolding(workTool);
 
 		-- stop while folding
 		if courseplay:isFoldable(workTool) then
-			if courseplay:isFolding(workTool) and self.cp.turnStage == 0 then
+			if isFolding and self.cp.turnStage == 0 then
 				allowedToDrive = false;
 				--courseplay:debug(tostring(workTool.name) .. ": isFolding -> allowedToDrive == false", 12);
 			end;
@@ -84,20 +86,12 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fill_level)
 			if allowedToDrive then
 				if not specialTool then
 					--unfold
-					if courseplay:isFoldable(workTool) and workTool:getIsFoldAllowed() then -- and ((self.cp.abortWork ~= nil and self.recordnumber == self.cp.abortWork - 2) or (self.cp.abortWork == nil and self.recordnumber == 2)) then
-						if courseplay:is_sowingMachine(workTool) then
-							workTool:setFoldDirection(-1);
-						
-						elseif workTool.turnOnFoldDirection ~= nil and workTool.turnOnFoldDirection ~= 0 then
-							workTool:setFoldDirection(workTool.turnOnFoldDirection);
-						
-						--Backup
-						else
-							workTool:setFoldDirection(1); --> doesn't work for Kotte VTL (liquidManure)
-						end;
+					if courseplay:isFoldable(workTool) and workTool:getIsFoldAllowed() and not isFolding and not isUnfolded then -- and ((self.cp.abortWork ~= nil and self.recordnumber == self.cp.abortWork - 2) or (self.cp.abortWork == nil and self.recordnumber == 2)) then
+						courseplay:debug(string.format('%s: unfold order (foldDir %d)', nameNum(workTool), workTool.cp.realUnfoldDirection), 17);
+						workTool:setFoldDirection(workTool.cp.realUnfoldDirection);
 					end;
 					
-					if not courseplay:isFolding(workTool) then
+					if not isFolding and isUnfolded then
 						--set or stow ridge markers
 						if courseplay:is_sowingMachine(workTool) and self.cp.ridgeMarkersAutomatic then
 							if ridgeMarker ~= nil then
@@ -143,7 +137,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fill_level)
 				end;
 
 				--raise
-				if not courseplay:isFolding(workTool) then
+				if not isFolding and isUnfolded then
 					if workTool.needsLowering and workTool.aiNeedsLowering and workTool:isLowered() then
 						self:setAIImplementsMoveDown(false);
 					end;
@@ -155,17 +149,9 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fill_level)
 				end;
 				
 				--fold
-				if courseplay:isFoldable(workTool) then
-					if courseplay:is_sowingMachine(workTool) then
-						workTool:setFoldDirection(1);
-
-					elseif workTool.turnOnFoldDirection ~= nil and workTool.turnOnFoldDirection ~= 0 then
-						workTool:setFoldDirection(-workTool.turnOnFoldDirection);
-						
-					--Backup
-					else
-						workTool:setFoldDirection(-1); --> doesn't work for Kotte VTL (liquidManure)
-					end;
+				if courseplay:isFoldable(workTool) and not isFolding and not isFolded then
+					courseplay:debug(string.format('%s: fold order (foldDir=%d)', nameNum(workTool), -workTool.cp.realUnfoldDirection), 17);
+					workTool:setFoldDirection(-workTool.cp.realUnfoldDirection);
 				end;
 			end
 		end
