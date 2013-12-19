@@ -168,18 +168,35 @@ function courseplay:load(xmlFile)
 	self.cp.folder_settings = {}
 	courseplay.settings.update_folders(self)
 
+	--aiTrafficCollisionTrigger
+	if self.aiTrafficCollisionTrigger == nil then
+		print(string.format('## Courseplay: %s: aiTrafficCollisionTrigger=nil', nameNum(self)));
+		local index = getXMLString(xmlFile, "vehicle.aiTrafficCollisionTrigger#index");
+		if index then
+			local triggerObject = Utils.indexToObject(self.components, index);
+			if triggerObject then
+				self.aiTrafficCollisionTrigger = triggerObject;
+				print(string.format('\taiTrafficCollisionTrigger found in xml -> %s', tostring(self.aiTrafficCollisionTrigger)));
+			end;
+		end;
+	end;
 	if self.aiTrafficCollisionTrigger == nil and getNumOfChildren(self.rootNode) > 0 then
 		if getChild(self.rootNode, "trafficCollisionTrigger") ~= 0 then
 			self.aiTrafficCollisionTrigger = getChild(self.rootNode, "trafficCollisionTrigger");
+			print(string.format('\taiTrafficCollisionTrigger found in first level under rootNode -> %s', tostring(self.aiTrafficCollisionTrigger)));
 		else
 			for i=0,getNumOfChildren(self.rootNode)-1 do
 				local child = getChildAt(self.rootNode, i);
 				if getChild(child, "trafficCollisionTrigger") ~= 0 then
 					self.aiTrafficCollisionTrigger = getChild(child, "trafficCollisionTrigger");
+					print(string.format('\taiTrafficCollisionTrigger found in second level under rootNode -> %s', tostring(self.aiTrafficCollisionTrigger)));
 					break;
 				end;
 			end;
 		end;
+	end;
+	if self.aiTrafficCollisionTrigger == nil then
+		print(string.format('## Courseplay: %s: aiTrafficCollisionTrigger=nil', nameNum(self)));
 	end;
 
 	--Direction 
@@ -210,8 +227,9 @@ function courseplay:load(xmlFile)
 	self.cp.DirectionNode = DirectionNode;
 
 	-- traffic collision
+
 	self.cpOnTrafficCollisionTrigger = courseplay.cpOnTrafficCollisionTrigger;
-	--self.aiTrafficCollisionTrigger = Utils.indexToObject(self.components, getXMLString(xmlFile, "vehicle.aiTrafficCollisionTrigger#index"));
+
 	self.cp.steeringAngle = Utils.getNoNil(getXMLFloat(xmlFile, "vehicle.wheels.wheel(1)" .. "#rotMax"), 30)
 	self.cp.tempCollis = {}
 	self.CPnumCollidingVehicles = 0;
@@ -530,6 +548,28 @@ function courseplay:load(xmlFile)
 		courseplay:register_button(self, 1, icon, "setAiMode", i, posX, posY, aiModeQuickSwitch.w, aiModeQuickSwitch.h);
 	end;
 
+	--recording
+	local recordingData = {
+		[1] = { 'recording_stop', 'stop_record' },
+		[2] = { 'recording_pause', 'setRecordingPause', true },
+		[3] = { 'recording_deleteWaypoint', 'delete_waypoint' },
+		[4] = { 'recording_setWait', 'set_waitpoint' },
+		[5] = { 'recording_setCrossing', 'set_crossing' },
+		[6] = { 'recording_turn', 'setRecordingTurnManeuver', true },
+		[7] = { 'recording_reverse', 'change_DriveDirection', true }
+	};
+	local w,h = w32px,h32px;
+	local padding = w/4;
+	local totalWidth = (#recordingData - 1) * (w + padding) + w;
+	local initX = courseplay.hud.infoBaseCenter - totalWidth/2;
+	
+	for i,data in pairs(recordingData) do
+		local posX = initX + ((w + padding) * (i-1));
+		local isToggleButton = data[3] or false;
+		courseplay:register_button(self, 1, data[1] .. '.png', data[2], nil, posX, courseplay.hud.linesButtonPosY[2], w, h, nil, nil, false, false, isToggleButton);
+	end;
+
+	--row buttons
 	for i=1, courseplay.hud.numLines do
 		courseplay:register_button(self, 1, "blank.dds", "rowButton", i, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[i], aiModeQuickSwitch.minX - courseplay.hud.infoBasePosX - 0.005, 0.015, i, nil, true);
 	end;
@@ -700,10 +740,10 @@ function courseplay:load(xmlFile)
 	--Page 9: Shovel settings
 	local wTemp = 22/1920;
 	local hTemp = 22/1080;
-	courseplay:register_button(self, 9, "shovelLoading.dds",      "saveShovelStatus", 2, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[1] - 0.003, wTemp, hTemp, 1, 2, true);
-	courseplay:register_button(self, 9, "shovelTransport.dds",    "saveShovelStatus", 3, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[2] - 0.003, wTemp, hTemp, 2, 3, true);
-	courseplay:register_button(self, 9, "shovelPreUnloading.dds", "saveShovelStatus", 4, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[3] - 0.003, wTemp, hTemp, 3, 4, true);
-	courseplay:register_button(self, 9, "shovelUnloading.dds",    "saveShovelStatus", 5, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[4] - 0.003, wTemp, hTemp, 4, 5, true);
+	courseplay:register_button(self, 9, "shovelLoading.dds",      "saveShovelStatus", 2, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[1] - 0.003, wTemp, hTemp, 1, 2, true, false, true);
+	courseplay:register_button(self, 9, "shovelTransport.dds",    "saveShovelStatus", 3, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[2] - 0.003, wTemp, hTemp, 2, 3, true, false, true);
+	courseplay:register_button(self, 9, "shovelPreUnloading.dds", "saveShovelStatus", 4, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[3] - 0.003, wTemp, hTemp, 3, 4, true, false, true);
+	courseplay:register_button(self, 9, "shovelUnloading.dds",    "saveShovelStatus", 5, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[4] - 0.003, wTemp, hTemp, 4, 5, true, false, true);
 
 	courseplay:register_button(self, 9, "blank.dds", "setShovelStopAndGo", nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[5], courseplay.hud.visibleArea.width, 0.015, 5, nil, true);
 	--END Page 9
@@ -840,23 +880,23 @@ end;
 
 -- is being called every loop
 function courseplay:update(dt)
+	if g_server ~= nil and (self.drive or self.record or self.record_pause) then
+		self.cp.infoText = nil;
+	end;
+
 	-- we are in record mode
 	if self.record then
 		courseplay:record(self);
-	end
+	end;
 
 	-- we are in drive mode and single player /MP server
 	if self.drive and g_server ~= nil then
-		
-		self.cp.infoText = nil;
-		
 		for refIdx,_ in pairs(courseplay.globalInfoText.msgReference) do
 			self.cp.hasSetGlobalInfoTextThisLoop[refIdx] = false;
 		end;
 
 		courseplay:drive(self, dt);
 
-		
 		for refIdx,_ in pairs(self.cp.activeGlobalInfoTexts) do
 			if not self.cp.hasSetGlobalInfoTextThisLoop[refIdx] then
 				courseplay:setGlobalInfoText(self, refIdx, true); --force remove
@@ -874,8 +914,8 @@ function courseplay:update(dt)
 		self.cp.onMpSetCourses = nil
 	end
 
-	if g_server ~= nil  then 
-	    self.cp.HUDrecordnumber = self.recordnumber
+	if g_server ~= nil then
+		self.cp.HUDrecordnumber = self.recordnumber
 		if self.drive then --TODO: restrict to currentPage == 1
 			self.cp.HUD1goOn = (self.Waypoints[self.cp.last_recordnumber] ~= nil and self.Waypoints[self.cp.last_recordnumber].wait and self.wait) or (self.cp.stopAtEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil));
 			self.cp.HUD1noWaitforFill = not self.cp.isLoaded and self.cp.mode ~= 5;

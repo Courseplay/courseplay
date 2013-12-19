@@ -282,6 +282,7 @@ function courseplay:setGlobalData()
 		NEEDS_REFILLING   = { level = -1, text = "COURSEPLAY_NEEDS_REFILLING" };
 		NEEDS_UNLOADING   = { level = -1, text = "COURSEPLAY_NEEDS_UNLOADING" };
 		OVERLOADING_POINT = { level =  0, text = "COURSEPLAY_REACHED_OVERLOADING_POINT" };
+		PICKUP_JAMMED 	  = { level = -2, text = "COURSEPLAY_PICKUP_JAMMED" };
 		TRAFFIC 		  = { level = -1, text = "COURSEPLAY_IS_IN_TRAFFIC" };
 		UNLOADING_BALE 	  = { level =  0, text = "COURSEPLAY_UNLOADING_BALES" };
 		WAIT_POINT 		  = { level =  0, text = "COURSEPLAY_REACHED_WAITING_POINT" };
@@ -300,7 +301,7 @@ function courseplay:setGlobalData()
 
 	--DEBUG CHANNELS
 	courseplay.numAvailableDebugChannels = 24;
-	courseplay.numDebugChannels = 15;
+	courseplay.numDebugChannels = 16;
 	courseplay.numDebugChannelButtonsPerLine = 12;
 	courseplay.debugChannelSection = 1;
 	courseplay.debugChannelSectionStart = 1;
@@ -326,7 +327,7 @@ function courseplay:setGlobalData()
 	13	reverse
 	14	EifokLiquidManure
 	15	mode3 (AugerWagon)
-	16	[empty]
+	16	recording
 	--]]
 
 	--MULTIPLAYER

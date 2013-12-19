@@ -58,12 +58,14 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 					if not specialTool then
 						-- automatic opening for balers
 						if workTool.balerUnloadingState ~= nil then
-							if courseplay:isRoundbaler(workTool) and fill_level > 90 and fill_level < 100 and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
+							local capacity = 100 * (workTool.realBalerOverFillingRatio or 1);
+
+							if courseplay:isRoundbaler(workTool) and fill_level > capacity * 0.9 and fill_level < capacity and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
 								if not workTool.isTurnedOn then
 									workTool:setIsTurnedOn(true, false);
 								end;
 								workSpeed = 0.5;
-							elseif fill_level >= 100 and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
+							elseif fill_level >= capacity and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
 								allowedToDrive = false;
 								if #(workTool.bales) > 0 then
 									workTool:setIsUnloadingBale(true, false)
@@ -197,8 +199,8 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 									courseplay:setMarkers(self, workTool);
 								end;
 
-								if workTool.setIsPickupDown ~= nil then
-									if self.pickup.isDown == nil or (self.pickup.isDown ~= nil and not self.pickup.isDown) then
+								if workTool.setIsPickupDown ~= nil and workTool.pickup then
+									if workTool.pickup.isDown == nil or (workTool.pickup.isDown ~= nil and not workTool.pickup.isDown) then
 										workTool:setIsPickupDown(true, false);
 									end;
 								end;
@@ -214,8 +216,8 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 							if workTool.setIsTurnedOn ~= nil and workTool.isTurnedOn then
 								workTool:setIsTurnedOn(false, false);
 							end;
-							if workTool.setIsPickupDown ~= nil then
-								if self.pickup.isDown == nil or (self.pickup.isDown ~= nil and self.pickup.isDown) then
+							if workTool.setIsPickupDown ~= nil and workTool.pickup then
+								if workTool.pickup.isDown == nil or (workTool.pickup.isDown ~= nil and workTool.pickup.isDown) then
 									workTool:setIsPickupDown(false, false);
 								end;
 							end;

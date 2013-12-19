@@ -1,6 +1,6 @@
 -- drives recored course
 function courseplay:drive(self, dt)
-	if  not self.isMotorStarted or not courseplay:getCanUseAiMode(self) then
+	if not courseplay:getCanUseAiMode(self) then
 		return;
 	end;
 

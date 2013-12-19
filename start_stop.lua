@@ -224,6 +224,10 @@ function courseplay:start(self)
 end;
 
 function courseplay:getCanUseAiMode(vehicle)
+	if not vehicle.isMotorStarted or (vehicle.motorStartTime and vehicle.motorStartTime > vehicle.time) then
+		return false;
+	end;
+
 	local mode = vehicle.cp.mode;
 
 	if mode ~= 5 and mode ~= 6 and mode ~= 7 and not vehicle.cp.tipperAttached then
@@ -258,8 +262,8 @@ function courseplay:getCanUseAiMode(vehicle)
 		end;
 		if mode == 6 then
 			if vehicle.cp.hasBaleLoader then
-				if vehicle.cp.numWaitPoints < 3 then
-					vehicle.cp.infoText = string.format(courseplay:loc('CPTooFewWaitingPoints'), 3);
+				if vehicle.cp.numWaitPoints < 2 then
+					vehicle.cp.infoText = string.format(courseplay:loc('CPTooFewWaitingPoints'), 2);
 					return false;
 				elseif vehicle.cp.numWaitPoints > 3 then
 					vehicle.cp.infoText = string.format(courseplay:loc('CPTooManyWaitingPoints'), 3);
@@ -373,6 +377,8 @@ function courseplay:stop(self)
 
 	--remove any global info texts
 	if g_server ~= nil then
+		self.cp.infoText = nil;
+
 		for refIdx,_ in pairs(courseplay.globalInfoText.msgReference) do
 			if self.cp.activeGlobalInfoTexts[refIdx] ~= nil then
 				courseplay:setGlobalInfoText(self, refIdx, true);

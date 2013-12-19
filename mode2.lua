@@ -277,29 +277,20 @@ function courseplay:unload_combine(self, dt)
 	if self.cp.turnCounter == nil then
 			self.cp.turnCounter = 0
 	end
-	--print("combine.turnDirection: "..tostring(combine.turnDirection))
+	
 	local AutoCombineIsTurning = false
 	local combineIsAutoCombine = false
 	local autoCombineExtraMoveBack = 0
-	if combine.turnDirection ~= nil and not combine.drive then
+	if combine.acParameters ~= nil and combine.acParameters.enabled and combine.isAIThreshing then
 		combineIsAutoCombine = true
 		if combine.cp.turnStage == nil then
 			combine.cp.turnStage = 0
 		end
-		if math.abs(combine.turnDirection) > 19 then
-			--if self.cp.activeCombine.cp.isChopper and   then
-			self.cp.turnCounter = self.cp.turnCounter +1	
-			if self.cp.turnCounter >= 40 then
-				combine.cp.turnStage = 2
-				autoCombineExtraMoveBack = self.cp.turnRadius*1.5
-				AutoCombineIsTurning = true
-			end						
+		if combine.acTurnStage ~= 0 then 
+			combine.cp.turnStage = 2
+			autoCombineExtraMoveBack = self.cp.turnRadius*1.5
+			AutoCombineIsTurning = true
 		else
-			if self.cp.turnCounter > 0 then
-				--print("self.cp.turnCounter: "..tostring(self.cp.turnCounter))
-				self.cp.turnCounter = 0
-			end
-			combine.acNumCollidingVehicles = math.min(combine.acNumCollidingVehicles -1,0)
 			combine.cp.turnStage = 0
 		end
 	end
@@ -390,7 +381,7 @@ function courseplay:unload_combine(self, dt)
 		-- near point
 		if dod < 3 then -- change to self.cp.modeState 4 == drive behind combine or cornChopper
 			if combine.cp.isChopper and (not self.isChopperTurning or combineIsAutoCombine) then -- decide on which side to drive based on ai-combine
-				courseplay:side_to_drive(self, combine, 10);
+				courseplay:sideToDrive(self, combine, 10);
 				if self.sideToDrive == "right" then
 						self.cp.combineOffset = math.abs(self.cp.combineOffset) * -1;
 				else 
@@ -471,9 +462,9 @@ function courseplay:unload_combine(self, dt)
 				--print("saving offset")
 				combine.cp.offset = self.cp.combineOffset;
 			end			
-			local fruitSide = courseplay:side_to_drive(self, combine, -10)
+			local fruitSide = courseplay:sideToDrive(self, combine, -10)
 			if fruitSide == "none" then
-				fruitSide = courseplay:side_to_drive(self, combine, -50)
+				fruitSide = courseplay:sideToDrive(self, combine, -50)
 			end
 			local offset = math.abs(self.cp.combineOffset)
 			local DirTx,_,DirTz = worldToLocal(self.rootNode,self.Waypoints[self.maxnumber].cx,0, self.Waypoints[self.maxnumber].cz)
@@ -482,7 +473,7 @@ function courseplay:unload_combine(self, dt)
 					courseplay:debug(nameNum(self) .. ": I'm left, fruit is right", 4)
 					local fx,fy,fz = localToWorld(self.rootNode, 0, 0, 8)
 					local sx,sy,sz = localToWorld(self.rootNode, 0 , 0, -self.cp.turnRadius-trailer_offset-autoCombineExtraMoveBack)
-					if courseplay:is_field(fx, fz) and not AutoCombineIsTurning then
+					if courseplay:is_field(fx, fz) and not combineIsAutoCombine then
 						courseplay:debug(nameNum(self) .. ": 1st target is on field", 4)
 						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, 0 , 0, 5);	
 						self.cp.modeState = 5
@@ -694,28 +685,29 @@ function courseplay:unload_combine(self, dt)
 	distance = courseplay:distance(sx, sz, cx, cz)
 	if combine_turning and not combine.cp.isChopper then
 		if combine.grainTankFillLevel > combine.grainTankCapacity*0.9 then
-			if combine.isAIThreshing then 
+			if combineIsAutoCombine and combine.acIsCPStopped ~= nil then
+				combine.acIsCPStopped = true
+			elseif combine.isAIThreshing then 
 				combine.waitForTurnTime = combine.time + 100
 			elseif tractor.drive == true then
 				combine.cp.waitingForTrailerToUnload = true
 			end			
 		elseif distance < 50 then
-			if combine.isAIThreshing and not (combine_fill_level == 0 and combine.currentPipeState ~= 2) then
+			if AutoCombineIsTurning and combine.acIsCPStopped ~= nil then
+				combine.acIsCPStopped = true
+			elseif combine.isAIThreshing and not (combine_fill_level == 0 and combine.currentPipeState ~= 2) then
 				combine.waitForTurnTime = combine.time + 100
 			elseif tractor.drive == true and not (combine_fill_level == 0 and combine:getCombineTrailerInRangePipeState()==0) then
 				combine.cp.waitingForTrailerToUnload = true
-			elseif combineIsAutoCombine and not (combine_fill_level == 0 and combine:getCombineTrailerInRangePipeState()==0) then
-				local delay = (combine.acDelayTimeToMoveBack - combine.acDelayTimeToStopMovement)/2 + combine.acDelayTimeToStopMovement
-				combine.acDelay = delay
 			end
-		elseif distance >= 50 and self.cp.modeState == 2 then
+		elseif distance < 100 and self.cp.modeState == 2 then
 			allowedToDrive = courseplay:brakeToStop(self)
-		end
+		end 
 	end
 	if combine_turning and distance < 20 then
 		if self.cp.modeState == 3 or self.cp.modeState == 4 then
 			if combine.cp.isChopper then
-				local fruitSide = courseplay:side_to_drive(self, combine, -10,true);
+				local fruitSide = courseplay:sideToDrive(self, combine, -10,true);
 				
 				--new chopper turn maneuver by Thomas Gärtner  
 				if fruitSide == "left" then -- chopper will turn left
@@ -1028,7 +1020,7 @@ function courseplay:unload_combine(self, dt)
 			if self.isRealistic then
 				AIVehicleUtil.mrDriveInDirection(self, dt, 1, false, true, 0, 1, self.cp.speeds.sl, true, true)
 			else
-				fwd = false
+				moveForwards = false
 				lx = 0
 				lz = 1
 			end
@@ -1132,19 +1124,21 @@ function courseplay:calculateCombineOffset(self, combine)
 
 	--special tools, special cases
 	if self.cp.combineOffsetAutoMode and combine.cp.isCaseIH7130 then
-		offs = 8.0;
+		offs =  8.0;
 	elseif self.cp.combineOffsetAutoMode and (combine.cp.isCaseIH9230 or combine.cp.isCaseIH9230Crawler) then
 		offs = 11.5;
-	elseif self.cp.combineOffsetAutoMode and (combine.cp.isGrimmeRootster604 or Utils.endsWith(combine.configFileName, "grimmeRootster604.xml")) then
+	elseif self.cp.combineOffsetAutoMode and combine.cp.isDeutz5465H then
+		offs =  5.1;
+	elseif self.cp.combineOffsetAutoMode and combine.cp.isGrimmeRootster604 then
 		offs = -4.3;
-	elseif self.cp.combineOffsetAutoMode and (combine.cp.isGrimmeSE7555 or Utils.endsWith(combine.configFileName, "grimmeSE75-55.xml")) then
+	elseif self.cp.combineOffsetAutoMode and combine.cp.isGrimmeSE7555 then
 		offs =  4.3;
 	elseif self.cp.combineOffsetAutoMode and combine.cp.isFahrM66 then
 		offs =  4.4;
-	elseif self.cp.combineOffsetAutoMode and (combine.cp.isJF1060 or Utils.endsWith(combine.configFileName, "JF_1060.xml")) then
-		offs =  7
-	elseif self.cp.combineOffsetAutoMode and (combine.cp.isRopaEuroTiger or Utils.endsWith(combine.configFileName, "RopaEuroTiger_V8_3_XL.xml")) then
-		offs =  5.2
+	elseif self.cp.combineOffsetAutoMode and combine.cp.isJF1060 then
+		offs =  7.0;
+	elseif self.cp.combineOffsetAutoMode and combine.cp.isRopaEuroTiger then
+		offs =  5.2;
 	
 	--Sugarbeet Loaders (e.g. Ropa Euro Maus, Holmer Terra Felis)
 	elseif self.cp.combineOffsetAutoMode and combine.cp.isSugarBeetLoader then
@@ -1199,7 +1193,7 @@ function courseplay:calculateCombineOffset(self, combine)
 		else
 			offs = 8;
 		end;
-		courseplay:side_to_drive(self, combine, 10);
+		courseplay:sideToDrive(self, combine, 10);
 			
 		if self.sideToDrive ~= nil then
 			if self.sideToDrive == "left" then

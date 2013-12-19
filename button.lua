@@ -1,14 +1,17 @@
-function courseplay:register_button(self, hudPage, img, function_to_call, parameter, x, y, width, height, hudRow, modifiedParameter, hoverText, isMouseWheelArea)
+function courseplay:register_button(self, hudPage, img, function_to_call, parameter, x, y, width, height, hudRow, modifiedParameter, hoverText, isMouseWheelArea, isToggleButton)
 	local overlay = nil;
 	if img and img ~= "blank.dds" then
 		overlay = Overlay:new(img, Utils.getFilename("img/" .. img, courseplay.path), x, y, width, height);
 	end;
 
+	if hoverText == nil then
+		hoverText = false;
+	end;
 	if isMouseWheelArea == nil then
 		isMouseWheelArea = false;
 	end;
-	if hoverText == nil then
-		hoverText = false;
+	if isToggleButton == nil then
+		isToggleButton = false;
 	end;
 
 	local button = { 
@@ -27,6 +30,7 @@ function courseplay:register_button(self, hudPage, img, function_to_call, parame
 		hoverText = hoverText,
 		color = courseplay.hud.colors.white,
 		isMouseWheelArea = isMouseWheelArea and function_to_call ~= nil,
+		isToggleButton = isToggleButton,
 		canBeClicked = not isMouseWheelArea and function_to_call ~= nil,
 		show = true,
 		isClicked = false,
@@ -164,6 +168,8 @@ function courseplay:renderButton(self, button)
 				elseif prm > 0 then
 					button.show = not self.cp.canDrive and self.cp.fieldEdge.customField.isCreated and self.cp.fieldEdge.customField.fieldNum < courseplay.fields.customFieldMaxNum;
 				end;
+			elseif fn == 'stop_record' or fn == 'setRecordingPause' or fn == 'delete_waypoint' or fn == 'set_waitpoint' or fn == 'set_crossing' or fn == 'setRecordingTurnManeuver' or fn == 'change_DriveDirection' then
+				button.show = self.record or self.record_pause;
 			end;
 
 		--Page 2
@@ -309,10 +315,16 @@ function courseplay:renderButton(self, button)
 				targetColor = colors.whiteDisabled;
 			elseif not button.isDisabled and button.canBeClicked and button.isClicked and not fn == "openCloseHud" then
 				targetColor = colors.activeRed;
-			elseif button.isHovered and ((button.page == 9 and button.isActive and button.canBeClicked and not button.isClicked) or (not button.isDisabled and not button.isActive and button.canBeClicked and not button.isClicked)) and not courseplay:colorsMatch(currentColor, hoverColor) then
+			elseif button.isHovered and ((not button.isDisabled and button.isToggleButton and button.isActive and button.canBeClicked and not button.isClicked) or (not button.isDisabled and not button.isActive and button.canBeClicked and not button.isClicked)) and not courseplay:colorsMatch(currentColor, hoverColor) then
 				targetColor = hoverColor;
-			elseif button.isActive and (button.page ~= 9 or (button.page == 9 and not button.isHovered)) and not courseplay:colorsMatch(currentColor, colors.activeGreen) then
+				if button.isToggleButton then
+					--print(string.format('button %q (loop %d): isHovered=%s, isActive=%s, isDisabled=%s, canBeClicked=%s -> hoverColor', fn, g_updateLoopIndex, tostring(button.isHovered), tostring(button.isActive), tostring(button.isDisabled), tostring(button.canBeClicked)));
+				end;
+			elseif button.isActive and (not button.isToggleButton or (button.isToggleButton and not button.isHovered)) and not courseplay:colorsMatch(currentColor, colors.activeGreen) then
 				targetColor = colors.activeGreen;
+				if button.isToggleButton then
+					--print(string.format('button %q (loop %d): isHovered=%s, isActive=%s, isDisabled=%s, canBeClicked=%s -> activeGreen', fn, g_updateLoopIndex, tostring(button.isHovered), tostring(button.isActive), tostring(button.isDisabled), tostring(button.canBeClicked)));
+				end;
 			end;
 
 			-- set colors

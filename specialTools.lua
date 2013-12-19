@@ -111,16 +111,16 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.isEifokZunhammer18500PU = true;
 		workTool.cp.hasEifokZunhammerAttachable = false;
 		workTool.cp.eifokZunhammerAttachable = nil;
-	elseif Utils.endsWith(workTool.configFileName, "moescha.xml") and workTool.moescha ~= nil then
+	elseif workTool.moescha ~= nil and Utils.endsWith(workTool.configFileName, "moescha.xml") then
 		workTool.cp.isEifokZunhammerMoescha = true;
 		workTool.cp.isEifokZunhammerAttachable = true;
 	elseif Utils.endsWith(workTool.configFileName, "vogelsang.xml") then
 		workTool.cp.isEifokZunhammerVogelsang = true;
 		workTool.cp.isEifokZunhammerAttachable = true;
-	elseif Utils.endsWith(workTool.configFileName, "zunhammerVibro.xml") and workTool.vibro ~= nil then
+	elseif workTool.vibro ~= nil and Utils.endsWith(workTool.configFileName, "zunhammerVibro.xml") then
 		workTool.cp.isEifokZunhammerVibro = true;
 		workTool.cp.isEifokZunhammerAttachable = true;
-	elseif Utils.endsWith(workTool.configFileName, "zubringer.xml") and workTool.hoseRef ~= nil then
+	elseif workTool.hoseRef ~= nil and Utils.endsWith(workTool.configFileName, "zubringer.xml") then
 		workTool.cp.isEifokKotteZubringer = true;
 		workTool.cp.hasEifokZunhammerAttachable = false;
 
@@ -265,6 +265,8 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.isCaseIH9230 = true;
 	elseif Utils.endsWith(workTool.configFileName, "caseIH9230Crawler.xml") then
 		workTool.cp.isCaseIH9230Crawler = true;
+	elseif Utils.endsWith(workTool.configFileName, "deutz5465H.xml") then
+		workTool.cp.isDeutz5465H = true;
 
 	--Cutters [Giants]
 	elseif Utils.endsWith(workTool.configFileName, "caseIH3162Cutter.xml") then
@@ -766,9 +768,10 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 			end;
 
 			--speed regulation
-			if workTool.isBlocked then 
-				allowedToDrive = false
-			end
+			if workTool.isBlocked then
+				allowedToDrive = false;
+				courseplay:setGlobalInfoText(self, 'PICKUP_JAMMED');
+			end;
 			workTool.blockMaxTime = 10000
 			if workTool.actLoad2 == 1 then
 				if workTool.blockTimer > workTool.blockMaxTime *0.8 then

@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="13">
-	<version>3.41.0305</version>
+	<version>3.41.0329</version>
 	<author>Jakob Tischler / Thomas Gärtner / Horoman</author>
 	<title>
 		<de>Courseplay</de>
@@ -1564,6 +1564,14 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<es>AutoCombine no está soportado</es> <!-- !!! -->
 			<it>AutoCombine non è supportato</it>
 			<cz>AutoCombine není podporován</cz> <!-- !!! -->
+		</text>
+		<text name="COURSEPLAY_PICKUP_JAMMED">
+			<en>: pickup is jammed</en>
+			<de>: Pickup ist verstopft</de>
+			<fr>: pickup is jammed</fr> <!-- !!! -->
+			<es>: pickup is jammed</es> <!-- !!! -->
+			<it>: pickup is jammed</it> <!-- !!! -->
+			<cz>: pickup is jammed</cz> <!-- !!! -->
 		</text>
 		<text name="COURSEPLAY_BALER_NEEDS_NETS">
 			<en>: baler needs new net rolls</en>

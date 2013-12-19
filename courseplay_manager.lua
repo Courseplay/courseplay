@@ -470,12 +470,27 @@ end
 
 --remove courseplayers from combine before it is reset and/or sold
 function courseplay_manager:removeCourseplayersFromCombine(vehicle, callDelete)
+	if vehicle.cp and vehicle.cameras then --Note: .cameras is used as a quick way to check if a vehicle is a steerable
+		courseplay:debug(string.format('BaseMission:removeVehicle() -> courseplay_manager:removeCourseplayersFromCombine(%q, %s)', nameNum(vehicle), tostring(callDelete)), 4);
+		for k,steerable in pairs(g_currentMission.steerables) do
+			if steerable.cp and steerable.cp.savedCombine and steerable.cp.savedCombine == vehicle then
+				courseplay:debug(string.format('\tsteerable %q: savedCombine is %q --> set savedCombine to nil, set selected_combine_number to 0, set HUD4savedCombine to false, set HUD4savedCombineName to "", reload hud page 4', nameNum(steerable), nameNum(vehicle)), 4);
+				steerable.cp.savedCombine = nil;
+				steerable.selected_combine_number = 0;
+				steerable.cp.HUD4savedCombine = false;
+				steerable.cp.HUD4savedCombineName = '';
+				courseplay.hud:setReloadPageOrder(steerable, 4, true);
+			end;
+		end;
+	end;
+
 	if vehicle.courseplayers ~= nil then
 		local combine = vehicle;
-		courseplay:debug(nameNum(combine) .. ": courseplay_manager:removeCourseplayersFromCombine(vehicle, callDelete)", 4);
+		local numCourseplayers = #(combine.courseplayers);
+		courseplay:debug(string.format('\t.courseplayers ~= nil (%d vehicles)', numCourseplayers), 4);
 
-		if table.getn(combine.courseplayers) > 0 then
-			courseplay:debug(nameNum(combine) .. " has " .. table.getn(combine.courseplayers) .. " courseplayers -> unregistering all", 4);
+		if numCourseplayers > 0 then
+			courseplay:debug(string.format('%s: has %d courseplayers -> unregistering all', nameNum(combine), numCourseplayers), 4);
 			for i,tractor in pairs(combine.courseplayers) do
 				courseplay:unregister_at_combine(tractor, combine);
 				
@@ -483,8 +498,10 @@ function courseplay_manager:removeCourseplayersFromCombine(vehicle, callDelete)
 					tractor.cp.savedCombine = nil;
 				end;
 				tractor.cp.reachableCombines = nil;
+
+				courseplay.hud:setReloadPageOrder(tractor, 4, true);
 			end;
-			courseplay:debug(nameNum(combine) .. " has " .. table.getn(combine.courseplayers) .. " courseplayers", 4);
+			courseplay:debug(string.format('%s: has %d courseplayers', nameNum(combine), numCourseplayers), 4);
 		end;
 	end;
 end;

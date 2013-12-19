@@ -1,38 +1,38 @@
 -- inspired by fieldstatus of Alan R. (ls-uk.info: thebadtouch)
-function courseplay:area_has_fruit(x, z, fruit_type, widthX, widthZ)
-	if not courseplay:is_field(x, z) then
-		return false
-	end
-
-	local density = 0
-	widthX = widhtX or 0.5;
+function courseplay:area_has_fruit(x, z, fruitType, widthX, widthZ)
+	widthX = widthX or 0.5;
 	widthZ = widthZ or 0.5;
-	if fruit_type ~= nil then
-		density = Utils.getFruitArea(fruit_type, x, z, x - widthX, z - widthZ, x + widthX, z + widthZ);
+	if not courseplay:is_field(x, z, widthX, widthZ) then
+		return false;
+	end;
+
+	local density = 0;
+	if fruitType ~= nil then
+		density = Utils.getFruitArea(fruitType, x, z, x - widthX, z - widthZ, x + widthX, z + widthZ);
 		if density > 0 then
 			--courseplay:debug(string.format("checking x: %d z %d - density: %d", x, z, density ), 3)
-			return true
-		end
+			return true;
+		end;
 	else
 		for i = 1, FruitUtil.NUM_FRUITTYPES do
 			if i ~= FruitUtil.FRUITTYPE_GRASS then
-
 				density = Utils.getFruitArea(i, x, z, x - widthX, z - widthZ, x + widthX, z + widthZ);
-
 				if density > 0 then
 					--courseplay:debug(string.format("checking x: %d z %d - density: %d", x, z, density ), 3)
-					return true
-				end
-			end
-		end
-	end
+					return true;
+				end;
+			end;
+		end;
+	end;
 
 	--courseplay:debug(string.format(" x: %d z %d - is really cut!", x, z ), 3)
-	return false
-end
+	return false;
+end;
 
-function courseplay:is_field(x, z)
-	local widthX, widthZ = 0.5, 0.5;
+function courseplay:is_field(x, z, widthX, widthZ)
+	widthX = widthX or 0.5;
+	widthZ = widthZ or 0.5;
+
 	if courseplay.fields.lastChannel ~= nil then
 		if Utils.getDensity(g_currentMission.terrainDetailId, courseplay.fields.lastChannel, x, z, x - widthX, z - widthZ, x + widthX, z + widthZ) ~= 0 then
 			return true;
@@ -97,8 +97,12 @@ end
 
 
 function courseplay:side_to_drive(self, combine, distance,switchSide)
+end
+
+
+function courseplay:sideToDrive(self, combine, distance,switchSide)
 	-- if there is a forced side to drive return this
-	--print("sideToDrive:") 
+	--print("courseplay:sideToDrive:") 
 	local tractor = combine
 	if courseplay:isAttachedCombine(combine) then
 		tractor = combine.attacherVehicle
@@ -108,7 +112,7 @@ function courseplay:side_to_drive(self, combine, distance,switchSide)
 	local x, y, z = 0,0,0
 	x, y, z = localToWorld(tractor.cp.DirectionNode, 0, 0, distance -5)
 	local dirX, dirZ = combine.aiThreshingDirectionX, combine.aiThreshingDirectionZ;
-	if (not (combine.isAIThreshing or combine.drive)) or  combine.aiThreshingDirectionX == nil or combine.aiThreshingDirectionZ == nil then
+	if (not (combine.isAIThreshing or combine.drive)) or  combine.aiThreshingDirectionX == nil or combine.aiThreshingDirectionZ == nil or combine.acParameters ~= nil then
 			local dx,_,dz = localDirectionToWorld(combine.rootNode, 0, 0, 2);
 			local length = Utils.vector2Length(dx,dz);
 			dirX = dx/length;
@@ -141,7 +145,18 @@ function courseplay:side_to_drive(self, combine, distance,switchSide)
 	--print("	leftFruit:  "..tostring(leftFruit).."  rightFruit:  "..tostring(rightFruit))
 	--courseplay:debug(string.format("%s: fruit: left %f right %f", combine.name, leftFruit, rightFruit), 3)
 	local fruitSide 
-	if combine.isAIThreshing then
+	if combine.acParameters ~= nil and combine.acParameters.enabled then -- autoCombine
+		--print(" combine.acParameters.leftAreaActive: "..tostring(combine.acParameters.leftAreaActive).."  combine.acTurnStage: "..tostring(combine.acTurnStage))
+		if not combine.acParameters.upNDown then
+			if combine.acParameters.leftAreaActive then
+				leftFruit,rightFruit = 0,100 
+				--fruitSide = "right"
+			else
+				leftFruit,rightFruit = 100,0
+				--fruitSide = "left"
+			end
+		end	
+	elseif combine.isAIThreshing then --helper
 		--print("	isAITreshing")
 		local tempFruit
 		if (not combine.waitingForDischarge and combine.waitForTurnTime > combine.time) or (combine.turnStage == 1) then
@@ -151,7 +166,8 @@ function courseplay:side_to_drive(self, combine, distance,switchSide)
 			leftFruit = rightFruit;
 			rightFruit = tempFruit;
 		end;
-	elseif tractor.drive then
+	
+	elseif tractor.drive then  --Courseplay
 		--print("	is in mode6") 
 		local Dir = 0;
 		local wayPoint = tractor.recordnumber
