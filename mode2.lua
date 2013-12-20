@@ -967,7 +967,7 @@ function courseplay:unload_combine(self, dt)
 
 	-- check traffic and calculate speed
 	
-	allowedToDrive = courseplay:check_traffic(self, true, allowedToDrive)
+	allowedToDrive = courseplay:checkTraffic(self, true, allowedToDrive)
 	refSpeed = courseplay:regulateTrafficSpeed(self,refSpeed,allowedToDrive)
 
 
@@ -1029,9 +1029,9 @@ function courseplay:unload_combine(self, dt)
 		self.cp.TrafficBrake = false
 		if self.cp.modeState == 5 or self.cp.modeState == 2 then
 			target_x, target_z = courseplay:isTheWayToTargetFree(self,target_x, target_z)
-		else
-			courseplay:setTrafficCollision(self, target_x, target_z)
 		end
+		courseplay:setTrafficCollision(self, target_x, target_z,true)
+		
 		if self.isRealistic then
 		
 			courseplay:driveInMRDirection(self, target_x, target_z,moveForwards, dt, allowedToDrive);

@@ -247,23 +247,7 @@ function courseplay:turn(self, dt) --!!!
 		else
 			AIVehicleUtil.driveInDirection(self, dt, 25, 0.5, 0.5, 20, true, moveForwards, lx, lz, self.cp.speeds.sl, 0.9);
 		end
-		
-		
-		local maxlx = 0.7071067; --math.sin(maxAngle);
-		local colDirX = lx;
-		local colDirZ = lz;
-
-		if colDirX > maxlx then
-			colDirX = maxlx;
-			colDirZ = 0.7071067; --math.cos(maxAngle);
-		elseif colDirX < -maxlx then
-			colDirX = -maxlx;
-			colDirZ = 0.7071067; --math.cos(maxAngle);
-		end;
-
-		for triggerId,_ in pairs(self.numCollidingVehicles) do
-			AIVehicleUtil.setCollisionDirection(self.cp.DirectionNode, triggerId, colDirX, colDirZ, true);
-		end;
+		courseplay:setTrafficCollision(self, lx, lz, true)
 	end;
 	
 	if newTargetX ~= nil and newTargetZ ~= nil then

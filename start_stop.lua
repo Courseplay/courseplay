@@ -34,7 +34,8 @@ function courseplay:start(self)
 	end
 
 	self.CPnumCollidingVehicles = 0;
-	self.cp.collidingVehicle = nil
+	self.cp.collidingVehicleId = nil
+	courseplay:debug(string.format("%s: Start/Stop: deleting \"self.cp.collidingVehicleId\"", nameNum(self)), 3);
 	--self.numToolsCollidingVehicles = {};
 	self.drive = false
 	self.record = false

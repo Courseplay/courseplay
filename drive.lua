@@ -651,7 +651,7 @@ function courseplay:drive(self, dt)
 		courseplay:openCloseCover(self, dt, showCover, self.cp.currentTipTrigger ~= nil);
 	end;
 
-	allowedToDrive = courseplay:check_traffic(self, true, allowedToDrive)
+	allowedToDrive = courseplay:checkTraffic(self, true, allowedToDrive)
 	
 	if self.cp.waitForTurnTime > self.timer then
 		allowedToDrive = courseplay:brakeToStop(self)
@@ -739,8 +739,7 @@ function courseplay:drive(self, dt)
 		end;
 	end;
 	
-	 
-	if courseplay:validateCollision(self) then
+	if self.cp.collidingVehicleId ~= nil then
 		refSpeed = courseplay:regulateTrafficSpeed(self, refSpeed, allowedToDrive);
 	end
 	
@@ -937,7 +936,7 @@ function courseplay:setTrafficCollision(self, lx, lz, workArea) --!!!
 	if self.cp.trafficCollisionTriggers[1] ~= nil then 
 		AIVehicleUtil.setCollisionDirection(self.cp.DirectionNode, self.cp.trafficCollisionTriggers[1], colDirX, colDirZ);
 		local recordNumber = self.recordnumber
-		if self.cp.collidingVehicle == nil then
+		if self.cp.collidingVehicleId == nil then
 			for i=2,self.cp.numTrafficCollisionTriggers do
 				if workArea or recordNumber + i > self.maxnumber or recordNumber < 2 then
 					AIVehicleUtil.setCollisionDirection(self.cp.trafficCollisionTriggers[i-1], self.cp.trafficCollisionTriggers[i], 0, -1);
@@ -956,39 +955,43 @@ function courseplay:setTrafficCollision(self, lx, lz, workArea) --!!!
 end;
 
 
-function courseplay:check_traffic(self, display_warnings, allowedToDrive)
+function courseplay:checkTraffic(self, display_warnings, allowedToDrive)
 	local ahead = false
-	local vehicle_in_front = g_currentMission.nodeToVehicle[self.cp.collidingVehicle]
+	local collisionVehicle = g_currentMission.nodeToVehicle[self.cp.collidingVehicleId]
 	--courseplay:debug(tableShow(self, nameNum(self), 4), 4)
-	if self.CPnumCollidingVehicles ~= nil and self.CPnumCollidingVehicles > 0 then
-		if vehicle_in_front ~= nil and not (self.cp.mode == 9 and vehicle_in_front.allowFillFromAir) then
-			local vx, vy, vz = getWorldTranslation(self.cp.collidingVehicle)
+	--if self.CPnumCollidingVehicles ~= nil and self.CPnumCollidingVehicles > 0 then
+		if collisionVehicle ~= nil and not (self.cp.mode == 9 and collisionVehicle.allowFillFromAir) then
+			local vx, vy, vz = getWorldTranslation(self.cp.collidingVehicleId)
 			local tx, ty, tz = worldToLocal(self.aiTrafficCollisionTrigger, vx, vy, vz)
 			local xvx, xvy, xvz = getWorldTranslation(self.aiTrafficCollisionTrigger)
 			local x, y, z = getWorldTranslation(self.cp.DirectionNode)
 			local x1, y1, z1 = 0,0,0
-			local halfLength = Utils.getNoNil(vehicle_in_front.sizeLength,5)/2
-			x1,z1 = AIVehicleUtil.getDriveDirection(self.cp.collidingVehicle, x, y, z);
+			local halfLength = Utils.getNoNil(collisionVehicle.sizeLength,5)/2
+			x1,z1 = AIVehicleUtil.getDriveDirection(self.cp.collidingVehicleId, x, y, z);
 			if z1 > -0.9 then -- tractor in front of vehicle face2face or beside < 4 o'clock
 				ahead = true
 			end
-			if vehicle_in_front.lastSpeedReal == nil or vehicle_in_front.lastSpeedReal*3600 < 5 or ahead then
-				--courseplay:debug(nameNum(self) .. ": colliding", 4)
-				courseplay:debug(nameNum(self)..": check_traffic:	distance: "..tostring(tz-halfLength),3)
+			if math.abs(tx) > 5 and collisionVehicle.rootNode ~= nil then
+				courseplay:debug(nameNum(self)..": checkTraffic:	deleteCollisionVehicle",3)
+				courseplay:deleteCollisionVehicle(self)
+				return allowedToDrive
+			end
+			if collisionVehicle.lastSpeedReal == nil or collisionVehicle.lastSpeedReal*3600 < 5 or ahead then
+				--courseplay:debug(nameNum(self)..": checkTraffic:	distance: "..tostring(tz-halfLength),3)
 				if tz <= 2 + halfLength then
 					allowedToDrive = false;
 					self.cp.inTraffic = true
-					courseplay:debug(nameNum(self)..": check_traffic:	Stop",3)
+					--courseplay:debug(nameNum(self)..": checkTraffic:	Stop",3)
 				elseif self.lastSpeedReal*3600 > 10 then
-					courseplay:debug(nameNum(self)..": check_traffic:	brake",3)
+					--courseplay:debug(nameNum(self)..": checkTraffic:	brake",3)
 					allowedToDrive = courseplay:brakeToStop(self)
 				else
-					courseplay:debug(nameNum(self)..": check_traffic:	do nothing - go, but set \"self.cp.isTrafficBraking\"",3)
+					--courseplay:debug(nameNum(self)..": checkTraffic:	do nothing - go, but set \"self.cp.isTrafficBraking\"",3)
 					self.cp.isTrafficBraking = true
 				end
 			end
 		end
-	end
+	--end
 	
 	if display_warnings and self.cp.inTraffic then
 		courseplay:setGlobalInfoText(self, 'TRAFFIC');
@@ -996,15 +999,16 @@ function courseplay:check_traffic(self, display_warnings, allowedToDrive)
 	return allowedToDrive
 end
 
-function courseplay:validateCollision(vehicle)
-	local isValid = true
-	
-	
-	
-	
-	
-
-	return isValid
+function courseplay:deleteCollisionVehicle(vehicle)
+	if vehicle.cp.collidingVehicleId ~= nil  then
+					vehicle.cp.collidingObjects.all[vehicle.cp.collidingVehicleId] = nil
+					--self.CPnumCollidingVehicles = math.max(self.CPnumCollidingVehicles - 1, 0);
+					--if self.CPnumCollidingVehicles == 0 then
+					--self.numCollidingVehicles[triggerId] = math.max(self.numCollidingVehicles[triggerId]-1, 0);
+					vehicle.cp.collidingObjects[4][vehicle.cp.collidingVehicleId] = nil
+					vehicle.cp.collidingVehicleId = nil
+					courseplay:debug(string.format("%s: 	deleteCollisionVehicle: setting \"self.cp.collidingVehicleId\"to nil", nameNum(self)), 3);
+	end
 end
 
 function courseplay:setSpeed(self, refSpeed, sl)
@@ -1220,38 +1224,38 @@ function courseplay:regulateTrafficSpeed(self,refSpeed,allowedToDrive)
 	if self.cp.isTrafficBraking then
 		return refSpeed
 	end
-	if self.cp.collidingVehicle ~= nil then
-		local vehicle_in_front = g_currentMission.nodeToVehicle[self.cp.collidingVehicle];
+	if self.cp.collidingVehicleId ~= nil then
+		local collisionVehicle = g_currentMission.nodeToVehicle[self.cp.collidingVehicleId];
 		local vehicleBehind = false
-		if vehicle_in_front == nil then
-			courseplay:debug(nameNum(self)..": regulateTrafficSpeed(1216):	setting self.cp.collidingVehicle nil",3)
-			self.cp.collidingVehicle = nil
+		if collisionVehicle == nil then
+			courseplay:debug(nameNum(self)..": regulateTrafficSpeed(1216):	setting self.cp.collidingVehicleId nil",3)
+			self.cp.collidingVehicleId = nil
 			self.CPnumCollidingVehicles = math.max(self.CPnumCollidingVehicles-1, 0);
 			return refSpeed
 		else
-			local name = getName(self.cp.collidingVehicle)
+			local name = getName(self.cp.collidingVehicleId)
 			courseplay:debug(nameNum(self)..": regulateTrafficSpeed:	 "..tostring(name),3)
 		end
-		local x, y, z = getWorldTranslation(self.cp.collidingVehicle)
+		local x, y, z = getWorldTranslation(self.cp.collidingVehicleId)
 		local x1, y1, z1 = worldToLocal(self.rootNode, x, y, z)
 		if z1 < 0 or math.abs(x1) > 5 then -- vehicle behind tractor
 			vehicleBehind = true
 		end
 		local distance = 0
-		if vehicle_in_front.rootNode ~= nil then
-			distance = courseplay:distance_to_object(self, vehicle_in_front)
+		if collisionVehicle.rootNode ~= nil then
+			distance = courseplay:distance_to_object(self, collisionVehicle)
 		end
-		if vehicle_in_front.rootNode == nil or vehicle_in_front.lastSpeedReal == nil or (distance > 40) or vehicleBehind then
-			courseplay:debug(string.format("%s: v.rootNode= %s,v.lastSpeedReal= %s, distance: %f, vehicleBehind= %s",nameNum(self),tostring(vehicle_in_front.rootNode),tostring(vehicle_in_front.lastSpeedReal),distance,tostring(vehicleBehind)),3)
-			courseplay:debug(nameNum(self)..": regulateTrafficSpeed(1230):	setting self.cp.collidingVehicle nil",3)
-			self.cp.tempCollis[self.cp.collidingVehicle] = nil
-			self.cp.collidingVehicle = nil
+		if collisionVehicle.rootNode == nil or collisionVehicle.lastSpeedReal == nil or (distance > 40) or vehicleBehind then
+			courseplay:debug(string.format("%s: v.rootNode= %s,v.lastSpeedReal= %s, distance: %f, vehicleBehind= %s",nameNum(self),tostring(collisionVehicle.rootNode),tostring(collisionVehicle.lastSpeedReal),distance,tostring(vehicleBehind)),3)
+			courseplay:deleteCollisionVehicle(self)
+			--courseplay:debug(nameNum(self)..": regulateTrafficSpeed(1230):	setting self.cp.collidingVehicleId nil",3)
+		
 		else
-			if allowedToDrive and not (self.cp.mode == 9 and vehicle_in_front.allowFillFromAir) then
-				if (self.lastSpeed*3600) - (vehicle_in_front.lastSpeedReal*3600) > 15 or z1 < 3 then
+			if allowedToDrive and not (self.cp.mode == 9 and collisionVehicle.allowFillFromAir) then
+				if (self.lastSpeed*3600) - (collisionVehicle.lastSpeedReal*3600) > 15 or z1 < 3 then
 					self.cp.TrafficBrake = true
 				else
-					return math.min(vehicle_in_front.lastSpeedReal,refSpeed)
+					return math.min(collisionVehicle.lastSpeedReal,refSpeed)
 				end
 			end
 		end

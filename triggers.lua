@@ -2,130 +2,112 @@
 
 -- traffic collision
 function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
+	--oops i found myself
 	if otherId == self.rootNode then 
 		return
 	end;
-
-	if otherId and (courseplay.trafficCollisionIgnoreList[otherId] or self.cpTrafficCollisionIgnoreList[otherId]) then --ignore objects on list
+	--ignore objects on list
+	if otherId and (courseplay.trafficCollisionIgnoreList[otherId] or self.cpTrafficCollisionIgnoreList[otherId]) then 
 		return;
 	end;
-
-	if onLeave then
-		local name = getName(otherId);
-		local triggerIndex = self.cp.trafficCollisionTriggerToTriggerIndex[triggerId];
-
-		courseplay:debug(nameNum(self)..": Trigger: call handleTrafficCollisions onLeave" ,3)
-		courseplay:handleTrafficCollisions(self, triggerId, otherId, onEnter, onLeave)
-
-		self.cp.collidingObjects.all[otherId] = nil;
-		self.cp.collidingObjects[triggerIndex][otherId] = nil;
-		self.cp.numCollidingObjects.all = math.max(self.cp.numCollidingObjects.all - 1, 0);
-		self.cp.numCollidingObjects[triggerIndex] = math.max(self.cp.numCollidingObjects[triggerIndex] - 1, 0);
-
-		courseplay:debug(string.format('%s: traffic onLeave: trigger %s, object id=%s, name=%q', nameNum(self), tostring(self.cp.trafficCollisionTriggerToTriggerIndex[triggerId]), tostring(otherId), tostring(name)), 3);
-		courseplay:debug(string.format('\tnumCollidingObjects all=%d, [%d]=%d', self.cp.numCollidingObjects.all, triggerIndex, self.cp.numCollidingObjects[triggerIndex]), 3);
-	elseif onEnter then
-		local name = getName(otherId);
-		local triggerIndex = self.cp.trafficCollisionTriggerToTriggerIndex[triggerId];
-		courseplay:debug(string.format('%s: traffic onEnter: trigger %s, object id=%s, name=%q', nameNum(self), tostring(triggerIndex), tostring(otherId), tostring(name)), 3);
-
-		--[[
-		local idsMatch = false
-		for transformId,_ in pairs (self.cp.tempCollis) do --TODO: "idsMatch = self.cp.tempCollis[otherId] == true" should suffice
-			if transformId == otherId then
-				idsMatch = true
-				break
-			end
-		end
-		]]
-
-		local idsMatch = self.cp.tempCollis[otherId] == true;
-		if idsMatch then
-			courseplay:debug(nameNum(self)..": Trigger: onEnter raycast already found ["..tostring(otherId).."]-> do nothing " ,3)
-		else
-			courseplay:debug(nameNum(self)..": Trigger: call handleTrafficCollisions onEnter ["..tostring(otherId).."]" ,3)
-			courseplay:handleTrafficCollisions(self, triggerId, otherId, onEnter, onLeave);
-			self.cp.collidingObjects.all[otherId] = true;
-			self.cp.collidingObjects[triggerIndex][otherId] = true;
-			self.cp.numCollidingObjects.all = self.cp.numCollidingObjects.all + 1;
-			self.cp.numCollidingObjects[triggerIndex] = self.cp.numCollidingObjects[triggerIndex] + 1;
-			courseplay:debug(string.format('\tnumCollidingObjects all=%d, [%d]=%d', self.cp.numCollidingObjects.all, triggerIndex, self.cp.numCollidingObjects[triggerIndex]), 3);
-		end
-	end
+	--whcih trigger is it ? 
+	local TriggerNumber = self.cp.trafficCollisionTriggerToTriggerIndex[triggerId];
 	
-
-end
-
-function courseplay:findTrafficCollisionCallback(transformId, x, y, z, distance)
-	local name = getName(transformId)
-	if courseplay.debugChannels[3] then  drawDebugPoint(x, y, z, 1, 1, 0, 1); end
-	courseplay:debug(nameNum(self)..": raycast callback response: ["..tostring(transformId).."] in "..tostring(distance),3)
-	local triggerId = self.aiTrafficCollisionTrigger 
-	if self.cp.tempCollis[transformId] == nil then
-		self.cp.tempCollis[transformId] = true
-		courseplay:debug(nameNum(self)..": raycast callback: found \""..tostring(name).."\" -> call handleTrafficCollisions onEnter",3)
-		courseplay:handleTrafficCollisions(self, triggerId, transformId, true, false)
-	else
-		return true
-	end
-	return false
-end
-
-function courseplay:handleTrafficCollisions(self, triggerId, otherId, onEnter, onLeave)
-	courseplay:debug(string.format("%s: handleTrafficCollisions:", nameNum(self)), 3);
-	if onEnter or onLeave then
-		if otherId == Player.rootNode then
+	if onEnter or onLeave then --TODO check whether it is required to ask for this 
+		if otherId == Player.rootNode then  --TODO check in Multiplayer
 			if onEnter then
 				self.CPnumCollidingVehicles = self.CPnumCollidingVehicles + 1;
-				self.numCollidingVehicles[triggerId] = self.numCollidingVehicles[triggerId]+1;
- 			elseif onLeave then
+			elseif onLeave then
 				self.CPnumCollidingVehicles = math.max(self.CPnumCollidingVehicles - 1, 0);
-				self.numCollidingVehicles[triggerId] = math.max(self.numCollidingVehicles[triggerId]-1, 0);
- 
 			end;
 		else
-			courseplay:debug(string.format("%s: 	found collision trigger", nameNum(self)), 3);
 			local vehicleOnList = false
 			local OtherIdisCloser = true
 			local vehicle = g_currentMission.nodeToVehicle[otherId];
-			local vehicleInFront = g_currentMission.nodeToVehicle[self.cp.collidingVehicle];
-			if onEnter and self.cp.collidingVehicle ~= nil and vehicleInFront ~= nil and vehicle ~= nil then
-				local distanceToOtherId = courseplay:distance_to_object(self, vehicle)
-				local distanceToVehicleInFront = courseplay:distance_to_object(self, vehicleInFront)
-				courseplay:debug(nameNum(self)..": 	checking Distances: new: "..tostring(distanceToOtherId).." vs. current: "..tostring(distanceToVehicleInFront),3);
-				if distanceToVehicleInFront < distanceToOtherId then
-					OtherIdisCloser = false
-					courseplay:debug(string.format("%s: 	target is not closer than existing target -> do not change \"self.cp.collidingVehicle\"", nameNum(self)), 3);
-				else
-					courseplay:debug(string.format("%s: 	target is closer than existing target -> change \"self.cp.collidingVehicle\"", nameNum(self)), 3);
+			local collisionVehicle = g_currentMission.nodeToVehicle[self.cp.collidingVehicleId];
+			
+			local isInOtherTrigger = false --is this ID in one of the other triggers?
+			for i=1,4 do
+				if i ~= TriggerNumber and self.cp.collidingObjects[i][otherId] then
+					isInOtherTrigger = true
 				end
 			end
-			if vehicle ~= nil and onEnter then
-				courseplay:debug(string.format("%s: 	checking CollisionIgnoreList", nameNum(self)), 3);
-				for a,b in pairs (self.cpTrafficCollisionIgnoreList) do
-					courseplay:debug(string.format("%s:		%s vs \"%s\"", nameNum(self), tostring(g_currentMission.nodeToVehicle[a].name), tostring(vehicle.name)), 3);
-					if g_currentMission.nodeToVehicle[a].id == vehicle.id then
-						courseplay:debug(string.format("%s:		\"%s\" is on list", nameNum(self), tostring(vehicle.name)), 3);
-						vehicleOnList = true
-						break
+			courseplay:debug(string.format("%s: Trigger%d: triggered collision with %d ", nameNum(self),TriggerNumber,otherId), 3);
+			local fixDistance = 0 -- if ID.rootNode is nil set, distance fix to 25m needed for traffic lights
+			if onEnter and vehicle ~= nil and vehicle.rootNode == nil then
+				fixDistance = TriggerNumber * 5
+				courseplay:debug(string.format("%s:	setting fix distance", nameNum(self)), 3);
+			end
+						
+			if not isInOtherTrigger then
+				--checking distance to saved and urrent ID
+				if onEnter and self.cp.collidingVehicleId ~= nil and collisionVehicle ~= nil and collisionVehicle.rootNode ~= nil and ((vehicle ~= nil  and vehicle.rootNode ~= nil) or fixDistance ~= 0) then
+					local distanceToOtherId = math.huge
+					if fixDistance == 0 then
+						distanceToOtherId= courseplay:distance_to_object(self, vehicle)
+					else
+						distanceToOtherId = fixDistance
+					end
+					local distanceToCollisionVehicle = courseplay:distance_to_object(self, collisionVehicle)
+					courseplay:debug(nameNum(self)..": 	onEnter, checking Distances: new: "..tostring(distanceToOtherId).." vs. current: "..tostring(distanceToCollisionVehicle),3);
+					if distanceToCollisionVehicle <= distanceToOtherId then
+						OtherIdisCloser = false
+						courseplay:debug(string.format("%s: 	target is not closer than existing target -> do not change \"self.cp.collidingVehicleId\"", nameNum(self)), 3);
+					else
+						courseplay:debug(string.format("%s: 	target is closer than existing target -> change \"self.cp.collidingVehicleId\"", nameNum(self)), 3);
 					end
 				end
-			end
-			if vehicle ~= nil and self.trafficCollisionIgnoreList[otherId] == nil and vehicleOnList == false then
-				if onEnter and OtherIdisCloser then
-					courseplay:debug(string.format("%s: 	\"%s\" is not on list, setting \"self.cp.collidingVehicle\"", nameNum(self), tostring(vehicle.name)), 3);
-					self.cp.collidingVehicle = otherId
-					self.CPnumCollidingVehicles = self.CPnumCollidingVehicles + 1;
-					self.numCollidingVehicles[triggerId] = self.numCollidingVehicles[triggerId]+1;
-				elseif onLeave then
-					self.cp.tempCollis[otherId] = nil
-					courseplay:debug(string.format("%s: 	onLeave - remove one of \"self.CPnumCollidingVehicles\"", nameNum(self)), 3);
-					self.CPnumCollidingVehicles = math.max(self.CPnumCollidingVehicles - 1, 0);
-					self.numCollidingVehicles[triggerId] = math.max(self.numCollidingVehicles[triggerId]-1, 0);
- 				end;
+				--checking CollisionIgnoreList
+				if onEnter and vehicle ~= nil and OtherIdisCloser then
+					courseplay:debug(string.format("%s: 	onEnter, checking CollisionIgnoreList", nameNum(self)), 3);
+					for a,b in pairs (self.cpTrafficCollisionIgnoreList) do
+						courseplay:debug(string.format("%s:		%s vs \"%s\"", nameNum(self), tostring(g_currentMission.nodeToVehicle[a].name), tostring(vehicle.name)), 3);
+						if g_currentMission.nodeToVehicle[a].id == vehicle.id then
+							courseplay:debug(string.format("%s:		\"%s\" is on list", nameNum(self), tostring(vehicle.name)), 3);
+							vehicleOnList = true
+							break
+						end
+					end
+				end
 			else
+				if onEnter then
+					OtherIdisCloser = false
+					courseplay:debug(string.format("%s: 	onEnter: %d is in other trigger -> ignore", nameNum(self),otherId ), 3);
+				else
+					courseplay:debug(string.format("%s: 	onLeave: %d is in other trigger -> ignore", nameNum(self),otherId), 3);
+				end
+			end
+			
+			if vehicle ~= nil and self.trafficCollisionIgnoreList[otherId] == nil and vehicleOnList == false then
+				if onEnter and OtherIdisCloser and not self.cp.collidingObjects.all[otherId] then
+					self.cp.collidingObjects.all[otherId] = true
+					self.cp.collidingVehicleId = otherId
+					--self.CPnumCollidingVehicles = self.CPnumCollidingVehicles + 1;
+					courseplay:debug(string.format("%s: 	\"%s\" is not on list, setting \"self.cp.collidingVehicleId\"", nameNum(self), tostring(vehicle.name)), 3);
+				elseif onLeave and not isInOtherTrigger then
+					self.cp.collidingObjects.all[otherId] = nil
+					if TriggerNumber ~= 4 then
+						--self.CPnumCollidingVehicles = math.max(self.CPnumCollidingVehicles - 1, 0);
+						--if self.CPnumCollidingVehicles == 0 then
+							self.cp.collidingVehicleId = nil
+						--end
+						AIVehicleUtil.setCollisionDirection(self.cp.trafficCollisionTriggers[1], self.cp.trafficCollisionTriggers[2], 0, -1);
+						courseplay:debug(string.format("%s: 	onLeave - setting \"self.cp.collidingVehicleId\" to nil", nameNum(self)), 3);
+					else
+						courseplay:debug(string.format("%s: 	onLeave - keep \"self.CPnumCollidingVehicles\" ", nameNum(self)), 3);
+					end
+				else
+					--courseplay:debug(string.format("%s: 	no registration:onEnter:%s, OtherIdisCloser:%s, registered: %s ,isInOtherTrigger: %s", nameNum(self),tostring(onEnter),tostring(OtherIdisCloser),tostring(self.cp.collidingObjects.all[otherId]),tostring(isInOtherTrigger)), 3);
+				end;
+			elseif not isInOtherTrigger then
 				courseplay:debug(string.format("%s: 	Vehicle is nil - do nothing", nameNum(self)), 3);
 			end
+			
+			if  onEnter then
+				self.cp.collidingObjects[TriggerNumber][otherId] = true
+			else
+				self.cp.collidingObjects[TriggerNumber][otherId] = nil
+			end	
 		end;
 	end;
 end
@@ -146,10 +128,10 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 	if self.tippers[1] ~= nil and tipTriggers ~= nil and tipTriggersCount > 0 then
 		courseplay:debug(nameNum(self) .. " transformId = ".. tostring(transformId)..": "..tostring(name), 1);
 		local fruitType = self.tippers[1].currentFillType;
-		if fruitType == nil or fruitType == 0 then
+		if fruitType == nil then
 			for i=2,#(self.tippers) do
 				fruitType = self.tippers[i].currentFillType;
-				if fruitType ~= nil and fruitType ~= 0 then 
+				if fruitType ~= nil then 
 					break
 				end
 			end
