@@ -284,7 +284,8 @@ function courseplay:drive(self, dt)
 	-- in a traffic yam?
 
 	-- coordinates of coli
-	local tx, ty, tz = getWorldTranslation(self.aiTrafficCollisionTrigger)
+	--local tx, ty, tz = getWorldTranslation(self.aiTrafficCollisionTrigger)
+	local tx, ty, tz = localToWorld(self.cp.DirectionNode,0,1,3)
 	-- direction of tractor
 	local nx, ny, nz = localDirectionToWorld(self.cp.DirectionNode, lx, 0, lz)
 	--RulModiä
