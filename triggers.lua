@@ -33,6 +33,13 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 				end
 			end
 			courseplay:debug(string.format("%s: Trigger%d: triggered collision with %d ", nameNum(self),TriggerNumber,otherId), 3);
+			local trafficLightDistance = 0 
+			if collisionVehicle ~= nil and collisionVehicle.rootNode == nil then
+				local x,y,z = getWorldTranslation(self.cp.collidingVehicleId)
+				_,_, trafficLightDistance = worldToLocal (self.rootNode, x,y,z)			
+			end
+			
+			
 			local fixDistance = 0 -- if ID.rootNode is nil set, distance fix to 25m needed for traffic lights
 			if onEnter and vehicle ~= nil and vehicle.rootNode == nil then
 				fixDistance = TriggerNumber * 5
@@ -41,14 +48,22 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 						
 			if not isInOtherTrigger then
 				--checking distance to saved and urrent ID
-				if onEnter and self.cp.collidingVehicleId ~= nil and collisionVehicle ~= nil and collisionVehicle.rootNode ~= nil and ((vehicle ~= nil  and vehicle.rootNode ~= nil) or fixDistance ~= 0) then
+				if onEnter and self.cp.collidingVehicleId ~= nil 
+						   and ((collisionVehicle ~= nil and collisionVehicle.rootNode ~= nil) or trafficLightDistance ~= 0 )
+						   and ((vehicle ~= nil  and vehicle.rootNode ~= nil) or fixDistance ~= 0) then
 					local distanceToOtherId = math.huge
 					if fixDistance == 0 then
 						distanceToOtherId= courseplay:distance_to_object(self, vehicle)
 					else
 						distanceToOtherId = fixDistance
 					end
-					local distanceToCollisionVehicle = courseplay:distance_to_object(self, collisionVehicle)
+					local distanceToCollisionVehicle = math.huge
+					if trafficLightDistance == 0 then
+						distanceToCollisionVehicle = courseplay:distance_to_object(self, collisionVehicle)
+					else
+						distanceToCollisionVehicle = math.abs(trafficLightDistance)
+					end
+					
 					courseplay:debug(nameNum(self)..": 	onEnter, checking Distances: new: "..tostring(distanceToOtherId).." vs. current: "..tostring(distanceToCollisionVehicle),3);
 					if distanceToCollisionVehicle <= distanceToOtherId then
 						OtherIdisCloser = false
@@ -86,15 +101,19 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 					courseplay:debug(string.format("%s: 	\"%s\" is not on list, setting \"self.cp.collidingVehicleId\"", nameNum(self), tostring(vehicle.name)), 3);
 				elseif onLeave and not isInOtherTrigger then
 					self.cp.collidingObjects.all[otherId] = nil
-					if TriggerNumber ~= 4 then
-						--self.CPnumCollidingVehicles = math.max(self.CPnumCollidingVehicles - 1, 0);
-						--if self.CPnumCollidingVehicles == 0 then
-							self.cp.collidingVehicleId = nil
-						--end
-						AIVehicleUtil.setCollisionDirection(self.cp.trafficCollisionTriggers[1], self.cp.trafficCollisionTriggers[2], 0, -1);
-						courseplay:debug(string.format("%s: 	onLeave - setting \"self.cp.collidingVehicleId\" to nil", nameNum(self)), 3);
+					if self.cp.collidingVehicleId == otherId then
+						if TriggerNumber ~= 4 then
+							--self.CPnumCollidingVehicles = math.max(self.CPnumCollidingVehicles - 1, 0);
+							--if self.CPnumCollidingVehicles == 0 then
+								self.cp.collidingVehicleId = nil
+							--end
+							AIVehicleUtil.setCollisionDirection(self.cp.trafficCollisionTriggers[1], self.cp.trafficCollisionTriggers[2], 0, -1);
+							courseplay:debug(string.format("%s: 	onLeave - setting \"self.cp.collidingVehicleId\" to nil", nameNum(self)), 3);
+						else
+							courseplay:debug(string.format("%s: 	onLeave - keep \"self.CPnumCollidingVehicles\" ", nameNum(self)), 3);
+						end
 					else
-						courseplay:debug(string.format("%s: 	onLeave - keep \"self.CPnumCollidingVehicles\" ", nameNum(self)), 3);
+						courseplay:debug(string.format("%s: 	onLeave - not valid for \"self.cp.collidingVehicleId\" keep it", nameNum(self)), 3);
 					end
 				else
 					--courseplay:debug(string.format("%s: 	no registration:onEnter:%s, OtherIdisCloser:%s, registered: %s ,isInOtherTrigger: %s", nameNum(self),tostring(onEnter),tostring(OtherIdisCloser),tostring(self.cp.collidingObjects.all[otherId]),tostring(isInOtherTrigger)), 3);
