@@ -74,7 +74,7 @@
 		end;
 
 	elseif vehicle.cp.hud.currentPage == 7 then
-		if vehicle.cp.copyCourseFromDriver ~= nil then --Force page 7 reload when vehicle distance is displayed
+		if vehicle.cp.copyCourseFromDriver ~= nil or courseplay.utils:hasVarChanged(vehicle, 'totalOffsetX') then --Force page 7 reload when vehicle distance is displayed
 			courseplay.hud:setReloadPageOrder(vehicle, 7, true);
 		end;
 	end;
