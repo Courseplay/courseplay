@@ -411,7 +411,8 @@ function courseplay.utils.table.compare(t1,t2,field)
 end
 
 function courseplay.utils.table.compare_name(t1,t2)
-	return courseplay.utils.table.compare(t1,t2,'name')
+	-- return courseplay.utils.table.compare(t1,t2,'name')
+	return courseplay.utils.table.compare(t1, t2, 'nameClean');
 end
 
 function courseplay.utils.table.search_in_field(tab, field, term)

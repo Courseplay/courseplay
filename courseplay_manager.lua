@@ -689,7 +689,7 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 			local folderType = streamDebugReadString(streamId)
 			local folderId = streamDebugReadInt32(streamId)
 			local folderParent = streamDebugReadInt32(streamId)
-			folder = { id = folderId, uid = folderUid, type = folderType, name = folderName, nameClean = courseplay:normalizeUTF8(folderName), parent = folderParent }
+			local folder = { id = folderId, uid = folderUid, type = folderType, name = folderName, nameClean = courseplay:normalizeUTF8(folderName), parent = folderParent }
 			g_currentMission.cp_folders[folderId] = folder
 			g_currentMission.cp_sorted = courseplay.courses.sort(g_currentMission.cp_courses, g_currentMission.cp_folders, 0, 0)
 		end
