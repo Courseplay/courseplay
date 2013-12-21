@@ -16,6 +16,7 @@ function courseplay_manager:loadMap(name)
 
 	self.buttons = {};
 
+	--GlobalInfoText
 	self.globalInfoTextMaxNum = 20;
 	self.globalInfoTextOverlays = {};
 	self.buttons.globalInfoText = {};
@@ -122,9 +123,13 @@ function courseplay_manager:deleteMap()
 end
 
 function courseplay_manager:draw()
+	if g_currentMission.paused then
+		return;
+	end;
+
 	courseplay.globalInfoText.hasContent = false;
 	line = 0;
-	if not courseplay.globalInfoText.hideWhenPdaActive or (courseplay.globalInfoText.hideWhenPdaActive and not g_currentMission.missionPDA.showPDA) and table.maxn(courseplay.globalInfoText.content) > 0 then
+	if (not courseplay.globalInfoText.hideWhenPdaActive or (courseplay.globalInfoText.hideWhenPdaActive and not g_currentMission.missionPDA.showPDA)) and table.maxn(courseplay.globalInfoText.content) > 0 then
 		courseplay.globalInfoText.hasContent = true;
 		for _,refIndexes in pairs(courseplay.globalInfoText.content) do
 			if line >= self.globalInfoTextMaxNum then
@@ -173,6 +178,10 @@ function courseplay_manager:draw()
 end;
 
 function courseplay_manager:mouseEvent(posX, posY, isDown, isUp, button)
+	if g_currentMission.paused then
+		return;
+	end;
+
 	local area = courseplay_manager.buttons.globalInfoTextClickArea;
 	if area == nil then
 		return;
@@ -201,6 +210,12 @@ function courseplay_manager:mouseEvent(posX, posY, isDown, isUp, button)
 			g_currentMission.isPlayerFrozen = true;
 		elseif self.playerOnFootMouseEnabled then
 			self.playerOnFootMouseEnabled = false;
+			if courseplay.globalInfoText.hasContent then --if a button was hovered when deactivating the cursor, deactivate hover state
+				for _,button in pairs(self.buttons.globalInfoText) do
+					button.isClicked = false;
+					button.isHovered = false;
+				end;
+			end;
 			if not self.wasPlayerFrozen then
 				g_currentMission.isPlayerFrozen = false;
 			end;
@@ -209,7 +224,7 @@ function courseplay_manager:mouseEvent(posX, posY, isDown, isUp, button)
 		InputBinding.setShowMouseCursor(self.playerOnFootMouseEnabled);
 
 	--HOVER
-	elseif not isDown then
+	elseif not isDown and courseplay.globalInfoText.hasContent --[[and posX > area.x1 * 0.9 and posX < area.x2 * 1.1 and posY > area.y1 * 0.9 and posY < area.y2 * 1.1]] then
 		for _,button in pairs(self.buttons.globalInfoText) do
 			button.isClicked = false;
 			if button.show and not button.isHidden then

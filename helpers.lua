@@ -748,7 +748,6 @@ function courseplay:get3dDirection(cx1,cy1,cz1,cx2,cy2,cz2)
 	return nx,ny,nz,dist
 end
 
-
 --UTF-8: ALLOWED CHARACTERS and NORMALIZATION
 --src: ASCII Table - Decimal (Base 10) Values @ http://www.parse-o-matic.com/parse/pskb/ASCII-Chart.htm
 --src: http://en.wikipedia.org/wiki/List_of_Unicode_characters
@@ -764,7 +763,7 @@ function courseplay:getAllowedCharacters()
 		prohibitedUnicodes[unicode] = prohibitedUnicodes[unicode] or false;
 		result[unicode] = not prohibitedUnicodes[unicode] and getCanRenderUnicode(unicode);
 		if courseplay.debugChannels[8] and getCanRenderUnicode(unicode) then
-			print(string.format('allowedCharacters[%d]=%s (%q) (prohibited=%s, getCanRenderUnicode()=%s)', unicode, tostring(result[unicode]), unicodeToUtf8(unicode), tostring(prohibitedUnicodes[unicode]), tostring(getCanRenderUnicode(unicode))));
+			print(string.format('allowedCharacters[%d]=%s (%q) (prohibited=%s, getCanRenderUnicode()=true)', unicode, tostring(result[unicode]), unicodeToUtf8(unicode), tostring(prohibitedUnicodes[unicode])));
 		end;
 	end;
 
@@ -775,29 +774,29 @@ function courseplay:getUtf8normalization()
 	local result = {};
 
 	local normalizationSpans = {
-		a =  { {192,195}, 197, {224,227}, 229, {256,261} },
+		a  = { {192,195}, 197, {224,227}, 229, {256,261} },
 		ae = { 196, 198, 228, 230 },
-		c =  { 199, 231, {262,269} },
-		d =  { {270,273} },
-		e =  { {200,203}, {232,235}, {274,283} },
-		g =  { {284,291} },
-		h =  { {292,295} },
-		i =  { {204,207}, {236,239}, {296,307} },
-		j =  { {308,309} },
-		k =  { {310,312} },
-		l =  { {313,322} },
-		n =  { 209, 241, {323,331} },
-		o =  { {210,213}, {242,245}, {332,337} },
+		c  = { 199, 231, {262,269} },
+		d  = { {270,273} },
+		e  = { {200,203}, {232,235}, {274,283} },
+		g  = { {284,291} },
+		h  = { {292,295} },
+		i  = { {204,207}, {236,239}, {296,307} },
+		j  = { {308,309} },
+		k  = { {310,312} },
+		l  = { {313,322} },
+		n  = { 209, 241, {323,331} },
+		o  = { {210,213}, {242,245}, {332,337} },
 		oe = { 214, 216, 246, 248, 338, 339 },
-		r =  { {340,345} },
-		s =  { {346,353}, 383 },
+		r  = { {340,345} },
+		s  = { {346,353}, 383 },
 		ss = { 223 },
-		t =  { {354,359} },
-		u =  { {217,219}, {249,251}, {360,371} },
+		t  = { {354,359} },
+		u  = { {217,219}, {249,251}, {360,371} },
 		ue = { 220, 252 },
-		w =  { 372, 373 },
-		y =  { 221, 253, 255, {374,376} },
-		z =  { {377,382} }
+		w  = { 372, 373 },
+		y  = { 221, 253, 255, {374,376} },
+		z  = { {377,382} }
 	};
 
 	--[[

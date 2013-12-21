@@ -778,7 +778,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 			workTool.blockMaxTime = 10000
 			if workTool.actLoad2 == 1 then
 				if workTool.blockTimer > workTool.blockMaxTime *0.8 then
-					self.cp.maxFieldSpeed = 7/3600
+					self.cp.maxFieldSpeed = self.cp.maxFieldSpeed * 0.7;
 					allowedToDrive = false
 				end
 			end
@@ -1104,6 +1104,7 @@ function courseplay:askForSpecialSettings(self,object)
 					object:setWorkMode(true);
 				else
 					object.workMode = true;
+					object.cp.needsEvent = true;
 				end;
 			end;
 		end;
