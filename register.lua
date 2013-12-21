@@ -18,7 +18,7 @@ function courseplay:register()
 		end;
 	end;
 
-	print(string.format("\t### Courseplay: installed into %d vehicles", numInstallationsVehicles));
+	print(string.format("### Courseplay: installed into %d vehicles", numInstallationsVehicles));
 end
 
 function courseplay:setLocales()

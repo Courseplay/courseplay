@@ -224,7 +224,7 @@ function courseplay:start(self)
 end;
 
 function courseplay:getCanUseAiMode(vehicle)
-	if not vehicle.isMotorStarted or (vehicle.ignitionMode and (vehicle.ignitionMode ~= 2 or (vehicle.motorStartTime > vehicle.time and vehicle.ignitionMode == 2))) then
+	if not vehicle.isMotorStarted or (vehicle.motorStartTime and vehicle.motorStartTime > vehicle.time) then
 		return false;
 	end;
 

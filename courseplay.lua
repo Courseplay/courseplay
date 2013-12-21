@@ -1,11 +1,12 @@
---
--- Courseplay
--- Specialization for Courseplay
---
--- @author  	Lautschreier / Hummel / Wolverin0815 / Bastian82 / skydancer / Jakob Tischler / Thomas Gärtner
--- @website:	http://courseplay.github.io/courseplay/
--- @version:	v3.41
--- @changelog:	http://courseplay.github.io/courseplay/en/changelog/index.html
+--[[
+Courseplay
+Specialization for Courseplay
+
+@author  	Jakob Tischler / Thomas Gärtner / horoman
+@website:	http://courseplay.github.io/courseplay/
+@version:	v3.41
+@changelog:	http://courseplay.github.io/courseplay/en/changelog/index.html
+]]
 
 courseplay = {
 	path = g_currentModDirectory;
@@ -48,12 +49,17 @@ if fileExists(modDescPath) then
 			[3] = tonumber(courseplay.versionSplitStr[3]);
 		};
 		courseplay.versionDisplayStr = string.format('v%s.%s\n.%s', courseplay.versionSplitStr[1], courseplay.versionSplitStr[2], courseplay.versionSplitStr[3]); --multiline display string
+		courseplay.isDevVersion = courseplay.versionSplitFlt[3] > 0;
+		if courseplay.isDevVersion then
+			courseplay.versionDisplayStr = courseplay.versionDisplayStr .. '.dev';
+		end;
 		courseplay.versionFlt = tonumber(string.format('%s.%s%s', courseplay.versionSplitStr[1], courseplay.versionSplitStr[2], courseplay.versionSplitStr[3]));
 	else
 		courseplay.versionSplitStr = { "0", "00", "0000" };
 		courseplay.versionSplitFlt = { 0, 0, 0 };
 		courseplay.versionDisplayStr = 'no\nversion';
 		courseplay.versionFlt = 0.00000;
+		courseplay.isDevVersion = false;
 	end;
 	courseplay.versionDisplay = courseplay.versionSplitFlt; --TODO: tmp solution until overloader script is changed - then delete
 end;
@@ -124,7 +130,19 @@ function courseplay:initialize()
 
 	courseplay:setGlobalData();
 
-	print(string.format("\t### Courseplay: initialized %d/%d files (v%s)", numFilesLoaded, numFiles, courseplay.version));
+	print(("### Courseplay: initialized %d/%d files (v%s)"):format(numFilesLoaded, numFiles, courseplay.version));
+
+	if courseplay.isDevVersion then
+		local devWarning = '';
+		devWarning = devWarning .. '\t' .. ('*'):rep(45) .. ' WARNING ' .. ('*'):rep(45) .. '\n';
+		devWarning = devWarning .. '\tYou\'re using a development version of Courseplay, which may and will contain errors, bugs,\n';
+		devWarning = devWarning .. '\tmistakes and unfinished code. Chances are you computer will explode when using it. Twice.\n';
+		devWarning = devWarning .. '\tIf you have no idea what "beta", "alpha", or "developer" means and entails, remove this version\n';
+		devWarning = devWarning .. '\tof Courseplay immediately. The Courseplay team will not take any responsibility for crop destroyed,\n';
+		devWarning = devWarning .. '\tsavegames deleted or baby pandas killed.\n';
+		devWarning = devWarning .. '\t' .. ('*'):rep(99);
+		print(devWarning);
+	end;
 end;
 
 function courseplay:setGlobalData()
