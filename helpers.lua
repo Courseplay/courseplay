@@ -57,33 +57,87 @@ function courseplay:stringToMath(str)
 end;
 
 
-function courseplay:isFolding(workTool) --TODO: use getIsAnimationPlaying(animationName)
+function courseplay:isFolding_BAK(workTool) --TODO: use getIsAnimationPlaying(animationName)
 	if courseplay:isFoldable(workTool) then
+		local isFolding, isFolded, isUnfolded = false, true, true;
+		--print(string.format('%s: isFolding(): turnOnFoldDirection=%s, startAnimTime=%s, foldMoveDirection=%s', nameNum(workTool), tostring(workTool.turnOnFoldDirection), tostring(workTool.startAnimTime), tostring(workTool.foldMoveDirection)));
 		for k, foldingPart in pairs(workTool.foldingParts) do
 			local charSet = foldingPart.animCharSet;
-			local animTime = nil
-			if charSet ~= 0 then
-				animTime = getAnimTrackTime(charSet, 0);
-			else
-				animTime = workTool:getRealAnimationTime(foldingPart.animationName);
-			end;
+			local animTime = charSet ~= 0 and getAnimTrackTime(charSet, 0) or workTool:getRealAnimationTime(foldingPart.animationName);
 
+			--print(string.format('\tfoldingPart %d: animTime=%s', k, tostring(animTime)));
 			if animTime ~= nil then
-				if workTool.foldMoveDirection > 0 then
-					if animTime < foldingPart.animDuration then
-						return true;
-					end
-				elseif workTool.foldMoveDirection < 0 then
-					if animTime > 0 then
-						return true;
-					end
-				end
-			end
+				--NOTE: I first thought that if turnOnFoldDirection < 0, unfolded is 0 and folded is animDuration, and if turnOnFoldDirection > 0 then unfold is animDuration and folded is 0. But as it turns out, for BOTH CASES unfolded is 0 and folded is animDuration. Why? I blame the Swiss.
+				if workTool.startAnimTime > 0 then
+					if animTime ~= 0 then
+						--print(string.format('\t\t[startAnimTime=%.3f] foldingPart %d: animTime (%s) ~= 0 -> isUnfolded = false', workTool.startAnimTime, k, tostring(animTime)));
+						isUnfolded = false;
+					end;
+					if animTime ~= foldingPart.animDuration then
+						--print(string.format('\t\t[startAnimTime=%.3f] foldingPart %d: animTime (%s) ~= animDuration (%s) -> isFolded = false', workTool.startAnimTime, k, tostring(animTime), tostring(foldingPart.animDuration)));
+						isFolded = false;
+					end;
+				else
+					if animTime ~= foldingPart.animDuration then
+						--print(string.format('\t\t[startAnimTime=%.3f] foldingPart %d: animTime (%s) ~= animDuration (%s) -> isUnfolded = false', workTool.startAnimTime, k, tostring(animTime), tostring(foldingPart.animDuration)));
+						isUnfolded = false;
+					end;
+					if animTime ~= 0 then
+						--print(string.format('\t\t[startAnimTime=%.3f] foldingPart %d: animTime (%s) ~= 0 -> isFolded = false', workTool.startAnimTime, k, tostring(animTime)));
+						isFolded = false;
+					end;
+				end;
+
+				if workTool.foldMoveDirection > 0 and animTime < foldingPart.animDuration then
+					isFolding = true;
+				elseif workTool.foldMoveDirection < 0 and animTime > 0 then
+					isFolding = true;
+				end;
+			end;
 		end;
-		return false;
-	else
-		return false;
+
+		--print(string.format('\t\t\treturn isFolding=%s, isFolded=%s, isUnfolded=%s', tostring(isFolding), tostring(isFolded), tostring(isUnfolded)));
+		return isFolding, isFolded, isUnfolded;
 	end;
+
+	return false, false, true;
+end;
+
+function courseplay:isFolding(workTool) --returns isFolding, isFolded, isUnfolded
+	if not courseplay:isFoldable(workTool) then
+		return false, false, true;
+	end;
+
+	local isFolding, isFolded, isUnfolded = false, true, true;
+	courseplay:debug(string.format('%s: isFolding(): realUnfoldDirection=%s, turnOnFoldDirection=%s, startAnimTime=%s, foldMoveDirection=%s', nameNum(workTool), tostring(workTool.cp.realUnfoldDirection), tostring(workTool.turnOnFoldDirection), tostring(workTool.startAnimTime), tostring(workTool.foldMoveDirection)), 17);
+
+	for k,foldingPart in pairs(workTool.foldingParts) do
+		--local charSet = foldingPart.animCharSet;
+		--local animTime = charSet ~= 0 and getAnimTrackTime(charSet, 0) or workTool:getRealAnimationTime(foldingPart.animationName);
+
+		--isFolded/isUnfolded
+		--print(string.format('\tfoldingPart %d: animTime=%s, foldAnimTime=%s, isFoldedAnimTime=%s, isUnfoldedAnimTime=%s', k, tostring(animTime), tostring(workTool.foldAnimTime), tostring(foldingPart.isFoldedAnimTime),  tostring(foldingPart.isUnfoldedAnimTime)));
+		if workTool.foldAnimTime ~= foldingPart.isFoldedAnimTimeNormal then
+			isFolded = false;
+			courseplay:debug(string.format('\tfoldingPart %d: foldAnimTime=%s, isFoldedAnimTimeNormal=%s, isUnfoldedAnimTimeNormal=%s -> isFolded = false', k, tostring(workTool.foldAnimTime), tostring(foldingPart.isFoldedAnimTimeNormal),  tostring(foldingPart.isUnfoldedAnimTimeNormal)), 17);
+		end;
+		if workTool.foldAnimTime ~= foldingPart.isUnfoldedAnimTimeNormal then
+			isUnfolded = false;
+			courseplay:debug(string.format('\tfoldingPart %d: foldAnimTime=%s, isFoldedAnimTimeNormal=%s, isUnfoldedAnimTimeNormal=%s -> isUnfolded = false', k, tostring(workTool.foldAnimTime), tostring(foldingPart.isFoldedAnimTimeNormal),  tostring(foldingPart.isUnfoldedAnimTimeNormal)), 17);
+		end;
+
+		--isFolding
+		--if workTool.foldMoveDirection > 0 and animTime < foldingPart.animDuration then
+		if workTool.foldMoveDirection > 0 and workTool.foldAnimTime < 1 then
+			isFolding = true;
+		--elseif workTool.foldMoveDirection < 0 and animTime > 0 then
+		elseif workTool.foldMoveDirection < 0 and workTool.foldAnimTime > 0 then
+			isFolding = true;
+		end;
+	end;
+
+	courseplay:debug(string.format('\treturn isFolding=%s, isFolded=%s, isUnfolded=%s', tostring(isFolding), tostring(isFolded), tostring(isUnfolded)), 17);
+	return isFolding, isFolded, isUnfolded;
 end;
 
 function courseplay:isAnimationPartPlaying(workTool, index)
@@ -357,7 +411,8 @@ function courseplay.utils.table.compare(t1,t2,field)
 end
 
 function courseplay.utils.table.compare_name(t1,t2)
-	return courseplay.utils.table.compare(t1,t2,'name')
+	-- return courseplay.utils.table.compare(t1,t2,'name')
+	return courseplay.utils.table.compare(t1, t2, 'nameClean');
 end
 
 function courseplay.utils.table.search_in_field(tab, field, term)

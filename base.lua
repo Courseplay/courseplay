@@ -170,13 +170,11 @@ function courseplay:load(xmlFile)
 
 	--aiTrafficCollisionTrigger
 	if self.aiTrafficCollisionTrigger == nil then
-		--print(string.format('## Courseplay: %s: aiTrafficCollisionTrigger=nil', nameNum(self)));
 		local index = getXMLString(xmlFile, "vehicle.aiTrafficCollisionTrigger#index");
 		if index then
 			local triggerObject = Utils.indexToObject(self.components, index);
 			if triggerObject then
 				self.aiTrafficCollisionTrigger = triggerObject;
-				--print(string.format('\taiTrafficCollisionTrigger found in xml -> %s', tostring(self.aiTrafficCollisionTrigger)));
 			end;
 		end;
 	end;
@@ -196,7 +194,7 @@ function courseplay:load(xmlFile)
 		end;
 	end;
 	if self.aiTrafficCollisionTrigger == nil then
-		print(string.format('## Courseplay: %s: aiTrafficCollisionTrigger=nil', nameNum(self)));
+		print(string.format('## Courseplay: %s: aiTrafficCollisionTrigger missing. Traffic collision prevention will not work!', nameNum(self)));
 	end;
 
 	--Direction 
@@ -227,7 +225,6 @@ function courseplay:load(xmlFile)
 	self.cp.DirectionNode = DirectionNode;
 
 	-- traffic collision
-
 	self.cpOnTrafficCollisionTrigger = courseplay.cpOnTrafficCollisionTrigger;
 
 	self.cp.steeringAngle = Utils.getNoNil(getXMLFloat(xmlFile, "vehicle.wheels.wheel(1)" .. "#rotMax"), 30)

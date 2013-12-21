@@ -35,15 +35,17 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 		hasFinishedWork = true
 	end
 
-	for i=1, table.getn(self.tippers) do
+	for i=1, #(self.tippers) do
 		workTool = self.tippers[i];
 		local tool = self
 		if courseplay:isAttachedCombine(workTool) then
 			tool = workTool
 		end
 
+		local isFolding, isFolded, isUnfolded = courseplay:isFolding(workTool);
+
 		-- stop while folding
-		if courseplay:isFolding(workTool) and self.cp.turnStage == 0 then
+		if isFolding and self.cp.turnStage == 0 then
 			allowedToDrive = courseplay:brakeToStop(self);
 			--courseplay:debug(tostring(workTool.name) .. ": isFolding -> allowedToDrive == false", 12);
 		end;
@@ -165,36 +167,37 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 							local forecast = Utils.getNoNil(self.Waypoints[recordnumber].ridgeMarker,0)
 							local marker = Utils.getNoNil(self.Waypoints[self.recordnumber].ridgeMarker,0)
 							local waypoint = math.max(marker,forecast)
-							if courseplay:isFoldable(workTool) and not courseplay:isFolding(workTool) then
+							if courseplay:isFoldable(workTool) and not isFolding and not isUnfolded then
 								if not workTool.cp.hasSpecializationPlough then
-									if workTool.cp.inversedFoldDirection then
-										workTool:setFoldDirection(1);
-									else
-										workTool:setFoldDirection(-1);
-									end
+									courseplay:debug(string.format('%s: unfold order (foldDir=%d)', nameNum(workTool), workTool.cp.realUnfoldDirection), 17);
+									workTool:setFoldDirection(workTool.cp.realUnfoldDirection);
 									self.cp.runOnceStartCourse = false;
 								elseif waypoint == 2 and self.cp.runOnceStartCourse then --wegpunkte finden und richtung setzen...
-									workTool:setFoldDirection(-1);
+									courseplay:debug(string.format('%s: unfold order (foldDir=%d)', nameNum(workTool), workTool.cp.realUnfoldDirection), 17);
+									workTool:setFoldDirection(workTool.cp.realUnfoldDirection);
 									if workTool:getIsPloughRotationAllowed() then
 										AITractor.aiRotateLeft(self);
 										self.cp.runOnceStartCourse = false;
 									end
 								elseif self.cp.runOnceStartCourse then
-									workTool:setFoldDirection(-1);
+									courseplay:debug(string.format('%s: unfold order (foldDir=%d)', nameNum(workTool), workTool.cp.realUnfoldDirection), 17);
+									workTool:setFoldDirection(workTool.cp.realUnfoldDirection);
 									self.cp.runOnceStartCourse = false;
 								end
 							end;
 
 
-							if not courseplay:isFolding(workTool) and not waitForSpecialTool then --TODO: where does "waitForSpecialTool" come from? what does it do?
+							if not isFolding and isUnfolded and not waitForSpecialTool then --TODO: where does "waitForSpecialTool" come from? what does it do?
 								--lower
 								if workTool.needsLowering and workTool.aiNeedsLowering then
 									self:setAIImplementsMoveDown(true);
+									courseplay:debug(string.format('%s: lower order', nameNum(workTool)), 17);
 								end;
 
 								--turn on
 								if workTool.setIsTurnedOn ~= nil and not workTool.isTurnedOn then
 									workTool:setIsTurnedOn(true, false);
+									courseplay:debug(string.format('%s: turn on order', nameNum(workTool)), 17);
 									self.cp.runOnceStartCourse = false
 									courseplay:setMarkers(self, workTool);
 								end;
@@ -202,6 +205,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 								if workTool.setIsPickupDown ~= nil and workTool.pickup then
 									if workTool.pickup.isDown == nil or (workTool.pickup.isDown ~= nil and not workTool.pickup.isDown) then
 										workTool:setIsPickupDown(true, false);
+										courseplay:debug(string.format('%s: lower pickup order', nameNum(workTool)), 17);
 									end;
 								end;
 							end;
@@ -211,30 +215,30 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 					workSpeed = 0;
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,nil)
 					if not specialTool then
-						if not courseplay:isFolding(workTool) then
+						if not isFolding then
 							--turn off
 							if workTool.setIsTurnedOn ~= nil and workTool.isTurnedOn then
 								workTool:setIsTurnedOn(false, false);
+								courseplay:debug(string.format('%s: turn off order', nameNum(workTool)), 17);
 							end;
 							if workTool.setIsPickupDown ~= nil and workTool.pickup then
 								if workTool.pickup.isDown == nil or (workTool.pickup.isDown ~= nil and workTool.pickup.isDown) then
 									workTool:setIsPickupDown(false, false);
+									courseplay:debug(string.format('%s: raise pickup order', nameNum(workTool)), 17);
 								end;
 							end;
 
 							--raise
 							if workTool.needsLowering and workTool.aiNeedsLowering and self.cp.turnStage == 0 then
 								self:setAIImplementsMoveDown(false);
+								courseplay:debug(string.format('%s: raise order', nameNum(workTool)), 17);
 							end;
 						end;
 
 						--fold
-						if courseplay:isFoldable(workTool) then
-							if workTool.cp.inversedFoldDirection then
-								workTool:setFoldDirection(-1);
-							else
-								workTool:setFoldDirection(1);
-							end
+						if courseplay:isFoldable(workTool) and not isFolding and not isFolded then
+							courseplay:debug(string.format('%s: fold order (foldDir=%d)', nameNum(workTool), -workTool.cp.realUnfoldDirection), 17);
+							workTool:setFoldDirection(-workTool.cp.realUnfoldDirection);
 							--workTool:setFoldDirection(-workTool.turnOnFoldDirection);
 						end;
 					end;
@@ -337,7 +341,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 								workTool:setFoldDirection(-1);
 							end;
 						end;
-						if not courseplay:isFolding(workTool) and not tool.isThreshing then
+						if not isFolding and not tool.isThreshing then
 							tool:setIsThreshing(true);
 							if pipeState > 0 then
 								tool:setPipeState(pipeState);
@@ -356,7 +360,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 								workTool:setFoldDirection(-1);
 							end;
 						end;
-						if not courseplay:isFolding(workTool) and tool.grainTankFillLevel < tool.grainTankCapacity and not tool.waitingForDischarge and not tool.isThreshing and not weatherStop then
+						if not isFolding and tool.grainTankFillLevel < tool.grainTankCapacity and not tool.waitingForDischarge and not tool.isThreshing and not weatherStop then
 							tool:setIsThreshing(true);
 						end
 

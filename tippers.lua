@@ -137,6 +137,10 @@ function courseplay:update_tools(self, tractor_or_implement)
 		end
 	end
 
+	--FOLDING PARTS: isFolded/isUnfolded states
+	courseplay:setFoldedStates(tractor_or_implement);
+
+
 	if not self.cp.hasUBT then
 		self.cp.hasUBT = false;
 	end;
@@ -234,8 +238,12 @@ function courseplay:update_tools(self, tractor_or_implement)
 			self.cp.aiTurnNoBackward = true
 			courseplay:debug(string.format("%s: object.aiLeftMarker == nil and table.getn(object.wheels) > 0 and object.cp.positionAtTractor <= 0 --> self.cp.aiTurnNoBackward = true", nameNum(object)), 6);
 		end
+
 		courseplay:askForSpecialSettings(self,object)
-		
+
+		--FOLDING PARTS: isFolded/isUnfolded states
+		courseplay:setFoldedStates(object);
+
 		-- are there more tippers attached to the current implement?
 		local other_tipper_attached
 		if table.getn(object.attachedImplements) ~= 0 then
@@ -254,6 +262,7 @@ function courseplay:update_tools(self, tractor_or_implement)
 	for k,v in pairs(self.components) do
 		self.cpTrafficCollisionIgnoreList[v.node] = true;
 	end;
+
 
 	--MINHUDPAGE for attached combines
 	self.cp.attachedCombineIdx = nil;
@@ -505,7 +514,40 @@ function courseplay:setMarkers(self, object)
 	end
 	courseplay:debug(nameNum(self) .. " self.turnEndBackDistance: "..tostring(self.turnEndBackDistance).."  self.aiToolExtraTargetMoveBack: "..tostring(self.aiToolExtraTargetMoveBack),6); 
 	courseplay:debug(nameNum(self) .. " setMarkers(): self.cp.backMarkerOffset: "..tostring(self.cp.backMarkerOffset).."  self.cp.aiFrontMarker: "..tostring(self.cp.aiFrontMarker), 6);
-end
+end;
+
+function courseplay:setFoldedStates(object)
+	if courseplay:isFoldable(object) then
+		courseplay:debug(string.rep('-', 50) .. '\n' .. nameNum(object) .. ': setFoldedStates()', 17);
+
+		object.cp.realUnfoldDirection = object.turnOnFoldDirection;
+		if object.cp.foldingPartsStartMoveDirection and object.cp.foldingPartsStartMoveDirection ~= 0 then
+			object.cp.realUnfoldDirection = object.turnOnFoldDirection * object.cp.foldingPartsStartMoveDirection;
+		end;
+		if object.cp.isMRpoettingerEurocat315H then --TODO: somehow move to specialTools
+			object.cp.realUnfoldDirection = -1;
+		end;
+		courseplay:debug(string.format('startAnimTime=%s, turnOnFoldDirection=%s, foldingPartsStartMoveDirection=%s --> realUnfoldDirection=%s', tostring(object.startAnimTime), tostring(object.turnOnFoldDirection), tostring(object.cp.foldingPartsStartMoveDirection), tostring(object.cp.realUnfoldDirection)), 17);
+
+		for i,foldingPart in pairs(object.foldingParts) do
+			foldingPart.isFoldedAnimTime = 0;
+			foldingPart.isFoldedAnimTimeNormal = 0;
+			if object.cp.realUnfoldDirection < 0 then
+				foldingPart.isFoldedAnimTime = foldingPart.animDuration;
+				foldingPart.isFoldedAnimTimeNormal = 1;
+			end;
+
+			foldingPart.isUnfoldedAnimTime = foldingPart.animDuration;
+			foldingPart.isUnfoldedAnimTimeNormal = 1;
+			if object.cp.realUnfoldDirection < 0 then
+				foldingPart.isUnfoldedAnimTime = 0;
+				foldingPart.isUnfoldedAnimTimeNormal = 0;
+			end;
+			courseplay:debug(string.format('\tfoldingPart %d: isFoldedAnimTime=%s (normal: %d), isUnfoldedAnimTime=%s (normal: %d)', i, tostring(foldingPart.isFoldedAnimTime), foldingPart.isFoldedAnimTimeNormal, tostring(foldingPart.isUnfoldedAnimTime), foldingPart.isUnfoldedAnimTimeNormal), 17);
+		end;
+		courseplay:debug(string.rep('-', 50), 17);
+	end;
+end;
 
 -- loads all tippers
 function courseplay:load_tippers(self)
