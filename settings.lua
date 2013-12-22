@@ -399,7 +399,7 @@ function courseplay:changeToolOffsetX(vehicle, changeBy, force, noDraw)
 	end;
 	vehicle.cp.totalOffsetX = vehicle.cp.laneOffset + vehicle.cp.toolOffsetX;
 
-	noDraw = noDraw or false;
+	if noDraw == nil then noDraw = false; end;
 	if not noDraw and vehicle.cp.mode ~= 3 and vehicle.cp.mode ~= 7 then
 		courseplay:calculateWorkWidthDisplayPoints(vehicle);
 		vehicle.cp.workWidthChanged = vehicle.timer + 2000;
@@ -539,7 +539,7 @@ function courseplay:switchDriverCopy(self, change_by)
 
 	if drivers ~= nil then
 		local selectedDriverNumber = self.cp.selectedDriverNumber + change_by;
-		self.cp.selectedDriverNumber = Utils.clamp(selectedDriverNumber, 0, table.getn(drivers));
+		self.cp.selectedDriverNumber = Utils.clamp(selectedDriverNumber, 0, #(drivers));
 
 		if self.cp.selectedDriverNumber == 0 then
 			self.cp.copyCourseFromDriver = nil;
@@ -557,10 +557,9 @@ end;
 
 function courseplay:findDrivers(self)
 	local foundDrivers = {}; -- resetting all drivers
-	local all_vehicles = g_currentMission.vehicles -- go through all vehicles that have a course -- TODO: only check courseplayers
-	for k, vehicle in pairs(all_vehicles) do
+	for k, vehicle in pairs(g_currentMission.steerables) do
 		if vehicle.Waypoints ~= nil then
-			if vehicle.rootNode ~= self.rootNode and table.getn(vehicle.Waypoints) > 0 then
+			if vehicle.rootNode ~= self.rootNode and #(vehicle.Waypoints) > 0 then
 				table.insert(foundDrivers, vehicle);
 			end;
 		end;

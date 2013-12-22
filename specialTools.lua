@@ -1180,6 +1180,7 @@ function courseplay:askForSpecialSettings(self,object)
 	end
 	if offsetChanged then
 		self.cp.tempToolOffsetX = tempOffset
+		courseplay:changeToolOffsetX(self, 0, false, true);
 	end
 end
 

@@ -213,32 +213,30 @@ function courseplay:drive(self, dt)
 		end;
 	end;
 	if offsetValid then
-		--courseplay:debug(string.format("old WP: %d x %d ", cx, cz ), 2)
-		-- direction vector
-		local vcx, vcz
+		--courseplay:debug(string.format('%s: waypoint before offset: cx=%.2f, cz=%.2f', nameNum(self), cx, cz), 2);
+		local vcx, vcz;
 		if self.recordnumber == 1 then
-			vcx = self.Waypoints[2].cx - cx
-			vcz = self.Waypoints[2].cz - cz
+			vcx = self.Waypoints[2].cx - cx;
+			vcz = self.Waypoints[2].cz - cz;
 		else
 			if self.Waypoints[self.cp.last_recordnumber].rev then
-				vcx = self.Waypoints[self.cp.last_recordnumber].cx - cx
-				vcz = self.Waypoints[self.cp.last_recordnumber].cz - cz
+				vcx = self.Waypoints[self.cp.last_recordnumber].cx - cx;
+				vcz = self.Waypoints[self.cp.last_recordnumber].cz - cz;
 			else
-				vcx = cx - self.Waypoints[self.cp.last_recordnumber].cx
-				vcz = cz - self.Waypoints[self.cp.last_recordnumber].cz
-			end
-		end
-		-- length of vector
-		local vl = Utils.vector2Length(vcx, vcz)
-		-- if not too short: normalize and add offsets
-		if vl ~= nil and vl > 0.01 then
-			vcx = vcx / vl
-			vcz = vcz / vl
-			cx = cx - vcz * self.cp.totalOffsetX + vcx * self.cp.toolOffsetZ
-			cz = cz + vcx * self.cp.totalOffsetX + vcz * self.cp.toolOffsetZ
-		end
-		--courseplay:debug(string.format("new WP: %d x %d (angle) %d ", cx, cz, angle ), 2)
-	end
+				vcx = cx - self.Waypoints[self.cp.last_recordnumber].cx;
+				vcz = cz - self.Waypoints[self.cp.last_recordnumber].cz;
+			end;
+		end;
+
+		local vl = Utils.vector2Length(vcx, vcz); -- length of vector
+		if vl ~= nil and vl > 0.01 then -- if not too short: normalize and add offsets
+			vcx = vcx / vl;
+			vcz = vcz / vl;
+			cx = cx - vcz * self.cp.totalOffsetX + vcx * self.cp.toolOffsetZ;
+			cz = cz + vcx * self.cp.totalOffsetX + vcz * self.cp.toolOffsetZ;
+		end;
+		--courseplay:debug(string.format('%s: waypoint after offset [%.1fm]: cx=%.2f, cz=%.2f', nameNum(self), self.cp.totalOffsetX, cx, cz), 2);
+	end;
 
 	if courseplay.debugChannels[12] and self.cp.isTurning == nil then
 		drawDebugPoint(cx, cty+3, cz, 0, 1 , 1, 1);
