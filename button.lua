@@ -210,6 +210,8 @@ function courseplay:renderButton(self, button)
 		elseif pg == 4 then
 			if fn == "switch_combine" and prm < 0 then
 				button.show = self.selected_combine_number > 0;
+			elseif fn == 'removeActiveCombineFromTractor' then
+				button.show = self.cp.activeCombine ~= nil;
 			end;
 
 		--Page 5

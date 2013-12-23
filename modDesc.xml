@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="13">
-	<version>3.41.0339</version>
+	<version>3.41.0340</version>
 	<author>Jakob Tischler / Thomas Gärtner / Horoman</author>
 	<title>
 		<de>Courseplay</de>
@@ -1652,6 +1652,14 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<es>Cubiertas</es>
 			<it>Coperturas</it>
 			<cz>Kryty</cz>
+		</text>
+		<text name="COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR">
+			<en>Remove combine assignment</en>
+			<de>Drescher-Zuordnung entfernen</de>
+			<fr>Remove combine assignment</fr> <!-- !!! -->
+			<es>Remove combine assignment</es> <!-- !!! -->
+			<it>Remove combine assignment</it> <!-- !!! -->
+			<cz>Remove combine assignment</cz> <!-- !!! -->
 		</text>
 
 

@@ -515,13 +515,13 @@ function courseplay:toggleOpenHudWithMouse(vehicle)
 	vehicle.cp.hud.openWithMouse = not vehicle.cp.hud.openWithMouse;
 end;
 
-function courseplay:switch_search_combine(self)
-	self.search_combine = not self.search_combine
-end
-
 function courseplay:toggleRealisticDriving(vehicle)
 	vehicle.cp.realisticDriving = not vehicle.cp.realisticDriving;
 end;
+
+function courseplay:switch_search_combine(self)
+	self.search_combine = not self.search_combine
+end
 
 function courseplay:switch_combine(vehicle, change_by)
 	local combines = courseplay:find_combines(vehicle);
@@ -532,11 +532,16 @@ function courseplay:switch_combine(vehicle, change_by)
 	else
 		vehicle.cp.savedCombine = combines[vehicle.selected_combine_number];
 	end;
+
+	courseplay:removeActiveCombineFromTractor(vehicle);
+end;
+
+function courseplay:removeActiveCombineFromTractor(vehicle)
 	if vehicle.cp.activeCombine ~= nil then
-     courseplay:unregister_at_combine(vehicle, vehicle.cp.activeCombine)
-	 vehicle.cp.lastActiveCombine = nil;
-    end
-end
+		courseplay:unregister_at_combine(vehicle, vehicle.cp.activeCombine);
+	end;
+	vehicle.cp.lastActiveCombine = nil;
+end;
 
 function courseplay:switchDriverCopy(self, change_by)
 	local drivers = courseplay:findDrivers(self);

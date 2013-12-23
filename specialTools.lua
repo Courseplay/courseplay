@@ -1064,8 +1064,8 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 	return false, allowedToDrive;
 end
 function courseplay:askForSpecialSettings(self,object)
-	local offsetChanged = false
-	local tempOffset = self.cp.toolOffsetX
+	local automaticToolOffsetX;
+
 	if self.cp.isWeidemann4270CX100T  then
 		local frontPart_vis = getParent(self.movingTools[1].node)
 		local frontPart = getParent(frontPart_vis)
@@ -1130,8 +1130,7 @@ function courseplay:askForSpecialSettings(self,object)
 		self.cp.aiTurnNoBackward = true
 		self.cp.noStopOnEdge = true
 		self.cp.noStopOnTurn = true
-		self.cp.toolOffsetX = -2.4
-		offsetChanged = true
+		automaticToolOffsetX = -2.4
 		object.cp.inversedFoldDirection = true
 
 	elseif object.cp.isKotteGARANTProfiVQ32000 then
@@ -1145,43 +1144,38 @@ function courseplay:askForSpecialSettings(self,object)
 		object.cp.tankerId = 0
 	elseif object.cp.isGrimmeSE7555 then
 		self.cp.aiTurnNoBackward = true
-		self.cp.toolOffsetX = -2.1
-		offsetChanged = true
+		automaticToolOffsetX = -2.1
 		print("Grimme SE 75-55 workwidth: 1 m");
 	elseif object.cp.isGrimmeRootster604 then
 		self.cp.aiTurnNoBackward = true
-		self.cp.toolOffsetX = -0.9
-		offsetChanged = true
+		automaticToolOffsetX = -0.9
 		print("Grimme Rootster 604 workwidth: 2.8 m");
 	elseif object.cp.isPoettingerMex6 then
 		self.cp.aiTurnNoBackward = true
-		self.cp.toolOffsetX = -2.5
-		offsetChanged = true
+		automaticToolOffsetX = -2.5
 		print("Pöttinger Mex 6 workwidth: 2.0 m");
 	elseif object.cp.isAbbeyAP900 then
 		self.cp.aiTurnNoBackward = true
-		self.cp.toolOffsetX = -4.1
-		offsetChanged = true
+		automaticToolOffsetX = -4.1
 		print("Abbey AP900 workwidth: 5.8 m");
 	elseif object.cp.isJF1060 then
 		self.cp.aiTurnNoBackward = true
-		self.cp.toolOffsetX = -2.5
-		offsetChanged = true
+		automaticToolOffsetX = -2.5
 	elseif object.cp.isClaasConspeedSFM or object.cp.isCaseIH3162Cutter then
 		object.cp.inversedFoldDirection = true;
 	elseif object.cp.isUrsusZ586 then
 		self.cp.aiTurnNoBackward = true
 		self.cp.noStopOnEdge = true
 		self.cp.noStopOnTurn = true
-		self.cp.toolOffsetX = -2.5
-		offsetChanged = true
+		automaticToolOffsetX = -2.5;
 	elseif object.cp.isSilageShield then
 		self.cp.hasShield = true
 	end
-	if offsetChanged then
-		self.cp.tempToolOffsetX = tempOffset
-		courseplay:changeToolOffsetX(self, 0, false, true);
-	end
+
+	if automaticToolOffsetX ~= nil then
+		self.cp.tempToolOffsetX = self.cp.toolOffsetX;
+		courseplay:changeToolOffsetX(self, nil, automaticToolOffsetX, true);
+	end;
 end
 
 function courseplay:handleSpecialSprayer(self, activeTool, fill_level, driveOn, allowedToDrive, lx, lz, dt, pumpDir)

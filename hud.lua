@@ -393,6 +393,10 @@ function courseplay.hud:loadPage(vehicle, page)
 
 		vehicle.cp.hud.content.pages[4][3][2].text = vehicle.cp.HUD4hasActiveCombine and vehicle.cp.HUD4combineName or courseplay:loc("CPNone");
 
+		if vehicle.cp.activeCombine ~= nil then
+			vehicle.cp.hud.content.pages[4][4][1].text = courseplay:loc('COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR');
+		end;
+
 
 	--PAGE 5: SPEEDS
 	elseif page == 5 then
