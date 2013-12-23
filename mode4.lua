@@ -127,6 +127,18 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fill_level)
 					end; --END if not isFolding
 				end
 			end;
+
+		--TRAFFIC: TURN OFF
+		elseif workArea and self.cp.abortWork == nil and self.cp.inTraffic then
+			workSpeed = 0;
+			specialTool, allowedToDrive = courseplay:handleSpecialTools(self, workTool, true, true, false, allowedToDrive, nil, nil, ridgeMarker);
+			if not specialTool then
+				if workTool.setIsTurnedOn ~= nil and workTool.isTurnedOn then
+					workTool:setIsTurnedOn(false, false);
+				end;
+			end;
+
+		--TURN OFF AND FOLD
 		elseif self.cp.turnStage == 0 then
 			workSpeed = 0;
 			--turn off

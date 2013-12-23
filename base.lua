@@ -228,8 +228,6 @@ function courseplay:load(xmlFile)
 	self.cp.steeringAngle = Utils.getNoNil(getXMLFloat(xmlFile, "vehicle.wheels.wheel(1)" .. "#rotMax"), 30)
 	self.cp.tempCollis = {}
 	self.CPnumCollidingVehicles = 0;
-	--	self.numToolsCollidingVehicles = {};
-	--	self.trafficCollisionIgnoreList = {};
 	self.cpTrafficCollisionIgnoreList = {};
 	self.cp.TrafficBrake = false
 	self.cp.inTraffic = false
@@ -239,9 +237,6 @@ function courseplay:load(xmlFile)
 	self.findBlockingObjectCallbackLeft = courseplay.findBlockingObjectCallbackLeft
 	self.findBlockingObjectCallbackRight = courseplay.findBlockingObjectCallbackRight
 	
-	if self.numCollidingVehicles == nil then
-		self.numCollidingVehicles = {};
-	end
 	if self.trafficCollisionIgnoreList == nil then
 		self.trafficCollisionIgnoreList = {}
 	end
@@ -265,7 +260,6 @@ function courseplay:load(xmlFile)
 				setTranslation(self.cp.trafficCollisionTriggers[i], 0,0,5);
 			end;
 			addTrigger(self.cp.trafficCollisionTriggers[i], 'cpOnTrafficCollisionTrigger', self);
-			self.numCollidingVehicles[self.cp.trafficCollisionTriggers[i]] = 0;
 			self.cp.trafficCollisionTriggerToTriggerIndex[self.cp.trafficCollisionTriggers[i]] = i;
 
 			courseplay.trafficCollisionIgnoreList[self.cp.trafficCollisionTriggers[i]] = true; --add all traffic collision triggers to global ignore list

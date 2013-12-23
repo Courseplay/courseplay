@@ -366,15 +366,16 @@ function courseplay:unload_combine(self, dt)
 			end
 		end
 
-		--if not self.cp.calculatedCourseToCombine then
-		--		if courseplay:calculate_course_to(self, currentX, currentZ) then
-		--			self.cp.modeState = 5
-		--			self.cp.shortestDistToWp = nil
-		--			-- modeState when waypoint is reached
-		--			self.cp.mode2nextState = 2
-		--		end
-
-		--	end
+		--[[
+		--PATHFINDING
+		if self.cp.realisticDriving and not self.cp.calculatedCourseToCombine then
+			if courseplay:calculate_course_to(self, currentX, currentZ) then
+				self.cp.modeState = 5;
+				self.cp.shortestDistToWp = nil;
+				self.cp.mode2nextState = 2; -- modeState when waypoint is reached
+			end;
+		end;
+		--]]
 
 		local lx, ly, lz = worldToLocal(self.cp.DirectionNode, currentX, currentY, currentZ)
 		dod = Utils.vector2Length(lx, lz)
