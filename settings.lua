@@ -532,6 +532,10 @@ function courseplay:switch_combine(vehicle, change_by)
 	else
 		vehicle.cp.savedCombine = combines[vehicle.selected_combine_number];
 	end;
+	if vehicle.cp.activeCombine ~= nil then
+     courseplay:unregister_at_combine(vehicle, vehicle.cp.activeCombine)
+	 vehicle.cp.lastActiveCombine = nil;
+    end
 end
 
 function courseplay:switchDriverCopy(self, change_by)

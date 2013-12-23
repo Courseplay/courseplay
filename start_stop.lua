@@ -372,7 +372,7 @@ function courseplay:stop(self)
 	self.cp.hasSowingMachine = false;
 	self.cp.hasPlough = false;
 	if self.cp.tempToolOffsetX ~= nil then
-		self.cp.toolOffsetX = self.cp.tempToolOffsetX 
+		courseplay:changeToolOffsetX(self, nil, self.cp.tempToolOffsetX, true);
 		self.cp.tempToolOffsetX = nil
 	end;
 

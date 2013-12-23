@@ -603,10 +603,10 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 				workTool.crabSteerMode = workTool.cp.crabSteerMode
 				if ridgeMarker == 1 then
 					workTool.HGdirection = 1;
-					self.cp.toolOffsetX = 3
+					courseplay:changeToolOffsetX(self, nil, 3, true);
 				elseif ridgeMarker == 2 then
 					workTool.HGdirection = -1;
-					self.cp.toolOffsetX = -3
+					courseplay:changeToolOffsetX(self, nil, -3, true);
 				end
 			end
 		end

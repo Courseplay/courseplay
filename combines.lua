@@ -230,7 +230,9 @@ function courseplay:register_at_combine(self, combine)
 	table.insert(combine.courseplayers, self)
 	self.cp.positionWithCombine = table.getn(combine.courseplayers)
 	self.cp.activeCombine = combine
-	courseplay:askForSpecialSettings(combine, combine)
+	self.cp.reachableCombines = {}
+	
+	courseplay:askForSpecialSettings(combine:getRootAttacherVehicle(), combine)
 
 	--OFFSET
 	if combine.cp == nil then
@@ -288,7 +290,7 @@ function courseplay:unregister_at_combine(self, combine)
 			combine.cp.turnStage = 0
 		end
 	end
-
+	
 	return true
 end
 
