@@ -240,6 +240,11 @@ function courseplay:load(xmlFile)
 	if self.trafficCollisionIgnoreList == nil then
 		self.trafficCollisionIgnoreList = {}
 	end
+	 if self.numCollidingVehicles == nil then
+		self.numCollidingVehicles = {};
+	end
+ 
+
 
 	self.cp.numTrafficCollisionTriggers = 0;
 	self.cp.trafficCollisionTriggers = {};
