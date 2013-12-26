@@ -43,6 +43,30 @@ function courseplay:start(self)
 	self.cp.calculatedCourseToCombine = false
 
 	AITractor.addCollisionTrigger(self, self);
+		
+
+	
+	
+	
+	if self.attachedCutters ~= nil then
+		for cutter, implement in pairs(self.attachedCutters) do
+			--remove cutter atTrafficCollisionTrigger in case of having changed or removed it while not in CP
+			if self.cp.trafficCollisionTriggers[0] ~= nil then
+				removeTrigger(self.cp.trafficCollisionTriggers[0])
+				self.cp.trafficCollisionTriggerToTriggerIndex[self.cp.trafficCollisionTriggers[0]] = nil
+			end	
+			courseplay:debug(string.format("cutter.aiTrafficCollisionTrigger:%s ,adding to self.cp.trafficCollisionTriggers[0]",tostring(cutter.aiTrafficCollisionTrigger)),3)
+			--set cutter aiTrafficCollisionTrigger to cp.aiTrafficCollisionTrigger's list
+			if cutter.aiTrafficCollisionTrigger ~= nil then
+				self.cp.trafficCollisionTriggers[0] = clone(cutter.aiTrafficCollisionTrigger, true);
+				addTrigger(self.cp.trafficCollisionTriggers[0], 'cpOnTrafficCollisionTrigger', self);
+				self.cp.trafficCollisionTriggerToTriggerIndex[self.cp.trafficCollisionTriggers[0]] = 0
+				self.cp.collidingObjects[0] = {};
+				--self.cp.numCollidingObjects[0] = 0;
+			end
+		end
+	end	
+	
 
 	self.orig_maxnumber = self.maxnumber
 	-- set default modeState if not in mode 2 or 3
@@ -386,7 +410,6 @@ function courseplay:stop(self)
 			end;
 		end;
 	end
-
 
 	--reset EifokLiquidManure
 	courseplay.thirdParty.EifokLiquidManure.resetData(self);
