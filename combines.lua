@@ -42,7 +42,7 @@ function courseplay:combine_allows_tractor(self, combine)
 				return true
 			end
 			-- is the pipe on the correct side?
-			if combine.turnStage == 1 or combine.turnStage == 2 or combine.cp.turnStage ~= 0 or combine.acTurnStage ~=0 then
+			if combine.turnStage == 1 or combine.turnStage == 2 or (combine.cp.turnStage ~= nil and combine.cp.turnStage ~= 0) or (combine.acTurnStage~= nil and combine.acTurnStage ~=0) then
 				courseplay:debug(nameNum(self)..": combine is turning -> refuse tractor",4)
 				courseplay:debug(string.format("%s:		combine.turnStage = %d, combine.cp.turnStage = %d, combine.acTurnStage = %s ",nameNum(self),combine.turnStage,combine.cp.turnStage,tostring(combine.acTurnStage)),4)
 				return false
