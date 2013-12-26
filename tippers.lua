@@ -293,6 +293,9 @@ function courseplay:update_tools(self, tractor_or_implement)
 					table.insert(self.tippers, object);
 					courseplay:setMarkers(self, object)
 					self.cpTrafficCollisionIgnoreList[object.rootNode] = true;
+					for k,v in pairs(object.components) do
+						self.cpTrafficCollisionIgnoreList[v.node] = true;
+					end;
 				end;
 			end;
 		end;

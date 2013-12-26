@@ -44,10 +44,6 @@ function courseplay:start(self)
 
 	AITractor.addCollisionTrigger(self, self);
 		
-
-	
-	
-	
 	if self.attachedCutters ~= nil then
 		for cutter, implement in pairs(self.attachedCutters) do
 			--remove cutter atTrafficCollisionTrigger in case of having changed or removed it while not in CP
@@ -55,14 +51,21 @@ function courseplay:start(self)
 				removeTrigger(self.cp.trafficCollisionTriggers[0])
 				self.cp.trafficCollisionTriggerToTriggerIndex[self.cp.trafficCollisionTriggers[0]] = nil
 			end	
-			courseplay:debug(string.format("cutter.aiTrafficCollisionTrigger:%s ,adding to self.cp.trafficCollisionTriggers[0]",tostring(cutter.aiTrafficCollisionTrigger)),3)
 			--set cutter aiTrafficCollisionTrigger to cp.aiTrafficCollisionTrigger's list
 			if cutter.aiTrafficCollisionTrigger ~= nil then
-				self.cp.trafficCollisionTriggers[0] = clone(cutter.aiTrafficCollisionTrigger, true);
+				if cutter.cpTrafficCollisionTrigger == nil then
+					cutter.cpTrafficCollisionTrigger = clone(cutter.aiTrafficCollisionTrigger, true);
+					self.cp.trafficCollisionTriggers[0] = cutter.cpTrafficCollisionTrigger
+				else
+					self.cp.trafficCollisionTriggers[0] = cutter.cpTrafficCollisionTrigger
+				end
 				addTrigger(self.cp.trafficCollisionTriggers[0], 'cpOnTrafficCollisionTrigger', self);
 				self.cp.trafficCollisionTriggerToTriggerIndex[self.cp.trafficCollisionTriggers[0]] = 0
 				self.cp.collidingObjects[0] = {};
+				courseplay:debug(string.format("%s: Start/Stop: cutter.aiTrafficCollisionTrigger present -> adding %s to self.cp.trafficCollisionTriggers[0]",nameNum(self),tostring(self.cp.trafficCollisionTriggers[0])),3)
 				--self.cp.numCollidingObjects[0] = 0;
+			else
+				courseplay:debug(string.format('## Courseplay: %s: aiTrafficCollisionTrigger in cutter missing. Traffic collision prevention will not work!', nameNum(self)),3);
 			end
 		end
 	end	

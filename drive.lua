@@ -970,7 +970,7 @@ function courseplay:checkTraffic(self, display_warnings, allowedToDrive)
 			if z1 > -0.9 then -- tractor in front of vehicle face2face or beside < 4 o'clock
 				ahead = true
 			end
-			if math.abs(tx) > 5 and collisionVehicle.rootNode ~= nil then
+			if math.abs(tx) > 5 and collisionVehicle.rootNode ~= nil and not self.cp.collidingObjects.all[self.cp.collidingVehicleId] then
 				courseplay:debug(nameNum(self)..": checkTraffic:	deleteCollisionVehicle",3)
 				courseplay:deleteCollisionVehicle(self)
 				return allowedToDrive
@@ -1237,7 +1237,7 @@ function courseplay:regulateTrafficSpeed(self,refSpeed,allowedToDrive)
 		end
 		local x, y, z = getWorldTranslation(self.cp.collidingVehicleId)
 		local x1, y1, z1 = worldToLocal(self.rootNode, x, y, z)
-		if z1 < 0 or math.abs(x1) > 5 then -- vehicle behind tractor
+		if z1 < 0 or math.abs(x1) > 5 and not self.cp.collidingObjects.all[self.cp.collidingVehicleId] then -- vehicle behind tractor
 			vehicleBehind = true
 		end
 		local distance = 0
