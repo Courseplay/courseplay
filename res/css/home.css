@@ -1,12 +1,12 @@
-section { margin:0 auto; text-align:center; }
+section { border-bottom:1px solid #E0E0E0; border-top:1px solid white; margin:0 auto; text-align:center; }
 section .col  { display:inline-block; margin:0 2em; text-align:center; width:170px; }
+section.firstSection { border-top:none; }
+section.lastSection { border-bottom:none; }
 .imgLink { display:block; }
 
-#language { border-bottom:1px solid #E0E0E0; }
 #language p { font-style:italic; margin:0 0 2em; text-align:center; }
 #language .lang div { text-align:center; }
 
-#downloads { border-top:1px solid white; }
 #downloads a { text-align:center; }
 #downloads .col .iconLink {
 	color:#323232;
