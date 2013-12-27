@@ -177,6 +177,8 @@ function courseplay:load(xmlFile)
 				self.aiTrafficCollisionTrigger = triggerObject;
 			end;
 		end;
+	else
+		courseplay.trafficCollisionIgnoreList[self.aiTrafficCollisionTrigger] = true; --add AI traffic collision trigger to global ignore list
 	end;
 	if self.aiTrafficCollisionTrigger == nil and getNumOfChildren(self.rootNode) > 0 then
 		if getChild(self.rootNode, "trafficCollisionTrigger") ~= 0 then
@@ -258,16 +260,16 @@ function courseplay:load(xmlFile)
 	if self.aiTrafficCollisionTrigger ~= nil then
 		self.cp.numTrafficCollisionTriggers = 4;
 		for i=1,self.cp.numTrafficCollisionTriggers do
-			self.cp.trafficCollisionTriggers[i] = clone(self.aiTrafficCollisionTrigger, true);
+			local newTrigger = clone(self.aiTrafficCollisionTrigger, true);
+			self.cp.trafficCollisionTriggers[i] = newTrigger
 			if i > 1 then
-				unlink(self.cp.trafficCollisionTriggers[i]);
-				link(self.cp.trafficCollisionTriggers[i-1], self.cp.trafficCollisionTriggers[i]);
-				setTranslation(self.cp.trafficCollisionTriggers[i], 0,0,5);
+				unlink(newTrigger);
+				link(self.cp.trafficCollisionTriggers[i-1], newTrigger);
+				setTranslation(newTrigger, 0,0,5);
 			end;
-			addTrigger(self.cp.trafficCollisionTriggers[i], 'cpOnTrafficCollisionTrigger', self);
-			self.cp.trafficCollisionTriggerToTriggerIndex[self.cp.trafficCollisionTriggers[i]] = i;
-
-			courseplay.trafficCollisionIgnoreList[self.cp.trafficCollisionTriggers[i]] = true; --add all traffic collision triggers to global ignore list
+			addTrigger(newTrigger, 'cpOnTrafficCollisionTrigger', self);
+			self.cp.trafficCollisionTriggerToTriggerIndex[newTrigger] = i;
+			courseplay.trafficCollisionIgnoreList[newTrigger] = true; --add all traffic collision triggers to global ignore list
 			self.cp.collidingObjects[i] = {};
 			self.cp.numCollidingObjects[i] = 0;
 		end;

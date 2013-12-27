@@ -75,12 +75,17 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 				--checking CollisionIgnoreList
 				if onEnter and vehicle ~= nil and OtherIdisCloser then
 					courseplay:debug(string.format("%s: 	onEnter, checking CollisionIgnoreList", nameNum(self)), 3);
-					for a,b in pairs (self.cpTrafficCollisionIgnoreList) do
-						courseplay:debug(string.format("%s:		%s vs \"%s\"", nameNum(self), tostring(g_currentMission.nodeToVehicle[a].name), tostring(vehicle.name)), 3);
-						if g_currentMission.nodeToVehicle[a].id == vehicle.id then
-							courseplay:debug(string.format("%s:		\"%s\" is on list", nameNum(self), tostring(vehicle.name)), 3);
+					if courseplay.trafficCollisionIgnoreList[otherId] then
+							courseplay:debug(string.format("%s:		%q is on global list", nameNum(self), tostring(vehicle.name)), 3);
 							vehicleOnList = true
-							break
+					else
+						for a,b in pairs (self.cpTrafficCollisionIgnoreList) do
+							courseplay:debug(string.format("%s:		%s vs %q", nameNum(self), tostring(g_currentMission.nodeToVehicle[a].name), tostring(vehicle.name)), 3);
+							if g_currentMission.nodeToVehicle[a].id == vehicle.id then
+								courseplay:debug(string.format("%s:		%q is on local list", nameNum(self), tostring(vehicle.name)), 3);
+								vehicleOnList = true
+								break
+							end
 						end
 					end
 				end
