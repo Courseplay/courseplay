@@ -416,6 +416,18 @@ function courseplay:updateAllTriggers()
 					damageModTriggersCount = damageModTriggersCount + 1;
 					allNonUpdateablesCount = allNonUpdateablesCount + 1;
 					allCount = allCount + 1;
+
+				elseif Utils.endsWith(xml, "mischstation.xml") then
+					for i,triggerData in pairs(trigger.TipTriggers) do
+						local triggerId = triggerData.triggerId;
+						if triggerId then
+							triggerData.isMixingStationTrigger = true;
+							courseplay.triggers.tipTriggers[triggerId] = triggerData;
+							courseplay.triggers.all[triggerId] = triggerData;
+							tipTriggersCount = tipTriggersCount + 1;
+							allCount = allCount + 1;
+						end;
+					end;
 				end;
 			end;
 		end

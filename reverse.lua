@@ -26,7 +26,8 @@ function courseplay:goReverse(self,lx,lz)
 		local tipperFillLevel, tipperCapacity = self:getAttachedTrailersFillLevelAndCapacity();
 		local tcx,tcy,tcz =0,0,0
 		local index = self.recordnumber +1
-		if debugActive then drawDebugPoint(xFrontNode,yFrontNode+3,zFrontNode, 1, 0 , 0, 1)
+		if debugActive then 
+			drawDebugPoint(xFrontNode,yFrontNode+3,zFrontNode, 1, 0 , 0, 1)
 			if not self.cp.checkReverseValdityPrinted then
 				local checkValdity = false
 				for i=index, self.maxnumber do
@@ -54,12 +55,12 @@ function courseplay:goReverse(self,lx,lz)
 				tcz = self.Waypoints[i].cz
 			else
 				tcx , tcy, tcz = localToWorld(node,0,0,-10*inverse)
-				self.recordnumber = i -1
 			end
 			local distance = courseplay:distance(xTipper,zTipper, tcx ,tcz)	
 			if distance > nodeDistance then
 					local _,_,z = worldToLocal(node, tcx,yTipper,tcz)
 					if z*inverse < 0 then
+						self.recordnumber = i -1
 						break
 					end
 			end
@@ -143,12 +144,12 @@ function courseplay:goReverse(self,lx,lz)
 		end
 		local nx, ny, nz = localDirectionToWorld(node, lxTipper, 0, lzTipper)
 		courseplay:debug(nameNum(self) .. ": call backward raycast", 1);
-		local num = raycastAll(xTipper,yTipper,zTipper, nx, ny, nz, "findTipTriggerCallback", 10, self)
+		local num = raycastAll(xTipper,yTipper+1,zTipper, nx, ny, nz, "findTipTriggerCallback", 10, self)
 		if num > 0 then 
 			courseplay:debug(string.format("%s: drive(%d): backward raycast end", nameNum(self), debug.getinfo(1).currentline), 1);
 		end;
 		if courseplay.debugChannels[1] then
-			drawDebugLine(xTipper,yTipper,zTipper, 1, 1, 0, xTipper+(nx*10), yTipper+(ny*10), zTipper+(nz*10), 1, 1, 0);
+			drawDebugLine(xTipper,yTipper+1,zTipper, 1, 1, 0, xTipper+(nx*10), yTipper+(ny*10), zTipper+(nz*10), 1, 1, 0);
 		end;
 		courseplay:showDirection(self.rootNode,lx,lz)
 		if (self.cp.mode == 1 or self.cp.mode == 2 or self.cp.mode == 6) and self.cp.tipperFillLevel == 0 then
