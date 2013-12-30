@@ -132,7 +132,7 @@ function courseplay:renderButton(self, button)
 				button.canScrollUp = self.cp.mode == 4 or self.cp.mode == 6;
 				button.canScrollDown = button.canScrollUp;
 			elseif fn == "changeToolOffsetX" or fn == "changeToolOffsetZ" then
-				button.canScrollUp = self.cp.mode == 3 or self.cp.mode == 4 or self.cp.mode == 6 or self.cp.mode == 7;
+				button.canScrollUp = self.cp.mode == 3 or self.cp.mode == 4 or self.cp.mode == 6 or self.cp.mode == 7 or self.cp.mode == 8;
 				button.canScrollDown = button.canScrollUp;
 			end;
 

@@ -208,6 +208,11 @@ function courseplay:drive(self, dt)
 				courseplay:changeLaneOffset(self, nil, 0);
 			end;
 			offsetValid = self.recordnumber > 3 and self.recordnumber > self.cp.waitPoints[1] - 6 and self.recordnumber <= self.cp.waitPoints[1] + 3 and not self.cp.mode7GoBackBeforeUnloading;
+		elseif self.cp.mode == 8 then
+			if self.cp.laneOffset ~= 0 then
+				courseplay:changeLaneOffset(self, nil, 0);
+			end;
+			offsetValid = self.recordnumber > self.cp.waitPoints[1] - 6 and self.recordnumber <= self.cp.waitPoints[1] + 3;
 		else 
 			offsetValid = false;
 		end;
