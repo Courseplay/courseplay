@@ -379,15 +379,15 @@ end
 
 function courseplay:change_tipper_offset(self, change_by)
 	self.cp.tipperOffset = courseplay:round(self.cp.tipperOffset, 1) + change_by
-	if self.cp.tipperOffset > -0.1 and self.cp.tipperOffset < 0.1 then
-		self.cp.tipperOffset = 0.0
-	end
+	if math.abs(vehicle.cp.tipperOffset) < 0.1 then
+		self.cp.tipperOffset = 0;
+	end;
 end
 
 function courseplay:changeLaneOffset(vehicle, changeBy, force)
 	vehicle.cp.laneOffset = force or (vehicle.cp.laneOffset + changeBy);
 	if math.abs(vehicle.cp.laneOffset) < 0.1 then
-		vehicle.cp.laneOffset = 0.0;
+		vehicle.cp.laneOffset = 0;
 	end;
 	vehicle.cp.totalOffsetX = vehicle.cp.laneOffset + vehicle.cp.toolOffsetX;
 end;
@@ -395,7 +395,7 @@ end;
 function courseplay:changeToolOffsetX(vehicle, changeBy, force, noDraw)
 	vehicle.cp.toolOffsetX = force or (vehicle.cp.toolOffsetX + changeBy);
 	if math.abs(vehicle.cp.toolOffsetX) < 0.1 then
-		vehicle.cp.toolOffsetX = 0.0;
+		vehicle.cp.toolOffsetX = 0;
 	end;
 	vehicle.cp.totalOffsetX = vehicle.cp.laneOffset + vehicle.cp.toolOffsetX;
 
@@ -409,7 +409,7 @@ end;
 function courseplay:changeToolOffsetZ(vehicle, changeBy, force)
 	vehicle.cp.toolOffsetZ = force or (vehicle.cp.toolOffsetZ + changeBy);
 	if math.abs(vehicle.cp.toolOffsetZ) < 0.1 then
-		vehicle.cp.toolOffsetZ = 0.0;
+		vehicle.cp.toolOffsetZ = 0;
 	end;
 end;
 
