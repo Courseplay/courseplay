@@ -520,8 +520,9 @@ function courseplay:setMarkers(self, object)
 end;
 
 function courseplay:setFoldedStates(object)
-	if courseplay:isFoldable(object) then
-		courseplay:debug(string.rep('-', 50) .. '\n' .. nameNum(object) .. ': setFoldedStates()', 17);
+	if courseplay:isFoldable(object) and object.turnOnFoldDirection then
+		if courseplay.debugChannels[17] then print(string.rep('-', 50)); end;
+		courseplay:debug(nameNum(object) .. ': setFoldedStates()', 17);
 
 		object.cp.realUnfoldDirection = object.turnOnFoldDirection;
 		if object.cp.foldingPartsStartMoveDirection and object.cp.foldingPartsStartMoveDirection ~= 0 then
@@ -535,20 +536,18 @@ function courseplay:setFoldedStates(object)
 		for i,foldingPart in pairs(object.foldingParts) do
 			foldingPart.isFoldedAnimTime = 0;
 			foldingPart.isFoldedAnimTimeNormal = 0;
+			foldingPart.isUnfoldedAnimTime = foldingPart.animDuration;
+			foldingPart.isUnfoldedAnimTimeNormal = 1;
+
 			if object.cp.realUnfoldDirection < 0 then
 				foldingPart.isFoldedAnimTime = foldingPart.animDuration;
 				foldingPart.isFoldedAnimTimeNormal = 1;
-			end;
-
-			foldingPart.isUnfoldedAnimTime = foldingPart.animDuration;
-			foldingPart.isUnfoldedAnimTimeNormal = 1;
-			if object.cp.realUnfoldDirection < 0 then
 				foldingPart.isUnfoldedAnimTime = 0;
 				foldingPart.isUnfoldedAnimTimeNormal = 0;
 			end;
 			courseplay:debug(string.format('\tfoldingPart %d: isFoldedAnimTime=%s (normal: %d), isUnfoldedAnimTime=%s (normal: %d)', i, tostring(foldingPart.isFoldedAnimTime), foldingPart.isFoldedAnimTimeNormal, tostring(foldingPart.isUnfoldedAnimTime), foldingPart.isUnfoldedAnimTimeNormal), 17);
 		end;
-		courseplay:debug(string.rep('-', 50), 17);
+		if courseplay.debugChannels[17] then print(string.rep('-', 50)); end;
 	end;
 end;
 
