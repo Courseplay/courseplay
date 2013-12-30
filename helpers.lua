@@ -425,14 +425,18 @@ function courseplay.utils.table.search_in_field(tab, field, term)
 	return result
 end
 
-function courseplay.utils.table.copy(tab)
--- note that only tab is copied. if tab contains tables itself again, these tables are not copied but referenced again (the reference is copied).
-	local result = {}
+function courseplay.utils.table.copy(tab, recursive)
+-- note that if 'recursive' is not 'true', only tab is copied. if tab contains tables itself again, these tables are not copied but referenced again (the reference is copied).
+	local result = {};
 	for k,v in pairs(tab) do
-		result[k]=v
-	end
-	return result
-end
+		if recursive and type(v) == 'table' then
+			result[k] = courseplay.utils.table.copy(v, recursive);
+		else
+			result[k] = v;
+		end;
+	end;
+	return result;
+end;
 
 function courseplay.utils.table.append(t1,t2)
 	for k,v in pairs(t2) do
