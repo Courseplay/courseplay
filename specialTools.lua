@@ -41,6 +41,7 @@ function courseplay:setNameVariable(workTool)
 
 	--------------------------------------------------------------
 
+	--Poettinger Eurocat 315H [MoreRealistic]
 	if workTool.typeName == 'moreRealistic.mower_animated' and Utils.endsWith(workTool.configFileName, 'poettingerEurocat315H.xml') then
 		workTool.cp.isMRpoettingerEurocat315H = true;
 
@@ -206,6 +207,10 @@ function courseplay:setNameVariable(workTool)
 	--Claas Quadrant 1200 [Eifok Team]
 	elseif Utils.endsWith(workTool.configFileName, "Claas_Quadrant_1200.xml") then
 		workTool.cp.isClaasQuadrant1200 = true;
+
+	--Krone Swadro 900 [NI-Modding]
+	elseif workTool.rowerFoldingParts and Utils.endsWith(workTool.configFileName, "KroneSwadro900.xml") then
+		workTool.cp.isKroneSwadro900 = true;
 
 	--Claas Liner 4000 [LS-Landtechnik & Fuqsbow-Team]
 	elseif Utils.endsWith(workTool.configFileName, "liner4000.xml") then
@@ -939,6 +944,53 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 	elseif workTool.animatedFrontloader ~= nil then
 		workTool:releaseShovel(unfold);
 
+	--Krone Swadro 900 [NI-Modding]
+	elseif workTool.cp.isKroneSwadro900 then
+		local rfp1,rfp2 = workTool.rowerFoldingParts[1], workTool.rowerFoldingParts[2];
+
+		local _,_,z1 = getRotation(rfp1.mainPart.joint.jointNode);
+		local _,_,z2 = getRotation(rfp2.mainPart.joint.jointNode);
+
+		local isFolded1   = math.abs(z1/(rfp1.mainPart.minRot[3] + 0.00001)) < 0.01;
+		local isFolded2   = math.abs(z2/(rfp2.mainPart.minRot[3] + 0.00001)) < 0.01;
+		local isFolded    = isFolded1 and isFolded2;
+
+		local isUnfolded1 = math.abs(z1/(rfp1.mainPart.maxRot[3] + 0.00001)) > 0.99;
+		local isUnfolded2 = math.abs(z2/(rfp2.mainPart.maxRot[3] + 0.00001)) > 0.99;
+		local isUnfolded  = isUnfolded1 and isUnfolded2;
+
+		local isFolding = not isFolded and not isUnfolded;
+		if isFolding then
+			allowedToDrive = false;
+		end;
+
+		local isLowered = rfp1.mainPart.isDown and rfp2.mainPart.isDown;
+
+		-- print(('%s: [unfold=%s, lower=%s, turnOn=%s]'):format(nameNum(workTool), tostring(unfold), tostring(lower), tostring(turnOn)));
+		-- print(('\t\tisFolded1=%s, isFolded2=%s, isUnfolded1=%s, isUnfolded2=%s, isFolded=%s, isUnfolded=%s, isFolding=%s'):format(tostring(isFolded1), tostring(isFolded2), tostring(isUnfolded1), tostring(isUnfolded2), tostring(isFolded), tostring(isUnfolded), tostring(isFolding)));
+
+		--fold/unfold
+		if (workTool.isTransport == unfold) and not isLowered then
+			workTool:setTransport(not unfold);
+			allowedToDrive = false; --not really needed, as it's only called once
+		end;
+
+		if isUnfolded then
+			--lower/raise
+			for i,part in pairs(workTool.rowerFoldingParts) do
+				if not workTool.isTransport and part.mainPart.isDown ~= lower then
+					workTool:setIsArmDown(i, lower);
+					allowedToDrive = false; --not really needed, as it's only called once
+				end;
+			end;
+
+			--turn on/off
+			if workTool.isTurnedOn ~= turnOn then
+				workTool:setIsTurnedOn(turnOn);
+			end;
+		end;
+
+		return true, allowedToDrive;
 
 	-- Claas liner 4000
 	elseif workTool.cp.isClaasLiner4000 then
