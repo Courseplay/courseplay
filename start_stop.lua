@@ -112,6 +112,7 @@ function courseplay:start(self)
 	local dist = courseplay:distance(ctx, ctz, cx, cz)
 	
 
+	local setLaneNumber = false;
 	for k,workTool in pairs(self.tippers) do    --TODO temporary solution (better would be Tool:getIsAnimationPlaying(animationName))
 		if courseplay:isFolding(workTool) then
 			if  self.setAIImplementsMoveDown ~= nil then
@@ -119,8 +120,14 @@ function courseplay:start(self)
 			elseif self.setFoldState ~= nil then
 				self:setFoldState(-1, true)
 			end
-		end
-	end
+		end;
+
+		--DrivingLine spec: set lane numbers
+		if self.cp.mode == 4 and not setLaneNumber and workTool.cp.hasSpecializationDrivingLine and not workTool.manualDrivingLine then
+			setLaneNumber = true;
+		end;
+	end;
+
 
 	local numWaitPoints = 0
 	self.cp.waitPoints = {};
@@ -129,6 +136,7 @@ function courseplay:start(self)
 	self.cp.shovelEmptyPoint = nil
 	local nearestpoint = dist
 	local recordNumber = 0
+	local curLaneNumber = 1;
 	for i,wp in pairs(self.Waypoints) do
 		local cx, cz = wp.cx, wp.cz
 		if self.cp.modeState == 0 or self.cp.modeState == 99 then
@@ -168,6 +176,15 @@ function courseplay:start(self)
 			if numWaitPoints == 3 and self.cp.shovelEmptyPoint == nil then
 				self.cp.shovelEmptyPoint = i;
 			end;
+		end;
+
+		--laneNumber (for seeders)
+		if setLaneNumber and wp.generated ~= nil and wp.generated == true then
+			if wp.turnEnd ~= nil and wp.turnEnd == true then
+				curLaneNumber = curLaneNumber + 1;
+				courseplay:debug(string.format('%s: waypoint %d: turnEnd=true -> new curLaneNumber=%d', nameNum(self), i, curLaneNumber), 12);
+			end;
+			wp.laneNum = curLaneNumber;
 		end;
 	end;
 	-- mode 6 without start and stop point, set them at start and end, for only-on-field-courses

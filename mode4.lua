@@ -126,6 +126,18 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fill_level)
 						end;
 					end; --END if not isFolding
 				end
+
+				--DRIVINGLINE SPEC
+				if workTool.cp.hasSpecializationDrivingLine and not workTool.manualDrivingLine then
+					local curLaneReal = self.Waypoints[self.recordnumber].laneNum;
+					if curLaneReal then
+						local intendedDrivingLane = ((curLaneReal-1) % workTool.nSMdrives) + 1;
+						if workTool.currentDrive ~= intendedDrivingLane then
+							courseplay:debug(string.format('%s: currentDrive=%d, curLaneReal=%d -> intendedDrivingLane=%d -> set', nameNum(workTool), workTool.currentDrive, curLaneReal, intendedDrivingLane), 17);
+							workTool.currentDrive = intendedDrivingLane;
+						end;
+					end;
+				end;
 			end;
 
 		--TRAFFIC: TURN OFF

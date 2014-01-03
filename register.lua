@@ -75,6 +75,7 @@ function courseplay:attachableLoad(xmlFile)
 	self.cp.hasSpecializationOvercharge = courseplay:hasSpecialization(self, "Overcharge");
 	self.cp.hasSpecializationBigBear = courseplay:hasSpecialization(self, "bigBear");
 	self.cp.hasSpecializationSowingMachineWithTank = courseplay:hasSpecialization(self, "SowingMachineWithTank");
+	self.cp.hasSpecializationDrivingLine = courseplay:hasSpecialization(self, "DrivingLine");
 
 	courseplay:setNameVariable(self);
 
