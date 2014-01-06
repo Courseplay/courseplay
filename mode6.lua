@@ -60,7 +60,8 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 					if not specialTool then
 						-- automatic opening for balers
 						if workTool.balerUnloadingState ~= nil then
-							local capacity = 100 * (workTool.realBalerOverFillingRatio or 1);
+							fill_level = courseplay:round(fill_level, 3);
+							local capacity = courseplay:round(100 * (workTool.realBalerOverFillingRatio or 1), 3);
 
 							if courseplay:isRoundbaler(workTool) and fill_level > capacity * 0.9 and fill_level < capacity and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
 								if not workTool.isTurnedOn then

@@ -107,6 +107,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fill_level)
 						if workTool.needsLowering and workTool.aiNeedsLowering then
 							--courseplay:debug(string.format("WP%d: isLowered() = %s, hasGroundContact = %s", self.recordnumber, tostring(workTool:isLowered()), tostring(workTool.hasGroundContact)),12);
 							if not workTool:isLowered() then
+								courseplay:debug(string.format('%s: lower order', nameNum(workTool)), 17);
 								self:setAIImplementsMoveDown(true);
 							end;
 						end;
@@ -123,6 +124,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fill_level)
 							else
 								workTool:setIsTurnedOn(true, false);
 							end;
+							courseplay:debug(string.format('%s: turn on order', nameNum(workTool)), 17);
 						end;
 					end; --END if not isFolding
 				end
@@ -148,6 +150,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fill_level)
 				if workTool.setIsTurnedOn ~= nil and workTool.isTurnedOn then
 					workTool:setIsTurnedOn(false, false);
 				end;
+				courseplay:debug(string.format('%s: [TRAFFIC] turn off order', nameNum(workTool)), 17);
 			end;
 
 		--TURN OFF AND FOLD
@@ -158,12 +161,14 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fill_level)
 			if not specialTool then
 				if workTool.setIsTurnedOn ~= nil and workTool.isTurnedOn then
 					workTool:setIsTurnedOn(false, false);
+					courseplay:debug(string.format('%s: turn off order', nameNum(workTool)), 17);
 				end;
 
 				--raise
 				if not isFolding and isUnfolded then
 					if workTool.needsLowering and workTool.aiNeedsLowering and workTool:isLowered() then
 						self:setAIImplementsMoveDown(false);
+						courseplay:debug(string.format('%s: raise order', nameNum(workTool)), 17);
 					end;
 				end;
 
