@@ -364,23 +364,23 @@ function courseplay:buttonsActiveEnabled(self, section)
 	end;
 end;
 
-function courseplay:change_combine_offset(self, change_by)
-	local previousOffset = self.cp.combineOffset
+function courseplay:change_combine_offset(vehicle, changeBy)
+	local previousOffset = vehicle.cp.combineOffset;
 
-	self.cp.combineOffsetAutoMode = false
-	self.cp.combineOffset = courseplay:round(self.cp.combineOffset, 1) + change_by
-	if self.cp.combineOffset < 0.1 and self.cp.combineOffset > -0.1 then
-		self.cp.combineOffset = 0.0
-		self.cp.combineOffsetAutoMode = true
-	end
+	vehicle.cp.combineOffsetAutoMode = false;
+	vehicle.cp.combineOffset = courseplay:round(vehicle.cp.combineOffset, 1) + changeBy;
+	if math.abs(vehicle.cp.combineOffset) < 0.1 then
+		vehicle.cp.combineOffset = 0.0;
+		vehicle.cp.combineOffsetAutoMode = true;
+	end;
 
-	courseplay:debug(nameNum(self) .. ": manual combine_offset change: prev " .. previousOffset .. " // new " .. self.cp.combineOffset .. " // auto = " .. tostring(self.cp.combineOffsetAutoMode), 4)
+	courseplay:debug(nameNum(vehicle) .. ": manual combine_offset change: prev " .. previousOffset .. " // new " .. vehicle.cp.combineOffset .. " // auto = " .. tostring(vehicle.cp.combineOffsetAutoMode), 4);
 end
 
-function courseplay:change_tipper_offset(self, change_by)
-	self.cp.tipperOffset = courseplay:round(self.cp.tipperOffset, 1) + change_by
+function courseplay:change_tipper_offset(vehicle, changeBy)
+	vehicle.cp.tipperOffset = courseplay:round(vehicle.cp.tipperOffset, 1) + changeBy;
 	if math.abs(vehicle.cp.tipperOffset) < 0.1 then
-		self.cp.tipperOffset = 0;
+		vehicle.cp.tipperOffset = 0;
 	end;
 end
 
