@@ -335,12 +335,9 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 				if not specialTool then
 					local weatherStop = not tool:getIsThreshingAllowed(true)
 					if tool.grainTankCapacity == 0 then
-						if courseplay:isFoldable(workTool) and not tool.isThreshing then
-							if workTool.cp.inversedFoldDirection then
-								workTool:setFoldDirection(1);
-							else
-								workTool:setFoldDirection(-1);
-							end;
+						if courseplay:isFoldable(workTool) and not tool.isThreshing and not isFolding and not isUnfolded then
+							courseplay:debug(string.format('%s: unfold order (foldDir=%d)', nameNum(workTool), workTool.cp.realUnfoldDirection), 17);
+							workTool:setFoldDirection(workTool.cp.realUnfoldDirection);
 						end;
 						if not isFolding and not tool.isThreshing then
 							tool:setIsThreshing(true);
@@ -354,12 +351,9 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 							tool.cp.waitingForTrailerToUnload = true
 						end
 					else
-						if courseplay:isFoldable(workTool) and not tool.isThreshing then
-							if workTool.cp.inversedFoldDirection then
-								workTool:setFoldDirection(1);
-							else
-								workTool:setFoldDirection(-1);
-							end;
+						if courseplay:isFoldable(workTool) and not tool.isThreshing and not isFolding and not isUnfolded then
+							courseplay:debug(string.format('%s: unfold order (foldDir=%d)', nameNum(workTool), workTool.cp.realUnfoldDirection), 17);
+							workTool:setFoldDirection(workTool.cp.realUnfoldDirection);
 						end;
 						if not isFolding and tool.grainTankFillLevel < tool.grainTankCapacity and not tool.waitingForDischarge and not tool.isThreshing and not weatherStop then
 							tool:setIsThreshing(true);
@@ -395,12 +389,9 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 				end
 				if not specialTool then
 					tool:setIsThreshing(false);
-					if courseplay:isFoldable(workTool) and isEmpty then
-						if workTool.cp.inversedFoldDirection then
-							workTool:setFoldDirection(-1);
-						else
-							workTool:setFoldDirection(1);
-						end;
+					if courseplay:isFoldable(workTool) and isEmpty and not isFolding and not isFolded then
+						courseplay:debug(string.format('%s: fold order (foldDir=%d)', nameNum(workTool), -workTool.cp.realUnfoldDirection), 17);
+						workTool:setFoldDirection(-workTool.cp.realUnfoldDirection);
 					end;
 					tool:setPipeState(1)
 				end

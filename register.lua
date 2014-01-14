@@ -152,8 +152,38 @@ function courseplay:foldableLoad(xmlFile)
 	if self.cp == nil then self.cp = {}; end;
 
 	--FOLDING PARTS STARTMOVEDIRECTION
-	self.cp.foldingPartsStartMoveDirection = Utils.getNoNil(getXMLInt(xmlFile, 'vehicle.foldingParts#startMoveDirection'), 0);
-	--print(string.format('%s foldableLoad(): foldingPartsStartMoveDirection=%s', nameNum(self), tostring(self.cp.foldingPartsStartMoveDirection)));
+	local startMoveDir = getXMLInt(xmlFile, 'vehicle.foldingParts#startMoveDirection');
+	-- print(string.format('%s foldableLoad(): foldingParts#startMoveDirection=%s', nameNum(self), tostring(startMoveDir)));
+	if startMoveDir == nil then
+		local singleDir;
+		local i = 0;
+		while true do -- go through single foldingPart entries
+			local key = string.format('vehicle.foldingParts.foldingPart(%d)', i);
+			if not hasXMLProperty(xmlFile, key) then break; end;
+			local dir = getXMLInt(xmlFile, key .. '#startMoveDirection');
+			-- print(string.format('\tfoldingPart(%d)#startMoveDirection=%s', i, tostring(dir)));
+			if dir then
+				if singleDir == nil then --first foldingPart -> set singleDir
+					-- print(string.format('\t\tsingleDir==nil -> set as %s', tostring(dir)));
+					singleDir = dir;
+				elseif dir ~= singleDir then -- two or more foldingParts have non-matching startMoveDirections --> not valid
+					-- print(string.format('\t\tdir (%d) ~= singleDir (%d) -> invalid, set nil, break', dir, singleDir));
+					singleDir = nil;
+					break;
+				elseif dir == singleDir then -- two or more foldingParts have non-matching startMoveDirections --> not valid
+					-- print(string.format('\t\tdir (%d) == singleDir (%d) -> valid, continue', dir, singleDir));
+				end;
+			end;
+			i = i + 1;
+		end;
+		if singleDir then -- startMoveDirection found in single foldingPart
+			-- print(string.format('\tstartMoveDir=nil, singleDir=%s -> set startMoveDir as singleDir', tostring(singleDir)));
+			startMoveDir = singleDir;
+		end;
+	end;
+
+	self.cp.foldingPartsStartMoveDirection = Utils.getNoNil(startMoveDir, 0);
+	-- print(string.format('%s foldableLoad(): foldingPartsStartMoveDirection=%s', nameNum(self), tostring(self.cp.foldingPartsStartMoveDirection)));
 end;
 Foldable.load = Utils.appendedFunction(Foldable.load, courseplay.foldableLoad);
 
