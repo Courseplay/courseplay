@@ -290,11 +290,13 @@ function courseplay:renderButton(self, button)
 				button.show = self.cp.workWidth > 0.1;
 			elseif fn == "switchStartingDirection" then
 				button.show = self.cp.hasStartingCorner;
-			elseif fn == "setHeadlandLanes" then
+			elseif fn == 'setHeadlandDir' or fn == 'setHeadlandOrder' then
+				button.show = self.cp.headland.numLanes > 0;
+			elseif fn == 'setHeadlandNumLanes' then
 				if prm < 0 then
-					button.show = self.cp.headland.numLanes > -1;
+					button.show = self.cp.headland.numLanes > 0;
 				elseif prm > 0 then
-					button.show = self.cp.headland.numLanes <  1;
+					button.show = self.cp.headland.numLanes < self.cp.headland.maxNumLanes;
 				end;
 			elseif fn == "generateCourse" then
 				button.show = self.cp.hasValidCourseGenerationData;

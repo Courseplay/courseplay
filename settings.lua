@@ -999,9 +999,21 @@ function courseplay:switchReturnToFirstPoint(self)
 	self.cp.returnToFirstPoint = not self.cp.returnToFirstPoint;
 end;
 
-function courseplay:setHeadlandLanes(self, change_by)
-	self.cp.headland.numLanes = Utils.clamp(self.cp.headland.numLanes + change_by, -1, 1);
-	courseplay:validateCourseGenerationData(self);
+function courseplay:setHeadlandNumLanes(vehicle, changeBy)
+	vehicle.cp.headland.numLanes = Utils.clamp(vehicle.cp.headland.numLanes + changeBy, 0, vehicle.cp.headland.maxNumLanes);
+	courseplay:validateCourseGenerationData(vehicle);
+end;
+
+function courseplay:setHeadlandDir(vehicle)
+	vehicle.cp.headland.userDirClockwise = not vehicle.cp.headland.userDirClockwise;
+	courseplay.button.setOverlay(vehicle.cp.headland.directionButton, vehicle.cp.headland.userDirClockwise and 1 or 2);
+	courseplay:debug(string.format('setHeadlandDir(): userDirClockwise=%s -> set to %q, setOverlay(directionButton, %d)', tostring(not vehicle.cp.headland.userDirClockwise), tostring(vehicle.cp.headland.userDirClockwise), vehicle.cp.headland.userDirClockwise and 1 or 2), 7);
+end;
+
+function courseplay:setHeadlandOrder(vehicle)
+	vehicle.cp.headland.orderBefore = not vehicle.cp.headland.orderBefore;
+	courseplay.button.setOverlay(vehicle.cp.headland.orderButton, vehicle.cp.headland.orderBefore and 1 or 2);
+	courseplay:debug(string.format('setHeadlandOrder(): orderBefore=%s -> set to %q, setOverlay(orderButton, %d)', tostring(not vehicle.cp.headland.orderBefore), tostring(vehicle.cp.headland.orderBefore), vehicle.cp.headland.orderBefore and 1 or 2), 7);
 end;
 
 function courseplay:validateCourseGenerationData(vehicle)
@@ -1274,4 +1286,9 @@ function courseplay:showFieldEdgePath(vehicle, pathType)
 			end;
 		end;
 	end;
+end;
+
+function courseplay:setDrawWaypointsLines(vehicle)
+	if not courseplay.isDeveloper then return; end;
+	vehicle.cp.drawWaypointsLines = not vehicle.cp.drawWaypointsLines;
 end;

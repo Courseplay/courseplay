@@ -538,17 +538,11 @@ function courseplay.hud:loadPage(vehicle, page)
 
 		--line 5 = return to first point
 		vehicle.cp.hud.content.pages[8][5][1].text = courseplay:loc("CPreturnToFirstPoint");
-		vehicle.cp.hud.content.pages[8][5][2].text = vehicle.cp.returnToFirstPoint and  courseplay:loc("CPactivated") or courseplay:loc("CPdeactivated");
+		vehicle.cp.hud.content.pages[8][5][2].text = vehicle.cp.returnToFirstPoint and courseplay:loc("CPactivated") or courseplay:loc("CPdeactivated");
 
 		--line 6 = headland
 		vehicle.cp.hud.content.pages[8][6][1].text = courseplay:loc("CPheadland");
-		if vehicle.cp.headland.numLanes == 0 then
-			vehicle.cp.hud.content.pages[8][6][2].text = courseplay:loc("CPdeactivated");
-		elseif vehicle.cp.headland.numLanes ~= 0 then
-			local lanesStr = math.abs(vehicle.cp.headland.numLanes) == 1 and courseplay:loc("CPheadlandLane") or courseplay:loc("CPheadlandLanes");
-			local order = vehicle.cp.headland.numLanes > 0 and courseplay:loc("CPbefore") or courseplay:loc("CPafter");
-			vehicle.cp.hud.content.pages[8][6][2].text = string.format("%d %s (%s)", math.abs(vehicle.cp.headland.numLanes), lanesStr, order);
-		end;
+		vehicle.cp.hud.content.pages[8][6][2].text = vehicle.cp.headland.numLanes ~= 0 and tostring(vehicle.cp.headland.numLanes) or '-';
 
 
 	--PAGE 9: SHOVEL SETTINGS

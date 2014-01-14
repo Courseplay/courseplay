@@ -114,17 +114,17 @@ function courseplay:handleAugerWagon(vehicle, workTool, unfold, unload, orderNam
 		if pipeOrderExists then
 			if unfold and not workTool.activeWorkMode then
 				if not workTool.workMode then
-					courseplay:debug(string.format('%s: unfold=true, activeWorkMode=false, workMode=false -> set workMode to true', nameNum(workTool)), 15);
+					courseplay:debug('\t\tunfold=true, activeWorkMode=false, workMode=false -> set workMode to true', 15);
 					workTool.workMode = true;
 					workTool.bigBearNeedEvent = true;
 				else
-					courseplay:debug(string.format('%s: unfold=true, activeWorkMode=false, workMode=true -> set activeWorkMode to true', nameNum(workTool)), 15);
+					courseplay:debug('\t\tunfold=true, activeWorkMode=false, workMode=true -> set activeWorkMode to true', 15);
 					workTool.activeWorkMode = true;
 					workTool.bigBearNeedEvent = true;
 				end;
 			elseif not unfold then
 				if workTool.activeWorkMode then
-					courseplay:debug(string.format('%s: unfold=false, activeWorkMode=true -> set activeWorkMode to false', nameNum(workTool)), 15);
+					courseplay:debug('\t\tunfold=false, activeWorkMode=true -> set activeWorkMode to false', 15);
 					workTool.activeWorkMode = false;
 					workTool.bigBearNeedEvent = true;
 				end;
@@ -132,11 +132,11 @@ function courseplay:handleAugerWagon(vehicle, workTool, unfold, unload, orderNam
 		end;
 
 		if unload and workTool.allowOverload and not workTool.isUnloading and workTool.trailerRaycastFound then
-			courseplay:debug(string.format('%s: unload=true, allowOverload=true, isUnloading=false, trailerRaycastFound=true -> set isUnloading to true', nameNum(workTool)), 15);
+			courseplay:debug('\t\tunload=true, allowOverload=true, isUnloading=false, trailerRaycastFound=true -> set isUnloading to true', 15);
 			workTool.isUnloading = true;
 			workTool.bigBearNeedEvent = true;
 		elseif workTool.isUnloading and (not unload or not workTool.trailerRaycastFound or not workTool.allowOverload) then
-			courseplay:debug(string.format('%s: unload=%s, isUnloading=true, allowOverload=%s, trailerRaycastFound=%s -> set isUnloading to false', nameNum(workTool), tostring(unload), tostring(workTool.allowOverload), tostring(workTool.trailerRaycastFound)), 15);
+			courseplay:debug(string.format('\t\tunload=%s, isUnloading=true, allowOverload=%s, trailerRaycastFound=%s -> set isUnloading to false', tostring(unload), tostring(workTool.allowOverload), tostring(workTool.trailerRaycastFound)), 15);
 			workTool.isUnloading = false;
 			workTool.bigBearNeedEvent = true;
 		end;

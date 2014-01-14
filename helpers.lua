@@ -23,86 +23,6 @@ function tableConcat(...)
     return t
 end
 
---stringToMath [Jakob Tischler, 22 Mar 2013]
-function courseplay:stringToMath(str)
-	local result = str;
-	
-	if string.find(str, "+") then
-		local strAr = Utils.splitString("+", str);
-		if table.getn(strAr) == 2 then
-			result = tonumber(strAr[1]) + tonumber(strAr[2]);
-			return result;
-		end;
-	elseif string.find(str, "-") and string.find(str, "-") > 1 then --Note: >1 so that it doesn't match simple negative numbers (e.g. "-2");
-		local strAr = Utils.splitString("-", str);
-		if table.getn(strAr) == 2 then
-			result = tonumber(strAr[1]) - tonumber(strAr[2]);
-			return result;
-		end;
-	elseif string.find(str, "*") then
-		local strAr = Utils.splitString("*", str);
-		if table.getn(strAr) == 2 then
-			result = tonumber(strAr[1]) * tonumber(strAr[2]);
-			return result;
-		end;
-	elseif string.find(str, "/") then
-		local strAr = Utils.splitString("/", str);
-		if table.getn(strAr) == 2 then
-			result = tonumber(strAr[1]) / tonumber(strAr[2]);
-			return result;
-		end;
-	end;
-	
-	return tonumber(result);
-end;
-
-
-function courseplay:isFolding_BAK(workTool) --TODO: use getIsAnimationPlaying(animationName)
-	if courseplay:isFoldable(workTool) then
-		local isFolding, isFolded, isUnfolded = false, true, true;
-		--print(string.format('%s: isFolding(): turnOnFoldDirection=%s, startAnimTime=%s, foldMoveDirection=%s', nameNum(workTool), tostring(workTool.turnOnFoldDirection), tostring(workTool.startAnimTime), tostring(workTool.foldMoveDirection)));
-		for k, foldingPart in pairs(workTool.foldingParts) do
-			local charSet = foldingPart.animCharSet;
-			local animTime = charSet ~= 0 and getAnimTrackTime(charSet, 0) or workTool:getRealAnimationTime(foldingPart.animationName);
-
-			--print(string.format('\tfoldingPart %d: animTime=%s', k, tostring(animTime)));
-			if animTime ~= nil then
-				--NOTE: I first thought that if turnOnFoldDirection < 0, unfolded is 0 and folded is animDuration, and if turnOnFoldDirection > 0 then unfold is animDuration and folded is 0. But as it turns out, for BOTH CASES unfolded is 0 and folded is animDuration. Why? I blame the Swiss.
-				if workTool.startAnimTime > 0 then
-					if animTime ~= 0 then
-						--print(string.format('\t\t[startAnimTime=%.3f] foldingPart %d: animTime (%s) ~= 0 -> isUnfolded = false', workTool.startAnimTime, k, tostring(animTime)));
-						isUnfolded = false;
-					end;
-					if animTime ~= foldingPart.animDuration then
-						--print(string.format('\t\t[startAnimTime=%.3f] foldingPart %d: animTime (%s) ~= animDuration (%s) -> isFolded = false', workTool.startAnimTime, k, tostring(animTime), tostring(foldingPart.animDuration)));
-						isFolded = false;
-					end;
-				else
-					if animTime ~= foldingPart.animDuration then
-						--print(string.format('\t\t[startAnimTime=%.3f] foldingPart %d: animTime (%s) ~= animDuration (%s) -> isUnfolded = false', workTool.startAnimTime, k, tostring(animTime), tostring(foldingPart.animDuration)));
-						isUnfolded = false;
-					end;
-					if animTime ~= 0 then
-						--print(string.format('\t\t[startAnimTime=%.3f] foldingPart %d: animTime (%s) ~= 0 -> isFolded = false', workTool.startAnimTime, k, tostring(animTime)));
-						isFolded = false;
-					end;
-				end;
-
-				if workTool.foldMoveDirection > 0 and animTime < foldingPart.animDuration then
-					isFolding = true;
-				elseif workTool.foldMoveDirection < 0 and animTime > 0 then
-					isFolding = true;
-				end;
-			end;
-		end;
-
-		--print(string.format('\t\t\treturn isFolding=%s, isFolded=%s, isUnfolded=%s', tostring(isFolding), tostring(isFolded), tostring(isUnfolded)));
-		return isFolding, isFolded, isUnfolded;
-	end;
-
-	return false, false, true;
-end;
-
 function courseplay:isFolding(workTool) --returns isFolding, isFolded, isUnfolded
 	if not courseplay:isFoldable(workTool) then
 		return false, false, true;
@@ -182,46 +102,31 @@ function courseplay:nilOrBool(variable, bool)
 	return variable == nil or (variable ~= nil and variable == bool);
 end;
 
-function table.contains(table, element) --TODO: always use Utils.hasListElement
-	for _, value in pairs(table) do
+function table.contains(t, element) --TODO: always use Utils.hasListElement
+	for _, value in pairs(t) do
 		if value == element then
-			return true
-		end
-	end
-	return false
+			return true;
+		end;
+	end;
+	return false;
 end;
 
-function table.map(table, func)
+function table.map(t, func)
 	local newArray = {};
-	for i,v in ipairs(table) do
+	for i,v in ipairs(t) do
 		newArray[i] = func(v);
 	end;
 	return newArray;
 end;
 
-function startswith(sbig, slittle) --TODO: always use Utils.startsWith
-	if type(slittle) == "table" then
-		for k, v in ipairs(slittle) do
-			if string.sub(sbig, 1, string.len(v)) == v then
-				return true
-			end
-		end
-		return false
-	end
-	return string.sub(sbig, 1, string.len(slittle)) == slittle
-end
-
-function endswith(sbig, slittle) --TODO: always use Utils.endsWith
-	if type(slittle) == "table" then
-		for k, v in ipairs(slittle) do
-			if string.sub(sbig, string.len(sbig) - string.len(v) + 1) == v then
-				return true
-			end
-		end
-		return false
-	end
-	return string.sub(sbig, string.len(sbig) - string.len(slittle) + 1) == slittle
-end
+function table.reverse(t)
+	local reversedTable = {};
+	local itemCount = #t;
+	for k,v in ipairs(t) do
+		reversedTable[itemCount + 1 - k] = v;
+	end;
+	return reversedTable;
+end;
 
 function nameNum(vehicle, hideNum)
 	if vehicle.cp ~= nil and vehicle.cp.coursePlayerNum ~= nil then
@@ -495,7 +400,35 @@ function courseplay.utils.table.getMax(tab, field)
 		end
 	end
 	return max
-end
+end;
+
+function table.rotate(tbl, inc) --@gist: https://gist.github.com/JakobTischler/b4bb7a4d1c8cf8d2d85f
+	if inc == nil or inc == 0 then
+		return tbl;
+	end;
+
+	local t = tbl;
+	local rot = math.abs(inc);
+
+	if inc < 0 then
+		for i=1,rot do
+			local p = t[1];
+			table.remove(t, 1);
+			table.insert(t, p);
+		end;
+	else
+		for i=1,rot do
+			local n = table.getn(t);
+			local p = t[n];
+			table.remove(t, n);
+			table.insert(t, 1, p);
+		end;
+	end;
+
+	return t;
+end;
+
+
 
 function courseplay.utils.findXMLNodeByAttr(File, node, attr, value, val_type)
 	-- returns the node number in case of success

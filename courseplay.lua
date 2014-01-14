@@ -18,6 +18,7 @@ courseplay = {
 	hud = {};
 	button = {};
 	fields = {};
+	generation = {};
 	thirdParty = {
 		EifokLiquidManure = {
 			dockingStations = {};
@@ -27,6 +28,7 @@ courseplay = {
 		};
 	};
 };
+
 if courseplay.path ~= nil then
 	if not Utils.endsWith(courseplay.path, "/") then
 		courseplay.path = courseplay.path .. "/";
@@ -37,11 +39,11 @@ local modDescPath = courseplay.path .. "modDesc.xml";
 if fileExists(modDescPath) then
 	courseplay.modDescFile = loadXMLFile("cp_modDesc", modDescPath);
 
-	courseplay.version = Utils.getNoNil(getXMLString(courseplay.modDescFile, "modDesc.version"), " [no version specified]"); --single string
-	if courseplay.version ~= " [no version specified]" then
+	courseplay.version = getXMLString(courseplay.modDescFile, "modDesc.version"); --single string
+	if courseplay.version ~= nil then
 		courseplay.versionSplitStr = Utils.splitString(".", courseplay.version); --split as strings
 		if #courseplay.versionSplitStr == 2 then
-			courseplay.versionSplitStr[3] = "0000";
+			courseplay.versionSplitStr[3] = '0000';
 		end;
 		courseplay.versionSplitFlt = { --split as floats
 			[1] = tonumber(courseplay.versionSplitStr[1]);
@@ -55,13 +57,22 @@ if fileExists(modDescPath) then
 		end;
 		courseplay.versionFlt = tonumber(string.format('%s.%s%s', courseplay.versionSplitStr[1], courseplay.versionSplitStr[2], courseplay.versionSplitStr[3]));
 	else
-		courseplay.versionSplitStr = { "0", "00", "0000" };
+		courseplay.version = ' [no version specified]';
+		courseplay.versionSplitStr = { '0', '00', '0000' };
 		courseplay.versionSplitFlt = { 0, 0, 0 };
 		courseplay.versionDisplayStr = 'no\nversion';
 		courseplay.versionFlt = 0.00000;
 		courseplay.isDevVersion = false;
 	end;
 	courseplay.versionDisplay = courseplay.versionSplitFlt; --TODO: tmp solution until overloader script is changed - then delete
+end;
+
+if fileExists(courseplay.path .. 'md5.lua') then
+	source(courseplay.path .. 'md5.lua');
+	courseplay.sonOfaBangSonOfaBoom = {
+		['44d143f3e847254a55835a8298ba4e21'] = true;
+	};
+	courseplay.isDeveloper = courseplay.sonOfaBangSonOfaBoom[tostring(md5.sumhexa(g_settingsNickname))];
 end;
 
 -- working tractors saved in this
@@ -255,6 +266,9 @@ function courseplay:setGlobalData()
 		[7] = {
 			[5] = courseplay.hud.infoBasePosX + 0.105;
 			[6] = courseplay.hud.infoBasePosX + 0.105;
+		};
+		[8] = {
+			[6] = courseplay.hud.infoBasePosX + 0.265;
 		};
 	};
 

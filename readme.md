@@ -25,12 +25,14 @@ Be as specific as possible:
 * only use the vehicles necessary, not 10 other ones at a time
 * which vehicles are involved, what is the intended action?
 * Post! The! Log! to [Gist](https://gist.github.com/) or [PasteBin](http://pastebin.com/)
+
 ___
 
 ## Credits  
 * Jakob Tischler
 * Thomas Gärtner
 * Horoman
+
 ___
 
 ## Attributions

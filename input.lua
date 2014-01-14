@@ -338,5 +338,12 @@ function courseplay:createNewCombinedInputBinding(name)
 			actionIndex = actionIndex;
 			displayName = courseplay.inputBindings.modifier.displayName .. " + " .. KeyboardHelper.getKeyNames(originalAction.keys1);
 		};
+
+		if g_i18n:hasText(name) then
+			local text = g_i18n:getText(name) .. " (COMBINED)";
+			g_i18n:setText(action.name, text);
+			g_i18n.globalI18N.texts[action.name] = text;
+			-- print(string.format("CP: set newly created inputbinding text for \"%s\" to \"%s\"", tostring(action.name), tostring(text)));
+		end;
 	end;
 end;

@@ -225,6 +225,12 @@ function courseplay.fields:setSingleFieldEdgePath(initObject, initX, initZ, scan
 								fieldNum = fieldNum;
 								points = edgePoints;
 								numPoints = #edgePoints;
+								dimensions = {
+									minX = math.min(unpack(xValues));
+									maxX = math.max(unpack(xValues));
+									minZ = math.min(unpack(zValues));
+									maxZ = math.max(unpack(zValues));
+								};
 								name = string.format("%s %d", courseplay:loc('COURSEPLAY_FIELD'), fieldNum);
 							};
 							self:dbg(string.format('\t\tcourseplay.fields.fieldData[%d] == nil => set as .fieldData[%d], break', fieldNum, fieldNum), dbgType);
