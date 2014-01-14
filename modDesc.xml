@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="13">
-	<version>3.41.0357</version>
-	<author>
-<![CDATA[Jakob Tischler
-Thomas Gärtner
-Horoman
-]]></author>
-	
+	<version>3.41.0358</version>
+	<author><![CDATA[Jakob Tischler, Thomas Gärtner,
+Horoman]]></author>
 	<title>
 		<de>Courseplay</de>
 		<en>Courseplay</en>
@@ -21,51 +17,44 @@ Horoman
 		<de>
 <![CDATA[Entwickler: Jakob Tischler, Thomas Gärtner, Horoman
 
-Übersetzungen: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, 
-[IT] JD7530, Cristiano Magro, [RU] Bernelli
-]]>
+Übersetzungen: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro,
+[RU] Bernelli]]>
 		</de>
 		<en>
 <![CDATA[Developers: Jakob Tischler, Thomas Gärtner, Horoman
 
-Translations: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, 
-[IT] JD7530, Cristiano Magro, [RU] Bernelli
-]]>
+Translations: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro,
+[RU] Bernelli]]>
 		</en>
 		<es>
 <![CDATA[Desarrolladores: Jakob Tischler, Thomas Gärtner, Horoman
 
-Tradduciónes: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, 
-[IT] JD7530, Cristiano Magro, [RU] Bernelli
-]]>
+Tradduciónes: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro,
+[RU] Bernelli]]>
 		</es>
 		<fr>
 <![CDATA[Développeurs: Jakob Tischler, Thomas Gärtner, Horoman
 
-Traductions: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, 
-[IT] JD7530, Cristiano Magro, [RU] Bernelli
-]]>
+Traductions: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro,
+[RU] Bernelli]]>
 		</fr>
 		<it>
 <![CDATA[Sviluppatori: Jakob Tischler, Thomas Gärtner, Horoman
 
-Traduzioni: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, 
-[IT] JD7530, Cristiano Magro, [RU] Bernelli
-]]>
+Traduzioni: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy,[IT] JD7530, Cristiano Magro,
+[RU] Bernelli]]>
 		</it>
 		<cz>
 <![CDATA[Vývojáři: Jakob Tischler, Thomas Gärtner, Horoman
 
-Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, 
-[IT] JD7530, Cristiano Magro, [RU] Bernelli
-]]>
+Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro,
+[RU] Bernelli]]>
 		</cz>
 		<ru>
 <![CDATA[Разработка: Jakob Tischler, Thomas Gärtner, Horoman
 
-Переводчики: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, 
-[IT] JD7530, Cristiano Magro, [RU] Bernelli
-]]>
+Переводчики: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro,
+[RU] Bernelli]]>
 		</ru>
  	</description>
 	
@@ -288,7 +277,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy,
 			<es>Tipo: cargar de cosechadora y descargar a remolque</es>
 			<it>Modo: Trasferimento (Svuota trebbia e scarica su altro rimorchio)</it>
 			<cz>Mod: Překládací vůz (odvoz od kombajnu na překládku)</cz>
-			<ru>Тип: Работа с комбайном без бункера</ru>
+			<ru>Тип: Посредник, комбайн > накопитель > прицеп</ru>
 		</text>
 		<text name="CourseMode4">
 			<en>Type: fertilize and seeding</en>

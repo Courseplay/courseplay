@@ -22,7 +22,8 @@ Translations
 * Czech: Albi
 * Spanish: JFMtb
 * French: Guillaume Dupuy
-* Italian: JD7530
+* Italian: JD7530, Cristiano Magro
+* Russian: Bernelli
 
 ====================================
 
