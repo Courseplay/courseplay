@@ -77,7 +77,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>Direction</fr>
 			<es>Dirección</es>
 			<it>Direzione</it>
-			<cz>Směr jízdy</cz>
+			<cz>Směr jízdy:</cz>
 			<ru>Направление</ru>
 		</text>
 		<text name="CourseDriveDirectionFor">
@@ -140,7 +140,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>Chauffeur</fr>
 			<es>Conductor</es>
 			<it>Autista</it>
-			<cz>Odvozce</cz>
+			<cz>Odvozce:</cz>
 			<ru>Транспорт</ru>
 		</text>
 		<text name="CoursePlayPlayerStart">
@@ -176,7 +176,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>Coté du chauffeur</fr>
 			<es>Lado de conducción</es>
 			<it>Lato autista</it>
-			<cz>Strana odvozce</cz>
+			<cz>Strana odvozce:</cz>
 			<ru>Водительская сторона</ru>
 		</text>
 		<text name="CoursePlayPlayerSideNone">
@@ -453,7 +453,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>inconnu</fr>
 			<es>desconocido</es>
 			<it>sconosciuto</it>
-			<cz>neznámy</cz>
+			<cz>neznámý</cz>
 			<ru>неизвестный</ru>
 		</text>
 		<text name="CPDistance">
@@ -462,7 +462,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>distance</fr>
 			<es>distancia</es>
 			<it>distanza</it>
-			<cz>Vzdálenost</cz>
+			<cz>vzdálenost</cz>
 			<ru>дистанция</ru>
 		</text>
 		<text name="CPWaitTime">
@@ -507,7 +507,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>Filtrer les courses:</fr>
 			<es>Filter courses:</es> <!-- !!! -->
 			<it>Filtro percorsi:</it>
-			<cz>Filter courses:</cz> <!-- !!! -->
+			<cz>Filtrovat trasy:</cz>
 			<ru>Фильтровать:</ru>
 		</text>
 		<text name="CPcoursesFilterTitle">
@@ -534,7 +534,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>a atteint le point d'attente</fr>
 			<es>ha alcanzado el punto de espera</es>
 			<it>ha raggiunto il punto d'attesa</it>
-			<cz>přijel na místo čekání</cz>
+			<cz>přijel na místo čekání.</cz>
 			<ru>доехал до места ожидания.</ru>
 		</text>
 		<text name="COURSEPLAY_REACHED_END_POINT">
@@ -543,7 +543,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>a atteint la fin de la course</fr>
 			<es>ha alcanzado el punto final</es>
 			<it>ha raggiunto la fine del percorso</it>
-			<cz>dojel na trigger nebo konec</cz>
+			<cz>dojel na trigger nebo konec.</cz>
 			<ru>доехал до пункта</ru>
 		</text>
 		<text name="COURSEPLAY_WORK_END">
@@ -570,7 +570,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>: l'outila besoin d'être vidé.</fr>
 			<es>: work tool needs to be unloaded.</es> <!-- !!! -->
 			<it>: attrezzo necessita di essere scaricato.</it>
-			<cz>: potřebuje vyložit.</cz> <!-- !!! -->
+			<cz>: potřebuje vyložit.</cz>
 			<ru>: нуждается в разгрузке.</ru>
 		</text>
 		<text name="COURSEPLAY_NEEDS_REFILLING">
@@ -597,7 +597,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>est coincé.</fr>
 			<es>atasco de trafico.</es>
 			<it>e' nel traffico.</it>
-			<cz>stoji v dopravní zácpě.</cz>
+			<cz>stojí v dopravní zácpě.</cz>
 			<ru>застрял.</ru>
 		</text>
 		<text name="CPloading">
@@ -775,7 +775,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>course temporaire</fr>
 			<es>ruta temporal</es>
 			<it>percorso temporaneo</it>
-			<en>dočasná trasa</en>
+			<cz>dočasná trasa</cz>
 			<ru>не сохраненный</ru>
 		</text>
 		<text name="CPTurnSpeed">
@@ -883,7 +883,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>pas de points</fr>
 			<es>no hay puntos</es>
 			<it>nessun punto di passaggio</it>
-			<cz>zatím žádné orientační body</cz>
+			<cz>Zatím žádné orientační body</cz>
 			<ru>Нет точек для отображения</ru>
 		</text>
 		<text name="WaypointMode1">
@@ -892,7 +892,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>le début et la fin</fr>
 			<es>el principio y el fin</es>
 			<it>l'inizio e la fine</it>
-			<cz>Začátek a konec</cz>
+			<cz>začátek a konec</cz>
 			<ru>старт и финиш</ru>
 		</text>
 		<text name="WaypointMode2">
@@ -910,7 +910,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>montrer les tous</fr>
 			<es>mostrar todos</es>
 			<it>mostra tutti</it>
-			<cz>všechny body</cz>
+			<cz>všechny body</cz>	
 			<ru>показать все</ru>
 		</text>
 		<text name="WaypointMode4">
@@ -1054,7 +1054,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>La batteuse tourne</fr>
 			<es>Cosechadora está girando</es>
 			<it>La trebbia sta girando</it>
-			<cz>Kombajn/rezačka se otáčí</cz>
+			<cz>Kombajn/řezačka se otáčí</cz>
 			<ru>Комбайн поворачивает</ru>
 		</text>
 		<text name="CPDriveBehinCombine">
@@ -1090,7 +1090,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>La batteuse me demande de m'arreter</fr>
 			<es>La cosechadora dice que pare</es>
 			<it>La trebbia mi dice di fermarmi</it>
-			<cz>Kombajn/rezačka říká že mám zastavit</cz>
+			<cz>Kombajn/řezačka říká, že mám zastavit</cz>
 			<ru>Комбайну нужна разгрузка</ru>
 		</text>
 		<text name="CPTurningTo">
@@ -1117,7 +1117,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>Attend que le niveau soit atteint</fr>
 			<es>Esperar hasta llegue al nivel de llenado</es>
 			<it>Aspettando che il livello di riempimento sia raggiunto</it>
-			<cz>Waiting until fill level is reached</cz> <!-- !!! -->
+			<cz>Čekám, než bude kombajn naplněn</cz>
 			<ru>Жду заполнения бункера</ru>
 		</text>
 		<text name="CPnoCombineInReach">
@@ -1126,7 +1126,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>Pas de Batteuse en vue</fr>
 			<es>Cosechadora fuera del alcance</es>
 			<it>Nessuna trebbia disponibile</it>
-			<cz>Kombajn/rezačka není v dosahu</cz>
+			<cz>Kombajn/řezačka není v dosahu</cz>
 			<ru>Ищу комбайн для работы</ru>
 		</text>
 		<text name="CPWaitUntilCombineTurned">
@@ -1135,7 +1135,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>Attend que la batteuse ait finis de tourner</fr>
 			<es>Esperar a que la cosechadora gire</es>
 			<it>Aspettando che la trebbia finisca di girare</it>
-			<cz>Čekám než se kombajn/rezačka otočí</cz>
+			<cz>Čekám, než se kombajn/řezačka otočí</cz>
 			<ru>Жду завершения маневра комбайна</ru>
 		</text>
 		<text name="CPWaitForWaypoint">
@@ -1162,7 +1162,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>doit bientôt faire le plein</fr>
 			<es>debe repostar pronto</es>
 			<it>dev'essere rifornito al piu' presto</it>
-			<cz>bude potřebovat dotankovat</cz>
+			<cz>bude potřebovat dotankovat.</cz>
 			<ru>скоро будет нуждаться в топливе</ru>
 		</text>
 		<text name="COURSEPLAY_MUST_BE_REFUELED">
@@ -1171,7 +1171,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>doit faire le plein</fr>
 			<es>debe repostar</es>
 			<it>dev'essere rifornito ora</it>
-			<cz>musí tankovat</cz>
+			<cz>musí tankovat.</cz>
 			<ru>нуждается в топливе</ru>
 		</text>
 		<text name="COURSEPLAY_IS_BEING_REFUELED">
@@ -1180,7 +1180,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>est en train d'être ravitailler</fr>
 			<es>está repostando</es>
 			<it>si sta rifornendo</it>
-			<cz>tankuje</cz>
+			<cz>tankuje.</cz>
 			<ru>заправляется</ru>
 		</text>
 		<text name="CPTooManyWaitingPoints">
@@ -1189,7 +1189,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>Trop de points d'attente! Seulement %d permits.</fr>
 			<es>Demasiados puntos de espera! Sólo %d permitido.</es>
 			<it>Troppi punti d'attesa! Permesso solo %d.</it> <!-- !!! -->
-			<cz>Příliš mnoho bod čekají! Pouze %d povoleno.</cz> <!-- !!! -->
+			<cz>Příliš mnoho bodů čekání! Pouze %d bodů je povoleno.</cz>
 			<ru>Слишком много остановок! Максимум разрешено %d.</ru>
 		</text>
 		<text name="CPTooFewWaitingPoints">
@@ -1198,7 +1198,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>Trop peu de points d'attente! Nécessaire %d.</fr> <!-- !!! -->
 			<es>Carece de puntos de espera! Requiere %d.</es>
 			<it>Troppo pochi punti d'attesa! %d necessario.</it> <!-- !!! -->
-			<cz>Postrádá čekací bod. Vyžaduje %d</cz> <!-- !!! -->
+			<cz>Postrádá body čekání. Vyžaduje %d body čekání.</cz>
 			<ru>Слишком мало остановок! Минимум нужно %d.</ru>
 		</text>
 		<text name="CPWrongTrailer">
@@ -1207,7 +1207,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>pas la bonne remorque pour ce mode</fr>
 			<es>remolque incorrecto para este modo</es>
 			<it>rimorchio sbagliato per questa modalita'</it>
-			<cz>Máš pro tento mod nevhodný příves</cz>
+			<cz>Máš pro tento mod nevhodný přívěs</cz>
 			<ru>Неподходящее оборудование для маршрута или типа.</ru>
 		</text>
 		<text name="CPWrongESLversion">
@@ -1225,7 +1225,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>est en attente d'une meilleure météo</fr>
 			<es>está esperando por un clima mejor</es>
 			<it>è in attesa di un tempo migliore</it>
-			<cz>čeká na lepší počasí</cz>
+			<cz>čeká na lepší počasí.</cz>
 			<ru>надо подождать хорошей погоды</ru>
 		</text>
 		<text name="CPSettings">
@@ -1243,7 +1243,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>Décalage de la voie</fr>
 			<es>Mov. de la calzada</es>
 			<it>Distanza corsia</it>
-			<cz>Lane offset</cz> <!-- !!! -->
+			<cz>Odstup od trasy:</cz>
 			<ru>Смещение от центра:</ru>
 		</text>
 		<text name="COURSEPLAY_TOOL_OFFSET_X">
@@ -1252,7 +1252,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>Outil: décalage latéral</fr>
 			<es>Herramienta: mov. horiz.</es>
 			<it>Utensile: distanza orizz.</it>
-			<cz>Horiz. posunutí nástroje</cz>
+			<cz>Horiz. posunutí stroje:	</cz>
 			<ru>Влево-вправо:</ru>
 		</text>
 		<text name="COURSEPLAY_TOOL_OFFSET_Z">
@@ -1261,7 +1261,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>Outil: décalage av/ar</fr>
 			<es>Herramienta: mov. vert.</es>
 			<it>Utensile: distanza vert.</it>
-			<cz>Vertik. posunutí nástroje</cz>
+			<cz>Vertik. posunutí stroje:</cz>
 			<ru>Назад-вперед:</ru>
 		</text>
 		<text name="COURSEPLAY_FRONT">
@@ -1297,7 +1297,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>a voulut prendre un bain</fr>
 			<es>quiere ir a nadar</es>
 			<it>vorrebbe nuotare</it>
-			<cz>by si rád zaplaval</cz>
+			<cz>by si rád zaplaval.</cz>
 			<ru>не хотелось бы намокнуть</ru>
 		</text>
 		<text name="COURSEPLAY_WAITPOINTS">
@@ -1531,7 +1531,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<es>Unloading on field</es> <!-- !!! -->
 			<fr>Déchargement aux champs</fr> <!-- !!! -->
 			<it>Scaricando sul campo</it>
-			<cz>Unloading on field</cz> <!-- !!! -->
+			<cz>Vyložit na poli</cz>
 			<ru>Разгрузка на поле</ru>
 		</text>
 		<text name="CPautomatic">
@@ -1695,7 +1695,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<es>Camino de aristas del campo</es> <!-- !!! -->
 			<fr>Voie de bord de champ</fr>
 			<it>Percorso bordo del campo</it>
-			<cz>Pole cesta na okraji</cz> <!-- !!! -->
+			<cz>Trasa okolo pole:</cz>
 			<ru>Выбрать поле:</ru>
 		</text>
 		<text name="COURSEPLAY_FIELD">
@@ -1704,7 +1704,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<es>Campo</es> <!-- !!! -->
 			<fr>Champ</fr>
 			<it>Campo</it>
-			<cz>Pole</cz> <!-- !!! -->
+			<cz>Pole</cz>
 			<ru>поле №</ru>
 		</text>
 		<text name="COURSEPLAY_HOSEMISSING">
@@ -1713,7 +1713,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<es>Falta una manguera - cancelar la recarga</es>
 			<fr>Manque un tuyau - annuler la recharge</fr> <!-- !!! -->
 			<it>Manca un tubo - annullare la ricarica</it> <!-- !!! -->
-			<cz>No hose could be found - cancel refill</cz> <!-- !!! -->
+			<cz>Hadice chybí - plnění zrušeno</cz>
 			<ru>Не могу найти</ru>
 		</text>
 		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE">
@@ -1722,7 +1722,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<es>Cambio de carril simétrico</es>
 			<fr>Changement de voie symétrique</fr>
 			<it>Cambio di corsia simmetrica</it>
-			<cz>Symmetric lane change</cz> <!-- !!! -->
+			<cz>Pravidelné otáčení:</cz>
 			<ru>Симметрично:</ru>
 		</text>
 		<text name="COURSEPLAY_DRIVERPRIOTITY">
@@ -1731,7 +1731,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<es>Prioridad del conductor</es>
 			<fr>Priorité du chauffeur</fr>
 			<it>Priorità dell'autista</it>
-			<cz>Priority odvozce</cz>
+			<cz>Priority odvozce:</cz>
 			<ru>Приоритет:</ru>
 		</text>
 		<text name="COURSEPLAY_FILLEVEL">
@@ -1740,7 +1740,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>niveau de remplissage</fr>
 			<es>nivel de llenado</es>
 			<it>livello di riempimento</it>
-			<cz>vyplnit úrovně</cz>
+			<cz>vyrovnat naplnění</cz>
 			<ru>загруженность</ru>
 		</text>
 		<text name="COURSEPLAY_NO_AUTOCOMBINE_MODE_7">
@@ -1749,7 +1749,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>AutoCombine n'est pas supporté</fr> <!-- !!! -->
 			<es>AutoCombine no está soportado</es> <!-- !!! -->
 			<it>AutoCombine non è supportato</it>
-			<cz>AutoCombine není podporován</cz> <!-- !!! -->
+			<cz>AutoCombine není podporován</cz>
 			<ru>Этот комбайн не поддерживается</ru>
 		</text>
 		<text name="COURSEPLAY_PICKUP_JAMMED">
@@ -1758,7 +1758,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>: pickup is jammed</fr> <!-- !!! -->
 			<es>: pickup is jammed</es> <!-- !!! -->
 			<it>: pickup is jammed</it> <!-- !!! -->
-			<cz>: pickup is jammed</cz> <!-- !!! -->
+			<cz>: odvozce je přetížený</cz>
 			<ru>: погрузка остановлена</ru>
 		</text>
 		<text name="COURSEPLAY_BALER_NEEDS_NETS">
@@ -1767,7 +1767,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>: baler needs new net rolls</fr> <!-- !!! -->
 			<es>: baler needs new net rolls</es> <!-- !!! -->
 			<it>: rotopressa ha bisogno di nuovo rotolo di rete</it>
-			<cz>: baler needs new net rolls</cz> <!-- !!! -->
+			<cz>: lis potřebuje nové balící role</cz>
 			<ru>: упаковщик нуждается в тюках</ru>
 		</text>
 		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES">
@@ -1776,7 +1776,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>Calculate current field's edge path</fr> <!-- !!! -->
 			<es>Calculate current field's edge path</es> <!-- !!! -->
 			<it>Calcolo perimetro del campo corrente</it>
-			<cz>Calculate current field's edge path</cz> <!-- !!! -->
+			<cz>Vypočítej trasu okolo aktuálního pole</cz>
 			<ru>Показать границы поля</ru>
 		</text>
 		<text name="COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER">
@@ -1785,7 +1785,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>Field edge path number</fr> <!-- !!! -->
 			<es>Field edge path number</es> <!-- !!! -->
 			<it>Perimetro del campo numero</it>
-			<cz>Field edge path number</cz> <!-- !!! -->
+			<cz>Trasa okolo pole číslo:</cz>
 			<ru>Выбрать поле:</ru>
 		</text>
 		<text name="COURSEPLAY_ADD_CUSTOM_FIELD_EDGE_PATH_TO_LIST">
@@ -1794,7 +1794,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>Add field %d's edge path to list</fr> <!-- !!! -->
 			<es>Add field %d's edge path to list</es> <!-- !!! -->
 			<it>Inserisci perimetro campo %d nella lista</it>
-			<cz>Add field %d's edge path to list</cz> <!-- !!! -->
+			<cz>Přidej trasu okolo pole %d do seznamu</cz>
 			<ru>Добавить поле в список</ru>
 		</text>
 		<text name="COURSEPLAY_OVERWRITE_CUSTOM_FIELD_EDGE_PATH_IN_LIST">
@@ -1803,7 +1803,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>Overwrite field %d's edge path in list</fr> <!-- !!! -->
 			<es>Overwrite field %d's edge path in list</es> <!-- !!! -->
 			<it>Sovrascrivi perimetro campo %d nella lista</it>
-			<cz>Overwrite field %d's edge path in list</cz> <!-- !!! -->
+			<cz>Přepsat trasu okolo pole %d v seznamu</cz>
 			<ru>Переписать поле в списке</ru>
 		</text>
 		<text name="COURSEPLAY_USER">
@@ -1821,7 +1821,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>doit bientôt réparer</fr>
 			<es>debe repararse pronto</es>
 			<it>dev'essere riparato al piu' presto</it>
-			<cz>should be repaired soon</cz> <!-- !!! -->
+			<cz>by měl být brzy opraven.</cz>
 			<ru>скоро развалится от повреждений</ru>
 		</text>
 		<text name="COURSEPLAY_DAMAGE_MUST_BE_REPAIRED">
@@ -1830,7 +1830,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>doit réparer</fr>
 			<es>debe repararse</es>
 			<it>dev'essere riparato ora</it>
-			<cz>must be repaired</cz> <!-- !!! -->
+			<cz>musí být opraven.</cz>
 			<ru>нуждается в ремонте</ru>
 		</text>
 		<text name="COURSEPLAY_DAMAGE_IS_BEING_REPAIRED">
@@ -1839,7 +1839,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>est en train d'être réparer</fr>
 			<es>está repararando</es>
 			<it>si sta riparato</it>
-			<cz>is being repaired</cz> <!-- !!! -->
+			<cz>je opravován.</cz>
 			<ru>на ремонте</ru>
 		</text>
 		<text name="COURSEPLAY_COVER_HANDLING">
@@ -1857,7 +1857,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>Remove combine assignment</fr> <!-- !!! -->
 			<es>Remove combine assignment</es> <!-- !!! -->
 			<it>Remove combine assignment</it> <!-- !!! -->
-			<cz>Remove combine assignment</cz> <!-- !!! -->
+			<cz>Odstraň přiřezení ke kombajnu</cz>
 			<ru>Удалить комбайн из списка</ru>
 		</text>
 
@@ -1886,7 +1886,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>Fonctions de Courseplay</fr>
 			<es>Funciones Courseplay</es>
 			<it>Funzioni Courseplay</it>
-			<cz>Courseplay funkce</cz>
+			<cz>Funkce Courseplay</cz>
 			<ru>функции Courseplay</ru>
 		</text>
 
@@ -1925,7 +1925,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>Courseplay: arrêter au prochain point ou trigger</fr>
 			<es>Courseplay: parar en último punto o siguiente trigger</es>
 			<it>Courseplay: ferma all'ultimo punto o al prossimo trigger</it>
-			<cz>Courseplay: Čekat na posledním bodě nebo triggeru</cz>
+			<cz>Courseplay: čekat na posledním bodě nebo triggeru</cz>
 			<ru>Courseplay: остановка в следующей точке</ru>
 		</text>
 		<text name="COURSEPLAY_DRIVENOW">
