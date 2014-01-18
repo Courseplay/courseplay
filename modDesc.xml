@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="13">
-	<version>3.41.0360</version>
+	<version>3.41.0361</version>
 	<author><![CDATA[Jakob Tischler, Thomas Gärtner,
 Horoman]]></author>
 	<title>
@@ -473,6 +473,24 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<it>Carica percorso</it>
 			<cz>Doba čekání:</cz>
 			<ru>Пауза:</ru>
+		</text>
+		<text name="COURSEPLAY_MINUTES">
+			<en>%d min</en>
+			<de>%d Min</de>
+			<fr>%d min</fr>
+			<es>%d min</es>
+			<it>%d min</it>
+			<cz>%d min</cz>
+			<ru>%d мин</ru>
+		</text>
+		<text name="COURSEPLAY_SECONDS">
+			<en>%d sec</en>
+			<de>%d Sek</de>
+			<fr>%d sec</fr>
+			<es>%d seg</es>
+			<it>%d sec</it>
+			<cz>%d sek</cz>
+			<ru>%d сек</ru>
 		</text>
 		<text name="CPLoadCourse">
 			<en>Load course:</en>
