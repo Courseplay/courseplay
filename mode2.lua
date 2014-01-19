@@ -14,7 +14,6 @@
 
 function courseplay:handle_mode2(self, dt)
 	local curFile = "mode2.lua"
-	local allowedToDrive = false
 
 	local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
 
@@ -127,9 +126,11 @@ function courseplay:handle_mode2(self, dt)
 		end
 	else -- NO active combine
 		-- STOP!!
-		if g_server ~= nil then
+		if self.isRealistic then
+			courseplay:driveInMRDirection(self, 0, 1, true, dt, false);
+		else
 			AIVehicleUtil.driveInDirection(self, dt, self.cp.steeringAngle, 0, 0, 28, false, moveForwards, 0, 1)
-		end
+		end;
 
 		if self.cp.isLoaded then
 			self.recordnumber = 2
@@ -213,7 +214,6 @@ function courseplay:handle_mode2(self, dt)
 			end
 		end
 	end
-	return allowedToDrive
 end
 
 function courseplay:unload_combine(self, dt)

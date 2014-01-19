@@ -441,7 +441,8 @@ function courseplay:drive(self, dt)
 		-- combi-mode
 		if (((self.cp.mode == 2 or self.cp.mode == 3) and self.recordnumber < 2) or self.cp.activeCombine) and self.cp.tipperAttached then
 			self.cp.inTraffic = false
-			return courseplay:handle_mode2(self, dt)
+			courseplay:handle_mode2(self, dt);
+			return;
 		elseif (self.cp.mode == 2 or self.cp.mode == 3) and self.recordnumber < 3 then
 			isBypassing = true
 			lx, lz = courseplay:isTheWayToTargetFree(self,lx, lz)
