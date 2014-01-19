@@ -13,26 +13,13 @@ end
 function courseplay:dcheck(vehicle)
 	local number = vehicle.record_pause and vehicle.recordnumber - 1 or 1;
 
-	local ctx, cty, ctz = getWorldTranslation(vehicle.rootNode);
 	local cx, cz = vehicle.Waypoints[number].cx, vehicle.Waypoints[number].cz;
 	local lx, ly, lz = worldToLocal(vehicle.rootNode, cx, 0, cz);
 	local arrowRotation = Utils.getYRotationFromDirection(lx, lz);
-
-	local cosAR, sinAR = math.cos(-arrowRotation), math.sin(-arrowRotation);
-	local arrowUV = {
-		[1] = -0.5 * cosAR + 0.5 * sinAR + 0.5;
-		[2] = -0.5 * sinAR - 0.5 * cosAR + 0.5;
-		[3] = -0.5 * cosAR - 0.5 * sinAR + 0.5;
-		[4] = -0.5 * sinAR + 0.5 * cosAR + 0.5;
-		[5] =  0.5 * cosAR + 0.5 * sinAR + 0.5;
-		[6] =  0.5 * sinAR - 0.5 * cosAR + 0.5;
-		[7] =  0.5 * cosAR - 0.5 * sinAR + 0.5;
-		[8] =  0.5 * sinAR + 0.5 * cosAR + 0.5;
-	};
-
-	setOverlayUVs(vehicle.cp.directionArrowOverlay.overlayId, arrowUV[1], arrowUV[2], arrowUV[3], arrowUV[4], arrowUV[5], arrowUV[6], arrowUV[7], arrowUV[8]);
+	vehicle.cp.directionArrowOverlay:setRotation(arrowRotation, vehicle.cp.directionArrowOverlay.width/2, vehicle.cp.directionArrowOverlay.height/2);
 	vehicle.cp.directionArrowOverlay:render();
 
+	local ctx, cty, ctz = getWorldTranslation(vehicle.rootNode);
 	vehicle.cp.infoText = string.format("%s: %.1fm", courseplay:loc("CPDistance"), courseplay:distance(ctx, ctz, cx, cz));
 end;
 

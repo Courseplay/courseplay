@@ -125,9 +125,9 @@ function courseplay:load(xmlFile)
 	self.cp.hasShovelStateRot["3"] = false
 	self.cp.hasShovelStateRot["4"] = false
 	self.cp.hasShovelStateRot["5"] = false
-	
-	-- our arrow is displaying dirction to waypoints
-	self.cp.directionArrowOverlay = Overlay:new("Arrow", Utils.getFilename("img/arrow.png", courseplay.path), 0.55, 0.05, 0.250, 0.250);
+
+	--direction arrow the last waypoint (during paused recording)
+	self.cp.directionArrowOverlay = Overlay:new('cpDistArrow_' .. tostring(self.rootNode), Utils.getFilename('img/arrow.png', courseplay.path), courseplay.hud.infoBaseCenter + 0.05, courseplay.hud.infoBasePosY + 0.11, 128/1920, 128/1080);
 
 	-- Visual i3D waypoint signs
 	self.cp.signs = {
@@ -370,7 +370,9 @@ function courseplay:load(xmlFile)
 		maxPointDistance = 7.25;
 	};
 	link(getRootNode(), self.cp.headland.tg);
-
+	if courseplay.isDeveloper then
+		self.cp.headland.maxNumLanes = 50;
+	end;
 	self.cp.fieldEdge = {
 		selectedField = {
 			fieldNum = 0;
@@ -796,8 +798,6 @@ function courseplay:load(xmlFile)
 	--END Page 9
 
 
-	self.fold_move_direction = 1;
-
 	courseplay:validateCanSwitchMode(self);
 	courseplay:buttonsActiveEnabled(self, "all");
 end
@@ -825,10 +825,6 @@ function courseplay:onEnter()
 end
 
 function courseplay:draw()
-	if self.dcheck and table.getn(self.Waypoints) > 1 then
-		courseplay:dcheck(self);
-	end
-
 	--WORKWIDTH DISPLAY
 	if self.cp.workWidthChanged > self.timer then
 		courseplay:showWorkWidth(self);
@@ -913,6 +909,9 @@ function courseplay:draw()
 			if self.cp.mouseCursorActive then
 				InputBinding.setShowMouseCursor(self.cp.mouseCursorActive);
 			end;
+		end;
+		if self.dcheck and #(self.Waypoints) > 1 then
+			courseplay:dcheck(self);
 		end;
 	end;
 end; --END draw()
