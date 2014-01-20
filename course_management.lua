@@ -1,4 +1,4 @@
-﻿-- saving // loading courses
+-- saving // loading courses
 
 -- enables input for course name
 function courseplay:showSaveCourseForm(self, saveWhat)
@@ -69,105 +69,138 @@ function courseplay:load_sorted_course(vehicle, index)
 	end	
 end
 
-function courseplay:load_course(self, id, use_real_id, add_course_at_end)
+function courseplay:load_course(self, id, useRealId, addCourseAtEnd)
 	-- global array for courses, no refreshing needed any more
 	courseplay:reinit_courses(self);
 
+	if addCourseAtEnd == nil then addCourseAtEnd = false; end;
+
+	courseplay:debug(string.format('%s: load_course(..., id=%s, useRealId=%s, addCourseAtEnd=%s)', nameNum(self), tostring(id), tostring(useRealId), tostring(addCourseAtEnd)), 8);
 	if id ~= nil and id ~= "" then
-		if not use_real_id then
+		if not useRealId then
 			return -- not supported any more
 		end
 		id = id * 1 -- equivalent to tonumber()
 
-		-- negative values mean that add_course_end is true
+		-- negative values mean that addCourseAtEnd is true
 		if id < 1 then
 			id = id * -1
-			add_course_at_end = true
+			addCourseAtEnd = true;
 		end
 
 		local course = g_currentMission.cp_courses[id]
 		if course == nil then
-			courseplay:debug("no course found", 8)
+			courseplay:debug(string.format('\tid %d -> course not found, return', id), 8);
 			return
 		end
 
-		if add_course_at_end == true then
+		if addCourseAtEnd == true then
 			table.insert(self.cp.loadedCourses, id * -1)
 		else
 			table.insert(self.cp.loadedCourses, id)
 		end
 
 		--	courseplay:reset_course(self)
-		if table.getn(self.Waypoints) == 0 then
-			self.numCourses = 1;
+		if #self.Waypoints == 0 then
+			self.cp.numCourses = 1;
 			self.Waypoints = course.waypoints
+			self.cp.numWaypoints = #self.Waypoints;
 			self.cp.currentCourseName = course.name
-		else -- Add new course to old course
+			courseplay:debug(string.format("course_management %d: %s: no course was loaded -> new course = course -> currentCourseName=%q, numCourses=%s", debug.getinfo(1).currentline, nameNum(self), tostring(self.cp.currentCourseName), tostring(self.cp.numCourses)), 8);
+
+		else -- add new course to old course
 			if self.cp.currentCourseName == nil then --recorded but not saved course
-				self.numCourses = 1;
+				self.cp.numCourses = 1;
 			end;
-			courseplay:debug(string.format("course_management 92: %s: self.cp.currentCourseName=%s, self.numCourses=%s", nameNum(self), tostring(self.cp.currentCourseName), tostring(self.numCourses)), 8);
-			
-			local course1_waypoints = self.Waypoints
-			local course2_waypoints = course.waypoints
+			courseplay:debug(string.format("course_management %d: %s: currentCourseName=%q, numCourses=%s -> add new course %q", debug.getinfo(1).currentline, nameNum(self), tostring(self.cp.currentCourseName), tostring(self.cp.numCourses), tostring(course.name)), 8);
 
-			local old_distance = 51
-			local lastWP = table.getn(self.Waypoints)
-			local wp_found = false
-			local new_wp = 1
-			-- go through all waypoints and try to find a waypoint of the next course near a crossing
 
-			if add_course_at_end ~= true then
-				for number, course1_wp in pairs(course1_waypoints) do
-					--courseplay:debug(number, 3)
-					if course1_wp.crossing == true and course1_wp.merged == nil and wp_found == false and number > self.startlastload then
-						-- go through the second course from behind!!
-						for number_2 = 1, table.getn(course2_waypoints) do
-							local course2_wp = course2_waypoints[number_2]
-							if course2_wp.crossing == true and course2_wp.merged == nil and wp_found == false then
-								local distance_between_waypoints = courseplay:distance(course1_wp.cx, course1_wp.cz, course2_wp.cx, course2_wp.cz)
-								if distance_between_waypoints < 50 and distance_between_waypoints ~= 0 then
-									if distance_between_waypoints < old_distance then
-										old_distance = distance_between_waypoints
-										lastWP = number
-										course1_waypoints[lastWP].merged = true
-										new_wp = number_2
-										wp_found = true
-									end
-								end
-							end
-						end
-					end
-				end
-			end -- comment by horoman: this loop looks strange to me. All the distance comparing, but if once wp_found is true, the loops will just go through all and do no comparing no more...
+			local course1, course2 = self.Waypoints, course.waypoints;
+			local numCourse1, numCourse2 = #course1, #course2;
+			local course1wp, course2wp = numCourse1, 1;
 
-			if wp_found == false then
-				courseplay:debug(nameNum(self) .. ": no waypoint found", 8)
-			end
+			--find crossing points, merge at first pair where dist < 50
+			local matchFound, closestMatchFound = false, false;
+			local useFirstMatch = false; --true: first match <50m is used to merge / false: match with closest distance <50m is used to merge;
+			if not addCourseAtEnd then
+				--find crossing points
+				local crossingPoints = { [1] = {}, [2] = {} };
+				for i,wp in pairs(course1) do
+					if i > 1 and wp.crossing == true then
+						-- courseplay:debug('course1 wp ' .. i .. ': add to crossingPoints[1]', 8);
+						table.insert(crossingPoints[1], i);
+					end;
+				end;
+				for i,wp in pairs(course2) do
+					if i < numCourse2 and wp.crossing == true then
+						-- courseplay:debug('course2 wp ' .. i .. ': add to crossingPoints[2]', 8);
+						table.insert(crossingPoints[2], i);
+					end;
+				end;
+				courseplay:debug(string.format('course 1 has %d crossing points (excluding first point), course 2 has %d crossing points (excluding last point), useFirstMatch=%s', #crossingPoints[1], #crossingPoints[2], tostring(useFirstMatch)), 8);
 
-			self.Waypoints = {}
+				--find < 50m match
+				local smallestDist = math.huge;
+				if #crossingPoints[1] > 0 and #crossingPoints[2] > 0 then
+					for _,wpNum1 in pairs(crossingPoints[1]) do
+						local wp1 = course1[wpNum1];
+						for _,wpNum2 in pairs(crossingPoints[2]) do
+							local wp2 = course2[wpNum2];
+							local dist = courseplay:distance(wp1.cx, wp1.cz, wp2.cx, wp2.cz);
+							courseplay:debug(string.format('course1 wp %d, course2 wp %d, dist=%s', wpNum1, wpNum2, tostring(dist)), 8);
+							if dist and dist ~= 0 and dist < 50 then
+								if useFirstMatch then
+									course1wp = wpNum1;
+									course2wp = wpNum2;
+									matchFound = true;
+									courseplay:debug(string.format('\tuseFirstMatch=true -> 2 valid crossing points found: (1)=#%d, (2)=#%d, dist=%.1f -> break', course1wp, course2wp, dist), 8);
+								else
+									if dist < smallestDist then
+										smallestDist = dist;
+										course1wp = wpNum1;
+										course2wp = wpNum2;
+										closestMatchFound = true;
+										courseplay:debug(string.format('\tuseFirstMatch=false -> 2 valid crossing points found: (1)=#%d, (2)=#%d, dist=%.1f -> continue', course1wp, course2wp, dist), 8);
+									end;
+								end;
+							end;
+							if matchFound then break; end;
+						end;
+						if matchFound then break; end;
+					end;
+				end;
+			end;
 
-			for i = 1, lastWP do
-				table.insert(self.Waypoints, course1_waypoints[i])
-			end
-			self.startlastload = lastWP
+			if not addCourseAtEnd then
+				if matchFound or closestMatchFound then
+					courseplay:debug(string.format('%s: merge points found: course 1: #%d, course 2: #%d', nameNum(self), course1wp, course2wp), 8);
+				else
+					courseplay:debug(string.format('%s: no points where the courses could be merged have been found -> add 2nd course at end', nameNum(self)), 8);
+				end;
+			end;
 
-			local lastNewWP = table.getn(course.waypoints)
-			for i = new_wp, lastNewWP do
-				table.insert(self.Waypoints, course.waypoints[i])
-			end
-			self.Waypoints[lastWP + 1].merged = true
-			self.numCourses = self.numCourses + 1;
-			self.cp.currentCourseName = string.format("%d %s", self.numCourses, courseplay:loc('CPCourseAdded'));
-		end
+			self.Waypoints = {};
+			for i=1, course1wp do
+				table.insert(self.Waypoints, course1[i]);
+			end;
+			for i=course2wp, numCourse2 do
+				table.insert(self.Waypoints, course2[i]);
+			end;
+
+			self.cp.numWaypoints = #self.Waypoints;
+			self.cp.numCourses = self.cp.numCourses + 1;
+			self.cp.currentCourseName = string.format("%d %s", self.cp.numCourses, courseplay:loc('CPCourseAdded'));
+			courseplay:debug(string.format('%s: adding course done -> numWaypoints=%d, numCourses=%s, currentCourseName=%q', nameNum(self), self.cp.numWaypoints, self.cp.numCourses, self.cp.currentCourseName), 8);
+		end;
+
 		self.cp.canDrive = true;
-		
+
 		self.recordnumber = 1;  -- Waypoint number
 		courseplay:updateWaypointSigns(self, "current");
 
 		self.cp.hasGeneratedCourse = false;
 		courseplay:validateCourseGenerationData(self);
-		
+
 		courseplay:validateCanSwitchMode(self);
 	end
 end

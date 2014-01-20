@@ -852,7 +852,7 @@ function courseplay:generateCourse(vehicle)
 	vehicle.Waypoints[1].crossing = true;
 	vehicle.Waypoints[vehicle.maxnumber].wait = true;
 	vehicle.Waypoints[vehicle.maxnumber].crossing = true;
-	vehicle.numCourses = 1;
+	vehicle.cp.numCourses = 1;
 	courseplay:updateWaypointSigns(vehicle);
 
 	vehicle.cp.hasGeneratedCourse = true;

@@ -106,7 +106,7 @@ function courseplay:stop_record(vehicle)
 	vehicle.cp.canDrive = true;
 	vehicle.maxnumber = vehicle.recordnumber - 1;
 	vehicle.recordnumber = 1;
-	vehicle.numCourses = 1;
+	vehicle.cp.numCourses = 1;
 
 	courseplay:validateCourseGenerationData(vehicle);
 	courseplay:validateCanSwitchMode(vehicle);
@@ -238,7 +238,7 @@ function courseplay:reset_course(vehicle)
 	vehicle.cp.canDrive = false
 	vehicle.cp.abortWork = nil
 	vehicle.startlastload = 1
-	vehicle.numCourses = 0;
+	vehicle.cp.numCourses = 0;
 	vehicle.cp.numWaitPoints = 0;
 	vehicle.cp.waitPoints = {};
 

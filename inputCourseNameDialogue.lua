@@ -180,7 +180,7 @@ function inputCourseNameDialogue:onSaveClick()
 		end
 
 		vehicle.cp.currentCourseId = maxID + 1;
-		vehicle.numCourses = 1;
+		vehicle.cp.numCourses = 1;
 
 		local course = { id = vehicle.cp.currentCourseId, uid = 'c'..vehicle.cp.currentCourseId, type = 'course', name = vehicle.cp.currentCourseName, nameClean = courseplay:normalizeUTF8(vehicle.cp.currentCourseName), waypoints = vehicle.Waypoints, parent = 0 }
 		g_currentMission.cp_courses[vehicle.cp.currentCourseId] = course

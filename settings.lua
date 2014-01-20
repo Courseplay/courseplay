@@ -584,7 +584,7 @@ function courseplay:copyCourse(self)
 		self.Waypoints = src.Waypoints;
 		self.cp.currentCourseName = src.cp.currentCourseName;
 		self.cp.loadedCourses = src.cp.loadedCourses;
-		self.numCourses = src.numCourses;
+		self.cp.numCourses = src.cp.numCourses;
 		self.recordnumber = 1;
 		self.maxnumber = table.getn(self.Waypoints);
 
@@ -1033,14 +1033,14 @@ function courseplay:validateCourseGenerationData(vehicle)
 	and hasEnoughWaypoints
 	and vehicle.cp.hasStartingCorner == true 
 	and vehicle.cp.hasStartingDirection == true 
-	and (vehicle.numCourses == nil or (vehicle.numCourses ~= nil and vehicle.numCourses == 1) or vehicle.cp.fieldEdge.selectedField.fieldNum > 0) 
+	and (vehicle.cp.numCourses == nil or (vehicle.cp.numCourses ~= nil and vehicle.cp.numCourses == 1) or vehicle.cp.fieldEdge.selectedField.fieldNum > 0) 
 	then
 		vehicle.cp.hasValidCourseGenerationData = true;
 	else
 		vehicle.cp.hasValidCourseGenerationData = false;
 	end;
 
-	courseplay:debug(string.format("%s: hasGeneratedCourse=%s, hasEnoughWaypoints=%s, hasStartingCorner=%s, hasStartingDirection=%s, numCourses=%s, fieldEdge.selectedField.fieldNum=%s ==> hasValidCourseGenerationData=%s", nameNum(vehicle), tostring(vehicle.cp.hasGeneratedCourse), tostring(hasEnoughWaypoints), tostring(vehicle.cp.hasStartingCorner), tostring(vehicle.cp.hasStartingDirection), tostring(vehicle.numCourses), tostring(vehicle.cp.fieldEdge.selectedField.fieldNum), tostring(vehicle.cp.hasValidCourseGenerationData)), 7);
+	courseplay:debug(string.format("%s: hasGeneratedCourse=%s, hasEnoughWaypoints=%s, hasStartingCorner=%s, hasStartingDirection=%s, numCourses=%s, fieldEdge.selectedField.fieldNum=%s ==> hasValidCourseGenerationData=%s", nameNum(vehicle), tostring(vehicle.cp.hasGeneratedCourse), tostring(hasEnoughWaypoints), tostring(vehicle.cp.hasStartingCorner), tostring(vehicle.cp.hasStartingDirection), tostring(vehicle.cp.numCourses), tostring(vehicle.cp.fieldEdge.selectedField.fieldNum), tostring(vehicle.cp.hasValidCourseGenerationData)), 7);
 end;
 
 function courseplay:validateCanSwitchMode(vehicle)
