@@ -237,8 +237,9 @@ function courseplay:reset_course(vehicle)
 	vehicle.Waypoints = {}
 	vehicle.cp.canDrive = false
 	vehicle.cp.abortWork = nil
-	vehicle.startlastload = 1
+	vehicle.cp.lastMergedWP = 1;
 	vehicle.cp.numCourses = 0;
+	vehicle.cp.numWaypoints = 0;
 	vehicle.cp.numWaitPoints = 0;
 	vehicle.cp.waitPoints = {};
 

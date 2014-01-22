@@ -120,20 +120,20 @@ function courseplay:load_course(self, id, useRealId, addCourseAtEnd)
 			local course1wp, course2wp = numCourse1, 1;
 
 			--find crossing points, merge at first pair where dist < 50
-			local matchFound, closestMatchFound = false, false;
+			local firstMatchFound, closestMatchFound = false, false;
 			local useFirstMatch = false; --true: first match <50m is used to merge / false: match with closest distance <50m is used to merge;
 			if not addCourseAtEnd then
 				--find crossing points
 				local crossingPoints = { [1] = {}, [2] = {} };
-				for i,wp in pairs(course1) do
-					if i > 1 and wp.crossing == true then
-						-- courseplay:debug('course1 wp ' .. i .. ': add to crossingPoints[1]', 8);
+				for i=self.cp.lastMergedWP + 1, numCourse1 do
+					if i > 1 and course1[i].crossing == true and not course1[i].merged then
+						courseplay:debug('course1 wp ' .. i .. ': add to crossingPoints[1]', 8);
 						table.insert(crossingPoints[1], i);
 					end;
 				end;
 				for i,wp in pairs(course2) do
-					if i < numCourse2 and wp.crossing == true then
-						-- courseplay:debug('course2 wp ' .. i .. ': add to crossingPoints[2]', 8);
+					if i < numCourse2 and wp.crossing == true and not wp.merged then
+						courseplay:debug('course2 wp ' .. i .. ': add to crossingPoints[2]', 8);
 						table.insert(crossingPoints[2], i);
 					end;
 				end;
@@ -152,27 +152,42 @@ function courseplay:load_course(self, id, useRealId, addCourseAtEnd)
 								if useFirstMatch then
 									course1wp = wpNum1;
 									course2wp = wpNum2;
-									matchFound = true;
-									courseplay:debug(string.format('\tuseFirstMatch=true -> 2 valid crossing points found: (1)=#%d, (2)=#%d, dist=%.1f -> break', course1wp, course2wp, dist), 8);
+
+									self.cp.lastMergedWP = wpNum1;
+									course1[course1wp].merged = true;
+									course2[course2wp].merged = true;
+
+									firstMatchFound = true;
+									courseplay:debug(string.format('\tuseFirstMatch=true -> 2 valid crossing points found: (1)=#%d, (2)=#%d, dist=%.1f -> lastMergedWP=%d, set "merged" for both to "true", break', course1wp, course2wp, dist, self.cp.lastMergedWP), 8);
 								else
 									if dist < smallestDist then
 										smallestDist = dist;
+
+										--remove previous 'merged' vars
+										course1[course1wp].merged = nil;
+										course1[course2wp].merged = nil;
+
 										course1wp = wpNum1;
 										course2wp = wpNum2;
+
+										self.cp.lastMergedWP = wpNum1;
+										course1[course1wp].merged = true;
+										course2[course2wp].merged = true;
+
 										closestMatchFound = true;
-										courseplay:debug(string.format('\tuseFirstMatch=false -> 2 valid crossing points found: (1)=#%d, (2)=#%d, dist=%.1f -> continue', course1wp, course2wp, dist), 8);
+										courseplay:debug(string.format('\tuseFirstMatch=false -> 2 valid crossing points found: (1)=#%d, (2)=#%d, dist=%.1f -> lastMergedWP=%d, set "merged" for both to "true", continue', course1wp, course2wp, dist, self.cp.lastMergedWP), 8);
 									end;
 								end;
 							end;
-							if matchFound then break; end;
+							if firstMatchFound then break; end;
 						end;
-						if matchFound then break; end;
+						if firstMatchFound then break; end;
 					end;
 				end;
 			end;
 
 			if not addCourseAtEnd then
-				if matchFound or closestMatchFound then
+				if firstMatchFound or closestMatchFound then
 					courseplay:debug(string.format('%s: merge points found: course 1: #%d, course 2: #%d', nameNum(self), course1wp, course2wp), 8);
 				else
 					courseplay:debug(string.format('%s: no points where the courses could be merged have been found -> add 2nd course at end', nameNum(self)), 8);

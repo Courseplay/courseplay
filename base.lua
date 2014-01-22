@@ -136,8 +136,11 @@ function courseplay:load(xmlFile)
 	};
 	courseplay:updateWaypointSigns(self);
 
-	self.cp.currentCourseName = nil
-	self.cp.currentCourseId = 0
+	self.cp.numCourses = 1;
+	self.cp.numWaypoints = 0;
+	self.cp.currentCourseName = nil;
+	self.cp.currentCourseId = 0;
+	self.cp.lastMergedWP = nil;
 
 	self.cp.loadedCourses = {}
 	self.cp.drivingDirReverse = false
