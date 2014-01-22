@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="13">
-	<version>3.41.0365</version>
+	<version>3.41.0366</version>
 	<author><![CDATA[Jakob Tischler, Thomas Gärtner,
 Horoman]]></author>
 	<title>
@@ -724,7 +724,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<cz>žádný</cz>
 			<ru>отсутствует</ru>
 		</text>
-		<text name="CPSelectCombine">
+		<text name="COURSEPLAY_CHOOSE_COMBINE">
 			<en>Choose combine:</en>
 			<de>Drescher wählen:</de>
 			<fr>Choix de Batteuse:</fr>
@@ -733,7 +733,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<cz>Vybrat kombajn:</cz>
 			<ru>Выбрать:</ru>
 		</text>
-		<text name="CPCombineSearch">
+		<text name="COURSEPLAY_COMBINE_SEARCH_MODE">
 			<en>Find combine:</en>
 			<de>Dreschersuche:</de>
 			<fr>Type de recherche:</fr>
@@ -751,7 +751,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<cz>Aktuální:</cz>
 			<ru>Выбран:</ru>
 		</text>
-		<text name="CPFindAuto">
+		<text name="COURSEPLAY_AUTOMATIC_SEARCH">
 			<en>automatic search</en>
 			<de>automatisch finden</de>
 			<fr>recherche automatique</fr>
@@ -760,7 +760,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<cz>najít automaticky</cz>
 			<ru>автоматически</ru>
 		</text>
-		<text name="CPFindManual">
+		<text name="COURSEPLAY_MANUAL_SEARCH">
 			<en>select manually</en>
 			<de>manuell zuweisen</de>
 			<fr>choisir manuellement</fr>
@@ -768,6 +768,15 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<it>seleziona manualmente</it>
 			<cz>manuálně přiřadit</cz>
 			<ru>в ручную</ru>
+		</text>
+		<text name="COURSEPLAY_SEARCH_COMBINE_ON_FIELD">
+			<en>Search combine on field %s</en>
+			<de>Drescher suchen auf Feld %s</de>
+			<fr>Search combine on field %s</fr> <!-- !!! -->
+			<es>Search combine on field %s</es> <!-- !!! -->
+			<it>Search combine on field %s</it> <!-- !!! -->
+			<cz>Search combine on field %s</cz> <!-- !!! -->
+			<ru>Search combine on field %s</ru> <!-- !!! -->
 		</text>
 		<text name="CPcopyCourse">
 			<en>Copy course:</en>

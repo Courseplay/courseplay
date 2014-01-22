@@ -489,9 +489,9 @@ function courseplay_manager:removeCourseplayersFromCombine(vehicle, callDelete)
 		courseplay:debug(string.format('BaseMission:removeVehicle() -> courseplay_manager:removeCourseplayersFromCombine(%q, %s)', nameNum(vehicle), tostring(callDelete)), 4);
 		for k,steerable in pairs(g_currentMission.steerables) do
 			if steerable.cp and steerable.cp.savedCombine and steerable.cp.savedCombine == vehicle then
-				courseplay:debug(string.format('\tsteerable %q: savedCombine is %q --> set savedCombine to nil, set selected_combine_number to 0, set HUD4savedCombine to false, set HUD4savedCombineName to "", reload hud page 4', nameNum(steerable), nameNum(vehicle)), 4);
+				courseplay:debug(string.format('\tsteerable %q: savedCombine is %q --> set savedCombine to nil, set selectedCombineNumber to 0, set HUD4savedCombine to false, set HUD4savedCombineName to "", reload hud page 4', nameNum(steerable), nameNum(vehicle)), 4);
 				steerable.cp.savedCombine = nil;
-				steerable.selected_combine_number = 0;
+				steerable.cp.selectedCombineNumber = 0;
 				steerable.cp.HUD4savedCombine = false;
 				steerable.cp.HUD4savedCombineName = '';
 				courseplay.hud:setReloadPageOrder(steerable, 4, true);

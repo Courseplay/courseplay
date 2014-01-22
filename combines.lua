@@ -11,7 +11,7 @@ function courseplay:find_combines(self)
 		end;
 		
 		if vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable or vehicle.cp.isSugarBeetLoader or courseplay:isAttachedCombine(vehicle) then
-			if (courseplay:isAttachedCombine(vehicle) and vehicle.attacherVehicle ~= nil and not Utils.endsWith(vehicle.configFileName, "poettingerMex6.xml")) or not courseplay:isAttachedCombine(vehicle) then
+			if (courseplay:isAttachedCombine(vehicle) and vehicle.attacherVehicle ~= nil and not vehicle.cp.isPoettingerMex6) or not courseplay:isAttachedCombine(vehicle) then
 				table.insert(found_combines, vehicle);
 			end;
 		end;
@@ -72,10 +72,11 @@ end
 
 -- find combines on the same field (texture)
 function courseplay:update_combines(self)
+	courseplay:debug(string.format("%s: update_combines()", nameNum(self)), 4);
 
 	self.cp.reachableCombines = {}
 
-	if not self.search_combine and self.cp.savedCombine then
+	if not self.cp.searchCombineAutomatically and self.cp.savedCombine then
 		courseplay:debug(nameNum(self)..": combine is manual set",4)
 		table.insert(self.cp.reachableCombines, self.cp.savedCombine)
 		return
@@ -91,7 +92,32 @@ function courseplay:update_combines(self)
 	local found_combines = courseplay:find_combines(self)
 
 	courseplay:debug(string.format("%s: combines found: %d", nameNum(self), table.getn(found_combines)), 4)
-	-- go throuh found
+
+	--[[
+	--DEV: check field pairing using fieldDefs
+	local combineFound;
+	if courseplay.fields.numAvailableFields > 0 and self.cp.searchCombineOnField > 0 then
+		local fieldData = courseplay.fields.fieldData[self.cp.searchCombineOnField];
+		for k,combine in pairs(found_combines) do
+			local combineX,_,combineZ = getWorldTranslation(combine.rootNode);
+			if combineX >= fieldData.dimensions.minX and combineX <= fieldData.dimensions.maxX and combineZ >= fieldData.dimensions.minZ and combineZ <= fieldData.dimensions.maxZ then
+				courseplay:debug(string.format('%s: combine %q is in field %d\'s dimensions', nameNum(self), nameNum(combine), self.cp.searchCombineOnField), 4);
+				if courseplay:pointInPolygonV2b(fieldData.points, combineX, combineZ, true) then
+					courseplay:debug(string.format('\tcombine is in field %d\'s poly', self.cp.searchCombineOnField), 4);
+					courseplay:debug(string.format('%s: adding %q to reachableCombines table', nameNum(self), nameNum(combine)), 4);
+					table.insert(self.cp.reachableCombines, combine);
+					combineFound = true;
+				end;
+			end;
+		end;
+		courseplay:debug(string.format("%s: combines reachable: %d ", nameNum(self), #(self.cp.reachableCombines)), 4);
+		if combineFound then
+			return;
+		end;
+	end;
+	]]
+
+	-- go through found combines
 	for k, combine in pairs(found_combines) do
 		lx, ly, lz = getWorldTranslation(combine.rootNode)
 		local dlx, dly, dlz = worldToLocal(self.cp.DirectionNode, lx, y, lz)
@@ -106,11 +132,10 @@ function courseplay:update_combines(self)
 		local area2 = Utils.getDensity(terrain, 2, x, z, lx, lz, hx, hz)
 		local area3 = Utils.getDensity(terrain, 3, x, z, lx, lz, hx, hz)
 		local areaAll = area0 + area1 + area2 + area3
-		courseplay:debug(nameNum(self)..": channel0: "..tostring(area0).." / channel1: "..tostring(area1).." / channel2: "..tostring(area2).." / channel3: "..tostring(area3),4)
-		courseplay:debug(nameNum(self)..": area: "..tostring(area).." / field in area: "..tostring(areaAll),4)
+		courseplay:debug(string.format('%s: to combine %q: area=%d, channels 0=%d, 1=%d, 2=%d, 3=%d, field in area = %d', nameNum(self), nameNum(combine), area, area0, area1, area2, area3, areaAll), 4);
 
-		if courseplay:isBetween(areaAll, area * 0.999, area * 1.1, true) and courseplay:combine_allows_tractor(self, combine) then
-			courseplay:debug(nameNum(self)..": adding "..tostring(combine.name).." to reachable combines list",4)
+		if areaAll >= area * 0.999 and areaAll <= area * 1.1 and courseplay:combine_allows_tractor(self, combine) then
+			courseplay:debug(string.format('%s: adding %q to reachableCombines table', nameNum(self), nameNum(combine)), 4);
 			table.insert(self.cp.reachableCombines, combine)
 		end
 	end

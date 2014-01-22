@@ -519,18 +519,38 @@ function courseplay:toggleRealisticDriving(vehicle)
 	vehicle.cp.realisticDriving = not vehicle.cp.realisticDriving;
 end;
 
-function courseplay:switch_search_combine(self)
-	self.search_combine = not self.search_combine
-end
+function courseplay:switchSearchCombineMode(vehicle)
+	vehicle.cp.searchCombineAutomatically = not vehicle.cp.searchCombineAutomatically;
+end;
 
-function courseplay:switch_combine(vehicle, change_by)
+function courseplay:setSearchCombineOnField(vehicle, changeDir)
+	if courseplay.fields.numAvailableFields == 0 or not vehicle.cp.searchCombineAutomatically then return; end;
+
+	local newFieldNum = vehicle.cp.searchCombineOnField + changeDir;
+	if newFieldNum == 0 then
+		vehicle.cp.searchCombineOnField = newFieldNum;
+		return;
+	end;
+
+	while courseplay.fields.fieldData[newFieldNum] == nil do
+		if newFieldNum == 0 then
+			vehicle.cp.searchCombineOnField = newFieldNum;
+			return;
+		end;
+		newFieldNum = Utils.clamp(newFieldNum + changeDir, 0, courseplay.fields.numAvailableFields);
+	end;
+
+	vehicle.cp.searchCombineOnField = newFieldNum;
+end;
+
+function courseplay:selectAssignedCombine(vehicle, changeBy)
 	local combines = courseplay:find_combines(vehicle);
-	vehicle.selected_combine_number = Utils.clamp(vehicle.selected_combine_number + change_by, 0, #combines);
+	vehicle.cp.selectedCombineNumber = Utils.clamp(vehicle.cp.selectedCombineNumber + changeBy, 0, #combines);
 
-	if vehicle.selected_combine_number == 0 then
+	if vehicle.cp.selectedCombineNumber == 0 then
 		vehicle.cp.savedCombine = nil;
 	else
-		vehicle.cp.savedCombine = combines[vehicle.selected_combine_number];
+		vehicle.cp.savedCombine = combines[vehicle.cp.selectedCombineNumber];
 	end;
 
 	courseplay:removeActiveCombineFromTractor(vehicle);

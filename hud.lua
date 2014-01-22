@@ -376,25 +376,37 @@ function courseplay.hud:loadPage(vehicle, page)
 
 	--PAGE 4: COMBINE ASSIGNMENT
 	elseif page == 4 then
-		vehicle.cp.hud.content.pages[4][1][1].text = courseplay:loc("CPSelectCombine");
-		vehicle.cp.hud.content.pages[4][2][1].text = courseplay:loc("CPCombineSearch");
-		vehicle.cp.hud.content.pages[4][3][1].text = courseplay:loc("COURSEPLAY_CURRENT");
+		--Line 1: combine search mode (automatic vs manual)
+		vehicle.cp.hud.content.pages[4][1][1].text = courseplay:loc("COURSEPLAY_COMBINE_SEARCH_MODE"); --always
+		vehicle.cp.hud.content.pages[4][1][2].text = vehicle.cp.searchCombineAutomatically and courseplay:loc("COURSEPLAY_AUTOMATIC_SEARCH") or courseplay:loc("COURSEPLAY_MANUAL_SEARCH");
 
-		if vehicle.cp.HUD4savedCombine then
-			if vehicle.cp.HUD4savedCombineName == nil then
-				vehicle.cp.HUD4savedCombineName = courseplay:loc("CPCombine");
+		--Line 2: select combine manually
+		if not vehicle.cp.searchCombineAutomatically then
+			vehicle.cp.hud.content.pages[4][2][1].text = courseplay:loc("COURSEPLAY_CHOOSE_COMBINE"); --only if manual
+			if vehicle.cp.HUD4savedCombine then
+				if vehicle.cp.HUD4savedCombineName == nil then
+					vehicle.cp.HUD4savedCombineName = courseplay:loc("CPCombine");
+				end;
+				vehicle.cp.hud.content.pages[4][2][2].text = string.format("%s (%dm)", vehicle.cp.HUD4savedCombineName, courseplay:distance_to_object(vehicle, vehicle.cp.savedCombine));
+			else
+				vehicle.cp.hud.content.pages[4][2][2].text = courseplay:loc("CPNone");
 			end;
-			vehicle.cp.hud.content.pages[4][1][2].text = string.format("%s (%dm)", vehicle.cp.HUD4savedCombineName, courseplay:distance_to_object(vehicle, vehicle.cp.savedCombine));
-		else
-			vehicle.cp.hud.content.pages[4][1][2].text = courseplay:loc("CPNone");
 		end;
 
-		vehicle.cp.hud.content.pages[4][2][2].text = vehicle.search_combine and courseplay:loc("CPFindAuto") or courseplay:loc("CPFindManual");
+		--[[
+		--Line 3: choose field for automatic search --only if automatic
+		if vehicle.cp.searchCombineAutomatically and courseplay.fields.numAvailableFields > 0 then
+			vehicle.cp.hud.content.pages[4][3][1].text = courseplay:loc("COURSEPLAY_SEARCH_COMBINE_ON_FIELD"):format(vehicle.cp.searchCombineOnField > 0 and tostring(vehicle.cp.searchCombineOnField) or '---');
+		end;
+		--]]
 
-		vehicle.cp.hud.content.pages[4][3][2].text = vehicle.cp.HUD4hasActiveCombine and vehicle.cp.HUD4combineName or courseplay:loc("CPNone");
+		--Line 4: current assigned combine
+		vehicle.cp.hud.content.pages[4][4][1].text = courseplay:loc("COURSEPLAY_CURRENT"); --always
+		vehicle.cp.hud.content.pages[4][4][2].text = vehicle.cp.HUD4hasActiveCombine and vehicle.cp.HUD4combineName or courseplay:loc("CPNone");
 
-		if vehicle.cp.activeCombine ~= nil then
-			vehicle.cp.hud.content.pages[4][4][1].text = courseplay:loc('COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR');
+		--Line 5: remove active combine from tractor
+		if vehicle.cp.activeCombine ~= nil then --only if activeCombine
+			vehicle.cp.hud.content.pages[4][5][1].text = courseplay:loc('COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR');
 		end;
 
 

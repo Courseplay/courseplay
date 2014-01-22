@@ -106,6 +106,12 @@ function courseplay:renderButton(self, button)
 				button.canScrollDown = self.cp.driveOnAtFillLevel > 0;
 			end;
 
+		elseif pg == 4 then
+			if fn == 'setSearchCombineOnField' then
+				button.canScrollUp = courseplay.fields.numAvailableFields > 0 and self.cp.searchCombineAutomatically and self.cp.searchCombineOnField > 0;
+				button.canScrollDown = courseplay.fields.numAvailableFields > 0 and self.cp.searchCombineAutomatically and self.cp.searchCombineOnField < courseplay.fields.numAvailableFields;
+			end;
+
 		elseif pg == 5 then
 			if fn == "change_turn_speed" then
 				button.canScrollUp =   self.cp.speeds.turn < 60/3600;
@@ -208,8 +214,20 @@ function courseplay:renderButton(self, button)
 
 		--Page 4
 		elseif pg == 4 then
-			if fn == "switch_combine" and prm < 0 then
-				button.show = self.selected_combine_number > 0;
+			if fn == 'selectAssignedCombine' then
+				button.show = not self.cp.searchCombineAutomatically;
+				if button.show and prm < 0 then
+					button.show = self.cp.selectedCombineNumber > 0;
+				end;
+			elseif fn == 'setSearchCombineOnField' then
+				button.show = courseplay.fields.numAvailableFields > 0 and self.cp.searchCombineAutomatically;
+				if button.show then
+					if prm < 0 then
+						button.show = self.cp.searchCombineOnField > 0;
+					else
+						button.show = self.cp.searchCombineOnField < courseplay.fields.numAvailableFields;
+					end;
+				end;
 			elseif fn == 'removeActiveCombineFromTractor' then
 				button.show = self.cp.activeCombine ~= nil;
 			end;
