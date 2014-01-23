@@ -217,7 +217,7 @@ function courseplay:delete_waypoint(vehicle)
 
 		vehicle.Waypoints[vehicle.recordnumber] = nil
 	end;
-	--courseplay:buttonsActiveEnabled(vehicle, 'recording');
+	courseplay:buttonsActiveEnabled(vehicle, 'recording');
 end;
 
 -- resets current course -- just setting variables
