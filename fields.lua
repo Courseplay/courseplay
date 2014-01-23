@@ -22,8 +22,8 @@ function courseplay.fields:setAllFieldEdges()
 
 	self:dbg(string.rep('-', 50) .. '\ncall setAllFieldEdges() START (curFieldScandIndex=' .. tostring(self.curFieldScanIndex) .. ')', 'scan');
 	
-	local scanStep = 5;
-	local maxN = 2000;
+	local scanStep = 1;
+	local maxN = 10000;
 	local numDirectionTries = 10;
 
 	local fieldDef = g_currentMission.fieldDefinitionBase.fieldDefs[self.curFieldScanIndex];
@@ -56,7 +56,7 @@ end;
 
 function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, randomDir)
 	--self = courseplay.fields
-	scanStep = scanStep or 5;
+	scanStep = scanStep or 1;
 	maxN = maxN or math.floor(10000/scanStep); --10 km circumference should be enough. otherwise state maxN as parameter
 	randomDir = randomDir or false;
 
@@ -79,7 +79,7 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 	if isField then
 		local dis = 0;
 		local isSearchPointOnField = true;
-		local stepA = 1;
+		local stepA = .25;
 		local stepB = -.05;
 
 		local xx, zz;
@@ -124,6 +124,9 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 		-- local dirX = dZ;
 		-- local dirZ = -dirX; --90° of search direction;
 		local px, pz = xx, zz;
+
+		local Ax, Az, Bx, Bz;
+		local Record = false;
 
 		while #coordinates < maxN do
 			setTranslation(tg,px,y,pz)
@@ -172,15 +175,44 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 			end;
 
 			--print("found")
-			table.insert(coordinates, { cx = px, cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, px, 1, pz), cz = pz });
-			table.insert(xValues, px);
-			table.insert(zValues, pz);
-			self:dbg(string.format('\tpoint %d set: cx=%s, cz=%s', #coordinates, tostring(px), tostring(pz)), 'scan');
+			if #coordinates == 0 then
+				Ax = px ;
+				Az = pz ;
+				Bx = px ;
+				Bz = pz ;
+				Record = true;
+			end;
+			local Cs = Utils.vector2Length(Ax-px,Az-pz);
+			local As = Utils.vector2Length(Ax-Bx,Az-Bz);
+			local Bs = Utils.vector2Length(Bx-px,Bz-pz);
+			
+			local Angle = math.deg ( math.acos (((As*As)+(Bs*Bs)-(Cs*Cs))/(2*As*Bs)));
+			self:dbg(string.format('Angle=%s , Distance =%s', tostring(Angle), tostring(Cs)), 'scan');
 
+			if (Cs >= scanStep*5) or ( Angle>181 ) or ( Angle<179 ) then
+				Record = true;
+			end;
+			if Record then
+				table.insert(coordinates, { cx = Bx, cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, Bx, 1, Bz), cz = Bz });
+				table.insert(xValues, Bx);
+				table.insert(zValues, Bz);
+				self:dbg(string.format('\tpoint %d set: cx=%s, cz=%s', #coordinates, tostring(Bx), tostring(Bz)), 'scan');
+				Ax = Bx;
+				Az = Bz;
+				Record = false;
+			end;
+			Bx = px;
+			Bz = pz;
+			
 			if #coordinates > 5 then
 				local dis0 = Utils.vector2Length(px-coordinates[1].cx, pz-coordinates[1].cz) 
 				--print(dis0)
 				if dis0 < scanStep*1.25 then --otherwise start and end points can be very close together
+					table.insert(coordinates, { cx = Bx, cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, Bx, 1, Bz), cz = Bz });
+					table.insert(xValues, Bx);
+					table.insert(zValues, Bz);
+					self:dbg(string.format('\tpoint %d set: cx=%s, cz=%s', #coordinates, tostring(Bx), tostring(Bz)), 'scan');
+
 					self:dbg(string.format('\tdistance to first point [%.2f] < scanStep*1.25 [%.2f] -> break', dis0, scanStep * 1.25), 'scan');
 					break;
 				end;
