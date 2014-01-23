@@ -1225,7 +1225,7 @@ function courseplay:setCustomSingleFieldEdge(vehicle)
 	courseplay.fields:dbg(string.format("Custom field scan: x,z=%.1f,%.1f, isField=%s", x, z, tostring(isField)), 'customLoad');
 	vehicle.cp.fieldEdge.customField.points = nil;
 	if isField then
-		local edgePoints = courseplay.fields:setSingleFieldEdgePath(vehicle.rootNode, x, z, 5, 2000, 10, nil, true, 'customLoad');
+		local edgePoints = courseplay.fields:setSingleFieldEdgePath(vehicle.rootNode, x, z, 1, 10000, 10, nil, true, 'customLoad');
 		vehicle.cp.fieldEdge.customField.points = edgePoints;
 		vehicle.cp.fieldEdge.customField.numPoints = edgePoints ~= nil and #edgePoints or 0;
 	end;
