@@ -76,33 +76,25 @@ function courseplay:attachableLoad(xmlFile)
 	self.cp.hasSpecializationBigBear = courseplay:hasSpecialization(self, "bigBear");
 	self.cp.hasSpecializationSowingMachineWithTank = courseplay:hasSpecialization(self, "SowingMachineWithTank");
 	self.cp.hasSpecializationDrivingLine = courseplay:hasSpecialization(self, "DrivingLine");
+	self.cp.hasSpecializationHoseRef = courseplay:hasSpecialization(self, "HoseRef");
 
 	courseplay:setNameVariable(self);
 
 
 	--ADD ATTACHABLES TO GLOBAL REFERENCE LIST
+	if courseplay.thirdParty.EifokLiquidManure == nil then courseplay.thirdParty.EifokLiquidManure = {}; end;
+	if courseplay.thirdParty.EifokLiquidManure.dockingStations == nil then courseplay.thirdParty.EifokLiquidManure.dockingStations = {}; end;
+	if courseplay.thirdParty.EifokLiquidManure.hoseRefVehicles == nil then courseplay.thirdParty.EifokLiquidManure.hoseRefVehicles = {}; end;
+
 	--Zunhammer Docking Station (zunhammerDocking.i3d / ManureDocking.lua) [Eifok Team]
 	if Utils.endsWith(self.typeName, "zhAndock") and Utils.endsWith(self.configFileName, "zunhammerDocking.xml") then
-		if courseplay.thirdParty.EifokLiquidManure == nil then courseplay.thirdParty.EifokLiquidManure = {}; end;
-		if courseplay.thirdParty.EifokLiquidManure.dockingStations == nil then courseplay.thirdParty.EifokLiquidManure.dockingStations = {}; end;
-
 		self.cp.isEifokZunhammerDockingStation = true;
 		courseplay.thirdParty.EifokLiquidManure.dockingStations[self.rootNode] = self;
 
-	--Kotte Containers (KotteContainer.i3d) [Eifok Team]
-	elseif Utils.endsWith(self.typeName, "kotte") and Utils.endsWith(self.configFileName, "kotte.xml") then
-		if courseplay.thirdParty.EifokLiquidManure == nil then courseplay.thirdParty.EifokLiquidManure = {}; end;
-		if courseplay.thirdParty.EifokLiquidManure.KotteContainers == nil then courseplay.thirdParty.EifokLiquidManure.KotteContainers = {}; end;
-
-		self.cp.isEifokKotteContainer = true;
-		courseplay.thirdParty.EifokLiquidManure.KotteContainers[self.rootNode] = self;
-
-	--Kotte Zubringer (KotteZubringer.i3d) [Eifok Team]
-	elseif Utils.endsWith(self.typeName, "zubringer") and Utils.endsWith(self.configFileName, "zubringer.xml") then
-		if courseplay.thirdParty.EifokLiquidManure == nil then courseplay.thirdParty.EifokLiquidManure = {}; end;
-		if courseplay.thirdParty.EifokLiquidManure.KotteZubringers == nil then courseplay.thirdParty.EifokLiquidManure.KotteZubringers = {}; end;
-
-		courseplay.thirdParty.EifokLiquidManure.KotteZubringers[self.rootNode] = self;
+	--HoseRef [Eifok Team]
+	elseif self.cp.hasSpecializationHoseRef then
+		self.cp.hasHoseRef = true;
+		courseplay.thirdParty.EifokLiquidManure.hoseRefVehicles[self.rootNode] = self;
 	end;
 end;
 Attachable.load = Utils.appendedFunction(Attachable.load, courseplay.attachableLoad);
@@ -111,10 +103,8 @@ function courseplay:attachableDelete()
 	if self.cp ~= nil then
 		if self.cp.isEifokZunhammerDockingStation then
 			courseplay.thirdParty.EifokLiquidManure.dockingStations[self.rootNode] = nil;
-		elseif self.cp.isEifokKotteZubringer then
-			courseplay.thirdParty.EifokLiquidManure.KotteContainers[self.rootNode] = nil;
-		elseif self.cp.isEifokKotteContainer then
-			courseplay.thirdParty.EifokLiquidManure.KotteZubringers[self.rootNode] = nil;
+		elseif self.cp.hasSpecializationHoseRef then
+			courseplay.thirdParty.EifokLiquidManure.hoseRefVehicles[self.rootNode] = nil;
 		end;
 	end;
 end;

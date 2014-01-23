@@ -422,7 +422,7 @@ function courseplay:stop(self)
 	end
 
 	--reset EifokLiquidManure
-	courseplay.thirdParty.EifokLiquidManure.resetData(self);
+	courseplay.thirdParty.EifokLiquidManure:resetData(self);
 
 	--remove from activeCoursePlayers
 	courseplay:removeFromActiveCoursePlayers(self);
