@@ -127,7 +127,7 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 
 		local Ax, Az, Bx, Bz;
 		local Record = false;
-
+		
 		while #coordinates < maxN do
 			setTranslation(tg,px,y,pz)
 			setTranslation(probe1,-scanStep,0,0); --reset scanstep (already rotated)
@@ -182,14 +182,14 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 				Bz = pz ;
 				Record = true;
 			end;
-			local Cs = Utils.vector2Length(Ax-px,Az-pz);
-			local As = Utils.vector2Length(Ax-Bx,Az-Bz);
-			local Bs = Utils.vector2Length(Bx-px,Bz-pz);
+			local ApLength = Utils.vector2Length(Ax-px,Az-pz);
+			local ABLength = Utils.vector2Length(Ax-Bx,Az-Bz);
+			local BpLength = Utils.vector2Length(Bx-px,Bz-pz);
 			
-			local Angle = math.deg ( math.acos (((As*As)+(Bs*Bs)-(Cs*Cs))/(2*As*Bs)));
+			local Angle = 180 - math.abs ( math.deg ( math.acos (((ABLength*ABLength)+(BpLength*BpLength)-(ApLength*ApLength))/(2*ABLength*BpLength))));
 			self:dbg(string.format('Angle=%s , Distance =%s', tostring(Angle), tostring(Cs)), 'scan');
 
-			if (Cs >= scanStep*5) or ( Angle>181 ) or ( Angle<179 ) then
+			if (ApLength >= scanStep*5) or ( Angle > 10) then
 				Record = true;
 			end;
 			if Record then
