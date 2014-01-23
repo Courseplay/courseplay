@@ -52,6 +52,8 @@ function courseplay:generateCourse(vehicle)
 	---#################################################################
 	-- (1) SET UP CORNERS AND DIRECTIONS --
 	--------------------------------------------------------------------
+	courseplay:debug('(1) SET UP CORNERS AND DIRECTIONS', 7);
+
 	local workWidth = vehicle.cp.workWidth;
 	local corners = {
 		[1] = 'SW',
@@ -381,11 +383,11 @@ function courseplay:generateCourse(vehicle)
 			table.insert(vehicle.cp.headland.lanes, lane);
 		end; --END for curLane in numLanes
 
-		courseplay:debug(string.format('generateCourse(%i):  #vehicle.cp.headland.lanes = %s', debug.getinfo(1).currentline, tostring(numCreatedLanes)), 7);
+		local numCreatedLanes = #(vehicle.cp.headland.lanes);
+		courseplay:debug(string.format('generateCourse(%i):  #vehicle.cp.headland.lanes=%s', debug.getinfo(1).currentline, tostring(numCreatedLanes)), 7);
 		-- courseplay:debug(tableShow(vehicle.cp.headland.lanes, 'vehicle.cp.headland.lanes', 7), 7); --WORKS
 
 		--base field work course on headland path
-		local numCreatedLanes = #(vehicle.cp.headland.lanes);
 		if numCreatedLanes > 0 then
 			poly.points = vehicle.cp.headland.lanes[numCreatedLanes]; --up/down based on last offset lane (= 1/2 workWidth overlap) - TODO: smaller overlap (1/4) ?
 			poly.numPoints = #(poly.points);
@@ -398,6 +400,8 @@ function courseplay:generateCourse(vehicle)
 	---#################################################################
 	-- (3) DIMENSIONS, ALL PATH POINTS
 	--------------------------------------------------------------------
+	courseplay:debug('(3) DIMENSIONS, ALL PATH POINTS', 7);
+
 	--reset x/z values and get field dimensions
 	poly.xValues, poly.zValues = {}, {};
 	for i,cp in pairs(poly.points) do
@@ -584,6 +588,7 @@ function courseplay:generateCourse(vehicle)
 	---############################################################################
 	-- (4) CHECK PATH LANES FOR VALID START AND END POINTS and FILL fieldWorkCourse
 	-------------------------------------------------------------------------------
+	courseplay:debug('(4) CHECK PATH LANES FOR VALID START AND END POINTS and FILL fieldWorkCourse', 7);
 	local fieldWorkCourse = {};
 	local numPoints = #(pathPoints);
 
@@ -745,35 +750,12 @@ function courseplay:generateCourse(vehicle)
 
 	end; --END for i in numPoints
 
-	local lastFivePoints = {};
-	if vehicle.cp.returnToFirstPoint then
-		fieldWorkCourse[#fieldWorkCourse].wait = false;
-
-		for b=5, 1, -1 do
-			local origPathPoint = fieldWorkCourse[b];
-
-			local point = {
-				cx = origPathPoint.cx,
-				cz = origPathPoint.cz,
-				angle = courseplay:invertAngleDeg(origPathPoint.angle),
-				wait = false, --b == 1,
-				rev = false,
-				crossing = false,
-				lane = 1,
-				turnStart = false,
-				turnEnd = false,
-				ridgeMarker = 0,
-				generated = true
-			};
-			table.insert(lastFivePoints, point);
-		end;
-	end;
-
 
 
 	---############################################################################
 	-- (5) ROTATE HEADLAND COURSES
 	-------------------------------------------------------------------------------
+	courseplay:debug('(5) ROTATE HEADLAND COURSES', 7);
 	local numHeadlandLanesCreated = 0;
 	if vehicle.cp.headland.numLanes > 0 then
 		numHeadlandLanesCreated = #(vehicle.cp.headland.lanes);
@@ -813,6 +795,40 @@ function courseplay:generateCourse(vehicle)
 	---############################################################################
 	-- (6) CONCATENATE HEADLAND COURSE and FIELDWORK COURSE
 	-------------------------------------------------------------------------------
+	courseplay:debug('(6) CONCATENATE HEADLAND COURSE and FIELDWORK COURSE', 7);
+	local lastFivePoints = {};
+	if vehicle.cp.returnToFirstPoint then
+		fieldWorkCourse[#fieldWorkCourse].wait = false;
+
+		local srcCourse = fieldWorkCourse;
+		if vehicle.cp.headland.numLanes and vehicle.cp.headland.numLanes > 0 and vehicle.cp.headland.orderBefore and #(vehicle.cp.headland.lanes) > 0 then
+			srcCourse = vehicle.cp.headland.lanes[1];
+			courseplay:debug(string.format('lastFivePoints: #headland.lanes=%d, headland.orderBefore=%s -> srcCourse = headland.lanes[1]', #(vehicle.cp.headland.lanes), tostring(vehicle.cp.headland.orderBefore)), 7);
+		end;
+
+		for b=5, 1, -1 do
+			local origPathPoint = srcCourse[b];
+
+			local point = {
+				cx = origPathPoint.cx,
+				cz = origPathPoint.cz,
+				angle = courseplay:invertAngleDeg(origPathPoint.angle),
+				wait = false, --b == 1,
+				rev = false,
+				crossing = false,
+				lane = 1,
+				turnStart = false,
+				turnEnd = false,
+				ridgeMarker = 0,
+				generated = true
+			};
+			table.insert(lastFivePoints, point);
+		end;
+	end;
+
+
+
+
 	vehicle.Waypoints = {};
 
 	if numHeadlandLanesCreated > 0 then
@@ -840,6 +856,7 @@ function courseplay:generateCourse(vehicle)
 	---############################################################################
 	-- (7) FINAL COURSE DATA
 	-------------------------------------------------------------------------------
+	courseplay:debug('(7) FINAL COURSE DATA', 7);
 	vehicle.maxnumber = #(vehicle.Waypoints)
 	if vehicle.maxnumber == 0 then
 		courseplay:debug('ERROR: #vehicle.Waypoints == 0 -> cancel and return', 7);
