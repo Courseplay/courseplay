@@ -41,8 +41,12 @@ function courseplay:setNameVariable(workTool)
 
 	--------------------------------------------------------------
 
+	--Claas Quantum 3800K [Vertex Design]
+	if workTool.psGrassactive ~= nil and workTool.psStrawactive ~= nil then --and Utils.endsWith(workTool.configFileName, 'claas_quantum_3800k.xml') then
+		workTool.cp.isClaasQuantum3800K = true;
+
 	--Poettinger Eurocat 315H [MoreRealistic]
-	if workTool.typeName == 'moreRealistic.mower_animated' and Utils.endsWith(workTool.configFileName, 'poettingerEurocat315H.xml') then
+	elseif workTool.typeName == 'moreRealistic.mower_animated' and Utils.endsWith(workTool.configFileName, 'poettingerEurocat315H.xml') then
 		workTool.cp.isMRpoettingerEurocat315H = true;
 
 	--Case IH Magnum 340 [Giants Titanium]
@@ -362,8 +366,25 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		workTool:setPTO(false)
 	end
 
+	--Claas Quantum 3800K [Vertex Design]
+	if workTool.cp.isClaasQuantum3800K then
+		--correctly turn off the grass particle system, as it's not being done in the trailer's "Pickup" spec
+		if turnOn ~= nil then
+			if turnOn then
+				if workTool.cp.hasDeactivatedGrassPS then
+					workTool.cp.hasDeactivatedGrassPS = false;
+				end;
+			elseif not turnOn and not workTool.psGrassactive and not workTool.cp.hasDeactivatedGrassPS then
+				for _, ps in pairs(workTool.grassParticleSystems) do
+					Utils.setEmittingState(ps.particleSystem, false);
+				end;
+				workTool.cp.hasDeactivatedGrassPS = true;
+			end;
+		end;
+		return false, allowedToDrive;
+
 	--Zunhammer Liquid Manure Pack [Eifok Team]
-	if workTool.cp.isEifokZunhammer18500PU then
+	elseif workTool.cp.isEifokZunhammer18500PU then
 		if workTool.cp.hasEifokZunhammerAttachable then
 			local attachable = workTool.cp.eifokZunhammerAttachable;
 
