@@ -39,6 +39,27 @@ function courseplay_manager:loadMap(name)
 	self.playerOnFootMouseEnabled = false;
 	self.wasPlayerFrozen = false;
 
+	--Field scan info display
+	self.fieldScanInfo = {};
+	self.fieldScanInfo.fileW = 512/1920;
+	self.fieldScanInfo.fileH = 256/1080;
+	self.fieldScanInfo.contentW = 426/1920;
+	self.fieldScanInfo.contentH = 180/1080;
+	self.fieldScanInfo.bgX, self.fieldScanInfo.bgY = 0.5 - self.fieldScanInfo.contentW/2, 0.5 - self.fieldScanInfo.contentH/2;
+	local bgPath = Utils.getFilename('img/fieldScanInfoBackground.png', courseplay.path)
+	self.fieldScanInfo.bgOverlay = Overlay:new('fieldScanInfoBackground', bgPath, self.fieldScanInfo.bgX, self.fieldScanInfo.bgY, self.fieldScanInfo.fileW, self.fieldScanInfo.fileH);
+	self.fieldScanInfo.lineX  = self.fieldScanInfo.bgX + 21/1920;
+	self.fieldScanInfo.line1Y = self.fieldScanInfo.bgY + 67/1080;
+	self.fieldScanInfo.line2Y = self.fieldScanInfo.bgY + 28/1080;
+	self.fieldScanInfo.loadX  = self.fieldScanInfo.bgX + 300/1920;
+	self.fieldScanInfo.loadY  = self.fieldScanInfo.line2Y - 0.018/4;
+	local loadingPath = Utils.getFilename('img/fieldScanInfoLoading.png', courseplay.path)
+	self.fieldScanInfo.loadOverlay = Overlay:new('fieldScanInfoLoad', loadingPath, self.fieldScanInfo.loadX, self.fieldScanInfo.loadY, 32/1920, 32/1080);
+	-- self.fieldScanInfo.loadTime = 0;
+	self.fieldScanInfo.loadRotStep = 0;
+	self.fieldScanInfo.loadRotAdd = math.rad(-360/72); --rotate 5° to the right each step
+	self.fieldScanInfo.rotationTime = 1000/72; --in ms
+
 	if g_server ~= nil then
 		courseplay.fields:loadAllCustomFields();
 	end;
@@ -175,6 +196,34 @@ function courseplay_manager:draw()
 	self.buttons.globalInfoTextClickArea.y2 = courseplay.globalInfoText.backgroundY + (line  * courseplay.globalInfoText.lineHeight);
 
 	courseplay.lightsNeeded = g_currentMission.environment.needsLights or (g_currentMission.environment.lastRainScale > 0.1 and g_currentMission.environment.timeSinceLastRain < 30);
+
+	-- display field scan msg
+	if not courseplay.fields.allFieldsScanned then
+		local fsi = self.fieldScanInfo;
+
+		fsi.bgOverlay:render();
+		fsi.loadOverlay:render();
+
+		courseplay:setFontSettings('white',  true, 'left');
+		renderText(fsi.lineX, fsi.line1Y - 0.001, 0.021, courseplay:loc('COURSEPLAY_FIELD_SCAN_IN_PROGRESS'));
+		courseplay:setFontSettings('shadow', true, 'left');
+		renderText(fsi.lineX, fsi.line1Y,         0.021, courseplay:loc('COURSEPLAY_FIELD_SCAN_IN_PROGRESS'));
+
+		local str2 = courseplay:loc('COURSEPLAY_SCANNING_FIELD_NMB'):format(courseplay.fields.curFieldScanIndex, g_currentMission.fieldDefinitionBase.numberOfFields);
+		courseplay:setFontSettings('white',  false, 'left');
+		renderText(fsi.lineX, fsi.line2Y - 0.001, 0.018, str2);
+		courseplay:setFontSettings('shadow', false, 'left');
+		renderText(fsi.lineX, fsi.line2Y,         0.018, str2);
+
+		local rotationStep = math.floor(g_currentMission.time / self.fieldScanInfo.rotationTime);
+		if rotationStep > fsi.loadRotStep then
+			fsi.loadOverlay:setRotation(rotationStep * fsi.loadRotAdd, fsi.loadOverlay.width/2, fsi.loadOverlay.height/2);
+			fsi.loadRotStep = rotationStep;
+		end;
+
+		--reset font settings
+		courseplay:setFontSettings('white', true, 'left');
+	end;
 end;
 
 function courseplay_manager:mouseEvent(posX, posY, isDown, isUp, button)

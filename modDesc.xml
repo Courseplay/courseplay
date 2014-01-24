@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="13">
-	<version>3.41.0370</version>
+	<version>3.41.0371</version>
 	<author><![CDATA[Jakob Tischler, Thomas Gärtner,
 Horoman]]></author>
 	<title>
@@ -1733,6 +1733,24 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<it>Campo</it>
 			<cz>Pole</cz>
 			<ru>поле №</ru>
+		</text>
+		<text name="COURSEPLAY_FIELD_SCAN_IN_PROGRESS">
+			<de>Feldscan im Gange</de>
+			<en>Field scan in progress</en>
+			<es>Field scan in progress</es> <!-- !!! -->
+			<fr>Field scan in progress</fr> <!-- !!! -->
+			<it>Field scan in progress</it> <!-- !!! -->
+			<cz>Field scan in progress</cz> <!-- !!! -->
+			<ru>Field scan in progress</ru> <!-- !!! -->
+		</text>
+		<text name="COURSEPLAY_SCANNING_FIELD_NMB">
+			<de>Scanne Feld %d/%d</de>
+			<en>Scanning field %d/%d</en>
+			<es>Scanning field %d/%d</es> <!-- !!! -->
+			<fr>Scanning field %d/%d</fr> <!-- !!! -->
+			<it>Scanning field %d/%d</it> <!-- !!! -->
+			<cz>Scanning field %d/%d</cz> <!-- !!! -->
+			<ru>Scanning field %d/%d</ru> <!-- !!! -->
 		</text>
 		<text name="COURSEPLAY_HOSEMISSING">
 			<de>Schlauch fehlt - Befüllung abgebrochen</de>
