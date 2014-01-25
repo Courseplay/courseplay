@@ -46,19 +46,34 @@ function courseplay_manager:loadMap(name)
 	self.fieldScanInfo.contentW = 426/1920;
 	self.fieldScanInfo.contentH = 180/1080;
 	self.fieldScanInfo.bgX, self.fieldScanInfo.bgY = 0.5 - self.fieldScanInfo.contentW/2, 0.5 - self.fieldScanInfo.contentH/2;
-	local bgPath = Utils.getFilename('img/fieldScanInfoBackground.png', courseplay.path)
+	local bgPath = Utils.getFilename('img/fieldScanInfoBackground.png', courseplay.path);
 	self.fieldScanInfo.bgOverlay = Overlay:new('fieldScanInfoBackground', bgPath, self.fieldScanInfo.bgX, self.fieldScanInfo.bgY, self.fieldScanInfo.fileW, self.fieldScanInfo.fileH);
-	self.fieldScanInfo.lineX  = self.fieldScanInfo.bgX + 21/1920;
+	local xPadding = 20/1920;
+	self.fieldScanInfo.lineX  = self.fieldScanInfo.bgX + xPadding;
 	self.fieldScanInfo.line1Y = self.fieldScanInfo.bgY + 67/1080;
-	self.fieldScanInfo.line2Y = self.fieldScanInfo.bgY + 28/1080;
-	self.fieldScanInfo.loadX  = self.fieldScanInfo.bgX + 300/1920;
-	self.fieldScanInfo.loadY  = self.fieldScanInfo.line2Y - 0.018/4;
-	local loadingPath = Utils.getFilename('img/fieldScanInfoLoading.png', courseplay.path)
+	self.fieldScanInfo.line2Y = self.fieldScanInfo.bgY + 40/1080;
+	self.fieldScanInfo.loadX  = self.fieldScanInfo.bgX + 340/1920;
+	-- self.fieldScanInfo.loadY  = self.fieldScanInfo.line2Y - 0.018/4;
+	self.fieldScanInfo.loadY  = self.fieldScanInfo.bgY + 57/1080;
+
+	local loadingPath = Utils.getFilename('img/fieldScanInfoLoading.png', courseplay.path);
 	self.fieldScanInfo.loadOverlay = Overlay:new('fieldScanInfoLoad', loadingPath, self.fieldScanInfo.loadX, self.fieldScanInfo.loadY, 32/1920, 32/1080);
 	-- self.fieldScanInfo.loadTime = 0;
 	self.fieldScanInfo.loadRotStep = 0;
 	self.fieldScanInfo.loadRotAdd = math.rad(-360/72); --rotate 5° to the right each step
 	self.fieldScanInfo.rotationTime = 1000/72; --in ms
+
+	self.fieldScanInfo.progressBarWidth = self.fieldScanInfo.contentW - 2 * xPadding - 5/1920;
+	local progressBarBgPath = Utils.getFilename('img/progressBarBackground.png', courseplay.path);
+	self.fieldScanInfo.progressBarBgOverlay = Overlay:new('fieldScanInfoProgressBarBg', progressBarBgPath, self.fieldScanInfo.lineX, self.fieldScanInfo.bgY + 16/1080, self.fieldScanInfo.progressBarWidth, 16/1080);
+	local progressBarPath = Utils.getFilename('img/progressBar.png', courseplay.path);
+	self.fieldScanInfo.progressBarOverlay = Overlay:new('fieldScanInfoProgressBar', progressBarPath, self.fieldScanInfo.lineX, self.fieldScanInfo.bgY + 16/1080, self.fieldScanInfo.progressBarWidth, 16/1080);
+	self.fieldScanInfo.percentColors = {
+		{ pct = 0.0, color = { r = 0.882353, g = 0.105882, b = 0 } },
+		{ pct = 0.5, color = { r = 1.000000, g = 0.800000, b = 0 } },
+		{ pct = 1.0, color = { r = 0.537255, g = 0.952941, b = 0 } }
+	};
+
 
 	if g_server ~= nil then
 		courseplay.fields:loadAllCustomFields();
@@ -201,16 +216,23 @@ function courseplay_manager:draw()
 	if not courseplay.fields.allFieldsScanned then
 		local fsi = self.fieldScanInfo;
 
-		fsi.bgOverlay:render();
-		fsi.loadOverlay:render();
+		fsi.progressBarBgOverlay:render();
+		local pct = courseplay.fields.curFieldScanIndex / g_currentMission.fieldDefinitionBase.numberOfFields;
+		local color = self:getColorFromPct(pct, fsi.percentColors);
+		fsi.progressBarOverlay:setColor(color.r, color.g, color.b, 1);
+		fsi.progressBarOverlay.width = fsi.progressBarWidth * pct;
+  		setOverlayUVs(fsi.progressBarOverlay.overlayId, 0,0, 0,1, pct,0, pct,1);
+		fsi.progressBarOverlay:render();
 
-		courseplay:setFontSettings('white',  true, 'left');
+		fsi.bgOverlay:render();
+
+		courseplay:setFontSettings({ 0.8, 0.8, 0.8, 1 },  true, 'left');
 		renderText(fsi.lineX, fsi.line1Y - 0.001, 0.021, courseplay:loc('COURSEPLAY_FIELD_SCAN_IN_PROGRESS'));
 		courseplay:setFontSettings('shadow', true, 'left');
 		renderText(fsi.lineX, fsi.line1Y,         0.021, courseplay:loc('COURSEPLAY_FIELD_SCAN_IN_PROGRESS'));
 
 		local str2 = courseplay:loc('COURSEPLAY_SCANNING_FIELD_NMB'):format(courseplay.fields.curFieldScanIndex, g_currentMission.fieldDefinitionBase.numberOfFields);
-		courseplay:setFontSettings('white',  false, 'left');
+		courseplay:setFontSettings({ 0.8, 0.8, 0.8, 1 },  false, 'left');
 		renderText(fsi.lineX, fsi.line2Y - 0.001, 0.018, str2);
 		courseplay:setFontSettings('shadow', false, 'left');
 		renderText(fsi.lineX, fsi.line2Y,         0.018, str2);
@@ -220,11 +242,44 @@ function courseplay_manager:draw()
 			fsi.loadOverlay:setRotation(rotationStep * fsi.loadRotAdd, fsi.loadOverlay.width/2, fsi.loadOverlay.height/2);
 			fsi.loadRotStep = rotationStep;
 		end;
+		fsi.loadOverlay:render();
 
 		--reset font settings
 		courseplay:setFontSettings('white', true, 'left');
 	end;
 end;
+
+function courseplay_manager:getColorFromPct(pct, colorMap)
+	local step = colorMap[2].pct - colorMap[1].pct;
+
+	for i=1, #colorMap do
+		local data = colorMap[i];
+		if pct == data.pct then
+			return data.color;
+		end;
+
+		--print(string.format('\tstep %d, step base pct=%.1f', i, colorMap[i].pct));
+		if pct <= data.pct then
+			local lower = colorMap[i - 1];
+			local upper = colorMap[i];
+			--print(string.format('\t\tpct <= map pct -> lower=colorMap[%d], upper=colorMap[%d]', i-1, i));
+
+			local rd, gd, bd = upper.color.r - lower.color.r, upper.color.g - lower.color.g, upper.color.b - lower.color.b;
+			local relativePct = (pct - lower.pct) / step;
+			--print(string.format('\t\trd=%.1f, gd=%.1f, bg=%.1f, relativePct=%.2f', rd, gd, bd, relativePct))
+			local color = {
+				r = lower.color.r + relativePct * rd,
+				g = lower.color.g + relativePct * gd,
+				b = lower.color.b + relativePct * bd
+			};
+			--print(string.format('\t\tr = lower r + relativePct * rd = %.2f + %.2f * %.2f = %.2f', lower.color.r, relativePct, rd, color.r));
+			--print(string.format('\t\tg = lower g + relativePct * gd = %.2f + %.2f * %.2f = %.2f', lower.color.g, relativePct, gd, color.g));
+			--print(string.format('\t\tb = lower b + relativePct * bd = %.2f + %.2f * %.2f = %.2f', lower.color.b, relativePct, bd, color.b));
+			return color;
+		end;
+	end;
+end;
+
 
 function courseplay_manager:mouseEvent(posX, posY, isDown, isUp, button)
 	if g_currentMission.paused then
