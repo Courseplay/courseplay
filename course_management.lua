@@ -165,7 +165,7 @@ function courseplay:load_course(self, id, useRealId, addCourseAtEnd)
 
 										--remove previous 'merged' vars
 										course1[course1wp].merged = nil;
-										course1[course2wp].merged = nil;
+										course2[course2wp].merged = nil;
 
 										course1wp = wpNum1;
 										course2wp = wpNum2;
