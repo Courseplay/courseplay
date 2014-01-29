@@ -75,7 +75,7 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 
 	local isField = courseplay:is_field(x0, z0, 0.1, 0.1);
 	local coordinates, xValues, zValues = {}, {}, {};
-
+	local Acoordinates, AxValues, AzValues = {}, {}, {};
 	if isField then
 		local dis = 0;
 		local isSearchPointOnField = true;
@@ -191,11 +191,71 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 		delete(probe1);
 		delete(tg);
 
-		-- search important direction changes to affine edge
-		local Acoordinates, AxValues, AzValues = {}, {}, {};
-		local point, prevPoint, nextPoint ;
+-- search important direction changes to affine edge
+	
+		local point ;
 		local ptA, ptB, ptC ;
-		for point = 1 , #coordinates do
+		for point, ptB in pairs(coordinates) do
+			table.insert(Acoordinates, ptB);			
+			table.insert(AxValues, ptB.cx);
+			table.insert(AzValues, ptB.cz);
+			if point - 1 < 1 then
+				ptA = coordinates[#coordinates]
+			else
+				ptA = Acoordinates[#Acoordinates-1]
+			end;
+			if point + 1 > #coordinates then
+				ptC = Acoordinates[1]
+			else
+				ptC = coordinates[point + 1]
+			end;
+			local dirAB = courseplay.generation:getPointDirection(ptA, ptB);
+			local dirBCx, dirBCz, BClength = courseplay.generation:getPointDirection(ptB,ptC);
+			local scanStep = BClength / 3 ;
+			local tg = createTransformGroup("scanner");
+			link(getRootNode(), tg);
+			local probe1 = createTransformGroup("probe1");
+			link(tg, probe1);
+			if math.abs(dirAB - dirBCx) >  (math.pi / 16) then
+				print(string.format('\tdirection change at point : %d at %.2f, %.2f, %.2f to %.2f, %.2f, %.2f ', point, ptB.cx, ptB.cy, ptB.cz, ptC.cx, ptC.cy, ptC.cz));
+				setTranslation(tg,ptB.cx,ptB.cy,ptB.cz);
+				setTranslation(probe1, scanStep, 0, 0);
+				local dx,dy,dz = worldDirectionToLocal(tg,dirBCx,0,dirBCz);
+				local dis2next = BClength;
+				while dis2next > scanStep do
+					setDirection(tg, -dz, 0, dx, 0, 1, 0);
+					local rotAngle = 0; 
+					local turnSide = 1;
+					local px,py,pz = getWorldTranslation(probe1);
+					local return2field = not courseplay:is_field(px, pz, 0.1, 0.1);
+					while courseplay:is_field(px, pz, 0.1, 0.1) or return2field do
+						rotAngle = rotAngle + 0.1;
+						turnSide = - turnSide ;
+						rotate (tg,0,rotAngle * turnSide,0);
+						px,py,pz = getWorldTranslation(probe1);
+						if return2field then
+							if courseplay:is_field(px, pz, 0.1, 0.1) then
+								return2field = false;
+							end;
+						end;	
+					end;
+					while not courseplay:is_field(px, pz, 0.1, 0.1) do
+						rotate(tg, 0, 0.01 * -turnSide, 0);
+						px,py,pz = getWorldTranslation(probe1);
+					end;
+					table.insert(Acoordinates, { cx = px, cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, px, 1, pz), cz = pz });			
+					table.insert(AxValues, px);
+					table.insert(AzValues, pz);
+					setTranslation(tg, px, getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, px, 1, pz), pz);
+					dis2next = Utils.vector2Length(px-ptC.cx,pz-ptC.cz);
+				end;
+			end;
+			unlink(probe1);
+			unlink(tg);
+			delete(probe1);
+			delete(tg);
+		end;
+	--[[	for point = 1 , #coordinates do
 			ptB = coordinates[point];
 			prevPoint = point - 1;
 			if prevPoint == 0 then
@@ -207,82 +267,60 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 				nextPoint = 1;
 			end;
 			ptC = coordinates[nextPoint];
-			local dirAB = courseplay.generation:getPointDirection(ptA,ptB);
-			local dirBC = courseplay.generation:getPointDirection(ptB,ptC); 
+			local dirABx, dirABz = courseplay.generation:getPointDirection(ptA,ptB);
+			local dirBCx, dirBCz = courseplay.generation:getPointDirection(ptB,ptC); 
 			local lengthBC = Utils.vector2Length(ptB.cx-ptC.cx,ptB.cz-ptC.cz);
 			local scanStep = lengthBC / 5;
-			local tg = createTransformGroup("scanner");
-			link(getRootNode(), tg);
-			local probe1 = createTransformGroup("probe1");
-			link(tg, probe1);
-			setTranslation(probe1,-scanStep,0,0);
-			local dirChange = math.abs(math.deg(math.acos(dirAB))-math.deg(math.acos(dirBC)));
-			self:dbg(string.format('point %s angle is : %d before and %d after, scan every %s m',tostring(point), tostring(math.deg(math.acos(dirAB))), tostring(math.deg(math.acos(dirBC))), tostring(scanStep)), 'scan');
-			-- add current point to coordinates
-			table.insert(Acoordinates, ptB);
-			table.insert(AxValues, ptB.cx);
-			table.insert(AzValues, ptB.cz);
-			if dirChange > 15  then -- refine edge with 4 points
+			local dirChange = dirABx - dirBCx;
+			self:dbg(string.format('point %s : %s, %s',tostring(point), tostring(ptB.cx), tostring(ptB.cz), tostring(scanStep)), 'scan');
+			-- add current point to  refined coordinates
+			local intPoint = 0;
+			if math.abs(dirChange) > (math.pi / 16)  then -- refine next segment
 				self:dbg(string.format('refine seg : %d - %d ', point, nextPoint), 'scan');
-				px, y, pz = ptB.cx, ptB.cy, ptB.cz;
-				local intPoint;
-				for intPoint = 1 , 4 do
-					setTranslation(tg,px,y,pz);
-					setTranslation(probe1,-scanStep,0,0); --reset scanstep (already rotated)
-					
-					px,_,pz = getWorldTranslation(probe1); 
-					local rotAngle = 0.1;
-					local turnSign = 1.0;
+				local tooNear = false;
+				local xx, zz = ptB.cx, ptB.cz;
+				while not tooNear do
+					local rotAngle = 0;
+					local side = -1.0;
+					intPoint = intPoint + 1;
 
-					local return2field = not courseplay:is_field(px, pz, 0.1, 0.1); --there is NO guarantee that probe1 (px,pz) is in field just because tg is!!! 
-					while courseplay:is_field(px, pz, 0.1, 0.1) or return2field do
-						rotate(tg,0,rotAngle*turnSign,0)
-						rotAngle = rotAngle*1.05;				
+					px, pz = xx + scanStep * (dirBCx + (rotAngle * side)), zz + scanStep * (dirBCz + (rotAngle * side));
+					self:dbg(string.format('point %s.%s : %s, %s ',tostring(point), tostring(intPoint), tostring(px), tostring(pz)), 'scan');
 
-						turnSign = -turnSign;
-						px,_,pz = getWorldTranslation(probe1);
-
-						if return2field then
-							if courseplay:is_field(px, pz, 0.1, 0.1) then
-								return2field = false;
-							end;
+					while courseplay:is_field(px, pz, 0.1, 0.1) do
+						rotAngle = rotAngle + 0.05;
+						side = - side ;
+						px, pz = xx + scanStep * (dirBCx + (rotAngle * side)), zz + scanStep * (dirBCz + (rotAngle * side));
+						if courseplay:is_field(px, pz, 0.1, 0.1) then
+							side = - side;
+							px, pz = xx + scanStep * (dirBCx + (rotAngle * side)), zz + scanStep * (dirBCz + (rotAngle * side));
 						end;
 					end;
-					
-					
-					cnt, maxcnt = 0, 0;
+					self:dbg(string.format('point %s.%s : %s, %s not on field',tostring(point), tostring(intPoint), tostring(px), tostring(pz)), 'scan');
+
+
 					while not courseplay:is_field(px, pz, 0.1, 0.1) do
-						rotate(tg,0,0.01*turnSign,0)
-						px,_,pz = getWorldTranslation(probe1);
-						self:dbg('\t\trotate back', 'scan');
-						cnt = cnt+1;
-						if cnt > 2*math.pi/.01 then
-							translate(probe1,.5*scanStep,0,0);
-							cnt = 0;
-							maxcnt = maxcnt + 1;
-							if maxcnt > 2 then
-								break;
-							end;
-						end;
+						rotAngle = rotAngle - 0.01 
+						px, pz = xx + scanStep * (dirBCx + (rotAngle * side)), zz + scanStep * (dirBCz + (rotAngle * side));
 					end;
+					self:dbg(string.format('point %s.%s : %s, %s  on field',tostring(point), tostring(intPoint), tostring(px), tostring(pz)), 'scan');
 					
-					if not courseplay:is_field(px, pz, 0.1, 0.1) then
-						self:dbg('\tlost point', 'scan');
-						break;
-					end;
-
-					--print("found")
+					print("found")
 					table.insert(Acoordinates, { cx = px, cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, px, 1, pz), cz = pz });
 					table.insert(AxValues, px);
 					table.insert(AzValues, pz);
 					self:dbg(string.format('\tpoint %d set: cx=%s, cz=%s', #Acoordinates, tostring(px), tostring(pz)), 'scan');
+					local dis0 = Utils.vector2Length(px-ptC.cx, pz-ptC.cz) 
+					self:dbg(string.format('\tdistance to next point [%.2f] ', dis0), 'scan');
+
+					if dis0 < scanStep*1.25 then --otherwise start and end points can be very close together
+						self:dbg(string.format('\tdistance to next point [%.2f] < scanStep*1.25 [%.2f] -> break', dis0, scanStep * 1.25), 'scan');
+						tooNear = true;
+					end;
+					xx, zz = px, pz;
 				end; 
-				unlink(probe1);
-				unlink(tg);
-				delete(probe1);
-				delete(tg);
 			end;
-		end;
+		end;]]
 
 		if Acoordinates and AxValues and AzValues then
 			self:dbg(string.format('\tget: #coordinates=%d, #xValues=%d, #zValues=%d', #Acoordinates, #AxValues, #AzValues), 'scan');
