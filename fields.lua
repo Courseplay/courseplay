@@ -58,88 +58,79 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 	--self = courseplay.fields
 	scanStep = scanStep or 5;
 	maxN = maxN or math.floor(10000/scanStep); --10 km circumference should be enough. otherwise state maxN as parameter
-	randomDir = randomDir or false;
 
 	local x0,_,z0 = getWorldTranslation(initObject);
-	local x,y,z = localDirectionToWorld(initObject, 0, 0, 1);
-
-	if randomDir then
-		math.randomseed(g_currentMission.time)
-		x = 2*math.random()-1;
-		z = 2*math.random()-1;
-	end;
-
-	local length = Utils.vector2Length(x,z);
-	local dX = x/length;
-	local dZ = z/length;
 
 	local isField = courseplay:is_field(x0, z0, 0.1, 0.1);
 	local coordinates, xValues, zValues = {}, {}, {};
-
+	local Acoordinates, AxValues, AzValues = {}, {}, {};
+	self:dbg(string.format('Begin edge scanning at : %.2f , %.2f', x0, z0), 'scan');
 	if isField then
 		local dis = 0;
-		local isSearchPointOnField = true;
 		local stepA = 1;
 		local stepB = -.05;
-
-		local xx, zz;
-		while isSearchPointOnField do --search fast forward (1m steps)
-			dis = dis + stepA;
-			xx = x0 + dis*dX;
-			zz = z0 + dis*dZ;
-			isSearchPointOnField = courseplay:is_field(xx, zz, 0.1, 0.1);
-			if math.abs(dis) > 2000 then
-				break;
-			end;
-		end;
-		self:dbg(string.format('\tfound first point past field border: xx=%s, zz=%s, dis=%s', tostring(xx), tostring(zz), tostring(dis)), 'scan');
-
-		while not isSearchPointOnField do --then backtrace in small 5cm steps
-			dis = dis + stepB;
-			xx = x0 + dis*dX;
-			zz = z0 + dis*dZ;
-			isSearchPointOnField = courseplay:is_field(xx, zz, 0.1, 0.1);
-		end;
-		self:dbg(string.format('\ttrace back, border point found: xx=%s, zz=%s, dis=%s', tostring(xx), tostring(zz), tostring(dis)), 'scan');
-
-		--now we have a point very close to the field boundary but definitely inside :)
-
+		local x,y,z = getRotation(initObject);
+		local ox,_,oz = getWorldTranslation(initObject);
 		local tg = createTransformGroup("scanner");
 		link(getRootNode(), tg);
 		local probe1 = createTransformGroup("probe1");
 		link(tg, probe1);
-		setTranslation(probe1,-scanStep,0,0);
-
-		--rotate 90° against initObject --unnecessary, as it's already been rotated in the above line (x coordinate)
-
-		--local _,ry,_ = getWorldRotation(initObject);
-		--setRotation(tg,0,ry,0)
+		setTranslation(tg,ox,0,oz );
 		if randomDir then
-			rotate(tg,0,2*math.pi*math.random(),0)
-		else
-			rotate(tg,0,math.pi/2,0) --turn side
+			math.randomseed(g_currentMission.time)
+			y = 2*math.pi*math.random();
+			x, z = 5*math.random(), 5*math.random();
 		end;
-		self:dbg(string.format('\trotate tg'), 'scan');
+		setRotation(tg,x,y,z);
 
-		-- local dirX = dZ;
-		-- local dirZ = -dirX; --90° of search direction;
-		local px, pz = xx, zz;
+		setTranslation(probe1,stepA,0,0);
+		x0, _, z0 = getWorldTranslation(tg);
+		self:dbg(string.format('\tSearching edge in direction : %.4f', y), 'scan');
+		while courseplay:is_field(x0,z0,0.1,0.1) do --search fast forward (1m steps)
+			dis = dis + stepA;
+			setTranslation(tg,getWorldTranslation(probe1));
+			x0, _, z0 = getWorldTranslation(tg);
+			if math.abs(dis) > 2000 then
+				break;
+			end;
+		end;
+		setTranslation(probe1,stepB,0,0);
+		self:dbg(string.format('\tfound first point past field border: x0=%s, z0=%s, dis=%s', tostring(x0), tostring(z0), tostring(dis)), 'scan');
+		while not courseplay:is_field(x0,z0,0.1,0.1) do --then backtrace in small 5cm steps
+			dis = dis + stepB;
+			setTranslation(tg,getWorldTranslation(probe1));
+			x0, _, z0 = getWorldTranslation(tg);
+		end;
+		self:dbg(string.format('\ttrace back, border point found: x0=%s, z0=%s, dis=%s', tostring(x0), tostring(z0), tostring(dis)), 'scan');
 
+		--now we have a point very close to the field boundary but definitely inside :)
+
+		--now we rotate this point to have it following the edge direction
+		setTranslation(probe1,.1,0,0);
+		x0, _, z0 = getWorldTranslation(probe1);
+		while not courseplay:is_field(x0,z0,0.1,0.1) do
+			rotate(tg,0,.01,0);
+			x0, _, z0 = getWorldTranslation(probe1);
+		end;
+
+		local _, prevRot  = getRotation(tg);
+		local scanAt = scanStep ;
+		directionChange = false;
 		while #coordinates < maxN do
-			setTranslation(tg,px,y,pz)
-			setTranslation(probe1,-scanStep,0,0); --reset scanstep (already rotated)
-			--local rx,ry,ry = getRotation(probe1);
-
+			if not directionChange then
+				setTranslation(tg,getWorldTranslation(probe1));
+			end;
+			setTranslation(probe1,scanAt,0,0); 
+			rotate(tg,0,math.pi/4,0); -- place probe1 inside the field 
 			px,_,pz = getWorldTranslation(probe1); 
 			local rotAngle = 0.1;
 			local turnSign = 1.0;
-			
+		
 			local return2field = not courseplay:is_field(px, pz, 0.1, 0.1); --there is NO guarantee that probe1 (px,pz) is in field just because tg is!!! 
 			
 			while courseplay:is_field(px, pz, 0.1, 0.1) or return2field do
 				rotate(tg,0,rotAngle*turnSign,0)
-				rotAngle = rotAngle*1.05;				
-				--rotAngle = rotAngle + 0.1; --alternative for performance tuning, don't know which one is better
+				rotAngle = rotAngle + 0.1;				
 				
 				turnSign = -turnSign;
 				px,_,pz = getWorldTranslation(probe1);
@@ -158,7 +149,7 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 				--self:dbg('\t\trotate back', 'scan');
 				cnt = cnt+1;
 				if cnt > 2*math.pi/.01 then
-					translate(probe1,.5*scanStep,0,0);
+					translate(probe1,-.5*scanAt,0,0);
 					cnt = 0;
 					maxcnt = maxcnt + 1;
 					if maxcnt > 2 then
@@ -170,34 +161,44 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 				self:dbg('\tlost point', 'scan');
 				break;
 			end;
+			local _, tgRot = getRotation(tg);
 
-			--print("found")
-			table.insert(coordinates, { cx = px, cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, px, 1, pz), cz = pz });
-			table.insert(xValues, px);
-			table.insert(zValues, pz);
-			self:dbg(string.format('\tpoint %d set: cx=%s, cz=%s', #coordinates, tostring(px), tostring(pz)), 'scan');
+			if math.abs(prevRot - tgRot) > math.pi / 16 and scanAt > 1 then -- If the there is a important direction change 
+				directionChange = true;
+				scanAt = scanAt -1;
 
+				setRotation(tg,0,prevRot,0); -- reset tg rotation and scan again with a shorter scanstep
+			else  -- save the new found point
+				table.insert(coordinates, { cx = px, cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, px, 1, pz), cz = pz });
+				table.insert(xValues, px);
+				table.insert(zValues, pz);
+				scanAt = scanStep;
+				prevRot = tgRot;
+				directionChange = false;
+				self:dbg(string.format('\tpoint %d set: cx=%s, cz=%s', #coordinates, tostring(px), tostring(pz)), 'scan');
+			end;
+			
 			if #coordinates > 5 then
 				local dis0 = Utils.vector2Length(px-coordinates[1].cx, pz-coordinates[1].cz) 
 				--print(dis0)
-				if dis0 < scanStep*1.25 then --otherwise start and end points can be very close together
+				if dis0 < scanAt*1.25 then --otherwise start and end points can be very close together
 					self:dbg(string.format('\tdistance to first point [%.2f] < scanStep*1.25 [%.2f] -> break', dis0, scanStep * 1.25), 'scan');
 					break;
 				end;
 			end;
 		end;
 
-		unlink(probe1);
-		unlink(tg);
-		delete(probe1);
-		delete(tg);
-
 		if coordinates and xValues and zValues then
 			self:dbg(string.format('\tget: #coordinates=%d, #xValues=%d, #zValues=%d', #coordinates, #xValues, #zValues), 'scan');
 		else
 			self:dbg(string.format('\tget: coordinates=%s, xValues=%s, zValues=%s', tostring(coordinates), tostring(xValues), tostring(zValues)), 'scan');
 		end;
-
+		
+		unlink(probe1);
+		unlink(tg);
+		delete(probe1);
+		delete(tg);
+		
 		return coordinates, xValues, zValues;
 	end;
 end;
@@ -205,7 +206,6 @@ end;
 function courseplay.fields:setSingleFieldEdgePath(initObject, initX, initZ, scanStep, maxN, numDirectionTries, fieldNum, returnPoints, dbgType)
 	for try=1,numDirectionTries do
 		local edgePoints, xValues, zValues = self:getSingleFieldEdge(initObject, scanStep, maxN, try > 1);
-
 		if edgePoints then
 			local numEdgePoints = #edgePoints;
 			--self:dbg(string.format("\ttry %d: %d edge points found, #xValues=%s, #zValues=%s", try, numEdgePoints, tostring(#xValues), tostring(#zValues)), dbgType);
