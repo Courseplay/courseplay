@@ -121,7 +121,7 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 				setTranslation(tg,getWorldTranslation(probe1));
 			end;
 			setTranslation(probe1,scanAt,0,0); 
-			rotate(tg,0,1,0); -- place probe1 inside the field 
+			rotate(tg,0,math.pi/4,0); -- place probe1 inside the field 
 			px,_,pz = getWorldTranslation(probe1); 
 			local rotAngle = 0.1;
 			local turnSign = 1.0;
@@ -167,13 +167,12 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 				directionChange = true;
 				scanAt = scanAt -1;
 
-				setRotation(tg,0,prevRot,0); -- reset tg and scan again with a shorter scanstep
+				setRotation(tg,0,prevRot,0); -- reset tg rotation and scan again with a shorter scanstep
 			else  -- save the new found point
 				table.insert(coordinates, { cx = px, cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, px, 1, pz), cz = pz });
 				table.insert(xValues, px);
 				table.insert(zValues, pz);
 				scanAt = scanStep;
-				--self:dbg(string.format('\t\tscanAt -> %.2f', scanAt), 'scan');
 				prevRot = tgRot;
 				directionChange = false;
 				self:dbg(string.format('\tpoint %d set: cx=%s, cz=%s', #coordinates, tostring(px), tostring(pz)), 'scan');
