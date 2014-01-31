@@ -70,16 +70,18 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 		local stepA = 1;
 		local stepB = -.05;
 		local x,y,z = getRotation(initObject);
-		if randomDir then
-			math.randomseed(g_currentMission.time)
-			y = 2*math.pi*math.random();
-		end;
+		local ox,_,oz = getWorldTranslation(initObject);
 		local tg = createTransformGroup("scanner");
 		link(getRootNode(), tg);
 		local probe1 = createTransformGroup("probe1");
 		link(tg, probe1);
-		setTranslation(tg,getWorldTranslation(initObject));
-		setRotation(tg,x,0,z);
+		setTranslation(tg,ox,0,oz );
+		if randomDir then
+			math.randomseed(g_currentMission.time)
+			y = 2*math.pi*math.random();
+			x, z = 5*math.random(), 5*math.random();
+		end;
+		setRotation(tg,x,y,z);
 
 		setTranslation(probe1,stepA,0,0);
 		x0, _, z0 = getWorldTranslation(tg);
@@ -118,8 +120,8 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 			if not directionChange then
 				setTranslation(tg,getWorldTranslation(probe1));
 			end;
-			setTranslation(probe1,scanAt,0,0); --reset scanstep (already rotated)
-			
+			setTranslation(probe1,scanAt,0,0); 
+			rotate(tg,0,1,0); -- place probe1 inside the field 
 			px,_,pz = getWorldTranslation(probe1); 
 			local rotAngle = 0.1;
 			local turnSign = 1.0;
@@ -161,7 +163,7 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 			end;
 			local _, tgRot = getRotation(tg);
 
-			if math.abs(prevRot - tgRot) > math.pi / 10 and scanAt > 1 then -- If the there is a important direction change 
+			if math.abs(prevRot - tgRot) > math.pi / 16 and scanAt > 1 then -- If the there is a important direction change 
 				directionChange = true;
 				scanAt = scanAt -1;
 
@@ -205,7 +207,6 @@ end;
 function courseplay.fields:setSingleFieldEdgePath(initObject, initX, initZ, scanStep, maxN, numDirectionTries, fieldNum, returnPoints, dbgType)
 	for try=1,numDirectionTries do
 		local edgePoints, xValues, zValues = self:getSingleFieldEdge(initObject, scanStep, maxN, try > 1);
-		translate(initObject,2,0,2);
 		if edgePoints then
 			local numEdgePoints = #edgePoints;
 			--self:dbg(string.format("\ttry %d: %d edge points found, #xValues=%s, #zValues=%s", try, numEdgePoints, tostring(#xValues), tostring(#zValues)), dbgType);
