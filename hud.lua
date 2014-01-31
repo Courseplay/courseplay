@@ -15,7 +15,7 @@
 	end;
 	if vehicle.Waypoints[vehicle.cp.HUDrecordnumber] ~= nil then
 		vehicle.cp.hud.content.global[3] = string.format("%s%s/%s\t%s%s\t%s%s", courseplay:loc("CPWaypoint"), tostring(vehicle.cp.HUDrecordnumber), tostring(vehicle.maxnumber), courseplay:loc('COURSEPLAY_WAITPOINTS'), tostring(vehicle.cp.numWaitPoints), courseplay:loc('COURSEPLAY_CROSSING_POINTS'), tostring(vehicle.cp.numCrossingPoints));
-	elseif vehicle.record or vehicle.record_pause then
+	elseif vehicle.cp.isRecording or vehicle.cp.recordingIsPaused then
 		vehicle.cp.hud.content.global[3] = string.format("%s%d\t%s%d\t%s%d", courseplay:loc("CPWaypoint"), vehicle.cp.HUDrecordnumber, courseplay:loc('COURSEPLAY_WAITPOINTS'), vehicle.cp.numWaitPoints, courseplay:loc('COURSEPLAY_CROSSING_POINTS'), vehicle.cp.numCrossingPoints);
 	else
 		vehicle.cp.hud.content.global[3] = courseplay:loc("CPNoWaypoint");
@@ -41,7 +41,7 @@
 		end;
 
 	elseif vehicle.cp.hud.currentPage == 1 then
-		if (vehicle.record or vehicle.record_pause) and vehicle.cp.HUDrecordnumber == 4 and courseplay.utils:hasVarChanged(vehicle, 'HUDrecordnumber') then --record pause action becomes available
+		if (vehicle.cp.isRecording or vehicle.cp.recordingIsPaused) and vehicle.cp.HUDrecordnumber == 4 and courseplay.utils:hasVarChanged(vehicle, 'HUDrecordnumber') then --record pause action becomes available
 			--courseplay.hud:setReloadPageOrder(vehicle, 1, true);
 			courseplay:buttonsActiveEnabled(vehicle, 'recording');
 		elseif vehicle.drive then
@@ -273,7 +273,7 @@ function courseplay.hud:loadPage(vehicle, page)
 			end
 
 		elseif not vehicle.drive then
-			if (not vehicle.record and not vehicle.record_pause) and not vehicle.cp.canDrive then
+			if (not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused) and not vehicle.cp.canDrive then
 				if (#(vehicle.Waypoints) == 0) then
 					vehicle.cp.hud.content.pages[1][1][1].text = courseplay:loc("PointRecordStart");
 				end;

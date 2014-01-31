@@ -38,8 +38,8 @@ function courseplay:start(self)
 	courseplay:debug(string.format("%s: Start/Stop: deleting \"self.cp.collidingVehicleId\"", nameNum(self)), 3);
 	--self.numToolsCollidingVehicles = {};
 	self.drive = false
-	self.record = false
-	self.record_pause = false
+	self.cp.isRecording = false
+	self.cp.recordingIsPaused = false
 	self.cp.calculatedCourseToCombine = false
 
 	AITractor.addCollisionTrigger(self, self);
@@ -93,7 +93,7 @@ function courseplay:start(self)
 
 	courseplay:reset_tools(self)
 	-- show arrow
-	self.dcheck = true
+	self.cp.distanceCheck = true
 	-- current position
 	local ctx, cty, ctz = getWorldTranslation(self.rootNode);
 	-- position of next waypoint
@@ -243,8 +243,8 @@ function courseplay:start(self)
 	self.cp.runOnceStartCourse = true;
 	self.drive = true;
 	self.cp.maxFieldSpeed = 0
-	self.record = false
-	self.dcheck = false;
+	self.cp.isRecording = false
+	self.cp.distanceCheck = false;
 
 	
 	if self.isRealistic then
@@ -339,8 +339,8 @@ function courseplay:stop(self)
 		self.ESLimiter.percentage[4] =	self.cp.ESL[3]  
 	end
 	self.cp.forcedToStop = false
-	self.record = false
-	self.record_pause = false
+	self.cp.isRecording = false
+	self.cp.recordingIsPaused = false
 	if self.cp.modeState > 4 then
 		self.cp.modeState = 1
 	end
@@ -386,7 +386,7 @@ function courseplay:stop(self)
 	self.cp.currentTipTrigger = nil
 	self.drive = false
 	self.cp.canDrive = true
-	self.dcheck = false
+	self.cp.distanceCheck = false
 	self.cp.mode7GoBackBeforeUnloading = false
 	if self.cp.checkReverseValdityPrinted then
 		self.cp.checkReverseValdityPrinted = false

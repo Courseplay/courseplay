@@ -159,7 +159,7 @@ function courseplay:setSignsVisibility(vehicle, forceHide)
 			vis = false;
 		end;
 
-		if vehicle.record then
+		if vehicle.cp.isRecording then
 			vis = true;
 		elseif forceHide or not vehicle.isEntered then
 			vis = false;

@@ -147,7 +147,7 @@ function courseplay:initialize()
 		local devWarning = '';
 		devWarning = devWarning .. '\t' .. ('*'):rep(45) .. ' WARNING ' .. ('*'):rep(45) .. '\n';
 		devWarning = devWarning .. '\tYou\'re using a development version of Courseplay, which may and will contain errors, bugs,\n';
-		devWarning = devWarning .. '\tmistakes and unfinished code. Chances are you computer will explode when using it. Twice.\n';
+		devWarning = devWarning .. '\tmistakes and unfinished code. Chances are your computer will explode when using it. Twice.\n';
 		devWarning = devWarning .. '\tIf you have no idea what "beta", "alpha", or "developer" means and entails, remove this version\n';
 		devWarning = devWarning .. '\tof Courseplay immediately. The Courseplay team will not take any responsibility for crop destroyed,\n';
 		devWarning = devWarning .. '\tsavegames deleted or baby pandas killed.\n';

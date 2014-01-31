@@ -250,7 +250,7 @@ function courseplay:executeFunction(self, func, value, page)
 
 
 			elseif not self.drive then
-				if not self.record and not self.record_pause and not self.cp.canDrive and #(self.Waypoints) == 0 then
+				if not self.cp.isRecording and not self.cp.recordingIsPaused and not self.cp.canDrive and #(self.Waypoints) == 0 then
 					if line == 1 then
 						courseplay:start_record(self);
 					elseif line == 3 then

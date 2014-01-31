@@ -10,8 +10,8 @@ function courseplay:distance(x1, z1, x2, z2)
 end
 
 -- displays arrow and distance to previous point
-function courseplay:dcheck(vehicle)
-	local number = vehicle.record_pause and vehicle.recordnumber - 1 or 1;
+function courseplay:distanceCheck(vehicle)
+	local number = vehicle.cp.recordingIsPaused and vehicle.recordnumber - 1 or 1;
 
 	local cx, cz = vehicle.Waypoints[number].cx, vehicle.Waypoints[number].cz;
 	local lx, ly, lz = worldToLocal(vehicle.rootNode, cx, 0, cz);

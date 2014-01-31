@@ -252,25 +252,26 @@ function courseplay:buttonsActiveEnabled(self, section)
 				button.isActive = self.cp.fieldEdge.customField.show;
 
 			elseif fn == 'stop_record' then
-				button.isDisabled = self.record_pause or self.cp.isRecordingTurnManeuver;
+				button.isDisabled = self.cp.recordingIsPaused or self.cp.isRecordingTurnManeuver;
 				button.canBeClicked = not button.isDisabled;
 			elseif fn == 'setRecordingPause' then
-				button.isActive = self.record_pause;
+				button.isActive = self.cp.recordingIsPaused;
 				button.isDisabled = self.cp.HUDrecordnumber < 4 or self.cp.isRecordingTurnManeuver;
 				button.canBeClicked = not button.isDisabled;
 			elseif fn == 'delete_waypoint' then
-				button.isDisabled = not self.record_pause;
+				-- NOTE: during recording pause, HUDrecordnumber = recordnumber + 1, that's why <= 5 is used
+				button.isDisabled = not self.cp.recordingIsPaused or self.cp.HUDrecordnumber <= 5;
 				button.canBeClicked = not button.isDisabled;
 			elseif fn == 'set_waitpoint' or fn == 'set_crossing' then
-				button.isDisabled = self.record_pause or self.cp.isRecordingTurnManeuver;
+				button.isDisabled = self.cp.recordingIsPaused or self.cp.isRecordingTurnManeuver;
 				button.canBeClicked = not button.isDisabled;
 			elseif fn == 'setRecordingTurnManeuver' then --isToggleButton
 				button.isActive = self.cp.isRecordingTurnManeuver;
-				button.isDisabled = self.record_pause or self.cp.drivingDirReverse;
+				button.isDisabled = self.cp.recordingIsPaused or self.cp.drivingDirReverse;
 				button.canBeClicked = not button.isDisabled;
 			elseif fn == 'change_DriveDirection' then --isToggleButton
 				button.isActive = self.cp.drivingDirReverse;
-				button.isDisabled = self.record_pause or self.cp.isRecordingTurnManeuver;
+				button.isDisabled = self.cp.recordingIsPaused or self.cp.isRecordingTurnManeuver;
 				button.canBeClicked = not button.isDisabled;
 			end;
 		end;
@@ -608,10 +609,10 @@ function courseplay:copyCourse(self)
 		self.recordnumber = 1;
 		self.maxnumber = table.getn(self.Waypoints);
 
-		self.record = false;
-		self.record_pause = false;
+		self.cp.isRecording = false;
+		self.cp.recordingIsPaused = false;
 		self.drive = false;
-		self.dcheck = false;
+		self.cp.distanceCheck = false;
 		self.cp.canDrive = true;
 		self.cp.abortWork = nil;
 
@@ -1064,8 +1065,8 @@ function courseplay:validateCourseGenerationData(vehicle)
 end;
 
 function courseplay:validateCanSwitchMode(vehicle)
-	vehicle.cp.canSwitchMode = not vehicle.drive and not vehicle.record and not vehicle.record_pause and not vehicle.cp.fieldEdge.customField.isCreated;
-	courseplay:debug(string.format("%s: validateCanSwitchMode(): drive=%s, record=%s, record_pause=%s, customField.isCreated=%s ==> canSwitchMode=%s", nameNum(vehicle), tostring(vehicle.drive), tostring(vehicle.record), tostring(vehicle.record_pause), tostring(vehicle.cp.fieldEdge.customField.isCreated), tostring(vehicle.cp.canSwitchMode)), 12);
+	vehicle.cp.canSwitchMode = not vehicle.drive and not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused and not vehicle.cp.fieldEdge.customField.isCreated;
+	courseplay:debug(string.format("%s: validateCanSwitchMode(): drive=%s, record=%s, record_pause=%s, customField.isCreated=%s ==> canSwitchMode=%s", nameNum(vehicle), tostring(vehicle.drive), tostring(vehicle.cp.isRecording), tostring(vehicle.cp.recordingIsPaused), tostring(vehicle.cp.fieldEdge.customField.isCreated), tostring(vehicle.cp.canSwitchMode)), 12);
 end;
 
 function courseplay:saveShovelStatus(self, stage)

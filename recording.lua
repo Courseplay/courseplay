@@ -79,8 +79,8 @@ end;
 -- starts course recording -- just setting variables
 function courseplay:start_record(vehicle)
 	--    courseplay:reset_course(vehicle)
-	vehicle.record = true;
-	vehicle.record_pause = false;
+	vehicle.cp.isRecording = true;
+	vehicle.cp.recordingIsPaused = false;
 	vehicle.drive = false
 	vehicle.cp.loadedCourses = {}
 	vehicle.recordnumber = 1;
@@ -99,10 +99,10 @@ end
 -- stops course recording -- just setting variables
 function courseplay:stop_record(vehicle)
 	courseplay:set_crossing(vehicle, true);
-	vehicle.record = false;
-	vehicle.record_pause = false;
+	vehicle.cp.isRecording = false;
+	vehicle.cp.recordingIsPaused = false;
 	vehicle.drive = false;
-	vehicle.dcheck = false;
+	vehicle.cp.distanceCheck = false;
 	vehicle.cp.canDrive = true;
 	vehicle.maxnumber = vehicle.recordnumber - 1;
 	vehicle.recordnumber = 1;
@@ -116,14 +116,14 @@ end
 
 function courseplay:setRecordingPause(vehicle)
 	if vehicle.recordnumber > 3 then
-		vehicle.record = not vehicle.record;
-		vehicle.record_pause = not vehicle.record_pause;
+		vehicle.cp.isRecording = not vehicle.cp.isRecording;
+		vehicle.cp.recordingIsPaused = not vehicle.cp.recordingIsPaused;
 
-		vehicle.dcheck = vehicle.record_pause;
+		vehicle.cp.distanceCheck = vehicle.cp.recordingIsPaused;
 
 		local oldSignIndex = #vehicle.cp.signs.current;
 		local oldSignType = vehicle.cp.signs.current[oldSignIndex].type;
-		local newSignType = vehicle.record_pause and 'stop' or 'normal'; --change last sign to "stop"/"normal"
+		local newSignType = vehicle.cp.recordingIsPaused and 'stop' or 'normal'; --change last sign to "stop"/"normal"
 		courseplay.utils.signs.changeSignType(vehicle, oldSignIndex, oldSignType, newSignType);
 
 		courseplay:validateCanSwitchMode(vehicle);

@@ -159,7 +159,7 @@ function courseplay:renderButton(self, button)
 		--Global
 		if pg == "global" then
 			if fn == "showSaveCourseForm" and prm == "course" then
-				button.show = self.cp.canDrive and not self.record and not self.record_pause and self.Waypoints ~= nil and #(self.Waypoints) ~= 0;
+				button.show = self.cp.canDrive and not self.cp.isRecording and not self.cp.recordingIsPaused and self.Waypoints ~= nil and #(self.Waypoints) ~= 0;
 			end;
 
 		--Page 1
@@ -175,7 +175,7 @@ function courseplay:renderButton(self, button)
 					button.show = not self.cp.canDrive and self.cp.fieldEdge.customField.isCreated and self.cp.fieldEdge.customField.fieldNum < courseplay.fields.customFieldMaxNum;
 				end;
 			elseif fn == 'stop_record' or fn == 'setRecordingPause' or fn == 'delete_waypoint' or fn == 'set_waitpoint' or fn == 'set_crossing' or fn == 'setRecordingTurnManeuver' or fn == 'change_DriveDirection' then
-				button.show = self.record or self.record_pause;
+				button.show = self.cp.isRecording or self.cp.recordingIsPaused;
 			end;
 
 		--Page 2

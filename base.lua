@@ -69,6 +69,12 @@ function courseplay:load(xmlFile)
 	self.cp.driveSlowTimer = 0;
 	self.cp.positionWithCombine = nil;
 
+	-- RECORDING
+	self.cp.isRecording = false;
+	self.cp.recordingIsPaused = false;
+	self.cp.isRecordingTurnManeuver = false;
+	self.cp.drivingDirReverse = false;
+
 	self.cp.waitPoints = {};
 	self.cp.numWaitPoints = 0;
 	self.cp.waitTime = 0;
@@ -143,7 +149,6 @@ function courseplay:load(xmlFile)
 	self.cp.lastMergedWP = 0;
 
 	self.cp.loadedCourses = {}
-	self.cp.drivingDirReverse = false
 
 	-- forced waypoints
 	self.target_x = nil
@@ -920,8 +925,8 @@ function courseplay:draw()
 				InputBinding.setShowMouseCursor(self.cp.mouseCursorActive);
 			end;
 		end;
-		if self.dcheck and #(self.Waypoints) > 1 then
-			courseplay:dcheck(self);
+		if self.cp.distanceCheck and #(self.Waypoints) > 1 then
+			courseplay:distanceCheck(self);
 		end;
 	end;
 end; --END draw()
@@ -963,7 +968,7 @@ end;
 
 -- is being called every loop
 function courseplay:update(dt)
-	if g_server ~= nil and (self.drive or self.record or self.record_pause) then
+	if g_server ~= nil and (self.drive or self.cp.isRecording or self.cp.recordingIsPaused) then
 		self.cp.infoText = nil;
 	end;
 
@@ -972,7 +977,7 @@ function courseplay:update(dt)
 	end;
 
 	-- we are in record mode
-	if self.record then
+	if self.cp.isRecording then
 		courseplay:record(self);
 	end;
 
@@ -1184,8 +1189,8 @@ function courseplay:readStream(streamId, connection)
 	self.cp.HUD4savedCombine = streamDebugReadBool(streamId)
 	self.cp.HUD4savedCombineName = streamDebugReadString(streamId);
 	self.recordnumber = streamDebugReadInt32(streamId)
-	self.record = streamDebugReadBool(streamId)
-	self.record_pause = streamDebugReadBool(streamId)
+	self.cp.isRecording = streamDebugReadBool(streamId)
+	self.cp.recordingIsPaused = streamDebugReadBool(streamId)
 	self.cp.searchCombineAutomatically = streamDebugReadBool(streamId)
 	self.cp.searchCombineOnField = streamDebugReadInt32(streamId)
 	self.cp.speeds.turn = streamDebugReadFloat32(streamId)
@@ -1307,8 +1312,8 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteBool(streamId,self.cp.HUD4savedCombine)
 	streamDebugWriteString(streamId,self.cp.HUD4savedCombineName)
 	streamDebugWriteInt32(streamId,self.recordnumber)
-	streamDebugWriteBool(streamId,self.record)
-	streamDebugWriteBool(streamId,self.record_pause)
+	streamDebugWriteBool(streamId,self.cp.isRecording)
+	streamDebugWriteBool(streamId,self.cp.recordingIsPaused)
 	streamDebugWriteBool(streamId,self.cp.searchCombineAutomatically)
 	streamDebugWriteInt32(streamId,self.cp.searchCombineOnField)
 	streamDebugWriteFloat32(streamId,self.cp.speeds.turn)

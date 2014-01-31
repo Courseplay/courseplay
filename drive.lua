@@ -916,7 +916,7 @@ function courseplay:drive(self, dt)
 			self.cp.isUnloaded = false
 			self.cp.stopAtEnd = false
 			self.cp.isLoaded = false
-			self.record = false
+			self.cp.isRecording = false
 			self.cp.canDrive = true
 		end
 	end
