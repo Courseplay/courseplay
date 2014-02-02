@@ -115,6 +115,10 @@ function courseplay_manager:createInitialCourseplayFile()
 			-- print(string.format('\t\tsetXMLString(..., "XML.courseplayGlobalInfoText#posY", %.3f)', courseplay.globalInfoText.posY));
 		end;
 
+		if getXMLBool(file, 'XML.courseplayFields#automaticScan') == nil then
+			setXMLString(file, 'XML.courseplayFields#automaticScan', tostring(courseplay.fields.automaticScan));
+			-- print(string.format('\t\tsetXMLString(..., "XML.courseplayFields#automaticScan", %q)', tostring(courseplay.fields.automaticScan)));
+		end;
 		if getXMLBool(file, 'XML.courseplayFields#debugScannedFields') == nil then
 			setXMLString(file, 'XML.courseplayFields#debugScannedFields', tostring(courseplay.fields.debugScannedFields));
 			-- print(string.format('\t\tsetXMLString(..., "XML.courseplayFields#debugScannedFields", %q)', tostring(courseplay.fields.debugScannedFields)));
@@ -265,8 +269,8 @@ function courseplay_manager:draw()
 
 	courseplay.lightsNeeded = g_currentMission.environment.needsLights or (g_currentMission.environment.lastRainScale > 0.1 and g_currentMission.environment.timeSinceLastRain < 30);
 
-	-- display field scan msg
-	if not courseplay.fields.allFieldsScanned then
+	-- DISPLAY FIELD SCAN MSG
+	if courseplay.fields.automaticScan and not courseplay.fields.allFieldsScanned then
 		local fsi = self.fieldScanInfo;
 
 		fsi.progressBarBgOverlay:render();
@@ -279,13 +283,13 @@ function courseplay_manager:draw()
 
 		fsi.bgOverlay:render();
 
-		courseplay:setFontSettings({ 0.8, 0.8, 0.8, 1 },  true, 'left');
+		courseplay:setFontSettings({ 0.8, 0.8, 0.8, 1 }, true, 'left');
 		renderText(fsi.lineX, fsi.line1Y - 0.001, 0.021, courseplay:loc('COURSEPLAY_FIELD_SCAN_IN_PROGRESS'));
 		courseplay:setFontSettings('shadow', true, 'left');
 		renderText(fsi.lineX, fsi.line1Y,         0.021, courseplay:loc('COURSEPLAY_FIELD_SCAN_IN_PROGRESS'));
 
 		local str2 = courseplay:loc('COURSEPLAY_SCANNING_FIELD_NMB'):format(courseplay.fields.curFieldScanIndex, g_currentMission.fieldDefinitionBase.numberOfFields);
-		courseplay:setFontSettings({ 0.8, 0.8, 0.8, 1 },  false, 'left');
+		courseplay:setFontSettings({ 0.8, 0.8, 0.8, 1 }, false, 'left');
 		renderText(fsi.lineX, fsi.line2Y - 0.001, 0.018, str2);
 		courseplay:setFontSettings('shadow', false, 'left');
 		renderText(fsi.lineX, fsi.line2Y,         0.018, str2);
@@ -406,13 +410,13 @@ function courseplay_manager:update(dt)
 		end;
 	end;
 
-	--SETUP INGAME FIELD DATA
+	--SETUP FIELD INGAME DATA
 	if not courseplay.fields.ingameDataSetUp then
 		courseplay.fields:setUpFieldsIngameData();
 	end;
 
 	--SCAN ALL FIELD EDGES
-	if not courseplay.fields.allFieldsScanned then
+	if courseplay.fields.automaticScan and not courseplay.fields.allFieldsScanned then
 		courseplay.fields:setAllFieldEdges();
 	end;
 end;
