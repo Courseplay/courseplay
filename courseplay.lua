@@ -157,10 +157,10 @@ function courseplay:initialize()
 end;
 
 function courseplay:setGlobalData()
-	--HUD
 	local customPosX, customPosY = nil, nil;
 	local customGitPosX, customGitPosY = nil, nil;
-	local fieldsDebugScan, fieldsDebugCustomLoad = false, false;
+	local fieldsDebugScan, fieldsDebugCustomLoad, fieldsCustomScanStep = false, false, nil;
+
 	local savegame = g_careerScreen.savegames[g_careerScreen.selectedIndex];
 	if savegame ~= nil then
 		local cpFilePath = savegame.savegameDirectory .. "/courseplay.xml";
@@ -179,9 +179,10 @@ function courseplay:setGlobalData()
 			end;
 
 			local fieldsKey = 'XML.courseplayFields';
-			if hasXMLProperty(cpFile, gitKey) then
+			if hasXMLProperty(cpFile, fieldsKey) then
 				fieldsDebugScan       = Utils.getNoNil(getXMLBool(cpFile, fieldsKey .. '#debugScannedFields'), false);
 				fieldsDebugCustomLoad = Utils.getNoNil(getXMLBool(cpFile, fieldsKey .. '#debugCustomLoadedFields'), false);
+				fieldsCustomScanStep = getXMLInt(cpFile, fieldsKey .. '#scanStep');
 			end;
 
 			delete(cpFile);
@@ -427,7 +428,7 @@ function courseplay:setGlobalData()
 	courseplay.fields.customFieldMaxNum = 150;
 	courseplay.fields.debugScannedFields = fieldsDebugScan;
 	courseplay.fields.debugCustomLoadedFields = fieldsDebugCustomLoad;
-
+	courseplay.fields.scanStep = Utils.getNoNil(fieldsCustomScanStep, courseplay.fields.defaultScanStep);
 	--PATHFINDING
 	courseplay.pathfinding = {};
 
