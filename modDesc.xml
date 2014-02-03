@@ -774,7 +774,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<de>Drescher suchen auf Feld %s</de>
 			<fr>Search combine on field %s</fr> <!-- !!! -->
 			<es>Search combine on field %s</es> <!-- !!! -->
-			<it>Search combine on field %s</it> <!-- !!! -->
+			<it>Ricerca trebbia nel campo %s</it>
 			<cz>Search combine on field %s</cz> <!-- !!! -->
 			<ru>Комбайн с поля № %s</ru> <!-- where this text? -->
 		</text>
@@ -1179,7 +1179,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<de>Fahre hinter Traktor</de>
 			<fr>Suit le tracteur</fr>
 			<es>Sigue el tractor</es>
-			<it>Segio il trattore</it>
+			<it>Segui il trattore</it>
 			<cz>Jedu za traktor</cz>
 			<ru>Еду за транспортом</ru>
 		</text>
@@ -1188,7 +1188,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<de>sollte aufgetankt werden</de>
 			<fr>doit bientôt faire le plein</fr>
 			<es>debe repostar pronto</es>
-			<it>dev'essere rifornito al piu' presto</it>
+			<it>dev'essere rifornito al più presto</it>
 			<cz>bude potřebovat dotankovat.</cz>
 			<ru>низкий уровень топлива</ru>
 		</text>
@@ -1233,7 +1233,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<de>falscher Trailer für diesen Modus</de>
 			<fr>pas la bonne remorque pour ce mode</fr>
 			<es>remolque incorrecto para este modo</es>
-			<it>rimorchio sbagliato per questa modalita'</it>
+			<it>rimorchio sbagliato per questa modalità</it>
 			<cz>Máš pro tento mod nevhodný přívěs</cz>
 			<ru>Неподходящее оборудование для типа маршрута.</ru>
 		</text>
@@ -1242,7 +1242,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<de>ESLimiter-Version wird nicht unterstützt</de>
 			<fr>la version du ESLimiter n'est pas compatible</fr>
 			<es>la version de ESLimiter no es compatible</es>
-			<it>la versione dell'ESLimiter non e' compatibile</it>
+			<it>la versione dell'ESLimiter non è compatibile</it>
 			<cz>verze ESLimiter není podporována</cz>
 			<ru>Эта версия ESLimiter не поддерживается</ru>
 		</text>
@@ -1485,7 +1485,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<en>Headland</en>
 			<es>Cabecera</es> <!-- !!! -->
 			<fr>Fourrière</fr>
-			<it>Headland</it> <!-- !!! -->
+			<it>Testata del campo</it>
 			<cz>Úvrať:</cz>
 			<ru>Обработка краев:</ru>
 		</text>
@@ -1721,7 +1721,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<en>Field edge path</en>
 			<es>Camino de aristas del campo</es> <!-- !!! -->
 			<fr>Voie de bord de champ</fr>
-			<it>Percorso bordo del campo</it>
+			<it>Percorso perimetrale del campo</it>
 			<cz>Trasa okolo pole:</cz>
 			<ru>Выбрать поле:</ru>
 		</text>
@@ -1739,7 +1739,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<en>Field scan in progress</en>
 			<es>Field scan in progress</es> <!-- !!! -->
 			<fr>Field scan in progress</fr> <!-- !!! -->
-			<it>Field scan in progress</it> <!-- !!! -->
+			<it>Scansione campi in esecuzione</it>
 			<cz>Field scan in progress</cz> <!-- !!! -->
 			<ru>начальная обработка</ru>
 		</text>
@@ -1748,7 +1748,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<en>Scanning field %d/%d</en>
 			<es>Scanning field %d/%d</es> <!-- !!! -->
 			<fr>Scanning field %d/%d</fr> <!-- !!! -->
-			<it>Scanning field %d/%d</it> <!-- !!! -->
+			<it>Scansione campo %d/%d</it> 
 			<cz>Scanning field %d/%d</cz> <!-- !!! -->
 			<ru>подготовка полей: %d/%d</ru>
 		</text>
@@ -1802,7 +1802,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<de>: Pickup ist verstopft</de>
 			<fr>: pickup is jammed</fr> <!-- !!! -->
 			<es>: pickup is jammed</es> <!-- !!! -->
-			<it>: pickup is jammed</it> <!-- !!! -->
+			<it>: pickup è intasato</it> 
 			<cz>: odvozce je přetížený</cz>
 			<ru>: погрузка остановлена</ru>
 		</text>
@@ -1901,7 +1901,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<de>Drescher-Zuordnung entfernen</de>
 			<fr>Remove combine assignment</fr> <!-- !!! -->
 			<es>Remove combine assignment</es> <!-- !!! -->
-			<it>Remove combine assignment</it> <!-- !!! -->
+			<it>Rimuovere assegnazione trebbia</it>
 			<cz>Odstraň přiřezení ke kombajnu</cz>
 			<ru>Удалить комбайн из списка</ru>
 		</text>
