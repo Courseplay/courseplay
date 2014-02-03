@@ -292,6 +292,17 @@ function courseplay.fields:setSingleFieldEdgePath(initObject, initX, initZ, scan
 	end;
 end;
 
+function courseplay.fields.buyField(self, fieldDef, isOwned) -- scan field when it's bought
+	-- print(string.format('buyField(fieldDef, isOwned) [fieldNumber %s]', tostring(fieldDef.fieldNumber)));
+	if g_currentMission.time > 0 and isOwned and courseplay.fields.automaticScan and courseplay.fields.onlyScanOwnedFields and courseplay.fields.fieldData[fieldDef.fieldNumber] == nil then
+		-- print(string.format('\tisOwned=true, automaticScan=true, onlyScanOwnedFields=true, fieldData[%d]=nil', fieldDef.fieldNumber));
+		local initObject = fieldDef.fieldMapIndicator;
+		local x,_,z = getWorldTranslation(initObject);
+		courseplay.fields:setSingleFieldEdgePath(initObject, x, z, courseplay.fields.scanStep, 2000, 10, fieldDef.fieldNumber, false, 'scan');
+	end;
+end;
+FieldDefinition.setFieldOwnedByPlayer = Utils.prependedFunction(FieldDefinition.setFieldOwnedByPlayer, courseplay.fields.buyField);
+
 --XML SAVING
 function courseplay.fields:openOrCreateXML(forceCreation)
 	--self = courseplay.fields
