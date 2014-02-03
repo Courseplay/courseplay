@@ -58,64 +58,68 @@ function courseplay.fields:setAllFieldEdges()
 	self:dbg('setAllFieldEdges() END\n' .. string.rep('-', 50), 'scan');
 end;
 
-function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, randomDir)
+function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, randomDir, dbgType)
 	--self = courseplay.fields
-	self:dbg(string.format('getSingleFieldEdge(initObject, [scanStep] %d, [maxN] %s, randomDir %s)', scanStep, tostring(maxN), tostring(randomDir)));
+	if randomDir == nil then randomDir = false; end;
 	scanStep = scanStep or self.defaultScanStep;
 	maxN = maxN or math.floor(10000/scanStep); --10 km circumference should be enough. otherwise state maxN as parameter
 	local steepCornerTolerance = math.rad(11.25); --TODO: make customizable
+	self:dbg(string.format('getSingleFieldEdge(initObject, [scanStep] %d, [maxN] %s, [randomDir] %s)', scanStep, tostring(maxN), tostring(randomDir)), dbgType);
 
 	local x0,_,z0 = getWorldTranslation(initObject);
 
 	local isField = courseplay:is_field(x0, z0, 0.1, 0.1);
 	local coordinates, xValues, zValues = {}, {}, {};
 	local numPoints = 0;
-	local Acoordinates, AxValues, AzValues = {}, {}, {};
-	self:dbg(string.format('Begin edge scanning at : %.2f , %.2f', x0, z0), 'scan');
+	self:dbg(string.format('Begin edge scanning at: %.2f, %.2f', x0, z0), dbgType);
 	if isField then
+		-- (1) SET INITIAL TG AND PROBE DATA
 		local dis = 0;
-		local stepA, stepB = 1, -.05;
-		local x,y,z = getRotation(initObject);
+		local stepA, stepB = 1, -0.05;
+		local rx,ry,rz = getWorldRotation(initObject);
 
-		local tg = createTransformGroup("scanner");
-		local probe1 = createTransformGroup("probe1");
+		local tg = createTransformGroup('courseplayFieldScanner');
+		local probe1 = createTransformGroup('courseplayFieldProbe');
 		link(getRootNode(), tg);
 		link(tg, probe1);
-		setTranslation(tg, x0,0,z0);
+		setTranslation(tg, x0, 0, z0);
+		setTranslation(probe1, 0, 0, 0);
 
 		if randomDir then
 			math.randomseed(g_currentMission.time)
-			y = 2*math.pi*math.random();
-			x, z = 5*math.random(), 5*math.random();
+			ry = 2*math.pi*math.random();
+			-- rx, rz = 5*math.random(), 5*math.random(); --TODO: why randomize x and z rotation?
 		end;
-		setRotation(tg,x,y,z);
+		setRotation(tg, 0, ry, 0);
 
-		setTranslation(probe1,stepA,0,0);
-		x0, _, z0 = getWorldTranslation(tg);
-		self:dbg(string.format('\tSearching edge in direction : %.4f', y), 'scan');
-		while courseplay:is_field(x0,z0,0.1,0.1) do --search fast forward (1m steps)
+		-- (2) FIND INITIAL BORDER POINT
+		self:dbg(string.format('\tSearching edge in direction: %.4f (%.1f deg)', ry, math.deg(ry)), dbgType);
+		while courseplay:is_field(x0, z0, 0.1, 0.1) do --search fast forward (1m steps)
 			dis = dis + stepA;
-			setTranslation(tg,getWorldTranslation(probe1));
-			x0, _, z0 = getWorldTranslation(tg);
+			setTranslation(probe1, 0, 0, dis);
+			x0, _, z0 = getWorldTranslation(probe1);
 			if math.abs(dis) > 2000 then
 				break;
 			end;
 		end;
-		setTranslation(probe1,stepB,0,0);
-		self:dbg(string.format('\tfound first point past field border: x0=%s, z0=%s, dis=%s', tostring(x0), tostring(z0), tostring(dis)), 'scan');
+		-- now we have a point very close to the field boundary but definitely outside
+		self:dbg(string.format('\tfound first point past field border: x0=%s, z0=%s, dis=%s', tostring(x0), tostring(z0), tostring(dis)), dbgType);
+
 		while not courseplay:is_field(x0,z0,0.1,0.1) do --then backtrace in small 5cm steps
 			dis = dis + stepB;
-			setTranslation(tg,getWorldTranslation(probe1));
-			x0, _, z0 = getWorldTranslation(tg);
+			setTranslation(probe1, 0, 0, dis);
+			x0, _, z0 = getWorldTranslation(probe1);
 		end;
-		self:dbg(string.format('\ttrace back, border point found: x0=%s, z0=%s, dis=%s', tostring(x0), tostring(z0), tostring(dis)), 'scan');
+		-- we found the exact border point (+/- 5cm) - move tg to that point
+		self:dbg(string.format('\ttrace back, border point found: x0=%s, z0=%s, dis=%s', tostring(x0), tostring(z0), tostring(dis)), dbgType);
+		setTranslation(tg, x0, 0, z0);
 
-		--now we have a point very close to the field boundary but definitely inside :)
 
-		--now we rotate this point to have it following the edge direction
-		setTranslation(probe1,.1,0,0);
+		-- (3) FIND NEXT BORDER POINT 10cm AWAY
+		-- now we rotate this point to have it following the edge direction
+		setTranslation(probe1, 0.1, 0, 0); --TODO: why translate on the x axis instead of the z axis?
 		x0, _, z0 = getWorldTranslation(probe1);
-		while not courseplay:is_field(x0,z0,0.1,0.1) do
+		while not courseplay:is_field(x0, z0, 0.1, 0.1) do
 			rotate(tg,0,.01,0); -- rotate by 0.573 deg
 			x0, _, z0 = getWorldTranslation(probe1);
 		end;
@@ -125,9 +129,9 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 		directionChange = false;
 		while numPoints < maxN do
 			if not directionChange then
-				setTranslation(tg,getWorldTranslation(probe1));
+				setTranslation(tg, getWorldTranslation(probe1));
 			end;
-			setTranslation(probe1,scanAt,0,0);
+			setTranslation(probe1, scanAt, 0, 0);
 			rotate(tg,0,math.pi/4,0); -- place probe1 inside the field (45 deg)
 			px,_,pz = getWorldTranslation(probe1);
 			local rotAngle = 0.1; -- 5.73 deg
@@ -135,10 +139,11 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 
 			local return2field = not courseplay:is_field(px, pz, 0.1, 0.1); --there is NO guarantee that probe1 (px,pz) is in field just because tg is!!!
 
-			-- pendulum, increase rotAngle each step until probe is outside of field
+			-- pendulum: increase rotAngle each step until probe is outside of field
 			while courseplay:is_field(px, pz, 0.1, 0.1) or return2field do
 				rotate(tg,0,rotAngle*turnSign,0);
-				rotAngle = rotAngle + 0.1;
+				rotAngle = rotAngle*1.05;
+				--rotAngle = rotAngle + 0.1; --alternative for performance tuning, don't know which one is better
 				turnSign = -turnSign;
 				px,_,pz = getWorldTranslation(probe1);
 
@@ -154,7 +159,7 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 			while not courseplay:is_field(px, pz, 0.1, 0.1) do
 				rotate(tg,0,0.01*turnSign,0)
 				px,_,pz = getWorldTranslation(probe1);
-				--self:dbg('\t\trotate back', 'scan');
+				--self:dbg('\t\trotate back', dbgType);
 				cnt = cnt+1;
 				if cnt > 2*math.pi/.01 then
 					translate(probe1,-.5*scanAt,0,0);
@@ -166,7 +171,7 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 				end;
 			end;
 			if not courseplay:is_field(px, pz, 0.1, 0.1) then
-				self:dbg('\tlost point', 'scan');
+				self:dbg('\tlost point', dbgType);
 				break;
 			end;
 			local _,tgRot,_ = getRotation(tg);
@@ -177,14 +182,14 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 				local prevPoint = coordinates[numPoints];
 				local centerX, centerZ = (px+prevPoint.cx)/2, (pz+prevPoint.cz)/2;
 				centerIsField = courseplay:is_field(centerX, centerZ, 0.1, 0.1);
-				-- self:dbg(string.format('point %d: prev cx,cz=%.1f,%.1f, px,pz=%.1f,%.1f, centerX,centerZ=%.1f,%.1f, centerIsField=%s', numPoints+1, prevPoint.cx, prevPoint.cz, px, pz, centerX, centerZ, tostring(centerIsField)), 'scan');
-				-- print(string.format('point %d: prev cx,cz=%.1f,%.1f, px,pz=%.1f,%.1f, centerX,centerZ=%.1f,%.1f, centerIsField=%s', numPoints+1, prevPoint.cx, prevPoint.cz, px, pz, centerX, centerZ, tostring(centerIsField)));
+				-- self:dbg(string.format('point %d: prev cx,cz=%.1f,%.1f, px,pz=%.1f,%.1f, centerX,centerZ=%.1f,%.1f, centerIsField=%s', numPoints+1, prevPoint.cx, prevPoint.cz, px, pz, centerX, centerZ, tostring(centerIsField)), dbgType);
 			end;
 			-- ]]
 
-			if math.abs(prevRot - tgRot) > steepCornerTolerance and scanAt > math.max(scanStep/5, 1) then -- dramatic direction change -> decrease scanAt in half steps
+			-- if math.abs(prevRot - tgRot) > steepCornerTolerance and scanAt > math.max(scanStep/5, 1) then -- dramatic direction change -> decrease scanAt in half steps
+			if math.abs(prevRot - tgRot) > steepCornerTolerance and scanAt >= 1 then -- dramatic direction change -> decrease scanAt in half steps
 				directionChange = true;
-				scanAt = math.max(scanAt / 2, 0.5);
+				scanAt = scanAt/2;
 				setRotation(tg,0,prevRot,0); -- reset tg rotation and scan again with a shorter scanstep
 
 			--[[
@@ -202,7 +207,7 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 				scanAt = scanStep;
 				prevRot = tgRot;
 				directionChange = false;
-				self:dbg(string.format('\tpoint %d set: cx=%s, cz=%s', #coordinates, tostring(px), tostring(pz)), 'scan');
+				self:dbg(string.format('\tpoint %d set: cx=%s, cz=%s', #coordinates, tostring(px), tostring(pz)), dbgType);
 			end;
 
 			if numPoints > 5 then
@@ -216,9 +221,9 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 		end;
 
 		if coordinates and xValues and zValues then
-			self:dbg(string.format('\tget: #coordinates=%d, #xValues=%d, #zValues=%d', #coordinates, #xValues, #zValues), 'scan');
+			self:dbg(string.format('\tget: #coordinates=%d, #xValues=%d, #zValues=%d', #coordinates, #xValues, #zValues), dbgType);
 		else
-			self:dbg(string.format('\tget: coordinates=%s, xValues=%s, zValues=%s', tostring(coordinates), tostring(xValues), tostring(zValues)), 'scan');
+			self:dbg(string.format('\tget: coordinates=%s, xValues=%s, zValues=%s', tostring(coordinates), tostring(xValues), tostring(zValues)), dbgType);
 		end;
 
 		unlink(probe1);
@@ -232,7 +237,7 @@ end;
 
 function courseplay.fields:setSingleFieldEdgePath(initObject, initX, initZ, scanStep, maxN, numDirectionTries, fieldNum, returnPoints, dbgType)
 	for try=1,numDirectionTries do
-		local edgePoints, xValues, zValues = self:getSingleFieldEdge(initObject, scanStep, maxN, try > 1);
+		local edgePoints, xValues, zValues = self:getSingleFieldEdge(initObject, scanStep, maxN, try > 1, dbgType);
 
 		if edgePoints then
 			local numEdgePoints = #edgePoints;
