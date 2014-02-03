@@ -99,37 +99,32 @@ function courseplay_manager:createInitialCourseplayFile()
 		-- NOTE: usually "hasXMLProperty" would be used in this case. This presented some weird shitty problem though, in that the first of each set (posX, posX and debugScannedFields) were created, but not the second ones. So, getXML... is the better choice in this case.
 		if not getXMLFloat(file, 'XML.courseplayHud#posX') then
 			setXMLString(file, 'XML.courseplayHud#posX', ('%.3f'):format(courseplay.hud.infoBasePosX));
-			-- print(string.format('\t\tsetXMLString(..., "XML.courseplayHud#posX", %.3f)', courseplay.hud.infoBasePosX));
 		end;
 		if not getXMLFloat(file, 'XML.courseplayHud#posY') then
 			setXMLString(file, 'XML.courseplayHud#posY', ('%.3f'):format(courseplay.hud.infoBasePosY));
-			-- print(string.format('\t\tsetXMLString(..., "XML.courseplayHud#posY", %.3f)', courseplay.hud.infoBasePosY));
 		end;
 
 		if not getXMLFloat(file, 'XML.courseplayGlobalInfoText#posX') then
 			setXMLString(file, 'XML.courseplayGlobalInfoText#posX', ('%.3f'):format(courseplay.globalInfoText.posX));
-			-- print(string.format('\t\tsetXMLString(..., "XML.courseplayGlobalInfoText#posX", %.3f)', courseplay.globalInfoText.posX));
 		end;
 		if not getXMLFloat(file, 'XML.courseplayGlobalInfoText#posY') then
 			setXMLString(file, 'XML.courseplayGlobalInfoText#posY', ('%.3f'):format(courseplay.globalInfoText.posY));
-			-- print(string.format('\t\tsetXMLString(..., "XML.courseplayGlobalInfoText#posY", %.3f)', courseplay.globalInfoText.posY));
 		end;
 
 		if getXMLBool(file, 'XML.courseplayFields#automaticScan') == nil then
 			setXMLString(file, 'XML.courseplayFields#automaticScan', tostring(courseplay.fields.automaticScan));
-			-- print(string.format('\t\tsetXMLString(..., "XML.courseplayFields#automaticScan", %q)', tostring(courseplay.fields.automaticScan)));
+		end;
+		if getXMLBool(file, 'XML.courseplayFields#onlyScanOwnedFields') == nil then
+			setXMLString(file, 'XML.courseplayFields#onlyScanOwnedFields', tostring(courseplay.fields.onlyScanOwnedFields));
 		end;
 		if getXMLBool(file, 'XML.courseplayFields#debugScannedFields') == nil then
 			setXMLString(file, 'XML.courseplayFields#debugScannedFields', tostring(courseplay.fields.debugScannedFields));
-			-- print(string.format('\t\tsetXMLString(..., "XML.courseplayFields#debugScannedFields", %q)', tostring(courseplay.fields.debugScannedFields)));
 		end;
 		if getXMLBool(file, 'XML.courseplayFields#debugCustomLoadedFields') == nil then
 			setXMLString(file, 'XML.courseplayFields#debugCustomLoadedFields', tostring(courseplay.fields.debugCustomLoadedFields));
-			-- print(string.format('\t\tsetXMLString(..., "XML.courseplayFields#debugCustomLoadedFields", %q)', tostring(courseplay.fields.debugCustomLoadedFields)));
 		end;
 		if not getXMLInt(file, 'XML.courseplayFields#scanStep') then
 			setXMLInt(file, 'XML.courseplayFields#scanStep', courseplay.fields.scanStep);
-			-- print(string.format('\t\setXMLInt(..., "XML.courseplayFields#scanStep", %d)', courseplay.fields.scanStep));
 		end;
 
 		saveXMLFile(file);

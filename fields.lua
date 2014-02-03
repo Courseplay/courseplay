@@ -3,6 +3,7 @@
 -- steep angle algorithm by fck54
 
 courseplay.fields.automaticScan = true;
+courseplay.fields.onlyScanOwnedFields = true;
 courseplay.fields.defaultScanStep = 5;
 courseplay.fields.scanStep = courseplay.fields.defaultScanStep;
 
@@ -32,20 +33,24 @@ function courseplay.fields:setAllFieldEdges()
 
 	local fieldDef = g_currentMission.fieldDefinitionBase.fieldDefs[self.curFieldScanIndex];
 	if fieldDef ~= nil then
-		local fieldNum = fieldDef.fieldNumber;
-		local initObject = fieldDef.fieldMapIndicator;
-		local x,_,z = getWorldTranslation(initObject);
-		if fieldNum and initObject and x and z then
-			local isField = courseplay:is_field(x, z, 0.1, 0.1);
+		if not self.onlyScanOwnedFields or (self.onlyScanOwnedFields and fieldDef.ownedByPlayer) then
+			local fieldNum = fieldDef.fieldNumber;
+			local initObject = fieldDef.fieldMapIndicator;
+			local x,_,z = getWorldTranslation(initObject);
+			if fieldNum and initObject and x and z then
+				local isField = courseplay:is_field(x, z, 0.1, 0.1);
 
-			self:dbg(string.format("fieldDef %d (fieldNum=%d): x,z=%.1f,%.1f, isField=%s", self.curFieldScanIndex, fieldNum, x, z, tostring(isField)), 'scan');
-			if isField then
-				self:setSingleFieldEdgePath(initObject, x, z, self.scanStep, maxN, numDirectionTries, fieldNum, false, 'scan');
+				self:dbg(string.format("fieldDef %d (fieldNum=%d): x,z=%.1f,%.1f, isField=%s", self.curFieldScanIndex, fieldNum, x, z, tostring(isField)), 'scan');
+				if isField then
+					self:setSingleFieldEdgePath(initObject, x, z, self.scanStep, maxN, numDirectionTries, fieldNum, false, 'scan');
+				end;
+
+				self.numAvailableFields = table.maxn(self.fieldData);
+			else
+				self:dbg(string.format('fieldDef %s: fieldNum=%s, initObject=%s, x,z=%s,%s -> cancel', tostring(self.curFieldScanIndex), tostring(fieldNum), tostring(initObject), tostring(x), tostring(z)), 'scan');
 			end;
-
-			self.numAvailableFields = table.maxn(self.fieldData);
 		else
-			self:dbg(string.format('fieldDef %s: fieldNum=%s, initObject=%s, x,z=%s,%s -> cancel', tostring(self.curFieldScanIndex), tostring(fieldNum), tostring(initObject), tostring(x), tostring(z)), 'scan');
+			self:dbg(string.format('fieldDef %s: onlyScanOwnedFields=%s, fieldDef.ownedByPlayer=%s -> skip field', tostring(self.curFieldScanIndex), tostring(self.onlyScanOwnedFields), tostring(fieldDef.ownedByPlayer)), 'scan');
 		end;
 	else
 		self:dbg(string.format('fieldDef %s is nil', tostring(self.curFieldScanIndex)), 'scan');

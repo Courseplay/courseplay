@@ -159,7 +159,7 @@ end;
 function courseplay:setGlobalData()
 	local customPosX, customPosY = nil, nil;
 	local customGitPosX, customGitPosY = nil, nil;
-	local fieldsAutomaticScan, fieldsDebugScan, fieldsDebugCustomLoad, fieldsCustomScanStep = true, false, false, nil;
+	local fieldsAutomaticScan, fieldsDebugScan, fieldsDebugCustomLoad, fieldsCustomScanStep, fieldsOnlyScanOwnedFields = true, false, false, nil, true;
 
 	local savegame = g_careerScreen.savegames[g_careerScreen.selectedIndex];
 	if savegame ~= nil then
@@ -181,6 +181,7 @@ function courseplay:setGlobalData()
 			local fieldsKey = 'XML.courseplayFields';
 			if hasXMLProperty(cpFile, fieldsKey) then
 				fieldsAutomaticScan   = Utils.getNoNil(getXMLBool(cpFile, fieldsKey .. '#automaticScan'), true);
+				fieldsOnlyScanOwnedFields = Utils.getNoNil(getXMLBool(cpFile, fieldsKey .. '#onlyScanOwnedFields'), true);
 				fieldsDebugScan       = Utils.getNoNil(getXMLBool(cpFile, fieldsKey .. '#debugScannedFields'), false);
 				fieldsDebugCustomLoad = Utils.getNoNil(getXMLBool(cpFile, fieldsKey .. '#debugCustomLoadedFields'), false);
 				fieldsCustomScanStep = getXMLInt(cpFile, fieldsKey .. '#scanStep');
@@ -428,6 +429,7 @@ function courseplay:setGlobalData()
 	courseplay.fields.ingameDataSetUp = false;
 	courseplay.fields.customFieldMaxNum = 150;
 	courseplay.fields.automaticScan = fieldsAutomaticScan;
+	courseplay.fields.onlyScanOwnedFields = fieldsOnlyScanOwnedFields;
 	courseplay.fields.debugScannedFields = fieldsDebugScan;
 	courseplay.fields.debugCustomLoadedFields = fieldsDebugCustomLoad;
 	courseplay.fields.scanStep = Utils.getNoNil(fieldsCustomScanStep, courseplay.fields.defaultScanStep);

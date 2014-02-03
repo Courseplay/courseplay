@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="13">
-	<version>3.41.0378</version>
+	<version>3.41.0379</version>
 	<author><![CDATA[Jakob Tischler, Thomas Gärtner,
 Horoman]]></author>
 	<title>
@@ -776,7 +776,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<es>Search combine on field %s</es> <!-- !!! -->
 			<it>Ricerca trebbia nel campo %s</it>
 			<cz>Search combine on field %s</cz> <!-- !!! -->
-			<ru>Комбайн с поля № %s</ru> <!-- where this text? -->
+			<ru>Комбайн с поля № %s</ru>
 		</text>
 		<text name="CPcopyCourse">
 			<en>Copy course:</en>
