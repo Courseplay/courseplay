@@ -508,7 +508,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<es>Nombre de ruta:</es>
 			<it>Nome del percorso:</it>
 			<cz>Jméno trasy:</cz>
-			<ru>Машрут:</ru>
+			<ru>Название маршрута:</ru>
 		</text>
 		<text name="CPFolderName">
 			<en>Folder name:</en>
@@ -562,7 +562,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<es>ha alcanzado el punto final</es>
 			<it>ha raggiunto la fine del percorso</it>
 			<cz>dojel na trigger nebo konec.</cz>
-			<ru>доехал до пункта</ru>
+			<ru>доехал до нужного пункта</ru>
 		</text>
 		<text name="COURSEPLAY_WORK_END">
 			<en>has finished work.</en>
@@ -571,7 +571,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<es>ha terminado el trabajo.</es>
 			<it>ha finito il lavoro.</it>
 			<cz>dokončil práci.</cz>
-			<ru>завершил маршрут.</ru>
+			<ru>завершил работу на маршруте.</ru>
 		</text>
 		<text name="CPReadyUnloadBale">
 			<en>ready for unloading bales.</en>
@@ -669,7 +669,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<es>Distancia lateral:</es>
 			<it>Distanza laterale:</it>
 			<cz>Boční odstup:</cz>
-			<ru>Длина трубы:</ru>
+			<ru>правее/левее:</ru>
 		</text>
 		<text name="CPRequiredFillLevel">
 			<en>Start at %:</en>
@@ -696,7 +696,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<es>Distancia vertical:</es>
 			<it>Distanza verticale:</it>
 			<cz>Odstup vpřed/vzad:</cz>
-			<ru>Высота трубы:</ru>
+			<ru>вперед/назад:</ru>
 		</text>
 		<text name="CPMaxHireables">
 			<en>maximum AI helpers:</en>
@@ -776,7 +776,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<es>Search combine on field %s</es> <!-- !!! -->
 			<it>Search combine on field %s</it> <!-- !!! -->
 			<cz>Search combine on field %s</cz> <!-- !!! -->
-			<ru>Search combine on field %s</ru> <!-- !!! -->
+			<ru>Комбайн с поля № %s</ru> <!-- where this text? -->
 		</text>
 		<text name="CPcopyCourse">
 			<en>Copy course:</en>
@@ -1190,7 +1190,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<es>debe repostar pronto</es>
 			<it>dev'essere rifornito al piu' presto</it>
 			<cz>bude potřebovat dotankovat.</cz>
-			<ru>скоро будет нуждаться в топливе</ru>
+			<ru>низкий уровень топлива</ru>
 		</text>
 		<text name="COURSEPLAY_MUST_BE_REFUELED">
 			<en>must be refueled</en>
@@ -1199,7 +1199,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<es>debe repostar</es>
 			<it>dev'essere rifornito ora</it>
 			<cz>musí tankovat.</cz>
-			<ru>нуждается в топливе</ru>
+			<ru>слишком мало топлива!</ru>
 		</text>
 		<text name="COURSEPLAY_IS_BEING_REFUELED">
 			<en>is being refueled</en>
@@ -1235,7 +1235,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<es>remolque incorrecto para este modo</es>
 			<it>rimorchio sbagliato per questa modalita'</it>
 			<cz>Máš pro tento mod nevhodný přívěs</cz>
-			<ru>Неподходящее оборудование для маршрута или типа.</ru>
+			<ru>Неподходящее оборудование для типа маршрута.</ru>
 		</text>
 		<text name="CPWrongESLversion">
 			<en>ESLimiter version is not supported</en>
@@ -1280,7 +1280,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<es>Herramienta: mov. horiz.</es>
 			<it>Utensile: distanza orizz.</it>
 			<cz>Horiz. posunutí stroje:	</cz>
-			<ru>Влево-вправо:</ru>
+			<ru>правее/левее:</ru>
 		</text>
 		<text name="COURSEPLAY_TOOL_OFFSET_Z">
 			<en>Tool offset vertical</en>
@@ -1289,7 +1289,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<es>Herramienta: mov. vert.</es>
 			<it>Utensile: distanza vert.</it>
 			<cz>Vertik. posunutí stroje:</cz>
-			<ru>Назад-вперед:</ru>
+			<ru>вперед/назад:</ru>
 		</text>
 		<text name="COURSEPLAY_FRONT">
 			<en>front</en>
@@ -1741,7 +1741,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>Field scan in progress</fr> <!-- !!! -->
 			<it>Field scan in progress</it> <!-- !!! -->
 			<cz>Field scan in progress</cz> <!-- !!! -->
-			<ru>Field scan in progress</ru> <!-- !!! -->
+			<ru>начальная обработка</ru>
 		</text>
 		<text name="COURSEPLAY_SCANNING_FIELD_NMB">
 			<de>Scanne Feld %d/%d</de>
@@ -1750,7 +1750,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>Scanning field %d/%d</fr> <!-- !!! -->
 			<it>Scanning field %d/%d</it> <!-- !!! -->
 			<cz>Scanning field %d/%d</cz> <!-- !!! -->
-			<ru>Scanning field %d/%d</ru> <!-- !!! -->
+			<ru>подготовка полей: %d/%d</ru>
 		</text>
 		<text name="COURSEPLAY_HOSEMISSING">
 			<de>Schlauch fehlt - Befüllung abgebrochen</de>
