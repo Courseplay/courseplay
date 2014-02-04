@@ -191,20 +191,21 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 			end;
 			-- ]]
 
-			-- if math.abs(prevRot - tgRot) > steepCornerTolerance and scanAt > math.max(scanStep/5, 1) then -- dramatic direction change -> decrease scanAt in half steps
+			--[[ -- STEEP ANGLE CHECK
 			if math.abs(prevRot - tgRot) > steepCornerTolerance and scanAt >= 1 then -- dramatic direction change -> decrease scanAt in half steps
 				directionChange = true;
 				scanAt = scanAt/2;
 				setRotation(tg,0,prevRot,0); -- reset tg rotation and scan again with a shorter scanstep
+			]]
 
-			--[[
+			--[[ --CENTER IS FIELD CHECK
 			elseif not centerIsField and scanAt >= 1.0 then -- center point is not field -> decrease scanAt in half steps
 				-- print(string.format('\tcenterIsField=false, scanAt=%.1f -> divide scanAt by 2, set directionChange to true', scanAt));
 				scanAt = math.max(scanAt / 2, 0.99999); --scan again with a shorter scan step
 				directionChange = true;
 			-- ]]
 
-			else  -- save the new found point
+			-- else  -- save the new found point
 				table.insert(coordinates, { cx = px, cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, px, 1, pz), cz = pz });
 				table.insert(xValues, px);
 				table.insert(zValues, pz);
@@ -212,8 +213,8 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 				scanAt = scanStep;
 				prevRot = tgRot;
 				directionChange = false;
-				self:dbg(string.format('\tpoint %d set: cx=%s, cz=%s', #coordinates, tostring(px), tostring(pz)), dbgType);
-			end;
+				self:dbg(string.format('\tpoint %d set: cx=%s, cz=%s', numPoints, tostring(px), tostring(pz)), dbgType);
+			-- end;
 
 			if numPoints > 5 then
 				local dis0 = Utils.vector2Length(px-coordinates[1].cx, pz-coordinates[1].cz)
