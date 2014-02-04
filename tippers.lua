@@ -589,7 +589,7 @@ function courseplay:load_tippers(self)
 
 		local current_tipper = self.tippers[self.cp.currentTrailerToFill]
 
-		-- drive on if actual tipper is full
+		-- drive on if current tipper is full
 		if current_tipper.fillLevel == current_tipper.capacity then
 			if table.getn(self.tippers) > self.cp.currentTrailerToFill then
 				local tipper_x, tipper_y, tipper_z = getWorldTranslation(self.tippers[self.cp.currentTrailerToFill].rootNode)

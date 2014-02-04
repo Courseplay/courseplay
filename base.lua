@@ -39,7 +39,8 @@ function courseplay:load(xmlFile)
 	if self.isRealistic then
 		self.cp.trailerPushSpeed = 0
 	end
-	
+	self.cp.stopWhenUnloading = false;
+
 	--turn maneuver
 	self.cp.waitForTurnTime = 0.00   --float
 	self.cp.turnStage = 0 --int
@@ -1440,6 +1441,7 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		if self.cp.isCombine then
 			curKey = key .. '.courseplay.combine';
 			self.cp.driverPriorityUseFillLevel = Utils.getNoNil(getXMLBool(xmlFile, curKey .. '#driverPriorityUseFillLevel'), false);
+			self.cp.stopWhenUnloading = Utils.getNoNil(getXMLBool(xmlFile, curKey .. '#stopWhenUnloading'), false);
 		end;
 
 
@@ -1483,10 +1485,10 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 	local fieldWork = string.format('<fieldWork workWidth="%.1f" ridgeMarkersAutomatic="%s" offsetData="%s" abortWork="%d" />', self.cp.workWidth, tostring(self.cp.ridgeMarkersAutomatic), offsetData, Utils.getNoNil(self.cp.abortWork, 0));
 	local shovels, combine = "", "";
 	if hasAllShovelRots then
-		shovels = string.format('<shovel rots="%s" />', shovelRotsAttrNodes);
+		shovels = string.format('<shovel rots=%q />', shovelRotsAttrNodes);
 	end;
 	if self.cp.isCombine then
-		combine = string.format('<combine driverPriorityUseFillLevel="%s" />', tostring(self.cp.driverPriorityUseFillLevel));
+		combine = string.format('<combine driverPriorityUseFillLevel=%q stopWhenUnloading=%q />', tostring(self.cp.driverPriorityUseFillLevel), tostring(self.cp.stopWhenUnloading));
 	end;
 	local cpClose = '</courseplay>';
 

@@ -186,11 +186,14 @@ function courseplay:executeFunction(self, func, value, page)
 				combine = self.tippers[self.cp.attachedCombineIdx];
 			end;
 
-			if combine.cp.isCombine then
+			if not combine.cp.isChopper then
 				if line == 4 then
 					courseplay:toggleDriverPriority(combine);
+				elseif line == 5 then
+					courseplay:toggleStopWhenUnloading(combine);
 				end;
 			end;
+
 			if combine.courseplayers == nil or #(combine.courseplayers) == 0 then
 				if line == 1 then
 					courseplay:call_player(combine);

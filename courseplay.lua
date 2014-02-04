@@ -263,6 +263,10 @@ function courseplay:setGlobalData()
 		[9] = courseplay.hud.infoBasePosX + 0.230,
 	};
 	courseplay.hud.col2posXforce = {
+		[0] = {
+			[4] = courseplay.hud.infoBasePosX + 0.212;
+			[5] = courseplay.hud.infoBasePosX + 0.212;
+		};
 		[1] = {
 			[4] = courseplay.hud.infoBasePosX + 0.182;
 		};

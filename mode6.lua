@@ -359,12 +359,13 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 							tool:setIsThreshing(true);
 						end
 
-						if tool.grainTankFillLevel >= tool.grainTankCapacity or tool.waitingForDischarge then
+						if tool.grainTankFillLevel >= tool.grainTankCapacity or tool.waitingForDischarge or (tool.cp.stopWhenUnloading and tool.pipeIsUnloading) then
 							tool.waitingForDischarge = true
 							allowedToDrive = false;
 							tool:setIsThreshing(false);
-							if tool.grainTankFillLevel < tool.grainTankCapacity*0.8 then
+							if tool.grainTankFillLevel < tool.grainTankCapacity*0.8 and (not tool.cp.stopWhenUnloading or (tool.cp.stopWhenUnloading and not tool.pipeIsUnloading)) then
 								tool.waitingForDischarge = false
+								-- print(string.format('fillLevel (%%)=%.1f, stopWhenUnloading=%s, pipeIsUnloading=%s -> set waitingForDischarge to false', 100*tool.grainTankFillLevel/tool.grainTankCapacity, tostring(tool.cp.stopWhenUnloading), tostring(tool.pipeIsUnloading)));
 							end
 						end
 

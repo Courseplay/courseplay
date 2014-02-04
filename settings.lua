@@ -1157,7 +1157,17 @@ function courseplay:toggleSymmetricLaneChange(vehicle, force)
 end;
 
 function courseplay:toggleDriverPriority(combine)
+	if combine.cp.driverPriorityUseFillLevel == nil then combine.cp.driverPriorityUseFillLevel = false; end;
 	combine.cp.driverPriorityUseFillLevel = not combine.cp.driverPriorityUseFillLevel;
+end;
+
+function courseplay:toggleStopWhenUnloading(combine)
+	if combine.cp.isChopper then
+		combine.cp.stopWhenUnloading = false;
+		return;
+	end;
+	if combine.cp.stopWhenUnloading == nil then combine.cp.stopWhenUnloading = false; end;
+	combine.cp.stopWhenUnloading = not combine.cp.stopWhenUnloading;
 end;
 
 function courseplay:goToVehicle(curVehicle, targetVehicle)

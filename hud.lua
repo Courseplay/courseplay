@@ -169,16 +169,17 @@ function courseplay.hud:loadPage(vehicle, page)
 	--PAGE 0: COMBINE SETTINGS
 	if page == 0 then
 		local combine = vehicle;
+		if vehicle.cp.attachedCombineIdx ~= nil then
+			combine = vehicle.tippers[vehicle.cp.attachedCombineIdx];
+		end;
 
-		--Driver priority
-		if vehicle.cp.isCombine then
+		if not combine.cp.isChopper then
+			--Driver priority
 			vehicle.cp.hud.content.pages[0][4][1].text = courseplay:loc("COURSEPLAY_DRIVERPRIOTITY");
+			vehicle.cp.hud.content.pages[0][4][2].text = combine.cp.driverPriorityUseFillLevel and courseplay:loc("COURSEPLAY_FILLEVEL") or courseplay:loc("CPDistance");
 
-			if vehicle.cp.driverPriorityUseFillLevel then
-				vehicle.cp.hud.content.pages[0][4][2].text = courseplay:loc("COURSEPLAY_FILLEVEL");
-			else
-				vehicle.cp.hud.content.pages[0][4][2].text = courseplay:loc("CPDistance");
-			end;
+			vehicle.cp.hud.content.pages[0][5][1].text = courseplay:loc('COURSEPLAY_STOP_DURING_UNLOADING');
+			vehicle.cp.hud.content.pages[0][5][2].text = combine.cp.stopWhenUnloading and courseplay:loc("CPactivated") or courseplay:loc("CPdeactivated");
 		end;
 
 		-- no courseplayer!
@@ -200,8 +201,7 @@ function courseplay.hud:loadPage(vehicle, page)
 			vehicle.cp.hud.content.pages[0][3][1].text = courseplay:loc("CoursePlayPlayerSendHome");
 
 			--chopper
-			local attachedIsChopper = vehicle.tippers[1] ~= nil and vehicle.tippers[1].cp.isChopper ;
-			if combine.cp.isChopper or attachedIsChopper then
+			if combine.cp.isChopper then
 				if vehicle.cp.HUD0tractor then
 					vehicle.cp.hud.content.pages[0][4][1].text = courseplay:loc("CoursePlayPlayerSwitchSide");
 					if vehicle.cp.HUD0combineForcedSide == "left" then
