@@ -589,7 +589,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<es>: work tool needs to be unloaded.</es> <!-- !!! -->
 			<it>: attrezzo necessita di essere scaricato.</it>
 			<cz>: potřebuje vyložit.</cz>
-			<ru>: нуждается в разгрузке.</ru>
+			<ru>нуждается в разгрузке.</ru>
 		</text>
 		<text name="COURSEPLAY_NEEDS_REFILLING">
 			<en>: work tool needs to be refilled.</en>
@@ -598,7 +598,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<es>: work tool needs to be refilled.</es> <!-- !!! -->
 			<it>: attrezzo deve essere rifornito.</it>
 			<cz>: pracovní stroj musí být doplněn.</cz>
-			<ru>: нуждается в заправке.</ru>
+			<ru>нуждается в заправке.</ru>
 		</text>
 		<text name="COURSEPLAY_UNLOADING_BALES">
 			<en>unloading bales.</en>
@@ -607,7 +607,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<es>descargar alpacas.</es>
 			<it>scaricando le balle.</it>
 			<cz>skládá balíky.</cz>
-			<ru>разгузил тюк.</ru>
+			<ru>выгрузка тюков.</ru>
 		</text>
 		<text name="COURSEPLAY_IS_IN_TRAFFIC">
 			<en>is in traffic.</en>
@@ -625,7 +625,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<es>Carga: %d de %d</es>
 			<it>Carico: %d di %d</it>
 			<cz>Bude naloženo: %d z %d</cz>
-			<ru>Погрузка %d из %d</ru>
+			<ru>Заполнение %d из %d</ru>
 		</text>
 		<text name="CPTriggerReached">
 			<en>tip trigger reached</en>
@@ -1551,6 +1551,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<fr>Traceurs</fr>
 			<it>Segnafile</it>
 			<cz>Znamenák stop:</cz>
+			<ru>Маркера:</ru>
 		</text>
 		<text name="CPunloadingOnField">
 			<de>Abladen auf dem Feld</de>
@@ -1804,7 +1805,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<es>: pickup is jammed</es> <!-- !!! -->
 			<it>: pickup è intasato</it> 
 			<cz>: odvozce je přetížený</cz>
-			<ru>: погрузка остановлена</ru>
+			<ru>погрузка остановлена</ru>
 		</text>
 		<text name="COURSEPLAY_BALER_NEEDS_NETS">
 			<en>: baler needs new net rolls</en>
@@ -1813,7 +1814,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<es>: baler needs new net rolls</es> <!-- !!! -->
 			<it>: rotopressa ha bisogno di nuovo rotolo di rete</it>
 			<cz>: lis potřebuje nové balící role</cz>
-			<ru>: упаковщик нуждается в тюках</ru>
+			<ru>упаковщик нуждается в тюках</ru>
 		</text>
 		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES">
 			<en>Calculate current field's edge path</en>
@@ -1912,7 +1913,7 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<es>Parar durante la descarga</es>
 			<it>Smettere durante lo scarico</it>
 			<cz>Zastavit při vykládce</cz> <!-- !!! -->
-			<ru>Стоп во время разгрузки</ru> <!-- !!! -->
+			<ru>Стоять при разгрузке:</ru>
 		</text>
 
 		<!-- INPUTBINDINGS -->
