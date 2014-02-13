@@ -39,13 +39,19 @@ function courseplay:setNameVariable(workTool)
 	end;
 	--]]
 
+
 	--------------------------------------------------------------
 
-	--Claas Quantum 3800K [Vertex Design]
-	if workTool.psGrassactive ~= nil and workTool.psStrawactive ~= nil then --and Utils.endsWith(workTool.configFileName, 'claas_quantum_3800k.xml') then
+
+	--John Deere S650 [Big Boss Modding]
+	if Utils.endsWith(workTool.configFileName, 'JohnDeereS650NW.xml') then
+		workTool.cp.isJohnDeereS650 = true;
+
+	-- Claas Quantum 3800K [Vertex Design]
+	elseif workTool.psGrassactive ~= nil and workTool.psStrawactive ~= nil then --and Utils.endsWith(workTool.configFileName, 'claas_quantum_3800k.xml') then
 		workTool.cp.isClaasQuantum3800K = true;
 
-	--Poettinger Eurocat 315H [MoreRealistic]
+	-- Poettinger Eurocat 315H [MoreRealistic]
 	elseif workTool.typeName == 'moreRealistic.mower_animated' and Utils.endsWith(workTool.configFileName, 'poettingerEurocat315H.xml') then
 		workTool.cp.isMRpoettingerEurocat315H = true;
 
