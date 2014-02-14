@@ -351,21 +351,23 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 							tool.cp.waitingForTrailerToUnload = true
 						end
 					else
+						local fillLevelPct = tool.grainTankFillLevel * 100 / tool.grainTankCapacity;
+
 						if courseplay:isFoldable(workTool) and not tool.isThreshing and not isFolding and not isUnfolded then
 							courseplay:debug(string.format('%s: unfold order (foldDir=%d)', nameNum(workTool), workTool.cp.realUnfoldDirection), 17);
 							workTool:setFoldDirection(workTool.cp.realUnfoldDirection);
 						end;
-						if not isFolding and tool.grainTankFillLevel < tool.grainTankCapacity and not tool.waitingForDischarge and not tool.isThreshing and not weatherStop then
+						if not isFolding and fillLevelPct < 100 and not tool.waitingForDischarge and not tool.isThreshing and not weatherStop then
 							tool:setIsThreshing(true);
 						end
 
-						if tool.grainTankFillLevel >= tool.grainTankCapacity or tool.waitingForDischarge or (tool.cp.stopWhenUnloading and tool.pipeIsUnloading) then
+						if fillLevelPct >= 100 or tool.waitingForDischarge or (tool.cp.stopWhenUnloading and tool.pipeIsUnloading and tool.courseplayers[1] ~= nil) then
 							tool.waitingForDischarge = true
 							allowedToDrive = false;
 							tool:setIsThreshing(false);
-							if tool.grainTankFillLevel < tool.grainTankCapacity*0.8 and (not tool.cp.stopWhenUnloading or (tool.cp.stopWhenUnloading and not tool.pipeIsUnloading)) then
+							if fillLevelPct < 80 and (not tool.cp.stopWhenUnloading or (tool.cp.stopWhenUnloading and tool.courseplayers[1] == nil)) then
 								tool.waitingForDischarge = false
-								-- print(string.format('fillLevel (%%)=%.1f, stopWhenUnloading=%s, pipeIsUnloading=%s -> set waitingForDischarge to false', 100*tool.grainTankFillLevel/tool.grainTankCapacity, tostring(tool.cp.stopWhenUnloading), tostring(tool.pipeIsUnloading)));
+								-- print(string.format('fillLevelPct=%.1f, stopWhenUnloading=%s, pipeIsUnloading=%s, tool.courseplayers[1]=%s -> set waitingForDischarge to false', fillLevelPct, tostring(tool.cp.stopWhenUnloading), tostring(tool.pipeIsUnloading), tostring(tool.courseplayers[1])));
 							end
 						end
 
