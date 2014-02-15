@@ -120,6 +120,7 @@ function courseplay:start(self)
 
 
 	local numWaitPoints = 0
+	local numCrossingPoints = 0
 	self.cp.waitPoints = {};
 	self.cp.shovelFillStartPoint = nil
 	self.cp.shovelFillEndPoint = nil
@@ -140,7 +141,11 @@ function courseplay:start(self)
 		if wp.wait then
 			numWaitPoints = numWaitPoints + 1;
 			self.cp.waitPoints[numWaitPoints] = i;
-		end
+		end;
+		if wp.crossing then
+			numCrossingPoints = numCrossingPoints + 1;
+			self.cp.crossingPoints[numCrossingPoints] = i;
+		end;
 
 		-- specific Workzone
 		if self.cp.mode == 4 or self.cp.mode == 6 or self.cp.mode == 7 then
@@ -187,7 +192,8 @@ function courseplay:start(self)
 		end;
 	end;
 	self.cp.numWaitPoints = numWaitPoints;
-	courseplay:debug(string.format("%s: numWaitPoints=%d, waitPoints[1]=%s", nameNum(self), self.cp.numWaitPoints, tostring(self.cp.waitPoints[1])), 12);
+	self.cp.numCrossingPoints = numCrossingPoints;
+	courseplay:debug(string.format("%s: numWaitPoints=%d, waitPoints[1]=%s, numCrossingPoints=%d", nameNum(self), self.cp.numWaitPoints, tostring(self.cp.waitPoints[1]), numCrossingPoints), 12);
 
 
 	if self.cp.modeState == 0 or self.cp.modeState == 99 then

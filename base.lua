@@ -79,6 +79,7 @@ function courseplay:load(xmlFile)
 	self.cp.waitPoints = {};
 	self.cp.numWaitPoints = 0;
 	self.cp.waitTime = 0;
+	self.cp.crossingPoints = {};
 	self.cp.numCrossingPoints = 0;
 
 	self.cp.visualWaypointsMode = 1
