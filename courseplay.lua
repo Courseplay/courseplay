@@ -67,12 +67,12 @@ if fileExists(modDescPath) then
 	courseplay.versionDisplay = courseplay.versionSplitFlt; --TODO: tmp solution until overloader script is changed - then delete
 end;
 
-if fileExists(courseplay.path .. 'md5.lua') then
-	source(courseplay.path .. 'md5.lua');
-	courseplay.sonOfaBangSonOfaBoom = {
-		['44d143f3e847254a55835a8298ba4e21'] = true;
-	};
-	courseplay.isDeveloper = courseplay.sonOfaBangSonOfaBoom[tostring(md5.sumhexa(g_settingsNickname))];
+courseplay.sonOfaBangSonOfaBoom = {
+	['44d143f3e847254a55835a8298ba4e21'] = true;
+};
+courseplay.isDeveloper = courseplay.sonOfaBangSonOfaBoom[getMD5(g_settingsNickname)];
+if courseplay.isDeveloper then
+	print('Special dev magic for Courseplay developer unlocked. You go, girl!');
 end;
 
 -- working tractors saved in this
@@ -82,58 +82,62 @@ courseplay.numActiveCoursePlayers = 0;
 
 function courseplay:initialize()
 	local fileList = {
-		"astar", 
-		"base",
-		"button", 
-		"combines", 
-		"courseplay_event", 
-		"courseplay_manager", 
-		"course_management",
-		"debug", 
-		"distance", 
-		"drive", 
-		"fields", 
-		"fruit", 
-		"generateCourse", 
-		"global", 
-		"helpers", 
-		"hud", 
-		"input", 
-		"inputCourseNameDialogue", 
-		"mode1", 
-		"mode2", 
-		"mode3", 
-		"mode4", 
-		"mode6", 
-		"mode8", 
-		"mode9", 
-		"recording", 
-		"settings", 
-		"signs", 
-		"specialTools", 
-		"start_stop", 
-		"tippers", 
-		"triggers", 
-		"turn",
-		"reverse",
-		"bypass"
+
+
+
+		'astar', 
+		'base',
+		'button', 
+		'combines', 
+		'courseplay_event', 
+		'courseplay_manager', 
+		'course_management',
+
+		'debug', 
+		'distance', 
+		'drive', 
+		'fields', 
+		'fruit', 
+		'generateCourse', 
+		'global', 
+		'helpers', 
+		'hud', 
+		'input', 
+		'inputCourseNameDialogue', 
+		'mode1', 
+		'mode2', 
+		'mode3', 
+		'mode4', 
+		'mode6', 
+		'mode8', 
+		'mode9', 
+		'recording', 
+		'settings', 
+		'signs', 
+		'specialTools', 
+		'start_stop', 
+		'tippers', 
+		'triggers', 
+		'turn',
+		'reverse',
+		'bypass'
 	};
 
-	local numFiles, numFilesLoaded = table.getn(fileList), 0;
+	local numFiles, numFilesLoaded = #(fileList), 0;
 	for _,file in ipairs(fileList) do
-		local filePath = courseplay.path .. file .. ".lua";
+		local filePath = courseplay.path .. file .. '.lua';
 
 		if fileExists(filePath) then
 			source(filePath);
-			--print("\t### Courseplay: " .. filePath .. " has been loaded");
+			--print('\t### Courseplay: ' .. filePath .. ' has been loaded');
 			numFilesLoaded = numFilesLoaded + 1;
 
-			if file == "inputCourseNameDialogue" then
+			if file == 'inputCourseNameDialogue' then
 				g_inputCourseNameDialogue = inputCourseNameDialogue:new();
-				g_gui:loadGui(courseplay.path .. "inputCourseNameDialogue.xml", "inputCourseNameDialogue", g_inputCourseNameDialogue);
+				g_gui:loadGui(courseplay.path .. 'inputCourseNameDialogue.xml', 'inputCourseNameDialogue', g_inputCourseNameDialogue);
 			end;
 		else
-			print("\tError: Courseplay could not load file " .. filePath);
+			print('\tError: Courseplay could not load file ' .. filePath);
 		end;
 	end;
 
@@ -141,7 +145,7 @@ function courseplay:initialize()
 
 	courseplay:setGlobalData();
 
-	print(("### Courseplay: initialized %d/%d files (v%s)"):format(numFilesLoaded, numFiles, courseplay.version));
+	print(('### Courseplay: initialized %d/%d files (v%s)'):format(numFilesLoaded, numFiles, courseplay.version));
 
 	if courseplay.isDevVersion then
 		local devWarning = '';
