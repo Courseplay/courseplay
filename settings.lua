@@ -442,7 +442,7 @@ end;
 
 function courseplay:change_WaypointMode(self, changeBy)
 	self.cp.visualWaypointsMode = courseplay:varLoop(self.cp.visualWaypointsMode, changeBy, 4, 1);
-	courseplay:setSignsVisibility(self);
+	courseplay.utils.signs:setSignsVisibility(self);
 end
 
 
@@ -624,7 +624,7 @@ function courseplay:copyCourse(self)
 		self.cp.modeState = 1;
 		self.cp.recordingTimer = 1;
 
-		courseplay:updateWaypointSigns(self, "current");
+		courseplay.utils.signs:updateWaypointSigns(self, "current");
 
 		--reset variables
 		self.cp.selectedDriverNumber = 0;

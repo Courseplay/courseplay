@@ -2,9 +2,7 @@
 	- run updateWaypointSigns() when course has been saved
 ]]
 
-courseplay.utils.signs = {};
-
-function courseplay:addSign(vehicle, x, z, rotationY, signType, insertIndex)
+function courseplay.utils.signs:addSign(vehicle, x, z, rotationY, signType, insertIndex)
 	signType = signType or "normal";
 
 	local sign;
@@ -18,7 +16,7 @@ function courseplay:addSign(vehicle, x, z, rotationY, signType, insertIndex)
 		sign = clone(rootSign, true);
 	end;
 
-	courseplay.utils.signs.setTranslation(sign, signType, x, z);
+	self:setTranslation(sign, signType, x, z);
 	rotationY = rotationY or 0;
 	if signType ~= "normal" then
 		setRotation(sign, 0, math.rad(rotationY), 0);
@@ -31,7 +29,8 @@ function courseplay:addSign(vehicle, x, z, rotationY, signType, insertIndex)
 	table.insert(vehicle.cp.signs[section], insertIndex, signData);
 end;
 
-function courseplay.utils.signs.moveToBuffer(vehicle, vehicleIndex, signData)
+function courseplay.utils.signs:moveToBuffer(vehicle, vehicleIndex, signData)
+	-- self = courseplay.utils.signs
 	local signType = signData.type;
 	local section = courseplay.signs.sections[signType];
 
@@ -39,25 +38,26 @@ function courseplay.utils.signs.moveToBuffer(vehicle, vehicleIndex, signData)
 		setVisibility(signData.sign, false);
 		courseplay.utils.table.move(vehicle.cp.signs[section], courseplay.signs.buffer[signType], vehicleIndex);
 	else
-		courseplay.utils.signs.deleteSign(signData.sign);
+		self:deleteSign(signData.sign);
 		vehicle.cp.signs[section][vehicleIndex] = nil;
 	end;
 
 end;
 
-function courseplay.utils.signs.setTranslation(sign, signType, x, z)
+function courseplay.utils.signs:setTranslation(sign, signType, x, z)
+	-- self = courseplay.utils.signs
 	local terrainHeight = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, x, 300, z);
 	setTranslation(sign, x, terrainHeight + courseplay.signs.heightPos[signType], z);
 end;
 
-function courseplay.utils.signs.changeSignType(vehicle, vehicleIndex, oldType, newType)
+function courseplay.utils.signs:changeSignType(vehicle, vehicleIndex, oldType, newType)
 	local section = courseplay.signs.sections[oldType];
 	local signData = vehicle.cp.signs[section][vehicleIndex];
-	courseplay.utils.signs.moveToBuffer(vehicle, vehicleIndex, signData);
-	courseplay:addSign(vehicle, signData.posX, signData.posZ, signData.rotY, newType, vehicleIndex);
+	self:moveToBuffer(vehicle, vehicleIndex, signData);
+	self:addSign(vehicle, signData.posX, signData.posZ, signData.rotY, newType, vehicleIndex);
 end;
 
-function courseplay:updateWaypointSigns(vehicle, section)
+function courseplay.utils.signs:updateWaypointSigns(vehicle, section)
 	section = section or "all"; --section: "all", "crossing", "current"
 
 	vehicle.cp.numWaitPoints = 0;
@@ -71,7 +71,7 @@ function courseplay:updateWaypointSigns(vehicle, section)
 		if #vehicle.cp.signs.current > neededPoints then
 			for j=#vehicle.cp.signs.current, neededPoints+1, -1 do --go backwards so we can safely move/delete
 				local signData = vehicle.cp.signs.current[j];
-				courseplay.utils.signs.moveToBuffer(vehicle, j, signData);
+				self:moveToBuffer(vehicle, j, signData);
 			end;
 		end;
 
@@ -88,16 +88,16 @@ function courseplay:updateWaypointSigns(vehicle, section)
 			local existingSignData = vehicle.cp.signs.current[i];
 			if existingSignData ~= nil then
 				if existingSignData.type == neededSignType then
-					courseplay.utils.signs.setTranslation(existingSignData.sign, existingSignData.type, wp.cx, wp.cz);
+					self:setTranslation(existingSignData.sign, existingSignData.type, wp.cx, wp.cz);
 					if existingSignData.type ~= "normal" and wp.angle then
 						setRotation(existingSignData.sign, 0, math.rad(wp.angle), 0);
 					end;
 				else
-					courseplay.utils.signs.moveToBuffer(vehicle, i, existingSignData);
-					courseplay:addSign(vehicle, wp.cx, wp.cz, wp.angle, neededSignType, i);
+					self:moveToBuffer(vehicle, i, existingSignData);
+					self:addSign(vehicle, wp.cx, wp.cz, wp.angle, neededSignType, i);
 				end;
 			else
-				courseplay:addSign(vehicle, wp.cx, wp.cz, wp.angle, neededSignType, i);
+				self:addSign(vehicle, wp.cx, wp.cz, wp.angle, neededSignType, i);
 			end;
 
 			if wp.wait then
@@ -116,30 +116,30 @@ function courseplay:updateWaypointSigns(vehicle, section)
 			if #vehicle.cp.signs.crossing > 0 then
 				for i=#vehicle.cp.signs.crossing, 1, -1 do --go backwards so we can safely move/delete
 					local signData = vehicle.cp.signs.crossing[i];
-					courseplay.utils.signs.moveToBuffer(vehicle, i, signData);
+					self:moveToBuffer(vehicle, i, signData);
 				end;
 			end;
 
 			for i,course in pairs(g_currentMission.cp_courses) do
 				for j,wp in pairs(course.waypoints) do
 					if wp.crossing then
-						courseplay:addSign(vehicle, wp.cx, wp.cz, wp.angle, "cross");
+						self:addSign(vehicle, wp.cx, wp.cz, wp.angle, "cross");
 					end;
 				end;
 			end;
 		end;
 	end;
 
-	courseplay:setSignsVisibility(vehicle);
+	self:setSignsVisibility(vehicle);
 end;
 
 
-function courseplay.utils.signs.deleteSign(sign)
+function courseplay.utils.signs:deleteSign(sign)
 	unlink(sign);
 	delete(sign);
 end;
 
-function courseplay:setSignsVisibility(vehicle, forceHide)
+function courseplay.utils.signs:setSignsVisibility(vehicle, forceHide)
 	if vehicle.cp == nil or vehicle.cp.signs == nil or (#vehicle.cp.signs.current == 0 and #vehicle.cp.signs.crossing == 0) then
 		return;
 	end;

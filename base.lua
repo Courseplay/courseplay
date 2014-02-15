@@ -142,7 +142,7 @@ function courseplay:load(xmlFile)
 		crossing = {};
 		current = {};
 	};
-	courseplay:updateWaypointSigns(self);
+	courseplay.utils.signs:updateWaypointSigns(self);
 
 	self.cp.numCourses = 1;
 	self.cp.numWaypoints = 0;
@@ -825,7 +825,7 @@ function courseplay:onLeave()
 	end
 
 	--hide visual i3D waypoint signs only when in vehicle
-	courseplay:setSignsVisibility(self, false);
+	courseplay.utils.signs:setSignsVisibility(self, false);
 end
 
 function courseplay:onEnter()
@@ -838,7 +838,7 @@ function courseplay:onEnter()
 	end
 
 	--show visual i3D waypoint signs only when in vehicle
-	courseplay:setSignsVisibility(self);
+	courseplay.utils.signs:setSignsVisibility(self);
 end
 
 function courseplay:draw()
@@ -1115,7 +1115,7 @@ function courseplay:delete()
 		if self.cp.signs ~= nil then
 			for _,section in pairs(self.cp.signs) do
 				for k,signData in pairs(section) do
-					courseplay.utils.signs.deleteSign(signData.sign);
+					courseplay.utils.signs:deleteSign(signData.sign);
 				end;
 			end;
 			self.cp.signs = nil;

@@ -198,7 +198,7 @@ function courseplay_manager:deleteMap()
 	--signs
 	for section,signDatas in pairs(courseplay.signs.buffer) do
 		for k,signData in pairs(signDatas) do
-			courseplay.utils.signs.deleteSign(signData.sign);
+			courseplay.utils.signs:deleteSign(signData.sign);
 		end;
 		courseplay.signs.buffer[section] = {};
 	end;

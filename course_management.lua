@@ -211,7 +211,7 @@ function courseplay:load_course(self, id, useRealId, addCourseAtEnd)
 		self.cp.canDrive = true;
 
 		self.recordnumber = 1;  -- Waypoint number
-		courseplay:updateWaypointSigns(self, "current");
+		courseplay.utils.signs:updateWaypointSigns(self, "current");
 
 		self.cp.hasGeneratedCourse = false;
 		courseplay:validateCourseGenerationData(self);
@@ -380,7 +380,7 @@ function courseplay:delete_sorted_item(vehicle, index)
 	g_currentMission.cp_sorted = courseplay.courses.sort()
 	courseplay.courses.save_all()
 	courseplay.settings.setReloadCourseItems()
-	courseplay:updateWaypointSigns(vehicle);
+	courseplay.utils.signs:updateWaypointSigns(vehicle);
 end
 
 function courseplay.courses.save_parent(type, id)

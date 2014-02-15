@@ -12,7 +12,9 @@ courseplay = {
 	path = g_currentModDirectory;
 	
 	-- place them here in order to get an overview of the contents of the courseplay object
-	utils = {};
+	utils = {
+		signs = {};
+	};
 	courses = {};
 	settings = {};
 	hud = {};

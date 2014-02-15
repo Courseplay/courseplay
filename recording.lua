@@ -31,7 +31,7 @@ function courseplay:record(vehicle)
 	if vehicle.cp.recordingTimer > 100 then
 		courseplay:setNewWaypointFromRecording(vehicle, cx, cz, newAngle, false, vehicle.cp.drivingDirReverse, vehicle.recordnumber == 1, vehicle.lastSpeedReal);
 		local signType = vehicle.recordnumber == 1 and "start" or nil;
-		courseplay:addSign(vehicle, cx, cz, newAngle, signType);
+		courseplay.utils.signs:addSign(vehicle, cx, cz, newAngle, signType);
 		vehicle.cp.recordingTimer = 1;
 		vehicle.recordnumber = vehicle.recordnumber + 1;
 	end;
@@ -50,7 +50,7 @@ function courseplay:set_waitpoint(vehicle)
 	vehicle.cp.recordingTimer = 1
 	vehicle.recordnumber = vehicle.recordnumber + 1;
 	vehicle.cp.numWaitPoints = vehicle.cp.numWaitPoints + 1;
-	courseplay:addSign(vehicle, cx, cz, newAngle, "wait");
+	courseplay.utils.signs:addSign(vehicle, cx, cz, newAngle, "wait");
 end
 
 
@@ -62,10 +62,10 @@ function courseplay:set_crossing(vehicle, stop)
 	vehicle.recordnumber = vehicle.recordnumber + 1
 	vehicle.cp.numCrossingPoints = vehicle.cp.numCrossingPoints + 1
 	if stop ~= nil then
-		courseplay:addSign(vehicle, cx, cz, newAngle, "stop");
+		courseplay.utils.signs:addSign(vehicle, cx, cz, newAngle, "stop");
 	else
-		courseplay:addSign(vehicle, cx, cz, newAngle, "cross");
-		courseplay:addSign(vehicle, cx, cz, newAngle, "normal");
+		courseplay.utils.signs:addSign(vehicle, cx, cz, newAngle, "cross");
+		courseplay.utils.signs:addSign(vehicle, cx, cz, newAngle, "normal");
 	end
 end
 
@@ -91,7 +91,7 @@ function courseplay:start_record(vehicle)
 	vehicle.cp.drivingDirReverse = false;
 
 	courseplay.utils:hasVarChanged(vehicle, 'HUDrecordnumber');
-	courseplay:updateWaypointSigns(vehicle, "current");
+	courseplay.utils.signs:updateWaypointSigns(vehicle, "current");
 	courseplay:validateCanSwitchMode(vehicle);
 	courseplay:buttonsActiveEnabled(vehicle, 'recording');
 end
@@ -110,7 +110,7 @@ function courseplay:stop_record(vehicle)
 
 	courseplay:validateCourseGenerationData(vehicle);
 	courseplay:validateCanSwitchMode(vehicle);
-	courseplay:updateWaypointSigns(vehicle);
+	courseplay.utils.signs:updateWaypointSigns(vehicle);
 	courseplay:buttonsActiveEnabled(vehicle, 'recording');
 end
 
@@ -124,7 +124,7 @@ function courseplay:setRecordingPause(vehicle)
 		local oldSignIndex = #vehicle.cp.signs.current;
 		local oldSignType = vehicle.cp.signs.current[oldSignIndex].type;
 		local newSignType = vehicle.cp.recordingIsPaused and 'stop' or 'normal'; --change last sign to "stop"/"normal"
-		courseplay.utils.signs.changeSignType(vehicle, oldSignIndex, oldSignType, newSignType);
+		courseplay.utils.signs:changeSignType(vehicle, oldSignIndex, oldSignType, newSignType);
 
 		courseplay:validateCanSwitchMode(vehicle);
 		courseplay:buttonsActiveEnabled(vehicle, 'recording');
@@ -184,7 +184,7 @@ function courseplay:setRecordingTurnManeuver(vehicle)
 
 	vehicle.cp.recordingTimer = 1
 	vehicle.recordnumber = vehicle.recordnumber + 1
-	courseplay:addSign(vehicle, cx, cz, newAngle, 'normal');
+	courseplay.utils.signs:addSign(vehicle, cx, cz, newAngle, 'normal');
 	courseplay:buttonsActiveEnabled(vehicle, 'recording');
 end;
 
@@ -196,7 +196,7 @@ function courseplay:change_DriveDirection(vehicle)
 	vehicle.cp.drivingDirReverse = not vehicle.cp.drivingDirReverse
 	vehicle.cp.recordingTimer = 1
 	vehicle.recordnumber = vehicle.recordnumber + 1
-	courseplay:addSign(vehicle, cx, cz, newAngle);
+	courseplay.utils.signs:addSign(vehicle, cx, cz, newAngle);
 	courseplay:buttonsActiveEnabled(vehicle, 'recording');
 end
 
@@ -208,12 +208,12 @@ function courseplay:delete_waypoint(vehicle)
 
 		--delete last sign
 		local lastSignIndex = #vehicle.cp.signs.current;
-		courseplay.utils.signs.moveToBuffer(vehicle, lastSignIndex, vehicle.cp.signs.current[lastSignIndex])
+		courseplay.utils.signs:moveToBuffer(vehicle, lastSignIndex, vehicle.cp.signs.current[lastSignIndex])
 
 		--change new last sign to "stop"
 		local oldSignIndex = lastSignIndex - 1;
 		local oldSignType = vehicle.cp.signs.current[oldSignIndex].type;
-		courseplay.utils.signs.changeSignType(vehicle, oldSignIndex, oldSignType, "stop");
+		courseplay.utils.signs:changeSignType(vehicle, oldSignIndex, oldSignType, "stop");
 
 		vehicle.Waypoints[vehicle.recordnumber] = nil
 	end;
@@ -247,7 +247,7 @@ function courseplay:reset_course(vehicle)
 	courseplay:validateCourseGenerationData(vehicle);
 	courseplay:validateCanSwitchMode(vehicle);
 
-	courseplay:updateWaypointSigns(vehicle, "current");
+	courseplay.utils.signs:updateWaypointSigns(vehicle, "current");
 end
 
 function courseplay:currentVehAngle(vehicle)

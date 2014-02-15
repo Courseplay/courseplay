@@ -192,7 +192,7 @@ function inputCourseNameDialogue:onSaveClick()
 		
 		courseplay.courses.save_course(vehicle.cp.currentCourseId, nil, true)
 		courseplay.settings.setReloadCourseItems()
-		courseplay:updateWaypointSigns(vehicle);
+		courseplay.utils.signs:updateWaypointSigns(vehicle);
 		
 	elseif vehicle.cp.saveWhat == 'folder' then
 		if self.textInputElement ~= nil then
@@ -216,7 +216,7 @@ function inputCourseNameDialogue:onSaveClick()
 		courseplay.courses.save_folder(folderID, nil, true)
 		courseplay.settings.add_folder(folderID)
 		courseplay.settings.setReloadCourseItems()
-		courseplay:updateWaypointSigns(vehicle);
+		courseplay.utils.signs:updateWaypointSigns(vehicle);
 		
 	elseif vehicle.cp.saveWhat == 'filter' then
 		if self.textInputElement ~= nil then
