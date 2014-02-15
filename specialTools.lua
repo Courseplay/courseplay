@@ -4,37 +4,49 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp = {};
 	end;
 
-	--replace cyclic Utils scanning
-	local specs = workTool.specializations;
-	workTool.cp.hasSpecializationAICombine 			 = SpecializationUtil.hasSpecialization(AICombine, specs);
-	workTool.cp.hasSpecializationAITractor 			 = SpecializationUtil.hasSpecialization(AITractor, specs);
-	workTool.cp.hasSpecializationAnimatedVehicle 	 = SpecializationUtil.hasSpecialization(AnimatedVehicle, specs);
-	workTool.cp.hasSpecializationBaleLoader 		 = SpecializationUtil.hasSpecialization(BaleLoader, specs) or SpecializationUtil.hasSpecialization(baleLoader, specs);
-	workTool.cp.hasSpecializationBaler 				 = SpecializationUtil.hasSpecialization(Baler, specs);
-	workTool.cp.hasSpecializationBunkerSiloCompacter = SpecializationUtil.hasSpecialization(BunkerSiloCompacter, specs);
-	workTool.cp.hasSpecializationCombine 			 = SpecializationUtil.hasSpecialization(Combine, specs);
-	workTool.cp.hasSpecializationCultivator 		 = SpecializationUtil.hasSpecialization(Cultivator, specs);
-	workTool.cp.hasSpecializationCylindered 		 = SpecializationUtil.hasSpecialization(Cylindered, specs);
-	workTool.cp.hasSpecializationFoldable 			 = SpecializationUtil.hasSpecialization(Foldable, specs) or SpecializationUtil.hasSpecialization(foldable, specs);
-	workTool.cp.hasSpecializationFruitPreparer 		 = SpecializationUtil.hasSpecialization(FruitPreparer, specs) or SpecializationUtil.hasSpecialization(fruitPreparer, specs);
-	workTool.cp.hasSpecializationMixerWagon 		 = SpecializationUtil.hasSpecialization(MixerWagon, specs);
-	workTool.cp.hasSpecializationMower 				 = SpecializationUtil.hasSpecialization(Mower, specs);
-	workTool.cp.hasSpecializationPlough 			 = SpecializationUtil.hasSpecialization(Plough, specs);
-	workTool.cp.hasSpecializationShovel 			 = SpecializationUtil.hasSpecialization(Shovel, specs);
-	workTool.cp.hasSpecializationSowingMachine 		 = SpecializationUtil.hasSpecialization(SowingMachine, specs) or SpecializationUtil.hasSpecialization(sowingMachine, specs);
-	workTool.cp.hasSpecializationSprayer 			 = SpecializationUtil.hasSpecialization(Sprayer, specs) or SpecializationUtil.hasSpecialization(sprayer, specs);
-	workTool.cp.hasSpecializationSteerable 			 = SpecializationUtil.hasSpecialization(Steerable, specs) or SpecializationUtil.hasSpecialization(steerable, specs);
-	workTool.cp.hasSpecializationTedder 			 = SpecializationUtil.hasSpecialization(Tedder, specs);
-	workTool.cp.hasSpecializationTrailer 			 = SpecializationUtil.hasSpecialization(Trailer, specs);
-	workTool.cp.hasSpecializationWindrower 			 = SpecializationUtil.hasSpecialization(Windrower, specs);
+	-- local specList = { 'AICombine', 'AITractor', 'AnimatedVehicle', 'BaleLoader', 'Baler', 'BunkerSiloCompacter', 'Combine', 'Cultivator', 'Cylindered', 'Foldable', 'FruitPreparer', 'MixerWagon', 'Mower', 'Plough', 'Shovel', 'SowingMachine', 'Sprayer', 'Steerable', 'Tedder', 'Trailer', 'Windrower' };
+
+	-- Only default specs!
+	for i,spec in pairs(workTool.specializations) do
+		if     spec == AICombine then 			workTool.cp.hasSpecializationAICombine 			 = true;
+		elseif spec == AITractor then 			workTool.cp.hasSpecializationAITractor 			 = true;
+		elseif spec == AnimatedVehicle then 	workTool.cp.hasSpecializationAnimatedVehicle 	 = true;
+		elseif spec == BaleLoader then 			workTool.cp.hasSpecializationBaleLoader 		 = true;
+		elseif spec == Baler then 				workTool.cp.hasSpecializationBaler 				 = true;
+		elseif spec == BunkerSiloCompacter then	workTool.cp.hasSpecializationBunkerSiloCompacter = true;
+		elseif spec == Combine then 			workTool.cp.hasSpecializationCombine 			 = true;
+		elseif spec == Cultivator then 			workTool.cp.hasSpecializationCultivator 		 = true;
+		elseif spec == Cylindered then 			workTool.cp.hasSpecializationCylindered 		 = true;
+		elseif spec == Foldable then 			workTool.cp.hasSpecializationFoldable 			 = true;
+		elseif spec == FruitPreparer then 		workTool.cp.hasSpecializationFruitPreparer 		 = true;
+		elseif spec == MixerWagon then 			workTool.cp.hasSpecializationMixerWagon 		 = true;
+		elseif spec == Mower then 				workTool.cp.hasSpecializationMower 				 = true;
+		elseif spec == Plough then 				workTool.cp.hasSpecializationPlough 			 = true;
+		elseif spec == Shovel then 				workTool.cp.hasSpecializationShovel 			 = true;
+		elseif spec == SowingMachine then 		workTool.cp.hasSpecializationSowingMachine 		 = true;
+		elseif spec == Sprayer then 			workTool.cp.hasSpecializationSprayer 			 = true;
+		elseif spec == Steerable then 			workTool.cp.hasSpecializationSteerable 			 = true;
+		elseif spec == Tedder then 				workTool.cp.hasSpecializationTedder 			 = true;
+		elseif spec == Trailer then 			workTool.cp.hasSpecializationTrailer 			 = true;
+		elseif spec == Windrower then 			workTool.cp.hasSpecializationWindrower 			 = true;
+		end;
+
+		--[[
+		-- alternate possible query:
+		for i,specClassName in pairs(specList) do
+			if spec == _G[specClassName] then 
+				workTool.cp['hasSpecialization' .. specClassName] = true;
+			end;
+		end;
+		]]
+	end;
 
 	--[[ DEBUG
-	local specList = { 'AICombine', 'AITractor', 'AnimatedVehicle', 'BaleLoader', 'Baler', 'BunkerSiloCompacter', 'Combine', 'Cultivator', 'Cylindered', 'Foldable', 'FruitPreparer', 'MixerWagon', 'Mower', 'Plough', 'Shovel', 'SowingMachine', 'Sprayer', 'Steerable', 'Tedder', 'Trailer', 'Windrower' };
 	print(nameNum(workTool) .. ': default specs list');
-	for i,specName in pairs(specList) do
-		local var = 'hasSpecialization' .. specName;
+	for i,specClassName in pairs(specList) do
+		local var = 'hasSpecialization' .. specClassName;
 		if workTool.cp[var] then
-			print(string.format('\t[%s] %s=true', specName, var));
+			print(('\t[%s] %s=true'):format(specClassName, var));
 		end;
 	end;
 	--]]

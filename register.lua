@@ -68,15 +68,15 @@ function courseplay:attachableLoad(xmlFile)
 	--SET SPECIALIZATION VARIABLE
 	--Default specializations -- not needed as they're set in setNameVariable()
 	--Custom (mod) specializations
-	self.cp.hasSpecializationAugerWagon = courseplay:hasSpecialization(self, "AugerWagon");
-	self.cp.hasSpecializationOverloader = courseplay:hasSpecialization(self, "overloader");
-	self.cp.hasSpecializationHaweSUW = courseplay:hasSpecialization(self, "Hawe_SUW");
-	self.cp.hasSpecializationAgrolinerTUW20 = courseplay:hasSpecialization(self, "AgrolinerTUW20");
-	self.cp.hasSpecializationOvercharge = courseplay:hasSpecialization(self, "Overcharge");
-	self.cp.hasSpecializationBigBear = courseplay:hasSpecialization(self, "bigBear");
-	self.cp.hasSpecializationSowingMachineWithTank = courseplay:hasSpecialization(self, "SowingMachineWithTank");
-	self.cp.hasSpecializationDrivingLine = courseplay:hasSpecialization(self, "DrivingLine");
-	self.cp.hasSpecializationHoseRef = courseplay:hasSpecialization(self, "HoseRef");
+	self.cp.hasSpecializationAugerWagon 		   = courseplay:hasSpecialization(self, 'AugerWagon');
+	self.cp.hasSpecializationOverloader 		   = courseplay:hasSpecialization(self, 'overloader');
+	self.cp.hasSpecializationHaweSUW 			   = courseplay:hasSpecialization(self, 'Hawe_SUW');
+	self.cp.hasSpecializationAgrolinerTUW20 	   = courseplay:hasSpecialization(self, 'AgrolinerTUW20');
+	self.cp.hasSpecializationOvercharge 		   = courseplay:hasSpecialization(self, 'Overcharge');
+	self.cp.hasSpecializationBigBear 			   = courseplay:hasSpecialization(self, 'bigBear');
+	self.cp.hasSpecializationSowingMachineWithTank = courseplay:hasSpecialization(self, 'SowingMachineWithTank');
+	self.cp.hasSpecializationDrivingLine 		   = courseplay:hasSpecialization(self, 'DrivingLine');
+	self.cp.hasSpecializationHoseRef 			   = courseplay:hasSpecialization(self, 'HoseRef');
 
 	courseplay:setNameVariable(self);
 
