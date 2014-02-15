@@ -1323,3 +1323,26 @@ function courseplay:setDrawWaypointsLines(vehicle)
 	if not courseplay.isDeveloper then return; end;
 	vehicle.cp.drawWaypointsLines = not vehicle.cp.drawWaypointsLines;
 end;
+
+function courseplay:setEngineState(vehicle, on)
+	if vehicle == nil or on == nil then return; end;
+
+	--Manual ignition v3.01/3.04 (self-installing)
+	if vehicle.setManualIgnitionMode ~= nil and vehicle.ignitionMode ~= nil then
+		vehicle:setManualIgnitionMode(on and 2 or 0);
+
+	--Manual ignition v3.x (in steerable as lua)
+	elseif vehicle.ignitionKey ~= nil and vehicle.allowedIgnition ~= nil then
+		vehicle.ignitionKey = on;
+        vehicle.allowedIgnition = on;
+
+	--default
+	elseif vehicle.startMotor and vehicle.stopMotor then
+		if on then
+			vehicle:startMotor(true);
+		else
+			vehicle.lastAcceleration = 0;
+			vehicle:stopMotor(true);
+		end;
+	end;
+end;
