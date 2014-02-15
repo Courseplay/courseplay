@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="13">
-	<version>3.41.0387</version>
+	<version>3.41.0388</version>
 	<author><![CDATA[Jakob Tischler, Thomas Gärtner,
 Horoman]]></author>
 	<title>
@@ -1914,6 +1914,9 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<it>Smettere durante lo scarico</it>
 			<cz>Zastavit při vykládce</cz> <!-- !!! -->
 			<ru>Стоять при разгрузке:</ru>
+		</text>
+		<text name="COURSEPLAY_SEPARATOR">
+			<en>・</en>
 		</text>
 
 		<!-- INPUTBINDINGS -->

@@ -14,9 +14,9 @@
 		vehicle.cp.hud.content.global[2] = courseplay:loc("CPNoCourseLoaded");
 	end;
 	if vehicle.Waypoints[vehicle.cp.HUDrecordnumber] ~= nil then
-		vehicle.cp.hud.content.global[3] = string.format("%s%s/%s\t%s%s\t%s%s", courseplay:loc("CPWaypoint"), tostring(vehicle.cp.HUDrecordnumber), tostring(vehicle.maxnumber), courseplay:loc('COURSEPLAY_WAITPOINTS'), tostring(vehicle.cp.numWaitPoints), courseplay:loc('COURSEPLAY_CROSSING_POINTS'), tostring(vehicle.cp.numCrossingPoints));
+		vehicle.cp.hud.content.global[3] = courseplay:loc("CPWaypoint") .. tostring(vehicle.cp.HUDrecordnumber) .. '/' .. tostring(vehicle.maxnumber) .. courseplay:loc('COURSEPLAY_SEPARATOR') .. courseplay:loc('COURSEPLAY_WAITPOINTS') .. tostring(vehicle.cp.numWaitPoints) .. courseplay:loc('COURSEPLAY_SEPARATOR') .. courseplay:loc('COURSEPLAY_CROSSING_POINTS') .. tostring(vehicle.cp.numCrossingPoints);
 	elseif vehicle.cp.isRecording or vehicle.cp.recordingIsPaused then
-		vehicle.cp.hud.content.global[3] = string.format("%s%d\t%s%d\t%s%d", courseplay:loc("CPWaypoint"), vehicle.cp.HUDrecordnumber, courseplay:loc('COURSEPLAY_WAITPOINTS'), vehicle.cp.numWaitPoints, courseplay:loc('COURSEPLAY_CROSSING_POINTS'), vehicle.cp.numCrossingPoints);
+		vehicle.cp.hud.content.global[3] = courseplay:loc("CPWaypoint") .. tostring(vehicle.cp.HUDrecordnumber) .. courseplay:loc('COURSEPLAY_SEPARATOR') .. courseplay:loc('COURSEPLAY_WAITPOINTS') .. tostring(vehicle.cp.numWaitPoints) .. courseplay:loc('COURSEPLAY_SEPARATOR') .. courseplay:loc('COURSEPLAY_CROSSING_POINTS') .. tostring(vehicle.cp.numCrossingPoints);
 	else
 		vehicle.cp.hud.content.global[3] = courseplay:loc("CPNoWaypoint");
 	end
