@@ -1088,10 +1088,25 @@ function courseplay:setSpeed(self, refSpeed, sl)
 			self.motor.maxRpm[sl]= maxRpm
 		end
 
-
-
 		self.lastSpeedSave = self.lastSpeedReal*3600
 	end
+
+	-- slipping notification
+	-- print(string.format('%s: lastSpeedSave=%.1f', nameNum(self), self.lastSpeedSave));
+	if self.lastSpeedSave < 0.5 and not self.cp.inTraffic and not self.Waypoints[self.recordnumber].wait then
+		if self.cp.timers.slippingWheels == nil or self.cp.timers.slippingWheels == 0 then
+			courseplay:setCustomTimer(self, 'slippingWheels', 5);
+			-- print(string.format('\tsetCustomTimer(..., "slippingWheels", 5)'));
+		elseif courseplay:timerIsThrough(self, 'slippingWheels') then
+			courseplay:setGlobalInfoText(self, 'SLIPPING_0');
+			-- print(string.format('\ttimerIsThrough -> SLIPPING'));
+		end;
+
+	-- reset timer
+	elseif self.cp.timers.slippingWheels ~= 0 then
+		self.cp.timers.slippingWheels = 0;
+		-- print(string.format('\treset timer'));
+	end;
 end;
 
 function courseplay:openCloseCover(self, dt, showCover, isAtTipTrigger)
@@ -1320,7 +1335,14 @@ function courseplay:setMRSpeed(self, refSpeed, sl, allowedToDrive, workArea)
 	
 	self.motor.speedLevel = sl
 	self.motor.realSpeedLevelsAI[self.motor.speedLevel] = refSpeed*3600
-	
+
+	-- slipping notification
+	if self.realDisplaySlipPercent > 90 then
+		courseplay:setGlobalInfoText(self, 'SLIPPING_2');
+	elseif self.realDisplaySlipPercent > 75 then
+		courseplay:setGlobalInfoText(self, 'SLIPPING_1');
+	end;
+
 	-- setting AWD if necessary
 	if (workArea or self.realDisplaySlipPercent > 25) and self.realAWDModeOn == false then 
 		self:realSetAwdActive(true);

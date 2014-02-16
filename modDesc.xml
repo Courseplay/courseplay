@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="13">
-	<version>3.41.0390</version>
+	<version>3.41.0391</version>
 	<author><![CDATA[Jakob Tischler, Thomas Gärtner,
 Horoman]]></author>
 	<title>
@@ -1914,6 +1914,33 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<it>Smettere durante lo scarico</it>
 			<cz>Zastavit při vykládce</cz> <!-- !!! -->
 			<ru>Стоять при разгрузке:</ru>
+		</text>
+		<text name="COURSEPLAY_SLIPPING_WARNING_0">
+			<en>is slipping</en>
+			<de>: durchdrehende Reifen</de>
+			<fr>is slipping</fr> <!-- !!! -->
+			<es>is slipping</es> <!-- !!! -->
+			<it>is slipping</it> <!-- !!! -->
+			<cz>is slipping</cz> <!-- !!! -->
+			<ru>is slipping</ru> <!-- !!! -->
+		</text>
+		<text name="COURSEPLAY_SLIPPING_WARNING_1">
+			<en>is slipping (> 75%)</en>
+			<de>: durchdrehende Reifen (> 75%)</de>
+			<fr>is slipping (> 75%)</fr> <!-- !!! -->
+			<es>is slipping (> 75%)</es> <!-- !!! -->
+			<it>is slipping (> 75%)</it> <!-- !!! -->
+			<cz>is slipping (> 75%)</cz> <!-- !!! -->
+			<ru>is slipping (> 75%)</ru> <!-- !!! -->
+		</text>
+		<text name="COURSEPLAY_SLIPPING_WARNING_2">
+			<en>is slipping (> 90%)</en>
+			<de>: durchdrehende Reifen (> 90%)</de>
+			<fr>is slipping (> 90%)</fr> <!-- !!! -->
+			<es>is slipping (> 90%)</es> <!-- !!! -->
+			<it>is slipping (> 90%)</it> <!-- !!! -->
+			<cz>is slipping (> 90%)</cz> <!-- !!! -->
+			<ru>is slipping (> 90%)</ru> <!-- !!! -->
 		</text>
 		<text name="COURSEPLAY_SEPARATOR">
 			<en>・</en>

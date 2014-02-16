@@ -416,6 +416,8 @@ function courseplay:stop(self)
 		self.cp.tempToolOffsetX = nil
 	end;
 
+	self.cp.timers.slippingWheels = 0;
+
 	--remove any global info texts
 	if g_server ~= nil then
 		self.cp.infoText = nil;
