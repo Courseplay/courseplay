@@ -324,6 +324,7 @@ function courseplay:load(xmlFile)
 	self.cp.allowFollowing = false
 	self.cp.followAtFillLevel = 50
 	self.cp.driveOnAtFillLevel = 90
+	self.cp.refillUntilPct = 100;
 
 	--self.turn_factor = nil --TODO: is never set, but used in mode2:816 in localToWorld function
 	self.cp.turnRadius = 10;
@@ -680,6 +681,10 @@ function courseplay:load(xmlFile)
 	courseplay:register_button(self, 3, "navigate_minus.dds", "change_required_fill_level_for_drive_on", -5, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[5], w16px, h16px, 5, -10, false);
 	courseplay:register_button(self, 3, "navigate_plus.dds",  "change_required_fill_level_for_drive_on",  5, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[5], w16px, h16px, 5,  10, false);
 	courseplay:register_button(self, 3, nil, "change_required_fill_level_for_drive_on", 5, mouseWheelArea.x, courseplay.hud.linesButtonPosY[5], mouseWheelArea.w, mouseWheelArea.h, 5, 10, true, true);
+
+	courseplay:register_button(self, 3, "navigate_minus.dds", "changeRefillUntilPct", -5, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[6], w16px, h16px, 6, -10, false);
+	courseplay:register_button(self, 3, "navigate_plus.dds",  "changeRefillUntilPct",  5, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[6], w16px, h16px, 6,  10, false);
+	courseplay:register_button(self, 3, nil, "changeRefillUntilPct", 5, mouseWheelArea.x, courseplay.hud.linesButtonPosY[6], mouseWheelArea.w, mouseWheelArea.h, 6, 10, true, true);
 
 
 	-- ##################################################
@@ -1164,6 +1169,7 @@ function courseplay:readStream(streamId, connection)
 	self.cp.realisticDriving = streamDebugReadBool(streamId);
 	self.cp.driveOnAtFillLevel = streamDebugReadFloat32(streamId)
 	self.cp.followAtFillLevel = streamDebugReadFloat32(streamId)
+	self.cp.refillUntilPct = streamDebugReadFloat32(streamId)
 	self.cp.tipperOffset = streamDebugReadFloat32(streamId)
 	self.cp.tipperHasCover = streamDebugReadBool(streamId);
 	self.cp.workWidth = streamDebugReadFloat32(streamId) 
@@ -1287,6 +1293,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteBool(streamId, self.cp.realisticDriving);
 	streamDebugWriteFloat32(streamId,self.cp.driveOnAtFillLevel)
 	streamDebugWriteFloat32(streamId,self.cp.followAtFillLevel)
+	streamDebugWriteFloat32(streamId,self.cp.refillUntilPct)
 	streamDebugWriteFloat32(streamId,self.cp.tipperOffset)
 	streamDebugWriteBool(streamId, self.cp.tipperHasCover)
 	streamDebugWriteFloat32(streamId,self.cp.workWidth);
@@ -1414,6 +1421,7 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		if self.cp.abortWork == 0 then
 			self.cp.abortWork = nil;
 		end;
+		self.cp.refillUntilPct = Utils.getNoNil(getXMLInt(xmlFile, curKey .. '#refillUntilPct'), 100);
 		local offsetData = Utils.getNoNil(getXMLString(xmlFile, curKey .. '#offsetData'), '0;0;0;false'); -- 1=laneOffset, 2=toolOffsetX, 3=toolOffsetZ, 4=symmetricalLaneChange
 		offsetData = Utils.splitString(';', offsetData);
 		courseplay:changeLaneOffset(self, nil, tonumber(offsetData[1]));
@@ -1483,7 +1491,7 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 	local cpOpen = string.format('<courseplay aiMode="%s" courses="%s" openHudWithMouse="%s" beacon="%s" waitTime="%s">', tostring(self.cp.mode), tostring(table.concat(self.cp.loadedCourses, ",")), tostring(self.cp.hud.openWithMouse), tostring(self.cp.beaconLightsMode), tostring(self.cp.waitTime));
 	local speeds = string.format('<speeds useRecordingSpeed="%s" unload="%.5f" turn="%.5f" field="%.5f" max="%.5f" />', tostring(self.cp.speeds.useRecordingSpeed), self.cp.speeds.unload, self.cp.speeds.turn, self.cp.speeds.field, self.cp.speeds.max);
 	local combi = string.format('<combi tipperOffset="%.1f" combineOffset="%.1f" fillFollow="%d" fillDriveOn="%d" turnRadius="%d" realisticDriving="%s" />', self.cp.tipperOffset, self.cp.combineOffset, self.cp.followAtFillLevel, self.cp.driveOnAtFillLevel, self.cp.turnRadius, tostring(self.cp.realisticDriving));
-	local fieldWork = string.format('<fieldWork workWidth="%.1f" ridgeMarkersAutomatic="%s" offsetData="%s" abortWork="%d" />', self.cp.workWidth, tostring(self.cp.ridgeMarkersAutomatic), offsetData, Utils.getNoNil(self.cp.abortWork, 0));
+	local fieldWork = string.format('<fieldWork workWidth="%.1f" ridgeMarkersAutomatic="%s" offsetData="%s" abortWork="%d" refillUntilPct="%d" />', self.cp.workWidth, tostring(self.cp.ridgeMarkersAutomatic), offsetData, Utils.getNoNil(self.cp.abortWork, 0), self.cp.refillUntilPct);
 	local shovels, combine = "", "";
 	if hasAllShovelRots then
 		shovels = string.format('<shovel rots=%q />', shovelRotsAttrNodes);

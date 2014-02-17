@@ -339,10 +339,14 @@ function courseplay.hud:loadPage(vehicle, page)
 		vehicle.cp.hud.content.pages[3][4][1].text = courseplay:loc("CPRequiredFillLevel") --"Start bei %:"
 		vehicle.cp.hud.content.pages[3][5][1].text = courseplay:loc("NoWaitforfillAt") --"abfahren bei %:"
 
+		if vehicle.cp.mode == 4 or vehicle.cp.mode == 8 then
+			vehicle.cp.hud.content.pages[3][6][1].text = courseplay:loc("COURSEPLAY_REFILL_UNTIL_PCT");
+		end;
+
 		if vehicle.cp.modeState ~= nil then
 			if vehicle.cp.combineOffset ~= 0 then
 				local combineOffsetMode = vehicle.cp.combineOffsetAutoMode and "(auto)" or "(mnl)";
-				vehicle.cp.hud.content.pages[3][1][2].text = string.format("%s %.1f", combineOffsetMode, vehicle.cp.combineOffset);
+				vehicle.cp.hud.content.pages[3][1][2].text = string.format("%s %.1fm", combineOffsetMode, vehicle.cp.combineOffset);
 			else
 				vehicle.cp.hud.content.pages[3][1][2].text = "auto";
 			end;
@@ -354,9 +358,9 @@ function courseplay.hud:loadPage(vehicle, page)
 			if vehicle.cp.tipperOffset == 0 then
 				vehicle.cp.hud.content.pages[3][2][2].text = "auto";
 			elseif vehicle.cp.tipperOffset > 0 then
-				vehicle.cp.hud.content.pages[3][2][2].text = string.format("auto+%.1f", vehicle.cp.tipperOffset);
+				vehicle.cp.hud.content.pages[3][2][2].text = string.format("auto+%.1fm", vehicle.cp.tipperOffset);
 			elseif vehicle.cp.tipperOffset < 0 then
-				vehicle.cp.hud.content.pages[3][2][2].text = string.format("auto%.1f", vehicle.cp.tipperOffset);
+				vehicle.cp.hud.content.pages[3][2][2].text = string.format("auto%.1fm", vehicle.cp.tipperOffset);
 			end;
 		else
 			vehicle.cp.hud.content.pages[3][2][2].text = "---";
@@ -364,14 +368,18 @@ function courseplay.hud:loadPage(vehicle, page)
 
 		if vehicle.cp.turnRadiusAuto ~= nil or vehicle.cp.turnRadius ~= nil then
 			local turnRadiusMode = vehicle.cp.turnRadiusAutoMode and '(auto)' or '(mnl)';
-			vehicle.cp.hud.content.pages[3][3][2].text = string.format("%s %d", turnRadiusMode, vehicle.cp.turnRadius);
+			vehicle.cp.hud.content.pages[3][3][2].text = string.format("%s %dm", turnRadiusMode, vehicle.cp.turnRadius);
 		else
 			vehicle.cp.hud.content.pages[3][3][2].text = "---";
 		end;
 
-		vehicle.cp.hud.content.pages[3][4][2].text = vehicle.cp.followAtFillLevel ~= nil and string.format("%d", vehicle.cp.followAtFillLevel) or '---';
+		vehicle.cp.hud.content.pages[3][4][2].text = vehicle.cp.followAtFillLevel ~= nil and string.format("%d%%", vehicle.cp.followAtFillLevel) or '---';
 
-		vehicle.cp.hud.content.pages[3][5][2].text = vehicle.cp.driveOnAtFillLevel ~= nil and string.format("%d", vehicle.cp.driveOnAtFillLevel) or '---';
+		vehicle.cp.hud.content.pages[3][5][2].text = vehicle.cp.driveOnAtFillLevel ~= nil and string.format("%d%%", vehicle.cp.driveOnAtFillLevel) or '---';
+
+		if vehicle.cp.mode == 4 or vehicle.cp.mode == 8 then
+			vehicle.cp.hud.content.pages[3][6][2].text = ('%d%%'):format(vehicle.cp.refillUntilPct);
+		end;
 
 
 	--PAGE 4: COMBINE ASSIGNMENT

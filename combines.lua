@@ -82,7 +82,7 @@ function courseplay:update_combines(self)
 		return
 	end
 
-	courseplay:debug(string.format("%s: combines total: %d", nameNum(self), table.getn(self.cp.reachableCombines)), 4)
+	courseplay:debug(string.format("%s: combines total: %d", nameNum(self), #(self.cp.reachableCombines)), 4)
 
 	local x, y, z = getWorldTranslation(self.cp.DirectionNode)
 	local hx, hy, hz = localToWorld(self.cp.DirectionNode, -2, 0, 0)
@@ -91,7 +91,7 @@ function courseplay:update_combines(self)
 
 	local found_combines = courseplay:find_combines(self)
 
-	courseplay:debug(string.format("%s: combines found: %d", nameNum(self), table.getn(found_combines)), 4)
+	courseplay:debug(string.format("%s: combines found: %d", nameNum(self), #(found_combines)), 4)
 
 	--[[
 	--DEV: check field pairing using fieldDefs

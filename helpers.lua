@@ -840,7 +840,7 @@ function courseplay.utils:getFnCallSource(level)
 	return tostring(debug.getinfo(level, "n").name);
 end;
 
-function courseplay.utils:getFnCallPath(numPathSteps)
+function courseplay.utils:getFnCallPath(numPathSteps) --TODO: always use 'printCallstack()'
 	numPathSteps = numPathSteps or 1;
 	if numPathSteps > 1 then
 		local ret = {};

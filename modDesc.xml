@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="13">
-	<version>3.41.0391</version>
+	<version>3.41.0392</version>
 	<author><![CDATA[Jakob Tischler, Thomas Gärtner,
 Horoman]]></author>
 	<title>
@@ -439,13 +439,13 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Перезапустить цикл</ru>
 		</text>
 		<text name="NoWaitforfillAt">
-			<en>Drive on at %</en>
-			<de>Abfahren bei %</de>
-			<fr>Partir à %</fr>
-			<es>Conducir a %</es>
-			<it>Avvia a %</it>
-			<cz>Odvézt při %:</cz>
-			<ru>Разгрузка при %:</ru>
+			<en>Drive on at:</en>
+			<de>Abfahren bei:</de>
+			<fr>Partir à:</fr>
+			<es>Conducir a:</es>
+			<it>Avvia a:</it>
+			<cz>Odvézt při:</cz>
+			<ru>Разгрузка при:</ru>
 		</text>
 		<text name="UNKNOWN">
 			<en>unknown</en>
@@ -672,13 +672,13 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>правее/левее:</ru>
 		</text>
 		<text name="CPRequiredFillLevel">
-			<en>Start at %:</en>
-			<de>Start bei %:</de>
-			<fr>Demarrer à %:</fr>
-			<es>Iniciar en %:</es>
-			<it>Inizia a %:</it>
-			<cz>Přijet při %:</cz>
-			<ru>Загрузка при %:</ru>
+			<en>Start at:</en>
+			<de>Start bei:</de>
+			<fr>Demarrer à:</fr>
+			<es>Iniciar en:</es>
+			<it>Inizia a:</it>
+			<cz>Přijet při:</cz>
+			<ru>Загрузка при:</ru>
 		</text>
 		<text name="CPTurnRadius">
 			<en>Turning circle:</en>
@@ -1941,6 +1941,15 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<it>is slipping (> 90%)</it> <!-- !!! -->
 			<cz>is slipping (> 90%)</cz> <!-- !!! -->
 			<ru>is slipping (> 90%)</ru> <!-- !!! -->
+		</text>
+		<text name="COURSEPLAY_REFILL_UNTIL_PCT">
+			<en>Refill until:</en>
+			<de>Auffüllen bis:</de>
+			<fr>Remplir jusqu'à:</fr>
+			<es>Llenar hasta:</es> <!-- !!! -->
+			<it>Riempir fino al:</it> <!-- !!! -->
+			<cz>Naplnit až do:</cz> <!-- !!! -->
+			<ru>Refill until:</ru> <!-- !!! -->
 		</text>
 		<text name="COURSEPLAY_SEPARATOR">
 			<en>・</en>

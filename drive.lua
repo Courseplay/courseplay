@@ -327,7 +327,7 @@ function courseplay:drive(self, dt)
 			else
 				local isInWorkArea = self.recordnumber > self.cp.startWork and self.recordnumber <= self.cp.stopWork;
 				if self.cp.tipperAttached and self.cp.startWork ~= nil and self.cp.stopWork ~= nil and self.tippers ~= nil and not isInWorkArea then
-					allowedToDrive,lx,lz = courseplay:refillSprayer(self, fill_level, 100, allowedToDrive, lx, lz, dt);
+					allowedToDrive,lx,lz = courseplay:refillSprayer(self, fill_level, self.cp.refillUntilPct, allowedToDrive, lx, lz, dt);
 				end;
 				if courseplay:timerIsThrough(self, "fillLevelChange") or self.cp.prevFillLevel == nil then
 					if self.cp.prevFillLevel ~= nil and fill_level == self.cp.prevFillLevel and fill_level > self.cp.driveOnAtFillLevel then
@@ -462,7 +462,7 @@ function courseplay:drive(self, dt)
 			if self.cp.tipperAttached and self.cp.startWork ~= nil and self.cp.stopWork ~= nil then
 				local isInWorkArea = self.recordnumber > self.cp.startWork and self.recordnumber <= self.cp.stopWork;
 				if self.tippers ~= nil and not isInWorkArea then
-					allowedToDrive,lx,lz = courseplay:refillSprayer(self, fill_level, 100, allowedToDrive, lx, lz, dt);
+					allowedToDrive,lx,lz = courseplay:refillSprayer(self, fill_level, self.cp.refillUntilPct, allowedToDrive, lx, lz, dt);
 				end
 			end;
 		end
@@ -491,7 +491,7 @@ function courseplay:drive(self, dt)
 			raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
 			if self.cp.tipperAttached then
 				if self.tippers ~= nil then
-					allowedToDrive,lx,lz = courseplay:refillSprayer(self, fill_level, 100, allowedToDrive, lx, lz, dt);
+					allowedToDrive,lx,lz = courseplay:refillSprayer(self, fill_level, self.cp.refillUntilPct, allowedToDrive, lx, lz, dt);
 				end;
 			end;
 		end;
@@ -1185,7 +1185,7 @@ function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive, lx,
 
 			local fillTypesMatch = courseplay:fillTypesMatch(fillTrigger, activeTool);
 
-			local canRefill = (activeToolFillLevel ~= nil and activeToolFillLevel < driveOn) and fillTypesMatch;
+			local canRefill = (activeToolFillLevel ~= nil and activeToolFillLevel <= driveOn) and fillTypesMatch;
 			--ManureLager: activeTool.ReFillTrigger has to be nil so it doesn't refill
 			if self.cp.mode == 8 then
 				canRefill = canRefill and activeTool.ReFillTrigger == nil and not courseplay:waypointsHaveAttr(self, self.recordnumber, -2, 2, "wait", true, false);
@@ -1202,15 +1202,19 @@ function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive, lx,
 				--courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
 				courseplay:handleSpecialTools(self,activeTool,nil,nil,nil,allowedToDrive,false,false)
 				local sprayer = activeTool.sprayerFillTriggers[1];
-				activeTool:setIsSprayerFilling(true, false);
+				if not activeTool.isSprayerFilling then
+					activeTool:setIsSprayerFilling(true);
+				end;
 				
 				if sprayer.trailerInTrigger == activeTool then --Feldrand-Container Guellebomber
 					sprayer.fill = true;
 				end;
 
-				self.cp.infoText = string.format(courseplay:loc("CPloading"), self.cp.tipperFillLevel, self.cp.tipperCapacity);
+				self.cp.infoText = courseplay:loc("CPloading"):format(activeTool.fillLevel, activeTool.capacity);
 			elseif self.cp.isLoaded or not self.cp.stopForLoading then
-				activeTool:setIsSprayerFilling(false, false);
+				if activeTool.isSprayerFilling then
+					activeTool:setIsSprayerFilling(false);
+				end;
 				courseplay:handleSpecialTools(self,activeTool,nil,nil,nil,allowedToDrive,false,false)
 				self.cp.fillTrigger = nil
 			end;
@@ -1224,10 +1228,15 @@ function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive, lx,
 				end
 			end
 			if fill_level < driveOn and activeTool.sowingMachineFillTriggers[1] ~= nil then
-				activeTool:setIsSowingMachineFilling(true, activeTool.sowingMachineFillTriggers[1].isEnabled, false);
+				if not activeTool.isSowingMachineFilling then
+					activeTool:setIsSowingMachineFilling(true);
+				end;
 				allowedToDrive = false;
-				self.cp.infoText = string.format(courseplay:loc("CPloading"), activeTool.fillLevel, activeTool.capacity);
+				self.cp.infoText = courseplay:loc("CPloading"):format(activeTool.fillLevel, activeTool.capacity);
 			elseif activeTool.sowingMachineFillTriggers[1] ~= nil then
+				if activeTool.isSowingMachineFilling then
+					activeTool:setIsSowingMachineFilling(false);
+				end;
 				self.cp.fillTrigger = nil
 			end;
 		end;

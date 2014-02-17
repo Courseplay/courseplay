@@ -564,24 +564,23 @@ function courseplay:removeActiveCombineFromTractor(vehicle)
 	vehicle.cp.lastActiveCombine = nil;
 end;
 
-function courseplay:switchDriverCopy(self, change_by)
-	local drivers = courseplay:findDrivers(self);
+function courseplay:switchDriverCopy(vehicle, changeBy)
+	local drivers = courseplay:findDrivers(vehicle);
 
 	if drivers ~= nil then
-		local selectedDriverNumber = self.cp.selectedDriverNumber + change_by;
-		self.cp.selectedDriverNumber = Utils.clamp(selectedDriverNumber, 0, #(drivers));
+		vehicle.cp.selectedDriverNumber = Utils.clamp(vehicle.cp.selectedDriverNumber + changeBy, 0, #(drivers));
 
-		if self.cp.selectedDriverNumber == 0 then
-			self.cp.copyCourseFromDriver = nil;
-			self.cp.hasFoundCopyDriver = false;
+		if vehicle.cp.selectedDriverNumber == 0 then
+			vehicle.cp.copyCourseFromDriver = nil;
+			vehicle.cp.hasFoundCopyDriver = false;
 		else
-			self.cp.copyCourseFromDriver = drivers[self.cp.selectedDriverNumber];
-			self.cp.hasFoundCopyDriver = true;
+			vehicle.cp.copyCourseFromDriver = drivers[vehicle.cp.selectedDriverNumber];
+			vehicle.cp.hasFoundCopyDriver = true;
 		end;
 	else
-		self.cp.copyCourseFromDriver = nil;
-		self.cp.selectedDriverNumber = 0;
-		self.cp.hasFoundCopyDriver = false;
+		vehicle.cp.copyCourseFromDriver = nil;
+		vehicle.cp.selectedDriverNumber = 0;
+		vehicle.cp.hasFoundCopyDriver = false;
 	end;
 end;
 
@@ -598,40 +597,43 @@ function courseplay:findDrivers(self)
 	return foundDrivers;
 end;
 
-function courseplay:copyCourse(self)
-	if self.cp.hasFoundCopyDriver ~= nil and self.cp.copyCourseFromDriver ~= nil then
-		local src = self.cp.copyCourseFromDriver;
+function courseplay:copyCourse(vehicle)
+	if vehicle.cp.hasFoundCopyDriver ~= nil and vehicle.cp.copyCourseFromDriver ~= nil then
+		local src = vehicle.cp.copyCourseFromDriver;
 
-		self.Waypoints = src.Waypoints;
-		self.cp.currentCourseName = src.cp.currentCourseName;
-		self.cp.loadedCourses = src.cp.loadedCourses;
-		self.cp.numCourses = src.cp.numCourses;
-		self.recordnumber = 1;
-		self.maxnumber = table.getn(self.Waypoints);
+		vehicle.Waypoints = src.Waypoints;
+		vehicle.cp.currentCourseName = src.cp.currentCourseName;
+		vehicle.cp.loadedCourses = src.cp.loadedCourses;
+		vehicle.cp.numCourses = src.cp.numCourses;
+		vehicle.recordnumber = 1;
+		vehicle.maxnumber = #(vehicle.Waypoints);
+		vehicle.cp.numWaitPoints = src.cp.numWaitPoints;
+		vehicle.cp.numCrossingPoints = src.cp.numCrossingPoints;
 
-		self.cp.isRecording = false;
-		self.cp.recordingIsPaused = false;
-		self.drive = false;
-		self.cp.distanceCheck = false;
-		self.cp.canDrive = true;
-		self.cp.abortWork = nil;
+		vehicle.cp.isRecording = false;
+		vehicle.cp.recordingIsPaused = false;
+		vehicle.drive = false;
+		vehicle.cp.distanceCheck = false;
+		vehicle.cp.canDrive = true;
+		vehicle.cp.abortWork = nil;
 
-		self.target_x, self.target_y, self.target_z = nil, nil, nil;
-		if self.cp.activeCombine ~= nil then
-			courseplay:unregister_at_combine(self, self.cp.activeCombine);
+		vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = nil, nil, nil;
+		vehicle.cp.nextTargets = {};
+		if vehicle.cp.activeCombine ~= nil then
+			courseplay:unregister_at_combine(vehicle, vehicle.cp.activeCombine);
 		end
 
-		self.cp.modeState = 1;
-		self.cp.recordingTimer = 1;
+		vehicle.cp.modeState = 1;
+		vehicle.cp.recordingTimer = 1;
 
-		courseplay.utils.signs:updateWaypointSigns(self, "current");
+		courseplay.utils.signs:updateWaypointSigns(vehicle, 'current');
 
 		--reset variables
-		self.cp.selectedDriverNumber = 0;
-		self.cp.hasFoundCopyDriver = false;
-		self.cp.copyCourseFromDriver = nil;
+		vehicle.cp.selectedDriverNumber = 0;
+		vehicle.cp.hasFoundCopyDriver = false;
+		vehicle.cp.copyCourseFromDriver = nil;
 
-		courseplay:validateCanSwitchMode(self);
+		courseplay:validateCanSwitchMode(vehicle);
 	end;
 end;
 
@@ -1145,7 +1147,7 @@ function courseplay:setMouseCursor(self, show)
 	end;
 end;
 
-function courseplay:changeDebugChannelSection(self, changeBy)
+function courseplay:changeDebugChannelSection(vehicle, changeBy)
 	courseplay.debugChannelSection = Utils.clamp(courseplay.debugChannelSection + changeBy, 1, math.ceil(courseplay.numAvailableDebugChannels / courseplay.numDebugChannelButtonsPerLine));
 	courseplay.debugChannelSectionEnd = courseplay.numDebugChannelButtonsPerLine * courseplay.debugChannelSection;
 	courseplay.debugChannelSectionStart = courseplay.debugChannelSectionEnd - courseplay.numDebugChannelButtonsPerLine + 1;
@@ -1325,7 +1327,9 @@ function courseplay:setDrawWaypointsLines(vehicle)
 end;
 
 function courseplay:setEngineState(vehicle, on)
-	if vehicle == nil or on == nil then return; end;
+	if vehicle == nil or on == nil or vehicle.isMotorStarted == on then
+		return;
+	end;
 
 	--Manual ignition v3.01/3.04 (self-installing)
 	if vehicle.setManualIgnitionMode ~= nil and vehicle.ignitionMode ~= nil then
@@ -1345,4 +1349,8 @@ function courseplay:setEngineState(vehicle, on)
 			vehicle:stopMotor(true);
 		end;
 	end;
+end;
+
+function courseplay:changeRefillUntilPct(vehicle, changeBy)
+	vehicle.cp.refillUntilPct = Utils.clamp(vehicle.cp.refillUntilPct + changeBy, 5, 100);
 end;
