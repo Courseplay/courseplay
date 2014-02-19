@@ -1,25 +1,12 @@
 -- starts driving the course
 function courseplay:start(self)
-	self.maxnumber = table.getn(self.Waypoints)
+	self.maxnumber = #(self.Waypoints)
 	if self.maxnumber < 1 then
 		return
 	end
 
-	--Manual ignition v3.01/3.04 (self-installing)
-	if self.setManualIgnitionMode ~= nil and self.ignitionMode ~= nil and self.ignitionMode ~= 2 then
-		self:setManualIgnitionMode(2);
-		
-	--Manual ignition v3.x (in steerable as lua)
-	elseif self.ignitionKey ~= nil and self.allowedIgnition ~= nil and not self.isMotorStarted then
-		self.ignitionKey = true;
-        self.allowedIgnition = true;
-    end;
-    --END manual ignition
-	
-	if not self.isMotorStarted then
-		self:startMotor(true);
-	end
-	
+	courseplay:setEngineState(self, true);
+
 	if self.cp.orgRpm == nil then
 		self.cp.orgRpm = {}
 		self.cp.orgRpm[1] = self.motor.maxRpm[1]
