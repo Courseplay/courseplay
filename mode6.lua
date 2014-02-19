@@ -347,9 +347,23 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 								tool:setPipeState(2);
 							end;
 						end
-						if pipeState == 0 and self.cp.turnStage == 0 then
-							tool.cp.waitingForTrailerToUnload = true
+
+						-- stop when there's no trailer to fill - courtesy of upsidedown
+						local chopperWaitForTrailer = false;
+						if tool.cp.isChopper and tool.lastValidGrainTankFruitType ~= FruitUtil.FRUITTYPE_UNKNOWN then
+							local targetTrailer = tool:findAutoAimTrailerToUnload(tool.lastValidGrainTankFruitType);
+							local trailer, trailerDistance = tool:findTrailerToUnload(tool.lastValidGrainTankFruitType);
+							-- print(string.format('targetTrailer=%s, trailer=%s', tostring(targetTrailer), tostring(trailer)));
+							if targetTrailer == nil or trailer == nil then
+								chopperWaitForTrailer = true;
+								-- print(string.format('\tat least one of them not found at pipeState %s -> chopperWaitForTrailer=true', tostring(pipeState)));
+							end;
+						end;
+						
+						if (pipeState == 0 and self.cp.turnStage == 0) or chopperWaitForTrailer then
+							tool.cp.waitingForTrailerToUnload = true;
 						end
+
 					else
 						local fillLevelPct = tool.grainTankFillLevel * 100 / tool.grainTankCapacity;
 
@@ -412,8 +426,16 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 						tool.cp.waitingForTrailerToUnload = false
 					end
 				elseif tool.cp.isChopper then
-					if (tool.pipeParticleSystems[9].isEmitting or pipeState > 0) then
-						self.cp.waitingForTrailerToUnload = false
+					-- resume driving
+					local ch, gr = Fillable.FILLTYPE_CHAFF, Fillable.FILLTYPE_GRASS_WINDROW;
+					if (tool.pipeParticleSystems and ((tool.pipeParticleSystems[ch] and tool.pipeParticleSystems[ch].isEmitting) or (tool.pipeParticleSystems[gr] and tool.pipeParticleSystems[gr].isEmitting))) or pipeState > 0 then
+						if tool.lastValidGrainTankFruitType ~= FruitUtil.FRUITTYPE_UNKNOWN then
+							local targetTrailer = tool:findAutoAimTrailerToUnload(tool.lastValidGrainTankFruitType);
+							local trailer, trailerDistance = tool:findTrailerToUnload(tool.lastValidGrainTankFruitType);
+							if targetTrailer ~= nil and trailer ~= nil and targetTrailer == trailer then
+								tool.cp.waitingForTrailerToUnload = false;
+							end;
+						end;
 					end
 				end
 			end

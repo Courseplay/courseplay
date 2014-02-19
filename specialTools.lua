@@ -884,7 +884,8 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 			end
 		end
 		local targetTrailer = workTool:findAutoAimTrailerToUnload(workTool.currentFruitType);
-		if targetTrailer == nil then
+		local trailer, trailerDistance = workTool:findTrailerToUnload(workTool.currentFruitType);
+		if targetTrailer == nil or trailer == nil then
 			allowedToDrive = false
 		end
 
