@@ -332,34 +332,33 @@ function courseplay:renderButton(self, button)
 
 		
 		if button.show and not button.isHidden then
-			local colors = courseplay.hud.colors;
-			local currentColor = courseplay:getButtonColor(button);
+			local currentColor = button.overlay.curColor;
 			local targetColor = currentColor;
-			local hoverColor = colors.hover;
-			if fn == "openCloseHud" then
-				hoverColor = colors.closeRed;
+			local hoverColor = 'hover';
+			if fn == 'openCloseHud' then
+				hoverColor = 'closeRed';
 			end;
 
-			if not button.isDisabled and not button.isActive and not button.isHovered and button.canBeClicked and not button.isClicked and not courseplay:colorsMatch(currentColor, colors.white) then
-				targetColor = colors.white;
-			elseif button.isDisabled and not courseplay:colorsMatch(currentColor, colors.whiteDisabled) then
-				targetColor = colors.whiteDisabled;
-			elseif not button.isDisabled and button.canBeClicked and button.isClicked and not fn == "openCloseHud" then
-				targetColor = colors.activeRed;
-			elseif button.isHovered and ((not button.isDisabled and button.isToggleButton and button.isActive and button.canBeClicked and not button.isClicked) or (not button.isDisabled and not button.isActive and button.canBeClicked and not button.isClicked)) and not courseplay:colorsMatch(currentColor, hoverColor) then
+			if not button.isDisabled and not button.isActive and not button.isHovered and button.canBeClicked and not button.isClicked then
+				targetColor = 'white';
+			elseif button.isDisabled then
+				targetColor = 'whiteDisabled';
+			elseif not button.isDisabled and button.canBeClicked and button.isClicked and fn ~= 'openCloseHud' then
+				targetColor = 'activeRed';
+			elseif button.isHovered and ((not button.isDisabled and button.isToggleButton and button.isActive and button.canBeClicked and not button.isClicked) or (not button.isDisabled and not button.isActive and button.canBeClicked and not button.isClicked)) then
 				targetColor = hoverColor;
 				if button.isToggleButton then
 					--print(string.format('button %q (loop %d): isHovered=%s, isActive=%s, isDisabled=%s, canBeClicked=%s -> hoverColor', fn, g_updateLoopIndex, tostring(button.isHovered), tostring(button.isActive), tostring(button.isDisabled), tostring(button.canBeClicked)));
 				end;
-			elseif button.isActive and (not button.isToggleButton or (button.isToggleButton and not button.isHovered)) and not courseplay:colorsMatch(currentColor, colors.activeGreen) then
-				targetColor = colors.activeGreen;
+			elseif button.isActive and (not button.isToggleButton or (button.isToggleButton and not button.isHovered)) then
+				targetColor = 'activeGreen';
 				if button.isToggleButton then
 					--print(string.format('button %q (loop %d): isHovered=%s, isActive=%s, isDisabled=%s, canBeClicked=%s -> activeGreen', fn, g_updateLoopIndex, tostring(button.isHovered), tostring(button.isActive), tostring(button.isDisabled), tostring(button.canBeClicked)));
 				end;
 			end;
 
 			-- set colors
-			if not courseplay:colorsMatch(currentColor, targetColor) then
+			if currentColor ~= targetColor then
 				courseplay:setButtonColor(button, targetColor)
 			end;
 
@@ -369,29 +368,11 @@ function courseplay:renderButton(self, button)
 end;
 
 
-function courseplay:setButtonColor(button, color)
-	if button == nil or button.overlay == nil or color == nil or table.getn(color) ~= 4 then
-		return;
+function courseplay:setButtonColor(button, colorName)
+	if button and button.overlay and colorName and courseplay.hud.colors[colorName] and #courseplay.hud.colors[colorName] == 4 then
+		button.overlay:setColor(unpack(courseplay.hud.colors[colorName]));
+		button.overlay.curColor = colorName;
 	end;
-	button.overlay:setColor(unpack(color));
-end;
-
-function courseplay:getButtonColor(button)
-	if button == nil or button.overlay == nil or button.overlay.r == nil or button.overlay.g == nil or button.overlay.b == nil or button.overlay.a == nil then
-		return nil;
-	end;
-	local r,g,b,a = button.overlay.r, button.overlay.g, button.overlay.b, button.overlay.a;
-	if r == nil or g == nil or b == nil or a == nil then
-		return nil;
-	end;
-	return { r,g,b,a };
-end;
-
-function courseplay:colorsMatch(color1, color2)
-	if color1 == nil or color2 == nil then
-		return nil;
-	end;
-	return Utils.areListsEqual(color1, color2, false);
 end;
 
 function courseplay.button.setOffset(button, x_off, y_off)
