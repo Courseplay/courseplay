@@ -1185,7 +1185,7 @@ function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive, lx,
 
 			local fillTypesMatch = courseplay:fillTypesMatch(fillTrigger, activeTool);
 
-			local canRefill = (activeToolFillLevel ~= nil and activeToolFillLevel <= driveOn) and fillTypesMatch;
+			local canRefill = (activeToolFillLevel ~= nil and activeToolFillLevel < driveOn) and fillTypesMatch;
 			--ManureLager: activeTool.ReFillTrigger has to be nil so it doesn't refill
 			if self.cp.mode == 8 then
 				canRefill = canRefill and activeTool.ReFillTrigger == nil and not courseplay:waypointsHaveAttr(self, self.recordnumber, -2, 2, "wait", true, false);

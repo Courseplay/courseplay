@@ -211,15 +211,15 @@ function courseplay:setGlobalData()
 	ch.lineHeight = 0.021;
 	ch.offset = 16/1920;  --0.006 (button width)
 	ch.colors = {
-		white =         {       1,       1,       1, 1    };
-		whiteInactive = {       1,       1,       1, 0.75 };
-		whiteDisabled = {       1,       1,       1, 0.15 };
-		hover =         {  32/255, 168/255, 219/255, 1    };
-		activeGreen =   { 110/255, 235/255,  56/255, 1    };
-		activeRed =     { 206/255,  83/255,  77/255, 1    };
-		closeRed =      { 180/255,       0,       0, 1    };
-		warningRed =    { 240/255,  25/255,  25/255, 1    };
-		shadow =        {  35/255,  35/255,  35/255, 1    };
+		white =         { 255/255, 255/255, 255/255, 1.00 };
+		whiteInactive = { 255/255, 255/255, 255/255, 0.75 };
+		whiteDisabled = { 255/255, 255/255, 255/255, 0.15 };
+		hover =         {  32/255, 168/255, 219/255, 1.00 };
+		activeGreen =   { 110/255, 235/255,  56/255, 1.00 };
+		activeRed =     { 206/255,  83/255,  77/255, 1.00 };
+		closeRed =      { 180/255,   0/255,   0/255, 1.00 };
+		warningRed =    { 240/255,  25/255,  25/255, 1.00 };
+		shadow =        {  35/255,  35/255,  35/255, 1.00 };
 	};
 
 	ch.pagesPerMode = {
