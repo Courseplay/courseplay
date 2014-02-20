@@ -291,22 +291,27 @@ function courseplay:drive(self, dt)
 	local tx, ty, tz = localToWorld(self.cp.DirectionNode,0,1,3)
 	-- direction of tractor
 	local nx, ny, nz = localDirectionToWorld(self.cp.DirectionNode, lx, 0, lz)
-	--RulModiä
-	if self.cp.beaconLightsMode == 1 then
-		if (self.cp.speeds.sl == 3 and not self.beaconLightsActive) or (self.cp.speeds.sl ~= 3 and self.beaconLightsActive) or (self.cp.mode == 7 and self.isAIThreshing and self.beaconLightsActive)  then
+
+	-- RulModiä
+	if self.cp.beaconLightsMode == 1 then --on streets only
+		local combineNeedsBeacon = self.cp.isCombine and (self.grainTankFillLevel / self.grainTankCapacity) > 0.8;
+		if (self.cp.speeds.sl == 3 and not self.beaconLightsActive)
+		or (self.cp.speeds.sl ~= 3 and self.beaconLightsActive and not combineNeedsBeacon)
+		or (self.cp.mode == 6 and combineNeedsBeacon and not self.beaconLightsActive)
+		or (self.cp.mode == 7 and self.isAIThreshing == self.beaconLightsActive) then
 			self:setBeaconLightsVisibility(not self.beaconLightsActive);
-		end
-	elseif self.cp.beaconLightsMode == 2 then
-		if (self.drive and not self.beaconLightsActive) or (not self.drive and self.beaconLightsActive) then
-			self:setBeaconLightsVisibility(not self.beaconLightsActive);
-		end
-	elseif self.cp.beaconLightsMode == 3 then
+		end;
+
+	elseif self.cp.beaconLightsMode == 2 then --always
+		if not self.beaconLightsActive then
+			self:setBeaconLightsVisibility(true);
+		end;
+
+	elseif self.cp.beaconLightsMode == 3 then --never
 		if self.beaconLightsActive then
 			self:setBeaconLightsVisibility(false);
-		end
-	end
-
-
+		end;
+	end;
 	-- the tipper that is currently loaded/unloaded
 	local activeTipper = nil
 	local isBypassing = false
