@@ -38,7 +38,7 @@ function courseplay.fields:setAllFieldEdges()
 			local initObject = fieldDef.fieldMapIndicator;
 			local x,_,z = getWorldTranslation(initObject);
 			if fieldNum and initObject and x and z then
-				local isField = courseplay:is_field(x, z, 0.1, 0.1);
+				local isField = courseplay:isField(x, z, 0.1, 0.1);
 
 				self:dbg(string.format("fieldDef %d (fieldNum=%d): x,z=%.1f,%.1f, isField=%s", self.curFieldScanIndex, fieldNum, x, z, tostring(isField)), 'scan');
 				if isField then
@@ -73,7 +73,7 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 
 	local x0,_,z0 = getWorldTranslation(initObject);
 
-	local isField = courseplay:is_field(x0, z0, 0.1, 0.1);
+	local isField = courseplay:isField(x0, z0, 0.1, 0.1);
 	local coordinates, xValues, zValues = {}, {}, {};
 	local numPoints = 0;
 	self:dbg(string.format('Begin edge scanning at: %.2f, %.2f', x0, z0), dbgType);
@@ -99,7 +99,7 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 
 		-- (2) FIND INITIAL BORDER POINT
 		self:dbg(string.format('\tSearching edge in direction: %.4f (%.1f deg)', ry, math.deg(ry)), dbgType);
-		while courseplay:is_field(x0, z0, 0.1, 0.1) do --search fast forward (1m steps)
+		while courseplay:isField(x0, z0, 0.1, 0.1) do --search fast forward (1m steps)
 			dis = dis + stepA;
 			setTranslation(probe1, 0, 0, dis);
 			x0, _, z0 = getWorldTranslation(probe1);
@@ -110,7 +110,7 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 		-- now we have a point very close to the field boundary but definitely outside
 		self:dbg(string.format('\tfound first point past field border: x0=%s, z0=%s, dis=%s', tostring(x0), tostring(z0), tostring(dis)), dbgType);
 
-		while not courseplay:is_field(x0,z0,0.1,0.1) do --then backtrace in small 5cm steps
+		while not courseplay:isField(x0,z0,0.1,0.1) do --then backtrace in small 5cm steps
 			dis = dis + stepB;
 			setTranslation(probe1, 0, 0, dis);
 			x0, _, z0 = getWorldTranslation(probe1);
@@ -124,7 +124,7 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 		-- now we rotate this point to have it following the edge direction
 		setTranslation(probe1, 0.1, 0, 0); --TODO: why translate on the x axis instead of the z axis?
 		x0, _, z0 = getWorldTranslation(probe1);
-		while not courseplay:is_field(x0, z0, 0.1, 0.1) do
+		while not courseplay:isField(x0, z0, 0.1, 0.1) do
 			rotate(tg,0,.01,0); -- rotate by 0.573 deg
 			x0, _, z0 = getWorldTranslation(probe1);
 		end;
@@ -142,10 +142,10 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 			local rotAngle = 0.1; -- 5.73 deg
 			local turnSign = 1.0;
 
-			local return2field = not courseplay:is_field(px, pz, 0.1, 0.1); --there is NO guarantee that probe1 (px,pz) is in field just because tg is!!!
+			local return2field = not courseplay:isField(px, pz, 0.1, 0.1); --there is NO guarantee that probe1 (px,pz) is in field just because tg is!!!
 
 			-- pendulum: increase rotAngle each step until probe is outside of field
-			while courseplay:is_field(px, pz, 0.1, 0.1) or return2field do
+			while courseplay:isField(px, pz, 0.1, 0.1) or return2field do
 				rotate(tg,0,rotAngle*turnSign,0);
 				rotAngle = rotAngle*1.05;
 				--rotAngle = rotAngle + 0.1; --alternative for performance tuning, don't know which one is better
@@ -153,7 +153,7 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 				px,_,pz = getWorldTranslation(probe1);
 
 				if return2field then
-					if courseplay:is_field(px, pz, 0.1, 0.1) then
+					if courseplay:isField(px, pz, 0.1, 0.1) then
 						return2field = false;
 					end;
 				end;
@@ -161,7 +161,7 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 
 			-- trace back into field in 0.573 deg steps
 			local cnt, maxcnt = 0, 0;
-			while not courseplay:is_field(px, pz, 0.1, 0.1) do
+			while not courseplay:isField(px, pz, 0.1, 0.1) do
 				rotate(tg,0,0.01*turnSign,0)
 				px,_,pz = getWorldTranslation(probe1);
 				--self:dbg('\t\trotate back', dbgType);
@@ -175,7 +175,7 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 					end;
 				end;
 			end;
-			if not courseplay:is_field(px, pz, 0.1, 0.1) then
+			if not courseplay:isField(px, pz, 0.1, 0.1) then
 				self:dbg('\tlost point', dbgType);
 				break;
 			end;
@@ -186,7 +186,7 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 			if numPoints > 0 then
 				local prevPoint = coordinates[numPoints];
 				local centerX, centerZ = (px+prevPoint.cx)/2, (pz+prevPoint.cz)/2;
-				centerIsField = courseplay:is_field(centerX, centerZ, 0.1, 0.1);
+				centerIsField = courseplay:isField(centerX, centerZ, 0.1, 0.1);
 				-- self:dbg(string.format('point %d: prev cx,cz=%.1f,%.1f, px,pz=%.1f,%.1f, centerX,centerZ=%.1f,%.1f, centerIsField=%s', numPoints+1, prevPoint.cx, prevPoint.cz, px, pz, centerX, centerZ, tostring(centerIsField)), dbgType);
 			end;
 			-- ]]

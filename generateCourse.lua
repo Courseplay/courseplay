@@ -1077,8 +1077,14 @@ function courseplay.generation:isPolyClockwise(poly)
 	return isClockwise;
 end;
 
-function courseplay.generation:getPointDirection(cp, np)
-	local dx, dz = np.cx - cp.cx, np.cz - cp.cz;
+function courseplay.generation:getPointDirection(cp, np, useC)
+	if useC == nil then useC = true; end;
+	local x,z = 'x','z';
+	if useC then
+		x,z = 'cx','cz';
+	end;
+
+	local dx, dz = np[x] - cp[x], np[z] - cp[z];
 	local vl = Utils.vector2Length(dx, dz);
 	if vl and vl > 0.0001 then
 		dx = dx / vl;
@@ -1097,16 +1103,19 @@ function courseplay.generation:getOffsetWidth(vehicle, laneNum)
 end;
 
 -- @src: https://love2d.org/forums/viewtopic.php?f=5&t=1516&start=10
-function courseplay.generation:smoothSpline(points, steps, useC)
+function courseplay.generation:smoothSpline(points, steps, useC, addHeight)
+	if useC == nil then useC = true; end;
+	if addHeight == nil then addHeight = false; end;
+
 	local numPoints = #points;
 	if numPoints < 3 then return points end;
 	local steps = steps or 5;
 	local spline = {};
 	local count = numPoints - 1;
 	local p0, p1, p2, p3, nx, nz;
-	local x,z = 'x','z';
+	local x,y,z = 'x','y','z';
 	if useC then
-		x,z = 'cx','cz';
+		x,y,z = 'cx','cy','cz';
 	end;
 
 	for i = 1, count do
@@ -1124,7 +1133,12 @@ function courseplay.generation:smoothSpline(points, steps, useC)
 			--prevent duplicate entries
 			local numSplinePoints = #spline;
 			if not (numSplinePoints > 0 and spline[numSplinePoints].cx == nx and spline[numSplinePoints].cz == nz) then
-				table.insert( spline , { cx = nx , cz = nz } ); -- table of indexed points
+				local point = {
+					[x] = nx,
+					[y] = addHeight and getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, nx, 1, nz) + 3 or nil,
+					[z] = nz
+				};
+				table.insert(spline, point); -- table of indexed points
 			end;
 		end;
 	end;

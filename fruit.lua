@@ -8,7 +8,7 @@ function courseplay:area_has_fruit(x, z, fruitType, widthX, widthZ)
 
 	local density = 0;
 	if fruitType ~= nil then
-		density = Utils.getFruitArea(fruitType, x, z, x - widthX, z - widthZ, x + widthX, z + widthZ);
+		density = Utils.getFruitArea(fruitType, x, z, x - widthX, z - widthZ, x + widthX, z + widthZ, true);
 		if density > 0 then
 			--courseplay:debug(string.format("checking x: %d z %d - density: %d", x, z, density ), 3)
 			return true;
@@ -16,7 +16,7 @@ function courseplay:area_has_fruit(x, z, fruitType, widthX, widthZ)
 	else
 		for i = 1, FruitUtil.NUM_FRUITTYPES do
 			if i ~= FruitUtil.FRUITTYPE_GRASS then
-				density = Utils.getFruitArea(i, x, z, x - widthX, z - widthZ, x + widthX, z + widthZ);
+				density = Utils.getFruitArea(i, x, z, x - widthX, z - widthZ, x + widthX, z + widthZ, true);
 				if density > 0 then
 					--courseplay:debug(string.format("checking x: %d z %d - density: %d", x, z, density ), 3)
 					return true;
@@ -46,6 +46,114 @@ function courseplay:is_field(x, z, widthX, widthZ)
 		end;
 	end;
 	return false;
+end;
+
+function courseplay:isField(x, z, widthX, widthZ)
+	widthX = widthX or 0.5;
+	widthZ = widthZ or 0.5;
+	local startWorldX, startWorldZ   = x, z;
+	local widthWorldX, widthWorldZ   = x - widthX, z - widthZ;
+	local heightWorldX, heightWorldZ = x + widthX, z + widthZ;
+
+	local detailId = g_currentMission.terrainDetailId;
+	local px,pz, pWidthX,pWidthZ, pHeightX,pHeightZ = Utils.getXZWidthAndHeight(detailId, startWorldX, startWorldZ, widthWorldX, widthWorldZ, heightWorldX, heightWorldZ);
+	setDensityCompareParams(detailId, 'greater', 0, 0, 0, 0);
+	local _,area,totalArea = getDensityParallelogram(detailId, px, pz, pWidthX, pWidthZ, pHeightX, pHeightZ, g_currentMission.terrainDetailTypeFirstChannel, g_currentMission.terrainDetailTypeNumChannels);
+	setDensityCompareParams(detailId, 'greater', -1);
+
+	return area > 0;
+end
+
+
+function courseplay:getLineHxHz(node, x1, z1, x2, z2)
+	if node == nil and (x1 == nil or z1 == nil or x2 == nil and z2 == nil) then return; end;
+
+	local createTg = node == nil;
+	if createTg then
+		node = createTransformGroup('cpFruitLineNode');
+		link(getRootNode(), node);
+		setTranslation(node, x1, 0, z1);
+
+		-- set rotation
+		local dx, dz, vl = courseplay.generation:getPointDirection({ cx = x1, cz = z1 }, { cx = x2, cz = z2 });
+		local rot = Utils.getYRotationFromDirection(dx, dz);
+		setRotation(node, 0, rot, 0);
+	end;
+
+	-- get hx, hz
+	--[[
+	local lineWidth = 2; -- in metres
+	local dlx, _, dlz = worldToLocal(node, x2, 0, z2);
+	local dnx, dnz = dlz * -1, dlx;
+	local angle = math.atan(dnz / dnx);
+	dnx = math.cos(angle) * -lineWidth;
+	dnz = math.sin(angle) * -lineWidth;
+	local hx, _, hz = localToWorld(node, dnx, 0, dnz);
+	]]
+	local hx, _, hz = localToWorld(node, -2, 0, 0);
+
+	if createTg then
+		unlink(node);
+		delete(node);
+	end;
+
+	-- courseplay:debug(string.format('getLineHxHz(..., [x1] %.1f, [z1] %.1f, [x2] %.1f, [z2] %.1f): hxTest,hzTest=%.3f,%.3f, hx,hz=%.3f,%.3f', x1, z1, x2, z2, hxTest, hzTest, hx, hz), 4);
+
+	return hx, hz;
+end;
+
+function courseplay:hasLineFruit(node, x1, z1, x2, z2, fixedFruitType)
+	if node and (x1 == nil or z1 == nil) then
+		x1, _, z1 = getWorldTranslation(node);
+	end;
+	local hx, hz = courseplay:getLineHxHz(vehicle, x1,z1, x2,z2);
+	if hx == nil or hz == nil then return; end;
+	-- print(string.format('hasLineFruit(): x1,z1=%s,%s, x2,z2=%s,%s, hx,hz=%s,%s', tostring(x1), tostring(z1), tostring(x2), tostring(z2), tostring(hx), tostring(hz)));
+
+	if fixedFruitType then
+		local density, total = Utils.getFruitArea(fixedFruitType, x1,z1, x2,z2, hx,hz, true);
+		if density > 0 then
+			return true, density, fixedFruitType, FruitUtil.fruitIndexToDesc[fixedFruitType].name;
+		end;
+		return false;
+	end;
+
+	for i = 1, FruitUtil.NUM_FRUITTYPES do
+		if i ~= FruitUtil.FRUITTYPE_GRASS then
+			local density, total = Utils.getFruitArea(i, x1,z1, x2,z2, hx,hz, true);
+			if density > 0 then
+				local fruitName = FruitUtil.fruitIndexToDesc[i].name;
+				-- courseplay:debug(string.format('\tfruitType %d (%s): density=%s (total=%s)', i, tostring(fruitName), tostring(density), tostring(total)), 4);
+				courseplay:debug(string.format('hasLineFruit(): fruitType %d (%s): density=%s (total=%s)', i, tostring(fruitName), tostring(density), tostring(total)), 4);
+				return true, density, i, fruitName;
+			end;
+		end;
+	end;
+
+	return false;
+end;
+
+function courseplay:isLineField(node, x1, z1, x2, z2)
+	if node and (x1 == nil or z1 == nil) then
+		x1, _, z1 = getWorldTranslation(node);
+	end;
+	local hx, hz = courseplay:getLineHxHz(node, x1, z1, x2, z2);
+	if hx == nil or hz == nil then return; end;
+	-- courseplay:debug(string.format('isLineField(): x1,z1=%s,%s, x2,z2=%s,%s, hx,hz=%s,%s', tostring(x1), tostring(z1), tostring(x2), tostring(z2), tostring(hx), tostring(hz)), 4);
+
+	local startWorldX, startWorldZ   = x1, z1;
+	local widthWorldX, widthWorldZ   = x2, z2;
+	local heightWorldX, heightWorldZ = hx, hz;
+
+	local detailId = g_currentMission.terrainDetailId;
+	local px,pz, pWidthX,pWidthZ, pHeightX,pHeightZ = Utils.getXZWidthAndHeight(detailId, startWorldX, startWorldZ, widthWorldX, widthWorldZ, heightWorldX, heightWorldZ);
+	setDensityCompareParams(detailId, 'greater', 0, 0, 0, 0);
+	local n,area,totalArea = getDensityParallelogram(detailId, px, pz, pWidthX, pWidthZ, pHeightX, pHeightZ, g_currentMission.terrainDetailTypeFirstChannel, g_currentMission.terrainDetailTypeNumChannels);
+	setDensityCompareParams(detailId, 'greater', -1);
+
+	courseplay:debug(string.format('isLineField(): x1,z1=%s,%s, x2,z2=%s,%s, hx,hz=%s,%s -> n=%s, area=%s, totalArea=%s', tostring(x1), tostring(z1), tostring(x2), tostring(z2), tostring(hx), tostring(hz), tostring(n), tostring(area), tostring(totalArea)), 4);
+
+	return area > 0 and area >= totalArea;
 end;
 
 function courseplay:check_for_fruit(self, distance)
@@ -86,9 +194,9 @@ function courseplay:check_for_fruit(self, distance)
 
 	for i = 1, FruitUtil.NUM_FRUITTYPES do
 		if i ~= FruitUtil.FRUITTYPE_GRASS then
-			leftFruit = leftFruit + Utils.getFruitArea(i, lStartX, lStartZ, lWidthX, lWidthZ, lHeightX, lHeightZ)
+			leftFruit = leftFruit + Utils.getFruitArea(i, lStartX, lStartZ, lWidthX, lWidthZ, lHeightX, lHeightZ); -- TODO: add "true" to allow preparingFruit (potatoes, sugarBeet) ?
 
-			rightFruit = rightFruit + Utils.getFruitArea(i, rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ)
+			rightFruit = rightFruit + Utils.getFruitArea(i, rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ); -- TODO: add "true" to allow preparingFruit (potatoes, sugarBeet) ?
 		end
 	end
 
@@ -140,8 +248,8 @@ function courseplay:sideToDrive(self, combine, distance,switchSide)
 	local leftFruit = 0
 	local rightFruit = 0
 
-	leftFruit = leftFruit + Utils.getFruitArea(combine.lastValidInputFruitType, lStartX, lStartZ, lWidthX, lWidthZ, lHeightX, lHeightZ,true)
-	rightFruit = rightFruit + Utils.getFruitArea(combine.lastValidInputFruitType, rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ,true)
+	leftFruit = leftFruit + Utils.getFruitArea(combine.lastValidInputFruitType, lStartX, lStartZ, lWidthX, lWidthZ, lHeightX, lHeightZ, true)
+	rightFruit = rightFruit + Utils.getFruitArea(combine.lastValidInputFruitType, rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ, true)
 	--print("	leftFruit:  "..tostring(leftFruit).."  rightFruit:  "..tostring(rightFruit))
 	--courseplay:debug(string.format("%s: fruit: left %f right %f", combine.name, leftFruit, rightFruit), 3)
 	local fruitSide 

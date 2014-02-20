@@ -72,27 +72,14 @@ function courseplay:update_combines(self)
 	-- go through found combines
 	for k, combine in pairs(found_combines) do
 		lx, ly, lz = getWorldTranslation(combine.rootNode)
-		local dlx, dly, dlz = worldToLocal(self.cp.DirectionNode, lx, y, lz)
-		local dnx = dlz * -1
-		local dnz = dlx
-		local angle = math.atan(dnz / dnx)
-		dnx = math.cos(angle) * -2
-		dnz = math.sin(angle) * -2
-		hx, hy, hz = localToWorld(self.cp.DirectionNode, dnx, 0, dnz)
-		local area0, area = Utils.getDensity(terrain, 0, x, z, lx, lz, hx, hz)
-		local area1 = Utils.getDensity(terrain, 1, x, z, lx, lz, hx, hz)
-		local area2 = Utils.getDensity(terrain, 2, x, z, lx, lz, hx, hz)
-		local area3 = Utils.getDensity(terrain, 3, x, z, lx, lz, hx, hz)
-		local areaAll = area0 + area1 + area2 + area3
-		courseplay:debug(string.format('%s: to combine %q: area=%d, channels 0=%d, 1=%d, 2=%d, 3=%d, field in area = %d', nameNum(self), nameNum(combine), area, area0, area1, area2, area3, areaAll), 4);
 
-		if areaAll >= area * 0.999 and areaAll <= area * 1.1 and courseplay:combine_allows_tractor(self, combine) then
+		if courseplay:isLineField(self.cp.DirectionNode, nil, nil, lx, lz) then
 			courseplay:debug(string.format('%s: adding %q to reachableCombines table', nameNum(self), nameNum(combine)), 4);
-			table.insert(self.cp.reachableCombines, combine)
-		end
-	end
+			table.insert(self.cp.reachableCombines, combine);
+		end;
+	end;
 
-	courseplay:debug(string.format("%s: combines reachable: %d ", nameNum(self), table.getn(self.cp.reachableCombines)), 4)
+	courseplay:debug(string.format("%s: combines reachable: %d ", nameNum(self), #(self.cp.reachableCombines)), 4)
 end
 
 
