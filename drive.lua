@@ -26,17 +26,17 @@ function courseplay:drive(self, dt)
 					self.lastaiThreshingDirectionZ = self.aiThreshingDirectionZ
 					self:stopAIThreshing()
 					self.cp.shortestDistToWp = nil
-					self.next_targets = {}
+					self.cp.nextTargets = {}
 					if lx7 < 0 then
 						courseplay:debug(nameNum(self) .. ": approach from right", 11);
-						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, -(0.34*3*self.cp.turnRadius) , 0, -3*self.cp.turnRadius);
-						courseplay:set_next_target(self, (0.34*2*self.cp.turnRadius) , 0);
-						courseplay:set_next_target(self, 0 , 3);
+						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.rootNode, -(0.34*3*self.cp.turnRadius) , 0, -3*self.cp.turnRadius);
+						courseplay:addNewTarget(self, (0.34*2*self.cp.turnRadius) , 0);
+						courseplay:addNewTarget(self, 0 , 3);
 					else
 						courseplay:debug(nameNum(self) .. ": approach from left", 11);
-						self.target_x, self.target_y, self.target_z = localToWorld(self.rootNode, (0.34*3*self.cp.turnRadius) , 0, -3*self.cp.turnRadius);
-						courseplay:set_next_target(self, -(0.34*2*self.cp.turnRadius) , 0);
-						courseplay:set_next_target(self, 0 ,3);
+						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.rootNode, (0.34*3*self.cp.turnRadius) , 0, -3*self.cp.turnRadius);
+						courseplay:addNewTarget(self, -(0.34*2*self.cp.turnRadius) , 0);
+						courseplay:addNewTarget(self, 0 ,3);
 					end
 					self.cp.mode7Unloading = true
 					self.cp.mode7GoBackBeforeUnloading = true
@@ -64,13 +64,13 @@ function courseplay:drive(self, dt)
 			courseplay:setGlobalInfoText(self, 'WORK_END');
 		end
 		if self.cp.modeState == 5 then
-			local targets = table.getn(self.next_targets)
+			local targets = #(self.cp.nextTargets)
 			local aligned  = false
 			local ctx7, cty7, ctz7 = getWorldTranslation(self.rootNode);
-			self.cp.infoText = string.format(courseplay:loc("CPDriveToWP"), self.target_x, self.target_z)
-			cx = self.target_x
-			cy = self.target_y
-			cz = self.target_z
+			self.cp.infoText = string.format(courseplay:loc("CPDriveToWP"), self.cp.curTarget.x, self.cp.curTarget.z)
+			cx = self.cp.curTarget.x
+			cy = self.cp.curTarget.y
+			cz = self.cp.curTarget.z
 
 			if courseplay.debugChannels[11] then 
 				drawDebugLine(cx, cty7+3, cz, 1, 0, 0, ctx7, cty7+3, ctz7, 1, 0, 0); 
@@ -87,17 +87,15 @@ function courseplay:drive(self, dt)
 				distToChange = distance_to_wp + 1
 			end
 			if targets == 2 then 
-				self.target_x7 = self.next_targets[2].x
-				self.target_y7 = self.next_targets[2].y
-				self.target_z7 = self.next_targets[2].z
+				self.cp.curTargetMode7 = self.cp.nextTargets[2];
 			elseif targets == 1 then
 				if math.abs(self.lastaiThreshingDirectionZ) > 0.1 then
-					if math.abs(self.target_x7-ctx7)< 3 then
+					if math.abs(self.cp.curTargetMode7.x-ctx7)< 3 then
 						aligned = true
 						courseplay:debug(nameNum(self) .. ": aligned", 11);
 					end
 				else
-					if math.abs(self.target_z7-ctz7)< 3 then
+					if math.abs(self.cp.curTargetMode7.z-ctz7)< 3 then
 						aligned = true
 						courseplay:debug(nameNum(self) .. ": aligned", 11);
 					end
@@ -111,12 +109,12 @@ function courseplay:drive(self, dt)
 					self:setIsThreshing(true)
 				end
 				if math.abs(self.lastaiThreshingDirectionX) > 0.1 then
-					if math.abs(self.target_x7-ctx7)< 5 then
+					if math.abs(self.cp.curTargetMode7.x-ctx7)< 5 then
 						aligned = true
 						courseplay:debug(nameNum(self) .. ": aligned", 11);
 					end
 				else
-					if math.abs(self.target_z7-ctz7)< 5 then
+					if math.abs(self.cp.curTargetMode7.z-ctz7)< 5 then
 						aligned = true
 						courseplay:debug(nameNum(self) .. ": aligned", 11);
 					end
@@ -125,10 +123,7 @@ function courseplay:drive(self, dt)
 			if distance_to_wp < distToChange or aligned then
 				self.cp.shortestDistToWp = nil
 				if targets  > 0 then
-					self.target_x = self.next_targets[1].x
-					self.target_y = self.next_targets[1].y
-					self.target_z = self.next_targets[1].z
-					table.remove(self.next_targets, 1)
+					courseplay:setCurrentTargetFromList(self, 1);
 					self.recordnumber = 2 
 				else
 					self.cp.modeState = 0
@@ -140,7 +135,7 @@ function courseplay:drive(self, dt)
 					self:startAIThreshing(true)
 					self.cp.mode7Unloading = false
 					courseplay:debug(nameNum(self) .. ": start AITreshing", 11);
-					courseplay:debug(nameNum(self) .. ": fault: "..tostring(math.ceil(math.abs(ctx7-self.target_x7)*100)).." cm X  "..tostring(math.ceil(math.abs(ctz7-self.target_z7)*100)).." cm Z", 11);
+					courseplay:debug(nameNum(self) .. ": fault: "..tostring(math.ceil(math.abs(ctx7-self.cp.curTargetMode7.x)*100)).." cm X  "..tostring(math.ceil(math.abs(ctz7-self.cp.curTargetMode7.z)*100)).." cm Z", 11);
 				end
 			end
 		end
@@ -312,6 +307,8 @@ function courseplay:drive(self, dt)
 			self:setBeaconLightsVisibility(false);
 		end;
 	end;
+
+
 	-- the tipper that is currently loaded/unloaded
 	local activeTipper = nil
 	local isBypassing = false
@@ -474,7 +471,7 @@ function courseplay:drive(self, dt)
 
 		if self.cp.mode == 7 then
 			if self.recordnumber == self.maxnumber then
-				if self.target_x ~= nil then
+				if self.cp.curTarget.x ~= nil then
 	 				self.cp.modeState = 5
 					self.recordnumber = 2
 					courseplay:debug(nameNum(self) .. ": " .. tostring(debug.getinfo(1).currentline) .. ": modeState = 5", 11);

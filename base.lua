@@ -153,10 +153,9 @@ function courseplay:load(xmlFile)
 	self.cp.loadedCourses = {}
 
 	-- forced waypoints
-	self.target_x = nil
-	self.target_y = nil
-	self.target_z = nil
-	self.next_targets = {}
+	self.cp.curTarget = {};
+	self.cp.curTargetMode7 = {};
+	self.cp.nextTargets = {};
 
 	-- speed limits
 	self.cp.speeds = {

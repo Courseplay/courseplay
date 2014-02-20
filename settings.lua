@@ -1351,6 +1351,26 @@ function courseplay:setEngineState(vehicle, on)
 	end;
 end;
 
+function courseplay:setCurrentTargetFromList(vehicle, index)
+	if #vehicle.cp.nextTargets == 0 then return; end;
+	index = index or 1;
+
+	vehicle.cp.curTarget = vehicle.cp.nextTargets[index];
+	if index == 1 then
+		table.remove(vehicle.cp.nextTargets, 1);
+		return;
+	end;
+
+	for i=index,1,-1 do
+		table.remove(vehicle.cp.nextTargets, i);
+	end;
+end;
+
+function courseplay:addNewTarget(vehicle, x, z)
+	local tx, ty, tz = localToWorld(vehicle.rootNode, x, 0, z);
+	table.insert(vehicle.cp.nextTargets, { x = tx, y = ty, z = tz });
+end;
+
 function courseplay:changeRefillUntilPct(vehicle, changeBy)
 	vehicle.cp.refillUntilPct = Utils.clamp(vehicle.cp.refillUntilPct + changeBy, 5, 100);
 end;

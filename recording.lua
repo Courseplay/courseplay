@@ -37,12 +37,6 @@ function courseplay:record(vehicle)
 	end;
 end;
 
-function courseplay:set_next_target(vehicle, x, z)
-	local next_x, next_y, next_z = localToWorld(vehicle.rootNode, x, 0, z)
-	local next_wp = { x = next_x, y = next_y, z = next_z }
-	table.insert(vehicle.next_targets, next_wp)
-end
-
 function courseplay:set_waitpoint(vehicle)
 	local cx, cy, cz = getWorldTranslation(vehicle.rootNode);
 	local newAngle = courseplay:currentVehAngle(vehicle);
@@ -224,11 +218,11 @@ end;
 function courseplay:reset_course(vehicle)
 	courseplay:reset_merged(vehicle)
 	vehicle.recordnumber = 1
-	vehicle.target_x, vehicle.target_y, vehicle.target_z = nil, nil, nil
+	vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = nil, nil, nil;
+	vehicle.cp.nextTargets = {};
 	if vehicle.cp.activeCombine ~= nil then
 		courseplay:unregister_at_combine(vehicle, vehicle.cp.activeCombine)
 	end
-	vehicle.next_targets = {}
 	vehicle.cp.loadedCourses = {}
 	vehicle.cp.currentCourseName = nil
 	--vehicle.cp.mode = 1
