@@ -6,23 +6,24 @@ courseplay edit by hummel 2011
 --]]
 
 
-function round(num, idp)
-	return math.floor(num / idp) * idp
+function courseplay:roundToBottomInterval(num, idp)
+	return math.floor(num / idp) * idp;
 end
 
-function CalcMoves(px, py, tx, ty, fruit_type) -- Based on some code of LMelior but made it work and improved way beyond his code, still thx LMelior!
+function courseplay:calcMoves(px, py, tx, ty, fruit_type, interval) -- Based on some code of LMelior but made it work and improved way beyond his code, still thx LMelior!
+	print("call calcMoves()");
 	if not courseplay:is_field(py, px) then
 		return nil
 	end
 
-	local interval = 5
+	interval = interval or 5;
 	local vertical_costs = 10
 	local diagnoal_costs = 14
 
-	px = round(px, interval)
-	py = round(py, interval)
-	tx = round(tx, interval)
-	ty = round(ty, interval)
+	px = courseplay:roundToBottomInterval(px, interval);
+	py = courseplay:roundToBottomInterval(py, interval);
+	tx = courseplay:roundToBottomInterval(tx, interval);
+	ty = courseplay:roundToBottomInterval(ty, interval);
 
 	--[[ PRE:
 mapmat is a 2d array
@@ -48,8 +49,9 @@ It will return nil if all the available nodes have been checked but the target h
 	local tempH = math.abs(px - tx) + math.abs(py - ty)
 	local tempG = 0
 	openlist[1] = { x = px, y = py, g = 0, h = tempH, f = 0 + tempH, par = 1 } -- Make starting point in list
-	local xsize = 1024 -- horizontal map size
-	local ysize = 1024 -- vertical map size
+
+	local xsize = (g_currentMission.terrainSize - 2)/2 -- horizontal map size -- TODO: make sure we get the correct map size (g_currentMission.terrainSize ?)
+	local ysize = xsize -- vertical map size
 	local curbase = {} -- Current square from which to check possible moves
 	local basis = 1 -- Index of current base
 	local max_tries = 2000
@@ -88,7 +90,7 @@ It will return nil if all the available nodes have been checked but the target h
 		local nwOK = true
 		local seOK = true
 		local swOK = true
-		local noOK = true
+		local neOK = true
 
 		-- Look through closedlist
 		if closedk > 0 then
@@ -125,12 +127,13 @@ It will return nil if all the available nodes have been checked but the target h
 		end
 
 		-- Check if next points are on the map and within moving distance
+		-- TODO: make sure we get the correct map size (g_currentMission.terrainSize ?)
 		if curbase.x + interval > xsize then
 			wOK = false
 			nwOK = false
 			swOK = false
 		end
-		if curbase.x - interval < -1024 then
+		if curbase.x - interval < -xsize then
 			eOK = false
 			neOK = false
 			seOK = false
@@ -140,7 +143,7 @@ It will return nil if all the available nodes have been checked but the target h
 			swOK = false
 			seOK = false
 		end
-		if curbase.y - interval < -1024 then
+		if curbase.y - interval < -ysize then
 			nOK = false
 			nwOK = false
 			neOK = false
@@ -148,16 +151,16 @@ It will return nil if all the available nodes have been checked but the target h
 
 		-- If it IS on the map, check map for obstacles
 		--(Lua returns an error if you try to access a table position that doesn't exist, so you can't combine it with above)
-		if wOK and curbase.x + interval <= xsize and courseplay:area_has_fruit(curbase.y, curbase.x + interval, fruit_type) then
+		if wOK and curbase.x + interval <= xsize and courseplay:area_has_fruit(curbase.x + interval, curbase.y, fruit_type) then
 			wOK = false
 		end
-		if eOK and curbase.x - interval >= -1024 and courseplay:area_has_fruit(curbase.y, curbase.x - interval, fruit_type) then
+		if eOK and curbase.x - interval >= -xsize and courseplay:area_has_fruit(curbase.x - interval, curbase.y, fruit_type) then
 			eOK = false
 		end
-		if sOK and curbase.y + interval <= ysize and courseplay:area_has_fruit(curbase.y + interval, curbase.x, fruit_type) then
+		if sOK and curbase.y + interval <= ysize and courseplay:area_has_fruit(curbase.x, curbase.y + interval, fruit_type) then
 			sOK = false
 		end
-		if nOK and curbase.y - interval >= -1024 and courseplay:area_has_fruit(curbase.y - interval, curbase.x, fruit_type) then
+		if nOK and curbase.y - interval >= -ysize and courseplay:area_has_fruit(curbase.x, curbase.y - interval, fruit_type) then
 			nOK = false
 		end
 
@@ -242,14 +245,15 @@ It will return nil if all the available nodes have been checked but the target h
 		listk = listk - 1
 
 		if closedlist[closedk].x == tx and closedlist[closedk].y == ty then
-			return CalcPath(closedlist)
+			return courseplay:calcPath(closedlist)
 		end
 	end
 
 	return nil
 end
 
-function CalcPath(closedlist)
+function courseplay:calcPath(closedlist)
+	--print("\tcall calcPath()");
 	--[[ PRE:
 closedlist is a list with the checked nodes.
 OR nil if all the available nodes have been checked but the target hasn't been found.
@@ -265,7 +269,7 @@ OR nil if closedlist==nil
 	end
 	local path = {}
 	local pathIndex = {}
-	local last = table.getn(closedlist)
+	local last = #(closedlist)
 	table.insert(pathIndex, 1, last)
 
 	local i = 1
@@ -274,7 +278,7 @@ OR nil if closedlist==nil
 		table.insert(pathIndex, i, closedlist[pathIndex[i - 1]].par)
 	end
 
-	for n = table.getn(pathIndex), 1, -1 do
+	for n = #(pathIndex), 1, -1 do
 		table.insert(path, { x = closedlist[pathIndex[n]].x, y = closedlist[pathIndex[n]].y })
 	end
 

@@ -22,54 +22,6 @@ function courseplay:find_combines(self)
 end
 
 
-function courseplay:combine_allows_tractor(self, combine)
-	if combine.courseplayers == nil then
-		combine.courseplayers = {}
-	end
-
-	local num_allowed_courseplayers = 1
-	if combine.cp.isChopper or combine.cp.isSugarBeetLoader then
-		num_allowed_courseplayers = 2
-	else
-		if self.cp.realisticDriving then
-			if combine.wants_courseplayer == true then
-				courseplay:debug(nameNum(self)..": combine full or manual call -> allow tractor",4)
-				return true
-			end
-			-- force unload when combine is full
-			if combine.grainTankFillLevel == combine.grainTankCapacity then
-				courseplay:debug(nameNum(self)..": set fill level reached -> allow tractor",4)
-				return true
-			end
-			-- is the pipe on the correct side?
-			if combine.turnStage == 1 or combine.turnStage == 2 or (combine.cp.turnStage ~= nil and combine.cp.turnStage ~= 0) or (combine.acTurnStage~= nil and combine.acTurnStage ~=0) then
-				courseplay:debug(nameNum(self)..": combine is turning -> refuse tractor",4)
-				courseplay:debug(string.format("%s:		combine.turnStage = %d, combine.cp.turnStage = %d, combine.acTurnStage = %s ",nameNum(self),combine.turnStage,combine.cp.turnStage,tostring(combine.acTurnStage)),4)
-				return false
-			end
-			local fruitSide = courseplay:sideToDrive(self, combine, -10)
-			if fruitSide == "none" then
-				courseplay:debug(nameNum(self)..": fruitSide is none -> try again with offset 0",4)
-				fruitSide = courseplay:sideToDrive(self, combine, 0)
-			end
-			if fruitSide == "left" then
-				courseplay:debug(nameNum(self)..": path finding active and pipe in fruit -> refuse tractor",4)
-				return false
-			end
-		end
-	end
-
-	if table.getn(combine.courseplayers) >= num_allowed_courseplayers then
-		return false
-	end
-
-	if table.getn(combine.courseplayers) == 1 and not combine.courseplayers[1].cp.allowFollowing then
-		return false
-	end
-
-	return true
-end
-
 -- find combines on the same field (texture)
 function courseplay:update_combines(self)
 	courseplay:debug(string.format("%s: update_combines()", nameNum(self)), 4);
