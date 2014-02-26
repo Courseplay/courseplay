@@ -43,24 +43,22 @@ function courseplay_manager:loadMap(name)
 
 	--Field scan info display
 	self.fieldScanInfo = {};
-	self.fieldScanInfo.fileW = 512/1920;
+	self.fieldScanInfo.fileW = 512/1080 / g_screenAspectRatio; --512/1920;
 	self.fieldScanInfo.fileH = 256/1080;
-	self.fieldScanInfo.contentW = 426/1920;
+	self.fieldScanInfo.contentW = 426/1080 / g_screenAspectRatio; --426/1920;
 	self.fieldScanInfo.contentH = 180/1080;
 	self.fieldScanInfo.bgX, self.fieldScanInfo.bgY = 0.5 - self.fieldScanInfo.contentW/2, 0.5 - self.fieldScanInfo.contentH/2;
 	local bgPath = Utils.getFilename('img/fieldScanInfoBackground.png', courseplay.path);
 	self.fieldScanInfo.bgOverlay = Overlay:new('fieldScanInfoBackground', bgPath, self.fieldScanInfo.bgX, self.fieldScanInfo.bgY, self.fieldScanInfo.fileW, self.fieldScanInfo.fileH);
-	local xPadding = 20/1920;
+	local xPadding = 20/1080 / g_screenAspectRatio; --20/1920;
 	self.fieldScanInfo.lineX  = self.fieldScanInfo.bgX + xPadding;
 	self.fieldScanInfo.line1Y = self.fieldScanInfo.bgY + 67/1080;
 	self.fieldScanInfo.line2Y = self.fieldScanInfo.bgY + 40/1080;
-	self.fieldScanInfo.loadX  = self.fieldScanInfo.bgX + 340/1920;
-	-- self.fieldScanInfo.loadY  = self.fieldScanInfo.line2Y - 0.018/4;
+	self.fieldScanInfo.loadX  = self.fieldScanInfo.bgX + 340/1080 / g_screenAspectRatio; --340/1920;
 	self.fieldScanInfo.loadY  = self.fieldScanInfo.bgY + 57/1080;
 
 	local loadingPath = Utils.getFilename('img/fieldScanInfoLoading.png', courseplay.path);
-	self.fieldScanInfo.loadOverlay = Overlay:new('fieldScanInfoLoad', loadingPath, self.fieldScanInfo.loadX, self.fieldScanInfo.loadY, 32/1920, 32/1080);
-	-- self.fieldScanInfo.loadTime = 0;
+	self.fieldScanInfo.loadOverlay = Overlay:new('fieldScanInfoLoad', loadingPath, self.fieldScanInfo.loadX, self.fieldScanInfo.loadY, 32/1080 / g_screenAspectRatio, 32/1080);
 	self.fieldScanInfo.loadRotStep = 0;
 	self.fieldScanInfo.loadRotAdd = math.rad(-360/72); --rotate 5° to the right each step
 	self.fieldScanInfo.rotationTime = 1000/72; --in ms

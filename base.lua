@@ -419,7 +419,8 @@ function courseplay:load(xmlFile)
 			pages = {};
 		};
 		mouseWheel = {
-			icon = Overlay:new("cpMouseWheelIcon", "dataS2/menu/mouseControlsHelp/mouseMMB.png", 0, 0, w32px, h32px);
+			-- icon = Overlay:new("cpMouseWheelIcon", "dataS2/menu/mouseControlsHelp/mouseMMB.png", 0, 0, w32px, h32px);
+			icon = Overlay:new("cpMouseWheelIcon", "dataS2/menu/mouseControlsHelp/mouseMMB.png", 0, 0, 32/g_screenWidth, 32/g_screenHeight);
 			render = false;
 		};
 
