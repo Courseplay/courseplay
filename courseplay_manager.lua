@@ -339,23 +339,20 @@ function courseplay_manager:getColorFromPct(pct, colorMap)
 end;
 
 
-function courseplay_manager:mouseEvent(posX, posY, isDown, isUp, button)
-	if g_currentMission.paused then
-		return;
-	end;
+function courseplay_manager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
+	if g_currentMission.paused then return; end;
 
 	local area = courseplay_manager.buttons.globalInfoTextClickArea;
 	if area == nil then
 		return;
 	end;
-	local mouseKey = button;
-	local mouseIsInClickArea = posX > area.x1 and posX < area.x2 and posY > area.y1 and posY < area.y2;
+	local mouseIsInClickArea = courseplay:mouseIsInArea(posX, posY, area.x1, area.x2, area.y1, area.y2);
 
 	--LEFT CLICK
 	if isDown and mouseKey == Input[courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION.keyName] and mouseIsInClickArea then
 		if courseplay.globalInfoText.hasContent then
 			for i,button in pairs(self.buttons.globalInfoText) do
-				if button.show and courseplay:mouseIsInButtonArea(posX, posY, button) then
+				if button.show and courseplay:mouseIsOnButton(posX, posY, button) then
 					local sourceVehicle = g_currentMission.controlledVehicle or button.parameter;
 					--print(string.format("handleMouseClickForButton(%q, button)", nameNum(sourceVehicle)));
 					courseplay:handleMouseClickForButton(sourceVehicle, button);
@@ -391,7 +388,7 @@ function courseplay_manager:mouseEvent(posX, posY, isDown, isUp, button)
 			button.isClicked = false;
 			if button.show and not button.isHidden then
 				button.isHovered = false;
-				if courseplay:mouseIsInButtonArea(posX, posY, button) then
+				if courseplay:mouseIsOnButton(posX, posY, button) then
 					button.isClicked = false;
 					button.isHovered = true;
 				end;
