@@ -26,7 +26,7 @@ function courseplay:handle_mode9(self, fill_level, allowedToDrive,dt)
 	--state 6: leave BGA
 	--state 7: wait for Trailer 10 before EmptyPoint
 	
-	local isValid = self.cp.shovelStateRot ~= nil and self.cp.shovelStateRot["2"] ~= nil and self.cp.shovelStateRot["3"] ~= nil and self.cp.shovelStateRot["4"] ~= nil and self.cp.shovelStateRot["5"] ~= nil;
+	local isValid = self.cp.shovelStateRot ~= nil and self.cp.shovelStateRot[2] ~= nil and self.cp.shovelStateRot[3] ~= nil and self.cp.shovelStateRot[4] ~= nil and self.cp.shovelStateRot[5] ~= nil;
 	if not isValid then
 		self.cp.infoText = courseplay:loc('CPAssignShovel');
 		return false
@@ -50,9 +50,9 @@ function courseplay:handle_mode9(self, fill_level, allowedToDrive,dt)
 
 	if self.cp.shovelState == 1 then
 		if self.recordnumber + 1 > self.cp.shovelFillStartPoint then
-			local hasTargetRotation = courseplay:hasTargetRotation(self, mt, secondary, self.cp.shovelStateRot["2"]);
+			local hasTargetRotation = courseplay:hasTargetRotation(self, mt, secondary, self.cp.shovelStateRot[2]);
 			if hasTargetRotation ~= nil and not hasTargetRotation then
-				courseplay:setMovingToolsRotation(self, dt, mt, secondary,  self.cp.shovelStateRot["2"]);
+				courseplay:setMovingToolsRotation(self, dt, mt, secondary,  self.cp.shovelStateRot[2]);
 			end
 			if hasTargetRotation then
 				self.cp.shovelState = 2
@@ -91,9 +91,9 @@ function courseplay:handle_mode9(self, fill_level, allowedToDrive,dt)
 					end
 				end			
 			else
-				local hasTargetRotation = courseplay:hasTargetRotation(self, mt, secondary, self.cp.shovelStateRot["3"]);
+				local hasTargetRotation = courseplay:hasTargetRotation(self, mt, secondary, self.cp.shovelStateRot[3]);
 				if hasTargetRotation ~= nil and not hasTargetRotation then
-					courseplay:setMovingToolsRotation(self, dt, mt, secondary, self.cp.shovelStateRot["3"]);
+					courseplay:setMovingToolsRotation(self, dt, mt, secondary, self.cp.shovelStateRot[3]);
 				end
 				if hasTargetRotation then
 					self.cp.shovelState = 3
@@ -108,9 +108,9 @@ function courseplay:handle_mode9(self, fill_level, allowedToDrive,dt)
 
 	elseif self.cp.shovelState == 3 then
 		if self.cp.last_recordnumber + 4 > self.cp.shovelEmptyPoint then
-			local hasTargetRotation = courseplay:hasTargetRotation(self, mt, secondary, self.cp.shovelStateRot["4"]);
+			local hasTargetRotation = courseplay:hasTargetRotation(self, mt, secondary, self.cp.shovelStateRot[4]);
 			if hasTargetRotation ~= nil and not hasTargetRotation then
-				courseplay:setMovingToolsRotation(self, dt, mt, secondary, self.cp.shovelStateRot["4"]);
+				courseplay:setMovingToolsRotation(self, dt, mt, secondary, self.cp.shovelStateRot[4]);
 			end
 			if hasTargetRotation then
 				self.cp.shovel.trailerFound = nil
@@ -153,9 +153,9 @@ function courseplay:handle_mode9(self, fill_level, allowedToDrive,dt)
 			--print("trailer/object found")
 			local unloadAllowed = self.cp.shovel.trailerFoundSupported or self.cp.shovel.objectFoundSupported
 			if unloadAllowed then
-				local hasTargetRotation = courseplay:hasTargetRotation(self, mt, secondary, self.cp.shovelStateRot["5"]);
+				local hasTargetRotation = courseplay:hasTargetRotation(self, mt, secondary, self.cp.shovelStateRot[5]);
 				if hasTargetRotation ~= nil and not hasTargetRotation then
-					courseplay:setMovingToolsRotation(self, dt, mt, secondary, self.cp.shovelStateRot["5"]);
+					courseplay:setMovingToolsRotation(self, dt, mt, secondary, self.cp.shovelStateRot[5]);
 				end
 				
 				if hasTargetRotation then
@@ -183,9 +183,9 @@ function courseplay:handle_mode9(self, fill_level, allowedToDrive,dt)
 					end
 				end
 			end
-			local hasTargetRotation = courseplay:hasTargetRotation(self, mt, secondary, self.cp.shovelStateRot["4"]);
+			local hasTargetRotation = courseplay:hasTargetRotation(self, mt, secondary, self.cp.shovelStateRot[4]);
 			if hasTargetRotation ~= nil and not hasTargetRotation then
-				courseplay:setMovingToolsRotation(self, dt, mt, secondary, self.cp.shovelStateRot["4"]);
+				courseplay:setMovingToolsRotation(self, dt, mt, secondary, self.cp.shovelStateRot[4]);
 			end
 			if hasTargetRotation and not self.Waypoints[self.recordnumber].rev then
 				self.cp.shovelState = 6
@@ -197,9 +197,9 @@ function courseplay:handle_mode9(self, fill_level, allowedToDrive,dt)
 
 	elseif self.cp.shovelState == 6 then
 		courseplay:handleSpecialTools(self,self,false,nil,nil,nil,nil,nil)
-		local hasTargetRotation = courseplay:hasTargetRotation(self, mt, secondary, self.cp.shovelStateRot["3"]);
+		local hasTargetRotation = courseplay:hasTargetRotation(self, mt, secondary, self.cp.shovelStateRot[3]);
 		if hasTargetRotation ~= nil and not hasTargetRotation then
-			courseplay:setMovingToolsRotation(self, dt, mt, secondary, self.cp.shovelStateRot["3"]);
+			courseplay:setMovingToolsRotation(self, dt, mt, secondary, self.cp.shovelStateRot[3]);
 		end
 		if self.recordnumber == 1 then
 			self.cp.shovelState = 1
@@ -263,10 +263,10 @@ function courseplay:hasTargetRotation(self, movingTools, secondary, targetRot)
 	local curRot = courseplay:getCurrentRotation(self, movingTools, secondary)
 	local curRotNum, targetRotNum = table.getn(curRot), table.getn(targetRot);
 	if curRotNum ~= targetRotNum then
-		self.cp.shovelStateRot["2"] = nil
-		self.cp.shovelStateRot["3"] = nil
-		self.cp.shovelStateRot["4"] = nil
-		self.cp.shovelStateRot["5"] = nil
+		self.cp.shovelStateRot[2] = nil
+		self.cp.shovelStateRot[3] = nil
+		self.cp.shovelStateRot[4] = nil
+		self.cp.shovelStateRot[5] = nil
 		print(nameNum(self) .. ": courseplay:hasTargetRotation() return nil")
 		return nil;
 	end;

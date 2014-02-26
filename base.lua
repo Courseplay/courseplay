@@ -129,10 +129,10 @@ function courseplay:load(xmlFile)
 	self.cp.shovelStopAndGo = false;
 	self.cp.shovelLastFillLevel = nil;
 	self.cp.hasShovelStateRot ={}
-	self.cp.hasShovelStateRot["2"] = false
-	self.cp.hasShovelStateRot["3"] = false
-	self.cp.hasShovelStateRot["4"] = false
-	self.cp.hasShovelStateRot["5"] = false
+	self.cp.hasShovelStateRot[2] = false
+	self.cp.hasShovelStateRot[3] = false
+	self.cp.hasShovelStateRot[4] = false
+	self.cp.hasShovelStateRot[5] = false
 
 	--direction arrow the last waypoint (during paused recording)
 	self.cp.directionArrowOverlay = Overlay:new('cpDistArrow_' .. tostring(self.rootNode), Utils.getFilename('img/arrow.png', courseplay.path), courseplay.hud.infoBaseCenter + 0.05, courseplay.hud.infoBasePosY + 0.11, 128/1920, 128/1080);
@@ -1210,10 +1210,10 @@ function courseplay:readStream(streamId, connection)
 	self.cp.symmetricLaneChange = streamDebugReadBool(streamId)
 	self.cp.startingCorner = streamDebugReadInt32(streamId)
 	self.cp.startingDirection = streamDebugReadInt32(streamId)
-	self.cp.hasShovelStateRot["2"] = streamDebugReadBool(streamId)
-	self.cp.hasShovelStateRot["3"] = streamDebugReadBool(streamId)
-	self.cp.hasShovelStateRot["4"] = streamDebugReadBool(streamId)
-	self.cp.hasShovelStateRot["5"] = streamDebugReadBool(streamId) 
+	self.cp.hasShovelStateRot[2] = streamDebugReadBool(streamId)
+	self.cp.hasShovelStateRot[3] = streamDebugReadBool(streamId)
+	self.cp.hasShovelStateRot[4] = streamDebugReadBool(streamId)
+	self.cp.hasShovelStateRot[5] = streamDebugReadBool(streamId) 
 	
 	local copyCourseFromDriverId = streamDebugReadInt32(streamId)
 	if copyCourseFromDriverId then
@@ -1334,10 +1334,10 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteBool(streamId,self.cp.symmetricLaneChange)
 	streamDebugWriteInt32(streamId,self.cp.startingCorner)
 	streamDebugWriteInt32(streamId,self.cp.startingDirection)
-	streamDebugWriteBool(streamId,self.cp.hasShovelStateRot["2"])
-	streamDebugWriteBool(streamId,self.cp.hasShovelStateRot["3"])
-	streamDebugWriteBool(streamId,self.cp.hasShovelStateRot["4"])
-	streamDebugWriteBool(streamId,self.cp.hasShovelStateRot["5"])
+	streamDebugWriteBool(streamId,self.cp.hasShovelStateRot[2])
+	streamDebugWriteBool(streamId,self.cp.hasShovelStateRot[3])
+	streamDebugWriteBool(streamId,self.cp.hasShovelStateRot[4])
+	streamDebugWriteBool(streamId,self.cp.hasShovelStateRot[5])
 	
 	local copyCourseFromDriverID = nil
 	if self.cp.copyCourseFromDriver ~= nil then
@@ -1439,7 +1439,8 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 			if #(shovelStates) == 4 then
 				for i=1,4 do
 					local shovelStateSplit = table.map(Utils.splitString(' ', shovelStates[i]), tonumber);
-					self.cp.shovelStateRot[tostring(i+1)] = shovelStateSplit;
+					self.cp.shovelStateRot[i+1] = shovelStateSplit;
+					self.cp.hasShovelStateRot[i+1] = self.cp.shovelStateRot[i+1] ~= nil;
 				end;
 				courseplay:debug(tableShow(self.cp.shovelStateRot, nameNum(self) .. ' shovelStateRot (after loading)', 10), 10);
 				courseplay:buttonsActiveEnabled(self, 'shovel');
@@ -1461,24 +1462,24 @@ end
 
 
 function courseplay:getSaveAttributesAndNodes(nodeIdent)
-	local attributes = "";
+	local attributes = '';
 
 	--Shovel positions
-	local shovelRotsTmp, shovelRotsAttrNodes = {}, "";
-	local hasAllShovelRots = self.cp.shovelStateRot ~= nil and self.cp.shovelStateRot["2"] ~= nil and self.cp.shovelStateRot["3"] ~= nil and self.cp.shovelStateRot["4"] ~= nil and self.cp.shovelStateRot["5"] ~= nil;
+	local shovelRotsTmp, shovelRotsAttrNodes = {}, '';
+	local hasAllShovelRots = self.cp.shovelStateRot ~= nil and self.cp.shovelStateRot[2] ~= nil and self.cp.shovelStateRot[3] ~= nil and self.cp.shovelStateRot[4] ~= nil and self.cp.shovelStateRot[5] ~= nil;
 	if hasAllShovelRots then
-		courseplay:debug(tableShow(self.cp.shovelStateRot, nameNum(self) .. " shovelStateRot (before saving)", 10), 10);
+		courseplay:debug(tableShow(self.cp.shovelStateRot, nameNum(self) .. ' shovelStateRot (before saving)', 10), 10);
 		local shovelStateRotSaveTable = {};
 		for a=1,4 do
 			shovelStateRotSaveTable[a] = {};
-			local rotTable = self.cp.shovelStateRot[tostring(a+1)];
-			for i=1,table.getn(rotTable) do
+			local rotTable = self.cp.shovelStateRot[a+1];
+			for i=1,#rotTable do
 				shovelStateRotSaveTable[a][i] = courseplay:round(rotTable[i], 4);
 			end;
-			table.insert(shovelRotsTmp, tostring(table.concat(shovelStateRotSaveTable[a], " ")));
+			table.insert(shovelRotsTmp, tostring(table.concat(shovelStateRotSaveTable[a], ' ')));
 		end;
-		if table.getn(shovelRotsTmp) > 0 then
-			shovelRotsAttrNodes = tostring(table.concat(shovelRotsTmp, ";"));
+		if #shovelRotsTmp > 0 then
+			shovelRotsAttrNodes = tostring(table.concat(shovelRotsTmp, ';'));
 			courseplay:debug(nameNum(self) .. ": shovelRotsAttrNodes=" .. shovelRotsAttrNodes, 10);
 		end;
 	end;
@@ -1488,10 +1489,10 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 
 
 	--NODES
-	local cpOpen = string.format('<courseplay aiMode="%s" courses="%s" openHudWithMouse="%s" beacon="%s" waitTime="%s">', tostring(self.cp.mode), tostring(table.concat(self.cp.loadedCourses, ",")), tostring(self.cp.hud.openWithMouse), tostring(self.cp.beaconLightsMode), tostring(self.cp.waitTime));
-	local speeds = string.format('<speeds useRecordingSpeed="%s" unload="%.5f" turn="%.5f" field="%.5f" max="%.5f" />', tostring(self.cp.speeds.useRecordingSpeed), self.cp.speeds.unload, self.cp.speeds.turn, self.cp.speeds.field, self.cp.speeds.max);
-	local combi = string.format('<combi tipperOffset="%.1f" combineOffset="%.1f" combineOffsetAutoMode=%q fillFollow="%d" fillDriveOn="%d" turnRadius="%d" realisticDriving="%s" />', self.cp.tipperOffset, self.cp.combineOffset, tostring(self.cp.combineOffsetAutoMode), self.cp.followAtFillLevel, self.cp.driveOnAtFillLevel, self.cp.turnRadius, tostring(self.cp.realisticDriving));
-	local fieldWork = string.format('<fieldWork workWidth="%.1f" ridgeMarkersAutomatic="%s" offsetData="%s" abortWork="%d" refillUntilPct="%d" />', self.cp.workWidth, tostring(self.cp.ridgeMarkersAutomatic), offsetData, Utils.getNoNil(self.cp.abortWork, 0), self.cp.refillUntilPct);
+	local cpOpen = string.format('<courseplay aiMode=%q courses=%q openHudWithMouse=%q beacon=%q waitTime=%q>', tostring(self.cp.mode), tostring(table.concat(self.cp.loadedCourses, ",")), tostring(self.cp.hud.openWithMouse), tostring(self.cp.beaconLightsMode), tostring(self.cp.waitTime));
+	local speeds = string.format('<speeds useRecordingSpeed=%q unload="%.5f" turn="%.5f" field="%.5f" max="%.5f" />', tostring(self.cp.speeds.useRecordingSpeed), self.cp.speeds.unload, self.cp.speeds.turn, self.cp.speeds.field, self.cp.speeds.max);
+	local combi = string.format('<combi tipperOffset="%.1f" combineOffset="%.1f" combineOffsetAutoMode=%q fillFollow="%d" fillDriveOn="%d" turnRadius="%d" realisticDriving=%q />', self.cp.tipperOffset, self.cp.combineOffset, tostring(self.cp.combineOffsetAutoMode), self.cp.followAtFillLevel, self.cp.driveOnAtFillLevel, self.cp.turnRadius, tostring(self.cp.realisticDriving));
+	local fieldWork = string.format('<fieldWork workWidth="%.1f" ridgeMarkersAutomatic=%q offsetData=%q abortWork="%d" refillUntilPct="%d" />', self.cp.workWidth, tostring(self.cp.ridgeMarkersAutomatic), offsetData, Utils.getNoNil(self.cp.abortWork, 0), self.cp.refillUntilPct);
 	local shovels, combine = "", "";
 	if hasAllShovelRots then
 		shovels = string.format('<shovel rots=%q />', shovelRotsAttrNodes);

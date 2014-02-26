@@ -358,7 +358,7 @@ function courseplay:buttonsActiveEnabled(self, section)
 	elseif self.cp.hud.currentPage == 9 and (section == nil or section == "all" or section == "shovel") then
 		for _,button in pairs(self.cp.buttons["9"]) do
 			if button.function_to_call == "saveShovelStatus" then --isToggleButton
-				button.isActive = self.cp.shovelStateRot[tostring(button.parameter)] ~= nil;
+				button.isActive = self.cp.shovelStateRot[button.parameter] ~= nil;
 				button.canBeClicked = true;
 			end;
 		end;
@@ -1071,44 +1071,43 @@ function courseplay:validateCanSwitchMode(vehicle)
 	courseplay:debug(string.format("%s: validateCanSwitchMode(): drive=%s, record=%s, record_pause=%s, customField.isCreated=%s ==> canSwitchMode=%s", nameNum(vehicle), tostring(vehicle.drive), tostring(vehicle.cp.isRecording), tostring(vehicle.cp.recordingIsPaused), tostring(vehicle.cp.fieldEdge.customField.isCreated), tostring(vehicle.cp.canSwitchMode)), 12);
 end;
 
-function courseplay:saveShovelStatus(self, stage)
-	if stage == nil then
-		return;
-	end;
-
-	local mt, secondary = courseplay:getMovingTools(self)
+function courseplay:saveShovelStatus(vehicle, stage)
+	if stage == nil then return; end;
 
 	if stage >= 2 and stage <= 5 then
-		self.cp.shovelStateRot[tostring(stage)] = courseplay:getCurrentRotation(self, mt, secondary);
-		if self.cp.shovelStateRot[tostring(stage)] ~= nil then
-			self.cp.hasShovelStateRot[tostring(stage)] = true
+		if vehicle.cp.shovelStateRot[stage] ~= nil then
+			vehicle.cp.shovelStateRot[stage] = nil;
+			vehicle.cp.hasShovelStateRot[stage] = false;
 		else
-			self.cp.hasShovelStateRot[tostring(stage)] = false
-		end
+			local mt, secondary = courseplay:getMovingTools(vehicle);
+			vehicle.cp.shovelStateRot[stage] = courseplay:getCurrentRotation(vehicle, mt, secondary);
+			vehicle.cp.hasShovelStateRot[stage] = vehicle.cp.shovelStateRot[stage] ~= nil;
+		end;
+
 	end;
-	courseplay:buttonsActiveEnabled(self, "shovel");
+	courseplay:buttonsActiveEnabled(vehicle, 'shovel');
 end;
 
-function courseplay:setShovelStopAndGo(self)
-	self.cp.shovelStopAndGo = not self.cp.shovelStopAndGo;
+function courseplay:setShovelStopAndGo(vehicle)
+	vehicle.cp.shovelStopAndGo = not vehicle.cp.shovelStopAndGo;
 end;
 
-function courseplay:setStartAtFirstPoint(self)
-	self.cp.startAtFirstPoint = not self.cp.startAtFirstPoint;
+function courseplay:setStartAtFirstPoint(vehicle)
+	vehicle.cp.startAtFirstPoint = not vehicle.cp.startAtFirstPoint;
 end;
 
-function courseplay:reloadCoursesFromXML(self)
+function courseplay:reloadCoursesFromXML(vehicle)
 	courseplay:debug("reloadCoursesFromXML()", 8);
 	if g_server ~= nil then
 		courseplay_manager:load_courses();
 		courseplay:debug(tableShow(g_currentMission.cp_courses, "g_cM cp_courses", 8), 8);
 		courseplay:debug("g_currentMission.cp_courses = courseplay_manager:load_courses()", 8);
-		if not self.drive then
-			local loadedCoursesBackup = self.cp.loadedCourses;
-			courseplay:reset_course(self);
-			self.cp.loadedCourses = loadedCoursesBackup;
-			courseplay:reload_courses(self, true);
-			courseplay:debug("courseplay:reload_courses(self, true)", 8);
+		if not vehicle.drive then
+			local loadedCoursesBackup = vehicle.cp.loadedCourses;
+			courseplay:reset_course(vehicle);
+			vehicle.cp.loadedCourses = loadedCoursesBackup;
+			courseplay:reload_courses(vehicle, true);
+			courseplay:debug("courseplay:reload_courses(vehicle, true)", 8);
 		end;
 		courseplay.settings.update_folders()
 		courseplay.settings.setReloadCourseItems()
