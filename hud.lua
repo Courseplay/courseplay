@@ -131,16 +131,18 @@ function courseplay:renderHud(vehicle)
 
 
 	--MAIN CONTENT
-	courseplay:setFontSettings("white", false);
+	courseplay:setFontSettings('white', false);
 	local page = vehicle.cp.hud.currentPage;
 	for line,columns in pairs(vehicle.cp.hud.content.pages[page]) do
 		for column,entry in pairs(columns) do
-			if column == 1 and entry.text ~= nil and entry.text ~= "" then
-				if entry.isHovered then
-					courseplay:setFontSettings("hover", false);
+			if column == 1 and entry.text ~= nil and entry.text ~= '' then
+				if entry.isClicked then
+					courseplay:setFontSettings('activeRed', false);
+				elseif entry.isHovered then
+					courseplay:setFontSettings('hover', false);
 				end;
 				renderText(courseplay.hud.infoBasePosX + 0.005 + entry.indention, courseplay.hud.linesPosY[line], 0.019, entry.text);
-				courseplay:setFontSettings("white", false);
+				courseplay:setFontSettings('white', false);
 			elseif column == 2 and entry.text ~= nil and entry.text ~= "" then
 				renderText(vehicle.cp.hud.content.pages[page][line][2].posX, courseplay.hud.linesPosY[line], 0.017, entry.text);
 			end;

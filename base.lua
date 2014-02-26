@@ -438,7 +438,7 @@ function courseplay:load(xmlFile)
 		self.cp.hud.content.pages[page] = {};
 		for line=1,courseplay.hud.numLines do
 			self.cp.hud.content.pages[page][line] = {
-				{ text = nil, isHovered = false, indention = 0 },
+				{ text = nil, isClicked = false, isHovered = false, indention = 0 },
 				{ text = nil, posX = courseplay.hud.col2posX[page] }
 			};
 			if courseplay.hud.col2posXforce[page] ~= nil and courseplay.hud.col2posXforce[page][line] ~= nil then

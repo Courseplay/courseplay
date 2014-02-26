@@ -1,8 +1,6 @@
-function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
-	local mouseKey = button;
-
+function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 	--RIGHT CLICK
-	if isDown and mouseKey == Input[courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION_SECONDARY.keyName] and self.isEntered then
+	if isDown and mouseButton == courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION_SECONDARY.buttonId and self.isEntered then
 		if self.cp.hud.show then
 			courseplay:setMouseCursor(self, not self.cp.mouseCursorActive);
 		elseif not self.cp.hud.show and self.cp.hud.openWithMouse then
@@ -12,50 +10,60 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 	end;
 
 	local hudGfx = courseplay.hud.visibleArea;
-	local mouseIsInHudArea = self.cp.mouseCursorActive and posX > hudGfx.x1 and posX < hudGfx.x2 and posY > hudGfx.y1 and posY < hudGfx.y2;
+	local mouseIsInHudArea = self.cp.mouseCursorActive and courseplay:mouseIsInArea(posX, posY, hudGfx.x1, hudGfx.x2, hudGfx.y1, hudGfx.y2);
+	-- posX > hudGfx.x1 and posX < hudGfx.x2 and posY > hudGfx.y1 and posY < hudGfx.y2;
+
+	if not mouseIsInHudArea then return; end;
 
 	--LEFT CLICK
-	if isDown and mouseKey == Input[courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION.keyName] and self.cp.mouseCursorActive and self.cp.hud.show and self.isEntered and mouseIsInHudArea then
-		local continueSearchingButton = true;
+	if (isDown or isUp) and mouseButton == courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION.buttonId and self.cp.mouseCursorActive and self.cp.hud.show and self.isEntered and mouseIsInHudArea then
+		local buttonToHandle;
 		for _,button in pairs(self.cp.buttons.global) do
-			if button.show and courseplay:mouseIsInButtonArea(posX, posY, button) then
-				continueSearchingButton = false;
-				courseplay:handleMouseClickForButton(self, button);
+			if button.show and courseplay:mouseIsOnButton(posX, posY, button) then
+				buttonToHandle = button;
 				break;
 			end;
 		end;
 
-		if continueSearchingButton then
+		if buttonToHandle == nil then
 			for _,button in pairs(self.cp.buttons[tostring(self.cp.hud.currentPage)]) do
-				if button.canBeClicked and button.show and courseplay:mouseIsInButtonArea(posX, posY, button) then
-					continueSearchingButton = false;
-					courseplay:handleMouseClickForButton(self, button);
+				if button.canBeClicked and button.show and courseplay:mouseIsOnButton(posX, posY, button) then
+					buttonToHandle = button;
 					break;
 				end;
 			end;
 		end;
 
-		if continueSearchingButton then
+		if buttonToHandle == nil then
 			if self.cp.hud.currentPage == 2 then
 				for _,button in pairs(self.cp.buttons["-2"]) do
-					if button.show and courseplay:mouseIsInButtonArea(posX, posY, button) then
-						courseplay:handleMouseClickForButton(self, button);
+					if button.show and courseplay:mouseIsOnButton(posX, posY, button) then
+						buttonToHandle = button;
 						break;
 					end;
 				end;
 			end;
 		end;
 
+		if buttonToHandle then
+			buttonToHandle.isClicked = isDown;
+			if buttonToHandle.hoverText then
+				self.cp.hud.content.pages[buttonToHandle.page][buttonToHandle.row][1].isClicked = isDown;
+			end;
+			if isUp then
+				courseplay:handleMouseClickForButton(self, buttonToHandle);
+			end;
+		end;
+
+
+
 	--HOVER
 	elseif self.cp.mouseCursorActive and not isDown and self.cp.hud.show and self.isEntered then
 		for _,button in pairs(self.cp.buttons.global) do
 			button.isClicked = false;
 			if button.show and not button.isHidden then
-				button.isHovered = false;
-				if courseplay:mouseIsInButtonArea(posX, posY, button) then
-					button.isClicked = false;
-					button.isHovered = true;
-				end;
+				button.isClicked = false;
+				button.isHovered = courseplay:mouseIsOnButton(posX, posY, button);
 			end;
 		end;
 
@@ -63,14 +71,13 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 		for _,button in pairs(self.cp.buttons[tostring(self.cp.hud.currentPage)]) do
 			button.isClicked = false;
 			if button.show and not button.isHidden then
-				button.isHovered = false;
-				if courseplay:mouseIsInButtonArea(posX, posY, button) then
-					button.isHovered = true;
+				button.isHovered = courseplay:mouseIsOnButton(posX, posY, button);
+				if button.isHovered then
 
 					if button.isMouseWheelArea and (button.canScrollUp or button.canScrollDown) then
 						--Mouse wheel icon
 						self.cp.hud.mouseWheel.render = true;
-						self.cp.hud.mouseWheel.icon:setPosition(posX + 3/1920, posY - 16/1080);
+						self.cp.hud.mouseWheel.icon:setPosition(posX + 3/g_screenWidth, posY - 16/g_screenHeight);
 
 						--action
 						local parameter = button.parameter;
@@ -102,7 +109,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 				button.isClicked = false;
 				if button.show and not button.isHidden then
 					button.isHovered = false;
-					if courseplay:mouseIsInButtonArea(posX, posY, button) then
+					if courseplay:mouseIsOnButton(posX, posY, button) then
 						button.isClicked = false;
 						button.isHovered = true;
 					end;
@@ -116,8 +123,13 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, button)
 	end;
 end; --END mouseEvent()
 
-function courseplay:mouseIsInButtonArea(x, y, button)
-	return x > button.x and x < button.x2 and y > button.y and y < button.y2;
+function courseplay:mouseIsInArea(mouseX, mouseY, areaX1, areaX2, areaY1, areaY2)
+	return mouseX >= areaX1 and mouseX <= areaX2 and mouseY >= areaY1 and mouseY <= areaY2;
+end;
+
+function courseplay:mouseIsOnButton(mouseX, mouseY, button)
+	-- return mouseX > button.x and mouseX < button.x2 and mouseY > button.y and mouseY < button.y2;
+	return courseplay:mouseIsInArea(mouseX, mouseY, button.x, button.x2, button.y, button.y2);
 end;
 
 function courseplay:handleMouseClickForButton(self, button)
@@ -132,7 +144,7 @@ function courseplay:handleMouseClickForButton(self, button)
 			return;
 		end;
 
-		button.isClicked = true;
+		-- button.isClicked = true;
 		if button.function_to_call == "showSaveCourseForm" then
 			self.cp.imWriting = true
 		end
@@ -141,7 +153,7 @@ function courseplay:handleMouseClickForButton(self, button)
 		else
 			self:setCourseplayFunc(button.function_to_call, parameter, false, button.page);
 		end	
-		button.isClicked = false;
+		-- button.isClicked = false;
 	end;
 end;
 
