@@ -144,7 +144,6 @@ function courseplay_manager:registerButton(section, fn, prm, img, x, y, w, h)
 		y_init = y,
 		y = y,
 		y2 = (y + h),
-		color = courseplay.hud.colors.white,
 		canBeClicked = fn ~= nil,
 		show = true,
 		isClicked = false,
@@ -233,21 +232,30 @@ function courseplay_manager:draw()
 
 				local button = self.buttons.globalInfoText[line];
 				if button ~= nil then
+					local currentColor = button.overlay.curColor;
+					local targetColor = currentColor;
+
 					button.canBeClicked = true;
 					button.isDisabled = data.vehicle.isBroken or data.vehicle.isControlled;
 					button.parameter = data.vehicle;
 					if g_currentMission.controlledVehicle == data.vehicle then
-						courseplay:setButtonColor(button, courseplay.hud.colors.activeGreen);
+						targetColor = 'activeGreen';
 						button.canBeClicked = false;
 					elseif button.isDisabled then
-						courseplay:setButtonColor(button, courseplay.hud.colors.whiteDisabled);
+						targetColor = 'whiteDisabled';
 					elseif button.isHovered then
-						courseplay:setButtonColor(button, courseplay.hud.colors.hover);
+						targetColor = 'hover';
 					elseif button.isClicked then
-						courseplay:setButtonColor(button, courseplay.hud.colors.activeRed);
+						targetColor = 'activeRed';
 					else
-						courseplay:setButtonColor(button, button.color);
+						targetColor = 'white';
 					end;
+
+					-- set color
+					if currentColor ~= targetColor then
+						courseplay:setButtonColor(button, targetColor)
+					end;
+
 					button.overlay:render();
 				end;
 
