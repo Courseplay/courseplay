@@ -12,6 +12,10 @@ function courseplay.fields:setUpFieldsIngameData()
 	self:dbg("call setUpIngameData()", 'scan');
 	self.fieldChannels = { g_currentMission.cultivatorChannel, g_currentMission.ploughChannel, g_currentMission.sowingChannel, g_currentMission.sowingWidthChannel };
 	self.lastChannel = g_currentMission.cultivatorChannel;
+
+	self.seedUsageCalculator.fruitTypes = self:getFruitTypes();
+	self:setCustomFieldsSeedData();
+
 	self.ingameDataSetUp = true;
 end;
 
@@ -35,19 +39,23 @@ function courseplay.fields:setAllFieldEdges()
 	if fieldDef ~= nil then
 		if not self.onlyScanOwnedFields or (self.onlyScanOwnedFields and fieldDef.ownedByPlayer) then
 			local fieldNum = fieldDef.fieldNumber;
-			local initObject = fieldDef.fieldMapIndicator;
-			local x,_,z = getWorldTranslation(initObject);
-			if fieldNum and initObject and x and z then
-				local isField = courseplay:isField(x, z, 0.1, 0.1);
+			if self.fieldData[fieldNum] == nil then
+				local initObject = fieldDef.fieldMapIndicator;
+				local x,_,z = getWorldTranslation(initObject);
+				if fieldNum and initObject and x and z then
+					local isField = courseplay:isField(x, z, 0.1, 0.1);
 
-				self:dbg(string.format("fieldDef %d (fieldNum=%d): x,z=%.1f,%.1f, isField=%s", self.curFieldScanIndex, fieldNum, x, z, tostring(isField)), 'scan');
-				if isField then
-					self:setSingleFieldEdgePath(initObject, x, z, self.scanStep, maxN, numDirectionTries, fieldNum, false, 'scan');
+					self:dbg(string.format("fieldDef %d (fieldNum=%d): x,z=%.1f,%.1f, isField=%s", self.curFieldScanIndex, fieldNum, x, z, tostring(isField)), 'scan');
+					if isField then
+						self:setSingleFieldEdgePath(initObject, x, z, self.scanStep, maxN, numDirectionTries, fieldNum, false, 'scan');
+					end;
+
+					self.numAvailableFields = table.maxn(courseplay.fields.fieldData);
+				else
+					self:dbg(string.format('fieldDef %s: fieldNum=%s, initObject=%s, x,z=%s,%s -> cancel', tostring(self.curFieldScanIndex), tostring(fieldNum), tostring(initObject), tostring(x), tostring(z)), 'scan');
 				end;
-
-				self.numAvailableFields = table.maxn(self.fieldData);
 			else
-				self:dbg(string.format('fieldDef %s: fieldNum=%s, initObject=%s, x,z=%s,%s -> cancel', tostring(self.curFieldScanIndex), tostring(fieldNum), tostring(initObject), tostring(x), tostring(z)), 'scan');
+				self:dbg(string.format('fieldDef %s: fieldNum=%s, fieldData already exists (custom field) -> cancel', tostring(self.curFieldScanIndex), tostring(fieldNum)), 'scan');
 			end;
 		else
 			self:dbg(string.format('fieldDef %s: onlyScanOwnedFields=%s, fieldDef.ownedByPlayer=%s -> skip field', tostring(self.curFieldScanIndex), tostring(self.onlyScanOwnedFields), tostring(fieldDef.ownedByPlayer)), 'scan');
@@ -251,7 +259,8 @@ function courseplay.fields:setSingleFieldEdgePath(initObject, initX, initZ, scan
 			if numEdgePoints >= 30 then
 				self:dbg(string.format("\ttry %d: %d edge points found", try, numEdgePoints), dbgType);
 
-				if courseplay:pointInPolygon_v2(edgePoints, xValues, zValues, initX, initZ) then
+				local area, centerInPoly, dimensions = self:getPolygonData(edgePoints, initX, initZ, true);
+				if centerInPoly then
 					self:dbg('\t\tinitObject is in poly --> valid, no retry', dbgType);
 
 					if returnPoints then
@@ -264,14 +273,17 @@ function courseplay.fields:setSingleFieldEdgePath(initObject, initX, initZ, scan
 								fieldNum = fieldNum;
 								points = edgePoints;
 								numPoints = #edgePoints;
-								dimensions = {
-									minX = math.min(unpack(xValues));
-									maxX = math.max(unpack(xValues));
-									minZ = math.min(unpack(zValues));
-									maxZ = math.max(unpack(zValues));
-								};
-								name = string.format("%s %d", courseplay:loc('COURSEPLAY_FIELD'), fieldNum);
+								areaSqm = area;
+								areaHa = area / 10000;
+								dimensions = dimensions;
+								name = string.format('%s %d', courseplay:loc('COURSEPLAY_FIELD'), fieldNum);
 							};
+
+							self.fieldData[fieldNum].fieldAreaText = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR_FIELD'):format(fieldNum, self:formatNumber(self.fieldData[fieldNum].areaHa, 2), g_i18n:getText('area_unit_short'));
+							self.fieldData[fieldNum].seedUsage, self.fieldData[fieldNum].seedPrice, self.fieldData[fieldNum].seedDataText = self:getFruitData(area);
+
+							self.numAvailableFields = table.maxn(courseplay.fields.fieldData);
+
 							self:dbg(string.format('\t\tcourseplay.fields.fieldData[%d] == nil => set as .fieldData[%d], break', fieldNum, fieldNum), dbgType);
 						else
 							self:dbg(string.format('\t\tcourseplay.fields.fieldData[%d] ~= nil => ignore scan, break', fieldNum), dbgType);
@@ -291,6 +303,135 @@ function courseplay.fields:setSingleFieldEdgePath(initObject, initX, initZ, scan
 	if returnPoints then
 		return nil;
 	end;
+end;
+
+courseplay.fields.getPointDirection = courseplay.generation.getPointDirection;
+
+function courseplay.fields:getPolygonData(poly, px, pz, useC, skipArea, skipDimensions)
+	-- This function gets a polygon's area, a boolean if x,z is inside the polygon, the poly's dimensions and the poly's direction (clockwise vs. counter-clockwise).
+	-- Since all of those queries require a for loop through the polygon's vertices, it is better to combine them into once big query.
+
+	if useC == nil then useC = true; end;
+	local x,z = useC and 'cx' or 'x', useC and 'cz' or 'z';
+	local numPoints = #poly;
+	local cp,np,pp;
+	local fp = poly[1];
+
+	-- POINT IN POLYGON (Jordan method) -- @src: http://de.wikipedia.org/wiki/Punkt-in-Polygon-Test_nach_Jordan
+	-- returns:
+	--	 1	point is inside of poly
+	--	-1	point is outside of poly
+	--	 0	point is directly on poly
+	local getPointInPoly = px ~= nil and pz ~= nil;
+	local pointInPoly = -1;
+	local point = { [x] = px, [z] = pz };
+
+	-- AREA -- @src: https://gist.github.com/listochkin/1200393
+	-- area will be twice the signed area of the polygon. If the poly is counter-clockwise, the area will be positive. If clockwise, the area will be negative.
+	-- returns: real area (|area| / 2)
+	local area = 0;
+
+	-- DIMENSIONS
+	local dimensions = {
+		minX =  999999,
+		maxX = -999999,
+		minZ =  999999,
+		maxZ = -999999
+	};
+
+	--[[
+	-- DIRECTION
+	-- offset test points
+	local dirX,dirZ = self:getPointDirection(poly[1], poly[2], useC);
+	local offsetRight = {
+		[x] = poly[2][x] - dirZ,
+		[z] = poly[2][z] + dirX,
+		isInPoly = false
+	};
+	local offsetLeft = {
+		[x] = poly[2][x] + dirZ,
+		[z] = poly[2][z] - dirX,
+		isInPoly = false
+	};
+	-- clockwise vs counterclockwise variables
+	local dirArea, dirSuccess, dirTries = 0, false, 1;
+	]]
+
+	-- ############################################################
+
+	for i=1, numPoints do
+		cp = poly[i];
+		np = i < numPoints and poly[i+1] or poly[1];
+		pp = i > 1 and poly[i-1] or poly[numPoints];
+
+		-- point in polygon
+		if getPointInPoly and pointInPoly ~= 0 then
+			pointInPoly = pointInPoly * courseplay.utils:crossProductQuery(point, cp, np, useC);
+		end;
+
+		-- area
+		if not skipArea then
+			area = area + cp[x] * np[z];
+			area = area - cp[z] * np[x];
+		end;
+
+		-- dimensions
+		if not skipDimensions then
+			if cp[x] < dimensions.minX then dimensions.minX = cp[x]; end;
+			if cp[x] > dimensions.maxX then dimensions.maxX = cp[x]; end;
+			if cp[z] < dimensions.minZ then dimensions.minZ = cp[z]; end;
+			if cp[z] > dimensions.maxZ then dimensions.maxZ = cp[z]; end;
+		end;
+
+		--[[
+		-- direction
+		if i < numPoints then
+			local pointStart = {
+				[x] = cp[x] - fp[x];
+				[z] = cp[z] - fp[z];
+			};
+			local pointEnd = {
+				[x] = np[x] - fp[x];
+				[z] = np[z] - fp[z];
+			};
+			dirArea = dirArea + (pointStart[x] * -pointEnd[z]) - (pointEnd[x] * -pointStart[z]);
+		end;
+
+		-- offset right point in poly
+		if ((cp[z] > offsetRight[z]) ~= (pp[z] > offsetRight[z])) and (offsetRight[x] < (pp[x] - cp[x]) * (offsetRight[z] - cp[z]) / (pp[z] - cp[z]) + cp[x]) then
+			offsetRight.isInPoly = not offsetRight.isInPoly;
+		end;
+
+		-- offset left point in poly
+		if ((cp[z] > offsetLeft[z])  ~= (pp[z] > offsetLeft[z]))  and (offsetLeft[x]  < (pp[x] - cp[x]) * (offsetLeft[z]  - cp[z]) / (pp[z] - cp[z]) + cp[x]) then
+			offsetLeft.isInPoly = not offsetLeft.isInPoly;
+		end;
+		]]
+	end;
+
+	if getPointInPoly then
+		pointInPoly = pointInPoly ~= -1;
+	else
+		pointInPoly = nil;
+	end;
+
+	if not skipDimensions then
+		dimensions.width  = dimensions.maxX - dimensions.minX;
+		dimensions.height = dimensions.maxZ - dimensions.minZ;
+	else
+		dimensions = nil;
+	end;
+
+	local isClockwise;
+	if not skipArea then
+		area = math.abs(area) / 2;
+		isClockwise = area < 0;
+	else
+		area = nil;
+		isClockwise = nil;
+	end;
+
+	return area, pointInPoly, dimensions, isClockwise;
 end;
 
 function courseplay.fields.buyField(self, fieldDef, isOwned) -- scan field when it's bought
@@ -378,6 +519,10 @@ function courseplay.fields:loadAllCustomFields()
 						local fieldData = {
 							fieldNum = fieldNum;
 							points = {};
+							areaSqm = 0;
+							areaHa = 0;
+							seedUsage = {};
+							seedPrice = {};
 							numPoints = numPoints;
 							name = string.format("%s %d (%s)", courseplay:loc('COURSEPLAY_FIELD'), fieldNum, courseplay:loc('COURSEPLAY_USER'));
 							isCustom = true;
@@ -391,11 +536,21 @@ function courseplay.fields:loadAllCustomFields()
 								end;
 							end;
 						end;
+						local area, _, dimensions = self:getPolygonData(fieldData.points, nil, nil, true);
+						fieldData.areaSqm = area;
+						fieldData.areaHa = area / 10000;
+						fieldData.fieldAreaText = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR_FIELD'):format(fieldNum, self:formatNumber(fieldData.areaHa, 2), g_i18n:getText('area_unit_short'));
+						fieldData.dimensions = dimensions;
+
+
 						self.fieldData[fieldNum] = fieldData;
 						if self.debugCustomLoadedFields then
 							self:dbg(tableShow(fieldData, 'fieldData[' .. fieldNum .. ']'), 'customLoad');
 						end;
-						self.numAvailableFields = table.maxn(self.fieldData);
+
+						self.numAvailableFields = table.maxn(courseplay.fields.fieldData);
+
+						table.insert(self.seedUsageCalculator.fieldsWithoutSeedData, fieldNum);
 					end;
 					i = i + 1;
 				end;
@@ -408,4 +563,98 @@ function courseplay.fields:dbg(str, debugType)
 	if (debugType == 'scan' and self.debugScannedFields) or (debugType == 'customLoad' and self.debugCustomLoadedFields) then
 		print(tostring(str));
 	end;
+end;
+
+-- SeedUsageCalculator functions
+function courseplay.fields:getFruitTypes()
+	--GET FRUITTYPES
+	local fruitTypes = {};
+	local hudW = g_currentMission.hudTipperOverlay.width  * 1.25;
+	local hudH = g_currentMission.hudTipperOverlay.height * 1.25;
+	local hudX = courseplay.hud.infoBasePosX - 10/1920 + 93/1920 + 449/1920 - hudW;
+	local hudY = courseplay.hud.infoBasePosY - 10/1920 + 335/1080;
+	for name,fruitType in pairs(FruitUtil.fruitTypes) do
+		if fruitType.allowsSeeding then
+			local fillType = FruitUtil.fruitTypeToFillType[fruitType.index];
+			local fillTypeDesc = Fillable.fillTypeIndexToDesc[ fillType ];
+			local fruitData = {
+				index = fruitType.index,
+				name = fruitType.name,
+				nameI18N = fillTypeDesc.nameI18N,
+				sucText = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE'):format(fillTypeDesc.nameI18N)
+			};
+
+			local hudOverlayFilename = g_currentMission.fillTypeOverlays[fillType].filename;
+			if hudOverlayFilename and hudOverlayFilename ~= '' then
+				local hudOverlayPath = hudOverlayFilename;
+				fruitData.overlay = Overlay:new(('suc_fruit_%s'):format(fruitType.name), hudOverlayPath, hudX, hudY, hudW, hudH);
+				fruitData.overlay:setColor(1, 1, 1, 0.25);
+				-- print(('SUC fruitType %s: hudPath=%q, overlay=%s'):format(fruitType.name, tostring(hudOverlayPath), tostring(fruitData.overlay)));
+			end;
+
+			fruitData.usagePerSqmDefault = fruitType.seedUsagePerSqm;
+			fruitData.pricePerLiterDefault = fillTypeDesc.pricePerLiter;
+			if courseplay.moreRealisticInstalled then
+				local _,seedPrice,seedUsage,_ = RealisticUtils.getFruitInfosV2(fruitType.name);
+				fruitData.usagePerSqmMoreRealistic = seedUsage;
+				fruitData.pricePerLiterMoreRealistic = seedPrice;
+			end;
+
+			table.insert(fruitTypes, fruitData);
+		end;
+	end;
+	self.seedUsageCalculator.numFruits = #fruitTypes;
+	table.sort(fruitTypes, function(a,b) return a.nameI18N:lower() < b.nameI18N:lower() end);
+	self.seedUsageCalculator.enabled = self.seedUsageCalculator.numFruits > 0;
+	return fruitTypes;
+end;
+
+function courseplay.fields:getFruitData(area)
+	local usage, price, text = {}, {}, {};
+
+	for i,fruitData in ipairs(self.seedUsageCalculator.fruitTypes) do
+		local name = fruitData.name;
+		usage[name] = {};
+		price[name] = {};
+		text[name] = {};
+
+		usage[name].default = fruitData.usagePerSqmDefault * area;
+		price[name].default = fruitData.pricePerLiterDefault * usage[name].default;
+		text[name].default = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR_USAGE_DEFAULT'):format(self:formatNumber(usage[name].default, 0), g_i18n:getText('fluid_unit_short'), self:formatNumber(price[name].default, 0, true));
+
+		if courseplay.moreRealisticInstalled then
+			usage[name].moreRealistic = fruitData.usagePerSqmMoreRealistic * area;
+			price[name].moreRealistic = fruitData.pricePerLiterMoreRealistic * usage[name].moreRealistic;
+			text[name].moreRealistic = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR_USAGE_MOREREALISTIC'):format(self:formatNumber(usage[name].moreRealistic, 0), g_i18n:getText('fluid_unit_short'), self:formatNumber(price[name].moreRealistic, 0, true));
+		end;
+	end;
+
+	return usage, price, text;
+end;
+
+function courseplay.fields:setCustomFieldsSeedData()
+	for i,fieldNum in ipairs(self.seedUsageCalculator.fieldsWithoutSeedData) do
+		self.fieldData[fieldNum].seedUsage, self.fieldData[fieldNum].seedPrice, self.fieldData[fieldNum].seedDataText = self:getFruitData(self.fieldData[fieldNum].areaSqm);
+	end;
+	self.seedUsageCalculator.fieldsWithoutSeedData = {};
+end;
+
+local saveFillTypeHudPath = function(self, fillType, filename)
+	self.fillTypeOverlays[fillType].filename = filename;
+	-- print(('addFillTypeOverlay(%s, %s) - self.fillTypeOverlays[fillType].filename=%q'):format(tostring(fillType), tostring(filename), tostring(self.fillTypeOverlays[fillType].filename)));
+end;
+FSBaseMission.addFillTypeOverlay = Utils.appendedFunction(FSBaseMission.addFillTypeOverlay, saveFillTypeHudPath);
+
+function courseplay.fields:formatNumber(number, precision, money)
+	precision = precision or 0;
+
+	local firstDigit, rest, decimal = ('%1.' .. precision .. 'f'):format(number):match('^([^%d]*%d)(%d*).?(%d*)');
+	local str = firstDigit .. rest:reverse():gsub('(%d%d%d)', '%1' .. courseplay.numberSeparator):reverse();
+	if decimal:len() > 0 then
+		str = ('%s%s%s'):format(str, courseplay.numberDecimalSeparator, decimal:sub(1, precision));
+	end;
+	if money then
+		str = ('%s %s'):format(str, g_i18n:getText('Currency_symbol'));
+	end;
+	return str;
 end;

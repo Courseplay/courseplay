@@ -91,7 +91,15 @@ end; --END setHudContent()
 
 
 function courseplay:renderHud(vehicle)
-	vehicle.cp.hud.background:render();
+	if vehicle.cp.suc.active then
+		vehicle.cp.hud.backgroundSuc:render();
+		if vehicle.cp.suc.selectedFruit.overlay then
+			vehicle.cp.suc.selectedFruit.overlay:render();
+		end;
+	else
+		vehicle.cp.hud.background:render();
+	end;
+
 
 	--BUTTONS
 	courseplay:renderButtons(vehicle, vehicle.cp.hud.currentPage);
@@ -146,6 +154,26 @@ function courseplay:renderHud(vehicle)
 			elseif column == 2 and entry.text ~= nil and entry.text ~= "" then
 				renderText(vehicle.cp.hud.content.pages[page][line][2].posX, courseplay.hud.linesPosY[line], 0.017, entry.text);
 			end;
+		end;
+	end;
+
+	-- SEED USAGE CALCULATOR
+	if vehicle.cp.suc.active then
+		local x = vehicle.cp.suc.textMinX;
+		local selectedField = courseplay.fields.fieldData[ vehicle.cp.fieldEdge.selectedField.fieldNum ];
+		local selectedFruit = vehicle.cp.suc.selectedFruit;
+		courseplay:setFontSettings('shadow', true);
+		renderText(x, vehicle.cp.suc.lines.title.posY - 0.001, vehicle.cp.suc.lines.title.fontSize, vehicle.cp.suc.lines.title.text);
+		courseplay:setFontSettings('white', true);
+		renderText(x, vehicle.cp.suc.lines.title.posY        , vehicle.cp.suc.lines.title.fontSize, vehicle.cp.suc.lines.title.text);
+
+		courseplay:setFontSettings('white', false);
+		renderText(x, vehicle.cp.suc.lines.field.posY, vehicle.cp.suc.lines.field.fontSize, selectedField.fieldAreaText);
+		renderText(x, vehicle.cp.suc.lines.fruit.posY, vehicle.cp.suc.lines.fruit.fontSize, selectedFruit.sucText);
+
+		renderText(x, vehicle.cp.suc.lines.resultDefault.posY, vehicle.cp.suc.lines.resultDefault.fontSize, selectedField.seedDataText[selectedFruit.name].default);
+		if courseplay.moreRealisticInstalled then
+			renderText(x, vehicle.cp.suc.lines.resultMoreRealistic.posY, vehicle.cp.suc.lines.resultMoreRealistic.fontSize, selectedField.seedDataText[selectedFruit.name].moreRealistic);
 		end;
 	end;
 end;

@@ -1,14 +1,11 @@
 --[[
 @title:     Course Generation for Courseplay
 @authors:   Jakob Tischler
-@version:   0.7
+@version:   0.71
 @date:      09 Feb 2013
-@updated:   14 Jan 2014
+@updated:   27 Feb 2014
 
 @copyright: No reproduction, usage or copying without the explicit permission by the author allowed.
-
-TODO:
-1) pointInPoly too inaccurate with points too close at poly edge
 ]]
 
 function courseplay:generateCourse(vehicle)
@@ -402,14 +399,7 @@ function courseplay:generateCourse(vehicle)
 	--------------------------------------------------------------------
 	courseplay:debug('(3) DIMENSIONS, ALL PATH POINTS', 7);
 
-	--reset x/z values and get field dimensions
-	poly.xValues, poly.zValues = {}, {};
-	for i,cp in pairs(poly.points) do
-		-- courseplay:debug(string.format('generateCourse(%i): x/zValues (%d): add cp.cx [%.1f] to xValues, add cp.cz [%.1f] to zValues', debug.getinfo(1).currentline, i, cp.cx, cp.cz), 7);
-		table.insert(poly.xValues, cp.cx);
-		table.insert(poly.zValues, cp.cz);
-	end;
-	local dimensions = self:getPolyDimensions(poly.xValues, poly.zValues);
+	local _, _, dimensions = courseplay.fields:getPolygonData(poly.points, nil, nil, true, true);
 	courseplay:debug(string.format('minX=%s, maxX=%s', tostring(dimensions.minX), tostring(dimensions.maxX)), 7); --WORKS
 	courseplay:debug(string.format('minZ=%s, maxZ=%s', tostring(dimensions.minZ), tostring(dimensions.maxZ)), 7); --WORKS
 	courseplay:debug(string.format('generateCourse(%i): width=%s, height=%s', debug.getinfo(1).currentline, tostring(dimensions.width), tostring(dimensions.height)), 7); --WORKS
@@ -492,7 +482,8 @@ function courseplay:generateCourse(vehicle)
 				curPoint.x = Utils.clamp(curPoint.x, dimensions.minX + (workWidth/2), dimensions.maxX - (workWidth/2));
 
 				--is point in field?
-				if courseplay:pointInPolygon_v2(poly.points, poly.xValues, poly.zValues, curPoint.x, curPoint.z) then
+				local _, pointInPoly = courseplay.fields:getPolygonData(poly.points, curPoint.x, curPoint.z, true, true, true);
+				if pointInPoly then
 					--courseplay:debug(string.format("Point %d (lane %d, point %d) - x=%.1f, z=%.1f - in Poly - adding to pathPoints", curPoint.num, curLane, a, curPoint.x, curPoint.z), 7);
 					table.insert(pathPoints, curPoint);
 				else
@@ -574,7 +565,8 @@ function courseplay:generateCourse(vehicle)
 				curPoint.z = Utils.clamp(curPoint.z, dimensions.minZ + (workWidth/2), dimensions.maxZ - (workWidth/2));
 
 				--is point in field?
-				if courseplay:pointInPolygon_v2(poly.points, poly.xValues, poly.zValues, curPoint.x, curPoint.z) then
+				local _, pointInPoly = courseplay.fields:getPolygonData(poly.points, curPoint.x, curPoint.z, true, true, true);
+        		if pointInPoly then
 					--courseplay:debug(string.format("Point %d (lane %d, point %d) - x=%.1f, z=%.1f - in Poly - adding to pathPoints", curPoint.num, curLane, a, curPoint.x, curPoint.z), 7);
 					table.insert(pathPoints, curPoint);
 				else
@@ -896,57 +888,6 @@ function courseplay.generation:getPolyDimensions(polyXValues, polyZValues)
 	dimensions.height = dimensions.maxZ - dimensions.minZ;
 
 	return dimensions;
-end;
-
-function courseplay:pointInPolygon_v2(polygon, xValues, zValues, x, z) --@src: http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
-	--nvert: Number of vertices in the polygon. Whether to repeat the first vertex at the end.
-	--vertx, verty: Arrays containing the x- and y-coordinates of the polygon's vertices.
-	--testx, testy: X- and y-coordinate of the test point.
-
-	local nvert = #(polygon);
-	local vertx, verty = xValues, zValues;
-	local testx, testy = x, z;
-
-	local i, j;
-	local c = false;
-
-	for i=1, nvert do
-		if i == 1 then
-			j = nvert;
-		else
-			j = i - 1;
-		end;
-
-		if ((verty[i]>testy) ~= (verty[j]>testy)) and (testx < (vertx[j]-vertx[i]) * (testy-verty[i]) / (verty[j]-verty[i]) + vertx[i]) then
-			c = not c;
-		end;
-	end;
-	return c;
-end;
-
-function courseplay:pointInPolygonV2b(poly, x, z, useC)
-	local numVertices = #poly;
-	local i, j;
-	local c = false;
-
-	for i=1, numVertices do
-		j = i - 1;
-		if i == 1 then
-			j = numVertices;
-		end;
-
-		local curVertX,  curVertZ  = poly[i].x, poly[i].z;
-		local prevVertX, prevVertZ = poly[j].x, poly[j].z;
-		if useC then
-			curVertX,  curVertZ  = poly[i].cx, poly[i].cz;
-			prevVertX, prevVertZ = poly[j].cx, poly[j].cz;
-		end;
-
-		if ((curVertZ > z) ~= (prevVertZ > z)) and (x < (prevVertX - curVertX) * (z - curVertZ) / (prevVertZ - curVertZ) + curVertX) then
-			c = not c;
-		end;
-	end;
-	return c;
 end;
 
 function courseplay:invertAngleDeg(ang)

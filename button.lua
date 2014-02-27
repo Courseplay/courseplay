@@ -61,19 +61,24 @@ function courseplay:register_button(self, hudPage, img, function_to_call, parame
 	return #(self.cp.buttons[tostring(hudPage)]);
 end
 
-function courseplay:renderButtons(self, page)
-	for _,button in pairs(self.cp.buttons.global) do
-		courseplay:renderButton(self, button);
+function courseplay:renderButtons(vehicle, page)
+	for _,button in pairs(vehicle.cp.buttons.global) do
+		courseplay:renderButton(vehicle, button);
 	end;
 
-	for _,button in pairs(self.cp.buttons[tostring(page)]) do
-		courseplay:renderButton(self, button);
+	for _,button in pairs(vehicle.cp.buttons[tostring(page)]) do
+		courseplay:renderButton(vehicle, button);
 	end;
 
 	if page == 2 then 
-		for _,button in pairs(self.cp.buttons["-2"]) do
-			courseplay:renderButton(self, button);
+		for _,button in pairs(vehicle.cp.buttons["-2"]) do
+			courseplay:renderButton(vehicle, button);
 		end;
+	end;
+
+	if vehicle.cp.suc.active then
+		courseplay:renderButton(vehicle, vehicle.cp.suc.fruitNegButton);
+		courseplay:renderButton(vehicle, vehicle.cp.suc.fruitPosButton);
 	end;
 end;
 
@@ -302,7 +307,9 @@ function courseplay:renderButton(self, button)
 
 		--Page 8
 		elseif pg == 8 then
-			if fn == "toggleSelectedFieldEdgePathShow" then
+			if fn == 'toggleSucHud' then
+				button.show = courseplay.fields.numAvailableFields > 0 and self.cp.fieldEdge.selectedField.fieldNum > 0;
+			elseif fn == "toggleSelectedFieldEdgePathShow" then
 				button.show = courseplay.fields.numAvailableFields > 0 and self.cp.fieldEdge.selectedField.fieldNum > 0;
 			elseif fn == "setFieldEdgePath" then
 				button.show = courseplay.fields.numAvailableFields > 0;

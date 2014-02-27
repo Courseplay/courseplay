@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="13">
-	<version>3.41.0407</version>
+	<version>3.41.0408</version>
 	<author><![CDATA[Jakob Tischler, Thomas Gärtner,
 Horoman]]></author>
 	<title>
@@ -1955,6 +1955,47 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<en>・</en>
 			<ru><![CDATA[  ]]></ru>
 		</text>
+
+		<!-- SeedUsageCalculator HUD content -->
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR">
+			<en>Seed usage calculator</en>
+			<de>Saatgut-Berechner</de>
+			<fr>Utilisation des semences</fr> <!-- !!! -->
+			<es>Uso de semillas</es> <!-- !!! -->
+			<it>Utilizzo di semi</it> <!-- !!! -->
+		</text>
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD">
+			<en>Field: %d (%s %s)</en>
+			<de>Feld: %d (%s %s)</de>
+			<fr>Champs: %d (%s %s)</fr>
+			<es>Campo: %d (%s %s)</es>
+			<it>Campo: %d (%s %s)</it>
+		</text>
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE">
+			<en>Seed type: %s</en>
+			<de>Saattyp: %s</de>
+			<es>Tipo de semilla: %s</es>
+			<fr>Type de semence: %s</fr>
+			<it>Tipo di seme: %s</it>
+		</text>
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE_DEFAULT">
+			<en>Default: %s %s (%s)</en>
+			<de>Standard: %s %s (%s)</de>
+			<fr>Défaut: %s %s (%s)</fr>
+			<es>Defecto: %s %s (%s)</es>
+			<it>Difette: %s %s (%s)</it>
+		</text>
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE_MOREREALISTIC">
+			<en>MoreRealistic: %s %s (%s)</en>
+			<de>MoreRealistic: %s %s (%s)</de>
+			<es>MoreRealistic: %s %s (%s)</es>
+			<fr>MoreRealistic: %s %s (%s)</fr>
+			<it>MoreRealistic: %s %s (%s)</it>
+		</text>
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_TRIM">
+			<en>・・・</en>
+		</text>
+		
 
 		<!-- INPUTBINDINGS -->
 		<text name="COURSEPLAY_HUD_OPEN">

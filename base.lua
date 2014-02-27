@@ -401,7 +401,7 @@ function courseplay:load(xmlFile)
 		};
 	};
 
-	self.cp.mouseCursorActive = false
+	self.cp.mouseCursorActive = false;
 
 
 	local w16px, h16px = 16/1920, 16/1080;
@@ -410,7 +410,8 @@ function courseplay:load(xmlFile)
 
 	-- HUD
 	self.cp.hud = {
-		background = Overlay:new("hudInfoBaseOverlay", Utils.getFilename("img/hud_bg.dds", courseplay.path), courseplay.hud.infoBasePosX - 10/1920, courseplay.hud.infoBasePosY - 10/1920, courseplay.hud.infoBaseWidth, courseplay.hud.infoBaseHeight);
+		background = Overlay:new('courseplayHud', Utils.getFilename('img/hud_bg.png', courseplay.path), courseplay.hud.infoBasePosX - 10/1920, courseplay.hud.infoBasePosY - 10/1920, courseplay.hud.infoBaseWidth, courseplay.hud.infoBaseHeight);
+		backgroundSuc = Overlay:new('courseplayHudSuc', Utils.getFilename('img/hud_suc_bg.png', courseplay.path), courseplay.hud.infoBasePosX - 10/1920, courseplay.hud.infoBasePosY - 10/1920, courseplay.hud.infoBaseWidth, courseplay.hud.infoBaseHeight);
 		currentPage = 1;
 		show = false;
 		openWithMouse = true;
@@ -419,8 +420,7 @@ function courseplay:load(xmlFile)
 			pages = {};
 		};
 		mouseWheel = {
-			-- icon = Overlay:new("cpMouseWheelIcon", "dataS2/menu/mouseControlsHelp/mouseMMB.png", 0, 0, w32px, h32px);
-			icon = Overlay:new("cpMouseWheelIcon", "dataS2/menu/mouseControlsHelp/mouseMMB.png", 0, 0, 32/g_screenWidth, 32/g_screenHeight);
+			icon = Overlay:new('cpMouseWheelIcon', 'dataS2/menu/mouseControlsHelp/mouseMMB.png', 0, 0, 32/g_screenWidth, 32/g_screenHeight);
 			render = false;
 		};
 
@@ -430,6 +430,77 @@ function courseplay:load(xmlFile)
 		OdometerOrigPosY = nil; --[table]
 		AllradOrigPosY = nil; --[table]
 	};
+
+	-- clickable buttons
+	self.cp.buttons = {};
+	self.cp.buttons.global = {};
+	self.cp.buttons.suc = {};
+	self.cp.buttons["-2"] = {};
+	for page=0, courseplay.hud.numPages do
+		self.cp.buttons[tostring(page)] = {};
+	end;
+
+	-- SeedUsageCalculator
+	self.cp.suc = {
+		active = false;
+		fontSize = 0.016;
+		x1 = self.cp.hud.background.x + 93/1920;
+		x2 = self.cp.hud.background.x + 93/1920 + 449/1920;
+		y1 = self.cp.hud.background.y + 335/1080;
+		y2 = self.cp.hud.background.y + 335/1080 + 115/1080;
+	};
+	self.cp.suc.lineHeight = self.cp.suc.fontSize; -- * 1.25;
+	-- if not courseplay.moreRealisticInstalled then
+		-- self.cp.suc.y2 = self.cp.suc.y2 - self.cp.suc.lineHeight;
+	-- end;
+	self.cp.suc.width  = self.cp.suc.x2 - self.cp.suc.x1;
+	self.cp.suc.height = self.cp.suc.y2 - self.cp.suc.y1;
+	self.cp.suc.buttonFileHeight = self.cp.suc.fontSize;
+	self.cp.suc.buttonFileWidth  = self.cp.suc.buttonFileHeight / g_screenAspectRatio;
+	self.cp.suc.hPad = self.cp.suc.buttonFileWidth * 2.25;
+	self.cp.suc.vPad = 0.007;
+	self.cp.suc.textMinX = self.cp.suc.x1 + self.cp.suc.hPad;
+	self.cp.suc.textMaxX = self.cp.suc.x2 - self.cp.suc.hPad;
+	self.cp.suc.textMaxWidth = self.cp.suc.textMaxX - self.cp.suc.textMinX;
+
+	self.cp.suc.lines = {};
+	self.cp.suc.lines.title = {
+		fontSize = self.cp.suc.fontSize * 1.1;
+		text = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR');
+	};
+	self.cp.suc.lines.title.posY = self.cp.suc.y2 - self.cp.suc.vPad - self.cp.suc.lines.title.fontSize;
+	self.cp.suc.lines.field = {
+		fontSize = self.cp.suc.fontSize;
+		posY = self.cp.suc.lines.title.posY - self.cp.suc.lineHeight * 1.15;
+		text = '';
+	};
+	self.cp.suc.lines.fruit = {
+		fontSize = self.cp.suc.fontSize;
+		posY = self.cp.suc.lines.field.posY - self.cp.suc.lineHeight;
+		text = '';
+	};
+	self.cp.suc.lines.resultDefault = {
+		fontSize = self.cp.suc.fontSize * 1.05;
+		posY = self.cp.suc.lines.fruit.posY - self.cp.suc.lineHeight * 4/3;
+		text = '';
+	};
+	self.cp.suc.lines.resultMoreRealistic = {
+		fontSize = self.cp.suc.fontSize * 1.05;
+		posY = self.cp.suc.lines.resultDefault.posY - self.cp.suc.lineHeight * 1.05;
+		text = '';
+	};
+	local xL = self.cp.suc.x1 + 3/1080 / g_screenAspectRatio;
+	local xR = self.cp.suc.x1 + self.cp.suc.buttonFileWidth;
+	local w,h = self.cp.suc.buttonFileWidth, self.cp.suc.buttonFileHeight;
+	local fruitNegButtonIdx = courseplay:register_button(self, 'suc', 'navigate_left.png',  'sucChangeFruit', -1, xL, self.cp.suc.lines.fruit.posY, w, h);
+	local fruitPosButtonIdx = courseplay:register_button(self, 'suc', 'navigate_right.png', 'sucChangeFruit',  1, xR, self.cp.suc.lines.fruit.posY, w, h);
+	self.cp.suc.fruitNegButton = self.cp.buttons.suc[fruitNegButtonIdx];
+	self.cp.suc.fruitPosButton = self.cp.buttons.suc[fruitPosButtonIdx];
+	-- self.cp.suc.selectedFieldIdx = 1;
+	-- self.cp.suc.selectedField = nil; --0;
+	self.cp.suc.selectedFruitIdx = 1;
+	self.cp.suc.selectedFruit = nil;
+
 
 	self.cp.hud.reloadPage = {};
 	courseplay.hud:setReloadPageOrder(self, -1, true); --reload all
@@ -456,14 +527,6 @@ function courseplay:load(xmlFile)
 	self.cp.hud.courses = {}
 	self.cp.hud.courseListPrev = false;
 	self.cp.hud.courseListNext = false; -- will be updated after loading courses into the hud
-
-	-- clickable buttons
-	self.cp.buttons = {};
-	self.cp.buttons.global = {};
-	self.cp.buttons["-2"] = {};
-	for page=0, courseplay.hud.numPages do
-		self.cp.buttons[tostring(page)] = {};
-	end;
 
 	--Camera backups: allowTranslation
 	self.cp.camerasBackup = {};
@@ -533,12 +596,12 @@ function courseplay:load(xmlFile)
 		courseplay:register_button(self, "global", string.format("pageNav_%d.dds", p), "setHudPage", p, posX, pageNav.posY, pageNav.buttonW, pageNav.buttonH);
 	end;
 
-	courseplay:register_button(self, "global", "navigate_left.dds", "switch_hud_page", -1, courseplay.hud.infoBasePosX + 0.035, courseplay.hud.infoBasePosY + 0.2395, w24px, h24px); --ORIG: +0.242
-	courseplay:register_button(self, "global", "navigate_right.dds", "switch_hud_page", 1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.infoBasePosY + 0.2395, w24px, h24px);
+	courseplay:register_button(self, "global", "navigate_left.png", "switch_hud_page", -1, courseplay.hud.infoBasePosX + 0.035, courseplay.hud.infoBasePosY + 0.2395, w24px, h24px); --ORIG: +0.242
+	courseplay:register_button(self, "global", "navigate_right.png", "switch_hud_page", 1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.infoBasePosY + 0.2395, w24px, h24px);
 
-	courseplay:register_button(self, "global", "close.dds", "openCloseHud", false, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.infoBasePosY + 0.255, w24px, h24px);
+	courseplay:register_button(self, "global", "close.png", "openCloseHud", false, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.infoBasePosY + 0.255, w24px, h24px);
 
-	courseplay:register_button(self, "global", "disk.dds", "showSaveCourseForm", 'course', listArrowX - 15/1920 - w24px, courseplay.hud.infoBasePosY + 0.056, w24px, h24px);
+	courseplay:register_button(self, "global", "disk.png", "showSaveCourseForm", 'course', listArrowX - 15/1920 - w24px, courseplay.hud.infoBasePosY + 0.056, w24px, h24px);
 
 	if courseplay.isDeveloper then
 		courseplay:register_button(self, "global", "eye.png", "setDrawWaypointsLines", nil, courseplay.hud.infoBasePosX + 0.01, courseplay.hud.infoBasePosY + 0.2395, w24px, h24px);
@@ -548,7 +611,7 @@ function courseplay:load(xmlFile)
 	-- ##################################################
 	-- Page 0: Combine controls
 	for i=1, courseplay.hud.numLines do
-		courseplay:register_button(self, 0, "blank.dds", "rowButton", i, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[i], courseplay.hud.visibleArea.width, 0.015, i, nil, true);
+		courseplay:register_button(self, 0, "blank.png", "rowButton", i, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[i], courseplay.hud.visibleArea.width, 0.015, i, nil, true);
 	end;
 
 
@@ -563,7 +626,7 @@ function courseplay:load(xmlFile)
 	};
 	aiModeQuickSwitch.minX = aiModeQuickSwitch.maxX - (aiModeQuickSwitch.numColumns * aiModeQuickSwitch.w);
 	for i=1, courseplay.numAiModes do
-		local icon = string.format("quickSwitch_mode%d.dds", i);
+		local icon = string.format("quickSwitch_mode%d.png", i);
 
 		local l = math.ceil(i/aiModeQuickSwitch.numColumns);
 		local col = i;
@@ -600,7 +663,7 @@ function courseplay:load(xmlFile)
 
 	--row buttons
 	for i=1, courseplay.hud.numLines do
-		courseplay:register_button(self, 1, "blank.dds", "rowButton", i, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[i], aiModeQuickSwitch.minX - courseplay.hud.infoBasePosX - 0.005, 0.015, i, nil, true);
+		courseplay:register_button(self, 1, "blank.png", "rowButton", i, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[i], aiModeQuickSwitch.minX - courseplay.hud.infoBasePosX - 0.005, 0.015, i, nil, true);
 	end;
 
 	--Custom field edge path
@@ -615,8 +678,8 @@ function courseplay:load(xmlFile)
 	-- ##################################################
 	-- Page 2: Course management
 	--course navigation
-	courseplay:register_button(self, 2, "navigate_up.dds",   "shiftHudCourses", -courseplay.hud.numLines, listArrowX, courseplay.hud.linesPosY[1] - 0.003,                       w24px, h24px, nil, -courseplay.hud.numLines*2);
-	courseplay:register_button(self, 2, "navigate_down.dds", "shiftHudCourses",  courseplay.hud.numLines, listArrowX, courseplay.hud.linesPosY[courseplay.hud.numLines] - 0.003, w24px, h24px, nil,  courseplay.hud.numLines*2);
+	courseplay:register_button(self, 2, "navigate_up.png",   "shiftHudCourses", -courseplay.hud.numLines, listArrowX, courseplay.hud.linesPosY[1] - 0.003,                       w24px, h24px, nil, -courseplay.hud.numLines*2);
+	courseplay:register_button(self, 2, "navigate_down.png", "shiftHudCourses",  courseplay.hud.numLines, listArrowX, courseplay.hud.linesPosY[courseplay.hud.numLines] - 0.003, w24px, h24px, nil,  courseplay.hud.numLines*2);
 
 	local courseListMouseWheelArea = {
 		x = mouseWheelArea.x,
@@ -628,7 +691,7 @@ function courseplay:load(xmlFile)
 
 	--reload courses
 	if g_server ~= nil then
-		--courseplay:register_button(self, 2, "refresh.dds", "reloadCoursesFromXML", nil, courseplay.hud.infoBasePosX + 0.258, courseplay.hud.infoBasePosY + 0.24, w16px, h16px);
+		--courseplay:register_button(self, 2, "refresh.png", "reloadCoursesFromXML", nil, courseplay.hud.infoBasePosX + 0.258, courseplay.hud.infoBasePosY + 0.24, w16px, h16px);
 	end;
 
 	--course actions
@@ -662,77 +725,77 @@ function courseplay:load(xmlFile)
 
 	-- ##################################################
 	-- Page 3
-	courseplay:register_button(self, 3, "navigate_minus.dds", "change_combine_offset", -0.1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, -0.5, false);
-	courseplay:register_button(self, 3, "navigate_plus.dds",  "change_combine_offset",  0.1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1,  0.5, false);
-	courseplay:register_button(self, 3, nil, "change_combine_offset", 0.1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[1], mouseWheelArea.w, mouseWheelArea.h, 1, 0.5, true, true);
+	courseplay:register_button(self, 3, 'navigate_minus.png', 'change_combine_offset', -0.1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, -0.5, false);
+	courseplay:register_button(self, 3, 'navigate_plus.png',  'change_combine_offset',  0.1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1,  0.5, false);
+	courseplay:register_button(self, 3, nil, 'change_combine_offset', 0.1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[1], mouseWheelArea.w, mouseWheelArea.h, 1, 0.5, true, true);
 
-	courseplay:register_button(self, 3, "navigate_minus.dds", "change_tipper_offset", -0.1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[2], w16px, h16px, 2, -0.5, false);
-	courseplay:register_button(self, 3, "navigate_plus.dds",  "change_tipper_offset",  0.1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[2], w16px, h16px, 2,  0.5, false);
-	courseplay:register_button(self, 3, nil, "change_tipper_offset", 0.1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[2], mouseWheelArea.w, mouseWheelArea.h, 2, 0.5, true, true);
+	courseplay:register_button(self, 3, 'navigate_minus.png', 'change_tipper_offset', -0.1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[2], w16px, h16px, 2, -0.5, false);
+	courseplay:register_button(self, 3, 'navigate_plus.png',  'change_tipper_offset',  0.1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[2], w16px, h16px, 2,  0.5, false);
+	courseplay:register_button(self, 3, nil, 'change_tipper_offset', 0.1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[2], mouseWheelArea.w, mouseWheelArea.h, 2, 0.5, true, true);
 
-	courseplay:register_button(self, 3, "navigate_minus.dds", "changeTurnRadius", -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[3], w16px, h16px, 3, -5, false);
-	courseplay:register_button(self, 3, "navigate_plus.dds",  "changeTurnRadius",  1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[3], w16px, h16px, 3,  5, false);
-	courseplay:register_button(self, 3, nil, "changeTurnRadius", 1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[3], mouseWheelArea.w, mouseWheelArea.h, 3, 5, true, true);
+	courseplay:register_button(self, 3, 'navigate_minus.png', 'changeTurnRadius', -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[3], w16px, h16px, 3, -5, false);
+	courseplay:register_button(self, 3, 'navigate_plus.png',  'changeTurnRadius',  1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[3], w16px, h16px, 3,  5, false);
+	courseplay:register_button(self, 3, nil, 'changeTurnRadius', 1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[3], mouseWheelArea.w, mouseWheelArea.h, 3, 5, true, true);
 
-	courseplay:register_button(self, 3, "navigate_minus.dds", "change_required_fill_level", -5, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[4], w16px, h16px, 4, -10, false);
-	courseplay:register_button(self, 3, "navigate_plus.dds",  "change_required_fill_level",  5, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[4], w16px, h16px, 4,  10, false);
-	courseplay:register_button(self, 3, nil, "change_required_fill_level", 5, mouseWheelArea.x, courseplay.hud.linesButtonPosY[4], mouseWheelArea.w, mouseWheelArea.h, 4, 10, true, true);
+	courseplay:register_button(self, 3, 'navigate_minus.png', 'change_required_fill_level', -5, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[4], w16px, h16px, 4, -10, false);
+	courseplay:register_button(self, 3, 'navigate_plus.png',  'change_required_fill_level',  5, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[4], w16px, h16px, 4,  10, false);
+	courseplay:register_button(self, 3, nil, 'change_required_fill_level', 5, mouseWheelArea.x, courseplay.hud.linesButtonPosY[4], mouseWheelArea.w, mouseWheelArea.h, 4, 10, true, true);
 
-	courseplay:register_button(self, 3, "navigate_minus.dds", "change_required_fill_level_for_drive_on", -5, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[5], w16px, h16px, 5, -10, false);
-	courseplay:register_button(self, 3, "navigate_plus.dds",  "change_required_fill_level_for_drive_on",  5, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[5], w16px, h16px, 5,  10, false);
-	courseplay:register_button(self, 3, nil, "change_required_fill_level_for_drive_on", 5, mouseWheelArea.x, courseplay.hud.linesButtonPosY[5], mouseWheelArea.w, mouseWheelArea.h, 5, 10, true, true);
+	courseplay:register_button(self, 3, 'navigate_minus.png', 'change_required_fill_level_for_drive_on', -5, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[5], w16px, h16px, 5, -10, false);
+	courseplay:register_button(self, 3, 'navigate_plus.png',  'change_required_fill_level_for_drive_on',  5, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[5], w16px, h16px, 5,  10, false);
+	courseplay:register_button(self, 3, nil, 'change_required_fill_level_for_drive_on', 5, mouseWheelArea.x, courseplay.hud.linesButtonPosY[5], mouseWheelArea.w, mouseWheelArea.h, 5, 10, true, true);
 
-	courseplay:register_button(self, 3, "navigate_minus.dds", "changeRefillUntilPct", -5, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[6], w16px, h16px, 6, -10, false);
-	courseplay:register_button(self, 3, "navigate_plus.dds",  "changeRefillUntilPct",  5, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[6], w16px, h16px, 6,  10, false);
-	courseplay:register_button(self, 3, nil, "changeRefillUntilPct", 5, mouseWheelArea.x, courseplay.hud.linesButtonPosY[6], mouseWheelArea.w, mouseWheelArea.h, 6, 10, true, true);
+	courseplay:register_button(self, 3, 'navigate_minus.png', 'changeRefillUntilPct', -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[6], w16px, h16px, 6, -5, false);
+	courseplay:register_button(self, 3, 'navigate_plus.png',  'changeRefillUntilPct',  1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[6], w16px, h16px, 6,  5, false);
+	courseplay:register_button(self, 3, nil, 'changeRefillUntilPct', 1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[6], mouseWheelArea.w, mouseWheelArea.h, 6, 5, true, true);
 
 
 	-- ##################################################
 	-- Page 4: Combine management
-	courseplay:register_button(self, 4, "blank.png", "switchSearchCombineMode", nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[1], courseplay.hud.visibleArea.width, 0.015, 1, nil, true);
+	courseplay:register_button(self, 4, 'blank.png', 'switchSearchCombineMode', nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[1], courseplay.hud.visibleArea.width, 0.015, 1, nil, true);
 
-	courseplay:register_button(self, 4, "navigate_up.png",   "selectAssignedCombine", -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[2], w16px, h16px, 2, nil, false);
-	courseplay:register_button(self, 4, "navigate_down.png", "selectAssignedCombine",  1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[2], w16px, h16px, 2, nil, false);
+	courseplay:register_button(self, 4, 'navigate_up.png',   'selectAssignedCombine', -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[2], w16px, h16px, 2, nil, false);
+	courseplay:register_button(self, 4, 'navigate_down.png', 'selectAssignedCombine',  1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[2], w16px, h16px, 2, nil, false);
 
 	--[[
-	courseplay:register_button(self, 4, "navigate_up.png",   "setSearchCombineOnField", -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[3], w16px, h16px, 3, nil, false);
-	courseplay:register_button(self, 4, "navigate_down.png", "setSearchCombineOnField",  1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[3], w16px, h16px, 3, nil, false);
+	courseplay:register_button(self, 4, 'navigate_up.png',   'setSearchCombineOnField', -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[3], w16px, h16px, 3, nil, false);
+	courseplay:register_button(self, 4, 'navigate_down.png', 'setSearchCombineOnField',  1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[3], w16px, h16px, 3, nil, false);
 	courseplay:register_button(self, 4, nil, 'setSearchCombineOnField', -1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[3], mouseWheelArea.w, mouseWheelArea.h, 3, -5, true, true);
 	--]]
 
-	courseplay:register_button(self, 4, "blank.png", "removeActiveCombineFromTractor", nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[5], courseplay.hud.visibleArea.width, 0.015, 5, nil, true);
+	courseplay:register_button(self, 4, 'blank.png', 'removeActiveCombineFromTractor', nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[5], courseplay.hud.visibleArea.width, 0.015, 5, nil, true);
 
 
 	-- ##################################################
 	-- Page 5: Speeds
-	courseplay:register_button(self, 5, "navigate_minus.dds", "change_turn_speed",   -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, -5, false);
-	courseplay:register_button(self, 5, "navigate_plus.dds",  "change_turn_speed",    1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1,  5, false);
+	courseplay:register_button(self, 5, "navigate_minus.png", "change_turn_speed",   -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, -5, false);
+	courseplay:register_button(self, 5, "navigate_plus.png",  "change_turn_speed",    1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1,  5, false);
 	courseplay:register_button(self, 5, nil, "change_turn_speed", 1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[1], mouseWheelArea.w, mouseWheelArea.h, 1, 5, true, true);
 
-	courseplay:register_button(self, 5, "navigate_minus.dds", "change_field_speed",  -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[2], w16px, h16px, 2, -5, false);
-	courseplay:register_button(self, 5, "navigate_plus.dds",  "change_field_speed",   1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[2], w16px, h16px, 2,  5, false);
+	courseplay:register_button(self, 5, "navigate_minus.png", "change_field_speed",  -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[2], w16px, h16px, 2, -5, false);
+	courseplay:register_button(self, 5, "navigate_plus.png",  "change_field_speed",   1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[2], w16px, h16px, 2,  5, false);
 	courseplay:register_button(self, 5, nil, "change_field_speed", 1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[2], mouseWheelArea.w, mouseWheelArea.h, 2, 5, true, true);
 
-	courseplay:register_button(self, 5, "navigate_minus.dds", "change_max_speed",    -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[3], w16px, h16px, 3, -5, false);
-	courseplay:register_button(self, 5, "navigate_plus.dds",  "change_max_speed",     1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[3], w16px, h16px, 3,  5, false);
+	courseplay:register_button(self, 5, "navigate_minus.png", "change_max_speed",    -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[3], w16px, h16px, 3, -5, false);
+	courseplay:register_button(self, 5, "navigate_plus.png",  "change_max_speed",     1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[3], w16px, h16px, 3,  5, false);
 	courseplay:register_button(self, 5, nil, "change_max_speed", 1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[3], mouseWheelArea.w, mouseWheelArea.h, 3, 5, true, true);
 
-	courseplay:register_button(self, 5, "navigate_minus.dds", "change_unload_speed", -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[4], w16px, h16px, 4, -5, false);
-	courseplay:register_button(self, 5, "navigate_plus.dds",  "change_unload_speed",  1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[4], w16px, h16px, 4,  5, false);
+	courseplay:register_button(self, 5, "navigate_minus.png", "change_unload_speed", -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[4], w16px, h16px, 4, -5, false);
+	courseplay:register_button(self, 5, "navigate_plus.png",  "change_unload_speed",  1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[4], w16px, h16px, 4,  5, false);
 	courseplay:register_button(self, 5, nil, "change_unload_speed", 1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[4], mouseWheelArea.w, mouseWheelArea.h, 4, 5, true, true);
 
-	courseplay:register_button(self, 5, "blank.dds", "change_use_speed",1, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[5], courseplay.hud.visibleArea.width, 0.015, 5, nil, true);
+	courseplay:register_button(self, 5, "blank.png", "change_use_speed",1, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[5], courseplay.hud.visibleArea.width, 0.015, 5, nil, true);
 
 
 	-- ##################################################
 	-- Page 6: General settings
-	courseplay:register_button(self, 6, "blank.dds", "toggleRealisticDriving", nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[1], courseplay.hud.visibleArea.width, 0.015, 1, nil, true);
-	courseplay:register_button(self, 6, "blank.dds", "toggleOpenHudWithMouse", nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[2], courseplay.hud.visibleArea.width, 0.015, 2, nil, true);
-	courseplay:register_button(self, 6, "blank.dds", "change_WaypointMode", 1, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[3], courseplay.hud.visibleArea.width, 0.015, 3, nil, true);
-	courseplay:register_button(self, 6, "blank.dds", "changeBeaconLightsMode", 1, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[4], courseplay.hud.visibleArea.width, 0.015, 4, nil, true);
+	courseplay:register_button(self, 6, "blank.png", "toggleRealisticDriving", nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[1], courseplay.hud.visibleArea.width, 0.015, 1, nil, true);
+	courseplay:register_button(self, 6, "blank.png", "toggleOpenHudWithMouse", nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[2], courseplay.hud.visibleArea.width, 0.015, 2, nil, true);
+	courseplay:register_button(self, 6, "blank.png", "change_WaypointMode", 1, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[3], courseplay.hud.visibleArea.width, 0.015, 3, nil, true);
+	courseplay:register_button(self, 6, "blank.png", "changeBeaconLightsMode", 1, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[4], courseplay.hud.visibleArea.width, 0.015, 4, nil, true);
 
-	courseplay:register_button(self, 6, "navigate_minus.dds", "changeWaitTime", -5, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[5], w16px, h16px, 5, -10, false);
-	courseplay:register_button(self, 6, "navigate_plus.dds",  "changeWaitTime",  5, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[5], w16px, h16px, 5,  10, false);
+	courseplay:register_button(self, 6, "navigate_minus.png", "changeWaitTime", -5, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[5], w16px, h16px, 5, -10, false);
+	courseplay:register_button(self, 6, "navigate_plus.png",  "changeWaitTime",  5, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[5], w16px, h16px, 5,  10, false);
 	courseplay:register_button(self, 6, nil, "changeWaitTime", 5, mouseWheelArea.x, courseplay.hud.linesButtonPosY[5], mouseWheelArea.w, mouseWheelArea.h, 5, 10, true, true);
 
 	local dbgW, dbgH = 22/1920, 22/1080;
@@ -749,23 +812,23 @@ function courseplay:load(xmlFile)
 
 	-- ##################################################
 	-- Page 7: Driving settings
-	courseplay:register_button(self, 7, "navigate_left.dds",  "changeLaneOffset", -0.1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, -0.5, false);
-	courseplay:register_button(self, 7, "navigate_right.dds", "changeLaneOffset",  0.1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1,  0.5, false);
+	courseplay:register_button(self, 7, "navigate_left.png",  "changeLaneOffset", -0.1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, -0.5, false);
+	courseplay:register_button(self, 7, "navigate_right.png", "changeLaneOffset",  0.1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1,  0.5, false);
 	courseplay:register_button(self, 7, nil, "changeLaneOffset", 0.1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[1], mouseWheelArea.w, mouseWheelArea.h, 1, 0.5, true, true);
 
-	courseplay:register_button(self, 7, "blank.dds", "toggleSymmetricLaneChange", nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[2], courseplay.hud.visibleArea.width, 0.015, 2, nil, true);
+	courseplay:register_button(self, 7, "blank.png", "toggleSymmetricLaneChange", nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[2], courseplay.hud.visibleArea.width, 0.015, 2, nil, true);
 
-	courseplay:register_button(self, 7, "navigate_left.dds",  "changeToolOffsetX", -0.1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[3], w16px, h16px, 3,  -0.5, false);
-	courseplay:register_button(self, 7, "navigate_right.dds", "changeToolOffsetX",  0.1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[3], w16px, h16px, 3,   0.5, false);
+	courseplay:register_button(self, 7, "navigate_left.png",  "changeToolOffsetX", -0.1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[3], w16px, h16px, 3,  -0.5, false);
+	courseplay:register_button(self, 7, "navigate_right.png", "changeToolOffsetX",  0.1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[3], w16px, h16px, 3,   0.5, false);
 	courseplay:register_button(self, 7, nil, "changeToolOffsetX", 0.1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[3], mouseWheelArea.w, mouseWheelArea.h, 3, 0.5, true, true);
 
-	courseplay:register_button(self, 7, "navigate_down.dds", "changeToolOffsetZ", -0.1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[4], w16px, h16px, 4,  -0.5, false);
-	courseplay:register_button(self, 7, "navigate_up.dds",   "changeToolOffsetZ",  0.1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[4], w16px, h16px, 4,   0.5, false);
+	courseplay:register_button(self, 7, "navigate_down.png", "changeToolOffsetZ", -0.1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[4], w16px, h16px, 4,  -0.5, false);
+	courseplay:register_button(self, 7, "navigate_up.png",   "changeToolOffsetZ",  0.1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[4], w16px, h16px, 4,   0.5, false);
 	courseplay:register_button(self, 7, nil, "changeToolOffsetZ", 0.1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[4], mouseWheelArea.w, mouseWheelArea.h, 4, 0.5, true, true);
 
 
-	courseplay:register_button(self, 7, "navigate_up.dds",   "switchDriverCopy", -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[5], w16px, h16px, 5, nil, false);
-	courseplay:register_button(self, 7, "navigate_down.dds", "switchDriverCopy",  1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[5], w16px, h16px, 5, nil, false);
+	courseplay:register_button(self, 7, "navigate_up.png",   "switchDriverCopy", -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[5], w16px, h16px, 5, nil, false);
+	courseplay:register_button(self, 7, "navigate_down.png", "switchDriverCopy",  1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[5], w16px, h16px, 5, nil, false);
 	courseplay:register_button(self, 7, nil, nil, nil, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[5], 0.015 + w16px, mouseWheelArea.h, 5, nil, true, false);
 	courseplay:register_button(self, 7, "copy.png",          "copyCourse",      nil, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[6], w16px, h16px);
 
@@ -775,18 +838,18 @@ function courseplay:load(xmlFile)
 	-- Note: line 1 (field edges) will be applied in first updateTick() runthrough
 
 	-- line 2 (workWidth)
-	courseplay:register_button(self, 8, "navigate_minus.dds", "changeWorkWidth", -0.1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[2], w16px, h16px, 2,  -0.5, false);
-	courseplay:register_button(self, 8, "navigate_plus.dds",  "changeWorkWidth",  0.1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[2], w16px, h16px, 2,   0.5, false);
+	courseplay:register_button(self, 8, "navigate_minus.png", "changeWorkWidth", -0.1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[2], w16px, h16px, 2,  -0.5, false);
+	courseplay:register_button(self, 8, "navigate_plus.png",  "changeWorkWidth",  0.1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[2], w16px, h16px, 2,   0.5, false);
 	courseplay:register_button(self, 8, nil, "changeWorkWidth", 0.1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[2], mouseWheelArea.w, mouseWheelArea.h, 2, 0.5, true, true);
 
 	-- line 3 (starting corner)
-	courseplay:register_button(self, 8, "blank.dds", "switchStartingCorner",     nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[3], courseplay.hud.visibleArea.width, 0.015, 3, nil, true);
+	courseplay:register_button(self, 8, "blank.png", "switchStartingCorner",     nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[3], courseplay.hud.visibleArea.width, 0.015, 3, nil, true);
 
 	-- line 4 (starting direction)
-	courseplay:register_button(self, 8, "blank.dds", "switchStartingDirection",  nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[4], courseplay.hud.visibleArea.width, 0.015, 4, nil, true);
+	courseplay:register_button(self, 8, "blank.png", "switchStartingDirection",  nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[4], courseplay.hud.visibleArea.width, 0.015, 4, nil, true);
 
 	-- line 5 (return to first point)
-	courseplay:register_button(self, 8, "blank.dds", "switchReturnToFirstPoint", nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[5], courseplay.hud.visibleArea.width, 0.015, 5, nil, true);
+	courseplay:register_button(self, 8, "blank.png", "switchReturnToFirstPoint", nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[5], courseplay.hud.visibleArea.width, 0.015, 5, nil, true);
 
 	-- line 6 (headland)
 	-- 6.1 direction
@@ -811,12 +874,12 @@ function courseplay:load(xmlFile)
 	-- Page 9: Shovel settings
 	local wTemp = 22/1920;
 	local hTemp = 22/1080;
-	courseplay:register_button(self, 9, "shovelLoading.dds",      "saveShovelStatus", 2, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[1] - 0.003, wTemp, hTemp, 1, 2, true, false, true);
-	courseplay:register_button(self, 9, "shovelTransport.dds",    "saveShovelStatus", 3, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[2] - 0.003, wTemp, hTemp, 2, 3, true, false, true);
-	courseplay:register_button(self, 9, "shovelPreUnloading.dds", "saveShovelStatus", 4, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[3] - 0.003, wTemp, hTemp, 3, 4, true, false, true);
-	courseplay:register_button(self, 9, "shovelUnloading.dds",    "saveShovelStatus", 5, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[4] - 0.003, wTemp, hTemp, 4, 5, true, false, true);
+	courseplay:register_button(self, 9, "shovelLoading.png",      "saveShovelStatus", 2, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[1] - 0.003, wTemp, hTemp, 1, 2, true, false, true);
+	courseplay:register_button(self, 9, "shovelTransport.png",    "saveShovelStatus", 3, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[2] - 0.003, wTemp, hTemp, 2, 3, true, false, true);
+	courseplay:register_button(self, 9, "shovelPreUnloading.png", "saveShovelStatus", 4, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[3] - 0.003, wTemp, hTemp, 3, 4, true, false, true);
+	courseplay:register_button(self, 9, "shovelUnloading.png",    "saveShovelStatus", 5, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[4] - 0.003, wTemp, hTemp, 4, 5, true, false, true);
 
-	courseplay:register_button(self, 9, "blank.dds", "setShovelStopAndGo", nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[5], courseplay.hud.visibleArea.width, 0.015, 5, nil, true);
+	courseplay:register_button(self, 9, "blank.png", "setShovelStopAndGo", nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[5], courseplay.hud.visibleArea.width, 0.015, 5, nil, true);
 	--END Page 9
 
 
@@ -1107,6 +1170,9 @@ function courseplay:delete()
 
 		if self.cp.hud.background ~= nil then
 			self.cp.hud.background:delete();
+		end;
+		if self.cp.hud.backgroundSuc ~= nil then
+			self.cp.hud.backgroundSuc:delete();
 		end;
 		if self.cp.directionArrowOverlay ~= nil then
 			self.cp.directionArrowOverlay:delete();

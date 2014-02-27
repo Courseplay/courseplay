@@ -10,18 +10,29 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 	end;
 
 	local hudGfx = courseplay.hud.visibleArea;
-	local mouseIsInHudArea = self.cp.mouseCursorActive and courseplay:mouseIsInArea(posX, posY, hudGfx.x1, hudGfx.x2, hudGfx.y1, hudGfx.y2);
-	-- posX > hudGfx.x1 and posX < hudGfx.x2 and posY > hudGfx.y1 and posY < hudGfx.y2;
+	local mouseIsInHudArea = self.cp.mouseCursorActive and courseplay:mouseIsInArea(posX, posY, hudGfx.x1, hudGfx.x2, hudGfx.y1, self.cp.suc.active and hudGfx.y2InclSuc or hudGfx.y2);
 
-	if not mouseIsInHudArea then return; end;
+	-- if not mouseIsInHudArea then return; end;
 
 	--LEFT CLICK
 	if (isDown or isUp) and mouseButton == courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION.buttonId and self.cp.mouseCursorActive and self.cp.hud.show and self.isEntered and mouseIsInHudArea then
 		local buttonToHandle;
-		for _,button in pairs(self.cp.buttons.global) do
-			if button.show and courseplay:mouseIsOnButton(posX, posY, button) then
-				buttonToHandle = button;
-				break;
+
+		if self.cp.suc.active then
+			for _,button in pairs(self.cp.buttons.suc) do
+				if button.show and courseplay:mouseIsOnButton(posX, posY, button) then
+					buttonToHandle = button;
+					break;
+				end;
+			end;
+		end;
+
+		if buttonToHandle == nil then
+			for _,button in pairs(self.cp.buttons.global) do
+				if button.show and courseplay:mouseIsOnButton(posX, posY, button) then
+					buttonToHandle = button;
+					break;
+				end;
 			end;
 		end;
 
@@ -59,6 +70,16 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 
 	--HOVER
 	elseif self.cp.mouseCursorActive and not isDown and self.cp.hud.show and self.isEntered then
+		-- local currentHoveredButton;
+		if self.cp.suc.active then
+			for _,button in pairs(self.cp.buttons.suc) do
+				if button.show and not button.isHidden then
+					button.isClicked = false;
+					button.isHovered = courseplay:mouseIsOnButton(posX, posY, button);
+				end;
+			end;
+		end;
+
 		for _,button in pairs(self.cp.buttons.global) do
 			button.isClicked = false;
 			if button.show and not button.isHidden then

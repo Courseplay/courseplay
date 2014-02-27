@@ -175,7 +175,7 @@ end;
 function courseplay:setHudPage(vehicle, pageNum)
 	if vehicle.cp.mode == nil then
 		vehicle.cp.hud.currentPage = pageNum;
-	elseif courseplay.hud.pagesPerMode[vehicle.cp.mode] ~= nil and courseplay.hud.pagesPerMode[vehicle.cp.mode][pageNum+1] then
+	elseif courseplay.hud.pagesPerMode[vehicle.cp.mode] ~= nil and courseplay.hud.pagesPerMode[vehicle.cp.mode][pageNum] then
 		if pageNum == 0 then
 			if vehicle.cp.minHudPage == 0 or vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable or vehicle.cp.isSugarBeetLoader then
 				vehicle.cp.hud.currentPage = pageNum;
@@ -191,12 +191,12 @@ function courseplay:setHudPage(vehicle, pageNum)
 end;
 
 function courseplay:switch_hud_page(vehicle, changeBy)
-	newPage = courseplay:minMaxPage(vehicle, vehicle.cp.hud.currentPage + changeBy);
+	local newPage = courseplay:minMaxPage(vehicle, vehicle.cp.hud.currentPage + changeBy);
 
 	if vehicle.cp.mode == nil then
 		vehicle.cp.hud.currentPage = newPage;
 	elseif courseplay.hud.pagesPerMode[vehicle.cp.mode] ~= nil then
-		while courseplay.hud.pagesPerMode[vehicle.cp.mode][newPage+1] == false do
+		while courseplay.hud.pagesPerMode[vehicle.cp.mode][newPage] == false do
 			newPage = courseplay:minMaxPage(vehicle, newPage + changeBy);
 		end;
 		vehicle.cp.hud.currentPage = newPage;
@@ -225,7 +225,7 @@ function courseplay:buttonsActiveEnabled(self, section)
 
 				if self.cp.mode == nil then
 					button.isDisabled = false;
-				elseif courseplay.hud.pagesPerMode[self.cp.mode] ~= nil and courseplay.hud.pagesPerMode[self.cp.mode][pageNum+1] then
+				elseif courseplay.hud.pagesPerMode[self.cp.mode] ~= nil and courseplay.hud.pagesPerMode[self.cp.mode][pageNum] then
 					if pageNum == 0 then
 						button.isDisabled = not (self.cp.minHudPage == 0 or self.cp.isCombine or self.cp.isChopper or self.cp.isHarvesterSteerable or self.cp.isSugarBeetLoader);
 					else
@@ -239,7 +239,6 @@ function courseplay:buttonsActiveEnabled(self, section)
 			end;
 		end;
 	end;
-
 
 	if self.cp.hud.currentPage == 1 and (section == nil or section == "all" or section == "quickModes" or section == "recording" or section == "customFieldShow") then
 		for _,button in pairs(self.cp.buttons["1"]) do
@@ -354,6 +353,9 @@ function courseplay:buttonsActiveEnabled(self, section)
 				break;
 			end;
 		end;
+
+	elseif self.cp.hud.currentPage == 8 and (section == nil or section == 'all' or section == 'suc') then
+		self.cp.suc.toggleHudButton.isActive = self.cp.suc.active;
 
 	elseif self.cp.hud.currentPage == 9 and (section == nil or section == "all" or section == "shovel") then
 		for _,button in pairs(self.cp.buttons["9"]) do
@@ -522,10 +524,20 @@ end;
 
 function courseplay:switchSearchCombineMode(vehicle)
 	vehicle.cp.searchCombineAutomatically = not vehicle.cp.searchCombineAutomatically;
+	if not vehicle.cp.searchCombineAutomatically then
+		courseplay:setSearchCombineOnField(vehicle, nil, 0);
+	end;
 end;
 
-function courseplay:setSearchCombineOnField(vehicle, changeDir)
-	if courseplay.fields.numAvailableFields == 0 or not vehicle.cp.searchCombineAutomatically then return; end;
+function courseplay:setSearchCombineOnField(vehicle, changeDir, force)
+	if courseplay.fields.numAvailableFields == 0 or not vehicle.cp.searchCombineAutomatically then
+		vehicle.cp.searchCombineOnField = 0;
+		return;
+	end;
+	if force and courseplay.fields.fieldData[force] then
+		vehicle.cp.searchCombineOnField = force;
+		return;
+	end;
 
 	local newFieldNum = vehicle.cp.searchCombineOnField + changeDir;
 	if newFieldNum == 0 then
@@ -1190,10 +1202,12 @@ function courseplay:createFieldEdgeButtons(vehicle)
 			w = courseplay.hud.visibleArea.x2 - courseplay.hud.visibleArea.x1 - (2 * 0.005),
 			h = courseplay.hud.lineHeight
 		};
-		courseplay:register_button(vehicle, 8, "eye.png", "toggleSelectedFieldEdgePathShow", nil, courseplay.hud.infoBasePosX + 0.270, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, nil, false);
-		courseplay:register_button(vehicle, 8, "navigate_up.png",   "setFieldEdgePath", -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, -5, false);
-		courseplay:register_button(vehicle, 8, "navigate_down.png", "setFieldEdgePath",  1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1,  5, false);
-		courseplay:register_button(vehicle, 8, nil, "setFieldEdgePath", -1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[1], mouseWheelArea.w, mouseWheelArea.h, 1, -5, true, true);
+		local toggleSucHudButtonIdx = courseplay:register_button(vehicle, 8, 'calculator.png', 'toggleSucHud', nil, courseplay.hud.infoBasePosX + 0.255, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, nil, false, false, true);
+		vehicle.cp.suc.toggleHudButton = vehicle.cp.buttons['8'][toggleSucHudButtonIdx];
+		courseplay:register_button(vehicle, 8, 'eye.png', 'toggleSelectedFieldEdgePathShow', nil, courseplay.hud.infoBasePosX + 0.270, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, nil, false);
+		courseplay:register_button(vehicle, 8, 'navigate_up.png',   'setFieldEdgePath', -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, -5, false);
+		courseplay:register_button(vehicle, 8, 'navigate_down.png', 'setFieldEdgePath',  1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1,  5, false);
+		courseplay:register_button(vehicle, 8, nil, 'setFieldEdgePath', -1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[1], mouseWheelArea.w, mouseWheelArea.h, 1, -5, true, true);
 		vehicle.cp.fieldEdge.selectedField.buttonsCreated = true;
 	end;
 end;
@@ -1202,18 +1216,28 @@ function courseplay:setFieldEdgePath(vehicle, changeDir, force)
 	local newFieldNum = force or vehicle.cp.fieldEdge.selectedField.fieldNum + changeDir;
 	if newFieldNum == 0 then
 		vehicle.cp.fieldEdge.selectedField.fieldNum = newFieldNum;
+		if vehicle.cp.suc.active then
+			courseplay:toggleSucHud(vehicle);
+		end;
 		return;
 	end;
 
 	while courseplay.fields.fieldData[newFieldNum] == nil do
 		if newFieldNum == 0 then
 			vehicle.cp.fieldEdge.selectedField.fieldNum = newFieldNum;
+			if vehicle.cp.suc.active then
+				courseplay:toggleSucHud(vehicle);
+			end;
 			return;
 		end;
 		newFieldNum = Utils.clamp(newFieldNum + changeDir, 0, courseplay.fields.numAvailableFields);
 	end;
 
 	vehicle.cp.fieldEdge.selectedField.fieldNum = newFieldNum;
+
+	if newFieldNum == 0 and vehicle.cp.suc.active then
+		courseplay:toggleSucHud(vehicle);
+	end;
 
 	--courseplay:toggleSelectedFieldEdgePathShow(vehicle, false);
 	if vehicle.cp.fieldEdge.customField.show then
@@ -1271,14 +1295,23 @@ end;
 
 function courseplay:addCustomSingleFieldEdgeToList(vehicle)
 	--print(string.format("%s: call addCustomSingleFieldEdgeToList()", nameNum(vehicle)));
-	courseplay.fields.fieldData[vehicle.cp.fieldEdge.customField.fieldNum] = {
+	data = {
 		fieldNum = vehicle.cp.fieldEdge.customField.fieldNum;
 		points = vehicle.cp.fieldEdge.customField.points;
 		numPoints = vehicle.cp.fieldEdge.customField.numPoints;
 		name = string.format("%s %d (%s)", courseplay:loc('COURSEPLAY_FIELD'), vehicle.cp.fieldEdge.customField.fieldNum, courseplay:loc('COURSEPLAY_USER'));
 		isCustom = true;
 	};
+	local area, _, dimensions = courseplay.fields:getPolygonData(data.points, nil, nil, true);
+	data.areaSqm = area;
+	data.areaHa = area / 10000;
+	data.dimensions = dimensions;
+	data.fieldAreaText = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR_FIELD'):format(data.fieldNum, courseplay.fields:formatNumber(data.areaHa, 2), g_i18n:getText('area_unit_short'));
+	data.seedUsage, data.seedPrice, data.seedDataText = courseplay.fields:getFruitData(area);
+
+	courseplay.fields.fieldData[vehicle.cp.fieldEdge.customField.fieldNum] = data;
 	courseplay.fields.numAvailableFields = table.maxn(courseplay.fields.fieldData);
+
 	--print(string.format("\tfieldNum=%d, name=%s, #points=%d", courseplay.fields.fieldData[vehicle.cp.fieldEdge.customField.fieldNum].fieldNum, courseplay.fields.fieldData[vehicle.cp.fieldEdge.customField.fieldNum].name, #courseplay.fields.fieldData[vehicle.cp.fieldEdge.customField.fieldNum].points));
 
 	--SAVE TO XML
@@ -1371,5 +1404,25 @@ function courseplay:addNewTarget(vehicle, x, z)
 end;
 
 function courseplay:changeRefillUntilPct(vehicle, changeBy)
-	vehicle.cp.refillUntilPct = Utils.clamp(vehicle.cp.refillUntilPct + changeBy, 5, 100);
+	vehicle.cp.refillUntilPct = Utils.clamp(vehicle.cp.refillUntilPct + changeBy, 1, 100);
+end;
+
+function courseplay:toggleSucHud(vehicle)
+	vehicle.cp.suc.active = not vehicle.cp.suc.active;
+	courseplay:buttonsActiveEnabled(vehicle, 'suc');
+	if vehicle.cp.suc.selectedFruit == nil then
+		vehicle.cp.suc.selectedFruitIdx = 1;
+		vehicle.cp.suc.selectedFruit = courseplay.fields.seedUsageCalculator.fruitTypes[1];
+	end;
+end;
+
+function courseplay:sucChangeFruit(vehicle, change)
+	local newIdx = vehicle.cp.suc.selectedFruitIdx + change;
+	if newIdx > courseplay.fields.seedUsageCalculator.numFruits then
+		newIdx = newIdx - courseplay.fields.seedUsageCalculator.numFruits;
+	elseif newIdx < 1 then
+		newIdx = courseplay.fields.seedUsageCalculator.numFruits - newIdx;
+	end;
+	vehicle.cp.suc.selectedFruitIdx = newIdx;
+	vehicle.cp.suc.selectedFruit = courseplay.fields.seedUsageCalculator.fruitTypes[vehicle.cp.suc.selectedFruitIdx];
 end;

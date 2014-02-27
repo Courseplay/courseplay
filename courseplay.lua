@@ -201,8 +201,8 @@ function courseplay:setGlobalData()
 	local ch = courseplay.hud
 	ch.infoBasePosX = Utils.getNoNil(customPosX, 0.433);
 	ch.infoBasePosY = Utils.getNoNil(customPosY, 0.002);
-	ch.infoBaseWidth = 0.512; --try: 512/1920
-	ch.infoBaseHeight = 0.512; --try: 512/1080
+	ch.infoBaseWidth = 0.512;
+	ch.infoBaseHeight = 0.512;
 	ch.linesPosY = {};
 	ch.linesBottomPosY = {};
 	ch.linesButtonPosY = {};
@@ -223,16 +223,16 @@ function courseplay:setGlobalData()
 	};
 
 	ch.pagesPerMode = {
-		--Pg 0  Pg 1  Pg 2  Pg 3   Pg 4   Pg 5  Pg 6  Pg 7  Pg 8   Pg 9
-		{ true, true, true, true,  false, true, true, true, false, false }; --Mode 1
-		{ true, true, true, true,  true,  true, true, true, false, false }; --Mode 2
-		{ true, true, true, true,  true,  true, true, true, false, false }; --Mode 3
-		{ true, true, true, true,  false, true, true, true, true,  false }; --Mode 4
-		{ true, true, true, false, false, true, true, true, false, false }; --Mode 5
-		{ true, true, true, false, false, true, true, true, true,  false }; --Mode 6
-		{ true, true, true, true,  false, true, true, true, false, false }; --Mode 7
-		{ true, true, true, true,  false, true, true, true, false, false }; --Mode 8
-		{ true, true, true, false, false, true, true, true, false, true  }; --Mode 9
+		--Pg 0		  Pg 1		  Pg 2		  Pg 3		   Pg 4			Pg 5		Pg 6		Pg 7		Pg 8		 Pg 9
+		{ [0] = true, [1] = true, [2] = true, [3] = true,  [4] = false, [5] = true, [6] = true, [7] = true, [8] = false, [9] = false }; --Mode 1
+		{ [0] = true, [1] = true, [2] = true, [3] = true,  [4] = true,  [5] = true, [6] = true, [7] = true, [8] = false, [9] = false }; --Mode 2
+		{ [0] = true, [1] = true, [2] = true, [3] = true,  [4] = true,  [5] = true, [6] = true, [7] = true, [8] = false, [9] = false }; --Mode 3
+		{ [0] = true, [1] = true, [2] = true, [3] = true,  [4] = false, [5] = true, [6] = true, [7] = true, [8] = true,  [9] = false }; --Mode 4
+		{ [0] = true, [1] = true, [2] = true, [3] = false, [4] = false, [5] = true, [6] = true, [7] = true, [8] = false, [9] = false }; --Mode 5
+		{ [0] = true, [1] = true, [2] = true, [3] = false, [4] = false, [5] = true, [6] = true, [7] = true, [8] = true,  [9] = false }; --Mode 6
+		{ [0] = true, [1] = true, [2] = true, [3] = true,  [4] = false, [5] = true, [6] = true, [7] = true, [8] = false, [9] = false }; --Mode 7
+		{ [0] = true, [1] = true, [2] = true, [3] = true,  [4] = false, [5] = true, [6] = true, [7] = true, [8] = false, [9] = false }; --Mode 8
+		{ [0] = true, [1] = true, [2] = true, [3] = false, [4] = false, [5] = true, [6] = true, [7] = true, [8] = false, [9] = true  }; --Mode 9
 	};
 	ch.visibleArea = {
 		x1 = courseplay.hud.infoBasePosX;
@@ -240,6 +240,7 @@ function courseplay:setGlobalData()
 		y1 = courseplay.hud.infoBasePosY;
 		y2 = --[[0.30463;]] --[[0.002 + 0.271 + 32/1080 + 0.002;]] courseplay.hud.infoBasePosY + 0.271 + 32/1080 + 0.002;
 	};
+	ch.visibleArea.y2InclSuc = ch.visibleArea.y2 + 0.15;
 	ch.visibleArea.width = courseplay.hud.visibleArea.x2 - courseplay.hud.visibleArea.x1;
 	ch.infoBaseCenter = (courseplay.hud.visibleArea.x1 + courseplay.hud.visibleArea.x2)/2;
 
@@ -289,6 +290,25 @@ function courseplay:setGlobalData()
 	loadSample(courseplay.hud.clickSound, Utils.getFilename("sounds/cpClickSound.wav", courseplay.path), false);
 
 	courseplay.lightsNeeded = false;
+
+	local langNumData = {
+		br = { '.', ',' },
+		cz = { ' ', ',' },
+		de = { '.', ',' },
+		en = { ',', '.' },
+		es = { '.', ',' },
+		fr = { ' ', ',' },
+		it = { '.', ',' },
+		jp = { ',', '.' },
+		pl = { ' ', ',' },
+		ru = { ' ', ',' }
+	};
+	courseplay.numberSeparator = '\'';
+	courseplay.numberDecimalSeparator = '.';
+	if g_languageShort and langNumData[g_languageShort] then
+		courseplay.numberSeparator        = langNumData[g_languageShort][1];
+		courseplay.numberDecimalSeparator = langNumData[g_languageShort][2];
+	end;
 
 	--GLOBALINFOTEXT
 	courseplay.globalInfoText = {};
@@ -446,6 +466,8 @@ function courseplay:setGlobalData()
 	courseplay.fields.debugScannedFields = fieldsDebugScan;
 	courseplay.fields.debugCustomLoadedFields = fieldsDebugCustomLoad;
 	courseplay.fields.scanStep = Utils.getNoNil(fieldsCustomScanStep, courseplay.fields.defaultScanStep);
+	courseplay.fields.seedUsageCalculator = {};
+	courseplay.fields.seedUsageCalculator.fieldsWithoutSeedData = {};
 
 	--PATHFINDING
 	courseplay.pathfinding = {};
@@ -453,6 +475,8 @@ function courseplay:setGlobalData()
 	--UTF8
 	courseplay.allowedCharacters = courseplay:getAllowedCharacters();
 	courseplay.utf8normalization = courseplay:getUtf8normalization();
+
+	courseplay.moreRealisticInstalled = RealisticUtils ~= nil and RealisticUtils.getFruitInfosV2 ~= nil;
 
 	--print("\t### Courseplay: setGlobalData() finished");
 end;

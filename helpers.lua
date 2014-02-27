@@ -859,3 +859,46 @@ function courseplay:loc(key)
 	return Utils.getNoNil(courseplay.locales[key], key);
 end;
 
+function courseplay.utils:crossProductQuery(a, b, c, useC)
+	-- returns:
+	--	-1	vector from A to right intersects BC (except at the bottom end point)
+	--	 0	A is directly on BC
+	--	 1	all else
+
+	if useC == nil then useC = true; end;
+	local x,z = useC and 'cx' or 'x', useC and 'cz' or 'z';
+
+	if a[z] == b[z] and b[z] == c[z] then
+		if (b[x] <= a[x] and a[x] <= c[x]) or (c[x] <= a[x] and a[x] <= b[x]) then
+			return 0;
+		else
+			return 1;
+		end;
+	end;
+
+	if b[z] > c[z] then
+		local cNew = b;
+		local bNew = c;
+		b,c = bNew,cNew;
+	end;
+
+	if a[z] == b[z] and a[x] == b[x] then
+		return 0;
+	end;
+
+	if a[z] <= b[z] or a[z] > c[z] then
+		return 1;
+	end;
+
+	local delta = (b[x] - a[x]) * (c[z] - a[z]) - (b[z] - a[z]) * (c[x] - a[x]);
+
+	-- possible to use Utils.sign(): return Utils.sign(delta) * -1;
+	if delta > 0 then
+		return -1;
+	elseif delta < 0 then
+		return 1;
+	else
+		return 0;
+	end;
+end;
+
