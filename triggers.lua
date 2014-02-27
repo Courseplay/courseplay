@@ -498,7 +498,11 @@ end;
 
 
 function courseplay:isValidTipTrigger(trigger)
-	return trigger.className and (trigger.className == "SiloTrigger" or trigger.isPlaceableHeapTrigger or trigger.isAlternativeTipTrigger or Utils.endsWith(trigger.className, "TipTrigger") or Utils.endsWith(trigger.className, "PlaceableHeap"));
+	local isValid = trigger.className and (trigger.className == "SiloTrigger" or trigger.isPlaceableHeapTrigger or trigger.isAlternativeTipTrigger or Utils.endsWith(trigger.className, "TipTrigger") or Utils.endsWith(trigger.className, "PlaceableHeap"));
+	if isValid and trigger.bunkerSilo and trigger.bunkerSilo.movingPlanes == nil then
+		isValid = false;
+	end;
+	return isValid;
 end;
 
 
