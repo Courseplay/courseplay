@@ -2175,6 +2175,52 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<hu>·</hu>
 		</text>
 
+		<!-- SeedUsageCalculator HUD content -->
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR">
+			<en>Seed usage calculator</en>
+			<de>Saatgut-Berechner</de>
+			<fr>Utilisation des semences</fr> <!-- !!! -->
+			<es>Uso de semillas</es> <!-- !!! -->
+			<it>Utilizzo di semi</it> <!-- !!! -->
+			<hu>Maghaszükséglet számítás</hu>
+		</text>
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD">
+			<en>Field: %d (%s %s)</en>
+			<de>Feld: %d (%s %s)</de>
+			<fr>Champs: %d (%s %s)</fr>
+			<es>Campo: %d (%s %s)</es>
+			<it>Campo: %d (%s %s)</it>
+			<hu>Terület: %d (%s %s)</hu>
+		</text>
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE">
+			<en>Seed type: %s</en>
+			<de>Saattyp: %s</de>
+			<es>Tipo de semilla: %s</es>
+			<fr>Type de semence: %s</fr>
+			<it>Tipo di seme: %s</it>
+			<hu>Vetőmag típusa: %s</hu>
+		</text>
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE_DEFAULT">
+			<en>Default: %s %s (%s)</en>
+			<de>Standard: %s %s (%s)</de>
+			<fr>Défaut: %s %s (%s)</fr>
+			<es>Defecto: %s %s (%s)</es>
+			<it>Difette: %s %s (%s)</it>
+			<hu>Alap verzióban: %s %s (%s) </hu>
+		</text>
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE_MOREREALISTIC">
+			<en>MoreRealistic: %s %s (%s)</en>
+			<de>MoreRealistic: %s %s (%s)</de>
+			<es>MoreRealistic: %s %s (%s)</es>
+			<fr>MoreRealistic: %s %s (%s)</fr>
+			<it>MoreRealistic: %s %s (%s)</it>
+			<hu>Több realítás módban: %s %s (%s)</hu>
+		</text>
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_TRIM">
+			<en>···</en>
+			<hu>···</hu>
+		</text>
+
 		<!-- INPUTBINDINGS -->
 		<text name="COURSEPLAY_HUD_OPEN">
 			<en>Show Courseplay HUD</en>
