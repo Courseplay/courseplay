@@ -3,22 +3,21 @@ function courseplay.prerequisitesPresent(specializations)
 end
 
 function courseplay:load(xmlFile)
-	
-	self.setCourseplayFunc = SpecializationUtil.callSpecializationsFunction("setCourseplayFunc");
+	self.setCourseplayFunc = courseplay.setCourseplayFunc;
 
 	--SEARCH AND SET self.name IF NOT EXISTING
 	if self.name == nil then
-		local nameSearch = { "vehicle.name." .. g_languageShort, "vehicle.name.en", "vehicle.name", "vehicle#type" };
+		local nameSearch = { 'vehicle.name.' .. g_languageShort, 'vehicle.name.en', 'vehicle.name', 'vehicle#type' };
 		for i,xmlPath in pairs(nameSearch) do
 			self.name = getXMLString(xmlFile, xmlPath);
 			if self.name ~= nil then
-				courseplay:debug(nameNum(self) .. ": self.name was nil, got new name from " .. xmlPath .. " in XML", 12);
+				-- print(('%s: self.name was nil, got new name from %q in XML'):format(self.name, xmlPath));
 				break;
 			end;
 		end;
 		if self.name == nil then
-			self.name = g_i18n:getText("UNKNOWN");
-			courseplay:debug(tostring(self.configFileName) .. ": self.name was nil, new name is " .. self.name, 12);
+			self.name = g_i18n:getText('UNKNOWN');
+			-- print(('%s: self.name was nil, new name is %q'):format(tostring(self.configFileName), self.name));
 		end;
 	end;
 

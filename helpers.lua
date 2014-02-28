@@ -856,7 +856,7 @@ function courseplay.utils:getFnCallPath(numPathSteps) --TODO: always use 'printC
 end;
 
 function courseplay:loc(key)
-	return Utils.getNoNil(courseplay.locales[key], key);
+	return courseplay.locales[key] or key;
 end;
 
 function courseplay.utils:crossProductQuery(a, b, c, useC)

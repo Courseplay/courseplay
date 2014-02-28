@@ -1,57 +1,33 @@
 --COURSEPLAY
-SpecializationUtil.registerSpecialization("courseplay", "courseplay", g_currentModDirectory .. "courseplay.lua")
+SpecializationUtil.registerSpecialization('courseplay', 'courseplay', g_currentModDirectory .. 'courseplay.lua');
 
 function courseplay:register()
 	local numInstallationsVehicles = 0;
-	for k,vehicleType in pairs(VehicleTypeUtil.vehicleTypes) do
-		if vehicleType ~= nil then
-			for a=1, table.maxn(vehicleType.specializations) do
-				local spec = vehicleType.specializations[a];
-				if spec ~= nil and spec == SpecializationUtil.getSpecialization("steerable") then
-					if not SpecializationUtil.hasSpecialization(courseplay, vehicleType.specializations) then
-						--courseplay:debug("adding courseplay to:"..tostring(vehicleType.name), 3);
-						table.insert(vehicleType.specializations, SpecializationUtil.getSpecialization("courseplay"));
-						numInstallationsVehicles = numInstallationsVehicles + 1;
-					end
+
+	local steerableSpec = SpecializationUtil.getSpecialization('steerable');
+	local courseplaySpec = SpecializationUtil.getSpecialization('courseplay');
+	for typeName,vehicleType in pairs(VehicleTypeUtil.vehicleTypes) do
+		if vehicleType then
+			for i,spec in pairs(vehicleType.specializations) do
+				if spec and spec == steerableSpec and not SpecializationUtil.hasSpecialization(courseplay, vehicleType.specializations) then
+					-- print(('\tadding Courseplay to %q'):format(tostring(vehicleType.name)));
+					table.insert(vehicleType.specializations, courseplaySpec);
+					numInstallationsVehicles = numInstallationsVehicles + 1;
+					break;
 				end;
 			end;
 		end;
 	end;
 
-	print(string.format("### Courseplay: installed into %d vehicles", numInstallationsVehicles));
+	print(string.format('### Courseplay: installed into %d vehicles', numInstallationsVehicles));
 end
-
-function courseplay:setLocales()
-	courseplay.locales = {};
-	local i=0;
-	while true do
-		local key = string.format("modDesc.l10n.text(%d)", i);
-		if not hasXMLProperty(courseplay.modDescFile, key) then 
-			break;
-		end;
-		local textName = getXMLString(courseplay.modDescFile, key .. "#name");
-		if textName ~= nil and textName ~= "" then
-			if not g_i18n:hasText(textName) then
-				g_i18n:setText(textName, textName);
-			end;
-			courseplay.locales[textName] = g_i18n:getText(textName);
-			--print(string.format("courseplay.locales[%s] (#%d) = %s", textName, i, courseplay.locales[textName]));
-			i = i + 1;
-		else
-			break;
-		end;
-	end;
-	delete(courseplay.modDescFile);
-	
-	--print("\t### Courseplay: setLocales() finished");
-end;
 
 function courseplay:attachableLoad(xmlFile)
 	if self.cp == nil then self.cp = {}; end;
 
 	--SEARCH AND SET ATTACHABLE'S self.name IF NOT EXISTING
 	if self.name == nil then
-		local nameSearch = { "vehicle.name." .. g_languageShort, "vehicle.name.en", "vehicle.name", "vehicle#type" };
+		local nameSearch = { 'vehicle.name.' .. g_languageShort, 'vehicle.name.en', 'vehicle.name', 'vehicle#type' };
 		for i,xmlPath in pairs(nameSearch) do
 			self.name = getXMLString(xmlFile, xmlPath);
 			if self.name ~= nil then 
@@ -60,7 +36,7 @@ function courseplay:attachableLoad(xmlFile)
 			end;
 		end;
 		if self.name == nil then 
-			self.name = g_i18n:getText("UNKNOWN");
+			self.name = g_i18n:getText('UNKNOWN');
 			--print(tostring(self.configFileName) .. ": self.name was nil, new name is " .. self.name);
 		end;
 	end;
@@ -177,6 +153,6 @@ function courseplay:foldableLoad(xmlFile)
 end;
 Foldable.load = Utils.appendedFunction(Foldable.load, courseplay.foldableLoad);
 
-courseplay:setLocales();
+courseplay.locales = courseplay.utils.table.copy(g_i18n.texts, true);
 courseplay:register();
 

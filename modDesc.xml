@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="13">
-	<version>3.41.0409</version>
+	<version>3.41.0410</version>
 	<author><![CDATA[Jakob Tischler, Thomas Gärtner,
 Horoman]]></author>
 	<title>
@@ -523,19 +523,19 @@ Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<en>Filter courses:</en>
 			<de>Kurse filtern:</de>
 			<fr>Filtrer les courses:</fr>
-			<es>Filter courses:</es> <!-- !!! -->
+			<es>Filtrar las rutas:</es>
 			<it>Filtro percorsi:</it>
 			<cz>Filtrovat trasy:</cz>
 			<ru>Фильтровать:</ru>
 		</text>
 		<text name="CPcoursesFilterTitle">
-			<en>Courses: "%s"</en>
-			<de>Kurse: "%s"</de>
-			<fr>Courses: "%s"</fr>
-			<es>Rutas: "%s"</es>
-			<it>Percorsi: "%s"</it>
-			<cz>Trasy: "%s"</cz>
-			<ru>Маршруты "%s"</ru>
+			<en>Courses: %q</en>
+			<de>Kurse: %q</de>
+			<fr>Courses: %q</fr>
+			<es>Rutas: %q</es>
+			<it>Percorsi: %q</it>
+			<cz>Trasy: %q</cz>
+			<ru>Маршруты: %q</ru>
 		</text>
 		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT">
 			<en>has reached overload point.</en>

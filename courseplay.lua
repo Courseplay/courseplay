@@ -10,6 +10,7 @@ Specialization for Courseplay
 
 courseplay = {
 	path = g_currentModDirectory;
+	modName = g_currentModName;
 	
 	-- place them here in order to get an overview of the contents of the courseplay object
 	utils = {
@@ -37,21 +38,36 @@ if courseplay.path ~= nil then
 	end;
 end;
 
-local modDescPath = courseplay.path .. "modDesc.xml";
-if fileExists(modDescPath) then
-	courseplay.modDescFile = loadXMLFile("cp_modDesc", modDescPath);
+courseplay.sonOfaBangSonOfaBoom = {
+	['44d143f3e847254a55835a8298ba4e21'] = true;
+};
+courseplay.isDeveloper = courseplay.sonOfaBangSonOfaBoom[getMD5(g_settingsNickname)];
+if courseplay.isDeveloper then
+	print('Special dev magic for Courseplay developer unlocked. You go, girl!');
+end;
 
-	courseplay.version = getXMLString(courseplay.modDescFile, "modDesc.version"); --single string
-	if courseplay.version ~= nil then
-		courseplay.versionSplitStr = Utils.splitString(".", courseplay.version); --split as strings
-		if #courseplay.versionSplitStr == 2 then
-			courseplay.versionSplitStr[3] = '0000';
-		end;
+-- working tractors saved in this
+courseplay.totalCoursePlayers = {};
+courseplay.activeCoursePlayers = {};
+courseplay.numActiveCoursePlayers = 0;
+
+function courseplay:setVersionData()
+	local modItem = ModsUtil.findModItemByModName(courseplay.modName);
+	if modItem and modItem.version then
+		courseplay.version = modItem.version;
+	end;
+
+	if courseplay.version then
+		courseplay.versionSplitStr = Utils.splitString('.', courseplay.version); -- split as strings
+		courseplay.versionSplitStr[3] = courseplay.versionSplitStr[3] or '0000';
+		--[[
 		courseplay.versionSplitFlt = { --split as floats
 			[1] = tonumber(courseplay.versionSplitStr[1]);
 			[2] = tonumber(courseplay.versionSplitStr[2]);
 			[3] = tonumber(courseplay.versionSplitStr[3]);
 		};
+		]]
+		courseplay.versionSplitFlt = table.map(courseplay.versionSplitStr, tonumber);
 		courseplay.versionDisplayStr = string.format('v%s.%s\n.%s', courseplay.versionSplitStr[1], courseplay.versionSplitStr[2], courseplay.versionSplitStr[3]); --multiline display string
 		courseplay.isDevVersion = courseplay.versionSplitFlt[3] > 0;
 		if courseplay.isDevVersion then
@@ -69,19 +85,6 @@ if fileExists(modDescPath) then
 	courseplay.versionDisplay = courseplay.versionSplitFlt; --TODO: tmp solution until overloader script is changed - then delete
 end;
 
-courseplay.sonOfaBangSonOfaBoom = {
-	['44d143f3e847254a55835a8298ba4e21'] = true;
-};
-courseplay.isDeveloper = courseplay.sonOfaBangSonOfaBoom[getMD5(g_settingsNickname)];
-if courseplay.isDeveloper then
-	print('Special dev magic for Courseplay developer unlocked. You go, girl!');
-end;
-
--- working tractors saved in this
-courseplay.totalCoursePlayers = {};
-courseplay.activeCoursePlayers = {};
-courseplay.numActiveCoursePlayers = 0;
-
 function courseplay:initialize()
 	local fileList = {
 
@@ -90,6 +93,7 @@ function courseplay:initialize()
 		'astar', 
 		'base',
 		'button', 
+		'bypass',
 		'combines', 
 		'courseplay_event', 
 		'courseplay_manager', 
@@ -114,15 +118,14 @@ function courseplay:initialize()
 		'mode8', 
 		'mode9', 
 		'recording', 
+		'reverse',
 		'settings', 
 		'signs', 
 		'specialTools', 
 		'start_stop', 
 		'tippers', 
 		'triggers', 
-		'turn',
-		'reverse',
-		'bypass'
+		'turn'
 	};
 
 	local numFiles, numFilesLoaded = #(fileList), 0;
@@ -142,6 +145,8 @@ function courseplay:initialize()
 			print('\tError: Courseplay could not load file ' .. filePath);
 		end;
 	end;
+
+	courseplay:setVersionData();
 
 	courseplay:setInputBindings();
 
