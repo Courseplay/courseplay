@@ -376,18 +376,24 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 						end
 
 						if fillLevelPct >= 100 or tool.waitingForDischarge or (tool.cp.stopWhenUnloading and tool.pipeIsUnloading and tool.courseplayers[1] ~= nil) then
-							tool.waitingForDischarge = true
-							allowedToDrive = false;
-							tool:setIsThreshing(false);
+							tool.waitingForDischarge = true;
+							allowedToDrive = courseplay:brakeToStop(self); -- allowedToDrive = false;
+							if tool.isThreshing then
+								tool:setIsThreshing(false);
+							end;
 							if fillLevelPct < 80 and (not tool.cp.stopWhenUnloading or (tool.cp.stopWhenUnloading and tool.courseplayers[1] == nil)) then
-								tool.waitingForDischarge = false
-								-- print(string.format('fillLevelPct=%.1f, stopWhenUnloading=%s, pipeIsUnloading=%s, tool.courseplayers[1]=%s -> set waitingForDischarge to false', fillLevelPct, tostring(tool.cp.stopWhenUnloading), tostring(tool.pipeIsUnloading), tostring(tool.courseplayers[1])));
-							end
-						end
+								tool.waitingForDischarge = false;
+								if not weatherStop and not tool.isThreshing then
+									tool:setIsThreshing(true);
+								end;
+							end;
+						end;
 
 						if weatherStop then
 							allowedToDrive = false;
-							tool:setIsThreshing(false);
+							if tool.isThreshing then
+								tool:setIsThreshing(false);
+							end;
 							courseplay:setGlobalInfoText(self, 'WEATHER');
 						end
 
