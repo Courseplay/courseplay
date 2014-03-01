@@ -2182,7 +2182,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<fr>Utilisation des semences</fr> <!-- !!! -->
 			<es>Uso de semillas</es> <!-- !!! -->
 			<it>Utilizzo di semi</it> <!-- !!! -->
-			<hu>Maghaszükséglet számítás</hu>
+			<hu>Vetőmag szükséglet számítás</hu>
 		</text>
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD">
 			<en>Field: %d (%s %s)</en>
@@ -2214,7 +2214,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<es>MoreRealistic: %s %s (%s)</es>
 			<fr>MoreRealistic: %s %s (%s)</fr>
 			<it>MoreRealistic: %s %s (%s)</it>
-			<hu>Több realítás módban: %s %s (%s)</hu>
+			<hu>Reálisabb módban: %s %s (%s)</hu>
 		</text>
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_TRIM">
 			<en>···</en>
