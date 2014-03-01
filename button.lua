@@ -220,7 +220,7 @@ function courseplay:renderButton(self, button)
 				end;
 			elseif fn == 'changeRefillUntilPct' then 
 				if prm < 0 then
-					button.show = (self.cp.mode == 4 or self.cp.mode == 8) and self.cp.refillUntilPct > 5;
+					button.show = (self.cp.mode == 4 or self.cp.mode == 8) and self.cp.refillUntilPct > 1;
 				elseif prm > 0 then
 					button.show = (self.cp.mode == 4 or self.cp.mode == 8) and self.cp.refillUntilPct < 100;
 				end;

@@ -1269,7 +1269,7 @@ end
 function courseplay:handleSpecialSprayer(self, activeTool, fill_level, driveOn, allowedToDrive, lx, lz, dt, pumpDir)
 	local vehicle = self;
 	pumpDir = pumpDir or "pull";
-	local isDone = (pumpDir == "pull" and fill_level == driveOn) or (pumpDir == "push" and fill_level == 0);
+	local isDone = (pumpDir == "pull" and fill_level >= driveOn) or (pumpDir == "push" and fill_level == 0);
 
 	--HoseRef system: sprayer [Eifok Team]
 	if activeTool.cp.isHoseRefSprayer and vehicle.cp.mode == 4 then
@@ -1369,7 +1369,7 @@ function courseplay:handleSpecialSprayer(self, activeTool, fill_level, driveOn, 
 							self.cp.maxFieldSpeed = 5/3600
 						else   -- fill up
 							allowedToDrive = false
-							if fill_level < 100 then
+							if fill_level < driveOn then
 								if not activeTool.manschetteInRange then
 									local done = courseplay:moveSingleTool(self,activeTool, 9, 0,0,1.2180819906372)
 									if done then
@@ -1389,7 +1389,7 @@ function courseplay:handleSpecialSprayer(self, activeTool, fill_level, driveOn, 
 							end
 						end
 					end
-					if fill_level == 100 then
+					if fill_level >= driveOn then
 						moveDone = courseplay:moveSingleTool(self,activeTool, 9, 0,0,0)
 						courseplay:moveSingleTool(self,activeTool, 11, 0,0,0)
 						courseplay:moveSingleTool(self,activeTool, 12, 0,0,0)
@@ -1591,10 +1591,10 @@ function courseplay.thirdParty.EifokLiquidManure:refillViaHose(vehicle, activeTo
 
 		local objectIsFull =  object.fillLevel ~= nil and object.capacity ~= nil and object.fillLevel >= object.capacity;
 		local objectIsEmpty = object.fillLevel ~= nil and object.fillLevel == 0;
-		local iAmFull =  fill_level == driveOn;
+		local iAmFull =  fill_level >= driveOn;
 		local iAmEmpty = fill_level == 0;
 
-		local isDone = iAmFull or (objectIsEmpty and fill_level > vehicle.cp.driveOnAtFillLevel);
+		local isDone = iAmFull or objectIsEmpty;
 		if pumpDir == "push" then
 			isDone = iAmEmpty or (objectIsFull and fill_level < vehicle.cp.followAtFillLevel);
 			--courseplay:debug(string.format("%s: isDone=%s, fill_level=%.1f, objectIsFull=%s (%s/%s), required_fill_level_for_follow=%d", nameNum(activeTool), tostring(isDone), fill_level, tostring(objectIsFull), tostring(object.fillLevel), tostring(object.capacity), vehicle.cp.followAtFillLevel), 14);
@@ -1759,8 +1759,8 @@ function courseplay.thirdParty.EifokLiquidManure:connectRefillDisconnect(vehicle
 				end;
 				
 				if objectIsReady and activeTool.pumpDir ~= pumpDirNum then
-					activeTool:setPumpDir(pumpDirNum); --WORKS
 					courseplay:debug(string.format("\t\tobject.fillLevel=%s, object.capacity=%s, activeTool.pumpDir=%s -> activeTool:setPumpDir(%d) [START FILL]", tostring(object.fillLevel), tostring(object.capacity), tostring(activeTool.pumpDir), pumpDirNum), 14);
+					activeTool:setPumpDir(pumpDirNum); --WORKS
 				end;
 			end;
 		end; --END not isDone
@@ -1779,7 +1779,7 @@ function courseplay.thirdParty.EifokLiquidManure:connectRefillDisconnect(vehicle
 			if courseplay.debugChannels[14] then
 				local objectIsFull  = object.fillLevel ~= nil and object.capacity ~= nil and object.fillLevel >= object.capacity;
 				local objectIsEmpty = object.fillLevel ~= nil and object.fillLevel == 0;
-				local iAmFull  = activeTool.fillLevel == activeTool.capacity;
+				local iAmFull  = 100 * activeTool.fillLevel/activeTool.capacity >= driveOn;
 				local iAmEmpty = activeTool.fillLevel == 0;
 				if pumpDir == "push" then
 					courseplay:debug(string.format("\t%s isDone=true, iAmEmpty=%s, objectIsFull=%s -> call stopAndDisconnect()", nameNum(activeTool), tostring(iAmEmpty), tostring(objectIsFull)), 14);

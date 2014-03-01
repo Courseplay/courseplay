@@ -332,7 +332,7 @@ function courseplay:drive(self, dt)
 					allowedToDrive,lx,lz = courseplay:refillSprayer(self, fill_level, self.cp.refillUntilPct, allowedToDrive, lx, lz, dt);
 				end;
 				if courseplay:timerIsThrough(self, "fillLevelChange") or self.cp.prevFillLevel == nil then
-					if self.cp.prevFillLevel ~= nil and fill_level == self.cp.prevFillLevel and fill_level > self.cp.driveOnAtFillLevel then
+					if self.cp.prevFillLevel ~= nil and fill_level == self.cp.prevFillLevel and fill_level > self.cp.refillUntilPct then
 						drive_on = true
 					end
 					self.cp.prevFillLevel = fill_level
