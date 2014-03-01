@@ -46,7 +46,7 @@ function courseplay:generateCourse(vehicle)
 	end;
 	]]
 
-	courseplay:reset_course(vehicle);
+	courseplay:clearCurrentLoadedCourse(vehicle);
 
 	---#################################################################
 	-- (1) SET UP CORNERS AND DIRECTIONS --

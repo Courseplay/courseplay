@@ -255,7 +255,7 @@ function courseplay:executeFunction(self, func, value, page)
 					elseif line == 3 and self.cp.mode ~= 9 then
 						courseplay:setStartAtFirstPoint(self);
 					elseif line == 4 then
-						courseplay:reset_course(self);
+						courseplay:clearCurrentLoadedCourse(self);
 					end;
 
 				else -- driving

@@ -1,3 +1,5 @@
+local curFile = 'start_stop.lua';
+
 -- starts driving the course
 function courseplay:start(self)
 	self.maxnumber = #(self.Waypoints)
@@ -115,6 +117,7 @@ function courseplay:start(self)
 	local nearestpoint = dist
 	local recordNumber = 0
 	local curLaneNumber = 1;
+	-- print(('%s [%s(%d)]: start(), modeState=%d, mode2nextState=%s'):format(nameNum(self), curFile, debug.getinfo(1).currentline, self.cp.modeState, tostring(self.cp.mode2nextState))); -- DEBUG140301
 	for i,wp in pairs(self.Waypoints) do
 		local cx, cz = wp.cx, wp.cz
 		if self.cp.modeState == 0 or self.cp.modeState == 99 then
@@ -183,17 +186,20 @@ function courseplay:start(self)
 	courseplay:debug(string.format("%s: numWaitPoints=%d, waitPoints[1]=%s, numCrossingPoints=%d", nameNum(self), self.cp.numWaitPoints, tostring(self.cp.waitPoints[1]), numCrossingPoints), 12);
 
 
+	-- print(('%s [%s(%d)]: start(), modeState=%d, mode2nextState=%s, recordNumber=%d'):format(nameNum(self), curFile, debug.getinfo(1).currentline, self.cp.modeState, tostring(self.cp.mode2nextState), recordNumber)); -- DEBUG140301
 	if self.cp.modeState == 0 or self.cp.modeState == 99 then
 		local changed = false
 		for i=recordNumber,recordNumber+3 do
 			if self.Waypoints[i]~= nil and self.Waypoints[i].turn ~= nil then
 				self.recordnumber = i + 2
+				-- print(('\t(%d) self.recordnumber=%d'):format(debug.getinfo(1).currentline, self.recordnumber)); -- DEBUG140301
 				changed = true
 				break
 			end	
 		end
 		if changed == false then
 			self.recordnumber = recordNumber
+			-- print(('\t(%d) self.recordnumber=%d'):format(debug.getinfo(1).currentline, self.recordnumber)); -- DEBUG140301
 		end
 
 		if self.recordnumber > self.maxnumber then
@@ -203,6 +209,7 @@ function courseplay:start(self)
 
 	if self.recordnumber > 2 and self.cp.mode ~= 4 and self.cp.mode ~= 6 then
 		self.cp.isLoaded = true
+		-- print(('%s [%s(%d)]: start(), recordnumber=%d -> set isLoaded to true'):format(nameNum(self), curFile, debug.getinfo(1).currentline, self.recordnumber)); -- DEBUG140301
 	elseif self.cp.mode == 4 or self.cp.mode == 6 then
 		self.cp.isLoaded = false;
 		self.cp.hasUnloadingRefillingCourse = self.maxnumber > self.cp.stopWork + 7;

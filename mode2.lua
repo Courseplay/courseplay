@@ -9,7 +9,7 @@
 -- 6 fahre hinter traktor
 -- 8 alle trailer voll
 -- 81 alle trailer voll, schlepper wendet von maschine weg
--- 9 wenden
+-- 99 wenden
 -- 10 seite wechseln
 
 function courseplay:handle_mode2(self, dt)
@@ -37,6 +37,7 @@ function courseplay:handle_mode2(self, dt)
 
 	if self.cp.modeState == 0 then
 		self.cp.modeState = 1
+		-- print(('%s [%s(%d)]: modeState=0 -> set modeState to 1'):format(nameNum(self), curFile, debug.getinfo(1).currentline)); -- DEBUG140301
 	end
 
 
@@ -46,6 +47,7 @@ function courseplay:handle_mode2(self, dt)
 
 	-- trailer full
 	if self.cp.modeState == 8 then
+		-- print(('%s [%s(%d)]: modeState=8 -> set recordnumber to 2, modeState to 0, isLoaded to true'):format(nameNum(self), curFile, debug.getinfo(1).currentline)); -- DEBUG140301
 		self.recordnumber = 2
 		courseplay:unregister_at_combine(self, self.cp.activeCombine)
 		self.cp.modeState = 0
@@ -133,6 +135,7 @@ function courseplay:handle_mode2(self, dt)
 		end;
 
 		if self.cp.isLoaded then
+			-- print(('%s [%s(%d)]: activeCombine=nil, isLoaded=true -> set recordnumber to 2, modeState to 99, return false'):format(nameNum(self), curFile, debug.getinfo(1).currentline)); -- DEBUG140301
 			self.recordnumber = 2
 			self.cp.modeState = 99
 			return false
@@ -755,6 +758,7 @@ function courseplay:unload_combine(self, dt)
 				self.cp.shortestDistToWp = nil
 				self.cp.mode2nextState = 7
 			end
+		-- elseif self.cp.modeState ~= 5 and self.cp.modeState ~= 99 and not self.cp.realisticDriving then
 		elseif self.cp.modeState ~= 5 and self.cp.modeState ~= 9 and not self.cp.realisticDriving then
 			-- just wait until combine has turned
 			allowedToDrive = false
@@ -773,8 +777,8 @@ function courseplay:unload_combine(self, dt)
 
 
 	--[[ TODO: MODESTATE 99 - WTF?
-	-- wende man?ver
-	if self.cp.modeState == 9 and self.target_x ~= nil and self.target_z ~= nil then
+	-- Turn maneuver
+	if self.cp.modeState == 99 and self.cp.curTarget.x ~= nil and self.cp.curTarget.z ~= nil then
 		--courseplay:remove_from_combines_ignore_list(self, combine)
 		self.cp.infoText = string.format(courseplay:loc("CPTurningTo"), self.cp.curTarget.x, self.cp.curTarget.z)
 		allowedToDrive = false
@@ -868,6 +872,7 @@ function courseplay:unload_combine(self, dt)
 					self.cp.infoText = courseplay:loc("CPWaitUntilCombineTurned");
 				elseif self.cp.mode2nextState == 81 then -- tipper turning from combine
 
+					-- print(('%s [%s(%d)]: no nextTargets, mode2nextState=81 -> set recordnumber to 2, modeState to 99, isLoaded to true, return false'):format(nameNum(self), curFile, debug.getinfo(1).currentline)); -- DEBUG140301
 					self.recordnumber = 2
 					courseplay:unregister_at_combine(self, self.cp.activeCombine)
 					self.cp.modeState = 99

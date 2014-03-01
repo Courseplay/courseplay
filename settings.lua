@@ -1,3 +1,5 @@
+local curFile = 'settings.lua';
+
 function courseplay:openCloseHud(self, open)
 	courseplay:setMouseCursor(self, open);
 	self.cp.hud.show = open;
@@ -636,6 +638,11 @@ function courseplay:copyCourse(vehicle)
 		end
 
 		vehicle.cp.modeState = 1;
+		-- print(('%s [%s(%d)]: copyCourse() -> set modeState to 1'):format(nameNum(vehicle), curFile, debug.getinfo(1).currentline)); -- DEBUG140301
+		if vehicle.cp.mode == 2 or vehicle.cp.mode == 3 then
+			vehicle.cp.modeState = 0;
+			-- print(('%s [%s(%d)]: copyCourse(): mode=%d -> set modeState to 0'):format(nameNum(vehicle), curFile, debug.getinfo(1).currentline, vehicle.cp.mode)); -- DEBUG140301
+		end;
 		vehicle.cp.recordingTimer = 1;
 
 		courseplay.utils.signs:updateWaypointSigns(vehicle, 'current');
@@ -1116,7 +1123,7 @@ function courseplay:reloadCoursesFromXML(vehicle)
 		courseplay:debug("g_currentMission.cp_courses = courseplay_manager:load_courses()", 8);
 		if not vehicle.drive then
 			local loadedCoursesBackup = vehicle.cp.loadedCourses;
-			courseplay:reset_course(vehicle);
+			courseplay:clearCurrentLoadedCourse(vehicle);
 			vehicle.cp.loadedCourses = loadedCoursesBackup;
 			courseplay:reload_courses(vehicle, true);
 			courseplay:debug("courseplay:reload_courses(vehicle, true)", 8);

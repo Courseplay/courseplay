@@ -1,3 +1,5 @@
+local curFile = 'recording.lua';
+
 -- records waypoints for course
 function courseplay:record(vehicle)
 	local cx, cy, cz = getWorldTranslation(vehicle.rootNode);
@@ -72,7 +74,7 @@ end;
 
 -- starts course recording -- just setting variables
 function courseplay:start_record(vehicle)
-	--    courseplay:reset_course(vehicle)
+	--    courseplay:clearCurrentLoadedCourse(vehicle)
 	vehicle.cp.isRecording = true;
 	vehicle.cp.recordingIsPaused = false;
 	vehicle.drive = false
@@ -214,8 +216,8 @@ function courseplay:delete_waypoint(vehicle)
 	courseplay:buttonsActiveEnabled(vehicle, 'recording');
 end;
 
--- resets current course -- just setting variables
-function courseplay:reset_course(vehicle)
+-- clears current course -- just setting variables
+function courseplay:clearCurrentLoadedCourse(vehicle)
 	courseplay:reset_merged(vehicle)
 	vehicle.recordnumber = 1
 	vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = nil, nil, nil;
@@ -225,8 +227,12 @@ function courseplay:reset_course(vehicle)
 	end
 	vehicle.cp.loadedCourses = {}
 	vehicle.cp.currentCourseName = nil
-	--vehicle.cp.mode = 1
-	vehicle.cp.modeState = 1
+	vehicle.cp.modeState = 1;
+	-- print(('%s [%s(%d)]: clearCurrentLoadedCourse() -> set modeState to 1'):format(nameNum(vehicle), curFile, debug.getinfo(1).currentline)); -- DEBUG140301
+	if vehicle.cp.mode == 2 or vehicle.cp.mode == 3 then
+		vehicle.cp.modeState = 0;
+		-- print(('%s [%s(%d)]: clearCurrentLoadedCourse(): mode=%d -> set modeState to 0'):format(nameNum(vehicle), curFile, debug.getinfo(1).currentline, vehicle.cp.mode)); -- DEBUG140301
+	end;
 	vehicle.cp.recordingTimer = 1
 	vehicle.Waypoints = {}
 	vehicle.cp.canDrive = false
