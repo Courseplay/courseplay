@@ -584,12 +584,13 @@ function courseplay.fields:getFruitTypes()
 				sucText = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE'):format(fillTypeDesc.nameI18N)
 			};
 
-			local hudOverlayFilename = g_currentMission.fillTypeOverlays[fillType].filename;
-			if hudOverlayFilename and hudOverlayFilename ~= '' then
-				local hudOverlayPath = hudOverlayFilename;
-				fruitData.overlay = Overlay:new(('suc_fruit_%s'):format(fruitType.name), hudOverlayPath, hudX, hudY, hudW, hudH);
-				fruitData.overlay:setColor(1, 1, 1, 0.25);
-				-- print(('SUC fruitType %s: hudPath=%q, overlay=%s'):format(fruitType.name, tostring(hudOverlayPath), tostring(fruitData.overlay)));
+			if fillType and g_currentMission.fillTypeOverlays[fillType] then
+				local hudOverlayPath = g_currentMission.fillTypeOverlays[fillType].filename;
+				if hudOverlayPath and hudOverlayPath ~= '' and fileExists(hudOverlayPath) then
+					fruitData.overlay = Overlay:new(('suc_fruit_%s'):format(fruitType.name), hudOverlayPath, hudX, hudY, hudW, hudH);
+					fruitData.overlay:setColor(1, 1, 1, 0.25);
+					-- print(('SUC fruitType %s: hudPath=%q, overlay=%s'):format(fruitType.name, tostring(hudOverlayPath), tostring(fruitData.overlay)));
+				end;
 			end;
 
 			fruitData.usagePerSqmDefault = fruitType.seedUsagePerSqm;
