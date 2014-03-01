@@ -350,36 +350,41 @@ function courseplay:generateCourse(vehicle)
 			-- courseplay:debug(tableShow(finalPoints, string.format('[line %d] finalPoints %d', debug.getinfo(1).currentline, curLane), 7), 7); --WORKS
 
 
-			-- --------------------------------------------------
-			-- (2.4) FINALIZE (ADD POINT DATA)
-			courseplay:debug('(2.4) FINALIZE (ADD POINT DATA)', 7);
+			if numOffsetPoints >= 5 then
+				-- --------------------------------------------------
+				-- (2.4) FINALIZE (ADD POINT DATA)
+				courseplay:debug('(2.4) FINALIZE (ADD POINT DATA)', 7);
 
-			lane = finalPoints;
-			for i,cp in pairs(lane) do
-				local np = lane[i+1];
-				if i == numOffsetPoints then
-					np = lane[1];
+				lane = finalPoints;
+				for i,cp in pairs(lane) do
+					local np = lane[i+1];
+					if i == numOffsetPoints then
+						np = lane[1];
+					end;
+					local dirX,dirZ = self:getPointDirection(cp, np);
+
+					cp.angle = Utils.getYRotationFromDirection(dirX, dirZ);
+					cp.wait = false;
+					cp.rev = false;
+					cp.crossing = false;
+					cp.generated = true;
+					cp.lane = curLane * -1; --negative lane = headland
+					-- cp.firstInLane = false;
+					cp.turn = nil;
+					cp.turnStart = false;
+					cp.turnEnd = false;
+					cp.ridgeMarker = laneRidgeMarker;
 				end;
-				local dirX,dirZ = self:getPointDirection(cp, np);
 
-				cp.angle = Utils.getYRotationFromDirection(dirX, dirZ);
-				cp.wait = false;
-				cp.rev = false;
-				cp.crossing = false;
-				cp.generated = true;
-				cp.lane = curLane * -1; --negative lane = headland
-				-- cp.firstInLane = false;
-				cp.turn = nil;
-				cp.turnStart = false;
-				cp.turnEnd = false;
-				cp.ridgeMarker = laneRidgeMarker;
+				polyPoints = lane;
+				polyLength = numOffsetPoints;
+				courseplay:debug(string.format("generateCourse(%i): inserting lane #%d (%d points) into headland.lanes", debug.getinfo(1).currentline, curLane, numOffsetPoints), 7);
+				-- courseplay:debug(tableShow(lane, string.format('[line %d] lane %d', debug.getinfo(1).currentline, curLane), 7), 7); --WORKS
+				table.insert(vehicle.cp.headland.lanes, lane);
+			else
+				courseplay:debug(string.format('headland lane #%d has fewer than 5 points (invalid) -> stop headland calculation', curLane), 7);
+				break;
 			end;
-
-			polyPoints = lane;
-			polyLength = numOffsetPoints;
-			courseplay:debug(string.format("generateCourse(%i): inserting lane #%d (%d points) into headland.lanes", debug.getinfo(1).currentline, curLane, numOffsetPoints), 7);
-			-- courseplay:debug(tableShow(lane, string.format('[line %d] lane %d', debug.getinfo(1).currentline, curLane), 7), 7); --WORKS
-			table.insert(vehicle.cp.headland.lanes, lane);
 		end; --END for curLane in numLanes
 
 		local numCreatedLanes = #(vehicle.cp.headland.lanes);
