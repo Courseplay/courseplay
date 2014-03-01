@@ -64,18 +64,18 @@ function courseplay.fields:setAllFieldEdges()
 end;
 
 function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, randomDir, dbgType)
-	--self = courseplay.fields
+--self = courseplay.fields
 	if randomDir == nil then randomDir = false; end;
 	scanStep = scanStep or self.defaultScanStep;
 	maxN = maxN or math.floor(10000/scanStep); --10 km circumference should be enough. otherwise state maxN as parameter
-	local steepCornerTolerance = math.rad(11.25); --TODO: make customizable
+	local steepCornerTolerance = math.rad(15); --TODO: make customizable
 	self:dbg(string.format('getSingleFieldEdge(initObject, [scanStep] %d, [maxN] %s, [randomDir] %s)', scanStep, tostring(maxN), tostring(randomDir)), dbgType);
 
 	local x0,_,z0 = getWorldTranslation(initObject);
 	local isField = courseplay:is_field(x0, z0, 0.1, 0.1);
 	local coordinates, xValues, zValues = {}, {}, {};
 	local numPoints = 0;
-	self:dbg(string.format('Begin edge scanning at: %.2f, %.2f', x0, z0), dbgType);
+	self:dbg(string.format('\Begin edge scanning at: %.2f, %.2f', x0, z0), dbgType);
 	if isField then
 		-- (1) SET INITIAL TG AND PROBE DATA
 		local dis = 0;
@@ -105,8 +105,9 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 				break;
 			end;
 		end;
+
 		-- now we have a point very close to the field boundary but definitely outside
-		self:dbg(string.format('\tfound first point past field border: x0=%s, z0=%s, dis=%s', tostring(x0), tostring(z0), tostring(dis)), dbgType);
+		self:dbg(string.format('\t\tfound first point past field border: x0=%s, z0=%s, dis=%s', tostring(x0), tostring(z0), tostring(dis)), dbgType);
 
 		while not courseplay:is_field(x0,z0,0.1,0.1) do --then backtrace in small 5cm steps
 			dis = dis + stepB;
@@ -114,19 +115,21 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 			x0, _, z0 = getWorldTranslation(tg);
 		end;
 		-- we found the exact border point (+/- 5cm) - move tg to that point
-		self:dbg(string.format('\ttrace back, border point found: x0=%s, z0=%s, dis=%s', tostring(x0), tostring(z0), tostring(dis)), dbgType);
-		--	setTranslation(tg, x0, 0, z0); Already done
+		self:dbg(string.format('\t\ttrace back, border point found: x0=%s, z0=%s, dis=%s', tostring(x0), tostring(z0), tostring(dis)), dbgType);
+		-- setTranslation(tg, x0, 0, z0); Already done
 
 
 		-- (3) FIND NEXT BORDER POINT 10cm AWAY
 		-- now we rotate this point to have it following the edge direction
+		
 		x0, _, z0 = getWorldTranslation(probe1);
 		while not courseplay:is_field(x0, z0, 0.1, 0.1) do
-			rotate(tg,0,.01,0); -- rotate by 0.573 deg
+			rotate(tg,0,.001,0); -- rotate by 0.573 deg
 			x0, _, z0 = getWorldTranslation(probe1);
 		end;
+		self:dbg('\tProbe1 is on field edge')
 
-		local _,prevRot,_  = getRotation(tg);
+		local _,prevRot,_ = getRotation(tg);
 		local scanAt = scanStep;
 		while numPoints < maxN do
 			setTranslation(probe1, 0, 0, scanAt);
@@ -141,7 +144,7 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 				cnt = cnt - .1;
 				rotate(tg,0,-rotAngle,0);
 				px,_,pz = getWorldTranslation(probe1);
-				if  cnt < 0 then
+				if cnt < 0 then
 					self:dbg('\lost', dbgType);
 					break;
 				end;
@@ -160,7 +163,8 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 				--self:dbg('\t\trotate back', dbgType);
 				cnt = cnt+1;
 				if cnt > 10 then
-					translate(probe1,0,0,-.5*scanAt);
+					scanAt = scanAt *.5;
+					translate(probe1,0,0,-scanAt);
 					cnt = 0;
 					maxcnt = maxcnt + 1;
 					if maxcnt > 2 then
@@ -175,22 +179,35 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 			end;
 
 			local _,tgRot,_ = getRotation(tg);
-			table.insert(coordinates, { cx = px, cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, px, 1, pz), cz = pz });
-			table.insert(xValues, px);
-			table.insert(zValues, pz);
-			self:dbg(string.format('\tpoint %d set: cx=%s, cz=%s at %.2f m', numPoints, tostring(px), tostring(pz), scanAt), dbgType);
-			numPoints = numPoints + 1;
-			scanAt = scanStep;
-			prevRot = tgRot;
-			setTranslation(tg, getWorldTranslation(probe1));
-
-			if numPoints > 5 then
-				local dis0 = Utils.vector2Length(px-coordinates[1].cx, pz-coordinates[1].cz)
-				--print(dis0)
-				if dis0 < scanAt*1.25 then --otherwise start and end points can be very close together
-					self:dbg(string.format('\tdistance to first point [%.2f] < scanStep*1.25 [%.2f] -> break', dis0, scanStep * 1.25), 'scan');
-					break;
+			local edgeTurn = math.abs(prevRot - tgRot);
+			if edgeTurn < steepCornerTolerance or scanAt <= .5 then
+				if scanAt < 1 then 
+					table.remove(coordinates);
+					table.remove(xValues);
+					table.remove(zValues);
+					numPoints = numPoints - 1;
 				end;
+				table.insert(coordinates, { cx = px, cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, px, 1, pz), cz = pz });
+				table.insert(xValues, px);
+				table.insert(zValues, pz);
+				self:dbg(string.format('\tpoint %d set: cx=%s, cz=%s at %.2f m', numPoints, tostring(px), tostring(pz), scanAt), dbgType);
+				numPoints = numPoints + 1;
+				scanAt = scanStep;
+				prevRot = tgRot;
+				setTranslation(tg, getWorldTranslation(probe1));
+
+				if numPoints > 5 then
+					local dis0 = Utils.vector2Length(px-coordinates[1].cx, pz-coordinates[1].cz)
+					--print(dis0)
+					if dis0 < scanAt*1.25 then --otherwise start and end points can be very close together
+						self:dbg(string.format('\tdistance to first point [%.2f] < scanStep*1.25 [%.2f] -> break', dis0, scanStep * 1.25), 'scan');
+						break;
+					end;
+				end;
+			else 
+				scanAt = math.abs(math.cos(edgeTurn) * scanAt); -- if in a 90° corner then the corner should be at that distance
+				self:dbg(string.format('\t\tScanAt reduced to %.2f', scanAt), dbgType);
+				setRotation(tg, 0, prevRot, 0);
 			end;
 		end;
 
@@ -207,6 +224,7 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 		return coordinates, xValues, zValues;
 	end;
 end;
+
 
 function courseplay.fields:setSingleFieldEdgePath(initObject, initX, initZ, scanStep, maxN, numDirectionTries, fieldNum, returnPoints, dbgType)
 	for try=1,numDirectionTries do
