@@ -2112,7 +2112,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 		<text name="COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR">
 			<en>Remove combine assignment</en>
 			<de>Drescher-Zuordnung entfernen</de>
-			<fr>Retirer l'a consigne l'attribution à la machine</fr>
+			<fr>Retirer l'attribution à la machine</fr>
 			<es>Remove combine assignment</es> <!-- !!! -->
 			<it>Rimuovere assegnazione trebbia</it>
 			<cz>Odstraň přiřezení ke kombajnu</cz>
