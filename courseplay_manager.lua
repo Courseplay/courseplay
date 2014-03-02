@@ -2,6 +2,11 @@
 local courseplay_manager_mt = Class(courseplay_manager);
 
 function courseplay_manager:loadMap(name)
+	if courseplay.isDeveloper then
+		addConsoleCommand('cpAddMoney', ('Add %s to your bank account'):format(g_i18n:formatMoney(5000000)), 'devAddMoney', self);
+		addConsoleCommand('cpAddFillLevels', 'Add 500\'000 l to all of your silos', 'devAddFillLevels', self);
+	end;
+
 	if g_currentMission.cp_courses == nil then
 		--courseplay:debug("cp courses was nil and initialized", 8);
 		g_currentMission.cp_courses = {};
@@ -22,7 +27,7 @@ function courseplay_manager:loadMap(name)
 	self.buttons.globalInfoText = {};
 	local git = courseplay.globalInfoText;
 	local buttonHeight = git.fontSize;
-	local buttonWidth = buttonHeight * 1080 / 1920;
+	local buttonWidth = buttonHeight / g_screenAspectRatio; -- buttonHeight * 1080 / 1920;
 	local buttonX = git.backgroundX - git.backgroundPadding - buttonWidth;
 	for i=1,self.globalInfoTextMaxNum do
 		local posY = git.backgroundY + (i - 1) * git.lineHeight;
@@ -213,7 +218,7 @@ function courseplay_manager:draw()
 	end;
 
 	courseplay.globalInfoText.hasContent = false;
-	line = 0;
+	local line = 0;
 	if (not courseplay.globalInfoText.hideWhenPdaActive or (courseplay.globalInfoText.hideWhenPdaActive and not g_currentMission.missionPDA.showPDA)) and table.maxn(courseplay.globalInfoText.content) > 0 then
 		courseplay.globalInfoText.hasContent = true;
 		for _,refIndexes in pairs(courseplay.globalInfoText.content) do
@@ -243,10 +248,10 @@ function courseplay_manager:draw()
 						button.canBeClicked = false;
 					elseif button.isDisabled then
 						targetColor = 'whiteDisabled';
-					elseif button.isHovered then
-						targetColor = 'hover';
 					elseif button.isClicked then
 						targetColor = 'activeRed';
+					elseif button.isHovered then
+						targetColor = 'hover';
 					else
 						targetColor = 'white';
 					end;
@@ -349,20 +354,23 @@ function courseplay_manager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 	local mouseIsInClickArea = courseplay:mouseIsInArea(posX, posY, area.x1, area.x2, area.y1, area.y2);
 
 	--LEFT CLICK
-	if isDown and mouseKey == Input[courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION.keyName] and mouseIsInClickArea then
+	if (isDown or isUp) and mouseKey == courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION.buttonId and mouseIsInClickArea then
 		if courseplay.globalInfoText.hasContent then
 			for i,button in pairs(self.buttons.globalInfoText) do
 				if button.show and courseplay:mouseIsOnButton(posX, posY, button) then
-					local sourceVehicle = g_currentMission.controlledVehicle or button.parameter;
-					--print(string.format("handleMouseClickForButton(%q, button)", nameNum(sourceVehicle)));
-					courseplay:handleMouseClickForButton(sourceVehicle, button);
+					button.isClicked = isDown;
+					if isUp then
+						local sourceVehicle = g_currentMission.controlledVehicle or button.parameter;
+						--print(string.format("handleMouseClickForButton(%q, button)", nameNum(sourceVehicle)));
+						courseplay:handleMouseClickForButton(sourceVehicle, button);
+					end;
 					break;
 				end;
 			end;
 		end;
 
 	--RIGHT CLICK
-	elseif isDown and mouseKey == Input[courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION_SECONDARY.keyName] and g_currentMission.controlledVehicle == nil then
+	elseif isDown and mouseKey == courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION_SECONDARY.buttonId and g_currentMission.controlledVehicle == nil then
 		if courseplay.globalInfoText.hasContent and not self.playerOnFootMouseEnabled then
 			self.playerOnFootMouseEnabled = true;
 			self.wasPlayerFrozen = g_currentMission.isPlayerFrozen;
@@ -383,7 +391,7 @@ function courseplay_manager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 		InputBinding.setShowMouseCursor(self.playerOnFootMouseEnabled);
 
 	--HOVER
-	elseif not isDown and courseplay.globalInfoText.hasContent --[[and posX > area.x1 * 0.9 and posX < area.x2 * 1.1 and posY > area.y1 * 0.9 and posY < area.y2 * 1.1]] then
+	elseif not isDown and not isUp and courseplay.globalInfoText.hasContent --[[and posX > area.x1 * 0.9 and posX < area.x2 * 1.1 and posY > area.y1 * 0.9 and posY < area.y2 * 1.1]] then
 		for _,button in pairs(self.buttons.globalInfoText) do
 			button.isClicked = false;
 			if button.show and not button.isHidden then
@@ -681,12 +689,27 @@ function courseplay_manager:removeCourseplayersFromCombine(vehicle, callDelete)
 end;
 BaseMission.removeVehicle = Utils.prependedFunction(BaseMission.removeVehicle, courseplay_manager.removeCourseplayersFromCombine);
 
+function courseplay_manager:devAddMoney()
+	if g_server ~= nil then
+		g_currentMission:addSharedMoney(5000000, 'other');
+		return ('Added %s to your bank account'):format(g_i18n:formatMoney(5000000));
+	end;
+end;
+function courseplay_manager:devAddFillLevels()
+	if g_server ~= nil then
+		for fillType=1,Fillable.NUM_FILLTYPES do
+			g_currentMission:setSiloAmount(fillType, g_currentMission:getSiloAmount(fillType) + 500000);
+		end;
+		return 'All silo fill levels increased by 500\'000.';
+	end;
+end;
+
+addModEventListener(courseplay_manager);
 
 
 
 stream_debug_counter = 0
 
-addModEventListener(courseplay_manager);
 
 --
 -- based on PlayerJoinFix

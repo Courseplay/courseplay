@@ -135,8 +135,8 @@ function courseplay:setNameVariable(workTool)
 	--HoseRef liquid manure trailers [Eifok Team] (CP implementation v2)
 	elseif workTool.cp.hasSpecializationHoseRef then
 		workTool.cp.hasHoseRef = true;
-		workTool.cp.isHoseRefTransporter = true;
-		workTool.cp.isHoseRefSprayer = workTool.cp.hasSpecializationSprayer and workTool.allowsSpraying;
+		workTool.cp.isHoseRefTransporter = workTool.hasPump;
+		workTool.cp.isHoseRefSprayer = workTool.hasPump and workTool.cp.hasSpecializationSprayer and workTool.allowsSpraying;
 		workTool.cp.hasEifokZunhammerAttachable = false;
 
 	--Eifok liquid manure attachable pack [Eifok Team]
@@ -441,11 +441,11 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 	elseif workTool.cp.isHoseRefTransporter then
 		-- print(string.format('handleSpecialTools(): isHoseRefTransporter, unload=%s -> %s handleSpecialSprayer(..., "push")', tostring(unload), unload and 'call' or 'don\'t call'));
 		if unload then
-			local fill_level = workTool.fillLevel * 100 / workTool.capacity;
+			local fillLevel = workTool.fillLevel * 100 / workTool.capacity;
 			if self.cp.tipperFillLevel ~= nil and self.cp.tipperCapacity ~= nil then
-				fill_level = self.cp.tipperFillLevel * 100 / self.cp.tipperCapacity;
+				fillLevel = self.cp.tipperFillLevel * 100 / self.cp.tipperCapacity;
 			end;
-			return courseplay:handleSpecialSprayer(self, workTool, fill_level, nil, allowedToDrive, nil, nil, nil, "push");
+			return courseplay:handleSpecialSprayer(self, workTool, fillLevel, nil, allowedToDrive, nil, nil, nil, "push");
 		end;
 
 	--Mchale998 bale wrapper
@@ -1269,6 +1269,7 @@ end
 function courseplay:handleSpecialSprayer(self, activeTool, fill_level, driveOn, allowedToDrive, lx, lz, dt, pumpDir)
 	local vehicle = self;
 	pumpDir = pumpDir or "pull";
+	driveOn = driveOn or 100;
 	local isDone = (pumpDir == "pull" and fill_level >= driveOn) or (pumpDir == "push" and fill_level == 0);
 
 	--HoseRef system: sprayer [Eifok Team]
@@ -1659,7 +1660,7 @@ function courseplay.thirdParty.EifokLiquidManure:refillViaHose(vehicle, activeTo
 
 			--GO FOR GLORY
 			else
-				allowedToDrive = courseplay.thirdParty.EifokLiquidManure:connectRefillDisconnect(vehicle, activeTool, allowedToDrive, vehicleConnectionRef, correctSideRef, isDone, pumpDir);
+				allowedToDrive = courseplay.thirdParty.EifokLiquidManure:connectRefillDisconnect(vehicle, activeTool, allowedToDrive, vehicleConnectionRef, correctSideRef, driveOn, isDone, pumpDir);
 			end;
 		end; --END if proceedWithFilling
 	end;
@@ -1697,7 +1698,7 @@ function courseplay.thirdParty.EifokLiquidManure:findHoseToUse(vehicle, activeTo
 		end;
 	end;
 end;
-function courseplay.thirdParty.EifokLiquidManure:connectRefillDisconnect(vehicle, activeTool, allowedToDrive, vehicleConnectionRef, correctSideRef, isDone, pumpDir)
+function courseplay.thirdParty.EifokLiquidManure:connectRefillDisconnect(vehicle, activeTool, allowedToDrive, vehicleConnectionRef, correctSideRef, driveOn, isDone, pumpDir)
 	--courseplay:debug(string.format("\t%s connectRefillDisconnect() start - allowedToDrive==%s", nameNum(activeTool), tostring(allowedToDrive)), 14);
 	local targetRefillObject = vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir];
 	local object, type, closestWaypoint, side, targetConnSide = targetRefillObject.object, targetRefillObject.type, targetRefillObject.closestWaypoint, targetRefillObject.side, targetRefillObject.targetConnSide;
