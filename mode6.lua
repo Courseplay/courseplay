@@ -309,7 +309,19 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 			-- safe last point
 			if (fill_level == 100 or self.cp.isLoaded) and workArea and not courseplay:isBaler(workTool) then
 				if self.cp.hasUnloadingRefillingCourse and self.cp.abortWork == nil then
-					self.cp.abortWork = self.cp.last_recordnumber - 10
+					self.cp.abortWork = self.cp.last_recordnumber - 10;
+					-- invert lane offset if abortWork is before previous turn point (symmetric lane change)
+					if self.cp.symmetricLaneChange and self.cp.laneOffset ~= 0 then
+						for i=self.cp.abortWork,self.cp.last_recordnumber do
+							local wp = self.Waypoints[i];
+							if wp.turn ~= nil then
+								courseplay:debug(string.format('%s: abortWork set (%d), abortWork + %d: turn=%s -> change lane offset back to abortWork\'s lane', nameNum(self), self.cp.abortWork, i-1, tostring(wp.turn)), 12);
+								courseplay:changeLaneOffset(self, nil, self.cp.laneOffset * -1);
+								self.cp.switchLaneOffset = true;
+								break;
+							end;
+						end;
+					end;
 					self.recordnumber = self.cp.stopWork - 4
 					if self.recordnumber < 1 then
 						self.recordnumber = 1
