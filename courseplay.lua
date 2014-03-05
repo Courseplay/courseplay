@@ -12,7 +12,7 @@ courseplay = {
 	path = g_currentModDirectory;
 	modName = g_currentModName;
 	
-	-- place them here in order to get an overview of the contents of the courseplay object
+	-- place sub-classes here in order to get an overview of the contents of the courseplay object and allow for sub-class functions
 	utils = {
 		signs = {};
 	};
@@ -30,6 +30,7 @@ courseplay = {
 			hoses = {};
 		};
 	};
+	pathfinding = {};
 };
 
 if courseplay.path ~= nil then
@@ -87,9 +88,6 @@ end;
 
 function courseplay:initialize()
 	local fileList = {
-
-
-
 		'astar', 
 		'base',
 		'button', 
@@ -98,7 +96,7 @@ function courseplay:initialize()
 		'courseplay_event', 
 		'courseplay_manager', 
 		'course_management',
-
+		'creatingAndDeletingFolders',
 		'debug', 
 		'distance', 
 		'drive', 
@@ -117,6 +115,9 @@ function courseplay:initialize()
 		'mode6', 
 		'mode8', 
 		'mode9', 
+		'pathfinding',
+		'pathfinding_helpers',
+		'pathfinding_PathFinderOnGrids',
 		'recording', 
 		'reverse',
 		'settings', 
