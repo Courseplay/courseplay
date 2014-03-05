@@ -13,7 +13,7 @@ function courseplay:record(vehicle)
 		local dist = courseplay:distance(cx, cz, prevCx, prevCz);
 
 		if vehicle.recordnumber <= 3 then
-			vehicle.cp.recordingTimer = dist > 10 and 101 or 1;
+			vehicle.cp.recordingTimer = dist > (vehicle.recordnumber == 3 and 20 or 10) and 101 or 1;
 
 		else
 			local angleDiff = math.abs(newAngle - prevAngle);
