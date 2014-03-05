@@ -504,7 +504,7 @@ function courseplay.hud:loadPage(vehicle, page)
 		vehicle.cp.hud.content.pages[6][6][1].text = courseplay:loc("CPDebugChannels");
 
 
-	--PAGE 6: DRIVING SETTINGS
+	--PAGE 7: DRIVING SETTINGS
 	elseif page == 7 then
 		if vehicle.cp.mode == 3 or vehicle.cp.mode == 4 or vehicle.cp.mode == 6 or vehicle.cp.mode == 7 or vehicle.cp.mode == 8 then
 			--Lane offset

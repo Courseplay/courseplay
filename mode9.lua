@@ -17,7 +17,7 @@ handles "mode9": Fill and empty shovel
 5)  drive course with recorded direction (most likely in reverse) until end - continue and repeat to 1)
 ]]
 
-function courseplay:handle_mode9(self, fill_level, allowedToDrive,dt)
+function courseplay:handle_mode9(self, fillLevelPct, allowedToDrive, dt)
 	--state 1: goto BunkerSilo 
 	--state 2: get ready to load / loading
 	--state 3: transport to BGA 
@@ -58,7 +58,7 @@ function courseplay:handle_mode9(self, fill_level, allowedToDrive,dt)
 				self.cp.shovelState = 2
 				courseplay:debug(nameNum(self) .. ": set state 2", 10);
 			end
-			if fill_level == 100 then
+			if fillLevelPct == 100 then
 				local fillType = self.cp.shovel.currentFillType;
 				self.cp.shovel:setFillLevel(self.cp.shovel.capacity*0.99, fillType);
 			end 
@@ -69,16 +69,16 @@ function courseplay:handle_mode9(self, fill_level, allowedToDrive,dt)
 
 		if self.cp.shovelStopAndGo then
 			if self.cp.shovelLastFillLevel == nil then
-				self.cp.shovelLastFillLevel = fill_level;
-			elseif self.cp.shovelLastFillLevel ~= nil and fill_level == self.cp.shovelLastFillLevel and fill_level < 100 then
+				self.cp.shovelLastFillLevel = fillLevelPct;
+			elseif self.cp.shovelLastFillLevel ~= nil and fillLevelPct == self.cp.shovelLastFillLevel and fillLevelPct < 100 then
 				--allowedToDrive = true;
-			elseif self.cp.shovelLastFillLevel ~= nil and self.cp.shovelLastFillLevel ~= fill_level then
+			elseif self.cp.shovelLastFillLevel ~= nil and self.cp.shovelLastFillLevel ~= fillLevelPct then
 				allowedToDrive = false;
 			end;
-			self.cp.shovelLastFillLevel = fill_level;
+			self.cp.shovelLastFillLevel = fillLevelPct;
 		end;
 
-		if fill_level == 100 or self.cp.isLoaded then 
+		if fillLevelPct == 100 or self.cp.isLoaded then 
 			if not self.cp.isLoaded then
 				for i=self.recordnumber, self.maxnumber do
 					local _,ty,_ = getWorldTranslation(self.rootNode)
@@ -173,7 +173,7 @@ function courseplay:handle_mode9(self, fill_level, allowedToDrive,dt)
 		--courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
 		courseplay:handleSpecialTools(self,self,true,nil,nil,nil,nil,nil)
 		local stopUnloading = self.cp.shovel.trailerFound ~= nil and self.cp.shovel.trailerFound.fillLevel >= self.cp.shovel.trailerFound.capacity 
-		if fill_level == 0 or stopUnloading then
+		if fillLevelPct == 0 or stopUnloading then
 			if self.cp.isLoaded then
 				for i = self.recordnumber,self.maxnumber do
 					if self.Waypoints[i].rev then

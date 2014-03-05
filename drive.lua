@@ -9,6 +9,14 @@ function courseplay:drive(self, dt)
 	-- may i drive or should i hold position for some reason?
 	local allowedToDrive = true
 
+	-- TIPPER FILL LEVELS (get once for all following functions)
+	self.cp.tipperFillLevel, self.cp.tipperCapacity = self:getAttachedTrailersFillLevelAndCapacity();
+	if self.cp.tipperFillLevel == nil then self.cp.tipperFillLevel = 0; end;
+	if self.cp.tipperCapacity == nil then self.cp.tipperCapacity = 0; end;
+	self.cp.tipperFillLevelPct = self.cp.tipperFillLevel * 100 / (self.cp.tipperCapacity + 0.00001);
+
+
+
 	-- combine self unloading
 	if self.cp.mode == 7 then
 		if self.isAIThreshing then
@@ -248,17 +256,11 @@ function courseplay:drive(self, dt)
 	local distToChange = nil
 	local lx, lz = AIVehicleUtil.getDriveDirection(self.cp.DirectionNode, cx, cty, cz);
 
-	-- what about our tippers?
-	self.cp.tipperFillLevel, self.cp.tipperCapacity = self:getAttachedTrailersFillLevelAndCapacity()
-	local fill_level = nil
-	if self.cp.tipperFillLevel ~= nil then
-		fill_level = self.cp.tipperFillLevel * 100 / self.cp.tipperCapacity
-	end
 	if self.cp.mode == 4 or self.cp.mode == 6 then
 		if  self.Waypoints[self.recordnumber].turn ~= nil then
 			self.cp.isTurning = self.Waypoints[self.recordnumber].turn
 		end
-		if self.cp.abortWork ~= nil and fill_level == 0 then
+		if self.cp.abortWork ~= nil and self.cp.tipperFillLevelPct == 0 then
 			self.cp.isTurning = nil
 		end
 
@@ -276,7 +278,7 @@ function courseplay:drive(self, dt)
 	end;
 
 	if self.cp.mode == 4 or self.cp.mode == 8 then
-		self.implementIsFull = (fill_level ~= nil and fill_level == 100);
+		self.implementIsFull = (self.cp.tipperFillLevelPct ~= nil and self.cp.tipperFillLevelPct == 100);
 	end;
 	
 	-- in a traffic yam?
@@ -318,28 +320,28 @@ function courseplay:drive(self, dt)
 			self.waitTimer = self.timer + self.cp.waitTime * 1000
 		end
 		if self.cp.mode == 3 and self.cp.tipperAttached then
-			courseplay:handleMode3(self, fill_level, allowedToDrive, dt);
+			courseplay:handleMode3(self, self.cp.tipperFillLevelPct, allowedToDrive, dt);
 
 		elseif self.cp.mode == 4 then
 			local drive_on = false
-			if self.cp.last_recordnumber == self.cp.startWork and fill_level ~= 0 then
+			if self.cp.last_recordnumber == self.cp.startWork and self.cp.tipperFillLevelPct ~= 0 then
 				self.wait = false
 			elseif self.cp.last_recordnumber == self.cp.stopWork and self.cp.abortWork ~= nil then
 				self.wait = false
 			else
 				local isInWorkArea = self.recordnumber > self.cp.startWork and self.recordnumber <= self.cp.stopWork;
 				if self.cp.tipperAttached and self.cp.startWork ~= nil and self.cp.stopWork ~= nil and self.tippers ~= nil and not isInWorkArea then
-					allowedToDrive,lx,lz = courseplay:refillSprayer(self, fill_level, self.cp.refillUntilPct, allowedToDrive, lx, lz, dt);
+					allowedToDrive,lx,lz = courseplay:refillSprayer(self, self.cp.tipperFillLevelPct, self.cp.refillUntilPct, allowedToDrive, lx, lz, dt);
 				end;
-				if courseplay:timerIsThrough(self, "fillLevelChange") or self.cp.prevFillLevel == nil then
-					if self.cp.prevFillLevel ~= nil and fill_level == self.cp.prevFillLevel and fill_level > self.cp.refillUntilPct then
+				if courseplay:timerIsThrough(self, "fillLevelChange") or self.cp.prevFillLevelPct == nil then
+					if self.cp.prevFillLevelPct ~= nil and self.cp.tipperFillLevelPct == self.cp.prevFillLevelPct and self.cp.tipperFillLevelPct > self.cp.refillUntilPct then
 						drive_on = true
 					end
-					self.cp.prevFillLevel = fill_level
+					self.cp.prevFillLevelPct = self.cp.tipperFillLevelPct
 					courseplay:setCustomTimer(self, "fillLevelChange", 7);
 				end
 
-				if fill_level == 100 or drive_on then
+				if self.cp.tipperFillLevelPct == 100 or drive_on then
 					self.wait = false
 				end
 				self.cp.infoText = string.format(courseplay:loc("CPloading"), self.cp.tipperFillLevel, self.cp.tipperCapacity)
@@ -351,7 +353,7 @@ function courseplay:drive(self, dt)
 				self.wait = false
 			elseif self.cp.last_recordnumber ~= self.cp.startWork and self.cp.last_recordnumber ~= self.cp.stopWork then 
 				courseplay:setGlobalInfoText(self, 'UNLOADING_BALE');
-				if fill_level == 0 or drive_on then
+				if self.cp.tipperFillLevelPct == 0 or drive_on then
 					self.wait = false
 				end;
 			end;
@@ -368,19 +370,19 @@ function courseplay:drive(self, dt)
 		elseif self.cp.mode == 8 then
 			courseplay:setGlobalInfoText(self, 'OVERLOADING_POINT');
 			if self.cp.tipperAttached then
-				-- drive on if fill_level doesn't change and fill level is < 100-self.cp.followAtFillLevel
+				-- drive on if tipperFillLevelPct doesn't change and fill level is < 100-self.cp.followAtFillLevel
 				courseplay:handle_mode8(self)
 				local drive_on = false
-				if courseplay:timerIsThrough(self, "fillLevelChange") or self.cp.prevFillLevel == nil then
-					if self.cp.prevFillLevel ~= nil and fill_level == self.cp.prevFillLevel and fill_level < self.cp.followAtFillLevel then
+				if courseplay:timerIsThrough(self, "fillLevelChange") or self.cp.prevFillLevelPct == nil then
+					if self.cp.prevFillLevelPct ~= nil and self.cp.tipperFillLevelPct == self.cp.prevFillLevelPct and self.cp.tipperFillLevelPct < self.cp.followAtFillLevel then
 						drive_on = true
 					end
-					self.cp.prevFillLevel = fill_level
+					self.cp.prevFillLevelPct = self.cp.tipperFillLevelPct
 					courseplay:setCustomTimer(self, "fillLevelChange", 7);
 				end
-				if fill_level == 0 or drive_on then
+				if self.cp.tipperFillLevelPct == 0 or drive_on then
 					self.wait = false
-					self.cp.prevFillLevel = nil
+					self.cp.prevFillLevelPct = nil
 					self.cp.isUnloaded = true
 				end
 			end
@@ -456,7 +458,7 @@ function courseplay:drive(self, dt)
 		end;
 
 		if self.cp.mode == 3 and self.cp.tipperAttached and self.recordnumber >= 2 and self.cp.modeState == 0 then
-			courseplay:handleMode3(self, fill_level, allowedToDrive, dt);
+			courseplay:handleMode3(self, self.cp.tipperFillLevelPct, allowedToDrive, dt);
 		end;
 
 		-- Fertilice loading --only for one Implement !
@@ -464,7 +466,7 @@ function courseplay:drive(self, dt)
 			if self.cp.tipperAttached and self.cp.startWork ~= nil and self.cp.stopWork ~= nil then
 				local isInWorkArea = self.recordnumber > self.cp.startWork and self.recordnumber <= self.cp.stopWork;
 				if self.tippers ~= nil and not isInWorkArea then
-					allowedToDrive,lx,lz = courseplay:refillSprayer(self, fill_level, self.cp.refillUntilPct, allowedToDrive, lx, lz, dt);
+					allowedToDrive,lx,lz = courseplay:refillSprayer(self, self.cp.tipperFillLevelPct, self.cp.refillUntilPct, allowedToDrive, lx, lz, dt);
 				end
 			end;
 		end
@@ -493,7 +495,7 @@ function courseplay:drive(self, dt)
 			raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
 			if self.cp.tipperAttached then
 				if self.tippers ~= nil then
-					allowedToDrive,lx,lz = courseplay:refillSprayer(self, fill_level, self.cp.refillUntilPct, allowedToDrive, lx, lz, dt);
+					allowedToDrive,lx,lz = courseplay:refillSprayer(self, self.cp.tipperFillLevelPct, self.cp.refillUntilPct, allowedToDrive, lx, lz, dt);
 				end;
 			end;
 		end;
@@ -574,7 +576,7 @@ function courseplay:drive(self, dt)
 	local workSpeed = 0;
 	local isFinishingWork = false
 	if self.cp.mode == 4 and self.cp.tipperAttached and self.cp.startWork ~= nil and self.cp.stopWork ~= nil then
-		allowedToDrive, workArea, workSpeed ,isFinishingWork = courseplay:handle_mode4(self, allowedToDrive, workSpeed, fill_level)
+		allowedToDrive, workArea, workSpeed ,isFinishingWork = courseplay:handle_mode4(self, allowedToDrive, workSpeed, self.cp.tipperFillLevelPct)
 	end
 
 	
@@ -583,7 +585,7 @@ function courseplay:drive(self, dt)
 	-- Mode 6 Fieldwork for balers and foragewagon
 	if (self.cp.mode == 6 or self.cp.mode == 4) and self.cp.startWork ~= nil and self.cp.stopWork ~= nil then
 		if self.cp.mode == 6 then
-			allowedToDrive, workArea, workSpeed, activeTipper ,isFinishingWork = courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx , lz )
+			allowedToDrive, workArea, workSpeed, activeTipper, isFinishingWork = courseplay:handle_mode6(self, allowedToDrive, workSpeed, self.cp.tipperFillLevelPct, lx , lz )
 		end
 		if not workArea and self.cp.tipperFillLevel ~= nil and ((self.grainTankCapacity == nil and self.cp.tipRefOffset ~= nil) or self.cp.hasMachinetoFill) then
 			if self.cp.currentTipTrigger == nil and self.cp.fillTrigger == nil then
@@ -625,7 +627,7 @@ function courseplay:drive(self, dt)
 		end;
 	end
 	if self.cp.mode == 9 then
-		allowedToDrive = courseplay:handle_mode9(self, fill_level, allowedToDrive, dt);
+		allowedToDrive = courseplay:handle_mode9(self, self.cp.tipperFillLevelPct, allowedToDrive, dt);
 	end;
 	self.cp.inTraffic = false
 	
@@ -687,7 +689,7 @@ function courseplay:drive(self, dt)
 		local x,y,z = getWorldTranslation(self.rootNode)
 		local _,_,ez = worldToLocal(self.rootNode, self.Waypoints[i].cx , y , self.Waypoints[i].cz)
 		if  ez < 0.2 then
-			if fill_level == 0 then
+			if self.cp.tipperFillLevelPct == 0 then
 				allowedToDrive = false
 				courseplay:setGlobalInfoText(self, 'WORK_END');
 			else
@@ -1112,13 +1114,12 @@ function courseplay:setSpeed(self, refSpeed, sl)
 end;
 
 function courseplay:openCloseCover(self, dt, showCover, isAtTipTrigger)
-	for i=1, table.getn(self.cp.tippersWithCovers) do
-		local twc = self.cp.tippersWithCovers[i];
+	for i,twc in pairs(self.cp.tippersWithCovers) do
 		local tIdx, coverType, showCoverWhenTipping, coverItems = twc.tipperIndex, twc.coverType, twc.showCoverWhenTipping, twc.coverItems;
 		local tipper = self.tippers[tIdx];
 
 		--SMK-34 et al.
-		if coverType == "setPlane" and tipper.plane.bOpen == showCover then
+		if coverType == 'setPlane' and tipper.plane.bOpen == showCover then
 			if showCoverWhenTipping and isAtTipTrigger and not showCover then
 				--
 			else
@@ -1126,11 +1127,11 @@ function courseplay:openCloseCover(self, dt, showCover, isAtTipTrigger)
 			end;
 
 		--Hobein 18t et al.
-		elseif coverType == "setCoverState" and tipper.cover.state ~= showCover then
+		elseif coverType == 'setCoverState' and tipper.cover.state ~= showCover then
 			tipper:setCoverState(showCover);
 
 		--TUW et al.
-		elseif coverType == "planeOpen" then
+		elseif coverType == 'planeOpen' then
 			if showCover and tipper.planeOpen then 
 				tipper:setAnimationTime(3, tipper.animationParts[3].offSet, false);
 			elseif not showCover and not tipper.planeOpen then
@@ -1138,26 +1139,25 @@ function courseplay:openCloseCover(self, dt, showCover, isAtTipTrigger)
 			end;
 
 		--Marston / setSheet
-		elseif coverType == "setSheet" and tipper.sheet.isActive ~= showCover then
+		elseif coverType == 'setSheet' and tipper.sheet.isActive ~= showCover then
 			tipper:setSheet(showCover);
 
 		--default Giants trailers
-		elseif coverType == "defaultGiants" then
+		elseif coverType == 'defaultGiants' then
 			for _,ci in pairs(coverItems) do
 				if getVisibility(ci) ~= showCover then
 					setVisibility(ci, showCover);
 				end;
 			end;
 		end;
-	end; --END for i in self.cp.tippersWithCovers
+	end; --END for i,tipperWithCover in self.cp.tippersWithCovers
 end;
 
-function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive, lx, lz, dt)
-	for i = 1, table.getn(self.tippers) do
-		local activeTool = self.tippers[i];
+function courseplay:refillSprayer(self, fillLevelPct, driveOn, allowedToDrive, lx, lz, dt)
+	for i,activeTool in pairs(self.tippers) do
 		local isSpecialSprayer = false
 		local fillTrigger = nil;
-		isSpecialSprayer, allowedToDrive, lx, lz = courseplay:handleSpecialSprayer(self,activeTool, fill_level, driveOn, allowedToDrive, lx, lz, dt, "pull");
+		isSpecialSprayer, allowedToDrive, lx, lz = courseplay:handleSpecialSprayer(self, activeTool, fillLevelPct, driveOn, allowedToDrive, lx, lz, dt, 'pull');
 		if isSpecialSprayer then
 			return allowedToDrive,lx,lz
 		end
@@ -1166,7 +1166,7 @@ function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive, lx,
 			if self.cp.fillTrigger ~= nil then
 				local trigger = courseplay.triggers.all[self.cp.fillTrigger];
 				if courseplay:fillTypesMatch(trigger, activeTool) then 
-					--print(nameNum(activeTool) .. ": slow down, it's a sprayerFillTrigger")
+					--print(nameNum(activeTool) .. ': slow down, it's a sprayerFillTrigger')
 					self.cp.isInFilltrigger = true
 				end
 			end
@@ -1190,7 +1190,7 @@ function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive, lx,
 			local canRefill = (activeToolFillLevel ~= nil and activeToolFillLevel < driveOn) and fillTypesMatch;
 			--ManureLager: activeTool.ReFillTrigger has to be nil so it doesn't refill
 			if self.cp.mode == 8 then
-				canRefill = canRefill and activeTool.ReFillTrigger == nil and not courseplay:waypointsHaveAttr(self, self.recordnumber, -2, 2, "wait", true, false);
+				canRefill = canRefill and activeTool.ReFillTrigger == nil and not courseplay:waypointsHaveAttr(self, self.recordnumber, -2, 2, 'wait', true, false);
 
 				if activeTool.isSpreaderInRange ~= nil and activeTool.isSpreaderInRange.manureTriggerc ~= nil then
 					canRefill = false;
@@ -1229,12 +1229,12 @@ function courseplay:refillSprayer(self, fill_level, driveOn, allowedToDrive, lx,
 					self.cp.isInFilltrigger = true
 				end
 			end
-			if fill_level < driveOn and activeTool.sowingMachineFillTriggers[1] ~= nil then
+			if fillLevelPct < driveOn and activeTool.sowingMachineFillTriggers[1] ~= nil then
 				if not activeTool.isSowingMachineFilling then
 					activeTool:setIsSowingMachineFilling(true);
 				end;
 				allowedToDrive = false;
-				self.cp.infoText = courseplay:loc("CPloading"):format(activeTool.fillLevel, activeTool.capacity);
+				self.cp.infoText = courseplay:loc('CPloading'):format(activeTool.fillLevel, activeTool.capacity);
 			elseif activeTool.sowingMachineFillTriggers[1] ~= nil then
 				if activeTool.isSowingMachineFilling then
 					activeTool:setIsSowingMachineFilling(false);

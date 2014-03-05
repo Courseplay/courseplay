@@ -1,5 +1,5 @@
-function courseplay:handleMode3(vehicle, fill_level, allowedToDrive, dt)
-	courseplay:debug(string.format("handleMode3(vehicle, fill_level=%s, allowedToDrive=%s, dt)", tostring(fill_level), tostring(allowedToDrive)), 15);
+function courseplay:handleMode3(vehicle, fillLevelPct, allowedToDrive, dt)
+	courseplay:debug(string.format("handleMode3(vehicle, fillLevelPct=%s, allowedToDrive=%s, dt)", tostring(fillLevelPct), tostring(allowedToDrive)), 15);
 	local workTool = vehicle.tippers[vehicle.cp.currentTrailerToFill] or vehicle.tippers[1];
 	local backPointsUnfoldPipe = 8; --[[workTool.cp.backPointsUnfoldPipe or 8;]] --NOTE: backPointsUnfoldPipe must not be 0! 
 	local forwardPointsFoldPipe = workTool.cp.forwardPointsFoldPipe or 2;
@@ -14,22 +14,22 @@ function courseplay:handleMode3(vehicle, fill_level, allowedToDrive, dt)
 			courseplay:setGlobalInfoText(vehicle, 'OVERLOADING_POINT');
 
 			local driveOn = false
-			if fill_level > 0 then
+			if fillLevelPct > 0 then
 				courseplay:handleAugerWagon(vehicle, workTool, true, true, "unload"); --unfold=true, unload=true
 			end;
-			if vehicle.cp.prevFillLevel ~= nil then
-				if fill_level > 0 and workTool.cp.isUnloading then
+			if vehicle.cp.prevFillLevelPct ~= nil then
+				if fillLevelPct > 0 and workTool.cp.isUnloading then
 					courseplay:setCustomTimer(vehicle, "fillLevelChange", 7);
-				elseif fill_level == vehicle.cp.prevFillLevel and fill_level < vehicle.cp.followAtFillLevel and courseplay:timerIsThrough(vehicle, "fillLevelChange", false) then
-					driveOn = true; -- drive on if fill_level doesn't change for 7 seconds and fill level is < required_fill_level_for_follow
+				elseif fillLevelPct == vehicle.cp.prevFillLevelPct and fillLevelPct < vehicle.cp.followAtFillLevel and courseplay:timerIsThrough(vehicle, "fillLevelChange", false) then
+					driveOn = true; -- drive on if fillLevelPct doesn't change for 7 seconds and fill level is < required_fillLevelPct_for_follow
 				end;
 			end;
 
-			vehicle.cp.prevFillLevel = fill_level;
+			vehicle.cp.prevFillLevelPct = fillLevelPct;
 
-			if (fill_level == 0 or driveOn) and not workTool.cp.isUnloading then
+			if (fillLevelPct == 0 or driveOn) and not workTool.cp.isUnloading then
 				courseplay:handleAugerWagon(vehicle, workTool, true, false, "stopUnload"); --unfold=true, unload=false
-				vehicle.cp.prevFillLevel = nil;
+				vehicle.cp.prevFillLevelPct = nil;
 				courseplay:driveOn(vehicle);
 			end;
 		end;

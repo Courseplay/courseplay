@@ -1,3 +1,5 @@
+local curFile = "mode2.lua"
+
 -- AI-states
 -- 0 Default, wenn nicht in Mode2 aktiv
 -- 1 warte am startpunkt auf arbeit
@@ -13,27 +15,13 @@
 -- 10 seite wechseln
 
 function courseplay:handle_mode2(self, dt)
-	local curFile = "mode2.lua"
-
-	local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
-
-	if tipper_fill_level == nil then
-		tipper_fill_level = 0
-	end
-	if tipper_capacity == nil then
-		tipper_capacity = 0
-	end
-
-	local fill_level = 0
-	if tipper_capacity ~= 0 then
-		fill_level = tipper_fill_level * 100 / tipper_capacity
-	end
-
-	if fill_level > self.cp.followAtFillLevel then
+	--[[
+	if self.cp.tipperFillLevelPct >= self.cp.followAtFillLevel then --TODO: shouldn't this be the "tractor that following me"'s followAtFillLevel ?
 		self.cp.allowFollowing = true
 	else
 		self.cp.allowFollowing = false
 	end
+	]]
 
 	if self.cp.modeState == 0 then
 		self.cp.modeState = 1
@@ -79,7 +67,7 @@ function courseplay:handle_mode2(self, dt)
 		self.cp.mode2nextState = 2
 	end
 
-	if (current_tipper.fillLevel == current_tipper.capacity) or self.cp.isLoaded or (fill_level >= self.cp.driveOnAtFillLevel and self.cp.modeState == 1) then
+	if (current_tipper.fillLevel == current_tipper.capacity) or self.cp.isLoaded or (self.cp.tipperFillLevelPct >= self.cp.driveOnAtFillLevel and self.cp.modeState == 1) then
 		if #(self.tippers) > self.cp.currentTrailerToFill then
 			self.cp.currentTrailerToFill = self.cp.currentTrailerToFill + 1
 		else
@@ -202,7 +190,7 @@ function courseplay:handle_mode2(self, dt)
 							local sx, sy, sz = getWorldTranslation(self.rootNode)
 							distance = courseplay:distance(sx, sz, cx, cz)
 							self.distanceToCombine = distance
-							self.callCombineFillLevel = fill_level
+							self.callCombineFillLevel = self.cp.tipperFillLevelPct
 							self.combineID = combine.id
 						end
 					end
@@ -231,8 +219,6 @@ function courseplay:unload_combine(self, dt)
 	local refSpeed = nil
 	local handleTurn = false
 	local isHarvester = false
-	local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
-	local tipper_percentage = tipper_fill_level / tipper_capacity * 100
 	local xt, yt, zt = nil, nil, nil
 	local dod = nil
 
@@ -590,7 +576,7 @@ function courseplay:unload_combine(self, dt)
 			end
 
 
-			if tipper_percentage >= self.cp.driveOnAtFillLevel then
+			if self.cp.tipperFillLevelPct >= self.cp.driveOnAtFillLevel then
 				self.cp.isLoaded = true
 			else
 				self.cp.mode2nextState = 1

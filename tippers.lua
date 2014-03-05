@@ -555,13 +555,6 @@ end;
 function courseplay:load_tippers(self)
 	local allowedToDrive = false
 	local cx, cz = self.Waypoints[2].cx, self.Waypoints[2].cz
-	local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
-	if tipper_fill_level == nil then tipper_fill_level = 0 end
-	if tipper_capacity == nil then tipper_capacity = 0 end
-	local fill_level = 0
-	if tipper_capacity ~= 0 then
-		fill_level = tipper_fill_level * 100 / tipper_capacity
-	end
 
 	if self.cp.currentTrailerToFill == nil then
 		self.cp.currentTrailerToFill = 1
@@ -569,16 +562,16 @@ function courseplay:load_tippers(self)
 
 	-- drive on when required fill level is reached
 	local drive_on = false
-	if self.cp.timeOut < self.timer or self.cp.prevFillLevel == nil then
-		if self.cp.prevFillLevel ~= nil and fill_level == self.cp.prevFillLevel and fill_level > self.cp.driveOnAtFillLevel then
+	if self.cp.timeOut < self.timer or self.cp.prevFillLevelPct == nil then
+		if self.cp.prevFillLevelPct ~= nil and self.cp.tipperFillLevelPct == self.cp.prevFillLevelPct and self.cp.tipperFillLevelPct > self.cp.driveOnAtFillLevel then
 			drive_on = true
 		end
-		self.cp.prevFillLevel = fill_level
+		self.cp.prevFillLevelPct = self.cp.tipperFillLevelPct
 		courseplay:set_timeout(self, 7000)
 	end
 
-	if fill_level == 100 or drive_on then
-		self.cp.prevFillLevel = nil
+	if self.cp.tipperFillLevelPct == 100 or drive_on then
+		self.cp.prevFillLevelPct = nil
 		self.cp.isLoaded = true
 		self.cp.lastTrailerToFillDistance = nil
 		self.cp.currentTrailerToFill = nil
@@ -639,7 +632,7 @@ function courseplay:unload_tippers(self)
 		courseplay:debug(nameNum(self) .. ": getTipDistanceFromTrailer function doesn't exist for currentTipTrigger - unloading function aborted", 2);
 		return allowedToDrive;
 	end;
-	local tipperFillLevel, tipperCapacity = self:getAttachedTrailersFillLevelAndCapacity();
+	-- local tipperFillLevel, tipperCapacity = self:getAttachedTrailersFillLevelAndCapacity();
 	local isBGA = ctt.bunkerSilo ~= nil;
 	local bgaIsFull = isBGA and (ctt.bunkerSilo.fillLevel >= ctt.bunkerSilo.capacity);
 	local bgaSectionPositions = {

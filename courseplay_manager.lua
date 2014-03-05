@@ -83,6 +83,8 @@ function courseplay_manager:loadMap(name)
 	if g_server ~= nil then
 		courseplay.fields:loadAllCustomFields();
 	end;
+
+	g_currentMission.environment:addMinuteChangeListener(courseplay_manager);
 end;
 
 function courseplay_manager:createInitialCourseplayFile()
@@ -272,8 +274,6 @@ function courseplay_manager:draw()
 		end;
 	end;
 	self.buttons.globalInfoTextClickArea.y2 = courseplay.globalInfoText.backgroundY + (line  * courseplay.globalInfoText.lineHeight);
-
-	courseplay.lightsNeeded = g_currentMission.environment.needsLights or (g_currentMission.environment.lastRainScale > 0.1 and g_currentMission.environment.timeSinceLastRain < 30);
 
 	-- DISPLAY FIELD SCAN MSG
 	if courseplay.fields.automaticScan and not courseplay.fields.allFieldsScanned then
@@ -702,6 +702,12 @@ function courseplay_manager:devAddFillLevels()
 		end;
 		return 'All silo fill levels increased by 500\'000.';
 	end;
+end;
+
+function courseplay_manager:minuteChanged()
+	local env = g_currentMission.environment;
+	local nightStart, dayStart = 19 * 3600000, 8 * 3600000; -- from 7pm until 8am
+	courseplay.lightsNeeded = env.needsLights or (env.dayTime >= nightStart or env.dayTime <= dayStart) or env.curRain ~= nil or (env.lastRainScale > 0.1 and env.timeSinceLastRain < 30);
 end;
 
 addModEventListener(courseplay_manager);

@@ -1266,11 +1266,11 @@ function courseplay:askForSpecialSettings(self,object)
 	end;
 end
 
-function courseplay:handleSpecialSprayer(self, activeTool, fill_level, driveOn, allowedToDrive, lx, lz, dt, pumpDir)
+function courseplay:handleSpecialSprayer(self, activeTool, fillLevelPct, driveOn, allowedToDrive, lx, lz, dt, pumpDir)
 	local vehicle = self;
 	pumpDir = pumpDir or "pull";
 	driveOn = driveOn or 100;
-	local isDone = (pumpDir == "pull" and fill_level >= driveOn) or (pumpDir == "push" and fill_level == 0);
+	local isDone = (pumpDir == "pull" and fillLevelPct >= driveOn) or (pumpDir == "push" and fillLevelPct == 0);
 
 	--HoseRef system: sprayer [Eifok Team]
 	if activeTool.cp.isHoseRefSprayer and vehicle.cp.mode == 4 then
@@ -1279,7 +1279,7 @@ function courseplay:handleSpecialSprayer(self, activeTool, fill_level, driveOn, 
 			courseplay.thirdParty.EifokLiquidManure:findRefillObject(vehicle, activeTool, 'MapHoseRefStation', pumpDir); --find MapHoseRefStations
 		end;
 		if vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir] ~= nil and vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir].type == 'MapHoseRefStation' then
-			allowedToDrive = courseplay.thirdParty.EifokLiquidManure:refillViaHose(vehicle, activeTool, fill_level, driveOn, allowedToDrive, lx, lz, dt, pumpDir);
+			allowedToDrive = courseplay.thirdParty.EifokLiquidManure:refillViaHose(vehicle, activeTool, fillLevelPct, driveOn, allowedToDrive, lx, lz, dt, pumpDir);
 		end;
 
 		if vehicle.cp.waitPoints[3] ~= nil and (vehicle.recordnumber == vehicle.cp.waitPoints[3] or vehicle.cp.last_recordnumber == vehicle.cp.waitPoints[3]) and vehicle.wait then
@@ -1293,11 +1293,11 @@ function courseplay:handleSpecialSprayer(self, activeTool, fill_level, driveOn, 
 				if vehicle.cp.timers.findRefillObject ~= 0 then --reset timer
 					vehicle.cp.timers.findRefillObject = 0;
 				end;
-				allowedToDrive = courseplay.thirdParty.EifokLiquidManure:refillViaHose(vehicle, activeTool, fill_level, driveOn, allowedToDrive, lx, lz, dt, pumpDir);
+				allowedToDrive = courseplay.thirdParty.EifokLiquidManure:refillViaHose(vehicle, activeTool, fillLevelPct, driveOn, allowedToDrive, lx, lz, dt, pumpDir);
 			end;
 
 		elseif pumpDir == 'pull' and vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir] == nil then
-			allowedToDrive = courseplay.thirdParty.EifokLiquidManure:refillAtLiquidManureTrigger(vehicle, activeTool, fill_level, driveOn, allowedToDrive, lx, lz, dt);
+			allowedToDrive = courseplay.thirdParty.EifokLiquidManure:refillAtLiquidManureTrigger(vehicle, activeTool, fillLevelPct, driveOn, allowedToDrive, lx, lz, dt);
 		end;
 
 		--courseplay:debug(string.format('\t%s handleSpecialSprayer() end [isHoseRefSprayer] - allowedToDrive==%s', nameNum(activeTool), tostring(allowedToDrive)), 14);
@@ -1310,7 +1310,7 @@ function courseplay:handleSpecialSprayer(self, activeTool, fill_level, driveOn, 
 			courseplay.thirdParty.EifokLiquidManure:findRefillObject(vehicle, activeTool, 'MapHoseRefStation', pumpDir);
 		end;
 		if vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir] ~= nil and vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir].type == 'MapHoseRefStation' then
-			allowedToDrive = courseplay.thirdParty.EifokLiquidManure:refillViaHose(vehicle, activeTool, fill_level, driveOn, allowedToDrive, lx, lz, dt, pumpDir);
+			allowedToDrive = courseplay.thirdParty.EifokLiquidManure:refillViaHose(vehicle, activeTool, fillLevelPct, driveOn, allowedToDrive, lx, lz, dt, pumpDir);
 		end;
 
 		if (vehicle.Waypoints[vehicle.recordnumber].wait or vehicle.Waypoints[vehicle.cp.last_recordnumber].wait) and vehicle.wait and pumpDir == 'push' then
@@ -1324,14 +1324,14 @@ function courseplay:handleSpecialSprayer(self, activeTool, fill_level, driveOn, 
 				if vehicle.cp.timers.findRefillObject ~= 0 then --reset timer
 					vehicle.cp.timers.findRefillObject = 0;
 				end;
-				allowedToDrive = courseplay.thirdParty.EifokLiquidManure:refillViaHose(vehicle, activeTool, fill_level, driveOn, allowedToDrive, lx, lz, dt, pumpDir);
+				allowedToDrive = courseplay.thirdParty.EifokLiquidManure:refillViaHose(vehicle, activeTool, fillLevelPct, driveOn, allowedToDrive, lx, lz, dt, pumpDir);
 			else
 				return false, allowedToDrive, lx, lz; --regular liquidManure / ManureLager trigger, handle as usual [PUSH]
 			end;
 
 		elseif pumpDir == 'pull' and vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir] == nil then
 			if not (vehicle.recordnumber >= vehicle.cp.waitPoints[1] - 4 and vehicle.recordnumber <= vehicle.cp.waitPoints[1] + 3) then
-				allowedToDrive = courseplay.thirdParty.EifokLiquidManure:refillAtLiquidManureTrigger(vehicle, activeTool, fill_level, driveOn, allowedToDrive, lx, lz, dt);
+				allowedToDrive = courseplay.thirdParty.EifokLiquidManure:refillAtLiquidManureTrigger(vehicle, activeTool, fillLevelPct, driveOn, allowedToDrive, lx, lz, dt);
 				--return false, allowedToDrive, lx, lz; ----regular liquidManure / ManureLager trigger, handle as usual [pull]
 			end;
 		end;
@@ -1370,7 +1370,7 @@ function courseplay:handleSpecialSprayer(self, activeTool, fill_level, driveOn, 
 							self.cp.maxFieldSpeed = 5/3600
 						else   -- fill up
 							allowedToDrive = false
-							if fill_level < driveOn then
+							if fillLevelPct < driveOn then
 								if not activeTool.manschetteInRange then
 									local done = courseplay:moveSingleTool(self,activeTool, 9, 0,0,1.2180819906372)
 									if done then
@@ -1390,7 +1390,7 @@ function courseplay:handleSpecialSprayer(self, activeTool, fill_level, driveOn, 
 							end
 						end
 					end
-					if fill_level >= driveOn then
+					if fillLevelPct >= driveOn then
 						moveDone = courseplay:moveSingleTool(self,activeTool, 9, 0,0,0)
 						courseplay:moveSingleTool(self,activeTool, 11, 0,0,0)
 						courseplay:moveSingleTool(self,activeTool, 12, 0,0,0)
@@ -1457,6 +1457,7 @@ end
 -- EIFOK LIQUID MANURE --
 -------------------------
 function courseplay.thirdParty.EifokLiquidManure:findRefillObject(vehicle, activeTool, where, pumpDir)
+	-- self = courseplay.thirdParty.EifokLiquidManure
 	-- where: 'MapHoseRefStation' / 'HoseRefVehicles'
 	-- pumpDir: 'push' / 'pull'
 
@@ -1532,13 +1533,13 @@ function courseplay.thirdParty.EifokLiquidManure:findRefillObject(vehicle, activ
 
 	-- Transporters & containers
 	elseif where == 'HoseRefVehicles' then
-		local vehiclesExist = table.maxn(courseplay.thirdParty.EifokLiquidManure.hoseRefVehicles) > 0;
+		local vehiclesExist = table.maxn(self.hoseRefVehicles) > 0;
 
 		if targetObject == nil and vehiclesExist then
-			for vehRootNode,hoseRefVehicle in pairs(courseplay.thirdParty.EifokLiquidManure.hoseRefVehicles) do
+			for vehRootNode,hoseRefVehicle in pairs(self.hoseRefVehicles) do
 				if hoseRefVehicle ~= nil and hoseRefVehicle ~= activeTool then
 					if hoseRefVehicle.cp.hoseRefs == nil then --first time: set cp.hoseRefs
-						courseplay.thirdParty.EifokLiquidManure:setCustomHoseRefs(hoseRefVehicle)
+						self:setCustomHoseRefs(hoseRefVehicle)
 					end;
 
 					local attVeh = hoseRefVehicle:getRootAttacherVehicle();
@@ -1566,7 +1567,7 @@ function courseplay.thirdParty.EifokLiquidManure:findRefillObject(vehicle, activ
 						end;
 					end; --END if hoseRefVehicleValid
 				end; --END if hoseRefVehicle ~= nil
-			end; --END for i,hoseRefVehicle in pairs(courseplay.thirdParty.EifokLiquidManure[vehicleType]) do
+			end; --END for i,hoseRefVehicle in pairs(self.hoseRefVehicles) do
 		end; --END if targetObject == nil and vehiclesExist then
 	end; --END if where == 'MapHoseRefStation'/'HoseRefVehicles'
 
@@ -1584,7 +1585,9 @@ function courseplay.thirdParty.EifokLiquidManure:findRefillObject(vehicle, activ
 		courseplay:debug(string.format('%s: findRefillObject(%s) (%s) END - targetObjectType=%s, closestWaypoint=%s, closestDistance=%.3f, side=%s, targetConnSide=%s', nameNum(activeTool), tostring(where), tostring(pumpDir), tostring(targetObjectType), tostring(closestWaypoint), closestDistance, tostring(side), tostring(targetConnSide)), 14);
 	end;
 end;
-function courseplay.thirdParty.EifokLiquidManure:refillViaHose(vehicle, activeTool, fill_level, driveOn, allowedToDrive, lx, lz, dt, pumpDir)
+function courseplay.thirdParty.EifokLiquidManure:refillViaHose(vehicle, activeTool, fillLevelPct, driveOn, allowedToDrive, lx, lz, dt, pumpDir)
+	-- self = courseplay.thirdParty.EifokLiquidManure
+
 	--courseplay:debug(string.format("\t%s refillViaHose() start - allowedToDrive==%s", nameNum(activeTool), tostring(allowedToDrive)), 14);
 	if vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir] ~= nil then --object found
 		local targetRefillObject = vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir];
@@ -1592,13 +1595,13 @@ function courseplay.thirdParty.EifokLiquidManure:refillViaHose(vehicle, activeTo
 
 		local objectIsFull =  object.fillLevel ~= nil and object.capacity ~= nil and object.fillLevel >= object.capacity;
 		local objectIsEmpty = object.fillLevel ~= nil and object.fillLevel == 0;
-		local iAmFull =  fill_level >= driveOn;
-		local iAmEmpty = fill_level == 0;
+		local iAmFull =  fillLevelPct >= driveOn;
+		local iAmEmpty = fillLevelPct == 0;
 
 		local isDone = iAmFull or objectIsEmpty;
 		if pumpDir == "push" then
-			isDone = iAmEmpty or (objectIsFull and fill_level < vehicle.cp.followAtFillLevel);
-			--courseplay:debug(string.format("%s: isDone=%s, fill_level=%.1f, objectIsFull=%s (%s/%s), required_fill_level_for_follow=%d", nameNum(activeTool), tostring(isDone), fill_level, tostring(objectIsFull), tostring(object.fillLevel), tostring(object.capacity), vehicle.cp.followAtFillLevel), 14);
+			isDone = iAmEmpty or (objectIsFull and fillLevelPct < vehicle.cp.followAtFillLevel);
+			--courseplay:debug(string.format("%s: isDone=%s, fillLevelPct=%.1f, objectIsFull=%s (%s/%s), followAtFillLevel=%d", nameNum(activeTool), tostring(isDone), fillLevelPct, tostring(objectIsFull), tostring(object.fillLevel), tostring(object.capacity), vehicle.cp.followAtFillLevel), 14);
 		end;
 
 		local proceedWithFilling = false;
@@ -1652,7 +1655,7 @@ function courseplay.thirdParty.EifokLiquidManure:refillViaHose(vehicle, activeTo
 			end;
 
 			--FIND HOSE TO USE
-			courseplay.thirdParty.EifokLiquidManure:findHoseToUse(vehicle, activeTool, object, correctSideRef, otherSideRef, checkOrder, side, pumpDir);
+			self:findHoseToUse(vehicle, activeTool, object, correctSideRef, otherSideRef, checkOrder, side, pumpDir);
 
 			if vehicle.cp.EifokLiquidManure.hoseToUse == nil then
 				courseplay:setGlobalInfoText(vehicle, 'HOSE_MISSING');
@@ -1660,7 +1663,7 @@ function courseplay.thirdParty.EifokLiquidManure:refillViaHose(vehicle, activeTo
 
 			--GO FOR GLORY
 			else
-				allowedToDrive = courseplay.thirdParty.EifokLiquidManure:connectRefillDisconnect(vehicle, activeTool, allowedToDrive, vehicleConnectionRef, correctSideRef, driveOn, isDone, pumpDir);
+				allowedToDrive = self:connectRefillDisconnect(vehicle, activeTool, allowedToDrive, vehicleConnectionRef, correctSideRef, driveOn, isDone, pumpDir);
 			end;
 		end; --END if proceedWithFilling
 	end;
@@ -1669,6 +1672,8 @@ function courseplay.thirdParty.EifokLiquidManure:refillViaHose(vehicle, activeTo
 	return allowedToDrive;
 end;
 function courseplay.thirdParty.EifokLiquidManure:findHoseToUse(vehicle, activeTool, object, correctSideRef, otherSideRef, checkOrder, side, pumpDir) --TODO: delete checkOrder, side from variables, as they're only needed for debug
+	-- self = courseplay.thirdParty.EifokLiquidManure
+
 	if vehicle.cp.EifokLiquidManure.hoseToUse == nil and vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir].type == "MapHoseRefStation" and object.isUsed then
 		local sId1,sId2 = vehicle.cp.EifokLiquidManure.sId1,vehicle.cp.EifokLiquidManure.sId2;
 		for i,hose in pairs(courseplay.thirdParty.EifokLiquidManure.hoses) do
@@ -1699,6 +1704,8 @@ function courseplay.thirdParty.EifokLiquidManure:findHoseToUse(vehicle, activeTo
 	end;
 end;
 function courseplay.thirdParty.EifokLiquidManure:connectRefillDisconnect(vehicle, activeTool, allowedToDrive, vehicleConnectionRef, correctSideRef, driveOn, isDone, pumpDir)
+	-- self = courseplay.thirdParty.EifokLiquidManure
+
 	--courseplay:debug(string.format("\t%s connectRefillDisconnect() start - allowedToDrive==%s", nameNum(activeTool), tostring(allowedToDrive)), 14);
 	local targetRefillObject = vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir];
 	local object, type, closestWaypoint, side, targetConnSide = targetRefillObject.object, targetRefillObject.type, targetRefillObject.closestWaypoint, targetRefillObject.side, targetRefillObject.targetConnSide;
@@ -1766,15 +1773,6 @@ function courseplay.thirdParty.EifokLiquidManure:connectRefillDisconnect(vehicle
 			end;
 		end; --END not isDone
 
-		--[[
-		--ZUBRINGER EMPTY
-		if not isDone and (type == "KotteZubringer" or type == "KotteContainer") and pumpDir == "pull" and object.fillLevel == 0 then
-			courseplay:debug(string.format("\t%s empty -> call stopAndDisconnect(), empty EifokLiquidManure table", nameNum(object)), 14);
-			courseplay.thirdParty.EifokLiquidManure:stopAndDisconnect(vehicle, activeTool, hoseTargetType, object, hose, correctSideRef);
-			courseplay.thirdParty.EifokLiquidManure:resetData(vehicle, pumpDir, false, false);
-		end;
-		]]
-
 		--STOP FILL
 		if isDone then
 			if courseplay.debugChannels[14] then
@@ -1788,11 +1786,11 @@ function courseplay.thirdParty.EifokLiquidManure:connectRefillDisconnect(vehicle
 					courseplay:debug(string.format("\t%s isDone=true, iAmFull=%s, objectIsEmpty=%s -> call stopAndDisconnect()", nameNum(activeTool), tostring(iAmFull), tostring(objectIsEmpty)), 14);
 				end;
 			end;
-			courseplay.thirdParty.EifokLiquidManure:stopAndDisconnect(vehicle, activeTool, hoseTargetType, object, hose, correctSideRef);
+			self:stopAndDisconnect(vehicle, activeTool, hoseTargetType, object, hose, correctSideRef);
 
 			--ALLOW DRIVING
 			if (vehicle.cp.EifokLiquidManure.leaveHoseAtStation and hose.ctors[sId1][hoseTargetType] == object and hose.ctors[sId2].veh == 0) or (not vehicle.cp.EifokLiquidManure.leaveHoseAtStation and hose.ctors[sId1].isAttached and hose.ctors[sId1].veh == activeTool) then --disconnected from connRef OR connected to vehicle (park)
-				courseplay.thirdParty.EifokLiquidManure:resetData(vehicle, pumpDir, pumpDir, false);
+				self:resetData(vehicle, pumpDir, pumpDir, false);
 				tmpAllowedToDrive = true;
 			end;
 		end; --END isDone
@@ -1807,6 +1805,8 @@ function courseplay.thirdParty.EifokLiquidManure:connectRefillDisconnect(vehicle
 	return allowedToDrive;
 end;
 function courseplay.thirdParty.EifokLiquidManure:stopAndDisconnect(vehicle, activeTool, hoseTargetType, object, hose, correctSideRef)
+	-- self = courseplay.thirdParty.EifokLiquidManure
+
 	local sId1,sId2 = vehicle.cp.EifokLiquidManure.sId1,vehicle.cp.EifokLiquidManure.sId2;
 
 	if hose.ctors[sId1][hoseTargetType] == object and hose.ctors[sId2].veh == activeTool then 
@@ -1845,7 +1845,9 @@ function courseplay.thirdParty.EifokLiquidManure:stopAndDisconnect(vehicle, acti
 end;
 
 
-function courseplay.thirdParty.EifokLiquidManure:refillAtLiquidManureTrigger(vehicle, activeTool, fill_level, driveOn, allowedToDrive, lx, lz, dt)
+function courseplay.thirdParty.EifokLiquidManure:refillAtLiquidManureTrigger(vehicle, activeTool, fillLevelPct, driveOn, allowedToDrive, lx, lz, dt)
+	-- self = courseplay.thirdParty.EifokLiquidManure
+
 	--in front on trigger
 	if vehicle.cp.fillTrigger ~= nil then
 		local trigger = courseplay.triggers.all[vehicle.cp.fillTrigger];
@@ -1865,7 +1867,7 @@ function courseplay.thirdParty.EifokLiquidManure:refillAtLiquidManureTrigger(veh
 			local fillArmAnim = activeTool.fillarm.anim;
 			local fillArmIsClosed = fillArmAnim.curTime == 0;
 			local fillArmIsOpen = activeTool.fillarm.bIsOpen;
-			if fill_level < driveOn then --stop, extend arm and fill
+			if fillLevelPct < driveOn then --stop, extend arm and fill
 				allowedToDrive = false;
 				if not fillArmIsOpen then --if arm is not fully extended
 					local fillArmAnimNewTime = math.min(fillArmAnim.curTime + dt*fillArmAnim.speed, fillArmAnim.duration);
@@ -1874,7 +1876,7 @@ function courseplay.thirdParty.EifokLiquidManure:refillAtLiquidManureTrigger(veh
 					activeTool:setIsSprayerFilling(true, false);
 					vehicle.cp.infoText = string.format(courseplay:loc("CPloading"), vehicle.cp.tipperFillLevel, vehicle.cp.tipperCapacity);
 				end;
-			elseif fill_level >= driveOn then
+			elseif fillLevelPct >= driveOn then
 				activeTool:setIsSprayerFilling(false, false);
 				vehicle.cp.fillTrigger = nil;
 				if not fillArmIsClosed then
@@ -1885,11 +1887,11 @@ function courseplay.thirdParty.EifokLiquidManure:refillAtLiquidManureTrigger(veh
 			end;
 
 		elseif activeTool.cp.isHoseRefTransporter then --Kotte Zubringer
-			if fill_level < driveOn then
+			if fillLevelPct < driveOn then
 				allowedToDrive = false;
 				activeTool:setIsSprayerFilling(true, false);
 				vehicle.cp.infoText = string.format(courseplay:loc("CPloading"), vehicle.cp.tipperFillLevel, vehicle.cp.tipperCapacity);
-			elseif fill_level >= driveOn then
+			elseif fillLevelPct >= driveOn then
 				activeTool:setIsSprayerFilling(false, false);
 				vehicle.cp.fillTrigger = nil;
 			end;
@@ -1899,6 +1901,8 @@ function courseplay.thirdParty.EifokLiquidManure:refillAtLiquidManureTrigger(veh
 end;
 
 function courseplay.thirdParty.EifokLiquidManure:setCustomHoseRefs(workTool)
+	-- self = courseplay.thirdParty.EifokLiquidManure
+
 	if workTool.hoseRef == nil or workTool.cp.hoseRefs ~= nil then return; end;
 
 	workTool.cp.hoseRefs = {
@@ -1917,6 +1921,8 @@ function courseplay.thirdParty.EifokLiquidManure:setCustomHoseRefs(workTool)
 	end;
 end;
 function courseplay.thirdParty.EifokLiquidManure:resetData(vehicle, targetObjectDir, searchDir, hasZunhammer)
+	-- self = courseplay.thirdParty.EifokLiquidManure
+
 	vehicle.cp.EifokLiquidManure.hoseToUse = nil;
 	vehicle.cp.EifokLiquidManure.sId1, vehicle.cp.EifokLiquidManure.sId2 = nil, nil;
 	vehicle.cp.EifokLiquidManure.leaveHoseAtStation = false;

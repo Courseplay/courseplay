@@ -1,4 +1,4 @@
-function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fill_level)
+function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct)
 	local workTool; -- = self.tippers[1] -- to do, quick, dirty and unsafe
 
 	local workArea = (self.recordnumber > self.cp.startWork) and (self.recordnumber < self.cp.finishWork)
@@ -17,7 +17,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fill_level)
 		end		
 	end	
 	-- Begin Work
-	if self.cp.last_recordnumber == self.cp.startWork and fill_level ~= 0 then
+	if self.cp.last_recordnumber == self.cp.startWork and fillLevelPct ~= 0 then
 		if self.cp.abortWork ~= nil then
 			if self.cp.abortWork < 5 then
 				self.cp.abortWork = 6
@@ -30,7 +30,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fill_level)
 	end
 	-- last point reached restart
 	if self.cp.abortWork ~= nil then
-		if self.cp.last_recordnumber == self.cp.abortWork and fill_level ~= 0 then
+		if self.cp.last_recordnumber == self.cp.abortWork and fillLevelPct ~= 0 then
 			self.recordnumber = self.cp.abortWork +2
 		end
 		if self.cp.last_recordnumber == self.cp.abortWork + 8 then
@@ -38,7 +38,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fill_level)
 		end
 	end
 	-- safe last point
-	if (fill_level == 0 or self.cp.urfStop) and workArea then
+	if (fillLevelPct == 0 or self.cp.urfStop) and workArea then
 		self.cp.urfStop = false
 		if self.cp.hasUnloadingRefillingCourse and self.cp.abortWork == nil then
 			self.cp.abortWork = self.recordnumber -10
@@ -90,7 +90,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fill_level)
 			--courseplay:debug(string.format("%s: unfold: turnOnFoldDirection=%s, foldMoveDirection=%s", workTool.name, tostring(workTool.turnOnFoldDirection), tostring(workTool.foldMoveDirection)), 12);
 		end;
 
-		if workArea and fill_level ~= 0 and (self.cp.abortWork == nil or self.cp.runOnceStartCourse) and self.cp.turnStage == 0 and not self.cp.inTraffic then
+		if workArea and fillLevelPct ~= 0 and (self.cp.abortWork == nil or self.cp.runOnceStartCourse) and self.cp.turnStage == 0 and not self.cp.inTraffic then
 			self.cp.runOnceStartCourse = false;
 			workSpeed = 1;
 			--turn On                     courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload,ridgeMarker)

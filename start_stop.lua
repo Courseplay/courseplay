@@ -399,7 +399,7 @@ function courseplay:stop(self)
 	self.cp.hasUnloadingRefillingCourse = false;
 	self.cp.stopAtEnd = false
 	self.cp.isUnloaded = false;
-	self.cp.prevFillLevel = nil;
+	self.cp.prevFillLevelPct = nil;
 	self.cp.isInRepairTrigger = nil;
 
 	self.cp.hasBaleLoader = false;

@@ -103,10 +103,10 @@ function courseplay:renderButton(self, button)
 			if fn == "changeTurnRadius" then
 				button.canScrollUp =   true;
 				button.canScrollDown = self.cp.turnRadius > 0;
-			elseif fn == "change_required_fill_level" then
+			elseif fn == "changeFollowAtFillLevel" then
 				button.canScrollUp =   self.cp.followAtFillLevel < 100;
 				button.canScrollDown = self.cp.followAtFillLevel > 0;
-			elseif fn == "change_required_fill_level_for_drive_on" then
+			elseif fn == "changeDriveOnAtFillLevel" then
 				button.canScrollUp =   self.cp.driveOnAtFillLevel < 100;
 				button.canScrollDown = self.cp.driveOnAtFillLevel > 0;
 			elseif fn == 'changeRefillUntilPct' then
@@ -121,16 +121,16 @@ function courseplay:renderButton(self, button)
 			end;
 
 		elseif pg == 5 then
-			if fn == "change_turn_speed" then
+			if fn == "changeTurnSpeed" then
 				button.canScrollUp =   self.cp.speeds.turn < 60/3600;
 				button.canScrollDown = self.cp.speeds.turn >  5/3600;
-			elseif fn == "change_field_speed" then
+			elseif fn == "changeFieldSpeed" then
 				button.canScrollUp =   self.cp.speeds.field < 60/3600;
 				button.canScrollDown = self.cp.speeds.field >  5/3600;
-			elseif fn == "change_max_speed" then
+			elseif fn == "changeMaxSpeed" then
 				button.canScrollUp =   self.cp.speeds.useRecordingSpeed == false and self.cp.speeds.max < 60/3600;
 				button.canScrollDown = self.cp.speeds.useRecordingSpeed == false and self.cp.speeds.max >  5/3600;
-			elseif fn == "change_unload_speed" then
+			elseif fn == "changeUnloadSpeed" then
 				button.canScrollUp =   self.cp.speeds.unload < 60/3600;
 				button.canScrollDown = self.cp.speeds.unload >  3/3600;
 			end;
@@ -206,13 +206,13 @@ function courseplay:renderButton(self, button)
 		elseif pg == 3 then
 			if fn == "changeTurnRadius" and prm < 0 then
 				button.show = self.cp.turnRadius > 0;
-			elseif fn == "change_required_fill_level" then
+			elseif fn == "changeFollowAtFillLevel" then
 				if prm < 0 then
 					button.show = self.cp.followAtFillLevel > 0;
 				elseif prm > 0 then
 					button.show = self.cp.followAtFillLevel < 100;
 				end;
-			elseif fn == "change_required_fill_level_for_drive_on" then 
+			elseif fn == "changeDriveOnAtFillLevel" then 
 				if prm < 0 then
 					button.show = self.cp.driveOnAtFillLevel > 0;
 				elseif prm > 0 then
@@ -248,25 +248,25 @@ function courseplay:renderButton(self, button)
 
 		--Page 5
 		elseif pg == 5 then
-			if fn == "change_turn_speed" then
+			if fn == "changeTurnSpeed" then
 				if prm < 0 then
 					button.show = self.cp.speeds.turn >  5/3600;
 				elseif prm > 0 then
 					button.show = self.cp.speeds.turn < 60/3600;
 				end;
-			elseif fn == "change_field_speed" then
+			elseif fn == "changeFieldSpeed" then
 				if prm < 0 then
 					button.show = self.cp.speeds.field >  5/3600;
 				elseif prm > 0 then
 					button.show = self.cp.speeds.field < 60/3600;
 				end;
-			elseif fn == "change_max_speed" then
+			elseif fn == "changeMaxSpeed" then
 				if prm < 0 then
 					button.show = not self.cp.speeds.useRecordingSpeed and self.cp.speeds.max >  5/3600;
 				elseif prm > 0 then
 					button.show = not self.cp.speeds.useRecordingSpeed and self.cp.speeds.max < 60/3600;
 				end;
-			elseif fn == "change_unload_speed" then
+			elseif fn == "changeUnloadSpeed" then
 				if prm < 0 then
 					button.show = self.cp.speeds.unload >  3/3600;
 				elseif prm > 0 then

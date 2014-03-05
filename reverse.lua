@@ -23,7 +23,6 @@ function courseplay:goReverse(self,lx,lz)
 		local xTractor,yTractor,zTractor = getWorldTranslation(self.rootNode)
 		local frontNode = tipper.cp.frontNode
 		local xFrontNode,yFrontNode,zFrontNode = getWorldTranslation(frontNode)
-		local tipperFillLevel, tipperCapacity = self:getAttachedTrailersFillLevelAndCapacity();
 		local tcx,tcy,tcz =0,0,0
 		local index = self.recordnumber +1
 		if debugActive then 

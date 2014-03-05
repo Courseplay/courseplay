@@ -361,7 +361,7 @@ function courseplay:buttonsActiveEnabled(self, section)
 
 	elseif self.cp.hud.currentPage == 9 and (section == nil or section == "all" or section == "shovel") then
 		for _,button in pairs(self.cp.buttons["9"]) do
-			if button.function_to_call == "saveShovelStatus" then --isToggleButton
+			if button.function_to_call == 'saveShovelPosition' then --isToggleButton
 				button.isActive = self.cp.shovelStateRot[button.parameter] ~= nil;
 				button.canBeClicked = true;
 			end;
@@ -369,7 +369,7 @@ function courseplay:buttonsActiveEnabled(self, section)
 	end;
 end;
 
-function courseplay:change_combine_offset(vehicle, changeBy)
+function courseplay:changeCombineOffset(vehicle, changeBy)
 	local previousOffset = vehicle.cp.combineOffset;
 
 	vehicle.cp.combineOffsetAutoMode = false;
@@ -382,7 +382,7 @@ function courseplay:change_combine_offset(vehicle, changeBy)
 	courseplay:debug(nameNum(vehicle) .. ": manual combine_offset change: prev " .. previousOffset .. " // new " .. vehicle.cp.combineOffset .. " // auto = " .. tostring(vehicle.cp.combineOffsetAutoMode), 4);
 end
 
-function courseplay:change_tipper_offset(vehicle, changeBy)
+function courseplay:changeTipperOffset(vehicle, changeBy)
 	vehicle.cp.tipperOffset = courseplay:round(vehicle.cp.tipperOffset, 1) + changeBy;
 	if math.abs(vehicle.cp.tipperOffset) < 0.1 then
 		vehicle.cp.tipperOffset = 0;
@@ -390,7 +390,7 @@ function courseplay:change_tipper_offset(vehicle, changeBy)
 end
 
 function courseplay:changeLaneOffset(vehicle, changeBy, force)
-	vehicle.cp.laneOffset = force or (vehicle.cp.laneOffset + changeBy);
+	vehicle.cp.laneOffset = force or (courseplay:round(vehicle.cp.laneOffset, 1) + changeBy);
 	if math.abs(vehicle.cp.laneOffset) < 0.1 then
 		vehicle.cp.laneOffset = 0;
 	end;
@@ -398,7 +398,7 @@ function courseplay:changeLaneOffset(vehicle, changeBy, force)
 end;
 
 function courseplay:changeToolOffsetX(vehicle, changeBy, force, noDraw)
-	vehicle.cp.toolOffsetX = force or (vehicle.cp.toolOffsetX + changeBy);
+	vehicle.cp.toolOffsetX = force or (courseplay:round(vehicle.cp.toolOffsetX, 1) + changeBy);
 	if math.abs(vehicle.cp.toolOffsetX) < 0.1 then
 		vehicle.cp.toolOffsetX = 0;
 	end;
@@ -412,7 +412,7 @@ function courseplay:changeToolOffsetX(vehicle, changeBy, force, noDraw)
 end;
 
 function courseplay:changeToolOffsetZ(vehicle, changeBy, force)
-	vehicle.cp.toolOffsetZ = force or (vehicle.cp.toolOffsetZ + changeBy);
+	vehicle.cp.toolOffsetZ = force or (courseplay:round(vehicle.cp.toolOffsetZ, 1) + changeBy);
 	if math.abs(vehicle.cp.toolOffsetZ) < 0.1 then
 		vehicle.cp.toolOffsetZ = 0;
 	end;
@@ -450,12 +450,12 @@ function courseplay:change_WaypointMode(self, changeBy)
 end
 
 
-function courseplay:change_required_fill_level_for_drive_on(self, change_by)
+function courseplay:changeDriveOnAtFillLevel(self, change_by)
 	self.cp.driveOnAtFillLevel = Utils.clamp(self.cp.driveOnAtFillLevel + change_by, 0, 100);
 end
 
 
-function courseplay:change_required_fill_level(self, change_by)
+function courseplay:changeFollowAtFillLevel(self, change_by)
 	self.cp.followAtFillLevel = Utils.clamp(self.cp.followAtFillLevel + change_by, 0, 100);
 end
 
@@ -475,39 +475,39 @@ function courseplay:changeTurnRadius(vehicle, changeBy)
 end
 
 
-function courseplay:change_turn_speed(self, change_by)
-	local speed = self.cp.speeds.turn * 3600;
-	speed = Utils.clamp(speed + change_by, 5, 60);
-	self.cp.speeds.turn = speed / 3600;
-end
-
 function courseplay:changeWaitTime(vehicle, changeBy)
 	vehicle.cp.waitTime = math.max(0, vehicle.cp.waitTime + changeBy);
 end
 
-function courseplay:change_field_speed(self, change_by)
-	local speed = self.cp.speeds.field * 3600;
-	speed = Utils.clamp(speed + change_by, 5, 60);
-	self.cp.speeds.field = speed / 3600;
+function courseplay:changeTurnSpeed(vehicle, changeBy)
+	local speed = vehicle.cp.speeds.turn * 3600;
+	speed = Utils.clamp(speed + changeBy, 5, 60);
+	vehicle.cp.speeds.turn = speed / 3600;
 end
 
-function courseplay:change_max_speed(self, change_by)
+function courseplay:changeFieldSpeed(vehicle, changeBy)
+	local speed = vehicle.cp.speeds.field * 3600;
+	speed = Utils.clamp(speed + changeBy, 5, 60);
+	vehicle.cp.speeds.field = speed / 3600;
+end
+
+function courseplay:changeMaxSpeed(vehicle, changeBy)
 	if not self.cp.speeds.useRecordingSpeed then
-		local speed = self.cp.speeds.max * 3600;
-		speed = Utils.clamp(speed + change_by, 5, 60);
-		self.cp.speeds.max = speed / 3600;
+		local speed = vehicle.cp.speeds.max * 3600;
+		speed = Utils.clamp(speed + changeBy, 5, 60);
+		vehicle.cp.speeds.max = speed / 3600;
 	end;
 end
 
-function courseplay:change_unload_speed(self, change_by)
-	local speed = self.cp.speeds.unload * 3600;
-	speed = Utils.clamp(speed + change_by, 3, 60);
-	self.cp.speeds.unload = speed / 3600;
+function courseplay:changeUnloadSpeed(vehicle, changeBy)
+	local speed = vehicle.cp.speeds.unload * 3600;
+	speed = Utils.clamp(speed + changeBy, 3, 60);
+	vehicle.cp.speeds.unload = speed / 3600;
 end
 
-function courseplay:change_use_speed(self)
-	self.cp.speeds.useRecordingSpeed = not self.cp.speeds.useRecordingSpeed
-end
+function courseplay:changeUseRecordingSpeed(vehicle)
+	vehicle.cp.speeds.useRecordingSpeed = not vehicle.cp.speeds.useRecordingSpeed;
+end;
 
 function courseplay:changeBeaconLightsMode(vehicle, changeBy)
 	vehicle.cp.beaconLightsMode = vehicle.cp.beaconLightsMode + changeBy;
@@ -1090,7 +1090,7 @@ function courseplay:validateCanSwitchMode(vehicle)
 	courseplay:debug(string.format("%s: validateCanSwitchMode(): drive=%s, record=%s, record_pause=%s, customField.isCreated=%s ==> canSwitchMode=%s", nameNum(vehicle), tostring(vehicle.drive), tostring(vehicle.cp.isRecording), tostring(vehicle.cp.recordingIsPaused), tostring(vehicle.cp.fieldEdge.customField.isCreated), tostring(vehicle.cp.canSwitchMode)), 12);
 end;
 
-function courseplay:saveShovelStatus(vehicle, stage)
+function courseplay:saveShovelPosition(vehicle, stage)
 	if stage == nil then return; end;
 
 	if stage >= 2 and stage <= 5 then

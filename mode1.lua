@@ -2,16 +2,11 @@
 function courseplay:handle_mode1(self)
 	local allowedToDrive = true
 	local activeTipper = nil
-	local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
-
-	if tipper_fill_level == nil then tipper_fill_level = 0 end
-	if tipper_capacity == nil then tipper_capacity = 0 end
-
 
 	-- done tipping
 	if self.cp.unloadingTipper ~= nil and self.cp.unloadingTipper.fillLevel == 0 then
 		self.cp.unloadingTipper = nil
-		if tipper_fill_level == 0 then
+		if self.cp.tipperFillLevel == 0 then
 			self.cp.isUnloaded = true
 			self.cp.currentTipTrigger = nil
 		end
@@ -19,10 +14,10 @@ function courseplay:handle_mode1(self)
 
 	-- tippers are not full
 	-- tipper should be loaded 10 meters before wp 2	
-	--if self.cp.isLoaded ~= true and ((self.recordnumber == 2 and tipper_fill_level < tipper_capacity and self.cp.isUnloaded == false and self.dist < 10) or self.cp.lastTrailerToFillDistance) then
-  	if self.cp.isLoaded ~= true and ((self.recordnumber == 2 and tipper_fill_level < tipper_capacity and self.cp.isUnloaded == false ) or self.cp.lastTrailerToFillDistance) then
+	--if self.cp.isLoaded ~= true and ((self.recordnumber == 2 and self.cp.tipperFillLevel < self.cp.tipperCapacity and self.cp.isUnloaded == false and self.dist < 10) or self.cp.lastTrailerToFillDistance) then
+  	if self.cp.isLoaded ~= true and ((self.recordnumber == 2 and self.cp.tipperFillLevel < self.cp.tipperCapacity and self.cp.isUnloaded == false ) or self.cp.lastTrailerToFillDistance) then
 		allowedToDrive = courseplay:load_tippers(self)
-		self.cp.infoText = string.format(courseplay:loc("CPloading"), tipper_fill_level, tipper_capacity)
+		self.cp.infoText = string.format(courseplay:loc("CPloading"), self.cp.tipperFillLevel, self.cp.tipperCapacity)
 	end
 
 	-- damn, i missed the trigger!
@@ -53,7 +48,7 @@ function courseplay:handle_mode1(self)
 	end;
 
 	-- tipper is not empty and tractor reaches TipTrigger
-	if tipper_fill_level > 0 and self.cp.currentTipTrigger ~= nil and self.recordnumber > 3 then
+	if self.cp.tipperFillLevel > 0 and self.cp.currentTipTrigger ~= nil and self.recordnumber > 3 then
 		allowedToDrive = courseplay:unload_tippers(self)
 
 

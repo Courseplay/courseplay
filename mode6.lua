@@ -1,4 +1,4 @@
-function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx , lz )
+function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, lx , lz )
 	local workTool --= self.tippers[1] -- to do, quick, dirty and unsafe
 	local activeTipper = nil
 	local specialTool = false
@@ -60,15 +60,15 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 					if not specialTool then
 						-- automatic opening for balers
 						if workTool.balerUnloadingState ~= nil then
-							fill_level = courseplay:round(fill_level, 3);
+							fillLevelPct = courseplay:round(fillLevelPct, 3);
 							local capacity = courseplay:round(100 * (workTool.realBalerOverFillingRatio or 1), 3);
 
-							if courseplay:isRoundbaler(workTool) and fill_level > capacity * 0.9 and fill_level < capacity and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
+							if courseplay:isRoundbaler(workTool) and fillLevelPct > capacity * 0.9 and fillLevelPct < capacity and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
 								if not workTool.isTurnedOn then
 									workTool:setIsTurnedOn(true, false);
 								end;
 								workSpeed = 0.5;
-							elseif fill_level >= capacity and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
+							elseif fillLevelPct >= capacity and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
 								allowedToDrive = false;
 								if #(workTool.bales) > 0 then
 									workTool:setIsUnloadingBale(true, false)
@@ -78,7 +78,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 								if workTool.balerUnloadingState == Baler.UNLOADING_OPEN then
 									workTool:setIsUnloadingBale(false)
 								end
-							elseif fill_level >= 0 and not workTool.isTurnedOn and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
+							elseif fillLevelPct >= 0 and not workTool.isTurnedOn and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
 								workTool:setIsTurnedOn(true, false);
 							end
 						end
@@ -94,14 +94,14 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 
 			-- baleloader, copied original code parts
 			elseif courseplay:is_baleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool) then
-				if workArea and fill_level ~= 100 then
+				if workArea and fillLevelPct ~= 100 then
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,true,true,true,allowedToDrive,nil,nil);
 					if not specialTool then
 						-- automatic stop for baleloader
 						if workTool.grabberIsMoving or workTool:getIsAnimationPlaying("rotatePlatform") then
 							allowedToDrive = false
 						end
-						if not workTool.isInWorkPosition and fill_level ~= 100 then
+						if not workTool.isInWorkPosition and fillLevelPct ~= 100 then
 							--g_client:getServerConnection():sendEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_BUTTON_WORK_TRANSPORT));
 							workTool.grabberIsMoving = true
 							workTool.isInWorkPosition = true
@@ -110,7 +110,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 					end;
 				end
 
-				if (fill_level == 100 and self.cp.hasUnloadingRefillingCourse or self.recordnumber == self.cp.stopWork) and workTool.isInWorkPosition and not workTool:getIsAnimationPlaying("rotatePlatform") then
+				if (fillLevelPct == 100 and self.cp.hasUnloadingRefillingCourse or self.recordnumber == self.cp.stopWork) and workTool.isInWorkPosition and not workTool:getIsAnimationPlaying("rotatePlatform") then
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,nil);
 					if not specialTool then
 						workTool.grabberIsMoving = true
@@ -120,7 +120,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 					end;
 				end
 
-				if fill_level == 100 and not self.cp.hasUnloadingRefillingCourse then
+				if fillLevelPct == 100 and not self.cp.hasUnloadingRefillingCourse then
 					if self.cp.automaticUnloadingOnField then
 						self.cp.unloadOrder = true
 						courseplay:setGlobalInfoText(self, 'UNLOADING_BALE');
@@ -130,7 +130,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 				end
 
 				-- automatic unload
-				if (not workArea and self.Waypoints[self.cp.last_recordnumber].wait and (self.wait or fill_level == 0)) or self.cp.unloadOrder then
+				if (not workArea and self.Waypoints[self.cp.last_recordnumber].wait and (self.wait or fillLevelPct == 0)) or self.cp.unloadOrder then
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,true);
 					if not specialTool then
 						if workTool.emptyState ~= BaleLoader.EMPTY_NONE then
@@ -158,7 +158,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 
 			-- other worktools, tippers, e.g. forage wagon
 			else
-				if workArea and fill_level ~= 100 and ((self.cp.abortWork == nil) or (self.cp.abortWork ~= nil and self.cp.last_recordnumber == self.cp.abortWork) or (self.cp.runOnceStartCourse)) and self.cp.turnStage == 0  then
+				if workArea and fillLevelPct ~= 100 and ((self.cp.abortWork == nil) or (self.cp.abortWork ~= nil and self.cp.last_recordnumber == self.cp.abortWork) or (self.cp.runOnceStartCourse)) and self.cp.turnStage == 0  then
 								--courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,true,true,true,allowedToDrive,nil,nil)
 					if allowedToDrive then
@@ -246,13 +246,11 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 				end;
 
 				-- done tipping
-				local tipper_fill_level, tipper_capacity = self:getAttachedTrailersFillLevelAndCapacity()
-
-				if tipper_fill_level ~= nil and tipper_capacity ~= nil then
+				if self.cp.tipperFillLevel ~= nil and self.cp.tipperCapacity ~= nil then
 					if self.cp.unloadingTipper ~= nil and self.cp.unloadingTipper.fillLevel == 0 then
 						self.cp.unloadingTipper = nil
 
-						if tipper_fill_level == 0 then
+						if self.cp.tipperFillLevel == 0 then
 							self.cp.isUnloaded = true
 							self.cp.currentTipTrigger = nil
 						end
@@ -277,7 +275,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 					end
 
 					-- tipper is not empty and tractor reaches TipTrigger
-					if tipper_fill_level > 0 and self.cp.currentTipTrigger ~= nil and self.recordnumber > 3 then
+					if self.cp.tipperFillLevel > 0 and self.cp.currentTipTrigger ~= nil and self.recordnumber > 3 then
 						allowedToDrive, activeTipper = courseplay:unload_tippers(self)
 						self.cp.infoText = courseplay:loc("CPTriggerReached") -- "Abladestelle erreicht"
 					end
@@ -285,7 +283,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 			end; --END other tools
 
 			-- Begin Work   or goto abortWork
-			if self.cp.last_recordnumber == self.cp.startWork and fill_level ~= 100 then
+			if self.cp.last_recordnumber == self.cp.startWork and fillLevelPct ~= 100 then
 				if self.cp.abortWork ~= nil then
 					if self.cp.abortWork < 5 then
 						self.cp.abortWork = 6
@@ -301,13 +299,13 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 			end
 			-- last point reached restart
 			if self.cp.abortWork ~= nil then
-				if (self.cp.last_recordnumber == self.cp.abortWork ) and fill_level ~= 100 then
+				if (self.cp.last_recordnumber == self.cp.abortWork ) and fillLevelPct ~= 100 then
 					self.recordnumber = self.cp.abortWork + 2  -- drive to waypoint after next waypoint
 					self.cp.abortWork = nil
 				end
 			end
 			-- safe last point
-			if (fill_level == 100 or self.cp.isLoaded) and workArea and not courseplay:isBaler(workTool) then
+			if (fillLevelPct == 100 or self.cp.isLoaded) and workArea and not courseplay:isBaler(workTool) then
 				if self.cp.hasUnloadingRefillingCourse and self.cp.abortWork == nil then
 					self.cp.abortWork = self.cp.last_recordnumber - 10;
 					-- invert lane offset if abortWork is before previous turn point (symmetric lane change)
@@ -377,23 +375,23 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fill_level, lx
 						end
 
 					else
-						local fillLevelPct = tool.grainTankFillLevel * 100 / tool.grainTankCapacity;
+						local tankFillLevelPct = tool.grainTankFillLevel * 100 / tool.grainTankCapacity;
 
 						if courseplay:isFoldable(workTool) and not tool.isThreshing and not isFolding and not isUnfolded then
 							courseplay:debug(string.format('%s: unfold order (foldDir=%d)', nameNum(workTool), workTool.cp.realUnfoldDirection), 17);
 							workTool:setFoldDirection(workTool.cp.realUnfoldDirection);
 						end;
-						if not isFolding and fillLevelPct < 100 and not tool.waitingForDischarge and not tool.isThreshing and not weatherStop then
+						if not isFolding and tankFillLevelPct < 100 and not tool.waitingForDischarge and not tool.isThreshing and not weatherStop then
 							tool:setIsThreshing(true);
 						end
 
-						if fillLevelPct >= 100 or tool.waitingForDischarge or (tool.cp.stopWhenUnloading and tool.pipeIsUnloading and tool.courseplayers[1] ~= nil) then
+						if tankFillLevelPct >= 100 or tool.waitingForDischarge or (tool.cp.stopWhenUnloading and tool.pipeIsUnloading and tool.courseplayers and tool.courseplayers[1] ~= nil) then
 							tool.waitingForDischarge = true;
 							allowedToDrive = courseplay:brakeToStop(self); -- allowedToDrive = false;
 							if tool.isThreshing then
 								tool:setIsThreshing(false);
 							end;
-							if fillLevelPct < 80 and (not tool.cp.stopWhenUnloading or (tool.cp.stopWhenUnloading and tool.courseplayers[1] == nil)) then
+							if tankFillLevelPct < 80 and (not tool.cp.stopWhenUnloading or (tool.cp.stopWhenUnloading and (tool.courseplayers == nil or tool.courseplayers[1] == nil))) then
 								tool.waitingForDischarge = false;
 								if not weatherStop and not tool.isThreshing then
 									tool:setIsThreshing(true);
