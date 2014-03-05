@@ -15,6 +15,7 @@ local curFile = "mode2.lua"
 -- 10 seite wechseln
 
 function courseplay:handle_mode2(self, dt)
+	local frontTractor;
 	--[[
 	if self.cp.tipperFillLevelPct >= self.cp.followAtFillLevel then --TODO: shouldn't this be the "tractor that following me"'s followAtFillLevel ?
 		self.cp.allowFollowing = true
@@ -110,6 +111,7 @@ function courseplay:handle_mode2(self, dt)
 		else
 			-- follow tractor in front of me
 			frontTractor = self.cp.activeCombine.courseplayers[self.cp.positionWithCombine - 1]
+			-- print(string.format('%s: activeCombine ~= nil, my position=%d, frontTractor (positionWithCombine %d) = %q', nameNum(self), self.cp.positionWithCombine, self.cp.positionWithCombine - 1, nameNum(frontTractor)));
 			--	courseplay:follow_tractor(self, dt, tractor)
 			self.cp.modeState = 6
 			courseplay:unload_combine(self, dt)
@@ -172,15 +174,21 @@ function courseplay:handle_mode2(self, dt)
 						if combine.grainTankCapacity == 0 then
 							if combine.courseplayers == nil then
 								self.best_combine = combine
-							elseif table.getn(combine.courseplayers) <= num_courseplayers or self.best_combine == nil then
-								num_courseplayers = table.getn(combine.courseplayers)
-								if table.getn(combine.courseplayers) > 0 then
-									if combine.courseplayers[1].cp.allowFollowing then
+							else
+								local numCombineCourseplayers = #combine.courseplayers;
+								if numCombineCourseplayers <= num_courseplayers or self.best_combine == nil then
+									num_courseplayers = numCombineCourseplayers;
+									if numCombineCourseplayers > 0 then
+										frontTractor = combine.courseplayers[num_courseplayers];
+										local canFollowFrontTractor = frontTractor.cp.tipperFillLevelPct and frontTractor.cp.tipperFillLevelPct >= self.cp.followAtFillLevel;
+										-- print(string.format('frontTractor (pos %d)=%q, canFollowFrontTractor=%s', numCombineCourseplayers, nameNum(frontTractor), tostring(canFollowFrontTractor)));
+										if canFollowFrontTractor then
+											self.best_combine = combine
+										end
+									else
 										self.best_combine = combine
 									end
-								else
-									self.best_combine = combine
-								end
+								end;
 							end 
 
 						elseif combine.grainTankFillLevel >= highest_fill_level and combine.isCheckedIn == nil then
@@ -365,6 +373,8 @@ function courseplay:unload_combine(self, dt)
 			end;
 		end;
 		--]]
+
+
 
 		local lx, ly, lz = worldToLocal(self.cp.DirectionNode, currentX, currentY, currentZ)
 		dod = Utils.vector2Length(lx, lz)
@@ -910,13 +920,16 @@ function courseplay:unload_combine(self, dt)
 			end
 		else
 			-- tractor behind tractor
-			--TODO: ORIG: z = -40
-			currentX, currentY, currentZ = localToWorld(frontTractor.rootNode, 0, 0, -backDistance)
-		end
+			currentX, currentY, currentZ = localToWorld(frontTractor.rootNode, 0, 0, -backDistance * 1.5); -- -backDistance * 1
+		end;
+
+
 
 		local lx, ly, lz = worldToLocal(self.cp.DirectionNode, currentX, currentY, currentZ)
 		dod = Utils.vector2Length(lx, lz)
-		if dod < 2 or frontTractor.cp.modeState ~= 3 then
+		-- if dod < 2 or (self.cp.positionWithCombine == 2 and frontTractor.cp.modeState ~= 3 and dod < 100) then
+		if dod < 2 or (self.cp.positionWithCombine == 2 and combine.courseplayers[1].cp.modeState ~= 3 and dod < 100) then
+			-- print(string.format('\tdod=%s, frontTractor.cp.modeState=%s -> brakeToStop', tostring(dod), tostring(frontTractor.cp.modeState)));
 			allowedToDrive = courseplay:brakeToStop(self)
 		end
 		if combine.cp.isSugarBeetLoader then

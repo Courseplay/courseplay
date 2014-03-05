@@ -89,7 +89,7 @@ function courseplay:register_at_combine(self, combine)
 	local curFile = "combines.lua"
 	courseplay:debug(string.format("%s: registering at combine %s", nameNum(self), tostring(combine.name)), 4)
 	--courseplay:debug(tableShow(combine, tostring(combine.name), 4), 4)
-	local num_allowed_courseplayers = 1
+	local numAllowedCourseplayers = 1
 	self.cp.calculatedCourseToCombine = false
 	if combine.courseplayers == nil then
 		combine.courseplayers = {};
@@ -99,7 +99,7 @@ function courseplay:register_at_combine(self, combine)
 	end;
 
 	if combine.cp.isChopper or combine.cp.isSugarBeetLoader then
-		num_allowed_courseplayers = 2
+		numAllowedCourseplayers = courseplay.isDeveloper and 4 or 2;
 	else
 		
 		if self.cp.realisticDriving then
@@ -126,7 +126,7 @@ function courseplay:register_at_combine(self, combine)
 		end
 	end
 
-	if table.getn(combine.courseplayers) == num_allowed_courseplayers then
+	if #(combine.courseplayers) == numAllowedCourseplayers then
 		courseplay:debug(string.format("%s (id %s): combine (id %s) is already registered", nameNum(self), tostring(self.id), tostring(combine.id)), 4);
 		return false
 	end
@@ -179,9 +179,15 @@ function courseplay:register_at_combine(self, combine)
 	--THOMAS' best_combine END
 
 
-	if table.getn(combine.courseplayers) == 1 and not combine.courseplayers[1].cp.allowFollowing then
-		return false
-	end
+	if #(combine.courseplayers) == numAllowedCourseplayers - 1 then
+		local frontTractor = combine.courseplayers[numAllowedCourseplayers - 1];
+		if frontTractor then
+			local canFollowFrontTractor = frontTractor.cp.tipperFillLevelPct and frontTractor.cp.tipperFillLevelPct >= self.cp.followAtFillLevel;
+			if not canFollowFrontTractor then
+				return false;
+			end;
+		end;
+	end;
 
 	-- you got a courseplayer, so stop yellin....
 	if combine.wants_courseplayer ~= nil and combine.wants_courseplayer == true then
@@ -194,7 +200,7 @@ function courseplay:register_at_combine(self, combine)
 	self.distanceToCombine = nil
 	self.combineID = nil
 	table.insert(combine.courseplayers, self)
-	self.cp.positionWithCombine = table.getn(combine.courseplayers)
+	self.cp.positionWithCombine = #(combine.courseplayers)
 	self.cp.activeCombine = combine
 	self.cp.reachableCombines = {}
 	
