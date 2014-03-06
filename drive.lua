@@ -12,8 +12,8 @@ function courseplay:drive(self, dt)
 	-- TIPPER FILL LEVELS (get once for all following functions)
 	self.cp.tipperFillLevel, self.cp.tipperCapacity = self:getAttachedTrailersFillLevelAndCapacity();
 	if self.cp.tipperFillLevel == nil then self.cp.tipperFillLevel = 0; end;
-	if self.cp.tipperCapacity == nil then self.cp.tipperCapacity = 0; end;
-	self.cp.tipperFillLevelPct = self.cp.tipperFillLevel * 100 / (self.cp.tipperCapacity + 0.00001);
+	if self.cp.tipperCapacity == nil or self.cp.tipperCapacity == 0 then self.cp.tipperCapacity = 0.00001; end;
+	self.cp.tipperFillLevelPct = self.cp.tipperFillLevel * 100 / self.cp.tipperCapacity;
 
 
 
@@ -334,14 +334,14 @@ function courseplay:drive(self, dt)
 					allowedToDrive,lx,lz = courseplay:refillSprayer(self, self.cp.tipperFillLevelPct, self.cp.refillUntilPct, allowedToDrive, lx, lz, dt);
 				end;
 				if courseplay:timerIsThrough(self, "fillLevelChange") or self.cp.prevFillLevelPct == nil then
-					if self.cp.prevFillLevelPct ~= nil and self.cp.tipperFillLevelPct == self.cp.prevFillLevelPct and self.cp.tipperFillLevelPct > self.cp.refillUntilPct then
+					if self.cp.prevFillLevelPct ~= nil and self.cp.tipperFillLevelPct == self.cp.prevFillLevelPct and self.cp.tipperFillLevelPct >= self.cp.refillUntilPct then
 						drive_on = true
 					end
 					self.cp.prevFillLevelPct = self.cp.tipperFillLevelPct
 					courseplay:setCustomTimer(self, "fillLevelChange", 7);
 				end
 
-				if self.cp.tipperFillLevelPct == 100 or drive_on then
+				if self.cp.tipperFillLevelPct >= self.cp.refillUntilPct or drive_on then
 					self.wait = false
 				end
 				self.cp.infoText = string.format(courseplay:loc("CPloading"), self.cp.tipperFillLevel, self.cp.tipperCapacity)
