@@ -52,8 +52,10 @@ function courseplay:goReverse(self,lx,lz)
 			if self.Waypoints[i].rev then
 				tcx = self.Waypoints[i].cx
 				tcz = self.Waypoints[i].cz
-			else
-				tcx , tcy, tcz = localToWorld(node,0,0,-10*inverse)
+            else
+                local dx, dz, vl = courseplay.generation:getPointDirection(self.Waypoints[i-2], self.Waypoints[i-1]);
+                tcx = self.Waypoints[i-1].cx + dx * 30;
+                tcz = self.Waypoints[i-1].cz + dz * 30;
 			end
 			local distance = courseplay:distance(xTipper,zTipper, tcx ,tcz)	
 			if distance > nodeDistance then
