@@ -1149,6 +1149,11 @@ function courseplay:updateTick(dt)
 		courseplay:reset_tools(self)
 	end
 
+	-- wage costs
+	if courseplay.wagesActive and self.isServer and self.drive and not self.isHired then
+		g_currentMission:addSharedMoney(dt * -courseplay.wagePerMs * courseplay.wageDifficultyMultiplier, 'wagePayment');
+	end;
+
 	self.timer = self.timer + dt
 	--courseplay:debug(string.format("timer: %f", self.timer ), 2)
 end
