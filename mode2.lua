@@ -279,17 +279,19 @@ function courseplay:unload_combine(self, dt)
 	local AutoCombineIsTurning = false
 	local combineIsAutoCombine = false
 	local autoCombineExtraMoveBack = 0
-	if combine.acParameters ~= nil and combine.acParameters.enabled and combine.isAIThreshing then
+	if tractor.acParameters ~= nil and tractor.acParameters.enabled and (tractor.isAIThreshing or tractor.isAITractorActivated) then
 		combineIsAutoCombine = true
-		if combine.cp.turnStage == nil then
-			combine.cp.turnStage = 0
+		if tractor.cp.turnStage == nil then
+			tractor.cp.turnStage = 0
 		end
-		if combine.acTurnStage ~= 0 then 
-			combine.cp.turnStage = 2
+		-- if tractor.acTurnStage ~= 0 then 
+		if tractor.acTurnStage > 0 then
+			tractor.cp.turnStage = 2
 			autoCombineExtraMoveBack = self.cp.turnRadius*1.5
 			AutoCombineIsTurning = true
+			-- print(('%s: acTurnStage=%d -> cp.turnState=2, AutoCombineIsTurning=true'):format(nameNum(tractor), tractor.acTurnStage)); --TODO: 140308 AutoTractor
 		else
-			combine.cp.turnStage = 0
+			tractor.cp.turnStage = 0
 		end
 	end
 	
@@ -299,6 +301,7 @@ function courseplay:unload_combine(self, dt)
 	if tractor ~= nil and (aiTurn or (tractor.cp.turnStage > 0)) then
 		self.cp.infoText = courseplay:loc("CPCombineTurning") -- "Drescher wendet. "
 		combine_turning = true
+		-- print(('%s: cp.turnStage=%d -> combine_turning=true'):format(nameNum(tractor), tractor.cp.turnStage));
 	end
 	if self.cp.modeState == 2 or self.cp.modeState == 3 or self.cp.modeState == 4 then
 		if combine == nil then
@@ -687,16 +690,18 @@ function courseplay:unload_combine(self, dt)
 	distance = courseplay:distance(sx, sz, cx, cz)
 	if combine_turning and not combine.cp.isChopper then
 		if combine.grainTankFillLevel > combine.grainTankCapacity*0.9 then
-			if combineIsAutoCombine and combine.acIsCPStopped ~= nil then
-				combine.acIsCPStopped = true
+			if combineIsAutoCombine and tractor.acIsCPStopped ~= nil then
+				-- print(nameNum(tractor) .. ': grainTankFillLevel > 90%% -> set acIsCPStopped to true'); --TODO: 140308 AutoTractor
+				tractor.acIsCPStopped = true
 			elseif combine.isAIThreshing then 
 				combine.waitForTurnTime = combine.time + 100
 			elseif tractor.drive == true then
 				combine.cp.waitingForTrailerToUnload = true
 			end			
 		elseif distance < 50 then
-			if AutoCombineIsTurning and combine.acIsCPStopped ~= nil then
-				combine.acIsCPStopped = true
+			if AutoCombineIsTurning and tractor.acIsCPStopped ~= nil then
+				-- print(nameNum(tractor) .. ': distance < 50 -> set acIsCPStopped to true'); --TODO: 140308 AutoTractor
+				tractor.acIsCPStopped = true
 			elseif combine.isAIThreshing and not (combine_fill_level == 0 and combine.currentPipeState ~= 2) then
 				combine.waitForTurnTime = combine.time + 100
 			elseif tractor.drive == true and not (combine_fill_level == 0 and combine:getCombineTrailerInRangePipeState()==0) then
