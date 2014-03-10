@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="13">
-	<version>3.41.0423</version>
+	<version>3.41.0429</version>
 	<author><![CDATA[Jakob Tischler, Thomas Gärtner,
 Horoman]]></author>
 	<title>
@@ -1969,7 +1969,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<ru>Симметрично:</ru>
 			<hu>Szimmetrikus sávváltás:</hu>
 		</text>
-		<text name="COURSEPLAY_DRIVERPRIOTITY">
+		<text name="COURSEPLAY_DRIVERPRIORITY">
 			<de>Abfahrer-Priorität</de>
 			<en>Driver priority</en>
 			<es>Prioridad del conductor</es>
@@ -2172,7 +2172,6 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 		<text name="COURSEPLAY_SEPARATOR">
 			<en>・</en>
 			<ru><![CDATA[  ]]></ru>
-			<hu>·</hu>
 		</text>
 
 		<!-- SeedUsageCalculator HUD content -->

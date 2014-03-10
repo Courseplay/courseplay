@@ -492,7 +492,7 @@ function courseplay:changeFieldSpeed(vehicle, changeBy)
 end
 
 function courseplay:changeMaxSpeed(vehicle, changeBy)
-	if not self.cp.speeds.useRecordingSpeed then
+	if not vehicle.cp.speeds.useRecordingSpeed then
 		local speed = vehicle.cp.speeds.max * 3600;
 		speed = Utils.clamp(speed + changeBy, 5, 60);
 		vehicle.cp.speeds.max = speed / 3600;

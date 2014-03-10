@@ -84,6 +84,8 @@ function courseplay_manager:loadMap(name)
 		courseplay.fields:loadAllCustomFields();
 	end;
 
+	courseplay.wageDifficultyMultiplier = Utils.lerp(0.5, 1, (g_currentMission.missionStats.difficulty - 1) / 2);
+
 	g_currentMission.environment:addMinuteChangeListener(courseplay_manager);
 end;
 
@@ -130,6 +132,13 @@ function courseplay_manager:createInitialCourseplayFile()
 		end;
 		if not getXMLInt(file, 'XML.courseplayFields#scanStep') then
 			setXMLInt(file, 'XML.courseplayFields#scanStep', courseplay.fields.scanStep);
+		end;
+
+		if getXMLBool(file, 'XML.courseplayWages#active') == nil then
+			setXMLString(file, 'XML.courseplayWages#active', tostring(courseplay.wagesActive));
+		end;
+		if not getXMLInt(file, 'XML.courseplayWages#wagePerHour') then
+			setXMLInt(file, 'XML.courseplayWages#wagePerHour', courseplay.wagePerHour);
 		end;
 
 		saveXMLFile(file);

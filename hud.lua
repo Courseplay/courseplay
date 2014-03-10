@@ -205,7 +205,7 @@ function courseplay.hud:loadPage(vehicle, page)
 
 		if not combine.cp.isChopper then
 			--Driver priority
-			vehicle.cp.hud.content.pages[0][4][1].text = courseplay:loc("COURSEPLAY_DRIVERPRIOTITY");
+			vehicle.cp.hud.content.pages[0][4][1].text = courseplay:loc("COURSEPLAY_DRIVERPRIORITY");
 			vehicle.cp.hud.content.pages[0][4][2].text = combine.cp.driverPriorityUseFillLevel and courseplay:loc("COURSEPLAY_FILLEVEL") or courseplay:loc("CPDistance");
 
 			vehicle.cp.hud.content.pages[0][5][1].text = courseplay:loc('COURSEPLAY_STOP_DURING_UNLOADING');

@@ -221,10 +221,11 @@ function courseplay:sideToDrive(self, combine, distance,switchSide)
 	x, y, z = localToWorld(tractor.cp.DirectionNode, 0, 0, distance -5)
 	local dirX, dirZ = combine.aiThreshingDirectionX, combine.aiThreshingDirectionZ;
 	if (not (combine.isAIThreshing or combine.drive)) or  combine.aiThreshingDirectionX == nil or combine.aiThreshingDirectionZ == nil or combine.acParameters ~= nil then
-			local dx,_,dz = localDirectionToWorld(combine.rootNode, 0, 0, 2);
-			local length = Utils.vector2Length(dx,dz);
-			dirX = dx/length;
-			dirZ = dz/length;
+		local node = combine.cp.fixedRootNode or combine.rootNode;
+		local dx,_,dz = localDirectionToWorld(node, 0, 0, 2);
+		local length = Utils.vector2Length(dx,dz);
+		dirX = dx/length;
+		dirZ = dz/length;
 	end
 	local sideX, sideZ = -dirZ, dirX;
 	local sideWatchDirOffset = Utils.getNoNil(combine.sideWatchDirOffset,-8)

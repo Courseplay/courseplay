@@ -173,6 +173,7 @@ function courseplay:setGlobalData()
 	local customPosX, customPosY = nil, nil;
 	local customGitPosX, customGitPosY = nil, nil;
 	local fieldsAutomaticScan, fieldsDebugScan, fieldsDebugCustomLoad, fieldsCustomScanStep, fieldsOnlyScanOwnedFields = true, false, false, nil, true;
+	local wagesActive, wagesAmount = false, 666;
 
 	local savegame = g_careerScreen.savegames[g_careerScreen.selectedIndex];
 	if savegame ~= nil then
@@ -198,6 +199,12 @@ function courseplay:setGlobalData()
 				fieldsDebugScan       = Utils.getNoNil(getXMLBool(cpFile, fieldsKey .. '#debugScannedFields'), false);
 				fieldsDebugCustomLoad = Utils.getNoNil(getXMLBool(cpFile, fieldsKey .. '#debugCustomLoadedFields'), false);
 				fieldsCustomScanStep = getXMLInt(cpFile, fieldsKey .. '#scanStep');
+			end;
+
+			local wagesKey = 'XML.courseplayWages';
+			if hasXMLProperty(cpFile, wagesKey) then
+				wagesActive = Utils.getNoNil(getXMLBool(cpFile, wagesKey .. '#active'), wagesActive);
+				wagesAmount = Utils.getNoNil(getXMLInt(cpFile, wagesKey .. '#wagePerHour'), wagesAmount);
 			end;
 
 			delete(cpFile);
@@ -484,6 +491,11 @@ function courseplay:setGlobalData()
 	courseplay.utf8normalization = courseplay:getUtf8normalization();
 
 	courseplay.moreRealisticInstalled = RealisticUtils ~= nil and RealisticUtils.getFruitInfosV2 ~= nil;
+
+	-- WORKER WAGES
+	courseplay.wagesActive = wagesActive;
+	courseplay.wagePerHour = wagesAmount;
+	courseplay.wagePerMs = wagesAmount / 60 / 60 / 1000;
 
 	--print("\t### Courseplay: setGlobalData() finished");
 end;

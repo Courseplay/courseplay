@@ -1,7 +1,7 @@
 -- Path finder algorithms that are optimized for grids
 
 local pathfinding = courseplay.pathfinding;
--- pathfinding.helpers = {}; --already done in algo_helpers - don't overwrite!
+-- pathfinding.helpers = {}; --already done in pathfinding_helpers - don't overwrite!
 local helpers = pathfinding.helpers;
 local Finders = {};
 

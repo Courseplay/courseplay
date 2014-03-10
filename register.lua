@@ -56,6 +56,13 @@ function courseplay:attachableLoad(xmlFile)
 
 	courseplay:setNameVariable(self);
 
+	-- ATTACHABLE CHOPPER SPECIAL NODE
+	if self.cp.isPoettingerMex6 or self.cp.isPoettingerMexOK then
+		self.cp.fixedRootNode = createTransformGroup('courseplayFixedRootNode');
+		link(self.rootNode, self.cp.fixedRootNode);
+		setTranslation(self.cp.fixedRootNode, 0, 0, 0);
+		setRotation(self.cp.fixedRootNode, 0, math.rad(180), 0);
+	end;
 
 	--ADD ATTACHABLES TO GLOBAL REFERENCE LIST
 	if courseplay.thirdParty.EifokLiquidManure == nil then courseplay.thirdParty.EifokLiquidManure = {}; end;

@@ -597,6 +597,7 @@ function courseplay.courses.delete_save_all(self)
 				file:write(string.format('\t<courseplayHud posX="%.3f" posY="%.3f" />\n', courseplay.hud.infoBasePosX, courseplay.hud.infoBasePosY));
 				file:write(string.format('\t<courseplayGlobalInfoText posX="%.3f" posY="%.3f" />\n', courseplay.globalInfoText.posX, courseplay.globalInfoText.posY));
 				file:write(string.format('\t<courseplayFields automaticScan=%q onlyScanOwnedFields=%q debugScannedFields=%q debugCustomLoadedFields=%q scanStep="%d" />\n', tostring(courseplay.fields.automaticScan), tostring(courseplay.fields.onlyScanOwnedFields), tostring(courseplay.fields.debugScannedFields), tostring(courseplay.fields.debugCustomLoadedFields), courseplay.fields.scanStep));
+				file:write(string.format('\t<courseplayWages active=%q wagePerHour="%d" />\n', tostring(courseplay.wagesActive), courseplay.wagePerHour));
 
 				file:write('\t<folders>\n')
 				for i,folder in pairs(g_currentMission.cp_folders) do
