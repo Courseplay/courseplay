@@ -258,6 +258,10 @@ function courseplay:setNameVariable(workTool)
 	elseif Utils.endsWith(workTool.configFileName, "poettingerMex6.xml") then
 		workTool.cp.isPoettingerMex6 = true;
 
+	--Poettinger Mex OK [Vertex Dezign]
+	elseif Utils.endsWith(workTool.configFileName, 'poettingerMexOK.xml') then
+		workTool.cp.isPoettingerMexOK = true;
+
 	--Sugarbeet Loaders [burner]
 	elseif Utils.endsWith(workTool.configFileName, "RopaEuroMaus.xml") then
 		workTool.cp.isRopaEuroMaus = true;
@@ -319,7 +323,7 @@ function courseplay:isSpecialSprayer(workTool)
 end;
 
 function courseplay:isSpecialChopper(workTool)
-	if workTool.cp.isJF1060 or workTool.cp.isPoettingerMex6 then
+	if workTool.cp.isJF1060 or workTool.cp.isPoettingerMex6 or workTool.cp.isPoettingerMexOK then
 		if workTool.grainTankFillLevel == nil then
 			workTool.grainTankFillLevel = 0;
 		end;
@@ -1242,6 +1246,10 @@ function courseplay:askForSpecialSettings(self,object)
 		self.cp.aiTurnNoBackward = true
 		automaticToolOffsetX = -2.5
 		print("Pöttinger Mex 6 workwidth: 2.0 m");
+	elseif object.cp.isPoettingerMexOK then
+		self.cp.aiTurnNoBackward = true
+		automaticToolOffsetX = -1.7;
+		print("Pöttinger Mex OK workwidth: 0.5 m");
 	elseif object.cp.isAbbeyAP900 then
 		self.cp.aiTurnNoBackward = true
 		automaticToolOffsetX = -4.1

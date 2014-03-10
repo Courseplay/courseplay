@@ -59,10 +59,11 @@ function courseplay:handle_mode2(self, dt)
 
 	-- switch side
 	if self.cp.activeCombine ~= nil and (self.cp.modeState == 10 or self.cp.activeCombine.turnAP ~= nil and self.cp.activeCombine.turnAP == true) then
+		local node = self.cp.activeCombine.cp.fixedRootNode or self.cp.activeCombine.rootNode;
 		if self.cp.combineOffset > 0 then
-			self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.cp.activeCombine.rootNode, 25, 0, 0)
+			self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(node, 25, 0, 0)
 		else
-			self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.cp.activeCombine.rootNode, -25, 0, 0)
+			self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(node, -25, 0, 0)
 		end
 		self.cp.modeState = 5
 		self.cp.mode2nextState = 2
@@ -314,7 +315,7 @@ function courseplay:unload_combine(self, dt)
 	end
 
 
-	local x1, y1, z1 = worldToLocal(combine.rootNode, x, y, z)
+	local x1, y1, z1 = worldToLocal(combine.cp.fixedRootNode or combine.rootNode, x, y, z)
 	local distance = Utils.vector2Length(x1, z1)
 
 	local safetyDistance = 11;
@@ -412,7 +413,7 @@ function courseplay:unload_combine(self, dt)
 	
 			tX, tY, tZ = localToWorld(combine.rootNode, self.cp.combineOffset, 0, prnToCombineZ -5);
 		else			
-			tX, tY, tZ = localToWorld(combine.rootNode, self.cp.combineOffset, 0, -5);
+			tX, tY, tZ = localToWorld(combine.cp.fixedRootNode or combine.rootNode, self.cp.combineOffset, 0, -5);
 		end
 
 		if combine.attachedImplements ~= nil then
@@ -598,7 +599,7 @@ function courseplay:unload_combine(self, dt)
 		if combine.cp.offset == nil and not combine.cp.isChopper then
 			courseplay:calculateCombineOffset(self, combine);
 		end
-		currentX, currentY, currentZ = localToWorld(combine.rootNode, self.cp.combineOffset, 0, trailer_offset + 5)
+		currentX, currentY, currentZ = localToWorld(combine.cp.fixedRootNode or combine.rootNode, self.cp.combineOffset, 0, trailer_offset + 5)
 		
 		--CALCULATE VERTICAL OFFSET (tipper offset)
 		local prnToCombineZ = courseplay:calculateVerticalOffset(self, combine);
@@ -1302,7 +1303,7 @@ function courseplay:calculateCombineOffset(self, combine)
 	if combine.pipeRaycastNode ~= nil then
 		prnX, prnY, prnZ = getTranslation(combine.pipeRaycastNode)
 		prnwX, prnwY, prnwZ = getWorldTranslation(combine.pipeRaycastNode)
-		combineToPrnX, combineToPrnY, combineToPrnZ = worldToLocal(combine.rootNode, prnwX, prnwY, prnwZ)
+		combineToPrnX, combineToPrnY, combineToPrnZ = worldToLocal(combine.cp.fixedRootNode or combine.rootNode, prnwX, prnwY, prnwZ)
 
 		if combineToPrnX >= 0 then
 			combine.cp.pipeSide = 1; --left
@@ -1419,18 +1420,18 @@ function courseplay:calculateVerticalOffset(self, combine)
 		cwX, cwY, cwZ = getWorldTranslation(combine.pipeRaycastNode);
 	end;
 	
-	local _, _, prnToCombineZ = worldToLocal(combine.rootNode, cwX, cwY, cwZ); 
+	local _, _, prnToCombineZ = worldToLocal(combine.cp.fixedRootNode or combine.rootNode, cwX, cwY, cwZ); 
 	
 	return prnToCombineZ;
 end;
 
 function courseplay:setTargetUnloadingCoords(self, combine, trailer_offset, prnToCombineZ)
-	local sourceRootNode = combine.rootNode;
+	local sourceRootNode = combine.cp.fixedRootNode or combine.rootNode;
 
 	if combine.cp.isChopper then
 		prnToCombineZ = 0;
 
-		if combine.attachedImplements ~= nil then
+		if combine.attachedImplements ~= nil and combine.haeckseldolly then
 			for k, i in pairs(combine.attachedImplements) do
 				local implement = i.object;
 				if implement.haeckseldolly == true then
