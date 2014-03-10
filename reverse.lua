@@ -53,7 +53,7 @@ function courseplay:goReverse(self,lx,lz)
 				tcx = self.Waypoints[i].cx
 				tcz = self.Waypoints[i].cz
             else
-                local dx, dz, vl = courseplay.generation:getPointDirection(self.Waypoints[i-2], self.Waypoints[i-1]);
+                local dx, dz, _ = courseplay.generation:getPointDirection(self.Waypoints[i-2], self.Waypoints[i-1]);
                 tcx = self.Waypoints[i-1].cx + dx * 30;
                 tcz = self.Waypoints[i-1].cz + dz * 30;
 			end
@@ -66,7 +66,7 @@ function courseplay:goReverse(self,lx,lz)
 					end
 			end
 		end
-		srX,srZ = self.Waypoints[self.recordnumber].cx,self.Waypoints[self.recordnumber].cz
+		local srX,srZ = self.Waypoints[self.recordnumber].cx,self.Waypoints[self.recordnumber].cz
 		local _,_,tsrZ = worldToLocal(self.rootNode,srX,yTipper,srZ)
 		if tsrZ > 0 then
 			self.cp.checkReverseValdityPrinted = false
@@ -87,62 +87,91 @@ function courseplay:goReverse(self,lx,lz)
 			courseplay:debug(nameNum(self) .. " backup tipper.cp.isPivot set: "..tostring(lxFrontNode),13)
 		end
 		local lxTractor, lzTractor = 0,0
-		local limitTractor = 0.068
-		local limitFront = 0.065
-		local limitTipper = 0.03
+        -- TODO: Start Old Code
+        --[[local limitTractor = 0.068
+        local limitFront = 0.065
+        local limitTipper = 0.03 ]]
+        -- End Old Code
 
-		if isPivot then
-			courseplay:showDirection(frontNode,lxFrontNode, lzFrontNode)
-			lxTractor, lzTractor = AIVehicleUtil.getDriveDirection(self.rootNode, xFrontNode,yFrontNode,zFrontNode);
-			courseplay:showDirection(self.rootNode,lxTractor, lzTractor)
-			
-			lz = (-lzTractor) - (-lzFrontNode) 
-			lx = (-lxTractor) - (-lxFrontNode) 
-			
-			if ((lxTipper > limitTipper and lxFrontNode < lxTipper) or (lxTipper < -limitTipper and lxFrontNode > lxTipper)) and math.abs(lxFrontNode) < limitFront and math.abs(lxTractor) < limitTractor then
+        if isPivot then
+            courseplay:showDirection(frontNode,lxFrontNode, lzFrontNode)
+            lxTractor, lzTractor = AIVehicleUtil.getDriveDirection(self.rootNode, xFrontNode,yFrontNode,zFrontNode);
+            courseplay:showDirection(self.rootNode,lxTractor, lzTractor)
 
-					lz = (-lzFrontNode) - (-lzTipper)
-					lx = (-lxFrontNode) - (-lxTipper)
-					
-					lz = (-lzTractor) - lz
-					lx = (-lxTractor) - lx
-					courseplay.Revprinted = false
-					if (lxTipper > 0 and lxFrontNode > 0 and lxTractor > 0) or (lxTipper < 0 and lxFrontNode < 0 and lxTractor < 0) then
-						lz = -lz
-						lx = -lx
-					end
-			else
-				if not courseplay.Revprinted then
-					if math.abs(lxFrontNode) > limitFront then
-						courseplay:debug(nameNum(self) .. " out with front: "..tostring(lxFrontNode),13)
-					end
-					if math.abs(lxTractor) > limitTractor then
-						courseplay:debug(nameNum(self) .. " out with tractor: "..tostring(lxTractor),13)
-					end
-					if math.abs(lxTipper) < limitTipper then
-						courseplay:debug(nameNum(self) .. " out with tipper: "..tostring(lxTipper),13)
-					end
-					courseplay.Revprinted = true
-				end
-			end
+            -- TODO: Start Old Code
+            --[[ lz = (-lzTractor) - (-lzFrontNode)
+            lx = (-lxTractor) - (-lxFrontNode)
+
+            if ((lxTipper > limitTipper and lxFrontNode < lxTipper) or (lxTipper < -limitTipper and lxFrontNode > lxTipper)) and math.abs(lxFrontNode) < limitFront and math.abs(lxTractor) < limitTractor then
+
+                    lz = (-lzFrontNode) - (-lzTipper)
+                    lx = (-lxFrontNode) - (-lxTipper)
+
+                    lz = (-lzTractor) - lz
+                    lx = (-lxTractor) - lx
+                    courseplay.Revprinted = false
+                    if (lxTipper > 0 and lxFrontNode > 0 and lxTractor > 0) or (lxTipper < 0 and lxFrontNode < 0 and lxTractor < 0) then
+                        lz = -lz
+                        lx = -lx
+                    end
+            else
+                if not courseplay.Revprinted then
+                    if math.abs(lxFrontNode) > limitFront then
+                        courseplay:debug(nameNum(self) .. " out with front: "..tostring(lxFrontNode),13)
+                    end
+                    if math.abs(lxTractor) > limitTractor then
+                        courseplay:debug(nameNum(self) .. " out with tractor: "..tostring(lxTractor),13)
+                    end
+                    if math.abs(lxTipper) < limitTipper then
+                        courseplay:debug(nameNum(self) .. " out with tipper: "..tostring(lxTipper),13)
+                    end
+                    courseplay.Revprinted = true
+                end
+            end]]
+            -- End Old Code
+
+            local tractorAngle  = courseplay:getRealWorldRotation(self.rootNode)
+            local pivotAngle    = courseplay:getRealWorldRotation(frontNode)
+            local tipperAngle   = courseplay:getRealWorldRotation(node)
+            local waypointAngle = math.atan2(zTipper - tcz, xTipper - tcx);
+
+            local rearAngleDiff     = (pivotAngle - tipperAngle) - (tipperAngle - waypointAngle);
+            local frontAngleDiff    = (tractorAngle - pivotAngle) - (pivotAngle - tipperAngle);
+
+            local angleDiff = (frontAngleDiff - rearAngleDiff) * 2;
+
+            lx, lz = math.sin(angleDiff), math.cos(angleDiff);
 		else
 			lxTractor, lzTractor = AIVehicleUtil.getDriveDirection(self.rootNode, xTipper,yTipper,zTipper);
 			courseplay:showDirection(self.rootNode,lxTractor, lzTractor)
-			
-			lz = (-lzTractor) - (-lzTipper) 
+
+            -- TODO: Start of old stearing code.
+			--[[lz = (-lzTractor) - (-lzTipper)
 			lx = (-lxTractor) - (-lxTipper) 
 		
 			if math.abs(lx) < 0.05 then
 				lx = 0
 				lz = 1
-			end
-			--print("lx: "..tostring(lx).."	lxTractor: "..tostring(lxTractor).."	lxTipper: "..tostring(lxTipper))
-		end
-		if (math.abs(lxFrontNode) > 0.4 or math.abs(lxTractor) > 0.4)  and isPivot then
+            end ]]
+            -- End of old stearing code.
+
+            --print("lx: "..tostring(lx).."	lxTractor: "..tostring(lxTractor).."	lxTipper: "..tostring(lxTipper))
+
+            local tractorAngle  = courseplay:getRealWorldRotation(self.rootNode)
+            local tipperAngle   = courseplay:getRealWorldRotation(node);
+            local waypointAngle = math.atan2(zTipper - tcz, xTipper - tcx);
+
+            local angleDiff     = ((tractorAngle - tipperAngle) - (tipperAngle - waypointAngle));
+
+            lx, lz = math.sin(angleDiff), math.cos(angleDiff);
+        end
+
+		if isPivot and ((math.abs(lxFrontNode) > 0.4 or math.abs(lxTractor) > 0.5)) then
 			fwd = true
 			--lx = -lx
 			self.recordnumber = self.cp.lastReverseRecordnumber
-		end
+        end
+
 		local nx, ny, nz = localDirectionToWorld(node, lxTipper, 0, lzTipper)
 		courseplay:debug(nameNum(self) .. ": call backward raycast", 1);
 		local num = raycastAll(xTipper,yTipper+1,zTipper, nx, ny, nz, "findTipTriggerCallback", 10, self)
@@ -154,7 +183,7 @@ function courseplay:goReverse(self,lx,lz)
 		end;
 		courseplay:showDirection(self.rootNode,lx,lz)
 		if (self.cp.mode == 1 or self.cp.mode == 2 or self.cp.mode == 6) and self.cp.tipperFillLevel == 0 then
-			for i = self.recordnumber, self.maxnumber do
+			--[[for i = self.recordnumber, self.maxnumber do
 				if  not self.Waypoints[i].rev then
 					local _,_,lz = worldToLocal(self.cp.DirectionNode, self.Waypoints[i].cx , y , self.Waypoints[i].cz)
 					if lz > 3 then
@@ -162,10 +191,8 @@ function courseplay:goReverse(self,lx,lz)
 						break
 					end					
 				end
-			end
+			end]]
 		end
-		
-		
 
 		return lx,lz,fwd
 end
@@ -176,4 +203,15 @@ function courseplay:showDirection(node,lx,lz)
 		ctx,_,ctz = localToWorld(node,lx*5,y,lz*5)
 		drawDebugLine(x, y+5, z, 1, 0, 0, ctx, y+5, ctz, 1, 0, 0);
 	end
+end
+
+function courseplay:getRealWorldRotation(node)
+    local x,y,z = localDirectionToWorld(node, 0, 0, 1);
+    local length = Utils.vector2Length(x,z);
+    local rot = 0;
+    if length > 0 then
+        rot = math.atan2(z/length,x/length);
+    end
+
+    return rot;
 end
