@@ -1158,6 +1158,18 @@ function courseplay:updateTick(dt)
 	--courseplay:debug(string.format("timer: %f", self.timer ), 2)
 end
 
+function courseplay:preDelete()
+	if self.cp ~= nil and self.cp.numActiveGlobalInfoTexts ~= 0 then
+		for refIdx,_ in pairs(courseplay.globalInfoText.msgReference) do
+			if self.cp.activeGlobalInfoTexts[refIdx] ~= nil then
+				courseplay:setGlobalInfoText(self, refIdx, true);
+				-- print(('%s: preDelete(): self.cp.activeGlobalInfoTexts[%s]=%s'):format(nameNum(self), tostring(refIdx), tostring(self.cp.activeGlobalInfoTexts[refIdx])));
+			end;
+			self.cp.hasSetGlobalInfoTextThisLoop[refIdx] = false;
+		end;
+	end;
+end;
+
 function courseplay:delete()
 	if self.aiTrafficCollisionTrigger ~= nil then
 		removeTrigger(self.aiTrafficCollisionTrigger);

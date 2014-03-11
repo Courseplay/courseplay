@@ -254,7 +254,7 @@ function courseplay_manager:draw()
 					button.canBeClicked = true;
 					button.isDisabled = data.vehicle.isBroken or data.vehicle.isControlled;
 					button.parameter = data.vehicle;
-					if g_currentMission.controlledVehicle == data.vehicle then
+					if g_currentMission.controlledVehicle and g_currentMission.controlledVehicle == data.vehicle then
 						targetColor = 'activeGreen';
 						button.canBeClicked = false;
 					elseif button.isDisabled then
