@@ -594,7 +594,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<es>Rutas: %q</es>
 			<it>Percorsi: %q</it>
 			<cz>Trasy: %q</cz>
-			<ru>Маршруты: %q</ru>
+			<ru>МАРШРУТЫ %q</ru>
 			<hu>Útvonal: %q</hu>
 		</text>
 		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT">
@@ -2066,7 +2066,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<es>usuario</es>
 			<it>utente</it>
 			<cz>uživatel</cz>
-			<ru>изменено</ru>
+			<ru>!</ru>
 			<hu>felhasználó</hu>
 		</text>
 		<text name="COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED">
@@ -2182,6 +2182,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<es>Uso de semillas</es> <!-- !!! -->
 			<it>Utilizzo di semi</it> <!-- !!! -->
 			<hu>Vetőmag szükséglet számítás</hu>
+			<ru>КАЛЬКУЛЯЦИЯ ПОСЕВОВ</ru>
 		</text>
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD">
 			<en>Field: %d (%s %s)</en>
@@ -2190,6 +2191,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<es>Campo: %d (%s %s)</es>
 			<it>Campo: %d (%s %s)</it>
 			<hu>Terület: %d (%s %s)</hu>
+			<ru>Поле: %d (%s %s)</ru>
 		</text>
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE">
 			<en>Seed type: %s</en>
@@ -2198,6 +2200,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<fr>Type de semence: %s</fr>
 			<it>Tipo di seme: %s</it>
 			<hu>Vetőmag típusa: %s</hu>
+			<ru>Семена: %s</ru>
 		</text>
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE_DEFAULT">
 			<en>Default: %s %s (%s)</en>
@@ -2206,6 +2209,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<es>Defecto: %s %s (%s)</es>
 			<it>Difette: %s %s (%s)</it>
 			<hu>Alap verzióban: %s %s (%s) </hu>
+			<ru>Норма: %s %s (%s)</ru>
 		</text>
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE_MOREREALISTIC">
 			<en>MoreRealistic: %s %s (%s)</en>
@@ -2214,6 +2218,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<fr>MoreRealistic: %s %s (%s)</fr>
 			<it>MoreRealistic: %s %s (%s)</it>
 			<hu>Reálisabb módban: %s %s (%s)</hu>
+			<ru>MR: %s %s (%s)</ru>
 		</text>
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_TRIM">
 			<en>···</en>
