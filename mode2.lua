@@ -112,7 +112,7 @@ function courseplay:handle_mode2(self, dt)
 		else
 			-- follow tractor in front of me
 			frontTractor = self.cp.activeCombine.courseplayers[self.cp.positionWithCombine - 1]
-			-- print(string.format('%s: activeCombine ~= nil, my position=%d, frontTractor (positionWithCombine %d) = %q', nameNum(self), self.cp.positionWithCombine, self.cp.positionWithCombine - 1, nameNum(frontTractor)));
+			courseplay:debug(string.format('%s: activeCombine ~= nil, my position=%d, frontTractor (positionWithCombine %d) = %q', nameNum(self), self.cp.positionWithCombine, self.cp.positionWithCombine - 1, nameNum(frontTractor)), 4);
 			--	courseplay:follow_tractor(self, dt, tractor)
 			self.cp.modeState = 6
 			courseplay:unload_combine(self, dt)
@@ -162,7 +162,7 @@ function courseplay:handle_mode2(self, dt)
 
 
 				local highest_fill_level = 0;
-				local num_courseplayers = 0;
+				local num_courseplayers = 0; --TODO: = fewest courseplayers ?
 				local distance = 0;
 
 				self.best_combine = nil;
@@ -182,7 +182,7 @@ function courseplay:handle_mode2(self, dt)
 									if numCombineCourseplayers > 0 then
 										frontTractor = combine.courseplayers[num_courseplayers];
 										local canFollowFrontTractor = frontTractor.cp.tipperFillLevelPct and frontTractor.cp.tipperFillLevelPct >= self.cp.followAtFillLevel;
-										-- print(string.format('frontTractor (pos %d)=%q, canFollowFrontTractor=%s', numCombineCourseplayers, nameNum(frontTractor), tostring(canFollowFrontTractor)));
+										courseplay:debug(string.format('%s: frontTractor (pos %d)=%q, canFollowFrontTractor=%s', nameNum(self), numCombineCourseplayers, nameNum(frontTractor), tostring(canFollowFrontTractor)), 4);
 										if canFollowFrontTractor then
 											self.best_combine = combine
 										end
@@ -895,10 +895,14 @@ function courseplay:unload_combine(self, dt)
 		end
 	end
 
+	local frontTractor;
+	if self.cp.activeCombine and self.cp.activeCombine.courseplayers and self.cp.positionWithCombine then
+		frontTractor = self.cp.activeCombine.courseplayers[self.cp.positionWithCombine - 1];
+	end;
 	if self.cp.modeState == 6 and frontTractor ~= nil then --Follow Tractor
 		self.cp.infoText = courseplay:loc("CPFollowTractor") -- "Fahre hinter Traktor"
 		--use the current tractor's sideToDrive as own
-		if frontTractor.sideToDrive ~= nil then
+		if frontTractor.sideToDrive ~= nil and frontTractor.sideToDrive ~= self.sideToDrive then
 			courseplay:debug(string.format("%s: setting current tractor's sideToDrive (%s) as my own", nameNum(self), tostring(frontTractor.sideToDrive)), 4);
 			self.sideToDrive = frontTractor.sideToDrive;
 		end;
@@ -936,7 +940,7 @@ function courseplay:unload_combine(self, dt)
 		dod = Utils.vector2Length(lx, lz)
 		-- if dod < 2 or (self.cp.positionWithCombine == 2 and frontTractor.cp.modeState ~= 3 and dod < 100) then
 		if dod < 2 or (self.cp.positionWithCombine == 2 and combine.courseplayers[1].cp.modeState ~= 3 and dod < 100) then
-			-- print(string.format('\tdod=%s, frontTractor.cp.modeState=%s -> brakeToStop', tostring(dod), tostring(frontTractor.cp.modeState)));
+			courseplay:debug(string.format('\tdod=%s, frontTractor.cp.modeState=%s -> brakeToStop', tostring(dod), tostring(frontTractor.cp.modeState)), 4);
 			allowedToDrive = courseplay:brakeToStop(self)
 		end
 		if combine.cp.isSugarBeetLoader then

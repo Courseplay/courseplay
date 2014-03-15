@@ -183,6 +183,7 @@ function courseplay:register_at_combine(self, combine)
 		local frontTractor = combine.courseplayers[numAllowedCourseplayers - 1];
 		if frontTractor then
 			local canFollowFrontTractor = frontTractor.cp.tipperFillLevelPct and frontTractor.cp.tipperFillLevelPct >= self.cp.followAtFillLevel;
+			courseplay:debug(string.format('%s: frontTractor (%s) fillLevelPct (%.1f), my followAtFillLevel=%d -> canFollowFrontTractor=%s', nameNum(self), nameNum(frontTractor), frontTractor.cp.tipperFillLevelPct, self.cp.followAtFillLevel, tostring(canFollowFrontTractor)), 4)
 			if not canFollowFrontTractor then
 				return false;
 			end;

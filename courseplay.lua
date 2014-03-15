@@ -41,7 +41,7 @@ end;
 
 courseplay.sonOfaBangSonOfaBoom = {
 	['44d143f3e847254a55835a8298ba4e21'] = true;
-    ['87a96c3bb39fa285d7ed2fb5beaffc16'] = true;
+	['87a96c3bb39fa285d7ed2fb5beaffc16'] = true;
 };
 courseplay.isDeveloper = courseplay.sonOfaBangSonOfaBoom[getMD5(g_settingsNickname)];
 if courseplay.isDeveloper then
@@ -97,7 +97,6 @@ function courseplay:initialize()
 		'courseplay_event', 
 		'courseplay_manager', 
 		'course_management',
-		'creatingAndDeletingFolders',
 		'debug', 
 		'distance', 
 		'drive', 
