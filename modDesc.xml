@@ -2220,6 +2220,18 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<hu>···</hu>
 		</text>
 
+		<!-- REVERSE BGA TIPPING -->
+		<text name="COURSEPLAY_BGA_IS_FULL">
+			<en>: work stopped. Bunker silo is full!</en>
+			<de>: work stopped. Bunker silo is full!</de> <!-- !!! -->
+			<fr>: work stopped. Bunker silo is full!</fr> <!-- !!! -->
+			<es>: work stopped. Bunker silo is full!</es> <!-- !!! -->
+			<it>: work stopped. Bunker silo is full!</it> <!-- !!! -->
+			<cz>: work stopped. Bunker silo is full!</cz> <!-- !!! -->
+			<ru>: work stopped. Bunker silo is full!</ru> <!-- !!! -->
+			<hu>: work stopped. Bunker silo is full!</hu> <!-- !!! -->
+		</text>
+
 		<!-- INPUTBINDINGS -->
 		<text name="COURSEPLAY_HUD_OPEN">
 			<en>Show Courseplay HUD</en>
