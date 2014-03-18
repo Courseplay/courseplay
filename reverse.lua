@@ -217,7 +217,8 @@ end;
 function courseplay:changeToFirstForwardWPAhead(vehicle)
 	for i = vehicle.recordnumber, vehicle.maxnumber do
 		if not vehicle.Waypoints[i].rev then
-			local _,_,lz = worldToLocal(vehicle.cp.DirectionNode, vehicle.Waypoints[i].cx, yTractor, vehicle.Waypoints[i].cz);
+			local _, y, _ = getWorldTranslation(vehicle.cp.DirectionNode);
+			local _,_,lz = worldToLocal(vehicle.cp.DirectionNode, vehicle.Waypoints[i].cx, y, vehicle.Waypoints[i].cz);
 			if lz > 3 then
 				vehicle.recordnumber = i;
 				break;
