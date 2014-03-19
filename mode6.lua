@@ -252,7 +252,9 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 
 						if self.cp.tipperFillLevel == 0 then
 							self.cp.isUnloaded = true
-							self.cp.currentTipTrigger = nil
+							self.cp.currentTipTrigger = nil;
+							self.cp.isReverseBGATipping = nil; -- Used for reverse BGA tipping
+							self.cp.BGASelectedSection = nil; -- Used for reverse BGA tipping
 						end
 					end
 
@@ -270,7 +272,9 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 						local trigger_x, trigger_y, trigger_z = getWorldTranslation(triggerId);
 						local ctx, cty, ctz = getWorldTranslation(self.rootNode);
 						if courseplay:distance(ctx, ctz, trigger_x, trigger_z) > 60 then
-							self.cp.currentTipTrigger = nil
+							self.cp.currentTipTrigger = nil;
+							self.cp.isReverseBGATipping = nil; -- Used for reverse BGA tipping
+							self.cp.BGASelectedSection = nil; -- Used for reverse BGA tipping
 						end
 					end
 

@@ -7,8 +7,10 @@ function courseplay:handle_mode1(self)
 	if self.cp.unloadingTipper ~= nil and self.cp.unloadingTipper.fillLevel == 0 then
 		self.cp.unloadingTipper = nil
 		if self.cp.tipperFillLevel == 0 then
-			self.cp.isUnloaded = true
-			self.cp.currentTipTrigger = nil
+			self.cp.isUnloaded = true;
+			self.cp.currentTipTrigger = nil;
+			self.cp.isReverseBGATipping = nil; -- Used for reverse BGA tipping
+			self.cp.BGASelectedSection = nil; -- Used for reverse BGA tipping
 		end
 	end
 
@@ -40,10 +42,14 @@ function courseplay:handle_mode1(self)
 			
 			if distance_to_trigger > 60 then 
 				self.cp.currentTipTrigger = nil;
+				self.cp.isReverseBGATipping = nil; -- Used for reverse BGA tipping
+				self.cp.BGASelectedSection = nil; -- Used for reverse BGA tipping
 				courseplay:debug(nameNum(self) .. ": distance to currentTipTrigger = " .. tostring(distance_to_trigger) .. " (> 60) --> currentTipTrigger = nil", 1);
 			end	
 		else
 			self.cp.currentTipTrigger = nil;
+			self.cp.isReverseBGATipping = nil; -- Used for reverse BGA tipping
+			self.cp.BGASelectedSection = nil; -- Used for reverse BGA tipping
 		end;
 	end;
 
