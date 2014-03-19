@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="13">
-	<version>3.41.0433</version>
+	<version>3.41.0434</version>
 	<author><![CDATA[Jakob Tischler, Thomas Gärtner,
 Horoman]]></author>
 	<title>
@@ -2223,6 +2223,18 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_TRIM">
 			<en>···</en>
 			<hu>···</hu>
+		</text>
+
+		<!-- REVERSE BGA TIPPING -->
+		<text name="COURSEPLAY_BGA_IS_FULL">
+			<en>: Bunker silo is full!</en>
+			<de>: Bunker silo is full!</de> <!-- !!! -->
+			<fr>: Bunker silo is full!</fr> <!-- !!! -->
+			<es>: Bunker silo is full!</es> <!-- !!! -->
+			<it>: Bunker silo is full!</it> <!-- !!! -->
+			<cz>: Bunker silo is full!</cz> <!-- !!! -->
+			<ru>: Bunker silo is full!</ru> <!-- !!! -->
+			<hu>: Bunker silo is full!</hu> <!-- !!! -->
 		</text>
 
 		<!-- INPUTBINDINGS -->

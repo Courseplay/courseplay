@@ -370,6 +370,7 @@ function courseplay:setGlobalData()
 		WATER 			  = { level = -2, text = 'COURSEPLAY_WATER_WARNING' };
 		WEATHER 		  = { level =  0, text = 'COURSEPLAY_WEATHER_WARNING' };
 		WORK_END 		  = { level =  1, text = 'COURSEPLAY_WORK_END' };
+		BGA_IS_FULL       = { level = -1, text = 'COURSEPLAY_BGA_IS_FULL'}; -- Used for reverse BGA tipping
 	};
 
 
