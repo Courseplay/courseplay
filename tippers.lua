@@ -717,10 +717,10 @@ function courseplay:unload_tippers(vehicle)
 							nearestDistance = (wx - x) * (wx - x) + (wz - z) * (wz - z);
 						end;
 
-						-- Make sure we drive to the middel of the next silo section before stopping again.
+						-- Make sure we drive to the middle of the next silo section before stopping again.
 						if vehicle.cp.isReverseBGATipping and vehicle.cp.lastReverseDistance >= nearestDistance then
 							vehicle.cp.lastReverseDistance = nearestDistance;
-							courseplay:debug(string.format("%s: Moving to the middle of silo section %d - Curent Distance: %.3fm]", nameNum(vehicle), vehicle.cp.BGASelectedSection, nearestDistance), 13);
+							courseplay:debug(string.format("%s: Moving to the middle of silo section %d - current distance: %.3fm]", nameNum(vehicle), vehicle.cp.BGASelectedSection, nearestDistance), 13);
 
 						-- Unload if inside the selected section
 						elseif trailerInTipRange and nearestBGASection == vehicle.cp.BGASelectedSection then

@@ -83,9 +83,9 @@ function courseplay:turn(self, dt) --!!!
 				end
 				if -dot < moveback  then
 					self.cp.turnStage = 0;
-					local _,_,z1 = worldToLocal(self.rootNode,self.Waypoints[self.recordnumber+1].cx, backY, self.Waypoints[self.recordnumber+1].cz)
-					local _,_,z2 = worldToLocal(self.rootNode,self.Waypoints[self.recordnumber+2].cx, backY, self.Waypoints[self.recordnumber+2].cz)
-					local _,_,z3 = worldToLocal(self.rootNode,self.Waypoints[self.recordnumber+3].cx, backY, self.Waypoints[self.recordnumber+3].cz)
+					local _,_,z1 = worldToLocal(self.rootNode, self.Waypoints[self.recordnumber+1].cx, backY, self.Waypoints[self.recordnumber+1].cz);
+					local _,_,z2 = worldToLocal(self.rootNode, self.Waypoints[self.recordnumber+2].cx, backY, self.Waypoints[self.recordnumber+2].cz);
+					local _,_,z3 = worldToLocal(self.rootNode, self.Waypoints[self.recordnumber+3].cx, backY, self.Waypoints[self.recordnumber+3].cz);
 					if self.cp.isCombine then
 						if z2 > 6 then
 							self.recordnumber = self.recordnumber +2
