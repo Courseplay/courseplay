@@ -123,15 +123,16 @@ function courseplay:load(xmlFile)
 	self.cp.shovelFillStartPoint = nil;
 	self.cp.shovelFillEndPoint = nil;
 	self.cp.shovelState = 1;
-	self.cp.shovelStateRot = {};
 	self.cp.shovel = {};
 	self.cp.shovelStopAndGo = false;
 	self.cp.shovelLastFillLevel = nil;
-	self.cp.hasShovelStateRot ={}
-	self.cp.hasShovelStateRot[2] = false
-	self.cp.hasShovelStateRot[3] = false
-	self.cp.hasShovelStateRot[4] = false
-	self.cp.hasShovelStateRot[5] = false
+	self.cp.shovelStatePositions = {};
+	self.cp.hasShovelStatePositions = {
+		[2] = false;
+		[3] = false;
+		[4] = false;
+		[5] = false;
+	};
 
 	--direction arrow the last waypoint (during paused recording)
 	self.cp.directionArrowOverlay = Overlay:new('cpDistArrow_' .. tostring(self.rootNode), Utils.getFilename('img/arrow.png', courseplay.path), courseplay.hud.infoBaseCenter + 0.05, courseplay.hud.infoBasePosY + 0.11, 128/1920, 128/1080);
@@ -1473,7 +1474,7 @@ end
 
 function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 	if not resetVehicles and g_server ~= nil then
-		--courseplay
+		-- COURSEPLAY
 		local curKey = key .. '.courseplay';
 		courseplay:setAiMode(self, Utils.getNoNil(getXMLInt(xmlFile, curKey .. '#aiMode'), 1));
 		self.cp.hud.openWithMouse = Utils.getNoNil(getXMLBool(xmlFile, curKey .. '#openHudWithMouse'), true);
@@ -1483,7 +1484,7 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		self.cp.loadedCourses = Utils.splitString(",", courses);
 		courseplay:reload_courses(self, true);
 
-		--speeds
+		-- SPEEDS
 		curKey = key .. '.courseplay.speeds';
 		self.cp.speeds.useRecordingSpeed = Utils.getNoNil(getXMLBool(xmlFile, curKey .. '#useRecordingSpeed'), true);
 		self.cp.speeds.unload = Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#unload'), 6/3600);
@@ -1491,7 +1492,7 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		self.cp.speeds.field = Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#field'), 24/3600);
 		self.cp.speeds.max = Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#max'), 50/3600);
 
-		--mode 2
+		-- MODE 2
 		curKey = key .. '.courseplay.combi';
 		self.cp.tipperOffset = Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#tipperOffset'), 0);
 		self.cp.combineOffset = Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#combineOffset'), 0);
@@ -1501,7 +1502,7 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		self.cp.turnRadius = Utils.getNoNil(getXMLInt(xmlFile, curKey .. '#turnRadius'), 10);
 		self.cp.realisticDriving = Utils.getNoNil(getXMLBool(xmlFile, curKey .. '#realisticDriving'), true);
 
-		--modes 4 / 6
+		-- MODES 4 / 6
 		curKey = key .. '.courseplay.fieldWork';
 		self.cp.workWidth = Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#workWidth'), 3);
 		self.cp.ridgeMarkersAutomatic = Utils.getNoNil(getXMLBool(xmlFile, curKey .. '#ridgeMarkersAutomatic'), true);
@@ -1517,25 +1518,33 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		courseplay:changeToolOffsetZ(self, nil, tonumber(offsetData[3]));
 		courseplay:toggleSymmetricLaneChange(self, offsetData[4] == 'true');
 
-		--shovel rots
+		-- SHOVEL POSITIONS
 		curKey = key .. '.courseplay.shovel';
-		local shovelRots = getXMLString(xmlFile, curKey .. '#rots');
-		if shovelRots ~= nil then
-			courseplay:debug(tableShow(self.cp.shovelStateRot, nameNum(self) .. ' shovelStateRot (before loading)', 10), 10);
-			self.cp.shovelStateRot = {};
-			local shovelStates = Utils.splitString(';', shovelRots);
-			if #(shovelStates) == 4 then
-				for i=1,4 do
-					local shovelStateSplit = table.map(Utils.splitString(' ', shovelStates[i]), tonumber);
-					self.cp.shovelStateRot[i+1] = shovelStateSplit;
-					self.cp.hasShovelStateRot[i+1] = self.cp.shovelStateRot[i+1] ~= nil;
+		local shovelRots = getXMLString(xmlFile, curKey .. '#rot');
+		local shovelTrans = getXMLString(xmlFile, curKey .. '#trans');
+		courseplay:debug(tableShow(self.cp.shovelStatePositions, nameNum(self) .. ' shovelStatePositions (before loading)', 10), 10);
+		if shovelRots and shovelTrans then
+			self.cp.shovelStatePositions = {};
+			shovelRots = Utils.splitString(';', shovelRots);
+			shovelTrans = Utils.splitString(';', shovelTrans);
+			if #shovelRots == 4 and #shovelTrans == 4 then
+				for state=2, 5 do
+					local shovelRotsSplit = table.map(Utils.splitString(' ', shovelRots[state-1]), tonumber);
+					local shovelTransSplit = table.map(Utils.splitString(' ', shovelTrans[state-1]), tonumber);
+					if shovelRotsSplit and shovelTransSplit then
+						self.cp.shovelStatePositions[state] = {
+							rot = shovelRotsSplit,
+							trans = shovelTransSplit
+						};
+					end;
+					self.cp.hasShovelStatePositions[state] = self.cp.shovelStatePositions[state] ~= nil and self.cp.shovelStatePositions[state].rot ~= nil and self.cp.shovelStatePositions[state].trans ~= nil; --TODO (Jakob): divide into rot and trans as well?
 				end;
-				courseplay:debug(tableShow(self.cp.shovelStateRot, nameNum(self) .. ' shovelStateRot (after loading)', 10), 10);
-				courseplay:buttonsActiveEnabled(self, 'shovel');
 			end;
 		end;
+		courseplay:debug(tableShow(self.cp.shovelStatePositions, nameNum(self) .. ' shovelStatePositions (after loading)', 10), 10);
+		courseplay:buttonsActiveEnabled(self, 'shovel');
 
-		--combine
+		-- COMBINE
 		if self.cp.isCombine then
 			curKey = key .. '.courseplay.combine';
 			self.cp.driverPriorityUseFillLevel = Utils.getNoNil(getXMLBool(xmlFile, curKey .. '#driverPriorityUseFillLevel'), false);
@@ -1552,23 +1561,39 @@ end
 function courseplay:getSaveAttributesAndNodes(nodeIdent)
 	local attributes = '';
 
-	--Shovel positions
-	local shovelRotsTmp, shovelRotsAttrNodes = {}, '';
-	local hasAllShovelRots = self.cp.shovelStateRot ~= nil and self.cp.shovelStateRot[2] ~= nil and self.cp.shovelStateRot[3] ~= nil and self.cp.shovelStateRot[4] ~= nil and self.cp.shovelStateRot[5] ~= nil;
-	if hasAllShovelRots then
-		courseplay:debug(tableShow(self.cp.shovelStateRot, nameNum(self) .. ' shovelStateRot (before saving)', 10), 10);
-		local shovelStateRotSaveTable = {};
-		for a=1,4 do
-			shovelStateRotSaveTable[a] = {};
-			local rotTable = self.cp.shovelStateRot[a+1];
-			for i=1,#rotTable do
-				shovelStateRotSaveTable[a][i] = courseplay:round(rotTable[i], 4);
+	--Shovel positions (<shovel rot="1;2;3;4" trans="1;2;3;4" />)
+	local shovelRotsAttrNodes, shovelTransAttrNodes;
+	local shovelRotsTmp, shovelTransTmp = {}, {};
+	if self.cp.shovelStatePositions and self.cp.shovelStatePositions[2] and self.cp.shovelStatePositions[3] and self.cp.shovelStatePositions[4] and self.cp.shovelStatePositions[5] then
+		if self.cp.shovelStatePositions[2].rot and self.cp.shovelStatePositions[3].rot and self.cp.shovelStatePositions[4].rot and self.cp.shovelStatePositions[5].rot then
+			local shovelStateRotSaveTable = {};
+			for a=1,4 do
+				shovelStateRotSaveTable[a] = {};
+				local rotTable = self.cp.shovelStatePositions[a+1].rot;
+				for i=1,#rotTable do
+					shovelStateRotSaveTable[a][i] = courseplay:round(rotTable[i], 4);
+				end;
+				table.insert(shovelRotsTmp, tostring(table.concat(shovelStateRotSaveTable[a], ' ')));
 			end;
-			table.insert(shovelRotsTmp, tostring(table.concat(shovelStateRotSaveTable[a], ' ')));
+			if #shovelRotsTmp > 0 then
+				shovelRotsAttrNodes = tostring(table.concat(shovelRotsTmp, ';'));
+				courseplay:debug(nameNum(self) .. ": shovelRotsAttrNodes=" .. shovelRotsAttrNodes, 10);
+			end;
 		end;
-		if #shovelRotsTmp > 0 then
-			shovelRotsAttrNodes = tostring(table.concat(shovelRotsTmp, ';'));
-			courseplay:debug(nameNum(self) .. ": shovelRotsAttrNodes=" .. shovelRotsAttrNodes, 10);
+		if self.cp.shovelStatePositions[2].trans and self.cp.shovelStatePositions[3].trans and self.cp.shovelStatePositions[4].trans and self.cp.shovelStatePositions[5].trans then
+			local shovelStateTransSaveTable = {};
+			for a=1,4 do
+				shovelStateTransSaveTable[a] = {};
+				local transTable = self.cp.shovelStatePositions[a+1].trans;
+				for i=1,#transTable do
+					shovelStateTransSaveTable[a][i] = courseplay:round(transTable[i], 4);
+				end;
+				table.insert(shovelTransTmp, tostring(table.concat(shovelStateTransSaveTable[a], ' ')));
+			end;
+			if #shovelTransTmp > 0 then
+				shovelTransAttrNodes = tostring(table.concat(shovelTransTmp, ';'));
+				courseplay:debug(nameNum(self) .. ": shovelTransAttrNodes=" .. shovelTransAttrNodes, 10);
+			end;
 		end;
 	end;
 
@@ -1581,9 +1606,9 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 	local speeds = string.format('<speeds useRecordingSpeed=%q unload="%.5f" turn="%.5f" field="%.5f" max="%.5f" />', tostring(self.cp.speeds.useRecordingSpeed), self.cp.speeds.unload, self.cp.speeds.turn, self.cp.speeds.field, self.cp.speeds.max);
 	local combi = string.format('<combi tipperOffset="%.1f" combineOffset="%.1f" combineOffsetAutoMode=%q fillFollow="%d" fillDriveOn="%d" turnRadius="%d" realisticDriving=%q />', self.cp.tipperOffset, self.cp.combineOffset, tostring(self.cp.combineOffsetAutoMode), self.cp.followAtFillLevel, self.cp.driveOnAtFillLevel, self.cp.turnRadius, tostring(self.cp.realisticDriving));
 	local fieldWork = string.format('<fieldWork workWidth="%.1f" ridgeMarkersAutomatic=%q offsetData=%q abortWork="%d" refillUntilPct="%d" />', self.cp.workWidth, tostring(self.cp.ridgeMarkersAutomatic), offsetData, Utils.getNoNil(self.cp.abortWork, 0), self.cp.refillUntilPct);
-	local shovels, combine = "", "";
-	if hasAllShovelRots then
-		shovels = string.format('<shovel rots=%q />', shovelRotsAttrNodes);
+	local shovels, combine = '', '';
+	if shovelRotsAttrNodes or shovelTransAttrNodes then
+		shovels = string.format('<shovel rot=%q trans=%q />', shovelRotsAttrNodes, shovelTransAttrNodes);
 	end;
 	if self.cp.isCombine then
 		combine = string.format('<combine driverPriorityUseFillLevel=%q stopWhenUnloading=%q />', tostring(self.cp.driverPriorityUseFillLevel), tostring(self.cp.stopWhenUnloading));
@@ -1595,7 +1620,7 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 	nodes = nodes .. nodeIdent .. indent .. speeds .. '\n';
 	nodes = nodes .. nodeIdent .. indent .. combi .. '\n';
 	nodes = nodes .. nodeIdent .. indent .. fieldWork .. '\n';
-	if hasAllShovelRots then
+	if shovelRotsAttrNodes or shovelTransAttrNodes then
 		nodes = nodes .. nodeIdent .. indent .. shovels .. '\n';
 	end;
 	if self.cp.isCombine then

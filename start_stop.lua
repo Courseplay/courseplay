@@ -314,6 +314,12 @@ function courseplay:getCanUseAiMode(vehicle)
 		elseif vehicle.cp.numWaitPoints > 3 then
 			vehicle.cp.infoText = string.format(courseplay:loc('CPTooManyWaitingPoints'), 3);
 			return false;
+		elseif vehicle.cp.shovelStatePositions == nil or vehicle.cp.shovelStatePositions[2] == nil or vehicle.cp.shovelStatePositions[3] == nil or vehicle.cp.shovelStatePositions[4] == nil or vehicle.cp.shovelStatePositions[5] == nil then
+			vehicle.cp.infoText = courseplay:loc('CPAssignShovel');
+			return false;
+		elseif vehicle.cp.shovelFillStartPoint == nil or vehicle.cp.shovelFillEndPoint == nil or vehicle.cp.shovelEmptyPoint == nil then
+			vehicle.cp.infoText = courseplay:loc('CPNoCourse');
+			return false;
 		end;
 	end;
 
@@ -411,6 +417,8 @@ function courseplay:stop(self)
 	end;
 
 	self.cp.timers.slippingWheels = 0;
+
+	self.cp.movingToolsPrimary, self.cp.movingToolsSecondary = nil, nil;
 
 	--remove any global info texts
 	if g_server ~= nil then

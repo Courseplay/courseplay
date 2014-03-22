@@ -1,3 +1,5 @@
+local curFile = 'drive.lua';
+
 -- drives recored course
 function courseplay:drive(self, dt)
 	if not courseplay:getCanUseAiMode(self) then

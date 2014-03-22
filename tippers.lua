@@ -632,8 +632,8 @@ function courseplay:unload_tippers(vehicle)
 		courseplay:debug(nameNum(vehicle) .. ": getTipDistanceFromTrailer function doesn't exist for currentTipTrigger - unloading function aborted", 2);
 		return allowedToDrive;
 	end;
-	-- local tipperFillLevel, tipperCapacity = vehicle:getAttachedTrailersFillLevelAndCapacity();
-	local isBGA = ctt.bunkerSilo ~= nil;
+
+	local isBGA = ctt.bunkerSilo ~= nil and ctt.bunkerSilo.movingPlanes ~= nil;
 	local bgaIsFull = isBGA and (ctt.bunkerSilo.fillLevel >= ctt.bunkerSilo.capacity);
 	local bgaSectionPositions = {
 		{ from =  0, to =   40 },
@@ -657,7 +657,7 @@ function courseplay:unload_tippers(vehicle)
 					goForTipping = trailerInTipRange;
 				else
 					-- Local values used in both normal and reverse direction
-					local silos = table.getn(ctt.bunkerSilo.movingPlanes);
+					local silos = #ctt.bunkerSilo.movingPlanes;
 					local x, y, z = getWorldTranslation(tipper.tipReferencePoints[bestTipReferencePoint].node);
 					local sx, sy, sz = worldToLocal(ctt.bunkerSilo.movingPlanes[1].nodeId, x, y, z);
 					local ex, ey, ez = worldToLocal(ctt.bunkerSilo.movingPlanes[silos].nodeId, x, y, z);

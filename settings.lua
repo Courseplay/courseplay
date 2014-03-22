@@ -362,7 +362,7 @@ function courseplay:buttonsActiveEnabled(self, section)
 	elseif self.cp.hud.currentPage == 9 and (section == nil or section == "all" or section == "shovel") then
 		for _,button in pairs(self.cp.buttons["9"]) do
 			if button.function_to_call == 'saveShovelPosition' then --isToggleButton
-				button.isActive = self.cp.shovelStateRot[button.parameter] ~= nil;
+				button.isActive = self.cp.shovelStatePositions[button.parameter] ~= nil;
 				button.canBeClicked = true;
 			end;
 		end;
@@ -1094,13 +1094,21 @@ function courseplay:saveShovelPosition(vehicle, stage)
 	if stage == nil then return; end;
 
 	if stage >= 2 and stage <= 5 then
-		if vehicle.cp.shovelStateRot[stage] ~= nil then
-			vehicle.cp.shovelStateRot[stage] = nil;
-			vehicle.cp.hasShovelStateRot[stage] = false;
+		if vehicle.cp.shovelStatePositions[stage] ~= nil then
+			vehicle.cp.shovelStatePositions[stage] = nil;
+			vehicle.cp.hasShovelStatePositions[stage] = false;
 		else
 			local mt, secondary = courseplay:getMovingTools(vehicle);
-			vehicle.cp.shovelStateRot[stage] = courseplay:getCurrentRotation(vehicle, mt, secondary);
-			vehicle.cp.hasShovelStateRot[stage] = vehicle.cp.shovelStateRot[stage] ~= nil;
+			local curRot, curTrans = courseplay:getCurrentMovingToolsPosition(vehicle, mt, secondary);
+			courseplay:debug(tableShow(curRot, ('saveShovelPosition(%q, %d) curRot'):format(nameNum(vehicle), stage), 10), 10);
+			courseplay:debug(tableShow(curTrans, ('saveShovelPosition(%q, %d) curTrans'):format(nameNum(vehicle), stage), 10), 10);
+			if curRot and curTrans then
+				vehicle.cp.shovelStatePositions[stage] = {
+					rot = curRot,
+					trans = curTrans
+				};
+			end;
+			vehicle.cp.hasShovelStatePositions[stage] = vehicle.cp.shovelStatePositions[stage] ~= nil;
 		end;
 
 	end;
