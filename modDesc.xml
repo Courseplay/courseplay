@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="13">
-	<version>3.41.0439</version>
+	<version>3.41.0440</version>
 	<author><![CDATA[Jakob Tischler, Thomas Gärtner,
 Horoman]]></author>
 	<title>
@@ -650,7 +650,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 		<text name="COURSEPLAY_NEEDS_UNLOADING">
 			<en>: work tool needs to be unloaded.</en>
 			<de>: Gerät muss entladen werden.</de>
-			<fr>: l'outila besoin d'être vidé.</fr>
+			<fr>: l'outil a besoin d'être vidé.</fr>
 			<es>: work tool needs to be unloaded.</es> <!-- !!! -->
 			<it>: attrezzo necessita di essere scaricato.</it>
 			<cz>: potřebuje vyložit.</cz>
@@ -1801,7 +1801,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 		<text name="CPNoShovel">
 			<en>No shovel could be found</en>
 			<de>keine Schaufel vorhanden</de>
-			<fr>Pas de godet trouvée</fr>
+			<fr>Pas de godet trouvé</fr>
 			<es>Falta una pala</es>
 			<it>Pala non trovata</it>
 			<cz>Lžíce nenalezena</cz>
@@ -1811,7 +1811,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 		<text name="CPShovelPositions">
 			<en>Shovel positions</en>
 			<de>Schaufelstellung</de>
-			<fr>Positions de la pelle</fr>
+			<fr>Positions du godet</fr>
 			<es>Posiciónes de la pala</es>
 			<it>Posizioni della pala</it>
 			<cz>Pozice lžíce:</cz>
@@ -1821,7 +1821,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 		<text name="CPAssignShovel">
 			<en>Missing shovel positions</en>
 			<de>Es fehlen Schaufelstellungen</de>
-			<fr>Il faux unes positions du godet</fr>
+			<fr>Il faut enregistrer les positions du godet</fr>
 			<es>Faltan unas posiciónes de la pala</es>
 			<it>Mancano le posizioni della pala</it>
 			<cz>Chybí pozice lžíce</cz>
@@ -1841,7 +1841,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 		<text name="setTransport">
 			<en>Transport position</en>
 			<de>Position "Transport"</de>
-			<fr>Position transporter</fr>
+			<fr>Position de transport</fr>
 			<es>Posición transportar</es>
 			<it>Posizione di trasporto</it>
 			<cz>Pozice lžíce při převozu:</cz>
@@ -2072,7 +2072,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 		<text name="COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED">
 			<en>should be repaired soon</en>
 			<de>sollte repariert werden</de>
-			<fr>doit bientôt réparer</fr>
+			<fr>doit bientôt être réparer</fr>
 			<es>debe repararse pronto</es>
 			<it>dev'essere riparato al piu' presto</it>
 			<cz>by měl být brzy opraven.</cz>
@@ -2082,7 +2082,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 		<text name="COURSEPLAY_DAMAGE_MUST_BE_REPAIRED">
 			<en>must be repaired</en>
 			<de>muss repariert werden</de>
-			<fr>doit réparer</fr>
+			<fr>doit être réparer</fr>
 			<es>debe repararse</es>
 			<it>dev'essere riparato ora</it>
 			<cz>musí být opraven.</cz>
@@ -2177,7 +2177,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<it>: il silo è pieno!</it>
 			<cz>: Bunker silo is full!</cz> <!-- !!! -->
 			<ru>: силосная яма заполнена!</ru>
-			<hu>: Bunker silo is full!</hu> <!-- !!! -->
+			<hu>: a BGA siló tele van!</hu>
 		</text>
 		<text name="COURSEPLAY_SEPARATOR">
 			<en>・</en>
