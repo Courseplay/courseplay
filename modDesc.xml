@@ -2177,7 +2177,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<it>: il silo è pieno!</it>
 			<cz>: Bunker silo is full!</cz> <!-- !!! -->
 			<ru>: силосная яма заполнена!</ru>
-			<hu>: Bunker silo is full!</hu> <!-- !!! -->
+			<hu>: a BGA siló tele van!</hu>
 		</text>
 		<text name="COURSEPLAY_SEPARATOR">
 			<en>・</en>
