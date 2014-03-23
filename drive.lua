@@ -782,15 +782,7 @@ function courseplay:drive(self, dt)
 		self.cp.infoText = courseplay:loc("CPWrongESLversion")
 	end
 
-	-- where to drive?
-	if courseplay:isWheelloader(self) then
-		local lx2 ,lz2  = AIVehicleUtil.getDriveDirection(self.rootNode, cx, cty, cz); 
-		if math.abs(self.steeringLastRotation) < 0.5 then
-			lx = lx2
-			lz = lz2
-		end
-	end
-   --finishing field work
+	--finishing field work
 	if isFinishingWork then
 		lx=0
 		lz=1
@@ -840,25 +832,49 @@ function courseplay:drive(self, dt)
 	
 	-- go, go, go!
 	if self.recordnumber == 1 or self.recordnumber == self.maxnumber - 1 or self.Waypoints[self.recordnumber].turn then
-		distToChange = 0.5
+		if self.cp.hasSpecializationArticulatedAxis then
+			distToChange = self.cp.mode == 9 and 2 or 1; -- ArticulatedAxis vehicles
+		else
+			distToChange = 0.5;
+		end;
 	elseif self.recordnumber + 1 <= self.maxnumber then
 		local beforeReverse = (self.Waypoints[self.recordnumber + 1].rev and (self.Waypoints[self.recordnumber].rev == false))
 		local afterReverse = (not self.Waypoints[self.recordnumber + 1].rev and self.Waypoints[self.cp.last_recordnumber].rev)
 		if (self.Waypoints[self.recordnumber].wait or beforeReverse) and self.Waypoints[self.recordnumber].rev == false then -- or afterReverse or self.recordnumber == 1
-			distToChange = 1
+			if self.cp.hasSpecializationArticulatedAxis then
+				distToChange = 2; -- ArticulatedAxis vehicles
+			else
+				distToChange = 1;
+			end;
 		elseif (self.Waypoints[self.recordnumber].rev and self.Waypoints[self.recordnumber].wait) or afterReverse then
-			distToChange = 2
+			if self.cp.hasSpecializationArticulatedAxis then
+				distToChange = 4; -- ArticulatedAxis vehicles
+			else
+				distToChange = 2;
+			end;
 		elseif self.Waypoints[self.recordnumber].rev then
-			distToChange = 2; --1
+			if self.cp.hasSpecializationArticulatedAxis then
+				distToChange = 4; -- ArticulatedAxis vehicles
+			else
+				distToChange = 2; --orig:1
+			end;
 		elseif self.cp.mode == 4 or self.cp.mode == 6 or self.cp.mode == 7 then
 			distToChange = 5;
 		elseif self.cp.mode == 9 then
 			distToChange = 4;
 		else
-			distToChange = 2.85; --orig: 5
+			if self.cp.hasSpecializationArticulatedAxis then
+				distToChange = 5; -- ArticulatedAxis vehicles
+			else
+				distToChange = 2.85; --orig: 5
+			end;
 		end;
 	else
-		distToChange = 2.85; --orig: 5
+		if self.cp.hasSpecializationArticulatedAxis then
+			distToChange = 5; -- ArticulatedAxis vehicles stear better with a longer change distance
+		else
+			distToChange = 2.85; --orig: 5
+		end;
 	end
 	
 	if self.cp.isKasi ~= nil then 
@@ -883,6 +899,24 @@ function courseplay:drive(self, dt)
 	if self.dist > self.cp.shortestDistToWp and self.recordnumber > 3 and self.dist < 15 and self.Waypoints[self.recordnumber].rev ~= true then
 		distToChange = self.dist + 1
 	end
+
+	-- Better stearing on Articulated Axis vehicles by Claus G. Pedersen
+	if self.isRealistic and self.cp.hasSpecializationArticulatedAxis then
+		-- Get the rotation direction from the vehicle to the drive direction note
+		local x,_,z = localDirectionToWorld(self.cp.DirectionNode, lx, 0, lz);
+		local dirRot = Utils.getYRotationFromDirection(x, z);
+
+		-- If we are a Wheelloader and we are reversing, the curent Rotation needs to be inverted to work.
+		local curRot = self.articulatedAxis.curRot;
+		if not fwd and courseplay:isWheelloader(self) then
+			curRot = curRot * -1;
+		end;
+
+		-- Here is the magic calculation to find the real lx and lz values based on the vehicle curRot
+		local stearAngle = (dirRot - courseplay:getRealWorldRotation(self.cp.DirectionNode)) - curRot;
+		lx, lz = Utils.getDirectionFromYRotation(stearAngle);
+
+	end;
 
 	if self.dist > distToChange or WpUnload or WpLoadEnd or isFinishingWork then
 		if g_server ~= nil then

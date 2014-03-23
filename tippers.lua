@@ -60,7 +60,7 @@ function courseplay:isFrontloader(workTool)
 	return workTool.cp.hasSpecializationCylindered  and workTool.cp.hasSpecializationAnimatedVehicle and not workTool.cp.hasSpecializationShovel;
 end;
 function courseplay:isWheelloader(workTool)
-	return workTool.typeName == "wheelLoader" or (workTool.cp.hasSpecializationSteerable and workTool.cp.hasSpecializationShovel and workTool.cp.hasSpecializationBunkerSiloCompacter);
+	return workTool.typeName:match("wheelLoader") or (workTool.cp.hasSpecializationSteerable and workTool.cp.hasSpecializationShovel and workTool.cp.hasSpecializationBunkerSiloCompacter);
 end;
 
 -- update implements to find attached tippers

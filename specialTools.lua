@@ -11,6 +11,7 @@ function courseplay:setNameVariable(workTool)
 		if     spec == AICombine then 			workTool.cp.hasSpecializationAICombine 			 = true;
 		elseif spec == AITractor then 			workTool.cp.hasSpecializationAITractor 			 = true;
 		elseif spec == AnimatedVehicle then 	workTool.cp.hasSpecializationAnimatedVehicle 	 = true;
+		elseif spec == ArticulatedAxis then		workTool.cp.hasSpecializationArticulatedAxis	 = true;
 		elseif spec == BaleLoader then 			workTool.cp.hasSpecializationBaleLoader 		 = true;
 		elseif spec == Baler then 				workTool.cp.hasSpecializationBaler 				 = true;
 		elseif spec == BunkerSiloCompacter then	workTool.cp.hasSpecializationBunkerSiloCompacter = true;
