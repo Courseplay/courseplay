@@ -159,7 +159,7 @@ function courseplay:setVarValueFromString(self, str, value)
 		return;
 	end;
 
-	local baseVar = nil;
+	local baseVar;
 	if what[1] == "self" then 
 		baseVar = self;
 	elseif what[1] == "courseplay" then
@@ -167,7 +167,7 @@ function courseplay:setVarValueFromString(self, str, value)
 	end;
 
 	if baseVar ~= nil then
-		local result = nil;
+		local result;
 		if whatDepth == 1 then --self
 			baseVar = value;
 			result = value;
@@ -193,7 +193,7 @@ end;
 function courseplay:getVarValueFromString(self, str)
 	local what = Utils.splitString(".", str);
 	local whatDepth = table.getn(what);
-	local whatObj = nil;
+	local whatObj;
 	if what[1] == "self" then 
 		whatObj = self;
 	elseif what[1] == "courseplay" then
@@ -382,7 +382,7 @@ function courseplay.utils.table.last(tab)
 end;
 
 function courseplay.utils.table.getMax(tab, field)
-	local max = nil
+	local max;
 	if tab ~= nil and field ~= nil then
 		max = false
 		for k, v in pairs(tab) do
@@ -643,7 +643,7 @@ function courseplay:hasSpecialization(vehicle, specClassName) --courtesy of Sati
 		specClassName = string.format("%s.%s", vehicle.customEnvironment, specClassName);
 	end;
 
-	local spec = nil;
+	local spec;
 	for k,v in pairs(SpecializationUtil.specializations) do
 		if v.className == specClassName then
 			spec = SpecializationUtil.getSpecialization(k);

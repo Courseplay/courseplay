@@ -1,5 +1,5 @@
 function courseplay:register_button(self, hudPage, img, function_to_call, parameter, x, y, width, height, hudRow, modifiedParameter, hoverText, isMouseWheelArea, isToggleButton)
-	local overlay = nil;
+	local overlay;
 	if img and img ~= "blank.dds" then
 		overlay = Overlay:new(img, Utils.getFilename("img/" .. img, courseplay.path), x, y, width, height);
 	end;

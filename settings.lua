@@ -1310,7 +1310,7 @@ end;
 
 function courseplay:addCustomSingleFieldEdgeToList(vehicle)
 	--print(string.format("%s: call addCustomSingleFieldEdgeToList()", nameNum(vehicle)));
-	data = {
+	local data = {
 		fieldNum = vehicle.cp.fieldEdge.customField.fieldNum;
 		points = vehicle.cp.fieldEdge.customField.points;
 		numPoints = vehicle.cp.fieldEdge.customField.numPoints;

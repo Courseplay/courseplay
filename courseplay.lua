@@ -169,8 +169,8 @@ function courseplay:initialize()
 end;
 
 function courseplay:setGlobalData()
-	local customPosX, customPosY = nil, nil;
-	local customGitPosX, customGitPosY = nil, nil;
+	local customPosX, customPosY;
+	local customGitPosX, customGitPosY;
 	local fieldsAutomaticScan, fieldsDebugScan, fieldsDebugCustomLoad, fieldsCustomScanStep, fieldsOnlyScanOwnedFields = true, false, false, nil, true;
 	local wagesActive, wagesAmount = false, 666;
 

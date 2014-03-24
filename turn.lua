@@ -262,7 +262,8 @@ function courseplay:lowerImplements(self, direction, workToolonOff)
 	local state  = 1
 	if direction then
 		state  = -1
-	end
+    end
+    local specialTool;
 	for _,workTool in pairs(self.tippers) do
 			    --courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
 		specialTool = courseplay:handleSpecialTools(self,workTool,true,direction,workToolonOff,nil,nil,nil)	

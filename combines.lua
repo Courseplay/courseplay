@@ -38,7 +38,7 @@ function courseplay:update_combines(self)
 
 	local x, y, z = getWorldTranslation(self.cp.DirectionNode)
 	local hx, hy, hz = localToWorld(self.cp.DirectionNode, -2, 0, 0)
-	local lx, ly, lz = nil, nil, nil
+	local lx, ly, lz;
 	local terrain = g_currentMission.terrainDetailId
 
 	local found_combines = courseplay:find_combines(self)
@@ -288,8 +288,8 @@ end
 
 function courseplay:calculateInitialCombineOffset(self, combine)
 	local curFile = "combines.lua";
-	local leftMarker = nil
-	local currentCutter = nil
+	local leftMarker;
+	local currentCutter;
 	combine.cp.lmX, combine.cp.rmX = 1.5, -1.5;
 	--print("run initial offset")
 	if combine.attachedCutters ~= nil then

@@ -221,15 +221,15 @@ function courseplay:unload_combine(self, dt)
 	local allowedToDrive = true
 	local combine = self.cp.activeCombine
 	local x, y, z = getWorldTranslation(self.cp.DirectionNode)
-	local currentX, currentY, currentZ = nil, nil, nil
+	local currentX, currentY, currentZ;
 
 	--local sl = nil --kann die weg??
 	local combine_fill_level, combine_turning = nil, false
-	local refSpeed = nil
+	local refSpeed;
 	local handleTurn = false
 	local isHarvester = false
-	local xt, yt, zt = nil, nil, nil
-	local dod = nil
+	local xt, yt, zt;
+	local dod;
 
 	-- Calculate Trailer Offset
 

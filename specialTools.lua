@@ -1423,12 +1423,13 @@ function courseplay:handleSpecialSprayer(self, activeTool, fillLevelPct, driveOn
 	return false, allowedToDrive,lx,lz;
 end
 
-function courseplay:moveSingleTool(self,activeTool, toolIndex,x,y,z)
+function courseplay:moveSingleTool(vehicle, activeTool, toolIndex, x,y,z)
 	--local toolRot = activeTool.movingTools[9].curRot[3]
 	local tool = activeTool.movingTools[toolIndex];
 	local rotSpeed = 0.0033;
 	local targetRot = {x,y,z}
-	local done = true
+	local done = true;
+	local changed = false;
 	if tool.rotSpeed ~= nil then
 		rotSpeed = tool.rotSpeed * 60;
 	end;
@@ -1450,12 +1451,16 @@ function courseplay:moveSingleTool(self,activeTool, toolIndex,x,y,z)
 			if newRot ~= oldRot and newRot >= tool.rotMin and newRot <= tool.rotMax then
 				tool.curRot[i] = newRot;
 				setRotation(tool.node, unpack(tool.curRot));
-				Cylindered.setDirty(self, tool);
-				self:raiseDirtyFlags(self.cylinderedDirtyFlag);
 				changed = true;
 			end;
 		end;
 	end;
+
+	if changed then
+		Cylindered.setDirty(vehicle, tool);
+		self:raiseDirtyFlags(vehicle.cylinderedDirtyFlag);
+	end;
+
 	return done
 
 end

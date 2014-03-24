@@ -40,7 +40,7 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive, dt)
 	end;
 	local mt, secondary = vehicle.cp.movingToolsPrimary, vehicle.cp.movingToolsSecondary;
 
-	if vehicle.recordnumber == 1 and vehicle.cp.shovelState ~= 6 then  --backup for missed approach --TODO (Jakob): shouldn't this be shovelState ~= 1 ?
+	if vehicle.recordnumber == 1 and vehicle.cp.shovelState ~= 6 then  --backup for missed approach
 		vehicle.cp.shovelState = 1;
 		vehicle.cp.isLoaded = false;
 		courseplay:debug(nameNum(vehicle) .. ": set state 1 (backup)", 10);
@@ -292,10 +292,12 @@ function courseplay:checkAndSetMovingToolsPosition(vehicle, movingTools, seconda
 
 	-- DIRTY FLAGS (movingParts)
 	if changed then
-		for _, part in pairs(vehicle.activeDirtyMovingParts) do
-			Cylindered.setDirty(vehicle, part);
+		if vehicle.activeDirtyMovingParts then
+			for _, part in pairs(vehicle.activeDirtyMovingParts) do
+				Cylindered.setDirty(vehicle, part);
+			end;
 		end;
-		if vehicle.cp.shovel then
+		if vehicle.cp.shovel and vehicle.cp.shovel.activeDirtyMovingParts then
 			for _, part in pairs(vehicle.cp.shovel.activeDirtyMovingParts) do
 				Cylindered.setDirty(vehicle.cp.shovel, part);
 			end;

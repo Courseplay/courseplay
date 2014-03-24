@@ -367,14 +367,15 @@ function courseplay:update_tools(vehicle, tractor_or_implement)
 					if c ~= nil and c ~= 0 then
 						c = getChild(c, "plasticPlane");
 					end;
-					
+
 					if c ~= nil and c ~= 0 then
 						vehicle.cp.tipperHasCover = true;
 						table.insert(coverItems, c);
 					end;
 				elseif isMUK then
 					local c = getChild(t.rootNode, "tank");
-					
+                    local c1, c2;
+
 					if c ~= nil and c ~= 0 then
 						c1 = getChild(c, "planeFlapLeft");
 						c2 = getChild(c, "planeFlapRight");
@@ -389,7 +390,7 @@ function courseplay:update_tools(vehicle, tractor_or_implement)
 					local c = getChild(t.rootNode, "plasticPlane");
 					if c ~= nil and c ~= 0 then
 						vehicle.cp.tipperHasCover = true;
-						
+
 						table.insert(coverItems, c);
 					end;
 				end;
@@ -475,7 +476,7 @@ function courseplay:setMarkers(vehicle, object)
 		for j,node in pairs(area[k]) do
 			if j == "start" or j == "height" or j == "width" then 
 				local x, y, z = getWorldTranslation(node)
-				_, _, ztt = worldToLocal(vehicle.rootNode, x, y, z)
+				local _, _, ztt = worldToLocal(vehicle.rootNode, x, y, z)
 				if object.cp.backMarkerOffset == nil or ztt > object.cp.backMarkerOffset then
 					object.cp.backMarkerOffset = ztt
 				end
@@ -977,7 +978,7 @@ function courseplay:getReverseProperties(vehicle, tipper)
 		return
 	end
 	local x,y,z = getWorldTranslation(vehicle.rootNode)
-	local_,_,tz = worldToLocal(tipper.rootNode, x,y,z)
+	local _,_,tz = worldToLocal(tipper.rootNode, x,y,z)
 	tipper.cp.nodeDistance = math.abs(tz)
 							courseplay:debug(nameNum(vehicle) .. " tz: "..tostring(tz).."  tipper.rootNode: "..tostring(tipper.rootNode),13)
 	if tz > 0 then

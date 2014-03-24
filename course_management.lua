@@ -666,7 +666,7 @@ function courseplay.courses.openOrCreateXML(forceCreation)
 -- returns the file if success, nil else
 	forceCreation = forceCreation or false
 	
-	local File = nil
+	local File;
 	local savegame = g_careerScreen.savegames[g_careerScreen.selectedIndex];
 	
 	if savegame ~= nil then
@@ -684,7 +684,7 @@ function courseplay.courses.openOrCreateXML(forceCreation)
 end
 
 function courseplay.courses.getMaxCourseID()
-	local maxID = nil
+	local maxID;
 	if g_currentMission.cp_courses ~= nil then
 		maxID = courseplay.utils.table.getMax(g_currentMission.cp_courses, 'id')
 		if  maxID == false then
@@ -695,7 +695,7 @@ function courseplay.courses.getMaxCourseID()
 end
 
 function courseplay.courses.getMaxFolderID()
-	local maxID = nil
+	local maxID;
 	if g_currentMission.cp_folders ~= nil then
 		maxID = courseplay.utils.table.getMax(g_currentMission.cp_folders, 'id')
 		if  maxID == false then
