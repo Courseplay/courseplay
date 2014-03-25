@@ -208,8 +208,10 @@ function courseplay.hud:loadPage(vehicle, page)
 			vehicle.cp.hud.content.pages[0][4][1].text = courseplay:loc("COURSEPLAY_DRIVERPRIORITY");
 			vehicle.cp.hud.content.pages[0][4][2].text = combine.cp.driverPriorityUseFillLevel and courseplay:loc("COURSEPLAY_FILLEVEL") or courseplay:loc("CPDistance");
 
-			vehicle.cp.hud.content.pages[0][5][1].text = courseplay:loc('COURSEPLAY_STOP_DURING_UNLOADING');
-			vehicle.cp.hud.content.pages[0][5][2].text = combine.cp.stopWhenUnloading and courseplay:loc("CPactivated") or courseplay:loc("CPdeactivated");
+			if vehicle.drive and vehicle.cp.mode == 6 then
+				vehicle.cp.hud.content.pages[0][5][1].text = courseplay:loc('COURSEPLAY_STOP_DURING_UNLOADING');
+				vehicle.cp.hud.content.pages[0][5][2].text = combine.cp.stopWhenUnloading and courseplay:loc("CPactivated") or courseplay:loc("CPdeactivated");
+			end;
 		end;
 
 		-- no courseplayer!

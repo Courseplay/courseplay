@@ -242,7 +242,7 @@ function courseplay:buttonsActiveEnabled(self, section)
 		end;
 	end;
 
-	if self.cp.hud.currentPage == 1 and (section == nil or section == "all" or section == "quickModes" or section == "recording" or section == "customFieldShow") then
+	if self.cp.hud.currentPage == 1 and (section == nil or section == "all" or section == "quickModes" or section == "recording" or section == "customFieldShow" or section == 'findFirstWaypoint') then
 		for _,button in pairs(self.cp.buttons["1"]) do
 			local fn = button.function_to_call;
 			if fn == "setAiMode" then
@@ -251,6 +251,8 @@ function courseplay:buttonsActiveEnabled(self, section)
 				button.canBeClicked = not button.isDisabled and not button.isActive;
 			elseif fn == "toggleCustomFieldEdgePathShow" then
 				button.isActive = self.cp.fieldEdge.customField.show;
+			elseif fn == 'toggleFindFirstWaypoint' then
+				button.isActive = self.cp.distanceCheck;
 
 			elseif fn == 'stop_record' then
 				button.isDisabled = self.cp.recordingIsPaused or self.cp.isRecordingTurnManeuver;
@@ -1440,4 +1442,12 @@ function courseplay:sucChangeFruit(vehicle, change)
 	end;
 	vehicle.cp.suc.selectedFruitIdx = newIdx;
 	vehicle.cp.suc.selectedFruit = courseplay.fields.seedUsageCalculator.fruitTypes[vehicle.cp.suc.selectedFruitIdx];
+end;
+
+function courseplay:toggleFindFirstWaypoint(vehicle)
+	vehicle.cp.distanceCheck = not vehicle.cp.distanceCheck;
+	if g_server ~= nil and not vehicle.cp.distanceCheck then
+		vehicle.cp.infoText = nil;
+	end;
+	courseplay:buttonsActiveEnabled(vehicle, 'findFirstWaypoint');
 end;

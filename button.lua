@@ -173,7 +173,7 @@ function courseplay:renderButton(self, button)
 		--Page 1
 		elseif pg == 1 then
 			if fn == "setAiMode" then
-				button.show = self.cp.canSwitchMode;
+				button.show = self.cp.canSwitchMode and not self.cp.distanceCheck;
 			elseif fn == "clearCustomFieldEdge" or fn == "toggleCustomFieldEdgePathShow" then
 				button.show = not self.cp.canDrive and self.cp.fieldEdge.customField.isCreated;
 			elseif fn == "setCustomFieldEdgePathNumber" then
@@ -182,6 +182,8 @@ function courseplay:renderButton(self, button)
 				elseif prm > 0 then
 					button.show = not self.cp.canDrive and self.cp.fieldEdge.customField.isCreated and self.cp.fieldEdge.customField.fieldNum < courseplay.fields.customFieldMaxNum;
 				end;
+			elseif fn == 'toggleFindFirstWaypoint' then
+				button.show = self.cp.canDrive and not self.drive and not self.cp.isRecording and not self.cp.recordingIsPaused;
 			elseif fn == 'stop_record' or fn == 'setRecordingPause' or fn == 'delete_waypoint' or fn == 'set_waitpoint' or fn == 'set_crossing' or fn == 'setRecordingTurnManeuver' or fn == 'change_DriveDirection' then
 				button.show = self.cp.isRecording or self.cp.recordingIsPaused;
 			end;

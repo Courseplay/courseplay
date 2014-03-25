@@ -680,6 +680,9 @@ function courseplay:load(xmlFile)
 	courseplay:register_button(self, 1, 'navigate_plus.png',  'setCustomFieldEdgePathNumber',  1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[4], w16px, h16px, 4,  5, false);
 	courseplay:register_button(self, 1, nil, 'setCustomFieldEdgePathNumber', 1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[4], mouseWheelArea.w, mouseWheelArea.h, 4, 5, true, true);
 
+	-- Find first waypoint
+	courseplay:register_button(self, 1, 'searchGlass.png', 'toggleFindFirstWaypoint', nil, listArrowX - (4*w16px*10/16) - (3*w16px), courseplay.hud.infoBasePosY + 0.2395, w24px, h24px, nil, nil, false, false, true);
+
 
 	-- ##################################################
 	-- Page 2: Course management
@@ -996,6 +999,9 @@ function courseplay:draw()
 		if self.cp.hud.show then
 			courseplay:setHudContent(self);
 			courseplay:renderHud(self);
+			if self.cp.distanceCheck and (self.drive or (not self.cp.canDrive and not self.cp.isRecording and not self.cp.recordingIsPaused)) then -- turn off findFirstWaypoint when driving or no course loaded
+				courseplay:toggleFindFirstWaypoint(self);
+			end;
 
 			if self.cp.mouseCursorActive then
 				InputBinding.setShowMouseCursor(self.cp.mouseCursorActive);

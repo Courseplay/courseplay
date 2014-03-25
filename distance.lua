@@ -4,9 +4,11 @@ function courseplay:distance(x1, z1, x2, z2)
 		return 1000;
 	end;
 
-	local xd = math.pow(x1 - x2, 2);
-	local zd = math.pow(z1 - z2, 2);
-	return math.sqrt(math.abs(xd + zd));
+	return Utils.vector2Length(x2 - x1, z2 - z1);
+
+	-- local xd = math.pow(x1 - x2, 2);
+	-- local zd = math.pow(z1 - z2, 2);
+	-- return math.sqrt(math.abs(xd + zd));
 end
 
 -- displays arrow and distance to previous point
