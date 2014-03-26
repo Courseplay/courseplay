@@ -420,15 +420,104 @@ function courseplay:changeToolOffsetZ(vehicle, changeBy, force)
 	end;
 end;
 
-function courseplay:changeWorkWidth(vehicle, changeBy)
-	if vehicle.cp.workWidth + changeBy > 10 then
-		if math.abs(changeBy) == 0.1 then
-			changeBy = 0.5 * Utils.sign(changeBy);
-		elseif math.abs(changeBy) == 0.5 then
-			changeBy = 2 * Utils.sign(changeBy);
+function courseplay:calculateWorkWidth(vehicle)
+	local l,r;
+
+	local vehL,vehR = courseplay:getCuttingAreaValuesX(vehicle);
+
+	local min, max, abs = math.min, math.max, math.abs;
+	local implL,implR = -9999,9999;
+	if vehicle.attachedImplements then
+		for i,implement in pairs(vehicle.attachedImplements) do
+			local object = implement.object;
+			local left, right = courseplay:getCuttingAreaValuesX(object);
+			implL = max(implL, left);
+			implR = min(implR, right);
+		end;
+	else
+		implL, implR = 0, 0;
+	end;
+
+	if vehL ~= 0 and vehR ~= 0 then
+		if implL ~= 0 and implR ~= 0 then
+			l = max(vehL, implL);
+			r = min(vehR, implR);
+		else
+			l = vehL;
+			r = vehR;
+		end;
+	else
+		if implL ~= 0 and implR ~= 0 then
+			l = implL;
+			r = implR;
+		else
+			l =  1.5;
+			r = -1.5;
 		end;
 	end;
-	vehicle.cp.workWidth = math.max(vehicle.cp.workWidth + changeBy, 0.1);
+
+	local workWidth = l - r;
+
+	courseplay:changeWorkWidth(vehicle, nil, workWidth);
+end;
+
+function courseplay:getCuttingAreaValuesX(object)
+
+	if object.aiLeftMarker and object.aiRightMarker then
+		local x, y, z = getWorldTranslation(object.aiLeftMarker);
+		local left, _, _ = worldToLocal(object.rootNode, x, y, z);
+		x, y, z = getWorldTranslation(object.aiRightMarker);
+		local right, _, _ = worldToLocal(object.rootNode, x, y, z);
+
+		return left, right;
+	end;
+
+
+	local areas;
+	if courseplay:isBigM(object) then
+		areas = object.mowerCutAreas;
+	elseif object.typeName == 'defoliator_animated' then
+		areas = object.fruitPreparerAreas;
+	else
+		areas = object.cuttingAreas;
+	end;
+
+	local min, max = math.min, math.max;
+	local left, right = -9999, 9999;
+	local setZero = false;
+	if areas and #areas > 0 then
+		local numAreas = #areas;
+		for i=1,numAreas do
+			for caType,node in pairs(areas[i]) do
+				if caType == 'start' or caType == 'height' or caType == 'width' then
+					local x, y, z = getWorldTranslation(node);
+					local caX, _, _ = worldToLocal(object.rootNode, x, y, z);
+					left = max(left, caX);
+					right = min(right, caX);
+				end;
+			end;
+		end;
+	else
+		left, right = 0, 0;
+	end;
+
+	return left, right;
+end;
+
+function courseplay:changeWorkWidth(vehicle, changeBy, force)
+	local abs, max = math.abs, math.max;
+	if force then
+		vehicle.cp.workWidth = max(courseplay:round(abs(force), 1), 0.1);
+	else
+		if vehicle.cp.workWidth + changeBy > 10 then
+			if abs(changeBy) == 0.1 then
+				changeBy = 0.5 * Utils.sign(changeBy);
+			elseif abs(changeBy) == 0.5 then
+				changeBy = 2 * Utils.sign(changeBy);
+			end;
+		end;
+		vehicle.cp.workWidth = max(vehicle.cp.workWidth + changeBy, 0.1);
+	end;
 	courseplay:calculateWorkWidthDisplayPoints(vehicle);
 	vehicle.cp.workWidthChanged = vehicle.timer + 2000;
 end;

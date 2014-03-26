@@ -847,8 +847,9 @@ function courseplay:load(xmlFile)
 	-- Note: line 1 (field edges) will be applied in first updateTick() runthrough
 
 	-- line 2 (workWidth)
-	courseplay:register_button(self, 8, 'navigate_minus.png', 'changeWorkWidth', -0.1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[2], w16px, h16px, 2,  -0.5, false);
-	courseplay:register_button(self, 8, 'navigate_plus.png',  'changeWorkWidth',  0.1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[2], w16px, h16px, 2,   0.5, false);
+	courseplay:register_button(self, 8, 'calculator.png', 'calculateWorkWidth',   nil, courseplay.hud.infoBasePosX + 0.270, courseplay.hud.linesButtonPosY[2], w16px, h16px, 2,  nil, false);
+	courseplay:register_button(self, 8, 'navigate_minus.png', 'changeWorkWidth', -0.1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[2], w16px, h16px, 2, -0.5, false);
+	courseplay:register_button(self, 8, 'navigate_plus.png',  'changeWorkWidth',  0.1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[2], w16px, h16px, 2,  0.5, false);
 	courseplay:register_button(self, 8, nil, 'changeWorkWidth', 0.1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[2], mouseWheelArea.w, mouseWheelArea.h, 2, 0.5, true, true);
 
 	-- line 3 (starting corner)
