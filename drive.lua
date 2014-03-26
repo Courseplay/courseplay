@@ -876,10 +876,17 @@ function courseplay:drive(self, dt)
 			distToChange = 2.85; --orig: 5
 		end;
 	end
-	
-	if self.cp.isKasi ~= nil then 
-		distToChange = distToChange * self.cp.isKasi
-	end  
+
+	-- Change the distance to the correct one on the Kirovets K700A.
+	if self.cp.isKasi ~= nil then
+		if fwd then
+			self.dist = self.dist - self.cp.isKasi;
+		else
+			self.dist = self.dist + self.cp.isKasi;
+		end;
+		-- TODO: (Claus) Remove old Kasi stuff.
+		--distToChange = distToChange * self.cp.isKasi
+	end
 
 	-- record shortest distance to the next waypoint
 	if self.cp.shortestDistToWp == nil or self.cp.shortestDistToWp > self.dist then

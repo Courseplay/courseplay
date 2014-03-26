@@ -1166,11 +1166,12 @@ function courseplay:askForSpecialSettings(self,object)
 		local frontPart_vis = getParent(self.movingTools[1].node)
 		local frontPart = getParent(frontPart_vis)
 		self.aiTrafficCollisionTrigger = getChild(frontPart, "trafficCollisionTrigger");
-		self.cp.DirectionNode = frontPart
 
 	elseif self.cp.isKirovetsK700A then
-		self.cp.DirectionNode = self.rootNode
-		self.cp.isKasi = 2.5
+		self.cp.DirectionNode = self.components[2].node;
+		self.cp.isKasi = 3.4; -- (Distance from rootNode to DirectionNode) Used to set the correct distance.
+		-- TODO: (Claus) Remove old Kasi stuff.
+		-- self.cp.isKasi = 1.5; -- Old stuff used for multiply the distanceToChange
 	elseif self.cp.isRopaEuroTiger then
 		self:setSteeringMode(5)
 		self.cp.offset = 5.2
