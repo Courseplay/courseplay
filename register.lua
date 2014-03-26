@@ -1,26 +1,38 @@
 --COURSEPLAY
 SpecializationUtil.registerSpecialization('courseplay', 'courseplay', g_currentModDirectory .. 'courseplay.lua');
 
-function courseplay:register()
-	local numInstallationsVehicles = 0;
+local steerableSpec = SpecializationUtil.getSpecialization('steerable');
+local courseplaySpec = SpecializationUtil.getSpecialization('courseplay');
+local numInstallationsVehicles = 0;
 
-	local steerableSpec = SpecializationUtil.getSpecialization('steerable');
-	local courseplaySpec = SpecializationUtil.getSpecialization('courseplay');
+function courseplay:register()
 	for typeName,vehicleType in pairs(VehicleTypeUtil.vehicleTypes) do
 		if vehicleType then
 			for i,spec in pairs(vehicleType.specializations) do
 				if spec and spec == steerableSpec and not SpecializationUtil.hasSpecialization(courseplay, vehicleType.specializations) then
 					-- print(('\tadding Courseplay to %q'):format(tostring(vehicleType.name)));
 					table.insert(vehicleType.specializations, courseplaySpec);
+					vehicleType.hasCourseplaySpec = true;
+					vehicleType.hasSteerableSpec = true;
 					numInstallationsVehicles = numInstallationsVehicles + 1;
 					break;
 				end;
 			end;
 		end;
 	end;
+end;
 
-	print(string.format('### Courseplay: installed into %d vehicles', numInstallationsVehicles));
-end
+-- if there are any vehicles loaded *after* Courseplay, install the spec into them
+local postRegister = function(typeName, className, filename, specializationNames, customEnvironment)
+	local vehicleType = VehicleTypeUtil.vehicleTypes[typeName];
+	if vehicleType and vehicleType.specializations and not vehicleType.hasCourseplaySpec and Utils.hasListElement(specializationNames, 'steerable') then
+		table.insert(vehicleType.specializations, courseplaySpec);
+		vehicleType.hasCourseplaySpec = true;
+		vehicleType.hasSteerableSpec = true;
+		numInstallationsVehicles = numInstallationsVehicles + 1;
+	end;
+end;
+VehicleTypeUtil.registerVehicleType = Utils.appendedFunction(VehicleTypeUtil.registerVehicleType, postRegister);
 
 function courseplay:attachableLoad(xmlFile)
 	if self.cp == nil then self.cp = {}; end;
@@ -162,4 +174,5 @@ Foldable.load = Utils.appendedFunction(Foldable.load, courseplay.foldableLoad);
 
 courseplay.locales = courseplay.utils.table.copy(g_i18n.texts, true);
 courseplay:register();
+print(string.format('### Courseplay: installed into %d vehicles', numInstallationsVehicles));
 
