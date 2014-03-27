@@ -834,6 +834,13 @@ function courseplay:unload_tippers(vehicle)
 				-- Tell the user why we have stoped.
 				courseplay:setGlobalInfoText(vehicle, 'BGA_IS_FULL');
 
+			-- BGA TIPTRIGGER IS FULL
+			elseif isBGA and bgaIsFull and not vehicle.Waypoints[vehicle.cp.last_recordnumber].rev and not vehicle.cp.isReverseBGATipping then
+				-- set trigger to nil
+				vehicle.cp.currentTipTrigger = nil;
+				vehicle.cp.isReverseBGATipping = nil;
+				vehicle.cp.BGASelectedSection = nil;
+
 			--REGULAR TIPTRIGGER
 			elseif not isBGA then
 				goForTipping = trailerInTipRange;
