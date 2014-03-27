@@ -349,6 +349,7 @@ function courseplay:setGlobalData()
 	end;
 	courseplay.globalInfoText.msgReference = {
 		BALER_NETS 		  = { level = -2, text = 'COURSEPLAY_BALER_NEEDS_NETS' };
+		BGA_IS_FULL       = { level = -1, text = 'COURSEPLAY_BGA_IS_FULL'};
 		DAMAGE_IS 		  = { level =  0, text = 'COURSEPLAY_DAMAGE_IS_BEING_REPAIRED' };
 		DAMAGE_MUST 	  = { level = -2, text = 'COURSEPLAY_DAMAGE_MUST_BE_REPAIRED' };
 		DAMAGE_SHOULD 	  = { level = -1, text = 'COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED' };
@@ -370,7 +371,6 @@ function courseplay:setGlobalData()
 		WATER 			  = { level = -2, text = 'COURSEPLAY_WATER_WARNING' };
 		WEATHER 		  = { level =  0, text = 'COURSEPLAY_WEATHER_WARNING' };
 		WORK_END 		  = { level =  1, text = 'COURSEPLAY_WORK_END' };
-		BGA_IS_FULL       = { level = -1, text = 'COURSEPLAY_BGA_IS_FULL'}; -- Used for reverse BGA tipping
 	};
 
 

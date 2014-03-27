@@ -484,7 +484,6 @@ function courseplay:getCuttingAreaValuesX(object)
 
 	local min, max = math.min, math.max;
 	local left, right = -9999, 9999;
-	local setZero = false;
 	if areas and #areas > 0 then
 		local numAreas = #areas;
 		for i=1,numAreas do
@@ -1311,9 +1310,9 @@ function courseplay:createFieldEdgeButtons(vehicle)
 		local toggleSucHudButtonIdx = courseplay:register_button(vehicle, 8, 'calculator.png', 'toggleSucHud', nil, courseplay.hud.infoBasePosX + 0.255, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, nil, false, false, true);
 		vehicle.cp.suc.toggleHudButton = vehicle.cp.buttons['8'][toggleSucHudButtonIdx];
 		courseplay:register_button(vehicle, 8, 'eye.png', 'toggleSelectedFieldEdgePathShow', nil, courseplay.hud.infoBasePosX + 0.270, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, nil, false);
-		courseplay:register_button(vehicle, 8, 'navigate_up.png',   'setFieldEdgePath', -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, -5, false);
-		courseplay:register_button(vehicle, 8, 'navigate_down.png', 'setFieldEdgePath',  1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1,  5, false);
-		courseplay:register_button(vehicle, 8, nil, 'setFieldEdgePath', -1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[1], mouseWheelArea.w, mouseWheelArea.h, 1, -5, true, true);
+		courseplay:register_button(vehicle, 8, 'navigate_up.png',   'setFieldEdgePath',  1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1,  5, false);
+		courseplay:register_button(vehicle, 8, 'navigate_down.png', 'setFieldEdgePath', -1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, -5, false);
+		courseplay:register_button(vehicle, 8, nil, 'setFieldEdgePath', 1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[1], mouseWheelArea.w, mouseWheelArea.h, 1, 5, true, true);
 		vehicle.cp.fieldEdge.selectedField.buttonsCreated = true;
 	end;
 end;

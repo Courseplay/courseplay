@@ -5,6 +5,7 @@ Date:		21 May 2013
 Authors:	Jakob Tischler
 			Thomas Gärtner
 			horoman
+			Satis
 
 For further information, visit http://courseplay.github.io/courseplay/
 

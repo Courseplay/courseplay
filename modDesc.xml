@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="13">
-	<version>3.41.0446</version>
+	<version>3.41.0447</version>
 	<author><![CDATA[Jakob Tischler, Thomas Gärtner,
-Horoman]]></author>
+Horoman, Satis]]></author>
 	<title>
 		<de>Courseplay</de>
 		<en>Courseplay</en>
@@ -16,49 +16,49 @@ Horoman]]></author>
 	
 	<description>
 		<de>
-<![CDATA[Entwickler: Jakob Tischler, Thomas Gärtner, Horoman
+<![CDATA[Entwickler: Jakob Tischler, Thomas Gärtner, Horoman, Satis
 
 Übersetzungen: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro,
 [RU] Bernelli, [HU] Chris von Bone]]>
 		</de>
 		<en>
-<![CDATA[Developers: Jakob Tischler, Thomas Gärtner, Horoman
+<![CDATA[Developers: Jakob Tischler, Thomas Gärtner, Horoman, Satis
 
 Translations: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro,
 [RU] Bernelli, [HU] Chris von Bone]]>
 		</en>
 		<es>
-<![CDATA[Desarrolladores: Jakob Tischler, Thomas Gärtner, Horoman
+<![CDATA[Desarrolladores: Jakob Tischler, Thomas Gärtner, Horoman, Satis
 
 Tradduciónes: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro,
 [RU] Bernelli, [HU] Chris von Bone]]>
 		</es>
 		<fr>
-<![CDATA[Développeurs: Jakob Tischler, Thomas Gärtner, Horoman
+<![CDATA[Développeurs: Jakob Tischler, Thomas Gärtner, Horoman, Satis
 
 Traductions: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro,
 [RU] Bernelli, [HU] Chris von Bone]]>
 		</fr>
 		<it>
-<![CDATA[Sviluppatori: Jakob Tischler, Thomas Gärtner, Horoman
+<![CDATA[Sviluppatori: Jakob Tischler, Thomas Gärtner, Horoman, Satis
 
 Traduzioni: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy,[IT] JD7530, Cristiano Magro,
 [RU] Bernelli, [HU] Chris von Bone]]>
 		</it>
 		<cz>
-<![CDATA[Vývojáři: Jakob Tischler, Thomas Gärtner, Horoman
+<![CDATA[Vývojáři: Jakob Tischler, Thomas Gärtner, Horoman, Satis
 
 Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro,
 [RU] Bernelli, [HU] Chris von Bone]]>
 		</cz>
 		<ru>
-<![CDATA[Разработка: Jakob Tischler, Thomas Gärtner, Horoman
+<![CDATA[Разработка: Jakob Tischler, Thomas Gärtner, Horoman, Satis
 
 Переводчики: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro,
 [RU] Bernelli, [HU] Chris von Bone]]>
 		</ru>
 		<hu>
-<![CDATA[Készítők: Jakob Tischler, Thomas Gärtner, Horoman
+<![CDATA[Készítők: Jakob Tischler, Thomas Gärtner, Horoman, Satis
 
 Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro,
 [RU] Bernelli, [HU] Chris von Bone]]>

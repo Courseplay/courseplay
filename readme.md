@@ -32,6 +32,7 @@ ___
 * Jakob Tischler
 * Thomas Gärtner
 * Horoman
+* Satis
 
 ___
 

@@ -152,8 +152,8 @@ function courseplay:renderButton(self, button)
 
 		elseif pg == 8 then
 			if fn == "setFieldEdgePath" then
-				button.canScrollUp   = courseplay.fields.numAvailableFields > 0 and self.cp.fieldEdge.selectedField.fieldNum > 0;
-				button.canScrollDown = courseplay.fields.numAvailableFields > 0 and self.cp.fieldEdge.selectedField.fieldNum < courseplay.fields.numAvailableFields;
+				button.canScrollUp = courseplay.fields.numAvailableFields > 0 and self.cp.fieldEdge.selectedField.fieldNum < courseplay.fields.numAvailableFields;
+				button.canScrollDown   = courseplay.fields.numAvailableFields > 0 and self.cp.fieldEdge.selectedField.fieldNum > 0;
 			elseif fn == "changeWorkWidth" then
 				button.canScrollUp =   true;
 				button.canScrollDown = self.cp.workWidth > 0.1;
