@@ -332,7 +332,7 @@ function courseplay:calculateInitialCombineOffset(self, combine)
 	elseif combine.cp.isCaseIH9230 or combine.cp.isCaseIH9230Crawler then
 		self.cp.combineOffset = 11.5;
 	elseif combine.cp.isDeutz5465H then
-		self.cp.combineOffset =  5.1;
+		self.cp.combineOffset =  5.6;
 	elseif combine.cp.isGrimmeRootster604 then
 		self.cp.combineOffset = -4.3;
 	elseif combine.cp.isGrimmeSE7555 then
