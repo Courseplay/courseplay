@@ -294,6 +294,9 @@ function courseplay:setNameVariable(workTool)
 	--Combines [Giants]
 	elseif Utils.endsWith(workTool.configFileName, "fahrM66.xml") or Utils.endsWith(workTool.configFileName, "fahrM66EX.xml") then
 		workTool.cp.isFahrM66 = true;
+		if not courseplay.trafficCollisionIgnoreList[workTool.components[2].node] then
+			courseplay.trafficCollisionIgnoreList[workTool.components[2].node] = true; -- adding the Farh M66 pipeCol to the ignore list if not set
+		end;
 	elseif Utils.endsWith(workTool.configFileName, "caseIH7130.xml") then
 		workTool.cp.isCaseIH7130 = true;
 	elseif Utils.endsWith(workTool.configFileName, "caseIH9230.xml") then

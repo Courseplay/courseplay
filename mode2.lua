@@ -1337,7 +1337,7 @@ function courseplay:calculateCombineOffset(self, combine)
 	elseif self.cp.combineOffsetAutoMode and combine.cp.isGrimmeSE7555 then
 		offs =  4.3;
 	elseif self.cp.combineOffsetAutoMode and combine.cp.isFahrM66 then
-		offs =  4.4;
+		offs =  3.9; -- Pipe collition added to global traffic ignore list. we can now go closer to the combine again. (Original 4.4m)
 	elseif self.cp.combineOffsetAutoMode and combine.cp.isJF1060 then
 		offs =  7.0;
 	elseif self.cp.combineOffsetAutoMode and combine.cp.isRopaEuroTiger then
