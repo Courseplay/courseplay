@@ -554,75 +554,82 @@ end;
 
 -- loads all tippers
 function courseplay:load_tippers(vehicle)
-	local allowedToDrive = false
-	local cx, cz = vehicle.Waypoints[2].cx, vehicle.Waypoints[2].cz
+	local allowedToDrive = false;
+	local cx, cz = vehicle.Waypoints[2].cx, vehicle.Waypoints[2].cz;
 
 	if vehicle.cp.currentTrailerToFill == nil then
-		vehicle.cp.currentTrailerToFill = 1
+		vehicle.cp.currentTrailerToFill = 1;
 	end
+	local currentTrailer = vehicle.tippers[vehicle.cp.currentTrailerToFill];
+
+	-- SUPER SILO TRIGGER
+	if currentTrailer.currentSuperSiloTrigger ~= nil then
+		local sst = currentTrailer.currentSuperSiloTrigger;
+		local triggerFillType;
+		if sst.fillTypes and sst.currentFillType and sst.fillTypes[sst.currentFillType] then
+			triggerFillType = sst.fillTypes[sst.currentFillType].fillType;
+		end;
+		if triggerFillType and currentTrailer:allowFillType(triggerFillType, true) then
+			if not currentTrailer.currentSuperSiloTrigger.isFilling then
+				currentTrailer.currentSuperSiloTrigger:setIsFilling(true);
+			end;
+		end;
+	end;
 
 	-- drive on when required fill level is reached
-	local drive_on = false
+	local driveOn = false;
 	if vehicle.cp.timeOut < vehicle.timer or vehicle.cp.prevFillLevelPct == nil then
 		if vehicle.cp.prevFillLevelPct ~= nil and vehicle.cp.tipperFillLevelPct == vehicle.cp.prevFillLevelPct and vehicle.cp.tipperFillLevelPct > vehicle.cp.driveOnAtFillLevel then
-			drive_on = true
-		end
-		vehicle.cp.prevFillLevelPct = vehicle.cp.tipperFillLevelPct
-		courseplay:set_timeout(vehicle, 7000)
-	end
+			driveOn = true;
+		end;
+		vehicle.cp.prevFillLevelPct = vehicle.cp.tipperFillLevelPct;
+		courseplay:set_timeout(vehicle, 7000);
+	end;
 
-	if vehicle.cp.tipperFillLevelPct == 100 or drive_on then
-		vehicle.cp.prevFillLevelPct = nil
-		vehicle.cp.isLoaded = true
-		vehicle.cp.lastTrailerToFillDistance = nil
-		vehicle.cp.currentTrailerToFill = nil
-		return true
-	end
+	if vehicle.cp.tipperFillLevelPct == 100 or driveOn then
+		vehicle.cp.prevFillLevelPct = nil;
+		vehicle.cp.isLoaded = true;
+		vehicle.cp.lastTrailerToFillDistance = nil;
+		vehicle.cp.currentTrailerToFill = nil;
+		return true;
+	end;
 
 	if vehicle.cp.lastTrailerToFillDistance == nil then
-
-		local current_tipper = vehicle.tippers[vehicle.cp.currentTrailerToFill]
-
 		-- drive on if current tipper is full
-		if current_tipper.fillLevel == current_tipper.capacity then
-			if table.getn(vehicle.tippers) > vehicle.cp.currentTrailerToFill then
-				local tipper_x, tipper_y, tipper_z = getWorldTranslation(vehicle.tippers[vehicle.cp.currentTrailerToFill].rootNode)
-
-				vehicle.cp.lastTrailerToFillDistance = courseplay:distance(cx, cz, tipper_x, tipper_z)
-
-				vehicle.cp.currentTrailerToFill = vehicle.cp.currentTrailerToFill + 1
+		if currentTrailer.fillLevel == currentTrailer.capacity then
+			if #(vehicle.tippers) > vehicle.cp.currentTrailerToFill then
+				local trailerX, _, trailerZ = getWorldTranslation(currentTrailer.fillRootNode); --TODO (Jakob): use fillRootNode instead of rootNode?
+				vehicle.cp.lastTrailerToFillDistance = courseplay:distance(cx, cz, trailerX, trailerZ);
+				vehicle.cp.currentTrailerToFill = vehicle.cp.currentTrailerToFill + 1;
 			else
-				vehicle.cp.currentTrailerToFill = nil
-				vehicle.cp.lastTrailerToFillDistance = nil
-			end
-			allowedToDrive = true
-		end
+				vehicle.cp.currentTrailerToFill = nil;
+				vehicle.cp.lastTrailerToFillDistance = nil;
+			end;
+			allowedToDrive = true;
+		end;
 
 	else
-		local tipper_x, tipper_y, tipper_z = getWorldTranslation(vehicle.tippers[vehicle.cp.currentTrailerToFill].rootNode)
-
-		local distance = courseplay:distance(cx, cz, tipper_x, tipper_z)
+		local trailerX, _, trailerZ = getWorldTranslation(currentTrailer.fillRootNode); --TODO (Jakob): use fillRootNode instead of rootNode?
+		local distance = courseplay:distance(cx, cz, trailerX, trailerZ);
 
 		if distance > vehicle.cp.lastTrailerToFillDistance and vehicle.cp.lastTrailerToFillDistance ~= nil then
-			allowedToDrive = true
+			allowedToDrive = true;
 		else
-			allowedToDrive = false
-			local current_tipper = vehicle.tippers[vehicle.cp.currentTrailerToFill]
-			if current_tipper.fillLevel == current_tipper.capacity then
-				if table.getn(vehicle.tippers) > vehicle.cp.currentTrailerToFill then
-					local tipper_x, tipper_y, tipper_z = getWorldTranslation(vehicle.tippers[vehicle.cp.currentTrailerToFill].rootNode)
-					vehicle.cp.lastTrailerToFillDistance = courseplay:distance(cx, cz, tipper_x, tipper_z)
-					vehicle.cp.currentTrailerToFill = vehicle.cp.currentTrailerToFill + 1
+			allowedToDrive = false;
+			if currentTrailer.fillLevel == currentTrailer.capacity then
+				if #(vehicle.tippers) > vehicle.cp.currentTrailerToFill then
+					vehicle.cp.lastTrailerToFillDistance = courseplay:distance(cx, cz, trailerX, trailerZ);
+					vehicle.cp.currentTrailerToFill = vehicle.cp.currentTrailerToFill + 1;
 				else
-					vehicle.cp.currentTrailerToFill = nil
-					vehicle.cp.lastTrailerToFillDistance = nil
-				end
-			end
-		end
-	end
+					vehicle.cp.currentTrailerToFill = nil;
+					vehicle.cp.lastTrailerToFillDistance = nil;
+				end;
+			end;
+		end;
+	end;
 
 	-- normal mode if all tippers are empty
-	return allowedToDrive
+	return allowedToDrive;
 end
 
 -- unloads all tippers
