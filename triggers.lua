@@ -14,7 +14,7 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 	local TriggerNumber = self.cp.trafficCollisionTriggerToTriggerIndex[triggerId];
 	
 	if onEnter or onLeave then --TODO check whether it is required to ask for this 
-		if otherId == Player.rootNode then  --TODO check in Multiplayer
+		if otherId == Player.rootNode then  --TODO check in Multiplayer --TODO (Jakob): g_currentMission.player.rootNode ?
 			if onEnter then
 				self.CPnumCollidingVehicles = self.CPnumCollidingVehicles + 1;
 			elseif onLeave then

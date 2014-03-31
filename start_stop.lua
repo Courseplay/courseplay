@@ -20,7 +20,14 @@ function courseplay:start(self)
 		self.cp.ESL[1] = self.ESLimiter.percentage[2]
 		self.cp.ESL[2] = self.ESLimiter.percentage[3]
 		self.cp.ESL[3] = self.ESLimiter.percentage[4]
-	end
+	end;
+	if self.isRealistic then
+		self.cp.mrOrigSpeed = {
+			[1] = self.motor.realSpeedLevelsAI[1],
+			[2] = self.motor.realSpeedLevelsAI[2],
+			[3] = self.motor.realSpeedLevelsAI[3]
+		};
+	end;
 
 	self.CPnumCollidingVehicles = 0;
 	self.cp.collidingVehicleId = nil
@@ -343,7 +350,12 @@ function courseplay:stop(self)
 		self.ESLimiter.percentage[2] =	self.cp.ESL[1]
 		self.ESLimiter.percentage[3] =	self.cp.ESL[2]
 		self.ESLimiter.percentage[4] =	self.cp.ESL[3]  
-	end
+	end;
+	if self.isRealistic and self.cp.mrOrigSpeed ~= nil then
+		self.motor.realSpeedLevelsAI[1] = self.cp.mrOrigSpeed[1];
+		self.motor.realSpeedLevelsAI[2] = self.cp.mrOrigSpeed[2];
+		self.motor.realSpeedLevelsAI[3] = self.cp.mrOrigSpeed[3];
+	end;
 	self.cp.forcedToStop = false
 	self.cp.isRecording = false
 	self.cp.recordingIsPaused = false

@@ -411,6 +411,9 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 
 	--Zunhammer Liquid Manure Pack [Eifok Team]
 	elseif workTool.cp.hasEifokZunhammerAttachable and self.cp.mode == 4 then
+		if vehicle.cp.waitTime > 0 then --set waitTime to 0
+			courseplay:changeWaitTime(vehicle, -vehicle.cp.waitTime);
+		end;
 		local attachable = workTool.cp.eifokZunhammerAttachable;
 
 		if attachable.cp.isEifokZunhammerMoescha then
@@ -449,6 +452,9 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 	elseif workTool.cp.isHoseRefTransporter then
 		-- print(string.format('handleSpecialTools(): isHoseRefTransporter, unload=%s -> %s handleSpecialSprayer(..., "push")', tostring(unload), unload and 'call' or 'don\'t call'));
 		if unload then
+			if vehicle.cp.waitTime > 0 then --set waitTime to 0
+				courseplay:changeWaitTime(vehicle, -vehicle.cp.waitTime);
+			end;
 			local fillLevel = workTool.fillLevel * 100 / workTool.capacity;
 			if self.cp.tipperFillLevel ~= nil and self.cp.tipperCapacity ~= nil then
 				fillLevel = self.cp.tipperFillLevel * 100 / self.cp.tipperCapacity;

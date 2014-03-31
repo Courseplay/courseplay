@@ -478,6 +478,10 @@ function courseplay:getCuttingAreaValuesX(object)
 		areas = object.mowerCutAreas;
 	elseif object.typeName == 'defoliator_animated' then
 		areas = object.fruitPreparerAreas;
+	elseif object.cp.isPoettingerAlpha then -- elseif object.alpMot then --Pöttinger Alpha mower
+		areas = object.alpMot.cuttingAreas;
+	elseif object.cp.isPoettingerX8 then -- elseif object.x8 and object.x8.mowers then --Pöttinger X8 mower
+		areas = object.x8.mowers;
 	else
 		areas = object.cuttingAreas;
 	end;
@@ -485,8 +489,7 @@ function courseplay:getCuttingAreaValuesX(object)
 	local min, max = math.min, math.max;
 	local left, right = -9999, 9999;
 	if areas and #areas > 0 then
-		local numAreas = #areas;
-		for i=1,numAreas do
+		for i=1,#areas do
 			for caType,node in pairs(areas[i]) do
 				if caType == 'start' or caType == 'height' or caType == 'width' then
 					local x, y, z = getWorldTranslation(node);

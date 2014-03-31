@@ -713,10 +713,10 @@ function courseplay_manager:devAddFillLevels()
 	end;
 end;
 
+local nightStart, dayStart = 19 * 3600000, 7.5 * 3600000; -- from 7pm until 7:30am
 function courseplay_manager:minuteChanged()
 	local env = g_currentMission.environment;
-	local nightStart, dayStart = 19 * 3600000, 8 * 3600000; -- from 7pm until 8am
-	courseplay.lightsNeeded = env.needsLights or (env.dayTime >= nightStart or env.dayTime <= dayStart) or env.curRain ~= nil or (env.lastRainScale > 0.1 and env.timeSinceLastRain < 30);
+	courseplay.lightsNeeded = env.needsLights or (env.dayTime >= nightStart or env.dayTime <= dayStart) or env.currentRain ~= nil or env.curRain ~= nil or (env.lastRainScale > 0.1 and env.timeSinceLastRain < 30);
 end;
 
 addModEventListener(courseplay_manager);
