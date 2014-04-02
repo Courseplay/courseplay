@@ -423,19 +423,22 @@ end;
 function courseplay:calculateWorkWidth(vehicle)
 	local l,r;
 
+	courseplay:debug(('%s: calculateWorkWidth()'):format(nameNum(vehicle)), 7);
 	local vehL,vehR = courseplay:getCuttingAreaValuesX(vehicle);
+	courseplay:debug(('\tvehL=%s, vehR=%s'):format(tostring(vehL), tostring(vehR)), 7);
 
 	local min, max, abs = math.min, math.max, math.abs;
 	local implL,implR = -9999,9999;
 	if vehicle.attachedImplements then
 		for i,implement in pairs(vehicle.attachedImplements) do
-			local object = implement.object;
-			local left, right = courseplay:getCuttingAreaValuesX(object);
+			local left, right = courseplay:getCuttingAreaValuesX(implement.object);
 			implL = max(implL, left);
 			implR = min(implR, right);
+			courseplay:debug(('\timplL=%s, implR=%s'):format(tostring(implL), tostring(implR)), 7);
 		end;
 	else
 		implL, implR = 0, 0;
+		courseplay:debug('\timplL=0, implR=0', 7);
 	end;
 
 	if vehL ~= 0 and vehR ~= 0 then
@@ -457,17 +460,28 @@ function courseplay:calculateWorkWidth(vehicle)
 	end;
 
 	local workWidth = l - r;
+	courseplay:debug(('\tl=%s, r=%s -> workWidth=l-r=%s'):format(tostring(l), tostring(r), tostring(workWidth)), 7);
 
 	courseplay:changeWorkWidth(vehicle, nil, workWidth);
 end;
 
 function courseplay:getCuttingAreaValuesX(object)
+	courseplay:debug(('\tgetCuttingAreaValuesX(%s)'):format(nameNum(object)), 7);
 
 	if object.aiLeftMarker and object.aiRightMarker then
 		local x, y, z = getWorldTranslation(object.aiLeftMarker);
 		local left, _, _ = worldToLocal(object.rootNode, x, y, z);
 		x, y, z = getWorldTranslation(object.aiRightMarker);
 		local right, _, _ = worldToLocal(object.rootNode, x, y, z);
+
+		courseplay:debug(('\t\taiMarkers: left=%s, right=%s'):format(tostring(left), tostring(right)), 7);
+
+		if left < right then
+			local rightBackup = right;
+			right = left;
+			left = rightBackup;
+			courseplay:debug(('\t\tleft < right -> switch -> left=%s, right=%s'):format(tostring(left), tostring(right)), 7);
+		end;
 
 		return left, right;
 	end;
@@ -476,14 +490,19 @@ function courseplay:getCuttingAreaValuesX(object)
 	local areas;
 	if courseplay:isBigM(object) then
 		areas = object.mowerCutAreas;
+		courseplay:debug('\t\tareas = mowerCutAreas (isBigM)', 7);
 	elseif object.typeName == 'defoliator_animated' then
 		areas = object.fruitPreparerAreas;
+		courseplay:debug('\t\tareas = fruitPreparerAreas', 7);
 	elseif object.cp.isPoettingerAlpha then -- elseif object.alpMot then --Pöttinger Alpha mower
 		areas = object.alpMot.cuttingAreas;
+		courseplay:debug('\t\tareas = alpMot.cuttingAreas (isPoettingerAlpha)', 7);
 	elseif object.cp.isPoettingerX8 then -- elseif object.x8 and object.x8.mowers then --Pöttinger X8 mower
 		areas = object.x8.mowers;
+		courseplay:debug('\t\tareas = x8.mowers (isPoettingerX8)', 7);
 	else
 		areas = object.cuttingAreas;
+		courseplay:debug('\t\tareas = cuttingAreas', 7);
 	end;
 
 	local min, max = math.min, math.max;
@@ -496,13 +515,16 @@ function courseplay:getCuttingAreaValuesX(object)
 					local caX, _, _ = worldToLocal(object.rootNode, x, y, z);
 					left = max(left, caX);
 					right = min(right, caX);
+					courseplay:debug(('\t\t\tarea %d, type=%s, caX=%s -> left=%s, right=%s'):format(i, tostring(caType), tostring(caX), tostring(left), tostring(right)), 7);
 				end;
 			end;
 		end;
 	else
 		left, right = 0, 0;
+		courseplay:debug('\t\t\tareas=nil -> left=0, right=0', 7);
 	end;
 
+	courseplay:debug(('\t\tareas: left=%s, right=%s'):format(tostring(left), tostring(right)), 7);
 	return left, right;
 end;
 
