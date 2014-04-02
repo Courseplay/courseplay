@@ -317,14 +317,22 @@ function courseplay:update_tools(vehicle, tractor_or_implement)
 		if tipper_attached and vehicle.tippers[i].rootNode ~= nil and vehicle.tippers[i].tipReferencePoints ~= nil then
 			local tipperX, tipperY, tipperZ = getWorldTranslation(vehicle.tippers[i].rootNode);
 			if tipper_attached and table.getn(vehicle.tippers[i].tipReferencePoints) > 1 then
+				vehicle.tippers[i].cp.rearTipRefPoint = nil;
 				for n=1 ,table.getn(vehicle.tippers[i].tipReferencePoints) do
 					local tipRefPointX, tipRefPointY, tipRefPointZ = worldToLocal(vehicle.tippers[i].tipReferencePoints[n].node, tipperX, tipperY, tipperZ);
 					tipRefPointX = math.abs(tipRefPointX);
-					if tipRefPointX > 0.1 then
+					if (vehicle.cp.tipRefOffset == nil or vehicle.cp.tipRefOffset == 0) and tipRefPointX > 0.1 then
 						vehicle.cp.tipRefOffset = tipRefPointX;
-						break;
 					else
 						vehicle.cp.tipRefOffset = 0
+					end;
+
+					-- Find the rear tipRefpoint in case we are reverse BGA tipping.
+					if tipRefPointX < 0.1 and tipRefPointZ > 0 then
+						if not vehicle.tippers[i].cp.rearTipRefPoint or vehicle.tippers[i].tipReferencePoints[n].width > vehicle.tippers[i].tipReferencePoints[vehicle.tippers[i].cp.rearTipRefPoint].width then
+							vehicle.tippers[i].cp.rearTipRefPoint = n;
+							courseplay:debug(string.format("%s: Found rear TipRefPoint: %d - tipRefPointZ = %f", nameNum(vehicle), n, tipRefPointZ), 13);
+						end;
 					end;
 				end;
 			else 
@@ -658,10 +666,11 @@ function courseplay:unload_tippers(vehicle)
 			courseplay:debug(nameNum(vehicle)..": distanceToTrigger: "..tostring(distanceToTrigger).."  /bestTipReferencePoint: "..tostring(bestTipReferencePoint).." /trailerInTipRange: "..tostring(trailerInTipRange), 2);
 			local goForTipping = false;
 			local unloadWhileReversing = false; -- Used by Reverse BGA Tipping
-			
+			local isRePositioning = false; -- Used by Reverse BGA Tipping
+
 			--BGA TRIGGER
 			if isBGA and not bgaIsFull then
-				if vehicle.cp.unloadAtSiloStart and not vehicle.Waypoints[vehicle.cp.last_recordnumber].rev and not vehicle.cp.isReverseBGATipping then
+				if vehicle.cp.unloadAtSiloStart and not vehicle.Waypoints[vehicle.recordnumber].rev and not vehicle.cp.isReverseBGATipping then
 					goForTipping = trailerInTipRange;
 				else
 					-- Local values used in both normal and reverse direction
@@ -675,13 +684,33 @@ function courseplay:unload_tippers(vehicle)
 					-------------------------------
 					--- Reverse into BGA and unload
 					-------------------------------
-					if vehicle.Waypoints[vehicle.cp.last_recordnumber].rev or vehicle.cp.isReverseBGATipping then
+					if vehicle.Waypoints[vehicle.recordnumber].rev or vehicle.cp.isReverseBGATipping then
+						-- Make sure we are using the rear TipReferencePoint as bestTipReferencePoint.
+						if tipper.cp.rearTipRefPoint and tipper.cp.rearTipRefPoint ~= bestTipReferencePoint then
+							bestTipReferencePoint = tipper.cp.rearTipRefPoint;
+							trailerInTipRange = g_currentMission:getIsTrailerInTipRange(tipper, ctt, bestTipReferencePoint);
+							x, y, z = getWorldTranslation(tipper.tipReferencePoints[bestTipReferencePoint].node);
+						end;
+
+						-- Check if bestTipReferencePoint it's inversed
+						if tipper.cp.inversedRearTipNode == nil then
+							local vx,vy,vz = getWorldTranslation(vehicle.rootNode)
+							local _,_,tz = worldToLocal(tipper.tipReferencePoints[bestTipReferencePoint].node, vx,vy,vz);
+							if tz > 0 then
+								tipper.cp.inversedRearTipNode = false;
+							else
+								tipper.cp.inversedRearTipNode = true;
+							end;
+						end;
+
 						-- Get the silo section fill level based on how many sections and total capacity.
-						local medianSiloCapacity = ctt.bunkerSilo.capacity / silos * 0.9; -- we make it a bit smaler than it actually is, since it will still unload a bit to the silo next to it.
+						local medianSiloCapacity = ctt.bunkerSilo.capacity / silos * 0.92; -- we make it a bit smaler than it actually is, since it will still unload a bit to the silo next to it.
 
 						-- Find what BGA silo section to unload in if not found
 						if not vehicle.cp.BGASelectedSection then
 							vehicle.cp.BGASectionInverted = false;
+							vehicle.cp.isChangingDirection = false;
+							vehicle.cp.lastDistance = math.huge;
 
 							-- Find out what end to start at.
 							if startDistance > endDistance then
@@ -712,49 +741,113 @@ function courseplay:unload_tippers(vehicle)
 						local nearestBGASection = 1;
 						for i, movingPlane in pairs(ctt.bunkerSilo.movingPlanes) do
 							local wx, _, wz = getWorldTranslation(movingPlane.nodeId);
-							local distance = (wx - x) * (wx - x) + (wz - z) * (wz - z);
+							local distance = Utils.vector2Length(wx - x, wz - z);
 							if nearestDistance > distance then
 								nearestBGASection = i;
 								nearestDistance = distance;
 							end;
 						end;
 
-						-- Get the new silo section distance from bestTipReferencePoint
-						if vehicle.cp.isReverseBGATipping then
-							local wx, _, wz = getWorldTranslation(ctt.bunkerSilo.movingPlanes[vehicle.cp.BGASelectedSection].nodeId);
-							nearestDistance = (wx - x) * (wx - x) + (wz - z) * (wz - z);
+						-- Check if last silo section.
+						local isLastSiloSection = (vehicle.cp.BGASectionInverted and vehicle.cp.BGASelectedSection == 1) or (not vehicle.cp.BGASectionInverted and vehicle.cp.BGASelectedSection == silos);
+
+						-- Start unloading some silo section before main silo section to make a ramp for the trailer.
+						if not isLastSiloSection and --[[not vehicle.cp.isReverseBGATipping and]] nearestBGASection ~= vehicle.cp.BGASelectedSection then
+							local unloadNumOfSectionBefore = 6;
+							local sectionMaxFillLevel = 0;
+							local isInUnloadSection = false;
+
+							-- INVERTED SILO DIRECTION
+							if (vehicle.cp.BGASectionInverted and nearestBGASection >= vehicle.cp.BGASelectedSection - unloadNumOfSectionBefore) and nearestBGASection < vehicle.cp.BGASelectedSection then
+								-- recalculate the num of section before, in case the num of section left is less.
+								unloadNumOfSectionBefore = math.min(vehicle.cp.BGASelectedSection - 1,unloadNumOfSectionBefore);
+
+								-- Calculate the current section max fill level.
+								sectionMaxFillLevel = (unloadNumOfSectionBefore - math.max(vehicle.cp.BGASelectedSection - nearestBGASection, 0) + 1) * ((medianSiloCapacity * 0.5) / unloadNumOfSectionBefore);
+
+								isInUnloadSection = true;
+
+								-- NORMAL SILO DIRECTION
+							elseif (not vehicle.cp.BGASectionInverted and nearestBGASection <= vehicle.cp.BGASelectedSection + unloadNumOfSectionBefore) and nearestBGASection > vehicle.cp.BGASelectedSection then
+								-- recalculate the num of section before, in case the num of section left is less.
+								unloadNumOfSectionBefore = math.min(silos - vehicle.cp.BGASelectedSection ,unloadNumOfSectionBefore)
+
+								-- Calculate the current section max fill level.
+								sectionMaxFillLevel = (unloadNumOfSectionBefore - math.max(nearestBGASection - vehicle.cp.BGASelectedSection, 0) + 1) * ((medianSiloCapacity * 0.5) / unloadNumOfSectionBefore);
+
+								isInUnloadSection = true;
+							end;
+
+							if ctt.bunkerSilo.movingPlanes[nearestBGASection].fillLevel < sectionMaxFillLevel then
+								goForTipping = trailerInTipRange and nearestDistance < 2.5;
+								unloadWhileReversing = true;
+							elseif isInUnloadSection and tipper.tipState ~= Trailer.TIPSTATE_CLOSING and tipper.tipState ~= Trailer.TIPSTATE_CLOSED then
+								tipper:toggleTipState();
+								courseplay:debug(string.format("%s: Ramp(%d) fill level is at max. Waiting with unloading.]", nameNum(vehicle), nearestBGASection), 13);
+							end;
+						end;
+
+						-- Get the silo section distance from bestTipReferencePoint
+						local wx, wy, wz = getWorldTranslation(ctt.bunkerSilo.movingPlanes[vehicle.cp.BGASelectedSection].nodeId);
+						nearestDistance = Utils.vector2Length(wx - x, wz - z);
+
+						-- If we drive to far, then change direction and try to replace again.
+						if not isLastSiloSection and nearestDistance > 1 --[[and nearestDistance > vehicle.cp.lastDistance and nearestBGASection ~= vehicle.cp.BGASelectedSection]] then
+							if nearestDistance < vehicle.cp.lastDistance then
+								-- prevent it from changing direction all the time.
+								if vehicle.cp.isChangingDirection then
+									vehicle.cp.isChangingDirection = false;
+									courseplay:debug(string.format("%s: Changed direction to %s to try reposition again.]", nameNum(vehicle), vehicle.Waypoints[vehicle.recordnumber].rev and "reverse" or "forward"), 13);
+								end;
+								isRePositioning = true;
+							elseif nearestDistance > vehicle.cp.lastDistance and not vehicle.cp.isChangingDirection then
+								local _,_,tz = worldToLocal(tipper.tipReferencePoints[bestTipReferencePoint].node, wx,wy,wz);
+								if tipper.cp.inversedRearTipNode then tz = tz * -1 end;
+
+								if tz > 0 and vehicle.Waypoints[vehicle.recordnumber].rev then
+									-- Change direction to forward
+									vehicle.cp.isReverseBGATipping = true;
+									vehicle.cp.isChangingDirection = true;
+									courseplay:changeToFirstForwardWPAhead(vehicle);
+								elseif tz < 0 and not vehicle.Waypoints[vehicle.recordnumber].rev then
+									-- Change direction to reverse
+									local found = false;
+									for i = vehicle.recordnumber, 1, -1 do
+										if vehicle.Waypoints[i].rev then
+											vehicle.recordnumber = i;
+											found = true;
+										end;
+									end;
+
+									if found then
+										vehicle.cp.isReverseBGATipping = false;
+										vehicle.cp.isChangingDirection = true;
+									end;
+								end;
+							end;
+						elseif vehicle.cp.isChangingDirection then
+							vehicle.cp.isChangingDirection = false;
 						end;
 
 						-- Make sure we drive to the middle of the next silo section before stopping again.
-						if vehicle.cp.isReverseBGATipping and vehicle.cp.lastReverseDistance >= nearestDistance then
-							vehicle.cp.lastReverseDistance = nearestDistance;
-							courseplay:debug(string.format("%s: Moving to the middle of silo section %d - current distance: %.3fm]", nameNum(vehicle), vehicle.cp.BGASelectedSection, nearestDistance), 13);
+						if (vehicle.cp.isReverseBGATipping and vehicle.cp.lastDistance >= nearestDistance) or isRePositioning then
+							--courseplay:debug(string.format("%s: Moving to the middle of silo section %d - current distance: %.3fm]", nameNum(vehicle), vehicle.cp.BGASelectedSection, nearestDistance), 13);
 
 						-- Unload if inside the selected section
 						elseif trailerInTipRange and nearestBGASection == vehicle.cp.BGASelectedSection then
 							goForTipping = trailerInTipRange and nearestDistance < 2.5;
 						end;
 
-						-- Check if last silo section.
-						local isLastSiloSection = (vehicle.cp.BGASectionInverted and vehicle.cp.BGASelectedSection == 1) or (not vehicle.cp.BGASectionInverted and vehicle.cp.BGASelectedSection == silos);
-
-						-- Start unloading 4 silo section before main silo section to make a ramp for the trailer.
-						if not isLastSiloSection and not vehicle.cp.isReverseBGATipping and nearestBGASection ~= vehicle.cp.BGASelectedSection then
-							if (vehicle.cp.BGASectionInverted and nearestBGASection >= vehicle.cp.BGASelectedSection - 4)
-							or (not vehicle.cp.BGASectionInverted and nearestBGASection <= vehicle.cp.BGASelectedSection + 4) then
-								goForTipping = trailerInTipRange and nearestDistance < 2.5;
-								unloadWhileReversing = true;
-							end;
-						end;
+						-- Update last distance
+						vehicle.cp.lastDistance = nearestDistance;
 
 						-- Goto the next silo section if this one is filled and not last silo section.
 						if not isLastSiloSection and ctt.bunkerSilo.movingPlanes[vehicle.cp.BGASelectedSection].fillLevel >= medianSiloCapacity then
 							-- Make sure we run this script even that we are not in an reverse waypoint anymore.
 							vehicle.cp.isReverseBGATipping = true;
 
-							-- Make sure we reset the lastReverseDistance in case we move silo section more than once in an unload
-							-- This should normally not be a problem, but is here in case some one made an trailer with an huge capacity.
-							vehicle.cp.lastReverseDistance = math.huge;
+							-- Make sure we reset the lastDistance in case we move silo section more than once in an unload
+							vehicle.cp.lastDistance = math.huge;
 
 							-- Find next section to unload into.
 							while (vehicle.cp.BGASectionInverted and vehicle.cp.BGASelectedSection > 1) or (not vehicle.cp.BGASectionInverted and vehicle.cp.BGASelectedSection < silos) do
@@ -835,14 +928,14 @@ function courseplay:unload_tippers(vehicle)
 				end;
 
 			--BGA TIPTRIGGER BUT IS FULL AND WE ARE REVERSE TIPPING
-			elseif isBGA and bgaIsFull and (vehicle.Waypoints[vehicle.cp.last_recordnumber].rev or vehicle.cp.isReverseBGATipping) then
+			elseif isBGA and bgaIsFull and (vehicle.Waypoints[vehicle.recordnumber].rev or vehicle.cp.isReverseBGATipping) then
 				-- Stop the vehicle, since we don't want to reverse into the BGA if it's full.
 				allowedToDrive = false;
 				-- Tell the user why we have stoped.
 				courseplay:setGlobalInfoText(vehicle, 'BGA_IS_FULL');
 
 			-- BGA TIPTRIGGER IS FULL
-			elseif isBGA and bgaIsFull and not vehicle.Waypoints[vehicle.cp.last_recordnumber].rev and not vehicle.cp.isReverseBGATipping then
+			elseif isBGA and bgaIsFull and not vehicle.Waypoints[vehicle.recordnumber].rev and not vehicle.cp.isReverseBGATipping then
 				-- set trigger to nil
 				vehicle.cp.currentTipTrigger = nil;
 				vehicle.cp.isReverseBGATipping = nil;
@@ -866,7 +959,7 @@ function courseplay:unload_tippers(vehicle)
 					courseplay:debug(nameNum(vehicle) .. ": goForTipping = true [trigger accepts fruit (" .. tostring(fruitType) .. ")]", 2);
 				end;
 
-				if tipper.tipState == Trailer.TIPSTATE_CLOSED then
+				if tipper.tipState == Trailer.TIPSTATE_CLOSED or tipper.tipState == Trailer.TIPSTATE_CLOSING then
 					vehicle.toggledTipState = bestTipReferencePoint;
 					local isNearestPoint = false
 					if distanceToTrigger > vehicle.cp.closestTipDistance then
@@ -885,7 +978,7 @@ function courseplay:unload_tippers(vehicle)
 					allowedToDrive = false;
 				end;
 
-				if isBGA and ((not vehicle.Waypoints[vehicle.cp.last_recordnumber].rev and not vehicle.cp.isReverseBGATipping) or unloadWhileReversing) then
+				if isBGA and ((not vehicle.Waypoints[vehicle.recordnumber].rev and not vehicle.cp.isReverseBGATipping) or unloadWhileReversing or isRePositioning) then
 					allowedToDrive = true;
 				end;
 			elseif not ctt.acceptedFillTypes[fruitType] then

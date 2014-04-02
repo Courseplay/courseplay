@@ -1188,8 +1188,9 @@ function courseplay:askForSpecialSettings(self,object)
 		self.cp.noStopOnEdge = true
 	end;
 
-
-	if object.cp.isAugerWagon then
+	if object.cp.isClaasQuantum3800K then
+		object.cp.frontNode = object.rootNode;
+	elseif object.cp.isAugerWagon then
 		if object.cp.foldPipeAtWaitPoint then
 			--object.cp.backPointsUnfoldPipe = 1;
 			object.cp.forwardPointsFoldPipe = 0;

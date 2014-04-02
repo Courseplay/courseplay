@@ -1398,9 +1398,9 @@ function courseplay:setMRSpeed(self, refSpeed, sl, allowedToDrive, workArea)
 	end;
 
 	-- setting AWD if necessary
-	if (workArea or self.realDisplaySlipPercent > 25) and self.realAWDModeOn == false then 
+	if (workArea or self.realDisplaySlipPercent > 25 or self.cp.BGASelectedSection) and self.realAWDModeOn == false then
 		self:realSetAwdActive(true);
-	elseif not workArea and self.realDisplaySlipPercent < 1 and self.realAWDModeOn == true then 
+	elseif not workArea and self.realDisplaySlipPercent < 1 and not self.cp.BGASelectedSection and self.realAWDModeOn == true then
 		self:realSetAwdActive(false);
 	end
 end;

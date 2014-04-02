@@ -239,6 +239,8 @@ function courseplay:clearCurrentLoadedCourse(vehicle)
 	vehicle.cp.abortWork = nil
 	vehicle.cp.isReverseBGATipping = nil; -- Used for reverse BGA tipping
 	vehicle.cp.BGASelectedSection = nil; -- Used for reverse BGA tipping
+	vehicle.cp.inversedRearTipNode = nil; -- Used for reverse BGA tipping
+	vehicle.cp.isChangingDirection = false; -- Used for reverse BGA tipping
 	vehicle.cp.lastMergedWP = 1;
 	vehicle.cp.numCourses = 0;
 	vehicle.cp.numWaypoints = 0;

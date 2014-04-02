@@ -11,6 +11,8 @@ function courseplay:handle_mode1(self)
 			self.cp.currentTipTrigger = nil;
 			self.cp.isReverseBGATipping = nil; -- Used for reverse BGA tipping
 			self.cp.BGASelectedSection = nil; -- Used for reverse BGA tipping
+			self.cp.inversedRearTipNode = nil; -- Used for reverse BGA tipping
+			self.cp.isChangingDirection = false; -- Used for reverse BGA tipping
 		end
 	end
 
@@ -39,17 +41,28 @@ function courseplay:handle_mode1(self)
 			local trigger_x, trigger_y, trigger_z = getWorldTranslation(trigger_id)
 			local ctx, cty, ctz = getWorldTranslation(self.rootNode);
 			local distance_to_trigger = courseplay:distance(ctx, ctz, trigger_x, trigger_z);
-			
-			if distance_to_trigger > 60 then 
+
+			-- Star reversion value is to check if we have started to reverse
+			-- This is used in case we already registered a tipTrigger but changed the direction and might not be in that tipTrigger when unloading. (Bug Fix)
+			local startReversing = self.Waypoints[self.recordnumber].rev and not self.Waypoints[self.cp.last_recordnumber].rev and not self.cp.BGASelectedSection;
+			if startReversing then
+				courseplay:debug(string.format("%s: Is starting to reverse. Tip trigger is reset.", nameNum(self)), 13);
+			end;
+
+			if distance_to_trigger > 60 or startReversing then
 				self.cp.currentTipTrigger = nil;
 				self.cp.isReverseBGATipping = nil; -- Used for reverse BGA tipping
 				self.cp.BGASelectedSection = nil; -- Used for reverse BGA tipping
+				self.cp.inversedRearTipNode = nil; -- Used for reverse BGA tipping
+				self.cp.isChangingDirection = false; -- Used for reverse BGA tipping
 				courseplay:debug(nameNum(self) .. ": distance to currentTipTrigger = " .. tostring(distance_to_trigger) .. " (> 60) --> currentTipTrigger = nil", 1);
 			end	
 		else
 			self.cp.currentTipTrigger = nil;
 			self.cp.isReverseBGATipping = nil; -- Used for reverse BGA tipping
 			self.cp.BGASelectedSection = nil; -- Used for reverse BGA tipping
+			self.cp.inversedRearTipNode = nil; -- Used for reverse BGA tipping
+			self.cp.isChangingDirection = false; -- Used for reverse BGA tipping
 		end;
 	end;
 

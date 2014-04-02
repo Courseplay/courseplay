@@ -310,7 +310,10 @@ function courseplay:load(xmlFile)
 	self.cp.isReverseBGATipping = nil; -- Used for reverse BGA tipping
 	self.cp.BGASelectedSection = nil; -- Used for reverse BGA tipping
 	self.cp.BGASectionInverted = false; -- Used for reverse BGA tipping
-	self.cp.lastReverseDistance = math.huge; -- Used for reverse BGA tipping
+	self.cp.lastDistance = math.huge; -- Used for reverse BGA tipping
+	self.cp.rearTipRefPoint = nil; -- Used for reverse BGA tipping
+	self.cp.inversedRearTipNode = nil; -- Used for reverse BGA tipping
+	self.cp.isChangingDirection = false; -- Used for reverse BGA tipping
 	self.cp.tipperHasCover = false;
 	self.cp.tippersWithCovers = {};
 	self.cp.automaticCoverHandling = true;
