@@ -159,7 +159,7 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive, dt)
 		--courseplay:handleSpecialTools(vehicle,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
 		courseplay:handleSpecialTools(vehicle,vehicle,true,nil,nil,nil,nil,nil)
 		local stopUnloading = vehicle.cp.shovel.trailerFound ~= nil and vehicle.cp.shovel.trailerFound.fillLevel >= vehicle.cp.shovel.trailerFound.capacity;
-		if fillLevelPct == 0 or stopUnloading then
+		if fillLevelPct <= 1 or stopUnloading then
 			if vehicle.cp.isLoaded then
 				for i = vehicle.recordnumber,vehicle.maxnumber do
 					if vehicle.Waypoints[i].rev then
