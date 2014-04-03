@@ -56,8 +56,12 @@ function courseplay:setNameVariable(workTool)
 	--------------------------------------------------------------
 
 
+	--John Deere S690i [Big Boss Modding]
+	if Utils.endsWith(workTool.configFileName, 'JohnDeereS690i.xml') or Utils.endsWith(workTool.configFileName, 'JohnDeereS690i_TT.xml') then
+		workTool.cp.isJohnDeereS690i = true;
+
 	--John Deere S650 [Big Boss Modding]
-	if Utils.endsWith(workTool.configFileName, 'JohnDeereS650NW.xml') then
+	elseif Utils.endsWith(workTool.configFileName, 'JohnDeereS650NW.xml') then
 		workTool.cp.isJohnDeereS650 = true;
 
 	-- Claas Quantum 3800K [Vertex Design]
@@ -1171,7 +1175,11 @@ end
 function courseplay:askForSpecialSettings(self,object)
 	local automaticToolOffsetX;
 
-	if self.cp.isWeidemann4270CX100T  then
+	if self.cp.isJohnDeereS690i and not self.isRealistic then
+		if self.motor.maxTorques[1] > 0 then
+			self.motor.maxTorques[1] = -self.motor.maxTorques[1];
+		end;
+	elseif self.cp.isWeidemann4270CX100T  then
 		local frontPart_vis = getParent(self.movingTools[1].node)
 		local frontPart = getParent(frontPart_vis)
 		self.aiTrafficCollisionTrigger = getChild(frontPart, "trafficCollisionTrigger");

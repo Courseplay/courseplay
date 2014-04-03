@@ -156,15 +156,10 @@ function courseplay:drive(self, dt)
 		courseplay:unregister_at_combine(self, self.cp.activeCombine)
 	end
 
-	-- switch lights on!
+	-- Turn on sound / control lights
 	if not self.isControlled then
-		-- we want to hear our courseplayers
-		setVisibility(self.aiMotorSound, true)
-		if courseplay.lightsNeeded then
-			self:setLightsVisibility(true);
-		else
-			self:setLightsVisibility(false);
-		end;
+		setVisibility(self.aiMotorSound, true); --TODO (Jakob): still needed in FS13?
+		self:setLightsVisibility(courseplay.lightsNeeded);
 	end;
 
 	-- current position
@@ -668,6 +663,7 @@ function courseplay:drive(self, dt)
 		allowedToDrive = courseplay:brakeToStop(self)
 	end 
 
+	-- MODE 9 --TODO (Jakob): why is this in drive instead of mode9?
 	local WpUnload = false
 	if self.cp.shovelEmptyPoint ~= nil and self.recordnumber >=3  then
 		WpUnload = self.recordnumber == self.cp.shovelEmptyPoint
@@ -700,6 +696,7 @@ function courseplay:drive(self, dt)
 			end
 		end
 	end
+	-- MODE 9 END
 
 
 
@@ -829,8 +826,8 @@ function courseplay:drive(self, dt)
 	else
 		courseplay:setSpeed(self, refSpeed, self.cp.speeds.sl)
 	end
-	
-	-- go, go, go!
+
+	-- DISTANCE TO CHANGE WAYPOINT
 	if self.recordnumber == 1 or self.recordnumber == self.maxnumber - 1 or self.Waypoints[self.recordnumber].turn then
 		if self.cp.hasSpecializationArticulatedAxis then
 			distToChange = self.cp.mode == 9 and 2 or 1; -- ArticulatedAxis vehicles
@@ -1063,96 +1060,86 @@ function courseplay:deleteCollisionVehicle(vehicle)
 	end
 end
 
-function courseplay:setSpeed(self, refSpeed, sl)
-	if self.lastSpeedSave ~= self.lastSpeedReal*3600 then		
-		if refSpeed*3600 == 1 then
-			refSpeed = 1.6 / 3600
+function courseplay:setSpeed(vehicle, refSpeed, sl)
+	if vehicle.lastSpeedSave ~= vehicle.lastSpeedReal*3600 then
+		local refSpeedKph = refSpeed * 3600;
+		local lastSpeedKph = vehicle.lastSpeed * 3600;
+
+		if refSpeedKph == 1 then
+			refSpeed = 1.6 / 3600;
+			refSpeedKph = 1.6;
 		end
-		local trueRpm = self.motor.lastMotorRpm*100/self.cp.orgRpm[3]
-		local targetRpm = self.motor.maxRpm[sl]*100/self.cp.orgRpm[3]	
-		local newLimit = 0
-		local oldLimit = 0 
-		if self.ESLimiter ~= nil then 
-			oldLimit =  self.ESLimiter.percentage[sl+1]
+		local trueRpm = vehicle.motor.lastMotorRpm*100/vehicle.cp.orgRpm[3];
+		local targetRpm = vehicle.motor.maxRpm[sl]*100/vehicle.cp.orgRpm[3];
+		local newLimit = 0;
+		local oldLimit = 0 ;
+		if vehicle.ESLimiter ~= nil then 
+			oldLimit =  vehicle.ESLimiter.percentage[sl+1];
 		else
-			oldLimit = targetRpm
-		end
+			oldLimit = targetRpm;
+		end;
 
-		if refSpeed*3600 - self.lastSpeed*3600 > 15 then
+		local speedDelta = refSpeedKph - lastSpeedKph; -- accelerate
+		if speedDelta > 15 then
 			if sl == 2 then
-				newLimit = 75
+				newLimit = 75;
 			else
-				newLimit = 100
-			end
-		elseif refSpeed*3600 - self.lastSpeed*3600 > 4 then
-			newLimit = oldLimit + 1
-		elseif refSpeed*3600 - self.lastSpeed*3600 > 0.5 then
-			newLimit = oldLimit + 0.1
-		elseif refSpeed*3600 - self.lastSpeed*3600 > 0 then	
-			newLimit = oldLimit
-		end
+				newLimit = 100;
+			end;
+		elseif speedDelta > 4 then
+			newLimit = oldLimit + 1;
+		elseif speedDelta > 0.5 then
+			newLimit = oldLimit + 0.1;
+		elseif speedDelta > 0 then
+			newLimit = oldLimit;
+		end;
 		if oldLimit - trueRpm > 10 then
-			if refSpeed*3600 - self.lastSpeed*3600 < 1 then
-				newLimit = trueRpm
-			
-			end
-		end
-		if self.lastSpeed*3600 - refSpeed*3600 > 8 and self.cp.isTurning == nil then
-			if sl == 1 then
-				newLimit = 20
-			else			
-				newLimit = oldLimit - 3
-			end
-		elseif self.lastSpeed*3600 - refSpeed*3600 > 3 then
-			newLimit = oldLimit -1
-		elseif self.lastSpeed*3600 - refSpeed*3600 > 1 then
-			newLimit = oldLimit -0.75
-		elseif self.lastSpeed*3600 - refSpeed*3600 > 0.5 then
-			newLimit = oldLimit -0.25
-		elseif self.lastSpeed*3600 - refSpeed*3600 > 0 then
-			newLimit = oldLimit
-		end
-		
-		if newLimit > 100 then
-			newLimit = 100
-		elseif newLimit < 0 then
-			newLimit = 0
-		end
+			if speedDelta < 1 then
+				newLimit = trueRpm;
+			end;
+		end;
 
-		if self.ESLimiter ~= nil and self.ESLimiter.maxRPM[5] ~= nil then
-			self:setNewLimit(sl+1, newLimit , false, true)
-		elseif self.ESLimiter ~= nil and self.ESLimiter.maxRPM[5] == nil then
+		speedDelta = lastSpeedKph - refSpeedKph; --decelerate
+		if speedDelta > 8 and vehicle.cp.isTurning == nil then
+			if sl == 1 then
+				newLimit = 20;
+			else
+				newLimit = oldLimit - 3;
+			end;
+		elseif speedDelta > 3 then
+			newLimit = oldLimit - 1;
+		elseif speedDelta > 1 then
+			newLimit = oldLimit - 0.75;
+		elseif speedDelta > 0.5 then
+			newLimit = oldLimit - 0.25;
+		elseif speedDelta > 0 then
+			newLimit = oldLimit;
+		end;
+
+		newLimit = Utils.clamp(newLimit, 0, 100);
+
+		if vehicle.ESLimiter ~= nil and vehicle.ESLimiter.maxRPM[5] ~= nil then
+			vehicle:setNewLimit(sl + 1, newLimit, false, true);
+		elseif vehicle.ESLimiter ~= nil and vehicle.ESLimiter.maxRPM[5] == nil then
 			--ESlimiter < V3
 		else
-			local maxRpm = newLimit * self.cp.orgRpm[3]/100
-			
-			-- don't drive faster/slower than you can!
-			if maxRpm > self.cp.orgRpm[3] then
-				maxRpm = self.cp.orgRpm[3]
-			elseif maxRpm < self.motor.minRpm then
-				maxRpm = self.motor.minRpm
-			end
-			self.motor.maxRpm[sl]= maxRpm
-		end
+			vehicle.motor.maxRpm[sl] = Utils.clamp(newLimit * vehicle.cp.orgRpm[3]/100, vehicle.motor.minRpm, vehicle.cp.orgRpm[3]);
+		end;
 
-		self.lastSpeedSave = self.lastSpeedReal*3600
-	end
+		vehicle.lastSpeedSave = vehicle.lastSpeedReal*3600;
+	end;
 
 	-- slipping notification
-	-- print(string.format('%s: lastSpeedSave=%.1f', nameNum(self), self.lastSpeedSave));
-	if self.lastSpeedSave < 0.5 and not self.cp.inTraffic and not self.Waypoints[self.recordnumber].wait then
-		if self.cp.timers.slippingWheels == nil or self.cp.timers.slippingWheels == 0 then
-			courseplay:setCustomTimer(self, 'slippingWheels', 5);
-			-- print(string.format('\tsetCustomTimer(..., "slippingWheels", 5)'));
-		elseif courseplay:timerIsThrough(self, 'slippingWheels') then
-			courseplay:setGlobalInfoText(self, 'SLIPPING_0');
-			-- print(string.format('\ttimerIsThrough -> SLIPPING'));
+	if vehicle.lastSpeedSave < 0.5 and not vehicle.cp.inTraffic and not vehicle.Waypoints[vehicle.recordnumber].wait then
+		if vehicle.cp.timers.slippingWheels == nil or vehicle.cp.timers.slippingWheels == 0 then
+			courseplay:setCustomTimer(vehicle, 'slippingWheels', 5);
+		elseif courseplay:timerIsThrough(vehicle, 'slippingWheels') then
+			courseplay:setGlobalInfoText(vehicle, 'SLIPPING_0');
 		end;
 
 	-- reset timer
-	elseif self.cp.timers.slippingWheels ~= 0 then
-		self.cp.timers.slippingWheels = 0;
-		-- print(string.format('\treset timer'));
+	elseif vehicle.cp.timers.slippingWheels ~= 0 then
+		vehicle.cp.timers.slippingWheels = 0;
 	end;
 end;
 

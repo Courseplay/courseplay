@@ -1,4 +1,14 @@
 function courseplay:turn(self, dt) --!!!
+	--[[ TURN STAGES:
+	0:	raise implements
+	1:	start forward turn
+	2:	
+	3:	reversing
+	4:	
+	5:	
+	6:	
+	]]
+
 	local newTargetX, newTargetY, newTargetZ;
 	local moveForwards = true;
 	local updateWheels = true;
@@ -10,7 +20,12 @@ function courseplay:turn(self, dt) --!!!
 		turnOutTimer = 0
 	end
 	self.cp.turnTimer = self.cp.turnTimer - dt;
+
+
+	-- TURN STAGES 1 - 6
 	if self.cp.turnTimer < 0 or self.cp.turnStage > 0 then
+
+		-- TURN STAGES 2 - 6
 		if self.cp.turnStage > 1 then
 			local x,y,z = getWorldTranslation(self.rootNode);
 			local dirX, dirZ = self.aiTractorDirectionX, self.aiTractorDirectionZ;
@@ -19,6 +34,8 @@ function courseplay:turn(self, dt) --!!!
 			newTargetX = self.aiTractorTargetX;
 			newTargetY = y;
 			newTargetZ = self.aiTractorTargetZ;
+
+			-- TURN STAGE 2
 			if self.cp.turnStage == 2 then
 				self.turnStageTimer = self.turnStageTimer - dt;
 				if self.cp.isTurning == "left" then
@@ -46,6 +63,8 @@ function courseplay:turn(self, dt) --!!!
 						self.turnStageTimer = Utils.getNoNil(self.turnStage3Timeout,20000)
 					end;
 				end;
+
+			-- TURN STAGE 3
 			elseif self.cp.turnStage == 3 then
 				self.turnStageTimer = self.turnStageTimer - dt;
 				if myDirX*dirX + myDirZ*dirZ > 0.95 or self.turnStageTimer < 0 then
@@ -53,6 +72,8 @@ function courseplay:turn(self, dt) --!!!
 				else
 					moveForwards = false;
 				end;
+
+			-- TURN STAGE 4
 			elseif self.cp.turnStage == 4 then
 				local dx, dz = x-newTargetX, z-newTargetZ;
 				local dot = dx*dirX + dz*dirZ;
@@ -71,6 +92,8 @@ function courseplay:turn(self, dt) --!!!
 					end
 					self.cp.turnStage = 5;
 				end;
+
+			-- TURN STAGE 5
 			elseif self.cp.turnStage == 5 then
 				local backX, backY, backZ = localToWorld(self.rootNode,0,0,frontMarker);
 				local dx, dz = backX-newTargetX, backZ-newTargetZ;
@@ -109,6 +132,7 @@ function courseplay:turn(self, dt) --!!!
 					self.cp.waitForTurnTime = self.time + turnOutTimer; 
 				end;
 
+			-- TURN STAGE 6
 			elseif self.cp.turnStage == 6 then
 				self.turnStageTimer = self.turnStageTimer - dt;
 				if self.turnStageTimer < 0 then
@@ -136,6 +160,8 @@ function courseplay:turn(self, dt) --!!!
 			if courseplay.debugChannels[12] then
 				drawDebugPoint(newTargetX, y+3, newTargetZ, 1, 1, 0, 1);
 			end;
+
+		-- TURN STAGE 1
 		elseif self.cp.turnStage == 1 then
 			-- turn
 			local dirX, dirZ = self.aiTractorDirectionX, self.aiTractorDirectionZ;
@@ -159,6 +185,8 @@ function courseplay:turn(self, dt) --!!!
 			self.aiTractorDirectionZ = -dirZ;
 			self.cp.turnStage = 2;
 			self.turnStageTimer = Utils.getNoNil(self.turnStage2Timeout,20000)
+
+		-- TURN STAGE ??? --TODO (Jakob): what's the situation here? turnStage not > 1 and not > 0 ? When do we get to this point?
 		else
 			self.cp.turnStage = 1;
 			if self.cp.noStopOnTurn == false then
@@ -167,6 +195,8 @@ function courseplay:turn(self, dt) --!!!
 			courseplay:lowerImplements(self, false, true)
 			updateWheels = false;
 		end;
+
+	-- TURN STAGE 0
 	else
 		local offset = Utils.getNoNil(self.cp.totalOffsetX, 0)
 		local x,y,z = localToWorld(self.rootNode, offset, 0, backMarker)
@@ -254,7 +284,6 @@ function courseplay:turn(self, dt) --!!!
 		self.aiTractorTargetX = newTargetX;
 		self.aiTractorTargetZ = newTargetZ;
 	end;
-	
 end
 
 function courseplay:lowerImplements(self, direction, workToolonOff)
@@ -304,7 +333,7 @@ function courseplay:turnWithOffset(self)
 	local curPoint = self.Waypoints[self.recordnumber+1]
 	local cx, cz = curPoint.cx, curPoint.cz;
 	local offsetX = self.cp.totalOffsetX
-	if curPoint.turnEnd and curPoint.laneDir ~= nil then
+	if curPoint.turnEnd and curPoint.laneDir ~= nil then --TODO (Jakob): use point's direction to next point to get the proper offset
 		local dir = curPoint.laneDir;
 		local turnDir = curPoint.turn;
 		

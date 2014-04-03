@@ -716,7 +716,7 @@ function courseplay:unload_combine(self, dt)
 			if combine.cp.isChopper then
 				local fruitSide = courseplay:sideToDrive(self, combine, -10,true);
 				
-				--new chopper turn maneuver by Thomas G�rtner  
+				--new chopper turn maneuver by Thomas Gärtner  
 				if fruitSide == "left" then -- chopper will turn left
 
 					if self.cp.combineOffset > 0 then -- I'm left of chopper
@@ -1324,7 +1324,9 @@ function courseplay:calculateCombineOffset(self, combine)
 	end;
 
 	--special tools, special cases
-	if self.cp.combineOffsetAutoMode and combine.cp.isJohnDeereS650 then
+	if self.cp.combineOffsetAutoMode and combine.cp.isJohnDeereS690i then
+		offs =  9.5;
+	elseif self.cp.combineOffsetAutoMode and combine.cp.isJohnDeereS650 then
 		offs =  7.7;
 	elseif self.cp.combineOffsetAutoMode and combine.cp.isCaseIH7130 then
 		offs =  8.0;
