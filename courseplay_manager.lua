@@ -227,7 +227,8 @@ function courseplay_manager:deleteMap()
 		end;
 	end;
 	courseplay.fields.seedUsageCalculator = {};
-end
+	courseplay.fields.seedUsageCalculator.fieldsWithoutSeedData = {};
+end;
 
 function courseplay_manager:draw()
 	if g_currentMission.paused then
