@@ -221,6 +221,12 @@ function courseplay_manager:deleteMap()
 	courseplay.fields.curFieldScanIndex = 0;
 	courseplay.fields.allFieldsScanned = false;
 	courseplay.fields.ingameDataSetUp = false;
+	for i,fruitData in pairs(courseplay.fields.seedUsageCalculator.fruitTypes) do
+		if fruitData.overlay then
+			fruitData.overlay:delete();
+		end;
+	end;
+	courseplay.fields.seedUsageCalculator = {};
 end
 
 function courseplay_manager:draw()

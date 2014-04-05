@@ -1,4 +1,4 @@
-﻿-- Field scanner
+-- Field scanner
 -- original algorithm by upsidedown, 24 Nov 2013 / incorporation into Courseplay by Jakob Tischler, 27 Nov 2013
 -- steep angle algorithm by fck54
 
@@ -559,7 +559,7 @@ function courseplay.fields:getFruitTypes()
 	local hudX = courseplay.hud.infoBasePosX - 10/1920 + 93/1920 + 449/1920 - hudW;
 	local hudY = courseplay.hud.infoBasePosY - 10/1920 + 335/1080;
 	for name,fruitType in pairs(FruitUtil.fruitTypes) do
-		if fruitType.allowsSeeding then
+		if fruitType.allowsSeeding and fruitType.seedUsagePerSqm then
 			local fillType = FruitUtil.fruitTypeToFillType[fruitType.index];
 			local fillTypeDesc = Fillable.fillTypeIndexToDesc[ fillType ];
 			local fruitData = {
@@ -586,7 +586,9 @@ function courseplay.fields:getFruitTypes()
 				fruitData.pricePerLiterMoreRealistic = seedPrice;
 			end;
 
-			table.insert(fruitTypes, fruitData);
+			if fruitData.nameI18N and fruitData.usagePerSqmDefault and fruitData.pricePerLiterDefault then
+				table.insert(fruitTypes, fruitData);
+			end;
 		end;
 	end;
 	self.seedUsageCalculator.numFruits = #fruitTypes;
