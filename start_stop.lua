@@ -192,6 +192,11 @@ function courseplay:start(self)
 	self.cp.numCrossingPoints = numCrossingPoints;
 	courseplay:debug(string.format("%s: numWaitPoints=%d, waitPoints[1]=%s, numCrossingPoints=%d", nameNum(self), self.cp.numWaitPoints, tostring(self.cp.waitPoints[1]), numCrossingPoints), 12);
 
+	-- Sprayer: set waitTime to 0
+	if self.cp.mode == 4 or self.cp.mode == 8 and self.cp.waitTime > 0 then
+		courseplay:changeWaitTime(self, -self.cp.waitTime);
+	end;
+
 
 	-- print(('%s [%s(%d)]: start(), modeState=%d, mode2nextState=%s, recordNumber=%d'):format(nameNum(self), curFile, debug.getinfo(1).currentline, self.cp.modeState, tostring(self.cp.mode2nextState), recordNumber)); -- DEBUG140301
 	if self.cp.modeState == 0 or self.cp.modeState == 99 then
