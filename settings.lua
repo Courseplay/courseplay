@@ -432,17 +432,30 @@ function courseplay:calculateWorkWidth(vehicle)
 	if vehicle.attachedImplements then
 		for i,implement in pairs(vehicle.attachedImplements) do
 			local left, right = courseplay:getCuttingAreaValuesX(implement.object);
-			implL = max(implL, left);
-			implR = min(implR, right);
-			courseplay:debug(('\timplL=%s, implR=%s'):format(tostring(implL), tostring(implR)), 7);
+			if left and right then
+				implL = max(implL, left);
+				implR = min(implR, right);
+			end;
+			courseplay:debug(('\t-> implL=%s, implR=%s'):format(tostring(implL), tostring(implR)), 7);
+			if implement.object.attachedImplements then
+				for j,subImplement in pairs(implement.object.attachedImplements) do
+					local subLeft, subRight = courseplay:getCuttingAreaValuesX(subImplement.object);
+					if subLeft and subRight then
+						implL = max(implL, subLeft);
+						implR = min(implR, subRight);
+					end;
+					courseplay:debug(('\t-> implL=%s, implR=%s'):format(j, tostring(implL), tostring(implR)), 7);
+				end;
+			end;
 		end;
-	else
-		implL, implR = 0, 0;
-		courseplay:debug('\timplL=0, implR=0', 7);
+	end;
+	if implL == -9999 or implR == 9999 then
+		implL, implR = nil, nil;
+		courseplay:debug('\timplL=nil, implR=nil', 7);
 	end;
 
-	if vehL ~= 0 and vehR ~= 0 then
-		if implL ~= 0 and implR ~= 0 then
+	if vehL and vehR then
+		if implL and implR then
 			l = max(vehL, implL);
 			r = min(vehR, implR);
 		else
@@ -450,7 +463,7 @@ function courseplay:calculateWorkWidth(vehicle)
 			r = vehR;
 		end;
 	else
-		if implL ~= 0 and implR ~= 0 then
+		if implL and implR then
 			l = implL;
 			r = implR;
 		else
@@ -494,12 +507,12 @@ function courseplay:getCuttingAreaValuesX(object)
 	elseif object.typeName == 'defoliator_animated' then
 		areas = object.fruitPreparerAreas;
 		courseplay:debug('\t\tareas = fruitPreparerAreas', 7);
-	elseif object.cp.isPoettingerAlpha then -- elseif object.alpMot then --Pöttinger Alpha mower
+	elseif object.cp.isPoettingerAlpha then -- Pöttinger Alpha mower
 		areas = object.alpMot.cuttingAreas;
 		courseplay:debug('\t\tareas = alpMot.cuttingAreas (isPoettingerAlpha)', 7);
-	elseif object.cp.isPoettingerX8 then -- elseif object.x8 and object.x8.mowers then --Pöttinger X8 mower
-		areas = object.x8.mowers;
-		courseplay:debug('\t\tareas = x8.mowers (isPoettingerX8)', 7);
+	elseif object.cp.isPoettingerX8 then -- Pöttinger X8 mower
+		areas = object.mowerCutAreasSend;
+		courseplay:debug('\t\tareas = mowerCutAreasSend (isPoettingerX8)', 7);
 	else
 		areas = object.cuttingAreas;
 		courseplay:debug('\t\tareas = cuttingAreas', 7);
@@ -519,9 +532,10 @@ function courseplay:getCuttingAreaValuesX(object)
 				end;
 			end;
 		end;
-	else
-		left, right = 0, 0;
-		courseplay:debug('\t\t\tareas=nil -> left=0, right=0', 7);
+	end;
+	if left == -9999 or right == 9999 then
+		left, right = nil, nil;
+		courseplay:debug('\t\t\tareas=nil -> left=nil, right=nil', 7);
 	end;
 
 	courseplay:debug(('\t\tareas: left=%s, right=%s'):format(tostring(left), tostring(right)), 7);
