@@ -4,6 +4,10 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp = {};
 	end;
 
+	if workTool.cp.hasSpecializationPathVehicle or workTool.cp.hasSpecializationTrafficVehicle then
+		return;
+	end;
+
 	-- local specList = { 'AICombine', 'AITractor', 'AnimatedVehicle', 'BaleLoader', 'Baler', 'BunkerSiloCompacter', 'Combine', 'Cultivator', 'Cylindered', 'Foldable', 'FruitPreparer', 'MixerWagon', 'Mower', 'Plough', 'Shovel', 'SowingMachine', 'Sprayer', 'Steerable', 'Tedder', 'Trailer', 'Windrower' };
 
 	-- Only default specs!
@@ -22,12 +26,14 @@ function courseplay:setNameVariable(workTool)
 		elseif spec == FruitPreparer then 		workTool.cp.hasSpecializationFruitPreparer 		 = true;
 		elseif spec == MixerWagon then 			workTool.cp.hasSpecializationMixerWagon 		 = true;
 		elseif spec == Mower then 				workTool.cp.hasSpecializationMower 				 = true;
+		elseif spec == PathVehicle then 		workTool.cp.hasSpecializationPathVehicle		 = true;
 		elseif spec == Plough then 				workTool.cp.hasSpecializationPlough 			 = true;
 		elseif spec == Shovel then 				workTool.cp.hasSpecializationShovel 			 = true;
 		elseif spec == SowingMachine then 		workTool.cp.hasSpecializationSowingMachine 		 = true;
 		elseif spec == Sprayer then 			workTool.cp.hasSpecializationSprayer 			 = true;
 		elseif spec == Steerable then 			workTool.cp.hasSpecializationSteerable 			 = true;
 		elseif spec == Tedder then 				workTool.cp.hasSpecializationTedder 			 = true;
+		elseif spec == TrafficVehicle then 		workTool.cp.hasSpecializationTrafficVehicle		 = true;
 		elseif spec == Trailer then 			workTool.cp.hasSpecializationTrailer 			 = true;
 		elseif spec == Windrower then 			workTool.cp.hasSpecializationWindrower 			 = true;
 		end;
@@ -53,41 +59,46 @@ function courseplay:setNameVariable(workTool)
 	--]]
 
 
+
 	--------------------------------------------------------------
 
 
 	--John Deere S690i [Big Boss Modding]
-	if Utils.endsWith(workTool.configFileName, 'JohnDeereS690i.xml') or Utils.endsWith(workTool.configFileName, 'JohnDeereS690i_TT.xml') then
+	if workTool.cp.xmlFileName == 'JohnDeereS690i.xml' or workTool.cp.xmlFileName == 'JohnDeereS690i_TT.xml' then
 		workTool.cp.isJohnDeereS690i = true;
 
 	--John Deere S650 [Big Boss Modding]
-	elseif Utils.endsWith(workTool.configFileName, 'JohnDeereS650NW.xml') then
+	elseif workTool.cp.xmlFileName == 'JohnDeereS650NW.xml' then
 		workTool.cp.isJohnDeereS650 = true;
 
 	-- Claas Quantum 3800K [Vertex Design]
-	elseif workTool.psGrassactive ~= nil and workTool.psStrawactive ~= nil then --and Utils.endsWith(workTool.configFileName, 'claas_quantum_3800k.xml') then
+	elseif workTool.psGrassactive ~= nil and workTool.psStrawactive ~= nil and workTool.cp.xmlFileName == 'claas_quantum_3800k.xml' then
 		workTool.cp.isClaasQuantum3800K = true;
 
 	-- Poettinger Eurocat 315H [MoreRealistic]
-	elseif workTool.typeName == 'moreRealistic.mower_animated' and Utils.endsWith(workTool.configFileName, 'poettingerEurocat315H.xml') then
+	elseif workTool.typeName == 'moreRealistic.mower_animated' and workTool.cp.xmlFileName == 'poettingerEurocat315H.xml' then
 		workTool.cp.isMRpoettingerEurocat315H = true;
 
+	--Fendt 828 Vario [surrealcrash, fruktor]
+	elseif Utils.endsWith(workTool.typeName, 'Vario') and (workTool.cp.xmlFileName == '828Vario.xml' or workTool.cp.xmlFileName == '828VarioEX.xml') then
+		workTool.cp.isFendt828VarioFruktor = true;
+
 	--Case IH Magnum 340 [Giants Titanium]
-	elseif Utils.endsWith(workTool.configFileName, "caseIHMagnum340.xml") or Utils.endsWith(workTool.configFileName, "caseIHMagnum340TwinWheel.xml") then
+	elseif workTool.cp.xmlFileName == 'caseIHMagnum340.xml' or workTool.cp.xmlFileName == 'caseIHMagnum340TwinWheel.xml' then
 		workTool.cp.isCaseIHMagnum340Titanium = true;
 
 	--Case IH Magnum 340 [Giants Titanium]
-	elseif Utils.endsWith(workTool.configFileName, "caseIHPuma160.xml") then
+	elseif workTool.cp.xmlFileName == 'caseIHPuma160.xml' then
 		workTool.cp.isCaseIHPuma160Titanium = true;
 
 	--John Deere 864 Premium [BJR]
-	elseif Utils.endsWith(workTool.configFileName, "JohnDeere864Premium.xml") then
+	elseif workTool.cp.xmlFileName == 'JohnDeere864Premium.xml' then
 		workTool.cp.isJohnDeere864Premium = true;
 
 	--AugerWagons
 	elseif workTool.cp.hasSpecializationAugerWagon then
 		workTool.cp.isAugerWagon = true;
-		if Utils.endsWith(workTool.configFileName, "horschTitan34UW.xml") then
+		if workTool.cp.xmlFileName == 'horschTitan34UW.xml' then
 			workTool.cp.isHorschTitan34UWTitaniumAddon = true;
 			workTool.cp.foldPipeAtWaitPoint = true;
 		end;
@@ -96,27 +107,27 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.hasSpecializationOverloaderV2 = workTool.overloaderVersion ~= nil and workTool.overloaderVersion >= 2;
 	elseif workTool.cp.hasSpecializationAgrolinerTUW20 then
 		workTool.cp.isAugerWagon = true;
-		if Utils.endsWith(workTool.configFileName, "AgrolinerTUW20.xml") then
+		if workTool.cp.xmlFileName == 'AgrolinerTUW20.xml' then
 			workTool.cp.isAgrolinerTUW20 = true;
 			workTool.cp.foldPipeAtWaitPoint = true;
 		end;
 	elseif workTool.cp.hasSpecializationOvercharge then
 		workTool.cp.isAugerWagon = true;
-		if Utils.endsWith(workTool.configFileName, "AgrolinerTUW20.xml") then
+		if workTool.cp.xmlFileName == 'AgrolinerTUW20.xml' then
 			workTool.cp.isAgrolinerTUW20 = true;
 			workTool.cp.foldPipeAtWaitPoint = true;
-		elseif Utils.endsWith(workTool.configFileName, "HaweULW2600T.xml") then
+		elseif workTool.cp.xmlFileName == 'HaweULW2600T.xml' then
 			workTool.cp.isHaweULW2600T = true;
 			workTool.cp.foldPipeAtWaitPoint = true;
-		elseif Utils.endsWith(workTool.configFileName, "HaweULW3000T.xml") then
+		elseif workTool.cp.xmlFileName == 'HaweULW3000T.xml' then
 			workTool.cp.isHaweULW3000T = true;
 			workTool.cp.foldPipeAtWaitPoint = true;
 		end;
 	elseif workTool.cp.hasSpecializationHaweSUW then
 		workTool.cp.isAugerWagon = true;
-		if Utils.endsWith(workTool.configFileName, "Hawe_SUW_4000.xml") then
+		if workTool.cp.xmlFileName == 'Hawe_SUW_4000.xml' then
 			workTool.cp.isHaweSUW4000 = true;
-		elseif Utils.endsWith(workTool.configFileName, "Hawe_SUW_5000.xml") then
+		elseif workTool.cp.xmlFileName == 'Hawe_SUW_5000.xml' then
 			workTool.cp.isHaweSUW5000 = true;
 		end;
 	elseif workTool.cp.hasSpecializationBigBear then
@@ -134,7 +145,7 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.isTaarupShuttle = true;
 
 	--Weidemann4270CX100T
-	elseif Utils.endsWith(workTool.configFileName, "weidemann4270CX100T.xml") then
+	elseif workTool.cp.xmlFileName == 'weidemann4270CX100T.xml' then
 		workTool.cp.isWeidemann4270CX100T = true
 
 	--HoseRef liquid manure trailers [Eifok Team] (CP implementation v2)
@@ -145,22 +156,22 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.hasEifokZunhammerAttachable = false;
 
 	--Eifok liquid manure attachable pack [Eifok Team]
-	elseif workTool.moescha ~= nil and Utils.endsWith(workTool.configFileName, "moescha.xml") then
+	elseif workTool.moescha ~= nil and workTool.cp.xmlFileName == 'moescha.xml' then
 		workTool.cp.isEifokZunhammerMoescha = true;
 		workTool.cp.isEifokZunhammerAttachable = true;
-	elseif Utils.endsWith(workTool.configFileName, "vogelsang.xml") then
+	elseif workTool.cp.xmlFileName == 'vogelsang.xml' then
 		workTool.cp.isEifokZunhammerVogelsang = true;
 		workTool.cp.isEifokZunhammerAttachable = true;
-	elseif workTool.vibro ~= nil and Utils.endsWith(workTool.configFileName, "zunhammerVibro.xml") then
+	elseif workTool.vibro ~= nil and workTool.cp.xmlFileName == 'zunhammerVibro.xml' then
 		workTool.cp.isEifokZunhammerVibro = true;
 		workTool.cp.isEifokZunhammerAttachable = true;
 
 	--Mchale998 bale wrapper [Bergwout]
-	elseif Utils.endsWith(workTool.configFileName, "Mchale998.xml") then
+	elseif workTool.cp.xmlFileName == 'Mchale998.xml' then
 		workTool.cp.isMchale998 = true
 
-	--Rolmasz S061 "Pomorzanin" [Maciusboss1 & Burner]
-	elseif Utils.endsWith(workTool.configFileName, "S061.xml") and workTool.setTramlinesOn ~= nil and workTool.leftMarkerRope ~= nil and workTool.leftMarkerSpeedRotatingParts ~= nil then
+	--Rolmasz S061 'Pomorzanin' [Maciusboss1 & Burner]
+	elseif workTool.cp.xmlFileName == 'S061.xml' and workTool.setTramlinesOn ~= nil and workTool.leftMarkerRope ~= nil and workTool.leftMarkerSpeedRotatingParts ~= nil then
 		workTool.cp.isRolmaszS061 = true;
 
 	--Universal Bale Trailer (UBT)
@@ -170,7 +181,7 @@ function courseplay:setNameVariable(workTool)
 	--Guellepack v2 [Bayerbua]
 	elseif workTool.fillerArmInRange ~= nil  then
 		workTool.cp.isFeldbinder = true
-	elseif Utils.endsWith(workTool.configFileName, "KotteGARANTProfiVQ32000.xml") and workTool.fillerArmNode ~= nil then
+	elseif workTool.cp.xmlFileName == 'KotteGARANTProfiVQ32000.xml' and workTool.fillerArmNode ~= nil then
 		workTool.cp.isKotteGARANTProfiVQ32000 = true
 
 	--Urf-Specialisation
@@ -178,144 +189,144 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.hasUrfSpec = true
 
 	--Silage shields
-	elseif Utils.endsWith(workTool.configFileName, "holaras.xml") then
+	elseif workTool.cp.xmlFileName == 'holaras.xml' then
 		workTool.cp.isSilageShield = true
-	elseif Utils.endsWith(workTool.configFileName, "Stegemann.xml") then
+	elseif workTool.cp.xmlFileName == 'Stegemann.xml' then
 		workTool.cp.isSilageShield = true
 
 	--Abbey Sprayer Pack [FS-UK Modteam]
-	elseif Utils.endsWith(workTool.configFileName, "Abbey_AP900.xml") then
+	elseif workTool.cp.xmlFileName == 'Abbey_AP900.xml' then
 		workTool.cp.isAbbeySprayerPack = true;
 		workTool.cp.isAbbeyAP900 = true;
-	elseif Utils.endsWith(workTool.configFileName, "Abbey_3000R.xml") then
+	elseif workTool.cp.xmlFileName == 'Abbey_3000R.xml' then
 		workTool.cp.isAbbeySprayerPack = true;
 		workTool.cp.isAbbey3000R = true;
-	elseif Utils.endsWith(workTool.configFileName, "Abbey_2000R.xml") then
+	elseif workTool.cp.xmlFileName == 'Abbey_2000R.xml' then
 		workTool.cp.isAbbeySprayerPack = true;
 		workTool.cp.isAbbey2000R = true;
-	elseif Utils.endsWith(workTool.configFileName, "Abbey_3000_Nurse.xml") then
+	elseif workTool.cp.xmlFileName == 'Abbey_3000_Nurse.xml' then
 		workTool.cp.isAbbeySprayerPack = true;
 		workTool.cp.isAbbey3000Nurse = true;
 
 	--JF-Stoll 1060 [NI Modding]
-	elseif Utils.endsWith(workTool.configFileName, "JF_1060.xml") then
+	elseif workTool.cp.xmlFileName == 'JF_1060.xml' then
 		workTool.cp.isJF1060 = true;
 
 	--Kverneland Mower Pack [NI Modding]
-	elseif Utils.endsWith(workTool.configFileName, "Kverneland_4028.xml") then
+	elseif workTool.cp.xmlFileName == 'Kverneland_4028.xml' then
 		workTool.cp.isKvernelandMowerPack = true;
 		workTool.cp.isKverneland4028 = true;
-	elseif Utils.endsWith(workTool.configFileName, "Kverneland_4028_AS.xml") then
+	elseif workTool.cp.xmlFileName == 'Kverneland_4028_AS.xml' then
 		workTool.cp.isKvernelandMowerPack = true;
 		workTool.cp.isKverneland4028AS = true;
-	elseif Utils.endsWith(workTool.configFileName, "Kverneland_KD240.xml") then
+	elseif workTool.cp.xmlFileName == 'Kverneland_KD240.xml' then
 		workTool.cp.isKvernelandMowerPack = true;
 		workTool.cp.isKvernelandKD240 = true;
-	elseif Utils.endsWith(workTool.configFileName, "Kverneland_KD240F.xml") then
+	elseif workTool.cp.xmlFileName == 'Kverneland_KD240F.xml' then
 		workTool.cp.isKvernelandMowerPack = true;
 		workTool.cp.isKvernelandKD240F = true;
-	elseif Utils.endsWith(workTool.configFileName, "Taarup_3532F.xml") then
+	elseif workTool.cp.xmlFileName == 'Taarup_3532F.xml' then
 		workTool.cp.isKvernelandMowerPack = true;
 		workTool.cp.isKverneland3532F = true;
 
 	--Taarup Mower Pack [NI Modding]
-	elseif Utils.endsWith(workTool.configFileName, "Taarup_5090.xml") then
+	elseif workTool.cp.xmlFileName == 'Taarup_5090.xml' then
 		workTool.cp.isTaarupMowerPack = true;
 		workTool.cp.isTaarup5090 = true;
 
 	--Poettinger Alpha/X8 Mower Pack [Eifok Team]
-	elseif Utils.endsWith(workTool.configFileName, "PoettingerAlpha.xml") then
+	elseif workTool.cp.xmlFileName == 'PoettingerAlpha.xml' then
 		workTool.cp.isPoettingerAlphaX8MowerPack = true;
 		workTool.cp.isPoettingerAlpha = true;
-	elseif Utils.endsWith(workTool.configFileName, "PoettingerX8.xml") then
+	elseif workTool.cp.xmlFileName == 'PoettingerX8.xml' then
 		workTool.cp.isPoettingerAlphaX8MowerPack = true;
 		workTool.cp.isPoettingerX8 = true;
 
 	--Claas Quadrant 1200 [Eifok Team]
-	elseif Utils.endsWith(workTool.configFileName, "Claas_Quadrant_1200.xml") then
+	elseif workTool.cp.xmlFileName == 'Claas_Quadrant_1200.xml' then
 		workTool.cp.isClaasQuadrant1200 = true;
 
 	--Krone Swadro 900 [NI-Modding]
-	elseif workTool.rowerFoldingParts and Utils.endsWith(workTool.configFileName, "KroneSwadro900.xml") then
+	elseif workTool.rowerFoldingParts and workTool.cp.xmlFileName == 'KroneSwadro900.xml' then
 		workTool.cp.isKroneSwadro900 = true;
 
 	--Claas Liner 4000 [LS-Landtechnik & Fuqsbow-Team]
-	elseif Utils.endsWith(workTool.configFileName, "liner4000.xml") then
+	elseif workTool.cp.xmlFileName == 'liner4000.xml' then
 		workTool.cp.isClaasLiner4000 = true;
 
 	--Ursus Z586 bale wrapper [Giants]
-	elseif Utils.endsWith(workTool.configFileName, "ursusZ586.xml") then
+	elseif workTool.cp.xmlFileName == 'ursusZ586.xml' then
 		workTool.cp.isUrsusZ586 = true;
 
 	--Tebbe HS180 [Stefan Maurus]
-	elseif Utils.endsWith(workTool.configFileName, "TebbeHS180.xml") then
+	elseif workTool.cp.xmlFileName == 'TebbeHS180.xml' then
 		workTool.cp.isTebbeHS180 = true;
 
 	--Fuchs liquid manure trailer [Stefan Maurus]
-	elseif Utils.endsWith(workTool.configFileName, "FuchsGuellefass.xml") and workTool.isFuchsFass then
+	elseif workTool.cp.xmlFileName == 'FuchsGuellefass.xml' and workTool.isFuchsFass then
 		workTool.cp.isFuchsLiquidManure = true;
 
 	--Claas Conspeed [SFM]
-	elseif Utils.endsWith(workTool.configFileName, "claasConspeed.xml") then
+	elseif workTool.cp.xmlFileName == 'claasConspeed.xml' then
 		workTool.cp.isClaasConspeedSFM = true;
 
 	--Poettinger Mex 6 [Giants]
-	elseif Utils.endsWith(workTool.configFileName, "poettingerMex6.xml") then
+	elseif workTool.cp.xmlFileName == 'poettingerMex6.xml' then
 		workTool.cp.isPoettingerMex6 = true;
 
 	--Poettinger Mex OK [Vertex Dezign]
-	elseif Utils.endsWith(workTool.configFileName, 'poettingerMexOK.xml') then
+	elseif workTool.cp.xmlFileName == 'poettingerMexOK.xml' then
 		workTool.cp.isPoettingerMexOK = true;
 
 	--Sugarbeet Loaders [burner]
-	elseif Utils.endsWith(workTool.configFileName, "RopaEuroMaus.xml") then
+	elseif workTool.cp.xmlFileName == 'RopaEuroMaus.xml' then
 		workTool.cp.isRopaEuroMaus = true;
-	elseif Utils.endsWith(workTool.configFileName, "HolmerTerraFelis.xml") then
+	elseif workTool.cp.xmlFileName == 'HolmerTerraFelis.xml' then
 		workTool.cp.isHolmerTerraFelis = true;
-	elseif Utils.endsWith(workTool.configFileName, "RopaNawaRoMaus.xml") then
+	elseif workTool.cp.xmlFileName == 'RopaNawaRoMaus.xml' then
 		workTool.cp.isRopaNawaRoMaus = true;
 
 	--Harvesters (steerable)
-	elseif Utils.endsWith(workTool.configFileName, "RopaEuroTiger_V8_3_XL.xml") then
+	elseif workTool.cp.xmlFileName == 'RopaEuroTiger_V8_3_XL.xml' then
 		workTool.cp.isRopaEuroTiger = true;
 
 	--Harvesters (steerable) [Giants]
-	elseif Utils.endsWith(workTool.configFileName, "grimmeMaxtron620.xml") then
+	elseif workTool.cp.xmlFileName == 'grimmeMaxtron620.xml' then
 		workTool.cp.isHarvesterSteerable = true;
 		workTool.cp.isGrimmeMaxtron620 = true;
-	elseif Utils.endsWith(workTool.configFileName, "grimmeTectron415.xml") then
+	elseif workTool.cp.xmlFileName == 'grimmeTectron415.xml' then
 		workTool.cp.isHarvesterSteerable = true;
 		workTool.cp.isGrimmeTectron415 = true;
 
 	--Harvesters (attachable) [Giants]
-	elseif Utils.endsWith(workTool.configFileName, "grimmeRootster604.xml") then
+	elseif workTool.cp.xmlFileName == 'grimmeRootster604.xml' then
 		workTool.cp.isHarvesterAttachable = true;
 		workTool.cp.isGrimmeRootster604 = true;
-	elseif Utils.endsWith(workTool.configFileName, "grimmeSE75-55.xml") then
+	elseif workTool.cp.xmlFileName == 'grimmeSE75-55.xml' then
 		workTool.cp.isHarvesterAttachable = true;
 		workTool.cp.isGrimmeSE7555 = true;
 
 	--Combines [Giants]
-	elseif Utils.endsWith(workTool.configFileName, "fahrM66.xml") or Utils.endsWith(workTool.configFileName, "fahrM66EX.xml") then
+	elseif workTool.cp.xmlFileName == 'fahrM66.xml' or workTool.cp.xmlFileName == 'fahrM66EX.xml' then
 		workTool.cp.isFahrM66 = true;
 		if not courseplay.trafficCollisionIgnoreList[workTool.components[2].node] then
 			courseplay.trafficCollisionIgnoreList[workTool.components[2].node] = true; -- adding the Farh M66 pipeCol to the ignore list if not set
 		end;
-	elseif Utils.endsWith(workTool.configFileName, "caseIH7130.xml") then
+	elseif workTool.cp.xmlFileName == 'caseIH7130.xml' then
 		workTool.cp.isCaseIH7130 = true;
-	elseif Utils.endsWith(workTool.configFileName, "caseIH9230.xml") then
+	elseif workTool.cp.xmlFileName == 'caseIH9230.xml' then
 		workTool.cp.isCaseIH9230 = true;
-	elseif Utils.endsWith(workTool.configFileName, "caseIH9230Crawler.xml") then
+	elseif workTool.cp.xmlFileName == 'caseIH9230Crawler.xml' then
 		workTool.cp.isCaseIH9230Crawler = true;
-	elseif Utils.endsWith(workTool.configFileName, "deutz5465H.xml") then
+	elseif workTool.cp.xmlFileName == 'deutz5465H.xml' then
 		workTool.cp.isDeutz5465H = true;
 
 	--Cutters [Giants]
-	elseif Utils.endsWith(workTool.configFileName, "caseIH3162Cutter.xml") then
+	elseif workTool.cp.xmlFileName == 'caseIH3162Cutter.xml' then
 		workTool.cp.isCaseIH3162Cutter = true;
 
 	--Others
-	elseif Utils.endsWith(workTool.configFileName, "KirovetsK700A.xml") then
+	elseif workTool.cp.xmlFileName == 'KirovetsK700A.xml' then
 		workTool.cp.isKirovetsK700A = true;
 	end;
 end;
@@ -377,9 +388,9 @@ function courseplay:isSpecialCombine(workTool, specialType, fileNames)
 		end;
 	end;
 
-	--[[if fileNames ~= nil and table.getn(fileNames) > 0 then
-		for i=1, table.getn(fileNames) do
-			if Utils.endsWith(workTool.configFileName, fileNames[i] .. ".xml") then
+	--[[if fileNames ~= nil and #fileNames > 0 then
+		for i=1, #fileNames do
+			if workTool.cp.xmlFileName == fileNames[i] .. '.xml' then
 				return true;
 			end;
 		end;

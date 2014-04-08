@@ -151,7 +151,7 @@ function courseplay:isLineField(node, x1, z1, x2, z2)
 	local n,area,totalArea = getDensityParallelogram(detailId, px, pz, pWidthX, pWidthZ, pHeightX, pHeightZ, g_currentMission.terrainDetailTypeFirstChannel, g_currentMission.terrainDetailTypeNumChannels);
 	setDensityCompareParams(detailId, 'greater', -1);
 
-	courseplay:debug(string.format('isLineField(): x1,z1=%s,%s, x2,z2=%s,%s, hx,hz=%s,%s -> n=%s, area=%s, totalArea=%s', tostring(x1), tostring(z1), tostring(x2), tostring(z2), tostring(hx), tostring(hz), tostring(n), tostring(area), tostring(totalArea)), 4);
+	courseplay:debug(string.format('isLineField(): x1,z1=%.2f,%.2f, x2,z2=%.2f,%.2f, hx,hz=%.2f,%.2f -> n=%s, area=%s, totalArea=%s', x1, z1, x2, z2, hx, hz, tostring(n), tostring(area), tostring(totalArea)), 4);
 
 	return area > 0 and area >= totalArea;
 end;

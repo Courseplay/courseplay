@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="13">
-	<version>3.41.0458</version>
+	<version>3.41.0459</version>
 	<author><![CDATA[Jakob Tischler, Thomas Gärtner,
 Horoman, Satis]]></author>
 	<title>
@@ -687,16 +687,6 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<ru>застрял.</ru>
 			<hu>dugóban van (forgalomban)</hu>
 		</text>
-		<text name="CPloading">
-			<en>Loading: %d of %d</en>
-			<de>Wird Beladen: %d von %d</de>
-			<fr>Chargement: %d sur %d</fr>
-			<es>Carga: %d de %d</es>
-			<it>Carico: %d di %d</it>
-			<cz>Bude naloženo: %d z %d</cz>
-			<ru>Заполнение %d из %d</ru>
-			<hu>Töltés: %d -ból %d</hu>
-		</text>
 		<text name="CPTriggerReached">
 			<en>tip trigger reached</en>
 			<de>Abladestelle erreicht</de>
@@ -706,6 +696,16 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<cz>Místo vysypání dosaženo</cz>
 			<ru>Достигнут пункт разрузки</ru>
 			<hu>Triggerig terjed</hu>
+		</text>
+		<text name="CPloading">
+			<en>Loading: %d of %d</en>
+			<de>Wird beladen: %d von %d</de>
+			<fr>Chargement: %d sur %d</fr>
+			<es>Carga: %d de %d</es>
+			<it>Carico: %d di %d</it>
+			<cz>Bude naloženo: %d z %d</cz>
+			<ru>Заполнение %d из %d</ru>
+			<hu>Töltés: %d -ból %d</hu>
 		</text>
 		<text name="CPUnloading">
 			<en>Unloading: %d of %d</en>

@@ -37,22 +37,6 @@ VehicleTypeUtil.registerVehicleType = Utils.appendedFunction(VehicleTypeUtil.reg
 function courseplay:attachableLoad(xmlFile)
 	if self.cp == nil then self.cp = {}; end;
 
-	--SEARCH AND SET ATTACHABLE'S self.name IF NOT EXISTING
-	if self.name == nil then
-		local nameSearch = { 'vehicle.name.' .. g_languageShort, 'vehicle.name.en', 'vehicle.name', 'vehicle#type' };
-		for i,xmlPath in pairs(nameSearch) do
-			self.name = getXMLString(xmlFile, xmlPath);
-			if self.name ~= nil then 
-				--print(self.name .. ": self.name was nil, got new name from " .. xmlPath .. " in XML");
-				break; 
-			end;
-		end;
-		if self.name == nil then 
-			self.name = g_i18n:getText('UNKNOWN');
-			--print(tostring(self.configFileName) .. ": self.name was nil, new name is " .. self.name);
-		end;
-	end;
-
 	--SET SPECIALIZATION VARIABLE
 	--Default specializations -- not needed as they're set in setNameVariable()
 	--Custom (mod) specializations
@@ -68,6 +52,11 @@ function courseplay:attachableLoad(xmlFile)
 
 	courseplay:setNameVariable(self);
 
+	--SEARCH AND SET OBJECT'S self.name IF NOT EXISTING
+	if self.name == nil then
+		self.name = courseplay:getObjectName(self, xmlFile);
+	end;
+
 	-- ATTACHABLE CHOPPER SPECIAL NODE
 	if self.cp.isPoettingerMex6 or self.cp.isPoettingerMexOK then
 		self.cp.fixedRootNode = createTransformGroup('courseplayFixedRootNode');
@@ -82,7 +71,7 @@ function courseplay:attachableLoad(xmlFile)
 	if courseplay.thirdParty.EifokLiquidManure.hoseRefVehicles == nil then courseplay.thirdParty.EifokLiquidManure.hoseRefVehicles = {}; end;
 
 	--Zunhammer Docking Station (zunhammerDocking.i3d / ManureDocking.lua) [Eifok Team]
-	if Utils.endsWith(self.typeName, "zhAndock") and Utils.endsWith(self.configFileName, "zunhammerDocking.xml") then
+	if Utils.endsWith(self.typeName, 'zhAndock') and self.cp.xmlFileName == 'zunhammerDocking.xml' then
 		self.cp.isEifokZunhammerDockingStation = true;
 		courseplay.thirdParty.EifokLiquidManure.dockingStations[self.rootNode] = self;
 
@@ -108,8 +97,21 @@ Attachable.delete = Utils.prependedFunction(Attachable.delete, courseplay.attach
 function courseplay:vehicleLoad(xmlFile)
 	if self.cp == nil then self.cp = {}; end;
 
+	-- XML FILE NAME VARIABLE
+	if self.cp.xmlFileName == nil then
+		local xmlFileName = Utils.splitString('/', self.configFileName);
+		self.cp.xmlFileName = xmlFileName[#xmlFileName];
+	end;
+
+	--[[
+	if self.cp.typeNameSingle == nil then
+		local typeNameSingle = Utils.splitString('.', self.typeName);
+		self.cp.typeNameSingle = typeNameSingle[#typeNameSingle];
+	end;
+	]]
+
 	--Zunhammer Hose (zunhammerHose.i3d / Hose.lua) [Eifok Team]
-	if Utils.endsWith(self.typeName, "zhHose") or Utils.endsWith(self.configFileName, "zunhammerHose.xml") then
+	if self.cp.xmlFileName == 'zunhammerHose.xml' or Utils.endsWith(self.typeName, 'zhHose') then
 		if courseplay.thirdParty.EifokLiquidManure == nil then courseplay.thirdParty.EifokLiquidManure = {}; end;
 		if courseplay.thirdParty.EifokLiquidManure.hoses == nil then courseplay.thirdParty.EifokLiquidManure.hoses = {}; end;
 

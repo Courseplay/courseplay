@@ -1190,8 +1190,8 @@ function courseplay:refillSprayer(self, fillLevelPct, driveOn, allowedToDrive, l
 		isSpecialSprayer, allowedToDrive, lx, lz = courseplay:handleSpecialSprayer(self, activeTool, fillLevelPct, driveOn, allowedToDrive, lx, lz, dt, 'pull');
 		if isSpecialSprayer then
 			return allowedToDrive,lx,lz
-		end
-		
+		end;
+
 		if courseplay:isSprayer(activeTool) or activeTool.cp.hasUrfSpec then --sprayer
 			if self.cp.fillTrigger ~= nil then
 				local trigger = courseplay.triggers.all[self.cp.fillTrigger];
@@ -1209,7 +1209,7 @@ function courseplay:refillSprayer(self, fillLevelPct, driveOn, allowedToDrive, l
 			end
 
 			if fillTrigger == nil then
-				if activeTool.sprayerFillTriggers ~= nil and table.getn(activeTool.sprayerFillTriggers) > 0 then
+				if activeTool.sprayerFillTriggers ~= nil and #activeTool.sprayerFillTriggers > 0 then
 					fillTrigger = activeTool.sprayerFillTriggers[1];
 					self.cp.fillTrigger = nil
 				end;
@@ -1228,7 +1228,7 @@ function courseplay:refillSprayer(self, fillLevelPct, driveOn, allowedToDrive, l
 
 				--TODO: what to do when transfering from one ManureLager to another?
 			end;
-			
+
 			if canRefill then
 				allowedToDrive = false;
 				--courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
@@ -1277,7 +1277,7 @@ function courseplay:refillSprayer(self, fillLevelPct, driveOn, allowedToDrive, l
 			allowedToDrive = false
 		end
 	end;
-	
+
 	return allowedToDrive,lx,lz
 end;
 

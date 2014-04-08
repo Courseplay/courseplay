@@ -7,21 +7,10 @@ function courseplay:load(xmlFile)
 
 	--SEARCH AND SET self.name IF NOT EXISTING
 	if self.name == nil then
-		local nameSearch = { 'vehicle.name.' .. g_languageShort, 'vehicle.name.en', 'vehicle.name', 'vehicle#type' };
-		for i,xmlPath in pairs(nameSearch) do
-			self.name = getXMLString(xmlFile, xmlPath);
-			if self.name ~= nil then
-				-- print(('%s: self.name was nil, got new name from %q in XML'):format(self.name, xmlPath));
-				break;
-			end;
-		end;
-		if self.name == nil then
-			self.name = g_i18n:getText('UNKNOWN');
-			-- print(('%s: self.name was nil, new name is %q'):format(tostring(self.configFileName), self.name));
-		end;
+		self.name = courseplay:getObjectName(self, xmlFile);
 	end;
 
-	self.cp = {};
+	if self.cp == nil then self.cp = {}; end;
 
 	self.cp.varMemory = {};
 

@@ -902,3 +902,30 @@ function courseplay.utils:crossProductQuery(a, b, c, useC)
 	end;
 end;
 
+function courseplay:getObjectName(object, xmlFile)
+	-- if object.name ~= nil the return object.name; end;
+
+	if object.cp.hasSpecializationPathVehicle or object.cp.hasSpecializationTrafficVehicle then
+		return 'TrafficVehicle_' .. tostring(object.rootNode);
+	end;
+
+	if object.configFileName then
+		local storeItem = StoreItemsUtil.storeItemsByXMLFilename[object.configFileName:lower()];
+		if storeItem and storeItem.name then
+			return storeItem.name;
+		end;
+	end;
+
+	if xmlFile ~= nil and xmlFile ~= 0 then
+		local nameSearch = { 'vehicle.name.' .. g_languageShort, 'vehicle.name.en', 'vehicle.name', 'vehicle#type' };
+		local name;
+		for i,xmlKey in ipairs(nameSearch) do
+			name = getXMLString(xmlFile, xmlKey);
+			if name ~= nil then 
+				return name;
+			end;
+		end;
+	end;
+
+	return courseplay:loc('UNKNOWN') .. '_' .. tostring(object.rootNode);
+end;
