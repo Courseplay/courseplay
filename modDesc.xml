@@ -861,7 +861,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<fr>Recherche sur le champs %s</fr>
 			<es>Search combine on field %s</es> <!-- !!! -->
 			<it>Ricerca trebbia nel campo %s</it>
-			<cz>Search combine on field %s</cz> <!-- !!! -->
+			<cz>Najdi kombajn na poli %s</cz> 
 			<ru>Комбайн с поля № %s</ru>
 			<hu>Kombájnkeresése a %s teületen</hu>
 		</text>
@@ -1935,7 +1935,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<es>Field scan in progress</es> <!-- !!! -->
 			<fr>Scan des champs en cours</fr>
 			<it>Scansione campi in esecuzione</it>
-			<cz>Field scan in progress</cz> <!-- !!! -->
+			<cz>Načítání polí</cz> 
 			<ru>начальная обработка</ru>
 			<hu>Térkép vizsgálata.</hu>
 		</text>
@@ -1945,7 +1945,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<es>Scanning field %d/%d</es> <!-- !!! -->
 			<fr>Analyse du champs %d/%d</fr>
 			<it>Scansione campo %d/%d</it> 
-			<cz>Scanning field %d/%d</cz> <!-- !!! -->
+			<cz>Načítání polí %d/%d</cz> 
 			<ru>подготовка полей: %d/%d</ru>
 			<hu>A terület vizsgálata: %d/%d</hu>
 		</text>
@@ -2125,7 +2125,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<fr>Arrêter pendant le déchargement</fr>
 			<es>Parar durante la descarga</es>
 			<it>Smettere durante lo scarico</it>
-			<cz>Zastavit při vykládce</cz> <!-- !!! -->
+			<cz>Zastavit při vykládání</cz> 
 			<ru>Стоять при разгрузке:</ru>
 			<hu>Kirakodás közben leállít</hu>
 		</text>
@@ -2135,7 +2135,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<fr>patine</fr>
 			<es>is slipping</es> <!-- !!! -->
 			<it>is slipping</it> <!-- !!! -->
-			<cz>is slipping</cz> <!-- !!! -->
+			<cz>se zasekl</cz> 
 			<ru>забуксовал. Помогите, помогите...</ru>
 			<hu>kipörög</hu>
 		</text>
@@ -2145,7 +2145,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<fr>patine (> 75%)</fr>
 			<es>is slipping (> 75%)</es> <!-- !!! -->
 			<it>is slipping (> 75%)</it> <!-- !!! -->
-			<cz>is slipping (> 75%)</cz> <!-- !!! -->
+			<cz>se zasekl (> 75%)</cz> 
 			<ru>буксует (> 75%)</ru>
 			<hu>kipörgés több mint 75%</hu>
 		</text>
@@ -2155,7 +2155,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<fr>patine (> 90%)</fr>
 			<es>is slipping (> 90%)</es> <!-- !!! -->
 			<it>is slipping (> 90%)</it> <!-- !!! -->
-			<cz>is slipping (> 90%)</cz> <!-- !!! -->
+			<cz>se zasekl (> 90%)</cz> 
 			<ru>буксует (> 90%)</ru>
 			<hu>kipörgés több mint 90%</hu>
 		</text>
@@ -2165,7 +2165,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<fr>Remplir jusqu'à:</fr>
 			<es>Llenar hasta:</es> <!-- !!! -->
 			<it>Riempir fino al:</it> <!-- !!! -->
-			<cz>Naplnit až do:</cz> <!-- !!! -->
+			<cz>Naplnit do:</cz> 
 			<ru>Наполнять до:</ru>
 			<hu>Újratölteni:</hu>
 		</text>
@@ -2175,7 +2175,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<fr>: le silo est plein!</fr>
 			<es>: el silo ésta llena!</es>
 			<it>: il silo è pieno!</it>
-			<cz>: Bunker silo is full!</cz> <!-- !!! -->
+			<cz>: Bunker je plný!</cz> 
 			<ru>: силосная яма заполнена!</ru>
 			<hu>: a BGA siló tele van!</hu>
 		</text>
@@ -2191,6 +2191,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<fr>Utilisation des semences</fr>
 			<es>Uso de semillas</es> <!-- !!! -->
 			<it>Utilizzo di semi</it> <!-- !!! -->
+			<cz>Kalkulačka spotřeby osiva</cz> 
 			<hu>Vetőmag szükséglet számítás</hu>
 			<ru>КАЛЬКУЛЯЦИЯ ПОСЕВОВ</ru>
 		</text>
@@ -2200,6 +2201,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<fr>Champs: %d (%s %s)</fr>
 			<es>Campo: %d (%s %s)</es>
 			<it>Campo: %d (%s %s)</it>
+			<cz>Pole: %d (%s %s)</cz> 
 			<hu>Terület: %d (%s %s)</hu>
 			<ru>Поле: %d (%s %s)</ru>
 		</text>
@@ -2209,6 +2211,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<es>Tipo de semilla: %s</es>
 			<fr>Type de semence: %s</fr>
 			<it>Tipo di seme: %s</it>
+			<cz>Osivo: %s</cz> 
 			<hu>Vetőmag típusa: %s</hu>
 			<ru>Семена: %s</ru>
 		</text>
@@ -2218,6 +2221,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<fr>Défaut: %s %s (%s)</fr>
 			<es>Defecto: %s %s (%s)</es>
 			<it>Difette: %s %s (%s)</it>
+			<cz>Základní: %s %s (%s)</cz> 
 			<hu>Alap verzióban: %s %s (%s) </hu>
 			<ru>Норма: %s %s (%s)</ru>
 		</text>
@@ -2227,6 +2231,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<es>MoreRealistic: %s %s (%s)</es>
 			<fr>MoreRealistic: %s %s (%s)</fr>
 			<it>MoreRealistic: %s %s (%s)</it>
+			<cz>MoreRealistic: %s %s (%s)</cz> 
 			<hu>Reálisabb módban: %s %s (%s)</hu>
 			<ru>MR: %s %s (%s)</ru>
 		</text>
