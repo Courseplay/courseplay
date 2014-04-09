@@ -905,7 +905,7 @@ end;
 function courseplay:getObjectName(object, xmlFile)
 	-- if object.name ~= nil the return object.name; end;
 
-	if object.cp.hasSpecializationPathVehicle or object.cp.hasSpecializationTrafficVehicle then
+	if object.cp and (object.cp.hasSpecializationPathVehicle or object.cp.hasSpecializationTrafficVehicle) then
 		return 'TrafficVehicle_' .. tostring(object.rootNode);
 	end;
 

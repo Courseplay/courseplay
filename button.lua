@@ -111,7 +111,7 @@ function courseplay:renderButton(self, button)
 				button.canScrollDown = self.cp.driveOnAtFillLevel > 0;
 			elseif fn == 'changeRefillUntilPct' then
 				button.canScrollUp =   (self.cp.mode == 4 or self.cp.mode == 8) and self.cp.refillUntilPct < 100;
-				button.canScrollDown = (self.cp.mode == 4 or self.cp.mode == 8) and self.cp.refillUntilPct > 5;
+				button.canScrollDown = (self.cp.mode == 4 or self.cp.mode == 8) and self.cp.refillUntilPct > 1;
 			end;
 
 		elseif pg == 4 then
