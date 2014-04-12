@@ -325,7 +325,11 @@ function courseplay:setNameVariable(workTool)
 	elseif workTool.cp.xmlFileName == 'caseIH3162Cutter.xml' then
 		workTool.cp.isCaseIH3162Cutter = true;
 
-	--Others
+	--Seeders [Giants DLC]
+	elseif workTool.cp.xmlFileName == 'vaderstadRapidA600S.xml' then
+		workTool.cp.isVaderstadRapidA600S = true;
+
+		--Others
 	elseif workTool.cp.xmlFileName == 'KirovetsK700A.xml' then
 		workTool.cp.isKirovetsK700A = true;
 	end;
@@ -1180,10 +1184,12 @@ end
 function courseplay:askForSpecialSettings(self,object)
 	local automaticToolOffsetX;
 
+	-- Self
 	if self.cp.isJohnDeereS690i and not self.isRealistic then
 		if self.motor.maxTorques[1] > 0 then
 			self.motor.maxTorques[1] = -self.motor.maxTorques[1];
 		end;
+
 	elseif self.cp.isWeidemann4270CX100T  then
 		local frontPart_vis = getParent(self.movingTools[1].node)
 		local frontPart = getParent(frontPart_vis)
@@ -1194,6 +1200,7 @@ function courseplay:askForSpecialSettings(self,object)
 		self.cp.isKasi = 3.4; -- (Distance from rootNode to DirectionNode) Used to set the correct distance.
 		-- TODO: (Claus) Remove old Kasi stuff.
 		-- self.cp.isKasi = 1.5; -- Old stuff used for multiply the distanceToChange
+
 	elseif self.cp.isRopaEuroTiger then
 		self:setSteeringMode(5)
 		self.cp.offset = 5.2
@@ -1201,8 +1208,13 @@ function courseplay:askForSpecialSettings(self,object)
 		self.cp.noStopOnEdge = true
 	end;
 
-	if object.cp.isClaasQuantum3800K then
+	-- Objects
+	if object.cp.isVaderstadRapidA600S then
+		object.cp.haveInversedRidgeMarkerState = true;
+
+	elseif object.cp.isClaasQuantum3800K then
 		object.cp.frontNode = object.rootNode;
+
 	elseif object.cp.isAugerWagon then
 		if object.cp.foldPipeAtWaitPoint then
 			--object.cp.backPointsUnfoldPipe = 1;
