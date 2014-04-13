@@ -329,7 +329,11 @@ function courseplay:setNameVariable(workTool)
 	elseif workTool.cp.xmlFileName == 'vaderstadRapidA600S.xml' then
 		workTool.cp.isVaderstadRapidA600S = true;
 
-		--Others
+	--Fertilizer [Giants DLC]
+	elseif workTool.cp.xmlFileName == 'marshallMS105.xml' then
+		workTool.cp.isMarshallMS105 = true;
+
+	--Others
 	elseif workTool.cp.xmlFileName == 'KirovetsK700A.xml' then
 		workTool.cp.isKirovetsK700A = true;
 	end;
@@ -411,8 +415,21 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		workTool:setPTO(false)
 	end
 
+	--Marshall MS 105 [Giant Marshell DLC Pack]
+	if workTool.cp.isMarshallMS105 then
+		if workTool.animation.state == 1 then -- Animation: state 1 is starting rotor spreader, state 2 is spreading.
+			workTool.animation.runWeight = 1;
+			workTool.animation.startWeight = 0;
+			workTool.animation.endWeight = 0;
+			setAnimTrackTime(workTool.animation.animCharSet, 0, 0);
+			disableAnimTrack(workTool.animation.animCharSet, 0);
+			setAnimTrackTime(workTool.animation.animCharSet, 1, 0);
+			enableAnimTrack(workTool.animation.animCharSet, 1);
+			workTool.animation.state = 2;
+		end;
+
 	--Claas Quantum 3800K [Vertex Design]
-	if workTool.cp.isClaasQuantum3800K then
+	elseif workTool.cp.isClaasQuantum3800K then
 		--correctly turn off the grass particle system, as it's not being done in the trailer's "Pickup" spec
 		if turnOn ~= nil then
 			if turnOn then
@@ -1198,8 +1215,6 @@ function courseplay:askForSpecialSettings(self,object)
 	elseif self.cp.isKirovetsK700A then
 		self.cp.DirectionNode = self.components[2].node;
 		self.cp.isKasi = 3.4; -- (Distance from rootNode to DirectionNode) Used to set the correct distance.
-		-- TODO: (Claus) Remove old Kasi stuff.
-		-- self.cp.isKasi = 1.5; -- Old stuff used for multiply the distanceToChange
 
 	elseif self.cp.isRopaEuroTiger then
 		self:setSteeringMode(5)
@@ -1211,6 +1226,9 @@ function courseplay:askForSpecialSettings(self,object)
 	-- Objects
 	if object.cp.isVaderstadRapidA600S then
 		object.cp.haveInversedRidgeMarkerState = true;
+
+	elseif object.cp.isMarshallMS105 then
+		automaticToolOffsetX = -7.0;
 
 	elseif object.cp.isClaasQuantum3800K then
 		object.cp.frontNode = object.rootNode;
@@ -1317,9 +1335,17 @@ function courseplay:handleSpecialSprayer(self, activeTool, fillLevelPct, driveOn
 	driveOn = driveOn or 100;
 	local isDone = (pumpDir == "pull" and fillLevelPct >= driveOn) or (pumpDir == "push" and fillLevelPct == 0);
 
+	--Marshall MS 105 [Giant Marshell DLC Pack]
+	if activeTool.cp.isMarshallMS105 and vehicle.cp.mode == 4 then
+		if #vehicle.cp.waitPoints == 3 then
+			local refillPoint = vehicle.cp.waitPoints[3];
+			local openHatch = vehicle.recordnumber > refillPoint - 1 and vehicle.recordnumber <= refillPoint + 4;
+			courseplay:openCloseMovingTool(self, activeTool, 1, openHatch, dt);
+		end;
+
 	--HoseRef system: sprayer [Eifok Team]
-	if activeTool.cp.isHoseRefSprayer and vehicle.cp.mode == 4 then
-		-- courseplay:debug(string.format('\t%s handleSpecialSprayer() start [isHoseRefSprayer] - pumpDir=%s, allowedToDrive=%s, searchMapHoseRefStation[pumpDir]=%s, targetRefillObject[pumpDir]=%s, isDone=%s', nameNum(activeTool), tostring(pumpDir), tostring(allowedToDrive), tostring(vehicle.cp.EifokLiquidManure.searchMapHoseRefStation[pumpDir]), tostring(vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir] == nil), tostring(isDone)), 14);
+	elseif activeTool.cp.isHoseRefSprayer and vehicle.cp.mode == 4 then
+			-- courseplay:debug(string.format('\t%s handleSpecialSprayer() start [isHoseRefSprayer] - pumpDir=%s, allowedToDrive=%s, searchMapHoseRefStation[pumpDir]=%s, targetRefillObject[pumpDir]=%s, isDone=%s', nameNum(activeTool), tostring(pumpDir), tostring(allowedToDrive), tostring(vehicle.cp.EifokLiquidManure.searchMapHoseRefStation[pumpDir]), tostring(vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir] == nil), tostring(isDone)), 14);
 		if vehicle.cp.EifokLiquidManure.searchMapHoseRefStation[pumpDir] and vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir] == nil and not isDone then
 			courseplay.thirdParty.EifokLiquidManure:findRefillObject(vehicle, activeTool, 'MapHoseRefStation', pumpDir); --find MapHoseRefStations
 		end;
@@ -1501,6 +1527,40 @@ function courseplay:moveSingleTool(vehicle, activeTool, toolIndex, x,y,z)
 
 end
 
+function courseplay:openCloseMovingTool(vehicle, activeTool, toolIndex, open, dt)
+	local mt = activeTool.movingTools[toolIndex];
+	local changed = false;
+
+	local curRot = mt.curRot[mt.rotationAxis];
+	local targetRot = mt.invertAxis and mt.rotMax or mt.rotMin;
+
+	if open then
+		targetRot = mt.invertAxis and mt.rotMin or mt.rotMax;
+	end;
+
+	if courseplay:round(curRot, 4) ~= courseplay:round(targetRot, 4) then
+		local newRot;
+
+		local rotDir = Utils.sign(targetRot - curRot);
+		if mt.node and mt.rotMin and mt.rotMax and rotDir ~= 0 then
+			local rotChange = mt.rotSpeed ~= nil and (mt.rotSpeed * dt) or (0.2/dt);
+			newRot = Utils.clamp(curRot + (rotChange * rotDir), mt.rotMin, mt.rotMax);
+			if (rotDir == 1 and newRot > targetRot) or (rotDir == -1 and newRot < targetRot) then
+				newRot = targetRot;
+			end;
+			if newRot ~= curRot and newRot >= mt.rotMin and newRot <= mt.rotMax then
+				mt.curRot[mt.rotationAxis] = newRot;
+				setRotation(mt.node, unpack(mt.curRot));
+				changed = true;
+			end;
+		end;
+	end;
+
+	if changed then
+		Cylindered.setDirty(vehicle, mt);
+		vehicle:raiseDirtyFlags(vehicle.cylinderedDirtyFlag);
+	end;
+end;
 
 
 -------------------------

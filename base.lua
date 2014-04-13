@@ -29,6 +29,9 @@ function courseplay:load(xmlFile)
 	end
 	self.cp.stopWhenUnloading = false;
 
+	-- GIANT DLC
+	self.cp.haveInversedRidgeMarkerState = nil; --bool
+
 	--turn maneuver
 	self.cp.waitForTurnTime = 0.00   --float
 	self.cp.turnStage = 0 --int
