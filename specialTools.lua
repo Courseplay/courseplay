@@ -1345,7 +1345,7 @@ function courseplay:handleSpecialSprayer(self, activeTool, fillLevelPct, driveOn
 
 	--Marshall MS 105 [Giant Marshell DLC Pack]
 	if activeTool.cp.isMarshallMS105 and vehicle.cp.mode == 4 then
-		if #vehicle.cp.waitPoints == 3 then
+		if #vehicle.cp.waitPoints == 3 then --TODO (Claus): use self.cp.numWaitPoints
 			local refillPoint = vehicle.cp.waitPoints[3];
 			local openHatch = vehicle.recordnumber > refillPoint - 1 and vehicle.recordnumber <= refillPoint + 4;
 			courseplay:openCloseMovingTool(self, activeTool, 1, openHatch, dt);
@@ -1451,12 +1451,12 @@ function courseplay:handleSpecialSprayer(self, activeTool, fillLevelPct, driveOn
 							allowedToDrive = false
 							if fillLevelPct < driveOn then
 								if not activeTool.manschetteInRange then
-									local done = courseplay:moveSingleTool(self,activeTool, 9, 0,0,1.2180819906372)
+									local done = courseplay:moveSingleTool(self,activeTool, 9, 0,0,1.2180819906372, dt)
 									if done then
 										if not activeTool.cp.moveArmBackward then
-											activeTool.cp.moveArmBackward = courseplay:moveSingleTool(self,activeTool, 11, math.rad(10),0,0) and courseplay:moveSingleTool(self,activeTool, 12, -math.rad(10),0,0)
+											activeTool.cp.moveArmBackward = courseplay:moveSingleTool(self,activeTool, 11, math.rad(10),0,0, dt) and courseplay:moveSingleTool(self,activeTool, 12, -math.rad(10),0,0, dt)
 										else
-											local movedone = courseplay:moveSingleTool(self,activeTool, 11, -math.rad(10),0,0) and courseplay:moveSingleTool(self,activeTool, 12, math.rad(10),0,0)
+											local movedone = courseplay:moveSingleTool(self,activeTool, 11, -math.rad(10),0,0, dt) and courseplay:moveSingleTool(self,activeTool, 12, math.rad(10),0,0, dt)
 											if movedone then
 												activeTool.cp.moveArmBackward = false
 											end
@@ -1470,9 +1470,9 @@ function courseplay:handleSpecialSprayer(self, activeTool, fillLevelPct, driveOn
 						end
 					end
 					if fillLevelPct >= driveOn then
-						moveDone = courseplay:moveSingleTool(self,activeTool, 9, 0,0,0)
-						courseplay:moveSingleTool(self,activeTool, 11, 0,0,0)
-						courseplay:moveSingleTool(self,activeTool, 12, 0,0,0)
+						moveDone = courseplay:moveSingleTool(self,activeTool, 9, 0,0,0, dt)
+						courseplay:moveSingleTool(self,activeTool, 11, 0,0,0, dt)
+						courseplay:moveSingleTool(self,activeTool, 12, 0,0,0, dt)
 						if moveDone then
 							activeTool.cp.moveArmBackward = false
 							self.cp.maxFieldSpeed = 0
@@ -1493,15 +1493,16 @@ function courseplay:handleSpecialSprayer(self, activeTool, fillLevelPct, driveOn
 	return false, allowedToDrive,lx,lz;
 end
 
-function courseplay:moveSingleTool(vehicle, activeTool, toolIndex, x,y,z)
+function courseplay:moveSingleTool(vehicle, activeTool, toolIndex, x,y,z, dt)
 	--local toolRot = activeTool.movingTools[9].curRot[3]
 	local tool = activeTool.movingTools[toolIndex];
 	local rotSpeed = 0.0033;
 	local targetRot = {x,y,z}
 	local done = true;
 	local changed = false;
+	if dt == nil then dt = g_physicsDt; end;
 	if tool.rotSpeed ~= nil then
-		rotSpeed = tool.rotSpeed * 60;
+		rotSpeed = tool.rotSpeed * dt;
 	end;
 	for i=1, 3 do
 		local oldRot = tool.curRot[i];
@@ -1611,7 +1612,7 @@ function courseplay.thirdParty.EifokLiquidManure:findRefillObject(vehicle, activ
 					local srX,srY,srZ = getWorldTranslation(station.ref1);
 					station.worldTranslation = { x=srX; y=srY; z=srZ; };
 				end;
-				if skipStation then
+				if skipStation then --TODO (Jakob): don't break here, instead use "if not skipStation then"
 					break;
 				end;
 				local srX,srY,srZ = station.worldTranslation.x,station.worldTranslation.y,station.worldTranslation.z;
