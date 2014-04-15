@@ -1324,9 +1324,9 @@ function courseplay:calculateCombineOffset(self, combine)
 	end;
 
 	--special tools, special cases
-	if self.cp.combineOffsetAutoMode and combine.cp.isJohnDeereS690i then
+	if self.cp.combineOffsetAutoMode and combine.cp.isJohnDeereS690iBBM then
 		offs =  9.5;
-	elseif self.cp.combineOffsetAutoMode and combine.cp.isJohnDeereS650 then
+	elseif self.cp.combineOffsetAutoMode and combine.cp.isJohnDeereS650BBM then
 		offs =  7.7;
 	elseif self.cp.combineOffsetAutoMode and combine.cp.isCaseIH7130 then
 		offs =  8.0;

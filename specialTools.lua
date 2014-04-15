@@ -8,7 +8,7 @@ function courseplay:setNameVariable(workTool)
 		return;
 	end;
 
-	-- local specList = { 'AICombine', 'AITractor', 'AnimatedVehicle', 'BaleLoader', 'Baler', 'BunkerSiloCompacter', 'Combine', 'Cultivator', 'Cylindered', 'Foldable', 'FruitPreparer', 'MixerWagon', 'Mower', 'Plough', 'Shovel', 'SowingMachine', 'Sprayer', 'Steerable', 'Tedder', 'Trailer', 'Windrower' };
+	-- local specList = { 'AICombine', 'AITractor', 'AnimatedVehicle', 'BaleLoader', 'Baler', 'BunkerSiloCompacter', 'Combine', 'Cultivator', 'Cylindered', 'Foldable', 'FruitPreparer', 'MixerWagon', 'Mower', 'PathVehicle', 'Plough', 'Shovel', 'SowingMachine', 'Sprayer', 'Steerable', 'Tedder', 'TrafficVehicle', 'Trailer', 'Windrower' };
 
 	-- Only default specs!
 	for i,spec in pairs(workTool.specializations) do
@@ -65,11 +65,19 @@ function courseplay:setNameVariable(workTool)
 
 	--John Deere S690i [Big Boss Modding]
 	if workTool.cp.xmlFileName == 'JohnDeereS690i.xml' or workTool.cp.xmlFileName == 'JohnDeereS690i_TT.xml' then
-		workTool.cp.isJohnDeereS690i = true;
+		workTool.cp.isJohnDeereS690iBBM = true;
+
+	--John Deere S680 [Big Boss Modding]
+	elseif workTool.cp.xmlFileName == 'JohnDeereS680dw.xml' or workTool.cp.xmlFileName == 'JohnDeereS680tt.xml' then
+		workTool.cp.isJohnDeereS680BBM = true;
+
+	--John Deere S670 [Big Boss Modding]
+	elseif workTool.cp.xmlFileName == 'JohnDeereS670bw.xml' then
+		workTool.cp.isJohnDeereS670BBM = true;
 
 	--John Deere S650 [Big Boss Modding]
 	elseif workTool.cp.xmlFileName == 'JohnDeereS650NW.xml' then
-		workTool.cp.isJohnDeereS650 = true;
+		workTool.cp.isJohnDeereS650BBM = true;
 
 	-- Claas Quantum 3800K [Vertex Design]
 	elseif workTool.psGrassactive ~= nil and workTool.psStrawactive ~= nil and workTool.cp.xmlFileName == 'claas_quantum_3800k.xml' then
@@ -1201,8 +1209,8 @@ end
 function courseplay:askForSpecialSettings(self,object)
 	local automaticToolOffsetX;
 
-	-- Self
-	if self.cp.isJohnDeereS690i and not self.isRealistic then
+	-- STEERABLES
+	if (self.cp.isJohnDeereS690iBBM or self.cp.isJohnDeereS680BBM or self.cp.isJohnDeereS670BBM) and not self.isRealistic then
 		if self.motor.maxTorques[1] > 0 then
 			self.motor.maxTorques[1] = -self.motor.maxTorques[1];
 		end;

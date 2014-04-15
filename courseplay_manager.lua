@@ -668,6 +668,7 @@ end
 
 --remove courseplayers from combine before it is reset and/or sold
 function courseplay_manager:removeCourseplayersFromCombine(vehicle, callDelete)
+	-- VEHICLE IS COMBINE
 	if vehicle.cp and vehicle.cameras then --Note: .cameras is used as a quick way to check if a vehicle is a steerable
 		courseplay:debug(string.format('BaseMission:removeVehicle() -> courseplay_manager:removeCourseplayersFromCombine(%q, %s)', nameNum(vehicle), tostring(callDelete)), 4);
 		for k,steerable in pairs(g_currentMission.steerables) do
@@ -701,6 +702,11 @@ function courseplay_manager:removeCourseplayersFromCombine(vehicle, callDelete)
 			end;
 			courseplay:debug(string.format('%s: has %d courseplayers', nameNum(combine), numCourseplayers), 4);
 		end;
+	end;
+
+	-- VEHICLE IS TRACTOR
+	if vehicle.cp then
+		courseplay:removeActiveCombineFromTractor(vehicle);
 	end;
 end;
 BaseMission.removeVehicle = Utils.prependedFunction(BaseMission.removeVehicle, courseplay_manager.removeCourseplayersFromCombine);
