@@ -671,50 +671,46 @@ function courseplay_manager:load_courses()
 end
 
 
---remove courseplayers from combine before it is reset and/or sold
-function courseplay_manager:removeCourseplayersFromCombine(vehicle, callDelete)
-	-- VEHICLE IS COMBINE
-	if vehicle.cp and vehicle.cameras then --Note: .cameras is used as a quick way to check if a vehicle is a steerable
-		courseplay:debug(string.format('BaseMission:removeVehicle() -> courseplay_manager:removeCourseplayersFromCombine(%q, %s)', nameNum(vehicle), tostring(callDelete)), 4);
-		for k,steerable in pairs(g_currentMission.steerables) do
-			if steerable.cp and steerable.cp.savedCombine and steerable.cp.savedCombine == vehicle then
-				courseplay:debug(string.format('\tsteerable %q: savedCombine is %q --> set savedCombine to nil, set selectedCombineNumber to 0, set HUD4savedCombine to false, set HUD4savedCombineName to "", reload hud page 4', nameNum(steerable), nameNum(vehicle)), 4);
-				steerable.cp.savedCombine = nil;
-				steerable.cp.selectedCombineNumber = 0;
-				steerable.cp.HUD4savedCombine = false;
-				steerable.cp.HUD4savedCombineName = '';
-				courseplay.hud:setReloadPageOrder(steerable, 4, true);
-			end;
-		end;
-	end;
-
-	if vehicle.courseplayers ~= nil then
-		local combine = vehicle;
-		local numCourseplayers = #(combine.courseplayers);
-		courseplay:debug(string.format('\t.courseplayers ~= nil (%d vehicles)', numCourseplayers), 4);
-
-		if numCourseplayers > 0 then
-			courseplay:debug(string.format('%s: has %d courseplayers -> unregistering all', nameNum(combine), numCourseplayers), 4);
-			for i,tractor in pairs(combine.courseplayers) do
-				courseplay:unregister_at_combine(tractor, combine);
-				
-				if tractor.cp.savedCombine ~= nil and tractor.cp.savedCombine == combine then
-					tractor.cp.savedCombine = nil;
-				end;
-				tractor.cp.reachableCombines = nil;
-
-				courseplay.hud:setReloadPageOrder(tractor, 4, true);
-			end;
-			courseplay:debug(string.format('%s: has %d courseplayers', nameNum(combine), numCourseplayers), 4);
-		end;
-	end;
-
-	-- VEHICLE IS TRACTOR
+--remove courseplayers from combine / combine from tractor before it is reset and/or sold
+function courseplay_manager:severCombineTractorConnection(vehicle, callDelete)
 	if vehicle.cp then
-		courseplay:removeActiveCombineFromTractor(vehicle);
+		-- VEHICLE IS COMBINE
+		if vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable or vehicle.cp.isSugarBeetLoader or vehicle.cp.isSugarBeetLoader or courseplay:isSpecialChopper(vehicle) then
+			courseplay:debug(('BaseMission:removeVehicle() -> severCombineTractorConnection(%q, %s) [VEHICLE IS COMBINE]'):format(nameNum(vehicle), tostring(callDelete)), 4);
+			local combine = vehicle;
+			-- remove this combine as savedCombine from all tractors
+			for i,tractor in pairs(g_currentMission.steerables) do
+				if tractor.cp and tractor.cp.savedCombine and tractor.cp.savedCombine == combine then
+					courseplay:debug(('\ttractor %q: savedCombine=%q --> removeSavedCombineFromTractor()'):format(nameNum(tractor), nameNum(combine)), 4);
+					courseplay:removeSavedCombineFromTractor(tractor);
+				end;
+			end;
+
+			-- unregister all tractors from this combine (activeCombine)
+			if combine.courseplayers ~= nil then
+				courseplay:debug(('\t.courseplayers ~= nil (%d courseplayers)'):format(#combine.courseplayers), 4);
+				if #combine.courseplayers > 0 then
+					for i,tractor in pairs(combine.courseplayers) do
+						courseplay:debug(('\t\t%q: removeActiveCombineFromTractor(), removeSavedCombineFromTractor()'):format(nameNum(tractor)), 4);
+						courseplay:removeActiveCombineFromTractor(tractor);
+						courseplay:removeSavedCombineFromTractor(tractor); --TODO (Jakob): unnecessary, as done above in steerables table already?
+						tractor.cp.reachableCombines = nil;
+					end;
+					courseplay:debug(('\t-> now has %d courseplayers'):format(#combine.courseplayers), 4);
+				end;
+			end;
+
+		-- VEHICLE IS TRACTOR
+		elseif vehicle.cp.activeCombine ~= nil or vehicle.cp.lastActiveCombine ~= nil or vehicle.cp.savedCombine ~= nil then
+			courseplay:debug(('BaseMission:removeVehicle() -> severCombineTractorConnection(%q, %s) [VEHICLE IS TRACTOR]'):format(nameNum(vehicle), tostring(callDelete)), 4);
+			courseplay:debug(('\tactiveCombine=%q, lastActiveCombine=%q, savedCombine=%q -> removeActiveCombineFromTractor(), removeSavedCombineFromTractor()'):format(nameNum(vehicle.cp.activeCombine), nameNum(vehicle.cp.lastActiveCombine), nameNum(vehicle.cp.savedCombine)), 4);
+			courseplay:removeActiveCombineFromTractor(vehicle);
+			courseplay:removeSavedCombineFromTractor(vehicle);
+			courseplay:debug(('\t-> activeCombine=%q, lastActiveCombine=%q, savedCombine=%q'):format(nameNum(vehicle.cp.activeCombine), nameNum(vehicle.cp.lastActiveCombine), nameNum(vehicle.cp.savedCombine)), 4);
+		end;
 	end;
 end;
-BaseMission.removeVehicle = Utils.prependedFunction(BaseMission.removeVehicle, courseplay_manager.removeCourseplayersFromCombine);
+BaseMission.removeVehicle = Utils.prependedFunction(BaseMission.removeVehicle, courseplay_manager.severCombineTractorConnection);
 
 function courseplay_manager:devAddMoney()
 	if g_server ~= nil then

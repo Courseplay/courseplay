@@ -129,14 +129,18 @@ function table.reverse(t)
 end;
 
 function nameNum(vehicle, hideNum)
+	if vehicle == nil then
+		return 'nil';
+	end;
+
 	if vehicle.cp ~= nil and vehicle.cp.coursePlayerNum ~= nil then
 		if hideNum == nil or hideNum == false then
-			return tostring(vehicle.name) .. " (#" .. tostring(vehicle.cp.coursePlayerNum) .. ")";
+			return tostring(vehicle.name) .. ' (#' .. tostring(vehicle.cp.coursePlayerNum) .. ')';
 		else
 			return tostring(vehicle.name);
 		end;
 	elseif vehicle.isHired then
-		return tostring(vehicle.name) .. " (helper)";
+		return tostring(vehicle.name) .. ' (helper)';
 	end;
 	return tostring(vehicle.name);
 end;

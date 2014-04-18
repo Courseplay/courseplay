@@ -705,6 +705,15 @@ function courseplay:removeActiveCombineFromTractor(vehicle)
 		courseplay:unregister_at_combine(vehicle, vehicle.cp.activeCombine);
 	end;
 	vehicle.cp.lastActiveCombine = nil;
+	courseplay.hud:setReloadPageOrder(vehicle, 4, true);
+end;
+
+function courseplay:removeSavedCombineFromTractor(vehicle)
+	vehicle.cp.savedCombine = nil;
+	vehicle.cp.selectedCombineNumber = 0;
+	vehicle.cp.HUD4savedCombine = false;
+	vehicle.cp.HUD4savedCombineName = '';
+	courseplay.hud:setReloadPageOrder(vehicle, 4, true);
 end;
 
 function courseplay:switchDriverCopy(vehicle, changeBy)
