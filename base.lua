@@ -810,8 +810,9 @@ function courseplay:load(xmlFile)
 		local dbgPosX = dbgMaxX - (courseplay.numDebugChannelButtonsPerLine * dbgW) + ((col-1) * dbgW);
 		courseplay:register_button(self, 6, 'debugChannelButtons.png', 'toggleDebugChannel', dbg, dbgPosX, dbgPosY, dbgW, dbgH);
 	end;
-	courseplay:register_button(self, 6, 'navigate_up.png',   'changeDebugChannelSection', -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[6], w16px, h16px, -1, nil, false);
-	courseplay:register_button(self, 6, 'navigate_down.png', 'changeDebugChannelSection',  1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[6], w16px, h16px,  1, nil, false);
+	courseplay:register_button(self, 6, 'navigate_up.png',   'changeDebugChannelSection', -1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[6], w16px, h16px, 6, -1, true, false);
+	courseplay:register_button(self, 6, 'navigate_down.png', 'changeDebugChannelSection',  1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[6], w16px, h16px, 6,  1, true, false);
+	courseplay:register_button(self, 6, nil, 'changeDebugChannelSection', -1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[6], mouseWheelArea.w, mouseWheelArea.h, 6, -1, true, true);
 
 
 	-- ##################################################

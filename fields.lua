@@ -631,7 +631,6 @@ end;
 
 local saveFillTypeHudPath = function(self, fillType, filename)
 	self.fillTypeOverlays[fillType].filename = filename;
-	-- print(('addFillTypeOverlay(%s, %s) - self.fillTypeOverlays[fillType].filename=%q'):format(tostring(fillType), tostring(filename), tostring(self.fillTypeOverlays[fillType].filename)));
 end;
 FSBaseMission.addFillTypeOverlay = Utils.appendedFunction(FSBaseMission.addFillTypeOverlay, saveFillTypeHudPath);
 

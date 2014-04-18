@@ -179,6 +179,11 @@ function courseplay_manager:deleteMap()
 	g_currentMission.cp_folders = nil
 	g_currentMission.cp_sorted = nil
 
+	-- debug channels
+	for channel,_ in pairs(courseplay.debugChannels) do
+		courseplay.debugChannels[channel] = false;
+	end;
+
 	--buttons
 	for i,vehicle in pairs(g_currentMission.steerables) do
 		if vehicle.cp ~= nil then

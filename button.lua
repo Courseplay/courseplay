@@ -139,6 +139,9 @@ function courseplay:renderButton(self, button)
 			if fn == "changeWaitTime" then
 				button.canScrollUp = not (self.cp.mode == 3 or self.cp.mode == 4 or self.cp.mode == 6 or self.cp.mode == 7);
 				button.canScrollDown = button.canScrollUp and self.cp.waitTime > 0;
+			elseif fn == 'changeDebugChannelSection' then
+				button.canScrollUp = courseplay.debugChannelSection > 1;
+				button.canScrollDown = courseplay.debugChannelSection < courseplay.numDebugChannelSections;
 			end;
 
 		elseif pg == 7 then
@@ -289,7 +292,7 @@ function courseplay:renderButton(self, button)
 				if prm < 0 then
 					button.show = courseplay.debugChannelSection > 1;
 				elseif prm > 0 then
-					button.show = courseplay.debugChannelSection < math.ceil(courseplay.numAvailableDebugChannels / courseplay.numDebugChannelButtonsPerLine);
+					button.show = courseplay.debugChannelSection < courseplay.numDebugChannelSections;
 				end;
 			end;
 

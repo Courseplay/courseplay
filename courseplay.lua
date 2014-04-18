@@ -385,6 +385,7 @@ function courseplay:setGlobalData()
 	courseplay.numAvailableDebugChannels = 24;
 	courseplay.numDebugChannels = 17;
 	courseplay.numDebugChannelButtonsPerLine = 12;
+	courseplay.numDebugChannelSections = math.ceil(courseplay.numAvailableDebugChannels / courseplay.numDebugChannelButtonsPerLine);
 	courseplay.debugChannelSection = 1;
 	courseplay.debugChannelSectionStart = 1;
 	courseplay.debugChannelSectionEnd = courseplay.numDebugChannelButtonsPerLine;
