@@ -86,6 +86,8 @@ function courseplay_manager:loadMap(name)
 
 	courseplay.wageDifficultyMultiplier = Utils.lerp(0.5, 1, (g_currentMission.missionStats.difficulty - 1) / 2);
 
+	self.firstRun = true;
+
 	g_currentMission.environment:addMinuteChangeListener(courseplay_manager);
 end;
 
@@ -427,7 +429,11 @@ function courseplay_manager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 end;
 
 function courseplay_manager:update(dt)
-	--courseplay:debug(table.getn(g_currentMission.courseplay_courses), 8);
+	if self.firstRun then
+		courseplay.moreRealisticInstalled = RealisticUtils ~= nil and RealisticUtils.getFruitInfosV2 ~= nil;
+		courseplay.moreRealisticVersion = courseplay:getMoreRealisticVersion();
+		self.firstRun = false;
+	end;
 
 	if g_currentMission.controlledVehicle == nil then
 		if self.playerOnFootMouseEnabled then

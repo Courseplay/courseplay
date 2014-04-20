@@ -113,7 +113,7 @@ end;
 
 function table.map(t, func)
 	local newArray = {};
-	for i,v in ipairs(t) do
+	for i,v in pairs(t) do
 		newArray[i] = func(v);
 	end;
 	return newArray;
@@ -818,7 +818,7 @@ function courseplay:checkAndPrintChange(vehicle, variable, VariableNameString)
 end;
 
 function courseplay.utils:hasVarChanged(vehicle, variableName, direct)
-	direct = direct or false;
+	if direct == nil then direct = false; end;
 	if vehicle.cp.varMemory == nil then
 		vehicle.cp.varMemory = {};
 	end;
@@ -932,4 +932,19 @@ function courseplay:getObjectName(object, xmlFile)
 	end;
 
 	return courseplay:loc('UNKNOWN') .. '_' .. tostring(object.rootNode);
+end;
+
+function courseplay:getMoreRealisticVersion()
+	if not courseplay.moreRealisticInstalled then
+		return nil;
+	end;
+
+	local modItem = ModsUtil.findModItemByModName(RealisticUtils.modName);
+	if modItem and modItem.version then
+		local versionSplit = table.map(Utils.splitString('.', modItem.version), tonumber);
+		versionSplit[3] = versionSplit[3] or 0;
+		return tonumber(('%d.%02d%02d'):format(versionSplit[1], versionSplit[2], versionSplit[3]));
+	end;
+
+	return 0;
 end;

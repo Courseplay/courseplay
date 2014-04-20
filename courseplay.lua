@@ -492,8 +492,6 @@ function courseplay:setGlobalData()
 	courseplay.allowedCharacters = courseplay:getAllowedCharacters();
 	courseplay.utf8normalization = courseplay:getUtf8normalization();
 
-	courseplay.moreRealisticInstalled = RealisticUtils ~= nil and RealisticUtils.getFruitInfosV2 ~= nil;
-
 	-- WORKER WAGES
 	courseplay.wagesActive = wagesActive;
 	courseplay.wagePerHour = wagesAmount;
