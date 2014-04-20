@@ -276,7 +276,7 @@ function courseplay:update_tools(vehicle, tractor_or_implement)
 		end;
 	end;
 	if vehicle.cp.attachedCombineIdx ~= nil then
-		--courseplay:debug(string.format("setMinHudPage(vehicle, vehicle.tippers[%d])", vehicle.cp.attachedCombineIdx), 12);
+		--courseplay:debug(string.format("setMinHudPage(vehicle, vehicle.tippers[%d])", vehicle.cp.attachedCombineIdx), 18);
 		courseplay:setMinHudPage(vehicle, vehicle.tippers[vehicle.cp.attachedCombineIdx]);
 	end;
 

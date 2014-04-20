@@ -110,10 +110,10 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 						local downParameter = upParameter * -1;
 
 						if Input.isMouseButtonPressed(Input.MOUSE_BUTTON_WHEEL_UP) and button.canScrollUp then
-							courseplay:debug(string.format("%s: MOUSE_BUTTON_WHEEL_UP: %s(%s)", nameNum(self), tostring(button.function_to_call), tostring(upParameter)), 12);
+							courseplay:debug(string.format("%s: MOUSE_BUTTON_WHEEL_UP: %s(%s)", nameNum(self), tostring(button.function_to_call), tostring(upParameter)), 18);
 							self:setCourseplayFunc(button.function_to_call, upParameter, false, button.page);
 						elseif Input.isMouseButtonPressed(Input.MOUSE_BUTTON_WHEEL_DOWN) and button.canScrollDown then
-							courseplay:debug(string.format("%s: MOUSE_BUTTON_WHEEL_DOWN: %s(%s)", nameNum(self), tostring(button.function_to_call), tostring(downParameter)), 12);
+							courseplay:debug(string.format("%s: MOUSE_BUTTON_WHEEL_DOWN: %s(%s)", nameNum(self), tostring(button.function_to_call), tostring(downParameter)), 18);
 							self:setCourseplayFunc(button.function_to_call, downParameter, false, button.page);
 						end;
 					end;
@@ -156,7 +156,7 @@ end;
 function courseplay:handleMouseClickForButton(self, button)
 	local parameter = button.parameter;
 	if InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER) and button.modifiedParameter ~= nil then --for some reason InputBinding works in :mouseEvent
-		courseplay:debug("button.modifiedParameter = " .. tostring(button.modifiedParameter), 12);
+		courseplay:debug("button.modifiedParameter = " .. tostring(button.modifiedParameter), 18);
 		parameter = button.modifiedParameter;
 	end;
 
@@ -204,7 +204,7 @@ function courseplay:executeFunction(self, func, value, page)
 		return
 	end
 	playSample(courseplay.hud.clickSound, 1, 1, 0);
-	courseplay:debug(nameNum(self) .. ": calling function \"" .. tostring(func) .. "(" .. tostring(value) .. ")\"", 12);
+	courseplay:debug(nameNum(self) .. ": calling function \"" .. tostring(func) .. "(" .. tostring(value) .. ")\"", 18);
 
 	if func ~= "rowButton" then
 		--@source: http://stackoverflow.com/questions/1791234/lua-call-function-from-a-string-with-function-name

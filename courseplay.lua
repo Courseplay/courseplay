@@ -383,7 +383,7 @@ function courseplay:setGlobalData()
 
 	--DEBUG CHANNELS
 	courseplay.numAvailableDebugChannels = 24;
-	courseplay.numDebugChannels = 17;
+	courseplay.numDebugChannels = 18;
 	courseplay.numDebugChannelButtonsPerLine = 12;
 	courseplay.numDebugChannelSections = math.ceil(courseplay.numAvailableDebugChannels / courseplay.numDebugChannelButtonsPerLine);
 	courseplay.debugChannelSection = 1;
@@ -412,6 +412,7 @@ function courseplay:setGlobalData()
 	15	mode3 (AugerWagon)
 	16	recording
 	17	mode4/6
+	18	hud action
 	--]]
 
 	--MULTIPLAYER
@@ -505,3 +506,4 @@ courseplay:initialize();
 
 --load(), update(), updateTick(), draw() are located in base.lua
 --mouseEvent(), keyEvent() are located in input.lua
+

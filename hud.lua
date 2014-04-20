@@ -187,14 +187,14 @@ function courseplay:setMinHudPage(vehicle, workTool)
 	end;
 
 	courseplay:setHudPage(vehicle, math.max(vehicle.cp.hud.currentPage, vehicle.cp.minHudPage));
-	courseplay:debug(string.format("setMinHudPage: minHudPage=%s, currentPage=%s", tostring(vehicle.cp.minHudPage), tostring(vehicle.cp.hud.currentPage)), 12);
+	courseplay:debug(string.format("setMinHudPage: minHudPage=%s, currentPage=%s", tostring(vehicle.cp.minHudPage), tostring(vehicle.cp.hud.currentPage)), 18);
 	courseplay:buttonsActiveEnabled(vehicle, "pageNav");
 end;
 
 function courseplay.hud:loadPage(vehicle, page)
 	--self = courseplay.hud
 
-	courseplay:debug(string.format('%s: loadPage(..., %d), set content', nameNum(vehicle), page), 12);
+	courseplay:debug(string.format('%s: loadPage(..., %d), set content', nameNum(vehicle), page), 18);
 
 	--PAGE 0: COMBINE SETTINGS
 	if page == 0 then
@@ -627,8 +627,8 @@ end;
 function courseplay.hud:setReloadPageOrder(vehicle, page, bool)
 	if vehicle.cp.hud.reloadPage[page] ~= bool then
 		vehicle.cp.hud.reloadPage[page] = bool;
-		if courseplay.debugChannels[12] and bool == true then
-			courseplay:debug(string.format('%s: set reloadPage[%d] to %s (called from %s)', nameNum(vehicle), page, tostring(bool), courseplay.utils:getFnCallPath(4)), 12);
+		if courseplay.debugChannels[18] and bool == true then
+			courseplay:debug(string.format('%s: set reloadPage[%d] to %s (called from %s)', nameNum(vehicle), page, tostring(bool), courseplay.utils:getFnCallPath(4)), 18);
 		end;
 	end;
 end;
