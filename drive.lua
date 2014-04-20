@@ -164,21 +164,18 @@ function courseplay:drive(self, dt)
 
 	-- current position
 	local ctx, cty, ctz = getWorldTranslation(self.rootNode);
-	-- coordinates of next waypoint
-	--if self.recordnumber > self.maxnumber then
-	-- this should never happen
-	--   self.recordnumber = self.maxnumber
-	-- end
-	
-	if self.recordnumber > 1 then
-		self.cp.last_recordnumber = self.recordnumber - 1
-	else
-		self.cp.last_recordnumber = 1
-	end
+
 	if self.recordnumber > self.maxnumber then
-		courseplay:debug(string.format("drive %i: %s: self.recordnumber (%s) > self.maxnumber (%s)", debug.getinfo(1).currentline, self.name, tostring(self.recordnumber), tostring(self.maxnumber)), 12); --this should never happen
-		self.recordnumber = self.maxnumber
-	end
+		courseplay:debug(string.format("drive %d: %s: self.recordnumber (%s) > self.maxnumber (%s)", debug.getinfo(1).currentline, nameNum(self), tostring(self.recordnumber), tostring(self.maxnumber)), 12); --this should never happen
+		self.recordnumber = self.maxnumber;
+	end;
+	if self.recordnumber > 1 then
+		self.cp.last_recordnumber = self.recordnumber - 1;
+	else
+		self.cp.last_recordnumber = 1;
+	end;
+
+
 	if self.cp.mode ~= 7 then 
 		cx, cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
 	elseif self.cp.mode == 7 and self.cp.modeState ~=5 then
@@ -219,26 +216,30 @@ function courseplay:drive(self, dt)
 	end;
 	if offsetValid then
 		--courseplay:debug(string.format('%s: waypoint before offset: cx=%.2f, cz=%.2f', nameNum(self), cx, cz), 2);
-		local vcx, vcz;
-		if self.recordnumber == 1 then
-			vcx = self.Waypoints[2].cx - cx;
-			vcz = self.Waypoints[2].cz - cz;
+		local fromX, fromZ, toX, toZ;
+		if self.recordnumber == 1 then --TODO (Jakob): also have offset @ recordnumber 1 ?
+			fromX = cx;
+			fromZ = cz;
+			toX = self.Waypoints[2].cx;
+			toZ = self.Waypoints[2].cz;
 		else
 			if self.Waypoints[self.cp.last_recordnumber].rev then
-				vcx = self.Waypoints[self.cp.last_recordnumber].cx - cx;
-				vcz = self.Waypoints[self.cp.last_recordnumber].cz - cz;
+				fromX = cx;
+				fromZ = cz;
+				toX = self.Waypoints[self.cp.last_recordnumber].cx;
+				toZ = self.Waypoints[self.cp.last_recordnumber].cz;
 			else
-				vcx = cx - self.Waypoints[self.cp.last_recordnumber].cx;
-				vcz = cz - self.Waypoints[self.cp.last_recordnumber].cz;
+				fromX = self.Waypoints[self.cp.last_recordnumber].cx;
+				fromZ = self.Waypoints[self.cp.last_recordnumber].cz;
+				toX = cx;
+				toZ = cz;
 			end;
 		end;
 
-		local vl = Utils.vector2Length(vcx, vcz); -- length of vector
-		if vl ~= nil and vl > 0.01 then -- if not too short: normalize and add offsets
-			vcx = vcx / vl;
-			vcz = vcz / vl;
-			cx = cx - vcz * self.cp.totalOffsetX + vcx * self.cp.toolOffsetZ;
-			cz = cz + vcx * self.cp.totalOffsetX + vcz * self.cp.toolOffsetZ;
+		local dx,_,dz,dist = courseplay:getWorldDirection(fromX, 0, fromZ, toX, 0, toZ)
+		if dist and dist > 0.01 then
+			cx = cx - dz * self.cp.totalOffsetX + dx * self.cp.toolOffsetZ;
+			cz = cz + dx * self.cp.totalOffsetX + dz * self.cp.toolOffsetZ;
 		end;
 		--courseplay:debug(string.format('%s: waypoint after offset [%.1fm]: cx=%.2f, cz=%.2f', nameNum(self), self.cp.totalOffsetX, cx, cz), 2);
 	end;

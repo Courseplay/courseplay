@@ -805,7 +805,7 @@ function courseplay:unload_tippers(vehicle)
 									-- Change direction to forward
 									vehicle.cp.isReverseBGATipping = true;
 									vehicle.cp.isChangingDirection = true;
-									courseplay:changeToFirstForwardWPAhead(vehicle);
+									vehicle.recordnumber = courseplay:getNextFwdPoint(vehicle);
 								elseif tz < 0 and not vehicle.Waypoints[vehicle.recordnumber].rev then
 									-- Change direction to reverse
 									local found = false;
@@ -860,7 +860,7 @@ function courseplay:unload_tippers(vehicle)
 							end;
 
 							-- Find the first forward waypoint ahead of the vehicle so we can drive ahead to the next silo section.
-							courseplay:changeToFirstForwardWPAhead(vehicle);
+							vehicle.recordnumber = courseplay:getNextFwdPoint(vehicle);
 
 							courseplay:debug(string.format("%s: New BGA silo section: %d", nameNum(vehicle), vehicle.cp.BGASelectedSection), 13);
 						elseif isLastSiloSection and goForTipping then
@@ -868,7 +868,7 @@ function courseplay:unload_tippers(vehicle)
 							vehicle.cp.isReverseBGATipping = true;
 
 							-- Make sure that we don't reverse into the silo after it's full
-							courseplay:changeToFirstForwardWPAhead(vehicle);
+							vehicle.recordnumber = courseplay:getNextFwdPoint(vehicle);
 						end;
 
 					-------------------------------

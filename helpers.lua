@@ -948,3 +948,19 @@ function courseplay:getMoreRealisticVersion()
 
 	return 0;
 end;
+
+function courseplay:getRealWorldRotation(node, direction)
+	if not direction then direction = 1 end;
+	local x,_,z = localDirectionToWorld(node, 0, 0, direction);
+	return Utils.getYRotationFromDirection(x, z);
+end;
+
+function courseplay:getWorldDirection(fromX, fromY, fromZ, toX, toY, toZ)
+	-- NOTE: if only 2D is needed, pass fromY and toY as 0
+	local wdx, wdy, wdz = toX - fromX, toY - fromY, toZ - fromZ;
+	local vl = Utils.vector3Length(wdx, wdy, wdz); -- length of vector
+	if vl and vl > 0.01 then
+		wdx, wdy, wdz = wdx/vl, wdy/vl, wdz/vl; -- if not too short: normalize
+	end;
+	return wdx, wdy, wdz, vl;
+end;
