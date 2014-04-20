@@ -1529,7 +1529,7 @@ function courseplay:moveSingleTool(vehicle, activeTool, toolIndex, x,y,z, dt)
 
 	if changed then
 		Cylindered.setDirty(vehicle, tool);
-		self:raiseDirtyFlags(vehicle.cylinderedDirtyFlag);
+		vehicle:raiseDirtyFlags(vehicle.cylinderedDirtyFlag);
 	end;
 
 	return done
