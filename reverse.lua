@@ -4,9 +4,16 @@ function courseplay:goReverse(vehicle,lx,lz)
 	local fwd = false;
 	local inverse = 1;
 	local tipper = vehicle.tippers[1];
+	if tipper and tipper.cp.isAttacherModule then
+		tipper = vehicle.tippers[2];
+	end;
 	local debugActive = courseplay.debugChannels[13];
-	local isNotValid = #vehicle.tippers == 0 or tipper.cp.inversedNodes == nil or tipper.cp.isPivot == nil or tipper.cp.frontNode == nil or vehicle.cp.mode == 9;
+	local isNotValid = #vehicle.tippers == 0 or tipper == nil or tipper.cp.inversedNodes == nil or tipper.cp.isPivot == nil or tipper.cp.frontNode == nil or vehicle.cp.mode == 9;
 	if isNotValid then
+		if (vehicle.cp.mode == 1 or vehicle.cp.mode == 2 or vehicle.cp.mode == 6) and vehicle.cp.tipperFillLevel == 0 then
+			vehicle.recordnumber = courseplay:getNextFwdPoint(vehicle);
+			return lx,lz,true;
+		end;
 		return -lx,-lz,fwd;
 	end;
 

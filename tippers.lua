@@ -947,34 +947,39 @@ function courseplay:unload_tippers(vehicle)
 			end
 
 			--UNLOAD
-			if ctt.acceptedFillTypes[fruitType] and goForTipping == true then  
-				if isBGA then
-					courseplay:debug(nameNum(vehicle) .. ": goForTipping = true [BGA trigger accepts fruit (" .. tostring(fruitType) .. ")]", 2);
-				else
-					courseplay:debug(nameNum(vehicle) .. ": goForTipping = true [trigger accepts fruit (" .. tostring(fruitType) .. ")]", 2);
-				end;
-
-				if tipper.tipState == Trailer.TIPSTATE_CLOSED or tipper.tipState == Trailer.TIPSTATE_CLOSING then
-					vehicle.toggledTipState = bestTipReferencePoint;
-					local isNearestPoint = false
-					if distanceToTrigger > vehicle.cp.closestTipDistance then
-						isNearestPoint = true
-						courseplay:debug(nameNum(vehicle) .. ": isNearestPoint = true ", 2);
+			if ctt.acceptedFillTypes[fruitType] and goForTipping == true then
+				if vehicle.cp.unloadingTipper == nil or vehicle.cp.unloadingTipper == tipper then -- make sure we only tip one trailer at the time
+					if isBGA then
+						courseplay:debug(nameNum(vehicle) .. ": goForTipping = true [BGA trigger accepts fruit (" .. tostring(fruitType) .. ")]", 2);
 					else
-						vehicle.cp.closestTipDistance = distanceToTrigger
-					end
-					if distanceToTrigger == 0 or isBGA or isNearestPoint then
-						tipper:toggleTipState(ctt,vehicle.toggledTipState);
-						vehicle.cp.unloadingTipper = tipper
-						courseplay:debug(nameNum(vehicle)..": toggleTipState: "..tostring(vehicle.toggledTipState).."  /unloadingTipper= "..tostring(vehicle.cp.unloadingTipper.name), 2);
-					end					
-				elseif tipper.tipState ~= Trailer.TIPSTATE_CLOSING then 
-					vehicle.cp.closestTipDistance = math.huge
-					allowedToDrive = false;
-				end;
+						courseplay:debug(nameNum(vehicle) .. ": goForTipping = true [trigger accepts fruit (" .. tostring(fruitType) .. ")]", 2);
+					end;
 
-				if isBGA and ((not vehicle.Waypoints[vehicle.recordnumber].rev and not vehicle.cp.isReverseBGATipping) or unloadWhileReversing or isRePositioning) then
-					allowedToDrive = true;
+					if tipper.tipState == Trailer.TIPSTATE_CLOSED or tipper.tipState == Trailer.TIPSTATE_CLOSING then
+						vehicle.toggledTipState = bestTipReferencePoint;
+						local isNearestPoint = false
+						if distanceToTrigger > tipper.cp.closestTipDistance then
+							isNearestPoint = true
+							courseplay:debug(nameNum(vehicle) .. ": isNearestPoint = true ", 2);
+						else
+							tipper.cp.closestTipDistance = distanceToTrigger
+						end
+						if distanceToTrigger == 0 or isBGA or isNearestPoint then
+							tipper:toggleTipState(ctt,vehicle.toggledTipState);
+							vehicle.cp.unloadingTipper = tipper
+							courseplay:debug(nameNum(vehicle)..": toggleTipState: "..tostring(vehicle.toggledTipState).."  /unloadingTipper= "..tostring(vehicle.cp.unloadingTipper.name), 2);
+							allowedToDrive = false;
+						end
+					elseif tipper.tipState ~= Trailer.TIPSTATE_CLOSING then
+						tipper.cp.closestTipDistance = math.huge
+						allowedToDrive = false;
+					end;
+
+					if isBGA and ((not vehicle.Waypoints[vehicle.recordnumber].rev and not vehicle.cp.isReverseBGATipping) or unloadWhileReversing or isRePositioning) then
+						allowedToDrive = true;
+					end;
+				else
+					tipper.cp.closestTipDistance = math.huge;
 				end;
 			elseif not ctt.acceptedFillTypes[fruitType] then
 				if isBGA then
@@ -1070,7 +1075,7 @@ end
 
 function courseplay:getReverseProperties(vehicle, tipper)
 	courseplay:debug(('getReverseProperties(%q, %q)'):format(nameNum(vehicle), nameNum(tipper)), 13);
-	if tipper.attacherVehicle == vehicle then
+	if tipper.attacherVehicle == vehicle or (#vehicle.tippers > 0 and vehicle.tippers[1] ~= tipper and vehicle.tippers[1].cp.isAttacherModule)then
 		tipper.cp.frontNode = getParent(tipper.attacherJoint.node);
 	else
 		tipper.cp.frontNode = getParent(tipper.attacherVehicle.attacherJoint.node);
