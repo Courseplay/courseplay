@@ -534,9 +534,11 @@ function courseplay:setFoldedStates(object)
 		if object.cp.foldingPartsStartMoveDirection and object.cp.foldingPartsStartMoveDirection ~= 0 then
 			object.cp.realUnfoldDirection = object.turnOnFoldDirection * object.cp.foldingPartsStartMoveDirection;
 		end;
-		if object.cp.isMRpoettingerEurocat315H then --TODO: somehow move to specialTools
-			object.cp.realUnfoldDirection = -1;
+
+		if object.cp.realUnfoldDirectionIsReversed then
+			object.cp.realUnfoldDirection = -object.cp.realUnfoldDirection;
 		end;
+
 		courseplay:debug(string.format('startAnimTime=%s, turnOnFoldDirection=%s, foldingPartsStartMoveDirection=%s --> realUnfoldDirection=%s', tostring(object.startAnimTime), tostring(object.turnOnFoldDirection), tostring(object.cp.foldingPartsStartMoveDirection), tostring(object.cp.realUnfoldDirection)), 17);
 
 		for i,foldingPart in pairs(object.foldingParts) do

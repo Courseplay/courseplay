@@ -431,6 +431,13 @@ function courseplay:calculateWorkWidth(vehicle)
 	local implL,implR = -9999,9999;
 	if vehicle.attachedImplements then
 		for i,implement in pairs(vehicle.attachedImplements) do
+			local workWidth = courseplay:askForSpecialWorkingWidth(implement.object);
+			if workWidth then
+				courseplay:debug(('\tSpecial workWidth found: %.1fm'):format(workWidth), 7);
+				courseplay:changeWorkWidth(vehicle, nil, workWidth);
+				return;
+			end;
+
 			local left, right = courseplay:getCuttingAreaValuesX(implement.object);
 			if left and right then
 				implL = max(implL, left);

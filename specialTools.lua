@@ -341,6 +341,18 @@ function courseplay:setNameVariable(workTool)
 	elseif workTool.cp.xmlFileName == 'marshallMS105.xml' then
 		workTool.cp.isMarshallMS105 = true;
 
+	--Lindner Unitrac [Giant Lindner DLC Pack]
+	elseif workTool.cp.xmlFileName == 'lindnerUnitrac92.xml' then
+		workTool.cp.isLindnerUnitrac92 = true;
+		workTool.cp.mode9TrafficIgnoreVehicle = true;
+	elseif workTool.cp.xmlFileName == 'lindnerTankModule.xml' then
+		workTool.cp.isLindnerTankModule = true;
+	elseif workTool.cp.xmlFileName == 'lindnerSpreaderModule.xml' then
+		workTool.cp.isLindnerSpreaderModule = true;
+	elseif workTool.cp.xmlFileName == 'lindnerForageModule.xml' then
+		workTool.cp.isLindnerForageModule = true;
+
+
 	--Others
 	elseif workTool.cp.xmlFileName == 'KirovetsK700A.xml' then
 		workTool.cp.isKirovetsK700A = true;
@@ -418,6 +430,7 @@ end
 
 
 function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload,ridgeMarker)
+
 	local implementsDown = lower and turnOn
 	if workTool.PTOId then
 		workTool:setPTO(false)
@@ -435,6 +448,37 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 			enableAnimTrack(workTool.animation.animCharSet, 1);
 			workTool.animation.state = 2;
 		end;
+
+		--Lindner Unitrac: Tank Module [Giant Lindner DLC Pack]
+	elseif workTool.cp.isLindnerTankModule and self.cp.mode == 4 and not self.cp.inTraffic then
+		local isFolding, isFolded, isUnfolded = courseplay:isFolding(workTool);
+
+		if courseplay:isFoldable(workTool) and not isFolding and not isUnfolded then
+			workTool:setFoldDirection(workTool.cp.realUnfoldDirection);
+		end;
+
+		if workTool.setIsTurnedOn ~= nil and implementsDown ~= nil and implementsDown ~= workTool.isTurnedOn then
+			workTool:setIsTurnedOn(implementsDown, false);
+		end;
+
+		return true, allowedToDrive;
+
+	--Lindner Unitrac: Stöckl Spreader Module [Giant Lindner DLC Pack]
+	elseif workTool.cp.isLindnerSpreaderModule and self.cp.mode == 4 and not self.cp.inTraffic then
+		local angle = 0;
+		if unfold then
+			angle = -38;
+		end;
+
+		if workTool.movingTools[1].curRot[workTool.movingTools[1].rotationAxis] ~= math.rad(angle) then
+			courseplay:rotateSingleTool(self, workTool, 1, angle);
+		end;
+
+		if workTool.setIsTurnedOn ~= nil and implementsDown ~= nil and implementsDown ~= workTool.isTurnedOn then
+			workTool:setIsTurnedOn(implementsDown, false);
+		end;
+
+		return true, allowedToDrive;
 
 	--Claas Quantum 3800K [Vertex Design]
 	elseif workTool.cp.isClaasQuantum3800K then
@@ -1206,6 +1250,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 
 	return false, allowedToDrive;
 end
+
 function courseplay:askForSpecialSettings(self,object)
 	local automaticToolOffsetX;
 
@@ -1237,6 +1282,24 @@ function courseplay:askForSpecialSettings(self,object)
 
 	elseif object.cp.isMarshallMS105 then
 		automaticToolOffsetX = -7.0;
+
+	elseif object.cp.isLindnerTankModule then
+		object.cp.realUnfoldDirectionIsReversed = true;
+		self.cp.aiTurnNoBackward = true;
+		self.cp.backMarkerOffset = -5;
+
+	elseif object.cp.isLindnerSpreaderModule then
+		automaticToolOffsetX = 4.7;
+		self.cp.backMarkerOffset = -3.5;
+
+	elseif object.cp.isLindnerForageModule then
+		self.cp.aiTurnNoBackward = true;
+		self.cp.noStopOnEdge = true;
+		self.cp.noStopOnTurn = true;
+		courseplay:changeToolOffsetZ(self, nil, -5);
+
+	elseif object.cp.isMRpoettingerEurocat315H then
+		object.cp.realUnfoldDirectionIsReversed = true;
 
 	elseif object.cp.isClaasQuantum3800K then
 		object.cp.frontNode = object.rootNode;
@@ -1286,7 +1349,6 @@ function courseplay:askForSpecialSettings(self,object)
 		self.cp.noStopOnEdge = true
 		self.cp.noStopOnTurn = true
 		automaticToolOffsetX = -2.4
-		object.cp.inversedFoldDirection = true
 
 	elseif object.cp.isKotteGARANTProfiVQ32000 then
 		object.cp.feldbinders = {}
@@ -1320,8 +1382,6 @@ function courseplay:askForSpecialSettings(self,object)
 	elseif object.cp.isJF1060 then
 		self.cp.aiTurnNoBackward = true
 		automaticToolOffsetX = -2.5
-	elseif object.cp.isClaasConspeedSFM or object.cp.isCaseIH3162Cutter then
-		object.cp.inversedFoldDirection = true;
 	elseif object.cp.isUrsusZ586 then
 		self.cp.aiTurnNoBackward = true
 		self.cp.noStopOnEdge = true
@@ -1337,6 +1397,16 @@ function courseplay:askForSpecialSettings(self,object)
 	end;
 end
 
+function courseplay:askForSpecialWorkingWidth(implement)
+	if implement.cp then
+		if implement.cp.isLindnerTankModule then
+			return 6.0;
+		end;
+	end;
+
+	return nil;
+end;
+
 function courseplay:handleSpecialSprayer(self, activeTool, fillLevelPct, driveOn, allowedToDrive, lx, lz, dt, pumpDir)
 	local vehicle = self;
 	pumpDir = pumpDir or "pull";
@@ -1345,10 +1415,21 @@ function courseplay:handleSpecialSprayer(self, activeTool, fillLevelPct, driveOn
 
 	--Marshall MS 105 [Giant Marshell DLC Pack]
 	if activeTool.cp.isMarshallMS105 and vehicle.cp.mode == 4 then
-		if #vehicle.cp.waitPoints == 3 then --TODO (Claus): use self.cp.numWaitPoints
+		if vehicle.cp.numWaitPoints == 3 then
 			local refillPoint = vehicle.cp.waitPoints[3];
 			local openHatch = vehicle.recordnumber > refillPoint - 1 and vehicle.recordnumber <= refillPoint + 4;
-			courseplay:openCloseMovingTool(self, activeTool, 1, openHatch, dt);
+			courseplay:rotateSingleTool(self, activeTool, 1, openHatch, dt);
+		end;
+
+	--Lindner Unitrac: Stöckl Spreader Module [Giant Lindner DLC Pack]
+	elseif activeTool.cp.isLindnerSpreaderModule and vehicle.cp.mode == 4 then
+		if vehicle.cp.numWaitPoints == 3 then
+			local refillPoint = vehicle.cp.waitPoints[3];
+			local isInRefillArea = vehicle.recordnumber > refillPoint - 3 and vehicle.recordnumber <= refillPoint;
+			if isInRefillArea and not activeTool:getIsAnimationPlaying('planeMover') and activeTool:getRealAnimationTime('planeMover') ~= 0 then
+				activeTool:resetMover();
+				courseplay:debug(string.format('%s: Resetting planeMover', nameNum(activeTool)), 6);
+			end;
 		end;
 
 	--HoseRef system: sprayer [Eifok Team]
@@ -1536,21 +1617,42 @@ function courseplay:moveSingleTool(vehicle, activeTool, toolIndex, x,y,z, dt)
 
 end
 
-function courseplay:openCloseMovingTool(vehicle, activeTool, toolIndex, open, dt)
+--- rotateSingleTool Usage
+--- @param vehicle 		[Object] 			The vehicle it self.
+--- @param activeTool 	[Object] 			The working tool or vehicle it self.
+--- @param toolIndex 	[Number] 			The moving tool index from the activeTool.movingTools
+--- @param rotatePos 	[Boolean or Number]	If boolean, then it will rotate to max or min position based on true or false.
+---											If Number, then rotate to that position in degree.
+--- @param dt			[Number or Nil]		The time in ms since last update. If nil, then it use the global dt from the game.
+function courseplay:rotateSingleTool(vehicle, activeTool, toolIndex, rotatePos, dt)
+	if vehicle == nil or activeTool == nil or toolIndex == nil or rotatePos == nil then
+		return;
+	end;
+
+	dt = dt or g_physicsDt;
+
 	local mt = activeTool.movingTools[toolIndex];
 	local changed = false;
 
 	local curRot = mt.curRot[mt.rotationAxis];
 	local targetRot = mt.invertAxis and mt.rotMax or mt.rotMin;
 
-	if open then
-		targetRot = mt.invertAxis and mt.rotMin or mt.rotMax;
+	if type(rotatePos) == 'boolean' then
+		if rotatePos then
+			targetRot = mt.invertAxis and mt.rotMin or mt.rotMax;
+		end;
+	elseif type(rotatePos) == 'number' then
+		targetRot = Utils.clamp(math.rad(rotatePos), mt.rotMin, mt.rotMax);
+	else
+		-- Unsupported rotatePos format, so we returns.
+		return;
 	end;
 
 	if courseplay:round(curRot, 4) ~= courseplay:round(targetRot, 4) then
 		local newRot;
 
 		local rotDir = Utils.sign(targetRot - curRot);
+
 		if mt.node and mt.rotMin and mt.rotMax and rotDir ~= 0 then
 			local rotChange = mt.rotSpeed ~= nil and (mt.rotSpeed * dt) or (0.2/dt);
 			newRot = Utils.clamp(curRot + (rotChange * rotDir), mt.rotMin, mt.rotMax);

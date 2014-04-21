@@ -905,8 +905,8 @@ function courseplay:drive(self, dt)
 		distToChange = self.dist + 1
 	end
 
-	-- Better stearing on Articulated Axis vehicles by Claus G. Pedersen
-	if self.isRealistic and self.cp.hasSpecializationArticulatedAxis then
+	-- Better stearing on MR Articulated Axis vehicles on MR Engine v1.3.19 and below. By Claus G. Pedersen
+	if self.isRealistic and self.cp.hasSpecializationArticulatedAxis and (not courseplay.moreRealisticVersion or courseplay.moreRealisticVersion < 1.0320) then
 		-- Get the rotation direction from the vehicle to the drive direction note
 		local x,_,z = localDirectionToWorld(self.cp.DirectionNode, lx, 0, lz);
 		local dirRot = Utils.getYRotationFromDirection(x, z);
@@ -1010,7 +1010,7 @@ function courseplay:checkTraffic(self, display_warnings, allowedToDrive)
 	local collisionVehicle = g_currentMission.nodeToVehicle[self.cp.collidingVehicleId]
 	--courseplay:debug(tableShow(self, nameNum(self), 4), 4)
 	--if self.CPnumCollidingVehicles ~= nil and self.CPnumCollidingVehicles > 0 then
-		if collisionVehicle ~= nil and not (self.cp.mode == 9 and collisionVehicle.allowFillFromAir) then
+		if collisionVehicle ~= nil and not (self.cp.mode == 9 and (collisionVehicle.allowFillFromAir or (collisionVehicle.cp and collisionVehicle.cp.mode9TrafficIgnoreVehicle))) then
 			local vx, vy, vz = getWorldTranslation(self.cp.collidingVehicleId)
 			local tx, ty, tz = worldToLocal(self.aiTrafficCollisionTrigger, vx, vy, vz)
 			local xvx, xvy, xvz = getWorldTranslation(self.aiTrafficCollisionTrigger)
