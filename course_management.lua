@@ -206,7 +206,7 @@ function courseplay:load_course(self, id, useRealId, addCourseAtEnd)
 
 			self.cp.numWaypoints = #self.Waypoints;
 			self.cp.numCourses = self.cp.numCourses + 1;
-			self.cp.currentCourseName = string.format("%d %s", self.cp.numCourses, courseplay:loc('CPCourseAdded'));
+			self.cp.currentCourseName = string.format("%d %s", self.cp.numCourses, courseplay:loc('COURSEPLAY_COMBINED_COURSES'));
 			courseplay:debug(string.format('%s: adding course done -> numWaypoints=%d, numCourses=%s, currentCourseName=%q', nameNum(self), self.cp.numWaypoints, self.cp.numCourses, self.cp.currentCourseName), 8);
 		end;
 

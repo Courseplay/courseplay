@@ -14,7 +14,7 @@
 			textOffset="0 0" 
 			textColor="0.95 0.95 0.95 1" 
 			textBold="false" 
-			text="$CP_CPCourseName,$CP_CPFolderName,$CP_CPFilterFor" 
+			text="$CP_COURSEPLAY_COURSE_NAME,$CP_COURSEPLAY_FOLDER_NAME,$CP_COURSEPLAY_FILTER_COURSES" 
 			textWrapWidth="0.8" 
 			alignment="left"
 		/>

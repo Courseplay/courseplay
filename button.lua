@@ -175,7 +175,7 @@ function courseplay:renderButton(self, button)
 
 		--Page 1
 		elseif pg == 1 then
-			if fn == "setAiMode" then
+			if fn == "setCpMode" then
 				button.show = self.cp.canSwitchMode and not self.cp.distanceCheck;
 			elseif fn == "clearCustomFieldEdge" or fn == "toggleCustomFieldEdgePathShow" then
 				button.show = not self.cp.canDrive and self.cp.fieldEdge.customField.isCreated;

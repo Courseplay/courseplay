@@ -12,7 +12,7 @@ end
 
 function courseplay:calcMoves(px, py, tx, ty, fruit_type, interval) -- Based on some code of LMelior but made it work and improved way beyond his code, still thx LMelior!
 	print("call calcMoves()");
-	if not courseplay:is_field(py, px) then
+	if not courseplay:isField(py, px) then
 		return nil
 	end
 
@@ -50,7 +50,7 @@ It will return nil if all the available nodes have been checked but the target h
 	local tempG = 0
 	openlist[1] = { x = px, y = py, g = 0, h = tempH, f = 0 + tempH, par = 1 } -- Make starting point in list
 
-	local xsize = (g_currentMission.terrainSize - 2)/2 -- horizontal map size -- TODO: make sure we get the correct map size (g_currentMission.terrainSize ?)
+	local xsize = (g_currentMission.terrainSize - 2)/2 -- horizontal map size
 	local ysize = xsize -- vertical map size
 	local curbase = {} -- Current square from which to check possible moves
 	local basis = 1 -- Index of current base
@@ -127,7 +127,6 @@ It will return nil if all the available nodes have been checked but the target h
 		end
 
 		-- Check if next points are on the map and within moving distance
-		-- TODO: make sure we get the correct map size (g_currentMission.terrainSize ?)
 		if curbase.x + interval > xsize then
 			wOK = false
 			nwOK = false
@@ -151,16 +150,16 @@ It will return nil if all the available nodes have been checked but the target h
 
 		-- If it IS on the map, check map for obstacles
 		--(Lua returns an error if you try to access a table position that doesn't exist, so you can't combine it with above)
-		if wOK and curbase.x + interval <= xsize and courseplay:area_has_fruit(curbase.x + interval, curbase.y, fruit_type) then
+		if wOK and curbase.x + interval <= xsize and courseplay:areaHasFruit(curbase.x + interval, curbase.y, fruit_type) then
 			wOK = false
 		end
-		if eOK and curbase.x - interval >= -xsize and courseplay:area_has_fruit(curbase.x - interval, curbase.y, fruit_type) then
+		if eOK and curbase.x - interval >= -xsize and courseplay:areaHasFruit(curbase.x - interval, curbase.y, fruit_type) then
 			eOK = false
 		end
-		if sOK and curbase.y + interval <= ysize and courseplay:area_has_fruit(curbase.x, curbase.y + interval, fruit_type) then
+		if sOK and curbase.y + interval <= ysize and courseplay:areaHasFruit(curbase.x, curbase.y + interval, fruit_type) then
 			sOK = false
 		end
-		if nOK and curbase.y - interval >= -ysize and courseplay:area_has_fruit(curbase.x, curbase.y - interval, fruit_type) then
+		if nOK and curbase.y - interval >= -ysize and courseplay:areaHasFruit(curbase.x, curbase.y - interval, fruit_type) then
 			nOK = false
 		end
 

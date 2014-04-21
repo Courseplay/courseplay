@@ -261,7 +261,7 @@ function courseplay:executeFunction(self, func, value, page)
 				else -- driving
 					if line == 1 then
 						courseplay:stop(self);
-					elseif line == 2 and self.cp.last_recordnumber ~= nil and self.Waypoints[self.cp.last_recordnumber].wait and self.wait then
+					elseif line == 2 and self.cp.lastRecordnumber ~= nil and self.Waypoints[self.cp.lastRecordnumber].wait and self.wait then
 						courseplay:driveOn(self);
 					elseif line == 2 and self.cp.stopAtEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil) then
 						courseplay:setStopAtEnd(self, false);
@@ -270,9 +270,7 @@ function courseplay:executeFunction(self, func, value, page)
 					elseif line == 4 and not self.cp.stopAtEnd then
 						self.cp.stopAtEnd = true
 					elseif line == 5 then
-						if self.cp.mode == 1 or self.cp.mode == 2 then
-							self.cp.unloadAtSiloStart = not self.cp.unloadAtSiloStart;
-						elseif self.cp.mode == 4 and self.cp.hasSowingMachine then
+						if self.cp.mode == 4 and self.cp.hasSowingMachine then
 							self.cp.ridgeMarkersAutomatic = not self.cp.ridgeMarkersAutomatic;
 						elseif self.cp.mode == 6 and self.cp.hasBaleLoader and not self.hasUnloadingRefillingCourse then
 							self.cp.automaticUnloadingOnField = not self.cp.automaticUnloadingOnField;

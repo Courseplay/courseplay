@@ -52,7 +52,7 @@ function courseplay:load(xmlFile)
 	self.cp.calculatedCourseToCombine = false
 
 	self.recordnumber = 1
-	self.cp.last_recordnumber = 1;
+	self.cp.lastRecordnumber = 1;
 	self.cp.recordingTimer = 1
 	self.startlastload = 1
 	self.cp.timeOut = 1
@@ -560,16 +560,16 @@ function courseplay:load(xmlFile)
 	--Hud titles
 	if courseplay.hud.hudTitles == nil then
 		courseplay.hud.hudTitles = {
-			[0] = courseplay:loc("CPCombineManagement"), -- Combine Controls
-			[1] = courseplay:loc("CPSteering"), -- "Abfahrhelfer Steuerung"
-			[2] = { courseplay:loc("CPManageCourses"), courseplay:loc("CPchooseFolder"), courseplay:loc("CPcoursesFilterTitle") }, -- "Kurse verwalten"
-			[3] = courseplay:loc("CPCombiSettings"), -- "Einstellungen Combi Modus"
-			[4] = courseplay:loc("CPManageCombines"), -- "Drescher verwalten"
-			[5] = courseplay:loc("CPSpeedLimit"), -- "Speeds"
-			[6] = courseplay:loc("CPSettings"), -- "General settings"
-			[7] = courseplay:loc("CPHud7"), -- "Driving settings"
-			[8] = courseplay:loc("CPcourseGeneration"), -- "Course Generation"
-			[9] = courseplay:loc("CPShovelPositions") --Schaufel progammieren
+			[0] = courseplay:loc("COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS"), -- combine controls
+			[1] = courseplay:loc("COURSEPLAY_PAGE_TITLE_CP_CONTROL"), -- courseplay control
+			[2] = { courseplay:loc("COURSEPLAY_PAGE_TITLE_MANAGE_COURSES"), courseplay:loc("COURSEPLAY_PAGE_TITLE_CHOOSE_FOLDER"), courseplay:loc("COURSEPLAY_COURSES_FILTER_TITLE") }, -- courses & filter
+			[3] = courseplay:loc("COURSEPLAY_PAGE_TITLE_COMBI_MODE"), -- combi mode settings
+			[4] = courseplay:loc("COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES"), -- manage combines
+			[5] = courseplay:loc("COURSEPLAY_PAGE_TITLE_SPEEDS"), -- speeds
+			[6] = courseplay:loc("COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS"), -- general settings
+			[7] = courseplay:loc("COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS"), -- Driving settings
+			[8] = courseplay:loc("COURSEPLAY_PAGE_TITLE_COURSE_GENERATION"), -- course generation
+			[9] = courseplay:loc("COURSEPLAY_SHOVEL_POSITIONS") -- shovel
 		};
 	end;
 
@@ -638,7 +638,7 @@ function courseplay:load(xmlFile)
 		local posX = aiModeQuickSwitch.minX + (aiModeQuickSwitch.w * (col-1));
 		local posY = courseplay.hud.linesPosY[1] + courseplay.hud.lineHeight --[[(20/1080)]] - (aiModeQuickSwitch.h * l);
 
-		courseplay:register_button(self, 1, icon, 'setAiMode', i, posX, posY, aiModeQuickSwitch.w, aiModeQuickSwitch.h);
+		courseplay:register_button(self, 1, icon, 'setCpMode', i, posX, posY, aiModeQuickSwitch.w, aiModeQuickSwitch.h);
 	end;
 
 	--recording
@@ -969,12 +969,12 @@ function courseplay:draw()
 				end;
 
 				if InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER) then
-					g_currentMission:addHelpButtonText(courseplay:loc("CoursePlayStop"), InputBinding.COURSEPLAY_START_STOP);
+					g_currentMission:addHelpButtonText(courseplay:loc("COURSEPLAY_STOP_COURSE"), InputBinding.COURSEPLAY_START_STOP);
 					if self.cp.HUD1goOn then
-						g_currentMission:addHelpButtonText(courseplay:loc("CourseWaitpointStart"), InputBinding.COURSEPLAY_DRIVEON);
+						g_currentMission:addHelpButtonText(courseplay:loc("COURSEPLAY_CONTINUE"), InputBinding.COURSEPLAY_DRIVEON);
 					end;
 					if self.cp.HUD1noWaitforFill then
-						g_currentMission:addHelpButtonText(courseplay:loc("NoWaitforfill"), InputBinding.COURSEPLAY_DRIVENOW);
+						g_currentMission:addHelpButtonText(courseplay:loc("COURSEPLAY_DRIVE_NOW"), InputBinding.COURSEPLAY_DRIVENOW);
 					end;
 				end;
 			else
@@ -983,7 +983,7 @@ function courseplay:draw()
 				end;
 
 				if InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER) then
-					g_currentMission:addHelpButtonText(courseplay:loc("CoursePlayStart"), InputBinding.COURSEPLAY_START_STOP);
+					g_currentMission:addHelpButtonText(courseplay:loc("COURSEPLAY_START_COURSE"), InputBinding.COURSEPLAY_START_STOP);
 				end;
 			end;
 		end;
@@ -1087,8 +1087,8 @@ function courseplay:update(dt)
 
 	if g_server ~= nil then
 		self.cp.HUDrecordnumber = self.recordnumber
-		if self.drive then --TODO: restrict to currentPage == 1
-			self.cp.HUD1goOn = (self.Waypoints[self.cp.last_recordnumber] ~= nil and self.Waypoints[self.cp.last_recordnumber].wait and self.wait) or (self.cp.stopAtEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil));
+		if self.drive then
+			self.cp.HUD1goOn = (self.Waypoints[self.cp.lastRecordnumber] ~= nil and self.Waypoints[self.cp.lastRecordnumber].wait and self.wait) or (self.cp.stopAtEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil));
 			self.cp.HUD1noWaitforFill = not self.cp.isLoaded and self.cp.mode ~= 5;
 		end;
 
@@ -1480,10 +1480,10 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 	if not resetVehicles and g_server ~= nil then
 		-- COURSEPLAY
 		local curKey = key .. '.courseplay';
-		courseplay:setAiMode(self, Utils.getNoNil(getXMLInt(xmlFile, curKey .. '#aiMode'), 1));
+		courseplay:setCpMode(self, Utils.getNoNil(getXMLInt(xmlFile, curKey .. '#aiMode'), 1));
 		self.cp.hud.openWithMouse = Utils.getNoNil(getXMLBool(xmlFile, curKey .. '#openHudWithMouse'), true);
-		self.cp.beaconLightsMode = Utils.getNoNil(getXMLInt(xmlFile, curKey .. "#beacon"), 1);
-		self.cp.waitTime = Utils.getNoNil(getXMLInt(xmlFile, curKey .. "#waitTime"), 0);
+		self.cp.beaconLightsMode = Utils.getNoNil(getXMLInt(xmlFile, curKey .. '#beacon'), 1);
+		self.cp.waitTime = Utils.getNoNil(getXMLInt(xmlFile, curKey .. '#waitTime'), 0);
 		local courses = Utils.getNoNil(getXMLString(xmlFile, curKey .. '#courses'), '');
 		self.cp.loadedCourses = Utils.splitString(",", courses);
 		courseplay:reload_courses(self, true);

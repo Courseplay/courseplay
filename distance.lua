@@ -5,10 +5,6 @@ function courseplay:distance(x1, z1, x2, z2)
 	end;
 
 	return Utils.vector2Length(x2 - x1, z2 - z1);
-
-	-- local xd = math.pow(x1 - x2, 2);
-	-- local zd = math.pow(z1 - z2, 2);
-	-- return math.sqrt(math.abs(xd + zd));
 end
 
 -- displays arrow and distance to previous point
@@ -22,19 +18,19 @@ function courseplay:distanceCheck(vehicle)
 	vehicle.cp.directionArrowOverlay:render();
 
 	local ctx, cty, ctz = getWorldTranslation(vehicle.rootNode);
-	vehicle.cp.infoText = string.format("%s: %.1fm", courseplay:loc("CPDistance"), courseplay:distance(ctx, ctz, cx, cz));
+	vehicle.cp.infoText = string.format("%s: %.1fm", courseplay:loc("COURSEPLAY_DISTANCE"), courseplay:distance(ctx, ctz, cx, cz));
 end;
 
 
-function courseplay:distance_to_object(self, object)
-	local x, y, z = getWorldTranslation(self.rootNode)
+function courseplay:distanceToObject(vehicle, object)
+	local x, y, z = getWorldTranslation(vehicle.rootNode)
 	local ox, oy, oz = worldToLocal(object.rootNode, x, y, z)
 
 	return Utils.vector2Length(ox, oz)
 end
 
 
-function courseplay:distance_to_point(self, x, y, z)
-	local ox, oy, oz = worldToLocal(self.cp.DirectionNode, x, y, z)
+function courseplay:distanceToPoint(vehicle, x, y, z)
+	local ox, oy, oz = worldToLocal(vehicle.cp.DirectionNode, x, y, z)
 	return Utils.vector2Length(ox, oz)
 end

@@ -1,28 +1,29 @@
 ﻿function courseplay:setHudContent(vehicle)
 	--GLOBAL
 	if vehicle.cp.mode > 0 and vehicle.cp.mode <= courseplay.numAiModes then
-		vehicle.cp.hud.content.global[1] = courseplay:loc(string.format("CourseMode%d", vehicle.cp.mode));
+		vehicle.cp.hud.content.global[1] = courseplay:loc(string.format('COURSEPLAY_MODE_%d', vehicle.cp.mode));
 	else
-		vehicle.cp.hud.content.global[1] = "---";
+		vehicle.cp.hud.content.global[1] = '---';
 	end;
 
 	if vehicle.cp.currentCourseName ~= nil then
-		vehicle.cp.hud.content.global[2] = string.format("%s %s", courseplay:loc("CPCourse"), vehicle.cp.currentCourseName);
+		vehicle.cp.hud.content.global[2] = string.format('%s %s', courseplay:loc('COURSEPLAY_COURSE'), vehicle.cp.currentCourseName);
 	elseif vehicle.Waypoints[1] ~= nil then
-		vehicle.cp.hud.content.global[2] = string.format("%s %s", courseplay:loc("CPCourse"), courseplay:loc("CPtempCourse"));
+		vehicle.cp.hud.content.global[2] = string.format('%s %s', courseplay:loc('COURSEPLAY_COURSE'), courseplay:loc('COURSEPLAY_TEMP_COURSE'));
 	else
-		vehicle.cp.hud.content.global[2] = courseplay:loc("CPNoCourseLoaded");
+		vehicle.cp.hud.content.global[2] = courseplay:loc('COURSEPLAY_NO_COURSE_LOADED');
 	end;
 	if vehicle.Waypoints[vehicle.cp.HUDrecordnumber] ~= nil then
-		vehicle.cp.hud.content.global[3] = courseplay:loc("CPWaypoint") .. tostring(vehicle.cp.HUDrecordnumber) .. '/' .. tostring(vehicle.maxnumber) .. courseplay:loc('COURSEPLAY_SEPARATOR') .. courseplay:loc('COURSEPLAY_WAITPOINTS') .. tostring(vehicle.cp.numWaitPoints) .. courseplay:loc('COURSEPLAY_SEPARATOR') .. courseplay:loc('COURSEPLAY_CROSSING_POINTS') .. tostring(vehicle.cp.numCrossingPoints);
+		vehicle.cp.hud.content.global[3] = courseplay:loc('COURSEPLAY_WAYPOINT') .. tostring(vehicle.cp.HUDrecordnumber) .. '/' .. tostring(vehicle.maxnumber) .. courseplay:loc('COURSEPLAY_SEPARATOR') .. courseplay:loc('COURSEPLAY_WAITPOINTS') .. tostring(vehicle.cp.numWaitPoints) .. courseplay:loc('COURSEPLAY_SEPARATOR') .. courseplay:loc('COURSEPLAY_CROSSING_POINTS') .. tostring(vehicle.cp.numCrossingPoints);
 	elseif vehicle.cp.isRecording or vehicle.cp.recordingIsPaused then
-		vehicle.cp.hud.content.global[3] = courseplay:loc("CPWaypoint") .. tostring(vehicle.cp.HUDrecordnumber) .. courseplay:loc('COURSEPLAY_SEPARATOR') .. courseplay:loc('COURSEPLAY_WAITPOINTS') .. tostring(vehicle.cp.numWaitPoints) .. courseplay:loc('COURSEPLAY_SEPARATOR') .. courseplay:loc('COURSEPLAY_CROSSING_POINTS') .. tostring(vehicle.cp.numCrossingPoints);
+		vehicle.cp.hud.content.global[3] = courseplay:loc('COURSEPLAY_WAYPOINT') .. tostring(vehicle.cp.HUDrecordnumber) .. courseplay:loc('COURSEPLAY_SEPARATOR') .. courseplay:loc('COURSEPLAY_WAITPOINTS') .. tostring(vehicle.cp.numWaitPoints) .. courseplay:loc('COURSEPLAY_SEPARATOR') .. courseplay:loc('COURSEPLAY_CROSSING_POINTS') .. tostring(vehicle.cp.numCrossingPoints);
 	else
-		vehicle.cp.hud.content.global[3] = courseplay:loc("CPNoWaypoint");
+		vehicle.cp.hud.content.global[3] = courseplay:loc('COURSEPLAY_NO_WAYPOINTS');
 	end
 
 	------------------------------------------------------------------
 
+	-- AUTOMATIC PAGE RELOAD BASED ON VARIABLE STATE
 	--ALL PAGES
 	if vehicle.cp.hud.reloadPage[-1] then
 		for page=0,courseplay.hud.numPages do
@@ -79,6 +80,7 @@
 		end;
 	end;
 
+	-- RELOAD PAGE
 	if vehicle.cp.hud.reloadPage[vehicle.cp.hud.currentPage] then
 		for line=1,courseplay.hud.numLines do
 			for column=1,2 do
@@ -205,52 +207,52 @@ function courseplay.hud:loadPage(vehicle, page)
 
 		if not combine.cp.isChopper then
 			--Driver priority
-			vehicle.cp.hud.content.pages[0][4][1].text = courseplay:loc("COURSEPLAY_DRIVERPRIORITY");
-			vehicle.cp.hud.content.pages[0][4][2].text = combine.cp.driverPriorityUseFillLevel and courseplay:loc("COURSEPLAY_FILLEVEL") or courseplay:loc("CPDistance");
+			vehicle.cp.hud.content.pages[0][4][1].text = courseplay:loc('COURSEPLAY_UNLOADING_DRIVER_PRIORITY');
+			vehicle.cp.hud.content.pages[0][4][2].text = combine.cp.driverPriorityUseFillLevel and courseplay:loc('COURSEPLAY_FILLEVEL') or courseplay:loc('COURSEPLAY_DISTANCE');
 
 			if vehicle.drive and vehicle.cp.mode == 6 then
 				vehicle.cp.hud.content.pages[0][5][1].text = courseplay:loc('COURSEPLAY_STOP_DURING_UNLOADING');
-				vehicle.cp.hud.content.pages[0][5][2].text = combine.cp.stopWhenUnloading and courseplay:loc("CPactivated") or courseplay:loc("CPdeactivated");
+				vehicle.cp.hud.content.pages[0][5][2].text = combine.cp.stopWhenUnloading and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
 			end;
 		end;
 
 		-- no courseplayer!
 		if vehicle.cp.HUD0noCourseplayer then
 			if vehicle.cp.HUD0wantsCourseplayer then
-				vehicle.cp.hud.content.pages[0][1][1].text = courseplay:loc("CoursePlayCalledPlayer");
+				vehicle.cp.hud.content.pages[0][1][1].text = courseplay:loc('COURSEPLAY_UNLOADING_DRIVER_REQUESTED');
 			else
-				vehicle.cp.hud.content.pages[0][1][1].text = courseplay:loc("CoursePlayCallPlayer");
+				vehicle.cp.hud.content.pages[0][1][1].text = courseplay:loc('COURSEPLAY_REQUEST_UNLOADING_DRIVER');
 			end
 		else
-			vehicle.cp.hud.content.pages[0][1][1].text = courseplay:loc("CoursePlayPlayer");
+			vehicle.cp.hud.content.pages[0][1][1].text = courseplay:loc('COURSEPLAY_DRIVER');
 			vehicle.cp.hud.content.pages[0][1][2].text = vehicle.cp.HUD0tractorName;
 
 			if vehicle.cp.HUD0tractorForcedToStop then
-				vehicle.cp.hud.content.pages[0][2][1].text = courseplay:loc("CoursePlayPlayerStart");
+				vehicle.cp.hud.content.pages[0][2][1].text = courseplay:loc('COURSEPLAY_UNLOADING_DRIVER_START');
 			else
-				vehicle.cp.hud.content.pages[0][2][1].text = courseplay:loc("CoursePlayPlayerStop");
+				vehicle.cp.hud.content.pages[0][2][1].text = courseplay:loc('COURSEPLAY_UNLOADING_DRIVER_STOP');
 			end
-			vehicle.cp.hud.content.pages[0][3][1].text = courseplay:loc("CoursePlayPlayerSendHome");
+			vehicle.cp.hud.content.pages[0][3][1].text = courseplay:loc('COURSEPLAY_UNLOADING_DRIVER_SEND_HOME');
 
 			--chopper
 			if combine.cp.isChopper then
 				if vehicle.cp.HUD0tractor then
-					vehicle.cp.hud.content.pages[0][4][1].text = courseplay:loc("CoursePlayPlayerSwitchSide");
-					if vehicle.cp.HUD0combineForcedSide == "left" then
-						vehicle.cp.hud.content.pages[0][4][2].text = courseplay:loc("COURSEPLAY_LEFT");
-					elseif vehicle.cp.HUD0combineForcedSide == "right" then
-						vehicle.cp.hud.content.pages[0][4][2].text = courseplay:loc("COURSEPLAY_RIGHT");
+					vehicle.cp.hud.content.pages[0][4][1].text = courseplay:loc('COURSEPLAY_UNLOADING_SIDE');
+					if vehicle.cp.HUD0combineForcedSide == 'left' then
+						vehicle.cp.hud.content.pages[0][4][2].text = courseplay:loc('COURSEPLAY_LEFT');
+					elseif vehicle.cp.HUD0combineForcedSide == 'right' then
+						vehicle.cp.hud.content.pages[0][4][2].text = courseplay:loc('COURSEPLAY_RIGHT');
 					else
-						vehicle.cp.hud.content.pages[0][4][2].text = courseplay:loc("CoursePlayPlayerSideNone");
+						vehicle.cp.hud.content.pages[0][4][2].text = courseplay:loc('COURSEPLAY_UNLOADING_SIDE_NONE');
 					end;
 
 					--manual chopping: initiate/end turning maneuver
 					if vehicle.cp.HUD0isManual then
-						vehicle.cp.hud.content.pages[0][5][1].text = courseplay:loc("CPturnManeuver");
+						vehicle.cp.hud.content.pages[0][5][1].text = courseplay:loc('COURSEPLAY_TURN_MANEUVER');
 						if vehicle.cp.HUD0turnStage == 0 then
-							vehicle.cp.hud.content.pages[0][5][2].text = courseplay:loc("CPStart");
+							vehicle.cp.hud.content.pages[0][5][2].text = courseplay:loc('COURSEPLAY_START');
 						elseif vehicle.cp.HUD0turnStage == 1 then
-							vehicle.cp.hud.content.pages[0][5][2].text = courseplay:loc("CPEnd");
+							vehicle.cp.hud.content.pages[0][5][2].text = courseplay:loc('COURSEPLAY_FINISH');
 						end;
 					end;
 				end;
@@ -262,67 +264,67 @@ function courseplay.hud:loadPage(vehicle, page)
 	elseif page == 1 then
 		if vehicle.cp.canDrive then
 			if not vehicle.drive then
-				vehicle.cp.hud.content.pages[1][1][1].text = courseplay:loc("CoursePlayStart")
+				vehicle.cp.hud.content.pages[1][1][1].text = courseplay:loc('COURSEPLAY_START_COURSE')
 
 				if vehicle.cp.mode ~= 9 then
-					vehicle.cp.hud.content.pages[1][3][1].text = courseplay:loc("cpStartAtFirstPoint");
+					vehicle.cp.hud.content.pages[1][3][1].text = courseplay:loc('COURSEPLAY_START_AT_POINT');
 					if vehicle.cp.startAtFirstPoint then
-						vehicle.cp.hud.content.pages[1][3][2].text = courseplay:loc("cpFirstPoint");
+						vehicle.cp.hud.content.pages[1][3][2].text = courseplay:loc('COURSEPLAY_FIRST_POINT');
 					else
-						vehicle.cp.hud.content.pages[1][3][2].text = courseplay:loc("cpNearestPoint");
+						vehicle.cp.hud.content.pages[1][3][2].text = courseplay:loc('COURSEPLAY_NEAREST_POINT');
 					end;
 				end;
 
-				vehicle.cp.hud.content.pages[1][4][1].text = courseplay:loc("CourseReset")
+				vehicle.cp.hud.content.pages[1][4][1].text = courseplay:loc('COURSEPLAY_RESET_COURSE')
 			else
-				vehicle.cp.hud.content.pages[1][1][1].text = courseplay:loc("CoursePlayStop")
+				vehicle.cp.hud.content.pages[1][1][1].text = courseplay:loc('COURSEPLAY_STOP_COURSE')
 
 				if vehicle.cp.HUD1goOn then
-					vehicle.cp.hud.content.pages[1][2][1].text = courseplay:loc("CourseWaitpointStart")
+					vehicle.cp.hud.content.pages[1][2][1].text = courseplay:loc('COURSEPLAY_CONTINUE')
 				end
 
 				if vehicle.cp.HUD1noWaitforFill then
-					vehicle.cp.hud.content.pages[1][3][1].text = courseplay:loc("NoWaitforfill")
+					vehicle.cp.hud.content.pages[1][3][1].text = courseplay:loc('COURSEPLAY_DRIVE_NOW')
 				end
 
 				if not vehicle.cp.stopAtEnd then
-					vehicle.cp.hud.content.pages[1][4][1].text = courseplay:loc("CoursePlayStopEnd")
+					vehicle.cp.hud.content.pages[1][4][1].text = courseplay:loc('COURSEPLAY_STOP_AT_LAST_POINT')
 				end
 
 				if vehicle.cp.mode == 4 and vehicle.cp.hasSowingMachine then
-					vehicle.cp.hud.content.pages[1][5][1].text = courseplay:loc("CPridgeMarkers");
-					vehicle.cp.hud.content.pages[1][5][2].text = vehicle.cp.ridgeMarkersAutomatic and courseplay:loc("CPautomatic") or courseplay:loc("CPmanual");
+					vehicle.cp.hud.content.pages[1][5][1].text = courseplay:loc('COURSEPLAY_RIDGEMARKERS');
+					vehicle.cp.hud.content.pages[1][5][2].text = vehicle.cp.ridgeMarkersAutomatic and courseplay:loc('COURSEPLAY_AUTOMATIC') or courseplay:loc('COURSEPLAY_MANUAL');
 
 				elseif vehicle.cp.mode == 6 and vehicle.cp.hasBaleLoader and not vehicle.cp.hasUnloadingRefillingCourse then
-					vehicle.cp.hud.content.pages[1][5][1].text = courseplay:loc("CPunloadingOnField");
-					vehicle.cp.hud.content.pages[1][5][2].text = vehicle.cp.automaticUnloadingOnField and courseplay:loc("CPautomatic") or courseplay:loc("CPmanual");
+					vehicle.cp.hud.content.pages[1][5][1].text = courseplay:loc('COURSEPLAY_UNLOADING_ON_FIELD');
+					vehicle.cp.hud.content.pages[1][5][2].text = vehicle.cp.automaticUnloadingOnField and courseplay:loc('COURSEPLAY_AUTOMATIC') or courseplay:loc('COURSEPLAY_MANUAL');
 				end;
 
 				if vehicle.cp.tipperHasCover and (vehicle.cp.mode == 1 or vehicle.cp.mode == 2 or vehicle.cp.mode == 5 or vehicle.cp.mode == 6) then
 					vehicle.cp.hud.content.pages[1][6][1].text = courseplay:loc('COURSEPLAY_COVER_HANDLING');
-					vehicle.cp.hud.content.pages[1][6][2].text = vehicle.cp.automaticCoverHandling and courseplay:loc("CPautomatic") or courseplay:loc("CPmanual");
+					vehicle.cp.hud.content.pages[1][6][2].text = vehicle.cp.automaticCoverHandling and courseplay:loc('COURSEPLAY_AUTOMATIC') or courseplay:loc('COURSEPLAY_MANUAL');
 				end;
 			end
 
 		elseif not vehicle.drive then
 			if (not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused) and not vehicle.cp.canDrive then
-				if (#(vehicle.Waypoints) == 0) then
-					vehicle.cp.hud.content.pages[1][1][1].text = courseplay:loc("PointRecordStart");
+				if #vehicle.Waypoints == 0 then
+					vehicle.cp.hud.content.pages[1][1][1].text = courseplay:loc('COURSEPLAY_RECORDING_START');
 				end;
 
 				--Custom field edge path
-				vehicle.cp.hud.content.pages[1][3][1].text = courseplay:loc("COURSEPLAY_SCAN_CURRENT_FIELD_EDGES");
+				vehicle.cp.hud.content.pages[1][3][1].text = courseplay:loc('COURSEPLAY_SCAN_CURRENT_FIELD_EDGES');
 				if vehicle.cp.fieldEdge.customField.isCreated then
-					vehicle.cp.hud.content.pages[1][4][1].text = courseplay:loc("COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER");
+					vehicle.cp.hud.content.pages[1][4][1].text = courseplay:loc('COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER');
 					if vehicle.cp.fieldEdge.customField.fieldNum > 0 then
 						vehicle.cp.hud.content.pages[1][4][2].text = tostring(vehicle.cp.fieldEdge.customField.fieldNum);
 						if vehicle.cp.fieldEdge.customField.selectedFieldNumExists then
-							vehicle.cp.hud.content.pages[1][5][1].text = string.format(courseplay:loc("COURSEPLAY_OVERWRITE_CUSTOM_FIELD_EDGE_PATH_IN_LIST"), vehicle.cp.fieldEdge.customField.fieldNum);
+							vehicle.cp.hud.content.pages[1][5][1].text = string.format(courseplay:loc('COURSEPLAY_OVERWRITE_CUSTOM_FIELD_EDGE_PATH_IN_LIST'), vehicle.cp.fieldEdge.customField.fieldNum);
 						else
-							vehicle.cp.hud.content.pages[1][5][1].text = string.format(courseplay:loc("COURSEPLAY_ADD_CUSTOM_FIELD_EDGE_PATH_TO_LIST"), vehicle.cp.fieldEdge.customField.fieldNum);
+							vehicle.cp.hud.content.pages[1][5][1].text = string.format(courseplay:loc('COURSEPLAY_ADD_CUSTOM_FIELD_EDGE_PATH_TO_LIST'), vehicle.cp.fieldEdge.customField.fieldNum);
 						end;
 					else
-						vehicle.cp.hud.content.pages[1][4][2].text = "---";
+						vehicle.cp.hud.content.pages[1][4][2].text = '---';
 					end;
 				end;
 			end;
@@ -334,21 +336,21 @@ function courseplay.hud:loadPage(vehicle, page)
 		-- update courses?
 		if vehicle.cp.reloadCourseItems then
 			courseplay.courses.reload(vehicle)
-			CourseplayEvent.sendEvent(vehicle,"self.cp.onMpSetCourses",true)
+			CourseplayEvent.sendEvent(vehicle,'self.cp.onMpSetCourses',true)
 		end
 		-- end update courses
 
 		local numCourses = #(vehicle.cp.hud.courses)
 
 		-- set line text
-		local courseName = ""
+		local courseName = ''
 		for line = 1, numCourses do
 			courseName = vehicle.cp.hud.courses[line].displayname
-			if courseName == nil or courseName == "" then
-				courseName = "-";
+			if courseName == nil or courseName == '' then
+				courseName = '-';
 			end;
 			vehicle.cp.hud.content.pages[2][line][1].text = courseName;
-			if vehicle.cp.hud.courses[line].type == "course" then
+			if vehicle.cp.hud.courses[line].type == 'course' then
 				vehicle.cp.hud.content.pages[2][line][1].indention = vehicle.cp.hud.courses[line].level * self.offset
 			else
 				vehicle.cp.hud.content.pages[2][line][1].indention = (vehicle.cp.hud.courses[line].level + 1) * self.offset
@@ -359,55 +361,54 @@ function courseplay.hud:loadPage(vehicle, page)
 		end
 
 		-- enable and disable buttons:
-		--courseplay.buttonsActiveEnabled(nil, vehicle, 'page2')
 		courseplay:buttonsActiveEnabled(vehicle, 'page2');
 
 
 	--PAGE 3: MODE 2 SETTINGS
 	elseif page == 3 then
-		vehicle.cp.hud.content.pages[3][1][1].text = courseplay:loc("CPCombineOffset") --"seitl. Abstand:"
-		vehicle.cp.hud.content.pages[3][2][1].text = courseplay:loc("CPVerticalOffset") --"vertikaler Abstand:"
-		vehicle.cp.hud.content.pages[3][3][1].text = courseplay:loc("CPTurnRadius") --"Wenderadius:"
-		vehicle.cp.hud.content.pages[3][4][1].text = courseplay:loc("CPRequiredFillLevel") --"Start bei %:"
-		vehicle.cp.hud.content.pages[3][5][1].text = courseplay:loc("NoWaitforfillAt") --"abfahren bei %:"
+		vehicle.cp.hud.content.pages[3][1][1].text = courseplay:loc('COURSEPLAY_COMBINE_OFFSET_HORIZONTAL');
+		vehicle.cp.hud.content.pages[3][2][1].text = courseplay:loc('COURSEPLAY_COMBINE_OFFSET_VERTICAL');
+		vehicle.cp.hud.content.pages[3][3][1].text = courseplay:loc('COURSEPLAY_TURN_RADIUS');
+		vehicle.cp.hud.content.pages[3][4][1].text = courseplay:loc('COURSEPLAY_START_AT');
+		vehicle.cp.hud.content.pages[3][5][1].text = courseplay:loc('COURSEPLAY_DRIVE_ON_AT');
 
 		if vehicle.cp.mode == 4 or vehicle.cp.mode == 8 then
-			vehicle.cp.hud.content.pages[3][6][1].text = courseplay:loc("COURSEPLAY_REFILL_UNTIL_PCT");
+			vehicle.cp.hud.content.pages[3][6][1].text = courseplay:loc('COURSEPLAY_REFILL_UNTIL_PCT');
 		end;
 
 		if vehicle.cp.modeState ~= nil then
 			if vehicle.cp.combineOffset ~= 0 then
-				local combineOffsetMode = vehicle.cp.combineOffsetAutoMode and "(auto)" or "(mnl)";
-				vehicle.cp.hud.content.pages[3][1][2].text = string.format("%s %.1fm", combineOffsetMode, vehicle.cp.combineOffset);
+				local combineOffsetMode = vehicle.cp.combineOffsetAutoMode and '(auto)' or '(mnl)';
+				vehicle.cp.hud.content.pages[3][1][2].text = string.format('%s %.1fm', combineOffsetMode, vehicle.cp.combineOffset);
 			else
-				vehicle.cp.hud.content.pages[3][1][2].text = "auto";
+				vehicle.cp.hud.content.pages[3][1][2].text = 'auto';
 			end;
 		else
-			vehicle.cp.hud.content.pages[3][1][2].text = "---";
+			vehicle.cp.hud.content.pages[3][1][2].text = '---';
 		end;
 
 		if vehicle.cp.tipperOffset ~= nil then
 			if vehicle.cp.tipperOffset == 0 then
-				vehicle.cp.hud.content.pages[3][2][2].text = "auto";
+				vehicle.cp.hud.content.pages[3][2][2].text = 'auto';
 			elseif vehicle.cp.tipperOffset > 0 then
-				vehicle.cp.hud.content.pages[3][2][2].text = string.format("auto+%.1fm", vehicle.cp.tipperOffset);
+				vehicle.cp.hud.content.pages[3][2][2].text = string.format('auto+%.1fm', vehicle.cp.tipperOffset);
 			elseif vehicle.cp.tipperOffset < 0 then
-				vehicle.cp.hud.content.pages[3][2][2].text = string.format("auto%.1fm", vehicle.cp.tipperOffset);
+				vehicle.cp.hud.content.pages[3][2][2].text = string.format('auto%.1fm', vehicle.cp.tipperOffset);
 			end;
 		else
-			vehicle.cp.hud.content.pages[3][2][2].text = "---";
+			vehicle.cp.hud.content.pages[3][2][2].text = '---';
 		end;
 
 		if vehicle.cp.turnRadiusAuto ~= nil or vehicle.cp.turnRadius ~= nil then
 			local turnRadiusMode = vehicle.cp.turnRadiusAutoMode and '(auto)' or '(mnl)';
-			vehicle.cp.hud.content.pages[3][3][2].text = string.format("%s %dm", turnRadiusMode, vehicle.cp.turnRadius);
+			vehicle.cp.hud.content.pages[3][3][2].text = string.format('%s %dm', turnRadiusMode, vehicle.cp.turnRadius);
 		else
-			vehicle.cp.hud.content.pages[3][3][2].text = "---";
+			vehicle.cp.hud.content.pages[3][3][2].text = '---';
 		end;
 
-		vehicle.cp.hud.content.pages[3][4][2].text = vehicle.cp.followAtFillLevel ~= nil and string.format("%d%%", vehicle.cp.followAtFillLevel) or '---';
+		vehicle.cp.hud.content.pages[3][4][2].text = vehicle.cp.followAtFillLevel ~= nil and string.format('%d%%', vehicle.cp.followAtFillLevel) or '---';
 
-		vehicle.cp.hud.content.pages[3][5][2].text = vehicle.cp.driveOnAtFillLevel ~= nil and string.format("%d%%", vehicle.cp.driveOnAtFillLevel) or '---';
+		vehicle.cp.hud.content.pages[3][5][2].text = vehicle.cp.driveOnAtFillLevel ~= nil and string.format('%d%%', vehicle.cp.driveOnAtFillLevel) or '---';
 
 		if vehicle.cp.mode == 4 or vehicle.cp.mode == 8 then
 			vehicle.cp.hud.content.pages[3][6][2].text = ('%d%%'):format(vehicle.cp.refillUntilPct);
@@ -417,32 +418,32 @@ function courseplay.hud:loadPage(vehicle, page)
 	--PAGE 4: COMBINE ASSIGNMENT
 	elseif page == 4 then
 		--Line 1: combine search mode (automatic vs manual)
-		vehicle.cp.hud.content.pages[4][1][1].text = courseplay:loc("COURSEPLAY_COMBINE_SEARCH_MODE"); --always
-		vehicle.cp.hud.content.pages[4][1][2].text = vehicle.cp.searchCombineAutomatically and courseplay:loc("COURSEPLAY_AUTOMATIC_SEARCH") or courseplay:loc("COURSEPLAY_MANUAL_SEARCH");
+		vehicle.cp.hud.content.pages[4][1][1].text = courseplay:loc('COURSEPLAY_COMBINE_SEARCH_MODE'); --always
+		vehicle.cp.hud.content.pages[4][1][2].text = vehicle.cp.searchCombineAutomatically and courseplay:loc('COURSEPLAY_AUTOMATIC_SEARCH') or courseplay:loc('COURSEPLAY_MANUAL_SEARCH');
 
 		--Line 2: select combine manually
 		if not vehicle.cp.searchCombineAutomatically then
-			vehicle.cp.hud.content.pages[4][2][1].text = courseplay:loc("COURSEPLAY_CHOOSE_COMBINE"); --only if manual
+			vehicle.cp.hud.content.pages[4][2][1].text = courseplay:loc('COURSEPLAY_CHOOSE_COMBINE'); --only if manual
 			if vehicle.cp.HUD4savedCombine then
 				if vehicle.cp.HUD4savedCombineName == nil then
-					vehicle.cp.HUD4savedCombineName = courseplay:loc("CPCombine");
+					vehicle.cp.HUD4savedCombineName = courseplay:loc('COURSEPLAY_COMBINE');
 				end;
-				vehicle.cp.hud.content.pages[4][2][2].text = string.format("%s (%dm)", vehicle.cp.HUD4savedCombineName, courseplay:distance_to_object(vehicle, vehicle.cp.savedCombine));
+				vehicle.cp.hud.content.pages[4][2][2].text = string.format('%s (%dm)', vehicle.cp.HUD4savedCombineName, courseplay:distanceToObject(vehicle, vehicle.cp.savedCombine));
 			else
-				vehicle.cp.hud.content.pages[4][2][2].text = courseplay:loc("CPNone");
+				vehicle.cp.hud.content.pages[4][2][2].text = courseplay:loc('COURSEPLAY_NONE');
 			end;
 		end;
 
 		--[[
 		--Line 3: choose field for automatic search --only if automatic
 		if vehicle.cp.searchCombineAutomatically and courseplay.fields.numAvailableFields > 0 then
-			vehicle.cp.hud.content.pages[4][3][1].text = courseplay:loc("COURSEPLAY_SEARCH_COMBINE_ON_FIELD"):format(vehicle.cp.searchCombineOnField > 0 and tostring(vehicle.cp.searchCombineOnField) or '---');
+			vehicle.cp.hud.content.pages[4][3][1].text = courseplay:loc('COURSEPLAY_SEARCH_COMBINE_ON_FIELD'):format(vehicle.cp.searchCombineOnField > 0 and tostring(vehicle.cp.searchCombineOnField) or '---');
 		end;
 		--]]
 
 		--Line 4: current assigned combine
-		vehicle.cp.hud.content.pages[4][4][1].text = courseplay:loc("COURSEPLAY_CURRENT"); --always
-		vehicle.cp.hud.content.pages[4][4][2].text = vehicle.cp.HUD4hasActiveCombine and vehicle.cp.HUD4combineName or courseplay:loc("CPNone");
+		vehicle.cp.hud.content.pages[4][4][1].text = courseplay:loc('COURSEPLAY_CURRENT'); --always
+		vehicle.cp.hud.content.pages[4][4][2].text = vehicle.cp.HUD4hasActiveCombine and vehicle.cp.HUD4combineName or courseplay:loc('COURSEPLAY_NONE');
 
 		--Line 5: remove active combine from tractor
 		if vehicle.cp.activeCombine ~= nil then --only if activeCombine
@@ -452,58 +453,59 @@ function courseplay.hud:loadPage(vehicle, page)
 
 	--PAGE 5: SPEEDS
 	elseif page == 5 then
-		vehicle.cp.hud.content.pages[5][1][1].text = courseplay:loc("CPTurnSpeed") -- "Wendemanöver:"
-		vehicle.cp.hud.content.pages[5][2][1].text = courseplay:loc("CPFieldSpeed") -- "Auf dem Feld:"
-		vehicle.cp.hud.content.pages[5][3][1].text = courseplay:loc("CPMaxSpeed") -- "Auf Straße:"
-		vehicle.cp.hud.content.pages[5][4][1].text = courseplay:loc("CPUnloadSpeed") -- "Abladen (BGA):"
-		vehicle.cp.hud.content.pages[5][5][1].text = courseplay:loc("CPuseSpeed") -- "Geschwindigkeit:"
+		vehicle.cp.hud.content.pages[5][1][1].text = courseplay:loc('COURSEPLAY_SPEED_TURN');
+		vehicle.cp.hud.content.pages[5][2][1].text = courseplay:loc('COURSEPLAY_SPEED_FIELD');
+		vehicle.cp.hud.content.pages[5][3][1].text = courseplay:loc('COURSEPLAY_SPEED_MAX');
+		vehicle.cp.hud.content.pages[5][4][1].text = courseplay:loc('COURSEPLAY_SPEED_UNLOAD');
+		vehicle.cp.hud.content.pages[5][5][1].text = courseplay:loc('COURSEPLAY_MAX_SPEED_MODE');
 
-		vehicle.cp.hud.content.pages[5][1][2].text = string.format("%d %s", g_i18n:getSpeed(vehicle.cp.speeds.turn   * 3600), g_i18n:getText("speedometer"));
-		vehicle.cp.hud.content.pages[5][2][2].text = string.format("%d %s", g_i18n:getSpeed(vehicle.cp.speeds.field  * 3600), g_i18n:getText("speedometer"));
-		vehicle.cp.hud.content.pages[5][4][2].text = string.format("%d %s", g_i18n:getSpeed(vehicle.cp.speeds.unload * 3600), g_i18n:getText("speedometer"));
+		vehicle.cp.hud.content.pages[5][1][2].text = string.format('%d %s', g_i18n:getSpeed(vehicle.cp.speeds.turn   * 3600), g_i18n:getText('speedometer'));
+		vehicle.cp.hud.content.pages[5][2][2].text = string.format('%d %s', g_i18n:getSpeed(vehicle.cp.speeds.field  * 3600), g_i18n:getText('speedometer'));
+		vehicle.cp.hud.content.pages[5][4][2].text = string.format('%d %s', g_i18n:getSpeed(vehicle.cp.speeds.unload * 3600), g_i18n:getText('speedometer'));
 
 		if vehicle.cp.speeds.useRecordingSpeed then
-			vehicle.cp.hud.content.pages[5][3][2].text = courseplay:loc("CPautomaticSpeed");
-			vehicle.cp.hud.content.pages[5][5][2].text = courseplay:loc("CPuseSpeed1") -- "wie beim einfahren"
+			vehicle.cp.hud.content.pages[5][3][2].text = courseplay:loc('COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC');
+			vehicle.cp.hud.content.pages[5][5][2].text = courseplay:loc('COURSEPLAY_MAX_SPEED_MODE_RECORDING');
 		else
-			vehicle.cp.hud.content.pages[5][3][2].text = string.format("%d %s", g_i18n:getSpeed(vehicle.cp.speeds.max * 3600), g_i18n:getText("speedometer"));
-			vehicle.cp.hud.content.pages[5][5][2].text = courseplay:loc("CPuseSpeed2") -- "maximale Geschwindigkeit"
+			vehicle.cp.hud.content.pages[5][3][2].text = string.format('%d %s', g_i18n:getSpeed(vehicle.cp.speeds.max * 3600), g_i18n:getText('speedometer'));
+			vehicle.cp.hud.content.pages[5][5][2].text = courseplay:loc('COURSEPLAY_MAX_SPEED_MODE_MAX');
 		end;
+
 
 	--PAGE 6: GENERAL SETTINGS
 	elseif page == 6 then
-		--aStar
-		vehicle.cp.hud.content.pages[6][1][1].text = courseplay:loc("CPaStar");
-		vehicle.cp.hud.content.pages[6][1][2].text = vehicle.cp.realisticDriving and courseplay:loc("CPactivated") or courseplay:loc("CPdeactivated");
+		-- pathfinding
+		vehicle.cp.hud.content.pages[6][1][1].text = courseplay:loc('COURSEPLAY_PATHFINDING');
+		vehicle.cp.hud.content.pages[6][1][2].text = vehicle.cp.realisticDriving and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
 
-		--Open hud key
-		vehicle.cp.hud.content.pages[6][2][1].text = courseplay:loc("CPopenHud");
+		-- Open hud key
+		vehicle.cp.hud.content.pages[6][2][1].text = courseplay:loc('COURSEPLAY_OPEN_HUD_MODE');
 		vehicle.cp.hud.content.pages[6][2][2].text = vehicle.cp.hud.openWithMouse and courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION_SECONDARY.displayName or courseplay.inputBindings.keyboard.COURSEPLAY_HUD_COMBINED.displayName;
 
-		--Waypoint mode
-		vehicle.cp.hud.content.pages[6][3][1].text = courseplay:loc("CPWPs");
-		vehicle.cp.hud.content.pages[6][3][2].text = courseplay:loc(string.format("WaypointMode%d", vehicle.cp.visualWaypointsMode));
+		-- Waypoint mode
+		vehicle.cp.hud.content.pages[6][3][1].text = courseplay:loc('COURSEPLAY_WAYPOINT_MODE');
+		vehicle.cp.hud.content.pages[6][3][2].text = courseplay:loc(string.format('COURSEPLAY_WAYPOINT_MODE_%d', vehicle.cp.visualWaypointsMode));
 
-		--Beacon lights
-		vehicle.cp.hud.content.pages[6][4][1].text = courseplay:loc("COURSEPLAY_BEACON_LIGHTS");
-		vehicle.cp.hud.content.pages[6][4][2].text = courseplay:loc(string.format("COURSEPLAY_BEACON_LIGHTS_MODE_%d", vehicle.cp.beaconLightsMode));
+		-- Beacon lights
+		vehicle.cp.hud.content.pages[6][4][1].text = courseplay:loc('COURSEPLAY_BEACON_LIGHTS');
+		vehicle.cp.hud.content.pages[6][4][2].text = courseplay:loc(string.format('COURSEPLAY_BEACON_LIGHTS_MODE_%d', vehicle.cp.beaconLightsMode));
 
-		--Waiting point: wait time
+		-- Waiting point: wait time
 		if not (vehicle.cp.mode == 3 or vehicle.cp.mode == 4 or vehicle.cp.mode == 6 or vehicle.cp.mode == 7) then
-			vehicle.cp.hud.content.pages[6][5][1].text = courseplay:loc("CPWaitTime");
+			vehicle.cp.hud.content.pages[6][5][1].text = courseplay:loc('COURSEPLAY_WAITING_TIME');
 			local minutes, seconds = math.floor(vehicle.cp.waitTime/60), vehicle.cp.waitTime % 60;
-			local str = string.format(courseplay:loc("COURSEPLAY_SECONDS"), seconds);
+			local str = courseplay:loc('COURSEPLAY_SECONDS'):format(seconds);
 			if minutes > 0 then
-				str = string.format(courseplay:loc("COURSEPLAY_MINUTES"), minutes);
+				str = courseplay:loc('COURSEPLAY_MINUTES'):format(minutes);
 				if seconds > 0 then
-					str = str .. ', ' .. string.format(courseplay:loc("COURSEPLAY_SECONDS"), seconds);
+					str = str .. ', ' .. courseplay:loc('COURSEPLAY_SECONDS'):format(seconds);
 				end;
 			end;
 			vehicle.cp.hud.content.pages[6][5][2].text = str;
 		end;
 
-		--Debug channels
-		vehicle.cp.hud.content.pages[6][6][1].text = courseplay:loc("CPDebugChannels");
+		-- Debug channels
+		vehicle.cp.hud.content.pages[6][6][1].text = courseplay:loc('COURSEPLAY_DEBUG_CHANNELS');
 
 
 	--PAGE 7: DRIVING SETTINGS
@@ -511,113 +513,113 @@ function courseplay.hud:loadPage(vehicle, page)
 		if vehicle.cp.mode == 3 or vehicle.cp.mode == 4 or vehicle.cp.mode == 6 or vehicle.cp.mode == 7 or vehicle.cp.mode == 8 then
 			--Lane offset
 			if vehicle.cp.mode == 4 or vehicle.cp.mode == 6 then
-				vehicle.cp.hud.content.pages[7][1][1].text = courseplay:loc("COURSEPLAY_LANE_OFFSET");
+				vehicle.cp.hud.content.pages[7][1][1].text = courseplay:loc('COURSEPLAY_LANE_OFFSET');
 				if vehicle.cp.laneOffset and vehicle.cp.laneOffset ~= 0 then
 					if vehicle.cp.laneOffset > 0 then
-						vehicle.cp.hud.content.pages[7][1][2].text = string.format("%.1fm (%s)", math.abs(vehicle.cp.laneOffset), courseplay:loc("COURSEPLAY_RIGHT"));
+						vehicle.cp.hud.content.pages[7][1][2].text = string.format('%.1fm (%s)', math.abs(vehicle.cp.laneOffset), courseplay:loc('COURSEPLAY_RIGHT'));
 					elseif vehicle.cp.laneOffset < 0 then
-						vehicle.cp.hud.content.pages[7][1][2].text = string.format("%.1fm (%s)", math.abs(vehicle.cp.laneOffset), courseplay:loc("COURSEPLAY_LEFT"));
+						vehicle.cp.hud.content.pages[7][1][2].text = string.format('%.1fm (%s)', math.abs(vehicle.cp.laneOffset), courseplay:loc('COURSEPLAY_LEFT'));
 					end;
 				else
-					vehicle.cp.hud.content.pages[7][1][2].text = "---";
+					vehicle.cp.hud.content.pages[7][1][2].text = '---';
 				end;
 			end;
 
 			--Symmetrical lane change
 			if vehicle.cp.mode == 4 or vehicle.cp.mode == 6 and vehicle.cp.laneOffset ~= 0 then
-				vehicle.cp.hud.content.pages[7][2][1].text = courseplay:loc("COURSEPLAY_SYMMETRIC_LANE_CHANGE");
-				vehicle.cp.hud.content.pages[7][2][2].text = vehicle.cp.symmetricLaneChange and courseplay:loc("CPactivated") or courseplay:loc("CPdeactivated");
+				vehicle.cp.hud.content.pages[7][2][1].text = courseplay:loc('COURSEPLAY_SYMMETRIC_LANE_CHANGE');
+				vehicle.cp.hud.content.pages[7][2][2].text = vehicle.cp.symmetricLaneChange and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
 			end;
 
 			--Tool horizontal offset
-			vehicle.cp.hud.content.pages[7][3][1].text = courseplay:loc("COURSEPLAY_TOOL_OFFSET_X");
+			vehicle.cp.hud.content.pages[7][3][1].text = courseplay:loc('COURSEPLAY_TOOL_OFFSET_X');
 			if vehicle.cp.toolOffsetX and vehicle.cp.toolOffsetX ~= 0 then
 				if vehicle.cp.toolOffsetX > 0 then
-					vehicle.cp.hud.content.pages[7][3][2].text = string.format("%.1fm (%s)", math.abs(vehicle.cp.toolOffsetX), courseplay:loc("COURSEPLAY_RIGHT"));
+					vehicle.cp.hud.content.pages[7][3][2].text = string.format('%.1fm (%s)', math.abs(vehicle.cp.toolOffsetX), courseplay:loc('COURSEPLAY_RIGHT'));
 				elseif vehicle.cp.toolOffsetX < 0 then
-					vehicle.cp.hud.content.pages[7][3][2].text = string.format("%.1fm (%s)", math.abs(vehicle.cp.toolOffsetX), courseplay:loc("COURSEPLAY_LEFT"));
+					vehicle.cp.hud.content.pages[7][3][2].text = string.format('%.1fm (%s)', math.abs(vehicle.cp.toolOffsetX), courseplay:loc('COURSEPLAY_LEFT'));
 				end;
 			else
-				vehicle.cp.hud.content.pages[7][3][2].text = "---";
+				vehicle.cp.hud.content.pages[7][3][2].text = '---';
 			end;
 
 			--Tool vertical offset
-			vehicle.cp.hud.content.pages[7][4][1].text = courseplay:loc("COURSEPLAY_TOOL_OFFSET_Z");
+			vehicle.cp.hud.content.pages[7][4][1].text = courseplay:loc('COURSEPLAY_TOOL_OFFSET_Z');
 			if vehicle.cp.toolOffsetZ and vehicle.cp.toolOffsetZ ~= 0 then
 				if vehicle.cp.toolOffsetZ > 0 then
-					vehicle.cp.hud.content.pages[7][4][2].text = string.format("%.1fm (%s)", math.abs(vehicle.cp.toolOffsetZ), courseplay:loc("COURSEPLAY_FRONT"));
+					vehicle.cp.hud.content.pages[7][4][2].text = string.format('%.1fm (%s)', math.abs(vehicle.cp.toolOffsetZ), courseplay:loc('COURSEPLAY_FRONT'));
 				elseif vehicle.cp.toolOffsetZ < 0 then
-					vehicle.cp.hud.content.pages[7][4][2].text = string.format("%.1fm (%s)", math.abs(vehicle.cp.toolOffsetZ), courseplay:loc("COURSEPLAY_BACK"));
+					vehicle.cp.hud.content.pages[7][4][2].text = string.format('%.1fm (%s)', math.abs(vehicle.cp.toolOffsetZ), courseplay:loc('COURSEPLAY_BACK'));
 				end;
 			else
-				vehicle.cp.hud.content.pages[7][4][2].text = "---";
+				vehicle.cp.hud.content.pages[7][4][2].text = '---';
 			end;
 		end;
 
 		--Copy course from driver
-		vehicle.cp.hud.content.pages[7][5][1].text = courseplay:loc("CPcopyCourse");
+		vehicle.cp.hud.content.pages[7][5][1].text = courseplay:loc('COURSEPLAY_COPY_COURSE');
 		if vehicle.cp.copyCourseFromDriver ~= nil then
-			local driverName = vehicle.cp.copyCourseFromDriver.name or courseplay:loc("CPDriver");
-			vehicle.cp.hud.content.pages[7][5][2].text = string.format("%s (%dm)", driverName, courseplay:distance_to_object(vehicle, vehicle.cp.copyCourseFromDriver));
-			vehicle.cp.hud.content.pages[7][6][2].text = '(' .. (vehicle.cp.copyCourseFromDriver.cp.currentCourseName or courseplay:loc("CPtempCourse")) .. ')';
+			local driverName = vehicle.cp.copyCourseFromDriver.name or courseplay:loc('COURSEPLAY_VEHICLE');
+			vehicle.cp.hud.content.pages[7][5][2].text = string.format('%s (%dm)', driverName, courseplay:distanceToObject(vehicle, vehicle.cp.copyCourseFromDriver));
+			vehicle.cp.hud.content.pages[7][6][2].text = '(' .. (vehicle.cp.copyCourseFromDriver.cp.currentCourseName or courseplay:loc('COURSEPLAY_TEMP_COURSE')) .. ')';
 		else
-			vehicle.cp.hud.content.pages[7][5][2].text = courseplay:loc("CPNone"); -- "keiner"
+			vehicle.cp.hud.content.pages[7][5][2].text = courseplay:loc('COURSEPLAY_NONE');
 		end;
 
 
 	--PAGE 8: COURSE GENERATION
 	elseif page == 8 then
 		--line 1 = CourseplayFields
-		vehicle.cp.hud.content.pages[8][1][1].text, vehicle.cp.hud.content.pages[8][1][2].text = "", "";
+		vehicle.cp.hud.content.pages[8][1][1].text, vehicle.cp.hud.content.pages[8][1][2].text = '', '';
 		if courseplay.fields.numAvailableFields > 0 then
-			vehicle.cp.hud.content.pages[8][1][1].text = courseplay:loc("COURSEPLAY_FIELD_EDGE_PATH");
+			vehicle.cp.hud.content.pages[8][1][1].text = courseplay:loc('COURSEPLAY_FIELD_EDGE_PATH');
 			vehicle.cp.hud.content.pages[8][1][2].text = vehicle.cp.fieldEdge.selectedField.fieldNum > 0 and courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum].name or '---';
 		end;
 
 		--line 2 = work width
-		vehicle.cp.hud.content.pages[8][2][1].text = courseplay:loc("COURSEPLAY_WORK_WIDTH"); -- Arbeitsbreite
-		vehicle.cp.hud.content.pages[8][2][2].text = vehicle.cp.workWidth ~= nil and string.format("%.1fm", vehicle.cp.workWidth) or '---';
+		vehicle.cp.hud.content.pages[8][2][1].text = courseplay:loc('COURSEPLAY_WORK_WIDTH');
+		vehicle.cp.hud.content.pages[8][2][2].text = vehicle.cp.workWidth ~= nil and string.format('%.1fm', vehicle.cp.workWidth) or '---';
 
 		--line 3 = starting corner
-		vehicle.cp.hud.content.pages[8][3][1].text = courseplay:loc("CPstartingCorner");
+		vehicle.cp.hud.content.pages[8][3][1].text = courseplay:loc('COURSEPLAY_STARTING_CORNER');
 		-- 1 = SW, 2 = NW, 3 = NE, 4 = SE
 		if vehicle.cp.hasStartingCorner then
-			vehicle.cp.hud.content.pages[8][3][2].text = courseplay:loc(string.format("CPcorner%d", vehicle.cp.startingCorner)); -- NE/SE/SW/NW
+			vehicle.cp.hud.content.pages[8][3][2].text = courseplay:loc(string.format('COURSEPLAY_CORNER_%d', vehicle.cp.startingCorner)); -- NE/SE/SW/NW
 		else
-			vehicle.cp.hud.content.pages[8][3][2].text = "---";
+			vehicle.cp.hud.content.pages[8][3][2].text = '---';
 		end;
 
 		--line 4 = starting direction
-		vehicle.cp.hud.content.pages[8][4][1].text = courseplay:loc("CPstartingDirection");
+		vehicle.cp.hud.content.pages[8][4][1].text = courseplay:loc('COURSEPLAY_STARTING_DIRECTION');
 		-- 1 = North, 2 = East, 3 = South, 4 = West
 		if vehicle.cp.hasStartingDirection then
-			vehicle.cp.hud.content.pages[8][4][2].text = courseplay:loc(string.format("CPdirection%d", vehicle.cp.startingDirection)); -- East/South/West/North
+			vehicle.cp.hud.content.pages[8][4][2].text = courseplay:loc(string.format('COURSEPLAY_DIRECTION_%d', vehicle.cp.startingDirection)); -- East/South/West/North
 		else
-			vehicle.cp.hud.content.pages[8][4][2].text = "---";
+			vehicle.cp.hud.content.pages[8][4][2].text = '---';
 		end;
 
 		--line 5 = return to first point
-		vehicle.cp.hud.content.pages[8][5][1].text = courseplay:loc("CPreturnToFirstPoint");
-		vehicle.cp.hud.content.pages[8][5][2].text = vehicle.cp.returnToFirstPoint and courseplay:loc("CPactivated") or courseplay:loc("CPdeactivated");
+		vehicle.cp.hud.content.pages[8][5][1].text = courseplay:loc('COURSEPLAY_RETURN_TO_FIRST_POINT');
+		vehicle.cp.hud.content.pages[8][5][2].text = vehicle.cp.returnToFirstPoint and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
 
 		--line 6 = headland
-		vehicle.cp.hud.content.pages[8][6][1].text = courseplay:loc("CPheadland");
+		vehicle.cp.hud.content.pages[8][6][1].text = courseplay:loc('COURSEPLAY_HEADLAND');
 		vehicle.cp.hud.content.pages[8][6][2].text = vehicle.cp.headland.numLanes ~= 0 and tostring(vehicle.cp.headland.numLanes) or '-';
 
 
 	--PAGE 9: SHOVEL SETTINGS
 	elseif page == 9 then
-		vehicle.cp.hud.content.pages[9][1][1].text = courseplay:loc("setLoad");  --"laden"
-		vehicle.cp.hud.content.pages[9][2][1].text = courseplay:loc("setTransport");  --"transportieren"
-		vehicle.cp.hud.content.pages[9][3][1].text = courseplay:loc("setPreUnload");  --"fertig zum entladen"
-		vehicle.cp.hud.content.pages[9][4][1].text = courseplay:loc("setUnload");  --"entladen"
+		vehicle.cp.hud.content.pages[9][1][1].text = courseplay:loc('COURSEPLAY_SHOVEL_LOADING_POSITION');
+		vehicle.cp.hud.content.pages[9][2][1].text = courseplay:loc('COURSEPLAY_SHOVEL_TRANSPORT_POSITION');
+		vehicle.cp.hud.content.pages[9][3][1].text = courseplay:loc('COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION');
+		vehicle.cp.hud.content.pages[9][4][1].text = courseplay:loc('COURSEPLAY_SHOVEL_UNLOADING_POSITION');
 
 		for state=2,5 do
 			vehicle.cp.hud.content.pages[9][state-1][2].text = vehicle.cp.hasShovelStatePositions[state] and 'OK' or '';
 		end;
 
-		vehicle.cp.hud.content.pages[9][5][1].text = courseplay:loc("cpShovelStopAndGo");
-		vehicle.cp.hud.content.pages[9][5][2].text = vehicle.cp.shovelStopAndGo and courseplay:loc("CPactivated") or courseplay:loc("CPdeactivated");
+		vehicle.cp.hud.content.pages[9][5][1].text = courseplay:loc('COURSEPLAY_SHOVEL_STOP_AND_GO');
+		vehicle.cp.hud.content.pages[9][5][2].text = vehicle.cp.shovelStopAndGo and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
 
 	end; --END if page == n
 

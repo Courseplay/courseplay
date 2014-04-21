@@ -681,7 +681,7 @@ end
 function courseplay_manager:severCombineTractorConnection(vehicle, callDelete)
 	if vehicle.cp then
 		-- VEHICLE IS COMBINE
-		if vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable or vehicle.cp.isSugarBeetLoader or vehicle.cp.isSugarBeetLoader or courseplay:isSpecialChopper(vehicle) then
+		if vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable or vehicle.cp.isSugarBeetLoader or courseplay:isSpecialChopper(vehicle) then
 			courseplay:debug(('BaseMission:removeVehicle() -> severCombineTractorConnection(%q, %s) [VEHICLE IS COMBINE]'):format(nameNum(vehicle), tostring(callDelete)), 4);
 			local combine = vehicle;
 			-- remove this combine as savedCombine from all tractors

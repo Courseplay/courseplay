@@ -116,7 +116,7 @@ function courseplay:openCloseHud(self, open)
 	end;
 end;
 
-function courseplay:setAiMode(vehicle, modeNum)
+function courseplay:setCpMode(vehicle, modeNum)
 	vehicle.cp.mode = modeNum;
 	courseplay:buttonsActiveEnabled(vehicle, "all");
 end;
@@ -245,7 +245,7 @@ function courseplay:buttonsActiveEnabled(self, section)
 	if self.cp.hud.currentPage == 1 and (section == nil or section == "all" or section == "quickModes" or section == "recording" or section == "customFieldShow" or section == 'findFirstWaypoint') then
 		for _,button in pairs(self.cp.buttons["1"]) do
 			local fn = button.function_to_call;
-			if fn == "setAiMode" then
+			if fn == "setCpMode" then
 				button.isActive = self.cp.mode == button.parameter;
 				button.isDisabled = button.parameter == 7 and not self.cp.isCombine and not self.cp.isChopper and not self.cp.isHarvesterSteerable;
 				button.canBeClicked = not button.isDisabled and not button.isActive;
@@ -431,7 +431,7 @@ function courseplay:calculateWorkWidth(vehicle)
 	local implL,implR = -9999,9999;
 	if vehicle.attachedImplements then
 		for i,implement in pairs(vehicle.attachedImplements) do
-			local workWidth = courseplay:askForSpecialWorkingWidth(implement.object);
+			local workWidth = courseplay:getSpecialWorkWidth(implement.object);
 			if workWidth then
 				courseplay:debug(('\tSpecial workWidth found: %.1fm'):format(workWidth), 7);
 				courseplay:changeWorkWidth(vehicle, nil, workWidth);
@@ -1417,7 +1417,7 @@ function courseplay:setCustomSingleFieldEdge(vehicle)
 	--print(string.format("%s: call setCustomSingleFieldEdge()", nameNum(vehicle)));
 
 	local x,y,z = getWorldTranslation(vehicle.rootNode);
-	local isField = x and z and courseplay:is_field(x, z, 0, 0); --TODO: use width/height of 0.1 ?
+	local isField = x and z and courseplay:isField(x, z, 0, 0); --TODO: use width/height of 0.1 ?
 	courseplay.fields:dbg(string.format("Custom field scan: x,z=%.1f,%.1f, isField=%s", x, z, tostring(isField)), 'customLoad');
 	vehicle.cp.fieldEdge.customField.points = nil;
 	if isField then

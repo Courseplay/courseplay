@@ -1,5 +1,4 @@
 function courseplay:setNameVariable(workTool)
-	--print("	base: CPloading: "..tostring(workTool.name))
 	if workTool.cp == nil then
 		workTool.cp = {};
 	end;
@@ -8,7 +7,7 @@ function courseplay:setNameVariable(workTool)
 		return;
 	end;
 
-	-- local specList = { 'AICombine', 'AITractor', 'AnimatedVehicle', 'BaleLoader', 'Baler', 'BunkerSiloCompacter', 'Combine', 'Cultivator', 'Cylindered', 'Foldable', 'FruitPreparer', 'MixerWagon', 'Mower', 'PathVehicle', 'Plough', 'Shovel', 'SowingMachine', 'Sprayer', 'Steerable', 'Tedder', 'TrafficVehicle', 'Trailer', 'Windrower' };
+	-- local specList = { 'AICombine', 'AITractor', 'AnimatedVehicle', 'BaleLoader', 'Baler', 'BunkerSiloCompacter', 'Combine', 'Cultivator', 'Cylindered', 'Fillable', 'Foldable', 'FruitPreparer', 'MixerWagon', 'Mower', 'PathVehicle', 'Plough', 'Shovel', 'SowingMachine', 'Sprayer', 'Steerable', 'Tedder', 'TrafficVehicle', 'Trailer', 'Windrower' };
 
 	-- Only default specs!
 	for i,spec in pairs(workTool.specializations) do
@@ -22,6 +21,7 @@ function courseplay:setNameVariable(workTool)
 		elseif spec == Combine then 			workTool.cp.hasSpecializationCombine 			 = true;
 		elseif spec == Cultivator then 			workTool.cp.hasSpecializationCultivator 		 = true;
 		elseif spec == Cylindered then 			workTool.cp.hasSpecializationCylindered 		 = true;
+		elseif spec == Fillable then 			workTool.cp.hasSpecializationFillable 			 = true;
 		elseif spec == Foldable then 			workTool.cp.hasSpecializationFoldable 			 = true;
 		elseif spec == FruitPreparer then 		workTool.cp.hasSpecializationFruitPreparer 		 = true;
 		elseif spec == MixerWagon then 			workTool.cp.hasSpecializationMixerWagon 		 = true;
@@ -1276,7 +1276,7 @@ function courseplay:askForSpecialSettings(self,object)
 		self.cp.noStopOnEdge = true
 	end;
 
-	-- Objects
+	-- OBJECTS
 	if object.cp.isVaderstadRapidA600S then
 		object.cp.haveInversedRidgeMarkerState = true;
 
@@ -1397,7 +1397,7 @@ function courseplay:askForSpecialSettings(self,object)
 	end;
 end
 
-function courseplay:askForSpecialWorkingWidth(implement)
+function courseplay:getSpecialWorkWidth(implement)
 	if implement.cp then
 		if implement.cp.isLindnerTankModule then
 			return 6.0;
@@ -1442,7 +1442,7 @@ function courseplay:handleSpecialSprayer(self, activeTool, fillLevelPct, driveOn
 			allowedToDrive = courseplay.thirdParty.EifokLiquidManure:refillViaHose(vehicle, activeTool, fillLevelPct, driveOn, allowedToDrive, lx, lz, dt, pumpDir);
 		end;
 
-		if vehicle.cp.waitPoints[3] ~= nil and (vehicle.recordnumber == vehicle.cp.waitPoints[3] or vehicle.cp.last_recordnumber == vehicle.cp.waitPoints[3]) and vehicle.wait then
+		if vehicle.cp.waitPoints[3] ~= nil and (vehicle.recordnumber == vehicle.cp.waitPoints[3] or vehicle.cp.lastRecordnumber == vehicle.cp.waitPoints[3]) and vehicle.wait then
 			if vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir] == nil and courseplay:timerIsThrough(vehicle, 'findRefillObject') and not isDone then
 				courseplay.thirdParty.EifokLiquidManure:findRefillObject(vehicle, activeTool, 'HoseRefVehicles', pumpDir); --find HoseRef vehicles (transporters and containers)
 				if vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir] == nil then
@@ -1473,7 +1473,7 @@ function courseplay:handleSpecialSprayer(self, activeTool, fillLevelPct, driveOn
 			allowedToDrive = courseplay.thirdParty.EifokLiquidManure:refillViaHose(vehicle, activeTool, fillLevelPct, driveOn, allowedToDrive, lx, lz, dt, pumpDir);
 		end;
 
-		if (vehicle.Waypoints[vehicle.recordnumber].wait or vehicle.Waypoints[vehicle.cp.last_recordnumber].wait) and vehicle.wait and pumpDir == 'push' then
+		if (vehicle.Waypoints[vehicle.recordnumber].wait or vehicle.Waypoints[vehicle.cp.lastRecordnumber].wait) and vehicle.wait and pumpDir == 'push' then
 			if vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir] == nil and courseplay:timerIsThrough(vehicle, 'findRefillObject') and not (activeTool.fill or activeTool.isReFilling) and not isDone then
 				courseplay.thirdParty.EifokLiquidManure:findRefillObject(vehicle, activeTool, 'HoseRefVehicles', pumpDir); --find HoseRef vehicles (transporters and containers)
 				if vehicle.cp.EifokLiquidManure.targetRefillObject[pumpDir] == nil then
@@ -1764,7 +1764,7 @@ function courseplay.thirdParty.EifokLiquidManure:findRefillObject(vehicle, activ
 					end;
 
 					local attVeh = hoseRefVehicle:getRootAttacherVehicle();
-					local hoseRefVehicleValid = attVeh == nil or (not attVeh.drive or (attVeh.Waypoints[attVeh.cp.last_recordnumber].wait and attVeh.wait));
+					local hoseRefVehicleValid = attVeh == nil or (not attVeh.drive or (attVeh.Waypoints[attVeh.cp.lastRecordnumber].wait and attVeh.wait));
 
 					if hoseRefVehicleValid then
 						for connSide,connRef in pairs(activeTool.cp.hoseRefs.conn) do --my conns
@@ -2095,7 +2095,7 @@ function courseplay.thirdParty.EifokLiquidManure:refillAtLiquidManureTrigger(veh
 					activeTool:setFillarm(fillArmAnimNewTime);
 				else
 					activeTool:setIsSprayerFilling(true, false);
-					vehicle.cp.infoText = string.format(courseplay:loc("CPloading"), vehicle.cp.tipperFillLevel, vehicle.cp.tipperCapacity);
+					vehicle.cp.infoText = string.format(courseplay:loc("COURSEPLAY_LOADING_AMOUNT"), vehicle.cp.tipperFillLevel, vehicle.cp.tipperCapacity);
 				end;
 			elseif fillLevelPct >= driveOn then
 				activeTool:setIsSprayerFilling(false, false);
@@ -2111,7 +2111,7 @@ function courseplay.thirdParty.EifokLiquidManure:refillAtLiquidManureTrigger(veh
 			if fillLevelPct < driveOn then
 				allowedToDrive = false;
 				activeTool:setIsSprayerFilling(true, false);
-				vehicle.cp.infoText = string.format(courseplay:loc("CPloading"), vehicle.cp.tipperFillLevel, vehicle.cp.tipperCapacity);
+				vehicle.cp.infoText = string.format(courseplay:loc("COURSEPLAY_LOADING_AMOUNT"), vehicle.cp.tipperFillLevel, vehicle.cp.tipperCapacity);
 			elseif fillLevelPct >= driveOn then
 				activeTool:setIsSprayerFilling(false, false);
 				vehicle.cp.fillTrigger = nil;

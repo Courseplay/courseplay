@@ -278,21 +278,21 @@ function courseplay:getCanUseAiMode(vehicle)
 	local mode = vehicle.cp.mode;
 
 	if mode ~= 5 and mode ~= 6 and mode ~= 7 and not vehicle.cp.tipperAttached then
-		vehicle.cp.infoText = courseplay:loc('CPWrongTrailer');
+		vehicle.cp.infoText = courseplay:loc('COURSEPLAY_WRONG_TRAILER');
 		return false;
 	end;
 
 	if mode == 3 or mode == 7 or mode == 8 then
 		if vehicle.cp.numWaitPoints < 1 then
-			vehicle.cp.infoText = string.format(courseplay:loc('CPTooFewWaitingPoints'), 1);
+			vehicle.cp.infoText = string.format(courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_FEW'), 1);
 			return false;
 		elseif vehicle.cp.numWaitPoints > 1 then
-			vehicle.cp.infoText = string.format(courseplay:loc('CPTooManyWaitingPoints'), 1);
+			vehicle.cp.infoText = string.format(courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_MANY'), 1);
 			return false;
 		end;
 		if mode == 3 then
 			if vehicle.tippers[1] == nil or vehicle.tippers[1].cp == nil or not vehicle.tippers[1].cp.isAugerWagon then
-				vehicle.cp.infoText = courseplay:loc('CPWrongTrailer');
+				vehicle.cp.infoText = courseplay:loc('COURSEPLAY_WRONG_TRAILER');
 				return false;
 			end;
 		elseif mode == 7 then
@@ -304,16 +304,16 @@ function courseplay:getCanUseAiMode(vehicle)
 
 	elseif mode == 4 or mode == 6 then
 		if vehicle.cp.startWork == nil or vehicle.cp.stopWork == nil then
-			vehicle.cp.infoText = courseplay:loc('CPNoWorkArea');
+			vehicle.cp.infoText = courseplay:loc('COURSEPLAY_NO_WORK_AREA');
 			return false;
 		end;
 		if mode == 6 then
 			if vehicle.cp.hasBaleLoader then
 				if vehicle.cp.numWaitPoints < 2 then
-					vehicle.cp.infoText = string.format(courseplay:loc('CPTooFewWaitingPoints'), 2);
+					vehicle.cp.infoText = string.format(courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_FEW'), 2);
 					return false;
 				elseif vehicle.cp.numWaitPoints > 3 then
-					vehicle.cp.infoText = string.format(courseplay:loc('CPTooManyWaitingPoints'), 3);
+					vehicle.cp.infoText = string.format(courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_MANY'), 3);
 					return false;
 				end;
 			end;
@@ -321,16 +321,16 @@ function courseplay:getCanUseAiMode(vehicle)
 
 	elseif mode == 9 then
 		if vehicle.cp.numWaitPoints < 3 then
-			vehicle.cp.infoText = string.format(courseplay:loc('CPTooFewWaitingPoints'), 3);
+			vehicle.cp.infoText = string.format(courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_FEW'), 3);
 			return false;
 		elseif vehicle.cp.numWaitPoints > 3 then
-			vehicle.cp.infoText = string.format(courseplay:loc('CPTooManyWaitingPoints'), 3);
+			vehicle.cp.infoText = string.format(courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_MANY'), 3);
 			return false;
 		elseif vehicle.cp.shovelStatePositions == nil or vehicle.cp.shovelStatePositions[2] == nil or vehicle.cp.shovelStatePositions[3] == nil or vehicle.cp.shovelStatePositions[4] == nil or vehicle.cp.shovelStatePositions[5] == nil then
-			vehicle.cp.infoText = courseplay:loc('CPAssignShovel');
+			vehicle.cp.infoText = courseplay:loc('COURSEPLAY_SHOVEL_POSITIONS_MISSING');
 			return false;
 		elseif vehicle.cp.shovelFillStartPoint == nil or vehicle.cp.shovelFillEndPoint == nil or vehicle.cp.shovelEmptyPoint == nil then
-			vehicle.cp.infoText = courseplay:loc('CPNoCourse');
+			vehicle.cp.infoText = courseplay:loc('COURSEPLAY_NO_VALID_COURSE');
 			return false;
 		end;
 	end;

@@ -137,11 +137,11 @@ function courseplay:register_at_combine(self, combine)
 			local fillLevel = 0
 			local vehicle_ID = 0
 			for k, vehicle in pairs(courseplay.activeCoursePlayers) do
-				if vehicle.combineID ~= nil then
-					if vehicle.combineID == combine.id and vehicle.cp.activeCombine == nil then
-						courseplay:debug(tostring(vehicle.id).." : callCombineFillLevel:"..tostring(vehicle.callCombineFillLevel).." for combine.id:"..tostring(combine.id), 4)
-						if fillLevel <= vehicle.callCombineFillLevel then
-							fillLevel = math.min(vehicle.callCombineFillLevel,0.1)
+				if vehicle.cp.combineID ~= nil then
+					if vehicle.cp.combineID == combine.id and vehicle.cp.activeCombine == nil then
+						courseplay:debug(tostring(vehicle.id).." : cp.callCombineFillLevel:"..tostring(vehicle.cp.callCombineFillLevel).." for combine.id:"..tostring(combine.id), 4)
+						if fillLevel <= vehicle.cp.callCombineFillLevel then
+							fillLevel = math.min(vehicle.cp.callCombineFillLevel,0.1)
 							vehicle_ID = vehicle.id
 						end
 					end
@@ -157,12 +157,12 @@ function courseplay:register_at_combine(self, combine)
 			local distance = 9999999
 			local vehicle_ID = 0
 			for k, vehicle in pairs(courseplay.activeCoursePlayers) do
-				if vehicle.combineID ~= nil then
-					--print(tostring(vehicle.name).." is calling for "..tostring(vehicle.combineID).."  combine.id= "..tostring(combine.id))
-					if vehicle.combineID == combine.id and vehicle.cp.activeCombine == nil then
-						courseplay:debug(tostring(vehicle.id).." : distanceToCombine:"..tostring(vehicle.distanceToCombine).." for combine.id:"..tostring(combine.id), 4)
-						if distance > vehicle.distanceToCombine then
-							distance = vehicle.distanceToCombine
+				if vehicle.cp.combineID ~= nil then
+					--print(tostring(vehicle.name).." is calling for "..tostring(vehicle.cp.combineID).."  combine.id= "..tostring(combine.id))
+					if vehicle.cp.combineID == combine.id and vehicle.cp.activeCombine == nil then
+						courseplay:debug(tostring(vehicle.id).." : distanceToCombine:"..tostring(vehicle.cp.distanceToCombine).." for combine.id:"..tostring(combine.id), 4)
+						if distance > vehicle.cp.distanceToCombine then
+							distance = vehicle.cp.distanceToCombine
 							vehicle_ID = vehicle.id
 						end
 					end
@@ -197,9 +197,9 @@ function courseplay:register_at_combine(self, combine)
 
 	courseplay:debug(string.format("%s is being checked in with %s", nameNum(self), tostring(combine.name)), 4)
 	combine.isCheckedIn = 1;
-	self.callCombineFillLevel = nil
-	self.distanceToCombine = nil
-	self.combineID = nil
+	self.cp.callCombineFillLevel = nil
+	self.cp.distanceToCombine = nil
+	self.cp.combineID = nil
 	table.insert(combine.courseplayers, self)
 	self.cp.positionWithCombine = #(combine.courseplayers)
 	self.cp.activeCombine = combine
@@ -225,7 +225,7 @@ function courseplay:register_at_combine(self, combine)
 	--END OFFSET
 
 	
-	courseplay:add_to_combines_ignore_list(self, combine);
+	courseplay:addToCombinesIgnoreList(self, combine);
 	return true;
 end
 
@@ -239,7 +239,7 @@ function courseplay:unregister_at_combine(self, combine)
 	end
 
 	self.cp.calculatedCourseToCombine = false;
-	courseplay:remove_from_combines_ignore_list(self, combine)
+	courseplay:removeFromCombinesIgnoreList(self, combine)
 	combine.isCheckedIn = nil;
 	table.remove(combine.courseplayers, self.cp.positionWithCombine)
 
@@ -267,7 +267,7 @@ function courseplay:unregister_at_combine(self, combine)
 	return true
 end
 
-function courseplay:add_to_combines_ignore_list(self, combine)
+function courseplay:addToCombinesIgnoreList(self, combine)
 	if combine == nil or combine.trafficCollisionIgnoreList == nil then
 		return
 	end
@@ -277,7 +277,7 @@ function courseplay:add_to_combines_ignore_list(self, combine)
 end
 
 
-function courseplay:remove_from_combines_ignore_list(self, combine)
+function courseplay:removeFromCombinesIgnoreList(self, combine)
 	if combine == nil or combine.trafficCollisionIgnoreList == nil then
 		return
 	end

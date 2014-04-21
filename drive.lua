@@ -21,136 +21,14 @@ function courseplay:drive(self, dt)
 
 	-- combine self unloading
 	if self.cp.mode == 7 then
-		if self.isAIThreshing then
-			if (self.grainTankFillLevel * 100 / self.grainTankCapacity) >= self.cp.driveOnAtFillLevel then
-				self.maxnumber = table.getn(self.Waypoints)
-				cx7, cz7 = self.Waypoints[self.maxnumber].cx, self.Waypoints[self.maxnumber].cz
-				local lx7, lz7 = AIVehicleUtil.getDriveDirection(self.rootNode, cx7, cty7, cz7);
-				local fx,fy,fz = localToWorld(self.rootNode, 0, 0, -3*self.cp.turnRadius)
-				local x7,y7,z7 = localToWorld(self.rootNode, 0, 0, -15)
-				self.cp.mode7tx7 = x7
-				self.cp.mode7ty7 = y7
-				self.cp.mode7tz7 = z7
-				if courseplay:is_field(fx, fz) or self.grainTankFillLevel >= self.grainTankCapacity*0.99 then
-					self.lastaiThreshingDirectionX = self.aiThreshingDirectionX
-					self.lastaiThreshingDirectionZ = self.aiThreshingDirectionZ
-					self:stopAIThreshing()
-					self.cp.shortestDistToWp = nil
-					self.cp.nextTargets = {}
-					if lx7 < 0 then
-						courseplay:debug(nameNum(self) .. ": approach from right", 11);
-						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.rootNode, -(0.34*3*self.cp.turnRadius) , 0, -3*self.cp.turnRadius);
-						courseplay:addNewTarget(self, (0.34*2*self.cp.turnRadius) , 0);
-						courseplay:addNewTarget(self, 0 , 3);
-					else
-						courseplay:debug(nameNum(self) .. ": approach from left", 11);
-						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.rootNode, (0.34*3*self.cp.turnRadius) , 0, -3*self.cp.turnRadius);
-						courseplay:addNewTarget(self, -(0.34*2*self.cp.turnRadius) , 0);
-						courseplay:addNewTarget(self, 0 ,3);
-					end
-					self.cp.mode7Unloading = true
-					self.cp.mode7GoBackBeforeUnloading = true
-					courseplay:start(self)
-					self.cp.speeds.sl = 3
-					refSpeed = self.cp.speeds.field
-				else 
-					return
-				end
-			else
-				return
-			end
-		elseif self.cp.mode7Unloading then
-			self.cp.speeds.sl = 3
-			refSpeed = self.cp.speeds.field
-			if self.cp.mode7GoBackBeforeUnloading then
-				local dist = courseplay:distance_to_point(self, self.cp.mode7tx7,self.cp.mode7ty7,self.cp.mode7tz7)
-				if  dist  < 1 then
-					self.cp.mode7GoBackBeforeUnloading = false
-					self.recordnumber = 2
-				end
-			end
-		else
-			allowedToDrive = false
-			courseplay:setGlobalInfoText(self, 'WORK_END');
-		end
-		if self.cp.modeState == 5 then
-			local targets = #(self.cp.nextTargets)
-			local aligned  = false
-			local ctx7, cty7, ctz7 = getWorldTranslation(self.rootNode);
-			self.cp.infoText = string.format(courseplay:loc("CPDriveToWP"), self.cp.curTarget.x, self.cp.curTarget.z)
-			cx = self.cp.curTarget.x
-			cy = self.cp.curTarget.y
-			cz = self.cp.curTarget.z
+		local continue;
+		continue, cx, cy, cz, refSpeed, allowedToDrive = courseplay:handleMode7(self, cx, cy, cz, refSpeed, allowedToDrive);
+		if not continue then
+			return;
+		end;
+	end;
 
-			if courseplay.debugChannels[11] then 
-				drawDebugLine(cx, cty7+3, cz, 1, 0, 0, ctx7, cty7+3, ctz7, 1, 0, 0); 
-			end;
 
-			self.cp.speeds.sl = 3
-			refSpeed = self.cp.speeds.field
-			distance_to_wp = courseplay:distance_to_point(self, cx, y, cz)
-			local distToChange = 4
-			if self.cp.shortestDistToWp == nil or self.cp.shortestDistToWp > distance_to_wp then
-				self.cp.shortestDistToWp = distance_to_wp
-			end
-			if distance_to_wp > self.cp.shortestDistToWp and distance_to_wp < 6 then
-				distToChange = distance_to_wp + 1
-			end
-			if targets == 2 then 
-				self.cp.curTargetMode7 = self.cp.nextTargets[2];
-			elseif targets == 1 then
-				if math.abs(self.lastaiThreshingDirectionZ) > 0.1 then
-					if math.abs(self.cp.curTargetMode7.x-ctx7)< 3 then
-						aligned = true
-						courseplay:debug(nameNum(self) .. ": aligned", 11);
-					end
-				else
-					if math.abs(self.cp.curTargetMode7.z-ctz7)< 3 then
-						aligned = true
-						courseplay:debug(nameNum(self) .. ": aligned", 11);
-					end
-				end
-			elseif targets  == 0 then
-				if distance_to_wp < 25 then
-					self.cp.speeds.sl = 3
-					refSpeed = self.cp.speeds.turn
-				end
-				if distance_to_wp < 15 then
-					self:setIsThreshing(true)
-				end
-				if math.abs(self.lastaiThreshingDirectionX) > 0.1 then
-					if math.abs(self.cp.curTargetMode7.x-ctx7)< 5 then
-						aligned = true
-						courseplay:debug(nameNum(self) .. ": aligned", 11);
-					end
-				else
-					if math.abs(self.cp.curTargetMode7.z-ctz7)< 5 then
-						aligned = true
-						courseplay:debug(nameNum(self) .. ": aligned", 11);
-					end
-				end
-			end
-			if distance_to_wp < distToChange or aligned then
-				self.cp.shortestDistToWp = nil
-				if targets  > 0 then
-					courseplay:setCurrentTargetFromList(self, 1);
-					self.recordnumber = 2 
-				else
-					self.cp.modeState = 0
-					if self.lastaiThreshingDirectionX ~= nil then
-						self.aiThreshingDirectionX = self.lastaiThreshingDirectionX
-						self.aiThreshingDirectionZ = self.lastaiThreshingDirectionZ
-						courseplay:debug(nameNum(self) .. ": restored self.aiThreshingDirection", 11);
-					end	
-					self:startAIThreshing(true)
-					self.cp.mode7Unloading = false
-					courseplay:debug(nameNum(self) .. ": start AITreshing", 11);
-					courseplay:debug(nameNum(self) .. ": fault: "..tostring(math.ceil(math.abs(ctx7-self.cp.curTargetMode7.x)*100)).." cm X  "..tostring(math.ceil(math.abs(ctz7-self.cp.curTargetMode7.z)*100)).." cm Z", 11);
-				end
-			end
-		end
-
-	end
 	-- unregister at combine, if there is one
 	if self.cp.isLoaded == true and self.cp.positionWithCombine ~= nil then
 		courseplay:unregister_at_combine(self, self.cp.activeCombine)
@@ -170,9 +48,9 @@ function courseplay:drive(self, dt)
 		self.recordnumber = self.maxnumber;
 	end;
 	if self.recordnumber > 1 then
-		self.cp.last_recordnumber = self.recordnumber - 1;
+		self.cp.lastRecordnumber = self.recordnumber - 1;
 	else
-		self.cp.last_recordnumber = 1;
+		self.cp.lastRecordnumber = 1;
 	end;
 
 
@@ -217,20 +95,20 @@ function courseplay:drive(self, dt)
 	if offsetValid then
 		--courseplay:debug(string.format('%s: waypoint before offset: cx=%.2f, cz=%.2f', nameNum(self), cx, cz), 2);
 		local fromX, fromZ, toX, toZ;
-		if self.recordnumber == 1 then --TODO (Jakob): also have offset @ recordnumber 1 ?
+		if self.recordnumber == 1 then
 			fromX = cx;
 			fromZ = cz;
 			toX = self.Waypoints[2].cx;
 			toZ = self.Waypoints[2].cz;
 		else
-			if self.Waypoints[self.cp.last_recordnumber].rev then
+			if self.Waypoints[self.cp.lastRecordnumber].rev then
 				fromX = cx;
 				fromZ = cz;
-				toX = self.Waypoints[self.cp.last_recordnumber].cx;
-				toZ = self.Waypoints[self.cp.last_recordnumber].cz;
+				toX = self.Waypoints[self.cp.lastRecordnumber].cx;
+				toZ = self.Waypoints[self.cp.lastRecordnumber].cz;
 			else
-				fromX = self.Waypoints[self.cp.last_recordnumber].cx;
-				fromZ = self.Waypoints[self.cp.last_recordnumber].cz;
+				fromX = self.Waypoints[self.cp.lastRecordnumber].cx;
+				fromZ = self.Waypoints[self.cp.lastRecordnumber].cz;
 				toX = cx;
 				toZ = cz;
 			end;
@@ -248,14 +126,14 @@ function courseplay:drive(self, dt)
 		drawDebugPoint(cx, cty+3, cz, 0, 1 , 1, 1);
 	end;
 
-	self.dist = courseplay:distance(cx, cz, ctx, ctz)
-	--courseplay:debug(string.format("Tx: %f2 Tz: %f2 WPcx: %f2 WPcz: %f2 dist: %f2 ", ctx, ctz, cx, cz, self.dist ), 2)
+	self.cp.distanceToTarget = courseplay:distance(cx, cz, ctx, ctz);
+	--courseplay:debug(string.format("Tx: %f2 Tz: %f2 WPcx: %f2 WPcz: %f2 dist: %f2 ", ctx, ctz, cx, cz, self.cp.distanceToTarget ), 2)
 	local fwd = nil
 	local distToChange = nil
 	local lx, lz = AIVehicleUtil.getDriveDirection(self.cp.DirectionNode, cx, cty, cz);
 
 	if self.cp.mode == 4 or self.cp.mode == 6 then
-		if  self.Waypoints[self.recordnumber].turn ~= nil then
+		if self.Waypoints[self.recordnumber].turn ~= nil then
 			self.cp.isTurning = self.Waypoints[self.recordnumber].turn
 		end
 		if self.cp.abortWork ~= nil and self.cp.tipperFillLevelPct == 0 then
@@ -313,7 +191,7 @@ function courseplay:drive(self, dt)
 	local activeTipper = nil
 	local isBypassing = false
 	--### WAITING POINTS - START
-	if self.Waypoints[self.cp.last_recordnumber].wait and self.wait then
+	if self.Waypoints[self.cp.lastRecordnumber].wait and self.wait then
 		if self.waitTimer == nil and self.cp.waitTime > 0 then
 			self.waitTimer = self.timer + self.cp.waitTime * 1000
 		end
@@ -322,9 +200,9 @@ function courseplay:drive(self, dt)
 
 		elseif self.cp.mode == 4 then
 			local drive_on = false
-			if self.cp.last_recordnumber == self.cp.startWork and self.cp.tipperFillLevelPct ~= 0 then
+			if self.cp.lastRecordnumber == self.cp.startWork and self.cp.tipperFillLevelPct ~= 0 then
 				self.wait = false
-			elseif self.cp.last_recordnumber == self.cp.stopWork and self.cp.abortWork ~= nil then
+			elseif self.cp.lastRecordnumber == self.cp.stopWork and self.cp.abortWork ~= nil then
 				self.wait = false
 			else
 				local isInWorkArea = self.recordnumber > self.cp.startWork and self.recordnumber <= self.cp.stopWork;
@@ -342,21 +220,21 @@ function courseplay:drive(self, dt)
 				if self.cp.tipperFillLevelPct >= self.cp.refillUntilPct or drive_on then
 					self.wait = false
 				end
-				self.cp.infoText = string.format(courseplay:loc("CPloading"), self.cp.tipperFillLevel, self.cp.tipperCapacity)
+				self.cp.infoText = string.format(courseplay:loc("COURSEPLAY_LOADING_AMOUNT"), self.cp.tipperFillLevel, self.cp.tipperCapacity)
 			end
 		elseif self.cp.mode == 6 then
-			if self.cp.last_recordnumber == self.cp.startWork then
+			if self.cp.lastRecordnumber == self.cp.startWork then
 				self.wait = false
-			elseif self.cp.last_recordnumber == self.cp.stopWork and self.cp.abortWork ~= nil then
+			elseif self.cp.lastRecordnumber == self.cp.stopWork and self.cp.abortWork ~= nil then
 				self.wait = false
-			elseif self.cp.last_recordnumber ~= self.cp.startWork and self.cp.last_recordnumber ~= self.cp.stopWork then 
+			elseif self.cp.lastRecordnumber ~= self.cp.startWork and self.cp.lastRecordnumber ~= self.cp.stopWork then 
 				courseplay:setGlobalInfoText(self, 'UNLOADING_BALE');
 				if self.cp.tipperFillLevelPct == 0 or drive_on then
 					self.wait = false
 				end;
 			end;
 		elseif self.cp.mode == 7 then
-			if self.cp.last_recordnumber == self.cp.startWork then
+			if self.cp.lastRecordnumber == self.cp.startWork then
 				if self.grainTankFillLevel > 0 then
 					self:setPipeState(2)
 					courseplay:setGlobalInfoText(self, 'OVERLOADING_POINT');
@@ -777,7 +655,7 @@ function courseplay:drive(self, dt)
 	
 	--checking ESLimiter version
 	if self.ESLimiter ~= nil and self.ESLimiter.maxRPM[5] == nil then
-		self.cp.infoText = courseplay:loc("CPWrongESLversion")
+		self.cp.infoText = courseplay:loc("COURSEPLAY_ESL_NOT_SUPPORTED")
 	end
 
 	--finishing field work
@@ -837,7 +715,7 @@ function courseplay:drive(self, dt)
 		end;
 	elseif self.recordnumber + 1 <= self.maxnumber then
 		local beforeReverse = (self.Waypoints[self.recordnumber + 1].rev and (self.Waypoints[self.recordnumber].rev == false))
-		local afterReverse = (not self.Waypoints[self.recordnumber + 1].rev and self.Waypoints[self.cp.last_recordnumber].rev)
+		local afterReverse = (not self.Waypoints[self.recordnumber + 1].rev and self.Waypoints[self.cp.lastRecordnumber].rev)
 		if (self.Waypoints[self.recordnumber].wait or beforeReverse) and self.Waypoints[self.recordnumber].rev == false then -- or afterReverse or self.recordnumber == 1
 			if self.cp.hasSpecializationArticulatedAxis then
 				distToChange = 2; -- ArticulatedAxis vehicles
@@ -878,17 +756,17 @@ function courseplay:drive(self, dt)
 	-- Change the distance to the correct one on the Kirovets K700A.
 	if self.cp.isKasi ~= nil then
 		if fwd then
-			self.dist = self.dist - self.cp.isKasi;
+			self.cp.distanceToTarget = self.cp.distanceToTarget - self.cp.isKasi;
 		else
-			self.dist = self.dist + self.cp.isKasi;
+			self.cp.distanceToTarget = self.cp.distanceToTarget + self.cp.isKasi;
 		end;
 		-- TODO: (Claus) Remove old Kasi stuff.
 		--distToChange = distToChange * self.cp.isKasi
 	end
 
 	-- record shortest distance to the next waypoint
-	if self.cp.shortestDistToWp == nil or self.cp.shortestDistToWp > self.dist then
-		self.cp.shortestDistToWp = self.dist
+	if self.cp.shortestDistToWp == nil or self.cp.shortestDistToWp > self.cp.distanceToTarget then
+		self.cp.shortestDistToWp = self.cp.distanceToTarget
 	end
 
 	if beforeReverse then
@@ -901,8 +779,8 @@ function courseplay:drive(self, dt)
 	end
 
 	-- if distance grows i must be circling
-	if self.dist > self.cp.shortestDistToWp and self.recordnumber > 3 and self.dist < 15 and self.Waypoints[self.recordnumber].rev ~= true then
-		distToChange = self.dist + 1
+	if self.cp.distanceToTarget > self.cp.shortestDistToWp and self.recordnumber > 3 and self.cp.distanceToTarget < 15 and self.Waypoints[self.recordnumber].rev ~= true then
+		distToChange = self.cp.distanceToTarget + 1
 	end
 
 	-- Better stearing on MR Articulated Axis vehicles on MR Engine v1.3.19 and below. By Claus G. Pedersen
@@ -923,7 +801,7 @@ function courseplay:drive(self, dt)
 
 	end;
 
-	if self.dist > distToChange or WpUnload or WpLoadEnd or isFinishingWork then
+	if self.cp.distanceToTarget > distToChange or WpUnload or WpLoadEnd or isFinishingWork then
 		if g_server ~= nil then
 			if self.isRealistic then 
 				courseplay:driveInMRDirection(self, lx,lz,fwd, dt,allowedToDrive);
@@ -992,9 +870,9 @@ function courseplay:setTrafficCollision(self, lx, lz, workArea) --!!!
 					AIVehicleUtil.setCollisionDirection(self.cp.trafficCollisionTriggers[i-1], self.cp.trafficCollisionTriggers[i], 0, -1);
 				else
 					local nodeX,nodeY,nodeZ = getWorldTranslation(self.cp.trafficCollisionTriggers[i]);
-					local nodeDirX,nodeDirY,nodeDirZ,distance = courseplay:get3dDirection(nodeX,nodeY,nodeZ, self.Waypoints[recordNumber+i].cx,nodeY,self.Waypoints[recordNumber+i].cz);
+					local nodeDirX,nodeDirY,nodeDirZ,distance = courseplay:getWorldDirection(nodeX,nodeY,nodeZ, self.Waypoints[recordNumber+i].cx,nodeY,self.Waypoints[recordNumber+i].cz);
 					if distance < 5.5 and recordNumber + i +1 <= self.maxnumber then
-							nodeDirX,nodeDirY,nodeDirZ,distance = courseplay:get3dDirection(nodeX,nodeY,nodeZ, self.Waypoints[recordNumber+i+1].cx,nodeY,self.Waypoints[recordNumber+i+1].cz);
+							nodeDirX,nodeDirY,nodeDirZ,distance = courseplay:getWorldDirection(nodeX,nodeY,nodeZ, self.Waypoints[recordNumber+i+1].cx,nodeY,self.Waypoints[recordNumber+i+1].cz);
 					end;
 						nodeDirX,nodeDirY,nodeDirZ = worldDirectionToLocal(self.cp.trafficCollisionTriggers[i-1], nodeDirX,nodeDirY,nodeDirZ);
 						AIVehicleUtil.setCollisionDirection(self.cp.trafficCollisionTriggers[i-1], self.cp.trafficCollisionTriggers[i], nodeDirX, nodeDirZ);
@@ -1243,7 +1121,7 @@ function courseplay:refillSprayer(self, fillLevelPct, driveOn, allowedToDrive, l
 					sprayer.fill = true;
 				end;
 
-				self.cp.infoText = courseplay:loc("CPloading"):format(activeTool.fillLevel, activeTool.capacity);
+				self.cp.infoText = courseplay:loc("COURSEPLAY_LOADING_AMOUNT"):format(activeTool.fillLevel, activeTool.capacity);
 			elseif self.cp.isLoaded or not self.cp.stopForLoading then
 				if activeTool.isSprayerFilling then
 					activeTool:setIsSprayerFilling(false);
@@ -1265,7 +1143,7 @@ function courseplay:refillSprayer(self, fillLevelPct, driveOn, allowedToDrive, l
 					activeTool:setIsSowingMachineFilling(true);
 				end;
 				allowedToDrive = false;
-				self.cp.infoText = courseplay:loc('CPloading'):format(activeTool.fillLevel, activeTool.capacity);
+				self.cp.infoText = courseplay:loc('COURSEPLAY_LOADING_AMOUNT'):format(activeTool.fillLevel, activeTool.capacity);
 			elseif activeTool.sowingMachineFillTriggers[1] ~= nil then
 				if activeTool.isSowingMachineFilling then
 					activeTool:setIsSowingMachineFilling(false);
@@ -1305,7 +1183,7 @@ function courseplay:regulateTrafficSpeed(self,refSpeed,allowedToDrive)
 		end
 		local distance = 0
 		if collisionVehicle.rootNode ~= nil then
-			distance = courseplay:distance_to_object(self, collisionVehicle)
+			distance = courseplay:distanceToObject(self, collisionVehicle)
 		end
 		if collisionVehicle.rootNode == nil or collisionVehicle.lastSpeedReal == nil or (distance > 40) or vehicleBehind then
 			courseplay:debug(string.format("%s: v.rootNode= %s,v.lastSpeedReal= %s, distance: %f, vehicleBehind= %s",nameNum(self),tostring(collisionVehicle.rootNode),tostring(collisionVehicle.lastSpeedReal),distance,tostring(vehicleBehind)),3)

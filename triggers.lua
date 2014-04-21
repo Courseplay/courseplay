@@ -53,13 +53,13 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 						   and ((vehicle ~= nil  and vehicle.rootNode ~= nil) or fixDistance ~= 0) then
 					local distanceToOtherId = math.huge
 					if fixDistance == 0 then
-						distanceToOtherId= courseplay:distance_to_object(self, vehicle)
+						distanceToOtherId= courseplay:distanceToObject(self, vehicle)
 					else
 						distanceToOtherId = fixDistance
 					end
 					local distanceToCollisionVehicle = math.huge
 					if trafficLightDistance == 0 then
-						distanceToCollisionVehicle = courseplay:distance_to_object(self, collisionVehicle)
+						distanceToCollisionVehicle = courseplay:distanceToObject(self, collisionVehicle)
 					else
 						distanceToCollisionVehicle = math.abs(trafficLightDistance)
 					end

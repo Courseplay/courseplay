@@ -29,7 +29,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 	if workArea then
 		workSpeed = 1;
 	end
-	if (self.recordnumber == self.cp.stopWork or self.cp.last_recordnumber == self.cp.stopWork) and self.cp.abortWork == nil and not self.cp.isLoaded and not isFinishingWork then
+	if (self.recordnumber == self.cp.stopWork or self.cp.lastRecordnumber == self.cp.stopWork) and self.cp.abortWork == nil and not self.cp.isLoaded and not isFinishingWork then
 		allowedToDrive = false
 		courseplay:setGlobalInfoText(self, 'WORK_END');
 		hasFinishedWork = true
@@ -85,7 +85,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 					end
 				end
 
-				if self.cp.last_recordnumber == self.cp.stopWork -1 and workTool.isTurnedOn then
+				if self.cp.lastRecordnumber == self.cp.stopWork -1 and workTool.isTurnedOn then
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,nil)
 					if not specialTool and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
 						workTool:setIsTurnedOn(false, false);
@@ -130,7 +130,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 				end
 
 				-- automatic unload
-				if (not workArea and self.Waypoints[self.cp.last_recordnumber].wait and (self.wait or fillLevelPct == 0)) or self.cp.unloadOrder then
+				if (not workArea and self.Waypoints[self.cp.lastRecordnumber].wait and (self.wait or fillLevelPct == 0)) or self.cp.unloadOrder then
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,true);
 					if not specialTool then
 						if workTool.emptyState ~= BaleLoader.EMPTY_NONE then
@@ -158,7 +158,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 
 			-- other worktools, tippers, e.g. forage wagon
 			else
-				if workArea and fillLevelPct ~= 100 and ((self.cp.abortWork == nil) or (self.cp.abortWork ~= nil and self.cp.last_recordnumber == self.cp.abortWork) or (self.cp.runOnceStartCourse)) and self.cp.turnStage == 0  then
+				if workArea and fillLevelPct ~= 100 and ((self.cp.abortWork == nil) or (self.cp.abortWork ~= nil and self.cp.lastRecordnumber == self.cp.abortWork) or (self.cp.runOnceStartCourse)) and self.cp.turnStage == 0  then
 								--courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,true,true,true,allowedToDrive,nil,nil)
 					if allowedToDrive then
@@ -212,7 +212,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 							end;
 						end;
 					end
-				elseif not workArea or self.cp.abortWork ~= nil or self.cp.isLoaded or self.cp.last_recordnumber == self.cp.stopWork then
+				elseif not workArea or self.cp.abortWork ~= nil or self.cp.isLoaded or self.cp.lastRecordnumber == self.cp.stopWork then
 					workSpeed = 0;
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,nil)
 					if not specialTool then
@@ -276,7 +276,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 
 						-- Start reversion value is to check if we have started to reverse
 						-- This is used in case we already registered a tipTrigger but changed the direction and might not be in that tipTrigger when unloading. (Bug Fix)
-						local startReversing = self.Waypoints[self.recordnumber].rev and not self.Waypoints[self.cp.last_recordnumber].rev and not self.cp.BGASelectedSection;
+						local startReversing = self.Waypoints[self.recordnumber].rev and not self.Waypoints[self.cp.lastRecordnumber].rev and not self.cp.BGASelectedSection;
 						if startReversing then
 							courseplay:debug(string.format("%s: Is starting to reverse. Tip trigger is reset.", nameNum(self)), 13);
 						end;
@@ -293,13 +293,13 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 					-- tipper is not empty and tractor reaches TipTrigger
 					if self.cp.tipperFillLevel > 0 and self.cp.currentTipTrigger ~= nil and self.recordnumber > 3 then
 						allowedToDrive, activeTipper = courseplay:unload_tippers(self)
-						self.cp.infoText = courseplay:loc("CPTriggerReached") -- "Abladestelle erreicht"
+						self.cp.infoText = courseplay:loc("COURSEPLAY_TIPTRIGGER_REACHED");
 					end
 				end;
 			end; --END other tools
 
 			-- Begin Work   or goto abortWork
-			if self.cp.last_recordnumber == self.cp.startWork and fillLevelPct ~= 100 then
+			if self.cp.lastRecordnumber == self.cp.startWork and fillLevelPct ~= 100 then
 				if self.cp.abortWork ~= nil then
 					if self.cp.abortWork < 5 then
 						self.cp.abortWork = 6
@@ -315,7 +315,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 			end
 			-- last point reached restart
 			if self.cp.abortWork ~= nil then
-				if (self.cp.last_recordnumber == self.cp.abortWork ) and fillLevelPct ~= 100 then
+				if (self.cp.lastRecordnumber == self.cp.abortWork ) and fillLevelPct ~= 100 then
 					self.recordnumber = self.cp.abortWork + 2  -- drive to waypoint after next waypoint
 					self.cp.abortWork = nil
 				end
@@ -323,10 +323,10 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 			-- safe last point
 			if (fillLevelPct == 100 or self.cp.isLoaded) and workArea and not courseplay:isBaler(workTool) then
 				if self.cp.hasUnloadingRefillingCourse and self.cp.abortWork == nil then
-					self.cp.abortWork = self.cp.last_recordnumber - 10;
+					self.cp.abortWork = self.cp.lastRecordnumber - 10;
 					-- invert lane offset if abortWork is before previous turn point (symmetric lane change)
 					if self.cp.symmetricLaneChange and self.cp.laneOffset ~= 0 then
-						for i=self.cp.abortWork,self.cp.last_recordnumber do
+						for i=self.cp.abortWork,self.cp.lastRecordnumber do
 							local wp = self.Waypoints[i];
 							if wp.turn ~= nil then
 								courseplay:debug(string.format('%s: abortWork set (%d), abortWork + %d: turn=%s -> change lane offset back to abortWork\'s lane', nameNum(self), self.cp.abortWork, i-1, tostring(wp.turn)), 12);

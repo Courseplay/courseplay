@@ -1,8 +1,8 @@
 -- inspired by fieldstatus of Alan R. (ls-uk.info: thebadtouch)
-function courseplay:area_has_fruit(x, z, fruitType, widthX, widthZ)
+function courseplay:areaHasFruit(x, z, fruitType, widthX, widthZ)
 	widthX = widthX or 0.5;
 	widthZ = widthZ or 0.5;
-	if not courseplay:is_field(x, z, widthX, widthZ) then
+	if not courseplay:isField(x, z, widthX, widthZ) then
 		return false;
 	end;
 
@@ -26,25 +26,6 @@ function courseplay:area_has_fruit(x, z, fruitType, widthX, widthZ)
 	end;
 
 	--courseplay:debug(string.format(" x: %d z %d - is really cut!", x, z ), 3)
-	return false;
-end;
-
-function courseplay:is_field(x, z, widthX, widthZ)
-	widthX = widthX or 0.5;
-	widthZ = widthZ or 0.5;
-
-	if courseplay.fields.lastChannel ~= nil then
-		if Utils.getDensity(g_currentMission.terrainDetailId, courseplay.fields.lastChannel, x, z, x - widthX, z - widthZ, x + widthX, z + widthZ) ~= 0 then
-			return true;
-		end;
-	end;
-
-	for i,channel in ipairs(courseplay.fields.fieldChannels) do
-		if Utils.getDensity(g_currentMission.terrainDetailId, channel, x, z, x - widthX, z - widthZ, x + widthX, z + widthZ) ~= 0 then
-			courseplay.fields.lastChannel = channel;
-			return true;
-		end;
-	end;
 	return false;
 end;
 
@@ -75,7 +56,7 @@ function courseplay:getLineHxHz(node, x1, z1, x2, z2)
 		setTranslation(node, x1, 0, z1);
 
 		-- set rotation
-		local dx, dz, vl = courseplay.generation:getPointDirection({ cx = x1, cz = z1 }, { cx = x2, cz = z2 });
+		local dx, dz, vl = courseplay.generation:getPointDirection({ cx = x1, cz = z1 }, { cx = x2, cz = z2 }); --TODO (Jakob): use courseplay:getWorldDirection()
 		local rot = Utils.getYRotationFromDirection(dx, dz);
 		setRotation(node, 0, rot, 0);
 	end;

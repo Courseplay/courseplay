@@ -1,18 +1,19 @@
-local curFile = "mode2.lua"
+local curFile = 'mode2.lua';
 
--- AI-states
--- 0 Default, wenn nicht in Mode2 aktiv
--- 1 warte am startpunkt auf arbeit
--- 2 fahre hinter drescher
--- 3 fahre zur pipe / abtanken
--- 4 fahre ans heck des dreschers
--- 5 wegpunkte abfahren
--- 7 warte auf die Pipe 
--- 6 fahre hinter traktor
--- 8 alle trailer voll
--- 81 alle trailer voll, schlepper wendet von maschine weg
--- 99 wenden
--- 10 seite wechseln
+--[[ MODE 2 STATES
+ 0: default, when not active
+ 1: wait for work at start point
+ 2: drive to combine
+ 3: drive to pipe / unload
+ 4: drive to the rear of the combine
+ 5: follow target points
+ 6: follow tractor
+ 7: wait for pipe
+ 8: all trailers are full
+81: all trailers are full, tractor turns away from the combine
+99: turn maneuver
+10: switch side
+--]]
 
 function courseplay:handle_mode2(self, dt)
 	local frontTractor;
@@ -24,17 +25,19 @@ function courseplay:handle_mode2(self, dt)
 	end
 	]]
 
+	-- STATE 0 (default, when not active)
 	if self.cp.modeState == 0 then
 		self.cp.modeState = 1
 		-- print(('%s [%s(%d)]: modeState=0 -> set modeState to 1'):format(nameNum(self), curFile, debug.getinfo(1).currentline)); -- DEBUG140301
 	end
 
 
+	-- STATE 1 (wait for work at start point)
 	if self.cp.modeState == 1 and self.cp.activeCombine ~= nil then
 		courseplay:unregister_at_combine(self, self.cp.activeCombine)
 	end
 
-	-- trailer full
+	-- STATE 8 (all trailers are full)
 	if self.cp.modeState == 8 then
 		-- print(('%s [%s(%d)]: modeState=8 -> set recordnumber to 2, modeState to 0, isLoaded to true'):format(nameNum(self), curFile, debug.getinfo(1).currentline)); -- DEBUG140301
 		self.recordnumber = 2
@@ -57,7 +60,7 @@ function courseplay:handle_mode2(self, dt)
 	end
 
 
-	-- switch side
+	-- STATE 10 (switch side)
 	if self.cp.activeCombine ~= nil and (self.cp.modeState == 10 or self.cp.activeCombine.turnAP ~= nil and self.cp.activeCombine.turnAP == true) then
 		local node = self.cp.activeCombine.cp.fixedRootNode or self.cp.activeCombine.rootNode;
 		if self.cp.combineOffset > 0 then
@@ -135,7 +138,7 @@ function courseplay:handle_mode2(self, dt)
 		-- are there any combines out there that need my help?
 		if self.cp.timeOut < self.timer then
 			if self.cp.lastActiveCombine ~= nil then
-				local distance = courseplay:distance_to_object(self, self.cp.lastActiveCombine)
+				local distance = courseplay:distanceToObject(self, self.cp.lastActiveCombine)
 				if distance > 20 then
 					self.cp.lastActiveCombine = nil
 				else
@@ -149,15 +152,15 @@ function courseplay:handle_mode2(self, dt)
 
 		--is any of the reachable combines full?
 		if self.cp.reachableCombines ~= nil then
-			if table.getn(self.cp.reachableCombines) > 0 then
+			if #self.cp.reachableCombines > 0 then
 				-- choose the combine that needs me the most
 				if self.best_combine ~= nil and self.cp.activeCombine == nil then
-					courseplay:debug(string.format("%s (%s): request check-in @ %s", nameNum(self), tostring(self.id), tostring(self.combineID)), 4);
+					courseplay:debug(string.format("%s (%s): request check-in @ %s", nameNum(self), tostring(self.id), tostring(self.cp.combineID)), 4);
 					if courseplay:register_at_combine(self, self.best_combine) then
 						self.cp.modeState = 2
 					end
 				else
-					self.cp.infoText = courseplay:loc("CPwaitFillLevel");
+					self.cp.infoText = courseplay:loc("COURSEPLAY_WAITING_FOR_FILL_LEVEL");
 				end
 
 
@@ -166,8 +169,8 @@ function courseplay:handle_mode2(self, dt)
 				local distance = 0;
 
 				self.best_combine = nil;
-				self.combineID = 0;
-				self.distanceToCombine = 99999999999;
+				self.cp.combineID = 0;
+				self.cp.distanceToCombine = 99999999999;
 
 				-- chose the combine who needs me the most
 				for k, combine in pairs(self.cp.reachableCombines) do
@@ -195,22 +198,20 @@ function courseplay:handle_mode2(self, dt)
 						elseif combine.grainTankFillLevel >= highest_fill_level and combine.isCheckedIn == nil then
 							highest_fill_level = combine.grainTankFillLevel
 							self.best_combine = combine
-							local cx, cy, cz = getWorldTranslation(combine.rootNode)
-							local sx, sy, sz = getWorldTranslation(self.rootNode)
-							distance = courseplay:distance(sx, sz, cx, cz)
-							self.distanceToCombine = distance
-							self.callCombineFillLevel = self.cp.tipperFillLevelPct
-							self.combineID = combine.id
+							distance = courseplay:distanceToObject(self, combine);
+							self.cp.distanceToCombine = distance
+							self.cp.callCombineFillLevel = self.cp.tipperFillLevelPct
+							self.cp.combineID = combine.id
 						end
 					end
 				end
 
-				if self.combineID ~= 0 then
-					courseplay:debug(string.format("%s (%s): call combine: %s", nameNum(self), tostring(self.id), tostring(self.combineID)), 4);
+				if self.cp.combineID ~= 0 then
+					courseplay:debug(string.format("%s (%s): call combine: %s", nameNum(self), tostring(self.id), tostring(self.cp.combineID)), 4);
 				end
 
 			else
-				self.cp.infoText = courseplay:loc("CPnoCombineInReach")
+				self.cp.infoText = courseplay:loc("COURSEPLAY_NO_COMBINE_IN_REACH")
 			end
 		end
 	end
@@ -223,7 +224,7 @@ function courseplay:unload_combine(self, dt)
 	local x, y, z = getWorldTranslation(self.cp.DirectionNode)
 	local currentX, currentY, currentZ;
 
-	--local sl = nil --kann die weg??
+	--local sl = nil --TODO (Jakob): still needed?
 	local combine_fill_level, combine_turning = nil, false
 	local refSpeed;
 	local handleTurn = false
@@ -299,7 +300,7 @@ function courseplay:unload_combine(self, dt)
 	
 	local aiTurn = combine.isAIThreshing and (combine.turnStage == 1 or combine.turnStage == 2 or combine.turnStage == 4 or combine.turnStage == 5)
 	if tractor ~= nil and (aiTurn or (tractor.cp.turnStage > 0)) then
-		self.cp.infoText = courseplay:loc("CPCombineTurning") -- "Drescher wendet. "
+		self.cp.infoText = courseplay:loc("COURSEPLAY_COMBINE_IS_TURNING") -- "Drescher wendet. "
 		combine_turning = true
 		-- print(('%s: cp.turnStage=%d -> combine_turning=true'):format(nameNum(tractor), tractor.cp.turnStage));
 	end
@@ -332,11 +333,12 @@ function courseplay:unload_combine(self, dt)
 		safetyDistance = 11;
 	end;
 
-	if self.cp.modeState == 2 then -- Drive to Combine or Cornchopper
+	-- STATE 2 (drive to combine)
+	if self.cp.modeState == 2 then
 		self.cp.speeds.sl = 2
 		refSpeed = self.cp.speeds.field
-		--courseplay:remove_from_combines_ignore_list(self, combine)
-		self.cp.infoText = courseplay:loc("CPDriveBehinCombine");
+		--courseplay:removeFromCombinesIgnoreList(self, combine)
+		self.cp.infoText = courseplay:loc("COURSEPLAY_DRIVE_BEHIND_COMBINE");
 
 		local x1, y1, z1 = worldToLocal(tractor.rootNode, x, y, z)
 
@@ -394,10 +396,12 @@ function courseplay:unload_combine(self, dt)
 				end
 			end
 			self.cp.modeState = 4
-		end
+		end;
+		-- END STATE 2
 
-		-- end self.cp.modeState 2
-	elseif self.cp.modeState == 4 then -- Drive to rear Combine or Cornchopper
+
+	-- STATE 4 (drive to rear of combine)
+	elseif self.cp.modeState == 4 then
 		if combine.cp.offset == nil or self.cp.combineOffset == 0 then
 			--print("offset not saved - calculate")
 			courseplay:calculateCombineOffset(self, combine);
@@ -405,8 +409,8 @@ function courseplay:unload_combine(self, dt)
 			--print("set saved offset")
 			self.cp.combineOffset = combine.cp.offset			
 		end
-		self.cp.infoText = courseplay:loc("CPDriveToCombine") -- "Fahre zum Drescher"
-		--courseplay:add_to_combines_ignore_list(self, combine)
+		self.cp.infoText = courseplay:loc("COURSEPLAY_DRIVE_TO_COMBINE") -- "Fahre zum Drescher"
+		--courseplay:addToCombinesIgnoreList(self, combine)
 		refSpeed = self.cp.speeds.field
 
 		local tX, tY, tZ = nil, nil, nil
@@ -451,11 +455,14 @@ function courseplay:unload_combine(self, dt)
 		if dod > 50 then
 			self.cp.modeState = 2
 		end
+		-- END STATE 4
 
-	elseif self.cp.modeState == 3 then --drive to unload pipe
 
-		self.cp.infoText = courseplay:loc("CPDriveNextCombine") -- "Fahre neben Drescher"
-		--courseplay:add_to_combines_ignore_list(self, combine)
+	-- STATE 3 (drive to unload pipe)
+	elseif self.cp.modeState == 3 then
+
+		self.cp.infoText = courseplay:loc("COURSEPLAY_DRIVE_NEXT_TO_COMBINE")
+		--courseplay:addToCombinesIgnoreList(self, combine)
 		refSpeed = self.cp.speeds.field
 
 		if self.cp.nextTargets ~= nil then
@@ -478,11 +485,11 @@ function courseplay:unload_combine(self, dt)
 					courseplay:debug(nameNum(self) .. ": I'm left, fruit is right", 4)
 					local fx,fy,fz = localToWorld(self.rootNode, 0, 0, 8)
 					local sx,sy,sz = localToWorld(self.rootNode, 0 , 0, -self.cp.turnRadius-trailer_offset-autoCombineExtraMoveBack)
-					if courseplay:is_field(fx, fz) and not combineIsAutoCombine then
+					if courseplay:isField(fx, fz) and not combineIsAutoCombine then
 						courseplay:debug(nameNum(self) .. ": 1st target is on field", 4)
 						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.rootNode, 0 , 0, 5);	
 						self.cp.modeState = 5
-					elseif courseplay:is_field(sx, sz) then
+					elseif courseplay:isField(sx, sz) then
 						courseplay:debug(nameNum(self) .. ": 2nd target is on field", 4)
 						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.rootNode, 2 , 0, -self.cp.turnRadius);
 						courseplay:addNewTarget(self, 0 ,  -self.cp.turnRadius-trailer_offset-autoCombineExtraMoveBack);
@@ -497,16 +504,16 @@ function courseplay:unload_combine(self, dt)
 					courseplay:debug(nameNum(self) .. ": I'm left, fruit is left", 4)
 					local fx,fy,fz = localToWorld(self.rootNode, 3*offset*-1, 0, -self.cp.turnRadius-trailer_offset)
 					local tx,ty,tz = localToWorld(self.rootNode, 3*offset*-1, 0, -(2*self.cp.turnRadius)-trailer_offset)
-					if courseplay:is_field(fx, fz) then
+					if courseplay:isField(fx, fz) then
 						courseplay:debug(nameNum(self) .. ": deepest waypoint is on field", 4)
 						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.rootNode, 2, 0, -self.cp.turnRadius-trailer_offset);
 						courseplay:addNewTarget(self, 3*offset*-1 ,  -self.cp.turnRadius-trailer_offset);
 						fx,fy,fz = localToWorld(self.rootNode, 3*offset*-1, 0, 0)
 						sx,sy,sz = localToWorld(self.rootNode, 3*offset*-1, 0, -(2*self.cp.turnRadius)-trailer_offset)
-						if courseplay:is_field(fx, fz) then
+						if courseplay:isField(fx, fz) then
 							courseplay:debug(nameNum(self) .. ": 1st target is on field", 4)
 							courseplay:addNewTarget(self, 3*offset*-1,0);
-						elseif courseplay:is_field(sx, sz) then
+						elseif courseplay:isField(sx, sz) then
 							courseplay:debug(nameNum(self) .. ": 2nd target is on field",4)
 							courseplay:addNewTarget(self, 3*offset*-1 ,  -(2*self.cp.turnRadius)-trailer_offset);
 						else
@@ -514,7 +521,7 @@ function courseplay:unload_combine(self, dt)
 							self.cp.curTarget.x, self.cp.curTarget.z  = self.Waypoints[self.maxnumber].cx, self.Waypoints[self.maxnumber].cz
 						end
 						self.cp.modeState = 5
-					elseif courseplay:is_field(tx, tz) then		
+					elseif courseplay:isField(tx, tz) then
 						courseplay:debug(nameNum(self) .. ": deepest waypoint is not on field", 4)
 						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.rootNode, self.cp.turnRadius, 0, 0);
 						courseplay:addNewTarget(self, 0 ,  -(2*trailer_offset));
@@ -533,17 +540,17 @@ function courseplay:unload_combine(self, dt)
 					courseplay:debug(nameNum(self) .. ": I'm right, fruit is right", 4)
 					local fx,fy,fz = localToWorld(self.rootNode, 3*offset, 0, -self.cp.turnRadius-trailer_offset)
 					local sx,sy,sz = localToWorld(self.rootNode, 3*offset,0,  -(2*trailer_offset))
-					if courseplay:is_field(fx, fz) then
+					if courseplay:isField(fx, fz) then
 						courseplay:debug(nameNum(self) .. ": deepest waypoint is on field", 4)
 						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.rootNode, -4, 0, -self.cp.turnRadius-trailer_offset);
 						courseplay:addNewTarget(self, 3*offset ,  -self.cp.turnRadius-trailer_offset);
 						fx,fy,fz = localToWorld(self.rootNode, 3*offset, 0, 0)
 						sx,sy,sz = localToWorld(self.rootNode, 3*offset, 0, -(2*self.cp.turnRadius)-trailer_offset)
-						if courseplay:is_field(fx, fz) then
+						if courseplay:isField(fx, fz) then
 							courseplay:debug(nameNum(self) .. ": 1st target is on field", 4)
 							courseplay:addNewTarget(self, 3*offset,0);
 
-						elseif courseplay:is_field(sx, sz) then
+						elseif courseplay:isField(sx, sz) then
 							courseplay:debug(nameNum(self) .. ": 2nd target is on field", 4)
 							courseplay:addNewTarget(self, 3*offset,  -(2*self.cp.turnRadius)-trailer_offset);
 						else
@@ -553,7 +560,7 @@ function courseplay:unload_combine(self, dt)
 						end
 						self.cp.modeState = 5
 
-					elseif courseplay:is_field(sx, sz) then	
+					elseif courseplay:isField(sx, sz) then
 						courseplay:debug(nameNum(self) .. ": deepest waypoint is not on field", 4)
 						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.rootNode, -self.cp.turnRadius, 0, 0);
 						courseplay:addNewTarget(self, 0 ,  -(2*trailer_offset));
@@ -570,11 +577,11 @@ function courseplay:unload_combine(self, dt)
 					courseplay:debug(nameNum(self) .. ": I'm right, fruit is left", 4)
 					local fx,fy,fz = localToWorld(self.rootNode, 0, 0, 3)
 					local sx,sy,sz = localToWorld(self.rootNode, 0,0, -self.cp.turnRadius-trailer_offset)
-					if courseplay:is_field(fx, fz) then
+					if courseplay:isField(fx, fz) then
 						courseplay:debug(nameNum(self) .. ": 1st target is on field", 4)
 						self.cp.modeState = 1
 
-					elseif courseplay:is_field(sx, sz) then
+					elseif courseplay:isField(sx, sz) then
 						courseplay:debug(nameNum(self) .. ": 2nd target is on field", 4)
 						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.rootNode, -2 , 0, -self.cp.turnRadius);
 						courseplay:addNewTarget(self, 0, -self.cp.turnRadius-trailer_offset);
@@ -608,7 +615,7 @@ function courseplay:unload_combine(self, dt)
 		local prnToCombineZ = courseplay:calculateVerticalOffset(self, combine);
 		
 		--SET TARGET UNLOADING COORDINATES @ COMBINE
-		local ttX, ttZ = courseplay:setTargetUnloadingCoords(self, combine, trailer_offset, prnToCombineZ);
+		local ttX, ttZ = courseplay:getTargetUnloadingCoords(self, combine, trailer_offset, prnToCombineZ);
 		
 		local lx, ly, lz = worldToLocal(self.cp.DirectionNode, ttX, y, ttZ)
 		dod = Utils.vector2Length(lx, lz)
@@ -617,21 +624,21 @@ function courseplay:unload_combine(self, dt)
 		end
 		-- combine is not moving and trailer is under pipe
 		if not combine.cp.isChopper and tractor.movingDirection == 0 and (lz <= 1 or lz < -0.1 * trailer_offset) then
-			self.cp.infoText = courseplay:loc("CPCombineWantsMeToStop") -- "Drescher sagt ich soll anhalten."
+			self.cp.infoText = courseplay:loc("COURSEPLAY_COMBINE_WANTS_ME_TO_STOP") -- "Drescher sagt ich soll anhalten."
 			allowedToDrive = false
 		elseif combine.cp.isChopper then
 			if combine.movingDirection == 0 and dod == -1 and self.isChopperTurning == false then
 				allowedToDrive = false
-				self.cp.infoText = courseplay:loc("CPCombineWantsMeToStop") -- "Drescher sagt ich soll anhalten."
+				self.cp.infoText = courseplay:loc("COURSEPLAY_COMBINE_WANTS_ME_TO_STOP") -- "Drescher sagt ich soll anhalten."
 			end
 			if lz < -2 then
 				allowedToDrive = false
-				self.cp.infoText = courseplay:loc("CPCombineWantsMeToStop")
+				self.cp.infoText = courseplay:loc("COURSEPLAY_COMBINE_WANTS_ME_TO_STOP")
 				--self.cp.modeState = 2
 			end
 		elseif lz < -1.5 then
 				allowedToDrive = false
-				self.cp.infoText = courseplay:loc("CPCombineWantsMeToStop")
+				self.cp.infoText = courseplay:loc("COURSEPLAY_COMBINE_WANTS_ME_TO_STOP")
 		end
 
 		-- refspeed depends on the distance to the combine
@@ -682,9 +689,11 @@ function courseplay:unload_combine(self, dt)
 		end
 
 		--courseplay:debug("combine.sentPipeIsUnloading: "..tostring(combine.sentPipeIsUnloading).." refSpeed:  "..tostring(refSpeed*3600).." combine_speed:  "..tostring(combine_speed*3600), 4)
+	end;
+	--END STATE 3
 
-		---------------------------------------------------------------------
-	end -- end self.cp.modeState 3 or 4
+	---------------------------------------------------------------------
+
 	local cx, cy, cz = getWorldTranslation(combine.rootNode)
 	local sx, sy, sz = getWorldTranslation(self.rootNode)
 	distance = courseplay:distance(sx, sz, cx, cz)
@@ -765,25 +774,26 @@ function courseplay:unload_combine(self, dt)
 		elseif self.cp.modeState ~= 5 and self.cp.modeState ~= 9 and not self.cp.realisticDriving then
 			-- just wait until combine has turned
 			allowedToDrive = false
-			self.cp.infoText = courseplay:loc("CPCombineWantsMeToStop")
+			self.cp.infoText = courseplay:loc("COURSEPLAY_COMBINE_WANTS_ME_TO_STOP")
 		end
 	end
 
 
+	-- STATE 7
 	if self.cp.modeState == 7 then
 		if combine.movingDirection == 0 then
 			self.cp.modeState = 3
 		else
-			self.cp.infoText = courseplay:loc("CPWaitUntilCombineTurned");
+			self.cp.infoText = courseplay:loc("COURSEPLAY_WAITING_FOR_COMBINE_TURNED");
 		end
 	end
 
 
-	--[[ TODO: MODESTATE 99 - WTF?
-	-- Turn maneuver
+	-- [[ TODO: MODESTATE 99 - WTF?
+	-- STATE 99 (turn maneuver)
 	if self.cp.modeState == 99 and self.cp.curTarget.x ~= nil and self.cp.curTarget.z ~= nil then
-		--courseplay:remove_from_combines_ignore_list(self, combine)
-		self.cp.infoText = string.format(courseplay:loc("CPTurningTo"), self.cp.curTarget.x, self.cp.curTarget.z)
+		--courseplay:removeFromCombinesIgnoreList(self, combine)
+		self.cp.infoText = string.format(courseplay:loc("COURSEPLAY_TURNING_TO_COORDS"), self.cp.curTarget.x, self.cp.curTarget.z)
 		allowedToDrive = false
 		local mx, mz = self.cp.curTarget.x, self.cp.curTarget.z
 		local lx, ly, lz = worldToLocal(self.cp.DirectionNode, mx, y, mz)
@@ -818,19 +828,19 @@ function courseplay:unload_combine(self, dt)
 
 
 
-	-- drive to given waypoint
+	-- STATE 5 (follow target points)
 	if self.cp.modeState == 5 and self.cp.curTarget.x ~= nil and self.cp.curTarget.z ~= nil then
 		if combine ~= nil then
-			--courseplay:remove_from_combines_ignore_list(self, combine)
+			--courseplay:removeFromCombinesIgnoreList(self, combine)
 		end
-		self.cp.infoText = string.format(courseplay:loc("CPDriveToWP"), self.cp.curTarget.x, self.cp.curTarget.z)
+		self.cp.infoText = string.format(courseplay:loc("COURSEPLAY_DRIVE_TO_WAYPOINT"), self.cp.curTarget.x, self.cp.curTarget.z)
 		currentX = self.cp.curTarget.x
 		currentY = self.cp.curTarget.y
 		currentZ = self.cp.curTarget.z
 		self.cp.speeds.sl = 2
 		refSpeed = self.cp.speeds.field
 
-		distance_to_wp = courseplay:distance_to_point(self, currentX, y, currentZ)
+		local distance_to_wp = courseplay:distanceToPoint(self, currentX, y, currentZ);
 
 		if #(self.cp.nextTargets) == 0 then
 			if distance_to_wp < 10 then
@@ -872,7 +882,7 @@ function courseplay:unload_combine(self, dt)
 					--self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(combine.rootNode, self.chopper_offset*0.7, 0, -9) -- -2          --??? *0,5 -10
 
 				elseif self.cp.mode2nextState == 4 and combine_turning then
-					self.cp.infoText = courseplay:loc("CPWaitUntilCombineTurned");
+					self.cp.infoText = courseplay:loc("COURSEPLAY_WAITING_FOR_COMBINE_TURNED");
 				elseif self.cp.mode2nextState == 81 then -- tipper turning from combine
 
 					-- print(('%s [%s(%d)]: no nextTargets, mode2nextState=81 -> set recordnumber to 2, modeState to 99, isLoaded to true, return false'):format(nameNum(self), curFile, debug.getinfo(1).currentline)); -- DEBUG140301
@@ -895,12 +905,14 @@ function courseplay:unload_combine(self, dt)
 		end
 	end
 
+
+	-- STATE 6 (follow tractor)
 	local frontTractor;
 	if self.cp.activeCombine and self.cp.activeCombine.courseplayers and self.cp.positionWithCombine then
 		frontTractor = self.cp.activeCombine.courseplayers[self.cp.positionWithCombine - 1];
 	end;
 	if self.cp.modeState == 6 and frontTractor ~= nil then --Follow Tractor
-		self.cp.infoText = courseplay:loc("CPFollowTractor") -- "Fahre hinter Traktor"
+		self.cp.infoText = courseplay:loc("COURSEPLAY_FOLLOWING_TRACTOR")
 		--use the current tractor's sideToDrive as own
 		if frontTractor.sideToDrive ~= nil and frontTractor.sideToDrive ~= self.sideToDrive then
 			courseplay:debug(string.format("%s: setting current tractor's sideToDrive (%s) as my own", nameNum(self), tostring(frontTractor.sideToDrive)), 4);
@@ -960,12 +972,12 @@ function courseplay:unload_combine(self, dt)
 	end
 
 	if currentX == nil or currentZ == nil then
-		self.cp.infoText = courseplay:loc("CPWaitForWaypoint") -- "Warte bis ich neuen Wegpunkt habe"
+		self.cp.infoText = courseplay:loc("COURSEPLAY_WAITING_FOR_WAYPOINT") -- "Warte bis ich neuen Wegpunkt habe"
 		allowedToDrive = courseplay:brakeToStop(self)
 	end
 
 	if self.cp.forcedToStop then
-		self.cp.infoText = courseplay:loc("CPCombineWantsMeToStop") -- "Drescher sagt ich soll anhalten."
+		self.cp.infoText = courseplay:loc("COURSEPLAY_COMBINE_WANTS_ME_TO_STOP") -- "Drescher sagt ich soll anhalten."
 		allowedToDrive = courseplay:brakeToStop(self)
 	end
 
@@ -1117,7 +1129,7 @@ function courseplay:calculateJpsPathTo(self, targetX, targetZ)
 		local function myEvalFunc(grid, x, y)
 			local category, wakable, costs = 1, true, 1;
 		
-			local hasFruit = courseplay:area_has_fruit(x, y, nil, grid.tileSize/2, grid.tileSize/2);
+			local hasFruit = courseplay:areaHasFruit(x, y, nil, grid.tileSize/2, grid.tileSize/2);
 			if hasFruit then
 				category = 2;
 			end;
@@ -1436,12 +1448,13 @@ function courseplay:calculateVerticalOffset(self, combine)
 	return prnToCombineZ;
 end;
 
-function courseplay:setTargetUnloadingCoords(self, combine, trailer_offset, prnToCombineZ)
+function courseplay:getTargetUnloadingCoords(vehicle, combine, trailerOffset, prnToCombineZ)
 	local sourceRootNode = combine.cp.fixedRootNode or combine.rootNode;
 
 	if combine.cp.isChopper then
 		prnToCombineZ = 0;
 
+		-- check for chopper dolly trailer ('Häcksel-Dolly')
 		if combine.attachedImplements ~= nil and combine.haeckseldolly then
 			for k, i in pairs(combine.attachedImplements) do
 				local implement = i.object;
@@ -1451,8 +1464,8 @@ function courseplay:setTargetUnloadingCoords(self, combine, trailer_offset, prnT
 			end;
 		end;
 	end;
-	
-	local ttX, _, ttZ = localToWorld(sourceRootNode, self.cp.combineOffset, 0, trailer_offset + prnToCombineZ);
-	
+
+	local ttX, _, ttZ = localToWorld(sourceRootNode, vehicle.cp.combineOffset, 0, trailerOffset + prnToCombineZ);
+
 	return ttX, ttZ;
 end;

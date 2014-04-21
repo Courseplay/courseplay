@@ -84,7 +84,7 @@ function courseplay:setVersionData()
 		courseplay.versionFlt = 0.00000;
 		courseplay.isDevVersion = false;
 	end;
-	courseplay.versionDisplay = courseplay.versionSplitFlt; --TODO: tmp solution until overloader script is changed - then delete
+	courseplay.versionDisplay = courseplay.versionSplitFlt;
 end;
 
 function courseplay:initialize()
@@ -113,6 +113,7 @@ function courseplay:initialize()
 		'mode3', 
 		'mode4', 
 		'mode6', 
+		'mode7', 
 		'mode8', 
 		'mode9', 
 		'pathfinding',
@@ -289,6 +290,8 @@ function courseplay:setGlobalData()
 		};
 		[1] = {
 			[4] = courseplay.hud.infoBasePosX + 0.182;
+			[5] = courseplay.hud.infoBasePosX + 0.182;
+			[6] = courseplay.hud.infoBasePosX + 0.182;
 		};
 		[7] = {
 			[5] = courseplay.hud.infoBasePosX + 0.105;

@@ -17,7 +17,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct)
 		end		
 	end	
 	-- Begin Work
-	if self.cp.last_recordnumber == self.cp.startWork and fillLevelPct ~= 0 then
+	if self.cp.lastRecordnumber == self.cp.startWork and fillLevelPct ~= 0 then
 		if self.cp.abortWork ~= nil then
 			if self.cp.abortWork < 5 then
 				self.cp.abortWork = 6
@@ -30,10 +30,10 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct)
 	end
 	-- last point reached restart
 	if self.cp.abortWork ~= nil then
-		if self.cp.last_recordnumber == self.cp.abortWork and fillLevelPct ~= 0 then
+		if self.cp.lastRecordnumber == self.cp.abortWork and fillLevelPct ~= 0 then
 			self.recordnumber = self.cp.abortWork +2
 		end
-		if self.cp.last_recordnumber == self.cp.abortWork + 8 then
+		if self.cp.lastRecordnumber == self.cp.abortWork + 8 then
 			self.cp.abortWork = nil
 		end
 	end
@@ -44,7 +44,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct)
 			self.cp.abortWork = self.recordnumber -10
 			-- invert lane offset if abortWork is before previous turn point (symmetric lane change)
 			if self.cp.symmetricLaneChange and self.cp.laneOffset ~= 0 then
-				for i=self.cp.abortWork,self.cp.last_recordnumber do
+				for i=self.cp.abortWork,self.cp.lastRecordnumber do
 					local wp = self.Waypoints[i];
 					if wp.turn ~= nil then
 						courseplay:debug(string.format('%s: abortWork set (%d), abortWork + %d: turn=%s -> change lane offset back to abortWork\'s lane', nameNum(self), self.cp.abortWork, i-1, tostring(wp.turn)), 12);
@@ -62,14 +62,14 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct)
 		end;
 	end
 	--
-	if (self.recordnumber == self.cp.stopWork or self.cp.last_recordnumber == self.cp.stopWork) and self.cp.abortWork == nil and not isFinishingWork then
+	if (self.recordnumber == self.cp.stopWork or self.cp.lastRecordnumber == self.cp.stopWork) and self.cp.abortWork == nil and not isFinishingWork then
 		allowedToDrive = courseplay:brakeToStop(self)
 		courseplay:setGlobalInfoText(self, 'WORK_END');
 		hasFinishedWork = true
 	end
 	
-	local firstPoint = self.cp.last_recordnumber == 1;
-	local prevPoint = self.Waypoints[self.cp.last_recordnumber];
+	local firstPoint = self.cp.lastRecordnumber == 1;
+	local prevPoint = self.Waypoints[self.cp.lastRecordnumber];
 	local nextPoint = self.Waypoints[self.recordnumber];
 	
 	local ridgeMarker = prevPoint.ridgeMarker;
