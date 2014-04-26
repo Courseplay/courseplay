@@ -531,7 +531,7 @@ function courseplay:setFoldedStates(object)
 		courseplay:debug(nameNum(object) .. ': setFoldedStates()', 17);
 
 		object.cp.realUnfoldDirection = object.turnOnFoldDirection;
-		if object.cp.foldingPartsStartMoveDirection and object.cp.foldingPartsStartMoveDirection ~= 0 then
+		if object.cp.foldingPartsStartMoveDirection and object.cp.foldingPartsStartMoveDirection ~= 0 and object.cp.foldingPartsStartMoveDirection ~= object.turnOnFoldDirection then
 			object.cp.realUnfoldDirection = object.turnOnFoldDirection * object.cp.foldingPartsStartMoveDirection;
 		end;
 
