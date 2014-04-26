@@ -48,6 +48,10 @@ function courseplay:setNameVariable(workTool)
 		]]
 	end;
 
+	if workTool.cp.hasSpecializationFillable then
+		workTool.cp.closestTipDistance = math.huge;
+	end;
+
 	--[[ DEBUG
 	print(nameNum(workTool) .. ': default specs list');
 	for i,specClassName in pairs(specList) do
@@ -345,6 +349,10 @@ function courseplay:setNameVariable(workTool)
 	elseif workTool.cp.xmlFileName == 'lindnerUnitrac92.xml' then
 		workTool.cp.isLindnerUnitrac92 = true;
 		workTool.cp.mode9TrafficIgnoreVehicle = true;
+		workTool.cp.tipperOffset = 1.0;
+	elseif workTool.cp.xmlFileName == 'lindnerTransporterModule.xml' then
+		workTool.cp.isLindnerTransporterModule = true;
+		workTool.cp.isAttacherModule = true;
 	elseif workTool.cp.xmlFileName == 'lindnerTankModule.xml' then
 		workTool.cp.isLindnerTankModule = true;
 	elseif workTool.cp.xmlFileName == 'lindnerSpreaderModule.xml' then

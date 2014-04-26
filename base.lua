@@ -43,7 +43,6 @@ function courseplay:load(xmlFile)
 	self.cp.noStopOnTurn = false --bool
 
 	self.toggledTipState = 0;
-	self.cp.closestTipDistance = math.huge
 
 	self.cp.combineOffsetAutoMode = true
 	self.drive = false
