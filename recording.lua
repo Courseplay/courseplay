@@ -1,4 +1,5 @@
 local curFile = 'recording.lua';
+local abs, atan2, deg, rad = math.abs, math.atan2, math.deg, math.rad;
 
 -- records waypoints for course
 function courseplay:record(vehicle)
@@ -16,7 +17,7 @@ function courseplay:record(vehicle)
 			vehicle.cp.recordingTimer = dist > (vehicle.recordnumber == 3 and 20 or 10) and 101 or 1;
 
 		else
-			local angleDiff = math.abs(newAngle - prevAngle);
+			local angleDiff = abs(newAngle - prevAngle);
 
 			if vehicle.cp.drivingDirReverse == true then
 				if dist > 2 and (angleDiff > 1.5 or dist > 10) then
@@ -33,7 +34,7 @@ function courseplay:record(vehicle)
 	if vehicle.cp.recordingTimer > 100 then
 		courseplay:setNewWaypointFromRecording(vehicle, cx, cz, newAngle, false, vehicle.cp.drivingDirReverse, vehicle.recordnumber == 1, vehicle.lastSpeedReal);
 		local signType = vehicle.recordnumber == 1 and "start" or nil;
-		courseplay.utils.signs:addSign(vehicle, cx, cz, newAngle, signType);
+		courseplay.utils.signs:addSign(vehicle, signType, cx, cz, nil, newAngle);
 		vehicle.cp.recordingTimer = 1;
 		vehicle.recordnumber = vehicle.recordnumber + 1;
 	end;
@@ -46,7 +47,7 @@ function courseplay:set_waitpoint(vehicle)
 	vehicle.cp.recordingTimer = 1
 	vehicle.recordnumber = vehicle.recordnumber + 1;
 	vehicle.cp.numWaitPoints = vehicle.cp.numWaitPoints + 1;
-	courseplay.utils.signs:addSign(vehicle, cx, cz, newAngle, "wait");
+	courseplay.utils.signs:addSign(vehicle, 'wait', cx, cz, nil, newAngle);
 end
 
 
@@ -58,10 +59,10 @@ function courseplay:set_crossing(vehicle, stop)
 	vehicle.recordnumber = vehicle.recordnumber + 1
 	vehicle.cp.numCrossingPoints = vehicle.cp.numCrossingPoints + 1
 	if stop ~= nil then
-		courseplay.utils.signs:addSign(vehicle, cx, cz, newAngle, "stop");
+		courseplay.utils.signs:addSign(vehicle, 'stop', cx, cz, nil, newAngle);
 	else
-		courseplay.utils.signs:addSign(vehicle, cx, cz, newAngle, "cross");
-		courseplay.utils.signs:addSign(vehicle, cx, cz, newAngle, "normal");
+		courseplay.utils.signs:addSign(vehicle, 'cross', cx, cz, nil, newAngle);
+		courseplay.utils.signs:addSign(vehicle, 'normal', cx, cz, nil, newAngle);
 	end
 end
 
@@ -180,7 +181,7 @@ function courseplay:setRecordingTurnManeuver(vehicle)
 
 	vehicle.cp.recordingTimer = 1
 	vehicle.recordnumber = vehicle.recordnumber + 1
-	courseplay.utils.signs:addSign(vehicle, cx, cz, newAngle, 'normal');
+	courseplay.utils.signs:addSign(vehicle, 'normal', cx, cz, nil, newAngle);
 	courseplay:buttonsActiveEnabled(vehicle, 'recording');
 end;
 
@@ -192,7 +193,7 @@ function courseplay:change_DriveDirection(vehicle)
 	vehicle.cp.drivingDirReverse = not vehicle.cp.drivingDirReverse
 	vehicle.cp.recordingTimer = 1
 	vehicle.recordnumber = vehicle.recordnumber + 1
-	courseplay.utils.signs:addSign(vehicle, cx, cz, newAngle);
+	courseplay.utils.signs:addSign(vehicle, 'normal', cx, cz, nil, newAngle);
 	courseplay:buttonsActiveEnabled(vehicle, 'recording');
 end
 
@@ -257,6 +258,8 @@ end
 function courseplay:currentVehAngle(vehicle)
 	local x, y, z = localDirectionToWorld(vehicle.rootNode, 0, 0, 1);
 	local length = Utils.vector2Length(x, z);
-	local dX, dZ = x/length, z/length;
-	return math.deg(math.atan2(dX, dZ))
+	local dx, dz = x/length, z/length;
+	local angleRad = Utils.getYRotationFromDirection(dx, dz);
+	local angleDeg = deg(angleRad);
+	return angleDeg, angleRad;
 end;

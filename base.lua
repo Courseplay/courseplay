@@ -795,7 +795,7 @@ function courseplay:load(xmlFile)
 	-- Page 6: General settings
 	courseplay:register_button(self, 6, 'blank.png', 'toggleRealisticDriving', nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[1], courseplay.hud.visibleArea.width, 0.015, 1, nil, true);
 	courseplay:register_button(self, 6, 'blank.png', 'toggleOpenHudWithMouse', nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[2], courseplay.hud.visibleArea.width, 0.015, 2, nil, true);
-	courseplay:register_button(self, 6, 'blank.png', 'change_WaypointMode', 1, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[3], courseplay.hud.visibleArea.width, 0.015, 3, nil, true);
+	courseplay:register_button(self, 6, 'blank.png', 'changeVisualWaypointsMode', 1, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[3], courseplay.hud.visibleArea.width, 0.015, 3, nil, true);
 	courseplay:register_button(self, 6, 'blank.png', 'changeBeaconLightsMode', 1, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[4], courseplay.hud.visibleArea.width, 0.015, 4, nil, true);
 
 	courseplay:register_button(self, 6, 'navigate_minus.png', 'changeWaitTime', -5, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[5], w16px, h16px, 5, -10, false);
@@ -1487,6 +1487,8 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		local courses = Utils.getNoNil(getXMLString(xmlFile, curKey .. '#courses'), '');
 		self.cp.loadedCourses = Utils.splitString(",", courses);
 		courseplay:reload_courses(self, true);
+		local visualWaypointsMode = Utils.getNoNil(getXMLInt(xmlFile, curKey .. '#visualWaypoints'), 1);
+		courseplay:changeVisualWaypointsMode(self, 0, visualWaypointsMode);
 
 		-- SPEEDS
 		curKey = key .. '.courseplay.speeds';
@@ -1606,7 +1608,7 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 
 
 	--NODES
-	local cpOpen = string.format('<courseplay aiMode=%q courses=%q openHudWithMouse=%q beacon=%q waitTime=%q>', tostring(self.cp.mode), tostring(table.concat(self.cp.loadedCourses, ",")), tostring(self.cp.hud.openWithMouse), tostring(self.cp.beaconLightsMode), tostring(self.cp.waitTime));
+	local cpOpen = string.format('<courseplay aiMode=%q courses=%q openHudWithMouse=%q beacon=%q visualWaypoints=%q waitTime=%q>', tostring(self.cp.mode), tostring(table.concat(self.cp.loadedCourses, ",")), tostring(self.cp.hud.openWithMouse), tostring(self.cp.beaconLightsMode), tostring(self.cp.visualWaypointsMode), tostring(self.cp.waitTime));
 	local speeds = string.format('<speeds useRecordingSpeed=%q unload="%.5f" turn="%.5f" field="%.5f" max="%.5f" />', tostring(self.cp.speeds.useRecordingSpeed), self.cp.speeds.unload, self.cp.speeds.turn, self.cp.speeds.field, self.cp.speeds.max);
 	local combi = string.format('<combi tipperOffset="%.1f" combineOffset="%.1f" combineOffsetAutoMode=%q fillFollow="%d" fillDriveOn="%d" turnRadius="%d" realisticDriving=%q />', self.cp.tipperOffset, self.cp.combineOffset, tostring(self.cp.combineOffsetAutoMode), self.cp.followAtFillLevel, self.cp.driveOnAtFillLevel, self.cp.turnRadius, tostring(self.cp.realisticDriving));
 	local fieldWork = string.format('<fieldWork workWidth="%.1f" ridgeMarkersAutomatic=%q offsetData=%q abortWork="%d" refillUntilPct="%d" />', self.cp.workWidth, tostring(self.cp.ridgeMarkersAutomatic), offsetData, Utils.getNoNil(self.cp.abortWork, 0), self.cp.refillUntilPct);

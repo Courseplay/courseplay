@@ -892,6 +892,21 @@ function courseplay.utils:crossProductQuery(a, b, c, useC)
 	end;
 end;
 
+function courseplay:getRelativePointDirection(pp, cp, np, useC)
+	if pp == nil or cp == nil or np == nil then return nil; end;
+	if useC == nil then useC = true; end;
+
+	local dx1, dz1 = courseplay.generation:getPointDirection(pp, cp, useC);
+	local dx2, dz2 = courseplay.generation:getPointDirection(cp, np, useC);
+
+	local rot1 = Utils.getYRotationFromDirection(dx1, dz1);
+	local rot2 = Utils.getYRotationFromDirection(dx2, dz2);
+
+	local rotDelta = rot1 - rot2; --TODO: rot2 - rot1 ?
+	
+	return Utils.getDirectionFromYRotation(rotDelta);
+end;
+
 function courseplay:getObjectName(object, xmlFile)
 	-- if object.name ~= nil the return object.name; end;
 

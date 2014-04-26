@@ -170,7 +170,7 @@ function courseplay:start(self)
 			end;
 		end;
 
-		--laneNumber (for seeders)
+		-- laneNumber (for seeders)
 		if setLaneNumber and wp.generated ~= nil and wp.generated == true then
 			if wp.turnEnd ~= nil and wp.turnEnd == true then
 				curLaneNumber = curLaneNumber + 1;
@@ -179,7 +179,9 @@ function courseplay:start(self)
 			wp.laneNum = curLaneNumber;
 		end;
 	end;
-	-- mode 6 without start and stop point, set them at start and end, for only-on-field-courses
+
+
+	-- modes 4/6 without start and stop point, set them at start and end, for only-on-field-courses
 	if (self.cp.mode == 4 or self.cp.mode == 6) then
 		if numWaitPoints == 0 or self.cp.startWork == nil then
 			self.cp.startWork = 1;

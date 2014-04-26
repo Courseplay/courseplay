@@ -580,19 +580,19 @@ function courseplay:calculateWorkWidthDisplayPoints(vehicle)
 	};
 end;
 
-function courseplay:change_WaypointMode(self, changeBy)
-	self.cp.visualWaypointsMode = courseplay:varLoop(self.cp.visualWaypointsMode, changeBy, 4, 1);
-	courseplay.utils.signs:setSignsVisibility(self);
+function courseplay:changeVisualWaypointsMode(vehicle, changeBy, force)
+	vehicle.cp.visualWaypointsMode = force or courseplay:varLoop(vehicle.cp.visualWaypointsMode, changeBy, 4, 1);
+	courseplay.utils.signs:setSignsVisibility(vehicle);
+end;
+
+
+function courseplay:changeDriveOnAtFillLevel(vehicle, changeBy)
+	vehicle.cp.driveOnAtFillLevel = Utils.clamp(vehicle.cp.driveOnAtFillLevel + changeBy, 0, 100);
 end
 
 
-function courseplay:changeDriveOnAtFillLevel(self, change_by)
-	self.cp.driveOnAtFillLevel = Utils.clamp(self.cp.driveOnAtFillLevel + change_by, 0, 100);
-end
-
-
-function courseplay:changeFollowAtFillLevel(self, change_by)
-	self.cp.followAtFillLevel = Utils.clamp(self.cp.followAtFillLevel + change_by, 0, 100);
+function courseplay:changeFollowAtFillLevel(vehicle, changeBy)
+	vehicle.cp.followAtFillLevel = Utils.clamp(vehicle.cp.followAtFillLevel + changeBy, 0, 100);
 end
 
 

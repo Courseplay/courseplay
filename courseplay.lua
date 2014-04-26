@@ -441,11 +441,11 @@ function courseplay:setGlobalData()
 
 	--SIGNS
 	local signData = {
-		normal = { 10000, "current",  5 },
-		start =  {   500, "current",  3 },
-		stop =   {   500, "current",  3 },
-		wait =   {  1000, "current",  3 },
-		cross =  {  2000, "crossing", 4 }
+		normal = { 10000, "current",  4.5 }, -- orig height=5
+		start =  {   500, "current",  4.5 }, -- orig height=3
+		stop =   {   500, "current",  4.5 }, -- orig height=3
+		wait =   {  1000, "current",  4.5 }, -- orig height=3
+		cross =  {  2000, "crossing", 4.0 }
 	};
 	local globalRootNode = getRootNode();
 	courseplay.signs = {
