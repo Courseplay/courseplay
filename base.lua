@@ -53,7 +53,6 @@ function courseplay:load(xmlFile)
 	self.recordnumber = 1
 	self.cp.lastRecordnumber = 1;
 	self.cp.recordingTimer = 1
-	self.startlastload = 1
 	self.cp.timeOut = 1
 	self.timer = 0.00
 	self.cp.timers = {}; 
@@ -99,8 +98,8 @@ function courseplay:load(xmlFile)
 	self.cp.stopWork = nil
 	self.cp.abortWork = nil
 	self.cp.hasUnloadingRefillingCourse = false;
-	self.wait = true
-	self.waitTimer = nil
+	self.wait = true --TODO (Jakob): put in cp table
+	self.cp.waitTimer = nil;
 	self.cp.realisticDriving = true;
 	self.cp.canSwitchMode = false;
 	self.cp.startAtFirstPoint = false;
@@ -285,7 +284,7 @@ function courseplay:load(xmlFile)
 
 
 	-- tippers
-	self.tippers = {}
+	self.tippers = {}; --TODO (Jakob): put in cp table
 	self.cp.tipperAttached = false
 	self.cp.currentTrailerToFill = nil
 	self.cp.lastTrailerToFillDistance = nil
@@ -1302,10 +1301,10 @@ function courseplay:readStream(streamId, connection)
 	self.cp.symmetricLaneChange = streamDebugReadBool(streamId)
 	self.cp.startingCorner = streamDebugReadInt32(streamId)
 	self.cp.startingDirection = streamDebugReadInt32(streamId)
-	self.cp.hasShovelStateRot[2] = streamDebugReadBool(streamId)
-	self.cp.hasShovelStateRot[3] = streamDebugReadBool(streamId)
-	self.cp.hasShovelStateRot[4] = streamDebugReadBool(streamId)
-	self.cp.hasShovelStateRot[5] = streamDebugReadBool(streamId) 
+	self.cp.hasShovelStatePositions[2] = streamDebugReadBool(streamId)
+	self.cp.hasShovelStatePositions[3] = streamDebugReadBool(streamId)
+	self.cp.hasShovelStatePositions[4] = streamDebugReadBool(streamId)
+	self.cp.hasShovelStatePositions[5] = streamDebugReadBool(streamId) 
 	
 	local copyCourseFromDriverId = streamDebugReadInt32(streamId)
 	if copyCourseFromDriverId then
@@ -1426,10 +1425,10 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteBool(streamId,self.cp.symmetricLaneChange)
 	streamDebugWriteInt32(streamId,self.cp.startingCorner)
 	streamDebugWriteInt32(streamId,self.cp.startingDirection)
-	streamDebugWriteBool(streamId,self.cp.hasShovelStateRot[2])
-	streamDebugWriteBool(streamId,self.cp.hasShovelStateRot[3])
-	streamDebugWriteBool(streamId,self.cp.hasShovelStateRot[4])
-	streamDebugWriteBool(streamId,self.cp.hasShovelStateRot[5])
+	streamDebugWriteBool(streamId,self.cp.hasShovelStatePositions[2])
+	streamDebugWriteBool(streamId,self.cp.hasShovelStatePositions[3])
+	streamDebugWriteBool(streamId,self.cp.hasShovelStatePositions[4])
+	streamDebugWriteBool(streamId,self.cp.hasShovelStatePositions[5])
 	
 	local copyCourseFromDriverID = nil
 	if self.cp.copyCourseFromDriver ~= nil then

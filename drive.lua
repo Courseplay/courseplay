@@ -69,57 +69,8 @@ function courseplay:drive(self, dt)
 	end;
 
 	--HORIZONTAL/VERTICAL OFFSET
-	local offsetValid = self.cp.totalOffsetX ~= nil and self.cp.toolOffsetZ ~= nil and (self.cp.totalOffsetX ~= 0 or self.cp.toolOffsetZ ~= 0);
-	if offsetValid then
-		if self.cp.mode == 3 then
-			if self.cp.laneOffset ~= 0 then
-				courseplay:changeLaneOffset(self, nil, 0);
-			end;
-			offsetValid = self.recordnumber > 2 and self.recordnumber > self.cp.waitPoints[1] - 6 and self.recordnumber <= self.cp.waitPoints[1] + 3;
-		elseif self.cp.mode == 4 or self.cp.mode == 6 then
-			offsetValid = self.recordnumber > self.cp.startWork and self.recordnumber < self.cp.stopWork and self.recordnumber > 1; --TODO: recordnumber incl startWork/stopWork?
-		elseif self.cp.mode == 7 then
-			if self.cp.laneOffset ~= 0 then
-				courseplay:changeLaneOffset(self, nil, 0);
-			end;
-			offsetValid = self.recordnumber > 3 and self.recordnumber > self.cp.waitPoints[1] - 6 and self.recordnumber <= self.cp.waitPoints[1] + 3 and not self.cp.mode7GoBackBeforeUnloading;
-		elseif self.cp.mode == 8 then
-			if self.cp.laneOffset ~= 0 then
-				courseplay:changeLaneOffset(self, nil, 0);
-			end;
-			offsetValid = self.recordnumber > self.cp.waitPoints[1] - 6 and self.recordnumber <= self.cp.waitPoints[1] + 3;
-		else 
-			offsetValid = false;
-		end;
-	end;
-	if offsetValid then
-		--courseplay:debug(string.format('%s: waypoint before offset: cx=%.2f, cz=%.2f', nameNum(self), cx, cz), 2);
-		local fromX, fromZ, toX, toZ;
-		if self.recordnumber == 1 then
-			fromX = cx;
-			fromZ = cz;
-			toX = self.Waypoints[2].cx;
-			toZ = self.Waypoints[2].cz;
-		else
-			if self.Waypoints[self.cp.lastRecordnumber].rev then
-				fromX = cx;
-				fromZ = cz;
-				toX = self.Waypoints[self.cp.lastRecordnumber].cx;
-				toZ = self.Waypoints[self.cp.lastRecordnumber].cz;
-			else
-				fromX = self.Waypoints[self.cp.lastRecordnumber].cx;
-				fromZ = self.Waypoints[self.cp.lastRecordnumber].cz;
-				toX = cx;
-				toZ = cz;
-			end;
-		end;
-
-		local dx,_,dz,dist = courseplay:getWorldDirection(fromX, 0, fromZ, toX, 0, toZ)
-		if dist and dist > 0.01 then
-			cx = cx - dz * self.cp.totalOffsetX + dx * self.cp.toolOffsetZ;
-			cz = cz + dx * self.cp.totalOffsetX + dz * self.cp.toolOffsetZ;
-		end;
-		--courseplay:debug(string.format('%s: waypoint after offset [%.1fm]: cx=%.2f, cz=%.2f', nameNum(self), self.cp.totalOffsetX, cx, cz), 2);
+	if courseplay:getIsVehicleOffsetValid(self) then
+		cx, cz = courseplay:getVehicleOffsettedCoords(self, cx, cz);
 	end;
 
 	if courseplay.debugChannels[12] and self.cp.isTurning == nil then
@@ -192,8 +143,8 @@ function courseplay:drive(self, dt)
 	local isBypassing = false
 	--### WAITING POINTS - START
 	if self.Waypoints[self.cp.lastRecordnumber].wait and self.wait then
-		if self.waitTimer == nil and self.cp.waitTime > 0 then
-			self.waitTimer = self.timer + self.cp.waitTime * 1000
+		if self.cp.waitTimer == nil and self.cp.waitTime > 0 then
+			self.cp.waitTimer = self.timer + self.cp.waitTime * 1000
 		end
 		if self.cp.mode == 3 and self.cp.tipperAttached then
 			courseplay:handleMode3(self, self.cp.tipperFillLevelPct, allowedToDrive, dt);
@@ -268,8 +219,8 @@ function courseplay:drive(self, dt)
 			courseplay:setGlobalInfoText(self, 'WAIT_POINT');
 		end
 		-- wait untli a specific time
-		if self.waitTimer and self.timer > self.waitTimer then
-			self.waitTimer = nil
+		if self.cp.waitTimer and self.timer > self.cp.waitTimer then
+			self.cp.waitTimer = nil
 			self.wait = false
 		end
 		allowedToDrive = false
@@ -846,8 +797,8 @@ function courseplay:drive(self, dt)
 end
 
 
-function courseplay:setTrafficCollision(self, lx, lz, workArea) --!!!
-	--local goForRaycast = self.cp.mode == 1 or (self.cp.mode == 3 and self.recordnumber > 3) or self.cp.mode == 5 or self.cp.mode == 8 or ((self.cp.mode == 4 or self.cp.mode == 6) and self.recordnumber > self.cp.stopWork) or (self.cp.mode == 2 and self.recordnumber > 3)
+function courseplay:setTrafficCollision(vehicle, lx, lz, workArea) --!!!
+	--local goForRaycast = vehicle.cp.mode == 1 or (vehicle.cp.mode == 3 and vehicle.recordnumber > 3) or vehicle.cp.mode == 5 or vehicle.cp.mode == 8 or ((vehicle.cp.mode == 4 or vehicle.cp.mode == 6) and vehicle.recordnumber > vehicle.cp.stopWork) or (vehicle.cp.mode == 2 and vehicle.recordnumber > 3)
 	--print("lx: "..tostring(lx).."	distance: "..tostring(distance))
 	local maxlx = 0.5; --math.sin(maxAngle); --sin30°  old was : 0.7071067 sin 45°
 	local colDirX = lx;
@@ -861,21 +812,21 @@ function courseplay:setTrafficCollision(self, lx, lz, workArea) --!!!
 		colDirZ = 0.4;
 	end;
 	--courseplay:debug(string.format("colDirX: %f colDirZ %f ",colDirX,colDirZ ), 3)
-	if self.cp.trafficCollisionTriggers[1] ~= nil then 
-		AIVehicleUtil.setCollisionDirection(self.cp.DirectionNode, self.cp.trafficCollisionTriggers[1], colDirX, colDirZ);
-		local recordNumber = self.recordnumber
-		if self.cp.collidingVehicleId == nil then
-			for i=2,self.cp.numTrafficCollisionTriggers do
-				if workArea or recordNumber + i > self.maxnumber or recordNumber < 2 then
-					AIVehicleUtil.setCollisionDirection(self.cp.trafficCollisionTriggers[i-1], self.cp.trafficCollisionTriggers[i], 0, -1);
+	if vehicle.cp.trafficCollisionTriggers[1] ~= nil then 
+		AIVehicleUtil.setCollisionDirection(vehicle.cp.DirectionNode, vehicle.cp.trafficCollisionTriggers[1], colDirX, colDirZ);
+		local recordNumber = vehicle.recordnumber
+		if vehicle.cp.collidingVehicleId == nil then
+			for i=2,vehicle.cp.numTrafficCollisionTriggers do
+				if workArea or recordNumber + i > vehicle.maxnumber or recordNumber < 2 then
+					AIVehicleUtil.setCollisionDirection(vehicle.cp.trafficCollisionTriggers[i-1], vehicle.cp.trafficCollisionTriggers[i], 0, -1);
 				else
-					local nodeX,nodeY,nodeZ = getWorldTranslation(self.cp.trafficCollisionTriggers[i]);
-					local nodeDirX,nodeDirY,nodeDirZ,distance = courseplay:getWorldDirection(nodeX,nodeY,nodeZ, self.Waypoints[recordNumber+i].cx,nodeY,self.Waypoints[recordNumber+i].cz);
-					if distance < 5.5 and recordNumber + i +1 <= self.maxnumber then
-							nodeDirX,nodeDirY,nodeDirZ,distance = courseplay:getWorldDirection(nodeX,nodeY,nodeZ, self.Waypoints[recordNumber+i+1].cx,nodeY,self.Waypoints[recordNumber+i+1].cz);
+					local nodeX,nodeY,nodeZ = getWorldTranslation(vehicle.cp.trafficCollisionTriggers[i]);
+					local nodeDirX,nodeDirY,nodeDirZ,distance = courseplay:getWorldDirection(nodeX,nodeY,nodeZ, vehicle.Waypoints[recordNumber+i].cx,nodeY,vehicle.Waypoints[recordNumber+i].cz);
+					if distance < 5.5 and recordNumber + i +1 <= vehicle.maxnumber then
+							nodeDirX,nodeDirY,nodeDirZ,distance = courseplay:getWorldDirection(nodeX,nodeY,nodeZ, vehicle.Waypoints[recordNumber+i+1].cx,nodeY,vehicle.Waypoints[recordNumber+i+1].cz);
 					end;
-						nodeDirX,nodeDirY,nodeDirZ = worldDirectionToLocal(self.cp.trafficCollisionTriggers[i-1], nodeDirX,nodeDirY,nodeDirZ);
-						AIVehicleUtil.setCollisionDirection(self.cp.trafficCollisionTriggers[i-1], self.cp.trafficCollisionTriggers[i], nodeDirX, nodeDirZ);
+						nodeDirX,nodeDirY,nodeDirZ = worldDirectionToLocal(vehicle.cp.trafficCollisionTriggers[i-1], nodeDirX,nodeDirY,nodeDirZ);
+						AIVehicleUtil.setCollisionDirection(vehicle.cp.trafficCollisionTriggers[i-1], vehicle.cp.trafficCollisionTriggers[i], nodeDirX, nodeDirZ);
 				end;
 			end
 		end
@@ -883,59 +834,59 @@ function courseplay:setTrafficCollision(self, lx, lz, workArea) --!!!
 end;
 
 
-function courseplay:checkTraffic(self, display_warnings, allowedToDrive)
+function courseplay:checkTraffic(vehicle, display_warnings, allowedToDrive)
 	local ahead = false
-	local collisionVehicle = g_currentMission.nodeToVehicle[self.cp.collidingVehicleId]
-	--courseplay:debug(tableShow(self, nameNum(self), 4), 4)
-	--if self.CPnumCollidingVehicles ~= nil and self.CPnumCollidingVehicles > 0 then
-		if collisionVehicle ~= nil and not (self.cp.mode == 9 and (collisionVehicle.allowFillFromAir or (collisionVehicle.cp and collisionVehicle.cp.mode9TrafficIgnoreVehicle))) then
-			local vx, vy, vz = getWorldTranslation(self.cp.collidingVehicleId)
-			local tx, ty, tz = worldToLocal(self.aiTrafficCollisionTrigger, vx, vy, vz)
-			local xvx, xvy, xvz = getWorldTranslation(self.aiTrafficCollisionTrigger)
-			local x, y, z = getWorldTranslation(self.cp.DirectionNode)
+	local collisionVehicle = g_currentMission.nodeToVehicle[vehicle.cp.collidingVehicleId]
+	--courseplay:debug(tableShow(vehicle, nameNum(vehicle), 4), 4)
+	--if vehicle.CPnumCollidingVehicles ~= nil and vehicle.CPnumCollidingVehicles > 0 then
+		if collisionVehicle ~= nil and not (vehicle.cp.mode == 9 and (collisionVehicle.allowFillFromAir or (collisionVehicle.cp and collisionVehicle.cp.mode9TrafficIgnoreVehicle))) then
+			local vx, vy, vz = getWorldTranslation(vehicle.cp.collidingVehicleId)
+			local tx, ty, tz = worldToLocal(vehicle.aiTrafficCollisionTrigger, vx, vy, vz)
+			local xvx, xvy, xvz = getWorldTranslation(vehicle.aiTrafficCollisionTrigger)
+			local x, y, z = getWorldTranslation(vehicle.cp.DirectionNode)
 			local x1, y1, z1 = 0,0,0
 			local halfLength = Utils.getNoNil(collisionVehicle.sizeLength,5)/2
-			x1,z1 = AIVehicleUtil.getDriveDirection(self.cp.collidingVehicleId, x, y, z);
+			x1,z1 = AIVehicleUtil.getDriveDirection(vehicle.cp.collidingVehicleId, x, y, z);
 			if z1 > -0.9 then -- tractor in front of vehicle face2face or beside < 4 o'clock
 				ahead = true
 			end
-			if math.abs(tx) > 5 and collisionVehicle.rootNode ~= nil and not self.cp.collidingObjects.all[self.cp.collidingVehicleId] then
-				courseplay:debug(nameNum(self)..": checkTraffic:	deleteCollisionVehicle",3)
-				courseplay:deleteCollisionVehicle(self)
+			if math.abs(tx) > 5 and collisionVehicle.rootNode ~= nil and not vehicle.cp.collidingObjects.all[vehicle.cp.collidingVehicleId] then
+				courseplay:debug(nameNum(vehicle)..": checkTraffic:	deleteCollisionVehicle",3)
+				courseplay:deleteCollisionVehicle(vehicle)
 				return allowedToDrive
 			end
 			if collisionVehicle.lastSpeedReal == nil or collisionVehicle.lastSpeedReal*3600 < 5 or ahead then
-				--courseplay:debug(nameNum(self)..": checkTraffic:	distance: "..tostring(tz-halfLength),3)
+				--courseplay:debug(nameNum(vehicle)..": checkTraffic:	distance: "..tostring(tz-halfLength),3)
 				if tz <= 2 + halfLength then
 					allowedToDrive = false;
-					self.cp.inTraffic = true
-					--courseplay:debug(nameNum(self)..": checkTraffic:	Stop",3)
-				elseif self.lastSpeedReal*3600 > 10 then
-					--courseplay:debug(nameNum(self)..": checkTraffic:	brake",3)
-					allowedToDrive = courseplay:brakeToStop(self)
+					vehicle.cp.inTraffic = true
+					--courseplay:debug(nameNum(vehicle)..": checkTraffic:	Stop",3)
+				elseif vehicle.lastSpeedReal*3600 > 10 then
+					--courseplay:debug(nameNum(vehicle)..": checkTraffic:	brake",3)
+					allowedToDrive = courseplay:brakeToStop(vehicle)
 				else
-					--courseplay:debug(nameNum(self)..": checkTraffic:	do nothing - go, but set \"self.cp.isTrafficBraking\"",3)
-					self.cp.isTrafficBraking = true
+					--courseplay:debug(nameNum(vehicle)..": checkTraffic:	do nothing - go, but set \"vehicle.cp.isTrafficBraking\"",3)
+					vehicle.cp.isTrafficBraking = true
 				end
 			end
 		end
 	--end
 	
-	if display_warnings and self.cp.inTraffic then
-		courseplay:setGlobalInfoText(self, 'TRAFFIC');
+	if display_warnings and vehicle.cp.inTraffic then
+		courseplay:setGlobalInfoText(vehicle, 'TRAFFIC');
 	end
 	return allowedToDrive
 end
 
 function courseplay:deleteCollisionVehicle(vehicle)
 	if vehicle.cp.collidingVehicleId ~= nil  then
-					vehicle.cp.collidingObjects.all[vehicle.cp.collidingVehicleId] = nil
-					--self.CPnumCollidingVehicles = math.max(self.CPnumCollidingVehicles - 1, 0);
-					--if self.CPnumCollidingVehicles == 0 then
-					--self.numCollidingVehicles[triggerId] = math.max(self.numCollidingVehicles[triggerId]-1, 0);
-					vehicle.cp.collidingObjects[4][vehicle.cp.collidingVehicleId] = nil
-					vehicle.cp.collidingVehicleId = nil
-					courseplay:debug(string.format("%s: 	deleteCollisionVehicle: setting \"self.cp.collidingVehicleId\"to nil", nameNum(self)), 3);
+		vehicle.cp.collidingObjects.all[vehicle.cp.collidingVehicleId] = nil
+		--self.CPnumCollidingVehicles = math.max(self.CPnumCollidingVehicles - 1, 0);
+		--if self.CPnumCollidingVehicles == 0 then
+		--self.numCollidingVehicles[triggerId] = math.max(self.numCollidingVehicles[triggerId]-1, 0);
+		vehicle.cp.collidingObjects[4][vehicle.cp.collidingVehicleId] = nil
+		vehicle.cp.collidingVehicleId = nil
+		courseplay:debug(string.format("%s: 	deleteCollisionVehicle: setting \"self.cp.collidingVehicleId\"to nil", nameNum(self)), 3);
 	end
 end
 
@@ -1022,10 +973,10 @@ function courseplay:setSpeed(vehicle, refSpeed, sl)
 	end;
 end;
 
-function courseplay:openCloseCover(self, dt, showCover, isAtTipTrigger)
-	for i,twc in pairs(self.cp.tippersWithCovers) do
+function courseplay:openCloseCover(vehicle, dt, showCover, isAtTipTrigger)
+	for i,twc in pairs(vehicle.cp.tippersWithCovers) do
 		local tIdx, coverType, showCoverWhenTipping, coverItems = twc.tipperIndex, twc.coverType, twc.showCoverWhenTipping, twc.coverItems;
-		local tipper = self.tippers[tIdx];
+		local tipper = vehicle.tippers[tIdx];
 
 		--SMK-34 et al.
 		if coverType == 'setPlane' and tipper.plane.bOpen == showCover then
@@ -1059,7 +1010,7 @@ function courseplay:openCloseCover(self, dt, showCover, isAtTipTrigger)
 				end;
 			end;
 		end;
-	end; --END for i,tipperWithCover in self.cp.tippersWithCovers
+	end; --END for i,tipperWithCover in vehicle.cp.tippersWithCovers
 end;
 
 function courseplay:refillSprayer(self, fillLevelPct, driveOn, allowedToDrive, lx, lz, dt)
@@ -1160,40 +1111,40 @@ function courseplay:refillSprayer(self, fillLevelPct, driveOn, allowedToDrive, l
 	return allowedToDrive,lx,lz
 end;
 
-function courseplay:regulateTrafficSpeed(self,refSpeed,allowedToDrive)
-	if self.cp.isTrafficBraking then
+function courseplay:regulateTrafficSpeed(vehicle,refSpeed,allowedToDrive)
+	if vehicle.cp.isTrafficBraking then
 		return refSpeed
 	end
-	if self.cp.collidingVehicleId ~= nil then
-		local collisionVehicle = g_currentMission.nodeToVehicle[self.cp.collidingVehicleId];
+	if vehicle.cp.collidingVehicleId ~= nil then
+		local collisionVehicle = g_currentMission.nodeToVehicle[vehicle.cp.collidingVehicleId];
 		local vehicleBehind = false
 		if collisionVehicle == nil then
-			courseplay:debug(nameNum(self)..": regulateTrafficSpeed(1216):	setting self.cp.collidingVehicleId nil",3)
-			self.cp.collidingVehicleId = nil
-			self.CPnumCollidingVehicles = math.max(self.CPnumCollidingVehicles-1, 0);
+			courseplay:debug(nameNum(vehicle)..": regulateTrafficSpeed(1216):	setting vehicle.cp.collidingVehicleId nil",3)
+			vehicle.cp.collidingVehicleId = nil
+			vehicle.CPnumCollidingVehicles = math.max(vehicle.CPnumCollidingVehicles-1, 0);
 			return refSpeed
 		else
-			local name = getName(self.cp.collidingVehicleId)
-			courseplay:debug(nameNum(self)..": regulateTrafficSpeed:	 "..tostring(name),3)
+			local name = getName(vehicle.cp.collidingVehicleId)
+			courseplay:debug(nameNum(vehicle)..": regulateTrafficSpeed:	 "..tostring(name),3)
 		end
-		local x, y, z = getWorldTranslation(self.cp.collidingVehicleId)
-		local x1, y1, z1 = worldToLocal(self.rootNode, x, y, z)
-		if z1 < 0 or math.abs(x1) > 5 and not self.cp.collidingObjects.all[self.cp.collidingVehicleId] then -- vehicle behind tractor
+		local x, y, z = getWorldTranslation(vehicle.cp.collidingVehicleId)
+		local x1, y1, z1 = worldToLocal(vehicle.rootNode, x, y, z)
+		if z1 < 0 or math.abs(x1) > 5 and not vehicle.cp.collidingObjects.all[vehicle.cp.collidingVehicleId] then -- vehicle behind tractor
 			vehicleBehind = true
 		end
 		local distance = 0
 		if collisionVehicle.rootNode ~= nil then
-			distance = courseplay:distanceToObject(self, collisionVehicle)
+			distance = courseplay:distanceToObject(vehicle, collisionVehicle)
 		end
 		if collisionVehicle.rootNode == nil or collisionVehicle.lastSpeedReal == nil or (distance > 40) or vehicleBehind then
-			courseplay:debug(string.format("%s: v.rootNode= %s,v.lastSpeedReal= %s, distance: %f, vehicleBehind= %s",nameNum(self),tostring(collisionVehicle.rootNode),tostring(collisionVehicle.lastSpeedReal),distance,tostring(vehicleBehind)),3)
-			courseplay:deleteCollisionVehicle(self)
-			--courseplay:debug(nameNum(self)..": regulateTrafficSpeed(1230):	setting self.cp.collidingVehicleId nil",3)
+			courseplay:debug(string.format("%s: v.rootNode= %s,v.lastSpeedReal= %s, distance: %f, vehicleBehind= %s",nameNum(vehicle),tostring(collisionVehicle.rootNode),tostring(collisionVehicle.lastSpeedReal),distance,tostring(vehicleBehind)),3)
+			courseplay:deleteCollisionVehicle(vehicle)
+			--courseplay:debug(nameNum(vehicle)..": regulateTrafficSpeed(1230):	setting vehicle.cp.collidingVehicleId nil",3)
 		
 		else
-			if allowedToDrive and not (self.cp.mode == 9 and collisionVehicle.allowFillFromAir) then
-				if (self.lastSpeed*3600) - (collisionVehicle.lastSpeedReal*3600) > 15 or z1 < 3 then
-					self.cp.TrafficBrake = true
+			if allowedToDrive and not (vehicle.cp.mode == 9 and collisionVehicle.allowFillFromAir) then
+				if (vehicle.lastSpeed*3600) - (collisionVehicle.lastSpeedReal*3600) > 15 or z1 < 3 then
+					vehicle.cp.TrafficBrake = true
 				else
 					return math.min(collisionVehicle.lastSpeedReal,refSpeed)
 				end
@@ -1203,32 +1154,32 @@ function courseplay:regulateTrafficSpeed(self,refSpeed,allowedToDrive)
 	return refSpeed
 end
 
-function courseplay:brakeToStop(self)
-	if self.isRealistic then
+function courseplay:brakeToStop(vehicle)
+	if vehicle.isRealistic then
 		return false
 	end
-	if self.lastSpeedReal > 1/3600 and not self.cp.TrafficHasStopped then
-		self.cp.TrafficBrake = true
-		self.cp.isTrafficBraking = true
+	if vehicle.lastSpeedReal > 1/3600 and not vehicle.cp.TrafficHasStopped then
+		vehicle.cp.TrafficBrake = true
+		vehicle.cp.isTrafficBraking = true
 		return true
 	else
-		self.cp.TrafficHasStopped = true
+		vehicle.cp.TrafficHasStopped = true
 		return false
 	end
 end
 
 
-function courseplay:driveInMRDirection(self, lx,lz,fwd,dt,allowedToDrive)
-	if not self.realForceAiDriven then
-		self.realForceAiDriven = true
+function courseplay:driveInMRDirection(vehicle, lx,lz,fwd,dt,allowedToDrive)
+	if not vehicle.realForceAiDriven then
+		vehicle.realForceAiDriven = true
 	end
-	if self.cp.speedBrake then 
+	if vehicle.cp.speedBrake then 
 		--print("speed brake")
 		allowedToDrive = false
 	end	
 
 	--when I'm 2Fast in a curve then brake
-	if math.abs(lx) > 0.25 and self.lastSpeedReal*3600 > 25 then
+	if math.abs(lx) > 0.25 and vehicle.lastSpeedReal*3600 > 25 then
 		allowedToDrive = false
 		--print("emergency brake")
 	end
@@ -1236,37 +1187,95 @@ function courseplay:driveInMRDirection(self, lx,lz,fwd,dt,allowedToDrive)
 		lx = -lx
 		lz = -lz
 	end
-	--AIVehicleUtil.mrDriveInDirection(self, dt, acceleration, allowedToDrive, moveForwards, lx, lz, speedLevel, useReduceSpeed, noDefaultHiredWorker)
-	AIVehicleUtil.mrDriveInDirection(self, dt, 1, allowedToDrive, fwd, lx, lz, self.cp.speeds.sl, true, true)
+	--AIVehicleUtil.mrDriveInDirection(vehicle, dt, acceleration, allowedToDrive, moveForwards, lx, lz, speedLevel, useReduceSpeed, noDefaultHiredWorker)
+	AIVehicleUtil.mrDriveInDirection(vehicle, dt, 1, allowedToDrive, fwd, lx, lz, vehicle.cp.speeds.sl, true, true)
 			
 end
 
 
-function courseplay:setMRSpeed(self, refSpeed, sl, allowedToDrive, workArea)
-	local currentSpeed = self.lastSpeedReal
+function courseplay:setMRSpeed(vehicle, refSpeed, sl, allowedToDrive, workArea)
+	local currentSpeed = vehicle.lastSpeedReal
 	local deltaMinus = currentSpeed*3600 - refSpeed*3600
 	local deltaPlus = refSpeed*3600 - currentSpeed*3600
 
 	if deltaMinus > 5 then
-		self.cp.speedBrake = true
+		vehicle.cp.speedBrake = true
 	else 
-		self.cp.speedBrake = false
+		vehicle.cp.speedBrake = false
 	end
 	
-	self.motor.speedLevel = sl
-	self.motor.realSpeedLevelsAI[self.motor.speedLevel] = refSpeed*3600
+	vehicle.motor.speedLevel = sl
+	vehicle.motor.realSpeedLevelsAI[vehicle.motor.speedLevel] = refSpeed*3600
 
 	-- slipping notification
-	if self.realDisplaySlipPercent > 90 then
-		courseplay:setGlobalInfoText(self, 'SLIPPING_2');
-	elseif self.realDisplaySlipPercent > 75 then
-		courseplay:setGlobalInfoText(self, 'SLIPPING_1');
+	if vehicle.realDisplaySlipPercent > 90 then
+		courseplay:setGlobalInfoText(vehicle, 'SLIPPING_2');
+	elseif vehicle.realDisplaySlipPercent > 75 then
+		courseplay:setGlobalInfoText(vehicle, 'SLIPPING_1');
 	end;
 
 	-- setting AWD if necessary
-	if (workArea or self.realDisplaySlipPercent > 25 or self.cp.BGASelectedSection) and self.realAWDModeOn == false then
-		self:realSetAwdActive(true);
-	elseif not workArea and self.realDisplaySlipPercent < 1 and not self.cp.BGASelectedSection and self.realAWDModeOn == true then
-		self:realSetAwdActive(false);
+	if (workArea or vehicle.realDisplaySlipPercent > 25 or vehicle.cp.BGASelectedSection) and vehicle.realAWDModeOn == false then
+		vehicle:realSetAwdActive(true);
+	elseif not workArea and vehicle.realDisplaySlipPercent < 1 and not vehicle.cp.BGASelectedSection and vehicle.realAWDModeOn == true then
+		vehicle:realSetAwdActive(false);
 	end
+end;
+
+function courseplay:getIsVehicleOffsetValid(vehicle)
+	local valid = vehicle.cp.totalOffsetX ~= nil and vehicle.cp.toolOffsetZ ~= nil and (vehicle.cp.totalOffsetX ~= 0 or vehicle.cp.toolOffsetZ ~= 0);
+	if not valid then
+		return false;
+	end;
+
+	if vehicle.cp.mode == 3 then
+		if vehicle.cp.laneOffset ~= 0 then
+			courseplay:changeLaneOffset(vehicle, nil, 0);
+		end;
+		return vehicle.recordnumber > 2 and vehicle.recordnumber > vehicle.cp.waitPoints[1] - 6 and vehicle.recordnumber <= vehicle.cp.waitPoints[1] + 3;
+	elseif vehicle.cp.mode == 4 or vehicle.cp.mode == 6 then
+		return vehicle.recordnumber >= vehicle.cp.startWork and vehicle.recordnumber <= vehicle.cp.stopWork;
+	elseif vehicle.cp.mode == 7 then
+		if vehicle.cp.laneOffset ~= 0 then
+			courseplay:changeLaneOffset(vehicle, nil, 0);
+		end;
+		return vehicle.recordnumber > 3 and vehicle.recordnumber > vehicle.cp.waitPoints[1] - 6 and vehicle.recordnumber <= vehicle.cp.waitPoints[1] + 3 and not vehicle.cp.mode7GoBackBeforeUnloading;
+	elseif vehicle.cp.mode == 8 then
+		if vehicle.cp.laneOffset ~= 0 then
+			courseplay:changeLaneOffset(vehicle, nil, 0);
+		end;
+		return vehicle.recordnumber > vehicle.cp.waitPoints[1] - 6 and vehicle.recordnumber <= vehicle.cp.waitPoints[1] + 3;
+	end; 
+
+	return false;
+end;
+
+function courseplay:getVehicleOffsettedCoords(vehicle, x, z)
+	--courseplay:debug(string.format('%s: waypoint before offset: cx=%.2f, cz=%.2f', nameNum(vehicle), cx, cz), 2);
+	local fromX, fromZ, toX, toZ;
+	if vehicle.recordnumber == 1 then
+		fromX = x;
+		fromZ = z;
+		toX = vehicle.Waypoints[2].cx;
+		toZ = vehicle.Waypoints[2].cz;
+	elseif vehicle.Waypoints[vehicle.cp.lastRecordnumber].rev then
+		fromX = x;
+		fromZ = z;
+		toX = vehicle.Waypoints[vehicle.cp.lastRecordnumber].cx;
+		toZ = vehicle.Waypoints[vehicle.cp.lastRecordnumber].cz;
+	else
+		fromX = vehicle.Waypoints[vehicle.cp.lastRecordnumber].cx;
+		fromZ = vehicle.Waypoints[vehicle.cp.lastRecordnumber].cz;
+		toX = x;
+		toZ = z;
+	end;
+
+	local dx,_,dz,dist = courseplay:getWorldDirection(fromX, 0, fromZ, toX, 0, toZ)
+	if dist and dist > 0.01 then
+		x = x - dz * vehicle.cp.totalOffsetX + dx * vehicle.cp.toolOffsetZ;
+		z = z + dx * vehicle.cp.totalOffsetX + dz * vehicle.cp.toolOffsetZ;
+	end;
+	--courseplay:debug(string.format('%s: waypoint after offset [%.1fm]: cx=%.2f, cz=%.2f', nameNum(vehicle), vehicle.cp.totalOffsetX, cx, cz), 2);
+
+	return x, z;
 end;
