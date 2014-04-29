@@ -64,10 +64,9 @@ function courseplay:start(self)
 				courseplay:debug(string.format('## Courseplay: %s: aiTrafficCollisionTrigger in cutter missing. Traffic collision prevention will not work!', nameNum(self)),3);
 			end
 		end
-	end	
-	
+	end
 
-	self.orig_maxnumber = self.maxnumber
+
 	-- set default modeState if not in mode 2 or 3
 	if self.cp.mode ~= 2 and self.cp.mode ~= 3 then
 		self.cp.modeState = 0
@@ -194,8 +193,8 @@ function courseplay:start(self)
 	self.cp.numCrossingPoints = numCrossingPoints;
 	courseplay:debug(string.format("%s: numWaitPoints=%d, waitPoints[1]=%s, numCrossingPoints=%d", nameNum(self), self.cp.numWaitPoints, tostring(self.cp.waitPoints[1]), numCrossingPoints), 12);
 
-	-- Sprayer: set waitTime to 0
-	if self.cp.mode == 4 or self.cp.mode == 8 and self.cp.waitTime > 0 then
+	-- set waitTime to 0 if necessary
+	if not courseplay:getCanHaveWaitTime(self) and self.cp.waitTime > 0 then
 		courseplay:changeWaitTime(self, -self.cp.waitTime);
 	end;
 

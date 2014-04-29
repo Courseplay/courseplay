@@ -141,7 +141,7 @@ function courseplay.button:renderButton(vehicle, button)
 
 		elseif pg == 6 then
 			if fn == "changeWaitTime" then
-				button.canScrollUp = not (vehicle.cp.mode == 3 or vehicle.cp.mode == 4 or vehicle.cp.mode == 6 or vehicle.cp.mode == 7 or vehicle.cp.mode == 9);
+				button.canScrollUp = courseplay:getCanHaveWaitTime(vehicle);
 				button.canScrollDown = button.canScrollUp and vehicle.cp.waitTime > 0;
 			elseif fn == 'changeDebugChannelSection' then
 				button.canScrollUp = courseplay.debugChannelSection > 1;
@@ -286,8 +286,8 @@ function courseplay.button:renderButton(vehicle, button)
 		--Page 6
 		elseif pg == 6 then
 			if fn == "changeWaitTime" then
-				button.show = not (vehicle.cp.mode == 3 or vehicle.cp.mode == 4 or vehicle.cp.mode == 6 or vehicle.cp.mode == 7 or vehicle.cp.mode == 9);
-				if prm < 0 and button.show then
+				button.show = courseplay:getCanHaveWaitTime(vehicle);
+				if button.show and prm < 0 then
 					button.show = vehicle.cp.waitTime > 0;
 				end;
 			elseif fn == "toggleDebugChannel" then

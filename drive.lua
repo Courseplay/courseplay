@@ -145,9 +145,11 @@ function courseplay:drive(self, dt)
 
 	--### WAITING POINTS - START
 	if self.Waypoints[self.cp.lastRecordnumber].wait and self.wait then
+		-- set wait time end
 		if self.cp.waitTimer == nil and self.cp.waitTime > 0 then
-			self.cp.waitTimer = self.timer + self.cp.waitTime * 1000
-		end
+			self.cp.waitTimer = self.timer + self.cp.waitTime * 1000;
+		end;
+
 		if self.cp.mode == 3 and self.cp.tipperAttached then
 			courseplay:handleMode3(self, self.cp.tipperFillLevelPct, allowedToDrive, dt);
 
@@ -220,7 +222,8 @@ function courseplay:drive(self, dt)
 		else
 			courseplay:setGlobalInfoText(self, 'WAIT_POINT');
 		end
-		-- wait for a specific amount of time
+
+		-- wait time passed -> continue driving
 		if self.cp.waitTimer and self.timer > self.cp.waitTimer then
 			self.cp.waitTimer = nil
 			self.wait = false
@@ -290,7 +293,7 @@ function courseplay:drive(self, dt)
 			courseplay:handleMode3(self, self.cp.tipperFillLevelPct, allowedToDrive, dt);
 		end;
 
-		-- Fertilice loading --only for one Implement !
+		-- MODE 4: REFILL SPRAYER or SEEDER
 		if self.cp.mode == 4 then
 			if self.cp.tipperAttached and self.cp.startWork ~= nil and self.cp.stopWork ~= nil then
 				local isInWorkArea = self.recordnumber > self.cp.startWork and self.recordnumber <= self.cp.stopWork;
@@ -319,7 +322,7 @@ function courseplay:drive(self, dt)
 			end;
 		end;
 
-		--REFILL LIQUID MANURE TRANSPORT
+		-- MODE 8: REFILL LIQUID MANURE TRANSPORT
 		if self.cp.mode == 8 then
 			raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self)
 			if self.cp.tipperAttached then
@@ -341,7 +344,6 @@ function courseplay:drive(self, dt)
 				raycastAll(tx, ty, tz, nx, ny, nz, "findTipTriggerCallback", 10, self);
 				if self.cp.fillTrigger ~= nil then
 					if courseplay.triggers.all[self.cp.fillTrigger].isDamageModTrigger then
-						--print("slow down , its a garage")
 						self.cp.isInFilltrigger = true
 					end
 				end
@@ -349,7 +351,7 @@ function courseplay:drive(self, dt)
 					self.cp.isInRepairTrigger = true
 				end;
 			elseif self.damageLevel == 0 then
-					self.cp.isInRepairTrigger = false
+				self.cp.isInRepairTrigger = false
 			end;
 			if self.cp.isInRepairTrigger then
 				allowedToDrive = false;

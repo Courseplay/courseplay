@@ -491,7 +491,7 @@ function courseplay.hud:loadPage(vehicle, page)
 		vehicle.cp.hud.content.pages[6][4][2].text = courseplay:loc(string.format('COURSEPLAY_BEACON_LIGHTS_MODE_%d', vehicle.cp.beaconLightsMode));
 
 		-- Waiting point: wait time
-		if not (vehicle.cp.mode == 3 or vehicle.cp.mode == 4 or vehicle.cp.mode == 6 or vehicle.cp.mode == 7) then
+		if courseplay:getCanHaveWaitTime(vehicle) then
 			vehicle.cp.hud.content.pages[6][5][1].text = courseplay:loc('COURSEPLAY_WAITING_TIME');
 			local minutes, seconds = math.floor(vehicle.cp.waitTime/60), vehicle.cp.waitTime % 60;
 			local str = courseplay:loc('COURSEPLAY_SECONDS'):format(seconds);
