@@ -416,8 +416,9 @@ function courseplay:updateAllTriggers()
 					damageModTriggersCount = damageModTriggersCount + 1;
 					allNonUpdateablesCount = allNonUpdateablesCount + 1;
 					allCount = allCount + 1;
+
 				--mixing station (placeable)
-				elseif Utils.endsWith(xml, "mischstation.xml") then
+				elseif Utils.endsWith(xml, 'mischstation.xml') then
 					for i,triggerData in pairs(trigger.TipTriggers) do
 						local triggerId = triggerData.triggerId;
 						if triggerId then

@@ -218,7 +218,7 @@ function courseplay:drive(self, dt)
 		else
 			courseplay:setGlobalInfoText(self, 'WAIT_POINT');
 		end
-		-- wait untli a specific time
+		-- wait for a specific amount of time
 		if self.cp.waitTimer and self.timer > self.cp.waitTimer then
 			self.cp.waitTimer = nil
 			self.wait = false

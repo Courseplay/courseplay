@@ -226,7 +226,7 @@ function inputCourseNameDialogue:onSaveClick()
 		end
 		
 		local button = vehicle.cp.buttons["2"][vehicle.cp.hud.filterButtonIndex];
-		courseplay.button.setOverlay(button, 2);
+		courseplay.button:setOverlay(button, 2);
 		courseplay.settings.setReloadCourseItems(vehicle);
 	end
 

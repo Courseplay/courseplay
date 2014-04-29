@@ -21,7 +21,7 @@ function courseplay_manager:loadMap(name)
 
 	self.buttons = {};
 
-	--GlobalInfoText
+	-- GLOBAL INFO TEXT
 	self.globalInfoTextMaxNum = 20;
 	self.globalInfoTextOverlays = {};
 	self.buttons.globalInfoText = {};
@@ -32,7 +32,7 @@ function courseplay_manager:loadMap(name)
 	for i=1,self.globalInfoTextMaxNum do
 		local posY = git.backgroundY + (i - 1) * git.lineHeight;
 		self.globalInfoTextOverlays[i] = Overlay:new(string.format("globalInfoTextOverlay%d", i), git.backgroundImg, git.backgroundX, posY, 0.1, git.fontSize);
-		self:registerButton('globalInfoText', 'goToVehicle', i, 'pageNav_7.png', buttonX, posY, buttonWidth, buttonHeight);
+		self:createButton('globalInfoText', 'goToVehicle', i, 'pageNav_7.png', buttonX, posY, buttonWidth, buttonHeight);
 	end;
 	self.buttons.globalInfoTextClickArea = {
 		x1 = buttonX;
@@ -46,7 +46,7 @@ function courseplay_manager:loadMap(name)
 	self.playerOnFootMouseEnabled = false;
 	self.wasPlayerFrozen = false;
 
-	--Field scan info display
+	-- FIELD SCAN INFO DISPLAY
 	self.fieldScanInfo = {};
 	self.fieldScanInfo.fileW = 512/1080 / g_screenAspectRatio; --512/1920;
 	self.fieldScanInfo.fileH = 256/1080;
@@ -148,7 +148,7 @@ function courseplay_manager:createInitialCourseplayFile()
 	end;
 end;
 
-function courseplay_manager:registerButton(section, fn, prm, img, x, y, w, h)
+function courseplay_manager:createButton(section, fn, prm, img, x, y, w, h)
 	local overlay = Overlay:new(img, Utils.getFilename("img/" .. img, courseplay.path), x, y, w, h);
 	local button = { 
 		section = section, 
@@ -170,7 +170,7 @@ function courseplay_manager:registerButton(section, fn, prm, img, x, y, w, h)
 		isHovered = false,
 		isHidden = false
 	};
-	--print(string.format("courseplay_manager:registerButton(%q, %q, %s, %q, %.3f, %.3f, %.3f, %.3f)", section, fn, prm, img, x, y, w, h));
+	--print(string.format("courseplay_manager:createButton(%q, %q, %s, %q, %.3f, %.3f, %.3f, %.3f)", section, fn, prm, img, x, y, w, h));
 	table.insert(courseplay_manager.buttons[tostring(section)], button);
 	--return #(courseplay_manager.buttons[tostring(section)]);
 end;
@@ -193,7 +193,7 @@ function courseplay_manager:deleteMap()
 				vehicle.cp.globalInfoTextOverlay:delete();
 			end;
 			if vehicle.cp.buttons ~= nil then
-				courseplay.button.deleteButtonOverlays(vehicle);
+				courseplay.button:deleteButtonOverlays(vehicle);
 			end;
 		end;
 	end;
@@ -283,7 +283,7 @@ function courseplay_manager:draw()
 
 					-- set color
 					if currentColor ~= targetColor then
-						courseplay:setButtonColor(button, targetColor)
+						courseplay.button:setButtonColor(button, targetColor)
 					end;
 
 					button.overlay:render();
@@ -384,8 +384,8 @@ function courseplay_manager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 					button.isClicked = isDown;
 					if isUp then
 						local sourceVehicle = g_currentMission.controlledVehicle or button.parameter;
-						--print(string.format("handleMouseClickForButton(%q, button)", nameNum(sourceVehicle)));
-						courseplay:handleMouseClickForButton(sourceVehicle, button);
+						--print(string.format("handleMouseClick(%q, button)", nameNum(sourceVehicle)));
+						courseplay.button:handleMouseClick(sourceVehicle, button);
 					end;
 					break;
 				end;

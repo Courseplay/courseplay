@@ -1,4 +1,4 @@
-function courseplay:register_button(self, hudPage, img, function_to_call, parameter, x, y, width, height, hudRow, modifiedParameter, hoverText, isMouseWheelArea, isToggleButton)
+function courseplay.button:create(vehicle, hudPage, img, function_to_call, parameter, x, y, width, height, hudRow, modifiedParameter, hoverText, isMouseWheelArea, isToggleButton)
 	local overlay;
 	if img and img ~= "blank.dds" then
 		overlay = Overlay:new(img, Utils.getFilename("img/" .. img, courseplay.path), x, y, width, height);
@@ -57,88 +57,92 @@ function courseplay:register_button(self, hudPage, img, function_to_call, parame
 		setOverlayUVs(button.overlay.overlayId, uvX1,uvY1, uvX1,uvY2, uvX2,uvY1, uvX2,uvY2);
 	end;
 
-	table.insert(self.cp.buttons[tostring(hudPage)], button);
-	return #(self.cp.buttons[tostring(hudPage)]);
+	table.insert(vehicle.cp.buttons[tostring(hudPage)], button);
+	return #(vehicle.cp.buttons[tostring(hudPage)]);
 end
 
-function courseplay:renderButtons(vehicle, page)
+function courseplay.button:renderButtons(vehicle, page)
+	-- self = courseplay.button
+
 	for _,button in pairs(vehicle.cp.buttons.global) do
-		courseplay:renderButton(vehicle, button);
+		self:renderButton(vehicle, button);
 	end;
 
 	for _,button in pairs(vehicle.cp.buttons[tostring(page)]) do
-		courseplay:renderButton(vehicle, button);
+		self:renderButton(vehicle, button);
 	end;
 
 	if page == 2 then 
 		for _,button in pairs(vehicle.cp.buttons["-2"]) do
-			courseplay:renderButton(vehicle, button);
+			self:renderButton(vehicle, button);
 		end;
 	end;
 
 	if vehicle.cp.suc.active then
-		courseplay:renderButton(vehicle, vehicle.cp.suc.fruitNegButton);
-		courseplay:renderButton(vehicle, vehicle.cp.suc.fruitPosButton);
+		self:renderButton(vehicle, vehicle.cp.suc.fruitNegButton);
+		self:renderButton(vehicle, vehicle.cp.suc.fruitPosButton);
 	end;
 end;
 
-function courseplay:renderButton(self, button)
+function courseplay.button:renderButton(vehicle, button)
+	-- self = courseplay.button
+
 	local pg, fn, prm = button.page, button.function_to_call, button.parameter;
 
 	--mouseWheelAreas conditionals
 	if button.isMouseWheelArea then
 		if pg == 1 then
 			if fn == "setCustomFieldEdgePathNumber" then
-				button.canScrollUp =   self.cp.fieldEdge.customField.isCreated and self.cp.fieldEdge.customField.fieldNum < courseplay.fields.customFieldMaxNum;
-				button.canScrollDown = self.cp.fieldEdge.customField.isCreated and self.cp.fieldEdge.customField.fieldNum > 0;
+				button.canScrollUp =   vehicle.cp.fieldEdge.customField.isCreated and vehicle.cp.fieldEdge.customField.fieldNum < courseplay.fields.customFieldMaxNum;
+				button.canScrollDown = vehicle.cp.fieldEdge.customField.isCreated and vehicle.cp.fieldEdge.customField.fieldNum > 0;
 			end;
 
 		elseif pg == 2 then
 			if fn == "shiftHudCourses" then
-				button.canScrollUp =   self.cp.hud.courseListPrev == true;
-				button.canScrollDown = self.cp.hud.courseListNext == true;
+				button.canScrollUp =   vehicle.cp.hud.courseListPrev == true;
+				button.canScrollDown = vehicle.cp.hud.courseListNext == true;
 			end;
 
 		elseif pg == 3 then
 			if fn == "changeTurnRadius" then
 				button.canScrollUp =   true;
-				button.canScrollDown = self.cp.turnRadius > 0;
+				button.canScrollDown = vehicle.cp.turnRadius > 0;
 			elseif fn == "changeFollowAtFillLevel" then
-				button.canScrollUp =   self.cp.followAtFillLevel < 100;
-				button.canScrollDown = self.cp.followAtFillLevel > 0;
+				button.canScrollUp =   vehicle.cp.followAtFillLevel < 100;
+				button.canScrollDown = vehicle.cp.followAtFillLevel > 0;
 			elseif fn == "changeDriveOnAtFillLevel" then
-				button.canScrollUp =   self.cp.driveOnAtFillLevel < 100;
-				button.canScrollDown = self.cp.driveOnAtFillLevel > 0;
+				button.canScrollUp =   vehicle.cp.driveOnAtFillLevel < 100;
+				button.canScrollDown = vehicle.cp.driveOnAtFillLevel > 0;
 			elseif fn == 'changeRefillUntilPct' then
-				button.canScrollUp =   (self.cp.mode == 4 or self.cp.mode == 8) and self.cp.refillUntilPct < 100;
-				button.canScrollDown = (self.cp.mode == 4 or self.cp.mode == 8) and self.cp.refillUntilPct > 1;
+				button.canScrollUp =   (vehicle.cp.mode == 4 or vehicle.cp.mode == 8) and vehicle.cp.refillUntilPct < 100;
+				button.canScrollDown = (vehicle.cp.mode == 4 or vehicle.cp.mode == 8) and vehicle.cp.refillUntilPct > 1;
 			end;
 
 		elseif pg == 4 then
 			if fn == 'setSearchCombineOnField' then
-				button.canScrollUp = courseplay.fields.numAvailableFields > 0 and self.cp.searchCombineAutomatically and self.cp.searchCombineOnField > 0;
-				button.canScrollDown = courseplay.fields.numAvailableFields > 0 and self.cp.searchCombineAutomatically and self.cp.searchCombineOnField < courseplay.fields.numAvailableFields;
+				button.canScrollUp = courseplay.fields.numAvailableFields > 0 and vehicle.cp.searchCombineAutomatically and vehicle.cp.searchCombineOnField > 0;
+				button.canScrollDown = courseplay.fields.numAvailableFields > 0 and vehicle.cp.searchCombineAutomatically and vehicle.cp.searchCombineOnField < courseplay.fields.numAvailableFields;
 			end;
 
 		elseif pg == 5 then
 			if fn == "changeTurnSpeed" then
-				button.canScrollUp =   self.cp.speeds.turn < 60/3600;
-				button.canScrollDown = self.cp.speeds.turn >  5/3600;
+				button.canScrollUp =   vehicle.cp.speeds.turn < 60/3600;
+				button.canScrollDown = vehicle.cp.speeds.turn >  5/3600;
 			elseif fn == "changeFieldSpeed" then
-				button.canScrollUp =   self.cp.speeds.field < 60/3600;
-				button.canScrollDown = self.cp.speeds.field >  5/3600;
+				button.canScrollUp =   vehicle.cp.speeds.field < 60/3600;
+				button.canScrollDown = vehicle.cp.speeds.field >  5/3600;
 			elseif fn == "changeMaxSpeed" then
-				button.canScrollUp =   self.cp.speeds.useRecordingSpeed == false and self.cp.speeds.max < 60/3600;
-				button.canScrollDown = self.cp.speeds.useRecordingSpeed == false and self.cp.speeds.max >  5/3600;
+				button.canScrollUp =   vehicle.cp.speeds.useRecordingSpeed == false and vehicle.cp.speeds.max < 60/3600;
+				button.canScrollDown = vehicle.cp.speeds.useRecordingSpeed == false and vehicle.cp.speeds.max >  5/3600;
 			elseif fn == "changeUnloadSpeed" then
-				button.canScrollUp =   self.cp.speeds.unload < 60/3600;
-				button.canScrollDown = self.cp.speeds.unload >  3/3600;
+				button.canScrollUp =   vehicle.cp.speeds.unload < 60/3600;
+				button.canScrollDown = vehicle.cp.speeds.unload >  3/3600;
 			end;
 
 		elseif pg == 6 then
 			if fn == "changeWaitTime" then
-				button.canScrollUp = not (self.cp.mode == 3 or self.cp.mode == 4 or self.cp.mode == 6 or self.cp.mode == 7);
-				button.canScrollDown = button.canScrollUp and self.cp.waitTime > 0;
+				button.canScrollUp = not (vehicle.cp.mode == 3 or vehicle.cp.mode == 4 or vehicle.cp.mode == 6 or vehicle.cp.mode == 7 or vehicle.cp.mode == 9);
+				button.canScrollDown = button.canScrollUp and vehicle.cp.waitTime > 0;
 			elseif fn == 'changeDebugChannelSection' then
 				button.canScrollUp = courseplay.debugChannelSection > 1;
 				button.canScrollDown = courseplay.debugChannelSection < courseplay.numDebugChannelSections;
@@ -146,20 +150,20 @@ function courseplay:renderButton(self, button)
 
 		elseif pg == 7 then
 			if fn == "changeLaneOffset" then
-				button.canScrollUp = self.cp.mode == 4 or self.cp.mode == 6;
+				button.canScrollUp = vehicle.cp.mode == 4 or vehicle.cp.mode == 6;
 				button.canScrollDown = button.canScrollUp;
 			elseif fn == "changeToolOffsetX" or fn == "changeToolOffsetZ" then
-				button.canScrollUp = self.cp.mode == 3 or self.cp.mode == 4 or self.cp.mode == 6 or self.cp.mode == 7 or self.cp.mode == 8;
+				button.canScrollUp = vehicle.cp.mode == 3 or vehicle.cp.mode == 4 or vehicle.cp.mode == 6 or vehicle.cp.mode == 7 or vehicle.cp.mode == 8;
 				button.canScrollDown = button.canScrollUp;
 			end;
 
 		elseif pg == 8 then
 			if fn == "setFieldEdgePath" then
-				button.canScrollUp = courseplay.fields.numAvailableFields > 0 and self.cp.fieldEdge.selectedField.fieldNum < courseplay.fields.numAvailableFields;
-				button.canScrollDown   = courseplay.fields.numAvailableFields > 0 and self.cp.fieldEdge.selectedField.fieldNum > 0;
+				button.canScrollUp = courseplay.fields.numAvailableFields > 0 and vehicle.cp.fieldEdge.selectedField.fieldNum < courseplay.fields.numAvailableFields;
+				button.canScrollDown   = courseplay.fields.numAvailableFields > 0 and vehicle.cp.fieldEdge.selectedField.fieldNum > 0;
 			elseif fn == "changeWorkWidth" then
 				button.canScrollUp =   true;
-				button.canScrollDown = self.cp.workWidth > 0.1;
+				button.canScrollDown = vehicle.cp.workWidth > 0.1;
 			end;
 		end;
 
@@ -170,25 +174,25 @@ function courseplay:renderButton(self, button)
 		--Global
 		if pg == "global" then
 			if fn == "showSaveCourseForm" and prm == "course" then
-				button.show = self.cp.canDrive and not self.cp.isRecording and not self.cp.recordingIsPaused and self.Waypoints ~= nil and #(self.Waypoints) ~= 0;
+				button.show = vehicle.cp.canDrive and not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused and vehicle.Waypoints ~= nil and #(vehicle.Waypoints) ~= 0;
 			end;
 
 		--Page 1
 		elseif pg == 1 then
 			if fn == "setCpMode" then
-				button.show = self.cp.canSwitchMode and not self.cp.distanceCheck;
+				button.show = vehicle.cp.canSwitchMode and not vehicle.cp.distanceCheck;
 			elseif fn == "clearCustomFieldEdge" or fn == "toggleCustomFieldEdgePathShow" then
-				button.show = not self.cp.canDrive and self.cp.fieldEdge.customField.isCreated;
+				button.show = not vehicle.cp.canDrive and vehicle.cp.fieldEdge.customField.isCreated;
 			elseif fn == "setCustomFieldEdgePathNumber" then
 				if prm < 0 then
-					button.show = not self.cp.canDrive and self.cp.fieldEdge.customField.isCreated and self.cp.fieldEdge.customField.fieldNum > 0;
+					button.show = not vehicle.cp.canDrive and vehicle.cp.fieldEdge.customField.isCreated and vehicle.cp.fieldEdge.customField.fieldNum > 0;
 				elseif prm > 0 then
-					button.show = not self.cp.canDrive and self.cp.fieldEdge.customField.isCreated and self.cp.fieldEdge.customField.fieldNum < courseplay.fields.customFieldMaxNum;
+					button.show = not vehicle.cp.canDrive and vehicle.cp.fieldEdge.customField.isCreated and vehicle.cp.fieldEdge.customField.fieldNum < courseplay.fields.customFieldMaxNum;
 				end;
 			elseif fn == 'toggleFindFirstWaypoint' then
-				button.show = self.cp.canDrive and not self.drive and not self.cp.isRecording and not self.cp.recordingIsPaused;
+				button.show = vehicle.cp.canDrive and not vehicle.drive and not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused;
 			elseif fn == 'stop_record' or fn == 'setRecordingPause' or fn == 'delete_waypoint' or fn == 'set_waitpoint' or fn == 'set_crossing' or fn == 'setRecordingTurnManeuver' or fn == 'change_DriveDirection' then
-				button.show = self.cp.isRecording or self.cp.recordingIsPaused;
+				button.show = vehicle.cp.isRecording or vehicle.cp.recordingIsPaused;
 			end;
 
 		--Page 2
@@ -196,95 +200,95 @@ function courseplay:renderButton(self, button)
 			if fn == "reloadCoursesFromXML" then
 				button.show = g_server ~= nil;
 			elseif fn == "showSaveCourseForm" and prm == "filter" then
-				button.show = not self.cp.hud.choose_parent;
+				button.show = not vehicle.cp.hud.choose_parent;
 			elseif fn == "shiftHudCourses" then
 				if prm < 0 then
-					button.show = self.cp.hud.courseListPrev;
+					button.show = vehicle.cp.hud.courseListPrev;
 				elseif prm > 0 then
-					button.show = self.cp.hud.courseListNext;
+					button.show = vehicle.cp.hud.courseListNext;
 				end;
 			end;
 		elseif pg == -2 then
-			button.show = self.cp.hud.content.pages[2][prm][1].text ~= nil;
+			button.show = vehicle.cp.hud.content.pages[2][prm][1].text ~= nil;
 
 		--Page 3
 		elseif pg == 3 then
 			if fn == "changeTurnRadius" and prm < 0 then
-				button.show = self.cp.turnRadius > 0;
+				button.show = vehicle.cp.turnRadius > 0;
 			elseif fn == "changeFollowAtFillLevel" then
 				if prm < 0 then
-					button.show = self.cp.followAtFillLevel > 0;
+					button.show = vehicle.cp.followAtFillLevel > 0;
 				elseif prm > 0 then
-					button.show = self.cp.followAtFillLevel < 100;
+					button.show = vehicle.cp.followAtFillLevel < 100;
 				end;
 			elseif fn == "changeDriveOnAtFillLevel" then 
 				if prm < 0 then
-					button.show = self.cp.driveOnAtFillLevel > 0;
+					button.show = vehicle.cp.driveOnAtFillLevel > 0;
 				elseif prm > 0 then
-					button.show = self.cp.driveOnAtFillLevel < 100;
+					button.show = vehicle.cp.driveOnAtFillLevel < 100;
 				end;
 			elseif fn == 'changeRefillUntilPct' then 
 				if prm < 0 then
-					button.show = (self.cp.mode == 4 or self.cp.mode == 8) and self.cp.refillUntilPct > 1;
+					button.show = (vehicle.cp.mode == 4 or vehicle.cp.mode == 8) and vehicle.cp.refillUntilPct > 1;
 				elseif prm > 0 then
-					button.show = (self.cp.mode == 4 or self.cp.mode == 8) and self.cp.refillUntilPct < 100;
+					button.show = (vehicle.cp.mode == 4 or vehicle.cp.mode == 8) and vehicle.cp.refillUntilPct < 100;
 				end;
 			end;
 
 		--Page 4
 		elseif pg == 4 then
 			if fn == 'selectAssignedCombine' then
-				button.show = not self.cp.searchCombineAutomatically;
+				button.show = not vehicle.cp.searchCombineAutomatically;
 				if button.show and prm < 0 then
-					button.show = self.cp.selectedCombineNumber > 0;
+					button.show = vehicle.cp.selectedCombineNumber > 0;
 				end;
 			elseif fn == 'setSearchCombineOnField' then
-				button.show = courseplay.fields.numAvailableFields > 0 and self.cp.searchCombineAutomatically;
+				button.show = courseplay.fields.numAvailableFields > 0 and vehicle.cp.searchCombineAutomatically;
 				if button.show then
 					if prm < 0 then
-						button.show = self.cp.searchCombineOnField > 0;
+						button.show = vehicle.cp.searchCombineOnField > 0;
 					else
-						button.show = self.cp.searchCombineOnField < courseplay.fields.numAvailableFields;
+						button.show = vehicle.cp.searchCombineOnField < courseplay.fields.numAvailableFields;
 					end;
 				end;
 			elseif fn == 'removeActiveCombineFromTractor' then
-				button.show = self.cp.activeCombine ~= nil;
+				button.show = vehicle.cp.activeCombine ~= nil;
 			end;
 
 		--Page 5
 		elseif pg == 5 then
 			if fn == "changeTurnSpeed" then
 				if prm < 0 then
-					button.show = self.cp.speeds.turn >  5/3600;
+					button.show = vehicle.cp.speeds.turn >  5/3600;
 				elseif prm > 0 then
-					button.show = self.cp.speeds.turn < 60/3600;
+					button.show = vehicle.cp.speeds.turn < 60/3600;
 				end;
 			elseif fn == "changeFieldSpeed" then
 				if prm < 0 then
-					button.show = self.cp.speeds.field >  5/3600;
+					button.show = vehicle.cp.speeds.field >  5/3600;
 				elseif prm > 0 then
-					button.show = self.cp.speeds.field < 60/3600;
+					button.show = vehicle.cp.speeds.field < 60/3600;
 				end;
 			elseif fn == "changeMaxSpeed" then
 				if prm < 0 then
-					button.show = not self.cp.speeds.useRecordingSpeed and self.cp.speeds.max >  5/3600;
+					button.show = not vehicle.cp.speeds.useRecordingSpeed and vehicle.cp.speeds.max >  5/3600;
 				elseif prm > 0 then
-					button.show = not self.cp.speeds.useRecordingSpeed and self.cp.speeds.max < 60/3600;
+					button.show = not vehicle.cp.speeds.useRecordingSpeed and vehicle.cp.speeds.max < 60/3600;
 				end;
 			elseif fn == "changeUnloadSpeed" then
 				if prm < 0 then
-					button.show = self.cp.speeds.unload >  3/3600;
+					button.show = vehicle.cp.speeds.unload >  3/3600;
 				elseif prm > 0 then
-					button.show = self.cp.speeds.unload < 60/3600;
+					button.show = vehicle.cp.speeds.unload < 60/3600;
 				end;
 			end;
 
 		--Page 6
 		elseif pg == 6 then
 			if fn == "changeWaitTime" then
-				button.show = not (self.cp.mode == 3 or self.cp.mode == 4 or self.cp.mode == 6 or self.cp.mode == 7);
+				button.show = not (vehicle.cp.mode == 3 or vehicle.cp.mode == 4 or vehicle.cp.mode == 6 or vehicle.cp.mode == 7 or vehicle.cp.mode == 9);
 				if prm < 0 and button.show then
-					button.show = self.cp.waitTime > 0;
+					button.show = vehicle.cp.waitTime > 0;
 				end;
 			elseif fn == "toggleDebugChannel" then
 				button.show = prm >= courseplay.debugChannelSectionStart and prm <= courseplay.debugChannelSectionEnd;
@@ -299,51 +303,52 @@ function courseplay:renderButton(self, button)
 		--Page 7
 		elseif pg == 7 then
 			if fn == "changeLaneOffset" then
-				button.show = self.cp.mode == 4 or self.cp.mode == 6;
+				button.show = vehicle.cp.mode == 4 or vehicle.cp.mode == 6;
 			elseif fn == "toggleSymmetricLaneChange" then
-				button.show = self.cp.mode == 4 or self.cp.mode == 6 and self.cp.laneOffset ~= 0;
+				button.show = vehicle.cp.mode == 4 or vehicle.cp.mode == 6 and vehicle.cp.laneOffset ~= 0;
 			elseif fn == "changeToolOffsetX" or fn == "changeToolOffsetZ" then
-				button.show = self.cp.mode == 3 or self.cp.mode == 4 or self.cp.mode == 6 or self.cp.mode == 7;
+				button.show = vehicle.cp.mode == 3 or vehicle.cp.mode == 4 or vehicle.cp.mode == 6 or vehicle.cp.mode == 7;
 			elseif fn == "switchDriverCopy" and prm < 0 then
-				button.show = self.cp.selectedDriverNumber > 0;
+				button.show = vehicle.cp.selectedDriverNumber > 0;
 			elseif fn == "copyCourse" then
-				button.show = self.cp.hasFoundCopyDriver;
+				button.show = vehicle.cp.hasFoundCopyDriver;
 			end;
 
 		--Page 8
 		elseif pg == 8 then
 			if fn == 'toggleSucHud' then
-				button.show = courseplay.fields.numAvailableFields > 0 and self.cp.fieldEdge.selectedField.fieldNum > 0;
+				button.show = courseplay.fields.numAvailableFields > 0 and vehicle.cp.fieldEdge.selectedField.fieldNum > 0;
 			elseif fn == "toggleSelectedFieldEdgePathShow" then
-				button.show = courseplay.fields.numAvailableFields > 0 and self.cp.fieldEdge.selectedField.fieldNum > 0;
+				button.show = courseplay.fields.numAvailableFields > 0 and vehicle.cp.fieldEdge.selectedField.fieldNum > 0;
 			elseif fn == "setFieldEdgePath" then
 				button.show = courseplay.fields.numAvailableFields > 0;
 				if button.show then
 					if prm < 0 then
-						button.show = self.cp.fieldEdge.selectedField.fieldNum > 0;
+						button.show = vehicle.cp.fieldEdge.selectedField.fieldNum > 0;
 					elseif prm > 0 then
-						button.show = self.cp.fieldEdge.selectedField.fieldNum < courseplay.fields.numAvailableFields;
+						button.show = vehicle.cp.fieldEdge.selectedField.fieldNum < courseplay.fields.numAvailableFields;
 					end;
 				end;
 			elseif fn == "changeWorkWidth" and prm < 0 then
-				button.show = self.cp.workWidth > 0.1;
+				button.show = vehicle.cp.workWidth > 0.1;
 			elseif fn == "switchStartingDirection" then
-				button.show = self.cp.hasStartingCorner;
+				button.show = vehicle.cp.hasStartingCorner;
 			elseif fn == 'setHeadlandDir' or fn == 'setHeadlandOrder' then
-				button.show = self.cp.headland.numLanes > 0;
+				button.show = vehicle.cp.headland.numLanes > 0;
 			elseif fn == 'setHeadlandNumLanes' then
 				if prm < 0 then
-					button.show = self.cp.headland.numLanes > 0;
+					button.show = vehicle.cp.headland.numLanes > 0;
 				elseif prm > 0 then
-					button.show = self.cp.headland.numLanes < self.cp.headland.maxNumLanes;
+					button.show = vehicle.cp.headland.numLanes < vehicle.cp.headland.maxNumLanes;
 				end;
 			elseif fn == "generateCourse" then
-				button.show = self.cp.hasValidCourseGenerationData;
+				button.show = vehicle.cp.hasValidCourseGenerationData;
 			end;
 		end;
 
 		
 		if button.show and not button.isHidden then
+			-- set color
 			local currentColor = button.overlay.curColor;
 			local targetColor = currentColor;
 			local hoverColor = 'hover';
@@ -369,25 +374,25 @@ function courseplay:renderButton(self, button)
 				end;
 			end;
 
-			-- set colors
 			if currentColor ~= targetColor then
-				courseplay:setButtonColor(button, targetColor)
+				self:setButtonColor(button, targetColor);
 			end;
 
+			-- render
 			button.overlay:render();
 		end;
 	end;	--elseif button.overlay ~= nil
 end;
 
 
-function courseplay:setButtonColor(button, colorName)
+function courseplay.button:setButtonColor(button, colorName)
 	if button and button.overlay and colorName and courseplay.hud.colors[colorName] and #courseplay.hud.colors[colorName] == 4 then
 		button.overlay:setColor(unpack(courseplay.hud.colors[colorName]));
 		button.overlay.curColor = colorName;
 	end;
 end;
 
-function courseplay.button.setOffset(button, x_off, y_off)
+function courseplay.button:setOffset(button, x_off, y_off)
 	x_off = x_off or 0
 	y_off = y_off or 0
 	
@@ -401,20 +406,20 @@ function courseplay.button.setOffset(button, x_off, y_off)
 	button.overlay.y = button.y_init + y_off
 end
 
-function courseplay.button.addOverlay(button, index, img)
+function courseplay.button:addOverlay(button, index, img)
 	local width = button.x2 - button.x
 	local height = button.y2 - button.y
 	button.overlays[index] = Overlay:new(img, Utils.getFilename("img/" .. img, courseplay.path), button.x, button.y, width, height);
 end
 
-function courseplay.button.setOverlay(button, index)
+function courseplay.button:setOverlay(button, index)
 	button.overlay = button.overlays[index]
 	-- the offset of the button might have changed...
 	button.overlay.x = button.x
 	button.overlay.y = button.y
 end
 
-function courseplay.button.deleteButtonOverlays(vehicle)
+function courseplay.button:deleteButtonOverlays(vehicle)
 	for k,buttonSection in pairs(vehicle.cp.buttons) do
 		for i,button in pairs(buttonSection) do
 			if button.overlays ~= nil then
@@ -424,7 +429,7 @@ function courseplay.button.deleteButtonOverlays(vehicle)
 					end;
 				end;
 			end;
-			--NOTE: deleting single overlays not necessary since all overlay in button.overlays have already been deleted.
+			--NOTE: deleting single overlays not necessary since all overlays in button.overlays have already been deleted.
 		end;
 	end;
 end;

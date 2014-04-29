@@ -62,7 +62,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 				self.cp.hud.content.pages[buttonToHandle.page][buttonToHandle.row][1].isClicked = isDown;
 			end;
 			if isUp then
-				courseplay:handleMouseClickForButton(self, buttonToHandle);
+				courseplay.button:handleMouseClick(self, buttonToHandle);
 			end;
 		end;
 
@@ -153,7 +153,7 @@ function courseplay:mouseIsOnButton(mouseX, mouseY, button)
 	return courseplay:mouseIsInArea(mouseX, mouseY, button.x, button.x2, button.y, button.y2);
 end;
 
-function courseplay:handleMouseClickForButton(self, button)
+function courseplay.button:handleMouseClick(vehicle, button)
 	local parameter = button.parameter;
 	if InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER) and button.modifiedParameter ~= nil then --for some reason InputBinding works in :mouseEvent
 		courseplay:debug("button.modifiedParameter = " .. tostring(button.modifiedParameter), 18);
@@ -161,18 +161,18 @@ function courseplay:handleMouseClickForButton(self, button)
 	end;
 
 	if button.show and not button.isHidden and button.canBeClicked and not button.isDisabled then
-		if button.function_to_call == "rowButton" and self.cp.hud.content.pages[self.cp.hud.currentPage][button.parameter][1].text == nil then
+		if button.function_to_call == "rowButton" and vehicle.cp.hud.content.pages[vehicle.cp.hud.currentPage][button.parameter][1].text == nil then
 			return;
 		end;
 
 		-- button.isClicked = true;
 		if button.function_to_call == "showSaveCourseForm" then
-			self.cp.imWriting = true
+			vehicle.cp.imWriting = true
 		end
 		if button.function_to_call == "goToVehicle" then
-			courseplay:executeFunction(self, "goToVehicle", parameter)
+			courseplay:executeFunction(vehicle, "goToVehicle", parameter)
 		else
-			self:setCourseplayFunc(button.function_to_call, parameter, false, button.page);
+			vehicle:setCourseplayFunc(button.function_to_call, parameter, false, button.page);
 		end	
 		-- button.isClicked = false;
 	end;
