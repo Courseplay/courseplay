@@ -430,7 +430,7 @@ function courseplay:setGlobalData()
 		"HUD0isManual",
 		"HUD0turnStage",
 		"HUD1notDrive",
-		"HUD1goOn",
+		"HUD1wait",
 		"HUD1noWaitforFill",
 		"HUD4combineName",
 		"HUD4hasActiveCombine",

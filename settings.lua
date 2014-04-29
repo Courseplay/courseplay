@@ -130,7 +130,7 @@ function courseplay:start_stop_player(combine)
 	tractor.cp.forcedToStop = not tractor.cp.forcedToStop;
 end;
 
-function courseplay:driveOn(vehicle, cancelStopAtEnd)
+function courseplay:cancelWait(vehicle, cancelStopAtEnd)
 	if vehicle.wait then
 		vehicle.wait = false;
 	end;

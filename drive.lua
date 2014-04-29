@@ -141,6 +141,8 @@ function courseplay:drive(self, dt)
 	-- the tipper that is currently loaded/unloaded
 	local activeTipper = nil
 	local isBypassing = false
+
+
 	--### WAITING POINTS - START
 	if self.Waypoints[self.cp.lastRecordnumber].wait and self.wait then
 		if self.cp.waitTimer == nil and self.cp.waitTime > 0 then
@@ -155,7 +157,7 @@ function courseplay:drive(self, dt)
 				self.wait = false
 			elseif self.cp.lastRecordnumber == self.cp.stopWork and self.cp.abortWork ~= nil then
 				self.wait = false
-			else
+			elseif self.cp.waitPoints[3] and self.cp.lastRecordnumber == self.cp.waitPoints[3] then
 				local isInWorkArea = self.recordnumber > self.cp.startWork and self.recordnumber <= self.cp.stopWork;
 				if self.cp.tipperAttached and self.cp.startWork ~= nil and self.cp.stopWork ~= nil and self.tippers ~= nil and not isInWorkArea then
 					allowedToDrive,lx,lz = courseplay:refillSprayer(self, self.cp.tipperFillLevelPct, self.cp.refillUntilPct, allowedToDrive, lx, lz, dt);
@@ -226,8 +228,8 @@ function courseplay:drive(self, dt)
 		allowedToDrive = false
 	--### WAITING POINTS - END
 
-	else -- ende wartepunkt
-		-- abfahrer-mode
+	else
+		-- MODES 1 & 2: unloading in trigger
 		if (self.cp.mode == 1 or (self.cp.mode == 2 and self.cp.isLoaded)) and self.cp.tipperFillLevel ~= nil and self.cp.tipRefOffset ~= nil and self.cp.tipperAttached then
 			if self.cp.currentTipTrigger == nil and self.cp.tipperFillLevel > 0 then
 				-- is there a tipTrigger within 10 meters?
@@ -398,20 +400,14 @@ function courseplay:drive(self, dt)
 		end
 	end
 
-	-- ai_mode 4 = fertilize
+	-- Modes 4 & 6
 	local workArea = false
 	local workSpeed = 0;
 	local isFinishingWork = false
-	if self.cp.mode == 4 and self.cp.tipperAttached and self.cp.startWork ~= nil and self.cp.stopWork ~= nil then
-		allowedToDrive, workArea, workSpeed ,isFinishingWork = courseplay:handle_mode4(self, allowedToDrive, workSpeed, self.cp.tipperFillLevelPct)
-	end
-
-	
-
-
-	-- Mode 6 Fieldwork for balers and foragewagon
-	if (self.cp.mode == 6 or self.cp.mode == 4) and self.cp.startWork ~= nil and self.cp.stopWork ~= nil then
-		if self.cp.mode == 6 then
+	if (self.cp.mode == 4 or self.cp.mode == 6) and self.cp.startWork ~= nil and self.cp.stopWork ~= nil then
+		if self.cp.mode == 4 and self.cp.tipperAttached and self.cp.startWork ~= nil and self.cp.stopWork ~= nil then
+			allowedToDrive, workArea, workSpeed ,isFinishingWork = courseplay:handle_mode4(self, allowedToDrive, workSpeed, self.cp.tipperFillLevelPct)
+		elseif self.cp.mode == 6 then
 			allowedToDrive, workArea, workSpeed, activeTipper, isFinishingWork = courseplay:handle_mode6(self, allowedToDrive, workSpeed, self.cp.tipperFillLevelPct, lx , lz )
 		end
 		if not workArea and self.cp.tipperFillLevel ~= nil and ((self.grainTankCapacity == nil and self.cp.tipRefOffset ~= nil) or self.cp.hasMachinetoFill) then

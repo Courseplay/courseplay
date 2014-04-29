@@ -30,7 +30,7 @@ function courseplay:handleMode3(vehicle, fillLevelPct, allowedToDrive, dt)
 			if (fillLevelPct == 0 or driveOn) and not workTool.cp.isUnloading then
 				courseplay:handleAugerWagon(vehicle, workTool, true, false, "stopUnload"); --unfold=true, unload=false
 				vehicle.cp.prevFillLevelPct = nil;
-				courseplay:driveOn(vehicle);
+				courseplay:cancelWait(vehicle);
 			end;
 		end;
 

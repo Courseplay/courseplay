@@ -1,5 +1,5 @@
 function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct)
-	local workTool; -- = self.tippers[1] -- to do, quick, dirty and unsafe
+	local workTool;
 
 	local workArea = (self.recordnumber > self.cp.startWork) and (self.recordnumber < self.cp.finishWork)
 	local isFinishingWork = false
@@ -14,8 +14,9 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct)
 			isFinishingWork = true
 		elseif self.cp.finishWork ~= self.cp.stopWork then
 				self.recordnumber = math.min(self.cp.finishWork+1,self.maxnumber)
-		end		
-	end	
+		end;
+	end;
+
 	-- Begin Work
 	if self.cp.lastRecordnumber == self.cp.startWork and fillLevelPct ~= 0 then
 		if self.cp.abortWork ~= nil then
@@ -37,7 +38,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct)
 			self.cp.abortWork = nil
 		end
 	end
-	-- safe last point
+	-- save last point
 	if (fillLevelPct == 0 or self.cp.urfStop) and workArea then
 		self.cp.urfStop = false
 		if self.cp.hasUnloadingRefillingCourse and self.cp.abortWork == nil then
@@ -62,11 +63,14 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct)
 		end;
 	end
 	--
-	if (self.recordnumber == self.cp.stopWork or self.cp.lastRecordnumber == self.cp.stopWork) and self.cp.abortWork == nil and not isFinishingWork then
-		allowedToDrive = courseplay:brakeToStop(self)
+	if (self.recordnumber == self.cp.stopWork or self.cp.lastRecordnumber == self.cp.stopWork) and self.cp.abortWork == nil and not isFinishingWork and self.wait then
+		allowedToDrive = courseplay:brakeToStop(self);
 		courseplay:setGlobalInfoText(self, 'WORK_END');
-		hasFinishedWork = true
-	end
+		hasFinishedWork = true;
+		if self.cp.hasUnloadingRefillingCourse and self.recordnumber == self.cp.stopWork then --make sure that lastRecordnumber is stopWork, so the 'waiting points' algorithm in drive() works
+			self.recordnumber = self.cp.stopWork + 1;
+		end;
+	end;
 	
 	local firstPoint = self.cp.lastRecordnumber == 1;
 	local prevPoint = self.Waypoints[self.cp.lastRecordnumber];
@@ -213,7 +217,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct)
 	if hasFinishedWork then
 		isFinishingWork = true
 	end
-	
-	
+
+
 	return allowedToDrive, workArea, workSpeed,isFinishingWork
 end;

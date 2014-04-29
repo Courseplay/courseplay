@@ -46,7 +46,7 @@
 			--courseplay.hud:setReloadPageOrder(vehicle, 1, true);
 			courseplay:buttonsActiveEnabled(vehicle, 'recording');
 		elseif vehicle.drive then
-			for i,varName in pairs({ --[['HUD1notDrive',]] 'HUD1goOn', 'HUD1noWaitforFill' }) do
+			for i,varName in pairs({ --[['HUD1notDrive',]] 'HUD1wait', 'HUD1noWaitforFill' }) do
 				if courseplay.utils:hasVarChanged(vehicle, varName) then
 					courseplay.hud:setReloadPageOrder(vehicle, 1, true);
 					break;
@@ -279,7 +279,7 @@ function courseplay.hud:loadPage(vehicle, page)
 			else
 				vehicle.cp.hud.content.pages[1][1][1].text = courseplay:loc('COURSEPLAY_STOP_COURSE')
 
-				if vehicle.cp.HUD1goOn then
+				if vehicle.cp.HUD1wait then
 					vehicle.cp.hud.content.pages[1][2][1].text = courseplay:loc('COURSEPLAY_CONTINUE')
 				end
 

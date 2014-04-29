@@ -262,7 +262,7 @@ function courseplay:executeFunction(self, func, value, page)
 					if line == 1 then
 						courseplay:stop(self);
 					elseif line == 2 and self.cp.lastRecordnumber ~= nil and self.Waypoints[self.cp.lastRecordnumber].wait and self.wait then
-						courseplay:driveOn(self);
+						courseplay:cancelWait(self);
 					elseif line == 2 and self.cp.stopAtEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil) then
 						courseplay:setStopAtEnd(self, false);
 					elseif line == 3 and not self.cp.isLoaded then
@@ -318,36 +318,36 @@ function courseplay:setInputBindings()
 		displayName = KeyboardHelper.getKeyNames(modifierAction.keys1)
 	};
 	if not courseplay.inputBindings.modifier.isRealModifier then
-		print(string.format("Warning: Courseplay InputBinding modifier \"%s\" (%s) is not a real modifier. Conflicts with other mods may arise.", courseplay.inputBindings.modifier.keyName, courseplay.inputBindings.modifier.displayName));
+		print(string.format('Warning: Courseplay InputBinding modifier %q (%s) is not a real modifier. Conflicts with other mods may arise.', courseplay.inputBindings.modifier.keyName, courseplay.inputBindings.modifier.displayName));
 	end;
 
 	--KEYBOARD
-	local courseplayKeyboardInputs = { "COURSEPLAY_HUD", "COURSEPLAY_START_STOP", "COURSEPLAY_DRIVEON", "COURSEPLAY_DRIVENOW" };
+	local courseplayKeyboardInputs = { 'COURSEPLAY_HUD', 'COURSEPLAY_START_STOP', 'COURSEPLAY_CANCELWAIT', 'COURSEPLAY_DRIVENOW' };
 	for i,name in pairs(courseplayKeyboardInputs) do
 		courseplay:createNewCombinedInputBinding(name);
 	end;
-	--print(tableShow(courseplay.inputBindings.keyboard, "courseplay.inputBindings.keyboard"));
+	--print(tableShow(courseplay.inputBindings.keyboard, 'courseplay.inputBindings.keyboard'));
 
 
 	--MOUSE
-	local courseplayMouseInputs = { "COURSEPLAY_MOUSEACTION", "COURSEPLAY_MOUSEACTION_SECONDARY" };
+	local courseplayMouseInputs = { 'COURSEPLAY_MOUSEACTION', 'COURSEPLAY_MOUSEACTION_SECONDARY' };
 	for i,name in pairs(courseplayMouseInputs) do
 		local action = InputBinding.actions[InputBinding[name]];
 		local mouseButtonId = action.mouseButtons[1]; --can there be more than 1 mouseButton for 1 action?
 		if mouseButtonId == nil then
-			print(string.format("Warning: Courseplay InputBinding \"%s\" has no mouse button attached to it. Functionality will not be guaranteed.", name));
+			print(string.format('Warning: Courseplay InputBinding %q has no mouse button attached to it. Functionality will not be guaranteed.', name));
 		end;
 
 		courseplay.inputBindings.mouse[name] = {
 			name = name;
 			buttonId = mouseButtonId;
 			keyName = Input.mouseButtonIdToIdName[mouseButtonId];
-			displayName = g_i18n:getText("mouse") .. " " .. MouseHelper.getButtonNames(action.mouseButtons);
+			displayName = g_i18n:getText('mouse') .. ' ' .. MouseHelper.getButtonNames(action.mouseButtons);
 			actionIndex = action.actionIndex;
 			inputBinding = InputBinding[name];
 		};
 	end;
-	--print(tableShow(courseplay.inputBindings.mouse, "courseplay.inputBindings.mouse"));
+	--print(tableShow(courseplay.inputBindings.mouse, 'courseplay.inputBindings.mouse'));
 end;
 
 function courseplay:createNewCombinedInputBinding(name)
@@ -357,8 +357,8 @@ function courseplay:createNewCombinedInputBinding(name)
 		local action = courseplay.utils.table.copy(originalAction);
 		local actionIndex = #(InputBinding.actions) + 1;
 
-		action.name = name .. "_COMBINED";
-		local keyNameList = courseplay.inputBindings.modifier.keyName .. " " .. Input.keyIdToIdName[originalAction.keys1[1]];
+		action.name = name .. '_COMBINED';
+		local keyNameList = courseplay.inputBindings.modifier.keyName .. ' ' .. Input.keyIdToIdName[originalAction.keys1[1]];
 		action.keys1 = InputBinding.loadKeyList(keyNameList, action.name);
 		action.keys1Set = Utils.listToSet(action.keys1);
 		action.actionIndex = actionIndex;
@@ -370,14 +370,14 @@ function courseplay:createNewCombinedInputBinding(name)
 			originalKeyInputBinding = InputBinding[name];
 			originalModifierInputBinding = courseplay.inputBindings.modifier.inputBinding;
 			actionIndex = actionIndex;
-			displayName = courseplay.inputBindings.modifier.displayName .. " + " .. KeyboardHelper.getKeyNames(originalAction.keys1);
+			displayName = courseplay.inputBindings.modifier.displayName .. ' + ' .. KeyboardHelper.getKeyNames(originalAction.keys1);
 		};
 
 		if g_i18n:hasText(name) then
-			local text = g_i18n:getText(name) .. " (COMBINED)";
+			local text = g_i18n:getText(name) .. ' (COMBINED)';
 			g_i18n:setText(action.name, text);
 			g_i18n.globalI18N.texts[action.name] = text;
-			-- print(string.format("CP: set newly created inputbinding text for \"%s\" to \"%s\"", tostring(action.name), tostring(text)));
+			-- print(string.format('CP: set newly created inputbinding text for %q to %q', tostring(action.name), tostring(text)));
 		end;
 	end;
 end;

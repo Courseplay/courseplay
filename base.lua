@@ -546,7 +546,7 @@ function courseplay:load(xmlFile)
 	self.cp.HUD0isManual = false;
 	self.cp.HUD0turnStage = 0;
 	self.cp.HUD1notDrive = false;
-	self.cp.HUD1goOn = false;
+	self.cp.HUD1wait = false;
 	self.cp.HUD1noWaitforFill = false;
 	self.cp.HUD4combineName = "";
 	self.cp.HUD4hasActiveCombine = false;
@@ -958,16 +958,16 @@ function courseplay:draw()
 			if self.drive then
 				if InputBinding.hasEvent(InputBinding.COURSEPLAY_START_STOP_COMBINED) then
 					self:setCourseplayFunc("stop", nil, false, 1);
-				elseif self.cp.HUD1goOn and InputBinding.hasEvent(InputBinding.COURSEPLAY_DRIVEON_COMBINED) then
-					self:setCourseplayFunc("driveOn", true, false, 1);
+				elseif self.cp.HUD1wait and InputBinding.hasEvent(InputBinding.COURSEPLAY_CANCELWAIT_COMBINED) then
+					self:setCourseplayFunc('cancelWait', true, false, 1);
 				elseif self.cp.HUD1noWaitforFill and InputBinding.hasEvent(InputBinding.COURSEPLAY_DRIVENOW_COMBINED) then
 					self:setCourseplayFunc("setIsLoaded", true, false, 1);
 				end;
 
 				if InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER) then
 					g_currentMission:addHelpButtonText(courseplay:loc("COURSEPLAY_STOP_COURSE"), InputBinding.COURSEPLAY_START_STOP);
-					if self.cp.HUD1goOn then
-						g_currentMission:addHelpButtonText(courseplay:loc("COURSEPLAY_CONTINUE"), InputBinding.COURSEPLAY_DRIVEON);
+					if self.cp.HUD1wait then
+						g_currentMission:addHelpButtonText(courseplay:loc("COURSEPLAY_CONTINUE"), InputBinding.COURSEPLAY_CANCELWAIT);
 					end;
 					if self.cp.HUD1noWaitforFill then
 						g_currentMission:addHelpButtonText(courseplay:loc("COURSEPLAY_DRIVE_NOW"), InputBinding.COURSEPLAY_DRIVENOW);
@@ -1084,8 +1084,18 @@ function courseplay:update(dt)
 	if g_server ~= nil then
 		self.cp.HUDrecordnumber = self.recordnumber
 		if self.drive then
-			self.cp.HUD1goOn = (self.Waypoints[self.cp.lastRecordnumber] ~= nil and self.Waypoints[self.cp.lastRecordnumber].wait and self.wait) or (self.cp.stopAtEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil));
+			self.cp.HUD1wait = (self.Waypoints[self.cp.lastRecordnumber] ~= nil and self.Waypoints[self.cp.lastRecordnumber].wait and self.wait) or (self.cp.stopAtEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil));
 			self.cp.HUD1noWaitforFill = not self.cp.isLoaded and self.cp.mode ~= 5;
+			--[[ TODO (Jakob):
+				* rename to "HUD1waitForFill"
+				* should only be applicable in following situations:
+					** mode 1: waypoint 1 (being filled)
+					** mode 2: waiting for fill/unloading combine
+					** mode 3: unloading at wait point 3
+					** mode 4: refilling in trigger/at wait point 3
+					** mode 6: on field
+					** mode 7: ai threshing / unloading at wait point
+			]]
 		end;
 
 		if self.cp.hud.currentPage == 0 then
@@ -1278,7 +1288,7 @@ function courseplay:readStream(streamId, connection)
 	self.cp.HUD0tractorForcedToStop = streamDebugReadBool(streamId)
 	self.cp.HUD0tractorName = streamDebugReadString(streamId);
 	self.cp.HUD0tractor = streamDebugReadBool(streamId)
-	self.cp.HUD1goON = streamDebugReadBool(streamId)
+	self.cp.HUD1wait = streamDebugReadBool(streamId)
 	self.cp.HUD1noWaitforFill = streamDebugReadBool(streamId)
 	self.cp.HUD4hasActiveCombine = streamDebugReadBool(streamId)
 	self.cp.HUD4combineName = streamDebugReadString(streamId);
@@ -1402,7 +1412,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteBool(streamId,self.cp.HUD0tractorForcedToStop)
 	streamDebugWriteString(streamId,self.cp.HUD0tractorName)
 	streamDebugWriteBool(streamId,self.cp.HUD0tractor)
-	streamDebugWriteBool(streamId,self.cp.HUD1goON)
+	streamDebugWriteBool(streamId,self.cp.HUD1wait)
 	streamDebugWriteBool(streamId,self.cp.HUD1noWaitforFill)
 	streamDebugWriteBool(streamId,self.cp.HUD4hasActiveCombine)
 	streamDebugWriteString(streamId,self.cp.HUD4combineName)
