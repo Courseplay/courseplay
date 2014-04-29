@@ -613,7 +613,11 @@ end
 
 function courseplay:changeWaitTime(vehicle, changeBy)
 	vehicle.cp.waitTime = math.max(0, vehicle.cp.waitTime + changeBy);
-end
+end;
+
+function courseplay:getCanHaveWaitTime(vehicle)
+	return vehicle.cp.mode == 1 or vehicle.cp.mode == 2 or vehicle.cp.mode == 5 or vehicle.cp.mode == 8;
+end;
 
 function courseplay:changeTurnSpeed(vehicle, changeBy)
 	local speed = vehicle.cp.speeds.turn * 3600;
