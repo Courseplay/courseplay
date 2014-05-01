@@ -1,4 +1,6 @@
 function courseplay.button:create(vehicle, hudPage, img, function_to_call, parameter, x, y, width, height, hudRow, modifiedParameter, hoverText, isMouseWheelArea, isToggleButton)
+	-- self = courseplay.button
+
 	local overlay;
 	if img and img ~= "blank.dds" then
 		overlay = Overlay:new(img, Utils.getFilename("img/" .. img, courseplay.path), x, y, width, height);
@@ -46,7 +48,15 @@ function courseplay.button:create(vehicle, hudPage, img, function_to_call, param
 		button.canScrollUp   = true;
 		button.canScrollDown = true;
 	end;
-	if function_to_call == "toggleDebugChannel" then
+
+	self:setSpecialButtonUVs(function_to_call, button);
+
+	table.insert(vehicle.cp.buttons[hudPage], button);
+	return #(vehicle.cp.buttons[hudPage]);
+end;
+
+function courseplay.button:setSpecialButtonUVs(functionToCall, button)
+	if functionToCall == 'toggleDebugChannel' then
 		local col = ((button.parameter-1) % courseplay.numDebugChannelButtonsPerLine) + 1;
 		local line = math.ceil(button.parameter / courseplay.numDebugChannelButtonsPerLine);
 
@@ -56,10 +66,7 @@ function courseplay.button:create(vehicle, hudPage, img, function_to_call, param
 		local uvY2 = uvY1 + (courseplay.numDebugChannelButtonsPerLine/courseplay.numAvailableDebugChannels);
 		setOverlayUVs(button.overlay.overlayId, uvX1,uvY1, uvX1,uvY2, uvX2,uvY1, uvX2,uvY2);
 	end;
-
-	table.insert(vehicle.cp.buttons[tostring(hudPage)], button);
-	return #(vehicle.cp.buttons[tostring(hudPage)]);
-end
+end;
 
 function courseplay.button:renderButtons(vehicle, page)
 	-- self = courseplay.button
@@ -68,12 +75,12 @@ function courseplay.button:renderButtons(vehicle, page)
 		self:renderButton(vehicle, button);
 	end;
 
-	for _,button in pairs(vehicle.cp.buttons[tostring(page)]) do
+	for _,button in pairs(vehicle.cp.buttons[page]) do
 		self:renderButton(vehicle, button);
 	end;
 
 	if page == 2 then 
-		for _,button in pairs(vehicle.cp.buttons["-2"]) do
+		for _,button in pairs(vehicle.cp.buttons[-2]) do
 			self:renderButton(vehicle, button);
 		end;
 	end;

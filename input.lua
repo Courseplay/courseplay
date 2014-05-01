@@ -37,7 +37,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 		end;
 
 		if buttonToHandle == nil then
-			for _,button in pairs(self.cp.buttons[tostring(self.cp.hud.currentPage)]) do
+			for _,button in pairs(self.cp.buttons[self.cp.hud.currentPage]) do
 				if button.canBeClicked and button.show and courseplay:mouseIsOnButton(posX, posY, button) then
 					buttonToHandle = button;
 					break;
@@ -47,7 +47,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 
 		if buttonToHandle == nil then
 			if self.cp.hud.currentPage == 2 then
-				for _,button in pairs(self.cp.buttons["-2"]) do
+				for _,button in pairs(self.cp.buttons[-2]) do
 					if button.show and courseplay:mouseIsOnButton(posX, posY, button) then
 						buttonToHandle = button;
 						break;
@@ -89,7 +89,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 		end;
 
 		self.cp.hud.mouseWheel.render = false;
-		for _,button in pairs(self.cp.buttons[tostring(self.cp.hud.currentPage)]) do
+		for _,button in pairs(self.cp.buttons[self.cp.hud.currentPage]) do
 			button.isClicked = false;
 			if button.show and not button.isHidden then
 				button.isHovered = courseplay:mouseIsOnButton(posX, posY, button);
@@ -126,7 +126,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 		end;
 
 		if self.cp.hud.currentPage == 2 then
-			for _,button in pairs(self.cp.buttons["-2"]) do
+			for _,button in pairs(self.cp.buttons[-2]) do
 				button.isClicked = false;
 				if button.show and not button.isHidden then
 					button.isHovered = false;

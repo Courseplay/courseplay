@@ -34,7 +34,7 @@ function courseplay:showSaveCourseForm(self, saveWhat)
 			end;
 		else
 			self.cp.hud.filter = '';
-			local button = self.cp.buttons["2"][self.cp.hud.filterButtonIndex];
+			local button = self.cp.buttons[2][self.cp.hud.filterButtonIndex];
 			courseplay.button:setOverlay(button, 1);
 			courseplay.settings.setReloadCourseItems(self);
 		end;

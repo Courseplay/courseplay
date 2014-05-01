@@ -243,7 +243,7 @@ function courseplay:buttonsActiveEnabled(self, section)
 	end;
 
 	if self.cp.hud.currentPage == 1 and (section == nil or section == "all" or section == "quickModes" or section == "recording" or section == "customFieldShow" or section == 'findFirstWaypoint') then
-		for _,button in pairs(self.cp.buttons["1"]) do
+		for _,button in pairs(self.cp.buttons[1]) do
 			local fn = button.function_to_call;
 			if fn == "setCpMode" then
 				button.isActive = self.cp.mode == button.parameter;
@@ -285,7 +285,7 @@ function courseplay:buttonsActiveEnabled(self, section)
 		local nofolders = nil == next(g_currentMission.cp_folders);
 		local offset = courseplay.hud.offset  --0.006 (button width)
 		local row
-		for _, button in pairs(self.cp.buttons['-2']) do
+		for _, button in pairs(self.cp.buttons[-2]) do
 			row = button.row
 			enable = true
 			hide = false
@@ -342,7 +342,7 @@ function courseplay:buttonsActiveEnabled(self, section)
 		courseplay.settings.validateCourseListArrows(self)
 
 	elseif self.cp.hud.currentPage == 6 and (section == nil or section == "all" or section == "debug") then
-		for _,button in pairs(self.cp.buttons["6"]) do
+		for _,button in pairs(self.cp.buttons[6]) do
 			if button.function_to_call == "toggleDebugChannel" then
 				button.isDisabled = button.parameter > courseplay.numDebugChannels;
 				button.isActive = courseplay.debugChannels[button.parameter] == true;
@@ -351,7 +351,7 @@ function courseplay:buttonsActiveEnabled(self, section)
 		end;
 
 	elseif self.cp.hud.currentPage == 8 and (section == nil or section == "all" or section == "selectedFieldShow") then
-		for _,button in pairs(self.cp.buttons["8"]) do
+		for _,button in pairs(self.cp.buttons[8]) do
 			if button.function_to_call == "toggleSelectedFieldEdgePathShow" then
 				button.isActive = self.cp.fieldEdge.selectedField.show;
 				break;
@@ -362,7 +362,7 @@ function courseplay:buttonsActiveEnabled(self, section)
 		self.cp.suc.toggleHudButton.isActive = self.cp.suc.active;
 
 	elseif self.cp.hud.currentPage == 9 and (section == nil or section == "all" or section == "shovel") then
-		for _,button in pairs(self.cp.buttons["9"]) do
+		for _,button in pairs(self.cp.buttons[9]) do
 			if button.function_to_call == 'saveShovelPosition' then --isToggleButton
 				button.isActive = self.cp.shovelStatePositions[button.parameter] ~= nil;
 				button.canBeClicked = true;
@@ -1305,11 +1305,11 @@ function courseplay:setMouseCursor(self, show)
 		for i,button in pairs(self.cp.buttons.global) do
 			button.isHovered = false;
 		end;
-		for i,button in pairs(self.cp.buttons[tostring(self.cp.hud.currentPage)]) do
+		for i,button in pairs(self.cp.buttons[self.cp.hud.currentPage]) do
 			button.isHovered = false;
 		end;
 		if self.cp.hud.currentPage == 2 then
-			for i,button in pairs(self.cp.buttons["-2"]) do
+			for i,button in pairs(self.cp.buttons[-2]) do
 				button.isHovered = false;
 			end;
 		end;
@@ -1367,7 +1367,7 @@ function courseplay:createFieldEdgeButtons(vehicle)
 			h = courseplay.hud.lineHeight
 		};
 		local toggleSucHudButtonIdx = courseplay.button:create(vehicle, 8, 'calculator.png', 'toggleSucHud', nil, courseplay.hud.infoBasePosX + 0.255, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, nil, false, false, true);
-		vehicle.cp.suc.toggleHudButton = vehicle.cp.buttons['8'][toggleSucHudButtonIdx];
+		vehicle.cp.suc.toggleHudButton = vehicle.cp.buttons[8][toggleSucHudButtonIdx];
 		courseplay.button:create(vehicle, 8, 'eye.png', 'toggleSelectedFieldEdgePathShow', nil, courseplay.hud.infoBasePosX + 0.270, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, nil, false);
 		courseplay.button:create(vehicle, 8, 'navigate_up.png',   'setFieldEdgePath',  1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1,  5, false);
 		courseplay.button:create(vehicle, 8, 'navigate_down.png', 'setFieldEdgePath', -1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, -5, false);

@@ -434,9 +434,9 @@ function courseplay:load(xmlFile)
 	self.cp.buttons = {};
 	self.cp.buttons.global = {};
 	self.cp.buttons.suc = {};
-	self.cp.buttons["-2"] = {};
+	self.cp.buttons[-2] = {};
 	for page=0, courseplay.hud.numPages do
-		self.cp.buttons[tostring(page)] = {};
+		self.cp.buttons[page] = {};
 	end;
 
 	-- SeedUsageCalculator
@@ -616,7 +616,7 @@ function courseplay:load(xmlFile)
 
 	-- ##################################################
 	-- Page 1
-	--ai_mode quickSwitch
+	-- mode quickSwitch
 	local aiModeQuickSwitch = {
 		w = w32px;
 		h = h32px;
@@ -710,18 +710,18 @@ function courseplay:load(xmlFile)
 	end;
 	for i=1, courseplay.hud.numLines do
 		local expandButtonIndex = courseplay.button:create(self, -2, 'folder_expand.png', 'expandFolder', i, buttonX[0], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
-		courseplay.button:addOverlay(self.cp.buttons['-2'][expandButtonIndex], 2, 'folder_reduce.png');
+		courseplay.button:addOverlay(self.cp.buttons[-2][expandButtonIndex], 2, 'folder_reduce.png');
 		courseplay.button:create(self, -2, 'courseLoadAppend.png', 'load_sorted_course', i, buttonX[1], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
 		courseplay.button:create(self, -2, 'courseAdd.png', 'add_sorted_course', i, buttonX[2], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
 		local linkParentButtonIndex = courseplay.button:create(self, -2, 'folder_parent_from.png', 'link_parent', i, buttonX[3], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
-		courseplay.button:addOverlay(self.cp.buttons['-2'][linkParentButtonIndex], 2, 'folder_parent_to.png');
+		courseplay.button:addOverlay(self.cp.buttons[-2][linkParentButtonIndex], 2, 'folder_parent_to.png');
 		if g_server ~= nil then
 			courseplay.button:create(self, -2, 'delete.png', 'delete_sorted_item', i, buttonX[4], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
 		end;
 		courseplay.button:create(self, -2, nil, nil, nil, buttonX[1], courseplay.hud.linesButtonPosY[i], hoverAreaWidth, mouseWheelArea.h, i, nil, true, false);
 	end
 	self.cp.hud.filterButtonIndex = courseplay.button:create(self, 2, 'searchGlass.png', 'showSaveCourseForm', 'filter', buttonX[2], courseplay.hud.infoBasePosY + 0.2395, w24px, h24px);
-	courseplay.button:addOverlay(self.cp.buttons['2'][self.cp.hud.filterButtonIndex], 2, 'cancel.png');
+	courseplay.button:addOverlay(self.cp.buttons[2][self.cp.hud.filterButtonIndex], 2, 'cancel.png');
 	courseplay.button:create(self, 2, 'folder_new.png', 'showSaveCourseForm', 'folder', listArrowX, courseplay.hud.infoBasePosY + 0.056, w24px, h24px);
 
 
@@ -856,12 +856,12 @@ function courseplay:load(xmlFile)
 	-- line 6 (headland)
 	-- 6.1 direction
 	local headlandDirButtonIdx = courseplay.button:create(self, 8, 'headlandDirCW.png', 'setHeadlandDir', nil, courseplay.hud.infoBasePosX + 0.246 - w32px, courseplay.hud.linesButtonPosY[6], w16px, h16px, 6, nil, false);
-	self.cp.headland.directionButton = self.cp.buttons['8'][headlandDirButtonIdx];
+	self.cp.headland.directionButton = self.cp.buttons[8][headlandDirButtonIdx];
 	courseplay.button:addOverlay(self.cp.headland.directionButton, 2, 'headlandDirCCW.png');
 
 	-- 6.2 order --width = 2 x 0.015
 	local headlandOrderButtonIdx = courseplay.button:create(self, 8, 'headlandOrderBefore.png', 'setHeadlandOrder', nil, courseplay.hud.infoBasePosX + 0.240, courseplay.hud.linesButtonPosY[6], w32px, h16px, 6, nil, false);
-	self.cp.headland.orderButton = self.cp.buttons['8'][headlandOrderButtonIdx];
+	self.cp.headland.orderButton = self.cp.buttons[8][headlandOrderButtonIdx];
 	courseplay.button:addOverlay(self.cp.headland.orderButton, 2, 'headlandOrderAfter.png');
 
 	-- 6.3: numLanes
