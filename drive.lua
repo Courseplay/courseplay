@@ -976,7 +976,7 @@ function courseplay:openCloseCover(vehicle, dt, showCover, isAtTipTrigger)
 		local tIdx, coverType, showCoverWhenTipping, coverItems = twc.tipperIndex, twc.coverType, twc.showCoverWhenTipping, twc.coverItems;
 		local tipper = vehicle.tippers[tIdx];
 
-		--SMK-34 et al.
+		-- SMK-34 et al.
 		if coverType == 'setPlane' and tipper.plane.bOpen == showCover then
 			if showCoverWhenTipping and isAtTipTrigger and not showCover then
 				--
@@ -984,11 +984,11 @@ function courseplay:openCloseCover(vehicle, dt, showCover, isAtTipTrigger)
 				tipper:setPlane(not showCover);
 			end;
 
-		--Hobein 18t et al.
+		-- Hobein 18t et al.
 		elseif coverType == 'setCoverState' and tipper.cover.state ~= showCover then
 			tipper:setCoverState(showCover);
 
-		--TUW et al.
+		-- TUW et al.
 		elseif coverType == 'planeOpen' then
 			if showCover and tipper.planeOpen then 
 				tipper:setAnimationTime(3, tipper.animationParts[3].offSet, false);
@@ -996,17 +996,21 @@ function courseplay:openCloseCover(vehicle, dt, showCover, isAtTipTrigger)
 				tipper:setAnimationTime(3, tipper.animationParts[3].animDuration, false);
 			end;
 
-		--Marston / setSheet
+		-- Marston / setSheet
 		elseif coverType == 'setSheet' and tipper.sheet.isActive ~= showCover then
 			tipper:setSheet(showCover);
 
-		--default Giants trailers
+		-- default Giants trailers
 		elseif coverType == 'defaultGiants' then
 			for _,ci in pairs(coverItems) do
 				if getVisibility(ci) ~= showCover then
 					setVisibility(ci, showCover);
 				end;
 			end;
+
+		-- setCoverState (Giants Marshall DLC)
+		elseif coverType == 'setCoverStateGiants' and tipper.isCoverOpen == showCover then
+			tipper:setCoverState(not showCover);
 		end;
 	end; --END for i,tipperWithCover in vehicle.cp.tippersWithCovers
 end;
@@ -1221,8 +1225,7 @@ function courseplay:setMRSpeed(vehicle, refSpeed, sl, allowedToDrive, workArea)
 end;
 
 function courseplay:getIsVehicleOffsetValid(vehicle)
-	local valid = vehicle.cp.totalOffsetX ~= nil and vehicle.cp.toolOffsetZ ~= nil and (vehicle.cp.totalOffsetX ~= 0 or vehicle.cp.toolOffsetZ ~= 0);
-	if not valid then
+	if not vehicle.cp.totalOffsetX ~= nil and vehicle.cp.toolOffsetZ ~= nil and (vehicle.cp.totalOffsetX ~= 0 or vehicle.cp.toolOffsetZ ~= 0) then
 		return false;
 	end;
 
