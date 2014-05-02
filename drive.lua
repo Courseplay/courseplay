@@ -1225,7 +1225,8 @@ function courseplay:setMRSpeed(vehicle, refSpeed, sl, allowedToDrive, workArea)
 end;
 
 function courseplay:getIsVehicleOffsetValid(vehicle)
-	if not vehicle.cp.totalOffsetX ~= nil and vehicle.cp.toolOffsetZ ~= nil and (vehicle.cp.totalOffsetX ~= 0 or vehicle.cp.toolOffsetZ ~= 0) then
+	local valid = vehicle.cp.totalOffsetX ~= nil and vehicle.cp.toolOffsetZ ~= nil and (vehicle.cp.totalOffsetX ~= 0 or vehicle.cp.toolOffsetZ ~= 0);
+	if not valid then
 		return false;
 	end;
 
