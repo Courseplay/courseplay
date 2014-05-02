@@ -265,7 +265,13 @@ function courseplay:unload_combine(self, dt)
 	local tractor = combine
 	if courseplay:isAttachedCombine(combine) then
 		tractor = combine.attacherVehicle
-	end
+
+		-- Really make sure the combine's attacherVehicle still exists - see issue #443
+		if tractor == nil then
+			courseplay:removeActiveCombineFromTractor(self);
+			return;
+		end;
+	end;
 
 	local combineIsHelperTurning = false
 	if tractor.turnStage ~= nil and tractor.turnStage ~= 0 then
