@@ -360,6 +360,9 @@ function courseplay:setNameVariable(workTool)
 	elseif workTool.cp.xmlFileName == 'lindnerForageModule.xml' then
 		workTool.cp.isLindnerForageModule = true;
 
+	--Ursus Addon [Giants Ursus DLC]
+	elseif workTool.cp.xmlFileName == 'ursusT127.xml' then
+		workTool.cp.isUrsusT127 = true;
 
 	--Others
 	elseif workTool.cp.xmlFileName == 'KirovetsK700A.xml' then
@@ -1260,6 +1263,20 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 end
 
 function courseplay:askForSpecialSettings(self,object)
+	-- SPECIAL VARIABLES TO USE:
+	--[[
+	-- automaticToolOffsetX:					(Distance in meters)	Used to automatically set the tool horizontal offset.
+	-- object.cp.haveInversedRidgeMarkerState:	(Boolean)				If the ridmarker is using the wrong side in auto mode, set this value to true
+	-- object.cp.specialUnloadDistance:			(Distance in meters)	Able to set the distance to the waiting waypoint when it needs to unload. Used by bale loaders.
+	-- self.cp.aiTurnNoBackward:				(Boolean)				Set to true if the vehicle is not allowed to reverse with the implement/trailer.
+	-- self.cp.noStopOnEdge:                    (Boolean)               Set this to true if it dont need to raice the work tool while turning.
+	--																	Some work tool types automatically set this to true.
+	-- self.cp.noStopOnTurn:					(Boolean)				Set this to true if the work tool don't need to stop for 1½ sec before turning.
+	--																	Some work tool types automatically set this to true.
+	-- self.cp.backMarkerOffset:				(Distance in meters)	If the implement stops to early or to late, you can specify then it needs to raise/lower or turn on/off the work tool
+	-- TODO: (Claus / Jakob) Add description for all the special varialbes that is usable here.
+	]]
+
 	local automaticToolOffsetX;
 
 	-- STEERABLES
@@ -1287,6 +1304,9 @@ function courseplay:askForSpecialSettings(self,object)
 	-- OBJECTS
 	if object.cp.isVaderstadRapidA600S then
 		object.cp.haveInversedRidgeMarkerState = true;
+
+	elseif object.cp.isUrsusT127 then
+		object.cp.specialUnloadDistance = -1.8;
 
 	elseif object.cp.isMarshallMS105 then
 		automaticToolOffsetX = -7.0;

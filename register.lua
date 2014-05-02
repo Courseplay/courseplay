@@ -123,14 +123,25 @@ end;
 Vehicle.load = Utils.appendedFunction(Vehicle.load, courseplay.vehicleLoad);
 
 function courseplay:vehicleDelete()
-	if self.cp ~= nil and self.cp.isEifokZunhammerHose then
-		for i,hose in pairs(courseplay.thirdParty.EifokLiquidManure.hoses) do
-			if hose.msh == self.msh then
-				table.remove(courseplay.thirdParty.EifokLiquidManure.hoses, i);
-				break;
+	if self.cp ~= nil then
+		if self.cp.isEifokZunhammerHose then
+			for i,hose in pairs(courseplay.thirdParty.EifokLiquidManure.hoses) do
+				if hose.msh == self.msh then
+					table.remove(courseplay.thirdParty.EifokLiquidManure.hoses, i);
+					break;
+				end;
 			end;
+			--courseplay.thirdParty.EifokLiquidManure.hoses[self.msh] = nil;
 		end;
-		--courseplay.thirdParty.EifokLiquidManure.hoses[self.msh] = nil;
+
+		--[[if self.cp.unloadOrFillNode and self.cp.unloadOrFillNode ~= 0 then
+			unlink(self.cp.unloadOrFillNode);
+			delete(self.cp.unloadOrFillNode);
+		end;
+		if self.cp.realTurningNode and self.cp.realTurningNode ~= 0 and self.cp.realTurningNode ~= self.cp.unloadOrFillNode then
+			unlink(self.cp.realTurningNode);
+			delete(self.cp.realTurningNode);
+		end;]]
 	end;
 end;
 Vehicle.delete = Utils.prependedFunction(Vehicle.delete, courseplay.vehicleDelete);

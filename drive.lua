@@ -772,14 +772,6 @@ function courseplay:drive(self, dt)
 			else
 				self.recordnumber = self.recordnumber + 1
 			end
-			-- ignore reverse Waypoints for mode 6
-			local in_work_area = false
-			if self.cp.startWork ~= nil and self.cp.stopWork ~= nil and self.recordnumber >= self.cp.startWork and self.recordnumber <= self.cp.stopWork then
-				in_work_area = true
-			end
-			while self.cp.mode == 6 and self.recordnumber < self.maxnumber and in_work_area and self.Waypoints[self.recordnumber].rev do
-				self.recordnumber = self.recordnumber + 1
-			end
 		else -- reset some variables
 			if (self.cp.mode == 4 or self.cp.mode == 6) and not self.cp.hasUnloadingRefillingCourse then
 			else
@@ -990,7 +982,7 @@ function courseplay:openCloseCover(vehicle, dt, showCover, isAtTipTrigger)
 
 		-- TUW et al.
 		elseif coverType == 'planeOpen' then
-			if showCover and tipper.planeOpen then 
+			if showCover and tipper.planeOpen then
 				tipper:setAnimationTime(3, tipper.animationParts[3].offSet, false);
 			elseif not showCover and not tipper.planeOpen then
 				tipper:setAnimationTime(3, tipper.animationParts[3].animDuration, false);

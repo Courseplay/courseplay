@@ -184,6 +184,9 @@ function courseplay:update_tools(vehicle, tractor_or_implement)
 				if courseplay:is_sowingMachine(object) then
 					vehicle.cp.hasSowingMachine = true;
 				end;
+				if object.hasWheels then
+					courseplay:getReverseProperties(vehicle, object);
+				end;
 			end
 		elseif vehicle.cp.mode == 5 then -- Transfer
 			if object.setPlane ~= nil then --open/close cover
@@ -349,10 +352,12 @@ function courseplay:update_tools(vehicle, tractor_or_implement)
 
 	--tippers with covers
 	vehicle.cp.tipperHasCover = false;
+	vehicle.cp.tippersWithCovers = nil;
 	vehicle.cp.tippersWithCovers = {};
 	if tipper_attached then
 		courseplay:setTipperCoverData(vehicle);
 	end;
+	--courseplay:debug(tableShow(vehicle.cp.tippersWithCovers, tostring(vehicle.name) .. ": vehicle.cp.tippersWithCovers", 6), 6);
 	--END tippers with covers
 
 
@@ -360,7 +365,7 @@ function courseplay:update_tools(vehicle, tractor_or_implement)
 		return true;
 	end;
 	return nil;
-end;
+end
 
 function courseplay:setMarkers(vehicle, object)
 	object.cp.backMarkerOffset = nil
@@ -1091,6 +1096,21 @@ end
 
 function courseplay:getReverseProperties(vehicle, tipper)
 	courseplay:debug(('getReverseProperties(%q, %q)'):format(nameNum(vehicle), nameNum(tipper)), 13);
+
+	-- We only need to set this once.
+	if not tipper.cp.realTurningNode then
+		-- Find the real trailer turning point
+		tipper.cp.realTurningNode = courseplay:createRealTrailerTurningNode(tipper);
+	end;
+
+	-- We only need to set this once.
+	if tipper.cp.unloadOrFillNode == nil then
+		-- We need to make sure we have all the info when creating the node.
+		courseplay:askForSpecialSettings(vehicle,tipper);
+
+		tipper.cp.unloadOrFillNode = courseplay:createUnloadOrFillNode(vehicle, tipper);
+	end;
+
 	if tipper.attacherVehicle == vehicle or (#vehicle.tippers > 0 and vehicle.tippers[1] ~= tipper and vehicle.tippers[1].cp.isAttacherModule)then
 		tipper.cp.frontNode = getParent(tipper.attacherJoint.node);
 	else
@@ -1102,16 +1122,13 @@ function courseplay:getReverseProperties(vehicle, tipper)
 		return;
 	end;
 
-	local x,y,z = getWorldTranslation(vehicle.rootNode);
-	local xTipper,yTipper,zTipper = getWorldTranslation(tipper.rootNode);
-	local _,_,tz = worldToLocal(tipper.rootNode, x,y,z);
-	tipper.cp.nodeDistance = math.abs(tz);
-	courseplay:debug("\ttz: "..tostring(tz).."  tipper.rootNode: "..tostring(tipper.rootNode), 13);
-	if tz > 0 then
-		tipper.cp.inversedNodes = false;
-	else
-		tipper.cp.inversedNodes = true;
-	end;
+	local xTipper,yTipper,zTipper = getWorldTranslation(tipper.cp.realTurningNode);
+
+	tipper.cp.nodeDistance = courseplay:getRealTrailerDistanceToPivot(vehicle, tipper);
+	courseplay:debug("\ttz: "..tostring(tipper.cp.nodeDistance).."  tipper.cp.realTurningNode: "..tostring(tipper.cp.realTurningNode), 13);
+
+	tipper.cp.inversedNodes = courseplay:isInvertedTrailerNode(vehicle, tipper);
+
 	local lxFrontNode, lzFrontNode = AIVehicleUtil.getDriveDirection(tipper.cp.frontNode, xTipper,yTipper,zTipper);
 	courseplay:debug("\tlxFrontNode: "..tostring(lxFrontNode), 13);
 	if math.abs(lxFrontNode) <= 0.001 or tipper.rootNode == tipper.cp.frontNode then
@@ -1124,4 +1141,164 @@ function courseplay:getReverseProperties(vehicle, tipper)
 	end;
 
 	courseplay:debug(('\t--> inversedNodes=%s, isPivot=%s, frontNode=%s'):format(tostring(tipper.cp.inversedNodes), tostring(tipper.cp.isPivot), tostring(tipper.cp.frontNode)), 13);
+end;
+
+function courseplay:isInvertedTrailerNode(vehicle, tipper)
+	local x,y,z = getWorldTranslation(vehicle.rootNode);
+	local xTipper,yTipper,zTipper = getWorldTranslation(tipper.rootNode);
+	local _,_,tz = worldToLocal(tipper.rootNode, x,y,z);
+	return (tz < 0) and true or false;
+end;
+
+function courseplay:getRealTrailerDistanceToPivot(vehicle, tipper)
+	-- In case it's not set.
+	if not tipper.cp.realTurningNode then
+		-- Find the real trailer turning point
+		tipper.cp.realTurningNode = courseplay:createRealTrailerTurningNode(tipper);
+	end;
+
+	local invert = courseplay:isInvertedTrailerNode(vehicle, tipper) and -1 or 1;
+
+	if tipper.attacherJoint.rootNode == tipper.rootNode then
+		local x,y,z = getWorldTranslation(tipper.attacherJoint.node);
+		local _,_,tz = worldToLocal(tipper.cp.realTurningNode, x,y,z);
+		return tz*invert;
+	else
+	    -- Attempt to find the pivot node.
+		local node = courseplay:findJointNodeConnectingToNode(tipper, tipper.attacherJoint.rootNode, tipper.rootNode);
+
+		if node then
+			local x,y,z = getWorldTranslation(tipper.attacherJoint.node);
+			local _,_,tz = worldToLocal(tipper.cp.realTurningNode, x,y,z);
+			return tz*invert;
+		else
+		    return 3*invert;
+		end;
+	end;
+end;
+
+function courseplay:findJointNodeConnectingToNode(tipper, fromNode, toNode)
+	-- Attempt to find the jointNode by backtracking the compomentJoints.
+	for index, component in ipairs(tipper.components) do
+		if component.node == fromNode then
+			for _, joint in ipairs(tipper.componentJoints) do
+				if joint.componentIndices[2] == index then
+					if tipper.components[joint.componentIndices[1]].node == toNode then
+						return joint.jointNode;
+					else
+					    return courseplay:findJointNodeConnectingToNode(tipper, tipper.components[joint.componentIndices[1]].node, toNode);
+					end;
+				end;
+			end;
+		end;
+	end;
+
+	-- Last attempt to find the jointNode by getting parent of parent (in dept of 3)
+	if getParent(getParent(tipper.attacherJoint.rootNode)) == tipper.rootNode
+	or getParent(getParent(getParent(tipper.attacherJoint.rootNode))) == tipper.rootNode
+	or getParent(getParent(getParent(getParent(tipper.attacherJoint.rootNode)))) == tipper.rootNode
+	then
+		return tipper.attacherJoint.node;
+	end;
+
+	return nil;
+end;
+
+function courseplay:createRealTrailerTurningNode(tipper)
+	if #tipper.wheels > 0 then
+		local _,yTrailer,_ = getWorldTranslation(tipper.rootNode);
+		local minDis, maxDis = 0, 0;
+		local minDisRot, maxDisRot = 0, 0;
+		local haveStraitWheels, haveRotatingWheels = false, false;
+		local Distance = 0;
+
+		-- Sort wheels in turning wheels and strait wheels and find the min and max distance for each set.
+		for i = 1, #tipper.wheels do
+			if tipper.wheels[i].node == tipper.rootNode then
+				local x,_,z = getWorldTranslation(tipper.wheels[i].driveNode);
+				local _,_,dis = worldToLocal(tipper.rootNode, x, yTrailer, z);
+				if tipper.wheels[i].steeringAxleScale == 0 then
+					if haveStraitWheels then
+						if dis < minDis then minDis = dis; end;
+						if dis > maxDis then maxDis = dis; end;
+					else
+						minDis = dis;
+						maxDis = dis;
+						haveStraitWheels = true;
+					end;
+				else
+					if haveRotatingWheels then
+						if dis < minDisRot then minDisRot = dis; end;
+						if dis > maxDisRot then maxDisRot = dis; end;
+					else
+						minDisRot = dis;
+						maxDisRot = dis;
+						haveRotatingWheels = true;
+					end;
+				end;
+			end;
+		end;
+
+		-- Calculate strait wheel median distance
+		if haveStraitWheels then
+			if minDis == maxDis then
+				Distance = minDis;
+			else
+			    local dif = minDis - maxDis;
+				Distance = minDis + (dif/2);
+			end;
+
+		-- Calculate turning wheel median distance if there is no strait wheels.
+		elseif haveRotatingWheels then
+			if minDisRot == maxDisRot then
+				Distance = minDisRot;
+			else
+				local dif = minDisRot - maxDisRot;
+				Distance = minDisRot + (dif/2);
+			end;
+		end;
+
+		-- If the distance is not 0 then greate an transformGroute and place it at the right location and return the node of it.
+		if Distance ~= 0 then
+			local node = createTransformGroup("realTurningNode");
+			link(tipper.rootNode, node);
+			setTranslation(node, 0, 0, Distance);
+			return node;
+		end;
+	end;
+
+	-- Return the tipper's rootNode if all the above fails.
+	return tipper.rootNode;
+end;
+
+function courseplay:createUnloadOrFillNode(vehicle, tipper)
+	-- Make sure the realTurningNode is set.
+	if not tipper.cp.realTurningNode then
+		-- Find the real trailer turning point
+		tipper.cp.realTurningNode = courseplay:createRealTrailerTurningNode(tipper);
+	end;
+	local invert = courseplay:isInvertedTrailerNode(vehicle, tipper) and -1 or 1;
+
+	if courseplay:is_baleLoader(tipper) then
+		local Distance = (tipper.cp.specialUnloadDistance or -5) * invert;
+		local node = createTransformGroup("UnloadOrFillNode");
+		link(tipper.cp.realTurningNode, node);
+		setTranslation(node, 0, 0, Distance);
+		return node;
+	elseif courseplay:isSpecialBaleLoader(tipper) then
+		if tipper.cp.specialUnloadDistance then
+			local Distance = tipper.cp.specialUnloadDistance * invert;
+			local node = createTransformGroup("UnloadOrFillNode");
+			link(tipper.cp.realTurningNode, node);
+			setTranslation(node, 0, 0, Distance);
+			return node;
+		else
+			return clone(tipper.cp.realTurningNode, true);
+		end;
+	elseif tipper.cp.hasSpecializationFillable and tipper.allowFillFromAir then
+		return tipper.exactFillRootNode;
+	end;
+
+	-- Return false, so this will only be runned once.
+	return false;
 end;
