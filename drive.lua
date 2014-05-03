@@ -271,7 +271,7 @@ function courseplay:drive(self, dt)
 			end;
 
 			-- handle mode
-			allowedToDrive = courseplay:handle_mode1(self);
+			allowedToDrive = courseplay:handle_mode1(self, allowedToDrive);
 		end;
 
 		-- combi-mode
@@ -596,10 +596,6 @@ function courseplay:drive(self, dt)
 			refSpeed = self.cp.speeds.turn
 		end
 		self.cp.isInFilltrigger = false
-	else
-		if self.runonce ~= nil then
-			self.runonce = nil;
-		end
 	end
 	
 	--checking ESLimiter version
@@ -709,8 +705,6 @@ function courseplay:drive(self, dt)
 		else
 			self.cp.distanceToTarget = self.cp.distanceToTarget + self.cp.isKasi;
 		end;
-		-- TODO: (Claus) Remove old Kasi stuff.
-		--distToChange = distToChange * self.cp.isKasi
 	end
 
 	-- record shortest distance to the next waypoint

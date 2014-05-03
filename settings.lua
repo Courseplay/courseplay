@@ -639,9 +639,11 @@ function courseplay:changeMaxSpeed(vehicle, changeBy)
 	end;
 end
 
-function courseplay:changeUnloadSpeed(vehicle, changeBy)
-	local speed = vehicle.cp.speeds.unload * 3600;
-	speed = Utils.clamp(speed + changeBy, 3, 60);
+function courseplay:changeUnloadSpeed(vehicle, changeBy, force)
+	local speed = force or (vehicle.cp.speeds.unload * 3600 + changeBy);
+	if not force then
+		speed = Utils.clamp(speed, 3, 60);
+	end;
 	vehicle.cp.speeds.unload = speed / 3600;
 end
 

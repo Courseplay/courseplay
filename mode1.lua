@@ -1,6 +1,5 @@
 -- handles "mode1" : waiting at start until tippers full - driving course and unloading on trigger
-function courseplay:handle_mode1(vehicle)
-	local allowedToDrive = true;
+function courseplay:handle_mode1(vehicle, allowedToDrive)
 	local activeTipper;
 
 	-- done tipping
@@ -13,6 +12,10 @@ function courseplay:handle_mode1(vehicle)
 			vehicle.cp.BGASelectedSection = nil; -- Used for reverse BGA tipping
 			vehicle.cp.inversedRearTipNode = nil; -- Used for reverse BGA tipping
 			vehicle.cp.isChangingDirection = false; -- Used for reverse BGA tipping
+			if vehicle.cp.backupUnloadSpeed then
+				courseplay:changeUnloadSpeed(vehicle, nil, vehicle.cp.backupUnloadSpeed);
+				vehicle.cp.backupUnloadSpeed = nil;
+			end;
 		end
 	end
 
@@ -47,13 +50,17 @@ function courseplay:handle_mode1(vehicle)
 				courseplay:debug(string.format("%s: Is starting to reverse. Tip trigger is reset.", nameNum(vehicle)), 13);
 			end;
 
-			if distance_to_trigger > 60 or startReversing then
+			if distance_to_trigger > 75 or startReversing then
 				vehicle.cp.currentTipTrigger = nil;
 				vehicle.cp.isReverseBGATipping = nil; -- Used for reverse BGA tipping
 				vehicle.cp.BGASelectedSection = nil; -- Used for reverse BGA tipping
 				vehicle.cp.inversedRearTipNode = nil; -- Used for reverse BGA tipping
 				vehicle.cp.isChangingDirection = false; -- Used for reverse BGA tipping
-				courseplay:debug(nameNum(vehicle) .. ": distance to currentTipTrigger = " .. tostring(distance_to_trigger) .. " (> 60) --> currentTipTrigger = nil", 1);
+				if vehicle.cp.backupUnloadSpeed then
+					courseplay:changeUnloadSpeed(vehicle, nil, vehicle.cp.backupUnloadSpeed);
+					vehicle.cp.backupUnloadSpeed = nil;
+				end;
+				courseplay:debug(nameNum(vehicle) .. ": distance to currentTipTrigger = " .. tostring(distance_to_trigger) .. " (> 75) --> currentTipTrigger = nil", 1);
 			end	
 		else
 			vehicle.cp.currentTipTrigger = nil;
@@ -61,12 +68,16 @@ function courseplay:handle_mode1(vehicle)
 			vehicle.cp.BGASelectedSection = nil; -- Used for reverse BGA tipping
 			vehicle.cp.inversedRearTipNode = nil; -- Used for reverse BGA tipping
 			vehicle.cp.isChangingDirection = false; -- Used for reverse BGA tipping
+			if vehicle.cp.backupUnloadSpeed then
+				courseplay:changeUnloadSpeed(vehicle, nil, vehicle.cp.backupUnloadSpeed);
+				vehicle.cp.backupUnloadSpeed = nil;
+			end;
 		end;
 	end;
 
 	-- tipper is not empty and tractor reaches TipTrigger
 	if vehicle.cp.tipperFillLevel > 0 and vehicle.cp.currentTipTrigger ~= nil and vehicle.recordnumber > 3 then
-		allowedToDrive = courseplay:unload_tippers(vehicle);
+		allowedToDrive = courseplay:unload_tippers(vehicle, allowedToDrive);
 		vehicle.cp.infoText = courseplay:loc("COURSEPLAY_TIPTRIGGER_REACHED");
 	end;
 

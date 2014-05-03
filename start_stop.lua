@@ -415,7 +415,11 @@ function courseplay:stop(self)
 	if self.cp.checkReverseValdityPrinted then
 		self.cp.checkReverseValdityPrinted = false
 	end
-	
+	if self.cp.backupUnloadSpeed then
+		courseplay:changeUnloadSpeed(self, nil, self.cp.backupUnloadSpeed);
+		self.cp.backupUnloadSpeed = nil;
+	end;
+
 	self.motor:setSpeedLevel(0, false);
 	self.motor.maxRpmOverride = nil;
 	self.cp.startWork = nil

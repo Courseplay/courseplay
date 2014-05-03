@@ -364,6 +364,10 @@ function courseplay:setNameVariable(workTool)
 	elseif workTool.cp.xmlFileName == 'ursusT127.xml' then
 		workTool.cp.isUrsusT127 = true;
 
+	--Kroeger Agroliner SRB 35 [Giants]
+	elseif workTool.cp.xmlFileName == 'SRB35.xml' then
+		workTool.cp.isSRB35 = true;
+
 	--Others
 	elseif workTool.cp.xmlFileName == 'KirovetsK700A.xml' then
 		workTool.cp.isKirovetsK700A = true;
@@ -1267,6 +1271,7 @@ function courseplay:askForSpecialSettings(self,object)
 	--[[
 	-- automaticToolOffsetX:					(Distance in meters)	Used to automatically set the tool horizontal offset.
 	-- object.cp.haveInversedRidgeMarkerState:	(Boolean)				If the ridmarker is using the wrong side in auto mode, set this value to true
+	-- object.cp.isPushWagon					(Boolean)				Set to true if the trailer is unloading by not lifting the trailer but pushing it out in the rear end. (Used in BGA tipping)
 	-- object.cp.specialUnloadDistance:			(Distance in meters)	Able to set the distance to the waiting waypoint when it needs to unload. Used by bale loaders.
 	-- self.cp.aiTurnNoBackward:				(Boolean)				Set to true if the vehicle is not allowed to reverse with the implement/trailer.
 	-- self.cp.noStopOnEdge:                    (Boolean)               Set this to true if it dont need to raice the work tool while turning.
@@ -1308,6 +1313,9 @@ function courseplay:askForSpecialSettings(self,object)
 	elseif object.cp.isUrsusT127 then
 		object.cp.specialUnloadDistance = -1.8;
 
+	elseif object.cp.isSRB35 then
+		object.cp.isPushWagon = true;
+
 	elseif object.cp.isMarshallMS105 then
 		automaticToolOffsetX = -7.0;
 
@@ -1331,6 +1339,7 @@ function courseplay:askForSpecialSettings(self,object)
 
 	elseif object.cp.isClaasQuantum3800K then
 		object.cp.frontNode = object.rootNode;
+		object.cp.isPushWagon = true;
 
 	elseif object.cp.isAugerWagon then
 		if object.cp.foldPipeAtWaitPoint then

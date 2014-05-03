@@ -242,6 +242,10 @@ function courseplay:clearCurrentLoadedCourse(vehicle)
 	vehicle.cp.BGASelectedSection = nil; -- Used for reverse BGA tipping
 	vehicle.cp.inversedRearTipNode = nil; -- Used for reverse BGA tipping
 	vehicle.cp.isChangingDirection = false; -- Used for reverse BGA tipping
+	if vehicle.cp.backupUnloadSpeed then
+		courseplay:changeUnloadSpeed(vehicle, nil, vehicle.cp.backupUnloadSpeed);
+		vehicle.cp.backupUnloadSpeed = nil;
+	end;
 	vehicle.cp.lastMergedWP = 1;
 	vehicle.cp.numCourses = 0;
 	vehicle.cp.numWaypoints = 0;
