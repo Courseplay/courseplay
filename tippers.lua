@@ -1164,7 +1164,7 @@ function courseplay:getReverseProperties(vehicle, tipper)
 	-- We only need to set this once.
 	if not tipper.cp.realTurningNode then
 		-- Find the real trailer turning point
-		tipper.cp.realTurningNode = courseplay:createRealTrailerTurningNode(tipper);
+		tipper.cp.realTurningNode = courseplay:createRealTrailerTurningNode(vehicle, tipper);
 	end;
 
 	-- We only need to set this once.
@@ -1218,7 +1218,7 @@ function courseplay:getRealTrailerDistanceToPivot(vehicle, tipper)
 	-- In case it's not set.
 	if not tipper.cp.realTurningNode then
 		-- Find the real trailer turning point
-		tipper.cp.realTurningNode = courseplay:createRealTrailerTurningNode(tipper);
+		tipper.cp.realTurningNode = courseplay:createRealTrailerTurningNode(vehicle, tipper);
 	end;
 
 	local invert = courseplay:isInvertedTrailerNode(vehicle, tipper) and -1 or 1;
@@ -1268,13 +1268,15 @@ function courseplay:findJointNodeConnectingToNode(tipper, fromNode, toNode)
 	return nil;
 end;
 
-function courseplay:createRealTrailerTurningNode(tipper)
+function courseplay:createRealTrailerTurningNode(vehicle, tipper)
 	if #tipper.wheels > 0 then
 		local _,yTrailer,_ = getWorldTranslation(tipper.rootNode);
 		local minDis, maxDis = 0, 0;
 		local minDisRot, maxDisRot = 0, 0;
 		local haveStraitWheels, haveRotatingWheels = false, false;
 		local Distance = 0;
+
+		local invert = courseplay:isInvertedTrailerNode(vehicle, tipper) and -1 or 1;
 
 		-- Sort wheels in turning wheels and strait wheels and find the min and max distance for each set.
 		for i = 1, #tipper.wheels do
@@ -1326,7 +1328,7 @@ function courseplay:createRealTrailerTurningNode(tipper)
 		if Distance ~= 0 then
 			local node = createTransformGroup("realTurningNode");
 			link(tipper.rootNode, node);
-			setTranslation(node, 0, 0, Distance);
+			setTranslation(node, 0, 0, Distance * invert);
 			return node;
 		end;
 	end;
@@ -1339,7 +1341,7 @@ function courseplay:createUnloadOrFillNode(vehicle, tipper)
 	-- Make sure the realTurningNode is set.
 	if not tipper.cp.realTurningNode then
 		-- Find the real trailer turning point
-		tipper.cp.realTurningNode = courseplay:createRealTrailerTurningNode(tipper);
+		tipper.cp.realTurningNode = courseplay:createRealTrailerTurningNode(vehicle, tipper);
 	end;
 	local invert = courseplay:isInvertedTrailerNode(vehicle, tipper) and -1 or 1;
 
