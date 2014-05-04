@@ -936,7 +936,6 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 
 					end;
 
-					local isFirseSiloSection = (vehicle.cp.BGASectionInverted and vehicle.cp.BGASelectedSection == silos) or (not vehicle.cp.BGASectionInverted and vehicle.cp.BGASelectedSection == 1);
 					local isLastSiloSection = (vehicle.cp.BGASectionInverted and vehicle.cp.BGASelectedSection == 1) or (not vehicle.cp.BGASectionInverted and vehicle.cp.BGASelectedSection == silos);
 
 					-- Get a vector distance, to make a more precise distance check.
@@ -944,15 +943,6 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 					local _, _, vectorDistance = worldToLocal(tipper.tipReferencePoints[bestTipReferencePoint].node, xmp, y, zmp);
 					if vehicle.cp.BGASectionInverted then
 						vectorDistance = -vectorDistance;
-					end;
-
-					-- Open hatch before time
-					if isFirseSiloSection and courseplay:isPushWagon(tipper) then
-						local openDistance = meterPrSeconds * (animation.animationDuration / animation.animationOpenSpeedScale / 1000);
-						local isOpen = tipper:getCurrentTipAnimationTime() >= animation.animationDuration;
-						if vectorDistance <= (2 + openDistance) and not isOpen then
-							tipper:enableTipAnimation(bestTipReferencePoint, 1);
-						end;
 					end;
 
 					if not isLastSiloSection and ctt.bunkerSilo.movingPlanes[vehicle.cp.BGASelectedSection].fillLevel >= vehicle.cp.bunkerSiloSectionFillLevel then
@@ -968,6 +958,17 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 							vehicle.cp.BGASelectedSection = math.min(vehicle.cp.BGASelectedSection + 1, silos);
 						end;
 						courseplay:debug(string.format("%s: Change to siloSection = %d", nameNum(vehicle), vehicle.cp.BGASelectedSection), 12);
+					end;
+
+					local isFirseSiloSection = (vehicle.cp.BGASectionInverted and vehicle.cp.BGASelectedSection == silos) or (not vehicle.cp.BGASectionInverted and vehicle.cp.BGASelectedSection == 1);
+
+					-- Open hatch before time
+					if isFirseSiloSection and courseplay:isPushWagon(tipper) then
+						local openDistance = meterPrSeconds * (animation.animationDuration / animation.animationOpenSpeedScale / 1000);
+						local isOpen = tipper:getCurrentTipAnimationTime() >= animation.animationDuration;
+						if vectorDistance <= (2 + openDistance) and not isOpen then
+							tipper:enableTipAnimation(bestTipReferencePoint, 1);
+						end;
 					end;
 
 					local canUnload = false;
