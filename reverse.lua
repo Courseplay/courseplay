@@ -27,7 +27,7 @@ function courseplay:goReverse(vehicle,lx,lz)
 	local node = tipper.cp.realTurningNode;
 	local isPivot = tipper.cp.isPivot;
 	local xTipper,yTipper,zTipper = getWorldTranslation(node);
-	if debugActive then drawDebugPoint(xTipper, yTipper+3, zTipper, 1, 0 , 0, 1) end;
+	if debugActive then drawDebugPoint(xTipper, yTipper+5, zTipper, 1, 0 , 0, 1) end;
 	local frontNode = tipper.cp.frontNode;
 	local xFrontNode,yFrontNode,zFrontNode = getWorldTranslation(frontNode);
 	local tcx,tcy,tcz =0,0,0;
@@ -100,7 +100,7 @@ function courseplay:goReverse(vehicle,lx,lz)
 		drawDebugPoint(tcx, yTipper+3, tcz, 1, 1 , 1, 1)
 		if tipper.cp.unloadOrFillNode then
 			local xUOFNode,yUOFNode,zUOFNode = getWorldTranslation(tipper.cp.unloadOrFillNode);
-			drawDebugPoint(xUOFNode,yUOFNode+3,zUOFNode, 0, 1 , 0.5, 1);
+			drawDebugPoint(xUOFNode,yUOFNode+5,zUOFNode, 0, 1 , 0.5, 1);
 		end;
 	end;
 

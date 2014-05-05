@@ -65,49 +65,61 @@ function courseplay:setNameVariable(workTool)
 
 
 	--------------------------------------------------------------
+	-- ###########################################################
+	--------------------------------------------------------------
 
-
-	--John Deere S690i [Big Boss Modding]
+	-- [1] MOD COMBINES
+	-- John Deere S690i [Big Boss Modding]
 	if workTool.cp.xmlFileName == 'JohnDeereS690i.xml' or workTool.cp.xmlFileName == 'JohnDeereS690i_TT.xml' then
 		workTool.cp.isJohnDeereS690iBBM = true;
 
-	--John Deere S680 [Big Boss Modding]
+	-- John Deere S680 [Big Boss Modding]
 	elseif workTool.cp.xmlFileName == 'JohnDeereS680dw.xml' or workTool.cp.xmlFileName == 'JohnDeereS680tt.xml' then
 		workTool.cp.isJohnDeereS680BBM = true;
 
-	--John Deere S670 [Big Boss Modding]
+	-- John Deere S670 [Big Boss Modding]
 	elseif workTool.cp.xmlFileName == 'JohnDeereS670bw.xml' then
 		workTool.cp.isJohnDeereS670BBM = true;
 
-	--John Deere S650 [Big Boss Modding]
+	-- John Deere S650 [Big Boss Modding]
 	elseif workTool.cp.xmlFileName == 'JohnDeereS650NW.xml' then
 		workTool.cp.isJohnDeereS650BBM = true;
 
-	-- Claas Quantum 3800K [Vertex Design]
-	elseif workTool.psGrassactive ~= nil and workTool.psStrawactive ~= nil and workTool.cp.xmlFileName == 'claas_quantum_3800k.xml' then
-		workTool.cp.isClaasQuantum3800K = true;
+	-- Ropa EuroTiger [Burner]
+	elseif workTool.cp.xmlFileName == 'RopaEuroTiger_V8_3_XL.xml' then
+		workTool.cp.isRopaEuroTiger = true;
 
-	-- Poettinger Eurocat 315H [MoreRealistic]
-	elseif workTool.typeName == 'moreRealistic.mower_animated' and workTool.cp.xmlFileName == 'poettingerEurocat315H.xml' then
-		workTool.cp.isMRpoettingerEurocat315H = true;
+	-- JF-Stoll 1060 [NI Modding]
+	elseif workTool.cp.xmlFileName == 'JF_1060.xml' then
+		workTool.cp.isJF1060 = true;
 
+	-- Poettinger Mex OK [Vertex Dezign]
+	elseif workTool.cp.xmlFileName == 'poettingerMexOK.xml' then
+		workTool.cp.isPoettingerMexOK = true;
+
+	-- Claas Conspeed cutter [SFM]
+	elseif workTool.cp.xmlFileName == 'claasConspeed.xml' then
+		workTool.cp.isClaasConspeedSFM = true;
+
+	-- ###########################################################
+
+	-- [2] MOD TRACTORS
 	--Fendt 828 Vario [surrealcrash, fruktor]
 	elseif Utils.endsWith(workTool.typeName, 'Vario') and (workTool.cp.xmlFileName == '828Vario.xml' or workTool.cp.xmlFileName == '828VarioEX.xml') then
 		workTool.cp.isFendt828VarioFruktor = true;
 
-	--Case IH Magnum 340 [Giants Titanium]
-	elseif workTool.cp.xmlFileName == 'caseIHMagnum340.xml' or workTool.cp.xmlFileName == 'caseIHMagnum340TwinWheel.xml' then
-		workTool.cp.isCaseIHMagnum340Titanium = true;
+	-- Kirovets K700A [SFM]
+	elseif workTool.cp.xmlFileName == 'KirovetsK700A.xml' then
+		workTool.cp.isKirovetsK700A = true;
 
-	--Case IH Magnum 340 [Giants Titanium]
-	elseif workTool.cp.xmlFileName == 'caseIHPuma160.xml' then
-		workTool.cp.isCaseIHPuma160Titanium = true;
+	-- ###########################################################
 
-	--John Deere 864 Premium [BJR]
-	elseif workTool.cp.xmlFileName == 'JohnDeere864Premium.xml' then
-		workTool.cp.isJohnDeere864Premium = true;
+	-- [3] MOD TRAILERS
+	-- Claas Quantum 3800K [Vertex Design]
+	elseif workTool.psGrassactive ~= nil and workTool.psStrawactive ~= nil and workTool.cp.xmlFileName == 'claas_quantum_3800k.xml' then
+		workTool.cp.isClaasQuantum3800K = true;
 
-	--AugerWagons
+	-- AugerWagons
 	elseif workTool.cp.hasSpecializationAugerWagon then
 		workTool.cp.isAugerWagon = true;
 		if workTool.cp.xmlFileName == 'horschTitan34UW.xml' then
@@ -147,27 +159,21 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.isRopaBigBear = true;
 		workTool.cp.foldPipeAtWaitPoint = true;
 		workTool.cp.hasSpecializationBigBearV2 = workTool.setUnloading ~= nil and workTool.setWorkMode~= nil and workTool.setActiveWorkMode ~= nil;
-	--[[
-	elseif workTool.turnOn ~= nil and workTool.inRangeDraw ~= nil and workTool.Go ~= nil and workTool.Go.trsp ~= nil and workTool.CheckDone ~= nil and workTool.CheckDone.trsp then
-		workTool.cp.isAugerWagon = true;
-		workTool.cp.isBrentAvalanche = true;
-	]]
 	elseif workTool.animationParts ~= nil and workTool.animationParts[2] ~= nil and workTool.toggleUnloadingState ~= nil and workTool.setUnloadingState ~= nil then
 		workTool.cp.isAugerWagon = true;
 		workTool.cp.isTaarupShuttle = true;
 
-	--Weidemann4270CX100T
-	elseif workTool.cp.xmlFileName == 'weidemann4270CX100T.xml' then
-		workTool.cp.isWeidemann4270CX100T = true
+	-- ###########################################################
 
-	--HoseRef liquid manure trailers [Eifok Team] (CP implementation v2)
+	-- [4] MOD MANURE / LIQUID MANURE
+	-- HoseRef liquid manure trailers [Eifok Team] (CP implementation v2)
 	elseif workTool.cp.hasSpecializationHoseRef then
 		workTool.cp.hasHoseRef = true;
 		workTool.cp.isHoseRefTransporter = workTool.hasPump;
 		workTool.cp.isHoseRefSprayer = workTool.hasPump and workTool.cp.hasSpecializationSprayer and workTool.allowsSpraying;
 		workTool.cp.hasEifokZunhammerAttachable = false;
 
-	--Eifok liquid manure attachable pack [Eifok Team]
+	-- Eifok liquid manure attachable pack [Eifok Team]
 	elseif workTool.moescha ~= nil and workTool.cp.xmlFileName == 'moescha.xml' then
 		workTool.cp.isEifokZunhammerMoescha = true;
 		workTool.cp.isEifokZunhammerAttachable = true;
@@ -178,35 +184,13 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.isEifokZunhammerVibro = true;
 		workTool.cp.isEifokZunhammerAttachable = true;
 
-	--Mchale998 bale wrapper [Bergwout]
-	elseif workTool.cp.xmlFileName == 'Mchale998.xml' then
-		workTool.cp.isMchale998 = true
-
-	--Rolmasz S061 'Pomorzanin' [Maciusboss1 & Burner]
-	elseif workTool.cp.xmlFileName == 'S061.xml' and workTool.setTramlinesOn ~= nil and workTool.leftMarkerRope ~= nil and workTool.leftMarkerSpeedRotatingParts ~= nil then
-		workTool.cp.isRolmaszS061 = true;
-
-	--Universal Bale Trailer (UBT)
-	elseif workTool.numAttacherParts ~= nil and workTool.autoLoad ~= nil and workTool.loadingIsActive ~= nil and workTool.unloadLeft ~= nil and workTool.unloadRight ~= nil and workTool.unloadBack ~= nil and workTool.typeOnTrailer ~= nil and workTool.fillLevelMax ~= nil then
-		workTool.cp.isUBT = true;
-
-	--Guellepack v2 [Bayerbua]
+	-- Guellepack v2 [Bayerbua]
 	elseif workTool.fillerArmInRange ~= nil  then
 		workTool.cp.isFeldbinder = true
 	elseif workTool.cp.xmlFileName == 'KotteGARANTProfiVQ32000.xml' and workTool.fillerArmNode ~= nil then
 		workTool.cp.isKotteGARANTProfiVQ32000 = true
 
-	--Urf-Specialisation
-	elseif workTool.sprayFillLevel ~= nil and workTool.sprayCapacity ~= nil then
-		workTool.cp.hasUrfSpec = true
-
-	--Silage shields
-	elseif workTool.cp.xmlFileName == 'holaras.xml' then
-		workTool.cp.isSilageShield = true
-	elseif workTool.cp.xmlFileName == 'Stegemann.xml' then
-		workTool.cp.isSilageShield = true
-
-	--Abbey Sprayer Pack [FS-UK Modteam]
+	-- Abbey Sprayer Pack [FS-UK Modteam]
 	elseif workTool.cp.xmlFileName == 'Abbey_AP900.xml' then
 		workTool.cp.isAbbeySprayerPack = true;
 		workTool.cp.isAbbeyAP900 = true;
@@ -220,11 +204,22 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.isAbbeySprayerPack = true;
 		workTool.cp.isAbbey3000Nurse = true;
 
-	--JF-Stoll 1060 [NI Modding]
-	elseif workTool.cp.xmlFileName == 'JF_1060.xml' then
-		workTool.cp.isJF1060 = true;
+	--Tebbe HS180 [Stefan Maurus]
+	elseif workTool.cp.xmlFileName == 'TebbeHS180.xml' or workTool.cp.hasSpecializationTebbeHS180 then
+		workTool.cp.isTebbeHS180 = true;
 
-	--Kverneland Mower Pack [NI Modding]
+	--Fuchs liquid manure trailer [Stefan Maurus]
+	elseif workTool.cp.xmlFileName == 'FuchsGuellefass.xml' and workTool.isFuchsFass then
+		workTool.cp.isFuchsLiquidManure = true;
+
+	-- ###########################################################
+
+	-- [5] MOD MOWERS
+	-- Poettinger Eurocat 315H [MoreRealistic]
+	elseif workTool.typeName == 'moreRealistic.mower_animated' and workTool.cp.xmlFileName == 'poettingerEurocat315H.xml' then
+		workTool.cp.isMRpoettingerEurocat315H = true;
+
+	-- Kverneland Mower Pack [NI Modding]
 	elseif workTool.cp.xmlFileName == 'Kverneland_4028.xml' then
 		workTool.cp.isKvernelandMowerPack = true;
 		workTool.cp.isKverneland4028 = true;
@@ -241,12 +236,12 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.isKvernelandMowerPack = true;
 		workTool.cp.isKverneland3532F = true;
 
-	--Taarup Mower Pack [NI Modding]
+	-- Taarup Mower Pack [NI Modding]
 	elseif workTool.cp.xmlFileName == 'Taarup_5090.xml' then
 		workTool.cp.isTaarupMowerPack = true;
 		workTool.cp.isTaarup5090 = true;
 
-	--Poettinger Alpha/X8 Mower Pack [Eifok Team]
+	-- Poettinger Alpha/X8 Mower Pack [Eifok Team]
 	elseif workTool.cp.xmlFileName == 'PoettingerAlpha.xml' then
 		workTool.cp.isPoettingerAlphaX8MowerPack = true;
 		workTool.cp.isPoettingerAlpha = true;
@@ -254,41 +249,50 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.isPoettingerAlphaX8MowerPack = true;
 		workTool.cp.isPoettingerX8 = true;
 
-	--Claas Quadrant 1200 [Eifok Team]
+	-- ###########################################################
+
+	-- [6] MOD BALING
+	-- John Deere 864 Premium [BJR]
+	elseif workTool.cp.xmlFileName == 'JohnDeere864Premium.xml' then
+		workTool.cp.isJohnDeere864Premium = true;
+
+	-- McHale998 bale wrapper [Bergwout]
+	elseif workTool.cp.xmlFileName == 'Mchale998.xml' then
+		workTool.cp.isMchale998 = true
+
+	-- Universal Bale Trailer (UBT)
+	elseif workTool.numAttacherParts ~= nil and workTool.autoLoad ~= nil and workTool.loadingIsActive ~= nil and workTool.unloadLeft ~= nil and workTool.unloadRight ~= nil and workTool.unloadBack ~= nil and workTool.typeOnTrailer ~= nil and workTool.fillLevelMax ~= nil then
+		workTool.cp.isUBT = true;
+		workTool.cp.isMoellerUbtBaleLoader = workTool.cp.xmlFileName == 'AA47ballen.xml';
+
+	-- Claas Quadrant 1200 [Eifok Team]
 	elseif workTool.cp.xmlFileName == 'Claas_Quadrant_1200.xml' then
 		workTool.cp.isClaasQuadrant1200 = true;
 
-	--Krone Swadro 900 [NI-Modding]
+	-- ###########################################################
+
+	-- [7] MOD OTHER TOOLS
+	-- Rolmasz S061 'Pomorzanin' [Maciusboss1 & Burner]
+	elseif workTool.cp.xmlFileName == 'S061.xml' and workTool.setTramlinesOn ~= nil and workTool.leftMarkerRope ~= nil and workTool.leftMarkerSpeedRotatingParts ~= nil then
+		workTool.cp.isRolmaszS061 = true;
+
+	-- Krone Swadro 900 [NI-Modding]
 	elseif workTool.rowerFoldingParts and workTool.cp.xmlFileName == 'KroneSwadro900.xml' then
 		workTool.cp.isKroneSwadro900 = true;
 
-	--Claas Liner 4000 [LS-Landtechnik & Fuqsbow-Team]
+	-- Claas Liner 4000 [LS-Landtechnik & Fuqsbow-Team]
 	elseif workTool.cp.xmlFileName == 'liner4000.xml' then
 		workTool.cp.isClaasLiner4000 = true;
 
-	--Ursus Z586 bale wrapper [Giants]
-	elseif workTool.cp.xmlFileName == 'ursusZ586.xml' then
-		workTool.cp.isUrsusZ586 = true;
+	-- Urf-Specialisation
+	elseif workTool.sprayFillLevel ~= nil and workTool.sprayCapacity ~= nil then
+		workTool.cp.hasUrfSpec = true
 
-	--Tebbe HS180 [Stefan Maurus]
-	elseif workTool.cp.xmlFileName == 'TebbeHS180.xml' then
-		workTool.cp.isTebbeHS180 = true;
-
-	--Fuchs liquid manure trailer [Stefan Maurus]
-	elseif workTool.cp.xmlFileName == 'FuchsGuellefass.xml' and workTool.isFuchsFass then
-		workTool.cp.isFuchsLiquidManure = true;
-
-	--Claas Conspeed [SFM]
-	elseif workTool.cp.xmlFileName == 'claasConspeed.xml' then
-		workTool.cp.isClaasConspeedSFM = true;
-
-	--Poettinger Mex 6 [Giants]
-	elseif workTool.cp.xmlFileName == 'poettingerMex6.xml' then
-		workTool.cp.isPoettingerMex6 = true;
-
-	--Poettinger Mex OK [Vertex Dezign]
-	elseif workTool.cp.xmlFileName == 'poettingerMexOK.xml' then
-		workTool.cp.isPoettingerMexOK = true;
+	-- Silage shields
+	elseif workTool.cp.xmlFileName == 'holaras.xml' then
+		workTool.cp.isSilageShield = true
+	elseif workTool.cp.xmlFileName == 'Stegemann.xml' then
+		workTool.cp.isSilageShield = true
 
 	--Sugarbeet Loaders [burner]
 	elseif workTool.cp.xmlFileName == 'RopaEuroMaus.xml' then
@@ -298,27 +302,15 @@ function courseplay:setNameVariable(workTool)
 	elseif workTool.cp.xmlFileName == 'RopaNawaRoMaus.xml' then
 		workTool.cp.isRopaNawaRoMaus = true;
 
-	--Harvesters (steerable)
-	elseif workTool.cp.xmlFileName == 'RopaEuroTiger_V8_3_XL.xml' then
-		workTool.cp.isRopaEuroTiger = true;
 
-	--Harvesters (steerable) [Giants]
-	elseif workTool.cp.xmlFileName == 'grimmeMaxtron620.xml' then
-		workTool.cp.isHarvesterSteerable = true;
-		workTool.cp.isGrimmeMaxtron620 = true;
-	elseif workTool.cp.xmlFileName == 'grimmeTectron415.xml' then
-		workTool.cp.isHarvesterSteerable = true;
-		workTool.cp.isGrimmeTectron415 = true;
+	-- ###########################################################
+	-- ###########################################################
+	-- ###########################################################
 
-	--Harvesters (attachable) [Giants]
-	elseif workTool.cp.xmlFileName == 'grimmeRootster604.xml' then
-		workTool.cp.isHarvesterAttachable = true;
-		workTool.cp.isGrimmeRootster604 = true;
-	elseif workTool.cp.xmlFileName == 'grimmeSE75-55.xml' then
-		workTool.cp.isHarvesterAttachable = true;
-		workTool.cp.isGrimmeSE7555 = true;
 
-	--Combines [Giants]
+	-- GIANTS DEFAULT / DLC
+	-- [1] COMBINES
+	-- Combines [Giants]
 	elseif workTool.cp.xmlFileName == 'fahrM66.xml' or workTool.cp.xmlFileName == 'fahrM66EX.xml' then
 		workTool.cp.isFahrM66 = true;
 		if not courseplay.trafficCollisionIgnoreList[workTool.components[2].node] then
@@ -333,19 +325,75 @@ function courseplay:setNameVariable(workTool)
 	elseif workTool.cp.xmlFileName == 'deutz5465H.xml' then
 		workTool.cp.isDeutz5465H = true;
 
-	--Cutters [Giants]
+	-- Poettinger Mex 6 [Giants]
+	elseif workTool.cp.xmlFileName == 'poettingerMex6.xml' then
+		workTool.cp.isPoettingerMex6 = true;
+
+	-- Harvesters (steerable) [Giants]
+	elseif workTool.cp.xmlFileName == 'grimmeMaxtron620.xml' then
+		workTool.cp.isHarvesterSteerable = true;
+		workTool.cp.isGrimmeMaxtron620 = true;
+	elseif workTool.cp.xmlFileName == 'grimmeTectron415.xml' then
+		workTool.cp.isHarvesterSteerable = true;
+		workTool.cp.isGrimmeTectron415 = true;
+
+	-- Harvesters (attachable) [Giants]
+	elseif workTool.cp.xmlFileName == 'grimmeRootster604.xml' then
+		workTool.cp.isHarvesterAttachable = true;
+		workTool.cp.isGrimmeRootster604 = true;
+	elseif workTool.cp.xmlFileName == 'grimmeSE75-55.xml' then
+		workTool.cp.isHarvesterAttachable = true;
+		workTool.cp.isGrimmeSE7555 = true;
+
+	-- Cutters [Giants Titanium DLC]
 	elseif workTool.cp.xmlFileName == 'caseIH3162Cutter.xml' then
 		workTool.cp.isCaseIH3162Cutter = true;
 
-	--Seeders [Giants DLC]
+	-- ###########################################################
+
+	-- [2] TRACTORS
+	-- Weidemann 4270 CX100T
+	elseif workTool.cp.xmlFileName == 'weidemann4270CX100T.xml' then
+		workTool.cp.isWeidemann4270CX100T = true
+
+	-- Case IH Magnum 340 [Giants Titanium]
+	elseif workTool.cp.xmlFileName == 'caseIHMagnum340.xml' or workTool.cp.xmlFileName == 'caseIHMagnum340TwinWheel.xml' then
+		workTool.cp.isCaseIHMagnum340Titanium = true;
+
+	-- Case IH Puma 160 [Giants Titanium]
+	elseif workTool.cp.xmlFileName == 'caseIHPuma160.xml' then
+		workTool.cp.isCaseIHPuma160Titanium = true;
+
+	-- ###########################################################
+
+	-- [3] TRAILERS
+	-- Kroeger Agroliner SRB 35 [Giants]
+	elseif workTool.cp.xmlFileName == 'SRB35.xml' then
+		workTool.cp.isSRB35 = true;
+
+	-- ###########################################################
+
+	-- [4] BALING
+	-- Ursus T127 bale loader [Giants Ursus DLC]
+	elseif workTool.cp.xmlFileName == 'ursusT127.xml' then
+		workTool.cp.isUrsusT127 = true;
+
+	-- Ursus Z586 bale wrapper [Giants Ursus DLC]
+	elseif workTool.cp.xmlFileName == 'ursusZ586.xml' then
+		workTool.cp.isUrsusZ586 = true;
+
+	-- ###########################################################
+
+	-- [5] OTHER TOOLS
+	-- Seeders [Giants Väderstad DLC]
 	elseif workTool.cp.xmlFileName == 'vaderstadRapidA600S.xml' then
 		workTool.cp.isVaderstadRapidA600S = true;
 
-	--Fertilizer [Giants DLC]
+	-- Fertilizer [Giants Marshall DLC]
 	elseif workTool.cp.xmlFileName == 'marshallMS105.xml' then
 		workTool.cp.isMarshallMS105 = true;
 
-	--Lindner Unitrac [Giant Lindner DLC Pack]
+	-- Lindner Unitrac [Giant Lindner DLC]
 	elseif workTool.cp.xmlFileName == 'lindnerUnitrac92.xml' then
 		workTool.cp.isLindnerUnitrac92 = true;
 		workTool.cp.mode9TrafficIgnoreVehicle = true;
@@ -359,19 +407,20 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.isLindnerSpreaderModule = true;
 	elseif workTool.cp.xmlFileName == 'lindnerForageModule.xml' then
 		workTool.cp.isLindnerForageModule = true;
-
-	--Ursus Addon [Giants Ursus DLC]
-	elseif workTool.cp.xmlFileName == 'ursusT127.xml' then
-		workTool.cp.isUrsusT127 = true;
-
-	--Kroeger Agroliner SRB 35 [Giants]
-	elseif workTool.cp.xmlFileName == 'SRB35.xml' then
-		workTool.cp.isSRB35 = true;
-
-	--Others
-	elseif workTool.cp.xmlFileName == 'KirovetsK700A.xml' then
-		workTool.cp.isKirovetsK700A = true;
 	end;
+end;
+
+function courseplay:setCustomSpecVariables(workTool)
+	workTool.cp.hasSpecializationAgrolinerTUW20 	   = courseplay:hasSpecialization(workTool, 'AgrolinerTUW20');
+	workTool.cp.hasSpecializationAugerWagon 		   = courseplay:hasSpecialization(workTool, 'AugerWagon');
+	workTool.cp.hasSpecializationBigBear 			   = courseplay:hasSpecialization(workTool, 'bigBear');
+	workTool.cp.hasSpecializationDrivingLine 		   = courseplay:hasSpecialization(workTool, 'DrivingLine');
+	workTool.cp.hasSpecializationHaweSUW 			   = courseplay:hasSpecialization(workTool, 'Hawe_SUW');
+	workTool.cp.hasSpecializationHoseRef 			   = courseplay:hasSpecialization(workTool, 'HoseRef');
+	workTool.cp.hasSpecializationOvercharge 		   = courseplay:hasSpecialization(workTool, 'Overcharge');
+	workTool.cp.hasSpecializationOverloader 		   = courseplay:hasSpecialization(workTool, 'overloader');
+	workTool.cp.hasSpecializationSowingMachineWithTank = courseplay:hasSpecialization(workTool, 'SowingMachineWithTank');
+	workTool.cp.hasSpecializationTebbeHS180 		   = courseplay:hasSpecialization(workTool, 'TebbeHS180');
 end;
 
 ------------------------------------------------------------------------------------------
@@ -1189,13 +1238,13 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 
 
 
-	--Tebbe HS180 (Maurus)
+	-- Tebbe HS180 script (Stefan Maurus)
 	elseif workTool.cp.isTebbeHS180 then
-		local flap = 0
+		local flap = 0;
 		if workTool.setDoorHigh ~= nil and workTool.doorhigh ~= nil then
 			if turnOn then 
-				flap = 3
-			end
+				flap = 3;
+			end;
 			workTool:setDoorHigh(flap);
 		end
 		if workTool.setFlapOpen ~= nil and workTool.flapopen then
@@ -1204,7 +1253,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		return false, allowedToDrive
 
 
-	--Fuchsfass
+	-- Fuchs liquid manure barrell (Stefan Maurus)
 	elseif workTool.cp.isFuchsLiquidManure and workTool.setdeckelAnimationisPlaying ~= nil then
 		if cover ~= nil then
 			workTool:setdeckelAnimationisPlaying(cover);
@@ -1272,9 +1321,9 @@ function courseplay:askForSpecialSettings(self,object)
 	-- automaticToolOffsetX:					(Distance in meters)	Used to automatically set the tool horizontal offset.
 	-- object.cp.haveInversedRidgeMarkerState:	(Boolean)				If the ridmarker is using the wrong side in auto mode, set this value to true
 	-- object.cp.isPushWagon					(Boolean)				Set to true if the trailer is unloading by not lifting the trailer but pushing it out in the rear end. (Used in BGA tipping)
-	-- object.cp.specialUnloadDistance:			(Distance in meters)	Able to set the distance to the waiting waypoint when it needs to unload. Used by bale loaders.
-	-- self.cp.aiTurnNoBackward:				(Boolean)				Set to true if the vehicle is not allowed to reverse with the implement/trailer.
-	-- self.cp.noStopOnEdge:                    (Boolean)               Set this to true if it dont need to raice the work tool while turning.
+	-- object.cp.specialUnloadDistance:			(Distance in meters)	Able to set the distance to the waiting point when it needs to unload. Used by bale loaders. Distance from trailer's turning point to the rear unloading point.
+	-- self.cp.aiTurnNoBackward:				(Boolean)				Set to true if the vehicle is not allowed to reverse with the implement/trailer during the turn maneuver.
+	-- self.cp.noStopOnEdge:                    (Boolean)               Set this to true if it dont need to stop the work tool while turning.
 	--																	Some work tool types automatically set this to true.
 	-- self.cp.noStopOnTurn:					(Boolean)				Set this to true if the work tool don't need to stop for 1½ sec before turning.
 	--																	Some work tool types automatically set this to true.
@@ -1307,7 +1356,10 @@ function courseplay:askForSpecialSettings(self,object)
 	end;
 
 	-- OBJECTS
-	if object.cp.isVaderstadRapidA600S then
+	if object.cp.isMoellerUbtBaleLoader then
+		object.cp.specialUnloadDistance = -2.63;
+
+	elseif object.cp.isVaderstadRapidA600S then
 		object.cp.haveInversedRidgeMarkerState = true;
 
 	elseif object.cp.isUrsusT127 then
@@ -1389,7 +1441,7 @@ function courseplay:askForSpecialSettings(self,object)
 
 	elseif object.cp.isKotteGARANTProfiVQ32000 then
 		object.cp.feldbinders = {}
-		for i=1, table.getn(g_currentMission.attachables) do
+		for i=1, #g_currentMission.attachables do
 			if g_currentMission.attachables[i].fillerArmInRange ~= nil then
 				table.insert(object.cp.feldbinders,i)
 			end
@@ -1768,7 +1820,7 @@ function courseplay.thirdParty.EifokLiquidManure:findRefillObject(vehicle, activ
 						targetObjectType = 'MapHoseRefStation';
 
 						--set side relative to course/vehicle --TODO: use directions
-						local angleToRefNormal = courseplay.utils.normalizeAngle(math.deg(math.atan2(srX - wp.cx, srZ - wp.cz)));
+						local angleToRefNormal = courseplay.utils.normalizeAngle(math.deg(Utils.getYRotationFromDirection(srX - wp.cx, srZ - wp.cz)));
 						local wpAngleNormal = courseplay.utils.normalizeAngle(wp.angle);
 						local angleDiffNormal = courseplay.utils.normalizeAngle(wpAngleNormal - angleToRefNormal);
 						if angleDiffNormal > 180 then

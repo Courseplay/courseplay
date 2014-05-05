@@ -56,7 +56,7 @@ function courseplay:getLineHxHz(node, x1, z1, x2, z2)
 		setTranslation(node, x1, 0, z1);
 
 		-- set rotation
-		local dx, dz, vl = courseplay.generation:getPointDirection({ cx = x1, cz = z1 }, { cx = x2, cz = z2 }); --TODO (Jakob): use courseplay:getWorldDirection()
+		local dx, _, dz, _ = courseplay:getWorldDirection(x1, 0, z1, x2, 0, z2);
 		local rot = Utils.getYRotationFromDirection(dx, dz);
 		setRotation(node, 0, rot, 0);
 	end;
@@ -87,7 +87,7 @@ function courseplay:hasLineFruit(node, x1, z1, x2, z2, fixedFruitType)
 	if node and (x1 == nil or z1 == nil) then
 		x1, _, z1 = getWorldTranslation(node);
 	end;
-	local hx, hz = courseplay:getLineHxHz(vehicle, x1,z1, x2,z2);
+	local hx, hz = courseplay:getLineHxHz(node, x1,z1, x2,z2);
 	if hx == nil or hz == nil then return; end;
 	-- print(string.format('hasLineFruit(): x1,z1=%s,%s, x2,z2=%s,%s, hx,hz=%s,%s', tostring(x1), tostring(z1), tostring(x2), tostring(z2), tostring(hx), tostring(hz)));
 
@@ -104,7 +104,6 @@ function courseplay:hasLineFruit(node, x1, z1, x2, z2, fixedFruitType)
 			local density, total = Utils.getFruitArea(i, x1,z1, x2,z2, hx,hz, true);
 			if density > 0 then
 				local fruitName = FruitUtil.fruitIndexToDesc[i].name;
-				-- courseplay:debug(string.format('\tfruitType %d (%s): density=%s (total=%s)', i, tostring(fruitName), tostring(density), tostring(total)), 4);
 				courseplay:debug(string.format('hasLineFruit(): fruitType %d (%s): density=%s (total=%s)', i, tostring(fruitName), tostring(density), tostring(total)), 4);
 				return true, density, i, fruitName;
 			end;
@@ -137,9 +136,9 @@ function courseplay:isLineField(node, x1, z1, x2, z2)
 	return area > 0 and area >= totalArea;
 end;
 
-function courseplay:check_for_fruit(self, distance)
 
-	local x, y, z = localToWorld(self.cp.DirectionNode, 0, 0, distance) --getWorldTranslation(combine.aiTreshingDirectionNode);
+function courseplay:check_for_fruit(vehicle, distance) --TODO (Jakob): this function isn't used anywhere anymore
+	local x, y, z = localToWorld(vehicle.cp.DirectionNode, 0, 0, distance) --getWorldTranslation(combine.aiTreshingDirectionNode);
 
 	local length = Utils.vector2Length(x, z);
 	local aiThreshingDirectionX = x / length;
@@ -185,21 +184,14 @@ function courseplay:check_for_fruit(self, distance)
 end
 
 
-function courseplay:side_to_drive(self, combine, distance,switchSide)
-end
-
-
-function courseplay:sideToDrive(self, combine, distance,switchSide)
-	-- if there is a forced side to drive return this
-	--print("courseplay:sideToDrive:") 
-	local tractor = combine
+function courseplay:sideToDrive(vehicle, combine, distance, switchSide)
+	local tractor = combine;
 	if courseplay:isAttachedCombine(combine) then
-		tractor = combine.attacherVehicle
-	end
+		tractor = combine.attacherVehicle;
+	end;
 
-
-	local x, y, z = 0,0,0
-	x, y, z = localToWorld(tractor.cp.DirectionNode, 0, 0, distance -5)
+	-- COMBINE DIRECTION
+	local x, y, z = localToWorld(tractor.cp.DirectionNode, 0, 0, distance - 5);
 	local dirX, dirZ = combine.aiThreshingDirectionX, combine.aiThreshingDirectionZ;
 	if (not (combine.isAIThreshing or combine.drive)) or  combine.aiThreshingDirectionX == nil or combine.aiThreshingDirectionZ == nil or combine.acParameters ~= nil then
 		local node = combine.cp.fixedRootNode or combine.rootNode;
@@ -207,13 +199,14 @@ function courseplay:sideToDrive(self, combine, distance,switchSide)
 		local length = Utils.vector2Length(dx,dz);
 		dirX = dx/length;
 		dirZ = dz/length;
-	end
-	local sideX, sideZ = -dirZ, dirX;
-	local sideWatchDirOffset = Utils.getNoNil(combine.sideWatchDirOffset,-8)
-	local sideWatchDirSize = Utils.getNoNil(combine.sideWatchDirSize,3)
-	local selfSideWatchDirSize = Utils.getNoNil(self.sideWatchDirSize,3)
+	end;
 
-	local threshWidth = 10
+	local sideX, sideZ = -dirZ, dirX;
+	local sideWatchDirOffset = Utils.getNoNil(combine.sideWatchDirOffset, -8);
+	local sideWatchDirSize = Utils.getNoNil(combine.sideWatchDirSize, 3); -- TODO (Jakob): default AICombine value is 8
+	local selfSideWatchDirSize = Utils.getNoNil(vehicle.sideWatchDirSize, 3); -- TODO (Jakob): default AITractor value is 7
+
+	local threshWidth = 10 -- TODO (Jakob): make more accurate - calculate and set in variable in update_tools()
 	local lWidthX = x - sideX * 0.5 * threshWidth + dirX * sideWatchDirOffset;
 	local lWidthZ = z - sideZ * 0.5 * threshWidth + dirZ * sideWatchDirOffset;
 	local lStartX = lWidthX - sideX * 0.7 * threshWidth;
@@ -227,92 +220,83 @@ function courseplay:sideToDrive(self, combine, distance,switchSide)
 	local rStartZ = rWidthZ + sideZ * 0.7 * threshWidth;
 	local rHeightX = rStartX + dirX * selfSideWatchDirSize;
 	local rHeightZ = rStartZ + dirZ * selfSideWatchDirSize;
-	local leftFruit = 0
-	local rightFruit = 0
 
-	leftFruit = leftFruit + Utils.getFruitArea(combine.lastValidInputFruitType, lStartX, lStartZ, lWidthX, lWidthZ, lHeightX, lHeightZ, true)
-	rightFruit = rightFruit + Utils.getFruitArea(combine.lastValidInputFruitType, rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ, true)
-	--print("	leftFruit:  "..tostring(leftFruit).."  rightFruit:  "..tostring(rightFruit))
-	--courseplay:debug(string.format("%s: fruit: left %f right %f", combine.name, leftFruit, rightFruit), 3)
-	local fruitSide 
+	-- TODO (Jakob): the last "true" means we're also including preparing fruit. Should this only be done if the combine has indeed a fruit preparer?
+	local leftFruit = Utils.getFruitArea(combine.lastValidInputFruitType, lStartX, lStartZ, lWidthX, lWidthZ, lHeightX, lHeightZ, true);
+	local rightFruit = Utils.getFruitArea(combine.lastValidInputFruitType, rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ, true);
+
+	-- courseplay:debug(string.format("%s: fruit: left %f, right %f", nameNum(combine), leftFruit, rightFruit), 3);
+
+
+	-- AUTO COMBINE
 	if combine.acParameters ~= nil and combine.acParameters.enabled then -- autoCombine
-		--print(" combine.acParameters.leftAreaActive: "..tostring(combine.acParameters.leftAreaActive).."  combine.acTurnStage: "..tostring(combine.acTurnStage))
 		if not combine.acParameters.upNDown then
 			if combine.acParameters.leftAreaActive then
-				leftFruit,rightFruit = 0,100 
-				--fruitSide = "right"
+				leftFruit,rightFruit = 0, 100; --fruitSide = "right"
 			else
-				leftFruit,rightFruit = 100,0
-				--fruitSide = "left"
+				leftFruit,rightFruit = 100, 0; --fruitSide = "left"
 			end
-		end	
-	elseif combine.isAIThreshing then --helper
-		--print("	isAITreshing")
-		local tempFruit
+		end
+
+	-- AI HELPER COMBINE
+	elseif combine.isAIThreshing then
+		-- Fruit side switch at end of field line
 		if (not combine.waitingForDischarge and combine.waitForTurnTime > combine.time) or (combine.turnStage == 1) then
-			--Fruit side switch at end of field line
-			--print("	automatic changeover")
-			tempFruit = leftFruit;
+			local tempFruit = leftFruit;
 			leftFruit = rightFruit;
 			rightFruit = tempFruit;
 		end;
-	
-	elseif tractor.drive then  --Courseplay
-		--print("	is in mode6") 
-		local Dir = 0;
-		local wayPoint = tractor.recordnumber
+
+	-- COURSEPLAY
+	elseif tractor.drive then
+		local ridgeMarker = 0;
+		local wayPoint = tractor.recordnumber;
 		if tractor.cp.turnStage > 0 then
-   			switchSide = true
-  		end
+   			switchSide = true;
+  		end;
 		if not switchSide then
-			wayPoint = wayPoint +2
+			wayPoint = wayPoint + 2;
 		else
-			wayPoint = wayPoint -2
-		end						
+			wayPoint = wayPoint - 2;
+		end;
 		if tractor.Waypoints ~= nil and wayPoint ~= nil and tractor.Waypoints[wayPoint] ~= nil then
-			Dir = Utils.getNoNil(tractor.Waypoints[wayPoint].ridgeMarker , 0);
+			ridgeMarker = Utils.getNoNil(tractor.Waypoints[wayPoint].ridgeMarker, 0);
 		end;
-		if Dir == 1 then
-			leftFruit , rightFruit  = 100,0
-		elseif Dir == 2 then
-			leftFruit , rightFruit  = 0,100
-		end
-	end
+		if ridgeMarker == 1 then
+			leftFruit, rightFruit  = 100, 0;
+		elseif ridgeMarker == 2 then
+			leftFruit, rightFruit  = 0, 100;
+		end;
+	end;
 	
+	local fruitSide = 'none';
 	if leftFruit > rightFruit then
-		fruitSide = "left"
+		fruitSide = 'left';
 	elseif leftFruit < rightFruit then
-		fruitSide = "right"
-	else
-		fruitSide = "none"
-	end
+		fruitSide = 'right';
+	end;
+
 	if combine.cp.forcedSide == nil then
-		--print("	forced side == nil")
 		if not switchSide then
-			if fruitSide == "right" then
-				self.sideToDrive = "left";
-			elseif fruitSide == "left" then
-				self.sideToDrive = "right";
+			if fruitSide == 'right' then
+				vehicle.sideToDrive = 'left';
+			elseif fruitSide == 'left' then
+				vehicle.sideToDrive = 'right';
 			else
-				self.sideToDrive = nil;
+				vehicle.sideToDrive = nil;
 			end;
 		else
-			if fruitSide == "right" then
-				self.sideToDrive = "right";
-			elseif fruitSide == "left" then
-				self.sideToDrive = "left";
+			if fruitSide == 'right' then
+				vehicle.sideToDrive = 'right';
+			elseif fruitSide == 'left' then
+				vehicle.sideToDrive = 'left';
 			end;
 		end;
-	elseif combine.cp.forcedSide == "right" then
-		--print("	forced side right")
-		self.sideToDrive = "right";
+	elseif combine.cp.forcedSide == 'right' then
+		vehicle.sideToDrive = 'right';
 	else
-		--print("	forced side left")
-		self.sideToDrive = "left";
-	end
+		vehicle.sideToDrive = 'left';
+	end;
 
-
-
-	--print("	return: fruitSide: "..tostring(fruitSide))
-	return fruitSide
+	return fruitSide;
 end

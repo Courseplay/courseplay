@@ -739,8 +739,8 @@ function courseplay:drive(self, dt)
 		end;
 
 		-- Here is the magic calculation to find the real lx and lz values based on the vehicle curRot
-		local stearAngle = (dirRot - courseplay:getRealWorldRotation(self.cp.DirectionNode)) - curRot;
-		lx, lz = Utils.getDirectionFromYRotation(stearAngle);
+		local steerAngle = (dirRot - courseplay:getRealWorldRotation(self.cp.DirectionNode)) - curRot;
+		lx, lz = Utils.getDirectionFromYRotation(steerAngle);
 
 	end;
 

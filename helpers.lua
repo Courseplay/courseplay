@@ -9,18 +9,18 @@ end;
 --Table concatenation: http://stackoverflow.com/a/1413919
 -- return a new array containing the concatenation of all of its parameters. Scaler parameters are included in place, and array parameters have their values shallow-copied to the final array. Note that userdata and function values are treated as scalar.
 function tableConcat(...) 
-    local t = {}
-    for n = 1,select("#",...) do
-        local arg = select(n,...)
-        if type(arg)=="table" then
-            for _,v in ipairs(arg) do
-                t[#t+1] = v
-            end
-        else
-            t[#t+1] = arg
-        end
-    end
-    return t
+	local t = {}
+	for n = 1,select("#",...) do
+		local arg = select(n,...)
+		if type(arg)=="table" then
+			for _,v in ipairs(arg) do
+				t[#t+1] = v
+			end
+		else
+			t[#t+1] = arg
+		end
+	end
+	return t;
 end
 
 function courseplay:isFolding(workTool) --returns isFolding, isFolded, isUnfolded
@@ -158,7 +158,7 @@ end;
 
 function courseplay:setVarValueFromString(self, str, value)
 	local what = Utils.splitString(".", str);
-	local whatDepth = table.getn(what);
+	local whatDepth = #what;
 	if whatDepth < 1 or whatDepth > 5 then
 		return;
 	end;
@@ -196,7 +196,7 @@ function courseplay:setVarValueFromString(self, str, value)
 end;
 function courseplay:getVarValueFromString(self, str)
 	local what = Utils.splitString(".", str);
-	local whatDepth = table.getn(what);
+	local whatDepth = #what;
 	local whatObj;
 	if what[1] == "self" then 
 		whatObj = self;
@@ -422,7 +422,7 @@ function table.rotate(tbl, inc) --@gist: https://gist.github.com/JakobTischler/b
 		end;
 	else
 		for i=1,rot do
-			local n = table.getn(t);
+			local n = #t;
 			local p = t[n];
 			table.remove(t, n);
 			table.insert(t, 1, p);
@@ -830,19 +830,43 @@ function courseplay.utils:getFnCallSource(level)
 	return tostring(debug.getinfo(level, "n").name);
 end;
 
-function courseplay.utils:getFnCallPath(numPathSteps) --TODO: always use 'printCallstack()'
+function courseplay.utils:getFnCallPath(numPathSteps)
 	numPathSteps = numPathSteps or 1;
 	if numPathSteps > 1 then
 		local ret = {};
-		for level=numPathSteps + 1, 2, -1 do
-			local fnAtLevel = debug.getinfo(level, "n").name;
-			if fnAtLevel then
-				table.insert(ret, string.format('[%d] %q', level - 1, fnAtLevel));
+		local fn, file, line;
+		for level=numPathSteps + 2, 2, -1 do
+			local debugData = debug.getinfo(level, 'nSl');
+			if level <= numPathSteps + 1 then
+				fn = debugData.name;
+				if fn and file and line then
+					ret[#ret + 1] = ('[%d] %s() (%s:%d)'):format(level - 1, fn, file, line);
+				end;
 			end;
+			file = courseplay.utils:getFileNameFromPath(debugData.source);
+			line = debugData.currentline;
+			-- print(('level %d: fn=%q, file=%q, line=%d'):format(level, tostring(fn), tostring(file), line))
 		end;
 		return table.concat(ret, ' -> ');
 	end;
-	return tostring('"' .. debug.getinfo(2, "n").name .. '"');
+
+	local debugData = debug.getinfo(2, 'nSl');
+	local file = courseplay.utils:getFileNameFromPath(debugData.source);
+	return ('%s() (%s:%d)'):format(debugData.name, file, debugData.currentline);
+end;
+
+function courseplay.utils:getFileNameFromPath(filePath)
+	local fileName = filePath;
+
+	local idx = filePath:match('^.*()/'); -- check for last forward slash
+	if idx == nil then
+		idx = filePath:match('^.*()\\'); -- check for last backward slash
+	end;
+	if idx then
+		fileName = filePath:sub(idx + 1, 9999);
+	end;
+
+	return fileName;
 end;
 
 function courseplay:loc(key)

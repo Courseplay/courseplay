@@ -7,7 +7,7 @@ function courseplay:showSaveCourseForm(self, saveWhat)
 	saveWhat = saveWhat or 'course'
 	
 	if saveWhat == 'course' then
-		if table.getn(self.Waypoints) > 0 then
+		if #(self.Waypoints) > 0 then
 			courseplay.vehicleToSaveCourseIn = self;
 			if self.cp.imWriting then
 				self.cp.saveWhat = 'course'

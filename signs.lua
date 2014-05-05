@@ -25,7 +25,7 @@ function courseplay.utils.signs:addSign(vehicle, signType, x, z, rotX, rotY, ins
 			local signPart = getChildAt(sign, 1);
 			setRotation(signPart, rad(-rotX), 0, 0);
 		end;
-		if distanceToNext and distanceToNext ~= 0 then
+		if distanceToNext and distanceToNext > 0.01 then
 			self:setWaypointSignLine(sign, distanceToNext, true);
 		else
 			self:setWaypointSignLine(sign, nil, false);
@@ -120,6 +120,10 @@ function courseplay.utils.signs:updateWaypointSigns(vehicle, section)
 				end;
 
 				wp.dirX, wp.dirY, wp.dirZ, wp.distToNextPoint = courseplay:getWorldDirection(wp.cx, wp.cy, wp.cz, np.cx, np.cy, np.cz);
+				if wp.distToNextPoint <= 0.01 and i > 1 then
+					local pp = vehicle.Waypoints[i - 1];
+					wp.dirX, wp.dirY, wp.dirZ = pp.dirX, pp.dirY, pp.dirZ;
+				end;
 				wp.rotY = Utils.getYRotationFromDirection(wp.dirX, wp.dirZ);
 				wp.angle = deg(wp.rotY);
 

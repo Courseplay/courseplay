@@ -93,7 +93,7 @@ function courseplay:load(xmlFile)
 	-- ai mode: 1 abfahrer, 2 kombiniert
 	self.cp.mode = 1
 	self.cp.modeState = 0
-	self.cp.mode2nextState = nil
+	self.cp.mode2nextState = nil;
 	self.cp.startWork = nil
 	self.cp.stopWork = nil
 	self.cp.abortWork = nil

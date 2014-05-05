@@ -15,7 +15,7 @@ function courseplay_manager:loadMap(name)
 
 		if g_server ~= nil and next(g_currentMission.cp_courses) == nil then
 			courseplay_manager:load_courses()
-			courseplay:debug(tableShow(g_currentMission.cp_courses, "g_cM cp_courses", 8), 8);
+			-- courseplay:debug(tableShow(g_currentMission.cp_courses, "g_cM cp_courses", 8), 8);
 		end
 	end;
 
@@ -432,6 +432,7 @@ function courseplay_manager:update(dt)
 	if self.firstRun then
 		courseplay.moreRealisticInstalled = RealisticUtils ~= nil and RealisticUtils.getFruitInfosV2 ~= nil;
 		courseplay.moreRealisticVersion = courseplay:getMoreRealisticVersion();
+
 		self.firstRun = false;
 	end;
 

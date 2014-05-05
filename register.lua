@@ -38,19 +38,9 @@ function courseplay:attachableLoad(xmlFile)
 	if self.cp == nil then self.cp = {}; end;
 
 	--SET SPECIALIZATION VARIABLE
-	--Default specializations -- not needed as they're set in setNameVariable()
-	--Custom (mod) specializations
-	self.cp.hasSpecializationAugerWagon 		   = courseplay:hasSpecialization(self, 'AugerWagon');
-	self.cp.hasSpecializationOverloader 		   = courseplay:hasSpecialization(self, 'overloader');
-	self.cp.hasSpecializationHaweSUW 			   = courseplay:hasSpecialization(self, 'Hawe_SUW');
-	self.cp.hasSpecializationAgrolinerTUW20 	   = courseplay:hasSpecialization(self, 'AgrolinerTUW20');
-	self.cp.hasSpecializationOvercharge 		   = courseplay:hasSpecialization(self, 'Overcharge');
-	self.cp.hasSpecializationBigBear 			   = courseplay:hasSpecialization(self, 'bigBear');
-	self.cp.hasSpecializationSowingMachineWithTank = courseplay:hasSpecialization(self, 'SowingMachineWithTank');
-	self.cp.hasSpecializationDrivingLine 		   = courseplay:hasSpecialization(self, 'DrivingLine');
-	self.cp.hasSpecializationHoseRef 			   = courseplay:hasSpecialization(self, 'HoseRef');
-
 	courseplay:setNameVariable(self);
+	courseplay:setCustomSpecVariables(self);
+
 
 	--SEARCH AND SET OBJECT'S self.name IF NOT EXISTING
 	if self.name == nil then
@@ -99,14 +89,15 @@ function courseplay:vehicleLoad(xmlFile)
 
 	-- XML FILE NAME VARIABLE
 	if self.cp.xmlFileName == nil then
-		local xmlFileName = Utils.splitString('/', self.configFileName);
-		self.cp.xmlFileName = xmlFileName[#xmlFileName];
+		-- local xmlFileName = Utils.splitString('/', self.configFileName);
+		-- self.cp.xmlFileName = xmlFileName[#xmlFileName];
+		self.cp.xmlFileName = courseplay.utils:getFileNameFromPath(self.configFileName);
 	end;
 
 	--[[
 	if self.cp.typeNameSingle == nil then
-		local typeNameSingle = Utils.splitString('.', self.typeName);
-		self.cp.typeNameSingle = typeNameSingle[#typeNameSingle];
+		self.cp.typeNameSingle = Utils.splitString('.', self.typeName);
+		self.cp.typeNameSingle = self.cp.typeNameSingle[#self.cp.typeNameSingle];
 	end;
 	]]
 

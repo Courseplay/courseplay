@@ -218,11 +218,10 @@ function courseplay:update_tools(vehicle, tractor_or_implement)
 					vehicle.cp.hasPlough = true;
 				end;
 			end;
-			if courseplay:is_baleLoader(object) then
+			if courseplay:is_baleLoader(object) or courseplay:isSpecialBaleLoader(object) then
 				vehicle.cp.hasBaleLoader = true;
 				courseplay:getReverseProperties(vehicle, object)
-			end;
-			if object.allowTipDischarge then
+			elseif object.allowTipDischarge then
 				courseplay:getReverseProperties(vehicle, object)
 			end
 		elseif vehicle.cp.mode == 8 then --Liquid manure transfer
@@ -355,12 +354,10 @@ function courseplay:update_tools(vehicle, tractor_or_implement)
 
 	--tippers with covers
 	vehicle.cp.tipperHasCover = false;
-	vehicle.cp.tippersWithCovers = nil;
 	vehicle.cp.tippersWithCovers = {};
 	if tipper_attached then
 		courseplay:setTipperCoverData(vehicle);
 	end;
-	--courseplay:debug(tableShow(vehicle.cp.tippersWithCovers, tostring(vehicle.name) .. ": vehicle.cp.tippersWithCovers", 6), 6);
 	--END tippers with covers
 
 
@@ -368,7 +365,7 @@ function courseplay:update_tools(vehicle, tractor_or_implement)
 		return true;
 	end;
 	return nil;
-end
+end;
 
 function courseplay:setMarkers(vehicle, object)
 	object.cp.backMarkerOffset = nil
@@ -470,17 +467,17 @@ end;
 function courseplay:setTipperCoverData(vehicle)
 	for i=1, #(vehicle.tippers) do
 		local t = vehicle.tippers[i];
-		local coverItems = {};
 		local isHKD302, isMUK, isSRB35 = false, false, false;
-		
+
 		if t.configFileName ~= nil then
 			isHKD302 = t.configFileName == 'data/vehicles/trailers/kroeger/HKD302.xml';
 			isMUK = t.configFileName == 'data/vehicles/trailers/kroeger/MUK303.xml' or t.configFileName == 'data/vehicles/trailers/kroeger/MUK402.xml';
-			isSRB35 = t.configFileName == 'data/vehicles/trailers/kroeger/SRB35.xml';
+			isSRB35 = t.cp.isSRB35; -- t.configFileName == 'data/vehicles/trailers/kroeger/SRB35.xml';
 		end;
 
 		-- Default Giants trailers
 		if isHKD302 or isMUK or isSRB35 then
+			local coverItems = {};
 			if isHKD302 then
 				local c = getChild(t.rootNode, 'bodyLeft');
 				if c ~= nil and c ~= 0 then
@@ -1211,7 +1208,7 @@ function courseplay:isInvertedTrailerNode(vehicle, tipper)
 	local x,y,z = getWorldTranslation(vehicle.rootNode);
 	local xTipper,yTipper,zTipper = getWorldTranslation(tipper.rootNode);
 	local _,_,tz = worldToLocal(tipper.rootNode, x,y,z);
-	return (tz < 0) and true or false;
+	return tz < 0;
 end;
 
 function courseplay:getRealTrailerDistanceToPivot(vehicle, tipper)
@@ -1314,7 +1311,7 @@ function courseplay:createRealTrailerTurningNode(vehicle, tipper)
 				Distance = minDis + (dif/2);
 			end;
 
-		-- Calculate turning wheel median distance if there is no strait wheels.
+		-- Calculate turning wheel median distance if there are no strait wheels.
 		elseif haveRotatingWheels then
 			if minDisRot == maxDisRot then
 				Distance = minDisRot;
@@ -1324,7 +1321,7 @@ function courseplay:createRealTrailerTurningNode(vehicle, tipper)
 			end;
 		end;
 
-		-- If the distance is not 0 then greate an transformGroute and place it at the right location and return the node of it.
+		-- If the distance is not 0 then create an transformGroup and place it at the right location and return the node of it.
 		if Distance ~= 0 then
 			local node = createTransformGroup("realTurningNode");
 			link(tipper.rootNode, node);

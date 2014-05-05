@@ -67,9 +67,9 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 					courseplay:debug(nameNum(self)..": 	onEnter, checking Distances: new: "..tostring(distanceToOtherId).." vs. current: "..tostring(distanceToCollisionVehicle),3);
 					if distanceToCollisionVehicle <= distanceToOtherId then
 						OtherIdisCloser = false
-						courseplay:debug(string.format("%s: 	target is not closer than existing target -> do not change \"self.cp.collidingVehicleId\"", nameNum(self)), 3);
+						courseplay:debug(string.format('%s: 	target is not closer than existing target -> do not change "self.cp.collidingVehicleId"', nameNum(self)), 3);
 					else
-						courseplay:debug(string.format("%s: 	target is closer than existing target -> change \"self.cp.collidingVehicleId\"", nameNum(self)), 3);
+						courseplay:debug(string.format('%s: 	target is closer than existing target -> change "self.cp.collidingVehicleId"', nameNum(self)), 3);
 					end
 				end
 				--checking CollisionIgnoreList
@@ -103,7 +103,7 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 					self.cp.collidingObjects.all[otherId] = true
 					self.cp.collidingVehicleId = otherId
 					--self.CPnumCollidingVehicles = self.CPnumCollidingVehicles + 1;
-					courseplay:debug(string.format("%s: 	\"%s\" is not on list, setting \"self.cp.collidingVehicleId\"", nameNum(self), tostring(vehicle.name)), 3);
+					courseplay:debug(string.format('%s: 	%q is not on list, setting "self.cp.collidingVehicleId"', nameNum(self), tostring(vehicle.name)), 3);
 				elseif onLeave and not isInOtherTrigger then
 					self.cp.collidingObjects.all[otherId] = nil
 					if self.cp.collidingVehicleId == otherId then
@@ -113,18 +113,18 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 								self.cp.collidingVehicleId = nil
 							--end
 							AIVehicleUtil.setCollisionDirection(self.cp.trafficCollisionTriggers[1], self.cp.trafficCollisionTriggers[2], 0, -1);
-							courseplay:debug(string.format("%s: 	onLeave - setting \"self.cp.collidingVehicleId\" to nil", nameNum(self)), 3);
+							courseplay:debug(string.format('%s: 	onLeave - setting "self.cp.collidingVehicleId" to nil', nameNum(self)), 3);
 						else
-							courseplay:debug(string.format("%s: 	onLeave - keep \"self.CPnumCollidingVehicles\" ", nameNum(self)), 3);
+							courseplay:debug(string.format('%s: 	onLeave - keep "self.CPnumCollidingVehicles"', nameNum(self)), 3);
 						end
 					else
-						courseplay:debug(string.format("%s: 	onLeave - not valid for \"self.cp.collidingVehicleId\" keep it", nameNum(self)), 3);
+						courseplay:debug(string.format('%s: 	onLeave - not valid for "self.cp.collidingVehicleId" keep it', nameNum(self)), 3);
 					end
 				else
-					--courseplay:debug(string.format("%s: 	no registration:onEnter:%s, OtherIdisCloser:%s, registered: %s ,isInOtherTrigger: %s", nameNum(self),tostring(onEnter),tostring(OtherIdisCloser),tostring(self.cp.collidingObjects.all[otherId]),tostring(isInOtherTrigger)), 3);
+					--courseplay:debug(string.format('%s: 	no registration:onEnter:%s, OtherIdisCloser:%s, registered: %s ,isInOtherTrigger: %s', nameNum(self),tostring(onEnter),tostring(OtherIdisCloser),tostring(self.cp.collidingObjects.all[otherId]),tostring(isInOtherTrigger)), 3);
 				end;
 			elseif not isInOtherTrigger then
-				courseplay:debug(string.format("%s: 	Vehicle is nil - do nothing", nameNum(self)), 3);
+				courseplay:debug(string.format('%s: 	Vehicle is nil - do nothing', nameNum(self)), 3);
 			end
 			
 			if  onEnter then
@@ -146,11 +146,12 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 		return true
 	end
 
+	-- TIPTRIGGERS
 	local tipTriggers, tipTriggersCount = courseplay.triggers.tipTriggers, courseplay.triggers.tipTriggersCount
 	local name = getName(transformId)
 	courseplay:debug(nameNum(self)..": found "..tostring(name),1)
 	if self.tippers[1] ~= nil and tipTriggers ~= nil and tipTriggersCount > 0 then
-		courseplay:debug(nameNum(self) .. " transformId = ".. tostring(transformId)..": "..tostring(name), 1);
+		courseplay:debug(nameNum(self) .. ": transformId=".. tostring(transformId)..": "..tostring(name), 1);
 		local fruitType = self.tippers[1].currentFillType;
 		if fruitType == nil or fruitType == 0 then
 			for i=2,#(self.tippers) do
@@ -216,13 +217,15 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 				else
 					courseplay:debug(string.format("%s: trigger %s does not have acceptedFillTypes (fruitType=%s)", nameNum(self), tostring(triggerId), tostring(fruitType)), 1);
 				end;
-			return true
+				return true;
 			end;
 		end;
-	end
+	end;
+
+	-- OTHER TRIGGERS
 	if courseplay.triggers.allNonUpdateables[transformId] then
 		local trigger = courseplay.triggers.allNonUpdateables[transformId]
-		courseplay:debug(nameNum(self) .. " transformId = ".. tostring(transformId)..": "..tostring(name).." is allNonUpdateables", 1);
+		courseplay:debug(('%s: transformId=%s: %s is allNonUpdateables'):format(nameNum(self), tostring(transformId), tostring(name)), 1);
 		if self.cp.mode == 4 then
 			self.cp.fillTrigger = transformId;
 		elseif self.cp.mode == 8 and (trigger.isSprayerFillTrigger 
@@ -232,16 +235,17 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 			self.cp.fillTrigger = transformId;									
 		elseif trigger.isGasStationTrigger or trigger.isDamageModTrigger then
 			self.cp.fillTrigger = transformId;
-		end
-		return true
-	end
-				
-	courseplay.confirmedNoneTriggers[transformId] = true
-	courseplay.confirmedNoneTriggersCounter = courseplay.confirmedNoneTriggersCounter +1
-	courseplay:debug(string.format("%s: added %s to blacklist", nameNum(self), tostring(name)), 1);
-	courseplay:debug("courseplay.confirmedNoneTriggers:  "..tostring(courseplay.confirmedNoneTriggersCounter),1);
-	
-	return true
+		elseif trigger.isGasStationTrigger or trigger.isDamageModTrigger or trigger.isWeightStation then
+			self.cp.fillTrigger = transformId;
+		end;
+		return true;
+	end;
+
+	courseplay.confirmedNoneTriggers[transformId] = true;
+	courseplay.confirmedNoneTriggersCounter = courseplay.confirmedNoneTriggersCounter + 1;
+	courseplay:debug(('%s: added %s to trigger blacklist -> total=%d'):format(nameNum(self), tostring(name), courseplay.confirmedNoneTriggersCounter), 1);
+
+	return true;
 end;
 
 function courseplay:updateAllTriggers()
