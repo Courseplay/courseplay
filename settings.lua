@@ -162,7 +162,7 @@ function courseplay:switch_player_side(combine)
 			return;
 		end;
 
-		tractor.cp.modeState = 10;
+		courseplay:setModeState(tractor, 10);
 
 		if combine.cp.forcedSide == nil then
 			combine.cp.forcedSide = "left";
@@ -788,11 +788,12 @@ function courseplay:copyCourse(vehicle)
 			courseplay:unregister_at_combine(vehicle, vehicle.cp.activeCombine);
 		end
 
-		vehicle.cp.modeState = 1;
-		-- print(('%s [%s(%d)]: copyCourse() -> set modeState to 1'):format(nameNum(vehicle), curFile, debug.getinfo(1).currentline)); -- DEBUG140301
 		if vehicle.cp.mode == 2 or vehicle.cp.mode == 3 then
-			vehicle.cp.modeState = 0;
+			courseplay:setModeState(vehicle, 0);
 			-- print(('%s [%s(%d)]: copyCourse(): mode=%d -> set modeState to 0'):format(nameNum(vehicle), curFile, debug.getinfo(1).currentline, vehicle.cp.mode)); -- DEBUG140301
+		else
+			courseplay:setModeState(vehicle, 1);
+			-- print(('%s [%s(%d)]: copyCourse() -> set modeState to 1'):format(nameNum(vehicle), curFile, debug.getinfo(1).currentline)); -- DEBUG140301
 		end;
 		vehicle.cp.recordingTimer = 1;
 

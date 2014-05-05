@@ -228,10 +228,10 @@ function courseplay:clearCurrentLoadedCourse(vehicle)
 	end
 	vehicle.cp.loadedCourses = {}
 	vehicle.cp.currentCourseName = nil
-	vehicle.cp.modeState = 1;
+	courseplay:setModeState(vehicle, 1);
 	-- print(('%s [%s(%d)]: clearCurrentLoadedCourse() -> set modeState to 1'):format(nameNum(vehicle), curFile, debug.getinfo(1).currentline)); -- DEBUG140301
 	if vehicle.cp.mode == 2 or vehicle.cp.mode == 3 then
-		vehicle.cp.modeState = 0;
+		courseplay:setModeState(vehicle, 0);
 		-- print(('%s [%s(%d)]: clearCurrentLoadedCourse(): mode=%d -> set modeState to 0'):format(nameNum(vehicle), curFile, debug.getinfo(1).currentline, vehicle.cp.mode)); -- DEBUG140301
 	end;
 	vehicle.cp.recordingTimer = 1

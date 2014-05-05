@@ -116,7 +116,7 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 				courseplay:setCurrentTargetFromList(vehicle, 1);
 				vehicle.recordnumber = 2 
 			else
-				vehicle.cp.modeState = 0
+				courseplay:setModeState(vehicle, 0);
 				if vehicle.lastaiThreshingDirectionX ~= nil then
 					vehicle.aiThreshingDirectionX = vehicle.lastaiThreshingDirectionX
 					vehicle.aiThreshingDirectionZ = vehicle.lastaiThreshingDirectionZ

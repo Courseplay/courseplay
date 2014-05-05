@@ -252,7 +252,8 @@ function courseplay:unregister_at_combine(self, combine)
 	self.cp.positionWithCombine = nil
 	self.cp.lastActiveCombine = self.cp.activeCombine
 	self.cp.activeCombine = nil
-	self.cp.modeState = 1
+	courseplay:setModeState(self, 1);
+
 
 	if self.trafficCollisionIgnoreList[combine.rootNode] == true then
 	   self.trafficCollisionIgnoreList[combine.rootNode] = nil
@@ -324,43 +325,25 @@ function courseplay:calculateInitialCombineOffset(self, combine)
 		end;
 	end;
 
-	--special tools, special cases
-	if combine.cp.isJohnDeereS690iBBM then
-		self.cp.combineOffset =  9.5;
-	elseif combine.cp.isJohnDeereS650BBM then
-		self.cp.combineOffset =  7.7;
-	elseif combine.cp.isCaseIH7130 then
-		self.cp.combineOffset =  8.0;
-	elseif combine.cp.isCaseIH9230 or combine.cp.isCaseIH9230Crawler then
-		self.cp.combineOffset = 11.5;
-	elseif combine.cp.isDeutz5465H then
-		self.cp.combineOffset =  5.6;
-	elseif combine.cp.isGrimmeRootster604 then
-		self.cp.combineOffset = -4.3;
-	elseif combine.cp.isGrimmeSE7555 then
-		self.cp.combineOffset =  4.3;
-	elseif combine.cp.isFahrM66 then
-		self.cp.combineOffset =  3.9; -- Pipe collition added to global traffic ignore list. we can now go closer to the combine again. (Original 4.4m)
-	elseif combine.cp.isJF1060 then
-		self.cp.combineOffset = -7;
-		combine.cp.offset = 7;
-	elseif combine.cp.isRopaEuroTiger then
-		self.cp.combineOffset =  5.2;
-	elseif combine.cp.isSugarBeetLoader then
-		local utwX,utwY,utwZ = getWorldTranslation(combine.unloadingTrigger.node);
-		local combineToUtwX,_,_ = worldToLocal(combine.rootNode, utwX,utwY,utwZ);
-		self.cp.combineOffset = combineToUtwX;
-	
-	--combine // combine_offset is in auto mode
+	--special combines
+	local specialOffset, chopperOffset = courseplay:getSpecialCombineOffset(combine);
+	if specialOffset then
+		self.cp.combineOffset = specialOffset;
+		if chopperOffset then
+			combine.cp.offset = chopperOffset;
+		end;
+
+	-- combine // combine_offset is in auto mode
 	elseif not combine.cp.isChopper and combine.currentPipeState == 2 and combine.pipeRaycastNode ~= nil then -- pipe is extended
 		self.cp.combineOffset = combineToPrnX;
 		courseplay:debug(string.format("%s(%i): %s @ %s: using combineToPrnX=%f, self.cp.combineOffset=%f", curFile, debug.getinfo(1).currentline, nameNum(self), tostring(combine.name), combineToPrnX, self.cp.combineOffset), 4)
-	elseif not combine.cp.isChopper and combine.pipeRaycastNode ~= nil then --pipe is closed
-		if getParent(combine.pipeRaycastNode) == combine.rootNode then -- pipeRaycastNode is direct child of combine.root
+	elseif not combine.cp.isChopper and combine.pipeRaycastNode ~= nil then -- pipe is closed
+		local raycastNodeParent = getParent(combine.pipeRaycastNode);
+		if raycastNodeParent == combine.rootNode then -- pipeRaycastNode is direct child of combine.root
 			self.cp.combineOffset = prnX;
 			courseplay:debug(string.format("%s(%i): %s @ %s: combine.root > pipeRaycastNode / self.cp.combineOffset=prnX=%f", curFile, debug.getinfo(1).currentline, nameNum(self), tostring(combine.name), self.cp.combineOffset), 4)
-		elseif getParent(getParent(combine.pipeRaycastNode)) == combine.rootNode then --pipeRaycastNode is direct child of pipe is direct child of combine.root
-			local pipeX, pipeY, pipeZ = getTranslation(getParent(combine.pipeRaycastNode))
+		elseif getParent(raycastNodeParent) == combine.rootNode then -- pipeRaycastNode is direct child of pipe is direct child of combine.root
+			local pipeX, pipeY, pipeZ = getTranslation(raycastNodeParent)
 			self.cp.combineOffset = pipeX - prnZ;
 
 			if prnZ == 0 or combine.cp.isGrimmeRootster604 then
@@ -371,13 +354,15 @@ function courseplay:calculateInitialCombineOffset(self, combine)
 			self.cp.combineOffset = combineToPrnX + (5 * combine.cp.pipeSide);
 			courseplay:debug(string.format("%s(%i): %s @ %s: using combineToPrnX=%f, self.cp.combineOffset=%f", curFile, debug.getinfo(1).currentline, nameNum(self), tostring(combine.name), combineToPrnX, self.cp.combineOffset), 4)
 		elseif combine.cp.lmX ~= nil then
-			if combine.cp.lmX > 0 then --use leftMarker
+			if combine.cp.lmX > 0 then -- use leftMarker
 				self.cp.combineOffset = combine.cp.lmX + 2.5;
 				courseplay:debug(string.format("%s(%i): %s @ %s: using leftMarker+2.5, self.cp.combineOffset=%f", curFile, debug.getinfo(1).currentline, nameNum(self), tostring(combine.name), self.cp.combineOffset), 4);
 			end;
 		else --BACKUP
 			self.cp.combineOffset = 8 * combine.cp.pipeSide;
 		end;
+
+	-- chopper
 	elseif combine.cp.isChopper then
 		courseplay:debug(string.format("%s(%i): %s @ %s: combine.cp.forcedSide=%s", curFile, debug.getinfo(1).currentline, nameNum(self), combine.name, tostring(combine.cp.forcedSide)), 4);
 		if combine.cp.forcedSide ~= nil then
@@ -423,4 +408,36 @@ function courseplay:calculateInitialCombineOffset(self, combine)
 			combine.cp.offset = math.abs(self.cp.combineOffset)
 		end;
 	end;
+end;
+
+function courseplay:getSpecialCombineOffset(combine)
+	if combine.cp == nil then return nil; end;
+
+	if combine.cp.isJohnDeereS690iBBM then
+		return  9.5;
+	elseif combine.cp.isJohnDeereS650BBM then
+		return  7.7;
+	elseif combine.cp.isCaseIH7130 then
+		return  8.0;
+	elseif combine.cp.isCaseIH9230 or combine.cp.isCaseIH9230Crawler then
+		return 11.5;
+	elseif combine.cp.isDeutz5465H then
+		return  5.6;
+	elseif combine.cp.isGrimmeRootster604 then
+		return -4.3;
+	elseif combine.cp.isGrimmeSE7555 then
+		return  4.3;
+	elseif combine.cp.isFahrM66 then
+		return  3.9;
+	elseif combine.cp.isJF1060 then
+		return -7.0, 7.0;
+	elseif combine.cp.isRopaEuroTiger then
+		return  5.2;
+	elseif combine.cp.isSugarBeetLoader then
+		local utwX,utwY,utwZ = getWorldTranslation(combine.unloadingTrigger.node);
+		local combineToUtwX,_,_ = worldToLocal(combine.rootNode, utwX,utwY,utwZ);
+		return combineToUtwX;
+	end;
+
+	return nil;
 end;

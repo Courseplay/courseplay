@@ -286,7 +286,7 @@ function courseplay:drive(self, dt)
 			isBypassing = true
 			lx, lz = courseplay:isTheWayToTargetFree(self,lx, lz)			
 		elseif self.cp.mode ~= 7 then
-			self.cp.modeState = 0
+			courseplay:setModeState(self, 0);
 		end;
 
 		if self.cp.mode == 3 and self.cp.tipperAttached and self.recordnumber >= 2 and self.cp.modeState == 0 then
@@ -306,7 +306,7 @@ function courseplay:drive(self, dt)
 		if self.cp.mode == 7 then
 			if self.recordnumber == self.maxnumber then
 				if self.cp.curTarget.x ~= nil then
-	 				self.cp.modeState = 5
+					courseplay:setModeState(self, 5);
 					self.recordnumber = 2
 					courseplay:debug(nameNum(self) .. ": " .. tostring(debug.getinfo(1).currentline) .. ": modeState = 5", 11);
 				else

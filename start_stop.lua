@@ -69,8 +69,8 @@ function courseplay:start(self)
 
 	-- set default modeState if not in mode 2 or 3
 	if self.cp.mode ~= 2 and self.cp.mode ~= 3 then
-		self.cp.modeState = 0
-	end
+		courseplay:setModeState(self, 0);
+	end;
 
 	if self.recordnumber < 1 then
 		self.recordnumber = 1
@@ -366,7 +366,7 @@ function courseplay:stop(self)
 	self.cp.isRecording = false
 	self.cp.recordingIsPaused = false
 	if self.cp.modeState > 4 then
-		self.cp.modeState = 1
+		courseplay:setModeState(self, 1);
 	end
 	self.cp.turnStage = 0
 	self.cp.isTurning = nil
