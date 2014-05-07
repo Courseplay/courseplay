@@ -1,6 +1,49 @@
+-- DEBUG CHANNELS
+courseplay.numAvailableDebugChannels = 24;
+courseplay.numDebugChannels = 18;
+courseplay.numDebugChannelButtonsPerLine = 12;
+courseplay.numDebugChannelSections = math.ceil(courseplay.numAvailableDebugChannels / courseplay.numDebugChannelButtonsPerLine);
+courseplay.debugChannelSection = 1;
+courseplay.debugChannelSectionStart = 1;
+courseplay.debugChannelSectionEnd = courseplay.numDebugChannelButtonsPerLine;
+courseplay.debugChannels = {};
+for channel=1, courseplay.numAvailableDebugChannels do
+	courseplay.debugChannels[channel] = false;
+end;
+--[[
+Debug channels legend:
+ 1	Raycast (drive + triggers) / TipTriggers
+ 2	unload_tippers
+ 3	traffic collision
+ 4	Combines/mode2, register and unload combines
+ 5	Multiplayer
+ 6	implements (update_tools etc)
+ 7	course generation
+ 8	course management
+ 9	path finding
+10	mode9
+11	mode7
+12	all other debugs (uncategorized)
+13	reverse
+14	EifokLiquidManure
+15	mode3 (AugerWagon)
+16	recording
+17	mode4/6
+18	hud action
+--]]
+
+--------------------------------------------------
+
+-- GENERAL DEBUG
 function courseplay:debug(str, channel)
 	if channel ~= nil and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == true then
 		print('[dbg' .. tostring(channel) .. ' lp' .. g_updateLoopIndex .. '] ' .. str);
+	end;
+end;
+
+function cpPrintLine(debugChannel)
+	if debugChannel == nil or courseplay.debugChannels[debugChannel] then
+		print(('-'):rep(50));
 	end;
 end;
 
@@ -96,13 +139,16 @@ function eval(str)
 	return assert(loadstring(str))()
 end
 
+--------------------------------------------------
+
+-- MULTIPLAYER DEBUG
 stream_debug_counter = 0
 
 function streamDebugWriteFloat32(streamId, value)
 	value = Utils.getNoNil(value, 0.0)
 	stream_debug_counter = stream_debug_counter + 1
-	--[[courseplay:debug("++++++++++++++++", 55)
-	courseplay:debug(stream_debug_counter, 55)
+	--[[courseplay:debug("++++++++++++++++", 5)
+	courseplay:debug(stream_debug_counter, 5)
 	courseplay:debug("float: " .. value, 5)
 	courseplay:debug("-----------------", 5)]]
 	courseplay:debug(string.format("%d: writing float: %f",stream_debug_counter, value ),5)

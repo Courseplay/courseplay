@@ -31,7 +31,7 @@ function courseplay:drive(self, dt)
 
 	-- unregister at combine, if there is one
 	if self.cp.isLoaded == true and self.cp.positionWithCombine ~= nil then
-		courseplay:unregister_at_combine(self, self.cp.activeCombine)
+		courseplay:unregisterFromCombine(self, self.cp.activeCombine)
 	end
 
 	-- Turn on sound / control lights
@@ -286,7 +286,9 @@ function courseplay:drive(self, dt)
 			isBypassing = true
 			lx, lz = courseplay:isTheWayToTargetFree(self,lx, lz)			
 		elseif self.cp.mode ~= 7 then
-			courseplay:setModeState(self, 0);
+			if self.cp.modeState ~= 0 then
+				courseplay:setModeState(self, 0);
+			end;
 		end;
 
 		if self.cp.mode == 3 and self.cp.tipperAttached and self.recordnumber >= 2 and self.cp.modeState == 0 then
@@ -519,7 +521,7 @@ function courseplay:drive(self, dt)
 				allowedToDrive = false
 				courseplay:setGlobalInfoText(self, 'WORK_END');
 			else
-				self.cp.isLoaded = true;
+				courseplay:setIsLoaded(self, true);
 				self.recordnumber = i + 2
 			end
 		end
@@ -773,7 +775,7 @@ function courseplay:drive(self, dt)
 			end
 			self.cp.isUnloaded = false
 			self.cp.stopAtEnd = false
-			self.cp.isLoaded = false
+			courseplay:setIsLoaded(self, false);
 			self.cp.isRecording = false
 			self.cp.canDrive = true
 		end
@@ -865,12 +867,12 @@ end
 function courseplay:deleteCollisionVehicle(vehicle)
 	if vehicle.cp.collidingVehicleId ~= nil  then
 		vehicle.cp.collidingObjects.all[vehicle.cp.collidingVehicleId] = nil
-		--self.CPnumCollidingVehicles = math.max(self.CPnumCollidingVehicles - 1, 0);
-		--if self.CPnumCollidingVehicles == 0 then
-		--self.numCollidingVehicles[triggerId] = math.max(self.numCollidingVehicles[triggerId]-1, 0);
+		--vehicle.CPnumCollidingVehicles = math.max(vehicle.CPnumCollidingVehicles - 1, 0);
+		--if vehicle.CPnumCollidingVehicles == 0 then
+		--vehicle.numCollidingVehicles[triggerId] = math.max(vehicle.numCollidingVehicles[triggerId]-1, 0);
 		vehicle.cp.collidingObjects[4][vehicle.cp.collidingVehicleId] = nil
 		vehicle.cp.collidingVehicleId = nil
-		courseplay:debug(string.format("%s: 	deleteCollisionVehicle: setting \"self.cp.collidingVehicleId\"to nil", nameNum(self)), 3);
+		courseplay:debug(string.format('%s: 	deleteCollisionVehicle: setting "collidingVehicleId" to nil', nameNum(vehicle)), 3);
 	end
 end
 
@@ -1001,24 +1003,24 @@ function courseplay:openCloseCover(vehicle, dt, showCover, isAtTipTrigger)
 	end; --END for i,tipperWithCover in vehicle.cp.tippersWithCovers
 end;
 
-function courseplay:refillSprayer(self, fillLevelPct, driveOn, allowedToDrive, lx, lz, dt)
-	for i,activeTool in pairs(self.tippers) do
+function courseplay:refillSprayer(vehicle, fillLevelPct, driveOn, allowedToDrive, lx, lz, dt)
+	for i,activeTool in pairs(vehicle.tippers) do
 		local isSpecialSprayer = false
-		local fillTrigger = nil;
-		isSpecialSprayer, allowedToDrive, lx, lz = courseplay:handleSpecialSprayer(self, activeTool, fillLevelPct, driveOn, allowedToDrive, lx, lz, dt, 'pull');
+		local fillTrigger;
+		isSpecialSprayer, allowedToDrive, lx, lz = courseplay:handleSpecialSprayer(vehicle, activeTool, fillLevelPct, driveOn, allowedToDrive, lx, lz, dt, 'pull');
 		if isSpecialSprayer then
 			return allowedToDrive,lx,lz
 		end;
 
 		if courseplay:isSprayer(activeTool) or activeTool.cp.hasUrfSpec then --sprayer
-			if self.cp.fillTrigger ~= nil then
-				local trigger = courseplay.triggers.all[self.cp.fillTrigger];
+			if vehicle.cp.fillTrigger ~= nil then
+				local trigger = courseplay.triggers.all[vehicle.cp.fillTrigger];
 				if courseplay:fillTypesMatch(trigger, activeTool) then 
 					--print(nameNum(activeTool) .. ': slow down, it's a sprayerFillTrigger')
-					self.cp.isInFilltrigger = true
+					vehicle.cp.isInFilltrigger = true
 				end
 			end
-			local activeToolFillLevel = nil;
+			local activeToolFillLevel;
 			if activeTool.fillLevel ~= nil and activeTool.capacity ~= nil then
 				activeToolFillLevel = (activeTool.fillLevel / activeTool.capacity) * 100;
 			end;
@@ -1029,7 +1031,7 @@ function courseplay:refillSprayer(self, fillLevelPct, driveOn, allowedToDrive, l
 			if fillTrigger == nil then
 				if activeTool.sprayerFillTriggers ~= nil and #activeTool.sprayerFillTriggers > 0 then
 					fillTrigger = activeTool.sprayerFillTriggers[1];
-					self.cp.fillTrigger = nil
+					vehicle.cp.fillTrigger = nil
 				end;
 			end;
 
@@ -1037,8 +1039,8 @@ function courseplay:refillSprayer(self, fillLevelPct, driveOn, allowedToDrive, l
 
 			local canRefill = (activeToolFillLevel ~= nil and activeToolFillLevel < driveOn) and fillTypesMatch;
 			--ManureLager: activeTool.ReFillTrigger has to be nil so it doesn't refill
-			if self.cp.mode == 8 then
-				canRefill = canRefill and activeTool.ReFillTrigger == nil and not courseplay:waypointsHaveAttr(self, self.recordnumber, -2, 2, 'wait', true, false);
+			if vehicle.cp.mode == 8 then
+				canRefill = canRefill and activeTool.ReFillTrigger == nil and not courseplay:waypointsHaveAttr(vehicle, vehicle.recordnumber, -2, 2, 'wait', true, false);
 
 				if activeTool.isSpreaderInRange ~= nil and activeTool.isSpreaderInRange.manureTriggerc ~= nil then
 					canRefill = false;
@@ -1049,8 +1051,8 @@ function courseplay:refillSprayer(self, fillLevelPct, driveOn, allowedToDrive, l
 
 			if canRefill then
 				allowedToDrive = false;
-				--courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
-				courseplay:handleSpecialTools(self,activeTool,nil,nil,nil,allowedToDrive,false,false)
+				--courseplay:handleSpecialTools(vehicle,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
+				courseplay:handleSpecialTools(vehicle,activeTool,nil,nil,nil,allowedToDrive,false,false)
 				local sprayer = activeTool.sprayerFillTriggers[1];
 				if not activeTool.isSprayerFilling then
 					activeTool:setIsSprayerFilling(true);
@@ -1060,21 +1062,21 @@ function courseplay:refillSprayer(self, fillLevelPct, driveOn, allowedToDrive, l
 					sprayer.fill = true;
 				end;
 
-				self.cp.infoText = courseplay:loc("COURSEPLAY_LOADING_AMOUNT"):format(activeTool.fillLevel, activeTool.capacity);
-			elseif self.cp.isLoaded or not self.cp.stopForLoading then
+				vehicle.cp.infoText = courseplay:loc("COURSEPLAY_LOADING_AMOUNT"):format(activeTool.fillLevel, activeTool.capacity);
+			elseif vehicle.cp.isLoaded or not vehicle.cp.stopForLoading then
 				if activeTool.isSprayerFilling then
 					activeTool:setIsSprayerFilling(false);
 				end;
-				courseplay:handleSpecialTools(self,activeTool,nil,nil,nil,allowedToDrive,false,false)
-				self.cp.fillTrigger = nil
+				courseplay:handleSpecialTools(vehicle,activeTool,nil,nil,nil,allowedToDrive,false,false)
+				vehicle.cp.fillTrigger = nil
 			end;
 		end
 		if courseplay:is_sowingMachine(activeTool) then --sowing machine
-			if self.cp.fillTrigger ~= nil then
-				local trigger = courseplay.triggers.all[self.cp.fillTrigger]
+			if vehicle.cp.fillTrigger ~= nil then
+				local trigger = courseplay.triggers.all[vehicle.cp.fillTrigger]
 				if trigger.isSowingMachineFillTrigger then
 					--print("slow down , its a SowingMachineFillTrigger")
-					self.cp.isInFilltrigger = true
+					vehicle.cp.isInFilltrigger = true
 				end
 			end
 			if fillLevelPct < driveOn and activeTool.sowingMachineFillTriggers[1] ~= nil then
@@ -1082,16 +1084,16 @@ function courseplay:refillSprayer(self, fillLevelPct, driveOn, allowedToDrive, l
 					activeTool:setIsSowingMachineFilling(true);
 				end;
 				allowedToDrive = false;
-				self.cp.infoText = courseplay:loc('COURSEPLAY_LOADING_AMOUNT'):format(activeTool.fillLevel, activeTool.capacity);
+				vehicle.cp.infoText = courseplay:loc('COURSEPLAY_LOADING_AMOUNT'):format(activeTool.fillLevel, activeTool.capacity);
 			elseif activeTool.sowingMachineFillTriggers[1] ~= nil then
 				if activeTool.isSowingMachineFilling then
 					activeTool:setIsSowingMachineFilling(false);
 				end;
-				self.cp.fillTrigger = nil
+				vehicle.cp.fillTrigger = nil
 			end;
 		end;
-		if self.cp.stopForLoading then
-			courseplay:handleSpecialTools(self,activeTool,nil,nil,nil,allowedToDrive,true,false)
+		if vehicle.cp.stopForLoading then
+			courseplay:handleSpecialTools(vehicle,activeTool,nil,nil,nil,allowedToDrive,true,false)
 			allowedToDrive = false
 		end
 	end;

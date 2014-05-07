@@ -23,14 +23,20 @@ end;
 
 
 function courseplay:distanceToObject(vehicle, object)
-	local x, y, z = getWorldTranslation(vehicle.rootNode)
-	local ox, oy, oz = worldToLocal(object.rootNode, x, y, z)
+	local x, y, z = getWorldTranslation(vehicle.rootNode);
+	local ox, oy, oz = worldToLocal(object.rootNode, x, y, z);
 
-	return Utils.vector2Length(ox, oz)
-end
+	return Utils.vector2Length(ox, oz);
+end;
 
 
 function courseplay:distanceToPoint(vehicle, x, y, z)
-	local ox, oy, oz = worldToLocal(vehicle.cp.DirectionNode, x, y, z)
-	return Utils.vector2Length(ox, oz)
-end
+	local ox, oy, oz = worldToLocal(vehicle.cp.DirectionNode, x, y, z);
+	return Utils.vector2Length(ox, oz);
+end;
+
+function courseplay:nodeToNodeDistance(node1, node2)
+	local x1,y1,z1 = getWorldTranslation(node1);
+	local x2,y2,z2 = getWorldTranslation(node2);
+	return Utils.vector3Length(x2 - x1, y2 - y1, z2 - z1);
+end;

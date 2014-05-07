@@ -221,10 +221,10 @@ function courseplay:start(self)
 	end --END if modeState == 0
 
 	if self.recordnumber > 2 and self.cp.mode ~= 4 and self.cp.mode ~= 6 then
-		self.cp.isLoaded = true
+		courseplay:setIsLoaded(self, true);
 		-- print(('%s [%s(%d)]: start(), recordnumber=%d -> set isLoaded to true'):format(nameNum(self), curFile, debug.getinfo(1).currentline, self.recordnumber)); -- DEBUG140301
 	elseif self.cp.mode == 4 or self.cp.mode == 6 then
-		self.cp.isLoaded = false;
+		courseplay:setIsLoaded(self, false);
 		self.cp.hasUnloadingRefillingCourse = self.maxnumber > self.cp.stopWork + 7;
 		if  self.Waypoints[self.cp.stopWork].cx == self.Waypoints[self.cp.startWork].cx 
 		and self.Waypoints[self.cp.stopWork].cz == self.Waypoints[self.cp.startWork].cz then
@@ -259,10 +259,10 @@ function courseplay:start(self)
 	self.cp.isRecording = false
 	self.cp.distanceCheck = false;
 
-	
 	if self.isRealistic then
-		self.cpSavedRealAWDModeOn = self.realAWDModeOn
-	end
+		self.cp.realAWDModeOnBackup = self.realAWDModeOn
+	end;
+
 
 	--EifokLiquidManure
 	self.cp.EifokLiquidManure.searchMapHoseRefStation.pull = true;
@@ -290,12 +290,15 @@ function courseplay:getCanUseAiMode(vehicle)
 		return false;
 	end;
 
+	local minWait, maxWait;
+
 	if mode == 3 or mode == 7 or mode == 8 then
-		if vehicle.cp.numWaitPoints < 1 then
-			vehicle.cp.infoText = string.format(courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_FEW'), 1);
+		minWait, maxWait = 1, 1;
+		if vehicle.cp.numWaitPoints < minWait then
+			vehicle.cp.infoText = courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_FEW'):format(minWait);
 			return false;
-		elseif vehicle.cp.numWaitPoints > 1 then
-			vehicle.cp.infoText = string.format(courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_MANY'), 1);
+		elseif vehicle.cp.numWaitPoints > maxWait then
+			vehicle.cp.infoText = courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_MANY'):format(maxWait);
 			return false;
 		end;
 		if mode == 3 then
@@ -317,22 +320,24 @@ function courseplay:getCanUseAiMode(vehicle)
 		end;
 		if mode == 6 then
 			if vehicle.cp.hasBaleLoader then
-				if vehicle.cp.numWaitPoints < 2 then
-					vehicle.cp.infoText = string.format(courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_FEW'), 2);
+				minWait, maxWait = 2, 3;
+				if vehicle.cp.numWaitPoints < minWait then
+					vehicle.cp.infoText = courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_FEW'):format(minWait);
 					return false;
-				elseif vehicle.cp.numWaitPoints > 3 then
-					vehicle.cp.infoText = string.format(courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_MANY'), 3);
+				elseif vehicle.cp.numWaitPoints > maxWait then
+					vehicle.cp.infoText = courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_MANY'):format(maxWait);
 					return false;
 				end;
 			end;
 		end;
 
 	elseif mode == 9 then
-		if vehicle.cp.numWaitPoints < 3 then
-			vehicle.cp.infoText = string.format(courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_FEW'), 3);
+		minWait, maxWait = 3, 3;
+		if vehicle.cp.numWaitPoints < minWait then
+			vehicle.cp.infoText = courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_FEW'):format(minWait);
 			return false;
-		elseif vehicle.cp.numWaitPoints > 3 then
-			vehicle.cp.infoText = string.format(courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_MANY'), 3);
+		elseif vehicle.cp.numWaitPoints > maxWait then
+			vehicle.cp.infoText = courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_MANY'):format(maxWait);
 			return false;
 		elseif vehicle.cp.shovelStatePositions == nil or vehicle.cp.shovelStatePositions[2] == nil or vehicle.cp.shovelStatePositions[3] == nil or vehicle.cp.shovelStatePositions[4] == nil or vehicle.cp.shovelStatePositions[5] == nil then
 			vehicle.cp.infoText = courseplay:loc('COURSEPLAY_SHOVEL_POSITIONS_MISSING');
@@ -348,7 +353,6 @@ end;
 
 -- stops driving the course
 function courseplay:stop(self)
-	--self:dismiss()
 	self.forceIsActive = false;
 	self.stopMotorOnLeave = true;
 	self.steeringEnabled = true;
@@ -387,7 +391,7 @@ function courseplay:stop(self)
 	self.cp.noStopOnEdge = false
 	if self.isRealistic then
 		self.motor.speedLevel = 0 
-		self:realSetAwdActive(self.cpSavedRealAWDModeOn)
+		self:realSetAwdActive(self.cp.realAWDModeOnBackup)
 		if self.realForceAiDriven then
 			self.realForceAiDriven = false
 		end
@@ -444,12 +448,13 @@ function courseplay:stop(self)
 		courseplay:changeToolOffsetX(self, nil, self.cp.tempToolOffsetX, true);
 		self.cp.tempToolOffsetX = nil
 	end;
+	self.cp.numWorkTools = 0;
 
 	self.cp.timers.slippingWheels = 0;
 
 	self.cp.movingToolsPrimary, self.cp.movingToolsSecondary = nil, nil;
 
-	--remove any global info texts
+	--remove any local and global info texts
 	if g_server ~= nil then
 		self.cp.infoText = nil;
 
@@ -466,6 +471,6 @@ function courseplay:stop(self)
 	--remove from activeCoursePlayers
 	courseplay:removeFromActiveCoursePlayers(self);
 
-	--validation: can switch ai_mode?
+	--validation: can switch mode?
 	courseplay:validateCanSwitchMode(self);
 end

@@ -20,13 +20,13 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 				if lx7 < 0 then
 					courseplay:debug(nameNum(vehicle) .. ": approach from right", 11);
 					vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.rootNode, -(0.34*3*vehicle.cp.turnRadius) , 0, -3*vehicle.cp.turnRadius);
-					courseplay:addNewTarget(vehicle, (0.34*2*vehicle.cp.turnRadius) , 0);
-					courseplay:addNewTarget(vehicle, 0 , 3);
+					courseplay:addNewTargetVector(vehicle, (0.34*2*vehicle.cp.turnRadius) , 0);
+					courseplay:addNewTargetVector(vehicle, 0 , 3);
 				else
 					courseplay:debug(nameNum(vehicle) .. ": approach from left", 11);
 					vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.rootNode, (0.34*3*vehicle.cp.turnRadius) , 0, -3*vehicle.cp.turnRadius);
-					courseplay:addNewTarget(vehicle, -(0.34*2*vehicle.cp.turnRadius) , 0);
-					courseplay:addNewTarget(vehicle, 0 ,3);
+					courseplay:addNewTargetVector(vehicle, -(0.34*2*vehicle.cp.turnRadius) , 0);
+					courseplay:addNewTargetVector(vehicle, 0 ,3);
 				end
 				vehicle.cp.mode7Unloading = true
 				vehicle.cp.mode7GoBackBeforeUnloading = true

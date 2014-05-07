@@ -229,15 +229,15 @@ function courseplay:executeFunction(self, func, value, page)
 
 			if combine.courseplayers == nil or #(combine.courseplayers) == 0 then
 				if line == 1 then
-					courseplay:call_player(combine);
+					courseplay:callCourseplayer(combine);
 				end;
 			else
 				if line == 2 then
-					courseplay:start_stop_player(combine);
+					courseplay:startStopCourseplayer(combine);
 				elseif line == 3 then
-					courseplay:send_player_home(combine);
+					courseplay:sendCourseplayerHome(combine);
 				elseif line == 4 and combine.cp.isChopper then
-					courseplay:switch_player_side(combine);
+					courseplay:switchCourseplayerSide(combine);
 				elseif line == 5 and combine.cp.isChopper and not self.drive and not self.isAIThreshing then --manual chopping: initiate/end turning maneuver
 					if self.cp.turnStage == 0 then
 						self.cp.turnStage = 1;

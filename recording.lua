@@ -224,7 +224,7 @@ function courseplay:clearCurrentLoadedCourse(vehicle)
 	vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = nil, nil, nil;
 	vehicle.cp.nextTargets = {};
 	if vehicle.cp.activeCombine ~= nil then
-		courseplay:unregister_at_combine(vehicle, vehicle.cp.activeCombine)
+		courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine)
 	end
 	vehicle.cp.loadedCourses = {}
 	vehicle.cp.currentCourseName = nil

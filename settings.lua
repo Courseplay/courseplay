@@ -121,11 +121,11 @@ function courseplay:setCpMode(vehicle, modeNum)
 	courseplay:buttonsActiveEnabled(vehicle, "all");
 end;
 
-function courseplay:call_player(combine)
-	combine.wants_courseplayer = not combine.wants_courseplayer;
+function courseplay:callCourseplayer(combine)
+	combine.cp.wantsCourseplayer = not combine.cp.wantsCourseplayer;
 end;
 
-function courseplay:start_stop_player(combine)
+function courseplay:startStopCourseplayer(combine)
 	local tractor = combine.courseplayers[1];
 	tractor.cp.forcedToStop = not tractor.cp.forcedToStop;
 end;
@@ -150,12 +150,11 @@ function courseplay:setIsLoaded(vehicle, bool)
 	vehicle.cp.isLoaded = bool;
 end;
 
-function courseplay:send_player_home(combine)
-	local tractor = combine.courseplayers[1];
-	tractor.cp.isLoaded = true;
+function courseplay:sendCourseplayerHome(combine)
+	courseplay:setIsLoaded(combine.courseplayers[1], true);
 end
 
-function courseplay:switch_player_side(combine)
+function courseplay:switchCourseplayerSide(combine)
 	if combine.grainTankCapacity == 0 then
 		local tractor = combine.courseplayers[1];
 		if tractor == nil then
@@ -192,7 +191,7 @@ function courseplay:setHudPage(vehicle, pageNum)
 	courseplay:buttonsActiveEnabled(vehicle, "all");
 end;
 
-function courseplay:switch_hud_page(vehicle, changeBy)
+function courseplay:switchHudPage(vehicle, changeBy)
 	local newPage = courseplay:minMaxPage(vehicle, vehicle.cp.hud.currentPage + changeBy);
 
 	if vehicle.cp.mode == nil then
@@ -616,7 +615,7 @@ function courseplay:changeWaitTime(vehicle, changeBy)
 end;
 
 function courseplay:getCanHaveWaitTime(vehicle)
-	return vehicle.cp.mode == 1 or vehicle.cp.mode == 2 or vehicle.cp.mode == 5 or vehicle.cp.mode == 8;
+	return vehicle.cp.mode == 1 or vehicle.cp.mode == 2 or vehicle.cp.mode == 5 or (vehicle.cp.mode == 6 and not vehicle.cp.hasBaleLoader) or vehicle.cp.mode == 8;
 end;
 
 function courseplay:changeTurnSpeed(vehicle, changeBy)
@@ -701,7 +700,7 @@ function courseplay:setSearchCombineOnField(vehicle, changeDir, force)
 end;
 
 function courseplay:selectAssignedCombine(vehicle, changeBy)
-	local combines = courseplay:find_combines(vehicle);
+	local combines = courseplay:getAllCombines();
 	vehicle.cp.selectedCombineNumber = Utils.clamp(vehicle.cp.selectedCombineNumber + changeBy, 0, #combines);
 
 	if vehicle.cp.selectedCombineNumber == 0 then
@@ -715,7 +714,7 @@ end;
 
 function courseplay:removeActiveCombineFromTractor(vehicle)
 	if vehicle.cp.activeCombine ~= nil then
-		courseplay:unregister_at_combine(vehicle, vehicle.cp.activeCombine);
+		courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine);
 	end;
 	vehicle.cp.lastActiveCombine = nil;
 	courseplay.hud:setReloadPageOrder(vehicle, 4, true);
@@ -785,7 +784,7 @@ function courseplay:copyCourse(vehicle)
 		vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = nil, nil, nil;
 		vehicle.cp.nextTargets = {};
 		if vehicle.cp.activeCombine ~= nil then
-			courseplay:unregister_at_combine(vehicle, vehicle.cp.activeCombine);
+			courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine);
 		end
 
 		if vehicle.cp.mode == 2 or vehicle.cp.mode == 3 then
@@ -1116,24 +1115,6 @@ function courseplay:expandFolder(vehicle, index)
 		end
 	end
 end
-
-function courseplay:change_num_ai_helpers(self, change_by)
-	local num_helpers = g_currentMission.maxNumHirables
-	num_helpers = num_helpers + change_by
-
-	if num_helpers < 1 then
-		num_helpers = 1
-	end
-
-	g_currentMission.maxNumHirables = num_helpers
-end
-
-function courseplay:change_DebugLevel(self, change_by)
-	courseplay.debugLevel = courseplay.debugLevel + change_by;
-	if courseplay.debugLevel > 4 then
-		courseplay.debugLevel = 0;
-	end;
-end;
 
 function courseplay:toggleDebugChannel(self, channel)
 	if courseplay.debugChannels[channel] ~= nil then
@@ -1565,7 +1546,7 @@ function courseplay:setCurrentTargetFromList(vehicle, index)
 	end;
 end;
 
-function courseplay:addNewTarget(vehicle, x, z)
+function courseplay:addNewTargetVector(vehicle, x, z)
 	local tx, ty, tz = localToWorld(vehicle.rootNode, x, 0, z);
 	table.insert(vehicle.cp.nextTargets, { x = tx, y = ty, z = tz });
 end;

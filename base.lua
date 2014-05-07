@@ -197,7 +197,7 @@ function courseplay:load(xmlFile)
 	end;
 
 	--Direction 
-	local DirectionNode = nil;
+	local DirectionNode;
 	if self.aiTractorDirectionNode ~= nil then
 		DirectionNode = self.aiTractorDirectionNode;
 	elseif self.aiTreshingDirectionNode ~= nil then
@@ -285,6 +285,7 @@ function courseplay:load(xmlFile)
 
 	-- tippers
 	self.tippers = {}; --TODO (Jakob): put in cp table
+	self.cp.numWorkTools = 0;
 	self.cp.tipperAttached = false
 	self.cp.currentTrailerToFill = nil
 	self.cp.lastTrailerToFillDistance = nil
@@ -594,8 +595,8 @@ function courseplay:load(xmlFile)
 		courseplay.button:create(self, 'global', string.format('pageNav_%d.dds', p), 'setHudPage', p, posX, pageNav.posY, pageNav.buttonW, pageNav.buttonH);
 	end;
 
-	courseplay.button:create(self, 'global', 'navigate_left.png', 'switch_hud_page', -1, courseplay.hud.infoBasePosX + 0.035, courseplay.hud.infoBasePosY + 0.2395, w24px, h24px); --ORIG: +0.242
-	courseplay.button:create(self, 'global', 'navigate_right.png', 'switch_hud_page', 1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.infoBasePosY + 0.2395, w24px, h24px);
+	courseplay.button:create(self, 'global', 'navigate_left.png', 'switchHudPage', -1, courseplay.hud.infoBasePosX + 0.035, courseplay.hud.infoBasePosY + 0.2395, w24px, h24px); --ORIG: +0.242
+	courseplay.button:create(self, 'global', 'navigate_right.png', 'switchHudPage', 1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.infoBasePosY + 0.2395, w24px, h24px);
 
 	courseplay.button:create(self, 'global', 'close.png', 'openCloseHud', false, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.infoBasePosY + 0.255, w24px, h24px);
 
@@ -1108,7 +1109,7 @@ function courseplay:update(dt)
 			else
 				self.cp.HUD0noCourseplayer = table.getn(combine.courseplayers) == 0
 			end
-			self.cp.HUD0wantsCourseplayer = combine.wants_courseplayer
+			self.cp.HUD0wantsCourseplayer = combine.cp.wantsCourseplayer
 			self.cp.HUD0combineForcedSide = combine.cp.forcedSide
 			self.cp.HUD0isManual = not self.drive and not combine.isAIThreshing 
 			self.cp.HUD0turnStage = self.cp.turnStage
@@ -1225,9 +1226,9 @@ function courseplay:delete()
 	end;
 end;
 
-function courseplay:set_timeout(self, interval)
-	self.cp.timeOut = self.timer + interval
-end
+function courseplay:set_timeout(vehicle, interval)
+	vehicle.cp.timeOut = vehicle.timer + interval;
+end;
 
 
 function courseplay:readStream(streamId, connection)
@@ -1437,38 +1438,38 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteBool(streamId,self.cp.hasShovelStatePositions[4])
 	streamDebugWriteBool(streamId,self.cp.hasShovelStatePositions[5])
 	
-	local copyCourseFromDriverID = nil
+	local copyCourseFromDriverID;
 	if self.cp.copyCourseFromDriver ~= nil then
 		copyCourseFromDriverID = networkGetObject(self.cp.copyCourseFromDriver)
 	end
 	streamDebugWriteInt32(streamId, copyCourseFromDriverID)
 	
 	
-	local savedCombineId = nil
+	local savedCombineId;
 	if self.cp.savedCombine ~= nil then
 		savedCombineId = networkGetObject(self.cp.savedCombine)
 	end
 	streamDebugWriteInt32(streamId, savedCombineId)
 
-	local activeCombineId = nil
+	local activeCombineId;
 	if self.cp.activeCombine ~= nil then
 		activeCombineId = networkGetObject(self.cp.activeCombine)
 	end
 	streamDebugWriteInt32(streamId, activeCombineId)
 
-	local current_trailer_id = nil
+	local current_trailer_id;
 	if self.cp.currentTrailerToFill ~= nil then
 		current_trailer_id = networkGetObject(self.cp.currentTrailerToFill)
 	end
 	streamDebugWriteInt32(streamId, current_trailer_id)
 
-	local unloading_tipper_id = nil
+	local unloading_tipper_id;
 	if self.cp.unloadingTipper ~= nil then
 		unloading_tipper_id = networkGetObject(self.cp.unloadingTipper)
 	end
 	streamDebugWriteInt32(streamId, unloading_tipper_id)
 
-	local loadedCourses = nil
+	local loadedCourses;
 	if #self.cp.loadedCourses then
 		loadedCourses = table.concat(self.cp.loadedCourses, ",")
 	end

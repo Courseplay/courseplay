@@ -269,11 +269,12 @@ function courseplay:update_tools(vehicle, tractor_or_implement)
 		vehicle.cpTrafficCollisionIgnoreList[v.node] = true;
 	end;
 
+	vehicle.cp.numWorkTools = #vehicle.tippers;
 
 	--MINHUDPAGE for attached combines
 	vehicle.cp.attachedCombineIdx = nil;
 	if not (vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable or vehicle.cp.isSugarBeetLoader) then
-		for i=1,#(vehicle.tippers) do
+		for i=1, vehicle.cp.numWorkTools do
 			if courseplay:isAttachedCombine(vehicle.tippers[i]) then
 				vehicle.cp.attachedCombineIdx = i;
 				break;
@@ -319,7 +320,7 @@ function courseplay:update_tools(vehicle, tractor_or_implement)
 	
 	--tipreferencepoints 
 	vehicle.cp.tipRefOffset = nil;
-	for i=1, #(vehicle.tippers) do
+	for i=1, vehicle.cp.numWorkTools do
 		if tipper_attached and vehicle.tippers[i].rootNode ~= nil and vehicle.tippers[i].tipReferencePoints ~= nil then
 			local tipperX, tipperY, tipperZ = getWorldTranslation(vehicle.tippers[i].rootNode);
 			if tipper_attached and #(vehicle.tippers[i].tipReferencePoints) > 1 then
@@ -432,7 +433,7 @@ end;
 
 function courseplay:setFoldedStates(object)
 	if courseplay:isFoldable(object) and object.turnOnFoldDirection then
-		if courseplay.debugChannels[17] then print(string.rep('-', 50)); end;
+		cpPrintLine(17);
 		courseplay:debug(nameNum(object) .. ': setFoldedStates()', 17);
 
 		object.cp.realUnfoldDirection = object.turnOnFoldDirection;
@@ -460,12 +461,12 @@ function courseplay:setFoldedStates(object)
 			end;
 			courseplay:debug(string.format('\tfoldingPart %d: isFoldedAnimTime=%s (normal: %d), isUnfoldedAnimTime=%s (normal: %d)', i, tostring(foldingPart.isFoldedAnimTime), foldingPart.isFoldedAnimTimeNormal, tostring(foldingPart.isUnfoldedAnimTime), foldingPart.isUnfoldedAnimTimeNormal), 17);
 		end;
-		if courseplay.debugChannels[17] then print(string.rep('-', 50)); end;
+		cpPrintLine(17);
 	end;
 end;
 
 function courseplay:setTipperCoverData(vehicle)
-	for i=1, #(vehicle.tippers) do
+	for i=1, vehicle.cp.numWorkTools do
 		local t = vehicle.tippers[i];
 		local isHKD302, isMUK, isSRB35 = false, false, false;
 
@@ -616,7 +617,7 @@ function courseplay:load_tippers(vehicle)
 
 	if vehicle.cp.tipperFillLevelPct == 100 or driveOn then
 		vehicle.cp.prevFillLevelPct = nil;
-		vehicle.cp.isLoaded = true;
+		courseplay:setIsLoaded(vehicle, true);
 		vehicle.cp.lastTrailerToFillDistance = nil;
 		vehicle.cp.currentTrailerToFill = nil;
 		return true;
@@ -625,7 +626,7 @@ function courseplay:load_tippers(vehicle)
 	if vehicle.cp.lastTrailerToFillDistance == nil then
 		-- drive on if current tipper is full
 		if currentTrailer.fillLevel == currentTrailer.capacity then
-			if #(vehicle.tippers) > vehicle.cp.currentTrailerToFill then
+			if vehicle.cp.numWorkTools > vehicle.cp.currentTrailerToFill then
 				local trailerX, _, trailerZ = getWorldTranslation(currentTrailer.fillRootNode);
 				vehicle.cp.lastTrailerToFillDistance = courseplay:distance(cx, cz, trailerX, trailerZ);
 				vehicle.cp.currentTrailerToFill = vehicle.cp.currentTrailerToFill + 1;
@@ -645,7 +646,7 @@ function courseplay:load_tippers(vehicle)
 		else
 			allowedToDrive = false;
 			if currentTrailer.fillLevel == currentTrailer.capacity then
-				if #(vehicle.tippers) > vehicle.cp.currentTrailerToFill then
+				if vehicle.cp.numWorkTools > vehicle.cp.currentTrailerToFill then
 					vehicle.cp.lastTrailerToFillDistance = courseplay:distance(cx, cz, trailerX, trailerZ);
 					vehicle.cp.currentTrailerToFill = vehicle.cp.currentTrailerToFill + 1;
 				else
@@ -1135,14 +1136,13 @@ function courseplay:getAutoTurnradius(vehicle, tipper_attached)
 	end;
 	
 	--if tipper_attached and vehicle.cp.mode == 2 then
-	if tipper_attached and (vehicle.cp.mode == 2 or vehicle.cp.mode == 3 or vehicle.cp.mode == 4 or vehicle.cp.mode == 6) then --JT: I've added modes 3, 4 & 6 - needed?
+	if tipper_attached and (vehicle.cp.mode == 2 or vehicle.cp.mode == 3 or vehicle.cp.mode == 4 or vehicle.cp.mode == 6) then --TODO (Jakob): I've added modes 3, 4 & 6 - needed?
 		vehicle.cp.turnRadiusAuto = turnRadius;
-		local n = #(vehicle.tippers);
 		--print(string.format("vehicle.tippers[1].sizeLength = %s  turnRadius = %s", tostring(vehicle.tippers[1].sizeLength),tostring( turnRadius)))
-		if n == 1 and vehicle.tippers[1].attacherVehicle ~= vehicle and (vehicle.tippers[1].sizeLength > turnRadius) then
+		if vehicle.cp.numWorkTools == 1 and vehicle.tippers[1].attacherVehicle ~= vehicle and (vehicle.tippers[1].sizeLength > turnRadius) then
 			vehicle.cp.turnRadiusAuto = vehicle.tippers[1].sizeLength;
 		end;
-		if (n > 1) then
+		if (vehicle.cp.numWorkTools > 1) then
 			vehicle.cp.turnRadiusAuto = turnRadius * 1.5;
 		end
 	end;
@@ -1456,7 +1456,7 @@ function courseplay:getTotalLengthOnWheels(vehicle)
 end;
 
 function courseplay:getDistances(object)
-	print(('-'):rep(50));
+	cpPrintLine(6);
 	local distances = {};
 
 	-- STEERABLES
