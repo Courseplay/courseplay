@@ -269,6 +269,13 @@ function courseplay:start(self)
 	self.cp.EifokLiquidManure.searchMapHoseRefStation.push = true;
 
 	courseplay:validateCanSwitchMode(self);
+
+	if courseplay.debugChannels[6] then
+		local length, offset = courseplay:getTotalLengthOnWheels(self);
+		print(('-'):rep(50));
+		print(("Total Length = %.2f, Offset = %.2f"):format(length, offset));
+		print(('-'):rep(50));
+	end;
 end;
 
 function courseplay:getCanUseAiMode(vehicle)

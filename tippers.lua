@@ -1259,7 +1259,7 @@ function courseplay:findJointNodeConnectingToNode(tipper, fromNode, toNode)
 	or getParent(getParent(getParent(tipper.attacherJoint.rootNode))) == tipper.rootNode
 	or getParent(getParent(getParent(getParent(tipper.attacherJoint.rootNode)))) == tipper.rootNode
 	then
-		return tipper.attacherJoint.node;
+		return tipper.rootNode;
 	end;
 
 	return nil;
@@ -1364,4 +1364,196 @@ function courseplay:createUnloadOrFillNode(vehicle, tipper)
 
 	-- Return false, so this will only be runned once.
 	return false;
+end;
+
+function courseplay:getTotalLengthOnWheels(vehicle)
+	local totalLength = 0;
+	local directionNodeToFrontWheelOffset;
+
+	if not vehicle.cp.distances then
+		vehicle.cp.distances = courseplay:getDistances(vehicle);
+	end;
+
+	-- STEERABLES
+	if vehicle.cp.hasSpecializationSteerable then
+		directionNodeToFrontWheelOffset = vehicle.cp.distances.frontWheelToDirectionNodeOffset;
+
+		local _, y, _ = getWorldTranslation(vehicle.rootNode);
+
+		local hasRearAttatch = false;
+		local jointType = 0;
+
+		for _, implement in ipairs(vehicle.attachedImplements) do
+			local xi, _, zi = getWorldTranslation(implement.object.attacherJoint.node);
+			local _,_,delta = worldToLocal(vehicle.rootNode, xi, y, zi);
+
+			-- Check if it's rear attached
+			if delta < 0 then
+				hasRearAttatch = true;
+				local length, _ = courseplay:getTotalLengthOnWheels(implement.object);
+				if length > 0 then
+					jointType = implement.object.attacherJoint.jointType;
+					totalLength = length;
+				end;
+			end;
+		end;
+
+		if hasRearAttatch and totalLength > 0 and jointType > 0 then
+			local length = vehicle.cp.distances.frontWheelToRearTrailerAttacherJoints[jointType];
+			if length then
+				totalLength = totalLength + length;
+			else
+				totalLength = 0;
+				directionNodeToFrontWheelOffset = 0;
+			end;
+			courseplay:debug(('%s: hasRearAttatch: totalLength=%.2f'):format(nameNum(vehicle), totalLength), 6);
+		else
+			totalLength = vehicle.cp.distances.frontWheelToRearWheel;
+			courseplay:debug(('%s: Using frontWheelToRearWheel=%.2f'):format(nameNum(vehicle), totalLength), 6);
+		end;
+
+	-- IMPLEMENTS OR TRAILERS
+	else
+	    -- TODO: (Claus) Check for inverted nodes
+		local _, y, _ = getWorldTranslation(vehicle.attacherJoint.node);
+
+		local hasRearAttatch = false;
+		local jointType = 0;
+
+		for _, implement in ipairs(vehicle.attachedImplements) do
+			local xi, _, zi = getWorldTranslation(implement.object.attacherJoint.node);
+			local delta,_,_ = worldToLocal(vehicle.attacherJoint.node, xi, y, zi);
+
+			-- Check if it's rear attached
+			if delta > 0 then
+				hasRearAttatch = true;
+				local length, _ = courseplay:getTotalLengthOnWheels(implement.object);
+				if length > 0 then
+					jointType = implement.object.attacherJoint.jointType;
+					totalLength = length;
+				end;
+			end;
+		end;
+
+		if hasRearAttatch and totalLength > 0 and jointType > 0 and vehicle.cp.distances.attacherJointToRearTrailerAttacherJoints then
+			local length = vehicle.cp.distances.attacherJointToRearTrailerAttacherJoints[jointType];
+			if length then
+				totalLength = totalLength + length;
+			else
+				totalLength = 0;
+			end;
+			courseplay:debug(('%s: hasRearAttatch: totalLength=%.2f'):format(nameNum(vehicle), totalLength), 6);
+		elseif vehicle.cp.distances.attacherJointToRearWheel then
+			totalLength = vehicle.cp.distances.attacherJointToRearWheel;
+			courseplay:debug(('%s: Using attacherJointToRearWheel=%.2f'):format(nameNum(vehicle), totalLength), 6);
+		else
+			totalLength = 0;
+			courseplay:debug(('%s: No length found, returning 0'):format(nameNum(vehicle)), 6);
+		end;
+	end;
+
+	return totalLength, directionNodeToFrontWheelOffset;
+end;
+
+function courseplay:getDistances(object)
+	print(('-'):rep(50));
+	local distances = {};
+
+	-- STEERABLES
+	if object.cp.DirectionNode then
+		-- Finde the front and rear distance from the direction node
+		local front, rear = 0, 0;
+		local haveRunnedOnce = false
+		for _, wheel in ipairs(object.wheels) do
+			local wdnrxTemp, wdnryTemp, wdnrzTemp = getRotation(wheel.driveNode);
+			setRotation(wheel.driveNode, 0, 0, 0);
+			local wreprxTemp, wrepryTemp, wreprzTemp = getRotation(wheel.repr);
+			setRotation(wheel.repr, 0, 0, 0);
+			local xw, yw, zw = getWorldTranslation(wheel.driveNode);
+			local _,_,dis = worldToLocal(object.cp.DirectionNode, xw, yw, zw);
+			setRotation(wheel.repr, wreprxTemp, wrepryTemp, wreprzTemp);
+			setRotation(wheel.driveNode, wdnrxTemp, wdnryTemp, wdnrzTemp);
+			if haveRunnedOnce then
+				if dis < rear then rear = dis; end;
+				if dis > front then front = dis; end;
+			else
+				rear = dis;
+				front = dis;
+				haveRunnedOnce = true;
+			end;
+		end;
+		-- Set the wheel offset anddistance
+		distances.frontWheelToDirectionNodeOffset = front * -1;
+		distances.frontWheelToRearWheel = math.abs(front - rear);
+		courseplay:debug(('%s: frontWheelToDirectionNodeOffset=%.2f, frontWheelToRearWheel=%.2f'):format(nameNum(object), distances.frontWheelToDirectionNodeOffset, distances.frontWheelToRearWheel), 6);
+
+		-- Finde the attacherJoints distance from the direction node
+		for _, attacherJoint in ipairs(object.attacherJoints) do
+			local xj, yj, zj = getWorldTranslation(attacherJoint.jointTransform);
+			local _,_,dis = worldToLocal(object.cp.DirectionNode, xj, yj, zj);
+			if dis < front then
+				if not distances.frontWheelToRearTrailerAttacherJoints then
+					distances.frontWheelToRearTrailerAttacherJoints = {};
+				end;
+				distances.frontWheelToRearTrailerAttacherJoints[attacherJoint.jointType] = math.abs(front - dis);
+				courseplay:debug(('%s: frontWheelToRearTrailerAttacherJoints[%d]=%.2f'):format(nameNum(object), attacherJoint.jointType, distances.frontWheelToRearTrailerAttacherJoints[attacherJoint.jointType]), 6);
+			end;
+		end
+
+	-- IMPLEMENTS OR TRAILERS
+	else
+		local node = object.attacherJoint.node;
+		local nodeLength = 0;
+		if object.attacherJoint.rootNode ~= object.rootNode then
+			local tempNode = courseplay:findJointNodeConnectingToNode(object, object.attacherJoint.rootNode, object.rootNode);
+			--print(("node=%d, tempNode=%d, rootNode=%d"):format(node, tempNode, object.rootNode));
+			if tempNode and tempNode ~= object.rootNode then
+				node = tempNode;
+				local tnx, tny, tnz = getWorldTranslation(tempNode);
+				local xdis,ydis,dis = worldToLocal(object.attacherJoint.node, tnx, tny, tnz);
+				--print(("xdis=%.2f, ydis=%.2f, dis=%.2f"):format(xdis,ydis,dis));
+
+				nodeLength = math.abs(xdis);
+				--print(("node=%d, nodeLength=%.2f"):format(node, nodeLength));
+			end;
+		end;
+
+		local nx, ny, nz = getWorldTranslation(node);
+		-- Find the distance from attacherJoint to rear wheel
+		if object.hasWheels then
+			distances.attacherJointToRearWheel = 0;
+			for _, wheel in ipairs(object.wheels) do
+				local wdnrxTemp, wdnryTemp, wdnrzTemp = getRotation(wheel.driveNode);
+				setRotation(wheel.driveNode, 0, 0, 0);
+				local wreprxTemp, wrepryTemp, wreprzTemp = getRotation(wheel.repr);
+				setRotation(wheel.repr, 0, 0, 0);
+				local _,_,dis = worldToLocal(wheel.driveNode, nx, ny, nz);
+				setRotation(wheel.repr, wreprxTemp, wrepryTemp, wreprzTemp);
+				setRotation(wheel.driveNode, wdnrxTemp, wdnryTemp, wdnrzTemp);
+
+				if math.abs(dis) + nodeLength > distances.attacherJointToRearWheel then
+					distances.attacherJointToRearWheel = math.abs(dis) + nodeLength;
+				end;
+			end;
+			courseplay:debug(('%s: attacherJointToRearWheel=%.2f'):format(nameNum(object), distances.attacherJointToRearWheel), 6);
+		end;
+
+		-- Finde the attacherJoints distance from the direction node
+		for _, attacherJoint in ipairs(object.attacherJoints) do
+			local jtfxTemp, jtfyTemp, jtfzTemp = getRotation(attacherJoint.jointTransform);
+			setRotation(attacherJoint.jointTransform, 0, 0, 0);
+			local _,_,dis = worldToLocal(attacherJoint.jointTransform, nx, ny, nz);
+
+			setRotation(attacherJoint.jointTransform, jtfxTemp, jtfyTemp, jtfzTemp);
+			if dis > 0 then
+				if not distances.attacherJointToRearTrailerAttacherJoints then
+					distances.attacherJointToRearTrailerAttacherJoints = {};
+				end;
+				distances.attacherJointToRearTrailerAttacherJoints[attacherJoint.jointType] = math.abs(dis) + nodeLength;
+				courseplay:debug(('%s: attacherJointToRearTrailerAttacherJoints[%d]=%.2f'):format(nameNum(object), attacherJoint.jointType, distances.attacherJointToRearTrailerAttacherJoints[attacherJoint.jointType]), 6);
+			end;
+		end;
+	end;
+
+	return distances;
 end;
