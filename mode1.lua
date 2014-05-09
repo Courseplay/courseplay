@@ -6,16 +6,7 @@ function courseplay:handle_mode1(vehicle, allowedToDrive)
 	if vehicle.cp.unloadingTipper ~= nil and vehicle.cp.unloadingTipper.fillLevel == 0 then
 		vehicle.cp.unloadingTipper = nil
 		if vehicle.cp.tipperFillLevel == 0 then
-			vehicle.cp.isUnloaded = true;
-			vehicle.cp.currentTipTrigger = nil;
-			vehicle.cp.isReverseBGATipping = nil; -- Used for reverse BGA tipping
-			vehicle.cp.BGASelectedSection = nil; -- Used for reverse BGA tipping
-			vehicle.cp.inversedRearTipNode = nil; -- Used for reverse BGA tipping
-			vehicle.cp.isChangingDirection = false; -- Used for reverse BGA tipping
-			if vehicle.cp.backupUnloadSpeed then
-				courseplay:changeUnloadSpeed(vehicle, nil, vehicle.cp.backupUnloadSpeed);
-				vehicle.cp.backupUnloadSpeed = nil;
-			end;
+			courseplay:resetTipTrigger(vehicle, true);
 		end
 	end
 
@@ -51,27 +42,11 @@ function courseplay:handle_mode1(vehicle, allowedToDrive)
 			end;
 
 			if distance_to_trigger > 75 or startReversing then
-				vehicle.cp.currentTipTrigger = nil;
-				vehicle.cp.isReverseBGATipping = nil; -- Used for reverse BGA tipping
-				vehicle.cp.BGASelectedSection = nil; -- Used for reverse BGA tipping
-				vehicle.cp.inversedRearTipNode = nil; -- Used for reverse BGA tipping
-				vehicle.cp.isChangingDirection = false; -- Used for reverse BGA tipping
-				if vehicle.cp.backupUnloadSpeed then
-					courseplay:changeUnloadSpeed(vehicle, nil, vehicle.cp.backupUnloadSpeed);
-					vehicle.cp.backupUnloadSpeed = nil;
-				end;
+				courseplay:resetTipTrigger(vehicle);
 				courseplay:debug(nameNum(vehicle) .. ": distance to currentTipTrigger = " .. tostring(distance_to_trigger) .. " (> 75) --> currentTipTrigger = nil", 1);
 			end	
 		else
-			vehicle.cp.currentTipTrigger = nil;
-			vehicle.cp.isReverseBGATipping = nil; -- Used for reverse BGA tipping
-			vehicle.cp.BGASelectedSection = nil; -- Used for reverse BGA tipping
-			vehicle.cp.inversedRearTipNode = nil; -- Used for reverse BGA tipping
-			vehicle.cp.isChangingDirection = false; -- Used for reverse BGA tipping
-			if vehicle.cp.backupUnloadSpeed then
-				courseplay:changeUnloadSpeed(vehicle, nil, vehicle.cp.backupUnloadSpeed);
-				vehicle.cp.backupUnloadSpeed = nil;
-			end;
+			courseplay:resetTipTrigger(vehicle);
 		end;
 	end;
 

@@ -1017,9 +1017,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 			-- BGA TIPTRIGGER IS FULL
 			elseif isBGA and bgaIsFull and not vehicle.Waypoints[vehicle.recordnumber].rev and not vehicle.cp.isReverseBGATipping then
 				-- set trigger to nil
-				vehicle.cp.currentTipTrigger = nil;
-				vehicle.cp.isReverseBGATipping = nil;
-				vehicle.cp.BGASelectedSection = nil;
+				courseplay:resetTipTrigger(vehicle);
 
 			--REGULAR TIPTRIGGER
 			elseif not isBGA then
@@ -1583,4 +1581,22 @@ function courseplay:getDistances(object)
 	end;
 
 	return distances;
+end;
+
+function courseplay:resetTipTrigger(vehicle, changeToForward)
+	if vehicle.cp.tipperFillLevel == 0 then
+		vehicle.cp.isUnloaded = true;
+	end
+	vehicle.cp.currentTipTrigger = nil;
+	vehicle.cp.isReverseBGATipping = nil; -- Used for reverse BGA tipping
+	vehicle.cp.BGASelectedSection = nil; -- Used for reverse BGA tipping
+	vehicle.cp.inversedRearTipNode = nil; -- Used for reverse BGA tipping
+	vehicle.cp.isChangingDirection = false; -- Used for reverse BGA tipping
+	if vehicle.cp.backupUnloadSpeed then
+		courseplay:changeUnloadSpeed(vehicle, nil, vehicle.cp.backupUnloadSpeed);
+		vehicle.cp.backupUnloadSpeed = nil;
+	end;
+	if changeToForward and vehicle.Waypoints[vehicle.recordnumber].rev then
+		vehicle.recordnumber = courseplay:getNextFwdPoint(vehicle);
+	end;
 end;

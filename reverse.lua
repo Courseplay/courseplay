@@ -8,12 +8,8 @@ function courseplay:goReverse(vehicle,lx,lz)
 		tipper = vehicle.tippers[2];
 	end;
 	local debugActive = courseplay.debugChannels[13];
-	local isNotValid = #vehicle.tippers == 0 or tipper == nil or tipper.cp.inversedNodes == nil or tipper.cp.isPivot == nil or tipper.cp.frontNode == nil or vehicle.cp.mode == 9;
+	local isNotValid = vehicle.cp.numWorkTools == 0 or tipper == nil or tipper.cp.inversedNodes == nil or tipper.cp.isPivot == nil or tipper.cp.frontNode == nil or vehicle.cp.mode == 9;
 	if isNotValid then
-		if (vehicle.cp.mode == 1 or vehicle.cp.mode == 2 or vehicle.cp.mode == 6) and vehicle.cp.tipperFillLevel == 0 then
-			vehicle.recordnumber = courseplay:getNextFwdPoint(vehicle);
-			return lx,lz,true;
-		end;
 		return -lx,-lz,fwd;
 	end;
 
@@ -167,9 +163,6 @@ function courseplay:goReverse(vehicle,lx,lz)
 		drawDebugLine(xTipper,yTipper+1,zTipper, 1, 1, 0, xTipper+(nx*10), yTipper+(ny*10), zTipper+(nz*10), 1, 1, 0);
 	end;
 	courseplay:showDirection(vehicle.cp.DirectionNode,lx,lz);
-	if (vehicle.cp.mode == 1 or vehicle.cp.mode == 2 or vehicle.cp.mode == 6) and vehicle.cp.tipperFillLevel == 0 then
-		vehicle.recordnumber = courseplay:getNextFwdPoint(vehicle);
-	end;
 
 	return lx,lz,fwd;
 end;
