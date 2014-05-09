@@ -263,19 +263,15 @@ function courseplay:start(self)
 		self.cp.realAWDModeOnBackup = self.realAWDModeOn
 	end;
 
+	if courseplay:canUseWeightStation(self) then
+		self.cp.totalLength, self.cp.totalLengthOffset = courseplay:getTotalLengthOnWheels(self);
+	end;
 
 	--EifokLiquidManure
 	self.cp.EifokLiquidManure.searchMapHoseRefStation.pull = true;
 	self.cp.EifokLiquidManure.searchMapHoseRefStation.push = true;
 
 	courseplay:validateCanSwitchMode(self);
-
-	if courseplay.debugChannels[6] then
-		local length, offset = courseplay:getTotalLengthOnWheels(self);
-		print(('-'):rep(50));
-		print(("Total Length = %.2f, Offset = %.2f"):format(length, offset));
-		print(('-'):rep(50));
-	end;
 end;
 
 function courseplay:getCanUseAiMode(vehicle)
@@ -396,7 +392,8 @@ function courseplay:stop(self)
 			self.realForceAiDriven = false
 		end
 	end
-	self.cp.fillTrigger = nil
+	self.cp.fillTrigger = nil;
+	self.cp.hasMachineToFill = false;
 	self.cp.unloadOrder = false
 	AITractor.removeCollisionTrigger(self, self);
 	self.cpTrafficCollisionIgnoreList = {}
@@ -440,6 +437,7 @@ function courseplay:stop(self)
 	self.cp.isUnloaded = false;
 	self.cp.prevFillLevelPct = nil;
 	self.cp.isInRepairTrigger = nil;
+	self.cp.curMapWeightStation = nil;
 
 	self.cp.hasBaleLoader = false;
 	self.cp.hasSowingMachine = false;
@@ -448,6 +446,7 @@ function courseplay:stop(self)
 		courseplay:changeToolOffsetX(self, nil, self.cp.tempToolOffsetX, true);
 		self.cp.tempToolOffsetX = nil
 	end;
+	self.cp.totalLength, self.cp.totalLengthOffset = 0, 0;
 	self.cp.numWorkTools = 0;
 
 	self.cp.timers.slippingWheels = 0;

@@ -1582,3 +1582,20 @@ function courseplay:toggleFindFirstWaypoint(vehicle)
 	end;
 	courseplay:buttonsActiveEnabled(vehicle, 'findFirstWaypoint');
 end;
+
+function courseplay:canUseWeightStation(vehicle)
+	return vehicle.cp.mode == 1 or vehicle.cp.mode == 2 or vehicle.cp.mode == 4 or vehicle.cp.mode == 6 or vehicle.cp.mode == 8;
+end;
+
+function courseplay:canScanForWeightStation(vehicle)
+	local scan = false;
+	if vehicle.cp.mode == 1 or vehicle.cp.mode == 2 then
+		scan = vehicle.recordnumber > 2;
+	elseif vehicle.cp.mode == 4 or vehicle.cp.mode == 6 then
+		scan = vehicle.cp.stopWork ~= nil and vehicle.recordnumber > vehicle.cp.stopWork;
+	elseif vehicle.cp.mode == 8 then
+		scan = true;
+	end;
+
+	return scan;
+end;

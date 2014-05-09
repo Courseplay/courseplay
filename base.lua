@@ -224,6 +224,14 @@ function courseplay:load(xmlFile)
 	end;
 	self.cp.DirectionNode = DirectionNode;
 
+	-- TRIGGERS
+	self.findTipTriggerCallback = courseplay.findTipTriggerCallback;
+	self.findSpecialTriggerCallback = courseplay.findSpecialTriggerCallback;
+	self.cp.hasRunRaycastThisLoop = {};
+	self.findTrafficCollisionCallback = courseplay.findTrafficCollisionCallback;
+	self.findBlockingObjectCallbackLeft = courseplay.findBlockingObjectCallbackLeft;
+	self.findBlockingObjectCallbackRight = courseplay.findBlockingObjectCallbackRight;
+
 	-- traffic collision
 	self.cpOnTrafficCollisionTrigger = courseplay.cpOnTrafficCollisionTrigger;
 
@@ -233,20 +241,13 @@ function courseplay:load(xmlFile)
 	self.cpTrafficCollisionIgnoreList = {};
 	self.cp.TrafficBrake = false
 	self.cp.inTraffic = false
-	-- tipTrigger
-	self.findTipTriggerCallback = courseplay.findTipTriggerCallback;
-	self.findTrafficCollisionCallback = courseplay.findTrafficCollisionCallback;
-	self.findBlockingObjectCallbackLeft = courseplay.findBlockingObjectCallbackLeft
-	self.findBlockingObjectCallbackRight = courseplay.findBlockingObjectCallbackRight
-	
+
 	if self.trafficCollisionIgnoreList == nil then
 		self.trafficCollisionIgnoreList = {}
 	end
 	 if self.numCollidingVehicles == nil then
 		self.numCollidingVehicles = {};
 	end
- 
-
 
 	self.cp.numTrafficCollisionTriggers = 0;
 	self.cp.trafficCollisionTriggers = {};

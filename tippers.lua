@@ -1422,6 +1422,10 @@ function courseplay:getTotalLengthOnWheels(vehicle)
 			courseplay:debug(('%s: Using frontWheelToRearWheel=%.2f'):format(nameNum(vehicle), totalLength), 6);
 		end;
 
+		cpPrintLine(6);
+		courseplay:debug(('%s: totalLength=%.2f, totalLengthOffset=%.2f'):format(nameNum(vehicle), totalLength, directionNodeToFrontWheelOffset), 6);
+		cpPrintLine(6);
+
 	-- IMPLEMENTS OR TRAILERS
 	else
 	    local _, y, _ = getWorldTranslation(vehicle.attacherJoint.node);

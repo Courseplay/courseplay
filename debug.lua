@@ -1,6 +1,6 @@
 -- DEBUG CHANNELS
 courseplay.numAvailableDebugChannels = 24;
-courseplay.numDebugChannels = 18;
+courseplay.numDebugChannels = 20;
 courseplay.numDebugChannelButtonsPerLine = 12;
 courseplay.numDebugChannelSections = math.ceil(courseplay.numAvailableDebugChannels / courseplay.numDebugChannelButtonsPerLine);
 courseplay.debugChannelSection = 1;
@@ -12,7 +12,7 @@ for channel=1, courseplay.numAvailableDebugChannels do
 end;
 --[[
 Debug channels legend:
- 1	Raycast (drive + triggers) / TipTriggers
+ 1	Raycast (drive + tipTriggers)
  2	unload_tippers
  3	traffic collision
  4	Combines/mode2, register and unload combines
@@ -30,6 +30,8 @@ Debug channels legend:
 16	recording
 17	mode4/6
 18	hud action
+19	special triggers
+20	WeightStation
 --]]
 
 --------------------------------------------------

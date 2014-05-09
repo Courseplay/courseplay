@@ -164,7 +164,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 					if allowedToDrive then
 						if not specialTool then
 							--unfold
-							local recordnumber = math.min(self.recordnumber+2 ,self.maxnumber)
+							local recordnumber = math.min(self.recordnumber + 2, self.maxnumber);
 							local forecast = Utils.getNoNil(self.Waypoints[recordnumber].ridgeMarker,0)
 							local marker = Utils.getNoNil(self.Waypoints[self.recordnumber].ridgeMarker,0)
 							local waypoint = math.max(marker,forecast)
@@ -289,7 +289,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 				end;
 			end; --END other tools
 
-			-- Begin Work   or goto abortWork
+			-- Begin work or go to abortWork
 			if self.cp.lastRecordnumber == self.cp.startWork and fillLevelPct ~= 100 then
 				if self.cp.abortWork ~= nil then
 					if self.cp.abortWork < 5 then

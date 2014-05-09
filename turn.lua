@@ -125,7 +125,7 @@ function courseplay:turn(self, dt) --!!!
 						else
 							self.recordnumber = self.recordnumber +3
 						end
-					end
+					end;
 					courseplay:lowerImplements(self, true, true)
 					self.cp.turnTimer = 8000
 					self.cp.isTurning = nil 

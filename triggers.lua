@@ -136,22 +136,76 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 	end;
 end
 
--- tip trigger
+-- FIND TRIGGERS
+function courseplay:doTriggerRaycasts(vehicle, triggerType, sides, x, y, z, nx, ny, nz, distance)
+	local numIntendedRaycasts = sides and 3 or 1;
+	if vehicle.cp.hasRunRaycastThisLoop[triggerType] and vehicle.cp.hasRunRaycastThisLoop[triggerType] >= numIntendedRaycasts then
+		return;
+	end;
+
+	local callBack, debugChannel, r, g, b;
+	if triggerType == 'tipTrigger' then
+		callBack = 'findTipTriggerCallback';
+		debugChannel = 1;
+		r, g, b = 1, 0, 0;
+	elseif triggerType == 'specialTrigger' then
+		callBack = 'findSpecialTriggerCallback';
+		debugChannel = 19;
+		r, g, b = 0, 1, 0.6;
+	end;
+
+	distance = distance or 10;
+
+	--------------------------------------------------
+
+	courseplay:doSingleRaycast(vehicle, triggerType, callBack, x, y, z, nx, ny, nz, distance, debugChannel, r, g, b, 1);
+
+	if sides and vehicle.cp.tipRefOffset ~= 0 then
+		if (triggerType == 'tipTrigger' and vehicle.cp.currentTipTrigger == nil) or (triggerType == 'specialTrigger' and vehicle.cp.fillTrigger == nil) then
+			x, y, z = localToWorld(vehicle.aiTrafficCollisionTrigger, vehicle.cp.tipRefOffset, 0, 0);
+			courseplay:doSingleRaycast(vehicle, triggerType, callBack, x1, y1, z1, nx, ny, nz, distance, debugChannel, r, g, b, 2);
+		end;
+
+		if (triggerType == 'tipTrigger' and vehicle.cp.currentTipTrigger == nil) or (triggerType == 'specialTrigger' and vehicle.cp.fillTrigger == nil) then
+			x, y, z = localToWorld(vehicle.aiTrafficCollisionTrigger, -vehicle.cp.tipRefOffset, 0, 0);
+			courseplay:doSingleRaycast(vehicle, triggerType, callBack, x1, y1, z1, nx, ny, nz, distance, debugChannel, r, g, b, 3);
+		end;
+	end;
+
+	vehicle.cp.hasRunRaycastThisLoop[triggerType] = numIntendedRaycasts;
+end;
+
+function courseplay:doSingleRaycast(vehicle, triggerType, callBack, x, y, z, nx, ny, nz, distance, debugChannel, r, g, b, raycastNumber)
+	if courseplay.debugChannels[debugChannel] then
+		courseplay:debug(('%s: call %s raycast #%d'):format(nameNum(vehicle), triggerType, raycastNumber), debugChannel);
+	end;
+	local num = raycastAll(x,y,z, nx,ny,nz, callBack, distance, vehicle);
+	if courseplay.debugChannels[debugChannel] then
+		if num > 0 then
+			courseplay:debug(('%s: %s raycast #%d end'):format(nameNum(vehicle), triggerType, raycastNumber), debugChannel);
+		end;
+		drawDebugLine(x,y,z, r,g,b, x+(nx*distance),y+(ny*distance),z+(nz*distance), r,g,b);
+	end;
+end;
+
+-- FIND TIP TRIGGER CALLBACK
 function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 	if courseplay.debugChannels[1] then
 		drawDebugPoint( x, y, z, 1, 1, 0, 1);
 	end;
 
-	if courseplay.confirmedNoneTriggers[transformId] == true then
-		return true
-	end
+	if courseplay.confirmedNoneTipTriggers[transformId] == true then
+		return true;
+	end;
+
+	local name = tostring(getName(transformId));
 
 	-- TIPTRIGGERS
 	local tipTriggers, tipTriggersCount = courseplay.triggers.tipTriggers, courseplay.triggers.tipTriggersCount
-	local name = getName(transformId)
-	courseplay:debug(nameNum(self)..": found "..tostring(name),1)
+	courseplay:debug(('%s: found %s'):format(nameNum(self), name), 1);
+
 	if self.tippers[1] ~= nil and tipTriggers ~= nil and tipTriggersCount > 0 then
-		courseplay:debug(nameNum(self) .. ": transformId=".. tostring(transformId)..": "..tostring(name), 1);
+		courseplay:debug(('%s: transformId=%s: %s'):format(nameNum(self), tostring(transformId), name), 1);
 		local fruitType = self.tippers[1].currentFillType;
 		if fruitType == nil or fruitType == 0 then
 			for i=2,#(self.tippers) do
@@ -222,28 +276,45 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 		end;
 	end;
 
+	courseplay.confirmedNoneTipTriggers[transformId] = true;
+	courseplay.confirmedNoneTipTriggersCounter = courseplay.confirmedNoneTipTriggersCounter + 1;
+	courseplay:debug(('%s: added %s to trigger blacklist -> total=%d'):format(nameNum(self), name, courseplay.confirmedNoneTipTriggersCounter), 1);
+
+	return true;
+end;
+
+-- FIND SPECIAL TRIGGER CALLBACK
+function courseplay:findSpecialTriggerCallback(transformId, x, y, z, distance)
+	if courseplay.debugChannels[19] then
+		drawDebugPoint(x, y, z, 0, 1, 0.6, 1);
+	end;
+
+	if courseplay.confirmedNoneSpecialTriggers[transformId] then
+		return true;
+	end;
+
+	local name = tostring(getName(transformId));
+
 	-- OTHER TRIGGERS
 	if courseplay.triggers.allNonUpdateables[transformId] then
-		local trigger = courseplay.triggers.allNonUpdateables[transformId]
-		courseplay:debug(('%s: transformId=%s: %s is allNonUpdateables'):format(nameNum(self), tostring(transformId), tostring(name)), 1);
-		if self.cp.mode == 4 then
+		local trigger = courseplay.triggers.allNonUpdateables[transformId];
+		courseplay:debug(('%s: transformId=%s: %s is allNonUpdateables'):format(nameNum(self), tostring(transformId), name), 19);
+
+		if trigger.isWeightStation and courseplay:canUseWeightStation(self) then
 			self.cp.fillTrigger = transformId;
-		elseif self.cp.mode == 8 and (trigger.isSprayerFillTrigger 
-								  or trigger.isLiquidManureFillTrigger
-								  or trigger.isSchweinemastLiquidManureTrigger 
-								  or trigger.isGasStationTrigger) then
-			self.cp.fillTrigger = transformId;									
+		elseif self.cp.mode == 4 then
+			self.cp.fillTrigger = transformId;
+		elseif self.cp.mode == 8 and (trigger.isSprayerFillTrigger or trigger.isLiquidManureFillTrigger or trigger.isSchweinemastLiquidManureTrigger) then
+			self.cp.fillTrigger = transformId;
 		elseif trigger.isGasStationTrigger or trigger.isDamageModTrigger then
-			self.cp.fillTrigger = transformId;
-		elseif trigger.isGasStationTrigger or trigger.isDamageModTrigger or trigger.isWeightStation then
 			self.cp.fillTrigger = transformId;
 		end;
 		return true;
 	end;
 
-	courseplay.confirmedNoneTriggers[transformId] = true;
-	courseplay.confirmedNoneTriggersCounter = courseplay.confirmedNoneTriggersCounter + 1;
-	courseplay:debug(('%s: added %s to trigger blacklist -> total=%d'):format(nameNum(self), tostring(name), courseplay.confirmedNoneTriggersCounter), 1);
+	courseplay.confirmedNoneSpecialTriggers[transformId] = true;
+	courseplay.confirmedNoneSpecialTriggersCounter = courseplay.confirmedNoneSpecialTriggersCounter + 1;
+	courseplay:debug(('%s: added %d (%s) to trigger blacklist -> total=%d'):format(nameNum(self), transformId, name, courseplay.confirmedNoneSpecialTriggersCounter), 19);
 
 	return true;
 end;
@@ -264,10 +335,11 @@ function courseplay:updateAllTriggers()
 		sowingMachineFillTriggers = {};
 		sprayerFillTriggers = {};
 		waterTrailerFillTriggers = {};
+		weightStations = {};
 		allNonUpdateables = {};
 		all = {};
 	};
-	local tipTriggersCount, damageModTriggersCount, gasStationTriggersCount, liquidManureFillTriggersCount, sowingMachineFillTriggersCount, sprayerFillTriggersCount, waterTrailerFillTriggersCount, allNonUpdateablesCount, allCount = 0, 0, 0, 0, 0, 0, 0, 0, 0;
+	local tipTriggersCount, damageModTriggersCount, gasStationTriggersCount, liquidManureFillTriggersCount, sowingMachineFillTriggersCount, sprayerFillTriggersCount, waterTrailerFillTriggersCount, weightStationsCount, allNonUpdateablesCount, allCount = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
 
 	--UPDATE
 	--nonUpdateable objects
@@ -324,6 +396,27 @@ function courseplay:updateAllTriggers()
 					end;
 				end;
 			end;
+		end;
+	end;
+
+	-- updateable objects
+	if g_currentMission.updateables ~= nil then
+		-- weight station
+		if g_currentMission.WeightStation ~= nil and #g_currentMission.WeightStation > 0 then
+			for t,object in pairs(g_currentMission.updateables) do
+				if object.isWeightStation or object.stationId and object.stationId ~= 0 and g_currentMission.WeightStation[object.stationId] and object.isEnabled and object.requestTimer and object.triggerId then
+					local station = g_currentMission.WeightStation[object.stationId];
+					object.isWeightStation = true;
+					station.isWeightStation = true;
+					courseplay.triggers.weightStations[object.triggerId] = station;
+					courseplay.triggers.allNonUpdateables[object.triggerId] = station;
+					courseplay.triggers.all[object.triggerId] = station;
+					weightStationsCount = weightStationsCount + 1;
+					allNonUpdateablesCount = allNonUpdateablesCount + 1;
+					allCount = allCount + 1;
+				end;
+			end;
+			-- print(tableShow(courseplay.triggers.weightStations, 'courseplay.triggers.weightStations'));
 		end;
 	end;
 
@@ -481,7 +574,7 @@ function courseplay:updateAllTriggers()
 		end
 	end;
 
-	courseplay.triggers.tipTriggersCount, courseplay.triggers.damageModTriggersCount, courseplay.triggers.gasStationTriggersCount, courseplay.triggers.liquidManureFillTriggersCount, courseplay.triggers.sowingMachineFillTriggersCount, courseplay.triggers.sprayerFillTriggersCount, courseplay.triggers.waterTrailerFillTriggersCount, courseplay.triggers.allNonUpdateablesCount, courseplay.triggers.allCount = tipTriggersCount, damageModTriggersCount, gasStationTriggersCount, liquidManureFillTriggersCount, sowingMachineFillTriggersCount, sprayerFillTriggersCount, waterTrailerFillTriggersCount, allNonUpdateablesCount, allCount;
+	courseplay.triggers.tipTriggersCount, courseplay.triggers.damageModTriggersCount, courseplay.triggers.gasStationTriggersCount, courseplay.triggers.liquidManureFillTriggersCount, courseplay.triggers.sowingMachineFillTriggersCount, courseplay.triggers.sprayerFillTriggersCount, courseplay.triggers.waterTrailerFillTriggersCount, courseplay.triggers.weightStationsCount, courseplay.triggers.allNonUpdateablesCount, courseplay.triggers.allCount = tipTriggersCount, damageModTriggersCount, gasStationTriggersCount, liquidManureFillTriggersCount, sowingMachineFillTriggersCount, sprayerFillTriggersCount, waterTrailerFillTriggersCount, weightStationsCount, allNonUpdateablesCount, allCount;
 end;
 
 --[[

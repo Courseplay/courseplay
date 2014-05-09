@@ -154,14 +154,7 @@ function courseplay:goReverse(vehicle,lx,lz)
 	end;
 
 	local nx, ny, nz = localDirectionToWorld(node, lxTipper, 0, lzTipper);
-	courseplay:debug(nameNum(vehicle) .. ": call backward raycast", 1);
-	local num = raycastAll(xTipper,yTipper+1,zTipper, nx, ny, nz, "findTipTriggerCallback", 10, vehicle);
-	if num > 0 then
-		courseplay:debug(string.format("%s: drive(%d): backward raycast end", nameNum(vehicle), debug.getinfo(1).currentline), 1);
-	end;
-	if courseplay.debugChannels[1] then
-		drawDebugLine(xTipper,yTipper+1,zTipper, 1, 1, 0, xTipper+(nx*10), yTipper+(ny*10), zTipper+(nz*10), 1, 1, 0);
-	end;
+	courseplay:doTriggerRaycasts(vehicle, 'tipTrigger', false, xTipper, yTipper + 1, zTipper, nx, ny, nz);
 	courseplay:showDirection(vehicle.cp.DirectionNode,lx,lz);
 
 	return lx,lz,fwd;

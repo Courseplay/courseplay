@@ -378,8 +378,10 @@ function courseplay:setGlobalData()
 
 
 	--TRIGGERS
-	courseplay.confirmedNoneTriggers = {};
-	courseplay.confirmedNoneTriggersCounter = 0;
+	courseplay.confirmedNoneTipTriggers = {};
+	courseplay.confirmedNoneTipTriggersCounter = 0;
+	courseplay.confirmedNoneSpecialTriggers = {};
+	courseplay.confirmedNoneSpecialTriggersCounter = 0;
 
 	--TRAFFIC
 	courseplay.trafficCollisionIgnoreList = {};
