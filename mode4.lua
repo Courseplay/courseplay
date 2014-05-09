@@ -13,7 +13,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct)
 			workArea = true
 			isFinishingWork = true
 		elseif self.cp.finishWork ~= self.cp.stopWork then
-				self.recordnumber = math.min(self.cp.finishWork+1,self.maxnumber)
+			courseplay:setRecordNumber(self, math.min(self.cp.finishWork + 1, self.maxnumber));
 		end;
 	end;
 
@@ -23,16 +23,16 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct)
 			if self.cp.abortWork < 5 then
 				self.cp.abortWork = 6
 			end
-			self.recordnumber = self.cp.abortWork
+			courseplay:setRecordNumber(self, self.cp.abortWork);
 			if self.Waypoints[self.recordnumber].turn ~= nil or self.Waypoints[self.recordnumber+1].turn ~= nil  then
-				self.recordnumber = self.recordnumber -2
+				courseplay:setRecordNumber(self, self.recordnumber - 2);
 			end
 		end
 	end
 	-- last point reached restart
 	if self.cp.abortWork ~= nil then
 		if self.cp.lastRecordnumber == self.cp.abortWork and fillLevelPct ~= 0 then
-			self.recordnumber = self.cp.abortWork +2
+			courseplay:setRecordNumber(self, self.cp.abortWork + 2);
 		end
 		if self.cp.lastRecordnumber == self.cp.abortWork + 8 then
 			self.cp.abortWork = nil
@@ -55,7 +55,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct)
 					end;
 				end;
 			end;
-			self.recordnumber = self.cp.stopWork - 4
+			courseplay:setRecordNumber(self, self.cp.stopWork - 4);
 			--courseplay:debug(string.format("Abort: %d StopWork: %d",self.cp.abortWork,self.cp.stopWork), 12)
 		elseif not self.cp.hasUnloadingRefillingCourse then
 			allowedToDrive = false;
@@ -68,7 +68,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct)
 		courseplay:setGlobalInfoText(self, 'WORK_END');
 		hasFinishedWork = true;
 		if self.cp.hasUnloadingRefillingCourse and self.recordnumber == self.cp.stopWork then --make sure that lastRecordnumber is stopWork, so the 'waiting points' algorithm in drive() works
-			self.recordnumber = self.cp.stopWork + 1;
+			courseplay:setRecordNumber(self, self.cp.stopWork + 1);
 		end;
 	end;
 	

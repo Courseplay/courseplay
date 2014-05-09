@@ -67,26 +67,26 @@ function courseplay:goReverse(vehicle,lx,lz)
 				local _,y,_ = getWorldTranslation(tipper.cp.unloadOrFillNode);
 				local _,_,z = worldToLocal(tipper.cp.unloadOrFillNode, vehicle.Waypoints[i-1].cx, y, vehicle.Waypoints[i-1].cz);
 				if z*inverse >= 0 then
-					vehicle.recordnumber = i;
+					courseplay:setRecordNumber(vehicle, i);
 					courseplay:debug(string.format("%s: Is at waiting point", nameNum(vehicle)), 13);
 				end;
 			else
 				if distance <= 2 then
-					vehicle.recordnumber = i;
+					courseplay:setRecordNumber(vehicle, i);
 					courseplay:debug(string.format("%s: Is at waiting point", nameNum(vehicle)), 13);
 				end;
 			end;
 			break;
 		elseif vehicle.Waypoints[i-1].rev and not vehicle.Waypoints[i].rev then
 			if distance <= 2 then
-				vehicle.recordnumber = courseplay:getNextFwdPoint(vehicle);
+				courseplay:setRecordNumber(vehicle, courseplay:getNextFwdPoint(vehicle));
 				courseplay:debug(string.format("%s: Change direction to forward", nameNum(vehicle)), 13);
 			end;
 			break;
 		elseif distance > 5 then
 			local _,_,z = worldToLocal(node, tcx,yTipper,tcz);
 			if z*inverse < 0 then
-				vehicle.recordnumber = i - 1;
+				courseplay:setRecordNumber(vehicle, i - 1);
 				break;
 			end;
 		end;
@@ -150,7 +150,7 @@ function courseplay:goReverse(vehicle,lx,lz)
 	if isPivot and ((abs(lxFrontNode) > 0.4 or abs(lxTractor) > 0.5)) then
 		fwd = true;
 		--lx = -lx
-		vehicle.recordnumber = vehicle.cp.lastReverseRecordnumber;
+		courseplay:setRecordNumber(vehicle, vehicle.cp.lastReverseRecordnumber);
 	end;
 
 	local nx, ny, nz = localDirectionToWorld(node, lxTipper, 0, lzTipper);

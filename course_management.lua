@@ -212,7 +212,7 @@ function courseplay:load_course(self, id, useRealId, addCourseAtEnd)
 
 		self.cp.canDrive = true;
 
-		self.recordnumber = 1;  -- Waypoint number
+		courseplay:setRecordNumber(self, 1);  -- Waypoint number
 		if self.cp.mode == 2 or self.cp.mode == 3 then
 			courseplay:setModeState(self, 0);
 			-- print(('%s [%s(%d)]: load_course(): mode=%d -> set modeState to 0'):format(nameNum(self), curFile, debug.getinfo(1).currentline, self.cp.mode)); -- DEBUG140301

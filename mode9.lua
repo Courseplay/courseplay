@@ -78,7 +78,7 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive, dt)
 					local _,_,z = worldToLocal(vehicle.rootNode, vehicle.Waypoints[i].cx , ty , vehicle.Waypoints[i].cz);
 					if z < -3 and vehicle.Waypoints[i].rev  then
 						--print("z taken:  "..tostring(z));
-						vehicle.recordnumber = i + 1;
+						courseplay:setRecordNumber(vehicle, i + 1);
 						courseplay:setIsLoaded(vehicle, true);
 						break;
 					end;
@@ -158,7 +158,7 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive, dt)
 				for i = vehicle.recordnumber,vehicle.maxnumber do
 					if vehicle.Waypoints[i].rev then
 						courseplay:setIsLoaded(vehicle, false);
-						vehicle.recordnumber = i;
+						courseplay:setRecordNumber(vehicle, i);
 						break;
 					end;
 				end;

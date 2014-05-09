@@ -46,7 +46,7 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 			local dist = courseplay:distanceToPoint(vehicle, vehicle.cp.mode7tx7,vehicle.cp.mode7ty7,vehicle.cp.mode7tz7)
 			if dist < 1 then
 				vehicle.cp.mode7GoBackBeforeUnloading = false
-				vehicle.recordnumber = 2
+				courseplay:setRecordNumber(vehicle, 2);
 			end
 		end
 	else
@@ -114,7 +114,7 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 			vehicle.cp.shortestDistToWp = nil
 			if targets > 0 then
 				courseplay:setCurrentTargetFromList(vehicle, 1);
-				vehicle.recordnumber = 2 
+				courseplay:setRecordNumber(vehicle, 2);
 			else
 				courseplay:setModeState(vehicle, 0);
 				if vehicle.lastaiThreshingDirectionX ~= nil then

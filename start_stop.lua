@@ -73,7 +73,7 @@ function courseplay:start(self)
 	end;
 
 	if self.recordnumber < 1 then
-		self.recordnumber = 1
+		courseplay:setRecordNumber(self, 1);
 	end
 
 	-- add do working players if not already added
@@ -204,19 +204,19 @@ function courseplay:start(self)
 		local changed = false
 		for i=recordNumber,recordNumber+3 do
 			if self.Waypoints[i]~= nil and self.Waypoints[i].turn ~= nil then
-				self.recordnumber = i + 2
+				courseplay:setRecordNumber(self, i + 2);
 				-- print(('\t(%d) self.recordnumber=%d'):format(debug.getinfo(1).currentline, self.recordnumber)); -- DEBUG140301
 				changed = true
 				break
 			end	
 		end
 		if changed == false then
-			self.recordnumber = recordNumber
+			courseplay:setRecordNumber(self, recordNumber);
 			-- print(('\t(%d) self.recordnumber=%d'):format(debug.getinfo(1).currentline, self.recordnumber)); -- DEBUG140301
 		end
 
 		if self.recordnumber > self.maxnumber then
-			self.recordnumber = 1
+			courseplay:setRecordNumber(self, 1);
 		end
 	end --END if modeState == 0
 
@@ -234,13 +234,13 @@ function courseplay:start(self)
 		end
 
 		if self.cp.finishWork ~= self.cp.stopWork and self.recordnumber > self.cp.finishWork and self.recordnumber <= self.cp.stopWork then
-			self.recordnumber = 2
+			courseplay:setRecordNumber(self, 2);
 		end
 		courseplay:debug(string.format("%s: maxnumber=%d, stopWork=%d, finishWork=%d, hasUnloadingRefillingCourse=%s, recordnumber=%d", nameNum(self), self.maxnumber, self.cp.stopWork, self.cp.finishWork, tostring(self.cp.hasUnloadingRefillingCourse), self.recordnumber), 12);
 	end
 
 	if self.cp.mode == 9 or self.cp.startAtFirstPoint then
-		self.recordnumber = 1;
+		courseplay:setRecordNumber(self, 1);
 		self.cp.shovelState = 1;
 	end;
 

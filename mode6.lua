@@ -23,9 +23,9 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 			workArea = true
 			isFinishingWork = true
 		elseif self.cp.finishWork ~= self.cp.stopWork then
-				self.recordnumber = math.min(self.cp.finishWork+1,self.maxnumber)
-		end		
-	end	
+			courseplay:setRecordNumber(self, math.min(self.cp.finishWork + 1,self.maxnumber));
+		end;
+	end;
 	if workArea then
 		workSpeed = 1;
 	end
@@ -295,19 +295,19 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 					if self.cp.abortWork < 5 then
 						self.cp.abortWork = 6
 					end
-					self.recordnumber = self.cp.abortWork
+					courseplay:setRecordNumber(self, self.cp.abortWork);
 					if self.recordnumber < 2 then
-						self.recordnumber = 2
+						courseplay:setRecordNumber(self, 2);
 					end
 					if self.Waypoints[self.recordnumber].turn ~= nil or self.Waypoints[self.recordnumber+1].turn ~= nil  then
-						self.recordnumber = self.recordnumber -2
+						courseplay:setRecordNumber(self, self.recordnumber - 2);
 					end
 				end
 			end
 			-- last point reached restart
 			if self.cp.abortWork ~= nil then
 				if (self.cp.lastRecordnumber == self.cp.abortWork ) and fillLevelPct ~= 100 then
-					self.recordnumber = self.cp.abortWork + 2  -- drive to waypoint after next waypoint
+					courseplay:setRecordNumber(self, self.cp.abortWork + 2); -- drive to waypoint after next waypoint
 					self.cp.abortWork = nil
 				end
 			end
@@ -327,9 +327,9 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 							end;
 						end;
 					end;
-					self.recordnumber = self.cp.stopWork - 4
+					courseplay:setRecordNumber(self, self.cp.stopWork - 4);
 					if self.recordnumber < 1 then
-						self.recordnumber = 1
+						courseplay:setRecordNumber(self, 1);
 					end
 					--courseplay:debug(string.format("Abort: %d StopWork: %d",self.cp.abortWork,self.cp.stopWork), 12)
 				elseif not self.cp.hasUnloadingRefillingCourse and not self.cp.automaticUnloadingOnField then

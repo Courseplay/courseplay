@@ -51,7 +51,7 @@ function courseplay:drive(self, dt)
 
 	if self.recordnumber > self.maxnumber then
 		courseplay:debug(string.format("drive %d: %s: self.recordnumber (%s) > self.maxnumber (%s)", debug.getinfo(1).currentline, nameNum(self), tostring(self.recordnumber), tostring(self.maxnumber)), 12); --this should never happen
-		self.recordnumber = self.maxnumber;
+		courseplay:setRecordNumber(self, self.maxnumber);
 	end;
 	if self.recordnumber > 1 then
 		self.cp.lastRecordnumber = self.recordnumber - 1;
@@ -280,7 +280,7 @@ function courseplay:drive(self, dt)
 			if self.recordnumber == self.maxnumber then
 				if self.cp.curTarget.x ~= nil then
 					courseplay:setModeState(self, 5);
-					self.recordnumber = 2
+					courseplay:setRecordNumber(self, 2);
 					courseplay:debug(nameNum(self) .. ": " .. tostring(debug.getinfo(1).currentline) .. ": modeState = 5", 11);
 				else
 					allowedToDrive = false
@@ -467,7 +467,7 @@ function courseplay:drive(self, dt)
 				courseplay:setGlobalInfoText(self, 'WORK_END');
 			else
 				courseplay:setIsLoaded(self, true);
-				self.recordnumber = i + 2
+				courseplay:setRecordNumber(self, i + 2);
 			end
 		end
 	end
@@ -713,12 +713,12 @@ function courseplay:drive(self, dt)
 			end
 			if self.cp.mode == 7 and self.cp.modeState == 5 then
 			else
-				self.recordnumber = self.recordnumber + 1
+				courseplay:setRecordNumber(self, self.recordnumber + 1);
 			end
 		else -- last waypoint: reset some variables
 			if (self.cp.mode == 4 or self.cp.mode == 6) and not self.cp.hasUnloadingRefillingCourse then
 			else
-				self.recordnumber = 1
+				courseplay:setRecordNumber(self, 1);
 			end
 			self.cp.isUnloaded = false
 			self.cp.stopAtEnd = false

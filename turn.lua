@@ -111,19 +111,19 @@ function courseplay:turn(self, dt) --!!!
 					local _,_,z3 = worldToLocal(self.rootNode, self.Waypoints[self.recordnumber+3].cx, backY, self.Waypoints[self.recordnumber+3].cz);
 					if self.cp.isCombine then
 						if z2 > 6 then
-							self.recordnumber = self.recordnumber +2
+							courseplay:setRecordNumber(self, self.recordnumber + 2);
 						elseif z3 > 6 then
-							self.recordnumber = self.recordnumber +3
+							courseplay:setRecordNumber(self, self.recordnumber + 3);
 						else
-							self.recordnumber = self.recordnumber +4
+							courseplay:setRecordNumber(self, self.recordnumber + 4);
 						end
 					else
 						if z1 > 0 then
-							self.recordnumber = self.recordnumber +1
+							courseplay:setRecordNumber(self, self.recordnumber + 1);
 						elseif z2 > 0 then
-							self.recordnumber = self.recordnumber +2
+							courseplay:setRecordNumber(self, self.recordnumber + 2);
 						else
-							self.recordnumber = self.recordnumber +3
+							courseplay:setRecordNumber(self, self.recordnumber + 3);
 						end
 					end;
 					courseplay:lowerImplements(self, true, true)

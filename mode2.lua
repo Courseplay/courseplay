@@ -39,7 +39,7 @@ function courseplay:handle_mode2(self, dt)
 
 	-- STATE 8 (all trailers are full)
 	if self.cp.modeState == 8 then
-		self.recordnumber = 2
+		courseplay:setRecordNumber(self, 2);
 		courseplay:unregisterFromCombine(self, self.cp.activeCombine)
 		courseplay:setModeState(self, 0);
 		courseplay:setIsLoaded(self, true);
@@ -128,7 +128,7 @@ function courseplay:handle_mode2(self, dt)
 		end;
 
 		if self.cp.isLoaded then
-			self.recordnumber = 2
+			courseplay:setRecordNumber(self, 2);
 			courseplay:setModeState(self, 99);
 			return false
 		end
@@ -888,7 +888,7 @@ function courseplay:unload_combine(self, dt)
 				elseif self.cp.mode2nextState == 81 then -- tipper turning from combine
 
 					-- print(('%s [%s(%d)]: no nextTargets, mode2nextState=81 -> set recordnumber to 2, modeState to 99, isLoaded to true, return false'):format(nameNum(self), curFile, debug.getinfo(1).currentline)); -- DEBUG140301
-					self.recordnumber = 2
+					courseplay:setRecordNumber(self, 2);
 					courseplay:unregisterFromCombine(self, self.cp.activeCombine)
 					courseplay:setModeState(self, 99);
 					courseplay:setIsLoaded(self, true);

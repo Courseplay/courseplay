@@ -769,7 +769,7 @@ function courseplay:copyCourse(vehicle)
 		vehicle.cp.currentCourseName = src.cp.currentCourseName;
 		vehicle.cp.loadedCourses = src.cp.loadedCourses;
 		vehicle.cp.numCourses = src.cp.numCourses;
-		vehicle.recordnumber = 1;
+		courseplay:setRecordNumber(vehicle, 1);
 		vehicle.maxnumber = #(vehicle.Waypoints);
 		vehicle.cp.numWaitPoints = src.cp.numWaitPoints;
 		vehicle.cp.numCrossingPoints = src.cp.numCrossingPoints;
