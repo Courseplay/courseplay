@@ -1226,7 +1226,7 @@ function courseplay:getRealTrailerDistanceToPivot(vehicle, tipper)
 		return tz*invert;
 	else
 	    -- Attempt to find the pivot node.
-		local node = courseplay:findJointNodeConnectingToNode(tipper, tipper.attacherJoint.rootNode, tipper.rootNode);
+		local node, _ = courseplay:findJointNodeConnectingToNode(tipper, tipper.attacherJoint.rootNode, tipper.rootNode);
 
 		if node then
 			local x,y,z = getWorldTranslation(tipper.attacherJoint.node);
@@ -1238,6 +1238,13 @@ function courseplay:getRealTrailerDistanceToPivot(vehicle, tipper)
 	end;
 end;
 
+--- courseplay:findJointNodeConnectingToNode(tipper, fromNode, toNode)
+--	Returns: (node, backtrack)
+--		node will return either:		1. The jointNode that connects to the toNode,
+--										2. The toNode if no jointNode is found but the fromNode is inside the same component as the toNode
+--										3. nil in case none of the above fails.
+--		backTrack will return either:	1. A table of all the jointNodes found from fromNode to toNode, if the jointNode that connects to the toNode is found.
+--										2: nil if no jointNode is found.
 function courseplay:findJointNodeConnectingToNode(tipper, fromNode, toNode)
 	-- Attempt to find the jointNode by backtracking the compomentJoints.
 	for index, component in ipairs(tipper.components) do
@@ -1245,24 +1252,29 @@ function courseplay:findJointNodeConnectingToNode(tipper, fromNode, toNode)
 			for _, joint in ipairs(tipper.componentJoints) do
 				if joint.componentIndices[2] == index then
 					if tipper.components[joint.componentIndices[1]].node == toNode then
-						return joint.jointNode;
+						return joint.jointNode, {joint.jointNode};
 					else
-					    return courseplay:findJointNodeConnectingToNode(tipper, tipper.components[joint.componentIndices[1]].node, toNode);
+						local node, backTrack = courseplay:findJointNodeConnectingToNode(tipper, tipper.components[joint.componentIndices[1]].node, toNode);
+						if backTrack then table.insert(backTrack, 1, joint.jointNode); end;
+					    return node, backTrack;
 					end;
 				end;
 			end;
 		end;
 	end;
 
-	-- Last attempt to find the jointNode by getting parent of parent (in dept of 3)
-	if getParent(getParent(tipper.attacherJoint.rootNode)) == tipper.rootNode
-	or getParent(getParent(getParent(tipper.attacherJoint.rootNode))) == tipper.rootNode
-	or getParent(getParent(getParent(getParent(tipper.attacherJoint.rootNode)))) == tipper.rootNode
-	then
-		return tipper.rootNode;
+	-- Last attempt to find the jointNode by getting parent of parent untill hit or the there is no more parents.
+	local node = fromNode;
+	while node ~= 0 do
+		if node == toNode then
+			return toNode, nil;
+		else
+			node = getParent(node);
+		end;
 	end;
 
-	return nil;
+	-- If anything else fails, return nil
+	return nil, nil;
 end;
 
 function courseplay:createRealTrailerTurningNode(vehicle, tipper)
@@ -1414,8 +1426,7 @@ function courseplay:getTotalLengthOnWheels(vehicle)
 
 	-- IMPLEMENTS OR TRAILERS
 	else
-	    -- TODO: (Claus) Check for inverted nodes
-		local _, y, _ = getWorldTranslation(vehicle.attacherJoint.node);
+	    local _, y, _ = getWorldTranslation(vehicle.attacherJoint.node);
 
 		local hasRearAttatch = false;
 		local jointType = 0;
@@ -1505,16 +1516,32 @@ function courseplay:getDistances(object)
 		local node = object.attacherJoint.node;
 		local nodeLength = 0;
 		if object.attacherJoint.rootNode ~= object.rootNode then
-			local tempNode = courseplay:findJointNodeConnectingToNode(object, object.attacherJoint.rootNode, object.rootNode);
-			--print(("node=%d, tempNode=%d, rootNode=%d"):format(node, tempNode, object.rootNode));
-			if tempNode and tempNode ~= object.rootNode then
+			local tempNode, backTrack = courseplay:findJointNodeConnectingToNode(object, object.attacherJoint.rootNode, object.rootNode);
+			if tempNode and backTrack then
 				node = tempNode;
 				local tnx, tny, tnz = getWorldTranslation(tempNode);
 				local xdis,ydis,dis = worldToLocal(object.attacherJoint.node, tnx, tny, tnz);
-				--print(("xdis=%.2f, ydis=%.2f, dis=%.2f"):format(xdis,ydis,dis));
+				for i = 1, #backTrack do
+					local btx, bty, btz = getWorldTranslation(backTrack[i]);
+					if i == 1 then
+						tempNode = object.attacherJoint.node;
+					else
+						tempNode = backTrack[i-1];
+					end;
 
-				nodeLength = math.abs(xdis);
-				--print(("node=%d, nodeLength=%.2f"):format(node, nodeLength));
+					-- Save the rotations of the tempNode
+					local tnrxTemp, tnryTemp, tnrzTemp = getRotation(tempNode);
+					-- Reset all the rotation to 0 for tempNode, to be sure we get valid data.
+					setRotation(tempNode, 0, 0, 0);
+					-- Get the distance from tempNode to the current backTrack node
+					local _,_,dis = worldToLocal(tempNode, btx, bty, btz);
+					-- Restore the tempNode rotations.
+					setRotation(tempNode, tnrxTemp, tnryTemp, tnrzTemp);
+					courseplay:debug(('%s: backTrack[%d](node: %s) Length = %.2f'):format(nameNum(object), i, tostring(backTrack[i]), math.abs(dis)), 6);
+					nodeLength = nodeLength + math.abs(dis);
+				end;
+
+				courseplay:debug(('%s: Length of attacherJoint to pivot = %.2f'):format(nameNum(object), nodeLength), 6);
 			end;
 		end;
 
