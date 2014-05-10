@@ -688,7 +688,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 			if isBGA and not bgaIsFull then
 				local stopAndGo = false;
 
-				--if vehicle.isRealistic then stopAndGo = true; end;
+				if vehicle.isRealistic then stopAndGo = true; end;
 
 				-- Make sure we are using the rear TipReferencePoint as bestTipReferencePoint if possible.
 				if tipper.cp.rearTipRefPoint and tipper.cp.rearTipRefPoint ~= bestTipReferencePoint then
@@ -900,7 +900,6 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 					local totalTipDuration = ((animation.dischargeEndTime - animation.dischargeStartTime) / animation.animationOpenSpeedScale) * fillDelta / 1000;
 					local meterPrSeconds = totalLength / totalTipDuration;
 					if stopAndGo then
-						--meterPrSeconds = (vehicle.cp.speeds.unload * 3600) * 1000 / 60 / 60;
 						meterPrSeconds = vehicle.cp.speeds.unload * 1000;
 					end;
 
@@ -914,8 +913,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 						vehicle.cp.BGASectionInverted = false;
 
 						ctt.bunkerSilo.cpTempFillLevel = fillLevel + vehicle.cp.tipperFillLevel;
-						--courseplay:debug(string.format("%s: cpTempFillLevel = %.2f", nameNum(vehicle), ctt.cpTempFillLevel), 2);
-						print(string.format("%s: cpTempFillLevel = %.2f", nameNum(tipper), ctt.bunkerSilo.cpTempFillLevel));
+						courseplay:debug(string.format("%s: cpTempFillLevel = %.2f", nameNum(vehicle), ctt.cpTempFillLevel), 2);
 
 						-- Find out what end to start at.
 						if startDistance < endDistance then
@@ -947,12 +945,19 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 					-- Get a vector distance, to make a more precise distance check.
 					local xmp, _, zmp = getWorldTranslation(ctt.bunkerSilo.movingPlanes[vehicle.cp.BGASelectedSection].nodeId);
 					local _, _, vectorDistance = worldToLocal(tipper.tipReferencePoints[bestTipReferencePoint].node, xmp, y, zmp);
+					local isOpen = tipper:getCurrentTipAnimationTime() >= animation.animationDuration;
 
 					if not isLastSiloSection and ctt.bunkerSilo.movingPlanes[vehicle.cp.BGASelectedSection].fillLevel >= vehicle.cp.bunkerSiloSectionFillLevel then
 						if tipper.tipState ~= Trailer.TIPSTATE_CLOSING and tipper.tipState ~= Trailer.TIPSTATE_CLOSED then
 							tipper:toggleTipState();
 							courseplay:debug(string.format("%s: SiloSection(%d) fill level is at max allowed fill level. Stopping unloading and move to next.", nameNum(vehicle), vehicle.cp.BGASelectedSection), 2);
-							if courseplay:isPushWagon(tipper) then tipper:disableCurrentTipAnimation(tipper.tipAnimations[bestTipReferencePoint].animationDuration); end;
+							if courseplay:isPushWagon(tipper) then
+								if isOpen then
+									tipper:disableCurrentTipAnimation(tipper.tipAnimations[bestTipReferencePoint].animationDuration);
+								else
+									tipper:enableTipAnimation(bestTipReferencePoint, 1);
+								end;
+							end;
 							vehicle.cp.isChangingPosition = true;
 						end;
 						if vehicle.cp.BGASectionInverted then
@@ -966,13 +971,21 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 					local isFirseSiloSection = (vehicle.cp.BGASectionInverted and vehicle.cp.BGASelectedSection == silos) or (not vehicle.cp.BGASectionInverted and vehicle.cp.BGASelectedSection == 1);
 
 					-- Open hatch before time
-					if isFirseSiloSection and courseplay:isPushWagon(tipper) then
+					if courseplay:isPushWagon(tipper) then
 						local openDistance = meterPrSeconds * (animation.animationDuration / animation.animationOpenSpeedScale / 1000);
-						local isOpen = tipper:getCurrentTipAnimationTime() >= animation.animationDuration;
-						--print(("%s: vectorDistance=%.2f, distanceNeeded=%.2f, slowDownAt=%.2f"):format(nameNum(tipper), vectorDistance, (3 + openDistance), 6*meterPrSeconds));
 						if vectorDistance <= (3 + openDistance) and not isOpen then
 							tipper:enableTipAnimation(bestTipReferencePoint, 1);
 						end;
+					end;
+
+					-- Slow down to real unload speed
+					if not vehicle.cp.backupUnloadSpeed and not stopAndGo and vectorDistance < 6*meterPrSeconds then
+						-- Calculate the unloading speed.
+						local refSpeed = meterPrSeconds * 3.6 * 0.80;
+						vehicle.cp.backupUnloadSpeed = vehicle.cp.speeds.unload * 3600;
+						courseplay:changeUnloadSpeed(vehicle, nil, refSpeed);
+						courseplay.hud:setReloadPageOrder(vehicle, 5, true);
+						courseplay:debug(string.format("%s: BGA totalLength=%.2f,  totalTipDuration%.2f,  refSpeed=%.2f", nameNum(vehicle), totalLength, totalTipDuration, refSpeed), 2);
 					end;
 
 					local canUnload = false;
@@ -980,16 +993,6 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 					if isFirseSiloSection then
 						if vectorDistance < 2 then
 							canUnload = ctt.bunkerSilo.movingPlanes[vehicle.cp.BGASelectedSection].fillLevel < vehicle.cp.bunkerSiloSectionFillLevel;
-						end;
-
-						-- Slow down to real unload speed
-						if not stopAndGo and vectorDistance < 6*meterPrSeconds and not vehicle.cp.backupUnloadSpeed then
-							-- Calculate the unloading speed.
-							local refSpeed = meterPrSeconds * 60 * 60 / 1000 * 0.80;
-							vehicle.cp.backupUnloadSpeed = vehicle.cp.speeds.unload * 3600;
-							courseplay:changeUnloadSpeed(vehicle, nil, refSpeed);
-							courseplay.hud:setReloadPageOrder(vehicle, 5, true);
-							courseplay:debug(string.format("%s: BGA totalLength=%.2f,  totalTipDuration%.2f,  refSpeed=%.2f", nameNum(vehicle), totalLength, totalTipDuration, refSpeed), 2);
 						end;
 
 						if vehicle.cp.BGASelectedSection ~= nearestBGASection and not vehicle.cp.isChangingPosition then
