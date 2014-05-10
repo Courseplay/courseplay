@@ -913,7 +913,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 						vehicle.cp.BGASectionInverted = false;
 
 						ctt.bunkerSilo.cpTempFillLevel = fillLevel + vehicle.cp.tipperFillLevel;
-						courseplay:debug(string.format("%s: cpTempFillLevel = %.2f", nameNum(vehicle), ctt.cpTempFillLevel), 2);
+						courseplay:debug(string.format("%s: cpTempFillLevel = %.2f", nameNum(vehicle), ctt.bunkerSilo.cpTempFillLevel), 2);
 
 						-- Find out what end to start at.
 						if startDistance < endDistance then
