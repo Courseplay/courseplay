@@ -140,6 +140,11 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 							elseif workTool.emptyState == BaleLoader.EMPTY_WAIT_TO_SINK then
 								-- BaleLoader.CHANGE_SINK
 								g_server:broadcastEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_SINK), true, nil, workTool)
+
+								-- Change the direction to forward if we were reversing.
+								if self.Waypoints[self.recordnumber].rev then
+									self.recordnumber = courseplay:getNextFwdPoint(self);
+								end;
 							elseif workTool.emptyState == BaleLoader.EMPTY_WAIT_TO_REDO then
 								-- BaleLoader.CHANGE_EMPTY_REDO
 								g_server:broadcastEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_EMPTY_REDO), true, nil, workTool);
@@ -149,7 +154,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 							if BaleLoader.getAllowsStartUnloading(workTool) then
 								g_server:broadcastEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_EMPTY_START), true, nil, workTool)
 							end
-							self.cp.unloadOrder = false
+							self.cp.unloadOrder = false;
 						end
 					end;
 				end;

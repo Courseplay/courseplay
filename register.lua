@@ -124,15 +124,6 @@ function courseplay:vehicleDelete()
 			end;
 			--courseplay.thirdParty.EifokLiquidManure.hoses[self.msh] = nil;
 		end;
-
-		--[[if self.cp.unloadOrFillNode and self.cp.unloadOrFillNode ~= 0 then
-			unlink(self.cp.unloadOrFillNode);
-			delete(self.cp.unloadOrFillNode);
-		end;
-		if self.cp.realTurningNode and self.cp.realTurningNode ~= 0 and self.cp.realTurningNode ~= self.cp.unloadOrFillNode then
-			unlink(self.cp.realTurningNode);
-			delete(self.cp.realTurningNode);
-		end;]]
 	end;
 end;
 Vehicle.delete = Utils.prependedFunction(Vehicle.delete, courseplay.vehicleDelete);

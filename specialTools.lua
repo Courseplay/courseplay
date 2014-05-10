@@ -118,6 +118,7 @@ function courseplay:setNameVariable(workTool)
 	-- Claas Quantum 3800K [Vertex Design]
 	elseif workTool.psGrassactive ~= nil and workTool.psStrawactive ~= nil and workTool.cp.xmlFileName == 'claas_quantum_3800k.xml' then
 		workTool.cp.isClaasQuantum3800K = true;
+		workTool.cp.isPushWagon = true;
 
 	-- AugerWagons
 	elseif workTool.cp.hasSpecializationAugerWagon then
@@ -367,9 +368,15 @@ function courseplay:setNameVariable(workTool)
 	-- ###########################################################
 
 	-- [3] TRAILERS
+	-- Bergmann HTW 65 [Giants]
+	elseif workTool.cp.xmlFileName == 'bergmannHTW65.xml' then
+		workTool.cp.isBergmannHTW65 = true;
+		workTool.cp.isPushWagon = true;
+
 	-- Kroeger Agroliner SRB 35 [Giants]
 	elseif workTool.cp.xmlFileName == 'SRB35.xml' then
 		workTool.cp.isSRB35 = true;
+		workTool.cp.isPushWagon = true;
 
 	-- ###########################################################
 
@@ -419,6 +426,7 @@ function courseplay:setCustomSpecVariables(workTool)
 	workTool.cp.hasSpecializationHoseRef 			   = courseplay:hasSpecialization(workTool, 'HoseRef');
 	workTool.cp.hasSpecializationOvercharge 		   = courseplay:hasSpecialization(workTool, 'Overcharge');
 	workTool.cp.hasSpecializationOverloader 		   = courseplay:hasSpecialization(workTool, 'overloader');
+	workTool.cp.hasSpecializationSiloTrailer		   = courseplay:hasSpecialization(workTool, 'SiloTrailer');
 	workTool.cp.hasSpecializationSowingMachineWithTank = courseplay:hasSpecialization(workTool, 'SowingMachineWithTank');
 	workTool.cp.hasSpecializationTebbeHS180 		   = courseplay:hasSpecialization(workTool, 'TebbeHS180');
 end;
@@ -1364,9 +1372,6 @@ function courseplay:askForSpecialSettings(self,object)
 
 	elseif object.cp.isUrsusT127 then
 		object.cp.specialUnloadDistance = -1.8;
-
-	elseif object.cp.isSRB35 then
-		object.cp.isPushWagon = true;
 
 	elseif object.cp.isMarshallMS105 then
 		automaticToolOffsetX = -7.0;

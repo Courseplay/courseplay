@@ -63,7 +63,7 @@ function courseplay:isWheelloader(workTool)
 	return workTool.typeName:match("wheelLoader") or (workTool.cp.hasSpecializationSteerable and workTool.cp.hasSpecializationShovel and workTool.cp.hasSpecializationBunkerSiloCompacter);
 end;
 function courseplay:isPushWagon(workTool)
-	return workTool.typeName:match("forageWagon") or workTool.cp.xmlFileName == 'bergmannHTW65.xml' or workTool.cp.isPushWagon;
+	return workTool.typeName:match("forageWagon") or workTool.cp.hasSpecializationSiloTrailer or workTool.cp.isPushWagon;
 end;
 
 -- update implements to find attached tippers
@@ -688,7 +688,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 			if isBGA and not bgaIsFull then
 				local stopAndGo = false;
 
-				if vehicle.isRealistic then stopAndGo = true; end;
+				--if vehicle.isRealistic then stopAndGo = true; end;
 
 				-- Make sure we are using the rear TipReferencePoint as bestTipReferencePoint if possible.
 				if tipper.cp.rearTipRefPoint and tipper.cp.rearTipRefPoint ~= bestTipReferencePoint then
@@ -900,14 +900,22 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 					local totalTipDuration = ((animation.dischargeEndTime - animation.dischargeStartTime) / animation.animationOpenSpeedScale) * fillDelta / 1000;
 					local meterPrSeconds = totalLength / totalTipDuration;
 					if stopAndGo then
-						meterPrSeconds = (vehicle.cp.speeds.unload * 3600) * 1000 / 60 / 60;
+						--meterPrSeconds = (vehicle.cp.speeds.unload * 3600) * 1000 / 60 / 60;
+						meterPrSeconds = vehicle.cp.speeds.unload * 1000;
 					end;
 
 					-- Find what BGA silo section to unload in if not found
 					if not vehicle.cp.BGASelectedSection then
-						vehicle.cp.bunkerSiloSectionFillLevel = math.min((ctt.bunkerSilo.fillLevel + (vehicle.cp.tipperFillLevel * 0.9))/silos, medianSiloCapacity);
-						courseplay:debug(string.format("%s: Max allowed fill level pr. section = %.2f", nameNum(vehicle), vehicle.cp.bunkerSiloSectionFillLevel), 12);
+						local fillLevel = ctt.bunkerSilo.fillLevel;
+						if ctt.bunkerSilo.cpTempFillLevel then fillLevel = ctt.bunkerSilo.cpTempFillLevel end;
+
+						vehicle.cp.bunkerSiloSectionFillLevel = math.min((fillLevel + (vehicle.cp.tipperFillLevel * 0.9))/silos, medianSiloCapacity);
+						courseplay:debug(string.format("%s: Max allowed fill level pr. section = %.2f", nameNum(vehicle), vehicle.cp.bunkerSiloSectionFillLevel), 2);
 						vehicle.cp.BGASectionInverted = false;
+
+						ctt.bunkerSilo.cpTempFillLevel = fillLevel + vehicle.cp.tipperFillLevel;
+						--courseplay:debug(string.format("%s: cpTempFillLevel = %.2f", nameNum(vehicle), ctt.cpTempFillLevel), 2);
+						print(string.format("%s: cpTempFillLevel = %.2f", nameNum(tipper), ctt.bunkerSilo.cpTempFillLevel));
 
 						-- Find out what end to start at.
 						if startDistance < endDistance then
@@ -930,7 +938,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 							end;
 						end;
 
-						courseplay:debug(string.format("%s: BGA selected silo section: %d - Is inverted order: %s", nameNum(vehicle), vehicle.cp.BGASelectedSection, tostring(vehicle.cp.BGASectionInverted)), 12);
+						courseplay:debug(string.format("%s: BGA selected silo section: %d - Is inverted order: %s", nameNum(vehicle), vehicle.cp.BGASelectedSection, tostring(vehicle.cp.BGASectionInverted)), 2);
 
 					end;
 
@@ -939,14 +947,11 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 					-- Get a vector distance, to make a more precise distance check.
 					local xmp, _, zmp = getWorldTranslation(ctt.bunkerSilo.movingPlanes[vehicle.cp.BGASelectedSection].nodeId);
 					local _, _, vectorDistance = worldToLocal(tipper.tipReferencePoints[bestTipReferencePoint].node, xmp, y, zmp);
-					if vehicle.cp.BGASectionInverted then
-						vectorDistance = -vectorDistance;
-					end;
 
 					if not isLastSiloSection and ctt.bunkerSilo.movingPlanes[vehicle.cp.BGASelectedSection].fillLevel >= vehicle.cp.bunkerSiloSectionFillLevel then
 						if tipper.tipState ~= Trailer.TIPSTATE_CLOSING and tipper.tipState ~= Trailer.TIPSTATE_CLOSED then
 							tipper:toggleTipState();
-							courseplay:debug(string.format("%s: SiloSection(%d) fill level is at max allowed fill level. Stopping unloading and move to next.", nameNum(vehicle), vehicle.cp.BGASelectedSection), 12);
+							courseplay:debug(string.format("%s: SiloSection(%d) fill level is at max allowed fill level. Stopping unloading and move to next.", nameNum(vehicle), vehicle.cp.BGASelectedSection), 2);
 							if courseplay:isPushWagon(tipper) then tipper:disableCurrentTipAnimation(tipper.tipAnimations[bestTipReferencePoint].animationDuration); end;
 							vehicle.cp.isChangingPosition = true;
 						end;
@@ -955,7 +960,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 						else
 							vehicle.cp.BGASelectedSection = math.min(vehicle.cp.BGASelectedSection + 1, silos);
 						end;
-						courseplay:debug(string.format("%s: Change to siloSection = %d", nameNum(vehicle), vehicle.cp.BGASelectedSection), 12);
+						courseplay:debug(string.format("%s: Change to siloSection = %d", nameNum(vehicle), vehicle.cp.BGASelectedSection), 2);
 					end;
 
 					local isFirseSiloSection = (vehicle.cp.BGASectionInverted and vehicle.cp.BGASelectedSection == silos) or (not vehicle.cp.BGASectionInverted and vehicle.cp.BGASelectedSection == 1);
@@ -964,7 +969,8 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 					if isFirseSiloSection and courseplay:isPushWagon(tipper) then
 						local openDistance = meterPrSeconds * (animation.animationDuration / animation.animationOpenSpeedScale / 1000);
 						local isOpen = tipper:getCurrentTipAnimationTime() >= animation.animationDuration;
-						if vectorDistance <= (2 + openDistance) and not isOpen then
+						--print(("%s: vectorDistance=%.2f, distanceNeeded=%.2f, slowDownAt=%.2f"):format(nameNum(tipper), vectorDistance, (3 + openDistance), 6*meterPrSeconds));
+						if vectorDistance <= (3 + openDistance) and not isOpen then
 							tipper:enableTipAnimation(bestTipReferencePoint, 1);
 						end;
 					end;
@@ -977,24 +983,25 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 						end;
 
 						-- Slow down to real unload speed
-						if not stopAndGo and vectorDistance < 3 and not vehicle.cp.backupUnloadSpeed then
+						if not stopAndGo and vectorDistance < 6*meterPrSeconds and not vehicle.cp.backupUnloadSpeed then
 							-- Calculate the unloading speed.
 							local refSpeed = meterPrSeconds * 60 * 60 / 1000 * 0.80;
 							vehicle.cp.backupUnloadSpeed = vehicle.cp.speeds.unload * 3600;
 							courseplay:changeUnloadSpeed(vehicle, nil, refSpeed);
-							courseplay:debug(string.format("%s: BGA totalLength=%.2f,  totalTipDuration%.2f,  refSpeed=%.2f", nameNum(vehicle), totalLength, totalTipDuration, refSpeed), 12);
+							courseplay.hud:setReloadPageOrder(vehicle, 5, true);
+							courseplay:debug(string.format("%s: BGA totalLength=%.2f,  totalTipDuration%.2f,  refSpeed=%.2f", nameNum(vehicle), totalLength, totalTipDuration, refSpeed), 2);
 						end;
 
 						if vehicle.cp.BGASelectedSection ~= nearestBGASection and not vehicle.cp.isChangingPosition then
 							vehicle.cp.BGASelectedSection = nearestBGASection;
-							courseplay:debug(string.format("%s: Change to siloSection = %d", nameNum(vehicle), vehicle.cp.BGASelectedSection), 12);
+							courseplay:debug(string.format("%s: Change to siloSection = %d", nameNum(vehicle), vehicle.cp.BGASelectedSection), 2);
 						end;
 					elseif vehicle.cp.BGASelectedSection == nearestBGASection then
 						canUnload = ctt.bunkerSilo.movingPlanes[vehicle.cp.BGASelectedSection].fillLevel < vehicle.cp.bunkerSiloSectionFillLevel or isLastSiloSection;
 						if vehicle.cp.isChangingPosition then vehicle.cp.isChangingPosition = nil end;
 					elseif vehicle.cp.BGASelectedSection ~= nearestBGASection and not vehicle.cp.isChangingPosition then
 						vehicle.cp.BGASelectedSection = nearestBGASection;
-						courseplay:debug(string.format("%s: Change to siloSection = %d", nameNum(vehicle), vehicle.cp.BGASelectedSection), 12);
+						courseplay:debug(string.format("%s: Change to siloSection = %d", nameNum(vehicle), vehicle.cp.BGASelectedSection), 2);
 					end;
 
 					goForTipping = trailerInTipRange and canUnload;
@@ -1086,6 +1093,13 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 	return allowedToDrive;
 end
 
+local cpNilTempFilllLevel = function(self, state)
+	if state ~= self.state and state == BunkerSilo.STATE_CLOSED then
+		self.cpTempFillLevel = nil;
+	end;
+end;
+BunkerSilo.setState = Utils.prependedFunction(BunkerSilo.setState, cpNilTempFilllLevel);
+
 function courseplay:getAutoTurnradius(vehicle, tipper_attached)
 	local sinAlpha = 0       --Sinus vom Lenkwinkel
 	local wheelbase = 0      --Radstand
@@ -1170,6 +1184,7 @@ function courseplay:getReverseProperties(vehicle, tipper)
 		tipper.cp.unloadOrFillNode = courseplay:createUnloadOrFillNode(vehicle, tipper);
 	end;
 
+	-- TODO: (Claus) Redo the whole frontNode setup.
 	if tipper.attacherVehicle == vehicle or (#vehicle.tippers > 0 and vehicle.tippers[1] ~= tipper and vehicle.tippers[1].cp.isAttacherModule)then
 		tipper.cp.frontNode = getParent(tipper.attacherJoint.node);
 	else
@@ -1541,6 +1556,8 @@ function courseplay:getDistances(object)
 					setRotation(tempNode, tnrxTemp, tnryTemp, tnrzTemp);
 					courseplay:debug(('%s: backTrack[%d](node: %s) Length = %.2f'):format(nameNum(object), i, tostring(backTrack[i]), math.abs(dis)), 6);
 					nodeLength = nodeLength + math.abs(dis);
+
+					-- TODO: (Claus) Make the nodeLength into attacherJointToPivot
 				end;
 
 				courseplay:debug(('%s: Length of attacherJoint to pivot = %.2f'):format(nameNum(object), nodeLength), 6);
@@ -1564,6 +1581,9 @@ function courseplay:getDistances(object)
 					distances.attacherJointToRearWheel = math.abs(dis) + nodeLength;
 				end;
 			end;
+
+			-- TODO: (Claus) Make the pivotToRearWheel distance if trailer is pivoted
+
 			courseplay:debug(('%s: attacherJointToRearWheel=%.2f'):format(nameNum(object), distances.attacherJointToRearWheel), 6);
 		end;
 
@@ -1582,6 +1602,7 @@ function courseplay:getDistances(object)
 				courseplay:debug(('%s: attacherJointToRearTrailerAttacherJoints[%d]=%.2f'):format(nameNum(object), attacherJoint.jointType, distances.attacherJointToRearTrailerAttacherJoints[attacherJoint.jointType]), 6);
 			end;
 		end;
+		-- TODO: (Claus) Make the pivotToRearTrailerAttacherJoints distance if trailer is pivoted.
 	end;
 
 	return distances;
@@ -1598,6 +1619,7 @@ function courseplay:resetTipTrigger(vehicle, changeToForward)
 	vehicle.cp.isChangingDirection = false; -- Used for reverse BGA tipping
 	if vehicle.cp.backupUnloadSpeed then
 		courseplay:changeUnloadSpeed(vehicle, nil, vehicle.cp.backupUnloadSpeed);
+		courseplay.hud:setReloadPageOrder(vehicle, 5, true);
 		vehicle.cp.backupUnloadSpeed = nil;
 	end;
 	if changeToForward and vehicle.Waypoints[vehicle.recordnumber].rev then
