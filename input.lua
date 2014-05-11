@@ -58,7 +58,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 
 		if buttonToHandle then
 			buttonToHandle.isClicked = isDown;
-			if buttonToHandle.hoverText then
+			if buttonToHandle.hoverText and buttonToHandle.function_to_call ~= nil then
 				self.cp.hud.content.pages[buttonToHandle.page][buttonToHandle.row][1].isClicked = isDown;
 			end;
 			if isUp then

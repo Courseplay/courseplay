@@ -535,16 +535,14 @@ function courseplay:drive(self, dt)
 		end;
 		self.cp.speeds.sl = 1;
 	elseif self.cp.isInFilltrigger then
+		refSpeed = self.cp.speeds.turn;
 		if self.lastSpeedReal > self.cp.speeds.turn then
 			courseplay:brakeToStop(self);
-		else
-			refSpeed = self.cp.speeds.turn;
 		end;
 		self.cp.speeds.sl = 1;
 		self.cp.isInFilltrigger = false;
 	end;
-	
-	local real_speed = self.lastSpeedReal;
+
 	local maxRpm = self.motor.maxRpm[self.cp.speeds.sl];
 
 	--checking ESLimiter version
