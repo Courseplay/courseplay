@@ -224,12 +224,11 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 
 	-- STEERABLE (vehicle)
 	if not isImplement then
-		cpPrintLine(6);
-
 		vehicle.cp.numWorkTools = #vehicle.tippers;
 
 		-- list debug
 		if courseplay.debugChannels[3] then
+			cpPrintLine(6);
 			courseplay:debug(('%s cpTrafficCollisionIgnoreList'):format(nameNum(vehicle)), 3);
 			for a,b in pairs(vehicle.cpTrafficCollisionIgnoreList) do
 				local name = g_currentMission.nodeToVehicle[a].name;
@@ -612,7 +611,7 @@ function courseplay:getReverseProperties(vehicle, workTool)
 		courseplay:debug('\tworkTool is vehicle (steerable) -> return', 13);
 		return;
 	end;
-	if not workTool.hasWheels then
+	if not workTool.wheels or #workTool.wheels == 0 then
 		courseplay:debug('\tworkTool has no wheels -> return', 13);
 		return;
 	end;
@@ -1020,7 +1019,7 @@ function courseplay:getDistances(object)
 
 		local nx, ny, nz = getWorldTranslation(node);
 		-- Find the distance from attacherJoint to rear wheel
-		if object.hasWheels then
+		if object.wheels and #object.wheels > 0 then
 			distances.attacherJointToRearWheel = 0;
 			for _, wheel in ipairs(object.wheels) do
 				local wdnrxTemp, wdnryTemp, wdnrzTemp = getRotation(wheel.driveNode);
@@ -1584,12 +1583,14 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 	return allowedToDrive;
 end
 
-local cpNilTempFillLevel = function(self, state)
-	if state ~= self.state and state == BunkerSilo.STATE_CLOSED then
-		self.cpTempFillLevel = nil;
+function courseplay:addCpNilTempFillLevelFunction()
+	local cpNilTempFillLevel = function(self, state)
+		if state ~= self.state and state == BunkerSilo.STATE_CLOSED then
+			self.cpTempFillLevel = nil;
+		end;
 	end;
+	BunkerSilo.setState = Utils.prependedFunction(BunkerSilo.setState, cpNilTempFillLevel);
 end;
-BunkerSilo.setState = Utils.prependedFunction(BunkerSilo.setState, cpNilTempFillLevel);
 
 function courseplay:resetTipTrigger(vehicle, changeToForward)
 	if vehicle.cp.tipperFillLevel == 0 then

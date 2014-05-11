@@ -432,6 +432,7 @@ function courseplay_manager:update(dt)
 	if self.firstRun then
 		courseplay.moreRealisticInstalled = RealisticUtils ~= nil and RealisticUtils.getFruitInfosV2 ~= nil;
 		courseplay.moreRealisticVersion = courseplay:getMoreRealisticVersion();
+		courseplay:addCpNilTempFillLevelFunction();
 
 		self.firstRun = false;
 	end;
