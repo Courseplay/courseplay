@@ -638,12 +638,16 @@ function courseplay:changeMaxSpeed(vehicle, changeBy)
 	end;
 end
 
-function courseplay:changeUnloadSpeed(vehicle, changeBy, force)
+function courseplay:changeUnloadSpeed(vehicle, changeBy, force, forceReloadPage)
 	local speed = force or (vehicle.cp.speeds.unload * 3600 + changeBy);
 	if not force then
 		speed = Utils.clamp(speed, 3, 60);
 	end;
 	vehicle.cp.speeds.unload = speed / 3600;
+
+	if forceReloadPage then
+		courseplay.hud:setReloadPageOrder(vehicle, 5, true);
+	end;
 end
 
 function courseplay:changeUseRecordingSpeed(vehicle)

@@ -207,7 +207,7 @@ function courseplay:sideToDrive(vehicle, combine, distance, switchSide)
 	local sideWatchDirSize = Utils.getNoNil(combine.sideWatchDirSize, 3); -- TODO (Jakob): default AICombine value is 8
 	local selfSideWatchDirSize = Utils.getNoNil(vehicle.sideWatchDirSize, 3); -- TODO (Jakob): default AITractor value is 7
 
-	local threshWidth = 10 -- TODO (Jakob): make more accurate - calculate and set in variable in update_tools()
+	local threshWidth = 10 -- TODO (Jakob): make more accurate - calculate and set in variable in updateWorkTools()
 	local lWidthX = x - sideX * 0.5 * threshWidth + dirX * sideWatchDirOffset;
 	local lWidthZ = z - sideZ * 0.5 * threshWidth + dirZ * sideWatchDirOffset;
 	local lStartX = lWidthX - sideX * 0.7 * threshWidth;

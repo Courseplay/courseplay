@@ -93,7 +93,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 				end
 
 			-- baleloader, copied original code parts
-			elseif courseplay:is_baleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool) then
+			elseif courseplay:isBaleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool) then
 				if workArea and fillLevelPct ~= 100 then
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,true,true,true,allowedToDrive,nil,nil);
 					if not specialTool then

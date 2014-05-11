@@ -7,7 +7,7 @@ function courseplay:setNameVariable(workTool)
 		return;
 	end;
 
-	-- local specList = { 'AICombine', 'AITractor', 'AnimatedVehicle', 'BaleLoader', 'Baler', 'BunkerSiloCompacter', 'Combine', 'Cultivator', 'Cylindered', 'Fillable', 'Foldable', 'FruitPreparer', 'MixerWagon', 'Mower', 'PathVehicle', 'Plough', 'Shovel', 'SowingMachine', 'Sprayer', 'Steerable', 'Tedder', 'TrafficVehicle', 'Trailer', 'Windrower' };
+	-- local specList = { 'AICombine', 'AITractor', 'AnimatedVehicle', 'BaleLoader', 'Baler', 'BunkerSiloCompacter', 'Combine', 'Cultivator', 'Cutter', 'Cylindered', 'Fillable', 'Foldable', 'FruitPreparer', 'MixerWagon', 'Mower', 'PathVehicle', 'Plough', 'Shovel', 'SowingMachine', 'Sprayer', 'Steerable', 'Tedder', 'TrafficVehicle', 'Trailer', 'Windrower' };
 
 	-- Only default specs!
 	for i,spec in pairs(workTool.specializations) do
@@ -20,6 +20,7 @@ function courseplay:setNameVariable(workTool)
 		elseif spec == BunkerSiloCompacter then	workTool.cp.hasSpecializationBunkerSiloCompacter = true;
 		elseif spec == Combine then 			workTool.cp.hasSpecializationCombine 			 = true;
 		elseif spec == Cultivator then 			workTool.cp.hasSpecializationCultivator 		 = true;
+		elseif spec == Cutter then 				workTool.cp.hasSpecializationCutter 			 = true;
 		elseif spec == Cylindered then 			workTool.cp.hasSpecializationCylindered 		 = true;
 		elseif spec == Fillable then 			workTool.cp.hasSpecializationFillable 			 = true;
 		elseif spec == Foldable then 			workTool.cp.hasSpecializationFoldable 			 = true;

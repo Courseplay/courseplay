@@ -123,6 +123,7 @@ function courseplay:start(self)
 	local nearestpoint = dist
 	local recordNumber = 0
 	local curLaneNumber = 1;
+	local hasReversing = false;
 	-- print(('%s [%s(%d)]: start(), modeState=%d, mode2nextState=%s'):format(nameNum(self), curFile, debug.getinfo(1).currentline, self.cp.modeState, tostring(self.cp.mode2nextState))); -- DEBUG140301
 	for i,wp in pairs(self.Waypoints) do
 		local cx, cz = wp.cx, wp.cz
@@ -141,6 +142,11 @@ function courseplay:start(self)
 		if wp.crossing then
 			numCrossingPoints = numCrossingPoints + 1;
 			self.cp.crossingPoints[numCrossingPoints] = i;
+		end;
+
+		-- has reversing part
+		if self.cp.mode ~= 9 and wp.rev then
+			hasReversing = true;
 		end;
 
 		-- specific Workzone
@@ -263,7 +269,7 @@ function courseplay:start(self)
 		self.cp.realAWDModeOnBackup = self.realAWDModeOn
 	end;
 
-	if courseplay:canUseWeightStation(self) then
+	if courseplay:canUseWeightStation(self) or hasReversing then
 		self.cp.totalLength, self.cp.totalLengthOffset = courseplay:getTotalLengthOnWheels(self);
 	end;
 

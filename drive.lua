@@ -1016,7 +1016,7 @@ function courseplay:refillSprayer(vehicle, fillLevelPct, driveOn, allowedToDrive
 				vehicle.cp.fillTrigger = nil
 			end;
 		end
-		if courseplay:is_sowingMachine(activeTool) then --sowing machine
+		if courseplay:isSowingMachine(activeTool) then --sowing machine
 			if vehicle.cp.fillTrigger ~= nil then
 				local trigger = courseplay.triggers.all[vehicle.cp.fillTrigger]
 				if trigger.isSowingMachineFillTrigger then
@@ -1132,7 +1132,11 @@ function courseplay:setMRSpeed(vehicle, refSpeed, sl, allowedToDrive, workArea)
 	local deltaMinus = currentSpeed*3600 - refSpeed*3600
 	local deltaPlus = refSpeed*3600 - currentSpeed*3600
 
-	if deltaMinus > 5 then
+	local tolerance = 5;
+	if vehicle.cp.currentTipTrigger and vehicle.cp.currentTipTrigger.bunkerSilo then
+		tolerance = 1;
+	end;
+	if deltaMinus > tolerance then
 		vehicle.cp.speedBrake = true
 	else 
 		vehicle.cp.speedBrake = false

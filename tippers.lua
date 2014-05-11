@@ -1,3 +1,5 @@
+-- ##### MANAGING TOOLS ##### --
+
 function courseplay:attachImplement(implement)
 	--local impl = implement.object;
 end;
@@ -8,7 +10,7 @@ end;
 function courseplay:reset_tools(vehicle)
 	vehicle.tippers = {}
 	-- are there any tippers?
-	vehicle.cp.tipperAttached = courseplay:update_tools(vehicle, vehicle)
+	vehicle.cp.tipperAttached = courseplay:updateWorkTools(vehicle, vehicle);
 	vehicle.cp.currentTrailerToFill = nil
 	vehicle.cp.lastTrailerToFillDistance = nil
 	vehicle.cp.toolsDirty = false;
@@ -29,13 +31,13 @@ end;
 function courseplay:isRoundbaler(workTool) -- is the tool a roundbaler?
 	return courseplay:isBaler(workTool) and (workTool.baleCloseAnimationName ~= nil and workTool.baleUnloadAnimationName ~= nil or courseplay:isSpecialRoundBaler(workTool));
 end;
-function courseplay:is_baleLoader(workTool) -- is the tool a bale loader?
+function courseplay:isBaleLoader(workTool) -- is the tool a bale loader?
 	return workTool.cp.hasSpecializationBaleLoader or (workTool.balesToLoad ~= nil and workTool.baleGrabber ~=nil and workTool.grabberIsMoving~= nil);
 end;
 function courseplay:isSprayer(workTool) -- is the tool a sprayer/spreader?
 	return workTool.cp.hasSpecializationSprayer or courseplay:isSpecialSprayer(workTool)
 end;
-function courseplay:is_sowingMachine(workTool) -- is the tool a sowing machine?
+function courseplay:isSowingMachine(workTool) -- is the tool a sowing machine?
 	return workTool.cp.hasSpecializationSowingMachine or courseplay:isSpecialSowingMachine(workTool);
 end;
 function courseplay:isFoldable(workTool) --is the tool foldable?
@@ -66,264 +68,233 @@ function courseplay:isPushWagon(workTool)
 	return workTool.typeName:match("forageWagon") or workTool.cp.hasSpecializationSiloTrailer or workTool.cp.isPushWagon;
 end;
 
--- update implements to find attached tippers
-function courseplay:update_tools(vehicle, tractor_or_implement)
-	courseplay:setNameVariable(tractor_or_implement);
-
-	--steerable (tractor, combine etc.)
-	local tipper_attached = false
-	if tractor_or_implement.cp.hasSpecializationAITractor 
-	or tractor_or_implement.cp.isHarvesterSteerable 
-	or courseplay:isBigM(tractor_or_implement) 
-	or courseplay:isMixer(tractor_or_implement)
-	or courseplay:isWheelloader(tractor_or_implement)
-	or tractor_or_implement.typeName == "frontloader" then
-		local object = tractor_or_implement
-		if vehicle.cp.mode == 1 or vehicle.cp.mode == 2 then
-			-- if object.cp.hasSpecializationTrailer then
-			if object.allowTipDischarge then
-				tipper_attached = true
-				table.insert(vehicle.tippers, object)
-			end
-		elseif vehicle.cp.mode == 3 then -- Overlader
-			if object.cp.hasSpecializationTrailer then --to do
-				tipper_attached = true
-				table.insert(vehicle.tippers, object)
-			end
-		elseif vehicle.cp.mode == 4 then -- Fertilizer
-			if courseplay:isSprayer(object) or courseplay:is_sowingMachine(object) then
-				tipper_attached = true
-				table.insert(vehicle.tippers, object)
-				courseplay:setMarkers(vehicle, object)
-				vehicle.cp.noStopOnEdge = courseplay:isSprayer(object);
-				vehicle.cp.noStopOnTurn = courseplay:isSprayer(object);
-				if courseplay:is_sowingMachine(object) then
-					vehicle.cp.hasSowingMachine = true;
-				end;
-			end
-		elseif vehicle.cp.mode == 6 then -- Baler, foragewagon, baleloader
-			if (courseplay:isBaler(object) 
-			or courseplay:is_baleLoader(object) 
-			or courseplay:isSpecialBaleLoader(object) 
-			or object.cp.hasSpecializationTedder
-			or object.cp.hasSpecializationWindrower
-			or object.cp.hasSpecializationCultivator
-			or object.cp.hasSpecializationPlough
-			or object.cp.hasSpecializationFruitPreparer
-			or object.allowTipDischarge 
-			or courseplay:isFoldable(object)) 
-			and not object.cp.isCaseIHMagnum340Titanium 
-			and not object.cp.isCaseIHPuma160Titanium 
-			and not object.cp.isFendt828VarioFruktor 
-			then
-				tipper_attached = true;
-				table.insert(vehicle.tippers, object);
-				courseplay:setMarkers(vehicle, object);
-				vehicle.cp.noStopOnTurn = courseplay:isBaler(object) or courseplay:is_baleLoader(object) or courseplay:isSpecialBaleLoader(object) or courseplay:isMower(object);
-				vehicle.cp.noStopOnEdge = courseplay:isBaler(object) or courseplay:is_baleLoader(object) or courseplay:isSpecialBaleLoader(object);
-				if object.cp.hasSpecializationPlough then 
-					vehicle.cp.hasPlough = true;
-				end;
-			end
-		elseif vehicle.cp.mode == 8 then -- Liquid manure transfer
-			--if SpecializationUtil.hasSpecialization(RefillTrigger, object.specializations) then
-			tipper_attached = true
-			table.insert(vehicle.tippers, object)
-			-- end
-		elseif vehicle.cp.mode == 9 then --Fill and empty shovel
-			if courseplay:isWheelloader(tractor_or_implement) 
-			or tractor_or_implement.typeName == "frontloader" 
-			or courseplay:isMixer(tractor_or_implement) then
-				tipper_attached = true;
-				table.insert(vehicle.tippers, object);
-				object.cp.shovelState = 1
-			end;
-		end
-	end
-
-	--FOLDING PARTS: isFolded/isUnfolded states
-	courseplay:setFoldedStates(tractor_or_implement);
-
-
-	if not vehicle.cp.hasUBT then
-		vehicle.cp.hasUBT = false;
+-- UPDATE WORKTOOL DATA
+function courseplay:updateWorkTools(vehicle, workTool, isImplement)
+	if not isImplement then
+		cpPrintLine(6, 3);
+		courseplay:debug(('%s: updateWorkTools(vehicle, %q, isImplement=false) (mode=%d)'):format(nameNum(vehicle), nameNum(workTool), vehicle.cp.mode), 6);
+	else
+		cpPrintLine(6);
+		courseplay:debug(('%s: updateWorkTools(vehicle, %q, isImplement=true)'):format(nameNum(vehicle), nameNum(workTool)), 6);
 	end;
-	-- go through all implements
-	vehicle.cp.aiBackMarker = nil
 
-	for k, implement in pairs(tractor_or_implement.attachedImplements) do
-		local object = implement.object
+	courseplay:setNameVariable(workTool);
 
-		courseplay:setNameVariable(object);
+	local hasWorkTool = false;
 
-		--FRONT or BACK?
-		local implX,implY,implZ = getWorldTranslation(object.rootNode);
-		local _,_,tractorToImplZ = worldToLocal(vehicle.rootNode, implX,implY,implZ);
-		object.cp.positionAtTractor = Utils.sign(tractorToImplZ);
-		courseplay:debug(string.format("%s: tractorToImplZ=%.4f, positionAtTractor=%d", nameNum(object), tractorToImplZ, object.cp.positionAtTractor), 6);
-
-		--ADD TO vehicle.tippers
-		if vehicle.cp.mode == 1 or vehicle.cp.mode == 2 then
-			--	if object.cp.hasSpecializationTrailer then
-			if object.allowTipDischarge then
-				tipper_attached = true
-				table.insert(vehicle.tippers, object)
-				courseplay:getReverseProperties(vehicle, object)
-			end
-			
-		elseif vehicle.cp.mode == 3 then -- Overlader
-			if object.cp.hasSpecializationTrailer and object.cp.isAugerWagon then --to do 
-				tipper_attached = true
-				table.insert(vehicle.tippers, object)
-			end
-		elseif vehicle.cp.mode == 4 then -- Fertilizer and Seeding
-			if courseplay:isSprayer(object) or courseplay:is_sowingMachine(object) then
-				tipper_attached = true
-				table.insert(vehicle.tippers, object)
-				courseplay:setMarkers(vehicle, object)
-				vehicle.cp.noStopOnEdge = courseplay:isSprayer(object);
-				vehicle.cp.noStopOnTurn = courseplay:isSprayer(object);
-				vehicle.cp.hasMachinetoFill = true
-				if courseplay:is_sowingMachine(object) then
-					vehicle.cp.hasSowingMachine = true;
-				end;
-				if object.hasWheels then
-					courseplay:getReverseProperties(vehicle, object);
-				end;
-			end
-		elseif vehicle.cp.mode == 5 then -- Transfer
-			if object.setPlane ~= nil then --open/close cover
-				tipper_attached = true;
-				table.insert(vehicle.tippers, object);
-			end;
-		elseif vehicle.cp.mode == 6 then -- Baler, foragewagon, baleloader
-			if courseplay:isBaler(object) 
-			or courseplay:is_baleLoader(object) 
-			or courseplay:isSpecialBaleLoader(object) 
-			or object.cp.hasSpecializationTedder
-			or object.cp.hasSpecializationWindrower
-			or object.cp.hasSpecializationCultivator
-			or object.cp.hasSpecializationPlough
-			or object.cp.hasSpecializationFruitPreparer 
-			or object.allowTipDischarge 
-			or courseplay:isMower(object)
-			or courseplay:isAttachedCombine(object) 
-			or courseplay:isFoldable(object) then
-				tipper_attached = true
-				table.insert(vehicle.tippers, object)
-				courseplay:setMarkers(vehicle, object)
-				vehicle.cp.noStopOnTurn = courseplay:isBaler(object) or courseplay:is_baleLoader(object) or courseplay:isSpecialBaleLoader(object);
-				vehicle.cp.noStopOnEdge = courseplay:isBaler(object) or courseplay:is_baleLoader(object) or courseplay:isSpecialBaleLoader(object);
-				if object.cp.hasSpecializationPlough then 
-					vehicle.cp.hasPlough = true;
-				end;
-			end;
-			if courseplay:is_baleLoader(object) or courseplay:isSpecialBaleLoader(object) then
-				vehicle.cp.hasBaleLoader = true;
-				courseplay:getReverseProperties(vehicle, object)
-			elseif object.allowTipDischarge then
-				courseplay:getReverseProperties(vehicle, object)
-			end
-		elseif vehicle.cp.mode == 8 then --Liquid manure transfer
-			--if SpecializationUtil.hasSpecialization(RefillTrigger, object.specializations) then
-			tipper_attached = true
-			table.insert(vehicle.tippers, object)
-			--		end
-		elseif vehicle.cp.mode == 9 then --Fill and empty shovel
-			if courseplay:isFrontloader(object) or object.cp.hasSpecializationShovel then 
-				tipper_attached = true;
-				table.insert(vehicle.tippers, object);
-				object.attacherVehicle.cp.shovelState = 1
-			end
+	-- MODE 1 + 2: GRAIN TRANSPORT / COMBI MODE
+	if vehicle.cp.mode == 1 or vehicle.cp.mode == 2 then
+		if workTool.allowTipDischarge then
+			hasWorkTool = true;
+			vehicle.tippers[#vehicle.tippers + 1] = workTool;
 		end;
 
-		if object.aiLeftMarker ~= nil and object.aiForceTurnNoBackward == true then 
-			vehicle.cp.aiTurnNoBackward = true
-			courseplay:debug(string.format("%s: object.aiLeftMarker ~= nil and object.aiForceTurnNoBackward == true --> vehicle.cp.aiTurnNoBackward = true", nameNum(object)), 6);
-		elseif object.aiLeftMarker == nil and #(object.wheels) > 0 and object.cp.positionAtTractor <= 0 then
-			vehicle.cp.aiTurnNoBackward = true
-			courseplay:debug(string.format("%s: object.aiLeftMarker == nil and #(object.wheels) > 0 and object.cp.positionAtTractor <= 0 --> vehicle.cp.aiTurnNoBackward = true", nameNum(object)), 6);
+	-- MODE 3: AUGERWAGON
+	elseif vehicle.cp.mode == 3 then
+		if workTool.cp.isAugerWagon then -- if workTool.cp.hasSpecializationTrailer then
+			hasWorkTool = true;
+			vehicle.tippers[#vehicle.tippers + 1] = workTool;
 		end
 
-		courseplay:askForSpecialSettings(vehicle,object)
+	-- MODE 4: FERTILIZER AND SEEDING
+	elseif vehicle.cp.mode == 4 then
+		if courseplay:isSprayer(workTool) or courseplay:isSowingMachine(workTool) then
+			hasWorkTool = true;
+			vehicle.tippers[#vehicle.tippers + 1] = workTool;
+			courseplay:setMarkers(vehicle, workTool)
+			vehicle.cp.hasMachinetoFill = true;
+			vehicle.cp.noStopOnEdge = courseplay:isSprayer(workTool);
+			vehicle.cp.noStopOnTurn = courseplay:isSprayer(workTool);
+			if courseplay:isSowingMachine(workTool) then
+				vehicle.cp.hasSowingMachine = true;
+			end;
+		end;
+
+	-- MODE 5: TRANSFER
+	elseif vehicle.cp.mode == 5 then
+		-- DO NOTHING
+
+	-- MODE 6: FIELDWORK
+	elseif vehicle.cp.mode == 6 then
+		if (courseplay:isBaler(workTool) 
+		or courseplay:isBaleLoader(workTool) 
+		or courseplay:isSpecialBaleLoader(workTool) 
+		or workTool.cp.hasSpecializationCultivator
+		or workTool.cp.hasSpecializationCutter
+		or workTool.cp.hasSpecializationFruitPreparer 
+		or workTool.cp.hasSpecializationPlough
+		or workTool.cp.hasSpecializationTedder
+		or workTool.cp.hasSpecializationWindrower
+		or workTool.allowTipDischarge 
+		or courseplay:isMower(workTool)
+		or courseplay:isAttachedCombine(workTool) 
+		or courseplay:isFoldable(workTool))
+		and not workTool.cp.isCaseIHMagnum340Titanium 
+		and not workTool.cp.isCaseIHPuma160Titanium 
+		and not workTool.cp.isFendt828VarioFruktor 
+		then
+			hasWorkTool = true;
+			vehicle.tippers[#vehicle.tippers + 1] = workTool;
+			courseplay:setMarkers(vehicle, workTool);
+			vehicle.cp.noStopOnTurn = courseplay:isBaler(workTool) or courseplay:isBaleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool);
+			vehicle.cp.noStopOnEdge = courseplay:isBaler(workTool) or courseplay:isBaleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool);
+			if workTool.cp.hasSpecializationPlough then 
+				vehicle.cp.hasPlough = true;
+			end;
+			if courseplay:isBaleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool) then
+				vehicle.cp.hasBaleLoader = true;
+			end;
+		end;
+
+	-- MODE 7: COMBINE SELF UNLOADING
+	elseif vehicle.cp.mode == 7 then
+		-- DO NOTHING
+
+	-- MODE 8: LIQUID MANURE TRANSFER
+	elseif vehicle.cp.mode == 8 then
+		if workTool.cp.hasSpecializationFillable then
+			hasWorkTool = true;
+			vehicle.tippers[#vehicle.tippers + 1] = workTool;
+		end;
+
+	-- MODE 9: FILL AND EMPTY SHOVEL
+	elseif vehicle.cp.mode == 9 then
+		if not isImplement and (courseplay:isWheelloader(workTool) or workTool.typeName == 'frontloader' or courseplay:isMixer(workTool)) then
+			hasWorkTool = true;
+			vehicle.tippers[#vehicle.tippers + 1] = workTool;
+			workTool.cp.shovelState = 1;
+
+		elseif isImplement and (courseplay:isFrontloader(workTool) or workTool.cp.hasSpecializationShovel) then 
+			hasWorkTool = true;
+			vehicle.tippers[#vehicle.tippers + 1] = workTool;
+			workTool.attacherVehicle.cp.shovelState = 1
+		end;
+	end;
+
+	if hasWorkTool then
+		courseplay:debug(('%s: workTool %q added to tippers (index %d)'):format(nameNum(vehicle), nameNum(workTool), #vehicle.tippers), 6);
+	end;
+
+	--------------------------------------------------
+
+	if not isImplement or hasWorkTool then
+		-- SPECIAL SETTINGS
+		courseplay:askForSpecialSettings(vehicle, workTool);
 
 		--FOLDING PARTS: isFolded/isUnfolded states
-		courseplay:setFoldedStates(object);
-
-		-- are there more tippers attached to the current implement?
-		local other_tipper_attached
-		if #(object.attachedImplements) ~= 0 then
-			other_tipper_attached = courseplay:update_tools(vehicle, object)
-		end
-		if other_tipper_attached == true then
-			tipper_attached = true
-		end
-		
-		courseplay:debug(string.format("%s: courseplay:update_tools()", nameNum(vehicle)), 6);
-
-		courseplay:debug(('%s: adding %q (%q) to cpTrafficCollisionIgnoreList'):format(nameNum(vehicle), tostring(object.name), tostring(object.cp.xmlFileName)), 3);
-		vehicle.cpTrafficCollisionIgnoreList[object.rootNode] = true;
-	end; --END for implement in attachedImplements
-	
-	for k,v in pairs(vehicle.components) do
-		vehicle.cpTrafficCollisionIgnoreList[v.node] = true;
+		courseplay:setFoldedStates(workTool);
 	end;
 
-	vehicle.cp.numWorkTools = #vehicle.tippers;
+	-- REVERSE PROPERTIES
+	courseplay:getReverseProperties(vehicle, workTool);
 
-	--MINHUDPAGE for attached combines
-	vehicle.cp.attachedCombineIdx = nil;
-	if not (vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable or vehicle.cp.isSugarBeetLoader) then
-		for i=1, vehicle.cp.numWorkTools do
-			if courseplay:isAttachedCombine(vehicle.tippers[i]) then
-				vehicle.cp.attachedCombineIdx = i;
-				break;
+	-- aiTurnNoBackward
+	if isImplement and hasWorkTool then
+		local implX,implY,implZ = getWorldTranslation(workTool.rootNode);
+		local _,_,tractorToImplZ = worldToLocal(vehicle.rootNode, implX,implY,implZ);
+
+		vehicle.cp.aiBackMarker = nil; --TODO (Jakob): still needed?
+		if not vehicle.cp.aiTurnNoBackward and workTool.aiLeftMarker ~= nil and workTool.aiForceTurnNoBackward == true then 
+			vehicle.cp.aiTurnNoBackward = true;
+			courseplay:debug(('%s: workTool.aiLeftMarker ~= nil and workTool.aiForceTurnNoBackward == true --> vehicle.cp.aiTurnNoBackward = true'):format(nameNum(workTool)), 6);
+		elseif not vehicle.cp.aiTurnNoBackward and workTool.aiLeftMarker == nil and #(workTool.wheels) > 0 and tractorToImplZ <= 0 then
+			vehicle.cp.aiTurnNoBackward = true;
+			courseplay:debug(('%s: workTool.aiLeftMarker == nil and #(workTool.wheels) > 0 and tractorToImplZ (%.2f) <= 0 --> vehicle.cp.aiTurnNoBackward = true'):format(nameNum(workTool), tractorToImplZ), 6);
+		end;
+	end;
+
+	-- TRAFFIC COLLISION IGNORE LIST
+	courseplay:debug(('%s: adding %q (%q) to cpTrafficCollisionIgnoreList'):format(nameNum(vehicle), nameNum(workTool), tostring(workTool.cp.xmlFileName)), 3);
+	vehicle.cpTrafficCollisionIgnoreList[workTool.rootNode] = true;
+	-- TRAFFIC COLLISION IGNORE LIST (components)
+	if not isImplement or workTool.cp.hasSpecializationCutter then
+		courseplay:debug(('%s: adding %q (%q) components to cpTrafficCollisionIgnoreList'):format(nameNum(vehicle), nameNum(workTool), tostring(workTool.cp.xmlFileName)), 3);
+		for i,component in pairs(workTool.components) do
+			vehicle.cpTrafficCollisionIgnoreList[component.node] = true;
+		end;
+	end;
+
+	-- CHECK ATTACHED IMPLEMENTS
+	for k,impl in pairs(workTool.attachedImplements) do
+		local implIsWorkTool = courseplay:updateWorkTools(vehicle, impl.object, true);
+		if implIsWorkTool then
+			hasWorkTool = true;
+		end;
+	end;
+
+	-- STEERABLE (vehicle)
+	if not isImplement then
+		cpPrintLine(6);
+
+		vehicle.cp.numWorkTools = #vehicle.tippers;
+
+		-- list debug
+		if courseplay.debugChannels[3] then
+			courseplay:debug(('%s cpTrafficCollisionIgnoreList'):format(nameNum(vehicle)), 3);
+			for a,b in pairs(vehicle.cpTrafficCollisionIgnoreList) do
+				local name = g_currentMission.nodeToVehicle[a].name;
+				courseplay:debug(('\\___ [%s] = %s (%q)'):format(tostring(a), tostring(name), tostring(getName(a))), 3);
+			end;
+		end;
+
+		--MINHUDPAGE FOR ATTACHED COMBINES
+		vehicle.cp.attachedCombineIdx = nil;
+		if not (vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable or vehicle.cp.isSugarBeetLoader) then
+			for i=1, vehicle.cp.numWorkTools do
+				if courseplay:isAttachedCombine(vehicle.tippers[i]) then
+					vehicle.cp.attachedCombineIdx = i;
+					break;
+				end;
+			end;
+		end;
+		if vehicle.cp.attachedCombineIdx ~= nil then
+			--courseplay:debug(string.format('setMinHudPage(vehicle, vehicle.tippers[%d])', vehicle.cp.attachedCombineIdx), 18);
+			courseplay:setMinHudPage(vehicle, vehicle.tippers[vehicle.cp.attachedCombineIdx]);
+		end;
+
+		-- TURN RADIUS
+		courseplay:setAutoTurnradius(vehicle, hasWorkTool);
+
+		-- TIP REFERENCE POINTS
+		courseplay:setTipRefOffset(vehicle);
+
+		-- TIPPER COVERS
+		vehicle.cp.tipperHasCover = false;
+		vehicle.cp.tippersWithCovers = {};
+		if hasWorkTool then
+			courseplay:setTipperCoverData(vehicle);
+		end;
+
+
+		-- FINAL TIPPERS TABLE DEBUG
+		if courseplay.debugChannels[6] then
+			cpPrintLine(6);
+			if vehicle.cp.numWorkTools > 0 then
+				courseplay:debug(('%s: tippers:'):format(nameNum(vehicle)), 6);
+				for i=1, vehicle.cp.numWorkTools do
+					courseplay:debug(('\\___ [%d] = %s'):format(i, nameNum(vehicle.tippers[i])), 6);
+				end;
+			else
+				courseplay:debug(('%s: no tippers set'):format(nameNum(vehicle)), 6);
 			end;
 		end;
 	end;
-	if vehicle.cp.attachedCombineIdx ~= nil then
-		--courseplay:debug(string.format("setMinHudPage(vehicle, vehicle.tippers[%d])", vehicle.cp.attachedCombineIdx), 18);
-		courseplay:setMinHudPage(vehicle, vehicle.tippers[vehicle.cp.attachedCombineIdx]);
+
+	--------------------------------------------------
+
+	if not isImplement then
+		cpPrintLine(6, 3);
 	end;
 
-	--CUTTERS
-	if vehicle.attachedCutters ~= nil and #(vehicle.attachedImplements) ~= 0 then
-		if vehicle.numAttachedCutters ~= nil and vehicle.numAttachedCutters > 0 then
-			for cutter, implement in pairs(vehicle.attachedCutters) do
-				local object = implement.object
-				if object ~= nil and object.cp == nil then
-					object.cp = {};
-				end;
+	return hasWorkTool;
+end;
 
-				if vehicle.cp.mode == 6 then
-					tipper_attached = true;
-					table.insert(vehicle.tippers, object);
-					courseplay:setMarkers(vehicle, object)
-					vehicle.cpTrafficCollisionIgnoreList[object.rootNode] = true;
-					for k,v in pairs(object.components) do
-						vehicle.cpTrafficCollisionIgnoreList[v.node] = true;
-					end;
-				end;
-			end;
-		end;
-	end;
-	
-	if courseplay.debugChannels[3] then
-		courseplay:debug(string.format("%s cpTrafficCollisionIgnoreList", nameNum(vehicle)), 3);
-		for a,b in pairs(vehicle.cpTrafficCollisionIgnoreList) do
-			local name = g_currentMission.nodeToVehicle[a].name
-			courseplay:debug(string.format("\\___ %s = %s", tostring(a), tostring(name)), 3);
-		end;
-	end
-
-	courseplay:getAutoTurnradius(vehicle, tipper_attached);
-	
-	--tipreferencepoints 
+function courseplay:setTipRefOffset(vehicle)
 	vehicle.cp.tipRefOffset = nil;
 	for i=1, vehicle.cp.numWorkTools do
-		if tipper_attached and vehicle.tippers[i].rootNode ~= nil and vehicle.tippers[i].tipReferencePoints ~= nil then
+		if vehicle.tippers[i].rootNode ~= nil and vehicle.tippers[i].tipReferencePoints ~= nil then
 			local tipperX, tipperY, tipperZ = getWorldTranslation(vehicle.tippers[i].rootNode);
-			if tipper_attached and #(vehicle.tippers[i].tipReferencePoints) > 1 then
+			if  #(vehicle.tippers[i].tipReferencePoints) > 1 then
 				vehicle.tippers[i].cp.rearTipRefPoint = nil;
 				for n=1 ,#(vehicle.tippers[i].tipReferencePoints) do
 					local tipRefPointX, tipRefPointY, tipRefPointZ = worldToLocal(vehicle.tippers[i].tipReferencePoints[n].node, tipperX, tipperY, tipperZ);
@@ -346,26 +317,12 @@ function courseplay:update_tools(vehicle, tractor_or_implement)
 				vehicle.cp.tipRefOffset = 0;
 			end;
 		elseif vehicle.cp.hasMachinetoFill then
-			vehicle.cp.tipRefOffset = 1.5
+			vehicle.cp.tipRefOffset = 1.5;
 		end;
 		if vehicle.cp.tipRefOffset ~= nil then
-			break
-		end		
-	end
-
-	--tippers with covers
-	vehicle.cp.tipperHasCover = false;
-	vehicle.cp.tippersWithCovers = {};
-	if tipper_attached then
-		courseplay:setTipperCoverData(vehicle);
+			break;
+		end;
 	end;
-	--END tippers with covers
-
-
-	if tipper_attached then
-		return true;
-	end;
-	return nil;
 end;
 
 function courseplay:setMarkers(vehicle, object)
@@ -427,8 +384,9 @@ function courseplay:setMarkers(vehicle, object)
 	if vehicle.cp.aiFrontMarker < -7 then
 		vehicle.aiToolExtraTargetMoveBack = math.abs(vehicle.cp.aiFrontMarker)
 	end
-	courseplay:debug(nameNum(vehicle) .. " vehicle.turnEndBackDistance: "..tostring(vehicle.turnEndBackDistance).."  vehicle.aiToolExtraTargetMoveBack: "..tostring(vehicle.aiToolExtraTargetMoveBack),6);
-	courseplay:debug(nameNum(vehicle) .. " setMarkers(): vehicle.cp.backMarkerOffset: "..tostring(vehicle.cp.backMarkerOffset).."  vehicle.cp.aiFrontMarker: "..tostring(vehicle.cp.aiFrontMarker), 6);
+
+	courseplay:debug(('%s: setMarkers(): turnEndBackDistance=%s, aiToolExtraTargetMoveBack=%s'):format(nameNum(vehicle), tostring(vehicle.turnEndBackDistance), tostring(vehicle.aiToolExtraTargetMoveBack)), 6);
+	courseplay:debug(('%s: setMarkers(): cp.backMarkerOffset=%s, cp.aiFrontMarker=%s'):format(nameNum(vehicle), tostring(vehicle.cp.backMarkerOffset), tostring(vehicle.cp.aiFrontMarker)), 6);
 end;
 
 function courseplay:setFoldedStates(object)

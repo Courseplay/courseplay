@@ -109,7 +109,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct)
 					
 					if not isFolding and isUnfolded then
 						--set or stow ridge markers
-						if courseplay:is_sowingMachine(workTool) and self.cp.ridgeMarkersAutomatic then
+						if courseplay:isSowingMachine(workTool) and self.cp.ridgeMarkersAutomatic then
 							if ridgeMarker ~= nil then
 								if workTool.cp.haveInversedRidgeMarkerState then
 									if ridgeMarker == 1 then
@@ -140,7 +140,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct)
 						--turn on
 						if workTool.setIsTurnedOn ~= nil and not workTool.isTurnedOn then
 							courseplay:setMarkers(self, workTool);
-							if courseplay:is_sowingMachine(workTool) then
+							if courseplay:isSowingMachine(workTool) then
 								--do manually instead of :setIsTurnedOn so that workTool.turnOnAnimation and workTool.playAnimation aren't called
 								workTool.isTurnedOn = true;
 								--[[if workTool.airBlowerSoundEnabled ~= nil then

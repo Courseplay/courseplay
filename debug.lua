@@ -17,7 +17,7 @@ Debug channels legend:
  3	traffic collision
  4	Combines/mode2, register and unload combines
  5	Multiplayer
- 6	implements (update_tools etc)
+ 6	implements (updateWorkTools etc)
  7	course generation
  8	course management
  9	path finding
@@ -43,9 +43,15 @@ function courseplay:debug(str, channel)
 	end;
 end;
 
-function cpPrintLine(debugChannel)
+local lines = {
+	('-'):rep(50),
+	('_'):rep(50),
+	('#'):rep(50)
+};
+function cpPrintLine(debugChannel, line)
 	if debugChannel == nil or courseplay.debugChannels[debugChannel] then
-		print(('-'):rep(50));
+		line = line or 1;
+		print(lines[line]);
 	end;
 end;
 
