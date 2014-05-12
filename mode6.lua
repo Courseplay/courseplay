@@ -256,7 +256,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 						self.cp.unloadingTipper = nil
 
 						if self.cp.tipperFillLevel == 0 then
-							courseplay:resetTipTrigger(self);
+							courseplay:resetTipTrigger(self, true);
 						end
 					end
 

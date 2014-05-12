@@ -154,6 +154,8 @@ function courseplay:doTriggerRaycasts(vehicle, triggerType, sides, x, y, z, nx, 
 		callBack = 'findSpecialTriggerCallback';
 		debugChannel = 19;
 		r, g, b = 0, 1, 0.6;
+	else
+		return;
 	end;
 
 	distance = distance or 10;
@@ -165,12 +167,12 @@ function courseplay:doTriggerRaycasts(vehicle, triggerType, sides, x, y, z, nx, 
 	if sides and vehicle.cp.tipRefOffset ~= 0 then
 		if (triggerType == 'tipTrigger' and vehicle.cp.currentTipTrigger == nil) or (triggerType == 'specialTrigger' and vehicle.cp.fillTrigger == nil) then
 			x, y, z = localToWorld(vehicle.aiTrafficCollisionTrigger, vehicle.cp.tipRefOffset, 0, 0);
-			courseplay:doSingleRaycast(vehicle, triggerType, callBack, x1, y1, z1, nx, ny, nz, distance, debugChannel, r, g, b, 2);
+			courseplay:doSingleRaycast(vehicle, triggerType, callBack, x, y, z, nx, ny, nz, distance, debugChannel, r, g, b, 2);
 		end;
 
 		if (triggerType == 'tipTrigger' and vehicle.cp.currentTipTrigger == nil) or (triggerType == 'specialTrigger' and vehicle.cp.fillTrigger == nil) then
 			x, y, z = localToWorld(vehicle.aiTrafficCollisionTrigger, -vehicle.cp.tipRefOffset, 0, 0);
-			courseplay:doSingleRaycast(vehicle, triggerType, callBack, x1, y1, z1, nx, ny, nz, distance, debugChannel, r, g, b, 3);
+			courseplay:doSingleRaycast(vehicle, triggerType, callBack, x, y, z, nx, ny, nz, distance, debugChannel, r, g, b, 3);
 		end;
 	end;
 

@@ -154,7 +154,7 @@ function courseplay:goReverse(vehicle,lx,lz)
 	end;
 
 	local nx, ny, nz = localDirectionToWorld(node, lxTipper, 0, lzTipper);
-	courseplay:doTriggerRaycasts(vehicle, 'tipTrigger', false, xTipper, yTipper + 1, zTipper, nx, ny, nz);
+	courseplay:doTriggerRaycasts(vehicle, 'tipTrigger', false, xTipper, yTipper + 1, zTipper, nx, ny, nz, 15);
 	courseplay:showDirection(vehicle.cp.DirectionNode,lx,lz);
 
 	return lx,lz,fwd;
