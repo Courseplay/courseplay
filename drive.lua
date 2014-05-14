@@ -84,10 +84,17 @@ function courseplay:drive(self, dt)
 	end;
 
 	self.cp.distanceToTarget = courseplay:distance(cx, cz, ctx, ctz);
-	--courseplay:debug(string.format("Tx: %f2 Tz: %f2 WPcx: %f2 WPcz: %f2 dist: %f2 ", ctx, ctz, cx, cz, self.cp.distanceToTarget ), 2)
-	local fwd = nil
-	local distToChange = nil
+	-- courseplay:debug(('ctx=%.2f, ctz=%.2f, cx=%.2f, cz=%.2f, distanceToTarget=%.2f'):format(ctx, ctz, cx, cz, self.cp.distanceToTarget), 2);
+	local fwd;
+	local distToChange;
+
+	-- coordinates of coli
+	local tx, ty, tz = localToWorld(self.cp.DirectionNode, 0, 1, 3); --local tx, ty, tz = getWorldTranslation(self.aiTrafficCollisionTrigger)
+	-- local direction of from DirectionNode to waypoint
 	local lx, lz = AIVehicleUtil.getDriveDirection(self.cp.DirectionNode, cx, cty, cz);
+	-- world direction of from DirectionNode to waypoint
+	local nx, ny, nz = localDirectionToWorld(self.cp.DirectionNode, lx, 0, lz);
+
 
 	if self.cp.mode == 4 or self.cp.mode == 6 then
 		if self.Waypoints[self.recordnumber].turn ~= nil then
@@ -110,12 +117,6 @@ function courseplay:drive(self, dt)
 		end;
 	end;
 
-
-	-- coordinates of coli
-	--local tx, ty, tz = getWorldTranslation(self.aiTrafficCollisionTrigger)
-	local tx, ty, tz = localToWorld(self.cp.DirectionNode,0,1,3)
-	-- direction of tractor
-	local nx, ny, nz = localDirectionToWorld(self.cp.DirectionNode, lx, 0, lz)
 
 	-- BEACON LIGHTS
 	if self.cp.beaconLightsMode == 1 then --on streets only
@@ -140,7 +141,7 @@ function courseplay:drive(self, dt)
 
 
 	-- the tipper that is currently loaded/unloaded
-	local activeTipper = nil
+	local activeTipper;
 	local isBypassing = false
 
 
@@ -236,8 +237,8 @@ function courseplay:drive(self, dt)
 	else
 		-- MODES 1 & 2: unloading in trigger
 		if (self.cp.mode == 1 or (self.cp.mode == 2 and self.cp.isLoaded)) and self.cp.tipperFillLevel ~= nil and self.cp.tipRefOffset ~= nil and self.cp.tipperAttached then
-			if self.cp.currentTipTrigger == nil and self.cp.tipperFillLevel > 0 then
-				courseplay:doTriggerRaycasts(self, 'tipTrigger', true, tx, ty, tz, nx, ny, nz);
+			if self.cp.currentTipTrigger == nil and self.cp.tipperFillLevel > 0 and self.recordnumber > 2 and self.recordnumber < self.maxnumber and not self.Waypoints[self.recordnumber].rev then
+				courseplay:doTriggerRaycasts(self, 'tipTrigger', 'fwd', true, tx, ty, tz, nx, ny, nz);
 			end;
 
 			allowedToDrive = courseplay:handle_mode1(self, allowedToDrive);
@@ -300,7 +301,7 @@ function courseplay:drive(self, dt)
 			if self.cp.curMapWeightStation ~= nil or (self.cp.fillTrigger ~= nil and courseplay.triggers.all[self.cp.fillTrigger].isWeightStation) then
 				allowedToDrive = courseplay:handleMapWeightStation(self, allowedToDrive);
 			elseif courseplay:canScanForWeightStation(self) then
-				courseplay:doTriggerRaycasts(self, 'specialTrigger', false, tx, ty, tz, nx, ny, nz);
+				courseplay:doTriggerRaycasts(self, 'specialTrigger', 'fwd', false, tx, ty, tz, nx, ny, nz);
 			end;
 		end;
 
@@ -313,7 +314,7 @@ function courseplay:drive(self, dt)
 				courseplay:setGlobalInfoText(self, 'DAMAGE_SHOULD');
 			end;
 			if self.damageLevel > 70 then
-				courseplay:doTriggerRaycasts(self, 'specialTrigger', false, tx, ty, tz, nx, ny, nz);
+				courseplay:doTriggerRaycasts(self, 'specialTrigger', 'fwd', false, tx, ty, tz, nx, ny, nz);
 				if self.cp.fillTrigger ~= nil then
 					if courseplay.triggers.all[self.cp.fillTrigger].isDamageModTrigger then
 						self.cp.isInFilltrigger = true
@@ -334,7 +335,7 @@ function courseplay:drive(self, dt)
 
 		-- MODE 8: REFILL LIQUID MANURE TRANSPORT
 		if self.cp.mode == 8 then
-			courseplay:doTriggerRaycasts(self, 'specialTrigger', false, tx, ty, tz, nx, ny, nz);
+			courseplay:doTriggerRaycasts(self, 'specialTrigger', 'fwd', false, tx, ty, tz, nx, ny, nz);
 			if self.cp.tipperAttached then
 				if self.tippers ~= nil then
 					allowedToDrive,lx,lz = courseplay:refillSprayer(self, self.cp.tipperFillLevelPct, self.cp.refillUntilPct, allowedToDrive, lx, lz, dt);
@@ -349,7 +350,7 @@ function courseplay:drive(self, dt)
 				allowedToDrive = false;
 				courseplay:setGlobalInfoText(self, 'FUEL_MUST');
 			elseif currentFuelPercentage < 20 and not self.isFuelFilling then
-				courseplay:doTriggerRaycasts(self, 'specialTrigger', false, tx, ty, tz, nx, ny, nz);
+				courseplay:doTriggerRaycasts(self, 'specialTrigger', 'fwd', false, tx, ty, tz, nx, ny, nz);
 				if self.cp.fillTrigger ~= nil and courseplay.triggers.all[self.cp.fillTrigger].isGasStationTrigger then
 					self.cp.isInFilltrigger = true;
 				end;
@@ -393,15 +394,15 @@ function courseplay:drive(self, dt)
 	if self.cp.mode == 4 and self.cp.startWork ~= nil and self.cp.stopWork ~= nil and self.cp.tipperAttached then
 		allowedToDrive, workArea, workSpeed, isFinishingWork = courseplay:handle_mode4(self, allowedToDrive, workSpeed, self.cp.tipperFillLevelPct);
 		if not workArea and self.cp.tipperFillLevelPct < self.cp.refillUntilPct then
-			courseplay:doTriggerRaycasts(self, 'specialTrigger', true, tx, ty, tz, nx, ny, nz);
+			courseplay:doTriggerRaycasts(self, 'specialTrigger', 'fwd', true, tx, ty, tz, nx, ny, nz);
 		end;
 
 	-- MODE 6
 	elseif self.cp.mode == 6 and self.cp.startWork ~= nil and self.cp.stopWork ~= nil then
 		allowedToDrive, workArea, workSpeed, activeTipper, isFinishingWork = courseplay:handle_mode6(self, allowedToDrive, workSpeed, self.cp.tipperFillLevelPct, lx, lz);
 
-		if not workArea and self.cp.tipperFillLevel and self.cp.tipperFillLevel > 0 and self.grainTankCapacity == nil and self.cp.tipRefOffset ~= nil then
-			courseplay:doTriggerRaycasts(self, 'tipTrigger', true, tx, ty, tz, nx, ny, nz);
+		if not workArea and self.cp.currentTipTrigger == nil and self.cp.tipperFillLevel and self.cp.tipperFillLevel > 0 and self.grainTankCapacity == nil and self.cp.tipRefOffset ~= nil and not self.Waypoints[self.recordnumber].rev then
+			courseplay:doTriggerRaycasts(self, 'tipTrigger', 'fwd', true, tx, ty, tz, nx, ny, nz);
 		end;
 
 	-- MODE 9
@@ -432,6 +433,7 @@ function courseplay:drive(self, dt)
 		courseplay:openCloseCover(self, dt, showCover, self.cp.currentTipTrigger ~= nil);
 	end;
 
+	-- CHECK TRAFFIC
 	allowedToDrive = courseplay:checkTraffic(self, true, allowedToDrive)
 	
 	if self.cp.waitForTurnTime > self.timer then
@@ -504,9 +506,10 @@ function courseplay:drive(self, dt)
 	local isAtStart = self.recordnumber < 3;
 	if 	((self.cp.mode == 1 or self.cp.mode == 5 or self.cp.mode == 7 or self.cp.mode == 8) and (isAtStart or isAtEnd)) or
 		((self.cp.mode == 2 or self.cp.mode == 3) and isAtEnd) or
-		(self.cp.mode == 9 and self.recordnumber > self.cp.waitPoints[1] and self.recordnumber <= self.cp.waitPoints[2]) or
+		(self.cp.mode == 9 and self.recordnumber > self.cp.shovelFillStartPoint and self.recordnumber <= self.cp.shovelFillEndPoint) or
 		(not workArea and self.wait and ((isAtEnd and self.Waypoints[self.recordnumber].wait) or courseplay:waypointsHaveAttr(self, self.recordnumber, 0, 2, "wait", true, false))) or 
 		(isAtEnd and self.Waypoints[self.recordnumber].rev) or
+		(not isAtEnd and (self.Waypoints[self.recordnumber].rev or self.Waypoints[self.recordnumber + 1].rev or self.Waypoints[self.recordnumber + 2].rev)) or
 		(workSpeed ~= nil and workSpeed == 0.5) 
 	then
 		self.cp.speeds.sl = 1;

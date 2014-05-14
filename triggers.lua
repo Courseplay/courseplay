@@ -139,7 +139,7 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 end
 
 -- FIND TRIGGERS
-function courseplay:doTriggerRaycasts(vehicle, triggerType, sides, x, y, z, nx, ny, nz, distance)
+function courseplay:doTriggerRaycasts(vehicle, triggerType, direction, sides, x, y, z, nx, ny, nz, distance)
 	local numIntendedRaycasts = sides and 3 or 1;
 	if vehicle.cp.hasRunRaycastThisLoop[triggerType] and vehicle.cp.hasRunRaycastThisLoop[triggerType] >= numIntendedRaycasts then
 		return;
@@ -149,7 +149,7 @@ function courseplay:doTriggerRaycasts(vehicle, triggerType, sides, x, y, z, nx, 
 	if triggerType == 'tipTrigger' then
 		callBack = 'findTipTriggerCallback';
 		debugChannel = 1;
-		r, g, b = 1, 0, 0;
+		r, g, b = 1, 0, 1;
 	elseif triggerType == 'specialTrigger' then
 		callBack = 'findSpecialTriggerCallback';
 		debugChannel = 19;
@@ -159,34 +159,35 @@ function courseplay:doTriggerRaycasts(vehicle, triggerType, sides, x, y, z, nx, 
 	end;
 
 	distance = distance or 10;
+	direction = direction or 'fwd';
 
 	--------------------------------------------------
 
-	courseplay:doSingleRaycast(vehicle, triggerType, callBack, x, y, z, nx, ny, nz, distance, debugChannel, r, g, b, 1);
+	courseplay:doSingleRaycast(vehicle, triggerType, direction, callBack, x, y, z, nx, ny, nz, distance, debugChannel, r, g, b, 1);
 
 	if sides and vehicle.cp.tipRefOffset ~= 0 then
 		if (triggerType == 'tipTrigger' and vehicle.cp.currentTipTrigger == nil) or (triggerType == 'specialTrigger' and vehicle.cp.fillTrigger == nil) then
 			x, y, z = localToWorld(vehicle.aiTrafficCollisionTrigger, vehicle.cp.tipRefOffset, 0, 0);
-			courseplay:doSingleRaycast(vehicle, triggerType, callBack, x, y, z, nx, ny, nz, distance, debugChannel, r, g, b, 2);
+			courseplay:doSingleRaycast(vehicle, triggerType, direction, callBack, x, y, z, nx, ny, nz, distance, debugChannel, r, g, b, 2);
 		end;
 
 		if (triggerType == 'tipTrigger' and vehicle.cp.currentTipTrigger == nil) or (triggerType == 'specialTrigger' and vehicle.cp.fillTrigger == nil) then
 			x, y, z = localToWorld(vehicle.aiTrafficCollisionTrigger, -vehicle.cp.tipRefOffset, 0, 0);
-			courseplay:doSingleRaycast(vehicle, triggerType, callBack, x, y, z, nx, ny, nz, distance, debugChannel, r, g, b, 3);
+			courseplay:doSingleRaycast(vehicle, triggerType, direction, callBack, x, y, z, nx, ny, nz, distance, debugChannel, r, g, b, 3);
 		end;
 	end;
 
 	vehicle.cp.hasRunRaycastThisLoop[triggerType] = numIntendedRaycasts;
 end;
 
-function courseplay:doSingleRaycast(vehicle, triggerType, callBack, x, y, z, nx, ny, nz, distance, debugChannel, r, g, b, raycastNumber)
+function courseplay:doSingleRaycast(vehicle, triggerType, direction, callBack, x, y, z, nx, ny, nz, distance, debugChannel, r, g, b, raycastNumber)
 	if courseplay.debugChannels[debugChannel] then
-		courseplay:debug(('%s: call %s raycast #%d'):format(nameNum(vehicle), triggerType, raycastNumber), debugChannel);
+		courseplay:debug(('%s: call %s raycast (%s) #%d'):format(nameNum(vehicle), triggerType, direction, raycastNumber), debugChannel);
 	end;
 	local num = raycastAll(x,y,z, nx,ny,nz, callBack, distance, vehicle);
 	if courseplay.debugChannels[debugChannel] then
 		if num > 0 then
-			courseplay:debug(('%s: %s raycast #%d end'):format(nameNum(vehicle), triggerType, raycastNumber), debugChannel);
+			courseplay:debug(('%s: %s raycast (%s) #%d: object found'):format(nameNum(vehicle), triggerType, direction, raycastNumber), debugChannel);
 		end;
 		drawDebugLine(x,y,z, r,g,b, x+(nx*distance),y+(ny*distance),z+(nz*distance), r,g,b);
 	end;
@@ -194,12 +195,12 @@ end;
 
 -- FIND TIP TRIGGER CALLBACK
 function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
-	if courseplay.debugChannels[1] then
-		drawDebugPoint( x, y, z, 1, 1, 0, 1);
-	end;
-
 	if courseplay.confirmedNoneTipTriggers[transformId] == true then
 		return true;
+	end;
+
+	if courseplay.debugChannels[1] then
+		drawDebugPoint( x, y, z, 1, 1, 0, 1);
 	end;
 
 	local name = tostring(getName(transformId));
@@ -224,7 +225,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 
 			if trigger ~= nil then
 				if trigger.bunkerSilo ~= nil and trigger.bunkerSilo.state ~= 0 then 
-					courseplay:debug(nameNum(self) .. ": bunkerSilo.state ~= 0 -> ignoring trigger", 1);
+					courseplay:debug(('%s: bunkerSilo.state=%d -> ignoring trigger'):format(nameNum(self), bunkerSilo.state), 1);
 					return true
 				end
 				if self.cp.hasShield and trigger.bunkerSilo == nil then
@@ -289,12 +290,12 @@ end;
 
 -- FIND SPECIAL TRIGGER CALLBACK
 function courseplay:findSpecialTriggerCallback(transformId, x, y, z, distance)
-	if courseplay.debugChannels[19] then
-		drawDebugPoint(x, y, z, 0, 1, 0.6, 1);
-	end;
-
 	if courseplay.confirmedNoneSpecialTriggers[transformId] then
 		return true;
+	end;
+
+	if courseplay.debugChannels[19] then
+		drawDebugPoint(x, y, z, 1, 1, 0, 1);
 	end;
 
 	local name = tostring(getName(transformId));

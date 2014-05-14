@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="13">
-	<version>3.41.0506</version>
+	<version>3.41.0507</version>
 	<author><![CDATA[Jakob Tischler, Thomas Gärtner,
 Horoman, Satis]]></author>
 	<title>
@@ -1111,7 +1111,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 		</text>
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT">
 			<en>Waiting for new waypoint</en>
-			<de>Warte bis ich neuen Wegpunkt habe</de>
+			<de>Warte auf neuen Wegpunkt</de>
 			<fr>Attend pour le nouveau point</fr>
 			<es>Esperando el nuevo punto</es>
 			<it>Attendi il prossimo punto di passaggio</it>

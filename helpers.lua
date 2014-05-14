@@ -134,11 +134,10 @@ function nameNum(vehicle, hideNum)
 	end;
 
 	if vehicle.cp ~= nil and vehicle.cp.coursePlayerNum ~= nil then
-		if hideNum == nil or hideNum == false then
-			return tostring(vehicle.name) .. ' (#' .. tostring(vehicle.cp.coursePlayerNum) .. ')';
-		else
+		if hideNum then
 			return tostring(vehicle.name);
 		end;
+		return tostring(vehicle.name) .. ' (#' .. tostring(vehicle.cp.coursePlayerNum) .. ')';
 	elseif vehicle.isHired then
 		return tostring(vehicle.name) .. ' (helper)';
 	end;
@@ -254,28 +253,28 @@ function courseplay:waypointsHaveAttr(vehicle, curRecordNumber, back, forward, a
 	for i=curRecordNumber+back, curRecordNumber+forward do
 		local wp = courseplay:loopedTable(vehicle.Waypoints, i);
 		if wp[attr] ~= nil and wp[attr] == value then
-			if not all then --waypoint has met condition, only one needs to -> return true
+			if not all then -- one waypoint has met condition, not all needed -> return true
 				return true;
 			end;
-		elseif all then --condition not met, but all waypoints should meet condition -> return false
+		elseif all then -- condition not met, but all waypoints should meet condition -> return false
 			return false;
 		end;
 	end;
 
-	if all then --all waypoints have met condition (no return false in loop) -> return true
+	if all then -- all waypoints have met condition (no return false in loop) -> return true
 		return true;
-	else --none of the waypoints have met condition (no return true in loop) -> return false
+	else -- none of the waypoints have met condition (no return true in loop) -> return false
 		return false;
 	end;
 end;
 
-function courseplay:varLoop(var, changeBy, max, min)
-	min = min or 1;
+function courseplay:varLoop(var, changeBy, maxVar, minVar)
+	minVar = minVar or 1;
 	var = var + changeBy;
-	if var > max then
-		var = min;
-	elseif var < min then
-		var = max;
+	if var > maxVar then
+		var = minVar;
+	elseif var < minVar then
+		var = maxVar;
 	end;
 	return var;
 end;

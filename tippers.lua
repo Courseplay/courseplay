@@ -1085,6 +1085,8 @@ function courseplay:load_tippers(vehicle)
 		if triggerFillType and currentTrailer:allowFillType(triggerFillType, true) then
 			if not currentTrailer.currentSuperSiloTrigger.isFilling then
 				currentTrailer.currentSuperSiloTrigger:setIsFilling(true);
+			elseif vehicle.cp.isLoaded then
+				currentTrailer.currentSuperSiloTrigger:setIsFilling(false);
 			end;
 		end;
 	end;

@@ -421,7 +421,7 @@ function courseplay:stop(self)
 	self.cp.attachedCombineIdx = nil;
 	self.cp.tempCollis = {}
 	self.checkSpeedLimit = true
-	self.cp.currentTipTrigger = nil
+	self.cp.currentTipTrigger = nil; --TODO: use courseplay:resetTipTrigger(self) instead ?
 	self.drive = false
 	self.cp.canDrive = true
 	self.cp.distanceCheck = false

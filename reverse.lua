@@ -153,8 +153,10 @@ function courseplay:goReverse(vehicle,lx,lz)
 		courseplay:setRecordNumber(vehicle, vehicle.cp.lastReverseRecordnumber);
 	end;
 
-	local nx, ny, nz = localDirectionToWorld(node, lxTipper, 0, lzTipper);
-	courseplay:doTriggerRaycasts(vehicle, 'tipTrigger', false, xTipper, yTipper + 1, zTipper, nx, ny, nz, 15);
+	if vehicle.cp.currentTipTrigger == nil and vehicle.cp.tipperFillLevel > 0 then
+		local nx, ny, nz = localDirectionToWorld(node, lxTipper, 0, lzTipper);
+		courseplay:doTriggerRaycasts(vehicle, 'tipTrigger', 'rev', false, xTipper, yTipper + 1, zTipper, nx, ny, nz);
+	end;
 	courseplay:showDirection(vehicle.cp.DirectionNode,lx,lz);
 
 	return lx,lz,fwd;
