@@ -17,3 +17,6 @@ $RECYCLE.BIN/
 
 # horoman
 .builtpath
+
+# Satis
+SatisInfo.txt

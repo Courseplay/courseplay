@@ -1395,10 +1395,6 @@ function courseplay:askForSpecialSettings(self,object)
 	elseif object.cp.isMRpoettingerEurocat315H then
 		object.cp.realUnfoldDirectionIsReversed = true;
 
-	elseif object.cp.isClaasQuantum3800K then
-		object.cp.frontNode = object.rootNode;
-		object.cp.isPushWagon = true;
-
 	elseif object.cp.isAugerWagon then
 		if object.cp.foldPipeAtWaitPoint then
 			--object.cp.backPointsUnfoldPipe = 1;

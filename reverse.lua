@@ -2,29 +2,25 @@ local abs, max, rad, sin = math.abs, math.max, math.rad, math.sin;
 
 function courseplay:goReverse(vehicle,lx,lz)
 	local fwd = false;
-	local inverse = 1;
-	local tipper = vehicle.tippers[1];
-	if tipper and tipper.cp.isAttacherModule then
-		tipper = vehicle.tippers[2];
+	local workTool = vehicle.tippers[1];
+	if workTool and workTool.cp.isAttacherModule then
+		workTool = vehicle.tippers[2];
 	end;
 	local debugActive = courseplay.debugChannels[13];
-	local isNotValid = vehicle.cp.numWorkTools == 0 or tipper == nil or tipper.cp.inversedNodes == nil or tipper.cp.isPivot == nil or tipper.cp.frontNode == nil or vehicle.cp.mode == 9;
+	local isNotValid = vehicle.cp.numWorkTools == 0 or workTool == nil or workTool.cp.isPivot == nil or not workTool.cp.frontNode or vehicle.cp.mode == 9;
 	if isNotValid then
 		return -lx,-lz,fwd;
 	end;
 
-	if tipper.cp.inversedNodes then
-		inverse = -1;
-	end;
 	if vehicle.cp.lastReverseRecordnumber == nil then
 		vehicle.cp.lastReverseRecordnumber = vehicle.recordnumber -1;
 	end;
 
-	local node = tipper.cp.realTurningNode;
-	local isPivot = tipper.cp.isPivot;
+	local node = workTool.cp.realTurningNode;
+	local isPivot = workTool.cp.isPivot;
 	local xTipper,yTipper,zTipper = getWorldTranslation(node);
 	if debugActive then drawDebugPoint(xTipper, yTipper+5, zTipper, 1, 0 , 0, 1) end;
-	local frontNode = tipper.cp.frontNode;
+	local frontNode = workTool.cp.frontNode;
 	local xFrontNode,yFrontNode,zFrontNode = getWorldTranslation(frontNode);
 	local tcx,tcy,tcz =0,0,0;
 	local index = vehicle.recordnumber + 1;
@@ -37,7 +33,7 @@ function courseplay:goReverse(vehicle,lx,lz)
 					tcx = vehicle.Waypoints[i].cx;
 					tcz = vehicle.Waypoints[i].cz;
 					local _,_,z = worldToLocal(node, tcx,yTipper,tcz);
-					if z*inverse < 0 then
+					if z < 0 then
 						checkValdity = true;
 						break;
 					end;
@@ -62,30 +58,60 @@ function courseplay:goReverse(vehicle,lx,lz)
 		end;
 		local distance = courseplay:distance(xTipper,zTipper, vehicle.Waypoints[i-1].cx ,vehicle.Waypoints[i-1].cz);
 
-		if vehicle.Waypoints[i-1].wait then
-			if tipper.cp.unloadOrFillNode then
-				local _,y,_ = getWorldTranslation(tipper.cp.unloadOrFillNode);
-				local _,_,z = worldToLocal(tipper.cp.unloadOrFillNode, vehicle.Waypoints[i-1].cx, y, vehicle.Waypoints[i-1].cz);
-				if z*inverse >= 0 then
-					courseplay:setRecordNumber(vehicle, i);
+		local waitingPoint;
+		if vehicle.Waypoints[i-1].wait	then waitingPoint = i-1;	end;
+		if vehicle.Waypoints[i].wait 	then waitingPoint = i; 		end;
+		-- HANDLE WAITING POINT WAYPOINT CHANGE
+		if waitingPoint then
+			if workTool.cp.realUnloadOrFillNode then
+				local _,y,_ = getWorldTranslation(workTool.cp.realUnloadOrFillNode);
+				local _,_,z = worldToLocal(workTool.cp.realUnloadOrFillNode, vehicle.Waypoints[waitingPoint].cx, y, vehicle.Waypoints[waitingPoint].cz);
+				if z >= 0 then
+					courseplay:setRecordNumber(vehicle, waitingPoint + 1);
 					courseplay:debug(string.format("%s: Is at waiting point", nameNum(vehicle)), 13);
+					break;
 				end;
 			else
 				if distance <= 2 then
-					courseplay:setRecordNumber(vehicle, i);
+					courseplay:setRecordNumber(vehicle, waitingPoint + 1);
 					courseplay:debug(string.format("%s: Is at waiting point", nameNum(vehicle)), 13);
+					break;
 				end;
 			end;
-			break;
+
+			if distance > 3 then
+				local _,_,z = worldToLocal(node, tcx,yTipper,tcz);
+				if z < 0 then
+					courseplay:setRecordNumber(vehicle, i - 1);
+					break;
+				end;
+			end;
+
+		-- HANDLE LAST REVERSE WAYPOINT CHANGE
 		elseif vehicle.Waypoints[i-1].rev and not vehicle.Waypoints[i].rev then
 			if distance <= 2 then
 				courseplay:setRecordNumber(vehicle, courseplay:getNextFwdPoint(vehicle));
 				courseplay:debug(string.format("%s: Change direction to forward", nameNum(vehicle)), 13);
 			end;
 			break;
-		elseif distance > 5 then
+
+		-- FIND THE RIGHT START REVERSING WAYPOINT
+		elseif vehicle.Waypoints[i-1].rev and not vehicle.Waypoints[i-2].rev then
+			for recNum = index, vehicle.maxnumber do
+				local srX,srZ = vehicle.Waypoints[recNum].cx,vehicle.Waypoints[recNum].cz;
+				local _,_,tsrZ = worldToLocal(node,srX,yTipper,srZ);
+				if tsrZ < -2 then
+					courseplay:setRecordNumber(vehicle, recNum);
+					courseplay:debug(string.format("%s: First reverse point -> Change waypoint to behind trailer: %q", nameNum(vehicle), recNum), 13);
+					break;
+				end;
+			end;
+			break;
+
+		-- HANDLE REVERSE WAYPOINT CHANGE
+		elseif distance > 3 then
 			local _,_,z = worldToLocal(node, tcx,yTipper,tcz);
-			if z*inverse < 0 then
+			if z < 0 then
 				courseplay:setRecordNumber(vehicle, i - 1);
 				break;
 			end;
@@ -94,8 +120,8 @@ function courseplay:goReverse(vehicle,lx,lz)
 
 	if debugActive then
 		drawDebugPoint(tcx, yTipper+3, tcz, 1, 1 , 1, 1)
-		if tipper.cp.unloadOrFillNode then
-			local xUOFNode,yUOFNode,zUOFNode = getWorldTranslation(tipper.cp.unloadOrFillNode);
+		if workTool.cp.realUnloadOrFillNode then
+			local xUOFNode,yUOFNode,zUOFNode = getWorldTranslation(workTool.cp.realUnloadOrFillNode);
 			drawDebugPoint(xUOFNode,yUOFNode+5,zUOFNode, 0, 1 , 0.5, 1);
 		end;
 	end;
@@ -106,52 +132,65 @@ function courseplay:goReverse(vehicle,lx,lz)
 
 	local lxFrontNode, lzFrontNode = AIVehicleUtil.getDriveDirection(frontNode, xTipper,yTipper,zTipper);
 
-	if tipper.cp.inversedNodes then 	-- some tippers have the rootNode backwards, crazy isn't it?
-		lxTipper, lzTipper = -lxTipper, -lzTipper;
-		lxFrontNode, lzFrontNode = -lxFrontNode, -lzFrontNode;
-	end;
-
-	if abs(lxFrontNode) > 0.001 and not tipper.cp.isPivot and tipper.rootNode ~= tipper.cp.frontNode then --backup
-		tipper.cp.isPivot = true;
-		courseplay:debug(nameNum(vehicle) .. " backup tipper.cp.isPivot set: "..tostring(lxFrontNode),13);
-	end;
+	-- TODO: (Claus) This should not be needed anymore. remove when sure!
+	--[[if abs(lxFrontNode) > 0.001 and not workTool.cp.isPivot and workTool.rootNode ~= workTool.cp.frontNode then --backup
+		workTool.cp.isPivot = true;
+		courseplay:debug(nameNum(vehicle) .. " backup workTool.cp.isPivot set: "..tostring(lxFrontNode),13);
+	end;]]
 
 	local lxTractor, lzTractor = 0,0;
-	local waypointAngle = Utils.getYRotationFromDirection(xTipper - tcx, zTipper - tcz);
-	local tipperAngle   = courseplay:getRealWorldRotation(node, inverse);
-	local tractorAngle  = courseplay:getRealWorldRotation(vehicle.cp.DirectionNode);
+
+	local maxTractorAngle = rad(60);
 
 	if isPivot then
 		courseplay:showDirection(frontNode,lxFrontNode, lzFrontNode);
 		lxTractor, lzTractor = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, xFrontNode,yFrontNode,zFrontNode);
 		courseplay:showDirection(vehicle.cp.DirectionNode,lxTractor, lzTractor);
 
-		local pivotAngle    = courseplay:getRealWorldRotation(frontNode, inverse);
+		local rotDelta = (workTool.cp.nodeDistance * (0.5 - (0.023 * workTool.cp.nodeDistance - 0.073)));
+		local trailerToWaypointAngle = courseplay:getLocalYRotationToPoint(node, tcx, yTipper, tcz, -1) * rotDelta;
+		trailerToWaypointAngle = Utils.clamp(trailerToWaypointAngle, -rad(90), rad(90));
 
-		local rearAngleDiff  = (tipperAngle - waypointAngle) - (pivotAngle - tipperAngle);
-		local frontAngleDiff = (pivotAngle - tipperAngle) - (tractorAngle - pivotAngle);
+		local dollyToTrailerAngle = courseplay:getLocalYRotationToPoint(frontNode, xTipper, yTipper, zTipper, -1);
 
-		local angleDiff = (frontAngleDiff - rearAngleDiff) * 2;
+		local tractorToDollyAngle = courseplay:getLocalYRotationToPoint(vehicle.cp.DirectionNode, xFrontNode, yFrontNode, zFrontNode, -1);
+
+		local rearAngleDiff	= (dollyToTrailerAngle - trailerToWaypointAngle);
+		rearAngleDiff = Utils.clamp(rearAngleDiff, -rad(45), rad(45));
+
+		local frontAngleDiff = (tractorToDollyAngle - dollyToTrailerAngle);
+		frontAngleDiff = Utils.clamp(frontAngleDiff, -rad(45), rad(45));
+
+		local angleDiff = (frontAngleDiff - rearAngleDiff) * (1.5 - (workTool.cp.nodeDistance * 0.4 - 0.9) + rotDelta);
+		angleDiff = Utils.clamp(angleDiff, -rad(45), rad(45));
 
 		lx, lz = Utils.getDirectionFromYRotation(angleDiff);
 	else
 		lxTractor, lzTractor = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, xTipper,yTipper,zTipper);
 		courseplay:showDirection(vehicle.cp.DirectionNode,lxTractor, lzTractor);
 
-		local rotDelta = 1 + (max(abs(tipper.cp.nodeDistance),3) * 0.3 - 0.9);
-		local maxAngle = rad(45);
+		local rotDelta = workTool.cp.nodeDistance * 0.3;
+		local trailerToWaypointAngle = courseplay:getLocalYRotationToPoint(node, tcx, yTipper, tcz, -1) * rotDelta;
+		trailerToWaypointAngle = Utils.clamp(trailerToWaypointAngle, -math.rad(90), math.rad(90));
+		local tractorToTrailerAngle = courseplay:getLocalYRotationToPoint(vehicle.cp.DirectionNode, xTipper, yTipper, zTipper, -1);
 
-		local angleDiff     = ((tipperAngle - waypointAngle) - (tractorAngle - tipperAngle)) * rotDelta;
-		angleDiff = Utils.clamp(angleDiff, -maxAngle, maxAngle);
+		local angleDiff = (tractorToTrailerAngle - trailerToWaypointAngle) * (1 + rotDelta);
+
+		-- If we only have stearing axle on the worktool and they turn when reversing, we need to stear allot more to counter this.
+		if workTool.cp.steeringAxleUpdateBackwards then
+			angleDiff = angleDiff * 4;
+		end;
+
+		angleDiff = Utils.clamp(angleDiff, -maxTractorAngle, maxTractorAngle);
 
 		lx, lz = Utils.getDirectionFromYRotation(angleDiff);
 	end;
 
-	if isPivot and ((abs(lxFrontNode) > 0.4 or abs(lxTractor) > 0.5)) then
+	--[[if isPivot and ((abs(lxFrontNode) > 0.4 or abs(lxTractor) > 0.5)) then
 		fwd = true;
 		--lx = -lx
 		courseplay:setRecordNumber(vehicle, vehicle.cp.lastReverseRecordnumber);
-	end;
+	end;]]
 
 	if vehicle.cp.currentTipTrigger == nil and vehicle.cp.tipperFillLevel > 0 then
 		local nx, ny, nz = localDirectionToWorld(node, lxTipper, 0, lzTipper);
@@ -160,6 +199,14 @@ function courseplay:goReverse(vehicle,lx,lz)
 	courseplay:showDirection(vehicle.cp.DirectionNode,lx,lz);
 
 	return lx,lz,fwd;
+end;
+
+function courseplay:getLocalYRotationToPoint(node, x, y, z, direction)
+	direction = direction or 1;
+	local dx, _, dz = worldToLocal(node, x, y, z);
+	dx = dx * direction;
+	dz = dz * direction;
+	return Utils.getYRotationFromDirection(dx, dz);
 end;
 
 function courseplay:showDirection(node,lx,lz)

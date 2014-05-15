@@ -124,6 +124,13 @@ function courseplay:vehicleDelete()
 			end;
 			--courseplay.thirdParty.EifokLiquidManure.hoses[self.msh] = nil;
 		end;
+
+		-- Remove created nodes
+		if self.cp.notesToDelete and #self.cp.notesToDelete > 0 then
+			for _, nodeId in ipairs(self.cp.notesToDelete) do
+				delete(nodeId);
+			end;
+		end
 	end;
 end;
 Vehicle.delete = Utils.prependedFunction(Vehicle.delete, courseplay.vehicleDelete);

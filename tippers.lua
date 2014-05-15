@@ -112,6 +112,11 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 
 	-- MODE 5: TRANSFER
 	elseif vehicle.cp.mode == 5 then
+		-- For reverse testing and only for developers!!!!
+		if isImplement and courseplay.isDeveloper then
+			hasWorkTool = true;
+			vehicle.tippers[#vehicle.tippers + 1] = workTool;
+		end;
 		-- DO NOTHING
 
 	-- MODE 6: FIELDWORK
@@ -607,12 +612,12 @@ end
 function courseplay:getReverseProperties(vehicle, workTool)
 	courseplay:debug(('getReverseProperties(%q, %q)'):format(nameNum(vehicle), nameNum(workTool)), 13);
 
+	-- Make sure they are reset so they wont conflict when changing worktools
+	workTool.cp.frontNode		= nil;
+	workTool.cp.isPivot			= nil;
+
 	if workTool == vehicle then
 		courseplay:debug('\tworkTool is vehicle (steerable) -> return', 13);
-		return;
-	end;
-	if not workTool.wheels or #workTool.wheels == 0 then
-		courseplay:debug('\tworkTool has no wheels -> return', 13);
 		return;
 	end;
 	if vehicle.cp.hasSpecializationShovel then
@@ -623,103 +628,131 @@ function courseplay:getReverseProperties(vehicle, workTool)
 		courseplay:debug('\tworkTool has "Shovel" spec -> return', 13);
 		return;
 	end;
+	if not courseplay:isReverseAbleWheeledWorkTool(workTool) then
+		courseplay:debug('\tworkTool do not need reverse properties -> return', 13);
+		return;
+	end;
 
 	--------------------------------------------------
 
-	-- We only need to set this once.
-	if not workTool.cp.realTurningNode then
-		-- Find the real trailer turning point
-		workTool.cp.realTurningNode = courseplay:createRealTrailerTurningNode(vehicle, workTool);
+	if not workTool.cp.distances then
+		workTool.cp.distances = courseplay:getDistances(workTool);
 	end;
 
-	-- We only need to set this once.
-	if workTool.cp.unloadOrFillNode == nil then
-		-- We need to make sure we have all the info when creating the node.
-		courseplay:askForSpecialSettings(vehicle, workTool);
+	workTool.cp.realTurningNode = courseplay:getRealTurningNode(workTool);
 
-		workTool.cp.unloadOrFillNode = courseplay:createUnloadOrFillNode(vehicle, workTool);
-	end;
+	workTool.cp.realUnloadOrFillNode = courseplay:getRealUnloadOrFillNode(workTool);
 
-	-- TODO: (Claus) Redo the whole frontNode setup.
-	if workTool.attacherVehicle == vehicle or (#vehicle.tippers > 0 and vehicle.tippers[1] ~= workTool and vehicle.tippers[1].cp.isAttacherModule) then
-		workTool.cp.frontNode = getParent(workTool.attacherJoint.node);
+	if workTool.attacherVehicle == vehicle or workTool.attacherVehicle.cp.isAttacherModule then
+		workTool.cp.frontNode = courseplay:getRealTrailerFrontNode(workTool);
 	else
-		workTool.cp.frontNode = getParent(workTool.attacherVehicle.attacherJoint.node);
-		courseplay:debug(string.format('\tworkTool %q has dolly', nameNum(workTool)), 13);
+		workTool.cp.frontNode = courseplay:getRealDollyFrontNode(workTool.attacherVehicle);
+		if workTool.cp.frontNode then
+			courseplay:debug(string.format('\tworkTool %q has dolly', nameNum(workTool)), 13);
+		else
+			courseplay:debug(string.format('\tworkTool %q has invalid dolly -> return', nameNum(workTool)), 13);
+			return;
+		end;
 	end;
 
-	local xTipper,yTipper,zTipper = getWorldTranslation(workTool.cp.realTurningNode);
-
-	workTool.cp.nodeDistance = courseplay:getRealTrailerDistanceToPivot(vehicle, workTool);
+	workTool.cp.nodeDistance = courseplay:getRealTrailerDistanceToPivot(workTool);
 	courseplay:debug("\ttz: "..tostring(workTool.cp.nodeDistance).."  workTool.cp.realTurningNode: "..tostring(workTool.cp.realTurningNode), 13);
 
-	workTool.cp.inversedNodes = courseplay:isInvertedTrailerNode(vehicle, workTool);
-
-	local lxFrontNode, lzFrontNode = AIVehicleUtil.getDriveDirection(workTool.cp.frontNode, xTipper,yTipper,zTipper);
-	courseplay:debug("\tlxFrontNode: "..tostring(lxFrontNode), 13);
-	if math.abs(lxFrontNode) <= 0.001 or workTool.rootNode == workTool.cp.frontNode then
+	if workTool.cp.realTurningNode == workTool.cp.frontNode then
 		workTool.cp.isPivot = false;
 	else
 		workTool.cp.isPivot = true;
 	end;
-	if workTool.rootNode == workTool.cp.frontNode then
-		courseplay:debug('\tworkTool.rootNode == workTool.cp.frontNode', 13);
+
+	if workTool.cp.realTurningNode == workTool.cp.frontNode then
+		courseplay:debug('\tworkTool.cp.realTurningNode == workTool.cp.frontNode', 13);
 	end;
 
-	courseplay:debug(('\t--> inversedNodes=%s, isPivot=%s, frontNode=%s'):format(tostring(workTool.cp.inversedNodes), tostring(workTool.cp.isPivot), tostring(workTool.cp.frontNode)), 13);
+	courseplay:debug(('\t--> isPivot=%s, frontNode=%s'):format(tostring(workTool.cp.isPivot), tostring(workTool.cp.frontNode)), 13);
 end;
 
-function courseplay:isInvertedTrailerNode(vehicle, tipper)
-	local x,y,z = getWorldTranslation(vehicle.rootNode);
-	local xTipper,yTipper,zTipper = getWorldTranslation(tipper.rootNode);
-	local _,_,tz = worldToLocal(tipper.rootNode, x,y,z);
-	return tz < 0;
+function courseplay:isInvertedTrailerNode(workTool, node)
+	-- Use node if set else use the workTool.rootNode
+	node = node or workTool.rootNode;
+
+	-- Check if the node is in front of the attacher node
+	local xTipper,yTipper,zTipper = getWorldTranslation(node);
+	local attacherNode = workTool.attacherJoint.node;
+	local rxTemp, ryTemp, rzTemp = getRotation(attacherNode);
+	setRotation(attacherNode, 0, 0, 0);
+	local _,_,direction = worldToLocal(attacherNode, xTipper,yTipper,zTipper);
+	setRotation(attacherNode, rxTemp, ryTemp, rzTemp);
+	local isInFront = direction >= 0;
+
+	-- Check if it's reversed based on if it's in front of the attacher node or not
+	local x,y,z = getWorldTranslation(attacherNode);
+	local _,_,tz = worldToLocal(node, x,y,z);
+	return isInFront and (tz > 0) or (tz < 0);
 end;
 
-function courseplay:getRealTrailerDistanceToPivot(vehicle, tipper)
-	-- In case it's not set.
-	if not tipper.cp.realTurningNode then
-		-- Find the real trailer turning point
-		tipper.cp.realTurningNode = courseplay:createRealTrailerTurningNode(vehicle, tipper);
-	end;
-
-	local invert = courseplay:isInvertedTrailerNode(vehicle, tipper) and -1 or 1;
-
-	if tipper.attacherJoint.rootNode == tipper.rootNode then
-		local x,y,z = getWorldTranslation(tipper.attacherJoint.node);
-		local _,_,tz = worldToLocal(tipper.cp.realTurningNode, x,y,z);
-		return tz*invert;
-	else
-	    -- Attempt to find the pivot node.
-		local node, _ = courseplay:findJointNodeConnectingToNode(tipper, tipper.attacherJoint.rootNode, tipper.rootNode);
-
-		if node then
-			local x,y,z = getWorldTranslation(tipper.attacherJoint.node);
-			local _,_,tz = worldToLocal(tipper.cp.realTurningNode, x,y,z);
-			return tz*invert;
-		else
-		    return 3*invert;
+local allowedJointType = {};
+function courseplay:isReverseAbleWheeledWorkTool(workTool)
+	if #allowedJointType == 0 then
+		local jointTypeList = {"implement", "trailer", "trailer", "trailer", "trailer"};
+		for _,jointType in ipairs(jointTypeList) do
+			local index = Vehicle.jointTypeNameToInt[jointType];
+			if index then
+				table.insert(allowedJointType, index, true);
+			end;
 		end;
 	end;
+
+	if allowedJointType[workTool.attacherJoint.jointType] and workTool.wheels and #workTool.wheels > 0 then
+		-- Attempt to find the pivot node.
+		local node, _ = courseplay:findJointNodeConnectingToNode(workTool, workTool.attacherJoint.rootNode, workTool.rootNode);
+		if node then
+			-- Trailers
+			if (workTool.attacherJoint.jointType ~= Vehicle.jointTypeNameToInt["implement"])
+			-- Implements with pivot and wheels that do not lift the wheels from the ground.
+			or (node ~= workTool.rootNode and workTool.attacherJoint.jointType == Vehicle.jointTypeNameToInt["implement"] and not workTool.attacherJoint.topReferenceNode)
+			then
+				return true;
+			end;
+		end;
+	end;
+
+	return false;
 end;
 
---- courseplay:findJointNodeConnectingToNode(tipper, fromNode, toNode)
+function courseplay:getRealTrailerDistanceToPivot(workTool)
+	-- Attempt to find the pivot node.
+	local node, backTrack = courseplay:findJointNodeConnectingToNode(workTool, workTool.attacherJoint.rootNode, workTool.rootNode);
+	if node then
+		local x,y,z;
+		if node == workTool.rootNode then
+			x,y,z = getWorldTranslation(workTool.attacherJoint.node);
+		else
+			x,y,z = getWorldTranslation(node);
+		end;
+		local _,_,tz = worldToLocal(courseplay:getRealTurningNode(workTool), x,y,z);
+		return tz;
+	else
+		return 3;
+	end;
+end;
+
+--- courseplay:findJointNodeConnectingToNode(workTool, fromNode, toNode)
 --	Returns: (node, backtrack)
 --		node will return either:		1. The jointNode that connects to the toNode,
 --										2. The toNode if no jointNode is found but the fromNode is inside the same component as the toNode
 --										3. nil in case none of the above fails.
 --		backTrack will return either:	1. A table of all the jointNodes found from fromNode to toNode, if the jointNode that connects to the toNode is found.
 --										2: nil if no jointNode is found.
-function courseplay:findJointNodeConnectingToNode(tipper, fromNode, toNode)
+function courseplay:findJointNodeConnectingToNode(workTool, fromNode, toNode)
 	-- Attempt to find the jointNode by backtracking the compomentJoints.
-	for index, component in ipairs(tipper.components) do
+	for index, component in ipairs(workTool.components) do
 		if component.node == fromNode then
-			for _, joint in ipairs(tipper.componentJoints) do
+			for _, joint in ipairs(workTool.componentJoints) do
 				if joint.componentIndices[2] == index then
-					if tipper.components[joint.componentIndices[1]].node == toNode then
+					if workTool.components[joint.componentIndices[1]].node == toNode then
 						return joint.jointNode, {joint.jointNode};
 					else
-						local node, backTrack = courseplay:findJointNodeConnectingToNode(tipper, tipper.components[joint.componentIndices[1]].node, toNode);
+						local node, backTrack = courseplay:findJointNodeConnectingToNode(workTool, workTool.components[joint.componentIndices[1]].node, toNode);
 						if backTrack then table.insert(backTrack, 1, joint.jointNode); end;
 					    return node, backTrack;
 					end;
@@ -742,105 +775,203 @@ function courseplay:findJointNodeConnectingToNode(tipper, fromNode, toNode)
 	return nil, nil;
 end;
 
-function courseplay:createRealTrailerTurningNode(vehicle, tipper)
-	if #tipper.wheels > 0 then
-		local _,yTrailer,_ = getWorldTranslation(tipper.rootNode);
-		local minDis, maxDis = 0, 0;
-		local minDisRot, maxDisRot = 0, 0;
-		local haveStraitWheels, haveRotatingWheels = false, false;
+function courseplay:createNewLinkedNode(object, nodeName, linkToNode)
+	if not object.cp.notesToDelete then object.cp.notesToDelete = {}; end;
+
+	local node = createTransformGroup(nodeName);
+	link(linkToNode, node);
+	table.insert(object.cp.notesToDelete, node);
+
+	return node;
+end;
+
+function courseplay:getRealTurningNode(workTool)
+	if not workTool.cp.turningNode then
+		local node = courseplay:createNewLinkedNode(workTool, "realTurningNode", workTool.rootNode);
+
 		local Distance = 0;
+		local invert = courseplay:isInvertedTrailerNode(workTool) and -1 or 1;
+		local steeringAxleScale = 0;
 
-		local invert = courseplay:isInvertedTrailerNode(vehicle, tipper) and -1 or 1;
+		-- Get the distance from root node to the whells turning point.
+		if workTool.wheels and #workTool.wheels > 0 then
+			local _,yTrailer,_ = getWorldTranslation(workTool.rootNode);
+			local minDis, maxDis = 0, 0;
+			local minDisRot, maxDisRot = 0, 0;
+			local haveStraitWheels, haveRotatingWheels = false, false;
+			local steeringAxleScaleMin, steeringAxleScaleMax = 0, 0;
 
-		-- Sort wheels in turning wheels and strait wheels and find the min and max distance for each set.
-		for i = 1, #tipper.wheels do
-			if tipper.wheels[i].node == tipper.rootNode then
-				local x,_,z = getWorldTranslation(tipper.wheels[i].driveNode);
-				local _,_,dis = worldToLocal(tipper.rootNode, x, yTrailer, z);
-				if tipper.wheels[i].steeringAxleScale == 0 then
-					if haveStraitWheels then
-						if dis < minDis then minDis = dis; end;
-						if dis > maxDis then maxDis = dis; end;
+			-- Sort wheels in turning wheels and strait wheels and find the min and max distance for each set.
+			for i = 1, #workTool.wheels do
+				if workTool.wheels[i].node == workTool.rootNode and workTool.wheels[i].lateralStiffness > 0 then
+					local x,_,z = getWorldTranslation(workTool.wheels[i].driveNode);
+					local _,_,dis = worldToLocal(workTool.rootNode, x, yTrailer, z);
+					-- TODO: (Claus) Update to check if steering axle update backwards + fix the offset on inversed node vehicles
+					dis = dis * invert;
+					if workTool.wheels[i].steeringAxleScale == 0 then
+						if haveStraitWheels then
+							if dis < minDis then minDis = dis; end;
+							if dis > maxDis then maxDis = dis; end;
+						else
+							minDis = dis;
+							maxDis = dis;
+							haveStraitWheels = true;
+						end;
 					else
-						minDis = dis;
-						maxDis = dis;
-						haveStraitWheels = true;
+						if workTool.wheels[i].steeringAxleScale < 0 and workTool.wheels[i].steeringAxleScale < steeringAxleScaleMin then
+							steeringAxleScaleMin = workTool.wheels[i].steeringAxleScale;
+						elseif workTool.wheels[i].steeringAxleScale > 0 and workTool.wheels[i].steeringAxleScale > steeringAxleScaleMax then
+							steeringAxleScaleMax = workTool.wheels[i].steeringAxleScale;
+						end;
+						if haveRotatingWheels then
+							if dis < minDisRot then minDisRot = dis; end;
+							if dis > maxDisRot then maxDisRot = dis; end;
+						else
+							minDisRot = dis;
+							maxDisRot = dis;
+							haveRotatingWheels = true;
+						end;
 					end;
+				end;
+			end;
+
+			-- Calculate strait wheel median distance
+			if haveStraitWheels then
+				if minDis == maxDis then
+					Distance = minDis;
 				else
-					if haveRotatingWheels then
-						if dis < minDisRot then minDisRot = dis; end;
-						if dis > maxDisRot then maxDisRot = dis; end;
-					else
-						minDisRot = dis;
-						maxDisRot = dis;
-						haveRotatingWheels = true;
-					end;
+					local dif = minDis - maxDis;
+					Distance = minDis + (dif/2);
+				end;
+
+			-- Calculate turning wheel median distance if there are no strait wheels.
+			elseif haveRotatingWheels then
+				steeringAxleScale = steeringAxleScaleMin + steeringAxleScaleMax;
+				if minDisRot == maxDisRot then
+					Distance = minDisRot;
+				else
+					local dif = minDisRot - maxDisRot;
+					Distance = minDisRot + (dif/2);
 				end;
 			end;
 		end;
 
-		-- Calculate strait wheel median distance
-		if haveStraitWheels then
-			if minDis == maxDis then
-				Distance = minDis;
-			else
-			    local dif = minDis - maxDis;
-				Distance = minDis + (dif/2);
-			end;
-
-		-- Calculate turning wheel median distance if there are no strait wheels.
-		elseif haveRotatingWheels then
-			if minDisRot == maxDisRot then
-				Distance = minDisRot;
-			else
-				local dif = minDisRot - maxDisRot;
-				Distance = minDisRot + (dif/2);
-			end;
-		end;
-
-		-- If the distance is not 0 then create an transformGroup and place it at the right location and return the node of it.
 		if Distance ~= 0 then
-			local node = createTransformGroup("realTurningNode");
-			link(tipper.rootNode, node);
-			setTranslation(node, 0, 0, Distance * invert);
-			return node;
+			setTranslation(node, 0, 0, Distance);
 		end;
+		if courseplay:isInvertedTrailerNode(workTool, node) then
+			setRotation(node, 0, math.rad(180), 0);
+		end;
+
+		if not haveStraitWheels and workTool.steeringAxleUpdateBackwards and steeringAxleScale < 0 then
+			local tempNode, _ = courseplay:findJointNodeConnectingToNode(workTool, workTool.attacherJoint.rootNode, workTool.rootNode);
+			if tempNode then
+				local x, y, z;
+				if tempNode == workTool.rootNode then
+					x, y, z = getWorldTranslation(workTool.attacherJoint.node);
+				else
+					x, y, z = getWorldTranslation(tempNode);
+				end;
+				local _,_,dis = worldToLocal(node, x, y, z);
+				local offset = (dis * math.abs(steeringAxleScale)) + Distance;
+				setTranslation(node, 0, 0, offset);
+				workTool.cp.steeringAxleUpdateBackwards = true;
+			end;
+		end;
+
+		workTool.cp.turningNode = node;
 	end;
 
-	-- Return the tipper's rootNode if all the above fails.
-	return tipper.rootNode;
+	return workTool.cp.turningNode;
 end;
 
-function courseplay:createUnloadOrFillNode(vehicle, tipper)
-	-- Make sure the realTurningNode is set.
-	if not tipper.cp.realTurningNode then
-		-- Find the real trailer turning point
-		tipper.cp.realTurningNode = courseplay:createRealTrailerTurningNode(vehicle, tipper);
-	end;
-	local invert = courseplay:isInvertedTrailerNode(vehicle, tipper) and -1 or 1;
+function courseplay:getRealUnloadOrFillNode(workTool)
+	if workTool.cp.unloadOrFillNode == nil then
+		-- BALELOADERS
+		if courseplay:isBaleLoader(workTool) or (courseplay:isSpecialBaleLoader(workTool) and workTool.cp.specialUnloadDistance) then
+			-- Create the new node and link it to realTurningNode
+			local node = courseplay:createNewLinkedNode(workTool, "UnloadOrFillNode", courseplay:getRealTurningNode(workTool));
 
-	if courseplay:isBaleLoader(tipper) then
-		local Distance = (tipper.cp.specialUnloadDistance or -5) * invert;
-		local node = createTransformGroup("UnloadOrFillNode");
-		link(tipper.cp.realTurningNode, node);
-		setTranslation(node, 0, 0, Distance);
-		return node;
-	elseif courseplay:isSpecialBaleLoader(tipper) then
-		if tipper.cp.specialUnloadDistance then
-			local Distance = tipper.cp.specialUnloadDistance * invert;
-			local node = createTransformGroup("UnloadOrFillNode");
-			link(tipper.cp.realTurningNode, node);
+			-- make sure we set the node distance position
+			local Distance = workTool.cp.specialUnloadDistance or -5;
 			setTranslation(node, 0, 0, Distance);
-			return node;
+
+			workTool.cp.unloadOrFillNode = node;
+
+		-- NORMAL FILLABLE TRAILERS WITH ALLOW TO BE FILLED FROM THE AIR
+		elseif workTool.cp.hasSpecializationFillable and workTool.allowFillFromAir then
+			-- Create the new node and link it to exactFillRootNode
+			local node = courseplay:createNewLinkedNode(workTool, "UnloadOrFillNode", workTool.exactFillRootNode);
+
+			-- Make sure ve set the height position to the same as the realTurningNode
+			local x, y, z = getWorldTranslation(courseplay:getRealTurningNode(workTool));
+			local _,Height,_ = worldToLocal(workTool.exactFillRootNode, x, y, z);
+			setTranslation(node, 0, Height, 0);
+
+			if courseplay:isInvertedTrailerNode(workTool, node) then
+				setRotation(node, 0, math.rad(180), 0);
+			end;
+
+			workTool.cp.unloadOrFillNode = node;
+
+		-- NONE OF THE ABOVE
 		else
-			return clone(tipper.cp.realTurningNode, true);
+			workTool.cp.unloadOrFillNode = false;
 		end;
-	elseif tipper.cp.hasSpecializationFillable and tipper.allowFillFromAir then
-		return tipper.exactFillRootNode;
 	end;
 
-	-- Return false, so this will only be runned once.
-	return false;
+	return workTool.cp.unloadOrFillNode;
+end;
+
+function courseplay:getRealTrailerFrontNode(workTool)
+	if not workTool.cp.realFrontNode then
+		local jointNode, backtrack = courseplay:findJointNodeConnectingToNode(workTool, workTool.attacherJoint.rootNode, workTool.rootNode);
+		if jointNode and backtrack and workTool.attacherJoint.jointType ~= Vehicle.jointTypeNameToInt["implement"] then
+			local rootNode;
+			for _, joint in ipairs(workTool.componentJoints) do
+				if joint.jointNode == jointNode then
+					rootNode = workTool.components[joint.componentIndices[2]].node;
+					break;
+				end;
+			end;
+
+			if rootNode then
+				local node = courseplay:createNewLinkedNode(workTool, "realFrontNode", rootNode);
+				local x, y, z = getWorldTranslation(jointNode);
+				local _,_,delta = worldToLocal(rootNode, x, y, z);
+
+				setTranslation(node, 0, 0, delta);
+
+				if courseplay:isInvertedTrailerNode(workTool, node) then
+					setRotation(node, 0, math.rad(180), 0);
+				end;
+
+				workTool.cp.realFrontNode = node;
+			end;
+		else
+			workTool.cp.realFrontNode = courseplay:getRealTurningNode(workTool);
+		end;
+	end;
+
+	return workTool.cp.realFrontNode
+end;
+
+function courseplay:getRealDollyFrontNode(dolly)
+	if dolly.cp.realDollyFrontNode == nil then
+		local node, _ = courseplay:findJointNodeConnectingToNode(dolly, dolly.attacherJoint.rootNode, dolly.rootNode);
+		if node then
+			-- Trailers without pivote
+			if (node == dolly.rootNode and dolly.attacherJoint.jointType ~= Vehicle.jointTypeNameToInt["implement"])
+			-- Implements with pivot and wheels that do not lift the wheels from the ground.
+			or (node ~= dolly.rootNode and dolly.attacherJoint.jointType == Vehicle.jointTypeNameToInt["implement"] and not dolly.attacherJoint.topReferenceNode) then
+				dolly.cp.realDollyFrontNode = courseplay:getRealTurningNode(dolly);
+			else
+				dolly.cp.realDollyFrontNode = false;
+			end;
+		end;
+	end;
+
+	return dolly.cp.realDollyFrontNode
 end;
 
 function courseplay:getTotalLengthOnWheels(vehicle)
@@ -984,13 +1115,13 @@ function courseplay:getDistances(object)
 	-- IMPLEMENTS OR TRAILERS
 	else
 		local node = object.attacherJoint.node;
-		local nodeLength = 0;
 		if object.attacherJoint.rootNode ~= object.rootNode then
 			local tempNode, backTrack = courseplay:findJointNodeConnectingToNode(object, object.attacherJoint.rootNode, object.rootNode);
 			if tempNode and backTrack then
 				node = tempNode;
 				local tnx, tny, tnz = getWorldTranslation(tempNode);
 				local xdis,ydis,dis = worldToLocal(object.attacherJoint.node, tnx, tny, tnz);
+				local nodeLength = 0;
 				for i = 1, #backTrack do
 					local btx, bty, btz = getWorldTranslation(backTrack[i]);
 					if i == 1 then
@@ -1009,18 +1140,17 @@ function courseplay:getDistances(object)
 					setRotation(tempNode, tnrxTemp, tnryTemp, tnrzTemp);
 					courseplay:debug(('%s: backTrack[%d](node: %s) Length = %.2f'):format(nameNum(object), i, tostring(backTrack[i]), math.abs(dis)), 6);
 					nodeLength = nodeLength + math.abs(dis);
-
-					-- TODO: (Claus) Make the nodeLength into attacherJointToPivot
 				end;
 
-				courseplay:debug(('%s: Length of attacherJoint to pivot = %.2f'):format(nameNum(object), nodeLength), 6);
+				distances.attacherJointToPivot = nodeLength
+				courseplay:debug(('%s: attacherJointToPivot=%.2f'):format(nameNum(object), distances.attacherJointToPivot), 6);
 			end;
 		end;
 
 		local nx, ny, nz = getWorldTranslation(node);
 		-- Find the distance from attacherJoint to rear wheel
 		if object.wheels and #object.wheels > 0 then
-			distances.attacherJointToRearWheel = 0;
+			local length = 0;
 			for _, wheel in ipairs(object.wheels) do
 				local wdnrxTemp, wdnryTemp, wdnrzTemp = getRotation(wheel.driveNode);
 				setRotation(wheel.driveNode, 0, 0, 0);
@@ -1030,12 +1160,17 @@ function courseplay:getDistances(object)
 				setRotation(wheel.repr, wreprxTemp, wrepryTemp, wreprzTemp);
 				setRotation(wheel.driveNode, wdnrxTemp, wdnryTemp, wdnrzTemp);
 
-				if math.abs(dis) + nodeLength > distances.attacherJointToRearWheel then
-					distances.attacherJointToRearWheel = math.abs(dis) + nodeLength;
+				if math.abs(dis) > length then
+					length = math.abs(dis);
 				end;
 			end;
 
-			-- TODO: (Claus) Make the pivotToRearWheel distance if trailer is pivoted
+			if distances.attacherJointToPivot then
+				distances.pivotToRearWheel = length;
+				distances.attacherJointToRearWheel = distances.attacherJointToPivot + length;
+			else
+				distances.attacherJointToRearWheel = length;
+			end;
 
 			courseplay:debug(('%s: attacherJointToRearWheel=%.2f'):format(nameNum(object), distances.attacherJointToRearWheel), 6);
 		end;
@@ -1051,11 +1186,20 @@ function courseplay:getDistances(object)
 				if not distances.attacherJointToRearTrailerAttacherJoints then
 					distances.attacherJointToRearTrailerAttacherJoints = {};
 				end;
-				distances.attacherJointToRearTrailerAttacherJoints[attacherJoint.jointType] = math.abs(dis) + nodeLength;
+
+				if distances.attacherJointToPivot then
+					if not distances.pivotToRearTrailerAttacherJoints then
+						distances.pivotToRearTrailerAttacherJoints = {};
+					end;
+					distances.pivotToRearTrailerAttacherJoints[attacherJoint.jointType] = math.abs(dis);
+					distances.attacherJointToRearTrailerAttacherJoints[attacherJoint.jointType] = distances.attacherJointToPivot + math.abs(dis);
+				else
+					distances.attacherJointToRearTrailerAttacherJoints[attacherJoint.jointType] = math.abs(dis);
+				end;
+
 				courseplay:debug(('%s: attacherJointToRearTrailerAttacherJoints[%d]=%.2f'):format(nameNum(object), attacherJoint.jointType, distances.attacherJointToRearTrailerAttacherJoints[attacherJoint.jointType]), 6);
 			end;
 		end;
-		-- TODO: (Claus) Make the pivotToRearTrailerAttacherJoints distance if trailer is pivoted.
 	end;
 
 	return distances;
