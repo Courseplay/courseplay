@@ -567,7 +567,7 @@ function courseplay.fields:getFruitTypes()
 					index = fruitType.index,
 					name = fruitType.name,
 					nameI18N = fillTypeDesc.nameI18N,
-					sucText = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE'):format(fillTypeDesc.nameI18N)
+					sucText = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE'):format(tostring(fillTypeDesc.nameI18N))
 				};
 
 				if fillType and g_currentMission.fillTypeOverlays[fillType] then

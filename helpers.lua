@@ -862,7 +862,7 @@ function courseplay.utils:getFileNameFromPath(filePath)
 		idx = filePath:match('^.*()\\'); -- check for last backward slash
 	end;
 	if idx then
-		fileName = filePath:sub(idx + 1, 9999);
+		fileName = filePath:sub(idx + 1, 500);
 	end;
 
 	return fileName;

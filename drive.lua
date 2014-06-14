@@ -77,10 +77,9 @@ function courseplay:drive(self, dt)
 	-- HORIZONTAL/VERTICAL OFFSET
 	if courseplay:getIsVehicleOffsetValid(self) then
 		cx, cz = courseplay:getVehicleOffsettedCoords(self, cx, cz);
-	end;
-
-	if courseplay.debugChannels[12] and self.cp.isTurning == nil then
-		drawDebugPoint(cx, cty+3, cz, 0, 1 , 1, 1);
+		if courseplay.debugChannels[12] and self.cp.isTurning == nil then
+			drawDebugPoint(cx, cty+3, cz, 0, 1 , 1, 1);
+		end;
 	end;
 
 	self.cp.distanceToTarget = courseplay:distance(cx, cz, ctx, ctz);
@@ -952,7 +951,9 @@ function courseplay:openCloseCover(vehicle, dt, showCover, isAtTipTrigger)
 end;
 
 function courseplay:refillSprayer(vehicle, fillLevelPct, driveOn, allowedToDrive, lx, lz, dt)
-	for i,activeTool in pairs(vehicle.tippers) do
+	-- for i,activeTool in pairs(vehicle.tippers) do --TODO (Jakob): delete
+	for i=1, vehicle.cp.numWorkTools do
+		local activeTool = vehicle.tippers[i];
 		local isSpecialSprayer = false
 		local fillTrigger;
 		isSpecialSprayer, allowedToDrive, lx, lz = courseplay:handleSpecialSprayer(vehicle, activeTool, fillLevelPct, driveOn, allowedToDrive, lx, lz, dt, 'pull');
@@ -979,7 +980,7 @@ function courseplay:refillSprayer(vehicle, fillLevelPct, driveOn, allowedToDrive
 			if fillTrigger == nil then
 				if activeTool.sprayerFillTriggers ~= nil and #activeTool.sprayerFillTriggers > 0 then
 					fillTrigger = activeTool.sprayerFillTriggers[1];
-					vehicle.cp.fillTrigger = nil
+					vehicle.cp.fillTrigger = nil; --TODO (Jakob): if i == vehicle.cp.numWorkTools then vehicle.cp.fillTrigger = nil; end; (prevent nilling if there are other tools left to be filled)
 				end;
 			end;
 

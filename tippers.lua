@@ -629,7 +629,7 @@ function courseplay:getReverseProperties(vehicle, workTool)
 		return;
 	end;
 	if not courseplay:isReverseAbleWheeledWorkTool(workTool) then
-		courseplay:debug('\tworkTool do not need reverse properties -> return', 13);
+		courseplay:debug('\tworkTool doesn\'t need reverse properties -> return', 13);
 		return;
 	end;
 
@@ -1313,7 +1313,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 			--local positionInSilo = -1;
 			local distanceToTrigger, bestTipReferencePoint = ctt:getTipDistanceFromTrailer(tipper);
 			local trailerInTipRange = g_currentMission:getIsTrailerInTipRange(tipper, ctt, bestTipReferencePoint);
-			courseplay:debug(nameNum(vehicle)..": distanceToTrigger: "..tostring(distanceToTrigger).."  /bestTipReferencePoint: "..tostring(bestTipReferencePoint).." /trailerInTipRange: "..tostring(trailerInTipRange), 2);
+			courseplay:debug(('%s: distanceToTrigger=%s, bestTipReferencePoint=%s -> trailerInTipRange=%s'):format(nameNum(vehicle), tostring(distanceToTrigger), tostring(bestTipReferencePoint), tostring(trailerInTipRange)), 2);
 			local goForTipping = false;
 			local unloadWhileReversing = false; -- Used by Reverse BGA Tipping
 			local isRePositioning = false; -- Used by Reverse BGA Tipping

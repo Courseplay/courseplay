@@ -316,7 +316,7 @@ function courseplay:setNameVariable(workTool)
 	elseif workTool.cp.xmlFileName == 'fahrM66.xml' or workTool.cp.xmlFileName == 'fahrM66EX.xml' then
 		workTool.cp.isFahrM66 = true;
 		if not courseplay.trafficCollisionIgnoreList[workTool.components[2].node] then
-			courseplay.trafficCollisionIgnoreList[workTool.components[2].node] = true; -- adding the Farh M66 pipeCol to the ignore list if not set
+			courseplay.trafficCollisionIgnoreList[workTool.components[2].node] = true; -- adding the Fahr M66 pipeCol to the ignore list if not set
 		end;
 	elseif workTool.cp.xmlFileName == 'caseIH7130.xml' then
 		workTool.cp.isCaseIH7130 = true;
