@@ -534,7 +534,21 @@ function courseplay:updateAllTriggers()
 				end;
 			end;
 		end
-	end
+	end;
+
+	-- UPK tipTriggers
+	if g_upkTipTrigger then
+		for i,trigger in ipairs(g_upkTipTrigger) do
+			local triggerId = trigger.triggerId;
+			if triggerId and trigger.isEnabled and trigger.type == 'tiptrigger' then
+				trigger.isUpkTipTrigger = true;
+				courseplay.triggers.tipTriggers[triggerId] = trigger;
+				courseplay.triggers.all[triggerId] = trigger;
+				tipTriggersCount = tipTriggersCount + 1;
+				allCount = allCount + 1;
+			end;
+		end;
+	end;
 
 	--tipTriggers objects
 	if g_currentMission.tipTriggers ~= nil then
