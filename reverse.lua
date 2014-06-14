@@ -87,6 +87,8 @@ function courseplay:goReverse(vehicle,lx,lz)
 				end;
 			end;
 
+			break;
+
 		-- HANDLE LAST REVERSE WAYPOINT CHANGE
 		elseif vehicle.Waypoints[i-1].rev and not vehicle.Waypoints[i].rev then
 			if distance <= 2 then
