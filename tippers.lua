@@ -182,7 +182,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 
 	--------------------------------------------------
 
-	if not isImplement or hasWorkTool then
+	if not isImplement or hasWorkTool or workTool.cp.isNonTippersHandledWorkTool then
 		-- SPECIAL SETTINGS
 		courseplay:askForSpecialSettings(vehicle, workTool);
 

@@ -179,12 +179,15 @@ function courseplay:setNameVariable(workTool)
 	elseif workTool.moescha ~= nil and workTool.cp.xmlFileName == 'moescha.xml' then
 		workTool.cp.isEifokZunhammerMoescha = true;
 		workTool.cp.isEifokZunhammerAttachable = true;
+		workTool.cp.isNonTippersHandledWorkTool = true;
 	elseif workTool.cp.xmlFileName == 'vogelsang.xml' then
 		workTool.cp.isEifokZunhammerVogelsang = true;
 		workTool.cp.isEifokZunhammerAttachable = true;
+		workTool.cp.isNonTippersHandledWorkTool = true;
 	elseif workTool.vibro ~= nil and workTool.cp.xmlFileName == 'zunhammerVibro.xml' then
 		workTool.cp.isEifokZunhammerVibro = true;
 		workTool.cp.isEifokZunhammerAttachable = true;
+		workTool.cp.isNonTippersHandledWorkTool = true;
 
 	-- Guellepack v2 [Bayerbua]
 	elseif workTool.fillerArmInRange ~= nil  then
@@ -826,11 +829,11 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		return false, allowedToDrive
 
 	--Urf-specialisation
-	elseif workTool.cp.hasUrfSpec then
-		if workTool.sprayFillLevel == 0 and workTool.isFertilizing > 1 then
-			self.cp.urfStop = true
-		end
-		return false, allowedToDrive
+	elseif workTool.cp.hasUrfSpec and workTool.sprayFillLevel ~= nil and workTool.isFertilizing ~= nil then
+		if workTool.sprayFillLevel == 0 and ((type(workTool.isFertilizing) == 'number' and workTool.isFertilizing > 1) or workTool.isFertilizing == true) then
+			self.cp.urfStop = true;
+		end;
+		return false, allowedToDrive;
 
 	--KvernelandMowerPack
 	elseif workTool.cp.isKvernelandMowerPack then
@@ -1324,7 +1327,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 	return false, allowedToDrive;
 end
 
-function courseplay:askForSpecialSettings(self,object)
+function courseplay:askForSpecialSettings(self, object)
 	-- SPECIAL VARIABLES TO USE:
 	--[[
 	-- automaticToolOffsetX:					(Distance in meters)	Used to automatically set the tool horizontal offset.
@@ -1339,6 +1342,8 @@ function courseplay:askForSpecialSettings(self,object)
 	-- self.cp.backMarkerOffset:				(Distance in meters)	If the implement stops to early or to late, you can specify then it needs to raise/lower or turn on/off the work tool
 	-- TODO: (Claus / Jakob) Add description for all the special varialbes that is usable here.
 	]]
+
+	courseplay:debug(('%s: askForSpecialSettings(..., %q)'):format(nameNum(self), nameNum(object)), 6);
 
 	local automaticToolOffsetX;
 
@@ -1422,13 +1427,17 @@ function courseplay:askForSpecialSettings(self,object)
 		end;
 
 	elseif object.cp.isHoseRefTransporter then
+		courseplay:debug(('\tobject %q: isHoseRefTransporter=true'):format(nameNum(object)), 14);
 		if object.cp.hoseRefs == nil then
+			courseplay:debug('\tsetCustomHoseRefs()', 14);
 			courseplay.thirdParty.EifokLiquidManure:setCustomHoseRefs(object);
 		end;
 
 	elseif object.cp.isEifokZunhammerAttachable then
+		courseplay:debug(('\tobject %q: isEifokZunhammerAttachable=true'):format(nameNum(object)), 14);
 		for i,tipper in pairs(self.tippers) do
 			if object.attacherVehicle == tipper then
+				courseplay:debug(('\t\t%s: hasEifokZunhammerAttachable=true, eifokZunhammerAttachable=%q'):format(nameNum(tipper), nameNum(object)), 14);
 				tipper.cp.hasEifokZunhammerAttachable = true;
 				tipper.cp.eifokZunhammerAttachable = object;
 				break;
