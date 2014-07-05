@@ -704,7 +704,10 @@ function courseplay:isReverseAbleWheeledWorkTool(workTool)
 
 	if allowedJointType[workTool.attacherJoint.jointType] and workTool.wheels and #workTool.wheels > 0 then
 		-- Attempt to find the pivot node.
+		-- TODO: (Claus) Figuere out a way to make all trailers reverseable (Wrong getParent node returned)
+		--courseplay:debug(('%s: Line: 708 - Before findJointNodeConnectingToNode, attacherJoint.node = %s'):format(nameNum(workTool), tostring(workTool.attacherJoint.node)), 13);
 		local node, _ = courseplay:findJointNodeConnectingToNode(workTool, workTool.attacherJoint.rootNode, workTool.rootNode);
+		--courseplay:debug(('%s: Line: 710 - Before node check'):format(nameNum(workTool)), 13);
 		if node then
 			-- Trailers
 			if (workTool.attacherJoint.jointType ~= Vehicle.jointTypeNameToInt["implement"])
@@ -745,13 +748,19 @@ end;
 --										2: nil if no jointNode is found.
 function courseplay:findJointNodeConnectingToNode(workTool, fromNode, toNode)
 	-- Attempt to find the jointNode by backtracking the compomentJoints.
+	--courseplay:debug(('%s: Line: 751'):format(nameNum(workTool)), 13);
 	for index, component in ipairs(workTool.components) do
+		--courseplay:debug(('%s: Line: 753'):format(nameNum(workTool)), 13);
 		if component.node == fromNode then
+			--courseplay:debug(('%s: Line: 755'):format(nameNum(workTool)), 13);
 			for _, joint in ipairs(workTool.componentJoints) do
+				--courseplay:debug(('%s: Line: 757'):format(nameNum(workTool)), 13);
 				if joint.componentIndices[2] == index then
+					--courseplay:debug(('%s: Line: 759'):format(nameNum(workTool)), 13);
 					if workTool.components[joint.componentIndices[1]].node == toNode then
 						return joint.jointNode, {joint.jointNode};
 					else
+						--courseplay:debug(('%s: Line: 763'):format(nameNum(workTool)), 13);
 						local node, backTrack = courseplay:findJointNodeConnectingToNode(workTool, workTool.components[joint.componentIndices[1]].node, toNode);
 						if backTrack then table.insert(backTrack, 1, joint.jointNode); end;
 					    return node, backTrack;
@@ -762,12 +771,15 @@ function courseplay:findJointNodeConnectingToNode(workTool, fromNode, toNode)
 	end;
 
 	-- Last attempt to find the jointNode by getting parent of parent untill hit or the there is no more parents.
+	--courseplay:debug(('%s: Line: 774 - fromNode = %s, toNode = %s'):format(nameNum(workTool), tostring(fromNode), tostring(toNode)), 13);
 	local node = fromNode;
-	while node ~= 0 do
+	--courseplay:debug(('%s: Line: 776 - Node = %s'):format(nameNum(workTool), tostring(node)), 13);
+	while node ~= 0 and node ~= nil do
 		if node == toNode then
 			return toNode, nil;
 		else
 			node = getParent(node);
+			--courseplay:debug(('%s: Line: 782 - Node = %s'):format(nameNum(workTool), tostring(node)), 13);
 		end;
 	end;
 
