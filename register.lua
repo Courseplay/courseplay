@@ -84,7 +84,7 @@ function courseplay:attachableDelete()
 end;
 Attachable.delete = Utils.prependedFunction(Attachable.delete, courseplay.attachableDelete);
 
-function courseplay:vehicleLoad(xmlFile)
+function courseplay.vehicleLoadFinished(self)
 	if self.cp == nil then self.cp = {}; end;
 
 	-- XML FILE NAME VARIABLE
@@ -111,18 +111,19 @@ function courseplay:vehicleLoad(xmlFile)
 		--courseplay.thirdParty.EifokLiquidManure.hoses[self.msh] = self;
 	end;
 end;
-Vehicle.load = Utils.appendedFunction(Vehicle.load, courseplay.vehicleLoad);
+Vehicle.loadFinished = Utils.prependedFunction(Vehicle.loadFinished, courseplay.vehicleLoadFinished);
+-- NOTE: using loadFinished() instead of load() so any other mod that overwrites Vehicle.load() doesn't interfere
 
 function courseplay:vehicleDelete()
 	if self.cp ~= nil then
 		if self.cp.isEifokZunhammerHose then
 			for i,hose in pairs(courseplay.thirdParty.EifokLiquidManure.hoses) do
 				if hose.msh == self.msh then
-					table.remove(courseplay.thirdParty.EifokLiquidManure.hoses, i);
+					-- table.remove(courseplay.thirdParty.EifokLiquidManure.hoses, i);
+					courseplay.thirdParty.EifokLiquidManure.hoses[i] = nil;
 					break;
 				end;
 			end;
-			--courseplay.thirdParty.EifokLiquidManure.hoses[self.msh] = nil;
 		end;
 
 		-- Remove created nodes
