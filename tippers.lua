@@ -98,14 +98,18 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 
 	-- MODE 4: FERTILIZER AND SEEDING
 	elseif vehicle.cp.mode == 4 then
-		if courseplay:isSprayer(workTool) or courseplay:isSowingMachine(workTool) then
+		local isSprayer, isSowingMachine = courseplay:isSprayer(workTool), courseplay:isSowingMachine(workTool);
+		if isSprayer or isSowingMachine then
 			hasWorkTool = true;
 			vehicle.tippers[#vehicle.tippers + 1] = workTool;
 			courseplay:setMarkers(vehicle, workTool)
 			vehicle.cp.hasMachinetoFill = true;
-			vehicle.cp.noStopOnEdge = courseplay:isSprayer(workTool);
-			vehicle.cp.noStopOnTurn = courseplay:isSprayer(workTool);
-			if courseplay:isSowingMachine(workTool) then
+			vehicle.cp.noStopOnEdge = isSprayer;
+			vehicle.cp.noStopOnTurn = isSprayer;
+			if isSprayer then
+				vehicle.cp.hasSprayer = true;
+			end;
+			if isSowingMachine then
 				vehicle.cp.hasSowingMachine = true;
 			end;
 		end;
@@ -852,8 +856,7 @@ function courseplay:getRealTurningNode(workTool)
 				if minDis == maxDis then
 					Distance = minDis;
 				else
-					local dif = minDis - maxDis;
-					Distance = minDis + (dif/2);
+					Distance = (minDis + maxDis) * 0.5;
 				end;
 
 			-- Calculate turning wheel median distance if there are no strait wheels.
