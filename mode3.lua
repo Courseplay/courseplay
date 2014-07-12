@@ -83,7 +83,7 @@ function courseplay:handleAugerWagon(vehicle, workTool, unfold, unload, orderNam
 
 	--Overcharge / AgrolinerTUW20 / Hawe SUW
 	elseif workTool.cp.hasSpecializationOvercharge or workTool.cp.hasSpecializationAgrolinerTUW20 or workTool.cp.hasSpecializationHaweSUW then
-		if pipeOrderExists then
+		if pipeOrderExists and workTool.pipe.out ~= nil then
 			if unfold and not workTool.pipe.out then
 				workTool:setAnimationTime(1, workTool.animationParts[1].animDuration, false);
 				if workTool.cp.hasPipeLight and workTool.cp.pipeLight.a ~= courseplay.lightsNeeded then
@@ -97,7 +97,7 @@ function courseplay:handleAugerWagon(vehicle, workTool, unfold, unload, orderNam
 			end;
 		end;
 
-		if unload and not workTool.isUnloading and workTool.trailerFoundId ~= 0 then
+		if unload and not workTool.isUnloading and (workTool.trailerFoundId ~= 0 or workTool.trailerFound ~= nil) then
 			workTool:setUnloadingState(true);
 			if workTool.isDrumActivated ~= nil then
 				workTool.isDrumActivated = workTool.isUnloading;

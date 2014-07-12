@@ -98,25 +98,25 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,true,true,true,allowedToDrive,nil,nil);
 					if not specialTool then
 						-- automatic stop for baleloader
-						if workTool.grabberIsMoving or workTool:getIsAnimationPlaying("rotatePlatform") then
-							allowedToDrive = false
-						end
+						if workTool.grabberIsMoving then
+							allowedToDrive = false;
+						end;
 						if not workTool.isInWorkPosition and fillLevelPct ~= 100 then
-							--g_client:getServerConnection():sendEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_BUTTON_WORK_TRANSPORT));
 							workTool.grabberIsMoving = true
 							workTool.isInWorkPosition = true
 							BaleLoader.moveToWorkPosition(workTool)
+							-- workTool:doStateChange(BaleLoader.CHANGE_MOVE_TO_WORK);
 						end
 					end;
 				end
 
-				if (fillLevelPct == 100 and self.cp.hasUnloadingRefillingCourse or self.recordnumber == self.cp.stopWork) and workTool.isInWorkPosition and not workTool:getIsAnimationPlaying("rotatePlatform") then
+				if (fillLevelPct == 100 and self.cp.hasUnloadingRefillingCourse or self.recordnumber == self.cp.stopWork) and workTool.isInWorkPosition and not workTool:getIsAnimationPlaying('rotatePlatform') and not workTool:getIsAnimationPlaying('emptyRotate') then
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,nil);
 					if not specialTool then
 						workTool.grabberIsMoving = true
 						workTool.isInWorkPosition = false
-						-- move to transport position
 						BaleLoader.moveToTransportPosition(workTool)
+						-- workTool:doStateChange(BaleLoader.CHANGE_MOVE_TO_TRANSPORT);
 					end;
 				end
 
@@ -127,7 +127,12 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 					else
 						specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,nil); --TODO: unclear
 					end
-				end
+				end;
+
+				-- stop when unloading
+				if workTool.activeAnimations and (workTool:getIsAnimationPlaying('rotatePlatform') --[[or workTool:getIsAnimationPlaying('emptyRotate')]]) then
+					allowedToDrive = false;
+				end;
 
 				-- automatic unload
 				if (not workArea and self.Waypoints[self.cp.lastRecordnumber].wait and (self.wait or fillLevelPct == 0)) or self.cp.unloadOrder then
