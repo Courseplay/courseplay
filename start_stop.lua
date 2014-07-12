@@ -446,8 +446,9 @@ function courseplay:stop(self)
 	self.cp.curMapWeightStation = nil;
 
 	self.cp.hasBaleLoader = false;
-	self.cp.hasSowingMachine = false;
 	self.cp.hasPlough = false;
+	self.cp.hasSowingMachine = false;
+	self.cp.hasSprayer = false;
 	if self.cp.tempToolOffsetX ~= nil then
 		courseplay:changeToolOffsetX(self, nil, self.cp.tempToolOffsetX, true);
 		self.cp.tempToolOffsetX = nil

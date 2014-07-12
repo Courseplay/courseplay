@@ -82,9 +82,14 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 							vehicleOnList = true
 					else
 						for a,b in pairs (self.cpTrafficCollisionIgnoreList) do
-							courseplay:debug(string.format("%s:		%s vs %q", nameNum(self), tostring(g_currentMission.nodeToVehicle[a].name), tostring(vehicle.name)), 3);
+							local veh1 = g_currentMission.nodeToVehicle[a];
+							local veh1Name = veh1.name;
+							if not veh1Name and veh1.cp then veh1Name = veh1.cp.xmlFileName; end;
+							local veh2Name = vehicle.name;
+							if not veh2Name and vehicle.cp then veh2Name = vehicle.cp.xmlFileName; end;
+							courseplay:debug(string.format("%s:		%s vs %q", nameNum(self), tostring(veh1Name), tostring(veh2Name)), 3);
 							if g_currentMission.nodeToVehicle[a].id == vehicle.id then
-								courseplay:debug(string.format("%s:		%q is on local list", nameNum(self), tostring(vehicle.name)), 3);
+								courseplay:debug(string.format("%s:		%q is on local list", nameNum(self), tostring(veh2Name)), 3);
 								vehicleOnList = true
 								break
 							end
@@ -308,6 +313,11 @@ function courseplay:findSpecialTriggerCallback(transformId, x, y, z, distance)
 		if trigger.isWeightStation and courseplay:canUseWeightStation(self) then
 			self.cp.fillTrigger = transformId;
 		elseif self.cp.mode == 4 then
+			if trigger.isSowingMachineFillTrigger and not self.cp.hasSowingMachine then
+				return true;
+			elseif trigger.isSprayerFillTrigger and not self.cp.hasSprayer then
+				return true;
+			end;
 			self.cp.fillTrigger = transformId;
 		elseif self.cp.mode == 8 and (trigger.isSprayerFillTrigger or trigger.isLiquidManureFillTrigger or trigger.isSchweinemastLiquidManureTrigger) then
 			self.cp.fillTrigger = transformId;

@@ -11,32 +11,32 @@ function courseplay:setNameVariable(workTool)
 
 	-- Only default specs!
 	for i,spec in pairs(workTool.specializations) do
-		if     spec == AICombine then 			workTool.cp.hasSpecializationAICombine 			 = true;
-		elseif spec == AITractor then 			workTool.cp.hasSpecializationAITractor 			 = true;
-		elseif spec == AnimatedVehicle then 	workTool.cp.hasSpecializationAnimatedVehicle 	 = true;
-		elseif spec == ArticulatedAxis then		workTool.cp.hasSpecializationArticulatedAxis	 = true;
-		elseif spec == BaleLoader then 			workTool.cp.hasSpecializationBaleLoader 		 = true;
-		elseif spec == Baler then 				workTool.cp.hasSpecializationBaler 				 = true;
-		elseif spec == BunkerSiloCompacter then	workTool.cp.hasSpecializationBunkerSiloCompacter = true;
-		elseif spec == Combine then 			workTool.cp.hasSpecializationCombine 			 = true;
-		elseif spec == Cultivator then 			workTool.cp.hasSpecializationCultivator 		 = true;
-		elseif spec == Cutter then 				workTool.cp.hasSpecializationCutter 			 = true;
-		elseif spec == Cylindered then 			workTool.cp.hasSpecializationCylindered 		 = true;
-		elseif spec == Fillable then 			workTool.cp.hasSpecializationFillable 			 = true;
-		elseif spec == Foldable then 			workTool.cp.hasSpecializationFoldable 			 = true;
-		elseif spec == FruitPreparer then 		workTool.cp.hasSpecializationFruitPreparer 		 = true;
-		elseif spec == MixerWagon then 			workTool.cp.hasSpecializationMixerWagon 		 = true;
-		elseif spec == Mower then 				workTool.cp.hasSpecializationMower 				 = true;
-		elseif spec == PathVehicle then 		workTool.cp.hasSpecializationPathVehicle		 = true;
-		elseif spec == Plough then 				workTool.cp.hasSpecializationPlough 			 = true;
-		elseif spec == Shovel then 				workTool.cp.hasSpecializationShovel 			 = true;
-		elseif spec == SowingMachine then 		workTool.cp.hasSpecializationSowingMachine 		 = true;
-		elseif spec == Sprayer then 			workTool.cp.hasSpecializationSprayer 			 = true;
-		elseif spec == Steerable then 			workTool.cp.hasSpecializationSteerable 			 = true;
-		elseif spec == Tedder then 				workTool.cp.hasSpecializationTedder 			 = true;
-		elseif spec == TrafficVehicle then 		workTool.cp.hasSpecializationTrafficVehicle		 = true;
-		elseif spec == Trailer then 			workTool.cp.hasSpecializationTrailer 			 = true;
-		elseif spec == Windrower then 			workTool.cp.hasSpecializationWindrower 			 = true;
+		if     spec == AICombine 		   then workTool.cp.hasSpecializationAICombine 			 = true;
+		elseif spec == AITractor 		   then workTool.cp.hasSpecializationAITractor 			 = true;
+		elseif spec == AnimatedVehicle 	   then workTool.cp.hasSpecializationAnimatedVehicle 	 = true;
+		elseif spec == ArticulatedAxis 	   then workTool.cp.hasSpecializationArticulatedAxis 	 = true;
+		elseif spec == BaleLoader 		   then workTool.cp.hasSpecializationBaleLoader 		 = true;
+		elseif spec == Baler 			   then workTool.cp.hasSpecializationBaler 				 = true;
+		elseif spec == BunkerSiloCompacter then workTool.cp.hasSpecializationBunkerSiloCompacter = true;
+		elseif spec == Combine 			   then workTool.cp.hasSpecializationCombine 			 = true;
+		elseif spec == Cultivator 		   then workTool.cp.hasSpecializationCultivator 		 = true;
+		elseif spec == Cutter 			   then workTool.cp.hasSpecializationCutter 			 = true;
+		elseif spec == Cylindered 		   then workTool.cp.hasSpecializationCylindered 		 = true;
+		elseif spec == Fillable 		   then workTool.cp.hasSpecializationFillable 			 = true;
+		elseif spec == Foldable 		   then workTool.cp.hasSpecializationFoldable 			 = true;
+		elseif spec == FruitPreparer 	   then workTool.cp.hasSpecializationFruitPreparer 		 = true;
+		elseif spec == MixerWagon 		   then workTool.cp.hasSpecializationMixerWagon 		 = true;
+		elseif spec == Mower 			   then workTool.cp.hasSpecializationMower 				 = true;
+		elseif spec == PathVehicle 		   then workTool.cp.hasSpecializationPathVehicle 		 = true;
+		elseif spec == Plough 			   then workTool.cp.hasSpecializationPlough 			 = true;
+		elseif spec == Shovel 			   then workTool.cp.hasSpecializationShovel 			 = true;
+		elseif spec == SowingMachine 	   then workTool.cp.hasSpecializationSowingMachine 		 = true;
+		elseif spec == Sprayer 			   then workTool.cp.hasSpecializationSprayer 			 = true;
+		elseif spec == Steerable 		   then workTool.cp.hasSpecializationSteerable 			 = true;
+		elseif spec == Tedder 			   then workTool.cp.hasSpecializationTedder 			 = true;
+		elseif spec == TrafficVehicle 	   then workTool.cp.hasSpecializationTrafficVehicle 	 = true;
+		elseif spec == Trailer 			   then workTool.cp.hasSpecializationTrailer 			 = true;
+		elseif spec == Windrower 		   then workTool.cp.hasSpecializationWindrower 			 = true;
 		end;
 
 		--[[
@@ -268,6 +268,7 @@ function courseplay:setNameVariable(workTool)
 	-- Universal Bale Trailer (UBT)
 	elseif workTool.numAttacherParts ~= nil and workTool.autoLoad ~= nil and workTool.loadingIsActive ~= nil and workTool.unloadLeft ~= nil and workTool.unloadRight ~= nil and workTool.unloadBack ~= nil and workTool.typeOnTrailer ~= nil and workTool.fillLevelMax ~= nil then
 		workTool.cp.isUBT = true;
+		workTool.cp.isBrantnerDPW18000 = workTool.cp.xmlFileName == 'dpw18000.xml';
 		workTool.cp.isMoellerUbtBaleLoader = workTool.cp.xmlFileName == 'AA47ballen.xml';
 
 	-- Claas Quadrant 1200 [Eifok Team]
@@ -736,6 +737,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		end;
 		if workTool.capacity == nil or (workTool.capacity ~= nil and workTool.capacity ~= workTool.fillLevelMax) then
 			workTool.capacity = workTool.fillLevelMax;
+			workTool.realBaseCapacity = workTool.fillLevelMax;
 		end;
 
 		if not workTool.autoLoad then
@@ -760,7 +762,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 						setRotation(attacher.attachedObject,rx,ry,rz);
 						link(root,attacher.attachedObject);
 						attacher.attachedObject = nil;
-						workTool.fillLevel = workTool.fillLevel - 1;
+						workTool:setFillLevel(workTool.fillLevel - 1, Fillable.FILLTYPE_UNKNOWN, true);
 					else
 						local x,y,z = getWorldTranslation(attacher.attachedObject);
 						local rx,ry,rz = getWorldRotation(attacher.attachedObject);
@@ -776,7 +778,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 						setRotation(attacher.attachedObject,rx,ry,rz);
 						link(root,attacher.attachedObject);
 						attacher.attachedObject = nil;
-						workTool.fillLevel = workTool.fillLevel - 1;
+						workTool:setFillLevel(workTool.fillLevel - 1, Fillable.FILLTYPE_UNKNOWN, true);
 					end;
 				end;
 			end;
@@ -1370,7 +1372,10 @@ function courseplay:askForSpecialSettings(self, object)
 	end;
 
 	-- OBJECTS
-	if object.cp.isMoellerUbtBaleLoader then
+	if object.cp.isBrantnerDPW18000 then
+		object.cp.specialUnloadDistance = -2.3;
+
+	elseif object.cp.isMoellerUbtBaleLoader then
 		object.cp.specialUnloadDistance = -2.63;
 
 	elseif object.cp.isVaderstadRapidA600S then
@@ -1431,6 +1436,14 @@ function courseplay:askForSpecialSettings(self, object)
 		if object.cp.hoseRefs == nil then
 			courseplay:debug('\tsetCustomHoseRefs()', 14);
 			courseplay.thirdParty.EifokLiquidManure:setCustomHoseRefs(object);
+		end;
+
+		-- add attached hoses to traffic collision ignore list
+		for side,ref in pairs(object.cp.hoseRefs.park) do
+			if ref.isUsed and ref.hose ~= nil then
+				courseplay:debug(('%s: %s: add hose %d [park %s] to traffic collision ignore list'):format(nameNum(self), nameNum(object), ref.hose.rootNode, side), 3);
+				self.cpTrafficCollisionIgnoreList[ref.hose.rootNode] = true;
+			end;
 		end;
 
 	elseif object.cp.isEifokZunhammerAttachable then
