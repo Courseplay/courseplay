@@ -809,12 +809,12 @@ function courseplay:getRealTurningNode(workTool)
 
 			-- Sort wheels in turning wheels and strait wheels and find the min and max distance for each set.
 			for i = 1, #workTool.wheels do
-				if workTool.wheels[i].node == workTool.rootNode and workTool.wheels[i].lateralStiffness > 0 then
+				--if workTool.wheels[i].node == workTool.rootNode and workTool.wheels[i].lateralStiffness > 0 then
+				if workTool.wheels[i].lateralStiffness > 0 then
 					local x,_,z = getWorldTranslation(workTool.wheels[i].driveNode);
 					local _,_,dis = worldToLocal(workTool.rootNode, x, yTrailer, z);
-					-- TODO: (Claus) Update to check if steering axle update backwards
 					dis = dis * invert;
-					if workTool.wheels[i].steeringAxleScale == 0 then
+					if workTool.steeringAxleUpdateBackwards == false or workTool.wheels[i].steeringAxleScale == 0 then
 						if haveStraitWheels then
 							if dis < minDis then minDis = dis; end;
 							if dis > maxDis then maxDis = dis; end;
