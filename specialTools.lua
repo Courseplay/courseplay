@@ -254,7 +254,7 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.isPoettingerAlphaX8MowerPack = true;
 		workTool.cp.isPoettingerX8 = true;
 
-	-- ###########################################################
+		-- ###########################################################
 
 	-- [6] MOD BALING
 	-- John Deere 864 Premium [BJR]
@@ -397,7 +397,11 @@ function courseplay:setNameVariable(workTool)
 	-- ###########################################################
 
 	-- [5] OTHER TOOLS
-	-- Seeders [Giants Väderstad DLC]
+	-- Kuhn FA 367 Mower [Farming Classics - Free DLC]
+	elseif workTool.cp.xmlFileName == 'kuhnFA367.xml' then
+		workTool.cp.iskuhnFA367 = true;
+
+		-- Seeders [Giants Väderstad DLC]
 	elseif workTool.cp.xmlFileName == 'vaderstadRapidA600S.xml' then
 		workTool.cp.isVaderstadRapidA600S = true;
 
@@ -1334,6 +1338,7 @@ function courseplay:askForSpecialSettings(self, object)
 	--[[
 	-- automaticToolOffsetX:					(Distance in meters)	Used to automatically set the tool horizontal offset.
 	-- object.cp.haveInversedRidgeMarkerState:	(Boolean)				If the ridmarker is using the wrong side in auto mode, set this value to true
+	-- object.cp.realUnfoldDirectionIsReversed:	(Boolean)				If the tool unfolds when driving roads and folds when working fields, then set this one to true to reverse the folding order.
 	-- object.cp.isPushWagon					(Boolean)				Set to true if the trailer is unloading by not lifting the trailer but pushing it out in the rear end. (Used in BGA tipping)
 	-- object.cp.specialUnloadDistance:			(Distance in meters)	Able to set the distance to the waiting point when it needs to unload. Used by bale loaders. Distance from trailer's turning point to the rear unloading point.
 	-- self.cp.aiTurnNoBackward:				(Boolean)				Set to true if the vehicle is not allowed to reverse with the implement/trailer during the turn maneuver.
@@ -1401,6 +1406,10 @@ function courseplay:askForSpecialSettings(self, object)
 		self.cp.noStopOnEdge = true;
 		self.cp.noStopOnTurn = true;
 		courseplay:changeToolOffsetZ(self, nil, -5);
+
+	elseif object.cp.iskuhnFA367 then
+		object.cp.realUnfoldDirectionIsReversed = true;
+		automaticToolOffsetX = -2.1;
 
 	elseif object.cp.isMRpoettingerEurocat315H then
 		object.cp.realUnfoldDirectionIsReversed = true;
