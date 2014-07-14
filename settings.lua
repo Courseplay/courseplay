@@ -639,20 +639,20 @@ end;
 
 function courseplay:changeTurnSpeed(vehicle, changeBy)
 	local speed = vehicle.cp.speeds.turn * 3600;
-	speed = Utils.clamp(speed + changeBy, 5, 60);
+	speed = Utils.clamp(speed + changeBy, 3, 60);
 	vehicle.cp.speeds.turn = speed / 3600;
 end
 
 function courseplay:changeFieldSpeed(vehicle, changeBy)
 	local speed = vehicle.cp.speeds.field * 3600;
-	speed = Utils.clamp(speed + changeBy, 5, 60);
+	speed = Utils.clamp(speed + changeBy, 3, 60);
 	vehicle.cp.speeds.field = speed / 3600;
 end
 
 function courseplay:changeMaxSpeed(vehicle, changeBy)
 	if not vehicle.cp.speeds.useRecordingSpeed then
 		local speed = vehicle.cp.speeds.max * 3600;
-		speed = Utils.clamp(speed + changeBy, 5, 60);
+		speed = Utils.clamp(speed + changeBy, 3, 60);
 		vehicle.cp.speeds.max = speed / 3600;
 	end;
 end

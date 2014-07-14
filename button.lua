@@ -134,13 +134,13 @@ function courseplay.button:renderButton(vehicle, button)
 		elseif pg == 5 then
 			if fn == "changeTurnSpeed" then
 				button.canScrollUp =   vehicle.cp.speeds.turn < 60/3600;
-				button.canScrollDown = vehicle.cp.speeds.turn >  5/3600;
+				button.canScrollDown = vehicle.cp.speeds.turn >  3/3600;
 			elseif fn == "changeFieldSpeed" then
 				button.canScrollUp =   vehicle.cp.speeds.field < 60/3600;
-				button.canScrollDown = vehicle.cp.speeds.field >  5/3600;
+				button.canScrollDown = vehicle.cp.speeds.field >  3/3600;
 			elseif fn == "changeMaxSpeed" then
 				button.canScrollUp =   vehicle.cp.speeds.useRecordingSpeed == false and vehicle.cp.speeds.max < 60/3600;
-				button.canScrollDown = vehicle.cp.speeds.useRecordingSpeed == false and vehicle.cp.speeds.max >  5/3600;
+				button.canScrollDown = vehicle.cp.speeds.useRecordingSpeed == false and vehicle.cp.speeds.max >  3/3600;
 			elseif fn == "changeUnloadSpeed" then
 				button.canScrollUp =   vehicle.cp.speeds.unload < 60/3600;
 				button.canScrollDown = vehicle.cp.speeds.unload >  3/3600;
