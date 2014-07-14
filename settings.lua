@@ -114,6 +114,25 @@ function courseplay:openCloseHud(self, open)
 			self.hudAllradOFFOverlay:setPosition(self.hudAllradOFFOverlay.x, self.cp.hud.AllradOrigPosY[3]);
 		end;
 	end;
+
+
+	-- set MaxRPM
+	if self.cp.hud.MaxRpmOrigPosY == nil and open and self.rpmLimiterHUD ~= nil and self.maxRpmPosX ~= nil and self.maxRpmPosY ~= nil and self.maxRpmStdValue ~= nil then
+		if ((self.maxRpmPosX > courseplay.hud.visibleArea.x1 and self.maxRpmPosX < courseplay.hud.visibleArea.x2) or
+			(self.maxRpmPosX + self.rpmLimiterHUD.width > courseplay.hud.visibleArea.x1 and self.maxRpmPosX + self.rpmLimiterHUD.width < courseplay.hud.visibleArea.x2)) and
+		   ((self.maxRpmPosY > courseplay.hud.visibleArea.y1 and self.maxRpmPosY < courseplay.hud.visibleArea.y2) or
+			(self.maxRpmPosY + self.rpmLimiterHUD.height > courseplay.hud.visibleArea.y1 and self.maxRpmPosY + self.rpmLimiterHUD.height < courseplay.hud.visibleArea.y2))
+		then
+			self.cp.hud.MaxRpmOrigPosY = { 
+				self.maxRpmPosY
+			};
+		end;
+	end;
+	-- toggle MaxRPM
+	if self.cp.hud.MaxRpmOrigPosY ~= nil then
+		self.maxRpmPosY = open and -1 or self.cp.hud.MaxRpmOrigPosY[1];
+		self.rpmLimiterHUD:setPosition(self.maxRpmPosX, self.maxRpmPosY);
+	end;
 end;
 
 function courseplay:setCpMode(vehicle, modeNum)

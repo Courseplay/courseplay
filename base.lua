@@ -427,6 +427,7 @@ function courseplay:load(xmlFile)
 		ThreshingCounterOrigPosY = nil; --[table]
 		OdometerOrigPosY = nil; --[table]
 		AllradOrigPosY = nil; --[table]
+		MaxRpmOrigPosY = nil; --[table]
 	};
 
 	-- clickable buttons
