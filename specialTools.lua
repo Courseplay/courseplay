@@ -397,11 +397,15 @@ function courseplay:setNameVariable(workTool)
 	-- ###########################################################
 
 	-- [5] OTHER TOOLS
+	-- Fahr KH 4S Tedder [Farming Classics - Free DLC]
+	elseif workTool.cp.xmlFileName == 'fahrKH4S.xml' then
+		workTool.cp.isFahrKH4S = true;
+
 	-- Kuhn FA 367 Mower [Farming Classics - Free DLC]
 	elseif workTool.cp.xmlFileName == 'kuhnFA367.xml' then
-		workTool.cp.iskuhnFA367 = true;
+		workTool.cp.isKuhnFA367 = true;
 
-		-- Seeders [Giants Väderstad DLC]
+	-- Seeders [Giants Väderstad DLC]
 	elseif workTool.cp.xmlFileName == 'vaderstadRapidA600S.xml' then
 		workTool.cp.isVaderstadRapidA600S = true;
 
@@ -1407,9 +1411,13 @@ function courseplay:askForSpecialSettings(self, object)
 		self.cp.noStopOnTurn = true;
 		courseplay:changeToolOffsetZ(self, nil, -5);
 
-	elseif object.cp.iskuhnFA367 then
+	elseif object.cp.isKuhnFA367 then
 		object.cp.realUnfoldDirectionIsReversed = true;
 		automaticToolOffsetX = -2.1;
+
+	elseif object.cp.isFahrKH4S then
+		-- self.cp.aiTurnNoBackward = false; -- TODO: (Claus) Why is it not reversing when turning ? Need to fix this!
+		object.cp.realUnfoldDirectionIsReversed = true;
 
 	elseif object.cp.isMRpoettingerEurocat315H then
 		object.cp.realUnfoldDirectionIsReversed = true;
