@@ -239,7 +239,7 @@ end;
 function courseplay:buttonsActiveEnabled(self, section)
 	if section == nil or section == "all" or section == "pageNav" then
 		for _,button in pairs(self.cp.buttons.global) do
-			if button.function_to_call == "setHudPage" then
+			if button.functionToCall == "setHudPage" then
 				local pageNum = button.parameter;
 				button.isActive = pageNum == self.cp.hud.currentPage;
 
@@ -262,7 +262,7 @@ function courseplay:buttonsActiveEnabled(self, section)
 
 	if self.cp.hud.currentPage == 1 and (section == nil or section == "all" or section == "quickModes" or section == "recording" or section == "customFieldShow" or section == 'findFirstWaypoint') then
 		for _,button in pairs(self.cp.buttons[1]) do
-			local fn = button.function_to_call;
+			local fn = button.functionToCall;
 			if fn == "setCpMode" then
 				button.isActive = self.cp.mode == button.parameter;
 				button.isDisabled = button.parameter == 7 and not self.cp.isCombine and not self.cp.isChopper and not self.cp.isHarvesterSteerable;
@@ -311,7 +311,7 @@ function courseplay:buttonsActiveEnabled(self, section)
 			if row > n_courses then
 				hide = true
 			else
-				if button.function_to_call == "expandFolder" then
+				if button.functionToCall == "expandFolder" then
 					if self.cp.hud.courses[row].type == 'course' then
 						hide = true
 					else
@@ -333,19 +333,19 @@ function courseplay:buttonsActiveEnabled(self, section)
 						end
 					end
 				else
-					if self.cp.hud.courses[row].type == 'folder' and (button.function_to_call == "load_sorted_course" or button.function_to_call == "add_sorted_course") then
+					if self.cp.hud.courses[row].type == 'folder' and (button.functionToCall == "load_sorted_course" or button.functionToCall == "add_sorted_course") then
 						hide = true
 					elseif self.cp.hud.choose_parent ~= true then
-						if button.function_to_call == 'delete_sorted_item' and self.cp.hud.courses[row].type == 'folder' and g_currentMission.cp_sorted.info[ self.cp.hud.courses[row].uid ].lastChild ~= 0 then
+						if button.functionToCall == 'delete_sorted_item' and self.cp.hud.courses[row].type == 'folder' and g_currentMission.cp_sorted.info[ self.cp.hud.courses[row].uid ].lastChild ~= 0 then
 							enable = false
-						elseif button.function_to_call == 'link_parent' then
+						elseif button.functionToCall == 'link_parent' then
 							courseplay.button:setOverlay(button, 1);
 							if nofolders then
 								enable = false;
 							end;
 						end
 					else
-						if button.function_to_call ~= 'link_parent' then
+						if button.functionToCall ~= 'link_parent' then
 							enable = false
 						else
 							courseplay.button:setOverlay(button, 2);
@@ -361,7 +361,7 @@ function courseplay:buttonsActiveEnabled(self, section)
 
 	elseif self.cp.hud.currentPage == 6 and (section == nil or section == "all" or section == "debug") then
 		for _,button in pairs(self.cp.buttons[6]) do
-			if button.function_to_call == "toggleDebugChannel" then
+			if button.functionToCall == "toggleDebugChannel" then
 				button.isDisabled = button.parameter > courseplay.numDebugChannels;
 				button.isActive = courseplay.debugChannels[button.parameter] == true;
 				button.canBeClicked = not button.isDisabled;
@@ -370,7 +370,7 @@ function courseplay:buttonsActiveEnabled(self, section)
 
 	elseif self.cp.hud.currentPage == 8 and (section == nil or section == "all" or section == "selectedFieldShow") then
 		for _,button in pairs(self.cp.buttons[8]) do
-			if button.function_to_call == "toggleSelectedFieldEdgePathShow" then
+			if button.functionToCall == "toggleSelectedFieldEdgePathShow" then
 				button.isActive = self.cp.fieldEdge.selectedField.show;
 				break;
 			end;
@@ -381,7 +381,7 @@ function courseplay:buttonsActiveEnabled(self, section)
 
 	elseif self.cp.hud.currentPage == 9 and (section == nil or section == "all" or section == "shovel") then
 		for _,button in pairs(self.cp.buttons[9]) do
-			if button.function_to_call == 'saveShovelPosition' then --isToggleButton
+			if button.functionToCall == 'saveShovelPosition' then --isToggleButton
 				button.isActive = self.cp.shovelStatePositions[button.parameter] ~= nil;
 				button.canBeClicked = true;
 			end;
@@ -639,28 +639,28 @@ end;
 
 function courseplay:changeTurnSpeed(vehicle, changeBy)
 	local speed = vehicle.cp.speeds.turn * 3600;
-	speed = Utils.clamp(speed + changeBy, 3, 60);
+	speed = Utils.clamp(speed + changeBy, vehicle.cp.speeds.minTurn, vehicle.cp.speeds.max);
 	vehicle.cp.speeds.turn = speed / 3600;
 end
 
 function courseplay:changeFieldSpeed(vehicle, changeBy)
 	local speed = vehicle.cp.speeds.field * 3600;
-	speed = Utils.clamp(speed + changeBy, 3, 60);
+	speed = Utils.clamp(speed + changeBy, vehicle.cp.speeds.minField, vehicle.cp.speeds.max);
 	vehicle.cp.speeds.field = speed / 3600;
 end
 
 function courseplay:changeMaxSpeed(vehicle, changeBy)
 	if not vehicle.cp.speeds.useRecordingSpeed then
-		local speed = vehicle.cp.speeds.max * 3600;
-		speed = Utils.clamp(speed + changeBy, 3, 60);
-		vehicle.cp.speeds.max = speed / 3600;
+		local speed = vehicle.cp.speeds.street * 3600;
+		speed = Utils.clamp(speed + changeBy, vehicle.cp.speeds.minStreet, vehicle.cp.speeds.max);
+		vehicle.cp.speeds.street = speed / 3600;
 	end;
 end
 
 function courseplay:changeUnloadSpeed(vehicle, changeBy, force, forceReloadPage)
 	local speed = force or (vehicle.cp.speeds.unload * 3600 + changeBy);
 	if not force then
-		speed = Utils.clamp(speed, 3, 60);
+		speed = Utils.clamp(speed, vehicle.cp.speeds.minUnload, vehicle.cp.speeds.max);
 	end;
 	vehicle.cp.speeds.unload = speed / 3600;
 

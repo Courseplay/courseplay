@@ -518,7 +518,7 @@ function courseplay:drive(self, dt)
 		refSpeed = self.cp.speeds.field;
 	else
 		self.cp.speeds.sl = 3;
-		refSpeed = self.cp.speeds.max;
+		refSpeed = self.cp.speeds.street;
 		if self.cp.speeds.useRecordingSpeed and self.Waypoints[self.recordnumber].speed ~= nil then
 			refSpeed = Utils.clamp(refSpeed, 3/3600, self.Waypoints[self.recordnumber].speed);
 		end;

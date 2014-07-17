@@ -150,11 +150,17 @@ function courseplay:load(xmlFile)
 	-- speed limits
 	self.cp.speeds = {
 		useRecordingSpeed = true;
-		unload =  6 / 3600; -- >3
-		turn =   10 / 3600; -- >5
-		field =  24 / 3600; -- >5
-		max =    50 / 3600; -- >5
+		unload =  6 / 3600;
+		turn =   10 / 3600;
+		field =  24 / 3600;
+		street =    50 / 3600;
 		sl = 3;
+
+		minUnload = 3;
+		minTurn = 3;
+		minField = 3;
+		minStreet = 3;
+		max = 60;
 	};
 
 	self.cp.toolsDirty = false
@@ -1302,7 +1308,7 @@ function courseplay:readStream(streamId, connection)
 	self.cp.speeds.turn = streamDebugReadFloat32(streamId)
 	self.cp.speeds.field = streamDebugReadFloat32(streamId)
 	self.cp.speeds.unload = streamDebugReadFloat32(streamId)
-	self.cp.speeds.max = streamDebugReadFloat32(streamId)
+	self.cp.speeds.street = streamDebugReadFloat32(streamId)
 	self.cp.visualWaypointsMode = streamDebugReadInt32(streamId)
 	self.cp.beaconLightsMode = streamDebugReadInt32(streamId)
 	self.cp.waitTime = streamDebugReadInt32(streamId)
@@ -1426,7 +1432,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteFloat32(streamId,self.cp.speeds.turn)
 	streamDebugWriteFloat32(streamId,self.cp.speeds.field)
 	streamDebugWriteFloat32(streamId,self.cp.speeds.unload)
-	streamDebugWriteFloat32(streamId,self.cp.speeds.max)
+	streamDebugWriteFloat32(streamId,self.cp.speeds.street)
 	streamDebugWriteInt32(streamId,self.cp.visualWaypointsMode)
 	streamDebugWriteInt32(streamId,self.cp.beaconLightsMode)
 	streamDebugWriteInt32(streamId,self.cp.waitTime)
@@ -1502,7 +1508,7 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		self.cp.speeds.unload = Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#unload'), 6/3600);
 		self.cp.speeds.turn = Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#turn'), 10/3600);
 		self.cp.speeds.field = Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#field'), 24/3600);
-		self.cp.speeds.max = Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#max'), 50/3600);
+		self.cp.speeds.street = Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#max'), 50/3600);
 
 		-- MODE 2
 		curKey = key .. '.courseplay.combi';
@@ -1615,7 +1621,7 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 
 	--NODES
 	local cpOpen = string.format('<courseplay aiMode=%q courses=%q openHudWithMouse=%q beacon=%q visualWaypoints=%q waitTime=%q>', tostring(self.cp.mode), tostring(table.concat(self.cp.loadedCourses, ",")), tostring(self.cp.hud.openWithMouse), tostring(self.cp.beaconLightsMode), tostring(self.cp.visualWaypointsMode), tostring(self.cp.waitTime));
-	local speeds = string.format('<speeds useRecordingSpeed=%q unload="%.5f" turn="%.5f" field="%.5f" max="%.5f" />', tostring(self.cp.speeds.useRecordingSpeed), self.cp.speeds.unload, self.cp.speeds.turn, self.cp.speeds.field, self.cp.speeds.max);
+	local speeds = string.format('<speeds useRecordingSpeed=%q unload="%.5f" turn="%.5f" field="%.5f" max="%.5f" />', tostring(self.cp.speeds.useRecordingSpeed), self.cp.speeds.unload, self.cp.speeds.turn, self.cp.speeds.field, self.cp.speeds.street);
 	local combi = string.format('<combi tipperOffset="%.1f" combineOffset="%.1f" combineOffsetAutoMode=%q fillFollow="%d" fillDriveOn="%d" turnRadius="%d" realisticDriving=%q />', self.cp.tipperOffset, self.cp.combineOffset, tostring(self.cp.combineOffsetAutoMode), self.cp.followAtFillLevel, self.cp.driveOnAtFillLevel, self.cp.turnRadius, tostring(self.cp.realisticDriving));
 	local fieldWork = string.format('<fieldWork workWidth="%.1f" ridgeMarkersAutomatic=%q offsetData=%q abortWork="%d" refillUntilPct="%d" />', self.cp.workWidth, tostring(self.cp.ridgeMarkersAutomatic), offsetData, Utils.getNoNil(self.cp.abortWork, 0), self.cp.refillUntilPct);
 	local shovels, combine = '', '';

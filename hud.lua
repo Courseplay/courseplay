@@ -467,7 +467,7 @@ function courseplay.hud:loadPage(vehicle, page)
 			vehicle.cp.hud.content.pages[5][3][2].text = courseplay:loc('COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC');
 			vehicle.cp.hud.content.pages[5][5][2].text = courseplay:loc('COURSEPLAY_MAX_SPEED_MODE_RECORDING');
 		else
-			vehicle.cp.hud.content.pages[5][3][2].text = string.format('%d %s', g_i18n:getSpeed(vehicle.cp.speeds.max * 3600), g_i18n:getText('speedometer'));
+			vehicle.cp.hud.content.pages[5][3][2].text = string.format('%d %s', g_i18n:getSpeed(vehicle.cp.speeds.street * 3600), g_i18n:getText('speedometer'));
 			vehicle.cp.hud.content.pages[5][5][2].text = courseplay:loc('COURSEPLAY_MAX_SPEED_MODE_MAX');
 		end;
 

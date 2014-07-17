@@ -959,13 +959,13 @@ function courseplay:unload_combine(self, dt)
 		end
 		if combine.cp.isSugarBeetLoader then
 			if distance > 50 then
-				refSpeed = self.cp.speeds.max
+				refSpeed = self.cp.speeds.street
 			else
 				refSpeed = Utils.clamp(frontTractor.lastSpeedReal, self.cp.speeds.turn, self.cp.speeds.field)
 			end
 		else
 			if distance > 50 then
-				refSpeed = self.cp.speeds.max
+				refSpeed = self.cp.speeds.street
 			else
 				refSpeed = frontTractor.lastSpeedReal --10/3600 -- frontTractor.lastSpeedReal
 			end
