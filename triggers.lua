@@ -526,8 +526,8 @@ function courseplay:updateAllTriggers()
 						end;
 					end;
 
-				-- BioHeatPlant tipTrigger (Forest Mod) (placeable)
-				elseif trigger.isStorageTipTrigger and trigger.substanceUsage ~= nil and trigger.acceptedFillType and trigger.acceptedFillType == Fillable.fillTypeNameToInt.woodChip and trigger.triggerId ~= nil then
+				-- BioHeatPlant / WoodChip storage tipTrigger (Forest Mod) (placeable)
+				elseif trigger.isStorageTipTrigger and trigger.acceptedFillType ~= nil and Fillable.fillTypeNameToInt.woodChip ~= nil and trigger.acceptedFillType == Fillable.fillTypeNameToInt.woodChip and trigger.triggerId ~= nil then
 					cpAddTrigger(trigger.triggerId, trigger, 'tipTrigger');
 				end;
 			end;
