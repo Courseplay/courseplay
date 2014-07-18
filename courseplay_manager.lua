@@ -154,7 +154,7 @@ function courseplay_manager:createButton(section, fn, prm, img, x, y, w, h)
 		section = section, 
 		overlay = overlay, 
 		overlays = { overlay }, 
-		function_to_call = fn, 
+		functionToCall = fn, 
 		parameter = prm, 
 		x_init = x,
 		x = x,
@@ -365,17 +365,15 @@ function courseplay_manager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 	if area == nil then
 		return;
 	end;
-	local mouseIsInClickArea = courseplay:mouseIsInArea(posX, posY, area.x1, area.x2, area.y1, area.y2);
 
 	--LEFT CLICK
-	if (isDown or isUp) and mouseKey == courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION.buttonId and mouseIsInClickArea then
+	if (isDown or isUp) and mouseKey == courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION.buttonId and courseplay:mouseIsInArea(posX, posY, area.x1, area.x2, area.y1, area.y2) then
 		if courseplay.globalInfoText.hasContent then
 			for i,button in pairs(self.buttons.globalInfoText) do
 				if button.show and courseplay:mouseIsOnButton(posX, posY, button) then
 					button.isClicked = isDown;
 					if isUp then
 						local sourceVehicle = g_currentMission.controlledVehicle or button.parameter;
-						--print(string.format("handleMouseClick(%q, button)", nameNum(sourceVehicle)));
 						courseplay.button:handleMouseClick(sourceVehicle, button);
 					end;
 					break;
