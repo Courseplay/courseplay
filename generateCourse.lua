@@ -96,7 +96,7 @@ function courseplay:generateCourse(vehicle)
 		local polyLength = poly.numPoints;
 
 		vehicle.cp.headland.lanes = {};
-		local offsetWidth, noGoWidth, laneOffsetWidth, laneNoGoWidth = 0,0,0,0;
+		local offsetWidth, noGoWidth = 0,0;
 
 		for curLane=1, numLanes do
 
@@ -109,7 +109,7 @@ function courseplay:generateCourse(vehicle)
 				end;
 			end;
 
-			laneOffsetWidth, laneNoGoWidth = self:getOffsetWidth(vehicle, curLane);
+			local laneOffsetWidth, laneNoGoWidth = self:getOffsetWidth(vehicle, curLane);
 			noGoWidth = offsetWidth + laneNoGoWidth;
 			offsetWidth = offsetWidth + laneOffsetWidth;
 
@@ -118,13 +118,13 @@ function courseplay:generateCourse(vehicle)
 			-- --------------------------------------------------
 			-- (2.1) CREATE INITIAL OFFSET POINTS
 			courseplay:debug('(2.1) CREATE INITIAL OFFSET POINTS', 7);
-			local lane = courseplay:offsetPoly(polyPoints, -offsetWidth);
+			local lane = courseplay:offsetPoly(polyPoints, -offsetWidth, vehicle);
 			if not(orderCW) then
 				lane = table.reverse(lane);
 			end;
 
 			local numOffsetPoints = 0;
-			for i, point in pairs(lane) do
+			for i, point in ipairs(lane) do
 				local data = {
 					cx = point.cx,
 					cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, point.cx, 1, point.cz), --TODO: actually only needed for debugPoint/debugLine
@@ -176,9 +176,13 @@ function courseplay:generateCourse(vehicle)
 
 		--base field work course on headland path
 		if numCreatedLanes > 0 then
-			--poly.points = courseplay:offsetPointsPoly(vehicle.cp.headland.lanes[numCreatedLanes], workWidth / 2); --up/down based on last offset lane (= 1/2 workWidth overlap) - TODO: smaller overlap (1/4) ?
-			offsetWidth = offsetWidth + (laneOffsetWidth * vehicle.cp.headland.overlap);
-			poly.points = courseplay:offsetPoly(polyPoints, -offsetWidth);
+			poly.points = vehicle.cp.headland.lanes[numCreatedLanes];
+			if vehicle.cp.headland.overlap ~= 0 then
+				local laneOffsetWidth, laneNoGoWidth = self:getOffsetWidth(vehicle, curLane);
+				noGoWidth = offsetWidth + laneNoGoWidth * vehicle.cp.headland.overlap;
+				offsetWidth = offsetWidth + laneOffsetWidth * vehicle.cp.headland.overlap;
+				poly.points = courseplay:offsetPoly(polyPoints, -offsetWidth);
+			end;
 			poly.numPoints = #(poly.points);
 			courseplay:debug(string.format('headland: numCreatedLanes=%d -> poly=%s, poly.points=%s, poly.numPoints=%s, #poly.points=%s', numCreatedLanes, tostring(poly), tostring(poly.points), tostring(poly.numPoints), tostring(poly.points and #poly.points or 'nil')), 7);
 		end;
@@ -566,40 +570,47 @@ function courseplay:generateCourse(vehicle)
 		if numHeadlandLanesCreated > 0 then
 			if vehicle.cp.headland.orderBefore then --each headland lanes' first point is closest to corresponding field edge corner point
 				local lanes = {};
-				for i,lane in pairs(vehicle.cp.headland.lanes) do
+				local prevLane;
+				for i,lane in ipairs(vehicle.cp.headland.lanes) do
 					local closest = self:getClosestPolyPoint(lane, startOnEdge.cx, startOnEdge.cz);
 					courseplay:debug(string.format('closest point on lane is : %d (%.2f, %.2f)', closest, lane[closest].cx, lane[closest].cz), 7);
 					local numPoints = #lane;
 					courseplay:debug(string.format('[before] rotating headland lane=%d, closest=%d -> rotate: numPoints-(closest-1)=%d-(%d-1)=%d', i, closest, numPoints, closest, numPoints - (closest-1)), 7);
-					local tmpLane = table.rotate(lane, numPoints - (closest - 1));
+					local lane = table.rotate(lane, numPoints - (closest - 1));
 					--remove last points where distance to first point is under work width 
-					if (i ~= vehicle.cp.headland.numLanes) then
-						while Utils.vector2Length(tmpLane[1].cx-tmpLane[numPoints].cx,tmpLane[1].cz-tmpLane[numPoints].cz) < (workWidth) do
-							table.remove(tmpLane);
-							numPoints = numPoints - 1;
-							courseplay:debug(string.format('Last point remove on headlane %d / %d', i, vehicle.cp.headland.numLanes), 7);
+					if (i > 1 and i <= vehicle.cp.headland.numLanes) then
+						local p3 = lane[1];
+						local p4 = lane[2];
+						local searching = true;
+						local idx = #prevLane;
+						while searching do
+							local crossing = courseplay:lineIntersection(prevLane[idx],prevLane[idx-1],p3,p4);
+							if crossing.ip1 == 'NFIP' then
+								break;
+							end;
+							table.remove(prevLane);
+							idx = idx - 1;
+							courseplay:debug(string.format('Last point remove on headlane %d / %d', i-1, vehicle.cp.headland.numLanes), 7);
 						end;
-						
-					elseif (i == vehicle.cp.headland.numLanes) and self:near(math.abs(math.deg(self:pointAngle(tmpLane[numPoints-1],tmpLane[numPoints]) + 180)),startPoint.angle, 5)  then
+						table.remove(lanes);
+						table.insert(lanes,prevLane);
+					elseif (i == vehicle.cp.headland.numLanes) and self:near(math.abs(math.deg(self:pointAngle(lane[numPoints-1],lane[numPoints]) + 180)),startPoint.angle, 5)  then
 						--we will have to make a turn maneuver at the end of the headlands
-						tmpLane[numPoints].turnStart = true;
+						lane[numPoints].turnStart = true;
 						turnAtHeadEnd = true;
 						if vehicle.cp.headland.userDirClockwise then
-							tmpLane[numPoints].turn = 'right';
+							lane[numPoints].turn = 'right';
 						else
-							tmpLane[numPoints].turn = 'left';
+							lane[numPoints].turn = 'left';
 						end;
-					end;
-					
-					--courseplay:debug(tableShow(vehicle.cp.headland.lanes[i], 'rotated headland lane '..i), 7);
-					if i == 1 then
+					elseif i == 1 then
 						-- set start point on the field edge
-						local startPoint = courseplay:findCrossing(tmpLane[2],tmpLane[1], field);
-						tmpLane[1].cx = startPoint.cx;
-						tmpLane[1].cz = startPoint.cz;
-						
+						local startPoint = courseplay:findCrossing(lane[3],lane[2], field);
+						lane[1].cx = startPoint.cx;
+						lane[1].cz = startPoint.cz;
 					end;
-					table.insert(lanes,tmpLane);
+					prevLane = lane;
+					table.insert(lanes,lane);
 				end;	
 				vehicle.cp.headland.lanes = nil;
 				vehicle.cp.headland.lanes = {};
@@ -616,7 +627,7 @@ function courseplay:generateCourse(vehicle)
 					courseplay:debug(string.format('[after] rotating headland lane=%d, closest=%d -> rotate: numPoints-(closest-1)=%d-(%d-1)=%d', i, closest, numPoints, closest, numPoints - (closest-1)), 7);
 
 					local tmpLane = table.rotate(lane, numPoints - (closest-1));
-					if i == numHeadlandLanesCreated and self:near(math.abs(math.deg(tmpLane[2].angle)+180),startPoint.angle, 5) then
+					if i == numHeadlandLanesCreated and self:near(math.abs(math.deg(self:pointAngle(lane[1],lane[2]) + 180)),startPoint.angle, 5) then
 						--we will have to make a turn maneuver before entering headland
 						tmpLane[1].turnEnd = true;
 						turnAtHeadEnd = true;
@@ -935,6 +946,44 @@ function courseplay.generation:pointAngle(p1,p2)
 	return Utils.getYRotationFromDirection(p1.cx-p2.cx, p1.cz-p2.cz);
 end;
 
+function courseplay:appendSpline(poly,after,p1,p2,vehicle)
+	local points = {};
+	local numPoints = #poly;
+	if after > 1 then
+		points[1] = poly[after-1];
+	else 
+		points[1] = poly[numPoints];
+	end;
+	points[2] = poly[after];
+	if p1 and p2 then
+		points[3] = p1;
+		points[4] = p2;
+	else
+		local idx3 = after+1;
+		local idx4 = after+2;
+		if after == numPoints then 
+			idx3 = 1;
+			idx4 = 2;
+		elseif after == numPoints-1 then
+			idx3 = numPoints;
+			idx4 = 1;
+		end;
+		points[3] = poly[idx3];
+		points[4] = poly[idx4];
+	end;
+	local distance = 5;
+	if vehicle then
+		distance = vehicle.cp.headland.maxPointDistance;
+	end;
+	local steps = math.floor(Utils.vector2Length(points[2].cx-points[3].cx,points[2].cz-points[3].cz) / distance);
+	courseplay:debug(string.format('%d point in spline',steps),7);
+	local spline = courseplay.generation:smoothSpline(points,steps);
+	local splinePoints = #spline;
+	for i = 2, splinePoints-1  do
+		table.insert(poly, after+i-1, spline[i]);
+	end;
+	return poly;
+end; 	
 
 -- @src: http://www.efg2.com/Lab/Graphics/Jean-YvesQueinecBezierCurves.htm
 function courseplay.generation:smoothSpline(points, steps, useC, addHeight)
@@ -1159,15 +1208,25 @@ function courseplay:pointDistToLine(point,linePoint1,linePoint2)
 	return dist, (t >= 0 and t <= 1);
 end;
 
-function courseplay:cleanPline(pline,boundingPline,offset)
+function courseplay:cleanPline(pline,boundingPline,offset,vehicle)
+	local minPointDistance = 1;
+	local maxPointDistance = 5;
 	courseplay:debug('CLEANPLINE',7);
 	local newPline = {};
 	local numPoints = #pline;
 	table.insert(pline,pline[1]);
 	courseplay:debug(string.format('Searching selfintersections on %d seg' , numPoints),7);
-	for idx1 = 1, numPoints do
+	local idx1 = 1;
+	while idx1 <= numPoints do
 		local p1 = pline[idx1];
 		local p2 = pline[idx1+1];
+		local p1p2Length = Utils.vector2Length(p1.cx-p2.cx,p1.cz-p2.cz);
+		if p1p2Length > maxPointDistance then
+			courseplay:debug(string.format('%d -> %d (%.2f m) must be refined',idx1,idx1+1,p1p2Length),7);
+			pline = courseplay:appendSpline(pline,idx1,nil,nil,vehicle);
+			p2 = pline[idx1+1];
+			numPoints = #pline-1
+		end;
 		table.insert(newPline, p1);
 		for idx2 = 1 , numPoints do
 			if idx2 - 1 < idx1 or idx1 < idx2 + 1 then
@@ -1181,6 +1240,7 @@ function courseplay:cleanPline(pline,boundingPline,offset)
 				end;
 			end;
 		end;
+		idx1 = idx1 + 1;
 	end;
 	pline = {};
 	local prevPoint = false;
@@ -1221,9 +1281,9 @@ function courseplay:keepPoint(point, pline, offset)
 	return keep;
 end;
 
-function courseplay:offsetPoly(pline, offset)
+function courseplay:offsetPoly(pline, offset, vehicle)
 	local pline1 = courseplay:untrimmedOffsetPline(pline, offset);
-	pline1 = courseplay:cleanPline(pline1, pline, offset);
+	pline1 = courseplay:cleanPline(pline1, pline, offset, vehicle);
 	return pline1;
 end;
 
