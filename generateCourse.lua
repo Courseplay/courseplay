@@ -5,7 +5,7 @@
 @date:      09 Feb 2013
 
 @coaothors: Fck54 (Franck Champlon)
-@updated:   01 august 2014
+@updated:   04 august 2014
 
 @copyright: No reproduction, usage or copying without the explicit permission by the author allowed.
 ]]
@@ -123,13 +123,17 @@ function courseplay:generateCourse(vehicle)
 				lane = table.reverse(lane);
 			end;
 
-			local numOffsetPoints = 0;
-			for i, point in ipairs(lane) do
+			local numOffsetPoints = #lane;
+			table.insert(lane, lane[1]);
+			for i = 1, numOffsetPoints do
+				local point = lane[i];
+				local nextPoint = lane[i+1];
+				local pointAngle = courseplay.generation:pointAngle(point,nextPoint);
 				local data = {
 					cx = point.cx,
 					cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, point.cx, 1, point.cz), --TODO: actually only needed for debugPoint/debugLine
 					cz = point.cz,
-					angle = point.angle,
+					angle = pointAngle,
 					wait = false,
 					rev = false,
 					crossing = false,
@@ -142,8 +146,14 @@ function courseplay:generateCourse(vehicle)
 					ridgeMarker = laneRidgeMarker
 				};
 				lane[i] = data;
-				numOffsetPoints = numOffsetPoints + 1;
+				if i > 1 then
+					if math.abs(lane[i-1].angle - pointAngle) > math.pi / 3 then
+						lane[i-1].turnStart = true;
+						lane[i].turnEnd = true;
+					end;
+				end;
 			end;
+			table.remove(lane);
 		
 
 			
@@ -946,44 +956,6 @@ function courseplay.generation:pointAngle(p1,p2)
 	return Utils.getYRotationFromDirection(p1.cx-p2.cx, p1.cz-p2.cz);
 end;
 
-function courseplay:appendSpline(poly,after,p1,p2,vehicle)
-	local points = {};
-	local numPoints = #poly;
-	if after > 1 then
-		points[1] = poly[after-1];
-	else 
-		points[1] = poly[numPoints];
-	end;
-	points[2] = poly[after];
-	if p1 and p2 then
-		points[3] = p1;
-		points[4] = p2;
-	else
-		local idx3 = after+1;
-		local idx4 = after+2;
-		if after == numPoints then 
-			idx3 = 1;
-			idx4 = 2;
-		elseif after == numPoints-1 then
-			idx3 = numPoints;
-			idx4 = 1;
-		end;
-		points[3] = poly[idx3];
-		points[4] = poly[idx4];
-	end;
-	local distance = 5;
-	if vehicle then
-		distance = vehicle.cp.headland.maxPointDistance;
-	end;
-	local steps = math.floor(Utils.vector2Length(points[2].cx-points[3].cx,points[2].cz-points[3].cz) / distance);
-	courseplay:debug(string.format('%d point in spline',steps),7);
-	local spline = courseplay.generation:smoothSpline(points,steps);
-	local splinePoints = #spline;
-	for i = 2, splinePoints-1  do
-		table.insert(poly, after+i-1, spline[i]);
-	end;
-	return poly;
-end; 	
 
 -- @src: http://www.efg2.com/Lab/Graphics/Jean-YvesQueinecBezierCurves.htm
 function courseplay.generation:smoothSpline(points, steps, useC, addHeight)
@@ -993,7 +965,6 @@ function courseplay.generation:smoothSpline(points, steps, useC, addHeight)
 	local numPoints = #points;
 	local steps = steps or 5;
 	local spline = {};
-	local count = numPoints - 1;
 	local p1, p2, p3, p4;
 	local x,y,z = 'x','y','z';
 	if useC then
@@ -1001,7 +972,7 @@ function courseplay.generation:smoothSpline(points, steps, useC, addHeight)
 	end;
 	
 	p1, p2, p3, p4 = points[1], points[2], points[3], points[4];
-	if numPoints == 3 then -- symmetric point to p3 is defined as reference
+	if numPoints == 3 then --  p3 mirrored on p2 is defined as reference
 		p4 = p3;
 		p3 = self:mirrorPoint(p3, p2, useC);
 		p2 = p3;
@@ -1209,7 +1180,7 @@ function courseplay:pointDistToLine(point,linePoint1,linePoint2)
 end;
 
 function courseplay:cleanPline(pline,boundingPline,offset,vehicle)
-	local minPointDistance = 1;
+	local minPointDistance = 0.5;
 	local maxPointDistance = 5;
 	courseplay:debug('CLEANPLINE',7);
 	local newPline = {};
@@ -1220,13 +1191,6 @@ function courseplay:cleanPline(pline,boundingPline,offset,vehicle)
 	while idx1 <= numPoints do
 		local p1 = pline[idx1];
 		local p2 = pline[idx1+1];
-		local p1p2Length = Utils.vector2Length(p1.cx-p2.cx,p1.cz-p2.cz);
-		if p1p2Length > maxPointDistance then
-			courseplay:debug(string.format('%d -> %d (%.2f m) must be refined',idx1,idx1+1,p1p2Length),7);
-			pline = courseplay:appendSpline(pline,idx1,nil,nil,vehicle);
-			p2 = pline[idx1+1];
-			numPoints = #pline-1
-		end;
 		table.insert(newPline, p1);
 		for idx2 = 1 , numPoints do
 			if idx2 - 1 < idx1 or idx1 < idx2 + 1 then
@@ -1243,15 +1207,58 @@ function courseplay:cleanPline(pline,boundingPline,offset,vehicle)
 		idx1 = idx1 + 1;
 	end;
 	pline = {};
+	savedPoints = 0;
 	local prevPoint = false;
-	for i, point in pairs(newPline) do
+	local prevAngle = false;
+	table.insert(newPline,newPline[1]);
+	local numPoints = #newPline;
+	for i, point in ipairs(newPline) do
 		if courseplay:keepPoint(point, boundingPline, offset) then
-			if (prevPoint and Utils.vector2Length(point.cx - prevPoint.cx, point.cz - prevPoint.cz) > .5 ) or i == 1 then
+			if not prevPoint then
 				table.insert(pline,point);
+				savedPoints = savedPoints + 1;
+				courseplay:debug(string.format('point %d saved as %d',i, savedPoints),7);
+			else
+				local segLength = Utils.vector2Length(point.cx - prevPoint.cx, point.cz - prevPoint.cz);
+				local curangle = courseplay.generation:pointAngle(point,prevPoint);
+				courseplay:debug(string.format('%d (%.2f,%.2f) -> %d (%.2f m)',i,point.cx,point.cz,savedPoints,segLength),7);
+				if segLength > minPointDistance and segLength <= maxPointDistance then
+					table.insert(pline,point);
+					savedPoints = savedPoints + 1;
+					courseplay:debug(string.format('point %d saved as %d',i, savedPoints),7);
+				elseif segLength > maxPointDistance then
+					local steps = math.ceil(segLength / maxPointDistance);
+					local points = {};
+					points[1] = pline[savedPoints - 1];
+					points[2] = prevPoint;
+					points[3] = point;
+					points[4] = i == numPoints and pline[2] or newPline[i+1];
+					if savedPoints == 1 then
+						for idx = 1, 3 do
+							points[idx] = points[idx+1];
+						end;
+						points[4] = nil;
+					end;
+					local spline = courseplay.generation:smoothSpline(points,steps);
+					local splinePoints = #spline;
+					for idx = 2, splinePoints do --add all but first ( prevPoint )
+						table.insert(pline, spline[idx]);
+						savedPoints = savedPoints + 1;
+						courseplay:debug(string.format('Spline point %d saved as %d',idx, savedPoints),7);
+					end;
+				elseif prevAngle then
+					if courseplay.generation:near(prevAngle,CurAngle,math.pi/4) then
+						table.insert(pline,point);
+						savedPoints = savedPoints + 1;
+						courseplay:debug(string.format('point %d saved as %d',i, savedPoints),7);
+					end;
+				end;
+				prevAngle = curAngle;
 			end;
 			prevPoint = point;
 		end;
 	end;
+	table.remove(pline);
 	return pline;			
 end;	
 
@@ -1285,12 +1292,6 @@ function courseplay:offsetPoly(pline, offset, vehicle)
 	local pline1 = courseplay:untrimmedOffsetPline(pline, offset);
 	pline1 = courseplay:cleanPline(pline1, pline, offset, vehicle);
 	return pline1;
-end;
-
-function courseplay:round(num,dec)
-	local mult = 10^(dec or 1);
-	local int, frac = math.modf(num * mult);
-	return int / mult;
 end;
 
 function courseplay:findCrossing(p1,p2, poly)
