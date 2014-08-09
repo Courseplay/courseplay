@@ -230,7 +230,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 
 			if trigger ~= nil then
 				if trigger.bunkerSilo ~= nil and trigger.bunkerSilo.state ~= 0 then 
-					courseplay:debug(('%s: bunkerSilo.state=%d -> ignoring trigger'):format(nameNum(self), bunkerSilo.state), 1);
+					courseplay:debug(('%s: bunkerSilo.state=%d -> ignoring trigger'):format(nameNum(self), trigger.bunkerSilo.state), 1);
 					return true
 				end
 				if self.cp.hasShield and trigger.bunkerSilo == nil then
