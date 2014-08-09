@@ -50,7 +50,7 @@ function courseplay:load(xmlFile)
 	self.cp.stopAtEnd = false
 	self.cp.calculatedCourseToCombine = false
 
-	self.recordnumber = 1
+	courseplay:setRecordNumber(self, 1);
 	self.cp.lastRecordnumber = 1;
 	self.cp.recordingTimer = 1
 	self.cp.timeOut = 1
@@ -1170,11 +1170,6 @@ function courseplay:updateTick(dt)
 		courseplay:reset_tools(self)
 	end
 
-	-- wage costs
-	if courseplay.wagesActive and self.isServer and self.drive and not self.isHired then
-		g_currentMission:addSharedMoney(dt * -courseplay.wagePerMs * courseplay.wageDifficultyMultiplier, 'wagePayment');
-	end;
-
 	self.timer = self.timer + dt
 	--courseplay:debug(string.format("timer: %f", self.timer ), 2)
 end
@@ -1300,7 +1295,7 @@ function courseplay:readStream(streamId, connection)
 	self.cp.HUD4combineName = streamDebugReadString(streamId);
 	self.cp.HUD4savedCombine = streamDebugReadBool(streamId)
 	self.cp.HUD4savedCombineName = streamDebugReadString(streamId);
-	self.recordnumber = streamDebugReadInt32(streamId)
+	courseplay:setRecordNumber(self, streamDebugReadInt32(streamId));
 	self.cp.isRecording = streamDebugReadBool(streamId)
 	self.cp.recordingIsPaused = streamDebugReadBool(streamId)
 	self.cp.searchCombineAutomatically = streamDebugReadBool(streamId)

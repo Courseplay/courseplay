@@ -148,7 +148,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 
 								-- Change the direction to forward if we were reversing.
 								if self.Waypoints[self.recordnumber].rev then
-									self.recordnumber = courseplay:getNextFwdPoint(self);
+									courseplay:setRecordNumber(self, courseplay:getNextFwdPoint(self));
 								end;
 							elseif workTool.emptyState == BaleLoader.EMPTY_WAIT_TO_REDO then
 								-- BaleLoader.CHANGE_EMPTY_REDO

@@ -1744,7 +1744,7 @@ function courseplay:resetTipTrigger(vehicle, changeToForward)
 		vehicle.cp.backupUnloadSpeed = nil;
 	end;
 	if changeToForward and vehicle.Waypoints[vehicle.recordnumber].rev then
-		vehicle.recordnumber = courseplay:getNextFwdPoint(vehicle);
+		courseplay:setRecordNumber(vehicle, courseplay:getNextFwdPoint(vehicle));
 	end;
 end;
 

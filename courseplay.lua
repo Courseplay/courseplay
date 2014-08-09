@@ -466,7 +466,7 @@ function courseplay:setGlobalData()
 	-- WORKER WAGES
 	courseplay.wagesActive = wagesActive;
 	courseplay.wagePerHour = wagesAmount;
-	courseplay.wagePerMs = wagesAmount / 60 / 60 / 1000;
+	courseplay.wagePerMin  = wagesAmount / 60;
 
 	--print("\t### Courseplay: setGlobalData() finished");
 end;

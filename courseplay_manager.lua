@@ -726,8 +726,22 @@ end;
 
 local nightStart, dayStart = 19 * 3600000, 7.5 * 3600000; -- from 7pm until 7:30am
 function courseplay_manager:minuteChanged()
+	-- WEATHER
 	local env = g_currentMission.environment;
 	courseplay.lightsNeeded = env.needsLights or (env.dayTime >= nightStart or env.dayTime <= dayStart) or env.currentRain ~= nil or env.curRain ~= nil or (env.lastRainScale > 0.1 and env.timeSinceLastRain < 30);
+
+	-- WAGES
+	if courseplay.wagesActive and g_server ~= nil then
+		local totalWages = 0;
+		for vehicleNum, vehicle in ipairs(courseplay.totalCoursePlayers) do
+			if vehicle.drive and not vehicle.isHired then
+				totalWages = totalWages + courseplay.wagePerMin;
+			end;
+		end;
+		if totalWages > 0 then
+			g_currentMission:addSharedMoney(-totalWages * courseplay.wageDifficultyMultiplier, 'wagePayment');
+		end;
+	end;
 end;
 
 addModEventListener(courseplay_manager);
