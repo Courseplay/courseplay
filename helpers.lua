@@ -641,9 +641,15 @@ function courseplay:timerIsThrough(vehicle, timerName, defaultToBool)
 	return vehicle.timer > vehicle.cp.timers[timerName];
 end;
 
-function courseplay:hasSpecialization(vehicle, specClassName) --courtesy of Satissis, TYVM!
-	if vehicle.customEnvironment ~= nil then
-		specClassName = string.format("%s.%s", vehicle.customEnvironment, specClassName);
+function courseplay:hasSpecialization(vehicle, specClassName)
+	-- real customEnvironment for MoreRealisticDLCs
+	if vehicle.typeName:lower():find('morerealisticdlcs.') then
+		local customEnvironment = Utils.splitString('.', vehicle.typeName)[1];
+		specClassName = ('%s.%s'):format(customEnvironment, specClassName);
+
+	-- default customEnvironment
+	elseif vehicle.customEnvironment ~= nil then
+		specClassName = ('%s.%s'):format(vehicle.customEnvironment, specClassName);
 	end;
 
 	local spec;
@@ -661,7 +667,7 @@ function courseplay:hasSpecialization(vehicle, specClassName) --courtesy of Sati
 	end;
 
 	return false;
-end
+end;
 
 function courseplay:getDriveDirection(node, x, y, z)
 	local lx, ly, lz = worldToLocal(node, x, y, z)
