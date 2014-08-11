@@ -641,6 +641,7 @@ function courseplay:timerIsThrough(vehicle, timerName, defaultToBool)
 	return vehicle.timer > vehicle.cp.timers[timerName];
 end;
 
+--[[TODO (Jakob): delete when new custom spec fn is made sure to always work correctly
 function courseplay:hasSpecialization(vehicle, specClassName)
 	-- real customEnvironment for MoreRealisticDLCs
 	if vehicle.typeName:lower():find('morerealisticdlcs.') then
@@ -668,6 +669,7 @@ function courseplay:hasSpecialization(vehicle, specClassName)
 
 	return false;
 end;
+]]
 
 function courseplay:getDriveDirection(node, x, y, z)
 	local lx, ly, lz = worldToLocal(node, x, y, z)

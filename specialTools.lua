@@ -430,6 +430,7 @@ function courseplay:setNameVariable(workTool)
 	end;
 end;
 
+--[[TODO (Jakob): delete when new custom spec fn is made sure to always work correctly
 function courseplay:setCustomSpecVariables(workTool)
 	workTool.cp.hasSpecializationAgrolinerTUW20 	   = courseplay:hasSpecialization(workTool, 'AgrolinerTUW20');
 	workTool.cp.hasSpecializationAugerWagon 		   = courseplay:hasSpecialization(workTool, 'AugerWagon');
@@ -443,6 +444,65 @@ function courseplay:setCustomSpecVariables(workTool)
 	workTool.cp.hasSpecializationSowingMachineWithTank = courseplay:hasSpecialization(workTool, 'SowingMachineWithTank');
 	workTool.cp.hasSpecializationTebbeHS180 		   = courseplay:hasSpecialization(workTool, 'TebbeHS180');
 end;
+]]
+
+function courseplay:setCustomSpecVariables(vehicle)
+	local customSpecNames = {
+		['AgrolinerTUW20'] 		  = { },
+		['AugerWagon'] 			  = { useVehicleCustomEnvironment = true },
+		['bigBear'] 			  = { },
+		['DrivingLine'] 		  = { },
+		['Hawe_SUW'] 			  = { },
+		['HoseRef'] 			  = { },
+		['Overcharge'] 			  = { },
+		['overloader'] 			  = { },
+		['SiloTrailer'] 		  = { },
+		['SowingMachineWithTank'] = { },
+		['TebbeHS180'] 			  = { }
+	};
+
+	local specToSpecClassName = {};
+
+	local vehicleCustomEnvironment = vehicle.customEnvironment;
+	local mrDlcsCustomEnvironment;
+	if vehicle.typeName:lower():find('morerealisticdlcs.') then
+		mrDlcsCustomEnvironment = Utils.splitString('.', vehicle.typeName)[1];
+	end;
+
+	for specClassName, data in pairs(customSpecNames) do
+		local fullSpecClassName = specClassName;
+		-- MoreRealisticDLCs vehicle
+		if mrDlcsCustomEnvironment then
+			-- spec must be in vehicle CE
+			if data.useVehicleCustomEnvironment then
+				if vehicleCustomEnvironment then
+					fullSpecClassName = ('%s.%s'):format(vehicleCustomEnvironment, specClassName);
+				end;
+
+			-- spec in MoreRealisticDLCs CE
+			else
+				fullSpecClassName = ('%s.%s'):format(mrDlcsCustomEnvironment, specClassName);
+			end;
+
+		-- vehicle CE
+		elseif vehicleCustomEnvironment then
+			fullSpecClassName = ('%s.%s'):format(vehicleCustomEnvironment, specClassName);
+		end;
+
+		local spec = getClassObject(fullSpecClassName);
+		if spec then
+			specToSpecClassName[spec] = specClassName;
+		end;
+	end;
+
+	for i, spec in ipairs(VehicleTypeUtil.vehicleTypes[vehicle.typeName].specializations) do
+		if specToSpecClassName[spec] ~= nil then
+			local varName = specToSpecClassName[spec]:gsub('^%l', string.upper):gsub('_', ''); -- first char uppercase, remove underscores
+			vehicle.cp['hasSpecialization' .. varName] = true;
+		end;
+	end;
+end;
+
 
 ------------------------------------------------------------------------------------------
 
