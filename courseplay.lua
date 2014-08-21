@@ -301,6 +301,10 @@ function courseplay:setGlobalData()
 			[6] = courseplay.hud.infoBasePosX + 0.265;
 		};
 	};
+	courseplay.hud.buttonPosX = {
+		[1] = courseplay.hud.infoBasePosX + 0.285;
+		[2] = courseplay.hud.infoBasePosX + 0.300;
+	};
 
 	ch.clickSound = createSample("clickSound");
 	loadSample(courseplay.hud.clickSound, Utils.getFilename("sounds/cpClickSound.wav", courseplay.path), false);

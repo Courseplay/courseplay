@@ -728,8 +728,14 @@ function courseplay:selectAssignedCombine(vehicle, changeBy)
 
 	if vehicle.cp.selectedCombineNumber == 0 then
 		vehicle.cp.savedCombine = nil;
+		vehicle.cp.HUD4savedCombineName = nil;
 	else
 		vehicle.cp.savedCombine = combines[vehicle.cp.selectedCombineNumber];
+		local combineName = vehicle.cp.savedCombine.name or courseplay:loc('COURSEPLAY_COMBINE');
+		local x1 = courseplay.hud.col2posX[4];
+		local x2 = courseplay.hud.buttonPosX[1] - getTextWidth(0.017, ' (9999m)');
+		local shortenedName, firstChar, lastChar = Utils.limitTextToWidth(combineName, 0.017, x2 - x1, false, '...');
+		vehicle.cp.HUD4savedCombineName = shortenedName;
 	end;
 
 	courseplay:removeActiveCombineFromTractor(vehicle);
