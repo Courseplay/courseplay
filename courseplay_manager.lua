@@ -74,9 +74,9 @@ function courseplay_manager:loadMap(name)
 	local progressBarPath = Utils.getFilename('img/progressBar.png', courseplay.path);
 	self.fieldScanInfo.progressBarOverlay = Overlay:new('fieldScanInfoProgressBar', progressBarPath, self.fieldScanInfo.lineX, self.fieldScanInfo.bgY + 16/1080, self.fieldScanInfo.progressBarWidth, 16/1080);
 	self.fieldScanInfo.percentColors = {
-		{ pct = 0.0, color = { r = 0.882353, g = 0.105882, b = 0 } },
-		{ pct = 0.5, color = { r = 1.000000, g = 0.800000, b = 0 } },
-		{ pct = 1.0, color = { r = 0.537255, g = 0.952941, b = 0 } }
+		{ pct = 0.0, color = { 0.882353, 0.105882, 0 } },
+		{ pct = 0.5, color = { 1.000000, 0.800000, 0 } },
+		{ pct = 1.0, color = { 0.537255, 0.952941, 0 } }
 	};
 
 
@@ -154,7 +154,7 @@ function courseplay_manager:createButton(section, fn, prm, img, x, y, w, h)
 		section = section, 
 		overlay = overlay, 
 		overlays = { overlay }, 
-		function_to_call = fn, 
+		functionToCall = fn, 
 		parameter = prm, 
 		x_init = x,
 		x = x,
@@ -304,8 +304,8 @@ function courseplay_manager:draw()
 
 		fsi.progressBarBgOverlay:render();
 		local pct = courseplay.fields.curFieldScanIndex / g_currentMission.fieldDefinitionBase.numberOfFields;
-		local color = self:getColorFromPct(pct, fsi.percentColors);
-		fsi.progressBarOverlay:setColor(color.r, color.g, color.b, 1);
+		local r, g, b = self:getColorFromPct(pct, fsi.percentColors);
+		fsi.progressBarOverlay:setColor(r, g, b, 1);
 		fsi.progressBarOverlay.width = fsi.progressBarWidth * pct;
   		setOverlayUVs(fsi.progressBarOverlay.overlayId, 0,0, 0,1, pct,0, pct,1);
 		fsi.progressBarOverlay:render();
@@ -338,30 +338,21 @@ end;
 function courseplay_manager:getColorFromPct(pct, colorMap)
 	local step = colorMap[2].pct - colorMap[1].pct;
 
-	for i=1, #colorMap do
+	if pct == 0 then
+		return unpack(colorMap[1].color);
+	end;
+
+	for i=2, #colorMap do
 		local data = colorMap[i];
 		if pct == data.pct then
-			return data.color;
+			return unpack(data.color);
 		end;
 
-		--print(string.format('\tstep %d, step base pct=%.1f', i, colorMap[i].pct));
-		if pct <= data.pct then
+		if pct < data.pct then
 			local lower = colorMap[i - 1];
 			local upper = colorMap[i];
-			--print(string.format('\t\tpct <= map pct -> lower=colorMap[%d], upper=colorMap[%d]', i-1, i));
-
-			local rd, gd, bd = upper.color.r - lower.color.r, upper.color.g - lower.color.g, upper.color.b - lower.color.b;
-			local relativePct = (pct - lower.pct) / step;
-			--print(string.format('\t\trd=%.1f, gd=%.1f, bg=%.1f, relativePct=%.2f', rd, gd, bd, relativePct))
-			local color = {
-				r = lower.color.r + relativePct * rd,
-				g = lower.color.g + relativePct * gd,
-				b = lower.color.b + relativePct * bd
-			};
-			--print(string.format('\t\tr = lower r + relativePct * rd = %.2f + %.2f * %.2f = %.2f', lower.color.r, relativePct, rd, color.r));
-			--print(string.format('\t\tg = lower g + relativePct * gd = %.2f + %.2f * %.2f = %.2f', lower.color.g, relativePct, gd, color.g));
-			--print(string.format('\t\tb = lower b + relativePct * bd = %.2f + %.2f * %.2f = %.2f', lower.color.b, relativePct, bd, color.b));
-			return color;
+			local pctAlpha = (pct - lower.pct) / step;
+			return Utils.vector3ArrayLerp(lower.color, upper.color, pctAlpha);
 		end;
 	end;
 end;
@@ -374,17 +365,15 @@ function courseplay_manager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 	if area == nil then
 		return;
 	end;
-	local mouseIsInClickArea = courseplay:mouseIsInArea(posX, posY, area.x1, area.x2, area.y1, area.y2);
 
 	--LEFT CLICK
-	if (isDown or isUp) and mouseKey == courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION.buttonId and mouseIsInClickArea then
+	if (isDown or isUp) and mouseKey == courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION.buttonId and courseplay:mouseIsInArea(posX, posY, area.x1, area.x2, area.y1, area.y2) then
 		if courseplay.globalInfoText.hasContent then
 			for i,button in pairs(self.buttons.globalInfoText) do
 				if button.show and courseplay:mouseIsOnButton(posX, posY, button) then
 					button.isClicked = isDown;
 					if isUp then
 						local sourceVehicle = g_currentMission.controlledVehicle or button.parameter;
-						--print(string.format("handleMouseClick(%q, button)", nameNum(sourceVehicle)));
 						courseplay.button:handleMouseClick(sourceVehicle, button);
 					end;
 					break;
@@ -737,8 +726,22 @@ end;
 
 local nightStart, dayStart = 19 * 3600000, 7.5 * 3600000; -- from 7pm until 7:30am
 function courseplay_manager:minuteChanged()
+	-- WEATHER
 	local env = g_currentMission.environment;
 	courseplay.lightsNeeded = env.needsLights or (env.dayTime >= nightStart or env.dayTime <= dayStart) or env.currentRain ~= nil or env.curRain ~= nil or (env.lastRainScale > 0.1 and env.timeSinceLastRain < 30);
+
+	-- WAGES
+	if courseplay.wagesActive and g_server ~= nil then
+		local totalWages = 0;
+		for vehicleNum, vehicle in ipairs(courseplay.totalCoursePlayers) do
+			if vehicle.drive and not vehicle.isHired then
+				totalWages = totalWages + courseplay.wagePerMin;
+			end;
+		end;
+		if totalWages > 0 then
+			g_currentMission:addSharedMoney(-totalWages * courseplay.wageDifficultyMultiplier, 'wagePayment');
+		end;
+	end;
 end;
 
 addModEventListener(courseplay_manager);

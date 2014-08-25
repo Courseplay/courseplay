@@ -11,32 +11,32 @@ function courseplay:setNameVariable(workTool)
 
 	-- Only default specs!
 	for i,spec in pairs(workTool.specializations) do
-		if     spec == AICombine then 			workTool.cp.hasSpecializationAICombine 			 = true;
-		elseif spec == AITractor then 			workTool.cp.hasSpecializationAITractor 			 = true;
-		elseif spec == AnimatedVehicle then 	workTool.cp.hasSpecializationAnimatedVehicle 	 = true;
-		elseif spec == ArticulatedAxis then		workTool.cp.hasSpecializationArticulatedAxis	 = true;
-		elseif spec == BaleLoader then 			workTool.cp.hasSpecializationBaleLoader 		 = true;
-		elseif spec == Baler then 				workTool.cp.hasSpecializationBaler 				 = true;
-		elseif spec == BunkerSiloCompacter then	workTool.cp.hasSpecializationBunkerSiloCompacter = true;
-		elseif spec == Combine then 			workTool.cp.hasSpecializationCombine 			 = true;
-		elseif spec == Cultivator then 			workTool.cp.hasSpecializationCultivator 		 = true;
-		elseif spec == Cutter then 				workTool.cp.hasSpecializationCutter 			 = true;
-		elseif spec == Cylindered then 			workTool.cp.hasSpecializationCylindered 		 = true;
-		elseif spec == Fillable then 			workTool.cp.hasSpecializationFillable 			 = true;
-		elseif spec == Foldable then 			workTool.cp.hasSpecializationFoldable 			 = true;
-		elseif spec == FruitPreparer then 		workTool.cp.hasSpecializationFruitPreparer 		 = true;
-		elseif spec == MixerWagon then 			workTool.cp.hasSpecializationMixerWagon 		 = true;
-		elseif spec == Mower then 				workTool.cp.hasSpecializationMower 				 = true;
-		elseif spec == PathVehicle then 		workTool.cp.hasSpecializationPathVehicle		 = true;
-		elseif spec == Plough then 				workTool.cp.hasSpecializationPlough 			 = true;
-		elseif spec == Shovel then 				workTool.cp.hasSpecializationShovel 			 = true;
-		elseif spec == SowingMachine then 		workTool.cp.hasSpecializationSowingMachine 		 = true;
-		elseif spec == Sprayer then 			workTool.cp.hasSpecializationSprayer 			 = true;
-		elseif spec == Steerable then 			workTool.cp.hasSpecializationSteerable 			 = true;
-		elseif spec == Tedder then 				workTool.cp.hasSpecializationTedder 			 = true;
-		elseif spec == TrafficVehicle then 		workTool.cp.hasSpecializationTrafficVehicle		 = true;
-		elseif spec == Trailer then 			workTool.cp.hasSpecializationTrailer 			 = true;
-		elseif spec == Windrower then 			workTool.cp.hasSpecializationWindrower 			 = true;
+		if     spec == AICombine 		   then workTool.cp.hasSpecializationAICombine 			 = true;
+		elseif spec == AITractor 		   then workTool.cp.hasSpecializationAITractor 			 = true;
+		elseif spec == AnimatedVehicle 	   then workTool.cp.hasSpecializationAnimatedVehicle 	 = true;
+		elseif spec == ArticulatedAxis 	   then workTool.cp.hasSpecializationArticulatedAxis 	 = true;
+		elseif spec == BaleLoader 		   then workTool.cp.hasSpecializationBaleLoader 		 = true;
+		elseif spec == Baler 			   then workTool.cp.hasSpecializationBaler 				 = true;
+		elseif spec == BunkerSiloCompacter then workTool.cp.hasSpecializationBunkerSiloCompacter = true;
+		elseif spec == Combine 			   then workTool.cp.hasSpecializationCombine 			 = true;
+		elseif spec == Cultivator 		   then workTool.cp.hasSpecializationCultivator 		 = true;
+		elseif spec == Cutter 			   then workTool.cp.hasSpecializationCutter 			 = true;
+		elseif spec == Cylindered 		   then workTool.cp.hasSpecializationCylindered 		 = true;
+		elseif spec == Fillable 		   then workTool.cp.hasSpecializationFillable 			 = true;
+		elseif spec == Foldable 		   then workTool.cp.hasSpecializationFoldable 			 = true;
+		elseif spec == FruitPreparer 	   then workTool.cp.hasSpecializationFruitPreparer 		 = true;
+		elseif spec == MixerWagon 		   then workTool.cp.hasSpecializationMixerWagon 		 = true;
+		elseif spec == Mower 			   then workTool.cp.hasSpecializationMower 				 = true;
+		elseif spec == PathVehicle 		   then workTool.cp.hasSpecializationPathVehicle 		 = true;
+		elseif spec == Plough 			   then workTool.cp.hasSpecializationPlough 			 = true;
+		elseif spec == Shovel 			   then workTool.cp.hasSpecializationShovel 			 = true;
+		elseif spec == SowingMachine 	   then workTool.cp.hasSpecializationSowingMachine 		 = true;
+		elseif spec == Sprayer 			   then workTool.cp.hasSpecializationSprayer 			 = true;
+		elseif spec == Steerable 		   then workTool.cp.hasSpecializationSteerable 			 = true;
+		elseif spec == Tedder 			   then workTool.cp.hasSpecializationTedder 			 = true;
+		elseif spec == TrafficVehicle 	   then workTool.cp.hasSpecializationTrafficVehicle 	 = true;
+		elseif spec == Trailer 			   then workTool.cp.hasSpecializationTrailer 			 = true;
+		elseif spec == Windrower 		   then workTool.cp.hasSpecializationWindrower 			 = true;
 		end;
 
 		--[[
@@ -179,12 +179,15 @@ function courseplay:setNameVariable(workTool)
 	elseif workTool.moescha ~= nil and workTool.cp.xmlFileName == 'moescha.xml' then
 		workTool.cp.isEifokZunhammerMoescha = true;
 		workTool.cp.isEifokZunhammerAttachable = true;
+		workTool.cp.isNonTippersHandledWorkTool = true;
 	elseif workTool.cp.xmlFileName == 'vogelsang.xml' then
 		workTool.cp.isEifokZunhammerVogelsang = true;
 		workTool.cp.isEifokZunhammerAttachable = true;
+		workTool.cp.isNonTippersHandledWorkTool = true;
 	elseif workTool.vibro ~= nil and workTool.cp.xmlFileName == 'zunhammerVibro.xml' then
 		workTool.cp.isEifokZunhammerVibro = true;
 		workTool.cp.isEifokZunhammerAttachable = true;
+		workTool.cp.isNonTippersHandledWorkTool = true;
 
 	-- Guellepack v2 [Bayerbua]
 	elseif workTool.fillerArmInRange ~= nil  then
@@ -251,7 +254,7 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.isPoettingerAlphaX8MowerPack = true;
 		workTool.cp.isPoettingerX8 = true;
 
-	-- ###########################################################
+		-- ###########################################################
 
 	-- [6] MOD BALING
 	-- John Deere 864 Premium [BJR]
@@ -265,6 +268,7 @@ function courseplay:setNameVariable(workTool)
 	-- Universal Bale Trailer (UBT)
 	elseif workTool.numAttacherParts ~= nil and workTool.autoLoad ~= nil and workTool.loadingIsActive ~= nil and workTool.unloadLeft ~= nil and workTool.unloadRight ~= nil and workTool.unloadBack ~= nil and workTool.typeOnTrailer ~= nil and workTool.fillLevelMax ~= nil then
 		workTool.cp.isUBT = true;
+		workTool.cp.isBrantnerDPW18000 = workTool.cp.xmlFileName == 'dpw18000.xml';
 		workTool.cp.isMoellerUbtBaleLoader = workTool.cp.xmlFileName == 'AA47ballen.xml';
 
 	-- Claas Quadrant 1200 [Eifok Team]
@@ -316,7 +320,7 @@ function courseplay:setNameVariable(workTool)
 	elseif workTool.cp.xmlFileName == 'fahrM66.xml' or workTool.cp.xmlFileName == 'fahrM66EX.xml' then
 		workTool.cp.isFahrM66 = true;
 		if not courseplay.trafficCollisionIgnoreList[workTool.components[2].node] then
-			courseplay.trafficCollisionIgnoreList[workTool.components[2].node] = true; -- adding the Farh M66 pipeCol to the ignore list if not set
+			courseplay.trafficCollisionIgnoreList[workTool.components[2].node] = true; -- adding the Fahr M66 pipeCol to the ignore list if not set
 		end;
 	elseif workTool.cp.xmlFileName == 'caseIH7130.xml' then
 		workTool.cp.isCaseIH7130 = true;
@@ -393,6 +397,14 @@ function courseplay:setNameVariable(workTool)
 	-- ###########################################################
 
 	-- [5] OTHER TOOLS
+	-- Fahr KH 4S Tedder [Farming Classics - Free DLC]
+	elseif workTool.cp.xmlFileName == 'fahrKH4S.xml' then
+		workTool.cp.isFahrKH4S = true;
+
+	-- Kuhn FA 367 Mower [Farming Classics - Free DLC]
+	elseif workTool.cp.xmlFileName == 'kuhnFA367.xml' then
+		workTool.cp.isKuhnFA367 = true;
+
 	-- Seeders [Giants Väderstad DLC]
 	elseif workTool.cp.xmlFileName == 'vaderstadRapidA600S.xml' then
 		workTool.cp.isVaderstadRapidA600S = true;
@@ -418,6 +430,7 @@ function courseplay:setNameVariable(workTool)
 	end;
 end;
 
+--[[TODO (Jakob): delete when new custom spec fn is made sure to always work correctly
 function courseplay:setCustomSpecVariables(workTool)
 	workTool.cp.hasSpecializationAgrolinerTUW20 	   = courseplay:hasSpecialization(workTool, 'AgrolinerTUW20');
 	workTool.cp.hasSpecializationAugerWagon 		   = courseplay:hasSpecialization(workTool, 'AugerWagon');
@@ -431,6 +444,65 @@ function courseplay:setCustomSpecVariables(workTool)
 	workTool.cp.hasSpecializationSowingMachineWithTank = courseplay:hasSpecialization(workTool, 'SowingMachineWithTank');
 	workTool.cp.hasSpecializationTebbeHS180 		   = courseplay:hasSpecialization(workTool, 'TebbeHS180');
 end;
+]]
+
+function courseplay:setCustomSpecVariables(vehicle)
+	local customSpecNames = {
+		['AgrolinerTUW20'] 		  = { },
+		['AugerWagon'] 			  = { useVehicleCustomEnvironment = true },
+		['bigBear'] 			  = { },
+		['DrivingLine'] 		  = { },
+		['Hawe_SUW'] 			  = { },
+		['HoseRef'] 			  = { },
+		['Overcharge'] 			  = { },
+		['overloader'] 			  = { },
+		['SiloTrailer'] 		  = { },
+		['SowingMachineWithTank'] = { },
+		['TebbeHS180'] 			  = { }
+	};
+
+	local specToSpecClassName = {};
+
+	local vehicleCustomEnvironment = vehicle.customEnvironment;
+	local mrDlcsCustomEnvironment;
+	if vehicle.typeName:lower():find('morerealisticdlcs.') then
+		mrDlcsCustomEnvironment = Utils.splitString('.', vehicle.typeName)[1];
+	end;
+
+	for specClassName, data in pairs(customSpecNames) do
+		local fullSpecClassName = specClassName;
+		-- MoreRealisticDLCs vehicle
+		if mrDlcsCustomEnvironment then
+			-- spec must be in vehicle CE
+			if data.useVehicleCustomEnvironment then
+				if vehicleCustomEnvironment then
+					fullSpecClassName = ('%s.%s'):format(vehicleCustomEnvironment, specClassName);
+				end;
+
+			-- spec in MoreRealisticDLCs CE
+			else
+				fullSpecClassName = ('%s.%s'):format(mrDlcsCustomEnvironment, specClassName);
+			end;
+
+		-- vehicle CE
+		elseif vehicleCustomEnvironment then
+			fullSpecClassName = ('%s.%s'):format(vehicleCustomEnvironment, specClassName);
+		end;
+
+		local spec = getClassObject(fullSpecClassName);
+		if spec then
+			specToSpecClassName[spec] = specClassName;
+		end;
+	end;
+
+	for i, spec in ipairs(VehicleTypeUtil.vehicleTypes[vehicle.typeName].specializations) do
+		if specToSpecClassName[spec] ~= nil then
+			local varName = specToSpecClassName[spec]:gsub('^%l', string.upper):gsub('_', ''); -- first char uppercase, remove underscores
+			vehicle.cp['hasSpecialization' .. varName] = true;
+		end;
+	end;
+end;
+
 
 ------------------------------------------------------------------------------------------
 
@@ -733,6 +805,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		end;
 		if workTool.capacity == nil or (workTool.capacity ~= nil and workTool.capacity ~= workTool.fillLevelMax) then
 			workTool.capacity = workTool.fillLevelMax;
+			workTool.realBaseCapacity = workTool.fillLevelMax;
 		end;
 
 		if not workTool.autoLoad then
@@ -757,7 +830,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 						setRotation(attacher.attachedObject,rx,ry,rz);
 						link(root,attacher.attachedObject);
 						attacher.attachedObject = nil;
-						workTool.fillLevel = workTool.fillLevel - 1;
+						workTool:setFillLevel(workTool.fillLevel - 1, Fillable.FILLTYPE_UNKNOWN, true);
 					else
 						local x,y,z = getWorldTranslation(attacher.attachedObject);
 						local rx,ry,rz = getWorldRotation(attacher.attachedObject);
@@ -773,7 +846,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 						setRotation(attacher.attachedObject,rx,ry,rz);
 						link(root,attacher.attachedObject);
 						attacher.attachedObject = nil;
-						workTool.fillLevel = workTool.fillLevel - 1;
+						workTool:setFillLevel(workTool.fillLevel - 1, Fillable.FILLTYPE_UNKNOWN, true);
 					end;
 				end;
 			end;
@@ -826,11 +899,11 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		return false, allowedToDrive
 
 	--Urf-specialisation
-	elseif workTool.cp.hasUrfSpec then
-		if workTool.sprayFillLevel == 0 and workTool.isFertilizing > 1 then
-			self.cp.urfStop = true
-		end
-		return false, allowedToDrive
+	elseif workTool.cp.hasUrfSpec and workTool.sprayFillLevel ~= nil and workTool.isFertilizing ~= nil then
+		if workTool.sprayFillLevel == 0 and ((type(workTool.isFertilizing) == 'number' and workTool.isFertilizing > 1) or workTool.isFertilizing == true) then
+			self.cp.urfStop = true;
+		end;
+		return false, allowedToDrive;
 
 	--KvernelandMowerPack
 	elseif workTool.cp.isKvernelandMowerPack then
@@ -1324,11 +1397,12 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 	return false, allowedToDrive;
 end
 
-function courseplay:askForSpecialSettings(self,object)
+function courseplay:askForSpecialSettings(self, object)
 	-- SPECIAL VARIABLES TO USE:
 	--[[
 	-- automaticToolOffsetX:					(Distance in meters)	Used to automatically set the tool horizontal offset.
 	-- object.cp.haveInversedRidgeMarkerState:	(Boolean)				If the ridmarker is using the wrong side in auto mode, set this value to true
+	-- object.cp.realUnfoldDirectionIsReversed:	(Boolean)				If the tool unfolds when driving roads and folds when working fields, then set this one to true to reverse the folding order.
 	-- object.cp.isPushWagon					(Boolean)				Set to true if the trailer is unloading by not lifting the trailer but pushing it out in the rear end. (Used in BGA tipping)
 	-- object.cp.specialUnloadDistance:			(Distance in meters)	Able to set the distance to the waiting point when it needs to unload. Used by bale loaders. Distance from trailer's turning point to the rear unloading point.
 	-- self.cp.aiTurnNoBackward:				(Boolean)				Set to true if the vehicle is not allowed to reverse with the implement/trailer during the turn maneuver.
@@ -1339,6 +1413,8 @@ function courseplay:askForSpecialSettings(self,object)
 	-- self.cp.backMarkerOffset:				(Distance in meters)	If the implement stops to early or to late, you can specify then it needs to raise/lower or turn on/off the work tool
 	-- TODO: (Claus / Jakob) Add description for all the special varialbes that is usable here.
 	]]
+
+	courseplay:debug(('%s: askForSpecialSettings(..., %q)'):format(nameNum(self), nameNum(object)), 6);
 
 	local automaticToolOffsetX;
 
@@ -1365,7 +1441,10 @@ function courseplay:askForSpecialSettings(self,object)
 	end;
 
 	-- OBJECTS
-	if object.cp.isMoellerUbtBaleLoader then
+	if object.cp.isBrantnerDPW18000 then
+		object.cp.specialUnloadDistance = -2.3;
+
+	elseif object.cp.isMoellerUbtBaleLoader then
 		object.cp.specialUnloadDistance = -2.63;
 
 	elseif object.cp.isVaderstadRapidA600S then
@@ -1391,6 +1470,14 @@ function courseplay:askForSpecialSettings(self,object)
 		self.cp.noStopOnEdge = true;
 		self.cp.noStopOnTurn = true;
 		courseplay:changeToolOffsetZ(self, nil, -5);
+
+	elseif object.cp.isKuhnFA367 then
+		object.cp.realUnfoldDirectionIsReversed = true;
+		automaticToolOffsetX = -2.1;
+
+	elseif object.cp.isFahrKH4S then
+		-- self.cp.aiTurnNoBackward = false; -- TODO: (Claus) Why is it not reversing when turning ? Need to fix this!
+		object.cp.realUnfoldDirectionIsReversed = true;
 
 	elseif object.cp.isMRpoettingerEurocat315H then
 		object.cp.realUnfoldDirectionIsReversed = true;
@@ -1422,13 +1509,25 @@ function courseplay:askForSpecialSettings(self,object)
 		end;
 
 	elseif object.cp.isHoseRefTransporter then
+		courseplay:debug(('\tobject %q: isHoseRefTransporter=true'):format(nameNum(object)), 14);
 		if object.cp.hoseRefs == nil then
+			courseplay:debug('\tsetCustomHoseRefs()', 14);
 			courseplay.thirdParty.EifokLiquidManure:setCustomHoseRefs(object);
 		end;
 
+		-- add attached hoses to traffic collision ignore list
+		for side,ref in pairs(object.cp.hoseRefs.park) do
+			if ref.isUsed and ref.hose ~= nil then
+				courseplay:debug(('%s: %s: add hose %d [park %s] to traffic collision ignore list'):format(nameNum(self), nameNum(object), ref.hose.rootNode, side), 3);
+				self.cpTrafficCollisionIgnoreList[ref.hose.rootNode] = true;
+			end;
+		end;
+
 	elseif object.cp.isEifokZunhammerAttachable then
+		courseplay:debug(('\tobject %q: isEifokZunhammerAttachable=true'):format(nameNum(object)), 14);
 		for i,tipper in pairs(self.tippers) do
 			if object.attacherVehicle == tipper then
+				courseplay:debug(('\t\t%s: hasEifokZunhammerAttachable=true, eifokZunhammerAttachable=%q'):format(nameNum(tipper), nameNum(object)), 14);
 				tipper.cp.hasEifokZunhammerAttachable = true;
 				tipper.cp.eifokZunhammerAttachable = object;
 				break;

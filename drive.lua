@@ -77,10 +77,9 @@ function courseplay:drive(self, dt)
 	-- HORIZONTAL/VERTICAL OFFSET
 	if courseplay:getIsVehicleOffsetValid(self) then
 		cx, cz = courseplay:getVehicleOffsettedCoords(self, cx, cz);
-	end;
-
-	if courseplay.debugChannels[12] and self.cp.isTurning == nil then
-		drawDebugPoint(cx, cty+3, cz, 0, 1 , 1, 1);
+		if courseplay.debugChannels[12] and self.cp.isTurning == nil then
+			drawDebugPoint(cx, cty+3, cz, 0, 1 , 1, 1);
+		end;
 	end;
 
 	self.cp.distanceToTarget = courseplay:distance(cx, cz, ctx, ctz);
@@ -519,7 +518,7 @@ function courseplay:drive(self, dt)
 		refSpeed = self.cp.speeds.field;
 	else
 		self.cp.speeds.sl = 3;
-		refSpeed = self.cp.speeds.max;
+		refSpeed = self.cp.speeds.street;
 		if self.cp.speeds.useRecordingSpeed and self.Waypoints[self.recordnumber].speed ~= nil then
 			refSpeed = Utils.clamp(refSpeed, 3/3600, self.Waypoints[self.recordnumber].speed);
 		end;
@@ -768,48 +767,45 @@ function courseplay:setTrafficCollision(vehicle, lx, lz, workArea) --!!!
 end;
 
 
-function courseplay:checkTraffic(vehicle, display_warnings, allowedToDrive)
+function courseplay:checkTraffic(vehicle, displayWarnings, allowedToDrive)
 	local ahead = false
 	local collisionVehicle = g_currentMission.nodeToVehicle[vehicle.cp.collidingVehicleId]
-	--courseplay:debug(tableShow(vehicle, nameNum(vehicle), 4), 4)
-	--if vehicle.CPnumCollidingVehicles ~= nil and vehicle.CPnumCollidingVehicles > 0 then
-		if collisionVehicle ~= nil and not (vehicle.cp.mode == 9 and (collisionVehicle.allowFillFromAir or (collisionVehicle.cp and collisionVehicle.cp.mode9TrafficIgnoreVehicle))) then
-			local vx, vy, vz = getWorldTranslation(vehicle.cp.collidingVehicleId)
-			local tx, ty, tz = worldToLocal(vehicle.aiTrafficCollisionTrigger, vx, vy, vz)
-			local xvx, xvy, xvz = getWorldTranslation(vehicle.aiTrafficCollisionTrigger)
-			local x, y, z = getWorldTranslation(vehicle.cp.DirectionNode)
-			local x1, y1, z1 = 0,0,0
-			local halfLength = Utils.getNoNil(collisionVehicle.sizeLength,5)/2
-			x1,z1 = AIVehicleUtil.getDriveDirection(vehicle.cp.collidingVehicleId, x, y, z);
-			if z1 > -0.9 then -- tractor in front of vehicle face2face or beside < 4 o'clock
-				ahead = true
-			end
-			if abs(tx) > 5 and collisionVehicle.rootNode ~= nil and not vehicle.cp.collidingObjects.all[vehicle.cp.collidingVehicleId] then
-				courseplay:debug(nameNum(vehicle)..": checkTraffic:	deleteCollisionVehicle",3)
-				courseplay:deleteCollisionVehicle(vehicle)
-				return allowedToDrive
-			end
-			if collisionVehicle.lastSpeedReal == nil or collisionVehicle.lastSpeedReal*3600 < 5 or ahead then
-				--courseplay:debug(nameNum(vehicle)..": checkTraffic:	distance: "..tostring(tz-halfLength),3)
-				if tz <= 2 + halfLength then
-					allowedToDrive = false;
-					vehicle.cp.inTraffic = true
-					--courseplay:debug(nameNum(vehicle)..": checkTraffic:	Stop",3)
-				elseif vehicle.lastSpeedReal*3600 > 10 then
-					--courseplay:debug(nameNum(vehicle)..": checkTraffic:	brake",3)
-					allowedToDrive = courseplay:brakeToStop(vehicle)
-				else
-					--courseplay:debug(nameNum(vehicle)..": checkTraffic:	do nothing - go, but set \"vehicle.cp.isTrafficBraking\"",3)
-					vehicle.cp.isTrafficBraking = true
-				end
-			end
-		end
-	--end
-	
-	if display_warnings and vehicle.cp.inTraffic then
+	if collisionVehicle ~= nil and not (vehicle.cp.mode == 9 and (collisionVehicle.allowFillFromAir or (collisionVehicle.cp and collisionVehicle.cp.mode9TrafficIgnoreVehicle))) then
+		local vx, vy, vz = getWorldTranslation(vehicle.cp.collidingVehicleId);
+		local tx, ty, tz = worldToLocal(vehicle.aiTrafficCollisionTrigger, vx, vy, vz);
+		local x, y, z = getWorldTranslation(vehicle.cp.DirectionNode);
+		local halfLength =  (collisionVehicle.sizeLength or 5) * 0.5;
+		local x1,z1 = AIVehicleUtil.getDriveDirection(vehicle.cp.collidingVehicleId, x, y, z);
+		if z1 > -0.9 then -- tractor in front of vehicle face2face or beside < 4 o'clock
+			ahead = true
+		end;
+
+		if abs(tx) > 5 and collisionVehicle.rootNode ~= nil and not vehicle.cp.collidingObjects.all[vehicle.cp.collidingVehicleId] then
+			courseplay:debug(('%s: checkTraffic:\tcall deleteCollisionVehicle()'):format(nameNum(vehicle)), 3);
+			courseplay:deleteCollisionVehicle(vehicle);
+			return allowedToDrive;
+		end;
+
+		if collisionVehicle.lastSpeedReal == nil or collisionVehicle.lastSpeedReal*3600 < 5 or ahead then
+			-- courseplay:debug(('%s: checkTraffic:\tcall distance=%.2f'):format(nameNum(vehicle), tz-halfLength), 3);
+			if tz <= halfLength + 2 then --TODO: abs(tz) ?
+				allowedToDrive = false;
+				vehicle.cp.inTraffic = true;
+				courseplay:debug(('%s: checkTraffic:\tstop'):format(nameNum(vehicle)), 3);
+			elseif vehicle.lastSpeedReal*3600 > 10 then
+				-- courseplay:debug(('%s: checkTraffic:\tbrake'):format(nameNum(vehicle)), 3);
+				allowedToDrive = courseplay:brakeToStop(vehicle);
+			else
+				-- courseplay:debug(('%s: checkTraffic:\tdo nothing - go, but set "vehicle.cp.isTrafficBraking"'):format(nameNum(vehicle)), 3);
+				vehicle.cp.isTrafficBraking = true;
+			end;
+		end;
+	end;
+
+	if displayWarnings and vehicle.cp.inTraffic then
 		courseplay:setGlobalInfoText(vehicle, 'TRAFFIC');
-	end
-	return allowedToDrive
+	end;
+	return allowedToDrive;
 end
 
 function courseplay:deleteCollisionVehicle(vehicle)
@@ -952,7 +948,9 @@ function courseplay:openCloseCover(vehicle, dt, showCover, isAtTipTrigger)
 end;
 
 function courseplay:refillSprayer(vehicle, fillLevelPct, driveOn, allowedToDrive, lx, lz, dt)
-	for i,activeTool in pairs(vehicle.tippers) do
+	-- for i,activeTool in pairs(vehicle.tippers) do --TODO (Jakob): delete
+	for i=1, vehicle.cp.numWorkTools do
+		local activeTool = vehicle.tippers[i];
 		local isSpecialSprayer = false
 		local fillTrigger;
 		isSpecialSprayer, allowedToDrive, lx, lz = courseplay:handleSpecialSprayer(vehicle, activeTool, fillLevelPct, driveOn, allowedToDrive, lx, lz, dt, 'pull');
@@ -960,14 +958,17 @@ function courseplay:refillSprayer(vehicle, fillLevelPct, driveOn, allowedToDrive
 			return allowedToDrive,lx,lz
 		end;
 
-		if courseplay:isSprayer(activeTool) or activeTool.cp.hasUrfSpec then --sprayer
+		-- SPRAYER
+		if courseplay:isSprayer(activeTool) or activeTool.cp.hasUrfSpec then
+			-- print(('\tworkTool %d (%q)'):format(i, nameNum(activeTool)));
 			if vehicle.cp.fillTrigger ~= nil then
 				local trigger = courseplay.triggers.all[vehicle.cp.fillTrigger];
-				if courseplay:fillTypesMatch(trigger, activeTool) then 
-					--print(nameNum(activeTool) .. ': slow down, it's a sprayerFillTrigger')
+				if trigger.isSprayerFillTrigger and courseplay:fillTypesMatch(trigger, activeTool) then 
+					-- print('\t\tslow down, it\'s a sprayerFillTrigger');
 					vehicle.cp.isInFilltrigger = true
 				end
-			end
+			end;
+
 			local activeToolFillLevel;
 			if activeTool.fillLevel ~= nil and activeTool.capacity ~= nil then
 				activeToolFillLevel = (activeTool.fillLevel / activeTool.capacity) * 100;
@@ -978,8 +979,9 @@ function courseplay:refillSprayer(vehicle, fillLevelPct, driveOn, allowedToDrive
 
 			if fillTrigger == nil then
 				if activeTool.sprayerFillTriggers ~= nil and #activeTool.sprayerFillTriggers > 0 then
+					-- print('\t\tset local fillTrigger to activeTool.sprayerFillTriggers[1], nil cp.fillTrigger');
 					fillTrigger = activeTool.sprayerFillTriggers[1];
-					vehicle.cp.fillTrigger = nil
+					vehicle.cp.fillTrigger = nil; --TODO (Jakob): if i == vehicle.cp.numWorkTools then vehicle.cp.fillTrigger = nil; end; (prevent nilling if there are other tools left to be filled)
 				end;
 			end;
 
@@ -1018,8 +1020,10 @@ function courseplay:refillSprayer(vehicle, fillLevelPct, driveOn, allowedToDrive
 				courseplay:handleSpecialTools(vehicle,activeTool,nil,nil,nil,allowedToDrive,false,false)
 				vehicle.cp.fillTrigger = nil
 			end;
-		end
-		if courseplay:isSowingMachine(activeTool) then --sowing machine
+		end;
+
+		-- SOWING MACHINE
+		if courseplay:isSowingMachine(activeTool) then
 			if vehicle.cp.fillTrigger ~= nil then
 				local trigger = courseplay.triggers.all[vehicle.cp.fillTrigger]
 				if trigger.isSowingMachineFillTrigger then

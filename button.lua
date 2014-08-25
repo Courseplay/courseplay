@@ -1,4 +1,4 @@
-function courseplay.button:create(vehicle, hudPage, img, function_to_call, parameter, x, y, width, height, hudRow, modifiedParameter, hoverText, isMouseWheelArea, isToggleButton)
+function courseplay.button:create(vehicle, hudPage, img, functionToCall, parameter, x, y, width, height, hudRow, modifiedParameter, hoverText, isMouseWheelArea, isToggleButton)
 	-- self = courseplay.button
 
 	local overlay;
@@ -20,7 +20,7 @@ function courseplay.button:create(vehicle, hudPage, img, function_to_call, param
 		page = hudPage, 
 		overlay = overlay, 
 		overlays = { overlay }, 
-		function_to_call = function_to_call, 
+		functionToCall = functionToCall, 
 		parameter = parameter, 
 		x_init = x,
 		x = x,
@@ -31,9 +31,9 @@ function courseplay.button:create(vehicle, hudPage, img, function_to_call, param
 		row = hudRow,
 		hoverText = hoverText,
 		color = courseplay.hud.colors.white,
-		isMouseWheelArea = isMouseWheelArea and function_to_call ~= nil,
+		isMouseWheelArea = isMouseWheelArea and functionToCall ~= nil,
 		isToggleButton = isToggleButton,
-		canBeClicked = not isMouseWheelArea and function_to_call ~= nil,
+		canBeClicked = not isMouseWheelArea and functionToCall ~= nil,
 		show = true,
 		isClicked = false,
 		isActive = false,
@@ -49,7 +49,7 @@ function courseplay.button:create(vehicle, hudPage, img, function_to_call, param
 		button.canScrollDown = true;
 	end;
 
-	self:setSpecialButtonUVs(function_to_call, button);
+	self:setSpecialButtonUVs(functionToCall, button);
 
 	table.insert(vehicle.cp.buttons[hudPage], button);
 	return #(vehicle.cp.buttons[hudPage]);
@@ -94,7 +94,7 @@ end;
 function courseplay.button:renderButton(vehicle, button)
 	-- self = courseplay.button
 
-	local pg, fn, prm = button.page, button.function_to_call, button.parameter;
+	local pg, fn, prm = button.page, button.functionToCall, button.parameter;
 
 	--mouseWheelAreas conditionals
 	if button.isMouseWheelArea then
@@ -132,18 +132,18 @@ function courseplay.button:renderButton(vehicle, button)
 			end;
 
 		elseif pg == 5 then
-			if fn == "changeTurnSpeed" then
-				button.canScrollUp =   vehicle.cp.speeds.turn < 60/3600;
-				button.canScrollDown = vehicle.cp.speeds.turn >  5/3600;
-			elseif fn == "changeFieldSpeed" then
-				button.canScrollUp =   vehicle.cp.speeds.field < 60/3600;
-				button.canScrollDown = vehicle.cp.speeds.field >  5/3600;
-			elseif fn == "changeMaxSpeed" then
-				button.canScrollUp =   vehicle.cp.speeds.useRecordingSpeed == false and vehicle.cp.speeds.max < 60/3600;
-				button.canScrollDown = vehicle.cp.speeds.useRecordingSpeed == false and vehicle.cp.speeds.max >  5/3600;
-			elseif fn == "changeUnloadSpeed" then
-				button.canScrollUp =   vehicle.cp.speeds.unload < 60/3600;
-				button.canScrollDown = vehicle.cp.speeds.unload >  3/3600;
+			if fn == 'changeTurnSpeed' then
+				button.canScrollUp =   vehicle.cp.speeds.turn < vehicle.cp.speeds.max/3600;
+				button.canScrollDown = vehicle.cp.speeds.turn > vehicle.cp.speeds.minTurn/3600;
+			elseif fn == 'changeFieldSpeed' then
+				button.canScrollUp =   vehicle.cp.speeds.field < vehicle.cp.speeds.max/3600;
+				button.canScrollDown = vehicle.cp.speeds.field > vehicle.cp.speeds.minField/3600;
+			elseif fn == 'changeMaxSpeed' then
+				button.canScrollUp =   vehicle.cp.speeds.useRecordingSpeed == false and vehicle.cp.speeds.street < vehicle.cp.speeds.max/3600;
+				button.canScrollDown = vehicle.cp.speeds.useRecordingSpeed == false and vehicle.cp.speeds.street > vehicle.cp.speeds.minStreet/3600;
+			elseif fn == 'changeUnloadSpeed' then
+				button.canScrollUp =   vehicle.cp.speeds.unload < vehicle.cp.speeds.max/3600;
+				button.canScrollDown = vehicle.cp.speeds.unload > vehicle.cp.speeds.minUnload/3600;
 			end;
 
 		elseif pg == 6 then
@@ -264,29 +264,29 @@ function courseplay.button:renderButton(vehicle, button)
 
 		--Page 5
 		elseif pg == 5 then
-			if fn == "changeTurnSpeed" then
+			if fn == 'changeTurnSpeed' then
 				if prm < 0 then
-					button.show = vehicle.cp.speeds.turn >  5/3600;
+					button.show = vehicle.cp.speeds.turn > vehicle.cp.speeds.minTurn/3600;
 				elseif prm > 0 then
-					button.show = vehicle.cp.speeds.turn < 60/3600;
+					button.show = vehicle.cp.speeds.turn < vehicle.cp.speeds.max/3600;
 				end;
-			elseif fn == "changeFieldSpeed" then
+			elseif fn == 'changeFieldSpeed' then
 				if prm < 0 then
-					button.show = vehicle.cp.speeds.field >  5/3600;
+					button.show = vehicle.cp.speeds.field > vehicle.cp.speeds.minField/3600;
 				elseif prm > 0 then
-					button.show = vehicle.cp.speeds.field < 60/3600;
+					button.show = vehicle.cp.speeds.field < vehicle.cp.speeds.max/3600;
 				end;
-			elseif fn == "changeMaxSpeed" then
+			elseif fn == 'changeMaxSpeed' then
 				if prm < 0 then
-					button.show = not vehicle.cp.speeds.useRecordingSpeed and vehicle.cp.speeds.max >  5/3600;
+					button.show = not vehicle.cp.speeds.useRecordingSpeed and vehicle.cp.speeds.street > vehicle.cp.speeds.minStreet/3600;
 				elseif prm > 0 then
-					button.show = not vehicle.cp.speeds.useRecordingSpeed and vehicle.cp.speeds.max < 60/3600;
+					button.show = not vehicle.cp.speeds.useRecordingSpeed and vehicle.cp.speeds.street < vehicle.cp.speeds.max/3600;
 				end;
-			elseif fn == "changeUnloadSpeed" then
+			elseif fn == 'changeUnloadSpeed' then
 				if prm < 0 then
-					button.show = vehicle.cp.speeds.unload >  3/3600;
+					button.show = vehicle.cp.speeds.unload > vehicle.cp.speeds.minUnload/3600;
 				elseif prm > 0 then
-					button.show = vehicle.cp.speeds.unload < 60/3600;
+					button.show = vehicle.cp.speeds.unload < vehicle.cp.speeds.max/3600;
 				end;
 			end;
 
