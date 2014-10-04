@@ -124,10 +124,11 @@ function courseplay:start(self)
 	local recordNumber = 0
 	local curLaneNumber = 1;
 	local hasReversing = false;
+	local lookForNearestWaypoint = self.cp.modeState == 0 or self.cp.modeState == 99 or self.cp.modeState == 1
 	-- print(('%s [%s(%d)]: start(), modeState=%d, mode2nextState=%s'):format(nameNum(self), curFile, debug.getinfo(1).currentline, self.cp.modeState, tostring(self.cp.mode2nextState))); -- DEBUG140301
 	for i,wp in pairs(self.Waypoints) do
 		local cx, cz = wp.cx, wp.cz
-		if self.cp.modeState == 0 or self.cp.modeState == 99 then
+		if lookForNearestWaypoint then
 			dist = courseplay:distance(ctx, ctz, cx, cz)
 			if dist <= nearestpoint then
 				nearestpoint = dist
@@ -206,7 +207,7 @@ function courseplay:start(self)
 
 
 	-- print(('%s [%s(%d)]: start(), modeState=%d, mode2nextState=%s, recordNumber=%d'):format(nameNum(self), curFile, debug.getinfo(1).currentline, self.cp.modeState, tostring(self.cp.mode2nextState), recordNumber)); -- DEBUG140301
-	if self.cp.modeState == 0 or self.cp.modeState == 99 then
+	if lookForNearestWaypoint then
 		local changed = false
 		for i=recordNumber,recordNumber+3 do
 			if self.Waypoints[i]~= nil and self.Waypoints[i].turn ~= nil then
