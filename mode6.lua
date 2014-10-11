@@ -401,8 +401,11 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 						if not isFolding and tankFillLevelPct < 100 and not tool.waitingForDischarge and not tool.isThreshing and not weatherStop then
 							tool:setIsThreshing(true);
 						end
-
-						if tankFillLevelPct >= 100 or tool.waitingForDischarge or (tool.cp.stopWhenUnloading and tool.pipeIsUnloading and tool.courseplayers and tool.courseplayers[1] ~= nil) then
+						if tool.pipeIsUnloading and tool.courseplayers[1] == nil and tool.cp.stopWhenUnloading and tankFillLevelPct >= 1 then
+							tool.stopForManualUnloader = true
+						end
+							
+						if tankFillLevelPct >= 100 or tool.waitingForDischarge or (tool.cp.stopWhenUnloading and tool.pipeIsUnloading and tool.courseplayers and tool.courseplayers[1] ~= nil) or tool.stopForManualUnloader then
 							tool.waitingForDischarge = true;
 							allowedToDrive = courseplay:brakeToStop(self); -- allowedToDrive = false;
 							if tool.isThreshing then
@@ -414,6 +417,9 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 									tool:setIsThreshing(true);
 								end;
 							end;
+							if tool.stopForManualUnloader and tool.grainTankFillLevel == 0 then
+								tool.stopForManualUnloader = false
+							end
 						end;
 
 						if weatherStop then
