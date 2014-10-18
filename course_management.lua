@@ -213,13 +213,13 @@ function courseplay:load_course(self, id, useRealId, addCourseAtEnd)
 		self.cp.canDrive = true;
 
 		courseplay:setRecordNumber(self, 1);  -- Waypoint number
-		if self.cp.mode == 2 or self.cp.mode == 3 then
+		--if self.cp.mode == 2 or self.cp.mode == 3 then TODO(Tom) Whats the reason fo setting to 1 ?
 			courseplay:setModeState(self, 0);
 			-- print(('%s [%s(%d)]: load_course(): mode=%d -> set modeState to 0'):format(nameNum(self), curFile, debug.getinfo(1).currentline, self.cp.mode)); -- DEBUG140301
-		else
+		--[[else
 			courseplay:setModeState(self, 1);
 			-- print(('%s [%s(%d)]: load_course() -> set modeState to 1'):format(nameNum(self), curFile, debug.getinfo(1).currentline)); -- DEBUG140301
-		end;
+		end;]]
 		courseplay.utils.signs:updateWaypointSigns(self, "current");
 
 		self.cp.hasGeneratedCourse = false;
