@@ -290,7 +290,7 @@ function courseplay:unload_combine(self, dt)
 			tractor.cp.turnStage = 0
 		end
 		-- if tractor.acTurnStage ~= 0 then 
-		if tractor.acTurnStage > 0 then
+		if tractor.acTurnStage > 0 and not (tractor.acTurnStage >= 20 and tractor.acTurnStage <= 22) then
 			tractor.cp.turnStage = 2
 			autoCombineExtraMoveBack = self.cp.turnRadius*1.5
 			AutoCombineIsTurning = true
@@ -314,8 +314,6 @@ function courseplay:unload_combine(self, dt)
 			allowedToDrive = false
 		end
 	end
-
-
 
 	local offset_to_chopper = self.cp.combineOffset
 	if combineIsHelperTurning or tractor.cp.turnStage ~= 0 then
@@ -1460,6 +1458,7 @@ function courseplay:setModeState(vehicle, state, debugLevel)
 	if vehicle.cp.modeState ~= state then
 		-- courseplay:onModeStateChange(vehicle, vehicle.cp.modeState, state);
 		-- print(('%s: modeState=%d -> set modeState to %d\n\t%s'):format(nameNum(vehicle), vehicle.cp.modeState, state, courseplay.utils:getFnCallPath(debugLevel))); -- DEBUG140301
+		
 		vehicle.cp.modeState = state;
 	end;
 end;
