@@ -401,7 +401,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 						if not isFolding and tankFillLevelPct < 100 and not tool.waitingForDischarge and not tool.isThreshing and not weatherStop then
 							tool:setIsThreshing(true);
 						end
-						if tool.pipeIsUnloading and tool.courseplayers[1] == nil and tool.cp.stopWhenUnloading and tankFillLevelPct >= 1 then
+						if tool.pipeIsUnloading and (tool.courseplayers == nil or tool.courseplayers[1] == nil) and tool.cp.stopWhenUnloading and tankFillLevelPct >= 1 then
 							tool.stopForManualUnloader = true
 						end
 							
