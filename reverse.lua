@@ -9,6 +9,12 @@ function courseplay:goReverse(vehicle,lx,lz)
 	local debugActive = courseplay.debugChannels[13];
 	local isNotValid = vehicle.cp.numWorkTools == 0 or workTool == nil or workTool.cp.isPivot == nil or not workTool.cp.frontNode or vehicle.cp.mode == 9;
 	if isNotValid then
+		-- Start: Fixes issue #525
+		local tx, ty, tz = localToWorld(vehicle.cp.DirectionNode, 0, 1, -3);
+		local nx, ny, nz = localDirectionToWorld(vehicle.cp.DirectionNode, lx, 0, lz);
+		courseplay:doTriggerRaycasts(vehicle, 'tipTrigger', 'rev', false, tx, ty, tz, nx, ny, nz);
+		--  End:  Fixes issue #525
+
 		return -lx,-lz,fwd;
 	end;
 
