@@ -1307,7 +1307,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 		return allowedToDrive;
 	end;
 
-	local isBGA = ctt.bunkerSilo ~= nil and ctt.bunkerSilo.movingPlanes ~= nil;
+	local isBGA = ctt.bunkerSilo ~= nil and ctt.bunkerSilo.movingPlanes ~= nil and vehicle.cp.handleAsOneSilo ~= true;
 	local bgaIsFull = isBGA and (ctt.bunkerSilo.fillLevel >= ctt.bunkerSilo.capacity);
 
 	for k, tipper in pairs(vehicle.tippers) do
@@ -1323,6 +1323,26 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 
 			--BGA TRIGGER
 			if isBGA and not bgaIsFull then
+				if vehicle.cp.handleAsOneSilo == nil then
+				    local length = 0;
+					for i = 1, #ctt.bunkerSilo.movingPlanes-1, 1 do
+						local x, y, z = getWorldTranslation(ctt.bunkerSilo.movingPlanes[i].nodeId);
+						local lx, _, lz = worldToLocal(ctt.bunkerSilo.movingPlanes[i+1].nodeId, x, y, z);
+						length = length + Utils.vector2Length(lx, lz);
+					end;
+					length = length / #ctt.bunkerSilo.movingPlanes;
+
+					if length < 0.5 then
+						vehicle.cp.handleAsOneSilo = true;
+					else
+						vehicle.cp.handleAsOneSilo = false;
+					end;
+
+					courseplay:debug(('%s: Median Silo Section Distance = %s, handleAsOneSilo = %s'):format(nameNum(vehicle), tostring(courseplay:round(length, 1)), tostring(vehicle.cp.handleAsOneSilo)), 13);
+
+					if vehicle.cp.handleAsOneSilo == true then return allowedToDrive; end;
+				end
+
 				local stopAndGo = false;
 
 				if vehicle.isRealistic then stopAndGo = true; end;
@@ -1567,6 +1587,13 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 
 					end;
 
+					--- Start: Fixing issue #509
+					if not ctt.bunkerSilo.movingPlanes[vehicle.cp.BGASelectedSection].fillLevel then
+						courseplay:resetTipTrigger(vehicle);
+						return allowedToDrive;
+					end;
+					---  End:  Fixing issue #509
+
 					local isLastSiloSection = (vehicle.cp.BGASectionInverted and vehicle.cp.BGASelectedSection == 1) or (not vehicle.cp.BGASectionInverted and vehicle.cp.BGASelectedSection == silos);
 
 					-- Get a vector distance, to make a more precise distance check.
@@ -1736,6 +1763,7 @@ function courseplay:resetTipTrigger(vehicle, changeToForward)
 		vehicle.cp.isUnloaded = true;
 	end
 	vehicle.cp.currentTipTrigger = nil;
+	vehicle.cp.handleAsOneSilo = nil; -- Used for BGA tipping
 	vehicle.cp.isReverseBGATipping = nil; -- Used for reverse BGA tipping
 	vehicle.cp.BGASelectedSection = nil; -- Used for reverse BGA tipping
 	vehicle.cp.inversedRearTipNode = nil; -- Used for reverse BGA tipping

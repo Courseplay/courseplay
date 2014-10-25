@@ -422,7 +422,7 @@ function courseplay:stop(self)
 	self.cp.attachedCombineIdx = nil;
 	self.cp.tempCollis = {}
 	self.checkSpeedLimit = true
-	self.cp.currentTipTrigger = nil; --TODO: use courseplay:resetTipTrigger(self) instead ?
+	courseplay:resetTipTrigger(self);
 	self.drive = false
 	self.cp.canDrive = true
 	self.cp.distanceCheck = false
@@ -430,10 +430,6 @@ function courseplay:stop(self)
 	if self.cp.checkReverseValdityPrinted then
 		self.cp.checkReverseValdityPrinted = false
 	end
-	if self.cp.backupUnloadSpeed then
-		courseplay:changeUnloadSpeed(self, nil, self.cp.backupUnloadSpeed);
-		self.cp.backupUnloadSpeed = nil;
-	end;
 
 	self.motor:setSpeedLevel(0, false);
 	self.motor.maxRpmOverride = nil;
