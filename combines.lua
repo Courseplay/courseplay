@@ -305,6 +305,7 @@ function courseplay:calculateInitialCombineOffset(vehicle, combine) --TODO (Jako
 	
 	local prnX,prnY,prnZ, prnwX,prnwY,prnwZ, combineToPrnX,combineToPrnY,combineToPrnZ = 0,0,0, 0,0,0, 0,0,0;
 	if combine.pipeRaycastNode ~= nil then
+		prnwX, prnwY, prnwZ = getWorldTranslation(combine.pipeRaycastNode)
 		prnX, prnY, prnZ = getTranslation(combine.pipeRaycastNode)
 		combineToPrnX, combineToPrnY, combineToPrnZ = worldToLocal(combine.rootNode, prnwX, prnwY, prnwZ)
 		if combine.cp.pipeSide == nil then
