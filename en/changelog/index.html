@@ -97,10 +97,19 @@
 				-->
 
 				<!-- CHANGE -->
-				<dt class="change">change</dt>
-				<dd>Beacon lights are now turned off when stopping the driver</dd>
+                <dt class="change">change</dt>
+                <dd><h4>Forward unloading in silage silos</h4>
+                    <ul>
+                        <li>Now unloading all the way in one go and not splited up in 3 sections</li>
+                        <li>Automaticly calculate and set the unloading speed</li>
+                        <li>MR vehicle stops to unload in each silo sections to be sure it unloads evenly all the way</li>
+                    </ul>
+                </dd>
 
-				<dt class="change">change</dt>
+                <dt class="change">change</dt>
+                <dd>Beacon lights are now turned off when stopping the driver</dd>
+
+                <dt class="change">change</dt>
 				<dd>Notification if tool needs to be refilled/unloaded in fertilizer/field work modes</dd>
 
 				<dt class="change">change</dt>
@@ -149,7 +158,18 @@
 
 
 				<!-- NEW -->
-				<dt class="new">new</dt>
+                <dt class="new">new</dt>
+                <dd>
+                    <h4>Reverse unloading in silage silos</h4>
+                    <ul>
+                        <li>Unloading in silage silos can now be done in reverse</li>
+                        <!-- TODO: move to manual --> <li>Record the route without an trailer as if the tractor was the trailer and reverse to the backend of the silage bin and change to forward again and continue the route</li>
+                        <!-- TODO: move to manual --> <li>Unloading will be done from the rear end of the silage silo</li>
+                        <li>For better MR handling, unloading will start a couple of silo sections before to build up and ramp</li>
+                    </ul>
+                </dd>
+
+                <dt class="new">new</dt>
 				<dd>4WD huds are now hidden when the Courseplay hud is active</dd>
 
 				<dt class="new">new</dt>
@@ -184,12 +204,11 @@
 
 				<dt class="new">new</dt>
 				<dd>
-					<h4>Driving backwards with trailers in grain transport and combi modes</h4>
+					<h4>Driving backwards with trailers</h4>
 					<ul>
-						<li>Tandem trailers can be driven around a curve; bogy trailers can only be driven straight on.</li>
+						<li>Trailers can be driven around a curve.</li>
 						<li>Only one trailer is supported, not multiple simultaneously.</li>
 						<li>The tractor will align the trailer according to the next waypoint, so there should be enough lateral space.</li>
-						<li>If the tractor/trailer gets stuck, it will drive forwards and retry.</li>
 						<!-- TODO: move to manual --> <li>The course should be recorded without a trailer attached, so the real intended course is recorded instead of the tractor's steering.</li>
 						<!-- TODO: move to manual --> <li>Be aware of the trailer's length; the radius around curves shouldn't be too narrow.</li>
 						<li>When driving backwards, the tip trigger will found <span class="emphasize2">behind the trailer</span>.</li>
