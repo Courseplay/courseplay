@@ -1389,6 +1389,8 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 
 					-- Find what BGA silo section to unload in if not found
 					if not vehicle.cp.BGASelectedSection then
+						-- TODO: (Claus) Make sure that the route is long enough (#535)
+
 						vehicle.cp.BGASectionInverted = false;
 
 						-- Find out what end to start at.
@@ -1587,12 +1589,10 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 
 					end;
 
-					--- Start: Fixing issue #509
-					if not ctt.bunkerSilo.movingPlanes[vehicle.cp.BGASelectedSection].fillLevel then
+					if not vehicle.cp.bunkerSiloSectionFillLevel then
 						courseplay:resetTipTrigger(vehicle);
 						return allowedToDrive;
 					end;
-					---  End:  Fixing issue #509
 
 					local isLastSiloSection = (vehicle.cp.BGASectionInverted and vehicle.cp.BGASelectedSection == 1) or (not vehicle.cp.BGASectionInverted and vehicle.cp.BGASelectedSection == silos);
 
