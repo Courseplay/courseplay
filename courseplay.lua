@@ -22,14 +22,6 @@ courseplay = {
 	button = {};
 	fields = {};
 	generation = {};
-	thirdParty = {
-		EifokLiquidManure = {
-			dockingStations = {};
-			KotteContainers = {};
-			KotteZubringers = {};
-			hoses = {};
-		};
-	};
 	pathfinding = {};
 };
 

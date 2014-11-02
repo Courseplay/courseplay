@@ -260,14 +260,10 @@ end;
 
 function courseplay:fillTypesMatch(fillTrigger, workTool)
 	if fillTrigger ~= nil then
-		if not workTool.cp.hasUrfSpec then
-			if fillTrigger.fillType then
-				return workTool:allowFillType(fillTrigger.fillType, false);
-			elseif fillTrigger.currentFillType then
-				return workTool:allowFillType(fillTrigger.currentFillType, false);
-			end;
-		elseif workTool.cp.hasUrfSpec and workTool.isFertilizing > 1 then
-			return fillTrigger.fillType and workTool.currentSprayFillType == fillTrigger.fillType;
+		if fillTrigger.fillType then
+			return workTool:allowFillType(fillTrigger.fillType, false);
+		elseif fillTrigger.currentFillType then
+			return workTool:allowFillType(fillTrigger.currentFillType, false);
 		end;
 	end;
 

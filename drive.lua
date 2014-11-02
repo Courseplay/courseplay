@@ -971,7 +971,7 @@ function courseplay:refillSprayer(vehicle, fillLevelPct, driveOn, allowedToDrive
 		end;
 
 		-- SPRAYER
-		if courseplay:isSprayer(activeTool) or activeTool.cp.hasUrfSpec then
+		if courseplay:isSprayer(activeTool) then
 			-- print(('\tworkTool %d (%q)'):format(i, nameNum(activeTool)));
 			if vehicle.cp.fillTrigger ~= nil then
 				local trigger = courseplay.triggers.all[vehicle.cp.fillTrigger];
@@ -985,9 +985,6 @@ function courseplay:refillSprayer(vehicle, fillLevelPct, driveOn, allowedToDrive
 			if activeTool.fillLevel ~= nil and activeTool.capacity ~= nil then
 				activeToolFillLevel = (activeTool.fillLevel / activeTool.capacity) * 100;
 			end;
-			if activeTool.cp.hasUrfSpec then
-				activeToolFillLevel = (activeTool.sprayFillLevel / activeTool.sprayCapacity) * 100;
-			end
 
 			if fillTrigger == nil then
 				if activeTool.fillTriggers[1] ~= nil and activeTool.fillTriggers[1].isSprayerFillTrigger then
