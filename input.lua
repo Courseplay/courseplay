@@ -204,7 +204,7 @@ function courseplay:executeFunction(self, func, value, page)
 		return
 	end
 	playSample(courseplay.hud.clickSound, 1, 1, 0);
-	courseplay:debug(nameNum(self) .. ": calling function \"" .. tostring(func) .. "(" .. tostring(value) .. ")\"", 18);
+	courseplay:debug(('%s: calling function "%s(%s)"'):format(nameNum(self), tostring(func), tostring(value)), 18);
 
 	if func ~= "rowButton" then
 		--@source: http://stackoverflow.com/questions/1791234/lua-call-function-from-a-string-with-function-name

@@ -26,19 +26,16 @@ function courseplay_manager:loadMap(name)
 	self.globalInfoTextOverlays = {};
 	self.buttons.globalInfoText = {};
 	local git = courseplay.globalInfoText;
-	local buttonHeight = git.fontSize;
-	local buttonWidth = buttonHeight / g_screenAspectRatio; -- buttonHeight * 1080 / 1920;
-	local buttonX = git.backgroundX - git.backgroundPadding - buttonWidth;
 	for i=1,self.globalInfoTextMaxNum do
-		local posY = git.backgroundY + (i - 1) * git.lineHeight;
-		self.globalInfoTextOverlays[i] = Overlay:new(string.format("globalInfoTextOverlay%d", i), git.backgroundImg, git.backgroundX, posY, 0.1, git.fontSize);
-		self:createButton('globalInfoText', 'goToVehicle', i, 'pageNav_7.png', buttonX, posY, buttonWidth, buttonHeight);
+		local posY = git.backgroundPosY + (i - 1) * git.lineHeight;
+		self.globalInfoTextOverlays[i] = Overlay:new(string.format("globalInfoTextOverlay%d", i), git.backgroundImg, git.backgroundPosX, posY, 0.1, git.buttonHeight);
+		self:createButton('globalInfoText', 'goToVehicle', i, 'pageNav_7.png', git.buttonPosX, posY, git.buttonWidth, git.buttonHeight);
 	end;
 	self.buttons.globalInfoTextClickArea = {
-		x1 = buttonX;
-		x2 = buttonX + buttonWidth;
-		y1 = git.backgroundY,
-		y2 = git.backgroundY + (self.globalInfoTextMaxNum  * git.lineHeight);
+		x1 = git.buttonPosX;
+		x2 = git.buttonPosX + git.buttonWidth;
+		y1 = git.backgroundPosY,
+		y2 = git.backgroundPosY + (self.globalInfoTextMaxNum  * git.lineHeight);
 	};
 
 	self:createInitialCourseplayFile();
@@ -262,12 +259,14 @@ function courseplay_manager:draw()
 	end;
 
 	courseplay.globalInfoText.hasContent = false;
+	local git = courseplay.globalInfoText;
 	local line = 0;
+	local basePosY = courseplay.globalInfoText.backgroundPosY;
 	local ingameMap = g_currentMission.ingameMap;
-	if not (ingameMap.isVisible and ingameMap.isFullSize) and table.maxn(courseplay.globalInfoText.content) > 0 then
-		local basePosY = ingameMap.isVisible and courseplay.globalInfoText.posYAboveMap or courseplay.globalInfoText.posY;
+	if not (ingameMap.isVisible and ingameMap.isFullSize) and table.maxn(git.content) > 0 then
+		basePosY = ingameMap.isVisible and git.posYAboveMap or git.posY;
 		courseplay.globalInfoText.hasContent = true;
-		for _,refIndexes in pairs(courseplay.globalInfoText.content) do
+		for _,refIndexes in pairs(git.content) do
 			if line >= self.globalInfoTextMaxNum then
 				break;
 			end;
@@ -275,14 +274,27 @@ function courseplay_manager:draw()
 			for refIdx,data in pairs(refIndexes) do
 				line = line + 1;
 
+				-- background
 				local bg = self.globalInfoTextOverlays[line];
-				bg:setColor(unpack(courseplay.globalInfoText.levelColors[data.level]));
-				local posY = basePosY + ((line - 1) * courseplay.globalInfoText.lineHeight);
-				bg:setPosition(bg.x, posY);
+				bg:setColor(unpack(git.levelColors[data.level]));
+				local gfxPosY = basePosY + (line - 1) * (git.lineHeight + git.lineMargin);
+				bg:setPosition(bg.x, gfxPosY);
 				bg:setDimension(data.backgroundWidth, bg.height);
+				bg:render();
 
+				-- text
+				-- (lineHeight - fontSize) * 0.5
+				courseplay:setFontSettings('white', false);
+				local textPosY = gfxPosY + (git.lineHeight - git.fontSize); -- should be (lineHeight-fontSize)*0.5, but there seems to be some pixel/sub-pixel rendering error
+				renderText(git.textPosX, textPosY, git.fontSize, data.text);
+
+				-- button
 				local button = self.buttons.globalInfoText[line];
 				if button ~= nil then
+					button.overlay:setPosition(button.overlay.x, gfxPosY);
+					button.y = gfxPosY;
+					button.y2 = gfxPosY + git.buttonHeight;
+
 					local currentColor = button.overlay.curColor;
 					local targetColor = currentColor;
 
@@ -309,15 +321,10 @@ function courseplay_manager:draw()
 
 					button.overlay:render();
 				end;
-
-
-				bg:render();
-				courseplay:setFontSettings("white", false);
-				renderText(courseplay.globalInfoText.posX, posY, courseplay.globalInfoText.fontSize, data.text);
 			end;
 		end;
 	end;
-	self.buttons.globalInfoTextClickArea.y2 = courseplay.globalInfoText.backgroundY + (line  * courseplay.globalInfoText.lineHeight);
+	self.buttons.globalInfoTextClickArea.y2 = basePosY + (line  * git.lineHeight);
 
 	-- DISPLAY FIELD SCAN MSG
 	if courseplay.fields.automaticScan and not courseplay.fields.allFieldsScanned then

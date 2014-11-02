@@ -1361,7 +1361,7 @@ function courseplay:toggleStopWhenUnloading(combine)
 end;
 
 function courseplay:goToVehicle(curVehicle, targetVehicle)
-	--print(string.format("%s: goToVehicle(): targetVehicle=%q", nameNum(curVehicle), nameNum(targetVehicle)));
+	-- print(string.format("%s: goToVehicle(): targetVehicle=%q", nameNum(curVehicle), nameNum(targetVehicle)));
 	g_client:getServerConnection():sendEvent(VehicleEnterRequestEvent:new(targetVehicle, g_settingsNickname));
 	g_currentMission.isPlayerFrozen = false;
 	courseplay_manager.playerOnFootMouseEnabled = false;

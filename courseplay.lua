@@ -4,7 +4,7 @@ Specialization for Courseplay
 
 @author  	Jakob Tischler / Thomas Gärtner / horoman
 @website:	http://courseplay.github.io/courseplay/
-@version:	v3.41
+@version:	v4.00 beta
 @changelog:	http://courseplay.github.io/courseplay/en/changelog/index.html
 ]]
 
@@ -340,15 +340,21 @@ function courseplay:setGlobalData()
 
 	--GLOBALINFOTEXT
 	courseplay.globalInfoText = {};
-	courseplay.globalInfoText.fontSize = 0.02;
-	courseplay.globalInfoText.lineHeight = courseplay.globalInfoText.fontSize * 1.1;
-	courseplay.globalInfoText.posX = 0.035;
-	courseplay.globalInfoText.posY = 0.01238;
+	courseplay.globalInfoText.posY = 0.01238; -- = ingameMap posY
 	courseplay.globalInfoText.posYAboveMap = courseplay.globalInfoText.posY + 0.027777777777778 + 0.20833333333333;
-	courseplay.globalInfoText.backgroundImg = "dataS2/menu/white.png";
-	courseplay.globalInfoText.backgroundPadding = 0.005;
-	courseplay.globalInfoText.backgroundX = courseplay.globalInfoText.posX - courseplay.globalInfoText.backgroundPadding;
-	courseplay.globalInfoText.backgroundY = courseplay.globalInfoText.posY;
+
+	courseplay.globalInfoText.fontSize = 0.016;
+	courseplay.globalInfoText.lineHeight = courseplay.globalInfoText.fontSize * 1.2;
+	courseplay.globalInfoText.lineMargin = courseplay.globalInfoText.lineHeight * 0.2;
+	courseplay.globalInfoText.buttonHeight = courseplay.globalInfoText.lineHeight;
+	courseplay.globalInfoText.buttonWidth = courseplay.globalInfoText.buttonHeight / g_screenAspectRatio;
+	courseplay.globalInfoText.buttonPosX = 0.015625; -- = ingameMap posX
+	courseplay.globalInfoText.buttonMargin = courseplay.globalInfoText.buttonWidth * 0.4;
+	courseplay.globalInfoText.backgroundPadding = courseplay.globalInfoText.buttonWidth * 0.2;
+	courseplay.globalInfoText.backgroundImg = 'dataS2/menu/white.png';
+	courseplay.globalInfoText.backgroundPosX = courseplay.globalInfoText.buttonPosX + courseplay.globalInfoText.buttonWidth + courseplay.globalInfoText.buttonMargin;
+	courseplay.globalInfoText.backgroundPosY = courseplay.globalInfoText.posY;
+	courseplay.globalInfoText.textPosX = courseplay.globalInfoText.backgroundPosX + courseplay.globalInfoText.backgroundPadding;
 	courseplay.globalInfoText.content = {};
 	courseplay.globalInfoText.hasContent = false;
 	courseplay.globalInfoText.vehicleHasText = {};
@@ -358,9 +364,11 @@ function courseplay:setGlobalData()
 		[0]  = courseplay.utils.table.copy(courseplay.hud.colors.hover);
 		[1]  = courseplay.utils.table.copy(courseplay.hud.colors.activeGreen);
 	};
+	--[[
 	for i=-2,1 do
 		courseplay.globalInfoText.levelColors[i][4] = 0.85;
 	end;
+	]]
 	courseplay.globalInfoText.msgReference = {
 		BALER_NETS 		  = { level = -2, text = 'COURSEPLAY_BALER_NEEDS_NETS' };
 		BGA_IS_FULL       = { level = -1, text = 'COURSEPLAY_BGA_IS_FULL'};
