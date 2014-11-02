@@ -449,7 +449,7 @@ function courseplay:load(xmlFile)
 	-- SeedUsageCalculator
 	self.cp.suc = {
 		active = false;
-		fontSize = 0.016;
+		fontSize = courseplay.hud.fontSizes.seedUsageCalculator;
 		x1 = self.cp.hud.background.x + 93/1920;
 		x2 = self.cp.hud.background.x + 93/1920 + 449/1920;
 		y1 = self.cp.hud.background.y + 335/1080;

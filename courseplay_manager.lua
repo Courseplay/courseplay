@@ -341,15 +341,15 @@ function courseplay_manager:draw()
 		fsi.bgOverlay:render();
 
 		courseplay:setFontSettings({ 0.8, 0.8, 0.8, 1 }, true, 'left');
-		renderText(fsi.lineX, fsi.line1Y - 0.001, 0.021, courseplay:loc('COURSEPLAY_FIELD_SCAN_IN_PROGRESS'));
+		renderText(fsi.lineX, fsi.line1Y - 0.001, courseplay.hud.fontSizes.fieldScanTitle, courseplay:loc('COURSEPLAY_FIELD_SCAN_IN_PROGRESS'));
 		courseplay:setFontSettings('shadow', true, 'left');
-		renderText(fsi.lineX, fsi.line1Y,         0.021, courseplay:loc('COURSEPLAY_FIELD_SCAN_IN_PROGRESS'));
+		renderText(fsi.lineX, fsi.line1Y,         courseplay.hud.fontSizes.fieldScanTitle, courseplay:loc('COURSEPLAY_FIELD_SCAN_IN_PROGRESS'));
 
 		local str2 = courseplay:loc('COURSEPLAY_SCANNING_FIELD_NMB'):format(courseplay.fields.curFieldScanIndex, g_currentMission.fieldDefinitionBase.numberOfFields);
 		courseplay:setFontSettings({ 0.8, 0.8, 0.8, 1 }, false, 'left');
-		renderText(fsi.lineX, fsi.line2Y - 0.001, 0.018, str2);
+		renderText(fsi.lineX, fsi.line2Y - 0.001, courseplay.hud.fontSizes.fieldScanData, str2);
 		courseplay:setFontSettings('shadow', false, 'left');
-		renderText(fsi.lineX, fsi.line2Y,         0.018, str2);
+		renderText(fsi.lineX, fsi.line2Y,         courseplay.hud.fontSizes.fieldScanData, str2);
 
 		local rotationStep = math.floor(g_currentMission.time / self.fieldScanInfo.rotationTime);
 		if rotationStep > fsi.loadRotStep then

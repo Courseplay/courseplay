@@ -225,12 +225,6 @@ function courseplay:setGlobalData()
 	ch.infoBasePosY = Utils.getNoNil(customPosY, 0.002);
 	ch.infoBaseWidth = 0.512;
 	ch.infoBaseHeight = 0.512;
-	ch.linesPosY = {};
-	ch.linesBottomPosY = {};
-	ch.linesButtonPosY = {};
-	ch.numPages = 9;
-	ch.numLines = 6;
-	ch.lineHeight = 0.021;
 	ch.offset = 16/1920;  --0.006 (button width)
 	ch.colors = {
 		white =         { 255/255, 255/255, 255/255, 1.00 };
@@ -268,16 +262,34 @@ function courseplay:setGlobalData()
 
 	--print(string.format("\t\tposX=%f,posY=%f, visX1=%f,visX2=%f, visY1=%f,visY2=%f, visCenter=%f", courseplay.hud.infoBasePosX, courseplay.hud.infoBasePosY, courseplay.hud.visibleArea.x1, courseplay.hud.visibleArea.x2, courseplay.hud.visibleArea.y1, courseplay.hud.visibleArea.y2, courseplay.hud.infoBaseCenter));
 
+	-- lines and text
+	ch.linesPosY = {};
+	ch.linesBottomPosY = {};
+	ch.linesButtonPosY = {};
+	ch.numPages = 9;
+	ch.numLines = 6;
+	ch.lineHeight = 0.0213;
 	for l=1,courseplay.hud.numLines do
 		if l == 1 then
-			courseplay.hud.linesPosY[l] = courseplay.hud.infoBasePosY + 0.210;
-			courseplay.hud.linesBottomPosY[l] = courseplay.hud.infoBasePosY + 0.077;
+			courseplay.hud.linesPosY[l] = courseplay.hud.infoBasePosY + 0.215;
+			courseplay.hud.linesBottomPosY[l] = courseplay.hud.infoBasePosY + 0.08;
 		else
 			courseplay.hud.linesPosY[l] = courseplay.hud.linesPosY[1] - ((l-1) * courseplay.hud.lineHeight);
 			courseplay.hud.linesBottomPosY[l] = courseplay.hud.linesBottomPosY[1] - ((l-1) * courseplay.hud.lineHeight);
 		end;
-		courseplay.hud.linesButtonPosY[l] = courseplay.hud.linesPosY[l] + 0.0020; --0.0045
+		courseplay.hud.linesButtonPosY[l] = courseplay.hud.linesPosY[l] - 0.003;
 	end;
+	ch.fontSizes = {
+		seedUsageCalculator = 0.015;
+		hudTitle = 0.021;
+		contentTitle = 0.016;
+		contentValue = 0.014; 
+		bottomInfo = 0.015;
+		version = 0.01;
+		infoText = 0.015;
+		fieldScanTitle = 0.021;
+		fieldScanData = 0.018;
+	};
 
 	courseplay.hud.col2posX = {
 		[0] = courseplay.hud.infoBasePosX + 0.122,

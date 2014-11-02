@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="20">
-	<version>4.00.0001</version>
+	<version>4.00.0002</version>
 	<author><![CDATA[Jakob Tischler, Thomas Gärtner,
 Horoman, Satis]]></author>
 	<title>
@@ -800,14 +800,14 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<hu>Útvonal: Útvonal nincs betöltve</hu>
 		</text>
 		<text name="COURSEPLAY_WAYPOINT">
-			<en>waypoint:</en>
-			<de>Wegpunkt:</de>
-			<fr>Point:</fr>
-			<es>Punto:</es>
+			<en>waypoint</en>
+			<de>Wegpunkt</de>
+			<fr>Point</fr>
+			<es>Punto</es>
 			<it>punto di passaggio</it>
-			<cz>Orientační bod:</cz>
-			<ru>Точек:</ru>
-			<hu>Útvonalpont: </hu>
+			<cz>Orientační bod</cz>
+			<ru>Точек</ru>
+			<hu>Útvonalpont</hu>
 		</text>
 		<text name="COURSEPLAY_NO_WAYPOINTS">
 			<en>no waypoints yet</en>
@@ -1280,24 +1280,24 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<hu>Vízbe vezettél, úsznod kell!</hu>
 		</text>
 		<text name="COURSEPLAY_WAITPOINTS">
-			<en>waiting points:</en>
-			<de>Wartepunkte:</de>
-			<fr>Points d'attente:</fr>
-			<es>Puntos de espera:</es>
-			<it>punti d'attesa:</it>
-			<cz>Bod čekání:</cz>
-			<ru>Остановок:</ru>
-			<hu>Útvonalpont:</hu>
+			<en>waiting points</en>
+			<de>Wartepunkte</de>
+			<fr>Points d'attente</fr>
+			<es>Puntos de espera</es>
+			<it>punti d'attesa</it>
+			<cz>Bod čekání</cz>
+			<ru>Остановок</ru>
+			<hu>Útvonalpont</hu>
 		</text>
 		<text name="COURSEPLAY_CROSSING_POINTS">
-			<en>crossing points:</en>
-			<de>Kreuzungspunkte:</de>
-			<fr>Points de croisement:</fr>
-			<es>Puntos de cruce:</es>
-			<it>incroci:</it>
-			<cz>Bod křížení:</cz>
-			<ru>Конечных точек:</ru>
-			<hu>Elágazási pont:</hu>
+			<en>crossing points</en>
+			<de>Kreuzungspunkte</de>
+			<fr>Points de croisement</fr>
+			<es>Puntos de cruce</es>
+			<it>incroci</it>
+			<cz>Bod křížení</cz>
+			<ru>Конечных точек</ru>
+			<hu>Elágazási pont</hu>
 		</text>
 		<text name="COURSEPLAY_OPEN_HUD_MODE">
 			<en>open Courseplay:</en>
@@ -1923,11 +1923,6 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<ru>: силосная яма заполнена!</ru>
 			<hu>: a BGA siló tele van!</hu>
 		</text>
-		<text name="COURSEPLAY_SEPARATOR">
-			<en>・</en>
-			<ru><![CDATA[  ]]></ru>
-		</text>
-
 		<!-- SeedUsageCalculator HUD content -->
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR">
 			<en>Seed usage calculator</en>
