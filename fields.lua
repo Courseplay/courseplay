@@ -550,8 +550,8 @@ end;
 function courseplay.fields:getFruitTypes()
 	--GET FRUITTYPES
 	local fruitTypes = {};
-	local hudW = g_currentMission.hudTipperOverlay.width  * 1.25;
-	local hudH = g_currentMission.hudTipperOverlay.height * 1.25;
+	local hudW = g_currentMission.hudTipperOverlay.width * 2.75;
+	local hudH = hudW * g_screenAspectRatio;
 	local hudX = courseplay.hud.infoBasePosX - 10/1920 + 93/1920 + 449/1920 - hudW;
 	local hudY = courseplay.hud.infoBasePosY - 10/1920 + 335/1080;
 	for name,fruitType in pairs(FruitUtil.fruitTypes) do
@@ -568,10 +568,12 @@ function courseplay.fields:getFruitTypes()
 
 				if fillType and g_currentMission.fillTypeOverlays[fillType] then
 					local hudOverlayPath = g_currentMission.fillTypeOverlays[fillType].filename;
-					if hudOverlayPath and hudOverlayPath ~= '' and fileExists(hudOverlayPath) then
-						fruitData.overlay = Overlay:new(('suc_fruit_%s'):format(fruitType.name), hudOverlayPath, hudX, hudY, hudW, hudH);
-						fruitData.overlay:setColor(1, 1, 1, 0.25);
-						-- print(('SUC fruitType %s: hudPath=%q, overlay=%s'):format(fruitType.name, tostring(hudOverlayPath), tostring(fruitData.overlay)));
+					if hudOverlayPath and hudOverlayPath ~= '' then
+						if Utils.startsWith(hudOverlayPath, 'dataS2') or fileExists(hudOverlayPath) then
+							fruitData.overlay = Overlay:new(('suc_fruit_%s'):format(fruitType.name), hudOverlayPath, hudX, hudY, hudW, hudH);
+							fruitData.overlay:setColor(1, 1, 1, 0.25);
+							-- print(('SUC fruitType %s: hudPath=%q, overlay=%s'):format(fruitType.name, tostring(hudOverlayPath), tostring(fruitData.overlay)));
+						end;
 					end;
 				end;
 
