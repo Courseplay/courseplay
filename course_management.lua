@@ -590,22 +590,29 @@ function courseplay.courses.delete_save_all(self)
 -- saves courses to xml-file
 -- opening the file with io.open will delete its content...
 	if g_server ~= nil then
-		local savegame = g_careerScreen.savegames[g_careerScreen.selectedIndex];
-		if savegame ~= nil and g_currentMission.cp_courses ~= nil then
-			local file = io.open(savegame.savegameDirectory .. "/courseplay.xml", "w");
+		if courseplay.cpXmlFilePath then
+			local file = io.open(courseplay.cpXmlFilePath, "w");
 			if file ~= nil then
 				file:write('<?xml version="1.0" encoding="utf-8" standalone="no" ?>\n<XML>\n');
 				file:write(string.format('\t<courseplayHud posX="%.3f" posY="%.3f" />\n', courseplay.hud.infoBasePosX, courseplay.hud.infoBasePosY));
-				file:write(string.format('\t<courseplayGlobalInfoText posX="%.3f" posY="%.3f" />\n', courseplay.globalInfoText.posX, courseplay.globalInfoText.posY));
+				--file:write(string.format('\t<courseplayGlobalInfoText posX="%.3f" posY="%.3f" />\n', courseplay.globalInfoText.posX, courseplay.globalInfoText.posY));
 				file:write(string.format('\t<courseplayFields automaticScan=%q onlyScanOwnedFields=%q debugScannedFields=%q debugCustomLoadedFields=%q scanStep="%d" />\n', tostring(courseplay.fields.automaticScan), tostring(courseplay.fields.onlyScanOwnedFields), tostring(courseplay.fields.debugScannedFields), tostring(courseplay.fields.debugCustomLoadedFields), courseplay.fields.scanStep));
 				file:write(string.format('\t<courseplayWages active=%q wagePerHour="%d" />\n', tostring(courseplay.wagesActive), courseplay.wagePerHour));
 
+				-- folders
 				file:write('\t<folders>\n')
 				for i,folder in pairs(g_currentMission.cp_folders) do
 					file:write('\t\t<folder name="' .. folder.name .. '" id="' .. folder.id .. '" parent="' .. folder.parent ..'" />\n');
 				end
-				file:write('\t</folders>\n')
-				
+				file:write('\t</folders>\n');
+
+				-- course reference
+				--[[file:write('\t<courseReference>\n');
+				for i,course in pairs(g_currentMission.cp_courses) do
+					file:write(('\t\t<course name=%q id=%q numWaypoints=%q parent=%q'):format(tostring(course.name), tostring(course.id), tostring(#course.waypoints), tostring(course.parent)));
+				end;
+				file:write('\t</courseReference>\n');
+				]]
 				file:write('\t<courses>\n')
 				for i,course in pairs(g_currentMission.cp_courses) do
 					file:write('\t\t<course name="' .. course.name .. '" id="' .. course.id .. '" numWaypoints="' .. #(course.waypoints) .. '" parent="' .. course.parent ..'">\n');
@@ -634,7 +641,7 @@ function courseplay.courses.delete_save_all(self)
 				file:write('\t</courses>\n</XML>');
 				file:close();
 			else
-				print("Error: Courseplay courses could not be saved to " .. tostring(savegame.savegameDirectory) .. "/courseplay.xml"); 
+				print("Error: Courseplay courses could not be saved to " .. tostring(courseplay.cpXmlFilePath)); 
 			end;
 		end;
 	end;
@@ -668,10 +675,8 @@ function courseplay.courses.openOrCreateXML(forceCreation)
 	forceCreation = forceCreation or false
 	
 	local File;
-	local savegame = g_careerScreen.savegames[g_careerScreen.selectedIndex];
-	
-	if savegame ~= nil then
-		local filePath = savegame.savegameDirectory .. "/courseplay.xml"
+	if courseplay.cpXmlFilePath ~= nil then
+		local filePath = courseplay.cpXmlFilePath;
 		if fileExists(filePath) and (not forceCreation) then
 			File = loadXMLFile("courseFile", filePath)
 		else

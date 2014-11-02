@@ -2,7 +2,7 @@
 
 <i3D name="Stop" version="1.6" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://i3d.giants.ch/schema/i3d-1.6.xsd">
   <Asset>
-    <Export program="GIANTS Editor 64bit" version="5.5.1"/>
+    <Export program="GIANTS Editor 64bit" version="6.0.2"/>
   </Asset>
 
   <Files>
@@ -12,10 +12,10 @@
 
 
   <Materials>
-    <Material name="CourseplayWaypointSign" materialId="7" ambientColor="1 1 1" cosPower="20" specularColor="0.25 0.25 0.25" alphaBlending="true">
+    <Material name="CourseplayWaypointSign" materialId="6" ambientColor="1 1 1" cosPower="20" specularColor="0.25 0.25 0.25" alphaBlending="true">
       <Emissivemap fileId="1"/>
     </Material>
-    <Material name="Sign" materialId="8" ambientColor="1 1 1" cosPower="20" specularColor="0.25 0.25 0.25">
+    <Material name="Sign" materialId="7" ambientColor="1 1 1" cosPower="20" specularColor="0.25 0.25 0.25">
       <Texture fileId="2"/>
     </Material>
   </Materials>
@@ -29,11 +29,11 @@
   </Dynamics>
 
   <Scene>
-    <Shape name="Waypoint" clipDistance="175" nodeId="16" materialIds="7" shapeId="1" castsShadows="true" receiveShadows="true">
-      <TransformGroup name="dummy" nodeId="22"/>
+    <Shape shapeId="1" name="Waypoint" clipDistance="175" nodeId="15" materialIds="6" castsShadows="true" receiveShadows="true">
+      <TransformGroup name="dummy" nodeId="16"/>
       <TransformGroup name="StopSign" nodeId="17">
-        <Shape name="Front" nodeId="18" materialIds="8" shapeId="2" castsShadows="true" receiveShadows="true"/>
-        <Shape name="Back" nodeId="19" materialIds="8" shapeId="3" castsShadows="true" receiveShadows="true"/>
+        <Shape shapeId="2" name="Front" nodeId="18" materialIds="7" castsShadows="true" receiveShadows="true"/>
+        <Shape shapeId="3" name="Back" nodeId="19" materialIds="7" castsShadows="true" receiveShadows="true"/>
       </TransformGroup>
     </Shape>
   </Scene>

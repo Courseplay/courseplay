@@ -10,7 +10,6 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 		end;
 	end;
 	--]]
-
 	local workArea = (self.recordnumber > self.cp.startWork) and (self.recordnumber < self.cp.finishWork)
 	local isFinishingWork = false
 	local hasFinishedWork = false
@@ -51,7 +50,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 		end;
 
 		-- implements, no combine or chopper
-		if workTool ~= nil and tool.grainTankCapacity == nil then
+		if workTool ~= nil and tool.attachedCutters == nil then
 			-- balers
 			if courseplay:isBaler(workTool) then
 				if self.recordnumber >= self.cp.startWork + 1 and self.recordnumber < self.cp.stopWork and self.cp.turnStage == 0 then
@@ -361,13 +360,13 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 				specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,true,true,true,allowedToDrive,nil,nil)
 				if not specialTool then
 					local weatherStop = not tool:getIsThreshingAllowed(true)
-					if tool.grainTankCapacity == 0 then
+					if tool.capacity == 0 then
 						if courseplay:isFoldable(workTool) and not tool.isThreshing and not isFolding and not isUnfolded then
 							courseplay:debug(string.format('%s: unfold order (foldDir=%d)', nameNum(workTool), workTool.cp.realUnfoldDirection), 17);
 							workTool:setFoldDirection(workTool.cp.realUnfoldDirection);
 						end;
 						if not isFolding and not tool.isThreshing then
-							tool:setIsThreshing(true);
+							tool:startThreshing(true);
 							if pipeState > 0 then
 								tool:setPipeState(pipeState);
 							else
@@ -392,14 +391,14 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 						end
 
 					else
-						local tankFillLevelPct = tool.grainTankFillLevel * 100 / tool.grainTankCapacity;
+						local tankFillLevelPct = tool.fillLevel * 100 / tool.capacity;
 
 						if courseplay:isFoldable(workTool) and not tool.isThreshing and not isFolding and not isUnfolded then
 							courseplay:debug(string.format('%s: unfold order (foldDir=%d)', nameNum(workTool), workTool.cp.realUnfoldDirection), 17);
 							workTool:setFoldDirection(workTool.cp.realUnfoldDirection);
 						end;
 						if not isFolding and tankFillLevelPct < 100 and not tool.waitingForDischarge and not tool.isThreshing and not weatherStop then
-							tool:setIsThreshing(true);
+							tool:startThreshing();
 						end
 						if tool.pipeIsUnloading and (tool.courseplayers == nil or tool.courseplayers[1] == nil) and tool.cp.stopWhenUnloading and tankFillLevelPct >= 1 then
 							tool.stopForManualUnloader = true
@@ -409,15 +408,15 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 							tool.waitingForDischarge = true;
 							allowedToDrive = courseplay:brakeToStop(self); -- allowedToDrive = false;
 							if tool.isThreshing then
-								tool:setIsThreshing(false);
+								tool:stopThreshing();
 							end;
 							if tankFillLevelPct < 80 and (not tool.cp.stopWhenUnloading or (tool.cp.stopWhenUnloading and (tool.courseplayers == nil or tool.courseplayers[1] == nil))) then
 								tool.waitingForDischarge = false;
 								if not weatherStop and not tool.isThreshing then
-									tool:setIsThreshing(true);
+									tool:startThreshing();
 								end;
 							end;
-							if tool.stopForManualUnloader and tool.grainTankFillLevel == 0 then
+							if tool.stopForManualUnloader and tool.fillLevel == 0 then
 								tool.stopForManualUnloader = false
 							end
 						end;
@@ -425,7 +424,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 						if weatherStop then
 							allowedToDrive = false;
 							if tool.isThreshing then
-								tool:setIsThreshing(false);
+								tool:stopThreshing();
 							end;
 							courseplay:setGlobalInfoText(self, 'WEATHER');
 						end
@@ -434,7 +433,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 				end
 			 --Stop combine
 			elseif self.recordnumber == self.cp.stopWork or self.cp.abortWork ~= nil then
-				local isEmpty = tool.grainTankFillLevel == 0
+				local isEmpty = tool.fillLevel == 0
 				if self.cp.abortWork == nil then
 					allowedToDrive = false;
 				end
@@ -453,15 +452,15 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 				end
 			end
 
-			if tool.cp.isCombine and tool.isThreshing and tool.grainTankFillLevel >= tool.grainTankCapacity*0.8  or ((pipeState > 0 or courseplay:isAttachedCombine(workTool))and not courseplay:isSpecialChopper(workTool))then
+			if tool.cp.isCombine and tool.isThreshing and tool.fillLevel >= tool.capacity*0.8  or ((pipeState > 0 or courseplay:isAttachedCombine(workTool))and not courseplay:isSpecialChopper(workTool))then
 				tool:setPipeState(2)
-			elseif  pipeState == 0 and tool.cp.isCombine and tool.grainTankFillLevel < tool.grainTankCapacity then
+			elseif  pipeState == 0 and tool.cp.isCombine and tool.fillLevel < tool.capacity then
 				tool:setPipeState(1)
 			end
 			if tool.cp.waitingForTrailerToUnload then
 				allowedToDrive = false;
 				if tool.cp.isCombine or courseplay:isAttachedCombine(workTool) then
-					if tool.cp.isCheckedIn == nil or (pipeState == 0 and tool.grainTankFillLevel == 0) then
+					if tool.cp.isCheckedIn == nil or (pipeState == 0 and tool.fillLevel == 0) then
 						tool.cp.waitingForTrailerToUnload = false
 					end
 				elseif tool.cp.isChopper then

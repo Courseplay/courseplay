@@ -56,91 +56,92 @@ function cpPrintLine(debugChannel, line)
 end;
 
 function tableShow(t, name, channel, indent, maxDepth)
-	--important performance backup: the channel is checked first before proceeding with the compilation of the table
+	-- important performance backup: the channel is checked first before proceeding with the compilation of the table
 	if channel ~= nil and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == false then
 		return;
 	end;
 
 
-	local cart -- a container
-	local autoref -- for self references
+	local cart; -- a container
+	local autoref; -- for self references
 	maxDepth = maxDepth or 50;
 	local depth = 0;
 
-	--[[ counts the number of elements in a table
-local function tablecount(t)
-   local n = 0
-   for _, _ in pairs(t) do n = n+1 end
-   return n
-end
-]]
 	-- (RiciLake) returns true if the table is empty
-	local function isemptytable(t) return next(t) == nil end
+	local function isemptytable(t)
+		return next(t) == nil;
+	end;
 
 	local function basicSerialize(o)
-		local so = tostring(o)
-		if type(o) == "function" then
-			local info = debug.getinfo(o, "S")
+		local so = tostring(o);
+		if type(o) == 'function' then
+			local info = debug.getinfo(o, 'S')
 			-- info.name is nil because o is not a calling level
-			if info.what == "C" then
-				return string.format("%q", so .. ", C function")
+			if info.what == 'C' then
+				return ('"%s, C function"'):format(so);
 			else
-				-- the information is defined through lines
-				return string.format("%q", so .. ", defined in (" ..
-						info.linedefined .. "-" .. info.lastlinedefined ..
-						")" .. info.source)
+				-- the information is defined in a script
+				return ('"%s, defined in %s (lines %d-%d)"'):format(so, info.source, info.linedefined, info.lastlinedefined);
 			end
-		elseif type(o) == "number" then
-			return so
+		elseif type(o) == 'number' then
+			return so;
 		else
-			return string.format("%q", so)
+			return ('%q'):format(so);
 		end
 	end
 
-	local function addtocart(value, name, indent, saved, field, curDepth)
-		indent = indent or ""
+	local function addToCart(value, name, indent, saved, field, curDepth)
+		indent = indent or ''
 		saved = saved or {}
 		field = field or name
-		cart = cart .. indent .. field
+		-- cart = cart .. indent .. field
+		cart = indent .. field
+		-- print(('addToCart(value=%q, name=%q, indent, saved, field=%q, curDepth=%d)'):format(tostring(value), tostring(name), tostring(field), tostring(curDepth)));
 
-		if type(value) ~= "table" then
-			cart = cart .. " = " .. basicSerialize(value) .. ";\n"
+		if type(value) ~= 'table' then
+			cart = cart .. ' = ' .. basicSerialize(value) .. ';';
+			print(cart);
 		else
 			if saved[value] then
-				cart = cart .. " = {}; -- " .. saved[value]
-						.. " (self reference)\n"
-				autoref = autoref .. name .. " = " .. saved[value] .. ";\n"
+				cart = cart .. ' = {}; -- ' .. saved[value] .. ' (self reference)';
+				print(cart);
+				autoref = autoref .. name .. ' = ' .. saved[value] .. ';\n';
 			else
-				saved[value] = name
-				--if tablecount(value) == 0 then
+				saved[value] = name;
 				if isemptytable(value) then
-					cart = cart .. " = {};\n"
+					cart = cart .. ' = {};';
+					print(cart);
 				else
 					if curDepth <= maxDepth then
-						cart = cart .. " = {\n"
+						cart = cart .. ' = {';
+						print(cart);
 						for k, v in pairs(value) do
-							k = basicSerialize(k)
-							local fname = string.format("%s[%s]", name, k)
-							field = string.format("[%s]", k)
+							k = basicSerialize(k);
+							local fname = string.format('%s[%s]', name, k);
+							field = string.format('[%s]', k);
 							-- three spaces between levels
-							addtocart(v, fname, indent .. "\t", saved, field, curDepth + 1);
-						end
-						cart = cart .. indent .. "};\n"
+							addToCart(v, fname, indent .. '\t', saved, field, curDepth + 1);
+						end;
+						cart = indent .. '};';
+						print(cart);
 					else
-						cart = cart .. " = { ... };\n";
+						cart = cart .. ' = { ... };';
+						print(cart);
 					end;
-				end
-			end
+				end;
+			end;
 		end;
-	end
+	end;
 
-	name = name or "__unnamed__"
-	if type(t) ~= "table" then
-		return name .. " = " .. basicSerialize(t)
-	end
-	cart, autoref = "", ""
-	addtocart(t, name, indent, nil, nil, depth + 1)
-	return cart .. autoref
+	name = name or '__unnamed__';
+	if type(t) ~= 'table' then
+		return name .. ' = ' .. basicSerialize(t);
+	end;
+	cart, autoref = '', '';
+	addToCart(t, name, indent, nil, nil, depth + 1)
+	-- return cart .. autoref
+	print(autoref);
+	return ('%s %s -END- %s'):format(('#'):rep(40), name, ('#'):rep(40));
 end;
 
 function eval(str)

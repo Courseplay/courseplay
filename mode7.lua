@@ -2,7 +2,7 @@ local abs, ceil = math.abs, math.ceil;
 
 function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 	if vehicle.isAIThreshing then
-		if (vehicle.grainTankFillLevel * 100 / vehicle.grainTankCapacity) >= vehicle.cp.driveOnAtFillLevel then
+		if (vehicle.grainTankFillLevel * 100 / vehicle.capacity) >= vehicle.cp.driveOnAtFillLevel then
 			vehicle.maxnumber = #(vehicle.Waypoints) --TODO (Jakob): no need to calculate it each loop!
 			local cx7, cz7 = vehicle.Waypoints[vehicle.maxnumber].cx, vehicle.Waypoints[vehicle.maxnumber].cz
 			local lx7, lz7 = AIVehicleUtil.getDriveDirection(vehicle.rootNode, cx7, cty7, cz7);
@@ -11,7 +11,7 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 			vehicle.cp.mode7tx7 = x7
 			vehicle.cp.mode7ty7 = y7
 			vehicle.cp.mode7tz7 = z7
-			if courseplay:isField(fx, fz) or vehicle.grainTankFillLevel >= vehicle.grainTankCapacity*0.99 then
+			if courseplay:isField(fx, fz) or vehicle.grainTankFillLevel >= vehicle.capacity*0.99 then
 				vehicle.lastaiThreshingDirectionX = vehicle.aiThreshingDirectionX
 				vehicle.lastaiThreshingDirectionZ = vehicle.aiThreshingDirectionZ
 				vehicle:stopAIThreshing()

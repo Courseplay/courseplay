@@ -528,8 +528,8 @@ function courseplay:isSpecialChopper(workTool)
 		if workTool.grainTankFillLevel == nil then
 			workTool.grainTankFillLevel = 0;
 		end;
-		if workTool.grainTankCapacity == nil then
-			workTool.grainTankCapacity = 0;
+		if workTool.capacity == nil then
+			workTool.capacity = 0;
 		end;
 		if workTool.cp.isChopper == nil then
 			workTool.cp.isChopper = true
@@ -562,8 +562,8 @@ function courseplay:isSpecialCombine(workTool, specialType, fileNames)
 				if workTool.grainTankFillLevel == nil then
 					workTool.grainTankFillLevel = 0;
 				end;
-				if workTool.grainTankCapacity == nil then
-					workTool.grainTankCapacity = 0;
+				if workTool.capacity == nil then
+					workTool.capacity = 0;
 				end;
 				return true;
 			end;

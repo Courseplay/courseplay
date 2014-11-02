@@ -424,7 +424,8 @@ function courseplay:load(xmlFile)
 			pages = {};
 		};
 		mouseWheel = {
-			icon = Overlay:new('cpMouseWheelIcon', 'dataS2/menu/mouseControlsHelp/mouseMMB.png', 0, 0, 32/g_screenWidth, 32/g_screenHeight);
+			-- icon = Overlay:new('cpMouseWheelIcon', 'dataS2/menu/mouseControlsHelp/mouseMMB.png', 0, 0, 32/g_screenWidth, 32/g_screenHeight); -- FS13
+			icon = Overlay:new('cpMouseWheelIcon', 'dataS2/menu/controllerSymbols/mouse/mouseMMB.png', 0, 0, 32/g_screenWidth, 32/g_screenHeight); -- FS15
 			render = false;
 		};
 

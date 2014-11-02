@@ -93,7 +93,7 @@ function courseplay:registerAtCombine(vehicle, combine)
 	else
 		
 		if vehicle.cp.realisticDriving then
-			if combine.cp.wantsCourseplayer == true or combine.grainTankFillLevel == combine.grainTankCapacity then
+			if combine.cp.wantsCourseplayer == true or combine.grainTankFillLevel == combine.capacity then
 
 			else
 				-- force unload when combine is full

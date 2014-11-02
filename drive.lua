@@ -7,7 +7,7 @@ function courseplay:drive(self, dt)
 	if not courseplay:getCanUseAiMode(self) then
 		return;
 	end;
-
+	
 	local refSpeed = 0
 	local cx,cy,cz = 0,0,0
 	-- may i drive or should i hold position for some reason?
@@ -42,7 +42,7 @@ function courseplay:drive(self, dt)
 
 	-- Turn on sound / control lights
 	if not self.isControlled then
-		setVisibility(self.aiMotorSound, true); --TODO (Jakob): still needed in FS13?
+		--setVisibility(self.aiMotorSound, true); --TODO (Jakob): still needed in FS13 and FS15(Tom)?
 		self:setLightsVisibility(courseplay.lightsNeeded);
 	end;
 
@@ -119,7 +119,7 @@ function courseplay:drive(self, dt)
 
 	-- BEACON LIGHTS
 	if self.cp.beaconLightsMode == 1 then --on streets only
-		local combineNeedsBeacon = self.cp.isCombine and (self.grainTankFillLevel / self.grainTankCapacity) > 0.8;
+		local combineNeedsBeacon = self.cp.isCombine and (self.fillLevel / self.capacity) > 0.8;
 		if (self.cp.speeds.sl == 3 and not self.beaconLightsActive)
 		or (self.cp.speeds.sl ~= 3 and self.beaconLightsActive and not combineNeedsBeacon)
 		or (self.cp.mode == 6 and combineNeedsBeacon and not self.beaconLightsActive)
@@ -191,7 +191,7 @@ function courseplay:drive(self, dt)
 			end;
 		elseif self.cp.mode == 7 then
 			if self.cp.lastRecordnumber == self.cp.startWork then
-				if self.grainTankFillLevel > 0 then
+				if self.fillLevel > 0 then
 					self:setPipeState(2)
 					courseplay:setGlobalInfoText(self, 'OVERLOADING_POINT');
 				else
@@ -400,7 +400,7 @@ function courseplay:drive(self, dt)
 	elseif self.cp.mode == 6 and self.cp.startWork ~= nil and self.cp.stopWork ~= nil then
 		allowedToDrive, workArea, workSpeed, activeTipper, isFinishingWork = courseplay:handle_mode6(self, allowedToDrive, workSpeed, self.cp.tipperFillLevelPct, lx, lz);
 
-		if not workArea and self.cp.currentTipTrigger == nil and self.cp.tipperFillLevel and self.cp.tipperFillLevel > 0 and self.grainTankCapacity == nil and self.cp.tipRefOffset ~= nil and not self.Waypoints[self.recordnumber].rev then
+		if not workArea and self.cp.currentTipTrigger == nil and self.cp.tipperFillLevel and self.cp.tipperFillLevel > 0 and self.capacity == nil and self.cp.tipRefOffset ~= nil and not self.Waypoints[self.recordnumber].rev then
 			courseplay:doTriggerRaycasts(self, 'tipTrigger', 'fwd', true, tx, ty, tz, nx, ny, nz);
 		end;
 
@@ -545,7 +545,7 @@ function courseplay:drive(self, dt)
 		self.cp.isInFilltrigger = false;
 	end;
 
-	local maxRpm = self.motor.maxRpm[self.cp.speeds.sl];
+	--local maxRpm = self.motor.maxRpm[self.cp.speeds.sl];
 
 	--checking ESLimiter version
 	if self.ESLimiter ~= nil and self.ESLimiter.maxRPM[5] == nil then
@@ -597,6 +597,7 @@ function courseplay:drive(self, dt)
 	if self.isRealistic then
 		courseplay:setMRSpeed(self, refSpeed, self.cp.speeds.sl, allowedToDrive, workArea);
 	else
+		
 		courseplay:setSpeed(self, refSpeed, self.cp.speeds.sl)
 	end
 
@@ -727,6 +728,7 @@ function courseplay:drive(self, dt)
 			self.cp.canDrive = true
 		end
 	end
+	
 end
 
 
@@ -821,6 +823,16 @@ function courseplay:deleteCollisionVehicle(vehicle)
 end
 
 function courseplay:setSpeed(vehicle, refSpeed, sl)
+	
+	if vehicle.cruiseControl.state == 0 then
+		vehicle:setCruiseControlState(1)
+	end 
+	vehicle.cruiseControl.minSpeed = refSpeed*3600   --TODO(Tom) thats rape, make it nice and clear when you know how
+	
+end
+	
+function dummy()
+	
 	if vehicle.lastSpeedSave ~= vehicle.lastSpeedReal*3600 then
 		local refSpeedKph = refSpeed * 3600;
 		local lastSpeedKph = vehicle.lastSpeed * 3600;

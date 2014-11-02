@@ -7,15 +7,17 @@ function courseplay:start(self)
 		return
 	end
 
+	--print(tableShow(self,"self"))
+	
 	courseplay:setEngineState(self, true);
 
 	if self.cp.orgRpm == nil then
 		self.cp.orgRpm = {}
-		self.cp.orgRpm[1] = self.motor.maxRpm[1]
-		self.cp.orgRpm[2] = self.motor.maxRpm[2]
-		self.cp.orgRpm[3] = self.motor.maxRpm[3]
+		self.cp.orgRpm[1] = self.motor.maxRpm
+		self.cp.orgRpm[2] = self.motor.maxRpm
+		self.cp.orgRpm[3] = self.motor.maxRpm
 	end
-	if self.ESLimiter ~= nil and self.ESLimiter.maxRPM[5] ~= nil then
+	--[[if self.ESLimiter ~= nil and self.ESLimiter.maxRPM[5] ~= nil then
 		self.cp.ESL = {}
 		self.cp.ESL[1] = self.ESLimiter.percentage[2]
 		self.cp.ESL[2] = self.ESLimiter.percentage[3]
@@ -27,7 +29,7 @@ function courseplay:start(self)
 			[2] = self.motor.realSpeedLevelsAI[2],
 			[3] = self.motor.realSpeedLevelsAI[3]
 		};
-	end;
+	end;]]
 
 	self.CPnumCollidingVehicles = 0;
 	self.cp.collidingVehicleId = nil
@@ -279,12 +281,13 @@ function courseplay:start(self)
 	self.cp.EifokLiquidManure.searchMapHoseRefStation.push = true;
 
 	courseplay:validateCanSwitchMode(self);
+	--print("startStop "..debug.getinfo(1).currentline)
 end;
 
 function courseplay:getCanUseAiMode(vehicle)
-	if not vehicle.isMotorStarted or (vehicle.motorStartTime and vehicle.motorStartTime > vehicle.time) then
+	--[[if not vehicle.isMotorStarted or (vehicle.motorStartTime and vehicle.motorStartTime > vehicle.time) then
 		return false;
-	end;
+	end;]]
 
 	local mode = vehicle.cp.mode;
 
@@ -361,7 +364,7 @@ function courseplay:stop(self)
 	self.steeringEnabled = true;
 	self.deactivateOnLeave = true
 	self.disableCharacterOnLeave = true
-	if self.cp.orgRpm then
+	--[[if self.cp.orgRpm then
 		self.motor.maxRpm[1] = self.cp.orgRpm[1]
 		self.motor.maxRpm[2] = self.cp.orgRpm[2]
 		self.motor.maxRpm[3] = self.cp.orgRpm[3]
@@ -375,7 +378,9 @@ function courseplay:stop(self)
 		self.motor.realSpeedLevelsAI[1] = self.cp.mrOrigSpeed[1];
 		self.motor.realSpeedLevelsAI[2] = self.cp.mrOrigSpeed[2];
 		self.motor.realSpeedLevelsAI[3] = self.cp.mrOrigSpeed[3];
-	end;
+	end;]]
+	self:setCruiseControlState(0)
+	self.cruiseControl.minSpeed = 1
 	self.cp.forcedToStop = false
 	self.cp.isRecording = false
 	self.cp.recordingIsPaused = false
@@ -431,7 +436,7 @@ function courseplay:stop(self)
 		self.cp.checkReverseValdityPrinted = false
 	end
 
-	self.motor:setSpeedLevel(0, false);
+	--self.motor:setSpeedLevel(0, false);
 	self.motor.maxRpmOverride = nil;
 	self.cp.startWork = nil
 	self.cp.stopWork = nil

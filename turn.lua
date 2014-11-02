@@ -201,7 +201,7 @@ function courseplay:turn(self, dt) --!!!
 		local offset = Utils.getNoNil(self.cp.totalOffsetX, 0)
 		local x,y,z = localToWorld(self.rootNode, offset, 0, backMarker)
 		local dist = courseplay:distance(self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz, x, z)
-		if self.grainTankCapacity ~= nil then
+		if self.attachedCutters ~= nil then
 			self.cp.noStopOnEdge = true
 		end
 		if backMarker <= 0 then
@@ -299,7 +299,7 @@ function courseplay:lowerImplements(self, direction, workToolonOff)
 	end	
 	if not specialTool then
 		if  self.setAIImplementsMoveDown ~= nil then
-			self:setAIImplementsMoveDown(direction)
+			self:setAIImplementsMoveDown(direction,true) --FS15 TODO(Tom) check function, actually combine stops threshing while lifting
 		elseif self.setFoldState ~= nil then
 			self:setFoldState(state, true)
 		end		

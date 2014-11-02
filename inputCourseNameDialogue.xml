@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <GUI onOpen="onOpen" onClose="onClose" onEnterPressed="onEnterPressed">
-	<GuiElement name="background" type="bitmap" position="0.4096 0.8" size="0.2667 0.1185" imageFilename="dataS2/menu/dialog_bg.png" MOD_imageDir="img/inputCourseNameGUI/" MOD_imageFilename="inputCourseName_bg.png" imageColor="1 1 1 1">
+	<GuiElement name="background" type="bitmap" position="0.4096 0.8" size="0.2667 0.1185" imageFilename="dataS2/menu/background01.png" MOD_imageDir="img/inputCourseNameGUI/" MOD_imageFilename="inputCourseName_bg.png" imageColor="1 1 1 1">
 		<!-- Title text -->
 		<GuiElement 
 			name="titleText" 
@@ -20,34 +20,35 @@
 		/>
 
 		<!-- Text input -->
+			<!--
+			imageFocusedColor="0.4314 0.9216 0.2196 0.05"
+			-->
 		<GuiElement 
-			name="textInput" 
-			type="textInput" 
-			profile="defaultTextInput" 
-			position="0 0" 
-			size="0.2667 0.1185" 
-			text="" 
-			onCreate="onCreateTextInput" 
-			onEnterPressed="onEnterPressed" 
-			onTextChanged="onTextChanged" 
-			onIsUnicodeAllowed="onIsUnicodeAllowed" 
+			name="textInput" type="textInput" position="0 0" size="0.2667 0.1185" text="" 
+			onCreate="onCreateTextInput" onEnterPressed="onEnterPressed" onTextChanged="onTextChanged" onIsUnicodeAllowed="onIsUnicodeAllowed" 
+
+			maxInputTextWidth="430px"
 			maxCharacters="25" 
+
 			focusId="1" 
 			focusChangeRight="2" 
 			focusChangeBottom="2" 
 			focusInit="onOpen"
 
-			textColor="0.15 0.15 0.15 1" 
+			textColor="0 0 0 1" 
 			textSize="0.017"
 			textBold="false" 
-			textOffset="0.0085 0.038" 
-
 			text2Size="0" 
+			alignment="left" 
+
+			textSelectedColor="0 0 0 1" 
+			textOffset="0px 46px" 
+
+			cursorFilename="g_baseUIFilename" 
+			cursorOffset="4px 1px" 
 
 			MOD_imageDir="img/inputCourseNameGUI/" 
 			MOD_imageFilename="inputCourseName_input_normal.png" 
-			MOD_imageFocusedFilename="inputCourseName_input_focused.png" 
-			MOD_imagePressedFilename="inputCourseName_input_focused.png" 
 		/>
 
 		<!-- Cancel button -->
@@ -65,6 +66,9 @@
 			focusChangeRight="3" 
 			focusChangeTop="1" 
 
+			imageColor="1 1 1 1"
+			imageFocusedColor="0.7059 0 0 1"
+
 			textColor="0.1 0.1 0.1 1" 
 			textDisabledColor="0.1 0.1 0.1 0.4" 
 			textOffset="0 0" 
@@ -75,8 +79,6 @@
 
 			MOD_imageDir="img/inputCourseNameGUI/" 
 			MOD_imageFilename="inputCourseName_cancelButton_normal.png" 
-			MOD_imageFocusedFilename="inputCourseName_cancelButton_focused.png" 
-			MOD_imagePressedFilename="inputCourseName_cancelButton_pressed.png" 
 		/>
 
 		<!-- Save button -->
@@ -94,6 +96,12 @@
 			focusChangeTop="1" 
 			disabled="true" 
 
+			imageColor="1 1 1 1"
+			imageFocusedColor="0.4314 0.9216 0.2196 1"
+			imageDisabledColor="1 1 1 0.15"
+			fadeInTime="0.2" 
+			fadeOutTime="0.2" 
+
 			textColor="0.1 0.1 0.1 1" 
 			textDisabledColor="0.1 0.1 0.1 0.4" 
 			textOffset="0 0" 
@@ -103,10 +111,7 @@
 			text2Size="0" 
 
 			MOD_imageDir="img/inputCourseNameGUI/" 
-			MOD_imageFilename="$course:inputCourseName_saveButton_normal.png,$folder:$course,$filter:inputCourseName_searchButton_normal.png" 
-			MOD_imageFocusedFilename="$course:inputCourseName_saveButton_focused.png,$folder:$course,$filter:inputCourseName_searchButton_focused.png" 
-			MOD_imagePressedFilename="$course:inputCourseName_saveButton_pressed.png,$folder:$course,$filter:inputCourseName_searchButton_pressed.png" 
-			MOD_imageDisabledFilename="$course:inputCourseName_saveButton_disabled.png,$folder:$course,$filter:inputCourseName_searchButton_disabled.png" 
+			MOD_imageFilename="$course:inputCourseName_saveButton_normal.png,$folder:inputCourseName_saveButton_normal.png,$filter:inputCourseName_searchButton_normal.png" 
 		/>
 	</GuiElement>
 </GUI>

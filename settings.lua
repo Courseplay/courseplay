@@ -174,7 +174,7 @@ function courseplay:sendCourseplayerHome(combine)
 end
 
 function courseplay:switchCourseplayerSide(combine)
-	if combine.grainTankCapacity == 0 then
+	if combine.capacity == 0 then
 		local tractor = combine.courseplayers[1];
 		if tractor == nil then
 			return;

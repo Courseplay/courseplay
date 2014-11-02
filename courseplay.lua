@@ -41,6 +41,7 @@ end;
 
 courseplay.sonOfaBangSonOfaBoom = {
 	['44d143f3e847254a55835a8298ba4e21'] = true;
+	['6fbb6a98a4054b1d603bd8c591d572af'] = true;
 	['87a96c3bb39fa285d7ed2fb5beaffc16'] = true;
 	['d4043d2f9265e18c794be4159faaef5c'] = true;
 };
@@ -159,57 +160,63 @@ function courseplay:initialize()
 
 	if courseplay.isDevVersion then
 		local devWarning = '';
-		devWarning = devWarning .. '\t' .. ('*'):rep(45) .. ' WARNING ' .. ('*'):rep(45) .. '\n';
-		devWarning = devWarning .. '\tYou\'re using a development version of Courseplay, which may and will contain errors, bugs,\n';
-		devWarning = devWarning .. '\tmistakes and unfinished code. Chances are your computer will explode when using it. Twice.\n';
-		devWarning = devWarning .. '\tIf you have no idea what "beta", "alpha", or "developer" means and entails, remove this version\n';
-		devWarning = devWarning .. '\tof Courseplay immediately. The Courseplay team will not take any responsibility for crop destroyed,\n';
-		devWarning = devWarning .. '\tsavegames deleted or baby pandas killed.\n';
-		devWarning = devWarning .. '\t' .. ('*'):rep(99);
+		devWarning = devWarning .. '\t' .. ('*'):rep(47) .. ' WARNING ' .. ('*'):rep(47) .. '\n';
+		devWarning = devWarning .. '\t* You are using a development version of Courseplay, which may and will contain errors, bugs,         *\n';
+		devWarning = devWarning .. '\t* mistakes and unfinished code. Chances are your computer will explode when using it. Twice.          *\n';
+		devWarning = devWarning .. '\t* If you have no idea what "beta", "alpha", or "developer" means and entails, remove this version     *\n';
+		devWarning = devWarning .. '\t* of Courseplay immediately. The Courseplay team will not take any responsibility for crop destroyed, *\n';
+		devWarning = devWarning .. '\t* savegames deleted or baby pandas killed.                                                            *\n';
+		devWarning = devWarning .. '\t' .. ('*'):rep(103);
 		print(devWarning);
 	end;
 end;
 
 function courseplay:setGlobalData()
+	courseplay.cpFolderPath = getUserProfileAppPath() .. 'courseplay/';
+	courseplay.cpSavegameFolderPath = courseplay.cpFolderPath .. 'savegame' .. g_careerScreen.selectedIndex .. '/';
+	courseplay.cpXmlFilePath = courseplay.cpSavegameFolderPath .. 'courseplay.xml';
+	createFolder(courseplay.cpFolderPath);
+	createFolder(courseplay.cpSavegameFolderPath);
+
+
 	local customPosX, customPosY;
 	local customGitPosX, customGitPosY;
 	local fieldsAutomaticScan, fieldsDebugScan, fieldsDebugCustomLoad, fieldsCustomScanStep, fieldsOnlyScanOwnedFields = true, false, false, nil, true;
 	local wagesActive, wagesAmount = false, 666;
 
-	local savegame = g_careerScreen.savegames[g_careerScreen.selectedIndex];
-	if savegame ~= nil then
-		local cpFilePath = savegame.savegameDirectory .. "/courseplay.xml";
-		if fileExists(cpFilePath) then
-			local cpFile = loadXMLFile("cpFile", cpFilePath);
-			local hudKey = "XML.courseplayHud";
-			if hasXMLProperty(cpFile, hudKey) then
-				customPosX = getXMLFloat(cpFile, hudKey .. "#posX");
-				customPosY = getXMLFloat(cpFile, hudKey .. "#posY");
-			end;
-
-			local gitKey = "XML.courseplayGlobalInfoText";
-			if hasXMLProperty(cpFile, gitKey) then
-				customGitPosX = getXMLFloat(cpFile, gitKey .. "#posX");
-				customGitPosY = getXMLFloat(cpFile, gitKey .. "#posY");
-			end;
-
-			local fieldsKey = 'XML.courseplayFields';
-			if hasXMLProperty(cpFile, fieldsKey) then
-				fieldsAutomaticScan   = Utils.getNoNil(getXMLBool(cpFile, fieldsKey .. '#automaticScan'), true);
-				fieldsOnlyScanOwnedFields = Utils.getNoNil(getXMLBool(cpFile, fieldsKey .. '#onlyScanOwnedFields'), true);
-				fieldsDebugScan       = Utils.getNoNil(getXMLBool(cpFile, fieldsKey .. '#debugScannedFields'), false);
-				fieldsDebugCustomLoad = Utils.getNoNil(getXMLBool(cpFile, fieldsKey .. '#debugCustomLoadedFields'), false);
-				fieldsCustomScanStep = getXMLInt(cpFile, fieldsKey .. '#scanStep');
-			end;
-
-			local wagesKey = 'XML.courseplayWages';
-			if hasXMLProperty(cpFile, wagesKey) then
-				wagesActive = Utils.getNoNil(getXMLBool(cpFile, wagesKey .. '#active'), wagesActive);
-				wagesAmount = Utils.getNoNil(getXMLInt(cpFile, wagesKey .. '#wagePerHour'), wagesAmount);
-			end;
-
-			delete(cpFile);
+	local cpFilePath = courseplay.cpSavegameFolderPath .. '/courseplay.xml';
+	if fileExists(cpFilePath) then
+		local cpFile = loadXMLFile('cpFile', cpFilePath);
+		local hudKey = 'XML.courseplayHud';
+		if hasXMLProperty(cpFile, hudKey) then
+			customPosX = getXMLFloat(cpFile, hudKey .. '#posX');
+			customPosY = getXMLFloat(cpFile, hudKey .. '#posY');
 		end;
+
+		--[[ NO MORE CUSTOM POSITIONS FOR GLOBALINFOTEXT
+		local gitKey = "XML.courseplayGlobalInfoText";
+		if hasXMLProperty(cpFile, gitKey) then
+			customGitPosX = getXMLFloat(cpFile, gitKey .. "#posX");
+			customGitPosY = getXMLFloat(cpFile, gitKey .. "#posY");
+		end;
+		]]
+
+		local fieldsKey = 'XML.courseplayFields';
+		if hasXMLProperty(cpFile, fieldsKey) then
+			fieldsAutomaticScan   = Utils.getNoNil(getXMLBool(cpFile, fieldsKey .. '#automaticScan'), true);
+			fieldsOnlyScanOwnedFields = Utils.getNoNil(getXMLBool(cpFile, fieldsKey .. '#onlyScanOwnedFields'), true);
+			fieldsDebugScan       = Utils.getNoNil(getXMLBool(cpFile, fieldsKey .. '#debugScannedFields'), false);
+			fieldsDebugCustomLoad = Utils.getNoNil(getXMLBool(cpFile, fieldsKey .. '#debugCustomLoadedFields'), false);
+			fieldsCustomScanStep = getXMLInt(cpFile, fieldsKey .. '#scanStep');
+		end;
+
+		local wagesKey = 'XML.courseplayWages';
+		if hasXMLProperty(cpFile, wagesKey) then
+			wagesActive = Utils.getNoNil(getXMLBool(cpFile, wagesKey .. '#active'), wagesActive);
+			wagesAmount = Utils.getNoNil(getXMLInt(cpFile, wagesKey .. '#wagePerHour'), wagesAmount);
+		end;
+
+		delete(cpFile);
 	end;
 
 	courseplay.numAiModes = 9;
@@ -335,10 +342,9 @@ function courseplay:setGlobalData()
 	courseplay.globalInfoText = {};
 	courseplay.globalInfoText.fontSize = 0.02;
 	courseplay.globalInfoText.lineHeight = courseplay.globalInfoText.fontSize * 1.1;
-	courseplay.globalInfoText.posX = Utils.getNoNil(customGitPosX, 0.035);
-	courseplay.globalInfoText.posY = Utils.getNoNil(customGitPosY, 0.01238);
-	local pdaHeight = 0.3375;
-	courseplay.globalInfoText.hideWhenPdaActive = courseplay.globalInfoText.posY < pdaHeight; --g_currentMission.MissionPDA.hudPDABaseHeight;
+	courseplay.globalInfoText.posX = 0.035;
+	courseplay.globalInfoText.posY = 0.01238;
+	courseplay.globalInfoText.posYAboveMap = courseplay.globalInfoText.posY + 0.027777777777778 + 0.20833333333333;
 	courseplay.globalInfoText.backgroundImg = "dataS2/menu/white.png";
 	courseplay.globalInfoText.backgroundPadding = 0.005;
 	courseplay.globalInfoText.backgroundX = courseplay.globalInfoText.posX - courseplay.globalInfoText.backgroundPadding;

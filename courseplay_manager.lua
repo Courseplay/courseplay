@@ -91,11 +91,28 @@ function courseplay_manager:loadMap(name)
 	g_currentMission.environment:addMinuteChangeListener(courseplay_manager);
 end;
 
+function courseplay_manager:getSavegameFolder(index)
+	if index then
+		-- print(('getSavegameFolder(%d): "%ssavegame%d/"'):format(tostring(index), tostring(getUserProfileAppPath()), index));
+		return ('%ssavegame%d/'):format(tostring(getUserProfileAppPath()), index);
+	end;
+
+	if g_currentMission.missionInfo.savegameDirectory then
+		-- print(('getSavegameFolder(): g_currentMission.missionInfo.savegameDirectory=%q'):format(tostring(g_currentMission.missionInfo.savegameDirectory)));
+		return g_currentMission.missionInfo.savegameDirectory;
+	end;
+
+	if g_currentMission.missionInfo.savegameIndex then
+		-- print(('getSavegameFolder(): "%ssavegame%d/"'):format(tostring(getUserProfileAppPath()), g_currentMission.missionInfo.savegameIndex));
+		return ('%ssavegame%d/'):format(tostring(getUserProfileAppPath()), g_currentMission.missionInfo.savegameIndex);
+	end;
+
+	return;
+end;
+
 function courseplay_manager:createInitialCourseplayFile()
-	local dir = g_currentMission.missionInfo.savegameDirectory;
-	if dir then
-		local filePath = dir .. '/courseplay.xml';
-		-- print(string.format('createInitialCourseplayFile(): filePath=%q', filePath));
+	local filePath = courseplay.cpXmlFilePath;
+	if filePath then
 		local file;
 		if not fileExists(filePath) then
 			file = createXMLFile('courseplayFile', filePath, 'XML');
@@ -113,12 +130,14 @@ function courseplay_manager:createInitialCourseplayFile()
 			setXMLString(file, 'XML.courseplayHud#posY', ('%.3f'):format(courseplay.hud.infoBasePosY));
 		end;
 
+		--[[ NO MORE CUSTOM POSITIONS FOR GLOBALINFOTEXT
 		if not getXMLFloat(file, 'XML.courseplayGlobalInfoText#posX') then
 			setXMLString(file, 'XML.courseplayGlobalInfoText#posX', ('%.3f'):format(courseplay.globalInfoText.posX));
 		end;
 		if not getXMLFloat(file, 'XML.courseplayGlobalInfoText#posY') then
 			setXMLString(file, 'XML.courseplayGlobalInfoText#posY', ('%.3f'):format(courseplay.globalInfoText.posY));
 		end;
+		]]
 
 		if getXMLBool(file, 'XML.courseplayFields#automaticScan') == nil then
 			setXMLString(file, 'XML.courseplayFields#automaticScan', tostring(courseplay.fields.automaticScan));
@@ -244,7 +263,9 @@ function courseplay_manager:draw()
 
 	courseplay.globalInfoText.hasContent = false;
 	local line = 0;
-	if (not courseplay.globalInfoText.hideWhenPdaActive or (courseplay.globalInfoText.hideWhenPdaActive and not g_currentMission.missionPDA.showPDA)) and table.maxn(courseplay.globalInfoText.content) > 0 then
+	local ingameMap = g_currentMission.ingameMap;
+	if not (ingameMap.isVisible and ingameMap.isFullSize) and table.maxn(courseplay.globalInfoText.content) > 0 then
+		local basePosY = ingameMap.isVisible and courseplay.globalInfoText.posYAboveMap or courseplay.globalInfoText.posY;
 		courseplay.globalInfoText.hasContent = true;
 		for _,refIndexes in pairs(courseplay.globalInfoText.content) do
 			if line >= self.globalInfoTextMaxNum then
@@ -256,7 +277,7 @@ function courseplay_manager:draw()
 
 				local bg = self.globalInfoTextOverlays[line];
 				bg:setColor(unpack(courseplay.globalInfoText.levelColors[data.level]));
-				local posY = courseplay.globalInfoText.posY + ((line - 1) * courseplay.globalInfoText.lineHeight);
+				local posY = basePosY + ((line - 1) * courseplay.globalInfoText.lineHeight);
 				bg:setPosition(bg.x, posY);
 				bg:setDimension(data.backgroundWidth, bg.height);
 
@@ -456,9 +477,8 @@ function courseplay_manager:load_courses()
 	courseplay:debug('loading courses by courseplay manager', 8);
 
 	local finish_all = false;
-	local savegame = g_careerScreen.savegames[g_careerScreen.selectedIndex];
-	if savegame ~= nil then
-		local filePath = savegame.savegameDirectory .. "/courseplay.xml";
+	if courseplay.cpXmlFilePath then
+		local filePath = courseplay.cpXmlFilePath;
 
 		if fileExists(filePath) then
 			local cpFile = loadXMLFile("courseFile", filePath);
@@ -654,14 +674,14 @@ function courseplay_manager:load_courses()
 						
 			delete(cpFile);
 		else
-			--print("\t \"courseplay.xml\" missing from \"savegame" .. g_careerScreen.selectedIndex .. "\" folder");
+			-- print(('\t"courseplay.xml" missing at %q'):format(tostring(courseplay.cpXmlFilePath);
 		end; --END if fileExists
 		
 		courseplay:debug(tableShow(g_currentMission.cp_sorted.item, "cp_sorted.item", 8), 8);
 
 		return g_currentMission.cp_courses;
 	else
-		print("Error: [Courseplay] current savegame could not be found.");
+		print(('Error: [Courseplay] current savegame could not be found at %q.'):format(courseplay.cpXmlFilePath));
 	end; --END if savegame ~= nil
 
 	return nil;

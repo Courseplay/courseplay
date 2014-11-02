@@ -153,7 +153,7 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 				rotate(tg,0,-rotAngle,0);
 				px,_,pz = getWorldTranslation(probe1);
 				if cnt < 0 then
-					self:dbg('\lost', dbgType);
+					self:dbg('\tlost', dbgType);
 					break;
 				end;
 				if return2field then
@@ -486,7 +486,7 @@ function courseplay.fields:loadAllCustomFields()
 	--self = courseplay.fields
 	if g_server ~= nil then
 		local savegame = g_careerScreen.savegames[g_careerScreen.selectedIndex];
-		if savegame ~= nil then
+		if savegame ~= nil and savegame.savegameDirectory ~= nil then
 			local filePath = savegame.savegameDirectory .. "/courseplayFields.xml"
 			if fileExists(filePath) then
 				local xmlFile = loadXMLFile("fieldsFile", filePath);

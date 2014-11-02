@@ -17,10 +17,10 @@ function courseplay:reset_tools(vehicle)
 end
 
 function courseplay:isCombine(workTool)
-	return (workTool.cp.hasSpecializationCombine or workTool.cp.hasSpecializationAICombine) and workTool.grainTankCapacity ~= nil and workTool.grainTankCapacity > 0;
+	return (workTool.cp.hasSpecializationCombine or workTool.cp.hasSpecializationAICombine) and workTool.attachedCutters ~= nil and workTool.capacity > 0;
 end;
 function courseplay:isChopper(workTool)
-	return (workTool.cp.hasSpecializationCombine or workTool.cp.hasSpecializationAICombine) and workTool.grainTankCapacity ~= nil and workTool.grainTankCapacity == 0 or courseplay:isSpecialChopper(workTool);
+	return (workTool.cp.hasSpecializationCombine or workTool.cp.hasSpecializationAICombine) and workTool.attachedCutters ~= nil and workTool.capacity == 0 or courseplay:isSpecialChopper(workTool);
 end;
 function courseplay:isHarvesterSteerable(workTool)
 	return workTool.typeName == "selfPropelledPotatoHarvester" or workTool.cp.isGrimmeMaxtron620 or workTool.cp.isGrimmeTectron415;
@@ -50,7 +50,7 @@ function courseplay:isBigM(workTool)
 	return workTool.cp.hasSpecializationSteerable and courseplay:isMower(workTool);
 end;
 function courseplay:isAttachedCombine(workTool)
-	return (workTool.typeName~= nil and workTool.typeName == "attachableCombine") or (not workTool.cp.hasSpecializationSteerable and  workTool.grainTankCapacity ~= nil) or courseplay:isSpecialChopper(workTool)
+	return (workTool.typeName~= nil and workTool.typeName == "attachableCombine") or (not workTool.cp.hasSpecializationSteerable and  workTool.capacity ~= nil) or courseplay:isSpecialChopper(workTool)
 end;
 function courseplay:isAttachedMixer(workTool)
 	return workTool.typeName == "mixerWagon" or (not workTool.cp.hasSpecializationSteerable and  workTool.cp.hasSpecializationMixerWagon)
@@ -144,7 +144,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 		then
 			hasWorkTool = true;
 			vehicle.tippers[#vehicle.tippers + 1] = workTool;
-			courseplay:setMarkers(vehicle, workTool);
+			courseplay:setMarkers(vehicle, workTool,isImplement);
 			vehicle.cp.noStopOnTurn = courseplay:isBaler(workTool) or courseplay:isBaleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool);
 			vehicle.cp.noStopOnEdge = courseplay:isBaler(workTool) or courseplay:isBaleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool);
 			if workTool.cp.hasSpecializationPlough then 
@@ -333,11 +333,11 @@ function courseplay:setTipRefOffset(vehicle)
 	end;
 end;
 
-function courseplay:setMarkers(vehicle, object)
+function courseplay:setMarkers(vehicle, object,isImplement)
 	object.cp.backMarkerOffset = nil
 	object.cp.aiFrontMarker = nil
 	-- get the behindest and the frontest  points :-) ( as offset to root node)
-	local area = object.cuttingAreas
+	local area = object.workAreas
 	if courseplay:isBigM(object) then
 		area = object.mowerCutAreas
 	elseif object.typeName == "defoliator_animated" then
@@ -353,6 +353,7 @@ function courseplay:setMarkers(vehicle, object)
 			if j == "start" or j == "height" or j == "width" then 
 				local x, y, z = getWorldTranslation(node)
 				local _, _, ztt = worldToLocal(vehicle.rootNode, x, y, z)
+				courseplay:debug(('%s:%s Point %s: ztt = %s'):format(nameNum(vehicle), tostring(object.name), tostring(j), tostring(ztt)), 6);
 				if object.cp.backMarkerOffset == nil or ztt > object.cp.backMarkerOffset then
 					object.cp.backMarkerOffset = ztt
 				end
@@ -387,6 +388,10 @@ function courseplay:setMarkers(vehicle, object)
 
 	if vehicle.cp.aiFrontMarker == nil or object.cp.aiFrontMarker > vehicle.cp.aiFrontMarker then
 		vehicle.cp.aiFrontMarker = object.cp.aiFrontMarker
+	end
+	if not isImplement then --FS15
+		vehicle.cp.aiFrontMarker = 0
+		vehicle.cp.backMarkerOffset = 0
 	end
 
 	if vehicle.cp.aiFrontMarker < -7 then
@@ -810,7 +815,7 @@ function courseplay:getRealTurningNode(workTool)
 			-- Sort wheels in turning wheels and strait wheels and find the min and max distance for each set.
 			for i = 1, #workTool.wheels do
 				--if workTool.wheels[i].node == workTool.rootNode and workTool.wheels[i].lateralStiffness > 0 then
-				if workTool.wheels[i].lateralStiffness > 0 then
+				if workTool.wheels[i].maxLatStiffness > 0 then
 					local x,_,z = getWorldTranslation(workTool.wheels[i].driveNode);
 					local _,_,dis = worldToLocal(workTool.rootNode, x, yTrailer, z);
 					dis = dis * invert;
