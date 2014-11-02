@@ -175,6 +175,7 @@ function courseplay:setGlobalData()
 	courseplay.cpFolderPath = getUserProfileAppPath() .. 'courseplay/';
 	courseplay.cpSavegameFolderPath = courseplay.cpFolderPath .. 'savegame' .. g_careerScreen.selectedIndex .. '/';
 	courseplay.cpXmlFilePath = courseplay.cpSavegameFolderPath .. 'courseplay.xml';
+	courseplay.cpFieldsXmlFilePath = courseplay.cpSavegameFolderPath .. 'courseplayFields.xml';
 	createFolder(courseplay.cpFolderPath);
 	createFolder(courseplay.cpSavegameFolderPath);
 

@@ -437,13 +437,12 @@ function courseplay.fields:openOrCreateXML(forceCreation)
 	forceCreation = forceCreation or false;
 
 	local xmlFile;
-	local savegame = g_careerScreen.savegames[g_careerScreen.selectedIndex];
-	if savegame ~= nil then
-		local filePath = savegame.savegameDirectory .. "/courseplayFields.xml"
+	if courseplay.cpFieldsXmlFilePath ~= nil then
+		local filePath = courseplay.cpFieldsXmlFilePath;
 		if fileExists(filePath) and (not forceCreation) then
-			xmlFile = loadXMLFile("fieldsFile", filePath);
+			xmlFile = loadXMLFile('fieldsFile', filePath);
 		else
-			xmlFile = createXMLFile("fieldsFile", filePath, 'XML');
+			xmlFile = createXMLFile('fieldsFile', filePath, 'XML');
 		end;
 	else
 		--this is a problem... xmlFile stays nil
@@ -456,9 +455,8 @@ function courseplay.fields:saveAllCustomFields()
 	-- saves fields to xml-file
 	-- opening the file with io.open will delete its content...
 	if g_server ~= nil then
-		local savegame = g_careerScreen.savegames[g_careerScreen.selectedIndex];
-		if savegame ~= nil and self.numAvailableFields > 0 then
-			local file = io.open(savegame.savegameDirectory .. '/courseplayFields.xml', 'w');
+		if courseplay.cpFieldsXmlFilePath ~= nil and self.numAvailableFields > 0 then
+			local file = io.open(courseplay.cpFieldsXmlFilePath, 'w');
 			if file ~= nil then
 				file:write('<?xml version="1.0" encoding="utf-8" standalone="no" ?>\n<XML>\n');
 
@@ -475,7 +473,7 @@ function courseplay.fields:saveAllCustomFields()
 				file:write('\t</fields>\n</XML>');
 				file:close();
 			else
-				print("Error: Courseplay's custom fields could not be saved to " .. tostring(savegame.savegameDirectory) .. "/courseplayFields.xml");
+				print("Error: Courseplay's custom fields could not be saved to " .. courseplay.cpFieldsXmlFilePath);
 			end;
 		end;
 	end;
@@ -485,11 +483,9 @@ end;
 function courseplay.fields:loadAllCustomFields()
 	--self = courseplay.fields
 	if g_server ~= nil then
-		local savegame = g_careerScreen.savegames[g_careerScreen.selectedIndex];
-		if savegame ~= nil and savegame.savegameDirectory ~= nil then
-			local filePath = savegame.savegameDirectory .. "/courseplayFields.xml"
-			if fileExists(filePath) then
-				local xmlFile = loadXMLFile("fieldsFile", filePath);
+		if courseplay.cpFieldsXmlFilePath ~= nil then
+			if fileExists(courseplay.cpFieldsXmlFilePath) then
+				local xmlFile = loadXMLFile("fieldsFile", courseplay.cpFieldsXmlFilePath);
 				local i = 0;
 				while true do
 					local key = string.format('XML.fields.field(%d)', i);
@@ -609,12 +605,12 @@ function courseplay.fields:getFruitData(area)
 		text[name] = {};
 
 		usage[name].default = fruitData.usagePerSqmDefault * area;
-		price[name].default = fruitData.pricePerLiterDefault * usage[name].default;
+		price[name].default = fruitData.pricePerLiterDefault * usage[name].default * g_i18n:getCurrencyFactor();
 		text[name].default = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR_USAGE_DEFAULT'):format(self:formatNumber(usage[name].default, 0), g_i18n:getText('fluid_unit_short'), self:formatNumber(price[name].default, 0, true));
 
 		if courseplay.moreRealisticInstalled then
 			usage[name].moreRealistic = fruitData.usagePerSqmMoreRealistic * area;
-			price[name].moreRealistic = fruitData.pricePerLiterMoreRealistic * usage[name].moreRealistic;
+			price[name].moreRealistic = fruitData.pricePerLiterMoreRealistic * usage[name].moreRealistic * g_i18n:getCurrencyFactor();
 			text[name].moreRealistic = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR_USAGE_MOREREALISTIC'):format(self:formatNumber(usage[name].moreRealistic, 0), g_i18n:getText('fluid_unit_short'), self:formatNumber(price[name].moreRealistic, 0, true));
 		end;
 	end;
@@ -643,7 +639,7 @@ function courseplay.fields:formatNumber(number, precision, money)
 		str = ('%s%s%s'):format(str, courseplay.numberDecimalSeparator, decimal:sub(1, precision));
 	end;
 	if money then
-		str = ('%s %s'):format(str, g_i18n:getText('Currency_symbol'));
+		str = ('%s %s'):format(str, g_i18n:getCurrencySymbol(true));
 	end;
 	return str;
 end;
