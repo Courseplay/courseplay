@@ -976,7 +976,7 @@ function courseplay:refillSprayer(vehicle, fillLevelPct, driveOn, allowedToDrive
 			if vehicle.cp.fillTrigger ~= nil then
 				local trigger = courseplay.triggers.all[vehicle.cp.fillTrigger];
 				if trigger.isSprayerFillTrigger and courseplay:fillTypesMatch(trigger, activeTool) then 
-					-- print('\t\tslow down, it\'s a sprayerFillTrigger');
+					--print('\t\tslow down, it\'s a sprayerFillTrigger');
 					vehicle.cp.isInFilltrigger = true
 				end
 			end;
@@ -990,9 +990,9 @@ function courseplay:refillSprayer(vehicle, fillLevelPct, driveOn, allowedToDrive
 			end
 
 			if fillTrigger == nil then
-				if activeTool.sprayerFillTriggers ~= nil and #activeTool.sprayerFillTriggers > 0 then
+				if activeTool.fillTriggers[1] ~= nil and activeTool.fillTriggers[1].isSprayerFillTrigger then
 					-- print('\t\tset local fillTrigger to activeTool.sprayerFillTriggers[1], nil cp.fillTrigger');
-					fillTrigger = activeTool.sprayerFillTriggers[1];
+					fillTrigger = activeTool.fillTriggers[1];
 					vehicle.cp.fillTrigger = nil; --TODO (Jakob): if i == vehicle.cp.numWorkTools then vehicle.cp.fillTrigger = nil; end; (prevent nilling if there are other tools left to be filled)
 				end;
 			end;
@@ -1015,9 +1015,9 @@ function courseplay:refillSprayer(vehicle, fillLevelPct, driveOn, allowedToDrive
 				allowedToDrive = false;
 				--courseplay:handleSpecialTools(vehicle,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
 				courseplay:handleSpecialTools(vehicle,activeTool,nil,nil,nil,allowedToDrive,false,false)
-				local sprayer = activeTool.sprayerFillTriggers[1];
-				if not activeTool.isSprayerFilling then
-					activeTool:setIsSprayerFilling(true);
+				local sprayer = activeTool.fillTriggers[1];
+				if not activeTool.isFilling then
+					activeTool:setIsFilling(true);
 				end;
 				
 				if sprayer.trailerInTrigger == activeTool then --Feldrand-Container Guellebomber
@@ -1026,8 +1026,8 @@ function courseplay:refillSprayer(vehicle, fillLevelPct, driveOn, allowedToDrive
 
 				vehicle.cp.infoText = courseplay:loc("COURSEPLAY_LOADING_AMOUNT"):format(activeTool.fillLevel, activeTool.capacity);
 			elseif vehicle.cp.isLoaded or not vehicle.cp.stopForLoading then
-				if activeTool.isSprayerFilling then
-					activeTool:setIsSprayerFilling(false);
+				if activeTool.isFilling then
+					activeTool:setIsFilling(false);
 				end;
 				courseplay:handleSpecialTools(vehicle,activeTool,nil,nil,nil,allowedToDrive,false,false)
 				vehicle.cp.fillTrigger = nil
@@ -1043,15 +1043,16 @@ function courseplay:refillSprayer(vehicle, fillLevelPct, driveOn, allowedToDrive
 					vehicle.cp.isInFilltrigger = true
 				end
 			end
-			if fillLevelPct < driveOn and activeTool.sowingMachineFillTriggers[1] ~= nil then
-				if not activeTool.isSowingMachineFilling then
-					activeTool:setIsSowingMachineFilling(true);
+			if fillLevelPct < driveOn and activeTool.fillTriggers[1] ~= nil and activeTool.fillTriggers[1].isSowingMachineFillTrigger then
+				print(tableShow(activeTool.fillTriggers,"activeTool.fillTriggers"))
+				if not activeTool.isFilling then
+					activeTool:setIsFilling(true);
 				end;
 				allowedToDrive = false;
 				vehicle.cp.infoText = courseplay:loc('COURSEPLAY_LOADING_AMOUNT'):format(activeTool.fillLevel, activeTool.capacity);
-			elseif activeTool.sowingMachineFillTriggers[1] ~= nil then
-				if activeTool.isSowingMachineFilling then
-					activeTool:setIsSowingMachineFilling(false);
+			elseif activeTool.fillTriggers[1] ~= nil then
+				if activeTool.isFilling then
+					activeTool:setIsFilling(false);
 				end;
 				vehicle.cp.fillTrigger = nil
 			end;
