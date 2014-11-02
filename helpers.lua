@@ -107,32 +107,6 @@ function courseplay:nilOrBool(variable, bool)
 	return variable == nil or (variable ~= nil and variable == bool);
 end;
 
-function table.contains(t, element) --TODO: always use Utils.hasListElement
-	for _, value in pairs(t) do
-		if value == element then
-			return true;
-		end;
-	end;
-	return false;
-end;
-
-function table.map(t, func)
-	local newArray = {};
-	for i,v in pairs(t) do
-		newArray[i] = func(v);
-	end;
-	return newArray;
-end;
-
-function table.reverse(t)
-	local reversedTable = {};
-	local itemCount = #t;
-	for k,v in ipairs(t) do
-		reversedTable[itemCount + 1 - k] = v;
-	end;
-	return reversedTable;
-end;
-
 function nameNum(vehicle, hideNum)
 	if vehicle == nil then
 		return 'nil';
@@ -214,7 +188,7 @@ function courseplay:getVarValueFromString(self, str)
 			whatObj = whatObj[key];
 			
 			if i ~= whatDepth and type(whatObj) ~= "table" then
-				print(nameNum(self) .. ": error in string \"" .. str .. "\" @ \"".. key .. "\": traversal failed");
+				print(('%s: error in string %q @ %s: traversal failed'):format(nameNum(self), str, key));
 				whatObj = nil;
 				break;
 			end;
@@ -382,32 +356,40 @@ function courseplay.utils.table.move(t1, t2, t1_index, t2_index)
 	return t2[t2_index] ~= nil;
 end;
 
-function courseplay.utils.table.last(tab)
-	if #tab == 0 then
-		return nil;
+function table.contains(t, element) --TODO: always use Utils.hasListElement
+	for _, value in pairs(t) do
+		if value == element then
+			return true;
+		end;
 	end;
-	return tab[#tab];
+	return false;
 end;
 
-function courseplay.utils.table.getMax(tab, field)
-	local max;
-	if tab ~= nil and field ~= nil then
-		max = false
-		for k, v in pairs(tab) do
-			if v[field] ~= nil then
-				max = v[field]
-				break
-			end
-		end
-		for k, v in pairs(tab) do
-			if v[field] ~= nil then
-				if v[field] > max then
-					max = v[field]
-				end
-			end
-		end
-	end
-	return max
+function table.map(t, func)
+	local newArray = {};
+	for i,v in pairs(t) do
+		newArray[i] = func(v);
+	end;
+	return newArray;
+end;
+
+function table.reverse(t)
+	local reversedTable = {};
+	local itemCount = #t;
+	for k,v in ipairs(t) do
+		reversedTable[itemCount + 1 - k] = v;
+	end;
+	return reversedTable;
+end;
+
+function table.getLast(t)
+	if #t == 0 then
+		if next(t) ~= nil then
+			return table.maxn(t);
+		end;
+		return nil;
+	end;
+	return t[#t];
 end;
 
 function table.rotate(tbl, inc) --@gist: https://gist.github.com/JakobTischler/b4bb7a4d1c8cf8d2d85f
@@ -436,87 +418,73 @@ function table.rotate(tbl, inc) --@gist: https://gist.github.com/JakobTischler/b
 	return t;
 end;
 
+function courseplay.utils.table.getMax(tab, field)
+	local max;
+	if tab ~= nil and field ~= nil then
+		max = false
+		for k, v in pairs(tab) do -- TODO (Jakob): use next(tab) instead of for loop
+			if v[field] ~= nil then
+				max = v[field]
+				break
+			end
+		end
+		for k, v in pairs(tab) do
+			if v[field] ~= nil then
+				if v[field] > max then
+					max = v[field]
+				end
+			end
+		end
+	end
+	return max
+end;
 
 
-function courseplay.utils.findXMLNodeByAttr(File, node, attr, value, val_type)
+
+local prmGetXMLFn = {
+	Bool = getXMLBool,
+	Float = getXMLFloat,
+	Int = getXMLInt,
+	String = getXMLString
+};
+local prmSetXMLFn = {
+	Bool = setXMLBool,
+	Float = setXMLFloat,
+	Int = setXMLInt,
+	String = setXMLString
+};
+function courseplay.utils.findXMLNodeByAttr(File, node, attr, value, valueType)
 	-- returns the node number in case of success
 	-- else it returns the negative value of the next unused node (if there are 6 nodes with the name defined by the node parameter and none matches the search, the function returns -7)
-	val_type = val_type or 'Int'
+	valueType = valueType or 'Int'
 	local i = -1
 	local done = false
 	local dummy
-	
-	-- this solution does not look very nice but has no unnecessary statements in the loops which should make them as fast as possible
-	if val_type == 'Int' then
+
+	if prmGetXMLFn[valueType] ~= nil then
+		-- this solution does not look very nice but has no unnecessary statements in the loops which should make them as fast as possible
 		repeat
-			i = i + 1
-			dummy = ''				
-			dummy = getXMLInt(File, string.format(node .. '(%d)' .. "#" .. attr, i))			
+			i = i + 1;
+			dummy = '';
+			dummy = prmGetXMLFn[valueType](File, string.format(node .. '(%d)' .. "#" .. attr, i));
 			if dummy == value then
-				done = true
-			elseif dummy == nil then
-				--the attribute seems not to exist. Does the node?
-				if not hasXMLProperty(File, string.format(node .. '(%d)', i)) then
-					-- if the node does not exist, we are at the end and done
-					done = true
-				end
-			end
-		until done
-	elseif val_type == 'String' then
-		repeat
-			i = i + 1
-			dummy = ''				
-			dummy = getXMLString(File, string.format(node .. '(%d)' .. "#" .. attr, i))
-			if dummy == value then
-				done = true
-			elseif dummy == nil then
-				--the attribute seems not to exist. Does the node?
-				if not hasXMLProperty(File, string.format(node .. '(%d)', i)) then
-					-- if the node does not exist, we are at the end and done
-					done = true
-				end
-			end
-		until done
-	elseif val_type == 'Float' then
-		repeat
-			i = i + 1
-			dummy = ''				
-			dummy = getXMLFloat(File, string.format(node .. '(%d)' .. "#" .. attr, i))
-			if dummy == value then
-				done = true
-			elseif dummy == nil then
-				--the attribute seems not to exist. Does the node?
-				if not hasXMLProperty(File, string.format(node .. '(%d)', i)) then
-					-- if the node does not exist, we are at the end and done
-					done = true
-				end
-			end
-		until done		
-	elseif val_type == 'Bool' then
-		repeat
-			i = i + 1
-			dummy = ''				
-			dummy = getXMLBool(File, string.format(node .. '(%d)' .. "#" .. attr, i))
-			if dummy == value then
-				done = true
-			elseif dummy == nil then
-				--the attribute seems not to exist. Does the node?
-				if not hasXMLProperty(File, string.format(node .. '(%d)', i)) then
-					-- if the node does not exist, we are at the end and done
-					done = true
-				end
-			end
-		until done		
+				done = true;
+			elseif dummy == nil then -- the attribute seems not to exist. Does the node?
+				if not hasXMLProperty(File, string.format(node .. '(%d)', i)) then -- if the node does not exist, we are at the end and done
+					done = true;
+				end;
+			end;
+		until done;
 	else
-		-- Error?!
-	end	
-	
+		-- ERROR
+	end;
+
 	if dummy ~= nil then
-		return i
+		return i;
 	else
-		return -1*i
-	end
-end
+		return -1 * i;
+	end;
+end;
 
 function courseplay.utils.findFreeXMLNode(File, node)
 	-- returns the node number in case of success
@@ -535,28 +503,28 @@ function courseplay.utils.findFreeXMLNode(File, node)
 	return i
 end
 
-function courseplay.utils.setXML(File, node, attribute, value, val_type, match_attr, match_attr_value, match_attr_type)
+function courseplay.utils.setXML(File, node, attribute, value, valueType, match_attr, match_attr_value, match_attr_type)
 	-- this function is not meant do be called in loops as it is rather slow: 
-	-- 1) due to the loadstring function.
-	-- 2) it is searched for the node everytime the function is called.
+	-- it is searched for the node everytime the function is called.
 	-- Use setMultipleXML instead.
-	attribute = attribute or ''
-	val_type = val_type or 'Int'
-	match_attr = match_attr or ''
-	match_attr_value = match_attr_value or ''
-	match_attr_type = match_attr_type or 'Int'
+	attribute = attribute or '';
+	valueType = valueType or 'Int';
+	match_attr = match_attr or '';
+	match_attr_value = match_attr_value or '';
+	match_attr_type = match_attr_type or 'Int';
 	
 	if attribute ~= '' then
-		attribute = '#' .. attribute
-	end
+		attribute = '#' .. attribute;
+	end;
+
 	if match_attr ~= '' and match_attr_value ~= '' then
-		local i = courseplay.utils.findXMLNodeByAttr(File, node, match_attr, match_attr_value, match_attr_type)
-		if i < 0 then i = -i end
-		assert(loadstring('setXML' .. val_type .. '(...)'))(File, string.format(node .. '(%d)' .. attribute, i), value)
+		local i = courseplay.utils.findXMLNodeByAttr(File, node, match_attr, match_attr_value, match_attr_type);
+		if i < 0 then i = -i end;
+		prmSetXMLFn[valueType](File, ('%s(%d)%s'):format(node, i, attribute), value);
 	else
-		assert(loadstring('setXML' .. val_type .. '(...)'))(File, node .. attribute, value)
-	end
-end
+		prmSetXMLFn[valueType](File, node .. attribute, value);
+	end;
+end;
 
 function courseplay.utils.setMultipleXML(File, node, values, types)
 -- function to save multiple attributes (and to the node itself) of one node
@@ -568,32 +536,25 @@ function courseplay.utils.setMultipleXML(File, node, values, types)
 -- to write into the node directly set attribute = '_node_'
 -- types is a table of the form:
 -- {attribute1 = type1, attribute2 = type2, ...}; type1 is a string (e.g. 'Int')
--- attributes with no type in the types table will be skipped.	
+-- attributes with no type in the types table will be skipped.
 	for attribute, value in pairs(values) do
-		val_type = types[attribute]
-		
-		if val_type ~= nil then
-			
+		local valueType = types[attribute]
+
+		if valueType ~= nil then
 			if attribute ~= '_node_' then
 				attribute = '#' .. attribute
 			else
 				attribute = ''
 			end
-		
-			if val_type == 'Int' then
-				setXMLInt(File, node .. attribute, value)
-			elseif val_type == 'String' then
-				setXMLString(File, node .. attribute, value)
-			elseif val_type == 'Float' then
-				setXMLFloat(File, node .. attribute, value)
-			elseif val_type == 'Bool' then
-				setXMLBool(File, node .. attribute, value)
+
+			if prmSetXMLFn[valueType] ~= nil then
+				prmSetXMLFn[valueType](File, node .. attribute, value);
 			else
 				-- Error?!
 				print('could not save attribute: ' .. attribute)
 			end
 		end -- end if not skip then
-	end	 -- end for k, v in pairs(values) do
+	end -- end for k, v in pairs(values) do
 end
 
 function courseplay.utils.setMultipleXMLNodes(File, root_node, node_name , values, types, unique_nodes)
