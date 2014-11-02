@@ -717,7 +717,7 @@ function courseplay:unload_combine(self, dt)
 			elseif combine.isAIThreshing and not (combine_fill_level == 0 and combine.currentPipeState ~= 2) then
 				allowedToDrive = false
 				--combine.waitForTurnTime = combine.time + 100 FS15
-			elseif tractor.drive == true and not (combine_fill_level == 0 and combine:getCombineTrailerInRangePipeState()==0) then
+			elseif tractor.drive == true and not (combine_fill_level == 0 and combine:getOverloadingTrailerInRangePipeState()==0) then
 				combine.cp.waitingForTrailerToUnload = true
 			end
 		elseif distance < 100 and self.cp.modeState == 2 then

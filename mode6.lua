@@ -353,8 +353,8 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 
 			--Start combine
 			local pipeState = 0;
-			if tool.getCombineTrailerInRangePipeState ~= nil then
-				pipeState = tool:getCombineTrailerInRangePipeState();
+			if tool.getOverloadingTrailerInRangePipeState ~= nil then
+				pipeState = tool:getOverloadingTrailerInRangePipeState();
 			end;
 			if workArea and not tool.isAIThreshing and self.cp.abortWork == nil and self.cp.turnStage == 0 then
 				specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,true,true,true,allowedToDrive,nil,nil)

@@ -287,7 +287,7 @@ function courseplay:drive(self, dt)
 					--TODO local text no aithreshing
 				end
 			end
-			local pipeState = self:getCombineTrailerInRangePipeState();
+			local pipeState = self:getOverloadingTrailerInRangePipeState();
 			if pipeState > 0 then
 				self:setPipeState(pipeState);
 			else
