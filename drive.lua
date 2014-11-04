@@ -828,7 +828,6 @@ function courseplay:setSpeed(vehicle, refSpeed, sl)
 		vehicle:setCruiseControlState(1)
 	end 
 	vehicle.cruiseControl.minSpeed = refSpeed*3600   --TODO(Tom) thats rape, make it nice and clear when you know how
-	
 end
 	
 function dummy()
@@ -1041,7 +1040,6 @@ function courseplay:refillSprayer(vehicle, fillLevelPct, driveOn, allowedToDrive
 				end
 			end
 			if fillLevelPct < driveOn and activeTool.fillTriggers[1] ~= nil and activeTool.fillTriggers[1].isSowingMachineFillTrigger then
-				print(tableShow(activeTool.fillTriggers,"activeTool.fillTriggers"))
 				if not activeTool.isFilling then
 					activeTool:setIsFilling(true);
 				end;
