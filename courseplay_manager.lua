@@ -7,6 +7,8 @@ function courseplay_manager:loadMap(name)
 		addConsoleCommand('cpAddFillLevels', 'Add 500\'000 l to all of your silos', 'devAddFillLevels', self);
 	end;
 
+	self:createInitialCourseplayFile();
+
 	if g_currentMission.cp_courses == nil then
 		--courseplay:debug("cp courses was nil and initialized", 8);
 		g_currentMission.cp_courses = {};
@@ -37,8 +39,6 @@ function courseplay_manager:loadMap(name)
 		y1 = git.backgroundPosY,
 		y2 = git.backgroundPosY + (self.globalInfoTextMaxNum  * git.lineHeight);
 	};
-
-	self:createInitialCourseplayFile();
 
 	self.playerOnFootMouseEnabled = false;
 	self.wasPlayerFrozen = false;
@@ -88,78 +88,44 @@ function courseplay_manager:loadMap(name)
 	g_currentMission.environment:addMinuteChangeListener(courseplay_manager);
 end;
 
-function courseplay_manager:getSavegameFolder(index)
-	if index then
-		-- print(('getSavegameFolder(%d): "%ssavegame%d/"'):format(tostring(index), tostring(getUserProfileAppPath()), index));
-		return ('%ssavegame%d/'):format(tostring(getUserProfileAppPath()), index);
-	end;
-
-	if g_currentMission.missionInfo.savegameDirectory then
-		-- print(('getSavegameFolder(): g_currentMission.missionInfo.savegameDirectory=%q'):format(tostring(g_currentMission.missionInfo.savegameDirectory)));
-		return g_currentMission.missionInfo.savegameDirectory;
-	end;
-
-	if g_currentMission.missionInfo.savegameIndex then
-		-- print(('getSavegameFolder(): "%ssavegame%d/"'):format(tostring(getUserProfileAppPath()), g_currentMission.missionInfo.savegameIndex));
-		return ('%ssavegame%d/'):format(tostring(getUserProfileAppPath()), g_currentMission.missionInfo.savegameIndex);
-	end;
-
-	return;
-end;
-
 function courseplay_manager:createInitialCourseplayFile()
-	local filePath = courseplay.cpXmlFilePath;
-	if filePath then
+	if courseplay.cpXmlFilePath then
 		local file;
-		if not fileExists(filePath) then
-			file = createXMLFile('courseplayFile', filePath, 'XML');
+		local created, changed = false, false;
+		if not fileExists(courseplay.cpXmlFilePath) then
+			file = createXMLFile('courseplayFile', courseplay.cpXmlFilePath, 'XML');
+			created = true;
 			-- print(string.format('\tcreateXmlFile("courseplayFile", [path], XML), file=%s', tostring(file)));
 		else
-			file = loadXMLFile('courseplayFile', filePath);
+			file = loadXMLFile('courseplayFile', courseplay.cpXmlFilePath);
 			-- print(string.format('\tloadXMLFile("courseplayFile", [path]), file=%s', tostring(file)));
 		end;
 
-		-- NOTE: usually "hasXMLProperty" would be used in this case. This presented some weird shitty problem though, in that the first of each set (posX, posX and debugScannedFields) were created, but not the second ones. So, getXML... is the better choice in this case.
-		if not getXMLFloat(file, 'XML.courseplayHud#posX') then
-			setXMLString(file, 'XML.courseplayHud#posX', ('%.3f'):format(courseplay.hud.infoBasePosX));
-		end;
-		if not getXMLFloat(file, 'XML.courseplayHud#posY') then
-			setXMLString(file, 'XML.courseplayHud#posY', ('%.3f'):format(courseplay.hud.infoBasePosY));
+		local data = {
+			{ tag = 'courseplayHud', attr = 'posX', value = ('%.3f'):format(courseplay.hud.infoBasePosX), get = 'Float', set = 'String' };
+			{ tag = 'courseplayHud', attr = 'posY', value = ('%.3f'):format(courseplay.hud.infoBasePosY), get = 'Float', set = 'String' };
+
+			{ tag = 'courseplayFields', attr = 'automaticScan', value = tostring(courseplay.fields.automaticScan), get = 'Bool', set = 'String' };
+			{ tag = 'courseplayFields', attr = 'onlyScanOwnedFields', value = tostring(courseplay.fields.onlyScanOwnedFields), get = 'Bool', set = 'String' };
+			{ tag = 'courseplayFields', attr = 'debugScannedFields', value = tostring(courseplay.fields.debugScannedFields), get = 'Bool', set = 'String' };
+			{ tag = 'courseplayFields', attr = 'debugCustomLoadedFields', value = tostring(courseplay.fields.debugCustomLoadedFields), get = 'Bool', set = 'String' };
+			{ tag = 'courseplayFields', attr = 'scanStep', value = courseplay.fields.scanStep, get = 'Int', set = 'Int' };
+
+			{ tag = 'courseplayWages', attr = 'active', value = tostring(courseplay.wagesActive), get = 'Bool', set = 'String' };
+			{ tag = 'courseplayWages', attr = 'wagePerHour', value = courseplay.wagePerHour, get = 'Int', set = 'Int' };
+		};
+
+		for _,d in ipairs(data) do
+			local node = ('XML.%s#%s'):format(d.tag, d.attr);
+			if created or courseplay.prmGetXMLFn[d.get](file, node) == nil then
+				courseplay.prmSetXMLFn[d.set](file, node, d.value);
+				changed = true;
+			end;
 		end;
 
-		--[[ NO MORE CUSTOM POSITIONS FOR GLOBALINFOTEXT
-		if not getXMLFloat(file, 'XML.courseplayGlobalInfoText#posX') then
-			setXMLString(file, 'XML.courseplayGlobalInfoText#posX', ('%.3f'):format(courseplay.globalInfoText.posX));
+		if changed then
+			saveXMLFile(file);
 		end;
-		if not getXMLFloat(file, 'XML.courseplayGlobalInfoText#posY') then
-			setXMLString(file, 'XML.courseplayGlobalInfoText#posY', ('%.3f'):format(courseplay.globalInfoText.posY));
-		end;
-		]]
-
-		if getXMLBool(file, 'XML.courseplayFields#automaticScan') == nil then
-			setXMLString(file, 'XML.courseplayFields#automaticScan', tostring(courseplay.fields.automaticScan));
-		end;
-		if getXMLBool(file, 'XML.courseplayFields#onlyScanOwnedFields') == nil then
-			setXMLString(file, 'XML.courseplayFields#onlyScanOwnedFields', tostring(courseplay.fields.onlyScanOwnedFields));
-		end;
-		if getXMLBool(file, 'XML.courseplayFields#debugScannedFields') == nil then
-			setXMLString(file, 'XML.courseplayFields#debugScannedFields', tostring(courseplay.fields.debugScannedFields));
-		end;
-		if getXMLBool(file, 'XML.courseplayFields#debugCustomLoadedFields') == nil then
-			setXMLString(file, 'XML.courseplayFields#debugCustomLoadedFields', tostring(courseplay.fields.debugCustomLoadedFields));
-		end;
-		if not getXMLInt(file, 'XML.courseplayFields#scanStep') then
-			setXMLInt(file, 'XML.courseplayFields#scanStep', courseplay.fields.scanStep);
-		end;
-
-		if getXMLBool(file, 'XML.courseplayWages#active') == nil then
-			setXMLString(file, 'XML.courseplayWages#active', tostring(courseplay.wagesActive));
-		end;
-		if not getXMLInt(file, 'XML.courseplayWages#wagePerHour') then
-			setXMLInt(file, 'XML.courseplayWages#wagePerHour', courseplay.wagePerHour);
-		end;
-
-		saveXMLFile(file);
 		delete(file);
 	end;
 end;

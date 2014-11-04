@@ -437,13 +437,13 @@ end;
 
 
 
-local prmGetXMLFn = {
+courseplay.prmGetXMLFn = {
 	Bool = getXMLBool,
 	Float = getXMLFloat,
 	Int = getXMLInt,
 	String = getXMLString
 };
-local prmSetXMLFn = {
+courseplay.prmSetXMLFn = {
 	Bool = setXMLBool,
 	Float = setXMLFloat,
 	Int = setXMLInt,
@@ -457,12 +457,12 @@ function courseplay.utils.findXMLNodeByAttr(File, node, attr, value, valueType)
 	local done = false
 	local dummy
 
-	if prmGetXMLFn[valueType] ~= nil then
+	if courseplay.prmGetXMLFn[valueType] ~= nil then
 		-- this solution does not look very nice but has no unnecessary statements in the loops which should make them as fast as possible
 		repeat
 			i = i + 1;
 			dummy = '';
-			dummy = prmGetXMLFn[valueType](File, string.format(node .. '(%d)' .. "#" .. attr, i));
+			dummy = courseplay.prmGetXMLFn[valueType](File, string.format(node .. '(%d)' .. "#" .. attr, i));
 			if dummy == value then
 				done = true;
 			elseif dummy == nil then -- the attribute seems not to exist. Does the node?
@@ -516,9 +516,9 @@ function courseplay.utils.setXML(File, node, attribute, value, valueType, match_
 	if match_attr ~= '' and match_attr_value ~= '' then
 		local i = courseplay.utils.findXMLNodeByAttr(File, node, match_attr, match_attr_value, match_attr_type);
 		if i < 0 then i = -i end;
-		prmSetXMLFn[valueType](File, ('%s(%d)%s'):format(node, i, attribute), value);
+		courseplay.prmSetXMLFn[valueType](File, ('%s(%d)%s'):format(node, i, attribute), value);
 	else
-		prmSetXMLFn[valueType](File, node .. attribute, value);
+		courseplay.prmSetXMLFn[valueType](File, node .. attribute, value);
 	end;
 end;
 
@@ -543,8 +543,8 @@ function courseplay.utils.setMultipleXML(File, node, values, types)
 				attribute = ''
 			end
 
-			if prmSetXMLFn[valueType] ~= nil then
-				prmSetXMLFn[valueType](File, node .. attribute, value);
+			if courseplay.prmSetXMLFn[valueType] ~= nil then
+				courseplay.prmSetXMLFn[valueType](File, node .. attribute, value);
 			else
 				-- Error?!
 				print('could not save attribute: ' .. attribute)
@@ -644,6 +644,7 @@ function courseplay:getDriveDirection(node, x, y, z)
 	return lx,ly,lz
 end
 
+-- TODO (Jakob) (FS15): move all UTF/normalization stuff to courseManagement.lua
 --UTF-8: ALLOWED CHARACTERS and NORMALIZATION
 --src: ASCII Table - Decimal (Base 10) Values @ http://www.parse-o-matic.com/parse/pskb/ASCII-Chart.htm
 --src: http://en.wikipedia.org/wiki/List_of_Unicode_characters
@@ -959,3 +960,24 @@ function courseplay:getWorldDirection(fromX, fromY, fromZ, toX, toY, toZ)
 	end;
 	return 0, 0, 0, 0;
 end;
+
+-- TODO (Jakob): not ~really~ needed anymore
+function courseplay_manager:getSavegameFolderPath(index)
+	if index then
+		-- print(('getSavegameFolder(%d): "%ssavegame%d/"'):format(tostring(index), tostring(getUserProfileAppPath()), index));
+		return ('%ssavegame%d/'):format(tostring(getUserProfileAppPath()), index);
+	end;
+
+	if g_currentMission.missionInfo.savegameDirectory then
+		-- print(('getSavegameFolder(): g_currentMission.missionInfo.savegameDirectory=%q'):format(tostring(g_currentMission.missionInfo.savegameDirectory)));
+		return g_currentMission.missionInfo.savegameDirectory;
+	end;
+
+	if g_currentMission.missionInfo.savegameIndex then
+		-- print(('getSavegameFolder(): "%ssavegame%d/"'):format(tostring(getUserProfileAppPath()), g_currentMission.missionInfo.savegameIndex));
+		return ('%ssavegame%d/'):format(tostring(getUserProfileAppPath()), g_currentMission.missionInfo.savegameIndex);
+	end;
+
+	return;
+end;
+

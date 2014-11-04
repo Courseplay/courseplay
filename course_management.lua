@@ -2,7 +2,7 @@ local curFile = 'course_management.lua';
 
 -- saving // loading courses
 
--- enables input for course name
+-- enables input for course/folder/filter name
 function courseplay:showSaveCourseForm(self, saveWhat)
 	saveWhat = saveWhat or 'course'
 	
@@ -675,8 +675,8 @@ function courseplay.courses.openOrCreateXML(forceCreation)
 	forceCreation = forceCreation or false
 	
 	local File;
-	if courseplay.cpXmlFilePath ~= nil then
-		local filePath = courseplay.cpXmlFilePath;
+	local filePath = courseplay.cpXmlFilePath;
+	if filePath ~= nil then
 		if fileExists(filePath) and (not forceCreation) then
 			File = loadXMLFile("courseFile", filePath)
 		else

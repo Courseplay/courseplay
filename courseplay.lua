@@ -40,6 +40,9 @@ courseplay.sonOfaBangSonOfaBoom = {
 courseplay.isDeveloper = courseplay.sonOfaBangSonOfaBoom[getMD5(g_settingsNickname)];
 if courseplay.isDeveloper then
 	print('Special dev magic for Courseplay developer unlocked. You go, girl!');
+else
+	print('No cookies for you! (please wait until we have some limited form of a working version...)');
+	return;
 end;
 
 -- working tractors saved in this
@@ -177,22 +180,13 @@ function courseplay:setGlobalData()
 	local fieldsAutomaticScan, fieldsDebugScan, fieldsDebugCustomLoad, fieldsCustomScanStep, fieldsOnlyScanOwnedFields = true, false, false, nil, true;
 	local wagesActive, wagesAmount = false, 666;
 
-	local cpFilePath = courseplay.cpSavegameFolderPath .. '/courseplay.xml';
-	if fileExists(cpFilePath) then
-		local cpFile = loadXMLFile('cpFile', cpFilePath);
+	if courseplay.cpXmlFilePath and fileExists(courseplay.cpXmlFilePath) then
+		local cpFile = loadXMLFile('cpFile', courseplay.cpXmlFilePath);
 		local hudKey = 'XML.courseplayHud';
 		if hasXMLProperty(cpFile, hudKey) then
 			customPosX = getXMLFloat(cpFile, hudKey .. '#posX');
 			customPosY = getXMLFloat(cpFile, hudKey .. '#posY');
 		end;
-
-		--[[ NO MORE CUSTOM POSITIONS FOR GLOBALINFOTEXT
-		local gitKey = "XML.courseplayGlobalInfoText";
-		if hasXMLProperty(cpFile, gitKey) then
-			customGitPosX = getXMLFloat(cpFile, gitKey .. "#posX");
-			customGitPosY = getXMLFloat(cpFile, gitKey .. "#posY");
-		end;
-		]]
 
 		local fieldsKey = 'XML.courseplayFields';
 		if hasXMLProperty(cpFile, fieldsKey) then
@@ -499,4 +493,3 @@ courseplay:initialize();
 
 --load(), update(), updateTick(), draw() are located in base.lua
 --mouseEvent(), keyEvent() are located in input.lua
-
