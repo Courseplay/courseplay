@@ -1,8 +1,5 @@
 --COURSEPLAY
 SpecializationUtil.registerSpecialization('courseplay', 'courseplay', g_currentModDirectory .. 'courseplay.lua');
-if courseplay.houstonWeGotAProblem then
-	return;
-end;
 
 local steerableSpec = SpecializationUtil.getSpecialization('steerable');
 local courseplaySpec = SpecializationUtil.getSpecialization('courseplay');

@@ -42,7 +42,6 @@ if courseplay.isDeveloper then
 	print('Special dev magic for Courseplay developer unlocked. You go, girl!');
 else
 	print('No cookies for you! (please wait until we have some limited form of a working version...)');
-	courseplay.houstonWeGotAProblem = true;
 	return;
 end;
 
@@ -175,7 +174,9 @@ function courseplay:setGlobalData()
 	createFolder(courseplay.cpFolderPath);
 	createFolder(courseplay.cpSavegameFolderPath);
 
+
 	local customPosX, customPosY;
+	local customGitPosX, customGitPosY;
 	local fieldsAutomaticScan, fieldsDebugScan, fieldsDebugCustomLoad, fieldsCustomScanStep, fieldsOnlyScanOwnedFields = true, false, false, nil, true;
 	local wagesActive, wagesAmount = false, 666;
 
