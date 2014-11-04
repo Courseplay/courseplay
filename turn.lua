@@ -303,10 +303,12 @@ function courseplay:lowerImplements(self, direction, workToolonOff)
 		elseif self.setFoldState ~= nil then
 			self:setFoldState(state, true)
 		end		
-		if workToolonOff then 
-			for _,workTool in pairs(self.tippers) do
-				if workTool.setIsTurnedOn ~= nil and not courseplay:isFolding(workTool) and not workTool.needsLowering then
-					workTool:setIsTurnedOn(direction, false);
+		if workToolonOff then
+			if not self.cp.isChopper and not self.cp.isCombine then
+				for _,workTool in pairs(self.tippers) do
+					if workTool.setIsTurnedOn ~= nil and not courseplay:isFolding(workTool) and not workTool.needsLowering then
+						workTool:setIsTurnedOn(direction, false);
+					end
 				end
 			end
 		end
