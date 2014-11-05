@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="20">
-	<version>4.00.0011</version>
+	<version>4.00.0012</version>
 	<author><![CDATA[Jakob Tischler, Thomas Gärtner,
 Horoman, Satis]]></author>
 	<title>
@@ -1919,9 +1919,39 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<fr>: le silo est plein!</fr>
 			<es>: el silo ésta llena!</es>
 			<it>: il silo è pieno!</it>
-			<cz>: Bunker je plný!</cz> 
+			<cz>: Bunker je plný!</cz>
 			<ru>: силосная яма заполнена!</ru>
 			<hu>: a BGA siló tele van!</hu>
+		</text>
+		<text name="COURSEPLAY_FARM_SILO_DONT_HAVE_FILTYPE">
+			<en>Farm Silo don't have selected fill type</en>
+			<de>Farm Silo don't have selected fill type</de>
+			<fr>Farm Silo don't have selected fill type</fr>
+			<es>Farm Silo don't have selected fill type</es>
+			<it>Farm Silo don't have selected fill type</it>
+			<cz>Farm Silo don't have selected fill type</cz>
+			<ru>Farm Silo don't have selected fill type</ru>
+			<hu>Farm Silo don't have selected fill type</hu>
+		</text>
+		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE">
+			<en>Farm Silo Load:</en>
+			<de>Farm Silo Load:</de>
+			<fr>Farm Silo Load:</fr>
+			<es>Farm Silo Load:</es>
+			<it>Farm Silo Load:</it>
+			<cz>Farm Silo Load:</cz>
+			<ru>Farm Silo Load:</ru>
+			<hu>Farm Silo Load:</hu>
+		</text>
+		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY">
+			<en>Farm Silo is empty!</en>
+			<de>Farm Silo is empty!</de>
+			<fr>Farm Silo is empty!</fr>
+			<es>Farm Silo is empty!</es>
+			<it>Farm Silo is empty!</it>
+			<cz>Farm Silo is empty!</cz>
+			<ru>Farm Silo is empty!</ru>
+			<hu>Farm Silo is empty!</hu>
 		</text>
 		<!-- SeedUsageCalculator HUD content -->
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR">

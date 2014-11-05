@@ -256,6 +256,8 @@ function courseplay:executeFunction(self, func, value, page)
 						courseplay:setStartAtFirstPoint(self);
 					elseif line == 4 then
 						courseplay:clearCurrentLoadedCourse(self);
+					elseif line == 6 and self.cp.mode == 1 and self.tippers[1] ~= nil and self.tippers[1].allowFillFromAir and self.tippers[1].allowTipDischarge then
+						self.cp.multiSiloSelectedFillType = courseplay:getNextFillableFillType(self);
 					end;
 
 				else -- driving

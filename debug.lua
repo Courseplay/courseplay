@@ -13,7 +13,7 @@ end;
 --[[
 Debug channels legend:
  1	Raycast (drive + tipTriggers)
- 2	unload_tippers
+ 2	Load and unload tippers
  3	traffic collision
  4	Combines/mode2, register and unload combines
  5	Multiplayer
@@ -25,7 +25,7 @@ Debug channels legend:
 11	mode7
 12	all other debugs (uncategorized)
 13	reverse
-14	EifokLiquidManure
+14	EifokLiquidManure (NOT USED ATM)
 15	mode3 (AugerWagon)
 16	recording
 17	mode4/6

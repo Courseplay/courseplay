@@ -368,29 +368,31 @@ function courseplay:setGlobalData()
 	end;
 	]]
 	courseplay.globalInfoText.msgReference = {
-		BALER_NETS 		  = { level = -2, text = 'COURSEPLAY_BALER_NEEDS_NETS' };
-		BGA_IS_FULL       = { level = -1, text = 'COURSEPLAY_BGA_IS_FULL'};
-		DAMAGE_IS 		  = { level =  0, text = 'COURSEPLAY_DAMAGE_IS_BEING_REPAIRED' };
-		DAMAGE_MUST 	  = { level = -2, text = 'COURSEPLAY_DAMAGE_MUST_BE_REPAIRED' };
-		DAMAGE_SHOULD 	  = { level = -1, text = 'COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED' };
-		END_POINT 		  = { level =  0, text = 'COURSEPLAY_REACHED_END_POINT' };
-		FUEL_IS 		  = { level =  0, text = 'COURSEPLAY_IS_BEING_REFUELED' };
-		FUEL_MUST 		  = { level = -2, text = 'COURSEPLAY_MUST_BE_REFUELED' };
-		FUEL_SHOULD 	  = { level = -1, text = 'COURSEPLAY_SHOULD_BE_REFUELED' };
-		HOSE_MISSING 	  = { level = -2, text = 'COURSEPLAY_HOSEMISSING' };
-		NEEDS_REFILLING   = { level = -1, text = 'COURSEPLAY_NEEDS_REFILLING' };
-		NEEDS_UNLOADING   = { level = -1, text = 'COURSEPLAY_NEEDS_UNLOADING' };
-		OVERLOADING_POINT = { level =  0, text = 'COURSEPLAY_REACHED_OVERLOADING_POINT' };
-		PICKUP_JAMMED 	  = { level = -2, text = 'COURSEPLAY_PICKUP_JAMMED' };
-		SLIPPING_0 		  = { level = -1, text = 'COURSEPLAY_SLIPPING_WARNING_0' };
-		SLIPPING_1 		  = { level = -1, text = 'COURSEPLAY_SLIPPING_WARNING_1' };
-		SLIPPING_2 		  = { level = -2, text = 'COURSEPLAY_SLIPPING_WARNING_2' };
-		TRAFFIC 		  = { level = -1, text = 'COURSEPLAY_IS_IN_TRAFFIC' };
-		UNLOADING_BALE 	  = { level =  0, text = 'COURSEPLAY_UNLOADING_BALES' };
-		WAIT_POINT 		  = { level =  0, text = 'COURSEPLAY_REACHED_WAITING_POINT' };
-		WATER 			  = { level = -2, text = 'COURSEPLAY_WATER_WARNING' };
-		WEATHER 		  = { level =  0, text = 'COURSEPLAY_WEATHER_WARNING' };
-		WORK_END 		  = { level =  1, text = 'COURSEPLAY_WORK_END' };
+		BALER_NETS					= { level = -2, text = 'COURSEPLAY_BALER_NEEDS_NETS' };
+		BGA_IS_FULL					= { level = -1, text = 'COURSEPLAY_BGA_IS_FULL'};
+		DAMAGE_IS					= { level =  0, text = 'COURSEPLAY_DAMAGE_IS_BEING_REPAIRED' };
+		DAMAGE_MUST					= { level = -2, text = 'COURSEPLAY_DAMAGE_MUST_BE_REPAIRED' };
+		DAMAGE_SHOULD				= { level = -1, text = 'COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED' };
+		END_POINT					= { level =  0, text = 'COURSEPLAY_REACHED_END_POINT' };
+		FARM_SILO_DONT_HAVE_FILTYPE	= { level = -2, text = 'COURSEPLAY_FARM_SILO_DONT_HAVE_FILTYPE'};
+		FARM_SILO_IS_EMPTY			= { level =  0, text = 'COURSEPLAY_FARM_SILO_IS_EMPTY'};
+		FUEL_IS						= { level =  0, text = 'COURSEPLAY_IS_BEING_REFUELED' };
+		FUEL_MUST					= { level = -2, text = 'COURSEPLAY_MUST_BE_REFUELED' };
+		FUEL_SHOULD					= { level = -1, text = 'COURSEPLAY_SHOULD_BE_REFUELED' };
+		HOSE_MISSING				= { level = -2, text = 'COURSEPLAY_HOSEMISSING' };
+		NEEDS_REFILLING				= { level = -1, text = 'COURSEPLAY_NEEDS_REFILLING' };
+		NEEDS_UNLOADING				= { level = -1, text = 'COURSEPLAY_NEEDS_UNLOADING' };
+		OVERLOADING_POINT			= { level =  0, text = 'COURSEPLAY_REACHED_OVERLOADING_POINT' };
+		PICKUP_JAMMED				= { level = -2, text = 'COURSEPLAY_PICKUP_JAMMED' };
+		SLIPPING_0					= { level = -1, text = 'COURSEPLAY_SLIPPING_WARNING_0' };
+		SLIPPING_1					= { level = -1, text = 'COURSEPLAY_SLIPPING_WARNING_1' };
+		SLIPPING_2					= { level = -2, text = 'COURSEPLAY_SLIPPING_WARNING_2' };
+		TRAFFIC						= { level = -1, text = 'COURSEPLAY_IS_IN_TRAFFIC' };
+		UNLOADING_BALE				= { level =  0, text = 'COURSEPLAY_UNLOADING_BALES' };
+		WAIT_POINT					= { level =  0, text = 'COURSEPLAY_REACHED_WAITING_POINT' };
+		WATER						= { level = -2, text = 'COURSEPLAY_WATER_WARNING' };
+		WEATHER						= { level =  0, text = 'COURSEPLAY_WEATHER_WARNING' };
+		WORK_END					= { level =  1, text = 'COURSEPLAY_WORK_END' };
 	};
 
 

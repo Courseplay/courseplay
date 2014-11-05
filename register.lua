@@ -135,6 +135,39 @@ function courseplay:foldableLoad(xmlFile)
 end;
 Foldable.load = Utils.appendedFunction(Foldable.load, courseplay.foldableLoad);
 
+--------------------------------------------------
+-- Adding easy access to MultiSiloTrigger
+--------------------------------------------------
+local MultiSiloTrigger_TriggerCallback = function(triggerId, otherActorId, onEnter, onLeave, onStay, otherShapeId, trailer)
+	local trailer = g_currentMission.objectToTrailer[trailer];
+	if trailer ~= nil and trailer:allowFillType(triggerId.selectedFillType, false) and trailer.getAllowFillFromAir ~= nil and trailer:getAllowFillFromAir() then
+		-- Make sure cp table is pressent in the trailer.
+		if not trailer.cp then
+			trailer.cp = {};
+		end;
+
+		if onEnter then
+			-- Add the current MultiSiloTrigger to the cp table, for easier access.
+			if not trailer.cp.currentMultiSiloTrigger then
+				trailer.cp.currentMultiSiloTrigger = triggerId;
+				courseplay:debug(('%s: MultiSiloTrigger Added! (onEnter)'):format(nameNum(trailer)), 2);
+
+				-- Remove the current MultiSiloTrigger here, even that it should be done in onLeave, but onLeave is never fired. (Possible a bug from Giants)
+			elseif triggerId.fill == 0 and trailer.cp.currentMultiSiloTrigger ~= nil then
+				trailer.cp.currentMultiSiloTrigger = nil;
+				courseplay:debug(('%s: MultiSiloTrigger Removed! (onEnter)'):format(nameNum(trailer)), 2);
+			end;
+		elseif onLeave then
+			-- Remove the current MultiSiloTrigger. (Is here in case Giants fixes the above bug))
+			if triggerId.fill == 0 and trailer.cp.currentMultiSiloTrigger ~= nil then
+				trailer.cp.currentMultiSiloTrigger = nil;
+				courseplay:debug(('%s: MultiSiloTrigger Removed! (onLeave)'):format(nameNum(trailer)), 2);
+			end;
+		end;
+	end;
+end;
+MultiSiloTrigger.triggerCallback = Utils.appendedFunction(MultiSiloTrigger.triggerCallback, MultiSiloTrigger_TriggerCallback);
+
 courseplay.locales = courseplay.utils.table.copy(g_i18n.texts, true);
 courseplay:register();
 print(string.format('### Courseplay: installed into %d vehicles', numInstallationsVehicles));

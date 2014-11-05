@@ -280,6 +280,11 @@ function courseplay.hud:loadPage(vehicle, page)
 				end;
 
 				vehicle.cp.hud.content.pages[1][4][1].text = courseplay:loc('COURSEPLAY_RESET_COURSE')
+
+				if vehicle.cp.mode == 1 and vehicle.tippers[1] ~= nil and vehicle.tippers[1].allowFillFromAir and vehicle.tippers[1].allowTipDischarge then
+					vehicle.cp.hud.content.pages[1][6][1].text = courseplay:loc('COURSEPLAY_FARM_SILO_FILL_TYPE');
+					vehicle.cp.hud.content.pages[1][6][2].text = Fillable.fillTypeIndexToDesc[vehicle.cp.multiSiloSelectedFillType].nameI18N;
+				end;
 			else
 				vehicle.cp.hud.content.pages[1][1][1].text = courseplay:loc('COURSEPLAY_STOP_COURSE')
 
