@@ -662,9 +662,9 @@ function courseplay:unload_combine(self, dt)
 			if ((combineIsHelperTurning or tractor.cp.turnStage ~= 0) and lz < 20) or (combine.movingDirection == 0 and lz < 5) then
 				refSpeed = 4 / 3600
 				self.cp.speeds.sl = 1
-				if self.ESLimiter == nil then
+				--[[if self.ESLimiter == nil then
 					self.motor.maxRpm[self.cp.speeds.sl] = 200
-				end 
+				end]] 
 			end
 		else
 			self.cp.speeds.sl = 2
@@ -1050,9 +1050,9 @@ function courseplay:unload_combine(self, dt)
 		end
 
 		self.cp.TrafficBrake = false
-		if self.cp.modeState == 5 or self.cp.modeState == 2 then
+		--[[if self.cp.modeState == 5 or self.cp.modeState == 2 then    FS15
 			targetX, targetZ = courseplay:isTheWayToTargetFree(self, targetX, targetZ)
-		end
+		end]]
 		courseplay:setTrafficCollision(self, targetX, targetZ,true)
 		
 		if self.isRealistic then

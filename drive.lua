@@ -1041,7 +1041,7 @@ function courseplay:refillSprayer(vehicle, fillLevelPct, driveOn, allowedToDrive
 				end
 			end
 			if fillLevelPct < driveOn and activeTool.fillTriggers[1] ~= nil and activeTool.fillTriggers[1].isSowingMachineFillTrigger then
-				print(tableShow(activeTool.fillTriggers,"activeTool.fillTriggers"))
+				--print(tableShow(activeTool.fillTriggers,"activeTool.fillTriggers"))
 				if not activeTool.isFilling then
 					activeTool:setIsFilling(true);
 				end;
