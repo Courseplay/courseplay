@@ -294,12 +294,12 @@ function courseplay:load(xmlFile)
 	-- tippers
 	self.tippers = {}; --TODO (Jakob): put in cp table
 	self.cp.numWorkTools = 0;
-	self.cp.tipperAttached = false
-	self.cp.currentTrailerToFill = nil
-	self.cp.lastTrailerToFillDistance = nil
-	self.cp.isUnloaded = false
-	self.cp.isLoaded = false
-	self.cp.unloadingTipper = nil
+	self.cp.tipperAttached = false;
+	self.cp.currentTrailerToFill = nil;
+	self.cp.trailerFillDistance = nil;
+	self.cp.isUnloaded = false;
+	self.cp.isLoaded = false;
+	self.cp.unloadingTipper = nil;
 	self.cp.tipperFillLevel = nil;
 	self.cp.tipperCapacity = nil;
 	self.cp.tipperFillLevelPct = 0;

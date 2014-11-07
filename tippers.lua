@@ -1,12 +1,14 @@
 -- ##### MANAGING TOOLS ##### --
 
 function courseplay:attachImplement(implement)
-	if implement.object.attacherVehicle.cp.hasSpecializationSteerable then
-		implement.object.attacherVehicle.cp.toolsDirty = true;
+	--- Update Vehicle
+	local workTool = implement.object;
+	if workTool.attacherVehicle.cp.hasSpecializationSteerable then
+		workTool.attacherVehicle.cp.toolsDirty = true;
 	end;
-	--local impl = implement.object;
 end;
 function courseplay:detachImplement(implementIndex)
+	--- Update Vehicle
 	self.cp.toolsDirty = true;
 end;
 
@@ -23,9 +25,12 @@ function courseplay:reset_tools(vehicle)
 	else
 		vehicle.cp.multiSiloSelectedFillType = Fillable.FILLTYPE_UNKNOWN;
 	end;
+	if vehicle.cp.hud.currentPage == 1 then
+		courseplay.hud:setReloadPageOrder(vehicle, 1, true);
+	end;
 
-	vehicle.cp.currentTrailerToFill = nil
-	vehicle.cp.lastTrailerToFillDistance = nil
+	vehicle.cp.currentTrailerToFill = nil;
+	vehicle.cp.trailerFillDistance = nil;
 	vehicle.cp.toolsDirty = false;
 end;
 
@@ -1247,14 +1252,24 @@ end;
 
 
 -- ##### LOADING TOOLS ##### --
-function courseplay:load_tippers(vehicle)
-	local allowedToDrive = false;
+function courseplay:load_tippers(vehicle, allowedToDrive)
+	-- local allowedToDrive = false;
 	local cx, cz = vehicle.Waypoints[2].cx, vehicle.Waypoints[2].cz;
 
 	if vehicle.cp.currentTrailerToFill == nil then
 		vehicle.cp.currentTrailerToFill = 1;
 	end
 	local currentTrailer = vehicle.tippers[vehicle.cp.currentTrailerToFill];
+
+	if not vehicle.cp.trailerFillDistance then
+		if not currentTrailer.cp.realUnloadOrFillNode then
+			return allowedToDrive;
+		end;
+
+		local _,y,_ = getWorldTranslation(currentTrailer.cp.realUnloadOrFillNode);
+		local _,_,z = worldToLocal(currentTrailer.cp.realUnloadOrFillNode, cx, y, cz);
+		vehicle.cp.trailerFillDistance = z;
+	end;
 
 	-- MultiSiloTrigger (Giants)
 	if currentTrailer.cp.currentMultiSiloTrigger ~= nil then
@@ -1274,8 +1289,6 @@ function courseplay:load_tippers(vehicle)
 			if not mst.isFilling and not siloIsEmpty and (currentTrailer.currentFillType == Fillable.FILLTYPE_UNKNOWN or currentTrailer.currentFillType == vehicle.cp.multiSiloSelectedFillType) then
 				mst:startFill(vehicle.cp.multiSiloSelectedFillType);
 				courseplay:debug(('%s: MultiSiloTrigger: selectedFillType = %s, isFilling = %s'):format(nameNum(vehicle), tostring(Fillable.fillTypeIntToName[mst.selectedFillType]), tostring(mst.isFilling)), 2);
-			--elseif not (currentTrailer.currentFillType == Fillable.FILLTYPE_UNKNOWN or currentTrailer.currentFillType == vehicle.cp.multiSiloSelectedFillType) then
-			--	allowedToDrive = true;
 			elseif siloIsEmpty then
 				courseplay:setGlobalInfoText(vehicle, 'FARM_SILO_IS_EMPTY');
 			end;
@@ -1297,41 +1310,28 @@ function courseplay:load_tippers(vehicle)
 	if vehicle.cp.tipperFillLevelPct == 100 or driveOn then
 		vehicle.cp.prevFillLevelPct = nil;
 		courseplay:setIsLoaded(vehicle, true);
-		vehicle.cp.lastTrailerToFillDistance = nil;
+		vehicle.cp.trailerFillDistance = nil;
 		vehicle.cp.currentTrailerToFill = nil;
-		return true;
+		return allowedToDrive;
 	end;
 
-	if vehicle.cp.lastTrailerToFillDistance == nil then
-		-- drive on if current tipper is full
-		if currentTrailer.fillLevel == currentTrailer.capacity then
+	if currentTrailer.cp.realUnloadOrFillNode and vehicle.cp.trailerFillDistance then
+		if currentTrailer.fillLevel == currentTrailer.capacity
+		or currentTrailer.cp.currentMultiSiloTrigger ~= nil and not (currentTrailer.currentFillType == Fillable.FILLTYPE_UNKNOWN or currentTrailer.currentFillType == vehicle.cp.multiSiloSelectedFillType) then
 			if vehicle.cp.numWorkTools > vehicle.cp.currentTrailerToFill then
-				local trailerX, _, trailerZ = getWorldTranslation(currentTrailer.fillRootNode);
-				vehicle.cp.lastTrailerToFillDistance = courseplay:distance(cx, cz, trailerX, trailerZ);
 				vehicle.cp.currentTrailerToFill = vehicle.cp.currentTrailerToFill + 1;
 			else
+				vehicle.cp.prevFillLevelPct = nil;
+				courseplay:setIsLoaded(vehicle, true);
+				vehicle.cp.trailerFillDistance = nil;
 				vehicle.cp.currentTrailerToFill = nil;
-				vehicle.cp.lastTrailerToFillDistance = nil;
 			end;
-			allowedToDrive = true;
-		end;
-
-	else
-		local trailerX, _, trailerZ = getWorldTranslation(currentTrailer.fillRootNode);
-		local distance = courseplay:distance(cx, cz, trailerX, trailerZ);
-
-		if distance > vehicle.cp.lastTrailerToFillDistance and vehicle.cp.lastTrailerToFillDistance ~= nil then
-			allowedToDrive = true;
 		else
-			allowedToDrive = false;
-			if currentTrailer.fillLevel == currentTrailer.capacity then
-				if vehicle.cp.numWorkTools > vehicle.cp.currentTrailerToFill then
-					vehicle.cp.lastTrailerToFillDistance = courseplay:distance(cx, cz, trailerX, trailerZ);
-					vehicle.cp.currentTrailerToFill = vehicle.cp.currentTrailerToFill + 1;
-				else
-					vehicle.cp.currentTrailerToFill = nil;
-					vehicle.cp.lastTrailerToFillDistance = nil;
-				end;
+			local _,y,_ = getWorldTranslation(currentTrailer.cp.realUnloadOrFillNode);
+			local _,_,vectorDistanceZ = worldToLocal(currentTrailer.cp.realUnloadOrFillNode, cx, y, cz);
+
+			if vectorDistanceZ < vehicle.cp.trailerFillDistance then
+				allowedToDrive = false;
 			end;
 		end;
 	end;

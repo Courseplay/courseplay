@@ -152,7 +152,7 @@ local MultiSiloTrigger_TriggerCallback = function(triggerId, otherActorId, onEnt
 				trailer.cp.currentMultiSiloTrigger = triggerId;
 				courseplay:debug(('%s: MultiSiloTrigger Added! (onEnter)'):format(nameNum(trailer)), 2);
 
-				-- Remove the current MultiSiloTrigger here, even that it should be done in onLeave, but onLeave is never fired. (Possible a bug from Giants)
+			-- Remove the current MultiSiloTrigger here, even that it should be done in onLeave, but onLeave is never fired. (Possible a bug from Giants)
 			elseif triggerId.fill == 0 and trailer.cp.currentMultiSiloTrigger ~= nil then
 				trailer.cp.currentMultiSiloTrigger = nil;
 				courseplay:debug(('%s: MultiSiloTrigger Removed! (onEnter)'):format(nameNum(trailer)), 2);
