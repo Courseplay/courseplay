@@ -377,6 +377,10 @@ function courseplay:setMarkers(vehicle, object,isImplement)
 		area = object.fruitPreparerAreas
 	end
 
+	if not area then
+		return;
+	end;
+
 	local tableLength = #(area)
 	if tableLength == 0 then
 		return
@@ -656,7 +660,6 @@ end
 
 -- ##### LOADING TOOLS ##### --
 function courseplay:load_tippers(vehicle, allowedToDrive)
-	-- local allowedToDrive = false;
 	local cx, cz = vehicle.Waypoints[2].cx, vehicle.Waypoints[2].cz;
 
 	if vehicle.cp.currentTrailerToFill == nil then

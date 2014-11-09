@@ -349,9 +349,11 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 				end;
 			end;
 
-		else  --COMBINES
+		--COMBINES
+		elseif workTool.cp.hasSpecializationCutter then
 
 			--Start combine
+			local isTurnedOn = tool:getIsTurnedOn();
 			local pipeState = 0;
 			if tool.getOverloadingTrailerInRangePipeState ~= nil then
 				pipeState = tool:getOverloadingTrailerInRangePipeState();
@@ -360,13 +362,16 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 				specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,true,true,true,allowedToDrive,nil,nil)
 				if not specialTool then
 					local weatherStop = not tool:getIsThreshingAllowed(true)
+
+					-- Choppers
 					if tool.capacity == 0 then
-						if courseplay:isFoldable(workTool) and not tool.isThreshing and not isFolding and not isUnfolded then
+						if courseplay:isFoldable(workTool) and not isTurnedOn and not isFolding and not isUnfolded then
 							courseplay:debug(string.format('%s: unfold order (foldDir=%d)', nameNum(workTool), workTool.cp.realUnfoldDirection), 17);
 							workTool:setFoldDirection(workTool.cp.realUnfoldDirection);
 						end;
-						if not isFolding and not tool.isThreshing then
-							tool:startThreshing(true);
+						if not isFolding and isUnfolded and not isTurnedOn then
+							courseplay:debug(string.format('%s: Start Treshing', nameNum(tool)), 12);
+							tool:setIsTurnedOn(true);
 							if pipeState > 0 then
 								tool:setPipeState(pipeState);
 							else
@@ -376,20 +381,21 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 
 						-- stop when there's no trailer to fill - courtesy of upsidedown
 						local chopperWaitForTrailer = false;
-						if tool.cp.isChopper and tool.lastValidGrainTankFruitType ~= FruitUtil.FRUITTYPE_UNKNOWN then
-							local targetTrailer = tool:findAutoAimTrailerToUnload(tool.lastValidGrainTankFruitType);
-							local trailer, trailerDistance = tool:findTrailerToUnload(tool.lastValidGrainTankFruitType);
-							-- print(string.format('targetTrailer=%s, trailer=%s', tostring(targetTrailer), tostring(trailer)));
+						if tool.cp.isChopper and tool.lastValidFillType ~= FruitUtil.FRUITTYPE_UNKNOWN then
+							local targetTrailer = tool:findAutoAimTrailerToUnload(tool.lastValidFillType);
+							local trailer, trailerDistance = tool:findTrailerToUnload(tool.lastValidFillType);
+							--print(string.format('targetTrailer=%s, trailer=%s', tostring(targetTrailer), tostring(trailer)));
 							if targetTrailer == nil or trailer == nil then
 								chopperWaitForTrailer = true;
-								-- print(string.format('\tat least one of them not found at pipeState %s -> chopperWaitForTrailer=true', tostring(pipeState)));
+								--print(string.format('\tat least one of them not found at pipeState %s -> chopperWaitForTrailer=true', tostring(pipeState)));
 							end;
 						end;
-						
+
 						if (pipeState == 0 and self.cp.turnStage == 0) or chopperWaitForTrailer then
 							tool.cp.waitingForTrailerToUnload = true;
-						end
+						end;
 
+					-- Combines
 					else
 						local tankFillLevelPct = tool.fillLevel * 100 / tool.capacity;
 
@@ -443,7 +449,11 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,true,false,false,allowedToDrive,nil)
 				end
 				if not specialTool then
-					tool:setIsThreshing(false);
+					if tool.cp.isChopper then
+						tool:setIsTurnedOn(false);
+					else
+						tool:setIsThreshing(false);
+					end;
 					if courseplay:isFoldable(workTool) and isEmpty and not isFolding and not isFolded then
 						courseplay:debug(string.format('%s: fold order (foldDir=%d)', nameNum(workTool), -workTool.cp.realUnfoldDirection), 17);
 						workTool:setFoldDirection(-workTool.cp.realUnfoldDirection);
@@ -458,7 +468,8 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 				tool:setPipeState(1)
 			end
 			if tool.cp.waitingForTrailerToUnload then
-				allowedToDrive = false;
+				courseplay:debug(string.format("%s: I'm waiting for an trailer!", nameNum(tool)), 12);
+				local mayIDrive = false;
 				if tool.cp.isCombine or courseplay:isAttachedCombine(workTool) then
 					if tool.cp.isCheckedIn == nil or (pipeState == 0 and tool.fillLevel == 0) then
 						tool.cp.waitingForTrailerToUnload = false
@@ -467,15 +478,18 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 					-- resume driving
 					local ch, gr = Fillable.FILLTYPE_CHAFF, Fillable.FILLTYPE_GRASS_WINDROW;
 					if (tool.pipeParticleSystems and ((tool.pipeParticleSystems[ch] and tool.pipeParticleSystems[ch].isEmitting) or (tool.pipeParticleSystems[gr] and tool.pipeParticleSystems[gr].isEmitting))) or pipeState > 0 then
-						if tool.lastValidGrainTankFruitType ~= FruitUtil.FRUITTYPE_UNKNOWN then
-							local targetTrailer = tool:findAutoAimTrailerToUnload(tool.lastValidGrainTankFruitType);
-							local trailer, trailerDistance = tool:findTrailerToUnload(tool.lastValidGrainTankFruitType);
+						if tool.lastValidFillType ~= FruitUtil.FRUITTYPE_UNKNOWN then
+							local targetTrailer = tool:findAutoAimTrailerToUnload(tool.lastValidFillType);
+							local trailer, trailerDistance = tool:findTrailerToUnload(tool.lastValidFillType);
 							if targetTrailer ~= nil and trailer ~= nil and targetTrailer == trailer then
 								tool.cp.waitingForTrailerToUnload = false;
 							end;
+						else
+							mayIDrive = allowedToDrive;
 						end;
 					end
 				end
+				allowedToDrive = mayIDrive;
 			end
 
 			local dx,_,dz = localDirectionToWorld(self.cp.DirectionNode, 0, 0, 1);
