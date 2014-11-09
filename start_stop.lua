@@ -276,10 +276,6 @@ function courseplay:start(self)
 		self.cp.totalLength, self.cp.totalLengthOffset = courseplay:getTotalLengthOnWheels(self);
 	end;
 
-	--EifokLiquidManure
-	self.cp.EifokLiquidManure.searchMapHoseRefStation.pull = true;
-	self.cp.EifokLiquidManure.searchMapHoseRefStation.push = true;
-
 	courseplay:validateCanSwitchMode(self);
 	--print("startStop "..debug.getinfo(1).currentline)
 end;
