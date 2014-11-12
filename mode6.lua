@@ -34,6 +34,12 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 		hasFinishedWork = true
 	end
 
+	-- TODO: (Claus) Should we use this? (New stuff)
+	--[[if self.sampleThreshingStart and isSamplePlaying(self.sampleThreshingStart.sample) then
+		allowedToDrive = false;
+		self.cp.infoText = string.format(courseplay:loc("COURSEPLAY_STARTING_UP_TOOL"), nameNum(self));
+	end;]]
+
 	local selfIsFolding, selfIsFolded, selfIsUnfolded = courseplay:isFolding(self);
 	for i=1, #(self.tippers) do
 		workTool = self.tippers[i];
@@ -479,7 +485,6 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 				tool:setPipeState(1)
 			end
 			if tool.cp.waitingForTrailerToUnload then
-				courseplay:debug(string.format("%s: I'm waiting for an trailer!", nameNum(tool)), 12);
 				local mayIDrive = false;
 				if tool.cp.isCombine or courseplay:isAttachedCombine(workTool) then
 					if tool.cp.isCheckedIn == nil or (pipeState == 0 and tool.fillLevel == 0) then

@@ -286,32 +286,43 @@ function courseplay:turn(self, dt) --!!!
 	end;
 end
 
-function courseplay:lowerImplements(self, direction, workToolonOff)
-	--direction true= lower,  false = raise , workToolonOff true = switch on worktool,  false = switch off worktool
-	local state  = 1
-	if direction then
-		state  = -1
-    end
+function courseplay:lowerImplements(self, moveDown, workToolonOff)
+	--moveDown true= lower,  false = raise , workToolonOff true = switch on worktool,  false = switch off worktool
+	if moveDown == nil then moveDown = false; end;
+
+	local state  = 1;
+	if moveDown then
+		state  = -1;
+    end;
+
     local specialTool;
 	for _,workTool in pairs(self.tippers) do
-			    --courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
-		specialTool = courseplay:handleSpecialTools(self,workTool,true,direction,workToolonOff,nil,nil,nil)	
-	end	
+					--courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
+		specialTool = courseplay:handleSpecialTools(self,workTool,true,moveDown,workToolonOff,nil,nil,nil);
+	end;
+
 	if not specialTool then
-		if  self.setAIImplementsMoveDown ~= nil then
-			self:setAIImplementsMoveDown(direction,true) --FS15 TODO(Tom) check function, actually combine stops threshing while lifting
+		if self.cp.isCombine or self.cp.isChopper then
+			for cutter, implement in pairs(self.attachedCutters) do
+				if cutter:isLowered() ~= moveDown then
+					self:lowerImplementByJointIndex(implement.jointDescIndex, moveDown, true);
+				end;
+			end;
+		elseif self.setAIImplementsMoveDown ~= nil then
+			self:setAIImplementsMoveDown(moveDown,true);
 		elseif self.setFoldState ~= nil then
-			self:setFoldState(state, true)
-		end		
-		if workToolonOff then 
+			self:setFoldState(state, true);
+		end;
+		if workToolonOff then
 			for _,workTool in pairs(self.tippers) do
-				if workTool.setIsTurnedOn ~= nil and not courseplay:isFolding(workTool) and not workTool.needsLowering then
-					workTool:setIsTurnedOn(direction, false);
-				end
-			end
-		end
-	end
-end
+				if workTool.setIsTurnedOn ~= nil and not courseplay:isFolding(workTool) and not workTool.needsLowering and workTool ~= self then
+					workTool:setIsTurnedOn(moveDown, false);
+				end;
+			end;
+		end;
+	end;
+end;
+
 function courseplay:turnWithOffset(self)
 	--SYMMETRIC LANE CHANGE
 	if self.cp.symmetricLaneChange then
