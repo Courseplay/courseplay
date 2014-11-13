@@ -178,8 +178,8 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 			hasWorkTool = true;
 			vehicle.tippers[#vehicle.tippers + 1] = workTool;
 			courseplay:setMarkers(vehicle, workTool,isImplement);
-			vehicle.cp.noStopOnTurn = courseplay:isBaler(workTool) or courseplay:isBaleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool);
-			vehicle.cp.noStopOnEdge = courseplay:isBaler(workTool) or courseplay:isBaleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool);
+			vehicle.cp.noStopOnTurn = courseplay:isBaler(workTool) or courseplay:isBaleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool) or vehicle.attachedCutters ~= nil;
+			vehicle.cp.noStopOnEdge = courseplay:isBaler(workTool) or courseplay:isBaleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool) or vehicle.attachedCutters ~= nil;
 			if workTool.cp.hasSpecializationPlough then 
 				vehicle.cp.hasPlough = true;
 			end;

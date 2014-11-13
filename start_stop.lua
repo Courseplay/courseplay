@@ -378,6 +378,7 @@ function courseplay:stop(self)
 	self:setCruiseControlState(0)
 	self.cruiseControl.minSpeed = 1
 	self.cp.forcedToStop = false
+	self.cp.waitingForTrailerToUnload = false
 	self.cp.isRecording = false
 	self.cp.recordingIsPaused = false
 	if self.cp.modeState > 4 then

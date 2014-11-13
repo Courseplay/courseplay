@@ -129,7 +129,7 @@ function courseplay:turn(self, dt) --!!!
 					courseplay:lowerImplements(self, true, true)
 					self.cp.turnTimer = 8000
 					self.cp.isTurning = nil 
-					self.cp.waitForTurnTime = self.time + turnOutTimer; 
+					self.cp.waitForTurnTime = self.timer + turnOutTimer;
 				end;
 
 			-- TURN STAGE 6
@@ -201,9 +201,6 @@ function courseplay:turn(self, dt) --!!!
 		local offset = Utils.getNoNil(self.cp.totalOffsetX, 0)
 		local x,y,z = localToWorld(self.rootNode, offset, 0, backMarker)
 		local dist = courseplay:distance(self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz, x, z)
-		if self.attachedCutters ~= nil then
-			self.cp.noStopOnEdge = true
-		end
 		if backMarker <= 0 then
 			if  dist < 0.5 then
 				if not self.cp.noStopOnTurn then
