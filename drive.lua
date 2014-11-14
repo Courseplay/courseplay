@@ -249,11 +249,11 @@ function courseplay:drive(self, dt)
 			courseplay:handle_mode2(self, dt);
 			return;
 		elseif (self.cp.mode == 2 or self.cp.mode == 3) and self.recordnumber < 3 then
-			isBypassing = true
-			lx, lz = courseplay:isTheWayToTargetFree(self,lx, lz)
+			--isBypassing = true
+			--lx, lz = courseplay:isTheWayToTargetFree(self,lx, lz)
 		elseif self.cp.mode == 6 and self.cp.hasBaleLoader and (self.recordnumber == self.cp.stopWork - 4 or (self.cp.abortWork ~= nil and self.recordnumber == self.cp.abortWork)) then
-			isBypassing = true
-			lx, lz = courseplay:isTheWayToTargetFree(self,lx, lz)
+			--isBypassing = true
+			--lx, lz = courseplay:isTheWayToTargetFree(self,lx, lz)
 		elseif self.cp.mode ~= 7 then
 			if self.cp.modeState ~= 0 then
 				courseplay:setModeState(self, 0);

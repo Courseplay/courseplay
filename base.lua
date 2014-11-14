@@ -351,13 +351,6 @@ function courseplay:load(xmlFile)
 	self.cp.selectedCombineNumber = 0
 	self.cp.searchCombineOnField = 0;
 
-	self.cp.EifokLiquidManure = {
-		targetRefillObject = {};
-		searchMapHoseRefStation = {
-			pull = true;
-			push = true;
-		};
-	};
 	--Copy course
 	self.cp.hasFoundCopyDriver = false;
 	self.cp.copyCourseFromDriver = nil;

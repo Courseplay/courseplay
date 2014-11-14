@@ -257,3 +257,71 @@ function streamDebugReadString(streamId)
 	courseplay:debug(string.format("%d: reading string: %s",stream_debug_counter, value ),5)
 	return value
 end
+
+
+	--e.g. courseplay:findInTables(g_currentMission ,"g_currentMission", otherId)
+function courseplay:findInTables(tableToSearchIn , tableToSearchString, valueToSearch)
+	
+	if courseplay.lastSearchedValue == nil then 
+		courseplay.lastSearchedValue = "empty"
+	end
+	if courseplay.lastSearchedValue == valueToSearch then --prevent loops in searching
+		return
+	else
+		print("courseplay:findInTables -> searching "..tostring(valueToSearch).." in "..tableToSearchString)
+		courseplay.lastSearchedValue = valueToSearch
+	end
+	
+	local tableSearch = {}
+	local tableSearchLvl1 = {}
+	local Count = 0 
+	
+	if type(tableToSearchIn) == "table" then
+		--Level 0
+		for index, value in pairs(tableToSearchIn) do	
+			if value == valueToSearch then
+				print(string.format("courseplay:findInTables -> %s.%s = %s",tableToSearchString,tostring(index),tostring(value)))
+			elseif type(value) == "table" then
+				local table1 = tableToSearchIn[index]
+				for index1, value1 in pairs(table1) do
+					if value1 == valueToSearch then
+						print(string.format("courseplay:findInTables -> %s.%s.%s = %s",tableToSearchString,tostring(index),tostring(index1),tostring(value1)))
+					elseif type(value1) == "table" then
+						local table2 = table1[index1]
+						for index2, value2 in pairs(table2) do
+							if value2 == valueToSearch then
+							print(string.format("courseplay:findInTables -> %s.%s.%s.%s = %s",tableToSearchString,tostring(index),tostring(index1),tostring(index2),tostring(value2)))
+							elseif type(value2) == "table" then
+								local table3 = table2[index2]
+								for index3, value3 in pairs(table3) do
+									if value3 == valueToSearch then
+										print(string.format("courseplay:findInTables -> %s.%s.%s.%s.%s = %s",tableToSearchString,tostring(index),tostring(index1),tostring(index2),tostring(index3),tostring(value3)))
+									elseif type(value3) == "table" then					
+										local table4 = table3[index3]
+										for index4, value4 in pairs(table3) do
+											if value4 == valueToSearch then
+												print(string.format("courseplay:findInTables -> %s.%s.%s.%s.%s.%s = %s",tableToSearchString,tostring(index),tostring(index1),tostring(index2),tostring(index3),tostring(index4),tostring(value4)))
+											elseif type(value4) == "table" then
+												local table5 = table4[index4]
+												for index5, value5 in pairs(table4) do
+													if value5 == valueToSearch then
+														print(string.format("courseplay:findInTables -> %s.%s.%s.%s.%s.%s.%s = %s",tableToSearchString,tostring(index),tostring(index1),tostring(index2),tostring(index3),tostring(index4),tostring(index5),tostring(value5)))
+													elseif type(value4) == "table" then
+													end
+												end
+											end
+										end
+									end
+								end							
+							end
+						end
+					end
+				end
+			end
+		end		
+	else
+		print("courseplay:findInTables -> "..tableToSearchString.." is not a table")
+	return
+	end
+	print("courseplay:findInTables -> searching finished")
+end

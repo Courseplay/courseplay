@@ -276,10 +276,6 @@ function courseplay:start(self)
 		self.cp.totalLength, self.cp.totalLengthOffset = courseplay:getTotalLengthOnWheels(self);
 	end;
 
-	--EifokLiquidManure
-	self.cp.EifokLiquidManure.searchMapHoseRefStation.pull = true;
-	self.cp.EifokLiquidManure.searchMapHoseRefStation.push = true;
-
 	courseplay:validateCanSwitchMode(self);
 	--print("startStop "..debug.getinfo(1).currentline)
 end;
@@ -382,6 +378,7 @@ function courseplay:stop(self)
 	self:setCruiseControlState(0)
 	self.cruiseControl.minSpeed = 1
 	self.cp.forcedToStop = false
+	self.cp.waitingForTrailerToUnload = false
 	self.cp.isRecording = false
 	self.cp.recordingIsPaused = false
 	if self.cp.modeState > 4 then

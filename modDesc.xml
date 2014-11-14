@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="20">
-	<version>4.00.0014</version>
+	<version>4.00.0021</version>
 	<author><![CDATA[Jakob Tischler, Thomas Gärtner,
 Horoman, Satis]]></author>
 	<title>
@@ -65,7 +65,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 		</hu>
  	</description>
 	
-	<multiplayer supported="true"/>	
+	<multiplayer supported="true"/>
 	<iconFilename>store.dds</iconFilename>
 
 	<l10n>
@@ -1952,6 +1952,16 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<cz>Farm Silo is empty!</cz>
 			<ru>Farm Silo is empty!</ru>
 			<hu>Farm Silo is empty!</hu>
+		</text>
+		<text name="COURSEPLAY_STARTING_UP_TOOL">
+			<en>Starting up %s!</en>
+			<de>Starting up %s!</de>
+			<fr>Starting up %s!</fr>
+			<es>Starting up %s!</es>
+			<it>Starting up %s!</it>
+			<cz>Starting up %s!</cz>
+			<ru>Starting up %s!</ru>
+			<hu>Starting up %s!</hu>
 		</text>
 		<!-- SeedUsageCalculator HUD content -->
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR">
