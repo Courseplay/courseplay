@@ -555,6 +555,19 @@ function courseplay:drive(self, dt)
 		fwd = false
 		lz = lz * -1
 		lx = lx * -1
+	elseif self.cp.isReverseBackToPoint then
+		if self.cp.reverseBackToPoint then
+			local _, _, zDis = worldToLocal(self.rootNode, self.cp.reverseBackToPoint.x, self.cp.reverseBackToPoint.y, self.cp.reverseBackToPoint.z);
+			if zDis < 0 then
+				fwd = false;
+				lx = 0;
+				lz = 1;
+			else
+				self.cp.reverseBackToPoint = nil;
+			end;
+		else
+			self.cp.isReverseBackToPoint = false;
+		end;
 	end
 	
 	-- Speed Control
@@ -1326,4 +1339,20 @@ function courseplay:setRecordNumber(vehicle, number)
 end;
 
 function courseplay:onRecordNumberChanged(vehicle)
+end;
+
+function courseplay:setReverseBackDistance(vehicle, metersBack)
+	if not vehicle or not metersBack then return; end;
+
+	if not vehicle.cp.reverseBackToPoint then
+		local x, y, z = localToWorld(vehicle.rootNode, 0, 0, -metersBack);
+		vehicle.cp.reverseBackToPoint = {};
+		vehicle.cp.reverseBackToPoint.x = x;
+		vehicle.cp.reverseBackToPoint.y = y;
+		vehicle.cp.reverseBackToPoint.z = z;
+
+		vehicle.cp.isReverseBackToPoint = true;
+
+		courseplay:debug(string.format("%s: Reverse back %d meters", nameNum(vehicle), metersBack), 13);
+	end;
 end;

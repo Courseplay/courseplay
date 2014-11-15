@@ -171,9 +171,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 		or courseplay:isMower(workTool)
 		or courseplay:isAttachedCombine(workTool) 
 		or courseplay:isFoldable(workTool))
-		and not workTool.cp.isCaseIHMagnum340Titanium 
-		and not workTool.cp.isCaseIHPuma160Titanium 
-		and not workTool.cp.isFendt828VarioFruktor 
+		and not workTool.cp.isCaseIHPuma160
 		then
 			hasWorkTool = true;
 			vehicle.tippers[#vehicle.tippers + 1] = workTool;

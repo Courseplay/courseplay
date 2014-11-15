@@ -111,12 +111,18 @@ function courseplay:setNameVariable(workTool)
 
 
 	-- GIANTS DEFAULT / DLC
-	-- [1] COMBINES
+	-- [1] COMBINES / CUTTERS
 	-- Combines [Giants]
 	elseif workTool.cp.xmlFileName == 'caseIH7130.xml' then
 		workTool.cp.isCaseIH7130 = true;
 	elseif workTool.cp.xmlFileName == 'caseIH9230Crawler.xml' then
 		workTool.cp.isCaseIH9230Crawler = true;
+	elseif workTool.cp.xmlFileName == 'newHollandTC590.xml' then
+		workTool.cp.isNewHollandTC590 = true;
+	elseif workTool.cp.xmlFileName == 'newHollandCR1090.xml' then
+		workTool.cp.isNewHollandCR1090 = true;
+	elseif workTool.cp.xmlFileName == 'sampoRosenlewC6.xml' then
+		workTool.cp.isSampoRosenlewC6 = true;
 
 	-- Harvesters (steerable) [Giants]
 	elseif workTool.cp.xmlFileName == 'grimmeMaxtron620.xml' then
@@ -140,7 +146,7 @@ function courseplay:setNameVariable(workTool)
 	-- [2] TRACTORS
 	-- Case IH Puma 160 [Giants]
 	elseif workTool.cp.xmlFileName == 'caseIHPuma160.xml' then
-		workTool.cp.isCaseIHPuma160Titanium = true;
+		workTool.cp.isCaseIHPuma160 = true;
 
 	-- ###########################################################
 
