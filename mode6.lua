@@ -34,11 +34,11 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 		hasFinishedWork = true
 	end
 
-	-- TODO: (Claus) Should we use this? (New stuff)
-	--[[if self.sampleThreshingStart and isSamplePlaying(self.sampleThreshingStart.sample) then
+	-- Wait until we have fully started up Threshing
+	if self.sampleThreshingStart and isSamplePlaying(self.sampleThreshingStart.sample) then
 		allowedToDrive = false;
-		self.cp.infoText = string.format(courseplay:loc("COURSEPLAY_STARTING_UP_TOOL"), nameNum(self));
-	end;]]
+		self.cp.infoText = string.format(courseplay:loc("COURSEPLAY_STARTING_UP_TOOL"), tostring(self.name));
+	end;
 
 	local selfIsFolding, selfIsFolded, selfIsUnfolded = courseplay:isFolding(self);
 	for i=1, #(self.tippers) do
@@ -453,6 +453,11 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 						end
 
 					end
+
+					-- Make sure we are lowered when working the field.
+					if allowedToDrive and isTurnedOn and not workTool:isLowered() then
+						courseplay:lowerImplements(tool, true, false);
+					end;
 				end
 			 --Stop combine
 			elseif self.recordnumber == self.cp.stopWork or self.cp.abortWork ~= nil then

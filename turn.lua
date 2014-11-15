@@ -190,7 +190,7 @@ function courseplay:turn(self, dt) --!!!
 		else
 			self.cp.turnStage = 1;
 			if self.cp.noStopOnTurn == false then
-				self.waitForTurnTime = self.time + 1500;
+				self.waitForTurnTime = self.timer + 1500;
 			end
 			courseplay:lowerImplements(self, false, true)
 			updateWheels = false;
