@@ -60,14 +60,8 @@ function courseplay:drive(self, dt)
 	end;
 
 
-	if self.cp.mode ~= 7 then 
+	if self.cp.mode ~= 7 or (self.cp.mode == 7 and self.cp.modeState ~= 5) then 
 		cx, cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
-	elseif self.cp.mode == 7 and self.cp.modeState ~=5 then
-		if not self.cp.mode7GoBackBeforeUnloading then
-			cx, cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
-		else
-			cx,cz = self.cp.mode7tx7, self.cp.mode7tz7
-		end
 	end
 
 	if courseplay.debugChannels[12] and self.cp.isTurning == nil then
@@ -274,26 +268,6 @@ function courseplay:drive(self, dt)
 				end
 			end;
 		end
-
-		-- MODE 7 PIPE STATE -- TODO (Jakob): move to mode7.lua
-		if self.cp.mode == 7 then
-			if self.recordnumber == self.maxnumber then
-				if self.cp.curTarget.x ~= nil then
-					courseplay:setModeState(self, 5);
-					courseplay:setRecordNumber(self, 2);
-					courseplay:debug(nameNum(self) .. ": " .. tostring(debug.getinfo(1).currentline) .. ": modeState = 5", 11);
-				else
-					allowedToDrive = false
-					--TODO local text no aithreshing
-				end
-			end
-			local pipeState = self:getOverloadingTrailerInRangePipeState();
-			if pipeState > 0 then
-				self:setPipeState(pipeState);
-			else
-				self:setPipeState(1);
-			end;
-		end;
 
 		-- MAP WEIGHT STATION
 		if courseplay:canUseWeightStation(self) then
@@ -503,7 +477,7 @@ function courseplay:drive(self, dt)
 	--SPEED SETTING
 	local isAtEnd   = self.recordnumber > self.maxnumber - 3;
 	local isAtStart = self.recordnumber < 3;
-	if 	((self.cp.mode == 1 or self.cp.mode == 5 or self.cp.mode == 7 or self.cp.mode == 8) and (isAtStart or isAtEnd)) or
+	if 	((self.cp.mode == 1 or self.cp.mode == 5 or self.cp.mode == 8) and (isAtStart or isAtEnd)) or
 		((self.cp.mode == 2 or self.cp.mode == 3) and isAtEnd) or
 		(self.cp.mode == 9 and self.recordnumber > self.cp.shovelFillStartPoint and self.recordnumber <= self.cp.shovelFillEndPoint) or
 		(not workArea and self.wait and ((isAtEnd and self.Waypoints[self.recordnumber].wait) or courseplay:waypointsHaveAttr(self, self.recordnumber, 0, 2, "wait", true, false))) or 
@@ -511,14 +485,16 @@ function courseplay:drive(self, dt)
 		(not isAtEnd and (self.Waypoints[self.recordnumber].rev or self.Waypoints[self.recordnumber + 1].rev or self.Waypoints[self.recordnumber + 2].rev)) or
 		(workSpeed ~= nil and workSpeed == 0.5) 
 	then
-		self.cp.speeds.sl = 1;
+		--self.cp.speeds.sl = 1;
 		refSpeed = self.cp.speeds.turn;
 	elseif ((self.cp.mode == 2 or self.cp.mode == 3) and isAtStart) or (workSpeed ~= nil and workSpeed == 1) then
-		self.cp.speeds.sl = 2;
+		--self.cp.speeds.sl = 2;
 		refSpeed = self.cp.speeds.field;
 	else
-		self.cp.speeds.sl = 3;
-		refSpeed = self.cp.speeds.street;
+		if self.cp.mode ~= 7 then
+		--self.cp.speeds.sl = 3;
+			refSpeed = self.cp.speeds.street;
+		end
 		if self.cp.speeds.useRecordingSpeed and self.Waypoints[self.recordnumber].speed ~= nil then
 			refSpeed = Utils.clamp(refSpeed, 3/3600, self.Waypoints[self.recordnumber].speed);
 		end;
@@ -528,7 +504,6 @@ function courseplay:drive(self, dt)
 		refSpeed = courseplay:regulateTrafficSpeed(self, refSpeed, allowedToDrive);
 	end
 	
-	--bunkerSilo speed by Thomas Gärtner
 	if self.cp.currentTipTrigger ~= nil then
 		if self.cp.currentTipTrigger.bunkerSilo ~= nil then
 			refSpeed = Utils.getNoNil(self.cp.speeds.unload, 3/3600);
@@ -545,14 +520,7 @@ function courseplay:drive(self, dt)
 		self.cp.isInFilltrigger = false;
 	end;
 
-	--local maxRpm = self.motor.maxRpm[self.cp.speeds.sl];
-
-	--checking ESLimiter version
-	if self.ESLimiter ~= nil and self.ESLimiter.maxRPM[5] == nil then
-		self.cp.infoText = courseplay:loc("COURSEPLAY_ESL_NOT_SUPPORTED")
-	end
-
-	--finishing field work
+	--finishing field work- go straight till tool is ready
 	if isFinishingWork then
 		lx=0
 		lz=1
@@ -648,14 +616,7 @@ function courseplay:drive(self, dt)
 		end;
 	end
 
-	-- Change the distance to the correct one on the Kirovets K700A.
-	if self.cp.isKasi ~= nil then
-		if fwd then
-			self.cp.distanceToTarget = self.cp.distanceToTarget - self.cp.isKasi;
-		else
-			self.cp.distanceToTarget = self.cp.distanceToTarget + self.cp.isKasi;
-		end;
-	end
+
 
 	-- record shortest distance to the next waypoint
 	if self.cp.shortestDistToWp == nil or self.cp.shortestDistToWp > self.cp.distanceToTarget then

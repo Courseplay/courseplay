@@ -18,7 +18,6 @@ function courseplay:load(xmlFile)
 	self.cp.isCombine = courseplay:isCombine(self);
 	self.cp.isChopper = courseplay:isChopper(self);
 	self.cp.isHarvesterSteerable = courseplay:isHarvesterSteerable(self);
-	self.cp.isKasi = nil
 	self.cp.isSugarBeetLoader = courseplay:isSpecialCombine(self, "sugarBeetLoader");
 	if self.cp.isCombine then
 		self.cp.mode7Unloading = false
@@ -914,7 +913,7 @@ end
 
 function courseplay:draw()
 	--WORKWIDTH DISPLAY
-	if self.cp.workWidthChanged > self.timer then
+	if self.cp.workWidthChanged > self.timer and self.cp.mode ~= 7 then
 		courseplay:showWorkWidth(self);
 	end;
 
