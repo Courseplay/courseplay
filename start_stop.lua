@@ -6,7 +6,6 @@ function courseplay:start(self)
 	if self.maxnumber < 1 then
 		return
 	end
-
 	courseplay:setEngineState(self, true);
 
 	if self.cp.orgRpm == nil then
@@ -64,6 +63,27 @@ function courseplay:start(self)
 				courseplay:debug(string.format('## Courseplay: %s: aiTrafficCollisionTrigger in cutter missing. Traffic collision prevention will not work!', nameNum(self)),3);
 			end
 		end
+	end
+	
+	-- adapt collis height to vehicles height , its a runonce
+	if self.cp.ColliHeightSet == nil then
+		local height = 0;
+		local step = self.sizeLength/2;
+		local distance = self.sizeLength;
+		local nx, ny, nz = localDirectionToWorld(self.rootNode, 0, -1, 0);	
+		self.cp.HeightsFound = 0;
+		self.cp.HeightsFoundColli = 0;			
+		for i=-step,step,0.5 do				
+			local x,y,z = localToWorld(self.rootNode, 0, distance, i);
+			raycastAll(x, y, z, nx, ny, nz, "findVehicleHeights", distance, self);
+			--print("drive raycast "..tostring(i).." end");
+			--drawDebugLine(x, y, z, 1, 0, 0, x+(nx*distance), y+(ny*distance), z+(nz*distance), 1, 0, 0);
+		end
+		local difference = self.cp.HeightsFound - self.cp.HeightsFoundColli;
+		local trigger = self.cp.trafficCollisionTriggers[1];
+		local Tx,Ty,Tz = getTranslation(trigger,self.rootNode);
+		setTranslation(trigger, Tx,Ty+difference,Tz);
+		self.cp.ColliHeightSet = true;
 	end
 	
 	--calculate workwidth for combines in mode7
@@ -476,4 +496,24 @@ function courseplay:stop(self)
 
 	--validation: can switch mode?
 	courseplay:validateCanSwitchMode(self);
+end
+
+
+function courseplay:findVehicleHeights(transformId, x, y, z, distance)
+		local height = self.sizeLength - distance
+		local vehicle = false
+		if self.cp.trafficCollisionTriggerToTriggerIndex[transformId] ~= nil then
+			if self.cp.HeightsFoundColli < height then
+				self.cp.HeightsFoundColli = height
+			end	
+		elseif transformId == self.rootNode then
+			vehicle = true
+		elseif getParent(transformId) == self.rootNode and self.aiTrafficCollisionTrigger ~= transformId then
+			vehicle = true
+		end
+		if vehicle and self.cp.HeightsFound < height then
+			self.cp.HeightsFound = height
+		end	
+		
+		return true
 end

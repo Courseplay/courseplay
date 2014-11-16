@@ -103,7 +103,6 @@ function courseplay:load(xmlFile)
 	self.cp.canSwitchMode = false;
 	self.cp.startAtFirstPoint = false;
 	self.cp.multiSiloSelectedFillType = Fillable.FILLTYPE_UNKNOWN;
-
 	self.cp.stopForLoading = false;
 
 	self.cp.attachedCombineIdx = nil;
@@ -237,7 +236,8 @@ function courseplay:load(xmlFile)
 	self.findTrafficCollisionCallback = courseplay.findTrafficCollisionCallback;
 	self.findBlockingObjectCallbackLeft = courseplay.findBlockingObjectCallbackLeft;
 	self.findBlockingObjectCallbackRight = courseplay.findBlockingObjectCallbackRight;
-
+	self.findVehicleHeights = courseplay.findVehicleHeights; 
+	
 	-- traffic collision
 	self.cpOnTrafficCollisionTrigger = courseplay.cpOnTrafficCollisionTrigger;
 
