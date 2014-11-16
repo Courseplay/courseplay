@@ -7,8 +7,6 @@ function courseplay:start(self)
 		return
 	end
 
-	--print(tableShow(Utils,"Utils",nil,nil, 2))
-	
 	courseplay:setEngineState(self, true);
 
 	if self.cp.orgRpm == nil then
@@ -378,7 +376,7 @@ function courseplay:stop(self)
 		self.motor.realSpeedLevelsAI[2] = self.cp.mrOrigSpeed[2];
 		self.motor.realSpeedLevelsAI[3] = self.cp.mrOrigSpeed[3];
 	end;]]
-	self:setCruiseControlState(0)
+	self:setCruiseControlState(Drivable.CRUISECONTROL_STATE_OFF)
 	self.cruiseControl.minSpeed = 1
 	self.cp.forcedToStop = false
 	self.cp.waitingForTrailerToUnload = false

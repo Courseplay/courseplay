@@ -705,8 +705,8 @@ function courseplay:unload_combine(self, dt)
 				-- print(nameNum(tractor) .. ': fillLevel > 90%% -> set acIsCPStopped to true'); --TODO: 140308 AutoTractor
 				tractor.acIsCPStopped = true
 			elseif combine.isAIThreshing then 
-				allowedToDrive = false
-				--combine.waitForTurnTime = combine.time + 100 FS15
+				--allowedToDrive = false
+				combine.waitForTurnTime = combine.timer + 100
 			elseif tractor.drive == true then
 				combine.cp.waitingForTrailerToUnload = true
 			end			
@@ -715,8 +715,8 @@ function courseplay:unload_combine(self, dt)
 				-- print(nameNum(tractor) .. ': distance < 50 -> set acIsCPStopped to true'); --TODO: 140308 AutoTractor
 				tractor.acIsCPStopped = true
 			elseif combine.isAIThreshing and not (combine_fill_level == 0 and combine.currentPipeState ~= 2) then
-				allowedToDrive = false
-				--combine.waitForTurnTime = combine.time + 100 FS15
+				--allowedToDrive = false
+				combine.waitForTurnTime = combine.timer + 100
 			elseif tractor.drive == true and not (combine_fill_level == 0 and combine:getOverloadingTrailerInRangePipeState()==0) then
 				combine.cp.waitingForTrailerToUnload = true
 			end

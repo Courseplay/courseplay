@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="20">
-	<version>4.00.0024</version>
+	<version>4.00.0025</version>
 	<author><![CDATA[Jakob Tischler, Thomas Gärtner,
 Horoman, Satis]]></author>
 	<title>
@@ -1955,7 +1955,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 		</text>
 		<text name="COURSEPLAY_STARTING_UP_TOOL">
 			<en>Starting up %s!</en>
-			<de>Starting up %s!</de>
+			<de>%s startet</de>
 			<fr>Starting up %s!</fr>
 			<es>Starting up %s!</es>
 			<it>Starting up %s!</it>

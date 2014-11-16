@@ -177,7 +177,7 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 						vehicle.aiThreshingDirectionZ = vehicle.lastaiThreshingDirectionZ;
 						courseplay:debug(nameNum(vehicle) .. ": restored vehicle.aiThreshingDirection", 11);
 					end
-					vehicle:setCruiseControlState(0);	-- TODO (Tom) tricky temporary solution
+					vehicle:setCruiseControlState(Drivable.CRUISECONTROL_STATE_OFF);	-- TODO (Tom) tricky temporary solution
 					vehicle.cruiseControl.minSpeed = 1;	-- TODO (Tom) tricky temporary solution			 	
 					vehicle:startAIThreshing(true);
 					vehicle.cp.mode7Unloading = false;

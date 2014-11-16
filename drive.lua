@@ -797,12 +797,11 @@ function courseplay:deleteCollisionVehicle(vehicle)
 end
 
 function courseplay:setSpeed(vehicle, refSpeed, sl)
-	
+	local newSpeed = math.max(refSpeed*3600,3)	
 	if vehicle.cruiseControl.state == 0 then
-		vehicle:setCruiseControlState(1)
+		vehicle:setCruiseControlState(Drivable.CRUISECONTROL_STATE_ACTIVE)
 	end 
-	vehicle.cruiseControl.minSpeed = refSpeed*3600   --TODO(Tom) thats rape, make it nice and clear when you know how
-	
+	vehicle.cruiseControl.minSpeed = newSpeed   --TODO(Tom) thats rape, make it nice and clear when you know how
 end
 	
 function dummy()
