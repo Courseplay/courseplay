@@ -168,6 +168,10 @@ function courseplay:initialize()
 end;
 
 function courseplay:setGlobalData()
+	if courseplay.globalDataSet then
+		return;
+	end;
+
 	courseplay.cpFolderPath = getUserProfileAppPath() .. 'courseplay/';
 	courseplay.cpSavegameFolderPath = courseplay.cpFolderPath .. 'savegame' .. g_careerScreen.selectedIndex .. '/';
 	courseplay.cpXmlFilePath = courseplay.cpSavegameFolderPath .. 'courseplay.xml';
@@ -488,6 +492,8 @@ function courseplay:setGlobalData()
 	courseplay.wagePerMin  = wagesAmount / 60;
 
 	--print("\t### Courseplay: setGlobalData() finished");
+
+	courseplay.globalDataSet = true;
 end;
 
 courseplay:initialize();

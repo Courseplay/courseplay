@@ -2,6 +2,10 @@
 local courseplay_manager_mt = Class(courseplay_manager);
 
 function courseplay_manager:loadMap(name)
+	if not courseplay.globalDataSet then
+		courseplay:setGlobalData();
+	end;
+
 	if courseplay.isDeveloper then
 		addConsoleCommand('cpAddMoney', ('Add %s to your bank account'):format(g_i18n:formatMoney(5000000)), 'devAddMoney', self);
 		addConsoleCommand('cpAddFillLevels', 'Add 500\'000 l to all of your silos', 'devAddFillLevels', self);
@@ -217,6 +221,9 @@ function courseplay_manager:deleteMap()
 	end;
 	courseplay.fields.seedUsageCalculator = {};
 	courseplay.fields.seedUsageCalculator.fieldsWithoutSeedData = {};
+
+	-- load/set global again on new map
+	courseplay.globalDataSet = false;
 end;
 
 function courseplay_manager:draw()
