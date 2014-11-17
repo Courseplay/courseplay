@@ -181,7 +181,7 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 					vehicle:startAIThreshing(true);
 					vehicle.cp.mode7Unloading = false;
 					courseplay:debug(nameNum(vehicle) .. ": start AITreshing", 11);
-					courseplay:debug(nameNum(vehicle) .. ": fault: "..tostring(ceil(abs(ctx7-vehicle.cp.curTargetMode7.x)*100)).." cm ", 11);
+					courseplay:debug(nameNum(vehicle) .. ": fault: "..tostring(ceil(abs(ctx7-vehicle.cp.curTargetMode7.x)*100)).." cm X  "..tostring(ceil(abs(ctz7-vehicle.cp.curTargetMode7.z)*100)).." cm Z", 11);
 				end
 			end
 		end

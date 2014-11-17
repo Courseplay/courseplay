@@ -530,6 +530,8 @@ function courseplay_manager:load_courses()
 
 						if speed == 0 then
 							speed = nil
+						elseif math.ceil(speed) ~= speed then
+							speed = math.ceil(speed*3600)							
 						end
 
 						--generated not needed, since true or false are loaded from file
@@ -886,7 +888,7 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 				local wait = streamDebugReadBool(streamId)
 				local rev = streamDebugReadBool(streamId)
 				local crossing = streamDebugReadBool(streamId)
-				local speeed = streamDebugReadInt32(streamId)
+				local speed = streamDebugReadInt32(streamId)
 
 				local generated = streamDebugReadBool(streamId)
 				local dir = streamDebugReadString(streamId)

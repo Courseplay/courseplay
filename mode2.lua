@@ -639,7 +639,7 @@ function courseplay:unload_combine(self, dt)
 		end
 
 		-- refspeed depends on the distance to the combine
-		local combine_speed = tractor.lastSpeed
+		local combine_speed = tractor.lastSpeed*3600
 		if combine.cp.isChopper then
 			if lz > 20 then
 				refSpeed = self.cp.speeds.field
@@ -948,7 +948,7 @@ function courseplay:unload_combine(self, dt)
 			if distance > 50 then
 				refSpeed = self.cp.speeds.street
 			else
-				refSpeed = frontTractor.lastSpeedReal 
+				refSpeed = frontTractor.lastSpeedReal*3600 
 			end
 		end
 		--courseplay:debug(string.format("distance: %d  dod: %d",distance,dod ), 4)
@@ -976,11 +976,11 @@ function courseplay:unload_combine(self, dt)
 
 
 	if allowedToDrive then
-		local real_speed = self.lastSpeedReal
+		--[[local real_speed = self.lastSpeedReal
 
 		if refSpeed == nil then
 			refSpeed = real_speed
-		end
+		end]]
 		
 		if self.isRealistic then
 			if self.cp.chopperIsTurning then

@@ -133,17 +133,17 @@ function courseplay.button:renderButton(vehicle, button)
 
 		elseif pg == 5 then
 			if fn == 'changeTurnSpeed' then
-				button.canScrollUp =   vehicle.cp.speeds.turn < vehicle.cp.speeds.max/3600;
-				button.canScrollDown = vehicle.cp.speeds.turn > vehicle.cp.speeds.minTurn/3600;
+				button.canScrollUp =   vehicle.cp.speeds.turn < vehicle.cp.speeds.max;
+				button.canScrollDown = vehicle.cp.speeds.turn > vehicle.cp.speeds.minTurn;
 			elseif fn == 'changeFieldSpeed' then
-				button.canScrollUp =   vehicle.cp.speeds.field < vehicle.cp.speeds.max/3600;
-				button.canScrollDown = vehicle.cp.speeds.field > vehicle.cp.speeds.minField/3600;
+				button.canScrollUp =   vehicle.cp.speeds.field < vehicle.cp.speeds.max;
+				button.canScrollDown = vehicle.cp.speeds.field > vehicle.cp.speeds.minField;
 			elseif fn == 'changeMaxSpeed' then
-				button.canScrollUp =   vehicle.cp.speeds.useRecordingSpeed == false and vehicle.cp.speeds.street < vehicle.cp.speeds.max/3600;
-				button.canScrollDown = vehicle.cp.speeds.useRecordingSpeed == false and vehicle.cp.speeds.street > vehicle.cp.speeds.minStreet/3600;
+				button.canScrollUp =   vehicle.cp.speeds.useRecordingSpeed == false and vehicle.cp.speeds.street < vehicle.cp.speeds.max;
+				button.canScrollDown = vehicle.cp.speeds.useRecordingSpeed == false and vehicle.cp.speeds.street > vehicle.cp.speeds.minStreet;
 			elseif fn == 'changeUnloadSpeed' then
-				button.canScrollUp =   vehicle.cp.speeds.unload < vehicle.cp.speeds.max/3600;
-				button.canScrollDown = vehicle.cp.speeds.unload > vehicle.cp.speeds.minUnload/3600;
+				button.canScrollUp =   vehicle.cp.speeds.unload < vehicle.cp.speeds.max;
+				button.canScrollDown = vehicle.cp.speeds.unload > vehicle.cp.speeds.minUnload;
 			end;
 
 		elseif pg == 6 then
@@ -266,27 +266,27 @@ function courseplay.button:renderButton(vehicle, button)
 		elseif pg == 5 then
 			if fn == 'changeTurnSpeed' then
 				if prm < 0 then
-					button.show = vehicle.cp.speeds.turn > vehicle.cp.speeds.minTurn/3600;
+					button.show = vehicle.cp.speeds.turn > vehicle.cp.speeds.minTurn;
 				elseif prm > 0 then
-					button.show = vehicle.cp.speeds.turn < vehicle.cp.speeds.max/3600;
+					button.show = vehicle.cp.speeds.turn < vehicle.cp.speeds.max;
 				end;
 			elseif fn == 'changeFieldSpeed' then
 				if prm < 0 then
-					button.show = vehicle.cp.speeds.field > vehicle.cp.speeds.minField/3600;
+					button.show = vehicle.cp.speeds.field > vehicle.cp.speeds.minField;
 				elseif prm > 0 then
-					button.show = vehicle.cp.speeds.field < vehicle.cp.speeds.max/3600;
+					button.show = vehicle.cp.speeds.field < vehicle.cp.speeds.max;
 				end;
 			elseif fn == 'changeMaxSpeed' then
 				if prm < 0 then
-					button.show = not vehicle.cp.speeds.useRecordingSpeed and vehicle.cp.speeds.street > vehicle.cp.speeds.minStreet/3600;
+					button.show = not vehicle.cp.speeds.useRecordingSpeed and vehicle.cp.speeds.street > vehicle.cp.speeds.minStreet;
 				elseif prm > 0 then
-					button.show = not vehicle.cp.speeds.useRecordingSpeed and vehicle.cp.speeds.street < vehicle.cp.speeds.max/3600;
+					button.show = not vehicle.cp.speeds.useRecordingSpeed and vehicle.cp.speeds.street < vehicle.cp.speeds.max;
 				end;
 			elseif fn == 'changeUnloadSpeed' then
 				if prm < 0 then
-					button.show = vehicle.cp.speeds.unload > vehicle.cp.speeds.minUnload/3600;
+					button.show = vehicle.cp.speeds.unload > vehicle.cp.speeds.minUnload;
 				elseif prm > 0 then
-					button.show = vehicle.cp.speeds.unload < vehicle.cp.speeds.max/3600;
+					button.show = vehicle.cp.speeds.unload < vehicle.cp.speeds.max;
 				end;
 			end;
 

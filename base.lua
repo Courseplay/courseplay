@@ -149,11 +149,11 @@ function courseplay:load(xmlFile)
 	-- speed limits
 	self.cp.speeds = {
 		useRecordingSpeed = true;
-		unload =  6 / 3600;
-		turn =   10 / 3600;
-		field =  24 / 3600;
-		street = 50 / 3600;
-		crawl = 3 / 3600;
+		unload =  6;
+		turn =   10;
+		field =  24;
+		street = 50;
+		crawl = 3;
 		
 		minUnload = 3;
 		minTurn = 3;
@@ -1496,10 +1496,10 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		-- SPEEDS
 		curKey = key .. '.courseplay.speeds';
 		self.cp.speeds.useRecordingSpeed = Utils.getNoNil(getXMLBool(xmlFile, curKey .. '#useRecordingSpeed'), true);
-		self.cp.speeds.unload = Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#unload'), 6/3600);
-		self.cp.speeds.turn = Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#turn'), 10/3600);
-		self.cp.speeds.field = Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#field'), 24/3600);
-		self.cp.speeds.street = Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#max'), 50/3600);
+		self.cp.speeds.unload = Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#unload'), 6);
+		self.cp.speeds.turn = Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#turn'), 10);
+		self.cp.speeds.field = Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#field'), 24);
+		self.cp.speeds.street = Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#max'), 50);
 
 		-- MODE 2
 		curKey = key .. '.courseplay.combi';

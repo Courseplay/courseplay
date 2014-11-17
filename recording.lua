@@ -30,9 +30,10 @@ function courseplay:record(vehicle)
 			end;
 		end;
 	end;
-
+	local speed = math.ceil(vehicle.lastSpeedReal*3600)
+	
 	if vehicle.cp.recordingTimer > 100 then
-		courseplay:setNewWaypointFromRecording(vehicle, cx, cz, newAngle, false, vehicle.cp.drivingDirReverse, vehicle.recordnumber == 1, vehicle.lastSpeedReal);
+		courseplay:setNewWaypointFromRecording(vehicle, cx, cz, newAngle, false, vehicle.cp.drivingDirReverse, vehicle.recordnumber == 1, speed);
 		local signType = vehicle.recordnumber == 1 and "start" or nil;
 		courseplay.utils.signs:addSign(vehicle, signType, cx, cz, nil, newAngle);
 		vehicle.cp.recordingTimer = 1;

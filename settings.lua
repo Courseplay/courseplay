@@ -639,31 +639,31 @@ function courseplay:getCanHaveWaitTime(vehicle)
 end;
 
 function courseplay:changeTurnSpeed(vehicle, changeBy)
-	local speed = vehicle.cp.speeds.turn * 3600;
+	local speed = vehicle.cp.speeds.turn;
 	speed = Utils.clamp(speed + changeBy, vehicle.cp.speeds.minTurn, vehicle.cp.speeds.max);
-	vehicle.cp.speeds.turn = speed / 3600;
+	vehicle.cp.speeds.turn = speed ;
 end
 
 function courseplay:changeFieldSpeed(vehicle, changeBy)
-	local speed = vehicle.cp.speeds.field * 3600;
+	local speed = vehicle.cp.speeds.field;
 	speed = Utils.clamp(speed + changeBy, vehicle.cp.speeds.minField, vehicle.cp.speeds.max);
-	vehicle.cp.speeds.field = speed / 3600;
+	vehicle.cp.speeds.field = speed;
 end
 
 function courseplay:changeMaxSpeed(vehicle, changeBy)
 	if not vehicle.cp.speeds.useRecordingSpeed then
-		local speed = vehicle.cp.speeds.street * 3600;
+		local speed = vehicle.cp.speeds.street;
 		speed = Utils.clamp(speed + changeBy, vehicle.cp.speeds.minStreet, vehicle.cp.speeds.max);
-		vehicle.cp.speeds.street = speed / 3600;
+		vehicle.cp.speeds.street = speed;
 	end;
 end
 
 function courseplay:changeUnloadSpeed(vehicle, changeBy, force, forceReloadPage)
-	local speed = force or (vehicle.cp.speeds.unload * 3600 + changeBy);
+	local speed = force or (vehicle.cp.speeds.unload + changeBy);
 	if not force then
 		speed = Utils.clamp(speed, vehicle.cp.speeds.minUnload, vehicle.cp.speeds.max);
 	end;
-	vehicle.cp.speeds.unload = speed / 3600;
+	vehicle.cp.speeds.unload = speed;
 
 	if forceReloadPage then
 		courseplay.hud:setReloadPageOrder(vehicle, 5, true);
