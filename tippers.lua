@@ -475,116 +475,31 @@ end;
 
 function courseplay:setTipperCoverData(vehicle)
 	for i=1, vehicle.cp.numWorkTools do
-		local t = vehicle.tippers[i];
-		local isHKD302, isMUK, isSRB35 = false, false, false;
-
-		if t.configFileName ~= nil then
-			isHKD302 = t.configFileName == 'data/vehicles/trailers/kroeger/HKD302.xml';
-			isMUK = t.configFileName == 'data/vehicles/trailers/kroeger/MUK303.xml' or t.configFileName == 'data/vehicles/trailers/kroeger/MUK402.xml';
-			isSRB35 = t.cp.isSRB35; -- t.configFileName == 'data/vehicles/trailers/kroeger/SRB35.xml';
-		end;
+		local workTool = vehicle.tippers[i];
 
 		-- Default Giants trailers
-		if isHKD302 or isMUK or isSRB35 then
-			local coverItems = {};
-			if isHKD302 then
-				local c = getChild(t.rootNode, 'bodyLeft');
-				if c ~= nil and c ~= 0 then
-					c = getChild(c, 'bodyRight');
-				end;
-				if c ~= nil and c ~= 0 then
-					c = getChild(c, 'body');
-				end;
-				if c ~= nil and c ~= 0 then
-					c = getChild(c, 'plasticPlane');
-				end;
-
-				if c ~= nil and c ~= 0 then
-					vehicle.cp.tipperHasCover = true;
-					table.insert(coverItems, c);
-				end;
-			elseif isMUK then
-				local c = getChild(t.rootNode, 'tank');
-				local c1, c2;
-				if c ~= nil and c ~= 0 then
-					c1 = getChild(c, 'planeFlapLeft');
-					c2 = getChild(c, 'planeFlapRight');
-				end;
-
-				if c1 ~= nil and c1 ~= 0 and c2 ~= nil and c2 ~= 0  then
-					vehicle.cp.tipperHasCover = true;
-					table.insert(coverItems, c1);
-					table.insert(coverItems, c2);
-				end;
-			elseif isSRB35 then
-				local c = getChild(t.rootNode, 'plasticPlane');
-				if c ~= nil and c ~= 0 then
-					vehicle.cp.tipperHasCover = true;
-					table.insert(coverItems, c);
-				end;
-			end;
-
-			if vehicle.cp.tipperHasCover and #(coverItems) > 0 then
-				courseplay:debug(string.format('Implement %q has a cover (coverItems ~= nil)', tostring(t.name)), 6);
-				local data = {
-					coverType = 'defaultGiants',
-					tipperIndex = i,
-					coverItems = coverItems
-				};
-				table.insert(vehicle.cp.tippersWithCovers, data);
-			end;
-
-		-- setPlane (SMK-34 et al.)
-		elseif t.setPlane ~= nil and type(t.setPlane) == 'function' and t.currentPlaneId == nil and t.currentPlaneSetId == nil then
-			--NOTE: setPlane is both in SMK and in chaffCover.lua -> check for currentPlaneId, currentPlaneSetId (chaffCover) nil
-			courseplay:debug(string.format('Implement %q has a cover (setPlane ~= nil)', tostring(t.name)), 6);
-			vehicle.cp.tipperHasCover = true;
+		if workTool.cp.hasSpecializationCover then
+			courseplay:debug(string.format('Implement %q has a cover (hasSpecializationCover == true)', tostring(workTool.name)), 6);
 			local data = {
-				coverType = 'setPlane',
+				coverType = 'defaultGiants',
 				tipperIndex = i,
-				showCoverWhenTipping = t.cp.xmlFileName == 'SMK34.xml'
+				--coverItems = coverItems
 			};
 			table.insert(vehicle.cp.tippersWithCovers, data);
-
-		-- planeOpen (TUW et al.)
-		elseif t.planeOpen ~= nil and t.animationParts[3] ~= nil and t.animationParts[3].offSet ~= nil and t.animationParts[3].animDuration ~= nil then
-			courseplay:debug(string.format('Implement %q has a cover (planeOpen ~= nil)', tostring(t.name)), 6);
 			vehicle.cp.tipperHasCover = true;
-			local data = {
-				coverType = 'planeOpen',
-				tipperIndex = i
-			};
-			table.insert(vehicle.cp.tippersWithCovers, data);
 
-		-- setCoverState (Hobein 18t et al.)
-		elseif t.setCoverState ~= nil and type(t.setCoverState) == 'function' and t.cover ~= nil and t.cover.opened ~= nil and t.cover.closed ~= nil and t.cover.state ~= nil then
-			courseplay:debug(string.format('Implement %q has a cover (setCoverState ~= nil)', tostring(t.name)), 6);
-			vehicle.cp.tipperHasCover = true;
-			local data = {
-				coverType = 'setCoverState',
-				tipperIndex = i
-			};
-			table.insert(vehicle.cp.tippersWithCovers, data);
-
-		-- setCoverState (Giants Marshall DLC)
-		elseif t.setCoverState ~= nil and type(t.setCoverState) == 'function' and t.covers ~= nil and t.isCoverOpen ~= nil then
-			courseplay:debug(string.format('Implement %q has a cover (setCoverState [Giants Marshall DLC] ~= nil)', tostring(t.name)), 6);
-			vehicle.cp.tipperHasCover = true;
-			local data = {
-				coverType = 'setCoverStateGiants',
-				tipperIndex = i
-			};
-			table.insert(vehicle.cp.tippersWithCovers, data);
-
-		-- setSheet (Marston)
-		elseif t.setSheet ~= nil and t.sheet ~= nil and t.sheet.isActive ~= nil then
-			courseplay:debug(string.format('Implement %q has a cover (setSheet ~= nil)', tostring(t.name)), 6);
-			vehicle.cp.tipperHasCover = true;
-			local data = {
-				coverType = 'setSheet',
-				tipperIndex = i
-			};
-			table.insert(vehicle.cp.tippersWithCovers, data);
+		-- Example: for mods trailer that don't use the default cover specialization. Look at openCloseCover() to see how this is used!
+		else--if workTool.cp.isCoverVehicle then
+			--courseplay:debug(string.format('Implement %q has a cover (isCoverVehicle == true)', tostring(workTool.name)), 6);
+			--vehicle.cp.tipperHasCover = true;
+			--local coverItems = someCreatedCoverList;
+			--local data = {
+			--	coverType = 'CoverVehicle',
+			--	tipperIndex = i,
+			--	coverItems = coverItems,
+			--	showCoverWhenTipping = true
+			--};
+			--table.insert(vehicle.cp.tippersWithCovers, data);
 		end;
 	end;
 end;

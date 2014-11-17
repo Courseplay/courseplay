@@ -19,6 +19,7 @@ function courseplay:setNameVariable(workTool)
 		elseif spec == Baler 			   then workTool.cp.hasSpecializationBaler 				 = true;
 		elseif spec == BunkerSiloCompacter then workTool.cp.hasSpecializationBunkerSiloCompacter = true;
 		elseif spec == Combine 			   then workTool.cp.hasSpecializationCombine 			 = true;
+		elseif spec == Cover 			   then workTool.cp.hasSpecializationCover				 = true;
 		elseif spec == Cultivator 		   then workTool.cp.hasSpecializationCultivator 		 = true;
 		elseif spec == Cutter 			   then workTool.cp.hasSpecializationCutter 			 = true;
 		elseif spec == Cylindered 		   then workTool.cp.hasSpecializationCylindered 		 = true;

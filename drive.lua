@@ -894,41 +894,25 @@ function courseplay:openCloseCover(vehicle, dt, showCover, isAtTipTrigger)
 		local tIdx, coverType, showCoverWhenTipping, coverItems = twc.tipperIndex, twc.coverType, twc.showCoverWhenTipping, twc.coverItems;
 		local tipper = vehicle.tippers[tIdx];
 
-		-- SMK-34 et al.
-		if coverType == 'setPlane' and tipper.plane.bOpen == showCover then
-			if showCoverWhenTipping and isAtTipTrigger and not showCover then
-				--
-			else
-				tipper:setPlane(not showCover);
-			end;
-
-		-- Hobein 18t et al.
-		elseif coverType == 'setCoverState' and tipper.cover.state ~= showCover then
-			tipper:setCoverState(showCover);
-
-		-- TUW et al.
-		elseif coverType == 'planeOpen' then
-			if showCover and tipper.planeOpen then
-				tipper:setAnimationTime(3, tipper.animationParts[3].offSet, false);
-			elseif not showCover and not tipper.planeOpen then
-				tipper:setAnimationTime(3, tipper.animationParts[3].animDuration, false);
-			end;
-
-		-- Marston / setSheet
-		elseif coverType == 'setSheet' and tipper.sheet.isActive ~= showCover then
-			tipper:setSheet(showCover);
-
 		-- default Giants trailers
-		elseif coverType == 'defaultGiants' then
-			for _,ci in pairs(coverItems) do
-				if getVisibility(ci) ~= showCover then
-					setVisibility(ci, showCover);
-				end;
+		if coverType == 'defaultGiants' then
+			if tipper.isCoverOpen == showCover then
+				tipper:setCoverState(not showCover);
 			end;
 
-		-- setCoverState (Giants Marshall DLC)
-		elseif coverType == 'setCoverStateGiants' and tipper.isCoverOpen == showCover then
-			tipper:setCoverState(not showCover);
+
+		-- Example: for mods trailer that don't use the default cover specialization
+		else--if coverType == 'CoverVehicle' then
+			--for _,ci in pairs(coverItems) do
+			--	if getVisibility(ci) ~= showCover then
+			--		setVisibility(ci, showCover);
+			--	end;
+			--end;
+			--if showCoverWhenTipping and isAtTipTrigger and not showCover then
+				--
+			--else
+			--	tipper:setPlane(not showCover);
+			--end;
 		end;
 	end; --END for i,tipperWithCover in vehicle.cp.tippersWithCovers
 end;
