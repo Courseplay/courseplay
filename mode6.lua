@@ -281,7 +281,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 
 						-- Start reversion value is to check if we have started to reverse
 						-- This is used in case we already registered a tipTrigger but changed the direction and might not be in that tipTrigger when unloading. (Bug Fix)
-						local startReversing = self.Waypoints[self.recordnumber].rev and not self.Waypoints[self.cp.lastRecordnumber].rev and not self.cp.BGASelectedSection;
+						local startReversing = self.Waypoints[self.recordnumber].rev and not self.Waypoints[self.cp.lastRecordnumber].rev;
 						if startReversing then
 							courseplay:debug(string.format("%s: Is starting to reverse. Tip trigger is reset.", nameNum(self)), 13);
 						end;
@@ -401,8 +401,11 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 						if not isFolding and tankFillLevelPct < 100 and not tool.waitingForDischarge and not tool.isThreshing and not weatherStop then
 							tool:setIsThreshing(true);
 						end
-
-						if tankFillLevelPct >= 100 or tool.waitingForDischarge or (tool.cp.stopWhenUnloading and tool.pipeIsUnloading and tool.courseplayers and tool.courseplayers[1] ~= nil) then
+						if tool.pipeIsUnloading and (tool.courseplayers == nil or tool.courseplayers[1] == nil) and tool.cp.stopWhenUnloading and tankFillLevelPct >= 1 then
+							tool.stopForManualUnloader = true
+						end
+							
+						if tankFillLevelPct >= 100 or tool.waitingForDischarge or (tool.cp.stopWhenUnloading and tool.pipeIsUnloading and tool.courseplayers and tool.courseplayers[1] ~= nil) or tool.stopForManualUnloader then
 							tool.waitingForDischarge = true;
 							allowedToDrive = courseplay:brakeToStop(self); -- allowedToDrive = false;
 							if tool.isThreshing then
@@ -414,6 +417,9 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 									tool:setIsThreshing(true);
 								end;
 							end;
+							if tool.stopForManualUnloader and tool.grainTankFillLevel == 0 then
+								tool.stopForManualUnloader = false
+							end
 						end;
 
 						if weatherStop then

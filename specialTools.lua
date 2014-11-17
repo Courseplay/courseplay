@@ -116,6 +116,15 @@ function courseplay:setNameVariable(workTool)
 	-- ###########################################################
 
 	-- [3] MOD TRAILERS
+	-- Perard Interbenne 25
+	elseif workTool.cp.xmlFileName == 'perard.xml' then
+		workTool.cp.isPerardInterbenne25 = true;
+		if not courseplay.trafficCollisionIgnoreList[workTool.components[2].node + 1] then
+			courseplay.trafficCollisionIgnoreList[workTool.components[2].node + 1] = true; -- adding the Perard Interbenne 25 pipeCol to the ignore list if not set
+		end;
+		workTool.cp.isAugerWagon = true;
+		workTool.cp.hasSpecializationOverloaderV2 = workTool.overloaderVersion ~= nil and workTool.overloaderVersion >= 2;
+
 	-- Claas Quantum 3800K [Vertex Design]
 	elseif workTool.psGrassactive ~= nil and workTool.psStrawactive ~= nil and workTool.cp.xmlFileName == 'claas_quantum_3800k.xml' then
 		workTool.cp.isClaasQuantum3800K = true;

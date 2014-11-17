@@ -34,16 +34,16 @@ function courseplay:handle_mode1(vehicle, allowedToDrive)
 			local ctx, cty, ctz = getWorldTranslation(vehicle.rootNode);
 			local distance_to_trigger = courseplay:distance(ctx, ctz, trigger_x, trigger_z);
 
-			-- Start reversion value is to check if we have started to reverse
+			-- Start reversing value is to check if we have started to reverse
 			-- This is used in case we already registered a tipTrigger but changed the direction and might not be in that tipTrigger when unloading. (Bug Fix)
-			local startReversing = vehicle.Waypoints[vehicle.recordnumber].rev and not vehicle.Waypoints[vehicle.cp.lastRecordnumber].rev and not vehicle.cp.BGASelectedSection;
+			local startReversing = vehicle.Waypoints[vehicle.recordnumber].rev and not vehicle.Waypoints[vehicle.cp.lastRecordnumber].rev;
 			if startReversing then
 				courseplay:debug(string.format("%s: Is starting to reverse. Tip trigger is reset.", nameNum(vehicle)), 13);
 			end;
 
 			if distance_to_trigger > 75 or startReversing then
 				courseplay:resetTipTrigger(vehicle);
-				courseplay:debug(nameNum(vehicle) .. ": distance to currentTipTrigger = " .. tostring(distance_to_trigger) .. " (> 75) --> currentTipTrigger = nil", 1);
+				courseplay:debug(nameNum(vehicle) .. ": distance to currentTipTrigger = " .. tostring(distance_to_trigger) .. " (> 75 or start reversing) --> currentTipTrigger = nil", 1);
 			end	
 		else
 			courseplay:resetTipTrigger(vehicle);

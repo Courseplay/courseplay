@@ -50,6 +50,8 @@ function courseplay:isTheWayToTargetFree(self,lx,lz)
 			self.cp.foundColli = {}
 			self.cp.bypassWaypointsSet = false
 			self.cp.bypassWaypoints = {}
+			courseplay:debug(nameNum(self) .."empty self.cp.foundColli ,stop bypassing",3)
+			courseplay:debug("",3)
 			return lx,lz
 		end
 		lx,lz = lxC, lzC
@@ -118,6 +120,6 @@ function courseplay:AnalyseRaycastResponse(self,side,transformId, x, y, z, dista
 		self.cp.foundColli[1].bp = math.sqrt(vehicle.sizeLength^2 + vehicle.sizeWidth^2)
 		self.cp.foundColli[1].vehicleId = vehicle.id
 	end
-	
+	courseplay:debug(nameNum(self) .."added : "..tostring(getName(transformId)).."["..tostring(transformId).."] to self.cp.foundColli[1] , start bypassing",3)
 
 end

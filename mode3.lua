@@ -19,9 +19,9 @@ function courseplay:handleMode3(vehicle, fillLevelPct, allowedToDrive, dt)
 			end;
 			if vehicle.cp.prevFillLevelPct ~= nil then
 				if fillLevelPct > 0 and workTool.cp.isUnloading then
-					courseplay:setCustomTimer(vehicle, "fillLevelChange", 7);
+					courseplay:setCustomTimer(vehicle, "fillLevelChange", 10);
 				elseif fillLevelPct == vehicle.cp.prevFillLevelPct and fillLevelPct < vehicle.cp.followAtFillLevel and courseplay:timerIsThrough(vehicle, "fillLevelChange", false) then
-					driveOn = true; -- drive on if fillLevelPct doesn't change for 7 seconds and fill level is < required_fillLevelPct_for_follow
+					driveOn = true; -- drive on if fillLevelPct doesn't change for 10 seconds and fill level is < required_fillLevelPct_for_follow
 				end;
 			end;
 

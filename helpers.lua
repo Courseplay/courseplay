@@ -47,12 +47,17 @@ function courseplay:isFolding(workTool) --returns isFolding, isFolded, isUnfolde
 		end;
 
 		--isFolding
-		--if workTool.foldMoveDirection > 0 and animTime < foldingPart.animDuration then
-		if workTool.foldMoveDirection > 0 and workTool.foldAnimTime < 1 then
-			isFolding = true;
-		--elseif workTool.foldMoveDirection < 0 and animTime > 0 then
-		elseif workTool.foldMoveDirection < 0 and workTool.foldAnimTime > 0 then
-			isFolding = true;
+		if workTool.oldFoldAnimTime == nil then workTool.oldFoldAnimTime = 0; end;
+		if workTool.foldAnimTime ~= workTool.oldFoldAnimTime then
+			--if workTool.foldMoveDirection > 0 and animTime < foldingPart.animDuration then
+			if workTool.foldMoveDirection > 0 and workTool.foldAnimTime < 1 then
+				isFolding = true;
+			--elseif workTool.foldMoveDirection < 0 and animTime > 0 then
+			elseif workTool.foldMoveDirection < 0 and workTool.foldAnimTime > 0 then
+				isFolding = true;
+			end;
+
+			workTool.oldFoldAnimTime = workTool.foldAnimTime;
 		end;
 	end;
 

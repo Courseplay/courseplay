@@ -108,7 +108,13 @@ function courseplay:registerAtCombine(vehicle, combine)
 					fruitSide = courseplay:sideToDrive(vehicle, combine, 0)
 				end
 				courseplay:debug(nameNum(vehicle)..": courseplay:sideToDrive = "..tostring(fruitSide),4)
-				if fruitSide == "left" then
+				
+				if combine.cp.pipeSide == nil then
+					courseplay:getCombinesPipeSide(combine)
+				end				
+				
+				local pipeIsInFruit = (combine.cp.pipeSide == 1 and fruitSide == "left") or (combine.cp.pipeSide == -1 and fruitSide == "right")
+				if pipeIsInFruit then
 					courseplay:debug(nameNum(vehicle)..": path finding active and pipe in fruit -> don't register tractor",4)
 					return false
 				end
@@ -299,17 +305,12 @@ function courseplay:calculateInitialCombineOffset(vehicle, combine) --TODO (Jako
 	
 	local prnX,prnY,prnZ, prnwX,prnwY,prnwZ, combineToPrnX,combineToPrnY,combineToPrnZ = 0,0,0, 0,0,0, 0,0,0;
 	if combine.pipeRaycastNode ~= nil then
-		prnX, prnY, prnZ = getTranslation(combine.pipeRaycastNode)
 		prnwX, prnwY, prnwZ = getWorldTranslation(combine.pipeRaycastNode)
+		prnX, prnY, prnZ = getTranslation(combine.pipeRaycastNode)
 		combineToPrnX, combineToPrnY, combineToPrnZ = worldToLocal(combine.rootNode, prnwX, prnwY, prnwZ)
-
-		if combineToPrnX >= 0 then
-			combine.cp.pipeSide = 1; --left
-			--print("pipe is left")
-		else
-			combine.cp.pipeSide = -1; --right
-			--print("pipe is right")
-		end;
+		if combine.cp.pipeSide == nil then
+			courseplay:getCombinesPipeSide(combine)
+		end
 	end;
 
 	--special combines
@@ -428,3 +429,18 @@ function courseplay:getSpecialCombineOffset(combine)
 
 	return nil;
 end;
+
+function courseplay:getCombinesPipeSide(combine)
+	prnwX, prnwY, prnwZ = getWorldTranslation(combine.pipeRaycastNode)
+	combineToPrnX, combineToPrnY, combineToPrnZ = worldToLocal(combine.rootNode, prnwX, prnwY, prnwZ)
+
+	if combineToPrnX >= 0 then
+		combine.cp.pipeSide = 1; --left
+		--print("pipe is left")
+	else
+		combine.cp.pipeSide = -1; --right
+		--print("pipe is right")
+	
+	
+	end;
+end

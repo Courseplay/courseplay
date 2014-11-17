@@ -227,8 +227,7 @@ function courseplay:sideToDrive(vehicle, combine, distance, switchSide)
 	local rightFruit = Utils.getFruitArea(combine.lastValidInputFruitType, rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ, true);
 
 	-- courseplay:debug(string.format("%s: fruit: left %f, right %f", nameNum(combine), leftFruit, rightFruit), 3);
-
-
+	
 	-- AUTO COMBINE
 	if combine.acParameters ~= nil and combine.acParameters.enabled then -- autoCombine
 		if not combine.acParameters.upNDown then
@@ -237,10 +236,18 @@ function courseplay:sideToDrive(vehicle, combine, distance, switchSide)
 			else
 				leftFruit,rightFruit = 100, 0; --fruitSide = "left"
 			end
+		else
+			if combine.acTurnStage == 0 or (combine.acTurnStage >= 20 and combine.acTurnStage <= 22) then
+				if combine.acParameters.leftAreaActive then 
+					leftFruit,rightFruit = 0, 100; --fruitSide = "right"
+				else
+					leftFruit,rightFruit = 100, 0; --fruitSide = "left"
+				end
+			end
 		end
-
+	
 	-- AI HELPER COMBINE
-	elseif combine.isAIThreshing then
+	elseif combine.isAIThreshing and combine.acParameters == nil then
 		-- Fruit side switch at end of field line
 		if (not combine.waitingForDischarge and combine.waitForTurnTime > combine.time) or (combine.turnStage == 1) then
 			local tempFruit = leftFruit;

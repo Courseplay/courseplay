@@ -325,12 +325,17 @@ function courseplay:generateCourse(vehicle)
 							for j, smoothPoint in pairs(smoothed) do
 								if j > steps + 1 and j <= steps + steps then --NOTE: smoothSpline's return includes the initial points, so they have to be skipped
 									-- smoothPoint.cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, smoothPoint.cx, 1, smoothPoint.cz); --TODO: only needed for debugPoint/debugLine ?
-									smoothPoint.cy = 0;
-									smoothPoint.offsetLane = curLane;
-									courseplay:debug(string.format('\t\tinsert smoothPoint %d (cx,cz=%.1f,%.1f) into "finalPoints"', j, smoothPoint.cx, smoothPoint.cz), 7);
+									if courseplay:round(finalPoints[#finalPoints].cx,4) == courseplay:round(smoothPoint.cx,4) and 
+									courseplay:round(finalPoints[#finalPoints].cz,4) == courseplay:round(smoothPoint.cz,4) then
+										courseplay:debug(string.format('\t\t not inserted smoothPoint because of double entry'), 7);
+									else
+										smoothPoint.cy = 0;
+										smoothPoint.offsetLane = curLane;
+										courseplay:debug(string.format('\t\tinsert smoothPoint %d (cx,cz=%.1f,%.1f) into "finalPoints"', j, smoothPoint.cx, smoothPoint.cz), 7);
 
-									table.insert(finalPoints, smoothPoint);
-									pointsInserted = pointsInserted + 1;
+										table.insert(finalPoints, smoothPoint);
+										pointsInserted = pointsInserted + 1;
+									end
 								elseif j > steps + steps then
 									break;
 								end;
