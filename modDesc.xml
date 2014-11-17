@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="20">
-	<version>4.00.0031</version>
+	<version>4.00.0032</version>
 	<author><![CDATA[Jakob Tischler, Thomas Gärtner,
 Horoman, Satis]]></author>
 	<title>
@@ -2119,7 +2119,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<cz>Farm Silo don't have selected fill type</cz>
 			<ru>Farm Silo don't have selected fill type</ru>
 			<hu>Farm Silo don't have selected fill type</hu>
-			<nl>Farm Silo don't have selected fill type</nl>
+			<nl>Farm Silo heeft niet de juiste vulling</nl>
 		</text>
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE">
 			<en>Farm Silo Load:</en>
@@ -2130,7 +2130,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<cz>Farm Silo Load:</cz>
 			<ru>Farm Silo Load:</ru>
 			<hu>Farm Silo Load:</hu>
-			<nl>Farm Silo Load:</nl>
+			<nl>Farm Silo laad:</nl>
 		</text>
 		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY">
 			<en>Farm Silo is empty!</en>
@@ -2141,7 +2141,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<cz>Farm Silo is empty!</cz>
 			<ru>Farm Silo is empty!</ru>
 			<hu>Farm Silo is empty!</hu>
-			<nl>Farm Silo is empty!</nl>
+			<nl>Farm Silo is leeg!</nl>
 		</text>
 		<text name="COURSEPLAY_STARTING_UP_TOOL">
 			<en>Starting up %s!</en>
@@ -2152,7 +2152,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<cz>Starting up %s!</cz>
 			<ru>Starting up %s!</ru>
 			<hu>Starting up %s!</hu>
-			<nl>Starting up %s!</nl>
+			<nl>Opstarten %s!</nl>
 		</text>
 		<!-- SeedUsageCalculator HUD content -->
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR">
