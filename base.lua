@@ -152,9 +152,9 @@ function courseplay:load(xmlFile)
 		unload =  6 / 3600;
 		turn =   10 / 3600;
 		field =  24 / 3600;
-		street =    50 / 3600;
-		sl = 3;
-
+		street = 50 / 3600;
+		crawl = 3 / 3600;
+		
 		minUnload = 3;
 		minTurn = 3;
 		minField = 3;

@@ -114,11 +114,18 @@ function courseplay:drive(self, dt)
 	-- BEACON LIGHTS
 	if self.cp.beaconLightsMode == 1 then --on streets only
 		local combineNeedsBeacon = self.cp.isCombine and (self.fillLevel / self.capacity) > 0.8;
-		if (self.cp.speeds.sl == 3 and not self.beaconLightsActive)
-		or (self.cp.speeds.sl ~= 3 and self.beaconLightsActive and not combineNeedsBeacon)
-		or (self.cp.mode == 6 and combineNeedsBeacon and not self.beaconLightsActive)
-		or (self.cp.mode == 7 and self.isAIThreshing == self.beaconLightsActive) then
-			self:setBeaconLightsVisibility(not self.beaconLightsActive);
+		local goForBeaconLights = ((self.cp.mode == 1 or self.cp.mode == 2 or self.cp.mode == 5) and self.recordnumber > 2) 
+								or (self.cp.mode == 4 or self.cp.mode == 6 and self.cp.abortWork ~= nil)
+								or combineNeedsBeacon;
+								
+		if goForBeaconLights then
+			if not self.beaconLightsActive then
+				self:setBeaconLightsVisibility(true);
+			end
+		else
+			if self.beaconLightsActive then
+				self:setBeaconLightsVisibility(false);
+			end
 		end;
 
 	elseif self.cp.beaconLightsMode == 2 then --always
@@ -485,20 +492,21 @@ function courseplay:drive(self, dt)
 		(not isAtEnd and (self.Waypoints[self.recordnumber].rev or self.Waypoints[self.recordnumber + 1].rev or self.Waypoints[self.recordnumber + 2].rev)) or
 		(workSpeed ~= nil and workSpeed == 0.5) 
 	then
-		--self.cp.speeds.sl = 1;
 		refSpeed = self.cp.speeds.turn;
 	elseif ((self.cp.mode == 2 or self.cp.mode == 3) and isAtStart) or (workSpeed ~= nil and workSpeed == 1) then
-		--self.cp.speeds.sl = 2;
 		refSpeed = self.cp.speeds.field;
 	else
+		local mode7onCourse = true
 		if self.cp.mode ~= 7 then
-		--self.cp.speeds.sl = 3;
 			refSpeed = self.cp.speeds.street;
+		elseif self.cp.modeState == 5 then
+			mode7onCourse = false
 		end
-		if self.cp.speeds.useRecordingSpeed and self.Waypoints[self.recordnumber].speed ~= nil then
-			refSpeed = Utils.clamp(refSpeed, 3/3600, self.Waypoints[self.recordnumber].speed);
+		if self.cp.speeds.useRecordingSpeed and self.Waypoints[self.recordnumber].speed ~= nil and mode7onCourse then
+			refSpeed = Utils.clamp(refSpeed, self.cp.speeds.crawl, self.Waypoints[self.recordnumber].speed);
 		end;
 	end;
+	
 	
 	if self.cp.collidingVehicleId ~= nil then
 		refSpeed = courseplay:regulateTrafficSpeed(self, refSpeed, allowedToDrive);
@@ -506,17 +514,15 @@ function courseplay:drive(self, dt)
 	
 	if self.cp.currentTipTrigger ~= nil then
 		if self.cp.currentTipTrigger.bunkerSilo ~= nil then
-			refSpeed = Utils.getNoNil(self.cp.speeds.unload, 3/3600);
+			refSpeed = Utils.getNoNil(self.cp.speeds.unload, self.cp.speeds.crawl);
 		else
 			refSpeed = self.cp.speeds.turn;
 		end;
-		self.cp.speeds.sl = 1;
 	elseif self.cp.isInFilltrigger then
 		refSpeed = self.cp.speeds.turn;
 		if self.lastSpeedReal > self.cp.speeds.turn then
 			courseplay:brakeToStop(self);
 		end;
-		self.cp.speeds.sl = 1;
 		self.cp.isInFilltrigger = false;
 	end;
 
@@ -529,14 +535,14 @@ function courseplay:drive(self, dt)
 	--reverse
 	if self.Waypoints[self.recordnumber].rev then
 		lx,lz,fwd = courseplay:goReverse(self,lx,lz)
-		refSpeed = Utils.getNoNil(self.cp.speeds.unload, 3/3600)
+		refSpeed = Utils.getNoNil(self.cp.speeds.unload, self.cp.speeds.crawl)
 	else
 		fwd = true
 	end
 
 	if self.cp.TrafficBrake then
 		if self.isRealistic then
-			AIVehicleUtil.mrDriveInDirection(self, dt, 1, false, true, 0, 1, self.cp.speeds.sl, true, true)
+			AIVehicleUtil.mrDriveInDirection(self, dt, 1, false, true, 0, 1, 3, true, true)
 			self.cp.TrafficBrake = false
 			self.cp.isTrafficBraking = false
 			self.cp.TrafficHasStopped = false
@@ -570,16 +576,11 @@ function courseplay:drive(self, dt)
 		end;
 	end
 	
-	-- Speed Control
-	if self.cp.maxFieldSpeed ~= 0 then
-		refSpeed = min(self.cp.maxFieldSpeed, refSpeed);
-	end
-	
 	if self.isRealistic then
-		courseplay:setMRSpeed(self, refSpeed, self.cp.speeds.sl, allowedToDrive, workArea);
+		courseplay:setMRSpeed(self, refSpeed, 3, allowedToDrive, workArea);
 	else
 		
-		courseplay:setSpeed(self, refSpeed, self.cp.speeds.sl)
+		courseplay:setSpeed(self, refSpeed)
 	end
 
 	-- DISTANCE TO CHANGE WAYPOINT
@@ -673,7 +674,7 @@ function courseplay:drive(self, dt)
 			if self.isRealistic then 
 				courseplay:driveInMRDirection(self, lx,lz,fwd, dt,allowedToDrive);
 			else
-				AIVehicleUtil.driveInDirection(self, dt, self.cp.steeringAngle, 0.5, 0.5, 8, true, fwd, lx, lz, self.cp.speeds.sl, 0.5);
+				AIVehicleUtil.driveInDirection(self, dt, self.cp.steeringAngle, 0.5, 0.5, 8, true, fwd, lx, lz, 3, 0.5);
 			end
 			if not isBypassing then
 				courseplay:setTrafficCollision(self, lx, lz, workArea)
@@ -1113,7 +1114,7 @@ function courseplay:driveInMRDirection(vehicle, lx,lz,fwd,dt,allowedToDrive)
 		lz = -lz
 	end
 	--AIVehicleUtil.mrDriveInDirection(vehicle, dt, acceleration, allowedToDrive, moveForwards, lx, lz, speedLevel, useReduceSpeed, noDefaultHiredWorker)
-	AIVehicleUtil.mrDriveInDirection(vehicle, dt, 1, allowedToDrive, fwd, lx, lz, vehicle.cp.speeds.sl, true, true)
+	AIVehicleUtil.mrDriveInDirection(vehicle, dt, 1, allowedToDrive, fwd, lx, lz, 3, true, true)
 end
 
 

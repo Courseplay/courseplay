@@ -247,10 +247,6 @@ function courseplay:unload_combine(self, dt)
 	local trailer_offset = zt + self.cp.tipperOffset
 
 
-	if self.cp.speeds.sl == nil then
-		self.cp.speeds.sl = 3
-	end
-
 	if self.cp.chopperIsTurning == nil then
 		self.cp.chopperIsTurning = false
 	end
@@ -337,7 +333,6 @@ function courseplay:unload_combine(self, dt)
 
 	-- STATE 2 (drive to combine)
 	if self.cp.modeState == 2 then
-		self.cp.speeds.sl = 2
 		refSpeed = self.cp.speeds.field
 		--courseplay:removeFromCombinesIgnoreList(self, combine)
 		self.cp.infoText = courseplay:loc("COURSEPLAY_DRIVE_BEHIND_COMBINE");
@@ -646,7 +641,6 @@ function courseplay:unload_combine(self, dt)
 		-- refspeed depends on the distance to the combine
 		local combine_speed = tractor.lastSpeed
 		if combine.cp.isChopper then
-			self.cp.speeds.sl = 2
 			if lz > 20 then
 				refSpeed = self.cp.speeds.field
 			elseif lz > 4 and (combine_speed*3600) > 5 then
@@ -656,33 +650,24 @@ function courseplay:unload_combine(self, dt)
 			elseif lz < -1 then
 				refSpeed = combine_speed / 2
 			else
-				refSpeed = max(combine_speed,3/3600)
+				refSpeed = max(combine_speed,self.cp.speeds.crawl)
 			end
 			
 			if ((combineIsHelperTurning or tractor.cp.turnStage ~= 0) and lz < 20) or (combine.movingDirection == 0 and lz < 5) then
-				refSpeed = 4 / 3600
-				self.cp.speeds.sl = 1
-				--[[if self.ESLimiter == nil then
-					self.motor.maxRpm[self.cp.speeds.sl] = 200
-				end]] 
+				refSpeed = self.cp.speeds.crawl
 			end
 		else
-			self.cp.speeds.sl = 2
 			if lz > 5 then
 				refSpeed = self.cp.speeds.field
 			elseif lz < -0.5 then
-				refSpeed = combine_speed - (3/3600)
+				refSpeed = combine_speed - self.cp.speeds.crawl
 			elseif lz > 1 or combine.sentPipeIsUnloading ~= true  then  
-				refSpeed = combine_speed + (3/3600) 
+				refSpeed = combine_speed + self.cp.speeds.crawl
 			else
 				refSpeed = combine_speed
 			end
 			if ((combineIsHelperTurning or tractor.cp.turnStage ~= 0) and lz < 20) or (self.timer < self.cp.driveSlowTimer) or (combine.movingDirection == 0 and lz < 15) then
-				refSpeed = 4 / 3600
-				self.cp.speeds.sl = 1
-				--[[if self.ESLimiter == nil then   FS15
-					self.motor.maxRpm[self.cp.speeds.sl] = 200
-				end ]]
+				refSpeed = self.cp.speeds.crawl
 				if combineIsHelperTurning or tractor.cp.turnStage ~= 0 then
 					self.cp.driveSlowTimer = self.timer + 2000
 				end
@@ -801,7 +786,6 @@ function courseplay:unload_combine(self, dt)
 		allowedToDrive = false
 		local mx, mz = self.cp.curTarget.x, self.cp.curTarget.z
 		local lx, ly, lz = worldToLocal(self.cp.DirectionNode, mx, y, mz)
-		self.cp.speeds.sl = 1
 		refSpeed = self.cp.speeds.field --self.cp.speeds.turn
 
 		if lz > 0 and abs(lx) < lz * 0.5 then -- lz * 0.5    --2
@@ -841,15 +825,13 @@ function courseplay:unload_combine(self, dt)
 		currentX = self.cp.curTarget.x
 		currentY = self.cp.curTarget.y
 		currentZ = self.cp.curTarget.z
-		self.cp.speeds.sl = 2
 		refSpeed = self.cp.speeds.field
 
 		local distance_to_wp = courseplay:distanceToPoint(self, currentX, y, currentZ);
 
 		if #(self.cp.nextTargets) == 0 then
 			if distance_to_wp < 10 then
-				refSpeed = self.cp.speeds.turn -- 3/3600
-				self.cp.speeds.sl = 1
+				refSpeed = self.cp.speeds.turn 
 			end
 		end
 
@@ -894,7 +876,6 @@ function courseplay:unload_combine(self, dt)
 					courseplay:setIsLoaded(self, true);
 
 				elseif self.cp.mode2nextState == 1 then
-					-- self.cp.speeds.sl = 1
 					-- refSpeed = self.cp.speeds.turn
 					courseplay:switchToNextMode2State(self);
 					courseplay:setMode2NextState(self, 0);
@@ -967,7 +948,7 @@ function courseplay:unload_combine(self, dt)
 			if distance > 50 then
 				refSpeed = self.cp.speeds.street
 			else
-				refSpeed = frontTractor.lastSpeedReal --10/3600 -- frontTractor.lastSpeedReal
+				refSpeed = frontTractor.lastSpeedReal 
 			end
 		end
 		--courseplay:debug(string.format("distance: %d  dod: %d",distance,dod ), 4)
@@ -995,10 +976,6 @@ function courseplay:unload_combine(self, dt)
 
 
 	if allowedToDrive then
-		if self.cp.speeds.sl == nil then
-			self.cp.speeds.sl = 3
-		end
-		--local maxRpm = self.motor.maxRpm[self.cp.speeds.sl] FS15
 		local real_speed = self.lastSpeedReal
 
 		if refSpeed == nil then
@@ -1009,9 +986,9 @@ function courseplay:unload_combine(self, dt)
 			if self.cp.chopperIsTurning then
 				refSpeed = self.cp.speeds.turn
 			end
-			courseplay:setMRSpeed(self, refSpeed, self.cp.speeds.sl,allowedToDrive)
+			courseplay:setMRSpeed(self, refSpeed, 3,allowedToDrive)
 		else
-			courseplay:setSpeed(self, refSpeed, self.cp.speeds.sl)
+			courseplay:setSpeed(self, refSpeed)
 		end
 	end
 
@@ -1041,7 +1018,7 @@ function courseplay:unload_combine(self, dt)
 		
 		if self.cp.TrafficBrake then
 			if self.isRealistic then
-				AIVehicleUtil.mrDriveInDirection(self, dt, 1, false, true, 0, 1, self.cp.speeds.sl, true, true)
+				AIVehicleUtil.mrDriveInDirection(self, dt, 1, false, true, 0, 1, 3, true, true)
 			else
 				moveForwards = false
 				lx = 0
@@ -1059,7 +1036,7 @@ function courseplay:unload_combine(self, dt)
 		
 			courseplay:driveInMRDirection(self, targetX, targetZ,moveForwards, dt, allowedToDrive);
 		else
-			AIVehicleUtil.driveInDirection(self, dt, self.cp.steeringAngle, 0.5, 0.5, 8, allowedToDrive, moveForwards, targetX, targetZ, self.cp.speeds.sl, 0.4)
+			AIVehicleUtil.driveInDirection(self, dt, self.cp.steeringAngle, 0.5, 0.5, 8, allowedToDrive, moveForwards, targetX, targetZ, 3, 0.4)
 		end
 
 		if courseplay.debugChannels[4] and self.cp.nextTargets and self.cp.curTarget.x and self.cp.curTarget.z then

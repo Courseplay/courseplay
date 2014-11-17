@@ -124,7 +124,6 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 			drawDebugLine(cx, cty7+3, cz, 1, 0, 0, ctx7, cty7+3, ctz7, 1, 0, 0); 
 		end;
 		if not vehicle.cp.mode7GoBackBeforeUnloading then
-			vehicle.cp.speeds.sl = 3;
 			refSpeed = vehicle.cp.speeds.field;
 			local distance_to_wp = courseplay:distanceToPoint(vehicle, cx, cy, cz);
 			local distToChange = 4;

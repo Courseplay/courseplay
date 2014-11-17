@@ -15,7 +15,6 @@ function courseplay:turn(self, dt) --!!!
 	local turnOutTimer = 1500
 	local frontMarker = Utils.getNoNil(self.cp.aiFrontMarker,-3)
 	local backMarker = Utils.getNoNil(self.cp.backMarkerOffset, 0)
-	self.cp.speeds.sl = 1
 	if self.cp.noStopOnEdge then 
 		turnOutTimer = 0
 	end
@@ -272,7 +271,7 @@ function courseplay:turn(self, dt) --!!!
 			end
  			courseplay:driveInMRDirection(self, lx,lz,moveForwards,dt,allowedToDrive)
 		else
-			AIVehicleUtil.driveInDirection(self, dt, 25, 0.5, 0.5, 20, true, moveForwards, lx, lz, self.cp.speeds.sl, 0.9);
+			AIVehicleUtil.driveInDirection(self, dt, 25, 0.5, 0.5, 20, true, moveForwards, lx, lz, 3, 0.9);
 		end
 		courseplay:setTrafficCollision(self, lx, lz, true)
 	end;
