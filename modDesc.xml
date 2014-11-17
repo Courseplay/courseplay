@@ -2027,7 +2027,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<de>Planen</de>
 			<fr>Couvertures</fr>
 			<es>Cubiertas</es>
-			<it>Coperturas</it>
+			<it>Copertura</it>
 			<cz>Kryty</cz>
 			<ru>Тент:</ru>
 			<hu>Ponyva:</hu>
@@ -2049,7 +2049,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<de>Während dem Abladen anhalten</de>
 			<fr>Arrêter pendant le déchargement</fr>
 			<es>Parar durante la descarga</es>
-			<it>Smettere durante lo scarico</it>
+			<it>Fermarsi durante lo scarico</it>
 			<cz>Zastavit při vykládání</cz> 
 			<ru>Стоять при разгрузке:</ru>
 			<hu>Kirakodás közben leállít</hu>
@@ -2060,7 +2060,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<de>: durchdrehende Reifen</de>
 			<fr>patine</fr>
 			<es>is slipping</es> <!-- !!! -->
-			<it>is slipping</it> <!-- !!! -->
+			<it>sta slittando</it>
 			<cz>se zasekl</cz> 
 			<ru>забуксовал. Помогите, помогите...</ru>
 			<hu>kipörög</hu>
@@ -2071,7 +2071,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<de>: durchdrehende Reifen (> 75%)</de>
 			<fr>patine (> 75%)</fr>
 			<es>is slipping (> 75%)</es> <!-- !!! -->
-			<it>is slipping (> 75%)</it> <!-- !!! -->
+			<it>sta slittando (> 75%)</it>
 			<cz>se zasekl (> 75%)</cz> 
 			<ru>буксует (> 75%)</ru>
 			<hu>kipörgés több mint 75%</hu>
@@ -2082,7 +2082,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<de>: durchdrehende Reifen (> 90%)</de>
 			<fr>patine (> 90%)</fr>
 			<es>is slipping (> 90%)</es> <!-- !!! -->
-			<it>is slipping (> 90%)</it> <!-- !!! -->
+			<it>sta slittando (> 90%)</it>
 			<cz>se zasekl (> 90%)</cz> 
 			<ru>буксует (> 90%)</ru>
 			<hu>kipörgés több mint 90%</hu>
@@ -2093,7 +2093,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<de>Auffüllen bis:</de>
 			<fr>Remplir jusqu'à:</fr>
 			<es>Llenar hasta:</es> <!-- !!! -->
-			<it>Riempir fino al:</it> <!-- !!! -->
+			<it>Riempire fino al:</it>
 			<cz>Naplnit do:</cz> 
 			<ru>Наполнять до:</ru>
 			<hu>Újratölteni:</hu>
@@ -2115,7 +2115,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<de>Farm Silo don't have selected fill type</de>
 			<fr>Farm Silo don't have selected fill type</fr>
 			<es>Farm Silo don't have selected fill type</es>
-			<it>Farm Silo don't have selected fill type</it>
+			<it>Il granaio non sa con cosa riempire</it>
 			<cz>Farm Silo don't have selected fill type</cz>
 			<ru>Farm Silo don't have selected fill type</ru>
 			<hu>Farm Silo don't have selected fill type</hu>
@@ -2126,7 +2126,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<de>Farm Silo Load:</de>
 			<fr>Farm Silo Load:</fr>
 			<es>Farm Silo Load:</es>
-			<it>Farm Silo Load:</it>
+			<it>Il granaio sta caricando:</it>
 			<cz>Farm Silo Load:</cz>
 			<ru>Farm Silo Load:</ru>
 			<hu>Farm Silo Load:</hu>
@@ -2137,7 +2137,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<de>Farm Silo is empty!</de>
 			<fr>Farm Silo is empty!</fr>
 			<es>Farm Silo is empty!</es>
-			<it>Farm Silo is empty!</it>
+			<it>Il granaio è vuoto!</it>
 			<cz>Farm Silo is empty!</cz>
 			<ru>Farm Silo is empty!</ru>
 			<hu>Farm Silo is empty!</hu>
@@ -2160,7 +2160,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<de>Saatgut-Berechner</de>
 			<fr>Utilisation des semences</fr>
 			<es>Uso de semillas</es> <!-- !!! -->
-			<it>Utilizzo di semi</it> <!-- !!! -->
+			<it>Utilizzo dei semi</it>
 			<cz>Kalkulačka spotřeby osiva</cz> 
 			<hu>Vetőmag szükséglet számítás</hu>
 			<ru>КАЛЬКУЛЯЦИЯ ПОСЕВОВ</ru>
@@ -2193,7 +2193,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<de>Standard: %s %s (%s)</de>
 			<fr>Défaut: %s %s (%s)</fr>
 			<es>Defecto: %s %s (%s)</es>
-			<it>Difette: %s %s (%s)</it>
+			<it>Standard: %s %s (%s)</it>
 			<cz>Základní: %s %s (%s)</cz> 
 			<hu>Alap verzióban: %s %s (%s) </hu>
 			<ru>Норма: %s %s (%s)</ru>
