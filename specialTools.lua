@@ -69,10 +69,59 @@ function courseplay:setNameVariable(workTool)
 	-- ###########################################################
 	--------------------------------------------------------------
 
+	-- SPECIALIZATIONS BASED
+	-- [1] AUGER WAGONS
+	if workTool.typeName == 'augerWagon' then
+		workTool.cp.isAugerWagon = true;
+		if workTool.cp.xmlFileName == 'horschTitan34UW.xml' then
+			workTool.cp.isHorschTitan34UW = true;
+			workTool.cp.foldPipeAtWaitPoint = true;
+		end;
+	elseif workTool.cp.hasSpecializationOverloader then
+		workTool.cp.isAugerWagon = true;
+		workTool.cp.hasSpecializationOverloaderV2 = workTool.overloaderVersion ~= nil and workTool.overloaderVersion >= 2;
+	elseif workTool.cp.hasSpecializationAgrolinerTUW20 then
+		workTool.cp.isAugerWagon = true;
+		if workTool.cp.xmlFileName == 'AgrolinerTUW20.xml' then
+			workTool.cp.isAgrolinerTUW20 = true;
+			workTool.cp.foldPipeAtWaitPoint = true;
+		end;
+	elseif workTool.cp.hasSpecializationOvercharge then
+		workTool.cp.isAugerWagon = true;
+		if workTool.cp.xmlFileName == 'AgrolinerTUW20.xml' then
+			workTool.cp.isAgrolinerTUW20 = true;
+			workTool.cp.foldPipeAtWaitPoint = true;
+		elseif workTool.cp.xmlFileName == 'HaweULW2600T.xml' then
+			workTool.cp.isHaweULW2600T = true;
+			workTool.cp.foldPipeAtWaitPoint = true;
+		elseif workTool.cp.xmlFileName == 'HaweULW3000T.xml' then
+			workTool.cp.isHaweULW3000T = true;
+			workTool.cp.foldPipeAtWaitPoint = true;
+		end;
+	elseif workTool.cp.hasSpecializationHaweSUW then
+		workTool.cp.isAugerWagon = true;
+		if workTool.cp.xmlFileName == 'Hawe_SUW_4000.xml' then
+			workTool.cp.isHaweSUW4000 = true;
+		elseif workTool.cp.xmlFileName == 'Hawe_SUW_5000.xml' then
+			workTool.cp.isHaweSUW5000 = true;
+		end;
+	elseif workTool.cp.hasSpecializationBigBear then
+		workTool.cp.isAugerWagon = true;
+		workTool.cp.isRopaBigBear = true;
+		workTool.cp.foldPipeAtWaitPoint = true;
+		workTool.cp.hasSpecializationBigBearV2 = workTool.setUnloading ~= nil and workTool.setWorkMode~= nil and workTool.setActiveWorkMode ~= nil;
+	elseif workTool.animationParts ~= nil and workTool.animationParts[2] ~= nil and workTool.toggleUnloadingState ~= nil and workTool.setUnloadingState ~= nil then
+		workTool.cp.isAugerWagon = true;
+		workTool.cp.isTaarupShuttle = true;
+
+
+	-- ###########################################################
+	-- ###########################################################
+	-- ###########################################################
+
+	-- MODS
 	-- [1] MOD COMBINES
-	-- NAME OF VEHICLE
-	if workTool.cp.xmlFileName == 'XML FILE USED' then
-		-- workTool.cp.isNameOfVehicle = true;
+
 
 	-- ###########################################################
 
@@ -196,7 +245,7 @@ end;
 function courseplay:setCustomSpecVariables(vehicle)
 	local customSpecNames = {
 		['AgrolinerTUW20'] 		  = { },
-		['AugerWagon'] 			  = { useVehicleCustomEnvironment = true },
+		--['AugerWagon'] 			  = { useVehicleCustomEnvironment = true },
 		['bigBear'] 			  = { },
 		['DrivingLine'] 		  = { },
 		['Hawe_SUW'] 			  = { },
