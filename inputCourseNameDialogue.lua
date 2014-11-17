@@ -2,20 +2,14 @@
 @name:    inputCourseNameDialogue
 @desc:    Dialogue settings for the Courseplay course saving form
 @author:  Jakob Tischler
-@version: 1.4
-@date:    30 Sep 2013
+@version: 1.5
+@date:    31 Oct 2014
 --]]
 
 local modDir = g_currentModDirectory;
 
 inputCourseNameDialogue = {}
 local inputCourseNameDialogue_mt = Class(inputCourseNameDialogue)
-inputCourseNameDialogue.stateData = {
-	normal =   { stateNum = 1, fileNameVar = "imageFilename" };
-	pressed =  { stateNum = 2, fileNameVar = "imagePressedFilename" };
-	focused =  { stateNum = 3, fileNameVar = "imageFocusedFilename" };
-	disabled = { stateNum = 4, fileNameVar = "imageDisabledFilename" };
-};
 inputCourseNameDialogue.types = { "course", "folder", "filter" };
 
 function inputCourseNameDialogue:new()
@@ -24,79 +18,63 @@ function inputCourseNameDialogue:new()
 	return instance;
 end; --END new()
 
-function inputCourseNameDialogue:setImageOverlay(element, state, filePath, type)
-	local stateLower = state:lower();
-	local stateNum = inputCourseNameDialogue.stateData[stateLower].stateNum;
-	local fileNameVar = inputCourseNameDialogue.stateData[stateLower].fileNameVar;
+local elementOverlayExists = function(element)
+	return element.overlay ~= nil and element.overlay.overlay ~= nil and element.overlay.overlay ~= 0;
+end;
 
-	if element.overlays == nil and state == "normal" then --one overlay, state "normal"
-		if element.overlay ~= nil then
-			delete(element.overlay);
+function inputCourseNameDialogue:setImageOverlay(element, filePath, type)
+	-- print(('\t\tsetImageOverlay(): element=%q, filePath=%q, type=%q'):format(tostring(element), tostring(filePath), tostring(type)));
+
+	if type == nil then
+		if elementOverlayExists(element) then
+			delete(element.overlay.overlay);
 		end;
-		element[fileNameVar] = filePath;
-		if element[fileNameVar] ~= nil then
-			element.overlay = createImageOverlay(element[fileNameVar]);
-		end;
-	elseif type == nil then
-		if element.overlays[stateNum] ~= nil then
-			delete(element.overlays[stateNum]);
-		end;
-		element[fileNameVar] = filePath;
-		if element[fileNameVar] ~= nil then
-			element.overlays[stateNum] = createImageOverlay(element[fileNameVar]);
-		end;
+
+		element.overlay.overlay = createImageOverlay(filePath);
+		element.overlay.filePath = filePath;
 	else
 		type = type:sub(2);
-		if element[type] == nil then
-			element[type] = {
-				overlays = {};
-			};
+		if element.courseplayTypes == nil then
+			element.courseplayTypes = {};
+		end;
+		if element.courseplayTypes[type] == nil then
+			element.courseplayTypes[type] = {};
 		end;
 
-		if Utils.startsWith(filePath, "$") then
-			local copyFromType = filePath:sub(2);
-			if element[copyFromType].overlays[stateNum] ~= nil then
-				element[type].overlays[stateNum] = element[copyFromType].overlays[stateNum];
+		element.courseplayTypes[type].overlayId = createImageOverlay(filePath);
+		element.courseplayTypes[type].filePath = filePath;
+		if type == 'course' then -- set the default overlay - ONLY DO THIS ONCE (for the course)
+			if elementOverlayExists(element) then
+				delete(element.overlay.overlay);
 			end;
-		else
-			if element[type].overlays[stateNum] ~= nil then
-				delete(element[type].overlays[stateNum]);
-			end;
-			element[type][fileNameVar] = filePath;
-			if element[type][fileNameVar] ~= nil then
-				element[type].overlays[stateNum] = createImageOverlay(element[type][fileNameVar]);
-			end;
-
-			--set "normal" overlay
-			if stateLower == "normal" and element.normal ~= nil and element.normal.overlays[stateNum] ~= nil then
-				element.overlays[stateNum] = element.normal.overlays[stateNum];
-			end;
+			element.overlay.overlay = element.courseplayTypes[type].overlayId;
+			element.overlay.filePath = element.courseplayTypes[type].filePath;
 		end;
+
+		-- print(tableShow(element, 'element "' .. filePath .. '"'));
 	end;
 end;
 function inputCourseNameDialogue.setModImages(element, xmlFile, key)
 	element.modImgDir = modDir .. (getXMLString(xmlFile, key .. "#MOD_imageDir") or "");
+	local fileNames = getXMLString(xmlFile, key .. '#MOD_imageFilename');
 
-	for state,data in pairs(inputCourseNameDialogue.stateData) do
-		local filePaths = getXMLString(xmlFile, key .. "#MOD_" .. data.fileNameVar);
-		if filePaths ~= nil then
-			local split = Utils.splitString(",", filePaths);
-			if #split == 1 then
-				inputCourseNameDialogue:setImageOverlay(element, state, element.modImgDir .. filePaths);
-			elseif #split == #inputCourseNameDialogue.types then
-				for _,data in pairs(split) do
-					local kv = Utils.splitString(":", data);
-					local type, filePath = unpack(kv);
-					local realFilePath = filePath;
-					if not Utils.startsWith(filePath, "$") then
-						realFilePath = element.modImgDir .. filePath;
-					end;
-
-					inputCourseNameDialogue:setImageOverlay(element, state, realFilePath, type);
+	if fileNames ~= nil then
+		local split = Utils.splitString(",", fileNames);
+		if #split == 1 then
+			inputCourseNameDialogue:setImageOverlay(element, element.modImgDir .. fileNames);
+		elseif #split == #inputCourseNameDialogue.types then
+			for _,data in pairs(split) do
+				local kv = Utils.splitString(":", data);
+				local type, filePath = unpack(kv);
+				local realFilePath = filePath;
+				if not Utils.startsWith(filePath, "$") then
+					realFilePath = element.modImgDir .. filePath;
 				end;
-			else
-				--ERROR
+
+				inputCourseNameDialogue:setImageOverlay(element, realFilePath, type);
 			end;
+		else
+			--ERROR
 		end;
 	end;
 end; --END setModImages()
@@ -127,7 +105,8 @@ function inputCourseNameDialogue:onOpen(element)
 	local saveWhat = courseplay.vehicleToSaveCourseIn.cp.saveWhat;
 
 	--SET SAVE BUTTON IMAGE
-	self.saveButtonElement.overlays = self.saveButtonElement[saveWhat].overlays;
+	self.saveButtonElement.overlay.overlay = self.saveButtonElement.courseplayTypes[saveWhat].overlayId;
+	self.saveButtonElement.overlay.filePath = self.saveButtonElement.courseplayTypes[saveWhat].filePath;
 
 	--SET TITLE TEXT
 	if self.titleTextElement.courseText == nil or self.titleTextElement.folderText == nil or self.titleTextElement.filterText == nil then

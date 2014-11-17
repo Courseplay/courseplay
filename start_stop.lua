@@ -6,16 +6,15 @@ function courseplay:start(self)
 	if self.maxnumber < 1 then
 		return
 	end
-
 	courseplay:setEngineState(self, true);
 
 	if self.cp.orgRpm == nil then
 		self.cp.orgRpm = {}
-		self.cp.orgRpm[1] = self.motor.maxRpm[1]
-		self.cp.orgRpm[2] = self.motor.maxRpm[2]
-		self.cp.orgRpm[3] = self.motor.maxRpm[3]
+		self.cp.orgRpm[1] = self.motor.maxRpm
+		self.cp.orgRpm[2] = self.motor.maxRpm
+		self.cp.orgRpm[3] = self.motor.maxRpm
 	end
-	if self.ESLimiter ~= nil and self.ESLimiter.maxRPM[5] ~= nil then
+	--[[if self.ESLimiter ~= nil and self.ESLimiter.maxRPM[5] ~= nil then
 		self.cp.ESL = {}
 		self.cp.ESL[1] = self.ESLimiter.percentage[2]
 		self.cp.ESL[2] = self.ESLimiter.percentage[3]
@@ -27,7 +26,7 @@ function courseplay:start(self)
 			[2] = self.motor.realSpeedLevelsAI[2],
 			[3] = self.motor.realSpeedLevelsAI[3]
 		};
-	end;
+	end;]]
 
 	self.CPnumCollidingVehicles = 0;
 	self.cp.collidingVehicleId = nil
@@ -65,8 +64,32 @@ function courseplay:start(self)
 			end
 		end
 	end
-
-
+	
+	-- adapt collis height to vehicles height , its a runonce
+	if self.cp.ColliHeightSet == nil then
+		local height = 0;
+		local step = self.sizeLength/2;
+		local distance = self.sizeLength;
+		local nx, ny, nz = localDirectionToWorld(self.rootNode, 0, -1, 0);	
+		self.cp.HeightsFound = 0;
+		self.cp.HeightsFoundColli = 0;			
+		for i=-step,step,0.5 do				
+			local x,y,z = localToWorld(self.rootNode, 0, distance, i);
+			raycastAll(x, y, z, nx, ny, nz, "findVehicleHeights", distance, self);
+			--print("drive raycast "..tostring(i).." end");
+			--drawDebugLine(x, y, z, 1, 0, 0, x+(nx*distance), y+(ny*distance), z+(nz*distance), 1, 0, 0);
+		end
+		local difference = self.cp.HeightsFound - self.cp.HeightsFoundColli;
+		local trigger = self.cp.trafficCollisionTriggers[1];
+		local Tx,Ty,Tz = getTranslation(trigger,self.rootNode);
+		setTranslation(trigger, Tx,Ty+difference,Tz);
+		self.cp.ColliHeightSet = true;
+	end
+	
+	--calculate workwidth for combines in mode7
+	if self.cp.mode == 7 then
+		courseplay:calculateWorkWidth(self)
+	end
 	-- set default modeState if not in mode 2 or 3
 	if self.cp.mode ~= 2 and self.cp.mode ~= 3 then
 		courseplay:setModeState(self, 0);
@@ -274,17 +297,14 @@ function courseplay:start(self)
 		self.cp.totalLength, self.cp.totalLengthOffset = courseplay:getTotalLengthOnWheels(self);
 	end;
 
-	--EifokLiquidManure
-	self.cp.EifokLiquidManure.searchMapHoseRefStation.pull = true;
-	self.cp.EifokLiquidManure.searchMapHoseRefStation.push = true;
-
 	courseplay:validateCanSwitchMode(self);
+	--print("startStop "..debug.getinfo(1).currentline)
 end;
 
 function courseplay:getCanUseAiMode(vehicle)
-	if not vehicle.isMotorStarted or (vehicle.motorStartTime and vehicle.motorStartTime > vehicle.time) then
+	--[[if not vehicle.isMotorStarted or (vehicle.motorStartTime and vehicle.motorStartTime > vehicle.time) then
 		return false;
-	end;
+	end;]]
 
 	local mode = vehicle.cp.mode;
 
@@ -361,7 +381,7 @@ function courseplay:stop(self)
 	self.steeringEnabled = true;
 	self.deactivateOnLeave = true
 	self.disableCharacterOnLeave = true
-	if self.cp.orgRpm then
+	--[[if self.cp.orgRpm then
 		self.motor.maxRpm[1] = self.cp.orgRpm[1]
 		self.motor.maxRpm[2] = self.cp.orgRpm[2]
 		self.motor.maxRpm[3] = self.cp.orgRpm[3]
@@ -375,8 +395,11 @@ function courseplay:stop(self)
 		self.motor.realSpeedLevelsAI[1] = self.cp.mrOrigSpeed[1];
 		self.motor.realSpeedLevelsAI[2] = self.cp.mrOrigSpeed[2];
 		self.motor.realSpeedLevelsAI[3] = self.cp.mrOrigSpeed[3];
-	end;
+	end;]]
+	self:setCruiseControlState(Drivable.CRUISECONTROL_STATE_OFF)
+	self.cruiseControl.minSpeed = 1
 	self.cp.forcedToStop = false
+	self.cp.waitingForTrailerToUnload = false
 	self.cp.isRecording = false
 	self.cp.recordingIsPaused = false
 	if self.cp.modeState > 4 then
@@ -431,7 +454,7 @@ function courseplay:stop(self)
 		self.cp.checkReverseValdityPrinted = false
 	end
 
-	self.motor:setSpeedLevel(0, false);
+	--self.motor:setSpeedLevel(0, false);
 	self.motor.maxRpmOverride = nil;
 	self.cp.startWork = nil
 	self.cp.stopWork = nil
@@ -468,12 +491,29 @@ function courseplay:stop(self)
 		end;
 	end
 
-	--reset EifokLiquidManure
-	courseplay.thirdParty.EifokLiquidManure:resetData(self);
-
 	--remove from activeCoursePlayers
 	courseplay:removeFromActiveCoursePlayers(self);
 
 	--validation: can switch mode?
 	courseplay:validateCanSwitchMode(self);
+end
+
+
+function courseplay:findVehicleHeights(transformId, x, y, z, distance)
+		local height = self.sizeLength - distance
+		local vehicle = false
+		if self.cp.trafficCollisionTriggerToTriggerIndex[transformId] ~= nil then
+			if self.cp.HeightsFoundColli < height then
+				self.cp.HeightsFoundColli = height
+			end	
+		elseif transformId == self.rootNode then
+			vehicle = true
+		elseif getParent(transformId) == self.rootNode and self.aiTrafficCollisionTrigger ~= transformId then
+			vehicle = true
+		end
+		if vehicle and self.cp.HeightsFound < height then
+			self.cp.HeightsFound = height
+		end	
+		
+		return true
 end

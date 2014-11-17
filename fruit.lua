@@ -194,7 +194,7 @@ function courseplay:sideToDrive(vehicle, combine, distance, switchSide)
 	-- COMBINE DIRECTION
 	local x, y, z = localToWorld(tractor.cp.DirectionNode, 0, 0, distance - 5);
 	local dirX, dirZ = combine.aiThreshingDirectionX, combine.aiThreshingDirectionZ;
-	if (not (combine.isAIThreshing or combine.drive)) or  combine.aiThreshingDirectionX == nil or combine.aiThreshingDirectionZ == nil or combine.acParameters ~= nil then
+	if (not (combine.isAIThreshing or combine.drive)) or  combine.aiThreshingDirectionX == nil or combine.aiThreshingDirectionZ == nil or (combine.acParameters ~= nil and combine.acParameters.enabled) then
 		local node = combine.cp.fixedRootNode or combine.rootNode;
 		local dx,_,dz = localDirectionToWorld(node, 0, 0, 2);
 		local length = Utils.vector2Length(dx,dz);
@@ -226,7 +226,7 @@ function courseplay:sideToDrive(vehicle, combine, distance, switchSide)
 	local leftFruit = Utils.getFruitArea(combine.lastValidInputFruitType, lStartX, lStartZ, lWidthX, lWidthZ, lHeightX, lHeightZ, true);
 	local rightFruit = Utils.getFruitArea(combine.lastValidInputFruitType, rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ, true);
 
-	-- courseplay:debug(string.format("%s: fruit: left %f, right %f", nameNum(combine), leftFruit, rightFruit), 3);
+	courseplay:debug(string.format("%s: fruit: left %f, right %f", nameNum(combine), leftFruit, rightFruit), 3);
 	
 	-- AUTO COMBINE
 	if combine.acParameters ~= nil and combine.acParameters.enabled then -- autoCombine
@@ -247,14 +247,14 @@ function courseplay:sideToDrive(vehicle, combine, distance, switchSide)
 		end
 	
 	-- AI HELPER COMBINE
-	elseif combine.isAIThreshing and combine.acParameters == nil then
+	--[[elseif combine.isAIThreshing and combine.acParameters == nil then   FS15
 		-- Fruit side switch at end of field line
 		if (not combine.waitingForDischarge and combine.waitForTurnTime > combine.time) or (combine.turnStage == 1) then
 			local tempFruit = leftFruit;
 			leftFruit = rightFruit;
 			rightFruit = tempFruit;
 		end;
-
+	]] 
 	-- COURSEPLAY
 	elseif tractor.drive then
 		local ridgeMarker = 0;

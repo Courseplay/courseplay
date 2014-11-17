@@ -172,8 +172,8 @@ function courseplay:handle_mode2(self, dt)
 
 				-- chose the combine who needs me the most
 				for k, combine in pairs(self.cp.reachableCombines) do
-					if (combine.grainTankFillLevel >= (combine.grainTankCapacity * self.cp.followAtFillLevel / 100)) or combine.grainTankCapacity == 0 or combine.cp.wantsCourseplayer then
-						if combine.grainTankCapacity == 0 then
+					if (combine.fillLevel >= (combine.capacity * self.cp.followAtFillLevel / 100)) or combine.capacity == 0 or combine.cp.wantsCourseplayer then
+						if combine.capacity == 0 then
 							if combine.courseplayers == nil then
 								self.cp.bestCombine = combine
 							else
@@ -193,8 +193,8 @@ function courseplay:handle_mode2(self, dt)
 								end;
 							end 
 
-						elseif combine.grainTankFillLevel >= highest_fill_level and combine.cp.isCheckedIn == nil then
-							highest_fill_level = combine.grainTankFillLevel
+						elseif combine.fillLevel >= highest_fill_level and combine.cp.isCheckedIn == nil then
+							highest_fill_level = combine.fillLevel
 							self.cp.bestCombine = combine
 							distance = courseplay:distanceToObject(self, combine);
 							self.cp.distanceToCombine = distance
@@ -255,8 +255,8 @@ function courseplay:unload_combine(self, dt)
 		self.cp.chopperIsTurning = false
 	end
 
-	if combine.grainTankCapacity > 0 then
-		combine_fill_level = combine.grainTankFillLevel * 100 / combine.grainTankCapacity
+	if combine.capacity > 0 then
+		combine_fill_level = combine.fillLevel * 100 / combine.capacity
 	else -- combine is a chopper / has no tank
 		combine_fill_level = 51;
 	end
@@ -662,9 +662,9 @@ function courseplay:unload_combine(self, dt)
 			if ((combineIsHelperTurning or tractor.cp.turnStage ~= 0) and lz < 20) or (combine.movingDirection == 0 and lz < 5) then
 				refSpeed = 4 / 3600
 				self.cp.speeds.sl = 1
-				if self.ESLimiter == nil then
+				--[[if self.ESLimiter == nil then
 					self.motor.maxRpm[self.cp.speeds.sl] = 200
-				end 
+				end]] 
 			end
 		else
 			self.cp.speeds.sl = 2
@@ -680,9 +680,9 @@ function courseplay:unload_combine(self, dt)
 			if ((combineIsHelperTurning or tractor.cp.turnStage ~= 0) and lz < 20) or (self.timer < self.cp.driveSlowTimer) or (combine.movingDirection == 0 and lz < 15) then
 				refSpeed = 4 / 3600
 				self.cp.speeds.sl = 1
-				if self.ESLimiter == nil then
+				--[[if self.ESLimiter == nil then   FS15
 					self.motor.maxRpm[self.cp.speeds.sl] = 200
-				end 
+				end ]]
 				if combineIsHelperTurning or tractor.cp.turnStage ~= 0 then
 					self.cp.driveSlowTimer = self.timer + 2000
 				end
@@ -700,12 +700,13 @@ function courseplay:unload_combine(self, dt)
 	local sx, sy, sz = getWorldTranslation(self.rootNode)
 	distance = courseplay:distance(sx, sz, cx, cz)
 	if combine_turning and not combine.cp.isChopper then
-		if combine.grainTankFillLevel > combine.grainTankCapacity*0.9 then
+		if combine.fillLevel > combine.capacity*0.9 then
 			if combineIsAutoCombine and tractor.acIsCPStopped ~= nil then
-				-- print(nameNum(tractor) .. ': grainTankFillLevel > 90%% -> set acIsCPStopped to true'); --TODO: 140308 AutoTractor
+				-- print(nameNum(tractor) .. ': fillLevel > 90%% -> set acIsCPStopped to true'); --TODO: 140308 AutoTractor
 				tractor.acIsCPStopped = true
 			elseif combine.isAIThreshing then 
-				combine.waitForTurnTime = combine.time + 100
+				--allowedToDrive = false
+				combine.waitForTurnTime = combine.timer + 100
 			elseif tractor.drive == true then
 				combine.cp.waitingForTrailerToUnload = true
 			end			
@@ -714,8 +715,9 @@ function courseplay:unload_combine(self, dt)
 				-- print(nameNum(tractor) .. ': distance < 50 -> set acIsCPStopped to true'); --TODO: 140308 AutoTractor
 				tractor.acIsCPStopped = true
 			elseif combine.isAIThreshing and not (combine_fill_level == 0 and combine.currentPipeState ~= 2) then
-				combine.waitForTurnTime = combine.time + 100
-			elseif tractor.drive == true and not (combine_fill_level == 0 and combine:getCombineTrailerInRangePipeState()==0) then
+				--allowedToDrive = false
+				combine.waitForTurnTime = combine.timer + 100
+			elseif tractor.drive == true and not (combine_fill_level == 0 and combine:getOverloadingTrailerInRangePipeState()==0) then
 				combine.cp.waitingForTrailerToUnload = true
 			end
 		elseif distance < 100 and self.cp.modeState == 2 then
@@ -996,7 +998,7 @@ function courseplay:unload_combine(self, dt)
 		if self.cp.speeds.sl == nil then
 			self.cp.speeds.sl = 3
 		end
-		local maxRpm = self.motor.maxRpm[self.cp.speeds.sl]
+		--local maxRpm = self.motor.maxRpm[self.cp.speeds.sl] FS15
 		local real_speed = self.lastSpeedReal
 
 		if refSpeed == nil then
@@ -1048,9 +1050,9 @@ function courseplay:unload_combine(self, dt)
 		end
 
 		self.cp.TrafficBrake = false
-		if self.cp.modeState == 5 or self.cp.modeState == 2 then
+		--[[if self.cp.modeState == 5 or self.cp.modeState == 2 then    FS15
 			targetX, targetZ = courseplay:isTheWayToTargetFree(self, targetX, targetZ)
-		end
+		end]]
 		courseplay:setTrafficCollision(self, targetX, targetZ,true)
 		
 		if self.isRealistic then

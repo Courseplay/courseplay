@@ -174,7 +174,7 @@ function courseplay:sendCourseplayerHome(combine)
 end
 
 function courseplay:switchCourseplayerSide(combine)
-	if combine.grainTankCapacity == 0 then
+	if combine.capacity == 0 then
 		local tractor = combine.courseplayers[1];
 		if tractor == nil then
 			return;
@@ -525,8 +525,9 @@ function courseplay:getCuttingAreaValuesX(object)
 	end;
 
 
-	local areas;
-	if courseplay:isBigM(object) then
+	local areas = object.workAreas;
+	-- TODO: Old FS15 methode, should be removed when sure all is using the "workAreas"
+	--[[if courseplay:isBigM(object) then
 		areas = object.mowerCutAreas;
 		courseplay:debug('\t\tareas = mowerCutAreas (isBigM)', 7);
 	elseif object.typeName == 'defoliator_animated' then
@@ -541,7 +542,7 @@ function courseplay:getCuttingAreaValuesX(object)
 	else
 		areas = object.cuttingAreas;
 		courseplay:debug('\t\tareas = cuttingAreas', 7);
-	end;
+	end;]]
 
 	local min, max = math.min, math.max;
 	local left, right = -9999, 9999;
@@ -1361,7 +1362,7 @@ function courseplay:toggleStopWhenUnloading(combine)
 end;
 
 function courseplay:goToVehicle(curVehicle, targetVehicle)
-	--print(string.format("%s: goToVehicle(): targetVehicle=%q", nameNum(curVehicle), nameNum(targetVehicle)));
+	-- print(string.format("%s: goToVehicle(): targetVehicle=%q", nameNum(curVehicle), nameNum(targetVehicle)));
 	g_client:getServerConnection():sendEvent(VehicleEnterRequestEvent:new(targetVehicle, g_settingsNickname));
 	g_currentMission.isPlayerFrozen = false;
 	courseplay_manager.playerOnFootMouseEnabled = false;

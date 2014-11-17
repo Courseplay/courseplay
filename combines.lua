@@ -93,7 +93,7 @@ function courseplay:registerAtCombine(vehicle, combine)
 	else
 		
 		if vehicle.cp.realisticDriving then
-			if combine.cp.wantsCourseplayer == true or combine.grainTankFillLevel == combine.grainTankCapacity then
+			if combine.cp.wantsCourseplayer == true or combine.fillLevel == combine.capacity then
 
 			else
 				-- force unload when combine is full
@@ -252,7 +252,7 @@ function courseplay:unregisterFromCombine(vehicle, combine)
 		vehicle.trafficCollisionIgnoreList[combine.rootNode] = nil
 	end
 	
-	if combine.acParameters ~= nil then
+	if combine.acParameters ~= nil and combine.acParameters.enabled then
 		if combine.cp.turnStage ~= 0 then
 			combine.cp.turnStage = 0
 		end
@@ -401,26 +401,18 @@ end;
 function courseplay:getSpecialCombineOffset(combine)
 	if combine.cp == nil then return nil; end;
 
-	if combine.cp.isJohnDeereS690iBBM then
-		return  9.5;
-	elseif combine.cp.isJohnDeereS650BBM then
-		return  7.7;
-	elseif combine.cp.isCaseIH7130 then
+	if combine.cp.isCaseIH7130 then
 		return  8.0;
-	elseif combine.cp.isCaseIH9230 or combine.cp.isCaseIH9230Crawler then
+	elseif combine.cp.isCaseIH9230Crawler then
 		return 11.5;
-	elseif combine.cp.isDeutz5465H then
-		return  5.6;
+	elseif combine.cp.isNewHollandTC590 then
+		return 5.1;
+	elseif combine.cp.isNewHollandCR1090 then
+		return 9.6;
+	elseif combine.cp.isSampoRosenlewC6 then
+		return 4.8;
 	elseif combine.cp.isGrimmeRootster604 then
 		return -4.3;
-	elseif combine.cp.isGrimmeSE7555 then
-		return  4.3;
-	elseif combine.cp.isFahrM66 then
-		return  3.9;
-	elseif combine.cp.isJF1060 then
-		return -7.0, 7.0;
-	elseif combine.cp.isRopaEuroTiger then
-		return  5.2;
 	elseif combine.cp.isSugarBeetLoader then
 		local utwX,utwY,utwZ = getWorldTranslation(combine.unloadingTrigger.node);
 		local combineToUtwX,_,_ = worldToLocal(combine.rootNode, utwX,utwY,utwZ);
@@ -431,8 +423,8 @@ function courseplay:getSpecialCombineOffset(combine)
 end;
 
 function courseplay:getCombinesPipeSide(combine)
-	prnwX, prnwY, prnwZ = getWorldTranslation(combine.pipeRaycastNode)
-	combineToPrnX, combineToPrnY, combineToPrnZ = worldToLocal(combine.rootNode, prnwX, prnwY, prnwZ)
+	local prnwX, prnwY, prnwZ = getWorldTranslation(combine.pipeRaycastNode)
+	local combineToPrnX, combineToPrnY, combineToPrnZ = worldToLocal(combine.rootNode, prnwX, prnwY, prnwZ)
 
 	if combineToPrnX >= 0 then
 		combine.cp.pipeSide = 1; --left

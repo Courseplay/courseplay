@@ -18,7 +18,6 @@ function courseplay:load(xmlFile)
 	self.cp.isCombine = courseplay:isCombine(self);
 	self.cp.isChopper = courseplay:isChopper(self);
 	self.cp.isHarvesterSteerable = courseplay:isHarvesterSteerable(self);
-	self.cp.isKasi = nil
 	self.cp.isSugarBeetLoader = courseplay:isSpecialCombine(self, "sugarBeetLoader");
 	if self.cp.isCombine then
 		self.cp.mode7Unloading = false
@@ -103,7 +102,7 @@ function courseplay:load(xmlFile)
 	self.cp.realisticDriving = true;
 	self.cp.canSwitchMode = false;
 	self.cp.startAtFirstPoint = false;
-
+	self.cp.multiSiloSelectedFillType = Fillable.FILLTYPE_UNKNOWN;
 	self.cp.stopForLoading = false;
 
 	self.cp.attachedCombineIdx = nil;
@@ -237,7 +236,8 @@ function courseplay:load(xmlFile)
 	self.findTrafficCollisionCallback = courseplay.findTrafficCollisionCallback;
 	self.findBlockingObjectCallbackLeft = courseplay.findBlockingObjectCallbackLeft;
 	self.findBlockingObjectCallbackRight = courseplay.findBlockingObjectCallbackRight;
-
+	self.findVehicleHeights = courseplay.findVehicleHeights; 
+	
 	-- traffic collision
 	self.cpOnTrafficCollisionTrigger = courseplay.cpOnTrafficCollisionTrigger;
 
@@ -293,12 +293,12 @@ function courseplay:load(xmlFile)
 	-- tippers
 	self.tippers = {}; --TODO (Jakob): put in cp table
 	self.cp.numWorkTools = 0;
-	self.cp.tipperAttached = false
-	self.cp.currentTrailerToFill = nil
-	self.cp.lastTrailerToFillDistance = nil
-	self.cp.isUnloaded = false
-	self.cp.isLoaded = false
-	self.cp.unloadingTipper = nil
+	self.cp.tipperAttached = false;
+	self.cp.currentTrailerToFill = nil;
+	self.cp.trailerFillDistance = nil;
+	self.cp.isUnloaded = false;
+	self.cp.isLoaded = false;
+	self.cp.unloadingTipper = nil;
 	self.cp.tipperFillLevel = nil;
 	self.cp.tipperCapacity = nil;
 	self.cp.tipperFillLevelPct = 0;
@@ -350,13 +350,6 @@ function courseplay:load(xmlFile)
 	self.cp.selectedCombineNumber = 0
 	self.cp.searchCombineOnField = 0;
 
-	self.cp.EifokLiquidManure = {
-		targetRefillObject = {};
-		searchMapHoseRefStation = {
-			pull = true;
-			push = true;
-		};
-	};
 	--Copy course
 	self.cp.hasFoundCopyDriver = false;
 	self.cp.copyCourseFromDriver = nil;
@@ -424,7 +417,8 @@ function courseplay:load(xmlFile)
 			pages = {};
 		};
 		mouseWheel = {
-			icon = Overlay:new('cpMouseWheelIcon', 'dataS2/menu/mouseControlsHelp/mouseMMB.png', 0, 0, 32/g_screenWidth, 32/g_screenHeight);
+			-- icon = Overlay:new('cpMouseWheelIcon', 'dataS2/menu/mouseControlsHelp/mouseMMB.png', 0, 0, 32/g_screenWidth, 32/g_screenHeight); -- FS13
+			icon = Overlay:new('cpMouseWheelIcon', 'dataS2/menu/controllerSymbols/mouse/mouseMMB.png', 0, 0, 32/g_screenWidth, 32/g_screenHeight); -- FS15
 			render = false;
 		};
 
@@ -448,7 +442,7 @@ function courseplay:load(xmlFile)
 	-- SeedUsageCalculator
 	self.cp.suc = {
 		active = false;
-		fontSize = 0.016;
+		fontSize = courseplay.hud.fontSizes.seedUsageCalculator;
 		x1 = self.cp.hud.background.x + 93/1920;
 		x2 = self.cp.hud.background.x + 93/1920 + 449/1920;
 		y1 = self.cp.hud.background.y + 335/1080;
@@ -919,7 +913,7 @@ end
 
 function courseplay:draw()
 	--WORKWIDTH DISPLAY
-	if self.cp.workWidthChanged > self.timer then
+	if self.cp.workWidthChanged > self.timer and self.cp.mode ~= 7 then
 		courseplay:showWorkWidth(self);
 	end;
 
@@ -1496,6 +1490,8 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		courseplay:reload_courses(self, true);
 		local visualWaypointsMode = Utils.getNoNil(getXMLInt(xmlFile, curKey .. '#visualWaypoints'), 1);
 		courseplay:changeVisualWaypointsMode(self, 0, visualWaypointsMode);
+		self.cp.multiSiloSelectedFillType = Fillable.fillTypeNameToInt[Utils.getNoNil(getXMLString(xmlFile, curKey .. '#multiSiloSelectedFillType'), 'unknown')];
+		if self.cp.multiSiloSelectedFillType == nil then self.cp.multiSiloSelectedFillType = Fillable.FILLTYPE_UNKNOWN; end;
 
 		-- SPEEDS
 		curKey = key .. '.courseplay.speeds';
@@ -1615,7 +1611,7 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 
 
 	--NODES
-	local cpOpen = string.format('<courseplay aiMode=%q courses=%q openHudWithMouse=%q beacon=%q visualWaypoints=%q waitTime=%q>', tostring(self.cp.mode), tostring(table.concat(self.cp.loadedCourses, ",")), tostring(self.cp.hud.openWithMouse), tostring(self.cp.beaconLightsMode), tostring(self.cp.visualWaypointsMode), tostring(self.cp.waitTime));
+	local cpOpen = string.format('<courseplay aiMode=%q courses=%q openHudWithMouse=%q beacon=%q visualWaypoints=%q waitTime=%q multiSiloSelectedFillType=%q>', tostring(self.cp.mode), tostring(table.concat(self.cp.loadedCourses, ",")), tostring(self.cp.hud.openWithMouse), tostring(self.cp.beaconLightsMode), tostring(self.cp.visualWaypointsMode), tostring(self.cp.waitTime), Fillable.fillTypeIntToName[self.cp.multiSiloSelectedFillType]);
 	local speeds = string.format('<speeds useRecordingSpeed=%q unload="%.5f" turn="%.5f" field="%.5f" max="%.5f" />', tostring(self.cp.speeds.useRecordingSpeed), self.cp.speeds.unload, self.cp.speeds.turn, self.cp.speeds.field, self.cp.speeds.street);
 	local combi = string.format('<combi tipperOffset="%.1f" combineOffset="%.1f" combineOffsetAutoMode=%q fillFollow="%d" fillDriveOn="%d" turnRadius="%d" realisticDriving=%q />', self.cp.tipperOffset, self.cp.combineOffset, tostring(self.cp.combineOffsetAutoMode), self.cp.followAtFillLevel, self.cp.driveOnAtFillLevel, self.cp.turnRadius, tostring(self.cp.realisticDriving));
 	local fieldWork = string.format('<fieldWork workWidth="%.1f" ridgeMarkersAutomatic=%q offsetData=%q abortWork="%d" refillUntilPct="%d" />', self.cp.workWidth, tostring(self.cp.ridgeMarkersAutomatic), offsetData, Utils.getNoNil(self.cp.abortWork, 0), self.cp.refillUntilPct);
