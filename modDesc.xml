@@ -2116,7 +2116,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<fr>Farm Silo don't have selected fill type</fr>
 			<es>Farm Silo don't have selected fill type</es>
 			<it>Il granaio non sa con cosa riempire</it>
-			<cz>Farm Silo don't have selected fill type</cz>
+			<cz>Silo neobsahuje vybranou plodinu</cz>
 			<ru>Farm Silo don't have selected fill type</ru>
 			<hu>Farm Silo don't have selected fill type</hu>
 			<nl>Farm Silo heeft niet de juiste vulling</nl>
@@ -2127,7 +2127,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<fr>Farm Silo Load:</fr>
 			<es>Farm Silo Load:</es>
 			<it>Il granaio sta caricando:</it>
-			<cz>Farm Silo Load:</cz>
+			<cz>Na sile se nakládá:</cz>
 			<ru>Farm Silo Load:</ru>
 			<hu>Farm Silo Load:</hu>
 			<nl>Farm Silo laad:</nl>
@@ -2138,7 +2138,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<fr>Farm Silo is empty!</fr>
 			<es>Farm Silo is empty!</es>
 			<it>Il granaio è vuoto!</it>
-			<cz>Farm Silo is empty!</cz>
+			<cz>Silo je prázdné!</cz>
 			<ru>Farm Silo is empty!</ru>
 			<hu>Farm Silo is empty!</hu>
 			<nl>Farm Silo is leeg!</nl>
@@ -2149,7 +2149,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<fr>Starting up %s!</fr>
 			<es>Starting up %s!</es>
 			<it>Starting up %s!</it>
-			<cz>Starting up %s!</cz>
+			<cz>Nastartovat při %s!</cz>
 			<ru>Starting up %s!</ru>
 			<hu>Starting up %s!</hu>
 			<nl>Opstarten %s!</nl>
@@ -2253,6 +2253,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 		<text name="COURSEPLAY_MODIFIER">
 			<en>Courseplay: modifier</en>
 			<de>Courseplay: Modifikator</de>
+			<cz>Courseplay: úprava</cz>
 			<ru>Courseplay: модификатор</ru>
 			<hu>Vezetősegéd gombkiosztás: Elsődleges</hu>
 			<nl>Courseplay: instellingen</nl>
@@ -2260,6 +2261,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 		<text name="COURSEPLAY_MENU_ACCEPT_SECONDARY">
 			<en>Courseplay: secondary menu accept</en>
 			<de>Courseplay: sekundäres Menü-Akzeptieren</de>
+			<cz>Courseplay: vedlejší menu povoleno</cz>
 			<ru>Courseplay: вторичное меню</ru>
 			<hu>Vezetősegéd gombkiosztás: Másodlagos</hu>
 			<nl>Courseplay: tweede menu accepteren</nl>
