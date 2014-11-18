@@ -105,10 +105,10 @@ end;
 function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 	if not isImplement then
 		cpPrintLine(6, 3);
-		courseplay:debug(('%s: updateWorkTools(vehicle, %q, isImplement=false) (mode=%d)'):format(nameNum(vehicle), nameNum(workTool), vehicle.cp.mode), 6);
+		courseplay:debug(('%s: updateWorkTools(%s, %q, isImplement=false) (mode=%d)'):format(nameNum(vehicle),tostring(vehicle.name), nameNum(workTool), vehicle.cp.mode), 6);
 	else
 		cpPrintLine(6);
-		courseplay:debug(('%s: updateWorkTools(vehicle, %q, isImplement=true)'):format(nameNum(vehicle), nameNum(workTool)), 6);
+		courseplay:debug(('%s: updateWorkTools(%s, %q, isImplement=true)'):format(nameNum(vehicle),tostring(vehicle.name), nameNum(workTool)), 6);
 	end;
 
 	courseplay:setNameVariable(workTool);
@@ -369,22 +369,19 @@ function courseplay:setMarkers(vehicle, object,isImplement)
 	object.cp.aiFrontMarker = nil
 	-- get the behindest and the frontest  points :-) ( as offset to root node)
 	local area = object.workAreas
-	if object.attachedCutters ~= nil then
+	if object.attachedCutters ~= nil and not object.cp.hasSpecializationFruitPreparer then
+		courseplay:debug(('%s: setMarkers(): %s is a combine -> return '):format(nameNum(vehicle), tostring(object.name)), 6);
 		return
 	end
-	-- TODO: Old FS15 methode, should be removed when sure all is using the "workAreas"
-	--[[if courseplay:isBigM(object) then
-		area = object.mowerCutAreas
-	elseif object.typeName == "defoliator_animated" then
-		area = object.fruitPreparerAreas
-	end]]
-
+	
 	if not area then
+		courseplay:debug(('%%s: setMarkers(): %s has no workAreas -> return '):format(nameNum(vehicle), tostring(object.name)), 6);
 		return;
 	end;
 
 	local tableLength = #(area)
 	if tableLength == 0 then
+		courseplay:debug(('%s: setMarkers(): %s has no workAreas -> return '):format(nameNum(vehicle), tostring(object.name)), 6);
 		return
 	end
 	for k = 1, tableLength do
@@ -407,7 +404,7 @@ function courseplay:setMarkers(vehicle, object,isImplement)
 		vehicle.cp.backMarkerOffset = object.cp.backMarkerOffset
 	end
 
-	if object.isFuchsFass then -- TODO (Jakob): move to askForSpecialSettings()
+	--[[if object.isFuchsFass then -- TODO (Jakob): move to askForSpecialSettings() --TODO (Tom) remove or leave ??
 		local x,y,z = 0,0,0;
 		local valveOffsetFromRootNode = 0;
 		local caOffsetFromValve = -1.5; --4.5;
@@ -423,22 +420,18 @@ function courseplay:setMarkers(vehicle, object,isImplement)
 		vehicle.cp.backMarkerOffset = distToFuchs + valveOffsetFromRootNode + caOffsetFromValve;
 		object.cp.aiFrontMarker = vehicle.cp.backMarkerOffset - 2.5;
 		vehicle.cp.aiFrontMarker = object.cp.aiFrontMarker;
-	end;
+	end;]]
 
 	if vehicle.cp.aiFrontMarker == nil or object.cp.aiFrontMarker > vehicle.cp.aiFrontMarker then
 		vehicle.cp.aiFrontMarker = object.cp.aiFrontMarker
-	end
-	if not isImplement then --FS15
-		vehicle.cp.aiFrontMarker = 0
-		vehicle.cp.backMarkerOffset = 0
 	end
 
 	if vehicle.cp.aiFrontMarker < -7 then
 		vehicle.aiToolExtraTargetMoveBack = math.abs(vehicle.cp.aiFrontMarker)
 	end
 
-	courseplay:debug(('%s: setMarkers(): turnEndBackDistance=%s, aiToolExtraTargetMoveBack=%s'):format(nameNum(vehicle), tostring(vehicle.turnEndBackDistance), tostring(vehicle.aiToolExtraTargetMoveBack)), 6);
-	courseplay:debug(('%s: setMarkers(): cp.backMarkerOffset=%s, cp.aiFrontMarker=%s'):format(nameNum(vehicle), tostring(vehicle.cp.backMarkerOffset), tostring(vehicle.cp.aiFrontMarker)), 6);
+	courseplay:debug(('%s: setMarkers(): turnEndBackDistance = %s, aiToolExtraTargetMoveBack = %s'):format(nameNum(vehicle), tostring(vehicle.turnEndBackDistance), tostring(vehicle.aiToolExtraTargetMoveBack)), 6);
+	courseplay:debug(('%s: setMarkers(): cp.backMarkerOffset = %s, cp.aiFrontMarker = %s'):format(nameNum(vehicle), tostring(vehicle.cp.backMarkerOffset), tostring(vehicle.cp.aiFrontMarker)), 6);
 end;
 
 function courseplay:setFoldedStates(object)

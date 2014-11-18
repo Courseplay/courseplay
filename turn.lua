@@ -13,8 +13,8 @@ function courseplay:turn(self, dt) --!!!
 	local moveForwards = true;
 	local updateWheels = true;
 	local turnOutTimer = 1500
-	local frontMarker = Utils.getNoNil(self.cp.aiFrontMarker,-3)
-	local backMarker = Utils.getNoNil(self.cp.backMarkerOffset, 0)
+	local frontMarker = Utils.getNoNil(self.cp.backMarkerOffset, -3)
+	local backMarker = Utils.getNoNil(self.cp.aiFrontMarker,0)
 	if self.cp.noStopOnEdge then 
 		turnOutTimer = 0
 	end
@@ -210,7 +210,7 @@ function courseplay:turn(self, dt) --!!!
 				self.cp.turnStage = 1;
 			end
 		else
-			if dist < 0.5 then
+			if dist < 0.5 and self.cp.turnStage ~= -1 then
 				self.cp.turnStage = -1
 				courseplay:lowerImplements(self, false, true)
 			end
@@ -298,15 +298,17 @@ function courseplay:lowerImplements(self, moveDown, workToolonOff)
 					--courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
 		specialTool = courseplay:handleSpecialTools(self,workTool,true,moveDown,workToolonOff,nil,nil,nil);
 	end;
-
 	if not specialTool then
-		if self.cp.isCombine or self.cp.isChopper then
+		if (self.cp.isCombine or self.cp.isChopper) and not self.cp.hasSpecializationFruitPreparer  then
 			for cutter, implement in pairs(self.attachedCutters) do
 				if cutter:isLowered() ~= moveDown then
 					self:lowerImplementByJointIndex(implement.jointDescIndex, moveDown, true);
 				end;
 			end;
 		elseif self.setAIImplementsMoveDown ~= nil then
+			if self:isLowered() == moveDown then 	--TODO (Tom) temp solution for potatoe and sugar beet harvesters 
+				return								--still not nice because on every turn we have a startup event while lowering
+			end
 			self:setAIImplementsMoveDown(moveDown,true);
 		elseif self.setFoldState ~= nil then
 			self:setFoldState(state, true);
