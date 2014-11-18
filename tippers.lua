@@ -369,7 +369,9 @@ function courseplay:setMarkers(vehicle, object,isImplement)
 	object.cp.aiFrontMarker = nil
 	-- get the behindest and the frontest  points :-) ( as offset to root node)
 	local area = object.workAreas
-
+	if object.attachedCutters ~= nil then
+		return
+	end
 	-- TODO: Old FS15 methode, should be removed when sure all is using the "workAreas"
 	--[[if courseplay:isBigM(object) then
 		area = object.mowerCutAreas

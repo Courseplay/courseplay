@@ -221,7 +221,7 @@ function courseplay:turn(self, dt) --!!!
 				updateWheels = false;
 				self.cp.turnStage = 1;
 			end
-		end		
+		end
 		x,y,z = localToWorld(self.cp.DirectionNode, 0, 0, 1)
 		self.aiTractorTargetX, self.aiTractorTargetZ = x,z
 		
@@ -284,7 +284,9 @@ end
 
 function courseplay:lowerImplements(self, moveDown, workToolonOff)
 	--moveDown true= lower,  false = raise , workToolonOff true = switch on worktool,  false = switch off worktool
-	if moveDown == nil then moveDown = false; end;
+	if moveDown == nil then 
+		moveDown = false; 
+	end;
 
 	local state  = 1;
 	if moveDown then
@@ -311,7 +313,11 @@ function courseplay:lowerImplements(self, moveDown, workToolonOff)
 		end;
 		if workToolonOff then
 			for _,workTool in pairs(self.tippers) do
-				if workTool.setIsTurnedOn ~= nil and not courseplay:isFolding(workTool) and not workTool.attacherJoint.needsLowering and workTool ~= self then
+				local needsLowering = false
+				if workTool.attacherJoint ~= nil then
+					needsLowering = workTool.attacherJoint.needsLowering
+				end
+				if workTool.setIsTurnedOn ~= nil and not courseplay:isFolding(workTool) and not needsLowering and workTool ~= self then
 					workTool:setIsTurnedOn(moveDown, false);
 				end;
 			end;

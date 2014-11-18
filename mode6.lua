@@ -51,7 +51,11 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 		end
 
 		local isFolding, isFolded, isUnfolded = courseplay:isFolding(workTool);
-		local needsLowering = workTool.attacherJoint.needsLowering
+		local needsLowering = false
+		
+		if workTool.attacherJoint ~= nil then
+			needsLowering = workTool.attacherJoint.needsLowering
+		end
 		
 		-- stop while folding
 		if (isFolding or selfIsFolding) and self.cp.turnStage == 0 then
