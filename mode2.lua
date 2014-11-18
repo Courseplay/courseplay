@@ -1036,7 +1036,7 @@ function courseplay:unload_combine(self, dt)
 		
 			courseplay:driveInMRDirection(self, targetX, targetZ,moveForwards, dt, allowedToDrive);
 		else
-			AIVehicleUtil.driveInDirection(self, dt, self.cp.steeringAngle, 0.5, 0.5, 8, allowedToDrive, moveForwards, targetX, targetZ, 3, 0.4)
+			AIVehicleUtil.driveInDirection(self, dt, self.cp.steeringAngle, 1, 0.5, 10, allowedToDrive, moveForwards, targetX, targetZ, refSpeed, 1)
 		end
 
 		if courseplay.debugChannels[4] and self.cp.nextTargets and self.cp.curTarget.x and self.cp.curTarget.z then

@@ -271,7 +271,7 @@ function courseplay:turn(self, dt) --!!!
 			end
  			courseplay:driveInMRDirection(self, lx,lz,moveForwards,dt,allowedToDrive)
 		else
-			AIVehicleUtil.driveInDirection(self, dt, 25, 0.5, 0.5, 20, true, moveForwards, lx, lz, 3, 0.9);
+			AIVehicleUtil.driveInDirection(self, dt, 25, 1, 0.5, 20, true, moveForwards, lx, lz, refSpeed, 1);
 		end
 		courseplay:setTrafficCollision(self, lx, lz, true)
 	end;

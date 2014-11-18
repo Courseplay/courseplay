@@ -9,7 +9,6 @@ function courseplay:drive(self, dt)
 	end;
 	
 	local refSpeed = 0
-	local line = 0
 	local cx,cy,cz = 0,0,0
 	-- may i drive or should i hold position for some reason?
 	local allowedToDrive = true
@@ -30,7 +29,6 @@ function courseplay:drive(self, dt)
 	if self.cp.mode == 7 then
 		local continue;
 		continue, cx, cy, cz, refSpeed, allowedToDrive = courseplay:handleMode7(self, cx, cy, cz, refSpeed, allowedToDrive);
-		line = 32
 		if not continue then
 			return;
 		end;
@@ -495,29 +493,23 @@ function courseplay:drive(self, dt)
 		(workSpeed ~= nil and workSpeed == 0.5) 
 	then
 		refSpeed = self.cp.speeds.turn;
-		line = 497
 	elseif ((self.cp.mode == 2 or self.cp.mode == 3) and isAtStart) or (workSpeed ~= nil and workSpeed == 1) then
 		refSpeed = self.cp.speeds.field;
-		line = 500
 	else
 		local mode7onCourse = true
 		if self.cp.mode ~= 7 then
 			refSpeed = self.cp.speeds.street;
-			line = 506
 		elseif self.cp.modeState == 5 then
 			mode7onCourse = false
 		end
 		if self.cp.speeds.useRecordingSpeed and self.Waypoints[self.recordnumber].speed ~= nil and mode7onCourse then
 			refSpeed = Utils.clamp(refSpeed, self.cp.speeds.crawl, self.Waypoints[self.recordnumber].speed);
-			line = 511
 		end;
 	end;
 	
 	
 	if self.cp.collidingVehicleId ~= nil then
 		refSpeed = courseplay:regulateTrafficSpeed(self, refSpeed, allowedToDrive);
-		line = 518
-		
 	end
 	
 	if self.cp.currentTipTrigger ~= nil then
@@ -528,7 +520,6 @@ function courseplay:drive(self, dt)
 		end;
 	elseif self.cp.isInFilltrigger then
 		refSpeed = self.cp.speeds.turn;
-		line = 530
 		if self.lastSpeedReal > self.cp.speeds.turn then
 			courseplay:brakeToStop(self);
 		end;
@@ -545,7 +536,6 @@ function courseplay:drive(self, dt)
 	if self.Waypoints[self.recordnumber].rev then
 		lx,lz,fwd = courseplay:goReverse(self,lx,lz)
 		refSpeed = Utils.getNoNil(self.cp.speeds.unload, self.cp.speeds.crawl)
-		line = 547
 	else
 		fwd = true
 	end
@@ -585,7 +575,6 @@ function courseplay:drive(self, dt)
 			self.cp.isReverseBackToPoint = false;
 		end;
 	end
-	renderText(0.5,0.8,0.019,"refSpeed: "..tostring(refSpeed).." set in line: "..line)
 	if self.isRealistic then
 		courseplay:setMRSpeed(self, refSpeed, 3, allowedToDrive, workArea);
 	else
@@ -684,7 +673,9 @@ function courseplay:drive(self, dt)
 			if self.isRealistic then 
 				courseplay:driveInMRDirection(self, lx,lz,fwd, dt,allowedToDrive);
 			else
-				AIVehicleUtil.driveInDirection(self, dt, self.cp.steeringAngle, 0.5, 0.5, 8, true, fwd, lx, lz, 3, 0.5);
+			--self,dt,steeringAngleLimit,acceleration,slowAcceleration,slowAngleLimit,allowedToDrive,moveForwards,lx,lz,maxSpeed,slowDownFactor,angle
+				--AIVehicleUtil.driveInDirection(dt,25,1,0.5,20,true,true,-0.028702223698223,0.99958800630799,22,1,nil)
+				AIVehicleUtil.driveInDirection(self, dt, self.cp.steeringAngle, 1, 0.5, 20, true, fwd, lx, lz, refSpeed, 1);
 			end
 			if not isBypassing then
 				courseplay:setTrafficCollision(self, lx, lz, workArea)
@@ -809,12 +800,12 @@ end
 
 function courseplay:setSpeed(vehicle, refSpeed)
 	local newSpeed = math.max(refSpeed,3)	
-	if vehicle.cruiseControl.state == 0 then
+	if vehicle.cruiseControl.state == Drivable.CRUISECONTROL_STATE_OFF then
 		vehicle:setCruiseControlState(Drivable.CRUISECONTROL_STATE_ACTIVE)
 	end 
-	vehicle.cruiseControl.minSpeed = newSpeed   --TODO(Tom) thats rape, make it nice and clear when you know how
+	vehicle:setCruiseControlMaxSpeed(newSpeed) 
 	
-		-- slipping notification
+	-- slipping notification
 	if vehicle.lastSpeedReal*3600 < 0.5 and not vehicle.cp.inTraffic and not vehicle.Waypoints[vehicle.recordnumber].wait then
 		if vehicle.cp.timers.slippingWheels == nil or vehicle.cp.timers.slippingWheels == 0 then
 			courseplay:setCustomTimer(vehicle, 'slippingWheels', 5);
