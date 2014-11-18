@@ -84,7 +84,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct)
 		workTool = self.tippers[i];
 
 		local isFolding, isFolded, isUnfolded = courseplay:isFolding(workTool);
-
+		local needsLowering = workTool.attacherJoint.needsLowering
 		-- stop while folding
 		if courseplay:isFoldable(workTool) then
 			if isFolding and self.cp.turnStage == 0 then
@@ -129,7 +129,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct)
 						end;
 
 						--lower/raise
-						if workTool.needsLowering and workTool.aiNeedsLowering then
+						if needsLowering and workTool.aiNeedsLowering then
 							--courseplay:debug(string.format("WP%d: isLowered() = %s, hasGroundContact = %s", self.recordnumber, tostring(workTool:isLowered()), tostring(workTool.hasGroundContact)),12);
 							if not workTool:isLowered() then
 								courseplay:debug(string.format('%s: lower order', nameNum(workTool)), 17);
@@ -191,7 +191,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct)
 
 				--raise
 				if not isFolding and isUnfolded then
-					if workTool.needsLowering and workTool.aiNeedsLowering and workTool:isLowered() then
+					if needsLowering and workTool.aiNeedsLowering and workTool:isLowered() then
 						self:setAIImplementsMoveDown(false);
 						courseplay:debug(string.format('%s: raise order', nameNum(workTool)), 17);
 					end;

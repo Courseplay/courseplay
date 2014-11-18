@@ -311,7 +311,7 @@ function courseplay:lowerImplements(self, moveDown, workToolonOff)
 		end;
 		if workToolonOff then
 			for _,workTool in pairs(self.tippers) do
-				if workTool.setIsTurnedOn ~= nil and not courseplay:isFolding(workTool) and not workTool.needsLowering and workTool ~= self then
+				if workTool.setIsTurnedOn ~= nil and not courseplay:isFolding(workTool) and not workTool.attacherJoint.needsLowering and workTool ~= self then
 					workTool:setIsTurnedOn(moveDown, false);
 				end;
 			end;

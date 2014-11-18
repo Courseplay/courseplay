@@ -268,43 +268,39 @@ function courseplay:findInTables(tableToSearchIn , tableToSearchString, valueToS
 	if courseplay.lastSearchedValue == valueToSearch then --prevent loops in searching
 		return
 	else
-		print("courseplay:findInTables -> searching "..tostring(valueToSearch).." in "..tableToSearchString)
-		courseplay.lastSearchedValue = valueToSearch
+		print("courseplay:findInTables -> searching "..type(valueToSearch).." "..tostring(valueToSearch).." in "..tableToSearchString)
+		--courseplay.lastSearchedValue = valueToSearch
 	end
-	
-	local tableSearch = {}
-	local tableSearchLvl1 = {}
-	local Count = 0 
 	
 	if type(tableToSearchIn) == "table" then
 		--Level 0
 		for index, value in pairs(tableToSearchIn) do	
-			if value == valueToSearch then
+			if courseplay:findInMatchingValues(index,value,valueToSearch)  then
 				print(string.format("courseplay:findInTables -> %s.%s = %s",tableToSearchString,tostring(index),tostring(value)))
 			elseif type(value) == "table" then
 				local table1 = tableToSearchIn[index]
 				for index1, value1 in pairs(table1) do
-					if value1 == valueToSearch then
+					if courseplay:findInMatchingValues(index1,value1,valueToSearch) then
 						print(string.format("courseplay:findInTables -> %s.%s.%s = %s",tableToSearchString,tostring(index),tostring(index1),tostring(value1)))
 					elseif type(value1) == "table" then
 						local table2 = table1[index1]
 						for index2, value2 in pairs(table2) do
-							if value2 == valueToSearch then
+							if courseplay:findInMatchingValues(index2,value2,valueToSearch) then
 							print(string.format("courseplay:findInTables -> %s.%s.%s.%s = %s",tableToSearchString,tostring(index),tostring(index1),tostring(index2),tostring(value2)))
 							elseif type(value2) == "table" then
 								local table3 = table2[index2]
 								for index3, value3 in pairs(table3) do
-									if value3 == valueToSearch then
+									if courseplay:findInMatchingValues(index3,value3 ,valueToSearch) then
 										print(string.format("courseplay:findInTables -> %s.%s.%s.%s.%s = %s",tableToSearchString,tostring(index),tostring(index1),tostring(index2),tostring(index3),tostring(value3)))
 									elseif type(value3) == "table" then					
 										local table4 = table3[index3]
 										for index4, value4 in pairs(table3) do
-											if value4 == valueToSearch then
+											if courseplay:findInMatchingValues(index4,value4,valueToSearch) then
 												print(string.format("courseplay:findInTables -> %s.%s.%s.%s.%s.%s = %s",tableToSearchString,tostring(index),tostring(index1),tostring(index2),tostring(index3),tostring(index4),tostring(value4)))
 											elseif type(value4) == "table" then
 												local table5 = table4[index4]
 												for index5, value5 in pairs(table4) do
-													if value5 == valueToSearch then
+													if courseplay:findInMatchingValues(index5,value5,valueToSearch) then
 														print(string.format("courseplay:findInTables -> %s.%s.%s.%s.%s.%s.%s = %s",tableToSearchString,tostring(index),tostring(index1),tostring(index2),tostring(index3),tostring(index4),tostring(index5),tostring(value5)))
 													elseif type(value4) == "table" then
 													end
@@ -324,4 +320,18 @@ function courseplay:findInTables(tableToSearchIn , tableToSearchString, valueToS
 	return
 	end
 	print("courseplay:findInTables -> searching finished")
+end
+function courseplay:findInMatchingValues(index, value1, value2)
+	local type1 = type(value1)
+	local type2 = type(value2)
+	--print("checking "..type1..tostring(value1).."vs "..type2.." "..tostring(value2))
+	if type1 == type2 and value1 == value2 then
+		return true
+	end		
+	if type2 == "string" then
+		if tostring(index) == value2 then
+			return true
+		end
+	end
+	return false
 end

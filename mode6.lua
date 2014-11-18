@@ -2,7 +2,6 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 	local workTool --= self.tippers[1] -- to do, quick, dirty and unsafe
 	local activeTipper = nil
 	local specialTool = false
-
 	--[[
 	if self.attachedCutters ~= nil then
 		for cutter, implement in pairs(self.attachedCutters) do
@@ -52,7 +51,8 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 		end
 
 		local isFolding, isFolded, isUnfolded = courseplay:isFolding(workTool);
-
+		local needsLowering = workTool.attacherJoint.needsLowering
+		
 		-- stop while folding
 		if (isFolding or selfIsFolding) and self.cp.turnStage == 0 then
 			allowedToDrive = courseplay:brakeToStop(self);
@@ -209,7 +209,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 
 							if not isFolding and isUnfolded and not waitForSpecialTool then --TODO: where does "waitForSpecialTool" come from? what does it do?
 								--lower
-								if workTool.needsLowering and workTool.aiNeedsLowering then
+								if needsLowering and workTool.aiNeedsLowering then
 									self:setAIImplementsMoveDown(true);
 									courseplay:debug(string.format('%s: lower order', nameNum(workTool)), 17);
 								end;
@@ -249,7 +249,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 							end;
 
 							--raise
-							if workTool.needsLowering and workTool.aiNeedsLowering and self.cp.turnStage == 0 then
+							if needsLowering and workTool.aiNeedsLowering and self.cp.turnStage == 0 then
 								self:setAIImplementsMoveDown(false);
 								courseplay:debug(string.format('%s: raise order', nameNum(workTool)), 17);
 							end;
