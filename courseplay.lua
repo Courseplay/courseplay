@@ -41,9 +41,9 @@ courseplay.isDeveloper = courseplay.sonOfaBangSonOfaBoom[getMD5(g_settingsNickna
 if courseplay.isDeveloper then
 	print('Special dev magic for Courseplay developer unlocked. You go, girl!');
 else
-	print('No cookies for you! (please wait until we have some limited form of a working version...)');
-	courseplay.houstonWeGotAProblem = true;
-	return;
+	--print('No cookies for you! (please wait until we have some limited form of a working version...)');
+	--courseplay.houstonWeGotAProblem = true;
+	--return;
 end;
 
 -- working tractors saved in this
