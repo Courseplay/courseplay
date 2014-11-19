@@ -508,9 +508,9 @@ function courseplay:getCuttingAreaValuesX(object)
 
 	if object.aiLeftMarker and object.aiRightMarker then
 		local x, y, z = getWorldTranslation(object.aiLeftMarker);
-		local left, _, _ = worldToLocal(object.rootNode, x, y, z);
+		local left, _, _ = worldToLocal(object.cp.DirectionNode or object.rootNode, x, y, z);
 		x, y, z = getWorldTranslation(object.aiRightMarker);
-		local right, _, _ = worldToLocal(object.rootNode, x, y, z);
+		local right, _, _ = worldToLocal(object.cp.DirectionNode or object.rootNode, x, y, z);
 
 		courseplay:debug(('\t\taiMarkers: left=%s, right=%s'):format(tostring(left), tostring(right)), 7);
 
@@ -526,23 +526,6 @@ function courseplay:getCuttingAreaValuesX(object)
 
 
 	local areas = object.workAreas;
-	-- TODO: Old FS15 methode, should be removed when sure all is using the "workAreas"
-	--[[if courseplay:isBigM(object) then
-		areas = object.mowerCutAreas;
-		courseplay:debug('\t\tareas = mowerCutAreas (isBigM)', 7);
-	elseif object.typeName == 'defoliator_animated' then
-		areas = object.fruitPreparerAreas;
-		courseplay:debug('\t\tareas = fruitPreparerAreas', 7);
-	elseif object.cp.isPoettingerAlpha then -- Pöttinger Alpha mower
-		areas = object.alpMot.cuttingAreas;
-		courseplay:debug('\t\tareas = alpMot.cuttingAreas (isPoettingerAlpha)', 7);
-	elseif object.cp.isPoettingerX8 then -- Pöttinger X8 mower
-		areas = object.mowerCutAreasSend;
-		courseplay:debug('\t\tareas = mowerCutAreasSend (isPoettingerX8)', 7);
-	else
-		areas = object.cuttingAreas;
-		courseplay:debug('\t\tareas = cuttingAreas', 7);
-	end;]]
 
 	local min, max = math.min, math.max;
 	local left, right = -9999, 9999;
@@ -551,7 +534,7 @@ function courseplay:getCuttingAreaValuesX(object)
 			for caType,node in pairs(areas[i]) do
 				if caType == 'start' or caType == 'height' or caType == 'width' then
 					local x, y, z = getWorldTranslation(node);
-					local caX, _, _ = worldToLocal(object.rootNode, x, y, z);
+					local caX, _, _ = worldToLocal(object.cp.DirectionNode or object.rootNode, x, y, z);
 					left = max(left, caX);
 					right = min(right, caX);
 					courseplay:debug(('\t\t\tarea %d, type=%s, caX=%s -> left=%s, right=%s'):format(i, tostring(caType), tostring(caX), tostring(left), tostring(right)), 7);
@@ -1577,7 +1560,7 @@ function courseplay:setCurrentTargetFromList(vehicle, index)
 end;
 
 function courseplay:addNewTargetVector(vehicle, x, z)
-	local tx, ty, tz = localToWorld(vehicle.rootNode, x, 0, z);
+	local tx, ty, tz = localToWorld(vehicle.cp.DirectionNode or vehicle.rootNode, x, 0, z);
 	table.insert(vehicle.cp.nextTargets, { x = tx, y = ty, z = tz });
 end;
 

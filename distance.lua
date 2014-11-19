@@ -12,18 +12,18 @@ function courseplay:distanceCheck(vehicle)
 	local number = vehicle.cp.recordingIsPaused and vehicle.recordnumber - 1 or 1;
 
 	local cx, cz = vehicle.Waypoints[number].cx, vehicle.Waypoints[number].cz;
-	local lx, ly, lz = worldToLocal(vehicle.rootNode, cx, 0, cz);
+	local lx, ly, lz = worldToLocal(vehicle.cp.DirectionNode, cx, 0, cz);
 	local arrowRotation = Utils.getYRotationFromDirection(lx, lz);
 	vehicle.cp.directionArrowOverlay:setRotation(arrowRotation, vehicle.cp.directionArrowOverlay.width/2, vehicle.cp.directionArrowOverlay.height/2);
 	vehicle.cp.directionArrowOverlay:render();
 
-	local ctx, cty, ctz = getWorldTranslation(vehicle.rootNode);
+	local ctx, cty, ctz = getWorldTranslation(vehicle.cp.DirectionNode);
 	vehicle.cp.infoText = string.format("%s: %.1fm", courseplay:loc("COURSEPLAY_DISTANCE"), courseplay:distance(ctx, ctz, cx, cz));
 end;
 
 
 function courseplay:distanceToObject(vehicle, object)
-	local x, y, z = getWorldTranslation(vehicle.rootNode);
+	local x, y, z = getWorldTranslation(vehicle.cp.DirectionNode or vehicle.rootNode);
 	local ox, oy, oz = worldToLocal(object.rootNode, x, y, z);
 
 	return Utils.vector2Length(ox, oz);

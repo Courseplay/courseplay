@@ -32,8 +32,8 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 	if vehicle.isAIThreshing then
 		if (vehicle.fillLevel * 100 / vehicle.capacity) >= vehicle.cp.driveOnAtFillLevel then
 			local cx7, cz7 = vehicle.Waypoints[vehicle.maxnumber].cx, vehicle.Waypoints[vehicle.maxnumber].cz;
-			local lx7, lz7 = AIVehicleUtil.getDriveDirection(vehicle.rootNode, cx7, cty7, cz7);
-			local x7,y7,z7 = localToWorld(vehicle.rootNode, 0, 0, -15);
+			local lx7, lz7 = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, cx7, cty7, cz7);
+			local x7,y7,z7 = localToWorld(vehicle.cp.DirectionNode, 0, 0, -15);
 			vehicle.cp.mode7t = {};
 			vehicle.cp.mode7t.x = x7;
 			vehicle.cp.mode7t.y = y7;
@@ -41,7 +41,7 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 			local fx,fy,fz = 0,0,0;
 			local isField = true;
 			for i = 0.5, 3 do
-				fx,fy,fz = localToWorld(vehicle.rootNode, 0, 0, -i*vehicle.cp.turnRadius);
+				fx,fy,fz = localToWorld(vehicle.cp.DirectionNode, 0, 0, -i*vehicle.cp.turnRadius);
 				if not courseplay:isField(fx, fz) then
 					isField = false;
 					break;
@@ -57,12 +57,12 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 				courseplay:debug(nameNum(vehicle) .. ": sideOffset = "..tostring(sideOffset), 11);
 				if lx7 < 0 then
 					courseplay:debug(nameNum(vehicle) .. ": approach from right", 11);
-					vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.rootNode, -sideOffset , 0, -3*vehicle.cp.turnRadius);
+					vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, -sideOffset , 0, -3*vehicle.cp.turnRadius);
 					courseplay:addNewTargetVector(vehicle, sideOffset , 0);
 					courseplay:addNewTargetVector(vehicle, 0 , 3.5);
 				else
 					courseplay:debug(nameNum(vehicle) .. ": approach from left", 11);
-					vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.rootNode, sideOffset , 0, -3*vehicle.cp.turnRadius);
+					vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, sideOffset , 0, -3*vehicle.cp.turnRadius);
 					courseplay:addNewTargetVector(vehicle, -sideOffset , 0);
 					courseplay:addNewTargetVector(vehicle, 0 ,3.5);
 				end
@@ -71,8 +71,8 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 				courseplay:start(vehicle);
 			else
 				if courseplay.debugChannels[11] then
-					local dbgctx7, dbgcty7, dbgctz7 = getWorldTranslation(vehicle.rootNode);
-					local dbgcx, _, dbgcz = localToWorld(vehicle.rootNode, 0 , 0, -3*vehicle.cp.turnRadius);
+					local dbgctx7, dbgcty7, dbgctz7 = getWorldTranslation(vehicle.cp.DirectionNode);
+					local dbgcx, _, dbgcz = localToWorld(vehicle.cp.DirectionNode, 0 , 0, -3*vehicle.cp.turnRadius);
 					drawDebugLine(dbgctx7, dbgcty7+3, dbgctz7, 1, 1, 1, dbgcx, dbgcty7+3, dbgcz, 1, 1, 1);
 				end					
 				return false;
@@ -108,7 +108,7 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 	elseif vehicle.cp.modeState == 5 then
 		local targets = #(vehicle.cp.nextTargets);
 		local aligned = false;
-		local ctx7, cty7, ctz7 = getWorldTranslation(vehicle.rootNode);
+		local ctx7, cty7, ctz7 = getWorldTranslation(vehicle.cp.DirectionNode);
 		vehicle.cp.infoText = string.format(courseplay:loc("COURSEPLAY_DRIVE_TO_WAYPOINT"), vehicle.cp.curTarget.x, vehicle.cp.curTarget.z);
 		if vehicle.cp.mode7GoBackBeforeUnloading then
 			cx = vehicle.cp.mode7t.x;

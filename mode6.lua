@@ -296,7 +296,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 							triggerId = trigger.specialTriggerId
 						end
 						local trigger_x, trigger_y, trigger_z = getWorldTranslation(triggerId);
-						local ctx, cty, ctz = getWorldTranslation(self.rootNode);
+						local ctx, cty, ctz = getWorldTranslation(self.cp.DirectionNode);
 
 						-- Start reversion value is to check if we have started to reverse
 						-- This is used in case we already registered a tipTrigger but changed the direction and might not be in that tipTrigger when unloading. (Bug Fix)

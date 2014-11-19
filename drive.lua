@@ -10,8 +10,8 @@ function courseplay:drive(self, dt)
 	
 	-- debug for workAreas
 	if courseplay.debugChannels[6] then
-		local tx1, ty1, tz1 = localToWorld(self.rootNode,3,1,self.cp.aiFrontMarker)
-		local tx2, ty2, tz2 = localToWorld(self.rootNode,3,1,self.cp.backMarkerOffset)
+		local tx1, ty1, tz1 = localToWorld(self.cp.DirectionNode,3,1,self.cp.aiFrontMarker)
+		local tx2, ty2, tz2 = localToWorld(self.cp.DirectionNode,3,1,self.cp.backMarkerOffset)
 		local nx, ny, nz = localDirectionToWorld(self.cp.DirectionNode, -1, 0, 0)
 		local distance = 6
 		drawDebugLine(tx1, ty1, tz1, 1, 0, 0, tx1+(nx*distance), ty1+(ny*distance), tz1+(nz*distance), 1, 0, 0) 
@@ -52,12 +52,11 @@ function courseplay:drive(self, dt)
 
 	-- Turn on sound / control lights
 	if not self.isControlled then
-		--setVisibility(self.aiMotorSound, true); --TODO (Jakob): still needed in FS13 and FS15(Tom)?
 		self:setLightsVisibility(courseplay.lightsNeeded);
 	end;
 
 	-- current position
-	local ctx, cty, ctz = getWorldTranslation(self.rootNode);
+	local ctx, cty, ctz = getWorldTranslation(self.cp.DirectionNode);
 
 	if self.recordnumber > self.maxnumber then
 		courseplay:debug(string.format("drive %d: %s: self.recordnumber (%s) > self.maxnumber (%s)", debug.getinfo(1).currentline, nameNum(self), tostring(self.recordnumber), tostring(self.maxnumber)), 12); --this should never happen
@@ -438,8 +437,8 @@ function courseplay:drive(self, dt)
 	
 	if WpUnload then
 		local i = self.cp.shovelEmptyPoint
-		local x,y,z = getWorldTranslation(self.rootNode)
-		local _,_,ez = worldToLocal(self.rootNode, self.Waypoints[i].cx , y , self.Waypoints[i].cz)
+		local x,y,z = getWorldTranslation(self.cp.DirectionNode)
+		local _,_,ez = worldToLocal(self.cp.DirectionNode, self.Waypoints[i].cx , y , self.Waypoints[i].cz)
 		if  ez < 0 then
 			allowedToDrive = false
 		end
@@ -451,8 +450,8 @@ function courseplay:drive(self, dt)
 	end
 	if WpLoadEnd then
 		local i = self.cp.shovelFillEndPoint
-		local x,y,z = getWorldTranslation(self.rootNode)
-		local _,_,ez = worldToLocal(self.rootNode, self.Waypoints[i].cx , y , self.Waypoints[i].cz)
+		local x,y,z = getWorldTranslation(self.cp.DirectionNode)
+		local _,_,ez = worldToLocal(self.cp.DirectionNode, self.Waypoints[i].cx , y , self.Waypoints[i].cz)
 		if  ez < 0.2 then
 			if self.cp.tipperFillLevelPct == 0 then
 				allowedToDrive = false
@@ -573,7 +572,7 @@ function courseplay:drive(self, dt)
 		lx = lx * -1
 	elseif self.cp.isReverseBackToPoint then
 		if self.cp.reverseBackToPoint then
-			local _, _, zDis = worldToLocal(self.rootNode, self.cp.reverseBackToPoint.x, self.cp.reverseBackToPoint.y, self.cp.reverseBackToPoint.z);
+			local _, _, zDis = worldToLocal(self.cp.DirectionNode, self.cp.reverseBackToPoint.x, self.cp.reverseBackToPoint.y, self.cp.reverseBackToPoint.z);
 			if zDis < 0 then
 				fwd = false;
 				lx = 0;
@@ -857,7 +856,6 @@ function courseplay:openCloseCover(vehicle, dt, showCover, isAtTipTrigger)
 end;
 
 function courseplay:refillSprayer(vehicle, fillLevelPct, driveOn, allowedToDrive, lx, lz, dt)
-	-- for i,activeTool in pairs(vehicle.tippers) do --TODO (Jakob): delete
 	for i=1, vehicle.cp.numWorkTools do
 		local activeTool = vehicle.tippers[i];
 		local isSpecialSprayer = false
@@ -977,7 +975,7 @@ function courseplay:regulateTrafficSpeed(vehicle,refSpeed,allowedToDrive)
 			courseplay:debug(nameNum(vehicle)..": regulateTrafficSpeed:	 "..tostring(name),3)
 		end
 		local x, y, z = getWorldTranslation(vehicle.cp.collidingVehicleId)
-		local x1, y1, z1 = worldToLocal(vehicle.rootNode, x, y, z)
+		local x1, y1, z1 = worldToLocal(vehicle.cp.DirectionNode, x, y, z)
 		if z1 < 0 or abs(x1) > 5 and not vehicle.cp.collidingObjects.all[vehicle.cp.collidingVehicleId] then -- vehicle behind tractor
 			vehicleBehind = true
 		end
@@ -1235,7 +1233,7 @@ function courseplay:setReverseBackDistance(vehicle, metersBack)
 	if not vehicle or not metersBack then return; end;
 
 	if not vehicle.cp.reverseBackToPoint then
-		local x, y, z = localToWorld(vehicle.rootNode, 0, 0, -metersBack);
+		local x, y, z = localToWorld(vehicle.cp.DirectionNode, 0, 0, -metersBack);
 		vehicle.cp.reverseBackToPoint = {};
 		vehicle.cp.reverseBackToPoint.x = x;
 		vehicle.cp.reverseBackToPoint.y = y;

@@ -162,25 +162,40 @@ function courseplay:setNameVariable(workTool)
 
 	-- GIANTS DEFAULT / DLC
 	-- [1] COMBINES / CUTTERS
-	-- Combines [Giants]
+	-- Combines / Harvesters [Giants]
 	elseif workTool.cp.xmlFileName == 'caseIH7130.xml' then
 		workTool.cp.isCaseIH7130 = true;
+		workTool.cp.directionNodeZOffset = 3;
+
 	elseif workTool.cp.xmlFileName == 'caseIH9230Crawler.xml' then
 		workTool.cp.isCaseIH9230Crawler = true;
+		workTool.cp.directionNodeZOffset = 3;
+
 	elseif workTool.cp.xmlFileName == 'newHollandTC590.xml' then
 		workTool.cp.isNewHollandTC590 = true;
+		workTool.cp.directionNodeZOffset = 2.9;
+
 	elseif workTool.cp.xmlFileName == 'newHollandCR1090.xml' then
 		workTool.cp.isNewHollandCR1090 = true;
+		workTool.cp.directionNodeZOffset = 3.5;
+
 	elseif workTool.cp.xmlFileName == 'sampoRosenlewC6.xml' then
 		workTool.cp.isSampoRosenlewC6 = true;
+		workTool.cp.directionNodeZOffset = 3.1;
 
-	-- Harvesters (steerable) [Giants]
+	elseif workTool.cp.xmlFileName == 'kroneBigX1100.xml' then
+		workTool.cp.isKroneBigX1100 = true;
+		workTool.cp.directionNodeZOffset = 1.894;
+
 	elseif workTool.cp.xmlFileName == 'grimmeMaxtron620.xml' then
 		workTool.cp.isHarvesterSteerable = true;
 		workTool.cp.isGrimmeMaxtron620 = true;
+		workTool.cp.directionNodeZOffset = 2.1;
+
 	elseif workTool.cp.xmlFileName == 'grimmeTectron415.xml' then
 		workTool.cp.isHarvesterSteerable = true;
 		workTool.cp.isGrimmeTectron415 = true;
+		workTool.cp.directionNodeZOffset = 2.3;
 
 	-- Harvesters (attachable) [Giants]
 	elseif workTool.cp.xmlFileName == 'grimmeRootster604.xml' then
@@ -197,6 +212,24 @@ function courseplay:setNameVariable(workTool)
 	-- Case IH Puma 160 [Giants]
 	elseif workTool.cp.xmlFileName == 'caseIHPuma160.xml' then
 		workTool.cp.isCaseIHPuma160 = true;
+
+	-- CaseIH Quadtrac 620 [Giants]
+	elseif workTool.cp.xmlFileName == 'caseIHQuadtrac620.xml' then
+		workTool.cp.isCaseIHQuadtrac620 = true;
+		workTool.cp.directionNodeZOffset = 1.556;
+		workTool.cp.showDirectionNode = true;
+
+	-- Liebherr L538 [Giants]
+	elseif workTool.cp.xmlFileName == 'liebherrL538.xml' then
+		workTool.cp.isLiebherrL538 = true;
+		workTool.cp.directionNodeZOffset = 1.533;
+		workTool.cp.showDirectionNode = true;
+
+	-- New Holland T9.560 [Giants]
+	elseif workTool.cp.xmlFileName == 'newHollandT9560.xml' then
+		workTool.cp.isNewHollandT9560 = true;
+		workTool.cp.directionNodeZOffset = 1.567;
+		workTool.cp.showDirectionNode = true;
 
 	-- ###########################################################
 
@@ -226,22 +259,6 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.isVaderstadRapidA600S = true;
 	end;
 end;
-
---[[TODO (Jakob): delete when new custom spec fn is made sure to always work correctly
-function courseplay:setCustomSpecVariables(workTool)
-	workTool.cp.hasSpecializationAgrolinerTUW20 	   = courseplay:hasSpecialization(workTool, 'AgrolinerTUW20');
-	workTool.cp.hasSpecializationAugerWagon 		   = courseplay:hasSpecialization(workTool, 'AugerWagon');
-	workTool.cp.hasSpecializationBigBear 			   = courseplay:hasSpecialization(workTool, 'bigBear');
-	workTool.cp.hasSpecializationDrivingLine 		   = courseplay:hasSpecialization(workTool, 'DrivingLine');
-	workTool.cp.hasSpecializationHaweSUW 			   = courseplay:hasSpecialization(workTool, 'Hawe_SUW');
-	workTool.cp.hasSpecializationHoseRef 			   = courseplay:hasSpecialization(workTool, 'HoseRef');
-	workTool.cp.hasSpecializationOvercharge 		   = courseplay:hasSpecialization(workTool, 'Overcharge');
-	workTool.cp.hasSpecializationOverloader 		   = courseplay:hasSpecialization(workTool, 'overloader');
-	workTool.cp.hasSpecializationSiloTrailer		   = courseplay:hasSpecialization(workTool, 'SiloTrailer');
-	workTool.cp.hasSpecializationSowingMachineWithTank = courseplay:hasSpecialization(workTool, 'SowingMachineWithTank');
-	workTool.cp.hasSpecializationTebbeHS180 		   = courseplay:hasSpecialization(workTool, 'TebbeHS180');
-end;
-]]
 
 function courseplay:setCustomSpecVariables(vehicle)
 	local customSpecNames = {

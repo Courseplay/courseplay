@@ -28,7 +28,7 @@ function courseplay:handle_mode1(vehicle, allowedToDrive)
 
 		if trigger_id ~= nil then
 			local trigger_x, trigger_y, trigger_z = getWorldTranslation(trigger_id)
-			local ctx, cty, ctz = getWorldTranslation(vehicle.rootNode);
+			local ctx, cty, ctz = getWorldTranslation(vehicle.cp.DirectionNode);
 			local distance_to_trigger = courseplay:distance(ctx, ctz, trigger_x, trigger_z);
 
 			-- Start reversing value is to check if we have started to reverse

@@ -113,7 +113,7 @@ function courseplay:start(self)
 	-- show arrow
 	self.cp.distanceCheck = true
 	-- current position
-	local ctx, cty, ctz = getWorldTranslation(self.rootNode);
+	local ctx, cty, ctz = getWorldTranslation(self.cp.DirectionNode);
 	-- position of next waypoint
 	local cx, cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
 	-- distance

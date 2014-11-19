@@ -61,7 +61,7 @@ function courseplay:handle_mode2(self, dt)
 
 	-- STATE 10 (switch side)
 	if self.cp.activeCombine ~= nil and (self.cp.modeState == 10 or self.cp.activeCombine.turnAP ~= nil and self.cp.activeCombine.turnAP == true) then
-		local node = self.cp.activeCombine.cp.fixedRootNode or self.cp.activeCombine.rootNode;
+		local node = self.cp.activeCombine.cp.DirectionNode or self.cp.activeCombine.rootNode;
 		if self.cp.combineOffset > 0 then
 			self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(node, 25, 0, 0)
 		else
@@ -79,18 +79,18 @@ function courseplay:handle_mode2(self, dt)
 			--courseplay:unregisterFromCombine(self, self.cp.activeCombine)  
 			if self.cp.modeState ~= 5 then
 				local cx2, cz2 = self.Waypoints[1].cx, self.Waypoints[1].cz
-				local lx2, lz2 = AIVehicleUtil.getDriveDirection(self.rootNode, cx2, cty2, cz2);
+				local lx2, lz2 = AIVehicleUtil.getDriveDirection(self.cp.DirectionNode, cx2, cty2, cz2);
 				if lz2 > 0 or (self.cp.activeCombine ~= nil and self.cp.activeCombine.cp.isChopper) then
 					if self.cp.combineOffset > 0 then
-						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.rootNode, self.cp.turnRadius, 0, self.cp.turnRadius)
+						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.cp.DirectionNode, self.cp.turnRadius, 0, self.cp.turnRadius)
 					else
-						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.rootNode, -self.cp.turnRadius, 0, self.cp.turnRadius)
+						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.cp.DirectionNode, -self.cp.turnRadius, 0, self.cp.turnRadius)
 					end
 				elseif self.cp.activeCombine ~= nil and not self.cp.activeCombine.cp.isChopper then
 					if self.cp.combineOffset > 0 then
-						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.rootNode, 3, 0, -self.cp.turnRadius)
+						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.cp.DirectionNode, 3, 0, -self.cp.turnRadius)
 					else
-						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.rootNode, -3, 0, -self.cp.turnRadius)
+						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.cp.DirectionNode, -3, 0, -self.cp.turnRadius)
 					end
 				end
 				courseplay:setModeState(self, 5);
@@ -222,7 +222,6 @@ function courseplay:unload_combine(self, dt)
 	local x, y, z = getWorldTranslation(self.cp.DirectionNode)
 	local currentX, currentY, currentZ;
 
-	--local sl = nil --TODO (Jakob): still needed?
 	local combine_fill_level, combine_turning = nil, false
 	local refSpeed;
 	local handleTurn = false
@@ -317,7 +316,7 @@ function courseplay:unload_combine(self, dt)
 	end
 
 
-	local x1, y1, z1 = worldToLocal(combine.cp.fixedRootNode or combine.rootNode, x, y, z)
+	local x1, y1, z1 = worldToLocal(combine.cp.DirectionNode or combine.rootNode, x, y, z)
 	local distance = Utils.vector2Length(x1, z1)
 
 	local safetyDistance = 11;
@@ -337,13 +336,13 @@ function courseplay:unload_combine(self, dt)
 		--courseplay:removeFromCombinesIgnoreList(self, combine)
 		self.cp.infoText = courseplay:loc("COURSEPLAY_DRIVE_BEHIND_COMBINE");
 
-		local x1, y1, z1 = worldToLocal(tractor.rootNode, x, y, z)
+		local x1, y1, z1 = worldToLocal(tractor.cp.DirectionNode or tractor.rootNode, x, y, z)
 
 		if z1 > -(self.cp.turnRadius + safetyDistance) then -- tractor in front of combine     
 			-- left side of combine
-			local cx_left, cy_left, cz_left = localToWorld(tractor.rootNode, 20, 0, -30) 
+			local cx_left, cy_left, cz_left = localToWorld(tractor.cp.DirectionNode or tractor.rootNode, 20, 0, -30)
 			-- righ side of combine
-			local cx_right, cy_right, cz_right = localToWorld(tractor.rootNode, -20, 0, -30) 
+			local cx_right, cy_right, cz_right = localToWorld(tractor.cp.DirectionNode or tractor.rootNode, -20, 0, -30)
 			local lx, ly, lz = worldToLocal(self.cp.DirectionNode, cx_left, y, cz_left)
 			-- distance to left position
 			local disL = Utils.vector2Length(lx, lz)
@@ -360,9 +359,9 @@ function courseplay:unload_combine(self, dt)
 		else
 			-- tractor behind combine
 			if not combine.cp.isChopper then
-				currentX, currentY, currentZ = localToWorld(tractor.rootNode, self.cp.combineOffset, 0, -(self.cp.turnRadius + safetyDistance)) --!!!
+				currentX, currentY, currentZ = localToWorld(tractor.cp.DirectionNode or tractor.rootNode, self.cp.combineOffset, 0, -(self.cp.turnRadius + safetyDistance)) --!!!
 			else
-				currentX, currentY, currentZ = localToWorld(tractor.rootNode, 0, 0, -(self.cp.turnRadius + safetyDistance))
+				currentX, currentY, currentZ = localToWorld(tractor.cp.DirectionNode or tractor.rootNode, 0, 0, -(self.cp.turnRadius + safetyDistance))
 			end
 		end
 
@@ -415,9 +414,9 @@ function courseplay:unload_combine(self, dt)
 		if combine.cp.isSugarBeetLoader then
 			local prnToCombineZ = courseplay:calculateVerticalOffset(self, combine);
 	
-			tX, tY, tZ = localToWorld(combine.rootNode, self.cp.combineOffset, 0, prnToCombineZ -5);
+			tX, tY, tZ = localToWorld(combine.cp.DirectionNode or combine.rootNode, self.cp.combineOffset, 0, prnToCombineZ -5);
 		else			
-			tX, tY, tZ = localToWorld(combine.cp.fixedRootNode or combine.rootNode, self.cp.combineOffset, 0, -5);
+			tX, tY, tZ = localToWorld(combine.cp.DirectionNode or combine.rootNode, self.cp.combineOffset, 0, -5);
 		end
 
 		if combine.attachedImplements ~= nil then
@@ -476,37 +475,37 @@ function courseplay:unload_combine(self, dt)
 				fruitSide = courseplay:sideToDrive(self, combine, -50)
 			end
 			local offset = abs(self.cp.combineOffset)
-			local DirTx,_,DirTz = worldToLocal(self.rootNode,self.Waypoints[self.maxnumber].cx,0, self.Waypoints[self.maxnumber].cz)
+			local DirTx,_,DirTz = worldToLocal(self.cp.DirectionNode,self.Waypoints[self.maxnumber].cx,0, self.Waypoints[self.maxnumber].cz)
 			if self.cp.combineOffset > 0 then  --I'm left
 				if fruitSide == "right" or fruitSide == "none" then 
 					courseplay:debug(nameNum(self) .. ": I'm left, fruit is right", 4)
-					local fx,fy,fz = localToWorld(self.rootNode, 0, 0, 8)
-					local sx,sy,sz = localToWorld(self.rootNode, 0 , 0, -self.cp.turnRadius-trailer_offset-autoCombineExtraMoveBack)
+					local fx,fy,fz = localToWorld(self.cp.DirectionNode, 0, 0, 8)
+					local sx,sy,sz = localToWorld(self.cp.DirectionNode, 0 , 0, -self.cp.turnRadius-trailer_offset-autoCombineExtraMoveBack)
 					if courseplay:isField(fx, fz) and not combineIsAutoCombine then
 						courseplay:debug(nameNum(self) .. ": 1st target is on field", 4)
-						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.rootNode, 0 , 0, 5);	
+						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.cp.DirectionNode, 0 , 0, 5);
 						courseplay:setModeState(self, 5);
 					elseif courseplay:isField(sx, sz) then
 						courseplay:debug(nameNum(self) .. ": 2nd target is on field", 4)
-						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.rootNode, 2 , 0, -self.cp.turnRadius);
+						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.cp.DirectionNode, 2 , 0, -self.cp.turnRadius);
 						courseplay:addNewTargetVector(self, 0 ,  -self.cp.turnRadius-trailer_offset-autoCombineExtraMoveBack);
 						courseplay:setModeState(self, 5);
 					else
 						courseplay:debug(nameNum(self) .. ": backup- back to start", 4)
-						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z  = localToWorld(self.rootNode, 2 , 0, -self.cp.turnRadius-trailer_offset)
+						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z  = localToWorld(self.cp.DirectionNode, 2 , 0, -self.cp.turnRadius-trailer_offset)
 						courseplay:addNewTargetVector(self, DirTx, DirTz);
 						courseplay:setModeState(self, 5);
 					end					
 				else
 					courseplay:debug(nameNum(self) .. ": I'm left, fruit is left", 4)
-					local fx,fy,fz = localToWorld(self.rootNode, 3*offset*-1, 0, -self.cp.turnRadius-trailer_offset)
-					local tx,ty,tz = localToWorld(self.rootNode, 3*offset*-1, 0, -(2*self.cp.turnRadius)-trailer_offset)
+					local fx,fy,fz = localToWorld(self.cp.DirectionNode, 3*offset*-1, 0, -self.cp.turnRadius-trailer_offset)
+					local tx,ty,tz = localToWorld(self.cp.DirectionNode, 3*offset*-1, 0, -(2*self.cp.turnRadius)-trailer_offset)
 					if courseplay:isField(fx, fz) then
 						courseplay:debug(nameNum(self) .. ": deepest waypoint is on field", 4)
-						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.rootNode, 2, 0, -self.cp.turnRadius-trailer_offset);
+						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.cp.DirectionNode, 2, 0, -self.cp.turnRadius-trailer_offset);
 						courseplay:addNewTargetVector(self, 3*offset*-1 ,  -self.cp.turnRadius-trailer_offset);
-						fx,fy,fz = localToWorld(self.rootNode, 3*offset*-1, 0, 0)
-						sx,sy,sz = localToWorld(self.rootNode, 3*offset*-1, 0, -(2*self.cp.turnRadius)-trailer_offset)
+						fx,fy,fz = localToWorld(self.cp.DirectionNode, 3*offset*-1, 0, 0)
+						local sx,sy,sz = localToWorld(self.cp.DirectionNode, 3*offset*-1, 0, -(2*self.cp.turnRadius)-trailer_offset)
 						if courseplay:isField(fx, fz) then
 							courseplay:debug(nameNum(self) .. ": 1st target is on field", 4)
 							courseplay:addNewTargetVector(self, 3*offset*-1,0);
@@ -520,14 +519,14 @@ function courseplay:unload_combine(self, dt)
 						courseplay:setModeState(self, 5);
 					elseif courseplay:isField(tx, tz) then
 						courseplay:debug(nameNum(self) .. ": deepest waypoint is not on field", 4)
-						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.rootNode, self.cp.turnRadius, 0, 0);
+						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.cp.DirectionNode, self.cp.turnRadius, 0, 0);
 						courseplay:addNewTargetVector(self, 0 ,  -(2*trailer_offset));
 						courseplay:addNewTargetVector(self, 3*offset*-1 ,  -(2*trailer_offset));
 						courseplay:addNewTargetVector(self, 3*offset*-1 , self.cp.turnRadius);
 						courseplay:setModeState(self, 5);
 					else
 						courseplay:debug(nameNum(self) .. ": backup- back to start", 4)
-						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z  = localToWorld(self.rootNode, 2 , 0, -self.cp.turnRadius-trailer_offset)
+						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z  = localToWorld(self.cp.DirectionNode, 2 , 0, -self.cp.turnRadius-trailer_offset)
 						courseplay:addNewTargetVector(self, DirTx, DirTz);
 						courseplay:setModeState(self, 5);
 					end
@@ -535,14 +534,14 @@ function courseplay:unload_combine(self, dt)
 			else
 				if fruitSide == "right" or fruitSide == "none" then 
 					courseplay:debug(nameNum(self) .. ": I'm right, fruit is right", 4)
-					local fx,fy,fz = localToWorld(self.rootNode, 3*offset, 0, -self.cp.turnRadius-trailer_offset)
-					local sx,sy,sz = localToWorld(self.rootNode, 3*offset,0,  -(2*trailer_offset))
+					local fx,fy,fz = localToWorld(self.cp.DirectionNode, 3*offset, 0, -self.cp.turnRadius-trailer_offset)
+					local sx,sy,sz = localToWorld(self.cp.DirectionNode, 3*offset,0,  -(2*trailer_offset))
 					if courseplay:isField(fx, fz) then
 						courseplay:debug(nameNum(self) .. ": deepest waypoint is on field", 4)
-						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.rootNode, -4, 0, -self.cp.turnRadius-trailer_offset);
+						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.cp.DirectionNode, -4, 0, -self.cp.turnRadius-trailer_offset);
 						courseplay:addNewTargetVector(self, 3*offset ,  -self.cp.turnRadius-trailer_offset);
-						fx,fy,fz = localToWorld(self.rootNode, 3*offset, 0, 0)
-						sx,sy,sz = localToWorld(self.rootNode, 3*offset, 0, -(2*self.cp.turnRadius)-trailer_offset)
+						fx,fy,fz = localToWorld(self.cp.DirectionNode, 3*offset, 0, 0)
+						sx,sy,sz = localToWorld(self.cp.DirectionNode, 3*offset, 0, -(2*self.cp.turnRadius)-trailer_offset)
 						if courseplay:isField(fx, fz) then
 							courseplay:debug(nameNum(self) .. ": 1st target is on field", 4)
 							courseplay:addNewTargetVector(self, 3*offset,0);
@@ -552,40 +551,40 @@ function courseplay:unload_combine(self, dt)
 							courseplay:addNewTargetVector(self, 3*offset,  -(2*self.cp.turnRadius)-trailer_offset);
 						else
 							courseplay:debug(nameNum(self) .. ": backup- back to start", 4)
-							self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z  = localToWorld(self.rootNode, -2 , 0, -self.cp.turnRadius-trailer_offset)
+							self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z  = localToWorld(self.cp.DirectionNode, -2 , 0, -self.cp.turnRadius-trailer_offset)
 							courseplay:addNewTargetVector(self, DirTx, DirTz);
 						end
 						courseplay:setModeState(self, 5);
 
 					elseif courseplay:isField(sx, sz) then
 						courseplay:debug(nameNum(self) .. ": deepest waypoint is not on field", 4)
-						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.rootNode, -self.cp.turnRadius, 0, 0);
+						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.cp.DirectionNode, -self.cp.turnRadius, 0, 0);
 						courseplay:addNewTargetVector(self, 0 ,  -(2*trailer_offset));
 						courseplay:addNewTargetVector(self, 3*offset,  -(2*trailer_offset));
 						courseplay:addNewTargetVector(self, 3*offset, self.cp.turnRadius);
 						courseplay:setModeState(self, 5);
 					else
 						courseplay:debug(nameNum(self) .. ": backup- back to start", 4)
-						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z  = localToWorld(self.rootNode, -2 , 0, -self.cp.turnRadius-trailer_offset)
+						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z  = localToWorld(self.cp.DirectionNode, -2 , 0, -self.cp.turnRadius-trailer_offset)
 						courseplay:addNewTargetVector(self, DirTx, DirTz);
 						courseplay:setModeState(self, 5);
 					end
 				else
 					courseplay:debug(nameNum(self) .. ": I'm right, fruit is left", 4)
-					local fx,fy,fz = localToWorld(self.rootNode, 0, 0, 3)
-					local sx,sy,sz = localToWorld(self.rootNode, 0,0, -self.cp.turnRadius-trailer_offset)
+					local fx,fy,fz = localToWorld(self.cp.DirectionNode, 0, 0, 3)
+					local sx,sy,sz = localToWorld(self.cp.DirectionNode, 0,0, -self.cp.turnRadius-trailer_offset)
 					if courseplay:isField(fx, fz) then
 						courseplay:debug(nameNum(self) .. ": 1st target is on field", 4)
 						courseplay:setModeState(self, 1);
 
 					elseif courseplay:isField(sx, sz) then
 						courseplay:debug(nameNum(self) .. ": 2nd target is on field", 4)
-						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.rootNode, -2 , 0, -self.cp.turnRadius);
+						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.cp.DirectionNode, -2 , 0, -self.cp.turnRadius);
 						courseplay:addNewTargetVector(self, 0, -self.cp.turnRadius-trailer_offset);
 						courseplay:setModeState(self, 5);
 					else
 						courseplay:debug(nameNum(self) .. ": backup- back to start", 4)
-						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z  = localToWorld(self.rootNode, -2 , 0, -self.cp.turnRadius-trailer_offset)
+						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z  = localToWorld(self.cp.DirectionNode, -2 , 0, -self.cp.turnRadius-trailer_offset)
 						courseplay:addNewTargetVector(self, DirTx, DirTz);
 						courseplay:setModeState(self, 5);
 					end
@@ -606,7 +605,7 @@ function courseplay:unload_combine(self, dt)
 		if combine.cp.offset == nil and not combine.cp.isChopper then
 			courseplay:calculateCombineOffset(self, combine);
 		end
-		currentX, currentY, currentZ = localToWorld(combine.cp.fixedRootNode or combine.rootNode, self.cp.combineOffset, 0, trailer_offset + 5)
+		currentX, currentY, currentZ = localToWorld(combine.cp.DirectionNode or combine.rootNode, self.cp.combineOffset, 0, trailer_offset + 5)
 		
 		--CALCULATE VERTICAL OFFSET (tipper offset)
 		local prnToCombineZ = courseplay:calculateVerticalOffset(self, combine);
@@ -681,8 +680,8 @@ function courseplay:unload_combine(self, dt)
 
 	---------------------------------------------------------------------
 
-	local cx, cy, cz = getWorldTranslation(combine.rootNode)
-	local sx, sy, sz = getWorldTranslation(self.rootNode)
+	local cx, cy, cz = getWorldTranslation(combine.cp.DirectionNode or combine.rootNode)
+	local sx, sy, sz = getWorldTranslation(self.cp.DirectionNode)
 	distance = courseplay:distance(sx, sz, cx, cz)
 	if combine_turning and not combine.cp.isChopper then
 		if combine.fillLevel > combine.capacity*0.9 then
@@ -719,25 +718,25 @@ function courseplay:unload_combine(self, dt)
 
 					if self.cp.combineOffset > 0 then -- I'm left of chopper
 						courseplay:debug(string.format("%s(%i): %s @ %s: combine turns left, I'm left", curFile, debug.getinfo(1).currentline, nameNum(self), tostring(combine.name)), 4);
-						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.rootNode, 0, 0, self.cp.turnRadius);
+						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.cp.DirectionNode, 0, 0, self.cp.turnRadius);
 						courseplay:addNewTargetVector(self, 2*self.cp.turnRadius*-1 ,  self.cp.turnRadius);
 						self.cp.chopperIsTurning = true
 	
 					else --i'm right of choppper
 						courseplay:debug(string.format("%s(%i): %s @ %s: combine turns left, I'm right", curFile, debug.getinfo(1).currentline, nameNum(self), tostring(combine.name)), 4);
-						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.rootNode, self.cp.turnRadius*-1, 0, self.cp.turnRadius);
+						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.cp.DirectionNode, self.cp.turnRadius*-1, 0, self.cp.turnRadius);
 						self.cp.chopperIsTurning = true
 					end
 					
 				else -- chopper will turn right
 					if self.cp.combineOffset < 0 then -- I'm right of chopper
 						courseplay:debug(string.format("%s(%i): %s @ %s: combine turns right, I'm right", curFile, debug.getinfo(1).currentline, nameNum(self), tostring(combine.name)), 4);
-						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.rootNode, 0, 0, self.cp.turnRadius);
+						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.cp.DirectionNode, 0, 0, self.cp.turnRadius);
 						courseplay:addNewTargetVector(self, 2*self.cp.turnRadius,     self.cp.turnRadius);
 						self.cp.chopperIsTurning = true
 					else -- I'm left of chopper
 						courseplay:debug(string.format("%s(%i): %s @ %s: combine turns right, I'm left", curFile, debug.getinfo(1).currentline, nameNum(self), tostring(combine.name)), 4);
-						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.rootNode, self.cp.turnRadius, 0, self.cp.turnRadius);
+						self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.cp.DirectionNode, self.cp.turnRadius, 0, self.cp.turnRadius);
 						self.cp.chopperIsTurning = true
 					end
 				end
@@ -863,7 +862,7 @@ function courseplay:unload_combine(self, dt)
 				end
 				if self.cp.mode2nextState == 7 then
 					courseplay:switchToNextMode2State(self);
-					--self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(combine.rootNode, self.chopper_offset*0.7, 0, -9) -- -2          --??? *0,5 -10
+					--self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(combine.cp.DirectionNode or combine.rootNode, self.chopper_offset*0.7, 0, -9) -- -2          --??? *0,5 -10
 
 				elseif self.cp.mode2nextState == 4 and combine_turning then
 					self.cp.infoText = courseplay:loc("COURSEPLAY_WAITING_FOR_COMBINE_TURNED");
@@ -904,15 +903,15 @@ function courseplay:unload_combine(self, dt)
 
 		-- drive behind tractor
 		local backDistance = max(10,(self.cp.turnRadius + safetyDistance))
-		local dx,dz = AIVehicleUtil.getDriveDirection(frontTractor.rootNode, x, y, z);
-		local x1, y1, z1 = worldToLocal(frontTractor.rootNode, x, y, z)
+		local dx,dz = AIVehicleUtil.getDriveDirection(frontTractor.cp.DirectionNode, x, y, z);
+		local x1, y1, z1 = worldToLocal(frontTractor.cp.DirectionNode, x, y, z)
 		local distance = Utils.vector2Length(x1, z1)
 		if z1 > -backDistance and dz > -0.9 then
 			-- tractor in front of tractor
 			-- left side of tractor
-			local cx_left, cy_left, cz_left = localToWorld(frontTractor.rootNode, 30, 0, -backDistance-20)
+			local cx_left, cy_left, cz_left = localToWorld(frontTractor.cp.DirectionNode, 30, 0, -backDistance-20)
 			-- righ side of tractor
-			local cx_right, cy_right, cz_right = localToWorld(frontTractor.rootNode, -30, 0, -backDistance-20)
+			local cx_right, cy_right, cz_right = localToWorld(frontTractor.cp.DirectionNode, -30, 0, -backDistance-20)
 			local lx, ly, lz = worldToLocal(self.cp.DirectionNode, cx_left, y, cz_left)
 			-- distance to left position
 			local disL = Utils.vector2Length(lx, lz)
@@ -926,7 +925,7 @@ function courseplay:unload_combine(self, dt)
 			end
 		else
 			-- tractor behind tractor
-			currentX, currentY, currentZ = localToWorld(frontTractor.rootNode, 0, 0, -backDistance * 1.5); -- -backDistance * 1
+			currentX, currentY, currentZ = localToWorld(frontTractor.cp.DirectionNode, 0, 0, -backDistance * 1.5); -- -backDistance * 1
 		end;
 
 
@@ -1303,7 +1302,7 @@ function courseplay:calculateCombineOffset(self, combine)
 	if combine.pipeRaycastNode ~= nil then
 		prnX, prnY, prnZ = getTranslation(combine.pipeRaycastNode)
 		prnwX, prnwY, prnwZ = getWorldTranslation(combine.pipeRaycastNode)
-		combineToPrnX, combineToPrnY, combineToPrnZ = worldToLocal(combine.cp.fixedRootNode or combine.rootNode, prnwX, prnwY, prnwZ)
+		combineToPrnX, combineToPrnY, combineToPrnZ = worldToLocal(combine.cp.DirectionNode or combine.rootNode, prnwX, prnwY, prnwZ)
 
 		if combineToPrnX >= 0 then
 			combine.cp.pipeSide = 1; --left
@@ -1320,7 +1319,7 @@ function courseplay:calculateCombineOffset(self, combine)
 	--Sugarbeet Loaders (e.g. Ropa Euro Maus, Holmer Terra Felis) --TODO (Jakob): theoretically not needed, as it's being dealt with in getSpecialCombineOffset()
 	elseif self.cp.combineOffsetAutoMode and combine.cp.isSugarBeetLoader then
 		local utwX,utwY,utwZ = getWorldTranslation(combine.unloadingTrigger.node);
-		local combineToUtwX,_,combineToUtwZ = worldToLocal(combine.rootNode, utwX,utwY,utwZ);
+		local combineToUtwX,_,combineToUtwZ = worldToLocal(combine.cp.DirectionNode or combine.rootNode, utwX,utwY,utwZ);
 		offs = combineToUtwX;
 
 	--combine // combine_offset is in auto mode, pipe is open
@@ -1404,13 +1403,13 @@ function courseplay:calculateVerticalOffset(self, combine)
 		cwX, cwY, cwZ = getWorldTranslation(combine.pipeRaycastNode);
 	end;
 	
-	local _, _, prnToCombineZ = worldToLocal(combine.cp.fixedRootNode or combine.rootNode, cwX, cwY, cwZ); 
+	local _, _, prnToCombineZ = worldToLocal(combine.cp.DirectionNode or combine.rootNode, cwX, cwY, cwZ);
 	
 	return prnToCombineZ;
 end;
 
 function courseplay:getTargetUnloadingCoords(vehicle, combine, trailerOffset, prnToCombineZ)
-	local sourceRootNode = combine.cp.fixedRootNode or combine.rootNode;
+	local sourceRootNode = combine.cp.DirectionNode or combine.rootNode;
 
 	if combine.cp.isChopper then
 		prnToCombineZ = 0;

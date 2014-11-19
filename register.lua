@@ -49,15 +49,6 @@ function courseplay:attachableLoad(xmlFile)
 	if self.name == nil then
 		self.name = courseplay:getObjectName(self, xmlFile);
 	end;
-
-	-- ATTACHABLE CHOPPER SPECIAL NODE
-	if self.cp.isPoettingerMex6 or self.cp.isPoettingerMexOK then
-		self.cp.fixedRootNode = createTransformGroup('courseplayFixedRootNode');
-		link(self.rootNode, self.cp.fixedRootNode);
-		setTranslation(self.cp.fixedRootNode, 0, 0, 0);
-		setRotation(self.cp.fixedRootNode, 0, math.rad(180), 0);
-	end;
-
 end;
 Attachable.load = Utils.appendedFunction(Attachable.load, courseplay.attachableLoad);
 

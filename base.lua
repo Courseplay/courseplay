@@ -227,6 +227,12 @@ function courseplay:load(xmlFile)
 			DirectionNode = self.rootNode;
 		end
 	end;
+	if self.cp.directionNodeZOffset and self.cp.directionNodeZOffset ~= 0 then
+		self.cp.oldDirectionNode = DirectionNode;  -- Only used for debugging.
+		DirectionNode = courseplay:createNewLinkedNode(self, "realDirectionNode", DirectionNode);
+		setTranslation(DirectionNode, 0, 0, self.cp.directionNodeZOffset);
+	end;
+
 	self.cp.DirectionNode = DirectionNode;
 
 	-- TRIGGERS
@@ -916,6 +922,20 @@ function courseplay:draw()
 	if self.cp.workWidthChanged > self.timer and self.cp.mode ~= 7 then
 		courseplay:showWorkWidth(self);
 	end;
+
+	--DEBUG SHOW DIRECTIONNODE
+	if courseplay.debugChannels[12] then
+		-- For debugging when setting the directionNodeZOffset. (Visual points shown for old node)
+		-- In specialTools.lua -> courseplay:setNameVariable(workTool), add the value "workTool.cp.showDirectionNode = true;" to the specific vehicle, while testing.
+		if self.cp.oldDirectionNode and self.cp.showDirectionNode then
+			local ox,oy,oz = getWorldTranslation(self.cp.oldDirectionNode);
+			drawDebugPoint(ox, oy+4, oz, 0.9098, 0.6902 , 0.2706, 1);
+		end;
+
+		local nx,ny,nz = getWorldTranslation(self.cp.DirectionNode);
+		drawDebugPoint(nx, ny+4, nz, 0.6196, 0.3490 , 0, 1);
+	end;
+
 
 	--KEYBOARD ACTIONS and HELP BUTTON TEXTS
 	--Note: located in draw() instead of update() so they're not displayed/executed for *all* vehicles but rather only for *self*

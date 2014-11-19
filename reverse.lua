@@ -140,12 +140,6 @@ function courseplay:goReverse(vehicle,lx,lz)
 
 	local lxFrontNode, lzFrontNode = AIVehicleUtil.getDriveDirection(frontNode, xTipper,yTipper,zTipper);
 
-	-- TODO: (Claus) This should not be needed anymore. remove when sure!
-	--[[if abs(lxFrontNode) > 0.001 and not workTool.cp.isPivot and workTool.rootNode ~= workTool.cp.frontNode then --backup
-		workTool.cp.isPivot = true;
-		courseplay:debug(nameNum(vehicle) .. " backup workTool.cp.isPivot set: "..tostring(lxFrontNode),13);
-	end;]]
-
 	local lxTractor, lzTractor = 0,0;
 
 	local maxTractorAngle = rad(60);
@@ -641,14 +635,14 @@ function courseplay:getTotalLengthOnWheels(vehicle)
 	if vehicle.cp.hasSpecializationSteerable then
 		directionNodeToFrontWheelOffset = vehicle.cp.distances.frontWheelToDirectionNodeOffset;
 
-		local _, y, _ = getWorldTranslation(vehicle.rootNode);
+		local _, y, _ = getWorldTranslation(vehicle.cp.DirectionNode);
 
 		local hasRearAttach = false;
 		local jointType = 0;
 
 		for _, implement in ipairs(vehicle.attachedImplements) do
 			local xi, _, zi = getWorldTranslation(implement.object.attacherJoint.node);
-			local _,_,delta = worldToLocal(vehicle.rootNode, xi, y, zi);
+			local _,_,delta = worldToLocal(vehicle.cp.DirectionNode, xi, y, zi);
 
 			-- Check if it's rear attached
 			if delta < 0 then

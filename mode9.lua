@@ -74,8 +74,8 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive, dt)
 		if fillLevelPct == 100 or vehicle.cp.isLoaded then
 			if not vehicle.cp.isLoaded then
 				for i=vehicle.recordnumber, vehicle.maxnumber do
-					local _,ty,_ = getWorldTranslation(vehicle.rootNode);
-					local _,_,z = worldToLocal(vehicle.rootNode, vehicle.Waypoints[i].cx , ty , vehicle.Waypoints[i].cz);
+					local _,ty,_ = getWorldTranslation(vehicle.cp.DirectionNode);
+					local _,_,z = worldToLocal(vehicle.cp.DirectionNode, vehicle.Waypoints[i].cx , ty , vehicle.Waypoints[i].cz);
 					if z < -3 and vehicle.Waypoints[i].rev  then
 						--print("z taken:  "..tostring(z));
 						courseplay:setRecordNumber(vehicle, i + 1);
@@ -105,18 +105,18 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive, dt)
 	-- STATE 7: WAIT FOR TRAILER 10m BEFORE EMPTYING POINT
 	elseif vehicle.cp.shovelState == 7 then
 		local p = vehicle.cp.shovelEmptyPoint;
-		local _,ry,_ = getWorldTranslation(vehicle.rootNode);
-		local nx, nz = AIVehicleUtil.getDriveDirection(vehicle.rootNode, vehicle.Waypoints[p].cx, ry, vehicle.Waypoints[p].cz);
+		local _,ry,_ = getWorldTranslation(vehicle.cp.DirectionNode);
+		local nx, nz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, vehicle.Waypoints[p].cx, ry, vehicle.Waypoints[p].cz);
 		local lx,ly,lz = localDirectionToWorld(vehicle.cp.DirectionNode, nx, 0, nz);
 		for i=6,12 do
-			local x,y,z = localToWorld(vehicle.rootNode,0,4,i);
+			local x,y,z = localToWorld(vehicle.cp.DirectionNode,0,4,i);
 			raycastAll(x, y, z, lx, -1, lz, "findTrailerRaycastCallback", 10, vehicle.cp.shovel);
 			if courseplay.debugChannels[10] then
 				drawDebugLine(x, y, z, 1, 0, 0, x+lx*10, y-10, z+lz*10, 1, 0, 0);
 			end;
 		end;
 
-		local ox, _, oz = worldToLocal(vehicle.rootNode, vehicle.Waypoints[p].cx, ry, vehicle.Waypoints[p].cz);
+		local ox, _, oz = worldToLocal(vehicle.cp.DirectionNode, vehicle.Waypoints[p].cx, ry, vehicle.Waypoints[p].cz);
 		local distance = Utils.vector2Length(ox, oz);
 		if vehicle.cp.shovel.trailerFound == nil and vehicle.cp.shovel.objectFound == nil and distance < 10 then
 			allowedToDrive = false;
