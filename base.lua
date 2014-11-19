@@ -159,7 +159,7 @@ function courseplay:load(xmlFile)
 		minTurn = 3;
 		minField = 3;
 		minStreet = 3;
-		max = 60;
+		max = self.cruiseControl.maxSpeed or 60;
 	};
 
 	self.cp.toolsDirty = false

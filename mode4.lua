@@ -1,6 +1,6 @@
-function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct)
+function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, refSpeed)
 	local workTool;
-
+	local forceSpeedLimit = refSpeed
 	local workArea = (self.recordnumber > self.cp.startWork) and (self.recordnumber < self.cp.finishWork)
 	local isFinishingWork = false
 	local hasFinishedWork = false
@@ -89,6 +89,12 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct)
 		if workTool.attacherJoint ~= nil then
 			needsLowering = workTool.attacherJoint.needsLowering
 		end
+		
+		--speedlimits
+		if workTool.doCheckSpeedLimit and workTool:doCheckSpeedLimit() then
+			forceSpeedLimit = math.min(forceSpeedLimit, workTool.speedLimit)
+		end
+
 		
 		-- stop while folding
 		if courseplay:isFoldable(workTool) then
@@ -224,5 +230,5 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct)
 	end
 
 
-	return allowedToDrive, workArea, workSpeed,isFinishingWork
+	return allowedToDrive, workArea, workSpeed,isFinishingWork,forceSpeedLimit
 end;

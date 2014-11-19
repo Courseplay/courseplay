@@ -1,7 +1,8 @@
-function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, lx , lz )
+function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, lx , lz, refSpeed )
 	local workTool --= self.tippers[1] -- to do, quick, dirty and unsafe
 	local activeTipper = nil
 	local specialTool = false
+	local forceSpeedLimit = refSpeed 
 	--[[
 	if self.attachedCutters ~= nil then
 		for cutter, implement in pairs(self.attachedCutters) do
@@ -55,6 +56,11 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 		
 		if workTool.attacherJoint ~= nil then
 			needsLowering = workTool.attacherJoint.needsLowering
+		end
+		
+		--speedlimits
+		if workTool.doCheckSpeedLimit and workTool:doCheckSpeedLimit() then
+			forceSpeedLimit = math.min(forceSpeedLimit, workTool.speedLimit)
 		end
 		
 		-- stop while folding
@@ -542,5 +548,5 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 	if hasFinishedWork then
 		isFinishingWork = true
 	end
-	return allowedToDrive, workArea, workSpeed, activeTipper ,isFinishingWork
+	return allowedToDrive, workArea, workSpeed, activeTipper ,isFinishingWork,forceSpeedLimit
 end
