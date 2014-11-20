@@ -1,8 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="20">
-	<version>4.00.0047</version>
-	<author><![CDATA[Jakob Tischler, Thomas Gärtner,
-Horoman, Satis]]></author>
+	<version>4.00.0049</version>
+	<author><![CDATA[Courseplay Dev Team]]></author>
 	<title>
 		<de>Courseplay</de>
 		<en>Courseplay</en>
@@ -17,53 +16,50 @@ Horoman, Satis]]></author>
 	
 	<description>
 		<de>
-<![CDATA[Entwickler: Jakob Tischler, Thomas Gärtner, Horoman, Satis
+<![CDATA[Entwickler: Jakob Tischler, Thomas Gärtner, Satis
 
-Übersetzungen: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro,
-[RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo]]>
+Übersetzungen: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro, [RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo]]>
 		</de>
 		<en>
-<![CDATA[Developers: Jakob Tischler, Thomas Gärtner, Horoman, Satis
+<![CDATA[Developers: Jakob Tischler, Thomas Gärtner, Satis
 
-Translations: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro,
-[RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo]]>
+Translations: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro, [RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo]]>
 		</en>
 		<es>
-<![CDATA[Desarrolladores: Jakob Tischler, Thomas Gärtner, Horoman, Satis
+<![CDATA[Desarrolladores: Jakob Tischler, Thomas Gärtner, Satis
 
-Tradduciónes: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro,
-[RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo]]>
+Tradduciónes: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro, [RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo]]>
 		</es>
 		<fr>
-<![CDATA[Développeurs: Jakob Tischler, Thomas Gärtner, Horoman, Satis
+<![CDATA[Développeurs: Jakob Tischler, Thomas Gärtner, Satis
 
-Traductions: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro,
-[RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo]]>
+Traductions: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro, [RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo]]>
 		</fr>
 		<it>
-<![CDATA[Sviluppatori: Jakob Tischler, Thomas Gärtner, Horoman, Satis
+<![CDATA[Sviluppatori: Jakob Tischler, Thomas Gärtner, Satis
 
-Traduzioni: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy,[IT] JD7530, Cristiano Magro,
-[RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo]]>
+Traduzioni: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy,[IT] JD7530, Cristiano Magro, [RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo]]>
 		</it>
 		<cz>
-<![CDATA[Vývojáři: Jakob Tischler, Thomas Gärtner, Horoman, Satis
+<![CDATA[Vývojáři: Jakob Tischler, Thomas Gärtner, Satis
 
-Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro,
-[RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo]]>
+Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro, [RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo]]>
 		</cz>
 		<ru>
-<![CDATA[Разработка: Jakob Tischler, Thomas Gärtner, Horoman, Satis
+<![CDATA[Разработка: Jakob Tischler, Thomas Gärtner, Satis
 
-Переводчики: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro,
-[RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo]]>
+Переводчики: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro, [RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo]]>
 		</ru>
 		<hu>
-<![CDATA[Készítők: Jakob Tischler, Thomas Gärtner, Horoman, Satis
+<![CDATA[Készítők: Jakob Tischler, Thomas Gärtner, Satis
 
-Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro,
-[RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo]]>
+Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro, [RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo]]>
 		</hu>
+		<nl>
+<![CDATA[Ontwikkelaars: Jakob Tischler, Thomas Gärtner, Satis
+
+Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro, [RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo]]>
+		</nl>
  	</description>
 	
 	<multiplayer supported="true"/>

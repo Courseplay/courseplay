@@ -22,16 +22,19 @@ Icons et al.
 Translations
 ------------------------------------
 * Czech: Albi
-* Spanish: JFMtb
+* Dutch: Pewemo
 * French: Guillaume Dupuy
+* Hungarian: Chris von Bone
 * Italian: JD7530, Cristiano Magro
 * Russian: Bernelli
+* Spanish: JFMtb
 
 ====================================
 
 Former Developers
 ------------------------------------
 * Lautschreier
+* Horoman
 * Hummel
 * Wolverin0815
 * Bastian82
