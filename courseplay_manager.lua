@@ -84,7 +84,7 @@ function courseplay_manager:loadMap(name)
 	if g_server ~= nil then
 		courseplay.fields:loadAllCustomFields();
 	end;
-
+	courseplay.totalCoursePlayers = {};
 	courseplay.wageDifficultyMultiplier = Utils.lerp(0.5, 1, (g_currentMission.missionStats.difficulty - 1) / 2);
 
 	self.firstRun = true;
