@@ -174,7 +174,7 @@ function courseplay_manager:deleteMap()
 
 	--buttons
 	for i,vehicle in pairs(g_currentMission.steerables) do
-		if vehicle.cp ~= nil then
+		if vehicle.cp ~= nil and not courseplay.nonSupportedVehicleTypeNames[v.typeName]  then
 			if vehicle.cp.globalInfoTextOverlay ~= nil then
 				vehicle.cp.globalInfoTextOverlay:delete();
 			end;
@@ -679,7 +679,7 @@ function courseplay_manager:severCombineTractorConnection(vehicle, callDelete)
 			local combine = vehicle;
 			-- remove this combine as savedCombine from all tractors
 			for i,tractor in pairs(g_currentMission.steerables) do
-				if tractor.cp and tractor.cp.savedCombine and tractor.cp.savedCombine == combine then
+				if tractor.cp and tractor.cp.savedCombine and tractor.cp.savedCombine == combine and not courseplay.nonSupportedVehicleTypeNames[v.typeName]  then
 					courseplay:debug(('\ttractor %q: savedCombine=%q --> removeSavedCombineFromTractor()'):format(nameNum(tractor), nameNum(combine)), 4);
 					courseplay:removeSavedCombineFromTractor(tractor);
 				end;

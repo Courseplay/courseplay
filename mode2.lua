@@ -774,6 +774,7 @@ function courseplay:unload_combine(self, dt)
 		else
 			self.cp.infoText = courseplay:loc("COURSEPLAY_WAITING_FOR_COMBINE_TURNED");
 		end
+		refSpeed = self.cp.speeds.turn
 	end
 
 
