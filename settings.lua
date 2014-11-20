@@ -894,8 +894,9 @@ function courseplay.settings.setReloadCourseItems(vehicle)
 		courseplay.hud:setReloadPageOrder(vehicle, 2, true);
 	else
 		for k,v in pairs(g_currentMission.steerables) do
-			if v.cp ~= nil then 		-- alternative way to check if SpecializationUtil.hasSpecialization(courseplay, v.specializations)
+			if v.cp ~= nil and not courseplay.nonSupportedVehicleTypeNames[v.typeName]  then 		-- alternative way to check if SpecializationUtil.hasSpecialization(courseplay, v.specializations)
 				v.cp.reloadCourseItems = true
+				print(string.format("courseplay.hud:setReloadPageOrder(%s, 2, true) TypeName: %s ;",tostring(v.name), v.typeName))
 				courseplay.hud:setReloadPageOrder(v, 2, true);
 			end
 		end
