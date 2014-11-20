@@ -279,7 +279,7 @@ function courseplay:unload_combine(self, dt)
 	local AutoCombineIsTurning = false
 	local combineIsAutoCombine = false
 	local autoCombineExtraMoveBack = 0
-	if tractor.acParameters ~= nil and tractor.acParameters.enabled and (tractor.isAIThreshing or tractor.isAITractorActivated) then
+	if tractor.acParameters ~= nil and tractor.acParameters.enabled and tractor.isHired  then
 		combineIsAutoCombine = true
 		if tractor.cp.turnStage == nil then
 			tractor.cp.turnStage = 0
