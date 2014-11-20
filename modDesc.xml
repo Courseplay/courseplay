@@ -2150,7 +2150,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<es>Starting up %s!</es>
 			<it>Starting up %s!</it>
 			<cz>Nastartovat při %s!</cz>
-			<ru>Starting up %s!</ru> <!-- where this text? -->
+			<ru>%s: включено распыление соломы!</ru>
 			<hu>Starting up %s!</hu>
 			<nl>Opstarten %s!</nl>
 		</text>
