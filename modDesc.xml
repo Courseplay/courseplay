@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="20">
-	<version>4.00.0047</version>
+	<version>4.00.0048</version>
 	<author><![CDATA[Jakob Tischler, Thomas Gärtner,
 Horoman, Satis]]></author>
 	<title>
@@ -2118,7 +2118,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<it>Il granaio non sa con cosa riempire</it>
 			<cz>Silo neobsahuje vybranou plodinu</cz>
 			<ru>Farm Silo don't have selected fill type</ru>
-			<hu>Farm Silo don't have selected fill type</hu>
+			<hu>Nem választottad ki a farm tárólóból a terménytípust</hu>
 			<nl>Farm Silo heeft niet de juiste vulling</nl>
 		</text>
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE">
@@ -2129,7 +2129,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<it>Il granaio sta caricando:</it>
 			<cz>Na sile se nakládá:</cz>
 			<ru>Farm Silo Load:</ru>
-			<hu>Farm Silo Load:</hu>
+			<hu>A farm tároló töltöttsége:</hu>
 			<nl>Farm Silo laad:</nl>
 		</text>
 		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY">
@@ -2140,7 +2140,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<it>Il granaio è vuoto!</it>
 			<cz>Silo je prázdné!</cz>
 			<ru>Farm Silo is empty!</ru>
-			<hu>Farm Silo is empty!</hu>
+			<hu>A farm tárólőja üres!</hu>
 			<nl>Farm Silo is leeg!</nl>
 		</text>
 		<text name="COURSEPLAY_STARTING_UP_TOOL">
@@ -2151,7 +2151,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<it>Starting up %s!</it>
 			<cz>Nastartovat při %s!</cz>
 			<ru>Starting up %s!</ru>
-			<hu>Starting up %s!</hu>
+			<hu>Beindul %s!</hu>
 			<nl>Opstarten %s!</nl>
 		</text>
 		<!-- SeedUsageCalculator HUD content -->
