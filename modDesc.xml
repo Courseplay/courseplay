@@ -2117,7 +2117,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<es>Farm Silo don't have selected fill type</es>
 			<it>Il granaio non sa con cosa riempire</it>
 			<cz>Silo neobsahuje vybranou plodinu</cz>
-			<ru>Farm Silo don't have selected fill type</ru>
+			<ru>В этом бункере нет такого продукта!</ru>
 			<hu>Farm Silo don't have selected fill type</hu>
 			<nl>Farm Silo heeft niet de juiste vulling</nl>
 		</text>
@@ -2128,7 +2128,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<es>Farm Silo Load:</es>
 			<it>Il granaio sta caricando:</it>
 			<cz>Na sile se nakládá:</cz>
-			<ru>Farm Silo Load:</ru>
+			<ru>Забрать из бункера:</ru>
 			<hu>Farm Silo Load:</hu>
 			<nl>Farm Silo laad:</nl>
 		</text>
@@ -2139,7 +2139,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<es>Farm Silo is empty!</es>
 			<it>Il granaio è vuoto!</it>
 			<cz>Silo je prázdné!</cz>
-			<ru>Farm Silo is empty!</ru>
+			<ru>В бункере не осталось выбранного продукта, увы...</ru>
 			<hu>Farm Silo is empty!</hu>
 			<nl>Farm Silo is leeg!</nl>
 		</text>
@@ -2150,7 +2150,7 @@ Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<es>Starting up %s!</es>
 			<it>Starting up %s!</it>
 			<cz>Nastartovat při %s!</cz>
-			<ru>Starting up %s!</ru>
+			<ru>Starting up %s!</ru> <!-- where this text? -->
 			<hu>Starting up %s!</hu>
 			<nl>Opstarten %s!</nl>
 		</text>
