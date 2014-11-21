@@ -90,6 +90,7 @@ function courseplay_manager:loadMap(name)
 	self.firstRun = true;
 
 	g_currentMission.environment:addMinuteChangeListener(courseplay_manager);
+	self.realTimeMinuteTimer = 0;
 end;
 
 function courseplay_manager:createInitialCourseplayFile()
@@ -444,13 +445,19 @@ function courseplay_manager:update(dt)
 	if courseplay.fields.automaticScan and not courseplay.fields.allFieldsScanned then
 		courseplay.fields:setAllFieldEdges();
 	end;
+
+	-- REAL TIME MINUTE CHANGER
+	if not g_currentMission.paused and courseplay.wagesActive and g_server ~= nil then -- TODO: if there are more items to be dealt with every minute, remove the "wagesActive" restriction
+		if self.realTimeMinuteTimer < 60000 then
+			self.realTimeMinuteTimer = self.realTimeMinuteTimer + dt;
+		else
+			self:realTimeMinuteChanged();
+			self.realTimeMinuteTimer = self.realTimeMinuteTimer - 60000;
+		end;
+	end;
 end;
 
-function courseplay_manager:updateTick(dt)
-end;
-
-function courseplay_manager:keyEvent()
-end
+function courseplay_manager:keyEvent() end;
 
 function courseplay_manager:load_courses()
 	--print("courseplay_manager:load_courses()");
@@ -731,11 +738,13 @@ function courseplay_manager:minuteChanged()
 	-- WEATHER
 	local env = g_currentMission.environment;
 	courseplay.lightsNeeded = env.needsLights or (env.dayTime >= nightStart or env.dayTime <= dayStart) or env.currentRain ~= nil or env.curRain ~= nil or (env.lastRainScale > 0.1 and env.timeSinceLastRain < 30);
+end;
 
+function courseplay_manager:realTimeMinuteChanged()
 	-- WAGES
 	if courseplay.wagesActive and g_server ~= nil then
 		local totalWages = 0;
-		for vehicleNum, vehicle in ipairs(courseplay.totalCoursePlayers) do
+		for vehicleNum, vehicle in ipairs(courseplay.activeCoursePlayers) do
 			if vehicle.drive and not vehicle.isHired then
 				totalWages = totalWages + courseplay.wagePerMin;
 			end;
