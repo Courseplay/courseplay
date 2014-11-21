@@ -744,12 +744,14 @@ function courseplay_manager:realTimeMinuteChanged()
 	-- WAGES
 	if courseplay.wagesActive and g_server ~= nil then
 		local totalWages = 0;
-		for vehicleNum, vehicle in ipairs(courseplay.activeCoursePlayers) do
+		for vehicleNum, vehicle in pairs(courseplay.activeCoursePlayers) do
 			if vehicle.drive and not vehicle.isHired then
 				totalWages = totalWages + courseplay.wagePerMin;
 			end;
 		end;
 		if totalWages > 0 then
+			-- TODO (Jakob): does addSharedMoney already include the currency factor, or do we have to calculate it before passing it?
+			-- totalWages = g_i18n:getCurrency(totalWages);
 			g_currentMission:addSharedMoney(-totalWages * courseplay.wageDifficultyMultiplier, 'wagePayment');
 		end;
 	end;
