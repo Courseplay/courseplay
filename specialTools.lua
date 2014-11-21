@@ -201,7 +201,11 @@ function courseplay:setNameVariable(workTool)
 	elseif workTool.cp.xmlFileName == 'grimmeRootster604.xml' then
 		workTool.cp.isHarvesterAttachable = true;
 		workTool.cp.isGrimmeRootster604 = true;
-
+	
+	elseif workTool.cp.xmlFileName == 'grimmeSE260.xml' then
+		workTool.cp.isHarvesterAttachable = true;
+		workTool.cp.isGrimmeSE260 = true;
+		
 	-- Cutters [Giants]
 	elseif workTool.cp.xmlFileName == 'caseIH3162Cutter.xml' then
 		workTool.cp.isCaseIH3162Cutter = true;
@@ -448,11 +452,14 @@ function courseplay:askForSpecialSettings(self, object)
 				end;
 			end;
 		end;
-
+	elseif object.cp.isGrimmeSE260 then
+		self.cp.aiTurnNoBackward = true
+		automaticToolOffsetX = -1.8
+		print("GrimmeSE260 workwidth: 1.6 m") --TODO (Tom) set local language for workwidth
 	elseif object.cp.isGrimmeRootster604 then
 		self.cp.aiTurnNoBackward = true
-		automaticToolOffsetX = -0.9
-		print("Grimme Rootster 604 workwidth: 2.8 m");
+		--automaticToolOffsetX = -0.9
+		print("Grimme Rootster 604 workwidth: 2.9 m") --TODO (Tom) set local language for workwidth
 	elseif object.cp.isUrsusZ586 then
 		self.cp.aiTurnNoBackward = true
 		self.cp.noStopOnEdge = true

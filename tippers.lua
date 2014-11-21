@@ -370,7 +370,7 @@ function courseplay:setMarkers(vehicle, object,isImplement)
 	object.cp.aiFrontMarker = nil
 	-- get the behindest and the frontest  points :-) ( as offset to root node)
 	local area = object.workAreas
-	if object.attachedCutters ~= nil and not object.cp.hasSpecializationFruitPreparer then
+	if object.attachedCutters ~= nil and not object.cp.hasSpecializationFruitPreparer and not courseplay:isAttachedCombine(object) then
 		courseplay:debug(('%s: setMarkers(): %s is a combine -> return '):format(nameNum(vehicle), tostring(object.name)), 6);
 		return
 	end

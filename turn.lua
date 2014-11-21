@@ -244,11 +244,10 @@ function courseplay:turn(self, dt) --!!!
 
 	if updateWheels then
 		local allowedToDrive = true
-		if self.isRealistic then
-			courseplay:setMRSpeed(self, self.cp.speeds.turn, 1,false)
-		else
-			courseplay:setSpeed(self, self.cp.speeds.turn, 1)
-		end
+		local refSpeed = self.cp.speeds.turn
+		
+		courseplay:setSpeed(self, refSpeed, 1)
+		
 		local lx, lz = AIVehicleUtil.getDriveDirection(self.cp.DirectionNode, newTargetX, newTargetY, newTargetZ);
 		if self.cp.turnStage == 3 and math.abs(lx) < 0.1 then
 			self.cp.turnStage = 4;

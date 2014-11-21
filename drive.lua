@@ -512,8 +512,12 @@ function courseplay:drive(self, dt)
 			mode7onCourse = false
 		end
 		if self.cp.speeds.useRecordingSpeed and self.Waypoints[self.recordnumber].speed ~= nil and mode7onCourse then
-			refSpeed = Utils.clamp(refSpeed, self.cp.speeds.crawl, self.Waypoints[self.recordnumber].speed);
-		end;
+			if self.Waypoints[self.recordnumber].speed < self.cp.speeds.crawl then
+				refSpeed = Utils.clamp(refSpeed, self.cp.speeds.crawl, self.Waypoints[self.recordnumber+1].speed);
+			else
+				refSpeed = Utils.clamp(refSpeed, self.cp.speeds.crawl, self.Waypoints[self.recordnumber].speed);
+			end
+		end;		
 	end;
 	
 	

@@ -66,7 +66,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 		-- stop while folding
 		if (isFolding or selfIsFolding) and self.cp.turnStage == 0 then
 			allowedToDrive = courseplay:brakeToStop(self);
-			--courseplay:debug(tostring(workTool.name) .. ": isFolding -> allowedToDrive == false", 12);
+			--courseplay:debug(tostring(workTool.name) .. ": isFolding -> allowedToDrive == false", 6);
 		end;
 
 		-- implements, no combine or chopper
@@ -470,12 +470,12 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 
 					-- Make sure we are lowered when working the field.
 					if allowedToDrive and isTurnedOn and not workTool:isLowered() and not self.cp.isReverseBackToPoint then
-						courseplay:lowerImplements(tool, true, false);
+						courseplay:lowerImplements(self, true, false);
 					end;
 
 					-- If we are moving a bit back, don't lower the tool before we move forward again.
 					if isTurnedOn and workTool:isLowered() and self.cp.isReverseBackToPoint then
-						courseplay:lowerImplements(tool, false, false);
+						courseplay:lowerImplements(self, false, false);
 					end;
 				end
 			 --Stop combine
