@@ -1,6 +1,6 @@
-function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct)
+function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, refSpeed)
 	local workTool;
-
+	local forceSpeedLimit = refSpeed
 	local workArea = (self.recordnumber > self.cp.startWork) and (self.recordnumber < self.cp.finishWork)
 	local isFinishingWork = false
 	local hasFinishedWork = false
@@ -84,7 +84,18 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct)
 		workTool = self.tippers[i];
 
 		local isFolding, isFolded, isUnfolded = courseplay:isFolding(workTool);
+		local needsLowering = false
+		
+		if workTool.attacherJoint ~= nil then
+			needsLowering = workTool.attacherJoint.needsLowering
+		end
+		
+		--speedlimits
+		if workTool.doCheckSpeedLimit and workTool:doCheckSpeedLimit() then
+			forceSpeedLimit = math.min(forceSpeedLimit, workTool.speedLimit)
+		end
 
+		
 		-- stop while folding
 		if courseplay:isFoldable(workTool) then
 			if isFolding and self.cp.turnStage == 0 then
@@ -129,7 +140,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct)
 						end;
 
 						--lower/raise
-						if workTool.needsLowering and workTool.aiNeedsLowering then
+						if needsLowering and workTool.aiNeedsLowering then
 							--courseplay:debug(string.format("WP%d: isLowered() = %s, hasGroundContact = %s", self.recordnumber, tostring(workTool:isLowered()), tostring(workTool.hasGroundContact)),12);
 							if not workTool:isLowered() then
 								courseplay:debug(string.format('%s: lower order', nameNum(workTool)), 17);
@@ -191,7 +202,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct)
 
 				--raise
 				if not isFolding and isUnfolded then
-					if workTool.needsLowering and workTool.aiNeedsLowering and workTool:isLowered() then
+					if needsLowering and workTool.aiNeedsLowering and workTool:isLowered() then
 						self:setAIImplementsMoveDown(false);
 						courseplay:debug(string.format('%s: raise order', nameNum(workTool)), 17);
 					end;
@@ -219,5 +230,5 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct)
 	end
 
 
-	return allowedToDrive, workArea, workSpeed,isFinishingWork
+	return allowedToDrive, workArea, workSpeed,isFinishingWork,forceSpeedLimit
 end;

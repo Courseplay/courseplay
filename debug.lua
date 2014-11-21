@@ -13,7 +13,7 @@ end;
 --[[
 Debug channels legend:
  1	Raycast (drive + tipTriggers)
- 2	unload_tippers
+ 2	Load and unload tippers
  3	traffic collision
  4	Combines/mode2, register and unload combines
  5	Multiplayer
@@ -25,7 +25,7 @@ Debug channels legend:
 11	mode7
 12	all other debugs (uncategorized)
 13	reverse
-14	EifokLiquidManure
+14	EifokLiquidManure (NOT USED ATM)
 15	mode3 (AugerWagon)
 16	recording
 17	mode4/6
@@ -56,91 +56,92 @@ function cpPrintLine(debugChannel, line)
 end;
 
 function tableShow(t, name, channel, indent, maxDepth)
-	--important performance backup: the channel is checked first before proceeding with the compilation of the table
+	-- important performance backup: the channel is checked first before proceeding with the compilation of the table
 	if channel ~= nil and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == false then
 		return;
 	end;
 
 
-	local cart -- a container
-	local autoref -- for self references
+	local cart; -- a container
+	local autoref; -- for self references
 	maxDepth = maxDepth or 50;
 	local depth = 0;
 
-	--[[ counts the number of elements in a table
-local function tablecount(t)
-   local n = 0
-   for _, _ in pairs(t) do n = n+1 end
-   return n
-end
-]]
 	-- (RiciLake) returns true if the table is empty
-	local function isemptytable(t) return next(t) == nil end
+	local function isemptytable(t)
+		return next(t) == nil;
+	end;
 
 	local function basicSerialize(o)
-		local so = tostring(o)
-		if type(o) == "function" then
-			local info = debug.getinfo(o, "S")
+		local so = tostring(o);
+		if type(o) == 'function' then
+			local info = debug.getinfo(o, 'S')
 			-- info.name is nil because o is not a calling level
-			if info.what == "C" then
-				return string.format("%q", so .. ", C function")
+			if info.what == 'C' then
+				return ('"%s, C function"'):format(so);
 			else
-				-- the information is defined through lines
-				return string.format("%q", so .. ", defined in (" ..
-						info.linedefined .. "-" .. info.lastlinedefined ..
-						")" .. info.source)
+				-- the information is defined in a script
+				return ('"%s, defined in %s (lines %d-%d)"'):format(so, info.source, info.linedefined, info.lastlinedefined);
 			end
-		elseif type(o) == "number" then
-			return so
+		elseif type(o) == 'number' then
+			return so;
 		else
-			return string.format("%q", so)
+			return ('%q'):format(so);
 		end
 	end
 
-	local function addtocart(value, name, indent, saved, field, curDepth)
-		indent = indent or ""
+	local function addToCart(value, name, indent, saved, field, curDepth)
+		indent = indent or ''
 		saved = saved or {}
 		field = field or name
-		cart = cart .. indent .. field
+		-- cart = cart .. indent .. field
+		cart = indent .. field
+		-- print(('addToCart(value=%q, name=%q, indent, saved, field=%q, curDepth=%d)'):format(tostring(value), tostring(name), tostring(field), tostring(curDepth)));
 
-		if type(value) ~= "table" then
-			cart = cart .. " = " .. basicSerialize(value) .. ";\n"
+		if type(value) ~= 'table' then
+			cart = cart .. ' = ' .. basicSerialize(value) .. ';';
+			print(cart);
 		else
 			if saved[value] then
-				cart = cart .. " = {}; -- " .. saved[value]
-						.. " (self reference)\n"
-				autoref = autoref .. name .. " = " .. saved[value] .. ";\n"
+				cart = cart .. ' = {}; -- ' .. saved[value] .. ' (self reference)';
+				print(cart);
+				autoref = autoref .. name .. ' = ' .. saved[value] .. ';\n';
 			else
-				saved[value] = name
-				--if tablecount(value) == 0 then
+				saved[value] = name;
 				if isemptytable(value) then
-					cart = cart .. " = {};\n"
+					cart = cart .. ' = {};';
+					print(cart);
 				else
 					if curDepth <= maxDepth then
-						cart = cart .. " = {\n"
+						cart = cart .. ' = {';
+						print(cart);
 						for k, v in pairs(value) do
-							k = basicSerialize(k)
-							local fname = string.format("%s[%s]", name, k)
-							field = string.format("[%s]", k)
+							k = basicSerialize(k);
+							local fname = string.format('%s[%s]', name, k);
+							field = string.format('[%s]', k);
 							-- three spaces between levels
-							addtocart(v, fname, indent .. "\t", saved, field, curDepth + 1);
-						end
-						cart = cart .. indent .. "};\n"
+							addToCart(v, fname, indent .. '\t', saved, field, curDepth + 1);
+						end;
+						cart = indent .. '};';
+						print(cart);
 					else
-						cart = cart .. " = { ... };\n";
+						cart = cart .. ' = { ... };';
+						print(cart);
 					end;
-				end
-			end
+				end;
+			end;
 		end;
-	end
+	end;
 
-	name = name or "__unnamed__"
-	if type(t) ~= "table" then
-		return name .. " = " .. basicSerialize(t)
-	end
-	cart, autoref = "", ""
-	addtocart(t, name, indent, nil, nil, depth + 1)
-	return cart .. autoref
+	name = name or '__unnamed__';
+	if type(t) ~= 'table' then
+		return name .. ' = ' .. basicSerialize(t);
+	end;
+	cart, autoref = '', '';
+	addToCart(t, name, indent, nil, nil, depth + 1)
+	-- return cart .. autoref
+	print(autoref);
+	return ('%s %s -END- %s'):format(('#'):rep(40), name, ('#'):rep(40));
 end;
 
 function eval(str)
@@ -255,4 +256,82 @@ function streamDebugReadString(streamId)
 	courseplay:debug("-----------------", 5)]]
 	courseplay:debug(string.format("%d: reading string: %s",stream_debug_counter, value ),5)
 	return value
+end
+
+
+	--e.g. courseplay:findInTables(g_currentMission ,"g_currentMission", otherId)
+function courseplay:findInTables(tableToSearchIn , tableToSearchString, valueToSearch)
+	
+	if courseplay.lastSearchedValue == nil then 
+		courseplay.lastSearchedValue = "empty"
+	end
+	if courseplay.lastSearchedValue == valueToSearch then --prevent loops in searching
+		return
+	else
+		print("courseplay:findInTables -> searching "..type(valueToSearch).." "..tostring(valueToSearch).." in "..tableToSearchString)
+		--courseplay.lastSearchedValue = valueToSearch
+	end
+	
+	if type(tableToSearchIn) == "table" then
+		--Level 0
+		for index, value in pairs(tableToSearchIn) do	
+			if courseplay:findInMatchingValues(index,value,valueToSearch)  then
+				print(string.format("courseplay:findInTables -> %s.%s = %s",tableToSearchString,tostring(index),tostring(value)))
+			elseif type(value) == "table" then
+				local table1 = tableToSearchIn[index]
+				for index1, value1 in pairs(table1) do
+					if courseplay:findInMatchingValues(index1,value1,valueToSearch) then
+						print(string.format("courseplay:findInTables -> %s.%s.%s = %s",tableToSearchString,tostring(index),tostring(index1),tostring(value1)))
+					elseif type(value1) == "table" then
+						local table2 = table1[index1]
+						for index2, value2 in pairs(table2) do
+							if courseplay:findInMatchingValues(index2,value2,valueToSearch) then
+							print(string.format("courseplay:findInTables -> %s.%s.%s.%s = %s",tableToSearchString,tostring(index),tostring(index1),tostring(index2),tostring(value2)))
+							elseif type(value2) == "table" then
+								local table3 = table2[index2]
+								for index3, value3 in pairs(table3) do
+									if courseplay:findInMatchingValues(index3,value3 ,valueToSearch) then
+										print(string.format("courseplay:findInTables -> %s.%s.%s.%s.%s = %s",tableToSearchString,tostring(index),tostring(index1),tostring(index2),tostring(index3),tostring(value3)))
+									elseif type(value3) == "table" then					
+										local table4 = table3[index3]
+										for index4, value4 in pairs(table3) do
+											if courseplay:findInMatchingValues(index4,value4,valueToSearch) then
+												print(string.format("courseplay:findInTables -> %s.%s.%s.%s.%s.%s = %s",tableToSearchString,tostring(index),tostring(index1),tostring(index2),tostring(index3),tostring(index4),tostring(value4)))
+											elseif type(value4) == "table" then
+												local table5 = table4[index4]
+												for index5, value5 in pairs(table4) do
+													if courseplay:findInMatchingValues(index5,value5,valueToSearch) then
+														print(string.format("courseplay:findInTables -> %s.%s.%s.%s.%s.%s.%s = %s",tableToSearchString,tostring(index),tostring(index1),tostring(index2),tostring(index3),tostring(index4),tostring(index5),tostring(value5)))
+													elseif type(value4) == "table" then
+													end
+												end
+											end
+										end
+									end
+								end							
+							end
+						end
+					end
+				end
+			end
+		end		
+	else
+		print("courseplay:findInTables -> "..tableToSearchString.." is not a table")
+	return
+	end
+	print("courseplay:findInTables -> searching finished")
+end
+function courseplay:findInMatchingValues(index, value1, value2)
+	local type1 = type(value1)
+	local type2 = type(value2)
+	--print("checking "..type1..tostring(value1).."vs "..type2.." "..tostring(value2))
+	if type1 == type2 and value1 == value2 then
+		return true
+	end		
+	if type2 == "string" then
+		if tostring(index) == value2 then
+			return true
+		end
+	end
+	return false
 end

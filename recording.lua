@@ -3,7 +3,7 @@ local abs, atan2, deg, rad = math.abs, math.atan2, math.deg, math.rad;
 
 -- records waypoints for course
 function courseplay:record(vehicle)
-	local cx, cy, cz = getWorldTranslation(vehicle.rootNode);
+	local cx, cy, cz = getWorldTranslation(vehicle.cp.DirectionNode);
 	local newAngle = courseplay:currentVehAngle(vehicle);
 	if vehicle.recordnumber < 2 then
 		vehicle.rotatedTime = 0
@@ -30,9 +30,10 @@ function courseplay:record(vehicle)
 			end;
 		end;
 	end;
-
+	local speed = math.ceil(vehicle.lastSpeedReal*3600)
+	
 	if vehicle.cp.recordingTimer > 100 then
-		courseplay:setNewWaypointFromRecording(vehicle, cx, cz, newAngle, false, vehicle.cp.drivingDirReverse, vehicle.recordnumber == 1, vehicle.lastSpeedReal);
+		courseplay:setNewWaypointFromRecording(vehicle, cx, cz, newAngle, false, vehicle.cp.drivingDirReverse, vehicle.recordnumber == 1, speed);
 		local signType = vehicle.recordnumber == 1 and "start" or nil;
 		courseplay.utils.signs:addSign(vehicle, signType, cx, cz, nil, newAngle);
 		vehicle.cp.recordingTimer = 1;
@@ -41,7 +42,7 @@ function courseplay:record(vehicle)
 end;
 
 function courseplay:set_waitpoint(vehicle)
-	local cx, cy, cz = getWorldTranslation(vehicle.rootNode);
+	local cx, cy, cz = getWorldTranslation(vehicle.cp.DirectionNode);
 	local newAngle = courseplay:currentVehAngle(vehicle);
 	courseplay:setNewWaypointFromRecording(vehicle, cx, cz, newAngle, true, vehicle.cp.drivingDirReverse, false, 0);
 	vehicle.cp.recordingTimer = 1
@@ -52,7 +53,7 @@ end
 
 
 function courseplay:set_crossing(vehicle, stop)
-	local cx, cy, cz = getWorldTranslation(vehicle.rootNode);
+	local cx, cy, cz = getWorldTranslation(vehicle.cp.DirectionNode);
 	local newAngle = courseplay:currentVehAngle(vehicle);
 	courseplay:setNewWaypointFromRecording(vehicle, cx, cz, newAngle, false, vehicle.cp.drivingDirReverse, true, vehicle.lastSpeedReal);
 	vehicle.cp.recordingTimer = 1
@@ -132,7 +133,7 @@ function courseplay:setRecordingTurnManeuver(vehicle)
 	vehicle.cp.isRecordingTurnManeuver = not vehicle.cp.isRecordingTurnManeuver;
 	courseplay:debug(string.format('%s: set "isRecordingTurnManeuver" to %s', nameNum(vehicle), tostring(vehicle.cp.isRecordingTurnManeuver)), 16);
 
-	local cx, cy, cz = getWorldTranslation(vehicle.rootNode);
+	local cx, cy, cz = getWorldTranslation(vehicle.cp.DirectionNode);
 	local newAngle = courseplay:currentVehAngle(vehicle);
 	if vehicle.cp.isRecordingTurnManeuver then
 		courseplay:setNewWaypointFromRecording(vehicle, cx, cz, newAngle, false, false, false, vehicle.lastSpeedReal, "noDirection", true, false);
@@ -187,7 +188,7 @@ end;
 
 -- set Waypoint before change direction
 function courseplay:change_DriveDirection(vehicle)
-	local cx, cy, cz = getWorldTranslation(vehicle.rootNode);
+	local cx, cy, cz = getWorldTranslation(vehicle.cp.DirectionNode);
 	local newAngle = courseplay:currentVehAngle(vehicle);
 	courseplay:setNewWaypointFromRecording(vehicle, cx, cz, newAngle, false, vehicle.cp.drivingDirReverse, false, 0);
 	vehicle.cp.drivingDirReverse = not vehicle.cp.drivingDirReverse
@@ -253,7 +254,7 @@ function courseplay:clearCurrentLoadedCourse(vehicle)
 end
 
 function courseplay:currentVehAngle(vehicle)
-	local x, y, z = localDirectionToWorld(vehicle.rootNode, 0, 0, 1);
+	local x, y, z = localDirectionToWorld(vehicle.cp.DirectionNode, 0, 0, 1);
 	local length = Utils.vector2Length(x, z);
 	local dx, dz = x/length, z/length;
 	local angleRad = Utils.getYRotationFromDirection(dx, dz);

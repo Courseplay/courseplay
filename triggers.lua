@@ -38,7 +38,7 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 			local trafficLightDistance = 0 
 			if collisionVehicle ~= nil and collisionVehicle.rootNode == nil then
 				local x,y,z = getWorldTranslation(self.cp.collidingVehicleId)
-				_,_, trafficLightDistance = worldToLocal (self.rootNode, x,y,z)			
+				_,_, trafficLightDistance = worldToLocal (self.cp.DirectionNode, x,y,z)
 			end
 			
 			

@@ -174,7 +174,7 @@ function courseplay:sendCourseplayerHome(combine)
 end
 
 function courseplay:switchCourseplayerSide(combine)
-	if combine.grainTankCapacity == 0 then
+	if combine.capacity == 0 then
 		local tractor = combine.courseplayers[1];
 		if tractor == nil then
 			return;
@@ -508,9 +508,9 @@ function courseplay:getCuttingAreaValuesX(object)
 
 	if object.aiLeftMarker and object.aiRightMarker then
 		local x, y, z = getWorldTranslation(object.aiLeftMarker);
-		local left, _, _ = worldToLocal(object.rootNode, x, y, z);
+		local left, _, _ = worldToLocal(object.cp.DirectionNode or object.rootNode, x, y, z);
 		x, y, z = getWorldTranslation(object.aiRightMarker);
-		local right, _, _ = worldToLocal(object.rootNode, x, y, z);
+		local right, _, _ = worldToLocal(object.cp.DirectionNode or object.rootNode, x, y, z);
 
 		courseplay:debug(('\t\taiMarkers: left=%s, right=%s'):format(tostring(left), tostring(right)), 7);
 
@@ -525,23 +525,7 @@ function courseplay:getCuttingAreaValuesX(object)
 	end;
 
 
-	local areas;
-	if courseplay:isBigM(object) then
-		areas = object.mowerCutAreas;
-		courseplay:debug('\t\tareas = mowerCutAreas (isBigM)', 7);
-	elseif object.typeName == 'defoliator_animated' then
-		areas = object.fruitPreparerAreas;
-		courseplay:debug('\t\tareas = fruitPreparerAreas', 7);
-	elseif object.cp.isPoettingerAlpha then -- Pöttinger Alpha mower
-		areas = object.alpMot.cuttingAreas;
-		courseplay:debug('\t\tareas = alpMot.cuttingAreas (isPoettingerAlpha)', 7);
-	elseif object.cp.isPoettingerX8 then -- Pöttinger X8 mower
-		areas = object.mowerCutAreasSend;
-		courseplay:debug('\t\tareas = mowerCutAreasSend (isPoettingerX8)', 7);
-	else
-		areas = object.cuttingAreas;
-		courseplay:debug('\t\tareas = cuttingAreas', 7);
-	end;
+	local areas = object.workAreas;
 
 	local min, max = math.min, math.max;
 	local left, right = -9999, 9999;
@@ -550,7 +534,7 @@ function courseplay:getCuttingAreaValuesX(object)
 			for caType,node in pairs(areas[i]) do
 				if caType == 'start' or caType == 'height' or caType == 'width' then
 					local x, y, z = getWorldTranslation(node);
-					local caX, _, _ = worldToLocal(object.rootNode, x, y, z);
+					local caX, _, _ = worldToLocal(object.cp.DirectionNode or object.rootNode, x, y, z);
 					left = max(left, caX);
 					right = min(right, caX);
 					courseplay:debug(('\t\t\tarea %d, type=%s, caX=%s -> left=%s, right=%s'):format(i, tostring(caType), tostring(caX), tostring(left), tostring(right)), 7);
@@ -638,31 +622,31 @@ function courseplay:getCanHaveWaitTime(vehicle)
 end;
 
 function courseplay:changeTurnSpeed(vehicle, changeBy)
-	local speed = vehicle.cp.speeds.turn * 3600;
+	local speed = vehicle.cp.speeds.turn;
 	speed = Utils.clamp(speed + changeBy, vehicle.cp.speeds.minTurn, vehicle.cp.speeds.max);
-	vehicle.cp.speeds.turn = speed / 3600;
+	vehicle.cp.speeds.turn = speed ;
 end
 
 function courseplay:changeFieldSpeed(vehicle, changeBy)
-	local speed = vehicle.cp.speeds.field * 3600;
+	local speed = vehicle.cp.speeds.field;
 	speed = Utils.clamp(speed + changeBy, vehicle.cp.speeds.minField, vehicle.cp.speeds.max);
-	vehicle.cp.speeds.field = speed / 3600;
+	vehicle.cp.speeds.field = speed;
 end
 
 function courseplay:changeMaxSpeed(vehicle, changeBy)
 	if not vehicle.cp.speeds.useRecordingSpeed then
-		local speed = vehicle.cp.speeds.street * 3600;
+		local speed = vehicle.cp.speeds.street;
 		speed = Utils.clamp(speed + changeBy, vehicle.cp.speeds.minStreet, vehicle.cp.speeds.max);
-		vehicle.cp.speeds.street = speed / 3600;
+		vehicle.cp.speeds.street = speed;
 	end;
 end
 
 function courseplay:changeUnloadSpeed(vehicle, changeBy, force, forceReloadPage)
-	local speed = force or (vehicle.cp.speeds.unload * 3600 + changeBy);
+	local speed = force or (vehicle.cp.speeds.unload + changeBy);
 	if not force then
 		speed = Utils.clamp(speed, vehicle.cp.speeds.minUnload, vehicle.cp.speeds.max);
 	end;
-	vehicle.cp.speeds.unload = speed / 3600;
+	vehicle.cp.speeds.unload = speed;
 
 	if forceReloadPage then
 		courseplay.hud:setReloadPageOrder(vehicle, 5, true);
@@ -780,7 +764,7 @@ end;
 function courseplay:findDrivers(self)
 	local foundDrivers = {}; -- resetting all drivers
 	for k, vehicle in pairs(g_currentMission.steerables) do
-		if vehicle.Waypoints ~= nil then
+		if vehicle.Waypoints ~= nil and not courseplay.nonSupportedVehicleTypeNames[v.typeName]  then
 			if vehicle.rootNode ~= self.rootNode and #(vehicle.Waypoints) > 0 then
 				table.insert(foundDrivers, vehicle);
 			end;
@@ -856,7 +840,7 @@ function courseplay.settings.add_folder(input1, input2)
 	if vehicle == false then
 	-- no vehicle given -> add folder to all vehicles
 		for k,v in pairs(g_currentMission.steerables) do
-			if v.cp ~= nil then 		-- alternative way to check if SpecializationUtil.hasSpecialization(courseplay, v.specializations)
+			if v.cp ~= nil and not courseplay.nonSupportedVehicleTypeNames[v.typeName]  then 		-- alternative way to check if SpecializationUtil.hasSpecialization(courseplay, v.specializations)
 				v.cp.folder_settings[id] = {}
 				courseplay.settings.add_folder_settings(v.cp.folder_settings[id])
 			end	
@@ -874,7 +858,7 @@ function courseplay.settings.update_folders(vehicle)
 	if vehicle == nil then
 	-- no vehicle given -> update all folders in all vehicles
 		for k,v in pairs(g_currentMission.steerables) do
-			if v.cp ~= nil then 		-- alternative way to check if SpecializationUtil.hasSpecialization(courseplay, v.specializations)
+			if v.cp ~= nil and not courseplay.nonSupportedVehicleTypeNames[v.typeName]  then 		-- alternative way to check if SpecializationUtil.hasSpecialization(courseplay, v.specializations)
 				old_settings = v.cp.folder_settings
 				v.cp.folder_settings = {}
 				for _,f in pairs(g_currentMission.cp_folders) do
@@ -910,8 +894,9 @@ function courseplay.settings.setReloadCourseItems(vehicle)
 		courseplay.hud:setReloadPageOrder(vehicle, 2, true);
 	else
 		for k,v in pairs(g_currentMission.steerables) do
-			if v.cp ~= nil then 		-- alternative way to check if SpecializationUtil.hasSpecialization(courseplay, v.specializations)
+			if v.cp ~= nil and not courseplay.nonSupportedVehicleTypeNames[v.typeName]  then 		-- alternative way to check if SpecializationUtil.hasSpecialization(courseplay, v.specializations)
 				v.cp.reloadCourseItems = true
+				--print(string.format("courseplay.hud:setReloadPageOrder(%s, 2, true) TypeName: %s ;",tostring(v.name), v.typeName))
 				courseplay.hud:setReloadPageOrder(v, 2, true);
 			end
 		end
@@ -990,7 +975,7 @@ function courseplay.hud.reloadCourses(vehicle)
 		courseplay.hud.setCourses(vehicle, index)
 	else
 		for k,v in pairs(g_currentMission.steerables) do
-			if v.cp ~= nil then 		-- alternative way to check if SpecializationUtil.hasSpecialization(courseplay, v.specializations)
+			if v.cp ~= nil and not courseplay.nonSupportedVehicleTypeNames[v.typeName]  then 		-- alternative way to check if SpecializationUtil.hasSpecialization(courseplay, v.specializations)
 				i = 1
 				-- course/folder in the hud might have been deleted -> info no longer available				
 				while i <= #v.cp.hud.courses and v.cp.sorted.info[ v.cp.hud.courses[i].uid ] == nil do
@@ -1100,7 +1085,7 @@ function courseplay.settings.validateCourseListArrows(vehicle)
 	else
 		-- update all vehicles
 		for k,v in pairs(g_currentMission.steerables) do
-			if v.cp ~= nil then 		-- alternative way to check if SpecializationUtil.hasSpecialization(courseplay, v.specializations)
+			if v.cp ~= nil and not courseplay.nonSupportedVehicleTypeNames[v.typeName]  then 		-- alternative way to check if SpecializationUtil.hasSpecialization(courseplay, v.specializations)
 				prev = true
 				next = true
 				n_hudcourses = #(v.cp.hud.courses)
@@ -1361,7 +1346,7 @@ function courseplay:toggleStopWhenUnloading(combine)
 end;
 
 function courseplay:goToVehicle(curVehicle, targetVehicle)
-	--print(string.format("%s: goToVehicle(): targetVehicle=%q", nameNum(curVehicle), nameNum(targetVehicle)));
+	-- print(string.format("%s: goToVehicle(): targetVehicle=%q", nameNum(curVehicle), nameNum(targetVehicle)));
 	g_client:getServerConnection():sendEvent(VehicleEnterRequestEvent:new(targetVehicle, g_settingsNickname));
 	g_currentMission.isPlayerFrozen = false;
 	courseplay_manager.playerOnFootMouseEnabled = false;
@@ -1576,7 +1561,7 @@ function courseplay:setCurrentTargetFromList(vehicle, index)
 end;
 
 function courseplay:addNewTargetVector(vehicle, x, z)
-	local tx, ty, tz = localToWorld(vehicle.rootNode, x, 0, z);
+	local tx, ty, tz = localToWorld(vehicle.cp.DirectionNode or vehicle.rootNode, x, 0, z);
 	table.insert(vehicle.cp.nextTargets, { x = tx, y = ty, z = tz });
 end;
 

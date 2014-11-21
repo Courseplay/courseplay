@@ -1,7 +1,5 @@
 -- handles "mode1" : waiting at start until tippers full - driving course and unloading on trigger
 function courseplay:handle_mode1(vehicle, allowedToDrive)
-	local activeTipper;
-
 	-- done tipping
 	if vehicle.cp.unloadingTipper ~= nil and vehicle.cp.unloadingTipper.fillLevel == 0 then
 		vehicle.cp.unloadingTipper = nil
@@ -11,9 +9,8 @@ function courseplay:handle_mode1(vehicle, allowedToDrive)
 	end
 
 	-- tippers are not full
-	-- tipper should be loaded 10 meters before wp 2	
-	if vehicle.cp.isLoaded ~= true and ((vehicle.recordnumber == 2 and vehicle.cp.tipperFillLevel < vehicle.cp.tipperCapacity and vehicle.cp.isUnloaded == false --[[and vehicle.cp.distanceToTarget < 10]]) or vehicle.cp.lastTrailerToFillDistance) then
-		allowedToDrive = courseplay:load_tippers(vehicle);
+	if vehicle.cp.isLoaded ~= true and ((vehicle.recordnumber == 2 and vehicle.cp.tipperFillLevel < vehicle.cp.tipperCapacity and vehicle.cp.isUnloaded == false) or vehicle.cp.trailerFillDistance) then
+		allowedToDrive = courseplay:load_tippers(vehicle, allowedToDrive);
 		vehicle.cp.infoText = string.format(courseplay:loc("COURSEPLAY_LOADING_AMOUNT"), vehicle.cp.tipperFillLevel, vehicle.cp.tipperCapacity);
 	end
 
@@ -31,7 +28,7 @@ function courseplay:handle_mode1(vehicle, allowedToDrive)
 
 		if trigger_id ~= nil then
 			local trigger_x, trigger_y, trigger_z = getWorldTranslation(trigger_id)
-			local ctx, cty, ctz = getWorldTranslation(vehicle.rootNode);
+			local ctx, cty, ctz = getWorldTranslation(vehicle.cp.DirectionNode);
 			local distance_to_trigger = courseplay:distance(ctx, ctz, trigger_x, trigger_z);
 
 			-- Start reversing value is to check if we have started to reverse

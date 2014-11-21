@@ -4,7 +4,7 @@ Specialization for Courseplay
 
 @author  	Jakob Tischler / Thomas Gärtner / horoman
 @website:	http://courseplay.github.io/courseplay/
-@version:	v3.41
+@version:	v4.00 beta
 @changelog:	http://courseplay.github.io/courseplay/en/changelog/index.html
 ]]
 
@@ -22,14 +22,6 @@ courseplay = {
 	button = {};
 	fields = {};
 	generation = {};
-	thirdParty = {
-		EifokLiquidManure = {
-			dockingStations = {};
-			KotteContainers = {};
-			KotteZubringers = {};
-			hoses = {};
-		};
-	};
 	pathfinding = {};
 };
 
@@ -41,12 +33,17 @@ end;
 
 courseplay.sonOfaBangSonOfaBoom = {
 	['44d143f3e847254a55835a8298ba4e21'] = true;
+	['6fbb6a98a4054b1d603bd8c591d572af'] = true;
 	['87a96c3bb39fa285d7ed2fb5beaffc16'] = true;
 	['d4043d2f9265e18c794be4159faaef5c'] = true;
 };
 courseplay.isDeveloper = courseplay.sonOfaBangSonOfaBoom[getMD5(g_settingsNickname)];
 if courseplay.isDeveloper then
 	print('Special dev magic for Courseplay developer unlocked. You go, girl!');
+else
+	--print('No cookies for you! (please wait until we have some limited form of a working version...)');
+	--courseplay.houstonWeGotAProblem = true;
+	--return;
 end;
 
 -- working tractors saved in this
@@ -159,57 +156,57 @@ function courseplay:initialize()
 
 	if courseplay.isDevVersion then
 		local devWarning = '';
-		devWarning = devWarning .. '\t' .. ('*'):rep(45) .. ' WARNING ' .. ('*'):rep(45) .. '\n';
-		devWarning = devWarning .. '\tYou\'re using a development version of Courseplay, which may and will contain errors, bugs,\n';
-		devWarning = devWarning .. '\tmistakes and unfinished code. Chances are your computer will explode when using it. Twice.\n';
-		devWarning = devWarning .. '\tIf you have no idea what "beta", "alpha", or "developer" means and entails, remove this version\n';
-		devWarning = devWarning .. '\tof Courseplay immediately. The Courseplay team will not take any responsibility for crop destroyed,\n';
-		devWarning = devWarning .. '\tsavegames deleted or baby pandas killed.\n';
-		devWarning = devWarning .. '\t' .. ('*'):rep(99);
+		devWarning = devWarning .. '\t' .. ('*'):rep(47) .. ' WARNING ' .. ('*'):rep(47) .. '\n';
+		devWarning = devWarning .. '\t* You are using a development version of Courseplay, which may and will contain errors, bugs,         *\n';
+		devWarning = devWarning .. '\t* mistakes and unfinished code. Chances are your computer will explode when using it. Twice.          *\n';
+		devWarning = devWarning .. '\t* If you have no idea what "beta", "alpha", or "developer" means and entails, remove this version     *\n';
+		devWarning = devWarning .. '\t* of Courseplay immediately. The Courseplay team will not take any responsibility for crop destroyed, *\n';
+		devWarning = devWarning .. '\t* savegames deleted or baby pandas killed.                                                            *\n';
+		devWarning = devWarning .. '\t' .. ('*'):rep(103);
 		print(devWarning);
 	end;
 end;
 
 function courseplay:setGlobalData()
+	if courseplay.globalDataSet then
+		return;
+	end;
+
+	courseplay.cpFolderPath = getUserProfileAppPath() .. 'courseplay/';
+	courseplay.cpSavegameFolderPath = courseplay.cpFolderPath .. 'savegame' .. g_careerScreen.selectedIndex .. '/';
+	courseplay.cpXmlFilePath = courseplay.cpSavegameFolderPath .. 'courseplay.xml';
+	courseplay.cpFieldsXmlFilePath = courseplay.cpSavegameFolderPath .. 'courseplayFields.xml';
+	createFolder(courseplay.cpFolderPath);
+	createFolder(courseplay.cpSavegameFolderPath);
+
 	local customPosX, customPosY;
-	local customGitPosX, customGitPosY;
 	local fieldsAutomaticScan, fieldsDebugScan, fieldsDebugCustomLoad, fieldsCustomScanStep, fieldsOnlyScanOwnedFields = true, false, false, nil, true;
-	local wagesActive, wagesAmount = false, 666;
+	local wagesActive, wagesAmount = false, 1125;
 
-	local savegame = g_careerScreen.savegames[g_careerScreen.selectedIndex];
-	if savegame ~= nil then
-		local cpFilePath = savegame.savegameDirectory .. "/courseplay.xml";
-		if fileExists(cpFilePath) then
-			local cpFile = loadXMLFile("cpFile", cpFilePath);
-			local hudKey = "XML.courseplayHud";
-			if hasXMLProperty(cpFile, hudKey) then
-				customPosX = getXMLFloat(cpFile, hudKey .. "#posX");
-				customPosY = getXMLFloat(cpFile, hudKey .. "#posY");
-			end;
-
-			local gitKey = "XML.courseplayGlobalInfoText";
-			if hasXMLProperty(cpFile, gitKey) then
-				customGitPosX = getXMLFloat(cpFile, gitKey .. "#posX");
-				customGitPosY = getXMLFloat(cpFile, gitKey .. "#posY");
-			end;
-
-			local fieldsKey = 'XML.courseplayFields';
-			if hasXMLProperty(cpFile, fieldsKey) then
-				fieldsAutomaticScan   = Utils.getNoNil(getXMLBool(cpFile, fieldsKey .. '#automaticScan'), true);
-				fieldsOnlyScanOwnedFields = Utils.getNoNil(getXMLBool(cpFile, fieldsKey .. '#onlyScanOwnedFields'), true);
-				fieldsDebugScan       = Utils.getNoNil(getXMLBool(cpFile, fieldsKey .. '#debugScannedFields'), false);
-				fieldsDebugCustomLoad = Utils.getNoNil(getXMLBool(cpFile, fieldsKey .. '#debugCustomLoadedFields'), false);
-				fieldsCustomScanStep = getXMLInt(cpFile, fieldsKey .. '#scanStep');
-			end;
-
-			local wagesKey = 'XML.courseplayWages';
-			if hasXMLProperty(cpFile, wagesKey) then
-				wagesActive = Utils.getNoNil(getXMLBool(cpFile, wagesKey .. '#active'), wagesActive);
-				wagesAmount = Utils.getNoNil(getXMLInt(cpFile, wagesKey .. '#wagePerHour'), wagesAmount);
-			end;
-
-			delete(cpFile);
+	if courseplay.cpXmlFilePath and fileExists(courseplay.cpXmlFilePath) then
+		local cpFile = loadXMLFile('cpFile', courseplay.cpXmlFilePath);
+		local hudKey = 'XML.courseplayHud';
+		if hasXMLProperty(cpFile, hudKey) then
+			customPosX = getXMLFloat(cpFile, hudKey .. '#posX');
+			customPosY = getXMLFloat(cpFile, hudKey .. '#posY');
 		end;
+
+		local fieldsKey = 'XML.courseplayFields';
+		if hasXMLProperty(cpFile, fieldsKey) then
+			fieldsAutomaticScan   = Utils.getNoNil(getXMLBool(cpFile, fieldsKey .. '#automaticScan'), true);
+			fieldsOnlyScanOwnedFields = Utils.getNoNil(getXMLBool(cpFile, fieldsKey .. '#onlyScanOwnedFields'), true);
+			fieldsDebugScan       = Utils.getNoNil(getXMLBool(cpFile, fieldsKey .. '#debugScannedFields'), false);
+			fieldsDebugCustomLoad = Utils.getNoNil(getXMLBool(cpFile, fieldsKey .. '#debugCustomLoadedFields'), false);
+			fieldsCustomScanStep = getXMLInt(cpFile, fieldsKey .. '#scanStep');
+		end;
+
+		local wagesKey = 'XML.courseplayWages';
+		if hasXMLProperty(cpFile, wagesKey) then
+			wagesActive = Utils.getNoNil(getXMLBool(cpFile, wagesKey .. '#active'), wagesActive);
+			wagesAmount = Utils.getNoNil(getXMLInt(cpFile, wagesKey .. '#wagePerHour'), wagesAmount);
+		end;
+
+		delete(cpFile);
 	end;
 
 	courseplay.numAiModes = 9;
@@ -218,12 +215,6 @@ function courseplay:setGlobalData()
 	ch.infoBasePosY = Utils.getNoNil(customPosY, 0.002);
 	ch.infoBaseWidth = 0.512;
 	ch.infoBaseHeight = 0.512;
-	ch.linesPosY = {};
-	ch.linesBottomPosY = {};
-	ch.linesButtonPosY = {};
-	ch.numPages = 9;
-	ch.numLines = 6;
-	ch.lineHeight = 0.021;
 	ch.offset = 16/1920;  --0.006 (button width)
 	ch.colors = {
 		white =         { 255/255, 255/255, 255/255, 1.00 };
@@ -261,16 +252,34 @@ function courseplay:setGlobalData()
 
 	--print(string.format("\t\tposX=%f,posY=%f, visX1=%f,visX2=%f, visY1=%f,visY2=%f, visCenter=%f", courseplay.hud.infoBasePosX, courseplay.hud.infoBasePosY, courseplay.hud.visibleArea.x1, courseplay.hud.visibleArea.x2, courseplay.hud.visibleArea.y1, courseplay.hud.visibleArea.y2, courseplay.hud.infoBaseCenter));
 
+	-- lines and text
+	ch.linesPosY = {};
+	ch.linesBottomPosY = {};
+	ch.linesButtonPosY = {};
+	ch.numPages = 9;
+	ch.numLines = 6;
+	ch.lineHeight = 0.0213;
 	for l=1,courseplay.hud.numLines do
 		if l == 1 then
-			courseplay.hud.linesPosY[l] = courseplay.hud.infoBasePosY + 0.210;
-			courseplay.hud.linesBottomPosY[l] = courseplay.hud.infoBasePosY + 0.077;
+			courseplay.hud.linesPosY[l] = courseplay.hud.infoBasePosY + 0.215;
+			courseplay.hud.linesBottomPosY[l] = courseplay.hud.infoBasePosY + 0.08;
 		else
 			courseplay.hud.linesPosY[l] = courseplay.hud.linesPosY[1] - ((l-1) * courseplay.hud.lineHeight);
 			courseplay.hud.linesBottomPosY[l] = courseplay.hud.linesBottomPosY[1] - ((l-1) * courseplay.hud.lineHeight);
 		end;
-		courseplay.hud.linesButtonPosY[l] = courseplay.hud.linesPosY[l] + 0.0020; --0.0045
+		courseplay.hud.linesButtonPosY[l] = courseplay.hud.linesPosY[l] - 0.003;
 	end;
+	ch.fontSizes = {
+		seedUsageCalculator = 0.015;
+		hudTitle = 0.021;
+		contentTitle = 0.016;
+		contentValue = 0.014; 
+		bottomInfo = 0.015;
+		version = 0.01;
+		infoText = 0.015;
+		fieldScanTitle = 0.021;
+		fieldScanData = 0.018;
+	};
 
 	courseplay.hud.col2posX = {
 		[0] = courseplay.hud.infoBasePosX + 0.122,
@@ -333,16 +342,21 @@ function courseplay:setGlobalData()
 
 	--GLOBALINFOTEXT
 	courseplay.globalInfoText = {};
-	courseplay.globalInfoText.fontSize = 0.02;
-	courseplay.globalInfoText.lineHeight = courseplay.globalInfoText.fontSize * 1.1;
-	courseplay.globalInfoText.posX = Utils.getNoNil(customGitPosX, 0.035);
-	courseplay.globalInfoText.posY = Utils.getNoNil(customGitPosY, 0.01238);
-	local pdaHeight = 0.3375;
-	courseplay.globalInfoText.hideWhenPdaActive = courseplay.globalInfoText.posY < pdaHeight; --g_currentMission.MissionPDA.hudPDABaseHeight;
-	courseplay.globalInfoText.backgroundImg = "dataS2/menu/white.png";
-	courseplay.globalInfoText.backgroundPadding = 0.005;
-	courseplay.globalInfoText.backgroundX = courseplay.globalInfoText.posX - courseplay.globalInfoText.backgroundPadding;
-	courseplay.globalInfoText.backgroundY = courseplay.globalInfoText.posY;
+	courseplay.globalInfoText.posY = 0.01238; -- = ingameMap posY
+	courseplay.globalInfoText.posYAboveMap = courseplay.globalInfoText.posY + 0.027777777777778 + 0.20833333333333;
+
+	courseplay.globalInfoText.fontSize = 0.016;
+	courseplay.globalInfoText.lineHeight = courseplay.globalInfoText.fontSize * 1.2;
+	courseplay.globalInfoText.lineMargin = courseplay.globalInfoText.lineHeight * 0.2;
+	courseplay.globalInfoText.buttonHeight = courseplay.globalInfoText.lineHeight;
+	courseplay.globalInfoText.buttonWidth = courseplay.globalInfoText.buttonHeight / g_screenAspectRatio;
+	courseplay.globalInfoText.buttonPosX = 0.015625; -- = ingameMap posX
+	courseplay.globalInfoText.buttonMargin = courseplay.globalInfoText.buttonWidth * 0.4;
+	courseplay.globalInfoText.backgroundPadding = courseplay.globalInfoText.buttonWidth * 0.2;
+	courseplay.globalInfoText.backgroundImg = 'dataS2/menu/white.png';
+	courseplay.globalInfoText.backgroundPosX = courseplay.globalInfoText.buttonPosX + courseplay.globalInfoText.buttonWidth + courseplay.globalInfoText.buttonMargin;
+	courseplay.globalInfoText.backgroundPosY = courseplay.globalInfoText.posY;
+	courseplay.globalInfoText.textPosX = courseplay.globalInfoText.backgroundPosX + courseplay.globalInfoText.backgroundPadding;
 	courseplay.globalInfoText.content = {};
 	courseplay.globalInfoText.hasContent = false;
 	courseplay.globalInfoText.vehicleHasText = {};
@@ -352,33 +366,37 @@ function courseplay:setGlobalData()
 		[0]  = courseplay.utils.table.copy(courseplay.hud.colors.hover);
 		[1]  = courseplay.utils.table.copy(courseplay.hud.colors.activeGreen);
 	};
+	--[[
 	for i=-2,1 do
 		courseplay.globalInfoText.levelColors[i][4] = 0.85;
 	end;
+	]]
 	courseplay.globalInfoText.msgReference = {
-		BALER_NETS 		  = { level = -2, text = 'COURSEPLAY_BALER_NEEDS_NETS' };
-		BGA_IS_FULL       = { level = -1, text = 'COURSEPLAY_BGA_IS_FULL'};
-		DAMAGE_IS 		  = { level =  0, text = 'COURSEPLAY_DAMAGE_IS_BEING_REPAIRED' };
-		DAMAGE_MUST 	  = { level = -2, text = 'COURSEPLAY_DAMAGE_MUST_BE_REPAIRED' };
-		DAMAGE_SHOULD 	  = { level = -1, text = 'COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED' };
-		END_POINT 		  = { level =  0, text = 'COURSEPLAY_REACHED_END_POINT' };
-		FUEL_IS 		  = { level =  0, text = 'COURSEPLAY_IS_BEING_REFUELED' };
-		FUEL_MUST 		  = { level = -2, text = 'COURSEPLAY_MUST_BE_REFUELED' };
-		FUEL_SHOULD 	  = { level = -1, text = 'COURSEPLAY_SHOULD_BE_REFUELED' };
-		HOSE_MISSING 	  = { level = -2, text = 'COURSEPLAY_HOSEMISSING' };
-		NEEDS_REFILLING   = { level = -1, text = 'COURSEPLAY_NEEDS_REFILLING' };
-		NEEDS_UNLOADING   = { level = -1, text = 'COURSEPLAY_NEEDS_UNLOADING' };
-		OVERLOADING_POINT = { level =  0, text = 'COURSEPLAY_REACHED_OVERLOADING_POINT' };
-		PICKUP_JAMMED 	  = { level = -2, text = 'COURSEPLAY_PICKUP_JAMMED' };
-		SLIPPING_0 		  = { level = -1, text = 'COURSEPLAY_SLIPPING_WARNING_0' };
-		SLIPPING_1 		  = { level = -1, text = 'COURSEPLAY_SLIPPING_WARNING_1' };
-		SLIPPING_2 		  = { level = -2, text = 'COURSEPLAY_SLIPPING_WARNING_2' };
-		TRAFFIC 		  = { level = -1, text = 'COURSEPLAY_IS_IN_TRAFFIC' };
-		UNLOADING_BALE 	  = { level =  0, text = 'COURSEPLAY_UNLOADING_BALES' };
-		WAIT_POINT 		  = { level =  0, text = 'COURSEPLAY_REACHED_WAITING_POINT' };
-		WATER 			  = { level = -2, text = 'COURSEPLAY_WATER_WARNING' };
-		WEATHER 		  = { level =  0, text = 'COURSEPLAY_WEATHER_WARNING' };
-		WORK_END 		  = { level =  1, text = 'COURSEPLAY_WORK_END' };
+		BALER_NETS					= { level = -2, text = 'COURSEPLAY_BALER_NEEDS_NETS' };
+		BGA_IS_FULL					= { level = -1, text = 'COURSEPLAY_BGA_IS_FULL'};
+		DAMAGE_IS					= { level =  0, text = 'COURSEPLAY_DAMAGE_IS_BEING_REPAIRED' };
+		DAMAGE_MUST					= { level = -2, text = 'COURSEPLAY_DAMAGE_MUST_BE_REPAIRED' };
+		DAMAGE_SHOULD				= { level = -1, text = 'COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED' };
+		END_POINT					= { level =  0, text = 'COURSEPLAY_REACHED_END_POINT' };
+		FARM_SILO_DONT_HAVE_FILTYPE	= { level = -2, text = 'COURSEPLAY_FARM_SILO_DONT_HAVE_FILTYPE'};
+		FARM_SILO_IS_EMPTY			= { level =  0, text = 'COURSEPLAY_FARM_SILO_IS_EMPTY'};
+		FUEL_IS						= { level =  0, text = 'COURSEPLAY_IS_BEING_REFUELED' };
+		FUEL_MUST					= { level = -2, text = 'COURSEPLAY_MUST_BE_REFUELED' };
+		FUEL_SHOULD					= { level = -1, text = 'COURSEPLAY_SHOULD_BE_REFUELED' };
+		HOSE_MISSING				= { level = -2, text = 'COURSEPLAY_HOSEMISSING' };
+		NEEDS_REFILLING				= { level = -1, text = 'COURSEPLAY_NEEDS_REFILLING' };
+		NEEDS_UNLOADING				= { level = -1, text = 'COURSEPLAY_NEEDS_UNLOADING' };
+		OVERLOADING_POINT			= { level =  0, text = 'COURSEPLAY_REACHED_OVERLOADING_POINT' };
+		PICKUP_JAMMED				= { level = -2, text = 'COURSEPLAY_PICKUP_JAMMED' };
+		SLIPPING_0					= { level = -1, text = 'COURSEPLAY_SLIPPING_WARNING_0' };
+		SLIPPING_1					= { level = -1, text = 'COURSEPLAY_SLIPPING_WARNING_1' };
+		SLIPPING_2					= { level = -2, text = 'COURSEPLAY_SLIPPING_WARNING_2' };
+		TRAFFIC						= { level = -1, text = 'COURSEPLAY_IS_IN_TRAFFIC' };
+		UNLOADING_BALE				= { level =  0, text = 'COURSEPLAY_UNLOADING_BALES' };
+		WAIT_POINT					= { level =  0, text = 'COURSEPLAY_REACHED_WAITING_POINT' };
+		WATER						= { level = -2, text = 'COURSEPLAY_WATER_WARNING' };
+		WEATHER						= { level =  0, text = 'COURSEPLAY_WEATHER_WARNING' };
+		WORK_END					= { level =  1, text = 'COURSEPLAY_WORK_END' };
 	};
 
 
@@ -474,10 +492,11 @@ function courseplay:setGlobalData()
 	courseplay.wagePerMin  = wagesAmount / 60;
 
 	--print("\t### Courseplay: setGlobalData() finished");
+
+	courseplay.globalDataSet = true;
 end;
 
 courseplay:initialize();
 
 --load(), update(), updateTick(), draw() are located in base.lua
 --mouseEvent(), keyEvent() are located in input.lua
-

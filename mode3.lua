@@ -171,20 +171,18 @@ function courseplay:handleAugerWagon(vehicle, workTool, unfold, unload, orderNam
 		end;
 
 	--AugerWagon spec
-	elseif workTool.cp.hasSpecializationAugerWagon and workTool.foldAnimTime ~= nil and workTool.turnOnFoldDirection ~= nil then
+	elseif workTool.typeName == 'augerWagon' then
 		if pipeOrderExists then
-			local pipeIsFolding = workTool.foldAnimTime > workTool.cp.lastFoldAnimTime;
-			local pipeIsUnfolding = workTool.foldAnimTime < workTool.cp.lastFoldAnimTime;
-			local pipeIsFolded = workTool.foldAnimTime == 1;
-			local pipeIsUnfolded = workTool.foldAnimTime == 0;
-			courseplay:debug(string.format("\t\tfoldAnimTime=%s, lastFoldAnimTime=%s", tostring(workTool.foldAnimTime), tostring(workTool.cp.lastFoldAnimTime)), 15);
-			courseplay:debug(string.format("\t\tpipeIsFolding=%s, pipeIsUnfolding=%s, pipeIsFolded=%s, pipeIsUnfolded=%s", tostring(pipeIsFolding), tostring(pipeIsUnfolding), tostring(pipeIsFolded), tostring(pipeIsUnfolded)), 15);
-			if unfold and not pipeIsUnfolded and not pipeIsUnfolding then
-				workTool:setFoldDirection(workTool.turnOnFoldDirection); -- -1
-				courseplay:debug(string.format("\t\t\tsetFoldDirection(%s) (unfold)", tostring(workTool.turnOnFoldDirection)), 15);
-			elseif not unfold and not pipeIsFolded and not pipeIsFolding then
-				workTool:setFoldDirection(workTool.turnOnFoldDirection * -1); -- 1
-				courseplay:debug(string.format("\t\t\tsetFoldDirection(%s) (fold)", tostring(workTool.turnOnFoldDirection * -1)), 15);
+			local pipeIsFolding = workTool.currentPipeState == 0;
+			local pipeIsFolded = workTool.currentPipeState == 1;
+			local pipeIsUnfolded = workTool.currentPipeState == 2;
+			courseplay:debug(string.format("\t\tpipeIsFolding=%s, pipeIsFolded=%s, pipeIsUnfolded=%s", tostring(pipeIsFolding), tostring(pipeIsFolded), tostring(pipeIsUnfolded)), 15);
+			if unfold and not pipeIsFolding and pipeIsFolded then
+				workTool:setPipeState(2);
+				courseplay:debug("\t\t\tsetPipeState(2) (unfold)", 15);
+			elseif not unfold and not pipeIsFolding and pipeIsUnfolded then
+				workTool:setPipeState(1);
+				courseplay:debug("\t\t\tsetPipeState(1) (fold)", 15);
 			end;
 			workTool.cp.lastFoldAnimTime = workTool.foldAnimTime;
 		end;

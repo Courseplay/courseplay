@@ -2,7 +2,7 @@
 
 <i3D name="CourseplayWaypointSign" version="1.6" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://i3d.giants.ch/schema/i3d-1.6.xsd">
   <Asset>
-    <Export program="GIANTS Editor 64bit" version="5.5.1"/>
+    <Export program="GIANTS Editor 64bit" version="6.0.2"/>
   </Asset>
 
   <Files>
@@ -11,7 +11,7 @@
 
 
   <Materials>
-	<Material name="CourseplayWaypointSign" materialId="7" ambientColor="5 5 5" cosPower="20" specularColor="0.25 0.25 0.25" alphaBlending="true">
+    <Material name="CourseplayWaypointSign" materialId="6" ambientColor="5 5 5" cosPower="20" specularColor="0.25 0.25 0.25" alphaBlending="true">
       <Emissivemap fileId="1"/>
     </Material>
   </Materials>
@@ -25,8 +25,8 @@
   </Dynamics>
 
   <Scene>
-    <Shape name="Waypoint" clipDistance="100" nodeId="13" materialIds="7" shapeId="1" castsShadows="true">
-      <Shape name="Line" nodeId="14" materialIds="7" shapeId="2" castsShadows="true"/>
+    <Shape shapeId="1" name="Waypoint" clipDistance="100" nodeId="12" materialIds="6" castsShadows="true">
+      <Shape shapeId="2" name="Line" nodeId="13" materialIds="6" castsShadows="true"/>
     </Shape>
   </Scene>
 

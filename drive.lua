@@ -7,10 +7,20 @@ function courseplay:drive(self, dt)
 	if not courseplay:getCanUseAiMode(self) then
 		return;
 	end;
-
-	local refSpeed = 0
+	
+	-- debug for workAreas
+	if courseplay.debugChannels[6] then
+		local tx1, ty1, tz1 = localToWorld(self.cp.DirectionNode,3,1,self.cp.aiFrontMarker)
+		local tx2, ty2, tz2 = localToWorld(self.cp.DirectionNode,3,1,self.cp.backMarkerOffset)
+		local nx, ny, nz = localDirectionToWorld(self.cp.DirectionNode, -1, 0, 0)
+		local distance = 6
+		drawDebugLine(tx1, ty1, tz1, 1, 0, 0, tx1+(nx*distance), ty1+(ny*distance), tz1+(nz*distance), 1, 0, 0) 
+		drawDebugLine(tx2, ty2, tz2, 1, 0, 0, tx2+(nx*distance), ty2+(ny*distance), tz2+(nz*distance), 1, 0, 0) 
+	end 
+	
+	local refSpeed = math.huge
 	local cx,cy,cz = 0,0,0
-	-- may i drive or should i hold position for some reason?
+	-- may I drive or should I hold position for some reason?
 	local allowedToDrive = true
 
 	-- TIPPER FILL LEVELS (get once for all following functions)
@@ -42,12 +52,11 @@ function courseplay:drive(self, dt)
 
 	-- Turn on sound / control lights
 	if not self.isControlled then
-		setVisibility(self.aiMotorSound, true); --TODO (Jakob): still needed in FS13?
 		self:setLightsVisibility(courseplay.lightsNeeded);
 	end;
 
 	-- current position
-	local ctx, cty, ctz = getWorldTranslation(self.rootNode);
+	local ctx, cty, ctz = getWorldTranslation(self.cp.DirectionNode);
 
 	if self.recordnumber > self.maxnumber then
 		courseplay:debug(string.format("drive %d: %s: self.recordnumber (%s) > self.maxnumber (%s)", debug.getinfo(1).currentline, nameNum(self), tostring(self.recordnumber), tostring(self.maxnumber)), 12); --this should never happen
@@ -60,14 +69,8 @@ function courseplay:drive(self, dt)
 	end;
 
 
-	if self.cp.mode ~= 7 then 
+	if self.cp.mode ~= 7 or (self.cp.mode == 7 and self.cp.modeState ~= 5) then 
 		cx, cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
-	elseif self.cp.mode == 7 and self.cp.modeState ~=5 then
-		if not self.cp.mode7GoBackBeforeUnloading then
-			cx, cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
-		else
-			cx,cz = self.cp.mode7tx7, self.cp.mode7tz7
-		end
 	end
 
 	if courseplay.debugChannels[12] and self.cp.isTurning == nil then
@@ -119,12 +122,19 @@ function courseplay:drive(self, dt)
 
 	-- BEACON LIGHTS
 	if self.cp.beaconLightsMode == 1 then --on streets only
-		local combineNeedsBeacon = self.cp.isCombine and (self.grainTankFillLevel / self.grainTankCapacity) > 0.8;
-		if (self.cp.speeds.sl == 3 and not self.beaconLightsActive)
-		or (self.cp.speeds.sl ~= 3 and self.beaconLightsActive and not combineNeedsBeacon)
-		or (self.cp.mode == 6 and combineNeedsBeacon and not self.beaconLightsActive)
-		or (self.cp.mode == 7 and self.isAIThreshing == self.beaconLightsActive) then
-			self:setBeaconLightsVisibility(not self.beaconLightsActive);
+		local combineNeedsBeacon = self.cp.isCombine and (self.fillLevel / self.capacity) > 0.8;
+		local goForBeaconLights = ((self.cp.mode == 1 or self.cp.mode == 2 or self.cp.mode == 5) and self.recordnumber > 2) 
+								or (self.cp.mode == 4 or self.cp.mode == 6 and self.cp.abortWork ~= nil)
+								or combineNeedsBeacon;
+								
+		if goForBeaconLights then
+			if not self.beaconLightsActive then
+				self:setBeaconLightsVisibility(true);
+			end
+		else
+			if self.beaconLightsActive then
+				self:setBeaconLightsVisibility(false);
+			end
 		end;
 
 	elseif self.cp.beaconLightsMode == 2 then --always
@@ -191,7 +201,7 @@ function courseplay:drive(self, dt)
 			end;
 		elseif self.cp.mode == 7 then
 			if self.cp.lastRecordnumber == self.cp.startWork then
-				if self.grainTankFillLevel > 0 then
+				if self.fillLevel > 0 then
 					self:setPipeState(2)
 					courseplay:setGlobalInfoText(self, 'OVERLOADING_POINT');
 				else
@@ -249,11 +259,11 @@ function courseplay:drive(self, dt)
 			courseplay:handle_mode2(self, dt);
 			return;
 		elseif (self.cp.mode == 2 or self.cp.mode == 3) and self.recordnumber < 3 then
-			isBypassing = true
-			lx, lz = courseplay:isTheWayToTargetFree(self,lx, lz)
+			--isBypassing = true
+			--lx, lz = courseplay:isTheWayToTargetFree(self,lx, lz)
 		elseif self.cp.mode == 6 and self.cp.hasBaleLoader and (self.recordnumber == self.cp.stopWork - 4 or (self.cp.abortWork ~= nil and self.recordnumber == self.cp.abortWork)) then
-			isBypassing = true
-			lx, lz = courseplay:isTheWayToTargetFree(self,lx, lz)
+			--isBypassing = true
+			--lx, lz = courseplay:isTheWayToTargetFree(self,lx, lz)
 		elseif self.cp.mode ~= 7 then
 			if self.cp.modeState ~= 0 then
 				courseplay:setModeState(self, 0);
@@ -274,26 +284,6 @@ function courseplay:drive(self, dt)
 				end
 			end;
 		end
-
-		-- MODE 7 PIPE STATE -- TODO (Jakob): move to mode7.lua
-		if self.cp.mode == 7 then
-			if self.recordnumber == self.maxnumber then
-				if self.cp.curTarget.x ~= nil then
-					courseplay:setModeState(self, 5);
-					courseplay:setRecordNumber(self, 2);
-					courseplay:debug(nameNum(self) .. ": " .. tostring(debug.getinfo(1).currentline) .. ": modeState = 5", 11);
-				else
-					allowedToDrive = false
-					--TODO local text no aithreshing
-				end
-			end
-			local pipeState = self:getCombineTrailerInRangePipeState();
-			if pipeState > 0 then
-				self:setPipeState(pipeState);
-			else
-				self:setPipeState(1);
-			end;
-		end;
 
 		-- MAP WEIGHT STATION
 		if courseplay:canUseWeightStation(self) then
@@ -391,16 +381,16 @@ function courseplay:drive(self, dt)
 	local isFinishingWork = false;
 	-- MODE 4
 	if self.cp.mode == 4 and self.cp.startWork ~= nil and self.cp.stopWork ~= nil and self.cp.tipperAttached then
-		allowedToDrive, workArea, workSpeed, isFinishingWork = courseplay:handle_mode4(self, allowedToDrive, workSpeed, self.cp.tipperFillLevelPct);
+		allowedToDrive, workArea, workSpeed, isFinishingWork, refSpeed = courseplay:handle_mode4(self, allowedToDrive, workSpeed, self.cp.tipperFillLevelPct, refSpeed);
 		if not workArea and self.cp.tipperFillLevelPct < self.cp.refillUntilPct then
 			courseplay:doTriggerRaycasts(self, 'specialTrigger', 'fwd', true, tx, ty, tz, nx, ny, nz);
 		end;
 
 	-- MODE 6
 	elseif self.cp.mode == 6 and self.cp.startWork ~= nil and self.cp.stopWork ~= nil then
-		allowedToDrive, workArea, workSpeed, activeTipper, isFinishingWork = courseplay:handle_mode6(self, allowedToDrive, workSpeed, self.cp.tipperFillLevelPct, lx, lz);
+		allowedToDrive, workArea, workSpeed, activeTipper, isFinishingWork,refSpeed = courseplay:handle_mode6(self, allowedToDrive, workSpeed, self.cp.tipperFillLevelPct, lx, lz,refSpeed);
 
-		if not workArea and self.cp.currentTipTrigger == nil and self.cp.tipperFillLevel and self.cp.tipperFillLevel > 0 and self.grainTankCapacity == nil and self.cp.tipRefOffset ~= nil and not self.Waypoints[self.recordnumber].rev then
+		if not workArea and self.cp.currentTipTrigger == nil and self.cp.tipperFillLevel and self.cp.tipperFillLevel > 0 and self.capacity == nil and self.cp.tipRefOffset ~= nil and not self.Waypoints[self.recordnumber].rev then
 			courseplay:doTriggerRaycasts(self, 'tipTrigger', 'fwd', true, tx, ty, tz, nx, ny, nz);
 		end;
 
@@ -447,8 +437,8 @@ function courseplay:drive(self, dt)
 	
 	if WpUnload then
 		local i = self.cp.shovelEmptyPoint
-		local x,y,z = getWorldTranslation(self.rootNode)
-		local _,_,ez = worldToLocal(self.rootNode, self.Waypoints[i].cx , y , self.Waypoints[i].cz)
+		local x,y,z = getWorldTranslation(self.cp.DirectionNode)
+		local _,_,ez = worldToLocal(self.cp.DirectionNode, self.Waypoints[i].cx , y , self.Waypoints[i].cz)
 		if  ez < 0 then
 			allowedToDrive = false
 		end
@@ -460,8 +450,8 @@ function courseplay:drive(self, dt)
 	end
 	if WpLoadEnd then
 		local i = self.cp.shovelFillEndPoint
-		local x,y,z = getWorldTranslation(self.rootNode)
-		local _,_,ez = worldToLocal(self.rootNode, self.Waypoints[i].cx , y , self.Waypoints[i].cz)
+		local x,y,z = getWorldTranslation(self.cp.DirectionNode)
+		local _,_,ez = worldToLocal(self.cp.DirectionNode, self.Waypoints[i].cx , y , self.Waypoints[i].cz)
 		if  ez < 0.2 then
 			if self.cp.tipperFillLevelPct == 0 then
 				allowedToDrive = false
@@ -503,7 +493,7 @@ function courseplay:drive(self, dt)
 	--SPEED SETTING
 	local isAtEnd   = self.recordnumber > self.maxnumber - 3;
 	local isAtStart = self.recordnumber < 3;
-	if 	((self.cp.mode == 1 or self.cp.mode == 5 or self.cp.mode == 7 or self.cp.mode == 8) and (isAtStart or isAtEnd)) or
+	if 	((self.cp.mode == 1 or self.cp.mode == 5 or self.cp.mode == 8) and (isAtStart or isAtEnd)) or
 		((self.cp.mode == 2 or self.cp.mode == 3) and isAtEnd) or
 		(self.cp.mode == 9 and self.recordnumber > self.cp.shovelFillStartPoint and self.recordnumber <= self.cp.shovelFillEndPoint) or
 		(not workArea and self.wait and ((isAtEnd and self.Waypoints[self.recordnumber].wait) or courseplay:waypointsHaveAttr(self, self.recordnumber, 0, 2, "wait", true, false))) or 
@@ -511,48 +501,45 @@ function courseplay:drive(self, dt)
 		(not isAtEnd and (self.Waypoints[self.recordnumber].rev or self.Waypoints[self.recordnumber + 1].rev or self.Waypoints[self.recordnumber + 2].rev)) or
 		(workSpeed ~= nil and workSpeed == 0.5) 
 	then
-		self.cp.speeds.sl = 1;
-		refSpeed = self.cp.speeds.turn;
+		refSpeed = math.min(self.cp.speeds.turn,refSpeed);
 	elseif ((self.cp.mode == 2 or self.cp.mode == 3) and isAtStart) or (workSpeed ~= nil and workSpeed == 1) then
-		self.cp.speeds.sl = 2;
-		refSpeed = self.cp.speeds.field;
+		refSpeed = math.min(self.cp.speeds.field,refSpeed);
 	else
-		self.cp.speeds.sl = 3;
-		refSpeed = self.cp.speeds.street;
-		if self.cp.speeds.useRecordingSpeed and self.Waypoints[self.recordnumber].speed ~= nil then
-			refSpeed = Utils.clamp(refSpeed, 3/3600, self.Waypoints[self.recordnumber].speed);
-		end;
+		local mode7onCourse = true
+		if self.cp.mode ~= 7 then
+			refSpeed = self.cp.speeds.street;
+		elseif self.cp.modeState == 5 then
+			mode7onCourse = false
+		end
+		if self.cp.speeds.useRecordingSpeed and self.Waypoints[self.recordnumber].speed ~= nil and mode7onCourse then
+			if self.Waypoints[self.recordnumber].speed < self.cp.speeds.crawl then
+				refSpeed = Utils.clamp(refSpeed, self.cp.speeds.crawl, self.Waypoints[self.recordnumber+1].speed);
+			else
+				refSpeed = Utils.clamp(refSpeed, self.cp.speeds.crawl, self.Waypoints[self.recordnumber].speed);
+			end
+		end;		
 	end;
+	
 	
 	if self.cp.collidingVehicleId ~= nil then
 		refSpeed = courseplay:regulateTrafficSpeed(self, refSpeed, allowedToDrive);
 	end
 	
-	--bunkerSilo speed by Thomas Gärtner
 	if self.cp.currentTipTrigger ~= nil then
 		if self.cp.currentTipTrigger.bunkerSilo ~= nil then
-			refSpeed = Utils.getNoNil(self.cp.speeds.unload, 3/3600);
+			refSpeed = Utils.getNoNil(self.cp.speeds.unload, self.cp.speeds.crawl);
 		else
 			refSpeed = self.cp.speeds.turn;
 		end;
-		self.cp.speeds.sl = 1;
 	elseif self.cp.isInFilltrigger then
 		refSpeed = self.cp.speeds.turn;
 		if self.lastSpeedReal > self.cp.speeds.turn then
 			courseplay:brakeToStop(self);
 		end;
-		self.cp.speeds.sl = 1;
 		self.cp.isInFilltrigger = false;
 	end;
 
-	local maxRpm = self.motor.maxRpm[self.cp.speeds.sl];
-
-	--checking ESLimiter version
-	if self.ESLimiter ~= nil and self.ESLimiter.maxRPM[5] == nil then
-		self.cp.infoText = courseplay:loc("COURSEPLAY_ESL_NOT_SUPPORTED")
-	end
-
-	--finishing field work
+	--finishing field work- go straight till tool is ready
 	if isFinishingWork then
 		lx=0
 		lz=1
@@ -561,14 +548,14 @@ function courseplay:drive(self, dt)
 	--reverse
 	if self.Waypoints[self.recordnumber].rev then
 		lx,lz,fwd = courseplay:goReverse(self,lx,lz)
-		refSpeed = Utils.getNoNil(self.cp.speeds.unload, 3/3600)
+		refSpeed = Utils.getNoNil(self.cp.speeds.unload, self.cp.speeds.crawl)
 	else
 		fwd = true
 	end
 
 	if self.cp.TrafficBrake then
 		if self.isRealistic then
-			AIVehicleUtil.mrDriveInDirection(self, dt, 1, false, true, 0, 1, self.cp.speeds.sl, true, true)
+			AIVehicleUtil.mrDriveInDirection(self, dt, 1, false, true, 0, 1, 3, true, true)
 			self.cp.TrafficBrake = false
 			self.cp.isTrafficBraking = false
 			self.cp.TrafficHasStopped = false
@@ -587,18 +574,24 @@ function courseplay:drive(self, dt)
 		fwd = false
 		lz = lz * -1
 		lx = lx * -1
+	elseif self.cp.isReverseBackToPoint then
+		if self.cp.reverseBackToPoint then
+			local _, _, zDis = worldToLocal(self.cp.DirectionNode, self.cp.reverseBackToPoint.x, self.cp.reverseBackToPoint.y, self.cp.reverseBackToPoint.z);
+			if zDis < 0 then
+				fwd = false;
+				lx = 0;
+				lz = 1;
+				refSpeed = self.cp.speeds.crawl
+			else
+				self.cp.reverseBackToPoint = nil;
+			end;
+		else
+			self.cp.isReverseBackToPoint = false;
+		end;
 	end
 	
-	-- Speed Control
-	if self.cp.maxFieldSpeed ~= 0 then
-		refSpeed = min(self.cp.maxFieldSpeed, refSpeed);
-	end
-	
-	if self.isRealistic then
-		courseplay:setMRSpeed(self, refSpeed, self.cp.speeds.sl, allowedToDrive, workArea);
-	else
-		courseplay:setSpeed(self, refSpeed, self.cp.speeds.sl)
-	end
+	courseplay:setSpeed(self, refSpeed)
+
 
 	-- DISTANCE TO CHANGE WAYPOINT
 	if self.recordnumber == 1 or self.recordnumber == self.maxnumber - 1 or self.Waypoints[self.recordnumber].turn then
@@ -647,14 +640,7 @@ function courseplay:drive(self, dt)
 		end;
 	end
 
-	-- Change the distance to the correct one on the Kirovets K700A.
-	if self.cp.isKasi ~= nil then
-		if fwd then
-			self.cp.distanceToTarget = self.cp.distanceToTarget - self.cp.isKasi;
-		else
-			self.cp.distanceToTarget = self.cp.distanceToTarget + self.cp.isKasi;
-		end;
-	end
+
 
 	-- record shortest distance to the next waypoint
 	if self.cp.shortestDistToWp == nil or self.cp.shortestDistToWp > self.cp.distanceToTarget then
@@ -698,7 +684,9 @@ function courseplay:drive(self, dt)
 			if self.isRealistic then 
 				courseplay:driveInMRDirection(self, lx,lz,fwd, dt,allowedToDrive);
 			else
-				AIVehicleUtil.driveInDirection(self, dt, self.cp.steeringAngle, 0.5, 0.5, 8, true, fwd, lx, lz, self.cp.speeds.sl, 0.5);
+			--self,dt,steeringAngleLimit,acceleration,slowAcceleration,slowAngleLimit,allowedToDrive,moveForwards,lx,lz,maxSpeed,slowDownFactor,angle
+				--AIVehicleUtil.driveInDirection(dt,25,1,0.5,20,true,true,-0.028702223698223,0.99958800630799,22,1,nil)
+				AIVehicleUtil.driveInDirection(self, dt, self.cp.steeringAngle, 1, 0.5, 20, true, fwd, lx, lz, refSpeed, 1);
 			end
 			if not isBypassing then
 				courseplay:setTrafficCollision(self, lx, lz, workArea)
@@ -727,6 +715,7 @@ function courseplay:drive(self, dt)
 			self.cp.canDrive = true
 		end
 	end
+	
 end
 
 
@@ -820,77 +809,15 @@ function courseplay:deleteCollisionVehicle(vehicle)
 	end
 end
 
-function courseplay:setSpeed(vehicle, refSpeed, sl)
-	if vehicle.lastSpeedSave ~= vehicle.lastSpeedReal*3600 then
-		local refSpeedKph = refSpeed * 3600;
-		local lastSpeedKph = vehicle.lastSpeed * 3600;
-
-		if refSpeedKph == 1 then
-			refSpeed = 1.6 / 3600;
-			refSpeedKph = 1.6;
-		end
-		local trueRpm = vehicle.motor.lastMotorRpm*100/vehicle.cp.orgRpm[3];
-		local targetRpm = vehicle.motor.maxRpm[sl]*100/vehicle.cp.orgRpm[3];
-		local newLimit = 0;
-		local oldLimit = 0 ;
-		if vehicle.ESLimiter ~= nil then 
-			oldLimit =  vehicle.ESLimiter.percentage[sl+1];
-		else
-			oldLimit = targetRpm;
-		end;
-
-		local speedDelta = refSpeedKph - lastSpeedKph; -- accelerate
-		if speedDelta > 15 then
-			if sl == 2 then
-				newLimit = 75;
-			else
-				newLimit = 100;
-			end;
-		elseif speedDelta > 4 then
-			newLimit = oldLimit + 1;
-		elseif speedDelta > 0.5 then
-			newLimit = oldLimit + 0.1;
-		elseif speedDelta > 0 then
-			newLimit = oldLimit;
-		end;
-		if oldLimit - trueRpm > 10 then
-			if speedDelta < 1 then
-				newLimit = trueRpm;
-			end;
-		end;
-
-		speedDelta = lastSpeedKph - refSpeedKph; --decelerate
-		if speedDelta > 8 and vehicle.cp.isTurning == nil then
-			if sl == 1 then
-				newLimit = 20;
-			else
-				newLimit = oldLimit - 3;
-			end;
-		elseif speedDelta > 3 then
-			newLimit = oldLimit - 1;
-		elseif speedDelta > 1 then
-			newLimit = oldLimit - 0.75;
-		elseif speedDelta > 0.5 then
-			newLimit = oldLimit - 0.25;
-		elseif speedDelta > 0 then
-			newLimit = oldLimit;
-		end;
-
-		newLimit = Utils.clamp(newLimit, 0, 100);
-
-		if vehicle.ESLimiter ~= nil and vehicle.ESLimiter.maxRPM[5] ~= nil then
-			vehicle:setNewLimit(sl + 1, newLimit, false, true);
-		elseif vehicle.ESLimiter ~= nil and vehicle.ESLimiter.maxRPM[5] == nil then
-			--ESlimiter < V3
-		else
-			vehicle.motor.maxRpm[sl] = Utils.clamp(newLimit * vehicle.cp.orgRpm[3]/100, vehicle.motor.minRpm, vehicle.cp.orgRpm[3]);
-		end;
-
-		vehicle.lastSpeedSave = vehicle.lastSpeedReal*3600;
-	end;
-
+function courseplay:setSpeed(vehicle, refSpeed)
+	local newSpeed = math.max(refSpeed,3)	
+	if vehicle.cruiseControl.state == Drivable.CRUISECONTROL_STATE_OFF then
+		vehicle:setCruiseControlState(Drivable.CRUISECONTROL_STATE_ACTIVE)
+	end 
+	vehicle:setCruiseControlMaxSpeed(newSpeed) 
+	
 	-- slipping notification
-	if vehicle.lastSpeedSave < 0.5 and not vehicle.cp.inTraffic and not vehicle.Waypoints[vehicle.recordnumber].wait then
+	if vehicle.lastSpeedReal*3600 < 0.5 and not vehicle.cp.inTraffic and not vehicle.Waypoints[vehicle.recordnumber].wait then
 		if vehicle.cp.timers.slippingWheels == nil or vehicle.cp.timers.slippingWheels == 0 then
 			courseplay:setCustomTimer(vehicle, 'slippingWheels', 5);
 		elseif courseplay:timerIsThrough(vehicle, 'slippingWheels') then
@@ -900,55 +827,39 @@ function courseplay:setSpeed(vehicle, refSpeed, sl)
 	-- reset timer
 	elseif vehicle.cp.timers.slippingWheels ~= 0 then
 		vehicle.cp.timers.slippingWheels = 0;
-	end;
-end;
-
+	end;	
+	
+end
+	
 function courseplay:openCloseCover(vehicle, dt, showCover, isAtTipTrigger)
 	for i,twc in pairs(vehicle.cp.tippersWithCovers) do
 		local tIdx, coverType, showCoverWhenTipping, coverItems = twc.tipperIndex, twc.coverType, twc.showCoverWhenTipping, twc.coverItems;
 		local tipper = vehicle.tippers[tIdx];
 
-		-- SMK-34 et al.
-		if coverType == 'setPlane' and tipper.plane.bOpen == showCover then
-			if showCoverWhenTipping and isAtTipTrigger and not showCover then
-				--
-			else
-				tipper:setPlane(not showCover);
-			end;
-
-		-- Hobein 18t et al.
-		elseif coverType == 'setCoverState' and tipper.cover.state ~= showCover then
-			tipper:setCoverState(showCover);
-
-		-- TUW et al.
-		elseif coverType == 'planeOpen' then
-			if showCover and tipper.planeOpen then
-				tipper:setAnimationTime(3, tipper.animationParts[3].offSet, false);
-			elseif not showCover and not tipper.planeOpen then
-				tipper:setAnimationTime(3, tipper.animationParts[3].animDuration, false);
-			end;
-
-		-- Marston / setSheet
-		elseif coverType == 'setSheet' and tipper.sheet.isActive ~= showCover then
-			tipper:setSheet(showCover);
-
 		-- default Giants trailers
-		elseif coverType == 'defaultGiants' then
-			for _,ci in pairs(coverItems) do
-				if getVisibility(ci) ~= showCover then
-					setVisibility(ci, showCover);
-				end;
+		if coverType == 'defaultGiants' then
+			if tipper.isCoverOpen == showCover then
+				tipper:setCoverState(not showCover);
 			end;
 
-		-- setCoverState (Giants Marshall DLC)
-		elseif coverType == 'setCoverStateGiants' and tipper.isCoverOpen == showCover then
-			tipper:setCoverState(not showCover);
+
+		-- Example: for mods trailer that don't use the default cover specialization
+		else--if coverType == 'CoverVehicle' then
+			--for _,ci in pairs(coverItems) do
+			--	if getVisibility(ci) ~= showCover then
+			--		setVisibility(ci, showCover);
+			--	end;
+			--end;
+			--if showCoverWhenTipping and isAtTipTrigger and not showCover then
+				--
+			--else
+			--	tipper:setPlane(not showCover);
+			--end;
 		end;
 	end; --END for i,tipperWithCover in vehicle.cp.tippersWithCovers
 end;
 
 function courseplay:refillSprayer(vehicle, fillLevelPct, driveOn, allowedToDrive, lx, lz, dt)
-	-- for i,activeTool in pairs(vehicle.tippers) do --TODO (Jakob): delete
 	for i=1, vehicle.cp.numWorkTools do
 		local activeTool = vehicle.tippers[i];
 		local isSpecialSprayer = false
@@ -959,12 +870,12 @@ function courseplay:refillSprayer(vehicle, fillLevelPct, driveOn, allowedToDrive
 		end;
 
 		-- SPRAYER
-		if courseplay:isSprayer(activeTool) or activeTool.cp.hasUrfSpec then
+		if courseplay:isSprayer(activeTool) then
 			-- print(('\tworkTool %d (%q)'):format(i, nameNum(activeTool)));
 			if vehicle.cp.fillTrigger ~= nil then
 				local trigger = courseplay.triggers.all[vehicle.cp.fillTrigger];
 				if trigger.isSprayerFillTrigger and courseplay:fillTypesMatch(trigger, activeTool) then 
-					-- print('\t\tslow down, it\'s a sprayerFillTrigger');
+					--print('\t\tslow down, it\'s a sprayerFillTrigger');
 					vehicle.cp.isInFilltrigger = true
 				end
 			end;
@@ -973,14 +884,11 @@ function courseplay:refillSprayer(vehicle, fillLevelPct, driveOn, allowedToDrive
 			if activeTool.fillLevel ~= nil and activeTool.capacity ~= nil then
 				activeToolFillLevel = (activeTool.fillLevel / activeTool.capacity) * 100;
 			end;
-			if activeTool.cp.hasUrfSpec then
-				activeToolFillLevel = (activeTool.sprayFillLevel / activeTool.sprayCapacity) * 100;
-			end
 
 			if fillTrigger == nil then
-				if activeTool.sprayerFillTriggers ~= nil and #activeTool.sprayerFillTriggers > 0 then
+				if activeTool.fillTriggers[1] ~= nil and activeTool.fillTriggers[1].isSprayerFillTrigger then
 					-- print('\t\tset local fillTrigger to activeTool.sprayerFillTriggers[1], nil cp.fillTrigger');
-					fillTrigger = activeTool.sprayerFillTriggers[1];
+					fillTrigger = activeTool.fillTriggers[1];
 					vehicle.cp.fillTrigger = nil; --TODO (Jakob): if i == vehicle.cp.numWorkTools then vehicle.cp.fillTrigger = nil; end; (prevent nilling if there are other tools left to be filled)
 				end;
 			end;
@@ -1003,9 +911,9 @@ function courseplay:refillSprayer(vehicle, fillLevelPct, driveOn, allowedToDrive
 				allowedToDrive = false;
 				--courseplay:handleSpecialTools(vehicle,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
 				courseplay:handleSpecialTools(vehicle,activeTool,nil,nil,nil,allowedToDrive,false,false)
-				local sprayer = activeTool.sprayerFillTriggers[1];
-				if not activeTool.isSprayerFilling then
-					activeTool:setIsSprayerFilling(true);
+				local sprayer = activeTool.fillTriggers[1];
+				if not activeTool.isFilling then
+					activeTool:setIsFilling(true);
 				end;
 				
 				if sprayer.trailerInTrigger == activeTool then --Feldrand-Container Guellebomber
@@ -1014,8 +922,8 @@ function courseplay:refillSprayer(vehicle, fillLevelPct, driveOn, allowedToDrive
 
 				vehicle.cp.infoText = courseplay:loc("COURSEPLAY_LOADING_AMOUNT"):format(activeTool.fillLevel, activeTool.capacity);
 			elseif vehicle.cp.isLoaded or not vehicle.cp.stopForLoading then
-				if activeTool.isSprayerFilling then
-					activeTool:setIsSprayerFilling(false);
+				if activeTool.isFilling then
+					activeTool:setIsFilling(false);
 				end;
 				courseplay:handleSpecialTools(vehicle,activeTool,nil,nil,nil,allowedToDrive,false,false)
 				vehicle.cp.fillTrigger = nil
@@ -1031,15 +939,16 @@ function courseplay:refillSprayer(vehicle, fillLevelPct, driveOn, allowedToDrive
 					vehicle.cp.isInFilltrigger = true
 				end
 			end
-			if fillLevelPct < driveOn and activeTool.sowingMachineFillTriggers[1] ~= nil then
-				if not activeTool.isSowingMachineFilling then
-					activeTool:setIsSowingMachineFilling(true);
+			if fillLevelPct < driveOn and activeTool.fillTriggers[1] ~= nil and activeTool.fillTriggers[1].isSowingMachineFillTrigger then
+				--print(tableShow(activeTool.fillTriggers,"activeTool.fillTriggers"))
+				if not activeTool.isFilling then
+					activeTool:setIsFilling(true);
 				end;
 				allowedToDrive = false;
 				vehicle.cp.infoText = courseplay:loc('COURSEPLAY_LOADING_AMOUNT'):format(activeTool.fillLevel, activeTool.capacity);
-			elseif activeTool.sowingMachineFillTriggers[1] ~= nil then
-				if activeTool.isSowingMachineFilling then
-					activeTool:setIsSowingMachineFilling(false);
+			elseif activeTool.fillTriggers[1] ~= nil then
+				if activeTool.isFilling then
+					activeTool:setIsFilling(false);
 				end;
 				vehicle.cp.fillTrigger = nil
 			end;
@@ -1070,7 +979,7 @@ function courseplay:regulateTrafficSpeed(vehicle,refSpeed,allowedToDrive)
 			courseplay:debug(nameNum(vehicle)..": regulateTrafficSpeed:	 "..tostring(name),3)
 		end
 		local x, y, z = getWorldTranslation(vehicle.cp.collidingVehicleId)
-		local x1, y1, z1 = worldToLocal(vehicle.rootNode, x, y, z)
+		local x1, y1, z1 = worldToLocal(vehicle.cp.DirectionNode, x, y, z)
 		if z1 < 0 or abs(x1) > 5 and not vehicle.cp.collidingObjects.all[vehicle.cp.collidingVehicleId] then -- vehicle behind tractor
 			vehicleBehind = true
 		end
@@ -1088,7 +997,7 @@ function courseplay:regulateTrafficSpeed(vehicle,refSpeed,allowedToDrive)
 				if (vehicle.lastSpeed*3600) - (collisionVehicle.lastSpeedReal*3600) > 15 or z1 < 3 then
 					vehicle.cp.TrafficBrake = true
 				else
-					return min(collisionVehicle.lastSpeedReal,refSpeed)
+					return min(collisionVehicle.lastSpeedReal*3600,refSpeed)
 				end
 			end
 		end
@@ -1130,42 +1039,9 @@ function courseplay:driveInMRDirection(vehicle, lx,lz,fwd,dt,allowedToDrive)
 		lz = -lz
 	end
 	--AIVehicleUtil.mrDriveInDirection(vehicle, dt, acceleration, allowedToDrive, moveForwards, lx, lz, speedLevel, useReduceSpeed, noDefaultHiredWorker)
-	AIVehicleUtil.mrDriveInDirection(vehicle, dt, 1, allowedToDrive, fwd, lx, lz, vehicle.cp.speeds.sl, true, true)
+	AIVehicleUtil.mrDriveInDirection(vehicle, dt, 1, allowedToDrive, fwd, lx, lz, 3, true, true)
 end
 
-
-function courseplay:setMRSpeed(vehicle, refSpeed, sl, allowedToDrive, workArea)
-	local currentSpeed = vehicle.lastSpeedReal
-	local deltaMinus = currentSpeed*3600 - refSpeed*3600
-	local deltaPlus = refSpeed*3600 - currentSpeed*3600
-
-	local tolerance = 5;
-	if vehicle.cp.currentTipTrigger and vehicle.cp.currentTipTrigger.bunkerSilo then
-		tolerance = 1;
-	end;
-	if deltaMinus > tolerance then
-		vehicle.cp.speedBrake = true
-	else 
-		vehicle.cp.speedBrake = false
-	end
-	
-	vehicle.motor.speedLevel = sl
-	vehicle.motor.realSpeedLevelsAI[vehicle.motor.speedLevel] = refSpeed*3600
-
-	-- slipping notification
-	if vehicle.realDisplaySlipPercent > 90 then
-		courseplay:setGlobalInfoText(vehicle, 'SLIPPING_2');
-	elseif vehicle.realDisplaySlipPercent > 75 then
-		courseplay:setGlobalInfoText(vehicle, 'SLIPPING_1');
-	end;
-
-	-- setting AWD if necessary
-	if (workArea or vehicle.realDisplaySlipPercent > 25 or vehicle.cp.BGASelectedSection) and vehicle.realAWDModeOn == false then
-		vehicle:realSetAwdActive(true);
-	elseif not workArea and vehicle.realDisplaySlipPercent < 1 and not vehicle.cp.BGASelectedSection and vehicle.realAWDModeOn == true then
-		vehicle:realSetAwdActive(false);
-	end
-end;
 
 function courseplay:getIsVehicleOffsetValid(vehicle)
 	local valid = vehicle.cp.totalOffsetX ~= nil and vehicle.cp.toolOffsetZ ~= nil and (vehicle.cp.totalOffsetX ~= 0 or vehicle.cp.toolOffsetZ ~= 0);
@@ -1312,8 +1188,8 @@ function courseplay:handleMapWeightStation(vehicle, allowedToDrive)
 		if vehicle.cp.totalLength and vehicle.cp.totalLength > 0 and vehicle.cp.totalLengthOffset then
 			stopAt = (vehicle.cp.totalLength * 0.5 + vehicle.cp.totalLengthOffset) * -1;
 		end;
-		local brakeDistance = pow(vehicle.cp.speeds.turn * 3600 * 0.1, 2);
-		-- local brakeDistance = pow(vehicle.lastSpeedReal * 3600 * 0.1, 2);
+		local brakeDistance = pow(vehicle.cp.speeds.turn * 0.1, 2);
+		-- local brakeDistance = pow(vehicle.lastSpeedReal * 0.1, 2);
 		-- local brakeDistance = 1;
 
 		-- tractor + trailer on scale -> stop
@@ -1355,4 +1231,20 @@ function courseplay:setRecordNumber(vehicle, number)
 end;
 
 function courseplay:onRecordNumberChanged(vehicle)
+end;
+
+function courseplay:setReverseBackDistance(vehicle, metersBack)
+	if not vehicle or not metersBack then return; end;
+
+	if not vehicle.cp.reverseBackToPoint then
+		local x, y, z = localToWorld(vehicle.cp.DirectionNode, 0, 0, -metersBack);
+		vehicle.cp.reverseBackToPoint = {};
+		vehicle.cp.reverseBackToPoint.x = x;
+		vehicle.cp.reverseBackToPoint.y = y;
+		vehicle.cp.reverseBackToPoint.z = z;
+
+		vehicle.cp.isReverseBackToPoint = true;
+
+		courseplay:debug(string.format("%s: Reverse back %d meters", nameNum(vehicle), metersBack), 13);
+	end;
 end;

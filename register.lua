@@ -1,16 +1,21 @@
 --COURSEPLAY
 SpecializationUtil.registerSpecialization('courseplay', 'courseplay', g_currentModDirectory .. 'courseplay.lua');
+if courseplay.houstonWeGotAProblem then
+	return;
+end;
 
 local steerableSpec = SpecializationUtil.getSpecialization('steerable');
 local courseplaySpec = SpecializationUtil.getSpecialization('courseplay');
 local numInstallationsVehicles = 0;
+courseplay.nonSupportedVehicleTypeNames ={}
+courseplay.nonSupportedVehicleTypeNames["forwarderTrailerSteerable"] = true
 
 function courseplay:register()
 	for typeName,vehicleType in pairs(VehicleTypeUtil.vehicleTypes) do
 		if vehicleType then
 			for i,spec in pairs(vehicleType.specializations) do
-				if spec and spec == steerableSpec and not SpecializationUtil.hasSpecialization(courseplay, vehicleType.specializations) then
-					-- print(('\tadding Courseplay to %q'):format(tostring(vehicleType.name)));
+				if spec and spec == steerableSpec and not SpecializationUtil.hasSpecialization(courseplay, vehicleType.specializations) and not courseplay.nonSupportedVehicleTypeNames[vehicleType.name] then
+					--print(('\tadding Courseplay to %q'):format(tostring(vehicleType.name)));
 					table.insert(vehicleType.specializations, courseplaySpec);
 					vehicleType.hasCourseplaySpec = true;
 					vehicleType.hasSteerableSpec = true;
@@ -25,7 +30,7 @@ end;
 -- if there are any vehicles loaded *after* Courseplay, install the spec into them
 local postRegister = function(typeName, className, filename, specializationNames, customEnvironment)
 	local vehicleType = VehicleTypeUtil.vehicleTypes[typeName];
-	if vehicleType and vehicleType.specializations and not vehicleType.hasCourseplaySpec and Utils.hasListElement(specializationNames, 'steerable') then
+	if vehicleType and vehicleType.specializations and not vehicleType.hasCourseplaySpec and Utils.hasListElement(specializationNames, 'steerable') and not courseplay.nonSupportedVehicleTypeNames[typeName]then
 		table.insert(vehicleType.specializations, courseplaySpec);
 		vehicleType.hasCourseplaySpec = true;
 		vehicleType.hasSteerableSpec = true;
@@ -46,40 +51,11 @@ function courseplay:attachableLoad(xmlFile)
 	if self.name == nil then
 		self.name = courseplay:getObjectName(self, xmlFile);
 	end;
-
-	-- ATTACHABLE CHOPPER SPECIAL NODE
-	if self.cp.isPoettingerMex6 or self.cp.isPoettingerMexOK then
-		self.cp.fixedRootNode = createTransformGroup('courseplayFixedRootNode');
-		link(self.rootNode, self.cp.fixedRootNode);
-		setTranslation(self.cp.fixedRootNode, 0, 0, 0);
-		setRotation(self.cp.fixedRootNode, 0, math.rad(180), 0);
-	end;
-
-	--ADD ATTACHABLES TO GLOBAL REFERENCE LIST
-	if courseplay.thirdParty.EifokLiquidManure == nil then courseplay.thirdParty.EifokLiquidManure = {}; end;
-	if courseplay.thirdParty.EifokLiquidManure.dockingStations == nil then courseplay.thirdParty.EifokLiquidManure.dockingStations = {}; end;
-	if courseplay.thirdParty.EifokLiquidManure.hoseRefVehicles == nil then courseplay.thirdParty.EifokLiquidManure.hoseRefVehicles = {}; end;
-
-	--Zunhammer Docking Station (zunhammerDocking.i3d / ManureDocking.lua) [Eifok Team]
-	if Utils.endsWith(self.typeName, 'zhAndock') and self.cp.xmlFileName == 'zunhammerDocking.xml' then
-		self.cp.isEifokZunhammerDockingStation = true;
-		courseplay.thirdParty.EifokLiquidManure.dockingStations[self.rootNode] = self;
-
-	--HoseRef [Eifok Team]
-	elseif self.cp.hasSpecializationHoseRef then
-		self.cp.hasHoseRef = true;
-		courseplay.thirdParty.EifokLiquidManure.hoseRefVehicles[self.rootNode] = self;
-	end;
 end;
 Attachable.load = Utils.appendedFunction(Attachable.load, courseplay.attachableLoad);
 
 function courseplay:attachableDelete()
 	if self.cp ~= nil then
-		if self.cp.isEifokZunhammerDockingStation then
-			courseplay.thirdParty.EifokLiquidManure.dockingStations[self.rootNode] = nil;
-		elseif self.cp.hasSpecializationHoseRef then
-			courseplay.thirdParty.EifokLiquidManure.hoseRefVehicles[self.rootNode] = nil;
-		end;
 	end;
 end;
 Attachable.delete = Utils.prependedFunction(Attachable.delete, courseplay.attachableDelete);
@@ -101,31 +77,12 @@ function courseplay.vehicleLoadFinished(self)
 	end;
 	]]
 
-	--Zunhammer Hose (zunhammerHose.i3d / Hose.lua) [Eifok Team]
-	if self.cp.xmlFileName == 'zunhammerHose.xml' or Utils.endsWith(self.typeName, 'zhHose') then
-		if courseplay.thirdParty.EifokLiquidManure == nil then courseplay.thirdParty.EifokLiquidManure = {}; end;
-		if courseplay.thirdParty.EifokLiquidManure.hoses == nil then courseplay.thirdParty.EifokLiquidManure.hoses = {}; end;
-
-		self.cp.isEifokZunhammerHose = true;
-		table.insert(courseplay.thirdParty.EifokLiquidManure.hoses, self);
-		--courseplay.thirdParty.EifokLiquidManure.hoses[self.msh] = self;
-	end;
 end;
 Vehicle.loadFinished = Utils.prependedFunction(Vehicle.loadFinished, courseplay.vehicleLoadFinished);
 -- NOTE: using loadFinished() instead of load() so any other mod that overwrites Vehicle.load() doesn't interfere
 
 function courseplay:vehicleDelete()
 	if self.cp ~= nil then
-		if self.cp.isEifokZunhammerHose then
-			for i,hose in pairs(courseplay.thirdParty.EifokLiquidManure.hoses) do
-				if hose.msh == self.msh then
-					-- table.remove(courseplay.thirdParty.EifokLiquidManure.hoses, i);
-					courseplay.thirdParty.EifokLiquidManure.hoses[i] = nil;
-					break;
-				end;
-			end;
-		end;
-
 		-- Remove created nodes
 		if self.cp.notesToDelete and #self.cp.notesToDelete > 0 then
 			for _, nodeId in ipairs(self.cp.notesToDelete) do
@@ -133,7 +90,8 @@ function courseplay:vehicleDelete()
 					delete(nodeId);
 				end;
 			end;
-		end
+		end;
+
 	end;
 end;
 Vehicle.delete = Utils.prependedFunction(Vehicle.delete, courseplay.vehicleDelete);
@@ -169,6 +127,39 @@ function courseplay:foldableLoad(xmlFile)
 	self.cp.foldingPartsStartMoveDirection = Utils.getNoNil(startMoveDir, 0);
 end;
 Foldable.load = Utils.appendedFunction(Foldable.load, courseplay.foldableLoad);
+
+--------------------------------------------------
+-- Adding easy access to MultiSiloTrigger
+--------------------------------------------------
+local MultiSiloTrigger_TriggerCallback = function(triggerId, otherActorId, onEnter, onLeave, onStay, otherShapeId, trailer)
+	local trailer = g_currentMission.objectToTrailer[trailer];
+	if trailer ~= nil and trailer:allowFillType(triggerId.selectedFillType, false) and trailer.getAllowFillFromAir ~= nil and trailer:getAllowFillFromAir() then
+		-- Make sure cp table is pressent in the trailer.
+		if not trailer.cp then
+			trailer.cp = {};
+		end;
+
+		if onEnter then
+			-- Add the current MultiSiloTrigger to the cp table, for easier access.
+			if not trailer.cp.currentMultiSiloTrigger then
+				trailer.cp.currentMultiSiloTrigger = triggerId;
+				courseplay:debug(('%s: MultiSiloTrigger Added! (onEnter)'):format(nameNum(trailer)), 2);
+
+			-- Remove the current MultiSiloTrigger here, even that it should be done in onLeave, but onLeave is never fired. (Possible a bug from Giants)
+			elseif triggerId.fill == 0 and trailer.cp.currentMultiSiloTrigger ~= nil then
+				trailer.cp.currentMultiSiloTrigger = nil;
+				courseplay:debug(('%s: MultiSiloTrigger Removed! (onEnter)'):format(nameNum(trailer)), 2);
+			end;
+		elseif onLeave then
+			-- Remove the current MultiSiloTrigger. (Is here in case Giants fixes the above bug))
+			if triggerId.fill == 0 and trailer.cp.currentMultiSiloTrigger ~= nil then
+				trailer.cp.currentMultiSiloTrigger = nil;
+				courseplay:debug(('%s: MultiSiloTrigger Removed! (onLeave)'):format(nameNum(trailer)), 2);
+			end;
+		end;
+	end;
+end;
+MultiSiloTrigger.triggerCallback = Utils.appendedFunction(MultiSiloTrigger.triggerCallback, MultiSiloTrigger_TriggerCallback);
 
 courseplay.locales = courseplay.utils.table.copy(g_i18n.texts, true);
 courseplay:register();
