@@ -175,7 +175,7 @@ function courseplay_manager:deleteMap()
 
 	--buttons
 	for i,vehicle in pairs(g_currentMission.steerables) do
-		if vehicle.cp ~= nil and not courseplay.nonSupportedVehicleTypeNames[v.typeName]  then
+		if vehicle.cp ~= nil and not courseplay.nonSupportedVehicleTypeNames[vehicle.typeName] then
 			if vehicle.cp.globalInfoTextOverlay ~= nil then
 				vehicle.cp.globalInfoTextOverlay:delete();
 			end;
@@ -686,7 +686,7 @@ function courseplay_manager:severCombineTractorConnection(vehicle, callDelete)
 			local combine = vehicle;
 			-- remove this combine as savedCombine from all tractors
 			for i,tractor in pairs(g_currentMission.steerables) do
-				if tractor.cp and tractor.cp.savedCombine and tractor.cp.savedCombine == combine and not courseplay.nonSupportedVehicleTypeNames[v.typeName]  then
+				if tractor.cp and tractor.cp.savedCombine and tractor.cp.savedCombine == combine and not courseplay.nonSupportedVehicleTypeNames[tractor.typeName]  then
 					courseplay:debug(('\ttractor %q: savedCombine=%q --> removeSavedCombineFromTractor()'):format(nameNum(tractor), nameNum(combine)), 4);
 					courseplay:removeSavedCombineFromTractor(tractor);
 				end;
@@ -752,7 +752,10 @@ function courseplay_manager:realTimeMinuteChanged()
 		if totalWages > 0 then
 			-- TODO (Jakob): does addSharedMoney already include the currency factor, or do we have to calculate it before passing it?
 			-- totalWages = g_i18n:getCurrency(totalWages);
+			-- local oldMoney = g_currentMission.missionStats.money;
+			-- local amount = -totalWages * courseplay.wageDifficultyMultiplier;
 			g_currentMission:addSharedMoney(-totalWages * courseplay.wageDifficultyMultiplier, 'wagePayment');
+			-- print(('amount=%.2f, getCurrency(amount)=%.2f, oldMoney=%.2f, newMoney=%.2f, changed=%.2f'):format(amount, g_i18n:getCurrency(amount), oldMoney, g_currentMission.missionStats.money, g_currentMission.missionStats.money - oldMoney));
 		end;
 	end;
 end;

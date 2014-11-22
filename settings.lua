@@ -761,12 +761,12 @@ function courseplay:switchDriverCopy(vehicle, changeBy)
 	end;
 end;
 
-function courseplay:findDrivers(self)
+function courseplay:findDrivers(vehicle)
 	local foundDrivers = {}; -- resetting all drivers
-	for k, vehicle in pairs(g_currentMission.steerables) do
-		if vehicle.Waypoints ~= nil and not courseplay.nonSupportedVehicleTypeNames[v.typeName]  then
-			if vehicle.rootNode ~= self.rootNode and #(vehicle.Waypoints) > 0 then
-				table.insert(foundDrivers, vehicle);
+	for _,otherVehicle in pairs(g_currentMission.steerables) do
+		if otherVehicle.Waypoints ~= nil and not courseplay.nonSupportedVehicleTypeNames[otherVehicle.typeName]  then
+			if otherVehicle.rootNode ~= vehicle.rootNode and #(otherVehicle.Waypoints) > 0 then
+				table.insert(foundDrivers, otherVehicle);
 			end;
 		end;
 	end;
