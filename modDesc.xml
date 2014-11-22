@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="20">
-	<version>4.00.0056</version>
+	<version>4.00.0057</version>
 	<author><![CDATA[Courseplay Dev Team]]></author>
 	<title>
 		<de>Courseplay</de>
@@ -2114,7 +2114,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<it>Il granaio non sa con cosa riempire</it>
 			<cz>Silo neobsahuje vybranou plodinu</cz>
 			<ru>В этом бункере нет такого продукта!</ru>
-			<hu>Farm Silo don't have selected fill type</hu>
+			<hu>Nem választottad ki a farm tárólóból a terménytípust</hu>
 			<nl>Farm Silo heeft niet de juiste vulling</nl>
 		</text>
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE">
@@ -2125,7 +2125,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<it>Il granaio sta caricando:</it>
 			<cz>Na sile se nakládá:</cz>
 			<ru>Забрать из бункера:</ru>
-			<hu>Farm Silo Load:</hu>
+			<hu>A farm tároló töltöttsége:</hu>
 			<nl>Farm Silo laad:</nl>
 		</text>
 		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY">
@@ -2136,7 +2136,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<it>Il granaio è vuoto!</it>
 			<cz>Silo je prázdné!</cz>
 			<ru>В бункере не осталось выбранного продукта, увы...</ru>
-			<hu>Farm Silo is empty!</hu>
+			<hu>A farm tárólőja üres!</hu>
 			<nl>Farm Silo is leeg!</nl>
 		</text>
 		<text name="COURSEPLAY_STARTING_UP_TOOL">
@@ -2147,7 +2147,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<it>Starting up %s!</it>
 			<cz>Nastartovat při %s!</cz>
 			<ru>%s: включено распыление соломы!</ru>
-			<hu>Starting up %s!</hu>
+			<hu>Beindul %s!</hu>
 			<nl>Opstarten %s!</nl>
 		</text>
 
@@ -2158,7 +2158,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<en>Do you want the fields to be scanned automatically?</en>
 			<es>Do you want the fields to be scanned automatically?</es>
 			<fr>Do you want the fields to be scanned automatically?</fr>
-			<hu>Do you want the fields to be scanned automatically?</hu>
+			<hu>Szeretnéd, hogy a mezők adatait automatikusan beolvassa?</hu>
 			<it>Do you want the fields to be scanned automatically?</it>
 			<nl>Do you want the fields to be scanned automatically?</nl>
 			<ru>Do you want the fields to be scanned automatically?</ru>
@@ -2169,7 +2169,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<en>Do you want your workers to earn wages (%s/hour)?</en>
 			<es>Do you want your workers to earn wages (%s/hour)?</es>
 			<fr>Do you want your workers to earn wages (%s/hour)?</fr>
-			<hu>Do you want your workers to earn wages (%s/hour)?</hu>
+			<hu>Szeretnéd, hogy a munkásod bért kapjon (%s/óra)?</hu>
 			<it>Do you want your workers to earn wages (%s/hour)?</it>
 			<nl>Do you want your workers to earn wages (%s/hour)?</nl>
 			<ru>Do you want your workers to earn wages (%s/hour)?</ru>
