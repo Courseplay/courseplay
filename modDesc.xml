@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="20">
-	<version>4.00.0054</version>
+	<version>4.00.0055</version>
 	<author><![CDATA[Courseplay Dev Team]]></author>
 	<title>
 		<de>Courseplay</de>
@@ -2150,6 +2150,31 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<hu>Starting up %s!</hu>
 			<nl>Opstarten %s!</nl>
 		</text>
+
+		<!-- Yes/No dialogues -->
+		<text name="COURSEPLAY_YES_NO_FIELDSCAN">
+			<cz>Do you want the fields to be scanned automatically?</cz> 
+			<de>Möchtest du dass die Felder automatisch gescanned werden?</de>
+			<en>Do you want the fields to be scanned automatically?</en>
+			<es>Do you want the fields to be scanned automatically?</es>
+			<fr>Do you want the fields to be scanned automatically?</fr>
+			<hu>Do you want the fields to be scanned automatically?</hu>
+			<it>Do you want the fields to be scanned automatically?</it>
+			<nl>Do you want the fields to be scanned automatically?</nl>
+			<ru>Do you want the fields to be scanned automatically?</ru>
+		</text>
+		<text name="COURSEPLAY_YES_NO_WAGES">
+			<cz>Do you want your workers to earn wages (%s/hour)?</cz> 
+			<de>Möchtest du Löhne für deine Fahrer aktivieren (%s/Stunde)?</de>
+			<en>Do you want your workers to earn wages (%s/hour)?</en>
+			<es>Do you want your workers to earn wages (%s/hour)?</es>
+			<fr>Do you want your workers to earn wages (%s/hour)?</fr>
+			<hu>Do you want your workers to earn wages (%s/hour)?</hu>
+			<it>Do you want your workers to earn wages (%s/hour)?</it>
+			<nl>Do you want your workers to earn wages (%s/hour)?</nl>
+			<ru>Do you want your workers to earn wages (%s/hour)?</ru>
+		</text>
+
 		<!-- SeedUsageCalculator HUD content -->
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR">
 			<en>Seed usage calculator</en>
