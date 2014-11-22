@@ -417,8 +417,8 @@ function courseplay:load(xmlFile)
 
 	-- HUD
 	self.cp.hud = {
-		background = Overlay:new('courseplayHud', Utils.getFilename('img/hud_bg.png', courseplay.path), courseplay.hud.infoBasePosX - 10/1920, courseplay.hud.infoBasePosY - 10/1920, courseplay.hud.infoBaseWidth, courseplay.hud.infoBaseHeight);
-		backgroundSuc = Overlay:new('courseplayHudSuc', Utils.getFilename('img/hud_suc_bg.png', courseplay.path), courseplay.hud.infoBasePosX - 10/1920, courseplay.hud.infoBasePosY - 10/1920, courseplay.hud.infoBaseWidth, courseplay.hud.infoBaseHeight);
+		background = Overlay:new('courseplayHud', Utils.getFilename('img/hud_bg.png', courseplay.path), courseplay.hud.infoBasePosX - 16/1920, courseplay.hud.infoBasePosY - 7/1080, courseplay.hud.infoBaseWidth, courseplay.hud.infoBaseHeight);
+		backgroundSuc = Overlay:new('courseplayHudSuc', Utils.getFilename('img/hud_suc_bg.png', courseplay.path), courseplay.hud.infoBasePosX - 16/1920, courseplay.hud.infoBasePosY - 7/1080, courseplay.hud.infoBaseWidth, courseplay.hud.infoBaseHeight);
 		currentPage = 1;
 		show = false;
 		openWithMouse = true;

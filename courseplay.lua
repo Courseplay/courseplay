@@ -267,7 +267,7 @@ function courseplay:setGlobalData()
 			courseplay.hud.linesPosY[l] = courseplay.hud.linesPosY[1] - ((l-1) * courseplay.hud.lineHeight);
 			courseplay.hud.linesBottomPosY[l] = courseplay.hud.linesBottomPosY[1] - ((l-1) * courseplay.hud.lineHeight);
 		end;
-		courseplay.hud.linesButtonPosY[l] = courseplay.hud.linesPosY[l] - 0.003;
+		courseplay.hud.linesButtonPosY[l] = courseplay.hud.linesPosY[l] - 0.001;
 	end;
 	ch.fontSizes = {
 		seedUsageCalculator = 0.015;
@@ -281,6 +281,7 @@ function courseplay:setGlobalData()
 		fieldScanData = 0.018;
 	};
 
+	courseplay.hud.col1posX = courseplay.hud.infoBasePosX + 0.005;
 	courseplay.hud.col2posX = {
 		[0] = courseplay.hud.infoBasePosX + 0.122,
 		[1] = courseplay.hud.infoBasePosX + 0.142,

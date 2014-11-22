@@ -117,7 +117,7 @@ function courseplay:renderHud(vehicle)
 	courseplay:setFontSettings("white", false, "left");
 	for v, text in pairs(vehicle.cp.hud.content.global) do
 		if text ~= nil then
-			renderText(courseplay.hud.infoBasePosX + 0.006, courseplay.hud.linesBottomPosY[v], courseplay.hud.fontSizes.bottomInfo, text); --ORIG: +0.003
+			renderText(courseplay.hud.col1posX, courseplay.hud.linesBottomPosY[v], courseplay.hud.fontSizes.bottomInfo, text);
 		end;
 	end
 
@@ -125,7 +125,7 @@ function courseplay:renderHud(vehicle)
 	--VERSION INFO
 	if courseplay.versionDisplayStr ~= nil then
 		courseplay:setFontSettings("white", false, "right");
-		renderText(courseplay.hud.visibleArea.x2 - 0.008, courseplay.hud.infoBasePosY + 0.016, courseplay.hud.fontSizes.version, courseplay.versionDisplayStr);
+		renderText(courseplay.hud.visibleArea.x2 - 0.01, courseplay.hud.infoBasePosY + 0.02, courseplay.hud.fontSizes.version, courseplay.versionDisplayStr);
 	end;
 
 
@@ -155,7 +155,7 @@ function courseplay:renderHud(vehicle)
 				elseif entry.isHovered then
 					courseplay:setFontSettings('hover', false);
 				end;
-				renderText(courseplay.hud.infoBasePosX + 0.005 + entry.indention, courseplay.hud.linesPosY[line], courseplay.hud.fontSizes.contentTitle, entry.text);
+				renderText(courseplay.hud.col1posX + entry.indention, courseplay.hud.linesPosY[line], courseplay.hud.fontSizes.contentTitle, entry.text);
 				courseplay:setFontSettings('white', false);
 			elseif column == 2 and entry.text ~= nil and entry.text ~= "" then
 				renderText(vehicle.cp.hud.content.pages[page][line][2].posX, courseplay.hud.linesPosY[line], courseplay.hud.fontSizes.contentValue, entry.text);
