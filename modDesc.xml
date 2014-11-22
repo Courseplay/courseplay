@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="20">
-	<version>4.00.0056</version>
+	<version>4.00.0057</version>
 	<author><![CDATA[Courseplay Dev Team]]></author>
 	<title>
 		<de>Courseplay</de>
@@ -2106,15 +2106,15 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<hu>: a BGA siló tele van!</hu>
 			<nl>: Bunker silo is vol!</nl>
 		</text>
-		<text name="COURSEPLAY_FARM_SILO_DONT_HAVE_FILTYPE">
-			<en>Farm Silo don't have selected fill type</en>
-			<de>Farm Silo don't have selected fill type</de>
-			<fr>Farm Silo don't have selected fill type</fr>
-			<es>Farm Silo don't have selected fill type</es>
+		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE">
+			<en>Farm silo doesn't have a selected fill type</en>
+			<de>Farmsilo hat keinen ausgewählten Fülltyp</de>
+			<fr>Farm silo doesn't have a selected fill type</fr>
+			<es>Farm silo doesn't have a selected fill type</es>
 			<it>Il granaio non sa con cosa riempire</it>
 			<cz>Silo neobsahuje vybranou plodinu</cz>
 			<ru>В этом бункере нет такого продукта!</ru>
-			<hu>Farm Silo don't have selected fill type</hu>
+			<hu>Farm silo doesn't have a selected fill type</hu>
 			<nl>Farm Silo heeft niet de juiste vulling</nl>
 		</text>
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE">

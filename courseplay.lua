@@ -378,7 +378,7 @@ function courseplay:setGlobalData()
 		DAMAGE_MUST					= { level = -2, text = 'COURSEPLAY_DAMAGE_MUST_BE_REPAIRED' };
 		DAMAGE_SHOULD				= { level = -1, text = 'COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED' };
 		END_POINT					= { level =  0, text = 'COURSEPLAY_REACHED_END_POINT' };
-		FARM_SILO_DONT_HAVE_FILTYPE	= { level = -2, text = 'COURSEPLAY_FARM_SILO_DONT_HAVE_FILTYPE'};
+		FARM_SILO_NO_FILLTYPE		= { level = -2, text = 'COURSEPLAY_FARM_SILO_NO_FILLTYPE'};
 		FARM_SILO_IS_EMPTY			= { level =  0, text = 'COURSEPLAY_FARM_SILO_IS_EMPTY'};
 		FUEL_IS						= { level =  0, text = 'COURSEPLAY_IS_BEING_REFUELED' };
 		FUEL_MUST					= { level = -2, text = 'COURSEPLAY_MUST_BE_REFUELED' };

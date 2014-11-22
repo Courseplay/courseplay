@@ -592,7 +592,7 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 				courseplay:setGlobalInfoText(vehicle, 'FARM_SILO_IS_EMPTY');
 			end;
 		else
-			courseplay:setGlobalInfoText(vehicle, 'FARM_SILO_DONT_HAVE_FILTYPE');
+			courseplay:setGlobalInfoText(vehicle, 'FARM_SILO_NO_FILLTYPE');
 		end;
 	end;
 
