@@ -222,7 +222,7 @@ function courseplay:executeFunction(self, func, value, page)
 			if not combine.cp.isChopper then
 				if line == 4 then
 					courseplay:toggleDriverPriority(combine);
-				elseif line == 5 and self.drive and self.cp.mode == 6 then
+				elseif line == 5 and self:getIsCourseplayDriving() and self.cp.mode == 6 then
 					courseplay:toggleStopWhenUnloading(combine);
 				end;
 			end;
@@ -238,7 +238,7 @@ function courseplay:executeFunction(self, func, value, page)
 					courseplay:sendCourseplayerHome(combine);
 				elseif line == 4 and combine.cp.isChopper then
 					courseplay:switchCourseplayerSide(combine);
-				elseif line == 5 and combine.cp.isChopper and not self.drive and not self.isAIThreshing then --manual chopping: initiate/end turning maneuver
+				elseif line == 5 and combine.cp.isChopper and not self:getIsCourseplayDriving() and not self.isAIThreshing then --manual chopping: initiate/end turning maneuver
 					if self.cp.turnStage == 0 then
 						self.cp.turnStage = 1;
 					elseif self.cp.turnStage == 1 then
@@ -249,7 +249,7 @@ function courseplay:executeFunction(self, func, value, page)
 
 		elseif page == 1 then
 			if self.cp.canDrive then
-				if not self.drive then
+				if not self:getIsCourseplayDriving() then
 					if line == 1 then
 						courseplay:start(self);
 					elseif line == 3 and self.cp.mode ~= 9 then
@@ -285,7 +285,7 @@ function courseplay:executeFunction(self, func, value, page)
 				end; -- end driving
 
 
-			elseif not self.drive then
+			elseif not self:getIsCourseplayDriving() then
 				if not self.cp.isRecording and not self.cp.recordingIsPaused and not self.cp.canDrive and #(self.Waypoints) == 0 then
 					if line == 1 then
 						courseplay:start_record(self);
@@ -295,7 +295,7 @@ function courseplay:executeFunction(self, func, value, page)
 						courseplay:addCustomSingleFieldEdgeToList(self);
 					end;
 				end;
-			end; --END if not self.drive
+			end; --END if not self:getIsCourseplayDriving()
 		end; --END is page 0 or 1
 	end; --END isRowFunction
 end;

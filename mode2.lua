@@ -691,9 +691,9 @@ function courseplay:unload_combine(self, dt)
 			elseif combine.isAIThreshing then 
 				--allowedToDrive = false
 				combine.waitForTurnTime = combine.timer + 100
-			elseif tractor.drive == true then
+			elseif tractor:getIsCourseplayDriving() then
 				combine.cp.waitingForTrailerToUnload = true
-			end			
+			end
 		elseif distance < 50 then
 			if AutoCombineIsTurning and tractor.acIsCPStopped ~= nil then
 				-- print(nameNum(tractor) .. ': distance < 50 -> set acIsCPStopped to true'); --TODO: 140308 AutoTractor
@@ -701,7 +701,7 @@ function courseplay:unload_combine(self, dt)
 			elseif combine.isAIThreshing and not (combine_fill_level == 0 and combine.currentPipeState ~= 2) then
 				--allowedToDrive = false
 				combine.waitForTurnTime = combine.timer + 100
-			elseif tractor.drive == true and not (combine_fill_level == 0 and combine:getOverloadingTrailerInRangePipeState()==0) then
+			elseif tractor:getIsCourseplayDriving() and not (combine_fill_level == 0 and combine:getOverloadingTrailerInRangePipeState()==0) then
 				combine.cp.waitingForTrailerToUnload = true
 			end
 		elseif distance < 100 and self.cp.modeState == 2 then

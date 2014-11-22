@@ -4,6 +4,9 @@ end
 
 function courseplay:load(xmlFile)
 	self.setCourseplayFunc = courseplay.setCourseplayFunc;
+	self.getIsCourseplayDriving = courseplay.getIsCourseplayDriving;
+	self.setIsCourseplayDriving = courseplay.setIsCourseplayDriving;
+
 
 	--SEARCH AND SET self.name IF NOT EXISTING
 	if self.name == nil then
@@ -11,6 +14,7 @@ function courseplay:load(xmlFile)
 	end;
 
 	if self.cp == nil then self.cp = {}; end;
+	self.hasCourseplay = true;
 
 	self.cp.varMemory = {};
 
@@ -44,7 +48,7 @@ function courseplay:load(xmlFile)
 	self.toggledTipState = 0;
 
 	self.cp.combineOffsetAutoMode = true
-	self.drive = false
+	self:setIsCourseplayDriving(false);
 	self.cp.runOnceStartCourse = false;
 	self.cp.stopAtEnd = false
 	self.cp.calculatedCourseToCombine = false
@@ -907,11 +911,11 @@ end
 function courseplay:onEnter()
 	if self.cp.mouseCursorActive then
 		courseplay:setMouseCursor(self, true);
-	end
+	end;
 
-	if self.drive and self.steeringEnabled then
-	  self.steeringEnabled = false
-	end
+	if self:getIsCourseplayDriving() and self.steeringEnabled then
+		self.steeringEnabled = false;
+	end;
 
 	--show visual i3D waypoint signs only when in vehicle
 	courseplay.utils.signs:setSignsVisibility(self);
@@ -975,7 +979,7 @@ function courseplay:draw()
 		end;
 
 		if self.cp.canDrive then
-			if self.drive then
+			if self:getIsCourseplayDriving() then
 				if InputBinding.hasEvent(InputBinding.COURSEPLAY_START_STOP_COMBINED) then
 					self:setCourseplayFunc("stop", nil, false, 1);
 				elseif self.cp.HUD1wait and InputBinding.hasEvent(InputBinding.COURSEPLAY_CANCELWAIT_COMBINED) then
@@ -1012,7 +1016,7 @@ function courseplay:draw()
 		if self.cp.hud.show then
 			courseplay:setHudContent(self);
 			courseplay:renderHud(self);
-			if self.cp.distanceCheck and (self.drive or (not self.cp.canDrive and not self.cp.isRecording and not self.cp.recordingIsPaused)) then -- turn off findFirstWaypoint when driving or no course loaded
+			if self.cp.distanceCheck and (self:getIsCourseplayDriving() or (not self.cp.canDrive and not self.cp.isRecording and not self.cp.recordingIsPaused)) then -- turn off findFirstWaypoint when driving or no course loaded
 				courseplay:toggleFindFirstWaypoint(self);
 			end;
 
@@ -1063,7 +1067,7 @@ end;
 
 -- is being called every loop
 function courseplay:update(dt)
-	if g_server ~= nil and (self.drive or self.cp.isRecording or self.cp.recordingIsPaused) then
+	if g_server ~= nil and (self:getIsCourseplayDriving() or self.cp.isRecording or self.cp.recordingIsPaused) then
 		self.cp.infoText = nil;
 	end;
 
@@ -1077,7 +1081,7 @@ function courseplay:update(dt)
 	end;
 
 	-- we are in drive mode and single player /MP server
-	if self.drive and g_server ~= nil then
+	if self:getIsCourseplayDriving() and g_server ~= nil then
 		for refIdx,_ in pairs(courseplay.globalInfoText.msgReference) do
 			self.cp.hasSetGlobalInfoTextThisLoop[refIdx] = false;
 		end;
@@ -1103,7 +1107,7 @@ function courseplay:update(dt)
 
 	if g_server ~= nil then
 		self.cp.HUDrecordnumber = self.recordnumber
-		if self.drive then
+		if self:getIsCourseplayDriving() then
 			self.cp.HUD1wait = (self.Waypoints[self.cp.lastRecordnumber] ~= nil and self.Waypoints[self.cp.lastRecordnumber].wait and self.wait) or (self.cp.stopAtEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil));
 			self.cp.HUD1noWaitforFill = not self.cp.isLoaded and self.cp.mode ~= 5;
 			--[[ TODO (Jakob):
@@ -1131,7 +1135,7 @@ function courseplay:update(dt)
 			end
 			self.cp.HUD0wantsCourseplayer = combine.cp.wantsCourseplayer
 			self.cp.HUD0combineForcedSide = combine.cp.forcedSide
-			self.cp.HUD0isManual = not self.drive and not combine.isAIThreshing 
+			self.cp.HUD0isManual = not self:getIsCourseplayDriving() and not combine.isAIThreshing 
 			self.cp.HUD0turnStage = self.cp.turnStage
 			local tractor = combine.courseplayers[1]
 			if tractor ~= nil then
@@ -1277,7 +1281,8 @@ function courseplay:readStream(streamId, connection)
 	self.cp.shovelStopAndGo = streamDebugReadBool(streamId);
 	self.cp.startAtFirstPoint = streamDebugReadBool(streamId);
 	self.cp.stopAtEnd = streamDebugReadBool(streamId);
-	self.drive = streamDebugReadBool(streamId)
+	local isDriving = streamDebugReadBool(streamId);
+	self:setIsCourseplayDriving(isDriving);
 	self.cp.hud.openWithMouse = streamDebugReadBool(streamId)
 	self.cp.realisticDriving = streamDebugReadBool(streamId);
 	self.cp.driveOnAtFillLevel = streamDebugReadFloat32(streamId)
@@ -1401,7 +1406,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteBool(streamId, self.cp.shovelStopAndGo);
 	streamDebugWriteBool(streamId, self.cp.startAtFirstPoint)
 	streamDebugWriteBool(streamId, self.cp.stopAtEnd)
-	streamDebugWriteBool(streamId,self.drive)
+	streamDebugWriteBool(streamId, self:getIsCourseplayDriving());
 	streamDebugWriteBool(streamId,self.cp.hud.openWithMouse)
 	streamDebugWriteBool(streamId, self.cp.realisticDriving);
 	streamDebugWriteFloat32(streamId,self.cp.driveOnAtFillLevel)

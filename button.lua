@@ -197,7 +197,7 @@ function courseplay.button:renderButton(vehicle, button)
 					button.show = not vehicle.cp.canDrive and vehicle.cp.fieldEdge.customField.isCreated and vehicle.cp.fieldEdge.customField.fieldNum < courseplay.fields.customFieldMaxNum;
 				end;
 			elseif fn == 'toggleFindFirstWaypoint' then
-				button.show = vehicle.cp.canDrive and not vehicle.drive and not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused;
+				button.show = vehicle.cp.canDrive and not vehicle:getIsCourseplayDriving() and not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused;
 			elseif fn == 'stop_record' or fn == 'setRecordingPause' or fn == 'delete_waypoint' or fn == 'set_waitpoint' or fn == 'set_crossing' or fn == 'setRecordingTurnManeuver' or fn == 'change_DriveDirection' then
 				button.show = vehicle.cp.isRecording or vehicle.cp.recordingIsPaused;
 			end;

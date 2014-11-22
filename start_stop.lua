@@ -32,7 +32,7 @@ function courseplay:start(self)
 	self.cp.collidingVehicleId = nil
 	courseplay:debug(string.format("%s: Start/Stop: deleting \"self.cp.collidingVehicleId\"", nameNum(self)), 3);
 	--self.numToolsCollidingVehicles = {};
-	self.drive = false
+	self:setIsCourseplayDriving(false);
 	self.cp.isRecording = false
 	self.cp.recordingIsPaused = false
 	self.cp.calculatedCourseToCombine = false
@@ -284,7 +284,7 @@ function courseplay:start(self)
 	-- ok i am near the waypoint, let's go
 	self.checkSpeedLimit = false
 	self.cp.runOnceStartCourse = true;
-	self.drive = true;
+	self:setIsCourseplayDriving(true);
 	self.cp.isRecording = false
 	self.cp.distanceCheck = false;
 
@@ -445,7 +445,7 @@ function courseplay:stop(self)
 	self.cp.tempCollis = {}
 	self.checkSpeedLimit = true
 	courseplay:resetTipTrigger(self);
-	self.drive = false
+	self:setIsCourseplayDriving(false);
 	self.cp.canDrive = true
 	self.cp.distanceCheck = false
 	self.cp.mode7GoBackBeforeUnloading = false

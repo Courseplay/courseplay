@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="20">
-	<version>4.00.0055</version>
+	<version>4.00.0056</version>
 	<author><![CDATA[Courseplay Dev Team]]></author>
 	<title>
 		<de>Courseplay</de>
@@ -2178,7 +2178,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 		<!-- SeedUsageCalculator HUD content -->
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR">
 			<en>Seed usage calculator</en>
-			<de>Saatgut-Berechner</de>
+			<de>Saatgut-Rechner</de>
 			<fr>Utilisation des semences</fr>
 			<es>Uso de semillas</es> <!-- !!! -->
 			<it>Utilizzo dei semi</it>

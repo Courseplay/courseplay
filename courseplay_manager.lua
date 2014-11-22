@@ -789,7 +789,7 @@ function courseplay_manager:realTimeMinuteChanged()
 	if courseplay.wagesActive and g_server ~= nil then
 		local totalWages = 0;
 		for vehicleNum, vehicle in pairs(courseplay.activeCoursePlayers) do
-			if vehicle.drive and not vehicle.isHired then
+			if vehicle:getIsCourseplayDriving() and not vehicle.isHired then
 				totalWages = totalWages + courseplay.wagePerMin;
 			end;
 		end;

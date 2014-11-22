@@ -1223,16 +1223,6 @@ function courseplay:handleMapWeightStation(vehicle, allowedToDrive)
 	return allowedToDrive;
 end;
 
-function courseplay:setRecordNumber(vehicle, number)
-	if vehicle.recordnumber ~= number then
-		-- courseplay:onRecordNumberChanged(vehicle);
-	end;
-	vehicle.recordnumber = number;
-end;
-
-function courseplay:onRecordNumberChanged(vehicle)
-end;
-
 function courseplay:setReverseBackDistance(vehicle, metersBack)
 	if not vehicle or not metersBack then return; end;
 
@@ -1247,4 +1237,22 @@ function courseplay:setReverseBackDistance(vehicle, metersBack)
 
 		courseplay:debug(string.format("%s: Reverse back %d meters", nameNum(vehicle), metersBack), 13);
 	end;
+end;
+
+function courseplay:setRecordNumber(vehicle, number)
+	if vehicle.recordnumber ~= number then
+		-- courseplay:onRecordNumberChanged(vehicle);
+	end;
+	vehicle.recordnumber = number;
+end;
+
+function courseplay:onRecordNumberChanged(vehicle)
+end;
+
+function courseplay:getIsCourseplayDriving()
+	return self.cp.isDriving;
+end;
+
+function courseplay:setIsCourseplayDriving(active)
+	self.cp.isDriving = active;
 end;

@@ -49,7 +49,7 @@
 		if (vehicle.cp.isRecording or vehicle.cp.recordingIsPaused) and vehicle.cp.HUDrecordnumber == 4 and courseplay.utils:hasVarChanged(vehicle, 'HUDrecordnumber') then --record pause action becomes available
 			--courseplay.hud:setReloadPageOrder(vehicle, 1, true);
 			courseplay:buttonsActiveEnabled(vehicle, 'recording');
-		elseif vehicle.drive then
+		elseif vehicle:getIsCourseplayDriving() then
 			for i,varName in pairs({ --[['HUD1notDrive',]] 'HUD1wait', 'HUD1noWaitforFill' }) do
 				if courseplay.utils:hasVarChanged(vehicle, varName) then
 					courseplay.hud:setReloadPageOrder(vehicle, 1, true);
@@ -58,7 +58,7 @@
 			end;
 		end;
 
-	elseif vehicle.cp.hud.currentPage == 3 and vehicle.drive and (vehicle.cp.mode == 2 or vehicle.cp.mode == 3) then
+	elseif vehicle.cp.hud.currentPage == 3 and vehicle:getIsCourseplayDriving() and (vehicle.cp.mode == 2 or vehicle.cp.mode == 3) then
 		for i,varName in pairs({ 'combineOffset', 'turnRadius' }) do
 			if courseplay.utils:hasVarChanged(vehicle, varName) then
 				courseplay.hud:setReloadPageOrder(vehicle, 3, true);
@@ -214,7 +214,7 @@ function courseplay.hud:loadPage(vehicle, page)
 			vehicle.cp.hud.content.pages[0][4][1].text = courseplay:loc('COURSEPLAY_UNLOADING_DRIVER_PRIORITY');
 			vehicle.cp.hud.content.pages[0][4][2].text = combine.cp.driverPriorityUseFillLevel and courseplay:loc('COURSEPLAY_FILLEVEL') or courseplay:loc('COURSEPLAY_DISTANCE');
 
-			if vehicle.drive and vehicle.cp.mode == 6 then
+			if vehicle:getIsCourseplayDriving() and vehicle.cp.mode == 6 then
 				vehicle.cp.hud.content.pages[0][5][1].text = courseplay:loc('COURSEPLAY_STOP_DURING_UNLOADING');
 				vehicle.cp.hud.content.pages[0][5][2].text = combine.cp.stopWhenUnloading and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
 			end;
@@ -267,7 +267,7 @@ function courseplay.hud:loadPage(vehicle, page)
 	--PAGE 1: COURSEPLAY CONTROL
 	elseif page == 1 then
 		if vehicle.cp.canDrive then
-			if not vehicle.drive then
+			if not vehicle:getIsCourseplayDriving() then
 				vehicle.cp.hud.content.pages[1][1][1].text = courseplay:loc('COURSEPLAY_START_COURSE')
 
 				if vehicle.cp.mode ~= 9 then
@@ -315,7 +315,7 @@ function courseplay.hud:loadPage(vehicle, page)
 				end;
 			end
 
-		elseif not vehicle.drive then
+		elseif not vehicle:getIsCourseplayDriving() then
 			if (not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused) and not vehicle.cp.canDrive then
 				if #vehicle.Waypoints == 0 then
 					vehicle.cp.hud.content.pages[1][1][1].text = courseplay:loc('COURSEPLAY_RECORDING_START');
