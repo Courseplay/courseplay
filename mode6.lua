@@ -154,7 +154,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 				end;
 
 				-- automatic unload
-				if (not workArea and self.Waypoints[self.cp.lastRecordnumber].wait and (self.wait or fillLevelPct == 0)) or self.cp.unloadOrder then
+				if (not workArea and self.Waypoints[self.cp.lastRecordnumber].wait and (self.cp.wait or fillLevelPct == 0)) or self.cp.unloadOrder then
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,true);
 					if not specialTool then
 						if workTool.emptyState ~= BaleLoader.EMPTY_NONE then

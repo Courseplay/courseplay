@@ -149,9 +149,13 @@ function courseplay:startStopCourseplayer(combine)
 	tractor.cp.forcedToStop = not tractor.cp.forcedToStop;
 end;
 
+function courseplay:setVehicleWait(vehicle, active)
+	vehicle.cp.wait = active;
+end;
+
 function courseplay:cancelWait(vehicle, cancelStopAtEnd)
-	if vehicle.wait then
-		vehicle.wait = false;
+	if vehicle.cp.wait then
+		courseplay:setVehicleWait(vehicle, false);
 	end;
 	if vehicle.cp.mode == 3 then
 		vehicle.cp.isUnloaded = true;

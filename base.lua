@@ -101,7 +101,7 @@ function courseplay:load(xmlFile)
 	self.cp.stopWork = nil
 	self.cp.abortWork = nil
 	self.cp.hasUnloadingRefillingCourse = false;
-	self.wait = true --TODO (Jakob): put in cp table
+	courseplay:setVehicleWait(self, true);
 	self.cp.waitTimer = nil;
 	self.cp.realisticDriving = true;
 	self.cp.canSwitchMode = false;
@@ -1108,7 +1108,7 @@ function courseplay:update(dt)
 	if g_server ~= nil then
 		self.cp.HUDrecordnumber = self.recordnumber
 		if self:getIsCourseplayDriving() then
-			self.cp.HUD1wait = (self.Waypoints[self.cp.lastRecordnumber] ~= nil and self.Waypoints[self.cp.lastRecordnumber].wait and self.wait) or (self.cp.stopAtEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil));
+			self.cp.HUD1wait = (self.Waypoints[self.cp.lastRecordnumber] ~= nil and self.Waypoints[self.cp.lastRecordnumber].wait and self.cp.wait) or (self.cp.stopAtEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil));
 			self.cp.HUD1noWaitforFill = not self.cp.isLoaded and self.cp.mode ~= 5;
 			--[[ TODO (Jakob):
 				* rename to "HUD1waitForFill"

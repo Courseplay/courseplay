@@ -155,7 +155,7 @@ function courseplay:drive(self, dt)
 
 
 	-- ### WAITING POINTS - START
-	if self.Waypoints[self.cp.lastRecordnumber].wait and self.wait then
+	if self.Waypoints[self.cp.lastRecordnumber].wait and self.cp.wait then
 		-- set wait time end
 		if self.cp.waitTimer == nil and self.cp.waitTime > 0 then
 			self.cp.waitTimer = self.timer + self.cp.waitTime * 1000;
@@ -167,9 +167,9 @@ function courseplay:drive(self, dt)
 		elseif self.cp.mode == 4 then
 			local drive_on = false
 			if self.cp.lastRecordnumber == self.cp.startWork and self.cp.tipperFillLevelPct ~= 0 then
-				self.wait = false
+				courseplay:setVehicleWait(self, false);
 			elseif self.cp.lastRecordnumber == self.cp.stopWork and self.cp.abortWork ~= nil then
-				self.wait = false
+				courseplay:setVehicleWait(self, false);
 			elseif self.cp.waitPoints[3] and self.cp.lastRecordnumber == self.cp.waitPoints[3] then
 				local isInWorkArea = self.recordnumber > self.cp.startWork and self.recordnumber <= self.cp.stopWork;
 				if self.cp.workToolAttached and self.cp.startWork ~= nil and self.cp.stopWork ~= nil and self.cp.workTools ~= nil and not isInWorkArea then
@@ -184,19 +184,19 @@ function courseplay:drive(self, dt)
 				end
 
 				if self.cp.tipperFillLevelPct >= self.cp.refillUntilPct or drive_on then
-					self.wait = false
+					courseplay:setVehicleWait(self, false);
 				end
 				self.cp.infoText = string.format(courseplay:loc("COURSEPLAY_LOADING_AMOUNT"), self.cp.tipperFillLevel, self.cp.tipperCapacity)
 			end
 		elseif self.cp.mode == 6 then
 			if self.cp.lastRecordnumber == self.cp.startWork then
-				self.wait = false
+				courseplay:setVehicleWait(self, false);
 			elseif self.cp.lastRecordnumber == self.cp.stopWork and self.cp.abortWork ~= nil then
-				self.wait = false
+				courseplay:setVehicleWait(self, false);
 			elseif self.cp.lastRecordnumber ~= self.cp.startWork and self.cp.lastRecordnumber ~= self.cp.stopWork then 
 				courseplay:setGlobalInfoText(self, 'UNLOADING_BALE');
 				if self.cp.tipperFillLevelPct == 0 or drive_on then
-					self.wait = false
+					courseplay:setVehicleWait(self, false);
 				end;
 			end;
 		elseif self.cp.mode == 7 then
@@ -205,7 +205,7 @@ function courseplay:drive(self, dt)
 					self:setPipeState(2)
 					courseplay:setGlobalInfoText(self, 'OVERLOADING_POINT');
 				else
-					self.wait = false
+					courseplay:setVehicleWait(self, false);
 					self.cp.isUnloaded = true
 				end
 			end
@@ -223,13 +223,13 @@ function courseplay:drive(self, dt)
 					courseplay:setCustomTimer(self, "fillLevelChange", 7);
 				end
 				if self.cp.tipperFillLevelPct == 0 or drive_on then
-					self.wait = false
+					courseplay:setVehicleWait(self, false);
 					self.cp.prevFillLevelPct = nil
 					self.cp.isUnloaded = true
 				end
 			end
 		elseif self.cp.mode == 9 then
-			self.wait = false;
+			courseplay:setVehicleWait(self, false);
 		else
 			courseplay:setGlobalInfoText(self, 'WAIT_POINT');
 		end
@@ -237,7 +237,7 @@ function courseplay:drive(self, dt)
 		-- wait time passed -> continue driving
 		if self.cp.waitTimer and self.timer > self.cp.waitTimer then
 			self.cp.waitTimer = nil
-			self.wait = false
+			courseplay:setVehicleWait(self, false);
 		end
 		allowedToDrive = false
 	-- ### WAITING POINTS - END
@@ -496,7 +496,7 @@ function courseplay:drive(self, dt)
 	if 	((self.cp.mode == 1 or self.cp.mode == 5 or self.cp.mode == 8) and (isAtStart or isAtEnd)) or
 		((self.cp.mode == 2 or self.cp.mode == 3) and isAtEnd) or
 		(self.cp.mode == 9 and self.recordnumber > self.cp.shovelFillStartPoint and self.recordnumber <= self.cp.shovelFillEndPoint) or
-		(not workArea and self.wait and ((isAtEnd and self.Waypoints[self.recordnumber].wait) or courseplay:waypointsHaveAttr(self, self.recordnumber, 0, 2, "wait", true, false))) or 
+		(not workArea and self.cp.wait and ((isAtEnd and self.Waypoints[self.recordnumber].wait) or courseplay:waypointsHaveAttr(self, self.recordnumber, 0, 2, "wait", true, false))) or 
 		(isAtEnd and self.Waypoints[self.recordnumber].rev) or
 		(not isAtEnd and (self.Waypoints[self.recordnumber].rev or self.Waypoints[self.recordnumber + 1].rev or self.Waypoints[self.recordnumber + 2].rev)) or
 		(workSpeed ~= nil and workSpeed == 0.5) 
@@ -696,8 +696,8 @@ function courseplay:drive(self, dt)
 		-- reset distance to waypoint
 		self.cp.shortestDistToWp = nil
 		if self.recordnumber < self.maxnumber then -- = New
-			if not self.wait then
-				self.wait = true
+			if not self.cp.wait then
+				courseplay:setVehicleWait(self, true);
 			end
 			if self.cp.mode == 7 and self.cp.modeState == 5 then
 			else

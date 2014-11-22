@@ -63,7 +63,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 		end;
 	end
 	--
-	if (self.recordnumber == self.cp.stopWork or self.cp.lastRecordnumber == self.cp.stopWork) and self.cp.abortWork == nil and not isFinishingWork and self.wait then
+	if (self.recordnumber == self.cp.stopWork or self.cp.lastRecordnumber == self.cp.stopWork) and self.cp.abortWork == nil and not isFinishingWork and self.cp.wait then
 		allowedToDrive = courseplay:brakeToStop(self);
 		courseplay:setGlobalInfoText(self, 'WORK_END');
 		hasFinishedWork = true;
