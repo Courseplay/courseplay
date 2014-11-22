@@ -181,7 +181,7 @@ function courseplay:setGlobalData()
 
 	local customPosX, customPosY;
 	local fieldsAutomaticScan, fieldsDebugScan, fieldsDebugCustomLoad, fieldsCustomScanStep, fieldsOnlyScanOwnedFields = true, false, false, nil, true;
-	local wagesActive, wagesAmount = false, 1125;
+	local wagesActive, wagesAmount = true, 1125;
 
 	if courseplay.cpXmlFilePath and fileExists(courseplay.cpXmlFilePath) then
 		local cpFile = loadXMLFile('cpFile', courseplay.cpXmlFilePath);
