@@ -1,5 +1,5 @@
 function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, lx , lz, refSpeed )
-	local workTool --= self.tippers[1] -- to do, quick, dirty and unsafe
+	local workTool;
 	local activeTipper = nil
 	local specialTool = false
 	local forceSpeedLimit = refSpeed 
@@ -44,8 +44,8 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 	end;
 
 	local selfIsFolding, selfIsFolded, selfIsUnfolded = courseplay:isFolding(self);
-	for i=1, #(self.tippers) do
-		workTool = self.tippers[i];
+	for i=1, #(self.cp.workTools) do
+		workTool = self.cp.workTools[i];
 		local tool = self
 		if courseplay:isAttachedCombine(workTool) then
 			tool = workTool
@@ -543,7 +543,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 			end
 
 		end
-	end; --END for i in self.tippers
+	end; --END for i in self.cp.workTools
 
 	if hasFinishedWork then
 		isFinishingWork = true

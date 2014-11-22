@@ -300,10 +300,10 @@ function courseplay:load(xmlFile)
 	courseplay:askForSpecialSettings(self,self)
 
 
-	-- tippers
-	self.tippers = {}; --TODO (Jakob): put in cp table
+	-- workTools
+	self.cp.workTools = {};
 	self.cp.numWorkTools = 0;
-	self.cp.tipperAttached = false;
+	self.cp.workToolAttached = false;
 	self.cp.currentTrailerToFill = nil;
 	self.cp.trailerFillDistance = nil;
 	self.cp.isUnloaded = false;
@@ -1124,8 +1124,8 @@ function courseplay:update(dt)
 
 		if self.cp.hud.currentPage == 0 then
 			local combine = self;
-			if self.cp.attachedCombineIdx ~= nil and self.tippers ~= nil and self.tippers[self.cp.attachedCombineIdx] ~= nil then
-				combine = self.tippers[self.cp.attachedCombineIdx];
+			if self.cp.attachedCombineIdx ~= nil and self.cp.workTools ~= nil and self.cp.workTools[self.cp.attachedCombineIdx] ~= nil then
+				combine = self.cp.workTools[self.cp.attachedCombineIdx];
 			end;
 			if combine.courseplayers == nil then
 				self.cp.HUD0noCourseplayer = true

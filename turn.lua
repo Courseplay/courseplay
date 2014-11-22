@@ -295,7 +295,7 @@ function courseplay:lowerImplements(self, moveDown, workToolonOff)
     end;
 
     local specialTool;
-	for _,workTool in pairs(self.tippers) do
+	for _,workTool in pairs(self.cp.workTools) do
 					--courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
 		specialTool = courseplay:handleSpecialTools(self,workTool,true,moveDown,workToolonOff,nil,nil,nil);
 	end;
@@ -315,7 +315,7 @@ function courseplay:lowerImplements(self, moveDown, workToolonOff)
 			self:setFoldState(state, true);
 		end;
 		if workToolonOff then
-			for _,workTool in pairs(self.tippers) do
+			for _,workTool in pairs(self.cp.workTools) do
 				local needsLowering = false
 				if workTool.attacherJoint ~= nil then
 					needsLowering = workTool.attacherJoint.needsLowering

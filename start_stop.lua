@@ -121,7 +121,7 @@ function courseplay:start(self)
 	
 
 	local setLaneNumber = false;
-	for k,workTool in pairs(self.tippers) do    --TODO temporary solution (better would be Tool:getIsAnimationPlaying(animationName))
+	for k,workTool in pairs(self.cp.workTools) do    --TODO temporary solution (better would be Tool:getIsAnimationPlaying(animationName))
 		if courseplay:isFolding(workTool) then
 			if  self.setAIImplementsMoveDown ~= nil then
 				self:setAIImplementsMoveDown(true)
@@ -307,7 +307,7 @@ function courseplay:getCanUseAiMode(vehicle)
 
 	local mode = vehicle.cp.mode;
 
-	if mode ~= 5 and mode ~= 6 and mode ~= 7 and not vehicle.cp.tipperAttached then
+	if mode ~= 5 and mode ~= 6 and mode ~= 7 and not vehicle.cp.workToolAttached then
 		vehicle.cp.infoText = courseplay:loc('COURSEPLAY_WRONG_TRAILER');
 		return false;
 	end;
@@ -324,7 +324,7 @@ function courseplay:getCanUseAiMode(vehicle)
 			return false;
 		end;
 		if mode == 3 then
-			if vehicle.tippers[1] == nil or vehicle.tippers[1].cp == nil or not vehicle.tippers[1].cp.isAugerWagon then
+			if vehicle.cp.workTools[1] == nil or vehicle.cp.workTools[1].cp == nil or not vehicle.cp.workTools[1].cp.isAugerWagon then
 				vehicle.cp.infoText = courseplay:loc('COURSEPLAY_WRONG_TRAILER');
 				return false;
 			end;
@@ -435,7 +435,7 @@ function courseplay:stop(self)
 	end;
 
 	--open all covers
-	if self.cp.tipperAttached and self.cp.tipperHasCover and self.cp.mode == 1 or self.cp.mode == 2 or self.cp.mode == 5 or self.cp.mode == 6 then
+	if self.cp.workToolAttached and self.cp.tipperHasCover and self.cp.mode == 1 or self.cp.mode == 2 or self.cp.mode == 5 or self.cp.mode == 6 then
 		courseplay:openCloseCover(self, nil, false);
 	end;
 

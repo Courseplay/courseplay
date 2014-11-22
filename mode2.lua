@@ -51,7 +51,7 @@ function courseplay:handle_mode2(self, dt)
 		self.cp.currentTrailerToFill = 1
 	end
 
-	local current_tipper = self.tippers[self.cp.currentTrailerToFill]
+	local current_tipper = self.cp.workTools[self.cp.currentTrailerToFill]
 
 	if current_tipper == nil then
 		self.cp.toolsDirty = true
@@ -72,7 +72,7 @@ function courseplay:handle_mode2(self, dt)
 	end
 
 	if (current_tipper.fillLevel == current_tipper.capacity) or self.cp.isLoaded or (self.cp.tipperFillLevelPct >= self.cp.driveOnAtFillLevel and self.cp.modeState == 1) then
-		if #(self.tippers) > self.cp.currentTrailerToFill then
+		if #(self.cp.workTools) > self.cp.currentTrailerToFill then -- TODO (Jakob): use numWorkTools
 			self.cp.currentTrailerToFill = self.cp.currentTrailerToFill + 1
 		else
 			self.cp.currentTrailerToFill = nil
@@ -232,10 +232,10 @@ function courseplay:unload_combine(self, dt)
 	-- Calculate Trailer Offset
 
 	if self.cp.currentTrailerToFill ~= nil then
-		xt, yt, zt = worldToLocal(self.tippers[self.cp.currentTrailerToFill].fillRootNode, x, y, z)
+		xt, yt, zt = worldToLocal(self.cp.workTools[self.cp.currentTrailerToFill].fillRootNode, x, y, z)
 	else
 		--courseplay:debug(nameNum(self) .. ": no cp.currentTrailerToFillSet", 4);
-		xt, yt, zt = worldToLocal(self.tippers[1].rootNode, x, y, z)
+		xt, yt, zt = worldToLocal(self.cp.workTools[1].rootNode, x, y, z)
 	end
 
 	-- support for tippers like hw80
@@ -1080,14 +1080,14 @@ function courseplay:calculateJpsPathTo(self, targetX, targetZ)
 	courseplay:debug(string.format('\tfruit density between tractor and target = %s -> continue calculation', tostring(density)), 4);
 
 	-- check fruit: tipper
-	if self.cp.tipperAttached then
-		for i,tipper in pairs(self.tippers) do
+	if self.cp.workToolAttached then
+		for i,tipper in pairs(self.cp.workTools) do
 			if tipper.getCurrentFruitType and tipper.fillLevel > 0 then
 				local tipperFruitType = tipper:getCurrentFruitType();
-				courseplay:debug(string.format('%s: tippers[%d]: fillType=%d (%s), getCurrentFruitType()=%s (%s)', nameNum(self), i, tipper.currentFillType, tostring(Fillable.fillTypeIntToName[tipper.currentFillType]), tostring(tipperFruitType), tostring(FruitUtil.fruitIndexToDesc[tipperFruitType].name)), 4);
+				courseplay:debug(string.format('%s: workTools[%d]: fillType=%d (%s), getCurrentFruitType()=%s (%s)', nameNum(self), i, tipper.currentFillType, tostring(Fillable.fillTypeIntToName[tipper.currentFillType]), tostring(tipperFruitType), tostring(FruitUtil.fruitIndexToDesc[tipperFruitType].name)), 4);
 				if tipperFruitType and tipperFruitType ~= FruitUtil.FRUITTYPE_UNKNOWN then
 					fruitType = tipperFruitType;
-					courseplay:debug(string.format('\tset pathFinding fruitType as tippers[%d]\'s fruitType', i), 4);
+					courseplay:debug(string.format('\tset pathFinding fruitType as workTools[%d]\'s fruitType', i), 4);
 					break;
 				end;
 			end;

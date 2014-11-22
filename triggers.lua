@@ -214,12 +214,12 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 	local tipTriggers, tipTriggersCount = courseplay.triggers.tipTriggers, courseplay.triggers.tipTriggersCount
 	courseplay:debug(('%s: found %s'):format(nameNum(self), name), 1);
 
-	if self.tippers[1] ~= nil and tipTriggers ~= nil and tipTriggersCount > 0 then
+	if self.cp.workTools[1] ~= nil and tipTriggers ~= nil and tipTriggersCount > 0 then
 		courseplay:debug(('%s: transformId=%s: %s'):format(nameNum(self), tostring(transformId), name), 1);
-		local fruitType = self.tippers[1].currentFillType;
+		local fruitType = self.cp.workTools[1].currentFillType;
 		if fruitType == nil or fruitType == 0 then
-			for i=2,#(self.tippers) do
-				fruitType = self.tippers[i].currentFillType;
+			for i=2,#(self.cp.workTools) do
+				fruitType = self.cp.workTools[i].currentFillType;
 				if fruitType ~= nil and fruitType ~= 0 then 
 					break
 				end

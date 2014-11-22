@@ -215,8 +215,8 @@ function courseplay:executeFunction(self, func, value, page)
 		local line = value;
 		if page == 0 then
 			local combine = self;
-			if self.cp.attachedCombineIdx ~= nil and self.tippers ~= nil and self.tippers[self.cp.attachedCombineIdx] ~= nil then
-				combine = self.tippers[self.cp.attachedCombineIdx];
+			if self.cp.attachedCombineIdx ~= nil and self.cp.workTools ~= nil and self.cp.workTools[self.cp.attachedCombineIdx] ~= nil then
+				combine = self.cp.workTools[self.cp.attachedCombineIdx];
 			end;
 
 			if not combine.cp.isChopper then
@@ -256,7 +256,7 @@ function courseplay:executeFunction(self, func, value, page)
 						courseplay:setStartAtFirstPoint(self);
 					elseif line == 4 then
 						courseplay:clearCurrentLoadedCourse(self);
-					elseif line == 6 and self.cp.mode == 1 and self.tippers[1] ~= nil and self.tippers[1].allowFillFromAir and self.tippers[1].allowTipDischarge then
+					elseif line == 6 and self.cp.mode == 1 and self.cp.workTools[1] ~= nil and self.cp.workTools[1].allowFillFromAir and self.cp.workTools[1].allowTipDischarge then
 						self.cp.multiSiloSelectedFillType = courseplay:getNextFillableFillType(self);
 					end;
 

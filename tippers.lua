@@ -13,14 +13,14 @@ function courseplay:detachImplement(implementIndex)
 end;
 
 function courseplay:reset_tools(vehicle)
-	vehicle.tippers = {}
+	vehicle.cp.workTools = {}
 	-- are there any tippers?
-	vehicle.cp.tipperAttached = courseplay:updateWorkTools(vehicle, vehicle);
+	vehicle.cp.workToolAttached = courseplay:updateWorkTools(vehicle, vehicle);
 
 	-- Reset fill type.
-	if #vehicle.tippers > 0 and vehicle.tippers[1].cp.hasSpecializationFillable and vehicle.tippers[1].allowFillFromAir and vehicle.tippers[1].allowTipDischarge then
-		if vehicle.cp.multiSiloSelectedFillType == Fillable.FILLTYPE_UNKNOWN or (vehicle.cp.multiSiloSelectedFillType ~= Fillable.FILLTYPE_UNKNOWN and not vehicle.tippers[1].fillTypes[vehicle.cp.multiSiloSelectedFillType]) then
-			vehicle.cp.multiSiloSelectedFillType = vehicle.tippers[1]:getFirstEnabledFillType();
+	if #vehicle.cp.workTools > 0 and vehicle.cp.workTools[1].cp.hasSpecializationFillable and vehicle.cp.workTools[1].allowFillFromAir and vehicle.cp.workTools[1].allowTipDischarge then
+		if vehicle.cp.multiSiloSelectedFillType == Fillable.FILLTYPE_UNKNOWN or (vehicle.cp.multiSiloSelectedFillType ~= Fillable.FILLTYPE_UNKNOWN and not vehicle.cp.workTools[1].fillTypes[vehicle.cp.multiSiloSelectedFillType]) then
+			vehicle.cp.multiSiloSelectedFillType = vehicle.cp.workTools[1]:getFirstEnabledFillType();
 		end;
 	else
 		vehicle.cp.multiSiloSelectedFillType = Fillable.FILLTYPE_UNKNOWN;
@@ -35,7 +35,7 @@ function courseplay:reset_tools(vehicle)
 end;
 
 function courseplay:getNextFillableFillType(vehicle)
-	local workTool = vehicle.tippers[1];
+	local workTool = vehicle.cp.workTools[1];
 	if vehicle.cp.multiSiloSelectedFillType == Fillable.FILLTYPE_UNKNOWN or vehicle.cp.multiSiloSelectedFillType == Fillable.NUM_FILLTYPES then
 		return workTool:getFirstEnabledFillType();
 	end;
@@ -119,14 +119,14 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 	if vehicle.cp.mode == 1 or vehicle.cp.mode == 2 then
 		if workTool.allowTipDischarge then
 			hasWorkTool = true;
-			vehicle.tippers[#vehicle.tippers + 1] = workTool;
+			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
 		end;
 
 	-- MODE 3: AUGERWAGON
 	elseif vehicle.cp.mode == 3 then
 		if workTool.cp.isAugerWagon then -- if workTool.cp.hasSpecializationTrailer then
 			hasWorkTool = true;
-			vehicle.tippers[#vehicle.tippers + 1] = workTool;
+			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
 		end
 
 	-- MODE 4: FERTILIZER AND SEEDING
@@ -134,7 +134,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 		local isSprayer, isSowingMachine = courseplay:isSprayer(workTool), courseplay:isSowingMachine(workTool);
 		if isSprayer or isSowingMachine then
 			hasWorkTool = true;
-			vehicle.tippers[#vehicle.tippers + 1] = workTool;
+			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
 			courseplay:setMarkers(vehicle, workTool)
 			vehicle.cp.hasMachinetoFill = true;
 			vehicle.cp.noStopOnEdge = isSprayer;
@@ -152,7 +152,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 		-- For reverse testing and only for developers!!!!
 		if isImplement and courseplay.isDeveloper then
 			hasWorkTool = true;
-			vehicle.tippers[#vehicle.tippers + 1] = workTool;
+			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
 		end;
 		-- DO NOTHING
 
@@ -174,7 +174,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 		and not workTool.cp.isCaseIHPuma160
 		then
 			hasWorkTool = true;
-			vehicle.tippers[#vehicle.tippers + 1] = workTool;
+			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
 			courseplay:setMarkers(vehicle, workTool,isImplement);
 			vehicle.cp.noStopOnTurn = courseplay:isBaler(workTool) or courseplay:isBaleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool) or vehicle.attachedCutters ~= nil;
 			vehicle.cp.noStopOnEdge = courseplay:isBaler(workTool) or courseplay:isBaleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool) or vehicle.attachedCutters ~= nil;
@@ -194,25 +194,25 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 	elseif vehicle.cp.mode == 8 then
 		if workTool.cp.hasSpecializationFillable then
 			hasWorkTool = true;
-			vehicle.tippers[#vehicle.tippers + 1] = workTool;
+			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
 		end;
 
 	-- MODE 9: FILL AND EMPTY SHOVEL
 	elseif vehicle.cp.mode == 9 then
 		if not isImplement and (courseplay:isWheelloader(workTool) or workTool.typeName == 'frontloader' or courseplay:isMixer(workTool)) then
 			hasWorkTool = true;
-			vehicle.tippers[#vehicle.tippers + 1] = workTool;
+			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
 			workTool.cp.shovelState = 1;
 
 		elseif isImplement and (courseplay:isFrontloader(workTool) or workTool.cp.hasSpecializationShovel) then 
 			hasWorkTool = true;
-			vehicle.tippers[#vehicle.tippers + 1] = workTool;
+			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
 			workTool.attacherVehicle.cp.shovelState = 1
 		end;
 	end;
 
 	if hasWorkTool then
-		courseplay:debug(('%s: workTool %q added to tippers (index %d)'):format(nameNum(vehicle), nameNum(workTool), #vehicle.tippers), 6);
+		courseplay:debug(('%s: workTool %q added to workTools (index %d)'):format(nameNum(vehicle), nameNum(workTool), #vehicle.cp.workTools), 6);
 	end;
 
 	--------------------------------------------------
@@ -264,7 +264,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 
 	-- STEERABLE (vehicle)
 	if not isImplement then
-		vehicle.cp.numWorkTools = #vehicle.tippers;
+		vehicle.cp.numWorkTools = #vehicle.cp.workTools;
 
 		-- list debug
 		if courseplay.debugChannels[3] then
@@ -280,15 +280,15 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 		vehicle.cp.attachedCombineIdx = nil;
 		if not (vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable or vehicle.cp.isSugarBeetLoader) then
 			for i=1, vehicle.cp.numWorkTools do
-				if courseplay:isAttachedCombine(vehicle.tippers[i]) then
+				if courseplay:isAttachedCombine(vehicle.cp.workTools[i]) then
 					vehicle.cp.attachedCombineIdx = i;
 					break;
 				end;
 			end;
 		end;
 		if vehicle.cp.attachedCombineIdx ~= nil then
-			--courseplay:debug(string.format('setMinHudPage(vehicle, vehicle.tippers[%d])', vehicle.cp.attachedCombineIdx), 18);
-			courseplay:setMinHudPage(vehicle, vehicle.tippers[vehicle.cp.attachedCombineIdx]);
+			--courseplay:debug(string.format('setMinHudPage(vehicle, vehicle.cp.workTools[%d])', vehicle.cp.attachedCombineIdx), 18);
+			courseplay:setMinHudPage(vehicle, vehicle.cp.workTools[vehicle.cp.attachedCombineIdx]);
 		end;
 
 		-- TURN RADIUS
@@ -305,16 +305,16 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 		end;
 
 
-		-- FINAL TIPPERS TABLE DEBUG
+		-- FINAL WORKTOOLS TABLE DEBUG
 		if courseplay.debugChannels[6] then
 			cpPrintLine(6);
 			if vehicle.cp.numWorkTools > 0 then
-				courseplay:debug(('%s: tippers:'):format(nameNum(vehicle)), 6);
+				courseplay:debug(('%s: workTools:'):format(nameNum(vehicle)), 6);
 				for i=1, vehicle.cp.numWorkTools do
-					courseplay:debug(('\\___ [%d] = %s'):format(i, nameNum(vehicle.tippers[i])), 6);
+					courseplay:debug(('\\___ [%d] = %s'):format(i, nameNum(vehicle.cp.workTools[i])), 6);
 				end;
 			else
-				courseplay:debug(('%s: no tippers set'):format(nameNum(vehicle)), 6);
+				courseplay:debug(('%s: no workTools set'):format(nameNum(vehicle)), 6);
 			end;
 		end;
 	end;
@@ -331,12 +331,12 @@ end;
 function courseplay:setTipRefOffset(vehicle)
 	vehicle.cp.tipRefOffset = nil;
 	for i=1, vehicle.cp.numWorkTools do
-		if vehicle.tippers[i].rootNode ~= nil and vehicle.tippers[i].tipReferencePoints ~= nil then
-			local tipperX, tipperY, tipperZ = getWorldTranslation(vehicle.tippers[i].rootNode);
-			if  #(vehicle.tippers[i].tipReferencePoints) > 1 then
-				vehicle.tippers[i].cp.rearTipRefPoint = nil;
-				for n=1 ,#(vehicle.tippers[i].tipReferencePoints) do
-					local tipRefPointX, tipRefPointY, tipRefPointZ = worldToLocal(vehicle.tippers[i].tipReferencePoints[n].node, tipperX, tipperY, tipperZ);
+		if vehicle.cp.workTools[i].rootNode ~= nil and vehicle.cp.workTools[i].tipReferencePoints ~= nil then
+			local tipperX, tipperY, tipperZ = getWorldTranslation(vehicle.cp.workTools[i].rootNode);
+			if  #(vehicle.cp.workTools[i].tipReferencePoints) > 1 then
+				vehicle.cp.workTools[i].cp.rearTipRefPoint = nil;
+				for n=1 ,#(vehicle.cp.workTools[i].tipReferencePoints) do
+					local tipRefPointX, tipRefPointY, tipRefPointZ = worldToLocal(vehicle.cp.workTools[i].tipReferencePoints[n].node, tipperX, tipperY, tipperZ);
 					tipRefPointX = math.abs(tipRefPointX);
 					if (vehicle.cp.tipRefOffset == nil or vehicle.cp.tipRefOffset == 0) and tipRefPointX > 0.1 then
 						vehicle.cp.tipRefOffset = tipRefPointX;
@@ -346,8 +346,8 @@ function courseplay:setTipRefOffset(vehicle)
 
 					-- Find the rear tipRefpoint in case we are reverse BGA tipping.
 					if tipRefPointX < 0.1 and tipRefPointZ > 0 then
-						if not vehicle.tippers[i].cp.rearTipRefPoint or vehicle.tippers[i].tipReferencePoints[n].width > vehicle.tippers[i].tipReferencePoints[vehicle.tippers[i].cp.rearTipRefPoint].width then
-							vehicle.tippers[i].cp.rearTipRefPoint = n;
+						if not vehicle.cp.workTools[i].cp.rearTipRefPoint or vehicle.cp.workTools[i].tipReferencePoints[n].width > vehicle.cp.workTools[i].tipReferencePoints[vehicle.cp.workTools[i].cp.rearTipRefPoint].width then
+							vehicle.cp.workTools[i].cp.rearTipRefPoint = n;
 							courseplay:debug(string.format("%s: Found rear TipRefPoint: %d - tipRefPointZ = %f", nameNum(vehicle), n, tipRefPointZ), 13);
 						end;
 					end;
@@ -453,7 +453,7 @@ end;
 
 function courseplay:setTipperCoverData(vehicle)
 	for i=1, vehicle.cp.numWorkTools do
-		local workTool = vehicle.tippers[i];
+		local workTool = vehicle.cp.workTools[i];
 
 		-- Default Giants trailers
 		if workTool.cp.hasSpecializationCover then
@@ -531,9 +531,9 @@ function courseplay:setAutoTurnradius(vehicle, hasWorkTool)
 	
 	if hasWorkTool and (vehicle.cp.mode == 2 or vehicle.cp.mode == 3 or vehicle.cp.mode == 4 or vehicle.cp.mode == 6) then --TODO (Jakob): I've added modes 3, 4 & 6 - needed?
 		vehicle.cp.turnRadiusAuto = turnRadius;
-		--print(string.format("vehicle.tippers[1].sizeLength = %s  turnRadius = %s", tostring(vehicle.tippers[1].sizeLength),tostring( turnRadius)))
-		if vehicle.cp.numWorkTools == 1 and vehicle.tippers[1].attacherVehicle ~= vehicle and (vehicle.tippers[1].sizeLength > turnRadius) then
-			vehicle.cp.turnRadiusAuto = vehicle.tippers[1].sizeLength;
+		--print(string.format("vehicle.cp.workTools[1].sizeLength = %s  turnRadius = %s", tostring(vehicle.cp.workTools[1].sizeLength),tostring( turnRadius)))
+		if vehicle.cp.numWorkTools == 1 and vehicle.cp.workTools[1].attacherVehicle ~= vehicle and (vehicle.cp.workTools[1].sizeLength > turnRadius) then
+			vehicle.cp.turnRadiusAuto = vehicle.cp.workTools[1].sizeLength;
 		end;
 		if (vehicle.cp.numWorkTools > 1) then
 			vehicle.cp.turnRadiusAuto = turnRadius * 1.5;
@@ -558,7 +558,7 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 	if vehicle.cp.currentTrailerToFill == nil then
 		vehicle.cp.currentTrailerToFill = 1;
 	end
-	local currentTrailer = vehicle.tippers[vehicle.cp.currentTrailerToFill];
+	local currentTrailer = vehicle.cp.workTools[vehicle.cp.currentTrailerToFill];
 
 	if not vehicle.cp.trailerFillDistance then
 		if not currentTrailer.cp.realUnloadOrFillNode then
@@ -654,7 +654,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 	local isBGA = ctt.bunkerSilo ~= nil and ctt.bunkerSilo.movingPlanes ~= nil and vehicle.cp.handleAsOneSilo ~= true;
 	local bgaIsFull = isBGA and (ctt.bunkerSilo.fillLevel >= ctt.bunkerSilo.capacity);
 
-	for k, tipper in pairs(vehicle.tippers) do
+	for k, tipper in pairs(vehicle.cp.workTools) do
 		if tipper.tipReferencePoints ~= nil then
 			local allowedToDriveBackup = allowedToDrive;
 			local fruitType = tipper.currentFillType

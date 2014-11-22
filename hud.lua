@@ -206,7 +206,7 @@ function courseplay.hud:loadPage(vehicle, page)
 	if page == 0 then
 		local combine = vehicle;
 		if vehicle.cp.attachedCombineIdx ~= nil then
-			combine = vehicle.tippers[vehicle.cp.attachedCombineIdx];
+			combine = vehicle.cp.workTools[vehicle.cp.attachedCombineIdx];
 		end;
 
 		if not combine.cp.isChopper then
@@ -281,7 +281,7 @@ function courseplay.hud:loadPage(vehicle, page)
 
 				vehicle.cp.hud.content.pages[1][4][1].text = courseplay:loc('COURSEPLAY_RESET_COURSE')
 
-				if vehicle.cp.mode == 1 and vehicle.tippers[1] ~= nil and vehicle.tippers[1].allowFillFromAir and vehicle.tippers[1].allowTipDischarge then
+				if vehicle.cp.mode == 1 and vehicle.cp.workTools[1] ~= nil and vehicle.cp.workTools[1].allowFillFromAir and vehicle.cp.workTools[1].allowTipDischarge then
 					vehicle.cp.hud.content.pages[1][6][1].text = courseplay:loc('COURSEPLAY_FARM_SILO_FILL_TYPE');
 					vehicle.cp.hud.content.pages[1][6][2].text = Fillable.fillTypeIndexToDesc[vehicle.cp.multiSiloSelectedFillType].nameI18N;
 				end;

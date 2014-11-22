@@ -1,6 +1,6 @@
 function courseplay:handleMode3(vehicle, fillLevelPct, allowedToDrive, dt)
 	courseplay:debug(string.format("handleMode3(vehicle, fillLevelPct=%s, allowedToDrive=%s, dt)", tostring(fillLevelPct), tostring(allowedToDrive)), 15);
-	local workTool = vehicle.tippers[vehicle.cp.currentTrailerToFill] or vehicle.tippers[1];
+	local workTool = vehicle.cp.workTools[vehicle.cp.currentTrailerToFill] or vehicle.cp.workTools[1];
 	local backPointsUnfoldPipe = 8; --[[workTool.cp.backPointsUnfoldPipe or 8;]] --NOTE: backPointsUnfoldPipe must not be 0! 
 	local forwardPointsFoldPipe = workTool.cp.forwardPointsFoldPipe or 2;
 	workTool.cp.isUnloading = workTool.fillLevel < workTool.cp.lastFillLevel;

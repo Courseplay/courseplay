@@ -2,9 +2,9 @@ local abs, max, rad, sin = math.abs, math.max, math.rad, math.sin;
 
 function courseplay:goReverse(vehicle,lx,lz)
 	local fwd = false;
-	local workTool = vehicle.tippers[1];
+	local workTool = vehicle.cp.workTools[1];
 	if workTool and workTool.cp.isAttacherModule then
-		workTool = vehicle.tippers[2];
+		workTool = vehicle.cp.workTools[2];
 	end;
 	local debugActive = courseplay.debugChannels[13];
 	local isNotValid = vehicle.cp.numWorkTools == 0 or workTool == nil or workTool.cp.isPivot == nil or not workTool.cp.frontNode or vehicle.cp.mode == 9;
