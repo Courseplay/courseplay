@@ -322,7 +322,7 @@ function courseplay:lowerImplements(self, moveDown, workToolonOff)
 				end
 				if workTool.setPickupState ~= nil then
 					needsLowering = true
-					if workTool.isPickupLowered ~= nil and workTool.isPickupLowered then
+					if workTool.isPickupLowered ~= nil and workTool.isPickupLowered ~= moveDown then
 						workTool:setPickupState(moveDown, false);
 					end;
 				end;

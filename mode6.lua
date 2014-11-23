@@ -101,6 +101,12 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 								workTool:setIsTurnedOn(true, false);
 							end
 						end
+						if workTool.setPickupState ~= nil then
+							if workTool.isPickupLowered ~= nil and not workTool.isPickupLowered then
+								workTool:setPickupState(true, false);
+								courseplay:debug(string.format('%s: lower pickup order', nameNum(workTool)), 17);
+							end;
+						end;
 					end
 				end
 
@@ -108,6 +114,12 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,nil)
 					if not specialTool and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
 						workTool:setIsTurnedOn(false, false);
+						if workTool.setPickupState ~= nil then
+							if workTool.isPickupLowered ~= nil and workTool.isPickupLowered then
+								workTool:setPickupState(false, false);
+								courseplay:debug(string.format('%s: raise pickup order', nameNum(workTool)), 17);
+							end;
+						end;
 					end
 				end
 
