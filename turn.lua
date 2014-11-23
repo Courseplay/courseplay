@@ -320,6 +320,12 @@ function courseplay:lowerImplements(self, moveDown, workToolonOff)
 				if workTool.attacherJoint ~= nil then
 					needsLowering = workTool.attacherJoint.needsLowering
 				end
+				if workTool.setPickupState ~= nil then
+					needsLowering = true
+					if workTool.isPickupLowered ~= nil and workTool.isPickupLowered then
+						workTool:setPickupState(moveDown, false);
+					end;
+				end;
 				if workTool.setIsTurnedOn ~= nil and not courseplay:isFolding(workTool) and not needsLowering and workTool ~= self then
 					workTool:setIsTurnedOn(moveDown, false);
 				end;

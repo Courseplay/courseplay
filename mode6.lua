@@ -232,9 +232,9 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 									courseplay:setMarkers(self, workTool);
 								end;
 
-								if workTool.setIsPickupDown ~= nil and workTool.pickup then
-									if workTool.pickup.isDown == nil or (workTool.pickup.isDown ~= nil and not workTool.pickup.isDown) then
-										workTool:setIsPickupDown(true, false);
+								if workTool.setPickupState ~= nil then
+									if workTool.isPickupLowered ~= nil and not workTool.isPickupLowered then
+										workTool:setPickupState(true, false);
 										courseplay:debug(string.format('%s: lower pickup order', nameNum(workTool)), 17);
 									end;
 								end;
@@ -251,9 +251,9 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 								workTool:setIsTurnedOn(false, false);
 								courseplay:debug(string.format('%s: turn off order', nameNum(workTool)), 17);
 							end;
-							if workTool.setIsPickupDown ~= nil and workTool.pickup then
-								if workTool.pickup.isDown == nil or (workTool.pickup.isDown ~= nil and workTool.pickup.isDown) then
-									workTool:setIsPickupDown(false, false);
+							if workTool.setPickupState ~= nil then
+								if workTool.isPickupLowered ~= nil and workTool.isPickupLowered then
+									workTool:setPickupState(false, false);
 									courseplay:debug(string.format('%s: raise pickup order', nameNum(workTool)), 17);
 								end;
 							end;
