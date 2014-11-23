@@ -87,11 +87,15 @@ function courseplay_manager:loadMap(name)
 	if g_server ~= nil then
 		courseplay.fields:loadAllCustomFields();
 	end;
+
 	courseplay.totalCoursePlayers = {};
+	courseplay.activeCoursePlayers = {};
+
 	courseplay.wageDifficultyMultiplier = Utils.lerp(0.5, 1, (g_currentMission.missionStats.difficulty - 1) / 2);
 
 	g_currentMission.environment:addMinuteChangeListener(courseplay_manager);
 	self.realTimeMinuteTimer = 0;
+	self.realTime10SecsTimer = 0;
 end;
 
 function courseplay_manager:createInitialCourseplayFile()
@@ -491,12 +495,12 @@ function courseplay_manager:update(dt)
 	end;
 
 	-- REAL TIME MINUTE CHANGER
-	if not g_currentMission.paused and courseplay.wagesActive and g_server ~= nil then -- TODO: if there are more items to be dealt with every minute, remove the "wagesActive" restriction
-		if self.realTimeMinuteTimer < 60000 then
-			self.realTimeMinuteTimer = self.realTimeMinuteTimer + dt;
+	if not g_currentMission.paused and courseplay.wagesActive and g_server ~= nil then -- TODO: if there are more items to be dealt with every 10 secs, remove the "wagesActive" restriction
+		if self.realTime10SecsTimer < 10000 then
+			self.realTime10SecsTimer = self.realTime10SecsTimer + dt;
 		else
-			self:realTimeMinuteChanged();
-			self.realTimeMinuteTimer = self.realTimeMinuteTimer - 60000;
+			self:realTime10SecsChanged();
+			self.realTime10SecsTimer = self.realTime10SecsTimer - 10000;
 		end;
 	end;
 end;
@@ -784,7 +788,7 @@ function courseplay_manager:minuteChanged()
 	courseplay.lightsNeeded = env.needsLights or (env.dayTime >= nightStart or env.dayTime <= dayStart) or env.currentRain ~= nil or env.curRain ~= nil or (env.lastRainScale > 0.1 and env.timeSinceLastRain < 30);
 end;
 
-function courseplay_manager:realTimeMinuteChanged()
+function courseplay_manager:realTime10SecsChanged()
 	-- WAGES
 	if courseplay.wagesActive and g_server ~= nil then
 		local totalWages = 0;
@@ -795,11 +799,7 @@ function courseplay_manager:realTimeMinuteChanged()
 		end;
 		if totalWages > 0 then
 			-- TODO (Jakob): does addSharedMoney already include the currency factor, or do we have to calculate it before passing it?
-			-- totalWages = g_i18n:getCurrency(totalWages);
-			-- local oldMoney = g_currentMission.missionStats.money;
-			-- local amount = -totalWages * courseplay.wageDifficultyMultiplier;
-			g_currentMission:addSharedMoney(-totalWages * courseplay.wageDifficultyMultiplier, 'wagePayment');
-			-- print(('amount=%.2f, getCurrency(amount)=%.2f, oldMoney=%.2f, newMoney=%.2f, changed=%.2f'):format(amount, g_i18n:getCurrency(amount), oldMoney, g_currentMission.missionStats.money, g_currentMission.missionStats.money - oldMoney));
+			g_currentMission:addSharedMoney(-totalWages * courseplay.wageDifficultyMultiplier / 6, 'wagePayment'); -- divide by 6 to get wage per 10 secs
 		end;
 	end;
 end;
