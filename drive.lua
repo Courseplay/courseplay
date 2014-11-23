@@ -1244,9 +1244,9 @@ function courseplay:setReverseBackDistance(vehicle, metersBack)
 end;
 
 function courseplay:setRecordNumber(vehicle, number)
-	if vehicle.recordnumber ~= number then
-		-- courseplay:onRecordNumberChanged(vehicle);
-	end;
+	--[[if vehicle.recordnumber ~= number then
+		courseplay:onRecordNumberChanged(vehicle);
+	end;]]
 	vehicle.recordnumber = number;
 end;
 
@@ -1258,5 +1258,11 @@ function courseplay:getIsCourseplayDriving()
 end;
 
 function courseplay:setIsCourseplayDriving(active)
+	--[[if self.cp.isDriving ~= active then
+		courseplay:onIsDrivingChanged(self);
+	end;]]
 	self.cp.isDriving = active;
+end;
+
+function courseplay:onIsDrivingChanged(vehicle)
 end;
