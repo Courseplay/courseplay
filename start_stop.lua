@@ -197,6 +197,11 @@ function courseplay:start(self)
 			if numWaitPoints == 3 and self.cp.shovelEmptyPoint == nil then
 				self.cp.shovelEmptyPoint = i;
 			end;
+			for i,_ in pairs(self.attachedImplements) do
+				if self.attachedImplements[i].object.ignoreVehicleDirectionOnLoad ~= nil then
+					self.attachedImplements[i].object.ignoreVehicleDirectionOnLoad = true
+				end
+			end			
 		end;
 
 		-- laneNumber (for seeders)
