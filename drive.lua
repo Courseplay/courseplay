@@ -513,13 +513,13 @@ function courseplay:drive(self, dt)
 		end
 		if self.cp.speeds.useRecordingSpeed and self.Waypoints[self.recordnumber].speed ~= nil and mode7onCourse then
 			if self.Waypoints[self.recordnumber].speed < self.cp.speeds.crawl then
-				if self.recordnumber == self.maxnumber then
-					refSpeed = Utils.clamp(refSpeed, self.cp.speeds.crawl, self.Waypoints[2].speed);
-				else
-					refSpeed = Utils.clamp(refSpeed, self.cp.speeds.crawl, self.Waypoints[self.recordnumber+1].speed);
+				if self.recordnumber == self.maxnumber and self.Waypoints[2].speed ~= nil then
+					refSpeed = Utils.clamp(refSpeed, self.cp.speeds.crawl, self.Waypoints[2].speed); --	@last waypoint, use speed from 2nd waypoint
+				elseif self.Waypoints[self.recordnumber+1].speed ~= nil then
+					refSpeed = Utils.clamp(refSpeed, self.cp.speeds.crawl, self.Waypoints[self.recordnumber+1].speed); -- @any waypoint use speed of +1 waypoint
 				end	
 			else
-				refSpeed = Utils.clamp(refSpeed, self.cp.speeds.crawl, self.Waypoints[self.recordnumber].speed);
+				refSpeed = Utils.clamp(refSpeed, self.cp.speeds.crawl, self.Waypoints[self.recordnumber].speed); --normaly use speed from waypoint
 			end
 		end;		
 	end;
