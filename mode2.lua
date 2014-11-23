@@ -366,10 +366,10 @@ function courseplay:unload_combine(self, dt)
 		end
 
 		--[[
-		-- PATHFINDING / REALISTIC DRIVING
+		-- PATHFINDING / REALISTIC DRIVING (ASTAR)
 		if self.cp.realisticDriving and not self.cp.calculatedCourseToCombine then
 			-- if courseplay:calculate_course_to(self, currentX, currentZ) then
-			if courseplay:calculateJpsPathTo(self, currentX, currentZ) then
+			if courseplay:calculateAstarPathToCoords(self, currentX, currentZ) then
 				courseplay:setModeState(self, 5);
 				self.cp.shortestDistToWp = nil;
 				courseplay:setMode2NextState(self, 2); -- modeState when waypoint is reached
@@ -1055,18 +1055,14 @@ function courseplay:unload_combine(self, dt)
 	end
 end
 
---NEW JPS VERSION
-function courseplay:calculateJpsPathTo(self, targetX, targetZ)
-	if courseplay.fields.numAvailableFields == 0 or self.cp.searchCombineOnField == nil or self.cp.searchCombineOnField == 0 then
-		return false;
-	end;
-	courseplay:debug(('%s: calculateJpsPathTo(..., [x] %.1f, [z] %.1f)'):format(nameNum(self), targetX, targetZ), 4);
-
+-- GET ASTAR PATH TO COMBINE
+function courseplay:calculateAstarPathToCoords(vehicle, targetX, targetZ)
+	courseplay:debug(('%s: calculateAstarPathToCoords(..., targetX=%.2f, targetZ=%.2f)'):format(nameNum(vehicle), targetX, targetZ), 4);
 	local tileSize = 5; -- meters
-	self.cp.calculatedCourseToCombine = true;
+	vehicle.cp.calculatedCourseToCombine = true;
 	
 	-- check if there is fruit between me and the target, if not then return false in order to avoid the calculating
-	local node = self.cp.DirectionNode;
+	local node = vehicle.cp.DirectionNode;
 	local x, y, z = getWorldTranslation(node);
 	-- local x, y, z = localToWorld(node, 0, 0, tileSize); --make sure first target is in front of us
 
@@ -1080,11 +1076,11 @@ function courseplay:calculateJpsPathTo(self, targetX, targetZ)
 	courseplay:debug(string.format('\tfruit density between tractor and target = %s -> continue calculation', tostring(density)), 4);
 
 	-- check fruit: tipper
-	if self.cp.workToolAttached then
-		for i,tipper in pairs(self.cp.workTools) do
+	if vehicle.cp.workToolAttached then
+		for i,tipper in pairs(vehicle.cp.workTools) do
 			if tipper.getCurrentFruitType and tipper.fillLevel > 0 then
 				local tipperFruitType = tipper:getCurrentFruitType();
-				courseplay:debug(string.format('%s: workTools[%d]: fillType=%d (%s), getCurrentFruitType()=%s (%s)', nameNum(self), i, tipper.currentFillType, tostring(Fillable.fillTypeIntToName[tipper.currentFillType]), tostring(tipperFruitType), tostring(FruitUtil.fruitIndexToDesc[tipperFruitType].name)), 4);
+				courseplay:debug(string.format('%s: workTools[%d]: fillType=%d (%s), getCurrentFruitType()=%s (%s)', nameNum(vehicle), i, tipper.currentFillType, tostring(Fillable.fillTypeIntToName[tipper.currentFillType]), tostring(tipperFruitType), tostring(FruitUtil.fruitIndexToDesc[tipperFruitType].name)), 4);
 				if tipperFruitType and tipperFruitType ~= FruitUtil.FRUITTYPE_UNKNOWN then
 					fruitType = tipperFruitType;
 					courseplay:debug(string.format('\tset pathFinding fruitType as workTools[%d]\'s fruitType', i), 4);
@@ -1095,203 +1091,52 @@ function courseplay:calculateJpsPathTo(self, targetX, targetZ)
 	end;
 	if fruitType == nil and fieldFruitType ~= nil then
 		fruitType = fieldFruitType;
-		courseplay:debug(string.format('%s: tipper fruitType=nil, fieldFruitType=%d (%s) -> set astar fruitType as fieldFruitType', nameNum(self), fieldFruitType, FruitUtil.fruitIndexToDesc[fieldFruitType].name), 4);
+		courseplay:debug(string.format('%s: tipper fruitType=nil, fieldFruitType=%d (%s) -> set astar fruitType as fieldFruitType', nameNum(vehicle), fieldFruitType, FruitUtil.fruitIndexToDesc[fieldFruitType].name), 4);
 	elseif fruitType == nil and fieldFruitType == nil then
-		courseplay:debug(string.format('%s: tipper fruitType=nil, fieldFruitType = nil -> return false', nameNum(self)), 4);
+		courseplay:debug(string.format('%s: tipper fruitType=nil, fieldFruitType = nil -> return false', nameNum(vehicle)), 4);
 		return false;
 	end;
 
 
-	local course = courseplay.fields.fieldData[self.cp.searchCombineOnField]; --fieldEdgePath
-	if course then
-		-- use new function to search a path
-		local function myEvalFunc(grid, x, y)
-			local category, wakable, costs = 1, true, 1;
-		
-			local hasFruit = courseplay:areaHasFruit(x, y, nil, grid.tileSize/2, grid.tileSize/2);
-			if hasFruit then
-				category = 2;
-			end;
-			
-			return category, wakable, costs;
-		end
-		
-		-- create grid
-		local grid = courseplay.pathfinding.helpers.Grid:new(tileSize, course.points, 'cx', 'cz'); --fieldEdgePath
-		-- print(tableShow(grid.limits, 'grid.limits'));
-		grid:setEvaluationFunction(myEvalFunc);
-		grid:evaluate();
-		
-		-- create Finder and search a path
-		local finder = courseplay.pathfinding.Pathfinder:new(grid, 'HJS');
-		local path = finder:getPath(z, x, targetZ, targetX); --TODO: why are x and z switched?
-		
-		if path then
-			self.cp.nextTargets, targetPoints, targetPointsCleaned = {}, {}, {};
+	local targetPoints = courseplay:calcMoves(z, x, targetZ, targetX, fruitType);
+	if targetPoints ~= nil then
+		vehicle.cp.nextTargets = {};
+		local numPoints = #targetPoints;
+		local firstPoint = ceil(vehicle.cp.turnRadius / 5);
+		courseplay:debug(string.format('numPoints=%d, first point = ceil(turnRadius [%.1f] / 5) = %d', numPoints, vehicle.cp.turnRadius, firstPoint), 4);
+		if numPoints < firstPoint then
+			return false;
+		end;
+		-- for i, cp in pairs(targetPoints) do
+		for i=firstPoint, numPoints do
+			local cp = targetPoints[i];
+			local insert = true;
 
-			for node, count in path:nodes() do
-				-- courseplay:debug(('node %s: node.x=%s, node.y=%s'):format(tostring(count), tostring(node.x), tostring(node.y)), 4);
-				local p = {};
-				p.x = courseplay:round(finder.grid:getX(node.x), 2);
-				p.z = courseplay:round(finder.grid:getY(node.y), 2);
-				p.y = 0;
-				table.insert(targetPoints, p);
-				-- courseplay:debug(('\tp.x=%s, p.z=%s'):format(tostring(p.x), tostring(p.z)), 4);
-			end;
-			local numPoints = #targetPoints;
-
-			-- make sure last point is original target point, not the tile coordinate
-			targetPoints[numPoints] = { 
-				x = targetX,
-				y = 0,
-				z = targetZ
-			};
-			courseplay:debug(string.format('%d points in path -> set last point as original target point (x,z=%.1f,%.1f)', numPoints, targetX, targetZ), 4);
-
-			--clean path (first round: only keep corner points)
-			local firstPoint = ceil(self.cp.turnRadius / 5);
-			courseplay:debug(string.format('clean path (first round): numPoints=%d, first point = ceil(turnRadius [%.1f] / 5) = %d', numPoints, self.cp.turnRadius, firstPoint), 4);
-			-- if numPoints < firstPoint then return false; end;
-
-			for i=1,numPoints do
-				local insert = true;
-				local cp = targetPoints[i];
+			--[[clean path (only keep corner points)
+			if i > firstPoint and i < numPoints then
 				local pp = targetPoints[i-1];
-				if i < numPoints then
-					local np = targetPoints[i+1];
-					local dirX, dirZ = courseplay.generation:getPointDirection(cp, np, false);
-					cp.dirX, cp.dirZ = courseplay:round(dirX, 5), courseplay:round(dirZ, 5);
-
-					if i > 1 and cp.dirX == pp.dirX and cp.dirZ == pp.dirZ then
-						courseplay:debug(string.format('\t%d: [x] %.2f, [z] %.2f, cp.dirX == pp.dirX == %.5f, cp.dirZ == pp.dirZ == %.5f -> insert=false', i, cp.x, cp.z, cp.dirX, cp.dirZ), 4);
-						insert = false;
-					end;
-				elseif i == numPoints then
-					cp.dirX, cp.dirZ = pp.dirX, pp.dirZ;
-				end;
-
-				if insert then
-					table.insert(targetPointsCleaned, { x = cp.x, y = 0, z = cp.z, dirX = cp.dirX, dirZ = cp.dirZ });
-					courseplay:debug(string.format('%d: [x] %.2f, [z] %.2f, dirX=%.5f, dirZ=%.5f, insert=true', i, cp.x, cp.z, cp.dirX, cp.dirZ), 4);
+				local np = targetPoints[i+1];
+				if cp.y == pp.y and cp.y == np.y then
+					courseplay:debug(string.format('\t%d: [x] cp.y==pp.y==np.y = %d, [z] cp.x = %d -> insert=false', i, cp.y, cp.x), 4);
+					insert = false;
+				elseif cp.x == pp.x and cp.x == np.x then
+					courseplay:debug(string.format('\t%d: [x] cp.y = %d, [z] cp.x==pp.x==np.x = %d -> insert=false', i, cp.y, cp.x), 4);
+					insert = false;
 				end;
 			end;
-			-- courseplay:debug(tableShow(targetPointsCleaned, 'targetPointsCleaned after first clean', 4), 4);
+			--]]
 
-
-
-			-- clean path (second round: smooth corners)
-			numPoints = #targetPointsCleaned;
-			courseplay:debug('clean path (second round: smooth corners): numPoints=' .. numPoints, 4);
-			local i = 2;
-			while i < numPoints do
-				local insert = true;
-				local pp = targetPointsCleaned[i-1];
-				local np = targetPointsCleaned[i+1];
-				if pp == nil or np == nil then
-					courseplay:debug(string.format('\t\tERROR: %d: pp=%s, np=%s', i, tostring(pp), tostring(np)), 4);
-				end;
-
-				local ppTpNpIsField = courseplay:isLineField(nil, pp.x, pp.z, np.x, np.z);
-				local ppTpNpHasFruit = courseplay:hasLineFruit(nil, pp.x, pp.z, np.x, np.z);
-				courseplay:debug(string.format('\ti=%d, ppTpNpIsField=%s, ppTpNpHasFruit=%s', i, tostring(ppTpNpIsField), tostring(ppTpNpHasFruit)), 4);
-				if ppTpNpIsField and not ppTpNpHasFruit then
-					table.remove(targetPointsCleaned, i);
-					numPoints = numPoints - 1;
-					courseplay:debug(string.format('\t\tremove current point %d, new numPoints = %d', i, numPoints), 4);
-				else
-					local cp = targetPointsCleaned[i];
-					cp.y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cp.x, 1, cp.z) + 3;
-					i = i + 1;
-				end;
+			if insert then
+				courseplay:debug(string.format('%d: [x] cp.y = %d, [z] cp.x = %d, insert=true', i, cp.y, cp.x), 4);
+				table.insert(vehicle.cp.nextTargets, { x = cp.y, y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cp.y, 1, cp.x) + 3, z = cp.x });
 			end;
-			numPoints = #targetPointsCleaned;
-
-			-- add y to first and last point
-			targetPointsCleaned[1].y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, targetPointsCleaned[1].x, 1, targetPointsCleaned[1].z) + 3;
-			targetPointsCleaned[numPoints].y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, targetPointsCleaned[numPoints].x, 1, targetPointsCleaned[numPoints].z) + 3;
-			courseplay:debug(tableShow(targetPointsCleaned, 'targetPointsCleaned after second clean', 4), 4);
-
-			-- courseplay:debug('clean path (third round: smoothSpline): numPoints=' .. numPoints, 4);
-			-- self.cp.nextTargets = courseplay.generation:smoothSpline(targetPointsCleaned, 3, false, true);
-			-- courseplay:debug(tableShow(self.cp.nextTargets, 'self.cp.nextTargets after smoothSpline()', 4), 4);
-
-			self.cp.nextTargets = targetPointsCleaned;
-
-			--get best first point
-			local _,_,z1 = worldToLocal(self.cp.DirectionNode, self.cp.nextTargets[1].x, self.cp.nextTargets[1].y, self.cp.nextTargets[1].z);
-			local _,_,z2 = worldToLocal(self.cp.DirectionNode, self.cp.nextTargets[2].x, self.cp.nextTargets[2].y, self.cp.nextTargets[2].z);
-
-			if z1 > 0 and z2 < 0 then --first point in front of me, second point behind me
-				courseplay:setCurrentTargetFromList(self, 1);
-				if courseplay:distance(self.cp.nextTargets[1].x, self.cp.nextTargets[1].z, self.cp.nextTargets[2].x, self.cp.nextTargets[2].z) < self.cp.turnRadius * 1.5 then
-					local x, y, z = localToWorld(self.cp.DirectionNode, 0, 0, self.cp.turnRadius * 1.5);
-					table.insert(self.cp.nextTargets, 1, { x = x, y = y, z = z });
-					courseplay:debug('get best first point: z1 > 0, z2 < 0, dist p1->p2 < turnRadius*1.5', 4);
-				else
-					courseplay:debug('get best first point: z1 > 0, z2 < 0, dist p1->p2 > turnRadius*1.5', 4);
-				end;
-			elseif z1 > 0 and z2 > 0 then --first and second points in front of me
-				courseplay:setCurrentTargetFromList(self, 1);
-				courseplay:debug('get best first point: z1 > 0, z2 > 0', 4);
-			elseif z1 < 0 and z2 > 0 then --first point behind me, second point in front of me
-				courseplay:setCurrentTargetFromList(self, 2);
-				courseplay:debug('get best first point: z1 < 0, z2 > 0', 4);
-			else --first and second points behind me
-				self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.cp.DirectionNode, 0, 0, self.cp.turnRadius * 1.5);
-				courseplay:debug('get best first point: z1 < 0, z2 < 0', 4);
-			end;
-
-			self.no_speed_limit = true;
-			courseplay:setModeState(self, 5);
-			return true;
 		end;
-
-		return false;
-
-	-- use old search function (aStar)
-	else
-		local targetPoints = courseplay:calcMoves(z, x, targetZ, targetX, fruitType);
-
-		if targetPoints ~= nil then
-			self.cp.nextTargets = {};
-			local numPoints = #targetPoints;
-			local firstPoint = ceil(self.cp.turnRadius / 5);
-			courseplay:debug(string.format('numPoints=%d, first point = ceil(turnRadius [%.1f] / 5) = %d', numPoints, self.cp.turnRadius, firstPoint), 4);
-			if numPoints < firstPoint then
-				return false;
-			end;
-			-- for i, cp in pairs(targetPoints) do
-			for i=firstPoint, numPoints do
-				local cp = targetPoints[i];
-				local insert = true;
-
-				--clean path (only keep corner points)
-				if i > firstPoint and i < numPoints then
-					local pp = targetPoints[i-1];
-					local np = targetPoints[i+1];
-					if cp.y == pp.y and cp.y == np.y then
-						courseplay:debug(string.format('\t%d: [x] cp.y==pp.y==np.y = %d, [z] cp.x = %d -> insert=false', i, cp.y, cp.x), 4);
-						insert = false;
-					elseif cp.x == pp.x and cp.x == np.x then
-						courseplay:debug(string.format('\t%d: [x] cp.y = %d, [z] cp.x==pp.x==np.x = %d -> insert=false', i, cp.y, cp.x), 4);
-						insert = false;
-					end;
-				end;
-
-				if insert then
-					courseplay:debug(string.format('%d: [x] cp.y = %d, [z] cp.x = %d, insert=true', i, cp.y, cp.x), 4);
-					table.insert(self.cp.nextTargets, { x = cp.y, y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cp.y, 1, cp.x) + 3, z = cp.x });
-				end;
-			end;
-			courseplay:setCurrentTargetFromList(self, 1);
-			courseplay:setModeState(self, 5);
-			return true;
-		end;
-
-		return false;
+		courseplay:setCurrentTargetFromList(vehicle, 1);
+		courseplay:setModeState(vehicle, 5);
+		return true;
 	end;
 
-	-- return false;
+	return false;
 end;
 
 function courseplay:calculateCombineOffset(self, combine)

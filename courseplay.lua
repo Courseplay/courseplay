@@ -22,7 +22,6 @@ courseplay = {
 	button = {};
 	fields = {};
 	generation = {};
-	pathfinding = {};
 };
 
 if courseplay.path ~= nil then
@@ -114,9 +113,6 @@ function courseplay:initialize()
 		'mode7', 
 		'mode8', 
 		'mode9', 
-		'pathfinding',
-		'pathfinding_helpers',
-		'pathfinding_PathFinderOnGrids',
 		'recording', 
 		'reverse',
 		'settings', 
@@ -479,9 +475,6 @@ function courseplay:setGlobalData()
 	courseplay.fields.scanStep = Utils.getNoNil(fieldsCustomScanStep, courseplay.fields.defaultScanStep);
 	courseplay.fields.seedUsageCalculator = {};
 	courseplay.fields.seedUsageCalculator.fieldsWithoutSeedData = {};
-
-	--PATHFINDING
-	courseplay.pathfinding = {};
 
 	--UTF8
 	courseplay.allowedCharacters = courseplay:getAllowedCharacters();
