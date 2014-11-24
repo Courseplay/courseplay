@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="20">
 	<version>4.00.0073</version>
 	<author><![CDATA[Courseplay Dev Team]]></author>
@@ -12,55 +12,61 @@
 		<ru>Courseplay</ru>
 		<hu>Courseplay - A Vezetősegéd</hu>
 		<nl>Courseplay</nl>
+		<br>Courseplay</br>
 	</title>
 	
 	<description>
 		<de>
 <![CDATA[Entwickler: Jakob Tischler, Thomas Gärtner, Satis
 
-Übersetzungen: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro, [RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo]]>
+Übersetzungen: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro, [RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo], [BR] Admilson]]>
 		</de>
 		<en>
 <![CDATA[Developers: Jakob Tischler, Thomas Gärtner, Satis
 
-Translations: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro, [RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo]]>
+Translations: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro, [RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo], [BR] Admilson]]>
 		</en>
 		<es>
 <![CDATA[Desarrolladores: Jakob Tischler, Thomas Gärtner, Satis
 
-Tradduciónes: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro, [RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo]]>
+Tradduciónes: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro, [RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo], [BR] Admilson]]>
 		</es>
 		<fr>
 <![CDATA[Développeurs: Jakob Tischler, Thomas Gärtner, Satis
 
-Traductions: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro, [RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo]]>
+Traductions: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro, [RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo], [BR] Admilson]]>
 		</fr>
 		<it>
 <![CDATA[Sviluppatori: Jakob Tischler, Thomas Gärtner, Satis
 
-Traduzioni: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy,[IT] JD7530, Cristiano Magro, [RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo]]>
+Traduzioni: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy,[IT] JD7530, Cristiano Magro, [RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo], [BR] Admilson]]>
 		</it>
 		<cz>
 <![CDATA[Vývojáři: Jakob Tischler, Thomas Gärtner, Satis
 
-Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro, [RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo]]>
+Překlady: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro, [RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo], [BR] Admilson]]>
 		</cz>
 		<ru>
 <![CDATA[Разработка: Jakob Tischler, Thomas Gärtner, Satis
 
-Переводчики: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro, [RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo]]>
+Переводчики: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro, [RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo], [BR] Admilson]]>
 		</ru>
 		<hu>
 <![CDATA[Készítők: Jakob Tischler, Thomas Gärtner, Satis
 
-Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro, [RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo]]>
+Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro, [RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo], [BR] Admilson]]>
 		</hu>
 		<nl>
 <![CDATA[Ontwikkelaars: Jakob Tischler, Thomas Gärtner, Satis
 
-Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro, [RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo]]>
+Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro, [RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo], [BR] Admilson]]>
 		</nl>
- 	</description>
+		<br>
+<![CDATA[Desenvolvedores: Jakob Tischler, Thomas Gärtner, Satis
+
+Tradutores: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano Magro, [RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo], [BR] Admilson]]>
+		</br>	
+	</description>
 	
 	<multiplayer supported="true"/>
 	<iconFilename>store.dds</iconFilename>
@@ -76,6 +82,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Начать запись маршрута</ru>
 			<hu>Útvonal rögzítés kezdete</hu>
 			<nl>Start route vastleggen</nl>
+			<br>Iniciar gravação da rota</br>
 		</text>
 		<text name="COURSEPLAY_DRIVER">
 			<en>Driver</en>
@@ -87,6 +94,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Транспорт</ru>
 			<hu>Útvonal</hu>
 			<nl>Bestuurder</nl>
+			<br>Motorista</br>
 		</text>
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START">
 			<en>Start driver</en>
@@ -98,6 +106,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Запустить по маршруту</ru>
 			<hu>Vezető indítása</hu>
 			<nl>Start bestuurder</nl>
+			<br>Dirigir</br>
 		</text>
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP">
 			<en>Stop driver</en>
@@ -109,6 +118,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Остановить транспорт</ru>
 			<hu>Vezető leállítása</hu>
 			<nl>Stop bestuurder</nl>
+			<br>Parar</br>
 		</text>
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT">
 			<en>Stop at last point or at next trigger</en>
@@ -120,6 +130,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Остановиться в следующей точке</ru>
 			<hu>Állj az utlsó pontnál, következő triggernél</hu>
 			<nl>Stop bij laatste punt of volgende trigger</nl>
+			<br>Parar no último ponto ou prôximo trigger</br>
 		</text>
 		<text name="COURSEPLAY_UNLOADING_SIDE">
 			<en>Driver side</en>
@@ -131,6 +142,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Водительская сторона</ru>
 			<hu>Vezető oldal</hu>
 			<nl>Bestuurderszijde</nl>
+			<br>Lado do motorista</br>
 		</text>
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE">
 			<en>automatic</en>
@@ -142,6 +154,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>автоматически</ru>
 			<hu>Automata</hu>
 			<nl>automatisch</nl>
+			<br>automático</br>
 		</text>
 		<text name="COURSEPLAY_LEFT">
 			<en>left</en>
@@ -153,6 +166,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>влево</ru>
 			<hu>bal</hu>
 			<nl>links</nl>
+			<br>esquerda</br>
 		</text>
 		<text name="COURSEPLAY_RIGHT">
 			<en>right</en>
@@ -164,6 +178,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>вправо</ru>
 			<hu>jobb</hu>
 			<nl>rechts</nl>
+			<br>direita</br>
 		</text>
 		<text name="COURSEPLAY_UNLOADING_DRIVER_SEND_HOME">
 			<en>Send driver home</en>
@@ -175,6 +190,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Отправить на разгрузку</ru>
 			<hu>Vezető elküldése</hu>
 			<nl>Stuur bestuurder weg</nl>
+			<br>Enviar motorista para a rota</br>
 		</text>
 		<text name="COURSEPLAY_REQUEST_UNLOADING_DRIVER">
 			<en>Request driver</en>
@@ -186,6 +202,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Вызвать транспорт</ru>
 			<hu>Vezető hívása</hu>
 			<nl>Verzoek bestuurder</nl>
+			<br>Chamar o motorista</br>
 		</text>
 		<text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED">
 			<en>Driver requested</en>
@@ -197,6 +214,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Отозвать транспорт</ru>
 			<hu>Vezető hívása</hu>
 			<nl>Bestuurder opgeroepen</nl>
+			<br>Motorista foi chamado</br>
 		</text>
 		<text name="COURSEPLAY_START_COURSE">
 			<en>Drive course</en>
@@ -208,6 +226,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Запустить по маршруту</ru>
 			<hu>Útvonal indítása</hu>
 			<nl>Route beginnen</nl>
+			<br>Dirigir na rota</br>
 		</text>
 		<text name="COURSEPLAY_STOP_COURSE">
 			<en>Stop driver</en>
@@ -219,6 +238,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Прервать маршрут</ru>
 			<hu>Útvonal leállítása</hu>
 			<nl>Stop bestuurder</nl>
+			<br>Parar</br>
 		</text>
 		<text name="COURSEPLAY_MODE_1">
 			<en>Type: Grain transport (Load at start)</en>
@@ -230,6 +250,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Тип: Транспортировка и продажа</ru>
 			<hu>Típus: Szállító segéd (tölt és indul)</hu>
 			<nl>Type: Transport</nl>
+			<br>Tipo: Transporte de grãos (Carregar e ir descarregar)</br>
 		</text>
 		<text name="COURSEPLAY_MODE_2">
 			<en>Type: Combi (empty combine and offload)</en>
@@ -241,6 +262,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Тип: Работа с комбайном</ru>
 			<hu>Típus: Kombájnkövetés (kombájn ürítés és leadás)</hu>
 			<nl>Type: Combi (combine legen en uitladen)</nl>
+			<br>Tipo: Combi (Carregar na ceifadeira e ir descarregar)</br>
 		</text>
 		<text name="COURSEPLAY_MODE_3">
 			<en>Type: Overloader (empty combine and offload to trailer)</en>
@@ -252,6 +274,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Тип: Посредник, комбайн > накопитель > прицеп</ru>
 			<hu>Típus: Átrakodás (kombájn ürítés és átrakás)</hu>
 			<nl>Type: Overladen (combine legen en overladen in trailer)</nl>
+			<br>Tipo: Autocarregador (Carregar na ceifadeira e descarrega na carreta)</br>
 		</text>
 		<text name="COURSEPLAY_MODE_4">
 			<en>Type: fertilize and seeding</en>
@@ -263,6 +286,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Тип: Удобрение и посев</ru>
 			<hu>Típus: Szorás és vetés</hu>
 			<nl>Type: Kunstmest en zaaien</nl>
+			<br>Tipo: Fertilizar e semear</br>
 		</text>
 		<text name="COURSEPLAY_MODE_5">
 			<en>Type: Transfer (drive from start to finish)</en>
@@ -274,6 +298,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Тип: Трансфер по маршруту</ru>
 			<hu>Típus: Szállitás (Vezetés a célig)</hu>
 			<nl>Type: Verladen (van start naar finish)</nl>
+			<br>Tipo: Transferir (Dirigir do início ao fim da rota)</br>
 		</text>
 		<text name="COURSEPLAY_MODE_6">
 			<en>Type: Fieldwork</en>
@@ -285,6 +310,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Тип: Полевые работы</ru>
 			<hu>Típus: Földmunkák, gyűjtés, szállítás</hu>
 			<nl>Type: Veldwerk</nl>
+			<br>Tipo: Trabalho no campo</br>
 		</text>
 		<text name="COURSEPLAY_MODE_7">
 			<en>Type: Combine self-unloading</en>
@@ -296,6 +322,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Тип: Саморазгрузка комбайна</ru>
 			<hu>Típus: A kombájn megy kirakodni</hu>
 			<nl>Type: Combine zelfontladen</nl>
+			<br>Tipo: Ceifadeira descarrega na carreta</br>
 		</text>
 		<text name="COURSEPLAY_MODE_8">
 			<en>Type: Manure transporter</en>
@@ -307,6 +334,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Тип: Перевозка навоза</ru>
 			<hu>Típus: Trágyaszállítás</hu>
 			<nl>Type: Mesttransport</nl>
+			<br>Tipo: Transporte de esterco</br>
 		</text>
 		<text name="COURSEPLAY_MODE_9">
 			<en>Type: Fill and empty shovel</en>
@@ -318,6 +346,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Тип: Работы для погрузчика</ru>
 			<hu>Típus: Rakodás (kanalat tölt és ürít)</hu>
 			<nl>Type: Vullen en legen shovel</nl>
+			<br>Tipo: Encher e esvaziar pá carregadeira</br>
 		</text>
 		<text name="COURSEPLAY_CONTINUE">
 			<en>continue</en>
@@ -329,6 +358,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Продолжить</ru>
 			<hu>tovább hajtás</hu>
 			<nl>doorgaan</nl>
+			<br>continua</br>
 		</text>
 		<text name="COURSEPLAY_RESET_COURSE">
 			<en>Reset course</en>
@@ -340,6 +370,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Сбросить маршрут</ru>
 			<hu>Útvonalat alaphelyzetbe</hu>
 			<nl>Reset route</nl>
+			<br>Resetar rota</br>
 		</text>
 		<text name="COURSEPLAY_DRIVE_NOW">
 			<en>Drive now</en>
@@ -351,6 +382,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Перезапустить цикл</ru>
 			<hu>Indítás azonnal (Nem vár a kiürítésig)</hu>
 			<nl>Nu rijden</nl>
+			<br>Dirigir agora</br>
 		</text>
 		<text name="COURSEPLAY_DRIVE_ON_AT">
 			<en>Drive on at:</en>
@@ -362,6 +394,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Разгрузка при:</ru>
 			<hu>Elszállítás:</hu>
 			<nl>Wegrijden bij:</nl>
+			<br>Dirigir em:</br>
 		</text>
 		<text name="UNKNOWN">
 			<en>unknown</en>
@@ -373,6 +406,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>неизвестный</ru>
 			<hu>Ismeretlen</hu>
 			<nl>onbekend</nl>
+			<br>desconhecido</br>
 		</text>
 		<text name="COURSEPLAY_DISTANCE">
 			<en>distance</en>
@@ -384,6 +418,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>дистанция</ru>
 			<hu>Távolság</hu>
 			<nl>afstand</nl>
+			<br>distancia</br>
 		</text>
 		<text name="COURSEPLAY_WAITING_TIME">
 			<en>Waiting time</en>
@@ -395,6 +430,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Пауза:</ru>
 			<hu>Várakozási idő</hu>
 			<nl>Wachttijd</nl>
+			<br>Tempo de espera</br>
 		</text>
 		<text name="COURSEPLAY_MINUTES">
 			<en>%d min</en>
@@ -406,6 +442,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>%d мин</ru>
 			<hu>%d min</hu>
 			<nl>%d min</nl>
+			<br>%d min</br>
 		</text>
 		<text name="COURSEPLAY_SECONDS">
 			<en>%d sec</en>
@@ -417,6 +454,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>%d сек</ru>
 			<hu>%d sec</hu>
 			<nl>%d sec</nl>
+			<br>%d sec</br>
 		</text>
 		<text name="COURSEPLAY_COURSE_NAME">
 			<en>Course name:</en>
@@ -428,6 +466,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Название маршрута:</ru>
 			<hu>Útvonal név:</hu>
 			<nl>Naam route:</nl>
+			<br>Nome da rota</br>
 		</text>
 		<text name="COURSEPLAY_FOLDER_NAME">
 			<en>Folder name:</en>
@@ -439,6 +478,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Имя папки:</ru>
 			<hu>Mappa név:</hu>
 			<nl>Folder naam:</nl>
+			<br>Nome da pasta</br>
 		</text>
 		<text name="COURSEPLAY_FILTER_COURSES">
 			<en>Filter courses:</en>
@@ -450,6 +490,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Фильтровать:</ru>
 			<hu>Útvonal szűrő:</hu>
 			<nl>Route filter:</nl>
+			<br>Filtrar rotas</br>
 		</text>
 		<text name="COURSEPLAY_COURSES_FILTER_TITLE">
 			<en>Courses: %q</en>
@@ -461,6 +502,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>МАРШРУТЫ %q</ru>
 			<hu>Útvonal: %q</hu>
 			<nl>Route: %q</nl>
+			<br>Rotas: %q</br>
 		</text>
 		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT">
 			<en>has reached overload point.</en>
@@ -472,6 +514,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>доехал до места разгрузки.</ru>
 			<hu>az átrakodási ponton van.</hu>
 			<nl>overlaad punt bereikt.</nl>
+			<br>Chegou no ponto para descarregar</br>
 		</text>
 		<text name="COURSEPLAY_REACHED_WAITING_POINT">
 			<en>has reached waiting point</en>
@@ -483,6 +526,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>доехал до места ожидания.</ru>
 			<hu>várakozási ponton van.</hu>
 			<nl>wachtpunt bereikt</nl>
+			<br>Chegou no ponto de espera</br>
 		</text>
 		<text name="COURSEPLAY_REACHED_END_POINT">
 			<en>has reached trigger/end point</en>
@@ -494,6 +538,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>доехал до нужного пункта</ru>
 			<hu>az utolsó ponton van.</hu>
 			<nl>trigger bereikt/eindpunt</nl>
+			<br>Chegou no trigger ou no fim da rota</br>
 		</text>
 		<text name="COURSEPLAY_WORK_END">
 			<en>has finished work.</en>
@@ -505,6 +550,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>завершил работу на маршруте.</ru>
 			<hu>végzett a munkával.</hu>
 			<nl>werk afgerond.</nl>
+			<br>Finalizado o trabalho</br>
 		</text>
 		<text name="COURSEPLAY_NEEDS_UNLOADING">
 			<en>: work tool needs to be unloaded.</en>
@@ -516,6 +562,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>нуждается в разгрузке.</ru>
 			<hu>: A munka folytatásához ki kell ürítened!</hu>
 			<nl>: gereedschap legen.</nl>
+			<br>Precisa de ferramenta para carregar</br>
 		</text>
 		<text name="COURSEPLAY_NEEDS_REFILLING">
 			<en>: work tool needs to be refilled.</en>
@@ -527,6 +574,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>нуждается в заправке.</ru>
 			<hu>: A munkaeszközt újra kell tölteni.</hu>
 			<nl>: gereedschap vullen.</nl>
+			<br>Precisa de ferramenta para recarregar</br>
 		</text>
 		<text name="COURSEPLAY_UNLOADING_BALES">
 			<en>unloading bales.</en>
@@ -538,6 +586,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>выгрузка тюков.</ru>
 			<hu> kirakja a bálákat.</hu>
 			<nl>Balen afladen</nl>
+			<br>Descarregar fardos</br>
 		</text>
 		<text name="COURSEPLAY_IS_IN_TRAFFIC">
 			<en>is in traffic.</en>
@@ -549,6 +598,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>застрял.</ru>
 			<hu>dugóban van (forgalomban)</hu>
 			<nl>oponthoud.</nl>
+			<br>em tráfego</br>
 		</text>
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED">
 			<en>tip trigger reached</en>
@@ -560,6 +610,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Достигнут пункт разрузки</ru>
 			<hu>Triggerig terjed</hu>
 			<nl>uitlaad trigger bereikt</nl>
+			<br>Chegou no trigger para descarregar</br>
 		</text>
 		<text name="COURSEPLAY_LOADING_AMOUNT">
 			<en>Loading: %d of %d</en>
@@ -571,6 +622,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Заполнение %d из %d</ru>
 			<hu>Töltés: %d -ból %d</hu>
 			<nl>Laden: %d of %d</nl>
+			<br>Carregando: %d de %d</br>
 		</text>
 		<text name="COURSEPLAY_WAYPOINT_MODE">
 			<en>Show waypoints</en>
@@ -582,6 +634,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Показать точки:</ru>
 			<hu>Útpontok megjelenítése</hu>
 			<nl>Toon markeringen</nl>
+			<br>Mostrar pontos</br>
 		</text>
 		<text name="COURSEPLAY_PATHFINDING">
 			<en>Pathfinding</en>
@@ -593,6 +646,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Поиск точек:</ru>
 			<hu>Útvonal keresése</hu>
 			<nl>Plotting</nl>
+			<br>Evitar as plantações</br>
 		</text>
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL">
 			<en>Side offset:</en>
@@ -604,6 +658,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>правее/левее:</ru>
 			<hu>oldal távolság:</hu>
 			<nl>Zijwaardse afstand:</nl>
+			<br>Distancia lateral</br>
 		</text>
 		<text name="COURSEPLAY_START_AT">
 			<en>Start at:</en>
@@ -615,6 +670,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Загрузка при:</ru>
 			<hu>Tölteni indul:</hu>
 			<nl>Start bij:</nl>
+			<br>Iniciar em:</br>
 		</text>
 		<text name="COURSEPLAY_TURN_RADIUS">
 			<en>Turning circle:</en>
@@ -626,6 +682,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Радиус поворота:</ru>
 			<hu>Fordulási sugár:</hu>
 			<nl>Draaicirkel:</nl>
+			<br>Raio de giro:</br>
 		</text>
 		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL">
 			<en>Vertical offset:</en>
@@ -637,6 +694,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>вперед/назад:</ru>
 			<hu>Eltolás előre/hátra:</hu>
 			<nl>Verticale afstand:</nl>
+			<br>Distancia vertical:</br>
 		</text>
 		<text name="COURSEPLAY_COMBINE">
 			<en>Combine</en>
@@ -648,6 +706,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Комбайн</ru>
 			<hu>Kombájn</hu>
 			<nl>Combine</nl>
+			<br>Ceifadeira</br>
 		</text>
 		<text name="COURSEPLAY_NONE">
 			<en>none</en>
@@ -659,6 +718,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>отсутствует</ru>
 			<hu>semmi</hu>
 			<nl>geen</nl>
+			<br>nenhum</br>
 		</text>
 		<text name="COURSEPLAY_CHOOSE_COMBINE">
 			<en>Choose combine:</en>
@@ -670,6 +730,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Выбрать:</ru>
 			<hu>Kombájnt választ:</hu>
 			<nl>Kies combine:</nl>
+			<br>Escolher ceifadeira</br>
 		</text>
 		<text name="COURSEPLAY_COMBINE_SEARCH_MODE">
 			<en>Find combine:</en>
@@ -681,6 +742,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Поиск:</ru>
 			<hu>Kombájn keresés:</hu>
 			<nl>Zoek combine:</nl>
+			<br>Procurar ceifadeira</br>
 		</text>
 		<text name="COURSEPLAY_CURRENT">
 			<en>Current:</en>
@@ -692,6 +754,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Выбран:</ru>
 			<hu>Jelenlegi:</hu>
 			<nl>Huidige:</nl>
+			<br>Atual:</br>
 		</text>
 		<text name="COURSEPLAY_AUTOMATIC_SEARCH">
 			<en>automatic search</en>
@@ -703,6 +766,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>автоматически</ru>
 			<hu>automatikus keresés</hu>
 			<nl>automatisch zoeken</nl>
+			<br>Procura automática</br>
 		</text>
 		<text name="COURSEPLAY_MANUAL_SEARCH">
 			<en>select manually</en>
@@ -714,6 +778,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>в ручную</ru>
 			<hu>kézzel kell kiválasztani</hu>
 			<nl>kies handmatig</nl>
+			<br>Selecionar manualmente</br>
 		</text>
 		<text name="COURSEPLAY_SEARCH_COMBINE_ON_FIELD">
 			<en>Search combine on field %s</en>
@@ -725,6 +790,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Комбайн с поля № %s</ru>
 			<hu>Kombájnkeresése a %s teületen</hu>
 			<nl>Zoek combine in veld %s</nl>
+			<br>Procurar ceifadeira no campo %s</br>
 		</text>
 		<text name="COURSEPLAY_COPY_COURSE">
 			<en>Copy course:</en>
@@ -736,6 +802,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Копировать:</ru>
 			<hu>Másolt útvonal:</hu>
 			<nl>Kopieër route:</nl>
+			<br>Copiar rota:</br>
 		</text>
 		<text name="COURSEPLAY_VEHICLE">
 			<en>Vehicle</en>
@@ -747,6 +814,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Транспорт</ru>
 			<hu>Jármű</hu>
 			<nl>Voertuig</nl>
+			<br>Veículo</br>
 		</text>
 		<text name="COURSEPLAY_TEMP_COURSE">
 			<en>temporary course</en>
@@ -758,6 +826,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>не сохраненный</ru>
 			<hu>ideiglenes útvonal</hu>
 			<nl>tijdelijke route</nl>
+			<br>Rota temporária</br>
 		</text>
 		<text name="COURSEPLAY_SPEED_TURN">
 			<en>Turn speed:</en>
@@ -769,6 +838,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Маневры:</ru>
 			<hu>Manőverezési seb.:</hu>
 			<nl>Draai snelheid:</nl>
+			<br>Velocidade de giro:</br>
 		</text>
 		<text name="COURSEPLAY_SPEED_FIELD">
 			<en>Field speed:</en>
@@ -780,6 +850,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>На поле:</ru>
 			<hu>Termőföldi seb.:</hu>
 			<nl>Veld snelheid:</nl>
+			<br>Velocidade no campo:</br>
 		</text>
 		<text name="COURSEPLAY_SPEED_MAX">
 			<en>Street speed:</en>
@@ -791,6 +862,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>В пути:</ru>
 			<hu>Közúti (max) seb.:</hu>
 			<nl>Weg snelheid:</nl>
+			<br>Velocidade na estrada:</br>
 		</text>
 		<text name="COURSEPLAY_SPEED_UNLOAD">
 			<en>Unload (BGA):</en>
@@ -802,6 +874,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Разгрузка (BGA):</ru>
 			<hu>Kirakodás (BGA):</hu>
 			<nl>Uitladen</nl>
+			<br>Descarregar (BGA)</br>
 		</text>
 		<text name="COURSEPLAY_MAX_SPEED_MODE">
 			<en>Speed:</en>
@@ -813,6 +886,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Режим:</ru>
 			<hu>Max Sebesség:</hu>
 			<nl>Snelheid:</nl>
+			<br>Velocidade:</br>
 		</text>
 		<text name="COURSEPLAY_MAX_SPEED_MODE_RECORDING">
 			<en>from recording</en>
@@ -824,6 +898,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>по настройкам</ru>
 			<hu>Felvétel alapján</hu>
 			<nl>van opname</nl>
+			<br>da gravação</br>
 		</text>
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX">
 			<en>maximum speed</en>
@@ -835,6 +910,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>скоростной</ru>
 			<hu>beállított sebesség</hu>
 			<nl>maximum snelheid</nl>
+			<br>velocidade máxima</br>
 		</text>
 		<text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC">
 			<en>automatic (from course)</en>
@@ -846,6 +922,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>автоматически</ru>
 			<hu>automaikus (az útvonalhoz)</hu>
 			<nl>automatisch (van opname)</nl>
+			<br>automático (da rota)</br>
 		</text>
 		<text name="COURSEPLAY_COURSE">
 			<en>Course:</en>
@@ -857,6 +934,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Маршрут:</ru>
 			<hu>Útvonal:</hu>
 			<nl>Route:</nl>
+			<br>Rota:</br>
 		</text>
 		<text name="COURSEPLAY_NO_COURSE_LOADED">
 			<en>course: no course loaded</en>
@@ -868,6 +946,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Маршрут: отсутствует</ru>
 			<hu>Útvonal: Útvonal nincs betöltve</hu>
 			<nl>route: geen route geladen</nl>
+			<br>rota: nenhuma rota carregada</br>
 		</text>
 		<text name="COURSEPLAY_WAYPOINT">
 			<en>waypoint</en>
@@ -879,6 +958,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Точек</ru>
 			<hu>Útvonalpont</hu>
 			<nl>markering</nl>
+			<br>Ponto</br>
 		</text>
 		<text name="COURSEPLAY_NO_WAYPOINTS">
 			<en>no waypoints yet</en>
@@ -890,6 +970,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Нет точек для отображения</ru>
 			<hu>Nincs még útvonalpont</hu>
 			<nl>nog geen markeringen</nl>
+			<br>nenhum ponto ainda</br>
 		</text>
 		<text name="COURSEPLAY_WAYPOINT_MODE_1">
 			<en>Start and end</en>
@@ -901,6 +982,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>старт и финиш</ru>
 			<hu>Főbb pontok</hu>
 			<nl>Start en finish</nl>
+			<br>Inicio e fim</br>
 		</text>
 		<text name="COURSEPLAY_WAYPOINT_MODE_2">
 			<en>without crossing points</en>
@@ -912,6 +994,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>без перекрестков</ru>
 			<hu>Csak kezdő- és végpont</hu>
 			<nl>zonder kruisingen</nl>
+			<br>sem pontos cruzados</br>
 		</text>
 		<text name="COURSEPLAY_WAYPOINT_MODE_3">
 			<en>show all own</en>
@@ -923,6 +1006,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>показать все</ru>
 			<hu>Minden pont</hu>
 			<nl>toon eigen</nl>
+			<br>mostrar todos</br>
 		</text>
 		<text name="COURSEPLAY_WAYPOINT_MODE_4">
 			<en>none</en>
@@ -934,6 +1018,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>не показывать</ru>
 			<hu>Nem mutat</hu>
 			<nl>geen</nl>
+			<br>nenhum</br>
 		</text>
 		<text name="COURSEPLAY_BEACON_LIGHTS">
 			<en>Beacon lights:</en>
@@ -945,6 +1030,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Мигалка:</ru>
 			<hu>Megkülönböztető jelzés:</hu>
 			<nl>Zwaailichten:</nl>
+			<br>Luzes de aviso:</br>
 		</text>
 		<text name="COURSEPLAY_BEACON_LIGHTS_MODE_1">
 			<en>only on the road</en>
@@ -956,6 +1042,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>только на дороге</ru>
 			<hu>az utakon működik</hu>
 			<nl>alleen op de weg</nl>
+			<br>na estrada</br>
 		</text>
 		<text name="COURSEPLAY_BEACON_LIGHTS_MODE_2">
 			<en>always turn on</en>
@@ -967,6 +1054,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>мигает всегда</ru>
 			<hu>mindig működik</hu>
 			<nl>altijd aan</nl>
+			<br>sempre ligadas</br>
 		</text>
 		<text name="COURSEPLAY_BEACON_LIGHTS_MODE_3">
 			<en>never turn on</en>
@@ -978,6 +1066,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>сломалась</ru>
 			<hu>nem működik</hu>
 			<nl>altijd uit</nl>
+			<br>desligadas</br>
 		</text>
 		<text name="COURSEPLAY_PAGE_TITLE_CP_CONTROL">
 			<en>Courseplay control</en>
@@ -989,6 +1078,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>КОНТРОЛЬ МАРШРУТА</ru>
 			<hu>Útvonal lejátszó szabályozás</hu>
 			<nl>Courseplay bediening</nl>
+			<br>Controle do Courseplay</br>
 		</text>
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS">
 			<en>Combine controls</en>
@@ -1000,6 +1090,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>УПРАВЛЕНИЕ ТРАНСПОРТОМ</ru>
 			<hu>Kombájn szabályozás</hu>
 			<nl>Combine bediening</nl>
+			<br>Controle da Ceifadeira</br>
 		</text>
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES">
 			<en>Manage courses</en>
@@ -1011,6 +1102,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>ЗАГРУЗИТЬ МАРШРУТ</ru>
 			<hu>Útvonal kezelés</hu>
 			<nl>Beheer routes</nl>
+			<br>Gerenciar rotas</br>
 		</text>
 		<text name="COURSEPLAY_PAGE_TITLE_CHOOSE_FOLDER">
 			<en>Choose folder</en>
@@ -1022,6 +1114,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>СОДЕРЖИМОЕ ПАПКИ</ru>
 			<hu>Mappa választás</hu>
 			<nl>Kies map</nl>
+			<br>Escolher pasta</br>
 		</text>
 		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE">
 			<en>Settings combi mode</en>
@@ -1033,6 +1126,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>ПАРАМЕТРЫ КОМБАЙНА</ru>
 			<hu>Szállító üzemmód beállítása</hu>
 			<nl>Instelling combi-modus</nl>
+			<br>Configurar modo combi</br>
 		</text>
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES">
 			<en>Manage combines</en>
@@ -1044,6 +1138,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>ВЫБОР КОМБАЙНА</ru>
 			<hu>Kombájn kezelés</hu>
 			<nl>Beheer combines</nl>
+			<br>Gerenciar ceifadeiras</br>
 		</text>
 		<text name="COURSEPLAY_PAGE_TITLE_SPEEDS">
 			<en>Speed limits</en>
@@ -1055,6 +1150,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>СКОРОСТНЫЕ ПАРАМЕТРЫ</ru>
 			<hu>Sebességhatár</hu>
 			<nl>Snelheden</nl>
+			<br>Limite de velocidade</br>
 		</text>
 		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS">
 			<en>Driving settings</en>
@@ -1066,6 +1162,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>СМЕЩЕНИЕ МАРШРУТА</ru>
 			<hu>Vezetési beállítások</hu>
 			<nl>Bestuur instellingen</nl>
+			<br>Configuração de condução</br>
 		</text>
 		<text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS">
 			<en>Settings</en>
@@ -1077,6 +1174,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>ДОПОЛНИТЕЛЬНЫЕ ОПЦИИ</ru>
 			<hu>Beállitások</hu>
 			<nl>Instellingen</nl>
+			<br>Configurações</br>
 		</text>
 		<text name="COURSEPLAY_COMBINE_IS_TURNING">
 			<en>Combine is turning</en>
@@ -1088,6 +1186,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Комбайн поворачивает</ru>
 			<hu>Kombájn éppen fordul</hu>
 			<nl>Combine draait</nl>
+			<br>Ceifadeira está virando</br>
 		</text>
 		<text name="COURSEPLAY_NO_WORK_AREA">
 			<en>no work area at this course</en>
@@ -1099,6 +1198,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>нет работы на маршруте</ru>
 			<hu>Nincs munkaterülete a vezetőnek</hu>
 			<nl>Geen werkgebied in deze route</nl>
+			<br>nenhuma area de trabalho nesta rota</br>
 		</text>
 		<text name="COURSEPLAY_COMBINED_COURSES">
 			<en>combined courses</en>
@@ -1110,6 +1210,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>- комбинированный</ru>
 			<hu>Betöltött útvonal</hu>
 			<nl>Samengestelde routes</nl>
+			<br>rotas combinadas</br>
 		</text>
 		<text name="COURSEPLAY_DRIVE_BEHIND_COMBINE">
 			<en>Drive behind combine</en>
@@ -1121,6 +1222,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Еду к комбайну</ru>
 			<hu>Kombájnhoz vezetés</hu>
 			<nl>Achter combine rijden</nl>
+			<br>Dirigir atrás da ceifadeira</br>
 		</text>
 		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE">
 			<en>Drive next to combine</en>
@@ -1132,6 +1234,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Еду рядом с комбайном</ru>
 			<hu>következő kombájnhoz megy</hu>
 			<nl>Naast combine rijden</nl>
+			<br>Dirigir ao lado da ceifadeira</br>
 		</text>
 		<text name="COURSEPLAY_DRIVE_TO_COMBINE">
 			<en>drive to combine</en>
@@ -1143,6 +1246,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Маневрирую для погрузки</ru>
 			<hu>Kombájnhoz megy</hu>
 			<nl>Naar combine rijden</nl>
+			<br>Dirigir até a ceifadeira</br>
 		</text>
 		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP">
 			<en>Combine is telling me to stop</en>
@@ -1154,6 +1258,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Комбайну нужна разгрузка</ru>
 			<hu>Kombájn azt mondja, állj!</hu>
 			<nl>Combine laat halthouden</nl>
+			<br>Ceifadeira pedindo para parar</br>
 		</text>
 		<text name="COURSEPLAY_TURNING_TO_COORDS">
 			<en>Turning to direction %d %d</en>
@@ -1165,6 +1270,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Возращение к %d %d</ru>
 			<hu>Irány %d %d</hu>
 			<nl>Ga naar %d %d</nl>
+			<br>Virando em direção %d %d</br>
 		</text>
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT">
 			<en>Drive to waypoint %d %d</en>
@@ -1176,6 +1282,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Еду на временную стоянку</ru>
 			<hu>az %d %d útvonalponthoz megy</hu>
 			<nl>Ga naar markering %d %d</nl>
+			<br>Dirigir ao ponto %d %d</br>
 		</text>
 		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL">
 			<en>Waiting until fill level is reached</en>
@@ -1187,6 +1294,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Жду заполнения бункера</ru>
 			<hu>vár, amíg kombájn ürít</hu>
 			<nl>Wacht tot vulstand bereikt is</nl>
+			<br>Esperar o carregamento</br>
 		</text>
 		<text name="COURSEPLAY_NO_COMBINE_IN_REACH">
 			<en>No combine in reach</en>
@@ -1198,6 +1306,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Ищу комбайн для работы</ru>
 			<hu>a kombájn nem ér el</hu>
 			<nl>Geen combine binnen bereik</nl>
+			<br>Nenhuma ceifadeira ao alcance</br>
 		</text>
 		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED">
 			<en>Waiting until combine has turned</en>
@@ -1209,6 +1318,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Жду завершения маневра комбайна</ru>
 			<hu>vár, amíg kombájn megfordul!</hu>
 			<nl>Wacht tot combine gedraaid is</nl>
+			<br>Esperar a ceifadeira virar</br>
 		</text>
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT">
 			<en>Waiting for new waypoint</en>
@@ -1220,6 +1330,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Жду у следующей точки</ru>
 			<hu>vár az új útvonalpontra</hu>
 			<nl>Wacht op nieuwe markering</nl>
+			<br>Aguardando por novo ponto</br>
 		</text>
 		<text name="COURSEPLAY_FOLLOWING_TRACTOR">
 			<en>Following tractor</en>
@@ -1231,6 +1342,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Еду за транспортом</ru>
 			<hu>Traktor követése</hu>
 			<nl>Volg tractor</nl>
+			<br>Seguindo trator</br>
 		</text>
 		<text name="COURSEPLAY_SHOULD_BE_REFUELED">
 			<en>should be refueled soon</en>
@@ -1242,6 +1354,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>низкий уровень топлива</ru>
 			<hu>Az üzemanyag fogyóban! (20% alatt)</hu>
 			<nl>moet spoedig bijgetankt worden</nl>
+			<br>Ficando sem combustível</br>
 		</text>
 		<text name="COURSEPLAY_MUST_BE_REFUELED">
 			<en>must be refueled</en>
@@ -1253,6 +1366,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>слишком мало топлива!</ru>
 			<hu>Újra kell tankolnod!</hu>
 			<nl>moet bijgetankt worden</nl>
+			<br>Precisa reabastecer</br>
 		</text>
 		<text name="COURSEPLAY_IS_BEING_REFUELED">
 			<en>is being refueled</en>
@@ -1264,6 +1378,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>заправляется</ru>
 			<hu>tankol!</hu>
 			<nl>wordt bijgetankt</nl>
+			<br>Reabastecendo</br>
 		</text>
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY">
 			<en>Too many waiting points! Only %d allowed.</en>
@@ -1275,6 +1390,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Слишком много остановок! Максимум разрешено %d.</ru>
 			<hu>Túl sok várakozási pont van! Csak %d szükséges.</hu>
 			<nl>Teveel markeringen! Maar %d toegestaan.</nl>
+			<br>Muitos pontos! Somente %d permitidos.</br>
 		</text>
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW">
 			<en>Too few waiting points! %d needed.</en>
@@ -1286,6 +1402,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Слишком мало остановок! Минимум нужно %d.</ru>
 			<hu>Túl kevés a várakozási pont! %d szükséges.</hu>
 			<nl>Te weinig markeringe! %d nodig.</nl>
+			<br>Poucos pontos! %d necessários.</br>
 		</text>
 		<text name="COURSEPLAY_WRONG_TRAILER">
 			<en>wrong trailer for this mode</en>
@@ -1297,6 +1414,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Неподходящее оборудование для типа маршрута.</ru>
 			<hu>Rossz munkaeszköz ehhez a mművelethez</hu>
 			<nl>Verkeerde trailer voor deze modus</nl>
+			<br>Carreta errada para este modo</br>
 		</text>
 		<text name="COURSEPLAY_ESL_NOT_SUPPORTED">
 			<en>ESLimiter version is not supported</en>
@@ -1308,6 +1426,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Эта версия ESLimiter не поддерживается</ru>
 			<hu>ESLimiter verziója nem támogatott</hu>
 			<nl>ESLimiter wordt niet ondersteund</nl>
+			<br>ESLimiter versão não suportada</br>
 		</text>
 		<text name="COURSEPLAY_WEATHER_WARNING">
 			<en>is waiting for better weather</en>
@@ -1319,6 +1438,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>надо подождать хорошей погоды</ru>
 			<hu>vár míg jobb idő lesz! (eláll az eső)</hu>
 			<nl>wacht op beter weer</nl>
+			<br>Esperando o tempo melhorar</br>
 		</text>
 		<text name="COURSEPLAY_LANE_OFFSET">
 			<en>Lane offset</en>
@@ -1330,6 +1450,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Смещение от центра:</ru>
 			<hu>Közlekedő út eltolás:</hu>
 			<nl>Baan uit lijn</nl>
+			<br>diatancia da faixa</br>
 		</text>
 		<text name="COURSEPLAY_TOOL_OFFSET_X">
 			<en>Tool offset horizontal</en>
@@ -1341,6 +1462,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>правее/левее:</ru>
 			<hu>Művelés eltolás oldalra:</hu>
 			<nl>Gereedschap uit lijn horizontaal</nl>
+			<br>Ferramenta: Distancia horizontal</br>
 		</text>
 		<text name="COURSEPLAY_TOOL_OFFSET_Z">
 			<en>Tool offset vertical</en>
@@ -1352,6 +1474,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>вперед/назад:</ru>
 			<hu>Művelés eltolás előre:</hu>
 			<nl>Gereedschap uit lijn verticaal</nl>
+			<br>Ferramenta: distancia vertical</br>
 		</text>
 		<text name="COURSEPLAY_FRONT">
 			<en>front</en>
@@ -1363,6 +1486,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>вперед</ru>
 			<hu>elöl</hu>
 			<nl>voorzijde</nl>
+			<br>Frente</br>
 		</text>
 		<text name="COURSEPLAY_BACK">
 			<en>back</en>
@@ -1374,6 +1498,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>назад</ru>
 			<hu>hátul</hu>
 			<nl>achterzijde</nl>
+			<br>ré</br>
 		</text>
 		<text name="COURSEPLAY_WORK_WIDTH">
 			<en>Working width</en>
@@ -1385,6 +1510,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Рабочая ширина:</ru>
 			<hu>Munkaszélesség:</hu>
 			<nl>Werkbreedte</nl>
+			<br>Largura da faixa</br>
 		</text>
 		<text name="COURSEPLAY_WATER_WARNING">
 			<en>would like to go swimming</en>
@@ -1396,6 +1522,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>не хотелось бы намокнуть</ru>
 			<hu>Vízbe vezettél, úsznod kell!</hu>
 			<nl>gaat zwemmen</nl>
+			<br>Gostaria de ir nadar?</br>
 		</text>
 		<text name="COURSEPLAY_WAITPOINTS">
 			<en>waiting points</en>
@@ -1407,6 +1534,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Остановок</ru>
 			<hu>Útvonalpont</hu>
 			<nl>wacht plaatsen</nl>
+			<br>esperando pontos</br>
 		</text>
 		<text name="COURSEPLAY_CROSSING_POINTS">
 			<en>crossing points</en>
@@ -1418,6 +1546,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Конечных точек</ru>
 			<hu>Elágazási pont</hu>
 			<nl>kruispunten</nl>
+			<br>pontos cruzados</br>
 		</text>
 		<text name="COURSEPLAY_OPEN_HUD_MODE">
 			<en>open Courseplay:</en>
@@ -1429,6 +1558,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Открыть Courseplay:</ru>
 			<hu>HUD megnyitása:</hu>
 			<nl>open Courseplay:</nl>
+			<br>Abrir Courseplay:</br>
 		</text>
 		<text name="COURSEPLAY_DEBUG_CHANNELS">
 			<en>Debug channels</en>
@@ -1440,6 +1570,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Режим отладки</ru>
 			<hu>Hibakereső csatorna:</hu>
 			<nl>Debug channels</nl>
+			<br>Debugar canais</br>
 		</text>
 
 		<!-- Course Generation -->
@@ -1453,6 +1584,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>ГЕНЕРАЦИЯ МАРШРУТА</ru>
 			<hu>Útvonal generálás</hu>
 			<nl>Route genereren</nl>
+			<br>Criar rota</br>
 		</text>
 		<text name="COURSEPLAY_STARTING_CORNER">
 			<en>Starting corner</en>
@@ -1463,6 +1595,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Стартовый угол:</ru>
 			<hu>Visszafordulási irány:</hu>
 			<nl>Start hoek</nl>
+			<br>Iniciar no canto</br>
 		</text>
 		<text name="COURSEPLAY_STARTING_DIRECTION">
 			<en>Starting direction</en>
@@ -1473,6 +1606,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Направление:</ru>
 			<hu>Irányítás indítása</hu>
 			<nl>Start richting</nl>
+			<br>Iniciar na direção</br>
 		</text>
 		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT">
 			<en>Return to first point</en>
@@ -1483,6 +1617,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Возврат на старт:</ru>
 			<hu>Vissza az első pontra</hu>
 			<nl>Keer terug naar start</nl>
+			<br>Retornar ao primeiro ponto</br>
 		</text>
 		<text name="COURSEPLAY_CORNER_1">
 			<en>South-West</en>
@@ -1493,6 +1628,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Юго-Запад</ru>
 			<hu>Dél-nyugat</hu>
 			<nl>Zuid-West</nl>
+			<br>Sudoeste</br>
 		</text>
 		<text name="COURSEPLAY_CORNER_2">
 			<en>North-West</en>
@@ -1503,6 +1639,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Северо-Запад</ru>
 			<hu>Észak-Nyugat</hu>
 			<nl>Noord-West</nl>
+			<br>Noroeste</br>
 		</text>
 		<text name="COURSEPLAY_CORNER_3">
 			<en>North-East</en>
@@ -1513,6 +1650,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Северо-Восток</ru>
 			<hu>Észak-kelet</hu>
 			<nl>Noord-Oost</nl>
+			<br>Nordeste</br>
 		</text>
 		<text name="COURSEPLAY_CORNER_4">
 			<en>South-East</en>
@@ -1523,6 +1661,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Юго-Восток</ru>
 			<hu>Dél-kelet</hu>
 			<nl>Zuid-Oost</nl>
+			<br>Sudeste</br>
 		</text>
 		<text name="COURSEPLAY_DIRECTION_1">
 			<en>North</en>
@@ -1533,6 +1672,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Север</ru>
 			<hu>Észak</hu>
 			<nl>Noord</nl>
+			<br>Norte</br>
 		</text>
 		<text name="COURSEPLAY_DIRECTION_2">
 			<en>East</en>
@@ -1543,6 +1683,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Восток</ru>
 			<hu>Kelet</hu>
 			<nl>Oost</nl>
+			<br>Oeste</br>
 		</text>
 		<text name="COURSEPLAY_DIRECTION_3">
 			<en>South</en>
@@ -1553,6 +1694,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Юг</ru>
 			<hu>Dél</hu>
 			<nl>Zuid</nl>
+			<br>Sul</br>
 		</text>
 		<text name="COURSEPLAY_DIRECTION_4">
 			<en>West</en>
@@ -1563,6 +1705,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Запад</ru>
 			<hu>Nyugat</hu>
 			<nl>West</nl>
+			<br>Oeste</br>
 		</text>
 		<text name="COURSEPLAY_HEADLAND">
 			<de>Vorgewende</de>
@@ -1574,6 +1717,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Обработка краев:</ru>
 			<hu>Munkasáv</hu>
 			<nl>Buitenrand</nl>
+			<br>Cabeceira</br>
 		</text>
 		<text name="COURSEPLAY_ACTIVATED">
 			<de>aktiviert</de>
@@ -1585,6 +1729,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>да</ru>
 			<hu>Bekapcsolva</hu>
 			<nl>geactiveerd</nl>
+			<br>ativado</br>
 		</text>
 		<text name="COURSEPLAY_DEACTIVATED">
 			<de>deaktiviert</de>
@@ -1596,6 +1741,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>нет</ru>
 			<hu>Kikapcsolva</hu>
 			<nl>gedeactiveerd</nl>
+			<br>desativado</br>
 		</text>
 
 		<text name="COURSEPLAY_RIDGEMARKERS">
@@ -1608,6 +1754,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Маркера:</ru>
 			<hu>Főbb pontok</hu>
 			<nl>Banen markeerders</nl>
+			<br>Traçador</br>
 		</text>
 		<text name="COURSEPLAY_UNLOADING_ON_FIELD">
 			<de>Abladen auf dem Feld</de>
@@ -1619,6 +1766,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Разгрузка на поле</ru>
 			<hu>Kirakodás a földön</hu>
 			<nl>Uitladen in het veld</nl>
+			<br>Descarregar no campo</br>
 		</text>
 		<text name="COURSEPLAY_AUTOMATIC">
 			<en>automatic</en>
@@ -1630,6 +1778,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>автоматически</ru>
 			<hu>automatikus</hu>
 			<nl>automatisch</nl>
+			<br>automático</br>
 		</text>
 		<text name="COURSEPLAY_MANUAL">
 			<de>manuell</de>
@@ -1641,6 +1790,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>в ручную</ru>
 			<hu>manuális</hu>
 			<nl>handmatig</nl>
+			<br>manual</br>
 		</text>
 		<text name="COURSEPLAY_TURN_MANEUVER">
 			<en>Turn maneuver:</en>
@@ -1652,6 +1802,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Поворот:</ru>
 			<hu>Fordulómanőver:</hu>
 			<nl>Draai beweging:</nl>
+			<br>Manobra de giro</br>
 		</text>
 		<text name="COURSEPLAY_START">
 			<en>Start</en>
@@ -1663,6 +1814,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Старт</ru>
 			<hu>Start</hu>
 			<nl>Start</nl>
+			<br>Iniciar</br>
 		</text>
 		<text name="COURSEPLAY_FINISH">
 			<en>Finish</en>
@@ -1674,6 +1826,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Финиш</ru>
 			<hu>Cél</hu>
 			<nl>Finish</nl>
+			<br>Terminar</br>
 		</text>
 
 		<text name="COURSEPLAY_NO_VALID_COURSE">
@@ -1686,6 +1839,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Не рабочий маршрут</ru>
 			<hu>Az útvonal nem megfelelő</hu>
 			<nl>Geen route geladen</nl>
+			<br>Rota inválida</br>
 		</text>
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND">
 			<en>No shovel could be found</en>
@@ -1697,6 +1851,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Ковш не обнаружен</ru>
 			<hu>Kanál nem található</hu>
 			<nl>Geen shovel gevonden</nl>
+			<br>Nenhuma pá carregadeira encontrada</br>
 		</text>
 		<text name="COURSEPLAY_SHOVEL_POSITIONS">
 			<en>Shovel positions</en>
@@ -1708,6 +1863,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>ПОЗИЦИИ КОВША</ru>
 			<hu>Kanál pozíció</hu>
 			<nl>Shovel posities</nl>
+			<br>Posição da pá carregadeira</br>
 		</text>
 		<text name="COURSEPLAY_SHOVEL_POSITIONS_MISSING">
 			<en>Missing shovel positions</en>
@@ -1719,6 +1875,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Позиции ковша не установлены</ru>
 			<hu>Hiányos kanál pozíció</hu>
 			<nl>Shovel posities ontbreken</nl>
+			<br>Faltam algumas posições da pá carregadeira</br>
 		</text>
 		<text name="COURSEPLAY_SHOVEL_LOADING_POSITION">
 			<en>Loading position</en>
@@ -1730,6 +1887,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Загрузка</ru>
 			<hu>Töltési pozíció</hu>
 			<nl>Laad stand</nl>
+			<br>Posição carregar</br>
 		</text>
 		<text name="COURSEPLAY_SHOVEL_TRANSPORT_POSITION">
 			<en>Transport position</en>
@@ -1741,6 +1899,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Транспортировка</ru>
 			<hu>Szállítási pozíció</hu>
 			<nl>Transport stand</nl>
+			<br>Posição de transporte</br>
 		</text>
 		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION">
 			<en>Pre-unloading position</en>
@@ -1752,6 +1911,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Предразгрузка</ru>
 			<hu>Kirakodást előkészítő pozíció</hu>
 			<nl>Aanvang uitlaad stand</nl>
+			<br>Posição pré descarregar</br>
 		</text>
 		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION">
 			<en>Unloading position</en>
@@ -1763,6 +1923,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Разгрузка</ru>
 			<hu>Kirakási pozíció</hu>
 			<nl>Uitlaad stand</nl>
+			<br>Posição descarregar</br>
 		</text>
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO">
 			<en>Stop + go loading</en>
@@ -1774,6 +1935,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Готово, поехали</ru>
 			<hu>Kirak és indul tölteni</hu>
 			<nl>Stop + Go Laden</nl>
+			<br>Parar e ir carregar</br>
 		</text>
 
 		<text name="COURSEPLAY_START_AT_POINT">
@@ -1786,6 +1948,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Начало маршрута:</ru>
 			<hu>Útvonal kezdése:</hu>
 			<nl>Route starten bij:</nl>
+			<br>Iniciar rota em:</br>
 		</text>
 		<text name="COURSEPLAY_FIRST_POINT">
 			<en>first waypoint</en>
@@ -1797,6 +1960,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>со стартовой точки</ru>
 			<hu>első útpont</hu>
 			<nl>eerste markering</nl>
+			<br>primeiro ponto</br>
 		</text>
 		<text name="COURSEPLAY_NEAREST_POINT">
 			<en>nearest waypoint</en>
@@ -1808,6 +1972,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>с ближайшей точки</ru>
 			<hu>legközelebbi útpont</hu>
 			<nl>volgende markering</nl>
+			<br>prôximo ponto</br>
 		</text>
 		<text name="COURSEPLAY_FIELD_EDGE_PATH">
 			<en>Field edge path</en>
@@ -1819,6 +1984,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Выбрать поле:</ru>
 			<hu>Művelendő terület:</hu>
 			<nl>Veldrand route</nl>
+			<br>Caminho borda do campo</br>
 		</text>
 		<text name="COURSEPLAY_FIELD">
 			<en>Field</en>
@@ -1830,6 +1996,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>поле №</ru>
 			<hu>Terület</hu>
 			<nl>Veld</nl>
+			<br>Campo</br>
 		</text>
 		<text name="COURSEPLAY_FIELD_SCAN_IN_PROGRESS">
 			<en>Field scan in progress</en>
@@ -1841,6 +2008,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>начальная обработка</ru>
 			<hu>Térkép vizsgálata.</hu>
 			<nl>Veldscan bezig</nl>
+			<br>Escaneando campo</br>
 		</text>
 		<text name="COURSEPLAY_SCANNING_FIELD_NMB">
 			<en>Scanning field %d/%d</en>
@@ -1852,6 +2020,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>подготовка полей: %d/%d</ru>
 			<hu>A terület vizsgálata: %d/%d</hu>
 			<nl>Scan Veld %d/%d</nl>
+			<br>Escaneando campo %d/%d</br>
 		</text>
 		<text name="COURSEPLAY_HOSEMISSING">
 			<en>No hose could be found - cancel refill</en>
@@ -1863,6 +2032,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Не могу найти</ru>
 			<hu>A tömlő nem található- utántöltés törölve</hu>
 			<nl>Geen vulslang gevonden, vullen geannuleerd</nl>
+			<br>Nenhuma mangueira encontrada - cancelando recarga</br>
 		</text>
 		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE">
 			<en>Symmetric lane change</en>
@@ -1874,6 +2044,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Симметрично:</ru>
 			<hu>Szimmetrikus sávváltás:</hu>
 			<nl>Evenwijdige baanwissel</nl>
+			<br>Mudando de faixa simétrica</br>
 		</text>
 		<text name="COURSEPLAY_UNLOADING_DRIVER_PRIORITY">
 			<en>Driver priority</en>
@@ -1885,6 +2056,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Приоритет:</ru>
 			<hu>Vezető prioritása:</hu>
 			<nl>Bestuurder voorrang</nl>
+			<br>Prioridade do motorista</br>
 		</text>
 		<text name="COURSEPLAY_FILLEVEL">
 			<en>fill level</en>
@@ -1896,6 +2068,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>загруженность</ru>
 			<hu>töltési szint</hu>
 			<nl>vul graad</nl>
+			<br>Nível de enchimento</br>
 		</text>
 		<text name="COURSEPLAY_NO_AUTOCOMBINE_MODE_7">
 			<en>AutoCombine is not supported</en>
@@ -1907,6 +2080,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Этот комбайн не поддерживается</ru>
 			<hu>Kombájn automaika nem megengedett</hu>
 			<nl>Autocombine wordt niet ondersteund</nl>
+			<br>Ceifadeira não suportado</br>
 		</text>
 		<text name="COURSEPLAY_PICKUP_JAMMED">
 			<en>: pickup is jammed</en>
@@ -1918,6 +2092,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>погрузка остановлена</ru>
 			<hu>: felszedő eltömődött</hu>
 			<nl>: pickup zit vast</nl>
+			<br>retirada está bloqueado</br>
 		</text>
 		<text name="COURSEPLAY_BALER_NEEDS_NETS">
 			<en>: baler needs new net rolls</en>
@@ -1929,6 +2104,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>упаковщик нуждается в тюках</ru>
 			<hu>: bálázónak új fólia kell</hu>
 			<nl>: Balenpers behoeft nieuwe wikkeling</nl>
+			<br>enfardadeira precisa de novos fardos</br>
 		</text>
 		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES">
 			<en>Calculate current field's edge path</en>
@@ -1940,6 +2116,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Показать границы поля</ru>
 			<hu>A területszél útvonalának kikalkulálása</hu>
 			<nl>Bereken huidige veldrand</nl>
+			<br>calcular o curso da borda do campo atual</br>
 		</text>
 		<text name="COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER">
 			<en>Field edge path number</en>
@@ -1951,6 +2128,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Выбрать поле:</ru>
 			<hu>Területszéle útvonalának száma</hu>
 			<nl>Veldrand nummer</nl>
+			<br>Número da borda do campo</br>
 		</text>
 		<text name="COURSEPLAY_ADD_CUSTOM_FIELD_EDGE_PATH_TO_LIST">
 			<en>Add field %d's edge path to list</en>
@@ -1962,6 +2140,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Добавить поле в список</ru>
 			<hu>A %d terület szélének utvonala hozzáadása a listához</hu>
 			<nl>Voeg veld %d randen toe aan lijst</nl>
+			<br>Adicionar borda do campo %d na lista</br>
 		</text>
 		<text name="COURSEPLAY_OVERWRITE_CUSTOM_FIELD_EDGE_PATH_IN_LIST">
 			<en>Overwrite field %d's edge path in list</en>
@@ -1973,6 +2152,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Переписать поле в списке</ru>
 			<hu>A %d terület szélének felülirása a listában</hu>
 			<nl>Overschrijf veld %d randen in lijst</nl>
+			<br>sobreescrever borda do campo %d na lista</br>
 		</text>
 		<text name="COURSEPLAY_USER">
 			<en>user</en>
@@ -1984,6 +2164,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>!</ru>
 			<hu>felhasználó</hu>
 			<nl>Gebruiker</nl>
+			<br>usuário</br>
 		</text>
 		<text name="COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED">
 			<en>should be repaired soon</en>
@@ -1995,6 +2176,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>скоро развалится от повреждений</ru>
 			<hu>hamarosan javításra szorul!</hu>
 			<nl>Dient spoedig hersteld te worden</nl>
+			<br>precisa reparar logo</br>
 		</text>
 		<text name="COURSEPLAY_DAMAGE_MUST_BE_REPAIRED">
 			<en>must be repaired</en>
@@ -2006,6 +2188,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>нуждается в ремонте</ru>
 			<hu>meg kell javítani!</hu>
 			<nl>Moet hersteld worden</nl>
+			<br>Reparar</br>
 		</text>
 		<text name="COURSEPLAY_DAMAGE_IS_BEING_REPAIRED">
 			<en>is being repaired</en>
@@ -2017,6 +2200,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>на ремонте</ru>
 			<hu>javítás alatt</hu>
 			<nl>Wordt hersteld</nl>
+			<br>Reparando</br>
 		</text>
 		<text name="COURSEPLAY_COVER_HANDLING">
 			<en>Covers</en>
@@ -2028,6 +2212,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Тент:</ru>
 			<hu>Ponyva:</hu>
 			<nl>Zeilen</nl>
+			<br>Cobertura</br>
 		</text>
 		<text name="COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR">
 			<en>Remove combine assignment</en>
@@ -2039,6 +2224,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Удалить комбайн из списка</ru>
 			<hu>Kombájnkijelölés eltávolítása</hu>
 			<nl>Verwijder combine opdracht</nl>
+			<br>Remover atribuições do trator</br>
 		</text>
 		<text name="COURSEPLAY_STOP_DURING_UNLOADING">
 			<en>Stop during unloading</en>
@@ -2050,6 +2236,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Стоять при разгрузке:</ru>
 			<hu>Kirakodás közben leállít</hu>
 			<nl>Stop tijdens ontladen</nl>
+			<br>Parar para descarregar</br>
 		</text>
 		<text name="COURSEPLAY_SLIPPING_WARNING_0">
 			<en>is slipping</en>
@@ -2061,6 +2248,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>забуксовал. Помогите, помогите...</ru>
 			<hu>kipörög</hu>
 			<nl>Slippend</nl>
+			<br>patinando</br>
 		</text>
 		<text name="COURSEPLAY_SLIPPING_WARNING_1">
 			<en>is slipping (> 75%)</en>
@@ -2072,6 +2260,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>буксует (> 75%)</ru>
 			<hu>kipörgés több mint 75%</hu>
 			<nl>Slippend (> 75%)</nl>
+			<br>patinando (>75%)</br>
 		</text>
 		<text name="COURSEPLAY_SLIPPING_WARNING_2">
 			<en>is slipping (> 90%)</en>
@@ -2083,6 +2272,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>буксует (> 90%)</ru>
 			<hu>kipörgés több mint 90%</hu>
 			<nl>Slippend(> 90%)</nl>
+			<br>patinando (>90%)</br>
 		</text>
 		<text name="COURSEPLAY_REFILL_UNTIL_PCT">
 			<en>Refill until:</en>
@@ -2094,6 +2284,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Наполнять до:</ru>
 			<hu>Újratölteni:</hu>
 			<nl>Bijvullen tot:</nl>
+			<br>Enchendo</br>
 		</text>
 		<text name="COURSEPLAY_BGA_IS_FULL">
 			<en>: Bunker silo is full!</en>
@@ -2105,6 +2296,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>: силосная яма заполнена!</ru>
 			<hu>: a BGA siló tele van!</hu>
 			<nl>: Bunker silo is vol!</nl>
+			<br>:Silo está cheio</br>
 		</text>
 		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE">
 			<en>Farm silo doesn't have the selected fill type</en>
@@ -2116,6 +2308,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>В этом бункере нет такого продукта!</ru>
 			<hu>Nem választottad ki a farm tárólóból a terménytípust</hu>
 			<nl>Farm Silo heeft niet de juiste vulling</nl>
+			<br>Silo não selecionou o tipo de carregamento</br>
 		</text>
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE">
 			<en>Farm silo load:</en>
@@ -2127,6 +2320,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Забрать из бункера:</ru>
 			<hu>A farm tároló töltöttsége:</hu>
 			<nl>Farm Silo laad:</nl>
+			<br>Silo carregado</br>
 		</text>
 		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY">
 			<en>Farm silo is empty!</en>
@@ -2138,6 +2332,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>В бункере не осталось выбранного продукта, увы...</ru>
 			<hu>A farm tárólőja üres!</hu>
 			<nl>Farm Silo is leeg!</nl>
+			<br>Silo esá vazio</br>
 		</text>
 		<text name="COURSEPLAY_STARTING_UP_TOOL">
 			<en>Starting up %s!</en>
@@ -2149,6 +2344,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>%s: включено распыление соломы!</ru>
 			<hu>Beindul %s!</hu>
 			<nl>Opstarten %s!</nl>
+			<br>Iniciando %d</br>
 		</text>
 
 		<!-- Yes/No dialogues -->
@@ -2162,6 +2358,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<it>Courseplay: Do you want the fields to be scanned automatically?</it>
 			<nl>Courseplay: Do you want the fields to be scanned automatically?</nl>
 			<ru>Courseplay: Do you want the fields to be scanned automatically?</ru>
+			<br>Courseplay: Você deseja que os campos sejam verificados automaticamente?</br>
 		</text>
 		<text name="COURSEPLAY_YES_NO_WAGES">
 			<cz>Courseplay: Do you want your workers to earn wages (%s/hour)?</cz> 
@@ -2173,6 +2370,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<it>Courseplay: Do you want your workers to earn wages (%s/hour)?</it>
 			<nl>Courseplay: Do you want your workers to earn wages (%s/hour)?</nl>
 			<ru>Courseplay: Do you want your workers to earn wages (%s/hour)?</ru>
+			<br>Courseplay: Você deseja que seus trabalhadores ganham salários (%s/hora)</br>
 		</text>
 
 		<!-- SeedUsageCalculator HUD content -->
@@ -2186,6 +2384,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<hu>Vetőmag szükséglet számítás</hu>
 			<ru>КАЛЬКУЛЯЦИЯ ПОСЕВОВ</ru>
 			<nl>Zaad verbruik calculator</nl>
+			<br>Uso de sementes</br>
 		</text>
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD">
 			<en>Field: %d (%s %s)</en>
@@ -2197,6 +2396,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<hu>Terület: %d (%s %s)</hu>
 			<ru>Поле: %d (%s %s)</ru>
 			<nl>Veld: %d (%s %s)</nl>
+			<br>Campo: %d (%s %s)</br>
 		</text>
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE">
 			<en>Seed type: %s</en>
@@ -2208,22 +2408,24 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<hu>Vetőmag típusa: %s</hu>
 			<ru>Семена: %s</ru>
 			<nl>Zaad soort: %s</nl>
+			<br>Tipo de semente: %s</br>
 		</text>
-		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE">
+	<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE">
 			<en>Usage: %s %s (%s)</en>
 			<de>Verbrauch: %s %s (%s)</de>
 			<fr>Utilisation: %s %s (%s)</fr>
 			<es>Uso: %s %s (%s)</es>
 			<it>Utilizzo: %s %s (%s)</it>
 			<cz>Usage: %s %s (%s)</cz> <!-- !!! -->
-			<hu>Szükséglet: %s %s (%s) </hu> <!-- !!! -->
+			<hu>Usage: %s %s (%s) </hu> <!-- !!! -->
 			<ru>Usage: %s %s (%s)</ru> <!-- !!! -->
 			<nl>Verbruik: %s %s (%s)</nl>
+			<br>Utilizado: %s %S (%s)</br>
 		</text>
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_TRIM">
 			<en>···</en>
 		</text>
-
+		
 		<!-- INPUTBINDINGS -->
 		<text name="COURSEPLAY_HUD_OPEN">
 			<en>Show Courseplay HUD</en>
@@ -2235,6 +2437,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>показать Courseplay</ru>
 			<hu>Vezetősegéd panel megnyitása</hu>
 			<nl>Toon Courseplay HUD</nl>
+			<br>Nostrar Courseplay HUD</br>
 		</text>
 		<text name="COURSEPLAY_HUD_CLOSE">
 			<en>Hide Courseplay HUD</en>
@@ -2246,6 +2449,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>скрыть Courseplay</ru>
 			<hu>Vezetősegéd panel bezárása</hu>
 			<nl>Verberg Courseplay HUD</nl>
+			<br>Ocultar Courseplay HUD</br>
 		</text>
 		<text name="COURSEPLAY_FUNCTIONS">
 			<en>Courseplay functions</en>
@@ -2257,6 +2461,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>функции Courseplay</ru>
 			<hu>Vezetősegéd funkciók</hu>
 			<nl>Courseplay functies</nl>
+			<br>Funções do Courseplay</br>
 		</text>
 
 		<!-- Keyboard -->
@@ -2267,6 +2472,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Courseplay: модификатор</ru>
 			<hu>Vezetősegéd gombkiosztás: Elsődleges</hu>
 			<nl>Courseplay: instellingen</nl>
+			<br>Courseplay: modificador</br>
 		</text>
 		<text name="COURSEPLAY_MENU_ACCEPT_SECONDARY">
 			<en>Courseplay: secondary menu accept</en>
@@ -2275,6 +2481,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Courseplay: вторичное меню</ru>
 			<hu>Vezetősegéd gombkiosztás: Másodlagos</hu>
 			<nl>Courseplay: tweede menu accepteren</nl>
+			<br>Courseplay: aceitar menu secondario</br>
 		</text>
 		<text name="COURSEPLAY_HUD">
 			<en>Show/hide Courseplay HUD</en>
@@ -2286,6 +2493,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Courseplay: показать/скрыть HUD</ru>
 			<hu>Vezetősegéd panel be/ki</hu>
 			<nl>Too/verberg Courseplay HUD</nl>
+			<br>Mostrar/ocultar Courseplay HUD</br>
 		</text>
 		<text name="COURSEPLAY_START_STOP">
 			<en>Courseplay: drive course/stop driver</en>
@@ -2297,6 +2505,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Courseplay: старт/стоп маршрута</ru>
 			<hu>Vezetősegéd: Vezető indítása/leállítása</hu>
 			<nl>Courseplay: rijd route/stop bestuurder</nl>
+			<br>Courseplay: dirigir / parar motorista</br>
 		</text>
 		<text name="COURSEPLAY_CANCELWAIT">
 			<en>Courseplay: stop at last point or at next trigger</en>
@@ -2308,6 +2517,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Courseplay: остановка в следующей точке</ru>
 			<hu>Vezetősegéd: Állj az utolsó ponton következő triggernél</hu>
 			<nl>Courseplay: stop bij laatste punt of volgende trigger</nl>
+			<br>Courseplay: parar no último ponto ou no prôximo trigger</br>
 		</text>
 		<text name="COURSEPLAY_DRIVENOW">
 			<en>Courseplay: drive now</en>
@@ -2319,6 +2529,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Courseplay: старт маршрута</ru>
 			<hu>Vezetősegéd: Indítás azonnal!</hu>
 			<nl>Courseplay: nu rijden</nl>
+			<br>Courseplay: dirigir agora</br>
 		</text>
 
 		<!-- Mouse -->
@@ -2332,6 +2543,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Courseplay: 1 функция мыши</ru>
 			<hu>Vezetősegéd: Egér activálás</hu>
 			<nl>Courseplay: muis aktie</nl>
+			<br>Courseplay: ação do mouse</br>
 		</text>
 		<text name="COURSEPLAY_MOUSEACTION_SECONDARY">
 			<en>Courseplay: secondary mouse action</en>
@@ -2343,6 +2555,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Courseplay: 2 функция мыши</ru>
 			<hu>Vezetősegéd: Másodlagos egér aktiválás</hu>
 			<nl>Courseplay: secundaire muis aktie</nl>
+			<br>Courseplay: ação secundaria do mouse</br>
 		</text>
 		<text name="COURSEPLAY_MOUSEARROW_SHOW">
 			<en>show mouse cursor</en>
@@ -2354,6 +2567,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>показать курсор</ru>
 			<hu>Egérkurzor megjelenítése</hu>
 			<nl>toon cursorr</nl>
+			<br>Mostrar cursor do mouse </br>
 		</text>
 		<text name="COURSEPLAY_MOUSEARROW_HIDE">
 			<en>hide mouse cursor</en>
@@ -2365,6 +2579,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>скрыть курсор</ru>
 			<hu>Egérkurzor elrejtése</hu>
 			<nl>verberg cursor</nl>
+			<br>Ocultar cursor do mouse </br>
 		</text>
 	</l10n>
 
