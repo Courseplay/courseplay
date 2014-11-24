@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="20">
-	<version>4.00.0071</version>
+	<version>4.00.0072</version>
 	<author><![CDATA[Courseplay Dev Team]]></author>
 	<title>
 		<de>Courseplay</de>
@@ -2209,27 +2209,16 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Семена: %s</ru>
 			<nl>Zaad soort: %s</nl>
 		</text>
-		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE_DEFAULT">
-			<en>Default: %s %s (%s)</en>
-			<de>Standard: %s %s (%s)</de>
-			<fr>Défaut: %s %s (%s)</fr>
-			<es>Defecto: %s %s (%s)</es>
-			<it>Standard: %s %s (%s)</it>
-			<cz>Základní: %s %s (%s)</cz> 
-			<hu>Alap verzióban: %s %s (%s) </hu>
-			<ru>Норма: %s %s (%s)</ru>
-			<nl>Standaard: %s %s (%s)</nl>
-		</text>
-		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE_MOREREALISTIC">
-			<en>MoreRealistic: %s %s (%s)</en>
-			<de>MoreRealistic: %s %s (%s)</de>
-			<es>MoreRealistic: %s %s (%s)</es>
-			<fr>MoreRealistic: %s %s (%s)</fr>
-			<it>MoreRealistic: %s %s (%s)</it>
-			<cz>MoreRealistic: %s %s (%s)</cz> 
-			<hu>Reálisabb módban: %s %s (%s)</hu>
-			<ru>MR: %s %s (%s)</ru>
-			<nl>MoreRealistic: %s %s (%s)</nl>
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE">
+			<en>Usage: %s %s (%s)</en>
+			<de>Verbrauch: %s %s (%s)</de>
+			<fr>Utilisation: %s %s (%s)</fr>
+			<es>Uso: %s %s (%s)</es>
+			<it>Utilizzo: %s %s (%s)</it>
+			<cz>Usage: %s %s (%s)</cz> <!-- !!! -->
+			<hu>Usage: %s %s (%s) </hu> <!-- !!! -->
+			<ru>Usage: %s %s (%s)</ru> <!-- !!! -->
+			<nl>Verbruik: %s %s (%s)</nl>
 		</text>
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_TRIM">
 			<en>···</en>

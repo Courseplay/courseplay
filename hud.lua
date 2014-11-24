@@ -177,10 +177,7 @@ function courseplay:renderHud(vehicle)
 		renderText(x, vehicle.cp.suc.lines.field.posY, vehicle.cp.suc.lines.field.fontSize, selectedField.fieldAreaText);
 		renderText(x, vehicle.cp.suc.lines.fruit.posY, vehicle.cp.suc.lines.fruit.fontSize, selectedFruit.sucText);
 
-		renderText(x, vehicle.cp.suc.lines.resultDefault.posY, vehicle.cp.suc.lines.resultDefault.fontSize, selectedField.seedDataText[selectedFruit.name].default);
-		if courseplay.moreRealisticInstalled then
-			renderText(x, vehicle.cp.suc.lines.resultMoreRealistic.posY, vehicle.cp.suc.lines.resultMoreRealistic.fontSize, selectedField.seedDataText[selectedFruit.name].moreRealistic);
-		end;
+		renderText(x, vehicle.cp.suc.lines.result.posY, vehicle.cp.suc.lines.result.fontSize, selectedField.seedDataText[selectedFruit.name]);
 	end;
 end;
 

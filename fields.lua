@@ -552,8 +552,8 @@ function courseplay.fields:getFruitTypes()
 	local fruitTypes = {};
 	local hudW = g_currentMission.hudTipperOverlay.width * 2.75;
 	local hudH = hudW * g_screenAspectRatio;
-	local hudX = courseplay.hud.infoBasePosX - 10/1920 + 93/1920 + 449/1920 - hudW;
-	local hudY = courseplay.hud.infoBasePosY - 10/1920 + 335/1080;
+	local hudX = courseplay.hud.infoBasePosX - 16/1920 + 93/1920 + 449/1920 - hudW;
+	local hudY = courseplay.hud.infoBasePosY - 7/1080 + 335/1080;
 	for name,fruitType in pairs(FruitUtil.fruitTypes) do
 		if fruitType.allowsSeeding and fruitType.seedUsagePerSqm then
 			local fillType = FruitUtil.fruitTypeToFillType[fruitType.index];
@@ -577,15 +577,10 @@ function courseplay.fields:getFruitTypes()
 					end;
 				end;
 
-				fruitData.usagePerSqmDefault = fruitType.seedUsagePerSqm;
-				fruitData.pricePerLiterDefault = fillTypeDesc.pricePerLiter;
-				if courseplay.moreRealisticInstalled then
-					local _,seedPrice,seedUsage,_ = RealisticUtils.getFruitInfosV2(fruitType.name);
-					fruitData.usagePerSqmMoreRealistic = seedUsage;
-					fruitData.pricePerLiterMoreRealistic = seedPrice;
-				end;
+				fruitData.usagePerSqm = fruitType.seedUsagePerSqm;
+				fruitData.pricePerLiter = fillTypeDesc.pricePerLiter;
 
-				if fruitData.nameI18N and fruitData.usagePerSqmDefault and fruitData.pricePerLiterDefault then
+				if fruitData.nameI18N and fruitData.usagePerSqm and fruitData.pricePerLiter then
 					table.insert(fruitTypes, fruitData);
 				end;
 			end;
@@ -602,19 +597,9 @@ function courseplay.fields:getFruitData(area)
 
 	for i,fruitData in ipairs(self.seedUsageCalculator.fruitTypes) do
 		local name = fruitData.name;
-		usage[name] = {};
-		price[name] = {};
-		text[name] = {};
-
-		usage[name].default = fruitData.usagePerSqmDefault * area;
-		price[name].default = fruitData.pricePerLiterDefault * usage[name].default * g_i18n:getCurrencyFactor();
-		text[name].default = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR_USAGE_DEFAULT'):format(self:formatNumber(usage[name].default, 0), g_i18n:getText('fluid_unit_short'), self:formatNumber(price[name].default, 0, true));
-
-		if courseplay.moreRealisticInstalled then
-			usage[name].moreRealistic = fruitData.usagePerSqmMoreRealistic * area;
-			price[name].moreRealistic = fruitData.pricePerLiterMoreRealistic * usage[name].moreRealistic * g_i18n:getCurrencyFactor();
-			text[name].moreRealistic = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR_USAGE_MOREREALISTIC'):format(self:formatNumber(usage[name].moreRealistic, 0), g_i18n:getText('fluid_unit_short'), self:formatNumber(price[name].moreRealistic, 0, true));
-		end;
+		usage[name] = fruitData.usagePerSqm * area;
+		price[name] = fruitData.pricePerLiter * usage[name];
+		text[name] = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR_USAGE'):format(courseplay:round(g_i18n:getFluid(usage[name])), g_i18n:getText('fluid_unit_short'), g_i18n:formatMoney(g_i18n:getCurrency(price[name])));
 	end;
 
 	return usage, price, text;

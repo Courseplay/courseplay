@@ -488,25 +488,18 @@ function courseplay:load(xmlFile)
 		posY = self.cp.suc.lines.field.posY - self.cp.suc.lineHeight;
 		text = '';
 	};
-	self.cp.suc.lines.resultDefault = {
+	self.cp.suc.lines.result = {
 		fontSize = self.cp.suc.fontSize * 1.05;
 		posY = self.cp.suc.lines.fruit.posY - self.cp.suc.lineHeight * 4/3;
-		text = '';
-	};
-	self.cp.suc.lines.resultMoreRealistic = {
-		fontSize = self.cp.suc.fontSize * 1.05;
-		posY = self.cp.suc.lines.resultDefault.posY - self.cp.suc.lineHeight * 1.05;
 		text = '';
 	};
 	local xL = self.cp.suc.x1 + 3/1080 / g_screenAspectRatio;
 	local xR = self.cp.suc.x1 + self.cp.suc.buttonFileWidth;
 	local w,h = self.cp.suc.buttonFileWidth, self.cp.suc.buttonFileHeight;
-	local fruitNegButtonIdx = courseplay.button:create(self, 'suc', 'navigate_left.png',  'sucChangeFruit', -1, xL, self.cp.suc.lines.fruit.posY, w, h);
-	local fruitPosButtonIdx = courseplay.button:create(self, 'suc', 'navigate_right.png', 'sucChangeFruit',  1, xR, self.cp.suc.lines.fruit.posY, w, h);
+	local fruitNegButtonIdx = courseplay.button:create(self, 'suc', 'navigate_left.png',  'sucChangeFruit', -1, xL, self.cp.suc.lines.fruit.posY - 3/1080, w, h);
+	local fruitPosButtonIdx = courseplay.button:create(self, 'suc', 'navigate_right.png', 'sucChangeFruit',  1, xR, self.cp.suc.lines.fruit.posY - 3/1080, w, h);
 	self.cp.suc.fruitNegButton = self.cp.buttons.suc[fruitNegButtonIdx];
 	self.cp.suc.fruitPosButton = self.cp.buttons.suc[fruitPosButtonIdx];
-	-- self.cp.suc.selectedFieldIdx = 1;
-	-- self.cp.suc.selectedField = nil; --0;
 	self.cp.suc.selectedFruitIdx = 1;
 	self.cp.suc.selectedFruit = nil;
 
