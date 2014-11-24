@@ -121,11 +121,8 @@ function courseplay:handle_mode2(self, dt)
 		end
 	else -- NO active combine
 		-- STOP!!
-		if self.isRealistic then
-			courseplay:driveInMRDirection(self, 0, 1, true, dt, false);
-		else
-			AIVehicleUtil.driveInDirection(self, dt, self.cp.steeringAngle, 0, 0, 28, false, moveForwards, 0, 1)
-		end;
+		AIVehicleUtil.driveInDirection(self, dt, self.cp.steeringAngle, 0, 0, 28, false, moveForwards, 0, 1)
+		
 
 		if self.cp.isLoaded then
 			courseplay:setRecordNumber(self, 2);
@@ -643,11 +640,11 @@ function courseplay:unload_combine(self, dt)
 			if lz > 20 then
 				refSpeed = self.cp.speeds.field
 			elseif lz > 4 and (combine_speed*3600) > 5 then
-				refSpeed = combine_speed *1.5
+				refSpeed = max(combine_speed *1.5,self.cp.speeds.crawl)
 			elseif lz > 10 then
 				refSpeed = self.cp.speeds.turn
 			elseif lz < -1 then
-				refSpeed = combine_speed / 2
+				refSpeed = max(combine_speed/2,self.cp.speeds.crawl)
 			else
 				refSpeed = max(combine_speed,self.cp.speeds.crawl)
 			end
@@ -659,11 +656,11 @@ function courseplay:unload_combine(self, dt)
 			if lz > 5 then
 				refSpeed = self.cp.speeds.field
 			elseif lz < -0.5 then
-				refSpeed = combine_speed - self.cp.speeds.crawl
+				refSpeed = max(combine_speed - self.cp.speeds.crawl,self.cp.speeds.crawl)
 			elseif lz > 1 or combine.sentPipeIsUnloading ~= true  then  
-				refSpeed = combine_speed + self.cp.speeds.crawl
+				refSpeed = max(combine_speed + self.cp.speeds.crawl,self.cp.speeds.crawl)
 			else
-				refSpeed = combine_speed
+				refSpeed = max(combine_speed,self.cp.speeds.crawl)
 			end
 			if ((combineIsHelperTurning or tractor.cp.turnStage ~= 0) and lz < 20) or (self.timer < self.cp.driveSlowTimer) or (combine.movingDirection == 0 and lz < 15) then
 				refSpeed = self.cp.speeds.crawl
@@ -948,7 +945,7 @@ function courseplay:unload_combine(self, dt)
 			if distance > 50 then
 				refSpeed = self.cp.speeds.street
 			else
-				refSpeed = frontTractor.lastSpeedReal*3600 
+				refSpeed = max(frontTractor.lastSpeedReal*3600,self.cp.speeds.crawl)
 			end
 		end
 		--courseplay:debug(string.format("distance: %d  dod: %d",distance,dod ), 4)
@@ -976,20 +973,7 @@ function courseplay:unload_combine(self, dt)
 
 
 	if allowedToDrive then
-		--[[local real_speed = self.lastSpeedReal
-
-		if refSpeed == nil then
-			refSpeed = real_speed
-		end]]
-		
-		if self.isRealistic then
-			if self.cp.chopperIsTurning then
-				refSpeed = self.cp.speeds.turn
-			end
-			courseplay:setMRSpeed(self, refSpeed, 3,allowedToDrive)
-		else
-			courseplay:setSpeed(self, refSpeed)
-		end
+		courseplay:setSpeed(self, refSpeed)
 	end
 
 
@@ -1003,27 +987,14 @@ function courseplay:unload_combine(self, dt)
 		end
 
 		if not allowedToDrive then
-			if self.isRealistic then
-				courseplay:driveInMRDirection(self, 0,1,true,dt,false)
-			else
-				AIVehicleUtil.driveInDirection(self, dt, 30, 0, 0, 28, false, moveForwards, 0, 1)
-				if g_server ~= nil then
-					AIVehicleUtil.driveInDirection(self, dt, self.cp.steeringAngle, 0.5, 0.5, 28, false, moveForwards, 0, 1)
-				end
-				
-			end
-			-- unload active tipper if given
+			AIVehicleUtil.driveInDirection(self, dt, 30, 0, 0, 28, false, moveForwards, 0, 1)
 			return;
 		end
 		
 		if self.cp.TrafficBrake then
-			if self.isRealistic then
-				AIVehicleUtil.mrDriveInDirection(self, dt, 1, false, true, 0, 1, 3, true, true)
-			else
-				moveForwards = false
+			moveForwards = false
 				lx = 0
 				lz = 1
-			end
 		end
 
 		self.cp.TrafficBrake = false
@@ -1032,12 +1003,8 @@ function courseplay:unload_combine(self, dt)
 		end]]
 		courseplay:setTrafficCollision(self, targetX, targetZ,true)
 		
-		if self.isRealistic then
+		AIVehicleUtil.driveInDirection(self, dt, self.cp.steeringAngle, 1, 0.5, 10, allowedToDrive, moveForwards, targetX, targetZ, refSpeed, 1)
 		
-			courseplay:driveInMRDirection(self, targetX, targetZ,moveForwards, dt, allowedToDrive);
-		else
-			AIVehicleUtil.driveInDirection(self, dt, self.cp.steeringAngle, 1, 0.5, 10, allowedToDrive, moveForwards, targetX, targetZ, refSpeed, 1)
-		end
 
 		if courseplay.debugChannels[4] and self.cp.nextTargets and self.cp.curTarget.x and self.cp.curTarget.z then
 			drawDebugPoint(self.cp.curTarget.x, self.cp.curTarget.y or 0, self.cp.curTarget.z, 1, 0.65, 0, 1);

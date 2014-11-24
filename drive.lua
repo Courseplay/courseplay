@@ -470,16 +470,8 @@ function courseplay:drive(self, dt)
 	if not allowedToDrive then
 		self.cp.TrafficBrake = false
 		self.cp.isTrafficBraking = false
-		if self.isRealistic then
-			courseplay:driveInMRDirection(self, 0,1,true,dt,false)
-			return
-		else
-			AIVehicleUtil.driveInDirection(self, dt, 30, 0, 0, 28, false, moveForwards, 0, 1)
-			if g_server ~= nil then
-				AIVehicleUtil.driveInDirection(self, dt, self.cp.steeringAngle, 0.5, 0.5, 28, false, moveForwards, 0, 1)
-			end
-			return;
-		end
+		AIVehicleUtil.driveInDirection(self, dt, 30, 0, 0, 28, false, moveForwards, 0, 1)
+		return;
 		-- unload active tipper if given
 	end
 
@@ -558,17 +550,9 @@ function courseplay:drive(self, dt)
 	end
 
 	if self.cp.TrafficBrake then
-		if self.isRealistic then
-			AIVehicleUtil.mrDriveInDirection(self, dt, 1, false, true, 0, 1, 3, true, true)
-			self.cp.TrafficBrake = false
-			self.cp.isTrafficBraking = false
-			self.cp.TrafficHasStopped = false
-			return
-		else
-			fwd = false
+		fwd = false
 			lx = 0
 			lz = 1
-		end
 	end  	
 	self.cp.TrafficBrake = false
 	self.cp.isTrafficBraking = false
@@ -665,33 +649,11 @@ function courseplay:drive(self, dt)
 		distToChange = self.cp.distanceToTarget + 1
 	end
 
-	-- Better stearing on MR Articulated Axis vehicles on MR Engine v1.3.19 and below. By Claus G. Pedersen
-	if self.isRealistic and self.cp.hasSpecializationArticulatedAxis and (not courseplay.moreRealisticVersion or courseplay.moreRealisticVersion < 1.0320) then
-		-- Get the rotation direction from the vehicle to the drive direction note
-		local x,_,z = localDirectionToWorld(self.cp.DirectionNode, lx, 0, lz);
-		local dirRot = Utils.getYRotationFromDirection(x, z);
-
-		-- If we are a Wheelloader and we are reversing, the curent Rotation needs to be inverted to work.
-		local curRot = self.articulatedAxis.curRot;
-		if not fwd and courseplay:isWheelloader(self) then
-			curRot = curRot * -1;
-		end;
-
-		-- Here is the magic calculation to find the real lx and lz values based on the vehicle curRot
-		local steerAngle = (dirRot - courseplay:getRealWorldRotation(self.cp.DirectionNode)) - curRot;
-		lx, lz = Utils.getDirectionFromYRotation(steerAngle);
-
-	end;
-
 	if self.cp.distanceToTarget > distToChange or WpUnload or WpLoadEnd or isFinishingWork then
 		if g_server ~= nil then
-			if self.isRealistic then 
-				courseplay:driveInMRDirection(self, lx,lz,fwd, dt,allowedToDrive);
-			else
 			--self,dt,steeringAngleLimit,acceleration,slowAcceleration,slowAngleLimit,allowedToDrive,moveForwards,lx,lz,maxSpeed,slowDownFactor,angle
-				--AIVehicleUtil.driveInDirection(dt,25,1,0.5,20,true,true,-0.028702223698223,0.99958800630799,22,1,nil)
-				AIVehicleUtil.driveInDirection(self, dt, self.cp.steeringAngle, 1, 0.5, 20, true, fwd, lx, lz, refSpeed, 1);
-			end
+			--AIVehicleUtil.driveInDirection(dt,25,1,0.5,20,true,true,-0.028702223698223,0.99958800630799,22,1,nil)
+			AIVehicleUtil.driveInDirection(self, dt, self.cp.steeringAngle, 1, 0.5, 20, true, fwd, lx, lz, refSpeed, 1);
 			if not isBypassing then
 				courseplay:setTrafficCollision(self, lx, lz, workArea)
 			end
@@ -1010,9 +972,6 @@ function courseplay:regulateTrafficSpeed(vehicle,refSpeed,allowedToDrive)
 end
 
 function courseplay:brakeToStop(vehicle)
-	if vehicle.isRealistic then
-		return false
-	end
 	if vehicle.lastSpeedReal > 1/3600 and not vehicle.cp.TrafficHasStopped then
 		vehicle.cp.TrafficBrake = true
 		vehicle.cp.isTrafficBraking = true
@@ -1022,30 +981,6 @@ function courseplay:brakeToStop(vehicle)
 		return false
 	end
 end
-
-
-function courseplay:driveInMRDirection(vehicle, lx,lz,fwd,dt,allowedToDrive)
-	if not vehicle.realForceAiDriven then
-		vehicle.realForceAiDriven = true
-	end
-	if vehicle.cp.speedBrake then 
-		--print("speed brake")
-		allowedToDrive = false
-	end	
-
-	--when I'm 2Fast in a curve then brake
-	if abs(lx) > 0.25 and vehicle.lastSpeedReal*3600 > 25 then
-		allowedToDrive = false
-		--print("emergency brake")
-	end
-	if not fwd then
-		lx = -lx
-		lz = -lz
-	end
-	--AIVehicleUtil.mrDriveInDirection(vehicle, dt, acceleration, allowedToDrive, moveForwards, lx, lz, speedLevel, useReduceSpeed, noDefaultHiredWorker)
-	AIVehicleUtil.mrDriveInDirection(vehicle, dt, 1, allowedToDrive, fwd, lx, lz, 3, true, true)
-end
-
 
 function courseplay:getIsVehicleOffsetValid(vehicle)
 	local valid = vehicle.cp.totalOffsetX ~= nil and vehicle.cp.toolOffsetZ ~= nil and (vehicle.cp.totalOffsetX ~= 0 or vehicle.cp.toolOffsetZ ~= 0);
