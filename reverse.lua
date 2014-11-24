@@ -795,18 +795,12 @@ function courseplay:getDistances(object)
 			end;
 		end;
 
-		local nx, ny, nz = getWorldTranslation(node);
 		-- Find the distance from attacherJoint to rear wheel
 		if object.wheels and #object.wheels > 0 then
 			local length = 0;
 			for _, wheel in ipairs(object.wheels) do
-				local wdnrxTemp, wdnryTemp, wdnrzTemp = getRotation(wheel.driveNode);
-				setRotation(wheel.driveNode, 0, 0, 0);
-				local wreprxTemp, wrepryTemp, wreprzTemp = getRotation(wheel.repr);
-				setRotation(wheel.repr, 0, 0, 0);
-				local _,_,dis = worldToLocal(wheel.driveNode, nx, ny, nz);
-				setRotation(wheel.repr, wreprxTemp, wrepryTemp, wreprzTemp);
-				setRotation(wheel.driveNode, wdnrxTemp, wdnryTemp, wdnrzTemp);
+				local nx, ny, nz = getWorldTranslation(wheel.driveNode);
+				local dis,_,_ = worldToLocal(node, nx, ny, nz);
 
 				if math.abs(dis) > length then
 					length = math.abs(dis);
@@ -825,11 +819,9 @@ function courseplay:getDistances(object)
 
 		-- Finde the attacherJoints distance from the direction node
 		for _, attacherJoint in ipairs(object.attacherJoints) do
-			local jtfxTemp, jtfyTemp, jtfzTemp = getRotation(attacherJoint.jointTransform);
-			setRotation(attacherJoint.jointTransform, 0, 0, 0);
-			local _,_,dis = worldToLocal(attacherJoint.jointTransform, nx, ny, nz);
+			local nx, ny, nz = getWorldTranslation(attacherJoint.jointTransform);
+			local dis,_,_ = worldToLocal(node, nx, ny, nz);
 
-			setRotation(attacherJoint.jointTransform, jtfxTemp, jtfyTemp, jtfzTemp);
 			if dis > 0 then
 				if not distances.attacherJointToRearTrailerAttacherJoints then
 					distances.attacherJointToRearTrailerAttacherJoints = {};

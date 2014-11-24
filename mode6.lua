@@ -317,7 +317,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 							courseplay:debug(string.format("%s: Is starting to reverse. Tip trigger is reset.", nameNum(self)), 13);
 						end;
 
-						if courseplay:distance(ctx, ctz, trigger_x, trigger_z) > 75 or startReversing then
+						if courseplay:distance(ctx, ctz, trigger_x, trigger_z) > (self.cp.totalLength + 5) or startReversing then
 							courseplay:resetTipTrigger(self);
 						end
 					end

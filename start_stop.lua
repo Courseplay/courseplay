@@ -297,9 +297,7 @@ function courseplay:start(self)
 		self.cp.realAWDModeOnBackup = self.realAWDModeOn
 	end;
 
-	if courseplay:canUseWeightStation(self) or hasReversing then
-		self.cp.totalLength, self.cp.totalLengthOffset = courseplay:getTotalLengthOnWheels(self);
-	end;
+	self.cp.totalLength, self.cp.totalLengthOffset = courseplay:getTotalLengthOnWheels(self);
 
 	courseplay:validateCanSwitchMode(self);
 	--print("startStop "..debug.getinfo(1).currentline)

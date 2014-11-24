@@ -414,7 +414,7 @@ function courseplay:drive(self, dt)
 
 		if self.cp.mode ~= 6 then
 			local minCoverWaypoint = self.cp.mode == 1 and 4 or 3;
-			showCover = self.recordnumber >= minCoverWaypoint and self.recordnumber < self.maxnumber and self.cp.currentTipTrigger == nil;
+			showCover = self.recordnumber >= minCoverWaypoint and self.recordnumber < self.maxnumber and self.cp.currentTipTrigger == nil and self.cp.trailerFillDistance == nil;
 		else
 			showCover = not workArea and self.cp.currentTipTrigger == nil;
 		end;

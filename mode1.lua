@@ -38,10 +38,10 @@ function courseplay:handle_mode1(vehicle, allowedToDrive)
 				courseplay:debug(string.format("%s: Is starting to reverse. Tip trigger is reset.", nameNum(vehicle)), 13);
 			end;
 
-			if distance_to_trigger > 75 or startReversing then
+			if distance_to_trigger > (vehicle.cp.totalLength + 5) or startReversing then
 				courseplay:resetTipTrigger(vehicle);
-				courseplay:debug(nameNum(vehicle) .. ": distance to currentTipTrigger = " .. tostring(distance_to_trigger) .. " (> 75 or start reversing) --> currentTipTrigger = nil", 1);
-			end	
+				courseplay:debug(string.format("%s: distance to currentTipTrigger = %d (> %d or start reversing) --> currentTipTrigger = nil", nameNum(vehicle), distance_to_trigger, (vehicle.cp.totalLength + 5)), 1);
+			end
 		else
 			courseplay:resetTipTrigger(vehicle);
 		end;
