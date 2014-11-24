@@ -2216,7 +2216,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<es>Uso: %s %s (%s)</es>
 			<it>Utilizzo: %s %s (%s)</it>
 			<cz>Usage: %s %s (%s)</cz> <!-- !!! -->
-			<hu>Usage: %s %s (%s) </hu> <!-- !!! -->
+			<hu>Szükséglet: %s %s (%s) </hu> <!-- !!! -->
 			<ru>Usage: %s %s (%s)</ru> <!-- !!! -->
 			<nl>Verbruik: %s %s (%s)</nl>
 		</text>
