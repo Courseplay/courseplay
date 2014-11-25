@@ -140,7 +140,9 @@ end;
 
 function courseplay:setCpMode(vehicle, modeNum)
 	vehicle.cp.mode = modeNum;
-	courseplay:buttonsActiveEnabled(vehicle, "all");
+	local UVs = courseplay.hud.bottomInfo.modeUvsPx[modeNum];
+	courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.currentModeIcon, UVs[1], UVs[2], UVs[3], UVs[4], courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
+	courseplay:buttonsActiveEnabled(vehicle, 'all');
 end;
 
 function courseplay:callCourseplayer(combine)

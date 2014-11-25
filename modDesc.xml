@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="20">
-	<version>4.00.0078</version>
+	<version>4.00.0079</version>
 	<author><![CDATA[Courseplay Dev Team]]></author>
 	<title>
 		<de>Courseplay</de>
@@ -847,17 +847,6 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<hu>automaikus (az útvonalhoz)</hu>
 			<nl>automatisch (van opname)</nl>
 		</text>
-		<text name="COURSEPLAY_COURSE">
-			<en>Course:</en>
-			<de>Kurs:</de>
-			<fr>Course:</fr>
-			<es>Ruta:</es>
-			<it>Percorso:</it>
-			<cz>Trasa:</cz>
-			<ru>Маршрут:</ru>
-			<hu>Útvonal:</hu>
-			<nl>Route:</nl>
-		</text>
 		<text name="COURSEPLAY_NO_COURSE_LOADED">
 			<en>course: no course loaded</en>
 			<de>Kurs: kein Kurs geladen</de>
@@ -868,28 +857,6 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Маршрут: отсутствует</ru>
 			<hu>Útvonal: Útvonal nincs betöltve</hu>
 			<nl>route: geen route geladen</nl>
-		</text>
-		<text name="COURSEPLAY_WAYPOINT">
-			<en>waypoint</en>
-			<de>Wegpunkt</de>
-			<fr>Point</fr>
-			<es>Punto</es>
-			<it>punto di passaggio</it>
-			<cz>Orientační bod</cz>
-			<ru>Точек</ru>
-			<hu>Útvonalpont</hu>
-			<nl>markering</nl>
-		</text>
-		<text name="COURSEPLAY_NO_WAYPOINTS">
-			<en>no waypoints yet</en>
-			<de>Noch keine Wegpunkte</de>
-			<fr>pas de points</fr>
-			<es>no hay puntos</es>
-			<it>nessun punto di passaggio</it>
-			<cz>Zatím žádné orientační body</cz>
-			<ru>Нет точек для отображения</ru>
-			<hu>Nincs még útvonalpont</hu>
-			<nl>nog geen markeringen</nl>
 		</text>
 		<text name="COURSEPLAY_WAYPOINT_MODE_1">
 			<en>Start and end</en>
@@ -1397,28 +1364,6 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<hu>Vízbe vezettél, úsznod kell!</hu>
 			<nl>gaat zwemmen</nl>
 		</text>
-		<text name="COURSEPLAY_WAITPOINTS">
-			<en>waiting points</en>
-			<de>Wartepunkte</de>
-			<fr>Points d'attente</fr>
-			<es>Puntos de espera</es>
-			<it>punti d'attesa</it>
-			<cz>Bod čekání</cz>
-			<ru>Остановок</ru>
-			<hu>Útvonalpont</hu>
-			<nl>wacht plaatsen</nl>
-		</text>
-		<text name="COURSEPLAY_CROSSING_POINTS">
-			<en>crossing points</en>
-			<de>Kreuzungspunkte</de>
-			<fr>Points de croisement</fr>
-			<es>Puntos de cruce</es>
-			<it>incroci</it>
-			<cz>Bod křížení</cz>
-			<ru>Конечных точек</ru>
-			<hu>Elágazási pont</hu>
-			<nl>kruispunten</nl>
-		</text>
 		<text name="COURSEPLAY_OPEN_HUD_MODE">
 			<en>open Courseplay:</en>
 			<de>Courseplay öffnen:</de>
@@ -1528,7 +1473,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<en>North</en>
 			<de>Norden</de>
 			<fr>Nord</fr>
-			<it>Nord</it>	
+			<it>Nord</it>
 			<cz>sever</cz>
 			<ru>Север</ru>
 			<hu>Észak</hu>
@@ -1538,7 +1483,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<en>East</en>
 			<de>Osten</de>
 			<fr>Est</fr>
-			<it>Est</it>		
+			<it>Est</it>
 			<cz>východ</cz>
 			<ru>Восток</ru>
 			<hu>Kelet</hu>
@@ -1548,7 +1493,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<en>South</en>
 			<de>Süden</de>
 			<fr>Sud</fr>
-			<it>Sud</it>			
+			<it>Sud</it>
 			<cz>jih</cz>
 			<ru>Юг</ru>
 			<hu>Dél</hu>

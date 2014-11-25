@@ -585,6 +585,11 @@ function courseplay:load(xmlFile)
 	};
 
 	local listArrowX = courseplay.hud.visibleArea.x2 - (2 * 0.005) - w24px;
+	local topIconsY = courseplay.hud.infoBasePosY + 0.2395;
+	local topIconsX = {};
+	topIconsX[3] = listArrowX - w16px - w24px;
+	topIconsX[2] = topIconsX[3] - w16px - w24px;
+	topIconsX[1] = topIconsX[2] - w16px - w24px;
 
 	-- Page nav
 	local pageNav = {
@@ -604,15 +609,12 @@ function courseplay:load(xmlFile)
 		courseplay.button:create(self, 'global', string.format('pageNav_%d.dds', p), 'setHudPage', p, posX, pageNav.posY, pageNav.buttonW, pageNav.buttonH, nil, nil, nil, false, false, toolTip);
 	end;
 
-	courseplay.button:create(self, 'global', 'navigate_left.png', 'switchHudPage', -1, courseplay.hud.infoBasePosX + 0.035, courseplay.hud.infoBasePosY + 0.2395, w24px, h24px); --ORIG: +0.242
-	courseplay.button:create(self, 'global', 'navigate_right.png', 'switchHudPage', 1, courseplay.hud.buttonPosX[1], courseplay.hud.infoBasePosY + 0.2395, w24px, h24px);
-
 	courseplay.button:create(self, 'global', 'close.png', 'openCloseHud', false, courseplay.hud.buttonPosX[2], courseplay.hud.infoBasePosY + 0.255, w24px, h24px);
 
-	courseplay.button:create(self, 'global', 'disk.png', 'showSaveCourseForm', 'course', listArrowX - 15/1920 - w24px, courseplay.hud.infoBasePosY + 0.056, w24px, h24px);
+	courseplay.button:create(self, 'global', 'disk.png', 'showSaveCourseForm', 'course', topIconsX[2], topIconsY, w24px, h24px);
 
 	if courseplay.isDeveloper then
-		courseplay.button:create(self, 'global', 'eye.png', 'setDrawWaypointsLines', nil, courseplay.hud.infoBasePosX + 0.01, courseplay.hud.infoBasePosY + 0.2395, w24px, h24px);
+		courseplay.button:create(self, 'global', 'eye.png', 'setDrawWaypointsLines', nil, courseplay.hud.col1posX, topIconsY, w24px, h24px);
 	end;
 
 
@@ -682,7 +684,7 @@ function courseplay:load(xmlFile)
 	courseplay.button:create(self, 1, nil, 'setCustomFieldEdgePathNumber', 1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[4], mouseWheelArea.w, mouseWheelArea.h, 4, 5, true, true);
 
 	-- Find first waypoint
-	courseplay.button:create(self, 1, 'searchGlass.png', 'toggleFindFirstWaypoint', nil, listArrowX - (4*w16px*10/16) - (3*w16px), courseplay.hud.infoBasePosY + 0.2395, w24px, h24px, nil, nil, false, false, true);
+	courseplay.button:create(self, 1, 'searchGlass.png', 'toggleFindFirstWaypoint', nil, topIconsX[1], topIconsY, w24px, h24px, nil, nil, false, false, true);
 
 
 	-- ##################################################
@@ -728,9 +730,9 @@ function courseplay:load(xmlFile)
 		end;
 		courseplay.button:create(self, -2, nil, nil, nil, buttonX[1], courseplay.hud.linesButtonPosY[i], hoverAreaWidth, mouseWheelArea.h, i, nil, true, false);
 	end
-	self.cp.hud.filterButtonIndex = courseplay.button:create(self, 2, 'searchGlass.png', 'showSaveCourseForm', 'filter', buttonX[2], courseplay.hud.infoBasePosY + 0.2395, w24px, h24px);
+	self.cp.hud.filterButtonIndex = courseplay.button:create(self, 2, 'searchGlass.png', 'showSaveCourseForm', 'filter', topIconsX[1], topIconsY, w24px, h24px);
 	courseplay.button:addOverlay(self.cp.buttons[2][self.cp.hud.filterButtonIndex], 2, 'cancel.png');
-	courseplay.button:create(self, 2, 'folder_new.png', 'showSaveCourseForm', 'folder', listArrowX, courseplay.hud.infoBasePosY + 0.056, w24px, h24px);
+	courseplay.button:create(self, 2, 'folder_new.png', 'showSaveCourseForm', 'folder', topIconsX[3], topIconsY, w24px, h24px);
 
 
 	-- ##################################################
@@ -877,7 +879,7 @@ function courseplay:load(xmlFile)
 	courseplay.button:create(self, 8, 'navigate_down.png', 'setHeadlandNumLanes',  -1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[6], w16px, h16px, 6, nil, false);
 
 	-- generation action button
-	courseplay.button:create(self, 8, 'pageNav_8.png', 'generateCourse', nil, listArrowX - 15/1920 - w24px - 15/1920 - w24px, courseplay.hud.infoBasePosY + 0.056, w24px, h24px, nil, nil, false);
+	courseplay.button:create(self, 8, 'pageNav_8.png', 'generateCourse', nil, topIconsX[3], topIconsY, w24px, h24px, nil, nil, false);
 
 
 	-- ##################################################
@@ -894,11 +896,30 @@ function courseplay:load(xmlFile)
 
 
 	-- ##################################################
-	-- ToolTip icon
-	local ttW = 24 / 1080 / g_screenAspectRatio;
-	local ttH = 24 / 1080;
-	self.cp.hud.toolTipIcon = Overlay:new('cpToolTipIcon', Utils.getFilename('img/bottomInfoSprite.png', courseplay.path), courseplay.hud.col1posX, courseplay.hud.infoBasePosY + 0.0055, ttW, ttH);
-	setOverlayUVs(self.cp.hud.toolTipIcon.overlayId, 0.75,0, 0.75,0.25, 1,0, 1,0.25);
+	-- Status icons
+	local w = courseplay.hud.bottomInfo.iconWidth;
+	local h = courseplay.hud.bottomInfo.iconHeight;
+	local sizeX,sizeY = courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y;
+	-- current mode icon
+	self.cp.hud.currentModeIcon = Overlay:new('cpCurrentModeIcon', courseplay.hud.iconSpritePath, courseplay.hud.bottomInfo.modeIconX, courseplay.hud.bottomInfo.iconPosY, w, h);
+	local UVs = courseplay.hud.bottomInfo.modeUvsPx[1];
+	courseplay.utils:setOverlayUVsPx(self.cp.hud.currentModeIcon, UVs[1], UVs[2], UVs[3], UVs[4], sizeX, sizeY);
+
+	-- waypoint icon
+	self.cp.hud.currentWaypointIcon = Overlay:new('cpCurrentWaypointIcon', courseplay.hud.iconSpritePath, courseplay.hud.bottomInfo.waypointIconX, courseplay.hud.bottomInfo.iconPosY, w, h);
+	courseplay.utils:setOverlayUVsPx(self.cp.hud.currentWaypointIcon, 10, 250, 42, 218, sizeX, sizeY);
+
+	-- waitPoints icon
+	self.cp.hud.waitPointsIcon = Overlay:new('cpWaitPointsIcon', courseplay.hud.iconSpritePath, courseplay.hud.bottomInfo.waitPointsIconX, courseplay.hud.bottomInfo.iconPosY, w, h);
+	courseplay.utils:setOverlayUVsPx(self.cp.hud.waitPointsIcon, 52, 250, 84, 218, sizeX, sizeY);
+
+	-- crossingPoints icon
+	self.cp.hud.crossingPointsIcon = Overlay:new('cpCrossingPointsIcon', courseplay.hud.iconSpritePath, courseplay.hud.bottomInfo.crossingPointsIconX, courseplay.hud.bottomInfo.iconPosY, w, h);
+	courseplay.utils:setOverlayUVsPx(self.cp.hud.crossingPointsIcon, 94, 250, 126, 218, sizeX, sizeY);
+
+	-- toolTip icon
+	self.cp.hud.toolTipIcon = Overlay:new('cpToolTipIcon', courseplay.hud.iconSpritePath, courseplay.hud.col1posX, courseplay.hud.infoBasePosY + 0.0055, w, h);
+	courseplay.utils:setOverlayUVsPx(self.cp.hud.toolTipIcon, 136, 250, 168, 218, sizeX, sizeY);
 
 
 

@@ -62,10 +62,7 @@ function courseplay.button:setSpecialButtonUVs(functionToCall, button)
 		local line = math.ceil(button.parameter / courseplay.numDebugChannelButtonsPerLine);
 
 		--space in dds: 16 x, 2 y
-		local uvX1,uvX2 = (col-1)/16, col/16;
-		local uvY1 = 1 - (line * (courseplay.numDebugChannelButtonsPerLine/courseplay.numAvailableDebugChannels));
-		local uvY2 = uvY1 + (courseplay.numDebugChannelButtonsPerLine/courseplay.numAvailableDebugChannels);
-		setOverlayUVs(button.overlay.overlayId, uvX1,uvY1, uvX1,uvY2, uvX2,uvY1, uvX2,uvY2);
+		courseplay.utils:setOverlayUVsSymmetric(button.overlay, col, line, 16, 2);
 	end;
 end;
 

@@ -1,28 +1,34 @@
 ﻿function courseplay:setHudContent(vehicle)
 	-- BOTTOM GLOBAL INFO
-	if vehicle.cp.mode > 0 and vehicle.cp.mode <= courseplay.numAiModes then
-		vehicle.cp.hud.content.global[1] = courseplay:loc(('COURSEPLAY_MODE_%d'):format(vehicle.cp.mode));
+	-- mode icon
+	vehicle.cp.hud.content.global[0] = vehicle.cp.mode > 0 and vehicle.cp.mode <= courseplay.numAiModes;
+
+	-- course name
+	if vehicle.cp.currentCourseName ~= nil then
+		vehicle.cp.hud.content.global[1] = vehicle.cp.currentCourseName;
+	elseif vehicle.Waypoints[1] ~= nil then
+		vehicle.cp.hud.content.global[1] = courseplay:loc('COURSEPLAY_TEMP_COURSE');
 	else
-		vehicle.cp.hud.content.global[1] = '---';
+		vehicle.cp.hud.content.global[1] = courseplay:loc('COURSEPLAY_NO_COURSE_LOADED');
 	end;
 
-	if vehicle.cp.currentCourseName ~= nil then
-		vehicle.cp.hud.content.global[2] = ('%s %s'):format(courseplay:loc('COURSEPLAY_COURSE'), vehicle.cp.currentCourseName);
-	elseif vehicle.Waypoints[1] ~= nil then
-		vehicle.cp.hud.content.global[2] = ('%s %s'):format(courseplay:loc('COURSEPLAY_COURSE'), courseplay:loc('COURSEPLAY_TEMP_COURSE'));
-	else
-		vehicle.cp.hud.content.global[2] = courseplay:loc('COURSEPLAY_NO_COURSE_LOADED');
-	end;
 	if vehicle.Waypoints[vehicle.cp.HUDrecordnumber] ~= nil or vehicle.cp.isRecording or vehicle.cp.recordingIsPaused then
-		local wayPoints = ('%s: %d'):format(courseplay:loc('COURSEPLAY_WAYPOINT'), vehicle.cp.HUDrecordnumber);
+		-- waypoints
 		if not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused then
-			wayPoints = ('%s/%d'):format(wayPoints, vehicle.maxnumber);
+			vehicle.cp.hud.content.global[2] = ('%d/%d'):format(vehicle.cp.HUDrecordnumber, vehicle.maxnumber);
+		else
+			vehicle.cp.hud.content.global[2] = tostring(vehicle.cp.HUDrecordnumber);
 		end;
-		local waitPoints	 = ('%s: %d'):format(courseplay:loc('COURSEPLAY_WAITPOINTS'), vehicle.cp.numWaitPoints);
-		local crossingPoints = ('%s: %d'):format(courseplay:loc('COURSEPLAY_CROSSING_POINTS'), vehicle.cp.numCrossingPoints);
-		vehicle.cp.hud.content.global[3] = ('%s   %s   %s'):format(wayPoints, waitPoints, crossingPoints);
+
+		-- waitPoints
+		vehicle.cp.hud.content.global[3] = tostring(vehicle.cp.numWaitPoints);
+
+		-- crossingPoints
+		vehicle.cp.hud.content.global[4] = tostring(vehicle.cp.numCrossingPoints);
 	else
-		vehicle.cp.hud.content.global[3] = courseplay:loc('COURSEPLAY_NO_WAYPOINTS');
+		vehicle.cp.hud.content.global[2] = nil;
+		vehicle.cp.hud.content.global[3] = nil;
+		vehicle.cp.hud.content.global[4] = nil;
 	end;
 
 	------------------------------------------------------------------
@@ -114,10 +120,29 @@ function courseplay:renderHud(vehicle)
 	end;
 
 	--BOTTOM GLOBAL INFO
-	courseplay:setFontSettings("white", false, "left");
-	for v, text in pairs(vehicle.cp.hud.content.global) do
+	courseplay:setFontSettings('white', false, 'left');
+	for i, text in pairs(vehicle.cp.hud.content.global) do
 		if text ~= nil then
-			renderText(courseplay.hud.col1posX, courseplay.hud.linesBottomPosY[v], courseplay.hud.fontSizes.bottomInfo, text);
+			if i == 0 then -- mode icon
+				if text == true then
+					vehicle.cp.hud.currentModeIcon:render();
+				end;
+			else
+				local textX;
+				if i == 1 then
+					textX = courseplay.hud.bottomInfo.modeTextX;
+				elseif i == 2 then
+					textX = courseplay.hud.bottomInfo.waypointTextX;
+					vehicle.cp.hud.currentWaypointIcon:render();
+				elseif i == 3 then
+					textX = courseplay.hud.bottomInfo.waitPointsTextX;
+					vehicle.cp.hud.waitPointsIcon:render();
+				elseif i == 4 then
+					textX = courseplay.hud.bottomInfo.crossingPointsTextX;
+					vehicle.cp.hud.crossingPointsIcon:render();
+				end;
+				renderText(textX, courseplay.hud.bottomInfo.textPosY, courseplay.hud.fontSizes.bottomInfo, text);
+			end;
 		end;
 	end
 
@@ -141,7 +166,7 @@ function courseplay:renderHud(vehicle)
 			hudPageTitle = string.format(courseplay.hud.hudTitles[vehicle.cp.hud.currentPage][3], vehicle.cp.hud.filter);
 		end;
 	end;
-	renderText(courseplay.hud.infoBasePosX + 0.060, courseplay.hud.infoBasePosY + 0.240, courseplay.hud.fontSizes.hudTitle, hudPageTitle);
+	renderText(courseplay.hud.infoBasePosX + 0.035, courseplay.hud.infoBasePosY + 0.240, courseplay.hud.fontSizes.hudTitle, hudPageTitle);
 
 
 	--MAIN CONTENT

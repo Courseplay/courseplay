@@ -207,6 +207,7 @@ function courseplay:setGlobalData()
 
 	courseplay.numAiModes = 9;
 	local ch = courseplay.hud
+	ch.iconSpritePath = Utils.getFilename('img/iconSprite.png', courseplay.path);
 	ch.infoBasePosX = Utils.getNoNil(customPosX, 0.433);
 	ch.infoBasePosY = Utils.getNoNil(customPosY, 0.002);
 	ch.infoBaseWidth = 0.512;
@@ -250,18 +251,15 @@ function courseplay:setGlobalData()
 
 	-- lines and text
 	ch.linesPosY = {};
-	ch.linesBottomPosY = {};
 	ch.linesButtonPosY = {};
 	ch.numPages = 9;
-	ch.numLines = 6;
-	ch.lineHeight = 0.0213;
+	ch.numLines = 8;
+	ch.lineHeight = 0.021;
 	for l=1,courseplay.hud.numLines do
 		if l == 1 then
 			courseplay.hud.linesPosY[l] = courseplay.hud.infoBasePosY + 0.215;
-			courseplay.hud.linesBottomPosY[l] = courseplay.hud.infoBasePosY + 0.08;
 		else
 			courseplay.hud.linesPosY[l] = courseplay.hud.linesPosY[1] - ((l-1) * courseplay.hud.lineHeight);
-			courseplay.hud.linesBottomPosY[l] = courseplay.hud.linesBottomPosY[1] - ((l-1) * courseplay.hud.lineHeight);
 		end;
 		courseplay.hud.linesButtonPosY[l] = courseplay.hud.linesPosY[l] - 0.001;
 	end;
@@ -312,6 +310,37 @@ function courseplay:setGlobalData()
 		[1] = courseplay.hud.infoBasePosX + 0.285;
 		[2] = courseplay.hud.infoBasePosX + 0.300;
 	};
+
+	ch.iconSpriteSize = {
+		x = 256;
+		y = 256;
+	};
+
+	ch.bottomInfo = {};
+	ch.bottomInfo.iconHeight = 24 / 1080;
+	ch.bottomInfo.iconWidth = ch.bottomInfo.iconHeight / g_screenAspectRatio;
+	ch.bottomInfo.textPosY = ch.infoBasePosY + 41 / 1080;
+	ch.bottomInfo.iconPosY = ch.bottomInfo.textPosY - 0.0055;
+	ch.bottomInfo.modeIconX = ch.col1posX;
+	ch.bottomInfo.modeTextX = ch.bottomInfo.modeIconX + ch.bottomInfo.iconWidth * 1.25;
+	ch.bottomInfo.waypointIconX = ch.visibleArea.x2 - 0.120;
+	ch.bottomInfo.waypointTextX = ch.bottomInfo.waypointIconX + ch.bottomInfo.iconWidth * 1.25;
+	ch.bottomInfo.waitPointsIconX = ch.visibleArea.x2 - 0.06;
+	ch.bottomInfo.waitPointsTextX = ch.bottomInfo.waitPointsIconX + ch.bottomInfo.iconWidth * 1.25;
+	ch.bottomInfo.crossingPointsIconX = ch.visibleArea.x2 - 0.034;
+	ch.bottomInfo.crossingPointsTextX = ch.bottomInfo.crossingPointsIconX + ch.bottomInfo.iconWidth * 1.25;
+	ch.bottomInfo.modeUvsPx = {
+		[1] = {  10,170,  42,138 };
+		[2] = {  52,170,  84,138 };
+		[3] = {  94,170, 126,138 };
+		[4] = { 136,170, 168,138 };
+		[5] = { 178,170, 210,138 };
+		[6] = { 220,170, 252,138 };
+		[7] = {  10,208,  42,176 };
+		[8] = {  52,208,  84,176 };
+		[9] = {  94,208, 126,176 };
+	};
+
 
 	ch.clickSound = createSample("clickSound");
 	loadSample(courseplay.hud.clickSound, Utils.getFilename("sounds/cpClickSound.wav", courseplay.path), false);

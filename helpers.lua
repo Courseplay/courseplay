@@ -981,3 +981,32 @@ function courseplay_manager:getSavegameFolderPath(index)
 	return;
 end;
 
+function courseplay.utils:setOverlayUVsSymmetric(overlay, col, line, numCols, numLines)
+	if overlay.overlayId and overlay.currentUVs == nil or overlay.currentUVs ~= { col, line, numCols, numLines } then
+		local bottomY = 1 - line / numLines;
+		local topY = bottomY + 1 / numLines;
+		local leftX = (col - 1) / numCols;
+		local rightX = leftX + 1 / numCols;
+		setOverlayUVs(overlay.overlayId, leftX,bottomY, leftX,topY, rightX,bottomY, rightX,topY);
+		overlay.currentUVs = { col, line, numCols, numLines };
+	end;
+end;
+
+function courseplay.utils:setOverlayUVsPx(overlay, leftX, bottomY, rightX, topY, textureSizeX, textureSizeY)
+	if overlay.overlayId and overlay.currentUVs == nil or overlay.currentUVs ~= { leftX, bottomY, rightX, topY } then
+		local fromTop = false;
+		if topY < bottomY then
+			fromTop = true;
+		end;
+		local leftXNormal = leftX / textureSizeX;
+		local rightXNormal = rightX / textureSizeX;
+		local bottomYNormal = bottomY / textureSizeY;
+		local topYNormal = topY / textureSizeY;
+		if fromTop then
+			bottomYNormal = 1 - bottomYNormal;
+			topYNormal = 1 - topYNormal;
+		end;
+		setOverlayUVs(overlay.overlayId, leftXNormal,bottomYNormal, leftXNormal,topYNormal, rightXNormal,bottomYNormal, rightXNormal,topYNormal);
+		overlay.currentUVs = { leftX, bottomY, rightX, topY };
+	end;
+end;
