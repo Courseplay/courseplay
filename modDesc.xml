@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="20">
-	<version>4.00.0081</version>
+	<version>4.00.0082</version>
 	<author><![CDATA[Courseplay Dev Team]]></author>
 	<title>
 		<de>Courseplay</de>
@@ -2051,11 +2051,11 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<hu>: a BGA siló tele van!</hu>
 			<nl>: Bunker silo is vol!</nl>
 		</text>
+
+		<!-- Farm silo --> <!-- missing: es, fr, (it) -->
 		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE">
 			<en>Farm silo doesn't have the selected fill type</en>
 			<de>Farmsilo hat den ausgewählten Fülltyp nicht</de>
-			<fr>Farm silo doesn't have the selected fill type</fr>
-			<es>Farm silo doesn't have the selected fill type</es>
 			<it>Il granaio non sa con cosa riempire</it>
 			<cz>Silo neobsahuje vybranou plodinu</cz>
 			<ru>В этом бункере нет такого продукта!</ru>
@@ -2065,8 +2065,6 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE">
 			<en>Farm silo load:</en>
 			<de>Farmsilo-Befüllung:</de>
-			<fr>Farm silo load:</fr>
-			<es>Farm silo load:</es>
 			<it>Il granaio sta caricando:</it>
 			<cz>Na sile se nakládá:</cz>
 			<ru>Забрать из бункера:</ru>
@@ -2076,8 +2074,6 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY">
 			<en>Farm silo is empty!</en>
 			<de>Farmsilo ist leer!</de>
-			<fr>Farm silo is empty!</fr>
-			<es>Farm silo is empty!</es>
 			<it>Il granaio è vuoto!</it>
 			<cz>Silo je prázdné!</cz>
 			<ru>В бункере не осталось выбранного продукта, увы...</ru>
@@ -2087,37 +2083,64 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 		<text name="COURSEPLAY_STARTING_UP_TOOL">
 			<en>Starting up %s!</en>
 			<de>%s startet</de>
-			<fr>Starting up %s!</fr>
-			<es>Starting up %s!</es>
-			<it>Starting up %s!</it>
 			<cz>Nastartovat při %s!</cz>
 			<ru>%s: включено распыление соломы!</ru>
 			<hu>Beindul %s!</hu>
 			<nl>Opstarten %s!</nl>
 		</text>
 
-		<!-- Yes/No dialogues -->
+		<!-- Recording buttons --> <!-- missing: cz, es, fr, hu, it, nl, ru -->
+		<text name="COURSEPLAY_RECORDING_STOP">
+			<en>Stop the recording</en>
+			<de>Aufnahme beenden</de>
+		</text>
+		<text name="COURSEPLAY_RECORDING_PAUSE">
+			<en>Pause the recording</en>
+			<de>Aufnahme pausieren</de>
+		</text>
+		<text name="COURSEPLAY_RECORDING_PAUSE_RESUME">
+			<en>Resume the recording</en>
+			<de>Aufnahme fortsetzen</de>
+		</text>
+		<text name="COURSEPLAY_RECORDING_DELETE">
+			<en>Delete the last waypoint</en>
+			<de>Letzten Wegpunkt löschen</de>
+		</text>
+		<text name="COURSEPLAY_RECORDING_SET_WAIT">
+			<en>Set wait point</en>
+			<de>Wartepunkt setzen</de>
+		</text>
+		<text name="COURSEPLAY_RECORDING_SET_CROSS">
+			<en>Set crossing point</en>
+			<de>Kreuzungspunkt setzen</de>
+		</text>
+		<text name="COURSEPLAY_RECORDING_TURN_START">
+			<en>Start turn maneuver</en>
+			<de>Wendemaneuver beginnen</de>
+		</text>
+		<text name="COURSEPLAY_RECORDING_TURN_END">
+			<en>End turn maneuver</en>
+			<de>Wendemaneuver beenden</de>
+		</text>
+		<text name="COURSEPLAY_RECORDING_REVERSE_START">
+			<en>Start reverse driving</en>
+			<de>Rückwärtsfahren beginnen</de>
+		</text>
+		<text name="COURSEPLAY_RECORDING_REVERSE_STOP">
+			<en>Stop reverse driving</en>
+			<de>Rückwärtsfahren beenden</de>
+		</text>
+
+		<!-- Yes/No dialogues --> <!-- missing: cz, es, fr, it, nl, ru -->
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN">
-			<cz>Courseplay: Do you want the fields to be scanned automatically?</cz> 
 			<de>Courseplay: Möchtest du dass die Felder automatisch gescanned werden?</de>
 			<en>Courseplay: Do you want the fields to be scanned automatically?</en>
-			<es>Courseplay: Do you want the fields to be scanned automatically?</es>
-			<fr>Courseplay: Do you want the fields to be scanned automatically?</fr>
 			<hu>Courseplay: Szeretnéd, hogy a mezők adatait automatikusan beolvassa?</hu>
-			<it>Courseplay: Do you want the fields to be scanned automatically?</it>
-			<nl>Courseplay: Do you want the fields to be scanned automatically?</nl>
-			<ru>Courseplay: Do you want the fields to be scanned automatically?</ru>
 		</text>
 		<text name="COURSEPLAY_YES_NO_WAGES">
-			<cz>Courseplay: Do you want your workers to earn wages (%s/hour)?</cz> 
 			<de>Courseplay: Möchtest du Löhne für deine Fahrer aktivieren (%s/Stunde)?</de>
 			<en>Courseplay: Do you want your workers to earn wages (%s/hour)?</en>
-			<es>Courseplay: Do you want your workers to earn wages (%s/hour)?</es>
-			<fr>Courseplay: Do you want your workers to earn wages (%s/hour)?</fr>
 			<hu>Courseplay: Szeretnéd, hogy a munkásod bért kapjon (%s/óra)?</hu>
-			<it>Courseplay: Do you want your workers to earn wages (%s/hour)?</it>
-			<nl>Courseplay: Do you want your workers to earn wages (%s/hour)?</nl>
-			<ru>Courseplay: Do you want your workers to earn wages (%s/hour)?</ru>
 		</text>
 
 		<!-- SeedUsageCalculator HUD content -->

@@ -116,6 +116,11 @@ function courseplay:setRecordingPause(vehicle)
 	if vehicle.recordnumber > 3 then
 		vehicle.cp.isRecording = not vehicle.cp.isRecording;
 		vehicle.cp.recordingIsPaused = not vehicle.cp.recordingIsPaused;
+		if vehicle.cp.recordingIsPaused then
+			courseplay.button:setToolTip(vehicle.cp.hud.recordingPauseButton, courseplay:loc('COURSEPLAY_RECORDING_PAUSE_RESUME'));
+		else
+			courseplay.button:setToolTip(vehicle.cp.hud.recordingPauseButton, courseplay:loc('COURSEPLAY_RECORDING_PAUSE'));
+		end;
 
 		vehicle.cp.distanceCheck = vehicle.cp.recordingIsPaused;
 
@@ -131,6 +136,11 @@ end;
 
 function courseplay:setRecordingTurnManeuver(vehicle)
 	vehicle.cp.isRecordingTurnManeuver = not vehicle.cp.isRecordingTurnManeuver;
+	if vehicle.cp.isRecordingTurnManeuver then
+		courseplay.button:setToolTip(vehicle.cp.hud.recordingTurnManeuverButton, courseplay:loc('COURSEPLAY_RECORDING_TURN_END'));
+	else
+		courseplay.button:setToolTip(vehicle.cp.hud.recordingTurnManeuverButton, courseplay:loc('COURSEPLAY_RECORDING_TURN_START'));
+	end;
 	courseplay:debug(string.format('%s: set "isRecordingTurnManeuver" to %s', nameNum(vehicle), tostring(vehicle.cp.isRecordingTurnManeuver)), 16);
 
 	local cx, cy, cz = getWorldTranslation(vehicle.cp.DirectionNode);
@@ -192,6 +202,11 @@ function courseplay:change_DriveDirection(vehicle)
 	local newAngle = courseplay:currentVehAngle(vehicle);
 	courseplay:setNewWaypointFromRecording(vehicle, cx, cz, newAngle, false, vehicle.cp.drivingDirReverse, false, 0);
 	vehicle.cp.drivingDirReverse = not vehicle.cp.drivingDirReverse
+	if vehicle.cp.drivingDirReverse then
+		courseplay.button:setToolTip(vehicle.cp.hud.recordingDriveDirectionButton, courseplay:loc('COURSEPLAY_RECORDING_REVERSE_STOP'));
+	else
+		courseplay.button:setToolTip(vehicle.cp.hud.recordingDriveDirectionButton, courseplay:loc('COURSEPLAY_RECORDING_REVERSE_START'));
+	end;
 	vehicle.cp.recordingTimer = 1
 	courseplay:setRecordNumber(vehicle, vehicle.recordnumber + 1);
 	courseplay.utils.signs:addSign(vehicle, 'normal', cx, cz, nil, newAngle);

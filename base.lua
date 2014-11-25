@@ -653,13 +653,13 @@ function courseplay:load(xmlFile)
 	--recording
 	-- TODO (Jakob): i18n
 	local recordingData = {
-		[1] = { 'recordingStop', 'stop_record', nil, 'Stop recording' },
-		[2] = { 'recordingPause', 'setRecordingPause', true, 'Pause recording' },
-		[3] = { 'recordingDelete', 'delete_waypoint', nil, 'Delete last waypoint' },
-		[4] = { 'recordingWait', 'set_waitpoint', nil, 'Set wait point' },
-		[5] = { 'recordingCross', 'set_crossing', nil, 'Set crossing point' },
-		[6] = { 'recordingTurn', 'setRecordingTurnManeuver', true, 'Start/end turn maneuver' },
-		[7] = { 'recordingReverse', 'change_DriveDirection', true, 'Set/stop reverse driving' }
+		[1] = { 'recordingStop', 'stop_record', nil, 'COURSEPLAY_RECORDING_STOP' },
+		[2] = { 'recordingPause', 'setRecordingPause', true, 'COURSEPLAY_RECORDING_PAUSE' },
+		[3] = { 'recordingDelete', 'delete_waypoint', nil, 'COURSEPLAY_RECORDING_DELETE' },
+		[4] = { 'recordingWait', 'set_waitpoint', nil, 'COURSEPLAY_RECORDING_SET_WAIT' },
+		[5] = { 'recordingCross', 'set_crossing', nil, 'COURSEPLAY_RECORDING_SET_CROSS' },
+		[6] = { 'recordingTurn', 'setRecordingTurnManeuver', true, 'COURSEPLAY_RECORDING_TURN_START' },
+		[7] = { 'recordingReverse', 'change_DriveDirection', true, 'COURSEPLAY_RECORDING_REVERSE_START' }
 	};
 	local w,h = w32px,h32px;
 	local padding = w/4;
@@ -668,8 +668,20 @@ function courseplay:load(xmlFile)
 	
 	for i,data in pairs(recordingData) do
 		local posX = initX + ((w + padding) * (i-1));
+		local fn = data[2];
 		local isToggleButton = data[3];
-		courseplay.button:create(self, 1, { 'iconSprite.png', data[1] }, data[2], nil, posX, courseplay.hud.linesButtonPosY[2], w, h, nil, nil, false, false, isToggleButton, data[4]);
+		local toolTip = courseplay:loc(data[4]);
+		local buttonIndex = courseplay.button:create(self, 1, { 'iconSprite.png', data[1] }, fn, nil, posX, courseplay.hud.linesButtonPosY[2], w, h, nil, nil, false, false, isToggleButton, toolTip);
+		if isToggleButton then
+			local button = self.cp.buttons[1][buttonIndex];
+			if fn == 'setRecordingPause' then
+				self.cp.hud.recordingPauseButton = button;
+			elseif fn == 'setRecordingTurnManeuver' then
+				self.cp.hud.recordingTurnManeuverButton = button;
+			elseif fn == 'change_DriveDirection' then
+				self.cp.hud.recordingDriveDirectionButton = button;
+			end;
+		end;
 	end;
 
 	--row buttons

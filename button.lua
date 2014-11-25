@@ -505,3 +505,10 @@ function courseplay.button:deleteButtonOverlays(vehicle)
 		end;
 	end;
 end;
+
+function courseplay.button:setToolTip(button, text)
+	if button.toolTip ~= text then
+		button.toolTip = text;
+	end;
+end;
+
