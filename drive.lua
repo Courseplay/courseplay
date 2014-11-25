@@ -651,9 +651,15 @@ function courseplay:drive(self, dt)
 
 	if self.cp.distanceToTarget > distToChange or WpUnload or WpLoadEnd or isFinishingWork then
 		if g_server ~= nil then
+			local acceleration = 1;
+			if self.cp.speedBrake then
+				-- We only need to break sligtly.
+				acceleration = -0.1; -- Setting accelrator to a negative value will break the tractor.
+			end;
+
 			--self,dt,steeringAngleLimit,acceleration,slowAcceleration,slowAngleLimit,allowedToDrive,moveForwards,lx,lz,maxSpeed,slowDownFactor,angle
-			--AIVehicleUtil.driveInDirection(dt,25,1,0.5,20,true,true,-0.028702223698223,0.99958800630799,22,1,nil)
-			AIVehicleUtil.driveInDirection(self, dt, self.cp.steeringAngle, 1, 0.5, 20, true, fwd, lx, lz, refSpeed, 1);
+			--AIVehicleUtil.driveInDirection(dt,25,acceleration,0.5,20,true,true,-0.028702223698223,0.99958800630799,22,1,nil)
+			AIVehicleUtil.driveInDirection(self, dt, self.cp.steeringAngle, acceleration, 0.5, 20, true, fwd, lx, lz, refSpeed, 1);
 			if not isBypassing then
 				courseplay:setTrafficCollision(self, lx, lz, workArea)
 			end
@@ -793,8 +799,19 @@ function courseplay:setSpeed(vehicle, refSpeed)
 	-- reset timer
 	elseif vehicle.cp.timers.slippingWheels ~= 0 then
 		vehicle.cp.timers.slippingWheels = 0;
-	end;	
-	
+	end;
+
+	local deltaMinus = (vehicle.lastSpeedReal * 3600) - refSpeed;
+	local tolerance = 5;
+	-- TODO: Remove commented out line if needed.
+	--if vehicle.cp.currentTipTrigger and vehicle.cp.currentTipTrigger.bunkerSilo then
+	--	tolerance = 1;
+	--end;
+	if deltaMinus > tolerance then
+		vehicle.cp.speedBrake = true;
+	else
+		vehicle.cp.speedBrake = false;
+	end;
 end
 	
 function courseplay:openCloseCover(vehicle, dt, showCover, isAtTipTrigger)

@@ -456,7 +456,6 @@ function courseplay:stop(self)
 		self.cp.checkReverseValdityPrinted = false
 	end
 
-	--self.motor:setSpeedLevel(0, false);
 	self.motor.maxRpmOverride = nil;
 	self.cp.startWork = nil
 	self.cp.stopWork = nil
