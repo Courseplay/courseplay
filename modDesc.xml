@@ -2195,7 +2195,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<it>Campo: %d (%s %s)</it>
 			<cz>Pole: %d (%s %s)</cz> 
 			<hu>Terület: %d (%s %s)</hu>
-			<ru>Поле: %d (%s %s)</ru>
+			<ru>Участок: %d (%s %s)</ru>
 			<nl>Veld: %d (%s %s)</nl>
 		</text>
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE">
@@ -2206,7 +2206,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<it>Tipo di seme: %s</it>
 			<cz>Osivo: %s</cz> 
 			<hu>Vetőmag típusa: %s</hu>
-			<ru>Семена: %s</ru>
+			<ru>%s</ru>
 			<nl>Zaad soort: %s</nl>
 		</text>
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE">
@@ -2217,7 +2217,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<it>Utilizzo: %s %s (%s)</it>
 			<cz>Usage: %s %s (%s)</cz> <!-- !!! -->
 			<hu>Szükséglet: %s %s (%s) </hu>
-			<ru>Usage: %s %s (%s)</ru> <!-- !!! -->
+			<ru>Расходы: %s %s (%s)</ru>
 			<nl>Verbruik: %s %s (%s)</nl>
 		</text>
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_TRIM">
