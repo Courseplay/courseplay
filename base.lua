@@ -498,8 +498,8 @@ function courseplay:load(xmlFile)
 	local xL = self.cp.suc.x1 + 3/1080 / g_screenAspectRatio;
 	local xR = self.cp.suc.x1 + self.cp.suc.buttonFileWidth;
 	local w,h = self.cp.suc.buttonFileWidth, self.cp.suc.buttonFileHeight;
-	local fruitNegButtonIdx = courseplay.button:create(self, 'suc', 'navigate_left.png',  'sucChangeFruit', -1, xL, self.cp.suc.lines.fruit.posY - 3/1080, w, h);
-	local fruitPosButtonIdx = courseplay.button:create(self, 'suc', 'navigate_right.png', 'sucChangeFruit',  1, xR, self.cp.suc.lines.fruit.posY - 3/1080, w, h);
+	local fruitNegButtonIdx = courseplay.button:create(self, 'suc', { 'iconSprite.png', 'navLeft' },  'sucChangeFruit', -1, xL, self.cp.suc.lines.fruit.posY - 3/1080, w, h);
+	local fruitPosButtonIdx = courseplay.button:create(self, 'suc', { 'iconSprite.png', 'navRight' }, 'sucChangeFruit',  1, xR, self.cp.suc.lines.fruit.posY - 3/1080, w, h);
 	self.cp.suc.fruitNegButton = self.cp.buttons.suc[fruitNegButtonIdx];
 	self.cp.suc.fruitPosButton = self.cp.buttons.suc[fruitPosButtonIdx];
 	self.cp.suc.selectedFruitIdx = 1;
@@ -609,12 +609,12 @@ function courseplay:load(xmlFile)
 		courseplay.button:create(self, 'global', 'iconSprite.png', 'setHudPage', p, posX, pageNav.posY, pageNav.buttonW, pageNav.buttonH, nil, nil, nil, false, false, toolTip);
 	end;
 
-	courseplay.button:create(self, 'global', 'close.png', 'openCloseHud', false, courseplay.hud.buttonPosX[2], courseplay.hud.infoBasePosY + 0.255, w24px, h24px);
+	courseplay.button:create(self, 'global', { 'iconSprite.png', 'close' }, 'openCloseHud', false, courseplay.hud.buttonPosX[2], courseplay.hud.infoBasePosY + 0.255, w24px, h24px);
 
-	courseplay.button:create(self, 'global', 'disk.png', 'showSaveCourseForm', 'course', topIconsX[2], topIconsY, w24px, h24px);
+	courseplay.button:create(self, 'global', { 'iconSprite.png', 'save' }, 'showSaveCourseForm', 'course', topIconsX[2], topIconsY, w24px, h24px);
 
 	if courseplay.isDeveloper then
-		courseplay.button:create(self, 'global', 'eye.png', 'setDrawWaypointsLines', nil, courseplay.hud.col1posX, topIconsY, w24px, h24px);
+		courseplay.button:create(self, 'global', { 'iconSprite.png', 'eye' }, 'setDrawWaypointsLines', nil, courseplay.hud.col1posX, topIconsY, w24px, h24px);
 	end;
 
 
@@ -651,14 +651,15 @@ function courseplay:load(xmlFile)
 	end;
 
 	--recording
+	-- TODO (Jakob): i18n
 	local recordingData = {
-		[1] = { 'recording_stop', 'stop_record' },
-		[2] = { 'recording_pause', 'setRecordingPause', true },
-		[3] = { 'recording_deleteWaypoint', 'delete_waypoint' },
-		[4] = { 'recording_setWait', 'set_waitpoint' },
-		[5] = { 'recording_setCrossing', 'set_crossing' },
-		[6] = { 'recording_turn', 'setRecordingTurnManeuver', true },
-		[7] = { 'recording_reverse', 'change_DriveDirection', true }
+		[1] = { 'recordingStop', 'stop_record', nil, 'Stop recording' },
+		[2] = { 'recordingPause', 'setRecordingPause', true, 'Pause recording' },
+		[3] = { 'recordingDelete', 'delete_waypoint', nil, 'Delete last waypoint' },
+		[4] = { 'recordingWait', 'set_waitpoint', nil, 'Set wait point' },
+		[5] = { 'recordingCross', 'set_crossing', nil, 'Set crossing point' },
+		[6] = { 'recordingTurn', 'setRecordingTurnManeuver', true, 'Start/end turn maneuver' },
+		[7] = { 'recordingReverse', 'change_DriveDirection', true, 'Set/stop reverse driving' }
 	};
 	local w,h = w32px,h32px;
 	local padding = w/4;
@@ -667,8 +668,8 @@ function courseplay:load(xmlFile)
 	
 	for i,data in pairs(recordingData) do
 		local posX = initX + ((w + padding) * (i-1));
-		local isToggleButton = data[3] or false;
-		courseplay.button:create(self, 1, data[1] .. '.png', data[2], nil, posX, courseplay.hud.linesButtonPosY[2], w, h, nil, nil, false, false, isToggleButton);
+		local isToggleButton = data[3];
+		courseplay.button:create(self, 1, { 'iconSprite.png', data[1] }, data[2], nil, posX, courseplay.hud.linesButtonPosY[2], w, h, nil, nil, false, false, isToggleButton, data[4]);
 	end;
 
 	--row buttons
@@ -677,22 +678,22 @@ function courseplay:load(xmlFile)
 	end;
 
 	--Custom field edge path
-	courseplay.button:create(self, 1, 'cancel.png', 'clearCustomFieldEdge', nil, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[3], w16px, h16px, 3, nil, false);
-	courseplay.button:create(self, 1, 'eye.png', 'toggleCustomFieldEdgePathShow', nil, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[3], w16px, h16px, 3, nil, false);
+	courseplay.button:create(self, 1, { 'iconSprite.png', 'cancel' }, 'clearCustomFieldEdge', nil, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[3], w16px, h16px, 3, nil, false);
+	courseplay.button:create(self, 1, { 'iconSprite.png', 'eye' }, 'toggleCustomFieldEdgePathShow', nil, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[3], w16px, h16px, 3, nil, false);
 
-	courseplay.button:create(self, 1, 'navigate_minus.png', 'setCustomFieldEdgePathNumber', -1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[4], w16px, h16px, 4, -5, false);
-	courseplay.button:create(self, 1, 'navigate_plus.png',  'setCustomFieldEdgePathNumber',  1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[4], w16px, h16px, 4,  5, false);
+	courseplay.button:create(self, 1, { 'iconSprite.png', 'navMinus' }, 'setCustomFieldEdgePathNumber', -1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[4], w16px, h16px, 4, -5, false);
+	courseplay.button:create(self, 1, { 'iconSprite.png', 'navPlus' },  'setCustomFieldEdgePathNumber',  1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[4], w16px, h16px, 4,  5, false);
 	courseplay.button:create(self, 1, nil, 'setCustomFieldEdgePathNumber', 1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[4], mouseWheelArea.w, mouseWheelArea.h, 4, 5, true, true);
 
 	-- Find first waypoint
-	courseplay.button:create(self, 1, 'searchGlass.png', 'toggleFindFirstWaypoint', nil, topIconsX[1], topIconsY, w24px, h24px, nil, nil, false, false, true);
+	courseplay.button:create(self, 1, { 'iconSprite.png', 'search' }, 'toggleFindFirstWaypoint', nil, topIconsX[1], topIconsY, w24px, h24px, nil, nil, false, false, true);
 
 
 	-- ##################################################
 	-- Page 2: Course management
 	--course navigation
-	courseplay.button:create(self, 2, 'navigate_up.png',   'shiftHudCourses', -courseplay.hud.numLines, listArrowX, courseplay.hud.linesPosY[1] - 0.003,                       w24px, h24px, nil, -courseplay.hud.numLines*2);
-	courseplay.button:create(self, 2, 'navigate_down.png', 'shiftHudCourses',  courseplay.hud.numLines, listArrowX, courseplay.hud.linesPosY[courseplay.hud.numLines] - 0.003, w24px, h24px, nil,  courseplay.hud.numLines*2);
+	courseplay.button:create(self, 2, { 'iconSprite.png', 'navUp' },   'shiftHudCourses', -courseplay.hud.numLines, listArrowX, courseplay.hud.linesPosY[1] - 0.003,                       w24px, h24px, nil, -courseplay.hud.numLines*2);
+	courseplay.button:create(self, 2, { 'iconSprite.png', 'navDown' }, 'shiftHudCourses',  courseplay.hud.numLines, listArrowX, courseplay.hud.linesPosY[courseplay.hud.numLines] - 0.003, w24px, h24px, nil,  courseplay.hud.numLines*2);
 
 	local courseListMouseWheelArea = {
 		x = mouseWheelArea.x,
@@ -702,13 +703,8 @@ function courseplay:load(xmlFile)
 	};
 	courseplay.button:create(self, 2, nil, 'shiftHudCourses',  -1, courseListMouseWheelArea.x, courseListMouseWheelArea.y, courseListMouseWheelArea.width, courseListMouseWheelArea.height, nil, -courseplay.hud.numLines, nil, true);
 
-	--reload courses
-	if g_server ~= nil then
-		--courseplay.button:create(self, 2, 'refresh.png', 'reloadCoursesFromXML', nil, courseplay.hud.infoBasePosX + 0.258, courseplay.hud.infoBasePosY + 0.24, w16px, h16px);
-	end;
-
-	--course actions
-	local pad = w16px*10/16 --old padding = 0.009667 ~ 18.5px
+	-- course actions
+	local pad = w16px*10/16;
 	local buttonX = {};
 	buttonX[0] = courseplay.hud.infoBasePosX + 0.005;
 	buttonX[4] = listArrowX - (2 * pad) - w16px;
@@ -720,46 +716,46 @@ function courseplay:load(xmlFile)
 		hoverAreaWidth = buttonX[4] + w16px - buttonX[1];
 	end;
 	for i=1, courseplay.hud.numLines do
-		local expandButtonIndex = courseplay.button:create(self, -2, 'folder_expand.png', 'expandFolder', i, buttonX[0], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
-		courseplay.button:addOverlay(self.cp.buttons[-2][expandButtonIndex], 2, 'folder_reduce.png');
-		courseplay.button:create(self, -2, 'courseLoadAppend.png', 'load_sorted_course', i, buttonX[1], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
-		courseplay.button:create(self, -2, 'courseAdd.png', 'add_sorted_course', i, buttonX[2], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
-		local linkParentButtonIndex = courseplay.button:create(self, -2, 'folder_parent_from.png', 'link_parent', i, buttonX[3], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
-		courseplay.button:addOverlay(self.cp.buttons[-2][linkParentButtonIndex], 2, 'folder_parent_to.png');
+		local expandButtonIndex = courseplay.button:create(self, -2, { 'iconSprite.png', 'navPlus' }, 'expandFolder', i, buttonX[0], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
+		courseplay.button:addOverlay(self.cp.buttons[-2][expandButtonIndex], 2, { 'iconSprite.png', 'navMinus' }); -- reduce folder
+		courseplay.button:create(self, -2, { 'iconSprite.png', 'courseLoadAppend' }, 'load_sorted_course', i, buttonX[1], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
+		courseplay.button:create(self, -2, { 'iconSprite.png', 'courseAdd' }, 'add_sorted_course', i, buttonX[2], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
+		local linkParentButtonIndex = courseplay.button:create(self, -2, { 'iconSprite.png', 'folderParentFrom' }, 'link_parent', i, buttonX[3], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
+		courseplay.button:addOverlay(self.cp.buttons[-2][linkParentButtonIndex], 2, { 'iconSprite.png', 'folderParentTo' }); -- folder parent to
 		if g_server ~= nil then
-			courseplay.button:create(self, -2, 'delete.png', 'delete_sorted_item', i, buttonX[4], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
+			courseplay.button:create(self, -2, { 'iconSprite.png', 'delete' }, 'delete_sorted_item', i, buttonX[4], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
 		end;
 		courseplay.button:create(self, -2, nil, nil, nil, buttonX[1], courseplay.hud.linesButtonPosY[i], hoverAreaWidth, mouseWheelArea.h, i, nil, true, false);
 	end
-	self.cp.hud.filterButtonIndex = courseplay.button:create(self, 2, 'searchGlass.png', 'showSaveCourseForm', 'filter', topIconsX[1], topIconsY, w24px, h24px);
-	courseplay.button:addOverlay(self.cp.buttons[2][self.cp.hud.filterButtonIndex], 2, 'cancel.png');
-	courseplay.button:create(self, 2, 'folder_new.png', 'showSaveCourseForm', 'folder', topIconsX[3], topIconsY, w24px, h24px);
+	self.cp.hud.filterButtonIndex = courseplay.button:create(self, 2, { 'iconSprite.png', 'search' }, 'showSaveCourseForm', 'filter', topIconsX[1], topIconsY, w24px, h24px);
+	courseplay.button:addOverlay(self.cp.buttons[2][self.cp.hud.filterButtonIndex], 2, { 'iconSprite.png', 'cancel' }); -- cancel
+	courseplay.button:create(self, 2, { 'iconSprite.png', 'folderNew' }, 'showSaveCourseForm', 'folder', topIconsX[3], topIconsY, w24px, h24px);
 
 
 	-- ##################################################
 	-- Page 3
-	courseplay.button:create(self, 3, 'navigate_minus.png', 'changeCombineOffset', -0.1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, -0.5, false);
-	courseplay.button:create(self, 3, 'navigate_plus.png',  'changeCombineOffset',  0.1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[1], w16px, h16px, 1,  0.5, false);
+	courseplay.button:create(self, 3, { 'iconSprite.png', 'navMinus' }, 'changeCombineOffset', -0.1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, -0.5, false);
+	courseplay.button:create(self, 3, { 'iconSprite.png', 'navPlus' },  'changeCombineOffset',  0.1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[1], w16px, h16px, 1,  0.5, false);
 	courseplay.button:create(self, 3, nil, 'changeCombineOffset', 0.1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[1], mouseWheelArea.w, mouseWheelArea.h, 1, 0.5, true, true);
 
-	courseplay.button:create(self, 3, 'navigate_minus.png', 'changeTipperOffset', -0.1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[2], w16px, h16px, 2, -0.5, false);
-	courseplay.button:create(self, 3, 'navigate_plus.png',  'changeTipperOffset',  0.1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[2], w16px, h16px, 2,  0.5, false);
+	courseplay.button:create(self, 3, { 'iconSprite.png', 'navMinus' }, 'changeTipperOffset', -0.1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[2], w16px, h16px, 2, -0.5, false);
+	courseplay.button:create(self, 3, { 'iconSprite.png', 'navPlus' },  'changeTipperOffset',  0.1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[2], w16px, h16px, 2,  0.5, false);
 	courseplay.button:create(self, 3, nil, 'changeTipperOffset', 0.1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[2], mouseWheelArea.w, mouseWheelArea.h, 2, 0.5, true, true);
 
-	courseplay.button:create(self, 3, 'navigate_minus.png', 'changeTurnRadius', -1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[3], w16px, h16px, 3, -5, false);
-	courseplay.button:create(self, 3, 'navigate_plus.png',  'changeTurnRadius',  1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[3], w16px, h16px, 3,  5, false);
+	courseplay.button:create(self, 3, { 'iconSprite.png', 'navMinus' }, 'changeTurnRadius', -1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[3], w16px, h16px, 3, -5, false);
+	courseplay.button:create(self, 3, { 'iconSprite.png', 'navPlus' },  'changeTurnRadius',  1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[3], w16px, h16px, 3,  5, false);
 	courseplay.button:create(self, 3, nil, 'changeTurnRadius', 1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[3], mouseWheelArea.w, mouseWheelArea.h, 3, 5, true, true);
 
-	courseplay.button:create(self, 3, 'navigate_minus.png', 'changeFollowAtFillLevel', -5, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[4], w16px, h16px, 4, -10, false);
-	courseplay.button:create(self, 3, 'navigate_plus.png',  'changeFollowAtFillLevel',  5, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[4], w16px, h16px, 4,  10, false);
+	courseplay.button:create(self, 3, { 'iconSprite.png', 'navMinus' }, 'changeFollowAtFillLevel', -5, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[4], w16px, h16px, 4, -10, false);
+	courseplay.button:create(self, 3, { 'iconSprite.png', 'navPlus' },  'changeFollowAtFillLevel',  5, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[4], w16px, h16px, 4,  10, false);
 	courseplay.button:create(self, 3, nil, 'changeFollowAtFillLevel', 5, mouseWheelArea.x, courseplay.hud.linesButtonPosY[4], mouseWheelArea.w, mouseWheelArea.h, 4, 10, true, true);
 
-	courseplay.button:create(self, 3, 'navigate_minus.png', 'changeDriveOnAtFillLevel', -5, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[5], w16px, h16px, 5, -10, false);
-	courseplay.button:create(self, 3, 'navigate_plus.png',  'changeDriveOnAtFillLevel',  5, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[5], w16px, h16px, 5,  10, false);
+	courseplay.button:create(self, 3, { 'iconSprite.png', 'navMinus' }, 'changeDriveOnAtFillLevel', -5, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[5], w16px, h16px, 5, -10, false);
+	courseplay.button:create(self, 3, { 'iconSprite.png', 'navPlus' },  'changeDriveOnAtFillLevel',  5, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[5], w16px, h16px, 5,  10, false);
 	courseplay.button:create(self, 3, nil, 'changeDriveOnAtFillLevel', 5, mouseWheelArea.x, courseplay.hud.linesButtonPosY[5], mouseWheelArea.w, mouseWheelArea.h, 5, 10, true, true);
 
-	courseplay.button:create(self, 3, 'navigate_minus.png', 'changeRefillUntilPct', -1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[6], w16px, h16px, 6, -5, false);
-	courseplay.button:create(self, 3, 'navigate_plus.png',  'changeRefillUntilPct',  1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[6], w16px, h16px, 6,  5, false);
+	courseplay.button:create(self, 3, { 'iconSprite.png', 'navMinus' }, 'changeRefillUntilPct', -1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[6], w16px, h16px, 6, -5, false);
+	courseplay.button:create(self, 3, { 'iconSprite.png', 'navPlus' },  'changeRefillUntilPct',  1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[6], w16px, h16px, 6,  5, false);
 	courseplay.button:create(self, 3, nil, 'changeRefillUntilPct', 1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[6], mouseWheelArea.w, mouseWheelArea.h, 6, 5, true, true);
 
 
@@ -767,32 +763,34 @@ function courseplay:load(xmlFile)
 	-- Page 4: Combine management
 	courseplay.button:create(self, 4, 'blank.png', 'switchSearchCombineMode', nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[1], courseplay.hud.visibleArea.width, 0.015, 1, nil, true);
 
-	courseplay.button:create(self, 4, 'navigate_up.png',   'selectAssignedCombine', -1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[2], w16px, h16px, 2, nil, false);
-	courseplay.button:create(self, 4, 'navigate_down.png', 'selectAssignedCombine',  1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[2], w16px, h16px, 2, nil, false);
+	courseplay.button:create(self, 4, { 'iconSprite.png', 'navUp' },   'selectAssignedCombine', -1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[2], w16px, h16px, 2, nil, false);
+	courseplay.button:create(self, 4, { 'iconSprite.png', 'navDown' }, 'selectAssignedCombine',  1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[2], w16px, h16px, 2, nil, false);
 
-	courseplay.button:create(self, 4, 'navigate_up.png',   'setSearchCombineOnField', -1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[3], w16px, h16px, 3, nil, false);
-	courseplay.button:create(self, 4, 'navigate_down.png', 'setSearchCombineOnField',  1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[3], w16px, h16px, 3, nil, false);
+	--[[
+	courseplay.button:create(self, 4, { 'iconSprite.png', 'navUp' },   'setSearchCombineOnField', -1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[3], w16px, h16px, 3, nil, false);
+	courseplay.button:create(self, 4, { 'iconSprite.png', 'navDown' }, 'setSearchCombineOnField',  1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[3], w16px, h16px, 3, nil, false);
 	courseplay.button:create(self, 4, nil, 'setSearchCombineOnField', -1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[3], mouseWheelArea.w, mouseWheelArea.h, 3, -5, true, true);
+	]]
 
 	courseplay.button:create(self, 4, 'blank.png', 'removeActiveCombineFromTractor', nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[5], courseplay.hud.visibleArea.width, 0.015, 5, nil, true);
 
 
 	-- ##################################################
 	-- Page 5: Speeds
-	courseplay.button:create(self, 5, 'navigate_minus.png', 'changeTurnSpeed',   -1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, -5, false);
-	courseplay.button:create(self, 5, 'navigate_plus.png',  'changeTurnSpeed',    1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[1], w16px, h16px, 1,  5, false);
+	courseplay.button:create(self, 5, { 'iconSprite.png', 'navMinus' }, 'changeTurnSpeed',   -1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, -5, false);
+	courseplay.button:create(self, 5, { 'iconSprite.png', 'navPlus' },  'changeTurnSpeed',    1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[1], w16px, h16px, 1,  5, false);
 	courseplay.button:create(self, 5, nil, 'changeTurnSpeed', 1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[1], mouseWheelArea.w, mouseWheelArea.h, 1, 5, true, true);
 
-	courseplay.button:create(self, 5, 'navigate_minus.png', 'changeFieldSpeed',  -1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[2], w16px, h16px, 2, -5, false);
-	courseplay.button:create(self, 5, 'navigate_plus.png',  'changeFieldSpeed',   1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[2], w16px, h16px, 2,  5, false);
+	courseplay.button:create(self, 5, { 'iconSprite.png', 'navMinus' }, 'changeFieldSpeed',  -1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[2], w16px, h16px, 2, -5, false);
+	courseplay.button:create(self, 5, { 'iconSprite.png', 'navPlus' },  'changeFieldSpeed',   1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[2], w16px, h16px, 2,  5, false);
 	courseplay.button:create(self, 5, nil, 'changeFieldSpeed', 1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[2], mouseWheelArea.w, mouseWheelArea.h, 2, 5, true, true);
 
-	courseplay.button:create(self, 5, 'navigate_minus.png', 'changeMaxSpeed',    -1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[3], w16px, h16px, 3, -5, false);
-	courseplay.button:create(self, 5, 'navigate_plus.png',  'changeMaxSpeed',     1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[3], w16px, h16px, 3,  5, false);
+	courseplay.button:create(self, 5, { 'iconSprite.png', 'navMinus' }, 'changeMaxSpeed',    -1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[3], w16px, h16px, 3, -5, false);
+	courseplay.button:create(self, 5, { 'iconSprite.png', 'navPlus' },  'changeMaxSpeed',     1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[3], w16px, h16px, 3,  5, false);
 	courseplay.button:create(self, 5, nil, 'changeMaxSpeed', 1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[3], mouseWheelArea.w, mouseWheelArea.h, 3, 5, true, true);
 
-	courseplay.button:create(self, 5, 'navigate_minus.png', 'changeUnloadSpeed', -1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[4], w16px, h16px, 4, -5, false);
-	courseplay.button:create(self, 5, 'navigate_plus.png',  'changeUnloadSpeed',  1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[4], w16px, h16px, 4,  5, false);
+	courseplay.button:create(self, 5, { 'iconSprite.png', 'navMinus' }, 'changeUnloadSpeed', -1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[4], w16px, h16px, 4, -5, false);
+	courseplay.button:create(self, 5, { 'iconSprite.png', 'navPlus' },  'changeUnloadSpeed',  1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[4], w16px, h16px, 4,  5, false);
 	courseplay.button:create(self, 5, nil, 'changeUnloadSpeed', 1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[4], mouseWheelArea.w, mouseWheelArea.h, 4, 5, true, true);
 
 	courseplay.button:create(self, 5, 'blank.png', 'changeUseRecordingSpeed',1, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[5], courseplay.hud.visibleArea.width, 0.015, 5, nil, true);
@@ -805,8 +803,8 @@ function courseplay:load(xmlFile)
 	courseplay.button:create(self, 6, 'blank.png', 'changeVisualWaypointsMode', 1, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[3], courseplay.hud.visibleArea.width, 0.015, 3, nil, true);
 	courseplay.button:create(self, 6, 'blank.png', 'changeBeaconLightsMode', 1, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[4], courseplay.hud.visibleArea.width, 0.015, 4, nil, true);
 
-	courseplay.button:create(self, 6, 'navigate_minus.png', 'changeWaitTime', -5, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[5], w16px, h16px, 5, -10, false);
-	courseplay.button:create(self, 6, 'navigate_plus.png',  'changeWaitTime',  5, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[5], w16px, h16px, 5,  10, false);
+	courseplay.button:create(self, 6, { 'iconSprite.png', 'navMinus' }, 'changeWaitTime', -5, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[5], w16px, h16px, 5, -10, false);
+	courseplay.button:create(self, 6, { 'iconSprite.png', 'navPlus' },  'changeWaitTime',  5, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[5], w16px, h16px, 5,  10, false);
 	courseplay.button:create(self, 6, nil, 'changeWaitTime', 5, mouseWheelArea.x, courseplay.hud.linesButtonPosY[5], mouseWheelArea.w, mouseWheelArea.h, 5, 10, true, true);
 
 	local dbgW, dbgH = 22/1920, 22/1080;
@@ -817,32 +815,32 @@ function courseplay:load(xmlFile)
 		local dbgPosX = dbgMaxX - (courseplay.numDebugChannelButtonsPerLine * dbgW) + ((col-1) * dbgW);
 		courseplay.button:create(self, 6, 'debugChannelButtons.png', 'toggleDebugChannel', dbg, dbgPosX, dbgPosY, dbgW, dbgH);
 	end;
-	courseplay.button:create(self, 6, 'navigate_up.png',   'changeDebugChannelSection', -1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[6], w16px, h16px, 6, -1, true, false);
-	courseplay.button:create(self, 6, 'navigate_down.png', 'changeDebugChannelSection',  1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[6], w16px, h16px, 6,  1, true, false);
+	courseplay.button:create(self, 6, { 'iconSprite.png', 'navUp' },   'changeDebugChannelSection', -1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[6], w16px, h16px, 6, -1, true, false);
+	courseplay.button:create(self, 6, { 'iconSprite.png', 'navDown' }, 'changeDebugChannelSection',  1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[6], w16px, h16px, 6,  1, true, false);
 	courseplay.button:create(self, 6, nil, 'changeDebugChannelSection', -1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[6], mouseWheelArea.w, mouseWheelArea.h, 6, -1, true, true);
 
 
 	-- ##################################################
 	-- Page 7: Driving settings
-	courseplay.button:create(self, 7, 'navigate_left.png',  'changeLaneOffset', -0.1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, -0.5, false);
-	courseplay.button:create(self, 7, 'navigate_right.png', 'changeLaneOffset',  0.1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[1], w16px, h16px, 1,  0.5, false);
+	courseplay.button:create(self, 7, { 'iconSprite.png', 'navLeft' },  'changeLaneOffset', -0.1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, -0.5, false);
+	courseplay.button:create(self, 7, { 'iconSprite.png', 'navRight' }, 'changeLaneOffset',  0.1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[1], w16px, h16px, 1,  0.5, false);
 	courseplay.button:create(self, 7, nil, 'changeLaneOffset', 0.1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[1], mouseWheelArea.w, mouseWheelArea.h, 1, 0.5, true, true);
 
 	courseplay.button:create(self, 7, 'blank.png', 'toggleSymmetricLaneChange', nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[2], courseplay.hud.visibleArea.width, 0.015, 2, nil, true);
 
-	courseplay.button:create(self, 7, 'navigate_left.png',  'changeToolOffsetX', -0.1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[3], w16px, h16px, 3,  -0.5, false);
-	courseplay.button:create(self, 7, 'navigate_right.png', 'changeToolOffsetX',  0.1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[3], w16px, h16px, 3,   0.5, false);
+	courseplay.button:create(self, 7, { 'iconSprite.png', 'navLeft' },  'changeToolOffsetX', -0.1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[3], w16px, h16px, 3,  -0.5, false);
+	courseplay.button:create(self, 7, { 'iconSprite.png', 'navRight' }, 'changeToolOffsetX',  0.1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[3], w16px, h16px, 3,   0.5, false);
 	courseplay.button:create(self, 7, nil, 'changeToolOffsetX', 0.1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[3], mouseWheelArea.w, mouseWheelArea.h, 3, 0.5, true, true);
 
-	courseplay.button:create(self, 7, 'navigate_down.png', 'changeToolOffsetZ', -0.1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[4], w16px, h16px, 4,  -0.5, false);
-	courseplay.button:create(self, 7, 'navigate_up.png',   'changeToolOffsetZ',  0.1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[4], w16px, h16px, 4,   0.5, false);
+	courseplay.button:create(self, 7, { 'iconSprite.png', 'navDown' }, 'changeToolOffsetZ', -0.1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[4], w16px, h16px, 4,  -0.5, false);
+	courseplay.button:create(self, 7, { 'iconSprite.png', 'navUp' },   'changeToolOffsetZ',  0.1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[4], w16px, h16px, 4,   0.5, false);
 	courseplay.button:create(self, 7, nil, 'changeToolOffsetZ', 0.1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[4], mouseWheelArea.w, mouseWheelArea.h, 4, 0.5, true, true);
 
 
-	courseplay.button:create(self, 7, 'navigate_up.png',   'switchDriverCopy', -1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[5], w16px, h16px, 5, nil, false);
-	courseplay.button:create(self, 7, 'navigate_down.png', 'switchDriverCopy',  1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[5], w16px, h16px, 5, nil, false);
+	courseplay.button:create(self, 7, { 'iconSprite.png', 'navUp' },   'switchDriverCopy', -1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[5], w16px, h16px, 5, nil, false);
+	courseplay.button:create(self, 7, { 'iconSprite.png', 'navDown' }, 'switchDriverCopy',  1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[5], w16px, h16px, 5, nil, false);
 	courseplay.button:create(self, 7, nil, nil, nil, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[5], 0.015 + w16px, mouseWheelArea.h, 5, nil, true, false);
-	courseplay.button:create(self, 7, 'copy.png',          'copyCourse',      nil, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[6], w16px, h16px);
+	courseplay.button:create(self, 7, { 'iconSprite.png', 'copy' }, 'copyCourse', nil, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[6], w16px, h16px);
 
 
 	-- ##################################################
@@ -850,9 +848,9 @@ function courseplay:load(xmlFile)
 	-- Note: line 1 (field edges) will be applied in first updateTick() runthrough
 
 	-- line 2 (workWidth)
-	courseplay.button:create(self, 8, 'calculator.png', 'calculateWorkWidth',   nil, courseplay.hud.infoBasePosX + 0.270, courseplay.hud.linesButtonPosY[2], w16px, h16px, 2,  nil, false);
-	courseplay.button:create(self, 8, 'navigate_minus.png', 'changeWorkWidth', -0.1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[2], w16px, h16px, 2, -0.5, false);
-	courseplay.button:create(self, 8, 'navigate_plus.png',  'changeWorkWidth',  0.1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[2], w16px, h16px, 2,  0.5, false);
+	courseplay.button:create(self, 8, { 'iconSprite.png', 'calculator' }, 'calculateWorkWidth', nil, courseplay.hud.buttonPosX[0], courseplay.hud.linesButtonPosY[2], w16px, h16px, 2, nil, false);
+	courseplay.button:create(self, 8, { 'iconSprite.png', 'navMinus' }, 'changeWorkWidth', -0.1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[2], w16px, h16px, 2, -0.5, false);
+	courseplay.button:create(self, 8, { 'iconSprite.png', 'navPlus' },  'changeWorkWidth',  0.1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[2], w16px, h16px, 2,  0.5, false);
 	courseplay.button:create(self, 8, nil, 'changeWorkWidth', 0.1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[2], mouseWheelArea.w, mouseWheelArea.h, 2, 0.5, true, true);
 
 	-- line 3 (starting corner)
@@ -866,31 +864,31 @@ function courseplay:load(xmlFile)
 
 	-- line 6 (headland)
 	-- 6.1 direction
-	local headlandDirButtonIdx = courseplay.button:create(self, 8, 'headlandDirCW.png', 'setHeadlandDir', nil, courseplay.hud.infoBasePosX + 0.246 - w32px, courseplay.hud.linesButtonPosY[6], w16px, h16px, 6, nil, false);
+	local headlandDirButtonIdx = courseplay.button:create(self, 8, { 'iconSprite.png', 'headlandDirCW' }, 'setHeadlandDir', nil, courseplay.hud.infoBasePosX + 0.246 - w32px, courseplay.hud.linesButtonPosY[6], w16px, h16px, 6, nil, false);
 	self.cp.headland.directionButton = self.cp.buttons[8][headlandDirButtonIdx];
-	courseplay.button:addOverlay(self.cp.headland.directionButton, 2, 'headlandDirCCW.png');
+	courseplay.button:addOverlay(self.cp.headland.directionButton, 2, { 'iconSprite.png', 'headlandDirCCW' });
 
 	-- 6.2 order --width = 2 x 0.015
-	local headlandOrderButtonIdx = courseplay.button:create(self, 8, 'headlandOrderBefore.png', 'setHeadlandOrder', nil, courseplay.hud.infoBasePosX + 0.240, courseplay.hud.linesButtonPosY[6], w32px, h16px, 6, nil, false);
+	local headlandOrderButtonIdx = courseplay.button:create(self, 8, { 'iconSprite.png', 'headlandOrdBef' }, 'setHeadlandOrder', nil, courseplay.hud.infoBasePosX + 0.240, courseplay.hud.linesButtonPosY[6], w32px, h16px, 6, nil, false);
 	self.cp.headland.orderButton = self.cp.buttons[8][headlandOrderButtonIdx];
-	courseplay.button:addOverlay(self.cp.headland.orderButton, 2, 'headlandOrderAfter.png');
+	courseplay.button:addOverlay(self.cp.headland.orderButton, 2, { 'iconSprite.png', 'headlandOrdAft' });
 
 	-- 6.3: numLanes
-	courseplay.button:create(self, 8, 'navigate_up.png',   'setHeadlandNumLanes',   1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[6], w16px, h16px, 6, nil, false);
-	courseplay.button:create(self, 8, 'navigate_down.png', 'setHeadlandNumLanes',  -1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[6], w16px, h16px, 6, nil, false);
+	courseplay.button:create(self, 8, { 'iconSprite.png', 'navUp' },   'setHeadlandNumLanes',   1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[6], w16px, h16px, 6, nil, false);
+	courseplay.button:create(self, 8, { 'iconSprite.png', 'navDown' }, 'setHeadlandNumLanes',  -1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[6], w16px, h16px, 6, nil, false);
 
 	-- generation action button
-	courseplay.button:create(self, 8, 'iconSprite.png', 'generateCourse', nil, topIconsX[3], topIconsY, w24px, h24px, nil, nil, false);
+	courseplay.button:create(self, 8, { 'iconSprite.png', 'generateCourse' }, 'generateCourse', nil, topIconsX[3], topIconsY, w24px, h24px, nil, nil, false);
 
 
 	-- ##################################################
 	-- Page 9: Shovel settings
 	local wTemp = 22/1920;
 	local hTemp = 22/1080;
-	courseplay.button:create(self, 9, 'shovelLoading.png',      'saveShovelPosition', 2, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[1] - 0.003, wTemp, hTemp, 1, 2, true, false, true);
-	courseplay.button:create(self, 9, 'shovelTransport.png',    'saveShovelPosition', 3, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[2] - 0.003, wTemp, hTemp, 2, 3, true, false, true);
-	courseplay.button:create(self, 9, 'shovelPreUnloading.png', 'saveShovelPosition', 4, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[3] - 0.003, wTemp, hTemp, 3, 4, true, false, true);
-	courseplay.button:create(self, 9, 'shovelUnloading.png',    'saveShovelPosition', 5, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[4] - 0.003, wTemp, hTemp, 4, 5, true, false, true);
+	courseplay.button:create(self, 9, { 'iconSprite.png', 'shovelLoading' },   'saveShovelPosition', 2, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[1] - 0.003, wTemp, hTemp, 1, 2, true, false, true);
+	courseplay.button:create(self, 9, { 'iconSprite.png', 'shovelTransport' }, 'saveShovelPosition', 3, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[2] - 0.003, wTemp, hTemp, 2, 3, true, false, true);
+	courseplay.button:create(self, 9, { 'iconSprite.png', 'shovelPreUnload' }, 'saveShovelPosition', 4, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[3] - 0.003, wTemp, hTemp, 3, 4, true, false, true);
+	courseplay.button:create(self, 9, { 'iconSprite.png', 'shovelUnloading' }, 'saveShovelPosition', 5, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[4] - 0.003, wTemp, hTemp, 4, 5, true, false, true);
 
 	courseplay.button:create(self, 9, 'blank.png', 'setShovelStopAndGo', nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[5], courseplay.hud.visibleArea.width, 0.015, 5, nil, true);
 	--END Page 9
@@ -912,11 +910,13 @@ function courseplay:load(xmlFile)
 
 	-- waitPoints icon
 	self.cp.hud.waitPointsIcon = Overlay:new('cpWaitPointsIcon', courseplay.hud.iconSpritePath, courseplay.hud.bottomInfo.waitPointsIconX, courseplay.hud.bottomInfo.iconPosY, w, h);
-	courseplay.utils:setOverlayUVsPx(self.cp.hud.waitPointsIcon, 40, 180, 72, 148, sizeX, sizeY);
+	local UVs = courseplay.hud.buttonUVsPx.recordingWait;
+	courseplay.utils:setOverlayUVsPx(self.cp.hud.waitPointsIcon, UVs[1], UVs[2], UVs[3], UVs[4], sizeX, sizeY);
 
 	-- crossingPoints icon
 	self.cp.hud.crossingPointsIcon = Overlay:new('cpCrossingPointsIcon', courseplay.hud.iconSpritePath, courseplay.hud.bottomInfo.crossingPointsIconX, courseplay.hud.bottomInfo.iconPosY, w, h);
-	courseplay.utils:setOverlayUVsPx(self.cp.hud.crossingPointsIcon, 76, 180, 108, 148, sizeX, sizeY);
+	UVs = courseplay.hud.buttonUVsPx.recordingCross;
+	courseplay.utils:setOverlayUVsPx(self.cp.hud.crossingPointsIcon, UVs[1], UVs[2], UVs[3], UVs[4], sizeX, sizeY);
 
 	-- toolTip icon
 	self.cp.hud.toolTipIcon = Overlay:new('cpToolTipIcon', courseplay.hud.iconSpritePath, courseplay.hud.col1posX, courseplay.hud.infoBasePosY + 0.0055, w, h);

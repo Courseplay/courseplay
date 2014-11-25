@@ -1,9 +1,16 @@
 function courseplay.button:create(vehicle, hudPage, img, functionToCall, parameter, x, y, width, height, hudRow, modifiedParameter, hoverText, isMouseWheelArea, isToggleButton, toolTip)
 	-- self = courseplay.button
 
-	local overlay;
-	if img and img ~= "blank.dds" then
-		overlay = Overlay:new(img, Utils.getFilename("img/" .. img, courseplay.path), x, y, width, height);
+	local overlay, spriteSection;
+	if img then
+		if type(img) == 'table' then
+			if img[1] == 'iconSprite.png' then
+				overlay = Overlay:new(img, courseplay.hud.iconSpritePath, x, y, width, height);
+				spriteSection = img[2];
+			end;
+		elseif img ~= 'blank.dds' and img ~= 'blank.png' then
+			overlay = Overlay:new(img, Utils.getFilename('img/' .. img, courseplay.path), x, y, width, height);
+		end;
 	end;
 
 	if hoverText == nil then
@@ -50,31 +57,37 @@ function courseplay.button:create(vehicle, hudPage, img, functionToCall, paramet
 		button.canScrollDown = true;
 	end;
 
-	self:setSpecialButtonUVs(functionToCall, button);
+	self:setSpecialButtonUVs(button, button.overlay, spriteSection);
 
 	table.insert(vehicle.cp.buttons[hudPage], button);
 	return #(vehicle.cp.buttons[hudPage]);
 end;
 
-function courseplay.button:setSpecialButtonUVs(functionToCall, button)
-	if functionToCall == 'toggleDebugChannel' then
-		local col = ((button.parameter-1) % courseplay.numDebugChannelButtonsPerLine) + 1;
-		local line = math.ceil(button.parameter / courseplay.numDebugChannelButtonsPerLine);
+function courseplay.button:setSpecialButtonUVs(button, ovl, spriteSection)
+	local fn = button.functionToCall;
+	local prm = button.parameter;
+	local txtSizeX, txtSizeY = courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y;
 
-		--space in dds: 16 x, 2 y
-		courseplay.utils:setOverlayUVsSymmetric(button.overlay, col, line, 16, 2);
+	if spriteSection and courseplay.hud.buttonUVsPx[spriteSection] ~= nil then
+		local UVs = courseplay.hud.buttonUVsPx[spriteSection];
+		courseplay.utils:setOverlayUVsPx(ovl, UVs[1], UVs[2], UVs[3], UVs[4], txtSizeX, txtSizeY);
 
-	elseif functionToCall == 'setCpMode' then
-		local UVs = courseplay.hud.modeButtonsUVsPx[button.parameter];
-		courseplay.utils:setOverlayUVsPx(button.overlay, UVs[1], UVs[2], UVs[3], UVs[4], courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
+	elseif fn == 'toggleDebugChannel' then
+		local col = ((prm - 1) % courseplay.numDebugChannelButtonsPerLine) + 1;
+		local line = math.ceil(prm / courseplay.numDebugChannelButtonsPerLine);
+		courseplay.utils:setOverlayUVsSymmetric(button.overlay, col, line, 16, 2); -- space in dds: 16 x, 2 y
 
-	elseif functionToCall == 'setHudPage' then
-		local UVs = courseplay.hud.pageButtonsUVsPx[button.parameter];
-		courseplay.utils:setOverlayUVsPx(button.overlay, UVs[1], UVs[2], UVs[3], UVs[4], courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
+	elseif fn == 'setCpMode' then
+		local UVs = courseplay.hud.modeButtonsUVsPx[prm];
+		courseplay.utils:setOverlayUVsPx(ovl, UVs[1], UVs[2], UVs[3], UVs[4], txtSizeX, txtSizeY);
 
-	elseif functionToCall == 'generateCourse' then
+	elseif fn == 'setHudPage' then
+		local UVs = courseplay.hud.pageButtonsUVsPx[prm];
+		courseplay.utils:setOverlayUVsPx(ovl, UVs[1], UVs[2], UVs[3], UVs[4], txtSizeX, txtSizeY);
+
+	elseif fn == 'generateCourse' then
 		local UVs = courseplay.hud.pageButtonsUVsPx[8];
-		courseplay.utils:setOverlayUVsPx(button.overlay, UVs[1], UVs[2], UVs[3], UVs[4], courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
+		courseplay.utils:setOverlayUVsPx(ovl, UVs[1], UVs[2], UVs[3], UVs[4], txtSizeX, txtSizeY);
 	end;
 end;
 
@@ -457,9 +470,18 @@ function courseplay.button:setOffset(button, x_off, y_off)
 end
 
 function courseplay.button:addOverlay(button, index, img)
+	local spriteSection;
 	local width = button.x2 - button.x
 	local height = button.y2 - button.y
-	button.overlays[index] = Overlay:new(img, Utils.getFilename("img/" .. img, courseplay.path), button.x, button.y, width, height);
+	if type(img) == 'table' then
+		if img[1] == 'iconSprite.png' then
+			button.overlays[index] = Overlay:new(img, courseplay.hud.iconSpritePath, button.x, button.y, width, height);
+			spriteSection = img[2];
+		end;
+	elseif img ~= 'blank.dds' and img ~= 'blank.png' then
+		button.overlays[index] = Overlay:new(img, Utils.getFilename('img/' .. img, courseplay.path), button.x, button.y, width, height);
+	end;
+	self:setSpecialButtonUVs(button, button.overlays[index], spriteSection);
 end
 
 function courseplay.button:setOverlay(button, index)

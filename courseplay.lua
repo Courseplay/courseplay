@@ -306,14 +306,16 @@ function courseplay:setGlobalData()
 		};
 	};
 	courseplay.hud.buttonPosX = {
-		[1] = courseplay.hud.infoBasePosX + 0.285;
-		[2] = courseplay.hud.infoBasePosX + 0.300;
+		[-1] = courseplay.hud.infoBasePosX + 0.255;
+		[0]  = courseplay.hud.infoBasePosX + 0.270;
+		[1]  = courseplay.hud.infoBasePosX + 0.285;
+		[2]  = courseplay.hud.infoBasePosX + 0.300;
 	};
 
 	ch.iconSpritePath = Utils.getFilename('img/iconSprite.png', courseplay.path);
 	ch.iconSpriteSize = {
 		x = 256;
-		y = 256;
+		y = 512;
 	};
 
 	ch.modeButtonsUVsPx = {
@@ -341,6 +343,47 @@ function courseplay:setGlobalData()
 		[9] = {  76,72, 108,40 };
 	};
 
+	courseplay.hud.buttonUVsPx = {
+		calculator       = {  76,288, 108,256 };
+		cancel           = {  40,288,  72,256 };
+		close            = { 148,216, 180,184 };
+		copy             = { 184,180, 216,148 };
+		courseLoadAppend = {   4,252,  36,220 };
+		courseAdd        = {  40,252,  72,220 };
+		eye              = { 148,180, 180,148 };
+		delete           = { 184,216, 216,184 };
+		folderNew        = { 220,216, 252,184 };
+		folderParentFrom = {  76,252, 108,220 };
+		folderParentTo   = { 112,252, 144,220 };
+		headlandDirCW    = {   4,324,  36,292 };
+		headlandDirCCW   = {  40,324,  72,292 };
+		headlandOrdBef   = { 112,288, 176,256 };
+		headlandOrdAft   = { 184,288, 248,256 };
+		generateCourse   = {  40, 72,  72, 40 };
+		navUp            = {  76,216, 108,184 };
+		navDown          = { 112,216, 144,184 };
+		navLeft          = {   4,216,  36,184 };
+		navRight         = {  40,216,  72,184 };
+		navPlus          = { 148,252, 180,220 };
+		navMinus         = { 184,252, 216,220 };
+		recordingCross   = {  76,180, 108,148 };
+		recordingDelete  = { 148,360, 180,328 };
+		recordingPause   = {  40,360,  72,328 };
+		recordingPlay    = { 220,324, 252,292 };
+		recordingReverse = { 112,360, 144,328 };
+		recordingStop    = {  76,360, 108,328 };
+		recordingTurn    = {   4,360,  36,328 };
+		recordingWait    = {  40,180,  72,148 };
+		refresh          = { 220,252, 252,220 };
+		save             = { 220,180, 252,148 };
+		search           = {   4,288,  36,256 };
+		shovelLoading    = {  76,324, 108,292 };
+		shovelUnloading  = { 112,324, 144,292 };
+		shovelPreUnload  = { 148,324, 180,292 };
+		shovelTransport  = { 184,324, 216,292 };
+	};
+
+	-- bottom info
 	ch.bottomInfo = {};
 	ch.bottomInfo.iconHeight = 24 / 1080;
 	ch.bottomInfo.iconWidth = ch.bottomInfo.iconHeight / g_screenAspectRatio;

@@ -1379,11 +1379,11 @@ function courseplay:createFieldEdgeButtons(vehicle)
 			w = courseplay.hud.visibleArea.x2 - courseplay.hud.visibleArea.x1 - (2 * 0.005),
 			h = courseplay.hud.lineHeight
 		};
-		local toggleSucHudButtonIdx = courseplay.button:create(vehicle, 8, 'calculator.png', 'toggleSucHud', nil, courseplay.hud.infoBasePosX + 0.255, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, nil, false, false, true);
+		local toggleSucHudButtonIdx = courseplay.button:create(vehicle, 8, { 'iconSprite.png', 'calculator' }, 'toggleSucHud', nil, courseplay.hud.buttonPosX[-1], courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, nil, false, false, true);
 		vehicle.cp.suc.toggleHudButton = vehicle.cp.buttons[8][toggleSucHudButtonIdx];
-		courseplay.button:create(vehicle, 8, 'eye.png', 'toggleSelectedFieldEdgePathShow', nil, courseplay.hud.infoBasePosX + 0.270, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, nil, false);
-		courseplay.button:create(vehicle, 8, 'navigate_up.png',   'setFieldEdgePath',  1, courseplay.hud.infoBasePosX + 0.285, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1,  5, false);
-		courseplay.button:create(vehicle, 8, 'navigate_down.png', 'setFieldEdgePath', -1, courseplay.hud.infoBasePosX + 0.300, courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, -5, false);
+		courseplay.button:create(vehicle, 8, { 'iconSprite.png', 'eye' }, 'toggleSelectedFieldEdgePathShow', nil, courseplay.hud.buttonPosX[0], courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, nil, false);
+		courseplay.button:create(vehicle, 8, { 'iconSprite.png', 'navUp' }, 'setFieldEdgePath',  1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[1], w16px, h16px, 1,  5, false);
+		courseplay.button:create(vehicle, 8, { 'iconSprite.png', 'navDown' }, 'setFieldEdgePath', -1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, -5, false);
 		courseplay.button:create(vehicle, 8, nil, 'setFieldEdgePath', 1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[1], mouseWheelArea.w, mouseWheelArea.h, 1, 5, true, true);
 		vehicle.cp.fieldEdge.selectedField.buttonsCreated = true;
 	end;
