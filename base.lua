@@ -85,7 +85,7 @@ function courseplay:load(xmlFile)
 	self.cp.canDrive = false --can drive course (has >4 waypoints, is not recording)
 	self.cp.coursePlayerNum = nil;
 
-	self.cp.infoText = nil -- info text on tractor
+	courseplay:setInfoText(self, nil); -- info text in tractor
 
 	-- global info text - also displayed when not in vehicle
 	self.cp.hasSetGlobalInfoTextThisLoop = {};
@@ -1061,7 +1061,7 @@ end;
 -- is being called every loop
 function courseplay:update(dt)
 	if g_server ~= nil and (self:getIsCourseplayDriving() or self.cp.isRecording or self.cp.recordingIsPaused) then
-		self.cp.infoText = nil;
+		courseplay:setInfoText(self, nil);
 	end;
 
 	if self.cp.drawWaypointsLines then
@@ -1242,6 +1242,19 @@ function courseplay:set_timeout(vehicle, interval)
 	vehicle.cp.timeOut = vehicle.timer + interval;
 end;
 
+function courseplay:setInfoText(vehicle, text)
+	if vehicle.cp.infoText ~= text then
+		vehicle.cp.infoText = text;
+	end;
+end;
+
+function courseplay:renderInfoText(vehicle)
+	if vehicle.isEntered and vehicle.cp.infoText ~= nil and vehicle.cp.toolTip == nil then
+		courseplay:setFontSettings("white", false, "left");
+		renderText(courseplay.hud.col1posX, courseplay.hud.infoBasePosY + 0.012, courseplay.hud.fontSizes.infoText, vehicle.cp.infoText);
+	end;
+end;
+
 
 function courseplay:readStream(streamId, connection)
 	courseplay:debug("id: "..tostring(self.id).."  base: readStream", 5)
@@ -1268,7 +1281,8 @@ function courseplay:readStream(streamId, connection)
 	self.cp.headland.numLanes = streamDebugReadInt32(streamId)
 	self.cp.hud.currentPage = streamDebugReadInt32(streamId)
     self.cp.hasUnloadingRefillingCourse	 = streamDebugReadBool(streamId);
-	self.cp.infoText = streamDebugReadString(streamId);
+	local infoText = streamDebugReadString(streamId);
+	courseplay:setInfoText(self, infoText);
 	self.cp.returnToFirstPoint = streamDebugReadBool(streamId);
 	self.cp.ridgeMarkersAutomatic = streamDebugReadBool(streamId);
 	self.cp.shovelStopAndGo = streamDebugReadBool(streamId);

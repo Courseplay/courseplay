@@ -155,7 +155,7 @@ function courseplay:handle_mode2(self, dt)
 						courseplay:setModeState(self, 2);
 					end
 				else
-					self.cp.infoText = courseplay:loc("COURSEPLAY_WAITING_FOR_FILL_LEVEL");
+					courseplay:setInfoText(self, courseplay:loc("COURSEPLAY_WAITING_FOR_FILL_LEVEL"));
 				end
 
 
@@ -206,7 +206,7 @@ function courseplay:handle_mode2(self, dt)
 				end
 
 			else
-				self.cp.infoText = courseplay:loc("COURSEPLAY_NO_COMBINE_IN_REACH")
+				courseplay:setInfoText(self, courseplay:loc("COURSEPLAY_NO_COMBINE_IN_REACH"));
 			end
 		end
 	end
@@ -296,13 +296,13 @@ function courseplay:unload_combine(self, dt)
 	
 	local aiTurn = combine.isAIThreshing and (combine.turnStage == 1 or combine.turnStage == 2 or combine.turnStage == 4 or combine.turnStage == 5)
 	if tractor ~= nil and (aiTurn or (tractor.cp.turnStage > 0)) then
-		self.cp.infoText = courseplay:loc("COURSEPLAY_COMBINE_IS_TURNING") -- "Drescher wendet. "
+		courseplay:setInfoText(self, courseplay:loc("COURSEPLAY_COMBINE_IS_TURNING")); -- "Drescher wendet. "
 		combine_turning = true
 		-- print(('%s: cp.turnStage=%d -> combine_turning=true'):format(nameNum(tractor), tractor.cp.turnStage));
 	end
 	if self.cp.modeState == 2 or self.cp.modeState == 3 or self.cp.modeState == 4 then
 		if combine == nil then
-			self.cp.infoText = "this should never happen";
+			courseplay:setInfoText(self, "combine == nil, this should never happen");
 			allowedToDrive = false
 		end
 	end
@@ -331,7 +331,7 @@ function courseplay:unload_combine(self, dt)
 	if self.cp.modeState == 2 then
 		refSpeed = self.cp.speeds.field
 		--courseplay:removeFromCombinesIgnoreList(self, combine)
-		self.cp.infoText = courseplay:loc("COURSEPLAY_DRIVE_BEHIND_COMBINE");
+		courseplay:setInfoText(self, courseplay:loc("COURSEPLAY_DRIVE_BEHIND_COMBINE"));
 
 		local x1, y1, z1 = worldToLocal(tractor.cp.DirectionNode or tractor.rootNode, x, y, z)
 
@@ -402,7 +402,7 @@ function courseplay:unload_combine(self, dt)
 			--print("set saved offset")
 			self.cp.combineOffset = combine.cp.offset			
 		end
-		self.cp.infoText = courseplay:loc("COURSEPLAY_DRIVE_TO_COMBINE") -- "Fahre zum Drescher"
+		courseplay:setInfoText(self, courseplay:loc("COURSEPLAY_DRIVE_TO_COMBINE")); -- "Fahre zum Drescher"
 		--courseplay:addToCombinesIgnoreList(self, combine)
 		refSpeed = self.cp.speeds.field
 
@@ -454,7 +454,7 @@ function courseplay:unload_combine(self, dt)
 	-- STATE 3 (drive to unload pipe)
 	elseif self.cp.modeState == 3 then
 
-		self.cp.infoText = courseplay:loc("COURSEPLAY_DRIVE_NEXT_TO_COMBINE")
+		courseplay:setInfoText(self, courseplay:loc("COURSEPLAY_DRIVE_NEXT_TO_COMBINE"));
 		--courseplay:addToCombinesIgnoreList(self, combine)
 		refSpeed = self.cp.speeds.field
 
@@ -617,21 +617,21 @@ function courseplay:unload_combine(self, dt)
 		end
 		-- combine is not moving and trailer is under pipe
 		if not combine.cp.isChopper and tractor.movingDirection == 0 and (lz <= 1 or lz < -0.1 * trailer_offset) then
-			self.cp.infoText = courseplay:loc("COURSEPLAY_COMBINE_WANTS_ME_TO_STOP") -- "Drescher sagt ich soll anhalten."
+			courseplay:setInfoText(self, courseplay:loc("COURSEPLAY_COMBINE_WANTS_ME_TO_STOP")); -- "Drescher sagt ich soll anhalten."
 			allowedToDrive = false
 		elseif combine.cp.isChopper then
 			if combine.movingDirection == 0 and dod == -1 and self.cp.chopperIsTurning == false then
 				allowedToDrive = false
-				self.cp.infoText = courseplay:loc("COURSEPLAY_COMBINE_WANTS_ME_TO_STOP") -- "Drescher sagt ich soll anhalten."
+				courseplay:setInfoText(self, courseplay:loc("COURSEPLAY_COMBINE_WANTS_ME_TO_STOP")); -- "Drescher sagt ich soll anhalten."
 			end
 			if lz < -2 then
 				allowedToDrive = false
-				self.cp.infoText = courseplay:loc("COURSEPLAY_COMBINE_WANTS_ME_TO_STOP")
+				courseplay:setInfoText(self, courseplay:loc("COURSEPLAY_COMBINE_WANTS_ME_TO_STOP"));
 				-- courseplay:setModeState(self, 2);
 			end
 		elseif lz < -1.5 then
 				allowedToDrive = false
-				self.cp.infoText = courseplay:loc("COURSEPLAY_COMBINE_WANTS_ME_TO_STOP")
+				courseplay:setInfoText(self, courseplay:loc("COURSEPLAY_COMBINE_WANTS_ME_TO_STOP"));
 		end
 
 		-- refspeed depends on the distance to the combine
@@ -759,7 +759,7 @@ function courseplay:unload_combine(self, dt)
 		elseif self.cp.modeState ~= 5 and self.cp.modeState ~= 9 and not self.cp.realisticDriving then
 			-- just wait until combine has turned
 			allowedToDrive = false
-			self.cp.infoText = courseplay:loc("COURSEPLAY_COMBINE_WANTS_ME_TO_STOP")
+			courseplay:setInfoText(self, courseplay:loc("COURSEPLAY_COMBINE_WANTS_ME_TO_STOP"));
 		end
 	end
 
@@ -769,7 +769,7 @@ function courseplay:unload_combine(self, dt)
 		if combine.movingDirection == 0 then
 			courseplay:setModeState(self, 3);
 		else
-			self.cp.infoText = courseplay:loc("COURSEPLAY_WAITING_FOR_COMBINE_TURNED");
+			courseplay:setInfoText(self, courseplay:loc("COURSEPLAY_WAITING_FOR_COMBINE_TURNED"));
 		end
 		refSpeed = self.cp.speeds.turn
 	end
@@ -779,7 +779,7 @@ function courseplay:unload_combine(self, dt)
 	-- STATE 99 (turn maneuver)
 	if self.cp.modeState == 99 and self.cp.curTarget.x ~= nil and self.cp.curTarget.z ~= nil then
 		--courseplay:removeFromCombinesIgnoreList(self, combine)
-		self.cp.infoText = string.format(courseplay:loc("COURSEPLAY_TURNING_TO_COORDS"), self.cp.curTarget.x, self.cp.curTarget.z)
+		courseplay:setInfoText(self, string.format(courseplay:loc("COURSEPLAY_TURNING_TO_COORDS"), self.cp.curTarget.x, self.cp.curTarget.z));
 		allowedToDrive = false
 		local mx, mz = self.cp.curTarget.x, self.cp.curTarget.z
 		local lx, ly, lz = worldToLocal(self.cp.DirectionNode, mx, y, mz)
@@ -818,7 +818,7 @@ function courseplay:unload_combine(self, dt)
 		if combine ~= nil then
 			--courseplay:removeFromCombinesIgnoreList(self, combine)
 		end
-		self.cp.infoText = string.format(courseplay:loc("COURSEPLAY_DRIVE_TO_WAYPOINT"), self.cp.curTarget.x, self.cp.curTarget.z)
+		courseplay:setInfoText(self, string.format(courseplay:loc("COURSEPLAY_DRIVE_TO_WAYPOINT"), self.cp.curTarget.x, self.cp.curTarget.z));
 		currentX = self.cp.curTarget.x
 		currentY = self.cp.curTarget.y
 		currentZ = self.cp.curTarget.z
@@ -863,7 +863,7 @@ function courseplay:unload_combine(self, dt)
 					--self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(combine.cp.DirectionNode or combine.rootNode, self.chopper_offset*0.7, 0, -9) -- -2          --??? *0,5 -10
 
 				elseif self.cp.mode2nextState == 4 and combine_turning then
-					self.cp.infoText = courseplay:loc("COURSEPLAY_WAITING_FOR_COMBINE_TURNED");
+					courseplay:setInfoText(self, courseplay:loc("COURSEPLAY_WAITING_FOR_COMBINE_TURNED"));
 				elseif self.cp.mode2nextState == 81 then -- tipper turning from combine
 
 					-- print(('%s [%s(%d)]: no nextTargets, mode2nextState=81 -> set recordnumber to 2, modeState to 99, isLoaded to true, return false'):format(nameNum(self), curFile, debug.getinfo(1).currentline)); -- DEBUG140301
@@ -892,7 +892,7 @@ function courseplay:unload_combine(self, dt)
 		frontTractor = self.cp.activeCombine.courseplayers[self.cp.positionWithCombine - 1];
 	end;
 	if self.cp.modeState == 6 and frontTractor ~= nil then --Follow Tractor
-		self.cp.infoText = courseplay:loc("COURSEPLAY_FOLLOWING_TRACTOR")
+		courseplay:setInfoText(self, courseplay:loc("COURSEPLAY_FOLLOWING_TRACTOR"));
 		--use the current tractor's sideToDrive as own
 		if frontTractor.sideToDrive ~= nil and frontTractor.sideToDrive ~= self.sideToDrive then
 			courseplay:debug(string.format("%s: setting current tractor's sideToDrive (%s) as my own", nameNum(self), tostring(frontTractor.sideToDrive)), 4);
@@ -952,12 +952,12 @@ function courseplay:unload_combine(self, dt)
 	end
 
 	if currentX == nil or currentZ == nil then
-		self.cp.infoText = courseplay:loc("COURSEPLAY_WAITING_FOR_WAYPOINT") -- "Warte bis ich neuen Wegpunkt habe"
+		courseplay:setInfoText(self, courseplay:loc("COURSEPLAY_WAITING_FOR_WAYPOINT")); -- "Warte bis ich neuen Wegpunkt habe"
 		allowedToDrive = courseplay:brakeToStop(self)
 	end
 
 	if self.cp.forcedToStop then
-		self.cp.infoText = courseplay:loc("COURSEPLAY_COMBINE_WANTS_ME_TO_STOP") -- "Drescher sagt ich soll anhalten."
+		courseplay:setInfoText(self, courseplay:loc("COURSEPLAY_COMBINE_WANTS_ME_TO_STOP")); -- "Drescher sagt ich soll anhalten."
 		allowedToDrive = courseplay:brakeToStop(self)
 	end
 

@@ -186,7 +186,7 @@ function courseplay:drive(self, dt)
 				if self.cp.tipperFillLevelPct >= self.cp.refillUntilPct or drive_on then
 					courseplay:setVehicleWait(self, false);
 				end
-				self.cp.infoText = string.format(courseplay:loc("COURSEPLAY_LOADING_AMOUNT"), self.cp.tipperFillLevel, self.cp.tipperCapacity)
+				courseplay:setInfoText(self, string.format(courseplay:loc("COURSEPLAY_LOADING_AMOUNT"), self.cp.tipperFillLevel, self.cp.tipperCapacity));
 			end
 		elseif self.cp.mode == 6 then
 			if self.cp.lastRecordnumber == self.cp.startWork then
@@ -886,7 +886,7 @@ function courseplay:refillSprayer(vehicle, fillLevelPct, driveOn, allowedToDrive
 					sprayer.fill = true;
 				end;
 
-				vehicle.cp.infoText = courseplay:loc("COURSEPLAY_LOADING_AMOUNT"):format(activeTool.fillLevel, activeTool.capacity);
+				courseplay:setInfoText(vehicle, courseplay:loc("COURSEPLAY_LOADING_AMOUNT"):format(activeTool.fillLevel, activeTool.capacity));
 			elseif vehicle.cp.isLoaded or not vehicle.cp.stopForLoading then
 				if activeTool.isFilling then
 					activeTool:setIsFilling(false);
@@ -911,7 +911,7 @@ function courseplay:refillSprayer(vehicle, fillLevelPct, driveOn, allowedToDrive
 					activeTool:setIsFilling(true);
 				end;
 				allowedToDrive = false;
-				vehicle.cp.infoText = courseplay:loc('COURSEPLAY_LOADING_AMOUNT'):format(activeTool.fillLevel, activeTool.capacity);
+				courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_LOADING_AMOUNT'):format(activeTool.fillLevel, activeTool.capacity));
 			elseif activeTool.fillTriggers[1] ~= nil then
 				if activeTool.isFilling then
 					activeTool:setIsFilling(false);

@@ -109,7 +109,7 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 		local targets = #(vehicle.cp.nextTargets);
 		local aligned = false;
 		local ctx7, cty7, ctz7 = getWorldTranslation(vehicle.cp.DirectionNode);
-		vehicle.cp.infoText = string.format(courseplay:loc("COURSEPLAY_DRIVE_TO_WAYPOINT"), vehicle.cp.curTarget.x, vehicle.cp.curTarget.z);
+		courseplay:setInfoText(vehicle, string.format(courseplay:loc("COURSEPLAY_DRIVE_TO_WAYPOINT"), vehicle.cp.curTarget.x, vehicle.cp.curTarget.z));
 		if vehicle.cp.mode7GoBackBeforeUnloading then
 			cx = vehicle.cp.mode7t.x;
 			cy = vehicle.cp.mode7t.y;

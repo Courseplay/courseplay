@@ -1600,7 +1600,7 @@ end;
 function courseplay:toggleFindFirstWaypoint(vehicle)
 	vehicle.cp.distanceCheck = not vehicle.cp.distanceCheck;
 	if g_server ~= nil and not vehicle.cp.distanceCheck then
-		vehicle.cp.infoText = nil;
+		courseplay:setInfoText(vehicle, nil);
 	end;
 	courseplay:buttonsActiveEnabled(vehicle, 'findFirstWaypoint');
 end;

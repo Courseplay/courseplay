@@ -311,7 +311,7 @@ function courseplay:getCanUseAiMode(vehicle)
 	local mode = vehicle.cp.mode;
 
 	if mode ~= 5 and mode ~= 6 and mode ~= 7 and not vehicle.cp.workToolAttached then
-		vehicle.cp.infoText = courseplay:loc('COURSEPLAY_WRONG_TRAILER');
+		courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WRONG_TRAILER'));
 		return false;
 	end;
 
@@ -320,37 +320,37 @@ function courseplay:getCanUseAiMode(vehicle)
 	if mode == 3 or mode == 7 or mode == 8 then
 		minWait, maxWait = 1, 1;
 		if vehicle.cp.numWaitPoints < minWait then
-			vehicle.cp.infoText = courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_FEW'):format(minWait);
+			courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_FEW'):format(minWait));
 			return false;
 		elseif vehicle.cp.numWaitPoints > maxWait then
-			vehicle.cp.infoText = courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_MANY'):format(maxWait);
+			courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_MANY'):format(maxWait));
 			return false;
 		end;
 		if mode == 3 then
 			if vehicle.cp.workTools[1] == nil or vehicle.cp.workTools[1].cp == nil or not vehicle.cp.workTools[1].cp.isAugerWagon then
-				vehicle.cp.infoText = courseplay:loc('COURSEPLAY_WRONG_TRAILER');
+				courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WRONG_TRAILER'));
 				return false;
 			end;
 		elseif mode == 7 then
 			if vehicle.isAutoCombineActivated ~= nil and vehicle.isAutoCombineActivated then
-				vehicle.cp.infoText = courseplay:loc('COURSEPLAY_NO_AUTOCOMBINE_MODE_7');
+				courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_NO_AUTOCOMBINE_MODE_7'));
 				return false;
 			end;
 		end;
 
 	elseif mode == 4 or mode == 6 then
 		if vehicle.cp.startWork == nil or vehicle.cp.stopWork == nil then
-			vehicle.cp.infoText = courseplay:loc('COURSEPLAY_NO_WORK_AREA');
+			courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_NO_WORK_AREA'));
 			return false;
 		end;
 		if mode == 6 then
 			if vehicle.cp.hasBaleLoader then
 				minWait, maxWait = 2, 3;
 				if vehicle.cp.numWaitPoints < minWait then
-					vehicle.cp.infoText = courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_FEW'):format(minWait);
+					courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_FEW'):format(minWait));
 					return false;
 				elseif vehicle.cp.numWaitPoints > maxWait then
-					vehicle.cp.infoText = courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_MANY'):format(maxWait);
+					courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_MANY'):format(maxWait));
 					return false;
 				end;
 			end;
@@ -359,16 +359,16 @@ function courseplay:getCanUseAiMode(vehicle)
 	elseif mode == 9 then
 		minWait, maxWait = 3, 3;
 		if vehicle.cp.numWaitPoints < minWait then
-			vehicle.cp.infoText = courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_FEW'):format(minWait);
+			courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_FEW'):format(minWait));
 			return false;
 		elseif vehicle.cp.numWaitPoints > maxWait then
-			vehicle.cp.infoText = courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_MANY'):format(maxWait);
+			courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_MANY'):format(maxWait));
 			return false;
 		elseif vehicle.cp.shovelStatePositions == nil or vehicle.cp.shovelStatePositions[2] == nil or vehicle.cp.shovelStatePositions[3] == nil or vehicle.cp.shovelStatePositions[4] == nil or vehicle.cp.shovelStatePositions[5] == nil then
-			vehicle.cp.infoText = courseplay:loc('COURSEPLAY_SHOVEL_POSITIONS_MISSING');
+			courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_SHOVEL_POSITIONS_MISSING'));
 			return false;
 		elseif vehicle.cp.shovelFillStartPoint == nil or vehicle.cp.shovelFillEndPoint == nil or vehicle.cp.shovelEmptyPoint == nil then
-			vehicle.cp.infoText = courseplay:loc('COURSEPLAY_NO_VALID_COURSE');
+			courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_NO_VALID_COURSE'));
 			return false;
 		end;
 	end;
@@ -484,7 +484,7 @@ function courseplay:stop(self)
 
 	--remove any local and global info texts
 	if g_server ~= nil then
-		self.cp.infoText = nil;
+		courseplay:setInfoText(self, nil);
 
 		for refIdx,_ in pairs(courseplay.globalInfoText.msgReference) do
 			if self.cp.activeGlobalInfoTexts[refIdx] ~= nil then

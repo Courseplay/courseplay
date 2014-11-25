@@ -40,7 +40,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 		if not self.cp.isReverseBackToPoint then
 			allowedToDrive = false;
 		end;
-		self.cp.infoText = string.format(courseplay:loc("COURSEPLAY_STARTING_UP_TOOL"), tostring(self.name));
+		courseplay:setInfoText(self, string.format(courseplay:loc("COURSEPLAY_STARTING_UP_TOOL"), tostring(self.name)));
 	end;
 
 	local selfIsFolding, selfIsFolded, selfIsUnfolded = courseplay:isFolding(self);
@@ -325,7 +325,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 					-- tipper is not empty and tractor reaches TipTrigger
 					if self.cp.tipperFillLevel > 0 and self.cp.currentTipTrigger ~= nil and self.recordnumber > 3 then
 						allowedToDrive, activeTipper = courseplay:unload_tippers(self, allowedToDrive);
-						self.cp.infoText = courseplay:loc("COURSEPLAY_TIPTRIGGER_REACHED");
+						courseplay:setInfoText(self, courseplay:loc("COURSEPLAY_TIPTRIGGER_REACHED"));
 					end
 				end;
 			end; --END other tools

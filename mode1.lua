@@ -11,7 +11,7 @@ function courseplay:handle_mode1(vehicle, allowedToDrive)
 	-- tippers are not full
 	if vehicle.cp.isLoaded ~= true and ((vehicle.recordnumber == 2 and vehicle.cp.tipperFillLevel < vehicle.cp.tipperCapacity and vehicle.cp.isUnloaded == false) or vehicle.cp.trailerFillDistance) then
 		allowedToDrive = courseplay:load_tippers(vehicle, allowedToDrive);
-		vehicle.cp.infoText = string.format(courseplay:loc("COURSEPLAY_LOADING_AMOUNT"), vehicle.cp.tipperFillLevel, vehicle.cp.tipperCapacity);
+		courseplay:setInfoText(vehicle, string.format(courseplay:loc("COURSEPLAY_LOADING_AMOUNT"), vehicle.cp.tipperFillLevel, vehicle.cp.tipperCapacity));
 	end
 
 	-- damn, I missed the trigger!
@@ -50,7 +50,7 @@ function courseplay:handle_mode1(vehicle, allowedToDrive)
 	-- tipper is not empty and tractor reaches TipTrigger
 	if vehicle.cp.tipperFillLevel > 0 and vehicle.cp.currentTipTrigger ~= nil and vehicle.recordnumber > 3 then
 		allowedToDrive = courseplay:unload_tippers(vehicle, allowedToDrive);
-		vehicle.cp.infoText = courseplay:loc("COURSEPLAY_TIPTRIGGER_REACHED");
+		courseplay:setInfoText(vehicle, courseplay:loc("COURSEPLAY_TIPTRIGGER_REACHED"));
 	end;
 
 	return allowedToDrive;
