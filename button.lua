@@ -63,6 +63,18 @@ function courseplay.button:setSpecialButtonUVs(functionToCall, button)
 
 		--space in dds: 16 x, 2 y
 		courseplay.utils:setOverlayUVsSymmetric(button.overlay, col, line, 16, 2);
+
+	elseif functionToCall == 'setCpMode' then
+		local UVs = courseplay.hud.modeButtonsUVsPx[button.parameter];
+		courseplay.utils:setOverlayUVsPx(button.overlay, UVs[1], UVs[2], UVs[3], UVs[4], courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
+
+	elseif functionToCall == 'setHudPage' then
+		local UVs = courseplay.hud.pageButtonsUVsPx[button.parameter];
+		courseplay.utils:setOverlayUVsPx(button.overlay, UVs[1], UVs[2], UVs[3], UVs[4], courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
+
+	elseif functionToCall == 'generateCourse' then
+		local UVs = courseplay.hud.pageButtonsUVsPx[8];
+		courseplay.utils:setOverlayUVsPx(button.overlay, UVs[1], UVs[2], UVs[3], UVs[4], courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
 	end;
 end;
 

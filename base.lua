@@ -606,7 +606,7 @@ function courseplay:load(xmlFile)
 		if p == 2 then
 			toolTip = courseplay.hud.hudTitles[p][1];
 		end;
-		courseplay.button:create(self, 'global', string.format('pageNav_%d.dds', p), 'setHudPage', p, posX, pageNav.posY, pageNav.buttonW, pageNav.buttonH, nil, nil, nil, false, false, toolTip);
+		courseplay.button:create(self, 'global', 'iconSprite.png', 'setHudPage', p, posX, pageNav.posY, pageNav.buttonW, pageNav.buttonH, nil, nil, nil, false, false, toolTip);
 	end;
 
 	courseplay.button:create(self, 'global', 'close.png', 'openCloseHud', false, courseplay.hud.buttonPosX[2], courseplay.hud.infoBasePosY + 0.255, w24px, h24px);
@@ -627,26 +627,27 @@ function courseplay:load(xmlFile)
 
 	-- ##################################################
 	-- Page 1
-	-- mode quickSwitch
-	local aiModeQuickSwitch = {
+	-- setCpMode buttons
+	local modeBtn = {
 		w = w32px;
 		h = h32px;
 		numColumns = 3;
-		maxX = courseplay.hud.visibleArea.x2 - 0.01;
+		marginX = w32px / 32;
+		marginY = h32px / 32;
+		maxX = listArrowX + w24px;
 	};
-	aiModeQuickSwitch.minX = aiModeQuickSwitch.maxX - (aiModeQuickSwitch.numColumns * aiModeQuickSwitch.w);
+	modeBtn.maxY = courseplay.hud.linesPosY[1] + courseplay.hud.lineHeight * 0.75 + modeBtn.marginY;
+	modeBtn.minX = modeBtn.maxX - (modeBtn.numColumns * modeBtn.w) - ((modeBtn.numColumns - 1) * modeBtn.marginX);
 	for i=1, courseplay.numAiModes do
-		local icon = string.format('quickSwitch_mode%d.png', i);
+		local line = math.ceil(i/modeBtn.numColumns); -- 1, 2, 3
+		local col = (i - 1) % modeBtn.numColumns; -- 0, 1, 2
 
-		local line = math.ceil(i/aiModeQuickSwitch.numColumns);
-		local col = (i - 1) % aiModeQuickSwitch.numColumns;
-
-		local posX = aiModeQuickSwitch.minX + (aiModeQuickSwitch.w * col);
-		local posY = courseplay.hud.linesPosY[1] + courseplay.hud.lineHeight --[[(20/1080)]] - (aiModeQuickSwitch.h * line);
+		local posX = modeBtn.minX + ((modeBtn.w + modeBtn.marginX) * col);
+		local posY = modeBtn.maxY - ((modeBtn.h + modeBtn.marginY) * line);
 
 		local toolTip = courseplay:loc(('COURSEPLAY_MODE_%d'):format(i));
 
-		courseplay.button:create(self, 1, icon, 'setCpMode', i, posX, posY, aiModeQuickSwitch.w, aiModeQuickSwitch.h, nil, nil, false, false, false, toolTip);
+		courseplay.button:create(self, 1, 'iconSprite.png', 'setCpMode', i, posX, posY, modeBtn.w, modeBtn.h, nil, nil, false, false, false, toolTip);
 	end;
 
 	--recording
@@ -672,7 +673,7 @@ function courseplay:load(xmlFile)
 
 	--row buttons
 	for i=1, courseplay.hud.numLines do
-		courseplay.button:create(self, 1, 'blank.png', 'rowButton', i, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[i], aiModeQuickSwitch.minX - courseplay.hud.infoBasePosX - 0.005, 0.015, i, nil, true);
+		courseplay.button:create(self, 1, 'blank.png', 'rowButton', i, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[i], modeBtn.minX - courseplay.hud.col1posX, 0.015, i, nil, true);
 	end;
 
 	--Custom field edge path
@@ -879,7 +880,7 @@ function courseplay:load(xmlFile)
 	courseplay.button:create(self, 8, 'navigate_down.png', 'setHeadlandNumLanes',  -1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[6], w16px, h16px, 6, nil, false);
 
 	-- generation action button
-	courseplay.button:create(self, 8, 'pageNav_8.png', 'generateCourse', nil, topIconsX[3], topIconsY, w24px, h24px, nil, nil, false);
+	courseplay.button:create(self, 8, 'iconSprite.png', 'generateCourse', nil, topIconsX[3], topIconsY, w24px, h24px, nil, nil, false);
 
 
 	-- ##################################################
@@ -902,24 +903,24 @@ function courseplay:load(xmlFile)
 	local sizeX,sizeY = courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y;
 	-- current mode icon
 	self.cp.hud.currentModeIcon = Overlay:new('cpCurrentModeIcon', courseplay.hud.iconSpritePath, courseplay.hud.bottomInfo.modeIconX, courseplay.hud.bottomInfo.iconPosY, w, h);
-	local UVs = courseplay.hud.bottomInfo.modeUvsPx[1];
+	local UVs = courseplay.hud.bottomInfo.modeUVsPx[1];
 	courseplay.utils:setOverlayUVsPx(self.cp.hud.currentModeIcon, UVs[1], UVs[2], UVs[3], UVs[4], sizeX, sizeY);
 
 	-- waypoint icon
 	self.cp.hud.currentWaypointIcon = Overlay:new('cpCurrentWaypointIcon', courseplay.hud.iconSpritePath, courseplay.hud.bottomInfo.waypointIconX, courseplay.hud.bottomInfo.iconPosY, w, h);
-	courseplay.utils:setOverlayUVsPx(self.cp.hud.currentWaypointIcon, 10, 250, 42, 218, sizeX, sizeY);
+	courseplay.utils:setOverlayUVsPx(self.cp.hud.currentWaypointIcon, 4, 180, 36, 148, sizeX, sizeY);
 
 	-- waitPoints icon
 	self.cp.hud.waitPointsIcon = Overlay:new('cpWaitPointsIcon', courseplay.hud.iconSpritePath, courseplay.hud.bottomInfo.waitPointsIconX, courseplay.hud.bottomInfo.iconPosY, w, h);
-	courseplay.utils:setOverlayUVsPx(self.cp.hud.waitPointsIcon, 52, 250, 84, 218, sizeX, sizeY);
+	courseplay.utils:setOverlayUVsPx(self.cp.hud.waitPointsIcon, 40, 180, 72, 148, sizeX, sizeY);
 
 	-- crossingPoints icon
 	self.cp.hud.crossingPointsIcon = Overlay:new('cpCrossingPointsIcon', courseplay.hud.iconSpritePath, courseplay.hud.bottomInfo.crossingPointsIconX, courseplay.hud.bottomInfo.iconPosY, w, h);
-	courseplay.utils:setOverlayUVsPx(self.cp.hud.crossingPointsIcon, 94, 250, 126, 218, sizeX, sizeY);
+	courseplay.utils:setOverlayUVsPx(self.cp.hud.crossingPointsIcon, 76, 180, 108, 148, sizeX, sizeY);
 
 	-- toolTip icon
 	self.cp.hud.toolTipIcon = Overlay:new('cpToolTipIcon', courseplay.hud.iconSpritePath, courseplay.hud.col1posX, courseplay.hud.infoBasePosY + 0.0055, w, h);
-	courseplay.utils:setOverlayUVsPx(self.cp.hud.toolTipIcon, 136, 250, 168, 218, sizeX, sizeY);
+	courseplay.utils:setOverlayUVsPx(self.cp.hud.toolTipIcon, 112, 180, 144, 148, sizeX, sizeY);
 
 
 

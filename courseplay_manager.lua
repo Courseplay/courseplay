@@ -38,7 +38,7 @@ function courseplay_manager:loadMap(name)
 	for i=1,self.globalInfoTextMaxNum do
 		local posY = git.backgroundPosY + (i - 1) * git.lineHeight;
 		self.globalInfoTextOverlays[i] = Overlay:new(string.format("globalInfoTextOverlay%d", i), git.backgroundImg, git.backgroundPosX, posY, 0.1, git.buttonHeight);
-		self:createButton('globalInfoText', 'goToVehicle', i, 'pageNav_7.png', git.buttonPosX, posY, git.buttonWidth, git.buttonHeight);
+		self:createButton('globalInfoText', 'goToVehicle', i, 'iconSprite.png', git.buttonPosX, posY, git.buttonWidth, git.buttonHeight);
 	end;
 	self.buttons.globalInfoTextClickArea = {
 		x1 = git.buttonPosX;
@@ -144,6 +144,13 @@ end;
 
 function courseplay_manager:createButton(section, fn, prm, img, x, y, w, h)
 	local overlay = Overlay:new(img, Utils.getFilename("img/" .. img, courseplay.path), x, y, w, h);
+
+	if fn == 'goToVehicle' then
+		local UVs = courseplay.hud.pageButtonsUVsPx[7];
+		courseplay.utils:setOverlayUVsPx(overlay, UVs[1], UVs[2], UVs[3], UVs[4], courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
+	end;
+
+
 	local button = { 
 		section = section, 
 		overlay = overlay, 

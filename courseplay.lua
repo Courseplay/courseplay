@@ -207,7 +207,6 @@ function courseplay:setGlobalData()
 
 	courseplay.numAiModes = 9;
 	local ch = courseplay.hud
-	ch.iconSpritePath = Utils.getFilename('img/iconSprite.png', courseplay.path);
 	ch.infoBasePosX = Utils.getNoNil(customPosX, 0.433);
 	ch.infoBasePosY = Utils.getNoNil(customPosY, 0.002);
 	ch.infoBaseWidth = 0.512;
@@ -311,16 +310,42 @@ function courseplay:setGlobalData()
 		[2] = courseplay.hud.infoBasePosX + 0.300;
 	};
 
+	ch.iconSpritePath = Utils.getFilename('img/iconSprite.png', courseplay.path);
 	ch.iconSpriteSize = {
 		x = 256;
 		y = 256;
+	};
+
+	ch.modeButtonsUVsPx = {
+		[1] = { 112, 72, 144,40 };
+		[2] = { 148, 72, 180,40 };
+		[3] = { 184, 72, 216,40 };
+		[4] = { 220, 72, 252,40 };
+		[5] = {   4,108,  36,76 };
+		[6] = {  40,108,  72,76 };
+		[7] = {  76,108, 108,76 };
+		[8] = { 112,108, 144,76 };
+		[9] = { 148,108, 180,76 };
+	};
+
+	ch.pageButtonsUVsPx = {
+		[0] = {   4,36,  36, 4 };
+		[1] = {  40,36,  72, 4 };
+		[2] = {  76,36, 108, 4 };
+		[3] = { 112,36, 144, 4 };
+		[4] = { 148,36, 180, 4 };
+		[5] = { 184,36, 216, 4 };
+		[6] = { 220,36, 252, 4 };
+		[7] = {   4,72,  36,40 };
+		[8] = {  40,72,  72,40 };
+		[9] = {  76,72, 108,40 };
 	};
 
 	ch.bottomInfo = {};
 	ch.bottomInfo.iconHeight = 24 / 1080;
 	ch.bottomInfo.iconWidth = ch.bottomInfo.iconHeight / g_screenAspectRatio;
 	ch.bottomInfo.textPosY = ch.infoBasePosY + 41 / 1080;
-	ch.bottomInfo.iconPosY = ch.bottomInfo.textPosY - 0.0055;
+	ch.bottomInfo.iconPosY = ch.bottomInfo.textPosY - 0.0059;
 	ch.bottomInfo.modeIconX = ch.col1posX;
 	ch.bottomInfo.modeTextX = ch.bottomInfo.modeIconX + ch.bottomInfo.iconWidth * 1.25;
 	ch.bottomInfo.waypointIconX = ch.visibleArea.x2 - 0.120;
@@ -329,16 +354,16 @@ function courseplay:setGlobalData()
 	ch.bottomInfo.waitPointsTextX = ch.bottomInfo.waitPointsIconX + ch.bottomInfo.iconWidth * 1.25;
 	ch.bottomInfo.crossingPointsIconX = ch.visibleArea.x2 - 0.034;
 	ch.bottomInfo.crossingPointsTextX = ch.bottomInfo.crossingPointsIconX + ch.bottomInfo.iconWidth * 1.25;
-	ch.bottomInfo.modeUvsPx = {
-		[1] = {  10,170,  42,138 };
-		[2] = {  52,170,  84,138 };
-		[3] = {  94,170, 126,138 };
-		[4] = { 136,170, 168,138 };
-		[5] = { 178,170, 210,138 };
-		[6] = { 220,170, 252,138 };
-		[7] = {  10,208,  42,176 };
-		[8] = {  52,208,  84,176 };
-		[9] = {  94,208, 126,176 };
+	ch.bottomInfo.modeUVsPx = {
+		[1] = { 184,108, 216, 76 };
+		[2] = { 220,108, 252, 76 };
+		[3] = {   4,144,  36,112 };
+		[4] = {  40,144,  72,112 };
+		[5] = {  76,144, 108,112 };
+		[6] = { 112,144, 144,112 };
+		[7] = { 148,144, 180,112 };
+		[8] = { 184,144, 216,112 };
+		[9] = { 220,144, 252,112 };
 	};
 
 
