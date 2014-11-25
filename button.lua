@@ -1,4 +1,4 @@
-function courseplay.button:create(vehicle, hudPage, img, functionToCall, parameter, x, y, width, height, hudRow, modifiedParameter, hoverText, isMouseWheelArea, isToggleButton)
+function courseplay.button:create(vehicle, hudPage, img, functionToCall, parameter, x, y, width, height, hudRow, modifiedParameter, hoverText, isMouseWheelArea, isToggleButton, toolTip)
 	-- self = courseplay.button
 
 	local overlay;
@@ -31,6 +31,7 @@ function courseplay.button:create(vehicle, hudPage, img, functionToCall, paramet
 		row = hudRow,
 		hoverText = hoverText,
 		color = courseplay.hud.colors.white,
+		toolTip = toolTip,
 		isMouseWheelArea = isMouseWheelArea and functionToCall ~= nil,
 		isToggleButton = isToggleButton,
 		canBeClicked = not isMouseWheelArea and functionToCall ~= nil,
@@ -61,33 +62,71 @@ function courseplay.button:setSpecialButtonUVs(functionToCall, button)
 		local line = math.ceil(button.parameter / courseplay.numDebugChannelButtonsPerLine);
 
 		--space in dds: 16 x, 2 y
-		local uvX1,uvX2 = (col-1)/16, col/16;
-		local uvY1 = 1 - (line * (courseplay.numDebugChannelButtonsPerLine/courseplay.numAvailableDebugChannels));
-		local uvY2 = uvY1 + (courseplay.numDebugChannelButtonsPerLine/courseplay.numAvailableDebugChannels);
-		setOverlayUVs(button.overlay.overlayId, uvX1,uvY1, uvX1,uvY2, uvX2,uvY1, uvX2,uvY2);
+		courseplay.utils:setOverlayUVsSymmetric(button.overlay, col, line, 16, 2);
+
+	elseif functionToCall == 'setCpMode' then
+		local UVs = courseplay.hud.modeButtonsUVsPx[button.parameter];
+		courseplay.utils:setOverlayUVsPx(button.overlay, UVs[1], UVs[2], UVs[3], UVs[4], courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
+
+	elseif functionToCall == 'setHudPage' then
+		local UVs = courseplay.hud.pageButtonsUVsPx[button.parameter];
+		courseplay.utils:setOverlayUVsPx(button.overlay, UVs[1], UVs[2], UVs[3], UVs[4], courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
+
+	elseif functionToCall == 'generateCourse' then
+		local UVs = courseplay.hud.pageButtonsUVsPx[8];
+		courseplay.utils:setOverlayUVsPx(button.overlay, UVs[1], UVs[2], UVs[3], UVs[4], courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
 	end;
 end;
 
 function courseplay.button:renderButtons(vehicle, page)
 	-- self = courseplay.button
 
+	local hoveredButton;
+
 	for _,button in pairs(vehicle.cp.buttons.global) do
-		self:renderButton(vehicle, button);
+		if self:renderButton(vehicle, button) then
+			hoveredButton = button;
+		end;
 	end;
 
 	for _,button in pairs(vehicle.cp.buttons[page]) do
-		self:renderButton(vehicle, button);
+		if self:renderButton(vehicle, button) then
+			hoveredButton = button;
+		end;
 	end;
 
 	if page == 2 then 
 		for _,button in pairs(vehicle.cp.buttons[-2]) do
-			self:renderButton(vehicle, button);
+			if self:renderButton(vehicle, button) then
+				hoveredButton = button;
+			end;
 		end;
 	end;
 
 	if vehicle.cp.suc.active then
-		self:renderButton(vehicle, vehicle.cp.suc.fruitNegButton);
-		self:renderButton(vehicle, vehicle.cp.suc.fruitPosButton);
+		if self:renderButton(vehicle, vehicle.cp.suc.fruitNegButton) then
+			hoveredButton = vehicle.cp.suc.fruitNegButton;
+		end;
+		if self:renderButton(vehicle, vehicle.cp.suc.fruitPosButton) then
+			hoveredButton = vehicle.cp.suc.fruitPosButton;
+		end;
+	end;
+
+	-- set currently hovered button
+	courseplay.button:setHoveredButton(vehicle, hoveredButton);
+end;
+
+function courseplay.button:setHoveredButton(vehicle, button)
+	if vehicle.cp.buttonHovered == button then
+		return;
+	end;
+	vehicle.cp.buttonHovered = button;
+
+	-- set toolTip
+	if vehicle.cp.buttonHovered ~= nil and vehicle.cp.buttonHovered.toolTip ~= nil then
+		courseplay:setToolTip(vehicle, vehicle.cp.buttonHovered.toolTip);
+	elseif vehicle.cp.buttonHovered == nil then
+		courseplay:setToolTip(vehicle, nil);
 	end;
 end;
 
@@ -95,6 +134,7 @@ function courseplay.button:renderButton(vehicle, button)
 	-- self = courseplay.button
 
 	local pg, fn, prm = button.page, button.functionToCall, button.parameter;
+	local hoveredButton = false;
 
 	--mouseWheelAreas conditionals
 	if button.isMouseWheelArea then
@@ -197,7 +237,7 @@ function courseplay.button:renderButton(vehicle, button)
 					button.show = not vehicle.cp.canDrive and vehicle.cp.fieldEdge.customField.isCreated and vehicle.cp.fieldEdge.customField.fieldNum < courseplay.fields.customFieldMaxNum;
 				end;
 			elseif fn == 'toggleFindFirstWaypoint' then
-				button.show = vehicle.cp.canDrive and not vehicle.drive and not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused;
+				button.show = vehicle.cp.canDrive and not vehicle:getIsCourseplayDriving() and not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused;
 			elseif fn == 'stop_record' or fn == 'setRecordingPause' or fn == 'delete_waypoint' or fn == 'set_waitpoint' or fn == 'set_crossing' or fn == 'setRecordingTurnManeuver' or fn == 'change_DriveDirection' then
 				button.show = vehicle.cp.isRecording or vehicle.cp.recordingIsPaused;
 			end;
@@ -371,6 +411,7 @@ function courseplay.button:renderButton(vehicle, button)
 				targetColor = 'activeRed';
 			elseif button.isHovered and ((not button.isDisabled and button.isToggleButton and button.isActive and button.canBeClicked and not button.isClicked) or (not button.isDisabled and not button.isActive and button.canBeClicked and not button.isClicked)) then
 				targetColor = hoverColor;
+				hoveredButton = true;
 				if button.isToggleButton then
 					--print(string.format('button %q (loop %d): isHovered=%s, isActive=%s, isDisabled=%s, canBeClicked=%s -> hoverColor', fn, g_updateLoopIndex, tostring(button.isHovered), tostring(button.isActive), tostring(button.isDisabled), tostring(button.canBeClicked)));
 				end;
@@ -389,6 +430,8 @@ function courseplay.button:renderButton(vehicle, button)
 			button.overlay:render();
 		end;
 	end;	--elseif button.overlay ~= nil
+
+	return hoveredButton;
 end;
 
 

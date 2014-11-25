@@ -11,6 +11,9 @@ function courseplay_manager:loadMap(name)
 		addConsoleCommand('cpAddFillLevels', 'Add 500\'000 l to all of your silos', 'devAddFillLevels', self);
 	end;
 
+	self.firstRun = true;
+	self.showFieldScanYesNoDialogue = false;
+	self.showWagesYesNoDialogue = false;
 	self:createInitialCourseplayFile();
 
 	if g_currentMission.cp_courses == nil then
@@ -35,7 +38,7 @@ function courseplay_manager:loadMap(name)
 	for i=1,self.globalInfoTextMaxNum do
 		local posY = git.backgroundPosY + (i - 1) * git.lineHeight;
 		self.globalInfoTextOverlays[i] = Overlay:new(string.format("globalInfoTextOverlay%d", i), git.backgroundImg, git.backgroundPosX, posY, 0.1, git.buttonHeight);
-		self:createButton('globalInfoText', 'goToVehicle', i, 'pageNav_7.png', git.buttonPosX, posY, git.buttonWidth, git.buttonHeight);
+		self:createButton('globalInfoText', 'goToVehicle', i, 'iconSprite.png', git.buttonPosX, posY, git.buttonWidth, git.buttonHeight);
 	end;
 	self.buttons.globalInfoTextClickArea = {
 		x1 = git.buttonPosX;
@@ -84,13 +87,15 @@ function courseplay_manager:loadMap(name)
 	if g_server ~= nil then
 		courseplay.fields:loadAllCustomFields();
 	end;
-	courseplay.totalCoursePlayers = {};
-	courseplay.wageDifficultyMultiplier = Utils.lerp(0.5, 1, (g_currentMission.missionStats.difficulty - 1) / 2);
 
-	self.firstRun = true;
+	courseplay.totalCoursePlayers = {};
+	courseplay.activeCoursePlayers = {};
+
+	courseplay.wageDifficultyMultiplier = Utils.lerp(0.5, 1, (g_currentMission.missionStats.difficulty - 1) / 2);
 
 	g_currentMission.environment:addMinuteChangeListener(courseplay_manager);
 	self.realTimeMinuteTimer = 0;
+	self.realTime10SecsTimer = 0;
 end;
 
 function courseplay_manager:createInitialCourseplayFile()
@@ -100,6 +105,8 @@ function courseplay_manager:createInitialCourseplayFile()
 		if not fileExists(courseplay.cpXmlFilePath) then
 			file = createXMLFile('courseplayFile', courseplay.cpXmlFilePath, 'XML');
 			created = true;
+			self.showFieldScanYesNoDialogue = true;
+			self.showWagesYesNoDialogue = true;
 			-- print(string.format('\tcreateXmlFile("courseplayFile", [path], XML), file=%s', tostring(file)));
 		else
 			file = loadXMLFile('courseplayFile', courseplay.cpXmlFilePath);
@@ -137,6 +144,13 @@ end;
 
 function courseplay_manager:createButton(section, fn, prm, img, x, y, w, h)
 	local overlay = Overlay:new(img, Utils.getFilename("img/" .. img, courseplay.path), x, y, w, h);
+
+	if fn == 'goToVehicle' then
+		local UVs = courseplay.hud.pageButtonsUVsPx[7];
+		courseplay.utils:setOverlayUVsPx(overlay, UVs[1], UVs[2], UVs[3], UVs[4], courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
+	end;
+
+
 	local button = { 
 		section = section, 
 		overlay = overlay, 
@@ -175,7 +189,7 @@ function courseplay_manager:deleteMap()
 
 	--buttons
 	for i,vehicle in pairs(g_currentMission.steerables) do
-		if vehicle.cp ~= nil and not courseplay.nonSupportedVehicleTypeNames[v.typeName]  then
+		if vehicle.cp ~= nil and not courseplay.nonSupportedVehicleTypeNames[vehicle.typeName] then
 			if vehicle.cp.globalInfoTextOverlay ~= nil then
 				vehicle.cp.globalInfoTextOverlay:delete();
 			end;
@@ -419,14 +433,55 @@ function courseplay_manager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 	end;
 end;
 
+function courseplay_manager:fieldScanDialogueCallback(setActive)
+	courseplay.fields.automaticScan = setActive;
+	local file = loadXMLFile('courseplayFile', courseplay.cpXmlFilePath);
+	if file and file ~= 0 then
+		setXMLBool(file, 'XML.courseplayFields#automaticScan', setActive);
+		saveXMLFile(file);
+		delete(file);
+	end;
+	g_gui:showGui('');
+end;
+
+function courseplay_manager:wagesDialogueCallback(setActive)
+	courseplay.wagesActive = setActive;
+	local file = loadXMLFile('courseplayFile', courseplay.cpXmlFilePath);
+	if file and file ~= 0 then
+		setXMLBool(file, 'XML.courseplayWages#active', setActive);
+		saveXMLFile(file);
+		delete(file);
+	end;
+	g_gui:showGui('');
+end;
+
 function courseplay_manager:update(dt)
+	if g_gui.currentGui ~= nil and g_gui.currentGuiName ~= 'inputCourseNameDialogue' then
+		return;
+	end;
+
 	if self.firstRun then
-		courseplay.moreRealisticInstalled = RealisticUtils ~= nil and RealisticUtils.getFruitInfosV2 ~= nil;
-		courseplay.moreRealisticVersion = courseplay:getMoreRealisticVersion();
 		courseplay:addCpNilTempFillLevelFunction();
 
 		self.firstRun = false;
 	end;
+
+	-- Field scan, wages yes/No dialogue -START-
+	if not g_currentMission.paused and g_gui.currentGui == nil then
+		if self.showFieldScanYesNoDialogue then
+			local yesNoDialogue = g_gui:showGui('YesNoDialog');
+			yesNoDialogue.target:setText(courseplay:loc('COURSEPLAY_YES_NO_FIELDSCAN'));
+			yesNoDialogue.target:setCallbacks(self.fieldScanDialogueCallback, self);
+			self.showFieldScanYesNoDialogue = false;
+		elseif self.showWagesYesNoDialogue then
+			local yesNoDialogue = g_gui:showGui('YesNoDialog');
+			local txt = courseplay:loc('COURSEPLAY_YES_NO_WAGES'):format(g_i18n:formatMoney(g_i18n:getCurrency(courseplay.wagePerHour * courseplay.wageDifficultyMultiplier), 2));
+			yesNoDialogue.target:setText(txt);
+			yesNoDialogue.target:setCallbacks(self.wagesDialogueCallback, self);
+			self.showWagesYesNoDialogue = false;
+		end;
+	end;
+	-- Field scan, wages yes/No dialogue - END -
 
 	if g_currentMission.controlledVehicle == nil then
 		if self.playerOnFootMouseEnabled then
@@ -447,12 +502,12 @@ function courseplay_manager:update(dt)
 	end;
 
 	-- REAL TIME MINUTE CHANGER
-	if not g_currentMission.paused and courseplay.wagesActive and g_server ~= nil then -- TODO: if there are more items to be dealt with every minute, remove the "wagesActive" restriction
-		if self.realTimeMinuteTimer < 60000 then
-			self.realTimeMinuteTimer = self.realTimeMinuteTimer + dt;
+	if not g_currentMission.paused and courseplay.wagesActive and g_server ~= nil then -- TODO: if there are more items to be dealt with every 10 secs, remove the "wagesActive" restriction
+		if self.realTime10SecsTimer < 10000 then
+			self.realTime10SecsTimer = self.realTime10SecsTimer + dt;
 		else
-			self:realTimeMinuteChanged();
-			self.realTimeMinuteTimer = self.realTimeMinuteTimer - 60000;
+			self:realTime10SecsChanged();
+			self.realTime10SecsTimer = self.realTime10SecsTimer - 10000;
 		end;
 	end;
 end;
@@ -686,7 +741,7 @@ function courseplay_manager:severCombineTractorConnection(vehicle, callDelete)
 			local combine = vehicle;
 			-- remove this combine as savedCombine from all tractors
 			for i,tractor in pairs(g_currentMission.steerables) do
-				if tractor.cp and tractor.cp.savedCombine and tractor.cp.savedCombine == combine and not courseplay.nonSupportedVehicleTypeNames[v.typeName]  then
+				if tractor.cp and tractor.cp.savedCombine and tractor.cp.savedCombine == combine and not courseplay.nonSupportedVehicleTypeNames[tractor.typeName]  then
 					courseplay:debug(('\ttractor %q: savedCombine=%q --> removeSavedCombineFromTractor()'):format(nameNum(tractor), nameNum(combine)), 4);
 					courseplay:removeSavedCombineFromTractor(tractor);
 				end;
@@ -740,19 +795,18 @@ function courseplay_manager:minuteChanged()
 	courseplay.lightsNeeded = env.needsLights or (env.dayTime >= nightStart or env.dayTime <= dayStart) or env.currentRain ~= nil or env.curRain ~= nil or (env.lastRainScale > 0.1 and env.timeSinceLastRain < 30);
 end;
 
-function courseplay_manager:realTimeMinuteChanged()
+function courseplay_manager:realTime10SecsChanged()
 	-- WAGES
 	if courseplay.wagesActive and g_server ~= nil then
 		local totalWages = 0;
 		for vehicleNum, vehicle in pairs(courseplay.activeCoursePlayers) do
-			if vehicle.drive and not vehicle.isHired then
+			if vehicle:getIsCourseplayDriving() and not vehicle.isHired then
 				totalWages = totalWages + courseplay.wagePerMin;
 			end;
 		end;
 		if totalWages > 0 then
 			-- TODO (Jakob): does addSharedMoney already include the currency factor, or do we have to calculate it before passing it?
-			-- totalWages = g_i18n:getCurrency(totalWages);
-			g_currentMission:addSharedMoney(-totalWages * courseplay.wageDifficultyMultiplier, 'wagePayment');
+			g_currentMission:addSharedMoney(-totalWages * courseplay.wageDifficultyMultiplier / 6, 'wagePayment'); -- divide by 6 to get wage per 10 secs
 		end;
 	end;
 end;

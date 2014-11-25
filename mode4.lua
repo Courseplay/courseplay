@@ -63,7 +63,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 		end;
 	end
 	--
-	if (self.recordnumber == self.cp.stopWork or self.cp.lastRecordnumber == self.cp.stopWork) and self.cp.abortWork == nil and not isFinishingWork and self.wait then
+	if (self.recordnumber == self.cp.stopWork or self.cp.lastRecordnumber == self.cp.stopWork) and self.cp.abortWork == nil and not isFinishingWork and self.cp.wait then
 		allowedToDrive = courseplay:brakeToStop(self);
 		courseplay:setGlobalInfoText(self, 'WORK_END');
 		hasFinishedWork = true;
@@ -80,8 +80,8 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 	local turnStart = prevPoint.turnStart;
 	local turnEnd = prevPoint.turnEnd;
 
-	for i=1, #(self.tippers) do
-		workTool = self.tippers[i];
+	for i=1, #(self.cp.workTools) do
+		workTool = self.cp.workTools[i];
 
 		local isFolding, isFolded, isUnfolded = courseplay:isFolding(workTool);
 		local needsLowering = false
@@ -224,7 +224,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 		--[[if not allowedToDrive then
 			workTool:setIsTurnedOn(false, false)
 		end]] --?? why am i here ??
-	end; --END for i in self.tippers
+	end; --END for i in self.cp.workTools
 	if hasFinishedWork then
 		isFinishingWork = true
 	end

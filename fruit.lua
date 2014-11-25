@@ -194,7 +194,7 @@ function courseplay:sideToDrive(vehicle, combine, distance, switchSide)
 	-- COMBINE DIRECTION
 	local x, y, z = localToWorld(tractor.cp.DirectionNode, 0, 0, distance - 5);
 	local dirX, dirZ = combine.aiThreshingDirectionX, combine.aiThreshingDirectionZ;
-	if (not (combine.isAIThreshing or combine.drive)) or  combine.aiThreshingDirectionX == nil or combine.aiThreshingDirectionZ == nil or (combine.acParameters ~= nil and combine.acParameters.enabled and combine.isHired) then
+	if (not (combine.isAIThreshing or combine:getIsCourseplayDriving())) or combine.aiThreshingDirectionX == nil or combine.aiThreshingDirectionZ == nil or (combine.acParameters ~= nil and combine.acParameters.enabled and combine.isHired) then
 		local node = combine.cp.DirectionNode or combine.rootNode;
 		local dx,_,dz = localDirectionToWorld(node, 0, 0, 2);
 		local length = Utils.vector2Length(dx,dz);
@@ -258,7 +258,7 @@ function courseplay:sideToDrive(vehicle, combine, distance, switchSide)
 		end;
 	
 	-- COURSEPLAY
-	elseif tractor.drive then
+	elseif tractor:getIsCourseplayDriving() then
 		courseplay:debug(string.format("%s:courseplay:sideToDrive: is Courseplayer", nameNum(combine)), 4);
 		local ridgeMarker = 0;
 		local wayPoint = tractor.recordnumber;

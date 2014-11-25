@@ -29,7 +29,7 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive, dt)
 	--state 7: wait for Trailer 10 before EmptyPoint
 
 	if vehicle.cp.tipperCapacity == nil or vehicle.cp.tipperCapacity == 0 then --NOTE: query here instead of getCanUseAiMode() as tipperCapacity doesn't exist until drive() has been run
-		vehicle.cp.infoText = courseplay:loc('COURSEPLAY_SHOVEL_NOT_FOUND');
+		courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_SHOVEL_NOT_FOUND'));
 		return false;
 	end;
 

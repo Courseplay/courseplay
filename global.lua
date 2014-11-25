@@ -61,13 +61,6 @@ function courseplay:setGlobalInfoText(vehicle, refIdx, forceRemove)
 	end;
 end;
 
-function courseplay:renderInfoText(vehicle)
-	if vehicle.isEntered and vehicle.cp.infoText ~= nil then
-		courseplay:setFontSettings("white", false, "left");
-		renderText(courseplay.hud.infoBasePosX + 0.005, courseplay.hud.infoBasePosY + 0.0055, courseplay.hud.fontSizes.infoText, vehicle.cp.infoText);
-	end;
-end;
-
 function courseplay:setFontSettings(color, fontBold, align)
 	if color ~= nil then
 		local prmType = type(color);

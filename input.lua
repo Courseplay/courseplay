@@ -215,14 +215,14 @@ function courseplay:executeFunction(self, func, value, page)
 		local line = value;
 		if page == 0 then
 			local combine = self;
-			if self.cp.attachedCombineIdx ~= nil and self.tippers ~= nil and self.tippers[self.cp.attachedCombineIdx] ~= nil then
-				combine = self.tippers[self.cp.attachedCombineIdx];
+			if self.cp.attachedCombineIdx ~= nil and self.cp.workTools ~= nil and self.cp.workTools[self.cp.attachedCombineIdx] ~= nil then
+				combine = self.cp.workTools[self.cp.attachedCombineIdx];
 			end;
 
 			if not combine.cp.isChopper then
 				if line == 4 then
 					courseplay:toggleDriverPriority(combine);
-				elseif line == 5 and self.drive and self.cp.mode == 6 then
+				elseif line == 5 and self:getIsCourseplayDriving() and self.cp.mode == 6 then
 					courseplay:toggleStopWhenUnloading(combine);
 				end;
 			end;
@@ -238,7 +238,7 @@ function courseplay:executeFunction(self, func, value, page)
 					courseplay:sendCourseplayerHome(combine);
 				elseif line == 4 and combine.cp.isChopper then
 					courseplay:switchCourseplayerSide(combine);
-				elseif line == 5 and combine.cp.isChopper and not self.drive and not self.isAIThreshing then --manual chopping: initiate/end turning maneuver
+				elseif line == 5 and combine.cp.isChopper and not self:getIsCourseplayDriving() and not self.isAIThreshing then --manual chopping: initiate/end turning maneuver
 					if self.cp.turnStage == 0 then
 						self.cp.turnStage = 1;
 					elseif self.cp.turnStage == 1 then
@@ -249,21 +249,21 @@ function courseplay:executeFunction(self, func, value, page)
 
 		elseif page == 1 then
 			if self.cp.canDrive then
-				if not self.drive then
+				if not self:getIsCourseplayDriving() then
 					if line == 1 then
 						courseplay:start(self);
 					elseif line == 3 and self.cp.mode ~= 9 then
 						courseplay:setStartAtFirstPoint(self);
 					elseif line == 4 then
 						courseplay:clearCurrentLoadedCourse(self);
-					elseif line == 6 and self.cp.mode == 1 and self.tippers[1] ~= nil and self.tippers[1].allowFillFromAir and self.tippers[1].allowTipDischarge then
+					elseif line == 6 and self.cp.mode == 1 and self.cp.workTools[1] ~= nil and self.cp.workTools[1].allowFillFromAir and self.cp.workTools[1].allowTipDischarge then
 						self.cp.multiSiloSelectedFillType = courseplay:getNextFillableFillType(self);
 					end;
 
 				else -- driving
 					if line == 1 then
 						courseplay:stop(self);
-					elseif line == 2 and self.cp.lastRecordnumber ~= nil and self.Waypoints[self.cp.lastRecordnumber].wait and self.wait then
+					elseif line == 2 and self.cp.lastRecordnumber ~= nil and self.Waypoints[self.cp.lastRecordnumber].wait and self.cp.wait then
 						courseplay:cancelWait(self);
 					elseif line == 2 and self.cp.stopAtEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil) then
 						courseplay:setStopAtEnd(self, false);
@@ -285,7 +285,7 @@ function courseplay:executeFunction(self, func, value, page)
 				end; -- end driving
 
 
-			elseif not self.drive then
+			elseif not self:getIsCourseplayDriving() then
 				if not self.cp.isRecording and not self.cp.recordingIsPaused and not self.cp.canDrive and #(self.Waypoints) == 0 then
 					if line == 1 then
 						courseplay:start_record(self);
@@ -295,7 +295,7 @@ function courseplay:executeFunction(self, func, value, page)
 						courseplay:addCustomSingleFieldEdgeToList(self);
 					end;
 				end;
-			end; --END if not self.drive
+			end; --END if not self:getIsCourseplayDriving()
 		end; --END is page 0 or 1
 	end; --END isRowFunction
 end;

@@ -32,7 +32,7 @@ function courseplay:start(self)
 	self.cp.collidingVehicleId = nil
 	courseplay:debug(string.format("%s: Start/Stop: deleting \"self.cp.collidingVehicleId\"", nameNum(self)), 3);
 	--self.numToolsCollidingVehicles = {};
-	self.drive = false
+	self:setIsCourseplayDriving(false);
 	self.cp.isRecording = false
 	self.cp.recordingIsPaused = false
 	self.cp.calculatedCourseToCombine = false
@@ -121,7 +121,7 @@ function courseplay:start(self)
 	
 
 	local setLaneNumber = false;
-	for k,workTool in pairs(self.tippers) do    --TODO temporary solution (better would be Tool:getIsAnimationPlaying(animationName))
+	for k,workTool in pairs(self.cp.workTools) do    --TODO temporary solution (better would be Tool:getIsAnimationPlaying(animationName))
 		if courseplay:isFolding(workTool) then
 			if  self.setAIImplementsMoveDown ~= nil then
 				self:setAIImplementsMoveDown(true)
@@ -197,6 +197,11 @@ function courseplay:start(self)
 			if numWaitPoints == 3 and self.cp.shovelEmptyPoint == nil then
 				self.cp.shovelEmptyPoint = i;
 			end;
+			for i,_ in pairs(self.attachedImplements) do
+				if self.attachedImplements[i].object.ignoreVehicleDirectionOnLoad ~= nil then
+					self.attachedImplements[i].object.ignoreVehicleDirectionOnLoad = true
+				end
+			end			
 		end;
 
 		-- laneNumber (for seeders)
@@ -284,7 +289,7 @@ function courseplay:start(self)
 	-- ok i am near the waypoint, let's go
 	self.checkSpeedLimit = false
 	self.cp.runOnceStartCourse = true;
-	self.drive = true;
+	self:setIsCourseplayDriving(true);
 	self.cp.isRecording = false
 	self.cp.distanceCheck = false;
 
@@ -292,9 +297,7 @@ function courseplay:start(self)
 		self.cp.realAWDModeOnBackup = self.realAWDModeOn
 	end;
 
-	if courseplay:canUseWeightStation(self) or hasReversing then
-		self.cp.totalLength, self.cp.totalLengthOffset = courseplay:getTotalLengthOnWheels(self);
-	end;
+	self.cp.totalLength, self.cp.totalLengthOffset = courseplay:getTotalLengthOnWheels(self);
 
 	courseplay:validateCanSwitchMode(self);
 	--print("startStop "..debug.getinfo(1).currentline)
@@ -307,8 +310,8 @@ function courseplay:getCanUseAiMode(vehicle)
 
 	local mode = vehicle.cp.mode;
 
-	if mode ~= 5 and mode ~= 6 and mode ~= 7 and not vehicle.cp.tipperAttached then
-		vehicle.cp.infoText = courseplay:loc('COURSEPLAY_WRONG_TRAILER');
+	if mode ~= 5 and mode ~= 6 and mode ~= 7 and not vehicle.cp.workToolAttached then
+		courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WRONG_TRAILER'));
 		return false;
 	end;
 
@@ -317,37 +320,37 @@ function courseplay:getCanUseAiMode(vehicle)
 	if mode == 3 or mode == 7 or mode == 8 then
 		minWait, maxWait = 1, 1;
 		if vehicle.cp.numWaitPoints < minWait then
-			vehicle.cp.infoText = courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_FEW'):format(minWait);
+			courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_FEW'):format(minWait));
 			return false;
 		elseif vehicle.cp.numWaitPoints > maxWait then
-			vehicle.cp.infoText = courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_MANY'):format(maxWait);
+			courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_MANY'):format(maxWait));
 			return false;
 		end;
 		if mode == 3 then
-			if vehicle.tippers[1] == nil or vehicle.tippers[1].cp == nil or not vehicle.tippers[1].cp.isAugerWagon then
-				vehicle.cp.infoText = courseplay:loc('COURSEPLAY_WRONG_TRAILER');
+			if vehicle.cp.workTools[1] == nil or vehicle.cp.workTools[1].cp == nil or not vehicle.cp.workTools[1].cp.isAugerWagon then
+				courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WRONG_TRAILER'));
 				return false;
 			end;
 		elseif mode == 7 then
 			if vehicle.isAutoCombineActivated ~= nil and vehicle.isAutoCombineActivated then
-				vehicle.cp.infoText = courseplay:loc('COURSEPLAY_NO_AUTOCOMBINE_MODE_7');
+				courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_NO_AUTOCOMBINE_MODE_7'));
 				return false;
 			end;
 		end;
 
 	elseif mode == 4 or mode == 6 then
 		if vehicle.cp.startWork == nil or vehicle.cp.stopWork == nil then
-			vehicle.cp.infoText = courseplay:loc('COURSEPLAY_NO_WORK_AREA');
+			courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_NO_WORK_AREA'));
 			return false;
 		end;
 		if mode == 6 then
 			if vehicle.cp.hasBaleLoader then
 				minWait, maxWait = 2, 3;
 				if vehicle.cp.numWaitPoints < minWait then
-					vehicle.cp.infoText = courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_FEW'):format(minWait);
+					courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_FEW'):format(minWait));
 					return false;
 				elseif vehicle.cp.numWaitPoints > maxWait then
-					vehicle.cp.infoText = courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_MANY'):format(maxWait);
+					courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_MANY'):format(maxWait));
 					return false;
 				end;
 			end;
@@ -356,16 +359,16 @@ function courseplay:getCanUseAiMode(vehicle)
 	elseif mode == 9 then
 		minWait, maxWait = 3, 3;
 		if vehicle.cp.numWaitPoints < minWait then
-			vehicle.cp.infoText = courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_FEW'):format(minWait);
+			courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_FEW'):format(minWait));
 			return false;
 		elseif vehicle.cp.numWaitPoints > maxWait then
-			vehicle.cp.infoText = courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_MANY'):format(maxWait);
+			courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_MANY'):format(maxWait));
 			return false;
 		elseif vehicle.cp.shovelStatePositions == nil or vehicle.cp.shovelStatePositions[2] == nil or vehicle.cp.shovelStatePositions[3] == nil or vehicle.cp.shovelStatePositions[4] == nil or vehicle.cp.shovelStatePositions[5] == nil then
-			vehicle.cp.infoText = courseplay:loc('COURSEPLAY_SHOVEL_POSITIONS_MISSING');
+			courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_SHOVEL_POSITIONS_MISSING'));
 			return false;
 		elseif vehicle.cp.shovelFillStartPoint == nil or vehicle.cp.shovelFillEndPoint == nil or vehicle.cp.shovelEmptyPoint == nil then
-			vehicle.cp.infoText = courseplay:loc('COURSEPLAY_NO_VALID_COURSE');
+			courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_NO_VALID_COURSE'));
 			return false;
 		end;
 	end;
@@ -435,7 +438,7 @@ function courseplay:stop(self)
 	end;
 
 	--open all covers
-	if self.cp.tipperAttached and self.cp.tipperHasCover and self.cp.mode == 1 or self.cp.mode == 2 or self.cp.mode == 5 or self.cp.mode == 6 then
+	if self.cp.workToolAttached and self.cp.tipperHasCover and self.cp.mode == 1 or self.cp.mode == 2 or self.cp.mode == 5 or self.cp.mode == 6 then
 		courseplay:openCloseCover(self, nil, false);
 	end;
 
@@ -445,7 +448,7 @@ function courseplay:stop(self)
 	self.cp.tempCollis = {}
 	self.checkSpeedLimit = true
 	courseplay:resetTipTrigger(self);
-	self.drive = false
+	self:setIsCourseplayDriving(false);
 	self.cp.canDrive = true
 	self.cp.distanceCheck = false
 	self.cp.mode7GoBackBeforeUnloading = false
@@ -453,7 +456,6 @@ function courseplay:stop(self)
 		self.cp.checkReverseValdityPrinted = false
 	end
 
-	--self.motor:setSpeedLevel(0, false);
 	self.motor.maxRpmOverride = nil;
 	self.cp.startWork = nil
 	self.cp.stopWork = nil
@@ -481,7 +483,7 @@ function courseplay:stop(self)
 
 	--remove any local and global info texts
 	if g_server ~= nil then
-		self.cp.infoText = nil;
+		courseplay:setInfoText(self, nil);
 
 		for refIdx,_ in pairs(courseplay.globalInfoText.msgReference) do
 			if self.cp.activeGlobalInfoTexts[refIdx] ~= nil then

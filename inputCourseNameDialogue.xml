@@ -1,33 +1,29 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <GUI onOpen="onOpen" onClose="onClose" onEnterPressed="onEnterPressed">
-	<GuiElement name="background" type="bitmap" position="0.4096 0.8" size="0.2667 0.1185" imageFilename="dataS2/menu/background01.png" MOD_imageDir="img/inputCourseNameGUI/" MOD_imageFilename="inputCourseName_bg.png" imageColor="1 1 1 1">
+	<GuiElement name="background" type="bitmap" position="0px 300px" size="512px 128px" screenAlign="middleCenter" positionOrigin="middleCenter" imageFilename="dataS2/menu/background01.png" MOD_imageDir="img/inputCourseNameGUI/" MOD_imageFilename="inputCourseName_bg.png" imageColor="1 1 1 1">
 		<!-- Title text -->
 		<GuiElement 
 			name="titleText" 
 			type="text" 
-			profile="defaultText" 
-			position="0.006 0.065" 
+			profile="defaultTextWhite" 
 			onCreate="onCreateTitleText" 
-			size="0.8 1" 
-			textSize="0.015" 
-			text2Size="0" 
-			textOffset="0 0" 
-			textColor="0.95 0.95 0.95 1" 
+			textSize="14px" 
 			textBold="false" 
+			textColor="0.95 0.95 0.95 1" 
 			text="$CP_COURSEPLAY_COURSE_NAME,$CP_COURSEPLAY_FOLDER_NAME,$CP_COURSEPLAY_FILTER_COURSES" 
-			textWrapWidth="0.8" 
-			alignment="left"
+
+			screenAlign="topLeft" positionOrigin="topLeft" position="8px+20px -8px-22px"
 		/>
 
-		<!-- Text input -->
-			<!--
-			imageFocusedColor="0.4314 0.9216 0.2196 0.05"
-			-->
 		<GuiElement 
-			name="textInput" type="textInput" position="0 0" size="0.2667 0.1185" text="" 
+			name="textInput" type="textInput" text="" 
+
+			screenAlign="topLeft" positionOrigin="topLeft" position="8px+32px -8px-13px"
+			size="432px 40px"
+
 			onCreate="onCreateTextInput" onEnterPressed="onEnterPressed" onTextChanged="onTextChanged" onIsUnicodeAllowed="onIsUnicodeAllowed" 
 
-			maxInputTextWidth="430px"
+			maxInputTextWidth="432px"
 			maxCharacters="25" 
 
 			focusId="1" 
@@ -35,20 +31,15 @@
 			focusChangeBottom="2" 
 			focusInit="onOpen"
 
-			textColor="0 0 0 1" 
-			textSize="0.017"
+			textColor="0.12 0.12 0.12 1" 
+			textSelectedColor="0.12 0.12 0.12 1" 
+			textSize="18px"
 			textBold="false" 
-			text2Size="0" 
 			alignment="left" 
 
-			textSelectedColor="0 0 0 1" 
-			textOffset="0px 46px" 
-
 			cursorFilename="g_baseUIFilename" 
-			cursorOffset="4px 1px" 
-
-			MOD_imageDir="img/inputCourseNameGUI/" 
-			MOD_imageFilename="inputCourseName_input_normal.png" 
+			cursorUVs="176px 457px 208px 489px"
+			cursorOffset="4px 0px" 
 		/>
 
 		<!-- Cancel button -->
@@ -56,9 +47,10 @@
 			name="cancelButton" 
 			type="button" 
 			profile="defaultButton" 
-			position="0.1410 0.01" 
-			size="0.01354167 0.02407" 
-			text="" 
+
+			screenAlign="topLeft" positionOrigin="topLeft" position="412px -80px"
+			size="30px 30px"
+
 			onCreate="onCreateCancelButton" 
 			onClick="onCancelClick" 
 			focusId="2" 
@@ -68,14 +60,9 @@
 
 			imageColor="1 1 1 1"
 			imageFocusedColor="0.7059 0 0 1"
-
-			textColor="0.1 0.1 0.1 1" 
-			textDisabledColor="0.1 0.1 0.1 0.4" 
-			textOffset="0 0" 
-			textSize="0.026"
-			textBold="false" 
-
-			text2Size="0" 
+			imageDisabledColor="1 1 1 0.15"
+			fadeInTime="0.2" 
+			fadeOutTime="0.2" 
 
 			MOD_imageDir="img/inputCourseNameGUI/" 
 			MOD_imageFilename="inputCourseName_cancelButton_normal.png" 
@@ -86,9 +73,9 @@
 			name="saveButton" 
 			type="button" 
 			profile="defaultButton" 
-			position="0.1590 0.01" 
-			size="0.01354167 0.02407" 
-			text="" 
+
+			screenAlign="topLeft" positionOrigin="topLeft" position="454px -80px"
+			size="30px 30px"
 			onCreate="onCreateSaveButton" 
 			onClick="onSaveClick" 
 			focusId="3" 
@@ -101,14 +88,6 @@
 			imageDisabledColor="1 1 1 0.15"
 			fadeInTime="0.2" 
 			fadeOutTime="0.2" 
-
-			textColor="0.1 0.1 0.1 1" 
-			textDisabledColor="0.1 0.1 0.1 0.4" 
-			textOffset="0 0" 
-			textSize="0.026"
-			textBold="false" 
-
-			text2Size="0" 
 
 			MOD_imageDir="img/inputCourseNameGUI/" 
 			MOD_imageFilename="$course:inputCourseName_saveButton_normal.png,$folder:inputCourseName_saveButton_normal.png,$filter:inputCourseName_searchButton_normal.png" 

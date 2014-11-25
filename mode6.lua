@@ -1,5 +1,5 @@
 function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, lx , lz, refSpeed )
-	local workTool --= self.tippers[1] -- to do, quick, dirty and unsafe
+	local workTool;
 	local activeTipper = nil
 	local specialTool = false
 	local forceSpeedLimit = refSpeed 
@@ -40,12 +40,12 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 		if not self.cp.isReverseBackToPoint then
 			allowedToDrive = false;
 		end;
-		self.cp.infoText = string.format(courseplay:loc("COURSEPLAY_STARTING_UP_TOOL"), tostring(self.name));
+		courseplay:setInfoText(self, string.format(courseplay:loc("COURSEPLAY_STARTING_UP_TOOL"), tostring(self.name)));
 	end;
 
 	local selfIsFolding, selfIsFolded, selfIsUnfolded = courseplay:isFolding(self);
-	for i=1, #(self.tippers) do
-		workTool = self.tippers[i];
+	for i=1, #(self.cp.workTools) do
+		workTool = self.cp.workTools[i];
 		local tool = self
 		if courseplay:isAttachedCombine(workTool) then
 			tool = workTool
@@ -101,6 +101,12 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 								workTool:setIsTurnedOn(true, false);
 							end
 						end
+						if workTool.setPickupState ~= nil then
+							if workTool.isPickupLowered ~= nil and not workTool.isPickupLowered then
+								workTool:setPickupState(true, false);
+								courseplay:debug(string.format('%s: lower pickup order', nameNum(workTool)), 17);
+							end;
+						end;
 					end
 				end
 
@@ -108,6 +114,12 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,nil)
 					if not specialTool and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
 						workTool:setIsTurnedOn(false, false);
+						if workTool.setPickupState ~= nil then
+							if workTool.isPickupLowered ~= nil and workTool.isPickupLowered then
+								workTool:setPickupState(false, false);
+								courseplay:debug(string.format('%s: raise pickup order', nameNum(workTool)), 17);
+							end;
+						end;
 					end
 				end
 
@@ -154,7 +166,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 				end;
 
 				-- automatic unload
-				if (not workArea and self.Waypoints[self.cp.lastRecordnumber].wait and (self.wait or fillLevelPct == 0)) or self.cp.unloadOrder then
+				if (not workArea and self.Waypoints[self.cp.lastRecordnumber].wait and (self.cp.wait or fillLevelPct == 0)) or self.cp.unloadOrder then
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,true);
 					if not specialTool then
 						if workTool.emptyState ~= BaleLoader.EMPTY_NONE then
@@ -232,9 +244,9 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 									courseplay:setMarkers(self, workTool);
 								end;
 
-								if workTool.setIsPickupDown ~= nil and workTool.pickup then
-									if workTool.pickup.isDown == nil or (workTool.pickup.isDown ~= nil and not workTool.pickup.isDown) then
-										workTool:setIsPickupDown(true, false);
+								if workTool.setPickupState ~= nil then
+									if workTool.isPickupLowered ~= nil and not workTool.isPickupLowered then
+										workTool:setPickupState(true, false);
 										courseplay:debug(string.format('%s: lower pickup order', nameNum(workTool)), 17);
 									end;
 								end;
@@ -251,9 +263,9 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 								workTool:setIsTurnedOn(false, false);
 								courseplay:debug(string.format('%s: turn off order', nameNum(workTool)), 17);
 							end;
-							if workTool.setIsPickupDown ~= nil and workTool.pickup then
-								if workTool.pickup.isDown == nil or (workTool.pickup.isDown ~= nil and workTool.pickup.isDown) then
-									workTool:setIsPickupDown(false, false);
+							if workTool.setPickupState ~= nil then
+								if workTool.isPickupLowered ~= nil and workTool.isPickupLowered then
+									workTool:setPickupState(false, false);
 									courseplay:debug(string.format('%s: raise pickup order', nameNum(workTool)), 17);
 								end;
 							end;
@@ -305,7 +317,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 							courseplay:debug(string.format("%s: Is starting to reverse. Tip trigger is reset.", nameNum(self)), 13);
 						end;
 
-						if courseplay:distance(ctx, ctz, trigger_x, trigger_z) > 75 or startReversing then
+						if courseplay:distance(ctx, ctz, trigger_x, trigger_z) > (self.cp.totalLength + 5) or startReversing then
 							courseplay:resetTipTrigger(self);
 						end
 					end
@@ -313,7 +325,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 					-- tipper is not empty and tractor reaches TipTrigger
 					if self.cp.tipperFillLevel > 0 and self.cp.currentTipTrigger ~= nil and self.recordnumber > 3 then
 						allowedToDrive, activeTipper = courseplay:unload_tippers(self, allowedToDrive);
-						self.cp.infoText = courseplay:loc("COURSEPLAY_TIPTRIGGER_REACHED");
+						courseplay:setInfoText(self, courseplay:loc("COURSEPLAY_TIPTRIGGER_REACHED"));
 					end
 				end;
 			end; --END other tools
@@ -543,7 +555,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 			end
 
 		end
-	end; --END for i in self.tippers
+	end; --END for i in self.cp.workTools
 
 	if hasFinishedWork then
 		isFinishingWork = true

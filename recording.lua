@@ -79,7 +79,7 @@ function courseplay:start_record(vehicle)
 	--    courseplay:clearCurrentLoadedCourse(vehicle)
 	vehicle.cp.isRecording = true;
 	vehicle.cp.recordingIsPaused = false;
-	vehicle.drive = false
+	vehicle:setIsCourseplayDriving(false);
 	vehicle.cp.loadedCourses = {}
 	courseplay:setRecordNumber(vehicle, 1);
 	vehicle.cp.HUDrecordnumber = 1;
@@ -99,7 +99,7 @@ function courseplay:stop_record(vehicle)
 	courseplay:set_crossing(vehicle, true);
 	vehicle.cp.isRecording = false;
 	vehicle.cp.recordingIsPaused = false;
-	vehicle.drive = false;
+	vehicle:setIsCourseplayDriving(false);
 	vehicle.cp.distanceCheck = false;
 	vehicle.cp.canDrive = true;
 	vehicle.maxnumber = vehicle.recordnumber - 1;

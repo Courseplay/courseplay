@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="20">
-	<version>4.00.0052</version>
+	<version>4.00.0080</version>
 	<author><![CDATA[Courseplay Dev Team]]></author>
 	<title>
 		<de>Courseplay</de>
@@ -847,17 +847,6 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<hu>automaikus (az útvonalhoz)</hu>
 			<nl>automatisch (van opname)</nl>
 		</text>
-		<text name="COURSEPLAY_COURSE">
-			<en>Course:</en>
-			<de>Kurs:</de>
-			<fr>Course:</fr>
-			<es>Ruta:</es>
-			<it>Percorso:</it>
-			<cz>Trasa:</cz>
-			<ru>Маршрут:</ru>
-			<hu>Útvonal:</hu>
-			<nl>Route:</nl>
-		</text>
 		<text name="COURSEPLAY_NO_COURSE_LOADED">
 			<en>course: no course loaded</en>
 			<de>Kurs: kein Kurs geladen</de>
@@ -868,28 +857,6 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<ru>Маршрут: отсутствует</ru>
 			<hu>Útvonal: Útvonal nincs betöltve</hu>
 			<nl>route: geen route geladen</nl>
-		</text>
-		<text name="COURSEPLAY_WAYPOINT">
-			<en>waypoint</en>
-			<de>Wegpunkt</de>
-			<fr>Point</fr>
-			<es>Punto</es>
-			<it>punto di passaggio</it>
-			<cz>Orientační bod</cz>
-			<ru>Точек</ru>
-			<hu>Útvonalpont</hu>
-			<nl>markering</nl>
-		</text>
-		<text name="COURSEPLAY_NO_WAYPOINTS">
-			<en>no waypoints yet</en>
-			<de>Noch keine Wegpunkte</de>
-			<fr>pas de points</fr>
-			<es>no hay puntos</es>
-			<it>nessun punto di passaggio</it>
-			<cz>Zatím žádné orientační body</cz>
-			<ru>Нет точек для отображения</ru>
-			<hu>Nincs még útvonalpont</hu>
-			<nl>nog geen markeringen</nl>
 		</text>
 		<text name="COURSEPLAY_WAYPOINT_MODE_1">
 			<en>Start and end</en>
@@ -1397,28 +1364,6 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<hu>Vízbe vezettél, úsznod kell!</hu>
 			<nl>gaat zwemmen</nl>
 		</text>
-		<text name="COURSEPLAY_WAITPOINTS">
-			<en>waiting points</en>
-			<de>Wartepunkte</de>
-			<fr>Points d'attente</fr>
-			<es>Puntos de espera</es>
-			<it>punti d'attesa</it>
-			<cz>Bod čekání</cz>
-			<ru>Остановок</ru>
-			<hu>Útvonalpont</hu>
-			<nl>wacht plaatsen</nl>
-		</text>
-		<text name="COURSEPLAY_CROSSING_POINTS">
-			<en>crossing points</en>
-			<de>Kreuzungspunkte</de>
-			<fr>Points de croisement</fr>
-			<es>Puntos de cruce</es>
-			<it>incroci</it>
-			<cz>Bod křížení</cz>
-			<ru>Конечных точек</ru>
-			<hu>Elágazási pont</hu>
-			<nl>kruispunten</nl>
-		</text>
 		<text name="COURSEPLAY_OPEN_HUD_MODE">
 			<en>open Courseplay:</en>
 			<de>Courseplay öffnen:</de>
@@ -1528,7 +1473,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<en>North</en>
 			<de>Norden</de>
 			<fr>Nord</fr>
-			<it>Nord</it>	
+			<it>Nord</it>
 			<cz>sever</cz>
 			<ru>Север</ru>
 			<hu>Észak</hu>
@@ -1538,7 +1483,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<en>East</en>
 			<de>Osten</de>
 			<fr>Est</fr>
-			<it>Est</it>		
+			<it>Est</it>
 			<cz>východ</cz>
 			<ru>Восток</ru>
 			<hu>Kelet</hu>
@@ -1548,7 +1493,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<en>South</en>
 			<de>Süden</de>
 			<fr>Sud</fr>
-			<it>Sud</it>			
+			<it>Sud</it>
 			<cz>jih</cz>
 			<ru>Юг</ru>
 			<hu>Dél</hu>
@@ -2106,37 +2051,37 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<hu>: a BGA siló tele van!</hu>
 			<nl>: Bunker silo is vol!</nl>
 		</text>
-		<text name="COURSEPLAY_FARM_SILO_DONT_HAVE_FILTYPE">
-			<en>Farm Silo don't have selected fill type</en>
-			<de>Farm Silo don't have selected fill type</de>
-			<fr>Farm Silo don't have selected fill type</fr>
-			<es>Farm Silo don't have selected fill type</es>
+		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE">
+			<en>Farm silo doesn't have the selected fill type</en>
+			<de>Farmsilo hat den ausgewählten Fülltyp nicht</de>
+			<fr>Farm silo doesn't have the selected fill type</fr>
+			<es>Farm silo doesn't have the selected fill type</es>
 			<it>Il granaio non sa con cosa riempire</it>
 			<cz>Silo neobsahuje vybranou plodinu</cz>
 			<ru>В этом бункере нет такого продукта!</ru>
-			<hu>Farm Silo don't have selected fill type</hu>
+			<hu>Nem választottad ki a farm tárólóból a terménytípust</hu>
 			<nl>Farm Silo heeft niet de juiste vulling</nl>
 		</text>
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE">
-			<en>Farm Silo Load:</en>
-			<de>Farm Silo Load:</de>
-			<fr>Farm Silo Load:</fr>
-			<es>Farm Silo Load:</es>
+			<en>Farm silo load:</en>
+			<de>Farmsilo-Befüllung:</de>
+			<fr>Farm silo load:</fr>
+			<es>Farm silo load:</es>
 			<it>Il granaio sta caricando:</it>
 			<cz>Na sile se nakládá:</cz>
 			<ru>Забрать из бункера:</ru>
-			<hu>Farm Silo Load:</hu>
+			<hu>A farm tároló töltöttsége:</hu>
 			<nl>Farm Silo laad:</nl>
 		</text>
 		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY">
-			<en>Farm Silo is empty!</en>
-			<de>Farm Silo is empty!</de>
-			<fr>Farm Silo is empty!</fr>
-			<es>Farm Silo is empty!</es>
+			<en>Farm silo is empty!</en>
+			<de>Farmsilo ist leer!</de>
+			<fr>Farm silo is empty!</fr>
+			<es>Farm silo is empty!</es>
 			<it>Il granaio è vuoto!</it>
 			<cz>Silo je prázdné!</cz>
 			<ru>В бункере не осталось выбранного продукта, увы...</ru>
-			<hu>Farm Silo is empty!</hu>
+			<hu>A farm tárólőja üres!</hu>
 			<nl>Farm Silo is leeg!</nl>
 		</text>
 		<text name="COURSEPLAY_STARTING_UP_TOOL">
@@ -2147,13 +2092,38 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<it>Starting up %s!</it>
 			<cz>Nastartovat při %s!</cz>
 			<ru>%s: включено распыление соломы!</ru>
-			<hu>Starting up %s!</hu>
+			<hu>Beindul %s!</hu>
 			<nl>Opstarten %s!</nl>
 		</text>
+
+		<!-- Yes/No dialogues -->
+		<text name="COURSEPLAY_YES_NO_FIELDSCAN">
+			<cz>Courseplay: Do you want the fields to be scanned automatically?</cz> 
+			<de>Courseplay: Möchtest du dass die Felder automatisch gescanned werden?</de>
+			<en>Courseplay: Do you want the fields to be scanned automatically?</en>
+			<es>Courseplay: Do you want the fields to be scanned automatically?</es>
+			<fr>Courseplay: Do you want the fields to be scanned automatically?</fr>
+			<hu>Courseplay: Szeretnéd, hogy a mezők adatait automatikusan beolvassa?</hu>
+			<it>Courseplay: Do you want the fields to be scanned automatically?</it>
+			<nl>Courseplay: Do you want the fields to be scanned automatically?</nl>
+			<ru>Courseplay: Do you want the fields to be scanned automatically?</ru>
+		</text>
+		<text name="COURSEPLAY_YES_NO_WAGES">
+			<cz>Courseplay: Do you want your workers to earn wages (%s/hour)?</cz> 
+			<de>Courseplay: Möchtest du Löhne für deine Fahrer aktivieren (%s/Stunde)?</de>
+			<en>Courseplay: Do you want your workers to earn wages (%s/hour)?</en>
+			<es>Courseplay: Do you want your workers to earn wages (%s/hour)?</es>
+			<fr>Courseplay: Do you want your workers to earn wages (%s/hour)?</fr>
+			<hu>Courseplay: Szeretnéd, hogy a munkásod bért kapjon (%s/óra)?</hu>
+			<it>Courseplay: Do you want your workers to earn wages (%s/hour)?</it>
+			<nl>Courseplay: Do you want your workers to earn wages (%s/hour)?</nl>
+			<ru>Courseplay: Do you want your workers to earn wages (%s/hour)?</ru>
+		</text>
+
 		<!-- SeedUsageCalculator HUD content -->
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR">
 			<en>Seed usage calculator</en>
-			<de>Saatgut-Berechner</de>
+			<de>Saatgut-Rechner</de>
 			<fr>Utilisation des semences</fr>
 			<es>Uso de semillas</es> <!-- !!! -->
 			<it>Utilizzo dei semi</it>
@@ -2170,7 +2140,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<it>Campo: %d (%s %s)</it>
 			<cz>Pole: %d (%s %s)</cz> 
 			<hu>Terület: %d (%s %s)</hu>
-			<ru>Поле: %d (%s %s)</ru>
+			<ru>Участок: %d (%s %s)</ru>
 			<nl>Veld: %d (%s %s)</nl>
 		</text>
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE">
@@ -2181,30 +2151,19 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano M
 			<it>Tipo di seme: %s</it>
 			<cz>Osivo: %s</cz> 
 			<hu>Vetőmag típusa: %s</hu>
-			<ru>Семена: %s</ru>
+			<ru>%s</ru>
 			<nl>Zaad soort: %s</nl>
 		</text>
-		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE_DEFAULT">
-			<en>Default: %s %s (%s)</en>
-			<de>Standard: %s %s (%s)</de>
-			<fr>Défaut: %s %s (%s)</fr>
-			<es>Defecto: %s %s (%s)</es>
-			<it>Standard: %s %s (%s)</it>
-			<cz>Základní: %s %s (%s)</cz> 
-			<hu>Alap verzióban: %s %s (%s) </hu>
-			<ru>Норма: %s %s (%s)</ru>
-			<nl>Standaard: %s %s (%s)</nl>
-		</text>
-		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE_MOREREALISTIC">
-			<en>MoreRealistic: %s %s (%s)</en>
-			<de>MoreRealistic: %s %s (%s)</de>
-			<es>MoreRealistic: %s %s (%s)</es>
-			<fr>MoreRealistic: %s %s (%s)</fr>
-			<it>MoreRealistic: %s %s (%s)</it>
-			<cz>MoreRealistic: %s %s (%s)</cz> 
-			<hu>Reálisabb módban: %s %s (%s)</hu>
-			<ru>MR: %s %s (%s)</ru>
-			<nl>MoreRealistic: %s %s (%s)</nl>
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE">
+			<en>Usage: %s %s (%s)</en>
+			<de>Verbrauch: %s %s (%s)</de>
+			<fr>Utilisation: %s %s (%s)</fr>
+			<es>Uso: %s %s (%s)</es>
+			<it>Utilizzo: %s %s (%s)</it>
+			<cz>Usage: %s %s (%s)</cz> <!-- !!! -->
+			<hu>Szükséglet: %s %s (%s) </hu>
+			<ru>Расходы: %s %s (%s)</ru>
+			<nl>Verbruik: %s %s (%s)</nl>
 		</text>
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_TRIM">
 			<en>···</en>

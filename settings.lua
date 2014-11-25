@@ -3,6 +3,9 @@ local curFile = 'settings.lua';
 function courseplay:openCloseHud(self, open)
 	courseplay:setMouseCursor(self, open);
 	self.cp.hud.show = open;
+	if not open then
+		courseplay.button:setHoveredButton(self, nil);
+	end;
 
 	--set ESLimiter
 	if self.cp.hud.ESLimiterOrigPosY == nil and open and self.ESLimiter ~= nil and self.ESLimiter.xPos ~= nil and self.ESLimiter.yPos ~= nil and self.ESLimiter.overlay ~= nil and self.ESLimiter.overlayBg ~= nil and self.ESLimiter.overlayBar ~= nil then
@@ -137,7 +140,9 @@ end;
 
 function courseplay:setCpMode(vehicle, modeNum)
 	vehicle.cp.mode = modeNum;
-	courseplay:buttonsActiveEnabled(vehicle, "all");
+	local UVs = courseplay.hud.bottomInfo.modeUVsPx[modeNum];
+	courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.currentModeIcon, UVs[1], UVs[2], UVs[3], UVs[4], courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
+	courseplay:buttonsActiveEnabled(vehicle, 'all');
 end;
 
 function courseplay:callCourseplayer(combine)
@@ -149,9 +154,13 @@ function courseplay:startStopCourseplayer(combine)
 	tractor.cp.forcedToStop = not tractor.cp.forcedToStop;
 end;
 
+function courseplay:setVehicleWait(vehicle, active)
+	vehicle.cp.wait = active;
+end;
+
 function courseplay:cancelWait(vehicle, cancelStopAtEnd)
-	if vehicle.wait then
-		vehicle.wait = false;
+	if vehicle.cp.wait then
+		courseplay:setVehicleWait(vehicle, false);
 	end;
 	if vehicle.cp.mode == 3 then
 		vehicle.cp.isUnloaded = true;
@@ -761,12 +770,12 @@ function courseplay:switchDriverCopy(vehicle, changeBy)
 	end;
 end;
 
-function courseplay:findDrivers(self)
+function courseplay:findDrivers(vehicle)
 	local foundDrivers = {}; -- resetting all drivers
-	for k, vehicle in pairs(g_currentMission.steerables) do
-		if vehicle.Waypoints ~= nil and not courseplay.nonSupportedVehicleTypeNames[v.typeName]  then
-			if vehicle.rootNode ~= self.rootNode and #(vehicle.Waypoints) > 0 then
-				table.insert(foundDrivers, vehicle);
+	for _,otherVehicle in pairs(g_currentMission.steerables) do
+		if otherVehicle.Waypoints ~= nil and not courseplay.nonSupportedVehicleTypeNames[otherVehicle.typeName]  then
+			if otherVehicle.rootNode ~= vehicle.rootNode and #(otherVehicle.Waypoints) > 0 then
+				table.insert(foundDrivers, otherVehicle);
 			end;
 		end;
 	end;
@@ -789,7 +798,7 @@ function courseplay:copyCourse(vehicle)
 
 		vehicle.cp.isRecording = false;
 		vehicle.cp.recordingIsPaused = false;
-		vehicle.drive = false;
+		vehicle:setIsCourseplayDriving(false);
 		vehicle.cp.distanceCheck = false;
 		vehicle.cp.canDrive = true;
 		vehicle.cp.abortWork = nil;
@@ -1229,12 +1238,16 @@ function courseplay:validateCourseGenerationData(vehicle)
 		vehicle.cp.hasValidCourseGenerationData = false;
 	end;
 
-	courseplay:debug(string.format("%s: hasGeneratedCourse=%s, hasEnoughWaypoints=%s, hasStartingCorner=%s, hasStartingDirection=%s, numCourses=%s, fieldEdge.selectedField.fieldNum=%s ==> hasValidCourseGenerationData=%s", nameNum(vehicle), tostring(vehicle.cp.hasGeneratedCourse), tostring(hasEnoughWaypoints), tostring(vehicle.cp.hasStartingCorner), tostring(vehicle.cp.hasStartingDirection), tostring(vehicle.cp.numCourses), tostring(vehicle.cp.fieldEdge.selectedField.fieldNum), tostring(vehicle.cp.hasValidCourseGenerationData)), 7);
+	if courseplay.debugChannels[7] then
+		courseplay:debug(string.format("%s: hasGeneratedCourse=%s, hasEnoughWaypoints=%s, hasStartingCorner=%s, hasStartingDirection=%s, numCourses=%s, fieldEdge.selectedField.fieldNum=%s ==> hasValidCourseGenerationData=%s", nameNum(vehicle), tostring(vehicle.cp.hasGeneratedCourse), tostring(hasEnoughWaypoints), tostring(vehicle.cp.hasStartingCorner), tostring(vehicle.cp.hasStartingDirection), tostring(vehicle.cp.numCourses), tostring(vehicle.cp.fieldEdge.selectedField.fieldNum), tostring(vehicle.cp.hasValidCourseGenerationData)), 7);
+	end;
 end;
 
 function courseplay:validateCanSwitchMode(vehicle)
-	vehicle.cp.canSwitchMode = not vehicle.drive and not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused and not vehicle.cp.fieldEdge.customField.isCreated;
-	courseplay:debug(string.format("%s: validateCanSwitchMode(): drive=%s, record=%s, record_pause=%s, customField.isCreated=%s ==> canSwitchMode=%s", nameNum(vehicle), tostring(vehicle.drive), tostring(vehicle.cp.isRecording), tostring(vehicle.cp.recordingIsPaused), tostring(vehicle.cp.fieldEdge.customField.isCreated), tostring(vehicle.cp.canSwitchMode)), 12);
+	vehicle.cp.canSwitchMode = not vehicle:getIsCourseplayDriving() and not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused and not vehicle.cp.fieldEdge.customField.isCreated;
+	if courseplay.debugChannels[12] then
+		courseplay:debug(string.format("%s: validateCanSwitchMode(): drive=%s, record=%s, record_pause=%s, customField.isCreated=%s ==> canSwitchMode=%s", nameNum(vehicle), tostring(vehicle:getIsCourseplayDriving()), tostring(vehicle.cp.isRecording), tostring(vehicle.cp.recordingIsPaused), tostring(vehicle.cp.fieldEdge.customField.isCreated), tostring(vehicle.cp.canSwitchMode)), 12);
+	end;
 end;
 
 function courseplay:saveShovelPosition(vehicle, stage)
@@ -1276,7 +1289,7 @@ function courseplay:reloadCoursesFromXML(vehicle)
 		courseplay_manager:load_courses();
 		courseplay:debug(tableShow(g_currentMission.cp_courses, "g_cM cp_courses", 8), 8);
 		courseplay:debug("g_currentMission.cp_courses = courseplay_manager:load_courses()", 8);
-		if not vehicle.drive then
+		if not vehicle:getIsCourseplayDriving() then
 			local loadedCoursesBackup = vehicle.cp.loadedCourses;
 			courseplay:clearCurrentLoadedCourse(vehicle);
 			vehicle.cp.loadedCourses = loadedCoursesBackup;
@@ -1315,6 +1328,8 @@ function courseplay:setMouseCursor(self, show)
 		for line=1,courseplay.hud.numLines do
 			self.cp.hud.content.pages[self.cp.hud.currentPage][line][1].isHovered = false;
 		end;
+
+		courseplay.button:setHoveredButton(self, nil);
 
 		self.cp.hud.mouseWheel.render = false;
 	end;
@@ -1592,7 +1607,7 @@ end;
 function courseplay:toggleFindFirstWaypoint(vehicle)
 	vehicle.cp.distanceCheck = not vehicle.cp.distanceCheck;
 	if g_server ~= nil and not vehicle.cp.distanceCheck then
-		vehicle.cp.infoText = nil;
+		courseplay:setInfoText(vehicle, nil);
 	end;
 	courseplay:buttonsActiveEnabled(vehicle, 'findFirstWaypoint');
 end;

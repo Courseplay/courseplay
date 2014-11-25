@@ -22,7 +22,6 @@ courseplay = {
 	button = {};
 	fields = {};
 	generation = {};
-	pathfinding = {};
 };
 
 if courseplay.path ~= nil then
@@ -114,9 +113,6 @@ function courseplay:initialize()
 		'mode7', 
 		'mode8', 
 		'mode9', 
-		'pathfinding',
-		'pathfinding_helpers',
-		'pathfinding_PathFinderOnGrids',
 		'recording', 
 		'reverse',
 		'settings', 
@@ -181,7 +177,7 @@ function courseplay:setGlobalData()
 
 	local customPosX, customPosY;
 	local fieldsAutomaticScan, fieldsDebugScan, fieldsDebugCustomLoad, fieldsCustomScanStep, fieldsOnlyScanOwnedFields = true, false, false, nil, true;
-	local wagesActive, wagesAmount = false, 1125;
+	local wagesActive, wagesAmount = true, 1500;
 
 	if courseplay.cpXmlFilePath and fileExists(courseplay.cpXmlFilePath) then
 		local cpFile = loadXMLFile('cpFile', courseplay.cpXmlFilePath);
@@ -254,20 +250,17 @@ function courseplay:setGlobalData()
 
 	-- lines and text
 	ch.linesPosY = {};
-	ch.linesBottomPosY = {};
 	ch.linesButtonPosY = {};
 	ch.numPages = 9;
-	ch.numLines = 6;
-	ch.lineHeight = 0.0213;
+	ch.numLines = 8;
+	ch.lineHeight = 0.021;
 	for l=1,courseplay.hud.numLines do
 		if l == 1 then
 			courseplay.hud.linesPosY[l] = courseplay.hud.infoBasePosY + 0.215;
-			courseplay.hud.linesBottomPosY[l] = courseplay.hud.infoBasePosY + 0.08;
 		else
 			courseplay.hud.linesPosY[l] = courseplay.hud.linesPosY[1] - ((l-1) * courseplay.hud.lineHeight);
-			courseplay.hud.linesBottomPosY[l] = courseplay.hud.linesBottomPosY[1] - ((l-1) * courseplay.hud.lineHeight);
 		end;
-		courseplay.hud.linesButtonPosY[l] = courseplay.hud.linesPosY[l] - 0.003;
+		courseplay.hud.linesButtonPosY[l] = courseplay.hud.linesPosY[l] - 0.001;
 	end;
 	ch.fontSizes = {
 		seedUsageCalculator = 0.015;
@@ -281,6 +274,7 @@ function courseplay:setGlobalData()
 		fieldScanData = 0.018;
 	};
 
+	courseplay.hud.col1posX = courseplay.hud.infoBasePosX + 0.005;
 	courseplay.hud.col2posX = {
 		[0] = courseplay.hud.infoBasePosX + 0.122,
 		[1] = courseplay.hud.infoBasePosX + 0.142,
@@ -315,6 +309,63 @@ function courseplay:setGlobalData()
 		[1] = courseplay.hud.infoBasePosX + 0.285;
 		[2] = courseplay.hud.infoBasePosX + 0.300;
 	};
+
+	ch.iconSpritePath = Utils.getFilename('img/iconSprite.png', courseplay.path);
+	ch.iconSpriteSize = {
+		x = 256;
+		y = 256;
+	};
+
+	ch.modeButtonsUVsPx = {
+		[1] = { 112, 72, 144,40 };
+		[2] = { 148, 72, 180,40 };
+		[3] = { 184, 72, 216,40 };
+		[4] = { 220, 72, 252,40 };
+		[5] = {   4,108,  36,76 };
+		[6] = {  40,108,  72,76 };
+		[7] = {  76,108, 108,76 };
+		[8] = { 112,108, 144,76 };
+		[9] = { 148,108, 180,76 };
+	};
+
+	ch.pageButtonsUVsPx = {
+		[0] = {   4,36,  36, 4 };
+		[1] = {  40,36,  72, 4 };
+		[2] = {  76,36, 108, 4 };
+		[3] = { 112,36, 144, 4 };
+		[4] = { 148,36, 180, 4 };
+		[5] = { 184,36, 216, 4 };
+		[6] = { 220,36, 252, 4 };
+		[7] = {   4,72,  36,40 };
+		[8] = {  40,72,  72,40 };
+		[9] = {  76,72, 108,40 };
+	};
+
+	ch.bottomInfo = {};
+	ch.bottomInfo.iconHeight = 24 / 1080;
+	ch.bottomInfo.iconWidth = ch.bottomInfo.iconHeight / g_screenAspectRatio;
+	ch.bottomInfo.textPosY = ch.infoBasePosY + 41 / 1080;
+	ch.bottomInfo.iconPosY = ch.bottomInfo.textPosY - 0.0059;
+	ch.bottomInfo.modeIconX = ch.col1posX;
+	ch.bottomInfo.modeTextX = ch.bottomInfo.modeIconX + ch.bottomInfo.iconWidth * 1.25;
+	ch.bottomInfo.waypointIconX = ch.visibleArea.x2 - 0.120;
+	ch.bottomInfo.waypointTextX = ch.bottomInfo.waypointIconX + ch.bottomInfo.iconWidth * 1.25;
+	ch.bottomInfo.waitPointsIconX = ch.visibleArea.x2 - 0.06;
+	ch.bottomInfo.waitPointsTextX = ch.bottomInfo.waitPointsIconX + ch.bottomInfo.iconWidth * 1.25;
+	ch.bottomInfo.crossingPointsIconX = ch.visibleArea.x2 - 0.034;
+	ch.bottomInfo.crossingPointsTextX = ch.bottomInfo.crossingPointsIconX + ch.bottomInfo.iconWidth * 1.25;
+	ch.bottomInfo.modeUVsPx = {
+		[1] = { 184,108, 216, 76 };
+		[2] = { 220,108, 252, 76 };
+		[3] = {   4,144,  36,112 };
+		[4] = {  40,144,  72,112 };
+		[5] = {  76,144, 108,112 };
+		[6] = { 112,144, 144,112 };
+		[7] = { 148,144, 180,112 };
+		[8] = { 184,144, 216,112 };
+		[9] = { 220,144, 252,112 };
+	};
+
 
 	ch.clickSound = createSample("clickSound");
 	loadSample(courseplay.hud.clickSound, Utils.getFilename("sounds/cpClickSound.wav", courseplay.path), false);
@@ -378,7 +429,7 @@ function courseplay:setGlobalData()
 		DAMAGE_MUST					= { level = -2, text = 'COURSEPLAY_DAMAGE_MUST_BE_REPAIRED' };
 		DAMAGE_SHOULD				= { level = -1, text = 'COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED' };
 		END_POINT					= { level =  0, text = 'COURSEPLAY_REACHED_END_POINT' };
-		FARM_SILO_DONT_HAVE_FILTYPE	= { level = -2, text = 'COURSEPLAY_FARM_SILO_DONT_HAVE_FILTYPE'};
+		FARM_SILO_NO_FILLTYPE		= { level = -2, text = 'COURSEPLAY_FARM_SILO_NO_FILLTYPE'};
 		FARM_SILO_IS_EMPTY			= { level =  0, text = 'COURSEPLAY_FARM_SILO_IS_EMPTY'};
 		FUEL_IS						= { level =  0, text = 'COURSEPLAY_IS_BEING_REFUELED' };
 		FUEL_MUST					= { level = -2, text = 'COURSEPLAY_MUST_BE_REFUELED' };
@@ -478,9 +529,6 @@ function courseplay:setGlobalData()
 	courseplay.fields.scanStep = Utils.getNoNil(fieldsCustomScanStep, courseplay.fields.defaultScanStep);
 	courseplay.fields.seedUsageCalculator = {};
 	courseplay.fields.seedUsageCalculator.fieldsWithoutSeedData = {};
-
-	--PATHFINDING
-	courseplay.pathfinding = {};
 
 	--UTF8
 	courseplay.allowedCharacters = courseplay:getAllowedCharacters();

@@ -51,7 +51,7 @@ function courseplay:handle_mode2(self, dt)
 		self.cp.currentTrailerToFill = 1
 	end
 
-	local current_tipper = self.tippers[self.cp.currentTrailerToFill]
+	local current_tipper = self.cp.workTools[self.cp.currentTrailerToFill]
 
 	if current_tipper == nil then
 		self.cp.toolsDirty = true
@@ -72,7 +72,7 @@ function courseplay:handle_mode2(self, dt)
 	end
 
 	if (current_tipper.fillLevel == current_tipper.capacity) or self.cp.isLoaded or (self.cp.tipperFillLevelPct >= self.cp.driveOnAtFillLevel and self.cp.modeState == 1) then
-		if #(self.tippers) > self.cp.currentTrailerToFill then
+		if #(self.cp.workTools) > self.cp.currentTrailerToFill then -- TODO (Jakob): use numWorkTools
 			self.cp.currentTrailerToFill = self.cp.currentTrailerToFill + 1
 		else
 			self.cp.currentTrailerToFill = nil
@@ -121,11 +121,8 @@ function courseplay:handle_mode2(self, dt)
 		end
 	else -- NO active combine
 		-- STOP!!
-		if self.isRealistic then
-			courseplay:driveInMRDirection(self, 0, 1, true, dt, false);
-		else
-			AIVehicleUtil.driveInDirection(self, dt, self.cp.steeringAngle, 0, 0, 28, false, moveForwards, 0, 1)
-		end;
+		AIVehicleUtil.driveInDirection(self, dt, self.cp.steeringAngle, 0, 0, 28, false, moveForwards, 0, 1)
+		
 
 		if self.cp.isLoaded then
 			courseplay:setRecordNumber(self, 2);
@@ -158,7 +155,7 @@ function courseplay:handle_mode2(self, dt)
 						courseplay:setModeState(self, 2);
 					end
 				else
-					self.cp.infoText = courseplay:loc("COURSEPLAY_WAITING_FOR_FILL_LEVEL");
+					courseplay:setInfoText(self, courseplay:loc("COURSEPLAY_WAITING_FOR_FILL_LEVEL"));
 				end
 
 
@@ -209,7 +206,7 @@ function courseplay:handle_mode2(self, dt)
 				end
 
 			else
-				self.cp.infoText = courseplay:loc("COURSEPLAY_NO_COMBINE_IN_REACH")
+				courseplay:setInfoText(self, courseplay:loc("COURSEPLAY_NO_COMBINE_IN_REACH"));
 			end
 		end
 	end
@@ -232,10 +229,10 @@ function courseplay:unload_combine(self, dt)
 	-- Calculate Trailer Offset
 
 	if self.cp.currentTrailerToFill ~= nil then
-		xt, yt, zt = worldToLocal(self.tippers[self.cp.currentTrailerToFill].fillRootNode, x, y, z)
+		xt, yt, zt = worldToLocal(self.cp.workTools[self.cp.currentTrailerToFill].fillRootNode, x, y, z)
 	else
 		--courseplay:debug(nameNum(self) .. ": no cp.currentTrailerToFillSet", 4);
-		xt, yt, zt = worldToLocal(self.tippers[1].rootNode, x, y, z)
+		xt, yt, zt = worldToLocal(self.cp.workTools[1].rootNode, x, y, z)
 	end
 
 	-- support for tippers like hw80
@@ -299,13 +296,13 @@ function courseplay:unload_combine(self, dt)
 	
 	local aiTurn = combine.isAIThreshing and (combine.turnStage == 1 or combine.turnStage == 2 or combine.turnStage == 4 or combine.turnStage == 5)
 	if tractor ~= nil and (aiTurn or (tractor.cp.turnStage > 0)) then
-		self.cp.infoText = courseplay:loc("COURSEPLAY_COMBINE_IS_TURNING") -- "Drescher wendet. "
+		courseplay:setInfoText(self, courseplay:loc("COURSEPLAY_COMBINE_IS_TURNING")); -- "Drescher wendet. "
 		combine_turning = true
 		-- print(('%s: cp.turnStage=%d -> combine_turning=true'):format(nameNum(tractor), tractor.cp.turnStage));
 	end
 	if self.cp.modeState == 2 or self.cp.modeState == 3 or self.cp.modeState == 4 then
 		if combine == nil then
-			self.cp.infoText = "this should never happen";
+			courseplay:setInfoText(self, "combine == nil, this should never happen");
 			allowedToDrive = false
 		end
 	end
@@ -334,7 +331,7 @@ function courseplay:unload_combine(self, dt)
 	if self.cp.modeState == 2 then
 		refSpeed = self.cp.speeds.field
 		--courseplay:removeFromCombinesIgnoreList(self, combine)
-		self.cp.infoText = courseplay:loc("COURSEPLAY_DRIVE_BEHIND_COMBINE");
+		courseplay:setInfoText(self, courseplay:loc("COURSEPLAY_DRIVE_BEHIND_COMBINE"));
 
 		local x1, y1, z1 = worldToLocal(tractor.cp.DirectionNode or tractor.rootNode, x, y, z)
 
@@ -366,10 +363,10 @@ function courseplay:unload_combine(self, dt)
 		end
 
 		--[[
-		-- PATHFINDING / REALISTIC DRIVING
+		-- PATHFINDING / REALISTIC DRIVING (ASTAR)
 		if self.cp.realisticDriving and not self.cp.calculatedCourseToCombine then
 			-- if courseplay:calculate_course_to(self, currentX, currentZ) then
-			if courseplay:calculateJpsPathTo(self, currentX, currentZ) then
+			if courseplay:calculateAstarPathToCoords(self, currentX, currentZ) then
 				courseplay:setModeState(self, 5);
 				self.cp.shortestDistToWp = nil;
 				courseplay:setMode2NextState(self, 2); -- modeState when waypoint is reached
@@ -405,7 +402,7 @@ function courseplay:unload_combine(self, dt)
 			--print("set saved offset")
 			self.cp.combineOffset = combine.cp.offset			
 		end
-		self.cp.infoText = courseplay:loc("COURSEPLAY_DRIVE_TO_COMBINE") -- "Fahre zum Drescher"
+		courseplay:setInfoText(self, courseplay:loc("COURSEPLAY_DRIVE_TO_COMBINE")); -- "Fahre zum Drescher"
 		--courseplay:addToCombinesIgnoreList(self, combine)
 		refSpeed = self.cp.speeds.field
 
@@ -457,7 +454,7 @@ function courseplay:unload_combine(self, dt)
 	-- STATE 3 (drive to unload pipe)
 	elseif self.cp.modeState == 3 then
 
-		self.cp.infoText = courseplay:loc("COURSEPLAY_DRIVE_NEXT_TO_COMBINE")
+		courseplay:setInfoText(self, courseplay:loc("COURSEPLAY_DRIVE_NEXT_TO_COMBINE"));
 		--courseplay:addToCombinesIgnoreList(self, combine)
 		refSpeed = self.cp.speeds.field
 
@@ -620,21 +617,21 @@ function courseplay:unload_combine(self, dt)
 		end
 		-- combine is not moving and trailer is under pipe
 		if not combine.cp.isChopper and tractor.movingDirection == 0 and (lz <= 1 or lz < -0.1 * trailer_offset) then
-			self.cp.infoText = courseplay:loc("COURSEPLAY_COMBINE_WANTS_ME_TO_STOP") -- "Drescher sagt ich soll anhalten."
+			courseplay:setInfoText(self, courseplay:loc("COURSEPLAY_COMBINE_WANTS_ME_TO_STOP")); -- "Drescher sagt ich soll anhalten."
 			allowedToDrive = false
 		elseif combine.cp.isChopper then
 			if combine.movingDirection == 0 and dod == -1 and self.cp.chopperIsTurning == false then
 				allowedToDrive = false
-				self.cp.infoText = courseplay:loc("COURSEPLAY_COMBINE_WANTS_ME_TO_STOP") -- "Drescher sagt ich soll anhalten."
+				courseplay:setInfoText(self, courseplay:loc("COURSEPLAY_COMBINE_WANTS_ME_TO_STOP")); -- "Drescher sagt ich soll anhalten."
 			end
 			if lz < -2 then
 				allowedToDrive = false
-				self.cp.infoText = courseplay:loc("COURSEPLAY_COMBINE_WANTS_ME_TO_STOP")
+				courseplay:setInfoText(self, courseplay:loc("COURSEPLAY_COMBINE_WANTS_ME_TO_STOP"));
 				-- courseplay:setModeState(self, 2);
 			end
 		elseif lz < -1.5 then
 				allowedToDrive = false
-				self.cp.infoText = courseplay:loc("COURSEPLAY_COMBINE_WANTS_ME_TO_STOP")
+				courseplay:setInfoText(self, courseplay:loc("COURSEPLAY_COMBINE_WANTS_ME_TO_STOP"));
 		end
 
 		-- refspeed depends on the distance to the combine
@@ -643,11 +640,11 @@ function courseplay:unload_combine(self, dt)
 			if lz > 20 then
 				refSpeed = self.cp.speeds.field
 			elseif lz > 4 and (combine_speed*3600) > 5 then
-				refSpeed = combine_speed *1.5
+				refSpeed = max(combine_speed *1.5,self.cp.speeds.crawl)
 			elseif lz > 10 then
 				refSpeed = self.cp.speeds.turn
 			elseif lz < -1 then
-				refSpeed = combine_speed / 2
+				refSpeed = max(combine_speed/2,self.cp.speeds.crawl)
 			else
 				refSpeed = max(combine_speed,self.cp.speeds.crawl)
 			end
@@ -659,11 +656,11 @@ function courseplay:unload_combine(self, dt)
 			if lz > 5 then
 				refSpeed = self.cp.speeds.field
 			elseif lz < -0.5 then
-				refSpeed = combine_speed - self.cp.speeds.crawl
+				refSpeed = max(combine_speed - self.cp.speeds.crawl,self.cp.speeds.crawl)
 			elseif lz > 1 or combine.sentPipeIsUnloading ~= true  then  
-				refSpeed = combine_speed + self.cp.speeds.crawl
+				refSpeed = max(combine_speed + self.cp.speeds.crawl,self.cp.speeds.crawl)
 			else
-				refSpeed = combine_speed
+				refSpeed = max(combine_speed,self.cp.speeds.crawl)
 			end
 			if ((combineIsHelperTurning or tractor.cp.turnStage ~= 0) and lz < 20) or (self.timer < self.cp.driveSlowTimer) or (combine.movingDirection == 0 and lz < 15) then
 				refSpeed = self.cp.speeds.crawl
@@ -691,9 +688,9 @@ function courseplay:unload_combine(self, dt)
 			elseif combine.isAIThreshing then 
 				--allowedToDrive = false
 				combine.waitForTurnTime = combine.timer + 100
-			elseif tractor.drive == true then
+			elseif tractor:getIsCourseplayDriving() then
 				combine.cp.waitingForTrailerToUnload = true
-			end			
+			end
 		elseif distance < 50 then
 			if AutoCombineIsTurning and tractor.acIsCPStopped ~= nil then
 				-- print(nameNum(tractor) .. ': distance < 50 -> set acIsCPStopped to true'); --TODO: 140308 AutoTractor
@@ -701,7 +698,7 @@ function courseplay:unload_combine(self, dt)
 			elseif combine.isAIThreshing and not (combine_fill_level == 0 and combine.currentPipeState ~= 2) then
 				--allowedToDrive = false
 				combine.waitForTurnTime = combine.timer + 100
-			elseif tractor.drive == true and not (combine_fill_level == 0 and combine:getOverloadingTrailerInRangePipeState()==0) then
+			elseif tractor:getIsCourseplayDriving() and not (combine_fill_level == 0 and combine:getOverloadingTrailerInRangePipeState()==0) then
 				combine.cp.waitingForTrailerToUnload = true
 			end
 		elseif distance < 100 and self.cp.modeState == 2 then
@@ -762,7 +759,7 @@ function courseplay:unload_combine(self, dt)
 		elseif self.cp.modeState ~= 5 and self.cp.modeState ~= 9 and not self.cp.realisticDriving then
 			-- just wait until combine has turned
 			allowedToDrive = false
-			self.cp.infoText = courseplay:loc("COURSEPLAY_COMBINE_WANTS_ME_TO_STOP")
+			courseplay:setInfoText(self, courseplay:loc("COURSEPLAY_COMBINE_WANTS_ME_TO_STOP"));
 		end
 	end
 
@@ -772,7 +769,7 @@ function courseplay:unload_combine(self, dt)
 		if combine.movingDirection == 0 then
 			courseplay:setModeState(self, 3);
 		else
-			self.cp.infoText = courseplay:loc("COURSEPLAY_WAITING_FOR_COMBINE_TURNED");
+			courseplay:setInfoText(self, courseplay:loc("COURSEPLAY_WAITING_FOR_COMBINE_TURNED"));
 		end
 		refSpeed = self.cp.speeds.turn
 	end
@@ -782,7 +779,7 @@ function courseplay:unload_combine(self, dt)
 	-- STATE 99 (turn maneuver)
 	if self.cp.modeState == 99 and self.cp.curTarget.x ~= nil and self.cp.curTarget.z ~= nil then
 		--courseplay:removeFromCombinesIgnoreList(self, combine)
-		self.cp.infoText = string.format(courseplay:loc("COURSEPLAY_TURNING_TO_COORDS"), self.cp.curTarget.x, self.cp.curTarget.z)
+		courseplay:setInfoText(self, string.format(courseplay:loc("COURSEPLAY_TURNING_TO_COORDS"), self.cp.curTarget.x, self.cp.curTarget.z));
 		allowedToDrive = false
 		local mx, mz = self.cp.curTarget.x, self.cp.curTarget.z
 		local lx, ly, lz = worldToLocal(self.cp.DirectionNode, mx, y, mz)
@@ -821,7 +818,7 @@ function courseplay:unload_combine(self, dt)
 		if combine ~= nil then
 			--courseplay:removeFromCombinesIgnoreList(self, combine)
 		end
-		self.cp.infoText = string.format(courseplay:loc("COURSEPLAY_DRIVE_TO_WAYPOINT"), self.cp.curTarget.x, self.cp.curTarget.z)
+		courseplay:setInfoText(self, string.format(courseplay:loc("COURSEPLAY_DRIVE_TO_WAYPOINT"), self.cp.curTarget.x, self.cp.curTarget.z));
 		currentX = self.cp.curTarget.x
 		currentY = self.cp.curTarget.y
 		currentZ = self.cp.curTarget.z
@@ -866,7 +863,7 @@ function courseplay:unload_combine(self, dt)
 					--self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(combine.cp.DirectionNode or combine.rootNode, self.chopper_offset*0.7, 0, -9) -- -2          --??? *0,5 -10
 
 				elseif self.cp.mode2nextState == 4 and combine_turning then
-					self.cp.infoText = courseplay:loc("COURSEPLAY_WAITING_FOR_COMBINE_TURNED");
+					courseplay:setInfoText(self, courseplay:loc("COURSEPLAY_WAITING_FOR_COMBINE_TURNED"));
 				elseif self.cp.mode2nextState == 81 then -- tipper turning from combine
 
 					-- print(('%s [%s(%d)]: no nextTargets, mode2nextState=81 -> set recordnumber to 2, modeState to 99, isLoaded to true, return false'):format(nameNum(self), curFile, debug.getinfo(1).currentline)); -- DEBUG140301
@@ -895,7 +892,7 @@ function courseplay:unload_combine(self, dt)
 		frontTractor = self.cp.activeCombine.courseplayers[self.cp.positionWithCombine - 1];
 	end;
 	if self.cp.modeState == 6 and frontTractor ~= nil then --Follow Tractor
-		self.cp.infoText = courseplay:loc("COURSEPLAY_FOLLOWING_TRACTOR")
+		courseplay:setInfoText(self, courseplay:loc("COURSEPLAY_FOLLOWING_TRACTOR"));
 		--use the current tractor's sideToDrive as own
 		if frontTractor.sideToDrive ~= nil and frontTractor.sideToDrive ~= self.sideToDrive then
 			courseplay:debug(string.format("%s: setting current tractor's sideToDrive (%s) as my own", nameNum(self), tostring(frontTractor.sideToDrive)), 4);
@@ -948,19 +945,19 @@ function courseplay:unload_combine(self, dt)
 			if distance > 50 then
 				refSpeed = self.cp.speeds.street
 			else
-				refSpeed = frontTractor.lastSpeedReal*3600 
+				refSpeed = max(frontTractor.lastSpeedReal*3600,self.cp.speeds.crawl)
 			end
 		end
 		--courseplay:debug(string.format("distance: %d  dod: %d",distance,dod ), 4)
 	end
 
 	if currentX == nil or currentZ == nil then
-		self.cp.infoText = courseplay:loc("COURSEPLAY_WAITING_FOR_WAYPOINT") -- "Warte bis ich neuen Wegpunkt habe"
+		courseplay:setInfoText(self, courseplay:loc("COURSEPLAY_WAITING_FOR_WAYPOINT")); -- "Warte bis ich neuen Wegpunkt habe"
 		allowedToDrive = courseplay:brakeToStop(self)
 	end
 
 	if self.cp.forcedToStop then
-		self.cp.infoText = courseplay:loc("COURSEPLAY_COMBINE_WANTS_ME_TO_STOP") -- "Drescher sagt ich soll anhalten."
+		courseplay:setInfoText(self, courseplay:loc("COURSEPLAY_COMBINE_WANTS_ME_TO_STOP")); -- "Drescher sagt ich soll anhalten."
 		allowedToDrive = courseplay:brakeToStop(self)
 	end
 
@@ -976,20 +973,7 @@ function courseplay:unload_combine(self, dt)
 
 
 	if allowedToDrive then
-		--[[local real_speed = self.lastSpeedReal
-
-		if refSpeed == nil then
-			refSpeed = real_speed
-		end]]
-		
-		if self.isRealistic then
-			if self.cp.chopperIsTurning then
-				refSpeed = self.cp.speeds.turn
-			end
-			courseplay:setMRSpeed(self, refSpeed, 3,allowedToDrive)
-		else
-			courseplay:setSpeed(self, refSpeed)
-		end
+		courseplay:setSpeed(self, refSpeed)
 	end
 
 
@@ -1003,27 +987,14 @@ function courseplay:unload_combine(self, dt)
 		end
 
 		if not allowedToDrive then
-			if self.isRealistic then
-				courseplay:driveInMRDirection(self, 0,1,true,dt,false)
-			else
-				AIVehicleUtil.driveInDirection(self, dt, 30, 0, 0, 28, false, moveForwards, 0, 1)
-				if g_server ~= nil then
-					AIVehicleUtil.driveInDirection(self, dt, self.cp.steeringAngle, 0.5, 0.5, 28, false, moveForwards, 0, 1)
-				end
-				
-			end
-			-- unload active tipper if given
+			AIVehicleUtil.driveInDirection(self, dt, 30, 0, 0, 28, false, moveForwards, 0, 1)
 			return;
 		end
 		
 		if self.cp.TrafficBrake then
-			if self.isRealistic then
-				AIVehicleUtil.mrDriveInDirection(self, dt, 1, false, true, 0, 1, 3, true, true)
-			else
-				moveForwards = false
+			moveForwards = false
 				lx = 0
 				lz = 1
-			end
 		end
 
 		self.cp.TrafficBrake = false
@@ -1032,12 +1003,8 @@ function courseplay:unload_combine(self, dt)
 		end]]
 		courseplay:setTrafficCollision(self, targetX, targetZ,true)
 		
-		if self.isRealistic then
+		AIVehicleUtil.driveInDirection(self, dt, self.cp.steeringAngle, 1, 0.5, 10, allowedToDrive, moveForwards, targetX, targetZ, refSpeed, 1)
 		
-			courseplay:driveInMRDirection(self, targetX, targetZ,moveForwards, dt, allowedToDrive);
-		else
-			AIVehicleUtil.driveInDirection(self, dt, self.cp.steeringAngle, 1, 0.5, 10, allowedToDrive, moveForwards, targetX, targetZ, refSpeed, 1)
-		end
 
 		if courseplay.debugChannels[4] and self.cp.nextTargets and self.cp.curTarget.x and self.cp.curTarget.z then
 			drawDebugPoint(self.cp.curTarget.x, self.cp.curTarget.y or 0, self.cp.curTarget.z, 1, 0.65, 0, 1);
@@ -1055,18 +1022,14 @@ function courseplay:unload_combine(self, dt)
 	end
 end
 
---NEW JPS VERSION
-function courseplay:calculateJpsPathTo(self, targetX, targetZ)
-	if courseplay.fields.numAvailableFields == 0 or self.cp.searchCombineOnField == nil or self.cp.searchCombineOnField == 0 then
-		return false;
-	end;
-	courseplay:debug(('%s: calculateJpsPathTo(..., [x] %.1f, [z] %.1f)'):format(nameNum(self), targetX, targetZ), 4);
-
+-- GET ASTAR PATH TO COMBINE
+function courseplay:calculateAstarPathToCoords(vehicle, targetX, targetZ)
+	courseplay:debug(('%s: calculateAstarPathToCoords(..., targetX=%.2f, targetZ=%.2f)'):format(nameNum(vehicle), targetX, targetZ), 4);
 	local tileSize = 5; -- meters
-	self.cp.calculatedCourseToCombine = true;
+	vehicle.cp.calculatedCourseToCombine = true;
 	
 	-- check if there is fruit between me and the target, if not then return false in order to avoid the calculating
-	local node = self.cp.DirectionNode;
+	local node = vehicle.cp.DirectionNode;
 	local x, y, z = getWorldTranslation(node);
 	-- local x, y, z = localToWorld(node, 0, 0, tileSize); --make sure first target is in front of us
 
@@ -1080,14 +1043,14 @@ function courseplay:calculateJpsPathTo(self, targetX, targetZ)
 	courseplay:debug(string.format('\tfruit density between tractor and target = %s -> continue calculation', tostring(density)), 4);
 
 	-- check fruit: tipper
-	if self.cp.tipperAttached then
-		for i,tipper in pairs(self.tippers) do
+	if vehicle.cp.workToolAttached then
+		for i,tipper in pairs(vehicle.cp.workTools) do
 			if tipper.getCurrentFruitType and tipper.fillLevel > 0 then
 				local tipperFruitType = tipper:getCurrentFruitType();
-				courseplay:debug(string.format('%s: tippers[%d]: fillType=%d (%s), getCurrentFruitType()=%s (%s)', nameNum(self), i, tipper.currentFillType, tostring(Fillable.fillTypeIntToName[tipper.currentFillType]), tostring(tipperFruitType), tostring(FruitUtil.fruitIndexToDesc[tipperFruitType].name)), 4);
+				courseplay:debug(string.format('%s: workTools[%d]: fillType=%d (%s), getCurrentFruitType()=%s (%s)', nameNum(vehicle), i, tipper.currentFillType, tostring(Fillable.fillTypeIntToName[tipper.currentFillType]), tostring(tipperFruitType), tostring(FruitUtil.fruitIndexToDesc[tipperFruitType].name)), 4);
 				if tipperFruitType and tipperFruitType ~= FruitUtil.FRUITTYPE_UNKNOWN then
 					fruitType = tipperFruitType;
-					courseplay:debug(string.format('\tset pathFinding fruitType as tippers[%d]\'s fruitType', i), 4);
+					courseplay:debug(string.format('\tset pathFinding fruitType as workTools[%d]\'s fruitType', i), 4);
 					break;
 				end;
 			end;
@@ -1095,203 +1058,52 @@ function courseplay:calculateJpsPathTo(self, targetX, targetZ)
 	end;
 	if fruitType == nil and fieldFruitType ~= nil then
 		fruitType = fieldFruitType;
-		courseplay:debug(string.format('%s: tipper fruitType=nil, fieldFruitType=%d (%s) -> set astar fruitType as fieldFruitType', nameNum(self), fieldFruitType, FruitUtil.fruitIndexToDesc[fieldFruitType].name), 4);
+		courseplay:debug(string.format('%s: tipper fruitType=nil, fieldFruitType=%d (%s) -> set astar fruitType as fieldFruitType', nameNum(vehicle), fieldFruitType, FruitUtil.fruitIndexToDesc[fieldFruitType].name), 4);
 	elseif fruitType == nil and fieldFruitType == nil then
-		courseplay:debug(string.format('%s: tipper fruitType=nil, fieldFruitType = nil -> return false', nameNum(self)), 4);
+		courseplay:debug(string.format('%s: tipper fruitType=nil, fieldFruitType = nil -> return false', nameNum(vehicle)), 4);
 		return false;
 	end;
 
 
-	local course = courseplay.fields.fieldData[self.cp.searchCombineOnField]; --fieldEdgePath
-	if course then
-		-- use new function to search a path
-		local function myEvalFunc(grid, x, y)
-			local category, wakable, costs = 1, true, 1;
-		
-			local hasFruit = courseplay:areaHasFruit(x, y, nil, grid.tileSize/2, grid.tileSize/2);
-			if hasFruit then
-				category = 2;
-			end;
-			
-			return category, wakable, costs;
-		end
-		
-		-- create grid
-		local grid = courseplay.pathfinding.helpers.Grid:new(tileSize, course.points, 'cx', 'cz'); --fieldEdgePath
-		-- print(tableShow(grid.limits, 'grid.limits'));
-		grid:setEvaluationFunction(myEvalFunc);
-		grid:evaluate();
-		
-		-- create Finder and search a path
-		local finder = courseplay.pathfinding.Pathfinder:new(grid, 'HJS');
-		local path = finder:getPath(z, x, targetZ, targetX); --TODO: why are x and z switched?
-		
-		if path then
-			self.cp.nextTargets, targetPoints, targetPointsCleaned = {}, {}, {};
+	local targetPoints = courseplay:calcMoves(z, x, targetZ, targetX, fruitType);
+	if targetPoints ~= nil then
+		vehicle.cp.nextTargets = {};
+		local numPoints = #targetPoints;
+		local firstPoint = ceil(vehicle.cp.turnRadius / 5);
+		courseplay:debug(string.format('numPoints=%d, first point = ceil(turnRadius [%.1f] / 5) = %d', numPoints, vehicle.cp.turnRadius, firstPoint), 4);
+		if numPoints < firstPoint then
+			return false;
+		end;
+		-- for i, cp in pairs(targetPoints) do
+		for i=firstPoint, numPoints do
+			local cp = targetPoints[i];
+			local insert = true;
 
-			for node, count in path:nodes() do
-				-- courseplay:debug(('node %s: node.x=%s, node.y=%s'):format(tostring(count), tostring(node.x), tostring(node.y)), 4);
-				local p = {};
-				p.x = courseplay:round(finder.grid:getX(node.x), 2);
-				p.z = courseplay:round(finder.grid:getY(node.y), 2);
-				p.y = 0;
-				table.insert(targetPoints, p);
-				-- courseplay:debug(('\tp.x=%s, p.z=%s'):format(tostring(p.x), tostring(p.z)), 4);
-			end;
-			local numPoints = #targetPoints;
-
-			-- make sure last point is original target point, not the tile coordinate
-			targetPoints[numPoints] = { 
-				x = targetX,
-				y = 0,
-				z = targetZ
-			};
-			courseplay:debug(string.format('%d points in path -> set last point as original target point (x,z=%.1f,%.1f)', numPoints, targetX, targetZ), 4);
-
-			--clean path (first round: only keep corner points)
-			local firstPoint = ceil(self.cp.turnRadius / 5);
-			courseplay:debug(string.format('clean path (first round): numPoints=%d, first point = ceil(turnRadius [%.1f] / 5) = %d', numPoints, self.cp.turnRadius, firstPoint), 4);
-			-- if numPoints < firstPoint then return false; end;
-
-			for i=1,numPoints do
-				local insert = true;
-				local cp = targetPoints[i];
+			--[[clean path (only keep corner points)
+			if i > firstPoint and i < numPoints then
 				local pp = targetPoints[i-1];
-				if i < numPoints then
-					local np = targetPoints[i+1];
-					local dirX, dirZ = courseplay.generation:getPointDirection(cp, np, false);
-					cp.dirX, cp.dirZ = courseplay:round(dirX, 5), courseplay:round(dirZ, 5);
-
-					if i > 1 and cp.dirX == pp.dirX and cp.dirZ == pp.dirZ then
-						courseplay:debug(string.format('\t%d: [x] %.2f, [z] %.2f, cp.dirX == pp.dirX == %.5f, cp.dirZ == pp.dirZ == %.5f -> insert=false', i, cp.x, cp.z, cp.dirX, cp.dirZ), 4);
-						insert = false;
-					end;
-				elseif i == numPoints then
-					cp.dirX, cp.dirZ = pp.dirX, pp.dirZ;
-				end;
-
-				if insert then
-					table.insert(targetPointsCleaned, { x = cp.x, y = 0, z = cp.z, dirX = cp.dirX, dirZ = cp.dirZ });
-					courseplay:debug(string.format('%d: [x] %.2f, [z] %.2f, dirX=%.5f, dirZ=%.5f, insert=true', i, cp.x, cp.z, cp.dirX, cp.dirZ), 4);
+				local np = targetPoints[i+1];
+				if cp.y == pp.y and cp.y == np.y then
+					courseplay:debug(string.format('\t%d: [x] cp.y==pp.y==np.y = %d, [z] cp.x = %d -> insert=false', i, cp.y, cp.x), 4);
+					insert = false;
+				elseif cp.x == pp.x and cp.x == np.x then
+					courseplay:debug(string.format('\t%d: [x] cp.y = %d, [z] cp.x==pp.x==np.x = %d -> insert=false', i, cp.y, cp.x), 4);
+					insert = false;
 				end;
 			end;
-			-- courseplay:debug(tableShow(targetPointsCleaned, 'targetPointsCleaned after first clean', 4), 4);
+			--]]
 
-
-
-			-- clean path (second round: smooth corners)
-			numPoints = #targetPointsCleaned;
-			courseplay:debug('clean path (second round: smooth corners): numPoints=' .. numPoints, 4);
-			local i = 2;
-			while i < numPoints do
-				local insert = true;
-				local pp = targetPointsCleaned[i-1];
-				local np = targetPointsCleaned[i+1];
-				if pp == nil or np == nil then
-					courseplay:debug(string.format('\t\tERROR: %d: pp=%s, np=%s', i, tostring(pp), tostring(np)), 4);
-				end;
-
-				local ppTpNpIsField = courseplay:isLineField(nil, pp.x, pp.z, np.x, np.z);
-				local ppTpNpHasFruit = courseplay:hasLineFruit(nil, pp.x, pp.z, np.x, np.z);
-				courseplay:debug(string.format('\ti=%d, ppTpNpIsField=%s, ppTpNpHasFruit=%s', i, tostring(ppTpNpIsField), tostring(ppTpNpHasFruit)), 4);
-				if ppTpNpIsField and not ppTpNpHasFruit then
-					table.remove(targetPointsCleaned, i);
-					numPoints = numPoints - 1;
-					courseplay:debug(string.format('\t\tremove current point %d, new numPoints = %d', i, numPoints), 4);
-				else
-					local cp = targetPointsCleaned[i];
-					cp.y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cp.x, 1, cp.z) + 3;
-					i = i + 1;
-				end;
+			if insert then
+				courseplay:debug(string.format('%d: [x] cp.y = %d, [z] cp.x = %d, insert=true', i, cp.y, cp.x), 4);
+				table.insert(vehicle.cp.nextTargets, { x = cp.y, y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cp.y, 1, cp.x) + 3, z = cp.x });
 			end;
-			numPoints = #targetPointsCleaned;
-
-			-- add y to first and last point
-			targetPointsCleaned[1].y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, targetPointsCleaned[1].x, 1, targetPointsCleaned[1].z) + 3;
-			targetPointsCleaned[numPoints].y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, targetPointsCleaned[numPoints].x, 1, targetPointsCleaned[numPoints].z) + 3;
-			courseplay:debug(tableShow(targetPointsCleaned, 'targetPointsCleaned after second clean', 4), 4);
-
-			-- courseplay:debug('clean path (third round: smoothSpline): numPoints=' .. numPoints, 4);
-			-- self.cp.nextTargets = courseplay.generation:smoothSpline(targetPointsCleaned, 3, false, true);
-			-- courseplay:debug(tableShow(self.cp.nextTargets, 'self.cp.nextTargets after smoothSpline()', 4), 4);
-
-			self.cp.nextTargets = targetPointsCleaned;
-
-			--get best first point
-			local _,_,z1 = worldToLocal(self.cp.DirectionNode, self.cp.nextTargets[1].x, self.cp.nextTargets[1].y, self.cp.nextTargets[1].z);
-			local _,_,z2 = worldToLocal(self.cp.DirectionNode, self.cp.nextTargets[2].x, self.cp.nextTargets[2].y, self.cp.nextTargets[2].z);
-
-			if z1 > 0 and z2 < 0 then --first point in front of me, second point behind me
-				courseplay:setCurrentTargetFromList(self, 1);
-				if courseplay:distance(self.cp.nextTargets[1].x, self.cp.nextTargets[1].z, self.cp.nextTargets[2].x, self.cp.nextTargets[2].z) < self.cp.turnRadius * 1.5 then
-					local x, y, z = localToWorld(self.cp.DirectionNode, 0, 0, self.cp.turnRadius * 1.5);
-					table.insert(self.cp.nextTargets, 1, { x = x, y = y, z = z });
-					courseplay:debug('get best first point: z1 > 0, z2 < 0, dist p1->p2 < turnRadius*1.5', 4);
-				else
-					courseplay:debug('get best first point: z1 > 0, z2 < 0, dist p1->p2 > turnRadius*1.5', 4);
-				end;
-			elseif z1 > 0 and z2 > 0 then --first and second points in front of me
-				courseplay:setCurrentTargetFromList(self, 1);
-				courseplay:debug('get best first point: z1 > 0, z2 > 0', 4);
-			elseif z1 < 0 and z2 > 0 then --first point behind me, second point in front of me
-				courseplay:setCurrentTargetFromList(self, 2);
-				courseplay:debug('get best first point: z1 < 0, z2 > 0', 4);
-			else --first and second points behind me
-				self.cp.curTarget.x, self.cp.curTarget.y, self.cp.curTarget.z = localToWorld(self.cp.DirectionNode, 0, 0, self.cp.turnRadius * 1.5);
-				courseplay:debug('get best first point: z1 < 0, z2 < 0', 4);
-			end;
-
-			self.no_speed_limit = true;
-			courseplay:setModeState(self, 5);
-			return true;
 		end;
-
-		return false;
-
-	-- use old search function (aStar)
-	else
-		local targetPoints = courseplay:calcMoves(z, x, targetZ, targetX, fruitType);
-
-		if targetPoints ~= nil then
-			self.cp.nextTargets = {};
-			local numPoints = #targetPoints;
-			local firstPoint = ceil(self.cp.turnRadius / 5);
-			courseplay:debug(string.format('numPoints=%d, first point = ceil(turnRadius [%.1f] / 5) = %d', numPoints, self.cp.turnRadius, firstPoint), 4);
-			if numPoints < firstPoint then
-				return false;
-			end;
-			-- for i, cp in pairs(targetPoints) do
-			for i=firstPoint, numPoints do
-				local cp = targetPoints[i];
-				local insert = true;
-
-				--clean path (only keep corner points)
-				if i > firstPoint and i < numPoints then
-					local pp = targetPoints[i-1];
-					local np = targetPoints[i+1];
-					if cp.y == pp.y and cp.y == np.y then
-						courseplay:debug(string.format('\t%d: [x] cp.y==pp.y==np.y = %d, [z] cp.x = %d -> insert=false', i, cp.y, cp.x), 4);
-						insert = false;
-					elseif cp.x == pp.x and cp.x == np.x then
-						courseplay:debug(string.format('\t%d: [x] cp.y = %d, [z] cp.x==pp.x==np.x = %d -> insert=false', i, cp.y, cp.x), 4);
-						insert = false;
-					end;
-				end;
-
-				if insert then
-					courseplay:debug(string.format('%d: [x] cp.y = %d, [z] cp.x = %d, insert=true', i, cp.y, cp.x), 4);
-					table.insert(self.cp.nextTargets, { x = cp.y, y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cp.y, 1, cp.x) + 3, z = cp.x });
-				end;
-			end;
-			courseplay:setCurrentTargetFromList(self, 1);
-			courseplay:setModeState(self, 5);
-			return true;
-		end;
-
-		return false;
+		courseplay:setCurrentTargetFromList(vehicle, 1);
+		courseplay:setModeState(vehicle, 5);
+		return true;
 	end;
 
-	-- return false;
+	return false;
 end;
 
 function courseplay:calculateCombineOffset(self, combine)

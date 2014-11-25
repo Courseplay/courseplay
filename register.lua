@@ -65,18 +65,12 @@ function courseplay.vehicleLoadFinished(self)
 
 	-- XML FILE NAME VARIABLE
 	if self.cp.xmlFileName == nil then
-		-- local xmlFileName = Utils.splitString('/', self.configFileName);
-		-- self.cp.xmlFileName = xmlFileName[#xmlFileName];
 		self.cp.xmlFileName = courseplay.utils:getFileNameFromPath(self.configFileName);
 	end;
 
-	--[[
-	if self.cp.typeNameSingle == nil then
-		self.cp.typeNameSingle = Utils.splitString('.', self.typeName);
-		self.cp.typeNameSingle = self.cp.typeNameSingle[#self.cp.typeNameSingle];
-	end;
-	]]
-
+	-- make sure every vehicle has the CP driving API functions
+	self.getIsCourseplayDriving = courseplay.getIsCourseplayDriving;
+	self.setIsCourseplayDriving = courseplay.setIsCourseplayDriving;
 end;
 Vehicle.loadFinished = Utils.prependedFunction(Vehicle.loadFinished, courseplay.vehicleLoadFinished);
 -- NOTE: using loadFinished() instead of load() so any other mod that overwrites Vehicle.load() doesn't interfere
@@ -86,7 +80,7 @@ function courseplay:vehicleDelete()
 		-- Remove created nodes
 		if self.cp.notesToDelete and #self.cp.notesToDelete > 0 then
 			for _, nodeId in ipairs(self.cp.notesToDelete) do
-				if nodeId and nodeId ~= 0 then
+				if nodeId and nodeId ~= 0 and getName(nodeId) ~= nil then
 					delete(nodeId);
 				end;
 			end;

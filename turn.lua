@@ -295,7 +295,7 @@ function courseplay:lowerImplements(self, moveDown, workToolonOff)
     end;
 
     local specialTool;
-	for _,workTool in pairs(self.tippers) do
+	for _,workTool in pairs(self.cp.workTools) do
 					--courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
 		specialTool = courseplay:handleSpecialTools(self,workTool,true,moveDown,workToolonOff,nil,nil,nil);
 	end;
@@ -315,11 +315,17 @@ function courseplay:lowerImplements(self, moveDown, workToolonOff)
 			self:setFoldState(state, true);
 		end;
 		if workToolonOff then
-			for _,workTool in pairs(self.tippers) do
+			for _,workTool in pairs(self.cp.workTools) do
 				local needsLowering = false
 				if workTool.attacherJoint ~= nil then
 					needsLowering = workTool.attacherJoint.needsLowering
 				end
+				if workTool.setPickupState ~= nil then
+					needsLowering = true
+					if workTool.isPickupLowered ~= nil and workTool.isPickupLowered ~= moveDown then
+						workTool:setPickupState(moveDown, false);
+					end;
+				end;
 				if workTool.setIsTurnedOn ~= nil and not courseplay:isFolding(workTool) and not needsLowering and workTool ~= self then
 					workTool:setIsTurnedOn(moveDown, false);
 				end;

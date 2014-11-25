@@ -2,9 +2,9 @@ local abs, max, rad, sin = math.abs, math.max, math.rad, math.sin;
 
 function courseplay:goReverse(vehicle,lx,lz)
 	local fwd = false;
-	local workTool = vehicle.tippers[1];
+	local workTool = vehicle.cp.workTools[1];
 	if workTool and workTool.cp.isAttacherModule then
-		workTool = vehicle.tippers[2];
+		workTool = vehicle.cp.workTools[2];
 	end;
 	local debugActive = courseplay.debugChannels[13];
 	local isNotValid = vehicle.cp.numWorkTools == 0 or workTool == nil or workTool.cp.isPivot == nil or not workTool.cp.frontNode or vehicle.cp.mode == 9;
@@ -795,18 +795,16 @@ function courseplay:getDistances(object)
 			end;
 		end;
 
-		local nx, ny, nz = getWorldTranslation(node);
+		-- backup node rotation and set the rotation to 0
+		local nodeXTemp, nodeYTemp, nodeZTemp = getRotation(node);
+		setRotation(node, 0, 0, 0);
+
 		-- Find the distance from attacherJoint to rear wheel
 		if object.wheels and #object.wheels > 0 then
 			local length = 0;
 			for _, wheel in ipairs(object.wheels) do
-				local wdnrxTemp, wdnryTemp, wdnrzTemp = getRotation(wheel.driveNode);
-				setRotation(wheel.driveNode, 0, 0, 0);
-				local wreprxTemp, wrepryTemp, wreprzTemp = getRotation(wheel.repr);
-				setRotation(wheel.repr, 0, 0, 0);
-				local _,_,dis = worldToLocal(wheel.driveNode, nx, ny, nz);
-				setRotation(wheel.repr, wreprxTemp, wrepryTemp, wreprzTemp);
-				setRotation(wheel.driveNode, wdnrxTemp, wdnryTemp, wdnrzTemp);
+				local nx, ny, nz = getWorldTranslation(wheel.driveNode);
+				local _,_,dis = worldToLocal(node, nx, ny, nz);
 
 				if math.abs(dis) > length then
 					length = math.abs(dis);
@@ -825,11 +823,10 @@ function courseplay:getDistances(object)
 
 		-- Finde the attacherJoints distance from the direction node
 		for _, attacherJoint in ipairs(object.attacherJoints) do
-			local jtfxTemp, jtfyTemp, jtfzTemp = getRotation(attacherJoint.jointTransform);
-			setRotation(attacherJoint.jointTransform, 0, 0, 0);
-			local _,_,dis = worldToLocal(attacherJoint.jointTransform, nx, ny, nz);
+			local nx, ny, nz = getWorldTranslation(attacherJoint.jointTransform);
+			local _,_,dis = worldToLocal(node, nx, ny, nz);
+			dis = dis * -1;
 
-			setRotation(attacherJoint.jointTransform, jtfxTemp, jtfyTemp, jtfzTemp);
 			if dis > 0 then
 				if not distances.attacherJointToRearTrailerAttacherJoints then
 					distances.attacherJointToRearTrailerAttacherJoints = {};
@@ -848,6 +845,9 @@ function courseplay:getDistances(object)
 				courseplay:debug(('%s: attacherJointToRearTrailerAttacherJoints[%d]=%.2f'):format(nameNum(object), attacherJoint.jointType, distances.attacherJointToRearTrailerAttacherJoints[attacherJoint.jointType]), 6);
 			end;
 		end;
+
+		-- restore node rotation from backup.
+		setRotation(node, nodeXTemp, nodeYTemp, nodeZTemp);
 	end;
 
 	return distances;
