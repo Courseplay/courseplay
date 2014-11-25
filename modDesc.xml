@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="20">
-	<version>4.00.0073</version>
+	<version>4.00.0077</version>
 	<author><![CDATA[Courseplay Dev Team]]></author>
 	<title>
 		<de>Courseplay</de>
@@ -2394,7 +2394,7 @@ Tradutores: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<it>Campo: %d (%s %s)</it>
 			<cz>Pole: %d (%s %s)</cz> 
 			<hu>Terület: %d (%s %s)</hu>
-			<ru>Поле: %d (%s %s)</ru>
+			<ru>Участок: %d (%s %s)</ru>
 			<nl>Veld: %d (%s %s)</nl>
 			<br>Campo: %d (%s %s)</br>
 		</text>
@@ -2406,7 +2406,7 @@ Tradutores: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<it>Tipo di seme: %s</it>
 			<cz>Osivo: %s</cz> 
 			<hu>Vetőmag típusa: %s</hu>
-			<ru>Семена: %s</ru>
+			<ru>%s</ru>
 			<nl>Zaad soort: %s</nl>
 			<br>Tipo de semente: %s</br>
 		</text>
@@ -2417,8 +2417,8 @@ Tradutores: [CZ] Albi, [ES] JFMtb, [FR] Guillaume Dupuy, [IT] JD7530, Cristiano 
 			<es>Uso: %s %s (%s)</es>
 			<it>Utilizzo: %s %s (%s)</it>
 			<cz>Usage: %s %s (%s)</cz> <!-- !!! -->
-			<hu>Usage: %s %s (%s) </hu> <!-- !!! -->
-			<ru>Usage: %s %s (%s)</ru> <!-- !!! -->
+			<hu>Usage: %s %s (%s) </hu> 
+			<ru>Расходы: %s %s (%s)</ru>
 			<nl>Verbruik: %s %s (%s)</nl>
 			<br>Utilizado: %s %S (%s)</br>
 		</text>
