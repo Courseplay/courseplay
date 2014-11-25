@@ -92,6 +92,8 @@ function courseplay:load(xmlFile)
 	self.cp.activeGlobalInfoTexts = {};
 	self.cp.numActiveGlobalInfoTexts = 0;
 
+	courseplay:setToolTip(self, nil);
+
 
 	-- ai mode: 1 abfahrer, 2 kombiniert
 	self.cp.mode = 1
@@ -595,7 +597,11 @@ function courseplay:load(xmlFile)
 	pageNav.baseX = courseplay.hud.infoBaseCenter - pageNav.totalWidth/2;
 	for p=0, courseplay.hud.numPages do
 		local posX = pageNav.baseX + (p * (pageNav.buttonW + pageNav.paddingRight));
-		courseplay.button:create(self, 'global', string.format('pageNav_%d.dds', p), 'setHudPage', p, posX, pageNav.posY, pageNav.buttonW, pageNav.buttonH);
+		local toolTip = courseplay.hud.hudTitles[p];
+		if p == 2 then
+			toolTip = courseplay.hud.hudTitles[p][1];
+		end;
+		courseplay.button:create(self, 'global', string.format('pageNav_%d.dds', p), 'setHudPage', p, posX, pageNav.posY, pageNav.buttonW, pageNav.buttonH, nil, nil, nil, false, false, toolTip);
 	end;
 
 	courseplay.button:create(self, 'global', 'navigate_left.png', 'switchHudPage', -1, courseplay.hud.infoBasePosX + 0.035, courseplay.hud.infoBasePosY + 0.2395, w24px, h24px); --ORIG: +0.242
@@ -630,16 +636,15 @@ function courseplay:load(xmlFile)
 	for i=1, courseplay.numAiModes do
 		local icon = string.format('quickSwitch_mode%d.png', i);
 
-		local l = math.ceil(i/aiModeQuickSwitch.numColumns);
-		local col = i;
-		while col > aiModeQuickSwitch.numColumns do
-			col = col - aiModeQuickSwitch.numColumns;
-		end;
+		local line = math.ceil(i/aiModeQuickSwitch.numColumns);
+		local col = (i - 1) % aiModeQuickSwitch.numColumns;
 
-		local posX = aiModeQuickSwitch.minX + (aiModeQuickSwitch.w * (col-1));
-		local posY = courseplay.hud.linesPosY[1] + courseplay.hud.lineHeight --[[(20/1080)]] - (aiModeQuickSwitch.h * l);
+		local posX = aiModeQuickSwitch.minX + (aiModeQuickSwitch.w * col);
+		local posY = courseplay.hud.linesPosY[1] + courseplay.hud.lineHeight --[[(20/1080)]] - (aiModeQuickSwitch.h * line);
 
-		courseplay.button:create(self, 1, icon, 'setCpMode', i, posX, posY, aiModeQuickSwitch.w, aiModeQuickSwitch.h);
+		local toolTip = courseplay:loc(('COURSEPLAY_MODE_%d'):format(i));
+
+		courseplay.button:create(self, 1, icon, 'setCpMode', i, posX, posY, aiModeQuickSwitch.w, aiModeQuickSwitch.h, nil, nil, false, false, false, toolTip);
 	end;
 
 	--recording
@@ -888,6 +893,15 @@ function courseplay:load(xmlFile)
 	--END Page 9
 
 
+	-- ##################################################
+	-- ToolTip icon
+	local ttW = 24 / 1080 / g_screenAspectRatio;
+	local ttH = 24 / 1080;
+	self.cp.hud.toolTipIcon = Overlay:new('cpToolTipIcon', Utils.getFilename('img/bottomInfoSprite.png', courseplay.path), courseplay.hud.col1posX, courseplay.hud.infoBasePosY + 0.0055, ttW, ttH);
+	setOverlayUVs(self.cp.hud.toolTipIcon.overlayId, 0.75,0, 0.75,0.25, 1,0, 1,0.25);
+
+
+
 	courseplay:validateCanSwitchMode(self);
 	courseplay:buttonsActiveEnabled(self, 'all');
 end
@@ -1020,6 +1034,7 @@ function courseplay:draw()
 		if self.cp.distanceCheck and #(self.Waypoints) > 1 then
 			courseplay:distanceCheck(self);
 		end;
+		courseplay:renderToolTip(self);
 	end;
 end; --END draw()
 
@@ -1250,8 +1265,22 @@ end;
 
 function courseplay:renderInfoText(vehicle)
 	if vehicle.isEntered and vehicle.cp.infoText ~= nil and vehicle.cp.toolTip == nil then
-		courseplay:setFontSettings("white", false, "left");
+		courseplay:setFontSettings('white', false, 'left');
 		renderText(courseplay.hud.col1posX, courseplay.hud.infoBasePosY + 0.012, courseplay.hud.fontSizes.infoText, vehicle.cp.infoText);
+	end;
+end;
+
+function courseplay:setToolTip(vehicle, text)
+	if vehicle.cp.toolTip ~= text then
+		vehicle.cp.toolTip = text;
+	end;
+end;
+
+function courseplay:renderToolTip(vehicle)
+	if vehicle.isEntered and vehicle.cp.toolTip ~= nil then
+		courseplay:setFontSettings('white', false, 'left');
+		renderText(courseplay.hud.col1posX + vehicle.cp.hud.toolTipIcon.width * 1.25, courseplay.hud.infoBasePosY + 0.012, courseplay.hud.fontSizes.infoText, vehicle.cp.toolTip);
+		vehicle.cp.hud.toolTipIcon:render();
 	end;
 end;
 

@@ -3,6 +3,9 @@ local curFile = 'settings.lua';
 function courseplay:openCloseHud(self, open)
 	courseplay:setMouseCursor(self, open);
 	self.cp.hud.show = open;
+	if not open then
+		courseplay.button:setHoveredButton(self, nil);
+	end;
 
 	--set ESLimiter
 	if self.cp.hud.ESLimiterOrigPosY == nil and open and self.ESLimiter ~= nil and self.ESLimiter.xPos ~= nil and self.ESLimiter.yPos ~= nil and self.ESLimiter.overlay ~= nil and self.ESLimiter.overlayBg ~= nil and self.ESLimiter.overlayBar ~= nil then
@@ -1323,6 +1326,8 @@ function courseplay:setMouseCursor(self, show)
 		for line=1,courseplay.hud.numLines do
 			self.cp.hud.content.pages[self.cp.hud.currentPage][line][1].isHovered = false;
 		end;
+
+		courseplay.button:setHoveredButton(self, nil);
 
 		self.cp.hud.mouseWheel.render = false;
 	end;
