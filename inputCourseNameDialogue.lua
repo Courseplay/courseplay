@@ -166,13 +166,13 @@ function inputCourseNameDialogue:onSaveClick()
 		--courseplay:dopairs(g_currentMission.cp_courses,1) replace it by tableshow
 		
 		g_currentMission.cp_sorted = courseplay.courses.sort()
-		
-		
-		
+
+
+
 		courseplay.courses.save_course(vehicle.cp.currentCourseId, nil, true)
 		courseplay.settings.setReloadCourseItems()
 		courseplay.utils.signs:updateWaypointSigns(vehicle);
-		
+
 	elseif vehicle.cp.saveWhat == 'folder' then
 		if self.textInputElement ~= nil then
 			vehicle.cp.saveFolderName = self.textInputElement.text
@@ -196,16 +196,15 @@ function inputCourseNameDialogue:onSaveClick()
 		courseplay.settings.add_folder(folderID)
 		courseplay.settings.setReloadCourseItems()
 		courseplay.utils.signs:updateWaypointSigns(vehicle);
-		
+
 	elseif vehicle.cp.saveWhat == 'filter' then
 		if self.textInputElement ~= nil then
 			vehicle.cp.hud.filter = self.textInputElement.text;
 			CourseplayEvent.sendEvent(vehicle, "self.cp.saveWhat", vehicle.cp.saveWhat)
 			CourseplayEvent.sendEvent(vehicle, "self.cp.saveFolderName", self.textInputElement.text)
 		end
-		
-		local button = vehicle.cp.buttons[2][vehicle.cp.hud.filterButtonIndex];
-		courseplay.button:setOverlay(button, 2);
+
+		courseplay.button:setSpecialButtonUVs(vehicle.cp.hud.filterButton, 'cancel');
 		courseplay.settings.setReloadCourseItems(vehicle);
 	end
 

@@ -26,7 +26,6 @@ function courseplay.button:create(vehicle, hudPage, img, functionToCall, paramet
 	local button = { 
 		page = hudPage, 
 		overlay = overlay, 
-		overlays = { overlay }, 
 		functionToCall = functionToCall, 
 		parameter = parameter, 
 		x_init = x,
@@ -57,15 +56,16 @@ function courseplay.button:create(vehicle, hudPage, img, functionToCall, paramet
 		button.canScrollDown = true;
 	end;
 
-	self:setSpecialButtonUVs(button, button.overlay, spriteSection);
+	self:setSpecialButtonUVs(button, spriteSection);
 
 	table.insert(vehicle.cp.buttons[hudPage], button);
-	return #(vehicle.cp.buttons[hudPage]);
+	return button;
 end;
 
-function courseplay.button:setSpecialButtonUVs(button, ovl, spriteSection)
+function courseplay.button:setSpecialButtonUVs(button, spriteSection)
 	local fn = button.functionToCall;
 	local prm = button.parameter;
+	local ovl = button.overlay;
 	local txtSizeX, txtSizeY = courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y;
 
 	if spriteSection and courseplay.hud.buttonUVsPx[spriteSection] ~= nil then
@@ -469,39 +469,12 @@ function courseplay.button:setOffset(button, x_off, y_off)
 	button.overlay.y = button.y_init + y_off
 end
 
-function courseplay.button:addOverlay(button, index, img)
-	local spriteSection;
-	local width = button.x2 - button.x
-	local height = button.y2 - button.y
-	if type(img) == 'table' then
-		if img[1] == 'iconSprite.png' then
-			button.overlays[index] = Overlay:new(img, courseplay.hud.iconSpritePath, button.x, button.y, width, height);
-			spriteSection = img[2];
-		end;
-	elseif img ~= 'blank.dds' and img ~= 'blank.png' then
-		button.overlays[index] = Overlay:new(img, Utils.getFilename('img/' .. img, courseplay.path), button.x, button.y, width, height);
-	end;
-	self:setSpecialButtonUVs(button, button.overlays[index], spriteSection);
-end
-
-function courseplay.button:setOverlay(button, index)
-	button.overlay = button.overlays[index]
-	-- the offset of the button might have changed...
-	button.overlay.x = button.x
-	button.overlay.y = button.y
-end
-
 function courseplay.button:deleteButtonOverlays(vehicle)
 	for k,buttonSection in pairs(vehicle.cp.buttons) do
 		for i,button in pairs(buttonSection) do
-			if button.overlays ~= nil then
-				for j,overlay in pairs(button.overlays) do
-					if overlay.overlayId ~= nil and overlay.delete ~= nil then
-						overlay:delete();
-					end;
-				end;
+			if button.overlay ~= nil and button.overlay.overlayId ~= nil and button.overlay.delete ~= nil then
+				button.overlay:delete();
 			end;
-			--NOTE: deleting single overlays not necessary since all overlays in button.overlays have already been deleted.
 		end;
 	end;
 end;

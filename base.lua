@@ -498,10 +498,8 @@ function courseplay:load(xmlFile)
 	local xL = self.cp.suc.x1 + 3/1080 / g_screenAspectRatio;
 	local xR = self.cp.suc.x1 + self.cp.suc.buttonFileWidth;
 	local w,h = self.cp.suc.buttonFileWidth, self.cp.suc.buttonFileHeight;
-	local fruitNegButtonIdx = courseplay.button:create(self, 'suc', { 'iconSprite.png', 'navLeft' },  'sucChangeFruit', -1, xL, self.cp.suc.lines.fruit.posY - 3/1080, w, h);
-	local fruitPosButtonIdx = courseplay.button:create(self, 'suc', { 'iconSprite.png', 'navRight' }, 'sucChangeFruit',  1, xR, self.cp.suc.lines.fruit.posY - 3/1080, w, h);
-	self.cp.suc.fruitNegButton = self.cp.buttons.suc[fruitNegButtonIdx];
-	self.cp.suc.fruitPosButton = self.cp.buttons.suc[fruitPosButtonIdx];
+	self.cp.suc.fruitNegButton = courseplay.button:create(self, 'suc', { 'iconSprite.png', 'navLeft' },  'sucChangeFruit', -1, xL, self.cp.suc.lines.fruit.posY - 3/1080, w, h);
+	self.cp.suc.fruitPosButton = courseplay.button:create(self, 'suc', { 'iconSprite.png', 'navRight' }, 'sucChangeFruit',  1, xR, self.cp.suc.lines.fruit.posY - 3/1080, w, h);
 	self.cp.suc.selectedFruitIdx = 1;
 	self.cp.suc.selectedFruit = nil;
 
@@ -671,9 +669,8 @@ function courseplay:load(xmlFile)
 		local fn = data[2];
 		local isToggleButton = data[3];
 		local toolTip = courseplay:loc(data[4]);
-		local buttonIndex = courseplay.button:create(self, 1, { 'iconSprite.png', data[1] }, fn, nil, posX, courseplay.hud.linesButtonPosY[2], w, h, nil, nil, false, false, isToggleButton, toolTip);
+		local button = courseplay.button:create(self, 1, { 'iconSprite.png', data[1] }, fn, nil, posX, courseplay.hud.linesButtonPosY[2], w, h, nil, nil, false, false, isToggleButton, toolTip);
 		if isToggleButton then
-			local button = self.cp.buttons[1][buttonIndex];
 			if fn == 'setRecordingPause' then
 				self.cp.hud.recordingPauseButton = button;
 			elseif fn == 'setRecordingTurnManeuver' then
@@ -728,19 +725,16 @@ function courseplay:load(xmlFile)
 		hoverAreaWidth = buttonX[4] + w16px - buttonX[1];
 	end;
 	for i=1, courseplay.hud.numLines do
-		local expandButtonIndex = courseplay.button:create(self, -2, { 'iconSprite.png', 'navPlus' }, 'expandFolder', i, buttonX[0], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
-		courseplay.button:addOverlay(self.cp.buttons[-2][expandButtonIndex], 2, { 'iconSprite.png', 'navMinus' }); -- reduce folder
+		courseplay.button:create(self, -2, { 'iconSprite.png', 'navPlus' }, 'expandFolder', i, buttonX[0], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
 		courseplay.button:create(self, -2, { 'iconSprite.png', 'courseLoadAppend' }, 'load_sorted_course', i, buttonX[1], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
 		courseplay.button:create(self, -2, { 'iconSprite.png', 'courseAdd' }, 'add_sorted_course', i, buttonX[2], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
-		local linkParentButtonIndex = courseplay.button:create(self, -2, { 'iconSprite.png', 'folderParentFrom' }, 'link_parent', i, buttonX[3], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
-		courseplay.button:addOverlay(self.cp.buttons[-2][linkParentButtonIndex], 2, { 'iconSprite.png', 'folderParentTo' }); -- folder parent to
+		courseplay.button:create(self, -2, { 'iconSprite.png', 'folderParentFrom' }, 'link_parent', i, buttonX[3], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
 		if g_server ~= nil then
 			courseplay.button:create(self, -2, { 'iconSprite.png', 'delete' }, 'delete_sorted_item', i, buttonX[4], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
 		end;
 		courseplay.button:create(self, -2, nil, nil, nil, buttonX[1], courseplay.hud.linesButtonPosY[i], hoverAreaWidth, mouseWheelArea.h, i, nil, true, false);
 	end
-	self.cp.hud.filterButtonIndex = courseplay.button:create(self, 2, { 'iconSprite.png', 'search' }, 'showSaveCourseForm', 'filter', topIconsX[1], topIconsY, w24px, h24px);
-	courseplay.button:addOverlay(self.cp.buttons[2][self.cp.hud.filterButtonIndex], 2, { 'iconSprite.png', 'cancel' }); -- cancel
+	self.cp.hud.filterButton = courseplay.button:create(self, 2, { 'iconSprite.png', 'search' }, 'showSaveCourseForm', 'filter', topIconsX[1], topIconsY, w24px, h24px);
 	courseplay.button:create(self, 2, { 'iconSprite.png', 'folderNew' }, 'showSaveCourseForm', 'folder', topIconsX[3], topIconsY, w24px, h24px);
 
 
@@ -876,14 +870,10 @@ function courseplay:load(xmlFile)
 
 	-- line 6 (headland)
 	-- 6.1 direction
-	local headlandDirButtonIdx = courseplay.button:create(self, 8, { 'iconSprite.png', 'headlandDirCW' }, 'setHeadlandDir', nil, courseplay.hud.infoBasePosX + 0.246 - w32px, courseplay.hud.linesButtonPosY[6], w16px, h16px, 6, nil, false);
-	self.cp.headland.directionButton = self.cp.buttons[8][headlandDirButtonIdx];
-	courseplay.button:addOverlay(self.cp.headland.directionButton, 2, { 'iconSprite.png', 'headlandDirCCW' });
+	self.cp.headland.directionButton = courseplay.button:create(self, 8, { 'iconSprite.png', 'headlandDirCW' }, 'setHeadlandDir', nil, courseplay.hud.infoBasePosX + 0.246 - w32px, courseplay.hud.linesButtonPosY[6], w16px, h16px, 6, nil, false);
 
 	-- 6.2 order --width = 2 x 0.015
-	local headlandOrderButtonIdx = courseplay.button:create(self, 8, { 'iconSprite.png', 'headlandOrdBef' }, 'setHeadlandOrder', nil, courseplay.hud.infoBasePosX + 0.240, courseplay.hud.linesButtonPosY[6], w32px, h16px, 6, nil, false);
-	self.cp.headland.orderButton = self.cp.buttons[8][headlandOrderButtonIdx];
-	courseplay.button:addOverlay(self.cp.headland.orderButton, 2, { 'iconSprite.png', 'headlandOrdAft' });
+	self.cp.headland.orderButton = courseplay.button:create(self, 8, { 'iconSprite.png', 'headlandOrdBef' }, 'setHeadlandOrder', nil, courseplay.hud.infoBasePosX + 0.240, courseplay.hud.linesButtonPosY[6], w32px, h16px, 6, nil, false);
 
 	-- 6.3: numLanes
 	courseplay.button:create(self, 8, { 'iconSprite.png', 'navUp' },   'setHeadlandNumLanes',   1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[6], w16px, h16px, 6, nil, false);

@@ -332,9 +332,9 @@ function courseplay:buttonsActiveEnabled(self, section)
 						else
 							-- check if plus or minus should show up
 							if self.cp.folder_settings[self.cp.hud.courses[row].id].showChildren then
-								courseplay.button:setOverlay(button,2)
+								courseplay.button:setSpecialButtonUVs(button, 'navMinus');
 							else
-								courseplay.button:setOverlay(button,1)
+								courseplay.button:setSpecialButtonUVs(button, 'navPlus');
 							end
 							if g_currentMission.cp_sorted.info[ self.cp.hud.courses[row].uid ].lastChild == 0 then
 								enable = false	-- button has no children
@@ -348,7 +348,7 @@ function courseplay:buttonsActiveEnabled(self, section)
 						if button.functionToCall == 'delete_sorted_item' and self.cp.hud.courses[row].type == 'folder' and g_currentMission.cp_sorted.info[ self.cp.hud.courses[row].uid ].lastChild ~= 0 then
 							enable = false
 						elseif button.functionToCall == 'link_parent' then
-							courseplay.button:setOverlay(button, 1);
+							courseplay.button:setSpecialButtonUVs(button, 'folderParentFrom');
 							if nofolders then
 								enable = false;
 							end;
@@ -357,7 +357,7 @@ function courseplay:buttonsActiveEnabled(self, section)
 						if button.functionToCall ~= 'link_parent' then
 							enable = false
 						else
-							courseplay.button:setOverlay(button, 2);
+							courseplay.button:setSpecialButtonUVs(button, 'folderParentTo');
 						end
 					end
 				end
@@ -1204,14 +1204,14 @@ end;
 
 function courseplay:setHeadlandDir(vehicle)
 	vehicle.cp.headland.userDirClockwise = not vehicle.cp.headland.userDirClockwise;
-	courseplay.button:setOverlay(vehicle.cp.headland.directionButton, vehicle.cp.headland.userDirClockwise and 1 or 2);
-	courseplay:debug(string.format('setHeadlandDir(): userDirClockwise=%s -> set to %q, setOverlay(directionButton, %d)', tostring(not vehicle.cp.headland.userDirClockwise), tostring(vehicle.cp.headland.userDirClockwise), vehicle.cp.headland.userDirClockwise and 1 or 2), 7);
+	courseplay.button:setSpecialButtonUVs(vehicle.cp.headland.directionButton, vehicle.cp.headland.userDirClockwise and 'headlandDirCW' or 'headlandDirCCW');
+	-- courseplay:debug(string.format('setHeadlandDir(): userDirClockwise=%s -> set to %q, setOverlay(directionButton, %d)', tostring(not vehicle.cp.headland.userDirClockwise), tostring(vehicle.cp.headland.userDirClockwise), vehicle.cp.headland.userDirClockwise and 1 or 2), 7);
 end;
 
 function courseplay:setHeadlandOrder(vehicle)
 	vehicle.cp.headland.orderBefore = not vehicle.cp.headland.orderBefore;
-	courseplay.button:setOverlay(vehicle.cp.headland.orderButton, vehicle.cp.headland.orderBefore and 1 or 2);
-	courseplay:debug(string.format('setHeadlandOrder(): orderBefore=%s -> set to %q, setOverlay(orderButton, %d)', tostring(not vehicle.cp.headland.orderBefore), tostring(vehicle.cp.headland.orderBefore), vehicle.cp.headland.orderBefore and 1 or 2), 7);
+	courseplay.button:setSpecialButtonUVs(vehicle.cp.headland.orderButton, vehicle.cp.headland.orderBefore and 'headlandOrdBef' or 'headlandOrdAft');
+	-- courseplay:debug(string.format('setHeadlandOrder(): orderBefore=%s -> set to %q, setOverlay(orderButton, %d)', tostring(not vehicle.cp.headland.orderBefore), tostring(vehicle.cp.headland.orderBefore), vehicle.cp.headland.orderBefore and 1 or 2), 7);
 end;
 
 function courseplay:validateCourseGenerationData(vehicle)
@@ -1379,8 +1379,7 @@ function courseplay:createFieldEdgeButtons(vehicle)
 			w = courseplay.hud.visibleArea.x2 - courseplay.hud.visibleArea.x1 - (2 * 0.005),
 			h = courseplay.hud.lineHeight
 		};
-		local toggleSucHudButtonIdx = courseplay.button:create(vehicle, 8, { 'iconSprite.png', 'calculator' }, 'toggleSucHud', nil, courseplay.hud.buttonPosX[-1], courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, nil, false, false, true);
-		vehicle.cp.suc.toggleHudButton = vehicle.cp.buttons[8][toggleSucHudButtonIdx];
+		vehicle.cp.suc.toggleHudButton = courseplay.button:create(vehicle, 8, { 'iconSprite.png', 'calculator' }, 'toggleSucHud', nil, courseplay.hud.buttonPosX[-1], courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, nil, false, false, true);
 		courseplay.button:create(vehicle, 8, { 'iconSprite.png', 'eye' }, 'toggleSelectedFieldEdgePathShow', nil, courseplay.hud.buttonPosX[0], courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, nil, false);
 		courseplay.button:create(vehicle, 8, { 'iconSprite.png', 'navUp' }, 'setFieldEdgePath',  1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[1], w16px, h16px, 1,  5, false);
 		courseplay.button:create(vehicle, 8, { 'iconSprite.png', 'navDown' }, 'setFieldEdgePath', -1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, -5, false);
