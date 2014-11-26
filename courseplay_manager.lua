@@ -466,22 +466,24 @@ function courseplay_manager:update(dt)
 		self.firstRun = false;
 	end;
 
-	-- Field scan, wages yes/No dialogue -START-
+	-- Field scan, wages yes/no dialogue -START-
 	if not g_currentMission.paused and g_gui.currentGui == nil then
 		if self.showFieldScanYesNoDialogue then
 			local yesNoDialogue = g_gui:showGui('YesNoDialog');
+			yesNoDialogue.target.titleElement:setText('Courseplay');
 			yesNoDialogue.target:setText(courseplay:loc('COURSEPLAY_YES_NO_FIELDSCAN'));
 			yesNoDialogue.target:setCallbacks(self.fieldScanDialogueCallback, self);
 			self.showFieldScanYesNoDialogue = false;
 		elseif self.showWagesYesNoDialogue then
 			local yesNoDialogue = g_gui:showGui('YesNoDialog');
+			yesNoDialogue.target.titleElement:setText('Courseplay');
 			local txt = courseplay:loc('COURSEPLAY_YES_NO_WAGES'):format(g_i18n:formatMoney(g_i18n:getCurrency(courseplay.wagePerHour * courseplay.wageDifficultyMultiplier), 2));
 			yesNoDialogue.target:setText(txt);
 			yesNoDialogue.target:setCallbacks(self.wagesDialogueCallback, self);
 			self.showWagesYesNoDialogue = false;
 		end;
 	end;
-	-- Field scan, wages yes/No dialogue - END -
+	-- Field scan, wages yes/n dialogue - END -
 
 	if g_currentMission.controlledVehicle == nil then
 		if self.playerOnFootMouseEnabled then

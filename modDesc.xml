@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="20">
-	<version>4.00.0084</version>
+	<version>4.00.0085</version>
 	<author><![CDATA[Courseplay Dev Team]]></author>
 	<title>
 		<de>Courseplay</de>
@@ -2157,20 +2157,18 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [IT] JD7530, Cristiano Magro, [R
 
 		<!-- Yes/No dialogues --> <!-- missing: cz, es, it, nl -->
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN">
-			<en>Courseplay: Do you want the fields to be scanned automatically?</en>
-			<de>Courseplay: Möchtest du dass die Felder automatisch gescanned werden?</de>
-			<fr>Courseplay: Voulez-vous que vos champs soient scannés automatiquement ?</fr>
-			<hu>Courseplay: Szeretnéd, hogy a mezők adatait automatikusan beolvassa?</hu>
-			<ru><![CDATA[Courseplay: 
-Включить автосканирование полей?]]></ru>
+			<en>Do you want the fields to be scanned automatically?</en>
+			<de>Möchtest du dass die Felder automatisch gescanned werden?</de>
+			<fr>Voulez-vous que vos champs soient scannés automatiquement ?</fr>
+			<hu>Szeretnéd, hogy a mezők adatait automatikusan beolvassa?</hu>
+			<ru>Включить автосканирование полей?</ru>
 		</text>
 		<text name="COURSEPLAY_YES_NO_WAGES">
-			<en>Courseplay: Do you want your workers to earn wages (%s/hour)?</en>
-			<de>Courseplay: Möchtest du Löhne für deine Fahrer aktivieren (%s/Stunde)?</de>
-			<fr>Courseplay: Voulez-vous payer des salaires pour vos ouvriers (%s/heure) ? ?</fr>
-			<hu>Courseplay: Szeretnéd, hogy a munkásod bért kapjon (%s/óra)?</hu>
-			<ru><![CDATA[Courseplay: 
-Рабочие хотят %s в час!
+			<en>Do you want your workers to earn wages (%s/hour)?</en>
+			<de>Möchtest du Löhne für deine Fahrer aktivieren (%s/Stunde)?</de>
+			<fr>Voulez-vous payer des salaires pour vos ouvriers (%s/heure) ? ?</fr>
+			<hu>Szeretnéd, hogy a munkásod bért kapjon (%s/óra)?</hu>
+			<ru><![CDATA[Рабочие хотят %s в час!
 Разрешить выплачивать зарплаты?]]></ru>
 		</text>
 
