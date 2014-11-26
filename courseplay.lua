@@ -211,7 +211,7 @@ function courseplay:setGlobalData()
 	ch.infoBasePosY = Utils.getNoNil(customPosY, 0.002);
 	ch.infoBaseWidth = 0.512;
 	ch.infoBaseHeight = 0.512;
-	ch.offset = 16/1920;  --0.006 (button width)
+	ch.indent = 16/1920 * 1.25; -- buttonWidth (16px) + 1/4 margin
 	ch.colors = {
 		white =         { 255/255, 255/255, 255/255, 1.00 };
 		whiteInactive = { 255/255, 255/255, 255/255, 0.75 };

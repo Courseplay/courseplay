@@ -903,26 +903,23 @@ function courseplay:load(xmlFile)
 	local sizeX,sizeY = courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y;
 	-- current mode icon
 	self.cp.hud.currentModeIcon = Overlay:new('cpCurrentModeIcon', courseplay.hud.iconSpritePath, courseplay.hud.bottomInfo.modeIconX, courseplay.hud.bottomInfo.iconPosY, w, h);
-	local UVs = courseplay.hud.bottomInfo.modeUVsPx[1];
-	courseplay.utils:setOverlayUVsPx(self.cp.hud.currentModeIcon, UVs[1], UVs[2], UVs[3], UVs[4], sizeX, sizeY);
+	courseplay.utils:setOverlayUVsPx(self.cp.hud.currentModeIcon, courseplay.hud.bottomInfo.modeUVsPx[1], sizeX, sizeY);
 
 	-- waypoint icon
 	self.cp.hud.currentWaypointIcon = Overlay:new('cpCurrentWaypointIcon', courseplay.hud.iconSpritePath, courseplay.hud.bottomInfo.waypointIconX, courseplay.hud.bottomInfo.iconPosY, w, h);
-	courseplay.utils:setOverlayUVsPx(self.cp.hud.currentWaypointIcon, 4, 180, 36, 148, sizeX, sizeY);
+	courseplay.utils:setOverlayUVsPx(self.cp.hud.currentWaypointIcon, { 4, 180, 36, 148 }, sizeX, sizeY);
 
 	-- waitPoints icon
 	self.cp.hud.waitPointsIcon = Overlay:new('cpWaitPointsIcon', courseplay.hud.iconSpritePath, courseplay.hud.bottomInfo.waitPointsIconX, courseplay.hud.bottomInfo.iconPosY, w, h);
-	local UVs = courseplay.hud.buttonUVsPx.recordingWait;
-	courseplay.utils:setOverlayUVsPx(self.cp.hud.waitPointsIcon, UVs[1], UVs[2], UVs[3], UVs[4], sizeX, sizeY);
+	courseplay.utils:setOverlayUVsPx(self.cp.hud.waitPointsIcon, courseplay.hud.buttonUVsPx.recordingWait, sizeX, sizeY);
 
 	-- crossingPoints icon
 	self.cp.hud.crossingPointsIcon = Overlay:new('cpCrossingPointsIcon', courseplay.hud.iconSpritePath, courseplay.hud.bottomInfo.crossingPointsIconX, courseplay.hud.bottomInfo.iconPosY, w, h);
-	UVs = courseplay.hud.buttonUVsPx.recordingCross;
-	courseplay.utils:setOverlayUVsPx(self.cp.hud.crossingPointsIcon, UVs[1], UVs[2], UVs[3], UVs[4], sizeX, sizeY);
+	courseplay.utils:setOverlayUVsPx(self.cp.hud.crossingPointsIcon, courseplay.hud.buttonUVsPx.recordingCross, sizeX, sizeY);
 
 	-- toolTip icon
 	self.cp.hud.toolTipIcon = Overlay:new('cpToolTipIcon', courseplay.hud.iconSpritePath, courseplay.hud.col1posX, courseplay.hud.infoBasePosY + 0.0055, w, h);
-	courseplay.utils:setOverlayUVsPx(self.cp.hud.toolTipIcon, 112, 180, 144, 148, sizeX, sizeY);
+	courseplay.utils:setOverlayUVsPx(self.cp.hud.toolTipIcon, { 112, 180, 144, 148 }, sizeX, sizeY);
 
 
 

@@ -140,8 +140,7 @@ end;
 
 function courseplay:setCpMode(vehicle, modeNum)
 	vehicle.cp.mode = modeNum;
-	local UVs = courseplay.hud.bottomInfo.modeUVsPx[modeNum];
-	courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.currentModeIcon, UVs[1], UVs[2], UVs[3], UVs[4], courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
+	courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.currentModeIcon, courseplay.hud.bottomInfo.modeUVsPx[modeNum], courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
 	courseplay:buttonsActiveEnabled(vehicle, 'all');
 end;
 
@@ -310,7 +309,7 @@ function courseplay:buttonsActiveEnabled(self, section)
 		local enable, hide = true, false
 		local n_courses = #(self.cp.hud.courses)
 		local nofolders = nil == next(g_currentMission.cp_folders);
-		local offset = courseplay.hud.offset  --0.006 (button width)
+		local indent = courseplay.hud.indent;
 		local row
 		for _, button in pairs(self.cp.buttons[-2]) do
 			row = button.row
@@ -325,7 +324,7 @@ function courseplay:buttonsActiveEnabled(self, section)
 						hide = true
 					else
 						-- position the expandFolder buttons
-						button:setOffset(self.cp.hud.courses[row].level * offset, 0)
+						button:setOffset(self.cp.hud.courses[row].level * indent, 0)
 						
 						if self.cp.hud.courses[row].id == 0 then
 							hide = true --hide for level 0 "folder"

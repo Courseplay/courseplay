@@ -992,8 +992,10 @@ function courseplay.utils:setOverlayUVsSymmetric(overlay, col, line, numCols, nu
 	end;
 end;
 
-function courseplay.utils:setOverlayUVsPx(overlay, leftX, bottomY, rightX, topY, textureSizeX, textureSizeY)
-	if overlay.overlayId and overlay.currentUVs == nil or overlay.currentUVs ~= { leftX, bottomY, rightX, topY } then
+function courseplay.utils:setOverlayUVsPx(overlay, UVs, textureSizeX, textureSizeY)
+	if overlay.overlayId and overlay.currentUVs == nil or overlay.currentUVs ~= UVs then
+		local leftX, bottomY, rightX, topY = unpack(UVs);
+
 		local fromTop = false;
 		if topY < bottomY then
 			fromTop = true;
@@ -1007,6 +1009,6 @@ function courseplay.utils:setOverlayUVsPx(overlay, leftX, bottomY, rightX, topY,
 			topYNormal = 1 - topYNormal;
 		end;
 		setOverlayUVs(overlay.overlayId, leftXNormal,bottomYNormal, leftXNormal,topYNormal, rightXNormal,bottomYNormal, rightXNormal,topYNormal);
-		overlay.currentUVs = { leftX, bottomY, rightX, topY };
+		overlay.currentUVs = UVs;
 	end;
 end;

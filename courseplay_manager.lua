@@ -146,8 +146,7 @@ function courseplay_manager:createButton(section, fn, prm, img, x, y, w, h)
 	local overlay = Overlay:new(img, Utils.getFilename("img/" .. img, courseplay.path), x, y, w, h);
 
 	if fn == 'goToVehicle' then
-		local UVs = courseplay.hud.pageButtonsUVsPx[7];
-		courseplay.utils:setOverlayUVsPx(overlay, UVs[1], UVs[2], UVs[3], UVs[4], courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
+		courseplay.utils:setOverlayUVsPx(overlay, courseplay.hud.pageButtonsUVsPx[7], courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
 	end;
 
 

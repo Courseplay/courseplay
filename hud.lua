@@ -382,9 +382,9 @@ function courseplay.hud:loadPage(vehicle, page)
 			end;
 			vehicle.cp.hud.content.pages[2][line][1].text = courseName;
 			if vehicle.cp.hud.courses[line].type == 'course' then
-				vehicle.cp.hud.content.pages[2][line][1].indention = vehicle.cp.hud.courses[line].level * self.offset
+				vehicle.cp.hud.content.pages[2][line][1].indention = vehicle.cp.hud.courses[line].level * self.indent;
 			else
-				vehicle.cp.hud.content.pages[2][line][1].indention = (vehicle.cp.hud.courses[line].level + 1) * self.offset
+				vehicle.cp.hud.content.pages[2][line][1].indention = (vehicle.cp.hud.courses[line].level + 1) * self.indent;
 			end
 		end;
 		for line = numCourses+1, self.numLines do

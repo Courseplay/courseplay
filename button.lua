@@ -43,6 +43,7 @@ function courseplay.button:new(vehicle, hudPage, img, functionToCall, parameter,
 	self.row = hudRow;
 	self.hoverText = hoverText;
 	self.color = courseplay.hud.colors.white;
+	self.spriteSection = spriteSection;
 	self.toolTip = toolTip;
 	self.isMouseWheelArea = isMouseWheelArea and functionToCall ~= nil;
 	self.isToggleButton = isToggleButton;
@@ -74,10 +75,8 @@ end;
 function courseplay.button:setSpriteSectionUVs(spriteSection)
 	if not spriteSection or courseplay.hud.buttonUVsPx[spriteSection] == nil then return; end;
 
-	local ovl = self.overlay;
-	local txtSizeX, txtSizeY = courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y;
-	local UVs = courseplay.hud.buttonUVsPx[spriteSection];
-	courseplay.utils:setOverlayUVsPx(ovl, UVs[1], UVs[2], UVs[3], UVs[4], txtSizeX, txtSizeY);
+	self.spriteSection = spriteSection;
+	courseplay.utils:setOverlayUVsPx(self.overlay, courseplay.hud.buttonUVsPx[spriteSection], courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
 end;
 
 function courseplay.button:setSpecialButtonUVs()
@@ -92,16 +91,13 @@ function courseplay.button:setSpecialButtonUVs()
 		courseplay.utils:setOverlayUVsSymmetric(self.overlay, col, line, 16, 2); -- space in dds: 16 x, 2 y
 
 	elseif fn == 'setCpMode' then
-		local UVs = courseplay.hud.modeButtonsUVsPx[prm];
-		courseplay.utils:setOverlayUVsPx(ovl, UVs[1], UVs[2], UVs[3], UVs[4], txtSizeX, txtSizeY);
+		courseplay.utils:setOverlayUVsPx(ovl, courseplay.hud.modeButtonsUVsPx[prm], txtSizeX, txtSizeY);
 
 	elseif fn == 'setHudPage' then
-		local UVs = courseplay.hud.pageButtonsUVsPx[prm];
-		courseplay.utils:setOverlayUVsPx(ovl, UVs[1], UVs[2], UVs[3], UVs[4], txtSizeX, txtSizeY);
+		courseplay.utils:setOverlayUVsPx(ovl, courseplay.hud.pageButtonsUVsPx[prm], txtSizeX, txtSizeY);
 
 	elseif fn == 'generateCourse' then
-		local UVs = courseplay.hud.pageButtonsUVsPx[8];
-		courseplay.utils:setOverlayUVsPx(ovl, UVs[1], UVs[2], UVs[3], UVs[4], txtSizeX, txtSizeY);
+		courseplay.utils:setOverlayUVsPx(ovl, courseplay.hud.pageButtonsUVsPx[8], txtSizeX, txtSizeY);
 	end;
 end;
 
