@@ -31,7 +31,6 @@ ___
 ## Credits  
 * Jakob Tischler
 * Thomas Gärtner
-* Horoman
 * Satis
 
 ___
@@ -42,6 +41,7 @@ ___
 
 ## Former developers  
 * Lautschreier
+* Horoman
 * Hummel
 * Wolverin0815
 * Bastian82

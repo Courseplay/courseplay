@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="20">
-	<version>4.00.0085</version>
+	<version>4.00.0086</version>
 	<author><![CDATA[Courseplay Dev Team]]></author>
 	<title>
 		<de>Courseplay</de>
@@ -18,47 +18,47 @@
 		<de>
 <![CDATA[Entwickler: Jakob Tischler, Thomas Gärtner, Satis
 
-Übersetzungen: [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [IT] JD7530, Cristiano Magro, [RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo]]>
+Übersetzungen: [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [NL] Pewemo, [RU] Bernelli]]>
 		</de>
 		<en>
 <![CDATA[Developers: Jakob Tischler, Thomas Gärtner, Satis
 
-Translations: [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [IT] JD7530, Cristiano Magro, [RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo]]>
+Translations: [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [NL] Pewemo, [RU] Bernelli]]>
 		</en>
 		<es>
 <![CDATA[Desarrolladores: Jakob Tischler, Thomas Gärtner, Satis
 
-Tradduciónes: [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [IT] JD7530, Cristiano Magro, [RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo]]>
+Tradduciónes: [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [NL] Pewemo, [RU] Bernelli]]>
 		</es>
 		<fr>
 <![CDATA[Développeurs: Jakob Tischler, Thomas Gärtner, Satis
 
-Traductions: [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [IT] JD7530, Cristiano Magro, [RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo]]>
+Traductions: [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [NL] Pewemo, [RU] Bernelli]]>
 		</fr>
 		<it>
 <![CDATA[Sviluppatori: Jakob Tischler, Thomas Gärtner, Satis
 
-Traduzioni: [CZ] Albi, [ES] JFMtb, [FR] Gui7545,[IT] JD7530, Cristiano Magro, [RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo]]>
+Traduzioni: [CZ] Albi, [ES] JFMtb, [FR] Gui7545,[HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [NL] Pewemo, [RU] Bernelli]]>
 		</it>
 		<cz>
 <![CDATA[Vývojáři: Jakob Tischler, Thomas Gärtner, Satis
 
-Překlady: [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [IT] JD7530, Cristiano Magro, [RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo]]>
+Překlady: [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [NL] Pewemo, [RU] Bernelli]]>
 		</cz>
 		<ru>
 <![CDATA[Разработка: Jakob Tischler, Thomas Gärtner, Satis
 
-Переводчики: [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [IT] JD7530, Cristiano Magro, [RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo]]>
+Переводчики: [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [NL] Pewemo, [RU] Bernelli]]>
 		</ru>
 		<hu>
 <![CDATA[Készítők: Jakob Tischler, Thomas Gärtner, Satis
 
-Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [IT] JD7530, Cristiano Magro, [RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo]]>
+Fordítók: [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [NL] Pewemo, [RU] Bernelli]]>
 		</hu>
 		<nl>
 <![CDATA[Ontwikkelaars: Jakob Tischler, Thomas Gärtner, Satis
 
-Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [IT] JD7530, Cristiano Magro, [RU] Bernelli, [HU] Chris von Bone, [NL] Pewemo]]>
+Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [NL] Pewemo, [RU] Bernelli]]>
 		</nl>
  	</description>
 	
@@ -2093,7 +2093,7 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [IT] JD7530, Cristiano Magro, [R
 			<nl>Opstarten %s!</nl>
 		</text>
 
-		<!-- Recording buttons --> <!-- missing: cz, es, hu, it, nl -->
+		<!-- Recording buttons --> <!-- missing: cz, es, it, nl -->
 		<text name="COURSEPLAY_RECORDING_STOP">
 			<en>Stop the recording</en>
 			<de>Aufnahme beenden</de>

@@ -4,7 +4,6 @@ Version:	4.00 beta
 Date:		2014
 Authors:	Jakob Tischler
 			Thomas Gärtner
-			horoman
 			Satis
 
 For further information, visit http://courseplay.github.io/courseplay/

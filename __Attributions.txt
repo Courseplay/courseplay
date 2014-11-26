@@ -23,7 +23,7 @@ Translations
 ------------------------------------
 * Czech: Albi
 * Dutch: Pewemo
-* French: Guillaume Dupuy
+* French: Gui7545
 * Hungarian: Chris von Bone
 * Italian: JD7530, Cristiano Magro
 * Russian: Bernelli
