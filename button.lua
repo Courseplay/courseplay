@@ -31,7 +31,7 @@ function courseplay.button:new(vehicle, hudPage, img, functionToCall, parameter,
 	self.vehicle = vehicle;
 	self.page = hudPage; 
 	self.functionToCall = functionToCall; 
-	self.parameter = parameter; 
+	self:setParameter(parameter);
 	self.x_init = x;
 	self.x = x;
 	self.x2 = (x + width);
@@ -41,14 +41,14 @@ function courseplay.button:new(vehicle, hudPage, img, functionToCall, parameter,
 	self.row = hudRow;
 	self.hoverText = hoverText;
 	self.color = courseplay.hud.colors.white;
-	self.toolTip = toolTip;
+	self:setToolTip(toolTip);
 	self.isMouseWheelArea = isMouseWheelArea and functionToCall ~= nil;
 	self.isToggleButton = isToggleButton;
 	self.canBeClicked = not isMouseWheelArea and functionToCall ~= nil;
 	self.show = true;
 	self.isClicked = false;
 	self.isActive = false;
-	self.isDisabled = false;
+	self:setDisabled(false);
 	self.isHovered = false;
 	self.isHidden = false;
 	if modifiedParameter then 
@@ -83,12 +83,7 @@ function courseplay.button:setSpecialButtonUVs()
 	local prm = self.parameter;
 	local txtSizeX, txtSizeY = courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y;
 
-	if fn == 'toggleDebugChannel' then
-		local col = ((prm - 1) % courseplay.numDebugChannelButtonsPerLine) + 1;
-		local line = math.ceil(prm / courseplay.numDebugChannelButtonsPerLine);
-		courseplay.utils:setOverlayUVsSymmetric(self.overlay, col, line, 16, 2); -- space in dds: 16 x, 2 y
-
-	elseif fn == 'setCpMode' then
+	if fn == 'setCpMode' then
 		courseplay.utils:setOverlayUVsPx(self.overlay, courseplay.hud.modeButtonsUVsPx[prm], txtSizeX, txtSizeY);
 
 	elseif fn == 'setHudPage' then
@@ -426,9 +421,21 @@ function courseplay.button:setOffset(x_off, y_off)
 	self.overlay.y = self.y_init + y_off
 end
 
+function courseplay.button:setParameter(parameter)
+	if self.parameter ~= parameter then
+		self.parameter = parameter;
+	end;
+end;
+
 function courseplay.button:setToolTip(text)
 	if self.toolTip ~= text then
 		self.toolTip = text;
+	end;
+end;
+
+function courseplay.button:setDisabled(disabled)
+	if self.isDisabled ~= disabled then
+		self.isDisabled = disabled;
 	end;
 end;
 

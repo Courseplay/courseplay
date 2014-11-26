@@ -187,6 +187,15 @@ function courseplay:renderHud(vehicle)
 			end;
 		end;
 	end;
+	if page == 6 then -- debug channels text
+		courseplay:setFontSettings('textDark', true, 'center');
+		local channelNum;
+		for i,data in ipairs(courseplay.debugButtonPosData) do
+			channelNum = courseplay.debugChannelSectionStart + (i - 1);
+			renderText(data.textPosX, data.textPosY, courseplay.hud.fontSizes.contentValue, tostring(channelNum));
+		end;
+		courseplay:setFontSettings('white', false, 'left');
+	end;
 
 	-- SEED USAGE CALCULATOR
 	if vehicle.cp.suc.active then

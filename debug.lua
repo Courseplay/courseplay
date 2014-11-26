@@ -1,38 +1,58 @@
--- DEBUG CHANNELS
-courseplay.numAvailableDebugChannels = 24;
-courseplay.numDebugChannels = 20;
-courseplay.numDebugChannelButtonsPerLine = 12;
-courseplay.numDebugChannelSections = math.ceil(courseplay.numAvailableDebugChannels / courseplay.numDebugChannelButtonsPerLine);
-courseplay.debugChannelSection = 1;
-courseplay.debugChannelSectionStart = 1;
-courseplay.debugChannelSectionEnd = courseplay.numDebugChannelButtonsPerLine;
-courseplay.debugChannels = {};
-for channel=1, courseplay.numAvailableDebugChannels do
-	courseplay.debugChannels[channel] = false;
+function courseplay:setUpDebugChannels()
+	-- DEBUG CHANNELS
+	courseplay.numAvailableDebugChannels = 24;
+	courseplay.numDebugChannels = 20;
+	courseplay.numDebugChannelButtonsPerLine = 12;
+	courseplay.numDebugChannelSections = math.ceil(courseplay.numAvailableDebugChannels / courseplay.numDebugChannelButtonsPerLine);
+	courseplay.debugChannelSection = 1;
+	courseplay.debugChannelSectionStart = 1;
+	courseplay.debugChannelSectionEnd = courseplay.numDebugChannelButtonsPerLine;
+	courseplay.debugChannels = {};
+	for channel=1, courseplay.numAvailableDebugChannels do
+		courseplay.debugChannels[channel] = false;
+	end;
+
+	-- Debug channels legend:
+	courseplay.debugChannelsDesc = {
+		 [1] = 'Debug: Raycast (drive + tipTriggers)';
+		 [2] = 'Debug: Load and unload tippers';
+		 [3] = 'Debug: Traffic collision';
+		 [4] = 'Debug: Combines/mode2, register and unload combines';
+		 [5] = 'Debug: Multiplayer';
+		 [6] = 'Debug: implements (updateWorkTools etc.)';
+		 [7] = 'Debug: course generation';
+		 [8] = 'Debug: course management';
+		 [9] = 'Debug: path finding';
+		[10] = 'Debug: mode9: shovel loading/unloading';
+		[11] = 'Debug: mode7: combine self-unloading';
+		[12] = 'Debug: all other debugs (uncategorized)';
+		[13] = 'Debug: reverse driving';
+		[14] = 'Debug: EifokLiquidManure (NOT USED ATM)';
+		[15] = 'Debug: mode3: AugerWagon';
+		[16] = 'Debug: recording courses';
+		[17] = 'Debug: mode4/6: seeding/fieldWork';
+		[18] = 'Debug: hud action';
+		[19] = 'Debug: special triggers';
+		[20] = 'Debug: WeightStation';
+	};
+
+	courseplay.debugButtonPosData = {};
+	local dbgW, dbgH = 22/1920, 22/1080;
+	local dbgMarginX = dbgW * 0.075;
+	local dbgMaxX = courseplay.hud.buttonPosX[1] - 0.01;
+	local dbgMinX = dbgMaxX - (courseplay.numDebugChannelButtonsPerLine * dbgW) - ((courseplay.numDebugChannelButtonsPerLine - 1) * dbgMarginX);
+	for i = 1, courseplay.numDebugChannelButtonsPerLine do
+		local data = {};
+		data.width  = dbgW;
+		data.height = dbgH;
+		data.posX = dbgMinX + ((i - 1) * (dbgW + dbgMarginX));
+		data.posY = courseplay.hud.linesPosY[6] - 0.004;
+		data.textPosX = data.posX + (dbgW * 0.5);
+		data.textPosY = courseplay.hud.linesPosY[6];
+
+		courseplay.debugButtonPosData[i] = data;
+	end;
 end;
---[[
-Debug channels legend:
- 1	Raycast (drive + tipTriggers)
- 2	Load and unload tippers
- 3	traffic collision
- 4	Combines/mode2, register and unload combines
- 5	Multiplayer
- 6	implements (updateWorkTools etc)
- 7	course generation
- 8	course management
- 9	path finding
-10	mode9
-11	mode7
-12	all other debugs (uncategorized)
-13	reverse
-14	EifokLiquidManure (NOT USED ATM)
-15	mode3 (AugerWagon)
-16	recording
-17	mode4/6
-18	hud action
-19	special triggers
-20	WeightStation
---]]
 
 --------------------------------------------------
 

@@ -122,15 +122,16 @@ function courseplay:buttonsActiveEnabled(self, section)
 				button.isActive = pageNum == self.cp.hud.currentPage;
 
 				if self.cp.mode == nil then
-					button.isDisabled = false;
+					button:setDisabled(false);
 				elseif courseplay.hud.pagesPerMode[self.cp.mode] ~= nil and courseplay.hud.pagesPerMode[self.cp.mode][pageNum] then
 					if pageNum == 0 then
-						button.isDisabled = not (self.cp.minHudPage == 0 or self.cp.isCombine or self.cp.isChopper or self.cp.isHarvesterSteerable or self.cp.isSugarBeetLoader);
+						local disabled = not (self.cp.minHudPage == 0 or self.cp.isCombine or self.cp.isChopper or self.cp.isHarvesterSteerable or self.cp.isSugarBeetLoader);
+						button:setDisabled(disabled);
 					else
-						button.isDisabled = false;
+						button:setDisabled(false);
 					end;
 				else
-					button.isDisabled = true;
+					button:setDisabled(true);
 				end;
 
 				button.canBeClicked = not button.isDisabled and not button.isActive;
@@ -143,7 +144,7 @@ function courseplay:buttonsActiveEnabled(self, section)
 			local fn = button.functionToCall;
 			if fn == "setCpMode" then
 				button.isActive = self.cp.mode == button.parameter;
-				button.isDisabled = button.parameter == 7 and not self.cp.isCombine and not self.cp.isChopper and not self.cp.isHarvesterSteerable;
+				button:setDisabled(button.parameter == 7 and not self.cp.isCombine and not self.cp.isChopper and not self.cp.isHarvesterSteerable);
 				button.canBeClicked = not button.isDisabled and not button.isActive;
 			elseif fn == "toggleCustomFieldEdgePathShow" then
 				button.isActive = self.cp.fieldEdge.customField.show;
@@ -151,26 +152,26 @@ function courseplay:buttonsActiveEnabled(self, section)
 				button.isActive = self.cp.distanceCheck;
 
 			elseif fn == 'stop_record' then
-				button.isDisabled = self.cp.recordingIsPaused or self.cp.isRecordingTurnManeuver;
+				button:setDisabled(self.cp.recordingIsPaused or self.cp.isRecordingTurnManeuver);
 				button.canBeClicked = not button.isDisabled;
 			elseif fn == 'setRecordingPause' then
 				button.isActive = self.cp.recordingIsPaused;
-				button.isDisabled = self.cp.HUDrecordnumber < 4 or self.cp.isRecordingTurnManeuver;
+				button:setDisabled(self.cp.HUDrecordnumber < 4 or self.cp.isRecordingTurnManeuver);
 				button.canBeClicked = not button.isDisabled;
 			elseif fn == 'delete_waypoint' then
 				-- NOTE: during recording pause, HUDrecordnumber = recordnumber + 1, that's why <= 5 is used
-				button.isDisabled = not self.cp.recordingIsPaused or self.cp.HUDrecordnumber <= 5;
+				button:setDisabled(not self.cp.recordingIsPaused or self.cp.HUDrecordnumber <= 5);
 				button.canBeClicked = not button.isDisabled;
 			elseif fn == 'set_waitpoint' or fn == 'set_crossing' then
-				button.isDisabled = self.cp.recordingIsPaused or self.cp.isRecordingTurnManeuver;
+				button:setDisabled(self.cp.recordingIsPaused or self.cp.isRecordingTurnManeuver);
 				button.canBeClicked = not button.isDisabled;
 			elseif fn == 'setRecordingTurnManeuver' then --isToggleButton
 				button.isActive = self.cp.isRecordingTurnManeuver;
-				button.isDisabled = self.cp.recordingIsPaused or self.cp.drivingDirReverse;
+				button:setDisabled(self.cp.recordingIsPaused or self.cp.drivingDirReverse);
 				button.canBeClicked = not button.isDisabled;
 			elseif fn == 'change_DriveDirection' then --isToggleButton
 				button.isActive = self.cp.drivingDirReverse;
-				button.isDisabled = self.cp.recordingIsPaused or self.cp.isRecordingTurnManeuver;
+				button:setDisabled(self.cp.recordingIsPaused or self.cp.isRecordingTurnManeuver);
 				button.canBeClicked = not button.isDisabled;
 			end;
 		end;
@@ -185,7 +186,7 @@ function courseplay:buttonsActiveEnabled(self, section)
 			row = button.row
 			enable = true
 			hide = false
-					
+
 			if row > n_courses then
 				hide = true
 			else
@@ -231,8 +232,8 @@ function courseplay:buttonsActiveEnabled(self, section)
 					end
 				end
 			end
-			
-			button.isDisabled = (not enable) or hide
+
+			button:setDisabled((not enable) or hide);
 			button.isHidden = hide
 		end -- for buttons
 		courseplay.settings.validateCourseListArrows(self)
@@ -240,7 +241,7 @@ function courseplay:buttonsActiveEnabled(self, section)
 	elseif self.cp.hud.currentPage == 6 and (section == nil or section == "all" or section == "debug") then
 		for _,button in pairs(self.cp.buttons[6]) do
 			if button.functionToCall == "toggleDebugChannel" then
-				button.isDisabled = button.parameter > courseplay.numDebugChannels;
+				button:setDisabled(button.parameter > courseplay.numDebugChannels);
 				button.isActive = courseplay.debugChannels[button.parameter] == true;
 				button.canBeClicked = not button.isDisabled;
 			end;
@@ -1208,6 +1209,16 @@ function courseplay:changeDebugChannelSection(vehicle, changeBy)
 	courseplay.debugChannelSection = Utils.clamp(courseplay.debugChannelSection + changeBy, 1, math.ceil(courseplay.numAvailableDebugChannels / courseplay.numDebugChannelButtonsPerLine));
 	courseplay.debugChannelSectionEnd = courseplay.numDebugChannelButtonsPerLine * courseplay.debugChannelSection;
 	courseplay.debugChannelSectionStart = courseplay.debugChannelSectionEnd - courseplay.numDebugChannelButtonsPerLine + 1;
+
+
+	-- update buttons' functions, toolTips and disabled status
+	for channel = courseplay.debugChannelSectionStart, courseplay.debugChannelSectionEnd do
+		local col = ((channel-1) % courseplay.numDebugChannelButtonsPerLine) + 1;
+		local button = vehicle.cp.hud.debugChannelButtons[col];
+		button:setParameter(channel);
+		button:setToolTip(courseplay.debugChannelsDesc[channel]);
+	end;
+	courseplay:buttonsActiveEnabled(vehicle, 'debug');
 end;
 
 function courseplay:toggleSymmetricLaneChange(vehicle, force)

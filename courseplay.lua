@@ -222,6 +222,7 @@ function courseplay:setGlobalData()
 		closeRed =      { 180/255,   0/255,   0/255, 1.00 };
 		warningRed =    { 240/255,  25/255,  25/255, 1.00 };
 		shadow =        {  35/255,  35/255,  35/255, 1.00 };
+		textDark =      {  15/255,  15/255,  15/255, 1.00 };
 	};
 
 	ch.pagesPerMode = {
@@ -414,6 +415,11 @@ function courseplay:setGlobalData()
 	loadSample(courseplay.hud.clickSound, Utils.getFilename("sounds/cpClickSound.wav", courseplay.path), false);
 
 	courseplay.lightsNeeded = false;
+
+
+	-- debug channels
+	courseplay:setUpDebugChannels();
+
 
 	local langNumData = {
 		br = { '.', ',' },

@@ -804,13 +804,11 @@ function courseplay:load(xmlFile)
 	courseplay.button:new(self, 6, { 'iconSprite.png', 'navPlus' },  'changeWaitTime',  5, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[5], w16px, h16px, 5,  10, false);
 	courseplay.button:new(self, 6, nil, 'changeWaitTime', 5, mouseWheelArea.x, courseplay.hud.linesButtonPosY[5], mouseWheelArea.w, mouseWheelArea.h, 5, 10, true, true);
 
-	local dbgW, dbgH = 22/1920, 22/1080;
-	local dbgPosY = courseplay.hud.linesPosY[6] - 0.004;
-	local dbgMaxX = courseplay.hud.buttonPosX[1] - 0.01;
-	for dbg=1, courseplay.numAvailableDebugChannels do
-		local col = ((dbg-1) % courseplay.numDebugChannelButtonsPerLine) + 1;
-		local dbgPosX = dbgMaxX - (courseplay.numDebugChannelButtonsPerLine * dbgW) + ((col-1) * dbgW);
-		courseplay.button:new(self, 6, 'debugChannelButtons.png', 'toggleDebugChannel', dbg, dbgPosX, dbgPosY, dbgW, dbgH);
+	self.cp.hud.debugChannelButtons = {};
+	for dbg=1, courseplay.numDebugChannelButtonsPerLine do
+		local data = courseplay.debugButtonPosData[dbg];
+		local toolTip = courseplay.debugChannelsDesc[dbg];
+		self.cp.hud.debugChannelButtons[dbg] = courseplay.button:new(self, 6, { 'iconSprite.png', 'recordingStop' }, 'toggleDebugChannel', dbg, data.posX, data.posY, data.width, data.height, nil, nil, nil, false, false, toolTip);
 	end;
 	courseplay.button:new(self, 6, { 'iconSprite.png', 'navUp' },   'changeDebugChannelSection', -1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[6], w16px, h16px, 6, -1, true, false);
 	courseplay.button:new(self, 6, { 'iconSprite.png', 'navDown' }, 'changeDebugChannelSection',  1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[6], w16px, h16px, 6,  1, true, false);
