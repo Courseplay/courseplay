@@ -20,7 +20,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 
 		if self.cp.suc.active then
 			for _,button in pairs(self.cp.buttons.suc) do
-				if button.show and courseplay:mouseIsOnButton(posX, posY, button) then
+				if button.show and button:getHasMouse(posX, posY) then
 					buttonToHandle = button;
 					break;
 				end;
@@ -29,7 +29,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 
 		if buttonToHandle == nil then
 			for _,button in pairs(self.cp.buttons.global) do
-				if button.show and courseplay:mouseIsOnButton(posX, posY, button) then
+				if button.show and button:getHasMouse(posX, posY) then
 					buttonToHandle = button;
 					break;
 				end;
@@ -38,7 +38,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 
 		if buttonToHandle == nil then
 			for _,button in pairs(self.cp.buttons[self.cp.hud.currentPage]) do
-				if button.canBeClicked and button.show and courseplay:mouseIsOnButton(posX, posY, button) then
+				if button.canBeClicked and button.show and button:getHasMouse(posX, posY) then
 					buttonToHandle = button;
 					break;
 				end;
@@ -48,7 +48,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 		if buttonToHandle == nil then
 			if self.cp.hud.currentPage == 2 then
 				for _,button in pairs(self.cp.buttons[-2]) do
-					if button.show and courseplay:mouseIsOnButton(posX, posY, button) then
+					if button.show and button:getHasMouse(posX, posY) then
 						buttonToHandle = button;
 						break;
 					end;
@@ -62,7 +62,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 				self.cp.hud.content.pages[buttonToHandle.page][buttonToHandle.row][1].isClicked = isDown;
 			end;
 			if isUp then
-				courseplay.button:handleMouseClick(self, buttonToHandle);
+				buttonToHandle:handleMouseClick();
 			end;
 		end;
 
@@ -75,7 +75,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 			for _,button in pairs(self.cp.buttons.suc) do
 				if button.show and not button.isHidden then
 					button.isClicked = false;
-					button.isHovered = courseplay:mouseIsOnButton(posX, posY, button);
+					button.isHovered = button:getHasMouse(posX, posY);
 				end;
 			end;
 		end;
@@ -84,7 +84,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 			button.isClicked = false;
 			if button.show and not button.isHidden then
 				button.isClicked = false;
-				button.isHovered = courseplay:mouseIsOnButton(posX, posY, button);
+				button.isHovered = button:getHasMouse(posX, posY);
 			end;
 		end;
 
@@ -92,7 +92,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 		for _,button in pairs(self.cp.buttons[self.cp.hud.currentPage]) do
 			button.isClicked = false;
 			if button.show and not button.isHidden then
-				button.isHovered = courseplay:mouseIsOnButton(posX, posY, button);
+				button.isHovered = button:getHasMouse(posX, posY);
 				if button.isHovered then
 
 					if button.isMouseWheelArea and (button.canScrollUp or button.canScrollDown) then
@@ -130,7 +130,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 				button.isClicked = false;
 				if button.show and not button.isHidden then
 					button.isHovered = false;
-					if courseplay:mouseIsOnButton(posX, posY, button) then
+					if button:getHasMouse(posX, posY) then
 						button.isClicked = false;
 						button.isHovered = true;
 					end;
@@ -148,33 +148,29 @@ function courseplay:mouseIsInArea(mouseX, mouseY, areaX1, areaX2, areaY1, areaY2
 	return mouseX >= areaX1 and mouseX <= areaX2 and mouseY >= areaY1 and mouseY <= areaY2;
 end;
 
-function courseplay:mouseIsOnButton(mouseX, mouseY, button)
-	-- return mouseX > button.x and mouseX < button.x2 and mouseY > button.y and mouseY < button.y2;
-	return courseplay:mouseIsInArea(mouseX, mouseY, button.x, button.x2, button.y, button.y2);
-end;
-
-function courseplay.button:handleMouseClick(vehicle, button)
-	local parameter = button.parameter;
-	if InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER) and button.modifiedParameter ~= nil then --for some reason InputBinding works in :mouseEvent
-		courseplay:debug("button.modifiedParameter = " .. tostring(button.modifiedParameter), 18);
-		parameter = button.modifiedParameter;
+function courseplay.button:handleMouseClick(vehicle)
+	vehicle = vehicle or self.vehicle;
+	local parameter = self.parameter;
+	if InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER) and self.modifiedParameter ~= nil then --for some reason InputBinding works in :mouseEvent
+		courseplay:debug("self.modifiedParameter = " .. tostring(self.modifiedParameter), 18);
+		parameter = self.modifiedParameter;
 	end;
 
-	if button.show and not button.isHidden and button.canBeClicked and not button.isDisabled then
-		if button.functionToCall == "rowButton" and vehicle.cp.hud.content.pages[vehicle.cp.hud.currentPage][button.parameter][1].text == nil then
+	if self.show and not self.isHidden and self.canBeClicked and not self.isDisabled then
+		if self.functionToCall == "rowButton" and vehicle.cp.hud.content.pages[vehicle.cp.hud.currentPage][self.parameter][1].text == nil then
 			return;
 		end;
 
-		-- button.isClicked = true;
-		if button.functionToCall == "showSaveCourseForm" then
+		-- self.isClicked = true;
+		if self.functionToCall == "showSaveCourseForm" then
 			vehicle.cp.imWriting = true
 		end
-		if button.functionToCall == "goToVehicle" then
+		if self.functionToCall == "goToVehicle" then
 			courseplay:executeFunction(vehicle, "goToVehicle", parameter)
 		else
-			vehicle:setCourseplayFunc(button.functionToCall, parameter, false, button.page);
-		end	
-		-- button.isClicked = false;
+			vehicle:setCourseplayFunc(self.functionToCall, parameter, false, self.page);
+		end
+		-- self.isClicked = false;
 	end;
 end;
 

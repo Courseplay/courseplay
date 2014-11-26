@@ -204,7 +204,7 @@ function inputCourseNameDialogue:onSaveClick()
 			CourseplayEvent.sendEvent(vehicle, "self.cp.saveFolderName", self.textInputElement.text)
 		end
 
-		courseplay.button:setSpecialButtonUVs(vehicle.cp.hud.filterButton, 'cancel');
+		vehicle.cp.hud.filterButton:setSpriteSectionUVs('cancel');
 		courseplay.settings.setReloadCourseItems(vehicle);
 	end
 

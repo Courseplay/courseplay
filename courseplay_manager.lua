@@ -194,7 +194,7 @@ function courseplay_manager:deleteMap()
 				vehicle.cp.globalInfoTextOverlay:delete();
 			end;
 			if vehicle.cp.buttons ~= nil then
-				courseplay.button:deleteButtonOverlays(vehicle);
+				courseplay.buttons:deleteButtonOverlays(vehicle);
 			end;
 		end;
 	end;
@@ -304,7 +304,7 @@ function courseplay_manager:draw()
 
 					-- set color
 					if currentColor ~= targetColor then
-						courseplay.button:setButtonColor(button, targetColor)
+						courseplay.button.setColor(button, targetColor); -- use indirect fn call as these buttons aren't (yet) part of the courseplay.button class and don't have the setColor function
 					end;
 
 					button.overlay:render();
@@ -386,11 +386,11 @@ function courseplay_manager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 	if (isDown or isUp) and mouseKey == courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION.buttonId and courseplay:mouseIsInArea(posX, posY, area.x1, area.x2, area.y1, area.y2) then
 		if courseplay.globalInfoText.hasContent then
 			for i,button in pairs(self.buttons.globalInfoText) do
-				if button.show and courseplay:mouseIsOnButton(posX, posY, button) then
+				if button.show and courseplay.button.getHasMouse(button, posX, posY) then -- use indirect fn call as these buttons aren't (yet) part of the courseplay.button class and don't have the getHasMouse function
 					button.isClicked = isDown;
 					if isUp then
 						local sourceVehicle = g_currentMission.controlledVehicle or button.parameter;
-						courseplay.button:handleMouseClick(sourceVehicle, button);
+						courseplay.button.handleMouseClick(button, sourceVehicle); -- use indirect fn call as these buttons aren't (yet) part of the courseplay.button class and don't have the handleMouseClick function
 					end;
 					break;
 				end;
@@ -424,7 +424,7 @@ function courseplay_manager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 			button.isClicked = false;
 			if button.show and not button.isHidden then
 				button.isHovered = false;
-				if courseplay:mouseIsOnButton(posX, posY, button) then
+				if courseplay.button.getHasMouse(button, posX, posY) then
 					button.isClicked = false;
 					button.isHovered = true;
 				end;

@@ -4,7 +4,7 @@ function courseplay:openCloseHud(self, open)
 	courseplay:setMouseCursor(self, open);
 	self.cp.hud.show = open;
 	if not open then
-		courseplay.button:setHoveredButton(self, nil);
+		courseplay.buttons:setHoveredButton(self, nil);
 	end;
 
 	--set ESLimiter
@@ -325,16 +325,16 @@ function courseplay:buttonsActiveEnabled(self, section)
 						hide = true
 					else
 						-- position the expandFolder buttons
-						courseplay.button:setOffset(button, self.cp.hud.courses[row].level * offset, 0)
+						button:setOffset(self.cp.hud.courses[row].level * offset, 0)
 						
 						if self.cp.hud.courses[row].id == 0 then
 							hide = true --hide for level 0 "folder"
 						else
 							-- check if plus or minus should show up
 							if self.cp.folder_settings[self.cp.hud.courses[row].id].showChildren then
-								courseplay.button:setSpecialButtonUVs(button, 'navMinus');
+								button:setSpriteSectionUVs('navMinus');
 							else
-								courseplay.button:setSpecialButtonUVs(button, 'navPlus');
+								button:setSpriteSectionUVs('navPlus');
 							end
 							if g_currentMission.cp_sorted.info[ self.cp.hud.courses[row].uid ].lastChild == 0 then
 								enable = false	-- button has no children
@@ -348,7 +348,7 @@ function courseplay:buttonsActiveEnabled(self, section)
 						if button.functionToCall == 'delete_sorted_item' and self.cp.hud.courses[row].type == 'folder' and g_currentMission.cp_sorted.info[ self.cp.hud.courses[row].uid ].lastChild ~= 0 then
 							enable = false
 						elseif button.functionToCall == 'link_parent' then
-							courseplay.button:setSpecialButtonUVs(button, 'folderParentFrom');
+							button:setSpriteSectionUVs('folderParentFrom');
 							if nofolders then
 								enable = false;
 							end;
@@ -357,7 +357,7 @@ function courseplay:buttonsActiveEnabled(self, section)
 						if button.functionToCall ~= 'link_parent' then
 							enable = false
 						else
-							courseplay.button:setSpecialButtonUVs(button, 'folderParentTo');
+							button:setSpriteSectionUVs('folderParentTo');
 						end
 					end
 				end
@@ -1204,13 +1204,13 @@ end;
 
 function courseplay:setHeadlandDir(vehicle)
 	vehicle.cp.headland.userDirClockwise = not vehicle.cp.headland.userDirClockwise;
-	courseplay.button:setSpecialButtonUVs(vehicle.cp.headland.directionButton, vehicle.cp.headland.userDirClockwise and 'headlandDirCW' or 'headlandDirCCW');
+	vehicle.cp.headland.directionButton:setSpriteSectionUVs(vehicle.cp.headland.userDirClockwise and 'headlandDirCW' or 'headlandDirCCW');
 	-- courseplay:debug(string.format('setHeadlandDir(): userDirClockwise=%s -> set to %q, setOverlay(directionButton, %d)', tostring(not vehicle.cp.headland.userDirClockwise), tostring(vehicle.cp.headland.userDirClockwise), vehicle.cp.headland.userDirClockwise and 1 or 2), 7);
 end;
 
 function courseplay:setHeadlandOrder(vehicle)
 	vehicle.cp.headland.orderBefore = not vehicle.cp.headland.orderBefore;
-	courseplay.button:setSpecialButtonUVs(vehicle.cp.headland.orderButton, vehicle.cp.headland.orderBefore and 'headlandOrdBef' or 'headlandOrdAft');
+	vehicle.cp.headland.orderButton:setSpriteSectionUVs(vehicle.cp.headland.orderBefore and 'headlandOrdBef' or 'headlandOrdAft');
 	-- courseplay:debug(string.format('setHeadlandOrder(): orderBefore=%s -> set to %q, setOverlay(orderButton, %d)', tostring(not vehicle.cp.headland.orderBefore), tostring(vehicle.cp.headland.orderBefore), vehicle.cp.headland.orderBefore and 1 or 2), 7);
 end;
 
@@ -1329,7 +1329,7 @@ function courseplay:setMouseCursor(self, show)
 			self.cp.hud.content.pages[self.cp.hud.currentPage][line][1].isHovered = false;
 		end;
 
-		courseplay.button:setHoveredButton(self, nil);
+		courseplay.buttons:setHoveredButton(self, nil);
 
 		self.cp.hud.mouseWheel.render = false;
 	end;
@@ -1379,11 +1379,11 @@ function courseplay:createFieldEdgeButtons(vehicle)
 			w = courseplay.hud.visibleArea.x2 - courseplay.hud.visibleArea.x1 - (2 * 0.005),
 			h = courseplay.hud.lineHeight
 		};
-		vehicle.cp.suc.toggleHudButton = courseplay.button:create(vehicle, 8, { 'iconSprite.png', 'calculator' }, 'toggleSucHud', nil, courseplay.hud.buttonPosX[-1], courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, nil, false, false, true);
-		courseplay.button:create(vehicle, 8, { 'iconSprite.png', 'eye' }, 'toggleSelectedFieldEdgePathShow', nil, courseplay.hud.buttonPosX[0], courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, nil, false);
-		courseplay.button:create(vehicle, 8, { 'iconSprite.png', 'navUp' }, 'setFieldEdgePath',  1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[1], w16px, h16px, 1,  5, false);
-		courseplay.button:create(vehicle, 8, { 'iconSprite.png', 'navDown' }, 'setFieldEdgePath', -1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, -5, false);
-		courseplay.button:create(vehicle, 8, nil, 'setFieldEdgePath', 1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[1], mouseWheelArea.w, mouseWheelArea.h, 1, 5, true, true);
+		vehicle.cp.suc.toggleHudButton = courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'calculator' }, 'toggleSucHud', nil, courseplay.hud.buttonPosX[-1], courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, nil, false, false, true);
+		courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'eye' }, 'toggleSelectedFieldEdgePathShow', nil, courseplay.hud.buttonPosX[0], courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, nil, false);
+		courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'navUp' }, 'setFieldEdgePath',  1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[1], w16px, h16px, 1,  5, false);
+		courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'navDown' }, 'setFieldEdgePath', -1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, -5, false);
+		courseplay.button:new(vehicle, 8, nil, 'setFieldEdgePath', 1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[1], mouseWheelArea.w, mouseWheelArea.h, 1, 5, true, true);
 		vehicle.cp.fieldEdge.selectedField.buttonsCreated = true;
 	end;
 end;

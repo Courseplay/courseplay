@@ -117,9 +117,9 @@ function courseplay:setRecordingPause(vehicle)
 		vehicle.cp.isRecording = not vehicle.cp.isRecording;
 		vehicle.cp.recordingIsPaused = not vehicle.cp.recordingIsPaused;
 		if vehicle.cp.recordingIsPaused then
-			courseplay.button:setToolTip(vehicle.cp.hud.recordingPauseButton, courseplay:loc('COURSEPLAY_RECORDING_PAUSE_RESUME'));
+			vehicle.cp.hud.recordingPauseButton:setToolTip(courseplay:loc('COURSEPLAY_RECORDING_PAUSE_RESUME'));
 		else
-			courseplay.button:setToolTip(vehicle.cp.hud.recordingPauseButton, courseplay:loc('COURSEPLAY_RECORDING_PAUSE'));
+			vehicle.cp.hud.recordingPauseButton:setToolTip(courseplay:loc('COURSEPLAY_RECORDING_PAUSE'));
 		end;
 
 		vehicle.cp.distanceCheck = vehicle.cp.recordingIsPaused;
@@ -137,9 +137,9 @@ end;
 function courseplay:setRecordingTurnManeuver(vehicle)
 	vehicle.cp.isRecordingTurnManeuver = not vehicle.cp.isRecordingTurnManeuver;
 	if vehicle.cp.isRecordingTurnManeuver then
-		courseplay.button:setToolTip(vehicle.cp.hud.recordingTurnManeuverButton, courseplay:loc('COURSEPLAY_RECORDING_TURN_END'));
+		vehicle.cp.hud.recordingTurnManeuverButton:setToolTip(courseplay:loc('COURSEPLAY_RECORDING_TURN_END'));
 	else
-		courseplay.button:setToolTip(vehicle.cp.hud.recordingTurnManeuverButton, courseplay:loc('COURSEPLAY_RECORDING_TURN_START'));
+		vehicle.cp.hud.recordingTurnManeuverButton:setToolTip(courseplay:loc('COURSEPLAY_RECORDING_TURN_START'));
 	end;
 	courseplay:debug(string.format('%s: set "isRecordingTurnManeuver" to %s', nameNum(vehicle), tostring(vehicle.cp.isRecordingTurnManeuver)), 16);
 
@@ -203,9 +203,9 @@ function courseplay:change_DriveDirection(vehicle)
 	courseplay:setNewWaypointFromRecording(vehicle, cx, cz, newAngle, false, vehicle.cp.drivingDirReverse, false, 0);
 	vehicle.cp.drivingDirReverse = not vehicle.cp.drivingDirReverse
 	if vehicle.cp.drivingDirReverse then
-		courseplay.button:setToolTip(vehicle.cp.hud.recordingDriveDirectionButton, courseplay:loc('COURSEPLAY_RECORDING_REVERSE_STOP'));
+		vehicle.cp.hud.recordingDriveDirectionButton:setToolTip(courseplay:loc('COURSEPLAY_RECORDING_REVERSE_STOP'));
 	else
-		courseplay.button:setToolTip(vehicle.cp.hud.recordingDriveDirectionButton, courseplay:loc('COURSEPLAY_RECORDING_REVERSE_START'));
+		vehicle.cp.hud.recordingDriveDirectionButton:setToolTip(courseplay:loc('COURSEPLAY_RECORDING_REVERSE_START'));
 	end;
 	vehicle.cp.recordingTimer = 1
 	courseplay:setRecordNumber(vehicle, vehicle.recordnumber + 1);

@@ -19,7 +19,7 @@ courseplay = {
 	courses = {};
 	settings = {};
 	hud = {};
-	button = {};
+	buttons = {};
 	fields = {};
 	generation = {};
 };

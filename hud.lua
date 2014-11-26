@@ -114,7 +114,7 @@ function courseplay:renderHud(vehicle)
 
 
 	--BUTTONS
-	courseplay.button:renderButtons(vehicle, vehicle.cp.hud.currentPage);
+	courseplay.buttons:renderButtons(vehicle, vehicle.cp.hud.currentPage);
 	if vehicle.cp.hud.mouseWheel.render then
 		vehicle.cp.hud.mouseWheel.icon:render();
 	end;

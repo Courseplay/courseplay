@@ -34,7 +34,7 @@ function courseplay:showSaveCourseForm(self, saveWhat)
 			end;
 		else
 			self.cp.hud.filter = '';
-			courseplay.button:setSpecialButtonUVs(self.cp.hud.filterButton, 'search');
+			self.cp.hud.filterButton:setSpriteSectionUVs('search');
 			courseplay.settings.setReloadCourseItems(self);
 		end;
 	end
