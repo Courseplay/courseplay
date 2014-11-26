@@ -4,21 +4,20 @@ if courseplay.houstonWeGotAProblem then
 	return;
 end;
 
-local steerableSpec = SpecializationUtil.getSpecialization('steerable');
+local drivableSpec = SpecializationUtil.getSpecialization('drivable');
 local courseplaySpec = SpecializationUtil.getSpecialization('courseplay');
 local numInstallationsVehicles = 0;
-courseplay.nonSupportedVehicleTypeNames ={}
-courseplay.nonSupportedVehicleTypeNames["forwarderTrailerSteerable"] = true
+courseplay.nonSupportedVehicleTypeNames = {};
 
 function courseplay:register()
 	for typeName,vehicleType in pairs(VehicleTypeUtil.vehicleTypes) do
 		if vehicleType then
 			for i,spec in pairs(vehicleType.specializations) do
-				if spec and spec == steerableSpec and not SpecializationUtil.hasSpecialization(courseplay, vehicleType.specializations) and not courseplay.nonSupportedVehicleTypeNames[vehicleType.name] then
-					--print(('\tadding Courseplay to %q'):format(tostring(vehicleType.name)));
+				if spec and spec == drivableSpec and not SpecializationUtil.hasSpecialization(courseplay, vehicleType.specializations) then
+					-- print(('\tadding Courseplay to %q'):format(tostring(vehicleType.name)));
 					table.insert(vehicleType.specializations, courseplaySpec);
 					vehicleType.hasCourseplaySpec = true;
-					vehicleType.hasSteerableSpec = true;
+					vehicleType.hasDrivableSpec = true;
 					numInstallationsVehicles = numInstallationsVehicles + 1;
 					break;
 				end;
@@ -30,10 +29,11 @@ end;
 -- if there are any vehicles loaded *after* Courseplay, install the spec into them
 local postRegister = function(typeName, className, filename, specializationNames, customEnvironment)
 	local vehicleType = VehicleTypeUtil.vehicleTypes[typeName];
-	if vehicleType and vehicleType.specializations and not vehicleType.hasCourseplaySpec and Utils.hasListElement(specializationNames, 'steerable') and not courseplay.nonSupportedVehicleTypeNames[typeName]then
+	if vehicleType and vehicleType.specializations and not vehicleType.hasCourseplaySpec and Utils.hasListElement(specializationNames, 'drivable') then
+		-- print(('\tadding Courseplay to %q'):format(typeName));
 		table.insert(vehicleType.specializations, courseplaySpec);
 		vehicleType.hasCourseplaySpec = true;
-		vehicleType.hasSteerableSpec = true;
+		vehicleType.hasDrivableSpec = true;
 		numInstallationsVehicles = numInstallationsVehicles + 1;
 	end;
 end;
