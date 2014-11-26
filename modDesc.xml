@@ -2093,70 +2093,85 @@ Vertaling: [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [IT] JD7530, Cristiano Magro, [R
 			<nl>Opstarten %s!</nl>
 		</text>
 
-		<!-- Recording buttons --> <!-- missing: cz, es, hu, it, nl, ru -->
+		<!-- Recording buttons --> <!-- missing: cz, es, hu, it, nl -->
 		<text name="COURSEPLAY_RECORDING_STOP">
 			<en>Stop the recording</en>
 			<de>Aufnahme beenden</de>
 			<fr>Arrêter l'enregistrement</fr>
+			<ru>остановить запись</ru>
 		</text>
 		<text name="COURSEPLAY_RECORDING_PAUSE">
 			<en>Pause the recording</en>
 			<de>Aufnahme pausieren</de>
 			<fr>Pauser l'enregistrement</fr>
+			<ru>пауза</ru>
 		</text>
 		<text name="COURSEPLAY_RECORDING_PAUSE_RESUME">
 			<en>Resume the recording</en>
 			<de>Aufnahme fortsetzen</de>
 			<fr>Reprendre l'enregistrement</fr>
+			<ru>продолжить запись</ru>
 		</text>
 		<text name="COURSEPLAY_RECORDING_DELETE">
 			<en>Delete the last waypoint</en>
 			<de>Letzten Wegpunkt löschen</de>
 			<fr>Supprimer le dernier point</fr>
+			<ru>удалить последнюю точку</ru>
 		</text>
 		<text name="COURSEPLAY_RECORDING_SET_WAIT">
 			<en>Set wait point</en>
 			<de>Wartepunkt setzen</de>
 			<fr>Placer un point d'attente</fr>
+			<ru>точка ожидания</ru>
 		</text>
 		<text name="COURSEPLAY_RECORDING_SET_CROSS">
 			<en>Set crossing point</en>
 			<de>Kreuzungspunkt setzen</de>
 			<fr>Placer un point de croisement</fr>
+			<ru>перекресток</ru>
 		</text>
 		<text name="COURSEPLAY_RECORDING_TURN_START">
 			<en>Start turn maneuver</en>
 			<de>Wendemaneuver beginnen</de>
 			<fr>Commencer la manœuvre de demi-tour</fr>
+			<ru>поворот</ru>
 		</text>
 		<text name="COURSEPLAY_RECORDING_TURN_END">
 			<en>End turn maneuver</en>
 			<de>Wendemaneuver beenden</de>
 			<fr>Terminer la manœuvre de demi-tour</fr>
+			<ru>поворот</ru>
 		</text>
 		<text name="COURSEPLAY_RECORDING_REVERSE_START">
 			<en>Start reverse driving</en>
 			<de>Rückwärtsfahren beginnen</de>
 			<fr>Marche arrière</fr>
+			<ru>включить задний ход</ru>
 		</text>
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP">
 			<en>Stop reverse driving</en>
 			<de>Rückwärtsfahren beenden</de>
 			<fr>Marche avant</fr>
+			<ru>отключить задний ход</ru>
 		</text>
 
-		<!-- Yes/No dialogues --> <!-- missing: cz, es, fr, it, nl, ru -->
+		<!-- Yes/No dialogues --> <!-- missing: cz, es, it, nl -->
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN">
 			<en>Courseplay: Do you want the fields to be scanned automatically?</en>
 			<de>Courseplay: Möchtest du dass die Felder automatisch gescanned werden?</de>
 			<fr>Courseplay: Voulez-vous que vos champs soient scannés automatiquement ?</fr>
 			<hu>Courseplay: Szeretnéd, hogy a mezők adatait automatikusan beolvassa?</hu>
+			<ru><![CDATA[Courseplay: 
+Включить автосканирование полей?]]></ru>
 		</text>
 		<text name="COURSEPLAY_YES_NO_WAGES">
 			<en>Courseplay: Do you want your workers to earn wages (%s/hour)?</en>
 			<de>Courseplay: Möchtest du Löhne für deine Fahrer aktivieren (%s/Stunde)?</de>
 			<fr>Courseplay: Voulez-vous payer des salaires pour vos ouvriers (%s/heure) ? ?</fr>
 			<hu>Courseplay: Szeretnéd, hogy a munkásod bért kapjon (%s/óra)?</hu>
+			<ru><![CDATA[Courseplay: 
+Рабочие хотят %s в час!
+Разрешить выплачивать зарплаты?]]></ru>
 		</text>
 
 		<!-- SeedUsageCalculator HUD content -->
