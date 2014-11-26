@@ -287,7 +287,11 @@ function courseplay:checkAndSetMovingToolsPosition(vehicle, movingTools, seconda
 
 			-- DIRTY FLAGS (movingTool)
 			if changed then
-				Cylindered.setDirty(mtMainObject, mt);
+				if vehicle.cp.attachedFrontLoader ~= nil then
+					Cylindered.setDirty(vehicle.cp.attachedFrontLoader, mt);
+				else
+					Cylindered.setDirty(mtMainObject, mt);
+				end	
 				vehicle:raiseDirtyFlags(mtMainObject.cylinderedDirtyFlag);
 			end;
 		end;
@@ -327,6 +331,7 @@ function courseplay:getMovingTools(vehicle)
 		vehicle.cp.shovel = vehicle.attachedImplements[shovel].object;
 	elseif frontLoader ~= 0 then
 		local object = vehicle.attachedImplements[frontLoader].object;
+		vehicle.cp.attachedFrontLoader = object
 		primaryMovingTools = object.movingTools;
 		if object.attachedImplements[1] ~= nil then
 			secondaryMovingTools = object.attachedImplements[1].object.movingTools;

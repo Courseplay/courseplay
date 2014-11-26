@@ -304,10 +304,10 @@ function courseplay:start(self)
 end;
 
 function courseplay:getCanUseAiMode(vehicle)
-	--[[if not vehicle.isMotorStarted or (vehicle.motorStartTime and vehicle.motorStartTime > vehicle.time) then
+	if not vehicle.isMotorStarted or (vehicle.motorStartTime and vehicle.motorStartTime > vehicle.timer) then
 		return false;
-	end;]]
-
+	end;
+	
 	local mode = vehicle.cp.mode;
 
 	if mode ~= 5 and mode ~= 6 and mode ~= 7 and not vehicle.cp.workToolAttached then
@@ -383,21 +383,6 @@ function courseplay:stop(self)
 	self.steeringEnabled = true;
 	self.deactivateOnLeave = true
 	self.disableCharacterOnLeave = true
-	--[[if self.cp.orgRpm then
-		self.motor.maxRpm[1] = self.cp.orgRpm[1]
-		self.motor.maxRpm[2] = self.cp.orgRpm[2]
-		self.motor.maxRpm[3] = self.cp.orgRpm[3]
-	end
-	if self.ESLimiter ~= nil and self.ESLimiter.maxRPM[5] ~= nil then
-		self.ESLimiter.percentage[2] =	self.cp.ESL[1]
-		self.ESLimiter.percentage[3] =	self.cp.ESL[2]
-		self.ESLimiter.percentage[4] =	self.cp.ESL[3]  
-	end;
-	if self.isRealistic and self.cp.mrOrigSpeed ~= nil then
-		self.motor.realSpeedLevelsAI[1] = self.cp.mrOrigSpeed[1];
-		self.motor.realSpeedLevelsAI[2] = self.cp.mrOrigSpeed[2];
-		self.motor.realSpeedLevelsAI[3] = self.cp.mrOrigSpeed[3];
-	end;]]
 	self:setCruiseControlState(Drivable.CRUISECONTROL_STATE_OFF)
 	self.cruiseControl.minSpeed = 1
 	self.cp.forcedToStop = false
@@ -480,7 +465,8 @@ function courseplay:stop(self)
 	self.cp.timers.slippingWheels = 0;
 
 	self.cp.movingToolsPrimary, self.cp.movingToolsSecondary = nil, nil;
-
+	self.cp.attachedFrontLoader = nil
+	
 	--remove any local and global info texts
 	if g_server ~= nil then
 		courseplay:setInfoText(self, nil);
