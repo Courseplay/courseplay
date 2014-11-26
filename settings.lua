@@ -1,10 +1,10 @@
 local curFile = 'settings.lua';
 
-function courseplay:openCloseHud(self, open)
-	courseplay:setMouseCursor(self, open);
-	self.cp.hud.show = open;
+function courseplay:openCloseHud(vehicle, open)
+	courseplay:setMouseCursor(vehicle, open);
+	vehicle.cp.hud.show = open;
 	if not open then
-		courseplay.buttons:setHoveredButton(self, nil);
+		courseplay.buttons:setHoveredButton(vehicle, nil);
 	end;
 end;
 

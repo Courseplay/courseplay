@@ -7,15 +7,14 @@ cpButton_mt = Class(courseplay.button);
 function courseplay.button:new(vehicle, hudPage, img, functionToCall, parameter, x, y, width, height, hudRow, modifiedParameter, hoverText, isMouseWheelArea, isToggleButton, toolTip)
 	local self = setmetatable({}, cpButton_mt);
 
-	local overlay, spriteSection;
 	if img then
 		if type(img) == 'table' then
 			if img[1] == 'iconSprite.png' then
-				overlay = Overlay:new(img, courseplay.hud.iconSpritePath, x, y, width, height);
-				spriteSection = img[2];
+				self.overlay = Overlay:new(img, courseplay.hud.iconSpritePath, x, y, width, height);
+				self.spriteSection = img[2];
 			end;
-		elseif img ~= 'blank.dds' and img ~= 'blank.png' then
-			overlay = Overlay:new(img, Utils.getFilename('img/' .. img, courseplay.path), x, y, width, height);
+		else
+			self.overlay = Overlay:new(img, Utils.getFilename('img/' .. img, courseplay.path), x, y, width, height);
 		end;
 	end;
 
@@ -31,7 +30,6 @@ function courseplay.button:new(vehicle, hudPage, img, functionToCall, parameter,
 
 	self.vehicle = vehicle;
 	self.page = hudPage; 
-	self.overlay = overlay; 
 	self.functionToCall = functionToCall; 
 	self.parameter = parameter; 
 	self.x_init = x;
@@ -43,7 +41,6 @@ function courseplay.button:new(vehicle, hudPage, img, functionToCall, parameter,
 	self.row = hudRow;
 	self.hoverText = hoverText;
 	self.color = courseplay.hud.colors.white;
-	self.spriteSection = spriteSection;
 	self.toolTip = toolTip;
 	self.isMouseWheelArea = isMouseWheelArea and functionToCall ~= nil;
 	self.isToggleButton = isToggleButton;
@@ -62,8 +59,8 @@ function courseplay.button:new(vehicle, hudPage, img, functionToCall, parameter,
 		self.canScrollDown = true;
 	end;
 
-	if spriteSection then
-		self:setSpriteSectionUVs(spriteSection);
+	if self.spriteSection then
+		self:setSpriteSectionUVs(self.spriteSection);
 	else
 		self:setSpecialButtonUVs();
 	end;
@@ -80,9 +77,10 @@ function courseplay.button:setSpriteSectionUVs(spriteSection)
 end;
 
 function courseplay.button:setSpecialButtonUVs()
+	if not self.overlay then return; end;
+
 	local fn = self.functionToCall;
 	local prm = self.parameter;
-	local ovl = self.overlay;
 	local txtSizeX, txtSizeY = courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y;
 
 	if fn == 'toggleDebugChannel' then
@@ -91,13 +89,13 @@ function courseplay.button:setSpecialButtonUVs()
 		courseplay.utils:setOverlayUVsSymmetric(self.overlay, col, line, 16, 2); -- space in dds: 16 x, 2 y
 
 	elseif fn == 'setCpMode' then
-		courseplay.utils:setOverlayUVsPx(ovl, courseplay.hud.modeButtonsUVsPx[prm], txtSizeX, txtSizeY);
+		courseplay.utils:setOverlayUVsPx(self.overlay, courseplay.hud.modeButtonsUVsPx[prm], txtSizeX, txtSizeY);
 
 	elseif fn == 'setHudPage' then
-		courseplay.utils:setOverlayUVsPx(ovl, courseplay.hud.pageButtonsUVsPx[prm], txtSizeX, txtSizeY);
+		courseplay.utils:setOverlayUVsPx(self.overlay, courseplay.hud.pageButtonsUVsPx[prm], txtSizeX, txtSizeY);
 
 	elseif fn == 'generateCourse' then
-		courseplay.utils:setOverlayUVsPx(ovl, courseplay.hud.pageButtonsUVsPx[8], txtSizeX, txtSizeY);
+		courseplay.utils:setOverlayUVsPx(self.overlay, courseplay.hud.pageButtonsUVsPx[8], txtSizeX, txtSizeY);
 	end;
 end;
 
@@ -413,6 +411,8 @@ function courseplay.button:setColor(colorName)
 end;
 
 function courseplay.button:setOffset(x_off, y_off)
+	if not self.overlay then return; end;
+
 	x_off = x_off or 0
 	y_off = y_off or 0
 	
@@ -432,7 +432,7 @@ function courseplay.button:setToolTip(text)
 	end;
 end;
 
-function courseplay.button:delete()
+function courseplay.button:deleteOverlay()
 	if self.overlay ~= nil and self.overlay.overlayId ~= nil and self.overlay.delete ~= nil then
 		self.overlay:delete();
 	end;
@@ -507,7 +507,7 @@ end;
 function courseplay.buttons:deleteButtonOverlays(vehicle)
 	for k,buttonSection in pairs(vehicle.cp.buttons) do
 		for i,button in pairs(buttonSection) do
-			button:delete();
+			button:deleteOverlay();
 		end;
 	end;
 end;
