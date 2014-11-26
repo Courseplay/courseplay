@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="20">
-	<version>4.00.0090</version>
+	<version>4.00.0091</version>
 	<author><![CDATA[Courseplay Dev Team]]></author>
 	<title>
 		<br>Courseplay</br>
@@ -1318,7 +1318,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<ru>низкий уровень топлива</ru>
 			<hu>Az üzemanyag fogyóban! (20% alatt)</hu>
 			<nl>moet spoedig bijgetankt worden</nl>
-			<br>Precisa reabastecer<r>
+			<br>Precisa reabastecer</br>
 		</text>
 		<text name="COURSEPLAY_MUST_BE_REFUELED">
 			<en>must be refueled</en>
@@ -2601,14 +2601,14 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 	</extraSourceFiles>
 
 	<inputBindings>
-		<inputname="COURSEPLAY_MODIFIER"				category="VEHICLE"	key1="KEY_lctrl"	key2=""button=""device="0"mouse=""						/>
-		<inputname="COURSEPLAY_HUD"						category="VEHICLE"	key1="KEY_delete"	key2=""button=""device="0"mouse=""						/>
-		<inputname="COURSEPLAY_MENU_ACCEPT_SECONDARY"	category="VEHICLE"	key1="KEY_KP_enter"	key2=""button=""device="0"mouse=""						/>
-		<inputname="COURSEPLAY_START_STOP"				category="VEHICLE"	key1="KEY_KP_7"		key2=""button=""device="0"mouse=""						/>
-		<inputname="COURSEPLAY_CANCELWAIT"				category="VEHICLE"	key1="KEY_KP_8"		key2=""button=""device="0"mouse=""						/>
-		<inputname="COURSEPLAY_DRIVENOW"				category="VEHICLE"	key1="KEY_KP_9"		key2=""button=""device="0"mouse=""						/>
-		<inputname="COURSEPLAY_MOUSEACTION"				category="VEHICLE"	key1=""				key2=""button=""device="0"mouse="MOUSE_BUTTON_LEFT"		/>
-		<inputname="COURSEPLAY_MOUSEACTION_SECONDARY"	category="VEHICLE"	key1=""				key2=""button=""device="0"mouse="MOUSE_BUTTON_RIGHT"	/>
+		<input name="COURSEPLAY_MODIFIER"				category="VEHICLE"	key1="KEY_lctrl"	key2="" button="" device="0" mouse=""					/>
+		<input name="COURSEPLAY_HUD"					category="VEHICLE"	key1="KEY_delete"	key2="" button="" device="0" mouse=""					/>
+		<input name="COURSEPLAY_MENU_ACCEPT_SECONDARY"	category="VEHICLE"	key1="KEY_KP_enter"	key2="" button="" device="0" mouse=""					/>
+		<input name="COURSEPLAY_START_STOP"				category="VEHICLE"	key1="KEY_KP_7"		key2="" button="" device="0" mouse=""					/>
+		<input name="COURSEPLAY_CANCELWAIT"				category="VEHICLE"	key1="KEY_KP_8"		key2="" button="" device="0" mouse=""					/>
+		<input name="COURSEPLAY_DRIVENOW"				category="VEHICLE"	key1="KEY_KP_9"		key2="" button="" device="0" mouse=""					/>
+		<input name="COURSEPLAY_MOUSEACTION"			category="VEHICLE"	key1=""				key2="" button="" device="0" mouse="MOUSE_BUTTON_LEFT"	/>
+		<input name="COURSEPLAY_MOUSEACTION_SECONDARY"	category="VEHICLE"	key1=""				key2="" button="" device="0" mouse="MOUSE_BUTTON_RIGHT"	/>
 	</inputBindings>
 
 </modDesc>
