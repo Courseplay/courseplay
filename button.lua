@@ -91,6 +91,9 @@ function courseplay.button:setSpecialButtonUVs()
 
 	elseif fn == 'generateCourse' then
 		courseplay.utils:setOverlayUVsPx(self.overlay, courseplay.hud.pageButtonsUVsPx[8], txtSizeX, txtSizeY);
+
+	elseif fn == 'toggleDebugChannel' then
+		self:setSpriteSectionUVs('recordingStop');
 	end;
 end;
 
@@ -371,7 +374,7 @@ function courseplay.button:render()
 
 		if self.show and not self.isHidden then
 			-- set color
-			local currentColor = self.overlay.curColor;
+			local currentColor = self.curColor;
 			local targetColor = currentColor;
 			local hoverColor = 'hover';
 			if fn == 'openCloseHud' then
@@ -421,15 +424,15 @@ function courseplay.button:setOffset(x_off, y_off)
 
 	x_off = x_off or 0
 	y_off = y_off or 0
-	
+
 	local width = self.x2 - self.x
 	local height = self.y2 - self.y
 	self.x = self.x_init + x_off
 	self.y = self.y_init + y_off
 	self.x2 = self.x + width
 	self.y2 = self.y + height
-	self.overlay.x = self.x_init + x_off
-	self.overlay.y = self.y_init + y_off
+
+	self.overlay:setPosition(self.x, self.y);
 end
 
 function courseplay.button:setParameter(parameter)

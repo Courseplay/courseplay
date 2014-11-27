@@ -199,8 +199,8 @@ function courseplay_manager:deleteMap()
 
 	--global info text
 	for i,button in pairs(self.buttons.globalInfoText) do
-		if button.overlay ~= nil and button.overlay.overlayId ~= nil and overlay.delete ~= nil then
-			overlay:delete();
+		if button.overlay ~= nil and button.overlay.overlayId ~= nil and button.overlay.delete ~= nil then
+			button.overlay:delete();
 		end;
 		if self.globalInfoTextOverlays[i] then
 			local gitOverlay = self.globalInfoTextOverlays[i];
@@ -277,7 +277,7 @@ function courseplay_manager:draw()
 					button.y = gfxPosY;
 					button.y2 = gfxPosY + git.buttonHeight;
 
-					local currentColor = button.overlay.curColor;
+					local currentColor = button.curColor;
 					local targetColor = currentColor;
 
 					button.canBeClicked = true;

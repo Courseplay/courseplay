@@ -716,18 +716,19 @@ function courseplay:load(xmlFile)
 	if g_server ~= nil then
 		hoverAreaWidth = buttonX[4] + w16px - buttonX[1];
 	end;
+	 -- TODO (Jakob): toolTips i18n
 	for i=1, courseplay.hud.numLines do
 		courseplay.button:new(self, -2, { 'iconSprite.png', 'navPlus' }, 'expandFolder', i, buttonX[0], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
-		courseplay.button:new(self, -2, { 'iconSprite.png', 'courseLoadAppend' }, 'load_sorted_course', i, buttonX[1], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
-		courseplay.button:new(self, -2, { 'iconSprite.png', 'courseAdd' }, 'add_sorted_course', i, buttonX[2], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
-		courseplay.button:new(self, -2, { 'iconSprite.png', 'folderParentFrom' }, 'link_parent', i, buttonX[3], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
+		courseplay.button:new(self, -2, { 'iconSprite.png', 'courseLoadAppend' }, 'load_sorted_course', i, buttonX[1], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false, false, false, 'Load course/merge into loaded course');
+		courseplay.button:new(self, -2, { 'iconSprite.png', 'courseAdd' }, 'add_sorted_course', i, buttonX[2], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false, false, false, 'Append course at the end');
+		courseplay.button:new(self, -2, { 'iconSprite.png', 'folderParentFrom' }, 'link_parent', i, buttonX[3], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false, false, false, 'Move to folder');
 		if g_server ~= nil then
-			courseplay.button:new(self, -2, { 'iconSprite.png', 'delete' }, 'delete_sorted_item', i, buttonX[4], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
+			courseplay.button:new(self, -2, { 'iconSprite.png', 'delete' }, 'delete_sorted_item', i, buttonX[4], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false, false, false, 'Delete course/folder');
 		end;
 		courseplay.button:new(self, -2, nil, nil, nil, buttonX[1], courseplay.hud.linesButtonPosY[i], hoverAreaWidth, mouseWheelArea.h, i, nil, true, false);
 	end
-	self.cp.hud.filterButton = courseplay.button:new(self, 2, { 'iconSprite.png', 'search' }, 'showSaveCourseForm', 'filter', topIconsX[1], topIconsY, w24px, h24px);
-	courseplay.button:new(self, 2, { 'iconSprite.png', 'folderNew' }, 'showSaveCourseForm', 'folder', topIconsX[3], topIconsY, w24px, h24px);
+	self.cp.hud.filterButton = courseplay.button:new(self, 2, { 'iconSprite.png', 'search' }, 'showSaveCourseForm', 'filter', topIconsX[1], topIconsY, w24px, h24px, nil, nil, false, false, false, 'Search for courses and folders');
+	courseplay.button:new(self, 2, { 'iconSprite.png', 'folderNew' }, 'showSaveCourseForm', 'folder', topIconsX[3], topIconsY, w24px, h24px, nil, nil, false, false, false, 'Create new folder');
 
 
 	-- ##################################################
@@ -809,7 +810,7 @@ function courseplay:load(xmlFile)
 	for dbg=1, courseplay.numDebugChannelButtonsPerLine do
 		local data = courseplay.debugButtonPosData[dbg];
 		local toolTip = courseplay.debugChannelsDesc[dbg];
-		self.cp.hud.debugChannelButtons[dbg] = courseplay.button:new(self, 6, { 'iconSprite.png', 'recordingStop' }, 'toggleDebugChannel', dbg, data.posX, data.posY, data.width, data.height, nil, nil, nil, false, false, toolTip);
+		self.cp.hud.debugChannelButtons[dbg] = courseplay.button:new(self, 6, 'iconSprite.png', 'toggleDebugChannel', dbg, data.posX, data.posY, data.width, data.height, nil, nil, nil, false, false, toolTip);
 	end;
 	courseplay.button:new(self, 6, { 'iconSprite.png', 'navUp' },   'changeDebugChannelSection', -1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[6], w16px, h16px, 6, -1, true, false);
 	courseplay.button:new(self, 6, { 'iconSprite.png', 'navDown' }, 'changeDebugChannelSection',  1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[6], w16px, h16px, 6,  1, true, false);
@@ -860,10 +861,10 @@ function courseplay:load(xmlFile)
 
 	-- line 6 (headland)
 	-- 6.1 direction
-	self.cp.headland.directionButton = courseplay.button:new(self, 8, { 'iconSprite.png', 'headlandDirCW' }, 'setHeadlandDir', nil, courseplay.hud.infoBasePosX + 0.246 - w32px, courseplay.hud.linesButtonPosY[6], w16px, h16px, 6, nil, false);
+	self.cp.headland.directionButton = courseplay.button:new(self, 8, { 'iconSprite.png', 'headlandDirCW' }, 'setHeadlandDir', nil, courseplay.hud.infoBasePosX + 0.246 - w32px, courseplay.hud.linesButtonPosY[6], w16px, h16px, 6, nil, false, nil, nil, 'Headland counter-/clockwise'); -- TODO (Jakob): i18n
 
 	-- 6.2 order
-	self.cp.headland.orderButton = courseplay.button:new(self, 8, { 'iconSprite.png', 'headlandOrdBef' }, 'setHeadlandOrder', nil, courseplay.hud.infoBasePosX + 0.240, courseplay.hud.linesButtonPosY[6], w32px, h16px, 6, nil, false);
+	self.cp.headland.orderButton = courseplay.button:new(self, 8, { 'iconSprite.png', 'headlandOrdBef' }, 'setHeadlandOrder', nil, courseplay.hud.infoBasePosX + 0.240, courseplay.hud.linesButtonPosY[6], w32px, h16px, 6, nil, false, nil, nil, 'Headland before/after field course'); -- TODO (Jakob): i18n
 
 	-- 6.3: numLanes
 	courseplay.button:new(self, 8, { 'iconSprite.png', 'navUp' },   'setHeadlandNumLanes',   1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[6], w16px, h16px, 6, nil, false);
@@ -877,10 +878,10 @@ function courseplay:load(xmlFile)
 	-- Page 9: Shovel settings
 	local wTemp = 22/1920;
 	local hTemp = 22/1080;
-	courseplay.button:new(self, 9, { 'iconSprite.png', 'shovelLoading' },   'saveShovelPosition', 2, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[1] - 0.003, wTemp, hTemp, 1, 2, true, false, true);
-	courseplay.button:new(self, 9, { 'iconSprite.png', 'shovelTransport' }, 'saveShovelPosition', 3, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[2] - 0.003, wTemp, hTemp, 2, 3, true, false, true);
-	courseplay.button:new(self, 9, { 'iconSprite.png', 'shovelPreUnload' }, 'saveShovelPosition', 4, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[3] - 0.003, wTemp, hTemp, 3, 4, true, false, true);
-	courseplay.button:new(self, 9, { 'iconSprite.png', 'shovelUnloading' }, 'saveShovelPosition', 5, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[4] - 0.003, wTemp, hTemp, 4, 5, true, false, true);
+	courseplay.button:new(self, 9, { 'iconSprite.png', 'shovelLoading' },   'saveShovelPosition', 2, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[1] - 0.003, wTemp, hTemp, 1, nil, true, false, true);
+	courseplay.button:new(self, 9, { 'iconSprite.png', 'shovelTransport' }, 'saveShovelPosition', 3, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[2] - 0.003, wTemp, hTemp, 2, nil, true, false, true);
+	courseplay.button:new(self, 9, { 'iconSprite.png', 'shovelPreUnload' }, 'saveShovelPosition', 4, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[3] - 0.003, wTemp, hTemp, 3, nil, true, false, true);
+	courseplay.button:new(self, 9, { 'iconSprite.png', 'shovelUnloading' }, 'saveShovelPosition', 5, courseplay.hud.infoBasePosX + 0.200, courseplay.hud.linesButtonPosY[4] - 0.003, wTemp, hTemp, 4, nil, true, false, true);
 
 	courseplay.button:new(self, 9, nil, 'setShovelStopAndGo', nil, courseplay.hud.col1posX, courseplay.hud.linesPosY[5], courseplay.hud.visibleArea.width, 0.015, 5, nil, true);
 	--END Page 9
@@ -888,24 +889,25 @@ function courseplay:load(xmlFile)
 
 	-- ##################################################
 	-- Status icons
-	local w = courseplay.hud.bottomInfo.iconWidth;
-	local h = courseplay.hud.bottomInfo.iconHeight;
+	local bi = courseplay.hud.bottomInfo;
+	local w = bi.iconWidth;
+	local h = bi.iconHeight;
 	local sizeX,sizeY = courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y;
 	-- current mode icon
-	self.cp.hud.currentModeIcon = Overlay:new('cpCurrentModeIcon', courseplay.hud.iconSpritePath, courseplay.hud.bottomInfo.modeIconX, courseplay.hud.bottomInfo.iconPosY, w, h);
-	courseplay.utils:setOverlayUVsPx(self.cp.hud.currentModeIcon, courseplay.hud.bottomInfo.modeUVsPx[1], sizeX, sizeY);
+	self.cp.hud.currentModeIcon = Overlay:new('cpCurrentModeIcon', courseplay.hud.iconSpritePath, bi.modeIconX, bi.iconPosY, w, h);
+	courseplay.utils:setOverlayUVsPx(self.cp.hud.currentModeIcon, bi.modeUVsPx[self.cp.mode], sizeX, sizeY);
 
 	-- waypoint icon
-	self.cp.hud.currentWaypointIcon = Overlay:new('cpCurrentWaypointIcon', courseplay.hud.iconSpritePath, courseplay.hud.bottomInfo.waypointIconX, courseplay.hud.bottomInfo.iconPosY, w, h);
+	self.cp.hud.currentWaypointIcon = Overlay:new('cpCurrentWaypointIcon', courseplay.hud.iconSpritePath, bi.waypointIconX, bi.iconPosY, w, h);
 	courseplay.utils:setOverlayUVsPx(self.cp.hud.currentWaypointIcon, { 4, 180, 36, 148 }, sizeX, sizeY);
 
 	-- waitPoints icon
-	self.cp.hud.waitPointsIcon = Overlay:new('cpWaitPointsIcon', courseplay.hud.iconSpritePath, courseplay.hud.bottomInfo.waitPointsIconX, courseplay.hud.bottomInfo.iconPosY, w, h);
-	courseplay.utils:setOverlayUVsPx(self.cp.hud.waitPointsIcon, courseplay.hud.buttonUVsPx.recordingWait, sizeX, sizeY);
+	self.cp.hud.waitPointsIcon = Overlay:new('cpWaitPointsIcon', courseplay.hud.iconSpritePath, bi.waitPointsIconX, bi.iconPosY, w, h);
+	courseplay.utils:setOverlayUVsPx(self.cp.hud.currentModeIcon, courseplay.hud.buttonUVsPx['recordingWait'], sizeX, sizeY);
 
 	-- crossingPoints icon
-	self.cp.hud.crossingPointsIcon = Overlay:new('cpCrossingPointsIcon', courseplay.hud.iconSpritePath, courseplay.hud.bottomInfo.crossingPointsIconX, courseplay.hud.bottomInfo.iconPosY, w, h);
-	courseplay.utils:setOverlayUVsPx(self.cp.hud.crossingPointsIcon, courseplay.hud.buttonUVsPx.recordingCross, sizeX, sizeY);
+	self.cp.hud.crossingPointsIcon = Overlay:new('cpCrossingPointsIcon', courseplay.hud.iconSpritePath, bi.crossingPointsIconX, bi.iconPosY, w, h);
+	courseplay.utils:setOverlayUVsPx(self.cp.hud.currentModeIcon, courseplay.hud.buttonUVsPx['recordingCross'], sizeX, sizeY);
 
 	-- toolTip icon
 	self.cp.hud.toolTipIcon = Overlay:new('cpToolTipIcon', courseplay.hud.iconSpritePath, courseplay.hud.col1posX, courseplay.hud.infoBasePosY + 0.0055, w, h);
