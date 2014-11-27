@@ -1914,12 +1914,13 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<nl>eerste markering</nl>
 			<br>primeiro ponto</br>
 		</text>
-		<text name="COURSEPLAY_CURRENT_POINT"> <!-- missing: cz, ru, hu -->
+		<text name="COURSEPLAY_CURRENT_POINT"> <!-- missing: cz, ru -->
 			<en>current waypoint</en>
 			<de>aktuellen Wegpunkt</de>
 			<es>punto actual</es>
 			<fr>courant point</fr>
 			<it>corrente punto</it>
+			<hu>Aktuális útpont</hu>
 			<nl>huidige markering</nl>
 			<br>atual ponto</br>
 		</text>
