@@ -1239,7 +1239,8 @@ end;
 
 function courseplay:getAverageWpSpeed(vehicle, numWaypoints)
 	numWaypoints = max(numWaypoints,3)
-	local refSpeed = 0 
+	local refSpeed = 0
+	local divider = numWaypoints
 	for i= (vehicle.recordnumber-1), (vehicle.recordnumber + numWaypoints-1) do
 		local index = i
 		if index > vehicle.maxnumber then
@@ -1247,8 +1248,12 @@ function courseplay:getAverageWpSpeed(vehicle, numWaypoints)
 		elseif index < 1 then
 			index = vehicle.maxnumber - index
 		end
-		refSpeed = refSpeed + vehicle.Waypoints[index].speed
+		if vehicle.Waypoints[index].speed ~= nil then
+			refSpeed = refSpeed + vehicle.Waypoints[index].speed
+		else
+			divider = divider -1
+		end
 	end
-	refSpeed = refSpeed/numWaypoints
-	return refSpeed
+	
+	return refSpeed/divider
 end;
