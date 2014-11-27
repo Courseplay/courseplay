@@ -40,17 +40,17 @@ function courseplay.button:new(vehicle, hudPage, img, functionToCall, parameter,
 	self.y2 = (y + height);
 	self.row = hudRow;
 	self.hoverText = hoverText;
-	self.color = courseplay.hud.colors.white;
+	self:setColor('white')
 	self:setToolTip(toolTip);
 	self.isMouseWheelArea = isMouseWheelArea and functionToCall ~= nil;
 	self.isToggleButton = isToggleButton;
-	self.canBeClicked = not isMouseWheelArea and functionToCall ~= nil;
-	self.show = true;
-	self.isClicked = false;
-	self.isActive = false;
+	self:setCanBeClicked(not isMouseWheelArea and functionToCall ~= nil);
+	self:setShow(true);
+	self:setClicked(false);
+	self:setActive(false);
 	self:setDisabled(false);
-	self.isHovered = false;
-	self.isHidden = false;
+	self:setHovered(false);
+	self:setHidden(false);
 	if modifiedParameter then 
 		self.modifiedParameter = modifiedParameter;
 	end
@@ -102,262 +102,273 @@ function courseplay.button:render()
 
 	--mouseWheelAreas conditionals
 	if self.isMouseWheelArea then
+		local canScrollUp, canScrollDown;
 		if pg == 1 then
 			if fn == "setCustomFieldEdgePathNumber" then
-				self.canScrollUp =   vehicle.cp.fieldEdge.customField.isCreated and vehicle.cp.fieldEdge.customField.fieldNum < courseplay.fields.customFieldMaxNum;
-				self.canScrollDown = vehicle.cp.fieldEdge.customField.isCreated and vehicle.cp.fieldEdge.customField.fieldNum > 0;
+				canScrollUp   = vehicle.cp.fieldEdge.customField.isCreated and vehicle.cp.fieldEdge.customField.fieldNum < courseplay.fields.customFieldMaxNum;
+				canScrollDown = vehicle.cp.fieldEdge.customField.isCreated and vehicle.cp.fieldEdge.customField.fieldNum > 0;
 			end;
 
 		elseif pg == 2 then
 			if fn == "shiftHudCourses" then
-				self.canScrollUp =   vehicle.cp.hud.courseListPrev == true;
-				self.canScrollDown = vehicle.cp.hud.courseListNext == true;
+				canScrollUp   = vehicle.cp.hud.courseListPrev == true;
+				canScrollDown = vehicle.cp.hud.courseListNext == true;
 			end;
 
 		elseif pg == 3 then
 			if fn == "changeTurnRadius" then
-				self.canScrollUp =   true;
-				self.canScrollDown = vehicle.cp.turnRadius > 0;
+				canScrollUp   = true;
+				canScrollDown = vehicle.cp.turnRadius > 0;
 			elseif fn == "changeFollowAtFillLevel" then
-				self.canScrollUp =   vehicle.cp.followAtFillLevel < 100;
-				self.canScrollDown = vehicle.cp.followAtFillLevel > 0;
+				canScrollUp   = vehicle.cp.followAtFillLevel < 100;
+				canScrollDown = vehicle.cp.followAtFillLevel > 0;
 			elseif fn == "changeDriveOnAtFillLevel" then
-				self.canScrollUp =   vehicle.cp.driveOnAtFillLevel < 100;
-				self.canScrollDown = vehicle.cp.driveOnAtFillLevel > 0;
+				canScrollUp   = vehicle.cp.driveOnAtFillLevel < 100;
+				canScrollDown = vehicle.cp.driveOnAtFillLevel > 0;
 			elseif fn == 'changeRefillUntilPct' then
-				self.canScrollUp =   (vehicle.cp.mode == 4 or vehicle.cp.mode == 8) and vehicle.cp.refillUntilPct < 100;
-				self.canScrollDown = (vehicle.cp.mode == 4 or vehicle.cp.mode == 8) and vehicle.cp.refillUntilPct > 1;
+				canScrollUp   = (vehicle.cp.mode == 4 or vehicle.cp.mode == 8) and vehicle.cp.refillUntilPct < 100;
+				canScrollDown = (vehicle.cp.mode == 4 or vehicle.cp.mode == 8) and vehicle.cp.refillUntilPct > 1;
 			end;
 
 		elseif pg == 4 then
 			if fn == 'setSearchCombineOnField' then
-				self.canScrollUp = courseplay.fields.numAvailableFields > 0 and vehicle.cp.searchCombineAutomatically and vehicle.cp.searchCombineOnField > 0;
-				self.canScrollDown = courseplay.fields.numAvailableFields > 0 and vehicle.cp.searchCombineAutomatically and vehicle.cp.searchCombineOnField < courseplay.fields.numAvailableFields;
+				canScrollUp   = courseplay.fields.numAvailableFields > 0 and vehicle.cp.searchCombineAutomatically and vehicle.cp.searchCombineOnField > 0;
+				canScrollDown = courseplay.fields.numAvailableFields > 0 and vehicle.cp.searchCombineAutomatically and vehicle.cp.searchCombineOnField < courseplay.fields.numAvailableFields;
 			end;
 
 		elseif pg == 5 then
 			if fn == 'changeTurnSpeed' then
-				self.canScrollUp =   vehicle.cp.speeds.turn < vehicle.cp.speeds.max;
-				self.canScrollDown = vehicle.cp.speeds.turn > vehicle.cp.speeds.minTurn;
+				canScrollUp   = vehicle.cp.speeds.turn < vehicle.cp.speeds.max;
+				canScrollDown = vehicle.cp.speeds.turn > vehicle.cp.speeds.minTurn;
 			elseif fn == 'changeFieldSpeed' then
-				self.canScrollUp =   vehicle.cp.speeds.field < vehicle.cp.speeds.max;
-				self.canScrollDown = vehicle.cp.speeds.field > vehicle.cp.speeds.minField;
+				canScrollUp   = vehicle.cp.speeds.field < vehicle.cp.speeds.max;
+				canScrollDown = vehicle.cp.speeds.field > vehicle.cp.speeds.minField;
 			elseif fn == 'changeMaxSpeed' then
-				self.canScrollUp =   vehicle.cp.speeds.useRecordingSpeed == false and vehicle.cp.speeds.street < vehicle.cp.speeds.max;
-				self.canScrollDown = vehicle.cp.speeds.useRecordingSpeed == false and vehicle.cp.speeds.street > vehicle.cp.speeds.minStreet;
+				canScrollUp   = vehicle.cp.speeds.useRecordingSpeed == false and vehicle.cp.speeds.street < vehicle.cp.speeds.max;
+				canScrollDown = vehicle.cp.speeds.useRecordingSpeed == false and vehicle.cp.speeds.street > vehicle.cp.speeds.minStreet;
 			elseif fn == 'changeUnloadSpeed' then
-				self.canScrollUp =   vehicle.cp.speeds.unload < vehicle.cp.speeds.max;
-				self.canScrollDown = vehicle.cp.speeds.unload > vehicle.cp.speeds.minUnload;
+				canScrollUp   = vehicle.cp.speeds.unload < vehicle.cp.speeds.max;
+				canScrollDown = vehicle.cp.speeds.unload > vehicle.cp.speeds.minUnload;
 			end;
 
 		elseif pg == 6 then
 			if fn == "changeWaitTime" then
-				self.canScrollUp = courseplay:getCanHaveWaitTime(vehicle);
-				self.canScrollDown = self.canScrollUp and vehicle.cp.waitTime > 0;
+				canScrollUp   = courseplay:getCanHaveWaitTime(vehicle);
+				canScrollDown = canScrollUp and vehicle.cp.waitTime > 0;
 			elseif fn == 'changeDebugChannelSection' then
-				self.canScrollUp = courseplay.debugChannelSection > 1;
-				self.canScrollDown = courseplay.debugChannelSection < courseplay.numDebugChannelSections;
+				canScrollUp   = courseplay.debugChannelSection > 1;
+				canScrollDown = courseplay.debugChannelSection < courseplay.numDebugChannelSections;
 			end;
 
 		elseif pg == 7 then
 			if fn == "changeLaneOffset" then
-				self.canScrollUp = vehicle.cp.mode == 4 or vehicle.cp.mode == 6;
-				self.canScrollDown = self.canScrollUp;
+				canScrollUp   = vehicle.cp.mode == 4 or vehicle.cp.mode == 6;
+				canScrollDown = canScrollUp;
 			elseif fn == "changeToolOffsetX" or fn == "changeToolOffsetZ" then
-				self.canScrollUp = vehicle.cp.mode == 3 or vehicle.cp.mode == 4 or vehicle.cp.mode == 6 or vehicle.cp.mode == 7 or vehicle.cp.mode == 8;
-				self.canScrollDown = self.canScrollUp;
+				canScrollUp   = vehicle.cp.mode == 3 or vehicle.cp.mode == 4 or vehicle.cp.mode == 6 or vehicle.cp.mode == 7 or vehicle.cp.mode == 8;
+				canScrollDown = canScrollUp;
 			end;
 
 		elseif pg == 8 then
 			if fn == "setFieldEdgePath" then
-				self.canScrollUp = courseplay.fields.numAvailableFields > 0 and vehicle.cp.fieldEdge.selectedField.fieldNum < courseplay.fields.numAvailableFields;
-				self.canScrollDown   = courseplay.fields.numAvailableFields > 0 and vehicle.cp.fieldEdge.selectedField.fieldNum > 0;
+				canScrollUp   = courseplay.fields.numAvailableFields > 0 and vehicle.cp.fieldEdge.selectedField.fieldNum < courseplay.fields.numAvailableFields;
+				canScrollDown = courseplay.fields.numAvailableFields > 0 and vehicle.cp.fieldEdge.selectedField.fieldNum > 0;
 			elseif fn == "changeWorkWidth" then
-				self.canScrollUp =   true;
-				self.canScrollDown = vehicle.cp.workWidth > 0.1;
+				canScrollUp   = true;
+				canScrollDown = vehicle.cp.workWidth > 0.1;
 			end;
 		end;
 
+		if canScrollUp ~= nil then
+			self:setCanScrollUp(canScrollUp);
+		end;
+		if canScrollDown ~= nil then
+			self:setCanScrollDown(canScrollDown);
+		end;
+
 	elseif self.overlay ~= nil then
-		self.show = true;
+		local show = true;
 
 		--CONDITIONAL DISPLAY
 		--Global
 		if pg == "global" then
 			if fn == "showSaveCourseForm" and prm == "course" then
-				self.show = vehicle.cp.canDrive and not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused and vehicle.Waypoints ~= nil and #(vehicle.Waypoints) ~= 0;
+				show = vehicle.cp.canDrive and not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused and vehicle.Waypoints ~= nil and #(vehicle.Waypoints) ~= 0;
 			end;
 
 		--Page 1
 		elseif pg == 1 then
 			if fn == "setCpMode" then
-				self.show = vehicle.cp.canSwitchMode and not vehicle.cp.distanceCheck;
+				show = vehicle.cp.canSwitchMode and not vehicle.cp.distanceCheck;
 			elseif fn == "clearCustomFieldEdge" or fn == "toggleCustomFieldEdgePathShow" then
-				self.show = not vehicle.cp.canDrive and vehicle.cp.fieldEdge.customField.isCreated;
+				show = not vehicle.cp.canDrive and vehicle.cp.fieldEdge.customField.isCreated;
 			elseif fn == "setCustomFieldEdgePathNumber" then
 				if prm < 0 then
-					self.show = not vehicle.cp.canDrive and vehicle.cp.fieldEdge.customField.isCreated and vehicle.cp.fieldEdge.customField.fieldNum > 0;
+					show = not vehicle.cp.canDrive and vehicle.cp.fieldEdge.customField.isCreated and vehicle.cp.fieldEdge.customField.fieldNum > 0;
 				elseif prm > 0 then
-					self.show = not vehicle.cp.canDrive and vehicle.cp.fieldEdge.customField.isCreated and vehicle.cp.fieldEdge.customField.fieldNum < courseplay.fields.customFieldMaxNum;
+					show = not vehicle.cp.canDrive and vehicle.cp.fieldEdge.customField.isCreated and vehicle.cp.fieldEdge.customField.fieldNum < courseplay.fields.customFieldMaxNum;
 				end;
 			elseif fn == 'toggleFindFirstWaypoint' then
-				self.show = vehicle.cp.canDrive and not vehicle:getIsCourseplayDriving() and not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused;
+				show = vehicle.cp.canDrive and not vehicle:getIsCourseplayDriving() and not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused;
 			elseif fn == 'stop_record' or fn == 'setRecordingPause' or fn == 'delete_waypoint' or fn == 'set_waitpoint' or fn == 'set_crossing' or fn == 'setRecordingTurnManeuver' or fn == 'change_DriveDirection' then
-				self.show = vehicle.cp.isRecording or vehicle.cp.recordingIsPaused;
+				show = vehicle.cp.isRecording or vehicle.cp.recordingIsPaused;
 			end;
 
 		--Page 2
 		elseif pg == 2 then
 			if fn == "reloadCoursesFromXML" then
-				self.show = g_server ~= nil;
+				show = g_server ~= nil;
 			elseif fn == "showSaveCourseForm" and prm == "filter" then
-				self.show = not vehicle.cp.hud.choose_parent;
+				show = not vehicle.cp.hud.choose_parent;
 			elseif fn == "shiftHudCourses" then
 				if prm < 0 then
-					self.show = vehicle.cp.hud.courseListPrev;
+					show = vehicle.cp.hud.courseListPrev;
 				elseif prm > 0 then
-					self.show = vehicle.cp.hud.courseListNext;
+					show = vehicle.cp.hud.courseListNext;
 				end;
 			end;
 		elseif pg == -2 then
-			self.show = vehicle.cp.hud.content.pages[2][prm][1].text ~= nil;
+			show = vehicle.cp.hud.content.pages[2][prm][1].text ~= nil;
 
 		--Page 3
 		elseif pg == 3 then
 			if fn == "changeTurnRadius" and prm < 0 then
-				self.show = vehicle.cp.turnRadius > 0;
+				show = vehicle.cp.turnRadius > 0;
 			elseif fn == "changeFollowAtFillLevel" then
 				if prm < 0 then
-					self.show = vehicle.cp.followAtFillLevel > 0;
+					show = vehicle.cp.followAtFillLevel > 0;
 				elseif prm > 0 then
-					self.show = vehicle.cp.followAtFillLevel < 100;
+					show = vehicle.cp.followAtFillLevel < 100;
 				end;
 			elseif fn == "changeDriveOnAtFillLevel" then 
 				if prm < 0 then
-					self.show = vehicle.cp.driveOnAtFillLevel > 0;
+					show = vehicle.cp.driveOnAtFillLevel > 0;
 				elseif prm > 0 then
-					self.show = vehicle.cp.driveOnAtFillLevel < 100;
+					show = vehicle.cp.driveOnAtFillLevel < 100;
 				end;
 			elseif fn == 'changeRefillUntilPct' then 
 				if prm < 0 then
-					self.show = (vehicle.cp.mode == 4 or vehicle.cp.mode == 8) and vehicle.cp.refillUntilPct > 1;
+					show = (vehicle.cp.mode == 4 or vehicle.cp.mode == 8) and vehicle.cp.refillUntilPct > 1;
 				elseif prm > 0 then
-					self.show = (vehicle.cp.mode == 4 or vehicle.cp.mode == 8) and vehicle.cp.refillUntilPct < 100;
+					show = (vehicle.cp.mode == 4 or vehicle.cp.mode == 8) and vehicle.cp.refillUntilPct < 100;
 				end;
 			end;
 
 		--Page 4
 		elseif pg == 4 then
 			if fn == 'selectAssignedCombine' then
-				self.show = not vehicle.cp.searchCombineAutomatically;
-				if self.show and prm < 0 then
-					self.show = vehicle.cp.selectedCombineNumber > 0;
+				show = not vehicle.cp.searchCombineAutomatically;
+				if show and prm < 0 then
+					show = vehicle.cp.selectedCombineNumber > 0;
 				end;
 			elseif fn == 'setSearchCombineOnField' then
-				self.show = courseplay.fields.numAvailableFields > 0 and vehicle.cp.searchCombineAutomatically;
-				if self.show then
+				show = courseplay.fields.numAvailableFields > 0 and vehicle.cp.searchCombineAutomatically;
+				if show then
 					if prm < 0 then
-						self.show = vehicle.cp.searchCombineOnField > 0;
+						show = vehicle.cp.searchCombineOnField > 0;
 					else
-						self.show = vehicle.cp.searchCombineOnField < courseplay.fields.numAvailableFields;
+						show = vehicle.cp.searchCombineOnField < courseplay.fields.numAvailableFields;
 					end;
 				end;
 			elseif fn == 'removeActiveCombineFromTractor' then
-				self.show = vehicle.cp.activeCombine ~= nil;
+				show = vehicle.cp.activeCombine ~= nil;
 			end;
 
 		--Page 5
 		elseif pg == 5 then
 			if fn == 'changeTurnSpeed' then
 				if prm < 0 then
-					self.show = vehicle.cp.speeds.turn > vehicle.cp.speeds.minTurn;
+					show = vehicle.cp.speeds.turn > vehicle.cp.speeds.minTurn;
 				elseif prm > 0 then
-					self.show = vehicle.cp.speeds.turn < vehicle.cp.speeds.max;
+					show = vehicle.cp.speeds.turn < vehicle.cp.speeds.max;
 				end;
 			elseif fn == 'changeFieldSpeed' then
 				if prm < 0 then
-					self.show = vehicle.cp.speeds.field > vehicle.cp.speeds.minField;
+					show = vehicle.cp.speeds.field > vehicle.cp.speeds.minField;
 				elseif prm > 0 then
-					self.show = vehicle.cp.speeds.field < vehicle.cp.speeds.max;
+					show = vehicle.cp.speeds.field < vehicle.cp.speeds.max;
 				end;
 			elseif fn == 'changeMaxSpeed' then
 				if prm < 0 then
-					self.show = not vehicle.cp.speeds.useRecordingSpeed and vehicle.cp.speeds.street > vehicle.cp.speeds.minStreet;
+					show = not vehicle.cp.speeds.useRecordingSpeed and vehicle.cp.speeds.street > vehicle.cp.speeds.minStreet;
 				elseif prm > 0 then
-					self.show = not vehicle.cp.speeds.useRecordingSpeed and vehicle.cp.speeds.street < vehicle.cp.speeds.max;
+					show = not vehicle.cp.speeds.useRecordingSpeed and vehicle.cp.speeds.street < vehicle.cp.speeds.max;
 				end;
 			elseif fn == 'changeUnloadSpeed' then
 				if prm < 0 then
-					self.show = vehicle.cp.speeds.unload > vehicle.cp.speeds.minUnload;
+					show = vehicle.cp.speeds.unload > vehicle.cp.speeds.minUnload;
 				elseif prm > 0 then
-					self.show = vehicle.cp.speeds.unload < vehicle.cp.speeds.max;
+					show = vehicle.cp.speeds.unload < vehicle.cp.speeds.max;
 				end;
 			end;
 
 		--Page 6
 		elseif pg == 6 then
 			if fn == "changeWaitTime" then
-				self.show = courseplay:getCanHaveWaitTime(vehicle);
-				if self.show and prm < 0 then
-					self.show = vehicle.cp.waitTime > 0;
+				show = courseplay:getCanHaveWaitTime(vehicle);
+				if show and prm < 0 then
+					show = vehicle.cp.waitTime > 0;
 				end;
 			elseif fn == "toggleDebugChannel" then
-				self.show = prm >= courseplay.debugChannelSectionStart and prm <= courseplay.debugChannelSectionEnd;
+				show = prm >= courseplay.debugChannelSectionStart and prm <= courseplay.debugChannelSectionEnd;
 			elseif fn == "changeDebugChannelSection" then
 				if prm < 0 then
-					self.show = courseplay.debugChannelSection > 1;
+					show = courseplay.debugChannelSection > 1;
 				elseif prm > 0 then
-					self.show = courseplay.debugChannelSection < courseplay.numDebugChannelSections;
+					show = courseplay.debugChannelSection < courseplay.numDebugChannelSections;
 				end;
 			end;
 
 		--Page 7
 		elseif pg == 7 then
 			if fn == "changeLaneOffset" then
-				self.show = vehicle.cp.mode == 4 or vehicle.cp.mode == 6;
+				show = vehicle.cp.mode == 4 or vehicle.cp.mode == 6;
 			elseif fn == "toggleSymmetricLaneChange" then
-				self.show = vehicle.cp.mode == 4 or vehicle.cp.mode == 6 and vehicle.cp.laneOffset ~= 0;
+				show = vehicle.cp.mode == 4 or vehicle.cp.mode == 6 and vehicle.cp.laneOffset ~= 0;
 			elseif fn == "changeToolOffsetX" or fn == "changeToolOffsetZ" then
-				self.show = vehicle.cp.mode == 3 or vehicle.cp.mode == 4 or vehicle.cp.mode == 6 or vehicle.cp.mode == 7;
+				show = vehicle.cp.mode == 3 or vehicle.cp.mode == 4 or vehicle.cp.mode == 6 or vehicle.cp.mode == 7;
 			elseif fn == "switchDriverCopy" and prm < 0 then
-				self.show = vehicle.cp.selectedDriverNumber > 0;
+				show = vehicle.cp.selectedDriverNumber > 0;
 			elseif fn == "copyCourse" then
-				self.show = vehicle.cp.hasFoundCopyDriver;
+				show = vehicle.cp.hasFoundCopyDriver;
 			end;
 
 		--Page 8
 		elseif pg == 8 then
 			if fn == 'toggleSucHud' then
-				self.show = courseplay.fields.numAvailableFields > 0 and vehicle.cp.fieldEdge.selectedField.fieldNum > 0;
+				show = courseplay.fields.numAvailableFields > 0 and vehicle.cp.fieldEdge.selectedField.fieldNum > 0;
 			elseif fn == "toggleSelectedFieldEdgePathShow" then
-				self.show = courseplay.fields.numAvailableFields > 0 and vehicle.cp.fieldEdge.selectedField.fieldNum > 0;
+				show = courseplay.fields.numAvailableFields > 0 and vehicle.cp.fieldEdge.selectedField.fieldNum > 0;
 			elseif fn == "setFieldEdgePath" then
-				self.show = courseplay.fields.numAvailableFields > 0;
-				if self.show then
+				show = courseplay.fields.numAvailableFields > 0;
+				if show then
 					if prm < 0 then
-						self.show = vehicle.cp.fieldEdge.selectedField.fieldNum > 0;
+						show = vehicle.cp.fieldEdge.selectedField.fieldNum > 0;
 					elseif prm > 0 then
-						self.show = vehicle.cp.fieldEdge.selectedField.fieldNum < courseplay.fields.numAvailableFields;
+						show = vehicle.cp.fieldEdge.selectedField.fieldNum < courseplay.fields.numAvailableFields;
 					end;
 				end;
 			elseif fn == "changeWorkWidth" and prm < 0 then
-				self.show = vehicle.cp.workWidth > 0.1;
+				show = vehicle.cp.workWidth > 0.1;
 			elseif fn == "switchStartingDirection" then
-				self.show = vehicle.cp.hasStartingCorner;
+				show = vehicle.cp.hasStartingCorner;
 			elseif fn == 'setHeadlandDir' or fn == 'setHeadlandOrder' then
-				self.show = vehicle.cp.headland.numLanes > 0;
+				show = vehicle.cp.headland.numLanes > 0;
 			elseif fn == 'setHeadlandNumLanes' then
 				if prm < 0 then
-					self.show = vehicle.cp.headland.numLanes > 0;
+					show = vehicle.cp.headland.numLanes > 0;
 				elseif prm > 0 then
-					self.show = vehicle.cp.headland.numLanes < vehicle.cp.headland.maxNumLanes;
+					show = vehicle.cp.headland.numLanes < vehicle.cp.headland.maxNumLanes;
 				end;
 			elseif fn == "generateCourse" then
-				self.show = vehicle.cp.hasValidCourseGenerationData;
+				show = vehicle.cp.hasValidCourseGenerationData;
 			end;
 		end;
 
-		
+		self:setShow(show);
+
+
+
 		if self.show and not self.isHidden then
 			-- set color
 			local currentColor = self.overlay.curColor;
@@ -399,9 +410,9 @@ function courseplay.button:render()
 end;
 
 function courseplay.button:setColor(colorName)
-	if self.overlay and colorName and self.overlay.curColor ~= colorName and courseplay.hud.colors[colorName] and #courseplay.hud.colors[colorName] == 4 then
+	if self.overlay and colorName and (self.curColor == nil or self.curColor ~= colorName) and courseplay.hud.colors[colorName] and #courseplay.hud.colors[colorName] == 4 then
 		self.overlay:setColor(unpack(courseplay.hud.colors[colorName]));
-		self.overlay.curColor = colorName;
+		self.curColor = colorName;
 	end;
 end;
 
@@ -433,9 +444,57 @@ function courseplay.button:setToolTip(text)
 	end;
 end;
 
+function courseplay.button:setActive(active)
+	if self.isActive ~= active then
+		self.isActive = active;
+	end;
+end;
+
+function courseplay.button:setCanBeClicked(canBeClicked)
+	if self.canBeClicked ~= canBeClicked then
+		self.canBeClicked = canBeClicked;
+	end;
+end;
+
+function courseplay.button:setClicked(clicked)
+	if self.isClicked ~= clicked then
+		self.isClicked = clicked;
+	end;
+end;
+
 function courseplay.button:setDisabled(disabled)
 	if self.isDisabled ~= disabled then
 		self.isDisabled = disabled;
+	end;
+end;
+
+function courseplay.button:setHovered(hovered)
+	if self.isHovered ~= hovered then
+		self.isHovered = hovered;
+	end;
+end;
+
+function courseplay.button:setCanScrollUp(canScrollUp)
+	if self.canScrollUp ~= canScrollUp then
+		self.canScrollUp = canScrollUp;
+	end;
+end;
+
+function courseplay.button:setCanScrollDown(canScrollDown)
+	if self.canScrollDown ~= canScrollDown then
+		self.canScrollDown = canScrollDown;
+	end;
+end;
+
+function courseplay.button:setShow(show)
+	if self.show ~= show then
+		self.show = show;
+	end;
+end;
+
+function courseplay.button:setHidden(hidden)
+	if self.isHidden ~= hidden then
+		self.isHidden = hidden;
 	end;
 end;
 

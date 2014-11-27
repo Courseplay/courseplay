@@ -57,7 +57,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 		end;
 
 		if buttonToHandle then
-			buttonToHandle.isClicked = isDown;
+			buttonToHandle:setClicked(isDown);
 			if buttonToHandle.hoverText and buttonToHandle.functionToCall ~= nil then
 				self.cp.hud.content.pages[buttonToHandle.page][buttonToHandle.row][1].isClicked = isDown;
 			end;
@@ -74,25 +74,25 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 		if self.cp.suc.active then
 			for _,button in pairs(self.cp.buttons.suc) do
 				if button.show and not button.isHidden then
-					button.isClicked = false;
-					button.isHovered = button:getHasMouse(posX, posY);
+					button:setClicked(false);
+					button:setHovered(button:getHasMouse(posX, posY));
 				end;
 			end;
 		end;
 
 		for _,button in pairs(self.cp.buttons.global) do
-			button.isClicked = false;
+			button:setClicked(false);
 			if button.show and not button.isHidden then
-				button.isClicked = false;
-				button.isHovered = button:getHasMouse(posX, posY);
+				button:setClicked(false);
+				button:setHovered(button:getHasMouse(posX, posY));
 			end;
 		end;
 
 		self.cp.hud.mouseWheel.render = false;
 		for _,button in pairs(self.cp.buttons[self.cp.hud.currentPage]) do
-			button.isClicked = false;
+			button:setClicked(false);
 			if button.show and not button.isHidden then
-				button.isHovered = button:getHasMouse(posX, posY);
+				button:setHovered(button:getHasMouse(posX, posY));
 				if button.isHovered then
 
 					if button.isMouseWheelArea and (button.canScrollUp or button.canScrollDown) then
@@ -127,12 +127,12 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 
 		if self.cp.hud.currentPage == 2 then
 			for _,button in pairs(self.cp.buttons[-2]) do
-				button.isClicked = false;
+				button:setClicked(false);
 				if button.show and not button.isHidden then
-					button.isHovered = false;
+					button:setHovered(false);
 					if button:getHasMouse(posX, posY) then
-						button.isClicked = false;
-						button.isHovered = true;
+						button:setClicked(false);
+						button:setHovered(true);
 					end;
 
 					if button.hoverText then
@@ -161,7 +161,7 @@ function courseplay.button:handleMouseClick(vehicle)
 			return;
 		end;
 
-		-- self.isClicked = true;
+		-- self:setClicked(true);
 		if self.functionToCall == "showSaveCourseForm" then
 			vehicle.cp.imWriting = true
 		end
@@ -170,7 +170,7 @@ function courseplay.button:handleMouseClick(vehicle)
 		else
 			vehicle:setCourseplayFunc(self.functionToCall, parameter, false, self.page);
 		end
-		-- self.isClicked = false;
+		-- self:setClicked(false);
 	end;
 end;
 

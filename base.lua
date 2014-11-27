@@ -474,7 +474,7 @@ function courseplay:load(xmlFile)
 	self.cp.suc.lines.title.posY = self.cp.suc.y2 - self.cp.suc.vPad - self.cp.suc.lines.title.fontSize;
 	self.cp.suc.lines.field = {
 		fontSize = self.cp.suc.fontSize;
-		posY = self.cp.suc.lines.title.posY - self.cp.suc.lineHeight * 1.15;
+		posY = self.cp.suc.lines.title.posY - self.cp.suc.lineHeight * 1.5;
 		text = '';
 	};
 	self.cp.suc.lines.fruit = {
@@ -496,6 +496,7 @@ function courseplay:load(xmlFile)
 	self.cp.suc.selectedFruit = nil;
 
 
+	-- main hud content
 	self.cp.hud.reloadPage = {};
 	courseplay.hud:setReloadPageOrder(self, -1, true); --reload all
 
