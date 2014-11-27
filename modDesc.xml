@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="20">
-	<version>4.00.0103</version>
+	<version>4.00.0104</version>
 	<author><![CDATA[Courseplay Dev Team]]></author>
 	<title>
 		<br>Courseplay</br>
@@ -1890,18 +1890,6 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<nl>Route starten bij:</nl>
 			<br>Iniciar rota em:</br>
 		</text>
-		<text name="COURSEPLAY_FIRST_POINT">
-			<en>first waypoint</en>
-			<de>ersten Wegpunkt</de>
-			<es>primer punto</es>
-			<fr>premier point</fr>
-			<it>primo punto</it>
-			<cz>na prvním bodě</cz>
-			<ru>со стартовой точки</ru>
-			<hu>első útpont</hu>
-			<nl>eerste markering</nl>
-			<br>primeiro ponto</br>
-		</text>
 		<text name="COURSEPLAY_NEAREST_POINT">
 			<en>nearest waypoint</en>
 			<de>nächsten Wegpunkt</de>
@@ -1914,6 +1902,28 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<nl>volgende markering</nl>
 			<br>próximo ponto</br>
 		</text>
+		<text name="COURSEPLAY_FIRST_POINT">
+			<en>first waypoint</en>
+			<de>ersten Wegpunkt</de>
+			<es>primer punto</es>
+			<fr>premier point</fr>
+			<it>primo punto</it>
+			<cz>na prvním bodě</cz>
+			<ru>со стартовой точки</ru>
+			<hu>első útpont</hu>
+			<nl>eerste markering</nl>
+			<br>primeiro ponto</br>
+		</text>
+		<text name="COURSEPLAY_CURRENT_POINT"> <!-- missing: cz, ru, hu -->
+			<en>current waypoint</en>
+			<de>aktuellen Wegpunkt</de>
+			<es>punto actual</es>
+			<fr>courant point</fr>
+			<it>corrente punto</it>
+			<nl>huidige  markering</nl>
+			<br>atual ponto</br>
+		</text>
+
 		<text name="COURSEPLAY_FIELD_EDGE_PATH">
 			<en>Field edge path</en>
 			<de>Feldrandkurs</de>

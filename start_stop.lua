@@ -290,14 +290,12 @@ function courseplay:start(self)
 			self.cp.driveControl.fourWDBackup = self.driveControl.fourWDandDifferentials.fourWheel;
 		end;
 		if self.cp.driveControl.hasHandbrake then
-			self.cp.driveControl.handbrakeBackup = self.driveControl.handBrake.isActive;
 			if self.driveControl.handBrake.isActive == true then
 				self.driveControl.handBrake.isActive = false;
 				changed = true;
 			end;
 		end;
 		if self.cp.driveControl.hasShuttleMode then
-			self.cp.driveControl.shuttleModeBackup = self.driveControl.shuttle.direction;
 			if self.driveControl.shuttle.direction < 1.0 then
 				self.driveControl.shuttle.direction = 1.0;
 				changed = true;
@@ -408,14 +406,6 @@ function courseplay:stop(self)
 		local changed = false;
 		if self.cp.driveControl.hasFourWD and self.driveControl.fourWDandDifferentials.fourWheel ~= self.cp.driveControl.fourWDBackup then
 			self.driveControl.fourWDandDifferentials.fourWheel = self.cp.driveControl.fourWDBackup;
-			changed = true;
-		end;
-		if self.cp.driveControl.hasHandbrake and self.driveControl.handBrake.isActive ~= self.cp.driveControl.handbrakeBackup then
-			self.driveControl.handBrake.isActive = self.cp.driveControl.handbrakeBackup;
-			changed = true;
-		end;
-		if self.cp.driveControl.hasShuttleMode and self.driveControl.shuttle.direction ~= self.cp.driveControl.shuttleModeBackup then
-			self.driveControl.shuttle.direction = self.cp.driveControl.shuttleModeBackup;
 			changed = true;
 		end;
 

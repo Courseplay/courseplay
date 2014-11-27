@@ -799,11 +799,13 @@ function courseplay:setSpeed(vehicle, refSpeed)
 			courseplay:setCustomTimer(vehicle, 'slippingWheels', 5);
 		elseif courseplay:timerIsThrough(vehicle, 'slippingWheels') then
 			courseplay:setGlobalInfoText(vehicle, 'SLIPPING_0');
+			vehicle.cp.isSlipping = true;
 		end;
 
 	-- reset timer
 	elseif vehicle.cp.timers.slippingWheels ~= 0 then
 		vehicle.cp.timers.slippingWheels = 0;
+		vehicle.cp.isSlipping = false;
 	end;
 
 	local deltaMinus = (vehicle.lastSpeedReal * 3600) - refSpeed;
@@ -1202,10 +1204,10 @@ end;
 
 function courseplay:setFourWheelDrive(vehicle, workArea)
 	local changed = false;
-	if (workArea or vehicle.cp.BGASelectedSection) and not vehicle.driveControl.fourWDandDifferentials.fourWheel then
+	if (workArea or vehicle.cp.BGASelectedSection or vehicle.cp.isSlipping) and not vehicle.driveControl.fourWDandDifferentials.fourWheel then
 		vehicle.driveControl.fourWDandDifferentials.fourWheel = true;
 		changed = true;
-	elseif not workArea and not vehicle.cp.BGASelectedSection and vehicle.driveControl.fourWDandDifferentials.fourWheel then
+	elseif not workArea and not vehicle.cp.BGASelectedSection and not vehicle.cp.isSlipping and vehicle.driveControl.fourWDandDifferentials.fourWheel then
 		vehicle.driveControl.fourWDandDifferentials.fourWheel = false;
 		changed = true;
 	end
