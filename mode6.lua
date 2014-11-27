@@ -10,6 +10,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 		end;
 	end;
 	--]]
+	local fieldArea = (self.recordnumber > self.cp.startWork) and (self.recordnumber < self.cp.stopWork)
 	local workArea = (self.recordnumber > self.cp.startWork) and (self.recordnumber < self.cp.finishWork)
 	local isFinishingWork = false
 	local hasFinishedWork = false
@@ -25,7 +26,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 			courseplay:setRecordNumber(self, math.min(self.cp.finishWork + 1,self.maxnumber));
 		end;
 	end;
-	if workArea then
+	if fieldArea then
 		workSpeed = 1;
 	end
 	if (self.recordnumber == self.cp.stopWork or self.cp.lastRecordnumber == self.cp.stopWork) and self.cp.abortWork == nil and not self.cp.isLoaded and not isFinishingWork then
@@ -254,7 +255,6 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 						end;
 					end
 				elseif not workArea or self.cp.abortWork ~= nil or self.cp.isLoaded or self.cp.lastRecordnumber == self.cp.stopWork then
-					workSpeed = 0;
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,nil)
 					if not specialTool then
 						if not isFolding then

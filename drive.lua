@@ -491,11 +491,11 @@ function courseplay:drive(self, dt)
 		(not workArea and self.cp.wait and ((isAtEnd and self.Waypoints[self.recordnumber].wait) or courseplay:waypointsHaveAttr(self, self.recordnumber, 0, 2, "wait", true, false))) or 
 		(isAtEnd and self.Waypoints[self.recordnumber].rev) or
 		(not isAtEnd and (self.Waypoints[self.recordnumber].rev or self.Waypoints[self.recordnumber + 1].rev or self.Waypoints[self.recordnumber + 2].rev)) or
-		(workSpeed ~= nil and workSpeed == 0.5) 
+		(workSpeed ~= nil and workSpeed == 0.5) -- baler in mode 6 , slow down
 	then
-		refSpeed = math.min(self.cp.speeds.turn,refSpeed);
+		refSpeed = math.min(self.cp.speeds.turn,refSpeed);              -- we are on the field, go field speed
 	elseif ((self.cp.mode == 2 or self.cp.mode == 3) and isAtStart) or (workSpeed ~= nil and workSpeed == 1) then
-		refSpeed = math.min(self.cp.speeds.field,refSpeed);
+		refSpeed = math.min(self.cp.speeds.field,refSpeed); 
 	else
 		local mode7onCourse = true
 		if self.cp.mode ~= 7 then
@@ -507,7 +507,7 @@ function courseplay:drive(self, dt)
 			if self.Waypoints[self.recordnumber].speed < self.cp.speeds.crawl then
 				refSpeed = courseplay:getAverageWpSpeed(self , 4)
 			else
-				refSpeed = Utils.clamp(refSpeed, self.cp.speeds.crawl, self.Waypoints[self.recordnumber].speed); --normaly use speed from waypoint
+				refSpeed = Utils.clamp(refSpeed, self.cp.speeds.crawl, self.Waypoints[self.recordnumber].speed); --normaly use speed from waypoint, but  maximum street speed
 			end
 		end;		
 	end;

@@ -1,6 +1,7 @@
 function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, refSpeed)
 	local workTool;
 	local forceSpeedLimit = refSpeed
+	local fieldArea = (self.recordnumber > self.cp.startWork) and (self.recordnumber < self.cp.stopWork)
 	local workArea = (self.recordnumber > self.cp.startWork) and (self.recordnumber < self.cp.finishWork)
 	local isFinishingWork = false
 	local hasFinishedWork = false
@@ -16,7 +17,12 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 			courseplay:setRecordNumber(self, math.min(self.cp.finishWork + 1, self.maxnumber));
 		end;
 	end;
-
+	
+	--go with field speed	
+	if fieldArea then
+		workSpeed = 1;
+	end
+	
 	-- Begin Work
 	if self.cp.lastRecordnumber == self.cp.startWork and fillLevelPct ~= 0 then
 		if self.cp.abortWork ~= nil then
@@ -107,7 +113,6 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 
 		if workArea and fillLevelPct ~= 0 and (self.cp.abortWork == nil or self.cp.runOnceStartCourse) and self.cp.turnStage == 0 and not self.cp.inTraffic then
 			self.cp.runOnceStartCourse = false;
-			workSpeed = 1;
 			--turn On                     courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload,ridgeMarker)
 			specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,true,true,true,allowedToDrive,nil,nil, ridgeMarker)
 			if allowedToDrive then
@@ -180,7 +185,6 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 
 		--TRAFFIC: TURN OFF
 		elseif workArea and self.cp.abortWork == nil and self.cp.inTraffic then
-			workSpeed = 0;
 			specialTool, allowedToDrive = courseplay:handleSpecialTools(self, workTool, true, true, false, allowedToDrive, nil, nil, ridgeMarker);
 			if not specialTool then
 				if workTool.setIsTurnedOn ~= nil and workTool.isTurnedOn then
@@ -191,7 +195,6 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 
 		--TURN OFF AND FOLD
 		elseif self.cp.turnStage == 0 then
-			workSpeed = 0;
 			--turn off
 			specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,nil, ridgeMarker)
 			if not specialTool then
