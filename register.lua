@@ -7,7 +7,6 @@ end;
 local drivableSpec = SpecializationUtil.getSpecialization('drivable');
 local courseplaySpec = SpecializationUtil.getSpecialization('courseplay');
 local numInstallationsVehicles = 0;
-courseplay.nonSupportedVehicleTypeNames = {};
 
 function courseplay:register()
 	for typeName,vehicleType in pairs(VehicleTypeUtil.vehicleTypes) do

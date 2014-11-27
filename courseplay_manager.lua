@@ -153,7 +153,6 @@ function courseplay_manager:createButton(section, fn, prm, img, x, y, w, h)
 	local button = { 
 		section = section, 
 		overlay = overlay, 
-		overlays = { overlay }, 
 		functionToCall = fn, 
 		parameter = prm, 
 		x_init = x,
@@ -188,7 +187,7 @@ function courseplay_manager:deleteMap()
 
 	--buttons
 	for i,vehicle in pairs(g_currentMission.steerables) do
-		if vehicle.cp ~= nil and not courseplay.nonSupportedVehicleTypeNames[vehicle.typeName] then
+		if vehicle.cp ~= nil and vehicle.cp.hasCourseplaySpec then
 			if vehicle.cp.globalInfoTextOverlay ~= nil then
 				vehicle.cp.globalInfoTextOverlay:delete();
 			end;
@@ -200,12 +199,8 @@ function courseplay_manager:deleteMap()
 
 	--global info text
 	for i,button in pairs(self.buttons.globalInfoText) do
-		if button.overlays ~= nil then
-			for j,overlay in pairs(button.overlays) do
-				if overlay.overlayId ~= nil and overlay.delete ~= nil then
-					overlay:delete();
-				end;
-			end;
+		if button.overlay ~= nil and button.overlay.overlayId ~= nil and overlay.delete ~= nil then
+			overlay:delete();
 		end;
 		if self.globalInfoTextOverlays[i] then
 			local gitOverlay = self.globalInfoTextOverlays[i];
@@ -251,8 +246,8 @@ function courseplay_manager:draw()
 	local basePosY = courseplay.globalInfoText.backgroundPosY;
 	local ingameMap = g_currentMission.ingameMap;
 	if not (ingameMap.isVisible and ingameMap.isFullSize) and table.maxn(git.content) > 0 then
-		basePosY = ingameMap.isVisible and git.posYAboveMap or git.posY;
 		courseplay.globalInfoText.hasContent = true;
+		basePosY = ingameMap.isVisible and git.posYAboveMap or git.posY;
 		for _,refIndexes in pairs(git.content) do
 			if line >= self.globalInfoTextMaxNum then
 				break;
@@ -742,7 +737,7 @@ function courseplay_manager:severCombineTractorConnection(vehicle, callDelete)
 			local combine = vehicle;
 			-- remove this combine as savedCombine from all tractors
 			for i,tractor in pairs(g_currentMission.steerables) do
-				if tractor.cp and tractor.cp.savedCombine and tractor.cp.savedCombine == combine and not courseplay.nonSupportedVehicleTypeNames[tractor.typeName]  then
+				if tractor.cp and tractor.cp.savedCombine and tractor.cp.savedCombine == combine and tractor.cp.hasCourseplaySpec  then
 					courseplay:debug(('\ttractor %q: savedCombine=%q --> removeSavedCombineFromTractor()'):format(nameNum(tractor), nameNum(combine)), 4);
 					courseplay:removeSavedCombineFromTractor(tractor);
 				end;

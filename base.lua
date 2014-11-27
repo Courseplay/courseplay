@@ -14,7 +14,7 @@ function courseplay:load(xmlFile)
 	end;
 
 	if self.cp == nil then self.cp = {}; end;
-	self.hasCourseplay = true;
+	self.cp.hasCourseplaySpec = true;
 
 	self.cp.varMemory = {};
 
