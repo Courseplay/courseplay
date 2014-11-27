@@ -505,11 +505,7 @@ function courseplay:drive(self, dt)
 		end
 		if self.cp.speeds.useRecordingSpeed and self.Waypoints[self.recordnumber].speed ~= nil and mode7onCourse then
 			if self.Waypoints[self.recordnumber].speed < self.cp.speeds.crawl then
-				if self.recordnumber == self.maxnumber and self.Waypoints[2].speed ~= nil then
-					refSpeed = Utils.clamp(refSpeed, self.cp.speeds.crawl, self.Waypoints[2].speed); --	@last waypoint, use speed from 2nd waypoint
-				elseif self.Waypoints[self.recordnumber+1].speed ~= nil then
-					refSpeed = Utils.clamp(refSpeed, self.cp.speeds.crawl, self.Waypoints[self.recordnumber+1].speed); -- @any waypoint use speed of +1 waypoint
-				end	
+				refSpeed = courseplay:getAverageWpSpeed(self , 4)
 			else
 				refSpeed = Utils.clamp(refSpeed, self.cp.speeds.crawl, self.Waypoints[self.recordnumber].speed); --normaly use speed from waypoint
 			end
@@ -529,7 +525,7 @@ function courseplay:drive(self, dt)
 		end;
 	elseif self.cp.isInFilltrigger then
 		refSpeed = self.cp.speeds.turn;
-		if self.lastSpeedReal > self.cp.speeds.turn then
+		if self.lastSpeedReal*3600 > self.cp.speeds.turn then
 			courseplay:brakeToStop(self);
 		end;
 		self.cp.isInFilltrigger = false;
@@ -1239,4 +1235,20 @@ function courseplay:setIsCourseplayDriving(active)
 end;
 
 function courseplay:onIsDrivingChanged(vehicle)
+end;
+
+function courseplay:getAverageWpSpeed(vehicle, numWaypoints)
+	numWaypoints = max(numWaypoints,3)
+	local refSpeed = 0 
+	for i= (vehicle.recordnumber-1), (vehicle.recordnumber + numWaypoints-1) do
+		local index = i
+		if index > vehicle.maxnumber then
+			index = index - vehicle.maxnumber
+		elseif index < 1 then
+			index = vehicle.maxnumber - index
+		end
+		refSpeed = refSpeed + vehicle.Waypoints[index].speed
+	end
+	refSpeed = refSpeed/numWaypoints
+	return refSpeed
 end;

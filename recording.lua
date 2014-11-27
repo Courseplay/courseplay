@@ -55,7 +55,7 @@ end
 function courseplay:set_crossing(vehicle, stop)
 	local cx, cy, cz = getWorldTranslation(vehicle.cp.DirectionNode);
 	local newAngle = courseplay:currentVehAngle(vehicle);
-	courseplay:setNewWaypointFromRecording(vehicle, cx, cz, newAngle, false, vehicle.cp.drivingDirReverse, true, vehicle.lastSpeedReal);
+	courseplay:setNewWaypointFromRecording(vehicle, cx, cz, newAngle, false, vehicle.cp.drivingDirReverse, true, vehicle.lastSpeedReal*3600);
 	vehicle.cp.recordingTimer = 1
 	courseplay:setRecordNumber(vehicle, vehicle.recordnumber + 1);
 	vehicle.cp.numCrossingPoints = vehicle.cp.numCrossingPoints + 1
@@ -146,7 +146,7 @@ function courseplay:setRecordingTurnManeuver(vehicle)
 	local cx, cy, cz = getWorldTranslation(vehicle.cp.DirectionNode);
 	local newAngle = courseplay:currentVehAngle(vehicle);
 	if vehicle.cp.isRecordingTurnManeuver then
-		courseplay:setNewWaypointFromRecording(vehicle, cx, cz, newAngle, false, false, false, vehicle.lastSpeedReal, "noDirection", true, false);
+		courseplay:setNewWaypointFromRecording(vehicle, cx, cz, newAngle, false, false, false, vehicle.lastSpeedReal*3600, "noDirection", true, false);
 	else
 		local preTurnStartPoint = vehicle.Waypoints[vehicle.recordnumber - 2];
 		local turnStartPoint = vehicle.Waypoints[vehicle.recordnumber - 1];
@@ -187,7 +187,7 @@ function courseplay:setRecordingTurnManeuver(vehicle)
 			print(printStr);
 		end;
 
-		courseplay:setNewWaypointFromRecording(vehicle, cx, cz, newAngle, false, false, false, vehicle.lastSpeedReal, nil, false, true);
+		courseplay:setNewWaypointFromRecording(vehicle, cx, cz, newAngle, false, false, false, vehicle.lastSpeedReal*3600, nil, false, true);
 	end;
 
 	vehicle.cp.recordingTimer = 1

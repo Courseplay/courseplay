@@ -553,10 +553,9 @@ function courseplay_manager:load_courses()
 						crossing = crossing == 1 or wpNum == 1;
 						wait = wait == 1;
 						rev = rev == 1;
-
-						if speed == 0 then
-							speed = nil
-						elseif math.ceil(speed) ~= speed then
+						
+						--is it a old savegame with old speeds ?
+						if math.ceil(speed) ~= speed then
 							speed = math.ceil(speed*3600)							
 						end
 

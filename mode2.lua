@@ -939,7 +939,7 @@ function courseplay:unload_combine(self, dt)
 			if distance > 50 then
 				refSpeed = self.cp.speeds.street
 			else
-				refSpeed = Utils.clamp(frontTractor.lastSpeedReal, self.cp.speeds.turn, self.cp.speeds.field)
+				refSpeed = Utils.clamp(frontTractor.lastSpeedReal*3600, self.cp.speeds.turn, self.cp.speeds.field)
 			end
 		else
 			if distance > 50 then
