@@ -243,6 +243,26 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.isBergmannHTW65 = true;
 		workTool.cp.isPushWagon = true;
 
+	-- Fliegl ASS 298 [Giants]
+	elseif workTool.cp.xmlFileName == 'flieglASS2101.xml' then
+		workTool.cp.isFlieglASS298 = true;
+		workTool.cp.isPushWagon = true;
+
+	-- Krampe Bandit 750 [Giants]
+	elseif workTool.cp.xmlFileName == 'krampeBandit750.xml' then
+		workTool.cp.isKrampeBandit750 = true;
+		workTool.cp.isPushWagon = true;
+
+	-- Krampe Bandit Sb 30 / 60 [Giants]
+	elseif workTool.cp.xmlFileName == 'krampeSB3060.xml' then
+		workTool.cp.isKrampeSB3060 = true;
+		workTool.cp.isPushWagon = true;
+
+	-- Kroeger Agroliner TAW 30 [Giants]
+	elseif workTool.cp.xmlFileName == 'kroegerTAW30.xml' then
+		workTool.cp.isKroegerTAW30 = true;
+		workTool.cp.isPushWagon = true;
+
 
 	-- ###########################################################
 

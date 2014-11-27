@@ -979,7 +979,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 					-- Slow down to real unload speed
 					if not vehicle.cp.backupUnloadSpeed and not stopAndGo and vectorDistance < 6*meterPrSeconds then
 						-- Calculate the unloading speed.
-						local refSpeed = meterPrSeconds * 3.6 * 0.80;
+						local refSpeed = meterPrSeconds * 3.6; -- * 0.90;
 						vehicle.cp.backupUnloadSpeed = vehicle.cp.speeds.unload;
 						courseplay:changeUnloadSpeed(vehicle, nil, refSpeed, true);
 						courseplay:debug(string.format("%s: BGA totalLength=%.2f,  totalTipDuration%.2f,  refSpeed=%.2f", nameNum(vehicle), totalLength, totalTipDuration, refSpeed), 2);
