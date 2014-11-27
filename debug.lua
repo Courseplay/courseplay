@@ -171,15 +171,65 @@ end
 --------------------------------------------------
 
 -- MULTIPLAYER DEBUG
-stream_debug_counter = 0
+courseplay.streamDebugCounter = 0;
 
+courseplay.streamWriteFunctions = {
+	Bool   = streamWriteBool;
+	Float  = streamWriteFloat32;
+	Int    = streamWriteInt32;
+	String = streamWriteString;
+};
+courseplay.streamReadFunctions = {
+	Bool   = streamReadBool;
+	Float  = streamReadFloat32;
+	Int    = streamReadInt32;
+	String = streamReadString;
+};
+function courseplay.streamDebugWrite(streamId, varType, value)
+	courseplay.streamDebugCounter = courseplay.streamDebugCounter + 1;
+	if varType == 'Bool' then
+		value = Utils.getNoNil(value, false);
+		if value == 1 then
+			value = true;
+		elseif value == 0 then
+			value = false;
+		end;
+		courseplay:debug(('%d: writing bool: %s'):format(courseplay.streamDebugCounter, tostring(value)), 5);
+	elseif varType == 'Float' then
+		value = value or 0.0;
+		courseplay:debug(('%d: writing float: %f'):format(courseplay.streamDebugCounter, value), 5);
+	elseif varType == 'Int' then
+		value = value or 0.0;
+		courseplay:debug(('%d: writing int: %d'):format(courseplay.streamDebugCounter, value), 5);
+	elseif varType == 'String' then
+		value = value or '';
+		courseplay:debug(('%d: writing string: %q'):format(courseplay.streamDebugCounter, value), 5);
+	end;
+
+	courseplay.streamWriteFunctions[varType](streamId, value);
+end;
+
+function courseplay.streamDebugRead(streamId, varType)
+	courseplay.streamDebugCounter = courseplay.streamDebugCounter + 1;
+
+	local value = courseplay.streamReadFunctions[varType](streamId);
+	if varType == 'Bool' then
+		courseplay:debug(('%d: reading bool: %s'):format(courseplay.streamDebugCounter, tostring(value)), 5);
+	elseif varType == 'Float' then
+		courseplay:debug(('%d: reading float: %s'):format(courseplay.streamDebugCounter, tostring(value)), 5);
+	elseif varType == 'Int' then
+		courseplay:debug(('%d: reading int: %s'):format(courseplay.streamDebugCounter, tostring(value)), 5);
+	elseif varType == 'String' then
+		courseplay:debug(('%d: reading string: %s'):format(courseplay.streamDebugCounter, tostring(value)), 5);
+	end;
+
+	return value;
+end;
+
+stream_debug_counter = 0;
 function streamDebugWriteFloat32(streamId, value)
 	value = Utils.getNoNil(value, 0.0)
 	stream_debug_counter = stream_debug_counter + 1
-	--[[courseplay:debug("++++++++++++++++", 5)
-	courseplay:debug(stream_debug_counter, 5)
-	courseplay:debug("float: " .. value, 5)
-	courseplay:debug("-----------------", 5)]]
 	courseplay:debug(string.format("%d: writing float: %f",stream_debug_counter, value ),5)
 	streamWriteFloat32(streamId, value)
 end
@@ -188,18 +238,11 @@ function streamDebugWriteBool(streamId, value)
 	value = Utils.getNoNil(value, false)
 	if value == 1 then
 		value = true
-	end
-
-	if value == 0 then
+	elseif value == 0 then
 		value = false
 	end
 
 	stream_debug_counter = stream_debug_counter + 1
-	--[[courseplay:debug("++++++++++++++++", 5)
-	courseplay:debug(stream_debug_counter, 5)
-	courseplay:debug("Bool: ", 5)
-	courseplay:debug(value, 5)
-	courseplay:debug("-----------------", 5)]]
 	courseplay:debug(string.format("%d: writing bool: %s",stream_debug_counter, tostring(value) ),5)	
 	streamWriteBool(streamId, value)
 end
@@ -207,11 +250,6 @@ end
 function streamDebugWriteInt32(streamId, value)
 	value = Utils.getNoNil(value, 0)
 	stream_debug_counter = stream_debug_counter + 1
-	--[[courseplay:debug("++++++++++++++++", 5)
-	courseplay:debug(stream_debug_counter, 5)
-	courseplay:debug("Int32: ", 5)
-	courseplay:debug(value, 5)
-	courseplay:debug("-----------------", 5)]]
 	courseplay:debug(string.format("%d: writing int: %d",stream_debug_counter, value ),5)
 	streamWriteInt32(streamId, value)
 end
@@ -219,11 +257,6 @@ end
 function streamDebugWriteString(streamId, value)
 	value = Utils.getNoNil(value, "")
 	stream_debug_counter = stream_debug_counter + 1
-	--[[courseplay:debug("++++++++++++++++", 5)
-	courseplay:debug(stream_debug_counter, 5)
-	courseplay:debug("String: ", 5)
-	courseplay:debug(value, 5)
-	courseplay:debug("-----------------", 5)]]
 	courseplay:debug(string.format("%d: writing string: %s",stream_debug_counter, value ),5)
 	streamWriteString(streamId, value)
 end
@@ -256,24 +289,14 @@ end
 
 function streamDebugReadBool(streamId)
 	stream_debug_counter = stream_debug_counter + 1
-	--courseplay:debug("++++++++++++++++", 5)
-	--courseplay:debug(stream_debug_counter, 5)
 	local value = streamReadBool(streamId)
-	--[[courseplay:debug("Bool: ", 5)
-	courseplay:debug(value, 5)
-	courseplay:debug("-----------------", 5)]]
 	courseplay:debug(string.format("%d: reading bool: %s",stream_debug_counter, tostring(value)),5)
 	return value
 end
 
 function streamDebugReadString(streamId)
 	stream_debug_counter = stream_debug_counter + 1
-	--courseplay:debug("++++++++++++++++", 5)
-	--courseplay:debug(stream_debug_counter, 5)
 	local value = streamReadString(streamId)
-	--[[courseplay:debug("String: ", 5)
-	courseplay:debug(value, 5)
-	courseplay:debug("-----------------", 5)]]
 	courseplay:debug(string.format("%d: reading string: %s",stream_debug_counter, value ),5)
 	return value
 end

@@ -1319,7 +1319,7 @@ function courseplay:readStream(streamId, connection)
 	
 	self.cp.automaticCoverHandling = streamDebugReadBool(streamId);
 	self.cp.automaticUnloadingOnField = streamDebugReadBool(streamId);
-	self.cp.mode = streamDebugReadInt32(streamId)
+	courseplay:setCpMode(self, streamDebugReadInt32(streamId));
 	self.cp.turnRadiusAuto = streamDebugReadFloat32(streamId)
 	self.cp.canDrive = streamDebugReadBool(streamId);
 	self.cp.combineOffsetAutoMode = streamDebugReadBool(streamId);
@@ -1337,17 +1337,14 @@ function courseplay:readStream(streamId, connection)
 	self.cp.hasStartingDirection = streamDebugReadBool(streamId);
 	self.cp.hasValidCourseGenerationData = streamDebugReadBool(streamId);
 	self.cp.headland.numLanes = streamDebugReadInt32(streamId)
-	self.cp.hud.currentPage = streamDebugReadInt32(streamId)
     self.cp.hasUnloadingRefillingCourse	 = streamDebugReadBool(streamId);
-	local infoText = streamDebugReadString(streamId);
-	courseplay:setInfoText(self, infoText);
+	courseplay:setInfoText(self, streamDebugReadString(streamId));
 	self.cp.returnToFirstPoint = streamDebugReadBool(streamId);
 	self.cp.ridgeMarkersAutomatic = streamDebugReadBool(streamId);
 	self.cp.shovelStopAndGo = streamDebugReadBool(streamId);
 	self.cp.startAtPoint = streamDebugReadInt32(streamId);
 	self.cp.stopAtEnd = streamDebugReadBool(streamId);
-	local isDriving = streamDebugReadBool(streamId);
-	self:setIsCourseplayDriving(isDriving);
+	self:setIsCourseplayDriving(streamDebugReadBool(streamId));
 	self.cp.hud.openWithMouse = streamDebugReadBool(streamId)
 	self.cp.realisticDriving = streamDebugReadBool(streamId);
 	self.cp.driveOnAtFillLevel = streamDebugReadFloat32(streamId)
@@ -1436,7 +1433,7 @@ function courseplay:readStream(streamId, connection)
 
 	local debugChannelsString = streamDebugReadString(streamId)
 	for k,v in pairs(Utils.splitString(",", debugChannelsString)) do
-		courseplay.debugChannels[k] = v == "true";
+		courseplay:toggleDebugChannel(self, k, v == 'true');
 	end;
 	courseplay:debug("id: "..tostring(self.id).."  base: readStream end", 5)
 end
@@ -1463,7 +1460,6 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteBool(streamId, self.cp.hasStartingDirection);
 	streamDebugWriteBool(streamId, self.cp.hasValidCourseGenerationData);
 	streamDebugWriteInt32(streamId,self.cp.headland.numLanes);
-	streamDebugWriteInt32(streamId,self.cp.hud.currentPage);
 	streamDebugWriteBool(streamId, self.cp.hasUnloadingRefillingCourse)
 	streamDebugWriteString(streamId, self.cp.infoText);
 	streamDebugWriteBool(streamId, self.cp.returnToFirstPoint);

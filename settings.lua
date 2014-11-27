@@ -9,11 +9,13 @@ function courseplay:openCloseHud(vehicle, open)
 end;
 
 function courseplay:setCpMode(vehicle, modeNum)
-	vehicle.cp.mode = modeNum;
-	courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.currentModeIcon, courseplay.hud.bottomInfo.modeUVsPx[modeNum], courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
-	courseplay:buttonsActiveEnabled(vehicle, 'all');
-	if modeNum == 1 then
-		courseplay:reset_tools(vehicle);
+	if vehicle.cp.mode ~= modeNum then
+		vehicle.cp.mode = modeNum;
+		courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.currentModeIcon, courseplay.hud.bottomInfo.modeUVsPx[modeNum], courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
+		courseplay:buttonsActiveEnabled(vehicle, 'all');
+		if modeNum == 1 then
+			courseplay:reset_tools(vehicle);
+		end;
 	end;
 end;
 
@@ -1012,9 +1014,9 @@ function courseplay:expandFolder(vehicle, index)
 	end
 end
 
-function courseplay:toggleDebugChannel(self, channel)
+function courseplay:toggleDebugChannel(self, channel, force)
 	if courseplay.debugChannels[channel] ~= nil then
-		courseplay.debugChannels[channel] = not courseplay.debugChannels[channel];
+		courseplay.debugChannels[channel] = Utils.getNoNil(force, not courseplay.debugChannels[channel]);
 		courseplay:buttonsActiveEnabled(self, "debug");
 	end;
 end;
