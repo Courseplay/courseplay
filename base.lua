@@ -917,7 +917,20 @@ function courseplay:load(xmlFile)
 
 	courseplay:validateCanSwitchMode(self);
 	courseplay:buttonsActiveEnabled(self, 'all');
-end
+end;
+
+function courseplay:postLoad(xmlFile)
+	-- Drive Control (upsidedown)
+	if self.driveControl ~= nil and g_currentMission.driveControl ~= nil then
+		self.cp.hasDriveControl = true;
+		self.cp.driveControl = {
+			hasFourWD = g_currentMission.driveControl.useModules.fourWDandDifferentials and not self.driveControl.fourWDandDifferentials.isSurpressed;
+			hasHandbrake = g_currentMission.driveControl.useModules.handBrake;
+			hasManualMotorStart = g_currentMission.driveControl.useModules.manMotorStart;
+			hasShuttleMode = g_currentMission.driveControl.useModules.shuttle;
+		};
+	end;
+end;
 
 function courseplay:onLeave()
 	if self.cp.mouseCursorActive then

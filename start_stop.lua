@@ -281,11 +281,37 @@ function courseplay:start(self)
 
 	courseplay:updateAllTriggers();
 
+	self.cp.forceIsActiveBackup = self.forceIsActive;
 	self.forceIsActive = true;
+	self.cp.stopMotorOnLeaveBackup = self.stopMotorOnLeave;
 	self.stopMotorOnLeave = false;
+	self.cp.deactivateOnLeaveBackup = deactivateOnLeave;
+	self.deactivateOnLeave = false;
+
+	if self.cp.hasDriveControl then
+		local changed = false;
+		if self.cp.driveControl.hasFourWD then
+			self.cp.driveControl.fourWDBackup = self.driveControl.fourWDandDifferentials.fourWheel;
+		end;
+		if self.cp.driveControl.hasHandbrake then
+			self.cp.driveControl.handbrakeBackup = self.driveControl.handBrake.isActive;
+			self.driveControl.handBrake.isActive = false;
+			changed = true;
+		end;
+		if self.cp.driveControl.hasShuttleMode then
+			self.cp.driveControl.shuttleModeBackup = self.driveControl.shuttle.direction;
+			self.driveControl.shuttle.direction = 1.0;
+			changed = true;
+		end;
+
+		if changed and driveControlInputEvent ~= nil then
+			driveControlInputEvent.sendEvent(self);
+		end;
+	end;
+
 	self.steeringEnabled = false;
-	self.deactivateOnLeave = false
 	self.disableCharacterOnLeave = false
+
 	-- ok i am near the waypoint, let's go
 	self.checkSpeedLimit = false
 	self.cp.runOnceStartCourse = true;
@@ -378,10 +404,31 @@ end;
 
 -- stops driving the course
 function courseplay:stop(self)
-	self.forceIsActive = false;
-	self.stopMotorOnLeave = true;
+	self.forceIsActive = self.cp.forceIsActiveBackup;
+	self.stopMotorOnLeave = self.cp.stopMotorOnLeaveBackup;
+	self.deactivateOnLeave = self.cp.deactivateOnLeaveBackup;
+
+	if self.cp.hasDriveControl then
+		local changed = false;
+		if self.cp.driveControl.hasFourWD then
+			self.driveControl.fourWDandDifferentials.fourWheel = self.cp.driveControl.fourWDBackup;
+			changed = true;
+		end;
+		if self.cp.driveControl.hasHandbrake then
+			self.driveControl.handBrake.isActive = self.cp.driveControl.handbrakeBackup;
+			changed = true;
+		end;
+		if self.cp.driveControl.hasShuttleMode then
+			self.driveControl.shuttle.direction = self.cp.driveControl.shuttleModeBackup;
+			changed = true;
+		end;
+
+		if changed and driveControlInputEvent ~= nil then
+			driveControlInputEvent.sendEvent(self);
+		end;
+	end;
+
 	self.steeringEnabled = true;
-	self.deactivateOnLeave = true
 	self.disableCharacterOnLeave = true
 	self:setCruiseControlState(Drivable.CRUISECONTROL_STATE_OFF)
 	self.cruiseControl.minSpeed = 1

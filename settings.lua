@@ -1422,17 +1422,21 @@ function courseplay:setEngineState(vehicle, on)
 		return;
 	end;
 
-	--Manual ignition v3.01/3.04 (self-installing)
-	if vehicle.setManualIgnitionMode ~= nil and vehicle.ignitionMode ~= nil then
-		vehicle:setManualIgnitionMode(on and 2 or 0);
+	-- driveControl engine start/stop
+	if vehicle.cp.hasDriveControl and vehicle.cp.driveControl.hasManualMotorStart then
+		if on then
+			vehicle.driveControl.manMotorStart.isMotorStarted = true; -- TODO: timer (800 ms) instead of immediate starting
+		else
+			vehicle.driveControl.manMotorStart.isMotorStarted = false;
+		end;
+		if driveControlInputEvent ~= nil then
+			driveControlInputEvent.sendEvent(vehicle);
+		end;
+		return;
+	end;
 
-	--Manual ignition v3.x (in steerable as lua)
-	elseif vehicle.ignitionKey ~= nil and vehicle.allowedIgnition ~= nil then
-		vehicle.ignitionKey = on;
-        vehicle.allowedIgnition = on;
-
-	--default
-	elseif vehicle.startMotor and vehicle.stopMotor then
+	-- default
+	if vehicle.startMotor and vehicle.stopMotor then
 		if on then
 			vehicle:startMotor(true);
 		else
