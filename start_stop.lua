@@ -196,11 +196,6 @@ function courseplay:start(self)
 			if numWaitPoints == 3 and self.cp.shovelEmptyPoint == nil then
 				self.cp.shovelEmptyPoint = i;
 			end;
-			for i,_ in pairs(self.attachedImplements) do
-				if self.attachedImplements[i].object.ignoreVehicleDirectionOnLoad ~= nil then
-					self.attachedImplements[i].object.ignoreVehicleDirectionOnLoad = true
-				end
-			end			
 		end;
 
 		-- laneNumber (for seeders)
@@ -272,6 +267,19 @@ function courseplay:start(self)
 	if self.cp.mode == 9 or self.cp.startAtPoint == courseplay.START_AT_FIRST_POINT then
 		courseplay:setRecordNumber(self, 1);
 		self.cp.shovelState = 1;
+		for i,_ in pairs(self.attachedImplements) do
+			local object = self.attachedImplements[i].object
+			if object.ignoreVehicleDirectionOnLoad ~= nil then
+				object.ignoreVehicleDirectionOnLoad = true
+			end	
+			if object.attachedImplements ~= nil then
+				for k,_ in pairs(object.attachedImplements) do
+					if object.attachedImplements[k].object.ignoreVehicleDirectionOnLoad ~= nil then
+						object.attachedImplements[k].object.ignoreVehicleDirectionOnLoad = true
+					end
+				end
+			end				
+		end	
 	end;
 
 	courseplay:updateAllTriggers();
