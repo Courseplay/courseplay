@@ -32,6 +32,8 @@ function courseplay.button:new(vehicle, hudPage, img, functionToCall, parameter,
 	self.page = hudPage; 
 	self.functionToCall = functionToCall; 
 	self:setParameter(parameter);
+	self.width = width;
+	self.height = height;
 	self.x_init = x;
 	self.x = x;
 	self.x2 = (x + width);
@@ -65,7 +67,11 @@ function courseplay.button:new(vehicle, hudPage, img, functionToCall, parameter,
 		self:setSpecialButtonUVs();
 	end;
 
-	table.insert(vehicle.cp.buttons[hudPage], self);
+	if vehicle.isCourseplayManager then
+		table.insert(vehicle.buttons[hudPage], self);
+	else
+		table.insert(vehicle.cp.buttons[hudPage], self);
+	end;
 	return self;
 end;
 
@@ -94,6 +100,10 @@ function courseplay.button:setSpecialButtonUVs()
 
 	elseif fn == 'toggleDebugChannel' then
 		self:setSpriteSectionUVs('recordingStop');
+
+	-- courseplay_manager buttons
+	elseif fn == 'goToVehicle' then
+		courseplay.utils:setOverlayUVsPx(self.overlay, courseplay.hud.pageButtonsUVsPx[7], txtSizeX, txtSizeY);
 	end;
 end;
 
@@ -419,19 +429,29 @@ function courseplay.button:setColor(colorName)
 	end;
 end;
 
-function courseplay.button:setOffset(x_off, y_off)
+function courseplay.button:setPosition(posX, posY)
+	self.x = posX;
+	self.x_init = posX;
+	self.x2 = posX + self.width;
+
+	self.y = posY;
+	self.y_init = posY;
+	self.y2 = posY + self.height;
+
 	if not self.overlay then return; end;
+	self.overlay:setPosition(self.x, self.y);
+end;
 
-	x_off = x_off or 0
-	y_off = y_off or 0
+function courseplay.button:setOffset(offsetX, offsetY)
+	offsetX = offsetX or 0
+	offsetY = offsetY or 0
 
-	local width = self.x2 - self.x
-	local height = self.y2 - self.y
-	self.x = self.x_init + x_off
-	self.y = self.y_init + y_off
-	self.x2 = self.x + width
-	self.y2 = self.y + height
+	self.x = self.x_init + offsetX;
+	self.y = self.y_init + offsetY;
+	self.x2 = self.x + self.width;
+	self.y2 = self.y + self.height;
 
+	if not self.overlay then return; end;
 	self.overlay:setPosition(self.x, self.y);
 end
 
@@ -498,6 +518,12 @@ end;
 function courseplay.button:setHidden(hidden)
 	if self.isHidden ~= hidden then
 		self.isHidden = hidden;
+	end;
+end;
+
+function courseplay.button:setAttribute(attribute, value)
+	if self[attribute] ~= value then
+		self[attribute] = value;
 	end;
 end;
 

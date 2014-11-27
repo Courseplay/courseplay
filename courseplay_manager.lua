@@ -2,6 +2,8 @@
 local courseplay_manager_mt = Class(courseplay_manager);
 
 function courseplay_manager:loadMap(name)
+	self.isCourseplayManager = true;
+
 	if not courseplay.globalDataSet then
 		courseplay:setGlobalData();
 	end;
@@ -38,7 +40,7 @@ function courseplay_manager:loadMap(name)
 	for i=1,self.globalInfoTextMaxNum do
 		local posY = git.backgroundPosY + (i - 1) * git.lineHeight;
 		self.globalInfoTextOverlays[i] = Overlay:new(string.format("globalInfoTextOverlay%d", i), git.backgroundImg, git.backgroundPosX, posY, 0.1, git.buttonHeight);
-		self:createButton('globalInfoText', 'goToVehicle', i, 'iconSprite.png', git.buttonPosX, posY, git.buttonWidth, git.buttonHeight);
+		courseplay.button:new(self, 'globalInfoText', 'iconSprite.png', 'goToVehicle', i, git.buttonPosX, posY, git.buttonWidth, git.buttonHeight);
 	end;
 	self.buttons.globalInfoTextClickArea = {
 		x1 = git.buttonPosX;
@@ -142,38 +144,6 @@ function courseplay_manager:createInitialCourseplayFile()
 	end;
 end;
 
-function courseplay_manager:createButton(section, fn, prm, img, x, y, w, h)
-	local overlay = Overlay:new(img, Utils.getFilename("img/" .. img, courseplay.path), x, y, w, h);
-
-	if fn == 'goToVehicle' then
-		courseplay.utils:setOverlayUVsPx(overlay, courseplay.hud.pageButtonsUVsPx[7], courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
-	end;
-
-
-	local button = { 
-		section = section, 
-		overlay = overlay, 
-		functionToCall = fn, 
-		parameter = prm, 
-		x_init = x,
-		x = x,
-		x2 = (x + w),
-		y_init = y,
-		y = y,
-		y2 = (y + h),
-		canBeClicked = fn ~= nil,
-		show = true,
-		isClicked = false,
-		isActive = false,
-		isDisabled = false,
-		isHovered = false,
-		isHidden = false
-	};
-	--print(string.format("courseplay_manager:createButton(%q, %q, %s, %q, %.3f, %.3f, %.3f, %.3f)", section, fn, prm, img, x, y, w, h));
-	table.insert(courseplay_manager.buttons[tostring(section)], button);
-	--return #(courseplay_manager.buttons[tostring(section)]);
-end;
-
 function courseplay_manager:deleteMap()
 	--courses & folders
 	g_currentMission.cp_courses = nil
@@ -199,9 +169,8 @@ function courseplay_manager:deleteMap()
 
 	--global info text
 	for i,button in pairs(self.buttons.globalInfoText) do
-		if button.overlay ~= nil and button.overlay.overlayId ~= nil and button.overlay.delete ~= nil then
-			button.overlay:delete();
-		end;
+		button:deleteOverlay();
+
 		if self.globalInfoTextOverlays[i] then
 			local gitOverlay = self.globalInfoTextOverlays[i];
 			if gitOverlay.overlayId ~= nil and gitOverlay.delete ~= nil then
@@ -273,19 +242,17 @@ function courseplay_manager:draw()
 				-- button
 				local button = self.buttons.globalInfoText[line];
 				if button ~= nil then
-					button.overlay:setPosition(button.overlay.x, gfxPosY);
-					button.y = gfxPosY;
-					button.y2 = gfxPosY + git.buttonHeight;
+					button:setPosition(button.overlay.x, gfxPosY)
 
 					local currentColor = button.curColor;
 					local targetColor = currentColor;
 
-					button.canBeClicked = true;
-					button.isDisabled = data.vehicle.isBroken or data.vehicle.isControlled;
-					button.parameter = data.vehicle;
+					button:setCanBeClicked(true);
+					button:setDisabled(data.vehicle.isBroken or data.vehicle.isControlled);
+					button:setParameter(data.vehicle);
 					if g_currentMission.controlledVehicle and g_currentMission.controlledVehicle == data.vehicle then
 						targetColor = 'activeGreen';
-						button.canBeClicked = false;
+						button:setCanBeClicked(false);
 					elseif button.isDisabled then
 						targetColor = 'whiteDisabled';
 					elseif button.isClicked then
@@ -298,9 +265,10 @@ function courseplay_manager:draw()
 
 					-- set color
 					if currentColor ~= targetColor then
-						courseplay.button.setColor(button, targetColor); -- use indirect fn call as these buttons aren't (yet) part of the courseplay.button class and don't have the setColor function
+						button:setColor(targetColor);
 					end;
 
+					-- NOTE: do not use button:render() here, as we neither need the button.show check, nor the hoveredButton var, nor the color setting. Simply rendering the overlay suffices
 					button.overlay:render();
 				end;
 			end;
@@ -380,11 +348,11 @@ function courseplay_manager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 	if (isDown or isUp) and mouseKey == courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION.buttonId and courseplay:mouseIsInArea(posX, posY, area.x1, area.x2, area.y1, area.y2) then
 		if courseplay.globalInfoText.hasContent then
 			for i,button in pairs(self.buttons.globalInfoText) do
-				if button.show and courseplay.button.getHasMouse(button, posX, posY) then -- use indirect fn call as these buttons aren't (yet) part of the courseplay.button class and don't have the getHasMouse function
-					button.isClicked = isDown;
+				if button.show and button:getHasMouse(posX, posY) then
+					button:setClicked(isDown);
 					if isUp then
 						local sourceVehicle = g_currentMission.controlledVehicle or button.parameter;
-						courseplay.button.handleMouseClick(button, sourceVehicle); -- use indirect fn call as these buttons aren't (yet) part of the courseplay.button class and don't have the handleMouseClick function
+						button:handleMouseClick(sourceVehicle);
 					end;
 					break;
 				end;
@@ -401,8 +369,8 @@ function courseplay_manager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 			self.playerOnFootMouseEnabled = false;
 			if courseplay.globalInfoText.hasContent then --if a button was hovered when deactivating the cursor, deactivate hover state
 				for _,button in pairs(self.buttons.globalInfoText) do
-					button.isClicked = false;
-					button.isHovered = false;
+					button:setClicked(false);
+					button:setHovered(false);
 				end;
 			end;
 			if not self.wasPlayerFrozen then
@@ -415,12 +383,12 @@ function courseplay_manager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 	--HOVER
 	elseif not isDown and not isUp and courseplay.globalInfoText.hasContent --[[and posX > area.x1 * 0.9 and posX < area.x2 * 1.1 and posY > area.y1 * 0.9 and posY < area.y2 * 1.1]] then
 		for _,button in pairs(self.buttons.globalInfoText) do
-			button.isClicked = false;
+			button:setClicked(false);
 			if button.show and not button.isHidden then
-				button.isHovered = false;
+				button:setHovered(false);
 				if courseplay.button.getHasMouse(button, posX, posY) then
-					button.isClicked = false;
-					button.isHovered = true;
+					button:setClicked(false);
+					button:setHovered(true);
 				end;
 			end;
 		end;

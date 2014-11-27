@@ -927,6 +927,7 @@ function courseplay:postLoad(xmlFile)
 			hasFourWD = g_currentMission.driveControl.useModules.fourWDandDifferentials and not self.driveControl.fourWDandDifferentials.isSurpressed;
 			hasHandbrake = g_currentMission.driveControl.useModules.handBrake;
 			hasManualMotorStart = g_currentMission.driveControl.useModules.manMotorStart;
+			hasMotorKeepTurnedOn = g_currentMission.driveControl.useModules.manMotorKeepTurnedOn;
 			hasShuttleMode = g_currentMission.driveControl.useModules.shuttle;
 		};
 	end;
