@@ -580,6 +580,11 @@ function courseplay:drive(self, dt)
 	
 	courseplay:setSpeed(self, refSpeed)
 
+	-- Four wheel drive
+	if self.cp.hasDriveControl and self.cp.driveControl.hasFourWD then
+		courseplay:setFourWheelDrive(self, workArea);
+	end;
+
 
 	-- DISTANCE TO CHANGE WAYPOINT
 	if self.recordnumber == 1 or self.recordnumber == self.maxnumber - 1 or self.Waypoints[self.recordnumber].turn then
@@ -1192,6 +1197,21 @@ function courseplay:setReverseBackDistance(vehicle, metersBack)
 		vehicle.cp.isReverseBackToPoint = true;
 
 		courseplay:debug(string.format("%s: Reverse back %d meters", nameNum(vehicle), metersBack), 13);
+	end;
+end;
+
+function courseplay:setFourWheelDrive(vehicle, workArea)
+	local changed = false;
+	if (workArea or vehicle.cp.BGASelectedSection) and not vehicle.driveControl.fourWDandDifferentials.fourWheel then
+		vehicle.driveControl.fourWDandDifferentials.fourWheel = true;
+		changed = true;
+	elseif not workArea and not vehicle.cp.BGASelectedSection and vehicle.driveControl.fourWDandDifferentials.fourWheel then
+		vehicle.driveControl.fourWDandDifferentials.fourWheel = false;
+		changed = true;
+	end
+
+	if changed and driveControlInputEvent ~= nil then
+		driveControlInputEvent.sendEvent(vehicle);
 	end;
 end;
 

@@ -903,11 +903,11 @@ function courseplay:load(xmlFile)
 
 	-- waitPoints icon
 	self.cp.hud.waitPointsIcon = Overlay:new('cpWaitPointsIcon', courseplay.hud.iconSpritePath, bi.waitPointsIconX, bi.iconPosY, w, h);
-	courseplay.utils:setOverlayUVsPx(self.cp.hud.currentModeIcon, courseplay.hud.buttonUVsPx['recordingWait'], sizeX, sizeY);
+	courseplay.utils:setOverlayUVsPx(self.cp.hud.waitPointsIcon, courseplay.hud.buttonUVsPx['recordingWait'], sizeX, sizeY);
 
 	-- crossingPoints icon
 	self.cp.hud.crossingPointsIcon = Overlay:new('cpCrossingPointsIcon', courseplay.hud.iconSpritePath, bi.crossingPointsIconX, bi.iconPosY, w, h);
-	courseplay.utils:setOverlayUVsPx(self.cp.hud.currentModeIcon, courseplay.hud.buttonUVsPx['recordingCross'], sizeX, sizeY);
+	courseplay.utils:setOverlayUVsPx(self.cp.hud.crossingPointsIcon, courseplay.hud.buttonUVsPx['recordingCross'], sizeX, sizeY);
 
 	-- toolTip icon
 	self.cp.hud.toolTipIcon = Overlay:new('cpToolTipIcon', courseplay.hud.iconSpritePath, courseplay.hud.col1posX, courseplay.hud.infoBasePosY + 0.0055, w, h);
