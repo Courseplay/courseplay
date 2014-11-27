@@ -249,7 +249,7 @@ function courseplay:executeFunction(self, func, value, page)
 					if line == 1 then
 						courseplay:start(self);
 					elseif line == 3 and self.cp.mode ~= 9 then
-						courseplay:setStartAtFirstPoint(self);
+						courseplay:toggleStartAtPoint(self);
 					elseif line == 4 then
 						courseplay:clearCurrentLoadedCourse(self);
 					elseif line == 6 and self.cp.mode == 1 and self.cp.workTools[1] ~= nil and self.cp.workTools[1].allowFillFromAir and self.cp.workTools[1].allowTipDischarge then

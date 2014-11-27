@@ -1152,8 +1152,8 @@ function courseplay:setShovelStopAndGo(vehicle)
 	vehicle.cp.shovelStopAndGo = not vehicle.cp.shovelStopAndGo;
 end;
 
-function courseplay:setStartAtFirstPoint(vehicle)
-	vehicle.cp.startAtFirstPoint = not vehicle.cp.startAtFirstPoint;
+function courseplay:toggleStartAtPoint(vehicle)
+	vehicle.cp.startAtPoint = courseplay:varLoop(vehicle.cp.startAtPoint, 1, courseplay.START_AT_CURRENT_POINT, courseplay.START_AT_NEAREST_POINT);
 end;
 
 function courseplay:reloadCoursesFromXML(vehicle)

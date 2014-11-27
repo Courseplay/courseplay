@@ -107,9 +107,11 @@ function courseplay:load(xmlFile)
 	self.cp.waitTimer = nil;
 	self.cp.realisticDriving = true;
 	self.cp.canSwitchMode = false;
-	self.cp.startAtFirstPoint = false;
 	self.cp.multiSiloSelectedFillType = Fillable.FILLTYPE_UNKNOWN;
 	self.cp.stopForLoading = false;
+
+	self.cp.startAtPoint = courseplay.START_AT_NEAREST_POINT;
+
 
 	self.cp.attachedCombineIdx = nil;
 
@@ -1342,7 +1344,7 @@ function courseplay:readStream(streamId, connection)
 	self.cp.returnToFirstPoint = streamDebugReadBool(streamId);
 	self.cp.ridgeMarkersAutomatic = streamDebugReadBool(streamId);
 	self.cp.shovelStopAndGo = streamDebugReadBool(streamId);
-	self.cp.startAtFirstPoint = streamDebugReadBool(streamId);
+	self.cp.startAtPoint = streamDebugReadInt32(streamId);
 	self.cp.stopAtEnd = streamDebugReadBool(streamId);
 	local isDriving = streamDebugReadBool(streamId);
 	self:setIsCourseplayDriving(isDriving);
@@ -1467,7 +1469,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteBool(streamId, self.cp.returnToFirstPoint);
 	streamDebugWriteBool(streamId, self.cp.ridgeMarkersAutomatic);
 	streamDebugWriteBool(streamId, self.cp.shovelStopAndGo);
-	streamDebugWriteBool(streamId, self.cp.startAtFirstPoint)
+	streamDebugWriteInt32(streamId, self.cp.startAtPoint);
 	streamDebugWriteBool(streamId, self.cp.stopAtEnd)
 	streamDebugWriteBool(streamId, self:getIsCourseplayDriving());
 	streamDebugWriteBool(streamId,self.cp.hud.openWithMouse)

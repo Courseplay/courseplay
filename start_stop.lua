@@ -147,10 +147,9 @@ function courseplay:start(self)
 	local recordNumber = 0
 	local curLaneNumber = 1;
 	local hasReversing = false;
-	local lookForNearestWaypoint = self.cp.modeState == 0 or self.cp.modeState == 99 --or self.cp.modeState == 1
-	-- print(('%s [%s(%d)]: start(), modeState=%d, mode2nextState=%s'):format(nameNum(self), curFile, debug.getinfo(1).currentline, self.cp.modeState, tostring(self.cp.mode2nextState))); -- DEBUG140301
+	local lookForNearestWaypoint = self.cp.startAtPoint == courseplay.START_AT_NEAREST_POINT and (self.cp.modeState == 0 or self.cp.modeState == 99); --or self.cp.modeState == 1
 	for i,wp in pairs(self.Waypoints) do
-		local cx, cz = wp.cx, wp.cz
+		local cx, cz = wp.cx, wp.cz;
 		if lookForNearestWaypoint then
 			dist = courseplay:distance(ctx, ctz, cx, cz)
 			if dist <= nearestpoint then
@@ -258,19 +257,19 @@ function courseplay:start(self)
 		courseplay:setIsLoaded(self, false);
 		self.cp.hasUnloadingRefillingCourse = self.maxnumber > self.cp.stopWork + 7;
 		if  self.Waypoints[self.cp.stopWork].cx == self.Waypoints[self.cp.startWork].cx 
-		and self.Waypoints[self.cp.stopWork].cz == self.Waypoints[self.cp.startWork].cz then
+		and self.Waypoints[self.cp.stopWork].cz == self.Waypoints[self.cp.startWork].cz then -- TODO: VERY unsafe, there could be LUA float problems (e.g. 7 + 8 = 15.000000001)
 			self.cp.finishWork = self.cp.stopWork-5
 		else
 			self.cp.finishWork = self.cp.stopWork
 		end
 
-		if self.cp.finishWork ~= self.cp.stopWork and self.recordnumber > self.cp.finishWork and self.recordnumber <= self.cp.stopWork then
+		if self.cp.startAtPoint == courseplay.START_AT_NEAREST_POINT and self.cp.finishWork ~= self.cp.stopWork and self.recordnumber > self.cp.finishWork and self.recordnumber <= self.cp.stopWork then
 			courseplay:setRecordNumber(self, 2);
 		end
 		courseplay:debug(string.format("%s: maxnumber=%d, stopWork=%d, finishWork=%d, hasUnloadingRefillingCourse=%s, recordnumber=%d", nameNum(self), self.maxnumber, self.cp.stopWork, self.cp.finishWork, tostring(self.cp.hasUnloadingRefillingCourse), self.recordnumber), 12);
 	end
 
-	if self.cp.mode == 9 or self.cp.startAtFirstPoint then
+	if self.cp.mode == 9 or self.cp.startAtPoint == courseplay.START_AT_FIRST_POINT then
 		courseplay:setRecordNumber(self, 1);
 		self.cp.shovelState = 1;
 	end;

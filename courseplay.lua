@@ -420,6 +420,10 @@ function courseplay:setGlobalData()
 	-- debug channels
 	courseplay:setUpDebugChannels();
 
+	-- "start at _ point" options
+	courseplay.START_AT_NEAREST_POINT = 1;
+	courseplay.START_AT_FIRST_POINT = 2;
+	courseplay.START_AT_CURRENT_POINT = 3;
 
 	local langNumData = {
 		br = { '.', ',' },

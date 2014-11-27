@@ -303,10 +303,12 @@ function courseplay.hud:loadPage(vehicle, page)
 
 				if vehicle.cp.mode ~= 9 then
 					vehicle.cp.hud.content.pages[1][3][1].text = courseplay:loc('COURSEPLAY_START_AT_POINT');
-					if vehicle.cp.startAtFirstPoint then
-						vehicle.cp.hud.content.pages[1][3][2].text = courseplay:loc('COURSEPLAY_FIRST_POINT');
-					else
+					if vehicle.cp.startAtPoint == courseplay.START_AT_NEAREST_POINT then
 						vehicle.cp.hud.content.pages[1][3][2].text = courseplay:loc('COURSEPLAY_NEAREST_POINT');
+					elseif vehicle.cp.startAtPoint == courseplay.START_AT_FIRST_POINT then
+						vehicle.cp.hud.content.pages[1][3][2].text = courseplay:loc('COURSEPLAY_FIRST_POINT');
+					elseif vehicle.cp.startAtPoint == courseplay.START_AT_CURRENT_POINT then
+						vehicle.cp.hud.content.pages[1][3][2].text = courseplay:loc('COURSEPLAY_CURRENT_POINT');
 					end;
 				end;
 
