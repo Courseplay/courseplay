@@ -38,7 +38,13 @@ function courseplay:handle_mode1(vehicle, allowedToDrive)
 				courseplay:debug(string.format("%s: Is starting to reverse. Tip trigger is reset.", nameNum(vehicle)), 13);
 			end;
 
-			if distance_to_trigger > (vehicle.cp.totalLength + 5) or startReversing then
+			local extraLength = 5;
+			if t.bunkerSilo ~= nil and t.bunkerSilo.movingPlanes ~= nil and vehicle.cp.handleAsOneSilo ~= true then
+				-- We are a bunkerSilo, so we need to add more extraLength to the totalLength.
+				extraLength = 55;
+			end;
+
+			if distance_to_trigger > (vehicle.cp.totalLength + extraLength) or startReversing then
 				courseplay:resetTipTrigger(vehicle);
 				courseplay:debug(string.format("%s: distance to currentTipTrigger = %d (> %d or start reversing) --> currentTipTrigger = nil", nameNum(vehicle), distance_to_trigger, (vehicle.cp.totalLength + 5)), 1);
 			end
