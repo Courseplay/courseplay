@@ -63,8 +63,8 @@ function courseplay:load(xmlFile)
 	self.cp.positionWithCombine = nil;
 
 	-- RECORDING
-	self.cp.isRecording = false;
-	self.cp.recordingIsPaused = false;
+	courseplay:setIsRecording(self, false);
+	courseplay:setRecordingIsPaused(self, false);
 	self.cp.isRecordingTurnManeuver = false;
 	self.cp.drivingDirReverse = false;
 
@@ -1378,8 +1378,8 @@ function courseplay:readStream(streamId, connection)
 	self.cp.HUD4savedCombine = streamDebugReadBool(streamId)
 	self.cp.HUD4savedCombineName = streamDebugReadString(streamId);
 	courseplay:setRecordNumber(self, streamDebugReadInt32(streamId));
-	self.cp.isRecording = streamDebugReadBool(streamId)
-	self.cp.recordingIsPaused = streamDebugReadBool(streamId)
+	courseplay:setIsRecording(self, streamDebugReadBool(streamId));
+	courseplay:setRecordingIsPaused(self, streamDebugReadBool(streamId));
 	self.cp.searchCombineAutomatically = streamDebugReadBool(streamId)
 	self.cp.searchCombineOnField = streamDebugReadInt32(streamId)
 	self.cp.speeds.turn = streamDebugReadFloat32(streamId)

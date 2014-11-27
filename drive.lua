@@ -688,7 +688,7 @@ function courseplay:drive(self, dt)
 			self.cp.isUnloaded = false
 			self.cp.stopAtEnd = false
 			courseplay:setIsLoaded(self, false);
-			self.cp.isRecording = false
+			courseplay:setIsRecording(self, false);
 			self.cp.canDrive = true
 		end
 	end

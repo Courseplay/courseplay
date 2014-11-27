@@ -669,8 +669,8 @@ function courseplay:copyCourse(vehicle)
 		vehicle.cp.numWaitPoints = src.cp.numWaitPoints;
 		vehicle.cp.numCrossingPoints = src.cp.numCrossingPoints;
 
-		vehicle.cp.isRecording = false;
-		vehicle.cp.recordingIsPaused = false;
+		courseplay:setIsRecording(vehicle, false);
+		courseplay:setRecordingIsPaused(vehicle, false);
 		vehicle:setIsCourseplayDriving(false);
 		vehicle.cp.distanceCheck = false;
 		vehicle.cp.canDrive = true;

@@ -33,8 +33,8 @@ function courseplay:start(self)
 	courseplay:debug(string.format("%s: Start/Stop: deleting \"self.cp.collidingVehicleId\"", nameNum(self)), 3);
 	--self.numToolsCollidingVehicles = {};
 	self:setIsCourseplayDriving(false);
-	self.cp.isRecording = false
-	self.cp.recordingIsPaused = false
+	courseplay:setIsRecording(self, false);
+	courseplay:setRecordingIsPaused(self, false);
 	self.cp.calculatedCourseToCombine = false
 
 	AITractor.addCollisionTrigger(self, self);
@@ -234,20 +234,17 @@ function courseplay:start(self)
 	end;
 
 
-	-- print(('%s [%s(%d)]: start(), modeState=%d, mode2nextState=%s, recordNumber=%d'):format(nameNum(self), curFile, debug.getinfo(1).currentline, self.cp.modeState, tostring(self.cp.mode2nextState), recordNumber)); -- DEBUG140301
 	if lookForNearestWaypoint then
 		local changed = false
 		for i=recordNumber,recordNumber+3 do
 			if self.Waypoints[i]~= nil and self.Waypoints[i].turn ~= nil then
 				courseplay:setRecordNumber(self, i + 2);
-				-- print(('\t(%d) self.recordnumber=%d'):format(debug.getinfo(1).currentline, self.recordnumber)); -- DEBUG140301
 				changed = true
 				break
 			end	
 		end
 		if changed == false then
 			courseplay:setRecordNumber(self, recordNumber);
-			-- print(('\t(%d) self.recordnumber=%d'):format(debug.getinfo(1).currentline, self.recordnumber)); -- DEBUG140301
 		end
 
 		if self.recordnumber > self.maxnumber then
@@ -257,7 +254,6 @@ function courseplay:start(self)
 
 	if self.recordnumber > 2 and self.cp.mode ~= 4 and self.cp.mode ~= 6 then
 		courseplay:setIsLoaded(self, true);
-		-- print(('%s [%s(%d)]: start(), recordnumber=%d -> set isLoaded to true'):format(nameNum(self), curFile, debug.getinfo(1).currentline, self.recordnumber)); -- DEBUG140301
 	elseif self.cp.mode == 4 or self.cp.mode == 6 then
 		courseplay:setIsLoaded(self, false);
 		self.cp.hasUnloadingRefillingCourse = self.maxnumber > self.cp.stopWork + 7;
@@ -320,12 +316,8 @@ function courseplay:start(self)
 	self.checkSpeedLimit = false
 	self.cp.runOnceStartCourse = true;
 	self:setIsCourseplayDriving(true);
-	self.cp.isRecording = false
+	courseplay:setIsRecording(self, false);
 	self.cp.distanceCheck = false;
-
-	if self.isRealistic then
-		self.cp.realAWDModeOnBackup = self.realAWDModeOn
-	end;
 
 	self.cp.totalLength, self.cp.totalLengthOffset = courseplay:getTotalLengthOnWheels(self);
 
@@ -438,8 +430,8 @@ function courseplay:stop(self)
 	self.cruiseControl.minSpeed = 1
 	self.cp.forcedToStop = false
 	self.cp.waitingForTrailerToUnload = false
-	self.cp.isRecording = false
-	self.cp.recordingIsPaused = false
+	courseplay:setIsRecording(self, false);
+	courseplay:setRecordingIsPaused(self, false);
 	if self.cp.modeState > 4 then
 		courseplay:setModeState(self, 1);
 	end

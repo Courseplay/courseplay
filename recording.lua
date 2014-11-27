@@ -77,8 +77,8 @@ end;
 -- starts course recording -- just setting variables
 function courseplay:start_record(vehicle)
 	--    courseplay:clearCurrentLoadedCourse(vehicle)
-	vehicle.cp.isRecording = true;
-	vehicle.cp.recordingIsPaused = false;
+	courseplay:setIsRecording(vehicle, true);
+	courseplay:setRecordingIsPaused(vehicle, false);
 	vehicle:setIsCourseplayDriving(false);
 	vehicle.cp.loadedCourses = {}
 	courseplay:setRecordNumber(vehicle, 1);
@@ -97,8 +97,8 @@ end
 -- stops course recording -- just setting variables
 function courseplay:stop_record(vehicle)
 	courseplay:set_crossing(vehicle, true);
-	vehicle.cp.isRecording = false;
-	vehicle.cp.recordingIsPaused = false;
+	courseplay:setIsRecording(vehicle, false);
+	courseplay:setRecordingIsPaused(vehicle, false);
 	vehicle:setIsCourseplayDriving(false);
 	vehicle.cp.distanceCheck = false;
 	vehicle.cp.canDrive = true;
@@ -114,8 +114,8 @@ end
 
 function courseplay:setRecordingPause(vehicle)
 	if vehicle.recordnumber > 3 then
-		vehicle.cp.isRecording = not vehicle.cp.isRecording;
-		vehicle.cp.recordingIsPaused = not vehicle.cp.recordingIsPaused;
+		courseplay:setIsRecording(vehicle, not vehicle.cp.isRecording);
+		courseplay:setRecordingIsPaused(vehicle, not vehicle.cp.recordingIsPaused);
 		if vehicle.cp.recordingIsPaused then
 			vehicle.cp.hud.recordingPauseButton:setToolTip(courseplay:loc('COURSEPLAY_RECORDING_PAUSE_RESUME'));
 		else
@@ -276,3 +276,16 @@ function courseplay:currentVehAngle(vehicle)
 	local angleDeg = deg(angleRad);
 	return angleDeg, angleRad;
 end;
+
+function courseplay:setIsRecording(vehicle, isRecording)
+	if vehicle.cp.isRecording ~= isRecording then
+		vehicle.cp.isRecording = isRecording;
+	end;
+end;
+
+function courseplay:setRecordingIsPaused(vehicle, pause)
+	if vehicle.cp.recordingIsPaused ~= pause then
+		vehicle.cp.recordingIsPaused = pause;
+	end;
+end;
+
