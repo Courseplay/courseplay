@@ -1424,12 +1424,15 @@ function courseplay:setEngineState(vehicle, on)
 
 	-- driveControl engine start/stop
 	if vehicle.cp.hasDriveControl and vehicle.cp.driveControl.hasManualMotorStart then
-		if on then
+		local changed = false;
+		if on and not vehicle.driveControl.manMotorStart.isMotorStarted then
 			vehicle.driveControl.manMotorStart.isMotorStarted = true; -- TODO: timer (800 ms) instead of immediate starting
-		else
+			changed = true;
+		elseif not on and vehicle.driveControl.manMotorStart.isMotorStarted and not vehicle.cp.driveControl.hasMotorKeepTurnedOn then
 			vehicle.driveControl.manMotorStart.isMotorStarted = false;
+			changed = true;
 		end;
-		if driveControlInputEvent ~= nil then
+		if changed and driveControlInputEvent ~= nil then
 			driveControlInputEvent.sendEvent(vehicle);
 		end;
 		return;

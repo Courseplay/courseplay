@@ -7,7 +7,7 @@ function courseplay:start(self)
 		return
 	end
 	courseplay:setEngineState(self, true);
-	
+
 	if self.cp.orgRpm == nil then
 		self.cp.orgRpm = {}
 		self.cp.orgRpm[1] = self.motor.maxRpm
@@ -295,13 +295,17 @@ function courseplay:start(self)
 		end;
 		if self.cp.driveControl.hasHandbrake then
 			self.cp.driveControl.handbrakeBackup = self.driveControl.handBrake.isActive;
-			self.driveControl.handBrake.isActive = false;
-			changed = true;
+			if self.driveControl.handBrake.isActive == true then
+				self.driveControl.handBrake.isActive = false;
+				changed = true;
+			end;
 		end;
 		if self.cp.driveControl.hasShuttleMode then
 			self.cp.driveControl.shuttleModeBackup = self.driveControl.shuttle.direction;
-			self.driveControl.shuttle.direction = 1.0;
-			changed = true;
+			if self.driveControl.shuttle.direction < 1.0 then
+				self.driveControl.shuttle.direction = 1.0;
+				changed = true;
+			end;
 		end;
 
 		if changed and driveControlInputEvent ~= nil then
@@ -410,15 +414,15 @@ function courseplay:stop(self)
 
 	if self.cp.hasDriveControl then
 		local changed = false;
-		if self.cp.driveControl.hasFourWD then
+		if self.cp.driveControl.hasFourWD and self.driveControl.fourWDandDifferentials.fourWheel ~= self.cp.driveControl.fourWDBackup then
 			self.driveControl.fourWDandDifferentials.fourWheel = self.cp.driveControl.fourWDBackup;
 			changed = true;
 		end;
-		if self.cp.driveControl.hasHandbrake then
+		if self.cp.driveControl.hasHandbrake and self.driveControl.handBrake.isActive ~= self.cp.driveControl.handbrakeBackup then
 			self.driveControl.handBrake.isActive = self.cp.driveControl.handbrakeBackup;
 			changed = true;
 		end;
-		if self.cp.driveControl.hasShuttleMode then
+		if self.cp.driveControl.hasShuttleMode and self.driveControl.shuttle.direction ~= self.cp.driveControl.shuttleModeBackup then
 			self.driveControl.shuttle.direction = self.cp.driveControl.shuttleModeBackup;
 			changed = true;
 		end;
