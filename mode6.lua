@@ -318,7 +318,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 						end;
 
 						local extraLength = 5;
-						if trigger.bunkerSilo ~= nil and trigger.bunkerSilo.movingPlanes ~= nil and vehicle.cp.handleAsOneSilo ~= true then
+						if trigger.bunkerSilo ~= nil and trigger.bunkerSilo.movingPlanes ~= nil and self.cp.handleAsOneSilo ~= true then
 							-- We are a bunkerSilo, so we need to add more extraLength to the totalLength.
 							extraLength = 55;
 						end;
