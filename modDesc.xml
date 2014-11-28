@@ -1566,7 +1566,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<it>Sud-Ovest</it>
 			<cz>jihozápad</cz>
 			<ru>Юго-Запад</ru>
-			<hu>Dél-nyugat</hu>
+			<hu>Dél/Nyugat</hu>
 			<nl>Zuid-West</nl>
 			<br>Sudoeste</br>
 		</text>
@@ -1577,7 +1577,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<it>Nord-Ovest</it>
 			<cz>severozápad</cz>
 			<ru>Северо-Запад</ru>
-			<hu>Észak-Nyugat</hu>
+			<hu>Észak/Nyugat</hu>
 			<nl>Noord-West</nl>
 			<br>Noroeste</br>
 		</text>
@@ -1588,7 +1588,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<it>Nord-Est</it>
 			<cz>severovýchod</cz>
 			<ru>Северо-Восток</ru>
-			<hu>Észak-kelet</hu>
+			<hu>Észak/Kelet</hu>
 			<nl>Noord-Oost</nl>
 			<br>Nordeste</br>
 		</text>
@@ -1599,7 +1599,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<it>Sud-Est</it>
 			<cz>jihovýchod</cz>
 			<ru>Юго-Восток</ru>
-			<hu>Dél-kelet</hu>
+			<hu>Dél/Kelet</hu>
 			<nl>Zuid-Oost</nl>
 			<br>Sudeste</br>
 		</text>
