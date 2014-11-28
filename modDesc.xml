@@ -135,7 +135,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 		<text name="COURSEPLAY_UNLOADING_SIDE">
 			<en>Driver side</en>
 			<de>Abfahrerseite</de>
-			<fr>Coté du chauffeur:</fr>
+			<fr>Côté du chauffeur:</fr>
 			<es>Lado de conducción</es>
 			<it>Lato autista</it>
 			<cz>Strana odvozce:</cz>
@@ -267,7 +267,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 		<text name="COURSEPLAY_MODE_3">
 			<en>Type: Overloader (empty combine and offload to trailer)</en>
 			<de>Typ: Überladewagen (Drescher abtanken)</de>
-			<fr>Type: Transbordeur (Dechargement de la Batteuse)</fr>
+			<fr>Type: Transbordeur (Déchargement de la Batteuse)</fr>
 			<es>Tipo: cargar de cosechadora y descargar a remolque</es>
 			<it>Modo: Trasferimento (Svuota trebbia e scarica su altro rimorchio)</it>
 			<cz>Mod: Překládací vůz (odvoz od kombajnu na překládku)</cz>
@@ -291,7 +291,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 		<text name="COURSEPLAY_MODE_5">
 			<en>Type: Transfer (drive from start to finish)</en>
 			<de>Typ: Überführung (Route abfahren)</de>
-			<fr>Type: Route (voyage du début jusqu'a la fin de la course)</fr>
+			<fr>Type: Route (voyage du début jusqu'à la fin de la course)</fr>
 			<es>Tipo: Traslado (conducir de un punto al final)</es>
 			<it>Modo: Trasferimento (vai dall'inizio alla fine)</it>
 			<cz>Mod: Průjezd (projede trasu bez zastavení)</cz>
@@ -663,7 +663,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 		<text name="COURSEPLAY_START_AT">
 			<en>Start at:</en>
 			<de>Start bei:</de>
-			<fr>Demarrer à:</fr>
+			<fr>Démarrer à:</fr>
 			<es>Iniciar en:</es>
 			<it>Inizia a:</it>
 			<cz>Přijet při:</cz>
@@ -987,7 +987,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 		<text name="COURSEPLAY_BEACON_LIGHTS">
 			<en>Beacon lights:</en>
 			<de>Rundumleuchte:</de>
-			<fr>Girophares:</fr>
+			<fr>Gyrophares:</fr>
 			<es>Rotativos:</es>
 			<it>Lampeggianti:</it>
 			<cz>Maják:</cz>
@@ -1179,7 +1179,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 		<text name="COURSEPLAY_DRIVE_BEHIND_COMBINE">
 			<en>Drive behind combine</en>
 			<de>Fahre hinter Drescher</de>
-			<fr>Conduit dérriere la batteuse</fr>
+			<fr>Conduit derrière la batteuse</fr>
 			<es>Ir detras de la cosechadora</es>
 			<it>Guida dietro la trebbia</it>
 			<cz>Jedu za kombajn/rezačku</cz>
@@ -1347,7 +1347,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY">
 			<en>Too many waiting points! Only %d allowed.</en>
 			<de>Zu viele Wartepunkte! Nur %d erlaubt.</de>
-			<fr>Trop de points d'attente! Seulement %d permits.</fr>
+			<fr>Trop de points d'attente! Seulement %d permis.</fr>
 			<es>Demasiados puntos de espera! Sólo %d permitido.</es>
 			<it>Troppi punti d'attesa! Permesso solo %d.</it> <!-- !!! -->
 			<cz>Příliš mnoho bodů čekání! Pouze %d bodů je povoleno.</cz>
@@ -1383,7 +1383,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 		<text name="COURSEPLAY_ESL_NOT_SUPPORTED">
 			<en>ESLimiter version is not supported</en>
 			<de>ESLimiter-Version wird nicht unterstützt</de>
-			<fr>la version du ESLimiter n'est pas compatible</fr>
+			<fr>la version de l'ESLimiter n'est pas compatible</fr>
 			<es>la version de ESLimiter no es compatible</es>
 			<it>la versione dell'ESLimiter non è compatibile</it>
 			<cz>verze ESLimiter není podporována</cz>
@@ -1479,7 +1479,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 		<text name="COURSEPLAY_WATER_WARNING">
 			<en>would like to go swimming</en>
 			<de>möchte baden gehen</de>
-			<fr>a voulut prendre un bain.</fr>
+			<fr>a voulu prendre un bain.</fr>
 			<es>quiere ir a nadar</es>
 			<it>vorrebbe nuotare</it>
 			<cz>by si rád zaplaval.</cz>
@@ -1551,7 +1551,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT">
 			<en>Return to first point</en>
 			<de>Am Startpunkt enden</de>
-			<fr>Retour au depart:</fr>
+			<fr>Retour au départ:</fr>
 			<it>Ritorna al primo punto</it>
 			<cz>Návrat na první bod:</cz>
 			<ru>Возврат на старт:</ru>
@@ -1747,7 +1747,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 		<text name="COURSEPLAY_START">
 			<en>Start</en>
 			<de>Starten</de>
-			<fr>Demarrer</fr>
+			<fr>Démarrer</fr>
 			<es>Iniciar</es>
 			<it>Inizia</it>
 			<cz>Start</cz>
@@ -1869,7 +1869,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<en>Stop + go loading</en>
 			<de>Stop + Go Laden</de>
 			<es>Stop + go loading</es> <!-- !! -->
-			<fr>Arreter et aller charger</fr>
+			<fr>Arrêter et aller charger</fr>
 			<it>Caricamento Stop + go</it>
 			<cz>Zastavit a jet nákládat:</cz>
 			<ru>Готово, поехали</ru>
@@ -1918,7 +1918,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<en>current waypoint</en>
 			<de>aktuellen Wegpunkt</de>
 			<es>punto actual</es>
-			<fr>courant point</fr>
+			<fr>point actuel</fr>
 			<it>corrente punto</it>
 			<hu>Aktuális útpont</hu>
 			<nl>huidige markering</nl>
@@ -2036,7 +2036,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 		<text name="COURSEPLAY_PICKUP_JAMMED">
 			<en>: pickup is jammed</en>
 			<de>: Pickup ist verstopft</de>
-			<fr>: le pickup est emcombré</fr>
+			<fr>: le pickup est encombré</fr>
 			<es>: pickup is jammed</es> <!-- !!! -->
 			<it>: pickup è intasato</it>
 			<cz>: odvozce je přetížený</cz>
@@ -2060,7 +2060,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES">
 			<en>Calculate current field's edge path</en>
 			<de>Aktuellen Feldrandkurs berechnen</de>
-			<fr>Calculer le tour du champs actuel</fr>
+			<fr>Calculer le tour du champ actuel</fr>
 			<es>Calculate current field's edge path</es> <!-- !!! -->
 			<it>Calcolo perimetro del campo corrente</it>
 			<cz>Vypočítej trasu okolo aktuálního pole</cz>
@@ -2120,7 +2120,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 		<text name="COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED">
 			<en>should be repaired soon</en>
 			<de>sollte repariert werden</de>
-			<fr>doit bientôt être réparer</fr>
+			<fr>doit bientôt être réparé</fr>
 			<es>debe repararse pronto</es>
 			<it>dev'essere riparato al piu' presto</it>
 			<cz>by měl být brzy opraven.</cz>
@@ -2132,7 +2132,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 		<text name="COURSEPLAY_DAMAGE_MUST_BE_REPAIRED">
 			<en>must be repaired</en>
 			<de>muss repariert werden</de>
-			<fr>doit être réparer</fr>
+			<fr>doit être réparé</fr>
 			<es>debe repararse</es>
 			<it>dev'essere riparato ora</it>
 			<cz>musí být opraven.</cz>
