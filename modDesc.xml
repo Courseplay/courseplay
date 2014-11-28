@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="20">
 	<version>4.00.0111</version>
 	<author><![CDATA[Courseplay Dev Team]]></author>
@@ -370,7 +370,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<ru>Сбросить маршрут</ru>
 			<hu>Útvonalat alaphelyzetbe</hu>
 			<nl>Reset route</nl>
-			<br>resetar rota</br>
+			<br>Resetar rota</br>
 		</text>
 		<text name="COURSEPLAY_DRIVE_NOW">
 			<en>Drive now</en>
@@ -670,7 +670,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<ru>Загрузка при:</ru>
 			<hu>Tölteni indul:</hu>
 			<nl>Start bij:</nl>
-			<br>Dirigir em:</br>
+			<br>Iniciar em:</br>
 		</text>
 		<text name="COURSEPLAY_TURN_RADIUS">
 			<en>Turning circle:</en>
@@ -874,6 +874,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<ru>Разгрузка (BGA):</ru>
 			<hu>Kirakodás (BGA):</hu>
 			<nl>Uitladen</nl>
+			<br>Descarregar (BGA):</br>
 			<br>Descarregar (BGA):</br>
 		</text>
 		<text name="COURSEPLAY_MAX_SPEED_MODE">
@@ -1126,7 +1127,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<ru>СМЕЩЕНИЕ МАРШРУТА</ru>
 			<hu>Vezetési beállítások</hu>
 			<nl>Bestuur instellingen</nl>
-			<br>Comfigurações de condução</br>
+			<br>Configurações de condução</br>
 		</text>
 		<text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS">
 			<en>Settings</en>
@@ -1186,7 +1187,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<ru>Еду к комбайну</ru>
 			<hu>Kombájnhoz vezetés</hu>
 			<nl>Achter combine rijden</nl>
-			<br>Dirigir atrás da ceifadeira</br>
+			<br>Seguir a ceifadeira</br>
 		</text>
 		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE">
 			<en>Drive next to combine</en>
@@ -1270,7 +1271,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<ru>Ищу комбайн для работы</ru>
 			<hu>a kombájn nem ér el</hu>
 			<nl>Geen combine binnen bereik</nl>
-			<br>nenhuma ceifadeira ao alcance</br>
+			<br>Nenhuma ceifadeira ao alcance</br>
 		</text>
 		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED">
 			<en>Waiting until combine has turned</en>
@@ -1282,7 +1283,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<ru>Жду завершения маневра комбайна</ru>
 			<hu>vár, amíg kombájn megfordul!</hu>
 			<nl>Wacht tot combine gedraaid is</nl>
-			<br>Esperar a ceifadeira virar</br>
+			<br>Esperando a ceifadeira virar</br>
 		</text>
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT">
 			<en>Waiting for new waypoint</en>
@@ -1318,7 +1319,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<ru>низкий уровень топлива</ru>
 			<hu>Az üzemanyag fogyóban! (20% alatt)</hu>
 			<nl>moet spoedig bijgetankt worden</nl>
-			<br>Precisa reabastecer</br>
+			<br>precisa reabastecer</br>
 		</text>
 		<text name="COURSEPLAY_MUST_BE_REFUELED">
 			<en>must be refueled</en>
@@ -1330,7 +1331,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<ru>слишком мало топлива!</ru>
 			<hu>Újra kell tankolnod!</hu>
 			<nl>moet bijgetankt worden</nl>
-			<br>Reabastecer</br>
+			<br>reabastecer</br>
 		</text>
 		<text name="COURSEPLAY_IS_BEING_REFUELED">
 			<en>is being refueled</en>
@@ -1342,7 +1343,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<ru>заправляется</ru>
 			<hu>tankol!</hu>
 			<nl>wordt bijgetankt</nl>
-			<br>Reabastecendo</br>
+			<br>reabastecendo</br>
 		</text>
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY">
 			<en>Too many waiting points! Only %d allowed.</en>
@@ -1742,7 +1743,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<ru>Поворот:</ru>
 			<hu>Fordulómanőver:</hu>
 			<nl>Draai beweging:</nl>
-			<br>manobra de giro</br>
+			<br>Manobra de giro</br>
 		</text>
 		<text name="COURSEPLAY_START">
 			<en>Start</en>
@@ -1922,7 +1923,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<it>corrente punto</it>
 			<hu>Aktuális útpont</hu>
 			<nl>huidige markering</nl>
-			<br>atual ponto</br>
+			<br>ponto atual </br>
 		</text>
 
 		<text name="COURSEPLAY_FIELD_EDGE_PATH">
@@ -1983,7 +1984,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<ru>Не могу найти</ru>
 			<hu>A tömlő nem található- utántöltés törölve</hu>
 			<nl>Geen vulslang gevonden, vullen geannuleerd</nl>
-			<br>Nenhum cano encontrado - cancelar recarda</br>
+			<br>Nenhum cano encontrado - cancelar recarga</br>
 		</text>
 		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE">
 			<en>Symmetric lane change</en>
@@ -2067,7 +2068,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<ru>Показать границы поля</ru>
 			<hu>A területszél útvonalának kikalkulálása</hu>
 			<nl>Bereken huidige veldrand</nl>
-			<br>Cálculo da borda do campo atual</br>
+			<br>Cálcular a borda do campo atual</br>
 		</text>
 		<text name="COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER">
 			<en>Field edge path number</en>
@@ -2139,7 +2140,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<ru>нуждается в ремонте</ru>
 			<hu>meg kell javítani!</hu>
 			<nl>Moet hersteld worden</nl>
-			<br>Reparar</br>
+			<br>reparar</br>
 		</text>
 		<text name="COURSEPLAY_DAMAGE_IS_BEING_REPAIRED">
 			<en>is being repaired</en>
@@ -2247,7 +2248,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<ru>: силосная яма заполнена!</ru>
 			<hu>: a BGA siló tele van!</hu>
 			<nl>: Bunker silo is vol!</nl>
-			<br>Silo está cheio!</br>
+			<br>: Silo está cheio!</br>
 		</text>
 
 		<!-- Farm silo --> <!-- missing: es, (it) -->
@@ -2260,7 +2261,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<ru>В этом бункере нет такого продукта!</ru>
 			<hu>Nem választottad ki a farm tárólóból a terménytípust</hu>
 			<nl>Farm Silo heeft niet de juiste vulling</nl>
-			<br>silo não selecionou o tipo de preenchimento </br>
+			<br>silo não selecionou o tipo de carregamento </br>
 		</text>
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE">
 			<en>Farm silo load:</en>
@@ -2271,7 +2272,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<ru>Забрать из бункера:</ru>
 			<hu>A farm tároló töltöttsége:</hu>
 			<nl>Farm Silo laad:</nl>
-			<br>Carregando silo :</br>
+			<br>Carregando silo:</br>
 		</text>
 		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY">
 			<en>Farm silo is empty!</en>
@@ -2384,7 +2385,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<fr>Voulez-vous que vos champs soient scannés automatiquement ?</fr>
 			<hu>Szeretnéd, hogy a mezők adatait automatikusan beolvassa?</hu>
 			<ru>Включить автосканирование полей?</ru>
-			<br>Você deseja que os campos a sejam escaneados automaticamente?</br>
+			<br>Você deseja que os campos sejam escaneados automaticamente?</br>
 		</text>
 		<text name="COURSEPLAY_YES_NO_WAGES">
 			<en>Do you want your workers to earn wages (%s/hour)?</en>
@@ -2582,7 +2583,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<nl>Courseplay: secundaire muis aktie</nl>
 			<br>Courseplay: ações secundárias do mouse</br>
 		</text>
-		<text name="COURSEPLAY_MOUSEARROW_SHOW"> <!-- missing: br -->
+		<text name="COURSEPLAY_MOUSEARROW_SHOW"> 
 			<en>show mouse cursor</en>
 			<de>Mauszeiger anzeigen</de>
 			<fr>Afficher le curseur</fr>
@@ -2592,6 +2593,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<ru>показать курсор</ru>
 			<hu>Egérkurzor megjelenítése</hu>
 			<nl>toon cursorr</nl>
+			<br>mostrar cursor do mouse</br>
 		</text>
 		<text name="COURSEPLAY_MOUSEARROW_HIDE">
 			<en>hide mouse cursor</en>
