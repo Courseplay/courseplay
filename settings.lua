@@ -19,7 +19,7 @@ function courseplay:setCpMode(vehicle, modeNum)
 	end;
 end;
 
-function courseplay:callCourseplayer(combine)
+function courseplay:toggleWantsCourseplayer(combine)
 	combine.cp.wantsCourseplayer = not combine.cp.wantsCourseplayer;
 end;
 
@@ -91,32 +91,6 @@ function courseplay:setHudPage(vehicle, pageNum)
 	courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);
 
 	courseplay:buttonsActiveEnabled(vehicle, "all");
-end;
-
-function courseplay:switchHudPage(vehicle, changeBy)
-	local newPage = courseplay:minMaxPage(vehicle, vehicle.cp.hud.currentPage + changeBy);
-
-	if vehicle.cp.mode == nil then
-		vehicle.cp.hud.currentPage = newPage;
-	elseif courseplay.hud.pagesPerMode[vehicle.cp.mode] ~= nil then
-		while courseplay.hud.pagesPerMode[vehicle.cp.mode][newPage] == false do
-			newPage = courseplay:minMaxPage(vehicle, newPage + changeBy);
-		end;
-		vehicle.cp.hud.currentPage = newPage;
-	end;
-
-	courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);
-
-	courseplay:buttonsActiveEnabled(vehicle, "all");
-end;
-
-function courseplay:minMaxPage(vehicle, pageNum)
-	if pageNum < vehicle.cp.minHudPage then
-		pageNum = courseplay.hud.numPages;
-	elseif pageNum > courseplay.hud.numPages then
-		pageNum = vehicle.cp.minHudPage;
-	end;
-	return pageNum;
 end;
 
 function courseplay:buttonsActiveEnabled(self, section)
@@ -537,7 +511,7 @@ function courseplay:changeUnloadSpeed(vehicle, changeBy, force, forceReloadPage)
 	end;
 end
 
-function courseplay:changeUseRecordingSpeed(vehicle)
+function courseplay:toggleUseRecordingSpeed(vehicle)
 	vehicle.cp.speeds.useRecordingSpeed = not vehicle.cp.speeds.useRecordingSpeed;
 end;
 
@@ -556,7 +530,7 @@ function courseplay:toggleRealisticDriving(vehicle)
 	vehicle.cp.realisticDriving = not vehicle.cp.realisticDriving;
 end;
 
-function courseplay:switchSearchCombineMode(vehicle)
+function courseplay:toggleSearchCombineMode(vehicle)
 	vehicle.cp.searchCombineAutomatically = not vehicle.cp.searchCombineAutomatically;
 	if not vehicle.cp.searchCombineAutomatically then
 		courseplay:setSearchCombineOnField(vehicle, nil, 0);
@@ -1022,71 +996,70 @@ function courseplay:toggleDebugChannel(self, channel, force)
 end;
 
 --Course generation
-function courseplay:switchStartingCorner(self)
-	self.cp.startingCorner = self.cp.startingCorner + 1;
-	if self.cp.startingCorner > 4 then
-		self.cp.startingCorner = 1;
+function courseplay:switchStartingCorner(vehicle)
+	vehicle.cp.startingCorner = vehicle.cp.startingCorner + 1;
+	if vehicle.cp.startingCorner > 4 then
+		vehicle.cp.startingCorner = 1;
 	end;
-	self.cp.hasStartingCorner = true;
-	self.cp.hasStartingDirection = false;
-	self.cp.startingDirection = 0;
+	vehicle.cp.hasStartingCorner = true;
+	vehicle.cp.hasStartingDirection = false;
+	vehicle.cp.startingDirection = 0;
 
-	courseplay:validateCourseGenerationData(self);
+	courseplay:validateCourseGenerationData(vehicle);
 end;
 
-function courseplay:switchStartingDirection(self)
+function courseplay:changeStartingDirection(vehicle)
 	-- corners: 1 = SW, 2 = NW, 3 = NE, 4 = SE
 	-- directions: 1 = North, 2 = East, 3 = South, 4 = West
 
 	local validDirections = {};
-	if self.cp.hasStartingCorner then
-		if self.cp.startingCorner == 1 then --SW
+	if vehicle.cp.hasStartingCorner then
+		if vehicle.cp.startingCorner == 1 then --SW
 			validDirections[1] = 1; --N
 			validDirections[2] = 2; --E
-		elseif self.cp.startingCorner == 2 then --NW
+		elseif vehicle.cp.startingCorner == 2 then --NW
 			validDirections[1] = 2; --E
 			validDirections[2] = 3; --S
-		elseif self.cp.startingCorner == 3 then --NE
+		elseif vehicle.cp.startingCorner == 3 then --NE
 			validDirections[1] = 3; --S
 			validDirections[2] = 4; --W
-		elseif self.cp.startingCorner == 4 then --SE
+		elseif vehicle.cp.startingCorner == 4 then --SE
 			validDirections[1] = 4; --W
 			validDirections[2] = 1; --N
 		end;
 
 		--would be easier with i=i+1, but more stored variables would be needed
-		if self.cp.startingDirection == 0 then
-			self.cp.startingDirection = validDirections[1];
-		elseif self.cp.startingDirection == validDirections[1] then
-			self.cp.startingDirection = validDirections[2];
-		elseif self.cp.startingDirection == validDirections[2] then
-			self.cp.startingDirection = validDirections[1];
+		if vehicle.cp.startingDirection == 0 then
+			vehicle.cp.startingDirection = validDirections[1];
+		elseif vehicle.cp.startingDirection == validDirections[1] then
+			vehicle.cp.startingDirection = validDirections[2];
+		elseif vehicle.cp.startingDirection == validDirections[2] then
+			vehicle.cp.startingDirection = validDirections[1];
 		end;
-		self.cp.hasStartingDirection = true;
+		vehicle.cp.hasStartingDirection = true;
 	end;
 
-	courseplay:validateCourseGenerationData(self);
+	courseplay:validateCourseGenerationData(vehicle);
 end;
 
-function courseplay:switchReturnToFirstPoint(self)
-	self.cp.returnToFirstPoint = not self.cp.returnToFirstPoint;
+function courseplay:toggleReturnToFirstPoint(vehicle)
+	vehicle.cp.returnToFirstPoint = not vehicle.cp.returnToFirstPoint;
 end;
 
-function courseplay:setHeadlandNumLanes(vehicle, changeBy)
+function courseplay:changeHeadlandNumLanes(vehicle, changeBy)
 	vehicle.cp.headland.numLanes = Utils.clamp(vehicle.cp.headland.numLanes + changeBy, 0, vehicle.cp.headland.maxNumLanes);
 	courseplay:validateCourseGenerationData(vehicle);
 end;
 
-function courseplay:setHeadlandDir(vehicle)
+function courseplay:toggleHeadlandDirection(vehicle)
 	vehicle.cp.headland.userDirClockwise = not vehicle.cp.headland.userDirClockwise;
 	vehicle.cp.headland.directionButton:setSpriteSectionUVs(vehicle.cp.headland.userDirClockwise and 'headlandDirCW' or 'headlandDirCCW');
-	-- courseplay:debug(string.format('setHeadlandDir(): userDirClockwise=%s -> set to %q, setOverlay(directionButton, %d)', tostring(not vehicle.cp.headland.userDirClockwise), tostring(vehicle.cp.headland.userDirClockwise), vehicle.cp.headland.userDirClockwise and 1 or 2), 7);
 end;
 
-function courseplay:setHeadlandOrder(vehicle)
+function courseplay:toggleHeadlandOrder(vehicle)
 	vehicle.cp.headland.orderBefore = not vehicle.cp.headland.orderBefore;
 	vehicle.cp.headland.orderButton:setSpriteSectionUVs(vehicle.cp.headland.orderBefore and 'headlandOrdBef' or 'headlandOrdAft');
-	-- courseplay:debug(string.format('setHeadlandOrder(): orderBefore=%s -> set to %q, setOverlay(orderButton, %d)', tostring(not vehicle.cp.headland.orderBefore), tostring(vehicle.cp.headland.orderBefore), vehicle.cp.headland.orderBefore and 1 or 2), 7);
+	-- courseplay:debug(string.format('toggleHeadlandOrder(): orderBefore=%s -> set to %q, setOverlay(orderButton, %d)', tostring(not vehicle.cp.headland.orderBefore), tostring(vehicle.cp.headland.orderBefore), vehicle.cp.headland.orderBefore and 1 or 2), 7);
 end;
 
 function courseplay:validateCourseGenerationData(vehicle)
@@ -1150,11 +1123,11 @@ function courseplay:saveShovelPosition(vehicle, stage)
 	courseplay:buttonsActiveEnabled(vehicle, 'shovel');
 end;
 
-function courseplay:setShovelStopAndGo(vehicle)
+function courseplay:toggleShovelStopAndGo(vehicle)
 	vehicle.cp.shovelStopAndGo = not vehicle.cp.shovelStopAndGo;
 end;
 
-function courseplay:toggleStartAtPoint(vehicle)
+function courseplay:changeStartAtPoint(vehicle)
 	vehicle.cp.startAtPoint = courseplay:varLoop(vehicle.cp.startAtPoint, 1, courseplay.START_AT_CURRENT_POINT, courseplay.START_AT_NEAREST_POINT);
 end;
 
@@ -1414,7 +1387,7 @@ function courseplay:showFieldEdgePath(vehicle, pathType)
 	end;
 end;
 
-function courseplay:setDrawWaypointsLines(vehicle)
+function courseplay:toggleDrawWaypointsLines(vehicle)
 	if not courseplay.isDeveloper then return; end;
 	vehicle.cp.drawWaypointsLines = not vehicle.cp.drawWaypointsLines;
 end;

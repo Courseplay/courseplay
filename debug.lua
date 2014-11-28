@@ -264,12 +264,7 @@ end
 
 function streamDebugReadFloat32(streamId)
 	stream_debug_counter = stream_debug_counter + 1
-	--courseplay:debug("++++++++++++++++", 5)
-	--courseplay:debug(stream_debug_counter, 5)
 	local value = streamReadFloat32(streamId)
-	--[[courseplay:debug("Float32: ", 5)
-	courseplay:debug(value, 5)
-	courseplay:debug("-----------------", 5)]]
 	courseplay:debug(string.format("%d: reading float: %f",stream_debug_counter, value ),5)
 	return value
 end
@@ -277,12 +272,7 @@ end
 
 function streamDebugReadInt32(streamId)
 	stream_debug_counter = stream_debug_counter + 1
-	--courseplay:debug("++++++++++++++++", 5)
-	--courseplay:debug(stream_debug_counter, 5)
 	local value = streamReadInt32(streamId)
-	--[[courseplay:debug("Int32: ", 5)
-	courseplay:debug(value, 5)
-	courseplay:debug("-----------------", 5)]]
 	courseplay:debug(string.format("%d: reading int: %d",stream_debug_counter, value ),5)
 	return value
 end

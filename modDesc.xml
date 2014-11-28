@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="20">
-	<version>4.00.0111</version>
+	<version>4.00.0112</version>
 	<author><![CDATA[Courseplay Dev Team]]></author>
 	<title>
 		<br>Courseplay</br>
@@ -874,7 +874,6 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<ru>Разгрузка (BGA):</ru>
 			<hu>Kirakodás (BGA):</hu>
 			<nl>Uitladen</nl>
-			<br>Descarregar (BGA):</br>
 			<br>Descarregar (BGA):</br>
 		</text>
 		<text name="COURSEPLAY_MAX_SPEED_MODE">

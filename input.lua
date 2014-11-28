@@ -225,7 +225,7 @@ function courseplay:executeFunction(self, func, value, page)
 
 			if combine.courseplayers == nil or #(combine.courseplayers) == 0 then
 				if line == 1 then
-					courseplay:callCourseplayer(combine);
+					courseplay:toggleWantsCourseplayer(combine);
 				end;
 			else
 				if line == 2 then
@@ -249,7 +249,7 @@ function courseplay:executeFunction(self, func, value, page)
 					if line == 1 then
 						courseplay:start(self);
 					elseif line == 3 and self.cp.mode ~= 9 then
-						courseplay:toggleStartAtPoint(self);
+						courseplay:changeStartAtPoint(self);
 					elseif line == 4 then
 						courseplay:clearCurrentLoadedCourse(self);
 					elseif line == 6 and self.cp.mode == 1 and self.cp.workTools[1] ~= nil and self.cp.workTools[1].allowFillFromAir and self.cp.workTools[1].allowTipDischarge then
@@ -266,7 +266,7 @@ function courseplay:executeFunction(self, func, value, page)
 					elseif line == 3 and not self.cp.isLoaded then
 						courseplay:setIsLoaded(self, true);
 					elseif line == 4 and not self.cp.stopAtEnd then
-						self.cp.stopAtEnd = true
+						courseplay:setStopAtEnd(self, true);
 					elseif line == 5 then
 						if self.cp.mode == 4 and self.cp.hasSowingMachine then
 							self.cp.ridgeMarkersAutomatic = not self.cp.ridgeMarkersAutomatic;

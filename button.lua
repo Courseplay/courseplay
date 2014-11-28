@@ -363,11 +363,11 @@ function courseplay.button:render()
 				end;
 			elseif fn == "changeWorkWidth" and prm < 0 then
 				show = vehicle.cp.workWidth > 0.1;
-			elseif fn == "switchStartingDirection" then
+			elseif fn == "changeStartingDirection" then
 				show = vehicle.cp.hasStartingCorner;
-			elseif fn == 'setHeadlandDir' or fn == 'setHeadlandOrder' then
+			elseif fn == 'toggleHeadlandDirection' or fn == 'toggleHeadlandOrder' then
 				show = vehicle.cp.headland.numLanes > 0;
-			elseif fn == 'setHeadlandNumLanes' then
+			elseif fn == 'changeHeadlandNumLanes' then
 				if prm < 0 then
 					show = vehicle.cp.headland.numLanes > 0;
 				elseif prm > 0 then

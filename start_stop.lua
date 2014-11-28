@@ -302,7 +302,7 @@ function courseplay:start(self)
 				changed = true;
 			end;
 		end;
-		if self.cp.driveControl.hasShuttleMode then
+		if self.cp.driveControl.hasShuttleMode and self.driveControl.shuttle.isActive then
 			if self.driveControl.shuttle.direction < 1.0 then
 				self.driveControl.shuttle.direction = 1.0;
 				changed = true;
@@ -485,7 +485,7 @@ function courseplay:stop(self)
 	self.cp.startWork = nil
 	self.cp.stopWork = nil
 	self.cp.hasUnloadingRefillingCourse = false;
-	self.cp.stopAtEnd = false
+	courseplay:setStopAtEnd(self, false);
 	self.cp.isUnloaded = false;
 	self.cp.prevFillLevelPct = nil;
 	self.cp.isInRepairTrigger = nil;
