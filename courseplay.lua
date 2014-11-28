@@ -168,12 +168,23 @@ function courseplay:setGlobalData()
 		return;
 	end;
 
-	courseplay.cpFolderPath = getUserProfileAppPath() .. 'courseplay/';
-	courseplay.cpSavegameFolderPath = courseplay.cpFolderPath .. 'savegame' .. g_careerScreen.selectedIndex .. '/';
-	courseplay.cpXmlFilePath = courseplay.cpSavegameFolderPath .. 'courseplay.xml';
-	courseplay.cpFieldsXmlFilePath = courseplay.cpSavegameFolderPath .. 'courseplayFields.xml';
-	createFolder(courseplay.cpFolderPath);
-	createFolder(courseplay.cpSavegameFolderPath);
+	local savegameFolderPath = ('%ssavegame%d/'):format(getUserProfileAppPath(), g_careerScreen.currentSavegame.savegameIndex);
+	courseplay.cpXmlFilePath = savegameFolderPath .. 'courseplay.xml';
+	courseplay.cpFieldsXmlFilePath = savegameFolderPath .. 'courseplayFields.xml';
+
+
+	-- CP MODES
+	courseplay.MODE_GRAIN_TRANSPORT = 1;
+	courseplay.MODE_COMBI = 2;
+	courseplay.MODE_OVERLOADER = 3;
+	courseplay.MODE_SEED_FERTILIZE = 4;
+	courseplay.MODE_TRANSPORT = 5;
+	courseplay.MODE_FIELDWORK = 6;
+	courseplay.MODE_COMBINE_SELF_UNLOADING = 7;
+	courseplay.MODE_LIQUIDMANURE_TRANSPORT = 8;
+	courseplay.MODE_SHOVEL_FILL_AND_EMPTY = 9;
+
+	------------------------------------------------------------
 
 	local customPosX, customPosY;
 	local fieldsAutomaticScan, fieldsDebugScan, fieldsDebugCustomLoad, fieldsCustomScanStep, fieldsOnlyScanOwnedFields = true, false, false, nil, true;
@@ -465,16 +476,12 @@ function courseplay:setGlobalData()
 	courseplay.globalInfoText.hasContent = false;
 	courseplay.globalInfoText.vehicleHasText = {};
 	courseplay.globalInfoText.levelColors = {
-		[-2] = courseplay.utils.table.copy(courseplay.hud.colors.closeRed);
-		[-1] = courseplay.utils.table.copy(courseplay.hud.colors.activeRed);
-		[0]  = courseplay.utils.table.copy(courseplay.hud.colors.hover);
-		[1]  = courseplay.utils.table.copy(courseplay.hud.colors.activeGreen);
+		[-2] = courseplay.hud.colors.closeRed;
+		[-1] = courseplay.hud.colors.activeRed;
+		[0]  = courseplay.hud.colors.hover;
+		[1]  = courseplay.hud.colors.activeGreen;
 	};
-	--[[
-	for i=-2,1 do
-		courseplay.globalInfoText.levelColors[i][4] = 0.85;
-	end;
-	]]
+
 	courseplay.globalInfoText.msgReference = {
 		BALER_NETS					= { level = -2, text = 'COURSEPLAY_BALER_NEEDS_NETS' };
 		BGA_IS_FULL					= { level = -1, text = 'COURSEPLAY_BGA_IS_FULL'};
