@@ -1200,10 +1200,10 @@ end;
 
 function courseplay:setFourWheelDrive(vehicle, workArea)
 	local changed = false;
-	if (workArea or vehicle.cp.BGASelectedSection or vehicle.cp.isSlipping) and not vehicle.driveControl.fourWDandDifferentials.fourWheel then
+	if (workArea or vehicle.cp.BGASelectedSection or vehicle.cp.isSlipping or vehicle.cp.mode == 9) and not vehicle.driveControl.fourWDandDifferentials.fourWheel then
 		vehicle.driveControl.fourWDandDifferentials.fourWheel = true;
 		changed = true;
-	elseif not workArea and not vehicle.cp.BGASelectedSection and not vehicle.cp.isSlipping and vehicle.driveControl.fourWDandDifferentials.fourWheel then
+	elseif not workArea and not vehicle.cp.BGASelectedSection and not vehicle.cp.isSlipping and vehicle.cp.mode ~= 9 and vehicle.driveControl.fourWDandDifferentials.fourWheel then
 		vehicle.driveControl.fourWDandDifferentials.fourWheel = false;
 		changed = true;
 	end
