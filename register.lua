@@ -79,10 +79,11 @@ function courseplay:vehicleDelete()
 		-- Remove created nodes
 		if self.cp.notesToDelete and #self.cp.notesToDelete > 0 then
 			for _, nodeId in ipairs(self.cp.notesToDelete) do
-				if nodeId and nodeId ~= 0 and getName(nodeId) ~= nil then
+				if nodeId and nodeId ~= 0 then
 					delete(nodeId);
 				end;
 			end;
+			self.cp.notesToDelete = nil;
 		end;
 
 	end;
