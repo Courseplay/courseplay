@@ -367,7 +367,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<es>Reiniciar ruta</es>
 			<it>Azzera percorso</it>
 			<cz>Odstranit orientační body</cz>
-			<ru>Сбросить маршрут</ru>
+			<ru>Сброс маршрута</ru>
 			<hu>Útvonalat alaphelyzetbe</hu>
 			<nl>Reset route</nl>
 			<br>Resetar rota</br>
@@ -1886,7 +1886,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<fr>Commencer la course au</fr>
 			<it>Avviare il corso al</it>
 			<cz>Začátek trasy:</cz>
-			<ru>Начало маршрута:</ru>
+			<ru>Способ запуска:</ru>
 			<hu>Útvonal kezdése:</hu>
 			<nl>Route starten bij:</nl>
 			<br>Iniciar rota em:</br>
@@ -1921,6 +1921,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<es>punto actual</es>
 			<fr>point actuel</fr>
 			<it>corrente punto</it>
+			<ru>продолжить маршрут</ru>
 			<hu>Aktuális útpont</hu>
 			<nl>huidige markering</nl>
 			<br>ponto atual </br>
