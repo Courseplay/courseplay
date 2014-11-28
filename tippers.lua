@@ -340,6 +340,7 @@ function courseplay:setTipRefOffset(vehicle)
 					tipRefPointX = math.abs(tipRefPointX);
 					if (vehicle.cp.tipRefOffset == nil or vehicle.cp.tipRefOffset == 0) and tipRefPointX > 0.1 then
 						vehicle.cp.tipRefOffset = tipRefPointX;
+						break
 					else
 						vehicle.cp.tipRefOffset = 0
 					end;
