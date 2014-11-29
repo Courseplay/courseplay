@@ -29,7 +29,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 	if fieldArea then
 		workSpeed = 1;
 	end
-	if (self.recordnumber == self.cp.stopWork or self.cp.lastRecordnumber == self.cp.stopWork) and self.cp.abortWork == nil and not self.cp.isLoaded and not isFinishingWork then
+	if (self.recordnumber == self.cp.stopWork or self.cp.lastRecordnumber == self.cp.stopWork) and self.cp.abortWork == nil and not self.cp.isLoaded and not isFinishingWork and self.cp.wait then
 		allowedToDrive = false
 		courseplay:setGlobalInfoText(self, 'WORK_END');
 		hasFinishedWork = true
@@ -499,7 +499,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 			 --Stop combine
 			elseif self.recordnumber == self.cp.stopWork or self.cp.abortWork ~= nil then
 				local isEmpty = tool.fillLevel == 0
-				if self.cp.abortWork == nil then
+				if self.cp.abortWork == nil and self.cp.wait then
 					allowedToDrive = false;
 				end
 				if isEmpty then

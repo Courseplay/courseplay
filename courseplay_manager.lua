@@ -124,6 +124,8 @@ function courseplay_manager.getThatFuckerBack(self)
 
 	if fileExists(backupCpFilePath) then
 		copyFile(backupCpFilePath, courseplay.cpXmlFilePath, true);
+	else
+		-- TODO (Jakob): create file anew
 	end;
 	if fileExists(backupCpFieldsFilePath) then
 		copyFile(backupCpFieldsFilePath, courseplay.cpFieldsXmlFilePath, true);

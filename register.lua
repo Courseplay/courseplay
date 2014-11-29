@@ -79,9 +79,10 @@ function courseplay.vehicleLoadFinished(self)
 		self.cp.xmlFileName = courseplay.utils:getFileNameFromPath(self.configFileName);
 	end;
 
-	-- make sure every vehicle has the CP driving API functions
+	-- make sure every vehicle has the CP API functions
 	self.getIsCourseplayDriving = courseplay.getIsCourseplayDriving;
 	self.setIsCourseplayDriving = courseplay.setIsCourseplayDriving;
+	self.setCpVar = courseplay.setCpVar;
 end;
 Vehicle.loadFinished = Utils.prependedFunction(Vehicle.loadFinished, courseplay.vehicleLoadFinished);
 -- NOTE: using loadFinished() instead of load() so any other mod that overwrites Vehicle.load() doesn't interfere

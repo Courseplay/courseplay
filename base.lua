@@ -48,12 +48,12 @@ function courseplay:load(xmlFile)
 	self.toggledTipState = 0;
 
 	self.cp.combineOffsetAutoMode = true
-	self:setIsCourseplayDriving(false);
+	self.cp.isDriving = false;
 	self.cp.runOnceStartCourse = false;
-	courseplay:setStopAtEnd(self, false);
+	self.cp.stopAtEnd = false;
 	self.cp.calculatedCourseToCombine = false
 
-	courseplay:setRecordNumber(self, 1);
+	self.recordnumber = 1;
 	self.cp.lastRecordnumber = 1;
 	self.cp.recordingTimer = 1
 	self.cp.timeOut = 1
@@ -63,8 +63,8 @@ function courseplay:load(xmlFile)
 	self.cp.positionWithCombine = nil;
 
 	-- RECORDING
-	courseplay:setIsRecording(self, false);
-	courseplay:setRecordingIsPaused(self, false);
+	self.cp.isRecording = false;
+	self.cp.recordingIsPaused = false;
 	self.cp.isRecordingTurnManeuver = false;
 	self.cp.drivingDirReverse = false;
 
@@ -85,14 +85,14 @@ function courseplay:load(xmlFile)
 	self.cp.canDrive = false --can drive course (has >4 waypoints, is not recording)
 	self.cp.coursePlayerNum = nil;
 
-	courseplay:setInfoText(self, nil); -- info text in tractor
+	self.cp.infoText = nil; -- info text in tractor
+	self.cp.toolTip = nil;
 
 	-- global info text - also displayed when not in vehicle
 	self.cp.hasSetGlobalInfoTextThisLoop = {};
 	self.cp.activeGlobalInfoTexts = {};
 	self.cp.numActiveGlobalInfoTexts = 0;
 
-	courseplay:setToolTip(self, nil);
 
 
 	-- ai mode: 1 abfahrer, 2 kombiniert
@@ -103,12 +103,12 @@ function courseplay:load(xmlFile)
 	self.cp.stopWork = nil
 	self.cp.abortWork = nil
 	self.cp.hasUnloadingRefillingCourse = false;
-	courseplay:setVehicleWait(self, true);
+	self.cp.wait = true;
 	self.cp.waitTimer = nil;
 	self.cp.realisticDriving = true;
 	self.cp.canSwitchMode = false;
 	self.cp.multiSiloSelectedFillType = Fillable.FILLTYPE_UNKNOWN;
-	courseplay:setSlippingStage(self, 0);
+	self.cp.slippingStage = 0;
 
 	self.cp.startAtPoint = courseplay.START_AT_NEAREST_POINT;
 
@@ -311,7 +311,7 @@ function courseplay:load(xmlFile)
 	self.cp.currentTrailerToFill = nil;
 	self.cp.trailerFillDistance = nil;
 	self.cp.isUnloaded = false;
-	courseplay:setIsLoaded(self, false);
+	self.cp.isLoaded = false;
 	self.cp.unloadingTipper = nil;
 	self.cp.tipperFillLevel = nil;
 	self.cp.tipperCapacity = nil;
@@ -534,7 +534,7 @@ function courseplay:load(xmlFile)
 	end;
 
 	--default hud conditional variables
-	self.cp.HUDrecordnumber = 0 
+	self.cp.HUDrecordnumber = 1; 
 	self.cp.HUD0noCourseplayer = false;
 	self.cp.HUD0wantsCourseplayer = false;
 	self.cp.HUD0tractorName = "";
@@ -1143,10 +1143,20 @@ function courseplay:update(dt)
 	end
 
 	if g_server ~= nil then
-		self.cp.HUDrecordnumber = self.recordnumber
 		if self:getIsCourseplayDriving() then
-			self.cp.HUD1wait = (self.Waypoints[self.cp.lastRecordnumber] ~= nil and self.Waypoints[self.cp.lastRecordnumber].wait and self.cp.wait) or (self.cp.stopAtEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil));
-			self.cp.HUD1noWaitforFill = not self.cp.isLoaded and self.cp.mode ~= 5;
+			local showDriveOnButton = false;
+			if self.cp.mode == 6 then
+				if self.cp.wait and (self.recordnumber == self.cp.stopWork or self.cp.lastRecordnumber == self.cp.stopWork) and self.cp.abortWork == nil and not self.cp.isLoaded and not isFinishingWork and self.cp.hasUnloadingRefillingCourse then
+					showDriveOnButton = true;
+				end;
+			else
+				if (self.cp.wait and (self.Waypoints[self.recordnumber].wait or self.Waypoints[self.cp.lastRecordnumber].wait)) or (self.cp.stopAtEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil)) then
+					showDriveOnButton = true;
+				end;
+			end;
+			self:setCpVar('HUD1wait', showDriveOnButton);
+
+			self:setCpVar('HUD1noWaitforFill', not self.cp.isLoaded and self.cp.mode ~= 5);
 			--[[ TODO (Jakob):
 				* rename to "HUD1waitForFill"
 				* should only be applicable in following situations:
@@ -1165,24 +1175,24 @@ function courseplay:update(dt)
 				combine = self.cp.workTools[self.cp.attachedCombineIdx];
 			end;
 			if combine.courseplayers == nil then
-				self.cp.HUD0noCourseplayer = true
+				self:setCpVar('HUD0noCourseplayer', true);
 				combine.courseplayers = {};
 			else
-				self.cp.HUD0noCourseplayer = table.getn(combine.courseplayers) == 0
+				self:setCpVar('HUD0noCourseplayer', #combine.courseplayers == 0);
 			end
-			self.cp.HUD0wantsCourseplayer = combine.cp.wantsCourseplayer
-			self.cp.HUD0combineForcedSide = combine.cp.forcedSide
-			self.cp.HUD0isManual = not self:getIsCourseplayDriving() and not combine.isAIThreshing 
-			self.cp.HUD0turnStage = self.cp.turnStage
+			self:setCpVar('HUD0noCourseplayer', combine.cp.wantsCourseplayer);
+			self:setCpVar('HUD0combineForcedSide', combine.cp.forcedSide);
+			self:setCpVar('HUD0isManual', not self:getIsCourseplayDriving() and not combine.isAIThreshing);
+			self:setCpVar('HUD0turnStage', self.cp.turnStage);
 			local tractor = combine.courseplayers[1]
 			if tractor ~= nil then
-				self.cp.HUD0tractorForcedToStop = tractor.cp.forcedToStop
-				self.cp.HUD0tractorName = tostring(tractor.name)
-				self.cp.HUD0tractor = true
+				self:setCpVar('HUD0tractorForcedToStop', tractor.cp.forcedToStop);
+				self:setCpVar('HUD0tractorName', tostring(tractor.name));
+				self:setCpVar('HUD0tractor', true);
 			else
-				self.cp.HUD0tractorForcedToStop = nil
-				self.cp.HUD0tractorName = nil
-				self.cp.HUD0tractor = false
+				self:setCpVar('HUD0tractorForcedToStop', nil);
+				self:setCpVar('HUD0tractorName', nil);
+				self:setCpVar('HUD0tractor', false);
 			end;
 
 		elseif self.cp.hud.currentPage == 1 then
@@ -1192,13 +1202,13 @@ function courseplay:update(dt)
 
 
 		elseif self.cp.hud.currentPage == 4 then
-			self.cp.HUD4hasActiveCombine = self.cp.activeCombine ~= nil
+			self:setCpVar('HUD4hasActiveCombine', self.cp.activeCombine ~= nil);
 			if self.cp.HUD4hasActiveCombine == true then
-				self.cp.HUD4combineName = self.cp.activeCombine.name
+				self:setCpVar('HUD4combineName', self.cp.activeCombine.name);
 			end
-			self.cp.HUD4savedCombine = self.cp.savedCombine ~= nil and self.cp.savedCombine.rootNode ~= nil
+			self:setCpVar('HUD4savedCombine', self.cp.savedCombine ~= nil and self.cp.savedCombine.rootNode ~= nil);
 			if self.cp.savedCombine ~= nil then
-				-- self.cp.HUD4savedCombineName = self.cp.savedCombine.name
+				self:setCpVar('HUD4savedCombineName', self.cp.savedCombine.name);
 			end
 
 		elseif self.cp.hud.currentPage == 8 then
@@ -1361,21 +1371,21 @@ function courseplay:readStream(streamId, connection)
 	self.cp.toolOffsetX = streamDebugReadFloat32(streamId)
 	self.cp.toolOffsetZ = streamDebugReadFloat32(streamId)
 	courseplay:setHudPage(self, streamDebugReadInt32(streamId));
-	self.cp.HUDrecordnumber = streamDebugReadInt32(streamId)
-	self.cp.HUD0noCourseplayer = streamDebugReadBool(streamId)
-	self.cp.HUD0wantsCourseplayer = streamDebugReadBool(streamId)
-	self.cp.HUD0combineForcedSide = streamDebugReadString(streamId);
-	self.cp.HUD0isManual = streamDebugReadBool(streamId)
-	self.cp.HUD0turnStage = streamDebugReadInt32(streamId)
-	self.cp.HUD0tractorForcedToStop = streamDebugReadBool(streamId)
-	self.cp.HUD0tractorName = streamDebugReadString(streamId);
-	self.cp.HUD0tractor = streamDebugReadBool(streamId)
-	self.cp.HUD1wait = streamDebugReadBool(streamId)
-	self.cp.HUD1noWaitforFill = streamDebugReadBool(streamId)
-	self.cp.HUD4hasActiveCombine = streamDebugReadBool(streamId)
-	self.cp.HUD4combineName = streamDebugReadString(streamId);
-	self.cp.HUD4savedCombine = streamDebugReadBool(streamId)
-	self.cp.HUD4savedCombineName = streamDebugReadString(streamId);
+	self:setCpVar('HUDrecordnumber', streamDebugReadInt32(streamId));
+	self:setCpVar('HUD0noCourseplayer', streamDebugReadBool(streamId));
+	self:setCpVar('HUD0wantsCourseplayer', streamDebugReadBool(streamId));
+	self:setCpVar('HUD0combineForcedSide', streamDebugReadString(streamId));
+	self:setCpVar('HUD0isManual', streamDebugReadBool(streamId));
+	self:setCpVar('HUD0turnStage', streamDebugReadInt32(streamId));
+	self:setCpVar('HUD0tractorForcedToStop', streamDebugReadBool(streamId));
+	self:setCpVar('HUD0tractorName', streamDebugReadString(streamId));
+	self:setCpVar('HUD0tractor', streamDebugReadBool(streamId));
+	self:setCpVar('HUD1wait', streamDebugReadBool(streamId));
+	self:setCpVar('HUD1noWaitforFill', streamDebugReadBool(streamId));
+	self:setCpVar('HUD4hasActiveCombine', streamDebugReadBool(streamId));
+	self:setCpVar('HUD4combineName', streamDebugReadString(streamId));
+	self:setCpVar('HUD4savedCombine', streamDebugReadBool(streamId));
+	self:setCpVar('HUD4savedCombineName', streamDebugReadString(streamId));
 	courseplay:setRecordNumber(self, streamDebugReadInt32(streamId));
 	courseplay:setIsRecording(self, streamDebugReadBool(streamId));
 	courseplay:setRecordingIsPaused(self, streamDebugReadBool(streamId));

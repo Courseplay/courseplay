@@ -1499,3 +1499,15 @@ function courseplay:setSlippingStage(vehicle, stage)
 		vehicle.cp.slippingStage = stage;
 	end;
 end;
+
+function courseplay:setCpVar(varName, value)
+	if self.cp[varName] ~= value then
+		local oldValue = self.cp[varName];
+		self.cp[varName] = value;
+		-- courseplay:onCpVarChanged(self, varName, oldValue);
+	end;
+end;
+
+function courseplay:onCpVarChanged(vehicle, varName, oldValue)
+	print(('%s: onCpVarChanged(%q, %q) [old value=%q]'):format(nameNum(vehicle), tostring(varName), tostring(vehicle.cp[varName]), tostring(oldValue)));
+end;

@@ -259,7 +259,7 @@ function courseplay:executeFunction(self, func, value, page)
 				else -- driving
 					if line == 1 then
 						courseplay:stop(self);
-					elseif line == 2 and self.cp.lastRecordnumber ~= nil and self.Waypoints[self.cp.lastRecordnumber].wait and self.cp.wait then
+					elseif line == 2 and self.cp.HUD1wait then
 						courseplay:cancelWait(self);
 					elseif line == 2 and self.cp.stopAtEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil) then
 						courseplay:setStopAtEnd(self, false);

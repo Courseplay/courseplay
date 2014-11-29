@@ -7,7 +7,7 @@ function courseplay:drive(self, dt)
 	if not courseplay:getCanUseAiMode(self) then
 		return;
 	end;
-	
+
 	-- debug for workAreas
 	if courseplay.debugChannels[6] then
 		local tx1, ty1, tz1 = localToWorld(self.cp.DirectionNode,3,1,self.cp.aiFrontMarker)
@@ -62,11 +62,6 @@ function courseplay:drive(self, dt)
 	if self.recordnumber > self.maxnumber then
 		courseplay:debug(string.format("drive %d: %s: self.recordnumber (%s) > self.maxnumber (%s)", debug.getinfo(1).currentline, nameNum(self), tostring(self.recordnumber), tostring(self.maxnumber)), 12); --this should never happen
 		courseplay:setRecordNumber(self, self.maxnumber);
-	end;
-	if self.recordnumber > 1 then
-		self.cp.lastRecordnumber = self.recordnumber - 1;
-	else
-		self.cp.lastRecordnumber = 1;
 	end;
 
 
@@ -286,7 +281,7 @@ function courseplay:drive(self, dt)
 			end;
 		end
 
-		-- MAP WEIGHT STATION
+		--[[ MAP WEIGHT STATION
 		if courseplay:canUseWeightStation(self) then
 			if self.cp.curMapWeightStation ~= nil or (self.cp.fillTrigger ~= nil and courseplay.triggers.all[self.cp.fillTrigger].isWeightStation) then
 				allowedToDrive = courseplay:handleMapWeightStation(self, allowedToDrive);
@@ -294,6 +289,7 @@ function courseplay:drive(self, dt)
 				courseplay:doTriggerRaycasts(self, 'specialTrigger', 'fwd', false, tx, ty, tz, nx, ny, nz);
 			end;
 		end;
+		]]
 
 		--VEHICLE DAMAGE
 		if self.damageLevel then
@@ -692,8 +688,8 @@ function courseplay:drive(self, dt)
 			self.cp.canDrive = true
 		end
 	end
-	
 end
+-- END drive();
 
 
 function courseplay:setTrafficCollision(vehicle, lx, lz, workArea) --!!!
@@ -1304,13 +1300,21 @@ end;
 -----------------------------------------------------------------------------------------
 
 function courseplay:setRecordNumber(vehicle, number)
-	--[[if vehicle.recordnumber ~= number then
-		courseplay:onRecordNumberChanged(vehicle);
-	end;]]
-	vehicle.recordnumber = number;
+	if vehicle.recordnumber ~= number then
+		local oldValue = vehicle.recordnumber;
+		vehicle.recordnumber = number;
+		courseplay:onRecordNumberChanged(vehicle, oldValue);
+	end;
 end;
 
-function courseplay:onRecordNumberChanged(vehicle)
+function courseplay:onRecordNumberChanged(vehicle, oldValue)
+	if vehicle.recordnumber > 1 then
+		vehicle.cp.lastRecordnumber = vehicle.recordnumber - 1;
+	else
+		vehicle.cp.lastRecordnumber = 1;
+	end;
+	vehicle.cp.HUDrecordnumber = vehicle.recordnumber;
+	-- print(('%s: onRecordNumberChanged(): new=%d, old=%s'):format(nameNum(vehicle), vehicle.recordnumber, tostring(oldValue)));
 end;
 
 function courseplay:getIsCourseplayDriving()
@@ -1318,10 +1322,10 @@ function courseplay:getIsCourseplayDriving()
 end;
 
 function courseplay:setIsCourseplayDriving(active)
-	--[[if self.cp.isDriving ~= active then
-		courseplay:onIsDrivingChanged(self);
-	end;]]
-	self.cp.isDriving = active;
+	if self.cp.isDriving ~= active then
+		self.cp.isDriving = active;
+		-- courseplay:onIsDrivingChanged(self);
+	end;
 end;
 
 function courseplay:onIsDrivingChanged(vehicle)
