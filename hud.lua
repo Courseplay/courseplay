@@ -43,25 +43,11 @@
 	end;
 
 	--CURRENT PAGE
-	if vehicle.cp.hud.currentPage == 0 then
-		for i,varName in pairs({ 'HUD0noCourseplayer', 'HUD0wantsCourseplayer', 'HUD0tractorName', 'HUD0tractorForcedToStop', 'HUD0tractor', 'HUD0combineForcedSide', 'HUD0isManual', 'HUD0turnStage' }) do
-			if courseplay.utils:hasVarChanged(vehicle, varName) then
-				courseplay.hud:setReloadPageOrder(vehicle, 0, true);
-				break;
-			end;
-		end;
-
-	elseif vehicle.cp.hud.currentPage == 1 then
+	if vehicle.cp.hud.currentPage == 1 then
 		if (vehicle.cp.isRecording or vehicle.cp.recordingIsPaused) and vehicle.cp.HUDrecordnumber == 4 and courseplay.utils:hasVarChanged(vehicle, 'HUDrecordnumber') then --record pause action becomes available
 			--courseplay.hud:setReloadPageOrder(vehicle, 1, true);
 			courseplay:buttonsActiveEnabled(vehicle, 'recording');
 		elseif vehicle:getIsCourseplayDriving() then
-			for i,varName in pairs({ --[['HUD1notDrive',]] 'HUD1wait', 'HUD1noWaitforFill' }) do
-				if courseplay.utils:hasVarChanged(vehicle, varName) then
-					courseplay.hud:setReloadPageOrder(vehicle, 1, true);
-					break;
-				end;
-			end;
 		end;
 
 	elseif vehicle.cp.hud.currentPage == 3 and vehicle:getIsCourseplayDriving() and (vehicle.cp.mode == 2 or vehicle.cp.mode == 3) then
@@ -75,13 +61,6 @@
 	elseif vehicle.cp.hud.currentPage == 4 then
 		if vehicle.cp.savedCombine ~= nil then --Force page 4 reload when combine distance is displayed
 			courseplay.hud:setReloadPageOrder(vehicle, 4, true);
-		else
-			for i,varName in pairs({ 'HUD4combineName', 'HUD4hasActiveCombine', 'HUD4savedCombine', 'HUD4savedCombineName' }) do
-				if courseplay.utils:hasVarChanged(vehicle, varName) then
-					courseplay.hud:setReloadPageOrder(vehicle, 4, true);
-					break;
-				end;
-			end;
 		end;
 
 	elseif vehicle.cp.hud.currentPage == 7 then

@@ -1180,7 +1180,7 @@ function courseplay:update(dt)
 			else
 				self:setCpVar('HUD0noCourseplayer', #combine.courseplayers == 0);
 			end
-			self:setCpVar('HUD0noCourseplayer', combine.cp.wantsCourseplayer);
+			self:setCpVar('HUD0wantsCourseplayer', combine.cp.wantsCourseplayer);
 			self:setCpVar('HUD0combineForcedSide', combine.cp.forcedSide);
 			self:setCpVar('HUD0isManual', not self:getIsCourseplayDriving() and not combine.isAIThreshing);
 			self:setCpVar('HUD0turnStage', self.cp.turnStage);

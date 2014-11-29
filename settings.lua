@@ -1504,10 +1504,21 @@ function courseplay:setCpVar(varName, value)
 	if self.cp[varName] ~= value then
 		local oldValue = self.cp[varName];
 		self.cp[varName] = value;
-		-- courseplay:onCpVarChanged(self, varName, oldValue);
+		courseplay:onCpVarChanged(self, varName, oldValue);
 	end;
 end;
 
 function courseplay:onCpVarChanged(vehicle, varName, oldValue)
-	print(('%s: onCpVarChanged(%q, %q) [old value=%q]'):format(nameNum(vehicle), tostring(varName), tostring(vehicle.cp[varName]), tostring(oldValue)));
+	-- print(('%s: onCpVarChanged(%q, %q) [old value=%q]'):format(nameNum(vehicle), tostring(varName), tostring(vehicle.cp[varName]), tostring(oldValue)));
+
+	-- TODO (Jakob): this is hud related and doesn't really belong here but rather in the hud.lua
+	if varName:sub(1, 3) == 'HUD' then
+		if Utils.startsWith(varName, 'HUD0') then
+			courseplay.hud:setReloadPageOrder(vehicle, 0, true);
+		elseif Utils.startsWith(varName, 'HUD1') then
+			courseplay.hud:setReloadPageOrder(vehicle, 1, true);
+		elseif Utils.startsWith(varName, 'HUD4') then
+			courseplay.hud:setReloadPageOrder(vehicle, 4, true);
+		end;
+	end;
 end;
