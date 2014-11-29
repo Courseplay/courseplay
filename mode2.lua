@@ -211,7 +211,10 @@ function courseplay:handle_mode2(self, dt)
 		end
 	end
 
-	courseplay:setFourWheelDrive(self);
+	-- Four wheel drive
+	if self.cp.hasDriveControl and self.cp.driveControl.hasFourWD then
+		courseplay:setFourWheelDrive(self, workArea);
+	end;
 end
 
 function courseplay:unload_combine(self, dt)
