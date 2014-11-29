@@ -210,6 +210,8 @@ function courseplay:handle_mode2(self, dt)
 			end
 		end
 	end
+
+	courseplay:setFourWheelDrive(self);
 end
 
 function courseplay:unload_combine(self, dt)
