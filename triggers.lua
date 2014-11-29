@@ -650,7 +650,8 @@ local MultiSiloTrigger_TriggerCallback = function(triggerId, otherActorId, onEnt
 
 		if onEnter then
 			-- Add the current MultiSiloTrigger to the cp table, for easier access.
-			if not trailer.cp.currentMultiSiloTrigger then
+			-- triggerId.Schnecke is only set for MischStation and that one is not an real MultiSiloTrigger and should not be used as one.
+			if not trailer.cp.currentMultiSiloTrigger and not triggerId.Schnecke then
 				trailer.cp.currentMultiSiloTrigger = triggerId;
 				courseplay:debug(('%s: MultiSiloTrigger Added! (onEnter)'):format(nameNum(trailer)), 2);
 

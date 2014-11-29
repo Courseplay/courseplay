@@ -27,8 +27,8 @@ function courseplay:setUpDebugChannels()
 		[11] = 'Debug: mode7: combine self-unloading';
 		[12] = 'Debug: all other debugs (uncategorized)';
 		[13] = 'Debug: reverse driving';
-		[14] = 'Debug: EifokLiquidManure (NOT USED ATM)';
-		[15] = 'Debug: mode3: AugerWagon';
+		[14] = 'Debug: driving specific';
+		[15] = 'Debug: mode3: overloader';
 		[16] = 'Debug: recording courses';
 		[17] = 'Debug: mode4/6: seeding/fieldWork';
 		[18] = 'Debug: hud action';

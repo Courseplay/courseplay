@@ -1492,3 +1492,10 @@ function courseplay:canScanForWeightStation(vehicle)
 
 	return scan;
 end;
+
+function courseplay:setSlippingStage(vehicle, stage)
+	if vehicle.cp.slippingStage ~= stage then
+		courseplay:debug(('%s: setSlippingStage(..., %d)'):format(nameNum(vehicle), stage), 14);
+		vehicle.cp.slippingStage = stage;
+	end;
+end;

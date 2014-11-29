@@ -2190,7 +2190,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<nl>Stop tijdens ontladen</nl>
 			<br>Parar para descarregar</br>
 		</text>
-		<text name="COURSEPLAY_SLIPPING_WARNING_0">
+		<text name="COURSEPLAY_SLIPPING_WARNING">
 			<en>is slipping</en>
 			<de>: durchdrehende Reifen</de>
 			<fr>patine</fr>
@@ -2201,30 +2201,6 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<hu>kipörög</hu>
 			<nl>Slippend</nl>
 			<br>patinando</br>
-		</text>
-		<text name="COURSEPLAY_SLIPPING_WARNING_1">
-			<en>is slipping (> 75%)</en>
-			<de>: durchdrehende Reifen (> 75%)</de>
-			<fr>patine (> 75%)</fr>
-			<es>is slipping (> 75%)</es> <!-- !!! -->
-			<it>sta slittando (> 75%)</it>
-			<cz>se zasekl (> 75%)</cz>
-			<ru>буксует (> 75%)</ru>
-			<hu>kipörgés több mint 75%</hu>
-			<nl>Slippend (> 75%)</nl>
-			<br>patinando (>75%)</br>
-		</text>
-		<text name="COURSEPLAY_SLIPPING_WARNING_2">
-			<en>is slipping (> 90%)</en>
-			<de>: durchdrehende Reifen (> 90%)</de>
-			<fr>patine (> 90%)</fr>
-			<es>is slipping (> 90%)</es> <!-- !!! -->
-			<it>sta slittando (> 90%)</it>
-			<cz>se zasekl (> 90%)</cz>
-			<ru>буксует (> 90%)</ru>
-			<hu>kipörgés több mint 90%</hu>
-			<nl>Slippend(> 90%)</nl>
-			<br>patinando (>90%)</br>
 		</text>
 		<text name="COURSEPLAY_REFILL_UNTIL_PCT">
 			<en>Refill until:</en>

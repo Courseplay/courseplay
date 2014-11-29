@@ -46,7 +46,7 @@ function courseplay_manager:loadMap(name)
 		x1 = git.buttonPosX;
 		x2 = git.buttonPosX + git.buttonWidth;
 		y1 = git.backgroundPosY,
-		y2 = git.backgroundPosY + (self.globalInfoTextMaxNum  * git.lineHeight);
+		y2 = git.backgroundPosY + (self.globalInfoTextMaxNum  * (git.lineHeight + git.lineMargin));
 	};
 
 	self.playerOnFootMouseEnabled = false;
@@ -80,9 +80,9 @@ function courseplay_manager:loadMap(name)
 	local progressBarPath = Utils.getFilename('img/progressBar.png', courseplay.path);
 	self.fieldScanInfo.progressBarOverlay = Overlay:new('fieldScanInfoProgressBar', progressBarPath, self.fieldScanInfo.lineX, self.fieldScanInfo.bgY + 16/1080, self.fieldScanInfo.progressBarWidth, 16/1080);
 	self.fieldScanInfo.percentColors = {
-		{ pct = 0.0, color = { 0.882353, 0.105882, 0 } },
-		{ pct = 0.5, color = { 1.000000, 0.800000, 0 } },
-		{ pct = 1.0, color = { 0.537255, 0.952941, 0 } }
+		{ pct = 0.0, color = { 225/255,  27/255, 0/255 } },
+		{ pct = 0.5, color = { 255/255, 204/255, 0/255 } },
+		{ pct = 1.0, color = { 137/255, 243/255, 0/255 } }
 	};
 
 
@@ -99,6 +99,37 @@ function courseplay_manager:loadMap(name)
 	self.realTimeMinuteTimer = 0;
 	self.realTime10SecsTimer = 0;
 end;
+
+-- Giants - very intelligently - deletes any mod file in the savegame folder when saving. And now we get it back!
+function courseplay_manager.getAutoBackupIndex(self)
+	if g_server == nil and g_dedicatedServerInfo == nil then return end;
+
+	-- save the backup index before saveSavegame() changes it
+	local savegameIndex = g_currentMission.missionInfo.savegameIndex;
+	local savegame = self.savegames[savegameIndex];
+	courseplay_manager.savegameAutoBackupIndex = savegame.autoBackupIndex;
+end;
+g_careerScreen.saveSavegame = Utils.prependedFunction(g_careerScreen.saveSavegame, courseplay_manager.getAutoBackupIndex);
+
+function courseplay_manager.getThatFuckerBack(self)
+	if g_server == nil and g_dedicatedServerInfo == nil then return end;
+
+	-- get savegame backup folder and copy courseplay.xml back to our savegame directory
+	local savegameIndex = g_currentMission.missionInfo.savegameIndex;
+	local savegame = self.savegames[savegameIndex];
+
+	local copyFromFolderPath = savegame:getSavegameAutoBackupBasePath() .. '/' .. savegame:getSavegameAutoBackupDirectory(savegame.savegameIndex, courseplay_manager.savegameAutoBackupIndex);
+	local backupCpFilePath = copyFromFolderPath .. '/courseplay.xml';
+	local backupCpFieldsFilePath = copyFromFolderPath .. '/courseplayFields.xml';
+
+	if fileExists(backupCpFilePath) then
+		copyFile(backupCpFilePath, courseplay.cpXmlFilePath, true);
+	end;
+	if fileExists(backupCpFieldsFilePath) then
+		copyFile(backupCpFieldsFilePath, courseplay.cpFieldsXmlFilePath, true);
+	end;
+end;
+g_careerScreen.saveSavegame = Utils.appendedFunction(g_careerScreen.saveSavegame, courseplay_manager.getThatFuckerBack);
 
 function courseplay_manager:createInitialCourseplayFile()
 	if courseplay.cpXmlFilePath then
@@ -234,9 +265,8 @@ function courseplay_manager:draw()
 				bg:render();
 
 				-- text
-				-- (lineHeight - fontSize) * 0.5
 				courseplay:setFontSettings('white', false);
-				local textPosY = gfxPosY + (git.lineHeight - git.fontSize); -- should be (lineHeight-fontSize)*0.5, but there seems to be some pixel/sub-pixel rendering error
+				local textPosY = gfxPosY + (git.lineHeight - git.fontSize) * 1.2; -- should be (lineHeight-fontSize)*0.5, but there seems to be some pixel/sub-pixel rendering error
 				renderText(git.textPosX, textPosY, git.fontSize, data.text);
 
 				-- button
@@ -274,7 +304,7 @@ function courseplay_manager:draw()
 			end;
 		end;
 	end;
-	self.buttons.globalInfoTextClickArea.y2 = basePosY + (line  * git.lineHeight);
+	self.buttons.globalInfoTextClickArea.y2 = basePosY + (line  * (git.lineHeight + git.lineMargin));
 
 	-- DISPLAY FIELD SCAN MSG
 	if courseplay.fields.automaticScan and not courseplay.fields.allFieldsScanned then
