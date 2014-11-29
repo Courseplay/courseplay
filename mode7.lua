@@ -51,6 +51,9 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 				vehicle.lastaiThreshingDirectionX = vehicle.aiThreshingDirectionX;
 				vehicle.lastaiThreshingDirectionZ = vehicle.aiThreshingDirectionZ;
 				vehicle:stopAIThreshing();
+				if vehicle.cp.hasDriveControl and vehicle.cp.driveControl.hasManualMotorStart then
+					vehicle.driveControl.manMotorStart.wasHired = false
+				end				
 				vehicle.cp.shortestDistToWp = nil;
 				vehicle.cp.nextTargets = {};
 				local sideOffset = math.max(0.34*3*vehicle.cp.turnRadius,vehicle.cp.workWidth);
