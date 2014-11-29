@@ -73,7 +73,11 @@ function courseplay:setNameVariable(workTool)
 	-- SPECIALIZATIONS BASED
 	-- [1] AUGER WAGONS
 	if workTool.typeName == 'augerWagon' then
-		workTool.cp.isAugerWagon = true;
+		if workTool.fillTypes and workTool.fillTypes[Fillable.FILLTYPE_LIQUIDMANURE] ~= nil then 
+			workTool.cp.isLiquidManureOverloader = true;
+		else
+			workTool.cp.isAugerWagon = true;
+		end
 		if workTool.cp.xmlFileName == 'horschTitan34UW.xml' then
 			workTool.cp.isHorschTitan34UW = true;
 			workTool.cp.foldPipeAtWaitPoint = true;

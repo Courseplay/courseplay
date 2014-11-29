@@ -38,24 +38,36 @@ local postRegister = function(typeName, className, filename, specializationNames
 end;
 VehicleTypeUtil.registerVehicleType = Utils.appendedFunction(VehicleTypeUtil.registerVehicleType, postRegister);
 
-function courseplay:attachableLoad(xmlFile)
+function courseplay:attachablePostLoad(xmlFile)
 	if self.cp == nil then self.cp = {}; end;
 
 	--SET SPECIALIZATION VARIABLE
 	courseplay:setNameVariable(self);
 	courseplay:setCustomSpecVariables(self);
 
+	if courseplay.liquidManureOverloaders == nil then
+		courseplay.liquidManureOverloaders ={}
+	end
+	if self.cp.isLiquidManureOverloader then
+		courseplay.liquidManureOverloaders[self.rootNode] = self
+	end
+	
 
 	--SEARCH AND SET OBJECT'S self.name IF NOT EXISTING
 	if self.name == nil then
 		self.name = courseplay:getObjectName(self, xmlFile);
 	end;
 end;
-Attachable.load = Utils.appendedFunction(Attachable.load, courseplay.attachableLoad);
+Attachable.postLoad = Utils.appendedFunction(Attachable.postLoad, courseplay.attachablePostLoad);
 
 function courseplay:attachableDelete()
 	if self.cp ~= nil then
+		if self.cp.isLiquidManureOverloader then
+			courseplay.liquidManureOverloaders[self.rootNode] = nil
+		end
 	end;
+
+	
 end;
 Attachable.delete = Utils.prependedFunction(Attachable.delete, courseplay.attachableDelete);
 

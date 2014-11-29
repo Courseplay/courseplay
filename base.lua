@@ -108,8 +108,7 @@ function courseplay:load(xmlFile)
 	self.cp.realisticDriving = true;
 	self.cp.canSwitchMode = false;
 	self.cp.multiSiloSelectedFillType = Fillable.FILLTYPE_UNKNOWN;
-	self.cp.stopForLoading = false;
-
+	
 	self.cp.startAtPoint = courseplay.START_AT_NEAREST_POINT;
 
 

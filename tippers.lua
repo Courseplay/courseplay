@@ -195,6 +195,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 		if workTool.cp.hasSpecializationFillable then
 			hasWorkTool = true;
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
+			vehicle.cp.hasMachinetoFill = true
 		end;
 
 	-- MODE 9: FILL AND EMPTY SHOVEL
@@ -331,7 +332,9 @@ end;
 function courseplay:setTipRefOffset(vehicle)
 	vehicle.cp.tipRefOffset = nil;
 	for i=1, vehicle.cp.numWorkTools do
-		if vehicle.cp.workTools[i].rootNode ~= nil and vehicle.cp.workTools[i].tipReferencePoints ~= nil then
+		if vehicle.cp.hasMachinetoFill then
+			vehicle.cp.tipRefOffset = 1.5;
+		elseif vehicle.cp.workTools[i].rootNode ~= nil and vehicle.cp.workTools[i].tipReferencePoints ~= nil then
 			local tipperX, tipperY, tipperZ = getWorldTranslation(vehicle.cp.workTools[i].rootNode);
 			if  #(vehicle.cp.workTools[i].tipReferencePoints) > 1 then
 				vehicle.cp.workTools[i].cp.rearTipRefPoint = nil;
@@ -356,8 +359,6 @@ function courseplay:setTipRefOffset(vehicle)
 			else 
 				vehicle.cp.tipRefOffset = 0;
 			end;
-		elseif vehicle.cp.hasMachinetoFill then
-			vehicle.cp.tipRefOffset = 1.5;
 		end;
 		if vehicle.cp.tipRefOffset ~= nil then
 			break;

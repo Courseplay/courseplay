@@ -7,7 +7,11 @@ function courseplay:start(self)
 		return
 	end
 	courseplay:setEngineState(self, true);
+	--print(tableShow(self.attachedImplements[1].object,tableShow(self.attachedImplements[1].object.name,nil,nil,2)))
+	--local id = self.attachedImplements[1].object.unloadTrigger.triggerId
+	--courseplay:findInTables(g_currentMission ,"g_currentMission", id)
 
+	
 	if self.cp.orgRpm == nil then
 		self.cp.orgRpm = {}
 		self.cp.orgRpm[1] = self.motor.maxRpm
@@ -480,7 +484,7 @@ function courseplay:stop(self)
 	if self.cp.checkReverseValdityPrinted then
 		self.cp.checkReverseValdityPrinted = false
 	end
-
+	self.cp.lastMode8UnloadTriggerId = nil
 	self.motor.maxRpmOverride = nil;
 	self.cp.startWork = nil
 	self.cp.stopWork = nil

@@ -91,7 +91,7 @@ function courseplay:drive(self, dt)
 	local distToChange;
 
 	-- coordinates of coli
-	local tx, ty, tz = localToWorld(self.cp.DirectionNode, 0, 1, 3); --local tx, ty, tz = getWorldTranslation(self.aiTrafficCollisionTrigger)
+	local tx, ty, tz = localToWorld(self.cp.DirectionNode, 0, 1, 5); --local tx, ty, tz = getWorldTranslation(self.aiTrafficCollisionTrigger)
 	-- local direction of from DirectionNode to waypoint
 	local lx, lz = AIVehicleUtil.getDriveDirection(self.cp.DirectionNode, cx, cty, cz);
 	-- world direction of from DirectionNode to waypoint
@@ -324,7 +324,7 @@ function courseplay:drive(self, dt)
 
 		-- MODE 8: REFILL LIQUID MANURE TRANSPORT
 		if self.cp.mode == 8 then
-			courseplay:doTriggerRaycasts(self, 'specialTrigger', 'fwd', false, tx, ty, tz, nx, ny, nz);
+			courseplay:doTriggerRaycasts(self, 'specialTrigger', 'fwd', true, tx, ty, tz, nx, ny, nz);
 			if self.cp.workToolAttached then
 				if self.cp.workTools ~= nil then
 					allowedToDrive,lx,lz = courseplay:refillSprayer(self, self.cp.tipperFillLevelPct, self.cp.refillUntilPct, allowedToDrive, lx, lz, dt);
@@ -572,6 +572,9 @@ function courseplay:drive(self, dt)
 		else
 			self.cp.isReverseBackToPoint = false;
 		end;
+	end
+	if abs(lx) > 0.5 then
+		refSpeed = min(refSpeed, self.cp.speeds.turn)
 	end
 	
 	courseplay:setSpeed(self, refSpeed)
@@ -856,11 +859,11 @@ function courseplay:refillSprayer(vehicle, fillLevelPct, driveOn, allowedToDrive
 		end;
 
 		-- SPRAYER
-		if courseplay:isSprayer(activeTool) then
+		if courseplay:isSprayer(activeTool) or activeTool.cp.isLiquidManureOverloader then
 			-- print(('\tworkTool %d (%q)'):format(i, nameNum(activeTool)));
 			if vehicle.cp.fillTrigger ~= nil then
 				local trigger = courseplay.triggers.all[vehicle.cp.fillTrigger];
-				if trigger.isSprayerFillTrigger and courseplay:fillTypesMatch(trigger, activeTool) then 
+				if (trigger.isSprayerFillTrigger or trigger.isLiquidManureFillTrigger )and courseplay:fillTypesMatch(trigger, activeTool) then 
 					--print('\t\tslow down, it\'s a sprayerFillTrigger');
 					vehicle.cp.isInFilltrigger = true
 				end
@@ -870,10 +873,9 @@ function courseplay:refillSprayer(vehicle, fillLevelPct, driveOn, allowedToDrive
 			if activeTool.fillLevel ~= nil and activeTool.capacity ~= nil then
 				activeToolFillLevel = (activeTool.fillLevel / activeTool.capacity) * 100;
 			end;
-
+			--vehicle.cp.lastMode8UnloadTriggerId
 			if fillTrigger == nil then
-				if activeTool.fillTriggers[1] ~= nil and activeTool.fillTriggers[1].isSprayerFillTrigger then
-					-- print('\t\tset local fillTrigger to activeTool.sprayerFillTriggers[1], nil cp.fillTrigger');
+				if activeTool.fillTriggers[1] ~= nil and (activeTool.fillTriggers[1].isSprayerFillTrigger or activeTool.fillTriggers[1].isLiquidManureFillTrigger) then
 					fillTrigger = activeTool.fillTriggers[1];
 					vehicle.cp.fillTrigger = nil; --TODO (Jakob): if i == vehicle.cp.numWorkTools then vehicle.cp.fillTrigger = nil; end; (prevent nilling if there are other tools left to be filled)
 				end;
@@ -885,14 +887,14 @@ function courseplay:refillSprayer(vehicle, fillLevelPct, driveOn, allowedToDrive
 			--ManureLager: activeTool.ReFillTrigger has to be nil so it doesn't refill
 			if vehicle.cp.mode == 8 then
 				canRefill = canRefill and activeTool.ReFillTrigger == nil and not courseplay:waypointsHaveAttr(vehicle, vehicle.recordnumber, -2, 2, 'wait', true, false);
-
 				if activeTool.isSpreaderInRange ~= nil and activeTool.isSpreaderInRange.manureTriggerc ~= nil then
 					canRefill = false;
 				end;
-
-				--TODO: what to do when transfering from one ManureLager to another?
+			--TODO: what to do when transfering from one ManureLager to another?
 			end;
-
+			if fillTrigger ~= nil and vehicle.cp.lastMode8UnloadTriggerId ~= nil and fillTrigger.triggerId == vehicle.cp.lastMode8UnloadTriggerId then
+				canRefill = false
+			end
 			if canRefill then
 				allowedToDrive = false;
 				--courseplay:handleSpecialTools(vehicle,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
@@ -901,13 +903,13 @@ function courseplay:refillSprayer(vehicle, fillLevelPct, driveOn, allowedToDrive
 				if not activeTool.isFilling then
 					activeTool:setIsFilling(true);
 				end;
-				
+				--[[
 				if sprayer.trailerInTrigger == activeTool then --Feldrand-Container Guellebomber
 					sprayer.fill = true;
-				end;
+				end;]]
 
 				courseplay:setInfoText(vehicle, courseplay:loc("COURSEPLAY_LOADING_AMOUNT"):format(activeTool.fillLevel, activeTool.capacity));
-			elseif vehicle.cp.isLoaded or not vehicle.cp.stopForLoading then
+			elseif vehicle.cp.isLoaded then
 				if activeTool.isFilling then
 					activeTool:setIsFilling(false);
 				end;
@@ -939,10 +941,6 @@ function courseplay:refillSprayer(vehicle, fillLevelPct, driveOn, allowedToDrive
 				vehicle.cp.fillTrigger = nil
 			end;
 		end;
-		if vehicle.cp.stopForLoading then
-			courseplay:handleSpecialTools(vehicle,activeTool,nil,nil,nil,allowedToDrive,true,false)
-			allowedToDrive = false
-		end
 	end;
 
 	return allowedToDrive,lx,lz

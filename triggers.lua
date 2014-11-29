@@ -172,12 +172,12 @@ function courseplay:doTriggerRaycasts(vehicle, triggerType, direction, sides, x,
 
 	if sides and vehicle.cp.tipRefOffset ~= 0 then
 		if (triggerType == 'tipTrigger' and vehicle.cp.currentTipTrigger == nil) or (triggerType == 'specialTrigger' and vehicle.cp.fillTrigger == nil) then
-			x, y, z = localToWorld(vehicle.aiTrafficCollisionTrigger, vehicle.cp.tipRefOffset, 0, 0);
+			x, _, z = localToWorld(vehicle.aiTrafficCollisionTrigger, vehicle.cp.tipRefOffset, 0, 0);
 			courseplay:doSingleRaycast(vehicle, triggerType, direction, callBack, x, y, z, nx, ny, nz, distance, debugChannel, r, g, b, 2);
 		end;
 
 		if (triggerType == 'tipTrigger' and vehicle.cp.currentTipTrigger == nil) or (triggerType == 'specialTrigger' and vehicle.cp.fillTrigger == nil) then
-			x, y, z = localToWorld(vehicle.aiTrafficCollisionTrigger, -vehicle.cp.tipRefOffset, 0, 0);
+			x, _, z = localToWorld(vehicle.aiTrafficCollisionTrigger, -vehicle.cp.tipRefOffset, 0, 0);
 			courseplay:doSingleRaycast(vehicle, triggerType, direction, callBack, x, y, z, nx, ny, nz, distance, debugChannel, r, g, b, 3);
 		end;
 	end;
@@ -192,7 +192,7 @@ function courseplay:doSingleRaycast(vehicle, triggerType, direction, callBack, x
 	local num = raycastAll(x,y,z, nx,ny,nz, callBack, distance, vehicle);
 	if courseplay.debugChannels[debugChannel] then
 		if num > 0 then
-			courseplay:debug(('%s: %s raycast (%s) #%d: object found'):format(nameNum(vehicle), triggerType, direction, raycastNumber), debugChannel);
+			--courseplay:debug(('%s: %s raycast (%s) #%d: object found'):format(nameNum(vehicle), triggerType, direction, raycastNumber), debugChannel);
 		end;
 		drawDebugLine(x,y,z, r,g,b, x+(nx*distance),y+(ny*distance),z+(nz*distance), r,g,b);
 	end;
@@ -545,6 +545,16 @@ function courseplay:updateAllTriggers()
 			end;
 		end
 	end;
+	
+	if courseplay.liquidManureOverloaders ~= nil then
+		for rootNode, vehicle in pairs(courseplay.liquidManureOverloaders) do
+			local trigger = vehicle.unloadTrigger
+			local triggerId = trigger.triggerId
+			trigger.isLiquidManureFillTrigger = true;
+			trigger.isLiquidManureOverloaderFillTrigger = true;
+			courseplay:cpAddTrigger(triggerId, trigger, 'liquidManure', 'nonUpdateable');
+		end
+	end
 end;
 
 
