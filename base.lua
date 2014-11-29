@@ -109,6 +109,7 @@ function courseplay:load(xmlFile)
 	self.cp.canSwitchMode = false;
 	self.cp.multiSiloSelectedFillType = Fillable.FILLTYPE_UNKNOWN;
 	self.cp.stopForLoading = false;
+	courseplay:setSlippingStage(self, 0);
 
 	self.cp.startAtPoint = courseplay.START_AT_NEAREST_POINT;
 

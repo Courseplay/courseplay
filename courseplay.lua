@@ -499,9 +499,7 @@ function courseplay:setGlobalData()
 		NEEDS_UNLOADING				= { level = -1, text = 'COURSEPLAY_NEEDS_UNLOADING' };
 		OVERLOADING_POINT			= { level =  0, text = 'COURSEPLAY_REACHED_OVERLOADING_POINT' };
 		PICKUP_JAMMED				= { level = -2, text = 'COURSEPLAY_PICKUP_JAMMED' };
-		SLIPPING_0					= { level = -1, text = 'COURSEPLAY_SLIPPING_WARNING_0' };
-		SLIPPING_1					= { level = -1, text = 'COURSEPLAY_SLIPPING_WARNING_1' };
-		SLIPPING_2					= { level = -2, text = 'COURSEPLAY_SLIPPING_WARNING_2' };
+		SLIPPING					= { level = -1, text = 'COURSEPLAY_SLIPPING_WARNING' };
 		TRAFFIC						= { level = -1, text = 'COURSEPLAY_IS_IN_TRAFFIC' };
 		UNLOADING_BALE				= { level =  0, text = 'COURSEPLAY_UNLOADING_BALES' };
 		WAIT_POINT					= { level =  0, text = 'COURSEPLAY_REACHED_WAITING_POINT' };

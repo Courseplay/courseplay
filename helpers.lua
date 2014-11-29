@@ -602,36 +602,9 @@ function courseplay:timerIsThrough(vehicle, timerName, defaultToBool)
 	end;
 	return vehicle.timer > vehicle.cp.timers[timerName];
 end;
-
---[[TODO (Jakob): delete when new custom spec fn is made sure to always work correctly
-function courseplay:hasSpecialization(vehicle, specClassName)
-	-- real customEnvironment for MoreRealisticDLCs
-	if vehicle.typeName:lower():find('morerealisticdlcs.') then
-		local customEnvironment = Utils.splitString('.', vehicle.typeName)[1];
-		specClassName = ('%s.%s'):format(customEnvironment, specClassName);
-
-	-- default customEnvironment
-	elseif vehicle.customEnvironment ~= nil then
-		specClassName = ('%s.%s'):format(vehicle.customEnvironment, specClassName);
-	end;
-
-	local spec;
-	for k,v in pairs(SpecializationUtil.specializations) do
-		if v.className == specClassName then
-			spec = SpecializationUtil.getSpecialization(k);
-			break;
-		end;
-	end;
-
-	if spec ~= nil then
-		if SpecializationUtil.hasSpecialization(spec, VehicleTypeUtil.vehicleTypes[vehicle.typeName].specializations) then -- We got the specialization class now, now checking if it's on the vehicle
-			return true;
-		end;
-	end;
-
-	return false;
+function courseplay:resetCustomTimer(vehicle, timerName)
+	vehicle.cp.timers[timerName] = 0.0;
 end;
-]]
 
 function courseplay:getDriveDirection(node, x, y, z)
 	local lx, ly, lz = worldToLocal(node, x, y, z)

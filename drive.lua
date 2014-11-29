@@ -22,6 +22,7 @@ function courseplay:drive(self, dt)
 	local cx,cy,cz = 0,0,0
 	-- may I drive or should I hold position for some reason?
 	local allowedToDrive = true
+	self.cp.curSpeed = self.lastSpeedReal * 3600;
 
 	-- TIPPER FILL LEVELS (get once for all following functions)
 	self.cp.tipperFillLevel, self.cp.tipperCapacity = self:getAttachedTrailersFillLevelAndCapacity();
@@ -525,7 +526,7 @@ function courseplay:drive(self, dt)
 		end;
 	elseif self.cp.isInFilltrigger then
 		refSpeed = self.cp.speeds.turn;
-		if self.lastSpeedReal*3600 > self.cp.speeds.turn then
+		if self.cp.curSpeed > self.cp.speeds.turn then
 			courseplay:brakeToStop(self);
 		end;
 		self.cp.isInFilltrigger = false;
@@ -754,7 +755,7 @@ function courseplay:checkTraffic(vehicle, displayWarnings, allowedToDrive)
 				allowedToDrive = false;
 				vehicle.cp.inTraffic = true;
 				courseplay:debug(('%s: checkTraffic:\tstop'):format(nameNum(vehicle)), 3);
-			elseif vehicle.lastSpeedReal*3600 > 10 then
+			elseif vehicle.cp.curSpeed > 10 then
 				-- courseplay:debug(('%s: checkTraffic:\tbrake'):format(nameNum(vehicle)), 3);
 				allowedToDrive = courseplay:brakeToStop(vehicle);
 			else
@@ -788,23 +789,10 @@ function courseplay:setSpeed(vehicle, refSpeed)
 		vehicle:setCruiseControlState(Drivable.CRUISECONTROL_STATE_ACTIVE)
 	end 
 	vehicle:setCruiseControlMaxSpeed(newSpeed) 
-	
-	-- slipping notification
-	if vehicle.lastSpeedReal*3600 < 0.5 and not vehicle.cp.inTraffic and not vehicle.Waypoints[vehicle.recordnumber].wait then
-		if vehicle.cp.timers.slippingWheels == nil or vehicle.cp.timers.slippingWheels == 0 then
-			courseplay:setCustomTimer(vehicle, 'slippingWheels', 5);
-		elseif courseplay:timerIsThrough(vehicle, 'slippingWheels') then
-			courseplay:setGlobalInfoText(vehicle, 'SLIPPING_0');
-			vehicle.cp.isSlipping = true;
-		end;
 
-	-- reset timer
-	elseif vehicle.cp.timers.slippingWheels ~= 0 then
-		vehicle.cp.timers.slippingWheels = 0;
-		vehicle.cp.isSlipping = false;
-	end;
+	courseplay:handleSlipping(vehicle, refSpeed);
 
-	local deltaMinus = (vehicle.lastSpeedReal * 3600) - refSpeed;
+	local deltaMinus = vehicle.cp.curSpeed - refSpeed;
 	local tolerance = 5;
 	-- TODO: Remove commented out line if needed.
 	--if vehicle.cp.currentTipTrigger and vehicle.cp.currentTipTrigger.bunkerSilo then
@@ -980,7 +968,7 @@ function courseplay:regulateTrafficSpeed(vehicle,refSpeed,allowedToDrive)
 		
 		else
 			if allowedToDrive and not (vehicle.cp.mode == 9 and collisionVehicle.allowFillFromAir) then
-				if (vehicle.lastSpeed*3600) - (collisionVehicle.lastSpeedReal*3600) > 15 or z1 < 3 then
+				if vehicle.cp.curSpeed - (collisionVehicle.lastSpeedReal*3600) > 15 or z1 < 3 then
 					vehicle.cp.TrafficBrake = true
 				else
 					return min(collisionVehicle.lastSpeedReal*3600,refSpeed)
@@ -992,7 +980,7 @@ function courseplay:regulateTrafficSpeed(vehicle,refSpeed,allowedToDrive)
 end
 
 function courseplay:brakeToStop(vehicle)
-	if vehicle.lastSpeedReal > 1/3600 and not vehicle.cp.TrafficHasStopped then
+	if vehicle.cp.curSpeed > 1 and not vehicle.cp.TrafficHasStopped then
 		vehicle.cp.TrafficBrake = true
 		vehicle.cp.isTrafficBraking = true
 		return true
@@ -1148,7 +1136,7 @@ function courseplay:handleMapWeightStation(vehicle, allowedToDrive)
 			stopAt = (vehicle.cp.totalLength * 0.5 + vehicle.cp.totalLengthOffset) * -1;
 		end;
 		local brakeDistance = pow(vehicle.cp.speeds.turn * 0.1, 2);
-		-- local brakeDistance = pow(vehicle.lastSpeedReal * 0.1, 2);
+		-- local brakeDistance = pow(vehicle.cp.curSpeed * 0.1, 2);
 		-- local brakeDistance = 1;
 
 		-- tractor + trailer on scale -> stop
@@ -1198,20 +1186,124 @@ function courseplay:setReverseBackDistance(vehicle, metersBack)
 	end;
 end;
 
+function courseplay:getAverageWpSpeed(vehicle, numWaypoints)
+	numWaypoints = max(numWaypoints,3)
+	local refSpeed = 0
+	local divider = numWaypoints
+	for i= (vehicle.recordnumber-1), (vehicle.recordnumber + numWaypoints-1) do
+		local index = i
+		if index > vehicle.maxnumber then
+			index = index - vehicle.maxnumber
+		elseif index < 1 then
+			index = vehicle.maxnumber - index
+		end
+		if vehicle.Waypoints[index].speed ~= nil then
+			refSpeed = refSpeed + vehicle.Waypoints[index].speed
+		else
+			divider = divider -1
+		end
+	end
+	
+	return refSpeed/divider
+end;
+
 function courseplay:setFourWheelDrive(vehicle, workArea)
 	local changed = false;
-	if (workArea or vehicle.cp.BGASelectedSection or vehicle.cp.isSlipping or vehicle.cp.mode == 9) and not vehicle.driveControl.fourWDandDifferentials.fourWheel then
+
+	-- set 4WD
+	local awdOn = workArea or vehicle.cp.BGASelectedSection or vehicle.cp.slippingStage ~= 0 or vehicle.cp.mode == 9 or (vehicle.cp.mode == 2 and vehicle.recordnumber <= 2);
+	local awdOff = not workArea and not vehicle.cp.BGASelectedSection and vehicle.cp.slippingStage == 0 and vehicle.cp.mode ~= 9 and not (vehicle.cp.mode == 2 and vehicle.recordnumber <= 2);
+	if awdOn and not vehicle.driveControl.fourWDandDifferentials.fourWheel then
+		courseplay:debug(('%s: set fourWheel to true'):format(nameNum(vehicle)), 14);
 		vehicle.driveControl.fourWDandDifferentials.fourWheel = true;
 		changed = true;
-	elseif not workArea and not vehicle.cp.BGASelectedSection and not vehicle.cp.isSlipping and vehicle.cp.mode ~= 9 and vehicle.driveControl.fourWDandDifferentials.fourWheel then
+	elseif awdOff and vehicle.driveControl.fourWDandDifferentials.fourWheel then
+		courseplay:debug(('%s: set fourWheel to false'):format(nameNum(vehicle)), 14);
 		vehicle.driveControl.fourWDandDifferentials.fourWheel = false;
 		changed = true;
-	end
+	end;
+
+	-- set differential lock
+	local targetLockStatus = vehicle.cp.slippingStage > 1;
+	if vehicle.driveControl.fourWDandDifferentials.diffLockFront ~= targetLockStatus then
+		courseplay:debug(('%s: set diffLockFront to %s'):format(nameNum(vehicle), tostring(targetLockStatus)), 14);
+		vehicle.driveControl.fourWDandDifferentials.diffLockFront = targetLockStatus;
+		changed = true;
+	end;
+	if vehicle.driveControl.fourWDandDifferentials.diffLockBack ~= targetLockStatus then
+		courseplay:debug(('%s: set diffLockBack to %s'):format(nameNum(vehicle), tostring(targetLockStatus)), 14);
+		vehicle.driveControl.fourWDandDifferentials.diffLockBack = targetLockStatus;
+		changed = true;
+	end;
 
 	if changed and driveControlInputEvent ~= nil then
 		driveControlInputEvent.sendEvent(vehicle);
 	end;
 end;
+
+function courseplay:handleSlipping(vehicle, refSpeed)
+	if vehicle.cp.inTraffic or vehicle.Waypoints[vehicle.recordnumber].wait then return end;
+
+	if vehicle.cp.slippingStage ~= 0 then
+		courseplay:setGlobalInfoText(vehicle, 'SLIPPING');
+	end;
+
+	-- 0) no slipping (slippingStage 0)
+	-- 1) 3 seconds < 0.5 kph -> slippingStage 1: activate 4WD
+	-- 2) another 3 seconds < 1 kph -> slippingStage 2: activate differential locks
+	-- 3) if speed > 20% refSpeed -> slippingStage 1: deactivate differential locks
+	-- 4) if speed > 35% refSpeed -> slippingStage 0: deactivate 4WD
+
+	if vehicle.cp.curSpeed < 0.5 then
+		-- set stage 1
+		if vehicle.cp.slippingStage == 0 then
+			if vehicle.cp.timers.slippingStage1 == nil or vehicle.cp.timers.slippingStage1 == 0 then
+				courseplay:setCustomTimer(vehicle, 'slippingStage1', 3);
+				courseplay:debug(('%s: setCustomTimer(..., "slippingStage1", 3)'):format(nameNum(vehicle)), 14);
+			elseif courseplay:timerIsThrough(vehicle, 'slippingStage1') then
+				courseplay:debug(('%s: timerIsThrough(..., "slippingStage1") -> setSlippingStage 1, reset timer'):format(nameNum(vehicle)), 14);
+				courseplay:setSlippingStage(vehicle, 1);
+				courseplay:resetCustomTimer(vehicle, 'slippingStage1');
+			end;
+
+		-- set stage 2
+		elseif vehicle.cp.slippingStage == 1 then
+			if vehicle.cp.timers.slippingStage2 == nil or vehicle.cp.timers.slippingStage2 == 0 then
+				courseplay:setCustomTimer(vehicle, 'slippingStage2', 3);
+				courseplay:debug(('%s: setCustomTimer(..., "slippingStage2", 3)'):format(nameNum(vehicle)), 14);
+			elseif courseplay:timerIsThrough(vehicle, 'slippingStage2') then
+				courseplay:debug(('%s: timerIsThrough(..., "slippingStage2") -> setSlippingStage 2, reset timer'):format(nameNum(vehicle)), 14);
+				courseplay:setSlippingStage(vehicle, 2);
+				courseplay:resetCustomTimer(vehicle, 'slippingStage2');
+			end;
+		end;
+
+	-- resets when speeds are met
+	elseif vehicle.cp.curSpeed >= refSpeed * 0.2 then
+		if vehicle.cp.curSpeed >= refSpeed * 0.35 then
+			if vehicle.cp.timers.slippingStage1 ~= 0 then
+				courseplay:debug(('%s: curStage=%d, refSpeed=%.2f, curSpeed=%.2f -> resetCustomTimer(..., "slippingStage1")'):format(nameNum(vehicle), vehicle.cp.slippingStage, refSpeed, vehicle.cp.curSpeed), 14);
+				courseplay:resetCustomTimer(vehicle, 'slippingStage1');
+			end;
+			if vehicle.cp.slippingStage > 0 then
+				courseplay:debug(('%s: curStage=%d, refSpeed=%.2f, curSpeed=%.2f -> setSlippingStage 0'):format(nameNum(vehicle), vehicle.cp.slippingStage, refSpeed, vehicle.cp.curSpeed), 14);
+				courseplay:setSlippingStage(vehicle, 0);
+			end;
+		end;
+
+		if vehicle.cp.timers.slippingStage2 ~= 0 then
+			courseplay:debug(('%s: curStage=%d, refSpeed=%.2f, curSpeed=%.2f -> resetCustomTimer(..., "slippingStage2")'):format(nameNum(vehicle), vehicle.cp.slippingStage, refSpeed, vehicle.cp.curSpeed), 14);
+			courseplay:resetCustomTimer(vehicle, 'slippingStage2');
+		end;
+		if vehicle.cp.slippingStage > 1 then
+			courseplay:debug(('%s: curStage=%d, refSpeed=%.2f, curSpeed=%.2f -> setSlippingStage 1'):format(nameNum(vehicle), vehicle.cp.slippingStage, refSpeed, vehicle.cp.curSpeed), 14);
+			courseplay:setSlippingStage(vehicle, 1);
+		end;
+	end;
+end;
+
+
+-----------------------------------------------------------------------------------------
 
 function courseplay:setRecordNumber(vehicle, number)
 	--[[if vehicle.recordnumber ~= number then
@@ -1235,25 +1327,4 @@ function courseplay:setIsCourseplayDriving(active)
 end;
 
 function courseplay:onIsDrivingChanged(vehicle)
-end;
-
-function courseplay:getAverageWpSpeed(vehicle, numWaypoints)
-	numWaypoints = max(numWaypoints,3)
-	local refSpeed = 0
-	local divider = numWaypoints
-	for i= (vehicle.recordnumber-1), (vehicle.recordnumber + numWaypoints-1) do
-		local index = i
-		if index > vehicle.maxnumber then
-			index = index - vehicle.maxnumber
-		elseif index < 1 then
-			index = vehicle.maxnumber - index
-		end
-		if vehicle.Waypoints[index].speed ~= nil then
-			refSpeed = refSpeed + vehicle.Waypoints[index].speed
-		else
-			divider = divider -1
-		end
-	end
-	
-	return refSpeed/divider
 end;

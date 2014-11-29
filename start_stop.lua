@@ -413,6 +413,8 @@ function courseplay:stop(self)
 		local changed = false;
 		if self.cp.driveControl.hasFourWD and self.driveControl.fourWDandDifferentials.fourWheel ~= self.cp.driveControl.fourWDBackup then
 			self.driveControl.fourWDandDifferentials.fourWheel = self.cp.driveControl.fourWDBackup;
+			self.driveControl.fourWDandDifferentials.diffLockFront = false;
+			self.driveControl.fourWDandDifferentials.diffLockBack = false;
 			changed = true;
 		end;
 
@@ -479,7 +481,8 @@ function courseplay:stop(self)
 	self.cp.mode7GoBackBeforeUnloading = false
 	if self.cp.checkReverseValdityPrinted then
 		self.cp.checkReverseValdityPrinted = false
-	end
+	end;
+	self.cp.curSpeed = 0;
 
 	self.motor.maxRpmOverride = nil;
 	self.cp.startWork = nil
@@ -490,6 +493,10 @@ function courseplay:stop(self)
 	self.cp.prevFillLevelPct = nil;
 	self.cp.isInRepairTrigger = nil;
 	self.cp.curMapWeightStation = nil;
+
+	courseplay:setSlippingStage(self, 0);
+	courseplay:resetCustomTimer(self, 'slippingStage1');
+	courseplay:resetCustomTimer(self, 'slippingStage2');
 
 	self.cp.hasBaleLoader = false;
 	self.cp.hasPlough = false;
