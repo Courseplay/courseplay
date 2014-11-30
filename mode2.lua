@@ -213,7 +213,7 @@ function courseplay:handle_mode2(self, dt)
 
 	-- Four wheel drive
 	if self.cp.hasDriveControl and self.cp.driveControl.hasFourWD then
-		courseplay:setFourWheelDrive(self, workArea);
+		courseplay:setFourWheelDrive(self);
 	end;
 end
 

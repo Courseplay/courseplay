@@ -335,11 +335,10 @@ function courseplay:start(self)
 end;
 
 function courseplay:getCanUseAiMode(vehicle)
-	
-	if not vehicle.isMotorStarted then --or (vehicle.motorStartTime and vehicle.motorStartTime > vehicle.timer) then
-		return false;				   -- TODO (Tom) check vehicle.motorStartTime in scripts, its been up to 70sec !!!
+	if not vehicle.isMotorStarted or (vehicle.motorStartTime and vehicle.motorStartTime > g_currentMission.time) then
+		return false;
 	end;
-	
+
 	local mode = vehicle.cp.mode;
 
 	if mode ~= 5 and mode ~= 6 and mode ~= 7 and not vehicle.cp.workToolAttached then
