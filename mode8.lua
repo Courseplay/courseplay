@@ -4,7 +4,7 @@ function courseplay:handle_mode8(vehicle)
 		--                                            courseplay:handleSpecialTools(vehicle, workTool, unfold, lower, turnOn, allowedToDrive, cover, unload)
 		local isSpecialTool, allowedToDrive, lx, lz = courseplay:handleSpecialTools(vehicle, workTool, nil,    nil,   nil,    nil,            nil,   true  );
 		if not isSpecialTool then
-			if workTool:getOverloadingTrailerInRangePipeState() > 0 and workTool.fillLevel > 0 and not workTool.isOverloadingActive then
+			if workTool.getOverloadingTrailerInRangePipeState ~= nil and workTool:getOverloadingTrailerInRangePipeState() > 0 and workTool.fillLevel > 0 and not workTool.isOverloadingActive then
 				for trailer,_ in pairs(workTool.overloadingTrailersInRange) do
 					if trailer.unloadTrigger ~= nil then
 						--print(" unloadtrigger id : "..tostring(trailer.unloadTrigger.triggerId))

@@ -500,6 +500,13 @@ function courseplay:updateAllTriggers()
 				-- BioHeatPlant / WoodChip storage tipTrigger (Forest Mod) (placeable)
 				elseif trigger.isStorageTipTrigger and trigger.acceptedFillType ~= nil and Fillable.fillTypeNameToInt.woodChip ~= nil and trigger.acceptedFillType == Fillable.fillTypeNameToInt.woodChip and trigger.triggerId ~= nil then
 					courseplay:cpAddTrigger(trigger.triggerId, trigger, 'tipTrigger');
+				
+				-- manureLager (placeable)
+				elseif trigger.ManureLagerPlaceableDirtyFlag or Utils.endsWith(xml, 'placeablemanurelager.xml') then
+					trigger.isManureLager = true;
+					trigger.isLiquidManureFillTrigger = true;
+					local triggerId = trigger.manureTrigger
+					courseplay:cpAddTrigger(triggerId, trigger, 'liquidManure', 'nonUpdateable');
 				end;
 			end;
 		end
