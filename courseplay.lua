@@ -223,17 +223,21 @@ function courseplay:setGlobalData()
 	ch.infoBaseWidth = 0.512;
 	ch.infoBaseHeight = 0.512;
 	ch.indent = 16/1920 * 1.25; -- buttonWidth (16px) + 1/4 margin
+
+	-- COLORS NOTE:
+	-- Because Giants fucked up big time, overlay colors that don't use full values are displayed way brighter than they should.
+	-- Until Giants fixes this, we're gonna have to use fake color values that effectively produce our desired colors
 	ch.colors = {
 		white =         { 255/255, 255/255, 255/255, 1.00 };
 		whiteInactive = { 255/255, 255/255, 255/255, 0.75 };
 		whiteDisabled = { 255/255, 255/255, 255/255, 0.15 };
-		hover =         {  32/255, 168/255, 219/255, 1.00 };
-		activeGreen =   { 110/255, 235/255,  56/255, 1.00 };
-		activeRed =     { 206/255,  83/255,  77/255, 1.00 };
-		closeRed =      { 180/255,   0/255,   0/255, 1.00 };
-		warningRed =    { 240/255,  25/255,  25/255, 1.00 };
-		shadow =        {  35/255,  35/255,  35/255, 1.00 };
-		textDark =      {  15/255,  15/255,  15/255, 1.00 };
+		hover =         {   4/255,  98/255, 180/255, 1.00 }; -- IS FAKE COLOR! ORIG COLOR: {  32/255, 168/255, 219/255, 1.00 };
+		activeGreen =   {  43/255, 205/255,  10/255, 1.00 }; -- IS FAKE COLOR! ORIG COLOR: { 110/255, 235/255,  56/255, 1.00 };
+		activeRed =     { 153/255,  22/255,  19/255, 1.00 }; -- IS FAKE COLOR! ORIG COLOR: { 206/255,  83/255,  77/255, 1.00 };
+		closeRed =      { 116/255,   0/255,   0/255, 1.00 }; -- IS FAKE COLOR! ORIG COLOR: { 180/255,   0/255,   0/255, 1.00 };
+		warningRed =    { 222/255,   2/255,   3/255, 1.00 }; -- IS FAKE COLOR! ORIG COLOR: { 240/255,  25/255,  25/255, 1.00 };
+		shadow =        {   4/255,   4/255,   4/255, 1.00 }; -- IS FAKE COLOR! ORIG COLOR: {  35/255,  35/255,  35/255, 1.00 };
+		textDark =      {   1/255,   1/255,   1/255, 1.00 }; -- IS FAKE COLOR! ORIG COLOR: {  15/255,  15/255,  15/255, 1.00 };
 	};
 
 	ch.pagesPerMode = {
