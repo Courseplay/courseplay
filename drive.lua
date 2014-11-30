@@ -1238,8 +1238,10 @@ end;
 function courseplay:handleSlipping(vehicle, refSpeed)
 	if vehicle.cp.inTraffic or vehicle.Waypoints[vehicle.recordnumber].wait then return end;
 
-	if vehicle.cp.slippingStage ~= 0 then
-		courseplay:setGlobalInfoText(vehicle, 'SLIPPING');
+	if vehicle.cp.slippingStage == 1 then
+		courseplay:setGlobalInfoText(vehicle, 'SLIPPING_1');
+	elseif vehicle.cp.slippingStage == 2 then
+		courseplay:setGlobalInfoText(vehicle, 'SLIPPING_2');
 	end;
 
 	-- 0) no slipping (slippingStage 0)

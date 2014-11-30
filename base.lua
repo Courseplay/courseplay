@@ -607,7 +607,7 @@ function courseplay:load(xmlFile)
 	courseplay.button:new(self, 'global', { 'iconSprite.png', 'save' }, 'showSaveCourseForm', 'course', topIconsX[2], topIconsY, w24px, h24px);
 
 	if courseplay.isDeveloper then
-		courseplay.button:new(self, 'global', { 'iconSprite.png', 'eye' }, 'toggleDrawWaypointsLines', nil, courseplay.hud.col1posX, topIconsY, w24px, h24px);
+		self.cp.toggleDrawWaypointsLinesButton = courseplay.button:new(self, 'global', { 'iconSprite.png', 'eye' }, 'toggleDrawWaypointsLines', nil, courseplay.hud.col1posX, topIconsY, w24px, h24px, nil, nil, false, false, true);
 	end;
 
 

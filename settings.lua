@@ -1390,6 +1390,7 @@ end;
 function courseplay:toggleDrawWaypointsLines(vehicle)
 	if not courseplay.isDeveloper then return; end;
 	vehicle.cp.drawWaypointsLines = not vehicle.cp.drawWaypointsLines;
+	vehicle.cp.toggleDrawWaypointsLinesButton:setActive(vehicle.cp.drawWaypointsLines);
 end;
 
 function courseplay:setEngineState(vehicle, on)
