@@ -120,7 +120,7 @@ function courseplay:drive(self, dt)
 	if self.cp.beaconLightsMode == 1 then --on streets only
 		local combineNeedsBeacon = self.cp.isCombine and (self.fillLevel / self.capacity) > 0.8;
 		local goForBeaconLights = ((self.cp.mode == 1 or self.cp.mode == 2 or self.cp.mode == 5) and self.recordnumber > 2) 
-								or (self.cp.mode == 4 or self.cp.mode == 6 and self.cp.abortWork ~= nil)
+								or ((self.cp.mode == 4 or self.cp.mode == 6) and self.recordnumber > self.cp.stopWork)
 								or combineNeedsBeacon;
 								
 		if goForBeaconLights then
