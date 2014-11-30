@@ -168,9 +168,9 @@ function courseplay:setGlobalData()
 		return;
 	end;
 
-	local savegameFolderPath = ('%ssavegame%d/'):format(getUserProfileAppPath(), g_careerScreen.currentSavegame.savegameIndex);
-	courseplay.cpXmlFilePath = savegameFolderPath .. 'courseplay.xml';
-	courseplay.cpFieldsXmlFilePath = savegameFolderPath .. 'courseplayFields.xml';
+	courseplay.savegameFolderPath = ('%ssavegame%d'):format(getUserProfileAppPath(), g_careerScreen.currentSavegame.savegameIndex);
+	courseplay.cpXmlFilePath = courseplay.savegameFolderPath .. '/courseplay.xml';
+	courseplay.cpFieldsXmlFilePath = courseplay.savegameFolderPath .. '/courseplayFields.xml';
 
 
 	-- CP MODES

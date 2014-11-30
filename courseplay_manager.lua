@@ -101,40 +101,77 @@ function courseplay_manager:loadMap(name)
 end;
 
 -- Giants - very intelligently - deletes any mod file in the savegame folder when saving. And now we get it back!
-function courseplay_manager.getAutoBackupIndex(self)
+local function backupCpFiles(self)
 	if g_server == nil and g_dedicatedServerInfo == nil then return end;
 
-	-- save the backup index before saveSavegame() changes it
-	local savegameIndex = g_currentMission.missionInfo.savegameIndex;
-	local savegame = self.savegames[savegameIndex];
-	courseplay_manager.savegameAutoBackupIndex = savegame.autoBackupIndex;
-end;
-g_careerScreen.saveSavegame = Utils.prependedFunction(g_careerScreen.saveSavegame, courseplay_manager.getAutoBackupIndex);
+	if not fileExists(courseplay.cpXmlFilePath) then
+		-- ERROR: CP FILE DOESN'T EXIST
+		return;
+	end;
 
-function courseplay_manager.getThatFuckerBack(self)
+	-- backup CP files before saveSavegame() deletes them
+	local savegameIndex = g_currentMission.missionInfo.savegameIndex;
+	courseplay_manager.cpTempSaveFolderPath = getUserProfileAppPath() .. 'courseplayBackupSavegame' .. savegameIndex;
+	createFolder(courseplay_manager.cpTempSaveFolderPath);
+	-- print('create folder at ' .. courseplay_manager.cpTempSaveFolderPath);
+	courseplay_manager.cpFileBackupPath = courseplay_manager.cpTempSaveFolderPath .. '/courseplay.xml';
+	copyFile(courseplay.cpXmlFilePath, courseplay_manager.cpFileBackupPath, true);
+	-- print('copy cp file to backup folder: ' .. courseplay_manager.cpFileBackupPath);
+
+	if fileExists(courseplay.cpFieldsXmlFilePath) then
+		courseplay_manager.cpFieldsFileBackupPath = courseplay_manager.cpTempSaveFolderPath .. '/courseplayFields.xml';
+		copyFile(courseplay.cpFieldsXmlFilePath, courseplay_manager.cpFieldsFileBackupPath, true);
+		-- print('copy cp fields file to backup folder: ' .. courseplay_manager.cpFieldsFileBackupPath);
+	end;
+end;
+g_careerScreen.saveSavegame = Utils.prependedFunction(g_careerScreen.saveSavegame, backupCpFiles);
+
+local function getThatFuckerBack(self)
 	if g_server == nil and g_dedicatedServerInfo == nil then return end;
 
-	-- get savegame backup folder and copy courseplay.xml back to our savegame directory
+	if not courseplay_manager.cpFileBackupPath then return end;
+
 	local savegameIndex = g_currentMission.missionInfo.savegameIndex;
-	local savegame = self.savegames[savegameIndex];
-
-	local copyFromFolderPath = savegame:getSavegameAutoBackupBasePath() .. '/' .. savegame:getSavegameAutoBackupDirectory(savegame.savegameIndex, courseplay_manager.savegameAutoBackupIndex);
-	local backupCpFilePath = copyFromFolderPath .. '/courseplay.xml';
-	local backupCpFieldsFilePath = copyFromFolderPath .. '/courseplayFields.xml';
-
-	if fileExists(backupCpFilePath) then
-		copyFile(backupCpFilePath, courseplay.cpXmlFilePath, true);
-	else
-		-- TODO (Jakob): create file anew
+	local savegameFolderPath = g_currentMission.missionInfo.savegameDirectory or courseplay.savegameFolderPath;
+	if savegameFolderPath == nil then
+		savegameFolderPath = ('%ssavegame%d'):format(getUserProfileAppPath(), savegameIndex);
 	end;
-	if fileExists(backupCpFieldsFilePath) then
-		copyFile(backupCpFieldsFilePath, courseplay.cpFieldsXmlFilePath, true);
+
+	if fileExists(savegameFolderPath .. '/careerSavegame.xml') then -- savegame isn't corrupted and has been saved correctly
+		-- print('orig savegame folder still exists');
+
+		-- copy backed up files back to our savegame directory
+		-- print('copy backup cp file to orig savegame folder');
+		copyFile(courseplay_manager.cpFileBackupPath, courseplay.cpXmlFilePath, true);
+		courseplay_manager.cpFileBackupPath = nil;
+		if courseplay_manager.cpFieldsFileBackupPath then
+			-- print('copy backup cp fields file to orig savegame folder');
+			copyFile(courseplay_manager.cpFieldsFileBackupPath, courseplay.cpFieldsXmlFilePath, true);
+			courseplay_manager.cpFieldsFileBackupPath = nil;
+		end;
+
+		deleteFolder(courseplay_manager.cpTempSaveFolderPath);
+		-- print('delete backup folder');
+
+	else -- corrupt savegame: display backup info message
+		print(('This savegame has been corrupted. The Courseplay file has been backed up to %q'):format(courseplay_manager.cpTempSaveFolderPath));
+
+		local msgTitle = 'Courseplay';
+		local msgTxt = 'This savegame has been corrupted.';
+		if courseplay_manager.cpFieldsFileBackupPath then
+			msgTxt = msgTxt .. ('\nYour Courseplay files have been backed up to the %q directory.'):format('courseplayBackupSavegame' .. savegameIndex);
+		else
+			msgTxt = msgTxt .. ('\nYour Courseplay file has been backed up to the %q directory.'):format('courseplayBackupSavegame' .. savegameIndex);
+		end;
+		msgTxt = msgTxt .. ('\n\nFull path: %q'):format(courseplay_manager.cpTempSaveFolderPath);
+		g_currentMission.inGameMessage:showMessage(msgTitle, msgTxt, 15000, false);
 	end;
 end;
-g_careerScreen.saveSavegame = Utils.appendedFunction(g_careerScreen.saveSavegame, courseplay_manager.getThatFuckerBack);
+g_careerScreen.saveSavegame = Utils.appendedFunction(g_careerScreen.saveSavegame, getThatFuckerBack);
 
 function courseplay_manager:createInitialCourseplayFile()
 	if courseplay.cpXmlFilePath then
+		createFolder(courseplay.savegameFolderPath);
 		local file;
 		local created, changed = false, false;
 		if not fileExists(courseplay.cpXmlFilePath) then
