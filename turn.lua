@@ -311,6 +311,12 @@ function courseplay:lowerImplements(self, moveDown, workToolonOff)
 				return								--still not nice because on every turn we have a startup event while lowering
 			end
 			self:setAIImplementsMoveDown(moveDown,true);
+			for i,_ in pairs(self.attachedImplements) do -- TODO (Tom) its all because setAIImplementsMoveDown turns on and off tools by itself
+				local workTool = self.attachedImplements[i].object   --find a better way
+				if not workToolonOff and workTool.isTurnedOn and courseplay:isSprayer(workTool) then
+					workTool:setIsTurnedOn(workToolonOff, false);
+				end
+			end
 		elseif self.setFoldState ~= nil then
 			self:setFoldState(state, true);
 		end;
