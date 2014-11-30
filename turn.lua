@@ -207,14 +207,14 @@ function courseplay:turn(self, dt) --!!!
 				if not self.cp.noStopOnTurn then
 					self.cp.waitForTurnTime = self.timer + 1500
 				end
-				courseplay:lowerImplements(self, false, true)
+				courseplay:lowerImplements(self, false, false)
 				updateWheels = false;
 				self.cp.turnStage = 1;
 			end
 		else
 			if dist < 0.5 and self.cp.turnStage ~= -1 then
 				self.cp.turnStage = -1
-				courseplay:lowerImplements(self, false, true)
+				courseplay:lowerImplements(self, false, false)
 			end
 			if dist > backMarker and self.cp.turnStage == -1 then
 				if self.cp.noStopOnTurn == false then
@@ -298,6 +298,13 @@ function courseplay:lowerImplements(self, moveDown, workToolonOff)
 	for _,workTool in pairs(self.cp.workTools) do
 					--courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
 		specialTool = courseplay:handleSpecialTools(self,workTool,true,moveDown,workToolonOff,nil,nil,nil);
+		
+		if not specialTool and workTool.setPickupState ~= nil then
+			if workTool.isPickupLowered ~= nil and workTool.isPickupLowered ~= moveDown then
+				workTool:setPickupState(moveDown, false);
+			end;
+		end;
+	
 	end;
 	if not specialTool then
 		if (self.cp.isCombine or self.cp.isChopper) and not self.cp.hasSpecializationFruitPreparer  then
@@ -311,29 +318,13 @@ function courseplay:lowerImplements(self, moveDown, workToolonOff)
 				return								--still not nice because on every turn we have a startup event while lowering
 			end
 			self:setAIImplementsMoveDown(moveDown,true);
-			for i,_ in pairs(self.attachedImplements) do -- TODO (Tom) its all because setAIImplementsMoveDown turns on and off tools by itself
-				local workTool = self.attachedImplements[i].object   --find a better way
-				if not workToolonOff and workTool.isTurnedOn and courseplay:isSprayer(workTool) then
-					workTool:setIsTurnedOn(workToolonOff, false);
-				end
-			end
 		elseif self.setFoldState ~= nil then
 			self:setFoldState(state, true);
 		end;
-		if workToolonOff then
+		if self.cp.mode == 4 then
 			for _,workTool in pairs(self.cp.workTools) do
-				local needsLowering = false
-				if workTool.attacherJoint ~= nil then
-					needsLowering = workTool.attacherJoint.needsLowering
-				end
-				if workTool.setPickupState ~= nil then
-					needsLowering = true
-					if workTool.isPickupLowered ~= nil and workTool.isPickupLowered ~= moveDown then
-						workTool:setPickupState(moveDown, false);
-					end;
-				end;
-				if workTool.setIsTurnedOn ~= nil and not courseplay:isFolding(workTool) and not needsLowering and workTool ~= self then
-					workTool:setIsTurnedOn(moveDown, false);
+				if workTool.setIsTurnedOn ~= nil and not courseplay:isFolding(workTool) and workTool ~= self and workTool.isTurnedOn ~= workToolonOff then
+					workTool:setIsTurnedOn(workToolonOff, false);
 				end;
 			end;
 		end;
