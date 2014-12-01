@@ -2358,7 +2358,7 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<en>Map icons: display text</en>
 			<de>Karten-Icons: Text anzeigen</de>
 			<fr>Icones sur la carte: afficher le texte</fr>
-			<ru>Показывать на карте:</ru>
+			<ru>Показать инфо на карте:</ru>
 		</text>
 
 		<!-- Yes/No dialogues --> <!-- missing: cz, es, it, nl -->
