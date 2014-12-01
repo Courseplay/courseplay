@@ -418,9 +418,7 @@ function courseplay:updateAllTriggers()
 			local triggerId = trigger.triggerId;
 			-- ManureLager
 			if triggerId ~= nil then
-				if courseplay:isValidTipTrigger(trigger) then
-					courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
-				elseif trigger.ManureLagerDirtyFlag or Utils.endsWith(trigger.className, 'ManureLager') then
+				if trigger.ManureLagerDirtyFlag or Utils.endsWith(trigger.className, 'ManureLager') then
 					trigger.isManureLager = true;
 					trigger.isLiquidManureFillTrigger = true;
 					courseplay:cpAddTrigger(triggerId, trigger, 'liquidManure', 'nonUpdateable');
@@ -526,12 +524,15 @@ function courseplay:updateAllTriggers()
 	-- tipTriggers objects
 	if g_currentMission.tipTriggers ~= nil then
 		for k, trigger in pairs(g_currentMission.tipTriggers) do
-			-- Regular tipTriggers
-			if trigger.isExtendedTrigger and courseplay:isValidTipTrigger(trigger) then
-				trigger.isAlternativeTipTrigger = Utils.endsWith(trigger.className, 'ExtendedTipTrigger');
+			-- Regular and Extended tipTriggers
+			if courseplay:isValidTipTrigger(trigger) then
 				local triggerId = trigger.triggerId;
 				if triggerId ~= nil then
 					courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
+				end;
+				-- Extended tipTriggers (AlternativeTipTrigger)
+				if trigger.isExtendedTrigger then
+					trigger.isAlternativeTipTrigger = Utils.endsWith(trigger.className, 'ExtendedTipTrigger');
 				end;
 
 			-- LiquidManureSiloTriggers [BGA]
