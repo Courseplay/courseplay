@@ -1510,14 +1510,14 @@ function courseplay:createMapHotspot(vehicle)
 			name = nameNum(vehicle, true) .. '\n';
 		end;
 		if courseplay.ingameMapIconShowCourse then
-			name = name .. ('(%s)'):format(vehicle.cp.currentCourseName);
+			name = name .. ('(%s)'):format(vehicle.cp.currentCourseName or courseplay:loc('COURSEPLAY_TEMP_COURSE'));
 		end;
 	end;
 
-	local iconPath = Utils.getFilename('img/ingameMapIcon.png', courseplay.path);
+	local iconPath = Utils.getFilename(('img/ingameMapIcon_%02d.png'):format(vehicle.cp.mode), courseplay.path);
 	local x = vehicle.components[1].lastTranslation[1];
 	local y = vehicle.components[1].lastTranslation[3];
-	local h = 20 / 1080;
+	local h = 24 / 1080;
 	local w = h / g_screenAspectRatio;
 	local blinking = false;
 	local persistent = false;

@@ -333,7 +333,9 @@ function courseplay:start(self)
 	courseplay:validateCanSwitchMode(self);
 
 	-- add ingameMap icon
-	courseplay:createMapHotspot(self);
+	if courseplay.ingameMapIconActive then
+		courseplay:createMapHotspot(self);
+	end;
 
 	--print("startStop "..debug.getinfo(1).currentline)
 end;
@@ -542,7 +544,9 @@ function courseplay:stop(self)
 	end
 
 	-- remove ingame map hotspot
-	courseplay:deleteMapHotspot(self);
+	if courseplay.ingameMapIconActive then
+		courseplay:deleteMapHotspot(self);
+	end;
 
 	--remove from activeCoursePlayers
 	courseplay:removeFromActiveCoursePlayers(self);
