@@ -1501,6 +1501,29 @@ function courseplay:setSlippingStage(vehicle, stage)
 	end;
 end;
 
+function courseplay:createMapHotspot(vehicle)
+	local name = ('[CP] %s'):format(nameNum(vehicle));
+	local iconPath = Utils.getFilename('img/ingameMapIcon.png', courseplay.path);
+	local x = vehicle.components[1].lastTranslation[1];
+	local y = vehicle.components[1].lastTranslation[3];
+	local h = 16 / 1080;
+	local w = h / g_screenAspectRatio;
+	local blinking = false;
+	local persistent = false;
+	local showName = true;
+	local objectId = vehicle.rootNode;
+	local hidable = false;
+	local renderLast = true;
+	vehicle.cp.ingameMapHotSpot = g_currentMission.ingameMap:createMapHotspot(name, iconPath, x, y, w, h, blinking, persistent, showName, objectId, hidable, renderLast);
+end;
+function courseplay:deleteMapHotspot(vehicle)
+	if vehicle.cp.ingameMapHotSpot then
+		g_currentMission.ingameMap:deleteMapHotspot(vehicle.cp.ingameMapHotSpot);
+	end;
+end;
+
+----------------------------------------------------------------------------------------------------
+
 function courseplay:setCpVar(varName, value)
 	if self.cp[varName] ~= value then
 		local oldValue = self.cp[varName];

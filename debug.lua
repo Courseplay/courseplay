@@ -161,7 +161,7 @@ function tableShow(t, name, channel, indent, maxDepth)
 	addToCart(t, name, indent, nil, nil, depth + 1)
 	-- return cart .. autoref
 	print(autoref);
-	return ('%s %s -END- %s'):format(('#'):rep(40), name, ('#'):rep(40));
+	return ('-- %s %s -END- %s --'):format(('#'):rep(40), name, ('#'):rep(40));
 end;
 
 function eval(str)

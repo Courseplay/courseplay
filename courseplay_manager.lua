@@ -284,7 +284,7 @@ function courseplay_manager:draw()
 	local line = 0;
 	local basePosY = courseplay.globalInfoText.backgroundPosY;
 	local ingameMap = g_currentMission.ingameMap;
-	if not (ingameMap.isVisible and ingameMap.isFullSize) and table.maxn(git.content) > 0 then
+	if not (ingameMap.isVisible and ingameMap.isFullSize) and table.maxn(git.content) > 0 then -- TODO (Jakob): ... and ingameMap:getIsFullSize()
 		courseplay.globalInfoText.hasContent = true;
 		basePosY = ingameMap.isVisible and git.posYAboveMap or git.posY;
 		for _,refIndexes in pairs(git.content) do

@@ -331,6 +331,10 @@ function courseplay:start(self)
 	self.cp.totalLength, self.cp.totalLengthOffset = courseplay:getTotalLengthOnWheels(self);
 
 	courseplay:validateCanSwitchMode(self);
+
+	-- add ingameMap icon
+	courseplay:createMapHotspot(self);
+
 	--print("startStop "..debug.getinfo(1).currentline)
 end;
 
@@ -536,6 +540,9 @@ function courseplay:stop(self)
 			end;
 		end;
 	end
+
+	-- remove ingame map hotspot
+	courseplay:deleteMapHotspot(self);
 
 	--remove from activeCoursePlayers
 	courseplay:removeFromActiveCoursePlayers(self);
