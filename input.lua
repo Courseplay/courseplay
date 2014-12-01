@@ -260,9 +260,11 @@ function courseplay:executeFunction(self, func, value, page)
 					if line == 1 then
 						courseplay:stop(self);
 					elseif line == 2 and self.cp.HUD1wait then
-						courseplay:cancelWait(self);
-					elseif line == 2 and self.cp.stopAtEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil) then
-						courseplay:setStopAtEnd(self, false);
+						if self.cp.stopAtEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil) then
+							courseplay:setStopAtEnd(self, false);
+						else
+							courseplay:cancelWait(self);
+						end;
 					elseif line == 3 and not self.cp.isLoaded then
 						courseplay:setIsLoaded(self, true);
 					elseif line == 4 and not self.cp.stopAtEnd then
