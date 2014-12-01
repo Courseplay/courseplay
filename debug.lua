@@ -46,9 +46,9 @@ function courseplay:setUpDebugChannels()
 		data.width  = dbgW;
 		data.height = dbgH;
 		data.posX = dbgMinX + ((i - 1) * (dbgW + dbgMarginX));
-		data.posY = courseplay.hud.linesPosY[6] - 0.004;
+		data.posY = courseplay.hud.linesPosY[8] - 0.004;
 		data.textPosX = data.posX + (dbgW * 0.5);
-		data.textPosY = courseplay.hud.linesPosY[6];
+		data.textPosY = courseplay.hud.linesPosY[8];
 
 		courseplay.debugButtonPosData[i] = data;
 	end;

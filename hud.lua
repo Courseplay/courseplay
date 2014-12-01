@@ -525,14 +525,14 @@ function courseplay.hud:loadPage(vehicle, page)
 			vehicle.cp.hud.content.pages[6][5][2].text = str;
 		end;
 
-		-- Debug channels
-		vehicle.cp.hud.content.pages[6][6][1].text = courseplay:loc('COURSEPLAY_DEBUG_CHANNELS');
-
 		-- Ingame map icon text
 		if courseplay.ingameMapIconActive and courseplay.ingameMapIconShowTextLoaded then
-			vehicle.cp.hud.content.pages[6][7][1].text = courseplay:loc('COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT');
-			vehicle.cp.hud.content.pages[6][7][2].text = courseplay.ingameMapIconShowText and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
+			vehicle.cp.hud.content.pages[6][6][1].text = courseplay:loc('COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT');
+			vehicle.cp.hud.content.pages[6][6][2].text = courseplay.ingameMapIconShowText and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
 		end;
+
+		-- Debug channels
+		vehicle.cp.hud.content.pages[6][8][1].text = courseplay:loc('COURSEPLAY_DEBUG_CHANNELS');
 
 
 	--PAGE 7: DRIVING SETTINGS

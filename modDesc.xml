@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="20">
-	<version>4.00.0141</version>
+	<version>4.00.0142</version>
 	<author><![CDATA[Courseplay Dev Team]]></author>
 	<title>
 		<br>Courseplay</br>
@@ -2190,11 +2190,10 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<nl>Stop tijdens ontladen</nl>
 			<br>Parar para descarregar</br>
 		</text>
-		<text name="COURSEPLAY_SLIPPING_WARNING">
+		<text name="COURSEPLAY_SLIPPING_WARNING"> <!-- missing: es -->
 			<en>is slipping</en>
 			<de>: durchdrehende Reifen</de>
 			<fr>patine</fr>
-			<es>is slipping</es> <!-- !!! -->
 			<it>sta slittando</it>
 			<cz>se zasekl</cz>
 			<ru>забуксовал. Помогите, помогите...</ru>
