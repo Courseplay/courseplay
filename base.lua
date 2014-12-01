@@ -818,6 +818,10 @@ function courseplay:load(xmlFile)
 	courseplay.button:new(self, 6, { 'iconSprite.png', 'navDown' }, 'changeDebugChannelSection',  1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[6], w16px, h16px, 6,  1, true, false);
 	courseplay.button:new(self, 6, nil, 'changeDebugChannelSection', -1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[6], mouseWheelArea.w, mouseWheelArea.h, 6, -1, true, true);
 
+	if courseplay.ingameMapIconActive and courseplay.ingameMapIconShowTextLoaded then
+		courseplay.button:new(self, 6, nil, 'toggleIngameMapIconShowText', nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[7], courseplay.hud.visibleArea.width, 0.015, 7, nil, true);
+	end;
+
 
 	-- ##################################################
 	-- Page 7: Driving settings

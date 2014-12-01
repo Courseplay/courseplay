@@ -1501,10 +1501,10 @@ function courseplay:setSlippingStage(vehicle, stage)
 	end;
 end;
 
+-- INGAME MAP ICONS
 function courseplay:createMapHotspot(vehicle)
 	local name = 'cpDriver';
-	local showText = courseplay.ingameMapIconShowName or courseplay.ingameMapIconShowCourse;
-	if showText then
+	if courseplay.ingameMapIconShowText then
 		name = '';
 		if courseplay.ingameMapIconShowName then
 			name = nameNum(vehicle, true) .. '\n';
@@ -1519,17 +1519,22 @@ function courseplay:createMapHotspot(vehicle)
 	local y = vehicle.components[1].lastTranslation[3];
 	local h = 24 / 1080;
 	local w = h / g_screenAspectRatio;
-	local blinking = false;
-	local persistent = false;
-	local objectId = vehicle.rootNode;
-	local hidable = false;
-	local renderLast = true;
-	vehicle.cp.ingameMapHotSpot = g_currentMission.ingameMap:createMapHotspot(name, iconPath, x, y, w, h, blinking, persistent, showText, objectId, hidable, renderLast);
+	vehicle.cp.ingameMapHotSpot = g_currentMission.ingameMap:createMapHotspot(name, iconPath, x, y, w, h, false, false, courseplay.ingameMapIconShowText, vehicle.rootNode, false, true);
 end;
 function courseplay:deleteMapHotspot(vehicle)
 	if vehicle.cp.ingameMapHotSpot then
 		g_currentMission.ingameMap:deleteMapHotspot(vehicle.cp.ingameMapHotSpot);
 		vehicle.cp.ingameMapHotSpot = nil;
+	end;
+end;
+function courseplay:toggleIngameMapIconShowText()
+	courseplay.ingameMapIconShowText = not courseplay.ingameMapIconShowText;
+	for _,vehicle in pairs(g_currentMission.steerables) do
+		if vehicle.cp and vehicle.cp.hasCourseplaySpec and vehicle.cp.ingameMapHotSpot then
+			courseplay:deleteMapHotspot(vehicle);
+			courseplay:createMapHotspot(vehicle);
+			courseplay.hud:setReloadPageOrder(vehicle, 7, true);
+		end;
 	end;
 end;
 

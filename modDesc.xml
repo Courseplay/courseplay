@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="20">
-	<version>4.00.0138</version>
+	<version>4.00.0139</version>
 	<author><![CDATA[Courseplay Dev Team]]></author>
 	<title>
 		<br>Courseplay</br>
@@ -2352,6 +2352,11 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<ru>отключить задний ход</ru>
 			<hu>Tolatás leállítása</hu>
 			<br>Parar marcha ré</br>
+		</text>
+
+		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT"> <!-- should the vehicle name/course be displayed with the map CP icons --> <!-- missing: br, cz, es, fr, hu, it, nl, ru -->
+			<en>Map icons: display text</en>
+			<de>Karten-Icons: Text anzeigen</de>
 		</text>
 
 		<!-- Yes/No dialogues --> <!-- missing: cz, es, it, nl -->

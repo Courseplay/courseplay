@@ -614,6 +614,8 @@ function courseplay:setGlobalData()
 	courseplay.ingameMapIconActive		= ingameMapIconActive;
 	courseplay.ingameMapIconShowName	= ingameMapIconShowName;
 	courseplay.ingameMapIconShowCourse	= ingameMapIconShowCourse;
+	courseplay.ingameMapIconShowText	= ingameMapIconShowName or ingameMapIconShowCourse;
+	courseplay.ingameMapIconShowTextLoaded = courseplay.ingameMapIconShowText;
 
 	--print("\t### Courseplay: setGlobalData() finished");
 
