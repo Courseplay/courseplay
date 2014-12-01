@@ -866,19 +866,20 @@ function courseplay:refillSprayer(vehicle, fillLevelPct, driveOn, allowedToDrive
 			end;
 
 			local fillTypesMatch = courseplay:fillTypesMatch(fillTrigger, activeTool);
-
 			local canRefill = (activeToolFillLevel ~= nil and activeToolFillLevel < driveOn) and fillTypesMatch;
-			--ManureLager: activeTool.ReFillTrigger has to be nil so it doesn't refill
+			
 			if vehicle.cp.mode == 8 then
-				canRefill = canRefill and activeTool.ReFillTrigger == nil and not courseplay:waypointsHaveAttr(vehicle, vehicle.recordnumber, -2, 2, 'wait', true, false);
-				if activeTool.isSpreaderInRange ~= nil and activeTool.isSpreaderInRange.manureTriggerc ~= nil then
+				canRefill = canRefill and not courseplay:waypointsHaveAttr(vehicle, vehicle.recordnumber, -2, 2, 'wait', true, false);
+				if (activeTool.isSpreaderInRange ~= nil and activeTool.isSpreaderInRange.manureTriggerc ~= nil) 
+				--normal fill triggers
+				or (fillTrigger ~= nil and fillTrigger.triggerId ~= nil and vehicle.cp.lastMode8UnloadTriggerId ~= nil and fillTrigger.triggerId == vehicle.cp.lastMode8UnloadTriggerId)
+				-- manureLager fill trigger
+				or (fillTrigger ~= nil and fillTrigger.manureTrigger ~= nil and vehicle.cp.lastMode8UnloadTriggerId ~= nil and fillTrigger.manureTrigger == vehicle.cp.lastMode8UnloadTriggerId)
+				then
 					canRefill = false;
 				end;
-			--TODO: what to do when transfering from one ManureLager to another?
 			end;
-			if fillTrigger ~= nil and vehicle.cp.lastMode8UnloadTriggerId ~= nil and fillTrigger.triggerId == vehicle.cp.lastMode8UnloadTriggerId then
-				canRefill = false
-			end
+			
 			if canRefill then
 				allowedToDrive = false;
 				--courseplay:handleSpecialTools(vehicle,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
