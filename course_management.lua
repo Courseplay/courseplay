@@ -593,9 +593,10 @@ function courseplay.courses.delete_save_all(self)
 			local file = io.open(courseplay.cpXmlFilePath, "w");
 			if file ~= nil then
 				file:write('<?xml version="1.0" encoding="utf-8" standalone="no" ?>\n<XML>\n');
-				file:write(string.format('\t<courseplayHud posX="%.3f" posY="%.3f" />\n', courseplay.hud.infoBasePosX, courseplay.hud.infoBasePosY));
-				file:write(string.format('\t<courseplayFields automaticScan=%q onlyScanOwnedFields=%q debugScannedFields=%q debugCustomLoadedFields=%q scanStep="%d" />\n', tostring(courseplay.fields.automaticScan), tostring(courseplay.fields.onlyScanOwnedFields), tostring(courseplay.fields.debugScannedFields), tostring(courseplay.fields.debugCustomLoadedFields), courseplay.fields.scanStep));
-				file:write(string.format('\t<courseplayWages active=%q wagePerHour="%d" />\n', tostring(courseplay.wagesActive), courseplay.wagePerHour));
+				file:write(('\t<courseplayHud posX="%.3f" posY="%.3f" />\n'):format(courseplay.hud.infoBasePosX, courseplay.hud.infoBasePosY));
+				file:write(('\t<courseplayFields automaticScan=%q onlyScanOwnedFields=%q debugScannedFields=%q debugCustomLoadedFields=%q scanStep="%d" />\n'):format(tostring(courseplay.fields.automaticScan), tostring(courseplay.fields.onlyScanOwnedFields), tostring(courseplay.fields.debugScannedFields), tostring(courseplay.fields.debugCustomLoadedFields), courseplay.fields.scanStep));
+				file:write(('\t<courseplayWages active=%q wagePerHour="%d" />\n'):format(tostring(courseplay.wagesActive), courseplay.wagePerHour));
+				file:write(('\t<courseplayIngameMap active=%q showName=%q showCourse=%q />\n'):format(tostring(courseplay.ingameMapIconActive), tostring(courseplay.ingameMapIconShowName),tostring(courseplay.ingameMapIconShowCourse)));
 
 				-- folders
 				file:write('\t<folders>\n')

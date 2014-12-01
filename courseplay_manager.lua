@@ -197,6 +197,10 @@ function courseplay_manager:createInitialCourseplayFile()
 
 			{ tag = 'courseplayWages', attr = 'active', value = tostring(courseplay.wagesActive), get = 'Bool', set = 'String' };
 			{ tag = 'courseplayWages', attr = 'wagePerHour', value = courseplay.wagePerHour, get = 'Int', set = 'Int' };
+
+			{ tag = 'courseplayIngameMap', attr = 'active',		value = tostring(courseplay.ingameMapIconActive),	  get = 'Bool', set = 'String' };
+			{ tag = 'courseplayIngameMap', attr = 'showName',	value = tostring(courseplay.ingameMapIconShowName),	  get = 'Bool', set = 'String' };
+			{ tag = 'courseplayIngameMap', attr = 'showCourse',	value = tostring(courseplay.ingameMapIconShowCourse), get = 'Bool', set = 'String' };
 		};
 
 		for _,d in ipairs(data) do
