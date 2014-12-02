@@ -2353,12 +2353,13 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<br>Parar marcha ré</br>
 		</text>
 
-		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT"> <!-- should the vehicle name/course be displayed with the map CP icons --> <!-- missing: br, cz, es, it, nl, ru -->
+		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT"> <!-- should the vehicle name/course be displayed with the map CP icons --> <!-- missing: cz, es, it, nl -->
 			<en>Map icons: display text</en>
 			<de>Karten-Icons: Text anzeigen</de>
 			<fr>Icones sur la carte: afficher le texte</fr>
 			<hu>Térképikonok: kijelzőszöveg</hu>
 			<br>Icones do mapa: Mostrar texto</br>
+			<ru>Показать инфо на карте:</ru>
 		</text>
 
 		<!-- Yes/No dialogues --> <!-- missing: cz, es, it, nl -->
