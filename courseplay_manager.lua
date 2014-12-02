@@ -274,6 +274,12 @@ function courseplay_manager:deleteMap()
 	courseplay.fields.seedUsageCalculator = {};
 	courseplay.fields.seedUsageCalculator.fieldsWithoutSeedData = {};
 
+	if courseplay.inputBindings.mouse.overlaySecondary then
+		courseplay.inputBindings.mouse.overlaySecondary:delete();
+		courseplay.inputBindings.mouse.overlaySecondary = nil;
+	end;
+
+
 	-- load/set global again on new map
 	courseplay.globalDataSet = false;
 end;
@@ -418,7 +424,7 @@ function courseplay_manager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 	end;
 
 	--LEFT CLICK
-	if (isDown or isUp) and mouseKey == courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION.buttonId and courseplay:mouseIsInArea(posX, posY, area.x1, area.x2, area.y1, area.y2) then
+	if (isDown or isUp) and mouseKey == courseplay.inputBindings.mouse.primaryButtonId and courseplay:mouseIsInArea(posX, posY, area.x1, area.x2, area.y1, area.y2) then
 		if courseplay.globalInfoText.hasContent then
 			for i,button in pairs(self.buttons.globalInfoText) do
 				if button.show and button:getHasMouse(posX, posY) then
@@ -433,7 +439,7 @@ function courseplay_manager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 		end;
 
 	--RIGHT CLICK
-	elseif isDown and mouseKey == courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION_SECONDARY.buttonId and g_currentMission.controlledVehicle == nil then
+	elseif isDown and mouseKey == courseplay.inputBindings.mouse.secondaryButtonId and g_currentMission.controlledVehicle == nil then
 		if courseplay.globalInfoText.hasContent and not self.playerOnFootMouseEnabled then
 			self.playerOnFootMouseEnabled = true;
 			self.wasPlayerFrozen = g_currentMission.isPlayerFrozen;
@@ -521,10 +527,11 @@ function courseplay_manager:update(dt)
 	-- Field scan, wages yes/n dialogue - END -
 
 	if g_currentMission.controlledVehicle == nil then
+		local helpHeight = g_currentMission.hudHelpTextSize + g_currentMission.hudHelpTextLineSpacing*2;
 		if self.playerOnFootMouseEnabled then
-			g_currentMission:addExtraPrintText(courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION_SECONDARY.displayName .. ": " .. courseplay:loc("COURSEPLAY_MOUSEARROW_HIDE"));
+			g_currentMission:addHelpTextFunction(courseplay.drawMouseButtonHelp, courseplay, helpHeight, courseplay:loc('COURSEPLAY_MOUSEARROW_HIDE'));
 		elseif courseplay.globalInfoText.hasContent then
-			g_currentMission:addExtraPrintText(courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION_SECONDARY.displayName .. ": " .. courseplay:loc("COURSEPLAY_MOUSEARROW_SHOW"));
+			g_currentMission:addHelpTextFunction(courseplay.drawMouseButtonHelp, courseplay, helpHeight, courseplay:loc('COURSEPLAY_MOUSEARROW_SHOW'));
 		end;
 	end;
 

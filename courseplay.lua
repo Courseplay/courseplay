@@ -144,7 +144,7 @@ function courseplay:initialize()
 
 	courseplay:setVersionData();
 
-	courseplay:setInputBindings();
+	courseplay.inputBindings.updateInputButtonData();
 
 	courseplay:setGlobalData();
 

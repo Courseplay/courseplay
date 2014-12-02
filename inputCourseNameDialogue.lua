@@ -252,12 +252,12 @@ function inputCourseNameDialogue:setCallbacks(onCourseNameEntered, target)
 end; --END setCallbacks()
 
 function inputCourseNameDialogue:update(dt)
-	if InputBinding.hasEvent(InputBinding.MENU_ACCEPT, true) or InputBinding.hasEvent(InputBinding.COURSEPLAY_MENU_ACCEPT_SECONDARY, true) then
-		InputBinding.hasEvent(InputBinding.MENU_ACCEPT, true);
+	if InputBinding.hasEvent(InputBinding.MENU_ACCEPT) or InputBinding.hasEvent(InputBinding.COURSEPLAY_MENU_ACCEPT_SECONDARY) then
+		-- InputBinding.hasEvent(InputBinding.MENU_ACCEPT);
 		self:onEnterPressed();
 	elseif InputBinding.hasEvent(InputBinding.MENU, true) or InputBinding.hasEvent(InputBinding.MENU_CANCEL, true) then
-		InputBinding.hasEvent(InputBinding.MENU_CANCEL, true);
-		InputBinding.hasEvent(InputBinding.MENU, true);
+		-- InputBinding.hasEvent(InputBinding.MENU_CANCEL);
+		-- InputBinding.hasEvent(InputBinding.MENU);
 		self:onCancelClick();
 	end;
 end; --END update()
