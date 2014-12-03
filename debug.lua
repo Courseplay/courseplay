@@ -94,7 +94,8 @@ function tableShow(t, name, channel, indent, maxDepth)
 
 	local function basicSerialize(o)
 		local so = tostring(o);
-		if type(o) == 'function' then
+		local oType = type(o);
+		if oType == 'function' then
 			local info = debug.getinfo(o, 'S')
 			-- info.name is nil because o is not a calling level
 			if info.what == 'C' then
@@ -103,12 +104,14 @@ function tableShow(t, name, channel, indent, maxDepth)
 				-- the information is defined in a script
 				return ('"%s, defined in %s (lines %d-%d)"'):format(so, info.source, info.linedefined, info.lastlinedefined);
 			end
-		elseif type(o) == 'number' then
+		elseif oType == 'number' then
 			return so;
+		elseif oType == 'boolean' then
+			return ('%s'):format(so);
 		else
 			return ('%q'):format(so);
-		end
-	end
+		end;
+	end;
 
 	local function addToCart(value, name, indent, saved, field, curDepth)
 		indent = indent or ''

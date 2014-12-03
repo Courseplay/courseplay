@@ -1529,8 +1529,9 @@ function courseplay:deleteMapHotspot(vehicle)
 end;
 function courseplay:toggleIngameMapIconShowText()
 	courseplay.ingameMapIconShowText = not courseplay.ingameMapIconShowText;
-	for _,vehicle in pairs(g_currentMission.steerables) do
-		if vehicle.cp and vehicle.cp.hasCourseplaySpec and vehicle.cp.ingameMapHotSpot then
+	-- for _,vehicle in pairs(g_currentMission.steerables) do
+	for _,vehicle in pairs(courseplay.activeCoursePlayers) do
+		if vehicle.cp.ingameMapHotSpot then
 			courseplay:deleteMapHotspot(vehicle);
 			courseplay:createMapHotspot(vehicle);
 			courseplay.hud:setReloadPageOrder(vehicle, 7, true);

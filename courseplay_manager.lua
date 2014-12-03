@@ -440,7 +440,7 @@ function courseplay_manager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 
 	--RIGHT CLICK
 	elseif isDown and mouseKey == courseplay.inputBindings.mouse.secondaryButtonId and g_currentMission.controlledVehicle == nil then
-		if courseplay.globalInfoText.hasContent and not self.playerOnFootMouseEnabled then
+		if courseplay.globalInfoText.hasContent and not self.playerOnFootMouseEnabled and not g_currentMission.player.currentTool then
 			self.playerOnFootMouseEnabled = true;
 			self.wasPlayerFrozen = g_currentMission.isPlayerFrozen;
 			g_currentMission.isPlayerFrozen = true;
@@ -526,7 +526,7 @@ function courseplay_manager:update(dt)
 	end;
 	-- Field scan, wages yes/n dialogue - END -
 
-	if g_currentMission.controlledVehicle == nil then
+	if g_currentMission.controlledVehicle == nil and not g_currentMission.player.currentTool then
 		local helpHeight = g_currentMission.hudHelpTextSize + g_currentMission.hudHelpTextLineSpacing*2;
 		if self.playerOnFootMouseEnabled then
 			g_currentMission:addHelpTextFunction(courseplay.drawMouseButtonHelp, courseplay, helpHeight, courseplay:loc('COURSEPLAY_MOUSEARROW_HIDE'));

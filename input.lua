@@ -94,7 +94,6 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 			if button.show and not button.isHidden then
 				button:setHovered(button:getHasMouse(posX, posY));
 				if button.isHovered then
-
 					if button.isMouseWheelArea and (button.canScrollUp or button.canScrollDown) then
 						--Mouse wheel icon
 						self.cp.hud.mouseWheel.render = true;
@@ -129,11 +128,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 			for _,button in pairs(self.cp.buttons[-2]) do
 				button:setClicked(false);
 				if button.show and not button.isHidden then
-					button:setHovered(false);
-					if button:getHasMouse(posX, posY) then
-						button:setClicked(false);
-						button:setHovered(true);
-					end;
+					button:setHovered(button:getHasMouse(posX, posY));
 
 					if button.hoverText then
 						self.cp.hud.content.pages[2][button.row][1].isHovered = button.isHovered;

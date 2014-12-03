@@ -412,6 +412,13 @@ function courseplay:load(xmlFile)
 		};
 	};
 
+	-- WOOD CUTTING: increase max cut length
+	if courseplay.isDeveloper then
+		self.cutLengthMax = 15;
+		self.cutLengthStep = 1;
+	end;
+
+
 	self.cp.mouseCursorActive = false;
 
 
