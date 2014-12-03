@@ -95,8 +95,11 @@ function courseplay:load(xmlFile)
 
 
 
-	-- ai mode: 1 abfahrer, 2 kombiniert
-	self.cp.mode = 1
+	-- CP mode
+	self.cp.mode = 1;
+	if self.cp.isCombine or self.cp.isChopper or self.cp.isHarvesterSteerable or self.cp.isWoodHarvester or self.cp.isWoodForwarder then
+		self.cp.mode = 5;
+	end;
 	self.cp.modeState = 0
 	self.cp.mode2nextState = nil;
 	self.cp.startWork = nil
@@ -884,7 +887,8 @@ function courseplay:load(xmlFile)
 	courseplay.button:new(self, 8, { 'iconSprite.png', 'navDown' }, 'changeHeadlandNumLanes',  -1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[6], w16px, h16px, 6, nil, false);
 
 	-- generation action button
-	courseplay.button:new(self, 8, { 'iconSprite.png', 'generateCourse' }, 'generateCourse', nil, topIconsX[3], topIconsY, w24px, h24px, nil, nil, false);
+	local toolTip = 'Generate field course'; -- TODO: i18n
+	self.cp.hud.generateCourseButton = courseplay.button:new(self, 8, { 'iconSprite.png', 'generateCourse' }, 'generateCourse', nil, topIconsX[3], topIconsY, w24px, h24px, nil, nil, false, false, false, toolTip);
 
 
 	-- ##################################################
@@ -998,18 +1002,17 @@ function courseplay:draw()
 			g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_FUNCTIONS'), InputBinding.COURSEPLAY_MODIFIER);
 		end;
 
-		local helpHeight = g_currentMission.hudHelpTextSize + g_currentMission.hudHelpTextLineSpacing*2;
 		if self.cp.hud.show then
 			if self.cp.mouseCursorActive then
-				g_currentMission:addHelpTextFunction(courseplay.drawMouseButtonHelp, self, helpHeight, courseplay:loc('COURSEPLAY_MOUSEARROW_HIDE'));
+				g_currentMission:addHelpTextFunction(courseplay.drawMouseButtonHelp, self, courseplay_manager.hudHelpMouseLineHeight, courseplay:loc('COURSEPLAY_MOUSEARROW_HIDE'));
 			else
-				g_currentMission:addHelpTextFunction(courseplay.drawMouseButtonHelp, self, helpHeight, courseplay:loc('COURSEPLAY_MOUSEARROW_SHOW'));
+				g_currentMission:addHelpTextFunction(courseplay.drawMouseButtonHelp, self, courseplay_manager.hudHelpMouseLineHeight, courseplay:loc('COURSEPLAY_MOUSEARROW_SHOW'));
 			end;
 		end;
 
 		if self.cp.hud.openWithMouse then
 			if not self.cp.hud.show then
-				g_currentMission:addHelpTextFunction(courseplay.drawMouseButtonHelp, self, helpHeight, courseplay:loc('COURSEPLAY_HUD_OPEN'));
+				g_currentMission:addHelpTextFunction(courseplay.drawMouseButtonHelp, self, courseplay_manager.hudHelpMouseLineHeight, courseplay:loc('COURSEPLAY_HUD_OPEN'));
 			end;
 		else
 			if modifierPressed then

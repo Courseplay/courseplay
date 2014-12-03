@@ -294,7 +294,7 @@ courseplay.fields.getPointDirection = courseplay.generation.getPointDirection;
 
 function courseplay.fields:getPolygonData(poly, px, pz, useC, skipArea, skipDimensions)
 	-- This function gets a polygon's area, a boolean if x,z is inside the polygon, the poly's dimensions and the poly's direction (clockwise vs. counter-clockwise).
-	-- Since all of those queries require a for loop through the polygon's vertices, it is better to combine them into once big query.
+	-- Since all of those queries require a for loop through the polygon's vertices, it is better to combine them into one big query.
 
 	if useC == nil then useC = true; end;
 	local x,z = useC and 'cx' or 'x', useC and 'cz' or 'z';

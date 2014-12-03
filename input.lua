@@ -1,6 +1,6 @@
 function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 	--RIGHT CLICK
-	if isDown and mouseButton == courseplay.inputBindings.mouse.secondaryButtonId and self.isEntered then
+	if isUp and mouseButton == courseplay.inputBindings.mouse.secondaryButtonId and self.isEntered then
 		if self.cp.hud.show then
 			courseplay:setMouseCursor(self, not self.cp.mouseCursorActive);
 		elseif not self.cp.hud.show and self.cp.hud.openWithMouse then

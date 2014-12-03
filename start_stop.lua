@@ -141,6 +141,10 @@ function courseplay:start(self)
 	end;
 
 
+	local mapIconPath = Utils.getFilename('img/mapWaypoint.png', courseplay.path);
+	local mapIconHeight = 2 / 1080;
+	local mapIconWidth = mapIconHeight / g_screenAspectRatio;
+
 	local numWaitPoints = 0
 	local numCrossingPoints = 0
 	self.cp.waitPoints = {};
@@ -210,7 +214,10 @@ function courseplay:start(self)
 			end;
 			wp.laneNum = curLaneNumber;
 		end;
-	end;
+
+		-- ingame map course display
+		-- wp.ingameMapHotSpot = g_currentMission.ingameMap:createMapHotspot(nil, mapIconPath, wp.cx, wp.cz, mapIconWidth, mapIconHeight);
+	end; -- END for wp in self.Waypoints
 
 
 	-- modes 4/6 without start and stop point, set them at start and end, for only-on-field-courses

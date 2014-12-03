@@ -239,6 +239,14 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.directionNodeZOffset = 1.567;
 		workTool.cp.showDirectionNode = true;
 
+	-- Wood harvesters [Giants]
+	elseif workTool.typeName == 'woodHarvester' then
+		workTool.cp.isWoodHarvester = true;
+
+	-- Wood forwarders [Giants]
+	elseif workTool.typeName == 'forwarder' then
+		workTool.cp.isWoodForwarder = true;
+
 	-- ###########################################################
 
 	-- [3] TRAILERS
@@ -305,30 +313,10 @@ function courseplay:setCustomSpecVariables(vehicle)
 
 	local specToSpecClassName = {};
 
-	local vehicleCustomEnvironment = vehicle.customEnvironment;
-	local mrDlcsCustomEnvironment;
-	if vehicle.typeName:lower():find('morerealisticdlcs.') then
-		mrDlcsCustomEnvironment = Utils.splitString('.', vehicle.typeName)[1];
-	end;
-
 	for specClassName, data in pairs(customSpecNames) do
 		local fullSpecClassName = specClassName;
-		-- MoreRealisticDLCs vehicle
-		if mrDlcsCustomEnvironment then
-			-- spec must be in vehicle CE
-			if data.useVehicleCustomEnvironment then
-				if vehicleCustomEnvironment then
-					fullSpecClassName = ('%s.%s'):format(vehicleCustomEnvironment, specClassName);
-				end;
-
-			-- spec in MoreRealisticDLCs CE
-			else
-				fullSpecClassName = ('%s.%s'):format(mrDlcsCustomEnvironment, specClassName);
-			end;
-
-		-- vehicle CE
-		elseif vehicleCustomEnvironment then
-			fullSpecClassName = ('%s.%s'):format(vehicleCustomEnvironment, specClassName);
+		if vehicle.customEnvironment then
+			fullSpecClassName = ('%s.%s'):format(vehicle.customEnvironment, specClassName);
 		end;
 
 		local spec = getClassObject(fullSpecClassName);

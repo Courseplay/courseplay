@@ -93,18 +93,20 @@ function courseplay:setHudPage(vehicle, pageNum)
 	courseplay:buttonsActiveEnabled(vehicle, "all");
 end;
 
-function courseplay:buttonsActiveEnabled(self, section)
-	if section == nil or section == "all" or section == "pageNav" then
-		for _,button in pairs(self.cp.buttons.global) do
-			if button.functionToCall == "setHudPage" then
-				local pageNum = button.parameter;
-				button:setActive(pageNum == self.cp.hud.currentPage);
+function courseplay:buttonsActiveEnabled(vehicle, section)
+	local anySection = section == nil or section == 'all';
 
-				if self.cp.mode == nil then
+	if anySection or section == 'pageNav' then
+		for _,button in pairs(vehicle.cp.buttons.global) do
+			if button.functionToCall == 'setHudPage' then
+				local pageNum = button.parameter;
+				button:setActive(pageNum == vehicle.cp.hud.currentPage);
+
+				if vehicle.cp.mode == nil then
 					button:setDisabled(false);
-				elseif courseplay.hud.pagesPerMode[self.cp.mode] ~= nil and courseplay.hud.pagesPerMode[self.cp.mode][pageNum] then
+				elseif courseplay.hud.pagesPerMode[vehicle.cp.mode] ~= nil and courseplay.hud.pagesPerMode[vehicle.cp.mode][pageNum] then
 					if pageNum == 0 then
-						local disabled = not (self.cp.minHudPage == 0 or self.cp.isCombine or self.cp.isChopper or self.cp.isHarvesterSteerable or self.cp.isSugarBeetLoader);
+						local disabled = not (vehicle.cp.minHudPage == 0 or vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable or vehicle.cp.isSugarBeetLoader);
 						button:setDisabled(disabled);
 					else
 						button:setDisabled(false);
@@ -118,129 +120,135 @@ function courseplay:buttonsActiveEnabled(self, section)
 		end;
 	end;
 
-	if self.cp.hud.currentPage == 1 and (section == nil or section == "all" or section == "quickModes" or section == "recording" or section == "customFieldShow" or section == 'findFirstWaypoint') then
-		for _,button in pairs(self.cp.buttons[1]) do
-			local fn = button.functionToCall;
-			if fn == "setCpMode" then
-				button:setActive(self.cp.mode == button.parameter);
-				button:setDisabled(button.parameter == 7 and not self.cp.isCombine and not self.cp.isChopper and not self.cp.isHarvesterSteerable);
+	if vehicle.cp.hud.currentPage == 1 and (anySection or section == 'quickModes' or section == 'recording' or section == 'customFieldShow' or section == 'findFirstWaypoint') then
+		for _,button in pairs(vehicle.cp.buttons[1]) do
+			local fn, prm = button.functionToCall, button.parameter;
+			if fn == 'setCpMode' and (anySection or section == 'quickModes') then
+				button:setActive(vehicle.cp.mode == prm);
+				local disabled = (prm == 7 and not vehicle.cp.isCombine and not vehicle.cp.isChopper and not vehicle.cp.isHarvesterSteerable)
+							  or ((prm == 1 or prm == 2 or prm == 3 or prm == 4 or prm == 8 or prm == 9) and (vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable))
+							  or ((prm ~= 5) and (vehicle.cp.isWoodHarvester or vehicle.cp.isWoodForwarder));
+				button:setDisabled(disabled);
 				button:setCanBeClicked(not button.isDisabled and not button.isActive);
-			elseif fn == "toggleCustomFieldEdgePathShow" then
-				button:setActive(self.cp.fieldEdge.customField.show);
-			elseif fn == 'toggleFindFirstWaypoint' then
-				button:setActive(self.cp.distanceCheck);
+			end;
 
-			elseif fn == 'stop_record' then
-				button:setDisabled(self.cp.recordingIsPaused or self.cp.isRecordingTurnManeuver);
-				button:setCanBeClicked(not button.isDisabled);
-			elseif fn == 'setRecordingPause' then
-				button:setActive(self.cp.recordingIsPaused);
-				button:setDisabled(self.cp.HUDrecordnumber < 4 or self.cp.isRecordingTurnManeuver);
-				button:setCanBeClicked(not button.isDisabled);
-			elseif fn == 'delete_waypoint' then
-				-- NOTE: during recording pause, HUDrecordnumber = recordnumber + 1, that's why <= 5 is used
-				button:setDisabled(not self.cp.recordingIsPaused or self.cp.HUDrecordnumber <= 5);
-				button:setCanBeClicked(not button.isDisabled);
-			elseif fn == 'set_waitpoint' or fn == 'set_crossing' then
-				button:setDisabled(self.cp.recordingIsPaused or self.cp.isRecordingTurnManeuver);
-				button:setCanBeClicked(not button.isDisabled);
-			elseif fn == 'setRecordingTurnManeuver' then --isToggleButton
-				button:setActive(self.cp.isRecordingTurnManeuver);
-				button:setDisabled(self.cp.recordingIsPaused or self.cp.drivingDirReverse);
-				button:setCanBeClicked(not button.isDisabled);
-			elseif fn == 'change_DriveDirection' then --isToggleButton
-				button:setActive(self.cp.drivingDirReverse);
-				button:setDisabled(self.cp.recordingIsPaused or self.cp.isRecordingTurnManeuver);
-				button:setCanBeClicked(not button.isDisabled);
+			if fn == 'toggleCustomFieldEdgePathShow' and (anySection or section == 'customFieldShow') then
+				button:setActive(vehicle.cp.fieldEdge.customField.show);
+			end;
+
+			if fn == 'toggleFindFirstWaypoint' and (anySection or section == 'findFirstWaypoint') then
+				button:setActive(vehicle.cp.distanceCheck);
+			end;
+
+			if anySection or section == 'recording' then
+				if fn == 'stop_record' then
+					button:setDisabled(vehicle.cp.recordingIsPaused or vehicle.cp.isRecordingTurnManeuver);
+					button:setCanBeClicked(not button.isDisabled);
+				elseif fn == 'setRecordingPause' then
+					button:setActive(vehicle.cp.recordingIsPaused);
+					button:setDisabled(vehicle.cp.HUDrecordnumber < 4 or vehicle.cp.isRecordingTurnManeuver);
+					button:setCanBeClicked(not button.isDisabled);
+				elseif fn == 'delete_waypoint' then
+					-- NOTE: during recording pause, HUDrecordnumber = recordnumber + 1, that's why <= 5 is used
+					button:setDisabled(not vehicle.cp.recordingIsPaused or vehicle.cp.HUDrecordnumber <= 5);
+					button:setCanBeClicked(not button.isDisabled);
+				elseif fn == 'set_waitpoint' or fn == 'set_crossing' then
+					button:setDisabled(vehicle.cp.recordingIsPaused or vehicle.cp.isRecordingTurnManeuver);
+					button:setCanBeClicked(not button.isDisabled);
+				elseif fn == 'setRecordingTurnManeuver' then --isToggleButton
+					button:setActive(vehicle.cp.isRecordingTurnManeuver);
+					button:setDisabled(vehicle.cp.recordingIsPaused or vehicle.cp.drivingDirReverse);
+					button:setCanBeClicked(not button.isDisabled);
+				elseif fn == 'change_DriveDirection' then --isToggleButton
+					button:setActive(vehicle.cp.drivingDirReverse);
+					button:setDisabled(vehicle.cp.recordingIsPaused or vehicle.cp.isRecordingTurnManeuver);
+					button:setCanBeClicked(not button.isDisabled);
+				end;
 			end;
 		end;
 
-	elseif self.cp.hud.currentPage == 2 and section == 'page2' then
-		local enable, hide = true, false
-		local n_courses = #(self.cp.hud.courses)
+	elseif vehicle.cp.hud.currentPage == 2 and section == 'page2' then
+		local enable, show = true, true;
+		local numVisibleCourses = #(vehicle.cp.hud.courses);
 		local nofolders = nil == next(g_currentMission.cp_folders);
 		local indent = courseplay.hud.indent;
-		local row
-		for _, button in pairs(self.cp.buttons[-2]) do
-			row = button.row
-			enable = true
-			hide = false
+		local row;
+		for _, button in pairs(vehicle.cp.buttons[-2]) do
+			row = button.row;
+			enable = true;
+			show = true;
 
-			if row > n_courses then
-				hide = true
+			if row > numVisibleCourses then
+				show = false;
 			else
-				if button.functionToCall == "expandFolder" then
-					if self.cp.hud.courses[row].type == 'course' then
-						hide = true
+				if button.functionToCall == 'expandFolder' then
+					if vehicle.cp.hud.courses[row].type == 'course' then
+						show = false;
 					else
 						-- position the expandFolder buttons
-						button:setOffset(self.cp.hud.courses[row].level * indent, 0)
+						button:setOffset(vehicle.cp.hud.courses[row].level * indent, 0)
 						
-						if self.cp.hud.courses[row].id == 0 then
-							hide = true --hide for level 0 "folder"
+						if vehicle.cp.hud.courses[row].id == 0 then
+							show = false; --hide for level 0 'folder'
 						else
 							-- check if plus or minus should show up
-							if self.cp.folder_settings[self.cp.hud.courses[row].id].showChildren then
+							if vehicle.cp.folder_settings[vehicle.cp.hud.courses[row].id].showChildren then
 								button:setSpriteSectionUVs('navMinus');
 							else
 								button:setSpriteSectionUVs('navPlus');
-							end
-							if g_currentMission.cp_sorted.info[ self.cp.hud.courses[row].uid ].lastChild == 0 then
-								enable = false	-- button has no children
-							end
-						end
-					end
+							end;
+							if g_currentMission.cp_sorted.info[ vehicle.cp.hud.courses[row].uid ].lastChild == 0 then
+								enable = false; -- button has no children
+							end;
+						end;
+					end;
 				else
-					if self.cp.hud.courses[row].type == 'folder' and (button.functionToCall == "load_sorted_course" or button.functionToCall == "add_sorted_course") then
-						hide = true
-					elseif self.cp.hud.choose_parent ~= true then
-						if button.functionToCall == 'delete_sorted_item' and self.cp.hud.courses[row].type == 'folder' and g_currentMission.cp_sorted.info[ self.cp.hud.courses[row].uid ].lastChild ~= 0 then
-							enable = false
+					if vehicle.cp.hud.courses[row].type == 'folder' and (button.functionToCall == 'load_sorted_course' or button.functionToCall == 'add_sorted_course') then
+						show = false;
+					elseif vehicle.cp.hud.choose_parent ~= true then
+						if button.functionToCall == 'delete_sorted_item' and vehicle.cp.hud.courses[row].type == 'folder' and g_currentMission.cp_sorted.info[ vehicle.cp.hud.courses[row].uid ].lastChild ~= 0 then
+							enable = false;
 						elseif button.functionToCall == 'link_parent' then
 							button:setSpriteSectionUVs('folderParentFrom');
 							if nofolders then
 								enable = false;
 							end;
-						end
+						end;
 					else
 						if button.functionToCall ~= 'link_parent' then
-							enable = false
+							enable = false;
 						else
 							button:setSpriteSectionUVs('folderParentTo');
-						end
-					end
-				end
-			end
+						end;
+					end;
+				end;
+			end;
 
-			button:setDisabled((not enable) or hide);
-			button:setHidden(hide);
-		end -- for buttons
-		courseplay.settings.validateCourseListArrows(self)
+			button:setDisabled(not enable or not show);
+			button:setShow(show);
+		end; -- for buttons
+		courseplay.settings.validateCourseListArrows(vehicle);
 
-	elseif self.cp.hud.currentPage == 6 and (section == nil or section == "all" or section == "debug") then
-		for _,button in pairs(self.cp.buttons[6]) do
-			if button.functionToCall == "toggleDebugChannel" then
+	elseif vehicle.cp.hud.currentPage == 6 and (anySection or section == 'debug') then
+		for _,button in pairs(vehicle.cp.buttons[6]) do
+			if button.functionToCall == 'toggleDebugChannel' then
 				button:setDisabled(button.parameter > courseplay.numDebugChannels);
 				button:setActive(courseplay.debugChannels[button.parameter] == true);
 				button:setCanBeClicked(not button.isDisabled);
 			end;
 		end;
 
-	elseif self.cp.hud.currentPage == 8 and (section == nil or section == "all" or section == "selectedFieldShow") then
-		for _,button in pairs(self.cp.buttons[8]) do
-			if button.functionToCall == "toggleSelectedFieldEdgePathShow" then
-				button:setActive(self.cp.fieldEdge.selectedField.show);
-				break;
-			end;
+	elseif vehicle.cp.hud.currentPage == 8 and (anySection or section == 'generateCourse' or section == 'selectedFieldShow' or section == 'suc') then
+		vehicle.cp.hud.generateCourseButton:setDisabled(not vehicle.cp.hasValidCourseGenerationData);
+		if vehicle.cp.hud.showSelectedFieldEdgePathButton then
+			vehicle.cp.hud.showSelectedFieldEdgePathButton:setActive(vehicle.cp.fieldEdge.selectedField.show);
 		end;
+		vehicle.cp.suc.toggleHudButton:setActive(vehicle.cp.suc.active);
 
-	elseif self.cp.hud.currentPage == 8 and (section == nil or section == 'all' or section == 'suc') then
-		self.cp.suc.toggleHudButton:setActive(self.cp.suc.active);
-
-	elseif self.cp.hud.currentPage == 9 and (section == nil or section == "all" or section == "shovel") then
-		for _,button in pairs(self.cp.buttons[9]) do
+	elseif vehicle.cp.hud.currentPage == 9 and (anySection or section == 'shovel') then
+		for _,button in pairs(vehicle.cp.buttons[9]) do
 			if button.functionToCall == 'saveShovelPosition' then --isToggleButton
-				button:setActive(self.cp.shovelStatePositions[button.parameter] ~= nil);
+				button:setActive(vehicle.cp.shovelStatePositions[button.parameter] ~= nil);
 				button:setCanBeClicked(true);
 			end;
 		end;
@@ -1085,6 +1093,7 @@ function courseplay:validateCourseGenerationData(vehicle)
 	else
 		vehicle.cp.hasValidCourseGenerationData = false;
 	end;
+	courseplay:buttonsActiveEnabled(vehicle, 'generateCourse');
 
 	if courseplay.debugChannels[7] then
 		courseplay:debug(string.format("%s: hasGeneratedCourse=%s, hasEnoughWaypoints=%s, hasStartingCorner=%s, hasStartingDirection=%s, numCourses=%s, fieldEdge.selectedField.fieldNum=%s ==> hasValidCourseGenerationData=%s", nameNum(vehicle), tostring(vehicle.cp.hasGeneratedCourse), tostring(hasEnoughWaypoints), tostring(vehicle.cp.hasStartingCorner), tostring(vehicle.cp.hasStartingDirection), tostring(vehicle.cp.numCourses), tostring(vehicle.cp.fieldEdge.selectedField.fieldNum), tostring(vehicle.cp.hasValidCourseGenerationData)), 7);
@@ -1238,7 +1247,7 @@ function courseplay:createFieldEdgeButtons(vehicle)
 			h = courseplay.hud.lineHeight
 		};
 		vehicle.cp.suc.toggleHudButton = courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'calculator' }, 'toggleSucHud', nil, courseplay.hud.buttonPosX[-1], courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, nil, false, false, true);
-		courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'eye' }, 'toggleSelectedFieldEdgePathShow', nil, courseplay.hud.buttonPosX[0], courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, nil, false);
+		vehicle.cp.hud.showSelectedFieldEdgePathButton = courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'eye' }, 'toggleSelectedFieldEdgePathShow', nil, courseplay.hud.buttonPosX[0], courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, nil, false);
 		courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'navUp' }, 'setFieldEdgePath',  1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[1], w16px, h16px, 1,  5, false);
 		courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'navDown' }, 'setFieldEdgePath', -1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[1], w16px, h16px, 1, -5, false);
 		courseplay.button:new(vehicle, 8, nil, 'setFieldEdgePath', 1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[1], mouseWheelArea.w, mouseWheelArea.h, 1, 5, true, true);

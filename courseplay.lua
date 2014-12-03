@@ -485,7 +485,6 @@ function courseplay:setGlobalData()
 	courseplay.globalInfoText.backgroundPosY = courseplay.globalInfoText.posY;
 	courseplay.globalInfoText.textPosX = courseplay.globalInfoText.backgroundPosX + courseplay.globalInfoText.backgroundPadding;
 	courseplay.globalInfoText.content = {};
-	courseplay.globalInfoText.hasContent = false;
 	courseplay.globalInfoText.vehicleHasText = {};
 	courseplay.globalInfoText.levelColors = {
 		[-2] = courseplay.hud.colors.closeRed;

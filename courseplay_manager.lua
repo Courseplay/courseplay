@@ -14,6 +14,9 @@ function courseplay_manager:loadMap(name)
 	end;
 
 	self.firstRun = true;
+	-- height for mouse text line in game's help menu
+	self.hudHelpMouseLineHeight = g_currentMission.hudHelpTextSize + g_currentMission.hudHelpTextLineSpacing*2;
+
 	self.showFieldScanYesNoDialogue = false;
 	self.showWagesYesNoDialogue = false;
 	self:createInitialCourseplayFile();
@@ -48,6 +51,7 @@ function courseplay_manager:loadMap(name)
 		y1 = git.backgroundPosY,
 		y2 = git.backgroundPosY + (self.globalInfoTextMaxNum  * (git.lineHeight + git.lineMargin));
 	};
+	self.globalInfoTextHasContent = false;
 
 	self.playerOnFootMouseEnabled = false;
 	self.wasPlayerFrozen = false;
@@ -289,13 +293,13 @@ function courseplay_manager:draw()
 		return;
 	end;
 
-	courseplay.globalInfoText.hasContent = false;
+	self.globalInfoTextHasContent = false;
 	local git = courseplay.globalInfoText;
 	local line = 0;
 	local basePosY = courseplay.globalInfoText.backgroundPosY;
 	local ingameMap = g_currentMission.ingameMap;
 	if not (ingameMap.isVisible and ingameMap.isFullSize) and table.maxn(git.content) > 0 then -- TODO (Jakob): ... and ingameMap:getIsFullSize()
-		courseplay.globalInfoText.hasContent = true;
+		self.globalInfoTextHasContent = true;
 		basePosY = ingameMap.isVisible and git.posYAboveMap or git.posY;
 		for _,refIndexes in pairs(git.content) do
 			if line >= self.globalInfoTextMaxNum then
@@ -390,6 +394,15 @@ function courseplay_manager:draw()
 		--reset font settings
 		courseplay:setFontSettings('white', true, 'left');
 	end;
+
+	-- HELP MENU
+	if g_currentMission.controlledVehicle == nil and not g_currentMission.player.currentTool then
+		if self.playerOnFootMouseEnabled then
+			g_currentMission:addHelpTextFunction(courseplay.drawMouseButtonHelp, courseplay, self.hudHelpMouseLineHeight, courseplay:loc('COURSEPLAY_MOUSEARROW_HIDE'));
+		elseif self.globalInfoTextHasContent then
+			g_currentMission:addHelpTextFunction(courseplay.drawMouseButtonHelp, courseplay, self.hudHelpMouseLineHeight, courseplay:loc('COURSEPLAY_MOUSEARROW_SHOW'));
+		end;
+	end;
 end;
 
 function courseplay_manager:getColorFromPct(pct, colorMap)
@@ -425,7 +438,7 @@ function courseplay_manager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 
 	--LEFT CLICK
 	if (isDown or isUp) and mouseKey == courseplay.inputBindings.mouse.primaryButtonId and courseplay:mouseIsInArea(posX, posY, area.x1, area.x2, area.y1, area.y2) then
-		if courseplay.globalInfoText.hasContent then
+		if self.globalInfoTextHasContent then
 			for i,button in pairs(self.buttons.globalInfoText) do
 				if button.show and button:getHasMouse(posX, posY) then
 					button:setClicked(isDown);
@@ -440,13 +453,13 @@ function courseplay_manager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 
 	--RIGHT CLICK
 	elseif isDown and mouseKey == courseplay.inputBindings.mouse.secondaryButtonId and g_currentMission.controlledVehicle == nil then
-		if courseplay.globalInfoText.hasContent and not self.playerOnFootMouseEnabled and not g_currentMission.player.currentTool then
+		if self.globalInfoTextHasContent and not self.playerOnFootMouseEnabled and not g_currentMission.player.currentTool then
 			self.playerOnFootMouseEnabled = true;
 			self.wasPlayerFrozen = g_currentMission.isPlayerFrozen;
 			g_currentMission.isPlayerFrozen = true;
 		elseif self.playerOnFootMouseEnabled then
 			self.playerOnFootMouseEnabled = false;
-			if courseplay.globalInfoText.hasContent then --if a button was hovered when deactivating the cursor, deactivate hover state
+			if self.globalInfoTextHasContent then --if a button was hovered when deactivating the cursor, deactivate hover state
 				for _,button in pairs(self.buttons.globalInfoText) do
 					button:setClicked(false);
 					button:setHovered(false);
@@ -460,15 +473,11 @@ function courseplay_manager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 		InputBinding.setShowMouseCursor(self.playerOnFootMouseEnabled);
 
 	--HOVER
-	elseif not isDown and not isUp and courseplay.globalInfoText.hasContent --[[and posX > area.x1 * 0.9 and posX < area.x2 * 1.1 and posY > area.y1 * 0.9 and posY < area.y2 * 1.1]] then
+	elseif not isDown and not isUp and self.globalInfoTextHasContent --[[and posX > area.x1 * 0.9 and posX < area.x2 * 1.1 and posY > area.y1 * 0.9 and posY < area.y2 * 1.1]] then
 		for _,button in pairs(self.buttons.globalInfoText) do
 			button:setClicked(false);
 			if button.show and not button.isHidden then
-				button:setHovered(false);
-				if courseplay.button.getHasMouse(button, posX, posY) then
-					button:setClicked(false);
-					button:setHovered(true);
-				end;
+				button:setHovered(button:getHasMouse(posX, posY));
 			end;
 		end;
 	end;
@@ -525,15 +534,6 @@ function courseplay_manager:update(dt)
 		end;
 	end;
 	-- Field scan, wages yes/n dialogue - END -
-
-	if g_currentMission.controlledVehicle == nil and not g_currentMission.player.currentTool then
-		local helpHeight = g_currentMission.hudHelpTextSize + g_currentMission.hudHelpTextLineSpacing*2;
-		if self.playerOnFootMouseEnabled then
-			g_currentMission:addHelpTextFunction(courseplay.drawMouseButtonHelp, courseplay, helpHeight, courseplay:loc('COURSEPLAY_MOUSEARROW_HIDE'));
-		elseif courseplay.globalInfoText.hasContent then
-			g_currentMission:addHelpTextFunction(courseplay.drawMouseButtonHelp, courseplay, helpHeight, courseplay:loc('COURSEPLAY_MOUSEARROW_SHOW'));
-		end;
-	end;
 
 	--SETUP FIELD INGAME DATA
 	if not courseplay.fields.ingameDataSetUp then
