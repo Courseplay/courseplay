@@ -354,6 +354,14 @@ function courseplay:getCanUseAiMode(vehicle)
 
 	local mode = vehicle.cp.mode;
 
+	if (mode == 7 and not vehicle.cp.isCombine and not vehicle.cp.isChopper and not vehicle.cp.isHarvesterSteerable)
+	or ((mode == 1 or mode == 2 or mode == 3 or mode == 4 or mode == 8 or mode == 9) and (vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable))
+	or ((mode ~= 5) and (vehicle.cp.isWoodHarvester or vehicle.cp.isWoodForwarder)) then
+		courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE'));
+		return false;
+	end;
+
+
 	if mode ~= 5 and mode ~= 6 and mode ~= 7 and not vehicle.cp.workToolAttached then
 		courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WRONG_TRAILER'));
 		return false;

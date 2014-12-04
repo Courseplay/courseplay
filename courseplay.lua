@@ -168,7 +168,7 @@ function courseplay:setGlobalData()
 		return;
 	end;
 
-	courseplay.savegameFolderPath = ('%ssavegame%d'):format(getUserProfileAppPath(), g_careerScreen.currentSavegame.savegameIndex);
+	courseplay.savegameFolderPath = ('%ssavegame%d'):format(getUserProfileAppPath(), g_careerScreen.currentSavegame.savegameIndex); -- TODO (Jakob): g_careerScreen.currentSavegame not available on DS. MP maybe as well
 	courseplay.cpXmlFilePath = courseplay.savegameFolderPath .. '/courseplay.xml';
 	courseplay.cpFieldsXmlFilePath = courseplay.savegameFolderPath .. '/courseplayFields.xml';
 

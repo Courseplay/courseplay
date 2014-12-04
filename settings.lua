@@ -1078,7 +1078,7 @@ function courseplay:validateCourseGenerationData(vehicle)
 		numWaypoints = #(vehicle.Waypoints);
 	end;
 
-	local hasEnoughWaypoints = numWaypoints > 4
+	local hasEnoughWaypoints = numWaypoints >= 4
 	if vehicle.cp.headland.numLanes ~= 0 then
 		hasEnoughWaypoints = numWaypoints >= 20;
 	end;

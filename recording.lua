@@ -1,5 +1,5 @@
 local curFile = 'recording.lua';
-local abs, atan2, deg, rad = math.abs, math.atan2, math.deg, math.rad;
+local abs, atan2, ceil, deg, rad = math.abs, math.atan2, math.ceil, math.deg, math.rad;
 
 -- records waypoints for course
 function courseplay:record(vehicle)
@@ -30,7 +30,7 @@ function courseplay:record(vehicle)
 			end;
 		end;
 	end;
-	vehicle.cp.curSpeed = math.ceil(vehicle.lastSpeedReal*3600)
+	vehicle.cp.curSpeed = ceil(vehicle.lastSpeedReal*3600)
 
 	if vehicle.cp.recordingTimer > 100 then
 		courseplay:setNewWaypointFromRecording(vehicle, cx, cz, newAngle, false, vehicle.cp.drivingDirReverse, vehicle.recordnumber == 1, vehicle.cp.curSpeed);

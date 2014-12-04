@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="20">
-	<version>4.00.0146</version>
+	<version>4.00.0147</version>
 	<author><![CDATA[Courseplay Dev Team]]></author>
 	<title>
 		<br>Courseplay</br>
@@ -1380,6 +1380,10 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<nl>Verkeerde trailer voor deze modus</nl>
 			<br>carreta incorreta para este modo</br>
 		</text>
+		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE"> <!-- missing: br, cz, fr, es, it, hu, nl, ru -->
+			<en>This vehicle type isn't supported in this mode.</en>
+			<de>Dieser Fahrzeugtyp wird in diesem Modus nicht unterstützt.</de>
+		</text>
 		<text name="COURSEPLAY_ESL_NOT_SUPPORTED">
 			<en>ESLimiter version is not supported</en>
 			<de>ESLimiter-Version wird nicht unterstützt</de>
@@ -1939,16 +1943,20 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<br>Caminho borda do campo</br>
 		</text>
 		<text name="COURSEPLAY_FIELD">
-			<en>Field</en>
-			<de>Feld</de>
-			<es>Campo</es> <!-- !!! -->
-			<fr>Champ</fr>
-			<it>Campo</it>
-			<cz>Pole</cz>
-			<ru>поле №</ru>
-			<hu>Terület</hu>
-			<nl>Veld</nl>
 			<br>Campo</br>
+			<cz>Pole</cz>
+			<de>Feld</de>
+			<en>Field</en>
+			<es>Campo</es>
+			<fr>Champ</fr>
+			<hu>Terület</hu>
+			<it>Campo</it>
+			<nl>Veld</nl>
+			<ru>поле №</ru>
+		</text>
+		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE"> <!-- missing: br, cz, es, fr, hu, it, nl, ru -->
+			<en>(currently loaded course)</en>
+			<de>(aktuell geladener Kurs)</de>
 		</text>
 		<text name="COURSEPLAY_FIELD_SCAN_IN_PROGRESS">
 			<en>Field scan in progress</en>

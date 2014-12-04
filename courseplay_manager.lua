@@ -298,7 +298,7 @@ function courseplay_manager:draw()
 	local line = 0;
 	local basePosY = courseplay.globalInfoText.backgroundPosY;
 	local ingameMap = g_currentMission.ingameMap;
-	if not (ingameMap.isVisible and ingameMap.isFullSize) and table.maxn(git.content) > 0 then -- TODO (Jakob): ... and ingameMap:getIsFullSize()
+	if not (ingameMap.isVisible and ingameMap:getIsFullSize()) and next(courseplay.globalInfoText.content) ~= nil then
 		self.globalInfoTextHasContent = true;
 		basePosY = ingameMap.isVisible and git.posYAboveMap or git.posY;
 		for _,refIndexes in pairs(git.content) do
@@ -452,7 +452,7 @@ function courseplay_manager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 		end;
 
 	--RIGHT CLICK
-	elseif isDown and mouseKey == courseplay.inputBindings.mouse.secondaryButtonId and g_currentMission.controlledVehicle == nil then
+	elseif isUp and mouseKey == courseplay.inputBindings.mouse.secondaryButtonId and g_currentMission.controlledVehicle == nil then
 		if self.globalInfoTextHasContent and not self.playerOnFootMouseEnabled and not g_currentMission.player.currentTool then
 			self.playerOnFootMouseEnabled = true;
 			self.wasPlayerFrozen = g_currentMission.isPlayerFrozen;
@@ -473,7 +473,7 @@ function courseplay_manager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 		InputBinding.setShowMouseCursor(self.playerOnFootMouseEnabled);
 
 	--HOVER
-	elseif not isDown and not isUp and self.globalInfoTextHasContent --[[and posX > area.x1 * 0.9 and posX < area.x2 * 1.1 and posY > area.y1 * 0.9 and posY < area.y2 * 1.1]] then
+	elseif not isDown and not isUp and self.globalInfoTextHasContent then
 		for _,button in pairs(self.buttons.globalInfoText) do
 			button:setClicked(false);
 			if button.show and not button.isHidden then
