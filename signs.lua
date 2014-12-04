@@ -5,16 +5,17 @@ local deg, rad = math.deg, math.rad;
 	- run updateWaypointSigns() when course has been saved
 ]]
 
+local signData = {
+	normal = { 10000, 'current',  4.5 }, -- orig height=5
+	start =  {   500, 'current',  4.5 }, -- orig height=3
+	stop =   {   500, 'current',  4.5 }, -- orig height=3
+	wait =   {  1000, 'current',  4.5 }, -- orig height=3
+	cross =  {  2000, 'crossing', 4.0 }
+};
+
 function courseplay.signs:setup()
 	print('## Courseplay: setting up signs');
 
-	local signData = {
-		normal = { 10000, 'current',  4.5 }, -- orig height=5
-		start =  {   500, 'current',  4.5 }, -- orig height=3
-		stop =   {   500, 'current',  4.5 }, -- orig height=3
-		wait =   {  1000, 'current',  4.5 }, -- orig height=3
-		cross =  {  2000, 'crossing', 4.0 }
-	};
 	local globalRootNode = getRootNode();
 
 	self.buffer = {};
@@ -36,7 +37,7 @@ function courseplay.signs:setup()
 		setTranslation(itemNode, 0, 0, 0);
 		setVisibility(itemNode, false);
 		delete(i3dNode);
-		courseplay.signs.protoTypes[signType] = itemNode;
+		self.protoTypes[signType] = itemNode;
 	end;
 end;
 
@@ -46,12 +47,12 @@ function courseplay.signs:addSign(vehicle, signType, x, z, rotX, rotY, insertInd
 
 	local sign;
 	local signFromBuffer = {};
-	local receivedSignFromBuffer = courseplay.utils.table.move(courseplay.signs.buffer[signType], signFromBuffer);
+	local receivedSignFromBuffer = courseplay.utils.table.move(self.buffer[signType], signFromBuffer);
 
 	if receivedSignFromBuffer then
 		sign = signFromBuffer[1].sign;
 	else
-		sign = clone(courseplay.signs.protoTypes[signType], true);
+		sign = clone(self.protoTypes[signType], true);
 	end;
 
 	self:setTranslation(sign, signType, x, z);
@@ -72,19 +73,19 @@ function courseplay.signs:addSign(vehicle, signType, x, z, rotX, rotY, insertInd
 	setVisibility(sign, true);
 
 	local signData = { type = signType, sign = sign, posX = x, posZ = z, rotY = rotY };
-	local section = courseplay.signs.sections[signType];
+	local section = self.sections[signType];
 	insertIndex = insertIndex or (#vehicle.cp.signs[section] + 1);
 	table.insert(vehicle.cp.signs[section], insertIndex, signData);
 end;
 
 function courseplay.signs:moveToBuffer(vehicle, vehicleIndex, signData)
-	-- self = courseplay.utils.signs
+	-- self = courseplay.signs
 	local signType = signData.type;
-	local section = courseplay.signs.sections[signType];
+	local section = self.sections[signType];
 
-	if #courseplay.signs.buffer[signType] < courseplay.signs.bufferMax[signType] then
+	if #self.buffer[signType] < self.bufferMax[signType] then
 		setVisibility(signData.sign, false);
-		courseplay.utils.table.move(vehicle.cp.signs[section], courseplay.signs.buffer[signType], vehicleIndex);
+		courseplay.utils.table.move(vehicle.cp.signs[section], self.buffer[signType], vehicleIndex);
 	else
 		self:deleteSign(signData.sign);
 		vehicle.cp.signs[section][vehicleIndex] = nil;
@@ -94,11 +95,11 @@ end;
 
 function courseplay.signs:setTranslation(sign, signType, x, z)
 	local terrainHeight = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, x, 300, z);
-	setTranslation(sign, x, terrainHeight + courseplay.signs.heightPos[signType], z);
+	setTranslation(sign, x, terrainHeight + self.heightPos[signType], z);
 end;
 
 function courseplay.signs:changeSignType(vehicle, vehicleIndex, oldType, newType)
-	local section = courseplay.signs.sections[oldType];
+	local section = self.sections[oldType];
 	local signData = vehicle.cp.signs[section][vehicleIndex];
 	self:moveToBuffer(vehicle, vehicleIndex, signData);
 	self:addSign(vehicle, newType, signData.posX, signData.posZ, signData.rotX, signData.rotY, vehicleIndex);

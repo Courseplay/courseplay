@@ -22,7 +22,6 @@ source(filePath);
 
 -- place sub-classes here in order to get an overview of the contents of the courseplay object and allow for sub-class functions
 courseplay.utils = {};
-courseplay.utils.signs = {};
 courseplay.courses = {};
 courseplay.settings = {};
 courseplay.hud = {};
@@ -130,12 +129,9 @@ local function setGlobalData()
 	courseplay.MODE_COMBINE_SELF_UNLOADING = 7;
 	courseplay.MODE_LIQUIDMANURE_TRANSPORT = 8;
 	courseplay.MODE_SHOVEL_FILL_AND_EMPTY = 9;
-
-	------------------------------------------------------------
-
 	courseplay.numAiModes = 9;
 
-	courseplay.lightsNeeded = false;
+	------------------------------------------------------------
 
 
 	-- "start at _ point" options

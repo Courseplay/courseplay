@@ -94,6 +94,10 @@ function CpManager:loadMap(name)
 	self.trafficCollisionIgnoreList = {};
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	-- MISCELLANEOUS
+	self.lightsNeeded = false;
+
+	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- LOAD COURSES AND FOLDERS
 	if g_currentMission.cp_courses == nil then
 		--courseplay:debug("cp_courses was nil and initialized", 8);
@@ -557,7 +561,7 @@ function CpManager:renderFieldScanInfo()
 	courseplay:setFontSettings('white', true, 'left');
 end;
 
-function CpManager.drawMouseButtonHelp(self, posY, txt)
+function CpManager.drawMouseButtonHelp(unusedSelf, posY, txt)
 	local xLeft = g_currentMission.hudHelpTextPosX1;
 	local xRight = g_currentMission.hudHelpTextPosX2;
 
@@ -624,7 +628,7 @@ local nightStart, dayStart = 19 * 3600000, 7.5 * 3600000; -- from 7pm until 7:30
 function CpManager:minuteChanged()
 	-- WEATHER
 	local env = g_currentMission.environment;
-	courseplay.lightsNeeded = env.needsLights or (env.dayTime >= nightStart or env.dayTime <= dayStart) or env.currentRain ~= nil or env.curRain ~= nil or (env.lastRainScale > 0.1 and env.timeSinceLastRain < 30);
+	self.lightsNeeded = env.needsLights or (env.dayTime >= nightStart or env.dayTime <= dayStart) or env.currentRain ~= nil or env.curRain ~= nil or (env.lastRainScale > 0.1 and env.timeSinceLastRain < 30);
 end;
 
 function CpManager:realTime10SecsChanged()

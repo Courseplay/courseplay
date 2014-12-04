@@ -53,7 +53,7 @@ function courseplay:drive(self, dt)
 
 	-- Turn on sound / control lights
 	if not self.isControlled then
-		self:setLightsVisibility(courseplay.lightsNeeded);
+		self:setLightsVisibility(CpManager.lightsNeeded);
 	end;
 
 	-- current position
