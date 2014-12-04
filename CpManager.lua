@@ -257,10 +257,13 @@ function CpManager:draw()
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- HELP MENU
+	-- TODO: addHelpTextFunction() is called, but drawMouseButtonHelp() isn't
 	if g_currentMission.controlledVehicle == nil and not g_currentMission.player.currentTool then
 		if self.playerOnFootMouseEnabled then
+			print('CpManager addHelpTextFunction(..., COURSEPLAY_MOUSEARROW_HIDE)');
 			g_currentMission:addHelpTextFunction(self.drawMouseButtonHelp, self, self.hudHelpMouseLineHeight, courseplay:loc('COURSEPLAY_MOUSEARROW_HIDE'));
-		elseif self.globalInfoTextHasContent then
+		elseif self.globalInfoText.hasContent then
+			print('CpManager addHelpTextFunction(..., COURSEPLAY_MOUSEARROW_SHOW)');
 			g_currentMission:addHelpTextFunction(self.drawMouseButtonHelp, self, self.hudHelpMouseLineHeight, courseplay:loc('COURSEPLAY_MOUSEARROW_SHOW'));
 		end;
 	end;
@@ -464,68 +467,6 @@ function CpManager:setupFieldScanInfo()
 	};
 end;
 
-function CpManager:renderGlobalInfoTexts(basePosY)
-	local git = courseplay.globalInfoText;
-	local line = 0;
-	for _,refIndexes in pairs(git.content) do
-		if line >= self.globalInfoTextMaxNum then
-			break;
-		end;
-
-		for refIdx,data in pairs(refIndexes) do
-			line = line + 1;
-
-			-- background
-			local bg = self.globalInfoTextOverlays[line];
-			bg:setColor(unpack(git.levelColors[data.level]));
-			local gfxPosY = basePosY + (line - 1) * (git.lineHeight + git.lineMargin);
-			bg:setPosition(bg.x, gfxPosY);
-			bg:setDimension(data.backgroundWidth, bg.height);
-			bg:render();
-
-			-- text
-			courseplay:setFontSettings('white', false);
-			local textPosY = gfxPosY + (git.lineHeight - git.fontSize) * 1.2; -- should be (lineHeight-fontSize)*0.5, but there seems to be some pixel/sub-pixel rendering error
-			renderText(git.textPosX, textPosY, git.fontSize, data.text);
-
-			-- button
-			local button = self.buttons.globalInfoText[line];
-			if button ~= nil then
-				button:setPosition(button.overlay.x, gfxPosY)
-
-				local currentColor = button.curColor;
-				local targetColor = currentColor;
-
-				button:setCanBeClicked(true);
-				button:setDisabled(data.vehicle.isBroken or data.vehicle.isControlled);
-				button:setParameter(data.vehicle);
-				if g_currentMission.controlledVehicle and g_currentMission.controlledVehicle == data.vehicle then
-					targetColor = 'activeGreen';
-					button:setCanBeClicked(false);
-				elseif button.isDisabled then
-					targetColor = 'whiteDisabled';
-				elseif button.isClicked then
-					targetColor = 'activeRed';
-				elseif button.isHovered then
-					targetColor = 'hover';
-				else
-					targetColor = 'white';
-				end;
-
-				-- set color
-				if currentColor ~= targetColor then
-					button:setColor(targetColor);
-				end;
-
-				-- NOTE: do not use button:render() here, as we neither need the button.show check, nor the hoveredButton var, nor the color setting. Simply rendering the overlay suffices
-				button.overlay:render();
-			end;
-		end;
-	end;
-
-	return line;
-end;
-
 function CpManager:renderFieldScanInfo()
 	local fsi = self.fieldScanInfo;
 
@@ -561,7 +502,8 @@ function CpManager:renderFieldScanInfo()
 	courseplay:setFontSettings('white', true, 'left');
 end;
 
-function CpManager.drawMouseButtonHelp(unusedSelf, posY, txt)
+function CpManager.drawMouseButtonHelp(self, posY, txt)
+	print('\tCpManager.drawMouseButtonHelp(self, posY, txt)');
 	local xLeft = g_currentMission.hudHelpTextPosX1;
 	local xRight = g_currentMission.hudHelpTextPosX2;
 
@@ -814,13 +756,75 @@ function CpManager:setGlobalInfoText(vehicle, refIdx, forceRemove)
 		if git.content[vehicle.rootNode] == nil then
 			git.content[vehicle.rootNode] = {};
 		end;
-		courseplay.globalInfoText.content[vehicle.rootNode][refIdx] = {
+		git.content[vehicle.rootNode][refIdx] = {
 			level = data.level,
 			text = text,
 			backgroundWidth = getTextWidth(git.fontSize, text) + git.backgroundPadding * 2.5,
 			vehicle = vehicle
 		};
 	end;
+end;
+
+function CpManager:renderGlobalInfoTexts(basePosY)
+	local git = self.globalInfoText;
+	local line = 0;
+	for _,refIndexes in pairs(git.content) do
+		if line >= self.globalInfoText.maxNum then
+			break;
+		end;
+
+		for refIdx,data in pairs(refIndexes) do
+			line = line + 1;
+
+			-- background
+			local bg = git.overlays[line];
+			bg:setColor(unpack(git.levelColors[data.level]));
+			local gfxPosY = basePosY + (line - 1) * (git.lineHeight + git.lineMargin);
+			bg:setPosition(bg.x, gfxPosY);
+			bg:setDimension(data.backgroundWidth, bg.height);
+			bg:render();
+
+			-- text
+			courseplay:setFontSettings('white', false);
+			local textPosY = gfxPosY + (git.lineHeight - git.fontSize) * 1.2; -- should be (lineHeight-fontSize)*0.5, but there seems to be some pixel/sub-pixel rendering error
+			renderText(git.textPosX, textPosY, git.fontSize, data.text);
+
+			-- button
+			local button = self.globalInfoText.buttons[line];
+			if button ~= nil then
+				button:setPosition(button.overlay.x, gfxPosY)
+
+				local currentColor = button.curColor;
+				local targetColor = currentColor;
+
+				button:setCanBeClicked(true);
+				button:setDisabled(data.vehicle.isBroken or data.vehicle.isControlled);
+				button:setParameter(data.vehicle);
+				if g_currentMission.controlledVehicle and g_currentMission.controlledVehicle == data.vehicle then
+					targetColor = 'activeGreen';
+					button:setCanBeClicked(false);
+				elseif button.isDisabled then
+					targetColor = 'whiteDisabled';
+				elseif button.isClicked then
+					targetColor = 'activeRed';
+				elseif button.isHovered then
+					targetColor = 'hover';
+				else
+					targetColor = 'white';
+				end;
+
+				-- set color
+				if currentColor ~= targetColor then
+					button:setColor(targetColor);
+				end;
+
+				-- NOTE: do not use button:render() here, as we neither need the button.show check, nor the hoveredButton var, nor the color setting. Simply rendering the overlay suffices
+				button.overlay:render();
+			end;
+		end;
+	end;
+
+	return line;
 end;
 
 

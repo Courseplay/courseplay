@@ -551,7 +551,7 @@ function courseplay:stop(self)
 	if g_server ~= nil then
 		courseplay:setInfoText(self, nil);
 
-		for refIdx,_ in pairs(courseplay.globalInfoText.msgReference) do
+		for refIdx,_ in pairs(CpManager.globalInfoText.msgReference) do
 			if self.cp.activeGlobalInfoTexts[refIdx] ~= nil then
 				CpManager:setGlobalInfoText(self, refIdx, true);
 			end;

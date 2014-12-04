@@ -1140,7 +1140,7 @@ function courseplay:update(dt)
 
 	-- we are in drive mode and single player /MP server
 	if isDriving and g_server ~= nil then
-		for refIdx,_ in pairs(courseplay.globalInfoText.msgReference) do
+		for refIdx,_ in pairs(CpManager.globalInfoText.msgReference) do
 			self.cp.hasSetGlobalInfoTextThisLoop[refIdx] = false;
 		end;
 
@@ -1262,7 +1262,7 @@ end
 
 function courseplay:preDelete()
 	if self.cp ~= nil and self.cp.numActiveGlobalInfoTexts ~= 0 then
-		for refIdx,_ in pairs(courseplay.globalInfoText.msgReference) do
+		for refIdx,_ in pairs(CpManager.globalInfoText.msgReference) do
 			if self.cp.activeGlobalInfoTexts[refIdx] ~= nil then
 				CpManager:setGlobalInfoText(self, refIdx, true);
 				-- print(('%s: preDelete(): self.cp.activeGlobalInfoTexts[%s]=%s'):format(nameNum(self), tostring(refIdx), tostring(self.cp.activeGlobalInfoTexts[refIdx])));
