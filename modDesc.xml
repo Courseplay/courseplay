@@ -1380,9 +1380,10 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<nl>Verkeerde trailer voor deze modus</nl>
 			<br>carreta incorreta para este modo</br>
 		</text>
-		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE"> <!-- missing: br, cz, fr, es, it, hu, nl, ru -->
+		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE"> <!-- missing: cz, fr, es, it, hu, nl, ru -->
 			<en>This vehicle type isn't supported in this mode.</en>
 			<de>Dieser Fahrzeugtyp wird in diesem Modus nicht unterstützt.</de>
+			<br>Este tipo de veículo não é suportado neste modo.</br> 
 		</text>
 		<text name="COURSEPLAY_ESL_NOT_SUPPORTED">
 			<en>ESLimiter version is not supported</en>
@@ -1954,9 +1955,10 @@ Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von B
 			<nl>Veld</nl>
 			<ru>поле №</ru>
 		</text>
-		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE"> <!-- missing: br, cz, es, fr, hu, it, nl, ru -->
+		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE"> <!-- missing: cz, es, fr, hu, it, nl, ru -->
 			<en>(currently loaded course)</en>
 			<de>(aktuell geladener Kurs)</de>
+			<br>(rota atual carregada)</br>
 		</text>
 		<text name="COURSEPLAY_FIELD_SCAN_IN_PROGRESS">
 			<en>Field scan in progress</en>
