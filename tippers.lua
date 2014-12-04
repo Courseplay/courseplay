@@ -150,7 +150,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 	-- MODE 5: TRANSFER
 	elseif vehicle.cp.mode == 5 then
 		-- For reverse testing and only for developers!!!!
-		if isImplement and courseplay.isDeveloper then
+		if isImplement and CpManager.isDeveloper then
 			hasWorkTool = true;
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
 		end;
@@ -591,10 +591,10 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 				mst:startFill(vehicle.cp.multiSiloSelectedFillType);
 				courseplay:debug(('%s: MultiSiloTrigger: selectedFillType = %s, isFilling = %s'):format(nameNum(vehicle), tostring(Fillable.fillTypeIntToName[mst.selectedFillType]), tostring(mst.isFilling)), 2);
 			elseif siloIsEmpty then
-				courseplay:setGlobalInfoText(vehicle, 'FARM_SILO_IS_EMPTY');
+				CpManager:setGlobalInfoText(vehicle, 'FARM_SILO_IS_EMPTY');
 			end;
 		else
-			courseplay:setGlobalInfoText(vehicle, 'FARM_SILO_NO_FILLTYPE');
+			CpManager:setGlobalInfoText(vehicle, 'FARM_SILO_NO_FILLTYPE');
 		end;
 	end;
 
@@ -1021,7 +1021,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 				-- Stop the vehicle, since we don't want to reverse into the BGA if it's full.
 				allowedToDrive = false;
 				-- Tell the user why we have stoped.
-				courseplay:setGlobalInfoText(vehicle, 'BGA_IS_FULL');
+				CpManager:setGlobalInfoText(vehicle, 'BGA_IS_FULL');
 
 			-- BGA TIPTRIGGER IS FULL
 			elseif isBGA and bgaIsFull and not vehicle.Waypoints[vehicle.recordnumber].rev and not vehicle.cp.isReverseBGATipping then

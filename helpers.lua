@@ -632,7 +632,7 @@ function courseplay:getAllowedCharacters()
 	for unicode=allowedSpan.from,allowedSpan.to do
 		prohibitedUnicodes[unicode] = prohibitedUnicodes[unicode] or false;
 		result[unicode] = not prohibitedUnicodes[unicode] and getCanRenderUnicode(unicode);
-		if courseplay.debugChannels[8] and getCanRenderUnicode(unicode) then
+		if courseplay.debugChannels and courseplay.debugChannels[8] and getCanRenderUnicode(unicode) then
 			print(string.format('allowedCharacters[%d]=%s (%q) (prohibited=%s, getCanRenderUnicode()=true)', unicode, tostring(result[unicode]), unicodeToUtf8(unicode), tostring(prohibitedUnicodes[unicode])));
 		end;
 	end;
@@ -681,14 +681,14 @@ function courseplay:getUtf8normalization()
 			if type(data) == "number" then
 				local utf8 = unicodeToUtf8(data);
 				result[utf8] = normal;
-				if courseplay.debugChannels[8] and getCanRenderUnicode(data) then
+				if false and getCanRenderUnicode(data) then
 					print(string.format("courseplay.utf8normalization[%q] = %q", utf8, normal));
 				end;
 			elseif type(data) == "table" then
 				for unicode=data[1],data[2] do
 					local utf8 = unicodeToUtf8(unicode);
 					result[utf8] = normal;
-					if courseplay.debugChannels[8] and getCanRenderUnicode(unicode) then
+					if false and getCanRenderUnicode(unicode) then
 						print(string.format("courseplay.utf8normalization[%q] = %q", utf8, normal));
 					end;
 				end;
@@ -934,26 +934,6 @@ function courseplay:getWorldDirection(fromX, fromY, fromZ, toX, toY, toZ)
 	return 0, 0, 0, 0;
 end;
 
--- TODO (Jakob): not ~really~ needed anymore
-function courseplay_manager:getSavegameFolderPath(index)
-	if index then
-		-- print(('getSavegameFolder(%d): "%ssavegame%d/"'):format(tostring(index), tostring(getUserProfileAppPath()), index));
-		return ('%ssavegame%d/'):format(tostring(getUserProfileAppPath()), index);
-	end;
-
-	if g_currentMission.missionInfo.savegameDirectory then
-		-- print(('getSavegameFolder(): g_currentMission.missionInfo.savegameDirectory=%q'):format(tostring(g_currentMission.missionInfo.savegameDirectory)));
-		return g_currentMission.missionInfo.savegameDirectory;
-	end;
-
-	if g_currentMission.missionInfo.savegameIndex then
-		-- print(('getSavegameFolder(): "%ssavegame%d/"'):format(tostring(getUserProfileAppPath()), g_currentMission.missionInfo.savegameIndex));
-		return ('%ssavegame%d/'):format(tostring(getUserProfileAppPath()), g_currentMission.missionInfo.savegameIndex);
-	end;
-
-	return;
-end;
-
 function courseplay.utils:setOverlayUVsSymmetric(overlay, col, line, numCols, numLines)
 	if overlay.overlayId and overlay.currentUVs == nil or overlay.currentUVs ~= { col, line, numCols, numLines } then
 		local bottomY = 1 - line / numLines;
@@ -985,3 +965,26 @@ function courseplay.utils:setOverlayUVsPx(overlay, UVs, textureSizeX, textureSiz
 		overlay.currentUVs = UVs;
 	end;
 end;
+
+function courseplay.utils:getColorFromPct(pct, colorMap)
+	local step = colorMap[2].pct - colorMap[1].pct;
+
+	if pct == 0 then
+		return unpack(colorMap[1].color);
+	end;
+
+	for i=2, #colorMap do
+		local data = colorMap[i];
+		if pct == data.pct then
+			return unpack(data.color);
+		end;
+
+		if pct < data.pct then
+			local lower = colorMap[i - 1];
+			local upper = colorMap[i];
+			local pctAlpha = (pct - lower.pct) / step;
+			return Utils.vector3ArrayLerp(lower.color, upper.color, pctAlpha);
+		end;
+	end;
+end;
+

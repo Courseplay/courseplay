@@ -2,10 +2,27 @@
 -- original algorithm by upsidedown, 24 Nov 2013 / incorporation into Courseplay by Jakob Tischler, 27 Nov 2013
 -- steep angle algorithm by fck54
 
-courseplay.fields.automaticScan = true;
-courseplay.fields.onlyScanOwnedFields = true;
-courseplay.fields.defaultScanStep = 5;
-courseplay.fields.scanStep = courseplay.fields.defaultScanStep;
+courseplay.fields = {};
+
+function courseplay.fields:setup()
+	print('## Courseplay: setting up fields (basic)');
+	self.fieldData = {};
+	self.numAvailableFields = 0;
+	self.fieldChannels = {};
+	self.lastChannel = 0;
+	self.curFieldScanIndex = 0;
+	self.allFieldsScanned = false;
+	self.ingameDataSetUp = false;
+	self.customFieldMaxNum = 150;
+	self.automaticScan = true;
+	self.onlyScanOwnedFields = true;
+	self.debugScannedFields = false;
+	self.debugCustomLoadedFields = false;
+	self.defaultScanStep = 5;
+	self.scanStep = 5;
+	self.seedUsageCalculator = {};
+	self.seedUsageCalculator.fieldsWithoutSeedData = {};
+end;
 
 function courseplay.fields:setUpFieldsIngameData()
 	--self = courseplay.fields
@@ -290,7 +307,7 @@ function courseplay.fields:setSingleFieldEdgePath(initObject, initX, initZ, scan
 	end;
 end;
 
-courseplay.fields.getPointDirection = courseplay.generation.getPointDirection;
+courseplay.fields.getPointDirection = courseplay.generation.getPointDirection; -- TODO (Jakob): generateCourse is sourced after fields, so this shouldn't really work!
 
 function courseplay.fields:getPolygonData(poly, px, pz, useC, skipArea, skipDimensions)
 	-- This function gets a polygon's area, a boolean if x,z is inside the polygon, the poly's dimensions and the poly's direction (clockwise vs. counter-clockwise).
@@ -437,8 +454,8 @@ function courseplay.fields:openOrCreateXML(forceCreation)
 	forceCreation = forceCreation or false;
 
 	local xmlFile;
-	if courseplay.cpFieldsXmlFilePath ~= nil then
-		local filePath = courseplay.cpFieldsXmlFilePath;
+	if CpManager.cpFieldsXmlFilePath ~= nil then
+		local filePath = CpManager.cpFieldsXmlFilePath;
 		if fileExists(filePath) and (not forceCreation) then
 			xmlFile = loadXMLFile('fieldsFile', filePath);
 		else
@@ -455,8 +472,8 @@ function courseplay.fields:saveAllCustomFields()
 	-- saves fields to xml-file
 	-- opening the file with io.open will delete its content...
 	if g_server ~= nil then
-		if courseplay.cpFieldsXmlFilePath ~= nil and self.numAvailableFields > 0 then
-			local file = io.open(courseplay.cpFieldsXmlFilePath, 'w');
+		if CpManager.cpFieldsXmlFilePath ~= nil and self.numAvailableFields > 0 then
+			local file = io.open(CpManager.cpFieldsXmlFilePath, 'w');
 			if file ~= nil then
 				file:write('<?xml version="1.0" encoding="utf-8" standalone="no" ?>\n<XML>\n');
 
@@ -473,7 +490,7 @@ function courseplay.fields:saveAllCustomFields()
 				file:write('\t</fields>\n</XML>');
 				file:close();
 			else
-				print("Error: Courseplay's custom fields could not be saved to " .. courseplay.cpFieldsXmlFilePath);
+				print("Error: Courseplay's custom fields could not be saved to " .. CpManager.cpFieldsXmlFilePath);
 			end;
 		end;
 	end;
@@ -483,9 +500,9 @@ end;
 function courseplay.fields:loadAllCustomFields()
 	--self = courseplay.fields
 	if g_server ~= nil then
-		if courseplay.cpFieldsXmlFilePath ~= nil then
-			if fileExists(courseplay.cpFieldsXmlFilePath) then
-				local xmlFile = loadXMLFile("fieldsFile", courseplay.cpFieldsXmlFilePath);
+		if CpManager.cpFieldsXmlFilePath ~= nil then
+			if fileExists(CpManager.cpFieldsXmlFilePath) then
+				local xmlFile = loadXMLFile("fieldsFile", CpManager.cpFieldsXmlFilePath);
 				local i = 0;
 				while true do
 					local key = string.format('XML.fields.field(%d)', i);

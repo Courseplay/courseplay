@@ -968,7 +968,7 @@ function courseplay:unload_combine(self, dt)
 
 	if self.showWaterWarning then
 		allowedToDrive = false
-		courseplay:setGlobalInfoText(self, 'WATER');
+		CpManager:setGlobalInfoText(self, 'WATER');
 	end
 
 	-- check traffic and calculate speed

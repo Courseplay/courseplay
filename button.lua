@@ -28,7 +28,9 @@ function courseplay.button:new(vehicle, hudPage, img, functionToCall, parameter,
 		isToggleButton = false;
 	end;
 
-	self.vehicle = vehicle;
+	if not vehicle.isCourseplayManager then
+		self.vehicle = vehicle;
+	end;
 	self.page = hudPage; 
 	self.functionToCall = functionToCall; 
 	self:setParameter(parameter);
@@ -67,7 +69,7 @@ function courseplay.button:new(vehicle, hudPage, img, functionToCall, parameter,
 	end;
 
 	if vehicle.isCourseplayManager then
-		table.insert(vehicle.buttons[hudPage], self);
+		table.insert(vehicle[hudPage].buttons, self);
 	else
 		table.insert(vehicle.cp.buttons[hudPage], self);
 	end;
@@ -100,7 +102,7 @@ function courseplay.button:setSpecialButtonUVs()
 	elseif fn == 'toggleDebugChannel' then
 		self:setSpriteSectionUVs('recordingStop');
 
-	-- courseplay_manager buttons
+	-- CpManager buttons
 	elseif fn == 'goToVehicle' then
 		courseplay.utils:setOverlayUVsPx(self.overlay, courseplay.hud.pageButtonsUVsPx[7], txtSizeX, txtSizeY);
 	end;

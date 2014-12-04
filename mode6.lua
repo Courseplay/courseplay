@@ -31,7 +31,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 	end
 	if (self.recordnumber == self.cp.stopWork or self.cp.lastRecordnumber == self.cp.stopWork) and self.cp.abortWork == nil and not self.cp.isLoaded and not isFinishingWork and self.cp.wait then
 		allowedToDrive = false
-		courseplay:setGlobalInfoText(self, 'WORK_END');
+		CpManager:setGlobalInfoText(self, 'WORK_END');
 		hasFinishedWork = true
 	end
 
@@ -155,7 +155,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 				if fillLevelPct == 100 and not self.cp.hasUnloadingRefillingCourse then
 					if self.cp.automaticUnloadingOnField then
 						self.cp.unloadOrder = true
-						courseplay:setGlobalInfoText(self, 'UNLOADING_BALE');
+						CpManager:setGlobalInfoText(self, 'UNLOADING_BALE');
 					else
 						specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,nil); --TODO: unclear
 					end
@@ -381,7 +381,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 					--courseplay:debug(string.format("Abort: %d StopWork: %d",self.cp.abortWork,self.cp.stopWork), 12)
 				elseif not self.cp.hasUnloadingRefillingCourse and not self.cp.automaticUnloadingOnField then
 					allowedToDrive = false;
-					courseplay:setGlobalInfoText(self, 'NEEDS_UNLOADING');
+					CpManager:setGlobalInfoText(self, 'NEEDS_UNLOADING');
 				elseif not self.cp.hasUnloadingRefillingCourse and self.cp.automaticUnloadingOnField then
 					allowedToDrive = false;
 				end;
@@ -481,7 +481,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 							if isTurnedOn then
 								tool:setIsTurnedOn(false);
 							end;
-							courseplay:setGlobalInfoText(self, 'WEATHER');
+							CpManager:setGlobalInfoText(self, 'WEATHER');
 						end
 
 					end

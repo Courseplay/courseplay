@@ -11,7 +11,7 @@ function courseplay:handleMode3(vehicle, fillLevelPct, allowedToDrive, dt)
 		end;
 
 		if vehicle.cp.wait and vehicle.cp.lastRecordnumber == vehicle.cp.waitPoints[1] then
-			courseplay:setGlobalInfoText(vehicle, 'OVERLOADING_POINT');
+			CpManager:setGlobalInfoText(vehicle, 'OVERLOADING_POINT');
 
 			local driveOn = false
 			if fillLevelPct > 0 then

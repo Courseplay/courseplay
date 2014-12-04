@@ -243,7 +243,9 @@ function courseplay:buttonsActiveEnabled(vehicle, section)
 		if vehicle.cp.hud.showSelectedFieldEdgePathButton then
 			vehicle.cp.hud.showSelectedFieldEdgePathButton:setActive(vehicle.cp.fieldEdge.selectedField.show);
 		end;
-		vehicle.cp.suc.toggleHudButton:setActive(vehicle.cp.suc.active);
+		if vehicle.cp.suc.toggleHudButton then
+			vehicle.cp.suc.toggleHudButton:setActive(vehicle.cp.suc.active);
+		end;
 
 	elseif vehicle.cp.hud.currentPage == 9 and (anySection or section == 'shovel') then
 		for _,button in pairs(vehicle.cp.buttons[9]) do
@@ -450,7 +452,7 @@ end;
 
 function courseplay:changeVisualWaypointsMode(vehicle, changeBy, force)
 	vehicle.cp.visualWaypointsMode = force or courseplay:varLoop(vehicle.cp.visualWaypointsMode, changeBy, 4, 1);
-	courseplay.utils.signs:setSignsVisibility(vehicle);
+	courseplay.signs:setSignsVisibility(vehicle);
 end;
 
 
@@ -675,7 +677,7 @@ function courseplay:copyCourse(vehicle)
 		end;
 		vehicle.cp.recordingTimer = 1;
 
-		courseplay.utils.signs:updateWaypointSigns(vehicle, 'current');
+		courseplay.signs:updateWaypointSigns(vehicle, 'current');
 
 		--reset variables
 		vehicle.cp.selectedDriverNumber = 0;
@@ -1143,9 +1145,9 @@ end;
 function courseplay:reloadCoursesFromXML(vehicle)
 	courseplay:debug("reloadCoursesFromXML()", 8);
 	if g_server ~= nil then
-		courseplay_manager:load_courses();
+		CpManager:load_courses();
 		courseplay:debug(tableShow(g_currentMission.cp_courses, "g_cM cp_courses", 8), 8);
-		courseplay:debug("g_currentMission.cp_courses = courseplay_manager:load_courses()", 8);
+		courseplay:debug("g_currentMission.cp_courses = CpManager:load_courses()", 8);
 		if not vehicle:getIsCourseplayDriving() then
 			local loadedCoursesBackup = vehicle.cp.loadedCourses;
 			courseplay:clearCurrentLoadedCourse(vehicle);
@@ -1231,7 +1233,7 @@ function courseplay:goToVehicle(curVehicle, targetVehicle)
 	-- print(string.format("%s: goToVehicle(): targetVehicle=%q", nameNum(curVehicle), nameNum(targetVehicle)));
 	g_client:getServerConnection():sendEvent(VehicleEnterRequestEvent:new(targetVehicle, g_settingsNickname));
 	g_currentMission.isPlayerFrozen = false;
-	courseplay_manager.playerOnFootMouseEnabled = false;
+	CpManager.playerOnFootMouseEnabled = false;
 	InputBinding.setShowMouseCursor(targetVehicle.cp.mouseCursorActive);
 end;
 
@@ -1397,7 +1399,7 @@ function courseplay:showFieldEdgePath(vehicle, pathType)
 end;
 
 function courseplay:toggleDrawWaypointsLines(vehicle)
-	if not courseplay.isDeveloper then return; end;
+	if not CpManager.isDeveloper then return; end;
 	vehicle.cp.drawWaypointsLines = not vehicle.cp.drawWaypointsLines;
 	vehicle.cp.toggleDrawWaypointsLinesButton:setActive(vehicle.cp.drawWaypointsLines);
 end;
@@ -1539,7 +1541,7 @@ end;
 function courseplay:toggleIngameMapIconShowText()
 	courseplay.ingameMapIconShowText = not courseplay.ingameMapIconShowText;
 	-- for _,vehicle in pairs(g_currentMission.steerables) do
-	for _,vehicle in pairs(courseplay.activeCoursePlayers) do
+	for _,vehicle in pairs(CpManager.activeCoursePlayers) do
 		if vehicle.cp.ingameMapHotSpot then
 			courseplay:deleteMapHotspot(vehicle);
 			courseplay:createMapHotspot(vehicle);

@@ -107,3 +107,217 @@ function courseplay:checkForChangeAndBroadcast(self, stringName, variable , vari
 	return variableMemory
 
 end
+
+
+
+---------------------------------
+
+
+
+--
+-- based on PlayerJoinFix
+--
+-- SFM-Modding
+-- @author:  Manuel Leithner
+-- @date:    01/08/11
+-- @version: v1.1
+-- @history: v1.0 - initial implementation
+--           v1.1 - adaption to courseplay
+--
+
+local modName = g_currentModName;
+local Server_sendObjects_old = Server.sendObjects;
+
+function Server:sendObjects(connection, x, y, z, viewDistanceCoeff)
+	connection:sendEvent(CourseplayJoinFixEvent:new());
+
+	Server_sendObjects_old(self, connection, x, y, z, viewDistanceCoeff);
+end
+
+
+CourseplayJoinFixEvent = {};
+CourseplayJoinFixEvent_mt = Class(CourseplayJoinFixEvent, Event);
+
+InitEventClass(CourseplayJoinFixEvent, "CourseplayJoinFixEvent");
+
+function CourseplayJoinFixEvent:emptyNew()
+	local self = Event:new(CourseplayJoinFixEvent_mt);
+	self.className = modName .. ".CourseplayJoinFixEvent";
+	return self;
+end
+
+function CourseplayJoinFixEvent:new()
+	local self = CourseplayJoinFixEvent:emptyNew()
+	return self;
+end
+
+function CourseplayJoinFixEvent:writeStream(streamId, connection)
+
+
+	if not connection:getIsServer() then
+		--courseplay:debug("manager transfering courses", 8);
+		--transfer courses
+		local course_count = 0
+		for _,_ in pairs(g_currentMission.cp_courses) do
+			course_count = course_count + 1
+		end
+		streamDebugWriteInt32(streamId, course_count)
+		print(string.format("\t### CourseplayMultiplayer: writing %d courses ", course_count ))
+		for id, course in pairs(g_currentMission.cp_courses) do
+			streamDebugWriteString(streamId, course.name)
+			streamDebugWriteString(streamId, course.uid)
+			streamDebugWriteString(streamId, course.type)
+			streamDebugWriteInt32(streamId, course.id)
+			streamDebugWriteInt32(streamId, course.parent)
+			streamDebugWriteInt32(streamId, #(course.waypoints))
+			for w = 1, #(course.waypoints) do
+				streamDebugWriteFloat32(streamId, course.waypoints[w].cx)
+				streamDebugWriteFloat32(streamId, course.waypoints[w].cz)
+				streamDebugWriteFloat32(streamId, course.waypoints[w].angle)
+				streamDebugWriteBool(streamId, course.waypoints[w].wait)
+				streamDebugWriteBool(streamId, course.waypoints[w].rev)
+				streamDebugWriteBool(streamId, course.waypoints[w].crossing)
+				streamDebugWriteInt32(streamId, course.waypoints[w].speed)
+
+				streamDebugWriteBool(streamId, course.waypoints[w].generated)
+				streamDebugWriteString(streamId, (course.waypoints[w].laneDir or ""))
+				streamDebugWriteString(streamId, course.waypoints[w].turn)
+				streamDebugWriteBool(streamId, course.waypoints[w].turnStart)
+				streamDebugWriteBool(streamId, course.waypoints[w].turnEnd)
+				streamDebugWriteInt32(streamId, course.waypoints[w].ridgeMarker)
+			end
+		end
+				
+		local folderCount = 0
+		for _,_ in pairs(g_currentMission.cp_folders) do
+			folderCount = folderCount + 1
+		end
+		streamDebugWriteInt32(streamId, folderCount)
+		print(string.format("\t### CourseplayMultiplayer: writing %d folders ", folderCount ))
+		for id, folder in pairs(g_currentMission.cp_folders) do
+			streamDebugWriteString(streamId, folder.name)
+			streamDebugWriteString(streamId, folder.uid)
+			streamDebugWriteString(streamId, folder.type)
+			streamDebugWriteInt32(streamId, folder.id)
+			streamDebugWriteInt32(streamId, folder.parent)
+		end
+				
+		local fieldsCount = 0
+		for _, field in pairs(courseplay.fields.fieldData) do
+			if field.isCustom then
+				fieldsCount = fieldsCount+1
+			end
+		end
+		streamDebugWriteInt32(streamId, fieldsCount)
+		print(string.format("\t### CourseplayMultiplayer: writing %d custom fields ", fieldsCount))
+		for id, course in pairs(courseplay.fields.fieldData) do
+			if course.isCustom then
+				streamDebugWriteString(streamId, course.name)
+				streamDebugWriteInt32(streamId, course.numPoints)
+				streamDebugWriteBool(streamId, course.isCustom)
+				streamDebugWriteInt32(streamId, course.fieldNum)
+				streamDebugWriteInt32(streamId, #(course.points))
+				for p = 1, #(course.points) do
+					streamDebugWriteFloat32(streamId, course.points[p].cx)
+					streamDebugWriteFloat32(streamId, course.points[p].cy)
+					streamDebugWriteFloat32(streamId, course.points[p].cz)
+				end
+			end
+		end
+	end;
+end
+
+function CourseplayJoinFixEvent:readStream(streamId, connection)
+	if connection:getIsServer() then
+		local course_count = streamDebugReadInt32(streamId)
+		print(string.format("\t### CourseplayMultiplayer: reading %d couses ", course_count ))
+		g_currentMission.cp_courses = {}
+		for i = 1, course_count do
+			--courseplay:debug("got course", 8);
+			local course_name = streamDebugReadString(streamId)
+			local courseUid = streamDebugReadString(streamId)
+			local courseType = streamDebugReadString(streamId)
+			local course_id = streamDebugReadInt32(streamId)
+			local courseParent = streamDebugReadInt32(streamId)
+			local wp_count = streamDebugReadInt32(streamId)
+			local waypoints = {}
+			for w = 1, wp_count do
+				--courseplay:debug("got waypoint", 8);
+				local cx = streamDebugReadFloat32(streamId)
+				local cz = streamDebugReadFloat32(streamId)
+				local angle = streamDebugReadFloat32(streamId)
+				local wait = streamDebugReadBool(streamId)
+				local rev = streamDebugReadBool(streamId)
+				local crossing = streamDebugReadBool(streamId)
+				local speed = streamDebugReadInt32(streamId)
+
+				local generated = streamDebugReadBool(streamId)
+				local dir = streamDebugReadString(streamId)
+				local turn = streamDebugReadString(streamId)
+				local turnStart = streamDebugReadBool(streamId)
+				local turnEnd = streamDebugReadBool(streamId)
+				local ridgeMarker = streamDebugReadInt32(streamId)
+				
+				local wp = {
+					cx = cx, 
+					cz = cz, 
+					angle = angle, 
+					wait = wait, 
+					rev = rev, 
+					crossing = crossing, 
+					speed = speed,
+					generated = generated,
+					laneDir = dir,
+					turn = turn,
+					turnStart = turnStart,
+					turnEnd = turnEnd,
+					ridgeMarker = ridgeMarker 
+				};
+				table.insert(waypoints, wp)
+			end
+			local course = { id = course_id, uid = courseUid, type = courseType, name = course_name, nameClean = courseplay:normalizeUTF8(course_name), waypoints = waypoints, parent = courseParent }
+			g_currentMission.cp_courses[course_id] = course
+			g_currentMission.cp_sorted = courseplay.courses.sort()
+		end
+		
+		local folderCount = streamDebugReadInt32(streamId)
+		print(string.format("\t### CourseplayMultiplayer: reading %d folders ", folderCount ))
+		g_currentMission.cp_folders = {}
+		for i = 1, folderCount do
+			local folderName = streamDebugReadString(streamId)
+			local folderUid = streamDebugReadString(streamId)
+			local folderType = streamDebugReadString(streamId)
+			local folderId = streamDebugReadInt32(streamId)
+			local folderParent = streamDebugReadInt32(streamId)
+			local folder = { id = folderId, uid = folderUid, type = folderType, name = folderName, nameClean = courseplay:normalizeUTF8(folderName), parent = folderParent }
+			g_currentMission.cp_folders[folderId] = folder
+			g_currentMission.cp_sorted = courseplay.courses.sort(g_currentMission.cp_courses, g_currentMission.cp_folders, 0, 0)
+		end
+		
+		local fieldsCount = streamDebugReadInt32(streamId)		
+		print(string.format("\t### CourseplayMultiplayer: reading %d custom fields ", fieldsCount))
+		courseplay.fields.fieldData = {}
+		for i = 1, fieldsCount do
+			local name = streamDebugReadString(streamId)
+			local numPoints = streamDebugReadInt32(streamId)
+			local isCustom = streamDebugReadBool(streamId)
+			local fieldNum = streamDebugReadInt32(streamId)
+			local ammountPoints = streamDebugReadInt32(streamId)
+			local waypoints = {}
+			for w = 1, ammountPoints do 
+				local cx = streamDebugReadFloat32(streamId)
+				local cy = streamDebugReadFloat32(streamId)
+				local cz = streamDebugReadFloat32(streamId)
+				local wp = { cx = cx, cy = cy, cz = cz}
+				table.insert(waypoints, wp)
+			end
+			local field = { name = name, numPoints = numPoints, isCustom = isCustom, fieldNum = fieldNum, points = waypoints}
+			courseplay.fields.fieldData[fieldNum] = field
+		end
+		print("\t### CourseplayMultiplayer: courses/folders reading end")
+	end;
+end
+
+function CourseplayJoinFixEvent:run(connection)
+	--courseplay:debug("CourseplayJoinFixEvent Run function should never be called", 8);
+end;

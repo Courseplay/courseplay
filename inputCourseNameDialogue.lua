@@ -171,7 +171,7 @@ function inputCourseNameDialogue:onSaveClick()
 
 		courseplay.courses.save_course(vehicle.cp.currentCourseId, nil, true)
 		courseplay.settings.setReloadCourseItems()
-		courseplay.utils.signs:updateWaypointSigns(vehicle);
+		courseplay.signs:updateWaypointSigns(vehicle);
 
 	elseif vehicle.cp.saveWhat == 'folder' then
 		if self.textInputElement ~= nil then
@@ -195,7 +195,7 @@ function inputCourseNameDialogue:onSaveClick()
 		courseplay.courses.save_folder(folderID, nil, true)
 		courseplay.settings.add_folder(folderID)
 		courseplay.settings.setReloadCourseItems()
-		courseplay.utils.signs:updateWaypointSigns(vehicle);
+		courseplay.signs:updateWaypointSigns(vehicle);
 
 	elseif vehicle.cp.saveWhat == 'filter' then
 		if self.textInputElement ~= nil then
@@ -262,3 +262,8 @@ function inputCourseNameDialogue:update(dt)
 	end;
 end; --END update()
 
+
+
+
+g_inputCourseNameDialogue = inputCourseNameDialogue:new();
+g_gui:loadGui(courseplay.path .. 'inputCourseNameDialogue.xml', 'inputCourseNameDialogue', g_inputCourseNameDialogue);

@@ -1,4 +1,6 @@
-function courseplay:setUpDebugChannels()
+function CpManager:setUpDebugChannels()
+	print('## Courseplay: setting up debug channels');
+
 	-- DEBUG CHANNELS
 	courseplay.numAvailableDebugChannels = 24;
 	courseplay.numDebugChannels = 20;

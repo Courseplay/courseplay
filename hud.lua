@@ -1,4 +1,232 @@
-﻿function courseplay:setHudContent(vehicle)
+﻿-- ####################################################################################################
+-- SETUP
+courseplay.hud = {};
+courseplay.hud.infoBasePosX = 0.433;
+courseplay.hud.infoBasePosY = 0.002;
+
+function courseplay.hud:setup()
+	-- self = courseplay.hud
+
+	print('## Courseplay: setting up hud');
+
+	self.infoBasePosX = courseplay.hud.infoBasePosX;
+	self.infoBasePosY = courseplay.hud.infoBasePosY;
+	self.infoBaseWidth = 0.512;
+	self.infoBaseHeight = 0.512;
+	self.indent = 16/1920 * 1.25; -- buttonWidth (16px) + 1/4 margin
+
+	-- COLORS NOTE:
+	-- Because Giants fucked up big time, overlay colors that don't use full values are displayed way brighter than they should.
+	-- Until Giants fixes this, we're gonna have to use fake color values that effectively produce our desired colors
+	self.colors = {
+		white =         { 255/255, 255/255, 255/255, 1.00 };
+		whiteInactive = { 255/255, 255/255, 255/255, 0.75 };
+		whiteDisabled = { 255/255, 255/255, 255/255, 0.15 };
+		hover =         {   4/255,  98/255, 180/255, 1.00 }; -- IS FAKE COLOR! ORIG COLOR: {  32/255, 168/255, 219/255, 1.00 };
+		activeGreen =   {  43/255, 205/255,  10/255, 1.00 }; -- IS FAKE COLOR! ORIG COLOR: { 110/255, 235/255,  56/255, 1.00 };
+		activeRed =     { 153/255,  22/255,  19/255, 1.00 }; -- IS FAKE COLOR! ORIG COLOR: { 206/255,  83/255,  77/255, 1.00 };
+		closeRed =      { 116/255,   0/255,   0/255, 1.00 }; -- IS FAKE COLOR! ORIG COLOR: { 180/255,   0/255,   0/255, 1.00 };
+		warningRed =    { 222/255,   2/255,   3/255, 1.00 }; -- IS FAKE COLOR! ORIG COLOR: { 240/255,  25/255,  25/255, 1.00 };
+		shadow =        {   4/255,   4/255,   4/255, 1.00 }; -- IS FAKE COLOR! ORIG COLOR: {  35/255,  35/255,  35/255, 1.00 };
+		textDark =      {   1/255,   1/255,   1/255, 1.00 }; -- IS FAKE COLOR! ORIG COLOR: {  15/255,  15/255,  15/255, 1.00 };
+	};
+
+	self.pagesPerMode = {
+		--Pg 0		  Pg 1		  Pg 2		  Pg 3		   Pg 4			Pg 5		Pg 6		Pg 7		Pg 8		 Pg 9
+		{ [0] = true, [1] = true, [2] = true, [3] = true,  [4] = false, [5] = true, [6] = true, [7] = true, [8] = false, [9] = false }; --Mode 1
+		{ [0] = true, [1] = true, [2] = true, [3] = true,  [4] = true,  [5] = true, [6] = true, [7] = true, [8] = false, [9] = false }; --Mode 2
+		{ [0] = true, [1] = true, [2] = true, [3] = true,  [4] = true,  [5] = true, [6] = true, [7] = true, [8] = false, [9] = false }; --Mode 3
+		{ [0] = true, [1] = true, [2] = true, [3] = true,  [4] = false, [5] = true, [6] = true, [7] = true, [8] = true,  [9] = false }; --Mode 4
+		{ [0] = true, [1] = true, [2] = true, [3] = false, [4] = false, [5] = true, [6] = true, [7] = true, [8] = false, [9] = false }; --Mode 5
+		{ [0] = true, [1] = true, [2] = true, [3] = false, [4] = false, [5] = true, [6] = true, [7] = true, [8] = true,  [9] = false }; --Mode 6
+		{ [0] = true, [1] = true, [2] = true, [3] = true,  [4] = false, [5] = true, [6] = true, [7] = true, [8] = false, [9] = false }; --Mode 7
+		{ [0] = true, [1] = true, [2] = true, [3] = true,  [4] = false, [5] = true, [6] = true, [7] = true, [8] = false, [9] = false }; --Mode 8
+		{ [0] = true, [1] = true, [2] = true, [3] = false, [4] = false, [5] = true, [6] = true, [7] = true, [8] = false, [9] = true  }; --Mode 9
+	};
+	self.visibleArea = {
+		x1 = self.infoBasePosX;
+		x2 = self.infoBasePosX + 0.320;
+		y1 = self.infoBasePosY;
+		y2 = --[[0.30463;]] --[[0.002 + 0.271 + 32/1080 + 0.002;]] self.infoBasePosY + 0.271 + 32/1080 + 0.002;
+	};
+	self.visibleArea.y2InclSuc = self.visibleArea.y2 + 0.15;
+	self.visibleArea.width = self.visibleArea.x2 - self.visibleArea.x1;
+	self.infoBaseCenter = (self.visibleArea.x1 + self.visibleArea.x2)/2;
+
+	--print(string.format("\t\tposX=%f,posY=%f, visX1=%f,visX2=%f, visY1=%f,visY2=%f, visCenter=%f", self.infoBasePosX, self.infoBasePosY, self.visibleArea.x1, self.visibleArea.x2, self.visibleArea.y1, self.visibleArea.y2, self.infoBaseCenter));
+
+	-- lines and text
+	self.linesPosY = {};
+	self.linesButtonPosY = {};
+	self.numPages = 9;
+	self.numLines = 8;
+	self.lineHeight = 0.021;
+	for l=1,self.numLines do
+		if l == 1 then
+			self.linesPosY[l] = self.infoBasePosY + 0.215;
+		else
+			self.linesPosY[l] = self.linesPosY[1] - ((l-1) * self.lineHeight);
+		end;
+		self.linesButtonPosY[l] = self.linesPosY[l] - 0.001;
+	end;
+	self.fontSizes = {
+		seedUsageCalculator = 0.015;
+		hudTitle = 0.021;
+		contentTitle = 0.016;
+		contentValue = 0.014; 
+		bottomInfo = 0.015;
+		version = 0.01;
+		infoText = 0.015;
+		fieldScanTitle = 0.021;
+		fieldScanData = 0.018;
+	};
+
+	self.col1posX = self.infoBasePosX + 0.005;
+	self.col2posX = {
+		[0] = self.infoBasePosX + 0.122,
+		[1] = self.infoBasePosX + 0.142,
+		[2] = self.infoBasePosX + 0.122,
+		[3] = self.infoBasePosX + 0.122,
+		[4] = self.infoBasePosX + 0.122,
+		[5] = self.infoBasePosX + 0.122,
+		[6] = self.infoBasePosX + 0.182,
+		[7] = self.infoBasePosX + 0.192,
+		[8] = self.infoBasePosX + 0.142,
+		[9] = self.infoBasePosX + 0.230,
+	};
+	self.col2posXforce = {
+		[0] = {
+			[4] = self.infoBasePosX + 0.212;
+			[5] = self.infoBasePosX + 0.212;
+		};
+		[1] = {
+			[4] = self.infoBasePosX + 0.182;
+			[5] = self.infoBasePosX + 0.182;
+			[6] = self.infoBasePosX + 0.182;
+		};
+		[7] = {
+			[5] = self.infoBasePosX + 0.105;
+			[6] = self.infoBasePosX + 0.105;
+		};
+		[8] = {
+			[6] = self.infoBasePosX + 0.265;
+		};
+	};
+	self.buttonPosX = {
+		[-1] = self.infoBasePosX + 0.255;
+		[0]  = self.infoBasePosX + 0.270;
+		[1]  = self.infoBasePosX + 0.285;
+		[2]  = self.infoBasePosX + 0.300;
+	};
+
+	self.iconSpritePath = Utils.getFilename('img/iconSprite.png', courseplay.path);
+	self.iconSpriteSize = {
+		x = 256;
+		y = 512;
+	};
+
+	self.modeButtonsUVsPx = {
+		[1] = { 112, 72, 144,40 };
+		[2] = { 148, 72, 180,40 };
+		[3] = { 184, 72, 216,40 };
+		[4] = { 220, 72, 252,40 };
+		[5] = {   4,108,  36,76 };
+		[6] = {  40,108,  72,76 };
+		[7] = {  76,108, 108,76 };
+		[8] = { 112,108, 144,76 };
+		[9] = { 148,108, 180,76 };
+	};
+
+	self.pageButtonsUVsPx = {
+		[0] = {   4,36,  36, 4 };
+		[1] = {  40,36,  72, 4 };
+		[2] = {  76,36, 108, 4 };
+		[3] = { 112,36, 144, 4 };
+		[4] = { 148,36, 180, 4 };
+		[5] = { 184,36, 216, 4 };
+		[6] = { 220,36, 252, 4 };
+		[7] = {   4,72,  36,40 };
+		[8] = {  40,72,  72,40 };
+		[9] = {  76,72, 108,40 };
+	};
+
+	self.buttonUVsPx = {
+		calculator       = {  76,288, 108,256 };
+		cancel           = {  40,288,  72,256 };
+		close            = { 148,216, 180,184 };
+		copy             = { 184,180, 216,148 };
+		courseLoadAppend = {   4,252,  36,220 };
+		courseAdd        = {  40,252,  72,220 };
+		eye              = { 148,180, 180,148 };
+		delete           = { 184,216, 216,184 };
+		folderNew        = { 220,216, 252,184 };
+		folderParentFrom = {  76,252, 108,220 };
+		folderParentTo   = { 112,252, 144,220 };
+		headlandDirCW    = {   4,324,  36,292 };
+		headlandDirCCW   = {  40,324,  72,292 };
+		headlandOrdBef   = { 112,288, 176,256 };
+		headlandOrdAft   = { 184,288, 248,256 };
+		generateCourse   = {  40, 72,  72, 40 };
+		navUp            = {  76,216, 108,184 };
+		navDown          = { 112,216, 144,184 };
+		navLeft          = {   4,216,  36,184 };
+		navRight         = {  40,216,  72,184 };
+		navPlus          = { 148,252, 180,220 };
+		navMinus         = { 184,252, 216,220 };
+		recordingCross   = {  76,180, 108,148 };
+		recordingDelete  = { 148,360, 180,328 };
+		recordingPause   = {  40,360,  72,328 };
+		recordingPlay    = { 220,324, 252,292 };
+		recordingReverse = { 112,360, 144,328 };
+		recordingStop    = {  76,360, 108,328 };
+		recordingTurn    = {   4,360,  36,328 };
+		recordingWait    = {  40,180,  72,148 };
+		refresh          = { 220,252, 252,220 };
+		save             = { 220,180, 252,148 };
+		search           = {   4,288,  36,256 };
+		shovelLoading    = {  76,324, 108,292 };
+		shovelUnloading  = { 112,324, 144,292 };
+		shovelPreUnload  = { 148,324, 180,292 };
+		shovelTransport  = { 184,324, 216,292 };
+	};
+
+	-- bottom info
+	self.bottomInfo = {};
+	self.bottomInfo.iconHeight = 24 / 1080;
+	self.bottomInfo.iconWidth = self.bottomInfo.iconHeight / g_screenAspectRatio;
+	self.bottomInfo.textPosY = self.infoBasePosY + 41 / 1080;
+	self.bottomInfo.iconPosY = self.bottomInfo.textPosY - 0.0059;
+	self.bottomInfo.modeIconX = self.col1posX;
+	self.bottomInfo.modeTextX = self.bottomInfo.modeIconX + self.bottomInfo.iconWidth * 1.25;
+	self.bottomInfo.waypointIconX = self.visibleArea.x2 - 0.120;
+	self.bottomInfo.waypointTextX = self.bottomInfo.waypointIconX + self.bottomInfo.iconWidth * 1.25;
+	self.bottomInfo.waitPointsIconX = self.visibleArea.x2 - 0.06;
+	self.bottomInfo.waitPointsTextX = self.bottomInfo.waitPointsIconX + self.bottomInfo.iconWidth * 1.25;
+	self.bottomInfo.crossingPointsIconX = self.visibleArea.x2 - 0.034;
+	self.bottomInfo.crossingPointsTextX = self.bottomInfo.crossingPointsIconX + self.bottomInfo.iconWidth * 1.25;
+	self.bottomInfo.modeUVsPx = {
+		[1] = { 184,108, 216, 76 };
+		[2] = { 220,108, 252, 76 };
+		[3] = {   4,144,  36,112 };
+		[4] = {  40,144,  72,112 };
+		[5] = {  76,144, 108,112 };
+		[6] = { 112,144, 144,112 };
+		[7] = { 148,144, 180,112 };
+		[8] = { 184,144, 216,112 };
+		[9] = { 220,144, 252,112 };
+	};
+
+
+	self.clickSound = createSample('clickSound');
+	loadSample(self.clickSound, Utils.getFilename('sounds/cpClickSound.wav', courseplay.path), false);
+end;
+
+
+-- ####################################################################################################
+-- EXECUTION
+function courseplay.hud:setContent(vehicle)
+	-- self = courseplay.hud
+
 	-- BOTTOM GLOBAL INFO
 	-- mode icon
 	vehicle.cp.hud.content.global[0] = vehicle.cp.mode > 0 and vehicle.cp.mode <= courseplay.numAiModes;
@@ -36,16 +264,16 @@
 	-- AUTOMATIC PAGE RELOAD BASED ON VARIABLE STATE
 	--ALL PAGES
 	if vehicle.cp.hud.reloadPage[-1] then
-		for page=0,courseplay.hud.numPages do
-			courseplay.hud:setReloadPageOrder(vehicle, page, true);
+		for page=0,self.numPages do
+			self:setReloadPageOrder(vehicle, page, true);
 		end;
-		courseplay.hud:setReloadPageOrder(vehicle, -1, false);
+		self:setReloadPageOrder(vehicle, -1, false);
 	end;
 
 	--CURRENT PAGE
 	if vehicle.cp.hud.currentPage == 1 then
 		if (vehicle.cp.isRecording or vehicle.cp.recordingIsPaused) and vehicle.cp.HUDrecordnumber == 4 and courseplay.utils:hasVarChanged(vehicle, 'HUDrecordnumber') then --record pause action becomes available
-			--courseplay.hud:setReloadPageOrder(vehicle, 1, true);
+			--self:setReloadPageOrder(vehicle, 1, true);
 			courseplay:buttonsActiveEnabled(vehicle, 'recording');
 		elseif vehicle:getIsCourseplayDriving() then
 		end;
@@ -53,35 +281,37 @@
 	elseif vehicle.cp.hud.currentPage == 3 and vehicle:getIsCourseplayDriving() and (vehicle.cp.mode == 2 or vehicle.cp.mode == 3) then
 		for i,varName in pairs({ 'combineOffset', 'turnRadius' }) do
 			if courseplay.utils:hasVarChanged(vehicle, varName) then
-				courseplay.hud:setReloadPageOrder(vehicle, 3, true);
+				self:setReloadPageOrder(vehicle, 3, true);
 				break;
 			end;
 		end;
 
 	elseif vehicle.cp.hud.currentPage == 4 then
 		if vehicle.cp.savedCombine ~= nil then --Force page 4 reload when combine distance is displayed
-			courseplay.hud:setReloadPageOrder(vehicle, 4, true);
+			self:setReloadPageOrder(vehicle, 4, true);
 		end;
 
 	elseif vehicle.cp.hud.currentPage == 7 then
 		if vehicle.cp.copyCourseFromDriver ~= nil or courseplay.utils:hasVarChanged(vehicle, 'totalOffsetX') then --Force page 7 reload when vehicle distance is displayed
-			courseplay.hud:setReloadPageOrder(vehicle, 7, true);
+			self:setReloadPageOrder(vehicle, 7, true);
 		end;
 	end;
 
 	-- RELOAD PAGE
 	if vehicle.cp.hud.reloadPage[vehicle.cp.hud.currentPage] then
-		for line=1,courseplay.hud.numLines do
+		for line=1,self.numLines do
 			for column=1,2 do
 				vehicle.cp.hud.content.pages[vehicle.cp.hud.currentPage][line][column].text = nil;
 			end;
 		end;
-		courseplay.hud:loadPage(vehicle, vehicle.cp.hud.currentPage);
+		self:loadPage(vehicle, vehicle.cp.hud.currentPage);
 	end;
 end; --END setHudContent()
 
 
-function courseplay:renderHud(vehicle)
+function courseplay.hud:renderHud(vehicle)
+	-- self = courseplay.hud
+
 	if vehicle.cp.suc.active then
 		vehicle.cp.hud.backgroundSuc:render();
 		if vehicle.cp.suc.selectedFruit.overlay then
@@ -109,18 +339,18 @@ function courseplay:renderHud(vehicle)
 			else
 				local textX;
 				if i == 1 then
-					textX = courseplay.hud.bottomInfo.modeTextX;
+					textX = self.bottomInfo.modeTextX;
 				elseif i == 2 then
-					textX = courseplay.hud.bottomInfo.waypointTextX;
+					textX = self.bottomInfo.waypointTextX;
 					vehicle.cp.hud.currentWaypointIcon:render();
 				elseif i == 3 then
-					textX = courseplay.hud.bottomInfo.waitPointsTextX;
+					textX = self.bottomInfo.waitPointsTextX;
 					vehicle.cp.hud.waitPointsIcon:render();
 				elseif i == 4 then
-					textX = courseplay.hud.bottomInfo.crossingPointsTextX;
+					textX = self.bottomInfo.crossingPointsTextX;
 					vehicle.cp.hud.crossingPointsIcon:render();
 				end;
-				renderText(textX, courseplay.hud.bottomInfo.textPosY, courseplay.hud.fontSizes.bottomInfo, text);
+				renderText(textX, self.bottomInfo.textPosY, self.fontSizes.bottomInfo, text);
 			end;
 		end;
 	end
@@ -129,23 +359,23 @@ function courseplay:renderHud(vehicle)
 	--VERSION INFO
 	if courseplay.versionDisplayStr ~= nil then
 		courseplay:setFontSettings("white", false, "right");
-		renderText(courseplay.hud.visibleArea.x2 - 0.01, courseplay.hud.infoBasePosY + 0.02, courseplay.hud.fontSizes.version, courseplay.versionDisplayStr);
+		renderText(self.visibleArea.x2 - 0.01, self.infoBasePosY + 0.02, self.fontSizes.version, courseplay.versionDisplayStr);
 	end;
 
 
 	--HUD TITLES
 	courseplay:setFontSettings("white", true, "left");
-	local hudPageTitle = courseplay.hud.hudTitles[vehicle.cp.hud.currentPage];
+	local hudPageTitle = self.hudTitles[vehicle.cp.hud.currentPage];
 	if vehicle.cp.hud.currentPage == 2 then
 		if not vehicle.cp.hud.choose_parent and vehicle.cp.hud.filter == '' then
-			hudPageTitle = courseplay.hud.hudTitles[vehicle.cp.hud.currentPage][1];
+			hudPageTitle = self.hudTitles[vehicle.cp.hud.currentPage][1];
 		elseif vehicle.cp.hud.choose_parent then
-			hudPageTitle = courseplay.hud.hudTitles[vehicle.cp.hud.currentPage][2];
+			hudPageTitle = self.hudTitles[vehicle.cp.hud.currentPage][2];
 		elseif vehicle.cp.hud.filter ~= '' then
-			hudPageTitle = string.format(courseplay.hud.hudTitles[vehicle.cp.hud.currentPage][3], vehicle.cp.hud.filter);
+			hudPageTitle = string.format(self.hudTitles[vehicle.cp.hud.currentPage][3], vehicle.cp.hud.filter);
 		end;
 	end;
-	renderText(courseplay.hud.infoBasePosX + 0.035, courseplay.hud.infoBasePosY + 0.240, courseplay.hud.fontSizes.hudTitle, hudPageTitle);
+	renderText(self.infoBasePosX + 0.035, self.infoBasePosY + 0.240, self.fontSizes.hudTitle, hudPageTitle);
 
 
 	--MAIN CONTENT
@@ -159,10 +389,10 @@ function courseplay:renderHud(vehicle)
 				elseif entry.isHovered then
 					courseplay:setFontSettings('hover', false);
 				end;
-				renderText(courseplay.hud.col1posX + entry.indention, courseplay.hud.linesPosY[line], courseplay.hud.fontSizes.contentTitle, entry.text);
+				renderText(self.col1posX + entry.indention, self.linesPosY[line], self.fontSizes.contentTitle, entry.text);
 				courseplay:setFontSettings('white', false);
 			elseif column == 2 and entry.text ~= nil and entry.text ~= "" then
-				renderText(vehicle.cp.hud.content.pages[page][line][2].posX, courseplay.hud.linesPosY[line], courseplay.hud.fontSizes.contentValue, entry.text);
+				renderText(vehicle.cp.hud.content.pages[page][line][2].posX, self.linesPosY[line], self.fontSizes.contentValue, entry.text);
 			end;
 		end;
 	end;
@@ -171,7 +401,7 @@ function courseplay:renderHud(vehicle)
 		local channelNum;
 		for i,data in ipairs(courseplay.debugButtonPosData) do
 			channelNum = courseplay.debugChannelSectionStart + (i - 1);
-			renderText(data.textPosX, data.textPosY, courseplay.hud.fontSizes.contentValue, tostring(channelNum));
+			renderText(data.textPosX, data.textPosY, self.fontSizes.contentValue, tostring(channelNum));
 		end;
 		courseplay:setFontSettings('white', false, 'left');
 	end;
@@ -208,7 +438,7 @@ function courseplay:setMinHudPage(vehicle, workTool)
 end;
 
 function courseplay.hud:loadPage(vehicle, page)
-	--self = courseplay.hud
+	-- self = courseplay.hud
 
 	courseplay:debug(string.format('%s: loadPage(..., %d), set content', nameNum(vehicle), page), 18);
 
@@ -653,14 +883,39 @@ function courseplay.hud:loadPage(vehicle, page)
 
 	end; -- END if page == n
 
-	courseplay.hud:setReloadPageOrder(vehicle, page, false);
+	self:setReloadPageOrder(vehicle, page, false);
 end;
 
 function courseplay.hud:setReloadPageOrder(vehicle, page, bool)
+	-- self = courseplay.hud
+
 	if vehicle.cp.hud.reloadPage[page] ~= bool then
 		vehicle.cp.hud.reloadPage[page] = bool;
 		if courseplay.debugChannels[18] and bool == true then
 			courseplay:debug(string.format('%s: set reloadPage[%d] to %s (called from %s)', nameNum(vehicle), page, tostring(bool), courseplay.utils:getFnCallPath(4)), 18);
 		end;
+	end;
+end;
+
+function courseplay:setFontSettings(color, fontBold, align)
+	if color ~= nil then
+		local prmType = type(color);
+		if prmType == 'string' and courseplay.hud.colors[color] ~= nil and #(courseplay.hud.colors[color]) == 4 then
+			setTextColor(unpack(courseplay.hud.colors[color]));
+		elseif prmType == 'table' and #(color) == 4 then
+			setTextColor(unpack(color));
+		end;
+	else --Backup
+		setTextColor(unpack(courseplay.hud.colors.white));
+	end;
+
+	if fontBold ~= nil and type(fontBold) == 'boolean' then
+		setTextBold(fontBold);
+	else
+		setTextBold(false);
+	end;
+
+	if align ~= nil and (align == 'left' or align == 'center' or align == 'right') then
+		setTextAlignment(RenderText['ALIGN_' .. align:upper()]);
 	end;
 end;

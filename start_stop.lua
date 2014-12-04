@@ -105,10 +105,10 @@ function courseplay:start(self)
 
 	-- add do working players if not already added
 	if self.cp.coursePlayerNum == nil then
-		self.cp.coursePlayerNum = courseplay:addToTotalCoursePlayers(self)
+		self.cp.coursePlayerNum = CpManager:addToTotalCoursePlayers(self)
 	end;
 	--add to activeCoursePlayers
-	courseplay:addToActiveCoursePlayers(self);
+	CpManager:addToActiveCoursePlayers(self);
 
 	self.cp.backMarkerOffset = nil
 	self.cp.aiFrontMarker = nil
@@ -553,7 +553,7 @@ function courseplay:stop(self)
 
 		for refIdx,_ in pairs(courseplay.globalInfoText.msgReference) do
 			if self.cp.activeGlobalInfoTexts[refIdx] ~= nil then
-				courseplay:setGlobalInfoText(self, refIdx, true);
+				CpManager:setGlobalInfoText(self, refIdx, true);
 			end;
 		end;
 	end
@@ -564,7 +564,7 @@ function courseplay:stop(self)
 	end;
 
 	--remove from activeCoursePlayers
-	courseplay:removeFromActiveCoursePlayers(self);
+	CpManager:removeFromActiveCoursePlayers(self);
 
 	--validation: can switch mode?
 	courseplay:validateCanSwitchMode(self);
