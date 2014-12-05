@@ -31,12 +31,12 @@ function CpManager:loadMap(name)
 	self:setupWages();
 	self:setupIngameMap();
 
-	----------------------------------------------------------------------------------------------------
+	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- LOAD SETTINGS FROM COURSEPLAY.XML / SAVE DEFAULT SETTINGS IF NOT EXISTING
 	self:loadOrSetXmlSettings();
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	-- SETUP HUD
+	-- SETUP (continued)
 	courseplay.hud:setup(); -- NOTE: hud has to be set up after the xml settings have been loaded, as almost all its values are based on infoBasePosX/Y
 	self:setUpDebugChannels(); -- NOTE: debugChannels have to be set up after the hud, as they rely on some hud values [positioning]
 	self:setupGlobalInfoText(); -- NOTE: globalInfoText has to be set up after the hud, as they rely on some hud values [colors]
@@ -837,7 +837,6 @@ function CpManager:loadOrSetXmlSettings()
 	if self.savegameFolderPath and self.cpXmlFilePath then
 		createFolder(self.savegameFolderPath);
 		local cpFile;
-		local created = false;
 		if fileExists(self.cpXmlFilePath) then
 			print('## Courseplay: loading settings from "courseplay.xml"');
 			cpFile = loadXMLFile('cpFile', self.cpXmlFilePath);
