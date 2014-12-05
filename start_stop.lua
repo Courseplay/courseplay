@@ -542,8 +542,6 @@ function courseplay:stop(self)
 	self.cp.totalLength, self.cp.totalLengthOffset = 0, 0;
 	self.cp.numWorkTools = 0;
 
-	self.cp.timers.slippingWheels = 0;
-
 	self.cp.movingToolsPrimary, self.cp.movingToolsSecondary = nil, nil;
 	self.cp.attachedFrontLoader = nil
 	

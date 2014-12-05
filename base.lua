@@ -1099,12 +1099,10 @@ function courseplay:drawWaypointsLines(vehicle)
 end;
 
 function courseplay:update(dt)
-	local isDriving = self:getIsCourseplayDriving();
-
 	-- KEYBOARD EVENTS
 	if self:getIsActive() and self.isEntered and InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER) then
 		if self.cp.canDrive then
-			if isDriving then
+			if self.cp.isDriving then
 				if InputBinding.hasEvent(InputBinding.COURSEPLAY_START_STOP) then
 					self:setCourseplayFunc("stop", nil, false, 1);
 				elseif self.cp.HUD1wait and InputBinding.hasEvent(InputBinding.COURSEPLAY_CANCELWAIT) then
@@ -1125,7 +1123,7 @@ function courseplay:update(dt)
 	end; -- self:getIsActive() and self.isEntered and modifierPressed
 
 
-	if g_server ~= nil and (isDriving or self.cp.isRecording or self.cp.recordingIsPaused) then
+	if g_server ~= nil and (self.cp.isDriving or self.cp.isRecording or self.cp.recordingIsPaused) then
 		courseplay:setInfoText(self, nil);
 	end;
 
@@ -1139,7 +1137,7 @@ function courseplay:update(dt)
 	end;
 
 	-- we are in drive mode and single player /MP server
-	if isDriving and g_server ~= nil then
+	if self.cp.isDriving and g_server ~= nil then
 		for refIdx,_ in pairs(CpManager.globalInfoText.msgReference) do
 			self.cp.hasSetGlobalInfoTextThisLoop[refIdx] = false;
 		end;
@@ -1164,7 +1162,7 @@ function courseplay:update(dt)
 	end
 
 	if g_server ~= nil then
-		if isDriving then
+		if self.cp.isDriving then
 			local showDriveOnButton = false;
 			if self.cp.mode == 6 then
 				if self.cp.wait and (self.recordnumber == self.cp.stopWork or self.cp.lastRecordnumber == self.cp.stopWork) and self.cp.abortWork == nil and not self.cp.isLoaded and not isFinishingWork and self.cp.hasUnloadingRefillingCourse then
@@ -1203,7 +1201,7 @@ function courseplay:update(dt)
 			end
 			self:setCpVar('HUD0wantsCourseplayer', combine.cp.wantsCourseplayer);
 			self:setCpVar('HUD0combineForcedSide', combine.cp.forcedSide);
-			self:setCpVar('HUD0isManual', not isDriving and not combine.isAIThreshing);
+			self:setCpVar('HUD0isManual', not self.cp.isDriving and not combine.isAIThreshing);
 			self:setCpVar('HUD0turnStage', self.cp.turnStage);
 			local tractor = combine.courseplayers[1]
 			if tractor ~= nil then
