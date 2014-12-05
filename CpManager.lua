@@ -55,6 +55,12 @@ function CpManager:loadMap(name)
 	-- INPUT
 	self.playerOnFootMouseEnabled = false;
 	self.wasPlayerFrozen = false;
+	local ovl = courseplay.inputBindings.mouse.overlaySecondary;
+	if ovl then
+		local h = (2.5 * g_currentMission.hudHelpTextSize);
+		local w = h / g_screenAspectRatio;
+		ovl:setDimension(w, h);
+	end;
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- FIELDS
@@ -178,9 +184,12 @@ function CpManager:deleteMap()
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- delete fieldScanInfo overlays
-	for _,ovl in ipairs( { 'bgOverlay', 'loadOverlay', 'progressBarBgOverlay', 'progressBarOverlay' } ) do
-		if self.fieldScanInfo[ovl] then
-			self.fieldScanInfo[ovl]:delete();
+	if self.fieldScanInfo then
+		for _,ovl in ipairs( { 'bgOverlay', 'loadOverlay', 'progressBarBgOverlay', 'progressBarOverlay' } ) do
+			if self.fieldScanInfo[ovl] then
+				self.fieldScanInfo[ovl]:delete();
+				self.fieldScanInfo[ovl] = nil;
+			end;
 		end;
 	end;
 
@@ -260,10 +269,8 @@ function CpManager:draw()
 	-- TODO: addHelpTextFunction() is called, but drawMouseButtonHelp() isn't
 	if g_currentMission.controlledVehicle == nil and not g_currentMission.player.currentTool then
 		if self.playerOnFootMouseEnabled then
-			print('CpManager addHelpTextFunction(..., COURSEPLAY_MOUSEARROW_HIDE)');
 			g_currentMission:addHelpTextFunction(self.drawMouseButtonHelp, self, self.hudHelpMouseLineHeight, courseplay:loc('COURSEPLAY_MOUSEARROW_HIDE'));
 		elseif self.globalInfoText.hasContent then
-			print('CpManager addHelpTextFunction(..., COURSEPLAY_MOUSEARROW_SHOW)');
 			g_currentMission:addHelpTextFunction(self.drawMouseButtonHelp, self, self.hudHelpMouseLineHeight, courseplay:loc('COURSEPLAY_MOUSEARROW_SHOW'));
 		end;
 	end;
@@ -482,13 +489,13 @@ function CpManager:renderFieldScanInfo()
 
 	courseplay:setFontSettings({ 0.8, 0.8, 0.8, 1 }, true, 'left');
 	renderText(fsi.lineX, fsi.line1Y - 0.001, courseplay.hud.fontSizes.fieldScanTitle, courseplay:loc('COURSEPLAY_FIELD_SCAN_IN_PROGRESS'));
-	courseplay:setFontSettings('shadow', true, 'left');
+	courseplay:setFontSettings('shadow', true);
 	renderText(fsi.lineX, fsi.line1Y,         courseplay.hud.fontSizes.fieldScanTitle, courseplay:loc('COURSEPLAY_FIELD_SCAN_IN_PROGRESS'));
 
 	local str2 = courseplay:loc('COURSEPLAY_SCANNING_FIELD_NMB'):format(courseplay.fields.curFieldScanIndex, g_currentMission.fieldDefinitionBase.numberOfFields);
-	courseplay:setFontSettings({ 0.8, 0.8, 0.8, 1 }, false, 'left');
+	courseplay:setFontSettings({ 0.8, 0.8, 0.8, 1 }, false);
 	renderText(fsi.lineX, fsi.line2Y - 0.001, courseplay.hud.fontSizes.fieldScanData, str2);
-	courseplay:setFontSettings('shadow', false, 'left');
+	courseplay:setFontSettings('shadow', false);
 	renderText(fsi.lineX, fsi.line2Y,         courseplay.hud.fontSizes.fieldScanData, str2);
 
 	local rotationStep = math.floor(g_currentMission.time / self.fieldScanInfo.rotationTime);
@@ -499,23 +506,19 @@ function CpManager:renderFieldScanInfo()
 	fsi.loadOverlay:render();
 
 	--reset font settings
-	courseplay:setFontSettings('white', true, 'left');
+	courseplay:setFontSettings('white', true);
 end;
 
 function CpManager.drawMouseButtonHelp(self, posY, txt)
-	print('\tCpManager.drawMouseButtonHelp(self, posY, txt)');
 	local xLeft = g_currentMission.hudHelpTextPosX1;
 	local xRight = g_currentMission.hudHelpTextPosX2;
 
 	local ovl = courseplay.inputBindings.mouse.overlaySecondary;
 	if ovl then
-		local h = (2.5 * g_currentMission.hudHelpTextSize);
-		local w = h / g_screenAspectRatio;
 		local y = posY - g_currentMission.hudHelpTextSize - g_currentMission.hudHelpTextLineSpacing*3;
-		ovl:setPosition(xLeft - w*0.2, y);
-		ovl:setDimension(w, h);
+		ovl:setPosition(xLeft - ovl.width*0.2, y);
 		ovl:render();
-		xLeft = xLeft + w*0.6;
+		xLeft = xLeft + ovl.width*0.6;
 	end;
 
 	posY = posY - g_currentMission.hudHelpTextSize - g_currentMission.hudHelpTextLineSpacing*2;
