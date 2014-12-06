@@ -786,15 +786,15 @@ function courseplay:linkParent(vehicle, index)
 				vehicle.cp.folder_settings[vehicle.cp.hud.selected_child.id].skipMe = false
 			end
 			vehicle.cp.hud.choose_parent = false
-			
+
 			-- link if possible and show courses anyway
-			if	type == 'folder' then --parent must be a folder!
+			if type == 'folder' then --parent must be a folder!
 				if vehicle.cp.hud.selected_child.type == 'folder' then
 					g_currentMission.cp_folders[vehicle.cp.hud.selected_child.id].parent = id
-					self:saveFolderToXml(vehicle.cp.hud.selected_child.id)
+					courseplay.courses:saveFolderToXml(vehicle.cp.hud.selected_child.id)
 				else
 					g_currentMission.cp_courses[vehicle.cp.hud.selected_child.id].parent = id
-					self:saveCourseToXml(vehicle.cp.hud.selected_child.id)
+					courseplay.courses:saveCourseToXml(vehicle.cp.hud.selected_child.id)
 				end
 				g_currentMission.cp_sorted = courseplay.courses:sort()
 				courseplay.settings.setReloadCourseItems()
