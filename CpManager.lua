@@ -3,6 +3,8 @@ CpManager = {};
 local CpManager_mt = Class(CpManager);
 addModEventListener(CpManager);
 
+local ceil = math.ceil;
+
 function CpManager:loadMap(name)
 	self.isCourseplayManager = true;
 	self.firstRun = true;
@@ -986,128 +988,112 @@ end;
 function CpManager:load_courses()
 	courseplay:debug('loading courses by courseplay manager', 8);
 
-	local finish_all = false;
 	if self.cpXmlFilePath then
 		local filePath = self.cpXmlFilePath;
 
 		if fileExists(filePath) then
-			local cpFile = loadXMLFile("courseFile", filePath);
+			local cpFile = loadXMLFile('courseFile', filePath);
 			g_currentMission.cp_courses = nil -- make sure it's empty (especially in case of a reload)
 			g_currentMission.cp_courses = {}
 			local courses_by_id = g_currentMission.cp_courses
 			local courses_without_id = {}
-			local i = 0
-			
-			local tempCourse
-			repeat
 
-				--current course
-				local currentCourse = string.format("XML.courses.course(%d)", i)
-				if not hasXMLProperty(cpFile, currentCourse) then
-					finish_all = true;
+			local waypoints;
+			local i = 0;
+			while true do
+				-- current course
+				local courseKey = ('XML.courses.course(%d)'):format(i);
+				if not hasXMLProperty(cpFile, courseKey) then
 					break;
 				end;
 
-				--course name
-				local courseName = getXMLString(cpFile, currentCourse .. "#name");
+				-- course name
+				local courseName = getXMLString(cpFile, courseKey .. '#name');
 				if courseName == nil then
-					courseName = string.format('NO_NAME%d',i)
+					courseName = ('NO_NAME%d'):format(i);
 				end;
 				local courseNameClean = courseplay:normalizeUTF8(courseName);
 
-				--course ID
-				local id = getXMLInt(cpFile, currentCourse .. "#id")
-				if id == nil then
-					id = 0;
-				end;
+				-- course ID
+				local id = getXMLInt(cpFile, courseKey .. '#id') or 0;
 				
-				--course parent
-				local parent = getXMLInt(cpFile, currentCourse .. "#parent")
-				if parent == nil then
-					parent = 0
-				end
+				-- course parent
+				local parent = getXMLInt(cpFile, courseKey .. '#parent') or 0;
 
 				--course waypoints
-				tempCourse = {};
+				waypoints = {};
+
 				local wpNum = 1;
-				local key = currentCourse .. ".waypoint" .. wpNum;
-				local finish_wp = not hasXMLProperty(cpFile, key);
-				
-				while not finish_wp do
-					local x, z = Utils.getVectorFromString(getXMLString(cpFile, key .. "#pos"));
-					if x ~= nil then
-						if z == nil then
-							finish_wp = true;
-							break;
-						end;
-						local dangle =   Utils.getVectorFromString(getXMLString(cpFile, key .. "#angle"));
-						local wait =     Utils.getVectorFromString(getXMLString(cpFile, key .. "#wait"));
-						local speed =    Utils.getVectorFromString(getXMLString(cpFile, key .. "#speed"));
-						local rev =      Utils.getVectorFromString(getXMLString(cpFile, key .. "#rev"));
-						local crossing = Utils.getVectorFromString(getXMLString(cpFile, key .. "#crossing"));
+				while true do
+					local key = courseKey .. '.waypoint' .. wpNum;
 
-						--course generation
-						local generated =   Utils.getNoNil(getXMLBool(cpFile, key .. "#generated"), false);
-						local dir =         getXMLString(cpFile, key .. "#dir");
-						local turn =        Utils.getNoNil(getXMLString(cpFile, key .. "#turn"), "false");
-						local turnStart =   Utils.getNoNil(getXMLInt(cpFile, key .. "#turnstart"), 0);
-						local turnEnd =     Utils.getNoNil(getXMLInt(cpFile, key .. "#turnend"), 0);
-						local ridgeMarker = Utils.getNoNil(getXMLInt(cpFile, key .. "#ridgemarker"), 0);
-
-						crossing = crossing == 1 or wpNum == 1;
-						wait = wait == 1;
-						rev = rev == 1;
-						
-						--is it a old savegame with old speeds ?
-						if math.ceil(speed) ~= speed then
-							speed = math.ceil(speed*3600)							
-						end
-
-						--generated not needed, since true or false are loaded from file
-						if turn == "false" then
-							turn = nil;
-						end;
-						turnStart = turnStart == 1;
-						turnEnd = turnEnd == 1;
-						--ridgeMarker not needed, since 0, 1 or 2 is loaded from file
-
-						tempCourse[wpNum] = { 
-							cx = x, 
-							cz = z, 
-							angle = dangle, 
-							rev = rev, 
-							wait = wait, 
-							crossing = crossing, 
-							speed = speed,
-							generated = generated,
-							laneDir = dir,
-							turn = turn,
-							turnStart = turnStart,
-							turnEnd = turnEnd,
-							ridgeMarker = ridgeMarker
-						};
-						
-						-- prepare next waypoint
-						wpNum = wpNum + 1;
-						key = currentCourse .. ".waypoint" .. wpNum;
-						finish_wp = not hasXMLProperty(cpFile, key);
-					else
-						finish_wp = true;
+					if not hasXMLProperty(cpFile, key .. '#pos') then
 						break;
 					end;
-				end -- while finish_wp == false;
+					local x, z = Utils.getVectorFromString(getXMLString(cpFile, key .. '#pos'));
+					if x == nil or z == nil then
+						break;
+					end;
+
+					local angle 	  =  getXMLFloat(cpFile, key .. '#angle') or 0;
+					local speed 	  = getXMLString(cpFile, key .. '#speed') or '0'; -- use string so we can get both ints and proper floats without LUA's rounding errors
+					speed = tonumber(speed);
+					if ceil(speed) ~= speed then -- is it an old savegame with old speeds ?
+						speed = ceil(speed * 3600);
+					end;
+
+					-- NOTE: only pos, angle and speed can't be nil. All others can and should be nil if not "active", so that they're not saved to the xml
+					local wait 		  =    getXMLInt(cpFile, key .. '#wait');
+					local rev 		  =    getXMLInt(cpFile, key .. '#rev');
+					local crossing 	  =    getXMLInt(cpFile, key .. '#crossing');
+
+					local generated   =   getXMLBool(cpFile, key .. '#generated');
+					local laneDir	  = getXMLString(cpFile, key .. '#dir');
+					local turn 		  = getXMLString(cpFile, key .. '#turn');
+					local turnStart	  =    getXMLInt(cpFile, key .. '#turnstart');
+					local turnEnd 	  =    getXMLInt(cpFile, key .. '#turnend');
+					local ridgeMarker =    getXMLInt(cpFile, key .. '#ridgemarker') or 0;
+
+					crossing = crossing == 1 or wpNum == 1;
+					wait = wait == 1;
+					rev = rev == 1;
+
+					if turn == 'false' then
+						turn = nil;
+					end;
+					turnStart = turnStart == 1;
+					turnEnd = turnEnd == 1;
+
+					waypoints[wpNum] = { 
+						cx = x, 
+						cz = z, 
+						angle = angle, 
+						speed = speed,
+
+						rev = rev, 
+						wait = wait, 
+						crossing = crossing, 
+						generated = generated,
+						laneDir = laneDir,
+						turn = turn,
+						turnStart = turnStart,
+						turnEnd = turnEnd,
+						ridgeMarker = ridgeMarker
+					};
+
+					wpNum = wpNum + 1;
+				end; -- END while true (waypoints)
 				
-				local course = { id = id, uid = 'c' .. id , type = 'course', name = courseName, nameClean = courseNameClean, waypoints = tempCourse, parent = parent }
+				local course = { id = id, uid = 'c' .. id , type = 'course', name = courseName, nameClean = courseNameClean, waypoints = waypoints, parent = parent };
 				if id ~= 0 then
-					courses_by_id[id] = course
+					courses_by_id[id] = course;
 				else
-					table.insert(courses_without_id, course)
-				end
-				
-				tempCourse = nil;
+					table.insert(courses_without_id, course);
+				end;
+
+				waypoints = nil;
 				i = i + 1;
-				
-			until finish_all == true;
+			end; -- END while true (courses)
 			
 			local j = 0
 			local currentFolder, FolderName, id, parent, folder

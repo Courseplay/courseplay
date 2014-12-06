@@ -462,20 +462,22 @@ function courseplay.courses.save_course(course_id, File, append)
 	types = { pos='String', angle='String', rev='Int', wait='Int', crossing='Int', speed='String', generated='Bool', dir='String', turn='String', turnstart='Int', turnend='Int', ridgemarker='Int' };
 
 	for k, v in pairs(g_currentMission.cp_courses[course_id].waypoints) do
-		local waypoint = {} --create a new table on every call
-		waypoint.pos = tostring(courseplay:round(v.cx, 4)) .. ' ' .. tostring(courseplay:round(v.cz, 4));
-		waypoint.angle = tostring(courseplay:round(v.angle, 4));
-		-- the following would not be necessary if bools would be saved as bools instead of converting them to integers...
-		waypoint.rev = courseplay:boolToInt(v.rev);
-		waypoint.wait = courseplay:boolToInt(v.wait);
-		waypoint.crossing = courseplay:boolToInt(v.crossing);
-		waypoint.speed = tostring(courseplay:round(v.speed or 0, 5));
-		waypoint.generated = Utils.getNoNil(v.generated,false);
-		waypoint.dir = v.laneDir or "";
-		waypoint.turn = v.turn or "false";
-		waypoint.turnstart = Utils.getNoNil(courseplay:boolToInt(v.turnStart),0);
-		waypoint.turnend = Utils.getNoNil(courseplay:boolToInt(v.turnEnd),0);
-		waypoint.ridgemarker = Utils.getNoNil(v.ridgeMarker,0);
+		local waypoint = {
+			pos = ('%.2f %.2f'):format(v.cx, v.cz);
+			angle = ('%.2f'):format(v.angle);
+			speed = ('%d'):format(v.speed or 0);
+			rev = courseplay:boolToInt(v.rev);
+			wait = courseplay:boolToInt(v.wait);
+			crossing = courseplay:boolToInt(v.crossing);
+			generated = v.generated;
+			dir = v.laneDir;
+			turn = v.turn;
+			turnstart = courseplay:boolToInt(v.turnStart);
+			turnend = courseplay:boolToInt(v.turnEnd);
+		};
+		if v.ridgeMarker and v.ridgeMarker ~= 0 then
+			waypoint.ridgemarker = v.ridgeMarker;
+		end;
 
 		waypoints[k] = waypoint;
 	end
@@ -605,7 +607,7 @@ function courseplay.courses.delete_save_all(self)
 				-- folders
 				local foldersTxt = '\t<folders>\n';
 				for i,folder in pairs(g_currentMission.cp_folders) do
-					foldersTxt = foldersTxt .. '\t\t<folder name="' .. folder.name .. '" id="' .. folder.id .. '" parent="' .. folder.parent ..'" />\n';
+					foldersTxt = foldersTxt .. ('\t\t<folder name=%q id="%d" parent="%d" />\n'):format(folder.name, folder.id, folder.parent);
 				end
 				foldersTxt = foldersTxt .. '\t</folders>\n';
 				file:write(foldersTxt);
@@ -613,30 +615,44 @@ function courseplay.courses.delete_save_all(self)
 				-- courses
 				file:write('\t<courses>\n')
 				for i,course in pairs(g_currentMission.cp_courses) do
-					local courseTxt = '\t\t<course name="' .. course.name .. '" id="' .. course.id .. '" numWaypoints="' .. #(course.waypoints) .. '" parent="' .. course.parent ..'">\n';
+					file:write(('\t\t<course name=%q id="%d" parent="%d" numWaypoints="%d">\n'):format(course.name, course.id, course.parent, #course.waypoints));
 					for wpNum,wp in ipairs(course.waypoints) do
-						local wpContent = '\t\t\t<waypoint' .. wpNum .. ' ';
-						wpContent = wpContent .. 'pos="' .. tostring(Utils.getNoNil(courseplay:round(wp.cx, 4), 0)) .. ' ' .. tostring(Utils.getNoNil(courseplay:round(wp.cz, 4), 0)) .. '" ';
-						wpContent = wpContent .. 'angle="' .. tostring(Utils.getNoNil(courseplay:round(wp.angle, 2), 0)) .. '" ';
-						wpContent = wpContent .. 'wait="' .. tostring(Utils.getNoNil(courseplay:boolToInt(wp.wait), 0)) .. '" ';
-						wpContent = wpContent .. 'crossing="' .. tostring(Utils.getNoNil(courseplay:boolToInt(wp.crossing), 0)) .. '" ';
-						wpContent = wpContent .. 'rev="' .. tostring(Utils.getNoNil(courseplay:boolToInt(wp.rev), 0)) .. '" ';
-						wpContent = wpContent .. 'speed="' .. tostring(courseplay:round(Utils.getNoNil(wp.speed, 0), 5)) .. '" ';
-						if wp.laneDir then
-							wpContent = wpContent .. 'dir="' .. tostring(wp.laneDir) .. '" '; --no getNoNil as we want it to be nil if it doesn't exist during loading
+						local wpContent = ('\t\t\t<waypoint%d pos="%.2f %.2f" angle="%.2f" speed="%d"'):format(wpNum, wp.cx, wp.cz, wp.angle, wp.speed or 0);
+
+						if wp.rev then
+							wpContent = wpContent .. ' rev="1"';
 						end;
-						wpContent = wpContent .. 'turn="' .. tostring(Utils.getNoNil(wp.turn, false)) .. '" ';
-						wpContent = wpContent .. 'turnstart="' .. tostring(Utils.getNoNil(courseplay:boolToInt(wp.turnStart), 0)) .. '" ';
-						wpContent = wpContent .. 'turnend="' .. tostring(Utils.getNoNil(courseplay:boolToInt(wp.turnEnd), 0)) .. '" ';
-						wpContent = wpContent .. 'ridgemarker="' .. tostring(Utils.getNoNil(wp.ridgeMarker, 0)) .. '" ';
-						wpContent = wpContent .. 'generated="' .. tostring(Utils.getNoNil(wp.generated, false)) .. '" ';
-						wpContent = wpContent .. '/>\n';
+						if wp.wait then
+							wpContent = wpContent .. ' wait="1"';
+						end;
+						if wp.crossing then
+							wpContent = wpContent .. ' crossing="1"';
+						end;
+						if wp.generated then
+							wpContent = wpContent .. ' generated="true"';
+						end;
+						if wp.laneDir ~= nil and wp.laneDir ~= '' then
+							wpContent = wpContent .. (' dir=%q'):format(wp.laneDir);
+						end;
+						if wp.turn ~= nil then
+							wpContent = wpContent .. (' turn=%q'):format(tostring(wp.turn));
+						end;
+						if wp.turnStart then
+							wpContent = wpContent .. ' turnstart="1"';
+						end;
+						if wp.turnStart then
+							wpContent = wpContent .. ' turnend="1"';
+						end;
+						if wp.ridgeMarker ~= nil and wp.ridgeMarker ~= 0 then
+							wpContent = wpContent .. (' ridgemarker="%d"'):format(wp.ridgeMarker);
+						end;
 
-						courseTxt = courseTxt .. wpContent;
+						wpContent = wpContent .. ' />\n';
+
+						file:write(wpContent);
 					end;
-					courseTxt = courseTxt .. '\t\t</course>\n';
 
-					file:write(courseTxt);
+					file:write('\t\t</course>\n');
 				end;
 				file:write('\t</courses>\n</XML>');
 				file:close();

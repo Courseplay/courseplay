@@ -369,15 +369,15 @@ function courseplay:generateCourse(vehicle)
 					local dirX,dirZ = self:getPointDirection(cp, np);
 
 					cp.angle = Utils.getYRotationFromDirection(dirX, dirZ);
-					cp.wait = false;
-					cp.rev = false;
-					cp.crossing = false;
+					cp.wait = nil;
+					cp.rev = nil;
+					cp.crossing = nil;
 					cp.generated = true;
 					cp.lane = curLane * -1; --negative lane = headland
 					-- cp.firstInLane = false;
 					cp.turn = nil;
-					cp.turnStart = false;
-					cp.turnEnd = false;
+					cp.turnStart = nil;
+					cp.turnEnd = nil;
 					cp.ridgeMarker = laneRidgeMarker;
 				end;
 
@@ -632,13 +632,13 @@ function courseplay:generateCourse(vehicle)
 			cx = cp.x,
 			cz = cp.z,
 			angle = angleDeg,
-			wait = false, --will be set to true for first and last after all is set and done
-			rev = false,
-			crossing = false,
+			wait = nil, --will be set to true for first and last after all is set and done
+			rev = nil,
+			crossing = nil,
 			lane = cp.lane,
 			laneDir = cp.laneDir,
-			turnStart = cp.lastInLane and cp.lane < numLanes,
-			turnEnd = cp.firstInLane and i > 1,
+			turnStart = courseplay:trueOrNil(cp.lastInLane and cp.lane < numLanes),
+			turnEnd = courseplay:trueOrNil(cp.firstInLane and i > 1),
 			ridgeMarker = cp.ridgeMarker,
 			generated = true
 		};
@@ -666,17 +666,17 @@ function courseplay:generateCourse(vehicle)
 				newFirstInLane.laneDir = point.laneDir;
 				newFirstInLane.firstInLane = true;
 				newFirstInLane.turn = point.turn;
-				newFirstInLane.turnStart = false;
-				newFirstInLane.turnEnd = i > 1 --true;
+				newFirstInLane.turnStart = nil;
+				newFirstInLane.turnEnd = courseplay:trueOrNil(i > 1);
 				newFirstInLane.ridgeMarker = 0;
 				newFirstInLane.generated = true;
 
 				--reset some vars in old first point
-				point.wait = false;
+				point.wait = nil;
 				point.firstInLane = false;
 				point.turn = nil;
-				point.turnStart = false;
-				point.turnEnd = false;
+				point.turnStart = nil;
+				point.turnEnd = nil;
 			end;
 		end; --END cp.firstInLane
 
@@ -725,16 +725,16 @@ function courseplay:generateCourse(vehicle)
 				newLastInLane.laneDir = point.laneDir;
 				newLastInLane.lastInLane = true;
 				newLastInLane.turn = point.turn;
-				newLastInLane.turnStart = i < numPoints --true;
-				newLastInLane.turnEnd = false;
+				newLastInLane.turnStart = courseplay:trueOrNil(i < numPoints);
+				newLastInLane.turnEnd = nil;
 				newLastInLane.ridgeMarker = 0;
 				newLastInLane.generated = true;
 
-				point.wait = false;
+				point.wait = nil;
 				point.lastInLane = false;
 				point.turn = nil;
-				point.turnStart = false;
-				point.turnEnd = false;
+				point.turnStart = nil;
+				point.turnEnd = nil;
 
 			end;
 		end; --END cp.lastInLane
@@ -817,12 +817,12 @@ function courseplay:generateCourse(vehicle)
 				cx = origPathPoint.cx,
 				cz = origPathPoint.cz,
 				angle = courseplay:invertAngleDeg(origPathPoint.angle),
-				wait = false, --b == 1,
-				rev = false,
-				crossing = false,
+				wait = nil,
+				rev = nil,
+				crossing = nil,
 				lane = 1,
-				turnStart = false,
-				turnEnd = false,
+				turnStart = nil,
+				turnEnd = nil,
 				ridgeMarker = 0,
 				generated = true
 			};
@@ -867,7 +867,7 @@ function courseplay:generateCourse(vehicle)
 		return;
 	end;
 
-	vehicle.recordnumber = 1;
+	courseplay:setRecordNumber(vehicle, 1);
 	vehicle.cp.canDrive = true;
 	vehicle.Waypoints[1].wait = true;
 	vehicle.Waypoints[1].crossing = true;

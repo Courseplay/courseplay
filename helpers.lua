@@ -214,6 +214,12 @@ function courseplay:intToBool(int)
 	end;
 	return int == 1;
 end;
+function courseplay:trueOrNil(bool)
+	if bool ~= nil and bool == true then
+		return true;
+	end;
+	return nil;
+end;
 
 function courseplay:loopedTable(tab, idx, maxIdx)
 	maxIdx = maxIdx or #tab;
@@ -543,7 +549,7 @@ function courseplay.utils.setMultipleXML(File, node, values, types)
 				attribute = ''
 			end
 
-			if courseplay.prmSetXMLFn[valueType] ~= nil then
+			if value ~= nil and courseplay.prmSetXMLFn[valueType] ~= nil then
 				courseplay.prmSetXMLFn[valueType](File, node .. attribute, value);
 			else
 				-- Error?!
