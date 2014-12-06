@@ -729,11 +729,11 @@ function courseplay:load(xmlFile)
 	 -- TODO (Jakob): toolTips i18n
 	for i=1, courseplay.hud.numLines do
 		courseplay.button:new(self, -2, { 'iconSprite.png', 'navPlus' }, 'expandFolder', i, buttonX[0], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false);
-		courseplay.button:new(self, -2, { 'iconSprite.png', 'courseLoadAppend' }, 'load_sorted_course', i, buttonX[1], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false, false, false, 'Load course/merge into loaded course');
-		courseplay.button:new(self, -2, { 'iconSprite.png', 'courseAdd' }, 'add_sorted_course', i, buttonX[2], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false, false, false, 'Append course at the end');
-		courseplay.button:new(self, -2, { 'iconSprite.png', 'folderParentFrom' }, 'link_parent', i, buttonX[3], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false, false, false, 'Move to folder');
+		courseplay.button:new(self, -2, { 'iconSprite.png', 'courseLoadAppend' }, 'loadSortedCourse', i, buttonX[1], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false, false, false, 'Load course/merge into loaded course');
+		courseplay.button:new(self, -2, { 'iconSprite.png', 'courseAdd' }, 'addSortedCourse', i, buttonX[2], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false, false, false, 'Append course at the end');
+		courseplay.button:new(self, -2, { 'iconSprite.png', 'folderParentFrom' }, 'linkParent', i, buttonX[3], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false, false, false, 'Move to folder');
 		if g_server ~= nil then
-			courseplay.button:new(self, -2, { 'iconSprite.png', 'delete' }, 'delete_sorted_item', i, buttonX[4], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false, false, false, 'Delete course/folder');
+			courseplay.button:new(self, -2, { 'iconSprite.png', 'delete' }, 'deleteSortedItem', i, buttonX[4], courseplay.hud.linesButtonPosY[i], w16px, h16px, i, nil, false, false, false, 'Delete course/folder');
 		end;
 		courseplay.button:new(self, -2, nil, nil, nil, buttonX[1], courseplay.hud.linesButtonPosY[i], hoverAreaWidth, mouseWheelArea.h, i, nil, true, false);
 	end
@@ -1159,7 +1159,7 @@ function courseplay:update(dt)
 		self.cp.doNotOnSaveClick = false
 	end
 	if self.cp.onMpSetCourses then
-		courseplay.courses.reload(self)
+		courseplay.courses:reloadVehicleCourses(self)
 		self.cp.onMpSetCourses = nil
 	end
 
@@ -1452,7 +1452,7 @@ function courseplay:readStream(streamId, connection)
 	local courses = streamDebugReadString(streamId) -- 60.
 	if courses ~= nil then
 		self.cp.loadedCourses = Utils.splitString(",", courses);
-		courseplay:reload_courses(self, true)
+		courseplay:reloadCourses(self, true)
 	end
 
 	local debugChannelsString = streamDebugReadString(streamId)
@@ -1597,7 +1597,7 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		self.cp.waitTime 		  = Utils.getNoNil(   getXMLInt(xmlFile, curKey .. '#waitTime'),		 0);
 		local courses 			  = Utils.getNoNil(getXMLString(xmlFile, curKey .. '#courses'),			 '');
 		self.cp.loadedCourses = Utils.splitString(",", courses);
-		courseplay:reload_courses(self, true);
+		courseplay:reloadCourses(self, true);
 		local visualWaypointsMode = Utils.getNoNil(   getXMLInt(xmlFile, curKey .. '#visualWaypoints'),	 1);
 		courseplay:changeVisualWaypointsMode(self, 0, visualWaypointsMode);
 		self.cp.multiSiloSelectedFillType = Fillable.fillTypeNameToInt[Utils.getNoNil(getXMLString(xmlFile, curKey .. '#multiSiloSelectedFillType'), 'unknown')];

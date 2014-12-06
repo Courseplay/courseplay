@@ -203,19 +203,19 @@ function courseplay:buttonsActiveEnabled(vehicle, section)
 						end;
 					end;
 				else
-					if vehicle.cp.hud.courses[row].type == 'folder' and (button.functionToCall == 'load_sorted_course' or button.functionToCall == 'add_sorted_course') then
+					if vehicle.cp.hud.courses[row].type == 'folder' and (button.functionToCall == 'loadSortedCourse' or button.functionToCall == 'addSortedCourse') then
 						show = false;
 					elseif vehicle.cp.hud.choose_parent ~= true then
-						if button.functionToCall == 'delete_sorted_item' and vehicle.cp.hud.courses[row].type == 'folder' and g_currentMission.cp_sorted.info[ vehicle.cp.hud.courses[row].uid ].lastChild ~= 0 then
+						if button.functionToCall == 'deleteSortedItem' and vehicle.cp.hud.courses[row].type == 'folder' and g_currentMission.cp_sorted.info[ vehicle.cp.hud.courses[row].uid ].lastChild ~= 0 then
 							enable = false;
-						elseif button.functionToCall == 'link_parent' then
+						elseif button.functionToCall == 'linkParent' then
 							button:setSpriteSectionUVs('folderParentFrom');
 							if nofolders then
 								enable = false;
 							end;
 						end;
 					else
-						if button.functionToCall ~= 'link_parent' then
+						if button.functionToCall ~= 'linkParent' then
 							enable = false;
 						else
 							button:setSpriteSectionUVs('folderParentTo');
@@ -803,7 +803,7 @@ function courseplay.hud.setCourses(self, start_index)
 	end
 	
 	-- is start_index even showed?
-	index = courseplay.courses.getMeOrBestFit(self, index)
+	index = courseplay.courses:getMeOrBestFit(self, index)
 	
 	if index ~= 0 then
 		-- insert first entry
@@ -812,7 +812,7 @@ function courseplay.hud.setCourses(self, start_index)
 		
 		-- now search for the next entries
 		while i <= hudLines do
-			index = courseplay.courses.getNextCourse(self,index)
+			index = courseplay.courses:getNextCourse(self,index)
 			if index == 0 then
 				-- no next item found: fill table with previous items and abort the loop
 				if start_index > 1 then
@@ -869,7 +869,7 @@ function courseplay:shiftHudCourses(vehicle, change_by)
 		index = vehicle.cp.sorted.info[vehicle.cp.hud.courses[#(vehicle.cp.hud.courses)].uid].sorted_index
 		
 		-- search for the next item
-		index = courseplay.courses.getNextCourse(vehicle,index)
+		index = courseplay.courses:getNextCourse(vehicle,index)
 		if index == 0 then
 			-- there is no next item: abort
 			change_by = 0
@@ -889,7 +889,7 @@ function courseplay:shiftHudCourses(vehicle, change_by)
 		index = vehicle.cp.sorted.info[vehicle.cp.hud.courses[1].uid].sorted_index
 		
 		-- search reverse for the next item
-		index = courseplay.courses.getNextCourse(vehicle, index, true)
+		index = courseplay.courses:getNextCourse(vehicle, index, true)
 		if index == 0 then
 			-- there is no next item: abort
 			change_by = 0
@@ -944,7 +944,7 @@ function courseplay.settings.validateCourseListArrows(vehicle)
 				next = false
 			elseif vehicle.cp.hud.showZeroLevelFolder and vehicle.cp.hud.courses[n_hudcourses].uid == 0 then
 				next = false
-			elseif 0 == courseplay.courses.getNextCourse(vehicle, vehicle.cp.sorted.info[ vehicle.cp.hud.courses[n_hudcourses].uid ].sorted_index) then
+			elseif 0 == courseplay.courses:getNextCourse(vehicle, vehicle.cp.sorted.info[ vehicle.cp.hud.courses[n_hudcourses].uid ].sorted_index) then
 				next = false
 			end
 		end
@@ -972,7 +972,7 @@ function courseplay.settings.validateCourseListArrows(vehicle)
 					-- update next
 					if n_hudcourses < coursplay.hud.numLines then
 						next = false
-					elseif 0 == courseplay.courses.getNextCourse(v, v.cp.sorted.info[v.cp.hud.courses[n_hudcourses].uid].sorted_index) then
+					elseif 0 == courseplay.courses:getNextCourse(v, v.cp.sorted.info[v.cp.hud.courses[n_hudcourses].uid].sorted_index) then
 						next = false
 					end
 				end
@@ -1153,8 +1153,7 @@ function courseplay:reloadCoursesFromXML(vehicle)
 			local loadedCoursesBackup = vehicle.cp.loadedCourses;
 			courseplay:clearCurrentLoadedCourse(vehicle);
 			vehicle.cp.loadedCourses = loadedCoursesBackup;
-			courseplay:reload_courses(vehicle, true);
-			courseplay:debug("courseplay:reload_courses(vehicle, true)", 8);
+			courseplay:reloadCourses(vehicle, true);
 		end;
 		courseplay.settings.update_folders()
 		courseplay.settings.setReloadCourseItems()

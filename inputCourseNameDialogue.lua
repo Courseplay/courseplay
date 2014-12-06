@@ -152,7 +152,7 @@ function inputCourseNameDialogue:onSaveClick()
 			--print("self.textInputElement= "..tostring(self.textInputElement).."  courseplay.vehicleToSaveCourseIn.cp.currentCourseName= "..tostring(courseplay.vehicleToSaveCourseIn.cp.currentCourseName));
 		end
 
-		local maxID = courseplay.courses.getMaxCourseID() -- horoman: made maxID local, should not make a difference as it is used nowhere (at least Eclipse file search doesn't find it in any of the courseplay files)
+		local maxID = courseplay.courses:getMaxCourseID() -- horoman: made maxID local, should not make a difference as it is used nowhere (at least Eclipse file search doesn't find it in any of the courseplay files)
 		if maxID == nil then
 			g_currentMission.cp_courses = {};
 			maxID = 0
@@ -165,11 +165,11 @@ function inputCourseNameDialogue:onSaveClick()
 		g_currentMission.cp_courses[vehicle.cp.currentCourseId] = course
 		--courseplay:dopairs(g_currentMission.cp_courses,1) replace it by tableshow
 		
-		g_currentMission.cp_sorted = courseplay.courses.sort()
+		g_currentMission.cp_sorted = courseplay.courses:sort()
 
 
 
-		courseplay.courses.save_course(vehicle.cp.currentCourseId, nil, true)
+		courseplay.courses:saveCourseToXml(vehicle.cp.currentCourseId, nil, true)
 		courseplay.settings.setReloadCourseItems()
 		courseplay.signs:updateWaypointSigns(vehicle);
 
@@ -180,7 +180,7 @@ function inputCourseNameDialogue:onSaveClick()
 			CourseplayEvent.sendEvent(vehicle, "self.cp.saveFolderName", self.textInputElement.text)
 		end
 	
-		local maxID = courseplay.courses.getMaxFolderID()
+		local maxID = courseplay.courses:getMaxFolderID()
 		if maxID == nil then
 			g_currentMission.cp_folders = {}
 			maxID = 0
@@ -190,9 +190,9 @@ function inputCourseNameDialogue:onSaveClick()
 
 		g_currentMission.cp_folders[folderID] = folder
 		--courseplay:dopairs(g_currentMission.cp_folders,1)replace it by tableshow
-		g_currentMission.cp_sorted = courseplay.courses.sort(g_currentMission.cp_courses, g_currentMission.cp_folders, 0, 0)
+		g_currentMission.cp_sorted = courseplay.courses:sort(g_currentMission.cp_courses, g_currentMission.cp_folders, 0, 0)
 
-		courseplay.courses.save_folder(folderID, nil, true)
+		courseplay.courses:saveFolderToXml(folderID, nil, true)
 		courseplay.settings.add_folder(folderID)
 		courseplay.settings.setReloadCourseItems()
 		courseplay.signs:updateWaypointSigns(vehicle);

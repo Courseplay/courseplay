@@ -586,7 +586,7 @@ function courseplay.hud:loadPage(vehicle, page)
 	elseif page == 2 then
 		-- update courses?
 		if vehicle.cp.reloadCourseItems then
-			courseplay.courses.reload(vehicle)
+			courseplay.courses:reloadVehicleCourses(vehicle)
 			CourseplayEvent.sendEvent(vehicle,'self.cp.onMpSetCourses',true)
 		end
 		-- end update courses
