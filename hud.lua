@@ -744,9 +744,11 @@ function courseplay.hud:loadPage(vehicle, page)
 		-- Waiting point: wait time
 		if courseplay:getCanHaveWaitTime(vehicle) then
 			vehicle.cp.hud.content.pages[6][5][1].text = courseplay:loc('COURSEPLAY_WAITING_TIME');
-			local minutes, seconds = math.floor(vehicle.cp.waitTime/60), vehicle.cp.waitTime % 60;
-			local str = courseplay:loc('COURSEPLAY_SECONDS'):format(seconds);
-			if minutes > 0 then
+			local str;
+			if vehicle.cp.waitTime < 60 then
+				str = courseplay:loc('COURSEPLAY_SECONDS'):format(vehicle.cp.waitTime);
+			else
+				local minutes, seconds = math.floor(vehicle.cp.waitTime/60), vehicle.cp.waitTime % 60;
 				str = courseplay:loc('COURSEPLAY_MINUTES'):format(minutes);
 				if seconds > 0 then
 					str = str .. ', ' .. courseplay:loc('COURSEPLAY_SECONDS'):format(seconds);

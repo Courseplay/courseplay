@@ -812,9 +812,9 @@ function courseplay:load(xmlFile)
 	courseplay.button:new(self, 6, nil, 'changeVisualWaypointsMode', 1, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[3], courseplay.hud.visibleArea.width, 0.015, 3, nil, true);
 	courseplay.button:new(self, 6, nil, 'changeBeaconLightsMode', 1, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[4], courseplay.hud.visibleArea.width, 0.015, 4, nil, true);
 
-	courseplay.button:new(self, 6, { 'iconSprite.png', 'navMinus' }, 'changeWaitTime', -5, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[5], w16px, h16px, 5, -10, false);
-	courseplay.button:new(self, 6, { 'iconSprite.png', 'navPlus' },  'changeWaitTime',  5, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[5], w16px, h16px, 5,  10, false);
-	courseplay.button:new(self, 6, nil, 'changeWaitTime', 5, mouseWheelArea.x, courseplay.hud.linesButtonPosY[5], mouseWheelArea.w, mouseWheelArea.h, 5, 10, true, true);
+	courseplay.button:new(self, 6, { 'iconSprite.png', 'navMinus' }, 'changeWaitTime', -1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[5], w16px, h16px, 5, -5, false);
+	courseplay.button:new(self, 6, { 'iconSprite.png', 'navPlus' },  'changeWaitTime',  1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[5], w16px, h16px, 5,  5, false);
+	courseplay.button:new(self, 6, nil, 'changeWaitTime', 1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[5], mouseWheelArea.w, mouseWheelArea.h, 5, 5, true, true);
 
 	if courseplay.ingameMapIconActive and courseplay.ingameMapIconShowTextLoaded then
 		courseplay.button:new(self, 6, nil, 'toggleIngameMapIconShowText', nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[6], courseplay.hud.visibleArea.width, 0.015, 7, nil, true);
