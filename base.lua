@@ -1125,16 +1125,8 @@ function courseplay:update(dt)
 	end; -- self:getIsActive() and self.isEntered and modifierPressed
 
 
-	if g_server ~= nil then
-		if self.cp.isDriving or self.cp.isRecording or self.cp.recordingIsPaused then
-			courseplay:setInfoText(self, nil);
-		elseif self.cp.infoText then
-			-- timer (set in getCanUseAiMode())
-			if self.cp.timers.infoText and courseplay:timerIsThrough(self, 'infoText') then
-				courseplay:setInfoText(self, nil);
-				courseplay:resetCustomTimer(self, 'infoText');
-			end;
-		end;
+	if g_server ~= nil and (self.cp.isDriving or self.cp.isRecording or self.cp.recordingIsPaused) then
+		courseplay:setInfoText(self, nil);
 	end;
 
 	if self.cp.drawWaypointsLines then
