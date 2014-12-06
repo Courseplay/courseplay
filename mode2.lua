@@ -131,7 +131,7 @@ function courseplay:handle_mode2(self, dt)
 		end
 
 		-- are there any combines out there that need my help?
-		if self.cp.timeOut < self.timer then
+		if courseplay:timerIsThrough(vehicle, 'searchForCombines') then
 			if self.cp.lastActiveCombine ~= nil then
 				local distance = courseplay:distanceToObject(self, self.cp.lastActiveCombine)
 				if distance > 20 then
@@ -142,7 +142,7 @@ function courseplay:handle_mode2(self, dt)
 			else 
 				courseplay:updateReachableCombines(self)
 			end
-			courseplay:set_timeout(self, 5000)
+			courseplay:setCustomTimer(vehicle, 'searchForCombines', 5);
 		end
 
 		--is any of the reachable combines full?

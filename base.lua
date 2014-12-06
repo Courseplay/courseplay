@@ -56,7 +56,6 @@ function courseplay:load(xmlFile)
 	self.recordnumber = 1;
 	self.cp.lastRecordnumber = 1;
 	self.cp.recordingTimer = 1
-	self.cp.timeOut = 1
 	self.timer = 0.00
 	self.cp.timers = {}; 
 	self.cp.driveSlowTimer = 0;
@@ -76,7 +75,6 @@ function courseplay:load(xmlFile)
 
 	self.cp.visualWaypointsMode = 1
 	self.cp.beaconLightsMode = 1
-	self.cp.workWidthChanged = 0
 	-- saves the shortest distance to the next waypoint (for recocnizing circling)
 	self.cp.shortestDistToWp = nil
 
@@ -976,8 +974,12 @@ function courseplay:draw()
 	local isDriving = self:getIsCourseplayDriving();
 
 	--WORKWIDTH DISPLAY
-	if self.cp.workWidthChanged > self.timer and self.cp.mode ~= 7 then
-		courseplay:showWorkWidth(self);
+	if self.cp.mode ~= 7 and self.cp.timers.showWorkWidth and self.cp.timers.showWorkWidth > 0 then
+		if courseplay:timerIsThrough(self, 'showWorkWidth') then -- stop showing, reset timer
+			courseplay:resetCustomTimer(self, 'showWorkWidth');
+		else -- timer running, show
+			courseplay:showWorkWidth(self);
+		end;
 	end;
 
 	--DEBUG SHOW DIRECTIONNODE
@@ -1123,8 +1125,16 @@ function courseplay:update(dt)
 	end; -- self:getIsActive() and self.isEntered and modifierPressed
 
 
-	if g_server ~= nil and (self.cp.isDriving or self.cp.isRecording or self.cp.recordingIsPaused) then
-		courseplay:setInfoText(self, nil);
+	if g_server ~= nil then
+		if self.cp.isDriving or self.cp.isRecording or self.cp.recordingIsPaused then
+			courseplay:setInfoText(self, nil);
+		elseif self.cp.infoText then
+			-- timer (set in getCanUseAiMode())
+			if self.cp.timers.infoText and courseplay:timerIsThrough(self, 'infoText') then
+				courseplay:setInfoText(self, nil);
+				courseplay:resetCustomTimer(self, 'infoText');
+			end;
+		end;
 	end;
 
 	if self.cp.drawWaypointsLines then
@@ -1254,8 +1264,7 @@ function courseplay:updateTick(dt)
 		courseplay:reset_tools(self)
 	end
 
-	self.timer = self.timer + dt
-	--courseplay:debug(string.format("timer: %f", self.timer ), 2)
+	self.timer = self.timer + dt;
 end
 
 function courseplay:preDelete()
@@ -1308,13 +1317,12 @@ function courseplay:delete()
 	end;
 end;
 
-function courseplay:set_timeout(vehicle, interval)
-	vehicle.cp.timeOut = vehicle.timer + interval;
-end;
-
-function courseplay:setInfoText(vehicle, text)
+function courseplay:setInfoText(vehicle, text, seconds)
 	if vehicle.cp.infoText ~= text then
 		vehicle.cp.infoText = text;
+		if seconds then
+			courseplay:setCustomTimer(vehicle, 'infoText', seconds);
+		end;
 	end;
 end;
 

@@ -295,7 +295,7 @@ function courseplay:changeToolOffsetX(vehicle, changeBy, force, noDraw)
 	if noDraw == nil then noDraw = false; end;
 	if not noDraw and vehicle.cp.mode ~= 3 and vehicle.cp.mode ~= 7 then
 		courseplay:calculateWorkWidthDisplayPoints(vehicle);
-		vehicle.cp.workWidthChanged = vehicle.timer + 2000;
+		courseplay:setCustomTimer(vehicle, 'showWorkWidth', 2);
 	end
 end;
 
@@ -434,7 +434,7 @@ function courseplay:changeWorkWidth(vehicle, changeBy, force)
 		vehicle.cp.workWidth = max(vehicle.cp.workWidth + changeBy, 0.1);
 	end;
 	courseplay:calculateWorkWidthDisplayPoints(vehicle);
-	vehicle.cp.workWidthChanged = vehicle.timer + 2000;
+	courseplay:setCustomTimer(vehicle, 'showWorkWidth', 2);
 end;
 
 function courseplay:calculateWorkWidthDisplayPoints(vehicle)

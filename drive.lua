@@ -4,8 +4,9 @@ local abs, max, min, pow, sin = math.abs, math.max, math.min, math.pow, math.sin
 
 -- drives recored course
 function courseplay:drive(self, dt)
-	if not courseplay:getCanUseAiMode(self) then
-		return;
+	-- check engine state
+	if not vehicle.isMotorStarted or (vehicle.motorStartTime and vehicle.motorStartTime > g_currentMission.time) then
+		return false;
 	end;
 
 	-- debug for workAreas

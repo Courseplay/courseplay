@@ -600,12 +600,12 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 
 	-- drive on when required fill level is reached
 	local driveOn = false;
-	if vehicle.cp.timeOut < vehicle.timer or vehicle.cp.prevFillLevelPct == nil then
+	if courseplay:timerIsThrough(vehicle, 'fillLevelChange') or vehicle.cp.prevFillLevelPct == nil then
 		if vehicle.cp.prevFillLevelPct ~= nil and vehicle.cp.tipperFillLevelPct == vehicle.cp.prevFillLevelPct and vehicle.cp.tipperFillLevelPct > vehicle.cp.driveOnAtFillLevel then
 			driveOn = true;
 		end;
 		vehicle.cp.prevFillLevelPct = vehicle.cp.tipperFillLevelPct;
-		courseplay:set_timeout(vehicle, 7000);
+		courseplay:setCustomTimer(vehicle, 'fillLevelChange', 7);
 	end;
 
 	if vehicle.cp.tipperFillLevelPct == 100 or driveOn then
