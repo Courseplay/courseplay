@@ -1145,9 +1145,10 @@ end;
 function courseplay:reloadCoursesFromXML(vehicle)
 	courseplay:debug("reloadCoursesFromXML()", 8);
 	if g_server ~= nil then
-		CpManager:load_courses();
+		courseplay.courses:loadCoursesAndFoldersFromXml();
+
 		courseplay:debug(tableShow(g_currentMission.cp_courses, "g_cM cp_courses", 8), 8);
-		courseplay:debug("g_currentMission.cp_courses = CpManager:load_courses()", 8);
+		courseplay:debug("g_currentMission.cp_courses = courseplay.courses:loadCoursesAndFoldersFromXml()", 8);
 		if not vehicle:getIsCourseplayDriving() then
 			local loadedCoursesBackup = vehicle.cp.loadedCourses;
 			courseplay:clearCurrentLoadedCourse(vehicle);

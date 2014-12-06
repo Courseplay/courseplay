@@ -3,7 +3,7 @@ CpManager = {};
 local CpManager_mt = Class(CpManager);
 addModEventListener(CpManager);
 
-local ceil = math.ceil;
+
 
 function CpManager:loadMap(name)
 	self.isCourseplayManager = true;
@@ -32,6 +32,7 @@ function CpManager:loadMap(name)
 	self.showFieldScanYesNoDialogue = false;
 	self:setupWages();
 	self:setupIngameMap();
+	courseplay.courses:setup(); -- NOTE: this call is only to set up batchWriteSize, without loading anything
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- LOAD SETTINGS FROM COURSEPLAY.XML / SAVE DEFAULT SETTINGS IF NOT EXISTING
@@ -42,6 +43,7 @@ function CpManager:loadMap(name)
 	courseplay.hud:setup(); -- NOTE: hud has to be set up after the xml settings have been loaded, as almost all its values are based on infoBasePosX/Y
 	self:setUpDebugChannels(); -- NOTE: debugChannels have to be set up after the hud, as they rely on some hud values [positioning]
 	self:setupGlobalInfoText(); -- NOTE: globalInfoText has to be set up after the hud, as they rely on some hud values [colors]
+	courseplay.courses:setup(true); -- NOTE: courses:setup is called a second time, now we actually load the courses and folders from the XML
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- COURSEPLAYERS TABLES
@@ -104,20 +106,6 @@ function CpManager:loadMap(name)
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- MISCELLANEOUS
 	self.lightsNeeded = false;
-
-	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	-- LOAD COURSES AND FOLDERS
-	if g_currentMission.cp_courses == nil then
-		--courseplay:debug("cp_courses was nil and initialized", 8);
-		g_currentMission.cp_courses = {};
-		g_currentMission.cp_folders = {};
-		g_currentMission.cp_sorted = {item={}, info={}};
-
-		if g_server ~= nil and next(g_currentMission.cp_courses) == nil then
-			self:load_courses();
-			-- courseplay:debug(tableShow(g_currentMission.cp_courses, "g_cM cp_courses", 8), 8);
-		end
-	end;
 end;
 
 function CpManager:deleteMap()
@@ -126,6 +114,7 @@ function CpManager:deleteMap()
 	g_currentMission.cp_courses = nil;
 	g_currentMission.cp_folders = nil;
 	g_currentMission.cp_sorted = nil;
+	courseplay.courses.batchWriteSize = nil;
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- deactivate debug channels
@@ -933,8 +922,17 @@ function CpManager:loadOrSetXmlSettings()
 		else
 			setXMLBool(cpFile, key .. '#showCourse', self.ingameMapIconShowCourse);
 		end;
-		self.ingameMapIconShowText	 = self.ingameMapIconShowName or self.ingameMapIconShowCourse;
+		self.ingameMapIconShowText = self.ingameMapIconShowName or self.ingameMapIconShowCourse;
 
+
+		-- batch write size (used in deleteSaveAll())
+		key = 'XML.courseManagement';
+		local batchWriteSize = getXMLInt(cpFile, key .. '#batchWriteSize');
+		if batchWriteSize ~= nil then
+			courseplay.courses.batchWriteSize = batchWriteSize;
+		else
+			setXMLInt(cpFile, key .. '#batchWriteSize', courseplay.courses.batchWriteSize);
+		end;
 
 		--------------------------------------------------
 		saveXMLFile(cpFile);
@@ -974,212 +972,11 @@ function CpManager:createXmlSettings()
 	setXMLBool(cpFile, key .. '#showName',	 self.ingameMapIconShowName);
 	setXMLBool(cpFile, key .. '#showCourse', self.ingameMapIconShowCourse);
 
+	-- batch write size (used in deleteSaveAll())
+	key = 'XML.courseManagement';
+	setXMLInt(cpFile, key .. '#batchWriteSize', courseplay.courses.batchWriteSize);
 	--------------------------------------------------
 
 	saveXMLFile(cpFile);
 	delete(cpFile);
 end;
-
-
-
--- ####################################################################################################
-
-
-function CpManager:load_courses()
-	courseplay:debug('loading courses by courseplay manager', 8);
-
-	if self.cpXmlFilePath then
-		local filePath = self.cpXmlFilePath;
-
-		if fileExists(filePath) then
-			local cpFile = loadXMLFile('courseFile', filePath);
-			g_currentMission.cp_courses = nil -- make sure it's empty (especially in case of a reload)
-			g_currentMission.cp_courses = {}
-			local courses_by_id = g_currentMission.cp_courses
-			local courses_without_id = {}
-
-			local waypoints;
-			local i = 0;
-			while true do
-				-- current course
-				local courseKey = ('XML.courses.course(%d)'):format(i);
-				if not hasXMLProperty(cpFile, courseKey) then
-					break;
-				end;
-
-				-- course name
-				local courseName = getXMLString(cpFile, courseKey .. '#name');
-				if courseName == nil then
-					courseName = ('NO_NAME%d'):format(i);
-				end;
-				local courseNameClean = courseplay:normalizeUTF8(courseName);
-
-				-- course ID
-				local id = getXMLInt(cpFile, courseKey .. '#id') or 0;
-				
-				-- course parent
-				local parent = getXMLInt(cpFile, courseKey .. '#parent') or 0;
-
-				--course waypoints
-				waypoints = {};
-
-				local wpNum = 1;
-				while true do
-					local key = courseKey .. '.waypoint' .. wpNum;
-
-					if not hasXMLProperty(cpFile, key .. '#pos') then
-						break;
-					end;
-					local x, z = Utils.getVectorFromString(getXMLString(cpFile, key .. '#pos'));
-					if x == nil or z == nil then
-						break;
-					end;
-
-					local angle 	  =  getXMLFloat(cpFile, key .. '#angle') or 0;
-					local speed 	  = getXMLString(cpFile, key .. '#speed') or '0'; -- use string so we can get both ints and proper floats without LUA's rounding errors
-					speed = tonumber(speed);
-					if ceil(speed) ~= speed then -- is it an old savegame with old speeds ?
-						speed = ceil(speed * 3600);
-					end;
-
-					-- NOTE: only pos, angle and speed can't be nil. All others can and should be nil if not "active", so that they're not saved to the xml
-					local wait 		  =    getXMLInt(cpFile, key .. '#wait');
-					local rev 		  =    getXMLInt(cpFile, key .. '#rev');
-					local crossing 	  =    getXMLInt(cpFile, key .. '#crossing');
-
-					local generated   =   getXMLBool(cpFile, key .. '#generated');
-					local laneDir	  = getXMLString(cpFile, key .. '#dir');
-					local turn 		  = getXMLString(cpFile, key .. '#turn');
-					local turnStart	  =    getXMLInt(cpFile, key .. '#turnstart');
-					local turnEnd 	  =    getXMLInt(cpFile, key .. '#turnend');
-					local ridgeMarker =    getXMLInt(cpFile, key .. '#ridgemarker') or 0;
-
-					crossing = crossing == 1 or wpNum == 1;
-					wait = wait == 1;
-					rev = rev == 1;
-
-					if turn == 'false' then
-						turn = nil;
-					end;
-					turnStart = turnStart == 1;
-					turnEnd = turnEnd == 1;
-
-					waypoints[wpNum] = { 
-						cx = x, 
-						cz = z, 
-						angle = angle, 
-						speed = speed,
-
-						rev = rev, 
-						wait = wait, 
-						crossing = crossing, 
-						generated = generated,
-						laneDir = laneDir,
-						turn = turn,
-						turnStart = turnStart,
-						turnEnd = turnEnd,
-						ridgeMarker = ridgeMarker
-					};
-
-					wpNum = wpNum + 1;
-				end; -- END while true (waypoints)
-				
-				local course = { id = id, uid = 'c' .. id , type = 'course', name = courseName, nameClean = courseNameClean, waypoints = waypoints, parent = parent };
-				if id ~= 0 then
-					courses_by_id[id] = course;
-				else
-					table.insert(courses_without_id, course);
-				end;
-
-				waypoints = nil;
-				i = i + 1;
-			end; -- END while true (courses)
-			
-			local j = 0
-			local currentFolder, FolderName, id, parent, folder
-			finish_all = false
-			g_currentMission.cp_folders = nil
-			g_currentMission.cp_folders = {}
-			local folders_by_id = g_currentMission.cp_folders
-			local folders_without_id = {}
-			repeat
-				-- current folder
-				currentFolder = string.format("XML.folders.folder(%d)", j)
-				if not hasXMLProperty(cpFile, currentFolder) then
-					finish_all = true;
-					break;
-				end;
-				
-				-- folder name
-				FolderName = getXMLString(cpFile, currentFolder .. "#name")
-				if FolderName == nil then
-					FolderName = string.format('NO_NAME%d',j)
-				end
-				local folderNameClean = courseplay:normalizeUTF8(FolderName);
-				
-				-- folder id
-				id = getXMLInt(cpFile, currentFolder .. "#id")
-				if id == nil then
-					id = 0
-				end
-				
-				-- folder parent
-				parent = getXMLInt(cpFile, currentFolder .. "#parent")
-				if parent == nil then
-					parent = 0
-				end
-				
-				-- "save" current folder
-				folder = { id = id, uid = 'f' .. id ,type = 'folder', name = FolderName, nameClean = folderNameClean, parent = parent }
-				if id ~= 0 then
-					folders_by_id[id] = folder
-				else
-					table.insert(folders_without_id, folder)
-				end
-				j = j + 1
-			until finish_all == true
-			
-			local save = false
-			if #courses_without_id > 0 then
-				-- give a new ID and save
-				local maxID = courseplay.courses.getMaxCourseID()
-				for i = 1, #courses_without_id do
-					maxID = maxID + 1
-					courses_without_id[i].id = maxID
-					courses_without_id[i].uid = 'c' .. maxID
-					courses_by_id[maxID] = courses_without_id[i]
-				end
-				save = true
-			end
-			if #folders_without_id > 0 then
-				-- give a new ID and save
-				local maxID = courseplay.courses.getMaxFolderID()
-				for i = #folders_without_id, 1, -1 do
-					maxID = maxID + 1
-					folders_without_id[i].id = maxID
-					folders_without_id[i].uid = 'f' .. maxID
-					folders_by_id[maxID] = table.remove(folders_without_id)
-				end
-				save = true
-			end		
-			if save then
-				-- this will overwrite the courseplay file and therefore delete the courses without ids and add them again with ids as they are now stored in g_currentMission with an id
-				courseplay.courses.save_all()
-			end
-			
-			g_currentMission.cp_sorted = courseplay.courses.sort(courses_by_id, folders_by_id, 0, 0)
-						
-			delete(cpFile);
-		else
-			-- print(('\t"courseplay.xml" missing at %q'):format(tostring(self.cpXmlFilePath);
-		end; --END if fileExists
-		
-		courseplay:debug(tableShow(g_currentMission.cp_sorted.item, "cp_sorted.item", 8), 8);
-
-		return g_currentMission.cp_courses;
-	else
-		print('COURSEPLAY ERROR: current savegame could not be found');
-	end; --END if savegame ~= nil
-
-	return nil;
-end

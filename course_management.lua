@@ -1,6 +1,30 @@
 local curFile = 'course_management.lua';
+local ceil = math.ceil;
 
 -- saving // loading courses
+function courseplay.courses:setup(doLoading)
+	-- NOTE: setup() is called twice during loadMap(), once before and once after the XML settings have been loaded
+	if self.batchWriteSize == nil then
+		self.batchWriteSize = 4096; -- used in deleteSaveAll() for batch-writing waypoint data. value in KB
+	end;
+
+
+	if not doLoading then return end;
+
+	-- LOAD COURSES AND FOLDERS FROM XML
+	if g_currentMission.cp_courses == nil then
+		-- courseplay:debug("cp_courses was nil and initialized", 8);
+		g_currentMission.cp_courses = {};
+		g_currentMission.cp_folders = {};
+		g_currentMission.cp_sorted = { item={}, info={} };
+
+		if g_server ~= nil and next(g_currentMission.cp_courses) == nil then
+			self:loadCoursesAndFoldersFromXml();
+			-- courseplay:debug(tableShow(g_currentMission.cp_courses, "g_cM cp_courses", 8), 8);
+		end;
+	end;
+end;
+
 
 -- enables input for course/folder/filter name
 function courseplay:showSaveCourseForm(self, saveWhat)
@@ -48,11 +72,11 @@ function courseplay:reload_courses(self, use_real_id)
 	end
 end
 
-function CpManager:reinitializeCourses()
+function courseplay.courses:reinitializeCourses()
 	if g_currentMission.cp_courses == nil then
 		courseplay:debug("cp_courses is empty", 8)
 		if g_server ~= nil then
-			CpManager:load_courses();
+			self:loadCoursesAndFoldersFromXml();
 		end
 		return
 	end
@@ -72,7 +96,7 @@ end
 
 function courseplay:load_course(self, id, useRealId, addCourseAtEnd)
 	-- global array for courses, no refreshing needed any more
-	CpManager:reinitializeCourses();
+	courseplay.courses:reinitializeCourses();
 
 	if addCourseAtEnd == nil then addCourseAtEnd = false; end;
 
@@ -587,7 +611,7 @@ function courseplay.courses.save_courses(File, append)
 	end
 end
 
-function courseplay.courses.delete_save_all(self)
+function courseplay.courses:deleteSaveAll()
 -- saves courses to xml-file
 -- opening the file with io.open will delete its content...
 	if g_server ~= nil then
@@ -601,6 +625,7 @@ function courseplay.courses.delete_save_all(self)
 				header = header .. ('\t<courseplayFields automaticScan=%q onlyScanOwnedFields=%q debugScannedFields=%q debugCustomLoadedFields=%q scanStep="%d" />\n'):format(tostring(courseplay.fields.automaticScan), tostring(courseplay.fields.onlyScanOwnedFields), tostring(courseplay.fields.debugScannedFields), tostring(courseplay.fields.debugCustomLoadedFields), courseplay.fields.scanStep);
 				header = header .. ('\t<courseplayWages active=%q wagePerHour="%d" />\n'):format(tostring(CpManager.wagesActive), CpManager.wagePerHour);
 				header = header .. ('\t<courseplayIngameMap active=%q showName=%q showCourse=%q />\n'):format(tostring(CpManager.ingameMapIconActive), tostring(CpManager.ingameMapIconShowName),tostring(CpManager.ingameMapIconShowCourse));
+				header = header .. ('\t<courseManagement batchWriteSize="%d" />'):format(self.batchWriteSize);
 
 				file:write(header);
 
@@ -615,7 +640,10 @@ function courseplay.courses.delete_save_all(self)
 				-- courses
 				file:write('\t<courses>\n')
 				for i,course in pairs(g_currentMission.cp_courses) do
-					file:write(('\t\t<course name=%q id="%d" parent="%d" numWaypoints="%d">\n'):format(course.name, course.id, course.parent, #course.waypoints));
+					local numWaypoints = #course.waypoints;
+					file:write(('\t\t<course name=%q id="%d" parent="%d" numWaypoints="%d">\n'):format(course.name, course.id, course.parent, numWaypoints));
+
+					local wpBatchTxt = '';
 					for wpNum,wp in ipairs(course.waypoints) do
 						local wpContent = ('\t\t\t<waypoint%d pos="%.2f %.2f" angle="%.2f" speed="%d"'):format(wpNum, wp.cx, wp.cz, wp.angle, wp.speed or 0);
 
@@ -649,7 +677,14 @@ function courseplay.courses.delete_save_all(self)
 
 						wpContent = wpContent .. ' />\n';
 
-						file:write(wpContent);
+						wpBatchTxt = wpBatchTxt .. wpContent;
+
+						-- write 4KB (or user adjusted value) at a time
+						local byteLength = wpBatchTxt:len();
+						if byteLength >= self.batchWriteSize or wpNum == numWaypoints then
+							file:write(wpBatchTxt);
+							wpBatchTxt = '';
+						end;
 					end;
 
 					file:write('\t\t</course>\n');
@@ -674,7 +709,7 @@ function courseplay.courses.save_all(recreateXML)
 	
 	if recreateXML then
 	-- new version (better performance):
-		courseplay.courses.delete_save_all()
+		courseplay.courses:deleteSaveAll();
 	else
 	-- old version:
 		local f = courseplay.courses.openOrCreateXML(recreateXML)
@@ -1085,4 +1120,210 @@ function courseplay.courses.reload(vehicle)
 		
 		vehicle.cp.reloadCourseItems = false
 	end -- end vehicle ~= nil
+end
+
+
+
+function courseplay.courses:loadCoursesAndFoldersFromXml()
+	print('## Courseplay: loading courses and folders from "courseplay.xml"');
+
+	if CpManager.cpXmlFilePath then
+		local filePath = CpManager.cpXmlFilePath;
+
+		if fileExists(filePath) then
+			local cpFile = loadXMLFile('courseFile', filePath);
+			g_currentMission.cp_courses = nil -- make sure it's empty (especially in case of a reload)
+			g_currentMission.cp_courses = {}
+			local courses_by_id = g_currentMission.cp_courses
+			local courses_without_id = {}
+
+			-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			-- LOAD COURSES
+			local waypoints;
+			local i = 0;
+			while true do
+				-- current course
+				local courseKey = ('XML.courses.course(%d)'):format(i);
+				if not hasXMLProperty(cpFile, courseKey) then
+					break;
+				end;
+
+				-- course name
+				local courseName = getXMLString(cpFile, courseKey .. '#name');
+				if courseName == nil then
+					courseName = ('NO_NAME%d'):format(i);
+				end;
+				local courseNameClean = courseplay:normalizeUTF8(courseName);
+
+				-- course ID
+				local id = getXMLInt(cpFile, courseKey .. '#id') or 0;
+				
+				-- course parent
+				local parent = getXMLInt(cpFile, courseKey .. '#parent') or 0;
+
+				--course waypoints
+				waypoints = {};
+
+				local wpNum = 1;
+				while true do
+					local key = courseKey .. '.waypoint' .. wpNum;
+
+					if not hasXMLProperty(cpFile, key .. '#pos') then
+						break;
+					end;
+					local x, z = Utils.getVectorFromString(getXMLString(cpFile, key .. '#pos'));
+					if x == nil or z == nil then
+						break;
+					end;
+
+					local angle 	  =  getXMLFloat(cpFile, key .. '#angle') or 0;
+					local speed 	  = getXMLString(cpFile, key .. '#speed') or '0'; -- use string so we can get both ints and proper floats without LUA's rounding errors
+					speed = tonumber(speed);
+					if ceil(speed) ~= speed then -- is it an old savegame with old speeds ?
+						speed = ceil(speed * 3600);
+					end;
+
+					-- NOTE: only pos, angle and speed can't be nil. All others can and should be nil if not "active", so that they're not saved to the xml
+					local wait 		  =    getXMLInt(cpFile, key .. '#wait');
+					local rev 		  =    getXMLInt(cpFile, key .. '#rev');
+					local crossing 	  =    getXMLInt(cpFile, key .. '#crossing');
+
+					local generated   =   getXMLBool(cpFile, key .. '#generated');
+					local laneDir	  = getXMLString(cpFile, key .. '#dir');
+					local turn 		  = getXMLString(cpFile, key .. '#turn');
+					local turnStart	  =    getXMLInt(cpFile, key .. '#turnstart');
+					local turnEnd 	  =    getXMLInt(cpFile, key .. '#turnend');
+					local ridgeMarker =    getXMLInt(cpFile, key .. '#ridgemarker') or 0;
+
+					crossing = crossing == 1 or wpNum == 1;
+					wait = wait == 1;
+					rev = rev == 1;
+
+					if turn == 'false' then
+						turn = nil;
+					end;
+					turnStart = turnStart == 1;
+					turnEnd = turnEnd == 1;
+
+					waypoints[wpNum] = { 
+						cx = x, 
+						cz = z, 
+						angle = angle, 
+						speed = speed,
+
+						rev = rev, 
+						wait = wait, 
+						crossing = crossing, 
+						generated = generated,
+						laneDir = laneDir,
+						turn = turn,
+						turnStart = turnStart,
+						turnEnd = turnEnd,
+						ridgeMarker = ridgeMarker
+					};
+
+					wpNum = wpNum + 1;
+				end; -- END while true (waypoints)
+				
+				local course = { id = id, uid = 'c' .. id , type = 'course', name = courseName, nameClean = courseNameClean, waypoints = waypoints, parent = parent };
+				if id ~= 0 then
+					courses_by_id[id] = course;
+				else
+					table.insert(courses_without_id, course);
+				end;
+
+				waypoints = nil;
+				i = i + 1;
+			end; -- END while true (courses)
+
+
+			-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			-- LOAD FOLDERS
+			local j = 0
+			local currentFolder, FolderName, id, parent, folder
+			finish_all = false
+			g_currentMission.cp_folders = nil
+			g_currentMission.cp_folders = {}
+			local folders_by_id = g_currentMission.cp_folders
+			local folders_without_id = {}
+			repeat
+				-- current folder
+				currentFolder = string.format("XML.folders.folder(%d)", j)
+				if not hasXMLProperty(cpFile, currentFolder) then
+					finish_all = true;
+					break;
+				end;
+				
+				-- folder name
+				FolderName = getXMLString(cpFile, currentFolder .. "#name")
+				if FolderName == nil then
+					FolderName = string.format('NO_NAME%d',j)
+				end
+				local folderNameClean = courseplay:normalizeUTF8(FolderName);
+				
+				-- folder id
+				id = getXMLInt(cpFile, currentFolder .. "#id")
+				if id == nil then
+					id = 0
+				end
+				
+				-- folder parent
+				parent = getXMLInt(cpFile, currentFolder .. "#parent")
+				if parent == nil then
+					parent = 0
+				end
+				
+				-- "save" current folder
+				folder = { id = id, uid = 'f' .. id ,type = 'folder', name = FolderName, nameClean = folderNameClean, parent = parent }
+				if id ~= 0 then
+					folders_by_id[id] = folder
+				else
+					table.insert(folders_without_id, folder)
+				end
+				j = j + 1
+			until finish_all == true
+			
+			local save = false
+			if #courses_without_id > 0 then
+				-- give a new ID and save
+				local maxID = courseplay.courses.getMaxCourseID()
+				for i = 1, #courses_without_id do
+					maxID = maxID + 1
+					courses_without_id[i].id = maxID
+					courses_without_id[i].uid = 'c' .. maxID
+					courses_by_id[maxID] = courses_without_id[i]
+				end
+				save = true
+			end
+			if #folders_without_id > 0 then
+				-- give a new ID and save
+				local maxID = courseplay.courses.getMaxFolderID()
+				for i = #folders_without_id, 1, -1 do
+					maxID = maxID + 1
+					folders_without_id[i].id = maxID
+					folders_without_id[i].uid = 'f' .. maxID
+					folders_by_id[maxID] = table.remove(folders_without_id)
+				end
+				save = true
+			end		
+			if save then
+				-- this will overwrite the courseplay file and therefore delete the courses without ids and add them again with ids as they are now stored in g_currentMission with an id
+				courseplay.courses.save_all()
+			end
+			
+			g_currentMission.cp_sorted = courseplay.courses.sort(courses_by_id, folders_by_id, 0, 0)
+						
+			delete(cpFile);
+		else
+			-- print(('\t"courseplay.xml" missing at %q'):format(tostring(CpManager.cpXmlFilePath);
+		end; --END if fileExists
+		
+		courseplay:debug(tableShow(g_currentMission.cp_sorted.item, "cp_sorted.item", 8), 8);
+
+		return g_currentMission.cp_courses;
+	else
+		print('COURSEPLAY ERROR: current savegame could not be found');
+	end; --END if savegame ~= nil
+
+	return nil;
 end

@@ -1445,7 +1445,7 @@ function courseplay:readStream(streamId, connection)
 		self.cp.unloadingTipper = networkGetObject(unloading_tipper_id)
 	end
 
-	CpManager:reinitializeCourses()
+	courseplay.courses:reinitializeCourses()
 
 
 	-- kurs daten
