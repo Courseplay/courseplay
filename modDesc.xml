@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="20">
-	<version>4.00.0167</version>
+	<version>4.00.0168</version>
 	<author><![CDATA[Courseplay Dev Team]]></author>
 	<title>
 		<br>Courseplay</br>
@@ -2576,7 +2576,6 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<br>Parar marcha ré</br>
 			<cs>前进模式</cs>
 		</text>
-
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT"> <!-- should the vehicle name/course be displayed with the map CP icons --> <!-- missing: cz, es, it, nl -->
 			<en>Map icons: display text</en>
 			<de>Karten-Icons: Text anzeigen</de>
@@ -2585,6 +2584,10 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<br>Icones do mapa: Mostrar texto</br>
 			<ru>Показать инфо на карте:</ru>
 			<cs>地图图标： 显示信息</cs>
+		</text>
+		<text name="COURSEPLAY_ALWAYS_USE_4WD"> <!-- missing: br, cs, cz, es, fr, hu, it, nl, ru -->
+			<en>Always use 4WD</en>
+			<de>Allrad immer anschalten</de>
 		</text>
 
 		<!-- Yes/No dialogues --> <!-- missing: cz, es, it, nl -->

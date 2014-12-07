@@ -1515,12 +1515,12 @@ end;
 -- INGAME MAP ICONS
 function courseplay:createMapHotspot(vehicle)
 	local name = 'cpDriver';
-	if courseplay.ingameMapIconShowText then
+	if CpManager.ingameMapIconShowText then
 		name = '';
-		if courseplay.ingameMapIconShowName then
+		if CpManager.ingameMapIconShowName then
 			name = nameNum(vehicle, true) .. '\n';
 		end;
-		if courseplay.ingameMapIconShowCourse then
+		if CpManager.ingameMapIconShowCourse then
 			name = name .. ('(%s)'):format(vehicle.cp.currentCourseName or courseplay:loc('COURSEPLAY_TEMP_COURSE'));
 		end;
 	end;
@@ -1530,7 +1530,7 @@ function courseplay:createMapHotspot(vehicle)
 	local y = vehicle.components[1].lastTranslation[3];
 	local h = 24 / 1080;
 	local w = h / g_screenAspectRatio;
-	vehicle.cp.ingameMapHotSpot = g_currentMission.ingameMap:createMapHotspot(name, iconPath, x, y, w, h, false, false, courseplay.ingameMapIconShowText, vehicle.rootNode, false, true);
+	vehicle.cp.ingameMapHotSpot = g_currentMission.ingameMap:createMapHotspot(name, iconPath, x, y, w, h, false, false, CpManager.ingameMapIconShowText, vehicle.rootNode, false, true);
 end;
 function courseplay:deleteMapHotspot(vehicle)
 	if vehicle.cp.ingameMapHotSpot then
