@@ -45,8 +45,6 @@ function courseplay:load(xmlFile)
 	self.cp.noStopOnEdge = false --bool
 	self.cp.noStopOnTurn = false --bool
 
-	self.toggledTipState = 0;
-
 	self.cp.combineOffsetAutoMode = true
 	self.cp.isDriving = false;
 	self.cp.runOnceStartCourse = false;
@@ -313,17 +311,15 @@ function courseplay:load(xmlFile)
 	self.cp.trailerFillDistance = nil;
 	self.cp.isUnloaded = false;
 	self.cp.isLoaded = false;
-	self.cp.unloadingTipper = nil;
 	self.cp.tipperFillLevel = nil;
 	self.cp.tipperCapacity = nil;
 	self.cp.tipperFillLevelPct = 0;
 	self.cp.prevFillLevelPct = nil;
 	self.cp.tipRefOffset = 0;
 	self.cp.isReverseBGATipping = nil; -- Used for reverse BGA tipping
-	self.cp.BGASelectedSection = nil; -- Used for reverse BGA tipping
-	self.cp.BGASectionInverted = false; -- Used for reverse BGA tipping
-	self.cp.rearTipRefPoint = nil; -- Used for reverse BGA tipping
-	self.cp.inversedRearTipNode = nil; -- Used for reverse BGA tipping
+	self.cp.isBGATipping = false; -- Used for BGA tipping
+	self.cp.BGASectionInverted = false; -- Used for BGA tipping
+	self.cp.inversedRearTipNode = nil; -- Used for BGA tipping
 	self.cp.tipperHasCover = false;
 	self.cp.tippersWithCovers = {};
 	self.cp.automaticCoverHandling = true;
@@ -1440,11 +1436,6 @@ function courseplay:readStream(streamId, connection)
 		self.cp.currentTrailerToFill = networkGetObject(current_trailer_id)
 	end
 
-	local unloading_tipper_id = streamDebugReadInt32(streamId)
-	if unloading_tipper_id then
-		self.cp.unloadingTipper = networkGetObject(unloading_tipper_id)
-	end
-
 	courseplay.courses:reinitializeCourses()
 
 
@@ -1567,12 +1558,6 @@ function courseplay:writeStream(streamId, connection)
 		current_trailer_id = networkGetObject(self.cp.currentTrailerToFill)
 	end
 	streamDebugWriteInt32(streamId, current_trailer_id)
-
-	local unloading_tipper_id;
-	if self.cp.unloadingTipper ~= nil then
-		unloading_tipper_id = networkGetObject(self.cp.unloadingTipper)
-	end
-	streamDebugWriteInt32(streamId, unloading_tipper_id)
 
 	local loadedCourses;
 	if #self.cp.loadedCourses then

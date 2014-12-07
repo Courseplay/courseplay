@@ -1,11 +1,8 @@
 -- handles "mode1" : waiting at start until tippers full - driving course and unloading on trigger
 function courseplay:handle_mode1(vehicle, allowedToDrive)
 	-- done tipping
-	if vehicle.cp.unloadingTipper ~= nil and vehicle.cp.unloadingTipper.fillLevel == 0 then
-		vehicle.cp.unloadingTipper = nil
-		if vehicle.cp.tipperFillLevel == 0 then
-			courseplay:resetTipTrigger(vehicle, true);
-		end
+	if vehicle.cp.tipperFillLevel == 0 then
+		courseplay:resetTipTrigger(vehicle, true);
 	end
 
 	-- tippers are not full
