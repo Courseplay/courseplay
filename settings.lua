@@ -1550,6 +1550,10 @@ function courseplay:toggleIngameMapIconShowText()
 	end;
 end;
 
+function courseplay:toggleAlwaysUseFourWD(vehicle)
+	vehicle.cp.driveControl.alwaysUseFourWD = not vehicle.cp.driveControl.alwaysUseFourWD;
+end;
+
 ----------------------------------------------------------------------------------------------------
 
 function courseplay:setCpVar(varName, value)

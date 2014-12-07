@@ -307,6 +307,10 @@ function courseplay:start(self)
 		local changed = false;
 		if self.cp.driveControl.hasFourWD then
 			self.cp.driveControl.fourWDBackup = self.driveControl.fourWDandDifferentials.fourWheel;
+			if self.cp.driveControl.alwaysUseFourWD and not self.driveControl.fourWDandDifferentials.fourWheel then
+				self.driveControl.fourWDandDifferentials.fourWheel = true;
+				changed = true;
+			end;
 		end;
 		if self.cp.driveControl.hasHandbrake then
 			if self.driveControl.handBrake.isActive == true then

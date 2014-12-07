@@ -105,8 +105,8 @@ function courseplay.hud:setup()
 			[6] = self.infoBasePosX + 0.182;
 		};
 		[7] = {
-			[5] = self.infoBasePosX + 0.105;
-			[6] = self.infoBasePosX + 0.105;
+			[7] = self.infoBasePosX + 0.105;
+			[8] = self.infoBasePosX + 0.105;
 		};
 		[8] = {
 			[6] = self.infoBasePosX + 0.265;
@@ -814,14 +814,20 @@ function courseplay.hud:loadPage(vehicle, page)
 			end;
 		end;
 
+		-- Always use 4WD
+		if vehicle.cp.hasDriveControl and vehicle.cp.driveControl.hasFourWD then
+			vehicle.cp.hud.content.pages[7][5][1].text = courseplay:loc('COURSEPLAY_ALWAYS_USE_4WD');
+			vehicle.cp.hud.content.pages[7][5][2].text = vehicle.cp.driveControl.alwaysUseFourWD and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
+		end;
+
 		--Copy course from driver
-		vehicle.cp.hud.content.pages[7][5][1].text = courseplay:loc('COURSEPLAY_COPY_COURSE');
+		vehicle.cp.hud.content.pages[7][7][1].text = courseplay:loc('COURSEPLAY_COPY_COURSE');
 		if vehicle.cp.copyCourseFromDriver ~= nil then
 			local driverName = vehicle.cp.copyCourseFromDriver.name or courseplay:loc('COURSEPLAY_VEHICLE');
-			vehicle.cp.hud.content.pages[7][5][2].text = string.format('%s (%dm)', driverName, courseplay:distanceToObject(vehicle, vehicle.cp.copyCourseFromDriver));
-			vehicle.cp.hud.content.pages[7][6][2].text = '(' .. (vehicle.cp.copyCourseFromDriver.cp.currentCourseName or courseplay:loc('COURSEPLAY_TEMP_COURSE')) .. ')';
+			vehicle.cp.hud.content.pages[7][7][2].text = string.format('%s (%dm)', driverName, courseplay:distanceToObject(vehicle, vehicle.cp.copyCourseFromDriver));
+			vehicle.cp.hud.content.pages[7][8][2].text = '(' .. (vehicle.cp.copyCourseFromDriver.cp.currentCourseName or courseplay:loc('COURSEPLAY_TEMP_COURSE')) .. ')';
 		else
-			vehicle.cp.hud.content.pages[7][5][2].text = courseplay:loc('COURSEPLAY_NONE');
+			vehicle.cp.hud.content.pages[7][7][2].text = courseplay:loc('COURSEPLAY_NONE');
 		end;
 
 
