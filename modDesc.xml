@@ -2479,10 +2479,12 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT"> <!-- missing: cs, cz, fr, es, hu, it, nl, ru -->
 			<en>Search for first waypoint</en>
 			<de>Nach erstem Wegpunkt suchen</de>
+			<br>Pesquisar pelo primeiro ponto</br>
 		</text>
 		<text name="COURSEPLAY_SAVE_CURRENT_COURSE"> <!-- missing: cs, cz, fr, es, hu, it, nl, ru -->
 			<en>Save current course</en>
 			<de>Aktuellen Kurs speichern</de>
+			<br>Salvar rota atual</br>
 		</text>
 
 		<!-- Recording buttons --> <!-- missing: cz, es, it, nl -->
@@ -2588,6 +2590,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 		<text name="COURSEPLAY_ALWAYS_USE_4WD"> <!-- missing: br, cs, cz, es, fr, hu, it, nl, ru -->
 			<en>Always use 4WD</en>
 			<de>Allrad immer anschalten</de>
+			<br>Usar sempre tração nas quatro rodas</br>
 		</text>
 
 		<!-- Yes/No dialogues --> <!-- missing: cz, es, it, nl -->
