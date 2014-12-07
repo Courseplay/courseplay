@@ -59,8 +59,8 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 			needsLowering = workTool.attacherJoint.needsLowering
 		end
 		
-		--speedlimits
-		if workTool.doCheckSpeedLimit and workTool:doCheckSpeedLimit() then
+		--speedlimits														--	TODO (Tom) workTool:doCheckSpeedLimit() is not working for harvesters			
+		if (workTool.doCheckSpeedLimit and workTool:doCheckSpeedLimit()) or workTool.cp.isGrimmeMaxtron620 or workTool.cp.isGrimmeTectron415 then
 			forceSpeedLimit = math.min(forceSpeedLimit, workTool.speedLimit)
 		end
 		
@@ -519,6 +519,11 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 
 			if tool.cp.isCombine and isTurnedOn and tool.fillLevel >= tool.capacity*0.8  or ((pipeState > 0 or courseplay:isAttachedCombine(workTool))and not courseplay:isSpecialChopper(workTool))then
 				tool:setPipeState(2)
+				if tool.setOverloadingActive  and tool.getIsPipeUnloadingAllowed then
+					if tool:getIsPipeUnloadingAllowed() then
+						tool:setOverloadingActive(true);
+					end
+				end
 			elseif  pipeState == 0 and tool.cp.isCombine and tool.fillLevel < tool.capacity then
 				tool:setPipeState(1)
 			end
@@ -555,7 +560,6 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 				self.aiThreshingDirectionX = -(dx/length);
 				self.aiThreshingDirectionZ = -(dz/length);
 			end
-
 		end
 	end; --END for i in self.cp.workTools
 
