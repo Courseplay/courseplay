@@ -298,9 +298,6 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 		-- TIP REFERENCE POINTS
 		courseplay:setTipRefOffset(vehicle);
 
-		-- REAR TIP REFERENCE POINT
-		courseplay:setRearTipRefPoint(vehicle)
-
 		-- TIPPER COVERS
 		vehicle.cp.tipperHasCover = false;
 		vehicle.cp.tippersWithCovers = {};
@@ -340,44 +337,24 @@ function courseplay:setTipRefOffset(vehicle)
 		elseif vehicle.cp.workTools[i].rootNode ~= nil and vehicle.cp.workTools[i].tipReferencePoints ~= nil then
 			local tipperX, tipperY, tipperZ = getWorldTranslation(vehicle.cp.workTools[i].rootNode);
 			if  #(vehicle.cp.workTools[i].tipReferencePoints) > 1 then
+				vehicle.cp.workTools[i].cp.rearTipRefPoint = nil;
 				for n=1 ,#(vehicle.cp.workTools[i].tipReferencePoints) do
 					local tipRefPointX, tipRefPointY, tipRefPointZ = worldToLocal(vehicle.cp.workTools[i].tipReferencePoints[n].node, tipperX, tipperY, tipperZ);
 					tipRefPointX = math.abs(tipRefPointX);
 					if (vehicle.cp.tipRefOffset == nil or vehicle.cp.tipRefOffset == 0) and tipRefPointX > 0.1 then
 						vehicle.cp.tipRefOffset = tipRefPointX;
-						break
-					else
-						vehicle.cp.tipRefOffset = 0
 					end;
-				end;
-			else 
-				vehicle.cp.tipRefOffset = 0;
-			end;
-		end;
-		if vehicle.cp.tipRefOffset ~= nil then
-			break;
-		end;
-	end;
-end;
 
-function courseplay:setRearTipRefPoint(vehicle)
-	for k, workTool in pairs(vehicle.cp.workTools) do
-		workTool.cp.rearTipRefPoint = nil;
-		if workTool.rootNode ~= nil and workTool.tipReferencePoints ~= nil then
-			local workToolX, workToolY, workToolZ = getWorldTranslation(workTool.rootNode);
-			if  #(workTool.tipReferencePoints) > 1 then
-				-- Find the rear tipRefpoint in case we are BGA tipping.
-				for n=1 ,#(workTool.tipReferencePoints) do
-					local tipRefPointX, tipRefPointY, tipRefPointZ = worldToLocal(workTool.tipReferencePoints[n].node, workToolX, workToolY, workToolZ);
-					tipRefPointX = math.abs(tipRefPointX);
-
+					-- Find the rear tipRefpoint in case we are BGA tipping.
 					if tipRefPointX < 0.1 and tipRefPointZ > 0 then
-						if not workTool.cp.rearTipRefPoint or workTool.tipReferencePoints[n].width > workTool.tipReferencePoints[workTool.cp.rearTipRefPoint].width then
-							workTool.cp.rearTipRefPoint = n;
+						if not vehicle.cp.workTools[i].cp.rearTipRefPoint or vehicle.cp.workTools[i].tipReferencePoints[n].width > vehicle.cp.workTools[i].tipReferencePoints[vehicle.cp.workTools[i].cp.rearTipRefPoint].width then
+							vehicle.cp.workTools[i].cp.rearTipRefPoint = n;
 							courseplay:debug(string.format("%s: Found rear TipRefPoint: %d - tipRefPointZ = %f", nameNum(vehicle), n, tipRefPointZ), 13);
 						end;
 					end;
 				end;
+			else 
+				vehicle.cp.tipRefOffset = 0;
 			end;
 		end;
 	end;
@@ -1015,7 +992,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 					local canUnload = false;
 					-- We can unload if we are in the right distance to the first silo
 					if isFirseSiloSection then
-						if vectorDistance < (1.25 + startTipDistance) then
+						if vectorDistance < startTipDistance then
 							canUnload = ctt.bunkerSilo.movingPlanes[tipper.cp.BGASelectedSection].fillLevel < vehicle.cp.bunkerSiloSectionFillLevel;
 						end;
 
@@ -1086,7 +1063,9 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 							courseplay:debug(nameNum(vehicle)..": toggleTipState: "..tostring(bestTipReferencePoint).."  /unloadingTipper= "..tostring(tipper.name), 2);
 							allowedToDrive = false;
 						end
-					elseif tipper.tipState ~= Trailer.TIPSTATE_CLOSING then
+					end;
+				else
+					if tipper.tipState ~= Trailer.TIPSTATE_CLOSING then
 						tipper.cp.closestTipDistance = math.huge
 						allowedToDrive = false;
 					end;
@@ -1094,8 +1073,6 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 					if isBGA and ((not vehicle.Waypoints[vehicle.recordnumber].rev and not vehicle.cp.isReverseBGATipping) or unloadWhileReversing) then
 						allowedToDrive = allowedToDriveBackup;
 					end;
-				else
-					tipper.cp.closestTipDistance = math.huge;
 				end;
 			elseif not ctt.acceptedFillTypes[fruitType] then
 				if isBGA then

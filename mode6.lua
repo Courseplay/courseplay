@@ -288,7 +288,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 
 				-- done tipping
 				if self.cp.tipperFillLevel ~= nil and self.cp.tipperCapacity ~= nil then
-					if self.cp.tipperFillLevel == 0 then
+					if self.cp.currentTipTrigger and self.cp.tipperFillLevel == 0 then
 						courseplay:resetTipTrigger(self, true);
 					end
 

@@ -1,7 +1,7 @@
 -- handles "mode1" : waiting at start until tippers full - driving course and unloading on trigger
 function courseplay:handle_mode1(vehicle, allowedToDrive)
 	-- done tipping
-	if vehicle.cp.tipperFillLevel == 0 then
+	if vehicle.cp.currentTipTrigger and vehicle.cp.tipperFillLevel == 0 then
 		courseplay:resetTipTrigger(vehicle, true);
 	end
 
