@@ -549,14 +549,17 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 		<text name="COURSEPLAY_CREATE_FOLDER"> <!-- missing: cs, cz, fr, es, hu, it, nl, ru -->
 			<en>Create new folder</en>
 			<de>Neuen Ordner erstellen</de>
+			<br>Criar nova pasta</br>
 		</text>
 		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS"> <!-- missing: cs, cz, fr, es, hu, it, nl, ru -->
 			<en>Search for courses and folders</en>
 			<de>Nach Kursen und Ordnern suchen</de>
+			<br>Pesquisar pastas e rotas</br>
 		</text>
 		<text name="COURSEPLAY_DEACTIVATE_FILTER"> <!-- missing: cs, cz, fr, es, hu, it, nl, ru -->
 			<en>Deactivate filter</en>
 			<de>Filter deaktivieren</de>
+			<br>Desativar filtros</br>
 		</text>
 		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT">
 			<en>has reached overload point.</en>
@@ -1638,7 +1641,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<ru>Открыть Courseplay:</ru>
 			<hu>HUD megnyitása:</hu>
 			<nl>open Courseplay:</nl>
-			<br>abrir Courseplay:</br>
+			<br>Abrir Courseplay:</br>
 			<cs>打开CP界面:</cs>
 		</text>
 		<text name="COURSEPLAY_DEBUG_CHANNELS">
