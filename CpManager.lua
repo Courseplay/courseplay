@@ -829,12 +829,13 @@ function CpManager:loadOrSetXmlSettings()
 		createFolder(self.savegameFolderPath);
 		local cpFile;
 		if fileExists(self.cpXmlFilePath) then
-			print('## Courseplay: loading settings from "courseplay.xml"');
 			cpFile = loadXMLFile('cpFile', self.cpXmlFilePath);
 		else
 			self:createXmlSettings();
 			return;
 		end;
+
+		print('## Courseplay: loading settings from "courseplay.xml"');
 
 		-- hud position
 		local key = 'XML.courseplayHud';

@@ -759,7 +759,7 @@ function courseplay.hud:loadPage(vehicle, page)
 		-- Ingame map icon text
 		if CpManager.ingameMapIconActive and CpManager.ingameMapIconShowTextLoaded then
 			vehicle.cp.hud.content.pages[6][6][1].text = courseplay:loc('COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT');
-			vehicle.cp.hud.content.pages[6][6][2].text = courseplay.ingameMapIconShowText and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
+			vehicle.cp.hud.content.pages[6][6][2].text = CpManager.ingameMapIconShowText and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
 		end;
 
 		-- Debug channels

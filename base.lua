@@ -817,8 +817,8 @@ function courseplay:load(xmlFile)
 	courseplay.button:new(self, 6, { 'iconSprite.png', 'navPlus' },  'changeWaitTime',  1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[5], w16px, h16px, 5,  5, false);
 	courseplay.button:new(self, 6, nil, 'changeWaitTime', 1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[5], mouseWheelArea.w, mouseWheelArea.h, 5, 5, true, true);
 
-	if courseplay.ingameMapIconActive and courseplay.ingameMapIconShowTextLoaded then
-		courseplay.button:new(self, 6, nil, 'toggleIngameMapIconShowText', nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[6], courseplay.hud.visibleArea.width, 0.015, 7, nil, true);
+	if CpManager.ingameMapIconActive and CpManager.ingameMapIconShowTextLoaded then
+		courseplay.button:new(self, 6, nil, 'toggleIngameMapIconShowText', nil, courseplay.hud.infoBasePosX, courseplay.hud.linesPosY[6], courseplay.hud.visibleArea.width, 0.015, 6, nil, true);
 	end;
 
 	self.cp.hud.debugChannelButtons = {};

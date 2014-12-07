@@ -1539,7 +1539,7 @@ function courseplay:deleteMapHotspot(vehicle)
 	end;
 end;
 function courseplay:toggleIngameMapIconShowText()
-	courseplay.ingameMapIconShowText = not courseplay.ingameMapIconShowText;
+	CpManager.ingameMapIconShowText = not CpManager.ingameMapIconShowText;
 	-- for _,vehicle in pairs(g_currentMission.steerables) do
 	for _,vehicle in pairs(CpManager.activeCoursePlayers) do
 		if vehicle.cp.ingameMapHotSpot then
