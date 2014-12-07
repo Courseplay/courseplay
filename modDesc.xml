@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="20">
-	<version>4.00.0163</version>
+	<version>4.00.0164</version>
 	<author><![CDATA[Courseplay Dev Team]]></author>
 	<title>
 		<br>Courseplay</br>
@@ -390,8 +390,8 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<br>continua</br>
 			<cs>继续</cs>
 		</text>
-		<text name="COURSEPLAY_RESET_COURSE">
-			<en>Reset course</en>
+		<text name="COURSEPLAY_CLEAR_COURSE">
+			<en>Clear current course</en>
 			<de>Wegpunkte löschen</de>
 			<fr>Réinitialiser la course</fr>
 			<es>Reiniciar ruta</es>
@@ -545,6 +545,18 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<nl>Route: %q</nl>
 			<br>Rotas: %q</br>
  			<cs>任务: %q</cs>
+		</text>
+		<text name="COURSEPLAY_CREATE_FOLDER"> <!-- missing: cs, cz, fr, es, hu, it, nl, ru -->
+			<en>Create new folder</en>
+			<de>Neuen Ordner erstellen</de>
+		</text>
+		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS"> <!-- missing: cs, cz, fr, es, hu, it, nl, ru -->
+			<en>Search for courses and folders</en>
+			<de>Nach Kursen und Ordnern suchen</de>
+		</text>
+		<text name="COURSEPLAY_DEACTIVATE_FILTER"> <!-- missing: cs, cz, fr, es, hu, it, nl, ru -->
+			<en>Deactivate filter</en>
+			<de>Filter deaktivieren</de>
 		</text>
 		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT">
 			<en>has reached overload point.</en>
@@ -2460,6 +2472,14 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<nl>Opstarten %s!</nl>
 			<br>Iniciando em %s!</br>
 			<cs>启动 %s!</cs>
+		</text>
+		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT"> <!-- missing: cs, cz, fr, es, hu, it, nl, ru -->
+			<en>Search for first waypoint</en>
+			<de>Nach erstem Wegpunkt suchen</de>
+		</text>
+		<text name="COURSEPLAY_SAVE_CURRENT_COURSE"> <!-- missing: cs, cz, fr, es, hu, it, nl, ru -->
+			<en>Save current course</en>
+			<de>Aktuellen Kurs speichern</de>
 		</text>
 
 		<!-- Recording buttons --> <!-- missing: cz, es, it, nl -->

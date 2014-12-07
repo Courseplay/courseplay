@@ -269,6 +269,7 @@ function courseplay:start(self)
 			self.cp.finishWork = self.cp.stopWork
 		end
 
+		-- NOTE: if we want to start the course but catch one of the last 5 points ("returnToStartPoint"), make sure we get wp 2
 		if self.cp.startAtPoint == courseplay.START_AT_NEAREST_POINT and self.cp.finishWork ~= self.cp.stopWork and self.recordnumber > self.cp.finishWork and self.recordnumber <= self.cp.stopWork then
 			courseplay:setRecordNumber(self, 2);
 		end

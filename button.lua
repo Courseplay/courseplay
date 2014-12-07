@@ -227,6 +227,8 @@ function courseplay.button:render()
 					show = vehicle.cp.canDrive and not vehicle:getIsCourseplayDriving() and not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused;
 				elseif fn == 'stop_record' or fn == 'setRecordingPause' or fn == 'delete_waypoint' or fn == 'set_waitpoint' or fn == 'set_crossing' or fn == 'setRecordingTurnManeuver' or fn == 'change_DriveDirection' then
 					show = vehicle.cp.isRecording or vehicle.cp.recordingIsPaused;
+				elseif fn == 'clearCurrentLoadedCourse' then
+					show = vehicle.cp.canDrive and not vehicle.cp.isDriving;
 				end;
 
 			--Page 2
@@ -235,6 +237,8 @@ function courseplay.button:render()
 					show = g_server ~= nil;
 				elseif fn == "showSaveCourseForm" and prm == "filter" then
 					show = not vehicle.cp.hud.choose_parent;
+				elseif fn == 'clearCurrentLoadedCourse' then
+					show = vehicle.cp.canDrive and not vehicle.cp.isDriving;
 				elseif fn == "shiftHudCourses" then
 					if prm < 0 then
 						show = vehicle.cp.hud.courseListPrev;
@@ -423,7 +427,7 @@ function courseplay.button:render()
 end;
 
 function courseplay.button:setColor(colorName)
-	if self.overlay and colorName and (self.curColor == nil or self.curColor ~= colorName) and courseplay.hud.colors[colorName] and #courseplay.hud.colors[colorName] == 4 then
+	if self.overlay and colorName and (self.curColor == nil or self.curColor ~= colorName) and courseplay.hud.colors[colorName] then
 		self.overlay:setColor(unpack(courseplay.hud.colors[colorName]));
 		self.curColor = colorName;
 	end;

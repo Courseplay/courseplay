@@ -245,8 +245,6 @@ function courseplay:executeFunction(self, func, value, page)
 						courseplay:start(self);
 					elseif line == 3 and self.cp.mode ~= 9 then
 						courseplay:changeStartAtPoint(self);
-					elseif line == 4 then
-						courseplay:clearCurrentLoadedCourse(self);
 					elseif line == 6 and self.cp.mode == 1 and self.cp.workTools[1] ~= nil and self.cp.workTools[1].allowFillFromAir and self.cp.workTools[1].allowTipDischarge then
 						self.cp.multiSiloSelectedFillType = courseplay:getNextFillableFillType(self);
 					end;

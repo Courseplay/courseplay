@@ -155,8 +155,9 @@ function courseplay.hud:setup()
 		cancel           = {  40,288,  72,256 };
 		close            = { 148,216, 180,184 };
 		copy             = { 184,180, 216,148 };
-		courseLoadAppend = {   4,252,  36,220 };
 		courseAdd        = {  40,252,  72,220 };
+		courseLoadAppend = {   4,252,  36,220 };
+		courseClear      = { 184,360, 216,328 };
 		eye              = { 148,180, 180,148 };
 		delete           = { 184,216, 216,184 };
 		folderNew        = { 220,216, 252,184 };
@@ -520,8 +521,6 @@ function courseplay.hud:loadPage(vehicle, page)
 						vehicle.cp.hud.content.pages[1][3][2].text = courseplay:loc('COURSEPLAY_CURRENT_POINT');
 					end;
 				end;
-
-				vehicle.cp.hud.content.pages[1][4][1].text = courseplay:loc('COURSEPLAY_RESET_COURSE')
 
 				if vehicle.cp.mode == 1 and vehicle.cp.workTools[1] ~= nil and vehicle.cp.workTools[1].allowFillFromAir and vehicle.cp.workTools[1].allowTipDischarge then
 					vehicle.cp.hud.content.pages[1][6][1].text = courseplay:loc('COURSEPLAY_FARM_SILO_FILL_TYPE');

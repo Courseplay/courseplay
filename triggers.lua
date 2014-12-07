@@ -552,12 +552,12 @@ function courseplay:updateAllTriggers()
 			-- Regular and Extended tipTriggers
 			elseif courseplay:isValidTipTrigger(trigger) then
 				local triggerId = trigger.triggerId;
-				if triggerId ~= nil then
-					courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
-				end;
 				-- Extended tipTriggers (AlternativeTipTrigger)
 				if trigger.isExtendedTrigger then
 					trigger.isAlternativeTipTrigger = Utils.endsWith(trigger.className, 'ExtendedTipTrigger');
+				end;
+				if triggerId ~= nil then
+					courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
 				end;
 			end;
 		end

@@ -27,39 +27,40 @@ end;
 
 
 -- enables input for course/folder/filter name
-function courseplay:showSaveCourseForm(self, saveWhat) -- fn is in courseplay because it's vehicle based
+function courseplay:showSaveCourseForm(vehicle, saveWhat) -- fn is in courseplay because it's vehicle based
 	saveWhat = saveWhat or 'course'
 	
 	if saveWhat == 'course' then
-		if #(self.Waypoints) > 0 then
-			courseplay.vehicleToSaveCourseIn = self;
-			if self.cp.imWriting then
-				self.cp.saveWhat = 'course'
+		if #(vehicle.Waypoints) > 0 then
+			courseplay.vehicleToSaveCourseIn = vehicle;
+			if vehicle.cp.imWriting then
+				vehicle.cp.saveWhat = 'course'
 				g_gui:showGui("inputCourseNameDialogue");
-				self.cp.imWriting = false
+				vehicle.cp.imWriting = false
 			end
 		end;
 		
 	elseif saveWhat == 'folder' then
-		courseplay.vehicleToSaveCourseIn = self;
-		if self.cp.imWriting then
-			self.cp.saveWhat = 'folder'
+		courseplay.vehicleToSaveCourseIn = vehicle;
+		if vehicle.cp.imWriting then
+			vehicle.cp.saveWhat = 'folder'
 			g_gui:showGui("inputCourseNameDialogue");
-			self.cp.imWriting = false
+			vehicle.cp.imWriting = false
 		end
 	
 	elseif saveWhat == 'filter' then
-		if self.cp.hud.filter == '' then
-			courseplay.vehicleToSaveCourseIn = self;
-			if self.cp.imWriting then
-				self.cp.saveWhat = 'filter';
+		if vehicle.cp.hud.filter == '' then
+			courseplay.vehicleToSaveCourseIn = vehicle;
+			if vehicle.cp.imWriting then
+				vehicle.cp.saveWhat = 'filter';
 				g_gui:showGui("inputCourseNameDialogue");
-				self.cp.imWriting = false;
+				vehicle.cp.imWriting = false;
 			end;
 		else
-			self.cp.hud.filter = '';
-			self.cp.hud.filterButton:setSpriteSectionUVs('search');
-			courseplay.settings.setReloadCourseItems(self);
+			vehicle.cp.hud.filter = '';
+			vehicle.cp.hud.filterButton:setSpriteSectionUVs('search');
+			vehicle.cp.hud.filterButton:setToolTip(courseplay:loc('COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS'));
+			courseplay.settings.setReloadCourseItems(vehicle);
 		end;
 	end
 end;

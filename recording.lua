@@ -249,10 +249,8 @@ function courseplay:clearCurrentLoadedCourse(vehicle)
 	vehicle.cp.loadedCourses = {}
 	vehicle.cp.currentCourseName = nil
 	courseplay:setModeState(vehicle, 1);
-	-- print(('%s [%s(%d)]: clearCurrentLoadedCourse() -> set modeState to 1'):format(nameNum(vehicle), curFile, debug.getinfo(1).currentline)); -- DEBUG140301
 	if vehicle.cp.mode == 2 or vehicle.cp.mode == 3 then
 		courseplay:setModeState(vehicle, 0);
-		-- print(('%s [%s(%d)]: clearCurrentLoadedCourse(): mode=%d -> set modeState to 0'):format(nameNum(vehicle), curFile, debug.getinfo(1).currentline, vehicle.cp.mode)); -- DEBUG140301
 	end;
 	vehicle.cp.recordingTimer = 1
 	vehicle.Waypoints = {}
@@ -270,6 +268,9 @@ function courseplay:clearCurrentLoadedCourse(vehicle)
 	courseplay:validateCanSwitchMode(vehicle);
 
 	courseplay.signs:updateWaypointSigns(vehicle, "current");
+
+	vehicle.cp.hud.clearCurrentCourseButton1:setHovered(false);
+	vehicle.cp.hud.clearCurrentCourseButton2:setHovered(false);
 end
 
 function courseplay:currentVehAngle(vehicle)

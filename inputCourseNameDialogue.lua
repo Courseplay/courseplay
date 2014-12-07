@@ -205,6 +205,7 @@ function inputCourseNameDialogue:onSaveClick()
 		end
 
 		vehicle.cp.hud.filterButton:setSpriteSectionUVs('cancel');
+		vehicle.cp.hud.filterButton:setToolTip(courseplay:loc('COURSEPLAY_DEACTIVATE_FILTER'));
 		courseplay.settings.setReloadCourseItems(vehicle);
 	end
 
