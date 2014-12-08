@@ -1,4 +1,5 @@
 local curFile = 'settings.lua';
+local abs, max, min = math.abs, math.max, math.min;
 
 function courseplay:openCloseHud(vehicle, open)
 	courseplay:setMouseCursor(vehicle, open);
@@ -262,7 +263,7 @@ function courseplay:changeCombineOffset(vehicle, changeBy)
 
 	vehicle.cp.combineOffsetAutoMode = false;
 	vehicle.cp.combineOffset = courseplay:round(vehicle.cp.combineOffset, 1) + changeBy;
-	if math.abs(vehicle.cp.combineOffset) < 0.1 then
+	if abs(vehicle.cp.combineOffset) < 0.1 then
 		vehicle.cp.combineOffset = 0.0;
 		vehicle.cp.combineOffsetAutoMode = true;
 	end;
@@ -272,14 +273,14 @@ end
 
 function courseplay:changeTipperOffset(vehicle, changeBy)
 	vehicle.cp.tipperOffset = courseplay:round(vehicle.cp.tipperOffset, 1) + changeBy;
-	if math.abs(vehicle.cp.tipperOffset) < 0.1 then
+	if abs(vehicle.cp.tipperOffset) < 0.1 then
 		vehicle.cp.tipperOffset = 0;
 	end;
 end
 
 function courseplay:changeLaneOffset(vehicle, changeBy, force)
 	vehicle.cp.laneOffset = force or (courseplay:round(vehicle.cp.laneOffset, 1) + changeBy);
-	if math.abs(vehicle.cp.laneOffset) < 0.1 then
+	if abs(vehicle.cp.laneOffset) < 0.1 then
 		vehicle.cp.laneOffset = 0;
 	end;
 	vehicle.cp.totalOffsetX = vehicle.cp.laneOffset + vehicle.cp.toolOffsetX;
@@ -287,7 +288,7 @@ end;
 
 function courseplay:changeToolOffsetX(vehicle, changeBy, force, noDraw)
 	vehicle.cp.toolOffsetX = force or (courseplay:round(vehicle.cp.toolOffsetX, 1) + changeBy);
-	if math.abs(vehicle.cp.toolOffsetX) < 0.1 then
+	if abs(vehicle.cp.toolOffsetX) < 0.1 then
 		vehicle.cp.toolOffsetX = 0;
 	end;
 	vehicle.cp.totalOffsetX = vehicle.cp.laneOffset + vehicle.cp.toolOffsetX;
@@ -301,7 +302,7 @@ end;
 
 function courseplay:changeToolOffsetZ(vehicle, changeBy, force)
 	vehicle.cp.toolOffsetZ = force or (courseplay:round(vehicle.cp.toolOffsetZ, 1) + changeBy);
-	if math.abs(vehicle.cp.toolOffsetZ) < 0.1 then
+	if abs(vehicle.cp.toolOffsetZ) < 0.1 then
 		vehicle.cp.toolOffsetZ = 0;
 	end;
 end;
@@ -313,7 +314,6 @@ function courseplay:calculateWorkWidth(vehicle)
 	local vehL,vehR = courseplay:getCuttingAreaValuesX(vehicle);
 	courseplay:debug(('\tvehL=%s, vehR=%s'):format(tostring(vehL), tostring(vehR)), 7);
 
-	local min, max, abs = math.min, math.max, math.abs;
 	local implL,implR = -9999,9999;
 	if vehicle.attachedImplements then
 		for i,implement in pairs(vehicle.attachedImplements) do
@@ -420,7 +420,6 @@ function courseplay:getCuttingAreaValuesX(object)
 end;
 
 function courseplay:changeWorkWidth(vehicle, changeBy, force)
-	local abs, max = math.abs, math.max;
 	if force then
 		vehicle.cp.workWidth = max(courseplay:round(abs(force), 1), 0.1);
 	else
@@ -431,7 +430,12 @@ function courseplay:changeWorkWidth(vehicle, changeBy, force)
 				changeBy = 2 * Utils.sign(changeBy);
 			end;
 		end;
-		vehicle.cp.workWidth = max(vehicle.cp.workWidth + changeBy, 0.1);
+
+		if (vehicle.cp.workWidth < 10 and vehicle.cp.workWidth + changeBy > 10) or (vehicle.cp.workWidth > 10 and vehicle.cp.workWidth + changeBy < 10) then
+			vehicle.cp.workWidth = 10;
+		else
+			vehicle.cp.workWidth = max(vehicle.cp.workWidth + changeBy, 0.1);
+		end;
 	end;
 	courseplay:calculateWorkWidthDisplayPoints(vehicle);
 	courseplay:setCustomTimer(vehicle, 'showWorkWidth', 2);
