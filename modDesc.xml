@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="20">
-	<version>4.00.0145</version>
+	<version>4.00.0170</version>
 	<author><![CDATA[Courseplay Dev Team]]></author>
 	<title>
 		<br>Courseplay</br>
@@ -13,65 +13,65 @@
 		<it>Courseplay</it>
 		<nl>Courseplay</nl>
 		<ru>Courseplay</ru>
-		<cs>CP驾驶助手</cs>
+		<cs>Courseplay 驾驶助手</cs>
 	</title>
 
 	<description>
 		<br>
 <![CDATA[Desenvolvedores: Jakob Tischler, Thomas Gärtner, Satis
 
-Tradutores: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [NL] Pewemo, [RU] Bernelli]]>
+Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [NL] Pewemo, [RU] Bernelli]]>
 		</br>
+		<cs>
+<![CDATA[开发商: Jakob Tischler, Thomas Gärtner, Satis
+
+翻译: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [NL] Pewemo, [RU] Bernelli]]>
+		</cs>
 		<cz>
 <![CDATA[Vývojáři: Jakob Tischler, Thomas Gärtner, Satis
 
-Překlady: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [NL] Pewemo, [RU] Bernelli]]>
+Překlady: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [NL] Pewemo, [RU] Bernelli]]>
 		</cz>
 		<de>
 <![CDATA[Entwickler: Jakob Tischler, Thomas Gärtner, Satis
 
-Übersetzungen: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [NL] Pewemo, [RU] Bernelli]]>
+Übersetzungen: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [NL] Pewemo, [RU] Bernelli]]>
 		</de>
 		<en>
 <![CDATA[Developers: Jakob Tischler, Thomas Gärtner, Satis
 
-Translations: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [NL] Pewemo, [RU] Bernelli]]>
+Translations: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [NL] Pewemo, [RU] Bernelli]]>
 		</en>
 		<es>
 <![CDATA[Desarrolladores: Jakob Tischler, Thomas Gärtner, Satis
 
-Tradduciónes: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [NL] Pewemo, [RU] Bernelli]]>
+Tradduciónes: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [NL] Pewemo, [RU] Bernelli]]>
 		</es>
 		<fr>
 <![CDATA[Développeurs: Jakob Tischler, Thomas Gärtner, Satis
 
-Traductions: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [NL] Pewemo, [RU] Bernelli]]>
+Traductions: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [NL] Pewemo, [RU] Bernelli]]>
 		</fr>
 		<it>
 <![CDATA[Sviluppatori: Jakob Tischler, Thomas Gärtner, Satis
 
-Traduzioni: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545,[HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [NL] Pewemo, [RU] Bernelli]]>
+Traduzioni: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545,[HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [NL] Pewemo, [RU] Bernelli]]>
 		</it>
 		<hu>
 <![CDATA[Készítők: Jakob Tischler, Thomas Gärtner, Satis
 
-Fordítók: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [NL] Pewemo, [RU] Bernelli]]>
+Fordítók: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [NL] Pewemo, [RU] Bernelli]]>
 		</hu>
 		<nl>
 <![CDATA[Ontwikkelaars: Jakob Tischler, Thomas Gärtner, Satis
 
-Vertaling: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [NL] Pewemo, [RU] Bernelli]]>
+Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [NL] Pewemo, [RU] Bernelli]]>
 		</nl>
  		<ru>
 <![CDATA[Разработка: Jakob Tischler, Thomas Gärtner, Satis
 
-Переводчики: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [NL] Pewemo, [RU] Bernelli]]>
+Переводчики: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [NL] Pewemo, [RU] Bernelli]]>
 		</ru>
-			<cs>
-<![CDATA[Developers: Jakob Tischler, Thomas Gärtner, Satis
-
-Translations: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [NL] Pewemo, [RU] Bernelli, [CN]Simba]]>
-		</cs>
 	</description>
 
 	<multiplayer supported="true"/>
@@ -390,8 +390,8 @@ Translations: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris vo
 			<br>continua</br>
 			<cs>继续</cs>
 		</text>
-		<text name="COURSEPLAY_RESET_COURSE">
-			<en>Reset course</en>
+		<text name="COURSEPLAY_CLEAR_COURSE">
+			<en>Clear current course</en>
 			<de>Wegpunkte löschen</de>
 			<fr>Réinitialiser la course</fr>
 			<es>Reiniciar ruta</es>
@@ -518,7 +518,7 @@ Translations: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris vo
 			<hu>Mappa név:</hu>
 			<nl>Folder naam:</nl>
 			<br>Nome da pesta</br>
-			<cs>文件夹名</cs>
+			<cs>目录名</cs>
 		</text>
 		<text name="COURSEPLAY_FILTER_COURSES">
 			<en>Filter courses:</en>
@@ -545,6 +545,27 @@ Translations: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris vo
 			<nl>Route: %q</nl>
 			<br>Rotas: %q</br>
  			<cs>任务: %q</cs>
+		</text>
+		<text name="COURSEPLAY_CREATE_FOLDER"> <!-- missing: cs, cz, fr, es, it, nl, ru -->
+			<en>Create new folder</en>
+			<de>Neuen Ordner erstellen</de>
+			<hu>Új mappa létrehozása</hu>
+			<br>Criar nova pasta</br>
+			<cs>创建新目录</cs>
+		</text>
+		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS"> <!-- missing: cs, cz, fr, es, it, nl, ru -->
+			<en>Search for courses and folders</en>
+			<de>Nach Kursen und Ordnern suchen</de>
+			<hu>Útvonal keresése a mappákban</hu>
+			<br>Pesquisar pastas e rotas</br>
+			<cs>搜索任务和目录</cs>
+		</text>
+		<text name="COURSEPLAY_DEACTIVATE_FILTER"> <!-- missing: cs, cz, fr, es, it, nl, ru -->
+			<en>Deactivate filter</en>
+			<de>Filter deaktivieren</de>
+			<hu>Szűrő alaphelyzetbe</hu>
+			<br>Desativar filtros</br>
+			<cs>禁用筛选</cs>
 		</text>
 		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT">
 			<en>has reached overload point.</en>
@@ -598,11 +619,10 @@ Translations: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris vo
 			<br>trabalho finalizado</br>
 			<cs>工作已完成。</cs>
 		</text>
-		<text name="COURSEPLAY_NEEDS_UNLOADING">
+		<text name="COURSEPLAY_NEEDS_UNLOADING"> <!-- missing: es -->
 			<en>: work tool needs to be unloaded.</en>
 			<de>: Gerät muss entladen werden.</de>
 			<fr>: l'outil a besoin d'être vidé.</fr>
-			<es>: work tool needs to be unloaded.</es> <!-- !!! -->
 			<it>: attrezzo necessita di essere scaricato.</it>
 			<cz>: potřebuje vyložit.</cz>
 			<ru>нуждается в разгрузке.</ru>
@@ -611,11 +631,10 @@ Translations: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris vo
 			<br>: equipamento precisa ser descarregado</br>
 			<cs>: 工具需要卸载。</cs>
 		</text>
-		<text name="COURSEPLAY_NEEDS_REFILLING">
+		<text name="COURSEPLAY_NEEDS_REFILLING"> <!-- missing: es -->
 			<en>: work tool needs to be refilled.</en>
 			<de>: Gerät muss aufgefüllt werden.</de>
 			<fr>: l'outil a besoin d'être rechargé.</fr>
-			<es>: work tool needs to be refilled.</es> <!-- !!! -->
 			<it>: attrezzo deve essere rifornito.</it>
 			<cz>: pracovní stroj musí být doplněn.</cz>
 			<ru>нуждается в заправке.</ru>
@@ -845,11 +864,10 @@ Translations: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris vo
 			<br>selecionar manualmente</br>
  			<cs>手动选择</cs>
 		</text>
-		<text name="COURSEPLAY_SEARCH_COMBINE_ON_FIELD">
+		<text name="COURSEPLAY_SEARCH_COMBINE_ON_FIELD"> <!-- missing: es -->
 			<en>Search combine on field %s</en>
 			<de>Drescher suchen auf Feld %s</de>
 			<fr>Recherche sur le champs %s</fr>
-			<es>Search combine on field %s</es> <!-- !!! -->
 			<it>Ricerca trebbia nel campo %s</it>
 			<cz>Najdi kombajn na poli %s</cz>
 			<ru>Комбайн с поля № %s</ru>
@@ -1489,11 +1507,19 @@ Translations: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris vo
 			<es>remolque incorrecto para este modo</es>
 			<it>rimorchio sbagliato per questa modalità</it>
 			<cz>Máš pro tento mod nevhodný přívěs</cz>
-			<ru>Неподходящее оборудование для типа маршрута.</ru>
+			<ru>Неподходящий тип оборудования для маршрута.</ru>
 			<hu>Rossz munkaeszköz ehhez a mművelethez</hu>
 			<nl>Verkeerde trailer voor deze modus</nl>
 			<br>carreta incorreta para este modo</br>
 			<cs>错误的拖车</cs>
+		</text>
+		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE"> <!-- missing: cs, cz, fr, es, it, nl -->
+			<en>This vehicle type isn't supported in this mode.</en>
+			<de>Dieser Fahrzeugtyp wird in diesem Modus nicht unterstützt.</de>
+			<ru>Неподходящий тип техники для маршрута.</ru>
+			<hu>Ez a járműtípus nem megfelelő ehhez a művelethez.</hu>
+			<br>Este veículo não é suportado neste modo</br>
+			<cs>当前模式不支持这种车辆</cs>
 		</text>
 		<text name="COURSEPLAY_ESL_NOT_SUPPORTED">
 			<en>ESLimiter version is not supported</en>
@@ -1616,13 +1642,13 @@ Translations: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris vo
 			<en>open Courseplay:</en>
 			<de>Courseplay öffnen:</de>
 			<fr>Ouverture de Courseplay:</fr>
-			<es>abrir Courseplay:</es>
+			<es>Abrir Courseplay:</es>
 			<it>apri Courseplay:</it>
 			<cz>Zapnout CP HUD:</cz>
 			<ru>Открыть Courseplay:</ru>
 			<hu>HUD megnyitása:</hu>
 			<nl>open Courseplay:</nl>
-			<br>abrir Courseplay:</br>
+			<br>Abrir Courseplay:</br>
 			<cs>打开CP界面:</cs>
 		</text>
 		<text name="COURSEPLAY_DEBUG_CHANNELS">
@@ -1838,10 +1864,9 @@ Translations: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris vo
 			<br>Marcador</br>
 			<cs>田埂标记</cs>
 		</text>
-		<text name="COURSEPLAY_UNLOADING_ON_FIELD">
+		<text name="COURSEPLAY_UNLOADING_ON_FIELD"> <!-- missing: es -->
 			<de>Abladen auf dem Feld</de>
 			<en>Unloading on field</en>
-			<es>Unloading on field</es> <!-- !!! -->
 			<fr>Déchargement aux champs</fr>
 			<it>Scaricando sul campo</it>
 			<cz>Vyložit na poli</cz>
@@ -1849,7 +1874,7 @@ Translations: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris vo
 			<hu>Kirakodás a földön</hu>
 			<nl>Uitladen in het veld</nl>
 			<br>Descarregando no campo</br>
-			<cs>卸载区</cs>
+			<cs>在田间卸载</cs>
 		</text>
 		<text name="COURSEPLAY_AUTOMATIC">
 			<en>automatic</en>
@@ -2074,7 +2099,7 @@ Translations: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris vo
 			<br>primeiro ponto</br>
  			<cs>起始点</cs>
 		</text>
-		<text name="COURSEPLAY_CURRENT_POINT"> <!-- missing: cz, ru -->
+		<text name="COURSEPLAY_CURRENT_POINT"> <!-- missing: cz -->
 			<en>current waypoint</en>
 			<de>aktuellen Wegpunkt</de>
 			<es>punto actual</es>
@@ -2101,22 +2126,29 @@ Translations: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris vo
 			<cs>选择农田</cs>
 		</text>
 		<text name="COURSEPLAY_FIELD">
-			<en>Field</en>
-			<de>Feld</de>
-			<es>Campo</es> <!-- !!! -->
-			<fr>Champ</fr>
-			<it>Campo</it>
-			<cz>Pole</cz>
-			<ru>поле №</ru>
-			<hu>Terület</hu>
-			<nl>Veld</nl>
 			<br>Campo</br>
 			<cs>农田</cs>
+			<cz>Pole</cz>
+			<de>Feld</de>
+			<en>Field</en>
+			<es>Campo</es>
+			<fr>Champ</fr>
+			<hu>Terület</hu>
+			<it>Campo</it>
+			<nl>Veld</nl>
+			<ru>поле №</ru>
 		</text>
-		<text name="COURSEPLAY_FIELD_SCAN_IN_PROGRESS">
+		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE"> <!-- missing: cs, cz, es, fr, it, nl -->
+			<en>(currently loaded course)</en>
+			<de>(aktuell geladener Kurs)</de>
+			<ru>(загруженный маршрут)</ru>
+			<hu>(jelenleg betöltött útvonal)</hu>
+			<br>(Rota atual carregada)</br>
+			<cs>当前加载的任务</cs>
+		</text>
+		<text name="COURSEPLAY_FIELD_SCAN_IN_PROGRESS"> <!-- missing: es -->
 			<en>Field scan in progress</en>
 			<de>Feldscan im Gange</de>
-			<es>Field scan in progress</es> <!-- !!! -->
 			<fr>Scan des champs en cours</fr>
 			<it>Scansione campi in esecuzione</it>
 			<cz>Načítání polí</cz>
@@ -2124,12 +2156,11 @@ Translations: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris vo
 			<hu>Térkép vizsgálata.</hu>
 			<nl>Veldscan bezig</nl>
 			<br>Escaneamento do campo em andamento</br>
- 			<cs>农田范围扫描进度</cs>
+ 			<cs>农田范围分析进度</cs>
 		</text>
-		<text name="COURSEPLAY_SCANNING_FIELD_NMB">
+		<text name="COURSEPLAY_SCANNING_FIELD_NMB"> <!-- missing: es -->
 			<en>Scanning field %d/%d</en>
 			<de>Scanne Feld %d/%d</de>
-			<es>Scanning field %d/%d</es> <!-- !!! -->
 			<fr>Analyse du champs %d/%d</fr>
 			<it>Scansione campo %d/%d</it>
 			<cz>Načítání polí %d/%d</cz>
@@ -2137,7 +2168,7 @@ Translations: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris vo
 			<hu>A terület vizsgálata: %d/%d</hu>
 			<nl>Scan Veld %d/%d</nl>
 			<br>Escaneando campo %d/%d</br>
-			<cs>扫描范围 %d/%d</cs>
+			<cs>分析范围 %d/%d</cs>
 		</text>
 		<text name="COURSEPLAY_HOSEMISSING">
 			<en>No hose could be found - cancel refill</en>
@@ -2189,7 +2220,7 @@ Translations: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris vo
 			<hu>töltési szint</hu>
 			<nl>vul graad</nl>
 			<br>nivel de enchimento</br>
-			<cs>填充水平</cs>
+			<cs>已装载量</cs>
 		</text>
 		<text name="COURSEPLAY_NO_AUTOCOMBINE_MODE_7">
 			<en>AutoCombine is not supported</en>
@@ -2204,11 +2235,10 @@ Translations: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris vo
 			<br>Ceifadeira não suportada</br>
 			<cs>不支持AutoCombine</cs>
 		</text>
-		<text name="COURSEPLAY_PICKUP_JAMMED">
+		<text name="COURSEPLAY_PICKUP_JAMMED"> <!-- missing: es -->
 			<en>: pickup is jammed</en>
 			<de>: Pickup ist verstopft</de>
 			<fr>: le pickup est encombré</fr>
-			<es>: pickup is jammed</es> <!-- !!! -->
 			<it>: pickup è intasato</it>
 			<cz>: odvozce je přetížený</cz>
 			<ru>погрузка остановлена</ru>
@@ -2217,11 +2247,10 @@ Translations: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris vo
 			<br>: carregamento está bloqueado</br>
 			<cs>: 皮卡车卡住了</cs>
 		</text>
-		<text name="COURSEPLAY_BALER_NEEDS_NETS">
+		<text name="COURSEPLAY_BALER_NEEDS_NETS"> <!-- missing: es -->
 			<en>: baler needs new net rolls</en>
 			<de>: Presse braucht neue Wickelnetze</de>
 			<fr>: la presse a besoin de nouveaux filets</fr>
-			<es>: baler needs new net rolls</es> <!-- !!! -->
 			<it>: rotopressa ha bisogno di nuovo rotolo di rete</it>
 			<cz>: lis potřebuje nové balící role</cz>
 			<ru>упаковщик нуждается в тюках</ru>
@@ -2230,11 +2259,10 @@ Translations: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris vo
 			<br>: fardos redondos precisa de embalagem</br>
 			<cs>: 打包机需要新的薄膜</cs>
 		</text>
-		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES">
+		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES"> <!-- missing: es -->
 			<en>Calculate current field's edge path</en>
 			<de>Aktuellen Feldrandkurs berechnen</de>
 			<fr>Calculer le tour du champ actuel</fr>
-			<es>Calculate current field's edge path</es> <!-- !!! -->
 			<it>Calcolo perimetro del campo corrente</it>
 			<cz>Vypočítej trasu okolo aktuálního pole</cz>
 			<ru>Показать границы поля</ru>
@@ -2243,11 +2271,10 @@ Translations: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris vo
 			<br>Cálcular a borda do campo atual</br>
 			<cs>计算当前农田的范围路径点</cs>
 		</text>
-		<text name="COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER">
+		<text name="COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER"> <!-- missing: es -->
 			<en>Field edge path number</en>
 			<de>Feldrandkurs-Nummer</de>
 			<fr>Tour du champs numéro</fr>
-			<es>Field edge path number</es> <!-- !!! -->
 			<it>Perimetro del campo numero</it>
 			<cz>Trasa okolo pole číslo:</cz>
 			<ru>Выбрать поле:</ru>
@@ -2256,11 +2283,10 @@ Translations: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris vo
 			<br>Número da borda do campo</br>
 			<cs>农田范围的编号：</cs>
 		</text>
-		<text name="COURSEPLAY_ADD_CUSTOM_FIELD_EDGE_PATH_TO_LIST">
+		<text name="COURSEPLAY_ADD_CUSTOM_FIELD_EDGE_PATH_TO_LIST"> <!-- missing: es -->
 			<en>Add field %d's edge path to list</en>
 			<de>Feldrandkurs %d zur Liste hinzufügen</de>
 			<fr>Ajoute le tour du champs %d à la liste</fr>
-			<es>Add field %d's edge path to list</es> <!-- !!! -->
 			<it>Inserisci perimetro campo %d nella lista</it>
 			<cz>Přidej trasu okolo pole %d do seznamu</cz>
 			<ru>Добавить поле в список</ru>
@@ -2269,11 +2295,10 @@ Translations: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris vo
 			<br>Adicionar borda do campo %d na lista</br>
 			<cs>添加 %d 号农田范围到列表</cs>
 		</text>
-		<text name="COURSEPLAY_OVERWRITE_CUSTOM_FIELD_EDGE_PATH_IN_LIST">
+		<text name="COURSEPLAY_OVERWRITE_CUSTOM_FIELD_EDGE_PATH_IN_LIST"> <!-- missing: es -->
 			<en>Overwrite field %d's edge path in list</en>
 			<de>Feldrandkurs %d in Liste überschreiben</de>
 			<fr>Ecraser le tour du champs %d dans la liste</fr>
-			<es>Overwrite field %d's edge path in list</es> <!-- !!! -->
 			<it>Sovrascrivi perimetro campo %d nella lista</it>
 			<cz>Přepsat trasu okolo pole %d v seznamu</cz>
 			<ru>Переписать поле в списке</ru>
@@ -2345,13 +2370,12 @@ Translations: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris vo
 			<hu>Ponyva:</hu>
 			<nl>Zeilen</nl>
 			<br>cobertura</br>
- 			<cs>车厢盖子</cs>
+ 			<cs>车斗盖子</cs>
 		</text>
-		<text name="COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR">
+		<text name="COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR"> <!-- missing: es -->
 			<en>Remove combine assignment</en>
 			<de>Drescher-Zuordnung entfernen</de>
 			<fr>Retirer l'attribution à la machine</fr>
-			<es>Remove combine assignment</es> <!-- !!! -->
 			<it>Rimuovere assegnazione trebbia</it>
 			<cz>Odstraň přiřezení ke kombajnu</cz>
 			<ru>Удалить комбайн из списка</ru>
@@ -2422,7 +2446,7 @@ Translations: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris vo
 			<ru>В этом бункере нет такого продукта!</ru>
 			<hu>Nem választottad ki a farm tárólóból a terménytípust</hu>
 			<nl>Farm Silo heeft niet de juiste vulling</nl>
-			<br>silo não selecionou o tipo de carregamento </br>
+			<br>Silo não selecionou o tipo de carregamento </br>
 			<cs>没有选定仓筒类型!</cs>
 		</text>
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE">
@@ -2459,6 +2483,20 @@ Translations: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris vo
 			<nl>Opstarten %s!</nl>
 			<br>Iniciando em %s!</br>
 			<cs>启动 %s!</cs>
+		</text>
+		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT"> <!-- missing: cs, cz, fr, es, it, nl, ru -->
+			<en>Search for first waypoint</en>
+			<de>Nach erstem Wegpunkt suchen</de>
+			<hu>Első útpont keresése</hu>
+			<br>Pesquisar pelo primeiro ponto</br>
+			<cs>寻找起始点</cs>
+		</text>
+		<text name="COURSEPLAY_SAVE_CURRENT_COURSE"> <!-- missing: cs, cz, fr, es, it, nl, ru -->
+			<en>Save current course</en>
+			<de>Aktuellen Kurs speichern</de>
+			<hu>Aktuális útvonal mentése</hu>
+			<br>Salvar rota atual</br>
+			<cs>保存当前任务</cs>
 		</text>
 
 		<!-- Recording buttons --> <!-- missing: cz, es, it, nl -->
@@ -2552,7 +2590,6 @@ Translations: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris vo
 			<br>Parar marcha ré</br>
 			<cs>前进模式</cs>
 		</text>
-
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT"> <!-- should the vehicle name/course be displayed with the map CP icons --> <!-- missing: cz, es, it, nl -->
 			<en>Map icons: display text</en>
 			<de>Karten-Icons: Text anzeigen</de>
@@ -2561,6 +2598,13 @@ Translations: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris vo
 			<br>Icones do mapa: Mostrar texto</br>
 			<ru>Показать инфо на карте:</ru>
 			<cs>地图图标： 显示信息</cs>
+		</text>
+		<text name="COURSEPLAY_ALWAYS_USE_4WD"> <!-- missing: br, cs, cz, es, fr, it, nl, ru -->
+			<en>Always use 4WD</en>
+			<de>Allrad immer anschalten</de>
+			<hu>Mindig összkerékhajtás</hu>
+			<br>Usar sempre tração nas quatro rodas</br>
+			<cs>使用四驱</cs>
 		</text>
 
 		<!-- Yes/No dialogues --> <!-- missing: cz, es, it, nl -->
@@ -2571,7 +2615,7 @@ Translations: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris vo
 			<hu>Szeretnéd, hogy a mezők adatait automatikusan beolvassa?</hu>
 			<ru>Включить автосканирование полей?</ru>
 			<br>Você deseja que os campos sejam escaneados automaticamente?</br>
-			<cs>需要自动扫描农田信息么？</cs>
+			<cs>你需要自动测量农田信息么？</cs>
 		</text>
 		<text name="COURSEPLAY_YES_NO_WAGES">
 			<en>Do you want your workers to earn wages (%s/hour)?</en>
@@ -2596,7 +2640,7 @@ Translations: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris vo
 			<ru>КАЛЬКУЛЯЦИЯ ПОСЕВОВ</ru>
 			<nl>Zaad verbruik calculator</nl>
 			<br>Cálculo do uso de sementes</br>
-			<cs>产量预计</cs>
+			<cs>种子使用量</cs>
 		</text>
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD">
 			<en>Field: %d (%s %s)</en>
@@ -2624,18 +2668,17 @@ Translations: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris vo
 			<br>Tipo de semente: %s</br>
 			<cs>种子类型: %s</cs>
 		</text>
-		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE">
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE"> <!-- missing: cz -->
 			<en>Usage: %s %s (%s)</en>
 			<de>Verbrauch: %s %s (%s)</de>
 			<fr>Utilisation: %s %s (%s)</fr>
 			<es>Uso: %s %s (%s)</es>
 			<it>Utilizzo: %s %s (%s)</it>
-			<cz>Usage: %s %s (%s)</cz> <!-- !!! -->
 			<hu>Szükséglet: %s %s (%s) </hu>
 			<ru>Расходы: %s %s (%s)</ru>
 			<nl>Verbruik: %s %s (%s)</nl>
 			<br>Utilizado: %s %s (%s)</br>
-			<cs>预计产量: %s %s (%s)</cs>
+			<cs>用量: %s %s (%s)</cs>
 		</text>
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_TRIM">
 			<en>···</en>
@@ -2703,7 +2746,7 @@ Translations: [BR] Admilson], [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris vo
 			<hu>Vezetősegéd gombkiosztás: Másodlagos</hu>
 			<nl>Courseplay: tweede menu accepteren</nl>
 			<br>Courseplay: acitar menu secundário</br>
-			<cs>Courseplay：二级菜单接受</cs>
+			<cs>Courseplay：启用弹出窗口</cs>
 		</text>
 		<text name="COURSEPLAY_HUD">
 			<en>Show/hide Courseplay HUD</en>
