@@ -331,6 +331,7 @@ end;
 
 function courseplay:setTipRefOffset(vehicle)
 	vehicle.cp.tipRefOffset = nil;
+	local foundTipRefOffset = false;
 	for i=1, vehicle.cp.numWorkTools do
 		if vehicle.cp.hasMachinetoFill then
 			vehicle.cp.tipRefOffset = 1.5;
@@ -341,8 +342,13 @@ function courseplay:setTipRefOffset(vehicle)
 				for n=1 ,#(vehicle.cp.workTools[i].tipReferencePoints) do
 					local tipRefPointX, tipRefPointY, tipRefPointZ = worldToLocal(vehicle.cp.workTools[i].tipReferencePoints[n].node, tipperX, tipperY, tipperZ);
 					tipRefPointX = math.abs(tipRefPointX);
-					if (vehicle.cp.tipRefOffset == nil or vehicle.cp.tipRefOffset == 0) and tipRefPointX > 0.1 then
-						vehicle.cp.tipRefOffset = tipRefPointX;
+					if not foundTipRefOffset then
+						if (vehicle.cp.tipRefOffset == nil or vehicle.cp.tipRefOffset == 0) and tipRefPointX > 0.1 then
+							vehicle.cp.tipRefOffset = tipRefPointX;
+							foundTipRefOffset = true;
+						else
+							vehicle.cp.tipRefOffset = 0
+						end;
 					end;
 
 					-- Find the rear tipRefpoint in case we are BGA tipping.
@@ -353,7 +359,7 @@ function courseplay:setTipRefOffset(vehicle)
 						end;
 					end;
 				end;
-			else 
+			else
 				vehicle.cp.tipRefOffset = 0;
 			end;
 		end;
