@@ -125,7 +125,7 @@ function CpManager:deleteMap()
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- delete vehicles' button overlays
 	for i,vehicle in pairs(g_currentMission.steerables) do
-		if vehicle.cp ~= nil and vehicle.cp.hasCourseplaySpec and vehicle.cp.buttons ~= nil then
+		if vehicle.cp ~= nil and vehicle.hasCourseplaySpec and vehicle.cp.buttons ~= nil then
 			courseplay.buttons:deleteButtonOverlays(vehicle);
 		end;
 	end;
@@ -187,7 +187,7 @@ function CpManager:deleteMap()
 end;
 
 function CpManager:update(dt)
-	if g_gui.currentGui ~= nil and g_gui.currentGuiName ~= 'inputCourseNameDialogue' then
+	if g_currentMission.paused or (g_gui.currentGui ~= nil and g_gui.currentGuiName ~= 'inputCourseNameDialogue') then
 		return;
 	end;
 
@@ -196,7 +196,7 @@ function CpManager:update(dt)
 		self.firstRun = false;
 	end;
 
-	if not g_currentMission.paused and g_gui.currentGui == nil then
+	if g_gui.currentGui == nil then
 		-- SETUP FIELD INGAME DATA
 		if not courseplay.fields.ingameDataSetUp then
 			courseplay.fields:setUpFieldsIngameData();
@@ -218,12 +218,22 @@ function CpManager:update(dt)
 
 
 	-- REAL TIME 10 SECS CHANGER
-	if not g_currentMission.paused and courseplay.wagesActive and g_server ~= nil then -- TODO: if there are more items to be dealt with every 10 secs, remove the "wagesActive" restriction
+	if courseplay.wagesActive and g_server ~= nil then -- NOTE: if there are more items to be dealt with every 10 secs, remove the "wagesActive" restriction
 		if self.realTime10SecsTimer < 10000 then
 			self.realTime10SecsTimer = self.realTime10SecsTimer + dt;
 		else
 			self:realTime10SecsChanged();
 			self.realTime10SecsTimer = self.realTime10SecsTimer - 10000;
+		end;
+	end;
+
+	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	-- HELP MENU
+	if g_gui.currentGui == nil and g_currentMission.controlledVehicle == nil and not g_currentMission.player.currentTool then
+		if self.playerOnFootMouseEnabled then
+			g_currentMission:addHelpTextFunction(self.drawMouseButtonHelp, self, self.hudHelpMouseLineHeight, courseplay:loc('COURSEPLAY_MOUSEARROW_HIDE'));
+		elseif self.globalInfoText.hasContent then
+			g_currentMission:addHelpTextFunction(self.drawMouseButtonHelp, self, self.hudHelpMouseLineHeight, courseplay:loc('COURSEPLAY_MOUSEARROW_SHOW'));
 		end;
 	end;
 end;
@@ -253,17 +263,6 @@ function CpManager:draw()
 	-- DISPLAY FIELD SCAN MSG
 	if courseplay.fields.automaticScan and not courseplay.fields.allFieldsScanned then
 		self:renderFieldScanInfo();
-	end;
-
-	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	-- HELP MENU
-	-- TODO: addHelpTextFunction() is called, but drawMouseButtonHelp() isn't
-	if g_currentMission.controlledVehicle == nil and not g_currentMission.player.currentTool then
-		if self.playerOnFootMouseEnabled then
-			g_currentMission:addHelpTextFunction(self.drawMouseButtonHelp, self, self.hudHelpMouseLineHeight, courseplay:loc('COURSEPLAY_MOUSEARROW_HIDE'));
-		elseif self.globalInfoText.hasContent then
-			g_currentMission:addHelpTextFunction(self.drawMouseButtonHelp, self, self.hudHelpMouseLineHeight, courseplay:loc('COURSEPLAY_MOUSEARROW_SHOW'));
-		end;
 	end;
 end;
 
@@ -528,7 +527,7 @@ function CpManager:severCombineTractorConnection(vehicle, callDelete)
 			local combine = vehicle;
 			-- remove this combine as savedCombine from all tractors
 			for i,tractor in pairs(g_currentMission.steerables) do
-				if tractor.cp and tractor.cp.savedCombine and tractor.cp.savedCombine == combine and tractor.cp.hasCourseplaySpec  then
+				if tractor.hasCourseplaySpec and tractor.cp.savedCombine and tractor.cp.savedCombine == combine then
 					courseplay:debug(('\ttractor %q: savedCombine=%q --> removeSavedCombineFromTractor()'):format(nameNum(tractor), nameNum(combine)), 4);
 					courseplay:removeSavedCombineFromTractor(tractor);
 				end;

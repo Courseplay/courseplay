@@ -621,7 +621,7 @@ end;
 function courseplay:findDrivers(vehicle)
 	local foundDrivers = {}; -- resetting all drivers
 	for _,otherVehicle in pairs(g_currentMission.steerables) do
-		if otherVehicle.Waypoints ~= nil and otherVehicle.cp.hasCourseplaySpec  then
+		if otherVehicle.Waypoints ~= nil and otherVehicle.hasCourseplaySpec  then
 			if otherVehicle.rootNode ~= vehicle.rootNode and #(otherVehicle.Waypoints) > 0 then
 				table.insert(foundDrivers, otherVehicle);
 			end;
@@ -697,7 +697,7 @@ function courseplay.settings.add_folder(input1, input2)
 	if vehicle == false then
 	-- no vehicle given -> add folder to all vehicles
 		for k,v in pairs(g_currentMission.steerables) do
-			if v.cp ~= nil and v.cp.hasCourseplaySpec then 		-- alternative way to check if SpecializationUtil.hasSpecialization(courseplay, v.specializations)
+			if v.hasCourseplaySpec then -- alternative way to check if SpecializationUtil.hasSpecialization(courseplay, v.specializations)
 				v.cp.folder_settings[id] = {}
 				courseplay.settings.add_folder_settings(v.cp.folder_settings[id])
 			end	
@@ -715,7 +715,7 @@ function courseplay.settings.update_folders(vehicle)
 	if vehicle == nil then
 	-- no vehicle given -> update all folders in all vehicles
 		for k,v in pairs(g_currentMission.steerables) do
-			if v.cp ~= nil and v.cp.hasCourseplaySpec then 		-- alternative way to check if SpecializationUtil.hasSpecialization(courseplay, v.specializations)
+			if v.hasCourseplaySpec then -- alternative way to check if SpecializationUtil.hasSpecialization(courseplay, v.specializations)
 				old_settings = v.cp.folder_settings
 				v.cp.folder_settings = {}
 				for _,f in pairs(g_currentMission.cp_folders) do
@@ -751,7 +751,7 @@ function courseplay.settings.setReloadCourseItems(vehicle)
 		courseplay.hud:setReloadPageOrder(vehicle, 2, true);
 	else
 		for k,v in pairs(g_currentMission.steerables) do
-			if v.cp ~= nil and v.cp.hasCourseplaySpec then 		-- alternative way to check if SpecializationUtil.hasSpecialization(courseplay, v.specializations)
+			if v.hasCourseplaySpec then -- alternative way to check if SpecializationUtil.hasSpecialization(courseplay, v.specializations)
 				v.cp.reloadCourseItems = true
 				--print(string.format("courseplay.hud:setReloadPageOrder(%s, 2, true) TypeName: %s ;",tostring(v.name), v.typeName))
 				courseplay.hud:setReloadPageOrder(v, 2, true);
@@ -832,7 +832,7 @@ function courseplay.hud.reloadCourses(vehicle)
 		courseplay.hud.setCourses(vehicle, index)
 	else
 		for k,v in pairs(g_currentMission.steerables) do
-			if v.cp ~= nil and v.cp.hasCourseplaySpec then 		-- alternative way to check if SpecializationUtil.hasSpecialization(courseplay, v.specializations)
+			if v.hasCourseplaySpec then -- alternative way to check if SpecializationUtil.hasSpecialization(courseplay, v.specializations)
 				i = 1
 				-- course/folder in the hud might have been deleted -> info no longer available				
 				while i <= #v.cp.hud.courses and v.cp.sorted.info[ v.cp.hud.courses[i].uid ] == nil do
@@ -942,7 +942,7 @@ function courseplay.settings.validateCourseListArrows(vehicle)
 	else
 		-- update all vehicles
 		for k,v in pairs(g_currentMission.steerables) do
-			if v.cp ~= nil and v.cp.hasCourseplaySpec then 		-- alternative way to check if SpecializationUtil.hasSpecialization(courseplay, v.specializations)
+			if v.hasCourseplaySpec then -- alternative way to check if SpecializationUtil.hasSpecialization(courseplay, v.specializations)
 				prev = true
 				next = true
 				n_hudcourses = #(v.cp.hud.courses)
