@@ -976,17 +976,12 @@ function courseplay:unload_combine(self, dt)
 	allowedToDrive = courseplay:checkTraffic(self, true, allowedToDrive)
 	refSpeed = courseplay:regulateTrafficSpeed(self,refSpeed,allowedToDrive)
 
-
-	if allowedToDrive then
-		courseplay:setSpeed(self, refSpeed)
-	end
-
-
+	
 	if g_server ~= nil then
-		local targetX, targetZ = nil, nil
+		local lx, lz = nil, nil
 		local moveForwards = true
 		if currentX ~= nil and currentZ ~= nil then
-			targetX, targetZ = AIVehicleUtil.getDriveDirection(self.cp.DirectionNode, currentX, y, currentZ)
+			lx, lz = AIVehicleUtil.getDriveDirection(self.cp.DirectionNode, currentX, y, currentZ)
 		else
 			allowedToDrive = false
 		end
@@ -1001,14 +996,22 @@ function courseplay:unload_combine(self, dt)
 				lx = 0
 				lz = 1
 		end
-
+		
+		if abs(lx) > 0.5 then
+			refSpeed = min(refSpeed, self.cp.speeds.turn)
+		end
+				
+		if allowedToDrive then
+			courseplay:setSpeed(self, refSpeed)
+		end
+		
 		self.cp.TrafficBrake = false
 		--[[if self.cp.modeState == 5 or self.cp.modeState == 2 then    FS15
-			targetX, targetZ = courseplay:isTheWayToTargetFree(self, targetX, targetZ)
+			lx, lz = courseplay:isTheWayToTargetFree(self, lx, lz)
 		end]]
-		courseplay:setTrafficCollision(self, targetX, targetZ,true)
+		courseplay:setTrafficCollision(self, lx, lz,true)
 		
-		AIVehicleUtil.driveInDirection(self, dt, self.cp.steeringAngle, 1, 0.5, 10, allowedToDrive, moveForwards, targetX, targetZ, refSpeed, 1)
+		AIVehicleUtil.driveInDirection(self, dt, self.cp.steeringAngle, 1, 0.5, 10, allowedToDrive, moveForwards, lx, lz, refSpeed, 1)
 		
 
 		if courseplay.debugChannels[4] and self.cp.nextTargets and self.cp.curTarget.x and self.cp.curTarget.z then
