@@ -546,19 +546,22 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<br>Rotas: %q</br>
  			<cs>任务: %q</cs>
 		</text>
-		<text name="COURSEPLAY_CREATE_FOLDER"> <!-- missing: cs, cz, fr, es, hu, it, nl, ru -->
+		<text name="COURSEPLAY_CREATE_FOLDER"> <!-- missing: cs, cz, fr, es, it, nl, ru -->
 			<en>Create new folder</en>
 			<de>Neuen Ordner erstellen</de>
+			<hu>Új mappa létrehozása</hu>
 			<br>Criar nova pasta</br>
 		</text>
-		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS"> <!-- missing: cs, cz, fr, es, hu, it, nl, ru -->
+		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS"> <!-- missing: cs, cz, fr, es, it, nl, ru -->
 			<en>Search for courses and folders</en>
 			<de>Nach Kursen und Ordnern suchen</de>
+			<hu>Útvonal keresése a mappákban</hu>
 			<br>Pesquisar pastas e rotas</br>
 		</text>
-		<text name="COURSEPLAY_DEACTIVATE_FILTER"> <!-- missing: cs, cz, fr, es, hu, it, nl, ru -->
+		<text name="COURSEPLAY_DEACTIVATE_FILTER"> <!-- missing: cs, cz, fr, es, it, nl, ru -->
 			<en>Deactivate filter</en>
 			<de>Filter deaktivieren</de>
+			<hu>Szűrő alaphelyzetbe</hu>
 			<br>Desativar filtros</br>
 		</text>
 		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT">
@@ -2476,14 +2479,16 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<br>Iniciando em %s!</br>
 			<cs>启动 %s!</cs>
 		</text>
-		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT"> <!-- missing: cs, cz, fr, es, hu, it, nl, ru -->
+		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT"> <!-- missing: cs, cz, fr, es, it, nl, ru -->
 			<en>Search for first waypoint</en>
 			<de>Nach erstem Wegpunkt suchen</de>
+			<hu>Első útpont keresése</hu>
 			<br>Pesquisar pelo primeiro ponto</br>
 		</text>
-		<text name="COURSEPLAY_SAVE_CURRENT_COURSE"> <!-- missing: cs, cz, fr, es, hu, it, nl, ru -->
+		<text name="COURSEPLAY_SAVE_CURRENT_COURSE"> <!-- missing: cs, cz, fr, es, it, nl, ru -->
 			<en>Save current course</en>
 			<de>Aktuellen Kurs speichern</de>
+			<hu>Aktuális útvonal mentése</hu>
 			<br>Salvar rota atual</br>
 		</text>
 
@@ -2587,9 +2592,10 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<ru>Показать инфо на карте:</ru>
 			<cs>地图图标： 显示信息</cs>
 		</text>
-		<text name="COURSEPLAY_ALWAYS_USE_4WD"> <!-- missing: br, cs, cz, es, fr, hu, it, nl, ru -->
+		<text name="COURSEPLAY_ALWAYS_USE_4WD"> <!-- missing: br, cs, cz, es, fr, it, nl, ru -->
 			<en>Always use 4WD</en>
 			<de>Allrad immer anschalten</de>
+			<hu>Mindig összkerékhajtás</hu>
 			<br>Usar sempre tração nas quatro rodas</br>
 		</text>
 
