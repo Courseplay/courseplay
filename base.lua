@@ -1074,11 +1074,34 @@ function courseplay:draw()
 end; --END draw()
 
 function courseplay:showWorkWidth(vehicle)
-	local left =  vehicle.cp.workWidthDisplayPoints.left;
-	local right = vehicle.cp.workWidthDisplayPoints.right;
-	drawDebugPoint(left.x, left.y, left.z, 1, 1, 0, 1);
-	drawDebugPoint(right.x, right.y, right.z, 1, 1, 0, 1);
-	drawDebugLine(left.x, left.y, left.z, 1, 0, 0, right.x, right.y, right.z, 1, 0, 0);
+
+	local left =  (vehicle.cp.workWidth *  0.5) + (vehicle.cp.toolOffsetX or 0);
+	local right = (vehicle.cp.workWidth * -0.5) + (vehicle.cp.toolOffsetX or 0);
+
+	if vehicle.cp.DirectionNode and vehicle.cp.backMarkerOffset and vehicle.cp.aiFrontMarker then
+		local p1x, p1y, p1z = localToWorld(vehicle.cp.DirectionNode, left,  1.6, vehicle.cp.backMarkerOffset);
+		local p2x, p2y, p2z = localToWorld(vehicle.cp.DirectionNode, right, 1.6, vehicle.cp.backMarkerOffset);
+		local p3x, p3y, p3z = localToWorld(vehicle.cp.DirectionNode, right, 1.6, vehicle.cp.aiFrontMarker);
+		local p4x, p4y, p4z = localToWorld(vehicle.cp.DirectionNode, left,  1.6, vehicle.cp.aiFrontMarker);
+
+		drawDebugPoint(p1x, p1y, p1z, 1, 1, 0, 1);
+		drawDebugPoint(p2x, p2y, p2z, 1, 1, 0, 1);
+		drawDebugPoint(p3x, p3y, p3z, 1, 1, 0, 1);
+		drawDebugPoint(p4x, p4y, p4z, 1, 1, 0, 1);
+
+		drawDebugLine(p1x, p1y, p1z, 1, 0, 0, p2x, p2y, p2z, 1, 0, 0);
+		drawDebugLine(p2x, p2y, p2z, 1, 0, 0, p3x, p3y, p3z, 1, 0, 0);
+		drawDebugLine(p3x, p3y, p3z, 1, 0, 0, p4x, p4y, p4z, 1, 0, 0);
+		drawDebugLine(p4x, p4y, p4z, 1, 0, 0, p1x, p1y, p1z, 1, 0, 0);
+	else
+		local lX, lY, lZ = localToWorld(vehicle.rootNode, left,  1.6, -6);
+		local rX, rY, rZ = localToWorld(vehicle.rootNode, right, 1.6, -6);
+
+		drawDebugPoint(lX, lY, lZ, 1, 1, 0, 1);
+		drawDebugPoint(rX, rY, rZ, 1, 1, 0, 1);
+
+		drawDebugLine(lX, lY, lZ, 1, 0, 0, rX, rY, rZ, 1, 0, 0);
+	end;
 end;
 
 function courseplay:drawWaypointsLines(vehicle)

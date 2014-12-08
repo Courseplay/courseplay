@@ -203,13 +203,13 @@ setGlobalData();
 
 if courseplay.isDevVersion then
 	local devWarning = '';
-	devWarning = devWarning .. '\t' .. ('*'):rep(47) .. ' WARNING ' .. ('*'):rep(47) .. '\n';
-	devWarning = devWarning .. '\t* You are using a development version of Courseplay, which may and will contain errors, bugs,         *\n';
-	devWarning = devWarning .. '\t* mistakes and unfinished code. Chances are your computer will explode when using it. Twice.          *\n';
-	devWarning = devWarning .. '\t* If you have no idea what "beta", "alpha", or "developer" means and entails, remove this version     *\n';
-	devWarning = devWarning .. '\t* of Courseplay immediately. The Courseplay team will not take any responsibility for crop destroyed, *\n';
-	devWarning = devWarning .. '\t* savegames deleted or baby pandas killed.                                                            *\n';
-	devWarning = devWarning .. '\t' .. ('*'):rep(103);
+	devWarning = devWarning .. '    ' .. ('*'):rep(47) .. ' WARNING ' .. ('*'):rep(47) .. '\n';
+	devWarning = devWarning .. '    * You are using a development version of Courseplay, which may and will contain errors, bugs,         *\n';
+	devWarning = devWarning .. '    * mistakes and unfinished code. Chances are your computer will explode when using it. Twice.          *\n';
+	devWarning = devWarning .. '    * If you have no idea what "beta", "alpha", or "developer" means and entails, remove this version     *\n';
+	devWarning = devWarning .. '    * of Courseplay immediately. The Courseplay team will not take any responsibility for crop destroyed, *\n';
+	devWarning = devWarning .. '    * savegames deleted or baby pandas killed.                                                            *\n';
+	devWarning = devWarning .. '    ' .. ('*'):rep(103);
 	print(devWarning);
 end;
 
