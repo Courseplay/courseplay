@@ -81,10 +81,13 @@ function courseplay.hud:setup()
 		fieldScanData = 0.018;
 	};
 
-	self.col1posX = self.infoBasePosX + 0.005;
+	self.contentMinX = self.visibleArea.x1 + 0.005;
+	self.contentMaxX = self.visibleArea.x2 - 0.01;
+	self.contentMaxWidth = self.contentMaxX - self.contentMinX;
+	self.col1posX = self.contentMinX;
 	self.col2posX = {
 		[0] = self.infoBasePosX + 0.122,
-		[1] = self.infoBasePosX + 0.142,
+		[1] = self.infoBasePosX + 0.192,
 		[2] = self.infoBasePosX + 0.122,
 		[3] = self.infoBasePosX + 0.122,
 		[4] = self.infoBasePosX + 0.122,
@@ -98,11 +101,6 @@ function courseplay.hud:setup()
 		[0] = {
 			[4] = self.infoBasePosX + 0.212;
 			[5] = self.infoBasePosX + 0.212;
-		};
-		[1] = {
-			[4] = self.infoBasePosX + 0.182;
-			[5] = self.infoBasePosX + 0.182;
-			[6] = self.infoBasePosX + 0.182;
 		};
 		[7] = {
 			[7] = self.infoBasePosX + 0.105;
@@ -508,7 +506,7 @@ function courseplay.hud:loadPage(vehicle, page)
 	--PAGE 1: COURSEPLAY CONTROL
 	elseif page == 1 then
 		if vehicle.cp.canDrive then
-			if not vehicle:getIsCourseplayDriving() then
+			if not vehicle:getIsCourseplayDriving() then -- only 6 lines available, as the mode buttons are in lines 7 and 8!
 				vehicle.cp.hud.content.pages[1][1][1].text = courseplay:loc('COURSEPLAY_START_COURSE')
 
 				if vehicle.cp.mode ~= 9 then
@@ -537,9 +535,8 @@ function courseplay.hud:loadPage(vehicle, page)
 					vehicle.cp.hud.content.pages[1][3][1].text = courseplay:loc('COURSEPLAY_DRIVE_NOW')
 				end
 
-				if not vehicle.cp.stopAtEnd then
-					vehicle.cp.hud.content.pages[1][4][1].text = courseplay:loc('COURSEPLAY_STOP_AT_LAST_POINT')
-				end
+				vehicle.cp.hud.content.pages[1][4][1].text = courseplay:loc('COURSEPLAY_STOP_AT_LAST_POINT');
+				vehicle.cp.hud.content.pages[1][4][2].text = vehicle.cp.stopAtEnd and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
 
 				if vehicle.cp.mode == 4 and vehicle.cp.hasSowingMachine then
 					vehicle.cp.hud.content.pages[1][5][1].text = courseplay:loc('COURSEPLAY_RIDGEMARKERS');
@@ -556,7 +553,7 @@ function courseplay.hud:loadPage(vehicle, page)
 				end;
 			end
 
-		elseif not vehicle:getIsCourseplayDriving() then
+		elseif not vehicle:getIsCourseplayDriving() then -- only 6 lines available, as the mode buttons are in lines 7 and 8!
 			if (not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused) and not vehicle.cp.canDrive then
 				if #vehicle.Waypoints == 0 then
 					vehicle.cp.hud.content.pages[1][1][1].text = courseplay:loc('COURSEPLAY_RECORDING_START');

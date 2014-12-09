@@ -40,10 +40,9 @@ function courseplay:getNextFillableFillType(vehicle)
 		return workTool:getFirstEnabledFillType();
 	end;
 
-	for fillType, enabled in pairs(workTool.fillTypes) do
-		if fillType > vehicle.cp.multiSiloSelectedFillType and enabled then
-			return fillType;
-		end;
+	local nextFillType, enabled = next(workTool.fillTypes, vehicle.cp.multiSiloSelectedFillType);
+	if nextFillType and enabled then
+		return nextFillType;
 	end;
 
 	return workTool:getFirstEnabledFillType();

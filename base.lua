@@ -2,6 +2,11 @@ function courseplay.prerequisitesPresent(specializations)
 	return true;
 end
 
+--[[
+function courseplay:preLoad(xmlFile)
+end;
+]]
+
 function courseplay:load(xmlFile)
 	self.setCourseplayFunc = courseplay.setCourseplayFunc;
 	self.getIsCourseplayDriving = courseplay.getIsCourseplayDriving;
@@ -577,11 +582,11 @@ function courseplay:load(xmlFile)
 	-- ## BUTTONS FOR HUD ##
 	local mouseWheelArea = {
 		x = courseplay.hud.col1posX,
-		w = courseplay.hud.visibleArea.x2 - courseplay.hud.visibleArea.x1 - (2 * 0.005),
+		w = courseplay.hud.contentMaxWidth,
 		h = courseplay.hud.lineHeight
 	};
 
-	local listArrowX = courseplay.hud.visibleArea.x2 - (2 * 0.005) - w24px;
+	local listArrowX = courseplay.hud.contentMaxX - w24px;
 	local topIconsY = courseplay.hud.infoBasePosY + 0.2395;
 	local topIconsX = {};
 	topIconsX[3] = listArrowX - w16px - w24px;
@@ -626,29 +631,19 @@ function courseplay:load(xmlFile)
 	-- ##################################################
 	-- Page 1
 	-- setCpMode buttons
-	local modeBtn = {
-		w = w32px;
-		h = h32px;
-		numColumns = 3;
-		marginX = w32px / 32;
-		marginY = h32px / 32;
-		maxX = listArrowX + w24px;
-	};
-	modeBtn.maxY = courseplay.hud.linesPosY[1] + courseplay.hud.lineHeight * 0.75 + modeBtn.marginY;
-	modeBtn.minX = modeBtn.maxX - (modeBtn.numColumns * modeBtn.w) - ((modeBtn.numColumns - 1) * modeBtn.marginX);
+	local h = h32px;
+	local w = h / g_screenAspectRatio;
+	local marginX = w / 3.2;
+	local totalWidth = (courseplay.numAiModes * w) + ((courseplay.numAiModes - 1) * marginX);
+	local baseX = courseplay.hud.infoBaseCenter - totalWidth/2;
 	for i=1, courseplay.numAiModes do
-		local line = math.ceil(i/modeBtn.numColumns); -- 1, 2, 3
-		local col = (i - 1) % modeBtn.numColumns; -- 0, 1, 2
-
-		local posX = modeBtn.minX + ((modeBtn.w + modeBtn.marginX) * col);
-		local posY = modeBtn.maxY - ((modeBtn.h + modeBtn.marginY) * line);
-
+		local posX = baseX + ((i - 1) * (w + marginX));
 		local toolTip = courseplay:loc(('COURSEPLAY_MODE_%d'):format(i));
 
-		courseplay.button:new(self, 1, 'iconSprite.png', 'setCpMode', i, posX, posY, modeBtn.w, modeBtn.h, nil, nil, false, false, false, toolTip);
+		courseplay.button:new(self, 1, 'iconSprite.png', 'setCpMode', i, posX, courseplay.hud.linesButtonPosY[8], w, h, nil, nil, false, false, false, toolTip);
 	end;
 
-	--recording
+	-- recording
 	local recordingData = {
 		[1] = { 'recordingStop', 'stop_record', nil, 'COURSEPLAY_RECORDING_STOP' },
 		[2] = { 'recordingPause', 'setRecordingPause', true, 'COURSEPLAY_RECORDING_PAUSE' },
@@ -658,13 +653,13 @@ function courseplay:load(xmlFile)
 		[6] = { 'recordingTurn', 'setRecordingTurnManeuver', true, 'COURSEPLAY_RECORDING_TURN_START' },
 		[7] = { 'recordingReverse', 'change_DriveDirection', true, 'COURSEPLAY_RECORDING_REVERSE_START' }
 	};
-	local w,h = w32px,h32px;
+	local h = h32px;
+	local w = h / g_screenAspectRatio;
 	local padding = w/4;
 	local totalWidth = (#recordingData - 1) * (w + padding) + w;
-	local initX = courseplay.hud.infoBaseCenter - totalWidth/2;
-	
+	local baseX = courseplay.hud.infoBaseCenter - totalWidth/2;
 	for i,data in pairs(recordingData) do
-		local posX = initX + ((w + padding) * (i-1));
+		local posX = baseX + ((w + padding) * (i-1));
 		local fn = data[2];
 		local isToggleButton = data[3];
 		local toolTip = courseplay:loc(data[4]);
@@ -680,12 +675,13 @@ function courseplay:load(xmlFile)
 		end;
 	end;
 
-	--row buttons
+	-- row buttons
+	local w = courseplay.hud.buttonPosX[1] - courseplay.hud.col1posX;
 	for i=1, courseplay.hud.numLines do
-		courseplay.button:new(self, 1, nil, 'rowButton', i, courseplay.hud.col1posX, courseplay.hud.linesPosY[i], modeBtn.minX - courseplay.hud.col1posX, 0.015, i, nil, true);
+		courseplay.button:new(self, 1, nil, 'rowButton', i, courseplay.hud.col1posX, courseplay.hud.linesPosY[i], w, 0.015, i, nil, true);
 	end;
 
-	--Custom field edge path
+	-- Custom field edge path
 	courseplay.button:new(self, 1, { 'iconSprite.png', 'cancel' }, 'clearCustomFieldEdge', nil, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[3], w16px, h16px, 3, nil, false);
 	courseplay.button:new(self, 1, { 'iconSprite.png', 'eye' }, 'toggleCustomFieldEdgePathShow', nil, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[3], w16px, h16px, 3, nil, false);
 
@@ -1277,6 +1273,11 @@ function courseplay:update(dt)
 	end;
 end; --END update()
 
+--[[
+function courseplay:postUpdate(dt)
+end;
+]]
+
 function courseplay:updateTick(dt)
 	if not self.cp.fieldEdge.selectedField.buttonsCreated and courseplay.fields.numAvailableFields > 0 then
 		courseplay:createFieldEdgeButtons(self);
@@ -1289,6 +1290,11 @@ function courseplay:updateTick(dt)
 
 	self.timer = self.timer + dt;
 end
+
+--[[
+function courseplay:postUpdateTick(dt)
+end;
+]]
 
 function courseplay:preDelete()
 	if self.cp ~= nil and self.cp.numActiveGlobalInfoTexts ~= 0 then

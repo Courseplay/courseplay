@@ -260,8 +260,8 @@ function courseplay:executeFunction(self, func, value, page)
 						end;
 					elseif line == 3 and not self.cp.isLoaded then
 						courseplay:setIsLoaded(self, true);
-					elseif line == 4 and not self.cp.stopAtEnd then
-						courseplay:setStopAtEnd(self, true);
+					elseif line == 4 then
+						courseplay:setStopAtEnd(self, not self.cp.stopAtEnd);
 					elseif line == 5 then
 						if self.cp.mode == 4 and self.cp.hasSowingMachine then
 							self.cp.ridgeMarkersAutomatic = not self.cp.ridgeMarkersAutomatic;

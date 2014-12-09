@@ -14,7 +14,7 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 	end;
 	--whcih trigger is it ? 
 	local TriggerNumber = self.cp.trafficCollisionTriggerToTriggerIndex[triggerId];
-	
+	-- print(('otherId=%d, getCollisionMask=%s, name=%q, className=%q'):format(otherId, tostring(getCollisionMask(otherId)), tostring(getName(otherId)), tostring(getClassName(otherId))));
 	if onEnter or onLeave then --TODO check whether it is required to ask for this 
 		if otherId == Player.rootNode then  --TODO check in Multiplayer --TODO (Jakob): g_currentMission.player.rootNode ?
 			if onEnter then
@@ -25,6 +25,13 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 		else
 			local vehicleOnList = false
 			local OtherIdisCloser = true
+
+			-- is this a traffic vehicle?
+			local cm = getCollisionMask(otherId);
+			if bitAND(cm, 33554432) ~= 0 then -- if bit25 is part of the collisionMask
+				-- is traffic vehicle
+			end;
+
 			local vehicle = g_currentMission.nodeToVehicle[otherId];
 			local collisionVehicle = g_currentMission.nodeToVehicle[self.cp.collidingVehicleId];
 			
