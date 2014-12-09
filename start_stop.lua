@@ -276,7 +276,7 @@ function courseplay:start(self)
 		courseplay:debug(string.format("%s: maxnumber=%d, stopWork=%d, finishWork=%d, hasUnloadingRefillingCourse=%s, recordnumber=%d", nameNum(self), self.maxnumber, self.cp.stopWork, self.cp.finishWork, tostring(self.cp.hasUnloadingRefillingCourse), self.recordnumber), 12);
 	end
 
-	if self.cp.mode == 9 or self.cp.startAtPoint == courseplay.START_AT_FIRST_POINT then
+	if self.cp.mode == 9 then
 		courseplay:setRecordNumber(self, 1);
 		self.cp.shovelState = 1;
 		for i,_ in pairs(self.attachedImplements) do
@@ -291,7 +291,13 @@ function courseplay:start(self)
 					end
 				end
 			end				
-		end	
+		end
+	elseif self.cp.startAtPoint == courseplay.START_AT_FIRST_POINT then
+		if self.cp.mode == 2 or self.cp.mode == 3 then
+			courseplay:setRecordNumber(self, 3);
+		else
+			courseplay:setRecordNumber(self, 1);
+		end
 	end;
 
 	courseplay:updateAllTriggers();
