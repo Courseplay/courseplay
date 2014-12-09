@@ -618,7 +618,7 @@ function courseplay.courses:deleteSaveAll()
 				-- header
 				local header = '';
 				header = header .. '<?xml version="1.0" encoding="utf-8" standalone="no" ?>\n<XML>\n';
-				header = header .. ('\t<courseplayHud posX="%.3f" posY="%.3f" />\n'):format(courseplay.hud.infoBasePosX, courseplay.hud.infoBasePosY);
+				header = header .. ('\t<courseplayHud posX="%.3f" posY="%.3f" />\n'):format(courseplay.hud.basePosX, courseplay.hud.basePosY);
 				header = header .. ('\t<courseplayFields automaticScan=%q onlyScanOwnedFields=%q debugScannedFields=%q debugCustomLoadedFields=%q scanStep="%d" />\n'):format(tostring(courseplay.fields.automaticScan), tostring(courseplay.fields.onlyScanOwnedFields), tostring(courseplay.fields.debugScannedFields), tostring(courseplay.fields.debugCustomLoadedFields), courseplay.fields.scanStep);
 				header = header .. ('\t<courseplayWages active=%q wagePerHour="%d" />\n'):format(tostring(CpManager.wagesActive), CpManager.wagePerHour);
 				header = header .. ('\t<courseplayIngameMap active=%q showName=%q showCourse=%q />\n'):format(tostring(CpManager.ingameMapIconActive), tostring(CpManager.ingameMapIconShowName),tostring(CpManager.ingameMapIconShowCourse));

@@ -567,10 +567,10 @@ end;
 function courseplay.fields:getFruitTypes()
 	--GET FRUITTYPES
 	local fruitTypes = {};
-	local hudW = g_currentMission.hudTipperOverlay.width * 2.75;
-	local hudH = hudW * g_screenAspectRatio;
-	local hudX = courseplay.hud.infoBasePosX - 16/1920 + 93/1920 + 449/1920 - hudW;
-	local hudY = courseplay.hud.infoBasePosY - 7/1080 + 335/1080;
+	local hudW = courseplay.hud.suc.overlayWidth;
+	local hudH = courseplay.hud.suc.overlayHeight;
+	local hudX = courseplay.hud.suc.overlayPosX;
+	local hudY = courseplay.hud.suc.overlayPosY;
 	for name,fruitType in pairs(FruitUtil.fruitTypes) do
 		if fruitType.allowsSeeding and fruitType.seedUsagePerSqm then
 			local fillType = FruitUtil.fruitTypeToFillType[fruitType.index];

@@ -40,9 +40,9 @@ function CpManager:loadMap(name)
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- SETUP (continued)
-	courseplay.hud:setup(); -- NOTE: hud has to be set up after the xml settings have been loaded, as almost all its values are based on infoBasePosX/Y
+	courseplay.hud:setup(); -- NOTE: hud has to be set up after the xml settings have been loaded, as almost all its values are based on basePosX/Y
 	self:setUpDebugChannels(); -- NOTE: debugChannels have to be set up after the hud, as they rely on some hud values [positioning]
-	self:setupGlobalInfoText(); -- NOTE: globalInfoText has to be set up after the hud, as they rely on some hud values [colors]
+	self:setupGlobalInfoText(); -- NOTE: globalInfoText has to be set up after the hud, as they rely on some hud values [colors, function]
 	courseplay.courses:setup(true); -- NOTE: courses:setup is called a second time, now we actually load the courses and folders from the XML
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -645,7 +645,7 @@ function CpManager:setupGlobalInfoText()
 
 	self.globalInfoText.posY = 0.01238; -- = ingameMap posY
 	self.globalInfoText.posYAboveMap = self.globalInfoText.posY + 0.027777777777778 + 0.20833333333333;
-	self.globalInfoText.fontSize = 0.016;
+	self.globalInfoText.fontSize = courseplay.hud:pxToNormal(18, 'y');
 	self.globalInfoText.lineHeight = self.globalInfoText.fontSize * 1.2;
 	self.globalInfoText.lineMargin = self.globalInfoText.lineHeight * 0.2;
 	self.globalInfoText.buttonHeight = self.globalInfoText.lineHeight;
@@ -840,14 +840,14 @@ function CpManager:loadOrSetXmlSettings()
 		local key = 'XML.courseplayHud';
 		local posX, posY = getXMLFloat(cpFile, key .. '#posX'), getXMLFloat(cpFile, key .. '#posY');
 		if posX then
-			courseplay.hud.infoBasePosX = posX;
+			courseplay.hud.basePosX = courseplay.hud:getFullPx(posX, 'x');
 		else
-			setXMLFloat(cpFile, key .. '#posX', courseplay.hud.infoBasePosX);
+			setXMLFloat(cpFile, key .. '#posX', courseplay.hud.basePosX);
 		end;
 		if posY then
-			courseplay.hud.infoBasePosY = posY;
+			courseplay.hud.basePosY = courseplay.hud:getFullPx(posY, 'y');
 		else
-			setXMLFloat(cpFile, key .. '#posY', courseplay.hud.infoBasePosY);
+			setXMLFloat(cpFile, key .. '#posY', courseplay.hud.basePosY);
 		end;
 
 
@@ -948,8 +948,8 @@ function CpManager:createXmlSettings()
 
 	-- hud position
 	local key = 'XML.courseplayHud';
-	setXMLFloat(cpFile, key .. '#posX', courseplay.hud.infoBasePosX);
-	setXMLFloat(cpFile, key .. '#posY', courseplay.hud.infoBasePosY);
+	setXMLFloat(cpFile, key .. '#posX', courseplay.hud.basePosX);
+	setXMLFloat(cpFile, key .. '#posY', courseplay.hud.basePosY);
 
 	-- fields settings
 	self.showFieldScanYesNoDialogue = true;

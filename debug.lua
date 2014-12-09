@@ -39,16 +39,18 @@ function CpManager:setUpDebugChannels()
 	};
 
 	courseplay.debugButtonPosData = {};
-	local dbgW, dbgH = 22/1920, 22/1080;
+	local dbgW = courseplay.hud:pxToNormal(22, 'x');
+	local dbgH = courseplay.hud:pxToNormal(22, 'y');
 	local dbgMarginX = dbgW * 0.075;
-	local dbgMaxX = courseplay.hud.buttonPosX[1] - 0.01;
+	local dbgMaxX = courseplay.hud.contentMaxX - (2 * (courseplay.hud.buttonSize.small.w + courseplay.hud.buttonSize.small.margin));
 	local dbgMinX = dbgMaxX - (courseplay.numDebugChannelButtonsPerLine * dbgW) - ((courseplay.numDebugChannelButtonsPerLine - 1) * dbgMarginX);
+	local dbgBtnPosY = courseplay.hud.linesPosY[8] - courseplay.hud:pxToNormal(5, 'y');
 	for i = 1, courseplay.numDebugChannelButtonsPerLine do
 		local data = {};
 		data.width  = dbgW;
 		data.height = dbgH;
 		data.posX = dbgMinX + ((i - 1) * (dbgW + dbgMarginX));
-		data.posY = courseplay.hud.linesPosY[8] - 0.004;
+		data.posY = dbgBtnPosY;
 		data.textPosX = data.posX + (dbgW * 0.5);
 		data.textPosY = courseplay.hud.linesPosY[8];
 
