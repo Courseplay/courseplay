@@ -562,6 +562,10 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 	local currentTrailer = vehicle.cp.workTools[vehicle.cp.currentTrailerToFill];
 
 	if not vehicle.cp.trailerFillDistance then
+		if courseplay:isMixer(currentTrailer) and not currentTrailer.cp.realUnloadOrFillNode then
+			currentTrailer.cp.realUnloadOrFillNode = courseplay:getRealUnloadOrFillNode(currentTrailer);
+		end;
+
 		if not currentTrailer.cp.realUnloadOrFillNode then
 			return allowedToDrive;
 		end;
