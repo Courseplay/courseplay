@@ -89,7 +89,7 @@ function courseplay:registerAtCombine(vehicle, combine)
 	end;
 
 	if combine.cp.isChopper or combine.cp.isSugarBeetLoader then
-		numAllowedCourseplayers = courseplay.isDeveloper and 4 or 2;
+		numAllowedCourseplayers = CpManager.isDeveloper and 4 or 2;
 	else
 		
 		if vehicle.cp.realisticDriving then
@@ -132,7 +132,7 @@ function courseplay:registerAtCombine(vehicle, combine)
 		if combine.cp.driverPriorityUseFillLevel then
 			local fillLevel = 0
 			local vehicle_ID = 0
-			for k, vehicle in pairs(courseplay.activeCoursePlayers) do
+			for k, vehicle in pairs(CpManager.activeCoursePlayers) do
 				if vehicle.cp.combineID ~= nil then
 					if vehicle.cp.combineID == combine.id and vehicle.cp.activeCombine == nil then
 						courseplay:debug(tostring(vehicle.id).." : cp.callCombineFillLevel:"..tostring(vehicle.cp.callCombineFillLevel).." for combine.id:"..tostring(combine.id), 4)
@@ -152,7 +152,7 @@ function courseplay:registerAtCombine(vehicle, combine)
 		else
 			local distance = 9999999
 			local vehicle_ID = 0
-			for k, vehicle in pairs(courseplay.activeCoursePlayers) do
+			for k, vehicle in pairs(CpManager.activeCoursePlayers) do
 				if vehicle.cp.combineID ~= nil then
 					--print(tostring(vehicle.name).." is calling for "..tostring(vehicle.cp.combineID).."  combine.id= "..tostring(combine.id))
 					if vehicle.cp.combineID == combine.id and vehicle.cp.activeCombine == nil then

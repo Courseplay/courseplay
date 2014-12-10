@@ -320,6 +320,9 @@ function courseplay:getReverseProperties(vehicle, workTool)
 end;
 
 function courseplay:isInvertedTrailerNode(workTool, node)
+	if courseplay:isMixer(workTool) then
+		return false;
+	end;
 	-- Use node if set else use the workTool.rootNode
 	node = node or workTool.rootNode;
 

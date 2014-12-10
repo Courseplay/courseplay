@@ -98,7 +98,7 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 	--finished work
 	else
 		allowedToDrive = false
-		courseplay:setGlobalInfoText(vehicle, 'WORK_END');
+		CpManager:setGlobalInfoText(vehicle, 'WORK_END');
 	end
 	--go to course
 	if vehicle.cp.modeState == 0 then

@@ -28,7 +28,9 @@ function courseplay.button:new(vehicle, hudPage, img, functionToCall, parameter,
 		isToggleButton = false;
 	end;
 
-	self.vehicle = vehicle;
+	if not vehicle.isCourseplayManager then
+		self.vehicle = vehicle;
+	end;
 	self.page = hudPage; 
 	self.functionToCall = functionToCall; 
 	self:setParameter(parameter);
@@ -67,7 +69,7 @@ function courseplay.button:new(vehicle, hudPage, img, functionToCall, parameter,
 	end;
 
 	if vehicle.isCourseplayManager then
-		table.insert(vehicle.buttons[hudPage], self);
+		table.insert(vehicle[hudPage].buttons, self);
 	else
 		table.insert(vehicle.cp.buttons[hudPage], self);
 	end;
@@ -100,7 +102,7 @@ function courseplay.button:setSpecialButtonUVs()
 	elseif fn == 'toggleDebugChannel' then
 		self:setSpriteSectionUVs('recordingStop');
 
-	-- courseplay_manager buttons
+	-- CpManager buttons
 	elseif fn == 'goToVehicle' then
 		courseplay.utils:setOverlayUVsPx(self.overlay, courseplay.hud.pageButtonsUVsPx[7], txtSizeX, txtSizeY);
 	end;
@@ -225,6 +227,8 @@ function courseplay.button:render()
 					show = vehicle.cp.canDrive and not vehicle:getIsCourseplayDriving() and not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused;
 				elseif fn == 'stop_record' or fn == 'setRecordingPause' or fn == 'delete_waypoint' or fn == 'set_waitpoint' or fn == 'set_crossing' or fn == 'setRecordingTurnManeuver' or fn == 'change_DriveDirection' then
 					show = vehicle.cp.isRecording or vehicle.cp.recordingIsPaused;
+				elseif fn == 'clearCurrentLoadedCourse' then
+					show = vehicle.cp.canDrive and not vehicle.cp.isDriving;
 				end;
 
 			--Page 2
@@ -233,6 +237,8 @@ function courseplay.button:render()
 					show = g_server ~= nil;
 				elseif fn == "showSaveCourseForm" and prm == "filter" then
 					show = not vehicle.cp.hud.choose_parent;
+				elseif fn == 'clearCurrentLoadedCourse' then
+					show = vehicle.cp.canDrive and not vehicle.cp.isDriving;
 				elseif fn == "shiftHudCourses" then
 					if prm < 0 then
 						show = vehicle.cp.hud.courseListPrev;
@@ -421,7 +427,7 @@ function courseplay.button:render()
 end;
 
 function courseplay.button:setColor(colorName)
-	if self.overlay and colorName and (self.curColor == nil or self.curColor ~= colorName) and courseplay.hud.colors[colorName] and #courseplay.hud.colors[colorName] == 4 then
+	if self.overlay and colorName and (self.curColor == nil or self.curColor ~= colorName) and courseplay.hud.colors[colorName] then
 		self.overlay:setColor(unpack(courseplay.hud.colors[colorName]));
 		self.curColor = colorName;
 	end;

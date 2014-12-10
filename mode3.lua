@@ -11,7 +11,7 @@ function courseplay:handleMode3(vehicle, fillLevelPct, allowedToDrive, dt)
 		end;
 
 		if vehicle.cp.wait and vehicle.cp.lastRecordnumber == vehicle.cp.waitPoints[1] then
-			courseplay:setGlobalInfoText(vehicle, 'OVERLOADING_POINT');
+			CpManager:setGlobalInfoText(vehicle, 'OVERLOADING_POINT');
 
 			local driveOn = false
 			if fillLevelPct > 0 then
@@ -86,8 +86,8 @@ function courseplay:handleAugerWagon(vehicle, workTool, unfold, unload, orderNam
 		if pipeOrderExists and workTool.pipe.out ~= nil then
 			if unfold and not workTool.pipe.out then
 				workTool:setAnimationTime(1, workTool.animationParts[1].animDuration, false);
-				if workTool.cp.hasPipeLight and workTool.cp.pipeLight.a ~= courseplay.lightsNeeded then
-					workTool:setState("work:1", courseplay.lightsNeeded);
+				if workTool.cp.hasPipeLight and workTool.cp.pipeLight.a ~= CpManager.lightsNeeded then
+					workTool:setState("work:1", CpManager.lightsNeeded);
 				end;
 			elseif not unfold and workTool.pipe.out then
 				workTool:setAnimationTime(1, workTool.animationParts[1].offSet, false);
@@ -153,11 +153,11 @@ function courseplay:handleAugerWagon(vehicle, workTool, unfold, unload, orderNam
 				courseplay:debug(string.format('\t\tunfold=%s, workTool.cpAI=%s -> set workTool.cpAI to %s', tostring(unfold), tostring(workTool.cpAI), newPipeState), 15);
 				workTool.cpAI = newPipeState;
 
-				if workTool.pipeLight ~= nil and getVisibility(workTool.pipeLight) ~= (unfold and courseplay.lightsNeeded) then
+				if workTool.pipeLight ~= nil and getVisibility(workTool.pipeLight) ~= (unfold and CpManager.lightsNeeded) then
 					if workTool.togglePipeLight then
-						workTool:togglePipeLight(unfold and courseplay.lightsNeeded);
+						workTool:togglePipeLight(unfold and CpManager.lightsNeeded);
 					else
-						setVisibility(workTool.pipeLight, unfold and courseplay.lightsNeeded);
+						setVisibility(workTool.pipeLight, unfold and CpManager.lightsNeeded);
 					end;
 				end;
 			end;
