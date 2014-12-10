@@ -1,10 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="20">
-<<<<<<< HEAD
-	<version>4.00.0170</version>
-=======
 	<version>4.00.0180</version>
->>>>>>> ba634b99a431f63a4fdc4a036aa6c38b7abac356
 	<author><![CDATA[Courseplay Dev Team]]></author>
 	<title>
 		<br>Courseplay</br>
@@ -29,11 +25,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 		<cs>
 <![CDATA[开发商: Jakob Tischler, Thomas Gärtner, Satis
 
-<<<<<<< HEAD
 翻译: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [NL] Pewemo, [RU] Bernelli]]>
-=======
-翻译: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [NL] Pewemo, [RU] Bernelli, [CN]Simba]]>
->>>>>>> ba634b99a431f63a4fdc4a036aa6c38b7abac356
 		</cs>
 		<cz>
 <![CDATA[Vývojáři: Jakob Tischler, Thomas Gärtner, Satis
@@ -526,11 +518,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Mappa név:</hu>
 			<nl>Folder naam:</nl>
 			<br>Nome da pesta</br>
-<<<<<<< HEAD
-			<cs>目录名</cs>
-=======
 			<cs>文件夹名</cs>
->>>>>>> ba634b99a431f63a4fdc4a036aa6c38b7abac356
 		</text>
 		<text name="COURSEPLAY_FILTER_COURSES">
 			<en>Filter courses:</en>
@@ -563,30 +551,21 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<de>Neuen Ordner erstellen</de>
 			<hu>Új mappa létrehozása</hu>
 			<br>Criar nova pasta</br>
-<<<<<<< HEAD
-			<cs>创建新目录</cs>
-=======
->>>>>>> ba634b99a431f63a4fdc4a036aa6c38b7abac356
+			<cs>新建文件夹</cs>
 		</text>
 		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS"> <!-- missing: cs, cz, fr, es, it, nl, ru -->
 			<en>Search for courses and folders</en>
 			<de>Nach Kursen und Ordnern suchen</de>
 			<hu>Útvonal keresése a mappákban</hu>
 			<br>Pesquisar pastas e rotas</br>
-<<<<<<< HEAD
-			<cs>搜索任务和目录</cs>
-=======
->>>>>>> ba634b99a431f63a4fdc4a036aa6c38b7abac356
+			<cs>搜索任务和文件夹</cs>
 		</text>
 		<text name="COURSEPLAY_DEACTIVATE_FILTER"> <!-- missing: cs, cz, fr, es, it, nl, ru -->
 			<en>Deactivate filter</en>
 			<de>Filter deaktivieren</de>
 			<hu>Szűrő alaphelyzetbe</hu>
 			<br>Desativar filtros</br>
-<<<<<<< HEAD
-			<cs>禁用筛选</cs>
-=======
->>>>>>> ba634b99a431f63a4fdc4a036aa6c38b7abac356
+			<cs>关闭筛选</cs>
 		</text>
 		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT">
 			<en>has reached overload point.</en>
@@ -1540,10 +1519,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<ru>Неподходящий тип техники для маршрута.</ru>
 			<hu>Ez a járműtípus nem megfelelő ehhez a művelethez.</hu>
 			<br>Este veículo não é suportado neste modo</br>
-<<<<<<< HEAD
-			<cs>当前模式不支持这种车辆</cs>
-=======
->>>>>>> ba634b99a431f63a4fdc4a036aa6c38b7abac356
+			<cs>当前车辆不支持当前模式</cs>
 		</text>
 		<text name="COURSEPLAY_ESL_NOT_SUPPORTED">
 			<en>ESLimiter version is not supported</en>
@@ -1898,11 +1874,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Kirakodás a földön</hu>
 			<nl>Uitladen in het veld</nl>
 			<br>Descarregando no campo</br>
-<<<<<<< HEAD
 			<cs>在田间卸载</cs>
-=======
-			<cs>卸载区</cs>
->>>>>>> ba634b99a431f63a4fdc4a036aa6c38b7abac356
 		</text>
 		<text name="COURSEPLAY_AUTOMATIC">
 			<en>automatic</en>
@@ -2172,10 +2144,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<ru>(загруженный маршрут)</ru>
 			<hu>(jelenleg betöltött útvonal)</hu>
 			<br>(Rota atual carregada)</br>
-<<<<<<< HEAD
-			<cs>当前加载的任务</cs>
-=======
->>>>>>> ba634b99a431f63a4fdc4a036aa6c38b7abac356
+			<cs>当前任务</cs>
 		</text>
 		<text name="COURSEPLAY_FIELD_SCAN_IN_PROGRESS"> <!-- missing: es -->
 			<en>Field scan in progress</en>
@@ -2187,11 +2156,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Térkép vizsgálata.</hu>
 			<nl>Veldscan bezig</nl>
 			<br>Escaneamento do campo em andamento</br>
-<<<<<<< HEAD
- 			<cs>农田范围分析进度</cs>
-=======
- 			<cs>农田范围扫描进度</cs>
->>>>>>> ba634b99a431f63a4fdc4a036aa6c38b7abac356
+ 			<cs>农田范围测量进度</cs>
 		</text>
 		<text name="COURSEPLAY_SCANNING_FIELD_NMB"> <!-- missing: es -->
 			<en>Scanning field %d/%d</en>
@@ -2203,11 +2168,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>A terület vizsgálata: %d/%d</hu>
 			<nl>Scan Veld %d/%d</nl>
 			<br>Escaneando campo %d/%d</br>
-<<<<<<< HEAD
-			<cs>分析范围 %d/%d</cs>
-=======
-			<cs>扫描范围 %d/%d</cs>
->>>>>>> ba634b99a431f63a4fdc4a036aa6c38b7abac356
+			<cs>测量范围 %d/%d</cs>
 		</text>
 		<text name="COURSEPLAY_HOSEMISSING">
 			<en>No hose could be found - cancel refill</en>
@@ -2259,11 +2220,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>töltési szint</hu>
 			<nl>vul graad</nl>
 			<br>nivel de enchimento</br>
-<<<<<<< HEAD
-			<cs>已装载量</cs>
-=======
 			<cs>填充水平</cs>
->>>>>>> ba634b99a431f63a4fdc4a036aa6c38b7abac356
 		</text>
 		<text name="COURSEPLAY_NO_AUTOCOMBINE_MODE_7">
 			<en>AutoCombine is not supported</en>
@@ -2413,11 +2370,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Ponyva:</hu>
 			<nl>Zeilen</nl>
 			<br>cobertura</br>
-<<<<<<< HEAD
- 			<cs>车斗盖子</cs>
-=======
  			<cs>车厢盖子</cs>
->>>>>>> ba634b99a431f63a4fdc4a036aa6c38b7abac356
 		</text>
 		<text name="COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR"> <!-- missing: es -->
 			<en>Remove combine assignment</en>
@@ -2467,7 +2420,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Újratölteni:</hu>
 			<nl>Bijvullen tot:</nl>
 			<br>Encher até</br>
-			<cs>填充到:</cs>
+			<cs>重新填充:</cs>
 		</text>
 		<text name="COURSEPLAY_BGA_IS_FULL">
 			<en>: Bunker silo is full!</en>
@@ -2536,20 +2489,14 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<de>Nach erstem Wegpunkt suchen</de>
 			<hu>Első útpont keresése</hu>
 			<br>Pesquisar pelo primeiro ponto</br>
-<<<<<<< HEAD
-			<cs>寻找起始点</cs>
-=======
->>>>>>> ba634b99a431f63a4fdc4a036aa6c38b7abac356
+			<cs>指向起始点</cs>
 		</text>
 		<text name="COURSEPLAY_SAVE_CURRENT_COURSE"> <!-- missing: cs, cz, fr, es, it, nl, ru -->
 			<en>Save current course</en>
 			<de>Aktuellen Kurs speichern</de>
 			<hu>Aktuális útvonal mentése</hu>
 			<br>Salvar rota atual</br>
-<<<<<<< HEAD
 			<cs>保存当前任务</cs>
-=======
->>>>>>> ba634b99a431f63a4fdc4a036aa6c38b7abac356
 		</text>
 
 		<!-- Recording buttons --> <!-- missing: cz, es, it, nl -->
@@ -2650,17 +2597,14 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Térképikonok: kijelzőszöveg</hu>
 			<br>Icones do mapa: Mostrar texto</br>
 			<ru>Показать инфо на карте:</ru>
-			<cs>地图图标： 显示信息</cs>
+			<cs>地图图标： 显示任务车辆图标</cs>
 		</text>
 		<text name="COURSEPLAY_ALWAYS_USE_4WD"> <!-- missing: br, cs, cz, es, fr, it, nl, ru -->
 			<en>Always use 4WD</en>
 			<de>Allrad immer anschalten</de>
 			<hu>Mindig összkerékhajtás</hu>
 			<br>Usar sempre tração nas quatro rodas</br>
-<<<<<<< HEAD
-			<cs>使用四驱</cs>
-=======
->>>>>>> ba634b99a431f63a4fdc4a036aa6c38b7abac356
+			<cs>打开4WD模式</cs>
 		</text>
 
 		<!-- Yes/No dialogues --> <!-- missing: cz, es, it, nl -->
@@ -2671,11 +2615,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Szeretnéd, hogy a mezők adatait automatikusan beolvassa?</hu>
 			<ru>Включить автосканирование полей?</ru>
 			<br>Você deseja que os campos sejam escaneados automaticamente?</br>
-<<<<<<< HEAD
-			<cs>你需要自动测量农田信息么？</cs>
-=======
-			<cs>需要自动扫描农田信息么？</cs>
->>>>>>> ba634b99a431f63a4fdc4a036aa6c38b7abac356
+			<cs>需要自动测量农田范围么？</cs>
 		</text>
 		<text name="COURSEPLAY_YES_NO_WAGES">
 			<en>Do you want your workers to earn wages (%s/hour)?</en>
@@ -2700,11 +2640,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<ru>КАЛЬКУЛЯЦИЯ ПОСЕВОВ</ru>
 			<nl>Zaad verbruik calculator</nl>
 			<br>Cálculo do uso de sementes</br>
-<<<<<<< HEAD
 			<cs>种子使用量</cs>
-=======
-			<cs>产量预计</cs>
->>>>>>> ba634b99a431f63a4fdc4a036aa6c38b7abac356
 		</text>
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD">
 			<en>Field: %d (%s %s)</en>
@@ -2742,11 +2678,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<ru>Расходы: %s %s (%s)</ru>
 			<nl>Verbruik: %s %s (%s)</nl>
 			<br>Utilizado: %s %s (%s)</br>
-<<<<<<< HEAD
 			<cs>用量: %s %s (%s)</cs>
-=======
-			<cs>预计产量: %s %s (%s)</cs>
->>>>>>> ba634b99a431f63a4fdc4a036aa6c38b7abac356
 		</text>
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_TRIM">
 			<en>···</en>
@@ -2814,11 +2746,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Vezetősegéd gombkiosztás: Másodlagos</hu>
 			<nl>Courseplay: tweede menu accepteren</nl>
 			<br>Courseplay: acitar menu secundário</br>
-<<<<<<< HEAD
-			<cs>Courseplay：启用弹出窗口</cs>
-=======
-			<cs>Courseplay：二级菜单接受</cs>
->>>>>>> ba634b99a431f63a4fdc4a036aa6c38b7abac356
+			<cs>Courseplay：弹出窗口</cs>
 		</text>
 		<text name="COURSEPLAY_HUD">
 			<en>Show/hide Courseplay HUD</en>
@@ -2857,7 +2785,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Vezetősegéd: Állj az utolsó ponton következő triggernél</hu>
 			<nl>Courseplay: stop bij laatste punt of volgende trigger</nl>
 			<br>Courseplay: parar no último ponto ou no próximo trigger</br>
- 			<cs>Courseplay：停止在最后路点或等待点</cs>
+ 			<cs>Courseplay：停在最后路点或等待点</cs>
 		</text>
 		<text name="COURSEPLAY_DRIVENOW">
 			<en>Courseplay: drive now</en>
