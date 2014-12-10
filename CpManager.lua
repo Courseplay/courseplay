@@ -176,12 +176,10 @@ function CpManager:deleteMap()
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- delete fieldScanInfo overlays
 	if self.fieldScanInfo then
-		for _,ovl in ipairs( { 'bgOverlay', 'loadOverlay', 'progressBarBgOverlay', 'progressBarOverlay' } ) do
-			if self.fieldScanInfo[ovl] then
-				self.fieldScanInfo[ovl]:delete();
-				self.fieldScanInfo[ovl] = nil;
-			end;
-		end;
+		self.fieldScanInfo.bgOverlay:delete();
+		self.fieldScanInfo.bgOverlay = nil;
+		self.fieldScanInfo.progressBarOverlay:delete();
+		self.fieldScanInfo.progressBarOverlay = nil;
 	end;
 
 end;

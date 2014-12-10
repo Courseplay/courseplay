@@ -271,6 +271,7 @@ function courseplay:clearCurrentLoadedCourse(vehicle)
 
 	vehicle.cp.hud.clearCurrentCourseButton1:setHovered(false);
 	vehicle.cp.hud.clearCurrentCourseButton2:setHovered(false);
+	vehicle.cp.hud.clearCurrentCourseButton8:setHovered(false);
 end
 
 function courseplay:currentVehAngle(vehicle)

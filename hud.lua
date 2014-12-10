@@ -1293,7 +1293,7 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	end;
 
 	-- row buttons
-	local w = self.buttonPosX[1] - self.col1posX;
+	local w = self.buttonPosX[2] - self.col1posX;
 	for i=1, self.numLines do
 		courseplay.button:new(vehicle, 1, nil, 'rowButton', i, self.col1posX, self.linesPosY[i], w, self.lineHeight, i, nil, true);
 	end;
@@ -1499,6 +1499,9 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	-- generation action button
 	local toolTip = 'Generate field course'; -- TODO: i18n
 	vehicle.cp.hud.generateCourseButton = courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'generateCourse' }, 'generateCourse', nil, topIconsX[2], topIconsY, wMiddle, hMiddle, nil, nil, false, false, false, toolTip);
+
+	-- Clear current course
+	vehicle.cp.hud.clearCurrentCourseButton8 = courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'courseClear' }, 'clearCurrentLoadedCourse', nil, topIconsX[0], topIconsY, wMiddle, hMiddle, nil, nil, false, false, false, courseplay:loc('COURSEPLAY_CLEAR_COURSE'));
 
 
 	-- ##################################################
