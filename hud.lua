@@ -870,10 +870,8 @@ function courseplay.hud:loadPage(vehicle, page)
 		vehicle.cp.hud.content.pages[6][3][2].text = courseplay:loc(string.format('COURSEPLAY_WAYPOINT_MODE_%d', vehicle.cp.visualWaypointsMode));
 
 		-- Beacon lights
-		if vehicle.cp.hasBeaconLights then
-			vehicle.cp.hud.content.pages[6][4][1].text = courseplay:loc('COURSEPLAY_BEACON_LIGHTS');
-			vehicle.cp.hud.content.pages[6][4][2].text = courseplay:loc(string.format('COURSEPLAY_BEACON_LIGHTS_MODE_%d', vehicle.cp.beaconLightsMode));
-		end;
+		vehicle.cp.hud.content.pages[6][4][1].text = courseplay:loc('COURSEPLAY_BEACON_LIGHTS');
+		vehicle.cp.hud.content.pages[6][4][2].text = courseplay:loc(string.format('COURSEPLAY_BEACON_LIGHTS_MODE_%d', vehicle.cp.beaconLightsMode));
 
 		-- Waiting point: wait time
 		if courseplay:getCanHaveWaitTime(vehicle) then
@@ -1415,9 +1413,7 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	courseplay.button:new(vehicle, 6, nil, 'toggleRealisticDriving', nil,  self.contentMinX, self.linesPosY[1], self.contentMaxWidth, self.lineHeight, 1, nil, true);
 	courseplay.button:new(vehicle, 6, nil, 'toggleOpenHudWithMouse', nil,  self.contentMinX, self.linesPosY[2], self.contentMaxWidth, self.lineHeight, 2, nil, true);
 	courseplay.button:new(vehicle, 6, nil, 'changeVisualWaypointsMode', 1, self.contentMinX, self.linesPosY[3], self.contentMaxWidth, self.lineHeight, 3, nil, true);
-	if vehicle.cp.hasBeaconLights then
-		courseplay.button:new(vehicle, 6, nil, 'changeBeaconLightsMode',    1, self.contentMinX, self.linesPosY[4], self.contentMaxWidth, self.lineHeight, 4, nil, true);
-	end;
+	courseplay.button:new(vehicle, 6, nil, 'changeBeaconLightsMode',    1, self.contentMinX, self.linesPosY[4], self.contentMaxWidth, self.lineHeight, 4, nil, true);
 
 	courseplay.button:new(vehicle, 6, { 'iconSprite.png', 'navMinus' }, 'changeWaitTime', -1, self.buttonPosX[2], self.linesButtonPosY[5], wSmall, hSmall, 5, -5, false);
 	courseplay.button:new(vehicle, 6, { 'iconSprite.png', 'navPlus' },  'changeWaitTime',  1, self.buttonPosX[1], self.linesButtonPosY[5], wSmall, hSmall, 5,  5, false);

@@ -77,7 +77,8 @@ function courseplay:load(xmlFile)
 	self.cp.numCrossingPoints = 0;
 
 	self.cp.visualWaypointsMode = 1
-	self.cp.beaconLightsMode = 1
+	self.cp.beaconLightsMode = 1;
+
 	-- saves the shortest distance to the next waypoint (for recocnizing circling)
 	self.cp.shortestDistToWp = nil
 
@@ -416,8 +417,6 @@ function courseplay:load(xmlFile)
 		self.cutLengthMax = 15;
 		self.cutLengthStep = 1;
 	end;
-
-	self.cp.hasBeaconLights = #self.beaconLights > 0;
 
 	self.cp.mouseCursorActive = false;
 
