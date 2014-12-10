@@ -4,7 +4,7 @@ local abs, max, min, pow, sin = math.abs, math.max, math.min, math.pow, math.sin
 
 -- drives recored course
 function courseplay:drive(self, dt)
-	if not courseplay:getCanUseAiMode(self) then
+	if not courseplay:getCanUseCpMode(self) then
 		return;
 	end;
 
@@ -53,7 +53,7 @@ function courseplay:drive(self, dt)
 
 	-- Turn on sound / control lights
 	if not self.isControlled then
-		self:setLightsVisibility(courseplay.lightsNeeded);
+		self:setLightsVisibility(CpManager.lightsNeeded);
 	end;
 
 	-- current position
@@ -190,7 +190,7 @@ function courseplay:drive(self, dt)
 			elseif self.cp.lastRecordnumber == self.cp.stopWork and self.cp.abortWork ~= nil then
 				courseplay:setVehicleWait(self, false);
 			elseif self.cp.lastRecordnumber ~= self.cp.startWork and self.cp.lastRecordnumber ~= self.cp.stopWork then 
-				courseplay:setGlobalInfoText(self, 'UNLOADING_BALE');
+				CpManager:setGlobalInfoText(self, 'UNLOADING_BALE');
 				if self.cp.tipperFillLevelPct == 0 or drive_on then
 					courseplay:setVehicleWait(self, false);
 				end;
@@ -199,14 +199,14 @@ function courseplay:drive(self, dt)
 			if self.cp.lastRecordnumber == self.cp.startWork then
 				if self.fillLevel > 0 then
 					self:setPipeState(2)
-					courseplay:setGlobalInfoText(self, 'OVERLOADING_POINT');
+					CpManager:setGlobalInfoText(self, 'OVERLOADING_POINT');
 				else
 					courseplay:setVehicleWait(self, false);
 					self.cp.isUnloaded = true
 				end
 			end
 		elseif self.cp.mode == 8 then
-			courseplay:setGlobalInfoText(self, 'OVERLOADING_POINT');
+			CpManager:setGlobalInfoText(self, 'OVERLOADING_POINT');
 			if self.cp.workToolAttached then
 				-- drive on if tipperFillLevelPct doesn't change and fill level is < 100-self.cp.followAtFillLevel
 				courseplay:handle_mode8(self)
@@ -227,7 +227,7 @@ function courseplay:drive(self, dt)
 		elseif self.cp.mode == 9 then
 			courseplay:setVehicleWait(self, false);
 		else
-			courseplay:setGlobalInfoText(self, 'WAIT_POINT');
+			CpManager:setGlobalInfoText(self, 'WAIT_POINT');
 		end
 
 		-- wait time passed -> continue driving
@@ -295,9 +295,9 @@ function courseplay:drive(self, dt)
 		if self.damageLevel then
 			if self.damageLevel >= 90 and not self.isInRepairTrigger then
 				allowedToDrive = courseplay:brakeToStop(self);
-				courseplay:setGlobalInfoText(self, 'DAMAGE_MUST');
+				CpManager:setGlobalInfoText(self, 'DAMAGE_MUST');
 			elseif self.damageLevel >= 50 and not self.isInRepairTrigger then
-				courseplay:setGlobalInfoText(self, 'DAMAGE_SHOULD');
+				CpManager:setGlobalInfoText(self, 'DAMAGE_SHOULD');
 			end;
 			if self.damageLevel > 70 then
 				courseplay:doTriggerRaycasts(self, 'specialTrigger', 'fwd', false, tx, ty, tz, nx, ny, nz);
@@ -315,7 +315,7 @@ function courseplay:drive(self, dt)
 			if self.cp.isInRepairTrigger then
 				allowedToDrive = false;
 				self.cp.fillTrigger = nil;
-				courseplay:setGlobalInfoText(self, 'DAMAGE_IS');
+				CpManager:setGlobalInfoText(self, 'DAMAGE_IS');
 			end;
 		end;
 
@@ -334,20 +334,20 @@ function courseplay:drive(self, dt)
 			local currentFuelPercentage = (self.fuelFillLevel / self.fuelCapacity + 0.0001) * 100;
 			if currentFuelPercentage < 5 then
 				allowedToDrive = false;
-				courseplay:setGlobalInfoText(self, 'FUEL_MUST');
+				CpManager:setGlobalInfoText(self, 'FUEL_MUST');
 			elseif currentFuelPercentage < 20 and not self.isFuelFilling then
 				courseplay:doTriggerRaycasts(self, 'specialTrigger', 'fwd', false, tx, ty, tz, nx, ny, nz);
 				if self.cp.fillTrigger ~= nil and courseplay.triggers.all[self.cp.fillTrigger].isGasStationTrigger then
 					self.cp.isInFilltrigger = true;
 				end;
-				courseplay:setGlobalInfoText(self, 'FUEL_SHOULD');
+				CpManager:setGlobalInfoText(self, 'FUEL_SHOULD');
 				if self.fuelFillTriggers[1] then
 					allowedToDrive = courseplay:brakeToStop(self);
 					self:setIsFuelFilling(true, self.fuelFillTriggers[1].isEnabled, false);
 				end;
 			elseif self.isFuelFilling and currentFuelPercentage < 99.9 then
 				allowedToDrive = courseplay:brakeToStop(self);
-				courseplay:setGlobalInfoText(self, 'FUEL_IS');
+				CpManager:setGlobalInfoText(self, 'FUEL_IS');
 			end;
 			if self.fuelFillTriggers[1] and self.cp.fillTrigger and courseplay.triggers.all[self.cp.fillTrigger].isGasStationTrigger then
 				courseplay:debug(nameNum(self) .. ': self.fuelFillTriggers[1] ~= nil -> resetting "self.cp.fillTrigger"', 1);
@@ -358,13 +358,13 @@ function courseplay:drive(self, dt)
 		-- WATER WARNING
 		if self.showWaterWarning then
 			allowedToDrive = false;
-			courseplay:setGlobalInfoText(self, 'WATER');
+			CpManager:setGlobalInfoText(self, 'WATER');
 		end;
 
 		-- STOP AND END OR TRIGGER
 		if self.cp.stopAtEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil) then
 			allowedToDrive = false;
-			courseplay:setGlobalInfoText(self, 'END_POINT');
+			CpManager:setGlobalInfoText(self, 'END_POINT');
 		end;
 	end;
 	-- ### NON-WAITING POINTS END
@@ -452,7 +452,7 @@ function courseplay:drive(self, dt)
 		if  ez < 0.2 then
 			if self.cp.tipperFillLevelPct == 0 then
 				allowedToDrive = false
-				courseplay:setGlobalInfoText(self, 'WORK_END');
+				CpManager:setGlobalInfoText(self, 'WORK_END');
 			else
 				courseplay:setIsLoaded(self, true);
 				courseplay:setRecordNumber(self, i + 2);
@@ -765,7 +765,7 @@ function courseplay:checkTraffic(vehicle, displayWarnings, allowedToDrive)
 	end;
 
 	if displayWarnings and vehicle.cp.inTraffic then
-		courseplay:setGlobalInfoText(vehicle, 'TRAFFIC');
+		CpManager:setGlobalInfoText(vehicle, 'TRAFFIC');
 	end;
 	return allowedToDrive;
 end
@@ -1206,8 +1206,8 @@ function courseplay:setFourWheelDrive(vehicle, workArea)
 	local changed = false;
 
 	-- set 4WD
-	local awdOn = workArea or vehicle.cp.BGASelectedSection or vehicle.cp.slippingStage ~= 0 or vehicle.cp.mode == 9 or (vehicle.cp.mode == 2 and vehicle.cp.modeState > 1);
-	local awdOff = not workArea and not vehicle.cp.BGASelectedSection and vehicle.cp.slippingStage == 0 and vehicle.cp.mode ~= 9 and not (vehicle.cp.mode == 2 and vehicle.cp.modeState > 1);
+	local awdOn = vehicle.cp.driveControl.alwaysUseFourWD or workArea or vehicle.cp.isBGATipping or vehicle.cp.slippingStage ~= 0 or vehicle.cp.mode == 9 or (vehicle.cp.mode == 2 and vehicle.cp.modeState > 1);
+	local awdOff = not vehicle.cp.driveControl.alwaysUseFourWD and not workArea and not vehicle.cp.isBGATipping and vehicle.cp.slippingStage == 0 and vehicle.cp.mode ~= 9 and not (vehicle.cp.mode == 2 and vehicle.cp.modeState > 1);
 	if awdOn and not vehicle.driveControl.fourWDandDifferentials.fourWheel then
 		courseplay:debug(('%s: set fourWheel to true'):format(nameNum(vehicle)), 14);
 		vehicle.driveControl.fourWDandDifferentials.fourWheel = true;
@@ -1240,9 +1240,9 @@ function courseplay:handleSlipping(vehicle, refSpeed)
 	if vehicle.cp.inTraffic or vehicle.Waypoints[vehicle.recordnumber].wait then return end;
 
 	if vehicle.cp.slippingStage == 1 then
-		courseplay:setGlobalInfoText(vehicle, 'SLIPPING_1');
+		CpManager:setGlobalInfoText(vehicle, 'SLIPPING_1');
 	elseif vehicle.cp.slippingStage == 2 then
-		courseplay:setGlobalInfoText(vehicle, 'SLIPPING_2');
+		CpManager:setGlobalInfoText(vehicle, 'SLIPPING_2');
 	end;
 
 	-- 0) no slipping (slippingStage 0)

@@ -65,13 +65,13 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 			--courseplay:debug(string.format("Abort: %d StopWork: %d",self.cp.abortWork,self.cp.stopWork), 12)
 		elseif not self.cp.hasUnloadingRefillingCourse then
 			allowedToDrive = false;
-			courseplay:setGlobalInfoText(self, 'NEEDS_REFILLING');
+			CpManager:setGlobalInfoText(self, 'NEEDS_REFILLING');
 		end;
 	end
 	--
 	if (self.recordnumber == self.cp.stopWork or self.cp.lastRecordnumber == self.cp.stopWork) and self.cp.abortWork == nil and not isFinishingWork and self.cp.wait then
 		allowedToDrive = courseplay:brakeToStop(self);
-		courseplay:setGlobalInfoText(self, 'WORK_END');
+		CpManager:setGlobalInfoText(self, 'WORK_END');
 		hasFinishedWork = true;
 		if self.cp.hasUnloadingRefillingCourse and self.recordnumber == self.cp.stopWork then --make sure that lastRecordnumber is stopWork, so the 'waiting points' algorithm in drive() works
 			courseplay:setRecordNumber(self, self.cp.stopWork + 1);

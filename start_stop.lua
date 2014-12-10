@@ -105,10 +105,10 @@ function courseplay:start(self)
 
 	-- add do working players if not already added
 	if self.cp.coursePlayerNum == nil then
-		self.cp.coursePlayerNum = courseplay:addToTotalCoursePlayers(self)
+		self.cp.coursePlayerNum = CpManager:addToTotalCoursePlayers(self)
 	end;
 	--add to activeCoursePlayers
-	courseplay:addToActiveCoursePlayers(self);
+	CpManager:addToActiveCoursePlayers(self);
 
 	self.cp.backMarkerOffset = nil
 	self.cp.aiFrontMarker = nil
@@ -269,13 +269,14 @@ function courseplay:start(self)
 			self.cp.finishWork = self.cp.stopWork
 		end
 
+		-- NOTE: if we want to start the course but catch one of the last 5 points ("returnToStartPoint"), make sure we get wp 2
 		if self.cp.startAtPoint == courseplay.START_AT_NEAREST_POINT and self.cp.finishWork ~= self.cp.stopWork and self.recordnumber > self.cp.finishWork and self.recordnumber <= self.cp.stopWork then
 			courseplay:setRecordNumber(self, 2);
 		end
 		courseplay:debug(string.format("%s: maxnumber=%d, stopWork=%d, finishWork=%d, hasUnloadingRefillingCourse=%s, recordnumber=%d", nameNum(self), self.maxnumber, self.cp.stopWork, self.cp.finishWork, tostring(self.cp.hasUnloadingRefillingCourse), self.recordnumber), 12);
 	end
 
-	if self.cp.mode == 9 or self.cp.startAtPoint == courseplay.START_AT_FIRST_POINT then
+	if self.cp.mode == 9 then
 		courseplay:setRecordNumber(self, 1);
 		self.cp.shovelState = 1;
 		for i,_ in pairs(self.attachedImplements) do
@@ -290,7 +291,13 @@ function courseplay:start(self)
 					end
 				end
 			end				
-		end	
+		end
+	elseif self.cp.startAtPoint == courseplay.START_AT_FIRST_POINT then
+		if self.cp.mode == 2 or self.cp.mode == 3 then
+			courseplay:setRecordNumber(self, 3);
+		else
+			courseplay:setRecordNumber(self, 1);
+		end
 	end;
 
 	courseplay:updateAllTriggers();
@@ -306,6 +313,10 @@ function courseplay:start(self)
 		local changed = false;
 		if self.cp.driveControl.hasFourWD then
 			self.cp.driveControl.fourWDBackup = self.driveControl.fourWDandDifferentials.fourWheel;
+			if self.cp.driveControl.alwaysUseFourWD and not self.driveControl.fourWDandDifferentials.fourWheel then
+				self.driveControl.fourWDandDifferentials.fourWheel = true;
+				changed = true;
+			end;
 		end;
 		if self.cp.driveControl.hasHandbrake then
 			if self.driveControl.handBrake.isActive == true then
@@ -340,19 +351,28 @@ function courseplay:start(self)
 	courseplay:validateCanSwitchMode(self);
 
 	-- add ingameMap icon
-	if courseplay.ingameMapIconActive then
+	if CpManager.ingameMapIconActive then
 		courseplay:createMapHotspot(self);
 	end;
 
 	--print("startStop "..debug.getinfo(1).currentline)
 end;
 
-function courseplay:getCanUseAiMode(vehicle)
+function courseplay:getCanUseCpMode(vehicle)
+	-- check engine state
 	if not vehicle.isMotorStarted or (vehicle.motorStartTime and vehicle.motorStartTime > g_currentMission.time) then
 		return false;
 	end;
 
 	local mode = vehicle.cp.mode;
+
+	if (mode == 7 and not vehicle.cp.isCombine and not vehicle.cp.isChopper and not vehicle.cp.isHarvesterSteerable)
+	or ((mode == 1 or mode == 2 or mode == 3 or mode == 4 or mode == 8 or mode == 9) and (vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable))
+	or ((mode ~= 5) and (vehicle.cp.isWoodHarvester or vehicle.cp.isWoodForwarder)) then
+		courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE'));
+		return false;
+	end;
+
 
 	if mode ~= 5 and mode ~= 6 and mode ~= 7 and not vehicle.cp.workToolAttached then
 		courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WRONG_TRAILER'));
@@ -534,8 +554,6 @@ function courseplay:stop(self)
 	self.cp.totalLength, self.cp.totalLengthOffset = 0, 0;
 	self.cp.numWorkTools = 0;
 
-	self.cp.timers.slippingWheels = 0;
-
 	self.cp.movingToolsPrimary, self.cp.movingToolsSecondary = nil, nil;
 	self.cp.attachedFrontLoader = nil
 	
@@ -543,20 +561,20 @@ function courseplay:stop(self)
 	if g_server ~= nil then
 		courseplay:setInfoText(self, nil);
 
-		for refIdx,_ in pairs(courseplay.globalInfoText.msgReference) do
+		for refIdx,_ in pairs(CpManager.globalInfoText.msgReference) do
 			if self.cp.activeGlobalInfoTexts[refIdx] ~= nil then
-				courseplay:setGlobalInfoText(self, refIdx, true);
+				CpManager:setGlobalInfoText(self, refIdx, true);
 			end;
 		end;
 	end
 
 	-- remove ingame map hotspot
-	if courseplay.ingameMapIconActive then
+	if CpManager.ingameMapIconActive then
 		courseplay:deleteMapHotspot(self);
 	end;
 
 	--remove from activeCoursePlayers
-	courseplay:removeFromActiveCoursePlayers(self);
+	CpManager:removeFromActiveCoursePlayers(self);
 
 	--validation: can switch mode?
 	courseplay:validateCanSwitchMode(self);

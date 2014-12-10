@@ -10,7 +10,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 	end;
 
 	local hudGfx = courseplay.hud.visibleArea;
-	local mouseIsInHudArea = self.cp.mouseCursorActive and courseplay:mouseIsInArea(posX, posY, hudGfx.x1, hudGfx.x2, hudGfx.y1, self.cp.suc.active and hudGfx.y2InclSuc or hudGfx.y2);
+	local mouseIsInHudArea = self.cp.mouseCursorActive and courseplay:mouseIsInArea(posX, posY, hudGfx.x1, hudGfx.x2, hudGfx.y1, self.cp.suc.active and hudGfx.y2WithSuc or hudGfx.y2);
 
 	-- if not mouseIsInHudArea then return; end;
 
@@ -185,7 +185,7 @@ end
 
 function courseplay:executeFunction(self, func, value, page)
 	if func == "setMPGlobalInfoText" then
-		courseplay:setGlobalInfoText(self, value, page)
+		CpManager:setGlobalInfoText(self, value, page)
 		courseplay:debug("					setting infoText: "..value..", force remove: "..tostring(page),5)
 		return
 	elseif Utils.startsWith(func,"self") or Utils.startsWith(func,"courseplay") then
@@ -245,8 +245,6 @@ function courseplay:executeFunction(self, func, value, page)
 						courseplay:start(self);
 					elseif line == 3 and self.cp.mode ~= 9 then
 						courseplay:changeStartAtPoint(self);
-					elseif line == 4 then
-						courseplay:clearCurrentLoadedCourse(self);
 					elseif line == 6 and self.cp.mode == 1 and self.cp.workTools[1] ~= nil and self.cp.workTools[1].allowFillFromAir and self.cp.workTools[1].allowTipDischarge then
 						self.cp.multiSiloSelectedFillType = courseplay:getNextFillableFillType(self);
 					end;
@@ -262,8 +260,8 @@ function courseplay:executeFunction(self, func, value, page)
 						end;
 					elseif line == 3 and not self.cp.isLoaded then
 						courseplay:setIsLoaded(self, true);
-					elseif line == 4 and not self.cp.stopAtEnd then
-						courseplay:setStopAtEnd(self, true);
+					elseif line == 4 then
+						courseplay:setStopAtEnd(self, not self.cp.stopAtEnd);
 					elseif line == 5 then
 						if self.cp.mode == 4 and self.cp.hasSowingMachine then
 							self.cp.ridgeMarkersAutomatic = not self.cp.ridgeMarkersAutomatic;

@@ -9,12 +9,12 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 		return
 	end;
 	--ignore objects on list
-	if otherId and (courseplay.trafficCollisionIgnoreList[otherId] or self.cpTrafficCollisionIgnoreList[otherId]) then 
+	if otherId and (CpManager.trafficCollisionIgnoreList[otherId] or self.cpTrafficCollisionIgnoreList[otherId]) then 
 		return;
 	end;
 	--whcih trigger is it ? 
 	local TriggerNumber = self.cp.trafficCollisionTriggerToTriggerIndex[triggerId];
-	
+	-- print(('otherId=%d, getCollisionMask=%s, name=%q, className=%q'):format(otherId, tostring(getCollisionMask(otherId)), tostring(getName(otherId)), tostring(getClassName(otherId))));
 	if onEnter or onLeave then --TODO check whether it is required to ask for this 
 		if otherId == Player.rootNode then  --TODO check in Multiplayer --TODO (Jakob): g_currentMission.player.rootNode ?
 			if onEnter then
@@ -25,6 +25,13 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 		else
 			local vehicleOnList = false
 			local OtherIdisCloser = true
+
+			-- is this a traffic vehicle?
+			local cm = getCollisionMask(otherId);
+			if bitAND(cm, 33554432) ~= 0 then -- if bit25 is part of the collisionMask
+				-- is traffic vehicle
+			end;
+
 			local vehicle = g_currentMission.nodeToVehicle[otherId];
 			local collisionVehicle = g_currentMission.nodeToVehicle[self.cp.collidingVehicleId];
 			
@@ -77,7 +84,7 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 				--checking CollisionIgnoreList
 				if onEnter and vehicle ~= nil and OtherIdisCloser then
 					courseplay:debug(string.format("%s: 	onEnter, checking CollisionIgnoreList", nameNum(self)), 3);
-					if courseplay.trafficCollisionIgnoreList[otherId] then
+					if CpManager.trafficCollisionIgnoreList[otherId] then
 							courseplay:debug(string.format("%s:		%q is on global list", nameNum(self), tostring(vehicle.name)), 3);
 							vehicleOnList = true
 					else
@@ -200,7 +207,7 @@ end;
 
 -- FIND TIP TRIGGER CALLBACK
 function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
-	if courseplay.confirmedNoneTipTriggers[transformId] == true then
+	if CpManager.confirmedNoneTipTriggers[transformId] == true then
 		return true;
 	end;
 
@@ -290,16 +297,16 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 		end;
 	end;
 
-	courseplay.confirmedNoneTipTriggers[transformId] = true;
-	courseplay.confirmedNoneTipTriggersCounter = courseplay.confirmedNoneTipTriggersCounter + 1;
-	courseplay:debug(('%s: added %s to trigger blacklist -> total=%d'):format(nameNum(self), name, courseplay.confirmedNoneTipTriggersCounter), 1);
+	CpManager.confirmedNoneTipTriggers[transformId] = true;
+	CpManager.confirmedNoneTipTriggersCounter = CpManager.confirmedNoneTipTriggersCounter + 1;
+	courseplay:debug(('%s: added %s to trigger blacklist -> total=%d'):format(nameNum(self), name, CpManager.confirmedNoneTipTriggersCounter), 1);
 
 	return true;
 end;
 
 -- FIND SPECIAL TRIGGER CALLBACK
 function courseplay:findSpecialTriggerCallback(transformId, x, y, z, distance)
-	if courseplay.confirmedNoneSpecialTriggers[transformId] then
+	if CpManager.confirmedNoneSpecialTriggers[transformId] then
 		return true;
 	end;
 
@@ -331,9 +338,9 @@ function courseplay:findSpecialTriggerCallback(transformId, x, y, z, distance)
 		return true;
 	end;
 
-	courseplay.confirmedNoneSpecialTriggers[transformId] = true;
-	courseplay.confirmedNoneSpecialTriggersCounter = courseplay.confirmedNoneSpecialTriggersCounter + 1;
-	courseplay:debug(('%s: added %d (%s) to trigger blacklist -> total=%d'):format(nameNum(self), transformId, name, courseplay.confirmedNoneSpecialTriggersCounter), 19);
+	CpManager.confirmedNoneSpecialTriggers[transformId] = true;
+	CpManager.confirmedNoneSpecialTriggersCounter = CpManager.confirmedNoneSpecialTriggersCounter + 1;
+	courseplay:debug(('%s: added %d (%s) to trigger blacklist -> total=%d'):format(nameNum(self), transformId, name, CpManager.confirmedNoneSpecialTriggersCounter), 19);
 
 	return true;
 end;
@@ -358,7 +365,16 @@ function courseplay:updateAllTriggers()
 		allNonUpdateables = {};
 		all = {};
 	};
-	courseplay.triggers.tipTriggersCount, courseplay.triggers.damageModTriggersCount, courseplay.triggers.gasStationTriggersCount, courseplay.triggers.liquidManureFillTriggersCount, courseplay.triggers.sowingMachineFillTriggersCount, courseplay.triggers.sprayerFillTriggersCount, courseplay.triggers.waterTrailerFillTriggersCount, courseplay.triggers.weightStationsCount, courseplay.triggers.allNonUpdateablesCount, courseplay.triggers.allCount = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+	courseplay.triggers.tipTriggersCount = 0;
+	courseplay.triggers.damageModTriggersCount = 0;
+	courseplay.triggers.gasStationTriggersCount = 0;
+	courseplay.triggers.liquidManureFillTriggersCount = 0;
+	courseplay.triggers.sowingMachineFillTriggersCount = 0;
+	courseplay.triggers.sprayerFillTriggersCount = 0;
+	courseplay.triggers.waterTrailerFillTriggersCount = 0;
+	courseplay.triggers.weightStationsCount = 0;
+	courseplay.triggers.allNonUpdateablesCount = 0;
+	courseplay.triggers.allCount = 0;
 
 	-- UPDATE
 	-- nonUpdateable objects
@@ -543,12 +559,12 @@ function courseplay:updateAllTriggers()
 			-- Regular and Extended tipTriggers
 			elseif courseplay:isValidTipTrigger(trigger) then
 				local triggerId = trigger.triggerId;
-				if triggerId ~= nil then
-					courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
-				end;
 				-- Extended tipTriggers (AlternativeTipTrigger)
 				if trigger.isExtendedTrigger then
 					trigger.isAlternativeTipTrigger = Utils.endsWith(trigger.className, 'ExtendedTipTrigger');
+				end;
+				if triggerId ~= nil then
+					courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
 				end;
 			end;
 		end
