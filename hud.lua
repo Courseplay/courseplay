@@ -5,27 +5,21 @@ local function round(num)
 	return floor(num + 0.5);
 end;
 
-function courseplay.hud:getFullPx(n, dimension)
-	if dimension == 'x' then
-		return round(n * g_screenWidth) / g_screenWidth;
-	else
-		return round(n * g_screenHeight) / g_screenHeight;
-	end;
-end;
 
-local sizeRatio = g_screenWidth/1920;
--- NOTE: in theory adjustWidth would work, but Giants doesn't use it with fonts or any GUI other elements. Again, such a fucking great job done by Giants!
--- local adjustWidth = getFullscreen() and g_screenWidth < g_referenceScreenWidth;
--- local adjustWidthRatio = g_screenWidth / g_referenceScreenWidth;
+local targetAspectRatio = 16/9; -- = 1920/1080;
+local aspectRatioRatio = g_screenAspectRatio / targetAspectRatio;
+local sizeRatio = 1;
+if g_screenWidth > 1920 then
+	sizeRatio = 1920 / g_screenWidth;
+end;
 
 -- px are in targetSize for 1920x1080
 function courseplay.hud:pxToNormal(px, dimension, fullPixel)
-	local ret = px / 1080 * sizeRatio;
+	local ret;
 	if dimension == 'x' then
-		ret = ret / g_screenAspectRatio;
-		-- if adjustWidth then
-		--	 ret = ret * adjustWidthRatio;
-		-- end;
+		ret = (px / 1920) * sizeRatio;
+	else
+		ret = (px / 1080) * sizeRatio * aspectRatioRatio;
 	end;
 	if fullPixel == nil or fullPixel then
 		ret = self:getFullPx(ret, dimension);
@@ -34,14 +28,28 @@ function courseplay.hud:pxToNormal(px, dimension, fullPixel)
 	return ret;
 end;
 
+function courseplay.hud:getFullPx(n, dimension)
+	if dimension == 'x' then
+		return round(n * g_screenWidth) / g_screenWidth;
+	else
+		return round(n * g_screenHeight) / g_screenHeight;
+	end;
+end;
+
 function courseplay.hud:getPxToNormalConstant(widthPx, heightPx)
 	return widthPx/g_screenWidth, heightPx/g_screenHeight;
 end;
 
+-- 800x600:   g_cM vehicleHudPosX=0.826458, vehicleHudPosY=0.020833, vehicleBaseHudHeight=0.027708, vehicleHudScale=0.700000
+-- 1024x768:  g_cM vehicleHudPosX=0.826458, vehicleHudPosY=0.020833, vehicleBaseHudHeight=0.027708, vehicleHudScale=0.700000
+-- 1280x800:  g_cM vehicleHudPosX=0.826458, vehicleHudPosY=0.025000, vehicleBaseHudHeight=0.033250, vehicleHudScale=0.700000
+-- 1680x1050: g_cM vehicleHudPosX=0.826458, vehicleHudPosY=0.025000, vehicleBaseHudHeight=0.033250, vehicleHudScale=0.700000
+-- 1920x1080: g_cM vehicleHudPosX=0.826458, vehicleHudPosY=0.027778, vehicleBaseHudHeight=0.036944, vehicleHudScale=0.700000
+
 
 -- ####################################################################################################
 -- SETUP
-courseplay.hud.basePosX = courseplay.hud:pxToNormal(830, 'x');
+courseplay.hud.basePosX = 0.826458 - courseplay.hud:pxToNormal(630 + 50, 'x'); -- vehicleHud - 50px padding - hud width
 courseplay.hud.basePosY = courseplay.hud:pxToNormal(8, 'y');
 
 function courseplay.hud:setup()
