@@ -98,10 +98,7 @@ function courseplay:load(xmlFile)
 
 
 	-- CP mode
-	self.cp.mode = 1;
-	if self.cp.isCombine or self.cp.isChopper or self.cp.isHarvesterSteerable or self.cp.isWoodHarvester or self.cp.isWoodForwarder then
-		self.cp.mode = 5;
-	end;
+	self.cp.mode = 5;
 	self.cp.modeState = 0
 	self.cp.mode2nextState = nil;
 	self.cp.startWork = nil
@@ -1112,7 +1109,7 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 	if not resetVehicles and g_server ~= nil then
 		-- COURSEPLAY
 		local curKey = key .. '.courseplay';
-		courseplay:setCpMode(self,  Utils.getNoNil(   getXMLInt(xmlFile, curKey .. '#aiMode'),			 1));
+		courseplay:setCpMode(self,  Utils.getNoNil(   getXMLInt(xmlFile, curKey .. '#aiMode'),			 self.cp.mode));
 		self.cp.hud.openWithMouse = Utils.getNoNil(  getXMLBool(xmlFile, curKey .. '#openHudWithMouse'), true);
 		self.cp.beaconLightsMode  = Utils.getNoNil(   getXMLInt(xmlFile, curKey .. '#beacon'),			 1);
 		self.cp.waitTime 		  = Utils.getNoNil(   getXMLInt(xmlFile, curKey .. '#waitTime'),		 0);

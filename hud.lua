@@ -144,8 +144,6 @@ function courseplay.hud:setup()
 		bottomInfo = self:pxToNormal(16, 'y');
 		version = self:pxToNormal(11, 'y');
 		infoText = self:pxToNormal(16, 'y');
-		fieldScanTitle = self:pxToNormal(23, 'y');
-		fieldScanData = self:pxToNormal(20, 'y');
 	};
 	self.numPages = 9;
 	self.numLines = 8;
@@ -1112,7 +1110,7 @@ function courseplay.hud:setupVehicleHud(vehicle)
 		vehicle.cp.buttons[page] = {};
 	end;
 
-	-- SeedUsageCalculator -- TODO
+	-- SeedUsageCalculator
 	vehicle.cp.suc = {
 		active = false;
 		fontSize = self.fontSizes.seedUsageCalculator;
@@ -1207,7 +1205,6 @@ function courseplay.hud:setupVehicleHud(vehicle)
 
 	courseplay:setMinHudPage(vehicle, nil);
 
-	-- ## BUTTONS FOR HUD ##
 	local mouseWheelArea = {
 		x = self.contentMinX,
 		w = self.contentMaxWidth,
@@ -1222,7 +1219,8 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	topIconsX[1] = topIconsX[2] - wSmall - wMiddle;
 	topIconsX[0] = topIconsX[1] - wSmall - wMiddle;
 
-	-- Page nav
+	-- ##################################################
+	-- Global
 	local posY = self.basePosY + self:pxToNormal(297, 'y');
 	local totalWidth = ((self.numPages + 1) * wBig) + (self.numPages * marginBig); --numPages=9, real numPages=10
 	local baseX = self.baseCenterPosX - totalWidth/2;
