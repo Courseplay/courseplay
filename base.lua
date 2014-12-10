@@ -417,6 +417,7 @@ function courseplay:load(xmlFile)
 		self.cutLengthStep = 1;
 	end;
 
+	self.cp.hasBeaconLights = #self.beaconLights > 0;
 
 	self.cp.mouseCursorActive = false;
 
