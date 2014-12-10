@@ -2,16 +2,14 @@ local curFile = 'combines.lua';
 
 function courseplay:getAllCombines()
 	local combines = {}
-	for _, vehicle in pairs(g_currentMission.vehicles) do --TODO (Jakob): create courseplay combine table, add each combine during load()
+	for _, vehicle in pairs(courseplay.combines) do
 		if vehicle.cp == nil then
 			vehicle.cp = {};
 			courseplay:setNameVariable(vehicle);
 		end;
-		
-		if vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable or vehicle.cp.isSugarBeetLoader or courseplay:isAttachedCombine(vehicle) then
-			if not courseplay:isAttachedCombine(vehicle) or (courseplay:isAttachedCombine(vehicle) and vehicle.attacherVehicle ~= nil and not vehicle.cp.isPoettingerMex6) then --TODO (Jakob): re-check Pöttinger Mex 6 support
-				table.insert(combines, vehicle);
-			end;
+
+		if not courseplay:isAttachedCombine(vehicle) or (vehicle.attacherVehicle ~= nil and not vehicle.cp.isPoettingerMex6) then
+			table.insert(combines, vehicle);
 		end;
 	end;
 

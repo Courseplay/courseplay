@@ -66,12 +66,10 @@ function courseplay:attachableDelete()
 			courseplay.liquidManureOverloaders[self.rootNode] = nil
 		end
 	end;
-
-	
 end;
 Attachable.delete = Utils.prependedFunction(Attachable.delete, courseplay.attachableDelete);
 
-function courseplay.vehicleLoadFinished(self)
+function courseplay.vehiclePostLoadFinished(self)
 	if self.cp == nil then self.cp = {}; end;
 
 	-- XML FILE NAME VARIABLE
@@ -83,8 +81,17 @@ function courseplay.vehicleLoadFinished(self)
 	self.getIsCourseplayDriving = courseplay.getIsCourseplayDriving;
 	self.setIsCourseplayDriving = courseplay.setIsCourseplayDriving;
 	self.setCpVar = courseplay.setCpVar;
+
+	-- combines table
+	if courseplay.combines == nil then
+		courseplay.combines = {};
+	end;
+
+	if self.cp.isCombine or self.cp.isChopper or self.cp.isHarvesterSteerable or self.cp.isSugarBeetLoader or courseplay:isAttachedCombine(self) then
+		courseplay.combines[self.rootNode] = self;
+	end;
 end;
-Vehicle.loadFinished = Utils.prependedFunction(Vehicle.loadFinished, courseplay.vehicleLoadFinished);
+Vehicle.loadFinished = Utils.appendedFunction(Vehicle.loadFinished, courseplay.vehiclePostLoadFinished);
 -- NOTE: using loadFinished() instead of load() so any other mod that overwrites Vehicle.load() doesn't interfere
 
 function courseplay:vehicleDelete()
@@ -99,6 +106,9 @@ function courseplay:vehicleDelete()
 			self.cp.notesToDelete = nil;
 		end;
 
+		if courseplay.combines[self.rootNode] then
+			courseplay.combines[self.rootNode] = nil;
+		end;
 	end;
 end;
 Vehicle.delete = Utils.prependedFunction(Vehicle.delete, courseplay.vehicleDelete);
