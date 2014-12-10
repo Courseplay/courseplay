@@ -97,8 +97,10 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 		end
 		
 		--speedlimits
+		local speedLimitActive = false
 		if workTool.doCheckSpeedLimit and workTool:doCheckSpeedLimit() then
 			forceSpeedLimit = math.min(forceSpeedLimit, workTool.speedLimit)
+			speedLimitActive = true
 		end
 
 		
@@ -150,6 +152,9 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 							if not workTool:isLowered() then
 								courseplay:debug(string.format('%s: lower order', nameNum(workTool)), 17);
 								self:setAIImplementsMoveDown(true);
+							elseif not speedLimitActive then  --TODO better would be getIsWorkAreaActive()
+								allowedToDrive = false;
+								courseplay:debug(string.format('%s: wait for lowering', nameNum(workTool)), 17);
 							end;
 						end;
 
