@@ -213,7 +213,7 @@ function courseplay:executeFunction(self, func, value, page)
 			if not combine.cp.isChopper then
 				if line == 4 then
 					courseplay:toggleDriverPriority(combine);
-				elseif line == 5 and self:getIsCourseplayDriving() and self.cp.mode == 6 then
+				elseif line == 5 and self:getIsCourseplayDriving() and self.cp.mode == courseplay.MODE_FIELDWORK then
 					courseplay:toggleStopWhenUnloading(combine);
 				end;
 			end;
@@ -245,7 +245,7 @@ function courseplay:executeFunction(self, func, value, page)
 						courseplay:start(self);
 					elseif line == 3 and self.cp.mode ~= 9 then
 						courseplay:changeStartAtPoint(self);
-					elseif line == 6 and self.cp.mode == 1 and self.cp.workTools[1] ~= nil and self.cp.workTools[1].allowFillFromAir and self.cp.workTools[1].allowTipDischarge then
+					elseif line == 6 and self.cp.mode == courseplay.MODE_GRAIN_TRANSPORT and self.cp.workTools[1] ~= nil and self.cp.workTools[1].allowFillFromAir and self.cp.workTools[1].allowTipDischarge then
 						self.cp.multiSiloSelectedFillType = courseplay:getNextFillableFillType(self);
 					end;
 
@@ -263,13 +263,13 @@ function courseplay:executeFunction(self, func, value, page)
 					elseif line == 4 then
 						courseplay:setStopAtEnd(self, not self.cp.stopAtEnd);
 					elseif line == 5 then
-						if self.cp.mode == 4 and self.cp.hasSowingMachine then
+						if self.cp.mode == courseplay.MODE_SEED_FERTILIZE and self.cp.hasSowingMachine then
 							self.cp.ridgeMarkersAutomatic = not self.cp.ridgeMarkersAutomatic;
-						elseif self.cp.mode == 6 and self.cp.hasBaleLoader and not self.hasUnloadingRefillingCourse then
+						elseif self.cp.mode == courseplay.MODE_FIELDWORK and self.cp.hasBaleLoader and not self.hasUnloadingRefillingCourse then
 							self.cp.automaticUnloadingOnField = not self.cp.automaticUnloadingOnField;
 						end;
 					elseif line == 6 then
-						if self.cp.tipperHasCover and (self.cp.mode == 1 or self.cp.mode == 2 or self.cp.mode == 5 or self.cp.mode == 6) then
+						if self.cp.tipperHasCover and (self.cp.mode == courseplay.MODE_GRAIN_TRANSPORT or self.cp.mode == courseplay.MODE_COMBI or self.cp.mode == courseplay.MODE_TRANSPORT or self.cp.mode == courseplay.MODE_FIELDWORK) then
 							self.cp.automaticCoverHandling = not self.cp.automaticCoverHandling;
 						end;
 					end;

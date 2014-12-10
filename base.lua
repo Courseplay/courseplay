@@ -688,7 +688,7 @@ function courseplay:update(dt)
 	if g_server ~= nil then
 		if self.cp.isDriving then
 			local showDriveOnButton = false;
-			if self.cp.mode == 6 then
+			if self.cp.mode == courseplay.MODE_FIELDWORK then
 				if self.cp.wait and (self.recordnumber == self.cp.stopWork or self.cp.lastRecordnumber == self.cp.stopWork) and self.cp.abortWork == nil and not self.cp.isLoaded and not isFinishingWork and self.cp.hasUnloadingRefillingCourse then
 					showDriveOnButton = true;
 				end;
