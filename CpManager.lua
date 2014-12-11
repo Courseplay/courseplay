@@ -76,10 +76,6 @@ function CpManager:loadMap(name)
 	end;
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	-- WAGES
-	self.wageDifficultyMultiplier = Utils.lerp(0.5, 1, (g_currentMission.missionStats.difficulty - 1) / 2);
-
-	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- TIMERS
 	g_currentMission.environment:addMinuteChangeListener(self);
 	self.realTimeMinuteTimer = 0;
@@ -216,7 +212,7 @@ function CpManager:update(dt)
 
 
 	-- REAL TIME 10 SECS CHANGER
-	if courseplay.wagesActive and g_server ~= nil then -- NOTE: if there are more items to be dealt with every 10 secs, remove the "wagesActive" restriction
+	if self.wagesActive and g_server ~= nil then -- NOTE: if there are more items to be dealt with every 10 secs, remove the "wagesActive" restriction
 		if self.realTime10SecsTimer < 10000 then
 			self.realTime10SecsTimer = self.realTime10SecsTimer + dt;
 		else
@@ -606,6 +602,7 @@ end;
 -- ####################################################################################################
 -- WAGES
 function CpManager:setupWages()
+	self.wageDifficultyMultiplier = Utils.lerp(0.5, 1, (g_currentMission.missionStats.difficulty - 1) / 2);
 	self.wagesActive = true;
 	self.wagePerHour = 1500;
 	self.wagePer10Secs  = self.wagePerHour / 360;

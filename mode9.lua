@@ -286,6 +286,7 @@ function courseplay:checkAndSetMovingToolsPosition(vehicle, movingTools, seconda
 			end;
 
 			-- DIRTY FLAGS (movingTool)
+			-- TODO: check if Cylindered.setMovingToolDirty() is better here
 			if changed then
 				if vehicle.cp.attachedFrontLoader ~= nil then
 					Cylindered.setDirty(vehicle.cp.attachedFrontLoader, mt);

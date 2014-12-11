@@ -355,7 +355,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 					vehicle.cp.abortWork = nil
 				end
 			end
-			-- safe last point
+			-- save last point
 			if (fillLevelPct == 100 or vehicle.cp.isLoaded) and workArea and not courseplay:isBaler(workTool) then
 				if vehicle.cp.hasUnloadingRefillingCourse and vehicle.cp.abortWork == nil then
 					vehicle.cp.abortWork = vehicle.cp.lastRecordnumber - 10;
