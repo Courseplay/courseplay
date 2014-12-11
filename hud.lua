@@ -142,6 +142,7 @@ function courseplay.hud:setup()
 		contentTitle = self:pxToNormal(17, 'y');
 		contentValue = self:pxToNormal(15, 'y');
 		bottomInfo = self:pxToNormal(16, 'y');
+		bottomInfoSmall = self:pxToNormal(13, 'y');
 		version = self:pxToNormal(11, 'y');
 		infoText = self:pxToNormal(16, 'y');
 	};
@@ -319,6 +320,7 @@ function courseplay.hud:setup()
 	self.bottomInfo.iconWidth  = self.buttonSize.middle.w;
 	self.bottomInfo.iconHeight = self.buttonSize.middle.h;
 	self.bottomInfo.textPosY = self.basePosY + self:pxToNormal(36 + 16*0.5 + 1, 'y');
+	self.bottomInfo.textSmallPosY = self.bottomInfo.textPosY + self:pxToNormal(1, 'y');
 	self.bottomInfo.iconPosY = self.basePosY + self:pxToNormal(36 + 30*0.5 - 24*0.5, 'y');
 
 	self.bottomInfo.modeIconX = self.col1posX;
@@ -384,7 +386,13 @@ function courseplay.hud:setContent(vehicle)
 	if vehicle.Waypoints[vehicle.cp.HUDrecordnumber] ~= nil or vehicle.cp.isRecording or vehicle.cp.recordingIsPaused then
 		-- waypoints
 		if not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused then
-			vehicle.cp.hud.content.bottomInfo.waypointText = ('%d/%d'):format(vehicle.cp.HUDrecordnumber, vehicle.maxnumber);
+			local str = ('%d/%d'):format(vehicle.cp.HUDrecordnumber, vehicle.maxnumber);
+			if str:len() > 7 then
+				vehicle.cp.hud.content.bottomInfo.waypointTextSmall = str;
+				vehicle.cp.hud.content.bottomInfo.waypointText = nil;
+			else
+				vehicle.cp.hud.content.bottomInfo.waypointText = str;
+			end;
 		else
 			vehicle.cp.hud.content.bottomInfo.waypointText = tostring(vehicle.cp.HUDrecordnumber);
 		end;
@@ -396,6 +404,7 @@ function courseplay.hud:setContent(vehicle)
 		vehicle.cp.hud.content.bottomInfo.crossingPointsText = tostring(vehicle.cp.numCrossingPoints);
 	else
 		vehicle.cp.hud.content.bottomInfo.waypointText = nil;
+		vehicle.cp.hud.content.bottomInfo.waypointTextSmall = nil;
 		vehicle.cp.hud.content.bottomInfo.waitPointsText = nil;
 		vehicle.cp.hud.content.bottomInfo.crossingPointsText = nil;
 	end;
@@ -479,10 +488,15 @@ function courseplay.hud:renderHud(vehicle)
 	if vehicle.cp.hud.content.bottomInfo.courseNameText ~= nil then
 		renderText(self.bottomInfo.courseNameX, self.bottomInfo.textPosY, self.fontSizes.bottomInfo, vehicle.cp.hud.content.bottomInfo.courseNameText);
 	end;
-	if vehicle.cp.hud.content.bottomInfo.waypointText ~= nil and vehicle.cp.hud.content.bottomInfo.waitPointsText ~= nil and vehicle.cp.hud.content.bottomInfo.crossingPointsText ~= nil then
+	if vehicle.cp.hud.content.bottomInfo.waypointText ~= nil then
 		renderText(self.bottomInfo.waypointTextX, self.bottomInfo.textPosY, self.fontSizes.bottomInfo, vehicle.cp.hud.content.bottomInfo.waypointText);
 		vehicle.cp.hud.currentWaypointIcon:render();
+	elseif vehicle.cp.hud.content.bottomInfo.waypointTextSmall ~= nil then
+		renderText(self.bottomInfo.waypointTextX, self.bottomInfo.textSmallPosY, self.fontSizes.bottomInfoSmall, vehicle.cp.hud.content.bottomInfo.waypointTextSmall);
+		vehicle.cp.hud.currentWaypointIcon:render();
+	end;
 
+	if vehicle.cp.hud.content.bottomInfo.waitPointsText ~= nil and vehicle.cp.hud.content.bottomInfo.crossingPointsText ~= nil then
 		courseplay:setFontSettings('white', false, 'center');
 
 		renderText(self.bottomInfo.waitPointsTextX, self.bottomInfo.textPosY, self.fontSizes.bottomInfo, vehicle.cp.hud.content.bottomInfo.waitPointsText);
