@@ -228,14 +228,18 @@ function courseplay:drive(self, dt)
 			courseplay:setVehicleWait(self, false);
 		else
 			CpManager:setGlobalInfoText(self, 'WAIT_POINT');
-		end
+		end;
 
 		-- wait time passed -> continue driving
 		if self.cp.waitTimer and self.timer > self.cp.waitTimer then
 			self.cp.waitTimer = nil
 			courseplay:setVehicleWait(self, false);
 		end
-		allowedToDrive = false
+
+		local _,_,zDist = worldToLocal(self.cp.DirectionNode, self.Waypoints[self.cp.lastRecordnumber].cx, cty, self.Waypoints[self.cp.lastRecordnumber].cz);
+		if zDist < 1 then -- don't stop immediately when hitting the waitPoints recordnumber, but rather wait until we're close enough (1m)
+			allowedToDrive = false;
+		end;
 	-- ### WAITING POINTS - END
 
 	-- ### NON-WAITING POINTS
@@ -469,7 +473,6 @@ function courseplay:drive(self, dt)
 		self.cp.isTrafficBraking = false
 		AIVehicleUtil.driveInDirection(self, dt, 30, 0, 0, 28, false, moveForwards, 0, 1)
 		return;
-		-- unload active tipper if given
 	end
 
 	if self.cp.isTurning ~= nil then
