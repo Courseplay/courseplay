@@ -374,8 +374,14 @@ function courseplay:getCanUseCpMode(vehicle)
 	end;
 
 
-	if mode ~= 5 and mode ~= 6 and mode ~= 7 and not vehicle.cp.workToolAttached then
-		courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WRONG_TRAILER'));
+	if mode ~= 5 and mode ~= 7 and not vehicle.cp.workToolAttached then
+		if mode == 4 or mode == 6 then
+			courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WRONG_TOOL'));
+		elseif mode == 9 then
+			courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_SHOVEL_NOT_FOUND'));
+		else
+			courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WRONG_TRAILER'));
+		end;
 		return false;
 	end;
 

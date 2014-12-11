@@ -171,6 +171,8 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 		or courseplay:isAttachedCombine(workTool) 
 		or courseplay:isFoldable(workTool))
 		and not workTool.cp.isCaseIHPuma160
+		and not courseplay:isSprayer(workTool)
+		and not courseplay:isSowingMachine(workTool)
 		then
 			hasWorkTool = true;
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;

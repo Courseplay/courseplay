@@ -320,7 +320,7 @@ function courseplay.hud:setup()
 	self.bottomInfo.iconWidth  = self.buttonSize.middle.w;
 	self.bottomInfo.iconHeight = self.buttonSize.middle.h;
 	self.bottomInfo.textPosY = self.basePosY + self:pxToNormal(36 + 16*0.5 + 1, 'y');
-	self.bottomInfo.textSmallPosY = self.bottomInfo.textPosY + self:pxToNormal(1, 'y');
+	self.bottomInfo.textSmallPosY = self.bottomInfo.textPosY; -- + self:pxToNormal(1, 'y');
 	self.bottomInfo.iconPosY = self.basePosY + self:pxToNormal(36 + 30*0.5 - 24*0.5, 'y');
 
 	self.bottomInfo.modeIconX = self.col1posX;

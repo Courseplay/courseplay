@@ -202,15 +202,15 @@ setGlobalData();
 
 
 if courseplay.isDevVersion then
-	local devWarning = '';
-	devWarning = devWarning .. '    ' .. ('*'):rep(47) .. ' WARNING ' .. ('*'):rep(47) .. '\n';
-	devWarning = devWarning .. '    * You are using a development version of Courseplay, which may and will contain errors, bugs,         *\n';
-	devWarning = devWarning .. '    * mistakes and unfinished code. Chances are your computer will explode when using it. Twice.          *\n';
-	devWarning = devWarning .. '    * If you have no idea what "beta", "alpha", or "developer" means and entails, remove this version     *\n';
-	devWarning = devWarning .. '    * of Courseplay immediately. The Courseplay team will not take any responsibility for crop destroyed, *\n';
-	devWarning = devWarning .. '    * savegames deleted or baby pandas killed.                                                            *\n';
-	devWarning = devWarning .. '    ' .. ('*'):rep(103);
-	print(devWarning);
+	local maxLength = 91;
+	local s = {
+		('%-' .. maxLength .. 's'):format('You are using a development version of Courseplay, which may and will contain errors, bugs,');
+		('%-' .. maxLength .. 's'):format('mistakes and unfinished code. Chances are your computer will explode when using it. Twice.');
+		('%-' .. maxLength .. 's'):format('If you have no idea what "beta", "alpha", or "developer" means and entails, remove this');
+		('%-' .. maxLength .. 's'):format('version of Courseplay immediately. The Courseplay team will not take any responsibility for');
+		('%-' .. maxLength .. 's'):format('crop destroyed, savegames deleted or baby pandas killed.');
+	};
+	print('    ' .. ('*'):rep((maxLength - 5) * 0.5) .. ' WARNING ' .. ('*'):rep((maxLength - 5) * 0.5) .. '\n    * ' .. table.concat(s, ' *\n    * ') .. ' *\n    ' .. ('*'):rep(maxLength + 4));
 end;
 
 

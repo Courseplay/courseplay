@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="20">
-	<version>4.00.0194</version>
+	<version>4.00.0195</version>
 	<author><![CDATA[Courseplay Dev Team]]></author>
 	<title>
 		<br>Courseplay</br>
@@ -1515,6 +1515,10 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<nl>Verkeerde trailer voor deze modus</nl>
 			<br>carreta incorreta para este modo</br>
 			<cs>错误的拖车</cs>
+		</text>
+		<text name="COURSEPLAY_WRONG_TOOL"> <!-- missing: br, cs, cz, es, fr, hu, it, nl, ru --> <!-- NOTE: same as 'COURSEPLAY_WRONG_TRAILER', only with "tool" instead of "trailer" -->
+			<en>wrong tool for this mode</en>
+			<de>falsches Gerät für diesen Modus</de>
 		</text>
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE"> <!-- missing: cs, fr, es, it, nl -->
 			<en>This vehicle type isn't supported in this mode.</en>
