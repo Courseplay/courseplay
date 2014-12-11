@@ -477,7 +477,7 @@ function courseplay:drive(self, dt)
 		self.cp.TrafficBrake = false
 		return
 	end
-
+	self.cp.checkMarkers = false
 
 	--SPEED SETTING
 	local isAtEnd   = self.recordnumber > self.maxnumber - 3;

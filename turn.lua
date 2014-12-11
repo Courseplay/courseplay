@@ -20,8 +20,14 @@ function courseplay:turn(self, dt) --!!!
 	if self.cp.noStopOnEdge then
 		turnOutTimer = 0
 	end
+	if not self.cp.checkMarkers then
+		self.cp.checkMarkers = true
+		for _,workTool in pairs(self.cp.workTools) do
+			courseplay:setMarkers(self, workTool)
+		end
+	end
+	
 	self.cp.turnTimer = self.cp.turnTimer - dt;
-
 
 	-- TURN STAGES 1 - 6
 	if self.cp.turnTimer < 0 or self.cp.turnStage > 0 then
