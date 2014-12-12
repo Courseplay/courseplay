@@ -148,7 +148,7 @@ function courseplay:drive(self, dt)
 	-- the tipper that is currently loaded/unloaded
 	local activeTipper;
 	local isBypassing = false
-
+	local isCrawlingToWait = false
 
 	-- ### WAITING POINTS - START
 	if self.Waypoints[self.cp.lastRecordnumber].wait and self.cp.wait then
@@ -235,7 +235,7 @@ function courseplay:drive(self, dt)
 			self.cp.waitTimer = nil
 			courseplay:setVehicleWait(self, false);
 		end
-
+		isCrawlingToWait = true
 		local _,_,zDist = worldToLocal(self.cp.DirectionNode, self.Waypoints[self.cp.lastRecordnumber].cx, cty, self.Waypoints[self.cp.lastRecordnumber].cz);
 		if zDist < 1 then -- don't stop immediately when hitting the waitPoints recordnumber, but rather wait until we're close enough (1m)
 			allowedToDrive = false;
@@ -485,13 +485,14 @@ function courseplay:drive(self, dt)
 	--SPEED SETTING
 	local isAtEnd   = self.recordnumber > self.maxnumber - 3;
 	local isAtStart = self.recordnumber < 3;
-	if 	((self.cp.mode == 1 or self.cp.mode == 5 or self.cp.mode == 8) and (isAtStart or isAtEnd)) or
-		((self.cp.mode == 2 or self.cp.mode == 3) and isAtEnd) or
-		(self.cp.mode == 9 and self.recordnumber > self.cp.shovelFillStartPoint and self.recordnumber <= self.cp.shovelFillEndPoint) or
-		(not workArea and self.cp.wait and ((isAtEnd and self.Waypoints[self.recordnumber].wait) or courseplay:waypointsHaveAttr(self, self.recordnumber, 0, 2, "wait", true, false))) or 
-		(isAtEnd and self.Waypoints[self.recordnumber].rev) or
-		(not isAtEnd and (self.Waypoints[self.recordnumber].rev or self.Waypoints[self.recordnumber + 1].rev or self.Waypoints[self.recordnumber + 2].rev)) or
-		(workSpeed ~= nil and workSpeed == 0.5) -- baler in mode 6 , slow down
+	if 	((self.cp.mode == 1 or self.cp.mode == 5 or self.cp.mode == 8) and (isAtStart or isAtEnd)) 
+	or	((self.cp.mode == 2 or self.cp.mode == 3) and isAtEnd) 
+	or	(self.cp.mode == 9 and self.recordnumber > self.cp.shovelFillStartPoint and self.recordnumber <= self.cp.shovelFillEndPoint)
+	or	(not workArea and self.cp.wait and ((isAtEnd and self.Waypoints[self.recordnumber].wait) or courseplay:waypointsHaveAttr(self, self.recordnumber, 0, 2, "wait", true, false)))
+	or 	(isAtEnd and self.Waypoints[self.recordnumber].rev)
+	or	(not isAtEnd and (self.Waypoints[self.recordnumber].rev or self.Waypoints[self.recordnumber + 1].rev or self.Waypoints[self.recordnumber + 2].rev))
+	or	(workSpeed ~= nil and workSpeed == 0.5) -- baler in mode 6 , slow down
+	or isCrawlingToWait		
 	then
 		refSpeed = math.min(self.cp.speeds.turn,refSpeed);              -- we are on the field, go field speed
 	elseif ((self.cp.mode == 2 or self.cp.mode == 3) and isAtStart) or (workSpeed ~= nil and workSpeed == 1) then
