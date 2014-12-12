@@ -1516,10 +1516,11 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<br>carreta incorreta para este modo</br>
 			<cs>错误的拖车</cs>
 		</text>
-		<text name="COURSEPLAY_WRONG_TOOL"> <!-- missing: br, cs, cz, es, fr, it, nl, ru --> <!-- NOTE: same as 'COURSEPLAY_WRONG_TRAILER', only with "tool" instead of "trailer" -->
+		<text name="COURSEPLAY_WRONG_TOOL"> <!-- missing: cs, cz, es, fr, it, nl, ru --> <!-- NOTE: same as 'COURSEPLAY_WRONG_TRAILER', only with "tool" instead of "trailer" -->
 			<en>wrong tool for this mode</en>
 			<de>falsches Gerät für diesen Modus</de>
 			<hu>Rossz munkaeszköz ehez a módhoz</hu>
+			<br>ferramenta errada para este modo</br>
 		</text>
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE"> <!-- missing: cs, fr, es, it, nl -->
 			<en>This vehicle type isn't supported in this mode.</en>
