@@ -719,8 +719,8 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 				local x, y, z = getWorldTranslation(tipper.tipReferencePoints[bestTipReferencePoint].node);
 				local sx, sy, sz = worldToLocal(ctt.bunkerSilo.movingPlanes[1].nodeId, x, y, z);
 				local ex, ey, ez = worldToLocal(ctt.bunkerSilo.movingPlanes[silos].nodeId, x, y, z);
-				local startDistance = sz;
-				local endDistance = ez;
+				local startDistance = Utils.vector2Length(sx, sz);
+				local endDistance = Utils.vector2Length(ex, ez);
 
 				-- Get nearest silo section number (Code snip taken from BunkerSilo:setFillDeltaAt)
 				local nearestDistance = math.huge;
@@ -978,7 +978,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 
 					local isFirseSiloSection = (vehicle.cp.BGASectionInverted and tipper.cp.BGASelectedSection == silos) or (not vehicle.cp.BGASectionInverted and tipper.cp.BGASelectedSection == 1);
 
-					local startTipDistance = 0;
+					local startTipDistance = 1.5;
 					-- Open hatch before time
 					if courseplay:isPushWagon(tipper) then
 						local openDistance = meterPrSeconds * (animation.animationDuration / animation.animationOpenSpeedScale / 1000);
