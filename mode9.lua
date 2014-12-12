@@ -345,3 +345,16 @@ function courseplay:getMovingTools(vehicle)
 
 	return primaryMovingTools, secondaryMovingTools;
 end;
+
+local origGetIsActiveForInput = Vehicle.getIsActiveForInput;
+function Vehicle:getIsActiveForInput(onlyTrueIfSelected)
+	if g_gui.currentGui ~= nil or g_currentMission.isPlayerFrozen then
+		return false;
+	end;
+
+	if self.typeName == 'wheelLoader' and self.hasCourseplaySpec and self:getIsCourseplayDriving() and self.cp.mode == 9 and not onlyTrueIfSelected then
+		return true;
+	end;
+
+	return origGetIsActiveForInput(self, onlyTrueIfSelected);
+end;
