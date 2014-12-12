@@ -433,23 +433,24 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 					-- Combines
 					else
 						local tankFillLevelPct = tool.fillLevel * 100 / tool.capacity;
-
-						-- WorkTool Unfolding.
-						if courseplay:isFoldable(workTool) and not isTurnedOn and not isFolding and not isUnfolded then
-							courseplay:debug(string.format('%s: unfold order (foldDir=%d)', nameNum(workTool), workTool.cp.realUnfoldDirection), 17);
-							workTool:setFoldDirection(workTool.cp.realUnfoldDirection);
-						end;
-
-						-- Combine Unfolding
-						if courseplay:isFoldable(tool) then
-							if not vehicleIsFolding and not vehicleIsUnfolded then
-								courseplay:debug(string.format('%s: unfold order (foldDir=%d)', nameNum(tool), tool.cp.realUnfoldDirection), 17);
-								tool:setFoldDirection(tool.cp.realUnfoldDirection);
+						if not vehicle.cp.isReverseBackToPoint then
+							-- WorkTool Unfolding.
+							if courseplay:isFoldable(workTool) and not isTurnedOn and not isFolding and not isUnfolded then
+								courseplay:debug(string.format('%s: unfold order (foldDir=%d)', nameNum(workTool), workTool.cp.realUnfoldDirection), 17);
+								workTool:setFoldDirection(workTool.cp.realUnfoldDirection);
 							end;
-						end;
 
-						if not isFolding and isUnfolded and not vehicleIsFolding and vehicleIsUnfolded and tankFillLevelPct < 100 and not tool.waitingForDischarge and not isTurnedOn and not weatherStop then
-							tool:setIsTurnedOn(true);
+							-- Combine Unfolding
+							if courseplay:isFoldable(tool) then
+								if not vehicleIsFolding and not vehicleIsUnfolded then
+									courseplay:debug(string.format('%s: unfold order (foldDir=%d)', nameNum(tool), tool.cp.realUnfoldDirection), 17);
+									tool:setFoldDirection(tool.cp.realUnfoldDirection);
+								end;
+							end;
+
+							if not isFolding and isUnfolded and not vehicleIsFolding and vehicleIsUnfolded and tankFillLevelPct < 100 and not tool.waitingForDischarge and not isTurnedOn and not weatherStop then
+								tool:setIsTurnedOn(true);
+							end
 						end
 						if tool.pipeIsUnloading and (tool.courseplayers == nil or tool.courseplayers[1] == nil) and tool.cp.stopWhenUnloading and tankFillLevelPct >= 1 then
 							tool.stopForManualUnloader = true
@@ -461,12 +462,12 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 							if isTurnedOn then
 								tool:setIsTurnedOn(false);
 							end;
+							if workTool:isLowered() then
+									courseplay:lowerImplements(vehicle, false, false);
+							end;
 							if tankFillLevelPct < 80 and (not tool.cp.stopWhenUnloading or (tool.cp.stopWhenUnloading and (tool.courseplayers == nil or tool.courseplayers[1] == nil))) then
 								courseplay:setReverseBackDistance(vehicle, 2);
 								tool.waitingForDischarge = false;
-								if not weatherStop and not isTurnedOn then
-									tool:setIsTurnedOn(true);
-								end;
 							end;
 							if tool.stopForManualUnloader and tool.fillLevel == 0 then
 								tool.stopForManualUnloader = false
@@ -487,11 +488,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 					if allowedToDrive and isTurnedOn and not workTool:isLowered() and not vehicle.cp.isReverseBackToPoint then
 						courseplay:lowerImplements(vehicle, true, false);
 					end;
-
-					-- If we are moving a bit back, don't lower the tool before we move forward again.
-					if isTurnedOn and workTool:isLowered() and vehicle.cp.isReverseBackToPoint then
-						courseplay:lowerImplements(vehicle, false, false);
-					end;
+				
 				end
 			 --Stop combine
 			elseif vehicle.recordnumber == vehicle.cp.stopWork or vehicle.cp.abortWork ~= nil then

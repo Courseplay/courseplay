@@ -313,16 +313,7 @@ function courseplay:lowerImplements(self, moveDown, workToolonOff)
 	
 	end;
 	if not specialTool then
-		if (self.cp.isCombine or self.cp.isChopper) and not self.cp.hasSpecializationFruitPreparer  then
-			for cutter, implement in pairs(self.attachedCutters) do
-				if cutter:isLowered() ~= moveDown then
-					self:lowerImplementByJointIndex(implement.jointDescIndex, moveDown, true);
-				end;
-			end;
-		elseif self.setAIImplementsMoveDown ~= nil then
-			if self:isLowered() == moveDown then 	--TODO (Tom) temp solution for potatoe and sugar beet harvesters 
-				return								--still not nice because on every turn we have a startup event while lowering
-			end
+		if self.setAIImplementsMoveDown ~= nil then
 			self:setAIImplementsMoveDown(moveDown,true);
 		elseif self.setFoldState ~= nil then
 			self:setFoldState(state, true);
