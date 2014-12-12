@@ -295,6 +295,7 @@ function courseplay:start(self)
 	elseif self.cp.startAtPoint == courseplay.START_AT_FIRST_POINT then
 		if self.cp.mode == 2 or self.cp.mode == 3 then
 			courseplay:setRecordNumber(self, 3);
+			courseplay:setIsLoaded(self, true);
 		else
 			courseplay:setRecordNumber(self, 1);
 		end
