@@ -556,6 +556,16 @@ function courseplay:updateAllTriggers()
 				t.isLiquidManureFillTrigger = true;
 				t.isCowsLiquidManureFillTrigger = true;
 				courseplay:cpAddTrigger(triggerId, t, 'liquidManure', 'nonUpdateable');
+
+				-- check corresponding feeding tipTriggers
+				if t.fillLevelObject and t.fillLevelObject.tipTriggers then
+					for i,subTrigger in pairs(t.fillLevelObject.tipTriggers) do
+						local triggerId = subTrigger.triggerId;
+						if triggerId and subTrigger.acceptedFillTypes then
+							courseplay:cpAddTrigger(triggerId, subTrigger, 'tipTrigger');
+						end;
+					end;
+				end;
 			-- Regular and Extended tipTriggers
 			elseif courseplay:isValidTipTrigger(trigger) then
 				local triggerId = trigger.triggerId;
@@ -585,6 +595,8 @@ end;
 function courseplay:cpAddTrigger(triggerId, trigger, triggerType, groupType)
 	--courseplay:debug(('%s: courseplay:cpAddTrigger: TriggerId: %s,trigger: %s, triggerType: %s,groupType: %s'):format(nameNum(self), tostring(triggerId), tostring(trigger), tostring(triggerType), tostring(groupType)), 1);
 	local t = courseplay.triggers;
+	if t.all[triggerId] ~= nil then return; end;
+
 	t.all[triggerId] = trigger;
 	t.allCount = t.allCount + 1;
 

@@ -1,3 +1,5 @@
+local max, min = math.max, math.min;
+
 function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPct, lx , lz, refSpeed )
 	local workTool;
 	local activeTipper = nil
@@ -23,7 +25,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 			workArea = true
 			isFinishingWork = true
 		elseif vehicle.cp.finishWork ~= vehicle.cp.stopWork then
-			courseplay:setRecordNumber(vehicle, math.min(vehicle.cp.finishWork + 1,vehicle.maxnumber));
+			courseplay:setRecordNumber(vehicle, min(vehicle.cp.finishWork + 1,vehicle.maxnumber));
 		end;
 	end;
 	if fieldArea then
@@ -62,7 +64,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 		
 		--speedlimits														--	TODO (Tom) workTool:doCheckSpeedLimit() is not working for harvesters			
 		if (workTool.doCheckSpeedLimit and workTool:doCheckSpeedLimit()) or workTool.cp.isGrimmeMaxtron620 or workTool.cp.isGrimmeTectron415 then
-			forceSpeedLimit = math.min(forceSpeedLimit, workTool.speedLimit)
+			forceSpeedLimit = min(forceSpeedLimit, workTool.speedLimit)
 		end
 		
 		-- stop while folding
@@ -207,10 +209,10 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 					if allowedToDrive then
 						if not specialTool then
 							--unfold
-							local recordnumber = math.min(vehicle.recordnumber + 2, vehicle.maxnumber);
+							local recordnumber = min(vehicle.recordnumber + 2, vehicle.maxnumber);
 							local forecast = Utils.getNoNil(vehicle.Waypoints[recordnumber].ridgeMarker,0)
 							local marker = Utils.getNoNil(vehicle.Waypoints[vehicle.recordnumber].ridgeMarker,0)
-							local waypoint = math.max(marker,forecast)
+							local waypoint = max(marker,forecast)
 							if courseplay:isFoldable(workTool) and not isFolding and not isUnfolded then
 								if not workTool.cp.hasSpecializationPlough then
 									courseplay:debug(string.format('%s: unfold order (foldDir=%d)', nameNum(workTool), workTool.cp.realUnfoldDirection), 17);
@@ -314,14 +316,11 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 							courseplay:debug(string.format("%s: Is starting to reverse. Tip trigger is reset.", nameNum(vehicle)), 13);
 						end;
 
-						local extraLength = 5;
-						if trigger.bunkerSilo ~= nil and trigger.bunkerSilo.movingPlanes ~= nil and vehicle.cp.handleAsOneSilo ~= true then
-							-- We are a bunkerSilo, so we need to add more extraLength to the totalLength.
-							extraLength = 55;
-						end;
-
-						if courseplay:distance(ctx, ctz, trigger_x, trigger_z) > (vehicle.cp.totalLength + extraLength) or startReversing then
+						local distToTrigger = courseplay:distance(ctx, ctz, trigger_x, trigger_z);
+						local maxDist = max(vehicle.cp.totalLength + 5, 55);
+						if distToTrigger > maxDist or startReversing then
 							courseplay:resetTipTrigger(vehicle);
+							courseplay:debug(string.format("%s: distance to currentTipTrigger = %d (> %d or start reversing) --> currentTipTrigger = nil", nameNum(vehicle), distToTrigger, maxDist), 1);
 						end
 					end
 

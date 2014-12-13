@@ -1,3 +1,4 @@
+local max = math.max;
 -- handles "mode1" : waiting at start until tippers full - driving course and unloading on trigger
 function courseplay:handle_mode1(vehicle, allowedToDrive)
 	-- done tipping
@@ -26,7 +27,7 @@ function courseplay:handle_mode1(vehicle, allowedToDrive)
 		if trigger_id ~= nil then
 			local trigger_x, trigger_y, trigger_z = getWorldTranslation(trigger_id)
 			local ctx, cty, ctz = getWorldTranslation(vehicle.cp.DirectionNode);
-			local distance_to_trigger = courseplay:distance(ctx, ctz, trigger_x, trigger_z);
+			local distToTrigger = courseplay:distance(ctx, ctz, trigger_x, trigger_z);
 
 			-- Start reversing value is to check if we have started to reverse
 			-- This is used in case we already registered a tipTrigger but changed the direction and might not be in that tipTrigger when unloading. (Bug Fix)
@@ -35,15 +36,10 @@ function courseplay:handle_mode1(vehicle, allowedToDrive)
 				courseplay:debug(string.format("%s: Is starting to reverse. Tip trigger is reset.", nameNum(vehicle)), 13);
 			end;
 
-			local extraLength = 5;
-			if t.bunkerSilo ~= nil and t.bunkerSilo.movingPlanes ~= nil and vehicle.cp.handleAsOneSilo ~= true then
-				-- We are a bunkerSilo, so we need to add more extraLength to the totalLength.
-				extraLength = 55;
-			end;
-
-			if distance_to_trigger > (vehicle.cp.totalLength + extraLength) or startReversing then
+			local maxDist = max(vehicle.cp.totalLength + 5, 55);
+			if distToTrigger > maxDist or startReversing then
 				courseplay:resetTipTrigger(vehicle);
-				courseplay:debug(string.format("%s: distance to currentTipTrigger = %d (> %d or start reversing) --> currentTipTrigger = nil", nameNum(vehicle), distance_to_trigger, (vehicle.cp.totalLength + 5)), 1);
+				courseplay:debug(string.format("%s: distance to currentTipTrigger = %d (> %d or start reversing) --> currentTipTrigger = nil", nameNum(vehicle), distance_to_trigger, maxDist), 1);
 			end
 		else
 			courseplay:resetTipTrigger(vehicle);
