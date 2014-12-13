@@ -263,7 +263,7 @@ function courseplay:turn(self, dt) --!!!
 			if self.isRealistic then
 				allowedToDrive = false
 			else
-				moveForwards = false;
+				moveForwards = self.movingDirection == -1;
 				lx = 0
 				lz = 1
 			end

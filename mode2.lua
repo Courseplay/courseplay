@@ -642,7 +642,7 @@ function courseplay:unload_combine(vehicle, dt)
 				combine.cp.waitingForTrailerToUnload = true
 			end
 		elseif distance < 100 and vehicle.cp.modeState == 2 then
-			allowedToDrive = courseplay:brakeToStop(vehicle)
+			allowedToDrive = false;
 		end 
 	end
 	if combineIsTurning and distance < 20 then
@@ -875,7 +875,7 @@ function courseplay:unload_combine(vehicle, dt)
 		-- if dod < 2 or (vehicle.cp.positionWithCombine == 2 and frontTractor.cp.modeState ~= 3 and dod < 100) then
 		if dod < 2 or (vehicle.cp.positionWithCombine == 2 and combine.courseplayers[1].cp.modeState ~= 3 and dod < 100) then
 			courseplay:debug(string.format('\tdod=%s, frontTractor.cp.modeState=%s -> brakeToStop', tostring(dod), tostring(frontTractor.cp.modeState)), 4);
-			allowedToDrive = courseplay:brakeToStop(vehicle)
+			allowedToDrive = false;
 		end
 		if combine.cp.isSugarBeetLoader then
 			if distance > 50 then
@@ -899,12 +899,12 @@ function courseplay:unload_combine(vehicle, dt)
 
 	if vehicle.cp.modeState ~= 9  and (currentX == nil or currentZ == nil) then
 		courseplay:setInfoText(vehicle, courseplay:loc("COURSEPLAY_WAITING_FOR_WAYPOINT")); -- "Warte bis ich neuen Wegpunkt habe"
-		allowedToDrive = courseplay:brakeToStop(vehicle)
+		allowedToDrive = false;
 	end
 
 	if vehicle.cp.forcedToStop then
 		courseplay:setInfoText(vehicle, courseplay:loc("COURSEPLAY_COMBINE_WANTS_ME_TO_STOP")); -- "Drescher sagt ich soll anhalten."
-		allowedToDrive = courseplay:brakeToStop(vehicle)
+		allowedToDrive = false;
 	end
 
 	if vehicle.showWaterWarning then
@@ -936,7 +936,7 @@ function courseplay:unload_combine(vehicle, dt)
 		end
 		
 		if vehicle.cp.TrafficBrake then
-			moveForwards = false
+			moveForwards = vehicle.movingDirection == -1;
 				lx = 0
 				lz = 1
 		end

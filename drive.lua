@@ -302,7 +302,7 @@ function courseplay:drive(self, dt)
 		--VEHICLE DAMAGE
 		if self.damageLevel then
 			if self.damageLevel >= 90 and not self.isInRepairTrigger then
-				allowedToDrive = courseplay:brakeToStop(self);
+				allowedToDrive = false;
 				CpManager:setGlobalInfoText(self, 'DAMAGE_MUST');
 			elseif self.damageLevel >= 50 and not self.isInRepairTrigger then
 				CpManager:setGlobalInfoText(self, 'DAMAGE_SHOULD');
@@ -350,11 +350,11 @@ function courseplay:drive(self, dt)
 				end;
 				CpManager:setGlobalInfoText(self, 'FUEL_SHOULD');
 				if self.fuelFillTriggers[1] then
-					allowedToDrive = courseplay:brakeToStop(self);
+					allowedToDrive = false;
 					self:setIsFuelFilling(true, self.fuelFillTriggers[1].isEnabled, false);
 				end;
 			elseif self.isFuelFilling and currentFuelPercentage < 99.9 then
-				allowedToDrive = courseplay:brakeToStop(self);
+				allowedToDrive = false;
 				CpManager:setGlobalInfoText(self, 'FUEL_IS');
 			end;
 			if self.fuelFillTriggers[1] and self.cp.fillTrigger and courseplay.triggers.all[self.cp.fillTrigger].isGasStationTrigger then
@@ -432,7 +432,7 @@ function courseplay:drive(self, dt)
 	allowedToDrive = courseplay:checkTraffic(self, true, allowedToDrive)
 	
 	if self.cp.waitForTurnTime > self.timer then
-		allowedToDrive = courseplay:brakeToStop(self)
+		allowedToDrive = false
 	end 
 
 	-- MODE 9 --TODO (Jakob): why is this in drive instead of mode9?
@@ -471,15 +471,6 @@ function courseplay:drive(self, dt)
 	-- MODE 9 END
 
 
-
-	-- allowedToDrive false -> STOP OR HOLD POSITION
-	if not allowedToDrive then
-		self.cp.TrafficBrake = false
-		self.cp.isTrafficBraking = false
-		AIVehicleUtil.driveInDirection(self, dt, 30, 0, 0, 28, false, moveForwards, 0, 1)
-		self.cp.speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): allowedToDrive false ")
-		return;
-	end
 
 	if self.cp.isTurning ~= nil then
 		courseplay:turn(self, dt);
@@ -543,7 +534,7 @@ function courseplay:drive(self, dt)
 		refSpeed = self.cp.speeds.turn;
 		speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 		if self.cp.curSpeed > self.cp.speeds.turn then
-			courseplay:brakeToStop(self);
+			allowedToDrive = false;
 		end;
 		self.cp.isInFilltrigger = false;
 	end;
@@ -563,26 +554,40 @@ function courseplay:drive(self, dt)
 		fwd = true
 	end
 
+	-- allowedToDrive false -> STOP OR HOLD POSITION
+	if not allowedToDrive then
+		self.cp.TrafficBrake = false;
+		self.cp.isTrafficBraking = false;
+
+		local moveForwards = true;
+		if self.cp.curSpeed > 1 then
+			allowedToDrive = true;
+			moveForwards = self.movingDirection == 1;
+		end;
+		AIVehicleUtil.driveInDirection(self, dt, 30, -1, 0, 28, allowedToDrive, moveForwards, 0, 1)
+		self.cp.speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): allowedToDrive false ")
+		return;
+	end
+
 	if self.cp.TrafficBrake then
-		fwd = false
-			lx = 0
-			lz = 1
+		fwd = self.movingDirection == -1;
+		lx = 0;
+		lz = 1;
 	end  	
 	self.cp.TrafficBrake = false
 	self.cp.isTrafficBraking = false
-	self.cp.TrafficHasStopped = false
 
 	if self.cp.mode7GoBackBeforeUnloading then
-		fwd = false
-		lz = lz * -1
-		lx = lx * -1
+		fwd = false;
+		lz = lz * -1;
+		lx = lx * -1;
 	elseif self.cp.isReverseBackToPoint then
 		if self.cp.reverseBackToPoint then
 			local _, _, zDis = worldToLocal(self.cp.DirectionNode, self.cp.reverseBackToPoint.x, self.cp.reverseBackToPoint.y, self.cp.reverseBackToPoint.z);
 			if zDis < 0 then
 				fwd = false;
-				lx = 0;
-				lz = 1;
+				lz = lz * -1;
+				lx = lx * -1;
 				refSpeed = self.cp.speeds.crawl
 				speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			else
@@ -680,7 +685,7 @@ function courseplay:drive(self, dt)
 			local acceleration = 1;
 			if self.cp.speedBrake then
 				-- We only need to break sligtly.
-				acceleration = -0.1; -- Setting accelrator to a negative value will break the tractor.
+				acceleration = (self.movingDirection == 1) == fwd and -0.25 or 0.25; -- Setting accelrator to a negative value will break the tractor.
 			end;
 
 			--self,dt,steeringAngleLimit,acceleration,slowAcceleration,slowAngleLimit,allowedToDrive,moveForwards,lx,lz,maxSpeed,slowDownFactor,angle
@@ -781,7 +786,7 @@ function courseplay:checkTraffic(vehicle, displayWarnings, allowedToDrive)
 				courseplay:debug(('%s: checkTraffic:\tstop'):format(nameNum(vehicle)), 3);
 			elseif vehicle.cp.curSpeed > 10 then
 				-- courseplay:debug(('%s: checkTraffic:\tbrake'):format(nameNum(vehicle)), 3);
-				allowedToDrive = courseplay:brakeToStop(vehicle);
+				allowedToDrive = false;
 			else
 				-- courseplay:debug(('%s: checkTraffic:\tdo nothing - go, but set "vehicle.cp.isTrafficBraking"'):format(nameNum(vehicle)), 3);
 				vehicle.cp.isTrafficBraking = true;
@@ -817,11 +822,11 @@ function courseplay:setSpeed(vehicle, refSpeed)
 	courseplay:handleSlipping(vehicle, refSpeed);
 
 	local deltaMinus = vehicle.cp.curSpeed - refSpeed;
-	local tolerance = 5;
-	-- TODO: Remove commented out line if needed.
-	--if vehicle.cp.currentTipTrigger and vehicle.cp.currentTipTrigger.bunkerSilo then
-	--	tolerance = 1;
-	--end;
+	local tolerance = 2.5;
+
+	if vehicle.cp.currentTipTrigger and vehicle.cp.currentTipTrigger.bunkerSilo then
+		tolerance = 1;
+	end;
 	if deltaMinus > tolerance then
 		vehicle.cp.speedBrake = true;
 	else
@@ -999,17 +1004,6 @@ function courseplay:regulateTrafficSpeed(vehicle,refSpeed,allowedToDrive)
 	return refSpeed
 end
 
-function courseplay:brakeToStop(vehicle)
-	if vehicle.cp.curSpeed > 1 and not vehicle.cp.TrafficHasStopped then
-		vehicle.cp.TrafficBrake = true
-		vehicle.cp.isTrafficBraking = true
-		return true
-	else
-		vehicle.cp.TrafficHasStopped = true
-		return false
-	end
-end
-
 function courseplay:getIsVehicleOffsetValid(vehicle)
 	local valid = vehicle.cp.totalOffsetX ~= nil and vehicle.cp.toolOffsetZ ~= nil and (vehicle.cp.totalOffsetX ~= 0 or vehicle.cp.toolOffsetZ ~= 0);
 	if not valid then
@@ -1105,7 +1099,7 @@ function courseplay:handleMapWeightStation(vehicle, allowedToDrive)
 
 				-- OTHER VEHICLE IN TRIGGER
 				else
-					allowedToDrive = courseplay:brakeToStop(vehicle);
+					allowedToDrive = false;
 					courseplay:debug(('%s: station=%s, other vehicle in trigger -> stop'):format(nameNum(vehicle), name), 20);
 					return allowedToDrive;
 				end;
@@ -1162,7 +1156,7 @@ function courseplay:handleMapWeightStation(vehicle, allowedToDrive)
 		-- tractor + trailer on scale -> stop
 		if vehToCenterZ and vehToCenterZ <= stopAt + brakeDistance then
 			local origAllowedToDrive = allowedToDrive;
-			allowedToDrive = courseplay:brakeToStop(vehicle);
+			allowedToDrive = false;
 
 			-- vehicle in trigger, still moving
 			if vehicle.cp.curMapWeightStation.timerSet == 1 then

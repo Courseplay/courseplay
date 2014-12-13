@@ -69,7 +69,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 		
 		-- stop while folding
 		if (isFolding or vehicleIsFolding) and vehicle.cp.turnStage == 0 then
-			allowedToDrive = courseplay:brakeToStop(vehicle);
+			allowedToDrive = false;
 			--courseplay:debug(tostring(workTool.name) .. ": isFolding -> allowedToDrive == false", 6);
 		end;
 
@@ -460,7 +460,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 						or (tool.cp.stopWhenUnloading and tool.pipeIsUnloading and tool.courseplayers and tool.courseplayers[1] ~= nil and tool.courseplayers[1].cp.modeState ~= 9) 
 						or tool.stopForManualUnloader then
 							tool.waitingForDischarge = true;
-							allowedToDrive = courseplay:brakeToStop(vehicle); -- allowedToDrive = false;
+							allowedToDrive = false;
 							if isTurnedOn then
 								tool:setIsTurnedOn(false);
 							end;
