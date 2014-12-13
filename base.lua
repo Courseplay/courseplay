@@ -477,7 +477,24 @@ function courseplay:draw()
 			courseplay:showWorkWidth(self);
 		end;
 	end;
-
+	--DEBUG Speed Setting
+	if courseplay.debugChannels[21] then
+		renderText(0.2, 0.105, 0.02, string.format("mode%d rn: %d",self.cp.mode,self.recordnumber));
+		renderText(0.2, 0.075, 0.02, self.cp.speedDebugLine);
+		if self.cp.speedDebugStreet then
+			local mode = "max"
+			local speed = self.cp.speeds.street
+			if self.cp.speeds.useRecordingSpeed then
+				mode = "wpt"
+				if self.Waypoints and self.Waypoints[self.recordnumber] and self.Waypoints[self.recordnumber].speed then
+					speed = self.Waypoints[self.recordnumber].speed
+				else
+					speed = "no speed"
+				end
+			end			
+			renderText(0.2, 0.045, 0.02, string.format("mode[%s] speed: %s",mode,tostring(speed)));
+		end	
+	end
 	--DEBUG SHOW DIRECTIONNODE
 	if courseplay.debugChannels[12] then
 		-- For debugging when setting the directionNodeZOffset. (Visual points shown for old node)

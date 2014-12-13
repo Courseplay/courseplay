@@ -336,6 +336,7 @@ function courseplay:unload_combine(vehicle, dt)
 	-- STATE 2 (drive to combine)
 	if vehicle.cp.modeState == 2 then
 		refSpeed = vehicle.cp.speeds.field
+		speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 		--courseplay:removeFromCombinesIgnoreList(vehicle, combine)
 		courseplay:setInfoText(vehicle, courseplay:loc("COURSEPLAY_DRIVE_BEHIND_COMBINE"));
 
@@ -411,7 +412,7 @@ function courseplay:unload_combine(vehicle, dt)
 		courseplay:setInfoText(vehicle, courseplay:loc("COURSEPLAY_DRIVE_TO_COMBINE")); -- "Fahre zum Drescher"
 		--courseplay:addToCombinesIgnoreList(vehicle, combine)
 		refSpeed = vehicle.cp.speeds.field
-
+		speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 		local tX, tY, tZ = nil, nil, nil
 
 		if combine.cp.isSugarBeetLoader then
@@ -463,7 +464,7 @@ function courseplay:unload_combine(vehicle, dt)
 		courseplay:setInfoText(vehicle, courseplay:loc("COURSEPLAY_DRIVE_NEXT_TO_COMBINE"));
 		--courseplay:addToCombinesIgnoreList(vehicle, combine)
 		refSpeed = vehicle.cp.speeds.field
-
+		speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 		if vehicle.cp.nextTargets ~= nil then
 			vehicle.cp.nextTargets = {}
 		end
@@ -545,31 +546,42 @@ function courseplay:unload_combine(vehicle, dt)
 		if combine.cp.isChopper then
 			if lz > 20 then
 				refSpeed = vehicle.cp.speeds.field
+				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			elseif lz > 4 and (combine_speed*3600) > 5 then
 				refSpeed = max(combine_speed *1.5,vehicle.cp.speeds.crawl)
+				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			elseif lz > 10 then
 				refSpeed = vehicle.cp.speeds.turn
+				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			elseif lz < -1 then
 				refSpeed = max(combine_speed/2,vehicle.cp.speeds.crawl)
+				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			else
 				refSpeed = max(combine_speed,vehicle.cp.speeds.crawl)
+				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			end
 			
 			if ((combineIsHelperTurning or tractor.cp.turnStage ~= 0) and lz < 20) or (combine.movingDirection == 0 and lz < 5) then
 				refSpeed = vehicle.cp.speeds.crawl
+				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			end
 		else
 			if lz > 5 then
 				refSpeed = vehicle.cp.speeds.field
+				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			elseif lz < -0.5 then
 				refSpeed = max(combine_speed - vehicle.cp.speeds.crawl,vehicle.cp.speeds.crawl)
+				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			elseif lz > 1 or combine.sentPipeIsUnloading ~= true  then  
 				refSpeed = max(combine_speed + vehicle.cp.speeds.crawl,vehicle.cp.speeds.crawl)
+				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			else
 				refSpeed = max(combine_speed,vehicle.cp.speeds.crawl)
+				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			end
 			if ((combineIsHelperTurning or tractor.cp.turnStage ~= 0) and lz < 20) or (vehicle.timer < vehicle.cp.driveSlowTimer) or (combine.movingDirection == 0 and lz < 15) then
 				refSpeed = vehicle.cp.speeds.crawl
+				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 				if combineIsHelperTurning or tractor.cp.turnStage ~= 0 then
 					vehicle.cp.driveSlowTimer = vehicle.timer + 2000
 				end
@@ -700,6 +712,7 @@ function courseplay:unload_combine(vehicle, dt)
 			courseplay:setInfoText(vehicle, courseplay:loc("COURSEPLAY_WAITING_FOR_COMBINE_TURNED"));
 		end
 		refSpeed = vehicle.cp.speeds.turn
+		speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 	end
 
 
@@ -712,7 +725,7 @@ function courseplay:unload_combine(vehicle, dt)
 		local mx, mz = vehicle.cp.curTarget.x, vehicle.cp.curTarget.z
 		local lx, ly, lz = worldToLocal(vehicle.cp.DirectionNode, mx, y, mz)
 		refSpeed = vehicle.cp.speeds.field --vehicle.cp.speeds.turn
-
+		speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 		if lz > 0 and abs(lx) < lz * 0.5 then -- lz * 0.5    --2
 			if vehicle.cp.mode2nextState == 4 and not combineIsTurning then
 				vehicle.cp.curTarget.x = nil
@@ -751,12 +764,13 @@ function courseplay:unload_combine(vehicle, dt)
 		currentY = vehicle.cp.curTarget.y
 		currentZ = vehicle.cp.curTarget.z
 		refSpeed = vehicle.cp.speeds.field
-
+		speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 		local distance_to_wp = courseplay:distanceToPoint(vehicle, currentX, y, currentZ);
 
 		if #(vehicle.cp.nextTargets) == 0 then
 			if distance_to_wp < 10 then
-				refSpeed = vehicle.cp.speeds.turn 
+				refSpeed = vehicle.cp.speeds.turn
+				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))				
 			end
 		end
 
@@ -866,14 +880,18 @@ function courseplay:unload_combine(vehicle, dt)
 		if combine.cp.isSugarBeetLoader then
 			if distance > 50 then
 				refSpeed = vehicle.cp.speeds.street
+				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			else
 				refSpeed = Utils.clamp(frontTractor.lastSpeedReal*3600, vehicle.cp.speeds.turn, vehicle.cp.speeds.field)
+				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			end
 		else
 			if distance > 50 then
 				refSpeed = vehicle.cp.speeds.street
+				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			else
 				refSpeed = max(frontTractor.lastSpeedReal*3600,vehicle.cp.speeds.crawl)
+				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			end
 		end
 		--courseplay:debug(string.format("distance: %d  dod: %d",distance,dod ), 4)
@@ -897,8 +915,10 @@ function courseplay:unload_combine(vehicle, dt)
 	-- check traffic and calculate speed
 	
 	allowedToDrive = courseplay:checkTraffic(vehicle, true, allowedToDrive)
-	refSpeed = courseplay:regulateTrafficSpeed(vehicle,refSpeed,allowedToDrive)
-
+	if vehicle.cp.collidingVehicleId ~= nil then
+		refSpeed = courseplay:regulateTrafficSpeed(vehicle,refSpeed,allowedToDrive)
+		speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
+	end
 	
 	if g_server ~= nil then
 		local lx, lz = nil, nil
@@ -911,6 +931,7 @@ function courseplay:unload_combine(vehicle, dt)
 
 		if not allowedToDrive then
 			AIVehicleUtil.driveInDirection(vehicle, dt, 30, 0, 0, 28, false, moveForwards, 0, 1)
+			vehicle.cp.speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): allowedToDrive false ")
 			return;
 		end
 		
@@ -922,9 +943,12 @@ function courseplay:unload_combine(vehicle, dt)
 		
 		if abs(lx) > 0.5 then
 			refSpeed = min(refSpeed, vehicle.cp.speeds.turn)
+			speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 		end
 				
 		if allowedToDrive then
+			vehicle.cp.speedDebugLine = speedDebugLine
+		
 			courseplay:setSpeed(vehicle, refSpeed)
 		end
 		

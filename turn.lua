@@ -251,8 +251,8 @@ function courseplay:turn(self, dt) --!!!
 	if updateWheels then
 		local allowedToDrive = true
 		local refSpeed = self.cp.speeds.turn
-		
-		courseplay:setSpeed(self, refSpeed, 1)
+		self.cp.speedDebugLine = ("turn("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
+		courseplay:setSpeed(self, refSpeed )
 		
 		local lx, lz = AIVehicleUtil.getDriveDirection(self.cp.DirectionNode, newTargetX, newTargetY, newTargetZ);
 		if self.cp.turnStage == 3 and math.abs(lx) < 0.1 then
