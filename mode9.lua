@@ -252,13 +252,13 @@ function courseplay:checkAndSetMovingToolsPosition(vehicle, movingTools, seconda
 
 			-- ROTATION
 			local rotDir = Utils.sign(targetRot - curRot);
-			if mt.node and mt.rotMin and mt.rotMax and rotDir and rotDir ~= 0 then
+			if mt.node and rotDir and rotDir ~= 0 then
 				local rotChange = mt.rotSpeed ~= nil and (mt.rotSpeed * dt) or (0.2/dt);
-				newRot = Utils.clamp(curRot + (rotChange * rotDir), mt.rotMin, mt.rotMax);
+				newRot = curRot + (rotChange * rotDir)
 				if (rotDir == 1 and newRot > targetRot) or (rotDir == -1 and newRot < targetRot) then
 					newRot = targetRot;
 				end;
-				if newRot ~= curRot and newRot >= mt.rotMin and newRot <= mt.rotMax then
+				if newRot ~= curRot  then
 					courseplay:debug(string.format('%s: movingTool %d: curRot=%.5f, targetRot=%.5f -> newRot=%.5f', nameNum(vehicle), i, curRot, targetRot, newRot), 10);
 					mt.curRot[rotAxis] = newRot;
 					setRotation(mt.node, unpack(mt.curRot));
@@ -344,17 +344,4 @@ function courseplay:getMovingTools(vehicle)
 	end;
 
 	return primaryMovingTools, secondaryMovingTools;
-end;
-
-local origGetIsActiveForInput = Vehicle.getIsActiveForInput;
-function Vehicle:getIsActiveForInput(onlyTrueIfSelected)
-	if g_gui.currentGui ~= nil or g_currentMission.isPlayerFrozen then
-		return false;
-	end;
-
-	if self.typeName == 'wheelLoader' and self.hasCourseplaySpec and self:getIsCourseplayDriving() and self.cp.mode == 9 and not onlyTrueIfSelected then
-		return true;
-	end;
-
-	return origGetIsActiveForInput(self, onlyTrueIfSelected);
 end;
