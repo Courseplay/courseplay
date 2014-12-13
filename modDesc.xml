@@ -1707,6 +1707,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<en>Starting corner</en>
 			<de>Startecke</de>
 			<fr>Coin de départ:</fr>
+			<es>Esquina inicial:</es>
 			<it>Angolo di partenza</it>
 			<cz>Počáteční roh:</cz>
 			<ru>Стартовый угол:</ru>
@@ -1719,6 +1720,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<en>Starting direction</en>
 			<de>Startrichtung</de>
 			<fr>Direction de départ:</fr>
+			<es>Salida dirección hacia el:</es>
 			<it>Direzione di partenza</it>
 			<cz>Směr trasy:</cz>
 			<ru>Направление:</ru>
@@ -1731,6 +1733,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<en>Return to first point</en>
 			<de>Am Startpunkt enden</de>
 			<fr>Retour au départ:</fr>
+			<es>Volver al primer punto:</es>
 			<it>Ritorna al primo punto</it>
 			<cz>Návrat na první bod:</cz>
 			<ru>Возврат на старт:</ru>
@@ -1743,6 +1746,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<en>South-West</en>
 			<de>Südwest</de>
 			<fr>Sud-Ouest</fr>
+			<es>Suroeste</es>
 			<it>Sud-Ovest</it>
 			<cz>jihozápad</cz>
 			<ru>Юго-Запад</ru>
@@ -1755,6 +1759,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<en>North-West</en>
 			<de>Nordwest</de>
 			<fr>Nord-Ouest</fr>
+			<es>Noroeste</es>
 			<it>Nord-Ovest</it>
 			<cz>severozápad</cz>
 			<ru>Северо-Запад</ru>
@@ -1767,6 +1772,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<en>North-East</en>
 			<de>Nordost</de>
 			<fr>Nord-Est</fr>
+			<es>Nordeste</es>
 			<it>Nord-Est</it>
 			<cz>severovýchod</cz>
 			<ru>Северо-Восток</ru>
@@ -1779,6 +1785,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<en>South-East</en>
 			<de>Südost</de>
 			<fr>Sud-Est</fr>
+			<es>Sudeste</es>
 			<it>Sud-Est</it>
 			<cz>jihovýchod</cz>
 			<ru>Юго-Восток</ru>
@@ -1791,6 +1798,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<en>North</en>
 			<de>Norden</de>
 			<fr>Nord</fr>
+			<es>Norte</es>
 			<it>Nord</it>
 			<cz>sever</cz>
 			<ru>Север</ru>
@@ -1803,6 +1811,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<en>East</en>
 			<de>Osten</de>
 			<fr>Est</fr>
+			<es>Este</es>
 			<it>Est</it>
 			<cz>východ</cz>
 			<ru>Восток</ru>
@@ -1815,6 +1824,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<en>South</en>
 			<de>Süden</de>
 			<fr>Sud</fr>
+			<es>Sur</es>
 			<it>Sud</it>
 			<cz>jih</cz>
 			<ru>Юг</ru>
@@ -1827,6 +1837,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<en>West</en>
 			<de>Westen</de>
 			<fr>Ouest</fr>
+			<es>Oeste</es>
 			<it>Ovest</it>
 			<cz>západ</cz>
 			<ru>Запад</ru>
@@ -1892,7 +1903,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<de>Abladen auf dem Feld</de>
 			<en>Unloading on field</en>
 			<fr>Déchargement aux champs</fr>
-			<es>Descargando en el campo</es>
+			<es>Descargar en el campo</es>
 			<it>Scaricando sul campo</it>
 			<cz>Vyložit na poli</cz>
 			<ru>Разгрузка на поле</ru>
@@ -1931,7 +1942,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<en>Turn maneuver:</en>
 			<de>Wendemanöver:</de>
 			<fr>Manœuvre de demi-tour:</fr>
-			<es>Maniobras de giro:</es> <!-- !! -->
+			<es>Maniobra de media vuelta:</es> <!-- !! -->
 			<it>Manovre di svolta:</it> <!-- !! -->
 			<cz>Otáčení:</cz>
 			<ru>Поворот:</ru>
@@ -1971,7 +1982,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<de>Kein gültiger Kurs geladen</de>
 			<en>Course is not valid</en>
 			<fr>La course n'est pas valide</fr>
-			<es>El curso no es válida</es>
+			<es>El curso no es válido</es>
 			<it>Il percorso non è valido</it>
 			<cz>Trasa není platná</cz>
 			<ru>Не рабочий маршрут</ru>
@@ -2141,7 +2152,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 		<text name="COURSEPLAY_FIELD_EDGE_PATH">
 			<en>Field edge path</en>
 			<de>Feldrandkurs</de>
-			<es>Camino de aristas del campo</es> <!-- !!! -->
+			<es>Camino perímetral del campo</es> <!-- !!! -->
 			<fr>Tour du champ</fr>
 			<it>Percorso perimetrale del campo</it>
 			<cz>Trasa okolo pole:</cz>
@@ -2168,7 +2179,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<en>(currently loaded course)</en>
 			<de>(aktuell geladener Kurs)</de>
 			<fr>(Course actuellement chargée)</fr>
-			<es>(ruta actual cargada</es>
+			<es>(ruta actual cargada)</es>
 			<cz>(načtená trasa)</cz>
 			<ru>(загруженный маршрут)</ru>
 			<hu>(jelenleg betöltött útvonal)</hu>
@@ -2296,7 +2307,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<en>Calculate current field's edge path</en>
 			<de>Aktuellen Feldrandkurs berechnen</de>
 			<fr>Calculer le tour du champ actuel</fr>
-			<es>Calculando el prerimetro del campo actual</es>
+			<es>Calcular el perímetro del campo actual</es>
 			<it>Calcolo perimetro del campo corrente</it>
 			<cz>Vypočítej trasu okolo aktuálního pole</cz>
 			<ru>Показать границы поля</ru>
@@ -2309,7 +2320,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<en>Field edge path number</en>
 			<de>Feldrandkurs-Nummer</de>
 			<fr>Tour du champs numéro</fr>
-			<es>Perimetro del campo numero</es>
+			<es>Perímetro del campo número</es>
 			<it>Perimetro del campo numero</it>
 			<cz>Trasa okolo pole číslo:</cz>
 			<ru>Выбрать поле:</ru>
@@ -2322,7 +2333,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<en>Add field %d's edge path to list</en>
 			<de>Feldrandkurs %d zur Liste hinzufügen</de>
 			<fr>Ajoute le tour du champs %d à la liste</fr>
-			<es>Añadir perimetro del campo %d a la lista</es>
+			<es>Añadir perímetro del campo %d a la lista</es>
 			<it>Inserisci perimetro campo %d nella lista</it>
 			<cz>Přidej trasu okolo pole %d do seznamu</cz>
 			<ru>Добавить поле в список</ru>
@@ -2335,7 +2346,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<en>Overwrite field %d's edge path in list</en>
 			<de>Feldrandkurs %d in Liste überschreiben</de>
 			<fr>Ecraser le tour du champs %d dans la liste</fr>
-			<es>Sobrescribir el perimetro del campo %d de la lista</es>
+			<es>Sobrescribir el perímetro del campo %d de la lista</es>
 			<it>Sovrascrivi perimetro campo %d nella lista</it>
 			<cz>Přepsat trasu okolo pole %d v seznamu</cz>
 			<ru>Переписать поле в списке</ru>
@@ -2387,7 +2398,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<en>is being repaired</en>
 			<de>wird repariert</de>
 			<fr>est en train d'être réparé</fr>
-			<es>está repararando</es>
+			<es>está reparado</es>
 			<it>si sta riparato</it>
 			<cz>je opravován.</cz>
 			<ru>на ремонте</ru>
@@ -2400,7 +2411,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<en>Covers</en>
 			<de>Planen</de>
 			<fr>Bâche:</fr>
-			<es>Cubiertas</es>
+			<es>Lonas</es>
 			<it>Copertura</it>
 			<cz>Kryty</cz>
 			<ru>Тент:</ru>
@@ -2413,7 +2424,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<en>Remove combine assignment</en>
 			<de>Drescher-Zuordnung entfernen</de>
 			<fr>Retirer l'attribution à la machine</fr>
-			<es>Cambiar la cosechadora asignada</es>
+			<es>Cancelar la asignación a esta cosechadora</es>
 			<it>Rimuovere assegnazione trebbia</it>
 			<cz>Odstraň přiřezení ke kombajnu</cz>
 			<ru>Удалить комбайн из списка</ru>
@@ -2426,7 +2437,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<en>Stop during unloading</en>
 			<de>Während dem Abladen anhalten</de>
 			<fr>Arrêter pendant le déchargement</fr>
-			<es>Parar durante la descarga</es>
+			<es>Detenerse durante la descarga</es>
 			<it>Fermarsi durante lo scarico</it>
 			<cz>Zastavit při vykládání</cz>
 			<ru>Стоять при разгрузке:</ru>
@@ -2531,7 +2542,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<en>Search for first waypoint</en>
 			<de>Nach erstem Wegpunkt suchen</de>
 			<fr>Cherche le premier point</fr>
-			<es>Buscando el primer punto</es>
+			<es>Buscar el primer punto</es>
 			<cz>Hledání prvního bodu</cz>
 			<hu>Első útpont keresése</hu>
 			<br>Pesquisar pelo primeiro ponto</br>
@@ -2596,7 +2607,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<en>Set wait point</en>
 			<de>Wartepunkt setzen</de>
 			<fr>Placer un point d'attente</fr>
-			<es>Definir punto de espera</es>
+			<es>Establecer un punto de espera</es>
 			<cz>Nastavit bod čekání</cz>
 			<ru>точка ожидания</ru>
 			<hu>Várakozási pont elhelyezése</hu>
@@ -2607,7 +2618,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<en>Set crossing point</en>
 			<de>Kreuzungspunkt setzen</de>
 			<fr>Placer un point de croisement</fr>
-			<es>Definir punto de cruce</es>
+			<es>Establecer un punto de cruce</es>
 			<cz>Nastavit bod křížení</cz>
 			<ru>перекресток</ru>
 			<hu>Elágazási pont elhelyezése</hu>
@@ -2618,7 +2629,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<en>Start turn maneuver</en>
 			<de>Wendemaneuver beginnen</de>
 			<fr>Commencer la manœuvre de demi-tour</fr>
-			<es>Iniciar maniobra de giro</es>
+			<es>Iniciar maniobra de media vuelta</es>
 			<cz>Začít se otáčet</cz>
 			<ru>поворот</ru>
 			<hu>Fordulás indítása (következő sorra)</hu>
@@ -2629,7 +2640,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<en>End turn maneuver</en>
 			<de>Wendemaneuver beenden</de>
 			<fr>Terminer la manœuvre de demi-tour</fr>
-			<es>Fin de maniobra de giro</es>
+			<es>Finalizar maniobra de media vuelta</es>
 			<cz>Konec otáční</cz>
 			<ru>поворот</ru>
 			<hu>Fordulás vége</hu>
@@ -2651,7 +2662,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<en>Stop reverse driving</en>
 			<de>Rückwärtsfahren beenden</de>
 			<fr>Marche avant</fr>
-			<es>Parar marcha atrás</es>
+			<es>Parar de conducir marcha atrás</es>
 			<cz>Konec couvání</cz>
 			<ru>отключить задний ход</ru>
 			<hu>Tolatás leállítása</hu>
@@ -2662,7 +2673,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<en>Map icons: display text</en>
 			<de>Karten-Icons: Text anzeigen</de>
 			<fr>Icones sur la carte: afficher le texte</fr>
-			<es>Iconos del mapa: mostrar texto</es>
+			<es>Iconos del mapa: mostrar etiquetas</es>
 			<cz>Ikony v mapě: zobrazit text</cz>
 			<hu>Térképikonok: kijelzőszöveg</hu>
 			<br>Icones do mapa: Mostrar texto</br>
@@ -2673,7 +2684,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<en>Always use 4WD</en>
 			<de>Allrad immer anschalten</de>
 			<fr>Toujours utiliser le 4x4</fr>
-			<es>Usar siempre la traccion a cuatro ruedas</es>
+			<es>Usar siempre traccion a las cuatro ruedas</es>
 			<cz>Vždy použít 4x4</cz>
 			<hu>Mindig összkerékhajtás</hu>
 			<br>Usar sempre tração nas quatro rodas</br>
@@ -2685,7 +2696,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<en>Do you want the fields to be scanned automatically?</en>
 			<de>Möchtest du dass die Felder automatisch gescanned werden?</de>
 			<fr>Voulez-vous que vos champs soient scannés automatiquement ?</fr>
-			<es>¿Usted desea que los campos sean escaneados automaticamente?</es>
+			<es>¿Desea usted que los campos sean escaneados automaticamente?</es>
 			<cz>Chceš aby pole byla skenována automaticky?</cz>
 			<hu>Szeretnéd, hogy a mezők adatait automatikusan beolvassa?</hu>
 			<ru>Включить автосканирование полей?</ru>
@@ -2696,7 +2707,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<en>Do you want your workers to earn wages (%s/hour)?</en>
 			<de>Möchtest du Löhne für deine Fahrer aktivieren (%s/Stunde)?</de>
 			<fr>Voulez-vous payer des salaires pour vos ouvriers (%s/heure) ? ?</fr>
-			<es>¿Usted desea que sus trabajadores reciban un salario (%s/hora)?</es>
+			<es>¿Desea usted que sus trabajadores reciban un salario (%s/hora)?</es>
 			<cz>Chceš aby byli pomocníci placeni (%s/hodinu)?</cz>
 			<hu>Szeretnéd, hogy a munkásod bért kapjon (%s/óra)?</hu>
 			<ru><![CDATA[Рабочие хотят %s в час!
