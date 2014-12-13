@@ -267,7 +267,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<es>Tipo: Ayudante (cargar y conducir)</es>
 			<it>Modo: Aiuto alla guida (Carico alla partenza)</it>
 			<cz>Mod: Odvozce (naložení v místě startu)</cz>
-			<ru>Тип: Транспортировка и продажа</ru>
+			<ru>ТРАНСПОРТИРОВКА И ПРОДАЖА</ru>
 			<hu>Típus: Szállító segéd (tölt és indul)</hu>
 			<nl>Type: Transport</nl>
 			<br>Tipo: Transporte de grãos (carregar e seguir na rota)</br>
@@ -280,7 +280,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<es>Tipo: Combi (cargar de cosechadora y descargar)</es>
 			<it>Modo: Combinato (Svuota trebbia e scarica presso deposito)</it>
 			<cz>Mod: Kombajn (ke kombajnu/rezačce a pak odvézt)</cz>
-			<ru>Тип: Работа с комбайном</ru>
+			<ru>РАБОТА С КОМБАЙНАМИ</ru>
 			<hu>Típus: Kombájnkövetés (kombájn ürítés és leadás)</hu>
 			<nl>Type: Combi (combine legen en uitladen)</nl>
 			<br>Tipo: Combi (carregar na ceifadeira e ir descarregar)</br>
@@ -293,7 +293,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<es>Tipo: cargar de cosechadora y descargar a remolque</es>
 			<it>Modo: Trasferimento (Svuota trebbia e scarica su altro rimorchio)</it>
 			<cz>Mod: Překládací vůz (odvoz od kombajnu na překládku)</cz>
-			<ru>Тип: Посредник, комбайн > накопитель > прицеп</ru>
+			<ru>РАБОТА С ПРИЦЕПОМ-КОНВЕЙЕРОМ</ru>
 			<hu>Típus: Átrakodás (kombájn ürítés és átrakás)</hu>
 			<nl>Type: Overladen (combine legen en overladen in trailer)</nl>
 			<br>Tipo: Autocarregador (carregar na ceifadeira e descarregar na carreta</br>
@@ -306,7 +306,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<es>Tipo: Fertilizar y sembrar</es>
 			<it>Modo: Concimare e seminare</it>
 			<cz>Mod: Hnojení a setí </cz>
-			<ru>Тип: Удобрение и посев</ru>
+			<ru>УДОБРЕНИЕ И ПОСЕВ</ru>
 			<hu>Típus: Szorás és vetés</hu>
 			<nl>Type: Kunstmest en zaaien</nl>
 			<br>Tipo: Fertilizar e semear</br>
@@ -319,7 +319,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<es>Tipo: Traslado (conducir de un punto al final)</es>
 			<it>Modo: Trasferimento (vai dall'inizio alla fine)</it>
 			<cz>Mod: Průjezd (projede trasu bez zastavení)</cz>
-			<ru>Тип: Трансфер по маршруту</ru>
+			<ru>ПЕРЕГОН ТЕХНИКИ</ru>
 			<hu>Típus: Szállitás (Vezetés a célig)</hu>
 			<nl>Type: Verladen (van start naar finish)</nl>
 			<br>Tipo: Transferir (dirigir do início ao fim da rota)</br>
@@ -332,7 +332,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<es>Tipo: Trabajo campo</es>
 			<it>Modo: Lavori in campo</it>
 			<cz>Mod: Polní práce</cz>
-			<ru>Тип: Полевые работы</ru>
+			<ru>РАЗНЫЕ ПОЛЕВЫЕ РАБОТЫ</ru>
 			<hu>Típus: Földmunkák, gyűjtés, szállítás</hu>
 			<nl>Type: Veldwerk</nl>
 			<br>Tipo: Trabalho no campo</br>
@@ -345,7 +345,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<es>Tipo: Cosechadora ir a remolque y descargar</es>
 			<it>Modo: La trebbia va a scaricare nel rimorchio</it>
 			<cz>Mod: Kombajn se jede sám vysypat</cz>
-			<ru>Тип: Саморазгрузка комбайна</ru>
+			<ru>САМОРАЗГУЗКА КОМБАЙНА</ru>
 			<hu>Típus: A kombájn megy kirakodni</hu>
 			<nl>Type: Combine zelfontladen</nl>
 			<br>Tipo: Ceifadeira descarrega na carreta</br>
@@ -358,7 +358,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<es>Tipo: Transportar estiércol</es>
 			<it>Modo: Trasporto liquame</it>
 			<cz>Mod: Převoz kejdy</cz>
-			<ru>Тип: Перевозка навоза</ru>
+			<ru>ПЕРЕВОЗКА НАВОЗА</ru>
 			<hu>Típus: Trágyaszállítás</hu>
 			<nl>Type: Mesttransport</nl>
 			<br>Tipo: Transporte de esterco</br>
@@ -371,7 +371,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<es>Tipo: Cargar y descargar una pala</es>
 			<it>Modo: Riempi e svuota pala</it>
 			<cz>Mod: Nakladač</cz>
-			<ru>Тип: Работы для погрузчика</ru>
+			<ru>РАБОТЫ ДЛЯ ПОГРУЗЧИКА</ru>
 			<hu>Típus: Rakodás (kanalat tölt és ürít)</hu>
 			<nl>Type: Vullen en legen shovel</nl>
 			<br>Tipo: Carregar e descarregar pá carregadeira</br>
@@ -527,7 +527,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<es>Filtrar las rutas:</es>
 			<it>Filtro percorsi:</it>
 			<cz>Filtrovat trasy:</cz>
-			<ru>Фильтровать:</ru>
+			<ru>Введите слово целиком или его фрагмент для начала поиска:</ru>
 			<hu>Útvonal szűrő:</hu>
 			<nl>Route filter:</nl>
 			<br>Filtrar rotas</br>
@@ -546,32 +546,35 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<br>Rotas: %q</br>
  			<cs>任务: %q</cs>
 		</text>
-		<text name="COURSEPLAY_CREATE_FOLDER"> <!-- missing: it, nl, ru -->
+		<text name="COURSEPLAY_CREATE_FOLDER"> <!-- missing: it, nl -->
 			<en>Create new folder</en>
 			<de>Neuen Ordner erstellen</de>
 			<fr>Créer un nouveau dossier</fr>
 			<es>Crear nueva carpeta</es>
 			<cz>Vytvořit novou složku</cz>
+			<ru>Создать папку</ru>
 			<hu>Új mappa létrehozása</hu>
 			<br>Criar nova pasta</br>
 			<cs>新建目录</cs>
 		</text>
-		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS"> <!-- missing: it, nl, ru -->
+		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS"> <!-- missing: it, nl -->
 			<en>Search for courses and folders</en>
 			<de>Nach Kursen und Ordnern suchen</de>
 			<fr>Recherche de course et de dossier</fr>
 			<es>Buscar carpetas y rutas</es>
 			<cz>Vyhledat trasu a složku</cz>
+			<ru>Поиск маршрутов и папок</ru>
 			<hu>Útvonal keresése a mappákban</hu>
 			<br>Pesquisar pastas e rotas</br>
 			<cs>捡索任务和目录</cs>
 		</text>
-		<text name="COURSEPLAY_DEACTIVATE_FILTER"> <!-- missing: it, nl, ru -->
+		<text name="COURSEPLAY_DEACTIVATE_FILTER"> <!-- missing: it, nl -->
 			<en>Deactivate filter</en>
 			<de>Filter deaktivieren</de>
 			<fr>Désactive les filtres</fr>
 			<es>Desactivar filtros</es>
 			<cz>Vypnout filtr</cz>
+			<ru>Отключить поиск</ru>
 			<hu>Szűrő alaphelyzetbe</hu>
 			<br>Desativar filtros</br>
 			<cs>关闭筛选</cs>
@@ -1519,17 +1522,18 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<es>remolque incorrecto para este modo</es>
 			<it>rimorchio sbagliato per questa modalità</it>
 			<cz>Máš pro tento mod nevhodný přívěs</cz>
-			<ru>Неподходящий тип оборудования для маршрута.</ru>
+			<ru>Неподходящий тип прицепа для маршрута</ru>
 			<hu>Rossz munkaeszköz ehhez a mművelethez</hu>
 			<nl>Verkeerde trailer voor deze modus</nl>
 			<br>carreta incorreta para este modo</br>
 			<cs>错误的拖车</cs>
 		</text>
-		<text name="COURSEPLAY_WRONG_TOOL"> <!-- missing:cz, it, nl, ru --> <!-- NOTE: same as 'COURSEPLAY_WRONG_TRAILER', only with "tool" instead of "trailer" -->
+		<text name="COURSEPLAY_WRONG_TOOL"> <!-- missing:cz, it, nl --> <!-- NOTE: same as 'COURSEPLAY_WRONG_TRAILER', only with "tool" instead of "trailer" -->
 			<en>wrong tool for this mode</en>
 			<de>falsches Gerät für diesen Modus</de>
 			<fr>pas le bon outil pour ce mode</fr>
 			<es>herramienta incorrecta para este modo</es>
+			<ru>Неподходящий тип инструмента для маршрута</ru>
 			<hu>Rossz munkaeszköz ehhez a módhoz</hu>
 			<br>ferramenta errada para este modo</br>
 			<cs>当前工具不支持当前模式</cs>
@@ -1540,7 +1544,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<fr>Ce véhicule n'est pas supporté dans ce mode</fr>
 			<es>este vehículo no es compatible en este modo</es>
 			<cz>Tento typ vozidla není v tomto módu podporován.</cz>
-			<ru>Неподходящий тип техники для маршрута.</ru>
+			<ru>Неподходящий тип техники для маршрута</ru>
 			<hu>Ez a járműtípus nem megfelelő ehhez a művelethez.</hu>
 			<br>Este veículo não é suportado neste modo</br>
 			<cs>当前车辆不支持当前模式</cs>
@@ -2193,7 +2197,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<es>Escaneo de campos en progreso</es>
 			<it>Scansione campi in esecuzione</it>
 			<cz>Načítání polí</cz>
-			<ru>начальная обработка</ru>
+			<ru><![CDATA[]]></ru> <!-- here the text it isn't necessary -->
 			<hu>Térkép vizsgálata.</hu>
 			<nl>Veldscan bezig</nl>
 			<br>Escaneamento do campo em andamento</br>
@@ -2206,7 +2210,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<es>Escaneando campo %d/%d</es>
 			<it>Scansione campo %d/%d</it>
 			<cz>Načítání polí %d/%d</cz>
-			<ru>подготовка полей: %d/%d</ru>
+			<ru>СКАНИРОВАНИЕ ПОЛЕЙ %d/%d</ru>
 			<hu>A terület vizsgálata: %d/%d</hu>
 			<nl>Scan Veld %d/%d</nl>
 			<br>Escaneando campo %d/%d</br>
@@ -2538,21 +2542,23 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<br>Iniciando em %s!</br>
 			<cs>启动 %s!</cs>
 		</text>
-		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT"> <!-- missing: it, nl, ru -->
+		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT"> <!-- missing: it, nl -->
 			<en>Search for first waypoint</en>
 			<de>Nach erstem Wegpunkt suchen</de>
 			<fr>Cherche le premier point</fr>
 			<es>Buscar el primer punto</es>
 			<cz>Hledání prvního bodu</cz>
+			<ru>Показать первую точку</ru>
 			<hu>Első útpont keresése</hu>
 			<br>Pesquisar pelo primeiro ponto</br>
 			<cs>指向起始点</cs>
 		</text>
-		<text name="COURSEPLAY_SAVE_CURRENT_COURSE"> <!-- missing: fr, it, nl, ru -->
+		<text name="COURSEPLAY_SAVE_CURRENT_COURSE"> <!-- missing: fr, it, nl -->
 			<en>Save current course</en>
 			<de>Aktuellen Kurs speichern</de>
 			<es>Salvar ruta actual</es>
 			<cz>Uložit aktuální trasu</cz>
+			<ru>Сохранить маршрут</ru>
 			<hu>Aktuális útvonal mentése</hu>
 			<br>Salvar rota atual</br>
 			<cs>保存当前任务</cs>
@@ -2680,12 +2686,13 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<ru>Показать инфо на карте:</ru>
 			<cs>地图图标： 显示任务车辆图标</cs>
 		</text>
-		<text name="COURSEPLAY_ALWAYS_USE_4WD"> <!-- missing: br, it, nl, ru -->
+		<text name="COURSEPLAY_ALWAYS_USE_4WD"> <!-- missing: br, it, nl -->
 			<en>Always use 4WD</en>
 			<de>Allrad immer anschalten</de>
 			<fr>Toujours utiliser le 4x4</fr>
 			<es>Usar siempre traccion a las cuatro ruedas</es>
 			<cz>Vždy použít 4x4</cz>
+			<ru>Всегда 4х4</ru>
 			<hu>Mindig összkerékhajtás</hu>
 			<br>Usar sempre tração nas quatro rodas</br>
 			<cs>打开4WD模式</cs>
