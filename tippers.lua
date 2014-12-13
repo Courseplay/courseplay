@@ -82,7 +82,7 @@ function courseplay:isBigM(workTool)
 	return workTool.cp.hasSpecializationSteerable and courseplay:isMower(workTool);
 end;
 function courseplay:isAttachedCombine(workTool)
-	return (workTool.typeName~= nil and workTool.typeName == "attachableCombine") or (not workTool.cp.hasSpecializationSteerable and  workTool.hasPipe) or courseplay:isSpecialChopper(workTool)
+	return (workTool.typeName~= nil and (workTool.typeName == 'attachableCombine' or workTool.typeName == 'attachableCombine_mouseControlled')) or (not workTool.cp.hasSpecializationSteerable and workTool.hasPipe and not workTool.cp.isAugerWagon and not workTool.cp.isLiquidManureOverloader) or courseplay:isSpecialChopper(workTool)
 end;
 function courseplay:isAttachedMixer(workTool)
 	return workTool.typeName == "mixerWagon" or (not workTool.cp.hasSpecializationSteerable and  workTool.cp.hasSpecializationMixerWagon)
@@ -171,6 +171,8 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 		or courseplay:isAttachedCombine(workTool) 
 		or courseplay:isFoldable(workTool))
 		and not workTool.cp.isCaseIHPuma160
+		and not courseplay:isSprayer(workTool)
+		and not courseplay:isSowingMachine(workTool)
 		then
 			hasWorkTool = true;
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
@@ -717,8 +719,8 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 				local x, y, z = getWorldTranslation(tipper.tipReferencePoints[bestTipReferencePoint].node);
 				local sx, sy, sz = worldToLocal(ctt.bunkerSilo.movingPlanes[1].nodeId, x, y, z);
 				local ex, ey, ez = worldToLocal(ctt.bunkerSilo.movingPlanes[silos].nodeId, x, y, z);
-				local startDistance = sz;
-				local endDistance = ez;
+				local startDistance = Utils.vector2Length(sx, sz);
+				local endDistance = Utils.vector2Length(ex, ez);
 
 				-- Get nearest silo section number (Code snip taken from BunkerSilo:setFillDeltaAt)
 				local nearestDistance = math.huge;
@@ -976,7 +978,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 
 					local isFirseSiloSection = (vehicle.cp.BGASectionInverted and tipper.cp.BGASelectedSection == silos) or (not vehicle.cp.BGASectionInverted and tipper.cp.BGASelectedSection == 1);
 
-					local startTipDistance = 0;
+					local startTipDistance = 1.5;
 					-- Open hatch before time
 					if courseplay:isPushWagon(tipper) then
 						local openDistance = meterPrSeconds * (animation.animationDuration / animation.animationOpenSpeedScale / 1000);

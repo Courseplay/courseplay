@@ -85,10 +85,8 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 	local ridgeMarker = prevPoint.ridgeMarker;
 	local turnStart = prevPoint.turnStart;
 	local turnEnd = prevPoint.turnEnd;
-
 	for i=1, #(self.cp.workTools) do
 		workTool = self.cp.workTools[i];
-
 		local isFolding, isFolded, isUnfolded = courseplay:isFolding(workTool);
 		local needsLowering = false
 		
@@ -97,8 +95,10 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 		end
 		
 		--speedlimits
+		local speedLimitActive = false
 		if workTool.doCheckSpeedLimit and workTool:doCheckSpeedLimit() then
 			forceSpeedLimit = math.min(forceSpeedLimit, workTool.speedLimit)
+			speedLimitActive = true
 		end
 
 		
@@ -150,9 +150,12 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 							if not workTool:isLowered() then
 								courseplay:debug(string.format('%s: lower order', nameNum(workTool)), 17);
 								self:setAIImplementsMoveDown(true);
+								courseplay:setCustomTimer(self, "lowerTimeOut" , 5 )
+							elseif not speedLimitActive and not courseplay:timerIsThrough(self, "lowerTimeOut") then 
+								allowedToDrive = false;
+								courseplay:debug(string.format('%s: wait for lowering', nameNum(workTool)), 17);
 							end;
 						end;
-
 						--turn on
 						if workTool.setIsTurnedOn ~= nil and not workTool.isTurnedOn then
 							courseplay:setMarkers(self, workTool);
@@ -231,7 +234,5 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 	if hasFinishedWork then
 		isFinishingWork = true
 	end
-
-
 	return allowedToDrive, workArea, workSpeed,isFinishingWork,forceSpeedLimit
 end;

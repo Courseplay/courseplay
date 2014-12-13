@@ -10,7 +10,7 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 	local pipeState = vehicle:getOverloadingTrailerInRangePipeState();
 	if pipeState > 0 then
 		vehicle:setPipeState(pipeState);
-	else
+	elseif not vehicle.isAIThreshing then
 		vehicle:setPipeState(1);
 	end;
 	

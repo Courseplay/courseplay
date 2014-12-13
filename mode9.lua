@@ -286,6 +286,7 @@ function courseplay:checkAndSetMovingToolsPosition(vehicle, movingTools, seconda
 			end;
 
 			-- DIRTY FLAGS (movingTool)
+			-- TODO: check if Cylindered.setMovingToolDirty() is better here
 			if changed then
 				if vehicle.cp.attachedFrontLoader ~= nil then
 					Cylindered.setDirty(vehicle.cp.attachedFrontLoader, mt);
@@ -343,4 +344,17 @@ function courseplay:getMovingTools(vehicle)
 	end;
 
 	return primaryMovingTools, secondaryMovingTools;
+end;
+
+local origGetIsActiveForInput = Vehicle.getIsActiveForInput;
+function Vehicle:getIsActiveForInput(onlyTrueIfSelected)
+	if g_gui.currentGui ~= nil or g_currentMission.isPlayerFrozen then
+		return false;
+	end;
+
+	if self.typeName == 'wheelLoader' and self.hasCourseplaySpec and self:getIsCourseplayDriving() and self.cp.mode == 9 and not onlyTrueIfSelected then
+		return true;
+	end;
+
+	return origGetIsActiveForInput(self, onlyTrueIfSelected);
 end;

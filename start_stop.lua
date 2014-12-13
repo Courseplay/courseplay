@@ -295,6 +295,7 @@ function courseplay:start(self)
 	elseif self.cp.startAtPoint == courseplay.START_AT_FIRST_POINT then
 		if self.cp.mode == 2 or self.cp.mode == 3 then
 			courseplay:setRecordNumber(self, 3);
+			courseplay:setIsLoaded(self, true);
 		else
 			courseplay:setRecordNumber(self, 1);
 		end
@@ -374,8 +375,14 @@ function courseplay:getCanUseCpMode(vehicle)
 	end;
 
 
-	if mode ~= 5 and mode ~= 6 and mode ~= 7 and not vehicle.cp.workToolAttached then
-		courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WRONG_TRAILER'));
+	if mode ~= 5 and mode ~= 7 and not vehicle.cp.workToolAttached then
+		if mode == 4 or mode == 6 then
+			courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WRONG_TOOL'));
+		elseif mode == 9 then
+			courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_SHOVEL_NOT_FOUND'));
+		else
+			courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WRONG_TRAILER'));
+		end;
 		return false;
 	end;
 

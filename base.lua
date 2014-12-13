@@ -77,7 +77,8 @@ function courseplay:load(xmlFile)
 	self.cp.numCrossingPoints = 0;
 
 	self.cp.visualWaypointsMode = 1
-	self.cp.beaconLightsMode = 1
+	self.cp.beaconLightsMode = 1;
+
 	-- saves the shortest distance to the next waypoint (for recocnizing circling)
 	self.cp.shortestDistToWp = nil
 
@@ -97,10 +98,7 @@ function courseplay:load(xmlFile)
 
 
 	-- CP mode
-	self.cp.mode = 1;
-	if self.cp.isCombine or self.cp.isChopper or self.cp.isHarvesterSteerable or self.cp.isWoodHarvester or self.cp.isWoodForwarder then
-		self.cp.mode = 5;
-	end;
+	self.cp.mode = 5;
 	self.cp.modeState = 0
 	self.cp.mode2nextState = nil;
 	self.cp.startWork = nil
@@ -417,7 +415,6 @@ function courseplay:load(xmlFile)
 		self.cutLengthStep = 1;
 	end;
 
-
 	self.cp.mouseCursorActive = false;
 
 	-- HUD
@@ -688,7 +685,7 @@ function courseplay:update(dt)
 	if g_server ~= nil then
 		if self.cp.isDriving then
 			local showDriveOnButton = false;
-			if self.cp.mode == 6 then
+			if self.cp.mode == courseplay.MODE_FIELDWORK then
 				if self.cp.wait and (self.recordnumber == self.cp.stopWork or self.cp.lastRecordnumber == self.cp.stopWork) and self.cp.abortWork == nil and not self.cp.isLoaded and not isFinishingWork and self.cp.hasUnloadingRefillingCourse then
 					showDriveOnButton = true;
 				end;
@@ -1112,7 +1109,7 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 	if not resetVehicles and g_server ~= nil then
 		-- COURSEPLAY
 		local curKey = key .. '.courseplay';
-		courseplay:setCpMode(self,  Utils.getNoNil(   getXMLInt(xmlFile, curKey .. '#aiMode'),			 1));
+		courseplay:setCpMode(self,  Utils.getNoNil(   getXMLInt(xmlFile, curKey .. '#aiMode'),			 self.cp.mode));
 		self.cp.hud.openWithMouse = Utils.getNoNil(  getXMLBool(xmlFile, curKey .. '#openHudWithMouse'), true);
 		self.cp.beaconLightsMode  = Utils.getNoNil(   getXMLInt(xmlFile, curKey .. '#beacon'),			 1);
 		self.cp.waitTime 		  = Utils.getNoNil(   getXMLInt(xmlFile, curKey .. '#waitTime'),		 0);

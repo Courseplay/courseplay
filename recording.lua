@@ -249,7 +249,7 @@ function courseplay:clearCurrentLoadedCourse(vehicle)
 	vehicle.cp.loadedCourses = {}
 	vehicle.cp.currentCourseName = nil
 	courseplay:setModeState(vehicle, 1);
-	if vehicle.cp.mode == 2 or vehicle.cp.mode == 3 then
+	if vehicle.cp.mode == courseplay.MODE_COMBI or vehicle.cp.mode == courseplay.MODE_OVERLOADER then
 		courseplay:setModeState(vehicle, 0);
 	end;
 	vehicle.cp.recordingTimer = 1
@@ -271,6 +271,7 @@ function courseplay:clearCurrentLoadedCourse(vehicle)
 
 	vehicle.cp.hud.clearCurrentCourseButton1:setHovered(false);
 	vehicle.cp.hud.clearCurrentCourseButton2:setHovered(false);
+	vehicle.cp.hud.clearCurrentCourseButton8:setHovered(false);
 end
 
 function courseplay:currentVehAngle(vehicle)
