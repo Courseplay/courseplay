@@ -455,7 +455,10 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 							tool.stopForManualUnloader = true
 						end
 							
-						if tankFillLevelPct >= 100 or tool.waitingForDischarge or (tool.cp.stopWhenUnloading and tool.pipeIsUnloading and tool.courseplayers and tool.courseplayers[1] ~= nil) or tool.stopForManualUnloader then
+						if tankFillLevelPct >= 100 
+						or tool.waitingForDischarge 
+						or (tool.cp.stopWhenUnloading and tool.pipeIsUnloading and tool.courseplayers and tool.courseplayers[1] ~= nil and tool.courseplayers[1].cp.modeState ~= 9) 
+						or tool.stopForManualUnloader then
 							tool.waitingForDischarge = true;
 							allowedToDrive = courseplay:brakeToStop(vehicle); -- allowedToDrive = false;
 							if isTurnedOn then
@@ -464,7 +467,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 							if workTool:isLowered() then
 									courseplay:lowerImplements(vehicle, false, false);
 							end;
-							if tankFillLevelPct < 80 and (not tool.cp.stopWhenUnloading or (tool.cp.stopWhenUnloading and (tool.courseplayers == nil or tool.courseplayers[1] == nil))) then
+							if (tankFillLevelPct < 80 and not tool.cp.stopWhenUnloading) or (tool.cp.stopWhenUnloading and tool.fillLevel == 0) then
 								courseplay:setReverseBackDistance(vehicle, 2);
 								tool.waitingForDischarge = false;
 							end;
