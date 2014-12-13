@@ -518,7 +518,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Mappa név:</hu>
 			<nl>Folder naam:</nl>
 			<br>Nome da pesta</br>
-			<cs>文件夹名</cs>
+			<cs>目录名</cs>
 		</text>
 		<text name="COURSEPLAY_FILTER_COURSES">
 			<en>Filter courses:</en>
@@ -546,23 +546,23 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<br>Rotas: %q</br>
  			<cs>任务: %q</cs>
 		</text>
-		<text name="COURSEPLAY_CREATE_FOLDER"> <!-- missing: cs, fr, es, it, nl, ru -->
+		<text name="COURSEPLAY_CREATE_FOLDER"> <!-- missing:fr, es, it, nl, ru -->
 			<en>Create new folder</en>
 			<de>Neuen Ordner erstellen</de>
 			<cz>Vytvořit novou složku</cz>
 			<hu>Új mappa létrehozása</hu>
 			<br>Criar nova pasta</br>
-			<cs>新建文件夹</cs>
+			<cs>新建目录</cs>
 		</text>
-		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS"> <!-- missing: cs, fr, es, it, nl, ru -->
+		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS"> <!-- missing: fr, es, it, nl, ru -->
 			<en>Search for courses and folders</en>
 			<de>Nach Kursen und Ordnern suchen</de>
 			<cz>Vyhledat trasu a složku</cz>
 			<hu>Útvonal keresése a mappákban</hu>
 			<br>Pesquisar pastas e rotas</br>
-			<cs>搜索任务和文件夹</cs>
+			<cs>捡索任务和目录</cs>
 		</text>
-		<text name="COURSEPLAY_DEACTIVATE_FILTER"> <!-- missing: cs, fr, es, it, nl, ru -->
+		<text name="COURSEPLAY_DEACTIVATE_FILTER"> <!-- missing:fr, es, it, nl, ru -->
 			<en>Deactivate filter</en>
 			<de>Filter deaktivieren</de>
 			<cz>Vypnout filtr</cz>
@@ -1516,13 +1516,14 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<br>carreta incorreta para este modo</br>
 			<cs>错误的拖车</cs>
 		</text>
-		<text name="COURSEPLAY_WRONG_TOOL"> <!-- missing: cs, cz, es, fr, it, nl, ru --> <!-- NOTE: same as 'COURSEPLAY_WRONG_TRAILER', only with "tool" instead of "trailer" -->
+		<text name="COURSEPLAY_WRONG_TOOL"> <!-- missing:cz, es, fr, it, nl, ru --> <!-- NOTE: same as 'COURSEPLAY_WRONG_TRAILER', only with "tool" instead of "trailer" -->
 			<en>wrong tool for this mode</en>
 			<de>falsches Gerät für diesen Modus</de>
 			<hu>Rossz munkaeszköz ehhez a módhoz</hu>
 			<br>ferramenta errada para este modo</br>
+			<cs>当前工具不支持当前模式</cs>
 		</text>
-		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE"> <!-- missing: cs, fr, es, it, nl -->
+		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE"> <!-- missing: fr, es, it, nl -->
 			<en>This vehicle type isn't supported in this mode.</en>
 			<de>Dieser Fahrzeugtyp wird in diesem Modus nicht unterstützt.</de>
 			<cz>Tento typ vozidla není v tomto módu podporován.</cz>
@@ -2149,7 +2150,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<nl>Veld</nl>
 			<ru>поле №</ru>
 		</text>
-		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE"> <!-- missing: cs, es, fr, it, nl -->
+		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE"> <!-- missing:es, fr, it, nl -->
 			<en>(currently loaded course)</en>
 			<de>(aktuell geladener Kurs)</de>
 			<cz>(načtená trasa)</cz>
@@ -2269,7 +2270,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>: bálázónak új fólia kell</hu>
 			<nl>: Balenpers behoeft nieuwe wikkeling</nl>
 			<br>: fardos redondos precisa de embalagem</br>
-			<cs>: 打包机需要新的薄膜</cs>
+			<cs>: 打包机需要新的包装网</cs>
 		</text>
 		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES"> <!-- missing: es -->
 			<en>Calculate current field's edge path</en>
@@ -2281,7 +2282,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>A területszél útvonalának kikalkulálása</hu>
 			<nl>Bereken huidige veldrand</nl>
 			<br>Cálcular a borda do campo atual</br>
-			<cs>计算当前农田的范围路径点</cs>
+			<cs>测量当前农田的范围路径点</cs>
 		</text>
 		<text name="COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER"> <!-- missing: es -->
 			<en>Field edge path number</en>
@@ -2496,7 +2497,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<br>Iniciando em %s!</br>
 			<cs>启动 %s!</cs>
 		</text>
-		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT"> <!-- missing: cs, fr, es, it, nl, ru -->
+		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT"> <!-- missing:  fr, es, it, nl, ru -->
 			<en>Search for first waypoint</en>
 			<de>Nach erstem Wegpunkt suchen</de>
 			<cz>Hledání prvního bodu</cz>
@@ -2504,7 +2505,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<br>Pesquisar pelo primeiro ponto</br>
 			<cs>指向起始点</cs>
 		</text>
-		<text name="COURSEPLAY_SAVE_CURRENT_COURSE"> <!-- missing: cs, fr, es, it, nl, ru -->
+		<text name="COURSEPLAY_SAVE_CURRENT_COURSE"> <!-- missing: fr, es, it, nl, ru -->
 			<en>Save current course</en>
 			<de>Aktuellen Kurs speichern</de>
 			<cz>Uložit aktuální trasu</cz>
@@ -2624,7 +2625,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<ru>Показать инфо на карте:</ru>
 			<cs>地图图标： 显示任务车辆图标</cs>
 		</text>
-		<text name="COURSEPLAY_ALWAYS_USE_4WD"> <!-- missing: br, cs, es, fr, it, nl, ru -->
+		<text name="COURSEPLAY_ALWAYS_USE_4WD"> <!-- missing: br,es, fr, it, nl, ru -->
 			<en>Always use 4WD</en>
 			<de>Allrad immer anschalten</de>
 			<cz>Vždy použít 4x4</cz>
