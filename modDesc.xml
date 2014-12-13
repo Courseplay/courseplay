@@ -546,25 +546,28 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<br>Rotas: %q</br>
  			<cs>任务: %q</cs>
 		</text>
-		<text name="COURSEPLAY_CREATE_FOLDER"> <!-- missing:fr, es, it, nl, ru -->
+		<text name="COURSEPLAY_CREATE_FOLDER"> <!-- missing:es, it, nl, ru -->
 			<en>Create new folder</en>
 			<de>Neuen Ordner erstellen</de>
+			<fr>Créer un nouveau dossier</fr>
 			<cz>Vytvořit novou složku</cz>
 			<hu>Új mappa létrehozása</hu>
 			<br>Criar nova pasta</br>
 			<cs>新建目录</cs>
 		</text>
-		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS"> <!-- missing: fr, es, it, nl, ru -->
+		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS"> <!-- missing: es, it, nl, ru -->
 			<en>Search for courses and folders</en>
 			<de>Nach Kursen und Ordnern suchen</de>
+			<fr>Recherche de course et de dossier</fr>
 			<cz>Vyhledat trasu a složku</cz>
 			<hu>Útvonal keresése a mappákban</hu>
 			<br>Pesquisar pastas e rotas</br>
 			<cs>捡索任务和目录</cs>
 		</text>
-		<text name="COURSEPLAY_DEACTIVATE_FILTER"> <!-- missing:fr, es, it, nl, ru -->
+		<text name="COURSEPLAY_DEACTIVATE_FILTER"> <!-- missing: es, it, nl, ru -->
 			<en>Deactivate filter</en>
 			<de>Filter deaktivieren</de>
+			<fr>Désactive les filtres</fr>
 			<cz>Vypnout filtr</cz>
 			<hu>Szűrő alaphelyzetbe</hu>
 			<br>Desativar filtros</br>
@@ -1516,16 +1519,18 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<br>carreta incorreta para este modo</br>
 			<cs>错误的拖车</cs>
 		</text>
-		<text name="COURSEPLAY_WRONG_TOOL"> <!-- missing:cz, es, fr, it, nl, ru --> <!-- NOTE: same as 'COURSEPLAY_WRONG_TRAILER', only with "tool" instead of "trailer" -->
+		<text name="COURSEPLAY_WRONG_TOOL"> <!-- missing:cz, es, it, nl, ru --> <!-- NOTE: same as 'COURSEPLAY_WRONG_TRAILER', only with "tool" instead of "trailer" -->
 			<en>wrong tool for this mode</en>
 			<de>falsches Gerät für diesen Modus</de>
+			<fr>pas le bon outil pour ce mode</fr>
 			<hu>Rossz munkaeszköz ehhez a módhoz</hu>
 			<br>ferramenta errada para este modo</br>
 			<cs>当前工具不支持当前模式</cs>
 		</text>
-		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE"> <!-- missing: fr, es, it, nl -->
+		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE"> <!-- missing: es, it, nl -->
 			<en>This vehicle type isn't supported in this mode.</en>
 			<de>Dieser Fahrzeugtyp wird in diesem Modus nicht unterstützt.</de>
+			<fr>Ce véhicule n'est pas supporté dans ce mode</fr>
 			<cz>Tento typ vozidla není v tomto módu podporován.</cz>
 			<ru>Неподходящий тип техники для маршрута.</ru>
 			<hu>Ez a járműtípus nem megfelelő ehhez a művelethez.</hu>
@@ -2150,9 +2155,10 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<nl>Veld</nl>
 			<ru>поле №</ru>
 		</text>
-		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE"> <!-- missing:es, fr, it, nl -->
+		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE"> <!-- missing:es, it, nl -->
 			<en>(currently loaded course)</en>
 			<de>(aktuell geladener Kurs)</de>
+			<fr>(Course actuellement chargée)</fr>
 			<cz>(načtená trasa)</cz>
 			<ru>(загруженный маршрут)</ru>
 			<hu>(jelenleg betöltött útvonal)</hu>
@@ -2497,9 +2503,10 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<br>Iniciando em %s!</br>
 			<cs>启动 %s!</cs>
 		</text>
-		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT"> <!-- missing:  fr, es, it, nl, ru -->
+		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT"> <!-- missing: es, it, nl, ru -->
 			<en>Search for first waypoint</en>
 			<de>Nach erstem Wegpunkt suchen</de>
+			<fr>Cherche le premier point</fr>
 			<cz>Hledání prvního bodu</cz>
 			<hu>Első útpont keresése</hu>
 			<br>Pesquisar pelo primeiro ponto</br>
@@ -2625,9 +2632,10 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<ru>Показать инфо на карте:</ru>
 			<cs>地图图标： 显示任务车辆图标</cs>
 		</text>
-		<text name="COURSEPLAY_ALWAYS_USE_4WD"> <!-- missing: br,es, fr, it, nl, ru -->
+		<text name="COURSEPLAY_ALWAYS_USE_4WD"> <!-- missing: br, es,  it, nl, ru -->
 			<en>Always use 4WD</en>
 			<de>Allrad immer anschalten</de>
+			<fr>Toujours utiliser le 4x4</fr>
 			<cz>Vždy použít 4x4</cz>
 			<hu>Mindig összkerékhajtás</hu>
 			<br>Usar sempre tração nas quatro rodas</br>
