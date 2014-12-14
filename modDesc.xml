@@ -1099,11 +1099,12 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<br>nenhum</br>
 			<cs>不显示</cs>
 		</text>
-		<text name="COURSEPLAY_WARNING_LIGHTS"> <!-- missing: cs, cz, es, hu, it, nl --> <!-- NOTE: this should be a general term that includes both beacon lights and hazard lights -->
+		<text name="COURSEPLAY_WARNING_LIGHTS"> <!-- missing: cs, cz, es, it, nl --> <!-- NOTE: this should be a general term that includes both beacon lights and hazard lights -->
 			<en>Warning lights:</en>
 			<de>Warnleuchten:</de>
 			<fr>Avertisseur lumineux:</fr>
 			<ru>Сигнальные огни:</ru>
+			<hu>Megkülönböztető jelzés:</hu>
 			<br>Luzes de aviso:</br>
 		</text>
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0">
@@ -1119,19 +1120,21 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<br>desligadas</br>
 			<cs>从不打开</cs>
 		</text>
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1"> <!-- missing: cs, cz, hu, it, nl -->
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1"> <!-- missing: cs, cz, it, nl -->
 			<en>beacon lights (on the street)</en>
 			<de>RUL (auf der Straße)</de>
 			<fr>gyrophares (sur la route)</fr>
 			<es>rotativos (en la carretera)</es>
+			<hu>sárga villogó (az utakon)</hu>
 			<ru>в дороге - маячок</ru>
 			<br>luzes rotativas (na estrada)</br>
 		</text>
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2">  <!-- missing: cs, cz, hu, it, nl --> <!-- NOTE: your text should NOT be any longer than the Spanish text! (there's not enough space in the hud for longer text) -->
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2">  <!-- missing: cs, cz, it, nl --> <!-- NOTE: your text should NOT be any longer than the Spanish text! (there's not enough space in the hud for longer text) -->
 			<en>beacon &amp; hazard lights (on the street)</en>
 			<de>RUL &amp; Warnblinker (auf der Straße)</de>
 			<fr>gyrophares &amp; feux de détresse (sur la route)</fr>
 			<es>Rotativos &amp; luces de emerg. (en la carretera)</es>
+			<hu>sárga villogó &amp; elakadásjelző (az utakon)</hu>
 			<ru>в дороге - маячок и габариты</ru>
 			<br>luzes rotativas &amp; luzes de emergência</br>
 		</text>
