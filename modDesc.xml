@@ -1126,13 +1126,13 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2">  <!-- missing: br, cs, cz, hu, it, nl, ru --> <!-- NOTE: your text should NOT be any longer than the Spanish text! (there's not enough space in the hud for longer text) -->
 			<en>beacon &amp; hazard lights (on the street)</en>
 			<de>RUL &amp; Warnblinker (auf der Straße)</de>
-			<fr>Gyrophares &amp; feux de détresse (sur la route)</fr>
+			<fr>gyrophares &amp; feux de détresse (sur la route)</fr>
 			<es>Rotativos &amp; luces de emerg. (en la carretera)</es>
 		</text>
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_3">
 			<en>beacon lights (always)</en>
 			<de>Rundumleuchten (immer)</de>
-			<fr>Gyrophares (toujours allumés)</fr>
+			<fr>gyrophares (toujours allumés)</fr>
 			<es>Rotativos (siempre encendidos)</es>
 			<it>Lampeggianti (sempre accesi)</it>
 			<cz>Maják (vždy zapnout)</cz>
@@ -2571,7 +2571,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 		<text name="COURSEPLAY_SAVE_CURRENT_COURSE"> <!-- missing: it, nl -->
 			<en>Save current course</en>
 			<de>Aktuellen Kurs speichern</de>
-			<>Sauvegarder la course actuelle</fr>
+			<fr>Sauvegarder la course actuelle</fr>
 			<es>Salvar ruta actual</es>
 			<cz>Uložit aktuální trasu</cz>
 			<ru>Сохранить маршрут</ru>
