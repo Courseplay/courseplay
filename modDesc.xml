@@ -1099,10 +1099,11 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<br>nenhum</br>
 			<cs>不显示</cs>
 		</text>
-		<text name="COURSEPLAY_WARNING_LIGHTS"> <!-- missing: br, cs, cz, es, hu, it, nl --> <!-- NOTE: this should be a general term that includes both beacon lights and hazard lights -->
+		<text name="COURSEPLAY_WARNING_LIGHTS"> <!-- missing: br, cs, cz, hu, it, nl --> <!-- NOTE: this should be a general term that includes both beacon lights and hazard lights -->
 			<en>Warning lights:</en>
 			<de>Warnleuchten:</de>
 			<fr>Avertisseur lumineux:</fr>
+			<es>Luces de advertencia:</es>
 			<ru>Сигнальные огни:</ru>
 		</text>
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0">
