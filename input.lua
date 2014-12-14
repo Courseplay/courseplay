@@ -213,7 +213,7 @@ function courseplay:executeFunction(self, func, value, page)
 			if not combine.cp.isChopper then
 				if line == 4 then
 					courseplay:toggleDriverPriority(combine);
-				elseif line == 5 and self:getIsCourseplayDriving() and self.cp.mode == courseplay.MODE_FIELDWORK then
+				elseif line == 5 and self.cp.mode == courseplay.MODE_FIELDWORK then
 					courseplay:toggleStopWhenUnloading(combine);
 				end;
 			end;
