@@ -14,6 +14,7 @@
 		<nl>Courseplay</nl>
 		<ru>Courseplay</ru>
 		<cs>Courseplay 驾驶助手</cs>
+		<pt>courseplay</pt>
 	</title>
 
 	<description>
@@ -72,6 +73,11 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 
 Переводчики: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [NL] Pewemo, [RU] Bernelli]]>
 		</ru>
+		<pt>
+<![CDATA[Desenvolvedores: Jakob Tischler, Thomas Gärtner, Satis
+
+Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [NL] Pewemo, [RU] Bernelli, [PT] TkJ portuga]]>
+		</pt>
 	</description>
 
 	<multiplayer supported="true"/>
@@ -90,6 +96,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<nl>Start route vastleggen</nl>
 			<br>Iniciar gravação da rota</br>
 			<cs>开始录制</cs>
+			<pt>iniciar a gravação</pt>
      </text>
 		<text name="COURSEPLAY_DRIVER">
 			<en>Driver</en>
@@ -103,6 +110,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<nl>Bestuurder</nl>
 			<br>Motorista</br>
 			<cs>任务车辆</cs>
+			<pt>conduzir</pt>
 		</text>
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START">
 			<en>Start driver</en>
@@ -116,6 +124,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<nl>Start bestuurder</nl>
 			<br>Dirigir</br>
 			<cs>开始卸载</cs>
+			<pt>arranjar condutor</pt>
 		</text>
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP">
 			<en>Stop driver</en>
@@ -128,7 +137,8 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Vezető leállítása</hu>
 			<nl>Stop bestuurder</nl>
 			<br>Parar o motorista</br>
-			<cs>停止卸载</cs>
+			<cs>停止卸载</cs>			
+			<pt>parar condutor</pt>
 		</text>
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT">
 			<en>Stop at last point or at next trigger</en>
@@ -142,6 +152,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<nl>Stop bij laatste punt of volgende trigger</nl>
 			<br>Parar no último ponto ou no próximo trigger</br>
 			<cs>停在最后一点或下一个起点</cs>
+			<pt>parar no ultimo ponto ou proximo</pt>
 		</text>
 		<text name="COURSEPLAY_UNLOADING_SIDE">
 			<en>Driver side</en>
@@ -155,6 +166,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<nl>Bestuurderszijde</nl>
 			<br>Lado do motorista</br>
 			<cs>卸载位置</cs>
+			<pt>lado do condutor</pt>
 		</text>
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE">
 			<en>automatic</en>
@@ -168,6 +180,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<nl>automatisch</nl>
 			<br>automático</br>
 			<cs>无卸载位置</cs>
+			<pt>automatico</pt>
 		</text>
 		<text name="COURSEPLAY_LEFT">
 			<en>left</en>
@@ -181,6 +194,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<nl>links</nl>
 			<br>esquerda</br>
 			<cs>左</cs>
+			<pt>esquerda</pt>
 		</text>
 		<text name="COURSEPLAY_RIGHT">
 			<en>right</en>
@@ -194,6 +208,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<nl>rechts</nl>
 			<br>direita</br>
 			<cs>右</cs>
+			<pt>direita</pt>
 		</text>
 		<text name="COURSEPLAY_UNLOADING_DRIVER_SEND_HOME">
 			<en>Send driver home</en>
@@ -207,6 +222,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<nl>Stuur bestuurder weg</nl>
 			<br>Enviar o motorista para a rota</br>
 			<cs>让装载车去卸载区</cs>
+			<pt>mandar condutor para rota</pt>
 		</text>
 		<text name="COURSEPLAY_REQUEST_UNLOADING_DRIVER">
 			<en>Request driver</en>
@@ -220,6 +236,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<nl>Verzoek bestuurder</nl>
 			<br>Chamar o motorista</br>
 			<cs>要求卸载</cs>
+			<pt>requisitar condutor</pt>
 		</text>
 		<text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED">
 			<en>Driver requested</en>
@@ -233,6 +250,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<nl>Bestuurder opgeroepen</nl>
 			<br>Motorista foi chamado</br>
 			<cs>请求卸载</cs>
+			<pt>condutor requisitado</pt>
 		</text>
 		<text name="COURSEPLAY_START_COURSE">
 			<en>Drive course</en>
@@ -246,6 +264,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<nl>Route beginnen</nl>
 			<br>Dirigir na rota</br>
 			<cs>启动任务</cs>
+			<pt>conduzir a rota</pt>
 		</text>
 		<text name="COURSEPLAY_STOP_COURSE">
 			<en>Stop driver</en>
@@ -259,6 +278,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<nl>Stop bestuurder</nl>
 			<br>Parar o motorista</br>
 			<cs>暂停任务</cs>
+			<pt>parar condutor</pt>
 		</text>
 		<text name="COURSEPLAY_MODE_1">
 			<en>Type: Grain transport (Load at start)</en>
@@ -272,6 +292,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<nl>Type: Transport</nl>
 			<br>Tipo: Transporte de grãos (carregar e seguir na rota)</br>
 			<cs>类型：普通运输（装载与卸载）</cs>
+			<pt>modo: ajudante (carga e conduzir)</pt>
 		</text>
 		<text name="COURSEPLAY_MODE_2">
 			<en>Type: Combi (empty combine and offload)</en>
@@ -285,6 +306,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<nl>Type: Combi (combine legen en uitladen)</nl>
 			<br>Tipo: Combi (carregar na ceifadeira e ir descarregar)</br>
 			<cs>类型：联合收割（接收与卸载）</cs>
+			<pt>modo: cabine (cargar junto da cabine e descargar)</pt>
 		</text>
 		<text name="COURSEPLAY_MODE_3">
 			<en>Type: Overloader (empty combine and offload to trailer)</en>
@@ -298,6 +320,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<nl>Type: Overladen (combine legen en overladen in trailer)</nl>
 			<br>Tipo: Autocarregador (carregar na ceifadeira e descarregar na carreta</br>
 			<cs>类型：中转运输（联合收割和普通运输）</cs>
+			<pt>modo: carga e descarga auto em outro reboque</pt>
 		</text>
 		<text name="COURSEPLAY_MODE_4">
 			<en>Type: fertilize and seeding</en>
@@ -311,6 +334,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<nl>Type: Kunstmest en zaaien</nl>
 			<br>Tipo: Fertilizar e semear</br>
 			<cs>类型：施肥和播种</cs>
+			<pt>modo: fertilizante e semeador</pt>
 		</text>
 		<text name="COURSEPLAY_MODE_5">
 			<en>Type: Transfer (drive from start to finish)</en>
