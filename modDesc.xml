@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="20">
-	<version>4.00.0211</version>
+	<version>4.00.0210</version>
 	<author><![CDATA[Courseplay Dev Team]]></author>
 	<title>
 		<br>Courseplay</br>
@@ -1099,9 +1099,10 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<br>nenhum</br>
 			<cs>不显示</cs>
 		</text>
-		<text name="COURSEPLAY_WARNING_LIGHTS"> <!-- missing: br, cs, cz, es, fr, hu, it, nl, ru --> <!-- NOTE: this should be a general term that includes both beacon lights and hazard lights -->
+		<text name="COURSEPLAY_WARNING_LIGHTS"> <!-- missing: br, cs, cz, es, hu, it, nl, ru --> <!-- NOTE: this should be a general term that includes both beacon lights and hazard lights -->
 			<en>Warning lights:</en>
 			<de>Warnleuchten:</de>
+			<fr>Feux de détresse:</fr>
 		</text>
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0">
 			<en>never turn on</en>
@@ -2567,9 +2568,10 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<br>Pesquisar pelo primeiro ponto</br>
 			<cs>指向起始点</cs>
 		</text>
-		<text name="COURSEPLAY_SAVE_CURRENT_COURSE"> <!-- missing: fr, it, nl -->
+		<text name="COURSEPLAY_SAVE_CURRENT_COURSE"> <!-- missing: it, nl -->
 			<en>Save current course</en>
 			<de>Aktuellen Kurs speichern</de>
+			<>Sauvegarder la course actuelle</fr>
 			<es>Salvar ruta actual</es>
 			<cz>Uložit aktuální trasu</cz>
 			<ru>Сохранить маршрут</ru>
