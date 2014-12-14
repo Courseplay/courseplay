@@ -39,7 +39,7 @@ function courseplay:handle_mode1(vehicle, allowedToDrive)
 			local maxDist = max(vehicle.cp.totalLength + 5, 55);
 			if distToTrigger > maxDist or startReversing then
 				courseplay:resetTipTrigger(vehicle);
-				courseplay:debug(string.format("%s: distance to currentTipTrigger = %d (> %d or start reversing) --> currentTipTrigger = nil", nameNum(vehicle), distance_to_trigger, maxDist), 1);
+				courseplay:debug(string.format("%s: distance to currentTipTrigger = %d (> %d or start reversing) --> currentTipTrigger = nil", nameNum(vehicle), distToTrigger, maxDist), 1);
 			end
 		else
 			courseplay:resetTipTrigger(vehicle);
