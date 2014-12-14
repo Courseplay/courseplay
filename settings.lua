@@ -50,7 +50,9 @@ function courseplay:setStopAtEnd(vehicle, bool)
 end;
 
 function courseplay:setIsLoaded(vehicle, bool)
-	vehicle.cp.isLoaded = bool;
+	if vehicle.cp.isLoaded ~= bool then
+		vehicle.cp.isLoaded = bool;
+	end;
 end;
 
 function courseplay:sendCourseplayerHome(combine)
