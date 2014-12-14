@@ -121,27 +121,29 @@ function courseplay:drive(self, dt)
 
 
 	-- WARNING LIGHTS
-	-- beacon lights
 	if self.cp.warningLightsMode == courseplay.WARNING_LIGHTS_NEVER then -- never
 		if self.beaconLightsActive then
 			self:setBeaconLightsVisibility(false);
 		end;
+		if self.cp.hasHazardLights and self.turnSignalState ~= Vehicle.TURNSIGNAL_OFF then
+			self:setTurnSignalState(Vehicle.TURNSIGNAL_OFF);
+		end;
 	else -- on street/always
+		local combineBeaconOn = self.cp.isCombine and (self.fillLevel / self.capacity) > 0.8;
 		local beaconOn = self.cp.warningLightsMode == courseplay.WARNING_LIGHTS_BEACON_ALWAYS 
-						 or ((self.cp.mode == 1 or self.cp.mode == 2 or self.cp.mode == 5) and self.recordnumber > 2) 
+						 or ((self.cp.mode == 1 or self.cp.mode == 2 or self.cp.mode == 3 or self.cp.mode == 5) and self.recordnumber > 2) 
 						 or ((self.cp.mode == 4 or self.cp.mode == 6) and self.recordnumber > self.cp.stopWork)
-						 or self.cp.isCombine and (self.fillLevel / self.capacity) > 0.8;
+						 or combineBeacon;
 		if self.beaconLightsActive ~= beaconOn then
 			self:setBeaconLightsVisibility(beaconOn);
 		end;
-	end;
-
-	-- hazard lights
-	if self.turnSignalState and self.setTurnSignalState then
-		if self.cp.warningLightsMode ~= courseplay.WARNING_LIGHTS_BEACON_HAZARD_ON_STREET and self.turnSignalState ~= Vehicle.TURNSIGNAL_OFF then
-			self:setTurnSignalState(Vehicle.TURNSIGNAL_OFF);
-		elseif self.cp.warningLightsMode == courseplay.WARNING_LIGHTS_BEACON_HAZARD_ON_STREET and self.turnSignalState ~= Vehicle.TURNSIGNAL_HAZARD then
-			self:setTurnSignalState(Vehicle.TURNSIGNAL_HAZARD);
+		if self.cp.hasHazardLights then
+			local hazardOn = self.cp.warningLightsMode == courseplay.WARNING_LIGHTS_BEACON_HAZARD_ON_STREET and beaconOn and not combineBeaconOn;
+			if not hazardOn and self.turnSignalState ~= Vehicle.TURNSIGNAL_OFF then
+				self:setTurnSignalState(Vehicle.TURNSIGNAL_OFF);
+			elseif hazardOn and self.turnSignalState ~= Vehicle.TURNSIGNAL_HAZARD then
+				self:setTurnSignalState(Vehicle.TURNSIGNAL_HAZARD);
+			end;
 		end;
 	end;
 

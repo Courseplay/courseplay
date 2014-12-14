@@ -78,6 +78,8 @@ function courseplay:load(xmlFile)
 
 	self.cp.visualWaypointsMode = 1
 	self.cp.warningLightsMode = 1;
+	self.cp.hasHazardLights = self.turnSignalState ~= nil and self.setTurnSignalState ~= nil;
+
 
 	-- saves the shortest distance to the next waypoint (for recocnizing circling)
 	self.cp.shortestDistToWp = nil
