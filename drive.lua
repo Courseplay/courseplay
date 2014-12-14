@@ -470,6 +470,21 @@ function courseplay:drive(self, dt)
 	end
 	-- MODE 9 END
 
+	
+	-- allowedToDrive false -> STOP OR HOLD POSITION
+	if not allowedToDrive then
+		self.cp.TrafficBrake = false;
+		self.cp.isTrafficBraking = false;
+
+		local moveForwards = true;
+		if self.cp.curSpeed > 1 then
+			allowedToDrive = true;
+			moveForwards = self.movingDirection == 1;
+		end;
+		AIVehicleUtil.driveInDirection(self, dt, 30, -1, 0, 28, allowedToDrive, moveForwards, 0, 1)
+		self.cp.speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): allowedToDrive false ")
+		return;
+	end
 
 
 	if self.cp.isTurning ~= nil then
@@ -533,9 +548,6 @@ function courseplay:drive(self, dt)
 	elseif self.cp.isInFilltrigger then
 		refSpeed = self.cp.speeds.turn;
 		speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
-		if self.cp.curSpeed > self.cp.speeds.turn then
-			allowedToDrive = false;
-		end;
 		self.cp.isInFilltrigger = false;
 	end;
 
@@ -552,21 +564,6 @@ function courseplay:drive(self, dt)
 		speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 	else
 		fwd = true
-	end
-
-	-- allowedToDrive false -> STOP OR HOLD POSITION
-	if not allowedToDrive then
-		self.cp.TrafficBrake = false;
-		self.cp.isTrafficBraking = false;
-
-		local moveForwards = true;
-		if self.cp.curSpeed > 1 then
-			allowedToDrive = true;
-			moveForwards = self.movingDirection == 1;
-		end;
-		AIVehicleUtil.driveInDirection(self, dt, 30, -1, 0, 28, allowedToDrive, moveForwards, 0, 1)
-		self.cp.speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): allowedToDrive false ")
-		return;
 	end
 
 	if self.cp.TrafficBrake then
