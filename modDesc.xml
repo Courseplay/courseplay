@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="20">
-	<version>4.00.0214</version>
+	<version>4.00.0213</version>
 	<author><![CDATA[Courseplay Dev Team]]></author>
 	<title>
 		<br>Courseplay</br>
@@ -1099,9 +1099,10 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<br>nenhum</br>
 			<cs>不显示</cs>
 		</text>
-		<text name="COURSEPLAY_WARNING_LIGHTS"> <!-- missing: br, cs, cz, es, fr, hu, it, nl, ru --> <!-- NOTE: this should be a general term that includes both beacon lights and hazard lights -->
+		<text name="COURSEPLAY_WARNING_LIGHTS"> <!-- missing: cs, cz, es, fr, hu, it, nl, ru --> <!-- NOTE: this should be a general term that includes both beacon lights and hazard lights -->
 			<en>Warning lights:</en>
 			<de>Warnleuchten:</de>
+			<br>Luzes de aviso:</br>
 		</text>
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0">
 			<en>never turn on</en>
@@ -1116,17 +1117,19 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<br>desligadas</br>
 			<cs>从不打开</cs>
 		</text>
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1"> <!-- missing: br, cs, cz, hu, it, nl, ru -->
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1"> <!-- missing: cs, cz, hu, it, nl, ru -->
 			<en>beacon lights (on the street)</en>
 			<de>RUL (auf der Straße)</de>
 			<fr>gyrophares (sur la route)</fr>
 			<es>rotativos (en la carretera)</es>
+			<br>luzes rotativas (na estrasda)</br>
 		</text>
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2">  <!-- missing: br, cs, cz, hu, it, nl, ru --> <!-- NOTE: your text should NOT be any longer than the Spanish text! (there's not enough space in the hud for longer text) -->
 			<en>beacon &amp; hazard lights (on the street)</en>
 			<de>RUL &amp; Warnblinker (auf der Straße)</de>
 			<fr>Gyrophares &amp; feux de détresse (sur la route)</fr>
-			<es>Rotativos &amp; luces de emerg. (en la carretera)</es>
+			<es>Rotativos  luces de emerg. (en la carretera)</es>
+			<br>luzes rotativas &amp; de emergência (na estrada)</br>
 		</text>
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_3">
 			<en>beacon lights (always)</en>
