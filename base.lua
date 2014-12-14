@@ -518,7 +518,7 @@ function courseplay:draw()
 
 
 	-- HELP BUTTON TEXTS
-	if self:getIsActive() and self.isEntered then
+	if self:getIsActive() and self.isEntered and g_currentMission.showHelpText then
 		local modifierPressed = InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER);
 
 		if (self.cp.canDrive or not self.cp.hud.openWithMouse) and not modifierPressed then
@@ -840,11 +840,14 @@ function courseplay:delete()
 			self.cp.headland.tg = nil;
 		end;
 
-		if self.cp.hud.background ~= nil then
-			self.cp.hud.background:delete();
+		if self.cp.hud.bg ~= nil then
+			self.cp.hud.bg:delete();
 		end;
-		if self.cp.hud.backgroundSuc ~= nil then
-			self.cp.hud.backgroundSuc:delete();
+		if self.cp.hud.bgWithModeButtons ~= nil then
+			self.cp.hud.bgWithModeButtons:delete();
+		end;
+		if self.cp.hud.suc ~= nil then
+			self.cp.hud.suc:delete();
 		end;
 		if self.cp.directionArrowOverlay ~= nil then
 			self.cp.directionArrowOverlay:delete();

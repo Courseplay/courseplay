@@ -567,10 +567,10 @@ end;
 function courseplay.fields:getFruitTypes()
 	--GET FRUITTYPES
 	local fruitTypes = {};
-	local hudW = courseplay.hud.suc.overlayWidth;
-	local hudH = courseplay.hud.suc.overlayHeight;
-	local hudX = courseplay.hud.suc.overlayPosX;
-	local hudY = courseplay.hud.suc.overlayPosY;
+	local hudW = courseplay.hud.suc.visibleArea.overlayWidth;
+	local hudH = courseplay.hud.suc.visibleArea.overlayHeight;
+	local hudX = courseplay.hud.suc.visibleArea.overlayPosX;
+	local hudY = courseplay.hud.suc.visibleArea.overlayPosY;
 	for name,fruitType in pairs(FruitUtil.fruitTypes) do
 		if fruitType.allowsSeeding and fruitType.seedUsagePerSqm then
 			local fillType = FruitUtil.fruitTypeToFillType[fruitType.index];
@@ -587,7 +587,7 @@ function courseplay.fields:getFruitTypes()
 					local hudOverlayPath = g_currentMission.fillTypeOverlays[fillType].filename;
 					if hudOverlayPath and hudOverlayPath ~= '' then
 						if Utils.startsWith(hudOverlayPath, 'dataS2') or fileExists(hudOverlayPath) then
-							fruitData.overlay = Overlay:new(('suc_fruit_%s'):format(fruitType.name), hudOverlayPath, hudX, hudY, hudW, hudH);
+							fruitData.overlay = Overlay:new('suc_fruit_' .. fruitType.name, hudOverlayPath, hudX, hudY, hudW, hudH);
 							fruitData.overlay:setColor(1, 1, 1, 0.25);
 							-- print(('SUC fruitType %s: hudPath=%q, overlay=%s'):format(fruitType.name, tostring(hudOverlayPath), tostring(fruitData.overlay)));
 						end;

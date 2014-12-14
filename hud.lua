@@ -71,13 +71,14 @@ function courseplay.hud:setup()
 	self.basePosX = courseplay.hud.basePosX;
 	self.basePosY = courseplay.hud.basePosY;
 	self.baseWidth  = self:pxToNormal(630, 'x');
-	self.baseHeight = self:pxToNormal(458, 'y');
+	self.baseHeight = self:pxToNormal(347, 'y');
 	self.baseCenterPosX = self.basePosX + self.baseWidth * 0.5;
 
-	self.baseUVsPx = { 18,468, 648,10 };
+	self.baseUVsPx = { 10,357, 640,10 };
+	self.baseWithModeButtonsUVsPx = {10,724, 640,377 }; 
 	self.baseTextureSize = {
 		x = 1024;
-		y = 512;
+		y = 1024;
 	};
 	-- COLORS NOTE:
 	-- Because Giants fucked up big time, overlay colors that don't use full values are displayed way brighter than they should.
@@ -112,25 +113,32 @@ function courseplay.hud:setup()
 	self.visibleArea.x1 = self.basePosX + self:pxToNormal(15, 'x');
 	self.visibleArea.x2 = self.visibleArea.x1 + self.visibleArea.width;
 	self.visibleArea.height = self:pxToNormal(326, 'y');
-	self.visibleArea.heightWithSuc = self:pxToNormal(442, 'y');
 	self.visibleArea.y1 = self.basePosY + self:pxToNormal(8, 'y');
 	self.visibleArea.y2 = self.visibleArea.y1 + self.visibleArea.height;
-	self.visibleArea.y2WithSuc = self.visibleArea.y1 + self.visibleArea.heightWithSuc;
 
 	-- SEEDUSAGECALCULATOR
 	self.suc = {};
-	self.suc.width = self:pxToNormal(460, 'x');
-	self.suc.x1 = self.basePosX + self:pxToNormal(85, 'x');
-	self.suc.x2 = self.suc.x1 + self.suc.width;
-	self.suc.height = self:pxToNormal(116, 'y');
-	self.suc.y1 = self.basePosY + self:pxToNormal(334, 'y');
+	self.suc.UVsPx = { 10,876, 476,744 };
+	self.suc.width  = self:pxToNormal(466, 'x');
+	self.suc.height = self:pxToNormal(132, 'y');
+	self.suc.x1 = self.baseCenterPosX - self.suc.width * 0.5;
+	self.suc.x2 = self.baseCenterPosX + self.suc.width * 0.5;
+	self.suc.y1 = self.basePosY + self.baseHeight; -- + self:pxToNormal(5, 'y');
 	self.suc.y2 = self.suc.y1 + self.suc.height;
-	self.suc.hPadding = self:pxToNormal(10, 'x');
-	self.suc.vPadding = self:pxToNormal(10, 'y');
-	self.suc.overlayWidth = g_currentMission.hudTipperOverlay.width * 2.75;
-	self.suc.overlayHeight = self.suc.overlayWidth * g_screenAspectRatio;
-	self.suc.overlayPosX = self.suc.x2 - self.suc.overlayWidth - self.suc.hPadding;
-	self.suc.overlayPosY = self.suc.y1 + self.suc.vPadding;
+
+	self.suc.visibleArea = {};
+	self.suc.visibleArea.width  = self:pxToNormal(450, 'x');
+	self.suc.visibleArea.height = self:pxToNormal(116, 'y');
+	self.suc.visibleArea.x1 = self.baseCenterPosX - self.suc.visibleArea.width * 0.5;
+	self.suc.visibleArea.x2 = self.baseCenterPosX + self.suc.visibleArea.width * 0.5;
+	self.suc.visibleArea.y1 = self.suc.y1 + self:pxToNormal(8, 'y');
+	self.suc.visibleArea.y2 = self.suc.y2 - self:pxToNormal(8, 'y');
+	self.suc.visibleArea.hPadding = self:pxToNormal(10, 'x');
+	self.suc.visibleArea.vPadding = self:pxToNormal(10, 'y');
+	self.suc.visibleArea.overlayWidth = g_currentMission.hudTipperOverlay.width * 2.75;
+	self.suc.visibleArea.overlayHeight = self.suc.visibleArea.overlayWidth * g_screenAspectRatio;
+	self.suc.visibleArea.overlayPosX = self.suc.visibleArea.x2 - self.suc.visibleArea.overlayWidth - self.suc.visibleArea.hPadding;
+	self.suc.visibleArea.overlayPosY = self.suc.visibleArea.y1 + self.suc.visibleArea.vPadding;
 
 
 	--print(string.format("\t\tposX=%f,posY=%f, visX1=%f,visX2=%f, visY1=%f,visY2=%f, visCenter=%f", self.basePosX, self.basePosY, self.visibleArea.x1, self.visibleArea.x2, self.visibleArea.y1, self.visibleArea.y2, self.baseCenterPosX));
@@ -210,7 +218,7 @@ function courseplay.hud:setup()
 	};
 
 	self.pageTitlePosX = self.visibleArea.x1 + self:pxToNormal(55, 'x');
-	self.pageTitlePosY = self.visibleArea.y1 + self:pxToNormal(249 + 34*0.5 - 23*0.5 + 3, 'y'); -- title line bottom y + title line height/2 - fontSize/2 plus some magic 3px for good measure
+	self.pageTitlePosY = self.visibleArea.y1 + self:pxToNormal(249 + 34*0.5 - 23*0.5 + 5, 'y'); -- title line bottom y + title line height/2 - fontSize/2 plus some magic 5px for good measure
 
 
 	-- BUTTON SIZES AND POSITIONS
@@ -467,13 +475,17 @@ function courseplay.hud:renderHud(vehicle)
 
 	-- SEEDUSAGECALCULATOR
 	if vehicle.cp.suc.active then
-		vehicle.cp.hud.backgroundSuc:render();
+		vehicle.cp.hud.suc:render();
 		if vehicle.cp.suc.selectedFruit.overlay then
 			vehicle.cp.suc.selectedFruit.overlay:render();
 		end;
+	end;
+
+	-- BASE HUD
+	if vehicle.cp.hud.currentPage == self.PAGE_CP_CONTROL and vehicle.cp.canSwitchMode and not vehicle.cp.distanceCheck then
+		vehicle.cp.hud.bgWithModeButtons:render();
 	else
-		-- BASE HUD
-		vehicle.cp.hud.background:render();
+		vehicle.cp.hud.bg:render();
 	end;
 
 
@@ -1096,9 +1108,11 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	local marginBig    = self.buttonSize.big.margin;
 	local w32pxConstant, h32pxConstant = self:getPxToNormalConstant(32, 32);
 
+	local gfxPath = Utils.getFilename('img/hud.png', courseplay.path);
 	vehicle.cp.hud = {
-		background    = Overlay:new('courseplayHud',    Utils.getFilename('img/hud.png',        courseplay.path), self.basePosX, self.basePosY, self.baseWidth, self.baseHeight);
-		backgroundSuc = Overlay:new('courseplayHudSuc', Utils.getFilename('img/hudWithSuc.png', courseplay.path), self.basePosX, self.basePosY, self.baseWidth, self.baseHeight);
+		bg				  = Overlay:new('cpHud1', gfxPath, self.basePosX, self.basePosY, self.baseWidth, self.baseHeight);
+		bgWithModeButtons = Overlay:new('cpHud2', gfxPath, self.basePosX, self.basePosY, self.baseWidth, self.baseHeight);
+		suc				  = Overlay:new('cpHud3', gfxPath, self.suc.x1,	  self.suc.y1,	 self.suc.width, self.suc.height);
 		currentPage = 1;
 		show = false;
 		openWithMouse = true;
@@ -1111,8 +1125,10 @@ function courseplay.hud:setupVehicleHud(vehicle)
 			render = false;
 		};
 	};
-	courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.background,    self.baseUVsPx, self.baseTextureSize.x, self.baseTextureSize.y);
-	courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.backgroundSuc, self.baseUVsPx, self.baseTextureSize.x, self.baseTextureSize.y);
+	courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.bg,				   self.baseUVsPx,				  self.baseTextureSize.x, self.baseTextureSize.y);
+	courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.bgWithModeButtons, self.baseWithModeButtonsUVsPx, self.baseTextureSize.x, self.baseTextureSize.y);
+	courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.suc,			   self.suc.UVsPx,				  self.baseTextureSize.x, self.baseTextureSize.y);
+
 
 
 	-- direction arrow to the first/last waypoint (during paused recording)
@@ -1133,8 +1149,9 @@ function courseplay.hud:setupVehicleHud(vehicle)
 		fontSize = self.fontSizes.seedUsageCalculator;
 	};
 	local lineHeight = vehicle.cp.suc.fontSize;
-	vehicle.cp.suc.textMinX = self.suc.x1 + self.suc.hPadding + self.buttonSize.small.w + self.buttonSize.small.margin + self.buttonSize.small.w + self.suc.hPadding;
-	vehicle.cp.suc.textMaxX = self.suc.x2 - self.suc.hPadding;
+	local sucVa = self.suc.visibleArea;
+	vehicle.cp.suc.textMinX = sucVa.x1 + sucVa.hPadding + self.buttonSize.small.w + self.buttonSize.small.margin + self.buttonSize.small.w + sucVa.hPadding;
+	vehicle.cp.suc.textMaxX = sucVa.x2 - sucVa.hPadding;
 	vehicle.cp.suc.textMaxWidth = vehicle.cp.suc.textMaxX - vehicle.cp.suc.textMinX;
 
 	vehicle.cp.suc.lines = {};
@@ -1142,7 +1159,7 @@ function courseplay.hud:setupVehicleHud(vehicle)
 		fontSize = vehicle.cp.suc.fontSize * 1.1;
 		text = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR');
 	};
-	vehicle.cp.suc.lines.title.posY = self.suc.y2 - self.suc.vPadding - vehicle.cp.suc.lines.title.fontSize;
+	vehicle.cp.suc.lines.title.posY = sucVa.y2 - sucVa.vPadding - vehicle.cp.suc.lines.title.fontSize;
 	vehicle.cp.suc.lines.field = {
 		fontSize = vehicle.cp.suc.fontSize;
 		posY = vehicle.cp.suc.lines.title.posY - lineHeight * 1.5;
@@ -1159,10 +1176,11 @@ function courseplay.hud:setupVehicleHud(vehicle)
 		text = '';
 	};
 	local w,h = self.buttonSize.small.w, self.buttonSize.small.h;
-	local xL = self.suc.x1 + self.suc.hPadding;
+	local xL = sucVa.x1 + sucVa.hPadding;
 	local xR = xL + w + self.buttonSize.small.margin;
-	vehicle.cp.suc.fruitNegButton = courseplay.button:new(vehicle, 'suc', { 'iconSprite.png', 'navLeft' },  'sucChangeFruit', -1, xL, vehicle.cp.suc.lines.fruit.posY - self:getFullPx(3, 'y'), w, h);
-	vehicle.cp.suc.fruitPosButton = courseplay.button:new(vehicle, 'suc', { 'iconSprite.png', 'navRight' }, 'sucChangeFruit',  1, xR, vehicle.cp.suc.lines.fruit.posY - self:getFullPx(3, 'y'), w, h);
+	local y = vehicle.cp.suc.lines.fruit.posY - self:pxToNormal(3, 'y');
+	vehicle.cp.suc.fruitNegButton = courseplay.button:new(vehicle, 'suc', { 'iconSprite.png', 'navLeft' },  'sucChangeFruit', -1, xL, y, w, h);
+	vehicle.cp.suc.fruitPosButton = courseplay.button:new(vehicle, 'suc', { 'iconSprite.png', 'navRight' }, 'sucChangeFruit',  1, xR, y, w, h);
 	vehicle.cp.suc.selectedFruitIdx = 1;
 	vehicle.cp.suc.selectedFruit = nil;
 
@@ -1238,7 +1256,7 @@ function courseplay.hud:setupVehicleHud(vehicle)
 
 	-- ##################################################
 	-- Global
-	local posY = self.basePosY + self:pxToNormal(297, 'y');
+	local posY = self.basePosY + self:pxToNormal(300, 'y');
 	local totalWidth = ((self.numPages + 1) * wBig) + (self.numPages * marginBig); --numPages=9, real numPages=10
 	local baseX = self.baseCenterPosX - totalWidth/2;
 	for p=0, self.numPages do
@@ -1273,11 +1291,12 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	-- setCpMode buttons
 	local totalWidth = (courseplay.numAiModes * wBig) + ((courseplay.numAiModes - 1) * marginBig);
 	local baseX = self.baseCenterPosX - totalWidth/2;
+	local y = self.linesButtonPosY[8] + self:pxToNormal(2, 'y');
 	for i=1, courseplay.numAiModes do
 		local posX = baseX + ((i - 1) * (wBig + marginBig));
 		local toolTip = courseplay:loc(('COURSEPLAY_MODE_%d'):format(i));
 
-		courseplay.button:new(vehicle, 1, 'iconSprite.png', 'setCpMode', i, posX, self.linesButtonPosY[8], wBig, hBig, nil, nil, false, false, false, toolTip);
+		courseplay.button:new(vehicle, 1, 'iconSprite.png', 'setCpMode', i, posX, y, wBig, hBig, nil, nil, false, false, false, toolTip);
 	end;
 
 	-- recording
