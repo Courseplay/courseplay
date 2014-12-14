@@ -23,6 +23,12 @@ function tableConcat(...)
 	return t;
 end
 
+function shallowCopy(t)
+	local rv = {}
+	for k, v in pairs(t) do rv[k] = v end
+	return rv
+end
+
 function courseplay:isFolding(workTool) --returns isFolding, isFolded, isUnfolded
 	if not courseplay:isFoldable(workTool) then
 		return false, false, true;
