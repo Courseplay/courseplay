@@ -241,7 +241,7 @@ function courseplay:load(xmlFile)
 			DirectionNode = self.rootNode;
 		end
 	end;
-	print(tostring(self.name), ": directionNodeZOffset = ", tostring(self.cp.directionNodeZOffset));
+
 	if self.cp.directionNodeZOffset and self.cp.directionNodeZOffset ~= 0 then
 		self.cp.oldDirectionNode = DirectionNode;  -- Only used for debugging.
 		DirectionNode = courseplay:createNewLinkedNode(self, "realDirectionNode", DirectionNode);

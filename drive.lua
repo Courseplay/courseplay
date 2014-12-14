@@ -582,8 +582,6 @@ function courseplay:drive(self, dt)
 			local _, _, zDis = worldToLocal(self.cp.DirectionNode, self.cp.reverseBackToPoint.x, self.cp.reverseBackToPoint.y, self.cp.reverseBackToPoint.z);
 			if zDis < 0 then
 				fwd = false;
-				lz = lz * -1;
-				lx = lx * -1;
 				refSpeed = self.cp.speeds.crawl
 				speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			else
