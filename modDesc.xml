@@ -2046,8 +2046,8 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<ru>Маркера:</ru>
 			<hu>Főbb pontok</hu>
 			<nl>Banen markeerders</nl>
-~			<br>desativado</br>
-			<pt>desligado</pt>
+~			<br>marcador</br>
+			<pt>marcadores</pt>
 			<cs>田埂标记</cs>
 		</text>
 		<text name="COURSEPLAY_UNLOADING_ON_FIELD">
