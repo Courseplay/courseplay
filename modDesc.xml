@@ -2004,7 +2004,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Munkasáv</hu>
 			<nl>Buitenrand</nl>
 			<br>Cabeceira</br>
-			<pt>Cabeceira do campo</pt
+			<pt>Cabeceira do campo</pt>
 			<cs>工作路径的模式</cs>
 		</text>
 		<text name="COURSEPLAY_ACTIVATED">
@@ -2369,7 +2369,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Térkép vizsgálata.</hu>
 			<nl>Veldscan bezig</nl>
 			<br>Escaneamento do campo em andamento</br>
-			<br>Verificação do campo em curso</>
+			<pt>Verificação do campo em curso</pt>
  			<cs>农田范围测量进度</cs>
 		</text>
 		<text name="COURSEPLAY_SCANNING_FIELD_NMB">
@@ -2551,7 +2551,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>felhasználó</hu>
 			<nl>Gebruiker</nl>
 			<br>usuário</br>
-			<>utilizador</pt>
+			<pt>utilizador</pt>
 			<cs>用户名</cs>
 		</text>
 		<text name="COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED">
@@ -2593,6 +2593,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>javítás alatt</hu>
 			<nl>Wordt hersteld</nl>
 			<br>reparando</br>
+			<pt>a reparar</pt>
 			<cs>正在修复中</cs>
 		</text>
 		<text name="COURSEPLAY_COVER_HANDLING">
