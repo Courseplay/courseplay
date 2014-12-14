@@ -433,7 +433,7 @@ function courseplay:createNewLinkedNode(object, nodeName, linkToNode)
 
 	local node = createTransformGroup(nodeName);
 	link(linkToNode, node);
-	table.insert(object.cp.notesToDelete, node);
+	table.insert(object.cp.notesToDelete, 1, node);
 
 	return node;
 end;

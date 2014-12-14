@@ -317,7 +317,8 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 						end;
 
 						local distToTrigger = courseplay:distance(ctx, ctz, trigger_x, trigger_z);
-						local maxDist = max(vehicle.cp.totalLength + 5, 55);
+						local isBGA = trigger.bunkerSilo ~= nil and trigger.bunkerSilo.movingPlanes ~= nil
+						local maxDist = isBGA and (vehicle.cp.totalLength + 55) or (vehicle.cp.totalLength + 5);
 						if distToTrigger > maxDist or startReversing then
 							courseplay:resetTipTrigger(vehicle);
 							courseplay:debug(string.format("%s: distance to currentTipTrigger = %d (> %d or start reversing) --> currentTipTrigger = nil", nameNum(vehicle), distToTrigger, maxDist), 1);
