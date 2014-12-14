@@ -71,14 +71,14 @@ function courseplay:updateReachableCombines(vehicle)
 end;
 
 
-function courseplay:registerAtCombine(vehicle, combine)
+function courseplay:registerAtCombine(callerVehicle, combine)
 	if combine.cp == nil then
 		combine.cp = {};
 	end;
-	courseplay:debug(string.format("%s: registering at combine %s", nameNum(vehicle), tostring(combine.name)), 4)
+	courseplay:debug(string.format("%s: registering at combine %s", nameNum(callerVehicle), tostring(combine.name)), 4)
 	--courseplay:debug(tableShow(combine, tostring(combine.name), 4), 4)
 	local numAllowedCourseplayers = 1
-	vehicle.cp.calculatedCourseToCombine = false
+	callerVehicle.cp.calculatedCourseToCombine = false
 	if combine.courseplayers == nil then
 		combine.courseplayers = {};
 	end;
@@ -90,22 +90,22 @@ function courseplay:registerAtCombine(vehicle, combine)
 		numAllowedCourseplayers = CpManager.isDeveloper and 4 or 2;
 	else
 		
-		if vehicle.cp.realisticDriving then
+		if callerVehicle.cp.realisticDriving then
 			if combine.cp.wantsCourseplayer == true or combine.fillLevel == combine.capacity then
 
 			else
 				-- force unload when combine is full
 				-- is the pipe on the correct side?
 				if combine.turnStage == 1 or combine.turnStage == 2 or combine.cp.turnStage ~= 0 then
-					courseplay:debug(nameNum(vehicle)..": combine is turning -> don't register tractor",4)
+					courseplay:debug(nameNum(callerVehicle)..": combine is turning -> don't register tractor",4)
 					return false
 				end
-				local fruitSide = courseplay:sideToDrive(vehicle, combine, -10)
+				local fruitSide = courseplay:sideToDrive(callerVehicle, combine, -10)
 				if fruitSide == "none" then
-					courseplay:debug(nameNum(vehicle)..": fruitSide is none -> try again with offset 0",4)
-					fruitSide = courseplay:sideToDrive(vehicle, combine, 0)
+					courseplay:debug(nameNum(callerVehicle)..": fruitSide is none -> try again with offset 0",4)
+					fruitSide = courseplay:sideToDrive(callerVehicle, combine, 0)
 				end
-				courseplay:debug(nameNum(vehicle)..": courseplay:sideToDrive = "..tostring(fruitSide),4)
+				courseplay:debug(nameNum(callerVehicle)..": courseplay:sideToDrive = "..tostring(fruitSide),4)
 				
 				if combine.cp.pipeSide == nil then
 					courseplay:getCombinesPipeSide(combine)
@@ -113,7 +113,7 @@ function courseplay:registerAtCombine(vehicle, combine)
 				
 				local pipeIsInFruit = (combine.cp.pipeSide == 1 and fruitSide == "left") or (combine.cp.pipeSide == -1 and fruitSide == "right")
 				if pipeIsInFruit then
-					courseplay:debug(nameNum(vehicle)..": path finding active and pipe in fruit -> don't register tractor",4)
+					courseplay:debug(nameNum(callerVehicle)..": path finding active and pipe in fruit -> don't register tractor",4)
 					return false
 				end
 			end
@@ -121,7 +121,7 @@ function courseplay:registerAtCombine(vehicle, combine)
 	end
 
 	if #(combine.courseplayers) == numAllowedCourseplayers then
-		courseplay:debug(string.format("%s (id %s): combine (id %s) is already registered", nameNum(vehicle), tostring(vehicle.id), tostring(combine.id)), 4);
+		courseplay:debug(string.format("%s (id %s): combine (id %s) is already registered", nameNum(callerVehicle), tostring(callerVehicle.id), tostring(combine.id)), 4);
 		return false
 	end
 
@@ -141,14 +141,14 @@ function courseplay:registerAtCombine(vehicle, combine)
 					end
 				end
 			end
-			if vehicle_ID ~= vehicle.id then
-				courseplay:debug(nameNum(vehicle) .. " (id " .. tostring(vehicle.id) .. "): there's a tractor with more fillLevel that's trying to register: "..tostring(vehicle_ID), 4)
+			if vehicle_ID ~= callerVehicle.id then
+				courseplay:debug(nameNum(callerVehicle) .. " (id " .. tostring(callerVehicle.id) .. "): there's a tractor with more fillLevel that's trying to register: "..tostring(vehicle_ID), 4)
 				return false
 			else
-				courseplay:debug(nameNum(vehicle) .. " (id " .. tostring(vehicle.id) .. "): it's my turn", 4);
+				courseplay:debug(nameNum(callerVehicle) .. " (id " .. tostring(callerVehicle.id) .. "): it's my turn", 4);
 			end
 		else
-			local distance = 9999999
+			local distance = math.huge
 			local vehicle_ID = 0
 			for k, vehicle in pairs(CpManager.activeCoursePlayers) do
 				if vehicle.cp.combineID ~= nil then
@@ -162,11 +162,11 @@ function courseplay:registerAtCombine(vehicle, combine)
 					end
 				end
 			end
-			if vehicle_ID ~= vehicle.id then
-				courseplay:debug(nameNum(vehicle) .. " (id " .. tostring(vehicle.id) .. "): there's a closer tractor that's trying to register: "..tostring(vehicle_ID), 4)
+			if vehicle_ID ~= callerVehicle.id then
+				courseplay:debug(nameNum(callerVehicle) .. " (id " .. tostring(callerVehicle.id) .. "): there's a closer tractor that's trying to register: "..tostring(vehicle_ID), 4)
 				return false
 			else
-				courseplay:debug(nameNum(vehicle) .. " (id " .. tostring(vehicle.id) .. "): it's my turn", 4);
+				courseplay:debug(nameNum(callerVehicle) .. " (id " .. tostring(callerVehicle.id) .. "): it's my turn", 4);
 			end
 		end
 	end
@@ -176,8 +176,8 @@ function courseplay:registerAtCombine(vehicle, combine)
 	if #(combine.courseplayers) == numAllowedCourseplayers - 1 then
 		local frontTractor = combine.courseplayers[numAllowedCourseplayers - 1];
 		if frontTractor then
-			local canFollowFrontTractor = frontTractor.cp.tipperFillLevelPct and frontTractor.cp.tipperFillLevelPct >= vehicle.cp.followAtFillLevel;
-			courseplay:debug(string.format('%s: frontTractor (%s) fillLevelPct (%.1f), my followAtFillLevel=%d -> canFollowFrontTractor=%s', nameNum(vehicle), nameNum(frontTractor), frontTractor.cp.tipperFillLevelPct, vehicle.cp.followAtFillLevel, tostring(canFollowFrontTractor)), 4)
+			local canFollowFrontTractor = frontTractor.cp.tipperFillLevelPct and frontTractor.cp.tipperFillLevelPct >= callerVehicle.cp.followAtFillLevel;
+			courseplay:debug(string.format('%s: frontTractor (%s) fillLevelPct (%.1f), my followAtFillLevel=%d -> canFollowFrontTractor=%s', nameNum(callerVehicle), nameNum(frontTractor), frontTractor.cp.tipperFillLevelPct, callerVehicle.cp.followAtFillLevel, tostring(canFollowFrontTractor)), 4)
 			if not canFollowFrontTractor then
 				return false;
 			end;
@@ -189,34 +189,34 @@ function courseplay:registerAtCombine(vehicle, combine)
 		combine.cp.wantsCourseplayer = false
 	end
 
-	courseplay:debug(string.format("%s is being checked in with %s", nameNum(vehicle), tostring(combine.name)), 4)
+	courseplay:debug(string.format("%s is being checked in with %s", nameNum(callerVehicle), tostring(combine.name)), 4)
 	combine.cp.isCheckedIn = 1;
-	vehicle.cp.callCombineFillLevel = nil
-	vehicle.cp.distanceToCombine = nil
-	vehicle.cp.combineID = nil
-	table.insert(combine.courseplayers, vehicle)
-	vehicle.cp.positionWithCombine = #(combine.courseplayers)
-	vehicle.cp.activeCombine = combine
-	vehicle.cp.reachableCombines = {}
+	callerVehicle.cp.callCombineFillLevel = nil
+	callerVehicle.cp.distanceToCombine = nil
+	callerVehicle.cp.combineID = nil
+	table.insert(combine.courseplayers, callerVehicle)
+	callerVehicle.cp.positionWithCombine = #(combine.courseplayers)
+	callerVehicle.cp.activeCombine = combine
+	callerVehicle.cp.reachableCombines = {}
 	
 	courseplay:askForSpecialSettings(combine:getRootAttacherVehicle(), combine)
 
 	--OFFSET
 	combine.cp.pipeSide = 1;
 
-	if vehicle.cp.combineOffsetAutoMode == true or vehicle.cp.combineOffset == 0 then
+	if callerVehicle.cp.combineOffsetAutoMode == true or callerVehicle.cp.combineOffset == 0 then
 	  	if combine.cp.offset == nil then
 			--print("no saved offset - initialise")
-	   		courseplay:calculateInitialCombineOffset(vehicle, combine);
+	   		courseplay:calculateInitialCombineOffset(callerVehicle, combine);
 	  	else 
 			--print("take the saved cp.offset")
-	   		vehicle.cp.combineOffset = combine.cp.offset;
+	   		callerVehicle.cp.combineOffset = combine.cp.offset;
 	  	end;
 	end;
 	--END OFFSET
 
 	
-	courseplay:addToCombinesIgnoreList(vehicle, combine);
+	courseplay:addToCombinesIgnoreList(callerVehicle, combine);
 	return true;
 end
 
