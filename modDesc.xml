@@ -1099,9 +1099,10 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<br>nenhum</br>
 			<cs>不显示</cs>
 		</text>
-		<text name="COURSEPLAY_WARNING_LIGHTS"> <!-- missing: br, cs, cz, es, fr, hu, it, nl, ru --> <!-- NOTE: this should be a general term that includes both beacon lights and hazard lights -->
+		<text name="COURSEPLAY_WARNING_LIGHTS"> <!-- missing: br, cs, cz, es, hu, it, nl, ru --> <!-- NOTE: this should be a general term that includes both beacon lights and hazard lights -->
 			<en>Warning lights:</en>
 			<de>Warnleuchten:</de>
+			<fr>Avertisseur lumineux:</fr>
 		</text>
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0">
 			<en>never turn on</en>
@@ -1125,13 +1126,13 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2">  <!-- missing: br, cs, cz, hu, it, nl, ru --> <!-- NOTE: your text should NOT be any longer than the Spanish text! (there's not enough space in the hud for longer text) -->
 			<en>beacon &amp; hazard lights (on the street)</en>
 			<de>RUL &amp; Warnblinker (auf der Straße)</de>
-			<fr>Gyrophares &amp; feux de détresse (sur la route)</fr>
+			<fr>gyrophares &amp; feux de détresse (sur la route)</fr>
 			<es>Rotativos &amp; luces de emerg. (en la carretera)</es>
 		</text>
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_3">
 			<en>beacon lights (always)</en>
 			<de>Rundumleuchten (immer)</de>
-			<fr>Gyrophares (toujours allumés)</fr>
+			<fr>gyrophares (toujours allumés)</fr>
 			<es>Rotativos (siempre encendidos)</es>
 			<it>Lampeggianti (sempre accesi)</it>
 			<cz>Maják (vždy zapnout)</cz>
@@ -1143,7 +1144,6 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 		</text>
 		<!-- TODO: delete after warning lights texts have been translated properly
 		<text name="COURSEPLAY_BEACON_LIGHTS_MODE_1">
-			<fr>seulement sur la route</fr>
 			<es>solo en la carretera</es>
 			<it>solo su strada</it>
 			<cz>zapnout jen na silnici</cz>
@@ -1154,7 +1154,6 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<cs>只在路上打开</cs>
 		</text>
 		<text name="COURSEPLAY_BEACON_LIGHTS_MODE_2">
-			<fr>toujours allumés</fr>
 			<es>siempre encendidos</es>
 			<it>sempre accesi</it>
 			<cz>vždy zapnout</cz>
@@ -2567,9 +2566,10 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<br>Pesquisar pelo primeiro ponto</br>
 			<cs>指向起始点</cs>
 		</text>
-		<text name="COURSEPLAY_SAVE_CURRENT_COURSE"> <!-- missing: fr, it, nl -->
+		<text name="COURSEPLAY_SAVE_CURRENT_COURSE"> <!-- missing: it, nl -->
 			<en>Save current course</en>
 			<de>Aktuellen Kurs speichern</de>
+			<fr>Sauvegarder la course actuelle</fr>
 			<es>Salvar ruta actual</es>
 			<cz>Uložit aktuální trasu</cz>
 			<ru>Сохранить маршрут</ru>
