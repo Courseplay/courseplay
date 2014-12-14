@@ -2046,7 +2046,8 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<ru>Маркера:</ru>
 			<hu>Főbb pontok</hu>
 			<nl>Banen markeerders</nl>
-			<br>Marcador</br>
+~			<br>desativado</br>
+			<pt>desligado</pt>
 			<cs>田埂标记</cs>
 		</text>
 		<text name="COURSEPLAY_UNLOADING_ON_FIELD">
@@ -2060,6 +2061,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Kirakodás a földön</hu>
 			<nl>Uitladen in het veld</nl>
 			<br>Descarregando no campo</br>
+			<pt>A descarregar no campo</pt>
 			<cs>在田间卸载</cs>
 		</text>
 		<text name="COURSEPLAY_AUTOMATIC">
@@ -2073,6 +2075,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>automatikus</hu>
 			<nl>automatisch</nl>
 			<br>automático</br>
+			<pt>automático</pt>
 			<cs>自动</cs>
 		</text>
 		<text name="COURSEPLAY_MANUAL">
@@ -2086,6 +2089,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>manuális</hu>
 			<nl>handmatig</nl>
 			<br>manual</br>
+			<pt>manual</pt>
 			<cs>手动</cs>
 		</text>
 		<text name="COURSEPLAY_TURN_MANEUVER">
@@ -2099,6 +2103,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Fordulómanőver:</hu>
 			<nl>Draai beweging:</nl>
 			<br>Manobra de giro</br>
+			<pt>Manobra de viragem</pt>
 			<cs>原路返回:</cs>
 		</text>
 		<text name="COURSEPLAY_START">
@@ -2112,6 +2117,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Start</hu>
 			<nl>Start</nl>
 			<br>Iniciar</br>
+			<pt>Iniciar</pt>
 			<cs>开始</cs>
 		</text>
 		<text name="COURSEPLAY_FINISH">
@@ -2125,6 +2131,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Cél</hu>
 			<nl>Finish</nl>
 			<br>Finalizar</br>
+			<pt>Concluir</pt>
 			<cs>完成</cs>
 		</text>
 
@@ -2139,6 +2146,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Az útvonal nem megfelelő</hu>
 			<nl>Geen route geladen</nl>
 			<br>Rota inválida</br>
+			<pt>Percurso inválido</pt>
 			<cs>无效任务</cs>
 		</text>
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND">
@@ -2151,7 +2159,8 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<ru>Ковш не обнаружен</ru>
 			<hu>Kanál nem található</hu>
 			<nl>Geen shovel gevonden</nl>
-			<br>nenhuma pá carregadeira encontrda</br>
+			<br>nenhuma pá carregadeira encontrada</br>
+			<pt>nenhuma pá encontrada</pt>
 			<cs>找不到铲斗</cs>
 		</text>
 		<text name="COURSEPLAY_SHOVEL_POSITIONS">
@@ -2165,6 +2174,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Kanál pozíció</hu>
 			<nl>Shovel posities</nl>
 			<br>Posições da pá carregadeira</br>
+			<pt>Posições da pá</pt>
 			<cs>铲斗位置</cs>
 		</text>
 		<text name="COURSEPLAY_SHOVEL_POSITIONS_MISSING">
@@ -2178,6 +2188,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Hiányos kanál pozíció</hu>
 			<nl>Shovel posities ontbreken</nl>
 			<br>Faltam algumas posições da pá carregadeira</br>
+			<pt>Faltam algumas posições da pá</pt>
 			<cs>缺少铲斗位置</cs>
 		</text>
 		<text name="COURSEPLAY_SHOVEL_LOADING_POSITION">
@@ -2191,6 +2202,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Töltési pozíció</hu>
 			<nl>Laad stand</nl>
 			<br>Posição carregar</br>
+			<pt>Posição de carregamento</pt>
 			<cs>铲斗填充位置</cs>
 		</text>
 		<text name="COURSEPLAY_SHOVEL_TRANSPORT_POSITION">
@@ -2204,6 +2216,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Szállítási pozíció</hu>
 			<nl>Transport stand</nl>
 			<br>Posição transporte</br>
+			<pt>Posição transporte</pt>
  			<cs>铲斗运输位置</cs>
 		</text>
 		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION">
@@ -2217,6 +2230,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Kirakodást előkészítő pozíció</hu>
 			<nl>Aanvang uitlaad stand</nl>
 			<br>Posição pré descarregar</br>
+			<pt>Posição pré descarregamento</pt>
 			<cs>铲斗预卸载位置</cs>
 		</text>
 		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION">
@@ -2230,6 +2244,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Kirakási pozíció</hu>
 			<nl>Uitlaad stand</nl>
 			<br>Posição descarregar</br>
+			<pt>Posição de descarregamento</pt>
 			<cs>铲斗卸载位置</cs>
 		</text>
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO">
@@ -2243,6 +2258,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Kirak és indul tölteni</hu>
 			<nl>Stop + Go Laden</nl>
 			<br>Parar e ir carregar</br>
+			<pt>Parar e ir carregar</pt>
 			<cs>停止并装载</cs>
 		</text>
 
@@ -2270,6 +2286,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>legközelebbi útpont</hu>
 			<nl>volgende markering</nl>
 			<br>próximo ponto</br>
+			<pt>próximo ponto</pt>
 			<cs>最近的点</cs>
 		</text>
 		<text name="COURSEPLAY_FIRST_POINT">
@@ -2283,6 +2300,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>első útpont</hu>
 			<nl>eerste markering</nl>
 			<br>primeiro ponto</br>
+			<pt>primeiro ponto</pt>
  			<cs>起始点</cs>
 		</text>
 		<text name="COURSEPLAY_CURRENT_POINT">
@@ -2296,6 +2314,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Aktuális útpont</hu>
 			<nl>huidige markering</nl>
 			<br>ponto atual </br>
+			<pt>ponto atual </pt>
  			<cs>当前点</cs>
 		</text>
 
@@ -2310,10 +2329,12 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Művelendő terület:</hu>
 			<nl>Veldrand route</nl>
 			<br>Caminho borda do campo</br>
+			<pt>Percurso da borda do campo</pt>
 			<cs>选择农田</cs>
 		</text>
 		<text name="COURSEPLAY_FIELD">
 			<br>Campo</br>
+			<pt>Campo</pt>
 			<cs>农田</cs>
 			<cz>Pole</cz>
 			<de>Feld</de>
@@ -2334,6 +2355,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<ru>(загруженный маршрут)</ru>
 			<hu>(jelenleg betöltött útvonal)</hu>
 			<br>(Rota atual carregada)</br>
+			<pt>(Percurso atual carregado)</pt>
 			<cs>当前任务</cs>
 		</text>
 		<text name="COURSEPLAY_FIELD_SCAN_IN_PROGRESS">
@@ -2347,6 +2369,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Térkép vizsgálata.</hu>
 			<nl>Veldscan bezig</nl>
 			<br>Escaneamento do campo em andamento</br>
+			<br>Verificação do campo em curso</>
  			<cs>农田范围测量进度</cs>
 		</text>
 		<text name="COURSEPLAY_SCANNING_FIELD_NMB">
@@ -2360,6 +2383,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>A terület vizsgálata: %d/%d</hu>
 			<nl>Scan Veld %d/%d</nl>
 			<br>Escaneando campo %d/%d</br>
+			<pt>Verificação do campo %d/%d</pt>
 			<cs>测量范围 %d/%d</cs>
 		</text>
 		<text name="COURSEPLAY_HOSEMISSING">
@@ -2373,6 +2397,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>A tömlő nem található- utántöltés törölve</hu>
 			<nl>Geen vulslang gevonden, vullen geannuleerd</nl>
 			<br>Nenhum cano encontrado - cancelar recarga</br>
+			<pt>Sem mangueira encontrada - cancelar recarga</pt>
 			<cs>找不到补给管-取消</cs>
 		</text>
 		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE">
@@ -2386,6 +2411,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Szimmetrikus sávváltás:</hu>
 			<nl>Evenwijdige baanwissel</nl>
 			<br>Mudança de faixa simétrica</br>
+			<pt>Mudança de faixa simétrica</pt>
 			<cs>对称变换车道</cs>
 		</text>
 		<text name="COURSEPLAY_UNLOADING_DRIVER_PRIORITY">
@@ -2399,6 +2425,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Vezető prioritása:</hu>
 			<nl>Bestuurder voorrang</nl>
 			<br>Prioridade do motorista</br>
+			<pt>Prioridade do condutor</pt>
 			<cs>卸载优先级</cs>
 		</text>
 		<text name="COURSEPLAY_FILLEVEL">
@@ -2412,6 +2439,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>töltési szint</hu>
 			<nl>vul graad</nl>
 			<br>nivel de enchimento</br>
+			<pt>nivel de enchimento</pt>
 			<cs>填充水平</cs>
 		</text>
 		<text name="COURSEPLAY_NO_AUTOCOMBINE_MODE_7">
@@ -2425,6 +2453,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Kombájn automaika nem megengedett</hu>
 			<nl>Autocombine wordt niet ondersteund</nl>
 			<br>Ceifadeira não suportada</br>
+			<pt>Ceifeira não suportada</pt>
 			<cs>不支持AutoCombine</cs>
 		</text>
 		<text name="COURSEPLAY_PICKUP_JAMMED">
@@ -2438,6 +2467,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>: felszedő eltömődött</hu>
 			<nl>: pickup zit vast</nl>
 			<br>: carregamento está bloqueado</br>
+			<pt>: carregamento com problemas</pt>
 			<cs>: 皮卡车卡住了</cs>
 		</text>
 		<text name="COURSEPLAY_BALER_NEEDS_NETS">
@@ -2451,6 +2481,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>: bálázónak új fólia kell</hu>
 			<nl>: Balenpers behoeft nieuwe wikkeling</nl>
 			<br>: fardos redondos precisa de embalagem</br>
+			<pt>: fardos redondos precisam de embalagem</pt>
 			<cs>: 打包机需要新的包装网</cs>
 		</text>
 		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES">
@@ -2464,6 +2495,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>A területszél útvonalának kikalkulálása</hu>
 			<nl>Bereken huidige veldrand</nl>
 			<br>Cálcular a borda do campo atual</br>
+			<pt>Calcular a borda do campo atual</pt>
 			<cs>测量当前农田的范围路径点</cs>
 		</text>
 		<text name="COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER">
@@ -2477,6 +2509,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Területszéle útvonalának száma</hu>
 			<nl>Veldrand nummer</nl>
 			<br>Número da borda do campo</br>
+			<pt>Número da borda do campo</pt>
 			<cs>农田范围的编号：</cs>
 		</text>
 		<text name="COURSEPLAY_ADD_CUSTOM_FIELD_EDGE_PATH_TO_LIST">
@@ -2490,6 +2523,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>A %d terület szélének utvonala hozzáadása a listához</hu>
 			<nl>Voeg veld %d randen toe aan lijst</nl>
 			<br>Adicionar borda do campo %d na lista</br>
+			<pt>Adicionar borda do campo %d na lista</pt>
 			<cs>添加 %d 号农田范围到列表</cs>
 		</text>
 		<text name="COURSEPLAY_OVERWRITE_CUSTOM_FIELD_EDGE_PATH_IN_LIST">
@@ -2503,6 +2537,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>A %d terület szélének felülirása a listában</hu>
 			<nl>Overschrijf veld %d randen in lijst</nl>
 			<br>Reescrever borda do campo %d na lista</br>
+			<pt>Reescrever borda do campo %d na lista</pt>
 			<cs> %d 号农田范围路径点在列表中</cs>
 		</text>
 		<text name="COURSEPLAY_USER">
@@ -2516,6 +2551,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>felhasználó</hu>
 			<nl>Gebruiker</nl>
 			<br>usuário</br>
+			<>utilizador</pt>
 			<cs>用户名</cs>
 		</text>
 		<text name="COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED">
@@ -2529,6 +2565,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>hamarosan javításra szorul!</hu>
 			<nl>Dient spoedig hersteld te worden</nl>
 			<br>precisa reparar</br>
+			<pt>precisa de ser reparado</pt>
 			<cs>应该尽快修复</cs>
 		</text>
 		<text name="COURSEPLAY_DAMAGE_MUST_BE_REPAIRED">
@@ -2542,6 +2579,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>meg kell javítani!</hu>
 			<nl>Moet hersteld worden</nl>
 			<br>reparar</br>
+			<pt>reparar</pt>
 			<cs>必须修复</cs>
 		</text>
 		<text name="COURSEPLAY_DAMAGE_IS_BEING_REPAIRED">
@@ -2568,6 +2606,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Ponyva:</hu>
 			<nl>Zeilen</nl>
 			<br>cobertura</br>
+			<pt>cobertura</pt>
  			<cs>车厢盖子</cs>
 		</text>
 		<text name="COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR">
@@ -2581,6 +2620,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Kombájnkijelölés eltávolítása</hu>
 			<nl>Verwijder combine opdracht</nl>
 			<br>Remover atribuições da ceifadeira</br>
+			<pt>Remover definições da ceifeira</pt>
 			<cs>删除指定的联合收割机</cs>
 		</text>
 		<text name="COURSEPLAY_STOP_DURING_UNLOADING">
@@ -2594,6 +2634,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Kirakodás közben leállít</hu>
 			<nl>Stop tijdens ontladen</nl>
 			<br>Parar para descarregar</br>
+			<pt>Parar durante a descarga</pt>
 			<cs>卸载时停车</cs>
 		</text>
 		<text name="COURSEPLAY_SLIPPING_WARNING">
@@ -2607,6 +2648,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>kipörög</hu>
 			<nl>Slippend</nl>
 			<br>patinando</br>
+			<pt>a escorregar</pt>
 			<cs>车辆打滑！</cs>
 		</text>
 		<text name="COURSEPLAY_REFILL_UNTIL_PCT">
@@ -2620,6 +2662,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Újratölteni:</hu>
 			<nl>Bijvullen tot:</nl>
 			<br>Encher até</br>
+			<pt>Encher até</pt>
 			<cs>重新填充:</cs>
 		</text>
 		<text name="COURSEPLAY_BGA_IS_FULL">
@@ -2633,6 +2676,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>: a BGA siló tele van!</hu>
 			<nl>: Bunker silo is vol!</nl>
 			<br>: Silo está cheio!</br>
+			<pt>: Silo está cheio!</pt>
 			<cs>:青贮池已满!</cs>
 		</text>
 
@@ -2647,7 +2691,8 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<ru>В этом бункере нет такого продукта!</ru>
 			<hu>Nem választottad ki a farm tárólóból a terménytípust</hu>
 			<nl>Farm Silo heeft niet de juiste vulling</nl>
-			<br>Silo não selecionou o tipo de carregamento </br>
+			<br>Silo não selecionou o tipo de carregamento</br>
+			<pt>Silo não tem o tipo correto para carregar</pt>
 			<cs>没有选定仓筒类型!</cs>
 		</text>
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE">
@@ -2661,6 +2706,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>A farm tároló töltöttsége:</hu>
 			<nl>Farm Silo laad:</nl>
 			<br>Carregando silo:</br>
+			<pt>A carregar do silo:</pt>
  			<cs>选定的仓筒类型:</cs>
 		</text>
 		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY">
@@ -2674,6 +2720,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>A farm tárólőja üres!</hu>
 			<nl>Farm Silo is leeg!</nl>
 			<br>Silo está vazio</br>
+			<pt>Silo está vazio</pt>
 			<cs>仓筒空了!</cs>
 		</text>
 		<text name="COURSEPLAY_STARTING_UP_TOOL">
@@ -2686,6 +2733,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Beindul %s!</hu>
 			<nl>Opstarten %s!</nl>
 			<br>Iniciando em %s!</br>
+			<pt>Iniciar a %s!</pt>
 			<cs>启动 %s!</cs>
 		</text>
 		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT"> <!-- missing: it, nl -->
@@ -2697,6 +2745,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<ru>Показать первую точку</ru>
 			<hu>Első útpont keresése</hu>
 			<br>Pesquisar pelo primeiro ponto</br>
+			<pt>Pesquisar pelo primeiro ponto</pt>
 			<cs>指向起始点</cs>
 		</text>
 		<text name="COURSEPLAY_SAVE_CURRENT_COURSE"> <!-- missing: fr, it, nl -->
@@ -2707,6 +2756,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<ru>Сохранить маршрут</ru>
 			<hu>Aktuális útvonal mentése</hu>
 			<br>Salvar rota atual</br>
+			<pt>Guardar percurso atual</pt>
 			<cs>保存当前任务</cs>
 		</text>
 
@@ -2720,6 +2770,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<ru>остановить запись</ru>
 			<hu>Felvétel leállítása</hu>
 			<br>Parar a gravação</br>
+			<pt>Parar a gravação</pt>
 			<cs>停止录制</cs>
 		</text>
 		<text name="COURSEPLAY_RECORDING_PAUSE">
@@ -2731,6 +2782,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<ru>пауза</ru>
 			<hu>Felvétel szüneteltetése</hu>
 			<br>Pausar a gravação</br>
+			<pt>Pausar a gravação</pt>
 			<cs>暂停录制</cs>
 		</text>
 		<text name="COURSEPLAY_RECORDING_PAUSE_RESUME">
@@ -2742,6 +2794,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<ru>продолжить запись</ru>
 			<hu>Felvétel folytatása</hu>
 			<br>Retomar a gravação</br>
+			<pt>Retomar a gravação</pt>
 			<cs>继续录制</cs>
 		</text>
 		<text name="COURSEPLAY_RECORDING_DELETE">
@@ -2753,6 +2806,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<ru>удалить последнюю точку</ru>
 			<hu>Az utolsó útvonalpont törlése</hu>
 			<br>Excluir o último ponto</br>
+			<pt>Excluir o último ponto</pt>
 			<cs>删除上个路径点</cs>
 		</text>
 		<text name="COURSEPLAY_RECORDING_SET_WAIT">
@@ -2764,6 +2818,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<ru>точка ожидания</ru>
 			<hu>Várakozási pont elhelyezése</hu>
 			<br>Definir ponto de espera</br>
+			<pt>Marcar ponto de espera</pt>
  			<cs>设置等待点</cs>
 		</text>
 		<text name="COURSEPLAY_RECORDING_SET_CROSS">
@@ -2775,6 +2830,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<ru>перекресток</ru>
 			<hu>Elágazási pont elhelyezése</hu>
 			<br>Definir ponto de cruzamento</br>
+			<pt>Marcar ponto de cruzamento</pt>
 			<cs>设置合并点</cs>
 		</text>
 		<text name="COURSEPLAY_RECORDING_TURN_START">
@@ -2786,6 +2842,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<ru>поворот</ru>
 			<hu>Fordulás indítása (következő sorra)</hu>
 			<br>Iniciar manobra de giro</br>
+			<pt>Iniciar manobra de viragem</pt>
  			<cs>设置折返点</cs>
 		</text>
 		<text name="COURSEPLAY_RECORDING_TURN_END">
@@ -2797,6 +2854,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<ru>поворот</ru>
 			<hu>Fordulás vége</hu>
 			<br>Fim da manobra de giro</br>
+			<pt>Fim da manobra de viragem</pt>
 			<cs>结束折返</cs>
 		</text>
 		<text name="COURSEPLAY_RECORDING_REVERSE_START">
@@ -2808,6 +2866,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<ru>включить задний ход</ru>
 			<hu>Tolatás indítása</hu>
 			<br>Marcha ré</br>
+			<pt>Marcha atrás</pt>
 			<cs>倒车模式</cs>
 		</text>
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP">
@@ -2819,6 +2878,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<ru>отключить задний ход</ru>
 			<hu>Tolatás leállítása</hu>
 			<br>Parar marcha ré</br>
+			<pt>Parar marcha atrás</pt>
 			<cs>前进模式</cs>
 		</text>
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT"> <!-- should the vehicle name/course be displayed with the map CP icons --> <!-- missing: it, nl -->
@@ -2829,6 +2889,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<cz>Ikony v mapě: zobrazit text</cz>
 			<hu>Térképikonok: kijelzőszöveg</hu>
 			<br>Icones do mapa: Mostrar texto</br>
+			<pt>Ícones do mapa: Mostrar legendas</pt>
 			<ru>Показать инфо на карте:</ru>
 			<cs>地图图标： 显示任务车辆图标</cs>
 		</text>
@@ -2841,6 +2902,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<ru>Всегда 4х4</ru>
 			<hu>Mindig összkerékhajtás</hu>
 			<br>Usar sempre tração nas quatro rodas</br>
+			<pt>Usar sempre tração às quatro rodas</pt>
 			<cs>打开4WD模式</cs>
 		</text>
 
@@ -2854,6 +2916,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Szeretnéd, hogy a mezők adatait automatikusan beolvassa?</hu>
 			<ru>Включить автосканирование полей?</ru>
 			<br>Você deseja que os campos sejam escaneados automaticamente?</br>
+			<pt>Pretende que os campos sejam verificados automaticamente?</pt>
 			<cs>需要自动测量农田范围么？</cs>
 		</text>
 		<text name="COURSEPLAY_YES_NO_WAGES">
@@ -2866,6 +2929,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<ru><![CDATA[Рабочие хотят %s в час!
 Разрешить выплачивать зарплаты?]]></ru>
 			<br>Você deseja que seus trabalhadores recebam salários (%s / hora)?</br>
+			<pt>Pretende que os seus trabalhadores recebam salários (%s / hora)?</pt>
  			<cs>你想要赚取雇人的工资么(%s/小时)？</cs>
 		</text>
 
@@ -2881,6 +2945,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<ru>КАЛЬКУЛЯЦИЯ ПОСЕВОВ</ru>
 			<nl>Zaad verbruik calculator</nl>
 			<br>Cálculo do uso de sementes</br>
+			<pt>Cálculo do uso das sementes</pt>
 			<cs>种子使用量</cs>
 		</text>
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD">
@@ -2894,6 +2959,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<ru>Участок: %d (%s %s)</ru>
 			<nl>Veld: %d (%s %s)</nl>
 			<br>Campo: %d (%s %s)</br>
+			<pt>Campo: %d (%s %s)</pt>
 			<cs>农田编号: %d号(%s %s)</cs>
 		</text>
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE">
@@ -2907,6 +2973,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<ru>%s</ru>
 			<nl>Zaad soort: %s</nl>
 			<br>Tipo de semente: %s</br>
+			<pt>Tipo de semente: %s</pt>
 			<cs>种子类型: %s</cs>
 		</text>
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE">
@@ -2920,6 +2987,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<ru>Расходы: %s %s (%s)</ru>
 			<nl>Verbruik: %s %s (%s)</nl>
 			<br>Utilizado: %s %s (%s)</br>
+			<pt>Utilizado: %s %s (%s)</pt>
 			<cs>用量: %s %s (%s)</cs>
 		</text>
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_TRIM">
@@ -2938,6 +3006,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Vezetősegéd panel megnyitása</hu>
 			<nl>Toon Courseplay HUD</nl>
 			<br>Mostrar Courseplay HUD</br>
+			<pt>Mostrar Courseplay HUD</pt>
 			<cs>打开CP界面</cs>
 		</text>
 		<text name="COURSEPLAY_HUD_CLOSE">
@@ -2951,6 +3020,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Vezetősegéd panel bezárása</hu>
 			<nl>Verberg Courseplay HUD</nl>
 			<br>Ocultar Courseplay HUD </br>
+			<pt>Ocultar Courseplay HUD </pt>
 			<cs>关闭CP界面</cs>
 		</text>
 		<text name="COURSEPLAY_FUNCTIONS">
@@ -2964,6 +3034,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Vezetősegéd funkciók</hu>
 			<nl>Courseplay functies</nl>
 			<br>Funções do Courseplay</br>
+			<pt>Funções do Courseplay</pt>
  			<cs>CP功能</cs>
 		</text>
 
@@ -2978,6 +3049,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Vezetősegéd gombkiosztás: Elsődleges</hu>
 			<nl>Courseplay: instellingen</nl>
 			<br>Courseplay: modificador</br>
+			<pt>Courseplay: modificador</pt>
 			<cs>Courseplay: 更改</cs>
 		</text>
 		<text name="COURSEPLAY_MENU_ACCEPT_SECONDARY">
@@ -2989,7 +3061,8 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<ru>Courseplay: вторичное меню</ru>
 			<hu>Vezetősegéd gombkiosztás: Másodlagos</hu>
 			<nl>Courseplay: tweede menu accepteren</nl>
-			<br>Courseplay: acitar menu secundário</br>
+			<br>Courseplay: aceitar menu secundário</br>
+			<pt>Courseplay: aceitar menu secundário</pt>
 			<cs>Courseplay：弹出窗口</cs>
 		</text>
 		<text name="COURSEPLAY_HUD">
@@ -3003,6 +3076,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Vezetősegéd panel be/ki</hu>
 			<nl>Too/verberg Courseplay HUD</nl>
 			<br>Mostrar/ocultar Courseplay HUD</br>
+			<pt>Mostrar/ocultar Courseplay HUD</pt>
 			<cs>打开/关闭CP界面</cs>
 		</text>
 		<text name="COURSEPLAY_START_STOP">
@@ -3016,6 +3090,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Vezetősegéd: Vezető indítása/leállítása</hu>
 			<nl>Courseplay: rijd route/stop bestuurder</nl>
 			<br>Courseplay: dirigir/parar na rota</br>
+			<pt>Courseplay: conduzir/parar no percurso</pt>
 			<cs>Courseplay：开始/停止 任务</cs>
 		</text>
 		<text name="COURSEPLAY_CANCELWAIT">
@@ -3029,6 +3104,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Vezetősegéd: Állj az utolsó ponton következő triggernél</hu>
 			<nl>Courseplay: stop bij laatste punt of volgende trigger</nl>
 			<br>Courseplay: parar no último ponto ou no próximo trigger</br>
+			<pt>Courseplay: parar no último ponto ou no próximo trigger</pt>
  			<cs>Courseplay：停在最后路点或等待点</cs>
 		</text>
 		<text name="COURSEPLAY_DRIVENOW">
@@ -3042,6 +3118,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Vezetősegéd: Indítás azonnal!</hu>
 			<nl>Courseplay: nu rijden</nl>
 			<br>Courseplay: dirigir agora</br>
+			<pt>Courseplay: conduzir agora</pt>
 			<cs>Courseplay：开车</cs>
 		</text>
 
@@ -3057,6 +3134,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Vezetősegéd: Egér activálás</hu>
 			<nl>Courseplay: muis aktie</nl>
 			<br>Courseplay: ações do mouse</br>
+			<pt>Courseplay: ações do rato</pt>
 			<cs>Courseplay：鼠标操作</cs>
 		</text>
 		<text name="COURSEPLAY_MOUSEACTION_SECONDARY">
@@ -3070,6 +3148,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Vezetősegéd: Másodlagos egér aktiválás</hu>
 			<nl>Courseplay: secundaire muis aktie</nl>
 			<br>Courseplay: ações secundárias do mouse</br>
+			<pt>Courseplay: ações secundárias do rato</pt>
 			<cs>Courseplay：辅助鼠标操作</cs>
 		</text>
 		<text name="COURSEPLAY_MOUSEARROW_SHOW"> 
@@ -3083,6 +3162,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Egérkurzor megjelenítése</hu>
 			<nl>toon cursorr</nl>
 			<br>mostrar cursor do mouse</br>
+			<pt>mostrar seta do rato</pt>
 			<cs>显示鼠标</cs>
 		</text>
 		<text name="COURSEPLAY_MOUSEARROW_HIDE">
@@ -3096,6 +3176,7 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<hu>Egérkurzor elrejtése</hu>
 			<nl>verberg cursor</nl>
 			<br>ocultar cursor do mouse</br>
+			<pt>ocultar seta do rato</pt>
 			<cs>不显示鼠标</cs>
 		</text>
 	</l10n>
