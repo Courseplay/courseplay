@@ -120,31 +120,28 @@ function courseplay:drive(self, dt)
 	end;
 
 
-	-- BEACON LIGHTS
-	if self.cp.beaconLightsMode == 1 then --on streets only
-		local combineNeedsBeacon = self.cp.isCombine and (self.fillLevel / self.capacity) > 0.8;
-		local goForBeaconLights = ((self.cp.mode == 1 or self.cp.mode == 2 or self.cp.mode == 5) and self.recordnumber > 2) 
-								or ((self.cp.mode == 4 or self.cp.mode == 6) and self.recordnumber > self.cp.stopWork)
-								or combineNeedsBeacon;
-								
-		if goForBeaconLights then
-			if not self.beaconLightsActive then
-				self:setBeaconLightsVisibility(true);
-			end
-		else
-			if self.beaconLightsActive then
-				self:setBeaconLightsVisibility(false);
-			end
-		end;
-
-	elseif self.cp.beaconLightsMode == 2 then --always
-		if not self.beaconLightsActive then
-			self:setBeaconLightsVisibility(true);
-		end;
-
-	elseif self.cp.beaconLightsMode == 3 then --never
+	-- WARNING LIGHTS
+	-- beacon lights
+	if self.cp.warningLightsMode == courseplay.WARNING_LIGHTS_NEVER then -- never
 		if self.beaconLightsActive then
 			self:setBeaconLightsVisibility(false);
+		end;
+	else -- on street/always
+		local beaconOn = self.cp.warningLightsMode == courseplay.WARNING_LIGHTS_BEACON_ALWAYS 
+						 or ((self.cp.mode == 1 or self.cp.mode == 2 or self.cp.mode == 5) and self.recordnumber > 2) 
+						 or ((self.cp.mode == 4 or self.cp.mode == 6) and self.recordnumber > self.cp.stopWork)
+						 or self.cp.isCombine and (self.fillLevel / self.capacity) > 0.8;
+		if self.beaconLightsActive ~= beaconOn then
+			self:setBeaconLightsVisibility(beaconOn);
+		end;
+	end;
+
+	-- hazard lights
+	if self.turnSignalState and self.setTurnSignalState then
+		if self.cp.warningLightsMode ~= courseplay.WARNING_LIGHTS_BEACON_HAZARD_ON_STREET and self.turnSignalState ~= Vehicle.TURNSIGNAL_OFF then
+			self:setTurnSignalState(Vehicle.TURNSIGNAL_OFF);
+		elseif self.cp.warningLightsMode == courseplay.WARNING_LIGHTS_BEACON_HAZARD_ON_STREET and self.turnSignalState ~= Vehicle.TURNSIGNAL_HAZARD then
+			self:setTurnSignalState(Vehicle.TURNSIGNAL_HAZARD);
 		end;
 	end;
 

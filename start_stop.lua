@@ -508,9 +508,12 @@ function courseplay:stop(self)
 	self.cp.foundColli = {}
 	self.cp.inTraffic = false
 	self.cp.bypassWaypointsSet = false
-	--deactivate beacon lights
+	-- deactivate beacon and hazard lights
 	if self.beaconLightsActive then
 		self:setBeaconLightsVisibility(false);
+	end;
+	if self.turnSignalState and self.turnSignalState ~= Vehicle.TURNSIGNAL_OFF then
+		self:setTurnSignalState(Vehicle.TURNSIGNAL_OFF);
 	end;
 
 	--open all covers

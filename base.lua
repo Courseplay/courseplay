@@ -77,7 +77,7 @@ function courseplay:load(xmlFile)
 	self.cp.numCrossingPoints = 0;
 
 	self.cp.visualWaypointsMode = 1
-	self.cp.beaconLightsMode = 1;
+	self.cp.warningLightsMode = 1;
 
 	-- saves the shortest distance to the next waypoint (for recocnizing circling)
 	self.cp.shortestDistToWp = nil
@@ -956,7 +956,7 @@ function courseplay:readStream(streamId, connection)
 	self.cp.speeds.unload = streamDebugReadFloat32(streamId)
 	self.cp.speeds.street = streamDebugReadFloat32(streamId)
 	self.cp.visualWaypointsMode = streamDebugReadInt32(streamId)
-	self.cp.beaconLightsMode = streamDebugReadInt32(streamId)
+	self.cp.warningLightsMode = streamDebugReadInt32(streamId)
 	self.cp.waitTime = streamDebugReadInt32(streamId)
 	self.cp.symmetricLaneChange = streamDebugReadBool(streamId)
 	self.cp.startingCorner = streamDebugReadInt32(streamId)
@@ -1074,7 +1074,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteFloat32(streamId,self.cp.speeds.unload)
 	streamDebugWriteFloat32(streamId,self.cp.speeds.street)
 	streamDebugWriteInt32(streamId,self.cp.visualWaypointsMode)
-	streamDebugWriteInt32(streamId,self.cp.beaconLightsMode)
+	streamDebugWriteInt32(streamId,self.cp.warningLightsMode)
 	streamDebugWriteInt32(streamId,self.cp.waitTime)
 	streamDebugWriteBool(streamId,self.cp.symmetricLaneChange)
 	streamDebugWriteInt32(streamId,self.cp.startingCorner)
@@ -1128,7 +1128,7 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		local curKey = key .. '.courseplay';
 		courseplay:setCpMode(self,  Utils.getNoNil(   getXMLInt(xmlFile, curKey .. '#aiMode'),			 self.cp.mode));
 		self.cp.hud.openWithMouse = Utils.getNoNil(  getXMLBool(xmlFile, curKey .. '#openHudWithMouse'), true);
-		self.cp.beaconLightsMode  = Utils.getNoNil(   getXMLInt(xmlFile, curKey .. '#beacon'),			 1);
+		self.cp.warningLightsMode  = Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#lights'),			 1);
 		self.cp.waitTime 		  = Utils.getNoNil(   getXMLInt(xmlFile, curKey .. '#waitTime'),		 0);
 		local courses 			  = Utils.getNoNil(getXMLString(xmlFile, curKey .. '#courses'),			 '');
 		self.cp.loadedCourses = Utils.splitString(",", courses);
@@ -1256,7 +1256,7 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 
 
 	--NODES
-	local cpOpen = string.format('<courseplay aiMode=%q courses=%q openHudWithMouse=%q beacon=%q visualWaypoints=%q waitTime=%q multiSiloSelectedFillType=%q>', tostring(self.cp.mode), tostring(table.concat(self.cp.loadedCourses, ",")), tostring(self.cp.hud.openWithMouse), tostring(self.cp.beaconLightsMode), tostring(self.cp.visualWaypointsMode), tostring(self.cp.waitTime), Fillable.fillTypeIntToName[self.cp.multiSiloSelectedFillType]);
+	local cpOpen = string.format('<courseplay aiMode=%q courses=%q openHudWithMouse=%q lights=%q visualWaypoints=%q waitTime=%q multiSiloSelectedFillType=%q>', tostring(self.cp.mode), tostring(table.concat(self.cp.loadedCourses, ",")), tostring(self.cp.hud.openWithMouse), tostring(self.cp.warningLightsMode), tostring(self.cp.visualWaypointsMode), tostring(self.cp.waitTime), Fillable.fillTypeIntToName[self.cp.multiSiloSelectedFillType]);
 	local speeds = string.format('<speeds useRecordingSpeed=%q unload="%d" turn="%d" field="%d" max="%d" />', tostring(self.cp.speeds.useRecordingSpeed), self.cp.speeds.unload, self.cp.speeds.turn, self.cp.speeds.field, self.cp.speeds.street);
 	local combi = string.format('<combi tipperOffset="%.1f" combineOffset="%.1f" combineOffsetAutoMode=%q fillFollow="%d" fillDriveOn="%d" turnRadius="%d" realisticDriving=%q />', self.cp.tipperOffset, self.cp.combineOffset, tostring(self.cp.combineOffsetAutoMode), self.cp.followAtFillLevel, self.cp.driveOnAtFillLevel, self.cp.turnRadius, tostring(self.cp.realisticDriving));
 	local fieldWork = string.format('<fieldWork workWidth="%.1f" ridgeMarkersAutomatic=%q offsetData=%q abortWork="%d" refillUntilPct="%d" />', self.cp.workWidth, tostring(self.cp.ridgeMarkersAutomatic), offsetData, Utils.getNoNil(self.cp.abortWork, 0), self.cp.refillUntilPct);

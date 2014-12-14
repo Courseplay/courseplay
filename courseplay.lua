@@ -139,6 +139,12 @@ local function setGlobalData()
 	courseplay.START_AT_FIRST_POINT = 2;
 	courseplay.START_AT_CURRENT_POINT = 3;
 
+	-- warning lights options
+	courseplay.WARNING_LIGHTS_NEVER = 0;
+	courseplay.WARNING_LIGHTS_BEACON_ON_STREET = 1;
+	courseplay.WARNING_LIGHTS_BEACON_HAZARD_ON_STREET = 2;
+	courseplay.WARNING_LIGHTS_BEACON_ALWAYS = 3;
+
 	local langNumData = {
 		br = { '.', ',' },
 		cz = { ' ', ',' },

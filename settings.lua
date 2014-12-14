@@ -516,11 +516,8 @@ function courseplay:toggleUseRecordingSpeed(vehicle)
 	vehicle.cp.speeds.useRecordingSpeed = not vehicle.cp.speeds.useRecordingSpeed;
 end;
 
-function courseplay:changeBeaconLightsMode(vehicle, changeBy)
-	vehicle.cp.beaconLightsMode = vehicle.cp.beaconLightsMode + changeBy;
-	if vehicle.cp.beaconLightsMode == 4 then
-		vehicle.cp.beaconLightsMode = 1;
-	end;
+function courseplay:changeWarningLightsMode(vehicle, changeBy)
+	vehicle.cp.warningLightsMode = Utils.clamp(vehicle.cp.warningLightsMode + changeBy, courseplay.WARNING_LIGHTS_NEVER, courseplay.WARNING_LIGHTS_BEACON_ALWAYS);
 end;
 
 function courseplay:toggleOpenHudWithMouse(vehicle)

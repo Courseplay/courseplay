@@ -323,6 +323,12 @@ function courseplay.button:render()
 			elseif pg == courseplay.hud.PAGE_GENERAL_SETTINGS then
 				if fn == 'toggleRealisticDriving' then
 					show = vehicle.cp.mode == courseplay.MODE_COMBI or vehicle.cp.mode == courseplay.MODE_OVERLOADER;
+				elseif fn == 'changeWarningLightsMode' then
+					if prm < 0 then
+						show = vehicle.cp.warningLightsMode > courseplay.WARNING_LIGHTS_NEVER;
+					else
+						show = vehicle.cp.warningLightsMode < courseplay.WARNING_LIGHTS_BEACON_ALWAYS;
+					end;
 				elseif fn == "changeWaitTime" then
 					show = courseplay:getCanHaveWaitTime(vehicle);
 					if show and prm < 0 then

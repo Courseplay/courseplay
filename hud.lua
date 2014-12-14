@@ -181,6 +181,9 @@ function courseplay.hud:setup()
 			[4] = self.basePosX + self:pxToNormal(407, 'x');
 			[5] = self.basePosX + self:pxToNormal(407, 'x');
 		};
+		[self.PAGE_GENERAL_SETTINGS] = {
+			[4] = self.basePosX + self:pxToNormal(240, 'x');
+		};
 		[self.PAGE_DRIVING_SETTINGS] = {
 			[7] = self.basePosX + self:pxToNormal(202, 'x');
 			[8] = self.basePosX + self:pxToNormal(202, 'x');
@@ -887,11 +890,11 @@ function courseplay.hud:loadPage(vehicle, page)
 
 		-- Waypoint mode
 		vehicle.cp.hud.content.pages[6][3][1].text = courseplay:loc('COURSEPLAY_WAYPOINT_MODE');
-		vehicle.cp.hud.content.pages[6][3][2].text = courseplay:loc(string.format('COURSEPLAY_WAYPOINT_MODE_%d', vehicle.cp.visualWaypointsMode));
+		vehicle.cp.hud.content.pages[6][3][2].text = courseplay:loc('COURSEPLAY_WAYPOINT_MODE_' .. vehicle.cp.visualWaypointsMode);
 
-		-- Beacon lights
-		vehicle.cp.hud.content.pages[6][4][1].text = courseplay:loc('COURSEPLAY_BEACON_LIGHTS');
-		vehicle.cp.hud.content.pages[6][4][2].text = courseplay:loc(string.format('COURSEPLAY_BEACON_LIGHTS_MODE_%d', vehicle.cp.beaconLightsMode));
+		-- Warning lights
+		vehicle.cp.hud.content.pages[6][4][1].text = courseplay:loc('COURSEPLAY_WARNING_LIGHTS');
+		vehicle.cp.hud.content.pages[6][4][2].text = courseplay:loc('COURSEPLAY_WARNING_LIGHTS_MODE_' .. vehicle.cp.warningLightsMode);
 
 		-- Waiting point: wait time
 		if courseplay:getCanHaveWaitTime(vehicle) then
@@ -1431,9 +1434,13 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	-- ##################################################
 	-- Page 6: General settings
 	courseplay.button:new(vehicle, 6, nil, 'toggleRealisticDriving', nil,  self.contentMinX, self.linesPosY[1], self.contentMaxWidth, self.lineHeight, 1, nil, true);
+
 	courseplay.button:new(vehicle, 6, nil, 'toggleOpenHudWithMouse', nil,  self.contentMinX, self.linesPosY[2], self.contentMaxWidth, self.lineHeight, 2, nil, true);
+
 	courseplay.button:new(vehicle, 6, nil, 'changeVisualWaypointsMode', 1, self.contentMinX, self.linesPosY[3], self.contentMaxWidth, self.lineHeight, 3, nil, true);
-	courseplay.button:new(vehicle, 6, nil, 'changeBeaconLightsMode',    1, self.contentMinX, self.linesPosY[4], self.contentMaxWidth, self.lineHeight, 4, nil, true);
+
+	courseplay.button:new(vehicle, 6, { 'iconSprite.png', 'navLeft' },  'changeWarningLightsMode', -1, self.buttonPosX[2], self.linesButtonPosY[4], wSmall, hSmall, 4, -1, false);
+	courseplay.button:new(vehicle, 6, { 'iconSprite.png', 'navRight' }, 'changeWarningLightsMode',  1, self.buttonPosX[1], self.linesButtonPosY[4], wSmall, hSmall, 4,  1, false);
 
 	courseplay.button:new(vehicle, 6, { 'iconSprite.png', 'navMinus' }, 'changeWaitTime', -1, self.buttonPosX[2], self.linesButtonPosY[5], wSmall, hSmall, 5, -5, false);
 	courseplay.button:new(vehicle, 6, { 'iconSprite.png', 'navPlus' },  'changeWaitTime',  1, self.buttonPosX[1], self.linesButtonPosY[5], wSmall, hSmall, 5,  5, false);

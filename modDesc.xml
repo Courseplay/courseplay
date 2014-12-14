@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="20">
-	<version>4.00.0209</version>
+	<version>4.00.0210</version>
 	<author><![CDATA[Courseplay Dev Team]]></author>
 	<title>
 		<br>Courseplay</br>
@@ -1099,46 +1099,11 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<br>nenhum</br>
 			<cs>不显示</cs>
 		</text>
-		<text name="COURSEPLAY_BEACON_LIGHTS">
-			<en>Beacon lights:</en>
-			<de>Rundumleuchte:</de>
-			<fr>Gyrophares:</fr>
-			<es>Rotativos:</es>
-			<it>Lampeggianti:</it>
-			<cz>Maják:</cz>
-			<ru>Мигалка:</ru>
-			<hu>Megkülönböztető jelzés:</hu>
-			<nl>Zwaailichten:</nl>
-			<br>Luzes de aviso:</br>
-			<cs>信标灯:</cs>
+		<text name="COURSEPLAY_WARNING_LIGHTS"> <!-- missing: br, cs, cz, es, fr, hu, it, nl, ru --> <!-- NOTE: this should be a general term that includes both beacon lights and hazard lights -->
+			<en>Warning lights:</en>
+			<de>Warnleuchten:</de>
 		</text>
-		<text name="COURSEPLAY_BEACON_LIGHTS_MODE_1">
-			<en>only on the road</en>
-			<de>Auf der Straße</de>
-			<fr>seulement sur la route</fr>
-			<es>solo en la carretera</es>
-			<it>solo su strada</it>
-			<cz>zapnout jen na silnici</cz>
-			<ru>только на дороге</ru>
-			<hu>az utakon működik</hu>
-			<nl>alleen op de weg</nl>
-			<br>somente na estrada</br>
-			<cs>只在路上打开</cs>
-		</text>
-		<text name="COURSEPLAY_BEACON_LIGHTS_MODE_2">
-			<en>always turn on</en>
-			<de>eingeschaltet</de>
-			<fr>toujours allumés</fr>
-			<es>siempre encendidos</es>
-			<it>sempre accesi</it>
-			<cz>vždy zapnout</cz>
-			<ru>мигает всегда</ru>
-			<hu>mindig működik</hu>
-			<nl>altijd aan</nl>
-			<br>sempre ligadas</br>
- 			<cs>始终打开</cs>
-		</text>
-		<text name="COURSEPLAY_BEACON_LIGHTS_MODE_3">
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0">
 			<en>never turn on</en>
 			<de>ausgeschaltet</de>
 			<fr>jamais allumés</fr>
@@ -1151,6 +1116,55 @@ Vertaling: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [H
 			<br>desligadas</br>
 			<cs>从不打开</cs>
 		</text>
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1"> <!-- missing: br, cs, cz, hu, it, nl, ru -->
+			<en>beacon lights (on the street)</en>
+			<de>RUL (auf der Straße)</de>
+			<fr>gyrophares (sur la route)</fr>
+			<es>rotativos (en la carretera)</es>
+		</text>
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2">  <!-- missing: br, cs, cz, hu, it, nl, ru --> <!-- NOTE: your text should NOT be any longer than the Spanish text! (there's not enough space in the hud for longer text) -->
+			<en>beacon &amp; hazard lights (on the street)</en>
+			<de>RUL &amp; Warnblinker (auf der Straße)</de>
+			<fr>Gyrophares &amp; feux de détresse (sur la route)</fr>
+			<es>Rotativos &amp; luces de emerg. (en la carretera)</es>
+		</text>
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_3">
+			<en>beacon lights (always)</en>
+			<de>Rundumleuchten (immer)</de>
+			<fr>Gyrophares (toujours allumés)</fr>
+			<es>Rotativos (siempre encendidos)</es>
+			<it>Lampeggianti (sempre accesi)</it>
+			<cz>Maják (vždy zapnout)</cz>
+			<ru>Мигалка (мигает всегда)</ru>
+			<hu>Megkülönböztető jelzés (mindig működik)</hu>
+			<nl>Zwaailichten (altijd aan)</nl>
+			<br>Luzes de aviso (sempre ligadas)</br>
+ 			<cs>信标灯 (始终打开)</cs>
+		</text>
+		<!-- TODO: delete after warning lights texts have been translated properly
+		<text name="COURSEPLAY_BEACON_LIGHTS_MODE_1">
+			<fr>seulement sur la route</fr>
+			<es>solo en la carretera</es>
+			<it>solo su strada</it>
+			<cz>zapnout jen na silnici</cz>
+			<ru>только на дороге</ru>
+			<hu>az utakon működik</hu>
+			<nl>alleen op de weg</nl>
+			<br>somente na estrada</br>
+			<cs>只在路上打开</cs>
+		</text>
+		<text name="COURSEPLAY_BEACON_LIGHTS_MODE_2">
+			<fr>toujours allumés</fr>
+			<es>siempre encendidos</es>
+			<it>sempre accesi</it>
+			<cz>vždy zapnout</cz>
+			<ru>мигает всегда</ru>
+			<hu>mindig működik</hu>
+			<nl>altijd aan</nl>
+			<br>sempre ligadas</br>
+ 			<cs>始终打开</cs>
+		</text>
+		-->
 		<text name="COURSEPLAY_PAGE_TITLE_CP_CONTROL">
 			<en>Courseplay control</en>
 			<de>Abfahrhelfer Steuerung</de>
