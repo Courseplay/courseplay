@@ -1248,6 +1248,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR]
 			<hu>Megkülönböztető jelzés (mindig működik)</hu>
 			<nl>Zwaailichten (altijd aan)</nl>
 			<br>Luzes de aviso (sempre ligadas)</br>
+			<pt>Pirilampo (sempre ligado)</pt>
  			<cs>始终打开信标灯</cs>
 		</text>
 		<text name="COURSEPLAY_PAGE_TITLE_CP_CONTROL">
