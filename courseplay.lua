@@ -147,6 +147,7 @@ local function setGlobalData()
 
 	local langNumData = {
 		br = { '.', ',' },
+		pt = { '.', ',' },
 		cz = { ' ', ',' },
 		de = { '.', ',' },
 		en = { ',', '.' },
