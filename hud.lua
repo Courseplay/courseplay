@@ -1,6 +1,6 @@
 ﻿courseplay.hud = {};
 
-local floor = math.floor;
+local ceil, floor = math.ceil, math.floor;
 local function round(num)
 	return floor(num + 0.5);
 end;
@@ -355,6 +355,7 @@ function courseplay.hud:setup()
 		[courseplay.MODE_SHOVEL_FILL_AND_EMPTY]	 = { 220,144, 252,112 };
 	};
 
+	-- TOOLTIP
 	self.toolTipIconWidth  = self:pxToNormal(20, 'x');
 	self.toolTipIconHeight = self:pxToNormal(20, 'y');
 	self.toolTipIconPosX = self.col1posX;
@@ -362,13 +363,30 @@ function courseplay.hud:setup()
 	self.toolTipTextPosX = self.toolTipIconPosX + self.toolTipIconWidth * 1.25;
 	self.toolTipTextPosY = self.basePosY + self:pxToNormal(16, 'y');
 
+	-- INFO TEXT
 	self.infoTextPosX = self.col1posX;
 	self.infoTextPosY = self.toolTipTextPosY;
 
+	-- DIRECTION ARROW
 	self.directionArrowPosX = self.baseCenterPosX + self:pxToNormal(96, 'x');
 	self.directionArrowPosY = self.basePosY + self:pxToNormal(118, 'y');
 	self.directionArrowWidth = self:pxToNormal(128, 'x');
 	self.directionArrowHeight = self:pxToNormal(128, 'y');
+
+	-- INGAME MAP ICONS
+	local iconSizePx, minX, minY = 118, 660, 10;
+	self.ingameMapIconsUVs = {};
+	for i=1,courseplay.numAiModes do
+		local col = ((i - 1) % 3) + 1;
+		local line = ceil(i / 3);
+
+		local xLeft = minX + (col - 1) * iconSizePx;
+		local xRight = xLeft + iconSizePx;
+		local yBottom = minY + line * iconSizePx;
+		local yTop = yBottom - iconSizePx;
+
+		self.ingameMapIconsUVs[i] = { xLeft,yBottom, xRight,yTop };
+	end;
 
 	-- SOUND
 	self.clickSound = createSample('clickSound');

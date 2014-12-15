@@ -1,5 +1,5 @@
 local curFile = 'settings.lua';
-local abs, max, min = math.abs, math.max, math.min;
+local abs, ceil, max, min = math.abs, math.ceil, math.max, math.min;
 
 function courseplay:openCloseHud(vehicle, open)
 	courseplay:setMouseCursor(vehicle, open);
@@ -1183,7 +1183,7 @@ function courseplay:setMouseCursor(self, show)
 end;
 
 function courseplay:changeDebugChannelSection(vehicle, changeBy)
-	courseplay.debugChannelSection = Utils.clamp(courseplay.debugChannelSection + changeBy, 1, math.ceil(courseplay.numAvailableDebugChannels / courseplay.numDebugChannelButtonsPerLine));
+	courseplay.debugChannelSection = Utils.clamp(courseplay.debugChannelSection + changeBy, 1, ceil(courseplay.numAvailableDebugChannels / courseplay.numDebugChannelButtonsPerLine));
 	courseplay.debugChannelSectionEnd = courseplay.numDebugChannelButtonsPerLine * courseplay.debugChannelSection;
 	courseplay.debugChannelSectionStart = courseplay.debugChannelSectionEnd - courseplay.numDebugChannelButtonsPerLine + 1;
 
@@ -1513,12 +1513,16 @@ function courseplay:createMapHotspot(vehicle)
 		end;
 	end;
 
-	local iconPath = Utils.getFilename(('img/ingameMapIcon_%02d.png'):format(vehicle.cp.mode), courseplay.path);
+	local iconPath = Utils.getFilename('img/hud.png', courseplay.path);
 	local x = vehicle.components[1].lastTranslation[1];
 	local y = vehicle.components[1].lastTranslation[3];
 	local h = 24 / 1080;
 	local w = h / g_screenAspectRatio;
 	vehicle.cp.ingameMapHotSpot = g_currentMission.ingameMap:createMapHotspot(name, iconPath, x, y, w, h, false, false, CpManager.ingameMapIconShowText, vehicle.rootNode, false, true);
+
+	if vehicle.cp.ingameMapHotSpot and vehicle.cp.ingameMapHotSpot.overlay then
+		courseplay.utils:setOverlayUVsPx(vehicle.cp.ingameMapHotSpot.overlay, courseplay.hud.ingameMapIconsUVs[vehicle.cp.mode], courseplay.hud.baseTextureSize.x, courseplay.hud.baseTextureSize.y);
+	end;
 end;
 function courseplay:deleteMapHotspot(vehicle)
 	if vehicle.cp.ingameMapHotSpot then
