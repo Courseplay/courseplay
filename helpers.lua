@@ -9,19 +9,19 @@ end;
 --Table concatenation: http://stackoverflow.com/a/1413919
 -- return a new array containing the concatenation of all of its parameters. Scaler parameters are included in place, and array parameters have their values shallow-copied to the final array. Note that userdata and function values are treated as scalar.
 function tableConcat(...) 
-	local t = {}
-	for n = 1,select("#",...) do
-		local arg = select(n,...)
-		if type(arg)=="table" then
+	local t = {};
+	for n = 1, select('#', ...) do
+		local arg = select(n, ...);
+		if type(arg) == 'table' then
 			for _,v in ipairs(arg) do
-				t[#t+1] = v
-			end
+				t[#t+1] = v;
+			end;
 		else
-			t[#t+1] = arg
-		end
-	end
+			t[#t+1] = arg;
+		end;
+	end;
 	return t;
-end
+end;
 
 function courseplay:isFolding(workTool) --returns isFolding, isFolded, isUnfolded
 	if not courseplay:isFoldable(workTool) then

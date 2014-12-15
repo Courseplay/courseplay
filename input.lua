@@ -10,7 +10,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 	end;
 
 	local hudGfx = courseplay.hud.visibleArea;
-	local mouseIsInHudArea = self.cp.mouseCursorActive and courseplay:mouseIsInArea(posX, posY, hudGfx.x1, hudGfx.x2, hudGfx.y1, self.cp.suc.active and hudGfx.y2WithSuc or hudGfx.y2);
+	local mouseIsInHudArea = self.cp.mouseCursorActive and courseplay:mouseIsInArea(posX, posY, hudGfx.x1, hudGfx.x2, hudGfx.y1, self.cp.suc.active and courseplay.hud.suc.visibleArea.y2 or hudGfx.y2);
 
 	-- if not mouseIsInHudArea then return; end;
 
@@ -213,7 +213,7 @@ function courseplay:executeFunction(self, func, value, page)
 			if not combine.cp.isChopper then
 				if line == 4 then
 					courseplay:toggleDriverPriority(combine);
-				elseif line == 5 and self:getIsCourseplayDriving() and self.cp.mode == courseplay.MODE_FIELDWORK then
+				elseif line == 5 and self.cp.mode == courseplay.MODE_FIELDWORK then
 					courseplay:toggleStopWhenUnloading(combine);
 				end;
 			end;
@@ -316,7 +316,7 @@ function courseplay.inputBindings.updateInputButtonData()
 
 		-- print(('\t%s: inputName=%q'):format(type, inputName));
 
-		local txt = ('%s %s'):format(g_i18n:getText('mouse'), MouseHelper.getButtonNames(action.mouseButtons));
+		local txt = ('%s %s'):format(g_i18n:getText('mouse'), MouseHelper.getButtonNames(action.mouseButtons)); -- TODO (Jakob): getButtonNames returns English, not i18n text
 		courseplay.inputBindings.mouse[type .. 'TextI18n'] = txt;
 		courseplay.inputBindings.mouse[type .. 'ButtonId'] = mouseButtonId;
 		-- print(('\t\t%sTextI18n=%q, mouseButtonId=%d'):format(type, txt, mouseButtonId));

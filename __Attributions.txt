@@ -1,5 +1,5 @@
-Icons et al.
-------------------------------------
+## Developer version
+
 * Tractor icon by Olivier Guin - under "CC BY 3.0" license
 * Globe icon by Nicholas Menghini - under "CC BY 3.0" license
 * Speed gauge icon by Márcio Duarte - under "CC BY 3.0" license
@@ -17,25 +17,28 @@ Icons et al.
 
 * All other icons and graphics by Jakob Tischler
 
-====================================
+___
 
-Translations
-------------------------------------
+## Translations
+
+* Chinese: Simba76
 * Czech: Albi
 * Dutch: Pewemo
 * French: Gui7545
 * Hungarian: Chris von Bone
 * Italian: JD7530, Cristiano Magro
+* Portuguese (BR): Admilson
+* Portuguese (PT): PTAzores
 * Russian: Bernelli
 * Spanish: JFMtb
 
-====================================
+___
 
-Former Developers
-------------------------------------
+## Former Developers
+
+* Bastian82
 * Lautschreier
 * Horoman
 * Hummel
-* Wolverin0815
-* Bastian82
 * Skydancer
+* Wolverin0815

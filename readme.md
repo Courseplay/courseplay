@@ -25,6 +25,7 @@ Be as specific as possible:
 * only use the vehicles necessary, not 10 other ones at a time
 * which vehicles are involved, what is the intended action?
 * Post! The! Log! to [Gist](https://gist.github.com/) or [PasteBin](http://pastebin.com/)
+* For more details on how to post a proper bug report, visit our [Wiki](https://github.com/Courseplay/courseplay/wiki)
 
 ___
 
@@ -36,13 +37,13 @@ ___
 ___
 
 ## Attributions
-Please see `__Attributions.txt` for more information.
+Please see `[__Attributions.md](https://github.com/Courseplay/courseplay/blob/master/__Attributions.md)` for more information.
 ___
 
 ## Former developers  
+* Bastian82
 * Lautschreier
 * Horoman
 * Hummel
-* Wolverin0815
-* Bastian82
 * Skydancer
+* Wolverin0815

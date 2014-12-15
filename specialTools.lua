@@ -293,6 +293,11 @@ function courseplay:setNameVariable(workTool)
 	-- Seeders [Giants]
 	elseif workTool.cp.xmlFileName == 'vaderstadRapidA600S.xml' then
 		workTool.cp.isVaderstadRapidA600S = true;
+
+	-- Special tools [Giants]
+	elseif workTool.typeName == 'strawBlower' then
+		workTool.cp.isStrawBlower = true;
+		workTool.cp.specialUnloadDistance = 0;
 	end;
 end;
 

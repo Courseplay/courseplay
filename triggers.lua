@@ -323,6 +323,7 @@ function courseplay:findSpecialTriggerCallback(transformId, x, y, z, distance)
 
 		if trigger.isWeightStation and courseplay:canUseWeightStation(self) then
 			self.cp.fillTrigger = transformId;
+			courseplay:debug(('%s: trigger %s is valid'):format(nameNum(self), tostring(transformId)), 19);
 		elseif self.cp.mode == 4 then
 			if trigger.isSowingMachineFillTrigger and not self.cp.hasSowingMachine then
 				return true;
@@ -330,10 +331,23 @@ function courseplay:findSpecialTriggerCallback(transformId, x, y, z, distance)
 				return true;
 			end;
 			self.cp.fillTrigger = transformId;
+			courseplay:debug(('%s: trigger %s is valid'):format(nameNum(self), tostring(transformId)), 19);
 		elseif self.cp.mode == 8 and (trigger.isSprayerFillTrigger or trigger.isLiquidManureFillTrigger or trigger.isSchweinemastLiquidManureTrigger) then
-			self.cp.fillTrigger = transformId;
+			if trigger.parentVehicle then
+				local tractor = trigger.parentVehicle:getRootAttacherVehicle()
+				if not (tractor and tractor.hasCourseplaySpec and tractor.cp.mode == 8 and tractor.cp.isDriving) then
+					self.cp.fillTrigger = transformId;
+					courseplay:debug(('%s: trigger %s is valid'):format(nameNum(self), tostring(transformId)), 19);
+				else
+					courseplay:debug(('%s: trigger %s is running mode8 -> refuse'):format(nameNum(self), tostring(transformId)), 19);
+				end
+			else
+				self.cp.fillTrigger = transformId;
+				courseplay:debug(('%s: trigger %s is valid'):format(nameNum(self), tostring(transformId)), 19);
+			end
 		elseif trigger.isGasStationTrigger or trigger.isDamageModTrigger then
 			self.cp.fillTrigger = transformId;
+			courseplay:debug(('%s: trigger %s is valid'):format(nameNum(self), tostring(transformId)), 19);
 		end;
 		return true;
 	end;
@@ -556,6 +570,16 @@ function courseplay:updateAllTriggers()
 				t.isLiquidManureFillTrigger = true;
 				t.isCowsLiquidManureFillTrigger = true;
 				courseplay:cpAddTrigger(triggerId, t, 'liquidManure', 'nonUpdateable');
+
+				-- check corresponding feeding tipTriggers
+				if t.fillLevelObject and t.fillLevelObject.tipTriggers then
+					for i,subTrigger in pairs(t.fillLevelObject.tipTriggers) do
+						local triggerId = subTrigger.triggerId;
+						if triggerId and subTrigger.acceptedFillTypes then
+							courseplay:cpAddTrigger(triggerId, subTrigger, 'tipTrigger');
+						end;
+					end;
+				end;
 			-- Regular and Extended tipTriggers
 			elseif courseplay:isValidTipTrigger(trigger) then
 				local triggerId = trigger.triggerId;
@@ -576,6 +600,7 @@ function courseplay:updateAllTriggers()
 			local triggerId = trigger.triggerId
 			trigger.isLiquidManureFillTrigger = true;
 			trigger.isLiquidManureOverloaderFillTrigger = true;
+			trigger.parentVehicle = vehicle
 			courseplay:cpAddTrigger(triggerId, trigger, 'liquidManure', 'nonUpdateable');
 		end
 	end
@@ -585,6 +610,8 @@ end;
 function courseplay:cpAddTrigger(triggerId, trigger, triggerType, groupType)
 	--courseplay:debug(('%s: courseplay:cpAddTrigger: TriggerId: %s,trigger: %s, triggerType: %s,groupType: %s'):format(nameNum(self), tostring(triggerId), tostring(trigger), tostring(triggerType), tostring(groupType)), 1);
 	local t = courseplay.triggers;
+	if t.all[triggerId] ~= nil then return; end;
+
 	t.all[triggerId] = trigger;
 	t.allCount = t.allCount + 1;
 

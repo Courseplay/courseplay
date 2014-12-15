@@ -99,6 +99,9 @@ end;
 function courseplay:isPushWagon(workTool)
 	return workTool.typeName:match("forageWagon") or workTool.cp.hasSpecializationSiloTrailer or workTool.cp.isPushWagon;
 end;
+function courseplay:isSpecialChopper(workTool)
+	return workTool.typeName:match("woodCrusherTrailer") 
+end
 
 -- UPDATE WORKTOOL DATA
 function courseplay:updateWorkTools(vehicle, workTool, isImplement)
@@ -459,12 +462,11 @@ function courseplay:setTipperCoverData(vehicle)
 		local workTool = vehicle.cp.workTools[i];
 
 		-- Default Giants trailers
-		if workTool.cp.hasSpecializationCover then
+		if workTool.cp.hasSpecializationCover and not workTool.cp.isStrawBlower then
 			courseplay:debug(string.format('Implement %q has a cover (hasSpecializationCover == true)', tostring(workTool.name)), 6);
 			local data = {
 				coverType = 'defaultGiants',
 				tipperIndex = i,
-				--coverItems = coverItems
 			};
 			table.insert(vehicle.cp.tippersWithCovers, data);
 			vehicle.cp.tipperHasCover = true;

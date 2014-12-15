@@ -433,7 +433,7 @@ function courseplay:createNewLinkedNode(object, nodeName, linkToNode)
 
 	local node = createTransformGroup(nodeName);
 	link(linkToNode, node);
-	table.insert(object.cp.notesToDelete, node);
+	table.insert(object.cp.notesToDelete, 1, node);
 
 	return node;
 end;
@@ -538,8 +538,8 @@ end;
 
 function courseplay:getRealUnloadOrFillNode(workTool)
 	if workTool.cp.unloadOrFillNode == nil then
-		-- BALELOADERS
-		if courseplay:isBaleLoader(workTool) or (courseplay:isSpecialBaleLoader(workTool) and workTool.cp.specialUnloadDistance) then
+		-- BALELOADERS and STRAWBLOWERS
+		if courseplay:isBaleLoader(workTool) or (courseplay:isSpecialBaleLoader(workTool) and workTool.cp.specialUnloadDistance) or workTool.cp.isStrawBlower then
 			-- Create the new node and link it to realTurningNode
 			local node = courseplay:createNewLinkedNode(workTool, "UnloadOrFillNode", courseplay:getRealTurningNode(workTool));
 
