@@ -678,7 +678,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR]
 			<cz>dokončil práci.</cz>
 			<ru>завершил работу на маршруте.</ru>
 			<hu>végzett a munkával.</hu>
-			<nl>werk afgerond.</nl>
+			<nl>heeft werk afgerond.</nl>
 			<br>trabalho finalizado</br>
 			<pt>trabalho concluído</pt>
 			<cs>工作已完成。</cs>
@@ -692,7 +692,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR]
 			<cz>: potřebuje vyložit.</cz>
 			<ru>нуждается в разгрузке.</ru>
 			<hu>: A munka folytatásához ki kell ürítened!</hu>
-			<nl>: gereedschap legen.</nl>
+			<nl>: gereedschap moet geleegd worden.</nl>
 			<br>: equipamento precisa ser descarregado</br>
 			<pt>: equipamento precisa de ser descarregado!</pt>
 			<cs>: 工具需要卸载。</cs>
@@ -706,7 +706,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR]
 			<cz>: pracovní stroj musí být doplněn.</cz>
 			<ru>нуждается в заправке.</ru>
 			<hu>: A munkaeszközt újra kell tölteni.</hu>
-			<nl>: gereedschap vullen.</nl>
+			<nl>: gereedschap moet gevuld worden.</nl>
 			<br>: equipamento precisa ser recarregado</br>
 			<pt>: equipamento precisa de ser recarregado</pt>
 			<cs>: 工具需要装载。</cs>
@@ -720,7 +720,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR]
 			<cz>skládá balíky.</cz>
 			<ru>выгрузка тюков.</ru>
 			<hu> kirakja a bálákat.</hu>
-			<nl>Balen afladen</nl>
+			<nl>Balen lossen.</nl>
 			<br>descarregando fardos</br>
 			<pt>a descarregar fardos</pt>
 			<cs>卸载。</cs>
@@ -790,7 +790,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR]
 			<cz>Objíždění porostu:</cz>
 			<ru>Поиск точек:</ru>
 			<hu>Útvonal keresése</hu>
-			<nl>Plotting</nl>
+			<nl>Om gewas rijden</nl>
 			<br>Evitar as plantações</br>
 			<pt>Evitar as plantações</pt>
 			<cs>禁止碾压生长的农作物:</cs>
@@ -2752,7 +2752,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR]
 			<pt>Iniciar a %s!</pt>
 			<cs>启动 %s!</cs>
 		</text>
-		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT"> <!-- missing: it, nl -->
+		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT"> <!-- missing: it,-->
 			<en>Search for first waypoint</en>
 			<de>Nach erstem Wegpunkt suchen</de>
 			<fr>Cherche le premier point</fr>
@@ -2760,11 +2760,12 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR]
 			<cz>Hledání prvního bodu</cz>
 			<ru>Показать первую точку</ru>
 			<hu>Első útpont keresése</hu>
+			<nl>Naar eerste markering zoeken</nl>
 			<br>Pesquisar pelo primeiro ponto</br>
 			<pt>Pesquisar pelo primeiro ponto</pt>
 			<cs>指向起始点</cs>
 		</text>
-		<text name="COURSEPLAY_SAVE_CURRENT_COURSE"> <!-- missing: it, nl -->
+		<text name="COURSEPLAY_SAVE_CURRENT_COURSE"> <!-- missing: it, -->
 			<en>Save current course</en>
 			<de>Aktuellen Kurs speichern</de>
 			<fr>Sauvegarder la course actuelle</fr>
@@ -2772,12 +2773,13 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR]
 			<cz>Uložit aktuální trasu</cz>
 			<ru>Сохранить маршрут</ru>
 			<hu>Aktuális útvonal mentése</hu>
+			<nl>Huidige route bewaren</nl>
 			<br>Salvar rota atual</br>
 			<pt>Guardar percurso atual</pt>
 			<cs>保存当前任务</cs>
 		</text>
 
-		<!-- Recording buttons --> <!-- missing: it, nl -->
+		<!-- Recording buttons --> <!-- missing: it,  -->
 		<text name="COURSEPLAY_RECORDING_STOP">
 			<en>Stop the recording</en>
 			<de>Aufnahme beenden</de>
@@ -2786,6 +2788,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR]
 			<cz>Ukončit nahrávání</cz>
 			<ru>остановить запись</ru>
 			<hu>Felvétel leállítása</hu>
+			<nl>Vastleggen beëindigen</nl>
 			<br>Parar a gravação</br>
 			<pt>Parar a gravação</pt>
 			<cs>停止录制</cs>
@@ -2798,6 +2801,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR]
 			<cz>Pozastavit nahrávání</cz>
 			<ru>пауза</ru>
 			<hu>Felvétel szüneteltetése</hu>
+			<nl>Vastleggen pauzeren</nl>
 			<br>Pausar a gravação</br>
 			<pt>Pausar a gravação</pt>
 			<cs>暂停录制</cs>
@@ -2810,6 +2814,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR]
 			<cz>Pokračovat v nahrávání</cz>
 			<ru>продолжить запись</ru>
 			<hu>Felvétel folytatása</hu>
+			<nl>Verdergaan met vastleggen</nl>
 			<br>Retomar a gravação</br>
 			<pt>Retomar a gravação</pt>
 			<cs>继续录制</cs>
@@ -2822,6 +2827,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR]
 			<cz>Smazat poslední bod</cz>
 			<ru>удалить последнюю точку</ru>
 			<hu>Az utolsó útvonalpont törlése</hu>
+			<nl>Laatste markering verwijderen</nl>
 			<br>Excluir o último ponto</br>
 			<pt>Excluir o último ponto</pt>
 			<cs>删除上个路径点</cs>
@@ -2834,6 +2840,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR]
 			<cz>Nastavit bod čekání</cz>
 			<ru>точка ожидания</ru>
 			<hu>Várakozási pont elhelyezése</hu>
+			<nl>Wachtplaats aangeven</nl>
 			<br>Definir ponto de espera</br>
 			<pt>Marcar ponto de espera</pt>
  			<cs>设置等待点</cs>
@@ -2846,6 +2853,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR]
 			<cz>Nastavit bod křížení</cz>
 			<ru>перекресток</ru>
 			<hu>Elágazási pont elhelyezése</hu>
+			<nl>Kruising aangeven</nl>
 			<br>Definir ponto de cruzamento</br>
 			<pt>Marcar ponto de cruzamento</pt>
 			<cs>设置合并点</cs>
@@ -2858,6 +2866,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR]
 			<cz>Začít se otáčet</cz>
 			<ru>поворот</ru>
 			<hu>Fordulás indítása (következő sorra)</hu>
+			<nl>Start draai beweging</nl>
 			<br>Iniciar manobra de giro</br>
 			<pt>Iniciar manobra de viragem</pt>
  			<cs>设置折返点</cs>
@@ -2870,6 +2879,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR]
 			<cz>Konec otáční</cz>
 			<ru>поворот</ru>
 			<hu>Fordulás vége</hu>
+			<nl>Einde draai beweging</nl>
 			<br>Fim da manobra de giro</br>
 			<pt>Fim da manobra de viragem</pt>
 			<cs>结束折返</cs>
@@ -2882,6 +2892,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR]
 			<cz>Začít couvat</cz>
 			<ru>включить задний ход</ru>
 			<hu>Tolatás indítása</hu>
+			<nl>Start achteruit rijden</nl>
 			<br>Marcha ré</br>
 			<pt>Marcha atrás</pt>
 			<cs>倒车模式</cs>
@@ -2894,6 +2905,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR]
 			<cz>Konec couvání</cz>
 			<ru>отключить задний ход</ru>
 			<hu>Tolatás leállítása</hu>
+			<nl>Stop achteruit rijden</nl>
 			<br>Parar marcha ré</br>
 			<pt>Parar marcha atrás</pt>
 			<cs>前进模式</cs>
@@ -2946,6 +2958,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR]
 			<es>¿Desea usted que sus trabajadores reciban un salario (%s/hora)?</es>
 			<cz>Chceš aby byli pomocníci placeni (%s/hodinu)?</cz>
 			<hu>Szeretnéd, hogy a munkásod bért kapjon (%s/óra)?</hu>
+			<nl>Wil je de bestuurders betalen (%s/uur)?</nl>
 			<ru><![CDATA[Рабочие хотят %s в час!
 Разрешить выплачивать зарплаты?]]></ru>
 			<br>Você deseja que seus trabalhadores recebam salários (%s / hora)?</br>
@@ -3094,7 +3107,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR]
 			<cz>Zobrazit/skrýt Courseplay HUD</cz>
 			<ru>Courseplay: показать/скрыть HUD</ru>
 			<hu>Vezetősegéd panel be/ki</hu>
-			<nl>Too/verberg Courseplay HUD</nl>
+			<nl>Toon/verberg Courseplay HUD</nl>
 			<br>Mostrar/ocultar Courseplay HUD</br>
 			<pt>Mostrar/ocultar Courseplay HUD</pt>
 			<cs>打开/关闭CP界面</cs>
@@ -3180,7 +3193,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR]
 			<cz>skrýt kurzor</cz>
 			<ru>показать курсор</ru>
 			<hu>Egérkurzor megjelenítése</hu>
-			<nl>toon cursorr</nl>
+			<nl>toon curso<r/nl>
 			<br>mostrar cursor do mouse</br>
 			<pt>mostrar seta do rato</pt>
 			<cs>显示鼠标</cs>
