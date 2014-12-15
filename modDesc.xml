@@ -1206,9 +1206,9 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<nl>altijd uit</nl>
 			<br>desligadas</br>
 			<pt>desligadas</pt>
-			<cs>从不打开</cs>
+			<cs>从不打开信标灯</cs>
 		</text>
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1"> <!-- missing: cs, cz, it, nl, pt -->
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1"> <!-- missing:  cz, it, nl, pt -->
 			<en>beacon lights (on the street)</en>
 			<de>RUL (auf der Straße)</de>
 			<fr>gyrophares (sur la route)</fr>
@@ -1216,9 +1216,9 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<hu>sárga villogó (az utakon)</hu>
 			<ru>в дороге - маячок</ru>
 			<br>luzes rotativas (na estrada)</br>
-			<cs>信标灯（在道路上）</cs>
+			<cs>在道路上打开信标灯</cs>
 		</text>
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2">  <!-- missing: cz, it, nl, pt --> <!-- NOTE: your text should NOT be any longer than the Spanish text! (there's not enough space in the hud for longer text) -->
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2">  <!-- missing:it, nl, pt --> <!-- NOTE: your text should NOT be any longer than the Spanish text! (there's not enough space in the hud for longer text) -->
 			<en>beacon &amp; hazard lights (on the street)</en>
 			<de>RUL &amp; Warnblinker (auf der Straße)</de>
 			<fr>gyrophares &amp; feux de détresse (sur la route)</fr>
@@ -1226,7 +1226,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<hu>sárga villogó &amp; elakadásjelző (az utakon)</hu>
 			<ru>в дороге - маячок и габариты</ru>
 			<br>luzes rotativas &amp; luzes de emergência</br>
-			<cs>闪光灯 &amp; 在路上</cs>
+			<cs>在道路上打开双闪灯和信标灯</cs>
 		</text>
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_3">
 			<en>beacon lights (always)</en>
@@ -1239,7 +1239,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<hu>Megkülönböztető jelzés (mindig működik)</hu>
 			<nl>Zwaailichten (altijd aan)</nl>
 			<br>Luzes de aviso (sempre ligadas)</br>
- 			<cs>信标灯 (始终打开)</cs>
+ 			<cs>始终打开信标灯</cs>
 		</text>
 		<text name="COURSEPLAY_PAGE_TITLE_CP_CONTROL">
 			<en>Courseplay control</en>
