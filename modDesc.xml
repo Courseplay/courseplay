@@ -4,7 +4,7 @@
 	<author><![CDATA[Courseplay Dev Team]]></author>
 	<title>
 		<br>Courseplay</br>
-		<cs>Courseplay 驾驶助手</cs>
+		<cs>Courseplay 全程驾驶助手</cs>
 		<cz>Courseplay</cz>
 		<de>Courseplay</de>
 		<en>Courseplay</en>
@@ -96,7 +96,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<nl>Start route vastleggen</nl>
 			<br>Iniciar gravação da rota</br>
 			<pt>Iniciar gravação do percurso</pt>
-			<cs>开始录制</cs>
+			<cs>开始录制任务</cs>
      </text>
 		<text name="COURSEPLAY_DRIVER">
 			<en>Driver</en>
@@ -152,7 +152,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<nl>Stop bij laatste punt of volgende trigger</nl>
 			<br>Parar no último ponto ou no próximo trigger</br>
 			<pt>Parar no último ponto ou no próximo trigger</pt>
-			<cs>停在最后一点或下一个起点</cs>
+			<cs>停在最后或下一个起点</cs>
 		</text>
 		<text name="COURSEPLAY_UNLOADING_SIDE">
 			<en>Driver side</en>
@@ -222,7 +222,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<nl>Stuur bestuurder weg</nl>
 			<br>Enviar o motorista para a rota</br>
 			<pt>Enviar o condutor para o percurso</pt>
-			<cs>让装载车去卸载区</cs>
+			<cs>让拖斗车去卸载</cs>
 		</text>
 		<text name="COURSEPLAY_REQUEST_UNLOADING_DRIVER">
 			<en>Request driver</en>
@@ -460,7 +460,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<nl>Wegrijden bij:</nl>
 			<br>Dirigir em:</br>
 			<pt>Conduzir em:</pt>
-			<cs>允许装载值：</cs>
+			<cs>允许卸载值：</cs>
 		</text>
 		<text name="UNKNOWN">
 			<en>unknown</en>
@@ -544,7 +544,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<nl>Naam route:</nl>
 			<br>Nome da rota</br>
 			<pt>Nome do percurso</pt>
-			<cs>任务名称：</cs>
+			<cs>任务名：</cs>
 		</text>
 		<text name="COURSEPLAY_FOLDER_NAME">
 			<en>Folder name:</en>
@@ -572,7 +572,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<nl>Route filter:</nl>
 			<br>Filtrar rotas</br>
 			<pt>Filtrar percursos</pt>
-			<cs>筛选任务：</cs>
+			<cs>检索任务：</cs>
 		</text>
 		<text name="COURSEPLAY_COURSES_FILTER_TITLE">
 			<en>Courses: %q</en>
@@ -610,7 +610,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<hu>Útvonal keresése a mappákban</hu>
 			<br>Pesquisar pastas e rotas</br>
 			<pt>Procurar por pastas e percursos</pt>
-			<cs>捡索任务和目录</cs>
+			<cs>检索任务和目录</cs>
 		</text>
 		<text name="COURSEPLAY_DEACTIVATE_FILTER"> <!-- missing: it, nl -->
 			<en>Deactivate filter</en>
@@ -622,7 +622,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<hu>Szűrő alaphelyzetbe</hu>
 			<br>Desativar filtros</br>
 			<pt>Desligar filtros</pt>
-			<cs>关闭筛选</cs>
+			<cs>关闭检索</cs>
 		</text>
 		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT">
 			<en>has reached overload point.</en>
@@ -818,7 +818,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<nl>Start bij:</nl>
 			<br>Iniciar em:</br>
 			<pt>Iniciar a:</pt>
-			<cs>允许卸载值:</cs>
+			<cs>车辆启动的值:</cs>
 		</text>
 		<text name="COURSEPLAY_TURN_RADIUS">
 			<en>Turning circle:</en>
@@ -958,7 +958,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<nl>Zoek combine in veld %s</nl>
 			<br>Procurar ceifadeira no campo %s</br>
 			<pt>Procurar ceifeira no campo %s</pt>
-			<cs>搜索附近的收割机 %s</cs>
+			<cs>检索附近的收割机 %s</cs>
 		</text>
 		<text name="COURSEPLAY_COPY_COURSE">
 			<en>Copy course:</en>
@@ -1028,7 +1028,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<nl>Veld snelheid:</nl>
 			<br>Velocidade no campo:</br>
 			<pt>Velocidade no campo:</pt>
-			<cs>工作速度:</cs>
+			<cs>田间速度:</cs>
 		</text>
 		<text name="COURSEPLAY_SPEED_MAX">
 			<en>Street speed:</en>
@@ -1184,7 +1184,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<pt>nenhum</pt>
 			<cs>不显示</cs>
 		</text>
-		<text name="COURSEPLAY_WARNING_LIGHTS"> <!-- missing: cs, cz, es, it, nl --> <!-- NOTE: this should be a general term that includes both beacon lights and hazard lights -->
+		<text name="COURSEPLAY_WARNING_LIGHTS"> <!-- missing:cz, es, it, nl --> <!-- NOTE: this should be a general term that includes both beacon lights and hazard lights -->
 			<en>Warning lights:</en>
 			<de>Warnleuchten:</de>
 			<fr>Avertisseur lumineux:</fr>
@@ -1216,8 +1216,9 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<hu>sárga villogó (az utakon)</hu>
 			<ru>в дороге - маячок</ru>
 			<br>luzes rotativas (na estrada)</br>
+			<cs>信标灯（在道路上）</cs>
 		</text>
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2">  <!-- missing: cs, cz, it, nl, pt --> <!-- NOTE: your text should NOT be any longer than the Spanish text! (there's not enough space in the hud for longer text) -->
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2">  <!-- missing: cz, it, nl, pt --> <!-- NOTE: your text should NOT be any longer than the Spanish text! (there's not enough space in the hud for longer text) -->
 			<en>beacon &amp; hazard lights (on the street)</en>
 			<de>RUL &amp; Warnblinker (auf der Straße)</de>
 			<fr>gyrophares &amp; feux de détresse (sur la route)</fr>
@@ -1225,6 +1226,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<hu>sárga villogó &amp; elakadásjelző (az utakon)</hu>
 			<ru>в дороге - маячок и габариты</ru>
 			<br>luzes rotativas &amp; luzes de emergência</br>
+			<cs>闪光灯 &amp; 在路上</cs>
 		</text>
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_3">
 			<en>beacon lights (always)</en>
@@ -1265,7 +1267,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<nl>Combine bediening</nl>
 			<br>Controle da ceifadeira</br>
 			<pt>Controlo da ceifeira</pt>
- 			<cs>联合收割机控制</cs>
+ 			<cs>收割机控制</cs>
 		</text>
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES">
 			<en>Manage courses</en>
@@ -1293,7 +1295,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<nl>Kies map</nl>
 			<br>Escolher pasta</br>
 			<pt>Escolher pasta</pt>
-			<cs>选择文件夹</cs>
+			<cs>选择目录</cs>
 		</text>
 		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE">
 			<en>Settings combi mode</en>
@@ -1307,7 +1309,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<nl>Instelling combi-modus</nl>
 			<br>Configurações do modo combi</br>
 			<pt>Configurações do modo combi</pt>
-			<cs>联合收割机模式</cs>
+			<cs>联合作业管理</cs>
 		</text>
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES">
 			<en>Manage combines</en>
@@ -1321,7 +1323,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<nl>Beheer combines</nl>
 			<br>Gerenciar ceifadeiras</br>
 			<pt>Gerir ceifeiras</pt>
-			<cs>联合收割机管理</cs>
+			<cs>收割机管理</cs>
 		</text>
 		<text name="COURSEPLAY_PAGE_TITLE_SPEEDS">
 			<en>Speed limits</en>
@@ -1377,7 +1379,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<nl>Combine draait</nl>
 			<br>Ceifadeira virando</br>
 			<pt>Ceifeira a virar</pt>
-			<cs>联合收割机正在转弯</cs>
+			<cs>收割机正在转弯</cs>
 		</text>
 		<text name="COURSEPLAY_NO_WORK_AREA">
 			<en>no work area at this course</en>
@@ -1447,7 +1449,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<nl>Naar combine rijden</nl>
 			<br>Dirigir para a ceifadeira</br>
 			<pt>Conduzir para a ceifeira</pt>
- 			<cs>车辆连接联合收割机</cs>
+ 			<cs>车辆已连接收割机</cs>
 		</text>
 		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP">
 			<en>Combine is telling me to stop</en>
@@ -1503,7 +1505,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<nl>Wacht tot vulstand bereikt is</nl>
 			<br>Aguardando que o enchimento chegue ao nível</br>
 			<pt>A Aguardar que o enchimento chegue ao nível</pt>
-			<cs>等待联合收割机容量到达设定值</cs>
+			<cs>等待收割机容量到达设定值</cs>
 		</text>
 		<text name="COURSEPLAY_NO_COMBINE_IN_REACH">
 			<en>No combine in reach</en>
@@ -1517,7 +1519,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<nl>Geen combine binnen bereik</nl>
 			<br>Nenhuma ceifadeira ao alcance</br>
 			<pt>Nenhuma ceifeira ao alcance</pt>
-			<cs>附近没有联合收割机</cs>
+			<cs>附近没有收割机</cs>
 		</text>
 		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED">
 			<en>Waiting until combine has turned</en>
@@ -1531,7 +1533,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<nl>Wacht tot combine gedraaid is</nl>
 			<br>Esperando a ceifadeira virar</br>
 			<pt>A esperar que a ceifeira vire</pt>
-			<cs>等待联合收割机完成转弯</cs>
+			<cs>等待收割机完成转弯</cs>
 		</text>
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT">
 			<en>Waiting for new waypoint</en>
@@ -2426,7 +2428,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<nl>Bestuurder voorrang</nl>
 			<br>Prioridade do motorista</br>
 			<pt>Prioridade do condutor</pt>
-			<cs>卸载优先级</cs>
+			<cs>卸载车辆优先级</cs>
 		</text>
 		<text name="COURSEPLAY_FILLEVEL">
 			<en>fill level</en>
@@ -2608,7 +2610,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<nl>Zeilen</nl>
 			<br>cobertura</br>
 			<pt>cobertura</pt>
- 			<cs>车厢盖子</cs>
+ 			<cs>拖斗盖子</cs>
 		</text>
 		<text name="COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR">
 			<en>Remove combine assignment</en>
@@ -2622,7 +2624,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<nl>Verwijder combine opdracht</nl>
 			<br>Remover atribuições da ceifadeira</br>
 			<pt>Remover definições da ceifeira</pt>
-			<cs>删除指定的联合收割机</cs>
+			<cs>删除指定的收割机</cs>
 		</text>
 		<text name="COURSEPLAY_STOP_DURING_UNLOADING">
 			<en>Stop during unloading</en>
