@@ -21,11 +21,14 @@ Icons et al.
 
 Translations
 ------------------------------------
+* Chinese: Simba76
 * Czech: Albi
 * Dutch: Pewemo
 * French: Gui7545
 * Hungarian: Chris von Bone
 * Italian: JD7530, Cristiano Magro
+* Portuguese (BR): Admilson
+* Portuguese (PT): PTAzores
 * Russian: Bernelli
 * Spanish: JFMtb
 
