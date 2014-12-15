@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="20">
-	<version>4.00.0221</version>
+	<version>4.00.0222</version>
 	<author><![CDATA[Courseplay Dev Team]]></author>
 	<title>
 		<br>Courseplay</br>
@@ -373,7 +373,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<cz>Mod: Kombajn se jede sám vysypat</cz>
 			<ru>САМОРАЗГУЗКА КОМБАЙНА</ru>
 			<hu>Típus: A kombájn megy kirakodni</hu>
-			<nl>Type: Combine zelfontladen</nl>
+			<nl>Type: Combine zelflossen</nl>
 			<br>Tipo: Ceifadeira descarrega na carreta</br>
 			<pt>Tipo: Ceifadeira descarrega no atrelado</pt>
 			<cs>类型：收割机自助卸载</cs>
@@ -555,7 +555,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<cz>Jméno složky:</cz>
 			<ru>Имя папки:</ru>
 			<hu>Mappa név:</hu>
-			<nl>Folder naam:</nl>
+			<nl>Map naam:</nl>
 			<br>Nome da pasta</br>
 			<pt>Nome da pasta</pt>
 			<cs>目录名</cs>
@@ -588,7 +588,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<pt>Percursos: %q</pt>
  			<cs>任务: %q</cs>
 		</text>
-		<text name="COURSEPLAY_CREATE_FOLDER"> <!-- missing: it, nl -->
+		<text name="COURSEPLAY_CREATE_FOLDER"> <!-- missing: it -->
 			<en>Create new folder</en>
 			<de>Neuen Ordner erstellen</de>
 			<fr>Créer un nouveau dossier</fr>
@@ -597,10 +597,11 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<ru>Создать папку</ru>
 			<hu>Új mappa létrehozása</hu>
 			<br>Criar nova pasta</br>
+			<nl>Maak map aan</nl>
 			<pt>Criar nova pasta</pt>
 			<cs>新建目录</cs>
 		</text>
-		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS"> <!-- missing: it, nl -->
+		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS"> <!-- missing: it, -->
 			<en>Search for courses and folders</en>
 			<de>Nach Kursen und Ordnern suchen</de>
 			<fr>Recherche de course et de dossier</fr>
@@ -608,11 +609,12 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<cz>Vyhledat trasu a složku</cz>
 			<ru>Поиск маршрутов и папок</ru>
 			<hu>Útvonal keresése a mappákban</hu>
+			<nl>Zoek routes en mappen</nl>
 			<br>Pesquisar pastas e rotas</br>
 			<pt>Procurar por pastas e percursos</pt>
 			<cs>检索任务和目录</cs>
 		</text>
-		<text name="COURSEPLAY_DEACTIVATE_FILTER"> <!-- missing: it, nl -->
+		<text name="COURSEPLAY_DEACTIVATE_FILTER"> <!-- missing: it,  -->
 			<en>Deactivate filter</en>
 			<de>Filter deaktivieren</de>
 			<fr>Désactive les filtres</fr>
@@ -620,6 +622,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<cz>Vypnout filtr</cz>
 			<ru>Отключить поиск</ru>
 			<hu>Szűrő alaphelyzetbe</hu>
+			<nl>Filter uitschakelen</nl>
 			<br>Desativar filtros</br>
 			<pt>Desligar filtros</pt>
 			<cs>关闭检索</cs>
@@ -1184,12 +1187,13 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<pt>nenhum</pt>
 			<cs>不显示</cs>
 		</text>
-		<text name="COURSEPLAY_WARNING_LIGHTS"> <!-- missing:cz, es, it, nl --> <!-- NOTE: this should be a general term that includes both beacon lights and hazard lights -->
+		<text name="COURSEPLAY_WARNING_LIGHTS"> <!-- missing:cz, es, it --> <!-- NOTE: this should be a general term that includes both beacon lights and hazard lights -->
 			<en>Warning lights:</en>
 			<de>Warnleuchten:</de>
 			<fr>Avertisseur lumineux:</fr>
 			<ru>Сигнальные огни:</ru>
 			<hu>Megkülönböztető jelzés:</hu>
+			<nl>Alarmlichten:</nl>
 			<br>Luzes de aviso:</br>
 			<pt>Luzes de sinalização:</pt>
 			<cs>信标灯:</cs>
@@ -1208,22 +1212,24 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<pt>desligadas</pt>
 			<cs>从不打开信标灯</cs>
 		</text>
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1"> <!-- missing:  cz, it, nl, pt -->
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1"> <!-- missing:  cz, it, pt -->
 			<en>beacon lights (on the street)</en>
 			<de>RUL (auf der Straße)</de>
 			<fr>gyrophares (sur la route)</fr>
 			<es>rotativos (en la carretera)</es>
 			<hu>sárga villogó (az utakon)</hu>
+			<nl>zwaailicht aan (op de weg)</nl>
 			<ru>в дороге - маячок</ru>
 			<br>luzes rotativas (na estrada)</br>
 			<cs>在道路上打开信标灯</cs>
 		</text>
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2">  <!-- missing:it, nl, pt --> <!-- NOTE: your text should NOT be any longer than the Spanish text! (there's not enough space in the hud for longer text) -->
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2">  <!-- missing:it, pt --> <!-- NOTE: your text should NOT be any longer than the Spanish text! (there's not enough space in the hud for longer text) -->
 			<en>beacon &amp; hazard lights (on the street)</en>
 			<de>RUL &amp; Warnblinker (auf der Straße)</de>
 			<fr>gyrophares &amp; feux de détresse (sur la route)</fr>
 			<es>Rotativos &amp; luces de emerg. (en la carretera)</es>
 			<hu>sárga villogó &amp; elakadásjelző (az utakon)</hu>
+			<nl>waarschuwingslichten aan ( op de weg)</nl>
 			<ru>в дороге - маячок и габариты</ru>
 			<br>luzes rotativas &amp; luzes de emergência</br>
 			<cs>在道路上打开双闪灯和信标灯</cs>
@@ -1628,7 +1634,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<cz>Postrádá body čekání. Vyžaduje %d body čekání.</cz>
 			<ru>Слишком мало остановок! Минимум нужно %d.</ru>
 			<hu>Túl kevés a várakozási pont! %d szükséges.</hu>
-			<nl>Te weinig markeringe! %d nodig.</nl>
+			<nl>Te weinig markeringen! %d nodig.</nl>
 			<br>Poucos pontos de espera! Necessários $d</br>
 			<pt>Poucos pontos de espera! São necessários $d</pt>
  			<cs>等待点太少! %d 需求.</cs>
@@ -1647,18 +1653,19 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<pt>atrelado incorreto para este modo</pt>
 			<cs>错误的拖车</cs>
 		</text>
-		<text name="COURSEPLAY_WRONG_TOOL"> <!-- missing:cz, it, nl --> <!-- NOTE: same as 'COURSEPLAY_WRONG_TRAILER', only with "tool" instead of "trailer" -->
+		<text name="COURSEPLAY_WRONG_TOOL"> <!-- missing:cz, it --> <!-- NOTE: same as 'COURSEPLAY_WRONG_TRAILER', only with "tool" instead of "trailer" -->
 			<en>wrong tool for this mode</en>
 			<de>falsches Gerät für diesen Modus</de>
 			<fr>pas le bon outil pour ce mode</fr>
 			<es>herramienta incorrecta para este modo</es>
 			<ru>Неподходящий тип инструмента для маршрута</ru>
 			<hu>Rossz munkaeszköz ehhez a módhoz</hu>
+			<nl>verkeerde gereedschap voor deze modus</nl>
 			<br>ferramenta errada para este modo</br>
 			<pt>ferramenta errada para este modo</pt>
 			<cs>当前工具不支持当前模式</cs>
 		</text>
-		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE"> <!-- missing: it, nl -->
+		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE"> <!-- missing: it -->
 			<en>This vehicle type isn't supported in this mode.</en>
 			<de>Dieser Fahrzeugtyp wird in diesem Modus nicht unterstützt.</de>
 			<fr>Ce véhicule n'est pas supporté dans ce mode</fr>
@@ -1666,6 +1673,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<cz>Tento typ vozidla není v tomto módu podporován.</cz>
 			<ru>Неподходящий тип техники для маршрута</ru>
 			<hu>Ez a járműtípus nem megfelelő ehhez a művelethez.</hu>
+			<nl>Dit voertuig wordt nu niet ondersteund</nl>
 			<br>Este veículo não é suportado neste modo</br>
 			<pt>Este veículo não é suportado neste modo</pt>
 			<cs>当前车辆不支持当前模式</cs>
@@ -2348,7 +2356,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<nl>Veld</nl>
 			<ru>поле №</ru>
 		</text>
-		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE"> <!-- missing: it, nl -->
+		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE"> <!-- missing: it, -->
 			<en>(currently loaded course)</en>
 			<de>(aktuell geladener Kurs)</de>
 			<fr>(Course actuellement chargée)</fr>
@@ -2356,6 +2364,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<cz>(načtená trasa)</cz>
 			<ru>(загруженный маршрут)</ru>
 			<hu>(jelenleg betöltött útvonal)</hu>
+			<nl>(huidige route)</nl>
 			<br>(Rota atual carregada)</br>
 			<pt>(Percurso atual carregado)</pt>
 			<cs>当前任务</cs>
@@ -2635,7 +2644,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<cz>Zastavit při vykládání</cz>
 			<ru>Стоять при разгрузке:</ru>
 			<hu>Kirakodás közben leállít</hu>
-			<nl>Stop tijdens ontladen</nl>
+			<nl>Stop tijdens lossen</nl>
 			<br>Parar para descarregar</br>
 			<pt>Parar durante a descarga</pt>
 			<cs>卸载时停车</cs>
@@ -2885,19 +2894,20 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<pt>Parar marcha atrás</pt>
 			<cs>前进模式</cs>
 		</text>
-		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT"> <!-- should the vehicle name/course be displayed with the map CP icons --> <!-- missing: it, nl -->
+		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT"> <!-- missing: it, --> <!-- should the vehicle name/course be displayed with the map CP icons -->
 			<en>Map icons: display text</en>
 			<de>Karten-Icons: Text anzeigen</de>
 			<fr>Icones sur la carte: afficher le texte</fr>
 			<es>Iconos del mapa: mostrar etiquetas</es>
 			<cz>Ikony v mapě: zobrazit text</cz>
 			<hu>Térképikonok: kijelzőszöveg</hu>
+			<nl>Map iconen, toon tekst</nl>
 			<br>Icones do mapa: Mostrar texto</br>
 			<pt>Ícones do mapa: Mostrar legendas</pt>
 			<ru>Показать инфо на карте:</ru>
 			<cs>地图图标： 显示任务车辆图标</cs>
 		</text>
-		<text name="COURSEPLAY_ALWAYS_USE_4WD"> <!-- missing: it, nl -->
+		<text name="COURSEPLAY_ALWAYS_USE_4WD"> <!-- missing: it,  -->
 			<en>Always use 4WD</en>
 			<de>Allrad immer anschalten</de>
 			<fr>Toujours utiliser le 4x4</fr>
@@ -2905,12 +2915,13 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<cz>Vždy použít 4x4</cz>
 			<ru>Всегда 4х4</ru>
 			<hu>Mindig összkerékhajtás</hu>
+			<nl>Altijd 4x4</nl>
 			<br>Usar sempre tração nas quatro rodas</br>
 			<pt>Usar sempre tração às quatro rodas</pt>
 			<cs>打开4WD模式</cs>
 		</text>
 
-		<!-- Yes/No dialogues --> <!-- missing: it, nl -->
+		<!-- Yes/No dialogues --> <!-- missing: it,  -->
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN">
 			<en>Do you want the fields to be scanned automatically?</en>
 			<de>Möchtest du dass die Felder automatisch gescanned werden?</de>
@@ -2918,6 +2929,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, [FR] Gui7545, [
 			<es>¿Desea usted que los campos sean escaneados automaticamente?</es>
 			<cz>Chceš aby pole byla skenována automaticky?</cz>
 			<hu>Szeretnéd, hogy a mezők adatait automatikusan beolvassa?</hu>
+			<nl>Wilt u de velden automatisch scannen?</nl>
 			<ru>Включить автосканирование полей?</ru>
 			<br>Você deseja que os campos sejam escaneados automaticamente?</br>
 			<pt>Pretende que os campos sejam verificados automaticamente?</pt>
