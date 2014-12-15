@@ -150,8 +150,8 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR]
 			<ru>Остановиться в следующей точке</ru>
 			<hu>Állj az utlsó pontnál, következő triggernél</hu>
 			<nl>Stop bij laatste punt of volgende trigger</nl>
-			<br>Parar no último ponto ou no próximo trigger</br>
-			<pt>Parar no último ponto ou no próximo trigger</pt>
+			<br>Parar no último ponto ou próximo trigger</br>
+			<pt>Parar no último ponto ou próximo trigger</pt>
 			<cs>停在最后或下一个起点</cs>
 		</text>
 		<text name="COURSEPLAY_UNLOADING_SIDE">
@@ -291,7 +291,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR]
 			<hu>Típus: Szállító segéd (tölt és indul)</hu>
 			<nl>Type: Transport</nl>
 			<br>Tipo: Transporte de grãos (carregar e seguir na rota)</br>
-			<pt>Tipo: Transporte de grãos ( carregar e conduzir )</pt>
+			<pt>Tipo: Transporte de grãos (carregar e conduzir)</pt>
 			<cs>类型：普通运输（装载与卸载）</cs>
 		</text>
 		<text name="COURSEPLAY_MODE_2">
@@ -1213,7 +1213,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR]
 			<pt>desligadas</pt>
 			<cs>从不打开信标灯</cs>
 		</text>
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1"> <!-- missing:  cz, it, pt -->
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1"> <!-- missing:  cz, it  -->
 			<en>beacon lights (on the street)</en>
 			<de>RUL (auf der Straße)</de>
 			<fr>gyrophares (sur la route)</fr>
@@ -1222,9 +1222,10 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR]
 			<nl>zwaailicht aan (op de weg)</nl>
 			<ru>в дороге - маячок</ru>
 			<br>luzes rotativas (na estrada)</br>
+			<pt>pirilampo (no percurso)</pt>
 			<cs>在道路上打开信标灯</cs>
 		</text>
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2">  <!-- missing:it, pt --> <!-- NOTE: your text should NOT be any longer than the Spanish text! (there's not enough space in the hud for longer text) -->
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2">  <!-- missing:it, --> <!-- NOTE: your text should NOT be any longer than the Spanish text! (there's not enough space in the hud for longer text) -->
 			<en>beacon &amp; hazard lights (on the street)</en>
 			<de>RUL &amp; Warnblinker (auf der Straße)</de>
 			<fr>gyrophares &amp; feux de détresse (sur la route)</fr>
@@ -1233,6 +1234,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR]
 			<nl>waarschuwingslichten aan ( op de weg)</nl>
 			<ru>в дороге - маячок и габариты</ru>
 			<br>luzes rotativas &amp; luzes de emergência</br>
+			<pt>pirilampo &amp; piscas</pt>
 			<cs>在道路上打开双闪灯和信标灯</cs>
 		</text>
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_3">
@@ -1663,7 +1665,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR]
 			<hu>Rossz munkaeszköz ehhez a módhoz</hu>
 			<nl>verkeerde gereedschap voor deze modus</nl>
 			<br>ferramenta errada para este modo</br>
-			<pt>ferramenta errada para este modo</pt>
+			<pt>implemento errado para este modo</pt>
 			<cs>当前工具不支持当前模式</cs>
 		</text>
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE"> <!-- missing: it -->
@@ -2226,7 +2228,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR]
 			<hu>Szállítási pozíció</hu>
 			<nl>Transport stand</nl>
 			<br>Posição transporte</br>
-			<pt>Posição transporte</pt>
+			<pt>Posição de transporte</pt>
  			<cs>铲斗运输位置</cs>
 		</text>
 		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION">
@@ -2591,7 +2593,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR]
 			<hu>meg kell javítani!</hu>
 			<nl>Moet hersteld worden</nl>
 			<br>reparar</br>
-			<pt>reparar</pt>
+			<pt>tem de ser reparado</pt>
 			<cs>必须修复</cs>
 		</text>
 		<text name="COURSEPLAY_DAMAGE_IS_BEING_REPAIRED">
@@ -2661,7 +2663,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR]
 			<hu>kipörög</hu>
 			<nl>Slippend</nl>
 			<br>patinando</br>
-			<pt>a escorregar</pt>
+			<pt>a partinar</pt>
 			<cs>车辆打滑！</cs>
 		</text>
 		<text name="COURSEPLAY_REFILL_UNTIL_PCT">
@@ -3121,7 +3123,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR]
 			<hu>Vezetősegéd: Állj az utolsó ponton következő triggernél</hu>
 			<nl>Courseplay: stop bij laatste punt of volgende trigger</nl>
 			<br>Courseplay: parar no último ponto ou no próximo trigger</br>
-			<pt>Courseplay: parar no último ponto ou no próximo trigger</pt>
+			<pt>Courseplay: parar no último ponto ou próximo trigger</pt>
  			<cs>Courseplay：停在最后路点或等待点</cs>
 		</text>
 		<text name="COURSEPLAY_DRIVENOW">
