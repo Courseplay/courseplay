@@ -165,7 +165,7 @@ function courseplay:drive(self, dt)
 
 		elseif self.cp.mode == 4 then
 			local drive_on = false
-			if self.cp.lastRecordnumber == self.cp.startWork and self.cp.tipperFillLevelPct ~= 0 then
+			if self.cp.lastRecordnumber == self.cp.startWork then
 				courseplay:setVehicleWait(self, false);
 			elseif self.cp.lastRecordnumber == self.cp.stopWork and self.cp.abortWork ~= nil then
 				courseplay:setVehicleWait(self, false);
@@ -492,7 +492,7 @@ function courseplay:drive(self, dt)
 		return
 	end
 	self.cp.checkMarkers = false
-
+	
 	--SPEED SETTING
 	local isAtEnd   = self.recordnumber > self.maxnumber - 3;
 	local isAtStart = self.recordnumber < 3;
