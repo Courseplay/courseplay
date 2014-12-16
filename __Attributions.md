@@ -30,7 +30,7 @@ ___
 * Portuguese (BR): Admilson
 * Portuguese (PT): PTAzores
 * Russian: Bernelli
-* Spanish: JFMtb
+* Spanish: JFMtb, PromGames
 
 ___
 

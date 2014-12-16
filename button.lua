@@ -360,7 +360,9 @@ function courseplay.button:render()
 
 			--Page 8
 			elseif pg == courseplay.hud.PAGE_COURSE_GENERATION then
-				if fn == 'toggleSucHud' then
+				if fn == 'clearCurrentLoadedCourse' then
+					show = vehicle.cp.canDrive and not vehicle.cp.isDriving;
+				elseif fn == 'toggleSucHud' then
 					show = courseplay.fields.numAvailableFields > 0 and vehicle.cp.fieldEdge.selectedField.fieldNum > 0;
 				elseif fn == "toggleSelectedFieldEdgePathShow" then
 					show = courseplay.fields.numAvailableFields > 0 and vehicle.cp.fieldEdge.selectedField.fieldNum > 0;
