@@ -46,16 +46,16 @@
 		<text name="COURSEPLAY_WORK_END" 								 text="ha terminado el trabajo." />
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 						 text=": equipamiento necesita ser descargado." />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 						 text=": el equipamiento necesita ser rellenado." />
-		<text name="COURSEPLAY_UNLOADING_BALES" 						 text="descargar alpacas." />
+		<text name="COURSEPLAY_UNLOADING_BALES" 						 text="descargar pacas." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 							 text="atasco de trafico." />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 						 text="Punto de descarga alcanzado" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Carga: %d de %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Mostrar los puntos" />
-		<text name="COURSEPLAY_PATHFINDING" 							 text="Evite los cultivos" />
+		<text name="COURSEPLAY_PATHFINDING" 							 text="Evitar los cultivos" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Distancia lateral:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Iniciar en:" />
 		<text name="COURSEPLAY_TURN_RADIUS" 							 text="Radio de giro:" />
-		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 				 text="Distancia vertical:" />
+		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 				 text="Decalaje vertical:" />
 		<text name="COURSEPLAY_COMBINE" 								 text="Cosechadora" />
 		<text name="COURSEPLAY_NONE" 									 text="ningún" />
 		<text name="COURSEPLAY_CHOOSE_COMBINE" 							 text="Cambiar cosechad:" />
@@ -81,26 +81,26 @@
 		<text name="COURSEPLAY_WAYPOINT_MODE_3" 						 text="mostrar todos" />
 		<text name="COURSEPLAY_WAYPOINT_MODE_4" 						 text="ninguno" />
 		<text name="COURSEPLAY_WARNING_LIGHTS" 							 text="Luces adicionales:" />
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 					 text="siempre apagados" />
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 					 text="rotativos (en la carretera)" />
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 					 text="Rotativos & luces de emerg. (en la carretera)" />
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_3" 					 text="Rotativos (siempre encendidos)" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 					 text="todas apagadas" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 					 text="rotativas (solo en carretera)" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 					 text="Rotativas &amp; luces emergencia (solo carretera)" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_3" 					 text="Rotativas (siempre encendidas)" />
 		<text name="COURSEPLAY_PAGE_TITLE_CP_CONTROL" 					 text="Courseplay control" />
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 			 text="Controles de cosechadora" />
-		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES" 				 text="Gestión de cursos" />
+		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES" 				 text="Gestión de rutas" />
 		<text name="COURSEPLAY_PAGE_TITLE_CHOOSE_FOLDER" 				 text="Elegir la carpeta" />
 		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 					 text="Configuración modo cosechadora" />
-		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES" 				 text="Gestione cosechadoras" />
+		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES" 				 text="Gestionar cosechadoras" />
 		<text name="COURSEPLAY_PAGE_TITLE_SPEEDS" 						 text="Limite velocidad" />
 		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 			 text="Configuración conducción" />
 		<text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS" 			 text="Configuración" />
 		<text name="COURSEPLAY_COMBINE_IS_TURNING" 						 text="Cosechadora está girando" />
-		<text name="COURSEPLAY_NO_WORK_AREA" 							 text="Sin area campo de trabajo en ruta" />
+		<text name="COURSEPLAY_NO_WORK_AREA" 							 text="Ningún area de campo de trabajo en esta ruta" />
 		<text name="COURSEPLAY_COMBINED_COURSES" 						 text="rutas combinadas" />
-		<text name="COURSEPLAY_DRIVE_BEHIND_COMBINE" 					 text="Ir detras de la cosechadora" />
+		<text name="COURSEPLAY_DRIVE_BEHIND_COMBINE" 					 text="Ir tras la cosechadora" />
 		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 					 text="Ir junto a la cosechadora" />
-		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 						 text="Ir a la cosechadora" />
-		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 				 text="La cosechadora dice que pare" />
+		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 						 text="Ir hacia la cosechadora" />
+		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 				 text="La cosechadora dice que me detenga" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 						 text="Girar en dirección %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 						 text="Ir al punto %d %d" />
 		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 					 text="Esperar hasta llegue al nivel de llenado" />
@@ -109,22 +109,22 @@
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 					 text="Esperando el nuevo punto" />
 		<text name="COURSEPLAY_FOLLOWING_TRACTOR" 						 text="Sigue el tractor" />
 		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 						 text="debe repostar pronto" />
-		<text name="COURSEPLAY_MUST_BE_REFUELED" 						 text="debe repostar" />
+		<text name="COURSEPLAY_MUST_BE_REFUELED" 						 text="debe repostar ya!" />
 		<text name="COURSEPLAY_IS_BEING_REFUELED" 						 text="está repostando" />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 				 text="Demasiados puntos de espera! Sólo %d permitido." />
-		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="Carece de puntos de espera! Requiere %d." />
+		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="Pocos puntos de espera! Requiere al menos %d." />
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="remolque incorrecto para este modo" />
 		<text name="COURSEPLAY_WRONG_TOOL" 								 text="herramienta incorrecta para este modo" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="este vehículo no es compatible en este modo" />
 		<text name="COURSEPLAY_ESL_NOT_SUPPORTED" 						 text="la version de ESLimiter no es compatible" />
-		<text name="COURSEPLAY_WEATHER_WARNING" 						 text="está esperando por un clima mejor" />
-		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Mov. de la calzada" />
-		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="Herramienta: mov. horiz." />
-		<text name="COURSEPLAY_TOOL_OFFSET_Z" 							 text="Herramienta: mov. vert." />
+		<text name="COURSEPLAY_WEATHER_WARNING" 						 text="está esperando a que el tiempo mejore" />
+		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Decalaje del carril" />
+		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="Herramienta: decalaje lateral" />
+		<text name="COURSEPLAY_TOOL_OFFSET_Z" 							 text="Herramienta: decalaje delante/atras" />
 		<text name="COURSEPLAY_FRONT" 									 text="delante" />
 		<text name="COURSEPLAY_BACK" 									 text="detrás" />
 		<text name="COURSEPLAY_WORK_WIDTH" 								 text="Ancho de trabajo" />
-		<text name="COURSEPLAY_WATER_WARNING" 							 text="quiere ir a nadar" />
+		<text name="COURSEPLAY_WATER_WARNING" 							 text="quiere darse un baño?" />
 		<text name="COURSEPLAY_OPEN_HUD_MODE" 							 text="Abrir Courseplay:" />
 		<text name="COURSEPLAY_DEBUG_CHANNELS" 							 text="Canales de depuración" />
 		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 			 text="Generación de una ruta" />
@@ -157,18 +157,18 @@
 		<text name="COURSEPLAY_SHOVEL_TRANSPORT_POSITION" 				 text="Posición transportar" />
 		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION" 			 text="Posición antes de descargar" />
 		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION" 				 text="Posición descargar" />
-		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Stop + go loading" />
-		<text name="COURSEPLAY_START_AT_POINT" 							 text="Empezar el curso al" />
+		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Detenerse e ir a cargar" />
+		<text name="COURSEPLAY_START_AT_POINT" 							 text="Empezar el curso en el" />
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="punto más cercano" />
 		<text name="COURSEPLAY_FIRST_POINT" 							 text="primer punto" />
 		<text name="COURSEPLAY_CURRENT_POINT" 							 text="punto actual" />
-		<text name="COURSEPLAY_FIELD_EDGE_PATH" 						 text="Camino perímetral del campo" />
+		<text name="COURSEPLAY_FIELD_EDGE_PATH" 						 text="Ruta perímetral del campo" />
 		<text name="COURSEPLAY_FIELD" 									 text="Campo" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 				 text="(ruta actual cargada)" />
 		<text name="COURSEPLAY_FIELD_SCAN_IN_PROGRESS" 					 text="Escaneo de campos en progreso" />
 		<text name="COURSEPLAY_SCANNING_FIELD_NMB" 						 text="Escaneando campo %d/%d" />
 		<text name="COURSEPLAY_HOSEMISSING" 							 text="Falta una manguera - cancelar la recarga" />
-		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE" 					 text="Cambio de carril simétrico" />
+		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE" 					 text="Cambio al otro carril simétrico" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_PRIORITY" 				 text="Prioridad del conductor" />
 		<text name="COURSEPLAY_FILLEVEL" 								 text="nivel de llenado" />
 		<text name="COURSEPLAY_NO_AUTOCOMBINE_MODE_7" 					 text="AutoCombine no está soportado" />
