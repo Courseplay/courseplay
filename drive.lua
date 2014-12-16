@@ -91,7 +91,7 @@ function courseplay:drive(self, dt)
 	local distToChange;
 
 	-- coordinates of coli
-	local tx, ty, tz = localToWorld(self.cp.DirectionNode, 0, 1, 5); --local tx, ty, tz = getWorldTranslation(self.aiTrafficCollisionTrigger)
+	local tx, ty, tz = localToWorld(self.cp.DirectionNode, 0, 1, 3); --local tx, ty, tz = getWorldTranslation(self.aiTrafficCollisionTrigger)
 	-- local direction of from DirectionNode to waypoint
 	local lx, lz = AIVehicleUtil.getDriveDirection(self.cp.DirectionNode, cx, cty, cz);
 	-- world direction of from DirectionNode to waypoint
