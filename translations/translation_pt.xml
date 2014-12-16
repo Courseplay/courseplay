@@ -84,7 +84,7 @@
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 					 text="desligadas" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 					 text="pirilampo (no percurso)" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 					 text="pirilampo e piscas (no percurso)" />
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_3" 					 text="Pirilampo (sempre ligado)" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_3" 					 text="pirilampo (sempre ligado)" />
 		<text name="COURSEPLAY_PAGE_TITLE_CP_CONTROL" 					 text="Controlo do Courseplay" />
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 		        	 text="Controlo da ceifeira" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES" 				 text="Gerir percursos" />
