@@ -83,7 +83,7 @@
 		<text name="COURSEPLAY_WARNING_LIGHTS" 							 text="Luzes de aviso:" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 					 text="desligadas" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 					 text="luzes rotativas (na estrada)" />
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 					 text="luzes rotativas & luzes de emergência" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 					 text="luzes rotativas &amp; luzes de emergência" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_3" 					 text="Luzes de aviso (sempre ligadas)" />
 		<text name="COURSEPLAY_PAGE_TITLE_CP_CONTROL" 					 text="Controle do Courseplay" />
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 			 text="Controle da ceifadeira" />

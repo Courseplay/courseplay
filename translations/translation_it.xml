@@ -149,7 +149,7 @@
 		<text name="COURSEPLAY_SHOVEL_TRANSPORT_POSITION" 				 text="Posizione di trasporto" />
 		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION" 			 text="Posizione di Pre-caricamento" />
 		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION" 				 text="Posizione di scaricamento" />
-		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Caricamento Stop + go" />
+		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Caricamento Stop &amp; go" />
 		<text name="COURSEPLAY_START_AT_POINT" 							 text="Avviare il corso al" />
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="punto più vicino" />
 		<text name="COURSEPLAY_FIRST_POINT" 							 text="primo punto" />

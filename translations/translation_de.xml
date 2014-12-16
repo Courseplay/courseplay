@@ -83,7 +83,7 @@
 		<text name="COURSEPLAY_WARNING_LIGHTS" 							 text="Warnleuchten:" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 					 text="ausgeschaltet" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 					 text="RUL (auf der Straße)" />
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 					 text="RUL & Warnblinker (auf der Straße)" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 					 text="RUL &amp; Warnblinker (auf der Straße)" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_3" 					 text="Rundumleuchten (immer)" />
 		<text name="COURSEPLAY_PAGE_TITLE_CP_CONTROL" 					 text="Abfahrhelfer Steuerung" />
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 			 text="Drescher steuern" />
@@ -153,11 +153,11 @@
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="keine Schaufel vorhanden" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS" 						 text="Schaufelstellung" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS_MISSING" 				 text="Es fehlen Schaufelstellungen" />
-		<text name="COURSEPLAY_SHOVEL_LOADING_POSITION" 				 text="Position 'Beladen'" />
-		<text name="COURSEPLAY_SHOVEL_TRANSPORT_POSITION" 				 text="Position 'Transport'" />
-		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION" 			 text="Position 'vor Abladen'" />
-		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION" 				 text="Position 'Abladen'" />
-		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Stop + Go Laden" />
+		<text name="COURSEPLAY_SHOVEL_LOADING_POSITION" 				 text='Position "Beladen"' />
+		<text name="COURSEPLAY_SHOVEL_TRANSPORT_POSITION" 				 text='Position "Transport"' />
+		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION" 			 text='Position "vor Abladen"' />
+		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION" 				 text='Position "Abladen"' />
+		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Stop &amp; Go Laden" />
 		<text name="COURSEPLAY_START_AT_POINT" 							 text="Kurs beginnen am" />
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="nächsten Wegpunkt" />
 		<text name="COURSEPLAY_FIRST_POINT" 							 text="ersten Wegpunkt" />

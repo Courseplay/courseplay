@@ -83,7 +83,7 @@
 		<text name="COURSEPLAY_WARNING_LIGHTS" 							 text="Avertisseur lumineux:" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 					 text="jamais allumés" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 					 text="gyrophares (sur la route)" />
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 					 text="gyrophares & feux de détresse (sur la route)" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 					 text="gyrophares &amp; feux de détresse (sur la route)" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_3" 					 text="gyrophares (toujours allumés)" />
 		<text name="COURSEPLAY_PAGE_TITLE_CP_CONTROL" 					 text="Courseplay control" />
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 			 text="Gestion de la conduite" />

@@ -83,7 +83,7 @@
 		<text name="COURSEPLAY_WARNING_LIGHTS" 							 text="Megkülönböztető jelzés:" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 					 text="nem működik" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 					 text="sárga villogó (az utakon)" />
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 					 text="sárga villogó & elakadásjelző (az utakon)" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 					 text="sárga villogó &amp; elakadásjelző (az utakon)" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_3" 					 text="Megkülönböztető jelzés (mindig működik)" />
 		<text name="COURSEPLAY_PAGE_TITLE_CP_CONTROL" 					 text="Útvonal lejátszó szabályozás" />
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 			 text="Kombájn szabályozás" />
