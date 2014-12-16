@@ -147,15 +147,16 @@ local function setGlobalData()
 
 	local langNumData = {
 		br = { '.', ',' },
-		pt = { '.', ',' },
+		cs = { ',', '.' },
 		cz = { ' ', ',' },
-		de = { '.', ',' },
+		de = { "'", ',' },
 		en = { ',', '.' },
 		es = { '.', ',' },
 		fr = { ' ', ',' },
 		it = { '.', ',' },
 		jp = { ',', '.' },
 		pl = { ' ', ',' },
+		pt = { '.', ',' },
 		ru = { ' ', ',' }
 	};
 	courseplay.numberSeparator = '\'';
