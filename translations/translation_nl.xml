@@ -201,7 +201,7 @@
                 <text name="COURSEPLAY_RECORDING_SET_WAIT"                                       text="Stel wachtpunt in" />
                 <text name="COURSEPLAY_RECORDING_SET_CROSS"                                      text="Stel kruising in" />
                 <text name="COURSEPLAY_RECORDING_TURN_START"                                     text="Begin draai beweging" />
-                <text name="COURSEPLAY_RECORDING_TURN_END"                                       text="Beëindig draaibeweging />
+                <text name="COURSEPLAY_RECORDING_TURN_END"                                       text="Beëindig draaibeweging" />
                 <text name="COURSEPLAY_RECORDING_REVERSE_START"                                  text="Begin achteruit rijden" />
                 <text name="COURSEPLAY_RECORDING_REVERSE_STOP"                                   text="Beëindig achteruit rijden" />
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Map iconen, toon tekst" />
