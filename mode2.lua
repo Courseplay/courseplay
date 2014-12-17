@@ -138,7 +138,7 @@ function courseplay:handle_mode2(vehicle, dt)
 				if distance > 20 then
 					vehicle.cp.lastActiveCombine = nil
 				else
-					courseplay:debug(string.format("%s (%s): last combine is just %.0f away, so wait", nameNum(vehicle), tostring(vehicle.id), distance), 4);
+					courseplay:debug(string.format("%s (%s): last combine is just %.0fm away, so wait", nameNum(vehicle), tostring(vehicle.id), distance), 4);
 				end
 			else 
 				courseplay:updateReachableCombines(vehicle)
@@ -1072,11 +1072,9 @@ function courseplay:calculateCombineOffset(vehicle, combine)
 		prnwX, prnwY, prnwZ = getWorldTranslation(combine.pipeRaycastNode)
 		combineToPrnX, combineToPrnY, combineToPrnZ = worldToLocal(combine.cp.DirectionNode or combine.rootNode, prnwX, prnwY, prnwZ)
 
-		if combineToPrnX >= 0 then
-			combine.cp.pipeSide = 1; --left
-		else
-			combine.cp.pipeSide = -1; --right
-		end;
+		if combine.cp.pipeSide == nil then
+			courseplay:getCombinesPipeSide(combine)
+		end
 	end;
 
 	--special tools, special cases
