@@ -171,7 +171,6 @@
 		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE" 					 text="Cambio al otro carril simétrico" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_PRIORITY" 				 text="Prioridad del conductor" />
 		<text name="COURSEPLAY_FILLEVEL" 								 text="nivel de llenado" />
-		<text name="COURSEPLAY_NO_AUTOCOMBINE_MODE_7" 					 text="AutoCombine no está soportado" />
 		<text name="COURSEPLAY_PICKUP_JAMMED" 							 text=": la cargadora esta bloqueada" />
 		<text name="COURSEPLAY_BALER_NEEDS_NETS" 						 text=": la encintadora necesita nuevos rollos" />
 		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES" 				 text="Calcular el perímetro del campo actual" />

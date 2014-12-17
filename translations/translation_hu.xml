@@ -171,7 +171,6 @@
 		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE" 					 text="Szimmetrikus sávváltás:" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_PRIORITY" 				 text="Vezető prioritása:" />
 		<text name="COURSEPLAY_FILLEVEL" 								 text="töltési szint" />
-		<text name="COURSEPLAY_NO_AUTOCOMBINE_MODE_7" 					 text="Kombájn automaika nem megengedett" />
 		<text name="COURSEPLAY_PICKUP_JAMMED" 							 text=": felszedő eltömődött" />
 		<text name="COURSEPLAY_BALER_NEEDS_NETS" 						 text=": bálázónak új fólia kell" />
 		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES" 				 text="A területszél útvonalának kikalkulálása" />

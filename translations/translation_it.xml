@@ -162,7 +162,6 @@
 		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE" 					 text="Cambio di corsia simmetrica" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_PRIORITY" 				 text="Priorità dell'autista" />
 		<text name="COURSEPLAY_FILLEVEL" 								 text="livello di riempimento" />
-		<text name="COURSEPLAY_NO_AUTOCOMBINE_MODE_7" 					 text="AutoCombine non è supportato" />
 		<text name="COURSEPLAY_PICKUP_JAMMED" 							 text=": pickup è intasato" />
 		<text name="COURSEPLAY_BALER_NEEDS_NETS" 						 text=": rotopressa ha bisogno di nuovo rotolo di rete" />
 		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES" 				 text="Calcolo perimetro del campo corrente" />

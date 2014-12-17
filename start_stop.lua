@@ -402,11 +402,6 @@ function courseplay:getCanUseCpMode(vehicle)
 				courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WRONG_TRAILER'));
 				return false;
 			end;
-		elseif mode == 7 then
-			if vehicle.isAutoCombineActivated ~= nil and vehicle.isAutoCombineActivated then
-				courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_NO_AUTOCOMBINE_MODE_7'));
-				return false;
-			end;
 		elseif mode == 8 then
 			if vehicle.cp.workTools[1] == nil then
 				courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WRONG_TRAILER'));

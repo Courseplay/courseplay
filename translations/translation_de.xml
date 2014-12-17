@@ -171,7 +171,6 @@
 		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE" 					 text="Symmetrischer Bahnwechsel" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_PRIORITY" 				 text="Abfahrer-Priorität" />
 		<text name="COURSEPLAY_FILLEVEL" 								 text="Füllstand" />
-		<text name="COURSEPLAY_NO_AUTOCOMBINE_MODE_7" 					 text="AutoCombine wird nicht unterstützt" />
 		<text name="COURSEPLAY_PICKUP_JAMMED" 							 text=": Pickup ist verstopft" />
 		<text name="COURSEPLAY_BALER_NEEDS_NETS" 						 text=": Presse braucht neue Wickelnetze" />
 		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES" 				 text="Aktuellen Feldrandkurs berechnen" />

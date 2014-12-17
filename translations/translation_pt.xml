@@ -171,7 +171,6 @@
 		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE" 					 text="Mudança de faixa simétrica" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_PRIORITY" 				 text="Prioridade do condutor" />
 		<text name="COURSEPLAY_FILLEVEL" 						 text="nivel de enchimento" />
-		<text name="COURSEPLAY_NO_AUTOCOMBINE_MODE_7" 					 text="Ceifeira não suportada" />
 		<text name="COURSEPLAY_PICKUP_JAMMED" 						 text=": carregamento com problemas" />
 		<text name="COURSEPLAY_BALER_NEEDS_NETS" 					 text=": fardos redondos precisam de embalagem" />
 		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES" 				 text="Calcular a borda do campo atual" />

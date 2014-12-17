@@ -171,7 +171,6 @@
 		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE" 					 text="Symmetric lane change" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_PRIORITY" 				 text="Driver priority" />
 		<text name="COURSEPLAY_FILLEVEL" 								 text="fill level" />
-		<text name="COURSEPLAY_NO_AUTOCOMBINE_MODE_7" 					 text="AutoCombine is not supported" />
 		<text name="COURSEPLAY_PICKUP_JAMMED" 							 text=": pickup is jammed" />
 		<text name="COURSEPLAY_BALER_NEEDS_NETS" 						 text=": baler needs new net rolls" />
 		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES" 				 text="Calculate current field's edge path" />

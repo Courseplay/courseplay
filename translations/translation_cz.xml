@@ -167,7 +167,6 @@
 		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE" 					 text="Pravidelné otáčení:" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_PRIORITY" 				 text="Priority odvozce:" />
 		<text name="COURSEPLAY_FILLEVEL" 								 text="vyrovnat naplnění" />
-		<text name="COURSEPLAY_NO_AUTOCOMBINE_MODE_7" 					 text="AutoCombine není podporován" />
 		<text name="COURSEPLAY_PICKUP_JAMMED" 							 text=": odvozce je přetížený" />
 		<text name="COURSEPLAY_BALER_NEEDS_NETS" 						 text=": lis potřebuje nové balící role" />
 		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES" 				 text="Vypočítej trasu okolo aktuálního pole" />

@@ -171,7 +171,6 @@
 		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE" 					 text="Симметрично:" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_PRIORITY" 				 text="Приоритет:" />
 		<text name="COURSEPLAY_FILLEVEL" 								 text="загруженность" />
-		<text name="COURSEPLAY_NO_AUTOCOMBINE_MODE_7" 					 text="Этот комбайн не поддерживается" />
 		<text name="COURSEPLAY_PICKUP_JAMMED" 							 text="погрузка остановлена" />
 		<text name="COURSEPLAY_BALER_NEEDS_NETS" 						 text="упаковщик нуждается в тюках" />
 		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES" 				 text="Показать границы поля" />

@@ -171,7 +171,6 @@
 		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE" 					 text="Evenwijdige baanwissel" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_PRIORITY" 				 text="Bestuurder voorrang" />
 		<text name="COURSEPLAY_FILLEVEL" 								 text="vul graad" />
-		<text name="COURSEPLAY_NO_AUTOCOMBINE_MODE_7" 					 text="Autocombine wordt niet ondersteund" />
 		<text name="COURSEPLAY_PICKUP_JAMMED" 							 text=": pickup zit vast" />
 		<text name="COURSEPLAY_BALER_NEEDS_NETS" 						 text=": Balenpers behoeft nieuwe wikkeling" />
 		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES" 				 text="Bereken huidige veldomtrek" />

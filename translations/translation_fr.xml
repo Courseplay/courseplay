@@ -171,7 +171,6 @@
 		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE" 					 text="Changement de voie symétrique" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_PRIORITY" 				 text="Priorité du chauffeur" />
 		<text name="COURSEPLAY_FILLEVEL" 								 text="niveau de remplissage" />
-		<text name="COURSEPLAY_NO_AUTOCOMBINE_MODE_7" 					 text="AutoCombine n'est pas supporté" />
 		<text name="COURSEPLAY_PICKUP_JAMMED" 							 text=": le pickup est encombré" />
 		<text name="COURSEPLAY_BALER_NEEDS_NETS" 						 text=": la presse a besoin de nouveaux filets" />
 		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES" 				 text="Calculer le tour du champ actuel" />

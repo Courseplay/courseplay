@@ -171,7 +171,6 @@
 		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE" 					 text="对称变换车道" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_PRIORITY" 				 text="卸载车辆优先级" />
 		<text name="COURSEPLAY_FILLEVEL" 								 text="填充水平" />
-		<text name="COURSEPLAY_NO_AUTOCOMBINE_MODE_7" 					 text="不支持AutoCombine" />
 		<text name="COURSEPLAY_PICKUP_JAMMED" 							 text=": 皮卡车卡住了" />
 		<text name="COURSEPLAY_BALER_NEEDS_NETS" 						 text=": 打包机需要新的包装网" />
 		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES" 				 text="测量当前农田的范围路径点" />
