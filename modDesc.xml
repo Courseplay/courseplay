@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
-<modDesc descVersion="20">
-	<version>4.00.0234</version>
+<modDesc descVersion="22">
+	<version>4.00.0235</version>
 	<author><![CDATA[Courseplay Dev Team]]></author>
 	<title>
 		<br>Courseplay</br>
@@ -80,7 +80,7 @@ Tradutores: [BR] Admilson], [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR]
 		</ru>
 	</description>
 
-	<multiplayer supported="true"/>
+	<multiplayer supported="false" />
 	<iconFilename>store.dds</iconFilename>
 	<l10n filenamePrefix="translations/translation" /> <!-- load translations from "translations/translation_<language>.xml file -->
 

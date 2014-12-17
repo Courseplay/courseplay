@@ -260,26 +260,14 @@ function courseplay:turn(self, dt) --!!!
 			moveForwards = true;
 		end;
 		if self.cp.TrafficBrake then
-			if self.isRealistic then
-				allowedToDrive = false
-			else
-				moveForwards = self.movingDirection == -1;
-				lx = 0
-				lz = 1
-			end
+			moveForwards = self.movingDirection == -1;
+			lx = 0
+			lz = 1
 		end
 		if self.invertedDrivingDirection then
 			lx = -lx
 		end
-		if self.isRealistic then
-			if self.cp.turnStage < 1 then
-				lx = 0
-				lz = 1
-			end
- 			courseplay:driveInMRDirection(self, lx,lz,moveForwards,dt,allowedToDrive)
-		else
-			AIVehicleUtil.driveInDirection(self, dt, 25, 1, 0.5, 20, true, moveForwards, lx, lz, refSpeed, 1);
-		end
+		AIVehicleUtil.driveInDirection(self, dt, 25, 1, 0.5, 20, true, moveForwards, lx, lz, refSpeed, 1);
 		courseplay:setTrafficCollision(self, lx, lz, true)
 	end;
 	

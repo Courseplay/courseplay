@@ -701,8 +701,6 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 
 				local stopAndGo = false;
 
-				if vehicle.isRealistic then stopAndGo = true; end;
-
 				-- Make sure we are using the rear TipReferencePoint as bestTipReferencePoint if possible.
 				if tipper.cp.rearTipRefPoint and tipper.cp.rearTipRefPoint ~= bestTipReferencePoint then
 					bestTipReferencePoint = tipper.cp.rearTipRefPoint;

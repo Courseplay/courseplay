@@ -475,13 +475,6 @@ function courseplay:stop(self)
 	self.cp.aiFrontMarker = nil
 	self.cp.aiTurnNoBackward = false
 	self.cp.noStopOnEdge = false
-	if self.isRealistic then
-		self.motor.speedLevel = 0 
-		self:realSetAwdActive(self.cp.realAWDModeOnBackup)
-		if self.realForceAiDriven then
-			self.realForceAiDriven = false
-		end
-	end
 	self.cp.fillTrigger = nil;
 	self.cp.hasMachineToFill = false;
 	self.cp.unloadOrder = false

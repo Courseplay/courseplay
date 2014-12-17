@@ -37,9 +37,6 @@ function courseplay:load(xmlFile)
 		self.cp.mode7Unloading = false
 		self.cp.driverPriorityUseFillLevel = false;
 	end
-	if self.isRealistic then
-		self.cp.trailerPushSpeed = 0
-	end
 	self.cp.stopWhenUnloading = false;
 
 	-- GIANT DLC
