@@ -116,7 +116,6 @@
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="Неподходящий тип прицепа для маршрута" />
 		<text name="COURSEPLAY_WRONG_TOOL" 								 text="Неподходящий тип инструмента для маршрута" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="Неподходящий тип техники для маршрута" />
-		<text name="COURSEPLAY_ESL_NOT_SUPPORTED" 						 text="Эта версия ESLimiter не поддерживается" />
 		<text name="COURSEPLAY_WEATHER_WARNING" 						 text="надо подождать хорошей погоды" />
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Смещение от центра:" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="правее/левее:" />

@@ -116,7 +116,6 @@
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="falscher Trailer für diesen Modus" />
 		<text name="COURSEPLAY_WRONG_TOOL" 								 text="falsches Gerät für diesen Modus" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="Dieser Fahrzeugtyp wird in diesem Modus nicht unterstützt." />
-		<text name="COURSEPLAY_ESL_NOT_SUPPORTED" 						 text="ESLimiter-Version wird nicht unterstützt" />
 		<text name="COURSEPLAY_WEATHER_WARNING" 						 text="wartet auf besseres Wetter" />
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Bahnversatz" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="Gerät-Versatz (horizontal)" />

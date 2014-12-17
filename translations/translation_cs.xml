@@ -116,7 +116,6 @@
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="错误的拖车" />
 		<text name="COURSEPLAY_WRONG_TOOL" 								 text="当前工具不支持当前模式" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="当前车辆不支持当前模式" />
-		<text name="COURSEPLAY_ESL_NOT_SUPPORTED" 						 text="ESLimiter版本不支持" />
 		<text name="COURSEPLAY_WEATHER_WARNING" 						 text="等待天气好转" />
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="行线偏移" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="工具横向调整" />

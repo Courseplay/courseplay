@@ -116,7 +116,6 @@
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="carreta incorreta para este modo" />
 		<text name="COURSEPLAY_WRONG_TOOL" 								 text="ferramenta errada para este modo" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="Este veículo não é suportado neste modo" />
-		<text name="COURSEPLAY_ESL_NOT_SUPPORTED" 						 text="Versão do ESLimiter não suportada" />
 		<text name="COURSEPLAY_WEATHER_WARNING" 						 text="aguardando o tempo melhorar" />
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Distancia da faixa" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="Distancia horizontal do equipamento" />

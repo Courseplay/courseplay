@@ -18,19 +18,6 @@ function courseplay:start(self)
 		self.cp.orgRpm[2] = self.motor.maxRpm
 		self.cp.orgRpm[3] = self.motor.maxRpm
 	end
-	--[[if self.ESLimiter ~= nil and self.ESLimiter.maxRPM[5] ~= nil then
-		self.cp.ESL = {}
-		self.cp.ESL[1] = self.ESLimiter.percentage[2]
-		self.cp.ESL[2] = self.ESLimiter.percentage[3]
-		self.cp.ESL[3] = self.ESLimiter.percentage[4]
-	end;
-	if self.isRealistic then
-		self.cp.mrOrigSpeed = {
-			[1] = self.motor.realSpeedLevelsAI[1],
-			[2] = self.motor.realSpeedLevelsAI[2],
-			[3] = self.motor.realSpeedLevelsAI[3]
-		};
-	end;]]
 
 	self.CPnumCollidingVehicles = 0;
 	self.cp.collidingVehicleId = nil

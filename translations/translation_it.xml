@@ -108,7 +108,6 @@
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 				 text="Troppi punti d'attesa! Permesso solo %d." />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="Troppo pochi punti d'attesa! %d necessario." />
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="rimorchio sbagliato per questa modalità" />
-		<text name="COURSEPLAY_ESL_NOT_SUPPORTED" 						 text="la versione dell'ESLimiter non è compatibile" />
 		<text name="COURSEPLAY_WEATHER_WARNING" 						 text="è in attesa di un tempo migliore" />
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Distanza corsia" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="Utensile: distanza orizz." />

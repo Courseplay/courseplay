@@ -116,7 +116,6 @@
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="pas la bonne remorque pour ce mode" />
 		<text name="COURSEPLAY_WRONG_TOOL" 								 text="pas le bon outil pour ce mode" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="Ce véhicule n'est pas supporté dans ce mode" />
-		<text name="COURSEPLAY_ESL_NOT_SUPPORTED" 						 text="la version de l'ESLimiter n'est pas compatible" />
 		<text name="COURSEPLAY_WEATHER_WARNING" 						 text="est en attente d'une meilleure météo." />
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Décalage de la voie" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="Outil: décalage latéral" />

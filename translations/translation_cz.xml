@@ -112,7 +112,6 @@
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="Postrádá body čekání. Vyžaduje %d body čekání." />
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="Máš pro tento mod nevhodný přívěs" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="Tento typ vozidla není v tomto módu podporován." />
-		<text name="COURSEPLAY_ESL_NOT_SUPPORTED" 						 text="verze ESLimiter není podporována" />
 		<text name="COURSEPLAY_WEATHER_WARNING" 						 text="čeká na lepší počasí." />
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Odstup od trasy:" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="Horiz. posunutí stroje:" />

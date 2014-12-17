@@ -116,7 +116,6 @@
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="Rossz munkaeszköz ehhez a mművelethez" />
 		<text name="COURSEPLAY_WRONG_TOOL" 								 text="Rossz munkaeszköz ehhez a módhoz" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="Ez a járműtípus nem megfelelő ehhez a művelethez." />
-		<text name="COURSEPLAY_ESL_NOT_SUPPORTED" 						 text="ESLimiter verziója nem támogatott" />
 		<text name="COURSEPLAY_WEATHER_WARNING" 						 text="vár míg jobb idő lesz! (eláll az eső)" />
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Közlekedő út eltolás:" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="Művelés eltolás oldalra:" />
