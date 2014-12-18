@@ -29,15 +29,20 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 			if onLeave then 
 				debugMessage = "onLeave"
 			end
-			-- is this a traffic vehicle?
-			local cm = getCollisionMask(otherId);
-			if bitAND(cm, 33554432) ~= 0 then -- if bit25 is part of the collisionMask
-				--print("is traffic vehicle")
-			end;
 
 			local vehicle = g_currentMission.nodeToVehicle[otherId];
 			local collisionVehicle = g_currentMission.nodeToVehicle[self.cp.collidingVehicleId];
-			
+			-- is this a traffic vehicle?
+			local cm = getCollisionMask(otherId);
+			if vehicle == nil and bitAND(cm, 2097152) ~= 0 then -- if bit21 is part of the collisionMask then set new vehicle in GCM.NTV
+				local pathVehicle = {}
+				pathVehicle.rootNode = otherId
+				pathVehicle.isCpPathvehicle = true
+				pathVehicle.name = "PathVehicle"
+				g_currentMission.nodeToVehicle[otherId] = pathVehicle
+				vehicle = pathVehicle
+			end;	
+						
 			local isInOtherTrigger = false --is this ID in one of the other triggers?
 			for i=1,4 do
 				if i ~= TriggerNumber and self.cp.collidingObjects[i][otherId] then
@@ -132,7 +137,8 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 						if TriggerNumber ~= 4 then
 							--self.CPnumCollidingVehicles = math.max(self.CPnumCollidingVehicles - 1, 0);
 							--if self.CPnumCollidingVehicles == 0 then
-								self.cp.collidingVehicleId = nil
+								--self.cp.collidingVehicleId = nil
+								courseplay:deleteCollisionVehicle(self);
 							--end
 							AIVehicleUtil.setCollisionDirection(self.cp.trafficCollisionTriggers[1], self.cp.trafficCollisionTriggers[2], 0, -1);
 							courseplay:debug(string.format('%s: 	onLeave - setting "self.cp.collidingVehicleId" to nil', nameNum(self)), 3);
