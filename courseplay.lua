@@ -79,7 +79,8 @@ local function initialize()
 		'start_stop', 
 		'tippers', 
 		'triggers', 
-		'turn'
+		'turn',
+		'vehicles'
 	};
 
 	local numFiles, numFilesLoaded = #(fileList) + 3, 3; -- + 3 as 'register.lua', 'courseplay.lua' and 'CpManager.lua' have already been loaded

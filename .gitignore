@@ -19,7 +19,7 @@ $RECYCLE.BIN/
 .builtpath
 
 # Satis
-SatisInfo.txt
+TurnRadiusCalculation.lua
 
 # Jakob
 *.WinMerge
