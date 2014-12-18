@@ -25,11 +25,14 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 		else
 			local vehicleOnList = false
 			local OtherIdisCloser = true
-
+			local debugMessage = "onEnter"
+			if onLeave then 
+				debugMessage = "onLeave"
+			end
 			-- is this a traffic vehicle?
 			local cm = getCollisionMask(otherId);
 			if bitAND(cm, 33554432) ~= 0 then -- if bit25 is part of the collisionMask
-				-- is traffic vehicle
+				--print("is traffic vehicle")
 			end;
 
 			local vehicle = g_currentMission.nodeToVehicle[otherId];
@@ -41,14 +44,20 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 					isInOtherTrigger = true
 				end
 			end
-			courseplay:debug(string.format("%s: Trigger%d: triggered collision with %d ", nameNum(self),TriggerNumber,otherId), 3);
+			courseplay:debug(string.format("%s:%s Trigger%d: triggered collision with %d ", nameNum(self),debugMessage,TriggerNumber,otherId), 3);
 			local trafficLightDistance = 0 
+			
 			if collisionVehicle ~= nil and collisionVehicle.rootNode == nil then
 				local x,y,z = getWorldTranslation(self.cp.collidingVehicleId)
 				_,_, trafficLightDistance = worldToLocal (self.cp.DirectionNode, x,y,z)
 			end
-			
-			
+			if vehicle ~= nil and vehicle.rootNode == nil then --check traffic lights: stop or go?
+				local _,transY,_ = getTranslation(otherId);
+				if transY < 0 then
+					OtherIdisCloser = false
+					courseplay:debug(tostring(otherId)..": trafficLight: transY = "..tostring(transY)..", so it's green or Off-> go on",3)
+				end
+			end
 			local fixDistance = 0 -- if ID.rootNode is nil set, distance fix to 25m needed for traffic lights
 			if onEnter and vehicle ~= nil and vehicle.rootNode == nil then
 				fixDistance = TriggerNumber * 5
@@ -111,7 +120,6 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 					courseplay:debug(string.format("%s: 	onLeave: %d is in other trigger -> ignore", nameNum(self),otherId), 3);
 				end
 			end
-			
 			if vehicle ~= nil and self.trafficCollisionIgnoreList[otherId] == nil and vehicleOnList == false then
 				if onEnter and OtherIdisCloser and not self.cp.collidingObjects.all[otherId] then
 					self.cp.collidingObjects.all[otherId] = true

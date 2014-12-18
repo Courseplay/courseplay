@@ -767,9 +767,9 @@ function courseplay:checkTraffic(vehicle, displayWarnings, allowedToDrive)
 		if z1 > -0.9 then -- tractor in front of vehicle face2face or beside < 4 o'clock
 			ahead = true
 		end;
-
-		if abs(tx) > 5 and collisionVehicle.rootNode ~= nil and not vehicle.cp.collidingObjects.all[vehicle.cp.collidingVehicleId] then
-			courseplay:debug(('%s: checkTraffic:\tcall deleteCollisionVehicle()'):format(nameNum(vehicle)), 3);
+		local _,transY,_ = getTranslation(vehicle.cp.collidingVehicleId);
+		if transY < 0 or abs(tx) > 5 and collisionVehicle.rootNode ~= nil and not vehicle.cp.collidingObjects.all[vehicle.cp.collidingVehicleId] then
+			courseplay:debug(('%s: checkTraffic:\tcall deleteCollisionVehicle(), transY= %s'):format(nameNum(vehicle),tostring(transY)), 3);
 			courseplay:deleteCollisionVehicle(vehicle);
 			return allowedToDrive;
 		end;
