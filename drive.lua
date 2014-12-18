@@ -583,7 +583,7 @@ function courseplay:drive(self, dt)
 			if zDis < 0 then
 				fwd = false;
 				lx = 0
-				lz = -1				
+				lz = 1				
 				refSpeed = self.cp.speeds.crawl
 				speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			else

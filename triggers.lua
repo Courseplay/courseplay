@@ -276,7 +276,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 
 					if fillTypeIsValid then
 						self.cp.currentTipTrigger = trigger;
-						self.cp.currentTipTrigger.cpActualLength = (courseplay:distanceToObject(self, trigger)- (distance+3))*2 --3 stands for the distance of the raycast to rootNode
+						self.cp.currentTipTrigger.cpActualLength = courseplay:distanceToObject(self, trigger)*2 
 						courseplay:debug(string.format("%s: self.cp.currentTipTrigger = %s , cpActualLength = %s", nameNum(self), tostring(triggerId),tostring(self.cp.currentTipTrigger.cpActualLength)), 1);
 						return false
 					end;
