@@ -224,5 +224,9 @@
 		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: secondary mouse action" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="show mouse cursor" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="hide mouse cursor" />
+		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Load course/merge into loaded course" />
+		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Append course at the end" />
+		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Move to folder" />
+		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Delete course/folder" />
 	</texts>
 </l10n>
