@@ -102,6 +102,9 @@ function courseplay:handle_mode2(vehicle, dt)
 
 
 	if vehicle.cp.activeCombine ~= nil then
+		if not vehicle.cp.activeCombine.cp.isChopper and courseplay:isSpecialChopper(vehicle.cp.activeCombine)then -- attached wood chipper will not be recognised as chopper before
+			vehicle.cp.activeCombine.cp.isChopper = true
+		end 
 		if vehicle.cp.positionWithCombine == 1 then
 			-- is there a trailer to fill, or at least a waypoint to go to?
 			if vehicle.cp.currentTrailerToFill or vehicle.cp.modeState == 5 then
@@ -527,7 +530,7 @@ function courseplay:unload_combine(vehicle, dt)
 			courseplay:setInfoText(vehicle, courseplay:loc("COURSEPLAY_COMBINE_WANTS_ME_TO_STOP")); -- "Drescher sagt ich soll anhalten."
 			allowedToDrive = false
 		elseif combine.cp.isChopper then
-			if combine.movingDirection == 0 and dod == -1 and vehicle.cp.chopperIsTurning == false then
+			if (combine.movingDirection == 0 or courseplay:isSpecialChopper(combine)) and dod == -1 and vehicle.cp.chopperIsTurning == false then
 				allowedToDrive = false
 				courseplay:setInfoText(vehicle, courseplay:loc("COURSEPLAY_COMBINE_WANTS_ME_TO_STOP")); -- "Drescher sagt ich soll anhalten."
 			end
