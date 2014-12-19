@@ -195,5 +195,9 @@
 		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: azione secondaria del mouse" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="mostra il cursore" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="nascondere il cursore" />
+		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Load course/merge into loaded course" /> <!-- No translation text! -->
+		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Append course at the end" /> <!-- No translation text! -->
+		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Move to folder" /> <!-- No translation text! -->
+		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Delete course/folder" /> <!-- No translation text! -->
 	</texts>
 </l10n>
