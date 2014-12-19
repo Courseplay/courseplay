@@ -126,7 +126,7 @@ function courseplay:handle_mode2(vehicle, dt)
 	else -- NO active combine
 		-- STOP!!
 		AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, 0, 0, 28, false, moveForwards, 0, 1)
-		
+		courseplay:resetSlippingTimers(vehicle)
 
 		if vehicle.cp.isLoaded then
 			courseplay:setRecordNumber(vehicle, 2);
@@ -935,6 +935,7 @@ function courseplay:unload_combine(vehicle, dt)
 		if not allowedToDrive then
 			AIVehicleUtil.driveInDirection(vehicle, dt, 30, 0, 0, 28, false, moveForwards, 0, 1)
 			vehicle.cp.speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): allowedToDrive false ")
+			courseplay:resetSlippingTimers(vehicle)
 			return;
 		end
 		
