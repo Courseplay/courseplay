@@ -37,6 +37,10 @@
 		<text name="COURSEPLAY_FOLDER_NAME" 							 text="Name des Ordners:" />
 		<text name="COURSEPLAY_FILTER_COURSES" 							 text="Kurse filtern:" />
 		<text name="COURSEPLAY_COURSES_FILTER_TITLE" 					 text="Kurse: %q" />
+		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Kurs laden/mit aktuellem Kurs zusammenfügen" />
+		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Kurs anhängen" />
+		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="In einen Ordner verschieben" />
+		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Kurs/Ordner löschen" />
 		<text name="COURSEPLAY_CREATE_FOLDER" 							 text="Neuen Ordner erstellen" />
 		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 			 text="Nach Kursen und Ordnern suchen" />
 		<text name="COURSEPLAY_DEACTIVATE_FILTER" 						 text="Filter deaktivieren" />
@@ -223,9 +227,5 @@
 		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: sekundäre Maus-Aktion" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="Mauszeiger anzeigen" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="Mauszeiger verstecken" />
-		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Load course/merge into loaded course" /> <!-- No translation text! -->
-		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Append course at the end" /> <!-- No translation text! -->
-		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Move to folder" /> <!-- No translation text! -->
-		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Delete course/folder" /> <!-- No translation text! -->
 	</texts>
 </l10n>
