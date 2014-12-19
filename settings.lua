@@ -4,7 +4,9 @@ local abs, ceil, max, min = math.abs, math.ceil, math.max, math.min;
 function courseplay:openCloseHud(vehicle, open)
 	courseplay:setMouseCursor(vehicle, open);
 	vehicle.cp.hud.show = open;
-	if not open then
+	if open then
+		courseplay:buttonsActiveEnabled(vehicle, 'all');
+	else
 		courseplay.buttons:setHoveredButton(vehicle, nil);
 	end;
 end;

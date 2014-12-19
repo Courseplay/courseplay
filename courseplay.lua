@@ -1,12 +1,14 @@
---[[
-Courseplay
-Specialization for Courseplay
-
-@author  	Jakob Tischler / Thomas Gärtner / horoman
-@website:	http://courseplay.github.io/courseplay/
-@version:	v4.00 beta
-@changelog:	http://courseplay.github.io/courseplay/en/changelog/index.html
-]]
+--
+-- Courseplay
+--
+-- @authors: Jakob Tischler / Thomas Gärtner / Satissis
+-- @version: 4.00 beta
+-- @website: http://courseplay.github.io/courseplay/
+-- @date:    2014
+-- @history: http://courseplay.github.io/courseplay/en/changelog/index.html
+--
+-- Copyright (C) 2014 Courseplay Dev Team
+-- 
 
 courseplay = {};
 courseplay.path = g_currentModDirectory;
