@@ -191,7 +191,7 @@
 		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="Farm Silo is leeg!" />
 		<text name="COURSEPLAY_STARTING_UP_TOOL" 						 text="Opstarten %s!" />
 		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 				 text="Eerste markering zoeken" />
-		<text name="COURSEPLAY_SAVE_CURRENT_COURSE" 					 text="Huidge route opslaan" />
+		<text name="COURSEPLAY_SAVE_CURRENT_COURSE" 					 text="Huidige route opslaan" />
 		<text name="COURSEPLAY_RECORDING_STOP" 							 text="Vastleggen stoppen" />
 		<text name="COURSEPLAY_RECORDING_PAUSE" 						 text="Vastleggen pauzeren" />
 		<text name="COURSEPLAY_RECORDING_PAUSE_RESUME" 					 text="Vastleggen hervatten" />
@@ -223,9 +223,9 @@
 		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: secundaire muis aktie" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="toon cursor" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="verberg cursor" />
-		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Load course/merge into loaded course" /> <!-- No translation text! -->
-		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Append course at the end" /> <!-- No translation text! -->
-		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Move to folder" /> <!-- No translation text! -->
-		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Delete course/folder" /> <!-- No translation text! -->
+		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Laad route/Invoegen in geladen route" /> <!-- No translation text! -->
+		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Route bijvoegen" /> <!-- No translation text! -->
+		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Verplaats naar map" /> <!-- No translation text! -->
+		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Verwijder route/map" /> <!-- No translation text! -->
 	</texts>
 </l10n>
