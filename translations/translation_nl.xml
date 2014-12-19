@@ -51,7 +51,7 @@
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 						 text="uitlaad trigger bereikt" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Laden: %d of %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Toon markeringen" />
-		<text name="COURSEPLAY_PATHFINDING" 							 text="Plotting" />
+		<text name="COURSEPLAY_PATHFINDING" 							 text="Om gewas rijden" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Zijwaardse afstand:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Start bij:" />
 		<text name="COURSEPLAY_TURN_RADIUS" 							 text="Draaicirkel:" />
@@ -64,7 +64,7 @@
 		<text name="COURSEPLAY_AUTOMATIC_SEARCH" 						 text="automatisch zoeken" />
 		<text name="COURSEPLAY_MANUAL_SEARCH" 							 text="kies handmatig" />
 		<text name="COURSEPLAY_SEARCH_COMBINE_ON_FIELD" 				 text="Zoek combine in veld %s" />
-		<text name="COURSEPLAY_COPY_COURSE" 							 text="Kopie철route:" />
+		<text name="COURSEPLAY_COPY_COURSE" 							 text="Kopieër route:" />
 		<text name="COURSEPLAY_VEHICLE" 								 text="Voertuig" />
 		<text name="COURSEPLAY_TEMP_COURSE" 							 text="Tijdelijke route" />
 		<text name="COURSEPLAY_SPEED_TURN" 								 text="Draai snelheid:" />
@@ -154,8 +154,8 @@
 		<text name="COURSEPLAY_SHOVEL_POSITIONS_MISSING" 				 text="Shovel posities ontbreken" />
 		<text name="COURSEPLAY_SHOVEL_LOADING_POSITION" 				 text="Laad stand" />
 		<text name="COURSEPLAY_SHOVEL_TRANSPORT_POSITION" 				 text="Transport stand" />
-		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION" 			 text="Aanvang uitlaad stand" />
-		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION" 				 text="Uitlaad stand" />
+		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION" 			 text="Aanvang los stand" />
+		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION" 				 text="Los stand" />
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Stop + Go Laden" />
 		<text name="COURSEPLAY_START_AT_POINT" 							 text="Route starten bij:" />
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="volgende markering" />
@@ -194,7 +194,7 @@
 		<text name="COURSEPLAY_SAVE_CURRENT_COURSE" 					 text="Huidge route opslaan" />
 		<text name="COURSEPLAY_RECORDING_STOP" 							 text="Vastleggen stoppen" />
 		<text name="COURSEPLAY_RECORDING_PAUSE" 						 text="Vastleggen pauzeren" />
-		<text name="COURSEPLAY_RECORDING_PAUSE_RESUME" 					 text="Vasteleggen hervatten" />
+		<text name="COURSEPLAY_RECORDING_PAUSE_RESUME" 					 text="Vastleggen hervatten" />
 		<text name="COURSEPLAY_RECORDING_DELETE" 						 text="Laatste markering verwijderen" />
 		<text name="COURSEPLAY_RECORDING_SET_WAIT" 						 text="Wachtpunt plaatsten" />
 		<text name="COURSEPLAY_RECORDING_SET_CROSS" 					 text="Kruising plaatsen" />
@@ -205,7 +205,7 @@
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Map iconen, toon tekst" />
 		<text name="COURSEPLAY_ALWAYS_USE_4WD" 							 text="Altijd 4x4" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="Velden automatisch scannen?" />
-		<text name="COURSEPLAY_YES_NO_WAGES" 							 text="Arbeiders belonen (%s/uur)?" />
+		<text name="COURSEPLAY_YES_NO_WAGES" 							 text="Wilt u de arbeiders belonen (%s/uur)?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 					 text="Zaad verbruik calculator" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 				 text="Veld: %d (%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 			 text="Zaad soort: %s" />
@@ -215,7 +215,7 @@
 		<text name="COURSEPLAY_FUNCTIONS" 								 text="Courseplay functies" />
 		<text name="COURSEPLAY_MODIFIER" 								 text="Courseplay: instellingen" />
 		<text name="COURSEPLAY_MENU_ACCEPT_SECONDARY" 					 text="Courseplay: tweede menu accepteren" />
-		<text name="COURSEPLAY_HUD" 									 text="Too/verberg Courseplay HUD" />
+		<text name="COURSEPLAY_HUD" 									 text="Toon/verberg Courseplay HUD" />
 		<text name="COURSEPLAY_START_STOP" 								 text="Courseplay: rijd route/stop bestuurder" />
 		<text name="COURSEPLAY_CANCELWAIT" 								 text="Courseplay: stop bij laatste punt of volgende trigger" />
 		<text name="COURSEPLAY_DRIVENOW" 								 text="Courseplay: nu rijden" />
