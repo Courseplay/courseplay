@@ -226,6 +226,6 @@
 		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Carregar rota/combinar na rota carregada" />
 		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Acrescentar rota no final" />
 		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Mover para pasta" />
-		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Excluir rota/pasta" /> <
+		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Excluir rota/pasta" /> 
 	</texts>
 </l10n>
