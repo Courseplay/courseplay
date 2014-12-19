@@ -473,7 +473,7 @@ function courseplay:drive(self, dt)
 	-- allowedToDrive false -> STOP OR HOLD POSITION
 	if not allowedToDrive then
 		-- reset slipping timers
-		courseplay:resetSlippingTimers(vehicle)
+		courseplay:resetSlippingTimers(self)
 
 		self.cp.TrafficBrake = false;
 		self.cp.isTrafficBraking = false;
