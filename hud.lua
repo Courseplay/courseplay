@@ -458,7 +458,7 @@ function courseplay.hud:setContent(vehicle)
 		end;
 
 	elseif vehicle.cp.hud.currentPage == 3 and vehicle:getIsCourseplayDriving() and (vehicle.cp.mode == 2 or vehicle.cp.mode == 3) then
-		for i,varName in pairs({ 'combineOffset', 'turnRadius' }) do
+		for i,varName in pairs({ 'combineOffset', 'turnDiameter' }) do
 			if courseplay.utils:hasVarChanged(vehicle, varName) then
 				self:setReloadPageOrder(vehicle, 3, true);
 				break;
@@ -831,9 +831,9 @@ function courseplay.hud:loadPage(vehicle, page)
 			vehicle.cp.hud.content.pages[3][2][2].text = '---';
 		end;
 
-		if vehicle.cp.turnRadiusAuto ~= nil or vehicle.cp.turnRadius ~= nil then
-			local turnRadiusMode = vehicle.cp.turnRadiusAutoMode and '(auto)' or '(mnl)';
-			vehicle.cp.hud.content.pages[3][3][2].text = string.format('%s %dm', turnRadiusMode, vehicle.cp.turnRadius);
+		if vehicle.cp.turnDiameterAuto ~= nil or vehicle.cp.turnDiameter ~= nil then
+			local turnRadiusMode = vehicle.cp.turnDiameterAutoMode and '(auto)' or '(mnl)';
+			vehicle.cp.hud.content.pages[3][3][2].text = string.format('%s %dm', turnRadiusMode, vehicle.cp.turnDiameter);
 		else
 			vehicle.cp.hud.content.pages[3][3][2].text = '---';
 		end;
@@ -1414,9 +1414,9 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	courseplay.button:new(vehicle, 3, { 'iconSprite.png', 'navPlus' },  'changeTipperOffset',  0.1, self.buttonPosX[1], self.linesButtonPosY[2], wSmall, hSmall, 2,  0.5, false);
 	courseplay.button:new(vehicle, 3, nil, 'changeTipperOffset', 0.1, mouseWheelArea.x, self.linesButtonPosY[2], mouseWheelArea.w, mouseWheelArea.h, 2, 0.5, true, true);
 
-	courseplay.button:new(vehicle, 3, { 'iconSprite.png', 'navMinus' }, 'changeTurnRadius', -1, self.buttonPosX[2], self.linesButtonPosY[3], wSmall, hSmall, 3, -5, false);
-	courseplay.button:new(vehicle, 3, { 'iconSprite.png', 'navPlus' },  'changeTurnRadius',  1, self.buttonPosX[1], self.linesButtonPosY[3], wSmall, hSmall, 3,  5, false);
-	courseplay.button:new(vehicle, 3, nil, 'changeTurnRadius', 1, mouseWheelArea.x, self.linesButtonPosY[3], mouseWheelArea.w, mouseWheelArea.h, 3, 5, true, true);
+	courseplay.button:new(vehicle, 3, { 'iconSprite.png', 'navMinus' }, 'changeTurnDiameter', -1, self.buttonPosX[2], self.linesButtonPosY[3], wSmall, hSmall, 3, -5, false);
+	courseplay.button:new(vehicle, 3, { 'iconSprite.png', 'navPlus' },  'changeTurnDiameter',  1, self.buttonPosX[1], self.linesButtonPosY[3], wSmall, hSmall, 3,  5, false);
+	courseplay.button:new(vehicle, 3, nil, 'changeTurnDiameter', 1, mouseWheelArea.x, self.linesButtonPosY[3], mouseWheelArea.w, mouseWheelArea.h, 3, 5, true, true);
 
 	courseplay.button:new(vehicle, 3, { 'iconSprite.png', 'navMinus' }, 'changeFollowAtFillLevel', -5, self.buttonPosX[2], self.linesButtonPosY[4], wSmall, hSmall, 4, -10, false);
 	courseplay.button:new(vehicle, 3, { 'iconSprite.png', 'navPlus' },  'changeFollowAtFillLevel',  5, self.buttonPosX[1], self.linesButtonPosY[4], wSmall, hSmall, 4,  10, false);

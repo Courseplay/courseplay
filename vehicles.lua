@@ -47,6 +47,57 @@ function courseplay:findJointNodeConnectingToNode(workTool, fromNode, toNode)
 	return nil, nil;
 end;
 
+function courseplay:getAckermannSteeringInfo(vehicle, xmlFile)
+	if xmlFile ~= nil and xmlFile ~= 0 then
+		local mainKey = "vehicle.ackermannSteering#";
+		local rotMax = getXMLInt(xmlFile, mainKey.."rotMax");
+
+		-- If rotMax is not set, Giants don't calculate the ackermannSteering.
+		if not rotMax then
+			--print(("%s: Have no rotMax. Aborting!"):format(vehicle.name));
+			return;
+
+		-- Else set rotMax value
+		else
+			local ASInfo = {};
+			ASInfo.rotMax = rotMax;
+			--print(cpPrintLine(nil, 3));
+			--print(("%s: rotMax = %.2f"):format(vehicle.name, ASInfo.rotMax));
+
+			-- Get rotCenter if avalible.
+			local str = getXMLString(xmlFile, mainKey.."rotCenter");
+			if str then
+				local centerWheels = Utils.splitString(' ', str);
+				if #centerWheels == 2 then
+					ASInfo.rotCenterX = tonumber(centerWheels[1]);
+					ASInfo.rotCenterZ = tonumber(centerWheels[2]);
+					--print(("%s: rotCenterX = %.2f, rotCenterZ = %.2f"):format(vehicle.name, ASInfo.rotCenterX, ASInfo.rotCenterZ));
+				end;
+			end;
+
+			-- Get all rotCenterWheel# if avalible.
+			local i = 1;
+			while true do
+				local key = mainKey .. "rotCenterWheel" .. tostring(i);
+				local val = getXMLInt(xmlFile, key);
+				if val then
+					if not ASInfo.rotCenterWheels then
+						ASInfo.rotCenterWheels = {};
+					end;
+
+					table.insert(ASInfo.rotCenterWheels, val + 1);
+					--print(("%s: rotCenterWheels[%d] = %d"):format(vehicle.name, i, val + 1));
+				else
+					break;
+				end;
+				i = i + 1;
+			end;
+
+			vehicle.cp.ackermannSteering = ASInfo;
+		end;
+	end;
+end;
+
 function courseplay:getDistances(object)
 	cpPrintLine(6);
 	local distances = {};

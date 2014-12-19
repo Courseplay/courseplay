@@ -459,17 +459,17 @@ function courseplay:changeFollowAtFillLevel(vehicle, changeBy)
 end
 
 
-function courseplay:changeTurnRadius(vehicle, changeBy)
-	vehicle.cp.turnRadius = vehicle.cp.turnRadius + changeBy;
-	vehicle.cp.turnRadiusAutoMode = false;
+function courseplay:changeTurnDiameter(vehicle, changeBy)
+	vehicle.cp.turnDiameter = vehicle.cp.turnDiameter + changeBy;
+	vehicle.cp.turnDiameterAutoMode = false;
 
-	if vehicle.cp.turnRadius < 0.5 then
-		vehicle.cp.turnRadius = 0;
+	if vehicle.cp.turnDiameter < 0.5 then
+		vehicle.cp.turnDiameter = 0;
 	end;
 
-	if vehicle.cp.turnRadius <= 0 then
-		vehicle.cp.turnRadiusAutoMode = true;
-		vehicle.cp.turnRadius = vehicle.cp.turnRadiusAuto
+	if vehicle.cp.turnDiameter <= 0 then
+		vehicle.cp.turnDiameterAutoMode = true;
+		vehicle.cp.turnDiameter = vehicle.cp.turnDiameterAuto
 	end;
 end
 
