@@ -24,9 +24,14 @@ function courseplay:updateReachableCombines(vehicle)
 	vehicle.cp.reachableCombines = {};
 
 	if not vehicle.cp.searchCombineAutomatically and vehicle.cp.savedCombine then
-		courseplay:debug(nameNum(vehicle)..": combine is manually set", 4);
-		table.insert(vehicle.cp.reachableCombines, vehicle.cp.savedCombine);
-		return;
+		local combine = vehicle.cp.savedCombine
+		if combine.cp and combine.cp.isCheckedIn then
+			courseplay:debug(nameNum(vehicle)..": combine (id"..tostring(combine.id)..") is manually set, but already checked in", 4);
+		else
+			courseplay:debug(nameNum(vehicle)..": combine (id"..tostring(combine.id)..") is manually set", 4);
+			table.insert(vehicle.cp.reachableCombines, combine);
+		end
+		return;			
 	end;
 
 	local allCombines = courseplay:getAllCombines();
@@ -194,7 +199,7 @@ function courseplay:registerAtCombine(callerVehicle, combine)
 	end
 
 	courseplay:debug(string.format("%s is being checked in with %s", nameNum(callerVehicle), tostring(combine.name)), 4)
-	combine.cp.isCheckedIn = 1;
+	combine.cp.isCheckedIn = true;
 	callerVehicle.cp.callCombineFillLevel = nil
 	callerVehicle.cp.distanceToCombine = nil
 	callerVehicle.cp.combineID = nil
@@ -230,7 +235,7 @@ function courseplay:unregisterFromCombine(vehicle, combine)
 	if vehicle.cp.activeCombine == nil or combine == nil then
 		return true
 	end
-
+	courseplay:debug(string.format("%s: unregistering from combine id(%s)", nameNum(vehicle), tostring(combine.id)), 4)
 	vehicle.cp.calculatedCourseToCombine = false;
 	courseplay:removeFromCombinesIgnoreList(vehicle, combine)
 	combine.cp.isCheckedIn = nil;

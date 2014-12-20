@@ -80,6 +80,8 @@ function CpManager:loadMap(name)
 	g_currentMission.environment:addMinuteChangeListener(self);
 	self.realTimeMinuteTimer = 0;
 	self.realTime10SecsTimer = 0;
+	self.realTime5SecsTimer = 0;
+	self.realTime5SecsTimerThrough = 0;
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- DEV CONSOLE COMMANDS
@@ -219,6 +221,15 @@ function CpManager:update(dt)
 			self:realTime10SecsChanged();
 			self.realTime10SecsTimer = self.realTime10SecsTimer - 10000;
 		end;
+	end;
+
+	-- REAL TIME 5 SECS CHANGER
+	if self.realTime5SecsTimer < 5000 then
+		self.realTime5SecsTimer = self.realTime5SecsTimer + dt;
+		self.realTime5SecsTimerThrough = false;
+	else
+		self.realTime5SecsTimer = self.realTime5SecsTimer - 5000;
+		self.realTime5SecsTimerThrough = true;
 	end;
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

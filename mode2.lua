@@ -135,18 +135,19 @@ function courseplay:handle_mode2(vehicle, dt)
 		end
 
 		-- are there any combines out there that need my help?
-		if courseplay:timerIsThrough(vehicle, 'searchForCombines') then
+		if CpManager.realTime5SecsTimerThrough then
 			if vehicle.cp.lastActiveCombine ~= nil then
 				local distance = courseplay:distanceToObject(vehicle, vehicle.cp.lastActiveCombine)
 				if distance > 20 then
 					vehicle.cp.lastActiveCombine = nil
+					courseplay:debug(string.format("%s (%s): last combine = nil", nameNum(vehicle), tostring(vehicle.id)), 4);
 				else
 					courseplay:debug(string.format("%s (%s): last combine is just %.0fm away, so wait", nameNum(vehicle), tostring(vehicle.id), distance), 4);
 				end
-			else 
+			end
+			if vehicle.cp.lastActiveCombine == nil then -- it's important to call this function in the same loop like nilling  vehicle.cp.lastActiveCombine
 				courseplay:updateReachableCombines(vehicle)
 			end
-			courseplay:setCustomTimer(vehicle, 'searchForCombines', 5);
 		end
 
 		--is any of the reachable combines full?
