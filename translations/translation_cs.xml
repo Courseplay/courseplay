@@ -223,9 +223,9 @@
 		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay：辅助鼠标操作" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="显示鼠标" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="不显示鼠标" />
-		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Load course/merge into loaded course" /> <!-- No translation text! -->
-		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Append course at the end" /> <!-- No translation text! -->
-		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Move to folder" /> <!-- No translation text! -->
-		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Delete course/folder" /> <!-- No translation text! -->
+		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="加载或合并任务" /> 
+		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="合并任务到尾端" /> 
+		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="移动任务到目录" /> 
+		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="删除任务或目录" /> 
 	</texts>
 </l10n>
