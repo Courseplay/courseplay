@@ -161,10 +161,10 @@
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="最近的点" />
 		<text name="COURSEPLAY_FIRST_POINT" 							 text="起始点" />
 		<text name="COURSEPLAY_CURRENT_POINT" 							 text="当前点" />
-		<text name="COURSEPLAY_FIELD_EDGE_PATH" 						 text="选择农田" />
-		<text name="COURSEPLAY_FIELD" 									 text="农田" />
+		<text name="COURSEPLAY_FIELD_EDGE_PATH" 						 text="选择土地" />
+		<text name="COURSEPLAY_FIELD" 									 text="土地" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 				 text="当前任务" />
-		<text name="COURSEPLAY_FIELD_SCAN_IN_PROGRESS" 					 text="农田范围测量进度" />
+		<text name="COURSEPLAY_FIELD_SCAN_IN_PROGRESS" 					 text="土地范围测量进度" />
 		<text name="COURSEPLAY_SCANNING_FIELD_NMB" 						 text="测量范围 %d/%d" />
 		<text name="COURSEPLAY_HOSEMISSING" 							 text="找不到补给管-取消" />
 		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE" 					 text="对称变换车道" />
@@ -172,10 +172,10 @@
 		<text name="COURSEPLAY_FILLEVEL" 								 text="填充水平" />
 		<text name="COURSEPLAY_PICKUP_JAMMED" 							 text=": 皮卡车卡住了" />
 		<text name="COURSEPLAY_BALER_NEEDS_NETS" 						 text=": 打包机需要新的包装网" />
-		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES" 				 text="测量当前农田的范围路径点" />
-		<text name="COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER" 			 text="农田范围的编号：" />
-		<text name="COURSEPLAY_ADD_CUSTOM_FIELD_EDGE_PATH_TO_LIST" 		 text="添加 %d 号农田范围到列表" />
-		<text name="COURSEPLAY_OVERWRITE_CUSTOM_FIELD_EDGE_PATH_IN_LIST" text="%d 号农田范围路径点在列表中" />
+		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES" 				 text="测量当前土地的范围路径点" />
+		<text name="COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER" 			 text="土地范围的编号：" />
+		<text name="COURSEPLAY_ADD_CUSTOM_FIELD_EDGE_PATH_TO_LIST" 		 text="添加 %d 号土地范围路径点到列表" />
+		<text name="COURSEPLAY_OVERWRITE_CUSTOM_FIELD_EDGE_PATH_IN_LIST" text="%d 号土地范围路径点在列表中" />
 		<text name="COURSEPLAY_USER" 									 text="用户名" />
 		<text name="COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED" 				 text="应该尽快修复" />
 		<text name="COURSEPLAY_DAMAGE_MUST_BE_REPAIRED" 				 text="必须修复" />
@@ -204,10 +204,10 @@
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="前进模式" />
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="地图图标： 显示任务车辆图标" />
 		<text name="COURSEPLAY_ALWAYS_USE_4WD" 							 text="打开4WD模式" />
-		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="需要自动测量农田范围么？" />
+		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="需要自动测量农田范围路径么？" />
 		<text name="COURSEPLAY_YES_NO_WAGES" 							 text="你想要赚取雇人的工资么(%s/小时)？" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 					 text="种子使用量" />
-		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 				 text="农田编号: %d号(%s %s)" />
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 				 text="土地编号: %d号(%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 			 text="种子类型: %s" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE" 				 text="用量: %s %s (%s)" />
 		<text name="COURSEPLAY_HUD_OPEN" 								 text="打开CP界面" />
