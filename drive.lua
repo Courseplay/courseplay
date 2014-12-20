@@ -760,6 +760,7 @@ end;
 
 function courseplay:checkTraffic(vehicle, displayWarnings, allowedToDrive)
 	local ahead = false
+	local inQuery = false
 	local collisionVehicle = g_currentMission.nodeToVehicle[vehicle.cp.collidingVehicleId]
 	if collisionVehicle ~= nil and not (vehicle.cp.mode == 9 and (collisionVehicle.allowFillFromAir or (collisionVehicle.cp and collisionVehicle.cp.mode9TrafficIgnoreVehicle))) then
 		local vx, vy, vz = getWorldTranslation(vehicle.cp.collidingVehicleId);
@@ -791,9 +792,14 @@ function courseplay:checkTraffic(vehicle, displayWarnings, allowedToDrive)
 				vehicle.cp.isTrafficBraking = true;
 			end;
 		end;
+		local attacher
+		if collisionVehicle.getRootAttacherVehicle then
+			attacher = collisionVehicle:getRootAttacherVehicle()
+			inQuery = vehicle.cp.mode == 1 and vehicle.recordnumber == 1 and attacher.cp ~= nil and attacher.cp.isDriving and attacher.cp.mode == 1 and attacher.recordnumber == 2 
+		end		
 	end;
 
-	if displayWarnings and vehicle.cp.inTraffic then
+	if displayWarnings and vehicle.cp.inTraffic and not inQuery then
 		CpManager:setGlobalInfoText(vehicle, 'TRAFFIC');
 	end;
 	return allowedToDrive;
