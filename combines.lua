@@ -92,7 +92,7 @@ function courseplay:registerAtCombine(callerVehicle, combine)
 		
 		if callerVehicle.cp.realisticDriving then
 			if combine.cp.wantsCourseplayer == true or combine.fillLevel == combine.capacity then
-
+				courseplay:debug(string.format("%s: combine.cp.wantsCourseplayer(%s) or combine.fillLevel == combine.capacity (%s)",nameNum(callerVehicle),tostring(combine.cp.wantsCourseplayer),tostring(combine.fillLevel == combine.capacity)),4)
 			else
 				-- force unload when combine is full
 				-- is the pipe on the correct side?
@@ -113,10 +113,14 @@ function courseplay:registerAtCombine(callerVehicle, combine)
 				
 				local pipeIsInFruit = (combine.cp.pipeSide == 1 and fruitSide == "left") or (combine.cp.pipeSide == -1 and fruitSide == "right")
 				if pipeIsInFruit then
-					courseplay:debug(nameNum(callerVehicle)..": path finding active and pipe in fruit -> don't register tractor",4)
+					courseplay:debug(nameNum(callerVehicle)..": path finding active and pipe(pipeSide "..tostring(combine.cp.pipeSide)..") is in fruit -> don't register tractor",4)
 					return false
+				else
+					courseplay:debug(nameNum(callerVehicle)..": path finding active and pipe(pipeSide "..tostring(combine.cp.pipeSide)..") is not in fruit -> register tractor",4)
 				end
 			end
+		else
+			courseplay:debug(nameNum(callerVehicle)..": path finding inactive",4) 
 		end
 	end
 
@@ -202,8 +206,6 @@ function courseplay:registerAtCombine(callerVehicle, combine)
 	courseplay:askForSpecialSettings(combine:getRootAttacherVehicle(), combine)
 
 	--OFFSET
-	combine.cp.pipeSide = 1;
-
 	if callerVehicle.cp.combineOffsetAutoMode == true or callerVehicle.cp.combineOffset == 0 then
 	  	if combine.cp.offset == nil then
 			--print("no saved offset - initialise")
@@ -423,14 +425,12 @@ end;
 function courseplay:getCombinesPipeSide(combine)
 	local prnwX, prnwY, prnwZ = getWorldTranslation(combine.pipeRaycastNode)
 	local combineToPrnX, combineToPrnY, combineToPrnZ = worldToLocal(combine.cp.DirectionNode or combine.rootNode, prnwX, prnwY, prnwZ)
-
+	
 	if combineToPrnX >= 0 then
 		combine.cp.pipeSide = 1; --left
 		--print("pipe is left")
 	else
 		combine.cp.pipeSide = -1; --right
 		--print("pipe is right")
-	
-	
 	end;
 end

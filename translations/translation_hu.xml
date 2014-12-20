@@ -83,7 +83,7 @@
 		<text name="COURSEPLAY_WARNING_LIGHTS" 							 text="Megkülönböztető jelzés:" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 					 text="nem működik" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 					 text="sárga villogó (az utakon)" />
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 					 text="sárga villogó & elakadásjelző (az utakon)" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 					 text="sárga villogó &amp; elakadásjelző (az utakon)" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_3" 					 text="Megkülönböztető jelzés (mindig működik)" />
 		<text name="COURSEPLAY_PAGE_TITLE_CP_CONTROL" 					 text="Útvonal lejátszó szabályozás" />
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 			 text="Kombájn szabályozás" />
@@ -116,7 +116,6 @@
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="Rossz munkaeszköz ehhez a mművelethez" />
 		<text name="COURSEPLAY_WRONG_TOOL" 								 text="Rossz munkaeszköz ehhez a módhoz" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="Ez a járműtípus nem megfelelő ehhez a művelethez." />
-		<text name="COURSEPLAY_ESL_NOT_SUPPORTED" 						 text="ESLimiter verziója nem támogatott" />
 		<text name="COURSEPLAY_WEATHER_WARNING" 						 text="vár míg jobb idő lesz! (eláll az eső)" />
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Közlekedő út eltolás:" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="Művelés eltolás oldalra:" />
@@ -171,7 +170,6 @@
 		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE" 					 text="Szimmetrikus sávváltás:" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_PRIORITY" 				 text="Vezető prioritása:" />
 		<text name="COURSEPLAY_FILLEVEL" 								 text="töltési szint" />
-		<text name="COURSEPLAY_NO_AUTOCOMBINE_MODE_7" 					 text="Kombájn automaika nem megengedett" />
 		<text name="COURSEPLAY_PICKUP_JAMMED" 							 text=": felszedő eltömődött" />
 		<text name="COURSEPLAY_BALER_NEEDS_NETS" 						 text=": bálázónak új fólia kell" />
 		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES" 				 text="A területszél útvonalának kikalkulálása" />
@@ -225,5 +223,9 @@
 		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Vezetősegéd: Másodlagos egér aktiválás" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="Egérkurzor megjelenítése" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="Egérkurzor elrejtése" />
+		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Útvonal betöltése/hozzáfűzés a betöltött útvonalhoz" />
+		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Útvonal hozzáadása a végéhez" />
+		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Áthelyezés mappába" />
+		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Útvonal/mappa törlése" />
 	</texts>
 </l10n>

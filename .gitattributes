@@ -21,5 +21,6 @@
 *.rtf	 diff=astextplain
 *.RTF	 diff=astextplain
 
+*.dds binary
 *.lua text
 *.xml text

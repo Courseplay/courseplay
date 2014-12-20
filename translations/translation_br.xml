@@ -83,7 +83,7 @@
 		<text name="COURSEPLAY_WARNING_LIGHTS" 							 text="Luzes de aviso:" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 					 text="desligadas" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 					 text="luzes rotativas (na estrada)" />
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 					 text="luzes rotativas & luzes de emergência" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 					 text="luzes rotativas &amp; luzes de emergência" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_3" 					 text="Luzes de aviso (sempre ligadas)" />
 		<text name="COURSEPLAY_PAGE_TITLE_CP_CONTROL" 					 text="Controle do Courseplay" />
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 			 text="Controle da ceifadeira" />
@@ -116,7 +116,6 @@
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="carreta incorreta para este modo" />
 		<text name="COURSEPLAY_WRONG_TOOL" 								 text="ferramenta errada para este modo" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="Este veículo não é suportado neste modo" />
-		<text name="COURSEPLAY_ESL_NOT_SUPPORTED" 						 text="Versão do ESLimiter não suportada" />
 		<text name="COURSEPLAY_WEATHER_WARNING" 						 text="aguardando o tempo melhorar" />
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Distancia da faixa" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="Distancia horizontal do equipamento" />
@@ -171,7 +170,6 @@
 		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE" 					 text="Mudança de faixa simétrica" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_PRIORITY" 				 text="Prioridade do motorista" />
 		<text name="COURSEPLAY_FILLEVEL" 								 text="nivel de enchimento" />
-		<text name="COURSEPLAY_NO_AUTOCOMBINE_MODE_7" 					 text="Ceifadeira não suportada" />
 		<text name="COURSEPLAY_PICKUP_JAMMED" 							 text=": carregamento está bloqueado" />
 		<text name="COURSEPLAY_BALER_NEEDS_NETS" 						 text=": fardos redondos precisa de embalagem" />
 		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES" 				 text="Cálcular a borda do campo atual" />
@@ -225,5 +223,9 @@
 		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: ações secundárias do mouse" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="mostrar cursor do mouse" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="ocultar cursor do mouse" />
+		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Carregar rota/combinar na rota carregada" />
+		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Acrescentar rota no final" />
+		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Mover para pasta" />
+		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Excluir rota/pasta" /> 
 	</texts>
 </l10n>

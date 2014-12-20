@@ -5,7 +5,6 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 			courseplay:setMouseCursor(self, not self.cp.mouseCursorActive);
 		elseif not self.cp.hud.show and self.cp.hud.openWithMouse then
 			courseplay:openCloseHud(self, true)
-			courseplay:buttonsActiveEnabled(self, "all");
 		end;
 	end;
 

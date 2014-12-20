@@ -25,30 +25,44 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 		else
 			local vehicleOnList = false
 			local OtherIdisCloser = true
-
-			-- is this a traffic vehicle?
-			local cm = getCollisionMask(otherId);
-			if bitAND(cm, 33554432) ~= 0 then -- if bit25 is part of the collisionMask
-				-- is traffic vehicle
-			end;
+			local debugMessage = "onEnter"
+			if onLeave then 
+				debugMessage = "onLeave"
+			end
 
 			local vehicle = g_currentMission.nodeToVehicle[otherId];
 			local collisionVehicle = g_currentMission.nodeToVehicle[self.cp.collidingVehicleId];
-			
+			-- is this a traffic vehicle?
+			local cm = getCollisionMask(otherId);
+			if vehicle == nil and bitAND(cm, 2097152) ~= 0 then -- if bit21 is part of the collisionMask then set new vehicle in GCM.NTV
+				local pathVehicle = {}
+				pathVehicle.rootNode = otherId
+				pathVehicle.isCpPathvehicle = true
+				pathVehicle.name = "PathVehicle"
+				g_currentMission.nodeToVehicle[otherId] = pathVehicle
+				vehicle = pathVehicle
+			end;	
+						
 			local isInOtherTrigger = false --is this ID in one of the other triggers?
 			for i=1,4 do
 				if i ~= TriggerNumber and self.cp.collidingObjects[i][otherId] then
 					isInOtherTrigger = true
 				end
 			end
-			courseplay:debug(string.format("%s: Trigger%d: triggered collision with %d ", nameNum(self),TriggerNumber,otherId), 3);
+			courseplay:debug(string.format("%s:%s Trigger%d: triggered collision with %d ", nameNum(self),debugMessage,TriggerNumber,otherId), 3);
 			local trafficLightDistance = 0 
+			
 			if collisionVehicle ~= nil and collisionVehicle.rootNode == nil then
 				local x,y,z = getWorldTranslation(self.cp.collidingVehicleId)
 				_,_, trafficLightDistance = worldToLocal (self.cp.DirectionNode, x,y,z)
 			end
-			
-			
+			if vehicle ~= nil and vehicle.rootNode == nil then --check traffic lights: stop or go?
+				local _,transY,_ = getTranslation(otherId);
+				if transY < 0 then
+					OtherIdisCloser = false
+					courseplay:debug(tostring(otherId)..": trafficLight: transY = "..tostring(transY)..", so it's green or Off-> go on",3)
+				end
+			end
 			local fixDistance = 0 -- if ID.rootNode is nil set, distance fix to 25m needed for traffic lights
 			if onEnter and vehicle ~= nil and vehicle.rootNode == nil then
 				fixDistance = TriggerNumber * 5
@@ -111,7 +125,6 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 					courseplay:debug(string.format("%s: 	onLeave: %d is in other trigger -> ignore", nameNum(self),otherId), 3);
 				end
 			end
-			
 			if vehicle ~= nil and self.trafficCollisionIgnoreList[otherId] == nil and vehicleOnList == false then
 				if onEnter and OtherIdisCloser and not self.cp.collidingObjects.all[otherId] then
 					self.cp.collidingObjects.all[otherId] = true
@@ -124,7 +137,8 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 						if TriggerNumber ~= 4 then
 							--self.CPnumCollidingVehicles = math.max(self.CPnumCollidingVehicles - 1, 0);
 							--if self.CPnumCollidingVehicles == 0 then
-								self.cp.collidingVehicleId = nil
+								--self.cp.collidingVehicleId = nil
+								courseplay:deleteCollisionVehicle(self);
 							--end
 							AIVehicleUtil.setCollisionDirection(self.cp.trafficCollisionTriggers[1], self.cp.trafficCollisionTriggers[2], 0, -1);
 							courseplay:debug(string.format('%s: 	onLeave - setting "self.cp.collidingVehicleId" to nil', nameNum(self)), 3);
@@ -276,7 +290,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 
 					if fillTypeIsValid then
 						self.cp.currentTipTrigger = trigger;
-						self.cp.currentTipTrigger.cpActualLength = (courseplay:distanceToObject(self, trigger)- (distance+5))*2 --5 stands for the distance of the raycast to rootNode
+						self.cp.currentTipTrigger.cpActualLength = courseplay:distanceToObject(self, trigger)*2 
 						courseplay:debug(string.format("%s: self.cp.currentTipTrigger = %s , cpActualLength = %s", nameNum(self), tostring(triggerId),tostring(self.cp.currentTipTrigger.cpActualLength)), 1);
 						return false
 					end;

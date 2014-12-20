@@ -116,7 +116,6 @@
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="Неподходящий тип прицепа для маршрута" />
 		<text name="COURSEPLAY_WRONG_TOOL" 								 text="Неподходящий тип инструмента для маршрута" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="Неподходящий тип техники для маршрута" />
-		<text name="COURSEPLAY_ESL_NOT_SUPPORTED" 						 text="Эта версия ESLimiter не поддерживается" />
 		<text name="COURSEPLAY_WEATHER_WARNING" 						 text="надо подождать хорошей погоды" />
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Смещение от центра:" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="правее/левее:" />
@@ -171,7 +170,6 @@
 		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE" 					 text="Симметрично:" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_PRIORITY" 				 text="Приоритет:" />
 		<text name="COURSEPLAY_FILLEVEL" 								 text="загруженность" />
-		<text name="COURSEPLAY_NO_AUTOCOMBINE_MODE_7" 					 text="Этот комбайн не поддерживается" />
 		<text name="COURSEPLAY_PICKUP_JAMMED" 							 text="погрузка остановлена" />
 		<text name="COURSEPLAY_BALER_NEEDS_NETS" 						 text="упаковщик нуждается в тюках" />
 		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES" 				 text="Показать границы поля" />
@@ -225,5 +223,9 @@
 		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: 2 функция мыши" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="показать курсор" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="скрыть курсор" />
+		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Load course/merge into loaded course" /> <!-- No translation text! -->
+		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Append course at the end" /> <!-- No translation text! -->
+		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Move to folder" /> <!-- No translation text! -->
+		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Delete course/folder" /> <!-- No translation text! -->
 	</texts>
 </l10n>

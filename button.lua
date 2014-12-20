@@ -130,9 +130,9 @@ function courseplay.button:render()
 			end;
 
 		elseif pg == courseplay.hud.PAGE_COMBI_MODE then
-			if fn == "changeTurnRadius" then
+			if fn == "changeTurnDiameter" then
 				canScrollUp   = true;
-				canScrollDown = vehicle.cp.turnRadius > 0;
+				canScrollDown = vehicle.cp.turnDiameter > 0;
 			elseif fn == "changeFollowAtFillLevel" then
 				canScrollUp   = vehicle.cp.followAtFillLevel < 100;
 				canScrollDown = vehicle.cp.followAtFillLevel > 0;
@@ -249,8 +249,8 @@ function courseplay.button:render()
 
 			--Page 3
 			elseif pg == courseplay.hud.PAGE_COMBI_MODE then
-				if fn == "changeTurnRadius" and prm < 0 then
-					show = vehicle.cp.turnRadius > 0;
+				if fn == "changeTurnDiameter" and prm < 0 then
+					show = vehicle.cp.turnDiameter > 0;
 				elseif fn == "changeFollowAtFillLevel" then
 					if prm < 0 then
 						show = vehicle.cp.followAtFillLevel > 0;

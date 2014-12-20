@@ -908,21 +908,6 @@ function courseplay:getObjectName(object, xmlFile)
 	return courseplay:loc('UNKNOWN') .. '_' .. tostring(object.rootNode);
 end;
 
-function courseplay:getMoreRealisticVersion()
-	if not courseplay.moreRealisticInstalled then
-		return nil;
-	end;
-
-	local modItem = ModsUtil.findModItemByModName(RealisticUtils.modName);
-	if modItem and modItem.version then
-		local versionSplit = table.map(Utils.splitString('.', modItem.version), tonumber);
-		versionSplit[3] = versionSplit[3] or 0;
-		return tonumber(('%d.%02d%02d'):format(versionSplit[1], versionSplit[2], versionSplit[3]));
-	end;
-
-	return 0;
-end;
-
 function courseplay:getRealWorldRotation(node, direction)
 	if not direction then direction = 1 end;
 	local x,_,z = localDirectionToWorld(node, 0, 0, direction);

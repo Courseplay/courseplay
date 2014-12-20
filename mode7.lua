@@ -41,7 +41,7 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 			local fx,fy,fz = 0,0,0;
 			local isField = true;
 			for i = 0.5, 3 do
-				fx,fy,fz = localToWorld(vehicle.cp.DirectionNode, 0, 0, -i*vehicle.cp.turnRadius);
+				fx,fy,fz = localToWorld(vehicle.cp.DirectionNode, 0, 0, -i*vehicle.cp.turnDiameter);
 				if not courseplay:isField(fx, fz) then
 					isField = false;
 					break;
@@ -56,16 +56,16 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 				end				
 				vehicle.cp.shortestDistToWp = nil;
 				vehicle.cp.nextTargets = {};
-				local sideOffset = math.max(0.34*3*vehicle.cp.turnRadius,vehicle.cp.workWidth);
+				local sideOffset = math.max(0.34*3*vehicle.cp.turnDiameter,vehicle.cp.workWidth);
 				courseplay:debug(nameNum(vehicle) .. ": sideOffset = "..tostring(sideOffset), 11);
 				if lx7 < 0 then
 					courseplay:debug(nameNum(vehicle) .. ": approach from right", 11);
-					vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, -sideOffset , 0, -3*vehicle.cp.turnRadius);
+					vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, -sideOffset , 0, -3*vehicle.cp.turnDiameter);
 					courseplay:addNewTargetVector(vehicle, sideOffset , 0);
 					courseplay:addNewTargetVector(vehicle, 0 , 3.5);
 				else
 					courseplay:debug(nameNum(vehicle) .. ": approach from left", 11);
-					vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, sideOffset , 0, -3*vehicle.cp.turnRadius);
+					vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, sideOffset , 0, -3*vehicle.cp.turnDiameter);
 					courseplay:addNewTargetVector(vehicle, -sideOffset , 0);
 					courseplay:addNewTargetVector(vehicle, 0 ,3.5);
 				end
@@ -75,7 +75,7 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 			else
 				if courseplay.debugChannels[11] then
 					local dbgctx7, dbgcty7, dbgctz7 = getWorldTranslation(vehicle.cp.DirectionNode);
-					local dbgcx, _, dbgcz = localToWorld(vehicle.cp.DirectionNode, 0 , 0, -3*vehicle.cp.turnRadius);
+					local dbgcx, _, dbgcz = localToWorld(vehicle.cp.DirectionNode, 0 , 0, -3*vehicle.cp.turnDiameter);
 					drawDebugLine(dbgctx7, dbgcty7+3, dbgctz7, 1, 1, 1, dbgcx, dbgcty7+3, dbgcz, 1, 1, 1);
 				end					
 				return false;

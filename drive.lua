@@ -91,7 +91,7 @@ function courseplay:drive(self, dt)
 	local distToChange;
 
 	-- coordinates of coli
-	local tx, ty, tz = localToWorld(self.cp.DirectionNode, 0, 1, 5); --local tx, ty, tz = getWorldTranslation(self.aiTrafficCollisionTrigger)
+	local tx, ty, tz = localToWorld(self.cp.DirectionNode, 0, 1, 3); --local tx, ty, tz = getWorldTranslation(self.aiTrafficCollisionTrigger)
 	-- local direction of from DirectionNode to waypoint
 	local lx, lz = AIVehicleUtil.getDriveDirection(self.cp.DirectionNode, cx, cty, cz);
 	-- world direction of from DirectionNode to waypoint
@@ -165,7 +165,7 @@ function courseplay:drive(self, dt)
 
 		elseif self.cp.mode == 4 then
 			local drive_on = false
-			if self.cp.lastRecordnumber == self.cp.startWork and self.cp.tipperFillLevelPct ~= 0 then
+			if self.cp.lastRecordnumber == self.cp.startWork then
 				courseplay:setVehicleWait(self, false);
 			elseif self.cp.lastRecordnumber == self.cp.stopWork and self.cp.abortWork ~= nil then
 				courseplay:setVehicleWait(self, false);
@@ -472,6 +472,9 @@ function courseplay:drive(self, dt)
 	
 	-- allowedToDrive false -> STOP OR HOLD POSITION
 	if not allowedToDrive then
+		-- reset slipping timers
+		courseplay:resetSlippingTimers(self)
+
 		self.cp.TrafficBrake = false;
 		self.cp.isTrafficBraking = false;
 
@@ -492,7 +495,7 @@ function courseplay:drive(self, dt)
 		return
 	end
 	self.cp.checkMarkers = false
-
+	
 	--SPEED SETTING
 	local isAtEnd   = self.recordnumber > self.maxnumber - 3;
 	local isAtStart = self.recordnumber < 3;
@@ -582,6 +585,8 @@ function courseplay:drive(self, dt)
 			local _, _, zDis = worldToLocal(self.cp.DirectionNode, self.cp.reverseBackToPoint.x, self.cp.reverseBackToPoint.y, self.cp.reverseBackToPoint.z);
 			if zDis < 0 then
 				fwd = false;
+				lx = 0
+				lz = 1				
 				refSpeed = self.cp.speeds.crawl
 				speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			else
@@ -765,9 +770,9 @@ function courseplay:checkTraffic(vehicle, displayWarnings, allowedToDrive)
 		if z1 > -0.9 then -- tractor in front of vehicle face2face or beside < 4 o'clock
 			ahead = true
 		end;
-
-		if abs(tx) > 5 and collisionVehicle.rootNode ~= nil and not vehicle.cp.collidingObjects.all[vehicle.cp.collidingVehicleId] then
-			courseplay:debug(('%s: checkTraffic:\tcall deleteCollisionVehicle()'):format(nameNum(vehicle)), 3);
+		local _,transY,_ = getTranslation(vehicle.cp.collidingVehicleId);
+		if transY < 0 or abs(tx) > 5 and collisionVehicle.rootNode ~= nil and not vehicle.cp.collidingObjects.all[vehicle.cp.collidingVehicleId] then
+			courseplay:debug(('%s: checkTraffic:\tcall deleteCollisionVehicle(), transY= %s'):format(nameNum(vehicle),tostring(transY)), 3);
 			courseplay:deleteCollisionVehicle(vehicle);
 			return allowedToDrive;
 		end;
@@ -1312,6 +1317,10 @@ function courseplay:handleSlipping(vehicle, refSpeed)
 	end;
 end;
 
+function courseplay:resetSlippingTimers(vehicle)
+	courseplay:resetCustomTimer(vehicle, 'slippingStage1');
+	courseplay:resetCustomTimer(vehicle, 'slippingStage2');
+end
 
 -----------------------------------------------------------------------------------------
 

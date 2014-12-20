@@ -116,7 +116,6 @@
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="错误的拖车" />
 		<text name="COURSEPLAY_WRONG_TOOL" 								 text="当前工具不支持当前模式" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="当前车辆不支持当前模式" />
-		<text name="COURSEPLAY_ESL_NOT_SUPPORTED" 						 text="ESLimiter版本不支持" />
 		<text name="COURSEPLAY_WEATHER_WARNING" 						 text="等待天气好转" />
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="行线偏移" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="工具横向调整" />
@@ -171,7 +170,6 @@
 		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE" 					 text="对称变换车道" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_PRIORITY" 				 text="卸载车辆优先级" />
 		<text name="COURSEPLAY_FILLEVEL" 								 text="填充水平" />
-		<text name="COURSEPLAY_NO_AUTOCOMBINE_MODE_7" 					 text="不支持AutoCombine" />
 		<text name="COURSEPLAY_PICKUP_JAMMED" 							 text=": 皮卡车卡住了" />
 		<text name="COURSEPLAY_BALER_NEEDS_NETS" 						 text=": 打包机需要新的包装网" />
 		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES" 				 text="测量当前农田的范围路径点" />
@@ -225,5 +223,9 @@
 		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay：辅助鼠标操作" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="显示鼠标" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="不显示鼠标" />
+		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Load course/merge into loaded course" /> <!-- No translation text! -->
+		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Append course at the end" /> <!-- No translation text! -->
+		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Move to folder" /> <!-- No translation text! -->
+		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Delete course/folder" /> <!-- No translation text! -->
 	</texts>
 </l10n>

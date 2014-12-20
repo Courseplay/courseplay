@@ -19,7 +19,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 	end;
 	
 	--go with field speed	
-	if fieldArea then
+	if fieldArea or self.recordnumber == self.cp.startWork then
 		workSpeed = 1;
 	end
 	

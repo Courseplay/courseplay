@@ -37,6 +37,10 @@
 		<text name="COURSEPLAY_FOLDER_NAME" 							 text="Name des Ordners:" />
 		<text name="COURSEPLAY_FILTER_COURSES" 							 text="Kurse filtern:" />
 		<text name="COURSEPLAY_COURSES_FILTER_TITLE" 					 text="Kurse: %q" />
+		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Kurs laden/mit aktuellem Kurs zusammenfügen" />
+		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Kurs anhängen" />
+		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="In einen Ordner verschieben" />
+		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Kurs/Ordner löschen" />
 		<text name="COURSEPLAY_CREATE_FOLDER" 							 text="Neuen Ordner erstellen" />
 		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 			 text="Nach Kursen und Ordnern suchen" />
 		<text name="COURSEPLAY_DEACTIVATE_FILTER" 						 text="Filter deaktivieren" />
@@ -83,7 +87,7 @@
 		<text name="COURSEPLAY_WARNING_LIGHTS" 							 text="Warnleuchten:" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 					 text="ausgeschaltet" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 					 text="RUL (auf der Straße)" />
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 					 text="RUL & Warnblinker (auf der Straße)" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 					 text="RUL &amp; Warnblinker (auf der Straße)" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_3" 					 text="Rundumleuchten (immer)" />
 		<text name="COURSEPLAY_PAGE_TITLE_CP_CONTROL" 					 text="Abfahrhelfer Steuerung" />
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 			 text="Drescher steuern" />
@@ -116,7 +120,6 @@
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="falscher Trailer für diesen Modus" />
 		<text name="COURSEPLAY_WRONG_TOOL" 								 text="falsches Gerät für diesen Modus" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="Dieser Fahrzeugtyp wird in diesem Modus nicht unterstützt." />
-		<text name="COURSEPLAY_ESL_NOT_SUPPORTED" 						 text="ESLimiter-Version wird nicht unterstützt" />
 		<text name="COURSEPLAY_WEATHER_WARNING" 						 text="wartet auf besseres Wetter" />
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Bahnversatz" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="Gerät-Versatz (horizontal)" />
@@ -153,11 +156,11 @@
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="keine Schaufel vorhanden" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS" 						 text="Schaufelstellung" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS_MISSING" 				 text="Es fehlen Schaufelstellungen" />
-		<text name="COURSEPLAY_SHOVEL_LOADING_POSITION" 				 text="Position 'Beladen'" />
-		<text name="COURSEPLAY_SHOVEL_TRANSPORT_POSITION" 				 text="Position 'Transport'" />
-		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION" 			 text="Position 'vor Abladen'" />
-		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION" 				 text="Position 'Abladen'" />
-		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Stop + Go Laden" />
+		<text name="COURSEPLAY_SHOVEL_LOADING_POSITION" 				 text='Position "Beladen"' />
+		<text name="COURSEPLAY_SHOVEL_TRANSPORT_POSITION" 				 text='Position "Transport"' />
+		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION" 			 text='Position "vor Abladen"' />
+		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION" 				 text='Position "Abladen"' />
+		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Stop &amp; Go Laden" />
 		<text name="COURSEPLAY_START_AT_POINT" 							 text="Kurs beginnen am" />
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="nächsten Wegpunkt" />
 		<text name="COURSEPLAY_FIRST_POINT" 							 text="ersten Wegpunkt" />
@@ -171,7 +174,6 @@
 		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE" 					 text="Symmetrischer Bahnwechsel" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_PRIORITY" 				 text="Abfahrer-Priorität" />
 		<text name="COURSEPLAY_FILLEVEL" 								 text="Füllstand" />
-		<text name="COURSEPLAY_NO_AUTOCOMBINE_MODE_7" 					 text="AutoCombine wird nicht unterstützt" />
 		<text name="COURSEPLAY_PICKUP_JAMMED" 							 text=": Pickup ist verstopft" />
 		<text name="COURSEPLAY_BALER_NEEDS_NETS" 						 text=": Presse braucht neue Wickelnetze" />
 		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES" 				 text="Aktuellen Feldrandkurs berechnen" />

@@ -108,7 +108,6 @@
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 				 text="Troppi punti d'attesa! Permesso solo %d." />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="Troppo pochi punti d'attesa! %d necessario." />
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="rimorchio sbagliato per questa modalità" />
-		<text name="COURSEPLAY_ESL_NOT_SUPPORTED" 						 text="la versione dell'ESLimiter non è compatibile" />
 		<text name="COURSEPLAY_WEATHER_WARNING" 						 text="è in attesa di un tempo migliore" />
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Distanza corsia" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="Utensile: distanza orizz." />
@@ -149,7 +148,7 @@
 		<text name="COURSEPLAY_SHOVEL_TRANSPORT_POSITION" 				 text="Posizione di trasporto" />
 		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION" 			 text="Posizione di Pre-caricamento" />
 		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION" 				 text="Posizione di scaricamento" />
-		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Caricamento Stop + go" />
+		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Caricamento Stop &amp; go" />
 		<text name="COURSEPLAY_START_AT_POINT" 							 text="Avviare il corso al" />
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="punto più vicino" />
 		<text name="COURSEPLAY_FIRST_POINT" 							 text="primo punto" />
@@ -162,7 +161,6 @@
 		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE" 					 text="Cambio di corsia simmetrica" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_PRIORITY" 				 text="Priorità dell'autista" />
 		<text name="COURSEPLAY_FILLEVEL" 								 text="livello di riempimento" />
-		<text name="COURSEPLAY_NO_AUTOCOMBINE_MODE_7" 					 text="AutoCombine non è supportato" />
 		<text name="COURSEPLAY_PICKUP_JAMMED" 							 text=": pickup è intasato" />
 		<text name="COURSEPLAY_BALER_NEEDS_NETS" 						 text=": rotopressa ha bisogno di nuovo rotolo di rete" />
 		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES" 				 text="Calcolo perimetro del campo corrente" />
@@ -197,5 +195,9 @@
 		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: azione secondaria del mouse" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="mostra il cursore" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="nascondere il cursore" />
+		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Load course/merge into loaded course" /> <!-- No translation text! -->
+		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Append course at the end" /> <!-- No translation text! -->
+		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Move to folder" /> <!-- No translation text! -->
+		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Delete course/folder" /> <!-- No translation text! -->
 	</texts>
 </l10n>

@@ -83,8 +83,8 @@
 		<text name="COURSEPLAY_WARNING_LIGHTS" 						 text="Luzes de sinalização:" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 					 text="desligadas" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 					 text="pirilampo (no percurso)" />
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 					 text="pirilampo & piscas" />
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_3" 					 text="Pirilampo (sempre ligado)" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 					 text="pirilampo e piscas (no percurso)" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_3" 					 text="pirilampo (sempre ligado)" />
 		<text name="COURSEPLAY_PAGE_TITLE_CP_CONTROL" 					 text="Controlo do Courseplay" />
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 		        	 text="Controlo da ceifeira" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES" 				 text="Gerir percursos" />
@@ -116,7 +116,6 @@
 		<text name="COURSEPLAY_WRONG_TRAILER" 						 text="atrelado incorreto para este modo" />
 		<text name="COURSEPLAY_WRONG_TOOL" 			        		 text="implemento errado para este modo" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		         text="Este veículo não é suportado neste modo" />
-		<text name="COURSEPLAY_ESL_NOT_SUPPORTED" 					 text="Versão do ESLimiter não suportado" />
 		<text name="COURSEPLAY_WEATHER_WARNING" 					 text="a esperar que o tempo melhore" />
 		<text name="COURSEPLAY_LANE_OFFSET" 						 text="Distânçia da faixa" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X" 						 text="Distânçia horizontal do equipamento" />
@@ -171,7 +170,6 @@
 		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE" 					 text="Mudança de faixa simétrica" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_PRIORITY" 				 text="Prioridade do condutor" />
 		<text name="COURSEPLAY_FILLEVEL" 						 text="nivel de enchimento" />
-		<text name="COURSEPLAY_NO_AUTOCOMBINE_MODE_7" 					 text="Ceifeira não suportada" />
 		<text name="COURSEPLAY_PICKUP_JAMMED" 						 text=": carregamento com problemas" />
 		<text name="COURSEPLAY_BALER_NEEDS_NETS" 					 text=": fardos redondos precisam de embalagem" />
 		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES" 				 text="Calcular a borda do campo atual" />
@@ -225,5 +223,9 @@
 		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: ações secundárias do rato" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 					 text="mostrar seta do rato" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 					 text="ocultar seta do rato" />
+		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Load course/merge into loaded course" /> <!-- No translation text! -->
+		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Append course at the end" /> <!-- No translation text! -->
+		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Move to folder" /> <!-- No translation text! -->
+		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Delete course/folder" /> <!-- No translation text! -->
 	</texts>
 </l10n>

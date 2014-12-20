@@ -28,7 +28,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 			courseplay:setRecordNumber(vehicle, min(vehicle.cp.finishWork + 1,vehicle.maxnumber));
 		end;
 	end;
-	if fieldArea then
+	if fieldArea or vehicle.recordnumber == vehicle.cp.startWork then
 		workSpeed = 1;
 	end
 	if (vehicle.recordnumber == vehicle.cp.stopWork or vehicle.cp.lastRecordnumber == vehicle.cp.stopWork) and vehicle.cp.abortWork == nil and not vehicle.cp.isLoaded and not isFinishingWork and vehicle.cp.wait then

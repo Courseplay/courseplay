@@ -52,7 +52,7 @@ function courseplay:turn(self, dt) --!!!
 				end
 				if myDirX*dirX + myDirZ*dirZ > 0.2 or self.turnStageTimer < 0 then
 					if self.cp.aiTurnNoBackward or
-					(courseplay:distance(newTargetX, newTargetZ, self.Waypoints[self.recordnumber-1].cx, self.Waypoints[self.recordnumber-1].cz) > self.cp.turnRadius * 1.2) then
+					(courseplay:distance(newTargetX, newTargetZ, self.Waypoints[self.recordnumber-1].cx, self.Waypoints[self.recordnumber-1].cz) > self.cp.turnDiameter * 1.2) then
 						self.cp.turnStage = 4;
 					else
 						self.cp.turnStage = 3;
@@ -260,26 +260,14 @@ function courseplay:turn(self, dt) --!!!
 			moveForwards = true;
 		end;
 		if self.cp.TrafficBrake then
-			if self.isRealistic then
-				allowedToDrive = false
-			else
-				moveForwards = self.movingDirection == -1;
-				lx = 0
-				lz = 1
-			end
+			moveForwards = self.movingDirection == -1;
+			lx = 0
+			lz = 1
 		end
 		if self.invertedDrivingDirection then
 			lx = -lx
 		end
-		if self.isRealistic then
-			if self.cp.turnStage < 1 then
-				lx = 0
-				lz = 1
-			end
- 			courseplay:driveInMRDirection(self, lx,lz,moveForwards,dt,allowedToDrive)
-		else
-			AIVehicleUtil.driveInDirection(self, dt, 25, 1, 0.5, 20, true, moveForwards, lx, lz, refSpeed, 1);
-		end
+		AIVehicleUtil.driveInDirection(self, dt, 25, 1, 0.5, 20, true, moveForwards, lx, lz, refSpeed, 1);
 		courseplay:setTrafficCollision(self, lx, lz, true)
 	end;
 	

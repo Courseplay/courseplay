@@ -1,3 +1,4 @@
+local abs, cos, sin, min, max, deg = math.abs, math.cos, math.sin, math.min, math.max, math.deg;
 -- ##### MANAGING TOOLS ##### --
 
 function courseplay:attachImplement(implement)
@@ -296,8 +297,14 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 			courseplay:setMinHudPage(vehicle, vehicle.cp.workTools[vehicle.cp.attachedCombineIdx]);
 		end;
 
-		-- TURN RADIUS
-		courseplay:setAutoTurnradius(vehicle, hasWorkTool);
+		-- TURN DIAMETER
+		--if CpManager.isDeveloper then
+		--	-- New Turn Radius Calculation
+		--	courseplay:setAutoTurnDiameter(vehicle, hasWorkTool);
+		--else
+			-- Old Turn Radius Calculation
+			courseplay:setOldAutoTurnDiameter(vehicle, hasWorkTool);
+		--end;
 
 		-- TIP REFERENCE POINTS
 		courseplay:setTipRefOffset(vehicle);
@@ -345,7 +352,7 @@ function courseplay:setTipRefOffset(vehicle)
 				vehicle.cp.workTools[i].cp.rearTipRefPoint = nil;
 				for n=1 ,#(vehicle.cp.workTools[i].tipReferencePoints) do
 					local tipRefPointX, tipRefPointY, tipRefPointZ = worldToLocal(vehicle.cp.workTools[i].tipReferencePoints[n].node, tipperX, tipperY, tipperZ);
-					tipRefPointX = math.abs(tipRefPointX);
+					tipRefPointX = abs(tipRefPointX);
 					if not foundTipRefOffset then
 						if (vehicle.cp.tipRefOffset == nil or vehicle.cp.tipRefOffset == 0) and tipRefPointX > 0.1 then
 							vehicle.cp.tipRefOffset = tipRefPointX;
@@ -416,7 +423,7 @@ function courseplay:setMarkers(vehicle, object,isImplement)
 	end
 
 	if vehicle.cp.aiFrontMarker < -7 then
-		vehicle.aiToolExtraTargetMoveBack = math.abs(vehicle.cp.aiFrontMarker)
+		vehicle.aiToolExtraTargetMoveBack = abs(vehicle.cp.aiFrontMarker)
 	end
 
 	courseplay:debug(('%s: setMarkers(): turnEndBackDistance = %s, aiToolExtraTargetMoveBack = %s'):format(nameNum(vehicle), tostring(vehicle.turnEndBackDistance), tostring(vehicle.aiToolExtraTargetMoveBack)), 6);
@@ -487,11 +494,31 @@ function courseplay:setTipperCoverData(vehicle)
 	end;
 end;
 
-function courseplay:setAutoTurnradius(vehicle, hasWorkTool)
+function courseplay:setAutoTurnDiameter(vehicle, hasWorkTool)
+	local turnRadius, turnRadiusAuto = 10, 10;
+
+	-- Use Giants calculated turning radius if pressent
+	if vehicle.maxTurningRadius then
+		vehicle.cp.turnDiameterAuto = abs(vehicle.maxTurningRadius);
+
+	-- No Giants turning radius, so we calculate it our self.
+	else
+		vehicle.cp.turnDiameterAuto = 85
+	end;
+
+	if vehicle.cp.turnDiameterAutoMode then
+		vehicle.cp.turnDiameter = vehicle.cp.turnDiameterAuto;
+		--if abs(vehicle.cp.turnDiameter) > 50 then
+		--	vehicle.cp.turnDiameter = 15
+		--end
+	end;
+end;
+
+function courseplay:setOldAutoTurnDiameter(vehicle, hasWorkTool)
 	local sinAlpha = 0;		-- Sinus vom Lenkwinkel
 	local wheelbase = 0;	-- Radstand
 	local track = 0;		-- Spurweite
-	local turnRadius = 0;	-- Wendekreis unbereinigt
+	local turnDiameter = 0;	-- Wendekreis unbereinigt
 	local xerion = false
 	if vehicle.foundWheels == nil then
 		vehicle.foundWheels = {}
@@ -528,27 +555,27 @@ function courseplay:setAutoTurnradius(vehicle, hasWorkTool)
 		end	 
 		track  = courseplay:distance(wh1X, wh1Z, wh2X, wh2Z)
 		wheelbase = courseplay:distance(wh1X, wh1Z, wh3X, wh3Z)
-		turnRadius = 2*wheelbase/sinAlpha+track
+		turnDiameter = 2*wheelbase/sinAlpha+track
 		vehicle.foundWheels = {}
 	else
-		turnRadius = vehicle.cp.turnRadius                  -- Kasi and Co are not supported. Nobody does hauling with a Kasi or Quadtrack !!!
+		turnDiameter = vehicle.cp.turnDiameter                  -- Kasi and Co are not supported. Nobody does hauling with a Kasi or Quadtrack !!!
 	end;
 	
 	if hasWorkTool and (vehicle.cp.mode == 2 or vehicle.cp.mode == 3 or vehicle.cp.mode == 4 or vehicle.cp.mode == 6) then --TODO (Jakob): I've added modes 3, 4 & 6 - needed?
-		vehicle.cp.turnRadiusAuto = turnRadius;
-		--print(string.format("vehicle.cp.workTools[1].sizeLength = %s  turnRadius = %s", tostring(vehicle.cp.workTools[1].sizeLength),tostring( turnRadius)))
-		if vehicle.cp.numWorkTools == 1 and vehicle.cp.workTools[1].attacherVehicle ~= vehicle and (vehicle.cp.workTools[1].sizeLength > turnRadius) then
-			vehicle.cp.turnRadiusAuto = vehicle.cp.workTools[1].sizeLength;
+		vehicle.cp.turnDiameterAuto = turnDiameter;
+		--print(string.format("vehicle.cp.workTools[1].sizeLength = %s  turnDiameter = %s", tostring(vehicle.cp.workTools[1].sizeLength),tostring( turnDiameter)))
+		if vehicle.cp.numWorkTools == 1 and vehicle.cp.workTools[1].attacherVehicle ~= vehicle and (vehicle.cp.workTools[1].sizeLength > turnDiameter) then
+			vehicle.cp.turnDiameterAuto = vehicle.cp.workTools[1].sizeLength;
 		end;
 		if (vehicle.cp.numWorkTools > 1) then
-			vehicle.cp.turnRadiusAuto = turnRadius * 1.5;
+			vehicle.cp.turnDiameterAuto = turnDiameter * 1.5;
 		end
 	end;
 
-	if vehicle.cp.turnRadiusAutoMode then
-		vehicle.cp.turnRadius = vehicle.cp.turnRadiusAuto;
-		if math.abs(vehicle.cp.turnRadius) > 50 then
-			vehicle.cp.turnRadius = 15
+	if vehicle.cp.turnDiameterAutoMode then
+		vehicle.cp.turnDiameter = vehicle.cp.turnDiameterAuto;
+		if abs(vehicle.cp.turnDiameter) > 50 then
+			vehicle.cp.turnDiameter = 15
 		end
 	end;
 end
@@ -701,8 +728,6 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 
 				local stopAndGo = false;
 
-				if vehicle.isRealistic then stopAndGo = true; end;
-
 				-- Make sure we are using the rear TipReferencePoint as bestTipReferencePoint if possible.
 				if tipper.cp.rearTipRefPoint and tipper.cp.rearTipRefPoint ~= bestTipReferencePoint then
 					bestTipReferencePoint = tipper.cp.rearTipRefPoint;
@@ -783,20 +808,20 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 						-- INVERTED SILO DIRECTION
 						if (vehicle.cp.BGASectionInverted and nearestBGASection >= tipper.cp.BGASelectedSection - unloadNumOfSectionBefore) and nearestBGASection < tipper.cp.BGASelectedSection then
 							-- recalculate the num of section before, in case the num of section left is less.
-							unloadNumOfSectionBefore = math.min(tipper.cp.BGASelectedSection - 1,unloadNumOfSectionBefore);
+							unloadNumOfSectionBefore = min(tipper.cp.BGASelectedSection - 1,unloadNumOfSectionBefore);
 
 							-- Calculate the current section max fill level.
-							sectionMaxFillLevel = (unloadNumOfSectionBefore - math.max(tipper.cp.BGASelectedSection - nearestBGASection, 0) + 1) * ((medianSiloCapacity * 0.5) / unloadNumOfSectionBefore);
+							sectionMaxFillLevel = (unloadNumOfSectionBefore - max(tipper.cp.BGASelectedSection - nearestBGASection, 0) + 1) * ((medianSiloCapacity * 0.5) / unloadNumOfSectionBefore);
 
 							isInUnloadSection = true;
 
 						-- NORMAL SILO DIRECTION
 						elseif (not vehicle.cp.BGASectionInverted and nearestBGASection <= tipper.cp.BGASelectedSection + unloadNumOfSectionBefore) and nearestBGASection > tipper.cp.BGASelectedSection then
 							-- recalculate the num of section before, in case the num of section left is less.
-							unloadNumOfSectionBefore = math.min(silos - tipper.cp.BGASelectedSection ,unloadNumOfSectionBefore)
+							unloadNumOfSectionBefore = min(silos - tipper.cp.BGASelectedSection ,unloadNumOfSectionBefore)
 
 							-- Calculate the current section max fill level.
-							sectionMaxFillLevel = (unloadNumOfSectionBefore - math.max(nearestBGASection - tipper.cp.BGASelectedSection, 0) + 1) * ((medianSiloCapacity * 0.5) / unloadNumOfSectionBefore);
+							sectionMaxFillLevel = (unloadNumOfSectionBefore - max(nearestBGASection - tipper.cp.BGASelectedSection, 0) + 1) * ((medianSiloCapacity * 0.5) / unloadNumOfSectionBefore);
 
 							isInUnloadSection = true;
 						end;
@@ -899,7 +924,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 
 					-- Get the animation
 					local animation = tipper.tipAnimations[bestTipReferencePoint];
-					local totalLength = math.abs(endDistance - startDistance);
+					local totalLength = abs(endDistance - startDistance);
 					local fillDelta = vehicle.cp.tipperFillLevel / vehicle.cp.tipperCapacity;
 					local totalTipDuration = ((animation.dischargeEndTime - animation.dischargeStartTime) / animation.animationOpenSpeedScale) * fillDelta / 1000;
 					local meterPrSeconds = totalLength / totalTipDuration;
@@ -912,7 +937,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 						local fillLevel = ctt.bunkerSilo.fillLevel;
 						if ctt.bunkerSilo.cpTempFillLevel then fillLevel = ctt.bunkerSilo.cpTempFillLevel end;
 
-						vehicle.cp.bunkerSiloSectionFillLevel = math.min((fillLevel + (vehicle.cp.tipperFillLevel * 0.9))/silos, medianSiloCapacity);
+						vehicle.cp.bunkerSiloSectionFillLevel = min((fillLevel + (vehicle.cp.tipperFillLevel * 0.9))/silos, medianSiloCapacity);
 						courseplay:debug(string.format("%s: Max allowed fill level pr. section = %.2f", nameNum(vehicle), vehicle.cp.bunkerSiloSectionFillLevel), 2);
 						vehicle.cp.BGASectionInverted = false;
 
@@ -971,9 +996,9 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 							vehicle.cp.isChangingPosition = true;
 						end;
 						if vehicle.cp.BGASectionInverted then
-							tipper.cp.BGASelectedSection = math.max(tipper.cp.BGASelectedSection - 1, 1);
+							tipper.cp.BGASelectedSection = max(tipper.cp.BGASelectedSection - 1, 1);
 						else
-							tipper.cp.BGASelectedSection = math.min(tipper.cp.BGASelectedSection + 1, silos);
+							tipper.cp.BGASelectedSection = min(tipper.cp.BGASelectedSection + 1, silos);
 						end;
 						courseplay:debug(string.format("%s: Change to siloSection = %d", nameNum(vehicle), tipper.cp.BGASelectedSection), 2);
 					end;

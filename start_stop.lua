@@ -18,19 +18,6 @@ function courseplay:start(self)
 		self.cp.orgRpm[2] = self.motor.maxRpm
 		self.cp.orgRpm[3] = self.motor.maxRpm
 	end
-	--[[if self.ESLimiter ~= nil and self.ESLimiter.maxRPM[5] ~= nil then
-		self.cp.ESL = {}
-		self.cp.ESL[1] = self.ESLimiter.percentage[2]
-		self.cp.ESL[2] = self.ESLimiter.percentage[3]
-		self.cp.ESL[3] = self.ESLimiter.percentage[4]
-	end;
-	if self.isRealistic then
-		self.cp.mrOrigSpeed = {
-			[1] = self.motor.realSpeedLevelsAI[1],
-			[2] = self.motor.realSpeedLevelsAI[2],
-			[3] = self.motor.realSpeedLevelsAI[3]
-		};
-	end;]]
 
 	self.CPnumCollidingVehicles = 0;
 	self.cp.collidingVehicleId = nil
@@ -402,11 +389,6 @@ function courseplay:getCanUseCpMode(vehicle)
 				courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WRONG_TRAILER'));
 				return false;
 			end;
-		elseif mode == 7 then
-			if vehicle.isAutoCombineActivated ~= nil and vehicle.isAutoCombineActivated then
-				courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_NO_AUTOCOMBINE_MODE_7'));
-				return false;
-			end;
 		elseif mode == 8 then
 			if vehicle.cp.workTools[1] == nil then
 				courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WRONG_TRAILER'));
@@ -493,13 +475,6 @@ function courseplay:stop(self)
 	self.cp.aiFrontMarker = nil
 	self.cp.aiTurnNoBackward = false
 	self.cp.noStopOnEdge = false
-	if self.isRealistic then
-		self.motor.speedLevel = 0 
-		self:realSetAwdActive(self.cp.realAWDModeOnBackup)
-		if self.realForceAiDriven then
-			self.realForceAiDriven = false
-		end
-	end
 	self.cp.fillTrigger = nil;
 	self.cp.hasMachineToFill = false;
 	self.cp.unloadOrder = false
