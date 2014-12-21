@@ -176,7 +176,7 @@ function courseplay:load(xmlFile)
 	};
 
 	self.cp.toolsDirty = false
-
+	self.cp.tempWheelFrictionScale = 1;
 	self.cp.orgRpm = nil;
 
 	-- data basis for the Course list

@@ -525,7 +525,7 @@ function courseplay:unload_combine(vehicle, dt)
 		end
 		-- combine is not moving and trailer is under pipe
 		if lz < 5 and combine.fillLevel > 100 then 
-			print(string.format("lz: %.4f, prnToCombineZ: %.2f, trailer_offset: %.2f",lz,prnToCombineZ,trailer_offset))
+			-- print(string.format("lz: %.4f, prnToCombineZ: %.2f, trailer_offset: %.2f",lz,prnToCombineZ,trailer_offset))
 		end
 		if not combine.cp.isChopper and combineIsStopped and (lz <= 1 or lz < -0.1 * trailer_offset) then
 			courseplay:setInfoText(vehicle, courseplay:loc("COURSEPLAY_COMBINE_WANTS_ME_TO_STOP")); 
