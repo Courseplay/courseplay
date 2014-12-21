@@ -1,3 +1,5 @@
+local floor = math.floor;
+
 function courseplay.prerequisitesPresent(specializations)
 	return true;
 end
@@ -1189,10 +1191,16 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		-- SPEEDS
 		curKey = key .. '.courseplay.speeds';
 		self.cp.speeds.useRecordingSpeed = Utils.getNoNil(getXMLBool(xmlFile, curKey .. '#useRecordingSpeed'), true);
-		self.cp.speeds.unload 			 = Utils.getNoNil( getXMLInt(xmlFile, curKey .. '#unload'), 6);
-		self.cp.speeds.turn 			 = Utils.getNoNil( getXMLInt(xmlFile, curKey .. '#turn'),  10);
-		self.cp.speeds.field 			 = Utils.getNoNil( getXMLInt(xmlFile, curKey .. '#field'), 24);
-		self.cp.speeds.street 			 = Utils.getNoNil( getXMLInt(xmlFile, curKey .. '#max'),   50);
+		-- use string so we can get both ints and proper floats without LUA's rounding errors
+		-- if float speeds (old speed system) are loaded, the default speeds are used instead
+		local unload = floor(tonumber(getXMLString(xmlFile, curKey .. '#unload') or '0'));
+		local turn   = floor(tonumber(getXMLString(xmlFile, curKey .. '#turn')	 or '0'));
+		local field  = floor(tonumber(getXMLString(xmlFile, curKey .. '#field')	 or '0'));
+		local street = floor(tonumber(getXMLString(xmlFile, curKey .. '#max')	 or '0'));
+		if unload ~= 0	then self.cp.speeds.unload	= unload; end;
+		if turn ~= 0	then self.cp.speeds.turn	= turn;   end;
+		if field ~= 0	then self.cp.speeds.field	= field;  end;
+		if street ~= 0	then self.cp.speeds.street	= street; end;
 
 		-- MODE 2
 		curKey = key .. '.courseplay.combi';
@@ -1201,7 +1209,7 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		self.cp.combineOffsetAutoMode = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#combineOffsetAutoMode'), true);
 		self.cp.followAtFillLevel 	  = Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#fillFollow'),			 50);
 		self.cp.driveOnAtFillLevel 	  = Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#fillDriveOn'),			 90);
-		self.cp.turnDiameter 			  = Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#turnDiameter'),			 10);
+		self.cp.turnDiameter 		  = Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#turnDiameter'),			 10);
 		self.cp.realisticDriving 	  = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#realisticDriving'),		 true);
 
 		-- MODES 4 / 6
