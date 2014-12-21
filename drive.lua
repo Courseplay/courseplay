@@ -474,10 +474,12 @@ function courseplay:drive(self, dt)
 	if not allowedToDrive then
 		-- reset slipping timers
 		courseplay:resetSlippingTimers(self)
-
+		if courseplay.debugChannels[21] then
+			renderText(0.5,0.85-(0.03*self.cp.coursePlayerNum),0.02,string.format("%s: self.lastSpeedReal: %.8f km/h ",nameNum(self),self.lastSpeedReal*3600))
+		end
 		self.cp.TrafficBrake = false;
 		self.cp.isTrafficBraking = false;
-
+		
 		local moveForwards = true;
 		if self.cp.curSpeed > 1 then
 			allowedToDrive = true;
@@ -780,7 +782,7 @@ function courseplay:checkTraffic(vehicle, displayWarnings, allowedToDrive)
 
 		if collisionVehicle.lastSpeedReal == nil or collisionVehicle.lastSpeedReal*3600 < 5 or ahead then
 			-- courseplay:debug(('%s: checkTraffic:\tcall distance=%.2f'):format(nameNum(vehicle), tz-halfLength), 3);
-			if tz <= halfLength + 2 then --TODO: abs(tz) ?
+			if tz <= halfLength + 4 then --TODO: abs(tz) ?
 				allowedToDrive = false;
 				vehicle.cp.inTraffic = true;
 				courseplay:debug(('%s: checkTraffic:\tstop'):format(nameNum(vehicle)), 3);

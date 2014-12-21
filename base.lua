@@ -502,6 +502,14 @@ function courseplay:draw()
 			end			
 			renderText(0.2, 0.045, 0.02, string.format("mode[%s] speed: %s",mode,tostring(speed)));
 		end	
+		if (self.cp.mode == 2 or self.cp.mode ==3) and self.cp.activeCombine ~= nil then
+			local combine = self.cp.activeCombine	
+			renderText(0.2,0.255,0.02,string.format("combine.lastSpeedReal: %.6f ",combine.lastSpeedReal*3600))
+			renderText(0.2,0.225,0.02,"combine.turnStage: "..combine.turnStage)
+			renderText(0.2,0.195,0.02,"combine.cp.turnStage: "..combine.cp.turnStage)
+			renderText(0.2,0.165,0.02,"combine.acTurnStage: "..combine.acTurnStage)
+			renderText(0.2,0.135,0.02,"combineIsTurning: "..tostring(self.cp.mode2DebugTurning ))
+		end	
 	end
 	--DEBUG SHOW DIRECTIONNODE
 	if courseplay.debugChannels[12] then
