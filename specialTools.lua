@@ -210,6 +210,10 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.isHarvesterAttachable = true;
 		workTool.cp.isGrimmeSE260 = true;
 		
+	elseif workTool.cp.xmlFileName == 'poettingerMex5.xml' then
+		workTool.cp.isHarvesterAttachable = true;
+		workTool.cp.isPoettingerMex5 = true;
+		
 	-- Cutters [Giants]
 	elseif workTool.cp.xmlFileName == 'caseIH3162Cutter.xml' then
 		workTool.cp.isCaseIH3162Cutter = true;
@@ -348,10 +352,6 @@ end;
 function courseplay:isSpecialSprayer(workTool)
 	return false;
 end;
-
-function courseplay:isSpecialChopper(workTool)
-	return false
-end
 
 function courseplay:isSpecialMower(workTool)
 	return false;

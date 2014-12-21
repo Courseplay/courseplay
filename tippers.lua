@@ -101,7 +101,7 @@ function courseplay:isPushWagon(workTool)
 	return workTool.typeName:match("forageWagon") or workTool.cp.hasSpecializationSiloTrailer or workTool.cp.isPushWagon;
 end;
 function courseplay:isSpecialChopper(workTool)
-	return workTool.typeName:match("woodCrusherTrailer") 
+	return workTool.typeName == "woodCrusherTrailer" or workTool.cp.isPoettingerMex5
 end
 
 -- UPDATE WORKTOOL DATA
