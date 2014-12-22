@@ -1057,3 +1057,59 @@ function courseplay:setAckermannSteeringInfo(vehicle, xmlFile)
 		end;
 	end;
 end;
+
+
+function courseplay:deleteCollisionVehicle(vehicle)
+	if vehicle.cp.collidingVehicleId ~= nil  then
+		local Id = vehicle.cp.collidingVehicleId
+		if g_currentMission.nodeToVehicle[Id].isCpPathvehicle  then
+			g_currentMission.nodeToVehicle[Id] = nil
+		end
+		vehicle.cp.collidingObjects.all[Id] = nil
+		--vehicle.CPnumCollidingVehicles = max(vehicle.CPnumCollidingVehicles - 1, 0);
+		--if vehicle.CPnumCollidingVehicles == 0 then
+		--vehicle.numCollidingVehicles[triggerId] = max(vehicle.numCollidingVehicles[triggerId]-1, 0);
+		vehicle.cp.collidingObjects[4][Id] = nil
+		vehicle.cp.collidingVehicleId = nil
+		courseplay:debug(string.format('%s: 	deleteCollisionVehicle: setting "collidingVehicleId" to nil', nameNum(vehicle)), 3);
+	end
+end
+
+function courseplay:setPathVehiclesSpeed(vehicle,dt)
+	pathVehicle = g_currentMission.nodeToVehicle[vehicle.cp.collidingVehicleId]
+	--print("update speed")
+	if pathVehicle.speedDisplayDt == nil then
+		pathVehicle.speedDisplayDt = 0
+		pathVehicle.lastSpeed = 0
+		pathVehicle.lastSpeedReal = 0
+		pathVehicle.movingDirection = 1
+	end
+	pathVehicle.speedDisplayDt = pathVehicle.speedDisplayDt + dt
+	if pathVehicle.speedDisplayDt > 100 then
+		local newX, newY, newZ = getWorldTranslation(pathVehicle.rootNode)
+		if pathVehicle.lastPosition == nil then
+		  pathVehicle.lastPosition = {
+			newX,
+			newY,
+			newZ
+		  }
+		end
+		local lastMovingDirection = pathVehicle.movingDirection
+		local dx, dy, dz = worldDirectionToLocal(pathVehicle.rootNode, newX - pathVehicle.lastPosition[1], newY - pathVehicle.lastPosition[2], newZ - pathVehicle.lastPosition[3])
+		if dz > 0.001 then
+		  pathVehicle.movingDirection = 1
+		elseif dz < -0.001 then
+		  pathVehicle.movingDirection = -1
+		else
+		  pathVehicle.movingDirection = 0
+		end
+		pathVehicle.lastMovedDistance = Utils.vector3Length(dx, dy, dz)
+		local lastLastSpeedReal = pathVehicle.lastSpeedReal
+		pathVehicle.lastSpeedReal = pathVehicle.lastMovedDistance * 0.01
+		pathVehicle.lastSpeedAcceleration = (pathVehicle.lastSpeedReal * pathVehicle.movingDirection - lastLastSpeedReal * lastMovingDirection) * 0.01
+		pathVehicle.lastSpeed = pathVehicle.lastSpeed * 0.85 + pathVehicle.lastSpeedReal * 0.15
+		pathVehicle.lastPosition[1], pathVehicle.lastPosition[2], pathVehicle.lastPosition[3] = newX, newY, newZ
+		pathVehicle.speedDisplayDt = pathVehicle.speedDisplayDt - 100
+	 end
+end
+

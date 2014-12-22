@@ -803,42 +803,8 @@ function courseplay:update(dt)
 	end;
 	
 	
-	if self.cp.collidingVehicleId ~= nil and g_currentMission.nodeToVehicle[self.cp.collidingVehicleId].isCpPathvehicle then
-		pathVehicle = g_currentMission.nodeToVehicle[self.cp.collidingVehicleId]
-		--print("update speed")
-		if pathVehicle.speedDisplayDt == nil then
-			pathVehicle.speedDisplayDt = 0
-			pathVehicle.lastSpeed = 0
-			pathVehicle.lastSpeedReal = 0
-			pathVehicle.movingDirection = 1
-		end
-		pathVehicle.speedDisplayDt = pathVehicle.speedDisplayDt + dt
-		if pathVehicle.speedDisplayDt > 100 then
-			local newX, newY, newZ = getWorldTranslation(pathVehicle.rootNode)
-			if pathVehicle.lastPosition == nil then
-			  pathVehicle.lastPosition = {
-				newX,
-				newY,
-				newZ
-			  }
-			end
-			local lastMovingDirection = pathVehicle.movingDirection
-			local dx, dy, dz = worldDirectionToLocal(pathVehicle.rootNode, newX - pathVehicle.lastPosition[1], newY - pathVehicle.lastPosition[2], newZ - pathVehicle.lastPosition[3])
-			if dz > 0.001 then
-			  pathVehicle.movingDirection = 1
-			elseif dz < -0.001 then
-			  pathVehicle.movingDirection = -1
-			else
-			  pathVehicle.movingDirection = 0
-			end
-			pathVehicle.lastMovedDistance = Utils.vector3Length(dx, dy, dz)
-			local lastLastSpeedReal = pathVehicle.lastSpeedReal
-			pathVehicle.lastSpeedReal = pathVehicle.lastMovedDistance * 0.01
-			pathVehicle.lastSpeedAcceleration = (pathVehicle.lastSpeedReal * pathVehicle.movingDirection - lastLastSpeedReal * lastMovingDirection) * 0.01
-			pathVehicle.lastSpeed = pathVehicle.lastSpeed * 0.85 + pathVehicle.lastSpeedReal * 0.15
-			pathVehicle.lastPosition[1], pathVehicle.lastPosition[2], pathVehicle.lastPosition[3] = newX, newY, newZ
-			pathVehicle.speedDisplayDt = pathVehicle.speedDisplayDt - 100
-		 end
+	if self.cp.collidingVehicleId ~= nil and g_currentMission.nodeToVehicle[self.cp.collidingVehicleId] ~= nil and g_currentMission.nodeToVehicle[self.cp.collidingVehicleId].isCpPathvehicle then
+		courseplay:setPathVehiclesSpeed(self,dt)
 	end
 end; --END update()
 

@@ -823,18 +823,6 @@ function courseplay:checkTraffic(vehicle, displayWarnings, allowedToDrive)
 	return allowedToDrive;
 end
 
-function courseplay:deleteCollisionVehicle(vehicle)
-	if vehicle.cp.collidingVehicleId ~= nil  then
-		vehicle.cp.collidingObjects.all[vehicle.cp.collidingVehicleId] = nil
-		--vehicle.CPnumCollidingVehicles = max(vehicle.CPnumCollidingVehicles - 1, 0);
-		--if vehicle.CPnumCollidingVehicles == 0 then
-		--vehicle.numCollidingVehicles[triggerId] = max(vehicle.numCollidingVehicles[triggerId]-1, 0);
-		vehicle.cp.collidingObjects[4][vehicle.cp.collidingVehicleId] = nil
-		vehicle.cp.collidingVehicleId = nil
-		courseplay:debug(string.format('%s: 	deleteCollisionVehicle: setting "collidingVehicleId" to nil', nameNum(vehicle)), 3);
-	end
-end
-
 function courseplay:setSpeed(vehicle, refSpeed)
 	local newSpeed = math.max(refSpeed,3)	
 	if vehicle.cruiseControl.state == Drivable.CRUISECONTROL_STATE_OFF then
@@ -993,6 +981,8 @@ function courseplay:regulateTrafficSpeed(vehicle,refSpeed,allowedToDrive)
 		local vehicleBehind = false
 		if collisionVehicle == nil then
 			courseplay:debug(nameNum(vehicle)..": regulateTrafficSpeed(1216):	setting vehicle.cp.collidingVehicleId nil",3)
+			courseplay:deleteCollisionVehicle(vehicle)
+			
 			vehicle.cp.collidingVehicleId = nil
 			vehicle.CPnumCollidingVehicles = max(vehicle.CPnumCollidingVehicles-1, 0);
 			return refSpeed
