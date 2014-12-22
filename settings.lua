@@ -1548,22 +1548,16 @@ function courseplay:toggleAlwaysUseFourWD(vehicle)
 	vehicle.cp.driveControl.alwaysUseFourWD = not vehicle.cp.driveControl.alwaysUseFourWD;
 end;
 
-function courseplay:setWheelsFrictionScale(vehicle, frictionScale)
-	-- courseplay:debug(('%s: setWheelsFrictionScale (%d)'):format(nameNum(vehicle), frictionScale), 14);
-	print(('%s: setWheelsFrictionScale (%d)'):format(nameNum(vehicle), frictionScale));
-	if vehicle.wheels then
-		for _,wheel in ipairs(vehicle.wheels) do
-			wheel.frictionScale = frictionScale;
-			setWheelShapeTireFriction(wheel.node, wheel.wheelShape, wheel.maxLongStiffness, wheel.maxLatStiffness, wheel.maxLatStiffnessLoad, wheel.frictionScale);
-		end;
+function courseplay:getAndSetFixedWorldPosition(object)
+	if object.cp.fixedWorldPosition == nil then
+		object.cp.fixedWorldPosition = {};
+		object.cp.fixedWorldPosition.px, object.cp.fixedWorldPosition.py, object.cp.fixedWorldPosition.pz = getWorldTranslation(object.components[1].node);
+		object.cp.fixedWorldPosition.rx, object.cp.fixedWorldPosition.ry, object.cp.fixedWorldPosition.rz = getWorldRotation(object.components[1].node);
 	end;
-
-	if vehicle.attachedImplements then
-		for _,implement in pairs(vehicle.attachedImplements) do
-			courseplay:setWheelsFrictionScale(implement.object, frictionScale);
-		end;
-	end;
+	local fwp = object.cp.fixedWorldPosition;
+	object:setWorldPosition(fwp.px,fwp.py,fwp.pz, fwp.rx,fwp.ry,fwp.rz, 1);
 end;
+
 
 ----------------------------------------------------------------------------------------------------
 

@@ -484,26 +484,18 @@ function courseplay:drive(self, dt)
 		if self.cp.curSpeed > 1 then
 			allowedToDrive = true;
 			moveForwards = self.movingDirection == 1;
-		else
-			-- ## FOR DEV TESTING: increase the friction scale to 10 when the vehicle is supposed to be stopped
-			if CpManager.isDeveloper then
-				if self.cp.tempWheelFrictionFactor ~= 10 then
-					self.cp.tempWheelFrictionFactor = 10;
-					courseplay:setWheelsFrictionScale(self, 10);
-				end;
-			end;
+		elseif self.cp.curSpeed < 0.2 then
+			-- ## The infamous "SUCK IT, GIANTS" fix, a.k.a "chain that fucker down, it ain't goin' nowhere!"
+			courseplay:getAndSetFixedWorldPosition(self);
 		end;
 		AIVehicleUtil.driveInDirection(self, dt, 30, -1, 0, 28, allowedToDrive, moveForwards, 0, 1)
 		self.cp.speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): allowedToDrive false ")
 		return;
 	end;
 
-	-- ## FOR DEV TESTING: decrease the frictionScale back to 1
-	if CpManager.isDeveloper then
-		if self.cp.tempWheelFrictionFactor ~= 1 then
-			self.cp.tempWheelFrictionFactor = 1;
-			courseplay:setWheelsFrictionScale(self, 1);
-		end;
+	-- reset fixedWorldPosition
+	if self.cp.fixedWorldPosition ~= nil then
+		self.cp.fixedWorldPosition = nil;
 	end;
 
 
