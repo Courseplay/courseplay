@@ -67,11 +67,11 @@
 		<text name="COURSEPLAY_COPY_COURSE" 							 text="复制任务:" />
 		<text name="COURSEPLAY_VEHICLE" 								 text="车辆" />
 		<text name="COURSEPLAY_TEMP_COURSE" 							 text="临时任务" />
-		<text name="COURSEPLAY_SPEED_TURN" 								 text="转弯速度:" />
+		<text name="COURSEPLAY_SPEED_TURN" 								 text="转弯或触发区速度:" />
 		<text name="COURSEPLAY_SPEED_FIELD" 							 text="田间速度:" />
 		<text name="COURSEPLAY_SPEED_MAX" 								 text="道路速度:" />
-		<text name="COURSEPLAY_SPEED_UNLOAD" 							 text="卸载区的速度 (BGA):" />
-		<text name="COURSEPLAY_MAX_SPEED_MODE" 							 text="速度模式:" />
+		<text name="COURSEPLAY_SPEED_UNLOAD" 							 text="在卸载区的速度(青贮池):" />
+		<text name="COURSEPLAY_MAX_SPEED_MODE" 							 text="速度控制:" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_RECORDING" 				 text="执行录制速度" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 						 text="手动调整" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 				 text="自动(根据任务)" />
@@ -122,13 +122,13 @@
 		<text name="COURSEPLAY_TOOL_OFFSET_Z" 							 text="工具纵向调整" />
 		<text name="COURSEPLAY_FRONT" 									 text="前面" />
 		<text name="COURSEPLAY_BACK" 									 text="后面" />
-		<text name="COURSEPLAY_WORK_WIDTH" 								 text="工作面宽度" />
+		<text name="COURSEPLAY_WORK_WIDTH" 								 text="工作面大小" />
 		<text name="COURSEPLAY_WATER_WARNING" 							 text="需要清洗" />
 		<text name="COURSEPLAY_OPEN_HUD_MODE" 							 text="打开CP界面:" />
 		<text name="COURSEPLAY_DEBUG_CHANNELS" 							 text="调试通道" />
 		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 			 text="生成任务路径点" />
 		<text name="COURSEPLAY_STARTING_CORNER" 						 text="起始角" />
-		<text name="COURSEPLAY_STARTING_DIRECTION" 						 text="行驶的方向" />
+		<text name="COURSEPLAY_STARTING_DIRECTION" 						 text="车辆行驶的方向" />
 		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT" 					 text="返回到起始点" />
 		<text name="COURSEPLAY_CORNER_1" 								 text="西南" />
 		<text name="COURSEPLAY_CORNER_2" 								 text="西北" />
@@ -138,7 +138,7 @@
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="东" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="南" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="西" />
-		<text name="COURSEPLAY_HEADLAND" 								 text="工作路径的模式" />
+		<text name="COURSEPLAY_HEADLAND" 								 text="路径的显示模式" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="开启" />
 		<text name="COURSEPLAY_DEACTIVATED" 							 text="关闭" />
 		<text name="COURSEPLAY_RIDGEMARKERS" 							 text="田埂标记" />
@@ -161,8 +161,8 @@
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="最近的点" />
 		<text name="COURSEPLAY_FIRST_POINT" 							 text="起始点" />
 		<text name="COURSEPLAY_CURRENT_POINT" 							 text="当前点" />
-		<text name="COURSEPLAY_FIELD_EDGE_PATH" 						 text="选择土地" />
-		<text name="COURSEPLAY_FIELD" 									 text="土地" />
+		<text name="COURSEPLAY_FIELD_EDGE_PATH" 						 text="选择土地范围路径" />
+		<text name="COURSEPLAY_FIELD" 									 text="土地范围路径编号:" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 				 text="当前任务" />
 		<text name="COURSEPLAY_FIELD_SCAN_IN_PROGRESS" 					 text="土地范围测量进度" />
 		<text name="COURSEPLAY_SCANNING_FIELD_NMB" 						 text="测量范围 %d/%d" />
@@ -175,8 +175,8 @@
 		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES" 				 text="测量当前土地的范围路径点" />
 		<text name="COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER" 			 text="土地范围的编号：" />
 		<text name="COURSEPLAY_ADD_CUSTOM_FIELD_EDGE_PATH_TO_LIST" 		 text="添加 %d 号土地范围路径点到列表" />
-		<text name="COURSEPLAY_OVERWRITE_CUSTOM_FIELD_EDGE_PATH_IN_LIST" text="%d 号土地范围路径点在列表中" />
-		<text name="COURSEPLAY_USER" 									 text="用户名" />
+		<text name="COURSEPLAY_OVERWRITE_CUSTOM_FIELD_EDGE_PATH_IN_LIST" text="%d 号土地范围路径点已经在列表中" />
+		<text name="COURSEPLAY_USER" 									 text="手动添加" />
 		<text name="COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED" 				 text="应该尽快修复" />
 		<text name="COURSEPLAY_DAMAGE_MUST_BE_REPAIRED" 				 text="必须修复" />
 		<text name="COURSEPLAY_DAMAGE_IS_BEING_REPAIRED" 				 text="正在修复中" />
@@ -202,9 +202,9 @@
 		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="结束折返" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_START" 				 text="倒车模式" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="前进模式" />
-		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="地图图标： 显示任务车辆图标" />
+		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="地图图标:显示任务车辆信息" />
 		<text name="COURSEPLAY_ALWAYS_USE_4WD" 							 text="打开4WD模式" />
-		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="需要自动测量农田范围路径么？" />
+		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="需要自动测量土地范围路径么？" />
 		<text name="COURSEPLAY_YES_NO_WAGES" 							 text="你想要赚取雇人的工资么(%s/小时)？" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 					 text="种子使用量" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 				 text="土地编号: %d号(%s %s)" />
