@@ -1548,6 +1548,23 @@ function courseplay:toggleAlwaysUseFourWD(vehicle)
 	vehicle.cp.driveControl.alwaysUseFourWD = not vehicle.cp.driveControl.alwaysUseFourWD;
 end;
 
+function courseplay:setWheelsFrictionScale(vehicle, frictionScale)
+	-- courseplay:debug(('%s: setWheelsFrictionScale (%d)'):format(nameNum(vehicle), frictionScale), 14);
+	print(('%s: setWheelsFrictionScale (%d)'):format(nameNum(vehicle), frictionScale));
+	if vehicle.wheels then
+		for _,wheel in ipairs(vehicle.wheels) do
+			wheel.frictionScale = frictionScale;
+			setWheelShapeTireFriction(wheel.node, wheel.wheelShape, wheel.maxLongStiffness, wheel.maxLatStiffness, wheel.maxLatStiffnessLoad, wheel.frictionScale);
+		end;
+	end;
+
+	if vehicle.attachedImplements then
+		for _,implement in pairs(vehicle.attachedImplements) do
+			courseplay:setWheelsFrictionScale(implement.object, frictionScale);
+		end;
+	end;
+end;
+
 ----------------------------------------------------------------------------------------------------
 
 function courseplay:setCpVar(varName, value)

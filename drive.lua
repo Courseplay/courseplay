@@ -474,19 +474,37 @@ function courseplay:drive(self, dt)
 	if not allowedToDrive then
 		-- reset slipping timers
 		courseplay:resetSlippingTimers(self)
-
+		if courseplay.debugChannels[21] then
+			renderText(0.5,0.85-(0.03*self.cp.coursePlayerNum),0.02,string.format("%s: self.lastSpeedReal: %.8f km/h ",nameNum(self),self.lastSpeedReal*3600))
+		end
 		self.cp.TrafficBrake = false;
 		self.cp.isTrafficBraking = false;
-
+		
 		local moveForwards = true;
 		if self.cp.curSpeed > 1 then
 			allowedToDrive = true;
 			moveForwards = self.movingDirection == 1;
+		else
+			-- ## FOR DEV TESTING: increase the friction scale to 10 when the vehicle is supposed to be stopped
+			if CpManager.isDeveloper then
+				if self.cp.tempWheelFrictionFactor ~= 10 then
+					self.cp.tempWheelFrictionFactor = 10;
+					courseplay:setWheelsFrictionScale(self, 10);
+				end;
+			end;
 		end;
 		AIVehicleUtil.driveInDirection(self, dt, 30, -1, 0, 28, allowedToDrive, moveForwards, 0, 1)
 		self.cp.speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): allowedToDrive false ")
 		return;
-	end
+	end;
+
+	-- ## FOR DEV TESTING: decrease the frictionScale back to 1
+	if CpManager.isDeveloper then
+		if self.cp.tempWheelFrictionFactor ~= 1 then
+			self.cp.tempWheelFrictionFactor = 1;
+			courseplay:setWheelsFrictionScale(self, 1);
+		end;
+	end;
 
 
 	if self.cp.isTurning ~= nil then
@@ -760,6 +778,7 @@ end;
 
 function courseplay:checkTraffic(vehicle, displayWarnings, allowedToDrive)
 	local ahead = false
+	local inQuery = false
 	local collisionVehicle = g_currentMission.nodeToVehicle[vehicle.cp.collidingVehicleId]
 	if collisionVehicle ~= nil and not (vehicle.cp.mode == 9 and (collisionVehicle.allowFillFromAir or (collisionVehicle.cp and collisionVehicle.cp.mode9TrafficIgnoreVehicle))) then
 		local vx, vy, vz = getWorldTranslation(vehicle.cp.collidingVehicleId);
@@ -779,7 +798,7 @@ function courseplay:checkTraffic(vehicle, displayWarnings, allowedToDrive)
 
 		if collisionVehicle.lastSpeedReal == nil or collisionVehicle.lastSpeedReal*3600 < 5 or ahead then
 			-- courseplay:debug(('%s: checkTraffic:\tcall distance=%.2f'):format(nameNum(vehicle), tz-halfLength), 3);
-			if tz <= halfLength + 2 then --TODO: abs(tz) ?
+			if tz <= halfLength + 4 then --TODO: abs(tz) ?
 				allowedToDrive = false;
 				vehicle.cp.inTraffic = true;
 				courseplay:debug(('%s: checkTraffic:\tstop'):format(nameNum(vehicle)), 3);
@@ -791,9 +810,14 @@ function courseplay:checkTraffic(vehicle, displayWarnings, allowedToDrive)
 				vehicle.cp.isTrafficBraking = true;
 			end;
 		end;
+		local attacher
+		if collisionVehicle.getRootAttacherVehicle then
+			attacher = collisionVehicle:getRootAttacherVehicle()
+			inQuery = vehicle.cp.mode == 1 and vehicle.recordnumber == 1 and attacher.cp ~= nil and attacher.cp.isDriving and attacher.cp.mode == 1 and attacher.recordnumber == 2 
+		end		
 	end;
 
-	if displayWarnings and vehicle.cp.inTraffic then
+	if displayWarnings and vehicle.cp.inTraffic and not inQuery then
 		CpManager:setGlobalInfoText(vehicle, 'TRAFFIC');
 	end;
 	return allowedToDrive;

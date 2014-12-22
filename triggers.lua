@@ -2,7 +2,7 @@
 
 -- traffic collision
 function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
-	if not self:getIsCourseplayDriving() or not self.isMotorStarted then return; end;
+	if not self.isMotorStarted then return; end;
 
 	--oops i found myself
 	if otherId == self.rootNode then 

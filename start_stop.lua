@@ -478,6 +478,7 @@ function courseplay:stop(self)
 	self.cp.fillTrigger = nil;
 	self.cp.hasMachineToFill = false;
 	self.cp.unloadOrder = false
+	self.cp.isUnloadingStopped = false
 	AITractor.removeCollisionTrigger(self, self);
 	self.cpTrafficCollisionIgnoreList = {}
 	self.cp.foundColli = {}
