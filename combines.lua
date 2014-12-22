@@ -418,6 +418,9 @@ function courseplay:getSpecialCombineOffset(combine)
 		return 4.8;
 	elseif combine.cp.isGrimmeRootster604 then
 		return -4.3;
+	elseif combine.cp.isPoettingerMex5 then
+		combine.cp.offset = 5.9
+		return 5.9;
 	elseif combine.cp.isSugarBeetLoader then
 		local utwX,utwY,utwZ = getWorldTranslation(combine.unloadingTrigger.node);
 		local combineToUtwX,_,_ = worldToLocal(combine.cp.DirectionNode or combine.rootNode, utwX,utwY,utwZ);
