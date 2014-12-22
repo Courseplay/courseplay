@@ -298,7 +298,7 @@ function courseplay:changeToolOffsetX(vehicle, changeBy, force, noDraw)
 	vehicle.cp.totalOffsetX = vehicle.cp.laneOffset + vehicle.cp.toolOffsetX;
 
 	if noDraw == nil then noDraw = false; end;
-	if not noDraw and vehicle.cp.mode ~= 3 and vehicle.cp.mode ~= 7 then
+	if not noDraw and vehicle.cp.mode ~= 2 and vehicle.cp.mode ~= 3 and vehicle.cp.mode ~= 7 then
 		courseplay:setCustomTimer(vehicle, 'showWorkWidth', 2);
 	end
 end;
@@ -1441,8 +1441,13 @@ function courseplay:setCurrentTargetFromList(vehicle, index)
 	end;
 end;
 
-function courseplay:addNewTargetVector(vehicle, x, z)
-	local tx, ty, tz = localToWorld(vehicle.cp.DirectionNode or vehicle.rootNode, x, 0, z);
+function courseplay:addNewTargetVector(vehicle, x, z, trailer)
+	local tx, ty, tz = 0,0,0
+	if trailer ~= nil then
+		tx, ty, tz = localToWorld(trailer.rootNode, x, 0, z);
+	else
+		tx, ty, tz = localToWorld(vehicle.cp.DirectionNode or vehicle.rootNode, x, 0, z);
+	end
 	table.insert(vehicle.cp.nextTargets, { x = tx, y = ty, z = tz });
 end;
 
@@ -1557,7 +1562,6 @@ function courseplay:getAndSetFixedWorldPosition(object)
 	local fwp = object.cp.fixedWorldPosition;
 	object:setWorldPosition(fwp.px,fwp.py,fwp.pz, fwp.rx,fwp.ry,fwp.rz, 1);
 end;
-
 
 ----------------------------------------------------------------------------------------------------
 
