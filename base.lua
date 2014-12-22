@@ -348,9 +348,14 @@ function courseplay:load(xmlFile)
 	self.cp.refillUntilPct = 100;
 
 	--self.turn_factor = nil --TODO: is never set, but used in mode2:816 in localToWorld function
-	courseplay:getAckermannSteeringInfo(self, xmlFile);
-	self.cp.turnDiameter = 10;
-	self.cp.turnDiameterAuto = 10;
+	courseplay:setAckermannSteeringInfo(self, xmlFile);
+	--cpPrintLine(nil, 3);
+	self.cp.vehicleTurnRadius = courseplay:getVehicleTurnRadius(self);
+	--cpPrintLine();
+	--print(("%s: vehicleTurnRadius = %.2f"):format(self.name, self.cp.vehicleTurnRadius));
+	--cpPrintLine();
+	self.cp.turnDiameter = self.cp.vehicleTurnRadius * 2;
+	self.cp.turnDiameterAuto = self.cp.vehicleTurnRadius * 2;
 	self.cp.turnDiameterAutoMode = true;
 
 	--Offset
@@ -1217,7 +1222,7 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		self.cp.combineOffsetAutoMode = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#combineOffsetAutoMode'), true);
 		self.cp.followAtFillLevel 	  = Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#fillFollow'),			 50);
 		self.cp.driveOnAtFillLevel 	  = Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#fillDriveOn'),			 90);
-		self.cp.turnDiameter 		  = Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#turnDiameter'),			 10);
+		self.cp.turnDiameter		  = Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#turnDiameter'),			 self.cp.vehicleTurnRadius * 2);
 		self.cp.realisticDriving 	  = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#realisticDriving'),		 true);
 
 		-- MODES 4 / 6

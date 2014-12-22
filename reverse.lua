@@ -276,7 +276,7 @@ function courseplay:getReverseProperties(vehicle, workTool)
 		courseplay:debug('\tworkTool has "Shovel" spec -> return', 13);
 		return;
 	end;
-	if not courseplay:isReverseAbleWheeledWorkTool(workTool) then
+	if not courseplay:isWheeledWorkTool(workTool) then
 		courseplay:debug('\tworkTool doesn\'t need reverse properties -> return', 13);
 		return;
 	end;

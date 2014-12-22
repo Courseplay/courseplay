@@ -298,13 +298,13 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 		end;
 
 		-- TURN DIAMETER
-		--if CpManager.isDeveloper then
-		--	-- New Turn Radius Calculation
-		--	courseplay:setAutoTurnDiameter(vehicle, hasWorkTool);
-		--else
+		if CpManager.isDeveloper then
+			-- New Turn Radius Calculation
+			courseplay:setAutoTurnDiameter(vehicle, hasWorkTool);
+		else
 			-- Old Turn Radius Calculation
 			courseplay:setOldAutoTurnDiameter(vehicle, hasWorkTool);
-		--end;
+		end;
 
 		-- TIP REFERENCE POINTS
 		courseplay:setTipRefOffset(vehicle);
@@ -495,23 +495,31 @@ function courseplay:setTipperCoverData(vehicle)
 end;
 
 function courseplay:setAutoTurnDiameter(vehicle, hasWorkTool)
+	cpPrintLine(6, 3);
 	local turnRadius, turnRadiusAuto = 10, 10;
 
-	-- Use Giants calculated turning radius if pressent
-	if vehicle.maxTurningRadius then
-		vehicle.cp.turnDiameterAuto = abs(vehicle.maxTurningRadius);
+	vehicle.cp.turnDiameterAuto = vehicle.cp.vehicleTurnRadius * 2;
+	courseplay:debug(('%s: Set turnDiameterAuto to %.2fm (2 x vehicleTurnRadius)'):format(nameNum(vehicle), vehicle.cp.turnDiameterAuto), 6);
 
-	-- No Giants turning radius, so we calculate it our self.
-	else
-		vehicle.cp.turnDiameterAuto = 85
+	-- Check if we have worktools and if we are in a valid mode
+	if hasWorkTool and (vehicle.cp.mode == 2 or vehicle.cp.mode == 3 or vehicle.cp.mode == 4 or vehicle.cp.mode == 6) then
+		courseplay:debug(('%s: getHighestToolTurnDiameter(%s)'):format(nameNum(vehicle), vehicle.name), 6);
+
+		local toolTurnDiameter = courseplay:getHighestToolTurnDiameter(vehicle);
+
+		-- If the toolTurnDiameter is bigger than the turnDiameterAuto, then set turnDiameterAuto to toolTurnDiameter
+		if toolTurnDiameter > vehicle.cp.turnDiameterAuto then
+			courseplay:debug(('%s: toolTurnDiameter(%.2fm) > turnDiameterAuto(%.2fm), turnDiameterAuto set to %.2fm'):format(nameNum(vehicle), toolTurnDiameter, vehicle.cp.turnDiameterAuto, toolTurnDiameter), 6);
+			vehicle.cp.turnDiameterAuto = toolTurnDiameter;
+		end;
 	end;
+
 
 	if vehicle.cp.turnDiameterAutoMode then
 		vehicle.cp.turnDiameter = vehicle.cp.turnDiameterAuto;
-		--if abs(vehicle.cp.turnDiameter) > 50 then
-		--	vehicle.cp.turnDiameter = 15
-		--end
+		courseplay:debug(('%s: turnDiameterAutoMode is active: turnDiameter set to %.2fm'):format(nameNum(vehicle), vehicle.cp.turnDiameterAuto), 6);
 	end;
+	cpPrintLine(6, 1);
 end;
 
 function courseplay:setOldAutoTurnDiameter(vehicle, hasWorkTool)
