@@ -1550,7 +1550,7 @@ end;
 
 function courseplay:setWheelsFrictionScale(vehicle, frictionScale)
 	-- courseplay:debug(('%s: setWheelsFrictionScale (%d)'):format(nameNum(vehicle), frictionScale), 14);
-	print('%s: setWheelsFrictionScale (%d)'):format(nameNum(vehicle), frictionScale));
+	print(('%s: setWheelsFrictionScale (%d)'):format(nameNum(vehicle), frictionScale));
 	if vehicle.wheels then
 		for _,wheel in ipairs(vehicle.wheels) do
 			wheel.frictionScale = frictionScale;
