@@ -30,7 +30,7 @@ function courseplay:updateReachableCombines(vehicle)
 		end;
 
 		local combine = vehicle.cp.savedCombine
-		if combine.cp and combine.cp.isCheckedIn then
+		if combine.cp and combine.cp.isCheckedIn and not combine.cp.isChopper then
 			courseplay:debug(nameNum(vehicle)..": combine (id"..tostring(combine.id)..") is manually set, but already checked in", 4);
 		else
 			courseplay:debug(nameNum(vehicle)..": combine (id"..tostring(combine.id)..") is manually set", 4);
