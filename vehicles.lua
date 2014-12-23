@@ -15,7 +15,7 @@ function courseplay:calculateTurnRadius(type, wheelBase, rotMax, CPRatio)
 
 		-- 4 Wheel Steering
 	elseif type == "4WS" then
-		turnRadius = wheelBase / (2 * sin(vehicle.cp.fourWheelSteerMaxRot)) * cos(vehicle.cp.fourWheelSteerMaxRot);
+		turnRadius = wheelBase / (2 * sin(rotMax)) * cos(rotMax);
 
 		-- 2 Wheel Steering
 	elseif (type == "2WS" or type == "Tool") then
