@@ -483,7 +483,7 @@ function courseplay:unload_combine(vehicle, dt)
 			local sideMultiplier = 0;
 			if combine.cp.workWidth == nil or combine.cp.workWidth == 0 then
 				local attacher = combine:getRootAttacherVehicle()
-				courseplay:calculateWorkWidth(attacher)
+				courseplay:calculateWorkWidth(attacher, true)
 			end 
 			local workWidth = combine.cp.workWidth
 			local combineOffset = vehicle.cp.combineOffset
