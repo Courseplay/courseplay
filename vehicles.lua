@@ -36,11 +36,13 @@ function courseplay:createNewLinkedNode(object, nodeName, linkToNode)
 end;
 
 --- courseplay:findJointNodeConnectingToNode(workTool, fromNode, toNode)
---	Returns: (node, backtrack)
+--	Returns: (node, backtrack, rotLimits)
 --		node will return either:		1. The jointNode that connects to the toNode,
 --										2. The toNode if no jointNode is found but the fromNode is inside the same component as the toNode
 --										3. nil in case none of the above fails.
 --		backTrack will return either:	1. A table of all the jointNodes found from fromNode to toNode, if the jointNode that connects to the toNode is found.
+--										2: nil if no jointNode is found.
+--		rotLimits will return either:	1. A table of all the rotLimits of the componentJoint, found from fromNode to toNode, if the jointNode that connects to the toNode is found.
 --										2: nil if no jointNode is found.
 function courseplay:findJointNodeConnectingToNode(workTool, fromNode, toNode)
 	if fromNode == toNode then return toNode; end;
@@ -336,7 +338,7 @@ function courseplay:getRealTurningNode(object)
 		if object.cp.DirectionNode then
 			local ASInfo = object.cp.ackermannSteering;
 			-- Giants have provided us with some info to use, so use them.
-			if ASInfo and (ASInfo.rotCenterZ or ASInfo.rotCenterWheels) then
+			if ASInfo and (ASInfo.rotCenterZ or ASInfo.rotCenterWheels) and not object.articulatedAxis then
 				-- The offset is already set for us to use.
 				if ASInfo.rotCenterZ then
 					setTranslation(node, 0, 0, ASInfo.rotCenterZ);
@@ -818,7 +820,7 @@ function courseplay:getVehicleTurnRadius(vehicle)
 	courseplay:getRealTurningNode(vehicle);
 
 	-- Giants have provided us with some info to use, so use them.
-	if vehicle.cp.ackermannSteering then
+	if vehicle.cp.ackermannSteering and not vehicle.articulatedAxis then
 		wheelBase = courseplay:getWheelBase(vehicle, true);
 		rotMax = vehicle.cp.ackermannSteering.rotMax;
 
