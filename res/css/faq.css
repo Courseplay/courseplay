@@ -3,17 +3,17 @@
 	margin:20px 0;
 }
 
-body.js .singleFaq h3 {
+body.js .singleFaq h2 {
 	cursor:pointer;
 	padding:2px 4px;
 	text-decoration:none;
 }
-body.js .singleFaq h3:hover, body.js .singleFaq h3:focus {
-	color: #20A8DB;
+body.js .singleFaq h2:hover, body.js .singleFaq h2:focus {
+	color: #FC0;
 }
-body.js .singleFaq h3:active {
-	background-color:#20A8DB;
-	color:#F0F0F0;
+body.js .singleFaq h2:active {
+	background-color:#FC0;
+	color:#333;
 }
 
 .singleFaq .faqContent {
@@ -23,13 +23,55 @@ body.js .singleFaq h3:active {
 	display:none;
 }
 
-#faq01 ul { margin:0; }
-#faq01 li {
+/* -------------------------------- */
+
+#bugReport .faqContent > ul > li, #bugReport .faqContent > ol > li {
+	background:rgba(0,0,0,0.35);
+	border-top:1px solid rgba(255,255,255,0.15);
+	border-right:1px solid rgba(0,0,0,0.4);
+	border-bottom:1px solid rgba(0,0,0,0.4);
+	list-style:none;
+	padding:0 0 0.5em;
+	margin: 0.8em 0;
+}
+#bugReport .faqContent > ul > li:first-of-type, #bugReport .faqContent > ol > li:first-of-type { margin-top:0; }
+#bugReport .faqContent > ul > li:last-of-type, #bugReport .faqContent > ol > li:last-of-type { margin-bottom:0; }
+#bugReport .faqContent > ul > li > h4 {
+	margin-bottom:0.5em;
+}
+#bugReport .faqContent > ul > li > h4 {
+	margin-top:0;
+	padding:0.5em 0.8em;
+}
+
+#bugReport .faqContent > ul > li > span,
+#bugReport .faqContent > ul > li > p, #bugReport .faqContent > ol > li > p,
+#bugReport .faqContent > ul > li > dl,
+#bugReport .faqContent > ul > li > figure, #bugReport .faqContent > ol > li > figure {
+	margin:0.5em 0.8em;
+}
+#bugReport .faqContent > ol > li:before {
+	border-top:none;
+	left:0;
+	top:0;
+}
+#bugReport .faqContent > ol > li {
+	padding-top:1.3em;
+}
+#bugReport .faqContent > ul > li ul, #bugReport .faqContent > ol > li ul,
+#bugReport .faqContent > ul > li ol {
+	margin:0.5em 1.8em;
+}
+
+/* -------------------------------- */
+
+#faqToolSupport ul { margin:0; }
+#faqToolSupport li {
 	list-style-type:none;
 	padding:8px;
 }
-#faq01 li:nth-child(2n)   { background:rgba(20,20,20,0.07); }
-#faq01 li:nth-child(2n-1) { background:rgba(20,20,20,0.035); }
+#faqToolSupport li:nth-child(2n)   { background:rgba(0,0,0,0.25); }
+#faqToolSupport li:nth-child(2n-1) { background:rgba(0,0,0,0.17); }
 .annotations {
 	border-top:1px solid #D6D6D6;
 	font-size:0.9em;
@@ -37,9 +79,25 @@ body.js .singleFaq h3:active {
 }
 
 
+#faqOffset h3 {
+	margin-top:2em;
+	margin-bottom:0;
+}
 
+/* LANE CHANGE */
+.no-js #playLaneOffsets,
+.no-js #laneChangeStage,
+.js #laneChangeImage {
+	display:none;
+}
 
 /* OFFSET CALCULATOR */
+.no-js #offsetCalculatorIntro,
+.no-js #offsetCalculator {
+	display:none;
+}
+
+
 #offsetCalculator { border-top:2px solid #c6c6c6; margin-top:20px; padding-top:20px; position:relative; }
 #textElements { display:none; }
 #input { 
@@ -67,8 +125,11 @@ body.js .singleFaq h3:active {
 
 #amount { display:none; }
 #amountText { margin-right:15px; }
-.hudIcon { cursor:pointer !important; }
-.hudIcon.hidden { cursor:default !important; opacity: 0; }
+span[class^="icon-"] { cursor:pointer !important; }
+span[class^="icon-"].hidden { cursor:default !important; opacity: 0; }
+span[class^="icon-"]:hover, span[class^="icon-"]:active {
+	color:#FC0;
+}
 #save { display:none; position:absolute; right:0; top:50px; }
 
 figure { margin-top:1em; margin-bottom:1em; }
@@ -152,3 +213,6 @@ figcaption {
 	box-shadow: inset 0 2px 5px -3px rgba(0,0,0,0.5);
 }
 
+.hidden {
+	display:none;
+}

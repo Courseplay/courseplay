@@ -5,110 +5,125 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
 	<link rel="author" href="../../humans.txt" />
 	<link rel="stylesheet" href="../../res/css/reset.css">
-	<link rel="stylesheet" href="../../res/fonts/icomoon/style.css" type="text/css" charset="utf-8">
-	<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
-	<link rel="stylesheet" href="../../res/fonts/adelle/stylesheet.css" type="text/css" charset="utf-8">
-	<link rel="stylesheet" href="../../res/fonts/caslon/stylesheet.css" type="text/css" charset="utf-8">
 	<link rel="stylesheet" href="../../res/css/base.css">
+	<link rel="stylesheet" href="../../res/css/nav.css">
 	<link rel="stylesheet" href="../../res/css/faq.css">
-	<!--[if lte IE 7]><script src="res/js/lte-ie7.js"></script><![endif]-->
+	<!--[if lte IE 7]><script src="../../res/js/lte-ie7.js"></script><![endif]-->
 	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 	<title>FAQ &rsaquo; Courseplay</title>
 
-	<script type="text/javascript">
-		var _gaq = _gaq || [];
-		_gaq.push(['_setAccount', 'UA-38537916-1']);
-		_gaq.push(['_trackPageview']);
-		(function() {
-			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-		})();
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-38537916-1', 'auto');
+		ga('send', 'pageview');
 	</script>
 </head>
 
 <body class="no-js">
-<div id="container">
-	<header>
-		<h1><a class="imgLink" href="../index.html"><img src="../../res/img/cp_logo.png" alt="Courseplay"></a></h1>
-	</header>
-
-	<section id="navSection">
-		<nav id="mainNav">
-			<li><a href="../installation/index.html">Installation<span class="info">How? What? Where?</span></a></li>
-			<li><a href="../manual/index.html">Manual<span class="info">How does Courseplay work? How do I &hellip;?</span></a></li>
-			<li class="active">FAQ</li>
-			<li><a href="../changelog/index.html">Changelog<span class="info">What's new, pussycat?</span></a></li>
-			<li><a href="../authors/index.html">Authors<span class="info">who's the team?</span></a></li>
-		</nav>
-	</section>
-
-	<section id="faq" class="content">
-		<h2>Frequently Asked Questions</h2>
-		<!--<p>These are not the questions you are looking for. Check out the <a href="../manual/index.html" title="Go to the Courseplay manual">manual</a> for a detailed&hellip; well &hellip; manual.</p>-->
-
-		<!--
-		<div id="faqNav">
+<div id="container" class="contentContainer">
+	<div id="navContainer">
+		<nav id="navSidebar">
+			<div id="navHome"><a class="imgLink" href="../index.html"><img id="cpLogo" src="../../res/img/courseplayLogoDark.png" alt="Courseplay" /></a></div>
+			<hr />
 			<ul>
-				<li><a href="#faq01">Which tools and vehicles does Courseplay support?</a></li>
-				<li><a href="#faq02">After loading my old savegame, I can't open the Courseplay hud anymore</a></li>
-				<li><a href="#faq03">How to use the offset? &mdash; a.k.a. how do I let multiple vehicles drive a fieldwork course?</a></li>
+				<li id="navInstallation">
+					<a href="../installation/index.html">
+						<span class="icon-installation"></span>
+						<span>Installation</span>
+					</a>
+				</li>
+				<li id="navManual">
+					<a href="../manual/index.html#intro">
+						<span class="icon-cog"></span>
+						<span>Manual</span>
+					</a>
+				</li>
+				<li id="navFAQ" class="active">
+					<a href="../faq/index.html">
+						<span class="icon-faq"></span>
+						<span>FAQ</span>
+					</a>
+				</li>
+				<li id="navChangelog">
+					<a href="../changelog/index.html">
+						<span class="icon-changelog"></span>
+						<span>Changelog</span>
+					</a>
+				</li>
+				<li id="navAuthors" class="last">
+					<a href="../authors/index.html">
+						<span class="icon-authors"></span>
+						<span>Authors</span>
+					</a>
+				</li>
 			</ul>
-		</div>
-		-->
-		<article id="faq01" class="singleFaq">
-			<h3>Which tools and vehicles does Courseplay support?</h3>
-			<div class="faqContent">
-				<p>Courseplay supports all default game vehicles and tools, with the exception of the <span class="emphasize2">Pöttinger Mex6</span> corn chopper and the <span class="emphasize2">water trailer</span>. We also support all modifications which use the default game scripts.</p>
+		</nav>
+	</div>
 
-				<p>In addition, we specifically support the following modifications <span class="emphasize2">(valid as of v3.41.0242)</span>:</p>
+	<!----------------------------------------------------------------------------------------------->
+
+	<main role="main" class="content">
+		<h1>Frequently Asked Questions</h1>
+
+		<hr />
+
+		<article id="bugReport" class="singleFaq">
+			<h2>How to provide a nice and sexy bug report</h2>
+			<ol class="faqContent">
+				<li>Bugs and suggestion are handled on our <a href="https://github.com/Courseplay/courseplay/issues"><span class="icon-github4"></span> issues</a> page.</li>
+				<li>Always update to the latest build and check if the problem really still exists before reporting issues.</li>
+				<li>Check if your problem has already been reported by someone else. If so, contribute to that issue instead of creating a new one.</li>
+				<li>Write in English. We have users (and developers) from all over the world. And by writing in English, you help them (and us) understand and maybe even contributing to the solution.</li>
+				<li>Be descriptive and clear: use a clear title without writing a whole novel. In the text area, describe the situation as precise as possible.</li>
+				<li>Post the complete game log:
+					<ol>
+						<li>You can find it in the following directory:
+							<ul>
+								<li>
+									<span class="emphasize1">Windows</span> <span class="emphasize2">(7 and above)</span>:
+									<pre>C:\Users\<span class="emphasize3">[USER NAME]</span>\My Documents\MyGames\FarmingSimulator2015\mods\log.txt</pre>
+								</li>
+								<li>
+									<span class="emphasize1">Mac OS</span> <span class="emphasize2">(OS X Download/DVD/Steam-Version)</span>:
+									<pre>/Users/<span class="emphasize3">[USER NAME]</span>/Library/Application Support/FarmingSimulator2015/log.txt</pre>
+								</li>
+								<li>
+									<span class="emphasize1">Mac OS</span> <span class="emphasize2">(OS X 10.7 and above)</span>:
+									<pre>/Users/<span class="emphasize3">[USER NAME]</span>/Library/Containers/com.focus-home.farmingsim2015/Data/Library/Application Support/FarmingSimulator2015/log.txt</pre>
+								</li>
+							</ul>
+						</li>
+						<li>Upload the log:<br />
+							Go to <a href="https://gist.github.com/">Gist</a> or <a href="http://pastebin.com/">Pastebin</a>, and add your log content by either using copy and paste, or dragging the log.txt file into the text area <span class="emphasize2">(Gist only)</span>.
+						</li>
+						<li>Post the link to your log in the issue.</li>
+					</ol>
+				</li>
+				<li>Tell us the Courseplay version you're using. You can find it either in the game's log <span class="emphasize2">(### Courseplay: initialized 37/37 files (<span class="emphasize1">v4.00.0158</span>))</span>, or ingame in the bottom right corner of the Courseplay hud.</li>
+				<li>Tell us which map and which mods you are using.</li>
+			</ol>
+		</article>
+
+		<article id="faqToolSupport" class="singleFaq">
+			<h2>Which tools and vehicles does Courseplay support?</h2>
+			<div class="faqContent">
+				<p>Courseplay supports all default game vehicles and tools, with the exception of the <span class="emphasize2">water trailer</span>. We also support all modifications which use the default game scripts.</p>
+				<p class="emphasize2"><span class="emphasize1">Note:</span> Courseplay does not automatically cut or handle any trees.</p>
+				<p>In addition, we specifically support the following modifications <span class="emphasize2">(valid as of v4.00)</span>:</p>
 				<ul>
-					<li><span class="emphasize1">Giants DLC Free Classics pack</span> &mdash; with the exception of the <span class="emphasize2">Fahr MH 650</span> corn chopper and the <span class="emphasize2">water trailer</span></li>
-					<li><span class="emphasize1">Giants DLC Ursus AddOn</span></li>
-					<li><span class="emphasize1">Giants DLC Titanium AddOn</span></li>
-
-					<li><span class="emphasize1">Abbey Manure Handling Kit</span> by <span class="emphasize2">FS-UK Modteam</span></li>
 					<li><span class="emphasize1">AutoCombine</span> by <span class="emphasize2">biedens</span></li>
-					<li><span class="emphasize1">Claas Lexion 770</span> (including all its tools) by <span class="emphasize2">SFM</span></li>
-					<li><span class="emphasize1">Claas Liner 4000</span> by <span class="emphasize2">LS-Landtechnik & Fuqsbow-Team</span></li>
-					<li><span class="emphasize1">Claas Quadrant 1200 baler</span> by <span class="emphasize2">Eifok-Team</span></li>
-					<li><span class="emphasize1">Feldbinder/Kotte liquid manure pack v2</span> by <span class="emphasize2">Bayerbua &amp; upsidedown</span></li>
-					<li><span class="emphasize1">Fuchs liquid manure trailer</span> by <span class="emphasize2">Stefan Maurus</span></li>
-					<li><span class="emphasize1">Hawe 2600T/3000T auger wagons</span> by <span class="emphasize2">BlueSky</span></li>
-					<li><span class="emphasize1">Hawe SUW auger wagons</span> by <span class="emphasize2">Kyosho's Modfactory</span></li>
-					<li><span class="emphasize1">Holaras silage shield</span> by <span class="emphasize2">Amigo2 &amp; xerion8300</span></li>
-					<li><span class="emphasize1">JF FCT1060 Pro Tec</span> by <span class="emphasize2">NI Modding</span></li>
-					<li><span class="emphasize1">John Deere 864 Premium baler</span> by <span class="emphasize2">BJR-Modding</span></li>
-					<li><span class="emphasize1">Kirovets K700A</span> by <span class="emphasize2">SFM</span></li>
-					<li><span class="emphasize1">Kverneland/Taarup mower pack</span> by <span class="emphasize2">NI modding</span></li>
-					<li><span class="emphasize1">McHale 988</span> by <span class="emphasize2">Bergwout</span></li>
-					<li><span class="emphasize1">MoreRealistic engine</span> by <span class="emphasize2">Dural</span></li>
+					<li><span class="emphasize1">DriveControl</span> by <span class="emphasize2">upsidedown</span></li>
 					<li><span class="emphasize1">Overloader specialization for auger wagons</span> by <span class="emphasize2">Satis</span></li>
-					<li><span class="emphasize1">P&ouml;ttinger mower pack</span> by <span class="emphasize2">Eifok-Team</span></li>
-					<li><span class="emphasize1">Rolmasz S061 seeder</span> by <span class="emphasize2">Maciusboss1 &amp; Burner</span></li>
-					<li><span class="emphasize1">Ropa Euro Tiger</span> by <span class="emphasize2">Maciusboss1 &amp; Burner</span></li>
-					<li><span class="emphasize1">Ropa EuroMaus*</span> and <span class="emphasize1">Holmer Terra Felis*</span> by <span class="emphasize2">Maciusboss1 & Burner</span></li>
-					<li><span class="emphasize1">Ropa NawaRo Maus*</span> by <span class="emphasize2">Maciusboss1 &amp; Burner</span></li>
-					<li><span class="emphasize1">Stegemann silage shield</span> by <span class="emphasize2">Kyosho's Modfactory</span></li>
-					<li><span class="emphasize1">Tebbe HS180</span> by <span class="emphasize2">Stefan Maurus</span></li>
-					<li><span class="emphasize1">Universal Bale Trailer specialization</span> by <span class="emphasize2">bassaddict</span></li>
-					<li><span class="emphasize1">URF specialization for seeders</span> by <span class="emphasize2">webalizer</span></li>
-					<li><span class="emphasize1">Zunhammer/Kotte liquid manure pack</span> by <span class="emphasize2">Eifok-Team</span></li>
 				</ul>
-				<p class="annotations"><span class="emphasize1">*</span> those loaders are handled as combines. You'll still have to control them manually, but Courseplay drivers will approach and unload them.</p>
 			</div>
 		</article>
 
-		<article id="faq02" class="singleFaq">
-			<h3>After loading my old savegame, I can't open the Courseplay hud anymore</h3>
-			<div class="faqContent">
-				<p>With Courseplay <span class="emphasize1">v3.40</span>, we've fixed the correct saving of the <span class="emphasize2">keyboard vs. mouse</span> option. With that, the value in the <code>vehicles.xml</code> has changed. Thus, the values of older savegames (pre v3.40) can't be loaded correctly anymore.</p>
-				<p>To remedy this, you will need to open the hud <span class="emphasize1">for each vehicle</span> with the keyboard (by default <kbd title="Control">CTRL</kbd> + <kbd title="Delete">Del</kbd>) and switch the setting to <code>mouse</code>. This needs to be done only once &mdash; after you save the game all will be saved and loaded correctly henceforth.</p>
-			</div>
-		</article>
-
-		<article id="faq03" class="singleFaq">
-			<h3>How to use the offset? &mdash; a.k.a. how do I let multiple vehicles drive a fieldwork course?</h3>
+		<article id="faqOffset" class="singleFaq">
+			<h2>How to use the offset? &mdash; a.k.a. how do I let multiple vehicles drive a fieldwork course?</h2>
 			<div class="faqContent">
 				<p>The <span class="emphasize1">horizontal offset</span> can be used for two different situations:</p>
 
@@ -116,14 +131,12 @@
 					<li>The work tool you're using isn't symmetrical, so you need to drive slightly off course (left or right) to have the tool in the path's center. This applies to, e.g., a bale loader, or a side mower. In this case, use the tool offset setting.</li>
 					<li>You want to use a group of vehicles to drive side by side, in order to work the field faster. In this case, use the lane offset setting.</li>
 				</ol>
-				<br />
 
-				<h4>The asymmetrical tool (tool offset)</h4>
+				<h3>The asymmetrical tool (tool offset)</h3>
 				<p>On the X axis, calculate (or at least estimate) the distance between the point where the tool should "hit" the path and the vehicle's center. Use that distance as the horizontal offset. For example, the default bale loader (Arcusin) needs an offset of approximately <span class="serif">1.5</span> to <span class="serif">2</span> metres to the <span class="emphasize2">left</span> (as the grabber is on the <span class="emphasize2">right</span> side of the tool).</p>
-				<br />
 
 
-				<h4>The groupies (lane offset)</h4>
+				<h3>The groupies (lane offset)</h3>
 				<p>In order to have multiple vehicles drive in a group, make sure of the following:</p>
 				<ol>
 					<li>Each vehicle uses the same tool, with the same work width.</li>
@@ -135,31 +148,39 @@
 
 				<p>Staying with the seeder example, vehicle #1 will drive on the <span class="emphasize2">left</span> side of the course with an offset of <span class="emphasize1">-3 metres</span>, vehicle #2 will drive on the <span class="emphasize2">right</span> side of the course with an offset of <span class="emphasize1">3 metres</span>.</p>
 
+				<h3>Regular vs. symmetric lane change</h3>
 				<p>There are two methods for setting up the lane usage: <span class="emphasize1">regular lane change</span> and <span class="emphasize1">symmetrical lane change</span>.</p>
 				<ul>
 					<li><span class="emphasize1">Regular lane change</span>: while in the first lane they will drive side by side, remember that their position, relative to the path, will <span class="emphasize2">always</span> be left/right of the course. So in the next lane, they will appear to switch the positions, but in reality they will still be left/right of the path.</li>
 					<li><span class="emphasize1">Symmetrical lane change</span>: the vehicles will effectively leave a free lane for the following vehicle.</li>
 				</ul>
-				<figure>
-					<img src="../../res/img/faq_symmetricalLaneChange_en.png" alt="Regular vs. symmetrical lane change" class="infoImg">
-					<figcaption>Fig. 1: Regular vs. symmetrical lane change</figcaption>
+
+				<figure id="laneChangeImage">
+					<img src="../../res/img/faq_laneChange_en.jpg" alt="Regular vs. symmetrical lane change" class="infoImg">
+					<figcaption>Regular vs. symmetrical lane change</figcaption>
 				</figure>
 
+				<noscript>Please enable Javascript to see a lane change animation.</noscript>
+				<button id="playLaneOffsets" class="button">Play</button>
+				<span id="regularText" class="hidden">Regular lane change</span>
+				<span id="symmetricText" class="hidden">Symmetric lane change</span>
+				<div id="laneChangeStage"></div>
 
+				<h3>The lane offset calculation</h3>
 				<p>The formula for calculating the offset is:</p>
-				<figure>
-					<img src="../../res/img/faq_offset_en.png" alt="Calculating the tool's offset" class="infoImg">
-					<figcaption>Fig. 2: Calculating the lane offset</figcaption>
-				</figure>
+				<p>
+					let <code>num</code> be the amount of vehicles<br />
+					let <code>pos</code> be the vehicle's position (#1, #2, #3, &hellip;)<br />
+					let <code>ww</code> be the tool's work width<br />
+					the tool's offset is:
+					<pre>( pos - ( (num + 1) / 2 ) ) * ww</pre>
+				</p>
+
+				<noscript>Please enable Javascript to use the offsect calculator tool.</noscript>
 
 
-				<p>But, we have also built a tool for calculating the correct offset settings for multiple tools:</p>
-
-				<noscript>Please enable Javascript to proceed.</noscript>
-
+				<p id="offsetCalculatorIntro">But, we have also built a tool for calculating the correct offset settings for multiple tools:</p>
 				<div id="offsetCalculator">
-					<h5>The lane offset calculator</h5>
-
 					<div id="textElements">
 						<sub data-lang="en" data-text="courseWorkWidth">Course work width</sub>
 						<sub data-lang="en" data-text="tool">Tool</sub>
@@ -179,7 +200,7 @@
 								<option value="8">8</option>
 							</select>
 							<span id="amountText">2</span>
-							<span id="amountplus" class="hudIcon plus inline">+</span>&nbsp;<span id="amountminus" class="hudIcon minus inline hidden">-</span>
+							<span id="amountplus" class="icon-plus inline"></span>&nbsp;<span id="amountminus" class="icon-minus inline hidden"></span>
 						</fieldset>
 
 						<fieldset>
@@ -191,28 +212,29 @@
 					</form>
 
 					<button id="save" class="button">Save as image</button>
-					<div id="stage"></div>
+					<div id="laneOffsetStage"></div>
 
 				</div>
 			</div>
 		</article>
-	</section>
+	</main>
 
+	<!----------------------------------------------------------------------------------------------->
 
 	<footer>
-		<span>&copy; Courseplay, 2014</span>
-		<nav id="footerNav">
+		<div>&copy; Courseplay Dev Team, 2014</div>
+		<ul id="navFooter">
 			<li><a href="https://github.com/Courseplay/courseplay">GitHub</a></li>
 			<li><a href="https://www.pivotaltracker.com/projects/675867#">Bug Tracker</a></li>
 			<li><a href="https://github.com/Courseplay/courseplay/issues?sort=created&state=open">GitHub Issue Tracker</a></li>
-			<li><a href="../../de/faq/index.html">Deutsche Version</a></li>
-			<li><a href="../..">Home</a></li>
-		</nav>
+			<li class="inactive"><a href="../../de/faq/index.html">Deutsche Version</a></li>
+			<li><a href="../../index.html">Home</a></li>
+		</ul>
 	</footer>
 </div> <!-- #container -->
 
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-<script src="http://d3lp1msu2r81bx.cloudfront.net/kjs/js/lib/kinetic-v4.4.0.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="../../res/js/kinetic-v5.1.0.min.js"></script>
 <script src="../../res/js/faq.js"></script>
 
 </body>

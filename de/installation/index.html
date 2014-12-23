@@ -5,10 +5,8 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
 	<link rel="author" href="../../humans.txt" />
 	<link rel="stylesheet" href="../../res/css/reset.css">
-	<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
-	<link rel="stylesheet" href="../../res/fonts/adelle/stylesheet.css" type="text/css" charset="utf-8">
-	<link rel="stylesheet" href="../../res/fonts/caslon/stylesheet.css" type="text/css" charset="utf-8">
 	<link rel="stylesheet" href="../../res/css/base.css">
+	<link rel="stylesheet" href="../../res/css/nav.css">
 	<!--[if lte IE 7]><script src="res/js/lte-ie7.js"></script><![endif]-->
 	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 	<title>Installation &rsaquo; Courseplay</title>
@@ -27,37 +25,86 @@
 
 <body>
 <div id="container">
-	<header>
-		<h1><a class="imgLink" href="../index.html"><img src="../../res/img/cp_logo.png" alt="Courseplay"></a></h1>
-	</header>
-	
-	<section id="navSection">
-		<nav id="mainNav">
-			<li class="active">Installation</li>
-			<li><a href="../manual/index.html">Anleitung<span class="info">Wie funktionert Courseplay? Was muss ich machen?</span></a></li>
-			<li><a href="../faq/index.html">FAQ<span class="info">Was gibt's noch zu wissen?</span></a></li>
-			<li><a href="../changelog/index.html">Changelog<span class="info">Was gibt's neues?</span></a></li>
-			<li><a href="../authors/index.html">Autoren<span class="info">Wer ist das Team?</span></a></li>
+	<div id="navContainer">
+		<nav id="navSidebar">
+			<div id="navHome"><a class="imgLink" href="../index.html"><img id="cpLogo" src="../../res/img/courseplayLogoDark.png" alt="Courseplay" /></a></div>
+			<hr />
+			<ul>
+				<li id="navInstallation" class="active">
+					<a href="../installation/index.html">
+						<span class="icon-installation"></span>
+						<span>Installation</span>
+					</a>
+				</li>
+				<li id="navManual">
+					<a href="../manual/index.html#intro">
+						<span class="icon-cog"></span>
+						<span>Anleitung</span>
+					</a>
+				</li>
+				<li id="navFAQ">
+					<a href="../faq/index.html">
+						<span class="icon-faq"></span>
+						<span>FAQ</span>
+					</a>
+				</li>
+				<li id="navChangelog">
+					<a href="../changelog/index.html">
+						<span class="icon-changelog"></span>
+						<span>Changelog</span>
+					</a>
+				</li>
+				<li id="navAuthors" class="last">
+					<a href="../authors/index.html">
+						<span class="icon-authors"></span>
+						<span>Autoren</span>
+					</a>
+				</li>
+			</ul>
 		</nav>
-	</section>
+	</div>
 
-	<section id="installation" class="content">
-		<h2>Installation</h2>
-		<p>Das Archiv <code>ZZZ_courseplay.zip</code> in das Verzeichnis <code>C:\Users\<span style="font-style:italic; font-weight:bold;">[Username]</span>\My Documents\MyGames\FarmingSimulator2013\mods</code> kopieren. Das war's!</p>
-		<p>Für die Installation der Entwickler-Version muss die heruntergeladene Zip-Datei entpackt werden, und der <span style="font-weight:bold;">Inhalt</span> des Ordners <code>courseplay-master</code> wieder in eine Zip-Datei namens <code>ZZZ_courseplay.zip</code> gepackt werden. Danach wie normal (s.o.) vorgehen.
-	</section>
+	<!----------------------------------------------------------------------------------------------->
 
+	<main role="main" class="content">
+		<article id="installation">
+			<h1>Installation</h1>
+
+			<hr />
+
+			<h2>Installation der veröffentlichten Version</h2>
+			<p>Kopiere das Archiv <code>ZZZ_courseplay.zip</code> in deinen Mods-Ordner. Das war's!</p>
+			<p>
+				Der Mods-Ordner befindet sich:<br />
+				<ul>
+					<li><span class="emphasize1">Windows</span> <span class="emphasize2">(7 und höher)</span>:</li>
+					<li><pre>C:\Users\<span class="emphasize3">[BENUTZERNAME]</span>\My Documents\MyGames\FarmingSimulator2015\mods</pre></li>
+					<li><span class="emphasize1">Mac OS X</span> <span class="emphasize2">(Download/DVD/Steam-Version)</span>:</li>
+					<li><pre>/Users/<span class="emphasize3">[BENUTZERNAME]</span>/Library/Application Support/FarmingSimulator2015</pre></li>
+					<li><span class="emphasize1">Mac OS X</span> <span class="emphasize2">(X 10.7 und höher)</span>:</li>
+					<li><pre>/Users/<span class="emphasize3">[BENUTZERNAME]</span>/Library/Containers/com.focus-home.farmingsim2015/Data/Library/Application Support/FarmingSimulator2015</pre></li>
+				</ul>
+			</p>
+
+			<hr />
+
+			<h2>Installation der Entwickler-Version</h2>
+			<p>Entpacke die heruntergeladene Zip-Datei in einen Ordner deiner Wahl. Hier findest du nun einen neuen Ordner namens <code>courseplay-master</code>. Packe den <span class="emphasize3">Inhalt</span> dieses Ordners in eine neue Zip-Datei names <code>ZZZ_courseplay.zip</code>. Dann installiere diese normal wie oben beschrieben.</p>
+		</article>
+	</main>
+
+	<!----------------------------------------------------------------------------------------------->
 
 	<footer>
-		<span>&copy; Courseplay, 2014</span>
-		<nav id="footerNav">
+		<div>&copy; Courseplay Dev Team, 2014</div>
+		<ul id="navFooter">
 			<li><a href="https://github.com/Courseplay/courseplay">GitHub</a></li>
 			<li><a href="https://www.pivotaltracker.com/projects/675867#">Bug Tracker</a></li>
 			<li><a href="https://github.com/Courseplay/courseplay/issues?sort=created&state=open">GitHub Issue Tracker</a></li>
 			<li><a href="../../en/installation/index.html">English Version</a></li>
 			<li><a href="../../index.html">Home</a></li>
-		</nav>
-	</footer>	
+		</ul>
+	</footer>
 </div> <!-- #container -->
 </body>
 </html>

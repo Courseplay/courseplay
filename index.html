@@ -5,86 +5,89 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
 	<link rel="author" href="humans.txt" />
 	<link rel="stylesheet" href="res/css/reset.css">
-	<link rel="stylesheet" href="res/fonts/icomoon/style.css">
-	<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
-	<link rel="stylesheet" href="res/fonts/adelle/stylesheet.css" type="text/css" charset="utf-8">
-	<link rel="stylesheet" href="res/fonts/caslon/stylesheet.css" type="text/css" charset="utf-8">
 	<link rel="stylesheet" href="res/css/base.css">
 	<link rel="stylesheet" href="res/css/home.css">
 	<!--[if lte IE 7]><script src="res/js/lte-ie7.js"></script><![endif]-->
 	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 	<title>Courseplay</title>
 
-	<script type="text/javascript">
-		var _gaq = _gaq || [];
-		_gaq.push(['_setAccount', 'UA-38537916-1']);
-		_gaq.push(['_trackPageview']);
-		(function() {
-			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-		})();
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-38537916-1', 'auto');
+		ga('send', 'pageview');
 	</script>
 </head>
 
 <body>
 <div id="container">
-	<header>
-		<h1><img src="res/img/cp_logo.png" alt="Courseplay"></h1>
-	</header>
+	<main role="main" class="content mainIndex">
+		<header>
+			<h1><img src="res/img/courseplayLogoBright.png" alt="Courseplay"></h1>
+		</header>
 
-	<section id="language" class="firstSection">
-		<p class="serif">Yay for stereotypes!</p>
-		<div class="col lang">
-			<a class="imgLink" href="de/index.html" rel="lang" title="Deutsche Infoseite">
-				<img src="res/img/german.png" alt="Deutsch">
-			</a>
-			<div><a href="de/index.html" title="Deutsche Infoseite">Deutsch</a></div>
-		</div>
-		<div class="col lang">
-			<a class="imgLink" href="en/index.html" rel="lang" title="English info site">
-				<img src="res/img/english.png" alt="English">
-			</a>
-			<div><a href="en/index.html" title="English info site">English</a></div>
-		</div>
-		<div class="clearfix"></div>
-	</section>
+		<section id="language" class="firstSection">
+			<p class="serif">Yay for stereotypes!</p>
+			<div class="colContainer">
+				<div class="col lang">
+					<a class="imgLink languageLink active" href="en/index.html" rel="lang" title="English">
+						<span class="icon-english"></span>
+					</a>
+					<div><a href="en/index.html" title="English">English</a></div>
+				</div>
+				<div class="col lang">
+					<span class="imgLink languageLink inactive" href="de/index.html" rel="lang" title="Deutsch">
+						<span class="icon-german"></span>
+					</span>
+					<div><span class="textLink inactive" href="de/index.html" title="Deutsch">Deutsch</span></div>
+				</div>
+			</div>
+		</section>
 
-	<section id="downloads" class="clearfix">
-		<div class="col">
-			<a href="http://www.modhoster.de/mods/courseplay--24" id="download-zip" class="imgLink iconLink" title="Download the latest version">
-				<span class="fs1" aria-hidden="true" data-icon="&#xe012;"></span>
-			</a>
-			<div><a href="http://www.modhoster.de/mods/courseplay--24" id="download-zip" title="Download the latest version">Download</a></div>
-		</div>
-		<div class="col">
-			<a href="https://github.com/Courseplay/courseplay" id="view-on-github" class="imgLink iconLink" title="View the project on GitHub">
-				<span class="fs1" aria-hidden="true" data-icon="&#xe000;"></span>*
-			</a>
-			<div><a href="https://github.com/Courseplay/courseplay" id="view-on-github" title="View the project on GitHub">Code @ GitHub</a>*</div>
-		</div>
-		<div class="clearfix"></div>
-		<p class="info">* <span class="emphasize1">Warning:</span> the developer version may and will contain errors, bugs, mistakes and unfinished code. Chances are you computer will explode when using it. Twice. If you have no idea what "beta", "alpha", or "developer" means and entails, steer clear. The Courseplay team will not take any responsibility for crop destroyed, savegames deleted or baby pandas killed. <br /> <br /> You have been warned.</p>
-	</section>
+		<hr />
 
-	<section id="donate" class="clearfix lastSection">
-		<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-			<input type="hidden" name="cmd" value="_s-xclick">
-			<input type="hidden" name="hosted_button_id" value="TA2KWNQHXMKQN">
-			<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="Donate to the Courseplay team via PayPal">
-			<img alt="" border="0" src="https://www.paypalobjects.com/de_DE/i/scr/pixel.gif" width="1" height="1">
-		</form>
-	</section>
+		<section id="downloads">
+			<div class="colContainer">
+				<div class="col">
+					<span href="http://www.modhoster.de/mods/courseplay--24" id="download-zip" class="imgLink iconLink inactive" title="Download the latest version">
+						<span aria-hidden="true" class="icon-cloud-download"></span>
+					</span>
+					<div><span href="http://www.modhoster.de/mods/courseplay--24" id="download-zip" class="textLink inactive" title="Download the latest version">Download</span></div>
+				</div>
+				<div class="col">
+					<a href="https://github.com/Courseplay/courseplay" id="view-on-github" class="imgLink iconLink active" title="View the project on GitHub">
+						<span aria-hidden="true" class="icon-github4"></span>
+					</a>
+					<div><a href="https://github.com/Courseplay/courseplay" id="view-on-github" class="textLink active" title="View the project on GitHub">Code @ GitHub</a>*</div>
+				</div>
+			</div>
+
+			<p class="info">* <span class="emphasize1">Warning:</span> the developer version may and will contain errors, bugs, mistakes and unfinished code. Chances are you computer will explode when using it. Twice. If you have no idea what "beta", "alpha", or "developer" means and entails, steer clear. The Courseplay team will not take any responsibility for crop destroyed, savegames deleted or baby pandas killed. <br /> You have been warned.</p>
+		</section>
+
+		<hr />
+
+		<section id="donateEN" class="lastSection">
+			<form id="donateButtonEN" class="donateButton" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
+				<input type="hidden" name="cmd" value="_s-xclick">
+				<input type="hidden" name="hosted_button_id" value="YVNAS8MQYTA9C">
+				<input type="image" src="res/img/donateButton_EN.png" border="0" name="submit" alt="Donate to the Courseplay team via PayPal">
+				<img alt="" border="0" src="https://www.paypalobjects.com/de_DE/i/scr/pixel.gif" width="1" height="1">
+			</form>
+		</section>
+	</main>
 
 	<footer>
-		<span>&copy; Courseplay, 2014</span>
-		<nav id="footerNav">
+		<div>&copy; Courseplay Dev Team, 2014</div>
+		<ul id="navFooter">
 			<li><a href="https://github.com/Courseplay/courseplay">GitHub</a></li>
 			<li><a href="https://www.pivotaltracker.com/projects/675867#">Bug Tracker</a></li>
 			<li><a href="https://github.com/Courseplay/courseplay/issues?sort=created&state=open">GitHub Issue Tracker</a></li>
-			<li>Home</li>
-		</nav>
-	</footer>	
+		</ul>
+	</footer>
 </div> <!-- #container -->
 </body>
 </html>

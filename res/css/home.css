@@ -1,23 +1,112 @@
-section { border-bottom:1px solid #E0E0E0; border-top:1px solid white; margin:0 auto; text-align:center; }
-section .col  { display:inline-block; margin:0 2em; text-align:center; width:170px; }
-section.firstSection { border-top:none; }
-section.lastSection { border-bottom:none; }
+header { text-align:center; }
+#container {
+	padding:2em;
+}
+
+.content.mainIndex {
+	margin:0 auto;
+}
+
+section {
+	padding:1em 0;
+}
+section.firstSection {
+	padding-top:0;
+}
+section.lastSection {
+	padding-bottom:0;
+}
+
+.colContainer  {
+	display:flex;
+	justify-content:center;
+}
+.colContainer .col  { 
+	margin:0 7.5%;
+	text-align:center; 
+	width:35%; 
+}
+
+.colContainer .col div { 
+	font-size:0.6em;
+	margin-top:1em;
+	text-align:center;
+	text-transform:uppercase;
+}
+
 .imgLink { display:block; }
 
-#language p { font-style:italic; margin:0 0 2em; text-align:center; }
-#language .lang div { text-align:center; }
-
-#downloads a { text-align:center; }
-#downloads .col .iconLink {
-	color:#323232;
-	display:inline;
-	font-size:2em;
+#language p { 
+	font-size:0.6em;
+	letter-spacing:0.8em;
+	margin:0 -0.8em 2em 0;
+	text-align:center;
+	text-transform:uppercase;
+}
+.col .imgLink {
+	color:#333;
+	display:inline !important;
+	text-decoration:none;
+}
+.col .imgLink span {
+	background:#FC0;
+	background:url('../img/noise_128x128_0.05.png') repeat #FC0;
+	border:4px solid transparent;
+	border-radius:12em;
+	padding:0.3em;
+}
+.col .imgLink.active:hover span, .col .imgLink.active:active span, .col .imgLink.active:focus span {
+	background-color:transparent;
+	border-color:#FC0;
+	color:#FC0;
+}
+.imgLink.inactive span {
+	background-color:#888;
+	cursor:not-allowed;
+}
+.textLink.inactive {
+	color:#888;
+	cursor:not-allowed;
 }
 
+#language .col .imgLink {
+	font-size:6em;
+}
+#downloads .col .imgLink {
+	font-size:3em;
+}
+
+/* --- */
 
 p.info { 
-	font-size:.8em;
+	font-size:0.8em;
 	font-style:italic;
-	margin-top:40px;
+	margin:2em 0 0;
 	text-align:left;
 }
+
+/* --- */
+
+footer {
+	padding-left:1em;
+}
+
+/* MEDIA QUERIES */
+@media only screen and (max-width: 1250px) {
+}
+
+@media only screen and (max-width: 850px) {
+}
+
+@media only screen and (max-width: 650px) {
+	#language .col .imgLink {
+		font-size:3em;
+	}
+	#downloads .col .imgLink {
+		font-size:1.5em;
+	}
+	footer {
+		font-size:0.6em;
+	}
+}
+

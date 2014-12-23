@@ -5,11 +5,8 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
 	<link rel="author" href="../humans.txt" />
 	<link rel="stylesheet" href="../res/css/reset.css">
-	<link rel="stylesheet" href="../res/fonts/icomoon/style.css">
-	<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
-	<link rel="stylesheet" href="../res/fonts/adelle/stylesheet.css" type="text/css" charset="utf-8">
-	<link rel="stylesheet" href="../res/fonts/caslon/stylesheet.css" type="text/css" charset="utf-8">
 	<link rel="stylesheet" href="../res/css/base.css">
+	<link rel="stylesheet" href="../res/css/nav.css">
 	<!--[if lte IE 7]><script src="res/js/lte-ie7.js"></script><![endif]-->
 	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 	<title>Courseplay</title>
@@ -28,49 +25,79 @@
 
 <body>
 <div id="container">
-	<header>
-		<h1><a class="imgLink" href="../de/index.html"><img src="../res/img/cp_logo.png" alt="Courseplay"></a></h1>
-	</header>
-	
-	<section id="navSection">
-		<nav id="mainNav">
-			<li><a href="installation/index.html">Installation<span class="info">Wie? Was? Wohin?</span></a></li>
-			<li><a href="manual/index.html">Anleitung<span class="info">Wie funktionert Courseplay? Was muss ich machen?</span></a></li>
-			<li><a href="faq/index.html">FAQ<span class="info">Was gibt's noch zu wissen?</span></a></li>
-			<li><a href="changelog/index.html">Changelog<span class="info">Was gibt's neues?</span></a></li>
-			<li><a href="authors/index.html">Autoren<span class="info">Wer ist das Team?</span></a></li>
+	<div id="navContainer">
+		<nav id="navSidebar">
+			<div id="navHome"><img id="cpLogo" src="../res/img/courseplayLogoDark.png" alt="Courseplay" /></div>
+			<hr />
+			<ul>
+				<li id="navInstallation">
+					<a href="installation/index.html">
+						<span class="icon-installation"></span>
+						<span>Installation</span>
+					</a>
+				</li>
+				<li id="navManual">
+					<a href="manual/index.html#intro">
+						<span class="icon-cog"></span>
+						<span>Anleitung</span>
+					</a>
+				</li>
+				<li id="navFAQ">
+					<a href="faq/index.html">
+						<span class="icon-faq"></span>
+						<span>FAQ</span>
+					</a>
+				</li>
+				<li id="navChangelog">
+					<a href="changelog/index.html">
+						<span class="icon-changelog"></span>
+						<span>Changelog</span>
+					</a>
+				</li>
+				<li id="navAuthors" class="last">
+					<a href="authors/index.html">
+						<span class="icon-authors"></span>
+						<span>Autoren</span>
+					</a>
+				</li>
+			</ul>
 		</nav>
-	</section>
+	</div>
 
-	<section id="introduction">
-		<h2>Willkommen zu Courseplay</h2>
-		<p>Courseplay ist ein Mod für den Landwirtschafts-Simulator 2013, der es ermöglicht verschiedenste Fahrzeuge autonom Kurse abfahren zu lassen, Arbeiten zu erledigen, Drescher abzutanken und vieles mehr.</p>
-	</section>
+	<!----------------------------------------------------------------------------------------------->
 
-	<section id="donateDE" class="clearfix">
-		<h3>Help us out</h3>
-		<p>Wir arbeiten lange, hart, in unserer Freizeit an Courseplay. Wenn euch das Projekt gefällt, könnt ihr uns gerne eure unbändige Liebe zeigen:</p>
-		<br />
-		<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-			<input type="hidden" name="cmd" value="_s-xclick">
-			<input type="hidden" name="hosted_button_id" value="S3HF5XUFFS7JU">
-			<input type="image" src="https://www.paypalobjects.com/de_DE/DE/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="An das Courseplay Dev Team spenden" align="center" style="margin: 0 auto">
-			<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-		</form>
-	</section>
+	<main role="main" class="content">
+		<article id="introduction">
+			<h1>Willkommen zu Courseplay</h1>
+			<hr />
+			<p>Courseplay ist ein Mod für den Landwirtschafts-Simulator 2015, der es ermöglicht verschiedenste Fahrzeuge autonom Kurse abfahren zu lassen, Arbeiten zu erledigen, Drescher abzutanken und vieles mehr.</p>
+		</article>
+
+		<hr />
+
+		<article id="donateDE" class="clearfix">
+			<h2>Help us out</h2>
+			<p>Wir arbeiten lange, hart, in unserer Freizeit an Courseplay. Wenn euch das Projekt gefällt, könnt ihr uns gerne eure unbändige Liebe zeigen:</p>
+			<form id="donateButtonDE" class="donateButton" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
+				<input type="hidden" name="cmd" value="_s-xclick">
+				<input type="hidden" name="hosted_button_id" value="YVNAS8MQYTA9C">
+				<input type="image" src="../res/img/donateButton_DE.png" border="0" name="submit" alt="Spende an das Courseplay-Team via PayPal">
+				<img alt="" border="0" src="https://www.paypalobjects.com/de_DE/i/scr/pixel.gif" width="1" height="1">
+			</form>
+		</article>
+	</main>
 
 	<!----------------------------------------------------------------------------------------------->
 
 	<footer>
-		<span>&copy; Courseplay, 2014</span>
-		<nav id="footerNav">
+		<div>&copy; Courseplay Dev Team, 2014</div>
+		<ul id="navFooter">
 			<li><a href="https://github.com/Courseplay/courseplay">GitHub</a></li>
 			<li><a href="https://www.pivotaltracker.com/projects/675867#">Bug Tracker</a></li>
 			<li><a href="https://github.com/Courseplay/courseplay/issues?sort=created&state=open">GitHub Issue Tracker</a></li>
-			<li><a href="../en/index.html">English Version</a></li>
-			<li><a href="../index.html">Home</a></li>
-		</nav>
-	</footer>	
+			<li><a href="../en/index.html">English version</a></li>
+		</ul>
+	</footer>
 </div> <!-- #container -->
 </body>
 </html>

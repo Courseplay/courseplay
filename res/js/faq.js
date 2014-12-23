@@ -5,8 +5,8 @@ CP = {};
 
 CP.animationTime = 250;
 CP.el = {
-	faqContent: $('div.faqContent'),
-	faqTitles: $('.singleFaq').find('h3')
+	faqContent: $('.faqContent'),
+	faqTitles: $('.singleFaq').find('h2')
 };
 CP.el.faqContent.addClass('closed');
 
@@ -18,16 +18,407 @@ CP.el.faqTitles.on('click', function(evt) {
 	CP.el.faqContent.removeClass('open').addClass('closed');
 	if (!isOpen) {
 		thisFaqContent.removeClass('closed').addClass('open');
-		scrollTo('#' + t.parents('.singleFaq').attr('id'));
+		scrollTo(t.parents('.singleFaq'));
 	};
 });
 
-function scrollTo(targetId) {
+function scrollTo(el) {
 	$('html, body').animate({
-		scrollTop: $(targetId).offset().top
+		scrollTop: el.offset().top
 	}, CP.animationTime);
-} //END scrollTo()	
+} //END scrollTo()
 
+
+/** SYMMETRIC LANE CHANGE **/
+var stage = new Kinetic.Stage({
+	container: 'laneChangeStage',
+	width: $('#faqOffset').width(),
+	height: 400
+});
+
+var layer = new Kinetic.Layer();
+
+var bottomLine = new Kinetic.Rect({
+	x: 0,
+	y: stage.getHeight() - 2,
+	width: stage.getWidth(),
+	height: 2,
+	fill: 'rgba(240,240,240,1)',
+});
+layer.add(bottomLine);
+
+var sepLine = new Kinetic.Rect({
+	x: stage.getWidth() * 0.5 - 2,
+	y: 0,
+	width: 4,
+	height: stage.getHeight() - 8,
+	fill: 'rgba(240,240,240,0.15)',
+});
+layer.add(sepLine);
+
+var canvasFont = 'DINPro, Calibri, Open Sans, Source Sans Pro, sans-serif';
+var regularLaneChangeText = $('#regularText').text();
+var symmetricLaneChangeText = $('#symmetricText').text();
+
+var regularLaneChangeText = new Kinetic.Text({
+	x: stage.getWidth() * 0.25,
+	y: 15,
+	text: regularLaneChangeText,
+	fontSize: 18,
+	fontFamily: canvasFont,
+	fill: 'rgb(240,240,240)',
+	id: 'regularLaneChangeText'
+});
+regularLaneChangeText.setOffset({
+	x: regularLaneChangeText.getWidth() * 0.5
+});
+var symmetricLaneChangeText = new Kinetic.Text({
+	x: stage.getWidth() * 0.75,
+	y: 15,
+	text: symmetricLaneChangeText,
+	fontSize: 18,
+	fontFamily: canvasFont,
+	fill: 'rgb(240,240,240)',
+	id: 'symmetricLaneChangeText'
+});
+symmetricLaneChangeText.setOffset({
+	x: symmetricLaneChangeText.getWidth() * 0.5
+});
+layer.add(regularLaneChangeText);
+layer.add(symmetricLaneChangeText);
+
+var courseLineRegular = new Kinetic.Line({
+	points: [
+		stage.getWidth() * 0.125, stage.getHeight() - 15, 
+		stage.getWidth() * 0.125, 100, 
+		stage.getWidth() * 0.375, 100,
+		stage.getWidth() * 0.375, stage.getHeight() - 15
+	],
+	stroke: 'rgba(240,240,240, 0.5)',
+	strokeWidth: 2,
+	lineJoin: 'round',
+	dash: [5, 5]
+});
+layer.add(courseLineRegular);
+var courseLineSymmetric = new Kinetic.Line({
+	points: [
+		stage.getWidth() * 0.625, stage.getHeight() - 15, 
+		stage.getWidth() * 0.625, 100, 
+		stage.getWidth() * 0.875, 100,
+		stage.getWidth() * 0.875, stage.getHeight() - 15
+	],
+	stroke: 'rgba(240,240,240, 0.5)',
+	strokeWidth: 2,
+	lineJoin: 'round',
+	dash: [5, 5]
+});
+layer.add(courseLineSymmetric);
+
+var regularCircle = new Kinetic.Circle({
+	x: stage.getWidth() * 0.125,
+	y: stage.getHeight() - 15,
+	radius: 10,
+	fill: 'rgba(240,240,240, 0.75)',
+	stroke: 'rgba(0,0,0,0.5)',
+	strokeWidth: 2
+});
+layer.add(regularCircle);
+
+var symmetricCircle = new Kinetic.Circle({
+	x: stage.getWidth() * 0.625,
+	y: stage.getHeight() - 15,
+	radius: 10,
+	fill: 'rgba(240,240,240, 0.75)',
+	stroke: 'rgba(0,0,0,0.5)',
+	strokeWidth: 2
+});
+layer.add(symmetricCircle);
+
+stage.add(layer);
+stage.draw()
+
+var regularCourseAnim = new Kinetic.Tween({
+	node: regularCircle,
+	duration: 2,
+	y: 100,
+	easing: Kinetic.Easings.EaseInOut,
+	onFinish: function() {
+		new Kinetic.Tween({
+			node: regularCircle,
+			duration: 2,
+			x: stage.getWidth() * 0.375,
+			easing: Kinetic.Easings.EaseInOut,
+			onFinish: function() {
+				new Kinetic.Tween({
+					node: regularCircle,
+					duration: 2,
+					y: stage.getHeight() - 15,
+					easing: Kinetic.Easings.EaseInOut
+				}).play();
+			}
+		}).play();
+	}
+});
+var symmetricCourseAnim = new Kinetic.Tween({
+	node: symmetricCircle,
+	duration: 2,
+	y: 100,
+	easing: Kinetic.Easings.EaseInOut,
+	onFinish: function() {
+		new Kinetic.Tween({
+			node: symmetricCircle,
+			duration: 2,
+			x: stage.getWidth() * 0.875,
+			easing: Kinetic.Easings.EaseInOut,
+			onFinish: function(right) {
+				new Kinetic.Tween({
+					node: symmetricCircle,
+					duration: 2,
+					y: stage.getHeight() - 15,
+					easing: Kinetic.Easings.EaseInOut
+				}).play();
+			}
+		}).play();
+	}
+});
+
+var lineWidth = 2, //stage.getWidth() * 1/8;
+	orange = 'rgba(255,78,0,1)',
+	blue = 'rgba(0,156,255,1)';
+
+// regular left
+var regularLeft1 = new Kinetic.Line({
+	points: [ stage.getWidth() * 1/16, stage.getHeight() - 15, stage.getWidth() * 1/16, stage.getHeight() - 15 ],
+	stroke: orange,
+	strokeWidth: lineWidth,
+	// dash: [10,5]
+});
+layer.add(regularLeft1);
+var regularLeft2 = new Kinetic.Line({
+	points: [ stage.getWidth() * 1/16, 65, stage.getWidth() * 1/16, 65 ],
+	stroke: orange,
+	strokeWidth: lineWidth,
+	// dash: [10,5]
+});
+layer.add(regularLeft2);
+var regularLeft3 = new Kinetic.Line({
+	points: [ stage.getWidth() * 7/16, 65, stage.getWidth() * 7/16, 65 ],
+	stroke: orange,
+	strokeWidth: lineWidth,
+	// dash: [10,5]
+});
+layer.add(regularLeft3);
+
+var a, b, c;
+a = new Kinetic.Tween({
+	node: regularLeft1,
+	points: [ stage.getWidth() * 1/16, stage.getHeight() - 15, stage.getWidth() * 1/16, 65 ],
+	duration: 2,
+	easing: Kinetic.Easings.EaseInOut,
+	onFinish: function() {
+		b.play();
+	}
+});
+b = new Kinetic.Tween({
+	node: regularLeft2,
+	points: [ stage.getWidth() * 1/16, 65, stage.getWidth() * 7/16, 65 ],
+	duration: 2,
+	easing: Kinetic.Easings.EaseInOut,
+	onFinish: function() {
+		c.play();
+	}
+});
+c = new Kinetic.Tween({
+	node: regularLeft3,
+	points: [ stage.getWidth() * 7/16, 65, stage.getWidth() * 7/16, stage.getHeight() - 15 ],
+	duration: 2,
+	easing: Kinetic.Easings.EaseInOut,
+	onFinish: function() {
+	}
+});
+
+// regular right
+var regularRight1 = new Kinetic.Line({
+	points: [ stage.getWidth() * 3/16, stage.getHeight() - 15, stage.getWidth() * 3/16, stage.getHeight() - 15 ],
+	stroke: blue,
+	strokeWidth: lineWidth,
+	// dash: [10,5]
+});
+layer.add(regularRight1);
+var regularRight2 = new Kinetic.Line({
+	points: [ stage.getWidth() * 3/16, 80, stage.getWidth() * 3/16, 80 ],
+	stroke: blue,
+	strokeWidth: lineWidth,
+	// dash: [10,5]
+});
+layer.add(regularRight2);
+var regularRight3 = new Kinetic.Line({
+	points: [ stage.getWidth() * 5/16, 80, stage.getWidth() * 5/16, 80 ],
+	stroke: blue,
+	strokeWidth: lineWidth,
+	// dash: [10,5]
+});
+layer.add(regularRight3);
+
+var d, e, f;
+d = new Kinetic.Tween({
+	node: regularRight1,
+	points: [ stage.getWidth() * 3/16, stage.getHeight() - 15, stage.getWidth() * 3/16, 80 ],
+	duration: 2,
+	easing: Kinetic.Easings.EaseInOut,
+	onFinish: function() {
+		e.play();
+	}
+});
+e = new Kinetic.Tween({
+	node: regularRight2,
+	points: [ stage.getWidth() * 3/16, 80, stage.getWidth() * 5/16, 80 ],
+	duration: 2,
+	easing: Kinetic.Easings.EaseInOut,
+	onFinish: function() {
+		f.play();
+	}
+});
+f = new Kinetic.Tween({
+	node: regularRight3,
+	points: [ stage.getWidth() * 5/16, 80, stage.getWidth() * 5/16, stage.getHeight() - 15 ],
+	duration: 2,
+	easing: Kinetic.Easings.EaseInOut,
+	onFinish: function() {
+	}
+});
+
+// symmetric left
+var symmetricLeft1 = new Kinetic.Line({
+	points: [ stage.getWidth() * 9/16, stage.getHeight() - 15, stage.getWidth() * 9/16, stage.getHeight() - 15 ],
+	stroke: orange,
+	strokeWidth: lineWidth,
+	// dash: [10,5]
+});
+layer.add(symmetricLeft1);
+var symmetricLeft2 = new Kinetic.Line({
+	points: [ stage.getWidth() * 9/16, 65, stage.getWidth() * 9/16, 65 ],
+	stroke: orange,
+	strokeWidth: lineWidth,
+	// dash: [10,5]
+});
+layer.add(symmetricLeft2);
+var symmetricLeft3 = new Kinetic.Line({
+	points: [ stage.getWidth() * 13/16, 65, stage.getWidth() * 13/16, 65 ],
+	stroke: orange,
+	strokeWidth: lineWidth,
+	// dash: [10,5]
+});
+layer.add(symmetricLeft3);
+
+var g, h, i;
+g = new Kinetic.Tween({
+	node: symmetricLeft1,
+	points: [ stage.getWidth() * 9/16, stage.getHeight() - 15, stage.getWidth() * 9/16, 65 ],
+	duration: 2,
+	easing: Kinetic.Easings.EaseInOut,
+	onFinish: function() {
+		h.play();
+	}
+});
+h = new Kinetic.Tween({
+	node: symmetricLeft2,
+	points: [ stage.getWidth() * 9/16, 65, stage.getWidth() * 13/16, 65 ],
+	duration: 2,
+	easing: Kinetic.Easings.EaseInOut,
+	onFinish: function() {
+		i.play();
+	}
+});
+i = new Kinetic.Tween({
+	node: symmetricLeft3,
+	points: [ stage.getWidth() * 13/16, 65, stage.getWidth() * 13/16, stage.getHeight() - 15 ],
+	duration: 2,
+	easing: Kinetic.Easings.EaseInOut,
+	onFinish: function() {
+	}
+});
+
+// symmetric right
+var symmetricRight1 = new Kinetic.Line({
+	points: [ stage.getWidth() * 11/16, stage.getHeight() - 15, stage.getWidth() * 11/16, stage.getHeight() - 15 ],
+	stroke: blue,
+	strokeWidth: lineWidth,
+	// dash: [10,5]
+});
+layer.add(symmetricRight1);
+var symmetricRight2 = new Kinetic.Line({
+	points: [ stage.getWidth() * 11/16, 80, stage.getWidth() * 11/16, 80 ],
+	stroke: blue,
+	strokeWidth: lineWidth,
+	// dash: [10,5]
+});
+layer.add(symmetricRight2);
+var symmetricRight3 = new Kinetic.Line({
+	points: [ stage.getWidth() * 15/16, 80, stage.getWidth() * 15/16, 80 ],
+	stroke: blue,
+	strokeWidth: lineWidth,
+	// dash: [10,5]
+});
+layer.add(symmetricRight3);
+
+var j, k, l;
+j = new Kinetic.Tween({
+	node: symmetricRight1,
+	points: [ stage.getWidth() * 11/16, stage.getHeight() - 15, stage.getWidth() * 11/16, 80 ],
+	duration: 2,
+	easing: Kinetic.Easings.EaseInOut,
+	onFinish: function() {
+		k.play();
+	}
+});
+k = new Kinetic.Tween({
+	node: symmetricRight2,
+	points: [ stage.getWidth() * 11/16, 80, stage.getWidth() * 15/16, 80 ],
+	duration: 2,
+	easing: Kinetic.Easings.EaseInOut,
+	onFinish: function() {
+		l.play();
+	}
+});
+l = new Kinetic.Tween({
+	node: symmetricRight3,
+	points: [ stage.getWidth() * 15/16, 80, stage.getWidth() * 15/16, stage.getHeight() - 15 ],
+	duration: 2,
+	easing: Kinetic.Easings.EaseInOut,
+	onFinish: function() {
+	}
+});
+
+
+$('#playLaneOffsets').show().on('click', function(evt) {
+	evt.preventDefault();
+
+	// regular
+	regularCircle.setX(stage.getWidth() * 0.125); // fake reset
+	regularCircle.setY(stage.getHeight() - 15); // fake reset
+	regularCourseAnim.reset().play();
+	c.reset();
+	b.reset();
+	a.reset().play();
+	f.reset();
+	e.reset();
+	d.reset().play();
+
+	// symmetric
+	symmetricCircle.setX(stage.getWidth() * 0.625); // fake reset
+	symmetricCircle.setY(stage.getHeight() - 15); // fake reset
+	symmetricCourseAnim.reset().play();
+	i.reset();
+	h.reset();
+	g.reset().play();
+	l.reset();
+	k.reset();
+	j.reset().play();
+});
+
+
+/** ################################################################### **/
 
 
 /** OFFSET CALCULATOR **/
@@ -62,10 +453,10 @@ $('#amountplus, #amountminus').on('click', function() {
 	} else if ($(this).attr('id') == 'amountminus'){
 		change = -1;
 	};
-	
+
 	var oldVal = parseFloat(amountEl.val());
 		newVal = oldVal + change;
-	
+
 	if (newVal <= 2) { 
 		newVal = 2;
 		$('#amountminus').addClass('hidden');
@@ -78,15 +469,16 @@ $('#amountplus, #amountminus').on('click', function() {
 	} else {
 		$('#amountplus').removeClass('hidden');
 	};
-	
+
 	amountEl.val(newVal);
 	updateOffsetData();
 });
 
 var stage = new Kinetic.Stage({
-	container: 'stage',
-	width: $('#faq').width(),
-	height: 400
+	container: 'laneOffsetStage',
+	width: $('#faqOffset').width(),
+	height: 400,
+	fill: 'rgba(240,240,240,0)'
 });
 
 var layer = new Kinetic.Layer();
@@ -123,16 +515,16 @@ var resultData = {
 		totalWorkWidth: 0,
 		toolOffsets: []
 	};
-	
+
 function initiateOffsetData() {
 	resultData.toolOffsets = [];
 
     var num = parseFloat(amountEl.val()),
         ww = parseFloat(workWidthEl.val());
-	
+
 	resultData.totalWorkWidth = ww * num,
 	//resultData.avg = num/2 + 0.5;
-	resultData.avg = (num+1)/2;
+	resultData.avg = (num+1) * 0.5;
     for (var i=1; i<=num; i++) {
 		var toolOffset = -(resultData.avg-i) * ww;
 		resultData.toolOffsets.push(toolOffset);
@@ -141,128 +533,129 @@ function initiateOffsetData() {
 
 function updateOffsetData() {
 	initiateOffsetData();
-	
+
 	$('#amountText').text(amountEl.val());
-	
-    var num = amountEl.val(),
-        ww = workWidthEl.val(),
+
+	var num = amountEl.val(),
+		ww = workWidthEl.val(),
 		canvasMultiplier = stage.getWidth()/resultData.totalWorkWidth;
 		animDuration = 0.4,
 		animEasing = 'ease-in-out';
-		
+
 	var totalWidthText = stage.get('#totalWidthText')[0];
 	totalWidthText.setText(textElements.courseWorkWidth + ': ' + resultData.totalWorkWidth + 'm');
-	totalWidthText.transitionTo({
-		x: stage.getWidth() / 2,
-	});
+
+	totalWidthText.setX(stage.getWidth() * 0.5);
 	totalWidthText.setOffset({
-		x: totalWidthText.getWidth() / 2
+		x: totalWidthText.getWidth() * 0.5
 	});
 
-	
+
 	for (var i=0; i<maxNumTools; i++) {
 		var toolRect = stage.get('#toolRect_'+i)[0];
 		var toolCourse = stage.get('#toolCourse_'+i)[0];
 		//var toolTextBg = stage.get('#toolTextBg_'+i)[0];
 		var toolText = stage.get('#toolText_'+i)[0];
-		
-		toolRect.transitionTo({
+
+
+		var tween = new Kinetic.Tween({
+			node: toolRect,
 			x: i * ww * canvasMultiplier,
 			width: ww * canvasMultiplier,
-			duration: animDuration,
-			easing: animEasing
-		});	
-		
-		var rectCenter = (i * ww * canvasMultiplier) + (ww/2 * canvasMultiplier);
-		
-		//Note: transitionTo doesn't work with lines yet. See https://github.com/ericdrowell/KineticJS/issues/123
-		/*toolCourse.transitionTo({
-			points: [rectCenter, stage.getHeight() - 100, rectCenter, 50],
-			duration: animDuration,
-			easing: animEasing
-		});*/
-		toolCourse.setPoints([rectCenter, stage.getHeight()-50, rectCenter, 50]);
+			duration: animDuration
+			// easing: animEasing
+		});
+		tween.play();
+
+
+		var rectCenter = (i * ww * canvasMultiplier) + (ww * 0.5 * canvasMultiplier);
+
+		tween = new Kinetic.Tween({
+			node: toolCourse,
+			x: rectCenter - 1,
+			// points: [rectCenter, stage.getHeight() - 50, rectCenter, 50],
+			duration: animDuration
+			// easing: animEasing
+		});
+		tween.play();
 
 		var text = textElements.tool + ' #' + parseFloat(i+1);
 		if (i < num) { 
 			text = textElements.tool + ' #' + parseFloat(i+1) + '\n' + textElements.offset + ': ' + resultData.toolOffsets[i] + 'm';
 		};
 		toolText.setText(text);
-		toolText.transitionTo({
-			x: rectCenter,
-			duration: animDuration,
-			easing: animEasing
-		});	
-		var textWidth = toolText.getWidth();
-		toolText.setOffset({
-			x: textWidth / 2
+		tween = new Kinetic.Tween({
+			node: toolText,
+			x: rectCenter - toolText.getWidth() * 0.5,
+			duration: animDuration
+			// easing: animEasing
 		});
+		tween.play();
 	};
 	stage.draw()
 };
 
 function firstDraw() {
-    var num = amountEl.val(),
-        ww = workWidthEl.val();
+	var num = amountEl.val(),
+		ww = workWidthEl.val();
 
-	var canvasFont = 'Calibri, Open Sans, Source Sans Pro';
-	
+	var canvasFont = 'DINPro, Calibri, Open Sans, Source Sans Pro';
+
 	var totalWidthText = new Kinetic.Text({
-		x: stage.getWidth() / 2,
+		x: stage.getWidth() * 0.5,
 		y: 15,
 		text: textElements.courseWorkWidth + ': ' + resultData.totalWorkWidth + 'm',
 		fontSize: 16,
 		fontFamily: canvasFont,
-		fill: 'green',
+		fill: 'rgb(240,240,240)',
 		id: 'totalWidthText'
-	});	
+	});
 	totalWidthText.setOffset({
-		x: totalWidthText.getWidth() / 2
+		x: totalWidthText.getWidth() * 0.5
 	});
 	infoLayer.add(totalWidthText);
-	
-	var totalWidthLineY = totalWidthText.getY() + totalWidthText.getHeight()/2;
+
+	var totalWidthLineY = totalWidthText.getY() + totalWidthText.getHeight() * 0.5;
 	var totalWidthLineLeft = new Kinetic.Line({
-		points: [0, totalWidthLineY, stage.getWidth()/2 - totalWidthText.getWidth() / 2 - 10, totalWidthLineY],
-		stroke: 'green',
+		points: [0, totalWidthLineY, stage.getWidth() * 0.5 - totalWidthText.getWidth()  * 0.5 - 10, totalWidthLineY],
+		stroke: 'rgb(240,240,240)',
 		strokeWidth: 2,
 		lineJoin: 'round',
 	});
 	var totalWidthLineRight = new Kinetic.Line({
-		points: [stage.getWidth()/2 + totalWidthText.getWidth() / 2 + 10, totalWidthLineY, stage.getWidth(), totalWidthLineY],
-		stroke: 'green',
+		points: [stage.getWidth() * 0.5 + totalWidthText.getWidth() * 0.5 + 10, totalWidthLineY, stage.getWidth(), totalWidthLineY],
+		stroke: 'rgb(240,240,240)',
 		strokeWidth: 2,
 		lineJoin: 'round',
 	});
 	infoLayer.add(totalWidthLineLeft);
 	infoLayer.add(totalWidthLineRight);
-	
+
 	var canvasMultiplier = stage.getWidth()/resultData.totalWorkWidth;
 	var mainLineWidth = 0.25;
+	var centerX = resultData.totalWorkWidth * 0.5 * canvasMultiplier
 	var course = new Kinetic.Line({
-		points: [(resultData.totalWorkWidth/2)*canvasMultiplier, stage.getHeight() - 50, (resultData.totalWorkWidth/2)*canvasMultiplier, 50],
+		points: [centerX, stage.getHeight() - 50, centerX, 50],
 		stroke: 'rgba(255,0,186,0.5)',
-		strokeWidth: 3,
-        lineJoin: 'round',
-		dashArray: [20, 10, 20, 10]
+		strokeWidth: 4,
+		lineJoin: 'round',
+		dash: [10, 10]
 	});
 	infoLayer.add(course);
-	
-	
-	
-	
-    for (var i=0; i<maxNumTools; i++) {
+
+
+	for (var i=0; i<maxNumTools; i++) {
 		var rectColor, strokeColor, lineColor;
 		var c = i;
 		while (c > toolColors.length - 1) {
 			c -= toolColors.length;
 		};
 		var color = toolColors[c];
-			
-		var rectColor = "rgba(" + color.r + ", " + color.g + ", " + color.b + ", 0.5)";
-		var strokeColor = "rgba(" + color.r + ", " + color.g + ", " + color.b + ", 0.8)";
-		var lineColor = "rgba(" + color.r + ", " + color.g + ", " + color.b + ", 1)";
-		
+
+		var rectColor   = 'rgba(' + color.r + ', ' + color.g + ', ' + color.b + ', 0.5)';
+		var strokeColor = 'rgba(' + color.r + ', ' + color.g + ', ' + color.b + ', 0.8)';
+		var lineColor   = 'rgba(' + color.r + ', ' + color.g + ', ' + color.b + ', 1.0)';
+
 		var toolRect = new Kinetic.Rect({
 			x: i * ww * canvasMultiplier,
 			y: 150,
@@ -273,42 +666,39 @@ function firstDraw() {
 			strokeWidth: 1,
 			id: 'toolRect_' + i
 		});
+		toolWidthLayer.add(toolRect);
 
-		var rectCenter = toolRect.getWidth()/2 + (i * ww * canvasMultiplier);
+		var rectCenter = toolRect.getWidth() * 0.5 + (i * ww * canvasMultiplier);
 		var toolCourse = new Kinetic.Line({
-			points: [rectCenter, stage.getHeight() - 50, rectCenter, 50],
+			x: rectCenter,
+			points: [0, stage.getHeight() - 50, 0, 50],
 			stroke: lineColor,
 			strokeWidth: 2,
-			lineCap: 'round',
 			lineJoin: 'round',
-			dashArray: [1, 5, 1, 5],
+			dash: [10, 10],
 			id: 'toolCourse_' + i
 		});
-		toolWidthLayer.add(toolRect);
 		toolCourseLayer.add(toolCourse);
-		
+
 		//text
 		var text = textElements.tool +' #' + parseFloat(i+1) + '\n' + textElements.offset + ': ';
 		if (i < num) { 
 			text += resultData.toolOffsets[i] + 'm';
 		};
 		var toolText = new Kinetic.Text({
-			x: rectCenter, 
 			y: 365,
 			text: text,
 			fontSize: 16,
 			fontFamily: canvasFont,
-			fill: 'rgb(50,50,50)',
+			fill: 'rgb(250,250,250)',
 			align: 'center',
 			id: 'toolText_' + i
-		});	
-		toolText.setOffset({
-			x: toolText.getWidth() / 2
 		});
+		toolText.setX(rectCenter - toolText.getWidth() * 0.5);
 		toolTextLayer.add(toolText);
-		
+
 	};
-	
+
 	stage.draw();
 }; //END firstDraw()
 
@@ -324,7 +714,7 @@ $('#save').show().on('click', function(evt) {
 			tab.focus();
 		}
 	});
-});	
+});
 
 
 }); })(jQuery); //END document.ready

@@ -5,11 +5,8 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
 	<link rel="author" href="../../humans.txt" />
 	<link rel="stylesheet" href="../../res/css/reset.css">
-	<link rel="stylesheet" href="../../res/fonts/icomoon/style.css">
-	<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
-	<link rel="stylesheet" href="../../res/fonts/adelle/stylesheet.css" type="text/css" charset="utf-8">
-	<link rel="stylesheet" href="../../res/fonts/caslon/stylesheet.css" type="text/css" charset="utf-8">
 	<link rel="stylesheet" href="../../res/css/base.css">
+	<link rel="stylesheet" href="../../res/css/nav.css">
 	<!--[if lte IE 7]><script src="res/js/lte-ie7.js"></script><![endif]-->
 	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 	<title>Autoren &rsaquo; Courseplay</title>
@@ -28,51 +25,103 @@
 
 <body>
 <div id="container">
-	<header>
-		<h1><a class="imgLink" href="../index.html"><img src="../../res/img/cp_logo.png" alt="Courseplay"></a></h1>
-	</header>
-	
-	<section id="navSection">
-		<nav id="mainNav">
-			<li><a href="../installation/index.html">Installation<span class="info">Wie? Was? Wohin?</span></a></li>
-			<li><a href="../manual/index.html">Anleitung<span class="info">Wie funktionert Courseplay? Was muss ich machen?</span></a></li>
-			<li><a href="../faq/index.html">FAQ<span class="info">Was gibt's noch zu wissen?</span></a></li>
-			<li><a href="../changelog/index.html">Changelog<span class="info">Was gibt's neues?</span></a></li>
-			<li class="active">Autoren</li>
+	<div id="navContainer">
+		<nav id="navSidebar">
+			<div id="navHome"><a class="imgLink" href="../index.html"><img id="cpLogo" src="../../res/img/courseplayLogoDark.png" alt="Courseplay" /></a></div>
+			<hr />
+			<ul>
+				<li id="navInstallation">
+					<a href="../installation/index.html">
+						<span class="icon-installation"></span>
+						<span>Installation</span>
+					</a>
+				</li>
+				<li id="navManual">
+					<a href="../manual/index.html#intro">
+						<span class="icon-cog"></span>
+						<span>Anleitung</span>
+					</a>
+				</li>
+				<li id="navFAQ">
+					<a href="../faq/index.html">
+						<span class="icon-faq"></span>
+						<span>FAQ</span>
+					</a>
+				</li>
+				<li id="navChangelog">
+					<a href="../changelog/index.html">
+						<span class="icon-changelog"></span>
+						<span>Changelog</span>
+					</a>
+				</li>
+				<li id="navAuthors" class="last active">
+					<a href="../authors/index.html">
+						<span class="icon-authors"></span>
+						<span>Autoren</span>
+					</a>
+				</li>
+			</ul>
 		</nav>
-	</section>
+	</div>
 
-	<section id="authors" class="content">
-		<h2>Autoren</h2>
-		<ul>
-			<li>Jakob Tischler (<a href="https://github.com/JakobTischler" title="Jakob auf GitHub folgen">@ GitHub</a>)</li>
-			<li>Thomas Gärtner (<a href="https://github.com/ThomasGaertner" title="Thomas auf GitHub folgen">@ GitHub</a>)</li>
-			<li>Roman Hofstetter (<a href="https://github.com/horoman" title="Roman auf GitHub folgen">@ GitHub</a>)</li>
-            <li>Claus G. Pedersen (<a href="https://github.com/Satissis" title="Claus auf GitHub folgen">@ GitHub</a>)</li>
-		</ul>
-		<br /><br />
+	<!----------------------------------------------------------------------------------------------->
 
-		<h4>Ehemalige Autoren</h4>
-		<ul>
-			<li>Lautschreier</li>
-			<li>Hummel</li>
-			<li>Wolverin0815</li>
-			<li>Bastian82</li>
-			<li>Skydancer</li>
-		</ul>
-	</section>
+	<main role="main" class="content">
+		<article id="authors">
+			<h1>Autoren</h1>
+			<hr />
+			<ul>
+				<li>Jakob Tischler (<a href="https://github.com/JakobTischler" title="Folge Jakob auf GitHub">@ GitHub</a>)</li>
+				<li>Thomas Gärtner (<a href="https://github.com/ThomasGaertner" title="Folge Thomas auf GitHub">@ GitHub</a>)</li>
+				<li>Claus G. Pedersen (<a href="https://github.com/Satissis" title="Folge Claus auf GitHub">@ GitHub</a>)</li>
+			</ul>
+		</article>
 
+		<hr />
+
+		<article id="formerAuthors">
+			<h2>Ehemalige Autoren</h2>
+			<ul>
+				<li>Bastian82</li>
+				<li>Horoman</li>
+				<li>Hummel</li>
+				<li>Lautschreier</li>
+				<li>Skydancer</li>
+				<li>Wolverin0815</li>
+			</ul>
+		</article>
+
+		<hr />
+
+		<article id="translators">
+			<h2>Übersetzer</h2>
+			<ul>
+				<li><span class="emphasize1">Chinesisch:</span> Simba76
+				<li><span class="emphasize1">Französisch:</span> Gui7545
+				<li><span class="emphasize1">Holländisch:</span> Pewemo
+				<li><span class="emphasize1">Italienisch:</span> JD7530, Cristiano Magro
+				<li><span class="emphasize1">Portugiesisch (BR):</span> Admilson
+				<li><span class="emphasize1">Portugiesisch (PT):</span> PTAzores
+				<li><span class="emphasize1">Russisch:</span> Bernelli
+				<li><span class="emphasize1">Spanisch:</span> JFMtb, PromGames
+				<li><span class="emphasize1">Tschechisch:</span> Albi
+				<li><span class="emphasize1">Ungarisch:</span> Chris von Bone
+			</ul>
+		</article>
+	</main>
+
+	<!----------------------------------------------------------------------------------------------->
 
 	<footer>
-		<span>&copy; Courseplay, 2014</span>
-		<nav id="footerNav">
+		<div>&copy; Courseplay Dev Team, 2014</div>
+		<ul id="navFooter">
 			<li><a href="https://github.com/Courseplay/courseplay">GitHub</a></li>
 			<li><a href="https://www.pivotaltracker.com/projects/675867#">Bug Tracker</a></li>
 			<li><a href="https://github.com/Courseplay/courseplay/issues?sort=created&state=open">GitHub Issue Tracker</a></li>
-			<li><a href="../../en/authors/index.html">English Version</a></li>
+			<li><a href="../../en/authors/index.html">English version</a></li>
 			<li><a href="../../index.html">Home</a></li>
-		</nav>
-	</footer>	
+		</ul>
+	</footer>
 </div> <!-- #container -->
 </body>
 </html>

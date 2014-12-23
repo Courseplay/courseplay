@@ -5,58 +5,86 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
 	<link rel="author" href="../../humans.txt" />
 	<link rel="stylesheet" href="../../res/css/reset.css">
-	<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,400italic,700italic' rel='stylesheet' type='text/css'>	<link rel="stylesheet" href="../../res/fonts/adelle/stylesheet.css" type="text/css" charset="utf-8">
-	<link rel="stylesheet" href="../../res/fonts/adelle/stylesheet.css" type="text/css" charset="utf-8">
-	<link rel="stylesheet" href="../../res/fonts/caslon/stylesheet.css" type="text/css" charset="utf-8">
 	<link rel="stylesheet" href="../../res/css/base.css">
-	<!--[if lte IE 7]><script src="res/js/lte-ie7.js"></script><![endif]-->
+	<link rel="stylesheet" href="../../res/css/nav.css">
+	<!--[if lte IE 7]><script src="../../res/js/lte-ie7.js"></script><![endif]-->
 	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 	<title>Thank you for your donation &rsaquo; Courseplay</title>
 
-	<script type="text/javascript">
-		var _gaq = _gaq || [];
-		_gaq.push(['_setAccount', 'UA-38537916-1']);
-		_gaq.push(['_trackPageview']);
-		(function() {
-			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-		})();
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-38537916-1', 'auto');
+		ga('send', 'pageview');
 	</script>
 </head>
 
 <body>
-<div id="container">
-	<header>
-		<h1><a class="imgLink" href="../index.html"><img src="../../res/img/cp_logo.png" alt="Courseplay"></a></h1>
-	</header>
-	
-	<section id="navSection">
-		<nav id="mainNav">
-			<li><a href="../installation/index.html">Installation<span class="info">How? What? Where?</span></a></li>
-			<li><a href="../manual/index.html">Manual<span class="info">How does Courseplay work? How do I &hellip;?</span></a></li>
-			<li><a href="../faq/index.html">FAQ<span class="info">What else is there to know?</span></a></li>
-			<li><a href="../changelog/index.html">Changelog<span class="info">What's new, pussycat?</span></a></li>
-			<li><a href="../authors/index.html">Authors<span class="info">Who's the team?</span></a></li>
+<div id="container" class="contentContainer">
+	<div id="navContainer">
+		<nav id="navSidebar">
+			<div id="navHome"><a class="imgLink" href="../index.html"><img id="cpLogo" src="../../res/img/courseplayLogoDark.png" alt="Courseplay" /></a></div>
+			<hr />
+			<ul>
+				<li id="navInstallation">
+					<a href="../installation/index.html">
+						<span class="icon-installation"></span>
+						<span>Installation</span>
+					</a>
+				</li>
+				<li id="navManual">
+					<a href="../manual/index.html#intro">
+						<span class="icon-cog"></span>
+						<span>Manual</span>
+					</a>
+				</li>
+				<li id="navFAQ">
+					<a href="../faq/index.html">
+						<span class="icon-faq"></span>
+						<span>FAQ</span>
+					</a>
+				</li>
+				<li id="navChangelog">
+					<a href="../changelog/index.html">
+						<span class="icon-changelog"></span>
+						<span>Changelog</span>
+					</a>
+				</li>
+				<li id="navAuthors" class="last">
+					<a href="../authors/index.html">
+						<span class="icon-authors"></span>
+						<span>Authors</span>
+					</a>
+				</li>
+			</ul>
 		</nav>
-	</section>
+	</div>
 
-	<section id="donationReturn" class="content">
-		<h2>Thank you!</h2>
-		<p>Your donation helps us keep our nerves. Now all we need is more coffe. And monkeys with typewriters.</p>
-	</section>
+	<!----------------------------------------------------------------------------------------------->
 
+	<main role="main" class="content">
+		<article id="donationReturn">
+			<h1>Thank you!</h1>
+			<hr />
+			<p>Your donation helps us keep our nerves. Now all we need is more coffe. And monkeys with typewriters.</p>
+		</article>
+	</main>
+
+	<!----------------------------------------------------------------------------------------------->
 
 	<footer>
-		<span>&copy; Courseplay, 2014</span>
-		<nav id="footerNav">
+		<div>&copy; Courseplay Dev Team, 2014</div>
+		<ul id="navFooter">
 			<li><a href="https://github.com/Courseplay/courseplay">GitHub</a></li>
-			<li><a href="https://www.pivotaltracker.com/projects/675867#">Bug Tracker</a></li>
+			<li><a href="https://www.pivotaltracker.com/proje class="inactive"cts/675867#">Bug Tracker</a></li>
 			<li><a href="https://github.com/Courseplay/courseplay/issues?sort=created&state=open">GitHub Issue Tracker</a></li>
-			<li><a href="../../de/installation/index.html">Deutsche Version</a></li>
+			<li class="inactive"><a href="../../de/donationReturn/index.html">Deutsche Version</a></li>
 			<li><a href="../../index.html">Home</a></li>
-		</nav>
-	</footer>	
+		</ul>
+	</footer>
 </div> <!-- #container -->
 </body>
 </html>

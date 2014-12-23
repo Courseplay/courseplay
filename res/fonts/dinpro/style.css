@@ -1,0 +1,52 @@
+@font-face {
+	font-family: 'DINPro';
+	src: local('DINPro Light'), local('DIN Pro Light'), url('dinpro-light-webfont.eot');
+	src: local('DINPro Light'), local('DIN Pro Light'), url('dinpro-light-webfont.eot?#iefix') format('embedded-opentype'),
+		 url('dinpro-light-webfont.woff') format('woff'),
+		 url('dinpro-light-webfont.ttf') format('truetype'),
+		 url('dinpro-light-webfont.svg#adelle_rgbold') format('svg');
+	font-weight: 100;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'DINPro';
+	src: local('DINPro Regular'), local('DIN Pro Regular'), local('DINPro'), local('DIN Pro'), url('dinpro-regular-webfont.eot');
+	src: local('DINPro Regular'), local('DIN Pro Regular'), local('DINPro'), local('DIN Pro'), url('dinpro-regular-webfont.eot?#iefix') format('embedded-opentype'),
+		 url('dinpro-regular-webfont.woff') format('woff'),
+		 url('dinpro-regular-webfont.ttf') format('truetype'),
+		 url('dinpro-regular-webfont.svg#adelle_rgregular') format('svg');
+	font-weight: 300;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'DINPro';
+	src: local('DINPro Medium'), local('DIN Pro Medium'), url('dinpro-medium-webfont.eot');
+	src: local('DINPro Medium'), local('DIN Pro Medium'), url('dinpro-medium-webfont.eot?#iefix') format('embedded-opentype'),
+		 url('dinpro-medium-webfont.woff') format('woff'),
+		 url('dinpro-medium-webfont.ttf') format('truetype'),
+		 url('dinpro-medium-webfont.svg#adelle_sbsemibold') format('svg');
+	font-weight: 500;
+	font-style: normal;
+}
+@font-face {
+	font-family: 'DINPro';
+	src: local('DINPro Bold'), local('DIN Pro Bold'), url('dinpro-bold-webfont.eot');
+	src: local('DINPro Bold'), local('DIN Pro Bold'), url('dinpro-bold-webfont.eot?#iefix') format('embedded-opentype'),
+		 url('dinpro-bold-webfont.woff') format('woff'),
+		 url('dinpro-bold-webfont.ttf') format('truetype'),
+		 url('dinpro-bold-webfont.svg#adelle_sbsemibold') format('svg');
+	font-weight: 700;
+	font-style: normal;
+}
+@font-face {
+	font-family: 'DINPro';
+	src: local('DINPro Black'), local('DIN Pro Black'), url('dinpro-black-webfont.eot');
+	src: local('DINPro Black'), local('DIN Pro Black'), url('dinpro-black-webfont.eot?#iefix') format('embedded-opentype'),
+		 url('dinpro-black-webfont.woff') format('woff'),
+		 url('dinpro-black-webfont.ttf') format('truetype'),
+		 url('dinpro-black-webfont.svg#adelle_sbsemibold') format('svg');
+	font-weight: 900;
+	font-style: normal;
+}
