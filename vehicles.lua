@@ -1014,15 +1014,12 @@ function courseplay:setAckermannSteeringInfo(vehicle, xmlFile)
 
 		-- If rotMax is not set, Giants don't calculate the ackermannSteering.
 		if not rotMax then
-			--print(("%s: Have no rotMax. Aborting!"):format(vehicle.name));
 			return;
 
 			-- Else set rotMax value
 		else
 			local ASInfo = {};
 			ASInfo.rotMax = rad(rotMax);
-			--cpPrintLine(nil, 3);
-			--print(("%s: rotMax = %.2f"):format(vehicle.name, ASInfo.rotMax));
 
 			-- Get rotCenter if avalible.
 			local str = getXMLString(xmlFile, mainKey.."rotCenter");
@@ -1031,7 +1028,6 @@ function courseplay:setAckermannSteeringInfo(vehicle, xmlFile)
 				if #centerWheels == 2 then
 					ASInfo.rotCenterX = tonumber(centerWheels[1]);
 					ASInfo.rotCenterZ = tonumber(centerWheels[2]);
-					--print(("%s: rotCenterX = %.2f, rotCenterZ = %.2f"):format(vehicle.name, ASInfo.rotCenterX, ASInfo.rotCenterZ));
 				end;
 			end;
 
@@ -1046,7 +1042,6 @@ function courseplay:setAckermannSteeringInfo(vehicle, xmlFile)
 					end;
 
 					table.insert(ASInfo.rotCenterWheels, val + 1);
-					--print(("%s: rotCenterWheels[%d] = %d"):format(vehicle.name, i, val + 1));
 				else
 					break;
 				end;
