@@ -23,7 +23,12 @@ function courseplay:updateReachableCombines(vehicle)
 
 	vehicle.cp.reachableCombines = {};
 
-	if not vehicle.cp.searchCombineAutomatically and vehicle.cp.savedCombine then
+	if not vehicle.cp.searchCombineAutomatically then
+		if not vehicle.cp.savedCombine then
+			-- manual mode, but no combine selected -> empty list
+			return;
+		end;
+
 		local combine = vehicle.cp.savedCombine
 		if combine.cp and combine.cp.isCheckedIn then
 			courseplay:debug(nameNum(vehicle)..": combine (id"..tostring(combine.id)..") is manually set, but already checked in", 4);
