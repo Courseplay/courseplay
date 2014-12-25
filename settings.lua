@@ -1554,7 +1554,7 @@ function courseplay:toggleAlwaysUseFourWD(vehicle)
 	vehicle.cp.driveControl.alwaysUseFourWD = not vehicle.cp.driveControl.alwaysUseFourWD;
 end;
 
-function courseplay:getAndSetFixedWorldPosition(object)
+function courseplay:getAndSetFixedWorldPosition(object, recursive)
 	if object.cp.fixedWorldPosition == nil then
 		object.cp.fixedWorldPosition = {};
 		object.cp.fixedWorldPosition.px, object.cp.fixedWorldPosition.py, object.cp.fixedWorldPosition.pz = getWorldTranslation(object.components[1].node);
@@ -1562,6 +1562,22 @@ function courseplay:getAndSetFixedWorldPosition(object)
 	end;
 	local fwp = object.cp.fixedWorldPosition;
 	object:setWorldPosition(fwp.px,fwp.py,fwp.pz, fwp.rx,fwp.ry,fwp.rz, 1);
+
+	if recursive and object.attachedImplements then
+		for _,impl in pairs(object.attachedImplements) do
+			courseplay:getAndSetFixedWorldPosition(impl.object);
+		end;
+	end;
+end;
+
+function courseplay:deleteFixedWorldPosition(object, recursive)
+	object.cp.fixedWorldPosition = nil;
+
+	if recursive and object.attachedImplements then
+		for _,impl in pairs(object.attachedImplements) do
+			courseplay:deleteFixedWorldPosition(impl.object);
+		end;
+	end;
 end;
 
 ----------------------------------------------------------------------------------------------------

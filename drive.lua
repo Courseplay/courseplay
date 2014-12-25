@@ -495,7 +495,7 @@ function courseplay:drive(self, dt)
 
 	-- reset fixedWorldPosition
 	if self.cp.fixedWorldPosition ~= nil then
-		self.cp.fixedWorldPosition = nil;
+		courseplay:deleteFixedWorldPosition(self);
 	end;
 
 

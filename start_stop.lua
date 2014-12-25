@@ -294,7 +294,7 @@ function courseplay:start(self)
 	self.forceIsActive = true;
 	self.cp.stopMotorOnLeaveBackup = self.stopMotorOnLeave;
 	self.stopMotorOnLeave = false;
-	self.cp.deactivateOnLeaveBackup = deactivateOnLeave;
+	self.cp.deactivateOnLeaveBackup = self.deactivateOnLeave;
 	self.deactivateOnLeave = false;
 
 	if self.cp.hasDriveControl then
@@ -542,7 +542,9 @@ function courseplay:stop(self)
 
 	self.cp.movingToolsPrimary, self.cp.movingToolsSecondary = nil, nil;
 	self.cp.attachedFrontLoader = nil
-	
+
+	courseplay:deleteFixedWorldPosition(self);
+
 	--remove any local and global info texts
 	if g_server ~= nil then
 		courseplay:setInfoText(self, nil);
