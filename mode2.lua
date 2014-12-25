@@ -481,16 +481,15 @@ function courseplay:unload_combine(vehicle, dt)
 				combine.cp.offset = vehicle.cp.combineOffset;
 			end			
 			local sideMultiplier = 0;
-			if combine.cp.workWidth == nil or combine.cp.workWidth == 0 then
-				local attacher = combine:getRootAttacherVehicle()
-				courseplay:calculateWorkWidth(attacher, true)
+			if tractor.cp.workWidth == nil or tractor.cp.workWidth == 0 or not tractor.cp.isDriving then
+				courseplay:calculateWorkWidth(tractor, true)
 			end 
-			local workWidth = combine.cp.workWidth
+			local workWidth = tractor.cp.workWidth
 			local combineOffset = vehicle.cp.combineOffset
 			local offset = abs(combineOffset)
 			local fruitSide = "404notFound"
 			if workWidth < offset then
-				local diff = workWidth/2
+				local diff = max (1.5,workWidth/2)
 				fruitSide = courseplay:sideToDrive(vehicle, combine, 0);
 				if (fruitSide == "right" and combineOffset > 0) or (fruitSide == "left" and combineOffset < 0) then
 					offset = offset-diff
