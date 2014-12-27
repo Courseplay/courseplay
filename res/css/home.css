@@ -27,6 +27,11 @@ section.lastSection {
 	width:35%; 
 }
 
+#downloads .col {
+	margin:0 2.5%;
+	width:20%;
+}
+
 .colContainer .col div { 
 	font-size:0.6em;
 	margin-top:1em;
