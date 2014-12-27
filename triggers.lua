@@ -40,6 +40,8 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 				pathVehicle.rootNode = otherId
 				pathVehicle.isCpPathvehicle = true
 				pathVehicle.name = "PathVehicle"
+				pathVehicle.sizeLength = 7
+				pathVehicle.sizeWidth = 3
 				g_currentMission.nodeToVehicle[otherId] = pathVehicle
 				vehicle = pathVehicle
 			end;	
