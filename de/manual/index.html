@@ -77,8 +77,14 @@
 								<li class="last"><a href="#driveMode9"><span class="icon-mode9single"></span><span>Shovel filling and emptying</span></a></li>
 							</ul>
 						</li>
-						<li class="last">
+						<li>
 							<a href="#generateCourse"><span>Generate course</span></a>
+						</li>
+						<li>
+							<a href="#fieldScanner"><span>Field scanner</span></a>
+						</li>
+						<li class="last">
+							<a href="#reverseDriving"><span>Reverse driving</span></a>
 						</li>
 					</ul>
 				</li>
@@ -112,6 +118,7 @@
 		<hr />
 
 		<article class="manualSection" id="intro">
+			<p class="info"><span class="icon-infoSign inline"></span>Momentan wird die Anleitung ins Deutsche übersetzt. Bis dahin ist sie auf Englisch verfügbar.</p>
 			<p>This manual aims to describe the Courseplay hud, the changeable settings, and the different drive modes. Most likely, there will be one or the other thing missing.</p>
 			<p>If you find a topic not dealt with in this manual, please let us know.</p>
 		</article>
@@ -248,8 +255,7 @@
 					<li>
 						<h4><span class="icon-recordingReverse"></span>Reverse driving</h4>
 						<p>Courseplay supports reverse driving with trailers in many modes. Activating this option later tells the driver to drive this portion of the course in reverse. You should only activate and deactivate it once you're at a complete stop and not rolling anymore. When active during the recording, you must drive in reverse, otherwise there will be severe driving errors later. Clicking once activates the reverse mode (the button turns green), clicking it again ends it.</p>
-						<!-- TODO section about reverse driving/with trailers -->
-						<!-- TODO link to that section here -->
+						<p class="info"><span class="icon-infoSign inline"></span> See also: <a href="#reverseDriving" class="internal">Reverse driving</a></p>
 					</li>
 				</ul>
 			</section>
@@ -977,6 +983,42 @@
 					<p>The waiting points at the start and the end will be set automatically. If you want to add an unloading/refilling course, the field course must be generated first. Afterwards, add the unloading/refilling course.</p>
 				</li>
 			</ol>
+		</article>
+
+		<!-- #################### -->
+
+		<article class="manualSection" id="fieldScanner">
+			<h2>Field scanner</h2>
+			<p>The Courseplay field scanner scans the map's fields and generates a field edge (field border) path. These edge paths can be used as the basis for a course generation. There's no need to drive around the field manually anymore. The automatic scanner runs on every savegame load and does not save or load the paths. The progress of the scan is displayed.</p>
+			<p>When you start a new savegame, there will be a dialog where you can activate/deactivate the automatic scan.</p>
+			<p>The scanner also features a manual scan setting: drive onto the field, and use the corresponding buttons and orders to create and save your custom field edge path. These custom field scans are saved into and loaded from the <code>courseplayFields.xml</code> file. Please see <a href="#hud_driverControls" class="internal"><span class="icon-page1 inline"></span>HUD: Drive controls</a> for detailed information.</p>
+			<p>The field scanner can only scan fields that have a field (cultivated, plowed, seeded) terrain. Meaning: if you've sown grass on a field, it doesn't count as a regular field anymore and the edge points can not be scanned. So if you plan to convert a field to a grass area, make sure to manually scan it first and save the path so you can use it later for generating courses.</p>
+			<p>There are multiple scanner settings that can be set in the <code>courseplay.xml</code> file (<code>courseplayFields</code> tag).
+				<ul>
+					<li><p><code>automaticScan</code>: activate (<span class="emphasize2">"true"</span>) or deactivate (<span class="emphasize2">"false"</span>) the automatic scan</li>
+					<li><p><code>onlyScanOwnedFields</code>: if activated (<span class="emphasize2">"true"</span>), only the fields that you own are scanned. Also when you buy a new field, it will be scanned immediately. If deactivated (<span class="emphasize2">"false"</span>), all fields are scanned.</p></li>
+					<li><p><code>debugScannedFields</code>: if activated (<span class="emphasize2">"true"</span>), debug information concerning the automatic scan will be printed in the log.</p></li>
+					<li><p><code>debugCustomLoadedFields</code>: if activated (<span class="emphasize2">"true"</span>), debug information concerning the manual scan will be printed in the log.</p></li>
+					<li><p><code>scanStep</code>: determines how detailed the path is going to be. <span class="emphasize2">Only change if the developer asks you to.</span></p></li>
+				</ul>
+			</p>
+			<p class="info"><span class="icon-infoSign inline"></span> On some maps, fields are too close together to be scanned correctly. The automatic scanner will most likely stop and/or crash. At the moment there is no viable solution for that problem.</p>
+		</article>
+
+		<!-- #################### -->
+
+		<article class="manualSection" id="reverseDriving">
+			<h2>Reverse driving</h2>
+			<p>Courseplay can handle reversing with a trailer attached. Both tandem and pivot trailers are supported. Reversing works both with straight and curved routes. This can be especially useful if a tip trigger or unloading point can't be really reached from the front or the sides. Only one trailer is supported, not multiple simultaneously.</p>
+			<p>Be aware of a couple of regulations when reversing with a trailer:
+				<ul>
+					<li><p>The tractor will align the trailer according to the next waypoint, so there should be enough lateral space.</p></li>
+					<li><p>The course should be recorded without a trailer attached, so the real intended course is recorded instead of the tractor's steering.</p></li>
+					<li><p>Be aware of the trailer's length; the radius around curves shouldn't be too narrow.</p></li>
+					<li><p>When driving backwards, the tip trigger will be found <span class="emphasize2">behind the trailer</span>.</p></li>
+				</ul>
+			</p>
+			<p>Unloading in silage silos can also be done in reverse. When recording the route, reverse to the backend of the silage bin and change to forward again and continue the route. Unloading will be done from the rear end of the silage silo. For better handling, unloading will start a couple of silo sections before to build up and ramp</p>
 		</article>
 	</main>
 
