@@ -39,7 +39,7 @@
 				<li id="navManual">
 					<a href="../manual/index.html#intro">
 						<span class="icon-cog"></span>
-						<span>Manual</span>
+						<span>Anleitung</span>
 					</a>
 				</li>
 				<li id="navFAQ">
@@ -57,7 +57,7 @@
 				<li id="navAuthors" class="last">
 					<a href="../authors/index.html">
 						<span class="icon-authors"></span>
-						<span>Authors</span>
+						<span>Autoren</span>
 					</a>
 				</li>
 			</ul>
@@ -72,56 +72,55 @@
 		<article id="cl_dev" class="singleChangelog" data-version="4.00.dev">
 			<hr />
 
-			<h3>Changes in the current developer version (v4.00.dev)</h3>
+			<h3>Änderungen in der aktuellen Entwicklerversion (v4.00.dev)</h3>
 			<!-- FIX -->
 			<ul class="changelogContent fix">
-				<li>improved detection of attached combines</li>
+				<li>Verbesserte Erkennung von angehängten Dreschern/Häckslern</li>
 
-				<li>Self-unloading combine: in order to not drive through the fruit, the combine will reverse a bit before driving to unloading spot</li>
+				<li>Drescher selbst abtanken: der Drescher setzt ein wenig zurück bevor er zum Abladepunkt fährt, um nicht direkt durch die Frucht zu fahren.</li>
 			</ul>
 
 			<!-- CHANGE -->
 			<ul class="changelogContent change">
 				<li>
-					<!-- TODO: Add to german page -->
-					<h4>Forward unloading in silage silos</h4>
+					<h4>Vorwärts-Abladen in Silage-Silos</h4>
 					<ul>
-						<li>Now unloading all the way in one go instead of being split up into 3 sections</li>
-						<li>The unloading speed is calculated and set automatticly</li>
+						<li>Es wird jetzt über's gesamte Silo verteilt in einem Schritt abgeladen anstatt per Drei-Sektionen-Aufteilung.</li>
+						<li>Die Ablade-Fahrgeschwindigkeit wird automatisch berechnet und gesetzt.</li>
 					</ul>
 				</li>
 
-				<li>Notification if tool needs to be refilled/unloaded in fertilizer/field work modes</li>
+				<li>Mitteilung wenn ein Gerät im Dünge/Sä- und Feldarbeitsmodus aufgefüllt/entleert werden muss</li>
 
-				<li>Debug levels have been changed to debug channels for vastly improved specific debug possibilities</li>
+				<li>Debug-Levels sind jetzt Debug-Channels, die spezifische Debug-Möglichkeiten stark verbessern<./li>
 
-				<li>Offset inputs are only shown in overloader, fertilizer/seeding, field work and combine self-unloading modes</li>
+				<li>Der Geräte-Versatz kann nun nur in den Überlade-, Dünger-/Sä-, Feldarbeits und Drescher-selbst-abtanken-Modi benutzt werden.</li>
 
-				<li>Speed units are now displayed correctly for every single language</li>
-
-				<li>
-					<h4>New inputBinding system</h4>
-					<ul>
-						<li>mouse buttons can now be changed in the game's option menu</li>
-						<li>far better compatibility with other mods that may use the same keys</li>
-					</ul>
-				</li>
+				<li>Geschwindigkeiten werden nun korrekt für jede Sprache angezeigt.</li>
 
 				<li>
-					<h4>New auger wagon system</h4>
+					<h4>Neues InputBinding-System</h4>
 					<ul>
-						<li>auger wagons no longer use their own specialization, but now are handled as special tools</li>
-						<li>most auger wagons will only unload when at the waiting point, not already when still driving</li>
-						<li>offset can now be used with the overloading course, allowing different auger wagons to use the same course</li>
+						<li>Mausknöpfe können nun im Optionsmenü des Spiels geändert werden.</li>
+						<li>Deutlich bessere Kompatibilität mit anderen Mods die evtl. dieselben Knöpfe benutzen</li>
 					</ul>
 				</li>
 
 				<li>
-					<h4>Offsets</h4>
+					<h4>Neues Überlader-System</h4>
 					<ul>
-						<li>lane and tool offsets are now separated, allowing for better control</li>
-						<li>plough offsets are inverted at the end of the lane, resulting in correct lane positions</li>
-						<li>self-unloading combine: offset can now be used with the offloading course, allowing different combines to use the same course</li>
+						<li>Überladewagen nutzen nun nicht mehr ihre eigenen Specializations sondern werden direkt von Courseplay gesteuert.</li>
+						<li>Die meisten Überladewagen laden jetzt erst direkt am Überladepunkt ab, und nicht schon wenn sie noch in Bewegung sind.</li>
+						<li>Geräteversatz kann nun mit dem Überladekurs benutzt werden, was es ermöglicht verschiedenste Überladewagentypen auf dem selben Kurs zu benutzen.</li>
+					</ul>
+				</li>
+
+				<li>
+					<h4>Versätze</h4>
+					<ul>
+						<li>Bahn- und Geräteversätze sind nun separat, was eine bessere und genauere Positionierung ermöglicht.</li>
+						<li>Pflug-Versätze werden am Ende der Bahn umgekehrt, so dass das Gerät in der nächsten Bahn die korrekte Positionierung bekommt.</li>
+						<li>Drescher selbst-abtanken: Geräteversatz kann nun mit dem Abladekurs benutzt werden, was es ermöglicht verschiedenste Drescher auf dem selben Kurs zu benutzen.</li>
 					</ul>
 				</li>
 			</ul>
@@ -129,149 +128,136 @@
 			<!-- NEW -->
 			<ul class="changelogContent new">
 				<li>
-					<h4>Automatic and manual field scanner</h4>
+					<h4>Automatischer und manueller Feldscanner</h4>
 					<ul>
-						<li>Courseplay can scan the map's fields to generate an border path (field edge path). No need to drive around the field anymore.</li>
-						<li>In an existing savegame, this option is activated by default. When starting a new savegame, there will be a dialog asking you to activate/deactivate it. The setting can be activated/deactivated in the <code>courseplay.xml</code> file.</li>
-						<li>In addition, single fields can be scanned manually (when the vehicle is on the field) and saved. These fields are saved in the <code>courseplayFields.xml</code> file.</li>
-						<li>Thanks to upsidedown for the initiation and help</li>
+						<li>Courseplay kann die Felder der Map scannen, um Feldgrenzpfade zu generieren. Man muss nicht mehr um das Feld herumfahren.</li>
+						<li>In einem bestehenden Savegame ist diese Option standardmäßig aktiviert. Startet man ein neues Savegame erscheint ein Einstellungsdialog wo man die Option aktivieren/deaktivieren kann. Man kann den Scanner auch in der <code>courseplay.xml</code> Datei aktivieren/deaktivieren.</li>
+						<li>Zusätzlich können einzelne Felder manuell gescannt (wenn das Fahrzeug auf dem Feld steht) und gespeichert werden. Diese Felder werden in der <code>courseplayFields.xml</code> Datei gespeichert und beim nächsten Start wieder geladen.</li>
+						<li>Danke an upsidedown für die Initiierung und Hilfe.</li>
 					</ul>
 				</li>
 
 				<li>
-					<h4>Driver wages</h4>
+					<h4>Fahrer-Gehälter</h4>
 					<ul>
-						<li>Drives are now paid wages:
+						<li>Fahrern werden nun Gehälter bezahlt:
 							<ul>
-								<li>easy: € 500 / hour</li>
-								<li>medium: € 1,000 / hour</li>
-								<li>difficult: € 1,500 / hour</li>
+								<li>einfach: € 500 / Stunde</li>
+								<li>normal: € 1'000 / Stunde</li>
+								<li>schwer: € 1'500 / Stunde</li>
 							</ul>
 						</li>
-						<li>If you use a different currency system than Euros, the wages are adjusted accordingly.</li>
-						<li>In an existing savegame, this option is activated by default. When starting a new savegame, there will be a dialog asking you to activate/deactivate it. The setting can be activated/deactivated in the <code>courseplay.xml</code> file.</li>
-					</ul>
-				</li>
-				
-				<li>Active drivers are displayed on the ingame map. This can be toggled in the <code>courseplay.xml</code> file.</li>
-
-				<li>
-					<!-- TODO: Add to german page -->
-					<h4>Reverse unloading in silage silos</h4>
-					<ul>
-						<li>Unloading in silage silos can now be done in reverse</li>
-						<!-- TODO: move to manual --> <li>Record the route without an trailer as if the tractor was the trailer and reverse to the backend of the silage bin and change to forward again and continue the route</li>
-						<!-- TODO: move to manual --> <li>Unloading will be done from the rear end of the silage silo</li>
-						<li>For better MR handling, unloading will start a couple of silo sections before to build up and ramp</li>
+						<li>Wird ein anderes Währungssystem als Euro benutzt, werden die Gehälter entsprechend angepasst.</li>
+						<li>In einem bestehenden Savegame ist diese Option standardmäßig aktiviert. Startet man ein neues Savegame erscheint ein Einstellungsdialog wo man die Option aktivieren/deaktivieren kann. Die Option kann auch in der <code>courseplay.xml</code> Datei aktiviert/deaktiviert werden.</li>
 					</ul>
 				</li>
 
-				<li>Auto ridgemarkers settings are now saved in/loaded from the <code>vehicles.xml</code> file.</li>
-
-				<li>Shovel positions are now saved in/loaded from the <code>vehicles.xml</code> file.</li>
-
-				<li>the Courseplay version is now displayed in the hud, allowing everyone to easily report it when needed</li>
+				<li>Aktive CP-Fahrer werden auf der Ingame-Karte angezeigt. Diese Option kann in der <code>courseplay.xml</code> Datei aktiviert/deaktiviert werden.</li>
 
 				<li>
-					<h4>Customizable hud position</h4>
-					The hud position can now be easily set by the user in the <code>vehicles.xml</code> file.<br />(<code>&lt;courseplayHud posX="0.433" posY="0.002" /&gt;</code>)
-				</li>
-
-				<li>
-					<h4>Mouse wheel usage</h4>
-					Any number and list values can now be set by using the mouse wheel (when hovering over the value or list). <br />
-					<span class="emphasize2">Note: while the mouse cursor is active, the vehicle's zoom function is disabled.</span>
-				</li>
-
-				<li>
-					<!-- TODO: Update on german page -->
-					<h4>Driving backwards with trailers</h4>
+					<h4>Rückwärts abladen in Silage-Silos</h4>
 					<ul>
-						<li>Trailers can be driven around a curve.</li>
-						<li>Only one trailer is supported, not multiple simultaneously.</li>
-						<li>The tractor will align the trailer according to the next waypoint, so there should be enough lateral space.</li>
-						<!-- TODO: move to manual --> <li>The course should be recorded without a trailer attached, so the real intended course is recorded instead of the tractor's steering.</li>
-						<!-- TODO: move to manual --> <li>Be aware of the trailer's length; the radius around curves shouldn't be too narrow.</li>
-						<li>When driving backwards, the tip trigger will be found <span class="emphasize2">behind the trailer</span>.</li>
+						<li>Abladen in Silage-Silos kann nun auch per Rückwärtsfahren getätigt werden.</li>
+						<!-- TODO: move to manual --> <li>Das Abladen wird vom hinteren Ende des Silos begonnen.</li>
+						<!-- TODO: move to manual --> <li>Der Kurs muss ohne einen Hänger aufgezeichnet werden (als wäre der Traktor der Hänger). Fahre rückwärts bis zum hinteren Ende des Silos und von da aus wieder vorwärts.</li>
+					</ul>
+				</li>
 
-						<!-- DE --
-						<li>Tandemhänger à la Krampe & Co können rückwärts auch um die Kurve in z.B. einen Abladetrigger geschoben werden; Drehschemelanhänger nur geradeaus.</li>
-						<li>Es wird nur ein (1) Anhänger beim rückwärtsfahren unterstützt, nicht mehrere zugleich.</li>
+				<li>Die Einstellung für die automatischen Spurreißer wird nun in der <code>vehicles.xml</code> Datei gespeichert und daraus geladen.</li>
+
+				<li>Schaufelpositionen werden nun in der <code>vehicles.xml</code> Datei gespeichert und wieder daraus geladen.</li>
+
+				<li>Die Courseplay-Version wird nun in der Hud angezeigt, und kann damit einfach und schnell an die Entwickler gemeldet werden wenn benötigt.</li>
+
+				<li>
+					<h4>Einstellbare Hud-Position</h4>
+					Die Hud-Position kann nun einfach in der <code>courseplay.xml</code> Datei geändert werden.<br />(<code>&lt;courseplayHud posX="0.433" posY="0.002" /&gt;</code>)
+				</li>
+
+				<li>
+					<h4>Mausrad-Benutzung</h4>
+					Zahleneinstellung und Listen können nun auch mit dem Mausrad benutzt werden (wenn die Maus über dem entsprechenden Eintrag ist).<br />
+					<span class="emphasize2">Hinweis: während der Mauscursor aktiv ist, wird die Zoom-Funktion des Fahrzeugs deaktiviert.</span>
+				</li>
+
+				<li>
+					<h4>Rückwärtsfahren mit Hängern</h4>
+					<ul>
+						<li>Hänger können nun um Kurven gefahren werden.</li>
+						<li>Nur ein (1) Hänger wird unterstützt, nicht mehrere gleichzeitig.</li>
 						<li>Der Traktor wird den Hänger immer in Richtung des nächsten Wegpunktes hinter dem Hänger ausrichten, daher sollte rechts und links genügend Platz zum rangieren sein.</li>
-						<li>Sollte er sich dabei verhaken, wird er wieder geradeziehen und neu versuchen.</li>
-						<!-- TODO: move to manual -- <li>Der Kurs sollte ohne Anhänger aufgezeichnet werden, um nicht die Lenkbewegungen sondern nur den reinen Kurs mit aufzuzeichnen.</li>
-						<!-- TODO: move to manual -- <li>Beachtet aber die Anhängerlänge am Ende des Kurses. Der Radius bei Kurven sollte nicht zu eng sein.</li>
+						<!-- TODO: move to manual --> <li>Der Kurs sollte ohne Anhänger aufgezeichnet werden, um nicht die Lenkbewegungen des Gegensteuerns sondern nur den reinen Kurs aufzuzeichnen.</li>
+						<!-- TODO: move to manual --> <li>Beachtet aber die Anhängerlänge am Ende des Kurses. Der Radius bei Kurven sollte nicht zu eng sein.</li>
 						<li>Beim Rückwärtsfahren wird der Abladetrigger <span class="emphasize2">hinter dem Hänger</span> gesucht.</li>
-						<!-- -->
 					</ul>
 				</li>
 
-				<li>When approaching refill triggers (e.g. seed, fuel, liquid manure, &hellip;), the vehicle now slows down to avoid hard braked stops</li>
+				<li>Beim Annähern an Auffülltrigger (z.B. Saat, Benzin, Gülle &hellip;) wird das Fahrzeug langsamer um hartes Bremsen zu vermeiden.</li>
 
 				<li>
-					<h4>Completely new course management system</h4>
+					<h4>Komplett neues Kurs-Management-System</h4>
 					<ul>
-						<li>Folders, baby! Courses (and folders) can now be moved into folders for better overview</li>
-						<li>Searchable courses and folders: use a filter to quickly find the course you want</li>
-						<li>Faster XML saving and loading</li>
-						<li>Much improved sorting of courses</li>
-						<li>Thanks to horoman writing and implementing it</li>
+						<li>Ordner, baby! Kurse (und Ordner) könnnen in andere Ordner verschoben werden um eine saubere Liste zu bekommen.</li>
+						<li>Durchsuchbare Kursliste: benutze einen Suchfilter um schnell den gewollten Kurs oder Ordner zu finden.</li>
+						<li>Schnelleres XML-Speichern und -Laden</li>
+						<li>Stark verbessertes Sortieren von Kursen</li>
+						<li>Danke an horoman, der das System schrieb und eingepflegt hat</li>
 					</ul>
 				</li>
 
 				<li>
-					<h4>New course save/filter form GUI</h4>
+					<h4>Neue Kurs-Speichern/-Suchen GUI</h4>
 					<ul>
-						<li>New interface for better visibility and usability&hellip; and beauty</li>
-						<li>Support for UTF8 in course and folder names <span class="emphasize2">(&auml;, &ouml;, &uuml;, &szlig;, &eacute;, &ntilde;, &yacute; etc.)</span></li>
-						<li>Increased maximum name length to 25 characters</li>
+						<li>Neues, sauberes Interface für bessere Sichtbarkeit und Benutzbarkeit</li>
+						<li>UTF8 wird nun in Kurs- und Ordnernamen unterstützt <span class="emphasize2">(&auml;, &ouml;, &uuml;, &szlig;, &eacute;, &ntilde;, &yacute; etc.)</span></li>
+						<li>Maximallänge für Namen auf 25 Buchstaben erhöht</li>
 					</ul>
 				</li>
 
 				<li>
-					<h4>Completely new waypoint sign system</h4>
+					<h4>Komplett neues Wegpunkt-Zeichen-System</h4>
 					<ul>
-						<li>vastly improved performance: unused signs are moved into a cache</li>
-						<li>signs are actually deleted, freeing up memory</li>
-						<li>new low-poly signs with new textures</li>
+						<li>Extrem verbesserte Performance: unbenutzte Zeichen werden in einen Cache verschoben.</li>
+						<li>Zeichen werden endlich richtig gelöscht, was den Arbeitsspeicher entlastet.</li>
+						<li>Neue Low-Poly-Zeichen mit neuen Texturen</li>
 					</ul>
 				</li>
 
 				<li>
-					<h4>Unloading on field</h4>
-					Baleloaders can now automatically unload on the field if no unloading course has been appended.
+					<h4>Abladen auf dem Feld</h4>
+					Ballenlader können nun automatisch auf dem Feld abladen wenn kein Abladekurs angehängt wurde.
 				</li>
 
 				<li>
-					<h4>Traffic collision raycast</h4>
+					<h4>Traffic-Erkennungs-Raycast</h4>
 					<ul>
-						<li>Earlier recognition of traffic ahead, meaning early enough braking</li>
-						<li>Traffic will not only be recognized straight ahead, but actually around the corner (where your vehicle is going)</li>
-						<li><span class="emphasize2">(Only in combi mode)</span> On the way to and from the combine, objects with a collision (bales, trees, other vehicles) will be bypassed by swerving left or right</li>
+						<li>Frührere Erkennung von Traffic-Fahrzeugen vor dem Traktor, rechtzeitiges Bremsen, Geschwindigkeitsanpassung</li>
+						<li>Traffic wird nicht nur direkt vor dem Traktor erkannt, sondern auch in Kurven (auf dem Kurs den der Traktor fährt).</li>
+						<li><span class="emphasize2">(Nur im Combi-Modus)</span> Auf dem Weg zum und vom Drescher werden Objekte mit Kollision (Bäume, andere Fahrzeuge) erkannt und umfahren (durch links/rechts ausschwenken).</li>
 					</ul>
 				</li>
 
 				<li>
-					<h4>Optional symmetric lane change</h4>
-					<span class="emphasize1">Please see the <a href="../faq/index.html">FAQ</a></span> for further information <span class="emphasize2">(&ldquo;How to use the offset? — a.k.a. how do I let multiple vehicles drive a fieldwork course?&rdquo;)</span>.
+					<h4>Optionaler symmetrischer Bahnwechsel symmetric lane change</h4>
+					<span class="emphasize1">Für weitere Information bitte die <a href="../faq/index.html">FAQ</a></span> lesen <span class="emphasize2">(&ldquo;How to use the offset? — a.k.a. how do I let multiple vehicles drive a fieldwork course?&rdquo;)</span>.
 				</li>
 
 				<li>
-					<h4>Optional switch in the combine for offloading driver priority</h4>
-					Choose between fill level (the fullest one will be called) and distance (the closest one will be called)
+					<h4>Optionale Einstellung im Drescher für die Abfahrer-Priorität</h4>
+					Wahl zwischen Füllstand (der vollste Abfahrer wird gerufen) und Distanz (der naheste Abfahrer wird gerufen)
 				</li>
 
 				<li>
-					<h4>Jump buttons for global info text notifications</h4>
-					Jump directly into the corresponding vehicle from your current tractor, or when being on foot by using the mouse cursor
+					<h4>Einsteige-Knöpfe für globale Mitteilungen</h4>
+					Steige direkt in das betroffene Fahrzeug ein (egal ob du in einem Traktor oder zu Fuß unterwegs bist) durch Benutzung des Mauscursors.
 				</li>
 
 				<!-- mod specific -->
 				<li>
-					<h4>Added support for the following mods</h4>
+					<h4>Support für folgende Mods hinzugefügt</h4>
 					<ul>
 						<li>AutoCombine <span class="emphasize2">(biedens)</span></li>
-						<li>Overloader script for auger wagons <span class="emphasize2">(Satis)</span></li>
+						<li>Overloader Script für Überlader <span class="emphasize2">(Satis)</span></li>
 						<li>DriveControl <span class="emphasize2">(upsidedown)</span></li>
 					</ul>
 				</li>
