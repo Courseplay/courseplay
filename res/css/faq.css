@@ -127,7 +127,7 @@ body.js .singleFaq h2:active {
 #amountText { margin-right:15px; }
 span[class^="icon-"] { cursor:pointer !important; }
 span[class^="icon-"].hidden { cursor:default !important; opacity: 0; }
-span[class^="icon-"]:hover, span[class^="icon-"]:active {
+#offsetCalculator span[class^="icon-"]:hover, #offsetCalculator span[class^="icon-"]:active {
 	color:#FC0;
 }
 #save { display:none; position:absolute; right:0; top:50px; }
