@@ -78,7 +78,7 @@ function courseplay.signs:addSign(vehicle, signType, x, z, rotX, rotY, insertInd
 	setVisibility(sign, true);
 
 	local signData = { type = signType, sign = sign, posX = x, posZ = z, rotY = rotY };
-	if signType == 'normal' and diamondColor then
+	if diamondColor and signType ~= 'cross' then
 		self:setSignColor(signData, diamondColor);
 	end;
 
@@ -202,10 +202,11 @@ function courseplay.signs:updateWaypointSigns(vehicle, section)
 							if neededSignType == 'start' or neededSignType == 'wait' then
 								local signPart = getChildAt(existingSignData.sign, 1);
 								setRotation(signPart, -wp.rotX, 0, 0);
-							else -- normal: set color
-								self:setSignColor(existingSignData, diamondColor);
 							end;
 							self:setWaypointSignLine(existingSignData.sign, wp.distToNextPoint, true);
+						end;
+						if neededSignType ~= 'cross' then
+							self:setSignColor(existingSignData, diamondColor);
 						end;
 					end;
 				else
@@ -250,7 +251,7 @@ function courseplay.signs:updateWaypointSigns(vehicle, section)
 end;
 
 function courseplay.signs:setSignColor(signData, colorName)
-	if signData.type == 'normal' and (signData.color == nil or signData.color ~= colorName) then
+	if signData.type ~= 'cross' and (signData.color == nil or signData.color ~= colorName) then
 		local x,y,z,w = unpack(diamondColors[colorName]);
 		-- print(('setSignColor (%q): sign=%s, x=%.3f, y=%.3f, z=%.3f, w=%d'):format(color, tostring(sign), x, y, z, w));
 		setShaderParameter(signData.sign, 'diffuseColor', x,y,z,w, false);
