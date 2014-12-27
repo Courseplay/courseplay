@@ -5,7 +5,7 @@ function courseplay:isTheWayToTargetFree(self,lx,lz)
 		lx = -0.5;
 	end;
 	local distance = 20
-	local heigth = 0.25
+	local heigth = 1.5
 	local tx, ty, tz = localToWorld(self.cp.DirectionNode,0,heigth,4)
 	local nx, _, nz = localDirectionToWorld(self.cp.DirectionNode, lx, 0, lz)
 	local terrainHeight = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, tx+(nx*distance), 0, tz+(nz*distance))

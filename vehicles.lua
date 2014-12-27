@@ -15,7 +15,7 @@ function courseplay:calculateTurnRadius(type, wheelBase, rotMax, CPRatio)
 
 		-- 4 Wheel Steering
 	elseif type == "4WS" then
-		turnRadius = wheelBase / (2 * sin(vehicle.cp.fourWheelSteerMaxRot)) * cos(vehicle.cp.fourWheelSteerMaxRot);
+		turnRadius = wheelBase / (2 * sin(rotMax)) * cos(rotMax);
 
 		-- 2 Wheel Steering
 	elseif (type == "2WS" or type == "Tool") then
@@ -36,11 +36,13 @@ function courseplay:createNewLinkedNode(object, nodeName, linkToNode)
 end;
 
 --- courseplay:findJointNodeConnectingToNode(workTool, fromNode, toNode)
---	Returns: (node, backtrack)
+--	Returns: (node, backtrack, rotLimits)
 --		node will return either:		1. The jointNode that connects to the toNode,
 --										2. The toNode if no jointNode is found but the fromNode is inside the same component as the toNode
 --										3. nil in case none of the above fails.
 --		backTrack will return either:	1. A table of all the jointNodes found from fromNode to toNode, if the jointNode that connects to the toNode is found.
+--										2: nil if no jointNode is found.
+--		rotLimits will return either:	1. A table of all the rotLimits of the componentJoint, found from fromNode to toNode, if the jointNode that connects to the toNode is found.
 --										2: nil if no jointNode is found.
 function courseplay:findJointNodeConnectingToNode(workTool, fromNode, toNode)
 	if fromNode == toNode then return toNode; end;
@@ -336,7 +338,7 @@ function courseplay:getRealTurningNode(object)
 		if object.cp.DirectionNode then
 			local ASInfo = object.cp.ackermannSteering;
 			-- Giants have provided us with some info to use, so use them.
-			if ASInfo and (ASInfo.rotCenterZ or ASInfo.rotCenterWheels) then
+			if ASInfo and (ASInfo.rotCenterZ or ASInfo.rotCenterWheels) and not object.articulatedAxis then
 				-- The offset is already set for us to use.
 				if ASInfo.rotCenterZ then
 					setTranslation(node, 0, 0, ASInfo.rotCenterZ);
@@ -818,7 +820,7 @@ function courseplay:getVehicleTurnRadius(vehicle)
 	courseplay:getRealTurningNode(vehicle);
 
 	-- Giants have provided us with some info to use, so use them.
-	if vehicle.cp.ackermannSteering then
+	if vehicle.cp.ackermannSteering and not vehicle.articulatedAxis then
 		wheelBase = courseplay:getWheelBase(vehicle, true);
 		rotMax = vehicle.cp.ackermannSteering.rotMax;
 
@@ -1014,15 +1016,12 @@ function courseplay:setAckermannSteeringInfo(vehicle, xmlFile)
 
 		-- If rotMax is not set, Giants don't calculate the ackermannSteering.
 		if not rotMax then
-			--print(("%s: Have no rotMax. Aborting!"):format(vehicle.name));
 			return;
 
 			-- Else set rotMax value
 		else
 			local ASInfo = {};
 			ASInfo.rotMax = rad(rotMax);
-			--cpPrintLine(nil, 3);
-			--print(("%s: rotMax = %.2f"):format(vehicle.name, ASInfo.rotMax));
 
 			-- Get rotCenter if avalible.
 			local str = getXMLString(xmlFile, mainKey.."rotCenter");
@@ -1031,7 +1030,6 @@ function courseplay:setAckermannSteeringInfo(vehicle, xmlFile)
 				if #centerWheels == 2 then
 					ASInfo.rotCenterX = tonumber(centerWheels[1]);
 					ASInfo.rotCenterZ = tonumber(centerWheels[2]);
-					--print(("%s: rotCenterX = %.2f, rotCenterZ = %.2f"):format(vehicle.name, ASInfo.rotCenterX, ASInfo.rotCenterZ));
 				end;
 			end;
 
@@ -1046,7 +1044,6 @@ function courseplay:setAckermannSteeringInfo(vehicle, xmlFile)
 					end;
 
 					table.insert(ASInfo.rotCenterWheels, val + 1);
-					--print(("%s: rotCenterWheels[%d] = %d"):format(vehicle.name, i, val + 1));
 				else
 					break;
 				end;
@@ -1057,3 +1054,59 @@ function courseplay:setAckermannSteeringInfo(vehicle, xmlFile)
 		end;
 	end;
 end;
+
+
+function courseplay:deleteCollisionVehicle(vehicle)
+	if vehicle.cp.collidingVehicleId ~= nil  then
+		local Id = vehicle.cp.collidingVehicleId
+		if g_currentMission.nodeToVehicle[Id].isCpPathvehicle  then
+			g_currentMission.nodeToVehicle[Id] = nil
+		end
+		vehicle.cp.collidingObjects.all[Id] = nil
+		--vehicle.CPnumCollidingVehicles = max(vehicle.CPnumCollidingVehicles - 1, 0);
+		--if vehicle.CPnumCollidingVehicles == 0 then
+		--vehicle.numCollidingVehicles[triggerId] = max(vehicle.numCollidingVehicles[triggerId]-1, 0);
+		vehicle.cp.collidingObjects[4][Id] = nil
+		vehicle.cp.collidingVehicleId = nil
+		courseplay:debug(string.format('%s: 	deleteCollisionVehicle: setting "collidingVehicleId" to nil', nameNum(vehicle)), 3);
+	end
+end
+
+function courseplay:setPathVehiclesSpeed(vehicle,dt)
+	pathVehicle = g_currentMission.nodeToVehicle[vehicle.cp.collidingVehicleId]
+	--print("update speed")
+	if pathVehicle.speedDisplayDt == nil then
+		pathVehicle.speedDisplayDt = 0
+		pathVehicle.lastSpeed = 0
+		pathVehicle.lastSpeedReal = 0
+		pathVehicle.movingDirection = 1
+	end
+	pathVehicle.speedDisplayDt = pathVehicle.speedDisplayDt + dt
+	if pathVehicle.speedDisplayDt > 100 then
+		local newX, newY, newZ = getWorldTranslation(pathVehicle.rootNode)
+		if pathVehicle.lastPosition == nil then
+		  pathVehicle.lastPosition = {
+			newX,
+			newY,
+			newZ
+		  }
+		end
+		local lastMovingDirection = pathVehicle.movingDirection
+		local dx, dy, dz = worldDirectionToLocal(pathVehicle.rootNode, newX - pathVehicle.lastPosition[1], newY - pathVehicle.lastPosition[2], newZ - pathVehicle.lastPosition[3])
+		if dz > 0.001 then
+		  pathVehicle.movingDirection = 1
+		elseif dz < -0.001 then
+		  pathVehicle.movingDirection = -1
+		else
+		  pathVehicle.movingDirection = 0
+		end
+		pathVehicle.lastMovedDistance = Utils.vector3Length(dx, dy, dz)
+		local lastLastSpeedReal = pathVehicle.lastSpeedReal
+		pathVehicle.lastSpeedReal = pathVehicle.lastMovedDistance * 0.01
+		pathVehicle.lastSpeedAcceleration = (pathVehicle.lastSpeedReal * pathVehicle.movingDirection - lastLastSpeedReal * lastMovingDirection) * 0.01
+		pathVehicle.lastSpeed = pathVehicle.lastSpeed * 0.85 + pathVehicle.lastSpeedReal * 0.15
+		pathVehicle.lastPosition[1], pathVehicle.lastPosition[2], pathVehicle.lastPosition[3] = newX, newY, newZ
+		pathVehicle.speedDisplayDt = pathVehicle.speedDisplayDt - 100
+	 end
+end
+

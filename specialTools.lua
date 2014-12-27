@@ -472,11 +472,11 @@ function courseplay:askForSpecialSettings(self, object)
 	elseif object.cp.isGrimmeSE260 then
 		self.cp.aiTurnNoBackward = true
 		automaticToolOffsetX = -1.8
-		print("GrimmeSE260 workwidth: 1.6 m") --TODO (Tom) set local language for workwidth
+		--courseplay:debug("GrimmeSE260 workwidth: 1.6 m",7) --TODO (Tom) set local language for workwidth
 	elseif object.cp.isGrimmeRootster604 then
 		self.cp.aiTurnNoBackward = true
 		--automaticToolOffsetX = -0.9
-		print("Grimme Rootster 604 workwidth: 2.9 m") --TODO (Tom) set local language for workwidth
+		--courseplay:debug("Grimme Rootster 604 workwidth: 2.9 m",7) --TODO (Tom) set local language for workwidth
 	elseif object.cp.isUrsusZ586 then
 		self.cp.aiTurnNoBackward = true
 		self.cp.noStopOnEdge = true
@@ -491,11 +491,16 @@ function courseplay:askForSpecialSettings(self, object)
 end
 
 function courseplay:getSpecialWorkWidth(workTool)
-	--[[if workTool.cp then
-		if workTool.cp.isLindnerTankModule then
+	if workTool.cp then
+		--[[if workTool.cp.isLindnerTankModule then
 			return 6.0;
-		end;
-	end;]]
+		end;]]
+		if workTool.cp.isGrimmeRootster604 then
+			return 2.9
+		elseif workTool.cp.isGrimmeSE260 then
+			return 1.6
+		end
+	end;
 
 	return nil;
 end;

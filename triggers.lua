@@ -32,13 +32,16 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 
 			local vehicle = g_currentMission.nodeToVehicle[otherId];
 			local collisionVehicle = g_currentMission.nodeToVehicle[self.cp.collidingVehicleId];
+			
 			-- is this a traffic vehicle?
 			local cm = getCollisionMask(otherId);
-			if vehicle == nil and bitAND(cm, 2097152) ~= 0 then -- if bit21 is part of the collisionMask then set new vehicle in GCM.NTV
+			if vehicle == nil and (bitAND(cm, 33554432) ~= 0 or getName(otherId) == "piQup") then -- if bit25 is part of the collisionMask then set new vehicle in GCM.NTV
 				local pathVehicle = {}
 				pathVehicle.rootNode = otherId
 				pathVehicle.isCpPathvehicle = true
 				pathVehicle.name = "PathVehicle"
+				pathVehicle.sizeLength = 7
+				pathVehicle.sizeWidth = 3
 				g_currentMission.nodeToVehicle[otherId] = pathVehicle
 				vehicle = pathVehicle
 			end;	
@@ -70,7 +73,7 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 			end
 						
 			if not isInOtherTrigger then
-				--checking distance to saved and urrent ID
+				--checking distance to saved and current ID
 				if onEnter and self.cp.collidingVehicleId ~= nil 
 						   and ((collisionVehicle ~= nil and collisionVehicle.rootNode ~= nil) or trafficLightDistance ~= 0 )
 						   and ((vehicle ~= nil  and vehicle.rootNode ~= nil) or fixDistance ~= 0) then
@@ -138,7 +141,7 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 							--self.CPnumCollidingVehicles = math.max(self.CPnumCollidingVehicles - 1, 0);
 							--if self.CPnumCollidingVehicles == 0 then
 								--self.cp.collidingVehicleId = nil
-								courseplay:deleteCollisionVehicle(self);
+							courseplay:deleteCollisionVehicle(self);
 							--end
 							AIVehicleUtil.setCollisionDirection(self.cp.trafficCollisionTriggers[1], self.cp.trafficCollisionTriggers[2], 0, -1);
 							courseplay:debug(string.format('%s: 	onLeave - setting "self.cp.collidingVehicleId" to nil', nameNum(self)), 3);

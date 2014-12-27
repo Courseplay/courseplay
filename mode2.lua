@@ -59,7 +59,6 @@ function courseplay:handle_mode2(vehicle, dt)
 		return false
 	end
 
-
 	-- STATE 10 (switch side)
 	if vehicle.cp.activeCombine ~= nil and (vehicle.cp.modeState == 10 or vehicle.cp.activeCombine.turnAP ~= nil and vehicle.cp.activeCombine.turnAP == true) then
 		local node = vehicle.cp.activeCombine.cp.DirectionNode or vehicle.cp.activeCombine.rootNode;
@@ -79,9 +78,9 @@ function courseplay:handle_mode2(vehicle, dt)
 			vehicle.cp.currentTrailerToFill = nil
 			if vehicle.cp.modeState ~= 5 then
 				if vehicle.cp.combineOffset > 0 then
-					vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, vehicle.cp.turnDiameter, 0, -vehicle.cp.turnDiameter)
+					vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, vehicle.cp.turnDiameter+2, 0, -(vehicle.cp.totalLength+2))
 				else
-					vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, -vehicle.cp.turnDiameter, 0, -vehicle.cp.turnDiameter)
+					vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, -vehicle.cp.turnDiameter-2, 0, -(vehicle.cp.totalLength+2))
 				end
 				courseplay:setModeState(vehicle, 5);
 				courseplay:setMode2NextState(vehicle, 81);
@@ -230,15 +229,15 @@ function courseplay:unload_combine(vehicle, dt)
 	local isHarvester = false
 	local xt, yt, zt;
 	local dod;
-
+	local currentTipper = {}
 	-- Calculate Trailer Offset
 
 	if vehicle.cp.currentTrailerToFill ~= nil then
-		local trailer = vehicle.cp.workTools[vehicle.cp.currentTrailerToFill]
-		if  not trailer.cp.realUnloadOrFillNode then
-			trailer.cp.realUnloadOrFillNode = courseplay:getRealUnloadOrFillNode(trailer);
+		currentTipper = vehicle.cp.workTools[vehicle.cp.currentTrailerToFill]
+		if  not currentTipper.cp.realUnloadOrFillNode then
+			currentTipper.cp.realUnloadOrFillNode = courseplay:getRealUnloadOrFillNode(currentTipper);
 		end;
-		xt, yt, zt = worldToLocal(trailer.cp.realUnloadOrFillNode, x, y, z)
+		xt, yt, zt = worldToLocal(currentTipper.cp.realUnloadOrFillNode, x, y, z)
 	else
 		--courseplay:debug(nameNum(vehicle) .. ": no cp.currentTrailerToFillSet", 4);
 		xt, yt, zt = worldToLocal(vehicle.cp.workTools[1].rootNode, x, y, z)
@@ -249,9 +248,10 @@ function courseplay:unload_combine(vehicle, dt)
 		zt = zt * -1
 	end
 
-	local trailer_offset = zt + vehicle.cp.tipperOffset
-
-
+	local trailerOffset = zt + vehicle.cp.tipperOffset
+	local totalLength = vehicle.cp.totalLength+2
+	local turnDiameter = vehicle.cp.turnDiameter+2
+	
 	if vehicle.cp.chopperIsTurning == nil then
 		vehicle.cp.chopperIsTurning = false
 	end
@@ -347,7 +347,7 @@ function courseplay:unload_combine(vehicle, dt)
 
 		local x1, y1, z1 = worldToLocal(tractor.cp.DirectionNode or tractor.rootNode, x, y, z)
 
-		if z1 > -(vehicle.cp.turnDiameter + safetyDistance) then -- tractor in front of combine
+		if z1 > -(turnDiameter + safetyDistance) then -- tractor in front of combine
 			-- left side of combine
 			local cx_left, cy_left, cz_left = localToWorld(tractor.cp.DirectionNode or tractor.rootNode, 20, 0, -30)
 			-- righ side of combine
@@ -368,9 +368,9 @@ function courseplay:unload_combine(vehicle, dt)
 		else
 			-- tractor behind combine
 			if not combine.cp.isChopper then
-				currentX, currentY, currentZ = localToWorld(tractor.cp.DirectionNode or tractor.rootNode, vehicle.cp.combineOffset, 0, -(vehicle.cp.turnDiameter + safetyDistance)) --!!!
+				currentX, currentY, currentZ = localToWorld(tractor.cp.DirectionNode or tractor.rootNode, vehicle.cp.combineOffset, 0, -(turnDiameter + safetyDistance)) --!!!
 			else
-				currentX, currentY, currentZ = localToWorld(tractor.cp.DirectionNode or tractor.rootNode, 0, 0, -(vehicle.cp.turnDiameter + safetyDistance))
+				currentX, currentY, currentZ = localToWorld(tractor.cp.DirectionNode or tractor.rootNode, 0, 0, -(turnDiameter + safetyDistance))
 			end
 		end
 
@@ -432,7 +432,7 @@ function courseplay:unload_combine(vehicle, dt)
 			for k, i in pairs(combine.attachedImplements) do
 				local implement = i.object;
 				if implement.haeckseldolly == true then
-					tX, tY, tZ = localToWorld(implement.rootNode, vehicle.cp.combineOffset, 0, trailer_offset)
+					tX, tY, tZ = localToWorld(implement.rootNode, vehicle.cp.combineOffset, 0, trailerOffset)
 				end
 			end
 		end
@@ -470,36 +470,52 @@ function courseplay:unload_combine(vehicle, dt)
 		--courseplay:addToCombinesIgnoreList(vehicle, combine)
 		refSpeed = vehicle.cp.speeds.field
 		speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
+		
 		if vehicle.cp.nextTargets ~= nil then
 			vehicle.cp.nextTargets = {}
 		end
 
-		if not combine.cp.isChopper and combineFillLevel == 0 or vehicle.cp.forceNewTargets then --combine empty set waypoints on the field !!!
+		if not combine.cp.isChopper and (combineFillLevel == 0 or vehicle.cp.forceNewTargets) then --combine empty set waypoints on the field !!!
 			if combine.cp.offset == nil then
 				--print("saving offset")
 				combine.cp.offset = vehicle.cp.combineOffset;
 			end			
 			local sideMultiplier = 0;
-			
-			if combineIsTurning or vehicle.cp.forceNewTargets then
-				if vehicle.cp.combineOffset > 0 then 
-					courseplay:debug(nameNum(vehicle) .. ": I'm left,combine is turning or field edge is near", 4)
-					sideMultiplier = - 1;
+			if tractor.cp.workWidth == nil or tractor.cp.workWidth == 0 or not tractor.cp.isDriving then
+				courseplay:calculateWorkWidth(tractor, true)
+			end 
+			local workWidth = tractor.cp.workWidth
+			local combineOffset = vehicle.cp.combineOffset
+			local offset = abs(combineOffset)
+			local fruitSide = "404notFound"
+			if workWidth < offset then
+				local diff = max (1.5,workWidth/2)
+				fruitSide = courseplay:sideToDrive(vehicle, combine, 0);
+				if (fruitSide == "right" and combineOffset > 0) or (fruitSide == "left" and combineOffset < 0) then
+					offset = offset-diff
 				else
-					courseplay:debug(nameNum(vehicle) .. ": I'm right,combine is turning or field edge is near", 4)
-					sideMultiplier = 1;				
+					offset = offset+diff
 				end
-					vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, -sideMultiplier*vehicle.cp.turnDiameter , 0, 0);
-					courseplay:addNewTargetVector(vehicle, -vehicle.cp.combineOffset*0.5 ,  -vehicle.cp.turnDiameter-trailer_offset-autoCombineExtraMoveBack);
-					courseplay:addNewTargetVector(vehicle, -vehicle.cp.combineOffset ,  (-vehicle.cp.turnDiameter-trailer_offset-autoCombineExtraMoveBack)*1.5);
-					courseplay:addNewTargetVector(vehicle, -vehicle.cp.combineOffset ,  (-vehicle.cp.turnDiameter-trailer_offset-autoCombineExtraMoveBack)*2.5);
-					courseplay:setModeState(vehicle, 5);
+			end	
+			courseplay:debug(string.format("combine.workWidth: %.2f,vehicle.cp.combineOffset: %.2f, calculated offset: %.2f, fruitSide: %s  ",workWidth,combineOffset,offset,fruitSide),4)	
+			if combineOffset > 0 then 
+				sideMultiplier = -1;
+			else
+				sideMultiplier = 1;				
+			end
+			if combineIsTurning or vehicle.cp.forceNewTargets then
+				courseplay:debug(nameNum(vehicle) .. ": combine is turning or field edge is near", 4)
+				vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(currentTipper.rootNode, -sideMultiplier*turnDiameter, 0, trailerOffset);
+				courseplay:addNewTargetVector(vehicle, sideMultiplier*offset*0.5 ,  (-totalLength*2)+trailerOffset,currentTipper);
+				courseplay:addNewTargetVector(vehicle, sideMultiplier*offset ,  (-totalLength*3)+trailerOffset,currentTipper);
+				courseplay:addNewTargetVector(vehicle, sideMultiplier*offset ,  (-totalLength*4)+trailerOffset,currentTipper);
+				courseplay:setModeState(vehicle, 5);
 				if vehicle.cp.forceNewTargets then
 					vehicle.cp.forceNewTargets = nil
 				end
 			else
-				vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, -vehicle.cp.combineOffset , 0, vehicle.cp.turnDiameter*0.5);
-					courseplay:addNewTargetVector(vehicle, -vehicle.cp.combineOffset , (vehicle.cp.turnDiameter+trailer_offset+autoCombineExtraMoveBack)*1.25);
+				vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(currentTipper.rootNode, sideMultiplier*offset*0.8 , 0, totalLength + trailerOffset);
+					courseplay:addNewTargetVector(vehicle, sideMultiplier*offset ,(totalLength*3)+trailerOffset,currentTipper);
 					courseplay:setModeState(vehicle, 9);				
 			end
 
@@ -510,13 +526,13 @@ function courseplay:unload_combine(vehicle, dt)
 		if combine.cp.offset == nil and not combine.cp.isChopper then
 			courseplay:calculateCombineOffset(vehicle, combine);
 		end
-		currentX, currentY, currentZ = localToWorld(combine.cp.DirectionNode or combine.rootNode, vehicle.cp.combineOffset, 0, trailer_offset + 5)
+		currentX, currentY, currentZ = localToWorld(combine.cp.DirectionNode or combine.rootNode, vehicle.cp.combineOffset, 0, trailerOffset + 5)
 		
 		--CALCULATE VERTICAL OFFSET (tipper offset)
 		local prnToCombineZ = courseplay:calculateVerticalOffset(vehicle, combine);
 		
 		--SET TARGET UNLOADING COORDINATES @ COMBINE
-		local ttX, ttZ = courseplay:getTargetUnloadingCoords(vehicle, combine, trailer_offset, prnToCombineZ);
+		local ttX, ttZ = courseplay:getTargetUnloadingCoords(vehicle, combine, trailerOffset, prnToCombineZ);
 		
 		local lx, ly, lz = worldToLocal(vehicle.cp.DirectionNode, ttX, y, ttZ)
 		dod = Utils.vector2Length(lx, lz)
@@ -525,9 +541,9 @@ function courseplay:unload_combine(vehicle, dt)
 		end
 		-- combine is not moving and trailer is under pipe
 		if lz < 5 and combine.fillLevel > 100 then 
-			-- print(string.format("lz: %.4f, prnToCombineZ: %.2f, trailer_offset: %.2f",lz,prnToCombineZ,trailer_offset))
+			-- print(string.format("lz: %.4f, prnToCombineZ: %.2f, trailerOffset: %.2f",lz,prnToCombineZ,trailerOffset))
 		end
-		if not combine.cp.isChopper and combineIsStopped and (lz <= 1 or lz < -0.1 * trailer_offset) then
+		if not combine.cp.isChopper and combineIsStopped and (lz <= 1 or lz < -0.1 * trailerOffset) then
 			courseplay:setInfoText(vehicle, courseplay:loc("COURSEPLAY_COMBINE_WANTS_ME_TO_STOP")); 
 			allowedToDrive = false
 		elseif combine.cp.isChopper then
@@ -605,7 +621,7 @@ function courseplay:unload_combine(vehicle, dt)
 		end
 		local x,y,z = getWorldTranslation(combine.cp.DirectionNode or combine.rootNode)
 		local _,_,combineDistance = worldToLocal(vehicle.cp.DirectionNode, x,y,z)
-		if combineDistance > vehicle.cp.swayPointDistance then
+		if combineDistance > vehicle.cp.swayPointDistance + 3 then
 			vehicle.cp.swayPointDistance = nil
 			courseplay:setModeState(vehicle, 5);
 		else
@@ -659,25 +675,25 @@ function courseplay:unload_combine(vehicle, dt)
 
 					if vehicle.cp.combineOffset > 0 then -- I'm left of chopper
 						courseplay:debug(string.format("%s(%i): %s @ %s: combine turns left, I'm left", curFile, debug.getinfo(1).currentline, nameNum(vehicle), tostring(combine.name)), 4);
-						vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, 0, 0, vehicle.cp.turnDiameter);
-						courseplay:addNewTargetVector(vehicle, 2*vehicle.cp.turnDiameter*-1 ,  vehicle.cp.turnDiameter);
+						vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, 0, 0, turnDiameter);
+						courseplay:addNewTargetVector(vehicle, 2*turnDiameter*-1 ,  turnDiameter);
 						vehicle.cp.chopperIsTurning = true
 	
 					else --i'm right of choppper
 						courseplay:debug(string.format("%s(%i): %s @ %s: combine turns left, I'm right", curFile, debug.getinfo(1).currentline, nameNum(vehicle), tostring(combine.name)), 4);
-						vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, vehicle.cp.turnDiameter*-1, 0, vehicle.cp.turnDiameter);
+						vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, turnDiameter*-1, 0, turnDiameter);
 						vehicle.cp.chopperIsTurning = true
 					end
 					
 				else -- chopper will turn right
 					if vehicle.cp.combineOffset < 0 then -- I'm right of chopper
 						courseplay:debug(string.format("%s(%i): %s @ %s: combine turns right, I'm right", curFile, debug.getinfo(1).currentline, nameNum(vehicle), tostring(combine.name)), 4);
-						vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, 0, 0, vehicle.cp.turnDiameter);
-						courseplay:addNewTargetVector(vehicle, 2*vehicle.cp.turnDiameter,     vehicle.cp.turnDiameter);
+						vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, 0, 0, turnDiameter);
+						courseplay:addNewTargetVector(vehicle, 2*turnDiameter,     turnDiameter);
 						vehicle.cp.chopperIsTurning = true
 					else -- I'm left of chopper
 						courseplay:debug(string.format("%s(%i): %s @ %s: combine turns right, I'm left", curFile, debug.getinfo(1).currentline, nameNum(vehicle), tostring(combine.name)), 4);
-						vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, vehicle.cp.turnDiameter, 0, vehicle.cp.turnDiameter);
+						vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, turnDiameter, 0, turnDiameter);
 						vehicle.cp.chopperIsTurning = true
 					end
 				end
@@ -846,7 +862,7 @@ function courseplay:unload_combine(vehicle, dt)
 		end;
 
 		-- drive behind tractor
-		local backDistance = max(10,(vehicle.cp.turnDiameter + safetyDistance))
+		local backDistance = max(10,(turnDiameter + safetyDistance))
 		local dx,dz = AIVehicleUtil.getDriveDirection(frontTractor.cp.DirectionNode, x, y, z);
 		local x1, y1, z1 = worldToLocal(frontTractor.cp.DirectionNode, x, y, z)
 		local distance = Utils.vector2Length(x1, z1)
@@ -958,9 +974,9 @@ function courseplay:unload_combine(vehicle, dt)
 		end
 		
 		vehicle.cp.TrafficBrake = false
-		--[[if vehicle.cp.modeState == 5 or vehicle.cp.modeState == 2 then    FS15
+		if vehicle.cp.modeState == 5 or vehicle.cp.modeState == 2 then   
 			lx, lz = courseplay:isTheWayToTargetFree(vehicle, lx, lz)
-		end]]
+		end
 		courseplay:setTrafficCollision(vehicle, lx, lz,true)
 		
 		AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, 1, 0.5, 10, allowedToDrive, moveForwards, lx, lz, refSpeed, 1)
