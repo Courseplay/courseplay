@@ -12,6 +12,11 @@ local signData = {
 	wait =   {  1000, 'current',  4.5 }, -- orig height=3
 	cross =  {  2000, 'crossing', 4.0 }
 };
+local diamondColors = {
+	regular   = { 1.000, 0.212, 0.000, 1.000 }; -- orange
+	turnStart = { 0.200, 0.900, 0.000, 1.000 }; -- green
+	turnEnd   = { 0.896, 0.000, 0.000, 1.000 }; -- red
+};
 
 function courseplay.signs:setup()
 	print('## Courseplay: setting up signs');
@@ -42,7 +47,7 @@ function courseplay.signs:setup()
 end;
 
 
-function courseplay.signs:addSign(vehicle, signType, x, z, rotX, rotY, insertIndex, distanceToNext)
+function courseplay.signs:addSign(vehicle, signType, x, z, rotX, rotY, insertIndex, distanceToNext, diamondColor)
 	signType = signType or 'normal';
 
 	local sign;
@@ -73,6 +78,10 @@ function courseplay.signs:addSign(vehicle, signType, x, z, rotX, rotY, insertInd
 	setVisibility(sign, true);
 
 	local signData = { type = signType, sign = sign, posX = x, posZ = z, rotY = rotY };
+	if signType == 'normal' and diamondColor then
+		self:setSignColor(signData, diamondColor);
+	end;
+
 	local section = self.sections[signType];
 	insertIndex = insertIndex or (#vehicle.cp.signs[section] + 1);
 	table.insert(vehicle.cp.signs[section], insertIndex, signData);
@@ -176,6 +185,13 @@ function courseplay.signs:updateWaypointSigns(vehicle, section)
 				wp.rotY = pp.rotY;
 			end;
 
+			local diamondColor = 'regular';
+			if wp.turnStart then
+				diamondColor = 'turnStart';
+			elseif wp.turnEnd then
+				diamondColor = 'turnEnd';
+			end;
+
 			local existingSignData = vehicle.cp.signs.current[i];
 			if existingSignData ~= nil then
 				if existingSignData.type == neededSignType then
@@ -186,16 +202,18 @@ function courseplay.signs:updateWaypointSigns(vehicle, section)
 							if neededSignType == 'start' or neededSignType == 'wait' then
 								local signPart = getChildAt(existingSignData.sign, 1);
 								setRotation(signPart, -wp.rotX, 0, 0);
+							else -- normal: set color
+								self:setSignColor(existingSignData, diamondColor);
 							end;
 							self:setWaypointSignLine(existingSignData.sign, wp.distToNextPoint, true);
 						end;
 					end;
 				else
 					self:moveToBuffer(vehicle, i, existingSignData);
-					self:addSign(vehicle, neededSignType, wp.cx, wp.cz, deg(wp.rotX), wp.angle, i, wp.distToNextPoint);
+					self:addSign(vehicle, neededSignType, wp.cx, wp.cz, deg(wp.rotX), wp.angle, i, wp.distToNextPoint, diamondColor);
 				end;
 			else
-				self:addSign(vehicle, neededSignType, wp.cx, wp.cz, deg(wp.rotX), wp.angle, i, wp.distToNextPoint);
+				self:addSign(vehicle, neededSignType, wp.cx, wp.cz, deg(wp.rotX), wp.angle, i, wp.distToNextPoint, diamondColor);
 			end;
 
 			if wp.wait then
@@ -229,6 +247,15 @@ function courseplay.signs:updateWaypointSigns(vehicle, section)
 	end;
 
 	self:setSignsVisibility(vehicle);
+end;
+
+function courseplay.signs:setSignColor(signData, colorName)
+	if signData.type == 'normal' and (signData.color == nil or signData.color ~= colorName) then
+		local x,y,z,w = unpack(diamondColors[colorName]);
+		-- print(('setSignColor (%q): sign=%s, x=%.3f, y=%.3f, z=%.3f, w=%d'):format(color, tostring(sign), x, y, z, w));
+		setShaderParameter(signData.sign, 'diffuseColor', x,y,z,w, false);
+		signData.color = colorName;
+	end;
 end;
 
 
