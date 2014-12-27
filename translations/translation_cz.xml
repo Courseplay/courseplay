@@ -74,7 +74,7 @@
 		<text name="COURSEPLAY_MAX_SPEED_MODE" 							 text="Rychlost:" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_RECORDING" 				 text="jako při nahrávání" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 						 text="maximální rychlost" />
-		<text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 				 text="automatická (z nahrávání)" />
+		<text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 				 text="automatická (z nahrávání, max. %s)" /> <!-- TODO: translation for "max." needed -->
 		<text name="COURSEPLAY_NO_COURSE_LOADED" 						 text="Trasa: není nahrána žádná trasa" />
 		<text name="COURSEPLAY_WAYPOINT_MODE_1" 						 text="začátek a konec" />
 		<text name="COURSEPLAY_WAYPOINT_MODE_2" 						 text="všechny body (bez křížení)" />

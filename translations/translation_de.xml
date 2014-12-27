@@ -78,7 +78,7 @@
 		<text name="COURSEPLAY_MAX_SPEED_MODE" 							 text="Geschwindigkeit:" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_RECORDING" 				 text="wie beim einfahren" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 						 text="maximale Geschwindigkeit" />
-		<text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 				 text="automatisch (vom Kurs)" />
+		<text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 				 text="automatisch (vom Kurs, max. %s)" />
 		<text name="COURSEPLAY_NO_COURSE_LOADED" 						 text="Kurs: kein Kurs geladen" />
 		<text name="COURSEPLAY_WAYPOINT_MODE_1" 						 text="Anfang und Ende" />
 		<text name="COURSEPLAY_WAYPOINT_MODE_2" 						 text="ohne Kreuzungspunkte" />

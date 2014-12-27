@@ -74,7 +74,7 @@
 		<text name="COURSEPLAY_MAX_SPEED_MODE" 							 text="Max Sebesség:" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_RECORDING" 				 text="Felvétel alapján" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 						 text="beállított sebesség" />
-		<text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 				 text="automaikus (az útvonalhoz)" />
+		<text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 				 text="automaikus (az útvonalhoz, max %s)" /> <!-- TODO: translation for "max." needed -->
 		<text name="COURSEPLAY_NO_COURSE_LOADED" 						 text="Útvonal: Útvonal nincs betöltve" />
 		<text name="COURSEPLAY_WAYPOINT_MODE_1" 						 text="Főbb pontok" />
 		<text name="COURSEPLAY_WAYPOINT_MODE_2" 						 text="Csak kezdő- és végpont" />
