@@ -82,11 +82,6 @@ dt { width: 30%; }
 .manualSection > ul > li > ol, .manualSubSection > ul > li > ol {
 	margin:0.5em 1.8em;
 }
-p.info {
-	background:rgba(255,255,255,0.1);
-	padding:0.5em 0.8em !important;
-	font-style:italic;
-}
 .manualSection > p.info {
 	margin-bottom:1em;
 }
