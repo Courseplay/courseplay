@@ -7,11 +7,30 @@ function courseplay:attachImplement(implement)
 	if workTool.attacherVehicle.cp.hasSpecializationSteerable then
 		workTool.attacherVehicle.cp.toolsDirty = true;
 	end;
+
+	courseplay:setAttachedCombine(self);
 end;
 function courseplay:detachImplement(implementIndex)
 	--- Update Vehicle
 	self.cp.toolsDirty = true;
 end;
+
+local origVehicleDetachImplement = Vehicle.detachImplement;
+Vehicle.detachImplement = function(self, implementIndex, noEventSend)
+	-- don't allow detaching while CP is active
+	if self.cp.isDriving and not noEventSend then -- if noEventSend == true, detachImplement has been called from Vehicle:delete() -> no need to abort
+		print('Courseplay warning: you need to stop Courseplay before detaching implements!');
+		return;
+	end;
+
+	origVehicleDetachImplement(self, implementIndex, noEventSend);
+
+	-- update attachCombineIndex and minHudPage
+	if not noEventSend then -- if noEventSend == true, detachImplement has been called from Vehicle:delete() -> no need to set attachedCombine anymore
+		courseplay:setAttachedCombine(self);
+	end;
+end;
+
 
 function courseplay:reset_tools(vehicle)
 	vehicle.cp.workTools = {}
@@ -280,21 +299,6 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 				local name = g_currentMission.nodeToVehicle[a].name;
 				courseplay:debug(('\\___ [%s] = %s (%q)'):format(tostring(a), tostring(name), tostring(getName(a))), 3);
 			end;
-		end;
-
-		--MINHUDPAGE FOR ATTACHED COMBINES
-		vehicle.cp.attachedCombineIdx = nil;
-		if not (vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable or vehicle.cp.isSugarBeetLoader) then
-			for i=1, vehicle.cp.numWorkTools do
-				if courseplay:isAttachedCombine(vehicle.cp.workTools[i]) then
-					vehicle.cp.attachedCombineIdx = i;
-					break;
-				end;
-			end;
-		end;
-		if vehicle.cp.attachedCombineIdx ~= nil then
-			--courseplay:debug(string.format('setMinHudPage(vehicle, vehicle.cp.workTools[%d])', vehicle.cp.attachedCombineIdx), 18);
-			courseplay:setMinHudPage(vehicle, vehicle.cp.workTools[vehicle.cp.attachedCombineIdx]);
 		end;
 
 		-- TURN DIAMETER

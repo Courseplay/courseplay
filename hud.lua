@@ -1,6 +1,6 @@
 ﻿courseplay.hud = {};
 
-local ceil, floor = math.ceil, math.floor;
+local abs, ceil, floor, max = math.abs, math.ceil, math.floor, math.max;
 local function round(num)
 	return floor(num + 0.5);
 end;
@@ -608,17 +608,15 @@ function courseplay.hud:renderHud(vehicle)
 	end;
 end;
 
-function courseplay:setMinHudPage(vehicle, workTool)
+function courseplay:setMinHudPage(vehicle)
 	vehicle.cp.minHudPage = courseplay.hud.PAGE_CP_CONTROL;
-
-	local hasAttachedCombine = workTool ~= nil and courseplay:isAttachedCombine(workTool);
-	if vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable or vehicle.cp.isSugarBeetLoader or hasAttachedCombine then
+	if vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable or vehicle.cp.isSugarBeetLoader or vehicle.cp.attachedCombine ~= nil then
 		vehicle.cp.minHudPage = courseplay.hud.PAGE_COMBINE_CONTROLS;
 	end;
 
-	courseplay:setHudPage(vehicle, math.max(vehicle.cp.hud.currentPage, vehicle.cp.minHudPage));
-	courseplay:debug(string.format("setMinHudPage: minHudPage=%s, currentPage=%s", tostring(vehicle.cp.minHudPage), tostring(vehicle.cp.hud.currentPage)), 18);
-	courseplay:buttonsActiveEnabled(vehicle, "pageNav");
+	courseplay:setHudPage(vehicle, max(vehicle.cp.hud.currentPage, vehicle.cp.minHudPage));
+	courseplay:debug(('%s: setMinHudPage(): minHudPage=%d, currentPage=%d'):format(nameNum(vehicle), vehicle.cp.minHudPage, vehicle.cp.hud.currentPage), 18);
+	courseplay:buttonsActiveEnabled(vehicle, 'pageNav');
 end;
 
 function courseplay.hud:loadPage(vehicle, page)
@@ -629,8 +627,8 @@ function courseplay.hud:loadPage(vehicle, page)
 	--PAGE 0: COMBINE SETTINGS
 	if page == 0 then
 		local combine = vehicle;
-		if vehicle.cp.attachedCombineIdx ~= nil then
-			combine = vehicle.cp.workTools[vehicle.cp.attachedCombineIdx];
+		if vehicle.cp.attachedCombine ~= nil then
+			combine = vehicle.cp.attachedCombine;
 		end;
 
 		if not combine.cp.isChopper then
@@ -934,7 +932,7 @@ function courseplay.hud:loadPage(vehicle, page)
 			if vehicle.cp.waitTime < 60 then
 				str = courseplay:loc('COURSEPLAY_SECONDS'):format(vehicle.cp.waitTime);
 			else
-				local minutes, seconds = math.floor(vehicle.cp.waitTime/60), vehicle.cp.waitTime % 60;
+				local minutes, seconds = floor(vehicle.cp.waitTime/60), vehicle.cp.waitTime % 60;
 				str = courseplay:loc('COURSEPLAY_MINUTES'):format(minutes);
 				if seconds > 0 then
 					str = str .. ', ' .. courseplay:loc('COURSEPLAY_SECONDS'):format(seconds);
@@ -961,9 +959,9 @@ function courseplay.hud:loadPage(vehicle, page)
 				vehicle.cp.hud.content.pages[7][1][1].text = courseplay:loc('COURSEPLAY_LANE_OFFSET');
 				if vehicle.cp.laneOffset and vehicle.cp.laneOffset ~= 0 then
 					if vehicle.cp.laneOffset > 0 then
-						vehicle.cp.hud.content.pages[7][1][2].text = string.format('%.1fm (%s)', math.abs(vehicle.cp.laneOffset), courseplay:loc('COURSEPLAY_RIGHT'));
+						vehicle.cp.hud.content.pages[7][1][2].text = string.format('%.1fm (%s)', abs(vehicle.cp.laneOffset), courseplay:loc('COURSEPLAY_RIGHT'));
 					elseif vehicle.cp.laneOffset < 0 then
-						vehicle.cp.hud.content.pages[7][1][2].text = string.format('%.1fm (%s)', math.abs(vehicle.cp.laneOffset), courseplay:loc('COURSEPLAY_LEFT'));
+						vehicle.cp.hud.content.pages[7][1][2].text = string.format('%.1fm (%s)', abs(vehicle.cp.laneOffset), courseplay:loc('COURSEPLAY_LEFT'));
 					end;
 				else
 					vehicle.cp.hud.content.pages[7][1][2].text = '---';
@@ -980,9 +978,9 @@ function courseplay.hud:loadPage(vehicle, page)
 			vehicle.cp.hud.content.pages[7][3][1].text = courseplay:loc('COURSEPLAY_TOOL_OFFSET_X');
 			if vehicle.cp.toolOffsetX and vehicle.cp.toolOffsetX ~= 0 then
 				if vehicle.cp.toolOffsetX > 0 then
-					vehicle.cp.hud.content.pages[7][3][2].text = string.format('%.1fm (%s)', math.abs(vehicle.cp.toolOffsetX), courseplay:loc('COURSEPLAY_RIGHT'));
+					vehicle.cp.hud.content.pages[7][3][2].text = string.format('%.1fm (%s)', abs(vehicle.cp.toolOffsetX), courseplay:loc('COURSEPLAY_RIGHT'));
 				elseif vehicle.cp.toolOffsetX < 0 then
-					vehicle.cp.hud.content.pages[7][3][2].text = string.format('%.1fm (%s)', math.abs(vehicle.cp.toolOffsetX), courseplay:loc('COURSEPLAY_LEFT'));
+					vehicle.cp.hud.content.pages[7][3][2].text = string.format('%.1fm (%s)', abs(vehicle.cp.toolOffsetX), courseplay:loc('COURSEPLAY_LEFT'));
 				end;
 			else
 				vehicle.cp.hud.content.pages[7][3][2].text = '---';
@@ -992,9 +990,9 @@ function courseplay.hud:loadPage(vehicle, page)
 			vehicle.cp.hud.content.pages[7][4][1].text = courseplay:loc('COURSEPLAY_TOOL_OFFSET_Z');
 			if vehicle.cp.toolOffsetZ and vehicle.cp.toolOffsetZ ~= 0 then
 				if vehicle.cp.toolOffsetZ > 0 then
-					vehicle.cp.hud.content.pages[7][4][2].text = string.format('%.1fm (%s)', math.abs(vehicle.cp.toolOffsetZ), courseplay:loc('COURSEPLAY_FRONT'));
+					vehicle.cp.hud.content.pages[7][4][2].text = string.format('%.1fm (%s)', abs(vehicle.cp.toolOffsetZ), courseplay:loc('COURSEPLAY_FRONT'));
 				elseif vehicle.cp.toolOffsetZ < 0 then
-					vehicle.cp.hud.content.pages[7][4][2].text = string.format('%.1fm (%s)', math.abs(vehicle.cp.toolOffsetZ), courseplay:loc('COURSEPLAY_BACK'));
+					vehicle.cp.hud.content.pages[7][4][2].text = string.format('%.1fm (%s)', abs(vehicle.cp.toolOffsetZ), courseplay:loc('COURSEPLAY_BACK'));
 				end;
 			else
 				vehicle.cp.hud.content.pages[7][4][2].text = '---';
@@ -1257,7 +1255,8 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	vehicle.cp.HUD4savedCombine = nil;
 	vehicle.cp.HUD4savedCombineName = "";
 
-	courseplay:setMinHudPage(vehicle, nil);
+	vehicle.cp.attachedCombine = nil;
+	courseplay:setMinHudPage(vehicle);
 
 	local mouseWheelArea = {
 		x = self.contentMinX,

@@ -205,8 +205,8 @@ function courseplay:executeFunction(self, func, value, page)
 		local line = value;
 		if page == 0 then
 			local combine = self;
-			if self.cp.attachedCombineIdx ~= nil and self.cp.workTools ~= nil and self.cp.workTools[self.cp.attachedCombineIdx] ~= nil then
-				combine = self.cp.workTools[self.cp.attachedCombineIdx];
+			if self.cp.attachedCombine ~= nil then
+				combine = self.cp.attachedCombine;
 			end;
 
 			if not combine.cp.isChopper then
