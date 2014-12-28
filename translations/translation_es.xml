@@ -107,7 +107,7 @@
 		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 					 text="Cosechadora fuera de alcance" />
 		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 				 text="Esperar a que la cosechadora gire" />
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 					 text="Esperando el nuevo punto" />
-		<text name="COURSEPLAY_FOLLOWING_TRACTOR" 						 text="Tractor esperando turnos" />
+		<text name="COURSEPLAY_FOLLOWING_TRACTOR" 						 text="siguiendo a tractor" />
 		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 						 text="debe repostar pronto" />
 		<text name="COURSEPLAY_MUST_BE_REFUELED" 						 text="debe repostar ya!" />
 		<text name="COURSEPLAY_IS_BEING_REFUELED" 						 text="está repostando" />
