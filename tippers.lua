@@ -18,7 +18,8 @@ end;
 local origVehicleDetachImplement = Vehicle.detachImplement;
 Vehicle.detachImplement = function(self, implementIndex, noEventSend)
 	-- don't allow detaching while CP is active
-	if self.cp.isDriving and not noEventSend then -- if noEventSend == true, detachImplement has been called from Vehicle:delete() -> no need to abort
+	local tractor = self:getRootAttacherVehicle();
+	if tractor and tractor.hasCourseplaySpec and tractor.cp.isDriving and not noEventSend then -- if noEventSend == true, detachImplement has been called from Vehicle:delete() -> no need to abort
 		print('Courseplay warning: you need to stop Courseplay before detaching implements!');
 		return;
 	end;
@@ -26,7 +27,7 @@ Vehicle.detachImplement = function(self, implementIndex, noEventSend)
 	origVehicleDetachImplement(self, implementIndex, noEventSend);
 
 	-- update attachCombineIndex and minHudPage
-	if not noEventSend then -- if noEventSend == true, detachImplement has been called from Vehicle:delete() -> no need to set attachedCombine anymore
+	if self.hasCourseplaySpec and not noEventSend then -- if noEventSend == true, detachImplement has been called from Vehicle:delete() -> no need to set attachedCombine anymore
 		courseplay:setAttachedCombine(self);
 	end;
 end;
