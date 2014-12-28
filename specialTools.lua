@@ -247,6 +247,10 @@ function courseplay:setNameVariable(workTool)
 	elseif workTool.typeName == 'woodHarvester' then
 		workTool.cp.isWoodHarvester = true;
 
+	-- Tree Planter [Giants]
+	elseif workTool.typeName == 'treePlanter' then
+		workTool.cp.isTreePlanter = true;
+				
 	-- Wood forwarders [Giants]
 	elseif workTool.typeName == 'forwarder' then
 		workTool.cp.isWoodForwarder = true;

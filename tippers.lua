@@ -155,7 +155,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 	-- MODE 4: FERTILIZER AND SEEDING
 	elseif vehicle.cp.mode == 4 then
 		local isSprayer, isSowingMachine = courseplay:isSprayer(workTool), courseplay:isSowingMachine(workTool);
-		if isSprayer or isSowingMachine then
+		if isSprayer or isSowingMachine or workTool.cp.isTreePlanter then
 			hasWorkTool = true;
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
 			courseplay:setMarkers(vehicle, workTool)
