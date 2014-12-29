@@ -121,8 +121,6 @@ function courseplay:load(xmlFile)
 	self.cp.startAtPoint = courseplay.START_AT_NEAREST_POINT;
 
 
-	self.cp.attachedCombineIdx = nil;
-
 	-- ai mode 9: shovel
 	self.cp.shovelEmptyPoint = nil;
 	self.cp.shovelFillStartPoint = nil;
@@ -744,8 +742,8 @@ function courseplay:update(dt)
 
 		if self.cp.hud.currentPage == 0 then
 			local combine = self;
-			if self.cp.attachedCombineIdx ~= nil and self.cp.workTools ~= nil and self.cp.workTools[self.cp.attachedCombineIdx] ~= nil then
-				combine = self.cp.workTools[self.cp.attachedCombineIdx];
+			if self.cp.attachedCombine then
+				combine = self.cp.attachedCombine;
 			end;
 			if combine.courseplayers == nil then
 				self:setCpVar('HUD0noCourseplayer', true);

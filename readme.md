@@ -1,4 +1,4 @@
-# Courseplay for Farming Simulator 2015 v4.00 beta
+# Courseplay for Farming Simulator 2015 v4.01.0000
 
 ### Important Update Information™
 We've got a website for Courseplay, containing all the glorious information you might ever need. Well, probably not. But if there is something you find missing, just holler, there's a good 50/50 chance that we're gonna add it.

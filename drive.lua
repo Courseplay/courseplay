@@ -959,6 +959,14 @@ function courseplay:refillSprayer(vehicle, fillLevelPct, driveOn, allowedToDrive
 				vehicle.cp.fillTrigger = nil
 			end;
 		end;
+		--Tree Planter
+		if activeTool.cp.isTreePlanter then
+			if activeTool.nearestSaplingPallet ~= nil and activeTool.mountedSaplingPallet == nil then
+				local id = activeTool.nearestSaplingPallet.id;
+				-- print("load Pallet "..tostring(id));
+				activeTool:loadPallet(id);
+			end
+		end
 	end;
 
 	return allowedToDrive,lx,lz

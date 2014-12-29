@@ -498,8 +498,6 @@ function courseplay:stop(self)
 	end;
 
 	-- resetting variables
-	courseplay:setMinHudPage(self, nil);
-	self.cp.attachedCombineIdx = nil;
 	self.cp.tempCollis = {}
 	self.checkSpeedLimit = true
 	courseplay:resetTipTrigger(self);

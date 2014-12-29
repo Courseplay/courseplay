@@ -85,7 +85,7 @@ function courseplay:setHudPage(vehicle, pageNum)
 		vehicle.cp.hud.currentPage = pageNum;
 	elseif courseplay.hud.pagesPerMode[vehicle.cp.mode] ~= nil and courseplay.hud.pagesPerMode[vehicle.cp.mode][pageNum] then
 		if pageNum == 0 then
-			if vehicle.cp.minHudPage == 0 or vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable or vehicle.cp.isSugarBeetLoader then
+			if vehicle.cp.minHudPage == 0 or vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable or vehicle.cp.isSugarBeetLoader or vehicle.cp.attachedCombine ~= nil then
 				vehicle.cp.hud.currentPage = pageNum;
 			end;
 		else
@@ -111,7 +111,7 @@ function courseplay:buttonsActiveEnabled(vehicle, section)
 					button:setDisabled(false);
 				elseif courseplay.hud.pagesPerMode[vehicle.cp.mode] ~= nil and courseplay.hud.pagesPerMode[vehicle.cp.mode][pageNum] then
 					if pageNum == 0 then
-						local disabled = not (vehicle.cp.minHudPage == 0 or vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable or vehicle.cp.isSugarBeetLoader);
+						local disabled = not (vehicle.cp.minHudPage == 0 or vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable or vehicle.cp.isSugarBeetLoader or vehicle.cp.attachedCombine ~= nil);
 						button:setDisabled(disabled);
 					else
 						button:setDisabled(false);
@@ -1578,6 +1578,22 @@ function courseplay:deleteFixedWorldPosition(object, recursive)
 			courseplay:deleteFixedWorldPosition(impl.object);
 		end;
 	end;
+end;
+
+function courseplay:setAttachedCombine(vehicle)
+	courseplay:debug(('%s: setAttachedCombine()'):format(nameNum(vehicle)), 6);
+	vehicle.cp.attachedCombine = nil;
+	if not (vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable or vehicle.cp.isSugarBeetLoader) and vehicle.attachedImplements then
+		for _,impl in pairs(vehicle.attachedImplements) do
+			if courseplay:isAttachedCombine(impl.object) then
+				vehicle.cp.attachedCombine = impl.object;
+				courseplay:debug(('    attachedCombine=%s, attachedCombine .cp=%s'):format(nameNum(impl.object), tostring(impl.object.cp)), 6);
+				break;
+			end;
+		end;
+	end;
+
+	courseplay:setMinHudPage(vehicle);
 end;
 
 ----------------------------------------------------------------------------------------------------
