@@ -101,8 +101,8 @@ function courseplay:registerAtCombine(callerVehicle, combine)
 	else
 		
 		if callerVehicle.cp.realisticDriving then
-			if combine.cp.wantsCourseplayer == true or combine.fillLevel == combine.capacity then
-				courseplay:debug(string.format("%s: combine.cp.wantsCourseplayer(%s) or combine.fillLevel == combine.capacity (%s)",nameNum(callerVehicle),tostring(combine.cp.wantsCourseplayer),tostring(combine.fillLevel == combine.capacity)),4)
+			if combine.cp.wantsCourseplayer == true or combine.fillLevel >= combine.capacity then
+				courseplay:debug(string.format("%s: combine.cp.wantsCourseplayer(%s) or combine.fillLevel >= combine.capacity (%s)",nameNum(callerVehicle),tostring(combine.cp.wantsCourseplayer),tostring(combine.fillLevel >= 0.99*combine.capacity)),4)
 			else
 				-- force unload when combine is full
 				-- is the pipe on the correct side?

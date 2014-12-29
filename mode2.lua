@@ -168,6 +168,9 @@ function courseplay:handle_mode2(vehicle, dt)
 
 				-- chose the combine who needs me the most
 				for k, combine in pairs(vehicle.cp.reachableCombines) do
+					if combine.acParameters ~= nil and combine.acParameters.enabled and combine.isHired  and combine.fillLevel >= 0.99*combine.capacity then --AC stops at 99% fillLevel so we have to set this as full
+						combine.cp.wantsCourseplayer = true
+					end
 					if (combine.fillLevel >= (combine.capacity * vehicle.cp.followAtFillLevel / 100)) or combine.capacity == 0 or combine.cp.wantsCourseplayer then
 						if combine.capacity == 0 then
 							if combine.courseplayers == nil then
