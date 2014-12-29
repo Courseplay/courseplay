@@ -74,12 +74,12 @@
 		<text name="COURSEPLAY_MAX_SPEED_MODE" 							 text="速度控制:" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_RECORDING" 				 text="执行录制速度" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 						 text="手动调整" />
-		<text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 				 text="自动(根据任务) (最大. %s)" /> <!-- TODO: translation for "max." needed -->
+		<text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 				 text="自动(根据任务) (最大. %s)" /> 
 		<text name="COURSEPLAY_NO_COURSE_LOADED" 						 text="任务：没有加载任务" />
 		<text name="COURSEPLAY_WAYPOINT_MODE_1" 						 text="显示起点和终点" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_2" 						 text="不显示路径点" />
+		<text name="COURSEPLAY_WAYPOINT_MODE_2" 						 text="不显示其它任务点" />
 		<text name="COURSEPLAY_WAYPOINT_MODE_3" 						 text="显示所有路径点" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_4" 						 text="所有不显示" />
+		<text name="COURSEPLAY_WAYPOINT_MODE_4" 						 text="都不显示" />
 		<text name="COURSEPLAY_WARNING_LIGHTS" 							 text="信标灯:" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 					 text="从不打开信标灯" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 					 text="在道路上打开信标灯" />
