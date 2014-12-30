@@ -130,7 +130,10 @@ function courseplay.button:render()
 			end;
 
 		elseif pg == courseplay.hud.PAGE_COMBI_MODE then
-			if fn == "changeTurnDiameter" then
+			if fn == 'changeCombineOffset' or fn == 'changeTipperOffset' then
+				canScrollUp = vehicle.cp.mode == courseplay.MODE_COMBI or vehicle.cp.mode == courseplay.MODE_OVERLOADER;
+				canScrollDown = canScrollUp;
+			elseif fn == "changeTurnDiameter" then
 				canScrollUp   = true;
 				canScrollDown = vehicle.cp.turnDiameter > 0;
 			elseif fn == "changeFollowAtFillLevel" then
@@ -249,7 +252,9 @@ function courseplay.button:render()
 
 			--Page 3
 			elseif pg == courseplay.hud.PAGE_COMBI_MODE then
-				if fn == "changeTurnDiameter" and prm < 0 then
+				if fn == 'changeCombineOffset' or fn == 'changeTipperOffset' then
+					show = vehicle.cp.mode == courseplay.MODE_COMBI or vehicle.cp.mode == courseplay.MODE_OVERLOADER;
+				elseif fn == "changeTurnDiameter" and prm < 0 then
 					show = vehicle.cp.turnDiameter > 0;
 				elseif fn == "changeFollowAtFillLevel" then
 					if prm < 0 then

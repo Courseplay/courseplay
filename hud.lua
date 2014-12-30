@@ -796,51 +796,46 @@ function courseplay.hud:loadPage(vehicle, page)
 
 	--PAGE 3: MODE 2 SETTINGS
 	elseif page == 3 then
-		vehicle.cp.hud.content.pages[3][1][1].text = courseplay:loc('COURSEPLAY_COMBINE_OFFSET_HORIZONTAL');
-		vehicle.cp.hud.content.pages[3][2][1].text = courseplay:loc('COURSEPLAY_COMBINE_OFFSET_VERTICAL');
-		vehicle.cp.hud.content.pages[3][3][1].text = courseplay:loc('COURSEPLAY_TURN_RADIUS');
-		vehicle.cp.hud.content.pages[3][4][1].text = courseplay:loc('COURSEPLAY_START_AT');
-		vehicle.cp.hud.content.pages[3][5][1].text = courseplay:loc('COURSEPLAY_DRIVE_ON_AT');
+		if vehicle.cp.mode == courseplay.MODE_COMBI or vehicle.cp.mode == courseplay.MODE_OVERLOADER then
+			vehicle.cp.hud.content.pages[3][1][1].text = courseplay:loc('COURSEPLAY_COMBINE_OFFSET_HORIZONTAL');
+			vehicle.cp.hud.content.pages[3][2][1].text = courseplay:loc('COURSEPLAY_COMBINE_OFFSET_VERTICAL');
 
-		if vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE or vehicle.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT then
-			vehicle.cp.hud.content.pages[3][6][1].text = courseplay:loc('COURSEPLAY_REFILL_UNTIL_PCT');
-		end;
-
-		if vehicle.cp.modeState ~= nil then
-			if vehicle.cp.combineOffset ~= 0 then
-				local combineOffsetMode = vehicle.cp.combineOffsetAutoMode and '(auto)' or '(mnl)';
-				vehicle.cp.hud.content.pages[3][1][2].text = string.format('%s %.1fm', combineOffsetMode, vehicle.cp.combineOffset);
+			if vehicle.cp.modeState ~= nil then
+				if vehicle.cp.combineOffset ~= 0 then
+					vehicle.cp.hud.content.pages[3][1][2].text = ('%s %.1fm'):format(vehicle.cp.combineOffsetAutoMode and '(auto)' or '(mnl)', vehicle.cp.combineOffset);
+				else
+					vehicle.cp.hud.content.pages[3][1][2].text = 'auto';
+				end;
 			else
-				vehicle.cp.hud.content.pages[3][1][2].text = 'auto';
+				vehicle.cp.hud.content.pages[3][1][2].text = '---';
 			end;
-		else
-			vehicle.cp.hud.content.pages[3][1][2].text = '---';
+
+			if vehicle.cp.tipperOffset ~= nil then
+				if vehicle.cp.tipperOffset ~= 0 then
+					vehicle.cp.hud.content.pages[3][2][2].text = ('auto%+.1fm'):format(vehicle.cp.tipperOffset);
+				else
+					vehicle.cp.hud.content.pages[3][2][2].text = 'auto';
+				end;
+			else
+				vehicle.cp.hud.content.pages[3][2][2].text = '---';
+			end;
 		end;
 
-		if vehicle.cp.tipperOffset ~= nil then
-			if vehicle.cp.tipperOffset == 0 then
-				vehicle.cp.hud.content.pages[3][2][2].text = 'auto';
-			elseif vehicle.cp.tipperOffset > 0 then
-				vehicle.cp.hud.content.pages[3][2][2].text = string.format('auto+%.1fm', vehicle.cp.tipperOffset);
-			elseif vehicle.cp.tipperOffset < 0 then
-				vehicle.cp.hud.content.pages[3][2][2].text = string.format('auto%.1fm', vehicle.cp.tipperOffset);
-			end;
-		else
-			vehicle.cp.hud.content.pages[3][2][2].text = '---';
-		end;
-
+		vehicle.cp.hud.content.pages[3][3][1].text = courseplay:loc('COURSEPLAY_TURN_RADIUS');
 		if vehicle.cp.turnDiameterAuto ~= nil or vehicle.cp.turnDiameter ~= nil then
-			local turnRadiusMode = vehicle.cp.turnDiameterAutoMode and '(auto)' or '(mnl)';
-			vehicle.cp.hud.content.pages[3][3][2].text = string.format('%s %dm', turnRadiusMode, vehicle.cp.turnDiameter);
+			vehicle.cp.hud.content.pages[3][3][2].text = ('%s %dm'):format(vehicle.cp.turnDiameterAutoMode and '(auto)' or '(mnl)', vehicle.cp.turnDiameter);
 		else
 			vehicle.cp.hud.content.pages[3][3][2].text = '---';
 		end;
 
-		vehicle.cp.hud.content.pages[3][4][2].text = vehicle.cp.followAtFillLevel ~= nil and string.format('%d%%', vehicle.cp.followAtFillLevel) or '---';
+		vehicle.cp.hud.content.pages[3][4][1].text = courseplay:loc('COURSEPLAY_START_AT');
+		vehicle.cp.hud.content.pages[3][4][2].text = vehicle.cp.followAtFillLevel ~= nil and ('%d%%'):format(vehicle.cp.followAtFillLevel) or '---';
 
-		vehicle.cp.hud.content.pages[3][5][2].text = vehicle.cp.driveOnAtFillLevel ~= nil and string.format('%d%%', vehicle.cp.driveOnAtFillLevel) or '---';
+		vehicle.cp.hud.content.pages[3][5][1].text = courseplay:loc('COURSEPLAY_DRIVE_ON_AT');
+		vehicle.cp.hud.content.pages[3][5][2].text = vehicle.cp.driveOnAtFillLevel ~= nil and ('%d%%'):format(vehicle.cp.driveOnAtFillLevel) or '---';
 
 		if vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE or vehicle.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT then
+			vehicle.cp.hud.content.pages[3][6][1].text = courseplay:loc('COURSEPLAY_REFILL_UNTIL_PCT');
 			vehicle.cp.hud.content.pages[3][6][2].text = ('%d%%'):format(vehicle.cp.refillUntilPct);
 		end;
 
