@@ -1,10 +1,10 @@
 @font-face {
 	font-family: 'courseplay';
-	src:url('fonts/courseplay.eot?et6xq');
-	src:url('fonts/courseplay.eot?#iefixet6xq') format('embedded-opentype'),
-		url('fonts/courseplay.woff?et6xq') format('woff'),
-		url('fonts/courseplay.ttf?et6xq') format('truetype'),
-		url('fonts/courseplay.svg?et6xq#courseplay') format('svg');
+	src:url('fonts/courseplay.eot?1u63wt');
+	src:url('fonts/courseplay.eot?#iefix1u63wt') format('embedded-opentype'),
+		url('fonts/courseplay.woff?1u63wt') format('woff'),
+		url('fonts/courseplay.ttf?1u63wt') format('truetype'),
+		url('fonts/courseplay.svg?1u63wt#courseplay') format('svg');
 	font-weight: normal;
 	font-style: normal;
 }
@@ -26,240 +26,328 @@
 .icon-cloud-download:before {
 	content: "\e9c2";
 }
+
 .icon-github4:before {
 	content: "\eab4";
 }
-.icon-english:before {
-	content: "\e64b";
+
+.icon-fsuk:before {
+	content: "\e64d";
 }
+
+.icon-modhoster:before {
+	content: "\e64e";
+}
+
 .icon-german:before {
 	content: "\e64c";
 }
+
 .icon-edit:before {
 	content: "\e647";
 }
+
 .icon-fix:before {
 	content: "\e648";
 }
+
 .icon-wiki:before {
 	content: "\e646";
 }
+
 .icon-mode1block:before {
 	content: "\e62a";
 }
+
 .icon-mode2block:before {
 	content: "\e62b";
 }
+
 .icon-mode3block:before {
 	content: "\e62c";
 }
+
 .icon-mode4block:before {
 	content: "\e62d";
 }
+
 .icon-mode5block:before {
 	content: "\e62e";
 }
+
 .icon-mode6block:before {
 	content: "\e62f";
 }
+
 .icon-mode7block:before {
 	content: "\e630";
 }
+
 .icon-mode8block:before {
 	content: "\e631";
 }
+
 .icon-mode9block:before {
 	content: "\e632";
 }
+
 .icon-mode1single:before {
 	content: "\e633";
 }
+
 .icon-mode2single:before {
 	content: "\e634";
 }
+
 .icon-mode3single:before {
 	content: "\e635";
 }
+
 .icon-mode4single:before {
 	content: "\e636";
 }
+
 .icon-mode5single:before {
 	content: "\e637";
 }
+
 .icon-mode6single:before {
 	content: "\e638";
 }
+
 .icon-mode7single:before {
 	content: "\e639";
 }
+
 .icon-mode8single:before {
 	content: "\e63a";
 }
+
 .icon-mode9single:before {
 	content: "\e63b";
 }
+
 .icon-page0:before {
 	content: "\e63c";
 }
+
 .icon-page1:before {
 	content: "\e63d";
 }
+
 .icon-page2:before {
 	content: "\e63e";
 }
+
 .icon-page3:before {
 	content: "\e63f";
 }
+
 .icon-page4:before {
 	content: "\e640";
 }
+
 .icon-page5:before {
 	content: "\e641";
 }
+
 .icon-page6:before {
 	content: "\e642";
 }
+
 .icon-page7:before {
 	content: "\e643";
 }
+
 .icon-page8:before {
 	content: "\e644";
 }
+
 .icon-page9:before {
 	content: "\e645";
 }
+
 .icon-headlandClockwise2:before {
 	content: "\e649";
 }
+
 .icon-headlandCounterClockwise2:before {
 	content: "\e64a";
 }
+
 .icon-headlandClockwise:before {
 	content: "\e628";
 }
+
 .icon-headlandCounterClockwise:before {
 	content: "\e629";
 }
+
 .icon-headlandAfter:before {
 	content: "\e61a";
 }
+
 .icon-headlandBefore:before {
 	content: "\e61b";
 }
+
 .icon-recordingDeleteWaypoint:before {
 	content: "\e603";
 }
+
 .icon-recordingPause:before {
 	content: "\e604";
 }
+
 .icon-recordingPlay:before {
 	content: "\e605";
 }
+
 .icon-recordingReverse:before {
 	content: "\e606";
 }
+
 .icon-recordingStop:before {
 	content: "\e607";
 }
+
 .icon-recordingTurn:before {
 	content: "\e608";
 }
+
 .icon-calculator:before {
 	content: "\e609";
 }
+
 .icon-arrowDown:before {
 	content: "\e60a";
 }
+
 .icon-arrowLeft:before {
 	content: "\e60b";
 }
+
 .icon-arrowRight:before {
 	content: "\e60c";
 }
+
 .icon-arrowUp:before {
 	content: "\e60d";
 }
+
 .icon-cancel:before {
 	content: "\e60e";
 }
+
 .icon-clearCourse:before {
 	content: "\e60f";
 }
+
 .icon-close:before {
 	content: "\e610";
 }
+
 .icon-copy:before {
 	content: "\e611";
 }
+
 .icon-crossSign:before {
 	content: "\e612";
 }
+
 .icon-delete:before {
 	content: "\e613";
 }
+
 .icon-eye:before {
 	content: "\e614";
 }
+
 .icon-courseAppend:before {
 	content: "\e615";
 }
+
 .icon-courseMoveToFolder:before {
 	content: "\e616";
 }
+
 .icon-courseMoveToFolder2:before {
 	content: "\e617";
 }
+
 .icon-newFolder:before {
 	content: "\e618";
 }
+
 .icon-loadMergeCourse:before {
 	content: "\e619";
 }
+
 .icon-infoSign:before {
 	content: "\e61d";
 }
+
 .icon-minus:before {
 	content: "\e61e";
 }
+
 .icon-plus:before {
 	content: "\e61f";
 }
+
 .icon-save:before {
 	content: "\e620";
 }
+
 .icon-search:before {
 	content: "\e621";
 }
+
 .icon-waitPointSign:before {
 	content: "\e622";
 }
+
 .icon-waypointSign:before {
 	content: "\e623";
 }
+
 .icon-shovelLoading:before {
 	content: "\e624";
 }
+
 .icon-shovelPreUnloading:before {
 	content: "\e625";
 }
+
 .icon-shovelTransport:before {
 	content: "\e626";
 }
+
 .icon-shovelUnloading:before {
 	content: "\e627";
 }
+
+.icon-english:before {
+	content: "\e64b";
+}
+
 .icon-faq:before {
 	content: "\e600";
 }
+
 .icon-installation:before {
 	content: "\e601";
 }
+
 .icon-changelog:before {
 	content: "\e602";
 }
+
 .icon-cog:before {
 	content: "\f013";
 }
+
 .icon-authors:before {
 	content: "\e61c";
 }
+

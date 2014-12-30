@@ -15,7 +15,8 @@
 	var icons = {
 		'icon-cloud-download': '&#xe9c2;',
 		'icon-github4': '&#xeab4;',
-		'icon-english': '&#xe64b;',
+		'icon-fsuk': '&#xe64d;',
+		'icon-modhoster': '&#xe64e;',
 		'icon-german': '&#xe64c;',
 		'icon-edit': '&#xe647;',
 		'icon-fix': '&#xe648;',
@@ -88,6 +89,7 @@
 		'icon-shovelPreUnloading': '&#xe625;',
 		'icon-shovelTransport': '&#xe626;',
 		'icon-shovelUnloading': '&#xe627;',
+		'icon-english': '&#xe64b;',
 		'icon-faq': '&#xe600;',
 		'icon-installation': '&#xe601;',
 		'icon-changelog': '&#xe602;',
