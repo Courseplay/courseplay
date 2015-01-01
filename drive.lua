@@ -925,9 +925,8 @@ function courseplay:refillSprayer(vehicle, fillLevelPct, driveOn, allowedToDrive
 				if sprayer.trailerInTrigger == activeTool then --Feldrand-Container Guellebomber
 					sprayer.fill = true;
 				end;]]
-
 				courseplay:setInfoText(vehicle, courseplay:loc("COURSEPLAY_LOADING_AMOUNT"):format(activeTool.fillLevel, activeTool.capacity));
-			elseif vehicle.cp.isLoaded then
+			elseif vehicle.cp.isLoaded or (activeToolFillLevel ~= nil and activeToolFillLevel >= driveOn) then
 				if activeTool.isFilling then
 					activeTool:setIsFilling(false);
 				end;
