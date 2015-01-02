@@ -286,6 +286,11 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.isKroegerTAW30 = true;
 		workTool.cp.isPushWagon = true;
 
+	-- Bergmann HT 50 [Giants DLC: ITRunner]
+	elseif workTool.cp.xmlFileName == 'containerChaff.xml' then
+		workTool.cp.isBergmannHT50 = true;
+		workTool.cp.isPushWagon = true;
+
 
 	-- ###########################################################
 
