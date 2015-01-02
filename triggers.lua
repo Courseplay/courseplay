@@ -107,10 +107,18 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 					else
 						for a,b in pairs (self.cpTrafficCollisionIgnoreList) do
 							local veh1 = g_currentMission.nodeToVehicle[a];
-							local veh1Name = veh1.name;
-							if not veh1Name and veh1.cp then veh1Name = veh1.cp.xmlFileName; end;
+							local veh1Name = ""
+							if veh1 ~= nil and veh1.name then
+								veh1Name = veh1.name;
+							elseif veh1 ~= nil and not veh1.name then
+								veh1Name = "noName"					
+							else
+								veh1Name = "noVehicle"
+							end
 							local veh2Name = vehicle.name;
-							if not veh2Name and vehicle.cp then veh2Name = vehicle.cp.xmlFileName; end;
+							if not veh2Name and vehicle.cp then 
+								veh2Name = vehicle.cp.xmlFileName; 
+							end;
 							courseplay:debug(string.format("%s:		%s vs %q", nameNum(self), tostring(veh1Name), tostring(veh2Name)), 3);
 							if g_currentMission.nodeToVehicle[a].id == vehicle.id then
 								courseplay:debug(string.format("%s:		%q is on local list", nameNum(self), tostring(veh2Name)), 3);

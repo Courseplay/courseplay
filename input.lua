@@ -57,7 +57,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 
 		if buttonToHandle then
 			buttonToHandle:setClicked(isDown);
-			if buttonToHandle.hoverText and buttonToHandle.functionToCall ~= nil then
+			if not buttonToHandle.isDisabled and buttonToHandle.hoverText and buttonToHandle.functionToCall ~= nil then
 				self.cp.hud.content.pages[buttonToHandle.page][buttonToHandle.row][1].isClicked = isDown;
 			end;
 			if isUp then
@@ -117,7 +117,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 					end;
 				end;
 
-				if button.hoverText then
+				if button.hoverText and not button.isDisabled then
 					self.cp.hud.content.pages[button.page][button.row][1].isHovered = button.isHovered;
 				end;
 			end;

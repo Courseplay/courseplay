@@ -347,8 +347,8 @@ function courseplay:start(self)
 end;
 
 function courseplay:getCanUseCpMode(vehicle)
-	-- check engine state
-	if not vehicle.isMotorStarted or (vehicle.motorStartTime and vehicle.motorStartTime > g_currentMission.time) then
+	-- check engine running state
+	if not courseplay:getIsEngineReady(vehicle) then
 		return false;
 	end;
 

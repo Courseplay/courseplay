@@ -79,7 +79,7 @@
 		<text name="COURSEPLAY_MAX_SPEED_MODE_RECORDING" 				 text="from recording" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 						 text="maximum speed" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 				 text="automatic (from course, max. %s)" />
-		<text name="COURSEPLAY_NO_COURSE_LOADED" 						 text="course: no course loaded" />
+		<text name="COURSEPLAY_NO_COURSE_LOADED" 						 text="no course loaded" />
 		<text name="COURSEPLAY_WAYPOINT_MODE_1" 						 text="Start and end" />
 		<text name="COURSEPLAY_WAYPOINT_MODE_2" 						 text="without crossing points" />
 		<text name="COURSEPLAY_WAYPOINT_MODE_3" 						 text="show all own" />
@@ -153,6 +153,8 @@
 		<text name="COURSEPLAY_START" 									 text="Start" />
 		<text name="COURSEPLAY_FINISH" 									 text="Finish" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="Course is not valid" />
+
+		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="No shovel could be found" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS" 						 text="Shovel positions" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS_MISSING" 				 text="Missing shovel positions" />
@@ -160,7 +162,16 @@
 		<text name="COURSEPLAY_SHOVEL_TRANSPORT_POSITION" 				 text="Transport position" />
 		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION" 			 text="Pre-unloading position" />
 		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION" 				 text="Unloading position" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION" 			 text="Save loading position" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_TRANSPORT_POSITION" 			 text="Save transport position" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_PRE_UNLOADING_POSITION" 		 text="Save pre-unloading position" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_UNLOADING_POSITION" 			 text="Save unloading position" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 		 text="Move to loading position" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 		 text="Move to transport position" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 	 text="Move to pre-unloading position" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 		 text="Move to unloading position" />
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Stop &amp; go loading" />
+
 		<text name="COURSEPLAY_START_AT_POINT" 							 text="Start course at" />
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="nearest waypoint" />
 		<text name="COURSEPLAY_FIRST_POINT" 							 text="first waypoint" />

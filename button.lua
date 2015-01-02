@@ -130,7 +130,10 @@ function courseplay.button:render()
 			end;
 
 		elseif pg == courseplay.hud.PAGE_COMBI_MODE then
-			if fn == "changeTurnDiameter" then
+			if fn == 'changeCombineOffset' or fn == 'changeTipperOffset' then
+				canScrollUp = vehicle.cp.mode == courseplay.MODE_COMBI or vehicle.cp.mode == courseplay.MODE_OVERLOADER;
+				canScrollDown = canScrollUp;
+			elseif fn == "changeTurnDiameter" then
 				canScrollUp   = true;
 				canScrollDown = vehicle.cp.turnDiameter > 0;
 			elseif fn == "changeFollowAtFillLevel" then
@@ -204,14 +207,14 @@ function courseplay.button:render()
 		if pg ~= -courseplay.hud.PAGE_MANAGE_COURSES then -- NOTE: course buttons' (page -2) visibility are handled in buttonsActiveEnabled(), section 'page2'
 			local show = true;
 
-			--CONDITIONAL DISPLAY
-			--Global
+			-- CONDITIONAL DISPLAY
+			-- Global
 			if pg == "global" then
 				if fn == "showSaveCourseForm" and prm == "course" then
 					show = vehicle.cp.canDrive and not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused and vehicle.Waypoints ~= nil and #(vehicle.Waypoints) ~= 0;
 				end;
 
-			--Page 1
+			-- Page 1
 			elseif pg == courseplay.hud.PAGE_CP_CONTROL then
 				if fn == "setCpMode" then
 					show = vehicle.cp.canSwitchMode and not vehicle.cp.distanceCheck;
@@ -231,7 +234,7 @@ function courseplay.button:render()
 					show = vehicle.cp.canDrive and not vehicle.cp.isDriving;
 				end;
 
-			--Page 2
+			-- Page 2
 			elseif pg == courseplay.hud.PAGE_MANAGE_COURSES then
 				if fn == "reloadCoursesFromXML" then
 					show = g_server ~= nil;
@@ -247,9 +250,11 @@ function courseplay.button:render()
 					end;
 				end;
 
-			--Page 3
+			-- Page 3
 			elseif pg == courseplay.hud.PAGE_COMBI_MODE then
-				if fn == "changeTurnDiameter" and prm < 0 then
+				if fn == 'changeCombineOffset' or fn == 'changeTipperOffset' then
+					show = vehicle.cp.mode == courseplay.MODE_COMBI or vehicle.cp.mode == courseplay.MODE_OVERLOADER;
+				elseif fn == "changeTurnDiameter" and prm < 0 then
 					show = vehicle.cp.turnDiameter > 0;
 				elseif fn == "changeFollowAtFillLevel" then
 					if prm < 0 then
@@ -271,7 +276,7 @@ function courseplay.button:render()
 					end;
 				end;
 
-			--Page 4
+			-- Page 4
 			elseif pg == courseplay.hud.PAGE_MANAGE_COMBINES then
 				if fn == 'selectAssignedCombine' then
 					show = not vehicle.cp.searchCombineAutomatically;
@@ -291,7 +296,7 @@ function courseplay.button:render()
 					show = vehicle.cp.activeCombine ~= nil;
 				end;
 
-			--Page 5
+			-- Page 5
 			elseif pg == courseplay.hud.PAGE_SPEEDS then
 				if fn == 'changeTurnSpeed' then
 					if prm < 0 then
@@ -319,7 +324,7 @@ function courseplay.button:render()
 					end;
 				end;
 
-			--Page 6
+			-- Page 6
 			elseif pg == courseplay.hud.PAGE_GENERAL_SETTINGS then
 				if fn == 'toggleRealisticDriving' then
 					show = vehicle.cp.mode == courseplay.MODE_COMBI or vehicle.cp.mode == courseplay.MODE_OVERLOADER;
@@ -344,7 +349,7 @@ function courseplay.button:render()
 					end;
 				end;
 
-			--Page 7
+			-- Page 7
 			elseif pg == courseplay.hud.PAGE_DRIVING_SETTINGS then
 				if fn == "changeLaneOffset" then
 					show = vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE or vehicle.cp.mode == courseplay.MODE_FIELDWORK;
@@ -358,7 +363,7 @@ function courseplay.button:render()
 					show = vehicle.cp.hasFoundCopyDriver;
 				end;
 
-			--Page 8
+			-- Page 8
 			elseif pg == courseplay.hud.PAGE_COURSE_GENERATION then
 				if fn == 'clearCurrentLoadedCourse' then
 					show = vehicle.cp.canDrive and not vehicle.cp.isDriving;
@@ -405,7 +410,9 @@ function courseplay.button:render()
 				hoverColor = 'closeRed';
 			end;
 
-			if not self.isDisabled and not self.isActive and not self.isHovered and self.canBeClicked and not self.isClicked then
+			if fn == 'moveShovelToPosition' and not self.isDisabled and vehicle.cp.manualShovelPositionOrder and vehicle.cp.manualShovelPositionOrder == prm then  -- forced color
+				targetColor = 'warningRed';
+			elseif not self.isDisabled and not self.isActive and not self.isHovered and self.canBeClicked and not self.isClicked then
 				targetColor = 'white';
 			elseif self.isDisabled then
 				targetColor = 'whiteDisabled';

@@ -130,12 +130,11 @@ function courseplay:load(xmlFile)
 	self.cp.shovelStopAndGo = false;
 	self.cp.shovelLastFillLevel = nil;
 	self.cp.shovelStatePositions = {};
-	self.cp.hasShovelStatePositions = {
-		[2] = false;
-		[3] = false;
-		[4] = false;
-		[5] = false;
-	};
+	self.cp.hasShovelStatePositions = {};
+	self.cp.manualShovelPositionOrder = nil;
+	for i=2,5 do
+		self.cp.hasShovelStatePositions[i] = false;
+	end;
 
 	-- Visual i3D waypoint signs
 	self.cp.signs = {
@@ -799,6 +798,13 @@ function courseplay:update(dt)
 	if self.cp.collidingVehicleId ~= nil and g_currentMission.nodeToVehicle[self.cp.collidingVehicleId] ~= nil and g_currentMission.nodeToVehicle[self.cp.collidingVehicleId].isCpPathvehicle then
 		courseplay:setPathVehiclesSpeed(self,dt)
 	end
+
+	-- MODE 9: move shovel to positions (manually)
+	if self.cp.mode == courseplay.MODE_SHOVEL_FILL_AND_EMPTY and self.cp.manualShovelPositionOrder ~= nil and self.cp.movingToolsPrimary and self.cp.movingToolsSecondary then
+		if courseplay:checkAndSetMovingToolsPosition(self, self.cp.movingToolsPrimary, self.cp.movingToolsSecondary, self.cp.shovelStatePositions[ self.cp.manualShovelPositionOrder ], dt) or courseplay:timerIsThrough(self, 'manualShovelPositionOrder') then
+			courseplay:resetManualShovelPositionOrder(self);
+		end;
+	end;
 end; --END update()
 
 --[[
