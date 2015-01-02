@@ -62,7 +62,7 @@
 		<text name="COURSEPLAY_COMBINE_SEARCH_MODE" 					 text="Поиск:" />
 		<text name="COURSEPLAY_CURRENT" 								 text="Выбран:" />
 		<text name="COURSEPLAY_AUTOMATIC_SEARCH" 						 text="автоматически" />
-		<text name="COURSEPLAY_MANUAL_SEARCH" 							 text="в ручную" />
+		<text name="COURSEPLAY_MANUAL_SEARCH" 							 text="вручную" />
 		<text name="COURSEPLAY_SEARCH_COMBINE_ON_FIELD" 				 text="Комбайн с поля № %s" />
 		<text name="COURSEPLAY_COPY_COURSE" 							 text="Копировать:" />
 		<text name="COURSEPLAY_VEHICLE" 								 text="Транспорт" />
@@ -101,7 +101,7 @@
 		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 					 text="Еду рядом с комбайном" />
 		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 						 text="Маневрирую для погрузки" />
 		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 				 text="Комбайну нужна разгрузка" />
-		<text name="COURSEPLAY_TURNING_TO_COORDS" 						 text="Возращение к %d %d" />
+		<text name="COURSEPLAY_TURNING_TO_COORDS" 						 text="Возвращение к %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 						 text="Еду на временную стоянку" />
 		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 					 text="Жду заполнения бункера" />
 		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 					 text="Ищу комбайн для работы" />
@@ -144,7 +144,7 @@
 		<text name="COURSEPLAY_RIDGEMARKERS" 							 text="Маркера:" />
 		<text name="COURSEPLAY_UNLOADING_ON_FIELD" 						 text="Разгрузка на поле" />
 		<text name="COURSEPLAY_AUTOMATIC" 								 text="автоматически" />
-		<text name="COURSEPLAY_MANUAL" 									 text="в ручную" />
+		<text name="COURSEPLAY_MANUAL" 									 text="вручную" />
 		<text name="COURSEPLAY_TURN_MANEUVER" 							 text="Поворот:" />
 		<text name="COURSEPLAY_START" 									 text="Старт" />
 		<text name="COURSEPLAY_FINISH" 									 text="Финиш" />
@@ -205,7 +205,8 @@
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Показать инфо на карте:" />
 		<text name="COURSEPLAY_ALWAYS_USE_4WD" 							 text="Всегда 4х4" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="Включить автосканирование полей?" />
-		<text name="COURSEPLAY_YES_NO_WAGES" 							 text="Рабочие хотят %s в час!\nРазрешить выплачивать зарплаты?" />
+		<text name="COURSEPLAY_YES_NO_WAGES" 							 text="Рабочие хотят %s в час!
+		Разрешить выплачивать зарплаты?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 					 text="КАЛЬКУЛЯЦИЯ ПОСЕВОВ" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 				 text="Участок: %d (%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 			 text="%s" />
