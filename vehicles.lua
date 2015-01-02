@@ -35,6 +35,22 @@ function courseplay:createNewLinkedNode(object, nodeName, linkToNode)
 	return node;
 end;
 
+function courseplay:deleteCollisionVehicle(vehicle)
+	if vehicle.cp.collidingVehicleId ~= nil  then
+		local Id = vehicle.cp.collidingVehicleId
+		if g_currentMission.nodeToVehicle[Id].isCpPathvehicle  then
+			g_currentMission.nodeToVehicle[Id] = nil
+		end
+		vehicle.cp.collidingObjects.all[Id] = nil
+		--vehicle.CPnumCollidingVehicles = max(vehicle.CPnumCollidingVehicles - 1, 0);
+		--if vehicle.CPnumCollidingVehicles == 0 then
+		--vehicle.numCollidingVehicles[triggerId] = max(vehicle.numCollidingVehicles[triggerId]-1, 0);
+		vehicle.cp.collidingObjects[4][Id] = nil
+		vehicle.cp.collidingVehicleId = nil
+		courseplay:debug(string.format('%s: 	deleteCollisionVehicle: setting "collidingVehicleId" to nil', nameNum(vehicle)), 3);
+	end
+end
+
 --- courseplay:findJointNodeConnectingToNode(workTool, fromNode, toNode)
 --	Returns: (node, backtrack, rotLimits)
 --		node will return either:		1. The jointNode that connects to the toNode,
@@ -1038,7 +1054,7 @@ function courseplay:setAckermannSteeringInfo(vehicle, xmlFile)
 			while true do
 				local key = mainKey .. "rotCenterWheel" .. tostring(i);
 				local val = getXMLInt(xmlFile, key);
-				if val then
+				if val and vehicle.wheels[val + 1].driveNode then
 					if not ASInfo.rotCenterWheels then
 						ASInfo.rotCenterWheels = {};
 					end;
@@ -1054,23 +1070,6 @@ function courseplay:setAckermannSteeringInfo(vehicle, xmlFile)
 		end;
 	end;
 end;
-
-
-function courseplay:deleteCollisionVehicle(vehicle)
-	if vehicle.cp.collidingVehicleId ~= nil  then
-		local Id = vehicle.cp.collidingVehicleId
-		if g_currentMission.nodeToVehicle[Id].isCpPathvehicle  then
-			g_currentMission.nodeToVehicle[Id] = nil
-		end
-		vehicle.cp.collidingObjects.all[Id] = nil
-		--vehicle.CPnumCollidingVehicles = max(vehicle.CPnumCollidingVehicles - 1, 0);
-		--if vehicle.CPnumCollidingVehicles == 0 then
-		--vehicle.numCollidingVehicles[triggerId] = max(vehicle.numCollidingVehicles[triggerId]-1, 0);
-		vehicle.cp.collidingObjects[4][Id] = nil
-		vehicle.cp.collidingVehicleId = nil
-		courseplay:debug(string.format('%s: 	deleteCollisionVehicle: setting "collidingVehicleId" to nil', nameNum(vehicle)), 3);
-	end
-end
 
 function courseplay:setPathVehiclesSpeed(vehicle,dt)
 	pathVehicle = g_currentMission.nodeToVehicle[vehicle.cp.collidingVehicleId]
