@@ -3,8 +3,15 @@ local abs, max, rad, sin = math.abs, math.max, math.rad, math.sin;
 function courseplay:goReverse(vehicle,lx,lz)
 	local fwd = false;
 	local workTool = vehicle.cp.workTools[1];
-	if workTool and workTool.cp.isAttacherModule then
-		workTool = vehicle.cp.workTools[2];
+	if workTool then
+		-- Attacher modules
+		if workTool.cp.isAttacherModule then
+			workTool = vehicle.cp.workTools[2];
+
+		-- HookLift modules needs the hookLiftTrailer
+		elseif courseplay:isHookLift(workTool) then
+			workTool = workTool.attacherVehicle;
+		end;
 	end;
 	local debugActive = courseplay.debugChannels[13];
 	local isNotValid = vehicle.cp.numWorkTools == 0 or workTool == nil or workTool.cp.isPivot == nil or not workTool.cp.frontNode or vehicle.cp.mode == 9;
@@ -276,7 +283,7 @@ function courseplay:getReverseProperties(vehicle, workTool)
 		courseplay:debug('\tworkTool has "Shovel" spec -> return', 13);
 		return;
 	end;
-	if not courseplay:isWheeledWorkTool(workTool) then
+	if not courseplay:isWheeledWorkTool(workTool) and not courseplay:isHookLift(workTool) then
 		courseplay:debug('\tworkTool doesn\'t need reverse properties -> return', 13);
 		return;
 	end;
@@ -291,7 +298,7 @@ function courseplay:getReverseProperties(vehicle, workTool)
 
 	workTool.cp.realUnloadOrFillNode = courseplay:getRealUnloadOrFillNode(workTool);
 
-	if workTool.attacherVehicle == vehicle or workTool.attacherVehicle.cp.isAttacherModule then
+	if workTool.attacherVehicle == vehicle or vehicle.cp.isHookLiftTrailer or workTool.attacherVehicle.cp.isAttacherModule then
 		workTool.cp.frontNode = courseplay:getRealTrailerFrontNode(workTool);
 	else
 		workTool.cp.frontNode = courseplay:getRealDollyFrontNode(workTool.attacherVehicle);

@@ -157,7 +157,8 @@ function courseplay:getDistances(object)
 	-- IMPLEMENTS OR TRAILERS
 	else
 		local node = object.attacherJoint.node;
-		if object.attacherJoint.rootNode ~= object.rootNode then
+		local isHookLift = courseplay:isHookLift(object);
+		if object.attacherJoint.rootNode ~= object.rootNode and not isHookLift then
 			local tempNode, backTrack = courseplay:findJointNodeConnectingToNode(object, object.attacherJoint.rootNode, object.rootNode);
 			if tempNode and backTrack then
 				node = tempNode;
@@ -194,7 +195,7 @@ function courseplay:getDistances(object)
 		setRotation(node, 0, 0, 0);
 
 		-- Find the distance from attacherJoint to rear wheel
-		if object.wheels and #object.wheels > 0 then
+		if object.wheels and #object.wheels > 0 and not isHookLift then
 			local length = 0;
 			for _, wheel in ipairs(object.wheels) do
 				local nx, ny, nz = getWorldTranslation(wheel.driveNode);

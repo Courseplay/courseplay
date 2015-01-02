@@ -53,6 +53,9 @@ function courseplay:setNameVariable(workTool)
 	if workTool.cp.hasSpecializationFillable then
 		workTool.cp.closestTipDistance = math.huge;
 	end;
+	if workTool.typeName == 'hookLiftTrailer' then
+		workTool.cp.isHookLiftTrailer = true;
+	end;
 
 	--[[ DEBUG
 	print(nameNum(workTool) .. ': default specs list');
