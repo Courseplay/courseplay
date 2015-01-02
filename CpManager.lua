@@ -175,11 +175,9 @@ function CpManager:deleteMap()
 	-- delete fieldScanInfo overlays
 	if self.fieldScanInfo then
 		self.fieldScanInfo.bgOverlay:delete();
-		self.fieldScanInfo.bgOverlay = nil;
 		self.fieldScanInfo.progressBarOverlay:delete();
-		self.fieldScanInfo.progressBarOverlay = nil;
+		self.fieldScanInfo = nil;
 	end;
-
 end;
 
 function CpManager:update(dt)
