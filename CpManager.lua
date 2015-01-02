@@ -764,6 +764,7 @@ end;
 function CpManager:renderGlobalInfoTexts(basePosY)
 	local git = self.globalInfoText;
 	local line = 0;
+	courseplay:setFontSettings('white', false, 'left');
 	for _,refIndexes in pairs(git.content) do
 		if line >= self.globalInfoText.maxNum then
 			break;
@@ -781,7 +782,6 @@ function CpManager:renderGlobalInfoTexts(basePosY)
 			bg:render();
 
 			-- text
-			courseplay:setFontSettings('white', false);
 			local textPosY = gfxPosY + (git.lineHeight - git.fontSize) * 1.2; -- should be (lineHeight-fontSize)*0.5, but there seems to be some pixel/sub-pixel rendering error
 			renderText(git.textPosX, textPosY, git.fontSize, data.text);
 
