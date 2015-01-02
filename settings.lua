@@ -172,7 +172,7 @@ function courseplay:buttonsActiveEnabled(vehicle, section)
 			end;
 		end;
 
-	elseif vehicle.cp.hud.currentPage == 2 and section == 'page2' then
+	elseif vehicle.cp.hud.currentPage == 2 and (anySection or section == 'page2') then
 		local enable, show = true, true;
 		local numVisibleCourses = #(vehicle.cp.hud.courses);
 		local nofolders = nil == next(g_currentMission.cp_folders);
@@ -257,6 +257,8 @@ function courseplay:buttonsActiveEnabled(vehicle, section)
 			if button.functionToCall == 'saveShovelPosition' then --isToggleButton
 				button:setActive(vehicle.cp.shovelStatePositions[button.parameter] ~= nil);
 				button:setCanBeClicked(true);
+			elseif button.functionToCall == 'moveShovelToPosition' then
+				button:setDisabled(not vehicle.cp.hasShovelStatePositions[button.parameter]);
 			end;
 		end;
 	end;
@@ -1103,26 +1105,46 @@ end;
 function courseplay:saveShovelPosition(vehicle, stage)
 	if stage == nil then return; end;
 
+	courseplay:debug(('%s: saveShovelPosition(..., %s)'):format(nameNum(vehicle), tostring(stage)), 10);
 	if stage >= 2 and stage <= 5 then
 		if vehicle.cp.shovelStatePositions[stage] ~= nil then
 			vehicle.cp.shovelStatePositions[stage] = nil;
-			vehicle.cp.hasShovelStatePositions[stage] = false;
 		else
 			local mt, secondary = courseplay:getMovingTools(vehicle);
 			local curRot, curTrans = courseplay:getCurrentMovingToolsPosition(vehicle, mt, secondary);
 			courseplay:debug(tableShow(curRot, ('saveShovelPosition(%q, %d) curRot'):format(nameNum(vehicle), stage), 10), 10);
 			courseplay:debug(tableShow(curTrans, ('saveShovelPosition(%q, %d) curTrans'):format(nameNum(vehicle), stage), 10), 10);
-			if curRot and curTrans then
+			if curRot and next(curRot) ~= nil and curTrans and next(curTrans) ~= nil then
 				vehicle.cp.shovelStatePositions[stage] = {
 					rot = curRot,
 					trans = curTrans
 				};
 			end;
-			vehicle.cp.hasShovelStatePositions[stage] = vehicle.cp.shovelStatePositions[stage] ~= nil;
 		end;
+		vehicle.cp.hasShovelStatePositions[stage] = vehicle.cp.shovelStatePositions[stage] ~= nil;
+		courseplay:debug('    hasShovelStatePositions=' .. tostring(vehicle.cp.hasShovelStatePositions[stage]), 10);
 
 	end;
 	courseplay:buttonsActiveEnabled(vehicle, 'shovel');
+end;
+
+function courseplay:moveShovelToPosition(vehicle, stage)
+	courseplay:debug(('%s: moveShovelToPosition(..., %s)'):format(nameNum(vehicle), tostring(stage)), 10);
+	if not stage or not vehicle.cp.hasShovelStatePositions[stage] or not courseplay:getIsEngineReady(vehicle) then
+		courseplay:debug(('    return (hasShovelStatePositions=%s)'):format(tostring(vehicle.cp.hasShovelStatePositions[stage])), 10);
+		return;
+	end;
+
+	vehicle.cp.manualShovelPositionOrder = stage;
+	vehicle.cp.movingToolsPrimary, vehicle.cp.movingToolsSecondary = courseplay:getMovingTools(vehicle);
+	courseplay:setCustomTimer(vehicle, 'manualShovelPositionOrder', 12); -- backup timer: if position hasn't been set within time frame, abort
+end;
+
+function courseplay:resetManualShovelPositionOrder(vehicle)
+	courseplay:debug(('%s: resetManualShovelPositionOrder()'):format(nameNum(vehicle)), 10);
+	vehicle.cp.manualShovelPositionOrder = nil;
+	vehicle.cp.movingToolsPrimary, vehicle.cp.movingToolsSecondary = nil, nil;
+	courseplay:resetCustomTimer(vehicle, 'manualShovelPositionOrder');
 end;
 
 function courseplay:toggleShovelStopAndGo(vehicle)
@@ -1594,6 +1616,10 @@ function courseplay:setAttachedCombine(vehicle)
 	end;
 
 	courseplay:setMinHudPage(vehicle);
+end;
+
+function courseplay:getIsEngineReady(vehicle)
+	return vehicle.isMotorStarted and (vehicle.motorStartTime == nil or vehicle.motorStartTime < g_currentMission.time);
 end;
 
 ----------------------------------------------------------------------------------------------------

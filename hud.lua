@@ -182,7 +182,7 @@ function courseplay.hud:setup()
 		[self.PAGE_GENERAL_SETTINGS]  = self.basePosX + self:pxToNormal(350, 'x'),
 		[self.PAGE_DRIVING_SETTINGS]  = self.basePosX + self:pxToNormal(368, 'x'),
 		[self.PAGE_COURSE_GENERATION] = self.basePosX + self:pxToNormal(272, 'x'),
-		[self.PAGE_SHOVEL_POSITIONS]  = self.basePosX + self:pxToNormal(442, 'x'),
+		[self.PAGE_SHOVEL_POSITIONS]  = self.basePosX + self:pxToNormal(390, 'x'),
 	};
 	self.col2posXforce = {
 		[self.PAGE_COMBINE_CONTROLS] = {
@@ -1062,7 +1062,9 @@ function courseplay.hud:loadPage(vehicle, page)
 		vehicle.cp.hud.content.pages[9][4][1].text = courseplay:loc('COURSEPLAY_SHOVEL_UNLOADING_POSITION');
 
 		for state=2,5 do
-			vehicle.cp.hud.content.pages[9][state-1][2].text = vehicle.cp.hasShovelStatePositions[state] and 'OK' or '';
+			if vehicle.cp.hasShovelStatePositions[state] then
+				vehicle.cp.hud.content.pages[9][state-1][2].text = 'OK';
+			end;
 		end;
 
 		vehicle.cp.hud.content.pages[9][5][1].text = courseplay:loc('COURSEPLAY_SHOVEL_STOP_AND_GO');
@@ -1558,15 +1560,22 @@ function courseplay.hud:setupVehicleHud(vehicle)
 
 	-- ##################################################
 	-- Page 9: Shovel settings
-	local shovelW = self:pxToNormal(22, 'x');
-	local shovelY = self:pxToNormal(22, 'y');
-	local shovelX = self.contentMinX + self:pxToNormal(330, 'x');
-	courseplay.button:new(vehicle, 9, { 'iconSprite.png', 'shovelLoading' },   'saveShovelPosition', 2, shovelX, self.linesButtonPosY[1], shovelW, shovelY, 1, nil, true, false, true);
-	courseplay.button:new(vehicle, 9, { 'iconSprite.png', 'shovelTransport' }, 'saveShovelPosition', 3, shovelX, self.linesButtonPosY[2], shovelW, shovelY, 2, nil, true, false, true);
-	courseplay.button:new(vehicle, 9, { 'iconSprite.png', 'shovelPreUnload' }, 'saveShovelPosition', 4, shovelX, self.linesButtonPosY[3], shovelW, shovelY, 3, nil, true, false, true);
-	courseplay.button:new(vehicle, 9, { 'iconSprite.png', 'shovelUnloading' }, 'saveShovelPosition', 5, shovelX, self.linesButtonPosY[4], shovelW, shovelY, 4, nil, true, false, true);
+	local pg = self.PAGE_SHOVEL_POSITIONS;
+	local btnW = self:pxToNormal(22, 'x');
+	local btnH = self:pxToNormal(22, 'y');
+	local shovelX1 = self.col2posX[pg] - btnW * 2;
+	local shovelX2 = self.col2posX[pg] + btnW * 3;
+	courseplay.button:new(vehicle, pg, { 'iconSprite.png', 'shovelLoading'   }, 'saveShovelPosition', 2, shovelX1, self.linesButtonPosY[1], btnW, btnH, 1, nil, true, false, true, courseplay:loc('COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION'));
+	courseplay.button:new(vehicle, pg, { 'iconSprite.png', 'shovelTransport' }, 'saveShovelPosition', 3, shovelX1, self.linesButtonPosY[2], btnW, btnH, 2, nil, true, false, true, courseplay:loc('COURSEPLAY_SHOVEL_SAVE_TRANSPORT_POSITION'));
+	courseplay.button:new(vehicle, pg, { 'iconSprite.png', 'shovelPreUnload' }, 'saveShovelPosition', 4, shovelX1, self.linesButtonPosY[3], btnW, btnH, 3, nil, true, false, true, courseplay:loc('COURSEPLAY_SHOVEL_SAVE_PRE_UNLOADING_POSITION'));
+	courseplay.button:new(vehicle, pg, { 'iconSprite.png', 'shovelUnloading' }, 'saveShovelPosition', 5, shovelX1, self.linesButtonPosY[4], btnW, btnH, 4, nil, true, false, true, courseplay:loc('COURSEPLAY_SHOVEL_SAVE_UNLOADING_POSITION'));
 
-	courseplay.button:new(vehicle, 9, nil, 'toggleShovelStopAndGo', nil, self.col1posX, self.linesPosY[5], self.visibleArea.width, self.lineHeight, 5, nil, true);
+	courseplay.button:new(vehicle, pg, { 'iconSprite.png', 'recordingPlay' }, 'moveShovelToPosition', 2, shovelX2, self.linesButtonPosY[1], wSmall, hSmall, 1, nil, true, false, false, courseplay:loc('COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION'));
+	courseplay.button:new(vehicle, pg, { 'iconSprite.png', 'recordingPlay' }, 'moveShovelToPosition', 3, shovelX2, self.linesButtonPosY[2], wSmall, hSmall, 2, nil, true, false, false, courseplay:loc('COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION'));
+	courseplay.button:new(vehicle, pg, { 'iconSprite.png', 'recordingPlay' }, 'moveShovelToPosition', 4, shovelX2, self.linesButtonPosY[3], wSmall, hSmall, 3, nil, true, false, false, courseplay:loc('COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION'));
+	courseplay.button:new(vehicle, pg, { 'iconSprite.png', 'recordingPlay' }, 'moveShovelToPosition', 5, shovelX2, self.linesButtonPosY[4], wSmall, hSmall, 4, nil, true, false, false, courseplay:loc('COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION'));
+
+	courseplay.button:new(vehicle, pg, nil, 'toggleShovelStopAndGo', nil, self.col1posX, self.linesPosY[5], self.visibleArea.width, self.lineHeight, 5, nil, true);
 	--END Page 9
 
 

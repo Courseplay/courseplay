@@ -153,6 +153,8 @@
 		<text name="COURSEPLAY_START" 									 text="Starten" />
 		<text name="COURSEPLAY_FINISH" 									 text="Beenden" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="Kein gültiger Kurs geladen" />
+
+		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="keine Schaufel vorhanden" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS" 						 text="Schaufelstellung" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS_MISSING" 				 text="Es fehlen Schaufelstellungen" />
@@ -160,7 +162,16 @@
 		<text name="COURSEPLAY_SHOVEL_TRANSPORT_POSITION" 				 text='Position "Transport"' />
 		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION" 			 text='Position "vor Abladen"' />
 		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION" 				 text='Position "Abladen"' />
+		<text name="COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION" 			 text='"Beladen"-Position speichern' />
+		<text name="COURSEPLAY_SHOVEL_SAVE_TRANSPORT_POSITION" 			 text='"Transport"-Position speichern' />
+		<text name="COURSEPLAY_SHOVEL_SAVE_PRE_UNLOADING_POSITION" 		 text='"Vor abladen"-Position speichern' />
+		<text name="COURSEPLAY_SHOVEL_SAVE_UNLOADING_POSITION" 			 text='"Abladen"-Position speichern' />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 		 text='"Beladen"-Position setzen' />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 		 text='"Transport"-Position setzen' />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 	 text='"Vor abladen"-Position setzen' />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 		 text='"Abladen"-Position setzen' />
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Stop &amp; Go Laden" />
+
 		<text name="COURSEPLAY_START_AT_POINT" 							 text="Kurs beginnen am" />
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="nächsten Wegpunkt" />
 		<text name="COURSEPLAY_FIRST_POINT" 							 text="ersten Wegpunkt" />
