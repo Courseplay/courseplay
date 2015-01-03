@@ -1341,18 +1341,13 @@ function courseplay:setRecordNumber(vehicle, number)
 	if vehicle.recordnumber ~= number then
 		local oldValue = vehicle.recordnumber;
 		vehicle.recordnumber = number;
-		courseplay:onRecordNumberChanged(vehicle, oldValue);
+		if vehicle.recordnumber > 1 then
+			vehicle.cp.lastRecordnumber = vehicle.recordnumber - 1;
+		else
+			vehicle.cp.lastRecordnumber = 1;
+		end;
+		vehicle:setCpVar('HUDrecordnumber', vehicle.recordnumber)
 	end;
-end;
-
-function courseplay:onRecordNumberChanged(vehicle, oldValue)
-	if vehicle.recordnumber > 1 then
-		vehicle.cp.lastRecordnumber = vehicle.recordnumber - 1;
-	else
-		vehicle.cp.lastRecordnumber = 1;
-	end;
-	vehicle.cp.HUDrecordnumber = vehicle.recordnumber;
-	-- print(('%s: onRecordNumberChanged(): new=%d, old=%s'):format(nameNum(vehicle), vehicle.recordnumber, tostring(oldValue)));
 end;
 
 function courseplay:getIsCourseplayDriving()
@@ -1360,11 +1355,6 @@ function courseplay:getIsCourseplayDriving()
 end;
 
 function courseplay:setIsCourseplayDriving(active)
-	if self.cp.isDriving ~= active then
-		self.cp.isDriving = active;
-		-- courseplay:onIsDrivingChanged(self);
-	end;
+	self:setCpVar('isDriving',active)
 end;
 
-function courseplay:onIsDrivingChanged(vehicle)
-end;

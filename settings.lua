@@ -1624,25 +1624,33 @@ end;
 
 ----------------------------------------------------------------------------------------------------
 
-function courseplay:setCpVar(varName, value)
+function courseplay:setCpVar(varName, value,noEventSend)
 	if self.cp[varName] ~= value then
 		local oldValue = self.cp[varName];
 		self.cp[varName] = value;
-		courseplay:onCpVarChanged(self, varName, oldValue);
-	end;
-end;
-
-function courseplay:onCpVarChanged(vehicle, varName, oldValue)
-	-- print(('%s: onCpVarChanged(%q, %q) [old value=%q]'):format(nameNum(vehicle), tostring(varName), tostring(vehicle.cp[varName]), tostring(oldValue)));
-
-	-- TODO (Jakob): this is hud related and doesn't really belong here but rather in the hud.lua
-	if varName:sub(1, 3) == 'HUD' then
-		if Utils.startsWith(varName, 'HUD0') then
-			courseplay.hud:setReloadPageOrder(vehicle, 0, true);
-		elseif Utils.startsWith(varName, 'HUD1') then
-			courseplay.hud:setReloadPageOrder(vehicle, 1, true);
-		elseif Utils.startsWith(varName, 'HUD4') then
-			courseplay.hud:setReloadPageOrder(vehicle, 4, true);
+		
+		print(string.format("setCpVar: %s: %s",varName,tostring(value)))
+		if not noEventSend then
+			if varName == "isDriving" then
+				print("setCpVar:sendEvent")
+				CourseplayEvent.sendEvent(self, "self.cp."..varName, value)
+			end
+		end
+		-- TODO (Jakob): this is hud related and doesn't really belong here but rather in the hud.lua
+		if varName == "isDriving" then
+			print("reload page 1")
+			courseplay.hud:setReloadPageOrder(self, 1, true);
+		elseif varName:sub(1, 3) == 'HUD' then
+			if Utils.startsWith(varName, 'HUD0') then
+				print("reload page 0")
+				courseplay.hud:setReloadPageOrder(self, 0, true);
+			elseif Utils.startsWith(varName, 'HUD1') then
+				print("reload page 1")
+				courseplay.hud:setReloadPageOrder(self, 1, true);
+			elseif Utils.startsWith(varName, 'HUD4') then
+				print("reload page 4")
+				courseplay.hud:setReloadPageOrder(self, 4, true);
+			end;
 		end;
 	end;
 end;
