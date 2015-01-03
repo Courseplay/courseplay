@@ -80,7 +80,7 @@ Tradutores: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR] 
 		</ru>
 	</description>
 
-	<multiplayer supported="false" />
+	<multiplayer supported="true" />
 	<iconFilename>img/store.dds</iconFilename>
 	<l10n filenamePrefix="translations/translation" /> <!-- load translations from "translations/translation_<language>.xml file -->
 

@@ -4,7 +4,7 @@ local abs, max, min, pow, sin , huge = math.abs, math.max, math.min, math.pow, m
 
 -- drives recored course
 function courseplay:drive(self, dt)
-	if not courseplay:getCanUseCpMode(self) then
+	if g_server == nil or not courseplay:getCanUseCpMode(self) then
 		return;
 	end;
 

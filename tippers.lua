@@ -309,13 +309,9 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 		end;
 
 		-- TURN DIAMETER
-		--if CpManager.isDeveloper then
-			-- New Turn Radius Calculation
+		if g_server ~= nil then
 			courseplay:setAutoTurnDiameter(vehicle, hasWorkTool);
-		--[[else
-			-- Old Turn Radius Calculation
-			courseplay:setOldAutoTurnDiameter(vehicle, hasWorkTool);
-		end;]]
+		end
 
 		-- TIP REFERENCE POINTS
 		courseplay:setTipRefOffset(vehicle);

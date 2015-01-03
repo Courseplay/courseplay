@@ -1607,7 +1607,7 @@ function courseplay:setAttachedCombine(vehicle)
 	vehicle.cp.attachedCombine = nil;
 	if not (vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable or vehicle.cp.isSugarBeetLoader) and vehicle.attachedImplements then
 		for _,impl in pairs(vehicle.attachedImplements) do
-			if courseplay:isAttachedCombine(impl.object) then
+			if impl.object and courseplay:isAttachedCombine(impl.object) then
 				vehicle.cp.attachedCombine = impl.object;
 				courseplay:debug(('    attachedCombine=%s, attachedCombine .cp=%s'):format(nameNum(impl.object), tostring(impl.object.cp)), 6);
 				break;

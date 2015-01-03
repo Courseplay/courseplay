@@ -2,6 +2,10 @@ local curFile = 'start_stop.lua';
 
 -- starts driving the course
 function courseplay:start(self)
+	if g_server == nil then
+		return
+	end
+
 	self.maxnumber = #(self.Waypoints)
 	if self.maxnumber < 1 then
 		return
@@ -436,6 +440,10 @@ end;
 
 -- stops driving the course
 function courseplay:stop(self)
+	if g_server == nil then
+		return
+	end
+	
 	self.forceIsActive = self.cp.forceIsActiveBackup;
 	self.stopMotorOnLeave = self.cp.stopMotorOnLeaveBackup;
 	self.deactivateOnLeave = self.cp.deactivateOnLeaveBackup;
