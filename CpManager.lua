@@ -11,20 +11,21 @@ function CpManager:loadMap(name)
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- XML PATHS
-	local savegameDir;
-	if g_currentMission.missionInfo.savegameDirectory then
-		savegameDir = g_currentMission.missionInfo.savegameDirectory;
-	end;
-	if not savegameDir and g_careerScreen.currentSavegame and g_careerScreen.currentSavegame.savegameIndex then -- TODO (Jakob): g_careerScreen.currentSavegame not available on DS. MP maybe as well
-		savegameDir = ('%ssavegame%d'):format(getUserProfileAppPath(), g_careerScreen.currentSavegame.savegameIndex);
-	end;
-	if not savegameDir and g_currentMission.missionInfo.savegameIndex ~= nil then
-		savegameDir = ('%ssavegame%d'):format(getUserProfileAppPath(), g_careerScreen.missionInfo.savegameIndex);
-	end;
-	self.savegameFolderPath = savegameDir;
-	self.cpXmlFilePath = self.savegameFolderPath .. '/courseplay.xml';
-	self.cpFieldsXmlFilePath = self.savegameFolderPath .. '/courseplayFields.xml';
-
+	if g_server ~= nil then
+		local savegameDir;
+		if g_currentMission.missionInfo.savegameDirectory then
+			savegameDir = g_currentMission.missionInfo.savegameDirectory;
+		end;
+		if not savegameDir and g_careerScreen.currentSavegame and g_careerScreen.currentSavegame.savegameIndex then -- TODO (Jakob): g_careerScreen.currentSavegame not available on DS. MP maybe as well
+			savegameDir = ('%ssavegame%d'):format(getUserProfileAppPath(), g_careerScreen.currentSavegame.savegameIndex);
+		end;
+		if not savegameDir and g_currentMission.missionInfo.savegameIndex ~= nil then
+			savegameDir = ('%ssavegame%d'):format(getUserProfileAppPath(), g_careerScreen.missionInfo.savegameIndex);
+		end;
+		self.savegameFolderPath = savegameDir;
+		self.cpXmlFilePath = self.savegameFolderPath .. '/courseplay.xml';
+		self.cpFieldsXmlFilePath = self.savegameFolderPath .. '/courseplayFields.xml';
+	end
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- SETUP DEFAULT GLOBAL DATA
 	courseplay.signs:setup();
@@ -36,8 +37,9 @@ function CpManager:loadMap(name)
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- LOAD SETTINGS FROM COURSEPLAY.XML / SAVE DEFAULT SETTINGS IF NOT EXISTING
-	self:loadOrSetXmlSettings();
-
+	if g_server ~= nil then
+		self:loadOrSetXmlSettings();
+	end
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- SETUP (continued)
 	courseplay.hud:setup(); -- NOTE: hud has to be set up after the xml settings have been loaded, as almost all its values are based on basePosX/Y

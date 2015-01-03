@@ -959,24 +959,24 @@ function courseplay:readStream(streamId, connection)
 	self.cp.toolOffsetX = streamDebugReadFloat32(streamId)
 	self.cp.toolOffsetZ = streamDebugReadFloat32(streamId)
 	courseplay:setHudPage(self, streamDebugReadInt32(streamId));
-	self:setCpVar('HUDrecordnumber', streamDebugReadInt32(streamId));
-	self:setCpVar('HUD0noCourseplayer', streamDebugReadBool(streamId));
-	self:setCpVar('HUD0wantsCourseplayer', streamDebugReadBool(streamId));
-	self:setCpVar('HUD0combineForcedSide', streamDebugReadString(streamId));
-	self:setCpVar('HUD0isManual', streamDebugReadBool(streamId));
-	self:setCpVar('HUD0turnStage', streamDebugReadInt32(streamId));
-	self:setCpVar('HUD0tractorForcedToStop', streamDebugReadBool(streamId));
-	self:setCpVar('HUD0tractorName', streamDebugReadString(streamId));
-	self:setCpVar('HUD0tractor', streamDebugReadBool(streamId));
-	self:setCpVar('HUD1wait', streamDebugReadBool(streamId));
-	self:setCpVar('HUD1noWaitforFill', streamDebugReadBool(streamId));
-	self:setCpVar('HUD4hasActiveCombine', streamDebugReadBool(streamId));
-	self:setCpVar('HUD4combineName', streamDebugReadString(streamId));
-	self:setCpVar('HUD4savedCombine', streamDebugReadBool(streamId));
-	self:setCpVar('HUD4savedCombineName', streamDebugReadString(streamId));
-	courseplay:setRecordNumber(self, streamDebugReadInt32(streamId));
-	courseplay:setIsRecording(self, streamDebugReadBool(streamId));
-	courseplay:setRecordingIsPaused(self, streamDebugReadBool(streamId));
+	self.cp.HUDrecordnumber = streamDebugReadInt32(streamId);
+	self.cp.HUD0noCourseplayer = streamDebugReadBool(streamId);
+	self.cp.HUD0wantsCourseplayer = streamDebugReadBool(streamId);
+	self.cp.HUD0combineForcedSide = streamDebugReadString(streamId);
+	self.cp.HUD0isManual = streamDebugReadBool(streamId);
+	self.cp.HUD0turnStage = streamDebugReadInt32(streamId);
+	self.cp.HUD0tractorForcedToStop = streamDebugReadBool(streamId);
+	self.cp.HUD0tractorName = streamDebugReadString(streamId);
+	self.cp.HUD0tractor = streamDebugReadBool(streamId);
+	self.cp.HUD1wait = streamDebugReadBool(streamId);
+	self.cp.HUD1noWaitforFill = streamDebugReadBool(streamId);
+	self.cp.HUD4hasActiveCombine = streamDebugReadBool(streamId);
+	self.cp.HUD4combineName = streamDebugReadString(streamId);
+	self.cp.HUD4savedCombine = streamDebugReadBool(streamId);
+	self.cp.HUD4savedCombineName = streamDebugReadString(streamId);
+	self.recordnumber = streamDebugReadInt32(streamId);
+	self.cp.isRecording = streamDebugReadBool(streamId);
+	self.cp.recordingIsPaused = streamDebugReadBool(streamId);
 	self.cp.searchCombineAutomatically = streamDebugReadBool(streamId)
 	self.cp.searchCombineOnField = streamDebugReadInt32(streamId)
 	self.cp.speeds.turn = streamDebugReadFloat32(streamId)
