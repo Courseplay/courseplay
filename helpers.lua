@@ -266,10 +266,12 @@ end;
 
 function courseplay:fillTypesMatch(fillTrigger, workTool)
 	if fillTrigger ~= nil then
-		if fillTrigger.fillType then
+		if rawget(fillTrigger, 'fillType') then -- make sure the fillTrigger doesn't return a meta fillType from a parent class
 			return workTool:allowFillType(fillTrigger.fillType, false);
 		elseif fillTrigger.currentFillType then
 			return workTool:allowFillType(fillTrigger.currentFillType, false);
+		elseif fillTrigger.getFillType then
+			return workTool:allowFillType(fillTrigger:getFillType(), false);
 		end;
 	end;
 
