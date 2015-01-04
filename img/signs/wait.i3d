@@ -15,7 +15,7 @@
   <Materials>
     <Material name="diamond" materialId="8" ambientColor="1 1 1" customShaderId="2">
       <Emissivemap fileId="1"/>
-      <CustomParameter name="diffuseColor" value="0 1 0 0"/>
+      <CustomParameter name="diffuseColor" value="1 0.212 0.0 1.0"/>
     </Material>
     <Material name="Sign" materialId="9" ambientColor="1 1 1" cosPower="20" specularColor="0.25 0.25 0.25">
       <Texture fileId="3"/>
