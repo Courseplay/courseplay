@@ -2,6 +2,15 @@ local curFile = 'start_stop.lua';
 
 -- starts driving the course
 function courseplay:start(self)
+	self.cp.forceIsActiveBackup = self.forceIsActive;
+	self.forceIsActive = true;
+	self.cp.stopMotorOnLeaveBackup = self.stopMotorOnLeave;
+	self.stopMotorOnLeave = false;
+	self.cp.deactivateOnLeaveBackup = self.deactivateOnLeave;
+	self.deactivateOnLeave = false;
+	self.steeringEnabled = false;
+	self.disableCharacterOnLeave = false
+
 	if g_server == nil then
 		return
 	end
@@ -294,13 +303,6 @@ function courseplay:start(self)
 
 	courseplay:updateAllTriggers();
 
-	self.cp.forceIsActiveBackup = self.forceIsActive;
-	self.forceIsActive = true;
-	self.cp.stopMotorOnLeaveBackup = self.stopMotorOnLeave;
-	self.stopMotorOnLeave = false;
-	self.cp.deactivateOnLeaveBackup = self.deactivateOnLeave;
-	self.deactivateOnLeave = false;
-
 	if self.cp.hasDriveControl then
 		local changed = false;
 		if self.cp.driveControl.hasFourWD then
@@ -328,8 +330,7 @@ function courseplay:start(self)
 		end;
 	end;
 
-	self.steeringEnabled = false;
-	self.disableCharacterOnLeave = false
+	
 
 	-- ok i am near the waypoint, let's go
 	self.checkSpeedLimit = false
@@ -440,13 +441,17 @@ end;
 
 -- stops driving the course
 function courseplay:stop(self)
-	if g_server == nil then
-		return
-	end
+
 	
 	self.forceIsActive = self.cp.forceIsActiveBackup;
 	self.stopMotorOnLeave = self.cp.stopMotorOnLeaveBackup;
 	self.deactivateOnLeave = self.cp.deactivateOnLeaveBackup;
+	self.steeringEnabled = true;
+	self.disableCharacterOnLeave = true
+	
+	if g_server == nil then
+		return
+	end
 
 	if self.cp.hasDriveControl then
 		local changed = false;
@@ -462,8 +467,7 @@ function courseplay:stop(self)
 		end;
 	end;
 
-	self.steeringEnabled = true;
-	self.disableCharacterOnLeave = true
+	
 	self:setCruiseControlState(Drivable.CRUISECONTROL_STATE_OFF)
 	self.cruiseControl.minSpeed = 1
 	self.cp.forcedToStop = false

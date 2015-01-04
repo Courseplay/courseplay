@@ -793,11 +793,11 @@ function courseplay:update(dt)
 		end;
 	end;
 
-	if g_server ~= nil and g_currentMission.missionDynamicInfo.isMultiplayer then 
+	--[[if g_server ~= nil and g_currentMission.missionDynamicInfo.isMultiplayer then 
 		for k,v in pairs(courseplay.checkValues) do
 			self.cp[v .. "Memory"] = courseplay:checkForChangeAndBroadcast(self, "self.cp." .. v , self.cp[v], self.cp[v .. "Memory"]);
 		end;
-	end;
+	end;]]
 	
 	
 	if self.cp.collidingVehicleId ~= nil and g_currentMission.nodeToVehicle[self.cp.collidingVehicleId] ~= nil and g_currentMission.nodeToVehicle[self.cp.collidingVehicleId].isCpPathvehicle then
@@ -902,22 +902,21 @@ end;
 function courseplay:renderInfoText(vehicle)
 	if vehicle.isEntered and vehicle.cp.infoText ~= nil and vehicle.cp.toolTip == nil then
 		local text = ""
-		if Utils.startsWith(vehicle.cp.infoText, "COURSEPLAY_LOADING_AMOUNT")
-		or Utils.startsWith(vehicle.cp.infoText, "COURSEPLAY_TURNING_TO_COORDS")
-		or Utils.startsWith(vehicle.cp.infoText, "COURSEPLAY_DRIVE_TO_WAYPOINT") then
-			local what = Utils.splitString(";", vehicle.cp.infoText);
+		local what = Utils.splitString(";", vehicle.cp.infoText);
+		
+		if what[1] == "COURSEPLAY_LOADING_AMOUNT"
+		or what[1] == "COURSEPLAY_TURNING_TO_COORDS"
+		or what[1] == "COURSEPLAY_DRIVE_TO_WAYPOINT" then
 			if what[3] then	 
 				text = string.format(courseplay:loc(what[1]), tonumber(what[2]), tonumber(what[3]));
 			end		
-		elseif Utils.startsWith(vehicle.cp.infoText, "COURSEPLAY_STARTING_UP_TOOL") 
-		or Utils.startsWith(vehicle.cp.infoText, "COURSEPLAY_WAITING_POINTS_TOO_FEW")
-		or Utils.startsWith(vehicle.cp.infoText, "COURSEPLAY_WAITING_POINTS_TOO_MANY")then
-			local what = Utils.splitString(";", vehicle.cp.infoText);
-				if what[2] then
-					text = string.format(courseplay:loc(what[1]), what[2]);
-				end
-		elseif Utils.startsWith(vehicle.cp.infoText, "COURSEPLAY_DISTANCE") then  
-			local what = Utils.splitString(";", vehicle.cp.infoText);
+		elseif what[1] == "COURSEPLAY_STARTING_UP_TOOL" 
+		or what[1] == "COURSEPLAY_WAITING_POINTS_TOO_FEW"
+		or what[1] == "COURSEPLAY_WAITING_POINTS_TOO_MANY" then
+			if what[2] then
+				text = string.format(courseplay:loc(what[1]), what[2]);
+			end
+		elseif what[1] == "COURSEPLAY_DISTANCE" then  
 			if what[2] then
 				text = string.format("%s: %.1fm", courseplay:loc("COURSEPLAY_DISTANCE"), tonumber(what[2]))
 			end
