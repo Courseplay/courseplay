@@ -1627,14 +1627,10 @@ end;
 function courseplay:setCpVar(varName, value,noEventSend)
 	if self.cp[varName] ~= value then
 		local oldValue = self.cp[varName];
-		self.cp[varName] = value;
-		
-		print(string.format("setCpVar: %s: %s",varName,tostring(value)))
-		if not noEventSend then
-			if varName == "isDriving" then
-				print("setCpVar:sendEvent")
-				CourseplayEvent.sendEvent(self, "self.cp."..varName, value)
-			end
+		self.cp[varName] = value;		
+		if not noEventSend and g_server ~= nil then
+			print(string.format("setCpVar: %s: %s -> send Event",varName,tostring(value)))
+			CourseplayEvent.sendEvent(self, "self.cp."..varName, value)
 		end
 		-- TODO (Jakob): this is hud related and doesn't really belong here but rather in the hud.lua
 		if varName == "isDriving" then

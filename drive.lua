@@ -4,7 +4,7 @@ local abs, max, min, pow, sin , huge = math.abs, math.max, math.min, math.pow, m
 
 -- drives recored course
 function courseplay:drive(self, dt)
-	if g_server == nil or not courseplay:getCanUseCpMode(self) then
+	if not courseplay:getCanUseCpMode(self) then
 		return;
 	end;
 
@@ -185,7 +185,7 @@ function courseplay:drive(self, dt)
 				if self.cp.tipperFillLevelPct >= self.cp.refillUntilPct or drive_on then
 					courseplay:setVehicleWait(self, false);
 				end
-				courseplay:setInfoText(self, string.format(courseplay:loc("COURSEPLAY_LOADING_AMOUNT"), self.cp.tipperFillLevel, self.cp.tipperCapacity));
+				courseplay:setInfoText(self, string.format("COURSEPLAY_LOADING_AMOUNT;%d;%d",courseplay:roundToBottomInterval(self.cp.tipperFillLevel, 100),self.cp.tipperCapacity));
 			end
 		elseif self.cp.mode == 6 then
 			if self.cp.lastRecordnumber == self.cp.startWork then
@@ -925,7 +925,7 @@ function courseplay:refillSprayer(vehicle, fillLevelPct, driveOn, allowedToDrive
 				if sprayer.trailerInTrigger == activeTool then --Feldrand-Container Guellebomber
 					sprayer.fill = true;
 				end;]]
-				courseplay:setInfoText(vehicle, courseplay:loc("COURSEPLAY_LOADING_AMOUNT"):format(activeTool.fillLevel, activeTool.capacity));
+				courseplay:setInfoText(vehicle, string.format("COURSEPLAY_LOADING_AMOUNT;%d;%d",courseplay:roundToBottomInterval(activeTool.fillLevel, 100),activeTool.capacity));
 			elseif vehicle.cp.isLoaded or (activeToolFillLevel ~= nil and activeToolFillLevel >= driveOn) then
 				if activeTool.isFilling then
 					activeTool:setIsFilling(false);
@@ -950,7 +950,7 @@ function courseplay:refillSprayer(vehicle, fillLevelPct, driveOn, allowedToDrive
 					activeTool:setIsFilling(true);
 				end;
 				allowedToDrive = false;
-				courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_LOADING_AMOUNT'):format(activeTool.fillLevel, activeTool.capacity));
+				courseplay:setInfoText(vehicle, string.format("COURSEPLAY_LOADING_AMOUNT;%d;%d",courseplay:roundToBottomInterval(activeTool.fillLevel, 100),activeTool.capacity));
 			elseif activeTool.fillTriggers[1] ~= nil then
 				if activeTool.isFilling then
 					activeTool:setIsFilling(false);

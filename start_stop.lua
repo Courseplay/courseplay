@@ -361,18 +361,18 @@ function courseplay:getCanUseCpMode(vehicle)
 	if (mode == 7 and not vehicle.cp.isCombine and not vehicle.cp.isChopper and not vehicle.cp.isHarvesterSteerable)
 	or ((mode == 1 or mode == 2 or mode == 3 or mode == 4 or mode == 8 or mode == 9) and (vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable))
 	or ((mode ~= 5) and (vehicle.cp.isWoodHarvester or vehicle.cp.isWoodForwarder)) then
-		courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE'));
+		courseplay:setInfoText(vehicle, 'COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE');
 		return false;
 	end;
 
 
 	if mode ~= 5 and mode ~= 7 and not vehicle.cp.workToolAttached then
 		if mode == 4 or mode == 6 then
-			courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WRONG_TOOL'));
+			courseplay:setInfoText(vehicle, 'COURSEPLAY_WRONG_TOOL');
 		elseif mode == 9 then
-			courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_SHOVEL_NOT_FOUND'));
+			courseplay:setInfoText(vehicle, 'COURSEPLAY_SHOVEL_NOT_FOUND');
 		else
-			courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WRONG_TRAILER'));
+			courseplay:setInfoText(vehicle, 'COURSEPLAY_WRONG_TRAILER');
 		end;
 		return false;
 	end;
@@ -382,37 +382,37 @@ function courseplay:getCanUseCpMode(vehicle)
 	if mode == 3 or mode == 7 or mode == 8 then
 		minWait, maxWait = 1, 1;
 		if vehicle.cp.numWaitPoints < minWait then
-			courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_FEW'):format(minWait));
+			courseplay:setInfoText(vehicle, string.format("COURSEPLAY_WAITING_POINTS_TOO_FEW;%d",minWait));
 			return false;
 		elseif vehicle.cp.numWaitPoints > maxWait then
-			courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_MANY'):format(maxWait));
+			courseplay:setInfoText(vehicle, string.format('COURSEPLAY_WAITING_POINTS_TOO_MANY;%d',maxWait));
 			return false;
 		end;
 		if mode == 3 then
 			if vehicle.cp.workTools[1] == nil or vehicle.cp.workTools[1].cp == nil or not vehicle.cp.workTools[1].cp.isAugerWagon then
-				courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WRONG_TRAILER'));
+				courseplay:setInfoText(vehicle, 'COURSEPLAY_WRONG_TRAILER');
 				return false;
 			end;
 		elseif mode == 8 then
 			if vehicle.cp.workTools[1] == nil then
-				courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WRONG_TRAILER'));
+				courseplay:setInfoText(vehicle, 'COURSEPLAY_WRONG_TRAILER');
 				return false;
 			end;
 		end;
 
 	elseif mode == 4 or mode == 6 then
 		if vehicle.cp.startWork == nil or vehicle.cp.stopWork == nil then
-			courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_NO_WORK_AREA'));
+			courseplay:setInfoText(vehicle, 'COURSEPLAY_NO_WORK_AREA');
 			return false;
 		end;
 		if mode == 6 then
 			if vehicle.cp.hasBaleLoader then
 				minWait, maxWait = 2, 3;
 				if vehicle.cp.numWaitPoints < minWait then
-					courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_FEW'):format(minWait));
+					courseplay:setInfoText(vehicle, string.format('COURSEPLAY_WAITING_POINTS_TOO_FEW;%d',minWait));
 					return false;
 				elseif vehicle.cp.numWaitPoints > maxWait then
-					courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_MANY'):format(maxWait));
+					courseplay:setInfoText(vehicle, string.format('COURSEPLAY_WAITING_POINTS_TOO_MANY;%d',maxWait));
 					return false;
 				end;
 			end;
@@ -421,16 +421,16 @@ function courseplay:getCanUseCpMode(vehicle)
 	elseif mode == 9 then
 		minWait, maxWait = 3, 3;
 		if vehicle.cp.numWaitPoints < minWait then
-			courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_FEW'):format(minWait));
+			courseplay:setInfoText(vehicle, string.format('COURSEPLAY_WAITING_POINTS_TOO_FEW;%d',minWait));
 			return false;
 		elseif vehicle.cp.numWaitPoints > maxWait then
-			courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_MANY'):format(maxWait));
+			courseplay:setInfoText(vehicle, string.format('COURSEPLAY_WAITING_POINTS_TOO_MANY;%d',maxWait));
 			return false;
 		elseif vehicle.cp.shovelStatePositions == nil or vehicle.cp.shovelStatePositions[2] == nil or vehicle.cp.shovelStatePositions[3] == nil or vehicle.cp.shovelStatePositions[4] == nil or vehicle.cp.shovelStatePositions[5] == nil then
-			courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_SHOVEL_POSITIONS_MISSING'));
+			courseplay:setInfoText(vehicle, 'COURSEPLAY_SHOVEL_POSITIONS_MISSING');
 			return false;
 		elseif vehicle.cp.shovelFillStartPoint == nil or vehicle.cp.shovelFillEndPoint == nil or vehicle.cp.shovelEmptyPoint == nil then
-			courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_NO_VALID_COURSE'));
+			courseplay:setInfoText(vehicle, 'COURSEPLAY_NO_VALID_COURSE');
 			return false;
 		end;
 	end;

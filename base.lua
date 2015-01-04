@@ -675,7 +675,12 @@ function courseplay:update(dt)
 
 
 	if g_server ~= nil and (self.cp.isDriving or self.cp.isRecording or self.cp.recordingIsPaused) then
-		courseplay:setInfoText(self, nil);
+		if self.cp.infoText == nil and not self.cp.infoTextNilSent then
+			CourseplayEvent.sendEvent(self, "self.cp.infoText",nil)
+			self.cp.infoTextNilSent = true
+		elseif self.cp.infoText ~= nil then
+			self.cp.infoText = nil
+		end
 	end;
 
 	if self.cp.drawWaypointsLines then
@@ -883,19 +888,44 @@ function courseplay:delete()
 	end;
 end;
 
-function courseplay:setInfoText(vehicle, text, seconds)
-	if vehicle.cp.infoText ~= text then
-		vehicle.cp.infoText = text;
-		if seconds then
-			courseplay:setCustomTimer(vehicle, 'infoText', seconds);
-		end;
+function courseplay:setInfoText(vehicle, text)
+	if vehicle.cp.infoText ~= text and  text ~= nil and vehicle.cp.lastInfoText ~= text then
+		vehicle:setCpVar('infoText',text)
+		vehicle.cp.lastInfoText = text
+		vehicle.cp.infoTextNilSent = false
+	elseif vehicle.cp.infoText ~= text and  text ~= nil and vehicle.cp.lastInfoText == text then
+		vehicle:setCpVar('infoText',text,true)
+		vehicle.cp.infoTextNilSent = false
 	end;
 end;
 
 function courseplay:renderInfoText(vehicle)
 	if vehicle.isEntered and vehicle.cp.infoText ~= nil and vehicle.cp.toolTip == nil then
+		local text = ""
+		if Utils.startsWith(vehicle.cp.infoText, "COURSEPLAY_LOADING_AMOUNT")
+		or Utils.startsWith(vehicle.cp.infoText, "COURSEPLAY_TURNING_TO_COORDS")
+		or Utils.startsWith(vehicle.cp.infoText, "COURSEPLAY_DRIVE_TO_WAYPOINT") then
+			local what = Utils.splitString(";", vehicle.cp.infoText);
+			if what[3] then	 
+				text = string.format(courseplay:loc(what[1]), tonumber(what[2]), tonumber(what[3]));
+			end		
+		elseif Utils.startsWith(vehicle.cp.infoText, "COURSEPLAY_STARTING_UP_TOOL") 
+		or Utils.startsWith(vehicle.cp.infoText, "COURSEPLAY_WAITING_POINTS_TOO_FEW")
+		or Utils.startsWith(vehicle.cp.infoText, "COURSEPLAY_WAITING_POINTS_TOO_MANY")then
+			local what = Utils.splitString(";", vehicle.cp.infoText);
+				if what[2] then
+					text = string.format(courseplay:loc(what[1]), what[2]);
+				end
+		elseif Utils.startsWith(vehicle.cp.infoText, "COURSEPLAY_DISTANCE") then  
+			local what = Utils.splitString(";", vehicle.cp.infoText);
+			if what[2] then
+				text = string.format("%s: %.1fm", courseplay:loc("COURSEPLAY_DISTANCE"), tonumber(what[2]))
+			end
+		else
+			text = courseplay:loc(vehicle.cp.infoText)
+		end
 		courseplay:setFontSettings('white', false, 'left');
-		renderText(courseplay.hud.infoTextPosX, courseplay.hud.infoTextPosY, courseplay.hud.fontSizes.infoText, vehicle.cp.infoText);
+		renderText(courseplay.hud.infoTextPosX, courseplay.hud.infoTextPosY, courseplay.hud.fontSizes.infoText, text);
 	end;
 end;
 

@@ -43,7 +43,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 		if not vehicle.cp.isReverseBackToPoint then
 			allowedToDrive = false;
 		end;
-		courseplay:setInfoText(vehicle, string.format(courseplay:loc("COURSEPLAY_STARTING_UP_TOOL"), tostring(vehicle.name)));
+		courseplay:setInfoText(vehicle, string.format("COURSEPLAY_STARTING_UP_TOOL;%s",tostring(vehicle.name)));
 	end;
 
 	local vehicleIsFolding, vehicleIsFolded, vehicleIsUnfolded = courseplay:isFolding(vehicle);
@@ -329,7 +329,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 					-- tipper is not empty and tractor reaches TipTrigger
 					if vehicle.cp.tipperFillLevel > 0 and vehicle.cp.currentTipTrigger ~= nil and vehicle.recordnumber > 3 then
 						allowedToDrive, activeTipper = courseplay:unload_tippers(vehicle, allowedToDrive);
-						courseplay:setInfoText(vehicle, courseplay:loc("COURSEPLAY_TIPTRIGGER_REACHED"));
+						courseplay:setInfoText(vehicle, "COURSEPLAY_TIPTRIGGER_REACHED");
 					end
 				end;
 			end; --END other tools

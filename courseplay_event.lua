@@ -101,8 +101,8 @@ end
 
 function courseplay:checkForChangeAndBroadcast(self, stringName, variable , variableMemory)
 	if variable ~= variableMemory then
-		print(string.format("checkForChangeAndBroadcast: %s = %s",stringName,tostring(variable)))
-		CourseplayEvent.sendEvent(self, stringName, variable)
+		print(string.format("checkForChangeAndBroadcast: %s = %s",stringName,tostring(variable))) 
+		--CourseplayEvent.sendEvent(self, stringName, variable)
 		variableMemory = variable
 	end
 	return variableMemory
