@@ -611,12 +611,15 @@ function courseplay:timerIsThrough(vehicle, timerName, defaultToBool)
 	end;
 	return vehicle.timer > timer;
 end;
-function courseplay:getIsTimerRunning(vehicle, timerName)
-	local timer = vehicle.cp.timers[timerName];
-	return timer and timer > vehicle.timer;
+function courseplay:getCustomTimerExists(vehicle, timerName)
+	return vehicle.cp.timers[timerName] ~= nil;
 end;
-function courseplay:resetCustomTimer(vehicle, timerName)
-	vehicle.cp.timers[timerName] = 0.0;
+function courseplay:resetCustomTimer(vehicle, timerName, setToNil)
+	if setToNil then
+		vehicle.cp.timers[timerName] = nil;
+	else
+		vehicle.cp.timers[timerName] = 0.0;
+	end;
 end;
 
 function courseplay:getDriveDirection(node, x, y, z)

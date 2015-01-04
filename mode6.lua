@@ -180,12 +180,13 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 								g_server:broadcastEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_DROP_BALES), true, nil, workTool)
 							elseif workTool.emptyState == BaleLoader.EMPTY_WAIT_TO_SINK then
 								-- (3) lower (fold) table
-								if courseplay:timerIsThrough(vehicle, 'foldBaleLoader', false) then
-									-- print(('%s: timer through -> set state BaleLoader.CHANGE_SINK'):format(nameNum(workTool)));
-									g_server:broadcastEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_SINK), true, nil, workTool);
-								elseif not courseplay:getIsTimerRunning(vehicle, 'foldBaleLoader') then
+								if not courseplay:getCustomTimerExists(vehicle, 'foldBaleLoader') then
 									-- print(('%s: foldBaleLoader timer not running -> set timer 2 seconds'):format(nameNum(workTool)));
 									courseplay:setCustomTimer(vehicle, 'foldBaleLoader', 2);
+								elseif courseplay:timerIsThrough(vehicle, 'foldBaleLoader', false) then
+									-- print(('%s: timer through -> set state BaleLoader.CHANGE_SINK -> reset timer'):format(nameNum(workTool)));
+									g_server:broadcastEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_SINK), true, nil, workTool);
+									courseplay:resetCustomTimer(vehicle, 'foldBaleLoader', true)
 								end;
 
 								-- Change the direction to forward if we were reversing.
