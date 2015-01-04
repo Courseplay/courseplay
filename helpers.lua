@@ -603,10 +603,15 @@ function courseplay:setCustomTimer(vehicle, timerName, seconds)
 	vehicle.cp.timers[timerName] = vehicle.timer + (seconds * 1000);
 end;
 function courseplay:timerIsThrough(vehicle, timerName, defaultToBool)
-	if vehicle.cp.timers[timerName] == nil then
+	local timer = vehicle.cp.timers[timerName];
+	if timer == nil then
 		return Utils.getNoNil(defaultToBool, true);
 	end;
-	return vehicle.timer > vehicle.cp.timers[timerName];
+	return vehicle.timer > timer;
+end;
+function courseplay:getIsTimerRunning(vehicle, timerName)
+	local timer = vehicle.cp.timers[timerName];
+	return timer and timer > vehicle.timer;
 end;
 function courseplay:resetCustomTimer(vehicle, timerName)
 	vehicle.cp.timers[timerName] = 0.0;
