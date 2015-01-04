@@ -326,10 +326,14 @@ function courseplay:getMovingTools(vehicle)
 		end;
 	end;
 
+	courseplay:debug(('%s: getMovingTools(): frontLoader index=%d, shovel index=%d'):format(nameNum(vehicle), frontLoader, shovel), 10);
+
 	if shovel ~= 0 then
 		primaryMovingTools = vehicle.movingTools;
 		secondaryMovingTools = vehicle.attachedImplements[shovel].object.movingTools;
 		vehicle.cp.shovel = vehicle.attachedImplements[shovel].object;
+
+		courseplay:debug(('    [1] primaryMt=%s, secondaryMt=%s, shovel=%s'):format(nameNum(vehicle), nameNum(vehicle.attachedImplements[shovel].object), nameNum(vehicle.cp.shovel)), 10);
 	elseif frontLoader ~= 0 then
 		local object = vehicle.attachedImplements[frontLoader].object;
 		vehicle.cp.attachedFrontLoader = object
@@ -338,9 +342,13 @@ function courseplay:getMovingTools(vehicle)
 			secondaryMovingTools = object.attachedImplements[1].object.movingTools;
 			vehicle.cp.shovel = object.attachedImplements[1].object;
 		end;
+
+		courseplay:debug(('    [2] attachedFrontLoader=%s, primaryMt=%s, secondaryMt=%s, shovel=%s'):format(nameNum(object), nameNum(object), nameNum(object.attachedImplements[1].object), nameNum(vehicle.cp.shovel)), 10);
 	else
 		primaryMovingTools = vehicle.movingTools;
 		vehicle.cp.shovel = vehicle;
+
+		courseplay:debug(('    [3] primaryMt=%s, shovel=%s'):format(nameNum(vehicle), nameNum(vehicle.cp.shovel)), 10);
 	end;
 
 	return primaryMovingTools, secondaryMovingTools;
