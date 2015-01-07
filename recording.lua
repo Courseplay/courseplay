@@ -83,7 +83,7 @@ function courseplay:start_record(vehicle)
 	vehicle:setIsCourseplayDriving(false);
 	vehicle.cp.loadedCourses = {}
 	courseplay:setRecordNumber(vehicle, 1);
-	vehicle.cp.HUDrecordnumber = 1;
+	vehicle:setCpVar('HUDrecordnumber',1);
 	vehicle.cp.numWaitPoints = 0;
 	vehicle.cp.numCrossingPoints = 0;
 	vehicle.cp.recordingTimer = 101;
@@ -102,8 +102,8 @@ function courseplay:stop_record(vehicle)
 	courseplay:setRecordingIsPaused(vehicle, false);
 	vehicle:setIsCourseplayDriving(false);
 	vehicle.cp.distanceCheck = false;
-	vehicle.cp.canDrive = true;
-	vehicle.maxnumber = vehicle.recordnumber - 1;
+	vehicle:setCpVar('canDrive',true);
+	vehicle:setCpVar('numWaypoints', vehicle.recordnumber - 1);
 	courseplay:setRecordNumber(vehicle, 1);
 	vehicle.cp.numCourses = 1;
 
@@ -254,7 +254,7 @@ function courseplay:clearCurrentLoadedCourse(vehicle)
 	end;
 	vehicle.cp.recordingTimer = 1
 	vehicle.Waypoints = {}
-	vehicle.cp.canDrive = false
+	vehicle:setCpVar('canDrive',false);
 	vehicle.cp.abortWork = nil
 	courseplay:resetTipTrigger(vehicle);
 	vehicle.cp.lastMergedWP = 1;

@@ -573,14 +573,14 @@ function courseplay:selectAssignedCombine(vehicle, changeBy)
 
 	if vehicle.cp.selectedCombineNumber == 0 then
 		vehicle.cp.savedCombine = nil;
-		vehicle.cp.HUD4savedCombineName = nil;
+		vehicle:setCpVar('HUD4savedCombineName',"");
 	else
 		vehicle.cp.savedCombine = combines[vehicle.cp.selectedCombineNumber];
 		local combineName = vehicle.cp.savedCombine.name or courseplay:loc('COURSEPLAY_COMBINE');
 		local x1 = courseplay.hud.col2posX[4];
 		local x2 = courseplay.hud.buttonPosX[1] - getTextWidth(courseplay.hud.fontSizes.contentValue, ' (9999m)');
 		local shortenedName, firstChar, lastChar = Utils.limitTextToWidth(combineName, courseplay.hud.fontSizes.contentValue, x2 - x1, false, '...');
-		vehicle.cp.HUD4savedCombineName = shortenedName;
+		vehicle:setCpVar('HUD4savedCombineName',shortenedName);
 	end;
 
 	courseplay:removeActiveCombineFromTractor(vehicle);
@@ -597,8 +597,8 @@ end;
 function courseplay:removeSavedCombineFromTractor(vehicle)
 	vehicle.cp.savedCombine = nil;
 	vehicle.cp.selectedCombineNumber = 0;
-	vehicle.cp.HUD4savedCombine = false;
-	vehicle.cp.HUD4savedCombineName = '';
+	vehicle:setCpVar('HUD4savedCombine',nil);
+	vehicle:setCpVar('HUD4savedCombineName',nil);
 	courseplay.hud:setReloadPageOrder(vehicle, 4, true);
 end;
 
@@ -644,7 +644,7 @@ function courseplay:copyCourse(vehicle)
 		vehicle.cp.loadedCourses = src.cp.loadedCourses;
 		vehicle.cp.numCourses = src.cp.numCourses;
 		courseplay:setRecordNumber(vehicle, 1);
-		vehicle.maxnumber = #(vehicle.Waypoints);
+		vehicle:setCpVar('numWaypoints',#(vehicle.Waypoints));
 		vehicle.cp.numWaitPoints = src.cp.numWaitPoints;
 		vehicle.cp.numCrossingPoints = src.cp.numCrossingPoints;
 
@@ -652,7 +652,7 @@ function courseplay:copyCourse(vehicle)
 		courseplay:setRecordingIsPaused(vehicle, false);
 		vehicle:setIsCourseplayDriving(false);
 		vehicle.cp.distanceCheck = false;
-		vehicle.cp.canDrive = true;
+		vehicle:setCpVar('canDrive',true);
 		vehicle.cp.abortWork = nil;
 
 		vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = nil, nil, nil;
@@ -1629,6 +1629,7 @@ function courseplay:setCpVar(varName, value,noEventSend)
 		local oldValue = self.cp[varName];
 		self.cp[varName] = value;		
 		if not noEventSend and g_server ~= nil then
+			--print(courseplay.utils:getFnCallPath(2))
 			print(string.format("setCpVar: %s: %s -> send Event",varName,tostring(value)))
 			CourseplayEvent.sendEvent(self, "self.cp."..varName, value)
 		end

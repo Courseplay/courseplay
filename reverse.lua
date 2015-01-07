@@ -41,7 +41,7 @@ function courseplay:goReverse(vehicle,lx,lz)
 		drawDebugPoint(xFrontNode,yFrontNode+3,zFrontNode, 1, 0 , 0, 1);
 		if not vehicle.cp.checkReverseValdityPrinted then
 			local checkValdity = false;
-			for i=index, vehicle.maxnumber do
+			for i=index, vehicle.cp.numWaypoints do
 				if vehicle.Waypoints[i].rev then
 					tcx = vehicle.Waypoints[i].cx;
 					tcz = vehicle.Waypoints[i].cz;
@@ -60,7 +60,7 @@ function courseplay:goReverse(vehicle,lx,lz)
 			vehicle.cp.checkReverseValdityPrinted = true;
 		end;
 	end;
-	for i= index, vehicle.maxnumber do
+	for i= index, vehicle.cp.numWaypoints do
 		if vehicle.Waypoints[i].rev and not vehicle.Waypoints[i-1].wait then
 			tcx = vehicle.Waypoints[i].cx;
 			tcz = vehicle.Waypoints[i].cz;
@@ -112,7 +112,7 @@ function courseplay:goReverse(vehicle,lx,lz)
 
 		-- FIND THE RIGHT START REVERSING WAYPOINT
 		elseif vehicle.Waypoints[i-1].rev and not vehicle.Waypoints[i-2].rev then
-			for recNum = index, vehicle.maxnumber do
+			for recNum = index, vehicle.cp.numWaypoints do
 				local srX,srZ = vehicle.Waypoints[recNum].cx,vehicle.Waypoints[recNum].cz;
 				local _,_,tsrZ = worldToLocal(node,srX,yTipper,srZ);
 				if tsrZ < -2 then
@@ -231,7 +231,7 @@ function courseplay:getNextFwdPoint(vehicle)
 	local maxVarianceX = sin(rad(30));
 	local firstFwd, firstFwdOver3;
 	courseplay:debug(('%s: getNextFwdPoint()'):format(nameNum(vehicle)), 13);
-	for i = vehicle.recordnumber, vehicle.maxnumber do
+	for i = vehicle.recordnumber, vehicle.cp.numWaypoints do
 		if not vehicle.Waypoints[i].rev then
 			local x, y, z = getWorldTranslation(vehicle.cp.DirectionNode);
 			local wdx, _, wdz, dist = courseplay:getWorldDirection(x, 0, z, vehicle.Waypoints[i].cx, 0, vehicle.Waypoints[i].cz);

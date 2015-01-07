@@ -14,7 +14,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 			workArea = true
 			isFinishingWork = true
 		elseif self.cp.finishWork ~= self.cp.stopWork then
-			courseplay:setRecordNumber(self, math.min(self.cp.finishWork + 1, self.maxnumber));
+			courseplay:setRecordNumber(self, math.min(self.cp.finishWork + 1, self.cp.numWaypoints));
 		end;
 	end;
 	

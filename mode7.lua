@@ -14,7 +14,7 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 		vehicle:setPipeState(1);
 	end;
 	
-	if (vehicle.recordnumber == vehicle.maxnumber and vehicle.cp.modeState ~= 5) or (vehicle.cp.mode7GoBackBeforeUnloading and vehicle.cp.modeState ~= 5) then 
+	if (vehicle.recordnumber == vehicle.cp.numWaypoints and vehicle.cp.modeState ~= 5) or (vehicle.cp.mode7GoBackBeforeUnloading and vehicle.cp.modeState ~= 5) then 
 		if vehicle.cp.curTarget.x ~= nil then
 			courseplay:setModeState(vehicle, 5);
 			courseplay:debug(nameNum(vehicle) .. ": " .. tostring(debug.getinfo(1).currentline) .. ": modeState = 5", 11);
@@ -31,7 +31,7 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 	-- wait untill fillLevel is reached	
 	if vehicle.isAIThreshing then
 		if (vehicle.fillLevel * 100 / vehicle.capacity) >= vehicle.cp.driveOnAtFillLevel then
-			local cx7, cz7 = vehicle.Waypoints[vehicle.maxnumber].cx, vehicle.Waypoints[vehicle.maxnumber].cz;
+			local cx7, cz7 = vehicle.Waypoints[vehicle.cp.numWaypoints].cx, vehicle.Waypoints[vehicle.cp.numWaypoints].cz;
 			local lx7, lz7 = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, cx7, cty7, cz7);
 			local x7,y7,z7 = localToWorld(vehicle.cp.DirectionNode, 0, 0, -15);
 			vehicle.cp.mode7t = {};

@@ -14,9 +14,9 @@ function courseplay:start(self)
 	if g_server == nil then
 		return
 	end
-
-	self.maxnumber = #(self.Waypoints)
-	if self.maxnumber < 1 then
+	
+	self:setCpVar('numWaypoints',#(self.Waypoints))
+	if self.cp.numWaypoints < 1 then
 		return
 	end
 	courseplay:setEngineState(self, true);
@@ -226,7 +226,7 @@ function courseplay:start(self)
 			self.cp.startWork = 1;
 		end;
 		if numWaitPoints == 0 or self.cp.stopWork == nil then
-			self.cp.stopWork = self.maxnumber;
+			self.cp.stopWork = self.cp.numWaypoints;
 		end;
 	end;
 	self.cp.numWaitPoints = numWaitPoints;
@@ -252,7 +252,7 @@ function courseplay:start(self)
 			courseplay:setRecordNumber(self, recordNumber);
 		end
 
-		if self.recordnumber > self.maxnumber then
+		if self.recordnumber > self.cp.numWaypoints then
 			courseplay:setRecordNumber(self, 1);
 		end
 	end --END if modeState == 0
@@ -261,7 +261,7 @@ function courseplay:start(self)
 		courseplay:setIsLoaded(self, true);
 	elseif self.cp.mode == 4 or self.cp.mode == 6 then
 		courseplay:setIsLoaded(self, false);
-		self.cp.hasUnloadingRefillingCourse = self.maxnumber > self.cp.stopWork + 7;
+		self.cp.hasUnloadingRefillingCourse = self.cp.numWaypoints > self.cp.stopWork + 7;
 		if  self.Waypoints[self.cp.stopWork].cx == self.Waypoints[self.cp.startWork].cx 
 		and self.Waypoints[self.cp.stopWork].cz == self.Waypoints[self.cp.startWork].cz then -- TODO: VERY unsafe, there could be LUA float problems (e.g. 7 + 8 = 15.000000001)
 			self.cp.finishWork = self.cp.stopWork-5
@@ -273,7 +273,7 @@ function courseplay:start(self)
 		if self.cp.startAtPoint == courseplay.START_AT_NEAREST_POINT and self.cp.finishWork ~= self.cp.stopWork and self.recordnumber > self.cp.finishWork and self.recordnumber <= self.cp.stopWork then
 			courseplay:setRecordNumber(self, 2);
 		end
-		courseplay:debug(string.format("%s: maxnumber=%d, stopWork=%d, finishWork=%d, hasUnloadingRefillingCourse=%s, recordnumber=%d", nameNum(self), self.maxnumber, self.cp.stopWork, self.cp.finishWork, tostring(self.cp.hasUnloadingRefillingCourse), self.recordnumber), 12);
+		courseplay:debug(string.format("%s: numWaypoints=%d, stopWork=%d, finishWork=%d, hasUnloadingRefillingCourse=%s, recordnumber=%d", nameNum(self), self.cp.numWaypoints, self.cp.stopWork, self.cp.finishWork, tostring(self.cp.hasUnloadingRefillingCourse), self.recordnumber), 12);
 	end
 
 	if self.cp.mode == 9 then
@@ -514,7 +514,7 @@ function courseplay:stop(self)
 	self.checkSpeedLimit = true
 	courseplay:resetTipTrigger(self);
 	self:setIsCourseplayDriving(false);
-	self.cp.canDrive = true
+	self:setCpVar('canDrive',true)
 	self.cp.distanceCheck = false
 	self.cp.mode7GoBackBeforeUnloading = false
 	if self.cp.checkReverseValdityPrinted then

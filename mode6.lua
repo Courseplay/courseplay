@@ -25,7 +25,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 			workArea = true
 			isFinishingWork = true
 		elseif vehicle.cp.finishWork ~= vehicle.cp.stopWork then
-			courseplay:setRecordNumber(vehicle, min(vehicle.cp.finishWork + 1,vehicle.maxnumber));
+			courseplay:setRecordNumber(vehicle, min(vehicle.cp.finishWork + 1,vehicle.cp.numWaypoints));
 		end;
 	end;
 	if fieldArea or vehicle.recordnumber == vehicle.cp.startWork then
@@ -209,7 +209,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 					if allowedToDrive then
 						if not specialTool then
 							--unfold
-							local recordnumber = min(vehicle.recordnumber + 2, vehicle.maxnumber);
+							local recordnumber = min(vehicle.recordnumber + 2, vehicle.cp.numWaypoints);
 							local forecast = Utils.getNoNil(vehicle.Waypoints[recordnumber].ridgeMarker,0)
 							local marker = Utils.getNoNil(vehicle.Waypoints[vehicle.recordnumber].ridgeMarker,0)
 							local waypoint = max(marker,forecast)

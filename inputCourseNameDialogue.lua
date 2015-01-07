@@ -166,10 +166,9 @@ function inputCourseNameDialogue:onSaveClick()
 		--courseplay:dopairs(g_currentMission.cp_courses,1) replace it by tableshow
 		
 		g_currentMission.cp_sorted = courseplay.courses:sort()
-
-
-
-		courseplay.courses:saveCourseToXml(vehicle.cp.currentCourseId, nil, true)
+		if g_server ~= nil then
+			courseplay.courses:saveCourseToXml(vehicle.cp.currentCourseId, nil, true)
+		end
 		courseplay.settings.setReloadCourseItems()
 		courseplay.signs:updateWaypointSigns(vehicle);
 
@@ -191,8 +190,9 @@ function inputCourseNameDialogue:onSaveClick()
 		g_currentMission.cp_folders[folderID] = folder
 		--courseplay:dopairs(g_currentMission.cp_folders,1)replace it by tableshow
 		g_currentMission.cp_sorted = courseplay.courses:sort(g_currentMission.cp_courses, g_currentMission.cp_folders, 0, 0)
-
-		courseplay.courses:saveFolderToXml(folderID, nil, true)
+		if g_server ~= nil then
+			courseplay.courses:saveFolderToXml(folderID, nil, true)
+		end
 		courseplay.settings.add_folder(folderID)
 		courseplay.settings.setReloadCourseItems()
 		courseplay.signs:updateWaypointSigns(vehicle);

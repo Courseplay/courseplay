@@ -13,6 +13,7 @@ function courseplay:load(xmlFile)
 	self.setCourseplayFunc = courseplay.setCourseplayFunc;
 	self.getIsCourseplayDriving = courseplay.getIsCourseplayDriving;
 	self.setIsCourseplayDriving = courseplay.setIsCourseplayDriving;
+	self.setCpVar = courseplay.setCpVar;
 
 
 	--SEARCH AND SET self.name IF NOT EXISTING
@@ -473,7 +474,6 @@ end
 
 function courseplay:draw()
 	local isDriving = self:getIsCourseplayDriving();
-
 	--WORKWIDTH DISPLAY
 	if self.cp.mode ~= 7 and self.cp.timers.showWorkWidth and self.cp.timers.showWorkWidth > 0 then
 		if courseplay:timerIsThrough(self, 'showWorkWidth') then -- stop showing, reset timer
@@ -582,7 +582,7 @@ function courseplay:draw()
 				InputBinding.setShowMouseCursor(self.cp.mouseCursorActive);
 			end;
 		end;
-		if self.cp.distanceCheck and #(self.Waypoints) > 1 then
+		if self.cp.distanceCheck and self.cp.numWaypoints > 1 then 
 			courseplay:distanceCheck(self);
 		end;
 		if self.isEntered and self.cp.toolTip ~= nil then
@@ -637,13 +637,13 @@ function courseplay:drawWaypointsLines(vehicle)
 
 		if i == 1 then
 			drawDebugPoint(wp.cx, wp.cy + height, wp.cz, 0, 1, 0, 1);
-		elseif i == vehicle.maxnumber then
+		elseif i == vehicle.cp.numWaypoints then
 			drawDebugPoint(wp.cx, wp.cy + height, wp.cz, 1, 0, 0, 1);
 		else
 			drawDebugPoint(wp.cx, wp.cy + height, wp.cz, 1, 1, 0, 1);
 		end;
 
-		if i < vehicle.maxnumber then
+		if i < vehicle.cp.numWaypoints then
 			drawDebugLine(wp.cx, wp.cy + height, wp.cz, 0, 1, 1, np.cx, np.cy + height, np.cz, 0, 1, 1);
 		end;
 	end;
@@ -673,7 +673,7 @@ function courseplay:update(dt)
 		end;
 	end; -- self:getIsActive() and self.isEntered and modifierPressed
 
-
+	
 	if g_server ~= nil and (self.cp.isDriving or self.cp.isRecording or self.cp.recordingIsPaused) then
 		if self.cp.infoText == nil and not self.cp.infoTextNilSent then
 			CourseplayEvent.sendEvent(self, "self.cp.infoText",nil)
@@ -725,7 +725,7 @@ function courseplay:update(dt)
 					showDriveOnButton = true;
 				end;
 			else
-				if (self.cp.wait and (self.Waypoints[self.recordnumber].wait or self.Waypoints[self.cp.lastRecordnumber].wait)) or (self.cp.stopAtEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil)) then
+				if (self.cp.wait and (self.Waypoints[self.recordnumber].wait or self.Waypoints[self.cp.lastRecordnumber].wait)) or (self.cp.stopAtEnd and (self.recordnumber == self.cp.numWaypoints or self.cp.currentTipTrigger ~= nil)) then
 					showDriveOnButton = true;
 				end;
 			end;
@@ -943,7 +943,7 @@ end;
 
 function courseplay:readStream(streamId, connection)
 	courseplay:debug("id: "..tostring(self.id).."  base: readStream", 5)
-	
+	print(tostring(self.name).."  base: readStream")
 	self.cp.automaticCoverHandling = streamDebugReadBool(streamId);
 	self.cp.automaticUnloadingOnField = streamDebugReadBool(streamId);
 	courseplay:setCpMode(self, streamDebugReadInt32(streamId));
@@ -1057,11 +1057,13 @@ function courseplay:readStream(streamId, connection)
 	for k,v in pairs(Utils.splitString(",", debugChannelsString)) do
 		courseplay:toggleDebugChannel(self, k, v == 'true');
 	end;
+	print("  base: readStream end")
 	courseplay:debug("id: "..tostring(self.id).."  base: readStream end", 5)
 end
 
 function courseplay:writeStream(streamId, connection)
 	courseplay:debug("id: "..tostring(networkGetObjectId(self)).."  base: write stream", 5)
+	print(tostring(self.name).."  base: write stream")
 	streamDebugWriteBool(streamId, self.cp.automaticCoverHandling)
 	streamDebugWriteBool(streamId, self.cp.automaticUnloadingOnField)
 	streamDebugWriteInt32(streamId,self.cp.mode)
@@ -1071,6 +1073,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteFloat32(streamId,self.cp.combineOffset)
 	streamDebugWriteString(streamId, self.cp.currentCourseName);
 	streamDebugWriteBool(streamId, self.cp.driverPriorityUseFillLevel);
+	print("  10")
 	streamDebugWriteBool(streamId, self.cp.drivingDirReverse)
 	streamDebugWriteBool(streamId, self.cp.fieldEdge.customField.isCreated)
 	streamDebugWriteInt32(streamId,self.cp.fieldEdge.customField.fieldNum)
@@ -1081,6 +1084,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteBool(streamId, self.cp.hasStartingCorner);
 	streamDebugWriteBool(streamId, self.cp.hasStartingDirection);
 	streamDebugWriteBool(streamId, self.cp.hasValidCourseGenerationData);
+	print("  20")
 	streamDebugWriteInt32(streamId,self.cp.headland.numLanes);
 	streamDebugWriteBool(streamId, self.cp.hasUnloadingRefillingCourse)
 	streamDebugWriteString(streamId, self.cp.infoText);
@@ -1091,6 +1095,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteBool(streamId, self.cp.stopAtEnd)
 	streamDebugWriteBool(streamId, self:getIsCourseplayDriving());
 	streamDebugWriteBool(streamId,self.cp.hud.openWithMouse)
+	print("  30")
 	streamDebugWriteBool(streamId, self.cp.realisticDriving);
 	streamDebugWriteFloat32(streamId,self.cp.driveOnAtFillLevel)
 	streamDebugWriteFloat32(streamId,self.cp.followAtFillLevel)
@@ -1101,6 +1106,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteBool(streamId,self.cp.turnDiameterAutoMode)
 	streamDebugWriteFloat32(streamId,self.cp.turnDiameter)
 	streamDebugWriteBool(streamId,self.cp.speeds.useRecordingSpeed)
+	print("  40")
 	streamDebugWriteFloat32(streamId,self.cp.coursePlayerNum);
 	streamDebugWriteFloat32(streamId,self.cp.laneOffset)
 	streamDebugWriteFloat32(streamId,self.cp.toolOffsetX)
@@ -1111,6 +1117,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteBool(streamId,self.cp.HUD0wantsCourseplayer)
 	streamDebugWriteString(streamId,self.cp.HUD0combineForcedSide)
 	streamDebugWriteBool(streamId,self.cp.HUD0isManual)
+	print("  50")
 	streamDebugWriteInt32(streamId,self.cp.HUD0turnStage)
 	streamDebugWriteBool(streamId,self.cp.HUD0tractorForcedToStop)
 	streamDebugWriteString(streamId,self.cp.HUD0tractorName)
@@ -1121,6 +1128,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteString(streamId,self.cp.HUD4combineName)
 	streamDebugWriteBool(streamId,self.cp.HUD4savedCombine)
 	streamDebugWriteString(streamId,self.cp.HUD4savedCombineName)
+	print("  60")
 	streamDebugWriteInt32(streamId,self.recordnumber)
 	streamDebugWriteBool(streamId,self.cp.isRecording)
 	streamDebugWriteBool(streamId,self.cp.recordingIsPaused)
@@ -1131,6 +1139,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteFloat32(streamId,self.cp.speeds.unload)
 	streamDebugWriteFloat32(streamId,self.cp.speeds.street)
 	streamDebugWriteInt32(streamId,self.cp.visualWaypointsMode)
+	print("  70")
 	streamDebugWriteInt32(streamId,self.cp.warningLightsMode)
 	streamDebugWriteInt32(streamId,self.cp.waitTime)
 	streamDebugWriteBool(streamId,self.cp.symmetricLaneChange)
@@ -1140,30 +1149,34 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteBool(streamId,self.cp.hasShovelStatePositions[3])
 	streamDebugWriteBool(streamId,self.cp.hasShovelStatePositions[4])
 	streamDebugWriteBool(streamId,self.cp.hasShovelStatePositions[5])
-	
+	print("  79")
 	local copyCourseFromDriverID;
 	if self.cp.copyCourseFromDriver ~= nil then
-		copyCourseFromDriverID = networkGetObject(self.cp.copyCourseFromDriver)
+		copyCourseFromDriverID = networkGetObjectId(self.cp.copyCourseFromDriver)
 	end
+	print(string.format("copyCourseFromDriverID type %s value: %s",type(copyCourseFromDriverID),tostring(copyCourseFromDriverID)))
 	streamDebugWriteInt32(streamId, copyCourseFromDriverID)
 	
 	
 	local savedCombineId;
 	if self.cp.savedCombine ~= nil then
-		savedCombineId = networkGetObject(self.cp.savedCombine)
+		savedCombineId = networkGetObjectId(self.cp.savedCombine)
 	end
+	print(string.format("savedCombineId type %s value: %s",type(savedCombineId),tostring(savedCombineId)))
 	streamDebugWriteInt32(streamId, savedCombineId)
 
 	local activeCombineId;
 	if self.cp.activeCombine ~= nil then
-		activeCombineId = networkGetObject(self.cp.activeCombine)
+		activeCombineId = networkGetObjectId(self.cp.activeCombine)
 	end
+	print(string.format("activeCombineId type %s value: %s",type(activeCombineId),tostring(activeCombineId)))
 	streamDebugWriteInt32(streamId, activeCombineId)
 
 	local current_trailer_id;
 	if self.cp.currentTrailerToFill ~= nil then
-		current_trailer_id = networkGetObject(self.cp.currentTrailerToFill)
+		current_trailer_id = networkGetObjectId(self.cp.currentTrailerToFill)
 	end
+	print(string.format("current_trailer_id type %s value: %s",type(current_trailer_id),tostring(current_trailer_id)))
 	streamDebugWriteInt32(streamId, current_trailer_id)
 
 	local loadedCourses;
@@ -1174,7 +1187,7 @@ function courseplay:writeStream(streamId, connection)
 
 	local debugChannelsString = table.concat(table.map(courseplay.debugChannels, tostring), ",");
 	streamDebugWriteString(streamId, debugChannelsString) 
-
+	print("  base: write stream end")
 	courseplay:debug("id: "..tostring(networkGetObjectId(self)).."  base: write stream end", 5)
 end
 

@@ -63,9 +63,9 @@ function courseplay:drive(self, dt)
 	-- current position
 	local ctx, cty, ctz = getWorldTranslation(self.cp.DirectionNode);
 
-	if self.recordnumber > self.maxnumber then
-		courseplay:debug(string.format("drive %d: %s: self.recordnumber (%s) > self.maxnumber (%s)", debug.getinfo(1).currentline, nameNum(self), tostring(self.recordnumber), tostring(self.maxnumber)), 12); --this should never happen
-		courseplay:setRecordNumber(self, self.maxnumber);
+	if self.recordnumber > self.cp.numWaypoints then
+		courseplay:debug(string.format("drive %d: %s: self.recordnumber (%s) > self.cp.numWaypoints (%s)", debug.getinfo(1).currentline, nameNum(self), tostring(self.recordnumber), tostring(self.cp.numWaypoints)), 12); --this should never happen
+		courseplay:setRecordNumber(self, self.cp.numWaypoints);
 	end;
 
 
@@ -249,7 +249,7 @@ function courseplay:drive(self, dt)
 	else
 		-- MODES 1 & 2: unloading in trigger
 		if (self.cp.mode == 1 or (self.cp.mode == 2 and self.cp.isLoaded)) and self.cp.tipperFillLevel ~= nil and self.cp.tipRefOffset ~= nil and self.cp.workToolAttached then
-			if self.cp.currentTipTrigger == nil and self.cp.tipperFillLevel > 0 and self.recordnumber > 2 and self.recordnumber < self.maxnumber and not self.Waypoints[self.recordnumber].rev then
+			if self.cp.currentTipTrigger == nil and self.cp.tipperFillLevel > 0 and self.recordnumber > 2 and self.recordnumber < self.cp.numWaypoints and not self.Waypoints[self.recordnumber].rev then
 				courseplay:doTriggerRaycasts(self, 'tipTrigger', 'fwd', true, tx, ty, tz, nx, ny, nz);
 			end;
 
@@ -369,7 +369,7 @@ function courseplay:drive(self, dt)
 		end;
 
 		-- STOP AND END OR TRIGGER
-		if self.cp.stopAtEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil or self.cp.fillTrigger ~= nil) then
+		if self.cp.stopAtEnd and (self.recordnumber == self.cp.numWaypoints or self.cp.currentTipTrigger ~= nil or self.cp.fillTrigger ~= nil) then
 			allowedToDrive = false;
 			CpManager:setGlobalInfoText(self, 'END_POINT');
 		end;
@@ -419,7 +419,7 @@ function courseplay:drive(self, dt)
 
 		if self.cp.mode ~= 6 then
 			local minCoverWaypoint = self.cp.mode == 1 and 4 or 3;
-			showCover = self.recordnumber >= minCoverWaypoint and self.recordnumber < self.maxnumber and self.cp.currentTipTrigger == nil and self.cp.trailerFillDistance == nil;
+			showCover = self.recordnumber >= minCoverWaypoint and self.recordnumber < self.cp.numWaypoints and self.cp.currentTipTrigger == nil and self.cp.trailerFillDistance == nil;
 		else
 			showCover = not workArea and self.cp.currentTipTrigger == nil;
 		end;
@@ -507,7 +507,7 @@ function courseplay:drive(self, dt)
 	self.cp.checkMarkers = false
 	
 	--SPEED SETTING
-	local isAtEnd   = self.recordnumber > self.maxnumber - 3;
+	local isAtEnd   = self.recordnumber > self.cp.numWaypoints - 3;
 	local isAtStart = self.recordnumber < 3;
 	if 	((self.cp.mode == 1 or self.cp.mode == 5 or self.cp.mode == 8) and (isAtStart or isAtEnd)) 
 	or	((self.cp.mode == 2 or self.cp.mode == 3) and isAtEnd) 
@@ -622,13 +622,13 @@ function courseplay:drive(self, dt)
 
 
 	-- DISTANCE TO CHANGE WAYPOINT
-	if self.recordnumber == 1 or self.recordnumber == self.maxnumber - 1 or self.Waypoints[self.recordnumber].turn then
+	if self.recordnumber == 1 or self.recordnumber == self.cp.numWaypoints - 1 or self.Waypoints[self.recordnumber].turn then
 		if self.cp.hasSpecializationArticulatedAxis then
 			distToChange = self.cp.mode == 9 and 2 or 1; -- ArticulatedAxis vehicles
 		else
 			distToChange = 0.5;
 		end;
-	elseif self.recordnumber + 1 <= self.maxnumber then
+	elseif self.recordnumber + 1 <= self.cp.numWaypoints then
 		local beforeReverse = (self.Waypoints[self.recordnumber + 1].rev and (self.Waypoints[self.recordnumber].rev == false))
 		local afterReverse = (not self.Waypoints[self.recordnumber + 1].rev and self.Waypoints[self.cp.lastRecordnumber].rev)
 		if (self.Waypoints[self.recordnumber].wait or beforeReverse) and self.Waypoints[self.recordnumber].rev == false then -- or afterReverse or self.recordnumber == 1
@@ -707,7 +707,7 @@ function courseplay:drive(self, dt)
 	else
 		-- reset distance to waypoint
 		self.cp.shortestDistToWp = nil
-		if self.recordnumber < self.maxnumber then -- = New
+		if self.recordnumber < self.cp.numWaypoints then -- = New
 			if not self.cp.wait then
 				courseplay:setVehicleWait(self, true);
 			end
@@ -724,7 +724,7 @@ function courseplay:drive(self, dt)
 			courseplay:setStopAtEnd(self, false);
 			courseplay:setIsLoaded(self, false);
 			courseplay:setIsRecording(self, false);
-			self.cp.canDrive = true
+			self:setCpVar('canDrive',true)
 		end
 	end
 end
@@ -751,12 +751,12 @@ function courseplay:setTrafficCollision(vehicle, lx, lz, workArea) --!!!
 		local recordNumber = vehicle.recordnumber
 		if vehicle.cp.collidingVehicleId == nil then
 			for i=2,vehicle.cp.numTrafficCollisionTriggers do
-				if workArea or recordNumber + i > vehicle.maxnumber or recordNumber < 2 then
+				if workArea or recordNumber + i > vehicle.cp.numWaypoints or recordNumber < 2 then
 					AIVehicleUtil.setCollisionDirection(vehicle.cp.trafficCollisionTriggers[i-1], vehicle.cp.trafficCollisionTriggers[i], 0, -1);
 				else
 					local nodeX,nodeY,nodeZ = getWorldTranslation(vehicle.cp.trafficCollisionTriggers[i]);
 					local nodeDirX,nodeDirY,nodeDirZ,distance = courseplay:getWorldDirection(nodeX,nodeY,nodeZ, vehicle.Waypoints[recordNumber+i].cx,nodeY,vehicle.Waypoints[recordNumber+i].cz);
-					if distance < 5.5 and recordNumber + i +1 <= vehicle.maxnumber then
+					if distance < 5.5 and recordNumber + i +1 <= vehicle.cp.numWaypoints then
 							nodeDirX,nodeDirY,nodeDirZ,distance = courseplay:getWorldDirection(nodeX,nodeY,nodeZ, vehicle.Waypoints[recordNumber+i+1].cx,nodeY,vehicle.Waypoints[recordNumber+i+1].cz);
 					end;
 						nodeDirX,nodeDirY,nodeDirZ = worldDirectionToLocal(vehicle.cp.trafficCollisionTriggers[i-1], nodeDirX,nodeDirY,nodeDirZ);
@@ -1218,10 +1218,10 @@ function courseplay:getAverageWpSpeed(vehicle, numWaypoints)
 	local divider = numWaypoints
 	for i= (vehicle.recordnumber-1), (vehicle.recordnumber + numWaypoints-1) do
 		local index = i
-		if index > vehicle.maxnumber then
-			index = index - vehicle.maxnumber
+		if index > vehicle.cp.numWaypoints then
+			index = index - vehicle.cp.numWaypoints
 		elseif index < 1 then
-			index = vehicle.maxnumber - index
+			index = vehicle.cp.numWaypoints - index
 		end
 		if vehicle.Waypoints[index].speed ~= nil then
 			refSpeed = refSpeed + vehicle.Waypoints[index].speed

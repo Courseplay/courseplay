@@ -73,7 +73,7 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive, dt)
 
 		if fillLevelPct == 100 or vehicle.cp.isLoaded then
 			if not vehicle.cp.isLoaded then
-				for i=vehicle.recordnumber, vehicle.maxnumber do
+				for i=vehicle.recordnumber, vehicle.cp.numWaypoints do
 					local _,ty,_ = getWorldTranslation(vehicle.cp.DirectionNode);
 					local _,_,z = worldToLocal(vehicle.cp.DirectionNode, vehicle.Waypoints[i].cx , ty , vehicle.Waypoints[i].cz);
 					if z < -3 and vehicle.Waypoints[i].rev  then
@@ -155,7 +155,7 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive, dt)
 		local stopUnloading = vehicle.cp.shovel.trailerFound ~= nil and vehicle.cp.shovel.trailerFound.fillLevel >= vehicle.cp.shovel.trailerFound.capacity;
 		if fillLevelPct <= 1 or stopUnloading then
 			if vehicle.cp.isLoaded then
-				for i = vehicle.recordnumber,vehicle.maxnumber do
+				for i = vehicle.recordnumber,vehicle.cp.numWaypoints do
 					if vehicle.Waypoints[i].rev then
 						courseplay:setIsLoaded(vehicle, false);
 						courseplay:setRecordNumber(vehicle, i);

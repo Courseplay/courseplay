@@ -154,7 +154,6 @@ end
 
 function CourseplayJoinFixEvent:writeStream(streamId, connection)
 
-
 	if not connection:getIsServer() then
 		--courseplay:debug("manager transfering courses", 8);
 		--transfer courses
@@ -162,8 +161,8 @@ function CourseplayJoinFixEvent:writeStream(streamId, connection)
 		for _,_ in pairs(g_currentMission.cp_courses) do
 			course_count = course_count + 1
 		end
-		streamDebugWriteInt32(streamId, course_count)
 		print(string.format("\t### CourseplayMultiplayer: writing %d courses ", course_count ))
+		streamDebugWriteInt32(streamId, course_count)
 		for id, course in pairs(g_currentMission.cp_courses) do
 			streamDebugWriteString(streamId, course.name)
 			streamDebugWriteString(streamId, course.uid)

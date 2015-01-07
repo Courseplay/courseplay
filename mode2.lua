@@ -306,7 +306,7 @@ function courseplay:unload_combine(vehicle, dt)
 	
 	local aiTurn = combine.isAIThreshing and combine.turnStage > 0 and not (combine.turnStage == 3 and vehicle.cp.choppersTurnHasEnded)
 	if tractor ~= nil and (aiTurn or tractor.cp.turnStage > 0) then
-		courseplay:setInfoText(vehicle, "COURSEPLAY_COMBINE_IS_TURNING");
+		--courseplay:setInfoText(vehicle, "COURSEPLAY_COMBINE_IS_TURNING");
 		combineIsTurning = true
 		-- print(('%s: cp.turnStage=%d -> combineIsTurning=true'):format(nameNum(tractor), tractor.cp.turnStage));
 	end
@@ -466,7 +466,6 @@ function courseplay:unload_combine(vehicle, dt)
 
 	-- STATE 3 (drive to unload pipe)
 	elseif vehicle.cp.modeState == 3 then
-		courseplay:setInfoText(vehicle, "COURSEPLAY_DRIVE_NEXT_TO_COMBINE");
 		--courseplay:addToCombinesIgnoreList(vehicle, combine)
 		refSpeed = vehicle.cp.speeds.field
 		speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
@@ -560,7 +559,9 @@ function courseplay:unload_combine(vehicle, dt)
 				allowedToDrive = false
 				courseplay:setInfoText(vehicle, "COURSEPLAY_COMBINE_WANTS_ME_TO_STOP");
 		end
-		
+		if vehicle.cp.infoText == nil then
+			courseplay:setInfoText(vehicle, "COURSEPLAY_DRIVE_NEXT_TO_COMBINE");
+		end
 		-- refspeed depends on the distance to the combine
 		local combine_speed = tractor.lastSpeed*3600
 		if combine.cp.isChopper then
@@ -918,7 +919,9 @@ function courseplay:unload_combine(vehicle, dt)
 	end
 
 	if vehicle.cp.modeState ~= 9  and (currentX == nil or currentZ == nil) then
-		courseplay:setInfoText(vehicle, "COURSEPLAY_WAITING_FOR_WAYPOINT");
+		if vehicle.cp.infoText == nil then
+			courseplay:setInfoText(vehicle, "COURSEPLAY_WAITING_FOR_WAYPOINT");
+		end
 		allowedToDrive = false;
 	end
 
