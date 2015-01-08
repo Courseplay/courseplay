@@ -186,7 +186,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 								elseif courseplay:timerIsThrough(vehicle, 'foldBaleLoader', false) then
 									-- print(('%s: timer through -> set state BaleLoader.CHANGE_SINK -> reset timer'):format(nameNum(workTool)));
 									g_server:broadcastEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_SINK), true, nil, workTool);
-									courseplay:resetCustomTimer(vehicle, 'foldBaleLoader', true)
+									courseplay:resetCustomTimer(vehicle, 'foldBaleLoader', true);
 								end;
 
 								-- Change the direction to forward if we were reversing.
