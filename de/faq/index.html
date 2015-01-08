@@ -122,73 +122,73 @@
 		</article>
 
 		<article id="faqOffset" class="singleFaq">
-			<h2>How to use the offset? &mdash; a.k.a. how do I let multiple vehicles drive a fieldwork course?</h2>
+			<h2>Wie funktioniert der Versatz? &mdash; a.k.a. wie lasse ich mehrere Fahrzeuge im Verbund fahren?</h2>
 			<div class="faqContent">
-				<p>The <span class="emphasize1">horizontal offset</span> can be used for two different situations:</p>
+				<p>Der <span class="emphasize1">seitliche Versatz</span> kann in zwei verschiedenen Situationen benutzt werden:</p>
 
 				<ol>
-					<li>The work tool you're using isn't symmetrical, so you need to drive slightly off course (left or right) to have the tool in the path's center. This applies to, e.g., a bale loader, or a side mower. In this case, use the tool offset setting.</li>
-					<li>You want to use a group of vehicles to drive side by side, in order to work the field faster. In this case, use the lane offset setting.</li>
+					<li>Das Arbeitsgerät ist asymmetrisch, so dass man leicht seitlich versetzt (links oder rechts) zum Kurs fahren muss. Das ist z.B. beim Ballenladen oder einem Seitenmäher der Fall.</li>
+					<li>Man möchte mehrere Fahrzeuge nebeneinander einen Feldarbeitskurs abfahren lassen (um das Feld schneller zu bearbeiten).</li>
 				</ol>
 
-				<h3>The asymmetrical tool (tool offset)</h3>
-				<p>On the X axis, calculate (or at least estimate) the distance between the point where the tool should "hit" the path and the vehicle's center. Use that distance as the horizontal offset. For example, the default bale loader (Arcusin) needs an offset of approximately <span class="serif">1.5</span> to <span class="serif">2</span> metres to the <span class="emphasize2">left</span> (as the grabber is on the <span class="emphasize2">right</span> side of the tool).</p>
+				<h3>Das asymmetrische Gerät (Gerät-Versatz)</h3>
+				<p>Berechne (oder schätze zumindest) den horizontalen Abstand zwischen dem Punkt des Arbeitsgerätes, der in der Kursmitte sein sollte, und der Mitte des Fahrzeuges. Diese Distanz wird der horizontale Versatz sein. Die Standard-Ballenlader (Arcusin), zum Beispiel, benötigt einen Versatz von etwa <span class="emphasize2">2,5</span> Meter nach <span class="emphasize2">links</span> (da der Greifer auf der <span class="emphasize2">rechten</span> Seite des Gerätes ist). Der Standard-Ursus-Ballenlader benötigt einen Versatz von etwa <span class="emphasize2">2,4</span> Meter nach <span class="emphasize2">links</span>.</p>
 
 
-				<h3>The groupies (lane offset)</h3>
-				<p>In order to have multiple vehicles drive in a group, make sure of the following:</p>
+				<h3>Der Verbund (Bahnversatz)</h3>
+				<p>Um mehrere Fahrzeuge im Verbund fahren zu lassen muss folgendes beachtet werden:</p>
 				<ol>
-					<li>Each vehicle uses the same tool, with the same work width.</li>
-					<li>Don't start all vehicles at once. If you do so, they will get stuck with another vehicle of the group at one point or the other.</li>
-					<li>If the tool's work width is not an integer (whole number like <span class="serif">6</span>, <span class="serif">8</span>, <span class="serif">12</span>) but instead is in the decimal area (e.g. <span class="serif">7.5</span>, <span class="serif">3.4</span>), use the next lower work width to calculate the offset. The reason for this is our limitation of setting the offset, which allows only for <span class="serif">.5</span> steps.</li>
+					<li>Alle Fahrzeuge benutzen das gleiche Gerät, mit der gleichen Arbeitsbreite.</li>
+					<li>Starte nicht alle Fahrzeuge zugleich, sondern zeitlich versetzt; ansonsten werden sie sich früher oder später ineinander verkeilen.</li>
+					<li>Wenn die Arbeitsbreite des Gerätes keine Ganzzahl ist (<span class="emphasize2">6</span>, <span class="emphasize2">8</span>, <span class="emphasize2">12</span> usw.), sondern im Kommabereich liegt (z.B. <span class="emphasize2">7,5</span>, <span class="emphasize2">3,4</span>), sollte auf die nächste ganze Zahl abgerundet werden um den Versatz zu berechnen. Dies liegt an unserer Limitierung, dass der Versatz nur in <span class="emphasize2">0,5er</span>-Schritten eingestellt werden kann.</li>
 				</ol>
 
-				<p>Each vehicle must use the same generated course. The course's work width needs to be tool's work width multiplied with the amount of vehicles. For example, when you use two 6m seeders, the course's work width has to be <span class="serif">12</span> &ndash; again: each tool needs to use this 12m <span class="emphasize1">(total work width)</span> course.</p>
+				<p>Jedes Fahrzeug muss den selben generierten Kurs benutzen. Die Kursarbeitsbreite ist die Anzahl der Fahrzeuge multipliziert mit der Gerätearbeitsbreite. Werden zum Beispiel zwei 6m-Säer benutzt, muss die Kursarbeitsbreite <span class="emphasize2">12m</span> sein &ndash; nochmal: jedes Fahrzeug muss diesen 12m-<span class="emphasize1">(Gesamtarbeitsbreite)</span>-Kurs benutzen.</p>
 
-				<p>Staying with the seeder example, vehicle #1 will drive on the <span class="emphasize2">left</span> side of the course with an offset of <span class="emphasize1">-3 metres</span>, vehicle #2 will drive on the <span class="emphasize2">right</span> side of the course with an offset of <span class="emphasize1">3 metres</span>.</p>
+				<p>Um beim Säerbeispiel zu bleiben wird Fahrzeug #1 auf der <span class="emphasize2">linken</span> Seite des Kurses fahren, mit einem Versatz von <span class="emphasize1">-3 Meter</span>; Fahrzeug #2 wird auf der  <span class="emphasize2">rechten</span> Seite des Kurses mit einem Versatz von <span class="emphasize1">3 Meter</span> fahren.</p>
 
-				<h3>Regular vs. symmetric lane change</h3>
-				<p>There are two methods for setting up the lane usage: <span class="emphasize1">regular lane change</span> and <span class="emphasize1">symmetrical lane change</span>.</p>
+				<h3>Regulärer vs. symmetrischer Bahnwechsel</h3>
+				<p>Es gibt zwei Methoden, die Bahnen der Geräte festzulegen: den <span class="emphasize1">regulären Bahnwechsel</span> und den <span class="emphasize1">symmetrischen Bahnwechsel</span>.</p>
 				<ul>
-					<li><span class="emphasize1">Regular lane change</span>: while in the first lane they will drive side by side, remember that their position, relative to the path, will <span class="emphasize2">always</span> be left/right of the course. So in the next lane, they will appear to switch the positions, but in reality they will still be left/right of the path.</li>
-					<li><span class="emphasize1">Symmetrical lane change</span>: the vehicles will effectively leave a free lane for the following vehicle.</li>
+					<li><span class="emphasize1">Regulärer Bahnwechsel</span>: während sie in der ersten Bahn nebeneinander fahren werden, sollte nicht vergessen werden ihre jeweilige Position, relativ zum Kurs, <span class="emphasize2">immer</span> links bzw. rechts ist. In der nächsten Bahn scheinen sie also ihre Positionen zu wechseln, doch in Wirklichkeit bleiben sie links bzw. rechts vom Kurs.</li>
+					<li><span class="emphasize1">Symmetrischer Bahnwechsel</span>: die Fahrzeuge werden effektiv eine Bahn für das nachfolgende Fahrzeug auslassen.</li>
 				</ul>
 
 				<figure id="laneChangeImage">
-					<img src="../../res/img/faq_laneChange_en.jpg" alt="Regular vs. symmetrical lane change" class="infoImg">
-					<figcaption>Regular vs. symmetrical lane change</figcaption>
+					<img src="../../res/img/faq_laneChange_de.jpg" alt="Regulärer vs. symmetrischer Bahnwechsel" class="infoImg">
+					<figcaption>Regulärer vs. symmetrischer Bahnwechsel</figcaption>
 				</figure>
 
-				<noscript>Please enable Javascript to see a lane change animation.</noscript>
+				<noscript>Bitte aktiviere Javascript um die Bahnwechsel-Animation sehen zu können.</noscript>
 				<button id="playLaneOffsets" class="button">Play</button>
-				<span id="regularText" class="hidden">Regular lane change</span>
-				<span id="symmetricText" class="hidden">Symmetric lane change</span>
+				<span id="regularText" class="hidden">Regulärer Bahnwechsel</span>
+				<span id="symmetricText" class="hidden">Symmetrischer Bahnwechsel</span>
 				<div id="laneChangeStage"></div>
 
-				<h3>The lane offset calculation</h3>
-				<p>The formula for calculating the offset is:</p>
+				<h3>Bahnversatz-Berechnung</h3>
+				<p>Die Formel zur Berechnung des Versatzes lautet:</p>
 				<p>
-					let <code>num</code> be the amount of vehicles<br />
-					let <code>pos</code> be the vehicle's position (#1, #2, #3, &hellip;)<br />
-					let <code>ww</code> be the tool's work width<br />
-					the tool's offset is:
-					<pre>( pos - ( (num + 1) / 2 ) ) * ww</pre>
+					<code>Anzahl</code> ist die Anzahl der Fahrzeuge im Verbund<br />
+					<code>Nummer</code> ist die Nummer des Fahrzeugs im Verbund (#1, #2, #3, &hellip;)<br />
+					<code>Arbeitsbreite</code> ist die Geräte-Arbeitsbreite eines einzelnen Gerätes (nicht die Gesamtarbeitsbreite)<br />
+					The Versatz für das jew. Gerät ist:
+					<pre>( Nummer - ( (Anzahl + 1) / 2 ) ) * Arbeitsbreite</pre>
 				</p>
 
-				<noscript>Please enable Javascript to use the offsect calculator tool.</noscript>
+				<noscript>Bitte aktiviere Javascript um das Versatz-Berechnungs-Tool benutzen zu können.</noscript>
 
 
-				<p id="offsetCalculatorIntro">But, we have also built a tool for calculating the correct offset settings for multiple tools:</p>
+				<p id="offsetCalculatorIntro">Wir haben zusätzlich noch ein Tool zur Berechnung des Versatzes für mehrere Geräte gebaut:</p>
 				<div id="offsetCalculator">
 					<div id="textElements">
-						<sub data-lang="en" data-text="courseWorkWidth">Course work width</sub>
-						<sub data-lang="en" data-text="tool">Tool</sub>
-						<sub data-lang="en" data-text="offset">Offset</sub>
+						<sub data-lang="de" data-text="courseWorkWidth">Gesamtarbeitsbreite</sub>
+						<sub data-lang="de" data-text="tool">Gerät</sub>
+						<sub data-lang="de" data-text="offset">Versatz</sub>
 					</div>
 
 					<form id="input">
 						<fieldset>
-							<label for="amount">Number of tools</label>
+							<label for="amount">Anzahl der Geräte</label>
 							<select name="amount" id="amount">
 								<option value="2" selected>2</option>
 								<option value="3">3</option>
@@ -203,14 +203,14 @@
 						</fieldset>
 
 						<fieldset>
-							<label for="workWidth">Work width</label>
+							<label for="workWidth">Gerätarbeitsbreite</label>
 							<input id="workWidth" name="workWidth" type="number" min="1" step="0.5" value="6">
 						</fieldset>
 
 						<div class="clearfix"></div>
 					</form>
 
-					<button id="save" class="button">Save as image</button>
+					<button id="save" class="button">Als Bild speichern</button>
 					<div id="laneOffsetStage"></div>
 
 				</div>
