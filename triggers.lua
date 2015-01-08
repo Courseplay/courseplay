@@ -390,6 +390,8 @@ function courseplay:findSpecialTriggerCallback(transformId, x, y, z, distance)
 end;
 
 function courseplay:updateAllTriggers()
+	courseplay:debug('updateAllTriggers()', 1);
+
 	--RESET
 	if courseplay.triggers ~= nil then
 		for k,triggerGroup in pairs(courseplay.triggers) do
@@ -423,32 +425,35 @@ function courseplay:updateAllTriggers()
 	-- UPDATE
 	-- nonUpdateable objects
 	if g_currentMission.nonUpdateables ~= nil then
+		courseplay:debug('\tcheck nonUpdateables', 1);
 		for k,v in pairs(g_currentMission.nonUpdateables) do
 			if g_currentMission.nonUpdateables[k] ~= nil then
 				local trigger = g_currentMission.nonUpdateables[k];
 				local triggerId = trigger.triggerId;
-				if triggerId ~= nil then
+				if triggerId ~= nil and trigger.isEnabled then
 					-- GasStationTriggers
-					if trigger.mapHotspot and trigger.mapHotspot.name and trigger.mapHotspot.name == 'FuelStation' then
+					if trigger.isa and trigger:isa(GasStation) then
 						trigger.isGasStationTrigger = true;
 						courseplay:cpAddTrigger(triggerId, trigger, 'gasStation', 'nonUpdateable');
+						courseplay:debug('\t\tadd GasStationTrigger', 1);
 
 					-- SowingMachineFillTriggers
-					elseif trigger.fillType and Fillable.fillTypeIntToName[trigger.fillType] == 'seeds' then
+					elseif trigger.fillType and trigger.fillType == Fillable.FILLTYPE_SEEDS then
 						trigger.isSowingMachineFillTrigger = true;
 						courseplay:cpAddTrigger(triggerId, trigger, 'sowingMachine', 'nonUpdateable');
+						courseplay:debug('\t\tadd SowingMachineFillTrigger', 1);
 
 					-- SprayerFillTriggers
-					elseif (trigger.sprayTypeDesc and trigger.sprayTypeDesc.name == 'fertilizer') or (Fillable.fillTypeIntToName[trigger.fillType] == 'fertilizer') then
+					elseif trigger.fillType and trigger.fillType == Fillable.FILLTYPE_FERTILIZER then
 						trigger.isSprayerFillTrigger = true;
 						courseplay:cpAddTrigger(triggerId, trigger, 'sprayer', 'nonUpdateable');
+						courseplay:debug('\t\tadd sprayerFillTrigger', 1);
 
-					--[[
-					-- WaterTrailerFillTriggers
-					-- Note: priceScale seems to only exist with WaterTrailerFillTriggers, which in turn don't have fillTypes to check against
-					elseif trigger.priceScale then
+					--[[ WaterTrailerFillTriggers
+					elseif trigger.isa and trigger:isa(WaterTrailerFillTrigger) then
 						trigger.isWaterTrailerFillTrigger = true;
 						courseplay:cpAddTrigger(triggerId, trigger, 'water', 'nonUpdateable');
+						courseplay:debug('\t\tadd waterTrailerFillTrigger', 1);
 					--]]
 					end;
 				end;
@@ -458,6 +463,7 @@ function courseplay:updateAllTriggers()
 
 	-- updateable objects
 	if g_currentMission.updateables ~= nil then
+		courseplay:debug('\tcheck updateables', 1);
 		-- weight station
 		if g_currentMission.WeightStation ~= nil and #g_currentMission.WeightStation > 0 then
 			for t,object in pairs(g_currentMission.updateables) do
@@ -466,14 +472,15 @@ function courseplay:updateAllTriggers()
 					object.isWeightStation = true;
 					station.isWeightStation = true;
 					courseplay:cpAddTrigger(object.triggerId, station, 'weightStation', 'nonUpdateable');
+					courseplay:debug('\t\tadd weightStation [mod]', 1);
 				end;
 			end;
-			-- print(tableShow(courseplay.triggers.weightStations, 'courseplay.triggers.weightStations'));
 		end;
 	end;
 
 	-- onCreate objects
 	if g_currentMission.onCreateLoadedObjects ~= nil then
+		courseplay:debug('\tcheck onCreateLoadedObjects', 1);
 		for k, trigger in pairs(g_currentMission.onCreateLoadedObjects) do
 			local triggerId = trigger.triggerId;
 			-- ManureLager
@@ -482,6 +489,7 @@ function courseplay:updateAllTriggers()
 					trigger.isManureLager = true;
 					trigger.isLiquidManureFillTrigger = true;
 					courseplay:cpAddTrigger(triggerId, trigger, 'liquidManure', 'nonUpdateable');
+					courseplay:debug('\t\tadd ManureLager [mod]', 1);
 				end;
 
 			-- Pigs [marhu]
@@ -490,13 +498,14 @@ function courseplay:updateAllTriggers()
 				trigger.isSchweinemastLiquidManureTrigger = true;
 				trigger.isLiquidManureFillTrigger = true;
 				courseplay:cpAddTrigger(triggerId, trigger, 'liquidManure', 'nonUpdateable');
+				courseplay:debug('\t\tadd pigs liquidManureFillTrigger [mod]', 1);
 			end;
 		end;
 	end;
 
 	-- placeables objects
 	if g_currentMission.placeables ~= nil then
-		--print(tableShow(g_currentMission.placeables, 'g_currentMission.placeables'));
+		courseplay:debug('\tcheck placeables', 1);
 		for xml, placeable in pairs(g_currentMission.placeables) do
 			for k, trigger in pairs(placeable) do
 				--	FermentingSilo
@@ -505,6 +514,7 @@ function courseplay:updateAllTriggers()
 					local triggerId = trigger.TipTrigger.triggerId;
 					if triggerId ~= nil then
 						courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
+						courseplay:debug('\t\tadd FermentingSiloTrigger [mod]', 1);
 					end;
 
 				-- SowingMachineFillTriggers (placeable)
@@ -516,6 +526,7 @@ function courseplay:updateAllTriggers()
 						isSowingMachineFillTriggerPlaceable = true;
 					};
 					courseplay:cpAddTrigger(data.triggerId, data, 'sowingMachine', 'nonUpdateable');
+					courseplay:debug('\t\tadd SowingMachineFillTrigger [placeable] [mod]', 1);
 
 				-- SprayerFillTriggers (placeable)
 				elseif trigger.SprayerFillTriggerId then
@@ -526,6 +537,7 @@ function courseplay:updateAllTriggers()
 						isSprayerFillTriggerPlaceable = true;
 					};
 					courseplay:cpAddTrigger(data.triggerId, data, 'sprayer', 'nonUpdateable');
+					courseplay:debug('\t\tadd SprayerFillTrigger [placeable] [mod]', 1);
 
 				-- DamageMod (placeable)
 				elseif trigger.customEnvironment == 'DamageMod' or Utils.endsWith(xml, 'garage.xml') then
@@ -536,6 +548,7 @@ function courseplay:updateAllTriggers()
 						isDamageModTriggerPlaceable = true;
 					};
 					courseplay:cpAddTrigger(trigger.triggerId, data, 'damageMod', 'nonUpdateable');
+					courseplay:debug('\t\tadd DamageModTrigger [mod]', 1);
 
 				-- mixing station (placeable)
 				elseif Utils.endsWith(xml, 'mischstation.xml') then
@@ -544,12 +557,14 @@ function courseplay:updateAllTriggers()
 						if triggerId then
 							triggerData.isMixingStationTrigger = true;
 							courseplay:cpAddTrigger(triggerId, triggerData, 'tipTrigger');
+							courseplay:debug('\t\tadd MixingStationTrigger [mod]', 1);
 						end;
 					end;
 
 				-- BioHeatPlant / WoodChip storage tipTrigger (Forest Mod) (placeable)
 				elseif trigger.isStorageTipTrigger and trigger.acceptedFillType ~= nil and Fillable.fillTypeNameToInt.woodChip ~= nil and trigger.acceptedFillType == Fillable.fillTypeNameToInt.woodChip and trigger.triggerId ~= nil then
 					courseplay:cpAddTrigger(trigger.triggerId, trigger, 'tipTrigger');
+					courseplay:debug('\t\tadd BioHeatPlant / WoodChop storage trigger [forest mod]', 1);
 
 				-- manureLager (placeable)
 				elseif trigger.ManureLagerPlaceableDirtyFlag or Utils.endsWith(xml, 'placeablemanurelager.xml') then
@@ -557,6 +572,7 @@ function courseplay:updateAllTriggers()
 					trigger.isLiquidManureFillTrigger = true;
 					local triggerId = trigger.manureTrigger
 					courseplay:cpAddTrigger(triggerId, trigger, 'liquidManure', 'nonUpdateable');
+					courseplay:debug('\t\tadd ManureLager [placeable] [mod]', 1);
 				end;
 			end;
 		end
@@ -564,6 +580,7 @@ function courseplay:updateAllTriggers()
 
 	-- UPK triggers
 	if g_upkTrigger then
+		courseplay:debug('\tcheck g_upkTrigger', 1);
 		for i,trigger in ipairs(g_upkTrigger) do
 			local triggerId = trigger.triggerId;
 			if triggerId and trigger.isEnabled then
@@ -572,26 +589,30 @@ function courseplay:updateAllTriggers()
 				if trigger.type == 'gasstationtrigger' then
 					trigger.isGasStationTrigger = true;
 					trigger.isUpkGasStationTrigger = true;
-					-- print(('add UPK gasStation trigger (id %d)'):format(triggerId));
 					courseplay:cpAddTrigger(triggerId, trigger, 'gasStation', 'nonUpdateable');
+					courseplay:debug(('\t\tadd gasStationTrigger (id %d)'):format(triggerId), 1);
 				elseif trigger.type == 'liquidmanurefilltrigger' then
 					trigger.isLiquidManureFillTrigger = true;
 					trigger.isUpkLiquidManureFillTrigger = true;
-					-- print(('add UPK liquidManureFillTrigger (id %d)'):format(triggerId));
 					courseplay:cpAddTrigger(triggerId, trigger, 'liquidManure', 'nonUpdateable');
+					courseplay:debug(('\t\tadd liquidManureFillTrigger (id %d)'):format(triggerId), 1);
 				elseif trigger.type == 'sprayerfilltrigger' then
 					trigger.isSprayerFillTrigger = true;
 					trigger.isUpkSprayerFillTrigger = true;
-					-- print(('add UPK sprayerFillTrigger (id %d)'):format(triggerId));
 					courseplay:cpAddTrigger(triggerId, trigger, 'sprayer', 'nonUpdateable');
+					courseplay:debug(('\t\tadd sprayerFillTrigger (id %d)'):format(triggerId), 1);
 				elseif trigger.type == 'tiptrigger' then
 					trigger.isUpkTipTrigger = true;
 					if trigger.i18nNameSpace == 'PlaceableHeaps' then
 						trigger.isPlaceableHeapTrigger = true;
 					end;
-					-- print(('add UPK tipTrigger (id %d), isPlaceableHeapTrigger=%s'):format(triggerId, tostring(trigger.isPlaceableHeapTrigger)));
+					courseplay:debug(('\t\tadd tipTrigger (id %d), isPlaceableHeapTrigger=%s'):format(triggerId, tostring(trigger.isPlaceableHeapTrigger)), 1);
 					courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
-				-- elseif trigger.type == 'waterfilltrigger' then
+				--[[elseif trigger.type == 'waterfilltrigger' then
+					trigger.isWaterTrailerFillTrigger = true;
+					courseplay:cpAddTrigger(triggerId, trigger, 'water', 'nonUpdateable');
+					courseplay:debug(('\t\tadd waterTrailerFillTrigger (id %d)'):format(triggerId), 1);
+				]]
 				end;
 			end;
 		end;
@@ -599,6 +620,7 @@ function courseplay:updateAllTriggers()
 
 	-- tipTriggers objects
 	if g_currentMission.tipTriggers ~= nil then
+		courseplay:debug('\tcheck tipTriggers', 1);
 		for k, trigger in pairs(g_currentMission.tipTriggers) do
 			-- LiquidManureSiloTriggers [BGA]
 			if trigger.bga and trigger.bga.liquidManureSiloTrigger then
@@ -607,6 +629,7 @@ function courseplay:updateAllTriggers()
 				t.isLiquidManureFillTrigger = true;
 				t.isBGAliquidManureFillTrigger = true;
 				courseplay:cpAddTrigger(triggerId, t, 'liquidManure', 'nonUpdateable');
+				courseplay:debug(('\t\tadd liquidManureFillTrigger (id %d) [BGA]'):format(triggerId), 1);
 
 			-- LiquidManureSiloTriggers [Cows]
 			elseif trigger.animalHusbandry and trigger.animalHusbandry.liquidManureTrigger then
@@ -615,6 +638,7 @@ function courseplay:updateAllTriggers()
 				t.isLiquidManureFillTrigger = true;
 				t.isCowsLiquidManureFillTrigger = true;
 				courseplay:cpAddTrigger(triggerId, t, 'liquidManure', 'nonUpdateable');
+				courseplay:debug(('\t\tadd liquidManureFillTrigger (id %d) [cows]'):format(triggerId), 1);
 
 				-- check corresponding feeding tipTriggers
 				if t.fillLevelObject and t.fillLevelObject.tipTriggers then
@@ -622,6 +646,7 @@ function courseplay:updateAllTriggers()
 						local triggerId = subTrigger.triggerId;
 						if triggerId and subTrigger.acceptedFillTypes then
 							courseplay:cpAddTrigger(triggerId, subTrigger, 'tipTrigger');
+							courseplay:debug(('\t\tadd feeding trough tipTrigger (id %d) [cows]'):format(triggerId), 1);
 						end;
 					end;
 				end;
@@ -634,6 +659,7 @@ function courseplay:updateAllTriggers()
 				end;
 				if triggerId ~= nil then
 					courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
+					courseplay:debug(('\t\tadd tipTrigger (id %d), isAlternativeTipTrigger=%s'):format(triggerId, tostring(trigger.isAlternativeTipTrigger)), 1);
 				end;
 			end;
 		end
@@ -647,6 +673,7 @@ function courseplay:updateAllTriggers()
 			trigger.isLiquidManureOverloaderFillTrigger = true;
 			trigger.parentVehicle = vehicle
 			courseplay:cpAddTrigger(triggerId, trigger, 'liquidManure', 'nonUpdateable');
+			courseplay:debug(('\t\tadd overloader\'s liquidManureFillTrigger (id %d)'):format(triggerId), 1);
 		end
 	end
 end;
