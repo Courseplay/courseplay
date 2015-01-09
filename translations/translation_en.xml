@@ -74,7 +74,7 @@
 		<text name="COURSEPLAY_SPEED_TURN" 								 text="Turn speed:" />
 		<text name="COURSEPLAY_SPEED_FIELD" 							 text="Field speed:" />
 		<text name="COURSEPLAY_SPEED_MAX" 								 text="Street speed:" />
-		<text name="COURSEPLAY_SPEED_UNLOAD" 							 text="Unload (BGA):" />
+		<text name="COURSEPLAY_SPEED_REVERSING" 						 text="Reversing speed:" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE" 							 text="Speed:" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_RECORDING" 				 text="from recording" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 						 text="maximum speed" />

@@ -70,7 +70,7 @@
 		<text name="COURSEPLAY_SPEED_TURN" 								 text="Manőverezési seb.:" />
 		<text name="COURSEPLAY_SPEED_FIELD" 							 text="Termőföldi seb.:" />
 		<text name="COURSEPLAY_SPEED_MAX" 								 text="Közúti (max) seb.:" />
-		<text name="COURSEPLAY_SPEED_UNLOAD" 							 text="Kirakodás (BGA):" />
+		<text name="COURSEPLAY_SPEED_REVERSING" 						 text="Kirakodás (BGA):" /> <!-- TODO: "Reversing speed" -->
 		<text name="COURSEPLAY_MAX_SPEED_MODE" 							 text="Max Sebesség:" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_RECORDING" 				 text="Felvétel alapján" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 						 text="beállított sebesség" />

@@ -74,7 +74,7 @@
 		<text name="COURSEPLAY_SPEED_TURN" 								 text="Wendemanöver:" />
 		<text name="COURSEPLAY_SPEED_FIELD" 							 text="Auf dem Feld:" />
 		<text name="COURSEPLAY_SPEED_MAX" 								 text="Auf Straße:" />
-		<text name="COURSEPLAY_SPEED_UNLOAD" 							 text="Abladen (BGA):" />
+		<text name="COURSEPLAY_SPEED_REVERSING" 						 text="Rückwärts:" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE" 							 text="Geschwindigkeit:" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_RECORDING" 				 text="wie beim einfahren" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 						 text="maximale Geschwindigkeit" />

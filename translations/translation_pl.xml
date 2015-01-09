@@ -74,7 +74,7 @@
 		<text name="COURSEPLAY_SPEED_TURN"								 text="Prędkość zawracania:" />
 		<text name="COURSEPLAY_SPEED_FIELD"								 text="Prędkość na polu:" />
 		<text name="COURSEPLAY_SPEED_MAX"								 text="Prędkość na ulicy:" />
-		<text name="COURSEPLAY_SPEED_UNLOAD"							 text="Rozładunek w BGA:" />
+		<text name="COURSEPLAY_SPEED_REVERSING"							 text="Rozładunek w BGA:" /> <!-- TODO: "Reversing speed" -->
 		<text name="COURSEPLAY_MAX_SPEED_MODE"							 text="Prędkość:" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_RECORDING"				 text="z nagrania" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX"						 text="prędkość max." />

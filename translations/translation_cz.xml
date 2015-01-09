@@ -70,7 +70,7 @@
 		<text name="COURSEPLAY_SPEED_TURN" 								 text="Rychlost otáčení:" />
 		<text name="COURSEPLAY_SPEED_FIELD" 							 text="Rychlost na poli:" />
 		<text name="COURSEPLAY_SPEED_MAX" 								 text="Rychlost na cestě:" />
-		<text name="COURSEPLAY_SPEED_UNLOAD" 							 text="Vykládání (BGA):" />
+		<text name="COURSEPLAY_SPEED_REVERSING" 						 text="Vykládání (BGA):" /> <!-- TODO: "Reversing speed" -->
 		<text name="COURSEPLAY_MAX_SPEED_MODE" 							 text="Rychlost:" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_RECORDING" 				 text="jako při nahrávání" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 						 text="maximální rychlost" />
