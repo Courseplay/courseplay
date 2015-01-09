@@ -165,7 +165,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 				end;
 
 				-- stop when unloading
-				if workTool.activeAnimations and (workTool:getIsAnimationPlaying('rotatePlatform') --[[or workTool:getIsAnimationPlaying('emptyRotate')]]) then
+				if workTool.activeAnimations and (workTool:getIsAnimationPlaying('rotatePlatform') or workTool:getIsAnimationPlaying('emptyRotate')) then
 					allowedToDrive = false;
 				end;
 
@@ -175,27 +175,37 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 					if not specialTool then
 						if workTool.emptyState ~= BaleLoader.EMPTY_NONE then
 							if workTool.emptyState == BaleLoader.EMPTY_WAIT_TO_DROP then
-								-- BaleLoader.CHANGE_DROP_BALES
+								-- (2) drop the bales
+								-- print(('%s: set state BaleLoader.CHANGE_DROP_BALES'):format(nameNum(workTool)));
 								g_server:broadcastEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_DROP_BALES), true, nil, workTool)
 							elseif workTool.emptyState == BaleLoader.EMPTY_WAIT_TO_SINK then
-								-- BaleLoader.CHANGE_SINK
-								g_server:broadcastEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_SINK), true, nil, workTool)
+								-- (3) lower (fold) table
+								if not courseplay:getCustomTimerExists(vehicle, 'foldBaleLoader') then
+									-- print(('%s: foldBaleLoader timer not running -> set timer 2 seconds'):format(nameNum(workTool)));
+									courseplay:setCustomTimer(vehicle, 'foldBaleLoader', 2);
+								elseif courseplay:timerIsThrough(vehicle, 'foldBaleLoader', false) then
+									-- print(('%s: timer through -> set state BaleLoader.CHANGE_SINK -> reset timer'):format(nameNum(workTool)));
+									g_server:broadcastEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_SINK), true, nil, workTool);
+									courseplay:resetCustomTimer(vehicle, 'foldBaleLoader', true);
+								end;
 
 								-- Change the direction to forward if we were reversing.
 								if vehicle.Waypoints[vehicle.recordnumber].rev then
+									-- print(('%s: set recordnumber to next forward point'):format(nameNum(workTool)));
 									courseplay:setRecordNumber(vehicle, courseplay:getNextFwdPoint(vehicle));
 								end;
 							elseif workTool.emptyState == BaleLoader.EMPTY_WAIT_TO_REDO then
-								-- BaleLoader.CHANGE_EMPTY_REDO
+								-- print(('%s: set state BaleLoader.CHANGE_EMPTY_REDO'):format(nameNum(workTool)));
 								g_server:broadcastEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_EMPTY_REDO), true, nil, workTool);
-							end
+							end;
 						else
-							--BaleLoader.CHANGE_EMPTY_START
+							-- (1) lift (unfold) table
 							if BaleLoader.getAllowsStartUnloading(workTool) then
-								g_server:broadcastEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_EMPTY_START), true, nil, workTool)
-							end
+								-- print(('%s: set state BaleLoader.CHANGE_EMPTY_START'):format(nameNum(workTool)));
+								g_server:broadcastEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_EMPTY_START), true, nil, workTool);
+							end;
 							vehicle.cp.unloadOrder = false;
-						end
+						end;
 					end;
 				end;
 			--END baleloader

@@ -37,7 +37,7 @@ function courseplay:record(vehicle)
 		local crossing = courseplay:trueOrNil(vehicle.recordnumber == 1);
 		courseplay:setNewWaypointFromRecording(vehicle, cx, cz, newAngle, nil, rev, crossing, vehicle.cp.curSpeed);
 		local signType = vehicle.recordnumber == 1 and "start" or nil;
-		courseplay.signs:addSign(vehicle, signType, cx, cz, nil, newAngle);
+		courseplay.signs:addSign(vehicle, signType, cx, cz, nil, newAngle, nil, nil, 'regular');
 		vehicle.cp.recordingTimer = 1;
 		courseplay:setRecordNumber(vehicle, vehicle.recordnumber + 1);
 	end;
@@ -53,7 +53,7 @@ function courseplay:set_waitpoint(vehicle)
 	vehicle.cp.recordingTimer = 1
 	courseplay:setRecordNumber(vehicle, vehicle.recordnumber + 1);
 	vehicle.cp.numWaitPoints = vehicle.cp.numWaitPoints + 1;
-	courseplay.signs:addSign(vehicle, 'wait', cx, cz, nil, newAngle);
+	courseplay.signs:addSign(vehicle, 'wait', cx, cz, nil, newAngle, nil, nil, 'regular');
 end
 
 
@@ -68,10 +68,10 @@ function courseplay:set_crossing(vehicle, stop)
 	courseplay:setRecordNumber(vehicle, vehicle.recordnumber + 1);
 	vehicle.cp.numCrossingPoints = vehicle.cp.numCrossingPoints + 1
 	if stop ~= nil then
-		courseplay.signs:addSign(vehicle, 'stop', cx, cz, nil, newAngle);
+		courseplay.signs:addSign(vehicle, 'stop', cx, cz, nil, newAngle, nil, nil, 'regular');
 	else
 		courseplay.signs:addSign(vehicle, 'cross', cx, cz, nil, newAngle);
-		courseplay.signs:addSign(vehicle, 'normal', cx, cz, nil, newAngle);
+		courseplay.signs:addSign(vehicle, 'normal', cx, cz, nil, newAngle, nil, nil, 'regular');
 	end
 end
 
@@ -194,7 +194,8 @@ function courseplay:setRecordingTurnManeuver(vehicle)
 
 	vehicle.cp.recordingTimer = 1
 	courseplay:setRecordNumber(vehicle, vehicle.recordnumber + 1);
-	courseplay.signs:addSign(vehicle, 'normal', cx, cz, nil, newAngle);
+	local diamondColor = vehicle.cp.isRecordingTurnManeuver and 'turnStart' or 'turnEnd';
+	courseplay.signs:addSign(vehicle, 'normal', cx, cz, nil, newAngle, nil, nil, diamondColor);
 	courseplay:buttonsActiveEnabled(vehicle, 'recording');
 end;
 
@@ -213,7 +214,7 @@ function courseplay:change_DriveDirection(vehicle)
 	end;
 	vehicle.cp.recordingTimer = 1
 	courseplay:setRecordNumber(vehicle, vehicle.recordnumber + 1);
-	courseplay.signs:addSign(vehicle, 'normal', cx, cz, nil, newAngle);
+	courseplay.signs:addSign(vehicle, 'normal', cx, cz, nil, newAngle, nil, nil, 'regular');
 	courseplay:buttonsActiveEnabled(vehicle, 'recording');
 end
 

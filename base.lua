@@ -805,7 +805,7 @@ function courseplay:update(dt)
 	end
 
 	-- MODE 9: move shovel to positions (manually)
-	if self.cp.mode == courseplay.MODE_SHOVEL_FILL_AND_EMPTY and self.cp.manualShovelPositionOrder ~= nil and self.cp.movingToolsPrimary and self.cp.movingToolsSecondary then
+	if self.cp.mode == courseplay.MODE_SHOVEL_FILL_AND_EMPTY and self.cp.manualShovelPositionOrder ~= nil and self.cp.movingToolsPrimary then
 		if courseplay:checkAndSetMovingToolsPosition(self, self.cp.movingToolsPrimary, self.cp.movingToolsSecondary, self.cp.shovelStatePositions[ self.cp.manualShovelPositionOrder ], dt) or courseplay:timerIsThrough(self, 'manualShovelPositionOrder') then
 			courseplay:resetManualShovelPositionOrder(self);
 		end;

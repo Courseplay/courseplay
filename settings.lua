@@ -1135,9 +1135,14 @@ function courseplay:moveShovelToPosition(vehicle, stage)
 		return;
 	end;
 
-	vehicle.cp.manualShovelPositionOrder = stage;
-	vehicle.cp.movingToolsPrimary, vehicle.cp.movingToolsSecondary = courseplay:getMovingTools(vehicle);
-	courseplay:setCustomTimer(vehicle, 'manualShovelPositionOrder', 12); -- backup timer: if position hasn't been set within time frame, abort
+	local mtPrimary, mtSecondary = courseplay:getMovingTools(vehicle);
+	if mtPrimary then
+		vehicle.cp.manualShovelPositionOrder = stage;
+		vehicle.cp.movingToolsPrimary, vehicle.cp.movingToolsSecondary = mtPrimary, mtSecondary;
+		courseplay:setCustomTimer(vehicle, 'manualShovelPositionOrder', 12); -- backup timer: if position hasn't been set within time frame, abort
+	else
+		courseplay:debug(('    movingToolsPrimary=%s, movingToolsSecondary=%s -> abort'):format(tostring(mtPrimary), tostring(mtSecondary)), 10);
+	end;
 end;
 
 function courseplay:resetManualShovelPositionOrder(vehicle)

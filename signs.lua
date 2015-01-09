@@ -111,7 +111,7 @@ function courseplay.signs:changeSignType(vehicle, vehicleIndex, oldType, newType
 	local section = self.sections[oldType];
 	local signData = vehicle.cp.signs[section][vehicleIndex];
 	self:moveToBuffer(vehicle, vehicleIndex, signData);
-	self:addSign(vehicle, newType, signData.posX, signData.posZ, signData.rotX, signData.rotY, vehicleIndex);
+	self:addSign(vehicle, newType, signData.posX, signData.posZ, signData.rotX, signData.rotY, vehicleIndex, nil, 'regular');
 end;
 
 function courseplay.signs:setWaypointSignLine(sign, distance, vis)

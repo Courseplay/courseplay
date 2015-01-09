@@ -128,7 +128,7 @@
 		<text name="COURSEPLAY_BACK" 									 text="back" />
 		<text name="COURSEPLAY_WORK_WIDTH" 								 text="Working width" />
 		<text name="COURSEPLAY_WATER_WARNING" 							 text="would like to go swimming" />
-		<text name="COURSEPLAY_OPEN_HUD_MODE" 							 text="open Courseplay:" />
+		<text name="COURSEPLAY_OPEN_HUD_MODE" 							 text="Open hud with:" />
 		<text name="COURSEPLAY_DEBUG_CHANNELS" 							 text="Debug channels" />
 		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 			 text="Course generation" />
 		<text name="COURSEPLAY_STARTING_CORNER" 						 text="Starting corner" />

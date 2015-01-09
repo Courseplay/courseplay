@@ -271,10 +271,12 @@ end;
 
 function courseplay:fillTypesMatch(fillTrigger, workTool)
 	if fillTrigger ~= nil then
-		if fillTrigger.fillType then
+		if rawget(fillTrigger, 'fillType') then -- make sure the fillTrigger doesn't return a meta fillType from a parent class
 			return workTool:allowFillType(fillTrigger.fillType, false);
 		elseif fillTrigger.currentFillType then
 			return workTool:allowFillType(fillTrigger.currentFillType, false);
+		elseif fillTrigger.getFillType then
+			return workTool:allowFillType(fillTrigger:getFillType(), false);
 		end;
 	end;
 
@@ -608,13 +610,21 @@ function courseplay:setCustomTimer(vehicle, timerName, seconds)
 	vehicle.cp.timers[timerName] = vehicle.timer + (seconds * 1000);
 end;
 function courseplay:timerIsThrough(vehicle, timerName, defaultToBool)
-	if vehicle.cp.timers[timerName] == nil then
+	local timer = vehicle.cp.timers[timerName];
+	if timer == nil then
 		return Utils.getNoNil(defaultToBool, true);
 	end;
-	return vehicle.timer > vehicle.cp.timers[timerName];
+	return vehicle.timer > timer;
 end;
-function courseplay:resetCustomTimer(vehicle, timerName)
-	vehicle.cp.timers[timerName] = 0.0;
+function courseplay:getCustomTimerExists(vehicle, timerName)
+	return vehicle.cp.timers[timerName] ~= nil;
+end;
+function courseplay:resetCustomTimer(vehicle, timerName, setToNil)
+	if setToNil then
+		vehicle.cp.timers[timerName] = nil;
+	else
+		vehicle.cp.timers[timerName] = 0.0;
+	end;
 end;
 
 function courseplay:getDriveDirection(node, x, y, z)

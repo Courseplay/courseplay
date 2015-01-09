@@ -13,7 +13,7 @@ function courseplay:handle_mode8(vehicle)
 					end	
 				end
 				
-			--ManureLager
+			-- ManureLager
 			elseif workTool.setIsReFilling ~= nil and workTool.ReFillTrigger ~= nil and workTool.fillLevel > 0 and not workTool.isReFilling then
 				workTool:setIsReFilling(true);
 				vehicle.cp.lastMode8UnloadTriggerId = workTool.ReFillTrigger.manureTrigger

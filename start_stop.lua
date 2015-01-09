@@ -303,6 +303,8 @@ function courseplay:start(self)
 
 	courseplay:updateAllTriggers();
 
+	self.cp.cruiseControlSpeedBackup = self.cruiseControl.speed;
+
 	if self.cp.hasDriveControl then
 		local changed = false;
 		if self.cp.driveControl.hasFourWD then
@@ -467,7 +469,11 @@ function courseplay:stop(self)
 		end;
 	end;
 
-	
+	if self.cp.cruiseControlSpeedBackup then
+		self.cruiseControl.speed = self.cp.cruiseControlSpeedBackup; -- NOTE JT: no need to use setter or event function - Drivable's update() checks for changes in the var and calls the event itself
+		self.cp.cruiseControlSpeedBackup = nil;
+	end;
+
 	self:setCruiseControlState(Drivable.CRUISECONTROL_STATE_OFF)
 	self.cruiseControl.minSpeed = 1
 	self.cp.forcedToStop = false
@@ -538,6 +544,8 @@ function courseplay:stop(self)
 	courseplay:setSlippingStage(self, 0);
 	courseplay:resetCustomTimer(self, 'slippingStage1');
 	courseplay:resetCustomTimer(self, 'slippingStage2');
+
+	courseplay:resetCustomTimer(self, 'foldBaleLoader', true);
 
 	self.cp.hasBaleLoader = false;
 	self.cp.hasPlough = false;
