@@ -1629,28 +1629,27 @@ end;
 
 ----------------------------------------------------------------------------------------------------
 
-function courseplay:setCpVar(varName, value,noEventSend)
+function courseplay:setCpVar(varName, value, noEventSend)
 	if self.cp[varName] ~= value then
 		local oldValue = self.cp[varName];
 		self.cp[varName] = value;		
-		if not noEventSend then
+		if CpManager.isMP and not noEventSend then
 			--print(courseplay.utils:getFnCallPath(2))
-			print(string.format("setCpVar: %s: %s -> send Event",varName,tostring(value)))
+			courseplay:debug(string.format("setCpVar: %s: %s -> send Event",varName,tostring(value)), 5);
 			CourseplayEvent.sendEvent(self, "self.cp."..varName, value)
 		end
-		-- TODO (Jakob): this is hud related and doesn't really belong here but rather in the hud.lua
 		if varName == "isDriving" then
-			print("reload page 1")
+			courseplay:debug("reload page 1", 5);
 			courseplay.hud:setReloadPageOrder(self, 1, true);
 		elseif varName:sub(1, 3) == 'HUD' then
 			if Utils.startsWith(varName, 'HUD0') then
-				print("reload page 0")
+				courseplay:debug("reload page 0", 5);
 				courseplay.hud:setReloadPageOrder(self, 0, true);
 			elseif Utils.startsWith(varName, 'HUD1') then
-				print("reload page 1")
+				courseplay:debug("reload page 1", 5);
 				courseplay.hud:setReloadPageOrder(self, 1, true);
 			elseif Utils.startsWith(varName, 'HUD4') then
-				print("reload page 4")
+				courseplay:debug("reload page 4", 5);
 				courseplay.hud:setReloadPageOrder(self, 4, true);
 			end;
 		end;
