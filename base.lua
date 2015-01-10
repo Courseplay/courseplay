@@ -623,7 +623,7 @@ function courseplay:showWorkWidth(vehicle)
 end;
 
 function courseplay:drawWaypointsLines(vehicle)
-	if not CpManager.isDeveloper or not vehicle.isControlled then return; end;
+	if not CpManager.isDeveloper or not vehicle.isControlled or vehicle ~= g_currentMission.controlledVehicle then return; end;
 
 	local height = 2.5;
 	for i,wp in pairs(vehicle.Waypoints) do
@@ -635,9 +635,9 @@ function courseplay:drawWaypointsLines(vehicle)
 			np.cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, np.cx, 1, np.cz);
 		end;
 
-		if i == 1 then
+		if i == 1 or wp.turnStart then
 			drawDebugPoint(wp.cx, wp.cy + height, wp.cz, 0, 1, 0, 1);
-		elseif i == vehicle.cp.numWaypoints then
+		elseif i == vehicle.cp.numWaypoints or wp.turnEnd then
 			drawDebugPoint(wp.cx, wp.cy + height, wp.cz, 1, 0, 0, 1);
 		else
 			drawDebugPoint(wp.cx, wp.cy + height, wp.cz, 1, 1, 0, 1);
@@ -793,7 +793,7 @@ function courseplay:update(dt)
 			end
 
 		elseif self.cp.hud.currentPage == 8 then
-			if self:getIsActive() and self.cp.fieldEdge.selectedField.show and self.cp.fieldEdge.selectedField.fieldNum > 0 then
+			if self:getIsActive() and self.cp.fieldEdge.selectedField.show and self.cp.fieldEdge.selectedField.fieldNum > 0 and self == g_currentMission.controlledVehicle then
 				courseplay:showFieldEdgePath(self, "selectedField");
 			end;
 		end;
