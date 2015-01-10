@@ -160,13 +160,13 @@ function courseplay:load(xmlFile)
 	-- speed limits
 	self.cp.speeds = {
 		useRecordingSpeed = true;
-		unload =  6;
+		reverse =  6;
 		turn =   10;
 		field =  24;
 		street = 50;
 		crawl = 3;
 		
-		minUnload = 3;
+		minReverse = 3;
 		minTurn = 3;
 		minField = 3;
 		minStreet = 3;
@@ -1018,7 +1018,7 @@ function courseplay:readStream(streamId, connection)
 	self.cp.searchCombineOnField = streamDebugReadInt32(streamId)
 	self.cp.speeds.turn = streamDebugReadFloat32(streamId)
 	self.cp.speeds.field = streamDebugReadFloat32(streamId)
-	self.cp.speeds.unload = streamDebugReadFloat32(streamId)
+	self.cp.speeds.reverse = streamDebugReadFloat32(streamId)
 	self.cp.speeds.street = streamDebugReadFloat32(streamId)
 	self.cp.visualWaypointsMode = streamDebugReadInt32(streamId)
 	self.cp.warningLightsMode = streamDebugReadInt32(streamId)
@@ -1136,7 +1136,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteInt32(streamId,self.cp.searchCombineOnField)
 	streamDebugWriteFloat32(streamId,self.cp.speeds.turn)
 	streamDebugWriteFloat32(streamId,self.cp.speeds.field)
-	streamDebugWriteFloat32(streamId,self.cp.speeds.unload)
+	streamDebugWriteFloat32(streamId,self.cp.speeds.reverse)
 	streamDebugWriteFloat32(streamId,self.cp.speeds.street)
 	streamDebugWriteInt32(streamId,self.cp.visualWaypointsMode)
 	streamDebugWriteInt32(streamId,self.cp.warningLightsMode)
@@ -1206,11 +1206,11 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		self.cp.speeds.useRecordingSpeed = Utils.getNoNil(getXMLBool(xmlFile, curKey .. '#useRecordingSpeed'), true);
 		-- use string so we can get both ints and proper floats without LUA's rounding errors
 		-- if float speeds (old speed system) are loaded, the default speeds are used instead
-		local unload = floor(tonumber(getXMLString(xmlFile, curKey .. '#unload') or '0'));
-		local turn   = floor(tonumber(getXMLString(xmlFile, curKey .. '#turn')	 or '0'));
-		local field  = floor(tonumber(getXMLString(xmlFile, curKey .. '#field')	 or '0'));
-		local street = floor(tonumber(getXMLString(xmlFile, curKey .. '#max')	 or '0'));
-		if unload ~= 0	then self.cp.speeds.unload	= unload; end;
+		local reverse = floor(tonumber(getXMLString(xmlFile, curKey .. '#reverse') or '0'));
+		local turn    = floor(tonumber(getXMLString(xmlFile, curKey .. '#turn')	   or '0'));
+		local field   = floor(tonumber(getXMLString(xmlFile, curKey .. '#field')   or '0'));
+		local street  = floor(tonumber(getXMLString(xmlFile, curKey .. '#max')	   or '0'));
+		if reverse ~= 0	then self.cp.speeds.reverse	= reverse; end;
 		if turn ~= 0	then self.cp.speeds.turn	= turn;   end;
 		if field ~= 0	then self.cp.speeds.field	= field;  end;
 		if street ~= 0	then self.cp.speeds.street	= street; end;
@@ -1326,7 +1326,7 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 
 	--NODES
 	local cpOpen = string.format('<courseplay aiMode=%q courses=%q openHudWithMouse=%q lights=%q visualWaypoints=%q waitTime=%q multiSiloSelectedFillType=%q>', tostring(self.cp.mode), tostring(table.concat(self.cp.loadedCourses, ",")), tostring(self.cp.hud.openWithMouse), tostring(self.cp.warningLightsMode), tostring(self.cp.visualWaypointsMode), tostring(self.cp.waitTime), Fillable.fillTypeIntToName[self.cp.multiSiloSelectedFillType]);
-	local speeds = string.format('<speeds useRecordingSpeed=%q unload="%d" turn="%d" field="%d" max="%d" />', tostring(self.cp.speeds.useRecordingSpeed), self.cp.speeds.unload, self.cp.speeds.turn, self.cp.speeds.field, self.cp.speeds.street);
+	local speeds = string.format('<speeds useRecordingSpeed=%q reverse="%d" turn="%d" field="%d" max="%d" />', tostring(self.cp.speeds.useRecordingSpeed), self.cp.speeds.reverse, self.cp.speeds.turn, self.cp.speeds.field, self.cp.speeds.street);
 	local combi = string.format('<combi tipperOffset="%.1f" combineOffset="%.1f" combineOffsetAutoMode=%q fillFollow="%d" fillDriveOn="%d" turnDiameter="%d" realisticDriving=%q />', self.cp.tipperOffset, self.cp.combineOffset, tostring(self.cp.combineOffsetAutoMode), self.cp.followAtFillLevel, self.cp.driveOnAtFillLevel, self.cp.turnDiameter, tostring(self.cp.realisticDriving));
 	local fieldWork = string.format('<fieldWork workWidth="%.1f" ridgeMarkersAutomatic=%q offsetData=%q abortWork="%d" refillUntilPct="%d" />', self.cp.workWidth, tostring(self.cp.ridgeMarkersAutomatic), offsetData, Utils.getNoNil(self.cp.abortWork, 0), self.cp.refillUntilPct);
 	local shovels, combine = '', '';

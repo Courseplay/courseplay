@@ -551,7 +551,7 @@ function courseplay:drive(self, dt)
 	
 	if self.cp.currentTipTrigger ~= nil then
 		if self.cp.currentTipTrigger.bunkerSilo ~= nil then
-			refSpeed = Utils.getNoNil(self.cp.speeds.unload, self.cp.speeds.crawl);
+			refSpeed = Utils.getNoNil(self.cp.speeds.reverse, self.cp.speeds.crawl);
 			speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 		else
 			refSpeed = self.cp.speeds.turn;
@@ -572,7 +572,7 @@ function courseplay:drive(self, dt)
 	--reverse
 	if self.Waypoints[self.cp.waypointIndex].rev then
 		lx,lz,fwd = courseplay:goReverse(self,lx,lz)
-		refSpeed = Utils.getNoNil(self.cp.speeds.unload, self.cp.speeds.crawl)
+		refSpeed = Utils.getNoNil(self.cp.speeds.reverse, self.cp.speeds.crawl)
 		speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 	else
 		fwd = true

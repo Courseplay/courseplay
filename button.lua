@@ -163,9 +163,9 @@ function courseplay.button:render()
 			elseif fn == 'changeMaxSpeed' then
 				canScrollUp   = vehicle.cp.speeds.useRecordingSpeed == false and vehicle.cp.speeds.street < vehicle.cp.speeds.max;
 				canScrollDown = vehicle.cp.speeds.useRecordingSpeed == false and vehicle.cp.speeds.street > vehicle.cp.speeds.minStreet;
-			elseif fn == 'changeUnloadSpeed' then
-				canScrollUp   = vehicle.cp.speeds.unload < vehicle.cp.speeds.max;
-				canScrollDown = vehicle.cp.speeds.unload > vehicle.cp.speeds.minUnload;
+			elseif fn == 'changeReverseSpeed' then
+				canScrollUp   = vehicle.cp.speeds.reverse < vehicle.cp.speeds.max;
+				canScrollDown = vehicle.cp.speeds.reverse > vehicle.cp.speeds.minReverse;
 			end;
 
 		elseif pg == courseplay.hud.PAGE_GENERAL_SETTINGS then
@@ -316,11 +316,11 @@ function courseplay.button:render()
 					elseif prm > 0 then
 						show = not vehicle.cp.speeds.useRecordingSpeed and vehicle.cp.speeds.street < vehicle.cp.speeds.max;
 					end;
-				elseif fn == 'changeUnloadSpeed' then
+				elseif fn == 'changeReverseSpeed' then
 					if prm < 0 then
-						show = vehicle.cp.speeds.unload > vehicle.cp.speeds.minUnload;
+						show = vehicle.cp.speeds.reverse > vehicle.cp.speeds.minReverse;
 					elseif prm > 0 then
-						show = vehicle.cp.speeds.unload < vehicle.cp.speeds.max;
+						show = vehicle.cp.speeds.reverse < vehicle.cp.speeds.max;
 					end;
 				end;
 

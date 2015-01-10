@@ -504,12 +504,12 @@ function courseplay:changeMaxSpeed(vehicle, changeBy)
 	end;
 end
 
-function courseplay:changeUnloadSpeed(vehicle, changeBy, force, forceReloadPage)
-	local speed = force or (vehicle.cp.speeds.unload + changeBy);
+function courseplay:changeReverseSpeed(vehicle, changeBy, force, forceReloadPage)
+	local speed = force or (vehicle.cp.speeds.reverse + changeBy);
 	if not force then
-		speed = Utils.clamp(speed, vehicle.cp.speeds.minUnload, vehicle.cp.speeds.max);
+		speed = Utils.clamp(speed, vehicle.cp.speeds.minReverse, vehicle.cp.speeds.max);
 	end;
-	vehicle.cp.speeds.unload = speed;
+	vehicle.cp.speeds.reverse = speed;
 
 	if forceReloadPage then
 		courseplay.hud:setReloadPageOrder(vehicle, 5, true);

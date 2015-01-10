@@ -944,7 +944,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 					local totalTipDuration = ((animation.dischargeEndTime - animation.dischargeStartTime) / animation.animationOpenSpeedScale) * fillDelta / 1000;
 					local meterPrSeconds = totalLength / totalTipDuration;
 					if stopAndGo then
-						meterPrSeconds = vehicle.cp.speeds.unload * 1000;
+						meterPrSeconds = vehicle.cp.speeds.reverse * 1000;
 					end;
 
 					-- Find what BGA silo section to unload in if not found
@@ -1037,8 +1037,8 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 					if not vehicle.cp.backupUnloadSpeed and not stopAndGo and vectorDistance < 6*meterPrSeconds then
 						-- Calculate the unloading speed.
 						local refSpeed = meterPrSeconds * 3.6; -- * 0.90;
-						vehicle.cp.backupUnloadSpeed = vehicle.cp.speeds.unload;
-						courseplay:changeUnloadSpeed(vehicle, nil, refSpeed, true);
+						vehicle.cp.backupUnloadSpeed = vehicle.cp.speeds.reverse;
+						courseplay:changeReverseSpeed(vehicle, nil, refSpeed, true);
 						courseplay:debug(string.format("%s: BGA totalLength=%.2f,  totalTipDuration%.2f,  refSpeed=%.2f", nameNum(vehicle), totalLength, totalTipDuration, refSpeed), 2);
 					end;
 
@@ -1172,7 +1172,7 @@ function courseplay:resetTipTrigger(vehicle, changeToForward)
 	end;
 	vehicle.cp.inversedRearTipNode = nil; -- Used for reverse BGA tipping
 	if vehicle.cp.backupUnloadSpeed then
-		courseplay:changeUnloadSpeed(vehicle, nil, vehicle.cp.backupUnloadSpeed, true);
+		courseplay:changeReverseSpeed(vehicle, nil, vehicle.cp.backupUnloadSpeed, true);
 		vehicle.cp.backupUnloadSpeed = nil;
 	end;
 	if changeToForward and vehicle.Waypoints[vehicle.cp.waypointIndex].rev then
