@@ -187,8 +187,8 @@ local function setGlobalData()
 		"HUD4combineName",
 		"HUD4hasActiveCombine",
 		"HUD4savedCombine",
-		"HUD4savedCombineName",
-		"HUDrecordnumber"
+		"HUD4savedCombineName"
+		
 	};]]
 
 

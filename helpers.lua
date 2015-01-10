@@ -767,7 +767,7 @@ function courseplay:checkAndPrintChange(vehicle, variable, VariableNameString)
 	end
 end;
 
-function courseplay.utils:hasVarChanged(vehicle, variableName, direct)
+function courseplay.utils:hasVarChanged(vehicle, variableName, direct) 
 	if direct == nil then direct = false; end;
 	if vehicle.cp.varMemory == nil then
 		vehicle.cp.varMemory = {};

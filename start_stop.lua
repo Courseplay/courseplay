@@ -99,8 +99,8 @@ function courseplay:start(self)
 		courseplay:setModeState(self, 0);
 	end;
 
-	if self.recordnumber < 1 then
-		courseplay:setRecordNumber(self, 1);
+	if self.cp.waypointIndex < 1 then
+		courseplay:setWaypointIndex(self, 1);
 	end
 
 	-- add do working players if not already added
@@ -119,7 +119,7 @@ function courseplay:start(self)
 	-- current position
 	local ctx, cty, ctz = getWorldTranslation(self.cp.DirectionNode);
 	-- position of next waypoint
-	local cx, cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
+	local cx, cz = self.Waypoints[self.cp.waypointIndex].cx, self.Waypoints[self.cp.waypointIndex].cz
 	-- distance
 	local dist = courseplay:distance(ctx, ctz, cx, cz)
 	
@@ -243,21 +243,21 @@ function courseplay:start(self)
 		local changed = false
 		for i=recordNumber,recordNumber+3 do
 			if self.Waypoints[i]~= nil and self.Waypoints[i].turn ~= nil then
-				courseplay:setRecordNumber(self, i + 2);
+				courseplay:setWaypointIndex(self, i + 2);
 				changed = true
 				break
 			end	
 		end
 		if changed == false then
-			courseplay:setRecordNumber(self, recordNumber);
+			courseplay:setWaypointIndex(self, recordNumber);
 		end
 
-		if self.recordnumber > self.cp.numWaypoints then
-			courseplay:setRecordNumber(self, 1);
+		if self.cp.waypointIndex > self.cp.numWaypoints then
+			courseplay:setWaypointIndex(self, 1);
 		end
 	end --END if modeState == 0
 
-	if self.recordnumber > 2 and self.cp.mode ~= 4 and self.cp.mode ~= 6 then
+	if self.cp.waypointIndex > 2 and self.cp.mode ~= 4 and self.cp.mode ~= 6 then
 		courseplay:setIsLoaded(self, true);
 	elseif self.cp.mode == 4 or self.cp.mode == 6 then
 		courseplay:setIsLoaded(self, false);
@@ -270,14 +270,14 @@ function courseplay:start(self)
 		end
 
 		-- NOTE: if we want to start the course but catch one of the last 5 points ("returnToStartPoint"), make sure we get wp 2
-		if self.cp.startAtPoint == courseplay.START_AT_NEAREST_POINT and self.cp.finishWork ~= self.cp.stopWork and self.recordnumber > self.cp.finishWork and self.recordnumber <= self.cp.stopWork then
-			courseplay:setRecordNumber(self, 2);
+		if self.cp.startAtPoint == courseplay.START_AT_NEAREST_POINT and self.cp.finishWork ~= self.cp.stopWork and self.cp.waypointIndex > self.cp.finishWork and self.cp.waypointIndex <= self.cp.stopWork then
+			courseplay:setWaypointIndex(self, 2);
 		end
-		courseplay:debug(string.format("%s: numWaypoints=%d, stopWork=%d, finishWork=%d, hasUnloadingRefillingCourse=%s, recordnumber=%d", nameNum(self), self.cp.numWaypoints, self.cp.stopWork, self.cp.finishWork, tostring(self.cp.hasUnloadingRefillingCourse), self.recordnumber), 12);
+		courseplay:debug(string.format("%s: numWaypoints=%d, stopWork=%d, finishWork=%d, hasUnloadingRefillingCourse=%s, waypointIndex=%d", nameNum(self), self.cp.numWaypoints, self.cp.stopWork, self.cp.finishWork, tostring(self.cp.hasUnloadingRefillingCourse), self.cp.waypointIndex), 12);
 	end
 
 	if self.cp.mode == 9 then
-		courseplay:setRecordNumber(self, 1);
+		courseplay:setWaypointIndex(self, 1);
 		self.cp.shovelState = 1;
 		for i,_ in pairs(self.attachedImplements) do
 			local object = self.attachedImplements[i].object
@@ -294,10 +294,10 @@ function courseplay:start(self)
 		end
 	elseif self.cp.startAtPoint == courseplay.START_AT_FIRST_POINT then
 		if self.cp.mode == 2 or self.cp.mode == 3 then
-			courseplay:setRecordNumber(self, 3);
+			courseplay:setWaypointIndex(self, 3);
 			courseplay:setIsLoaded(self, true);
 		else
-			courseplay:setRecordNumber(self, 1);
+			courseplay:setWaypointIndex(self, 1);
 		end
 	end;
 

@@ -412,10 +412,10 @@ function courseplay.hud:setContent(vehicle)
 		vehicle.cp.hud.content.bottomInfo.courseNameText = courseplay:loc('COURSEPLAY_NO_COURSE_LOADED');
 	end;
 
-	if vehicle.Waypoints[vehicle.cp.HUDrecordnumber] ~= nil or vehicle.cp.isRecording or vehicle.cp.recordingIsPaused or g_server == nil then
+	if vehicle.Waypoints[vehicle.cp.waypointIndex] ~= nil or vehicle.cp.isRecording or vehicle.cp.recordingIsPaused or g_server == nil then
 		-- waypoints
 		if not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused then
-			local str = ('%d/%d'):format(vehicle.cp.HUDrecordnumber, vehicle.cp.numWaypoints);
+			local str = ('%d/%d'):format(vehicle.cp.waypointIndex, vehicle.cp.numWaypoints);
 			if str:len() > 7 then
 				vehicle.cp.hud.content.bottomInfo.waypointTextSmall = str;
 				vehicle.cp.hud.content.bottomInfo.waypointText = nil;
@@ -423,7 +423,7 @@ function courseplay.hud:setContent(vehicle)
 				vehicle.cp.hud.content.bottomInfo.waypointText = str;
 			end;
 		else
-			vehicle.cp.hud.content.bottomInfo.waypointText = tostring(vehicle.cp.HUDrecordnumber);
+			vehicle.cp.hud.content.bottomInfo.waypointText = tostring(vehicle.cp.waypointIndex);
 		end;
 
 		-- waitPoints
@@ -451,7 +451,7 @@ function courseplay.hud:setContent(vehicle)
 
 	-- CURRENT PAGE
 	if vehicle.cp.hud.currentPage == 1 then
-		if (vehicle.cp.isRecording or vehicle.cp.recordingIsPaused) and vehicle.cp.HUDrecordnumber == 4 and courseplay.utils:hasVarChanged(vehicle, 'HUDrecordnumber') then --record pause action becomes available
+		if (vehicle.cp.isRecording or vehicle.cp.recordingIsPaused) and vehicle.cp.waypointIndex == 4 and courseplay.utils:hasVarChanged(vehicle, 'waypointIndex') then --record pause action becomes available
 			-- self:setReloadPageOrder(vehicle, 1, true);
 			courseplay:buttonsActiveEnabled(vehicle, 'recording');
 		elseif vehicle:getIsCourseplayDriving() then
@@ -1237,7 +1237,6 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	end;
 
 	--default hud conditional variables
-	vehicle.cp.HUDrecordnumber = 1; 
 	vehicle.cp.HUD0noCourseplayer = false;
 	vehicle.cp.HUD0wantsCourseplayer = false;
 	vehicle.cp.HUD0tractorName = "";

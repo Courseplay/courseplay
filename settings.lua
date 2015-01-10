@@ -151,11 +151,10 @@ function courseplay:buttonsActiveEnabled(vehicle, section)
 					button:setCanBeClicked(not button.isDisabled);
 				elseif fn == 'setRecordingPause' then
 					button:setActive(vehicle.cp.recordingIsPaused);
-					button:setDisabled(vehicle.cp.HUDrecordnumber < 4 or vehicle.cp.isRecordingTurnManeuver);
+					button:setDisabled(vehicle.cp.waypointIndex < 4 or vehicle.cp.isRecordingTurnManeuver);
 					button:setCanBeClicked(not button.isDisabled);
 				elseif fn == 'delete_waypoint' then
-					-- NOTE: during recording pause, HUDrecordnumber = recordnumber + 1, that's why <= 5 is used
-					button:setDisabled(not vehicle.cp.recordingIsPaused or vehicle.cp.HUDrecordnumber <= 5);
+					button:setDisabled(not vehicle.cp.recordingIsPaused or vehicle.cp.waypointIndex <= 4);
 					button:setCanBeClicked(not button.isDisabled);
 				elseif fn == 'set_waitpoint' or fn == 'set_crossing' then
 					button:setDisabled(vehicle.cp.recordingIsPaused or vehicle.cp.isRecordingTurnManeuver);
@@ -643,7 +642,7 @@ function courseplay:copyCourse(vehicle)
 		vehicle:setCpVar('currentCourseName',src.cp.currentCourseName,courseplay.isClient);
 		vehicle.cp.loadedCourses = src.cp.loadedCourses;
 		vehicle.cp.numCourses = src.cp.numCourses;
-		courseplay:setRecordNumber(vehicle, 1);
+		courseplay:setWaypointIndex(vehicle, 1);
 		vehicle.cp.numWaypoints = #(vehicle.Waypoints);
 		vehicle.cp.numWaitPoints = src.cp.numWaitPoints;
 		vehicle.cp.numCrossingPoints = src.cp.numCrossingPoints;
@@ -1519,9 +1518,9 @@ end;
 function courseplay:canScanForWeightStation(vehicle)
 	local scan = false;
 	if vehicle.cp.mode == 1 or vehicle.cp.mode == 2 then
-		scan = vehicle.recordnumber > 2;
+		scan = vehicle.cp.waypointIndex > 2;
 	elseif vehicle.cp.mode == 4 or vehicle.cp.mode == 6 then
-		scan = vehicle.cp.stopWork ~= nil and vehicle.recordnumber > vehicle.cp.stopWork;
+		scan = vehicle.cp.stopWork ~= nil and vehicle.cp.waypointIndex > vehicle.cp.stopWork;
 	elseif vehicle.cp.mode == 8 then
 		scan = true;
 	end;

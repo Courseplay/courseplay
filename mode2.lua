@@ -40,7 +40,7 @@ function courseplay:handle_mode2(vehicle, dt)
 
 	-- STATE 8 (all trailers are full)
 	if vehicle.cp.modeState == 8 then
-		courseplay:setRecordNumber(vehicle, 2);
+		courseplay:setWaypointIndex(vehicle, 2);
 		courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine)
 		courseplay:setModeState(vehicle, 0);
 		courseplay:setIsLoaded(vehicle, true);
@@ -90,7 +90,7 @@ function courseplay:handle_mode2(vehicle, dt)
 	
 	if vehicle.cp.modeState == 1 and (vehicle.cp.tipperFillLevelPct >= vehicle.cp.driveOnAtFillLevel or vehicle.cp.isLoaded) then
 		vehicle.cp.currentTrailerToFill = nil
-		courseplay:setRecordNumber(vehicle, 2);
+		courseplay:setWaypointIndex(vehicle, 2);
 		courseplay:setIsLoaded(vehicle, true);
 	end
 	
@@ -123,7 +123,7 @@ function courseplay:handle_mode2(vehicle, dt)
 		courseplay:resetSlippingTimers(vehicle)
 
 		if vehicle.cp.isLoaded then
-			courseplay:setRecordNumber(vehicle, 2);
+			courseplay:setWaypointIndex(vehicle, 2);
 			courseplay:setModeState(vehicle, 99);
 			return false
 		end
@@ -829,8 +829,8 @@ function courseplay:unload_combine(vehicle, dt)
 					courseplay:setInfoText(vehicle, "COURSEPLAY_WAITING_FOR_COMBINE_TURNED");
 				elseif vehicle.cp.mode2nextState == 81 then -- tipper turning from combine
 
-					-- print(('%s [%s(%d)]: no nextTargets, mode2nextState=81 -> set recordnumber to 2, modeState to 99, isLoaded to true, return false'):format(nameNum(vehicle), curFile, debug.getinfo(1).currentline)); -- DEBUG140301
-					courseplay:setRecordNumber(vehicle, 2);
+					-- print(('%s [%s(%d)]: no nextTargets, mode2nextState=81 -> set waypointIndex to 2, modeState to 99, isLoaded to true, return false'):format(nameNum(vehicle), curFile, debug.getinfo(1).currentline)); -- DEBUG140301
+					courseplay:setWaypointIndex(vehicle, 2);
 					courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine)
 					courseplay:setModeState(vehicle, 99);
 					courseplay:setIsLoaded(vehicle, true);

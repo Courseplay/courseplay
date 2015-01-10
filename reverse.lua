@@ -26,7 +26,7 @@ function courseplay:goReverse(vehicle,lx,lz)
 	end;
 
 	if vehicle.cp.lastReverseRecordnumber == nil then
-		vehicle.cp.lastReverseRecordnumber = vehicle.recordnumber -1;
+		vehicle.cp.lastReverseRecordnumber = vehicle.cp.waypointIndex -1;
 	end;
 
 	local node = workTool.cp.realTurningNode;
@@ -36,7 +36,7 @@ function courseplay:goReverse(vehicle,lx,lz)
 	local frontNode = workTool.cp.frontNode;
 	local xFrontNode,yFrontNode,zFrontNode = getWorldTranslation(frontNode);
 	local tcx,tcy,tcz =0,0,0;
-	local index = vehicle.recordnumber + 1;
+	local index = vehicle.cp.waypointIndex + 1;
 	if debugActive then
 		drawDebugPoint(xFrontNode,yFrontNode+3,zFrontNode, 1, 0 , 0, 1);
 		if not vehicle.cp.checkReverseValdityPrinted then
@@ -80,13 +80,13 @@ function courseplay:goReverse(vehicle,lx,lz)
 				local _,y,_ = getWorldTranslation(workTool.cp.realUnloadOrFillNode);
 				local _,_,z = worldToLocal(workTool.cp.realUnloadOrFillNode, vehicle.Waypoints[waitingPoint].cx, y, vehicle.Waypoints[waitingPoint].cz);
 				if z >= 0 then
-					courseplay:setRecordNumber(vehicle, waitingPoint + 1);
+					courseplay:setWaypointIndex(vehicle, waitingPoint + 1);
 					courseplay:debug(string.format("%s: Is at waiting point", nameNum(vehicle)), 13);
 					break;
 				end;
 			else
 				if distance <= 2 then
-					courseplay:setRecordNumber(vehicle, waitingPoint + 1);
+					courseplay:setWaypointIndex(vehicle, waitingPoint + 1);
 					courseplay:debug(string.format("%s: Is at waiting point", nameNum(vehicle)), 13);
 					break;
 				end;
@@ -95,7 +95,7 @@ function courseplay:goReverse(vehicle,lx,lz)
 			if distance > 3 then
 				local _,_,z = worldToLocal(node, tcx,yTipper,tcz);
 				if z < 0 then
-					courseplay:setRecordNumber(vehicle, i - 1);
+					courseplay:setWaypointIndex(vehicle, i - 1);
 					break;
 				end;
 			end;
@@ -105,7 +105,7 @@ function courseplay:goReverse(vehicle,lx,lz)
 		-- HANDLE LAST REVERSE WAYPOINT CHANGE
 		elseif vehicle.Waypoints[i-1].rev and not vehicle.Waypoints[i].rev then
 			if distance <= 2 then
-				courseplay:setRecordNumber(vehicle, courseplay:getNextFwdPoint(vehicle));
+				courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle));
 				courseplay:debug(string.format("%s: Change direction to forward", nameNum(vehicle)), 13);
 			end;
 			break;
@@ -116,7 +116,7 @@ function courseplay:goReverse(vehicle,lx,lz)
 				local srX,srZ = vehicle.Waypoints[recNum].cx,vehicle.Waypoints[recNum].cz;
 				local _,_,tsrZ = worldToLocal(node,srX,yTipper,srZ);
 				if tsrZ < -2 then
-					courseplay:setRecordNumber(vehicle, recNum);
+					courseplay:setWaypointIndex(vehicle, recNum);
 					courseplay:debug(string.format("%s: First reverse point -> Change waypoint to behind trailer: %q", nameNum(vehicle), recNum), 13);
 					break;
 				end;
@@ -127,7 +127,7 @@ function courseplay:goReverse(vehicle,lx,lz)
 		elseif distance > 3 then
 			local _,_,z = worldToLocal(node, tcx,yTipper,tcz);
 			if z < 0 then
-				courseplay:setRecordNumber(vehicle, i - 1);
+				courseplay:setWaypointIndex(vehicle, i - 1);
 				break;
 			end;
 		end;
@@ -198,7 +198,7 @@ function courseplay:goReverse(vehicle,lx,lz)
 	--[[if isPivot and ((abs(lxFrontNode) > 0.4 or abs(lxTractor) > 0.5)) then
 		fwd = true;
 		--lx = -lx
-		courseplay:setRecordNumber(vehicle, vehicle.cp.lastReverseRecordnumber);
+		courseplay:setWaypointIndex(vehicle, vehicle.cp.lastReverseRecordnumber);
 	end;]]
 
 	if vehicle.cp.currentTipTrigger == nil and vehicle.cp.tipperFillLevel > 0 then
@@ -231,7 +231,7 @@ function courseplay:getNextFwdPoint(vehicle)
 	local maxVarianceX = sin(rad(30));
 	local firstFwd, firstFwdOver3;
 	courseplay:debug(('%s: getNextFwdPoint()'):format(nameNum(vehicle)), 13);
-	for i = vehicle.recordnumber, vehicle.cp.numWaypoints do
+	for i = vehicle.cp.waypointIndex, vehicle.cp.numWaypoints do
 		if not vehicle.Waypoints[i].rev then
 			local x, y, z = getWorldTranslation(vehicle.cp.DirectionNode);
 			local wdx, _, wdz, dist = courseplay:getWorldDirection(x, 0, z, vehicle.Waypoints[i].cx, 0, vehicle.Waypoints[i].cz);
@@ -246,7 +246,7 @@ function courseplay:getNextFwdPoint(vehicle)
 			end;
 			courseplay:debug(('\tpoint %d, dx=%.4f, dz=%.4f, dist=%.2f, maxVarianceX=%.4f'):format(i, dx, dz, dist, maxVarianceX), 13);
 			if dz > 0 and abs(dx) <= maxVarianceX then -- forward and x angle <= 30°
-				courseplay:debug('\t-> return as recordnumber', 13);
+				courseplay:debug('\t-> return as waypointIndex', 13);
 				return i;
 			end;
 		end;

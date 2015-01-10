@@ -868,7 +868,7 @@ function courseplay:generateCourse(vehicle)
 		return;
 	end;
 
-	courseplay:setRecordNumber(vehicle, 1);
+	courseplay:setWaypointIndex(vehicle, 1);
 	vehicle:setCpVar('canDrive',true,courseplay.isClient);
 	vehicle.Waypoints[1].wait = true;
 	vehicle.Waypoints[1].crossing = true;

@@ -14,7 +14,7 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 		vehicle:setPipeState(1);
 	end;
 	
-	if (vehicle.recordnumber == vehicle.cp.numWaypoints and vehicle.cp.modeState ~= 5) or (vehicle.cp.mode7GoBackBeforeUnloading and vehicle.cp.modeState ~= 5) then 
+	if (vehicle.cp.waypointIndex == vehicle.cp.numWaypoints and vehicle.cp.modeState ~= 5) or (vehicle.cp.mode7GoBackBeforeUnloading and vehicle.cp.modeState ~= 5) then 
 		if vehicle.cp.curTarget.x ~= nil then
 			courseplay:setModeState(vehicle, 5);
 			courseplay:debug(nameNum(vehicle) .. ": " .. tostring(debug.getinfo(1).currentline) .. ": modeState = 5", 11);
@@ -90,7 +90,7 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 			local dist = courseplay:distanceToPoint(vehicle, vehicle.cp.mode7t.x,vehicle.cp.mode7t.y,vehicle.cp.mode7t.z);
 			if dist < 1 then
 				vehicle.cp.mode7GoBackBeforeUnloading = false;
-				courseplay:setRecordNumber(vehicle, 2);
+				courseplay:setWaypointIndex(vehicle, 2);
 				courseplay:setModeState(vehicle, 0);
 				courseplay:debug(nameNum(vehicle) .. ": " .. tostring(debug.getinfo(1).currentline) .. ": modeState = 0", 11);
 			end
@@ -102,7 +102,7 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 	end
 	--go to course
 	if vehicle.cp.modeState == 0 then
-		if vehicle.recordnumber ==2 then
+		if vehicle.cp.waypointIndex ==2 then
 			refSpeed = vehicle.cp.speeds.field;
 		else
 			refSpeed = vehicle.cp.speeds.street;

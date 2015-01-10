@@ -6,11 +6,11 @@ function courseplay:handleMode3(vehicle, fillLevelPct, allowedToDrive, dt)
 	workTool.cp.isUnloading = workTool.fillLevel < workTool.cp.lastFillLevel;
 
 	if workTool.cp.isAugerWagon then
-		if vehicle.cp.wait and vehicle.cp.lastRecordnumber >= math.max(vehicle.cp.waitPoints[1] - backPointsUnfoldPipe, 2) and vehicle.cp.lastRecordnumber < vehicle.cp.waitPoints[1] and not workTool.cp.isUnloading then
+		if vehicle.cp.wait and vehicle.cp.previousWaypointIndex >= math.max(vehicle.cp.waitPoints[1] - backPointsUnfoldPipe, 2) and vehicle.cp.previousWaypointIndex < vehicle.cp.waitPoints[1] and not workTool.cp.isUnloading then
 			courseplay:handleAugerWagon(vehicle, workTool, true, false, "unfold"); --unfold=true, unload=false
 		end;
 
-		if vehicle.cp.wait and vehicle.cp.lastRecordnumber == vehicle.cp.waitPoints[1] then
+		if vehicle.cp.wait and vehicle.cp.previousWaypointIndex == vehicle.cp.waitPoints[1] then
 			CpManager:setGlobalInfoText(vehicle, 'OVERLOADING_POINT');
 
 			local driveOn = false
@@ -40,15 +40,15 @@ function courseplay:handleMode3(vehicle, fillLevelPct, allowedToDrive, dt)
 			courseplay:checkAndPrintChange(vehicle, backPointsUnfoldPipe, "backPointsUnfoldPipe");
 			courseplay:checkAndPrintChange(vehicle, forwardPointsFoldPipe, "forwardPointsFoldPipe");
 
-			courseplay:checkAndPrintChange(vehicle, vehicle.cp.lastRecordnumber, "lastRecordnumber");
+			courseplay:checkAndPrintChange(vehicle, vehicle.cp.previousWaypointIndex, "previousWaypointIndex");
 			courseplay:checkAndPrintChange(vehicle, vehicle.cp.isUnloaded, "isUnloaded");
 			courseplay:checkAndPrintChange(vehicle, vehicle.cp.wait, "wait");
 			print("-------------------------");
 		end;
 
-		if vehicle.cp.lastRecordnumber < math.max(vehicle.cp.waitPoints[1] - backPointsUnfoldPipe, 2) then -- is before unfold pipe point
+		if vehicle.cp.previousWaypointIndex < math.max(vehicle.cp.waitPoints[1] - backPointsUnfoldPipe, 2) then -- is before unfold pipe point
 			courseplay:handleAugerWagon(vehicle, workTool, false, false, "foldBefore"); --unfold=false, unload=false
-		elseif (not vehicle.cp.wait or vehicle.cp.isUnloaded) and vehicle.cp.lastRecordnumber >= math.min(vehicle.cp.waitPoints[1] + forwardPointsFoldPipe, vehicle.cp.numWaypoints - 1) then -- is past fold pipe point
+		elseif (not vehicle.cp.wait or vehicle.cp.isUnloaded) and vehicle.cp.previousWaypointIndex >= math.min(vehicle.cp.waitPoints[1] + forwardPointsFoldPipe, vehicle.cp.numWaypoints - 1) then -- is past fold pipe point
 			courseplay:handleAugerWagon(vehicle, workTool, false, false, "foldAfter"); --unfold=false, unload=false
 		elseif workTool.cp.isUnloading and not vehicle.cp.wait then
 			courseplay:handleAugerWagon(vehicle, workTool, true, false, "forceStopUnload"); --unfold=true, unload=false

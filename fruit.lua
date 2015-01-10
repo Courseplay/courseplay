@@ -261,7 +261,7 @@ function courseplay:sideToDrive(vehicle, combine, distance, switchSide)
 	elseif tractor:getIsCourseplayDriving() then
 		courseplay:debug(string.format("%s:courseplay:sideToDrive: is Courseplayer", nameNum(combine)), 4);
 		local ridgeMarker = 0;
-		local wayPoint = tractor.recordnumber;
+		local wayPoint = tractor.cp.waypointIndex;
 		if tractor.cp.turnStage > 0 then
    			switchSide = true;
   		end;

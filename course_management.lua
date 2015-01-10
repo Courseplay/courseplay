@@ -237,7 +237,7 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 
 		vehicle.cp.canDrive = true;
 
-		courseplay:setRecordNumber(vehicle, 1);
+		courseplay:setWaypointIndex(vehicle, 1);
 		courseplay:setModeState(vehicle, 0);
 		courseplay.signs:updateWaypointSigns(vehicle, "current");
 

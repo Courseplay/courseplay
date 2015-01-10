@@ -60,8 +60,8 @@ function courseplay:load(xmlFile)
 	self.cp.stopAtEnd = false;
 	self.cp.calculatedCourseToCombine = false
 
-	self.recordnumber = 1;
-	self.cp.lastRecordnumber = 1;
+	self.cp.waypointIndex = 1;
+	self.cp.previousWaypointIndex = 1;
 	self.cp.recordingTimer = 1
 	self.timer = 0.00
 	self.cp.timers = {}; 
@@ -484,15 +484,15 @@ function courseplay:draw()
 	end;
 	--DEBUG Speed Setting
 	if courseplay.debugChannels[21] then
-		renderText(0.2, 0.105, 0.02, string.format("mode%d rn: %d",self.cp.mode,self.recordnumber));
+		renderText(0.2, 0.105, 0.02, string.format("mode%d rn: %d",self.cp.mode,self.cp.waypointIndex));
 		renderText(0.2, 0.075, 0.02, self.cp.speedDebugLine);
 		if self.cp.speedDebugStreet then
 			local mode = "max"
 			local speed = self.cp.speeds.street
 			if self.cp.speeds.useRecordingSpeed then
 				mode = "wpt"
-				if self.Waypoints and self.Waypoints[self.recordnumber] and self.Waypoints[self.recordnumber].speed then
-					speed = self.Waypoints[self.recordnumber].speed
+				if self.Waypoints and self.Waypoints[self.cp.waypointIndex] and self.Waypoints[self.cp.waypointIndex].speed then
+					speed = self.Waypoints[self.cp.waypointIndex].speed
 				else
 					speed = "no speed"
 				end
@@ -727,11 +727,11 @@ function courseplay:update(dt)
 		if self.cp.isDriving then
 			local showDriveOnButton = false;
 			if self.cp.mode == courseplay.MODE_FIELDWORK then
-				if self.cp.wait and (self.recordnumber == self.cp.stopWork or self.cp.lastRecordnumber == self.cp.stopWork) and self.cp.abortWork == nil and not self.cp.isLoaded and not isFinishingWork and self.cp.hasUnloadingRefillingCourse then
+				if self.cp.wait and (self.cp.waypointIndex == self.cp.stopWork or self.cp.previousWaypointIndex == self.cp.stopWork) and self.cp.abortWork == nil and not self.cp.isLoaded and not isFinishingWork and self.cp.hasUnloadingRefillingCourse then
 					showDriveOnButton = true;
 				end;
 			else
-				if (self.cp.wait and (self.Waypoints[self.recordnumber].wait or self.Waypoints[self.cp.lastRecordnumber].wait)) or (self.cp.stopAtEnd and (self.recordnumber == self.cp.numWaypoints or self.cp.currentTipTrigger ~= nil)) then
+				if (self.cp.wait and (self.Waypoints[self.cp.waypointIndex].wait or self.Waypoints[self.cp.previousWaypointIndex].wait)) or (self.cp.stopAtEnd and (self.cp.waypointIndex == self.cp.numWaypoints or self.cp.currentTipTrigger ~= nil)) then
 					showDriveOnButton = true;
 				end;
 			end;
@@ -997,7 +997,6 @@ function courseplay:readStream(streamId, connection)
 	self.cp.toolOffsetX = streamDebugReadFloat32(streamId)
 	self.cp.toolOffsetZ = streamDebugReadFloat32(streamId)
 	courseplay:setHudPage(self, streamDebugReadInt32(streamId));
-	self.cp.HUDrecordnumber = streamDebugReadInt32(streamId);
 	self.cp.HUD0noCourseplayer = streamDebugReadBool(streamId);
 	self.cp.HUD0wantsCourseplayer = streamDebugReadBool(streamId);
 	self.cp.HUD0combineForcedSide = streamDebugReadString(streamId);
@@ -1012,7 +1011,7 @@ function courseplay:readStream(streamId, connection)
 	self.cp.HUD4combineName = streamDebugReadString(streamId);
 	self.cp.HUD4savedCombine = streamDebugReadBool(streamId);
 	self.cp.HUD4savedCombineName = streamDebugReadString(streamId);
-	self.recordnumber = streamDebugReadInt32(streamId);
+	self.cp.waypointIndex = streamDebugReadInt32(streamId);
 	self.cp.isRecording = streamDebugReadBool(streamId);
 	self.cp.recordingIsPaused = streamDebugReadBool(streamId);
 	self.cp.searchCombineAutomatically = streamDebugReadBool(streamId)
@@ -1116,7 +1115,6 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteFloat32(streamId,self.cp.toolOffsetX)
 	streamDebugWriteFloat32(streamId,self.cp.toolOffsetZ)
 	streamDebugWriteInt32(streamId,self.cp.hud.currentPage)
-	streamDebugWriteInt32(streamId,self.cp.HUDrecordnumber)
 	streamDebugWriteBool(streamId,self.cp.HUD0noCourseplayer)
 	streamDebugWriteBool(streamId,self.cp.HUD0wantsCourseplayer)
 	streamDebugWriteString(streamId,self.cp.HUD0combineForcedSide)
@@ -1131,7 +1129,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteString(streamId,self.cp.HUD4combineName)
 	streamDebugWriteBool(streamId,self.cp.HUD4savedCombine)
 	streamDebugWriteString(streamId,self.cp.HUD4savedCombineName)
-	streamDebugWriteInt32(streamId,self.recordnumber)
+	streamDebugWriteInt32(streamId,self.cp.waypointIndex)
 	streamDebugWriteBool(streamId,self.cp.isRecording)
 	streamDebugWriteBool(streamId,self.cp.recordingIsPaused)
 	streamDebugWriteBool(streamId,self.cp.searchCombineAutomatically)

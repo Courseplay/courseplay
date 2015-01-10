@@ -63,14 +63,14 @@ function courseplay:drive(self, dt)
 	-- current position
 	local ctx, cty, ctz = getWorldTranslation(self.cp.DirectionNode);
 
-	if self.recordnumber > self.cp.numWaypoints then
-		courseplay:debug(string.format("drive %d: %s: self.recordnumber (%s) > self.cp.numWaypoints (%s)", debug.getinfo(1).currentline, nameNum(self), tostring(self.recordnumber), tostring(self.cp.numWaypoints)), 12); --this should never happen
-		courseplay:setRecordNumber(self, self.cp.numWaypoints);
+	if self.cp.waypointIndex > self.cp.numWaypoints then
+		courseplay:debug(string.format("drive %d: %s: self.cp.waypointIndex (%s) > self.cp.numWaypoints (%s)", debug.getinfo(1).currentline, nameNum(self), tostring(self.cp.waypointIndex), tostring(self.cp.numWaypoints)), 12); --this should never happen
+		courseplay:setWaypointIndex(self, self.cp.numWaypoints);
 	end;
 
 
 	if self.cp.mode ~= 7 or (self.cp.mode == 7 and self.cp.modeState ~= 5) then 
-		cx, cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
+		cx, cz = self.Waypoints[self.cp.waypointIndex].cx, self.Waypoints[self.cp.waypointIndex].cz
 	end
 
 	if courseplay.debugChannels[12] and self.cp.isTurning == nil then
@@ -99,8 +99,8 @@ function courseplay:drive(self, dt)
 
 
 	if self.cp.mode == 4 or self.cp.mode == 6 then
-		if self.Waypoints[self.recordnumber].turn ~= nil then
-			self.cp.isTurning = self.Waypoints[self.recordnumber].turn
+		if self.Waypoints[self.cp.waypointIndex].turn ~= nil then
+			self.cp.isTurning = self.Waypoints[self.cp.waypointIndex].turn
 		end
 		if self.cp.abortWork ~= nil and self.cp.tipperFillLevelPct == 0 then
 			self.cp.isTurning = nil
@@ -131,8 +131,8 @@ function courseplay:drive(self, dt)
 	else -- on street/always
 		local combineBeaconOn = self.cp.isCombine and (self.fillLevel / self.capacity) > 0.8;
 		local beaconOn = self.cp.warningLightsMode == courseplay.WARNING_LIGHTS_BEACON_ALWAYS 
-						 or ((self.cp.mode == 1 or self.cp.mode == 2 or self.cp.mode == 3 or self.cp.mode == 5) and self.recordnumber > 2) 
-						 or ((self.cp.mode == 4 or self.cp.mode == 6) and self.recordnumber > self.cp.stopWork)
+						 or ((self.cp.mode == 1 or self.cp.mode == 2 or self.cp.mode == 3 or self.cp.mode == 5) and self.cp.waypointIndex > 2) 
+						 or ((self.cp.mode == 4 or self.cp.mode == 6) and self.cp.waypointIndex > self.cp.stopWork)
 						 or combineBeacon;
 		if self.beaconLightsActive ~= beaconOn then
 			self:setBeaconLightsVisibility(beaconOn);
@@ -154,7 +154,7 @@ function courseplay:drive(self, dt)
 	local isCrawlingToWait = false
 
 	-- ### WAITING POINTS - START
-	if self.Waypoints[self.cp.lastRecordnumber].wait and self.cp.wait then
+	if self.Waypoints[self.cp.previousWaypointIndex].wait and self.cp.wait then
 		-- set wait time end
 		if self.cp.waitTimer == nil and self.cp.waitTime > 0 then
 			self.cp.waitTimer = self.timer + self.cp.waitTime * 1000;
@@ -165,12 +165,12 @@ function courseplay:drive(self, dt)
 
 		elseif self.cp.mode == 4 then
 			local drive_on = false
-			if self.cp.lastRecordnumber == self.cp.startWork then
+			if self.cp.previousWaypointIndex == self.cp.startWork then
 				courseplay:setVehicleWait(self, false);
-			elseif self.cp.lastRecordnumber == self.cp.stopWork and self.cp.abortWork ~= nil then
+			elseif self.cp.previousWaypointIndex == self.cp.stopWork and self.cp.abortWork ~= nil then
 				courseplay:setVehicleWait(self, false);
-			elseif self.cp.waitPoints[3] and self.cp.lastRecordnumber == self.cp.waitPoints[3] then
-				local isInWorkArea = self.recordnumber > self.cp.startWork and self.recordnumber <= self.cp.stopWork;
+			elseif self.cp.waitPoints[3] and self.cp.previousWaypointIndex == self.cp.waitPoints[3] then
+				local isInWorkArea = self.cp.waypointIndex > self.cp.startWork and self.cp.waypointIndex <= self.cp.stopWork;
 				if self.cp.workToolAttached and self.cp.startWork ~= nil and self.cp.stopWork ~= nil and self.cp.workTools ~= nil and not isInWorkArea then
 					allowedToDrive,lx,lz = courseplay:refillSprayer(self, self.cp.tipperFillLevelPct, self.cp.refillUntilPct, allowedToDrive, lx, lz, dt);
 				end;
@@ -188,18 +188,18 @@ function courseplay:drive(self, dt)
 				courseplay:setInfoText(self, string.format("COURSEPLAY_LOADING_AMOUNT;%d;%d",courseplay:roundToBottomInterval(self.cp.tipperFillLevel, 100),self.cp.tipperCapacity));
 			end
 		elseif self.cp.mode == 6 then
-			if self.cp.lastRecordnumber == self.cp.startWork then
+			if self.cp.previousWaypointIndex == self.cp.startWork then
 				courseplay:setVehicleWait(self, false);
-			elseif self.cp.lastRecordnumber == self.cp.stopWork and self.cp.abortWork ~= nil then
+			elseif self.cp.previousWaypointIndex == self.cp.stopWork and self.cp.abortWork ~= nil then
 				courseplay:setVehicleWait(self, false);
-			elseif self.cp.lastRecordnumber ~= self.cp.startWork and self.cp.lastRecordnumber ~= self.cp.stopWork then 
+			elseif self.cp.previousWaypointIndex ~= self.cp.startWork and self.cp.previousWaypointIndex ~= self.cp.stopWork then 
 				CpManager:setGlobalInfoText(self, 'UNLOADING_BALE');
 				if self.cp.tipperFillLevelPct == 0 or drive_on then
 					courseplay:setVehicleWait(self, false);
 				end;
 			end;
 		elseif self.cp.mode == 7 then
-			if self.cp.lastRecordnumber == self.cp.startWork then
+			if self.cp.previousWaypointIndex == self.cp.startWork then
 				if self.fillLevel > 0 then
 					self:setPipeState(2)
 					CpManager:setGlobalInfoText(self, 'OVERLOADING_POINT');
@@ -239,8 +239,8 @@ function courseplay:drive(self, dt)
 			courseplay:setVehicleWait(self, false);
 		end
 		isCrawlingToWait = true
-		local _,_,zDist = worldToLocal(self.cp.DirectionNode, self.Waypoints[self.cp.lastRecordnumber].cx, cty, self.Waypoints[self.cp.lastRecordnumber].cz);
-		if zDist < 1 then -- don't stop immediately when hitting the waitPoints recordnumber, but rather wait until we're close enough (1m)
+		local _,_,zDist = worldToLocal(self.cp.DirectionNode, self.Waypoints[self.cp.previousWaypointIndex].cx, cty, self.Waypoints[self.cp.previousWaypointIndex].cz);
+		if zDist < 1 then -- don't stop immediately when hitting the waitPoints waypointIndex, but rather wait until we're close enough (1m)
 			allowedToDrive = false;
 		end;
 	-- ### WAITING POINTS - END
@@ -249,7 +249,7 @@ function courseplay:drive(self, dt)
 	else
 		-- MODES 1 & 2: unloading in trigger
 		if (self.cp.mode == 1 or (self.cp.mode == 2 and self.cp.isLoaded)) and self.cp.tipperFillLevel ~= nil and self.cp.tipRefOffset ~= nil and self.cp.workToolAttached then
-			if self.cp.currentTipTrigger == nil and self.cp.tipperFillLevel > 0 and self.recordnumber > 2 and self.recordnumber < self.cp.numWaypoints and not self.Waypoints[self.recordnumber].rev then
+			if self.cp.currentTipTrigger == nil and self.cp.tipperFillLevel > 0 and self.cp.waypointIndex > 2 and self.cp.waypointIndex < self.cp.numWaypoints and not self.Waypoints[self.cp.waypointIndex].rev then
 				courseplay:doTriggerRaycasts(self, 'tipTrigger', 'fwd', true, tx, ty, tz, nx, ny, nz);
 			end;
 
@@ -257,14 +257,14 @@ function courseplay:drive(self, dt)
 		end;
 
 		-- COMBI MODE / BYPASSING
-		if (((self.cp.mode == 2 or self.cp.mode == 3) and self.recordnumber < 2) or self.cp.activeCombine) and self.cp.workToolAttached then
+		if (((self.cp.mode == 2 or self.cp.mode == 3) and self.cp.waypointIndex < 2) or self.cp.activeCombine) and self.cp.workToolAttached then
 			self.cp.inTraffic = false
 			courseplay:handle_mode2(self, dt);
 			return;
-		elseif (self.cp.mode == 2 or self.cp.mode == 3) and self.recordnumber < 3 then
+		elseif (self.cp.mode == 2 or self.cp.mode == 3) and self.cp.waypointIndex < 3 then
 			isBypassing = true
 			lx, lz = courseplay:isTheWayToTargetFree(self,lx, lz)
-		elseif self.cp.mode == 6 and self.cp.hasBaleLoader and (self.recordnumber == self.cp.stopWork - 4 or (self.cp.abortWork ~= nil and self.recordnumber == self.cp.abortWork)) then
+		elseif self.cp.mode == 6 and self.cp.hasBaleLoader and (self.cp.waypointIndex == self.cp.stopWork - 4 or (self.cp.abortWork ~= nil and self.cp.waypointIndex == self.cp.abortWork)) then
 			isBypassing = true
 			lx, lz = courseplay:isTheWayToTargetFree(self,lx, lz)
 		elseif self.cp.mode ~= 7 then
@@ -274,14 +274,14 @@ function courseplay:drive(self, dt)
 		end;
 
 		-- MODE 3: UNLOADING
-		if self.cp.mode == 3 and self.cp.workToolAttached and self.recordnumber >= 2 and self.cp.modeState == 0 then
+		if self.cp.mode == 3 and self.cp.workToolAttached and self.cp.waypointIndex >= 2 and self.cp.modeState == 0 then
 			courseplay:handleMode3(self, self.cp.tipperFillLevelPct, allowedToDrive, dt);
 		end;
 
 		-- MODE 4: REFILL SPRAYER or SEEDER
 		if self.cp.mode == 4 then
 			if self.cp.workToolAttached and self.cp.startWork ~= nil and self.cp.stopWork ~= nil then
-				local isInWorkArea = self.recordnumber > self.cp.startWork and self.recordnumber <= self.cp.stopWork;
+				local isInWorkArea = self.cp.waypointIndex > self.cp.startWork and self.cp.waypointIndex <= self.cp.stopWork;
 				if self.cp.workTools ~= nil and not isInWorkArea then
 					allowedToDrive,lx,lz = courseplay:refillSprayer(self, self.cp.tipperFillLevelPct, self.cp.refillUntilPct, allowedToDrive, lx, lz, dt);
 				end
@@ -369,7 +369,7 @@ function courseplay:drive(self, dt)
 		end;
 
 		-- STOP AND END OR TRIGGER
-		if self.cp.stopAtEnd and (self.recordnumber == self.cp.numWaypoints or self.cp.currentTipTrigger ~= nil or self.cp.fillTrigger ~= nil) then
+		if self.cp.stopAtEnd and (self.cp.waypointIndex == self.cp.numWaypoints or self.cp.currentTipTrigger ~= nil or self.cp.fillTrigger ~= nil) then
 			allowedToDrive = false;
 			CpManager:setGlobalInfoText(self, 'END_POINT');
 		end;
@@ -395,7 +395,7 @@ function courseplay:drive(self, dt)
 	elseif self.cp.mode == 6 and self.cp.startWork ~= nil and self.cp.stopWork ~= nil then
 		allowedToDrive, workArea, workSpeed, activeTipper, isFinishingWork,refSpeed = courseplay:handle_mode6(self, allowedToDrive, workSpeed, self.cp.tipperFillLevelPct, lx, lz,refSpeed);
 		speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
-		if not workArea and self.cp.currentTipTrigger == nil and self.cp.tipperFillLevel and self.cp.tipperFillLevel > 0 and self.capacity == nil and self.cp.tipRefOffset ~= nil and not self.Waypoints[self.recordnumber].rev then
+		if not workArea and self.cp.currentTipTrigger == nil and self.cp.tipperFillLevel and self.cp.tipperFillLevel > 0 and self.capacity == nil and self.cp.tipRefOffset ~= nil and not self.Waypoints[self.cp.waypointIndex].rev then
 			courseplay:doTriggerRaycasts(self, 'tipTrigger', 'fwd', true, tx, ty, tz, nx, ny, nz);
 		end;
 
@@ -419,7 +419,7 @@ function courseplay:drive(self, dt)
 
 		if self.cp.mode ~= 6 then
 			local minCoverWaypoint = self.cp.mode == 1 and 4 or 3;
-			showCover = self.recordnumber >= minCoverWaypoint and self.recordnumber < self.cp.numWaypoints and self.cp.currentTipTrigger == nil and self.cp.trailerFillDistance == nil;
+			showCover = self.cp.waypointIndex >= minCoverWaypoint and self.cp.waypointIndex < self.cp.numWaypoints and self.cp.currentTipTrigger == nil and self.cp.trailerFillDistance == nil;
 		else
 			showCover = not workArea and self.cp.currentTipTrigger == nil;
 		end;
@@ -436,8 +436,8 @@ function courseplay:drive(self, dt)
 
 	-- MODE 9 --TODO (Jakob): why is this in drive instead of mode9?
 	local WpUnload = false
-	if self.cp.shovelEmptyPoint ~= nil and self.recordnumber >=3  then
-		WpUnload = self.recordnumber == self.cp.shovelEmptyPoint
+	if self.cp.shovelEmptyPoint ~= nil and self.cp.waypointIndex >=3  then
+		WpUnload = self.cp.waypointIndex == self.cp.shovelEmptyPoint
 	end
 	
 	if WpUnload then
@@ -450,8 +450,8 @@ function courseplay:drive(self, dt)
 	end
 	
 	local WpLoadEnd = false
-	if self.cp.shovelFillEndPoint ~= nil and self.recordnumber >=3  then
-		WpLoadEnd = self.recordnumber == self.cp.shovelFillEndPoint
+	if self.cp.shovelFillEndPoint ~= nil and self.cp.waypointIndex >=3  then
+		WpLoadEnd = self.cp.waypointIndex == self.cp.shovelFillEndPoint
 	end
 	if WpLoadEnd then
 		local i = self.cp.shovelFillEndPoint
@@ -463,7 +463,7 @@ function courseplay:drive(self, dt)
 				CpManager:setGlobalInfoText(self, 'WORK_END');
 			else
 				courseplay:setIsLoaded(self, true);
-				courseplay:setRecordNumber(self, i + 2);
+				courseplay:setWaypointIndex(self, i + 2);
 			end
 		end
 	end
@@ -507,14 +507,14 @@ function courseplay:drive(self, dt)
 	self.cp.checkMarkers = false
 	
 	--SPEED SETTING
-	local isAtEnd   = self.recordnumber > self.cp.numWaypoints - 3;
-	local isAtStart = self.recordnumber < 3;
+	local isAtEnd   = self.cp.waypointIndex > self.cp.numWaypoints - 3;
+	local isAtStart = self.cp.waypointIndex < 3;
 	if 	((self.cp.mode == 1 or self.cp.mode == 5 or self.cp.mode == 8) and (isAtStart or isAtEnd)) 
 	or	((self.cp.mode == 2 or self.cp.mode == 3) and isAtEnd) 
-	or	(self.cp.mode == 9 and self.recordnumber > self.cp.shovelFillStartPoint and self.recordnumber <= self.cp.shovelFillEndPoint)
-	or	(not workArea and self.cp.wait and ((isAtEnd and self.Waypoints[self.recordnumber].wait) or courseplay:waypointsHaveAttr(self, self.recordnumber, 0, 2, "wait", true, false)))
-	or 	(isAtEnd and self.Waypoints[self.recordnumber].rev)
-	or	(not isAtEnd and (self.Waypoints[self.recordnumber].rev or self.Waypoints[self.recordnumber + 1].rev or self.Waypoints[self.recordnumber + 2].rev))
+	or	(self.cp.mode == 9 and self.cp.waypointIndex > self.cp.shovelFillStartPoint and self.cp.waypointIndex <= self.cp.shovelFillEndPoint)
+	or	(not workArea and self.cp.wait and ((isAtEnd and self.Waypoints[self.cp.waypointIndex].wait) or courseplay:waypointsHaveAttr(self, self.cp.waypointIndex, 0, 2, "wait", true, false)))
+	or 	(isAtEnd and self.Waypoints[self.cp.waypointIndex].rev)
+	or	(not isAtEnd and (self.Waypoints[self.cp.waypointIndex].rev or self.Waypoints[self.cp.waypointIndex + 1].rev or self.Waypoints[self.cp.waypointIndex + 2].rev))
 	or	(workSpeed ~= nil and workSpeed == 0.5) -- baler in mode 6 , slow down
 	or isCrawlingToWait		
 	then
@@ -532,12 +532,12 @@ function courseplay:drive(self, dt)
 		elseif self.cp.modeState == 5 then
 			mode7onCourse = false
 		end
-		if self.cp.speeds.useRecordingSpeed and self.Waypoints[self.recordnumber].speed ~= nil and mode7onCourse then
-			if self.Waypoints[self.recordnumber].speed < self.cp.speeds.crawl then
+		if self.cp.speeds.useRecordingSpeed and self.Waypoints[self.cp.waypointIndex].speed ~= nil and mode7onCourse then
+			if self.Waypoints[self.cp.waypointIndex].speed < self.cp.speeds.crawl then
 				refSpeed = courseplay:getAverageWpSpeed(self , 4)
 				speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			else
-				refSpeed = Utils.clamp(refSpeed, self.cp.speeds.crawl, self.Waypoints[self.recordnumber].speed); --normaly use speed from waypoint, but  maximum street speed
+				refSpeed = Utils.clamp(refSpeed, self.cp.speeds.crawl, self.Waypoints[self.cp.waypointIndex].speed); --normaly use speed from waypoint, but  maximum street speed
 				speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			end
 		end;		
@@ -570,7 +570,7 @@ function courseplay:drive(self, dt)
 	end
 	
 	--reverse
-	if self.Waypoints[self.recordnumber].rev then
+	if self.Waypoints[self.cp.waypointIndex].rev then
 		lx,lz,fwd = courseplay:goReverse(self,lx,lz)
 		refSpeed = Utils.getNoNil(self.cp.speeds.unload, self.cp.speeds.crawl)
 		speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
@@ -622,28 +622,28 @@ function courseplay:drive(self, dt)
 
 
 	-- DISTANCE TO CHANGE WAYPOINT
-	if self.recordnumber == 1 or self.recordnumber == self.cp.numWaypoints - 1 or self.Waypoints[self.recordnumber].turn then
+	if self.cp.waypointIndex == 1 or self.cp.waypointIndex == self.cp.numWaypoints - 1 or self.Waypoints[self.cp.waypointIndex].turn then
 		if self.cp.hasSpecializationArticulatedAxis then
 			distToChange = self.cp.mode == 9 and 2 or 1; -- ArticulatedAxis vehicles
 		else
 			distToChange = 0.5;
 		end;
-	elseif self.recordnumber + 1 <= self.cp.numWaypoints then
-		local beforeReverse = (self.Waypoints[self.recordnumber + 1].rev and (self.Waypoints[self.recordnumber].rev == false))
-		local afterReverse = (not self.Waypoints[self.recordnumber + 1].rev and self.Waypoints[self.cp.lastRecordnumber].rev)
-		if (self.Waypoints[self.recordnumber].wait or beforeReverse) and self.Waypoints[self.recordnumber].rev == false then -- or afterReverse or self.recordnumber == 1
+	elseif self.cp.waypointIndex + 1 <= self.cp.numWaypoints then
+		local beforeReverse = (self.Waypoints[self.cp.waypointIndex + 1].rev and (self.Waypoints[self.cp.waypointIndex].rev == false))
+		local afterReverse = (not self.Waypoints[self.cp.waypointIndex + 1].rev and self.Waypoints[self.cp.previousWaypointIndex].rev)
+		if (self.Waypoints[self.cp.waypointIndex].wait or beforeReverse) and self.Waypoints[self.cp.waypointIndex].rev == false then -- or afterReverse or self.cp.waypointIndex == 1
 			if self.cp.hasSpecializationArticulatedAxis then
 				distToChange = 2; -- ArticulatedAxis vehicles
 			else
 				distToChange = 1;
 			end;
-		elseif (self.Waypoints[self.recordnumber].rev and self.Waypoints[self.recordnumber].wait) or afterReverse then
+		elseif (self.Waypoints[self.cp.waypointIndex].rev and self.Waypoints[self.cp.waypointIndex].wait) or afterReverse then
 			if self.cp.hasSpecializationArticulatedAxis then
 				distToChange = 4; -- ArticulatedAxis vehicles
 			else
 				distToChange = 2;
 			end;
-		elseif self.Waypoints[self.recordnumber].rev then
+		elseif self.Waypoints[self.cp.waypointIndex].rev then
 			if self.cp.hasSpecializationArticulatedAxis then
 				distToChange = 4; -- ArticulatedAxis vehicles
 			else
@@ -685,7 +685,7 @@ function courseplay:drive(self, dt)
 	end
 
 	-- if distance grows i must be circling
-	if self.cp.distanceToTarget > self.cp.shortestDistToWp and self.recordnumber > 3 and self.cp.distanceToTarget < 15 and self.Waypoints[self.recordnumber].rev ~= true then
+	if self.cp.distanceToTarget > self.cp.shortestDistToWp and self.cp.waypointIndex > 3 and self.cp.distanceToTarget < 15 and self.Waypoints[self.cp.waypointIndex].rev ~= true then
 		distToChange = self.cp.distanceToTarget + 1
 	end
 
@@ -707,18 +707,18 @@ function courseplay:drive(self, dt)
 	else
 		-- reset distance to waypoint
 		self.cp.shortestDistToWp = nil
-		if self.recordnumber < self.cp.numWaypoints then -- = New
+		if self.cp.waypointIndex < self.cp.numWaypoints then -- = New
 			if not self.cp.wait then
 				courseplay:setVehicleWait(self, true);
 			end
 			if self.cp.mode == 7 and self.cp.modeState == 5 then
 			else
-				courseplay:setRecordNumber(self, self.recordnumber + 1);
+				courseplay:setWaypointIndex(self, self.cp.waypointIndex + 1);
 			end
 		else -- last waypoint: reset some variables
 			if (self.cp.mode == 4 or self.cp.mode == 6) and not self.cp.hasUnloadingRefillingCourse then
 			else
-				courseplay:setRecordNumber(self, 1);
+				courseplay:setWaypointIndex(self, 1);
 			end
 			self.cp.isUnloaded = false
 			courseplay:setStopAtEnd(self, false);
@@ -732,7 +732,7 @@ end
 
 
 function courseplay:setTrafficCollision(vehicle, lx, lz, workArea) --!!!
-	--local goForRaycast = vehicle.cp.mode == 1 or (vehicle.cp.mode == 3 and vehicle.recordnumber > 3) or vehicle.cp.mode == 5 or vehicle.cp.mode == 8 or ((vehicle.cp.mode == 4 or vehicle.cp.mode == 6) and vehicle.recordnumber > vehicle.cp.stopWork) or (vehicle.cp.mode == 2 and vehicle.recordnumber > 3)
+	--local goForRaycast = vehicle.cp.mode == 1 or (vehicle.cp.mode == 3 and vehicle.cp.waypointIndex > 3) or vehicle.cp.mode == 5 or vehicle.cp.mode == 8 or ((vehicle.cp.mode == 4 or vehicle.cp.mode == 6) and vehicle.cp.waypointIndex > vehicle.cp.stopWork) or (vehicle.cp.mode == 2 and vehicle.cp.waypointIndex > 3)
 	--print("lx: "..tostring(lx).."	distance: "..tostring(distance))
 	local maxlx = 0.5; --sin(maxAngle); --sin30°  old was : 0.7071067 sin 45°
 	local colDirX = lx;
@@ -748,7 +748,7 @@ function courseplay:setTrafficCollision(vehicle, lx, lz, workArea) --!!!
 	--courseplay:debug(string.format("colDirX: %f colDirZ %f ",colDirX,colDirZ ), 3)
 	if vehicle.cp.trafficCollisionTriggers[1] ~= nil then 
 		AIVehicleUtil.setCollisionDirection(vehicle.cp.DirectionNode, vehicle.cp.trafficCollisionTriggers[1], colDirX, colDirZ);
-		local recordNumber = vehicle.recordnumber
+		local recordNumber = vehicle.cp.waypointIndex
 		if vehicle.cp.collidingVehicleId == nil then
 			for i=2,vehicle.cp.numTrafficCollisionTriggers do
 				if workArea or recordNumber + i > vehicle.cp.numWaypoints or recordNumber < 2 then
@@ -805,7 +805,7 @@ function courseplay:checkTraffic(vehicle, displayWarnings, allowedToDrive)
 		local attacher
 		if collisionVehicle.getRootAttacherVehicle then
 			attacher = collisionVehicle:getRootAttacherVehicle()
-			inQuery = vehicle.cp.mode == 1 and vehicle.recordnumber == 1 and attacher.cp ~= nil and attacher.cp.isDriving and attacher.cp.mode == 1 and attacher.recordnumber == 2 
+			inQuery = vehicle.cp.mode == 1 and vehicle.cp.waypointIndex == 1 and attacher.cp ~= nil and attacher.cp.isDriving and attacher.cp.mode == 1 and attacher.cp.waypointIndex == 2 
 		end		
 	end;
 
@@ -913,7 +913,7 @@ function courseplay:refillSprayer(vehicle, fillLevelPct, driveOn, allowedToDrive
 			local canRefill = (activeToolFillLevel ~= nil and activeToolFillLevel < driveOn) and fillTypesMatch;
 			
 			if vehicle.cp.mode == 8 then
-				canRefill = canRefill and not courseplay:waypointsHaveAttr(vehicle, vehicle.recordnumber, -2, 2, 'wait', true, false);
+				canRefill = canRefill and not courseplay:waypointsHaveAttr(vehicle, vehicle.cp.waypointIndex, -2, 2, 'wait', true, false);
 				if (activeTool.isSpreaderInRange ~= nil and activeTool.isSpreaderInRange.manureTriggerc ~= nil) 
 				--normal fill triggers
 				or (fillTrigger ~= nil and fillTrigger.triggerId ~= nil and vehicle.cp.lastMode8UnloadTriggerId ~= nil and fillTrigger.triggerId == vehicle.cp.lastMode8UnloadTriggerId)
@@ -1035,19 +1035,19 @@ function courseplay:getIsVehicleOffsetValid(vehicle)
 		if vehicle.cp.laneOffset ~= 0 then
 			courseplay:changeLaneOffset(vehicle, nil, 0);
 		end;
-		return vehicle.recordnumber > 2 and vehicle.recordnumber > vehicle.cp.waitPoints[1] - 6 and vehicle.recordnumber <= vehicle.cp.waitPoints[1] + 3;
+		return vehicle.cp.waypointIndex > 2 and vehicle.cp.waypointIndex > vehicle.cp.waitPoints[1] - 6 and vehicle.cp.waypointIndex <= vehicle.cp.waitPoints[1] + 3;
 	elseif vehicle.cp.mode == 4 or vehicle.cp.mode == 6 then
-		return vehicle.recordnumber >= vehicle.cp.startWork and vehicle.recordnumber <= vehicle.cp.stopWork;
+		return vehicle.cp.waypointIndex >= vehicle.cp.startWork and vehicle.cp.waypointIndex <= vehicle.cp.stopWork;
 	elseif vehicle.cp.mode == 7 then
 		if vehicle.cp.laneOffset ~= 0 then
 			courseplay:changeLaneOffset(vehicle, nil, 0);
 		end;
-		return vehicle.recordnumber > 3 and vehicle.recordnumber > vehicle.cp.waitPoints[1] - 6 and vehicle.recordnumber <= vehicle.cp.waitPoints[1] + 3 and not vehicle.cp.mode7GoBackBeforeUnloading;
+		return vehicle.cp.waypointIndex > 3 and vehicle.cp.waypointIndex > vehicle.cp.waitPoints[1] - 6 and vehicle.cp.waypointIndex <= vehicle.cp.waitPoints[1] + 3 and not vehicle.cp.mode7GoBackBeforeUnloading;
 	elseif vehicle.cp.mode == 8 then
 		if vehicle.cp.laneOffset ~= 0 then
 			courseplay:changeLaneOffset(vehicle, nil, 0);
 		end;
-		return vehicle.recordnumber > vehicle.cp.waitPoints[1] - 6 and vehicle.recordnumber <= vehicle.cp.waitPoints[1] + 3;
+		return vehicle.cp.waypointIndex > vehicle.cp.waitPoints[1] - 6 and vehicle.cp.waypointIndex <= vehicle.cp.waitPoints[1] + 3;
 	end; 
 
 	return false;
@@ -1056,19 +1056,19 @@ end;
 function courseplay:getVehicleOffsettedCoords(vehicle, x, z)
 	--courseplay:debug(string.format('%s: waypoint before offset: cx=%.2f, cz=%.2f', nameNum(vehicle), cx, cz), 2);
 	local fromX, fromZ, toX, toZ;
-	if vehicle.recordnumber == 1 then
+	if vehicle.cp.waypointIndex == 1 then
 		fromX = x;
 		fromZ = z;
 		toX = vehicle.Waypoints[2].cx;
 		toZ = vehicle.Waypoints[2].cz;
-	elseif vehicle.Waypoints[vehicle.cp.lastRecordnumber].rev then
+	elseif vehicle.Waypoints[vehicle.cp.previousWaypointIndex].rev then
 		fromX = x;
 		fromZ = z;
-		toX = vehicle.Waypoints[vehicle.cp.lastRecordnumber].cx;
-		toZ = vehicle.Waypoints[vehicle.cp.lastRecordnumber].cz;
+		toX = vehicle.Waypoints[vehicle.cp.previousWaypointIndex].cx;
+		toZ = vehicle.Waypoints[vehicle.cp.previousWaypointIndex].cz;
 	else
-		fromX = vehicle.Waypoints[vehicle.cp.lastRecordnumber].cx;
-		fromZ = vehicle.Waypoints[vehicle.cp.lastRecordnumber].cz;
+		fromX = vehicle.Waypoints[vehicle.cp.previousWaypointIndex].cx;
+		fromZ = vehicle.Waypoints[vehicle.cp.previousWaypointIndex].cz;
 		toX = x;
 		toZ = z;
 	end;
@@ -1225,7 +1225,7 @@ function courseplay:getAverageWpSpeed(vehicle, numWaypoints)
 	numWaypoints = max(numWaypoints,3)
 	local refSpeed = 0
 	local divider = numWaypoints
-	for i= (vehicle.recordnumber-1), (vehicle.recordnumber + numWaypoints-1) do
+	for i= (vehicle.cp.waypointIndex-1), (vehicle.cp.waypointIndex + numWaypoints-1) do
 		local index = i
 		if index > vehicle.cp.numWaypoints then
 			index = index - vehicle.cp.numWaypoints
@@ -1277,7 +1277,7 @@ function courseplay:setFourWheelDrive(vehicle, workArea)
 end;
 
 function courseplay:handleSlipping(vehicle, refSpeed)
-	if vehicle.cp.inTraffic or vehicle.Waypoints[vehicle.recordnumber].wait then return end;
+	if vehicle.cp.inTraffic or vehicle.Waypoints[vehicle.cp.waypointIndex].wait then return end;
 
 	if vehicle.cp.slippingStage == 1 then
 		CpManager:setGlobalInfoText(vehicle, 'SLIPPING_1');
@@ -1346,16 +1346,14 @@ end
 
 -----------------------------------------------------------------------------------------
 
-function courseplay:setRecordNumber(vehicle, number)
-	if vehicle.recordnumber ~= number then
-		local oldValue = vehicle.recordnumber;
-		vehicle.recordnumber = number;
-		if vehicle.recordnumber > 1 then
-			vehicle.cp.lastRecordnumber = vehicle.recordnumber - 1;
+function courseplay:setWaypointIndex(vehicle, number)
+	if vehicle.cp.waypointIndex ~= number then
+		vehicle:setCpVar('waypointIndex',number,courseplay.isClient);
+		if vehicle.cp.waypointIndex > 1 then
+			vehicle.cp.previousWaypointIndex = vehicle.cp.waypointIndex - 1;
 		else
-			vehicle.cp.lastRecordnumber = 1;
+			vehicle.cp.previousWaypointIndex = 1;
 		end;
-		vehicle:setCpVar('HUDrecordnumber', vehicle.recordnumber,courseplay.isClient)
 	end;
 end;
 

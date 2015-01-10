@@ -779,7 +779,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 				-------------------------------
 				--- Reverse into BGA and unload
 				-------------------------------
-				if vehicle.Waypoints[vehicle.recordnumber].rev or vehicle.cp.isReverseBGATipping then
+				if vehicle.Waypoints[vehicle.cp.waypointIndex].rev or vehicle.cp.isReverseBGATipping then
 					-- Get the silo section fill level based on how many sections and total capacity.
 					local medianSiloCapacity = ctt.bunkerSilo.capacity / silos * 0.92; -- we make it a bit smaler than it actually is, since it will still unload a bit to the silo next to it.
 
@@ -864,17 +864,17 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 					if not isLastSiloSection and (vectorDistance > 1 or vectorDistance < -1) and nearestBGASection ~= tipper.cp.BGASelectedSection then
 						local isChangingDirection = false;
 
-						if vectorDistance > 0 and vehicle.Waypoints[vehicle.recordnumber].rev then
+						if vectorDistance > 0 and vehicle.Waypoints[vehicle.cp.waypointIndex].rev then
 							-- Change direction to forward
 							vehicle.cp.isReverseBGATipping = true;
 							isChangingDirection = true;
-							courseplay:setRecordNumber(vehicle, courseplay:getNextFwdPoint(vehicle));
-						elseif vectorDistance < 0 and not vehicle.Waypoints[vehicle.recordnumber].rev then
+							courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle));
+						elseif vectorDistance < 0 and not vehicle.Waypoints[vehicle.cp.waypointIndex].rev then
 							-- Change direction to reverse
 							local found = false;
-							for i = vehicle.recordnumber, 1, -1 do
+							for i = vehicle.cp.waypointIndex, 1, -1 do
 								if vehicle.Waypoints[i].rev then
-									courseplay:setRecordNumber(vehicle, i);
+									courseplay:setWaypointIndex(vehicle, i);
 									found = true;
 								end;
 							end;
@@ -886,7 +886,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 						end;
 
 						if isChangingDirection then
-							courseplay:debug(string.format("%s: Changed direction to %s to try reposition again.]", nameNum(vehicle), vehicle.Waypoints[vehicle.recordnumber].rev and "reverse" or "forward"), 13);
+							courseplay:debug(string.format("%s: Changed direction to %s to try reposition again.]", nameNum(vehicle), vehicle.Waypoints[vehicle.cp.waypointIndex].rev and "reverse" or "forward"), 13);
 						end;
 					end;
 
@@ -919,7 +919,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 						end;
 
 						-- Find the first forward waypoint ahead of the vehicle so we can drive ahead to the next silo section.
-						courseplay:setRecordNumber(vehicle, courseplay:getNextFwdPoint(vehicle));
+						courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle));
 
 						courseplay:debug(string.format("%s: New BGA silo section: %d", nameNum(vehicle), tipper.cp.BGASelectedSection), 13);
 					elseif isLastSiloSection and goForTipping then
@@ -927,7 +927,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 						vehicle.cp.isReverseBGATipping = true;
 
 						-- Make sure that we don't reverse into the silo after it's full
-						courseplay:setRecordNumber(vehicle, courseplay:getNextFwdPoint(vehicle));
+						courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle));
 					end;
 
 				-------------------------------
@@ -1072,14 +1072,14 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 				end;
 
 			--BGA TIPTRIGGER BUT IS FULL AND WE ARE REVERSE TIPPING
-			elseif isBGA and bgaIsFull and (vehicle.Waypoints[vehicle.recordnumber].rev or vehicle.cp.isReverseBGATipping) then
+			elseif isBGA and bgaIsFull and (vehicle.Waypoints[vehicle.cp.waypointIndex].rev or vehicle.cp.isReverseBGATipping) then
 				-- Stop the vehicle, since we don't want to reverse into the BGA if it's full.
 				allowedToDrive = false;
 				-- Tell the user why we have stoped.
 				CpManager:setGlobalInfoText(vehicle, 'BGA_IS_FULL');
 
 			-- BGA TIPTRIGGER IS FULL
-			elseif isBGA and bgaIsFull and not vehicle.Waypoints[vehicle.recordnumber].rev and not vehicle.cp.isReverseBGATipping then
+			elseif isBGA and bgaIsFull and not vehicle.Waypoints[vehicle.cp.waypointIndex].rev and not vehicle.cp.isReverseBGATipping then
 				-- set trigger to nil
 				courseplay:resetTipTrigger(vehicle);
 
@@ -1123,7 +1123,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 						allowedToDrive = false;
 					end;
 
-					if isBGA and ((not vehicle.Waypoints[vehicle.recordnumber].rev and not vehicle.cp.isReverseBGATipping) or unloadWhileReversing) then
+					if isBGA and ((not vehicle.Waypoints[vehicle.cp.waypointIndex].rev and not vehicle.cp.isReverseBGATipping) or unloadWhileReversing) then
 						allowedToDrive = allowedToDriveBackup;
 					end;
 				end;
@@ -1175,8 +1175,8 @@ function courseplay:resetTipTrigger(vehicle, changeToForward)
 		courseplay:changeUnloadSpeed(vehicle, nil, vehicle.cp.backupUnloadSpeed, true);
 		vehicle.cp.backupUnloadSpeed = nil;
 	end;
-	if changeToForward and vehicle.Waypoints[vehicle.recordnumber].rev then
-		courseplay:setRecordNumber(vehicle, courseplay:getNextFwdPoint(vehicle));
+	if changeToForward and vehicle.Waypoints[vehicle.cp.waypointIndex].rev then
+		courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle));
 	end;
 end;
 

@@ -7,7 +7,7 @@ function courseplay:handle_mode1(vehicle, allowedToDrive)
 	end
 
 	-- tippers are not full
-	if vehicle.cp.isLoaded ~= true and ((vehicle.recordnumber == 2 and vehicle.cp.tipperFillLevel < vehicle.cp.tipperCapacity and vehicle.cp.isUnloaded == false) or vehicle.cp.trailerFillDistance) then
+	if vehicle.cp.isLoaded ~= true and ((vehicle.cp.waypointIndex == 2 and vehicle.cp.tipperFillLevel < vehicle.cp.tipperCapacity and vehicle.cp.isUnloaded == false) or vehicle.cp.trailerFillDistance) then
 		allowedToDrive = courseplay:load_tippers(vehicle, allowedToDrive);
 		courseplay:setInfoText(vehicle, string.format("COURSEPLAY_LOADING_AMOUNT;%d;%d",courseplay:roundToBottomInterval(vehicle.cp.tipperFillLevel, 100),vehicle.cp.tipperCapacity));
 	end
@@ -31,7 +31,7 @@ function courseplay:handle_mode1(vehicle, allowedToDrive)
 
 			-- Start reversing value is to check if we have started to reverse
 			-- This is used in case we already registered a tipTrigger but changed the direction and might not be in that tipTrigger when unloading. (Bug Fix)
-			local startReversing = vehicle.Waypoints[vehicle.recordnumber].rev and not vehicle.Waypoints[vehicle.cp.lastRecordnumber].rev;
+			local startReversing = vehicle.Waypoints[vehicle.cp.waypointIndex].rev and not vehicle.Waypoints[vehicle.cp.previousWaypointIndex].rev;
 			if startReversing then
 				courseplay:debug(string.format("%s: Is starting to reverse. Tip trigger is reset.", nameNum(vehicle)), 13);
 			end;
@@ -49,7 +49,7 @@ function courseplay:handle_mode1(vehicle, allowedToDrive)
 	end;
 
 	-- tipper is not empty and tractor reaches TipTrigger
-	if vehicle.cp.tipperFillLevel > 0 and vehicle.cp.currentTipTrigger ~= nil and vehicle.recordnumber > 3 then
+	if vehicle.cp.tipperFillLevel > 0 and vehicle.cp.currentTipTrigger ~= nil and vehicle.cp.waypointIndex > 3 then
 		allowedToDrive = courseplay:unload_tippers(vehicle, allowedToDrive);
 		courseplay:setInfoText(vehicle, "COURSEPLAY_TIPTRIGGER_REACHED");
 	end;
