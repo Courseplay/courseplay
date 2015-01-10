@@ -1652,6 +1652,8 @@ function courseplay:setCpVar(varName, value, noEventSend)
 				courseplay:debug("reload page 4", 5);
 				courseplay.hud:setReloadPageOrder(self, 4, true);
 			end;
+		elseif varName == 'waypointIndex' and self.cp.hud.currentPage == courseplay.hud.PAGE_CP_CONTROL and (self.cp.isRecording or self.cp.recordingIsPaused) and value and value == 4 then -- record pause action becomes available
+			courseplay:buttonsActiveEnabled(self, 'recording');
 		end;
 	end;
 end;

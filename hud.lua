@@ -450,14 +450,7 @@ function courseplay.hud:setContent(vehicle)
 	end;
 
 	-- CURRENT PAGE
-	if vehicle.cp.hud.currentPage == 1 then
-		if (vehicle.cp.isRecording or vehicle.cp.recordingIsPaused) and vehicle.cp.waypointIndex == 4 and courseplay.utils:hasVarChanged(vehicle, 'waypointIndex') then --record pause action becomes available
-			-- self:setReloadPageOrder(vehicle, 1, true);
-			courseplay:buttonsActiveEnabled(vehicle, 'recording');
-		elseif vehicle:getIsCourseplayDriving() then
-		end;
-
-	elseif vehicle.cp.hud.currentPage == 3 and vehicle:getIsCourseplayDriving() and (vehicle.cp.mode == 2 or vehicle.cp.mode == 3) then
+	if vehicle.cp.hud.currentPage == 3 and vehicle:getIsCourseplayDriving() and (vehicle.cp.mode == 2 or vehicle.cp.mode == 3) then
 		for i,varName in pairs({ 'combineOffset', 'turnDiameter' }) do
 			if courseplay.utils:hasVarChanged(vehicle, varName) then
 				self:setReloadPageOrder(vehicle, 3, true);
