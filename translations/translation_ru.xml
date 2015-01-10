@@ -70,7 +70,7 @@
 		<text name="COURSEPLAY_SPEED_TURN" 								 text="Маневры:" />
 		<text name="COURSEPLAY_SPEED_FIELD" 							 text="На поле:" />
 		<text name="COURSEPLAY_SPEED_MAX" 								 text="В пути:" />
-		<text name="COURSEPLAY_SPEED_UNLOAD" 							 text="Разгрузка (BGA):" />
+		<text name="COURSEPLAY_SPEED_REVERSING" 						 text="Разгрузка (BGA):" /> <!-- TODO: "Reversing speed" -->
 		<text name="COURSEPLAY_MAX_SPEED_MODE" 							 text="Режим:" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_RECORDING" 				 text="по настройкам" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 						 text="скоростной" />

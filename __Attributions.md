@@ -27,6 +27,7 @@ ___
 * French: Gui7545
 * Hungarian: Chris von Bone
 * Italian: JD7530, Cristiano Magro
+* Polish: Ziuta
 * Portuguese (BR): Admilson
 * Portuguese (PT): PTAzores
 * Russian: Bernelli

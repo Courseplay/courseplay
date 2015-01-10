@@ -70,7 +70,7 @@
 		<text name="COURSEPLAY_SPEED_TURN" 								 text="Draai snelheid:" />
 		<text name="COURSEPLAY_SPEED_FIELD" 							 text="Veld snelheid:" />
 		<text name="COURSEPLAY_SPEED_MAX" 								 text="Weg snelheid:" />
-		<text name="COURSEPLAY_SPEED_UNLOAD" 							 text="Uitladen" />
+		<text name="COURSEPLAY_SPEED_REVERSING" 						 text="Uitladen" /> <!-- TODO: "Reversing speed" -->
 		<text name="COURSEPLAY_MAX_SPEED_MODE" 							 text="Snelheid:" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_RECORDING" 				 text="van opname" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 						 text="maximum snelheid" />

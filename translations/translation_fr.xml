@@ -74,7 +74,7 @@
 		<text name="COURSEPLAY_SPEED_TURN" 						 text="Vitesse de virage:" />
 		<text name="COURSEPLAY_SPEED_FIELD" 						 text="Vitesse de champs:" />
 		<text name="COURSEPLAY_SPEED_MAX" 						 text="Vitesse de route:" />
-		<text name="COURSEPLAY_SPEED_UNLOAD" 						 text="Décharger (BGA):" />
+		<text name="COURSEPLAY_SPEED_REVERSING" 						 text="Décharger (BGA):" /> <!-- TODO: "Reversing speed" -->
 		<text name="COURSEPLAY_MAX_SPEED_MODE" 						 text="Vitesse:" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_RECORDING" 				 text="même que l'enregistrement" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 					 text="vitesse maximale" />
