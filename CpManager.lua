@@ -9,6 +9,9 @@ function CpManager:loadMap(name)
 	self.isCourseplayManager = true;
 	self.firstRun = true;
 
+	-- MULTIPLAYER
+	courseplay.isClient = not g_server;
+
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- XML PATHS
 	if g_server ~= nil then

@@ -133,7 +133,6 @@ local function setGlobalData()
 	courseplay.MODE_LIQUIDMANURE_TRANSPORT = 8;
 	courseplay.MODE_SHOVEL_FILL_AND_EMPTY = 9;
 	courseplay.numAiModes = 9;
-	courseplay.isClient = not g_server
 	------------------------------------------------------------
 
 
