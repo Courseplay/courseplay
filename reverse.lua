@@ -4,13 +4,16 @@ function courseplay:goReverse(vehicle,lx,lz)
 	local fwd = false;
 	local workTool = vehicle.cp.workTools[1];
 	if workTool then
-		-- Attacher modules
-		if workTool.cp.isAttacherModule then
-			workTool = vehicle.cp.workTools[2];
-
-		-- HookLift modules needs the hookLiftTrailer
-		elseif courseplay:isHookLift(workTool) then
+		-- Attacher modules and HookLift modules that needs the hookLiftTrailer
+		if courseplay:isHookLift(workTool) or courseplay:isAttacherModule(workTool) then
 			workTool = workTool.attacherVehicle;
+
+			if workTool == vehicle then
+			workTool = vehicle.cp.workTools[2];
+				if courseplay:isAttacherModule(workTool) then
+					workTool = workTool.attacherVehicle;
+				end;
+			end;
 		end;
 	end;
 	local debugActive = courseplay.debugChannels[13];
@@ -283,7 +286,7 @@ function courseplay:getReverseProperties(vehicle, workTool)
 		courseplay:debug('\tworkTool has "Shovel" spec -> return', 13);
 		return;
 	end;
-	if not courseplay:isWheeledWorkTool(workTool) and not courseplay:isHookLift(workTool) then
+	if not courseplay:isWheeledWorkTool(workTool) or courseplay:isHookLift(workTool) or courseplay:isAttacherModule(workTool) then
 		courseplay:debug('\tworkTool doesn\'t need reverse properties -> return', 13);
 		return;
 	end;

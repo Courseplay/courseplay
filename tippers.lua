@@ -69,66 +69,72 @@ function courseplay:getNextFillableFillType(vehicle)
 	return workTool:getFirstEnabledFillType();
 end;
 
-function courseplay:isCombine(workTool)
-	return (workTool.cp.hasSpecializationCombine or workTool.cp.hasSpecializationAICombine) and workTool.attachedCutters ~= nil and workTool.capacity > 0;
-end;
-function courseplay:isChopper(workTool)
-	return (workTool.cp.hasSpecializationCombine or workTool.cp.hasSpecializationAICombine) and workTool.attachedCutters ~= nil and workTool.capacity == 0 or courseplay:isSpecialChopper(workTool);
-end;
-function courseplay:isHarvesterSteerable(workTool)
-	return workTool.typeName == "selfPropelledPotatoHarvester" or workTool.cp.isGrimmeMaxtron620 or workTool.cp.isGrimmeTectron415;
-end;
-function courseplay:isBaler(workTool) -- is the tool a baler?
-	return workTool.cp.hasSpecializationBaler or workTool.balerUnloadingState ~= nil or courseplay:isSpecialBaler(workTool);
-end;
-function courseplay:isRoundbaler(workTool) -- is the tool a roundbaler?
-	return courseplay:isBaler(workTool) and (workTool.baleCloseAnimationName ~= nil and workTool.baleUnloadAnimationName ~= nil or courseplay:isSpecialRoundBaler(workTool));
-end;
-function courseplay:isBaleLoader(workTool) -- is the tool a bale loader?
-	return workTool.cp.hasSpecializationBaleLoader or (workTool.balesToLoad ~= nil and workTool.baleGrabber ~=nil and workTool.grabberIsMoving~= nil);
-end;
-function courseplay:isSprayer(workTool) -- is the tool a sprayer/spreader?
-	return workTool.cp.hasSpecializationSprayer or courseplay:isSpecialSprayer(workTool)
-end;
-function courseplay:isSowingMachine(workTool) -- is the tool a sowing machine?
-	return workTool.cp.hasSpecializationSowingMachine or courseplay:isSpecialSowingMachine(workTool);
-end;
-function courseplay:isFoldable(workTool) --is the tool foldable?
-	return workTool.cp.hasSpecializationFoldable or workTool.foldingParts ~= nil;
-end;
-function courseplay:isMower(workTool)
-	return workTool.cp.hasSpecializationMower or courseplay:isSpecialMower(workTool);
-end;
-function courseplay:isBigM(workTool)
-	return workTool.cp.hasSpecializationSteerable and courseplay:isMower(workTool);
-end;
 function courseplay:isAttachedCombine(workTool)
 	return (workTool.typeName~= nil and (workTool.typeName == 'attachableCombine' or workTool.typeName == 'attachableCombine_mouseControlled')) or (not workTool.cp.hasSpecializationSteerable and workTool.hasPipe and not workTool.cp.isAugerWagon and not workTool.cp.isLiquidManureOverloader) or courseplay:isSpecialChopper(workTool)
 end;
 function courseplay:isAttachedMixer(workTool)
 	return workTool.typeName == "mixerWagon" or (not workTool.cp.hasSpecializationSteerable and  workTool.cp.hasSpecializationMixerWagon)
 end;
-function courseplay:isMixer(workTool)
-	return workTool.typeName == "selfPropelledMixerWagon" or (workTool.cp.hasSpecializationSteerable and  workTool.cp.hasSpecializationMixerWagon)
+function courseplay:isAttacherModule(workTool)
+	if workTool.attacherJoint then
+		return (workTool.attacherJoint.jointType == Vehicle.jointTypeNameToInt["semitrailer"] and (not workTool.wheels or (workTool.wheels and #workTool.wheels == 0))) or workTool.cp.isAttacherModule == true;
+	end;
+	return false;
+end;
+function courseplay:isBaleLoader(workTool) -- is the tool a bale loader?
+	return workTool.cp.hasSpecializationBaleLoader or (workTool.balesToLoad ~= nil and workTool.baleGrabber ~=nil and workTool.grabberIsMoving~= nil);
+end;
+function courseplay:isBaler(workTool) -- is the tool a baler?
+	return workTool.cp.hasSpecializationBaler or workTool.balerUnloadingState ~= nil or courseplay:isSpecialBaler(workTool);
+end;
+function courseplay:isBigM(workTool)
+	return workTool.cp.hasSpecializationSteerable and courseplay:isMower(workTool);
+end;
+function courseplay:isCombine(workTool)
+	return (workTool.cp.hasSpecializationCombine or workTool.cp.hasSpecializationAICombine) and workTool.attachedCutters ~= nil and workTool.capacity > 0;
+end;
+function courseplay:isChopper(workTool)
+	return (workTool.cp.hasSpecializationCombine or workTool.cp.hasSpecializationAICombine) and workTool.attachedCutters ~= nil and workTool.capacity == 0 or courseplay:isSpecialChopper(workTool);
+end;
+function courseplay:isFoldable(workTool) --is the tool foldable?
+	return workTool.cp.hasSpecializationFoldable or workTool.foldingParts ~= nil;
 end;
 function courseplay:isFrontloader(workTool)
 	return workTool.cp.hasSpecializationCylindered  and workTool.cp.hasSpecializationAnimatedVehicle and not workTool.cp.hasSpecializationShovel;
 end;
-function courseplay:isWheelloader(workTool)
-	return workTool.typeName:match("wheelLoader");
+function courseplay:isHarvesterSteerable(workTool)
+	return workTool.typeName == "selfPropelledPotatoHarvester" or workTool.cp.isGrimmeMaxtron620 or workTool.cp.isGrimmeTectron415;
 end;
-function courseplay:isPushWagon(workTool)
-	return workTool.typeName:match("forageWagon") or workTool.cp.hasSpecializationSiloTrailer or workTool.cp.isPushWagon;
-end;
-function courseplay:isSpecialChopper(workTool)
-	return workTool.typeName == "woodCrusherTrailer" or workTool.cp.isPoettingerMex5
-end
 function courseplay:isHookLift(workTool)
 	if workTool.attacherJoint then
 		return workTool.attacherJoint.jointType == Vehicle.jointTypeNameToInt["hookLift"];
 	end;
 	return false;
 end
+function courseplay:isMixer(workTool)
+	return workTool.typeName == "selfPropelledMixerWagon" or (workTool.cp.hasSpecializationSteerable and  workTool.cp.hasSpecializationMixerWagon)
+end;
+function courseplay:isMower(workTool)
+	return workTool.cp.hasSpecializationMower or courseplay:isSpecialMower(workTool);
+end;
+function courseplay:isPushWagon(workTool)
+	return workTool.typeName:match("forageWagon") or workTool.cp.hasSpecializationSiloTrailer or workTool.cp.isPushWagon;
+end;
+function courseplay:isRoundbaler(workTool) -- is the tool a roundbaler?
+	return courseplay:isBaler(workTool) and (workTool.baleCloseAnimationName ~= nil and workTool.baleUnloadAnimationName ~= nil or courseplay:isSpecialRoundBaler(workTool));
+end;
+function courseplay:isSowingMachine(workTool) -- is the tool a sowing machine?
+	return workTool.cp.hasSpecializationSowingMachine or courseplay:isSpecialSowingMachine(workTool);
+end;
+function courseplay:isSpecialChopper(workTool)
+	return workTool.typeName == "woodCrusherTrailer" or workTool.cp.isPoettingerMex5
+end
+function courseplay:isSprayer(workTool) -- is the tool a sprayer/spreader?
+	return workTool.cp.hasSpecializationSprayer or courseplay:isSpecialSprayer(workTool)
+end;
+function courseplay:isWheelloader(workTool)
+	return workTool.typeName:match("wheelLoader");
+end;
 
 -- UPDATE WORKTOOL DATA
 function courseplay:updateWorkTools(vehicle, workTool, isImplement)
@@ -146,7 +152,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 
 	-- MODE 1 + 2: GRAIN TRANSPORT / COMBI MODE
 	if vehicle.cp.mode == 1 or vehicle.cp.mode == 2 then
-		if workTool.allowTipDischarge then
+		if workTool.allowTipDischarge and workTool.capacity and workTool.capacity > 0.1 then
 			hasWorkTool = true;
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
 		end;
@@ -601,16 +607,24 @@ end
 -- ##### LOADING TOOLS ##### --
 function courseplay:load_tippers(vehicle, allowedToDrive)
 	local cx, cz = vehicle.Waypoints[2].cx, vehicle.Waypoints[2].cz;
+	local driveOn = false;
 
 	if vehicle.cp.currentTrailerToFill == nil then
 		vehicle.cp.currentTrailerToFill = 1;
 	end
 	local currentTrailer = vehicle.cp.workTools[vehicle.cp.currentTrailerToFill];
+	if not currentTrailer.cp.realUnloadOrFillNode then
+		currentTrailer.cp.realUnloadOrFillNode = courseplay:getRealUnloadOrFillNode(currentTrailer);
+		if not currentTrailer.cp.realUnloadOrFillNode then
+			if vehicle.cp.numWorkTools > vehicle.cp.currentTrailerToFill then
+				vehicle.cp.currentTrailerToFill = vehicle.cp.currentTrailerToFill + 1;
+			else
+				driveOn = true;
+			end;
+		end;
+	end;
 
 	if not vehicle.cp.trailerFillDistance then
-		if courseplay:isMixer(currentTrailer) and not currentTrailer.cp.realUnloadOrFillNode then
-			currentTrailer.cp.realUnloadOrFillNode = courseplay:getRealUnloadOrFillNode(currentTrailer);
-		end;
 
 		if not currentTrailer.cp.realUnloadOrFillNode then
 			return allowedToDrive;
@@ -648,7 +662,6 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 	end;
 
 	-- drive on when required fill level is reached
-	local driveOn = false;
 	if courseplay:timerIsThrough(vehicle, 'fillLevelChange') or vehicle.cp.prevFillLevelPct == nil then
 		if vehicle.cp.prevFillLevelPct ~= nil and vehicle.cp.tipperFillLevelPct == vehicle.cp.prevFillLevelPct and vehicle.cp.tipperFillLevelPct > vehicle.cp.driveOnAtFillLevel then
 			driveOn = true;
