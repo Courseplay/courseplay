@@ -573,14 +573,14 @@ function courseplay:selectAssignedCombine(vehicle, changeBy)
 
 	if vehicle.cp.selectedCombineNumber == 0 then
 		vehicle.cp.savedCombine = nil;
-		vehicle:setCpVar('HUD4savedCombineName',"");
+		vehicle:setCpVar('HUD4savedCombineName',"",courseplay.isClient);
 	else
 		vehicle.cp.savedCombine = combines[vehicle.cp.selectedCombineNumber];
 		local combineName = vehicle.cp.savedCombine.name or courseplay:loc('COURSEPLAY_COMBINE');
 		local x1 = courseplay.hud.col2posX[4];
 		local x2 = courseplay.hud.buttonPosX[1] - getTextWidth(courseplay.hud.fontSizes.contentValue, ' (9999m)');
 		local shortenedName, firstChar, lastChar = Utils.limitTextToWidth(combineName, courseplay.hud.fontSizes.contentValue, x2 - x1, false, '...');
-		vehicle:setCpVar('HUD4savedCombineName',shortenedName);
+		vehicle:setCpVar('HUD4savedCombineName',shortenedName,courseplay.isClient);
 	end;
 
 	courseplay:removeActiveCombineFromTractor(vehicle);
@@ -597,8 +597,8 @@ end;
 function courseplay:removeSavedCombineFromTractor(vehicle)
 	vehicle.cp.savedCombine = nil;
 	vehicle.cp.selectedCombineNumber = 0;
-	vehicle:setCpVar('HUD4savedCombine',nil);
-	vehicle:setCpVar('HUD4savedCombineName',nil);
+	vehicle:setCpVar('HUD4savedCombine',nil,courseplay.isClient);
+	vehicle:setCpVar('HUD4savedCombineName',nil,courseplay.isClient);
 	courseplay.hud:setReloadPageOrder(vehicle, 4, true);
 end;
 
@@ -640,19 +640,19 @@ function courseplay:copyCourse(vehicle)
 		local src = vehicle.cp.copyCourseFromDriver;
 
 		vehicle.Waypoints = src.Waypoints;
-		vehicle.cp.currentCourseName = src.cp.currentCourseName;
+		vehicle:setCpVar('currentCourseName',src.cp.currentCourseName,courseplay.isClient);
 		vehicle.cp.loadedCourses = src.cp.loadedCourses;
 		vehicle.cp.numCourses = src.cp.numCourses;
 		courseplay:setRecordNumber(vehicle, 1);
-		vehicle:setCpVar('numWaypoints',#(vehicle.Waypoints));
+		vehicle.cp.numWaypoints = #(vehicle.Waypoints);
 		vehicle.cp.numWaitPoints = src.cp.numWaitPoints;
 		vehicle.cp.numCrossingPoints = src.cp.numCrossingPoints;
 
 		courseplay:setIsRecording(vehicle, false);
 		courseplay:setRecordingIsPaused(vehicle, false);
 		vehicle:setIsCourseplayDriving(false);
-		vehicle.cp.distanceCheck = false;
-		vehicle:setCpVar('canDrive',true);
+		vehicle:setCpVar('distanceCheck',false,courseplay.isClient);
+		vehicle:setCpVar('canDrive',true,courseplay.isClient);
 		vehicle.cp.abortWork = nil;
 
 		vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = nil, nil, nil;
@@ -1096,7 +1096,7 @@ function courseplay:validateCourseGenerationData(vehicle)
 end;
 
 function courseplay:validateCanSwitchMode(vehicle)
-	vehicle.cp.canSwitchMode = not vehicle:getIsCourseplayDriving() and not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused and not vehicle.cp.fieldEdge.customField.isCreated;
+	vehicle:setCpVar('canSwitchMode',not vehicle:getIsCourseplayDriving() and not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused and not vehicle.cp.fieldEdge.customField.isCreated,courseplay.isClient);
 	if courseplay.debugChannels[12] then
 		courseplay:debug(string.format("%s: validateCanSwitchMode(): drive=%s, record=%s, record_pause=%s, customField.isCreated=%s ==> canSwitchMode=%s", nameNum(vehicle), tostring(vehicle:getIsCourseplayDriving()), tostring(vehicle.cp.isRecording), tostring(vehicle.cp.recordingIsPaused), tostring(vehicle.cp.fieldEdge.customField.isCreated), tostring(vehicle.cp.canSwitchMode)), 12);
 	end;
@@ -1181,8 +1181,9 @@ end;
 
 function courseplay:setMouseCursor(self, show)
 	self.cp.mouseCursorActive = show;
-	InputBinding.setShowMouseCursor(show);
-
+	if self.isEntered then --its necessesary for MP 
+		InputBinding.setShowMouseCursor(show);
+	end
 	--Cameras: deactivate/reactivate zoom function in order to allow CP mouse wheel
 	for camIndex,_ in pairs(self.cp.camerasBackup) do
 		self.cameras[camIndex].allowTranslation = not show;
@@ -1504,8 +1505,8 @@ function courseplay:sucChangeFruit(vehicle, change)
 end;
 
 function courseplay:toggleFindFirstWaypoint(vehicle)
-	vehicle.cp.distanceCheck = not vehicle.cp.distanceCheck;
-	if g_server ~= nil and not vehicle.cp.distanceCheck then
+	vehicle:setCpVar('distanceCheck',not vehicle.cp.distanceCheck,courseplay.isClient);
+	if not courseplay.isClient and not vehicle.cp.distanceCheck then
 		courseplay:setInfoText(vehicle, nil);
 	end;
 	courseplay:buttonsActiveEnabled(vehicle, 'findFirstWaypoint');
@@ -1633,7 +1634,7 @@ function courseplay:setCpVar(varName, value,noEventSend)
 	if self.cp[varName] ~= value then
 		local oldValue = self.cp[varName];
 		self.cp[varName] = value;		
-		if not noEventSend and g_server ~= nil then
+		if not noEventSend then
 			--print(courseplay.utils:getFnCallPath(2))
 			print(string.format("setCpVar: %s: %s -> send Event",varName,tostring(value)))
 			CourseplayEvent.sendEvent(self, "self.cp."..varName, value)

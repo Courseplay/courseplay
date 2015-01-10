@@ -83,7 +83,7 @@ function courseplay:start_record(vehicle)
 	vehicle:setIsCourseplayDriving(false);
 	vehicle.cp.loadedCourses = {}
 	courseplay:setRecordNumber(vehicle, 1);
-	vehicle:setCpVar('HUDrecordnumber',1);
+	vehicle:setCpVar('HUDrecordnumber',1,courseplay.isClient);
 	vehicle.cp.numWaitPoints = 0;
 	vehicle.cp.numCrossingPoints = 0;
 	vehicle.cp.recordingTimer = 101;
@@ -102,8 +102,8 @@ function courseplay:stop_record(vehicle)
 	courseplay:setRecordingIsPaused(vehicle, false);
 	vehicle:setIsCourseplayDriving(false);
 	vehicle.cp.distanceCheck = false;
-	vehicle:setCpVar('canDrive',true);
-	vehicle:setCpVar('numWaypoints', vehicle.recordnumber - 1);
+	vehicle:setCpVar('canDrive',true,courseplay.isClient);
+	vehicle:setCpVar('numWaypoints', vehicle.recordnumber - 1,courseplay.isClient);
 	courseplay:setRecordNumber(vehicle, 1);
 	vehicle.cp.numCourses = 1;
 
@@ -123,7 +123,7 @@ function courseplay:setRecordingPause(vehicle)
 			vehicle.cp.hud.recordingPauseButton:setToolTip(courseplay:loc('COURSEPLAY_RECORDING_PAUSE'));
 		end;
 
-		vehicle.cp.distanceCheck = vehicle.cp.recordingIsPaused;
+		vehicle:setCpVar('distanceCheck',vehicle.cp.recordingIsPaused,courseplay.isClient);
 
 		local oldSignIndex = #vehicle.cp.signs.current;
 		local oldSignType = vehicle.cp.signs.current[oldSignIndex].type;
@@ -248,14 +248,14 @@ function courseplay:clearCurrentLoadedCourse(vehicle)
 		courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine)
 	end
 	vehicle.cp.loadedCourses = {}
-	vehicle.cp.currentCourseName = nil
+	vehicle:setCpVar('currentCourseName',nil,courseplay.isClient)
 	courseplay:setModeState(vehicle, 1);
 	if vehicle.cp.mode == courseplay.MODE_COMBI or vehicle.cp.mode == courseplay.MODE_OVERLOADER then
 		courseplay:setModeState(vehicle, 0);
 	end;
 	vehicle.cp.recordingTimer = 1
 	vehicle.Waypoints = {}
-	vehicle:setCpVar('canDrive',false);
+	vehicle:setCpVar('canDrive',false,courseplay.isClient);
 	vehicle.cp.abortWork = nil
 	courseplay:resetTipTrigger(vehicle);
 	vehicle.cp.lastMergedWP = 1;

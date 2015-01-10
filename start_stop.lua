@@ -11,11 +11,11 @@ function courseplay:start(self)
 	self.steeringEnabled = false;
 	self.disableCharacterOnLeave = false
 
-	if g_server == nil then
+	if courseplay.isClient then
 		return
 	end
 	
-	self:setCpVar('numWaypoints',#(self.Waypoints))
+	self.cp.numWaypoints= #self.Waypoints
 	if self.cp.numWaypoints < 1 then
 		return
 	end
@@ -115,7 +115,7 @@ function courseplay:start(self)
 
 	courseplay:reset_tools(self)
 	-- show arrow
-	self.cp.distanceCheck = true
+	self:setCpVar('distanceCheck',true,courseplay.isClient);
 	-- current position
 	local ctx, cty, ctz = getWorldTranslation(self.cp.DirectionNode);
 	-- position of next waypoint
@@ -339,7 +339,7 @@ function courseplay:start(self)
 	self.cp.runOnceStartCourse = true;
 	self:setIsCourseplayDriving(true);
 	courseplay:setIsRecording(self, false);
-	self.cp.distanceCheck = false;
+	self:setCpVar('distanceCheck',false,courseplay.isClient);
 
 	self.cp.totalLength, self.cp.totalLengthOffset = courseplay:getTotalLengthOnWheels(self);
 
@@ -450,8 +450,8 @@ function courseplay:stop(self)
 	self.deactivateOnLeave = self.cp.deactivateOnLeaveBackup;
 	self.steeringEnabled = true;
 	self.disableCharacterOnLeave = true
-	
-	if g_server == nil then
+	self.cp.lastInfoText = nil
+	if courseplay.isClient then
 		return
 	end
 
@@ -520,8 +520,8 @@ function courseplay:stop(self)
 	self.checkSpeedLimit = true
 	courseplay:resetTipTrigger(self);
 	self:setIsCourseplayDriving(false);
-	self:setCpVar('canDrive',true)
-	self.cp.distanceCheck = false
+	self:setCpVar('canDrive',true,courseplay.isClient)
+	self:setCpVar('distanceCheck',false,courseplay.isClient);
 	self.cp.mode7GoBackBeforeUnloading = false
 	if self.cp.checkReverseValdityPrinted then
 		self.cp.checkReverseValdityPrinted = false

@@ -724,7 +724,7 @@ function courseplay:drive(self, dt)
 			courseplay:setStopAtEnd(self, false);
 			courseplay:setIsLoaded(self, false);
 			courseplay:setIsRecording(self, false);
-			self:setCpVar('canDrive',true)
+			self:setCpVar('canDrive',true,courseplay.isClient)
 		end
 	end
 end
@@ -1355,7 +1355,7 @@ function courseplay:setRecordNumber(vehicle, number)
 		else
 			vehicle.cp.lastRecordnumber = 1;
 		end;
-		vehicle:setCpVar('HUDrecordnumber', vehicle.recordnumber)
+		vehicle:setCpVar('HUDrecordnumber', vehicle.recordnumber,courseplay.isClient)
 	end;
 end;
 
@@ -1364,6 +1364,6 @@ function courseplay:getIsCourseplayDriving()
 end;
 
 function courseplay:setIsCourseplayDriving(active)
-	self:setCpVar('isDriving',active)
+	self:setCpVar('isDriving',active,courseplay.isClient)
 end;
 

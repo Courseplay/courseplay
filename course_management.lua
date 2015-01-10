@@ -131,8 +131,8 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 		if #vehicle.Waypoints == 0 then
 			vehicle.cp.numCourses = 1;
 			vehicle.Waypoints = course.waypoints
-			vehicle:setCpVar('numWaypoints',#vehicle.Waypoints);
-			vehicle.cp.currentCourseName = course.name
+			vehicle.cp.numWaypoints = #vehicle.Waypoints;
+			vehicle:setCpVar('currentCourseName',course.name,courseplay.isClient)
 			courseplay:debug(string.format("course_management %d: %s: no course was loaded -> new course = course -> currentCourseName=%q, numCourses=%s", debug.getinfo(1).currentline, nameNum(vehicle), tostring(vehicle.cp.currentCourseName), tostring(vehicle.cp.numCourses)), 8);
 
 		else -- add new course to old course
@@ -229,9 +229,9 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 				table.insert(vehicle.Waypoints, course2[i]);
 			end;
 
-			vehicle:setCpVar('numWaypoints',#vehicle.Waypoints);
+			vehicle.cp.numWaypoints = #vehicle.Waypoints;
 			vehicle.cp.numCourses = vehicle.cp.numCourses + 1;
-			vehicle.cp.currentCourseName = string.format("%d %s", vehicle.cp.numCourses, courseplay:loc('COURSEPLAY_COMBINED_COURSES'));
+			vehicle:setCpVar('currentCourseName',string.format("%d %s", vehicle.cp.numCourses, courseplay:loc('COURSEPLAY_COMBINED_COURSES')),courseplay.isClient);
 			courseplay:debug(string.format('%s: adding course done -> numWaypoints=%d, numCourses=%s, currentCourseName=%q', nameNum(vehicle), vehicle.cp.numWaypoints, vehicle.cp.numCourses, vehicle.cp.currentCourseName), 8);
 		end;
 

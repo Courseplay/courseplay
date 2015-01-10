@@ -193,7 +193,9 @@ function courseplay:executeFunction(self, func, value, page)
 		--courseplay:debug("					"..tostring(func)..": "..tostring(value),5)
 		return
 	end
-	playSample(courseplay.hud.clickSound, 1, 1, 0);
+	if self.isEntered then
+		playSample(courseplay.hud.clickSound, 1, 1, 0);
+	end
 	courseplay:debug(('%s: calling function "%s(%s)"'):format(nameNum(self), tostring(func), tostring(value)), 18);
 
 	if func ~= "rowButton" then

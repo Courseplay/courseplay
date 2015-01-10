@@ -132,7 +132,7 @@ function courseplay.signs:updateWaypointSigns(vehicle, section)
 	vehicle.cp.numWaitPoints = 0;
 	vehicle.cp.numCrossingPoints = 0;
 	
-	vehicle:setCpVar('numWaypoints',#vehicle.Waypoints);
+	vehicle.cp.numWaypoints = #vehicle.Waypoints;
 
 	if section == 'all' or section == 'current' then
 		local neededPoints = vehicle.cp.numWaypoints;

@@ -158,7 +158,7 @@ function courseplay:setVarValueFromString(self, str, value)
 			result = value;
 		elseif whatDepth == 3 then --self.cp.var
 			if baseVar == self and what[2] == 'cp' then
-				self:setCpVar(what[3], value,true)
+				self:setCpVar(what[3], value,true,courseplay.isClient)
 				result = value;
 			else
 				baseVar[what[2]][what[3]] = value;

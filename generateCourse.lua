@@ -861,7 +861,7 @@ function courseplay:generateCourse(vehicle)
 	-- (7) FINAL COURSE DATA
 	-------------------------------------------------------------------------------
 	courseplay:debug('(7) FINAL COURSE DATA', 7);
-	vehicle:setCpVar('numWaypoints',#(vehicle.Waypoints))	
+	vehicle.cp.numWaypoints = #vehicle.Waypoints	
 	
 	if vehicle.cp.numWaypoints == 0 then
 		courseplay:debug('ERROR: #vehicle.Waypoints == 0 -> cancel and return', 7);
@@ -869,7 +869,7 @@ function courseplay:generateCourse(vehicle)
 	end;
 
 	courseplay:setRecordNumber(vehicle, 1);
-	vehicle:setCpVar('canDrive',true);
+	vehicle:setCpVar('canDrive',true,courseplay.isClient);
 	vehicle.Waypoints[1].wait = true;
 	vehicle.Waypoints[1].crossing = true;
 	vehicle.Waypoints[vehicle.cp.numWaypoints].wait = true;

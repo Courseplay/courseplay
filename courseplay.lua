@@ -94,7 +94,7 @@ local function initialize()
 		--print('\t### Courseplay: ' .. filePath .. ' has been loaded');
 		numFilesLoaded = numFilesLoaded + 1;
 	end;
-
+	
 	print(('### Courseplay: initialized %d/%d files (v%s)'):format(numFilesLoaded, numFiles, courseplay.version));
 end;
 
@@ -133,7 +133,7 @@ local function setGlobalData()
 	courseplay.MODE_LIQUIDMANURE_TRANSPORT = 8;
 	courseplay.MODE_SHOVEL_FILL_AND_EMPTY = 9;
 	courseplay.numAiModes = 9;
-
+	courseplay.isClient = not g_server
 	------------------------------------------------------------
 
 

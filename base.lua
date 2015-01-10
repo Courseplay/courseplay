@@ -15,7 +15,6 @@ function courseplay:load(xmlFile)
 	self.setIsCourseplayDriving = courseplay.setIsCourseplayDriving;
 	self.setCpVar = courseplay.setCpVar;
 
-
 	--SEARCH AND SET self.name IF NOT EXISTING
 	if self.name == nil then
 		self.name = courseplay:getObjectName(self, xmlFile);
@@ -90,7 +89,8 @@ function courseplay:load(xmlFile)
 	self.cp.shortestDistToWp = nil
 
 	self.Waypoints = {}
-
+	self.cp.isEntered = false
+	self.cp.remoteIsEntered = false
 	self.cp.canDrive = false --can drive course (has >4 waypoints, is not recording)
 	self.cp.coursePlayerNum = nil;
 
@@ -102,7 +102,7 @@ function courseplay:load(xmlFile)
 	self.cp.activeGlobalInfoTexts = {};
 	self.cp.numActiveGlobalInfoTexts = 0;
 
-
+	
 
 	-- CP mode
 	self.cp.mode = 5;
@@ -672,9 +672,15 @@ function courseplay:update(dt)
 			self:setCourseplayFunc('openCloseHud', not self.cp.hud.show);
 		end;
 	end; -- self:getIsActive() and self.isEntered and modifierPressed
-
 	
-	if g_server ~= nil and (self.cp.isDriving or self.cp.isRecording or self.cp.recordingIsPaused) then
+	if not self.cp.remoteIsEntered then
+		if self.cp.isEntered ~= self.isEntered then
+			CourseplayEvent.sendEvent(self, "self.cp.remoteIsEntered",self.isEntered)
+		end
+		self:setCpVar('isEntered',self.isEntered)
+	end
+	
+	if not courseplay.isClient then -- and self.cp.infoText ~= nil then --(self.cp.isDriving or self.cp.isRecording or self.cp.recordingIsPaused) then
 		if self.cp.infoText == nil and not self.cp.infoTextNilSent then
 			CourseplayEvent.sendEvent(self, "self.cp.infoText",nil)
 			self.cp.infoTextNilSent = true
@@ -717,7 +723,7 @@ function courseplay:update(dt)
 		self.cp.onMpSetCourses = nil
 	end
 
-	if g_server ~= nil then
+	if not courseplay.isClient then
 		if self.cp.isDriving then
 			local showDriveOnButton = false;
 			if self.cp.mode == courseplay.MODE_FIELDWORK then
@@ -729,9 +735,9 @@ function courseplay:update(dt)
 					showDriveOnButton = true;
 				end;
 			end;
-			self:setCpVar('HUD1wait', showDriveOnButton);
+			self:setCpVar('HUD1wait', showDriveOnButton,courseplay.isClient);
 
-			self:setCpVar('HUD1noWaitforFill', not self.cp.isLoaded and self.cp.mode ~= 5);
+			self:setCpVar('HUD1noWaitforFill', not self.cp.isLoaded and self.cp.mode ~= 5,courseplay.isClient);
 			--[[ TODO (Jakob):
 				* rename to "HUD1waitForFill"
 				* should only be applicable in following situations:
@@ -750,24 +756,24 @@ function courseplay:update(dt)
 				combine = self.cp.attachedCombine;
 			end;
 			if combine.courseplayers == nil then
-				self:setCpVar('HUD0noCourseplayer', true);
+				self:setCpVar('HUD0noCourseplayer', true,courseplay.isClient);
 				combine.courseplayers = {};
 			else
-				self:setCpVar('HUD0noCourseplayer', #combine.courseplayers == 0);
+				self:setCpVar('HUD0noCourseplayer', #combine.courseplayers == 0,courseplay.isClient);
 			end
-			self:setCpVar('HUD0wantsCourseplayer', combine.cp.wantsCourseplayer);
-			self:setCpVar('HUD0combineForcedSide', combine.cp.forcedSide);
-			self:setCpVar('HUD0isManual', not self.cp.isDriving and not combine.isAIThreshing);
-			self:setCpVar('HUD0turnStage', self.cp.turnStage);
+			self:setCpVar('HUD0wantsCourseplayer', combine.cp.wantsCourseplayer,courseplay.isClient);
+			self:setCpVar('HUD0combineForcedSide', combine.cp.forcedSide,courseplay.isClient);
+			self:setCpVar('HUD0isManual', not self.cp.isDriving and not combine.isAIThreshing,courseplay.isClient);
+			self:setCpVar('HUD0turnStage', self.cp.turnStage,courseplay.isClient);
 			local tractor = combine.courseplayers[1]
 			if tractor ~= nil then
-				self:setCpVar('HUD0tractorForcedToStop', tractor.cp.forcedToStop);
-				self:setCpVar('HUD0tractorName', tostring(tractor.name));
-				self:setCpVar('HUD0tractor', true);
+				self:setCpVar('HUD0tractorForcedToStop', tractor.cp.forcedToStop,courseplay.isClient);
+				self:setCpVar('HUD0tractorName', tostring(tractor.name),courseplay.isClient);
+				self:setCpVar('HUD0tractor', true,courseplay.isClient);
 			else
-				self:setCpVar('HUD0tractorForcedToStop', nil);
-				self:setCpVar('HUD0tractorName', nil);
-				self:setCpVar('HUD0tractor', false);
+				self:setCpVar('HUD0tractorForcedToStop', nil,courseplay.isClient);
+				self:setCpVar('HUD0tractorName', nil,courseplay.isClient);
+				self:setCpVar('HUD0tractor', false,courseplay.isClient);
 			end;
 
 		elseif self.cp.hud.currentPage == 1 then
@@ -777,13 +783,13 @@ function courseplay:update(dt)
 
 
 		elseif self.cp.hud.currentPage == 4 then
-			self:setCpVar('HUD4hasActiveCombine', self.cp.activeCombine ~= nil);
+			self:setCpVar('HUD4hasActiveCombine', self.cp.activeCombine ~= nil,courseplay.isClient);
 			if self.cp.HUD4hasActiveCombine == true then
-				self:setCpVar('HUD4combineName', self.cp.activeCombine.name);
+				self:setCpVar('HUD4combineName', self.cp.activeCombine.name,courseplay.isClient);
 			end
-			self:setCpVar('HUD4savedCombine', self.cp.savedCombine ~= nil and self.cp.savedCombine.rootNode ~= nil);
+			self:setCpVar('HUD4savedCombine', self.cp.savedCombine ~= nil and self.cp.savedCombine.rootNode ~= nil,courseplay.isClient);
 			if self.cp.savedCombine ~= nil then
-				self:setCpVar('HUD4savedCombineName', self.cp.savedCombine.name);
+				self:setCpVar('HUD4savedCombineName', self.cp.savedCombine.name,courseplay.isClient);
 			end
 
 		elseif self.cp.hud.currentPage == 8 then
@@ -889,8 +895,11 @@ function courseplay:delete()
 end;
 
 function courseplay:setInfoText(vehicle, text)
+	if not vehicle.cp.isEntered then
+		return
+	end
 	if vehicle.cp.infoText ~= text and  text ~= nil and vehicle.cp.lastInfoText ~= text then
-		vehicle:setCpVar('infoText',text)
+		vehicle:setCpVar('infoText',text,courseplay.isClient)
 		vehicle.cp.lastInfoText = text
 		vehicle.cp.infoTextNilSent = false
 	elseif vehicle.cp.infoText ~= text and  text ~= nil and vehicle.cp.lastInfoText == text then
@@ -943,7 +952,7 @@ end;
 
 function courseplay:readStream(streamId, connection)
 	courseplay:debug("id: "..tostring(self.id).."  base: readStream", 5)
-	print(tostring(self.name).."  base: readStream")
+	--print(tostring(self.name).."  base: readStream")
 	self.cp.automaticCoverHandling = streamDebugReadBool(streamId);
 	self.cp.automaticUnloadingOnField = streamDebugReadBool(streamId);
 	courseplay:setCpMode(self, streamDebugReadInt32(streamId));
@@ -1057,13 +1066,12 @@ function courseplay:readStream(streamId, connection)
 	for k,v in pairs(Utils.splitString(",", debugChannelsString)) do
 		courseplay:toggleDebugChannel(self, k, v == 'true');
 	end;
-	print("  base: readStream end")
 	courseplay:debug("id: "..tostring(self.id).."  base: readStream end", 5)
 end
 
 function courseplay:writeStream(streamId, connection)
 	courseplay:debug("id: "..tostring(networkGetObjectId(self)).."  base: write stream", 5)
-	print(tostring(self.name).."  base: write stream")
+	--print(tostring(self.name).."  base: write stream")
 	streamDebugWriteBool(streamId, self.cp.automaticCoverHandling)
 	streamDebugWriteBool(streamId, self.cp.automaticUnloadingOnField)
 	streamDebugWriteInt32(streamId,self.cp.mode)
@@ -1073,7 +1081,6 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteFloat32(streamId,self.cp.combineOffset)
 	streamDebugWriteString(streamId, self.cp.currentCourseName);
 	streamDebugWriteBool(streamId, self.cp.driverPriorityUseFillLevel);
-	print("  10")
 	streamDebugWriteBool(streamId, self.cp.drivingDirReverse)
 	streamDebugWriteBool(streamId, self.cp.fieldEdge.customField.isCreated)
 	streamDebugWriteInt32(streamId,self.cp.fieldEdge.customField.fieldNum)
@@ -1084,7 +1091,6 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteBool(streamId, self.cp.hasStartingCorner);
 	streamDebugWriteBool(streamId, self.cp.hasStartingDirection);
 	streamDebugWriteBool(streamId, self.cp.hasValidCourseGenerationData);
-	print("  20")
 	streamDebugWriteInt32(streamId,self.cp.headland.numLanes);
 	streamDebugWriteBool(streamId, self.cp.hasUnloadingRefillingCourse)
 	streamDebugWriteString(streamId, self.cp.infoText);
@@ -1095,7 +1101,6 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteBool(streamId, self.cp.stopAtEnd)
 	streamDebugWriteBool(streamId, self:getIsCourseplayDriving());
 	streamDebugWriteBool(streamId,self.cp.hud.openWithMouse)
-	print("  30")
 	streamDebugWriteBool(streamId, self.cp.realisticDriving);
 	streamDebugWriteFloat32(streamId,self.cp.driveOnAtFillLevel)
 	streamDebugWriteFloat32(streamId,self.cp.followAtFillLevel)
@@ -1106,7 +1111,6 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteBool(streamId,self.cp.turnDiameterAutoMode)
 	streamDebugWriteFloat32(streamId,self.cp.turnDiameter)
 	streamDebugWriteBool(streamId,self.cp.speeds.useRecordingSpeed)
-	print("  40")
 	streamDebugWriteFloat32(streamId,self.cp.coursePlayerNum);
 	streamDebugWriteFloat32(streamId,self.cp.laneOffset)
 	streamDebugWriteFloat32(streamId,self.cp.toolOffsetX)
@@ -1117,7 +1121,6 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteBool(streamId,self.cp.HUD0wantsCourseplayer)
 	streamDebugWriteString(streamId,self.cp.HUD0combineForcedSide)
 	streamDebugWriteBool(streamId,self.cp.HUD0isManual)
-	print("  50")
 	streamDebugWriteInt32(streamId,self.cp.HUD0turnStage)
 	streamDebugWriteBool(streamId,self.cp.HUD0tractorForcedToStop)
 	streamDebugWriteString(streamId,self.cp.HUD0tractorName)
@@ -1128,7 +1131,6 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteString(streamId,self.cp.HUD4combineName)
 	streamDebugWriteBool(streamId,self.cp.HUD4savedCombine)
 	streamDebugWriteString(streamId,self.cp.HUD4savedCombineName)
-	print("  60")
 	streamDebugWriteInt32(streamId,self.recordnumber)
 	streamDebugWriteBool(streamId,self.cp.isRecording)
 	streamDebugWriteBool(streamId,self.cp.recordingIsPaused)
@@ -1139,7 +1141,6 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteFloat32(streamId,self.cp.speeds.unload)
 	streamDebugWriteFloat32(streamId,self.cp.speeds.street)
 	streamDebugWriteInt32(streamId,self.cp.visualWaypointsMode)
-	print("  70")
 	streamDebugWriteInt32(streamId,self.cp.warningLightsMode)
 	streamDebugWriteInt32(streamId,self.cp.waitTime)
 	streamDebugWriteBool(streamId,self.cp.symmetricLaneChange)
@@ -1149,12 +1150,10 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteBool(streamId,self.cp.hasShovelStatePositions[3])
 	streamDebugWriteBool(streamId,self.cp.hasShovelStatePositions[4])
 	streamDebugWriteBool(streamId,self.cp.hasShovelStatePositions[5])
-	print("  79")
 	local copyCourseFromDriverID;
 	if self.cp.copyCourseFromDriver ~= nil then
 		copyCourseFromDriverID = networkGetObjectId(self.cp.copyCourseFromDriver)
 	end
-	print(string.format("copyCourseFromDriverID type %s value: %s",type(copyCourseFromDriverID),tostring(copyCourseFromDriverID)))
 	streamDebugWriteInt32(streamId, copyCourseFromDriverID)
 	
 	
@@ -1162,21 +1161,18 @@ function courseplay:writeStream(streamId, connection)
 	if self.cp.savedCombine ~= nil then
 		savedCombineId = networkGetObjectId(self.cp.savedCombine)
 	end
-	print(string.format("savedCombineId type %s value: %s",type(savedCombineId),tostring(savedCombineId)))
 	streamDebugWriteInt32(streamId, savedCombineId)
 
 	local activeCombineId;
 	if self.cp.activeCombine ~= nil then
 		activeCombineId = networkGetObjectId(self.cp.activeCombine)
 	end
-	print(string.format("activeCombineId type %s value: %s",type(activeCombineId),tostring(activeCombineId)))
 	streamDebugWriteInt32(streamId, activeCombineId)
 
 	local current_trailer_id;
 	if self.cp.currentTrailerToFill ~= nil then
 		current_trailer_id = networkGetObjectId(self.cp.currentTrailerToFill)
 	end
-	print(string.format("current_trailer_id type %s value: %s",type(current_trailer_id),tostring(current_trailer_id)))
 	streamDebugWriteInt32(streamId, current_trailer_id)
 
 	local loadedCourses;
@@ -1187,7 +1183,6 @@ function courseplay:writeStream(streamId, connection)
 
 	local debugChannelsString = table.concat(table.map(courseplay.debugChannels, tostring), ",");
 	streamDebugWriteString(streamId, debugChannelsString) 
-	print("  base: write stream end")
 	courseplay:debug("id: "..tostring(networkGetObjectId(self)).."  base: write stream end", 5)
 end
 
