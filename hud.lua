@@ -816,7 +816,7 @@ function courseplay.hud:loadPage(vehicle, page)
 
 		vehicle.cp.hud.content.pages[3][3][1].text = courseplay:loc('COURSEPLAY_TURN_RADIUS');
 		if vehicle.cp.turnDiameterAuto ~= nil or vehicle.cp.turnDiameter ~= nil then
-			vehicle.cp.hud.content.pages[3][3][2].text = ('%s %dm'):format(vehicle.cp.turnDiameterAutoMode and '(auto)' or '(mnl)', vehicle.cp.turnDiameter);
+			vehicle.cp.hud.content.pages[3][3][2].text = ('%s %d%s'):format(vehicle.cp.turnDiameterAutoMode and '(auto)' or '(mnl)', vehicle.cp.turnDiameter, g_i18n:getText('unit_meter'));
 		else
 			vehicle.cp.hud.content.pages[3][3][2].text = '---';
 		end;
@@ -847,7 +847,12 @@ function courseplay.hud:loadPage(vehicle, page)
 					vehicle:setCpVar('HUD4savedCombineName',courseplay:loc('COURSEPLAY_COMBINE'),courseplay.isClient);
 				end;
 				if vehicle.cp.savedCombine ~= nil then
-					vehicle.cp.hud.content.pages[4][2][2].text = string.format('%s (%dm)', vehicle.cp.HUD4savedCombineName, courseplay:distanceToObject(vehicle, vehicle.cp.savedCombine));
+					local dist = courseplay:distanceToObject(vehicle, vehicle.cp.savedCombine);
+					if dist >= 1000 then
+						vehicle.cp.hud.content.pages[4][2][2].text = ('%s (%.1f%s)'):format(courseplay:loc('COURSEPLAY_DISTANCE'), dist * 0.001, g_i18n:getMeasuringUnit());
+					else
+						vehicle.cp.hud.content.pages[4][2][2].text = ('%s (%d%s)'):format(courseplay:loc('COURSEPLAY_DISTANCE'), dist, g_i18n:getText('unit_meter'));
+					end;
 				end
 			else
 				vehicle.cp.hud.content.pages[4][2][2].text = courseplay:loc('COURSEPLAY_NONE');
@@ -999,7 +1004,12 @@ function courseplay.hud:loadPage(vehicle, page)
 		vehicle.cp.hud.content.pages[7][7][1].text = courseplay:loc('COURSEPLAY_COPY_COURSE');
 		if vehicle.cp.copyCourseFromDriver ~= nil then
 			local driverName = vehicle.cp.copyCourseFromDriver.name or courseplay:loc('COURSEPLAY_VEHICLE');
-			vehicle.cp.hud.content.pages[7][7][2].text = string.format('%s (%dm)', driverName, courseplay:distanceToObject(vehicle, vehicle.cp.copyCourseFromDriver));
+			local dist = courseplay:distanceToObject(vehicle, vehicle.cp.copyCourseFromDriver);
+			if dist >= 1000 then
+				vehicle.cp.hud.content.pages[7][7][2].text = ('%s (%.1f%s)'):format(driverName, dist * 0.001, g_i18n:getMeasuringUnit());
+			else
+				vehicle.cp.hud.content.pages[7][7][2].text = ('%s (%d%s)'):format(driverName, dist, g_i18n:getText('unit_meter'));
+			end;
 			vehicle.cp.hud.content.pages[7][8][2].text = '(' .. (vehicle.cp.copyCourseFromDriver.cp.currentCourseName or courseplay:loc('COURSEPLAY_TEMP_COURSE')) .. ')';
 		else
 			vehicle.cp.hud.content.pages[7][7][2].text = courseplay:loc('COURSEPLAY_NONE');

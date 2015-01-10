@@ -910,7 +910,7 @@ end;
 
 function courseplay:renderInfoText(vehicle)
 	if vehicle.isEntered and vehicle.cp.infoText ~= nil and vehicle.cp.toolTip == nil then
-		local text = ""
+		local text;
 		local what = Utils.splitString(";", vehicle.cp.infoText);
 		
 		if what[1] == "COURSEPLAY_LOADING_AMOUNT"
@@ -927,13 +927,21 @@ function courseplay:renderInfoText(vehicle)
 			end
 		elseif what[1] == "COURSEPLAY_DISTANCE" then  
 			if what[2] then
-				text = string.format("%s: %.1fm", courseplay:loc("COURSEPLAY_DISTANCE"), tonumber(what[2]))
+				local dist = tonumber(what[2]);
+				if dist >= 1000 then
+					text = ('%s: %.1f%s'):format(courseplay:loc('COURSEPLAY_DISTANCE'), dist * 0.001, g_i18n:getMeasuringUnit());
+				else
+					text = ('%s: %d%s'):format(courseplay:loc('COURSEPLAY_DISTANCE'), dist, g_i18n:getText('unit_meter'));
+				end;
 			end
 		else
 			text = courseplay:loc(vehicle.cp.infoText)
-		end
-		courseplay:setFontSettings('white', false, 'left');
-		renderText(courseplay.hud.infoTextPosX, courseplay.hud.infoTextPosY, courseplay.hud.fontSizes.infoText, text);
+		end;
+
+		if text then
+			courseplay:setFontSettings('white', false, 'left');
+			renderText(courseplay.hud.infoTextPosX, courseplay.hud.infoTextPosY, courseplay.hud.fontSizes.infoText, text);
+		end;
 	end;
 end;
 

@@ -18,7 +18,7 @@ function courseplay:distanceCheck(vehicle)
 	vehicle.cp.directionArrowOverlay:render();
 
 	local ctx, cty, ctz = getWorldTranslation(vehicle.cp.DirectionNode);
-	courseplay:setInfoText(vehicle, string.format("%s: %.1fm", courseplay:loc("COURSEPLAY_DISTANCE"), courseplay:distance(ctx, ctz, cx, cz)));
+	courseplay:setInfoText(vehicle, ('COURSEPLAY_DISTANCE;%d'):format(courseplay:distance(ctx, ctz, cx, cz)));
 end;
 
 
