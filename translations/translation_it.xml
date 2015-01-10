@@ -64,13 +64,13 @@
 		<text name="COURSEPLAY_COPY_COURSE" 							 text="Copia percorso:" />
 		<text name="COURSEPLAY_VEHICLE" 								 text="Veicolo" />
 		<text name="COURSEPLAY_TEMP_COURSE" 							 text="percorso temporaneo" />
-		<text name="COURSEPLAY_SPEED_TURN" 								 text="Velocita' di sterzata:" />
-		<text name="COURSEPLAY_SPEED_FIELD" 							 text="Velocita' sul campo:" />
-		<text name="COURSEPLAY_SPEED_MAX" 								 text="Velocita' su strada:" />
-		<text name="COURSEPLAY_SPEED_REVERSING" 						 text="Scarica (BGA)" /> <!-- TODO: "Reversing speed" -->
-		<text name="COURSEPLAY_MAX_SPEED_MODE" 							 text="Velocita':" />
+		<text name="COURSEPLAY_SPEED_TURN" 								 text="velocità di sterzata:" />
+		<text name="COURSEPLAY_SPEED_FIELD" 							 text="Velocità sul campo:" />
+		<text name="COURSEPLAY_SPEED_MAX" 								 text="Velocità su strada:" />
+		<text name="COURSEPLAY_SPEED_REVERSING" 						 text="Velocità indietro" />
+		<text name="COURSEPLAY_MAX_SPEED_MODE" 							 text="Velocità:" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_RECORDING" 				 text="come da registrazione" />
-		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 						 text="velocita' massima" />
+		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 						 text="velocità massima" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 				 text="automatica (dal percorso, max. %s)" />
 		<text name="COURSEPLAY_NO_COURSE_LOADED" 						 text="percorso: nessun percorso selezionato" />
 		<text name="COURSEPLAY_WAYPOINT_MODE_1" 						 text="l'inizio e la fine" />
@@ -85,7 +85,7 @@
 		<text name="COURSEPLAY_PAGE_TITLE_CHOOSE_FOLDER" 				 text="Scegliere la cartella" />
 		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 					 text="Opzioni della modalita' combi" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES" 				 text="Gestione della trebbia" />
-		<text name="COURSEPLAY_PAGE_TITLE_SPEEDS" 						 text="Velocita' limite" />
+		<text name="COURSEPLAY_PAGE_TITLE_SPEEDS" 						 text="Velocità limite" />
 		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 			 text="Parametri di guida" />
 		<text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS" 			 text="Parametri" />
 		<text name="COURSEPLAY_COMBINE_IS_TURNING" 						 text="La trebbia sta girando" />
@@ -195,9 +195,9 @@
 		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: azione secondaria del mouse" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="mostra il cursore" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="nascondere il cursore" />
-		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Load course/merge into loaded course" /> <!-- No translation text! -->
-		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Append course at the end" /> <!-- No translation text! -->
-		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Move to folder" /> <!-- No translation text! -->
-		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Delete course/folder" /> <!-- No translation text! -->
+		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Caricare/combinare corso in corso caricato" />
+		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Aggiungere corso alla fine" />
+		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Spostare a directory" /> <!-- folder/directory is directory in italiano -->
+		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Cancella corso/directory" />
 	</texts>
 </l10n>
