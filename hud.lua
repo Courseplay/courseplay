@@ -849,9 +849,9 @@ function courseplay.hud:loadPage(vehicle, page)
 				if vehicle.cp.savedCombine ~= nil then
 					local dist = courseplay:distanceToObject(vehicle, vehicle.cp.savedCombine);
 					if dist >= 1000 then
-						vehicle.cp.hud.content.pages[4][2][2].text = ('%s (%.1f%s)'):format(courseplay:loc('COURSEPLAY_DISTANCE'), dist * 0.001, g_i18n:getMeasuringUnit());
+						vehicle.cp.hud.content.pages[4][2][2].text = ('%s (%.1f%s)'):format(vehicle.cp.HUD4savedCombineName, dist * 0.001, g_i18n:getMeasuringUnit());
 					else
-						vehicle.cp.hud.content.pages[4][2][2].text = ('%s (%d%s)'):format(courseplay:loc('COURSEPLAY_DISTANCE'), dist, g_i18n:getText('unit_meter'));
+						vehicle.cp.hud.content.pages[4][2][2].text = ('%s (%d%s)'):format(vehicle.cp.HUD4savedCombineName, dist, g_i18n:getText('unit_meter'));
 					end;
 				end
 			else
