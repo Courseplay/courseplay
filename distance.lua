@@ -9,7 +9,7 @@ end
 
 -- displays arrow and distance to previous point
 function courseplay:distanceCheck(vehicle)
-	local number = vehicle.cp.recordingIsPaused and vehicle.recordnumber - 1 or 1;
+	local number = vehicle.cp.recordingIsPaused and vehicle.cp.waypointIndex - 1 or 1;
 
 	local cx, cz = vehicle.Waypoints[number].cx, vehicle.Waypoints[number].cz;
 	local lx, ly, lz = worldToLocal(vehicle.cp.DirectionNode, cx, 0, cz);

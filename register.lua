@@ -81,7 +81,7 @@ function courseplay.vehiclePostLoadFinished(self)
 	self.getIsCourseplayDriving = courseplay.getIsCourseplayDriving;
 	self.setIsCourseplayDriving = courseplay.setIsCourseplayDriving;
 	self.setCpVar = courseplay.setCpVar;
-
+	
 	-- combines table
 	if courseplay.combines == nil then
 		courseplay.combines = {};

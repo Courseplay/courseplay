@@ -135,6 +135,7 @@ function courseplay:isBetween(n, num1, num2, include)
 end;
 
 function courseplay:setVarValueFromString(self, str, value)
+	print(string.format("courseplay:setVarValueFromString(self, %s, %s)",str,tostring(value)))
 	local what = Utils.splitString(".", str);
 	local whatDepth = #what;
 	if whatDepth < 1 or whatDepth > 5 then
@@ -147,7 +148,6 @@ function courseplay:setVarValueFromString(self, str, value)
 	elseif what[1] == "courseplay" then
 		baseVar = courseplay;
 	end;
-
 	if baseVar ~= nil then
 		local result;
 		if whatDepth == 1 then --self
@@ -157,8 +157,13 @@ function courseplay:setVarValueFromString(self, str, value)
 			baseVar[what[2]] = value;
 			result = value;
 		elseif whatDepth == 3 then --self.cp.var
-			baseVar[what[2]][what[3]] = value;
-			result = value;
+			if baseVar == self and what[2] == 'cp' then
+				self:setCpVar(what[3], value,true,courseplay.isClient)
+				result = value;
+			else
+				baseVar[what[2]][what[3]] = value;
+				result = value;
+			end
 		elseif whatDepth == 4 then --self.cp.table.var
 			baseVar[what[2]][what[3]][what[4]] = value;
 			result = value;
@@ -762,7 +767,7 @@ function courseplay:checkAndPrintChange(vehicle, variable, VariableNameString)
 	end
 end;
 
-function courseplay.utils:hasVarChanged(vehicle, variableName, direct)
+function courseplay.utils:hasVarChanged(vehicle, variableName, direct) 
 	if direct == nil then direct = false; end;
 	if vehicle.cp.varMemory == nil then
 		vehicle.cp.varMemory = {};
