@@ -135,6 +135,7 @@ function courseplay:isBetween(n, num1, num2, include)
 end;
 
 function courseplay:setVarValueFromString(self, str, value)
+	print(string.format("courseplay:setVarValueFromString(self, %s, %s)",str,tostring(value)))
 	local what = Utils.splitString(".", str);
 	local whatDepth = #what;
 	if whatDepth < 1 or whatDepth > 5 then
@@ -147,7 +148,6 @@ function courseplay:setVarValueFromString(self, str, value)
 	elseif what[1] == "courseplay" then
 		baseVar = courseplay;
 	end;
-
 	if baseVar ~= nil then
 		local result;
 		if whatDepth == 1 then --self
@@ -157,8 +157,13 @@ function courseplay:setVarValueFromString(self, str, value)
 			baseVar[what[2]] = value;
 			result = value;
 		elseif whatDepth == 3 then --self.cp.var
-			baseVar[what[2]][what[3]] = value;
-			result = value;
+			if baseVar == self and what[2] == 'cp' then
+				self:setCpVar(what[3], value,true,courseplay.isClient)
+				result = value;
+			else
+				baseVar[what[2]][what[3]] = value;
+				result = value;
+			end
 		elseif whatDepth == 4 then --self.cp.table.var
 			baseVar[what[2]][what[3]][what[4]] = value;
 			result = value;
@@ -266,10 +271,12 @@ end;
 
 function courseplay:fillTypesMatch(fillTrigger, workTool)
 	if fillTrigger ~= nil then
-		if fillTrigger.fillType then
+		if rawget(fillTrigger, 'fillType') then -- make sure the fillTrigger doesn't return a meta fillType from a parent class
 			return workTool:allowFillType(fillTrigger.fillType, false);
 		elseif fillTrigger.currentFillType then
 			return workTool:allowFillType(fillTrigger.currentFillType, false);
+		elseif fillTrigger.getFillType then
+			return workTool:allowFillType(fillTrigger:getFillType(), false);
 		end;
 	end;
 
@@ -603,13 +610,21 @@ function courseplay:setCustomTimer(vehicle, timerName, seconds)
 	vehicle.cp.timers[timerName] = vehicle.timer + (seconds * 1000);
 end;
 function courseplay:timerIsThrough(vehicle, timerName, defaultToBool)
-	if vehicle.cp.timers[timerName] == nil then
+	local timer = vehicle.cp.timers[timerName];
+	if timer == nil then
 		return Utils.getNoNil(defaultToBool, true);
 	end;
-	return vehicle.timer > vehicle.cp.timers[timerName];
+	return vehicle.timer > timer;
 end;
-function courseplay:resetCustomTimer(vehicle, timerName)
-	vehicle.cp.timers[timerName] = 0.0;
+function courseplay:getCustomTimerExists(vehicle, timerName)
+	return vehicle.cp.timers[timerName] ~= nil;
+end;
+function courseplay:resetCustomTimer(vehicle, timerName, setToNil)
+	if setToNil then
+		vehicle.cp.timers[timerName] = nil;
+	else
+		vehicle.cp.timers[timerName] = 0.0;
+	end;
 end;
 
 function courseplay:getDriveDirection(node, x, y, z)
@@ -752,7 +767,7 @@ function courseplay:checkAndPrintChange(vehicle, variable, VariableNameString)
 	end
 end;
 
-function courseplay.utils:hasVarChanged(vehicle, variableName, direct)
+function courseplay.utils:hasVarChanged(vehicle, variableName, direct) 
 	if direct == nil then direct = false; end;
 	if vehicle.cp.varMemory == nil then
 		vehicle.cp.varMemory = {};

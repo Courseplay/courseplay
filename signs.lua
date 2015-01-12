@@ -111,7 +111,7 @@ function courseplay.signs:changeSignType(vehicle, vehicleIndex, oldType, newType
 	local section = self.sections[oldType];
 	local signData = vehicle.cp.signs[section][vehicleIndex];
 	self:moveToBuffer(vehicle, vehicleIndex, signData);
-	self:addSign(vehicle, newType, signData.posX, signData.posZ, signData.rotX, signData.rotY, vehicleIndex);
+	self:addSign(vehicle, newType, signData.posX, signData.posZ, signData.rotX, signData.rotY, vehicleIndex, nil, 'regular');
 end;
 
 function courseplay.signs:setWaypointSignLine(sign, distance, vis)
@@ -131,10 +131,11 @@ function courseplay.signs:updateWaypointSigns(vehicle, section)
 
 	vehicle.cp.numWaitPoints = 0;
 	vehicle.cp.numCrossingPoints = 0;
-	vehicle.maxnumber = #vehicle.Waypoints;
+	
+	vehicle.cp.numWaypoints = #vehicle.Waypoints;
 
 	if section == 'all' or section == 'current' then
-		local neededPoints = vehicle.maxnumber;
+		local neededPoints = vehicle.cp.numWaypoints;
 
 		--move not needed ones to buffer
 		if #vehicle.cp.signs.current > neededPoints then
@@ -149,7 +150,7 @@ function courseplay.signs:updateWaypointSigns(vehicle, section)
 			local neededSignType = 'normal';
 			if i == 1 then
 				neededSignType = 'start';
-			elseif i == vehicle.maxnumber then
+			elseif i == vehicle.cp.numWaypoints then
 				neededSignType = 'stop';
 			elseif wp.wait then
 				neededSignType = 'wait';
@@ -161,7 +162,7 @@ function courseplay.signs:updateWaypointSigns(vehicle, section)
 				wp.cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, wp.cx, 0, wp.cz);
 			end;
 
-			if i < vehicle.maxnumber then
+			if i < vehicle.cp.numWaypoints then
 				np = vehicle.Waypoints[i + 1];
 				if np.cy == nil or np.cy == 0 then
 					np.cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, np.cx, 0, np.cz);

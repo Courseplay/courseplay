@@ -861,18 +861,19 @@ function courseplay:generateCourse(vehicle)
 	-- (7) FINAL COURSE DATA
 	-------------------------------------------------------------------------------
 	courseplay:debug('(7) FINAL COURSE DATA', 7);
-	vehicle.maxnumber = #(vehicle.Waypoints)
-	if vehicle.maxnumber == 0 then
+	vehicle.cp.numWaypoints = #vehicle.Waypoints	
+	
+	if vehicle.cp.numWaypoints == 0 then
 		courseplay:debug('ERROR: #vehicle.Waypoints == 0 -> cancel and return', 7);
 		return;
 	end;
 
-	courseplay:setRecordNumber(vehicle, 1);
-	vehicle.cp.canDrive = true;
+	courseplay:setWaypointIndex(vehicle, 1);
+	vehicle:setCpVar('canDrive',true,courseplay.isClient);
 	vehicle.Waypoints[1].wait = true;
 	vehicle.Waypoints[1].crossing = true;
-	vehicle.Waypoints[vehicle.maxnumber].wait = true;
-	vehicle.Waypoints[vehicle.maxnumber].crossing = true;
+	vehicle.Waypoints[vehicle.cp.numWaypoints].wait = true;
+	vehicle.Waypoints[vehicle.cp.numWaypoints].crossing = true;
 	vehicle.cp.numCourses = 1;
 	courseplay.signs:updateWaypointSigns(vehicle);
 

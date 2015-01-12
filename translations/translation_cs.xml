@@ -70,7 +70,7 @@
 		<text name="COURSEPLAY_SPEED_TURN" 								 text="转弯或触发区速度:" />
 		<text name="COURSEPLAY_SPEED_FIELD" 							 text="田间速度:" />
 		<text name="COURSEPLAY_SPEED_MAX" 								 text="道路速度:" />
-		<text name="COURSEPLAY_SPEED_UNLOAD" 							 text="在卸载区的速度(青贮池):" />
+		<text name="COURSEPLAY_SPEED_REVERSING" 						 text="在卸载区的速度(青贮池):" /> <!-- TODO: "Reversing speed" -->
 		<text name="COURSEPLAY_MAX_SPEED_MODE" 							 text="速度控制:" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_RECORDING" 				 text="执行录制速度" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 						 text="手动调整" />

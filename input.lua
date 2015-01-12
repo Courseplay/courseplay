@@ -193,7 +193,9 @@ function courseplay:executeFunction(self, func, value, page)
 		--courseplay:debug("					"..tostring(func)..": "..tostring(value),5)
 		return
 	end
-	playSample(courseplay.hud.clickSound, 1, 1, 0);
+	if self.isEntered then
+		playSample(courseplay.hud.clickSound, 1, 1, 0);
+	end
 	courseplay:debug(('%s: calling function "%s(%s)"'):format(nameNum(self), tostring(func), tostring(value)), 18);
 
 	if func ~= "rowButton" then
@@ -252,7 +254,7 @@ function courseplay:executeFunction(self, func, value, page)
 					if line == 1 then
 						courseplay:stop(self);
 					elseif line == 2 and self.cp.HUD1wait then
-						if self.cp.stopAtEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil) then
+						if self.cp.stopAtEnd and (self.cp.waypointIndex == self.cp.numWaypoints or self.cp.currentTipTrigger ~= nil) then
 							courseplay:setStopAtEnd(self, false);
 						else
 							courseplay:cancelWait(self);

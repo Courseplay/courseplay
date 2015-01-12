@@ -151,11 +151,10 @@ function courseplay:buttonsActiveEnabled(vehicle, section)
 					button:setCanBeClicked(not button.isDisabled);
 				elseif fn == 'setRecordingPause' then
 					button:setActive(vehicle.cp.recordingIsPaused);
-					button:setDisabled(vehicle.cp.HUDrecordnumber < 4 or vehicle.cp.isRecordingTurnManeuver);
+					button:setDisabled(vehicle.cp.waypointIndex < 4 or vehicle.cp.isRecordingTurnManeuver);
 					button:setCanBeClicked(not button.isDisabled);
 				elseif fn == 'delete_waypoint' then
-					-- NOTE: during recording pause, HUDrecordnumber = recordnumber + 1, that's why <= 5 is used
-					button:setDisabled(not vehicle.cp.recordingIsPaused or vehicle.cp.HUDrecordnumber <= 5);
+					button:setDisabled(not vehicle.cp.recordingIsPaused or vehicle.cp.waypointIndex <= 4);
 					button:setCanBeClicked(not button.isDisabled);
 				elseif fn == 'set_waitpoint' or fn == 'set_crossing' then
 					button:setDisabled(vehicle.cp.recordingIsPaused or vehicle.cp.isRecordingTurnManeuver);
@@ -505,12 +504,12 @@ function courseplay:changeMaxSpeed(vehicle, changeBy)
 	end;
 end
 
-function courseplay:changeUnloadSpeed(vehicle, changeBy, force, forceReloadPage)
-	local speed = force or (vehicle.cp.speeds.unload + changeBy);
+function courseplay:changeReverseSpeed(vehicle, changeBy, force, forceReloadPage)
+	local speed = force or (vehicle.cp.speeds.reverse + changeBy);
 	if not force then
-		speed = Utils.clamp(speed, vehicle.cp.speeds.minUnload, vehicle.cp.speeds.max);
+		speed = Utils.clamp(speed, vehicle.cp.speeds.minReverse, vehicle.cp.speeds.max);
 	end;
-	vehicle.cp.speeds.unload = speed;
+	vehicle.cp.speeds.reverse = speed;
 
 	if forceReloadPage then
 		courseplay.hud:setReloadPageOrder(vehicle, 5, true);
@@ -573,14 +572,14 @@ function courseplay:selectAssignedCombine(vehicle, changeBy)
 
 	if vehicle.cp.selectedCombineNumber == 0 then
 		vehicle.cp.savedCombine = nil;
-		vehicle.cp.HUD4savedCombineName = nil;
+		vehicle:setCpVar('HUD4savedCombineName',"",courseplay.isClient);
 	else
 		vehicle.cp.savedCombine = combines[vehicle.cp.selectedCombineNumber];
 		local combineName = vehicle.cp.savedCombine.name or courseplay:loc('COURSEPLAY_COMBINE');
 		local x1 = courseplay.hud.col2posX[4];
 		local x2 = courseplay.hud.buttonPosX[1] - getTextWidth(courseplay.hud.fontSizes.contentValue, ' (9999m)');
 		local shortenedName, firstChar, lastChar = Utils.limitTextToWidth(combineName, courseplay.hud.fontSizes.contentValue, x2 - x1, false, '...');
-		vehicle.cp.HUD4savedCombineName = shortenedName;
+		vehicle:setCpVar('HUD4savedCombineName',shortenedName,courseplay.isClient);
 	end;
 
 	courseplay:removeActiveCombineFromTractor(vehicle);
@@ -597,8 +596,8 @@ end;
 function courseplay:removeSavedCombineFromTractor(vehicle)
 	vehicle.cp.savedCombine = nil;
 	vehicle.cp.selectedCombineNumber = 0;
-	vehicle.cp.HUD4savedCombine = false;
-	vehicle.cp.HUD4savedCombineName = '';
+	vehicle:setCpVar('HUD4savedCombine',nil,courseplay.isClient);
+	vehicle:setCpVar('HUD4savedCombineName',nil,courseplay.isClient);
 	courseplay.hud:setReloadPageOrder(vehicle, 4, true);
 end;
 
@@ -640,19 +639,19 @@ function courseplay:copyCourse(vehicle)
 		local src = vehicle.cp.copyCourseFromDriver;
 
 		vehicle.Waypoints = src.Waypoints;
-		vehicle.cp.currentCourseName = src.cp.currentCourseName;
+		vehicle:setCpVar('currentCourseName',src.cp.currentCourseName,courseplay.isClient);
 		vehicle.cp.loadedCourses = src.cp.loadedCourses;
 		vehicle.cp.numCourses = src.cp.numCourses;
-		courseplay:setRecordNumber(vehicle, 1);
-		vehicle.maxnumber = #(vehicle.Waypoints);
+		courseplay:setWaypointIndex(vehicle, 1);
+		vehicle.cp.numWaypoints = #(vehicle.Waypoints);
 		vehicle.cp.numWaitPoints = src.cp.numWaitPoints;
 		vehicle.cp.numCrossingPoints = src.cp.numCrossingPoints;
 
 		courseplay:setIsRecording(vehicle, false);
 		courseplay:setRecordingIsPaused(vehicle, false);
 		vehicle:setIsCourseplayDriving(false);
-		vehicle.cp.distanceCheck = false;
-		vehicle.cp.canDrive = true;
+		vehicle:setCpVar('distanceCheck',false,courseplay.isClient);
+		vehicle:setCpVar('canDrive',true,courseplay.isClient);
 		vehicle.cp.abortWork = nil;
 
 		vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = nil, nil, nil;
@@ -1096,7 +1095,7 @@ function courseplay:validateCourseGenerationData(vehicle)
 end;
 
 function courseplay:validateCanSwitchMode(vehicle)
-	vehicle.cp.canSwitchMode = not vehicle:getIsCourseplayDriving() and not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused and not vehicle.cp.fieldEdge.customField.isCreated;
+	vehicle:setCpVar('canSwitchMode',not vehicle:getIsCourseplayDriving() and not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused and not vehicle.cp.fieldEdge.customField.isCreated,courseplay.isClient);
 	if courseplay.debugChannels[12] then
 		courseplay:debug(string.format("%s: validateCanSwitchMode(): drive=%s, record=%s, record_pause=%s, customField.isCreated=%s ==> canSwitchMode=%s", nameNum(vehicle), tostring(vehicle:getIsCourseplayDriving()), tostring(vehicle.cp.isRecording), tostring(vehicle.cp.recordingIsPaused), tostring(vehicle.cp.fieldEdge.customField.isCreated), tostring(vehicle.cp.canSwitchMode)), 12);
 	end;
@@ -1135,9 +1134,14 @@ function courseplay:moveShovelToPosition(vehicle, stage)
 		return;
 	end;
 
-	vehicle.cp.manualShovelPositionOrder = stage;
-	vehicle.cp.movingToolsPrimary, vehicle.cp.movingToolsSecondary = courseplay:getMovingTools(vehicle);
-	courseplay:setCustomTimer(vehicle, 'manualShovelPositionOrder', 12); -- backup timer: if position hasn't been set within time frame, abort
+	local mtPrimary, mtSecondary = courseplay:getMovingTools(vehicle);
+	if mtPrimary then
+		vehicle.cp.manualShovelPositionOrder = stage;
+		vehicle.cp.movingToolsPrimary, vehicle.cp.movingToolsSecondary = mtPrimary, mtSecondary;
+		courseplay:setCustomTimer(vehicle, 'manualShovelPositionOrder', 12); -- backup timer: if position hasn't been set within time frame, abort
+	else
+		courseplay:debug(('    movingToolsPrimary=%s, movingToolsSecondary=%s -> abort'):format(tostring(mtPrimary), tostring(mtSecondary)), 10);
+	end;
 end;
 
 function courseplay:resetManualShovelPositionOrder(vehicle)
@@ -1176,8 +1180,9 @@ end;
 
 function courseplay:setMouseCursor(self, show)
 	self.cp.mouseCursorActive = show;
-	InputBinding.setShowMouseCursor(show);
-
+	if self.isEntered then --its necessesary for MP 
+		InputBinding.setShowMouseCursor(show);
+	end
 	--Cameras: deactivate/reactivate zoom function in order to allow CP mouse wheel
 	for camIndex,_ in pairs(self.cp.camerasBackup) do
 		self.cameras[camIndex].allowTranslation = not show;
@@ -1499,8 +1504,8 @@ function courseplay:sucChangeFruit(vehicle, change)
 end;
 
 function courseplay:toggleFindFirstWaypoint(vehicle)
-	vehicle.cp.distanceCheck = not vehicle.cp.distanceCheck;
-	if g_server ~= nil and not vehicle.cp.distanceCheck then
+	vehicle:setCpVar('distanceCheck',not vehicle.cp.distanceCheck,courseplay.isClient);
+	if not courseplay.isClient and not vehicle.cp.distanceCheck then
 		courseplay:setInfoText(vehicle, nil);
 	end;
 	courseplay:buttonsActiveEnabled(vehicle, 'findFirstWaypoint');
@@ -1513,9 +1518,9 @@ end;
 function courseplay:canScanForWeightStation(vehicle)
 	local scan = false;
 	if vehicle.cp.mode == 1 or vehicle.cp.mode == 2 then
-		scan = vehicle.recordnumber > 2;
+		scan = vehicle.cp.waypointIndex > 2;
 	elseif vehicle.cp.mode == 4 or vehicle.cp.mode == 6 then
-		scan = vehicle.cp.stopWork ~= nil and vehicle.recordnumber > vehicle.cp.stopWork;
+		scan = vehicle.cp.stopWork ~= nil and vehicle.cp.waypointIndex > vehicle.cp.stopWork;
 	elseif vehicle.cp.mode == 8 then
 		scan = true;
 	end;
@@ -1607,7 +1612,7 @@ function courseplay:setAttachedCombine(vehicle)
 	vehicle.cp.attachedCombine = nil;
 	if not (vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable or vehicle.cp.isSugarBeetLoader) and vehicle.attachedImplements then
 		for _,impl in pairs(vehicle.attachedImplements) do
-			if courseplay:isAttachedCombine(impl.object) then
+			if impl.object and courseplay:isAttachedCombine(impl.object) then
 				vehicle.cp.attachedCombine = impl.object;
 				courseplay:debug(('    attachedCombine=%s, attachedCombine .cp=%s'):format(nameNum(impl.object), tostring(impl.object.cp)), 6);
 				break;
@@ -1624,25 +1629,31 @@ end;
 
 ----------------------------------------------------------------------------------------------------
 
-function courseplay:setCpVar(varName, value)
+function courseplay:setCpVar(varName, value, noEventSend)
 	if self.cp[varName] ~= value then
 		local oldValue = self.cp[varName];
-		self.cp[varName] = value;
-		courseplay:onCpVarChanged(self, varName, oldValue);
-	end;
-end;
-
-function courseplay:onCpVarChanged(vehicle, varName, oldValue)
-	-- print(('%s: onCpVarChanged(%q, %q) [old value=%q]'):format(nameNum(vehicle), tostring(varName), tostring(vehicle.cp[varName]), tostring(oldValue)));
-
-	-- TODO (Jakob): this is hud related and doesn't really belong here but rather in the hud.lua
-	if varName:sub(1, 3) == 'HUD' then
-		if Utils.startsWith(varName, 'HUD0') then
-			courseplay.hud:setReloadPageOrder(vehicle, 0, true);
-		elseif Utils.startsWith(varName, 'HUD1') then
-			courseplay.hud:setReloadPageOrder(vehicle, 1, true);
-		elseif Utils.startsWith(varName, 'HUD4') then
-			courseplay.hud:setReloadPageOrder(vehicle, 4, true);
+		self.cp[varName] = value;		
+		if CpManager.isMP and not noEventSend then
+			--print(courseplay.utils:getFnCallPath(2))
+			courseplay:debug(string.format("setCpVar: %s: %s -> send Event",varName,tostring(value)), 5);
+			CourseplayEvent.sendEvent(self, "self.cp."..varName, value)
+		end
+		if varName == "isDriving" then
+			courseplay:debug("reload page 1", 5);
+			courseplay.hud:setReloadPageOrder(self, 1, true);
+		elseif varName:sub(1, 3) == 'HUD' then
+			if Utils.startsWith(varName, 'HUD0') then
+				courseplay:debug("reload page 0", 5);
+				courseplay.hud:setReloadPageOrder(self, 0, true);
+			elseif Utils.startsWith(varName, 'HUD1') then
+				courseplay:debug("reload page 1", 5);
+				courseplay.hud:setReloadPageOrder(self, 1, true);
+			elseif Utils.startsWith(varName, 'HUD4') then
+				courseplay:debug("reload page 4", 5);
+				courseplay.hud:setReloadPageOrder(self, 4, true);
+			end;
+		elseif varName == 'waypointIndex' and self.cp.hud.currentPage == courseplay.hud.PAGE_CP_CONTROL and (self.cp.isRecording or self.cp.recordingIsPaused) and value and value == 4 then -- record pause action becomes available
+			courseplay:buttonsActiveEnabled(self, 'recording');
 		end;
 	end;
 end;

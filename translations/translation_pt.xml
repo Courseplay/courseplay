@@ -70,7 +70,7 @@
 		<text name="COURSEPLAY_SPEED_TURN" 						 text="Velocidade na curva:" />
 		<text name="COURSEPLAY_SPEED_FIELD" 						 text="Velocidade no campo:" />
 		<text name="COURSEPLAY_SPEED_MAX" 						 text="Velocidade na estrada:" />
-		<text name="COURSEPLAY_SPEED_UNLOAD" 						 text="Descarregar (BGA):" />
+		<text name="COURSEPLAY_SPEED_REVERSING" 					 text="Velocidade de marcha-atrás:" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE" 						 text="Velocidade:" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_RECORDING" 				 text="da gravação" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 					 text="velocidade máxima" />

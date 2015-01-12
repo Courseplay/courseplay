@@ -31,7 +31,7 @@ function courseplay:showSaveCourseForm(vehicle, saveWhat) -- fn is in courseplay
 	saveWhat = saveWhat or 'course'
 	
 	if saveWhat == 'course' then
-		if #(vehicle.Waypoints) > 0 then
+		if vehicle.cp.numWaypoints > 0 then
 			courseplay.vehicleToSaveCourseIn = vehicle;
 			if vehicle.cp.imWriting then
 				vehicle.cp.saveWhat = 'course'
@@ -132,7 +132,7 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 			vehicle.cp.numCourses = 1;
 			vehicle.Waypoints = course.waypoints
 			vehicle.cp.numWaypoints = #vehicle.Waypoints;
-			vehicle.cp.currentCourseName = course.name
+			vehicle:setCpVar('currentCourseName',course.name,courseplay.isClient)
 			courseplay:debug(string.format("course_management %d: %s: no course was loaded -> new course = course -> currentCourseName=%q, numCourses=%s", debug.getinfo(1).currentline, nameNum(vehicle), tostring(vehicle.cp.currentCourseName), tostring(vehicle.cp.numCourses)), 8);
 
 		else -- add new course to old course
@@ -231,13 +231,13 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 
 			vehicle.cp.numWaypoints = #vehicle.Waypoints;
 			vehicle.cp.numCourses = vehicle.cp.numCourses + 1;
-			vehicle.cp.currentCourseName = string.format("%d %s", vehicle.cp.numCourses, courseplay:loc('COURSEPLAY_COMBINED_COURSES'));
+			vehicle:setCpVar('currentCourseName',string.format("%d %s", vehicle.cp.numCourses, courseplay:loc('COURSEPLAY_COMBINED_COURSES')),courseplay.isClient);
 			courseplay:debug(string.format('%s: adding course done -> numWaypoints=%d, numCourses=%s, currentCourseName=%q', nameNum(vehicle), vehicle.cp.numWaypoints, vehicle.cp.numCourses, vehicle.cp.currentCourseName), 8);
 		end;
 
 		vehicle.cp.canDrive = true;
 
-		courseplay:setRecordNumber(vehicle, 1);
+		courseplay:setWaypointIndex(vehicle, 1);
 		courseplay:setModeState(vehicle, 0);
 		courseplay.signs:updateWaypointSigns(vehicle, "current");
 
@@ -700,6 +700,10 @@ function courseplay.courses:saveAllToXml(recreateXML)
 -- recreateXML (bool): 	if nil or true the xml file will be overwritten. While saving each course/folder it is saved without 
 --							checking if the id already exists in the file (it should not as the file was deleted and therefore empty).  This is faster than
 --						if false, the xml file will only be created if it doesn't exist. If there exists already a course/folder with the specific id in the xml, it will be overwritten
+	if g_server == nil then
+		return
+	end
+	
 	if recreateXML == nil then
 		recreateXML = true
 	end

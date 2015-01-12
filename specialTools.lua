@@ -53,6 +53,9 @@ function courseplay:setNameVariable(workTool)
 	if workTool.cp.hasSpecializationFillable then
 		workTool.cp.closestTipDistance = math.huge;
 	end;
+	if workTool.typeName == 'hookLiftTrailer' then
+		workTool.cp.isHookLiftTrailer = true;
+	end;
 
 	--[[ DEBUG
 	print(nameNum(workTool) .. ': default specs list');
@@ -281,6 +284,11 @@ function courseplay:setNameVariable(workTool)
 	-- Kroeger Agroliner TAW 30 [Giants]
 	elseif workTool.cp.xmlFileName == 'kroegerTAW30.xml' then
 		workTool.cp.isKroegerTAW30 = true;
+		workTool.cp.isPushWagon = true;
+
+	-- Bergmann HT 50 [Giants DLC: ITRunner]
+	elseif workTool.cp.xmlFileName == 'containerChaff.xml' then
+		workTool.cp.isBergmannHT50 = true;
 		workTool.cp.isPushWagon = true;
 
 
