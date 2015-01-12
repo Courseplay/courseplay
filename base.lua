@@ -830,6 +830,7 @@ function courseplay:updateTick(dt)
 
 	--attached or detached implement?
 	if self.cp.toolsDirty then
+		self.cpTrafficCollisionIgnoreList = {}
 		courseplay:reset_tools(self)
 	end
 

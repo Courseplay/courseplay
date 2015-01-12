@@ -45,89 +45,99 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 				g_currentMission.nodeToVehicle[otherId] = pathVehicle
 				vehicle = pathVehicle
 			end;	
-						
-			local isInOtherTrigger = false --is this ID in one of the other triggers?
+			-------
+			--is this ID in one of the other triggers?
+			local isInOtherTrigger = false 
 			for i=1,4 do
 				if i ~= TriggerNumber and self.cp.collidingObjects[i][otherId] then
 					isInOtherTrigger = true
 				end
 			end
 			courseplay:debug(string.format("%s:%s Trigger%d: triggered collision with %d ", nameNum(self),debugMessage,TriggerNumber,otherId), 3);
+			--is it a traffic light ?
 			local trafficLightDistance = 0 
-			
 			if collisionVehicle ~= nil and collisionVehicle.rootNode == nil then
 				local x,y,z = getWorldTranslation(self.cp.collidingVehicleId)
 				_,_, trafficLightDistance = worldToLocal (self.cp.DirectionNode, x,y,z)
 			end
-			if vehicle ~= nil and vehicle.rootNode == nil then --check traffic lights: stop or go?
+			----
+			--check traffic lights: stop or go?
+			if vehicle ~= nil and vehicle.rootNode == nil then 
 				local _,transY,_ = getTranslation(otherId);
 				if transY < 0 then
 					OtherIdisCloser = false
 					courseplay:debug(tostring(otherId)..": trafficLight: transY = "..tostring(transY)..", so it's green or Off-> go on",3)
 				end
 			end
-			local fixDistance = 0 -- if ID.rootNode is nil set, distance fix to 25m needed for traffic lights
+			---
+			-- if Id.rootNode is nil, set distance fix to trigger * 5m needed for traffic lights
+			local fixDistance = 0 
 			if onEnter and vehicle ~= nil and vehicle.rootNode == nil then
 				fixDistance = TriggerNumber * 5
 				courseplay:debug(string.format("%s:	setting fix distance", nameNum(self)), 3);
 			end
-						
+			----
+				
 			if not isInOtherTrigger then
-				--checking distance to saved and current ID
-				if onEnter and self.cp.collidingVehicleId ~= nil 
-						   and ((collisionVehicle ~= nil and collisionVehicle.rootNode ~= nil) or trafficLightDistance ~= 0 )
-						   and ((vehicle ~= nil  and vehicle.rootNode ~= nil) or fixDistance ~= 0) then
-					local distanceToOtherId = math.huge
-					if fixDistance == 0 then
-						distanceToOtherId= courseplay:distanceToObject(self, vehicle)
-					else
-						distanceToOtherId = fixDistance
+				
+				if onEnter then
+					--checking distance to saved and current ID
+					if self.cp.collidingVehicleId ~= nil 
+							   and ((collisionVehicle ~= nil and collisionVehicle.rootNode ~= nil) or trafficLightDistance ~= 0 )
+							   and ((vehicle ~= nil  and vehicle.rootNode ~= nil) or fixDistance ~= 0) then
+						local distanceToOtherId = math.huge
+						if fixDistance == 0 then
+							distanceToOtherId= courseplay:distanceToObject(self, vehicle)
+						else
+							distanceToOtherId = fixDistance
+						end
+						local distanceToCollisionVehicle = math.huge
+						if trafficLightDistance == 0 then
+							distanceToCollisionVehicle = courseplay:distanceToObject(self, collisionVehicle)
+						else
+							distanceToCollisionVehicle = math.abs(trafficLightDistance)
+						end
+						
+						courseplay:debug(nameNum(self)..": 	onEnter, checking Distances: new: "..tostring(distanceToOtherId).." vs. current: "..tostring(distanceToCollisionVehicle),3);
+						if distanceToCollisionVehicle <= distanceToOtherId then
+							OtherIdisCloser = false
+							courseplay:debug(string.format('%s: 	target is not closer than existing target -> do not change "self.cp.collidingVehicleId"', nameNum(self)), 3);
+						else
+							courseplay:debug(string.format('%s: 	target is closer than existing target -> change "self.cp.collidingVehicleId"', nameNum(self)), 3);
+						end
 					end
-					local distanceToCollisionVehicle = math.huge
-					if trafficLightDistance == 0 then
-						distanceToCollisionVehicle = courseplay:distanceToObject(self, collisionVehicle)
-					else
-						distanceToCollisionVehicle = math.abs(trafficLightDistance)
-					end
-					
-					courseplay:debug(nameNum(self)..": 	onEnter, checking Distances: new: "..tostring(distanceToOtherId).." vs. current: "..tostring(distanceToCollisionVehicle),3);
-					if distanceToCollisionVehicle <= distanceToOtherId then
-						OtherIdisCloser = false
-						courseplay:debug(string.format('%s: 	target is not closer than existing target -> do not change "self.cp.collidingVehicleId"', nameNum(self)), 3);
-					else
-						courseplay:debug(string.format('%s: 	target is closer than existing target -> change "self.cp.collidingVehicleId"', nameNum(self)), 3);
-					end
-				end
-				--checking CollisionIgnoreList
-				if onEnter and vehicle ~= nil and OtherIdisCloser then
-					courseplay:debug(string.format("%s: 	onEnter, checking CollisionIgnoreList", nameNum(self)), 3);
-					if CpManager.trafficCollisionIgnoreList[otherId] then
+					----
+					--checking CollisionIgnoreList
+					if vehicle ~= nil and OtherIdisCloser then
+						courseplay:debug(string.format("%s: 	onEnter, checking CollisionIgnoreList", nameNum(self)), 3);
+						if CpManager.trafficCollisionIgnoreList[otherId] then
 							courseplay:debug(string.format("%s:		%q is on global list", nameNum(self), tostring(vehicle.name)), 3);
 							vehicleOnList = true
-					else
-						for a,b in pairs (self.cpTrafficCollisionIgnoreList) do
-							local veh1 = g_currentMission.nodeToVehicle[a];
-							local veh1Name = ""
-							if veh1 ~= nil and veh1.name then
-								veh1Name = veh1.name;
-							elseif veh1 ~= nil and not veh1.name then
-								veh1Name = "noName"					
-							else
-								veh1Name = "noVehicle"
-							end
-							local veh2Name = vehicle.name;
-							if not veh2Name and vehicle.cp then 
-								veh2Name = vehicle.cp.xmlFileName; 
-							end;
-							courseplay:debug(string.format("%s:		%s vs %q", nameNum(self), tostring(veh1Name), tostring(veh2Name)), 3);
-							if g_currentMission.nodeToVehicle[a].id == vehicle.id then
-								courseplay:debug(string.format("%s:		%q is on local list", nameNum(self), tostring(veh2Name)), 3);
-								vehicleOnList = true
-								break
+						elseif self.trafficCollisionIgnoreList[otherId] then
+							courseplay:debug(string.format("%s:		%q is on local list", nameNum(self), tostring(otherId)), 3);	
+							vehicleOnList = true
+						else
+							for a,b in pairs (self.cpTrafficCollisionIgnoreList) do
+								local veh1 = g_currentMission.nodeToVehicle[a];
+								if veh1 ~= nil then
+									local veh1Name = ""
+									veh1Name = veh1.name;
+									local veh2Name = vehicle.name;
+									if not veh2Name and vehicle.cp then 
+										veh2Name = vehicle.cp.xmlFileName; 
+									end;
+									courseplay:debug(string.format("%s:		%s vs %q", nameNum(self), tostring(veh1Name), tostring(veh2Name)), 3);
+									if veh1.id == vehicle.id then
+										courseplay:debug(string.format("%s:		%q is on local list", nameNum(self), tostring(veh2Name)), 3);
+										vehicleOnList = true
+										break
+									end
+								end
 							end
 						end
 					end
-				end
+					----
+				end	
 			else
 				if onEnter then
 					OtherIdisCloser = false
@@ -163,7 +173,7 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 					--courseplay:debug(string.format('%s: 	no registration:onEnter:%s, OtherIdisCloser:%s, registered: %s ,isInOtherTrigger: %s', nameNum(self),tostring(onEnter),tostring(OtherIdisCloser),tostring(self.cp.collidingObjects.all[otherId]),tostring(isInOtherTrigger)), 3);
 				end;
 			elseif not isInOtherTrigger then
-				courseplay:debug(string.format('%s: 	Vehicle is nil - do nothing', nameNum(self)), 3);
+				courseplay:debug(string.format('%s: 	Vehicle is nil or on ignoreList  -> do nothing', nameNum(self)), 3);
 			end
 			
 			if  onEnter then
