@@ -18,9 +18,9 @@
 		<text name="COURSEPLAY_MODE_1" 									 text="类型：普通运输（装载与卸载）" />
 		<text name="COURSEPLAY_MODE_2" 									 text="类型：联合收割（接收与卸载）" />
 		<text name="COURSEPLAY_MODE_3" 									 text="类型：中转运输（联合收割和普通运输）" />
-		<text name="COURSEPLAY_MODE_4" 									 text="类型：施肥和播种" />
+		<text name="COURSEPLAY_MODE_4" 									 text="类型：田间作业（施肥和播种）" />
 		<text name="COURSEPLAY_MODE_5" 									 text="类型：转移(从起点到终点)" />
-		<text name="COURSEPLAY_MODE_6" 									 text="类型：田间作业" />
+		<text name="COURSEPLAY_MODE_6" 									 text="类型：田间作业（收割和收集）" />
 		<text name="COURSEPLAY_MODE_7" 									 text="类型：收割机自助卸载" />
 		<text name="COURSEPLAY_MODE_8" 									 text="类型：水/肥/油 流动补充" />
 		<text name="COURSEPLAY_MODE_9" 									 text="类型：铲车工作模式" />
@@ -70,7 +70,7 @@
 		<text name="COURSEPLAY_SPEED_TURN" 								 text="转弯或触发区速度:" />
 		<text name="COURSEPLAY_SPEED_FIELD" 							 text="田间速度:" />
 		<text name="COURSEPLAY_SPEED_MAX" 								 text="道路速度:" />
-		<text name="COURSEPLAY_SPEED_REVERSING" 						 text="在卸载区的速度(青贮池):" /> <!-- TODO: "Reversing speed" -->
+		<text name="COURSEPLAY_SPEED_REVERSING" 						 text="倒车速度:" /> 
 		<text name="COURSEPLAY_MAX_SPEED_MODE" 							 text="速度控制:" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_RECORDING" 				 text="执行录制速度" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 						 text="手动调整" />
@@ -107,7 +107,7 @@
 		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 					 text="附近没有收割机" />
 		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 				 text="等待收割机完成转弯" />
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 					 text="等待新的路径点" />
-		<text name="COURSEPLAY_FOLLOWING_TRACTOR" 						 text="以下的拖拉机" />
+		<text name="COURSEPLAY_FOLLOWING_TRACTOR" 						 text="等待中的车辆" />
 		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 						 text="油料不足,尽快补充." />
 		<text name="COURSEPLAY_MUST_BE_REFUELED" 						 text="油料严重不足,必须补充." />
 		<text name="COURSEPLAY_IS_BEING_REFUELED" 						 text="正在加油" />
