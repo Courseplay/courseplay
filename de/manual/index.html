@@ -330,64 +330,64 @@
 		<article class="manualSection" id="hud_manageCourses">
 			<h2>
 				<span class="icon-page2"></span>
-				HUD: Manage courses
+				HUD: Kurse verwalten
 			</h2>
-			<p>On this page you'll find an overview containing your saved courses and folders. The list can be scrolled through by using the up/down arrows <span class="icon-arrowUp inline" title="up arrow"></span>/<span class="icon-arrowDown inline" title="down arrow"></span> near the hud's right edge, or by using the mouse wheel.</p>
-			<p>The course management system basically works like a regular file system. You can create folders, move courses or other folders to it, and load and delete them. The courses and folders are saved in the <code>courseplay.xml</code> file.</p>
+			<p>Auf dieser Seite findest du eine Übersicht deiner gespeicherten Kurse und Ordner. Die Liste kann mit den Pfeilen (<span class="icon-arrowUp inline" title="up arrow"></span>/<span class="icon-arrowDown inline" title="down arrow"></span>) an der rechten Seite und dem Mausrad gescrollt werden.</p>
+			<p>Das Kurs-Management-System funktioniert grundlegend wie ein reguläres Dateisystem. Man kann Ordner erstellen, Kurse und andere Ordner in diese verschieben, Kurse laden und löschen. The Kurse und Ordner werden in der <code>courseplay.xml</code> Datei gespeichert.</p>
 
 			<dl class="buttonInfo">
-				<dt>Default change</dt>
-				<dd>8 lines (mouse wheel: 1 line)</dd>
+				<dt>Standard-Änderung</dt>
+				<dd>8 Zeilen (Mausrad: 1 Zeile)</dd>
 				<div class="clearfix"></div>
-				<dt><kbd title="Control">CTRL</kbd> change</dt>
-				<dd>16 lines (mouse wheel: 8 lines)</dd>
+				<dt><kbd title="Control">STRG</kbd>-Änderung</dt>
+				<dd>16 Zeilen (Mausrad: 8 Zeilen)</dd>
 				<div class="clearfix"></div>
 			</dl>
 
 			<section class="manualSubSection" style="border-top:2px dashed #BBB; padding-top:1em;">
-				<h3>General actions</h3>
+				<h3>Generelle Aktionen</h3>
 				<ul>
 					<li>
-						<h4><span class="icon-clearCourse"></span>Clear course</h4>
-						<p>In order to record or load a completely new course, the current course must be cleared with this option. The course will not be deleted from the save game, only the driver will clear his current course.</p>
+						<h4><span class="icon-clearCourse"></span>Wegpunkte löschen</h4>
+						<p>Um einen neuen Kurs aufzunehmen oder zu laden, müssen die aktuellen Wegpunkte mit dieser Option erst einmal entfernt werden. Der Kurs wird dabei nicht vom Savegame gelösct, sondern nur der jeweilige Fahrer wird seine aktuellen Wegpunkte löschen.</p>
 					</li>
 					<li>
-						<h4><span class="icon-search"></span>Search for courses and folders</h4>
-						<p>This option lets you filter your course and folder list. A GUI will open where you can enter the name. When the filter is active, you can deactivate it by clicking <span class="icon-cancel inline" title="cancel button"></span>.</p>
+						<h4><span class="icon-search"></span>Nach Kursen und Ordnern suchen</h4>
+						<p>Diese Option erm;glicht es, die Kurs- und Ordnerliste zu filtern. Ein kleines Fenster öffnet sich wo man den Suchbegriff eingeben kann. Wenn der Filter aktiv ist, kann man ihn per Klick auf den Abbrechen-Button (<span class="icon-cancel inline" title="Abbrechen"></span>) beenden.</p>
 					</li>
 					<li>
-						<h4><span class="icon-newFolder"></span>Create new folder</h4>
-						<p>Creates a new folder on the base level. A GUI will open where you can enter the name.</p>
+						<h4><span class="icon-newFolder"></span>Neuen Ordner erstellen</h4>
+						<p>Kreiert einen neuen Ordner auf der Hauptebene. Ein kleines Fenster öffnet sich wo man den Ordnernamen eingeben kann.</p>
 					</li>
 					<li>
-						<h4><span class="icon-save"></span>Save course</h4>
-						<p>Saves the currently active course as a new course in the file system. A GUI will open where you can enter the name.</p>
+						<h4><span class="icon-save"></span>Kurs speichern</h4>
+						<p>Speichert den aktuell aktiven Kurs als neuen Kurs im Dateisystem. Ein kleines Fenster öffnet sich wo man den Kursnamen eingeben kann.</p>
 					</li>
 				</ul>
 			</section>
 
 			<section class="manualSubSection">
-				<h3>Course actions</h3>
+				<h3>Kursaktionen</h3>
 				<ul>
 					<li>
-						<h4><span class="icon-loadMergeCourse" title="Load/merge course"></span> Load/merge</h4>
-						<p>Loading the course. If there already is a course loaded, the clicked course will be merged into the already loaded one at the first common <a href="#hud_driverControls" class="internalTab"><span class="icon-crossSign"></span> crossing point</a>. In both courses, two crossing points (one in each course) that are closer to each other than 50 metres are determined. The combined course will lead up until the first course's crossing point, and from there go the second course from its respective crossing point.</p>
+						<h4><span class="icon-loadMergeCourse"></span> Kurs laden/mit aktuellem Kurs zusammenfügen</h4>
+						<p>Den gewählten Kurs laden. Wenn schon ein Kurs geladen ist, wird der neue Kurs mit dem existierenden am ersten gemeinsamen <a href="#hud_driverControls" class="internalTab"><span class="icon-crossSign"></span> Kreuzungspunktbereich</a> zusammengefügt. In den Kursen werden zwei Kreuzungspunkte (jeweils einer in jeden Kurs) die näher als 50m zueinander sind gesucht. Der kombinierte Kurs wird bis zum Kreuzungspunkt des ersten Kurses gehen, von dort zum Kreuzungspunkt des zweiten Kurses und von dort den zweiten Kurs weiter.</p>
 						<figure>
-							<img src="../../res/img/manual_mergeCourse_en.jpg" class="infoImg">
-							<figcaption>Combination of two courses at crossing points</figcaption>
+							<img src="../../res/img/manual_mergeCourse_de.jpg" class="infoImg">
+							<figcaption>Kombinierung von zwei Kursen an ihren Kreuzungspunkten</figcaption>
 						</figure>
 					</li>
 					<li>
-						<h4><span class="icon-courseAppend" title="Append course"></span> Append</h4>
-						<p>If there already is a course loaded, the clicked course will be added at the end of the already loaded course. Otherwise it will be loaded as usual.</p>
+						<h4><span class="icon-courseAppend"></span> Kurs anhängen</h4>
+						<p>Ist schon ein Kurs geladen wird der gewählte Kurs ans Ende angehängt. Ansonsten wird er regulär geladen.</p>
 					</li>
 					<li>
-						<h4><span class="icon-delete" title="Delete course/folder"></span> Delete</h4>
-						<p>The course will be deleted completely from Courseplay and the save game. It will not be available anymore, not even when loading the game again.</p>
+						<h4><span class="icon-delete"></span> Kurs/Ordner löschen</h4>
+						<p>Der Kurs/Ordner wird komplett aus Courseplay und dem Savegame gelöscht. Er wird beim nächsten Savegame-Start nicht mehr zu Verfügung stehen. Ordner können nur gelöscht werden wenn sie keine anderen Ordner und/oder Kurse enthalten.</p>
 					</li>
 					<li>
-						<h4><span class="icon-courseMoveToFolder" title="Move to folder"></span> Move to folder</h4>
-						<p>The course (or folder) will be moved to the then selected folder.</p>
+						<h4><span class="icon-courseMoveToFolder"></span> In Ordner verschieben</h4>
+						<p>Der Kurs (oder Ordner) wird in den danach ausgewählten Ordner veschoben.</p>
 					</li>
 				</ul>
 			</section>
