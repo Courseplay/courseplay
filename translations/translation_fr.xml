@@ -37,10 +37,10 @@
 		<text name="COURSEPLAY_FOLDER_NAME" 						 text="Nom du dossier:" />
 		<text name="COURSEPLAY_FILTER_COURSES" 						 text="Filtrer les courses:" />
 		<text name="COURSEPLAY_COURSES_FILTER_TITLE" 					 text="Courses: %q" />
-		<text name="COURSEPLAY_LOAD_COURSE" 						 text="Charger la course/la fusionner avec celle chargée" /> <!-- No translation text! -->
-		<text name="COURSEPLAY_APPEND_COURSE" 					 	 text="Ajouter la course à la fin" /> <!-- No translation text! -->
-		<text name="COURSEPLAY_MOVE_TO_FOLDER" 					 	 text="Déplacer dans un dossier" /> <!-- No translation text! -->
-		<text name="COURSEPLAY_DELETE_COURSE" 					 	 text="Supprimer la course/le dossier" /> <!-- No translation text! -->
+		<text name="COURSEPLAY_LOAD_COURSE" 						 text="Charger la course/la fusionner avec celle chargée" /> 
+		<text name="COURSEPLAY_APPEND_COURSE" 					 	 text="Ajouter la course à la fin" />
+		<text name="COURSEPLAY_MOVE_TO_FOLDER" 					 	 text="Déplacer dans un dossier" /> 
+		<text name="COURSEPLAY_DELETE_COURSE" 					 	 text="Supprimer la course/le dossier" /> 
 		<text name="COURSEPLAY_CREATE_FOLDER" 						 text="Créer un nouveau dossier" />
 		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 				 text="Recherche de course et de dossier" />
 		<text name="COURSEPLAY_DEACTIVATE_FILTER" 					 text="Désactive les filtres" />
@@ -74,7 +74,7 @@
 		<text name="COURSEPLAY_SPEED_TURN" 						 text="Vitesse de virage:" />
 		<text name="COURSEPLAY_SPEED_FIELD" 						 text="Vitesse de champs:" />
 		<text name="COURSEPLAY_SPEED_MAX" 						 text="Vitesse de route:" />
-		<text name="COURSEPLAY_SPEED_REVERSING" 						 text="Décharger (BGA):" /> <!-- TODO: "Reversing speed" -->
+		<text name="COURSEPLAY_SPEED_REVERSING" 					 text="Vitesse de recul:" /> 
 		<text name="COURSEPLAY_MAX_SPEED_MODE" 						 text="Vitesse:" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_RECORDING" 				 text="même que l'enregistrement" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 					 text="vitesse maximale" />
