@@ -677,7 +677,7 @@ function courseplay:update(dt)
 		end;
 
 		if not self.cp.openHudWithMouse and InputBinding.hasEvent(InputBinding.COURSEPLAY_HUD) then
-			self:setCourseplayFunc('openCloseHud', not self.cp.hud.show, true);
+			self:setCourseplayFunc('openCloseHud', not self.cp.hud.show);
 		end;
 	end; -- self:getIsActive() and self.isEntered and modifierPressed
 	

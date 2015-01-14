@@ -1180,8 +1180,9 @@ end;
 
 function courseplay:setMouseCursor(self, show)
 	self.cp.mouseCursorActive = show;
-	InputBinding.setShowMouseCursor(show);
-
+	if self.isEntered then --its necessesary for MP 
+		InputBinding.setShowMouseCursor(show);
+	end
 	--Cameras: deactivate/reactivate zoom function in order to allow CP mouse wheel
 	for camIndex,_ in pairs(self.cp.camerasBackup) do
 		self.cameras[camIndex].allowTranslation = not show;
