@@ -149,6 +149,8 @@
 		<text name="COURSEPLAY_START" 									 text="Kezdés" />
 		<text name="COURSEPLAY_FINISH" 									 text="Vége" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="Az útvonal nem megfelelő" />
+
+		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="Kanál nem található" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS" 						 text="Kanál pozíció" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS_MISSING" 				 text="Hiányos kanál pozíció" />
@@ -156,7 +158,12 @@
 		<text name="COURSEPLAY_SHOVEL_TRANSPORT_POSITION" 				 text="Szállítási pozíció" />
 		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION" 			 text="Kirakodást előkészítő pozíció" />
 		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION" 				 text="Kirakási pozíció" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 		 text="Move to loading position" /> <!-- Translation needed -->
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 		 text="Move to transport position" /> <!-- Translation needed -->
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 	 text="Move to pre-unloading position" /> <!-- Translation needed -->
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 		 text="Move to unloading position" /> <!-- Translation needed -->
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Kirak és indul tölteni" />
+
 		<text name="COURSEPLAY_START_AT_POINT" 							 text="Útvonal kezdése:" />
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="legközelebbi útpont" />
 		<text name="COURSEPLAY_FIRST_POINT" 							 text="első útpont" />
