@@ -626,6 +626,7 @@ function courseplay:drawWaypointsLines(vehicle)
 	if not CpManager.isDeveloper or not vehicle.isControlled or vehicle ~= g_currentMission.controlledVehicle then return; end;
 
 	local height = 2.5;
+	local r,g,b,a;
 	for i,wp in pairs(vehicle.Waypoints) do
 		if wp.cy == nil or wp.cy == 0 then
 			wp.cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, wp.cx, 1, wp.cz);
@@ -636,15 +637,22 @@ function courseplay:drawWaypointsLines(vehicle)
 		end;
 
 		if i == 1 or wp.turnStart then
-			drawDebugPoint(wp.cx, wp.cy + height, wp.cz, 0, 1, 0, 1);
+			r,g,b,a = 0, 1, 0, 1;
 		elseif i == vehicle.cp.numWaypoints or wp.turnEnd then
-			drawDebugPoint(wp.cx, wp.cy + height, wp.cz, 1, 0, 0, 1);
+			r,g,b,a = 1, 0, 0, 1;
+		elseif i == vehicle.cp.waypointIndex then
+			r,g,b,a = 0.9, 0, 0.6, 1;
 		else
-			drawDebugPoint(wp.cx, wp.cy + height, wp.cz, 1, 1, 0, 1);
+			r,g,b,a = 1, 1, 0, 1;
 		end;
+		drawDebugPoint(wp.cx, wp.cy + height, wp.cz, r,g,b,a);
 
 		if i < vehicle.cp.numWaypoints then
-			drawDebugLine(wp.cx, wp.cy + height, wp.cz, 0, 1, 1, np.cx, np.cy + height, np.cz, 0, 1, 1);
+			if i + 1 == vehicle.cp.waypointIndex then
+				drawDebugLine(wp.cx, wp.cy + height, wp.cz, 0.9, 0, 0.6, np.cx, np.cy + height, np.cz, 1, 0.4, 0.05);
+			else
+				drawDebugLine(wp.cx, wp.cy + height, wp.cz, 0, 1, 1, np.cx, np.cy + height, np.cz, 0, 1, 1);
+			end;
 		end;
 	end;
 end;
@@ -669,7 +677,7 @@ function courseplay:update(dt)
 		end;
 
 		if not self.cp.openHudWithMouse and InputBinding.hasEvent(InputBinding.COURSEPLAY_HUD) then
-			self:setCourseplayFunc('openCloseHud', not self.cp.hud.show);
+			self:setCourseplayFunc('openCloseHud', not self.cp.hud.show, true);
 		end;
 	end; -- self:getIsActive() and self.isEntered and modifierPressed
 	
@@ -830,6 +838,7 @@ function courseplay:updateTick(dt)
 
 	--attached or detached implement?
 	if self.cp.toolsDirty then
+		self.cpTrafficCollisionIgnoreList = {}
 		courseplay:reset_tools(self)
 	end
 
