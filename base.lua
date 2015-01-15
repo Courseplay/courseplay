@@ -567,9 +567,6 @@ function courseplay:draw()
 		end;
 	end;
 
-	--RENDER
-	courseplay:renderInfoText(self);
-
 	if self:getIsActive() then
 		if self.cp.hud.show then
 			courseplay.hud:setContent(self);
@@ -589,6 +586,10 @@ function courseplay:draw()
 			courseplay:renderToolTip(self);
 		end;
 	end;
+	
+	--RENDER
+	courseplay:renderInfoText(self);
+	
 end; --END draw()
 
 function courseplay:showWorkWidth(vehicle)
