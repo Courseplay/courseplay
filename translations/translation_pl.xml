@@ -235,6 +235,8 @@
 		<text name="COURSEPLAY_START_STOP"								 text="Courseplay: Wystartuj/zatrzymaj kierowcę" />
 		<text name="COURSEPLAY_CANCELWAIT"								 text="Courseplay: zatrzymaj się w ostatnim miejscu lub następnym triggerze" />
 		<text name="COURSEPLAY_DRIVENOW"								 text="Courseplay: jedź teraz" />
+		<text name="COURSEPLAY_NEXTMODE" 								 text="Courseplay: next mode" /> <!-- TRANSLATION NEEDED -->
+		<text name="COURSEPLAY_PREVMODE" 								 text="Courseplay: previous mode" /> <!-- TRANSLATION NEEDED -->
 		<text name="COURSEPLAY_MOUSEACTION_PRIMARY"						 text="Courseplay: akcja myszy" />
 		<text name="COURSEPLAY_MOUSEACTION_SECONDARY"					 text="Courseplay: kolejna akcja myszy" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW"							 text="Pokaż kursor myszy" />

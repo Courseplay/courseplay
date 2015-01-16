@@ -230,6 +230,8 @@
 		<text name="COURSEPLAY_START_STOP" 						 text="Courseplay: conduzir/parar no percurso" />
 		<text name="COURSEPLAY_CANCELWAIT" 						 text="Courseplay: parar no último ponto ou próximo trigger" />
 		<text name="COURSEPLAY_DRIVENOW" 						 text="Courseplay: conduzir agora" />
+		<text name="COURSEPLAY_NEXTMODE" 								 text="Courseplay: next mode" /> <!-- TRANSLATION NEEDED -->
+		<text name="COURSEPLAY_PREVMODE" 								 text="Courseplay: previous mode" /> <!-- TRANSLATION NEEDED -->
 		<text name="COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Courseplay: ações do rato" />
 		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: ações secundárias do rato" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 					 text="mostrar seta do rato" />

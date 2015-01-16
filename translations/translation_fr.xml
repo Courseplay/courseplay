@@ -234,6 +234,8 @@
 		<text name="COURSEPLAY_START_STOP" 						 text="Courseplay: Démarrer/arrêter la course" />
 		<text name="COURSEPLAY_CANCELWAIT" 						 text="Courseplay: Arrêter au prochain point ou trigger" />
 		<text name="COURSEPLAY_DRIVENOW" 						 text="Courseplay: Démarrer maintenant" />
+		<text name="COURSEPLAY_NEXTMODE" 								 text="Courseplay: next mode" /> <!-- TRANSLATION NEEDED -->
+		<text name="COURSEPLAY_PREVMODE" 								 text="Courseplay: previous mode" /> <!-- TRANSLATION NEEDED -->
 		<text name="COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Courseplay: Action de la souris" />
 		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: Action secondaire de la souris" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 					 text="Afficher le curseur" />

@@ -230,6 +230,8 @@
 		<text name="COURSEPLAY_START_STOP" 								 text="Vezetősegéd: Vezető indítása/leállítása" />
 		<text name="COURSEPLAY_CANCELWAIT" 								 text="Vezetősegéd: Állj az utolsó ponton következő triggernél" />
 		<text name="COURSEPLAY_DRIVENOW" 								 text="Vezetősegéd: Indítás azonnal!" />
+		<text name="COURSEPLAY_NEXTMODE" 								 text="Courseplay: next mode" /> <!-- TRANSLATION NEEDED -->
+		<text name="COURSEPLAY_PREVMODE" 								 text="Courseplay: previous mode" /> <!-- TRANSLATION NEEDED -->
 		<text name="COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Vezetősegéd: Egér activálás" />
 		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Vezetősegéd: Másodlagos egér aktiválás" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="Egérkurzor megjelenítése" />

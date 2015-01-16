@@ -230,6 +230,8 @@
 		<text name="COURSEPLAY_START_STOP" 								 text="Courseplay: rijd route/stop bestuurder" />
 		<text name="COURSEPLAY_CANCELWAIT" 								 text="Courseplay: stop bij laatste punt of volgende trigger" />
 		<text name="COURSEPLAY_DRIVENOW" 								 text="Courseplay: nu rijden" />
+		<text name="COURSEPLAY_NEXTMODE" 								 text="Courseplay: next mode" /> <!-- TRANSLATION NEEDED -->
+		<text name="COURSEPLAY_PREVMODE" 								 text="Courseplay: previous mode" /> <!-- TRANSLATION NEEDED -->
 		<text name="COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Courseplay: muis aktie" />
 		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: secundaire muis aktie" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="toon cursor" />

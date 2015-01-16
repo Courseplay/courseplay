@@ -132,7 +132,7 @@ local function setGlobalData()
 	courseplay.MODE_COMBINE_SELF_UNLOADING = 7;
 	courseplay.MODE_LIQUIDMANURE_TRANSPORT = 8;
 	courseplay.MODE_SHOVEL_FILL_AND_EMPTY = 9;
-	courseplay.numAiModes = 9;
+	courseplay.NUM_MODES = 9;
 	------------------------------------------------------------
 
 

@@ -661,20 +661,28 @@ end;
 function courseplay:update(dt)
 	-- KEYBOARD EVENTS
 	if self:getIsActive() and self.isEntered and InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER) then
-		if self.cp.canDrive then
-			if self.cp.isDriving then
-				if InputBinding.hasEvent(InputBinding.COURSEPLAY_START_STOP) then
-					self:setCourseplayFunc("stop", nil, false, 1);
-				elseif self.cp.HUD1wait and InputBinding.hasEvent(InputBinding.COURSEPLAY_CANCELWAIT) then
-					self:setCourseplayFunc('cancelWait', true, false, 1);
-				elseif self.cp.HUD1noWaitforFill and InputBinding.hasEvent(InputBinding.COURSEPLAY_DRIVENOW) then
-					self:setCourseplayFunc("setIsLoaded", true, false, 1);
+		if InputBinding.hasEvent(InputBinding.COURSEPLAY_START_STOP) then
+			if self.cp.canDrive then
+				if self.cp.isDriving then
+					self:setCourseplayFunc('stop', nil, false, 1);
+				else
+					self:setCourseplayFunc('start', nil, false, 1);
 				end;
 			else
-				if InputBinding.hasEvent(InputBinding.COURSEPLAY_START_STOP) then
-					self:setCourseplayFunc("start", nil, false, 1);
+				if not self.cp.isRecording and not self.cp.recordingIsPaused and self.cp.numWaypoints == 0 then
+					self:setCourseplayFunc('start_record', nil, false, 1);
+				elseif self.cp.isRecording and not self.cp.recordingIsPaused and not self.cp.isRecordingTurnManeuver then
+					self:setCourseplayFunc('stop_record', nil, false, 1);
 				end;
 			end;
+		elseif InputBinding.hasEvent(InputBinding.COURSEPLAY_CANCELWAIT) and self.cp.HUD1wait and self.cp.canDrive and self.cp.isDriving then
+			self:setCourseplayFunc('cancelWait', true, false, 1);
+		elseif InputBinding.hasEvent(InputBinding.COURSEPLAY_DRIVENOW) and self.cp.HUD1noWaitforFill and self.cp.canDrive and self.cp.isDriving then
+			self:setCourseplayFunc('setIsLoaded', true, false, 1);
+		elseif self.cp.canSwitchMode and InputBinding.hasEvent(InputBinding.COURSEPLAY_NEXTMODE) then
+			self:setCourseplayFunc('setNextPrevMode', 1, false, 1);
+		elseif self.cp.canSwitchMode and InputBinding.hasEvent(InputBinding.COURSEPLAY_PREVMODE) then
+			self:setCourseplayFunc('setNextPrevMode', -1, false, 1);
 		end;
 
 		if not self.cp.openHudWithMouse and InputBinding.hasEvent(InputBinding.COURSEPLAY_HUD) then

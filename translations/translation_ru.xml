@@ -231,6 +231,8 @@
 		<text name="COURSEPLAY_START_STOP" 								 text="Courseplay: старт/стоп маршрута" />
 		<text name="COURSEPLAY_CANCELWAIT" 								 text="Courseplay: остановка в следующей точке" />
 		<text name="COURSEPLAY_DRIVENOW" 								 text="Courseplay: старт маршрута" />
+		<text name="COURSEPLAY_NEXTMODE" 								 text="Courseplay: next mode" /> <!-- TRANSLATION NEEDED -->
+		<text name="COURSEPLAY_PREVMODE" 								 text="Courseplay: previous mode" /> <!-- TRANSLATION NEEDED -->
 		<text name="COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Courseplay: 1 функция мыши" />
 		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: 2 функция мыши" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="показать курсор" />

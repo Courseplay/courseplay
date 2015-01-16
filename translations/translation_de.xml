@@ -234,6 +234,8 @@
 		<text name="COURSEPLAY_START_STOP" 								 text="Courseplay: Abfahrer einstellen/entlassen" />
 		<text name="COURSEPLAY_CANCELWAIT" 								 text="Courseplay: Warten am letzten Wegpunkt oder Trigger" />
 		<text name="COURSEPLAY_DRIVENOW" 								 text="Courseplay: sofort abfahren" />
+		<text name="COURSEPLAY_NEXTMODE" 								 text="Courseplay: nächster Modus" />
+		<text name="COURSEPLAY_PREVMODE" 								 text="Courseplay: voriger Modus" />
 		<text name="COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Courseplay: Maus-Aktion" />
 		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: sekundäre Maus-Aktion" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="Mauszeiger anzeigen" />

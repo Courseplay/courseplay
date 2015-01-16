@@ -226,6 +226,8 @@
 		<text name="COURSEPLAY_START_STOP" 								 text="Courseplay: aktivovat/zastavit odvozce" />
 		<text name="COURSEPLAY_CANCELWAIT" 								 text="Courseplay: čekat na posledním bodě nebo triggeru" />
 		<text name="COURSEPLAY_DRIVENOW" 								 text="Courseplay: odvézt bez čekání na doplnění" />
+		<text name="COURSEPLAY_NEXTMODE" 								 text="Courseplay: next mode" /> <!-- TRANSLATION NEEDED -->
+		<text name="COURSEPLAY_PREVMODE" 								 text="Courseplay: previous mode" /> <!-- TRANSLATION NEEDED -->
 		<text name="COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Courseplay: myš akce" />
 		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: myš sekundární akce" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="skrýt kurzor" />
