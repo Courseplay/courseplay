@@ -70,7 +70,7 @@
 		<text name="COURSEPLAY_SPEED_TURN" 						 text="Velocidade na curva:" />
 		<text name="COURSEPLAY_SPEED_FIELD" 						 text="Velocidade no campo:" />
 		<text name="COURSEPLAY_SPEED_MAX" 						 text="Velocidade na estrada:" />
-		<text name="COURSEPLAY_SPEED_REVERSING" 					 text="Velocidade de marcha-atrás:" />
+		<text name="COURSEPLAY_SPEED_REVERSING" 					 text="Veloc. de marcha-atrás:" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE" 						 text="Velocidade:" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_RECORDING" 				 text="da gravação" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 					 text="velocidade máxima" />
@@ -158,10 +158,10 @@
 		<text name="COURSEPLAY_SHOVEL_TRANSPORT_POSITION" 				 text="Posição de transporte" />
 		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION" 		        	 text="Posição de pré-descarga" />
 		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION" 				 text="Posição de descarga" />
-		<text name="COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION" 			 text="Save loading position" /> <!-- Translation needed -->
-		<text name="COURSEPLAY_SHOVEL_SAVE_TRANSPORT_POSITION" 			 text="Save transport position" /> <!-- Translation needed -->
-		<text name="COURSEPLAY_SHOVEL_SAVE_PRE_UNLOADING_POSITION" 		 text="Save pre-unloading position" /> <!-- Translation needed -->
-		<text name="COURSEPLAY_SHOVEL_SAVE_UNLOADING_POSITION" 			 text="Save unloading position" /> <!-- Translation needed -->
+		<text name="COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION" 				 text="Gravar posição de carregamento" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_TRANSPORT_POSITION" 				 text="Gravar Posição de transporte" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_PRE_UNLOADING_POSITION" 			 text="Gravar posição de pré-descarga" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_UNLOADING_POSITION" 				 text="Gravar posição de descarga" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 	   		 text="Mover para posição de carregamento" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 			 text="Mover para posição de transporte" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 			 text="Mover para posição de pré-descarga" />
@@ -230,8 +230,8 @@
 		<text name="COURSEPLAY_START_STOP" 						 text="Courseplay: conduzir/parar no percurso" />
 		<text name="COURSEPLAY_CANCELWAIT" 						 text="Courseplay: parar no último ponto ou próximo trigger" />
 		<text name="COURSEPLAY_DRIVENOW" 						 text="Courseplay: conduzir agora" />
-		<text name="COURSEPLAY_NEXTMODE" 								 text="Courseplay: next mode" /> <!-- TRANSLATION NEEDED -->
-		<text name="COURSEPLAY_PREVMODE" 								 text="Courseplay: previous mode" /> <!-- TRANSLATION NEEDED -->
+		<text name="COURSEPLAY_NEXTMODE" 						 text="Courseplay: modo seguinte" />
+		<text name="COURSEPLAY_PREVMODE" 						 text="Courseplay: modo anterior" />
 		<text name="COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Courseplay: ações do rato" />
 		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: ações secundárias do rato" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 					 text="mostrar seta do rato" />
