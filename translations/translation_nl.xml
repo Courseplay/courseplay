@@ -158,10 +158,10 @@
 		<text name="COURSEPLAY_SHOVEL_TRANSPORT_POSITION" 				 text="Transport stand" />
 		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION" 			 text="Aanvang los stand" />
 		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION" 				 text="Los stand" />
-		<text name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 		 text="Move to loading position" /> <!-- Translation needed -->
-		<text name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 		 text="Move to transport position" /> <!-- Translation needed -->
-		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 	 text="Move to pre-unloading position" /> <!-- Translation needed -->
-		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 		 text="Move to unloading position" /> <!-- Translation needed -->		
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 		 text="Ga naar laad stand" /> 
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 		 text="Ga naar transport stand" /> 
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 	 text="Ga naar aanvang los stand" /> 
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 		 text="Ga naar los stand" /> 		
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Stop + Go Laden" />
 		
 		<text name="COURSEPLAY_START_AT_POINT" 							 text="Route starten bij:" />
@@ -193,8 +193,8 @@
 		<text name="COURSEPLAY_SLIPPING_WARNING" 						 text="Slippend" />
 		<text name="COURSEPLAY_REFILL_UNTIL_PCT" 						 text="Bijvullen tot:" />
 		<text name="COURSEPLAY_BGA_IS_FULL" 							 text=": Bunker silo is vol!" />
-		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 					 text="Farm Silo heeft niet de juiste vulling" />
-		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 					 text="Farm Silo laad:" />
+		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 					 text="Boerderij Silo heeft niet de juiste vulling" />
+		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 					 text="Boerderij Silo laadt:" />
 		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="Farm Silo is leeg!" />
 		<text name="COURSEPLAY_STARTING_UP_TOOL" 						 text="Opstarten %s!" />
 		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 				 text="Eerste markering zoeken" />
@@ -230,9 +230,9 @@
 		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: secundaire muis aktie" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="toon cursor" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="verberg cursor" />
-		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Laad route/Invoegen in geladen route" /> <!-- No translation text! -->
-		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Route bijvoegen" /> <!-- No translation text! -->
-		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Verplaats naar map" /> <!-- No translation text! -->
-		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Verwijder route/map" /> <!-- No translation text! -->
+		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Laad route/Invoegen in geladen route" /> 
+		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Route bijvoegen" /> 
+		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Verplaats naar map" /> 
+		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Verwijder route/map" /> 
 	</texts>
 </l10n>
