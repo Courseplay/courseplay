@@ -15,15 +15,15 @@
 		<text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED" 				 text="请求卸载" />
 		<text name="COURSEPLAY_START_COURSE" 							 text="启动任务" />
 		<text name="COURSEPLAY_STOP_COURSE" 							 text="暂停任务" />
-		<text name="COURSEPLAY_MODE_1" 									 text="类型：普通运输（装载与卸载）" />
-		<text name="COURSEPLAY_MODE_2" 									 text="类型：联合收割（接收与卸载）" />
-		<text name="COURSEPLAY_MODE_3" 									 text="类型：中转运输（联合收割和普通运输）" />
-		<text name="COURSEPLAY_MODE_4" 									 text="类型：田间作业（施肥和播种）" />
-		<text name="COURSEPLAY_MODE_5" 									 text="类型：转移(从起点到终点)" />
-		<text name="COURSEPLAY_MODE_6" 									 text="类型：田间作业（收割和收集）" />
-		<text name="COURSEPLAY_MODE_7" 									 text="类型：收割机自助卸载" />
-		<text name="COURSEPLAY_MODE_8" 									 text="类型：水/肥/油 流动补充" />
-		<text name="COURSEPLAY_MODE_9" 									 text="类型：铲车工作模式" />
+		<text name="COURSEPLAY_MODE_1" 									 text="模式1：普通运输（装载与卸载）" />
+		<text name="COURSEPLAY_MODE_2" 									 text="模式2：联合收割（接收与卸载）" />
+		<text name="COURSEPLAY_MODE_3" 									 text="模式3：中转运输（联合收割）" />
+		<text name="COURSEPLAY_MODE_4" 									 text="模式4：田间作业（施肥和播种）" />
+		<text name="COURSEPLAY_MODE_5" 									 text="模式5：转移(从起点到终点)" />
+		<text name="COURSEPLAY_MODE_6" 									 text="模式6：田间作业（收割和收集）" />
+		<text name="COURSEPLAY_MODE_7" 									 text="模式7：收割机自助卸载" />
+		<text name="COURSEPLAY_MODE_8" 									 text="模式8：流动补充" />
+		<text name="COURSEPLAY_MODE_9" 									 text="模式9：铲车模式" />
 		<text name="COURSEPLAY_CONTINUE" 								 text="继续" />
 		<text name="COURSEPLAY_CLEAR_COURSE" 							 text="重置任务" />
 		<text name="COURSEPLAY_DRIVE_NOW" 								 text="立即出发" />
@@ -77,9 +77,9 @@
 		<text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 				 text="自动(根据任务) (最大. %s)" /> 
 		<text name="COURSEPLAY_NO_COURSE_LOADED" 						 text="任务：没有加载任务" />
 		<text name="COURSEPLAY_WAYPOINT_MODE_1" 						 text="显示起点和终点" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_2" 						 text="不显示其它任务点" />
+		<text name="COURSEPLAY_WAYPOINT_MODE_2" 						 text="不显示其它的任务点" />
 		<text name="COURSEPLAY_WAYPOINT_MODE_3" 						 text="显示所有路径点" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_4" 						 text="都不显示" />
+		<text name="COURSEPLAY_WAYPOINT_MODE_4" 						 text="不显示" />
 		<text name="COURSEPLAY_WARNING_LIGHTS" 							 text="信标灯:" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 					 text="从不打开信标灯" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 					 text="在道路上打开信标灯" />
