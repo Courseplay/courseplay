@@ -14,6 +14,7 @@ end;
 function courseplay:setCpMode(vehicle, modeNum)
 	if vehicle.cp.mode ~= modeNum then
 		vehicle.cp.mode = modeNum;
+		courseplay:setNextPrevModeVars(vehicle);
 		courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.currentModeIcon, courseplay.hud.bottomInfo.modeUVsPx[modeNum], courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
 		courseplay:buttonsActiveEnabled(vehicle, 'all');
 		if modeNum == 1 then
@@ -22,28 +23,35 @@ function courseplay:setCpMode(vehicle, modeNum)
 	end;
 end;
 
-function courseplay:setNextPrevMode(vehicle, dir)
+function courseplay:setNextPrevModeVars(vehicle)
 	local curMode = vehicle.cp.mode;
-	if (dir == -1 and curMode == courseplay.MODE_GRAIN_TRANSPORT) or (dir == 1 and curMode == courseplay.NUM_MODES) then
-		return nil;
-	end;
+	local nextMode, prevMode, nextModeTest, prevModeTest = nil, nil, curMode + 1, curMode - 1;
 
-	local mode = curMode + 0;
-	while mode >= courseplay.MODE_GRAIN_TRANSPORT and mode <= courseplay.NUM_MODES do
-		mode = mode + dir;
-		if mode < courseplay.MODE_GRAIN_TRANSPORT or mode > courseplay.NUM_MODES then
-			break;
-		end;
-
-		if courseplay:getCanVehicleUseMode(vehicle, mode) then
-			courseplay:setCpMode(vehicle, mode);
-			return mode;
-		else
-			-- invalid mode --> skip
+	if curMode > courseplay.MODE_GRAIN_TRANSPORT then
+		while prevModeTest >= courseplay.MODE_GRAIN_TRANSPORT do
+			if courseplay:getCanVehicleUseMode(vehicle, prevModeTest) then
+				prevMode = prevModeTest;
+				break;
+			else
+				-- invalid mode --> skip
+				prevModeTest = prevModeTest - 1;
+			end;
 		end;
 	end;
+	vehicle.cp.prevMode = prevMode;
 
-	return nil;
+	if curMode < courseplay.NUM_MODES then
+		while nextModeTest <= courseplay.NUM_MODES do
+			if courseplay:getCanVehicleUseMode(vehicle, nextModeTest) then
+				nextMode = nextModeTest;
+				break;
+			else
+				-- invalid mode --> skip
+				nextModeTest = nextModeTest + 1;
+			end;
+		end;
+	end;
+	vehicle.cp.nextMode = nextMode;
 end;
 
 function courseplay:getCanVehicleUseMode(vehicle, mode)

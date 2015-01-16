@@ -106,6 +106,7 @@ function courseplay:load(xmlFile)
 
 	-- CP mode
 	self.cp.mode = 5;
+	courseplay:setNextPrevModeVars(self);
 	self.cp.modeState = 0
 	self.cp.mode2nextState = nil;
 	self.cp.startWork = nil
@@ -552,17 +553,34 @@ function courseplay:draw()
 			end;
 		end;
 
-		if self.cp.canDrive and modifierPressed then
-			if isDriving then
-				g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_STOP_COURSE'), InputBinding.COURSEPLAY_START_STOP);
-				if self.cp.HUD1wait then
-					g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_CONTINUE'), InputBinding.COURSEPLAY_CANCELWAIT);
-				end;
-				if self.cp.HUD1noWaitforFill then
-					g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_DRIVE_NOW'), InputBinding.COURSEPLAY_DRIVENOW);
+		if modifierPressed then
+			if self.cp.canDrive then
+				if isDriving then
+					g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_STOP_COURSE'), InputBinding.COURSEPLAY_START_STOP);
+					if self.cp.HUD1wait then
+						g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_CONTINUE'), InputBinding.COURSEPLAY_CANCELWAIT);
+					end;
+					if self.cp.HUD1noWaitforFill then
+						g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_DRIVE_NOW'), InputBinding.COURSEPLAY_DRIVENOW);
+					end;
+				else
+					g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_START_COURSE'), InputBinding.COURSEPLAY_START_STOP);
 				end;
 			else
-				g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_START_COURSE'), InputBinding.COURSEPLAY_START_STOP);
+				if not self.cp.isRecording and not self.cp.recordingIsPaused and self.cp.numWaypoints == 0 then
+					g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_RECORDING_START'), InputBinding.COURSEPLAY_START_STOP);
+				elseif self.cp.isRecording and not self.cp.recordingIsPaused and not self.cp.isRecordingTurnManeuver then
+					g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_RECORDING_STOP'), InputBinding.COURSEPLAY_START_STOP);
+				end;
+			end;
+
+			if self.cp.canSwitchMode then
+				if self.cp.nextMode then
+					g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_NEXTMODE'), InputBinding.COURSEPLAY_NEXTMODE);
+				end;
+				if self.cp.prevMode then
+					g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_PREVMODE'), InputBinding.COURSEPLAY_PREVMODE);
+				end;
 			end;
 		end;
 	end;
@@ -679,10 +697,10 @@ function courseplay:update(dt)
 			self:setCourseplayFunc('cancelWait', true, false, 1);
 		elseif InputBinding.hasEvent(InputBinding.COURSEPLAY_DRIVENOW) and self.cp.HUD1noWaitforFill and self.cp.canDrive and self.cp.isDriving then
 			self:setCourseplayFunc('setIsLoaded', true, false, 1);
-		elseif self.cp.canSwitchMode and InputBinding.hasEvent(InputBinding.COURSEPLAY_NEXTMODE) then
-			self:setCourseplayFunc('setNextPrevMode', 1, false, 1);
-		elseif self.cp.canSwitchMode and InputBinding.hasEvent(InputBinding.COURSEPLAY_PREVMODE) then
-			self:setCourseplayFunc('setNextPrevMode', -1, false, 1);
+		elseif self.cp.canSwitchMode and self.cp.nextMode and InputBinding.hasEvent(InputBinding.COURSEPLAY_NEXTMODE) then
+			self:setCourseplayFunc('setCpMode', self.cp.nextMode, false, 1);
+		elseif self.cp.canSwitchMode and self.cp.prevMode and InputBinding.hasEvent(InputBinding.COURSEPLAY_PREVMODE) then
+			self:setCourseplayFunc('setCpMode', self.cp.prevMode, false, 1);
 		end;
 
 		if not self.cp.openHudWithMouse and InputBinding.hasEvent(InputBinding.COURSEPLAY_HUD) then
@@ -1174,6 +1192,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteBool(streamId,self.cp.hasShovelStatePositions[3])
 	streamDebugWriteBool(streamId,self.cp.hasShovelStatePositions[4])
 	streamDebugWriteBool(streamId,self.cp.hasShovelStatePositions[5])
+
 	local copyCourseFromDriverID;
 	if self.cp.copyCourseFromDriver ~= nil then
 		copyCourseFromDriverID = networkGetObjectId(self.cp.copyCourseFromDriver)
