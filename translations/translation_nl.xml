@@ -149,6 +149,8 @@
 		<text name="COURSEPLAY_START" 									 text="Start" />
 		<text name="COURSEPLAY_FINISH" 									 text="Finish" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="Geen route geladen" />
+
+		<!-- shovel stuff -->		
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="Geen shovel gevonden" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS" 						 text="Shovel posities" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS_MISSING" 				 text="Shovel posities ontbreken" />
@@ -156,7 +158,12 @@
 		<text name="COURSEPLAY_SHOVEL_TRANSPORT_POSITION" 				 text="Transport stand" />
 		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION" 			 text="Aanvang los stand" />
 		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION" 				 text="Los stand" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 		 text="Move to loading position" /> <!-- Translation needed -->
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 		 text="Move to transport position" /> <!-- Translation needed -->
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 	 text="Move to pre-unloading position" /> <!-- Translation needed -->
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 		 text="Move to unloading position" /> <!-- Translation needed -->		
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Stop + Go Laden" />
+		
 		<text name="COURSEPLAY_START_AT_POINT" 							 text="Route starten bij:" />
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="volgende markering" />
 		<text name="COURSEPLAY_FIRST_POINT" 							 text="eerste markering" />

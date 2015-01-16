@@ -145,6 +145,8 @@
 		<text name="COURSEPLAY_START" 									 text="Start" />
 		<text name="COURSEPLAY_FINISH" 									 text="Ukončit" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="Trasa není platná" />
+
+		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="Lžíce nenalezena" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS" 						 text="Pozice lžíce:" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS_MISSING" 				 text="Chybí pozice lžíce" />
@@ -152,7 +154,12 @@
 		<text name="COURSEPLAY_SHOVEL_TRANSPORT_POSITION" 				 text="Pozice lžíce při převozu:" />
 		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION" 			 text="Pozice lžíce před vykládáním:" />
 		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION" 				 text="Pozice lžíce při vykládání:" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 		 text="Move to loading position" /> <!-- Translation needed -->
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 		 text="Move to transport position" /> <!-- Translation needed -->
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 	 text="Move to pre-unloading position" /> <!-- Translation needed -->
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 		 text="Move to unloading position" /> <!-- Translation needed -->
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Zastavit a jet nákládat:" />
+
 		<text name="COURSEPLAY_START_AT_POINT" 							 text="Začátek trasy:" />
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="na nejbližším bodě" />
 		<text name="COURSEPLAY_FIRST_POINT" 							 text="na prvním bodě" />
