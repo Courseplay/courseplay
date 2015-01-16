@@ -230,8 +230,8 @@ function courseplay:delete_waypoint(vehicle)
 		local oldSignIndex = lastSignIndex - 1;
 		local oldSignType = vehicle.cp.signs.current[oldSignIndex].type;
 		courseplay.signs:changeSignType(vehicle, oldSignIndex, oldSignType, "stop");
-
 		vehicle.Waypoints[vehicle.cp.waypointIndex] = nil
+		vehicle.cp.numWaypoints = vehicle.cp.waypointIndex
 	end;
 	courseplay:buttonsActiveEnabled(vehicle, 'recording');
 end;
@@ -297,5 +297,6 @@ end;
 function courseplay:setNewWaypointFromRecording(vehicle, cx, cz, angle, wait, rev, crossing, speed, turn, turnStart, turnEnd)
 	vehicle.Waypoints[vehicle.cp.waypointIndex] = { cx = cx, cz = cz, angle = angle, wait = wait, rev = rev, crossing = crossing, speed = speed, turn = turn, turnStart = turnStart, turnEnd = turnEnd };
 	courseplay:debug(string.format('%s: recording: set new waypoint (#%d): cx,cz=%.1f,%.1f, angle=%.1f, wait=%s, rev=%s, crossing=%s, speed=%.5f, turn=%s, turnStart=%s, turnEnd=%s', nameNum(vehicle), vehicle.cp.waypointIndex, cx, cz, angle, tostring(wait), tostring(rev), tostring(crossing), speed, tostring(turn), tostring(turnStart), tostring(turnEnd)), 16);
+	vehicle.cp.numWaypoints = vehicle.cp.waypointIndex
 end;
 
