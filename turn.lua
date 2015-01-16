@@ -13,6 +13,7 @@ function courseplay:turn(self, dt) --!!!
 	local moveForwards = true;
 	local updateWheels = true;
 	local turnOutTimer = 1500
+	local turnTimer = 1500
 	--local frontMarker = Utils.getNoNil(self.cp.backMarkerOffset, -3)
 	--local backMarker = Utils.getNoNil(self.cp.aiFrontMarker,0)
 	local frontMarker = Utils.getNoNil(self.cp.aiFrontMarker, -3)
@@ -197,7 +198,7 @@ function courseplay:turn(self, dt) --!!!
 		else
 			self.cp.turnStage = 1;
 			if self.cp.noStopOnTurn == false then
-				self.waitForTurnTime = self.timer + 1500;
+				self.waitForTurnTime = self.timer + turnTimer;
 			end
 			courseplay:lowerImplements(self, false, true)
 			updateWheels = false;
@@ -205,13 +206,22 @@ function courseplay:turn(self, dt) --!!!
 
 	-- TURN STAGE 0
 	else
+		if self.isStrawEnabled then 
+			self.cp.savedNoStopOnTurn = self.cp.noStopOnTurn
+			self.cp.noStopOnTurn = false
+			turnTimer = self.strawToggleTime or 5;
+		elseif self.cp.savedNoStopOnTurn ~= nil then
+			self.cp.noStopOnTurn = self.cp.savedNoStopOnTurn
+			self.cp.savedNoStopOnTurn = nil
+		end
+		
 		local offset = Utils.getNoNil(self.cp.totalOffsetX, 0)
 		local x,y,z = localToWorld(self.cp.DirectionNode, offset, 0, backMarker)
 		local dist = courseplay:distance(self.Waypoints[self.cp.waypointIndex].cx, self.Waypoints[self.cp.waypointIndex].cz, x, z)
 		if backMarker <= 0 then
 			if  dist < 0.5 then
 				if not self.cp.noStopOnTurn then
-					self.cp.waitForTurnTime = self.timer + 1500
+					self.cp.waitForTurnTime = self.timer + turnTimer
 				end
 				courseplay:lowerImplements(self, false, false)
 				updateWheels = false;
@@ -224,7 +234,7 @@ function courseplay:turn(self, dt) --!!!
 			end
 			if dist > backMarker and self.cp.turnStage == -1 then
 				if self.cp.noStopOnTurn == false then
-					self.cp.waitForTurnTime = self.timer + 1500
+					self.cp.waitForTurnTime = self.timer + turnTimer
 				end
 				updateWheels = false;
 				self.cp.turnStage = 1;
