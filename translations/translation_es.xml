@@ -158,6 +158,10 @@
 		<text name="COURSEPLAY_SHOVEL_TRANSPORT_POSITION" 				 text="Posición transportar" />
 		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION" 			 text="Posición antes de descargar" />
 		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION" 				 text="Posición descargar" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION" 			 text="Save loading position" /> <!-- Translation needed -->
+		<text name="COURSEPLAY_SHOVEL_SAVE_TRANSPORT_POSITION" 			 text="Save transport position" /> <!-- Translation needed -->
+		<text name="COURSEPLAY_SHOVEL_SAVE_PRE_UNLOADING_POSITION" 		 text="Save pre-unloading position" /> <!-- Translation needed -->
+		<text name="COURSEPLAY_SHOVEL_SAVE_UNLOADING_POSITION" 			 text="Save unloading position" /> <!-- Translation needed -->
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 		 text="Move to loading position" /> <!-- Translation needed -->
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 		 text="Move to transport position" /> <!-- Translation needed -->
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 	 text="Move to pre-unloading position" /> <!-- Translation needed -->
