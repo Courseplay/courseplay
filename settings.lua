@@ -1510,9 +1510,11 @@ function courseplay:setCurrentTargetFromList(vehicle, index)
 	end;
 end;
 
-function courseplay:addNewTargetVector(vehicle, x, z, trailer)
+function courseplay:addNewTargetVector(vehicle, x, z, trailer,node)
 	local tx, ty, tz = 0,0,0
-	if trailer ~= nil then
+	if node ~= nil then
+		tx, ty, tz = localToWorld(node, x, 0, z);
+	elseif trailer ~= nil then
 		tx, ty, tz = localToWorld(trailer.rootNode, x, 0, z);
 	else
 		tx, ty, tz = localToWorld(vehicle.cp.DirectionNode or vehicle.rootNode, x, 0, z);
