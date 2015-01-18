@@ -101,7 +101,7 @@
 		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 					 text="Conduzir ao lado da ceifeira" />
 		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 		          		 text="Conduzir para a ceifeira" />
 		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 				 text="Ceifeira está a pedir para parar" />
-		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	 text="Waiting until waiting position is free" /> <!-- TODO: its when the tractor waits, until the combine has cleared the waiting point after unloading -->	
+		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 			 text="A aguardar que o lugar de espera esteja livre" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 					 text="A virar na direção %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 					 text="Conduzir para o ponto %d %d" />
 		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 					 text="A Aguardar que o enchimento chegue ao nível" />
