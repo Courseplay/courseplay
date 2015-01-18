@@ -38,7 +38,7 @@ end;
 function courseplay:deleteCollisionVehicle(vehicle)
 	if vehicle.cp.collidingVehicleId ~= nil  then
 		local Id = vehicle.cp.collidingVehicleId
-		if g_currentMission.nodeToVehicle[Id].isCpPathvehicle  then
+		if g_currentMission.nodeToVehicle[Id] and g_currentMission.nodeToVehicle[Id].isCpPathvehicle  then
 			g_currentMission.nodeToVehicle[Id] = nil
 		end
 		vehicle.cp.collidingObjects.all[Id] = nil
