@@ -98,10 +98,10 @@
 		<text name="COURSEPLAY_NO_WORK_AREA" 							 text="Nincs munkaterülete a vezetőnek" />
 		<text name="COURSEPLAY_COMBINED_COURSES" 						 text="Betöltött útvonal" />
 		<text name="COURSEPLAY_DRIVE_BEHIND_COMBINE" 					 text="Kombájnhoz vezetés" />
-		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 					 text="következő kombájnhoz megy" /> <!--New text: Kombájn mellett halad-->
+		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 					 text="Kombájn mellett halad" />
 		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 						 text="Kombájnhoz megy" />
 		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 				 text="Kombájn azt mondja, állj!" />
-		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	 text="Waiting until waiting position is free" /> <!-- TODO: its when the tractor waits, until the combine has cleared the waiting point after unloading -->		
+		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	 text="Addig vár, míg a várakozási hely felszabadul" />		
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 						 text="Irány %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 						 text="az %d %d útvonalponthoz megy" />
 		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 					 text="vár, amíg kombájn ürít" />
