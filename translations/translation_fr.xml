@@ -105,6 +105,7 @@
 		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 					 text="Conduit à coté de la batteuse" />
 		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 					 text="Conduit vers la batteuse" />
 		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 				 text="La batteuse me demande de m'arrêter" />
+		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	 text="Waiting until waiting position is free" /> <!-- TODO: its when the tractor waits, until the combine has cleared the waiting point after unloading -->		
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 					 text="Tourne en direction de %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 					 text="Conduit vers le points %d %d" />
 		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 					 text="Attend que le niveau soit atteint" />

@@ -105,6 +105,7 @@
 		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE"					 text="Odjazd od kombajnu" />
 		<text name="COURSEPLAY_DRIVE_TO_COMBINE"						 text="Przejazd do kombajnu" />
 		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP"				 text="Kombajnista kazał mi się zatrzymać" />
+		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	 text="Waiting until waiting position is free" /> <!-- TODO: its when the tractor waits, until the combine has cleared the waiting point after unloading -->
 		<text name="COURSEPLAY_TURNING_TO_COORDS"						 text="Zawracanie do kierunku %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT"						 text="Przejazd do punktu trasy %d %d" />
 		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL"					 text="Oczekiwanie na osiągnięcie ustalonego poziomu wypełnienia" />

@@ -633,19 +633,20 @@ function courseplay:unload_combine(vehicle, dt)
 	
 	-- STATE 9 (wait till combine is gone)
 	elseif vehicle.cp.modeState == 9 then
+		local lastIndex = #vehicle.cp.nextTargets
+		local tx,ty,tz = vehicle.cp.nextTargets[lastIndex].x,vehicle.cp.nextTargets[lastIndex].y,vehicle.cp.nextTargets[lastIndex].z;
 		if vehicle.cp.swayPointDistance == nil then
-			local lastIndex = #vehicle.cp.nextTargets
-			local tx,ty,tz = vehicle.cp.nextTargets[lastIndex].x,vehicle.cp.nextTargets[lastIndex].y,vehicle.cp.nextTargets[lastIndex].z;
 			_,_,vehicle.cp.swayPointDistance = worldToLocal(vehicle.cp.DirectionNode, tx,ty,tz) 
 		end
 		local x,y,z = getWorldTranslation(combine.cp.DirectionNode or combine.rootNode)
 		local _,_,combineDistance = worldToLocal(vehicle.cp.DirectionNode, x,y,z)
-		if combineDistance > vehicle.cp.swayPointDistance + 3 then
+		local backupDistance = worldToLocal(combine.cp.DirectionNode, tx,ty,tz)
+		if combineDistance > vehicle.cp.swayPointDistance + 3 or backupDistance < -5 then
 			vehicle.cp.swayPointDistance = nil
 			courseplay:setModeState(vehicle, 5);
 		else
 			allowedToDrive = false
-			courseplay:setInfoText(vehicle, "COURSEPLAY_COMBINE_WANTS_ME_TO_STOP");
+			courseplay:setInfoText(vehicle, "COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE");
 		end
 		if combineIsTurning then
 			vehicle.cp.swayPointDistance = nil

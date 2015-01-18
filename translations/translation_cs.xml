@@ -101,6 +101,7 @@
 		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 					 text="车辆已接近联合收割机" />
 		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 						 text="车辆已连接收割机" />
 		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 				 text="收割机要求车辆先停下来" />
+		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	 text="Waiting until waiting position is free" /> <!-- TODO: its when the tractor waits, until the combine has cleared the waiting point after unloading -->		
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 						 text="转向到 %d %d 点" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 						 text="前往 %d %d 坐标点" />
 		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 					 text="等待收割机容量到达设定值" />

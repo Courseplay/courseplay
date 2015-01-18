@@ -101,6 +101,7 @@
 		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 					 text="Ir junto a la cosechadora" />
 		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 						 text="Ir hacia la cosechadora" />
 		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 				 text="La cosechadora dice que me detenga" />
+		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	 text="Waiting until waiting position is free" /> <!-- TODO: its when the tractor waits, until the combine has cleared the waiting point after unloading -->		
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 						 text="Girar en dirección %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 						 text="Ir al punto %d %d" />
 		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 					 text="Esperar hasta que llegue al nivel de llenado" />

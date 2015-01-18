@@ -98,6 +98,7 @@
 		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 					 text="Jedu vedle kombajnu/rezačky" />
 		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 						 text="Jedu ke kombajnu/rezačce" />
 		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 				 text="Kombajn/řezačka říká, že mám zastavit" />
+		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	 text="Waiting until waiting position is free" /> <!-- TODO: its when the tractor waits, until the combine has cleared the waiting point after unloading -->		
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 						 text="Otočím se ve směru %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 						 text="Jedu na souřadnice %d %d" />
 		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 					 text="Čekám, než bude kombajn naplněn" />

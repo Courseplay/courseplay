@@ -105,6 +105,7 @@
 		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 					 text="Drive next to combine" />
 		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 						 text="drive to combine" />
 		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 				 text="Combine is telling me to stop" />
+		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	 text="Waiting until waiting position is free" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 						 text="Turning to direction %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 						 text="Drive to waypoint %d %d" />
 		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 					 text="Waiting until fill level is reached" />
