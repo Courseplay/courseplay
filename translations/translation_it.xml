@@ -95,6 +95,7 @@
 		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 					 text="Guida accanto la trebbia" />
 		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 						 text="Vai alla trebbia" />
 		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 				 text="La trebbia mi dice di fermarmi" />
+		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	                 text="Aspettando che mia posizione di aspettare sia libera" /> 
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 						 text="Girando in direzione %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 						 text="Guida a %d %d" />
 		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 					 text="Aspettando che il livello di riempimento sia raggiunto" />
@@ -141,14 +142,25 @@
 		<text name="COURSEPLAY_START" 									 text="Inizia" />
 		<text name="COURSEPLAY_FINISH" 									 text="Termina" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="Il percorso non è valido" />
+
+		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="Pala non trovata" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS" 						 text="Posizioni della pala" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS_MISSING" 				 text="Mancano le posizioni della pala" />
-		<text name="COURSEPLAY_SHOVEL_LOADING_POSITION" 				 text="Posizione di caricamento" />
+		<text name="COURSEPLAY_SHOVEL_LOADING_POSITION" 				 text="Posizione di riempimento" />
 		<text name="COURSEPLAY_SHOVEL_TRANSPORT_POSITION" 				 text="Posizione di trasporto" />
-		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION" 			 text="Posizione di Pre-caricamento" />
-		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION" 				 text="Posizione di scaricamento" />
+		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION" 			 text="Posizione prima di riempimento" />
+		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION" 				 text="Posizione di svuotamento" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION" 			 text="salva posizione di riempimento" /> 
+		<text name="COURSEPLAY_SHOVEL_SAVE_TRANSPORT_POSITION" 			 text="salva posizione di trasporto" /> 
+		<text name="COURSEPLAY_SHOVEL_SAVE_PRE_UNLOADING_POSITION" 		 text="salva posizione prima di svuotamento" /> 
+		<text name="COURSEPLAY_SHOVEL_SAVE_UNLOADING_POSITION" 			 text="salva posizione di svuotamento" /> 
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 		 text="muovi a posizione di riempimento" /> 
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 		 text="muovi a posizione di trasporto" /> 
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 	         text="muovi a posizione prima di svuotamento" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 		 text="muovi a posizione di svuotamento" /> 
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Caricamento Stop &amp; go" />
+
 		<text name="COURSEPLAY_START_AT_POINT" 							 text="Avviare il corso al" />
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="punto più vicino" />
 		<text name="COURSEPLAY_FIRST_POINT" 							 text="primo punto" />
@@ -191,6 +203,8 @@
 		<text name="COURSEPLAY_START_STOP" 								 text="Courseplay: usa/ferma percorso" />
 		<text name="COURSEPLAY_CANCELWAIT" 								 text="Courseplay: ferma all'ultimo punto o al prossimo trigger" />
 		<text name="COURSEPLAY_DRIVENOW" 								 text="Courseplay: avvia ora" />
+		<text name="COURSEPLAY_NEXTMODE" 								 text="Courseplay: modo successivo" /> 
+		<text name="COURSEPLAY_PREVMODE" 								 text="Courseplay: modo precedente" /> 
 		<text name="COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Courseplay: azione del mouse" />
 		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: azione secondaria del mouse" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="mostra il cursore" />

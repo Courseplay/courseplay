@@ -525,7 +525,6 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 						courseplay:debug(string.format('%s: fold order (foldDir=%d)', nameNum(tool), -tool.cp.realUnfoldDirection), 17);
 						tool:setFoldDirection(-tool.cp.realUnfoldDirection);
 					end;
-					tool:setPipeState(1)
 				end
 			end
 

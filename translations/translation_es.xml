@@ -101,6 +101,7 @@
 		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 					 text="Ir junto a la cosechadora" />
 		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 						 text="Ir hacia la cosechadora" />
 		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 				 text="La cosechadora dice que me detenga" />
+		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	 text="Waiting until waiting position is free" /> <!-- TODO: its when the tractor waits, until the combine has cleared the waiting point after unloading -->		
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 						 text="Girar en dirección %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 						 text="Ir al punto %d %d" />
 		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 					 text="Esperar hasta que llegue al nivel de llenado" />
@@ -149,6 +150,8 @@
 		<text name="COURSEPLAY_START" 									 text="Iniciar" />
 		<text name="COURSEPLAY_FINISH" 									 text="Detener" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="El curso no es válido" />
+
+		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="Falta la pala" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS" 						 text="Posiciónes de la pala" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS_MISSING" 				 text="Faltan posiciónes de la pala" />
@@ -156,7 +159,16 @@
 		<text name="COURSEPLAY_SHOVEL_TRANSPORT_POSITION" 				 text="Posición transportar" />
 		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION" 			 text="Posición antes de descargar" />
 		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION" 				 text="Posición descargar" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION" 			 text="Guardar posición de carga" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_TRANSPORT_POSITION" 			 text="Guardar posición de transporte" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_PRE_UNLOADING_POSITION" 		 text="Guardar posición de pre-descarga" /> <!-- Translation needed -->
+		<text name="COURSEPLAY_SHOVEL_SAVE_UNLOADING_POSITION" 			 text="Guardar posición de descarga" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 		 text="Mover pala a posición de carga" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 		 text="Mover pala a posición de transporte" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 	 text="Mover pala a posición de pre-descarga" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 		 text="Mover pala a posición de descarga" />
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Detenerse e ir a cargar" />
+
 		<text name="COURSEPLAY_START_AT_POINT" 							 text="Empezar el curso en el" />
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="punto más cercano" />
 		<text name="COURSEPLAY_FIRST_POINT" 							 text="primer punto" />
@@ -219,6 +231,8 @@
 		<text name="COURSEPLAY_START_STOP" 								 text="Courseplay: conducir/detener ruta" />
 		<text name="COURSEPLAY_CANCELWAIT" 								 text="Courseplay: parar en último punto o siguiente trigger" />
 		<text name="COURSEPLAY_DRIVENOW" 								 text="Courseplay: conducir ahora" />
+		<text name="COURSEPLAY_NEXTMODE" 								 text="Courseplay: modo siguiente" />
+		<text name="COURSEPLAY_PREVMODE" 								 text="Courseplay: modo anterior mode" />
 		<text name="COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Courseplay: acción del ratón" />
 		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: acción secondaria del ratón" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="mostrar el cursor" />

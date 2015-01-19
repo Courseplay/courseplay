@@ -74,7 +74,7 @@
 		<text name="COURSEPLAY_SPEED_TURN" 								 text="Velocidade na curva:" />
 		<text name="COURSEPLAY_SPEED_FIELD" 							 text="Velocidade no campo:" />
 		<text name="COURSEPLAY_SPEED_MAX" 								 text="Velocidade na estrada:" />
-		<text name="COURSEPLAY_SPEED_REVERSING" 						 text="Velocidade de ré:" /> <!-- TODO: "Reversing speed" -->
+		<text name="COURSEPLAY_SPEED_REVERSING" 						 text="Velocidade de ré:" /> 
 		<text name="COURSEPLAY_MAX_SPEED_MODE" 							 text="Velocidade:" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_RECORDING" 				 text="da gravação" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 						 text="velocidade máxima" />
@@ -105,6 +105,7 @@
 		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 					 text="Dirigir para a próxima ceifadeira" />
 		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 						 text="Dirigir para a ceifadeira" />
 		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 				 text="Ceifadeira pedindo para parar" />
+		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	 text="Aguardar até que a posição de espera esteja livre" /> 
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 						 text="Virando em direção %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 						 text="Dirigir para o ponto %d %d" />
 		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 					 text="Aguardando que o enchimento chegue ao nível" />
@@ -235,6 +236,8 @@
 		<text name="COURSEPLAY_START_STOP" 								 text="Courseplay: dirigir/parar na rota" />
 		<text name="COURSEPLAY_CANCELWAIT" 								 text="Courseplay: parar no último ponto ou no próximo trigger" />
 		<text name="COURSEPLAY_DRIVENOW" 								 text="Courseplay: dirigir agora" />
+		<text name="COURSEPLAY_NEXTMODE" 								 text="Courseplay: próximo modo" /> 
+		<text name="COURSEPLAY_PREVMODE" 								 text="Courseplay: modo anterior" /> 
 		<text name="COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Courseplay: ações do mouse" />
 		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: ações secundárias do mouse" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="mostrar cursor do mouse" />

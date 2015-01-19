@@ -105,6 +105,7 @@
 		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 					 text="Drive next to combine" />
 		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 						 text="drive to combine" />
 		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 				 text="Combine is telling me to stop" />
+		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	 text="Waiting until waiting position is free" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 						 text="Turning to direction %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 						 text="Drive to waypoint %d %d" />
 		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 					 text="Waiting until fill level is reached" />
@@ -228,6 +229,7 @@
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_TRIM" 				 text="···" />
 		<text name="COURSEPLAY_HUD_OPEN" 								 text="Show Courseplay HUD" />
 		<text name="COURSEPLAY_HUD_CLOSE" 								 text="Hide Courseplay HUD" />
+
 		<text name="COURSEPLAY_FUNCTIONS" 								 text="Courseplay functions" />
 		<text name="COURSEPLAY_MODIFIER" 								 text="Courseplay: modifier" />
 		<text name="COURSEPLAY_MENU_ACCEPT_SECONDARY" 					 text="Courseplay: secondary menu accept" />
@@ -235,6 +237,8 @@
 		<text name="COURSEPLAY_START_STOP" 								 text="Courseplay: drive course/stop driver" />
 		<text name="COURSEPLAY_CANCELWAIT" 								 text="Courseplay: stop at last point or at next trigger" />
 		<text name="COURSEPLAY_DRIVENOW" 								 text="Courseplay: drive now" />
+		<text name="COURSEPLAY_NEXTMODE" 								 text="Courseplay: next mode" />
+		<text name="COURSEPLAY_PREVMODE" 								 text="Courseplay: previous mode" />
 		<text name="COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Courseplay: mouse action" />
 		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: secondary mouse action" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="show mouse cursor" />

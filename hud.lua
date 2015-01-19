@@ -376,7 +376,7 @@ function courseplay.hud:setup()
 	-- INGAME MAP ICONS
 	local iconSizePx, minX, minY = 118, 660, 10;
 	self.ingameMapIconsUVs = {};
-	for i=1,courseplay.numAiModes do
+	for i=1,courseplay.NUM_MODES do
 		local col = ((i - 1) % 3) + 1;
 		local line = ceil(i / 3);
 
@@ -401,7 +401,7 @@ function courseplay.hud:setContent(vehicle)
 
 	-- BOTTOM GLOBAL INFO
 	-- mode icon
-	vehicle.cp.hud.content.bottomInfo.showModeIcon = vehicle.cp.mode > 0 and vehicle.cp.mode <= courseplay.numAiModes;
+	vehicle.cp.hud.content.bottomInfo.showModeIcon = vehicle.cp.mode > 0 and vehicle.cp.mode <= courseplay.NUM_MODES;
 
 	-- course name
 	if vehicle.cp.currentCourseName ~= nil then
@@ -1308,10 +1308,10 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	-- ##################################################
 	-- Page 1
 	-- setCpMode buttons
-	local totalWidth = (courseplay.numAiModes * wBig) + ((courseplay.numAiModes - 1) * marginBig);
+	local totalWidth = (courseplay.NUM_MODES * wBig) + ((courseplay.NUM_MODES - 1) * marginBig);
 	local baseX = self.baseCenterPosX - totalWidth/2;
 	local y = self.linesButtonPosY[8] + self:pxToNormal(2, 'y');
-	for i=1, courseplay.numAiModes do
+	for i=1, courseplay.NUM_MODES do
 		local posX = baseX + ((i - 1) * (wBig + marginBig));
 		local toolTip = courseplay:loc(('COURSEPLAY_MODE_%d'):format(i));
 

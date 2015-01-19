@@ -101,6 +101,7 @@
 		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 					 text="Еду рядом с комбайном" />
 		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 						 text="Маневрирую для погрузки" />
 		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 				 text="Комбайну нужна разгрузка" />
+		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	 text="Перекур, пусть пока комбайн отъедет" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 						 text="Возвращение к %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 						 text="Еду на временную стоянку" />
 		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 					 text="Жду заполнения бункера" />
@@ -149,6 +150,8 @@
 		<text name="COURSEPLAY_START" 									 text="Старт" />
 		<text name="COURSEPLAY_FINISH" 									 text="Финиш" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="Не рабочий маршрут" />
+		
+		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="Ковш не обнаружен" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS" 						 text="ПОЗИЦИИ КОВША" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS_MISSING" 				 text="Позиции ковша не установлены" />
@@ -156,7 +159,16 @@
 		<text name="COURSEPLAY_SHOVEL_TRANSPORT_POSITION" 				 text="Транспортировка" />
 		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION" 			 text="Предразгрузка" />
 		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION" 				 text="Разгрузка" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION" 			 text="Сохранить позицию" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_TRANSPORT_POSITION" 			 text="Сохранить позицию" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_PRE_UNLOADING_POSITION" 		 text="Сохранить позицию" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_UNLOADING_POSITION" 			 text="Сохранить позицию" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 		 text="Показать позицию" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 		 text="Показать позицию" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 	 text="Показать позицию" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 		 text="Показать позицию" />
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Готово, поехали" />
+		
 		<text name="COURSEPLAY_START_AT_POINT" 							 text="Способ запуска:" />
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="с ближайшей точки" />
 		<text name="COURSEPLAY_FIRST_POINT" 							 text="со стартовой точки" />
@@ -220,6 +232,8 @@
 		<text name="COURSEPLAY_START_STOP" 								 text="Courseplay: старт/стоп маршрута" />
 		<text name="COURSEPLAY_CANCELWAIT" 								 text="Courseplay: остановка в следующей точке" />
 		<text name="COURSEPLAY_DRIVENOW" 								 text="Courseplay: старт маршрута" />
+		<text name="COURSEPLAY_NEXTMODE" 								 text="Courseplay: следующий тип работы" />
+		<text name="COURSEPLAY_PREVMODE" 								 text="Courseplay: предыдущий тип работы" />
 		<text name="COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Courseplay: 1 функция мыши" />
 		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: 2 функция мыши" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="показать курсор" />

@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="22">
-	<version>4.01.0037</version>
+	<version>4.01.0047</version>
 	<author><![CDATA[Courseplay Dev Team]]></author>
 	<title>
 		<br>Courseplay</br>
@@ -101,6 +101,8 @@ Tradutores: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR] 
 		<input name="COURSEPLAY_START_STOP"				category="VEHICLE"	key1="KEY_KP_7"		key2="" button="" device="0" mouse=""					/>
 		<input name="COURSEPLAY_CANCELWAIT"				category="VEHICLE"	key1="KEY_KP_8"		key2="" button="" device="0" mouse=""					/>
 		<input name="COURSEPLAY_DRIVENOW"				category="VEHICLE"	key1="KEY_KP_9"		key2="" button="" device="0" mouse=""					/>
+		<input name="COURSEPLAY_NEXTMODE"				category="VEHICLE"	key1="KEY_pageup"	key2="" button="" device="0" mouse=""					/>
+		<input name="COURSEPLAY_PREVMODE"				category="VEHICLE"	key1="KEY_pagedown"	key2="" button="" device="0" mouse=""					/>
 		<input name="COURSEPLAY_MOUSEACTION_PRIMARY"	category="VEHICLE"	key1=""				key2="" button="" device="0" mouse="MOUSE_BUTTON_LEFT"	/>
 		<input name="COURSEPLAY_MOUSEACTION_SECONDARY"	category="VEHICLE"	key1=""				key2="" button="" device="0" mouse="MOUSE_BUTTON_RIGHT"	/>
 	</inputBindings>

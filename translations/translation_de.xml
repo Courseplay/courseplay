@@ -105,6 +105,7 @@
 		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 					 text="Fahre neben Drescher" />
 		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 						 text="Fahre zu Drescher" />
 		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 				 text="Drescher sagt ich soll anhalten" />
+		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	 text="Warte bis die Warteposition frei ist" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 						 text="wende in Richtung Koordinaten %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 						 text="fahre zu Wegpunkt %d %d" />
 		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 					 text="Warte bis Füllstand erreicht ist" />
@@ -234,6 +235,8 @@
 		<text name="COURSEPLAY_START_STOP" 								 text="Courseplay: Abfahrer einstellen/entlassen" />
 		<text name="COURSEPLAY_CANCELWAIT" 								 text="Courseplay: Warten am letzten Wegpunkt oder Trigger" />
 		<text name="COURSEPLAY_DRIVENOW" 								 text="Courseplay: sofort abfahren" />
+		<text name="COURSEPLAY_NEXTMODE" 								 text="Courseplay: nächster Modus" />
+		<text name="COURSEPLAY_PREVMODE" 								 text="Courseplay: voriger Modus" />
 		<text name="COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Courseplay: Maus-Aktion" />
 		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: sekundäre Maus-Aktion" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="Mauszeiger anzeigen" />

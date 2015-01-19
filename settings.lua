@@ -14,12 +14,56 @@ end;
 function courseplay:setCpMode(vehicle, modeNum)
 	if vehicle.cp.mode ~= modeNum then
 		vehicle.cp.mode = modeNum;
+		courseplay:setNextPrevModeVars(vehicle);
 		courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.currentModeIcon, courseplay.hud.bottomInfo.modeUVsPx[modeNum], courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
 		courseplay:buttonsActiveEnabled(vehicle, 'all');
 		if modeNum == 1 then
 			courseplay:reset_tools(vehicle);
 		end;
 	end;
+end;
+
+function courseplay:setNextPrevModeVars(vehicle)
+	local curMode = vehicle.cp.mode;
+	local nextMode, prevMode, nextModeTest, prevModeTest = nil, nil, curMode + 1, curMode - 1;
+
+	if curMode > courseplay.MODE_GRAIN_TRANSPORT then
+		while prevModeTest >= courseplay.MODE_GRAIN_TRANSPORT do
+			if courseplay:getCanVehicleUseMode(vehicle, prevModeTest) then
+				prevMode = prevModeTest;
+				break;
+			else
+				-- invalid mode --> skip
+				prevModeTest = prevModeTest - 1;
+			end;
+		end;
+	end;
+	vehicle.cp.prevMode = prevMode;
+
+	if curMode < courseplay.NUM_MODES then
+		while nextModeTest <= courseplay.NUM_MODES do
+			if courseplay:getCanVehicleUseMode(vehicle, nextModeTest) then
+				nextMode = nextModeTest;
+				break;
+			else
+				-- invalid mode --> skip
+				nextModeTest = nextModeTest + 1;
+			end;
+		end;
+	end;
+	vehicle.cp.nextMode = nextMode;
+end;
+
+function courseplay:getCanVehicleUseMode(vehicle, mode)
+	if mode == courseplay.MODE_COMBINE_SELF_UNLOADING and not vehicle.cp.isCombine and not vehicle.cp.isChopper and not vehicle.cp.isHarvesterSteerable then
+		return false;
+	elseif (vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable) and (mode ~= courseplay.MODE_TRANSPORT and mode ~= courseplay.MODE_FIELDWORK and mode ~= courseplay.MODE_COMBINE_SELF_UNLOADING) then
+		return false;
+	elseif mode ~= courseplay.MODE_TRANSPORT and (vehicle.cp.isWoodHarvester or vehicle.cp.isWoodForwarder) then
+		return false;
+	end;
+
+	return true;
 end;
 
 function courseplay:toggleWantsCourseplayer(combine)
@@ -130,9 +174,7 @@ function courseplay:buttonsActiveEnabled(vehicle, section)
 			local fn, prm = button.functionToCall, button.parameter;
 			if fn == 'setCpMode' and (anySection or section == 'quickModes') then
 				button:setActive(vehicle.cp.mode == prm);
-				local disabled = (prm == 7 and not vehicle.cp.isCombine and not vehicle.cp.isChopper and not vehicle.cp.isHarvesterSteerable)
-							  or ((prm == 1 or prm == 2 or prm == 3 or prm == 4 or prm == 8 or prm == 9) and (vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable))
-							  or ((prm ~= 5) and (vehicle.cp.isWoodHarvester or vehicle.cp.isWoodForwarder));
+				local disabled = not courseplay:getCanVehicleUseMode(vehicle, prm);
 				button:setDisabled(disabled);
 				button:setCanBeClicked(not button.isDisabled and not button.isActive);
 			end;
@@ -1095,9 +1137,9 @@ function courseplay:validateCourseGenerationData(vehicle)
 end;
 
 function courseplay:validateCanSwitchMode(vehicle)
-	vehicle:setCpVar('canSwitchMode',not vehicle:getIsCourseplayDriving() and not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused and not vehicle.cp.fieldEdge.customField.isCreated,courseplay.isClient);
+	vehicle:setCpVar('canSwitchMode', not vehicle:getIsCourseplayDriving() and not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused and not vehicle.cp.fieldEdge.customField.isCreated,courseplay.isClient);
 	if courseplay.debugChannels[12] then
-		courseplay:debug(string.format("%s: validateCanSwitchMode(): drive=%s, record=%s, record_pause=%s, customField.isCreated=%s ==> canSwitchMode=%s", nameNum(vehicle), tostring(vehicle:getIsCourseplayDriving()), tostring(vehicle.cp.isRecording), tostring(vehicle.cp.recordingIsPaused), tostring(vehicle.cp.fieldEdge.customField.isCreated), tostring(vehicle.cp.canSwitchMode)), 12);
+		courseplay:debug(('%s: validateCanSwitchMode(): isDriving=%s, isRecording=%s, recordingIsPaused=%s, customField.isCreated=%s ==> canSwitchMode=%s'):format(nameNum(vehicle), tostring(vehicle:getIsCourseplayDriving()), tostring(vehicle.cp.isRecording), tostring(vehicle.cp.recordingIsPaused), tostring(vehicle.cp.fieldEdge.customField.isCreated), tostring(vehicle.cp.canSwitchMode)), 12);
 	end;
 end;
 
@@ -1468,9 +1510,11 @@ function courseplay:setCurrentTargetFromList(vehicle, index)
 	end;
 end;
 
-function courseplay:addNewTargetVector(vehicle, x, z, trailer)
+function courseplay:addNewTargetVector(vehicle, x, z, trailer,node)
 	local tx, ty, tz = 0,0,0
-	if trailer ~= nil then
+	if node ~= nil then
+		tx, ty, tz = localToWorld(node, x, 0, z);
+	elseif trailer ~= nil then
 		tx, ty, tz = localToWorld(trailer.rootNode, x, 0, z);
 	else
 		tx, ty, tz = localToWorld(vehicle.cp.DirectionNode or vehicle.rootNode, x, 0, z);

@@ -98,9 +98,10 @@
 		<text name="COURSEPLAY_NO_WORK_AREA" 							 text="Nincs munkaterülete a vezetőnek" />
 		<text name="COURSEPLAY_COMBINED_COURSES" 						 text="Betöltött útvonal" />
 		<text name="COURSEPLAY_DRIVE_BEHIND_COMBINE" 					 text="Kombájnhoz vezetés" />
-		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 					 text="következő kombájnhoz megy" /> <!--New text: Kombájn mellett halad-->
+		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 					 text="Kombájn mellett halad" />
 		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 						 text="Kombájnhoz megy" />
 		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 				 text="Kombájn azt mondja, állj!" />
+		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	 text="Addig vár, míg a várakozási hely felszabadul" />		
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 						 text="Irány %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 						 text="az %d %d útvonalponthoz megy" />
 		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 					 text="vár, amíg kombájn ürít" />
@@ -149,6 +150,8 @@
 		<text name="COURSEPLAY_START" 									 text="Kezdés" />
 		<text name="COURSEPLAY_FINISH" 									 text="Vége" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="Az útvonal nem megfelelő" />
+
+		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="Kanál nem található" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS" 						 text="Kanál pozíció" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS_MISSING" 				 text="Hiányos kanál pozíció" />
@@ -156,7 +159,16 @@
 		<text name="COURSEPLAY_SHOVEL_TRANSPORT_POSITION" 				 text="Szállítási pozíció" />
 		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION" 			 text="Kirakodást előkészítő pozíció" />
 		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION" 				 text="Kirakási pozíció" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION" 			 text="Töltési pozíció mentése" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_TRANSPORT_POSITION" 			 text="Szállítási pozíció mentése" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_PRE_UNLOADING_POSITION" 		 text="Kirakodást előkészítő pozíció mentése" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_UNLOADING_POSITION" 			 text="Kirakási pozíció mentése" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 		 text="Mozgatás a töltési pozícióba" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 		 text="Mozgatás a szállítási pozícióba" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 	 text="Mozgatás a kirakodást előkészítő pozícióba" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 		 text="Mozgatás a kirakási pozícióba" />
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Kirak és indul tölteni" />
+
 		<text name="COURSEPLAY_START_AT_POINT" 							 text="Útvonal kezdése:" />
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="legközelebbi útpont" />
 		<text name="COURSEPLAY_FIRST_POINT" 							 text="első útpont" />
@@ -219,6 +231,8 @@
 		<text name="COURSEPLAY_START_STOP" 								 text="Vezetősegéd: Vezető indítása/leállítása" />
 		<text name="COURSEPLAY_CANCELWAIT" 								 text="Vezetősegéd: Állj az utolsó ponton következő triggernél" />
 		<text name="COURSEPLAY_DRIVENOW" 								 text="Vezetősegéd: Indítás azonnal!" />
+		<text name="COURSEPLAY_NEXTMODE" 								 text="Vezetősegéd: Következő művelet" />
+		<text name="COURSEPLAY_PREVMODE" 								 text="Vezetősegéd: Előző művelet" />
 		<text name="COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Vezetősegéd: Egér activálás" />
 		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Vezetősegéd: Másodlagos egér aktiválás" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="Egérkurzor megjelenítése" />
