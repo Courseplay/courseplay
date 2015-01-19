@@ -101,7 +101,7 @@
 		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 					 text="Ir junto a la cosechadora" />
 		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 						 text="Ir hacia la cosechadora" />
 		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 				 text="La cosechadora dice que me detenga" />
-		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	 text="Waiting until waiting position is free" /> <!-- TODO: its when the tractor waits, until the combine has cleared the waiting point after unloading -->		
+		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	 text="Esperando a que se vaya la cosechadora" />	
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 						 text="Girar en dirección %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 						 text="Ir al punto %d %d" />
 		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 					 text="Esperar hasta que llegue al nivel de llenado" />
@@ -154,15 +154,15 @@
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="Falta la pala" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS" 						 text="Posiciónes de la pala" />
-		<text name="COURSEPLAY_SHOVEL_POSITIONS_MISSING" 				 text="Faltan posiciónes de la pala" />
-		<text name="COURSEPLAY_SHOVEL_LOADING_POSITION" 				 text="Posición cargar" />
-		<text name="COURSEPLAY_SHOVEL_TRANSPORT_POSITION" 				 text="Posición transportar" />
-		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION" 			 text="Posición antes de descargar" />
-		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION" 				 text="Posición descargar" />
-		<text name="COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION" 			 text="Guardar posición de carga" />
-		<text name="COURSEPLAY_SHOVEL_SAVE_TRANSPORT_POSITION" 			 text="Guardar posición de transporte" />
-		<text name="COURSEPLAY_SHOVEL_SAVE_PRE_UNLOADING_POSITION" 		 text="Guardar posición de pre-descarga" /> <!-- Translation needed -->
-		<text name="COURSEPLAY_SHOVEL_SAVE_UNLOADING_POSITION" 			 text="Guardar posición de descarga" />
+		<text name="COURSEPLAY_SHOVEL_POSITIONS_MISSING" 				 text="Falta definir las posiciónes de la pala" />
+		<text name="COURSEPLAY_SHOVEL_LOADING_POSITION" 				 text="Posición pala para cargar" />
+		<text name="COURSEPLAY_SHOVEL_TRANSPORT_POSITION" 				 text="Posición pala para transportar" />
+		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION" 			 text="Posición pala para pre-descarga" />
+		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION" 				 text="Posición pala para descargar" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION" 			 text="Guardar posición de pala: carga" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_TRANSPORT_POSITION" 			 text="Guardar posición de pala: transporte" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_PRE_UNLOADING_POSITION" 		 text="Guardar posición de pala: pre-descarga" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_UNLOADING_POSITION" 			 text="Guardar posición de pala: descarga" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 		 text="Mover pala a posición de carga" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 		 text="Mover pala a posición de transporte" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 	 text="Mover pala a posición de pre-descarga" />
