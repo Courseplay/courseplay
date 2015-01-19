@@ -1,3 +1,253 @@
+local abs, min = math.abs, math.min;
+
+function courseplay:newturn(self, dt)
+	--[[ TURN STAGES:
+	0:	Raise implements
+	1:	Create Turn maneuver (Creating waypoints to follow)
+	2:	Drive Turn maneuver
+	3:	Lower implement and continue on next lane
+	]]
+
+	local allowedToDrive = true;
+	local moveForwards = true;
+	local refSpeed = self.cp.speeds.turn
+	local directionForce = 1;
+	local lx, lz = 0, 1;
+	local turnOutTimer = 1500;
+	local turnTimer = 1500;
+
+	local frontMarker = Utils.getNoNil(self.cp.aiFrontMarker, -3);
+	local backMarker = Utils.getNoNil(self.cp.backMarkerOffset,0);
+	if self.cp.noStopOnEdge then
+		turnOutTimer = 0;
+	end;
+
+	local vehicleX, vehicleY, vehicleZ = getWorldTranslation(self.cp.DirectionNode);
+
+	local newTarget = self.cp.turnTargets[self.cp.curTurnIndex];
+
+	-- Debug prints
+	if courseplay.debugChannels[14] then
+		if #self.cp.turnTargets > 0 then
+			-- Draw debug points for waypoints.
+			for k, v in ipairs(self.cp.turnTargets) do
+				local posY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, v.posX, 1, v.posZ);
+				drawDebugPoint(v.posX, posY + 3, v.posZ, 0, 1, 1, 1);
+			end;
+		end;
+	end;
+
+	-- TURN STAGES 1 - 4
+	if self.cp.turnStage > 0 then
+
+		-- TURN STAGES 1 - Create Turn maneuver (Creating waypoints to follow)
+		if self.cp.turnStage == 1 then
+			courseplay:clearTurnTargets(self); -- Make sure we have cleaned it from any previus usage.
+			self.cp.curTurnIndex = 1; -- Reset the current target index to the first one.
+
+			-- Get the turn radius either by the automatic or user provided turn circle.
+			local turnRadius = self.cp.turnDiameter / 2;
+
+			-- Get the new turn target with offset
+			local cx,cz = self.Waypoints[self.cp.waypointIndex+1].cx, self.Waypoints[self.cp.waypointIndex+1].cz;
+			if (self.cp.laneOffset ~= nil and self.cp.laneOffset ~= 0) or (self.cp.toolOffsetX ~= nil and self.cp.toolOffsetX ~= 0) then
+				courseplay:debug(string.format("%s:(Turn) turnWithOffset = true", nameNum(self)), 14);
+				cx,cz = courseplay:turnWithOffset(self)
+			end;
+			local targetDeltaX, _, targetDeltaZ = worldToLocal(self.cp.DirectionNode, cx, vehicleY, cz);
+			courseplay:debug(string.format("%s:(Turn) targetDeltaX=%.2f, targetDeltaZ=%.2f", nameNum(self), targetDeltaX, targetDeltaZ), 14);
+
+			-- Get the turn direction
+			local direction = 1;
+			if targetDeltaX < 0 then
+				direction = -1;
+			end;
+
+			-- Find the zOffset based on tractors current position from the start turn wp
+			local _, _, z = worldToLocal(self.cp.DirectionNode, self.Waypoints[self.cp.waypointIndex].cx, vehicleY, self.Waypoints[self.cp.waypointIndex].cz);
+			local zOffset = abs(z) + 1;
+			-- If the front marker is in front of us and it's bigger than the normal offset, use that instead.
+			if frontMarker > abs(z) then
+				zOffset = frontMarker + 1;
+			end;
+
+
+			-- No need for Ohm or reverse turn
+			if abs(targetDeltaX) > self.cp.turnDiameter then
+				local posX, posZ;
+				local index = 1;
+				-- WP 1
+				posX, _, posZ = localToWorld(self.cp.DirectionNode, 0, 0, 1);
+				courseplay:addTurnTarget(self, posX, posZ);
+
+				-- WP 2
+				-- Target is less that 45° on the side of us
+				if (targetDeltaZ + zOffset) > abs(targetDeltaX) then
+					posX, _, posZ = localToWorld(self.cp.DirectionNode, targetDeltaX - (turnRadius * 2 * direction), 0, targetDeltaZ + zOffset);
+
+				-- Target is 45° or more on the side of us
+				else
+					posX, _, posZ = localToWorld(self.cp.DirectionNode, turnRadius * direction, 0, turnRadius + 1);
+				end;
+				courseplay:addTurnTarget(self, posX, posZ);
+
+				-- WP 3
+				posX, _, posZ = localToWorld(self.cp.DirectionNode, targetDeltaX - (turnRadius * direction), 0, targetDeltaZ + turnRadius + zOffset);
+				courseplay:addTurnTarget(self, posX, posZ);
+
+				-- WP 4
+				posX, _, posZ = localToWorld(self.cp.DirectionNode, targetDeltaX, 0, targetDeltaZ + zOffset);
+				courseplay:addTurnTarget(self, posX, posZ);
+
+				-- WP 5
+				posX, _, posZ = localToWorld(self.cp.DirectionNode, targetDeltaX, 0, targetDeltaZ - (self.cp.totalLength + self.cp.totalLengthOffset + 5));
+				courseplay:addTurnTarget(self, posX, posZ, true);
+
+				courseplay:debug(string.format("%s:(Turn) Normal turn with %d waypoints", nameNum(self), #self.cp.turnTargets), 14);
+
+			-- Ohm or reverse turn
+			else
+				-- TODO: (Claus) make Ohm and Reverse turn maneuver.
+			end;
+
+			self.cp.turnStage = 2;
+
+		-- TURN STAGES 2 - Drive Turn maneuver
+		elseif self.cp.turnStage == 2 then
+			if newTarget then
+				if newTarget.stage3 then
+					self.cp.turnStage = 3;
+					return;
+				end;
+
+				-- Change turn waypoint
+				local dist = courseplay:distance(newTarget.posX, newTarget.posZ, vehicleX, vehicleZ);
+				if dist < 1.5 then
+					self.cp.curTurnIndex = min(self.cp.curTurnIndex + 1, #self.cp.turnTargets);
+				end;
+			else
+				self.cp.turnStage = 1; -- Somehow we don't have any waypoints, so try recollect them.
+				return;
+			end;
+
+		-- TURN STAGES 3 - Lower implement and continue on next lane
+		else
+			local _, _, deltaZ = worldToLocal(self.cp.DirectionNode,self.Waypoints[self.cp.waypointIndex+1].cx, vehicleY, self.Waypoints[self.cp.waypointIndex+1].cz)
+
+			-- Lower implement and continue on next lane
+			if deltaZ < frontMarker then
+				courseplay:lowerImplements(self, true, true);
+
+				self.cp.turnStage = 0;
+				self.cp.isTurning = nil;
+				self.cp.waitForTurnTime = self.timer + turnOutTimer;
+
+				courseplay:setWaypointIndex(self, courseplay:getNextFwdPoint(self));
+				courseplay:clearTurnTargets(self);
+
+				return;
+			end;
+		end;
+
+
+	-- TURN STAGES 0
+	else
+		if self.isStrawEnabled then
+			self.cp.savedNoStopOnTurn = self.cp.noStopOnTurn
+			self.cp.noStopOnTurn = false;
+			turnTimer = self.strawToggleTime or 5;
+		elseif self.cp.savedNoStopOnTurn ~= nil then
+			self.cp.noStopOnTurn = self.cp.savedNoStopOnTurn;
+			self.cp.savedNoStopOnTurn = nil;
+		end;
+
+		local offset = Utils.getNoNil(self.cp.totalOffsetX, 0);
+		local x,y,z = localToWorld(self.cp.DirectionNode, offset, 0, backMarker);
+		local dist = courseplay:distance(self.Waypoints[self.cp.waypointIndex].cx, self.Waypoints[self.cp.waypointIndex].cz, x, z);
+		if backMarker <= 0 then
+			if  dist < 0.5 then
+				if not self.cp.noStopOnTurn then
+					self.cp.waitForTurnTime = self.timer + turnTimer;
+				end;
+				courseplay:lowerImplements(self, false, false);
+				--updateWheels = false;
+				self.cp.turnStage = 1;
+			end;
+		else
+			if dist < 0.5 and self.cp.turnStage ~= -1 then
+				self.cp.turnStage = -1;
+				courseplay:lowerImplements(self, false, false);
+			end;
+			if dist > backMarker and self.cp.turnStage == -1 then
+				if not self.cp.noStopOnTurn then
+					self.cp.waitForTurnTime = self.timer + turnTimer;
+				end;
+				--updateWheels = false;
+				self.cp.turnStage = 1;
+			end;
+		end;
+	end;
+
+	-- allowedToDrive false -> SLOW DOWN TO STOP
+	if not allowedToDrive then
+		-- reset slipping timers
+		courseplay:resetSlippingTimers(self)
+		if courseplay.debugChannels[21] then
+			renderText(0.5,0.85-(0.03*self.cp.coursePlayerNum),0.02,string.format("%s: self.lastSpeedReal: %.8f km/h ",nameNum(self),self.lastSpeedReal*3600))
+		end
+		self.cp.TrafficBrake = false;
+		self.cp.isTrafficBraking = false;
+
+		local moveForwards = true;
+		if self.cp.curSpeed > 1 then
+			allowedToDrive = true;
+			moveForwards = self.movingDirection == 1;
+			directionForce = -1;
+		end;
+		self.cp.speedDebugLine = ("turn("..tostring(debug.getinfo(1).currentline-1).."): allowedToDrive false ")
+	else
+		self.cp.speedDebugLine = ("turn("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
+		courseplay:setSpeed(self, refSpeed )
+	end;
+
+	--Set the driving direction
+	if newTarget then
+		lx, lz = AIVehicleUtil.getDriveDirection(self.cp.DirectionNode, newTarget.posX, vehicleY, newTarget.posZ);
+	end;
+	if courseplay.debugChannels[12] and newTarget then
+		local posY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, newTarget.posX, 1, newTarget.posZ);
+		drawDebugPoint(newTarget.posX, posY + 3, newTarget.posZ, 1, 1, 0, 1);
+	end;
+
+	-- Traffic break if something is in front of us
+	if self.cp.TrafficBrake then
+		moveForwards = self.movingDirection == -1;
+		--lx = 0
+		--lz = 1
+	end
+
+	-- Vehicles with inverted driving direction.
+	if self.invertedDrivingDirection then
+		lx = -lx
+	end
+
+	--self,dt,steeringAngleLimit,acceleration,slowAcceleration,slowAngleLimit,allowedToDrive,moveForwards,lx,lz,maxSpeed,slowDownFactor,angle
+	AIVehicleUtil.driveInDirection(self, dt, (self.cp.steeringAngle - 5), directionForce, 0.5, 20, allowedToDrive, moveForwards, lx, lz, refSpeed, 1);
+	courseplay:setTrafficCollision(self, lx, lz, true);
+end;
+
+function courseplay:addTurnTarget(vehicle, posX, posZ, stage3)
+	local target = {};
+	target.posX 	= posX;
+	target.posZ 	= posZ;
+	target.stage3	= stage3;
+	table.insert(vehicle.cp.turnTargets, target);
+end
+
+function courseplay:clearTurnTargets(vehicle)
+	vehicle.cp.turnTargets = {};
+end
+
 function courseplay:turn(self, dt) --!!!
 	--[[ TURN STAGES:
 	0:	raise implements
@@ -8,6 +258,11 @@ function courseplay:turn(self, dt) --!!!
 	5:	
 	6:	
 	]]
+
+	if self.cp.hasSprayer then
+		courseplay:newturn(self, dt);
+		return;
+	end;
 
 	local newTargetX, newTargetY, newTargetZ;
 	local moveForwards = true;

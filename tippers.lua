@@ -50,6 +50,8 @@ function courseplay:reset_tools(vehicle)
 		courseplay.hud:setReloadPageOrder(vehicle, 1, true);
 	end;
 
+	courseplay:calculateWorkWidth(vehicle, true);
+
 	vehicle.cp.currentTrailerToFill = nil;
 	vehicle.cp.trailerFillDistance = nil;
 	vehicle.cp.toolsDirty = false;

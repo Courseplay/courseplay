@@ -157,6 +157,8 @@ function courseplay:load(xmlFile)
 	self.cp.curTarget = {};
 	self.cp.curTargetMode7 = {};
 	self.cp.nextTargets = {};
+	self.cp.turnTargets = {};
+	self.cp.curTurnIndex = 1;
 
 	-- speed limits
 	self.cp.speeds = {
