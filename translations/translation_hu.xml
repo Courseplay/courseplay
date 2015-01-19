@@ -26,7 +26,7 @@
 		<text name="COURSEPLAY_MODE_9" 									 text="Típus: Rakodás (kanalat tölt és ürít)" />
 		<text name="COURSEPLAY_CONTINUE" 								 text="tovább hajtás" />
 		<text name="COURSEPLAY_CLEAR_COURSE" 							 text="Útvonalat alaphelyzetbe" />
-		<text name="COURSEPLAY_DRIVE_NOW" 								 text="Indítás azonnal (Nem vár a kiürítésig)" />
+		<text name="COURSEPLAY_DRIVE_NOW" 								 text="Indítás azonnal (Nem vár a töltésre)" />
 		<text name="COURSEPLAY_DRIVE_ON_AT" 							 text="Elszállítás:" />
 		<text name="UNKNOWN" 											 text="Ismeretlen" />
 		<text name="COURSEPLAY_DISTANCE" 								 text="Távolság" />
@@ -48,7 +48,7 @@
 		<text name="COURSEPLAY_NEEDS_REFILLING" 						 text=": A munkaeszközt újra kell tölteni." />
 		<text name="COURSEPLAY_UNLOADING_BALES" 						 text="kirakja a bálákat." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 							 text="dugóban van (forgalomban)" />
-		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 						 text="Elérte a triggerig" />
+		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 						 text="Elérte a triggert" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Töltés: %d -ból %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Útpontok megjelenítése" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Útvonal keresése" />
