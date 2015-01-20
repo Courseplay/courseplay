@@ -170,6 +170,11 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 				end;
 
 				-- automatic unload
+				if vehicle.cp.delayFolding and courseplay:timerIsThrough(vehicle, 'foldBaleLoader', false) then
+					vehicle.cp.unloadOrder = true
+					vehicle.cp.delayFolding = nil
+				end
+				
 				if (not workArea and vehicle.Waypoints[vehicle.cp.previousWaypointIndex].wait and (vehicle.cp.wait or fillLevelPct == 0)) or vehicle.cp.unloadOrder then
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,false,false,false,allowedToDrive,nil,true);
 					if not specialTool then
@@ -183,6 +188,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 								if not courseplay:getCustomTimerExists(vehicle, 'foldBaleLoader') then
 									-- print(('%s: foldBaleLoader timer not running -> set timer 2 seconds'):format(nameNum(workTool)));
 									courseplay:setCustomTimer(vehicle, 'foldBaleLoader', 2);
+									vehicle.cp.delayFolding = true;
 								elseif courseplay:timerIsThrough(vehicle, 'foldBaleLoader', false) then
 									-- print(('%s: timer through -> set state BaleLoader.CHANGE_SINK -> reset timer'):format(nameNum(workTool)));
 									g_server:broadcastEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_SINK), true, nil, workTool);
