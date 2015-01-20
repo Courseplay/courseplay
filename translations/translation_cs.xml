@@ -216,7 +216,7 @@
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="地图图标:显示任务车辆信息" />
 		<text name="COURSEPLAY_ALWAYS_USE_4WD" 							 text="打开4WD模式" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="需要自动测量土地范围路径么？" />
-		<text name="COURSEPLAY_YES_NO_WAGES" 							 text="你想要赚取雇人的工资么(%s/小时)？" />
+		<text name="COURSEPLAY_YES_NO_WAGES" 							 text="你想要CP赚取雇人的工资么(%s/小时)？" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 					 text="种子使用量" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 				 text="土地编号: %d号(%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 			 text="种子类型: %s" />
