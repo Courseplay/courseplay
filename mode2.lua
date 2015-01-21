@@ -123,11 +123,11 @@ function courseplay:handle_mode2(vehicle, dt)
 		AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, 0, 0, 28, false, moveForwards, 0, 1)
 		courseplay:resetSlippingTimers(vehicle)
 
-		if vehicle.cp.isLoaded then
+		--[[if vehicle.cp.isLoaded then
 			courseplay:setWaypointIndex(vehicle, 2);
 			courseplay:setModeState(vehicle, 99);
 			return false
-		end
+		end]]
 
 		-- are there any combines out there that need my help?
 		if CpManager.realTime5SecsTimerThrough then
@@ -773,7 +773,7 @@ function courseplay:unload_combine(vehicle, dt)
 	end
 
 
-	-- [[ TODO: MODESTATE 99 - WTF?
+	--[[ TODO: MODESTATE 99 - WTF?
 	-- STATE 99 (turn maneuver)
 	if vehicle.cp.modeState == 99 and vehicle.cp.curTarget.x ~= nil and vehicle.cp.curTarget.z ~= nil then
 		--courseplay:removeFromCombinesIgnoreList(vehicle, combine)
@@ -807,7 +807,7 @@ function courseplay:unload_combine(vehicle, dt)
 			allowedToDrive = true
 		end
 	end
-	--]]
+	]]
 
 
 
@@ -866,10 +866,10 @@ function courseplay:unload_combine(vehicle, dt)
 				elseif vehicle.cp.mode2nextState == 81 then -- tipper turning from combine
 
 					-- print(('%s [%s(%d)]: no nextTargets, mode2nextState=81 -> set waypointIndex to 2, modeState to 99, isLoaded to true, return false'):format(nameNum(vehicle), curFile, debug.getinfo(1).currentline)); -- DEBUG140301
-					courseplay:setWaypointIndex(vehicle, 2);
 					courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine)
-					courseplay:setModeState(vehicle, 99);
 					courseplay:setIsLoaded(vehicle, true);
+					courseplay:setModeState(vehicle, 0);
+					courseplay:setWaypointIndex(vehicle, 2);
 
 				elseif vehicle.cp.mode2nextState == 1 then
 					-- refSpeed = vehicle.cp.speeds.turn

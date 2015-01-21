@@ -50,10 +50,10 @@ function courseplay:drive(self, dt)
 	end;
 
 
-	-- unregister at combine, if there is one
+	--[[ unregister at combine, if there is one
 	if self.cp.isLoaded == true and self.cp.positionWithCombine ~= nil then
 		courseplay:unregisterFromCombine(self, self.cp.activeCombine)
-	end
+	end]]
 
 	-- Turn on sound / control lights
 	if not self.isControlled then
