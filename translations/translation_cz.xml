@@ -70,7 +70,7 @@
 		<text name="COURSEPLAY_SPEED_TURN" 								 text="Rychlost otáčení:" />
 		<text name="COURSEPLAY_SPEED_FIELD" 							 text="Rychlost na poli:" />
 		<text name="COURSEPLAY_SPEED_MAX" 								 text="Rychlost na cestě:" />
-		<text name="COURSEPLAY_SPEED_REVERSING" 						 text="Vykládání (BGA):" /> <!-- TODO: "Reversing speed" -->
+		<text name="COURSEPLAY_SPEED_REVERSING" 						 text="Rychlost couvání:" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE" 							 text="Rychlost:" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_RECORDING" 				 text="jako při nahrávání" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 						 text="maximální rychlost" />
@@ -98,7 +98,7 @@
 		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 					 text="Jedu vedle kombajnu/rezačky" />
 		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 						 text="Jedu ke kombajnu/rezačce" />
 		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 				 text="Kombajn/řezačka říká, že mám zastavit" />
-		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	 text="Waiting until waiting position is free" /> <!-- TODO: its when the tractor waits, until the combine has cleared the waiting point after unloading -->		
+		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	 text="Čekám, než se uvolní bod k čekání" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 						 text="Otočím se ve směru %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 						 text="Jedu na souřadnice %d %d" />
 		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 					 text="Čekám, než bude kombajn naplněn" />
@@ -155,14 +155,14 @@
 		<text name="COURSEPLAY_SHOVEL_TRANSPORT_POSITION" 				 text="Pozice lžíce při převozu:" />
 		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION" 			 text="Pozice lžíce před vykládáním:" />
 		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION" 				 text="Pozice lžíce při vykládání:" />
-		<text name="COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION" 			 text="Save loading position" /> <!-- Translation needed -->
-		<text name="COURSEPLAY_SHOVEL_SAVE_TRANSPORT_POSITION" 			 text="Save transport position" /> <!-- Translation needed -->
-		<text name="COURSEPLAY_SHOVEL_SAVE_PRE_UNLOADING_POSITION" 		 text="Save pre-unloading position" /> <!-- Translation needed -->
-		<text name="COURSEPLAY_SHOVEL_SAVE_UNLOADING_POSITION" 			 text="Save unloading position" /> <!-- Translation needed -->
-		<text name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 		 text="Move to loading position" /> <!-- Translation needed -->
-		<text name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 		 text="Move to transport position" /> <!-- Translation needed -->
-		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 	 text="Move to pre-unloading position" /> <!-- Translation needed -->
-		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 		 text="Move to unloading position" /> <!-- Translation needed -->
+		<text name="COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION" 			 text="Uložit pozici lžíce při nakládání" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_TRANSPORT_POSITION" 			 text="Uložit pozici lžíce při převozu" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_PRE_UNLOADING_POSITION" 		 text="Uložit pozici lžíce před vykládání" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_UNLOADING_POSITION" 			 text="Uložit pozici lžíce při vykládání" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 		 text="Pohyb lžíce do pozice k nakládání" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 		 text="Pohyb lžíce do pozice k převozu" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 	 text="Pohyb lžíce do pozice k vykládání" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 		 text="Pohyb lžíce do pozice k vykládání" />
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Zastavit a jet nákládat:" />
 
 		<text name="COURSEPLAY_START_AT_POINT" 							 text="Začátek trasy:" />
@@ -227,8 +227,8 @@
 		<text name="COURSEPLAY_START_STOP" 								 text="Courseplay: aktivovat/zastavit odvozce" />
 		<text name="COURSEPLAY_CANCELWAIT" 								 text="Courseplay: čekat na posledním bodě nebo triggeru" />
 		<text name="COURSEPLAY_DRIVENOW" 								 text="Courseplay: odvézt bez čekání na doplnění" />
-		<text name="COURSEPLAY_NEXTMODE" 								 text="Courseplay: next mode" /> <!-- TRANSLATION NEEDED -->
-		<text name="COURSEPLAY_PREVMODE" 								 text="Courseplay: previous mode" /> <!-- TRANSLATION NEEDED -->
+		<text name="COURSEPLAY_NEXTMODE" 								 text="Courseplay: další mód" />
+		<text name="COURSEPLAY_PREVMODE" 								 text="Courseplay: předchozí mód" />
 		<text name="COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Courseplay: myš akce" />
 		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: myš sekundární akce" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="skrýt kurzor" />
