@@ -101,7 +101,7 @@
 		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 					 text="Naast combine rijden" />
 		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 						 text="Naar combine rijden" />
 		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 				 text="Combine laat halthouden" />
-		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	 text="Waiting until waiting position is free" /> <!-- TODO: its when the tractor waits, until the combine has cleared the waiting point after unloading -->		
+		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	 text="Wacht tot wachtpositie vrij is" />	
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 						 text="Ga naar %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 						 text="Ga naar markering %d %d" />
 		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 					 text="Wacht tot vulstand bereikt is" />
