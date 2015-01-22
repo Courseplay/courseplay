@@ -416,6 +416,7 @@ function courseplay:updateAllTriggers()
 		liquidManureFillTriggers = {};
 		sowingMachineFillTriggers = {};
 		sprayerFillTriggers = {};
+		waterReceivers = {};
 		waterTrailerFillTriggers = {};
 		weightStations = {};
 		allNonUpdateables = {};
@@ -427,6 +428,7 @@ function courseplay:updateAllTriggers()
 	courseplay.triggers.liquidManureFillTriggersCount = 0;
 	courseplay.triggers.sowingMachineFillTriggersCount = 0;
 	courseplay.triggers.sprayerFillTriggersCount = 0;
+	courseplay.triggers.waterReceiversCount = 0;
 	courseplay.triggers.waterTrailerFillTriggersCount = 0;
 	courseplay.triggers.weightStationsCount = 0;
 	courseplay.triggers.allNonUpdateablesCount = 0;
@@ -460,12 +462,11 @@ function courseplay:updateAllTriggers()
 						courseplay:cpAddTrigger(triggerId, trigger, 'sprayer', 'nonUpdateable');
 						courseplay:debug('\t\tadd SprayerFillTrigger', 1);
 
-					--[[ WaterTrailerFillTriggers
+					-- WaterTrailerFillTriggers
 					elseif trigger.isa and trigger:isa(WaterTrailerFillTrigger) then
 						trigger.isWaterTrailerFillTrigger = true;
 						courseplay:cpAddTrigger(triggerId, trigger, 'water', 'nonUpdateable');
 						courseplay:debug('\t\tadd waterTrailerFillTrigger', 1);
-					--]]
 					end;
 				end;
 			end;
@@ -490,6 +491,10 @@ function courseplay:updateAllTriggers()
 	end;
 
 	-- onCreate objects
+	local WaterMod;
+	if g_currentMission.missionInfo.customEnvironment then
+		WaterMod = getfenv(0)[g_currentMission.missionInfo.customEnvironment].WaterMod;
+	end;
 	if g_currentMission.onCreateLoadedObjects ~= nil then
 		courseplay:debug('\tcheck onCreateLoadedObjects', 1);
 		for k, object in pairs(g_currentMission.onCreateLoadedObjects) do
@@ -511,7 +516,7 @@ function courseplay:updateAllTriggers()
 
 			-- ManureLager
 			elseif object.triggerId ~= nil then
-				if object.ManureLagerDirtyFlag or Utils.endsWith(object.className, 'ManureLager') then
+				if object.isManureLager or object.ManureLagerDirtyFlag or Utils.endsWith(object.className, 'ManureLager') then
 					object.isManureLager = true;
 					object.isLiquidManureFillTrigger = true;
 					courseplay:cpAddTrigger(object.triggerId, object, 'liquidManure', 'nonUpdateable');
@@ -519,12 +524,29 @@ function courseplay:updateAllTriggers()
 				end;
 
 			-- Pigs [marhu]
-			elseif object.numSchweine ~= nil and object.liquidManureSiloTrigger ~= nil and object.liquidManureSiloTrigger.triggerId ~= nil then
-				triggerId = object.liquidManureSiloTrigger.triggerId;
-				object.isSchweinemastLiquidManureTrigger = true;
-				object.isLiquidManureFillTrigger = true;
-				courseplay:cpAddTrigger(triggerId, object, 'liquidManure', 'nonUpdateable');
-				courseplay:debug('\t\tadd pigs liquidManureFillTrigger [mod]', 1);
+			elseif object.SchweineZuchtDirtyFlag or object.numSchweine ~= nil then
+				if object.liquidManureSiloTrigger ~= nil and object.liquidManureSiloTrigger.triggerId ~= nil then
+					local trigger = object.liquidManureSiloTrigger;
+					local triggerId = trigger.triggerId;
+					trigger.isSchweinemastLiquidManureTrigger = true;
+					trigger.isLiquidManureFillTrigger = true;
+					courseplay:cpAddTrigger(triggerId, object, 'liquidManure', 'nonUpdateable');
+					courseplay:debug('\t\tadd pigs liquidManureFillTrigger [mod]', 1);
+				end;
+
+				if object.isSchweinezuchtWater or (object.WaterTrailers and object.WaterTrailerActivatable) then
+					local triggerId = object.nodeId;
+					object.isSchweinezuchtWater = true;
+					courseplay:cpAddTrigger(triggerId, object, 'waterReceiver', 'onCreateLoadedObjects');
+					courseplay:debug('\t\tadd Schweinezucht water receiver trigger [mod]', 1);
+				end;
+
+			-- WaterMod [marhu] (*receives* water from trailer)
+			elseif object.isWaterMod or (WaterMod and object.isa and object:isa(WaterMod) and object.WaterTrailerTrigger) then
+				local triggerId = object.WaterTrailerTrigger;
+				object.isWaterMod = true;
+				courseplay:cpAddTrigger(triggerId, object, 'waterReceiver', 'onCreateLoadedObjects');
+				courseplay:debug('\t\tadd WaterMod receiver trigger [mod]', 1);
 			end;
 		end;
 	end;
@@ -599,6 +621,13 @@ function courseplay:updateAllTriggers()
 					local triggerId = trigger.manureTrigger
 					courseplay:cpAddTrigger(triggerId, trigger, 'liquidManure', 'nonUpdateable');
 					courseplay:debug('\t\tadd ManureLager [placeable] [mod]', 1);
+
+				-- Greenhouse (water tank) (placeable) (*receives* water from trailer)
+				elseif trigger.isGreenhouse or trigger.waterTrailerActivatable then
+					trigger.isGreenhouse = true;
+					local triggerId = trigger.waterTankTriggerNode;
+					courseplay:cpAddTrigger(triggerId, trigger, 'waterReceiver', 'onCreateLoadedObjects');
+					courseplay:debug('\t\tadd greenhouse water trigger [placeable]', 1);
 				end;
 			end;
 		end
@@ -634,11 +663,10 @@ function courseplay:updateAllTriggers()
 					end;
 					courseplay:debug(('\t\tadd tipTrigger (id %d), isPlaceableHeapTrigger=%s'):format(triggerId, tostring(trigger.isPlaceableHeapTrigger)), 1);
 					courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
-				--[[elseif trigger.type == 'waterfilltrigger' then
+				elseif trigger.type == 'waterfilltrigger' then
 					trigger.isWaterTrailerFillTrigger = true;
 					courseplay:cpAddTrigger(triggerId, trigger, 'water', 'nonUpdateable');
 					courseplay:debug(('\t\tadd waterTrailerFillTrigger (id %d)'):format(triggerId), 1);
-				]]
 				end;
 			end;
 		end;
@@ -672,7 +700,7 @@ function courseplay:updateAllTriggers()
 			end;
 		end
 	end;
-	
+
 	if courseplay.liquidManureOverloaders ~= nil then
 		for rootNode, vehicle in pairs(courseplay.liquidManureOverloaders) do
 			local trigger = vehicle.unloadTrigger
@@ -729,6 +757,9 @@ function courseplay:cpAddTrigger(triggerId, trigger, triggerType, groupType)
 	elseif triggerType == 'weightStation' then
 		t.weightStations[triggerId] = trigger;
 		t.weightStationsCount = t.weightStationsCount + 1;
+	elseif triggerType == 'waterReceiver' then
+		t.waterReceivers[triggerId] = trigger;
+		t.waterReceiversCount = t.waterReceiversCount + 1;
 	end;
 end;
 

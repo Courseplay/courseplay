@@ -204,7 +204,7 @@ function courseplay:goReverse(vehicle,lx,lz)
 		courseplay:setWaypointIndex(vehicle, vehicle.cp.lastReverseRecordnumber);
 	end;]]
 
-	if vehicle.cp.currentTipTrigger == nil and vehicle.cp.tipperFillLevel > 0 then
+	if (vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT or vehicle.cp.mode == courseplay.MODE_COMBI or vehicle.cp.mode == courseplay.MODE_FIELDWORK) and vehicle.cp.currentTipTrigger == nil and vehicle.cp.tipperFillLevel > 0 then
 		local nx, ny, nz = localDirectionToWorld(node, lxTipper, 0, lzTipper);
 		courseplay:doTriggerRaycasts(vehicle, 'tipTrigger', 'rev', false, xTipper, yTipper + 1, zTipper, nx, ny, nz);
 	end;
