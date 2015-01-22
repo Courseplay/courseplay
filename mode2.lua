@@ -106,6 +106,7 @@ function courseplay:handle_mode2(vehicle, dt)
 					-- drive behind combine: courseplay:setModeState(vehicle, 2);
 					-- drive next to combine:
 					courseplay:setModeState(vehicle, 3);
+					vehicle.cp.directModeThree = true
 				end
 				courseplay:unload_combine(vehicle, dt)
 			end
@@ -122,11 +123,11 @@ function courseplay:handle_mode2(vehicle, dt)
 		AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, 0, 0, 28, false, moveForwards, 0, 1)
 		courseplay:resetSlippingTimers(vehicle)
 
-		if vehicle.cp.isLoaded then
+		--[[if vehicle.cp.isLoaded then
 			courseplay:setWaypointIndex(vehicle, 2);
 			courseplay:setModeState(vehicle, 99);
 			return false
-		end
+		end]]
 
 		-- are there any combines out there that need my help?
 		if CpManager.realTime5SecsTimerThrough then
@@ -553,7 +554,7 @@ function courseplay:unload_combine(vehicle, dt)
 		
 		local lx, ly, lz = worldToLocal(vehicle.cp.DirectionNode, ttX, y, ttZ)
 		dod = Utils.vector2Length(lx, lz)
-		if dod > 40 or vehicle.cp.chopperIsTurning == true then
+		if (dod > 40 and not vehicle.cp.directModeThree) or vehicle.cp.chopperIsTurning == true then
 			courseplay:setModeState(vehicle, 2);
 		end
 		-- combine is not moving and trailer is under pipe
@@ -596,6 +597,9 @@ function courseplay:unload_combine(vehicle, dt)
 				refSpeed = max(combine_speed/2,vehicle.cp.speeds.crawl)
 				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			else
+				if vehicle.cp.directModeThree then
+					vehicle.cp.directModeThree = nil
+				end
 				refSpeed = max(combine_speed,vehicle.cp.speeds.crawl)
 				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			end
@@ -769,7 +773,7 @@ function courseplay:unload_combine(vehicle, dt)
 	end
 
 
-	-- [[ TODO: MODESTATE 99 - WTF?
+	--[[ TODO: MODESTATE 99 - WTF?
 	-- STATE 99 (turn maneuver)
 	if vehicle.cp.modeState == 99 and vehicle.cp.curTarget.x ~= nil and vehicle.cp.curTarget.z ~= nil then
 		--courseplay:removeFromCombinesIgnoreList(vehicle, combine)
@@ -803,7 +807,7 @@ function courseplay:unload_combine(vehicle, dt)
 			allowedToDrive = true
 		end
 	end
-	--]]
+	]]
 
 
 
@@ -862,10 +866,10 @@ function courseplay:unload_combine(vehicle, dt)
 				elseif vehicle.cp.mode2nextState == 81 then -- tipper turning from combine
 
 					-- print(('%s [%s(%d)]: no nextTargets, mode2nextState=81 -> set waypointIndex to 2, modeState to 99, isLoaded to true, return false'):format(nameNum(vehicle), curFile, debug.getinfo(1).currentline)); -- DEBUG140301
-					courseplay:setWaypointIndex(vehicle, 2);
 					courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine)
-					courseplay:setModeState(vehicle, 99);
 					courseplay:setIsLoaded(vehicle, true);
+					courseplay:setModeState(vehicle, 0);
+					courseplay:setWaypointIndex(vehicle, 2);
 
 				elseif vehicle.cp.mode2nextState == 1 then
 					-- refSpeed = vehicle.cp.speeds.turn
@@ -1257,8 +1261,7 @@ function courseplay:setModeState(vehicle, state, debugLevel)
 	debugLevel = debugLevel or 2;
 	if vehicle.cp.modeState ~= state then
 		-- courseplay:onModeStateChange(vehicle, vehicle.cp.modeState, state);
-		 --print(('%s: modeState=%d -> set modeState to %d\n%s'):format(nameNum(vehicle), vehicle.cp.modeState, state, courseplay.utils:getFnCallPath(debugLevel))); -- DEBUG140301
-		
+		-- print(('%s: modeState=%d -> set modeState to %d\n%s'):format(nameNum(vehicle), vehicle.cp.modeState, state, courseplay.utils:getFnCallPath(debugLevel))); -- DEBUG140301
 		vehicle.cp.modeState = state;
 	end;
 end;
