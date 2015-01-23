@@ -108,6 +108,16 @@ function CpManager:loadMap(name)
 	self.trafficCollisionIgnoreList = {};
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	-- 2D COURSE
+	self.course2dPolyOverlayId = createImageOverlay('dataS/scripts/shared/graph_pixel.dds');
+	self.course2dPlotField = { x = 0.65, y = 0.3, width = 0.3, height = 0.3 * g_screenAspectRatio}; -- definition of plot field for 2D
+	self.course2dColorTable = {
+		{ pct = 0.0, color = { 210/255,   5/255, 0/255 } },
+		{ pct = 0.5, color = { 255/255, 230/255, 0/255 } },
+		{ pct = 1.0, color = { 84/255, 255/255, 0/255 } }
+	};
+
+	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- MISCELLANEOUS
 	self.lightsNeeded = false;
 end;
@@ -184,6 +194,10 @@ function CpManager:deleteMap()
 		self.fieldScanInfo.progressBarOverlay:delete();
 		self.fieldScanInfo = nil;
 	end;
+
+	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	-- delete 2D course overlays
+	deleteOverlay(self.course2dPolyOverlayId);
 end;
 
 function CpManager:update(dt)

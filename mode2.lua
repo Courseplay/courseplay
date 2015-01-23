@@ -19,15 +19,7 @@ local abs, ceil, max, min = math.abs, math.ceil, math.max, math.min;
 
 function courseplay:handle_mode2(vehicle, dt)
 	local frontTractor;
-	--[[
-	if vehicle.cp.tipperFillLevelPct >= vehicle.cp.followAtFillLevel then --TODO: shouldn't this be the "tractor that following me"'s followAtFillLevel ?
-		vehicle.cp.allowFollowing = true
-	else
-		vehicle.cp.allowFollowing = false
-	end
-	]]
-	renderText(0.2, 0.075, 0.02, string.format("modeState = %s, isLoaded = %s",tostring(vehicle.cp.modeState),tostring(vehicle.cp.isLoaded)));
-	renderText(0.2, 0.105, 0.02, string.format("mode2nextState = %s, curTarget.x = %s",tostring(vehicle.cp.mode2nextState),tostring(vehicle.cp.curTarget.x)));
+
 	-- STATE 0 (default, when not active)
 	if vehicle.cp.modeState == 0 then
 		courseplay:setModeState(vehicle, 1);

@@ -604,10 +604,14 @@ function courseplay:draw()
 			courseplay:renderToolTip(self);
 		end;
 	end;
-	
+
+
 	--RENDER
 	courseplay:renderInfoText(self);
-	
+
+	if isDriving and self.cp.course2dDrawData and CpManager.isDeveloper and self.cp.drawWaypointsLines then
+		courseplay:drawCourse2D(self, 1,0,0,1, false);
+	end;
 end; --END draw()
 
 function courseplay:showWorkWidth(vehicle)
