@@ -26,7 +26,7 @@
 		<text name="COURSEPLAY_MODE_9" 									 text="Típus: Rakodás (kanalat tölt és ürít)" />
 		<text name="COURSEPLAY_CONTINUE" 								 text="tovább hajtás" />
 		<text name="COURSEPLAY_CLEAR_COURSE" 							 text="Útvonalat alaphelyzetbe" />
-		<text name="COURSEPLAY_DRIVE_NOW" 								 text="Indítás azonnal (Nem vár a kiürítésig)" />
+		<text name="COURSEPLAY_DRIVE_NOW" 								 text="Indítás azonnal (Nem vár a töltésre)" />
 		<text name="COURSEPLAY_DRIVE_ON_AT" 							 text="Elszállítás:" />
 		<text name="UNKNOWN" 											 text="Ismeretlen" />
 		<text name="COURSEPLAY_DISTANCE" 								 text="Távolság" />
@@ -48,7 +48,7 @@
 		<text name="COURSEPLAY_NEEDS_REFILLING" 						 text=": A munkaeszközt újra kell tölteni." />
 		<text name="COURSEPLAY_UNLOADING_BALES" 						 text="kirakja a bálákat." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 							 text="dugóban van (forgalomban)" />
-		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 						 text="Elérte a triggerig" />
+		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 						 text="Elérte a triggert" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Töltés: %d -ból %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Útpontok megjelenítése" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Útvonal keresése" />
@@ -103,11 +103,11 @@
 		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 				 text="Kombájn azt mondja, állj!" />
 		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	 text="Addig vár, míg a várakozási hely felszabadul" />		
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 						 text="Irány %d %d" />
-		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 						 text="az %d %d útvonalponthoz megy" />
-		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 					 text="vár, amíg kombájn ürít" />
-		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 					 text="a kombájn nem ér el" />
-		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 				 text="vár, amíg kombájn megfordul!" />
-		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 					 text="vár az új útvonalpontra" />
+		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 						 text="Az %d %d útvonalponthoz megy" />
+		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 					 text="Vár, amíg kombájn ürít" />
+		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 					 text="Nincs hívó kombájn" />
+		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 				 text="Vár, amíg kombájn megfordul!" />
+		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 					 text="Vár az új útvonalpontra" />
 		<text name="COURSEPLAY_FOLLOWING_TRACTOR" 						 text="Traktor követése" />
 		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 						 text="Az üzemanyag fogyóban! (20% alatt)" />
 		<text name="COURSEPLAY_MUST_BE_REFUELED" 						 text="Újra kell tankolnod!" />

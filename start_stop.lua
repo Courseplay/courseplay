@@ -400,6 +400,9 @@ function courseplay:getCanUseCpMode(vehicle)
 			if vehicle.cp.workTools[1] == nil then
 				courseplay:setInfoText(vehicle, 'COURSEPLAY_WRONG_TRAILER');
 				return false;
+			elseif vehicle.cp.workTools[1].cp.isWaterTrailer and courseplay.triggers.waterReceiversCount == 0 then
+				courseplay:setInfoText(vehicle, 'There are no water triggers on this map'); -- TODO i18n
+				return false;
 			end;
 		end;
 

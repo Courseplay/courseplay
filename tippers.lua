@@ -231,10 +231,11 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 
 	-- MODE 8: LIQUID MANURE TRANSFER
 	elseif vehicle.cp.mode == 8 then
-		if workTool.cp.hasSpecializationFillable and (workTool.getOverloadingTrailerInRangePipeState ~= nil or workTool.setIsReFilling ~= nil) then
+		if workTool.cp.hasSpecializationFillable and ((workTool.getOverloadingTrailerInRangePipeState ~= nil or workTool.setIsReFilling ~= nil) or workTool.cp.isFuelTrailer or workTool.cp.isWaterTrailer) then
 			hasWorkTool = true;
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
-			vehicle.cp.hasMachinetoFill = true
+			vehicle.cp.hasMachinetoFill = true;
+			workTool.cp.waterReceiverTrigger = nil; -- water trailer: make sure it has no saved unloading water trigger
 		end;
 
 	-- MODE 9: FILL AND EMPTY SHOVEL
@@ -1193,5 +1194,170 @@ function courseplay:resetTipTrigger(vehicle, changeToForward)
 	if changeToForward and vehicle.Waypoints[vehicle.cp.waypointIndex].rev then
 		courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle));
 	end;
+end;
+
+function courseplay:refillWorkTools(vehicle, fillLevelPct, driveOn, allowedToDrive, lx, lz, dt)
+	for _,workTool in ipairs(vehicle.cp.workTools) do
+		if workTool.fillLevel == nil or workTool.capacity == nil then
+			return;
+		end;
+		local workToolFillLevelPct = workTool.fillLevel * 100 / workTool.capacity;
+
+		local isSprayer = courseplay:isSprayer(workTool);
+
+		if isSprayer then
+			local isSpecialSprayer = false;
+			isSpecialSprayer, allowedToDrive, lx, lz = courseplay:handleSpecialSprayer(vehicle, workTool, fillLevelPct, driveOn, allowedToDrive, lx, lz, dt, 'pull');
+			if isSpecialSprayer then
+				return allowedToDrive, lx, lz;
+			end;
+		end;
+
+		-- Sprayer / liquid manure transporters
+		if (isSprayer or workTool.cp.isLiquidManureOverloader) and not workTool.fillTypes[Fillable.FILLTYPE_MANURE] then
+			-- print(('\tworkTool %d (%q)'):format(i, nameNum(workTool)));
+			local fillTrigger;
+
+			if vehicle.cp.fillTrigger ~= nil then
+				local trigger = courseplay.triggers.all[vehicle.cp.fillTrigger];
+				if (trigger.isSprayerFillTrigger or trigger.isLiquidManureFillTrigger) and courseplay:fillTypesMatch(trigger, workTool) then 
+					--print('\t\tslow down, it\'s a sprayerFillTrigger');
+					vehicle.cp.isInFilltrigger = true;
+				end;
+			end;
+
+			-- check for fillTrigger
+			if workTool.fillTriggers then
+				local trigger = workTool.fillTriggers[1];
+				if trigger ~= nil and (trigger.isSprayerFillTrigger or trigger.isLiquidManureFillTrigger) then
+					fillTrigger = trigger;
+					vehicle.cp.fillTrigger = nil;
+				end;
+			end;
+
+			-- check for UPK fillTrigger
+			if fillTrigger == nil and workTool.upkTrigger then
+				local trigger = workTool.upkTrigger[1];
+				if trigger ~= nil and (trigger.isSprayerFillTrigger or trigger.isLiquidManureFillTrigger) then
+					fillTrigger = trigger;
+					vehicle.cp.fillTrigger = nil;
+				end;
+			end;
+
+			local fillTypesMatch = courseplay:fillTypesMatch(fillTrigger, workTool);
+			local canRefill = workToolFillLevelPct < driveOn and fillTypesMatch;
+
+			if canRefill and vehicle.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT then
+				canRefill = not courseplay:waypointsHaveAttr(vehicle, vehicle.cp.waypointIndex, -2, 2, 'wait', true, false);
+
+				if canRefill then
+					if (workTool.isSpreaderInRange ~= nil and workTool.isSpreaderInRange.manureTriggerc ~= nil) 
+					-- regular fill triggers
+					or (fillTrigger ~= nil and fillTrigger.triggerId ~= nil and vehicle.cp.lastMode8UnloadTriggerId ~= nil and fillTrigger.triggerId == vehicle.cp.lastMode8UnloadTriggerId)
+					-- manureLager fill trigger
+					or (fillTrigger ~= nil and fillTrigger.manureTrigger ~= nil and vehicle.cp.lastMode8UnloadTriggerId ~= nil and fillTrigger.manureTrigger == vehicle.cp.lastMode8UnloadTriggerId)
+					then
+						canRefill = false;
+					end;
+				end;
+			end;
+			-- print(('workToolFillLevelPct=%.1f, driveOn=%d, fillTrigger=%s, fillTypesMatch=%s, canRefill=%s'):format(workToolFillLevelPct, driveOn, tostring(fillTrigger), tostring(fillTypesMatch), tostring(canRefill)));
+
+			if canRefill then
+				allowedToDrive = false;
+				-- 												 unfold, lower, turnOn, allowedToDrive, cover, unload)
+				courseplay:handleSpecialTools(vehicle, workTool, nil,    nil,   nil,    allowedToDrive, false, false);
+
+				if not workTool.isFilling then
+					workTool:setIsFilling(true);
+				end;
+				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay:roundToBottomInterval(workTool.fillLevel, 100), workTool.capacity));
+
+			elseif vehicle.cp.isLoaded or workToolFillLevelPct >= driveOn then
+				if workTool.isFilling then
+					workTool:setIsFilling(false);
+				end;
+				--												 unfold, lower, turnOn, allowedToDrive, cover, unload)
+				courseplay:handleSpecialTools(vehicle, workTool, nil,    nil,   nil,    allowedToDrive, false, false);
+				vehicle.cp.fillTrigger = nil;
+			end;
+		end;
+
+		-- SOWING MACHINE -- NOTE: no elseif, as a workTool might be both a sprayer and a seeder (URF)
+		if courseplay:isSowingMachine(workTool) then
+			if vehicle.cp.fillTrigger ~= nil then
+				local trigger = courseplay.triggers.all[vehicle.cp.fillTrigger];
+				if trigger.isSowingMachineFillTrigger then
+					--print("slow down , its a SowingMachineFillTrigger")
+					vehicle.cp.isInFilltrigger = true;
+				end
+			end
+			if fillLevelPct < driveOn and workTool.fillTriggers[1] ~= nil and workTool.fillTriggers[1].isSowingMachineFillTrigger then
+				--print(tableShow(workTool.fillTriggers,"workTool.fillTriggers"))
+				if not workTool.isFilling then
+					workTool:setIsFilling(true);
+				end;
+				allowedToDrive = false;
+				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay:roundToBottomInterval(workTool.fillLevel, 100), workTool.capacity));
+			elseif workTool.fillTriggers[1] ~= nil then
+				if workTool.isFilling then
+					workTool:setIsFilling(false);
+				end;
+				vehicle.cp.fillTrigger = nil;
+			end;
+
+		-- TREE PLANTER
+		elseif workTool.cp.isTreePlanter then
+			if workTool.nearestSaplingPallet ~= nil and workTool.mountedSaplingPallet == nil then
+				local id = workTool.nearestSaplingPallet.id;
+				-- print("load Pallet "..tostring(id));
+				workTool:loadPallet(id);
+			end;
+
+		-- FUEL TRAILER
+		elseif workTool.cp.isFuelTrailer then
+			if vehicle.cp.fillTrigger ~= nil then
+				local trigger = courseplay.triggers.all[vehicle.cp.fillTrigger];
+				if trigger.isGasStationTrigger then
+					vehicle.cp.isInFilltrigger = true;
+				end
+			end
+			if fillLevelPct < driveOn and workTool.fuelFillTriggers[1] ~= nil and workTool.fuelFillTriggers[1].isGasStationTrigger then
+				if not workTool.isFuelFilling then
+					workTool:setIsFuelFilling(true);
+				end;
+				allowedToDrive = false;
+				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay:roundToBottomInterval(workTool.fillLevel, 100), workTool.capacity));
+			elseif workTool.fuelFillTriggers[1] ~= nil then
+				if workTool.isFuelFilling then
+					workTool:setIsFuelFilling(false);
+				end;
+				vehicle.cp.fillTrigger = nil;
+			end;
+
+		-- WATER TRAILER
+		elseif workTool.cp.isWaterTrailer then
+			if vehicle.cp.fillTrigger ~= nil then
+				local trigger = courseplay.triggers.all[vehicle.cp.fillTrigger];
+				if trigger.isWaterTrailerFillTrigger then
+					vehicle.cp.isInFilltrigger = true;
+				end
+			end
+			if fillLevelPct < driveOn and workTool.waterTrailerFillTriggers[1] ~= nil and workTool.waterTrailerFillTriggers[1].isWaterTrailerFillTrigger then
+				if not workTool.isWaterTrailerFilling then
+					workTool:setIsWaterTrailerFilling(true);
+				end;
+				allowedToDrive = false;
+				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay:roundToBottomInterval(workTool.fillLevel, 100), workTool.capacity));
+			elseif workTool.waterTrailerFillTriggers[1] ~= nil then
+				if workTool.isWaterTrailerFilling then
+					workTool:setIsWaterTrailerFilling(false);
+				end;
+				vehicle.cp.fillTrigger = nil;
+			end;
+		end;
+	end;
+
+	return allowedToDrive, lx, lz;
 end;
 

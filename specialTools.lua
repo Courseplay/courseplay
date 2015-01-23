@@ -7,7 +7,7 @@ function courseplay:setNameVariable(workTool)
 		return;
 	end;
 
-	-- local specList = { 'AICombine', 'AITractor', 'AnimatedVehicle', 'BaleLoader', 'Baler', 'BunkerSiloCompacter', 'Combine', 'Cultivator', 'Cutter', 'Cylindered', 'Fillable', 'Foldable', 'FruitPreparer', 'MixerWagon', 'Mower', 'PathVehicle', 'Plough', 'Shovel', 'SowingMachine', 'Sprayer', 'Steerable', 'Tedder', 'TrafficVehicle', 'Trailer', 'Windrower' };
+	-- local specList = { 'AICombine', 'AITractor', 'AnimatedVehicle', 'BaleLoader', 'Baler', 'BunkerSiloCompacter', 'Combine', 'Cultivator', 'Cutter', 'Cylindered', 'Fillable', 'Foldable', 'FruitPreparer', 'FuelTrailer', 'MixerWagon', 'Mower', 'PathVehicle', 'Plough', 'Shovel', 'SowingMachine', 'Sprayer', 'Steerable', 'Tedder', 'TrafficVehicle', 'Trailer', 'WaterTrailer', 'Windrower' };
 
 	-- Only default specs!
 	for i,spec in pairs(workTool.specializations) do
@@ -26,6 +26,7 @@ function courseplay:setNameVariable(workTool)
 		elseif spec == Fillable 		   then workTool.cp.hasSpecializationFillable 			 = true;
 		elseif spec == Foldable 		   then workTool.cp.hasSpecializationFoldable 			 = true;
 		elseif spec == FruitPreparer 	   then workTool.cp.hasSpecializationFruitPreparer 		 = true;
+		elseif spec == FuelTrailer		   then workTool.cp.hasSpecializationFuelTrailer		 = true;
 		elseif spec == MixerWagon 		   then workTool.cp.hasSpecializationMixerWagon 		 = true;
 		elseif spec == Mower 			   then workTool.cp.hasSpecializationMower 				 = true;
 		elseif spec == PathVehicle 		   then workTool.cp.hasSpecializationPathVehicle 		 = true;
@@ -37,6 +38,7 @@ function courseplay:setNameVariable(workTool)
 		elseif spec == Tedder 			   then workTool.cp.hasSpecializationTedder 			 = true;
 		elseif spec == TrafficVehicle 	   then workTool.cp.hasSpecializationTrafficVehicle 	 = true;
 		elseif spec == Trailer 			   then workTool.cp.hasSpecializationTrailer 			 = true;
+		elseif spec == WaterTrailer		   then workTool.cp.hasSpecializationWaterTrailer		 = true;
 		elseif spec == Windrower 		   then workTool.cp.hasSpecializationWindrower 			 = true;
 		end;
 
@@ -314,6 +316,20 @@ function courseplay:setNameVariable(workTool)
 	elseif workTool.typeName == 'strawBlower' then
 		workTool.cp.isStrawBlower = true;
 		workTool.cp.specialUnloadDistance = 0;
+
+	elseif workTool.typeName == 'fuelTrailer' or workTool.cp.hasSpecializationFuelTrailer then
+		workTool.cp.isFuelTrailer = true;
+
+	elseif workTool.typeName == 'waterTrailer' or workTool.cp.hasSpecializationWaterTrailer then
+		workTool.cp.isWaterTrailer = true;
+	end;
+
+	if courseplay:isSprayer(workTool) then
+		if workTool.fillTypes[Fillable.FILLTYPE_LIQUIDMANURE] then
+			workTool.cp.isLiquidManureSprayer = true;
+		elseif workTool.fillTypes[Fillable.FILLTYPE_MANURE] then
+			workTool.cp.isManureSprayer = true;
+		end;
 	end;
 end;
 
@@ -494,7 +510,11 @@ function courseplay:askForSpecialSettings(self, object)
 		self.cp.noStopOnEdge = true
 		self.cp.noStopOnTurn = true
 		automaticToolOffsetX = -2.5;
-	end
+	end;
+
+	if self.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT then
+		object.cp.lastFillLevel = object.fillLevel;
+	end;
 
 	if automaticToolOffsetX ~= nil then
 		self.cp.tempToolOffsetX = self.cp.toolOffsetX;

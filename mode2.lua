@@ -26,7 +26,8 @@ function courseplay:handle_mode2(vehicle, dt)
 		vehicle.cp.allowFollowing = false
 	end
 	]]
-
+	renderText(0.2, 0.075, 0.02, string.format("modeState = %s, isLoaded = %s",tostring(vehicle.cp.modeState),tostring(vehicle.cp.isLoaded)));
+	renderText(0.2, 0.105, 0.02, string.format("mode2nextState = %s, curTarget.x = %s",tostring(vehicle.cp.mode2nextState),tostring(vehicle.cp.curTarget.x)));
 	-- STATE 0 (default, when not active)
 	if vehicle.cp.modeState == 0 then
 		courseplay:setModeState(vehicle, 1);
@@ -106,6 +107,7 @@ function courseplay:handle_mode2(vehicle, dt)
 					-- drive behind combine: courseplay:setModeState(vehicle, 2);
 					-- drive next to combine:
 					courseplay:setModeState(vehicle, 3);
+					vehicle.cp.directModeThree = true
 				end
 				courseplay:unload_combine(vehicle, dt)
 			end
@@ -553,7 +555,7 @@ function courseplay:unload_combine(vehicle, dt)
 		
 		local lx, ly, lz = worldToLocal(vehicle.cp.DirectionNode, ttX, y, ttZ)
 		dod = Utils.vector2Length(lx, lz)
-		if dod > 40 or vehicle.cp.chopperIsTurning == true then
+		if (dod > 40 and not vehicle.cp.directModeThree) or vehicle.cp.chopperIsTurning == true then
 			courseplay:setModeState(vehicle, 2);
 		end
 		-- combine is not moving and trailer is under pipe
@@ -596,6 +598,9 @@ function courseplay:unload_combine(vehicle, dt)
 				refSpeed = max(combine_speed/2,vehicle.cp.speeds.crawl)
 				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			else
+				if vehicle.cp.directModeThree then
+					vehicle.cp.directModeThree = nil
+				end
 				refSpeed = max(combine_speed,vehicle.cp.speeds.crawl)
 				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			end
@@ -769,7 +774,7 @@ function courseplay:unload_combine(vehicle, dt)
 	end
 
 
-	-- [[ TODO: MODESTATE 99 - WTF?
+	--[[ TODO: MODESTATE 99 - WTF?
 	-- STATE 99 (turn maneuver)
 	if vehicle.cp.modeState == 99 and vehicle.cp.curTarget.x ~= nil and vehicle.cp.curTarget.z ~= nil then
 		--courseplay:removeFromCombinesIgnoreList(vehicle, combine)
@@ -803,7 +808,7 @@ function courseplay:unload_combine(vehicle, dt)
 			allowedToDrive = true
 		end
 	end
-	--]]
+	]]
 
 
 
@@ -838,11 +843,11 @@ function courseplay:unload_combine(vehicle, dt)
 		end
 
 		if distance_to_wp < distToChange then
-			if vehicle.cp.mode2nextState == 81 then
+			--[[if vehicle.cp.mode2nextState == 81 then
 				if vehicle.cp.activeCombine ~= nil then
 					courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine)
 				end
-			end
+			end]]
 
 			vehicle.cp.shortestDistToWp = nil
 			if #(vehicle.cp.nextTargets) > 0 then
@@ -862,10 +867,10 @@ function courseplay:unload_combine(vehicle, dt)
 				elseif vehicle.cp.mode2nextState == 81 then -- tipper turning from combine
 
 					-- print(('%s [%s(%d)]: no nextTargets, mode2nextState=81 -> set waypointIndex to 2, modeState to 99, isLoaded to true, return false'):format(nameNum(vehicle), curFile, debug.getinfo(1).currentline)); -- DEBUG140301
-					courseplay:setWaypointIndex(vehicle, 2);
 					courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine)
-					courseplay:setModeState(vehicle, 99);
 					courseplay:setIsLoaded(vehicle, true);
+					courseplay:setModeState(vehicle, 0);
+					courseplay:setWaypointIndex(vehicle, 2);
 
 				elseif vehicle.cp.mode2nextState == 1 then
 					-- refSpeed = vehicle.cp.speeds.turn
@@ -1257,8 +1262,7 @@ function courseplay:setModeState(vehicle, state, debugLevel)
 	debugLevel = debugLevel or 2;
 	if vehicle.cp.modeState ~= state then
 		-- courseplay:onModeStateChange(vehicle, vehicle.cp.modeState, state);
-		 --print(('%s: modeState=%d -> set modeState to %d\n%s'):format(nameNum(vehicle), vehicle.cp.modeState, state, courseplay.utils:getFnCallPath(debugLevel))); -- DEBUG140301
-		
+		-- print(('%s: modeState=%d -> set modeState to %d\n%s'):format(nameNum(vehicle), vehicle.cp.modeState, state, courseplay.utils:getFnCallPath(debugLevel))); -- DEBUG140301
 		vehicle.cp.modeState = state;
 	end;
 end;

@@ -50,10 +50,10 @@ function courseplay:drive(self, dt)
 	end;
 
 
-	-- unregister at combine, if there is one
+	--[[ unregister at combine, if there is one
 	if self.cp.isLoaded == true and self.cp.positionWithCombine ~= nil then
 		courseplay:unregisterFromCombine(self, self.cp.activeCombine)
-	end
+	end]]
 
 	-- Turn on sound / control lights
 	if not self.isControlled then
@@ -172,7 +172,7 @@ function courseplay:drive(self, dt)
 			elseif self.cp.waitPoints[3] and self.cp.previousWaypointIndex == self.cp.waitPoints[3] then
 				local isInWorkArea = self.cp.waypointIndex > self.cp.startWork and self.cp.waypointIndex <= self.cp.stopWork;
 				if self.cp.workToolAttached and self.cp.startWork ~= nil and self.cp.stopWork ~= nil and self.cp.workTools ~= nil and not isInWorkArea then
-					allowedToDrive,lx,lz = courseplay:refillSprayer(self, self.cp.tipperFillLevelPct, self.cp.refillUntilPct, allowedToDrive, lx, lz, dt);
+					allowedToDrive,lx,lz = courseplay:refillWorkTools(self, self.cp.tipperFillLevelPct, self.cp.refillUntilPct, allowedToDrive, lx, lz, dt);
 				end;
 				if courseplay:timerIsThrough(self, "fillLevelChange") or self.cp.prevFillLevelPct == nil then
 					if self.cp.prevFillLevelPct ~= nil and self.cp.tipperFillLevelPct == self.cp.prevFillLevelPct and self.cp.tipperFillLevelPct >= self.cp.refillUntilPct then
@@ -185,7 +185,7 @@ function courseplay:drive(self, dt)
 				if self.cp.tipperFillLevelPct >= self.cp.refillUntilPct or drive_on then
 					courseplay:setVehicleWait(self, false);
 				end
-				courseplay:setInfoText(self, string.format("COURSEPLAY_LOADING_AMOUNT;%d;%d",courseplay:roundToBottomInterval(self.cp.tipperFillLevel, 100),self.cp.tipperCapacity));
+				courseplay:setInfoText(self, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay:roundToBottomInterval(self.cp.tipperFillLevel, 100), self.cp.tipperCapacity));
 			end
 		elseif self.cp.mode == 6 then
 			if self.cp.previousWaypointIndex == self.cp.startWork then
@@ -209,24 +209,7 @@ function courseplay:drive(self, dt)
 				end
 			end
 		elseif self.cp.mode == 8 then
-			CpManager:setGlobalInfoText(self, 'OVERLOADING_POINT');
-			if self.cp.workToolAttached then
-				-- drive on if tipperFillLevelPct doesn't change and fill level is < 100-self.cp.followAtFillLevel
-				courseplay:handle_mode8(self)
-				local drive_on = false
-				if courseplay:timerIsThrough(self, "fillLevelChange") or self.cp.prevFillLevelPct == nil then
-					if self.cp.prevFillLevelPct ~= nil and self.cp.tipperFillLevelPct == self.cp.prevFillLevelPct and self.cp.tipperFillLevelPct < self.cp.followAtFillLevel then
-						drive_on = true
-					end
-					self.cp.prevFillLevelPct = self.cp.tipperFillLevelPct
-					courseplay:setCustomTimer(self, "fillLevelChange", 7);
-				end
-				if self.cp.tipperFillLevelPct == 0 or drive_on then
-					courseplay:setVehicleWait(self, false);
-					self.cp.prevFillLevelPct = nil
-					self.cp.isUnloaded = true
-				end
-			end
+			allowedToDrive, lx, lz = courseplay:handleMode8(self, false, true, allowedToDrive, lx, lz, dt);
 		elseif self.cp.mode == 9 then
 			courseplay:setVehicleWait(self, false);
 		else
@@ -276,17 +259,20 @@ function courseplay:drive(self, dt)
 		-- MODE 3: UNLOADING
 		if self.cp.mode == 3 and self.cp.workToolAttached and self.cp.waypointIndex >= 2 and self.cp.modeState == 0 then
 			courseplay:handleMode3(self, self.cp.tipperFillLevelPct, allowedToDrive, dt);
-		end;
 
 		-- MODE 4: REFILL SPRAYER or SEEDER
-		if self.cp.mode == 4 then
+		elseif self.cp.mode == 4 then
 			if self.cp.workToolAttached and self.cp.startWork ~= nil and self.cp.stopWork ~= nil then
 				local isInWorkArea = self.cp.waypointIndex > self.cp.startWork and self.cp.waypointIndex <= self.cp.stopWork;
 				if self.cp.workTools ~= nil and not isInWorkArea then
-					allowedToDrive,lx,lz = courseplay:refillSprayer(self, self.cp.tipperFillLevelPct, self.cp.refillUntilPct, allowedToDrive, lx, lz, dt);
+					allowedToDrive,lx,lz = courseplay:refillWorkTools(self, self.cp.tipperFillLevelPct, self.cp.refillUntilPct, allowedToDrive, lx, lz, dt);
 				end
 			end;
-		end
+
+		-- MODE 8: REFILL LIQUID MANURE TRANSPORT
+		elseif self.cp.mode == 8 then
+			allowedToDrive, lx, lz = courseplay:handleMode8(self, true, false, allowedToDrive, lx, lz, dt, tx, ty, tz, nx, ny, nz);
+		end;
 
 		--[[ MAP WEIGHT STATION
 		if courseplay:canUseWeightStation(self) then
@@ -323,16 +309,6 @@ function courseplay:drive(self, dt)
 				allowedToDrive = false;
 				self.cp.fillTrigger = nil;
 				CpManager:setGlobalInfoText(self, 'DAMAGE_IS');
-			end;
-		end;
-
-		-- MODE 8: REFILL LIQUID MANURE TRANSPORT
-		if self.cp.mode == 8 then
-			courseplay:doTriggerRaycasts(self, 'specialTrigger', 'fwd', true, tx, ty, tz, nx, ny, nz);
-			if self.cp.workToolAttached then
-				if self.cp.workTools ~= nil then
-					allowedToDrive,lx,lz = courseplay:refillSprayer(self, self.cp.tipperFillLevelPct, self.cp.refillUntilPct, allowedToDrive, lx, lz, dt);
-				end;
 			end;
 		end;
 
@@ -863,121 +839,6 @@ function courseplay:openCloseCover(vehicle, dt, showCover, isAtTipTrigger)
 			--end;
 		end;
 	end; --END for i,tipperWithCover in vehicle.cp.tippersWithCovers
-end;
-
-function courseplay:refillSprayer(vehicle, fillLevelPct, driveOn, allowedToDrive, lx, lz, dt)
-	for i=1, vehicle.cp.numWorkTools do
-		local activeTool = vehicle.cp.workTools[i];
-		local isSpecialSprayer = false
-		local fillTrigger;
-		isSpecialSprayer, allowedToDrive, lx, lz = courseplay:handleSpecialSprayer(vehicle, activeTool, fillLevelPct, driveOn, allowedToDrive, lx, lz, dt, 'pull');
-		if isSpecialSprayer then
-			return allowedToDrive,lx,lz
-		end;
-
-		-- SPRAYER
-		if courseplay:isSprayer(activeTool) or activeTool.cp.isLiquidManureOverloader then
-			-- print(('\tworkTool %d (%q)'):format(i, nameNum(activeTool)));
-			if vehicle.cp.fillTrigger ~= nil then
-				local trigger = courseplay.triggers.all[vehicle.cp.fillTrigger];
-				if (trigger.isSprayerFillTrigger or trigger.isLiquidManureFillTrigger) and courseplay:fillTypesMatch(trigger, activeTool) then 
-					--print('\t\tslow down, it\'s a sprayerFillTrigger');
-					vehicle.cp.isInFilltrigger = true
-				end
-			end;
-
-			local activeToolFillLevel;
-			if activeTool.fillLevel ~= nil and activeTool.capacity ~= nil then
-				activeToolFillLevel = (activeTool.fillLevel / activeTool.capacity) * 100;
-			end;
-			--vehicle.cp.lastMode8UnloadTriggerId
-
-			-- check for fillTrigger
-			if fillTrigger == nil and activeTool.fillTriggers then
-				local activeToolFillTrigger = activeTool.fillTriggers[1];
-				if activeToolFillTrigger ~= nil and (activeToolFillTrigger.isSprayerFillTrigger or activeToolFillTrigger.isLiquidManureFillTrigger) then
-					fillTrigger = activeToolFillTrigger;
-					vehicle.cp.fillTrigger = nil;
-				end;
-			end;
-			-- check for UPK fillTrigger
-			if fillTrigger == nil and activeTool.upkTrigger then
-				local activeToolFillTrigger = activeTool.upkTrigger[1];
-				if activeToolFillTrigger ~= nil and (activeToolFillTrigger.isSprayerFillTrigger or activeToolFillTrigger.isLiquidManureFillTrigger) then
-					fillTrigger = activeToolFillTrigger;
-					vehicle.cp.fillTrigger = nil;
-				end;
-			end;
-
-			local fillTypesMatch = courseplay:fillTypesMatch(fillTrigger, activeTool);
-			local canRefill = (activeToolFillLevel ~= nil and activeToolFillLevel < driveOn) and fillTypesMatch;
-			
-			if vehicle.cp.mode == 8 then
-				canRefill = canRefill and not courseplay:waypointsHaveAttr(vehicle, vehicle.cp.waypointIndex, -2, 2, 'wait', true, false);
-				if (activeTool.isSpreaderInRange ~= nil and activeTool.isSpreaderInRange.manureTriggerc ~= nil) 
-				--normal fill triggers
-				or (fillTrigger ~= nil and fillTrigger.triggerId ~= nil and vehicle.cp.lastMode8UnloadTriggerId ~= nil and fillTrigger.triggerId == vehicle.cp.lastMode8UnloadTriggerId)
-				-- manureLager fill trigger
-				or (fillTrigger ~= nil and fillTrigger.manureTrigger ~= nil and vehicle.cp.lastMode8UnloadTriggerId ~= nil and fillTrigger.manureTrigger == vehicle.cp.lastMode8UnloadTriggerId)
-				then
-					canRefill = false;
-				end;
-			end;
-			-- print(('activeToolFillLevel=%s, driveOn=%s, fillTrigger=%s, fillTypesMatch=%s, canRefill=%s'):format(tostring(activeToolFillLevel), tostring(driveOn), tostring(fillTrigger), tostring(fillTypesMatch), tostring(canRefill)));
-			
-			if canRefill then
-				allowedToDrive = false;
-				--courseplay:handleSpecialTools(vehicle,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
-				courseplay:handleSpecialTools(vehicle,activeTool,nil,nil,nil,allowedToDrive,false,false)
-
-				if not activeTool.isFilling then
-					activeTool:setIsFilling(true);
-				end;
-				
-				courseplay:setInfoText(vehicle, courseplay:loc("COURSEPLAY_LOADING_AMOUNT"):format(activeTool.fillLevel, activeTool.capacity));
-			elseif vehicle.cp.isLoaded or (activeToolFillLevel ~= nil and activeToolFillLevel >= driveOn) then
-				if activeTool.isFilling then
-					activeTool:setIsFilling(false);
-				end;
-				courseplay:handleSpecialTools(vehicle,activeTool,nil,nil,nil,allowedToDrive,false,false)
-				vehicle.cp.fillTrigger = nil
-			end;
-		end;
-
-		-- SOWING MACHINE
-		if courseplay:isSowingMachine(activeTool) then
-			if vehicle.cp.fillTrigger ~= nil then
-				local trigger = courseplay.triggers.all[vehicle.cp.fillTrigger]
-				if trigger.isSowingMachineFillTrigger then
-					--print("slow down , its a SowingMachineFillTrigger")
-					vehicle.cp.isInFilltrigger = true
-				end
-			end
-			if fillLevelPct < driveOn and activeTool.fillTriggers[1] ~= nil and activeTool.fillTriggers[1].isSowingMachineFillTrigger then
-				--print(tableShow(activeTool.fillTriggers,"activeTool.fillTriggers"))
-				if not activeTool.isFilling then
-					activeTool:setIsFilling(true);
-				end;
-				allowedToDrive = false;
-				courseplay:setInfoText(vehicle, string.format("COURSEPLAY_LOADING_AMOUNT;%d;%d",courseplay:roundToBottomInterval(activeTool.fillLevel, 100),activeTool.capacity));
-			elseif activeTool.fillTriggers[1] ~= nil then
-				if activeTool.isFilling then
-					activeTool:setIsFilling(false);
-				end;
-				vehicle.cp.fillTrigger = nil
-			end;
-		end;
-		--Tree Planter
-		if activeTool.cp.isTreePlanter then
-			if activeTool.nearestSaplingPallet ~= nil and activeTool.mountedSaplingPallet == nil then
-				local id = activeTool.nearestSaplingPallet.id;
-				-- print("load Pallet "..tostring(id));
-				activeTool:loadPallet(id);
-			end
-		end
-	end;
-
-	return allowedToDrive,lx,lz
 end;
 
 function courseplay:regulateTrafficSpeed(vehicle,refSpeed,allowedToDrive)
