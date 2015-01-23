@@ -26,7 +26,8 @@ function courseplay:handle_mode2(vehicle, dt)
 		vehicle.cp.allowFollowing = false
 	end
 	]]
-
+	renderText(0.2, 0.075, 0.02, string.format("modeState = %s, isLoaded = %s",tostring(vehicle.cp.modeState),tostring(vehicle.cp.isLoaded)));
+	renderText(0.2, 0.105, 0.02, string.format("mode2nextState = %s, curTarget.x = %s",tostring(vehicle.cp.mode2nextState),tostring(vehicle.cp.curTarget.x)));
 	-- STATE 0 (default, when not active)
 	if vehicle.cp.modeState == 0 then
 		courseplay:setModeState(vehicle, 1);
@@ -123,11 +124,11 @@ function courseplay:handle_mode2(vehicle, dt)
 		AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, 0, 0, 28, false, moveForwards, 0, 1)
 		courseplay:resetSlippingTimers(vehicle)
 
-		--[[if vehicle.cp.isLoaded then
+		if vehicle.cp.isLoaded then
 			courseplay:setWaypointIndex(vehicle, 2);
 			courseplay:setModeState(vehicle, 99);
 			return false
-		end]]
+		end
 
 		-- are there any combines out there that need my help?
 		if CpManager.realTime5SecsTimerThrough then
@@ -842,11 +843,11 @@ function courseplay:unload_combine(vehicle, dt)
 		end
 
 		if distance_to_wp < distToChange then
-			if vehicle.cp.mode2nextState == 81 then
+			--[[if vehicle.cp.mode2nextState == 81 then
 				if vehicle.cp.activeCombine ~= nil then
 					courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine)
 				end
-			end
+			end]]
 
 			vehicle.cp.shortestDistToWp = nil
 			if #(vehicle.cp.nextTargets) > 0 then
