@@ -618,7 +618,7 @@ function courseplay.hud:loadPage(vehicle, page)
 	courseplay:debug(string.format('%s: loadPage(..., %d), set content', nameNum(vehicle), page), 18);
 
 	--PAGE 0: COMBINE SETTINGS
-	if page == 0 then
+	if page == self.PAGE_COMBINE_CONTROLS then
 		local combine = vehicle;
 		if vehicle.cp.attachedCombine ~= nil then
 			combine = vehicle.cp.attachedCombine;
@@ -680,7 +680,7 @@ function courseplay.hud:loadPage(vehicle, page)
 
 
 	--PAGE 1: COURSEPLAY CONTROL
-	elseif page == 1 then
+	elseif page == self.PAGE_CP_CONTROL then
 		if vehicle.cp.canDrive then
 			if not vehicle:getIsCourseplayDriving() then -- only 6 lines available, as the mode buttons are in lines 7 and 8!
 				vehicle.cp.hud.content.pages[1][1][1].text = courseplay:loc('COURSEPLAY_START_COURSE')
@@ -755,7 +755,7 @@ function courseplay.hud:loadPage(vehicle, page)
 
 
 	--PAGE 2: COURSE LIST
-	elseif page == 2 then
+	elseif page == self.PAGE_MANAGE_COURSES then
 		-- update courses?
 		if vehicle.cp.reloadCourseItems then
 			courseplay.courses:reloadVehicleCourses(vehicle)
@@ -788,7 +788,7 @@ function courseplay.hud:loadPage(vehicle, page)
 
 
 	--PAGE 3: MODE 2 SETTINGS
-	elseif page == 3 then
+	elseif page == self.PAGE_COMBI_MODE then
 		if vehicle.cp.mode == courseplay.MODE_COMBI or vehicle.cp.mode == courseplay.MODE_OVERLOADER then
 			vehicle.cp.hud.content.pages[3][1][1].text = courseplay:loc('COURSEPLAY_COMBINE_OFFSET_HORIZONTAL');
 			vehicle.cp.hud.content.pages[3][2][1].text = courseplay:loc('COURSEPLAY_COMBINE_OFFSET_VERTICAL');
@@ -834,7 +834,7 @@ function courseplay.hud:loadPage(vehicle, page)
 
 
 	--PAGE 4: COMBINE ASSIGNMENT
-	elseif page == 4 then
+	elseif page == self.PAGE_MANAGE_COMBINES then
 		--Line 1: combine search mode (automatic vs manual)
 		vehicle.cp.hud.content.pages[4][1][1].text = courseplay:loc('COURSEPLAY_COMBINE_SEARCH_MODE'); --always
 		vehicle.cp.hud.content.pages[4][1][2].text = vehicle.cp.searchCombineAutomatically and courseplay:loc('COURSEPLAY_AUTOMATIC_SEARCH') or courseplay:loc('COURSEPLAY_MANUAL_SEARCH');
@@ -877,7 +877,7 @@ function courseplay.hud:loadPage(vehicle, page)
 
 
 	--PAGE 5: SPEEDS
-	elseif page == 5 then
+	elseif page == self.PAGE_SPEEDS then
 		vehicle.cp.hud.content.pages[5][1][1].text = courseplay:loc('COURSEPLAY_SPEED_TURN');
 		vehicle.cp.hud.content.pages[5][2][1].text = courseplay:loc('COURSEPLAY_SPEED_FIELD');
 		vehicle.cp.hud.content.pages[5][3][1].text = courseplay:loc('COURSEPLAY_SPEED_MAX');
@@ -899,7 +899,7 @@ function courseplay.hud:loadPage(vehicle, page)
 
 
 	--PAGE 6: GENERAL SETTINGS
-	elseif page == 6 then
+	elseif page == self.PAGE_GENERAL_SETTINGS then
 		-- pathfinding
 		vehicle.cp.hud.content.pages[6][1][1].text = nil;
 		vehicle.cp.hud.content.pages[6][1][2].text = nil;
@@ -947,7 +947,7 @@ function courseplay.hud:loadPage(vehicle, page)
 
 
 	--PAGE 7: DRIVING SETTINGS
-	elseif page == 7 then
+	elseif page == self.PAGE_DRIVING_SETTINGS then
 		if vehicle.cp.mode == courseplay.MODE_OVERLOADER or vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE or vehicle.cp.mode == courseplay.MODE_FIELDWORK or vehicle.cp.mode == courseplay.MODE_COMBINE_SELF_UNLOADING or vehicle.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT then
 			--Lane offset
 			if vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE or vehicle.cp.mode == courseplay.MODE_FIELDWORK then
@@ -1017,7 +1017,7 @@ function courseplay.hud:loadPage(vehicle, page)
 
 
 	-- PAGE 8: COURSE GENERATION
-	elseif page == 8 then
+	elseif page == self.PAGE_COURSE_GENERATION then
 		-- line 1 = field edge path
 		vehicle.cp.hud.content.pages[8][1][1].text = courseplay:loc('COURSEPLAY_FIELD_EDGE_PATH');
 		if courseplay.fields.numAvailableFields > 0 and vehicle.cp.fieldEdge.selectedField.fieldNum > 0 then
@@ -1060,7 +1060,7 @@ function courseplay.hud:loadPage(vehicle, page)
 
 
 	-- PAGE 9: SHOVEL SETTINGS
-	elseif page == 9 then
+	elseif page == self.PAGE_SHOVEL_POSITIONS then
 		vehicle.cp.hud.content.pages[9][1][1].text = courseplay:loc('COURSEPLAY_SHOVEL_LOADING_POSITION');
 		vehicle.cp.hud.content.pages[9][2][1].text = courseplay:loc('COURSEPLAY_SHOVEL_TRANSPORT_POSITION');
 		vehicle.cp.hud.content.pages[9][3][1].text = courseplay:loc('COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION');
