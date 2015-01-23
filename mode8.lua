@@ -21,13 +21,13 @@ function courseplay:handleMode8(vehicle, load, unload, allowedToDrive, lx, lz, d
 			vehicle.cp.isUnloading = vehicle.cp.tipperFillLevelPct < vehicle.cp.prevFillLevelPct;
 		end;
 
-		-- liquid manure transporters
-		if workTool.cp.isLiquidManureOverloader then
+		-- liquid manure sprayers/transporters
+		if workTool.cp.isLiquidManureSprayer or workTool.cp.isLiquidManureOverloader then
 			--                                            courseplay:handleSpecialTools(vehicle, workTool, unfold, lower, turnOn, allowedToDrive, cover, unload)
 			local isSpecialTool, allowedToDrive, lx, lz = courseplay:handleSpecialTools(vehicle, workTool, nil,    nil,   nil,    allowedToDrive, nil,   true  );
 			if not isSpecialTool then
 				-- trailer
-				if workTool.getOverloadingTrailerInRangePipeState ~= nil and workTool:getOverloadingTrailerInRangePipeState() > 0 and not workTool.isOverloadingActive then
+				if workTool.cp.isLiquidManureOverloader and workTool.getOverloadingTrailerInRangePipeState ~= nil and workTool:getOverloadingTrailerInRangePipeState() > 0 and not workTool.isOverloadingActive then
 					for trailer,_ in pairs(workTool.overloadingTrailersInRange) do
 						if trailer.unloadTrigger ~= nil and trailer.fillLevel < trailer.capacity then
 							workTool:setOverloadingActive(true);
@@ -47,7 +47,7 @@ function courseplay:handleMode8(vehicle, load, unload, allowedToDrive, lx, lz, d
 					if not workTool.isFilling and workTool.fillLevel > 1 then
 						workTool:setIsFilling(true);
 						vehicle.cp.lastMode8UnloadTriggerId = workTool.fillTriggers[1].triggerId;
-						courseplay:debug(('    %s: [BGAextension] setIsFilling(true), triggerIdd=%d'):format(nameNum(workTool), vehicle.cp.lastMode8UnloadTriggerId), 23);
+						courseplay:debug(('    %s: [BGAextension] setIsFilling(true), triggerId=%d'):format(nameNum(workTool), vehicle.cp.lastMode8UnloadTriggerId), 23);
 					end;
 				end;
 			end;
