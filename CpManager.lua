@@ -38,6 +38,7 @@ function CpManager:loadMap(name)
 	self:setupWages();
 	self:setupIngameMap();
 	courseplay.courses:setup(); -- NOTE: this call is only to set up batchWriteSize, without loading anything
+	self:setup2dCourseData(false); -- NOTE: this call is only to initiate the position and opacity
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- LOAD SETTINGS FROM COURSEPLAY.XML / SAVE DEFAULT SETTINGS IF NOT EXISTING
@@ -50,6 +51,7 @@ function CpManager:loadMap(name)
 	self:setUpDebugChannels(); -- NOTE: debugChannels have to be set up after the hud, as they rely on some hud values [positioning]
 	self:setupGlobalInfoText(); -- NOTE: globalInfoText has to be set up after the hud, as they rely on some hud values [colors, function]
 	courseplay.courses:setup(true); -- NOTE: courses:setup is called a second time, now we actually load the courses and folders from the XML
+	self:setup2dCourseData(true); -- NOTE: setup2dCourseData is called a second time, now we actually create the data and overlays
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- COURSEPLAYERS TABLES
@@ -106,23 +108,6 @@ function CpManager:loadMap(name)
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- TRAFFIC
 	self.trafficCollisionIgnoreList = {};
-
-	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	-- 2D COURSE
-	self.course2dPolyOverlayId = createImageOverlay('dataS/scripts/shared/graph_pixel.dds');
-
-	local w, h = courseplay.hud:getPxToNormalConstant(14, 10);
-	self.course2dTractorOverlay = Overlay:new('cpTractorIndicator', courseplay.hud.iconSpritePath, 0.5, 0.5, w, h);
-	courseplay.utils:setOverlayUVsPx(self.course2dTractorOverlay, courseplay.hud.buttonUVsPx.recordingPlay, courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
-	self.course2dTractorOverlay:setColor(0,0.8,1,1);
-
-	self.course2dPlotField = { x = 0.65, y = 0.35, width = 0.3, height = 0.3 * g_screenAspectRatio}; -- definition of plot field for 2D
-
-	self.course2dColorTable = {
-		{ pct = 0.0, color = {  84/255, 255/255, 0/255 } },
-		{ pct = 0.5, color = { 255/255, 230/255, 0/255 } },
-		{ pct = 1.0, color = { 210/255,   5/255, 0/255 } }
-	};
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- MISCELLANEOUS
@@ -209,6 +194,9 @@ function CpManager:deleteMap()
 	end;
 	if self.course2dTractorOverlay then
 		self.course2dTractorOverlay:delete();
+	end;
+	if self.course2dPdaMapOverlay then
+		self.course2dPdaMapOverlay:delete();
 	end;
 end;
 
@@ -853,6 +841,33 @@ function CpManager:renderGlobalInfoTexts(basePosY)
 	return line;
 end;
 
+-- ####################################################################################################
+-- 2D COURSE DRAW SETUP
+function CpManager:setup2dCourseData(createOverlays)
+	if not createOverlays then
+		self.course2dPlotPosX = 0.65;
+		self.course2dPlotPosY = 0.35;
+		self.course2dPdaMapOpacity = 0.7;
+
+		self.course2dColorTable = {
+			{ pct = 0.0, color = {  84/255, 255/255, 0/255 } },
+			{ pct = 0.5, color = { 255/255, 230/255, 0/255 } },
+			{ pct = 1.0, color = { 210/255,   5/255, 0/255 } }
+		};
+
+		self.course2dPlotField = { x = self.course2dPlotPosX, y = self.course2dPlotPosY, width = 0.3, height = 0.3 * g_screenAspectRatio}; -- definition of plot field for 2D
+
+		return;
+	end;
+
+	self.course2dPolyOverlayId = createImageOverlay('dataS/scripts/shared/graph_pixel.dds');
+
+	local w, h = courseplay.hud:getPxToNormalConstant(14, 10);
+	self.course2dTractorOverlay = Overlay:new('cpTractorIndicator', courseplay.hud.iconSpritePath, 0.5, 0.5, w, h);
+	courseplay.utils:setOverlayUVsPx(self.course2dTractorOverlay, courseplay.hud.buttonUVsPx.recordingPlay, courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
+	self.course2dTractorOverlay:setColor(0,0.8,1,1);
+
+end;
 
 -- ####################################################################################################
 -- LOAD SETTINGS FROM courseplay.xml / SET DEFAULT SETTINGS IF NOT EXISTING
@@ -967,6 +982,28 @@ function CpManager:loadOrSetXmlSettings()
 			setXMLInt(cpFile, key .. '#batchWriteSize', courseplay.courses.batchWriteSize);
 		end;
 
+
+		-- 2D course
+		key = 'XML.course2D';
+		local posX, posY, opacity = getXMLFloat(cpFile, key .. '#posX'), getXMLFloat(cpFile, key .. '#posY'), getXMLFloat(cpFile, key .. '#opacity');
+		if posX ~= nil then
+			self.course2dPlotPosX = posX;
+			self.course2dPlotField.x = self.course2dPlotPosX;
+		else
+			setXMLFloat(cpFile, key .. '#posX', self.course2dPlotPosX);
+		end;
+		if posY ~= nil then
+			self.course2dPlotPosY = posY;
+			self.course2dPlotField.y = self.course2dPlotPosY;
+		else
+			setXMLFloat(cpFile, key .. '#posY', self.course2dPlotPosY);
+		end;
+		if opacity ~= nil then
+			self.course2dPdaMapOpacity = opacity;
+		else
+			setXMLFloat(cpFile, key .. '#opacity', self.course2dPdaMapOpacity);
+		end;
+
 		--------------------------------------------------
 		saveXMLFile(cpFile);
 		delete(cpFile);
@@ -1008,8 +1045,14 @@ function CpManager:createXmlSettings()
 	-- batch write size (used in deleteSaveAll())
 	key = 'XML.courseManagement';
 	setXMLInt(cpFile, key .. '#batchWriteSize', courseplay.courses.batchWriteSize);
-	--------------------------------------------------
 
+	-- 2D course
+	key = 'XML.course2D';
+	setXMLFloat(cpFile, key .. '#posX', self.course2dPlotPosX);
+	setXMLFloat(cpFile, key .. '#posY', self.course2dPlotPosY);
+	setXMLFloat(cpFile, key .. '#opacity', self.course2dPdaMapOpacity);
+
+	--------------------------------------------------
 	saveXMLFile(cpFile);
 	delete(cpFile);
 end;

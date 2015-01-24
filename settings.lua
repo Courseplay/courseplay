@@ -719,6 +719,9 @@ function courseplay:copyCourse(vehicle)
 		vehicle.cp.copyCourseFromDriver = nil;
 
 		courseplay:validateCanSwitchMode(vehicle);
+
+		-- SETUP 2D COURSE DRAW DATA
+		courseplay:setupCourse2dData(vehicle);
 	end;
 end;
 
