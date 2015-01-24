@@ -117,10 +117,6 @@ function CpManager:loadMap(name)
 	self.course2dTractorOverlay:setColor(0,0.8,1,1);
 
 	self.course2dPlotField = { x = 0.65, y = 0.35, width = 0.3, height = 0.3 * g_screenAspectRatio}; -- definition of plot field for 2D
-	self.course2dPlotField.tractorVisAreaMinX = self.course2dPlotField.x - 0.1;
-	self.course2dPlotField.tractorVisAreaMaxX = self.course2dPlotField.x + self.course2dPlotField.width + 0.1;
-	self.course2dPlotField.tractorVisAreaMinY = self.course2dPlotField.y - 0.1 * g_screenAspectRatio;
-	self.course2dPlotField.tractorVisAreaMaxY = self.course2dPlotField.y + self.course2dPlotField.height + 0.1 * g_screenAspectRatio;
 
 	self.course2dColorTable = {
 		{ pct = 0.0, color = {  84/255, 255/255, 0/255 } },

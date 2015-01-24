@@ -609,8 +609,8 @@ function courseplay:draw()
 	--RENDER
 	courseplay:renderInfoText(self);
 
-	if isDriving and self.cp.course2dDrawData and CpManager.isDeveloper and self.cp.drawWaypointsLines then
-		courseplay:drawCourse2D(self, 1,0,0,1, false);
+	if self.cp.course2dDrawData and self.cp.drawCourse then
+		courseplay:drawCourse2D(self, false);
 	end;
 end; --END draw()
 
@@ -728,7 +728,7 @@ function courseplay:update(dt)
 		end
 	end;
 
-	if self.cp.drawWaypointsLines then
+	if CpManager.isDeveloper and self.cp.drawCourse then
 		courseplay:drawWaypointsLines(self);
 	end;
 

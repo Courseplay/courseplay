@@ -350,12 +350,6 @@ function courseplay:start(self)
 		courseplay:createMapHotspot(self);
 	end;
 
-
-	-- SETUP 2D COURSE DRAW DATA
-	if CpManager.isDeveloper then
-		courseplay:setupCourse2dData(self); -- TODO: also for client!
-	end;
-
 	--print("startStop "..debug.getinfo(1).currentline)
 end;
 
@@ -587,10 +581,6 @@ function courseplay:stop(self)
 	if CpManager.ingameMapIconActive then
 		courseplay:deleteMapHotspot(self);
 	end;
-
-	-- remove 2D course data
-	self.cp.course2dDimensions = nil;
-	self.cp.course2dDrawData = nil;
 
 	--remove from activeCoursePlayers
 	CpManager:removeFromActiveCoursePlayers(self);

@@ -1457,10 +1457,9 @@ function courseplay:showFieldEdgePath(vehicle, pathType)
 	end;
 end;
 
-function courseplay:toggleDrawWaypointsLines(vehicle)
-	if not CpManager.isDeveloper then return; end;
-	vehicle.cp.drawWaypointsLines = not vehicle.cp.drawWaypointsLines;
-	vehicle.cp.toggleDrawWaypointsLinesButton:setActive(vehicle.cp.drawWaypointsLines);
+function courseplay:toggleDrawCourse(vehicle)
+	vehicle.cp.drawCourse = not vehicle.cp.drawCourse;
+	vehicle.cp.toggleDrawCourseButton:setActive(vehicle.cp.drawCourse);
 end;
 
 function courseplay:setEngineState(vehicle, on)
