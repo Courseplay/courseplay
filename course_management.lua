@@ -245,6 +245,9 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 		courseplay:validateCourseGenerationData(vehicle);
 
 		courseplay:validateCanSwitchMode(vehicle);
+
+		-- SETUP 2D COURSE DRAW DATA
+		courseplay:setupCourse2dData(vehicle);
 	end
 end
 

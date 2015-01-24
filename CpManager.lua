@@ -108,6 +108,23 @@ function CpManager:loadMap(name)
 	self.trafficCollisionIgnoreList = {};
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	-- 2D COURSE
+	self.course2dPolyOverlayId = createImageOverlay('dataS/scripts/shared/graph_pixel.dds');
+
+	local w, h = courseplay.hud:getPxToNormalConstant(14, 10);
+	self.course2dTractorOverlay = Overlay:new('cpTractorIndicator', courseplay.hud.iconSpritePath, 0.5, 0.5, w, h);
+	courseplay.utils:setOverlayUVsPx(self.course2dTractorOverlay, courseplay.hud.buttonUVsPx.recordingPlay, courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
+	self.course2dTractorOverlay:setColor(0,0.8,1,1);
+
+	self.course2dPlotField = { x = 0.65, y = 0.35, width = 0.3, height = 0.3 * g_screenAspectRatio}; -- definition of plot field for 2D
+
+	self.course2dColorTable = {
+		{ pct = 0.0, color = {  84/255, 255/255, 0/255 } },
+		{ pct = 0.5, color = { 255/255, 230/255, 0/255 } },
+		{ pct = 1.0, color = { 210/255,   5/255, 0/255 } }
+	};
+
+	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- MISCELLANEOUS
 	self.lightsNeeded = false;
 end;
@@ -183,6 +200,15 @@ function CpManager:deleteMap()
 		self.fieldScanInfo.bgOverlay:delete();
 		self.fieldScanInfo.progressBarOverlay:delete();
 		self.fieldScanInfo = nil;
+	end;
+
+	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	-- delete 2D course overlays
+	if self.course2dPolyOverlayId and self.course2dPolyOverlayId ~= 0 then
+		delete(self.course2dPolyOverlayId);
+	end;
+	if self.course2dTractorOverlay then
+		self.course2dTractorOverlay:delete();
 	end;
 end;
 

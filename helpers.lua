@@ -1,4 +1,6 @@
-﻿function courseplay:isEven(n)
+﻿local abs, huge, max, min, pi, sqrt = math.abs, math.huge, math.max, math.min, math.pi, math.sqrt;
+
+function courseplay:isEven(n)
    return tonumber(n) % 2 == 0;
 end;
 
@@ -992,5 +994,159 @@ function courseplay.utils:getColorFromPct(pct, colorMap)
 			return Utils.vector3ArrayLerp(lower.color, upper.color, pctAlpha);
 		end;
 	end;
+end;
+
+-- 2D course
+function courseplay.utils:getCourseDimensions(poly)
+	local xMin, yMin = huge, huge;
+	local xMax, yMax = -huge, -huge;
+	for _,point in pairs(poly) do
+		xMin = min(xMin, point.cx);
+		yMin = min(yMin, point.cz);
+		xMax = max(xMax, point.cx);
+		yMax = max(yMax, point.cz);
+	end;
+	local span = max(xMax-xMin,yMax-yMin);
+
+	return { xMin = xMin, xMax = xMax, yMin = yMin, yMax = yMax, span = span };
+end;
+
+function courseplay.utils:scalePlotField2D(x, y)
+	local xRes = CpManager.course2dPlotField.x + x * CpManager.course2dPlotField.width;
+	local yRes = CpManager.course2dPlotField.y + y * CpManager.course2dPlotField.height;
+	return xRes, yRes
+end;
+
+function courseplay.utils:det(x1, y1, x2, y2)
+	return x1 * y2 - y1 * x2;
+end;
+
+function courseplay.utils:removeCollinearPoints(poly, epsilon)
+	local function pointsAreCollinear(p, q, r, eps)
+		return abs(self:det(q.cx-p.cx, q.cz-p.cz,    r.cx-p.cx, r.cz-p.cz)) <= (eps or 1e-32)
+	end
+
+	local res = self.table.copy(poly);
+	res[1].origIndex = 1;
+	res[#poly].origIndex = #poly;
+	for k=#poly-1,2,-1 do
+		res[k].origIndex = k;
+		if pointsAreCollinear(res[k+1], res[k], res[k-1], epsilon) then
+			table.remove(res,k)
+		end;
+	end;
+
+	return res;
+end;
+
+function courseplay.utils:worldCoordsTo2D(vehicle, worldX, worldZ)
+	local x =     (worldX - vehicle.cp.course2dDimensions.xMin) / vehicle.cp.course2dDimensions.span;
+	local y = 1 - (worldZ - vehicle.cp.course2dDimensions.yMin) / vehicle.cp.course2dDimensions.span;
+	x, y = self:scalePlotField2D(x, y);
+	-- x = courseplay.hud:getFullPx(x, 'x');
+	-- y = courseplay.hud:getFullPx(y, 'y');
+
+	return x, y;
+end;
+
+function courseplay:setupCourse2dData(vehicle)
+	vehicle.cp.course2dDimensions = courseplay.utils:getCourseDimensions(vehicle.Waypoints);
+	local pxSize = 2;  -- thickness of line in pixels
+	local height = pxSize / g_screenHeight;
+
+	local bgX1, bgY1 = courseplay.utils:worldCoordsTo2D(vehicle, vehicle.cp.course2dDimensions.xMin, vehicle.cp.course2dDimensions.yMin);
+	local bgX2, bgY2 = courseplay.utils:worldCoordsTo2D(vehicle, vehicle.cp.course2dDimensions.xMax, vehicle.cp.course2dDimensions.yMax);
+	local bgW, bgH = bgX2 - bgX1, abs(bgY2 - bgY1);
+
+	vehicle.cp.course2dBackground = {
+		x = bgX1,
+		y = bgY2, -- seems wrong, but is correct, as [3D] topZ < bottomZ, but [2D] topY > bottomY
+		width = bgW,
+		height = bgH,
+		tractorVisAreaMinX = bgX1 - 0.1;
+		tractorVisAreaMaxX = bgX2 + 0.1;
+		tractorVisAreaMinY = bgY2 - 0.1 * g_screenAspectRatio;
+		tractorVisAreaMaxY = bgY1 + 0.1 * g_screenAspectRatio;
+	};
+
+	vehicle.cp.course2dDrawData = {};
+	local epsilon = 2; -- orig: 0.001, also ok: 0.5
+	local reducedWaypoints = courseplay.utils:removeCollinearPoints(vehicle.Waypoints, epsilon);
+	local numReducedPoints = #reducedWaypoints;
+	-- print(('epsilon=%d -> #Waypoints=%d, #reducedWaypoints=%d'):format(epsilon, vehicle.cp.numWaypoints, numReducedPoints)); -- TODO delete print
+	local np, startX, startY, endX, endY, dx, dz, dx2D, dy2D, width, rotation, r, g, b;
+	for i,wp in ipairs(reducedWaypoints) do
+		np = i < numReducedPoints and reducedWaypoints[i + 1] or reducedWaypoints[1];
+
+		startX, startY = courseplay.utils:worldCoordsTo2D(vehicle, wp.cx, wp.cz);
+		endX, endY	   = courseplay.utils:worldCoordsTo2D(vehicle, np.cx, np.cz);
+
+		dx2D = endX - startX;
+		dy2D = (endY - startY) / g_screenAspectRatio;
+		width = Utils.vector2Length(dx2D, dy2D);
+
+		dx = np.cx - wp.cx;
+		dz = np.cz - wp.cz;
+		rotation = Utils.getYRotationFromDirection(dx, dz) - pi * 0.5;
+
+		r, g, b = courseplay.utils:getColorFromPct(wp.origIndex / vehicle.cp.numWaypoints, CpManager.course2dColorTable);
+
+		vehicle.cp.course2dDrawData[i] = {
+			x = startX;
+			y = startY;
+			width = width;
+			height = height;
+			rotation = rotation;
+			color = { r, g, b, 1 };
+		};
+	end;
+end;
+
+function courseplay:drawCourse2D(vehicle, doLoop)
+	-- background
+	setOverlayColor(CpManager.course2dPolyOverlayId, 0,0,0,0.6);
+	local bg = vehicle.cp.course2dBackground;
+	renderOverlay(CpManager.course2dPolyOverlayId, bg.x, bg.y, bg.width, bg.height);
+
+
+	-- course
+	local numPoints = #vehicle.cp.course2dDrawData;
+	local r,g,b,a;
+	for i,data in ipairs(vehicle.cp.course2dDrawData) do
+		if not doLoop and i == numPoints then
+			break;
+		end;
+
+		r,g,b,a = unpack(data.color);
+		setOverlayColor(CpManager.course2dPolyOverlayId, r,g,b,a);
+
+		setOverlayRotation(CpManager.course2dPolyOverlayId, data.rotation, 0, 0);
+
+		renderOverlay(CpManager.course2dPolyOverlayId, data.x, data.y, data.width, data.height);
+	end;
+	setOverlayRotation(CpManager.course2dPolyOverlayId, 0, 0, 0); -- reset overlay rotation
+
+
+	-- render vehicle position
+	local worldX,_,worldZ = getWorldTranslation(vehicle.rootNode);
+	local x, y = courseplay.utils:worldCoordsTo2D(vehicle, worldX, worldZ);
+
+	-- outside of screen -> abort
+	if x < 0 or x > 1 or y < 0 or y > 1 then
+		return;
+	end;
+
+	-- outside of plotField padding area -> abort
+	if x < bg.tractorVisAreaMinX or x > bg.tractorVisAreaMaxX or y < bg.tractorVisAreaMinY or y > bg.tractorVisAreaMaxY then
+		return;
+	end;
+
+	local dx,_,dz = localDirectionToWorld(vehicle.cp.DirectionNode or vehicle.rootNode, 0, 0, 1);
+	local rotation = Utils.getYRotationFromDirection(dx, dz) - pi * 0.5;
+
+	local ovl = CpManager.course2dTractorOverlay;
+	ovl:setPosition(x - ovl.width * 0.5, y - ovl.height * 0.5);
+	ovl:setRotation(rotation, ovl.width * 0.5, ovl.height * 0.5);
+	ovl:render();
 end;
 
