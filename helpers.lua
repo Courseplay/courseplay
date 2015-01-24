@@ -1039,38 +1039,49 @@ function courseplay.utils:removeCollinearPoints(poly)
 	return res;
 end;
 
+function courseplay.utils:worldCoordsTo2D(vehicle, worldX, worldZ)
+	local x =     (worldX - vehicle.cp.course2dDimensions.xMin) / vehicle.cp.course2dDimensions.span;
+	local y = 1 - (worldZ - vehicle.cp.course2dDimensions.yMin) / vehicle.cp.course2dDimensions.span;
+	x, y = courseplay.utils:scalePlotField2D(x, y);
+	-- x = courseplay.hud:getFullPx(x, 'x');
+	-- y = courseplay.hud:getFullPx(y, 'y');
+
+	return x, y;
+end;
+
 function courseplay:setupCourse2dData(vehicle)
 	vehicle.cp.course2dDimensions = courseplay.utils:getCourseDimensions(vehicle.Waypoints);
 	local pxSize = 2;  -- thickness of line in pixels
 	local height = pxSize / g_screenHeight;
 
+	local bgX1, bgY1 = courseplay.utils:worldCoordsTo2D(vehicle, vehicle.cp.course2dDimensions.xMin, vehicle.cp.course2dDimensions.yMin);
+	local bgX2, bgY2 = courseplay.utils:worldCoordsTo2D(vehicle, vehicle.cp.course2dDimensions.xMax, vehicle.cp.course2dDimensions.yMax);
+	local bgW, bgH = bgX2 - bgX1, abs(bgY2 - bgY1);
+
+	vehicle.cp.course2dBackground = {
+		x = bgX1,
+		y = bgY2, -- seems wrong, but is correct, as [3D] topZ < bottomZ, but [2D] topY > bottomY
+		width = bgW,
+		height = bgH
+	};
+
 	vehicle.cp.course2dDrawData = {};
 	local reducedWaypoints = courseplay.utils:removeCollinearPoints(vehicle.Waypoints);
 	local numReducedPoints = #reducedWaypoints;
 	print(('#Waypoints=%d, #reducedWaypoints=%d'):format(vehicle.cp.numWaypoints, numReducedPoints)); -- TODO delete print
-	local np, x1, y1, x2, y2, startX, endX, startY, endY, dx, dy, width, rotation, r, g, b;
+	local np, startX, startY, endX, endY, dx, dy, width, rotation, r, g, b;
 	for i,wp in ipairs(reducedWaypoints) do
 		np = i < numReducedPoints and reducedWaypoints[i + 1] or reducedWaypoints[1];
 
-		x1 = (wp.cx - vehicle.cp.course2dDimensions.xMin) / vehicle.cp.course2dDimensions.span;
-		x2 = (np.cx - vehicle.cp.course2dDimensions.xMin) / vehicle.cp.course2dDimensions.span;
-		y1 = 1 - (wp.cz - vehicle.cp.course2dDimensions.yMin) / vehicle.cp.course2dDimensions.span;
-		y2 = 1 - (np.cz - vehicle.cp.course2dDimensions.yMin) / vehicle.cp.course2dDimensions.span;
-
-		x1, y1 = courseplay.utils:scalePlotField2D(x1, y1);
-		x2, y2 = courseplay.utils:scalePlotField2D(x2, y2);
-
-		startX = courseplay.hud:getFullPx(x1, 'x');
-		endX   = courseplay.hud:getFullPx(x2, 'x');
-		startY = courseplay.hud:getFullPx(y1, 'y');
-		endY   = courseplay.hud:getFullPx(y2, 'y');
+		startX, startY = courseplay.utils:worldCoordsTo2D(vehicle, wp.cx, wp.cz);
+		endX, endY	   = courseplay.utils:worldCoordsTo2D(vehicle, np.cx, np.cz);
 
 		dx = endX - startX;
 		dy = endY - startY;
 
 		width = Utils.vector2Length(dx, dy / g_screenAspectRatio);
 
-		rotation = -Utils.getYRotationFromDirection(-dx, -dy / g_screenAspectRatio) - pi/2;
+		rotation = -Utils.getYRotationFromDirection(-dx, -dy / g_screenAspectRatio) - pi * 0.5;
 
 		r, g, b = courseplay.utils:getColorFromPct(wp.origIndex / vehicle.cp.numWaypoints, CpManager.course2dColorTable);
 
@@ -1086,8 +1097,13 @@ function courseplay:setupCourse2dData(vehicle)
 end;
 
 function courseplay:drawCourse2D(vehicle, r,g,b,a, doLoop)
-	setOverlayColor(CpManager.course2dPolyOverlayId, r,g,b,a);
+	-- background
+	setOverlayColor(CpManager.course2dPolyOverlayId, 0,0,0,0.6);
+	local bg = vehicle.cp.course2dBackground;
+	renderOverlay(CpManager.course2dPolyOverlayId, bg.x, bg.y, bg.width, bg.height);
 
+
+	-- course
 	local numPoints = #vehicle.cp.course2dDrawData;
 	for i,data in ipairs(vehicle.cp.course2dDrawData) do
 		if not doLoop and i == numPoints then
@@ -1101,25 +1117,33 @@ function courseplay:drawCourse2D(vehicle, r,g,b,a, doLoop)
 
 		renderOverlay(CpManager.course2dPolyOverlayId, data.x, data.y, data.width, data.height);
 	end;
+	setOverlayRotation(CpManager.course2dPolyOverlayId, 0, 0, 0); -- reset overlay rotation
 
-	-- reset overlay rotation
-	setOverlayRotation(CpManager.course2dPolyOverlayId, 0, 0.5, 0.5);
 
 	-- render vehicle position
-	local wx,_,wz = getWorldTranslation(vehicle.rootNode);
-	local x = (wx - vehicle.cp.course2dDimensions.xMin) / vehicle.cp.course2dDimensions.span;
-	local y = 1 - (wz - vehicle.cp.course2dDimensions.yMin) / vehicle.cp.course2dDimensions.span;
-	x, y = courseplay.utils:scalePlotField2D(x, y);
-	x = courseplay.hud:getFullPx(x, 'x');
-	y = courseplay.hud:getFullPx(y, 'y');
+	local ovl = CpManager.course2dTractorOverlay;
 
-	local width = 8 / g_screenWidth;
-	local height = 8 / g_screenHeight;
-	-- display centered at point
-	x = x - width * 0.5;
-	y = y - height * 0.5;
+	local worldX,_,worldZ = getWorldTranslation(vehicle.rootNode);
+	local x, y = courseplay.utils:worldCoordsTo2D(vehicle, worldX, worldZ);
 
-	setOverlayColor(CpManager.course2dPolyOverlayId, 0,0.8,1,1);
-	renderOverlay(CpManager.course2dPolyOverlayId, x, y, width, height);
+	-- outside of screen -> abort
+	if x < 0 or x > 1 or y < 0 or y > 1 then
+		return;
+	end;
+
+	-- outside of plotField padding area -> abort
+	if x < CpManager.course2dPlotField.tractorVisAreaMinX or x > CpManager.course2dPlotField.tractorVisAreaMaxX or y < CpManager.course2dPlotField.tractorVisAreaMinY or y > CpManager.course2dPlotField.tractorVisAreaMaxY then
+		return;
+	end;
+
+	local dx,_,dz = localDirectionToWorld(vehicle.cp.DirectionNode or vehicle.rootNode, 0, 0, 1);
+	local rotation = Utils.getYRotationFromDirection(dx, dz) - pi * 0.5;
+
+	x = x - ovl.width * 0.5;
+	y = y - ovl.height * 0.5;
+
+	ovl:setPosition(x, y);
+	ovl:setRotation(rotation, ovl.width * 0.5, ovl.height * 0.5);
+	ovl:render();
 end;
 
