@@ -133,6 +133,11 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 			vehicle.Waypoints = course.waypoints
 			vehicle.cp.numWaypoints = #vehicle.Waypoints;
 			vehicle:setCpVar('currentCourseName',course.name,courseplay.isClient)
+
+			-- for turn maneuver
+			vehicle.cp.courseWorkWidth = course.workWidth;
+			vehicle.cp.courseNumHeadlandLanes = course.numHeadlandLanes;
+
 			courseplay:debug(string.format("course_management %d: %s: no course was loaded -> new course = course -> currentCourseName=%q, numCourses=%s", debug.getinfo(1).currentline, nameNum(vehicle), tostring(vehicle.cp.currentCourseName), tostring(vehicle.cp.numCourses)), 8);
 
 		else -- add new course to old course
@@ -232,6 +237,15 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 			vehicle.cp.numWaypoints = #vehicle.Waypoints;
 			vehicle.cp.numCourses = vehicle.cp.numCourses + 1;
 			vehicle:setCpVar('currentCourseName',string.format("%d %s", vehicle.cp.numCourses, courseplay:loc('COURSEPLAY_COMBINED_COURSES')),courseplay.isClient);
+
+			-- for turn maneuver
+			if not vehicle.cp.courseWorkWidth then
+				vehicle.cp.courseWorkWidth = course.workWidth;
+			end;
+			if not vehicle.cp.courseNumHeadlandLanes then
+				vehicle.cp.courseNumHeadlandLanes = course.numHeadlandLanes;
+			end;
+
 			courseplay:debug(string.format('%s: adding course done -> numWaypoints=%d, numCourses=%s, currentCourseName=%q', nameNum(vehicle), vehicle.cp.numWaypoints, vehicle.cp.numCourses, vehicle.cp.currentCourseName), 8);
 		end;
 
@@ -462,7 +476,7 @@ function courseplay.courses:saveCourseToXml(course_id, File, append)
 	end
 	
 	-- { id = id, type = 'course', name = name, waypoints = tempCourse, parent = parent }
-	local types = { id = 'Int', name = 'String', parent = 'Int'}
+	local types = { id = 'Int', name = 'String', parent = 'Int', workWidth = 'Float', numHeadlandLanes = 'Int' }
 	local i = 0
 	
 	-- find the node position and save the attributes
@@ -483,7 +497,7 @@ function courseplay.courses:saveCourseToXml(course_id, File, append)
 	-- xml: pos="float float" angle=float rev=0/1 wait=0/1 crossing=0/1 speed=float generated="true/false" turn="true/false" turnstart=0/1 turnend=0/1 ridgemarker=0/1/2
 	local waypoints = {}
 	-- setXMLFloat seems imprecise...
-	types = { pos='String', angle='String', rev='Int', wait='Int', crossing='Int', speed='String', generated='Bool', dir='String', turn='String', turnstart='Int', turnend='Int', ridgemarker='Int' };
+	types = { pos='String', angle='String', rev='Int', wait='Int', crossing='Int', speed='String', generated='Bool', lane='Int', dir='String', turn='String', turnstart='Int', turnend='Int', ridgemarker='Int' };
 
 	for k, v in pairs(g_currentMission.cp_courses[course_id].waypoints) do
 		local waypoint = {
@@ -501,6 +515,9 @@ function courseplay.courses:saveCourseToXml(course_id, File, append)
 		};
 		if v.ridgeMarker and v.ridgeMarker ~= 0 then
 			waypoint.ridgemarker = v.ridgeMarker;
+		end;
+		if v.lane and v.lane < 0 then -- only save headland lane indexes
+			waypoint.lane = v.lane;
 		end;
 
 		waypoints[k] = waypoint;
@@ -641,7 +658,15 @@ function courseplay.courses:deleteSaveAll()
 				file:write('\t<courses>\n')
 				for i,course in pairs(g_currentMission.cp_courses) do
 					local numWaypoints = #course.waypoints;
-					file:write(('\t\t<course name=%q id="%d" parent="%d" numWaypoints="%d">\n'):format(course.name, course.id, course.parent, numWaypoints));
+					local courseTxt = ('\t\t<course name=%q id="%d" parent="%d'):format(course.name, course.id, course.parent)
+					if course.workWidth then
+						courseTxt = courseTxt .. (' workWidth=%.1f'):format(course.workWidth);
+					end;
+					if course.numHeadlandLanes then
+						courseTxt = courseTxt .. (' numHeadlandLanes=%d'):format(course.numHeadlandLanes);
+					end;
+					courseTxt = courseText .. '>\n';
+					file:write(courseTxt);
 
 					local wpBatchTxt = '';
 					for wpNum,wp in ipairs(course.waypoints) do
@@ -659,6 +684,9 @@ function courseplay.courses:deleteSaveAll()
 						if wp.generated then
 							wpContent = wpContent .. ' generated="true"';
 						end;
+						if wp.lane and wp.lane < 0 then -- only save headland lane indexes
+							wpContent = wpContent .. (' lane="%d"'):format(wp.lane);
+						end;
 						if wp.laneDir ~= nil and wp.laneDir ~= '' then
 							wpContent = wpContent .. (' dir=%q'):format(wp.laneDir);
 						end;
@@ -668,7 +696,7 @@ function courseplay.courses:deleteSaveAll()
 						if wp.turnStart then
 							wpContent = wpContent .. ' turnstart="1"';
 						end;
-						if wp.turnStart then
+						if wp.turnEnd then
 							wpContent = wpContent .. ' turnend="1"';
 						end;
 						if wp.ridgeMarker ~= nil and wp.ridgeMarker ~= 0 then
@@ -1161,9 +1189,15 @@ function courseplay.courses:loadCoursesAndFoldersFromXml()
 
 				-- course ID
 				local id = getXMLInt(cpFile, courseKey .. '#id') or 0;
-				
+
 				-- course parent
 				local parent = getXMLInt(cpFile, courseKey .. '#parent') or 0;
+
+				-- course workWidth
+				local workWidth = getXMLFloat(cpFile, courseKey .. '#workWidth');
+
+				-- course numHeadlandLanes
+				local numHeadlandLanes = getXMLInt(cpFile, courseKey .. '#numHeadlandLanes');
 
 				--course waypoints
 				waypoints = {};
@@ -1193,6 +1227,7 @@ function courseplay.courses:loadCoursesAndFoldersFromXml()
 					local crossing 	  =    getXMLInt(cpFile, key .. '#crossing');
 
 					local generated   =   getXMLBool(cpFile, key .. '#generated');
+					local lane		  =    getXMLInt(cpFile, key .. '#lane');
 					local laneDir	  = getXMLString(cpFile, key .. '#dir');
 					local turn 		  = getXMLString(cpFile, key .. '#turn');
 					local turnStart	  =    getXMLInt(cpFile, key .. '#turnstart');
@@ -1219,6 +1254,7 @@ function courseplay.courses:loadCoursesAndFoldersFromXml()
 						wait = wait, 
 						crossing = crossing, 
 						generated = generated,
+						lane = lane,
 						laneDir = laneDir,
 						turn = turn,
 						turnStart = turnStart,
@@ -1229,7 +1265,17 @@ function courseplay.courses:loadCoursesAndFoldersFromXml()
 					wpNum = wpNum + 1;
 				end; -- END while true (waypoints)
 				
-				local course = { id = id, uid = 'c' .. id , type = 'course', name = courseName, nameClean = courseNameClean, waypoints = waypoints, parent = parent };
+				local course = { 
+					id = id, 
+					uid = 'c' .. id,
+					type = 'course', 
+					name = courseName, 
+					nameClean = courseNameClean, 
+					waypoints = waypoints, 
+					parent = parent, 
+					workWidth = workWidth, 
+					numHeadlandLanes = numHeadlandLanes 
+				};
 				if id ~= 0 then
 					courses_by_id[id] = course;
 				else

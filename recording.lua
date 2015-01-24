@@ -262,6 +262,10 @@ function courseplay:clearCurrentLoadedCourse(vehicle)
 	vehicle.cp.numWaitPoints = 0;
 	vehicle.cp.waitPoints = {};
 
+	-- for turn maneuver
+	vehicle.cp.courseWorkWidth = nil;
+	vehicle.cp.courseNumHeadlandLanes = nil;
+
 	vehicle.cp.hasGeneratedCourse = false;
 	courseplay:validateCourseGenerationData(vehicle);
 	courseplay:validateCanSwitchMode(vehicle);
