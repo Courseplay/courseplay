@@ -1021,17 +1021,17 @@ function courseplay.utils:det(x1, y1, x2, y2)
 	return x1 * y2 - y1 * x2;
 end;
 
-function courseplay.utils:copyNoCollinearity(poly)
-	local function areCollinear(p, q, r, eps)
+function courseplay.utils:removeCollinearPoints(poly)
+	local function pointsAreCollinear(p, q, r, eps)
 		return abs(self:det(q.cx-p.cx, q.cz-p.cz,    r.cx-p.cx, r.cz-p.cz)) <= (eps or 1e-32)
 	end
 
-	local res = courseplay.utils.table.copy(poly);
+	local res = self.table.copy(poly);
 	res[1].origIndex = 1;
 	res[#poly].origIndex = #poly;
 	for k=#poly-1,2,-1 do
 		res[k].origIndex = k;
-		if areCollinear(res[k+1], res[k], res[k-1], 0.5) then
+		if pointsAreCollinear(res[k+1], res[k], res[k-1], 0.5) then -- original eps: 0.001
 			table.remove(res,k)
 		end;
 	end;
@@ -1041,38 +1041,38 @@ end;
 
 function courseplay:setupCourse2dData(vehicle)
 	vehicle.cp.course2dDimensions = courseplay.utils:getCourseDimensions(vehicle.Waypoints);
-	local pxSize = 2;   -- thickness of line in pixels
+	local pxSize = 2;  -- thickness of line in pixels
 	local height = pxSize / g_screenHeight;
 
 	vehicle.cp.course2dDrawData = {};
-	local reducedWaypoints = courseplay.utils:copyNoCollinearity(vehicle.Waypoints);
+	local reducedWaypoints = courseplay.utils:removeCollinearPoints(vehicle.Waypoints);
 	local numReducedPoints = #reducedWaypoints;
 	print(('#Waypoints=%d, #reducedWaypoints=%d'):format(vehicle.cp.numWaypoints, numReducedPoints)); -- TODO delete print
-	local np;
+	local np, x1, y1, x2, y2, startX, endX, startY, endY, dx, dy, width, rotation, r, g, b;
 	for i,wp in ipairs(reducedWaypoints) do
 		np = i < numReducedPoints and reducedWaypoints[i + 1] or reducedWaypoints[1];
 
-		local x1 = (wp.cx - vehicle.cp.course2dDimensions.xMin) / vehicle.cp.course2dDimensions.span;
-		local x2 = (np.cx - vehicle.cp.course2dDimensions.xMin) / vehicle.cp.course2dDimensions.span;
-		local y1 = 1 - (wp.cz - vehicle.cp.course2dDimensions.yMin) / vehicle.cp.course2dDimensions.span;
-		local y2 = 1 - (np.cz - vehicle.cp.course2dDimensions.yMin) / vehicle.cp.course2dDimensions.span;
+		x1 = (wp.cx - vehicle.cp.course2dDimensions.xMin) / vehicle.cp.course2dDimensions.span;
+		x2 = (np.cx - vehicle.cp.course2dDimensions.xMin) / vehicle.cp.course2dDimensions.span;
+		y1 = 1 - (wp.cz - vehicle.cp.course2dDimensions.yMin) / vehicle.cp.course2dDimensions.span;
+		y2 = 1 - (np.cz - vehicle.cp.course2dDimensions.yMin) / vehicle.cp.course2dDimensions.span;
 
 		x1, y1 = courseplay.utils:scalePlotField2D(x1, y1);
 		x2, y2 = courseplay.utils:scalePlotField2D(x2, y2);
 
-		local startX = courseplay.hud:getFullPx(x1, 'x');
-		local endX	 = courseplay.hud:getFullPx(x2, 'x');
-		local startY = courseplay.hud:getFullPx(y1, 'y');
-		local endY	 = courseplay.hud:getFullPx(y2, 'y');
+		startX = courseplay.hud:getFullPx(x1, 'x');
+		endX   = courseplay.hud:getFullPx(x2, 'x');
+		startY = courseplay.hud:getFullPx(y1, 'y');
+		endY   = courseplay.hud:getFullPx(y2, 'y');
 
-		local dx = endX - startX;
-		local dy = endY - startY;
+		dx = endX - startX;
+		dy = endY - startY;
 
-		local width = sqrt((dx^2 + (dy*g_screenHeight/g_screenWidth)^2));
+		width = Utils.vector2Length(dx, dy / g_screenAspectRatio);
 
-		local rotation = -Utils.getYRotationFromDirection(-dx, -dy*g_screenHeight/g_screenWidth) - pi/2;
+		rotation = -Utils.getYRotationFromDirection(-dx, -dy / g_screenAspectRatio) - pi/2;
 
-		local r, g, b = courseplay.utils:getColorFromPct(wp.origIndex / vehicle.cp.numWaypoints, CpManager.course2dColorTable);
+		r, g, b = courseplay.utils:getColorFromPct(wp.origIndex / vehicle.cp.numWaypoints, CpManager.course2dColorTable);
 
 		vehicle.cp.course2dDrawData[i] = {
 			x = startX;
@@ -1113,8 +1113,8 @@ function courseplay:drawCourse2D(vehicle, r,g,b,a, doLoop)
 	x = courseplay.hud:getFullPx(x, 'x');
 	y = courseplay.hud:getFullPx(y, 'y');
 
-	local width = 6 / g_screenWidth;
-	local height = 6 / g_screenHeight;
+	local width = 8 / g_screenWidth;
+	local height = 8 / g_screenHeight;
 	-- display centered at point
 	x = x - width * 0.5;
 	y = y - height * 0.5;
