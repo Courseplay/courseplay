@@ -218,6 +218,7 @@
 		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="Wendemaneuver beenden" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_START" 				 text="Rückwärtsfahren beginnen" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="Rückwärtsfahren beenden" />
+		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Zwischenpunkte hinzufügen" />
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Karten-Icons: Text anzeigen" />
 		<text name="COURSEPLAY_ALWAYS_USE_4WD" 							 text="Allrad immer anschalten" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="Möchtest du dass die Felder automatisch gescanned werden?" />

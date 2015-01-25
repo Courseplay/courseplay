@@ -218,6 +218,7 @@
 		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="End turn maneuver" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_START" 				 text="Start reverse driving" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="Stop reverse driving" />
+		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Add split points" />
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Map icons: display text" />
 		<text name="COURSEPLAY_ALWAYS_USE_4WD" 							 text="Always use 4WD" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="Do you want the fields to be scanned automatically?" />

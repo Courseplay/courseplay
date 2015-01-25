@@ -214,6 +214,7 @@
 		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="Finalizar maniobra de media vuelta" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_START" 				 text="Marcha atrás" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="Parar de conducir marcha atrás" />
+		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Add split points" /> <!-- TODO: TRANSLATION! (during recording adds multiple points between last point and current position -->
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Iconos del mapa: mostrar etiquetas" />
 		<text name="COURSEPLAY_ALWAYS_USE_4WD" 							 text="Usar siempre traccion a las cuatro ruedas" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="¿Desea usted que los campos sean escaneados automaticamente?" />

@@ -209,6 +209,9 @@ function courseplay:buttonsActiveEnabled(vehicle, section)
 					button:setActive(vehicle.cp.drivingDirReverse);
 					button:setDisabled(vehicle.cp.recordingIsPaused or vehicle.cp.isRecordingTurnManeuver);
 					button:setCanBeClicked(not button.isDisabled);
+				elseif fn == 'addSplitRecordingPoints' then
+					button:setDisabled(not vehicle.cp.recordingIsPaused);
+					button:setCanBeClicked(not button.isDisabled);
 				end;
 			end;
 		end;
