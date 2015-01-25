@@ -48,7 +48,7 @@
 		<text name="COURSEPLAY_NEEDS_REFILLING" 						 text=": 工具需要装载。" />
 		<text name="COURSEPLAY_UNLOADING_BALES" 						 text="卸载。" />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 							 text="卡住了!" />
-		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 						 text="已达到触发区" />
+		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 						 text="已进入触发区" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="装载: %d of %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="路径显示的模式：" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="禁止碾压生长的农作物:" />
