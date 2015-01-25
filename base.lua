@@ -621,15 +621,17 @@ function courseplay:draw()
 end; --END draw()
 
 function courseplay:showWorkWidth(vehicle)
+	local offsX, offsZ = vehicle.cp.toolOffsetX or 0, vehicle.cp.toolOffsetZ or 0;
 
-	local left =  (vehicle.cp.workWidth *  0.5) + (vehicle.cp.toolOffsetX or 0);
-	local right = (vehicle.cp.workWidth * -0.5) + (vehicle.cp.toolOffsetX or 0);
+	local left =  (vehicle.cp.workWidth *  0.5) + offsX;
+	local right = (vehicle.cp.workWidth * -0.5) + offsX;
+
 
 	if vehicle.cp.DirectionNode and vehicle.cp.backMarkerOffset and vehicle.cp.aiFrontMarker then
-		local p1x, p1y, p1z = localToWorld(vehicle.cp.DirectionNode, left,  1.6, vehicle.cp.backMarkerOffset);
-		local p2x, p2y, p2z = localToWorld(vehicle.cp.DirectionNode, right, 1.6, vehicle.cp.backMarkerOffset);
-		local p3x, p3y, p3z = localToWorld(vehicle.cp.DirectionNode, right, 1.6, vehicle.cp.aiFrontMarker);
-		local p4x, p4y, p4z = localToWorld(vehicle.cp.DirectionNode, left,  1.6, vehicle.cp.aiFrontMarker);
+		local p1x, p1y, p1z = localToWorld(vehicle.cp.DirectionNode, left,  1.6, vehicle.cp.backMarkerOffset - offsZ);
+		local p2x, p2y, p2z = localToWorld(vehicle.cp.DirectionNode, right, 1.6, vehicle.cp.backMarkerOffset - offsZ);
+		local p3x, p3y, p3z = localToWorld(vehicle.cp.DirectionNode, right, 1.6, vehicle.cp.aiFrontMarker - offsZ);
+		local p4x, p4y, p4z = localToWorld(vehicle.cp.DirectionNode, left,  1.6, vehicle.cp.aiFrontMarker - offsZ);
 
 		drawDebugPoint(p1x, p1y, p1z, 1, 1, 0, 1);
 		drawDebugPoint(p2x, p2y, p2z, 1, 1, 0, 1);
@@ -641,8 +643,8 @@ function courseplay:showWorkWidth(vehicle)
 		drawDebugLine(p3x, p3y, p3z, 1, 0, 0, p4x, p4y, p4z, 1, 0, 0);
 		drawDebugLine(p4x, p4y, p4z, 1, 0, 0, p1x, p1y, p1z, 1, 0, 0);
 	else
-		local lX, lY, lZ = localToWorld(vehicle.rootNode, left,  1.6, -6);
-		local rX, rY, rZ = localToWorld(vehicle.rootNode, right, 1.6, -6);
+		local lX, lY, lZ = localToWorld(vehicle.rootNode, left,  1.6, -6 - offsZ);
+		local rX, rY, rZ = localToWorld(vehicle.rootNode, right, 1.6, -6 - offsZ);
 
 		drawDebugPoint(lX, lY, lZ, 1, 1, 0, 1);
 		drawDebugPoint(rX, rY, rZ, 1, 1, 0, 1);
@@ -1296,7 +1298,7 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		offsetData = Utils.splitString(';', offsetData);
 		courseplay:changeLaneOffset(self, nil, tonumber(offsetData[1]));
 		courseplay:changeToolOffsetX(self, nil, tonumber(offsetData[2]), true);
-		courseplay:changeToolOffsetZ(self, nil, tonumber(offsetData[3]));
+		courseplay:changeToolOffsetZ(self, nil, tonumber(offsetData[3]), true);
 		courseplay:toggleSymmetricLaneChange(self, offsetData[4] == 'true');
 
 		-- SHOVEL POSITIONS

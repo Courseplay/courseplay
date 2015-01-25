@@ -953,11 +953,7 @@ function courseplay.hud:loadPage(vehicle, page)
 			if vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE or vehicle.cp.mode == courseplay.MODE_FIELDWORK then
 				vehicle.cp.hud.content.pages[7][1][1].text = courseplay:loc('COURSEPLAY_LANE_OFFSET');
 				if vehicle.cp.laneOffset and vehicle.cp.laneOffset ~= 0 then
-					if vehicle.cp.laneOffset > 0 then
-						vehicle.cp.hud.content.pages[7][1][2].text = string.format('%.1fm (%s)', abs(vehicle.cp.laneOffset), courseplay:loc('COURSEPLAY_RIGHT'));
-					elseif vehicle.cp.laneOffset < 0 then
-						vehicle.cp.hud.content.pages[7][1][2].text = string.format('%.1fm (%s)', abs(vehicle.cp.laneOffset), courseplay:loc('COURSEPLAY_LEFT'));
-					end;
+					vehicle.cp.hud.content.pages[7][1][2].text = ('%.1f%s (%s)'):format(abs(vehicle.cp.laneOffset), g_i18n:getText('unit_meter'), courseplay:loc(vehicle.cp.laneOffset > 0 and 'COURSEPLAY_RIGHT' or 'COURSEPLAY_LEFT'));
 				else
 					vehicle.cp.hud.content.pages[7][1][2].text = '---';
 				end;
@@ -972,11 +968,7 @@ function courseplay.hud:loadPage(vehicle, page)
 			--Tool horizontal offset
 			vehicle.cp.hud.content.pages[7][3][1].text = courseplay:loc('COURSEPLAY_TOOL_OFFSET_X');
 			if vehicle.cp.toolOffsetX and vehicle.cp.toolOffsetX ~= 0 then
-				if vehicle.cp.toolOffsetX > 0 then
-					vehicle.cp.hud.content.pages[7][3][2].text = string.format('%.1fm (%s)', abs(vehicle.cp.toolOffsetX), courseplay:loc('COURSEPLAY_RIGHT'));
-				elseif vehicle.cp.toolOffsetX < 0 then
-					vehicle.cp.hud.content.pages[7][3][2].text = string.format('%.1fm (%s)', abs(vehicle.cp.toolOffsetX), courseplay:loc('COURSEPLAY_LEFT'));
-				end;
+				vehicle.cp.hud.content.pages[7][3][2].text = ('%.1f%s (%s)'):format(abs(vehicle.cp.toolOffsetX), g_i18n:getText('unit_meter'), courseplay:loc(vehicle.cp.toolOffsetX > 0 and 'COURSEPLAY_RIGHT' or 'COURSEPLAY_LEFT'));
 			else
 				vehicle.cp.hud.content.pages[7][3][2].text = '---';
 			end;
@@ -984,11 +976,7 @@ function courseplay.hud:loadPage(vehicle, page)
 			--Tool vertical offset
 			vehicle.cp.hud.content.pages[7][4][1].text = courseplay:loc('COURSEPLAY_TOOL_OFFSET_Z');
 			if vehicle.cp.toolOffsetZ and vehicle.cp.toolOffsetZ ~= 0 then
-				if vehicle.cp.toolOffsetZ > 0 then
-					vehicle.cp.hud.content.pages[7][4][2].text = string.format('%.1fm (%s)', abs(vehicle.cp.toolOffsetZ), courseplay:loc('COURSEPLAY_FRONT'));
-				elseif vehicle.cp.toolOffsetZ < 0 then
-					vehicle.cp.hud.content.pages[7][4][2].text = string.format('%.1fm (%s)', abs(vehicle.cp.toolOffsetZ), courseplay:loc('COURSEPLAY_BACK'));
-				end;
+				vehicle.cp.hud.content.pages[7][4][2].text = ('%.1f%s (%s)'):format(abs(vehicle.cp.toolOffsetZ), g_i18n:getText('unit_meter'), courseplay:loc(vehicle.cp.toolOffsetZ > 0 and 'COURSEPLAY_FRONT' or 'COURSEPLAY_BACK'));
 			else
 				vehicle.cp.hud.content.pages[7][4][2].text = '---';
 			end;

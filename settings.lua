@@ -345,10 +345,14 @@ function courseplay:changeToolOffsetX(vehicle, changeBy, force, noDraw)
 	end;
 end;
 
-function courseplay:changeToolOffsetZ(vehicle, changeBy, force)
+function courseplay:changeToolOffsetZ(vehicle, changeBy, force, noDraw)
 	vehicle.cp.toolOffsetZ = force or (courseplay:round(vehicle.cp.toolOffsetZ, 1) + changeBy);
 	if abs(vehicle.cp.toolOffsetZ) < 0.1 then
 		vehicle.cp.toolOffsetZ = 0;
+	end;
+
+	if not noDraw and vehicle.cp.DirectionNode and vehicle.cp.backMarkerOffset and vehicle.cp.aiFrontMarker then
+		courseplay:setCustomTimer(vehicle, 'showWorkWidth', 2);
 	end;
 end;
 
