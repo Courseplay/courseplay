@@ -10,10 +10,8 @@ local abs, ceil, max, min = math.abs, math.ceil, math.max, math.min;
  5: follow target points
  6: follow tractor
  7: wait for pipe
- 8: all trailers are full
  9: wait till combine is gone outa my way
 81: all trailers are full, tractor turns away from the combine
-99: turn maneuver
 10: switch side
 --]]
 
@@ -29,15 +27,6 @@ function courseplay:handle_mode2(vehicle, dt)
 	-- STATE 1 (wait for work at start point)
 	if vehicle.cp.modeState == 1 and vehicle.cp.activeCombine ~= nil then
 		courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine)
-	end
-
-	-- STATE 8 (all trailers are full)
-	if vehicle.cp.modeState == 8 then
-		courseplay:setWaypointIndex(vehicle, 2);
-		courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine)
-		courseplay:setModeState(vehicle, 0);
-		courseplay:setIsLoaded(vehicle, true);
-		return false
 	end
 
 	-- support multiple tippers
@@ -70,6 +59,9 @@ function courseplay:handle_mode2(vehicle, dt)
 		else
 			vehicle.cp.currentTrailerToFill = nil
 			if vehicle.cp.modeState ~= 5 then
+				if vehicle.cp.modeState == 9 then
+					vehicle.cp.nextTargets ={}
+				end
 				if vehicle.cp.combineOffset > 0 then
 					vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, vehicle.cp.turnDiameter+2, 0, -(vehicle.cp.totalLength+2))
 				else
