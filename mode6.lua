@@ -549,11 +549,11 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 			end
 			if tool.cp.waitingForTrailerToUnload then
 				local mayIDrive = false;
-				if tool.cp.isCombine or courseplay:isAttachedCombine(workTool) then
+				if tool.cp.isCombine or (courseplay:isAttachedCombine(workTool) and not courseplay:isSpecialChopper(workTool)) then
 					if tool.cp.isCheckedIn == nil or (pipeState == 0 and tool.fillLevel == 0) then
 						tool.cp.waitingForTrailerToUnload = false
 					end
-				elseif tool.cp.isChopper then
+				elseif tool.cp.isChopper or courseplay:isSpecialChopper(workTool) then
 					-- resume driving
 					local ch, gr = Fillable.FILLTYPE_CHAFF, Fillable.FILLTYPE_GRASS_WINDROW;
 					if (tool.pipeParticleSystems and ((tool.pipeParticleSystems[ch] and tool.pipeParticleSystems[ch].isEmitting) or (tool.pipeParticleSystems[gr] and tool.pipeParticleSystems[gr].isEmitting))) or pipeState > 0 then
