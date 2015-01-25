@@ -245,6 +245,9 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 		courseplay:validateCourseGenerationData(vehicle);
 
 		courseplay:validateCanSwitchMode(vehicle);
+
+		-- SETUP 2D COURSE DRAW DATA
+		courseplay:setupCourse2dData(vehicle);
 	end
 end
 
@@ -665,7 +668,7 @@ function courseplay.courses:deleteSaveAll()
 						if wp.turnStart then
 							wpContent = wpContent .. ' turnstart="1"';
 						end;
-						if wp.turnStart then
+						if wp.turnEnd then
 							wpContent = wpContent .. ' turnend="1"';
 						end;
 						if wp.ridgeMarker ~= nil and wp.ridgeMarker ~= 0 then

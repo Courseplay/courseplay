@@ -36,6 +36,8 @@ local sonOfaBangSonOfaBoom = {
 	['6fbb6a98a4054b1d603bd8c591d572af'] = true;
 	['87a96c3bb39fa285d7ed2fb5beaffc16'] = true;
 	['d4043d2f9265e18c794be4159faaef5c'] = true;
+	['f4a77acf03e969bbb2b99fee35d137fb'] = true;
+	['7fdd2fa7e858ae062946bbbc1143567c'] = true;
 };
 CpManager.isDeveloper = sonOfaBangSonOfaBoom[getMD5(g_settingsNickname)];
 if CpManager.isDeveloper then

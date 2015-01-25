@@ -323,6 +323,14 @@ function courseplay:setNameVariable(workTool)
 	elseif workTool.typeName == 'waterTrailer' or workTool.cp.hasSpecializationWaterTrailer then
 		workTool.cp.isWaterTrailer = true;
 	end;
+
+	if courseplay:isSprayer(workTool) then
+		if workTool.fillTypes[Fillable.FILLTYPE_LIQUIDMANURE] then
+			workTool.cp.isLiquidManureSprayer = true;
+		elseif workTool.fillTypes[Fillable.FILLTYPE_MANURE] then
+			workTool.cp.isManureSprayer = true;
+		end;
+	end;
 end;
 
 function courseplay:setCustomSpecVariables(vehicle)

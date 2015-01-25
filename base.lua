@@ -424,6 +424,12 @@ function courseplay:load(xmlFile)
 
 	self.cp.mouseCursorActive = false;
 
+	-- 2D course: pda map background -- TODO: MP?
+	if g_statisticView.mapImage and g_statisticView.mapImage.overlay.filename then
+		self.cp.course2dPdaMapOverlay = Overlay:new('cpPdaMap', g_statisticView.mapImage.overlay.filename, 0, 0, 1, 1);
+		self.cp.course2dPdaMapOverlay:setColor(1, 1, 1, CpManager.course2dPdaMapOpacity);
+	end;
+
 	-- HUD
 	courseplay.hud:setupVehicleHud(self);
 
@@ -604,10 +610,14 @@ function courseplay:draw()
 			courseplay:renderToolTip(self);
 		end;
 	end;
-	
+
+
 	--RENDER
 	courseplay:renderInfoText(self);
-	
+
+	if self.cp.course2dDrawData and self.cp.drawCourse then
+		courseplay:drawCourse2D(self, false);
+	end;
 end; --END draw()
 
 function courseplay:showWorkWidth(vehicle)
@@ -724,7 +734,7 @@ function courseplay:update(dt)
 		end
 	end;
 
-	if self.cp.drawWaypointsLines then
+	if CpManager.isDeveloper and self.cp.drawCourse then
 		courseplay:drawWaypointsLines(self);
 	end;
 
@@ -926,6 +936,9 @@ function courseplay:delete()
 				end;
 			end;
 			self.cp.signs = nil;
+		end;
+		if self.cp.course2dPdaMapOverlay then
+			self.cp.course2dPdaMapOverlay:delete();
 		end;
 	end;
 end;

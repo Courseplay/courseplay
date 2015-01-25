@@ -271,7 +271,12 @@ function courseplay:clearCurrentLoadedCourse(vehicle)
 	vehicle.cp.hud.clearCurrentCourseButton1:setHovered(false);
 	vehicle.cp.hud.clearCurrentCourseButton2:setHovered(false);
 	vehicle.cp.hud.clearCurrentCourseButton8:setHovered(false);
-end
+
+	-- remove 2D course data
+	vehicle.cp.course2dDimensions = nil;
+	vehicle.cp.course2dDrawData = nil;
+	vehicle.cp.course2dBackground = nil;
+end;
 
 function courseplay:currentVehAngle(vehicle)
 	local x, y, z = localDirectionToWorld(vehicle.cp.DirectionNode, 0, 0, 1);

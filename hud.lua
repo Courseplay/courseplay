@@ -1293,9 +1293,7 @@ function courseplay.hud:setupVehicleHud(vehicle)
 
 	courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'save' }, 'showSaveCourseForm', 'course', topIconsX[3], topIconsY, wMiddle, hMiddle, nil, nil, false, false, false, courseplay:loc('COURSEPLAY_SAVE_CURRENT_COURSE'));
 
-	if CpManager.isDeveloper then
-		vehicle.cp.toggleDrawWaypointsLinesButton = courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'eye' }, 'toggleDrawWaypointsLines', nil, self.col1posX, topIconsY, wMiddle, hMiddle, nil, nil, false, false, true);
-	end;
+	vehicle.cp.toggleDrawCourseButton = courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'eye' }, 'toggleDrawCourse', nil, self.col1posX, topIconsY, wMiddle, hMiddle, nil, nil, false, false, true);
 
 
 	-- ##################################################
