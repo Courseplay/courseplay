@@ -111,7 +111,7 @@ function courseplay:stop_record(vehicle)
 	courseplay:buttonsActiveEnabled(vehicle, 'recording');
 
 	-- SETUP 2D COURSE DRAW DATA
-	courseplay:setupCourse2dData(vehicle);
+	vehicle.cp.course2dUpdateDrawData = true;
 end;
 
 function courseplay:setRecordingPause(vehicle)

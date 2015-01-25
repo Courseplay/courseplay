@@ -615,7 +615,7 @@ function courseplay:draw()
 	--RENDER
 	courseplay:renderInfoText(self);
 
-	if self.cp.course2dDrawData and self.cp.drawCourse then
+	if self.cp.drawCourse then
 		courseplay:drawCourse2D(self, false);
 	end;
 end; --END draw()

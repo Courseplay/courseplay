@@ -728,7 +728,7 @@ function courseplay:copyCourse(vehicle)
 		courseplay:validateCanSwitchMode(vehicle);
 
 		-- SETUP 2D COURSE DRAW DATA
-		courseplay:setupCourse2dData(vehicle);
+		vehicle.cp.course2dUpdateDrawData = true;
 	end;
 end;
 

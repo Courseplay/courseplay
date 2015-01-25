@@ -883,7 +883,7 @@ function courseplay:generateCourse(vehicle)
 	courseplay:validateCanSwitchMode(vehicle);
 
 	-- SETUP 2D COURSE DRAW DATA
-	courseplay:setupCourse2dData(vehicle);
+	vehicle.cp.course2dUpdateDrawData = true;
 
 	courseplay:debug(string.format("generateCourse() finished: %d lanes, %d headland %s", numLanes, numHeadlandLanesCreated, numHeadlandLanesCreated == 1 and 'lane' or 'lanes'), 7);
 end;
