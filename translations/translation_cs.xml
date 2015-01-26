@@ -214,7 +214,7 @@
 		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="结束折返" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_START" 				 text="倒车模式" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="前进模式" />
-		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Add split points" /> <!-- TODO: TRANSLATION! (during recording adds multiple points between last point and current position -->
+		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="增加路径点" />
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="地图图标:显示任务车辆信息" />
 		<text name="COURSEPLAY_ALWAYS_USE_4WD" 							 text="打开4WD模式" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="需要自动测量土地范围路径么？" />
