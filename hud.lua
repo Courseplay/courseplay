@@ -286,44 +286,45 @@ function courseplay.hud:setup()
 	};
 
 	self.buttonUVsPx = {
-		calculator       = {  76,288, 108,256 };
-		cancel           = {  40,288,  72,256 };
-		close            = { 148,216, 180,184 };
-		copy             = { 184,180, 216,148 };
-		courseAdd        = {  40,252,  72,220 };
-		courseLoadAppend = {   4,252,  36,220 };
-		courseClear      = { 184,360, 216,328 };
-		eye              = { 148,180, 180,148 };
-		delete           = { 184,216, 216,184 };
-		folderNew        = { 220,216, 252,184 };
-		folderParentFrom = {  76,252, 108,220 };
-		folderParentTo   = { 112,252, 144,220 };
-		headlandDirCW    = {   4,324,  36,292 };
-		headlandDirCCW   = {  40,324,  72,292 };
-		headlandOrdBef   = { 112,288, 176,256 };
-		headlandOrdAft   = { 184,288, 248,256 };
-		generateCourse   = {  40, 72,  72, 40 };
-		navUp            = {  76,216, 108,184 };
-		navDown          = { 112,216, 144,184 };
-		navLeft          = {   4,216,  36,184 };
-		navRight         = {  40,216,  72,184 };
-		navPlus          = { 148,252, 180,220 };
-		navMinus         = { 184,252, 216,220 };
-		recordingCross   = {  76,180, 108,148 };
-		recordingDelete  = { 148,360, 180,328 };
-		recordingPause   = {  40,360,  72,328 };
-		recordingPlay    = { 220,324, 252,292 };
-		recordingReverse = { 112,360, 144,328 };
-		recordingStop    = {  76,360, 108,328 };
-		recordingTurn    = {   4,360,  36,328 };
-		recordingWait    = {  40,180,  72,148 };
-		refresh          = { 220,252, 252,220 };
-		save             = { 220,180, 252,148 };
-		search           = {   4,288,  36,256 };
-		shovelLoading    = {  76,324, 108,292 };
-		shovelUnloading  = { 112,324, 144,292 };
-		shovelPreUnload  = { 148,324, 180,292 };
-		shovelTransport  = { 184,324, 216,292 };
+		calculator        = {  76,288, 108,256 };
+		cancel            = {  40,288,  72,256 };
+		close             = { 148,216, 180,184 };
+		copy              = { 184,180, 216,148 };
+		courseAdd         = {  40,252,  72,220 };
+		courseLoadAppend  = {   4,252,  36,220 };
+		courseClear       = { 184,360, 216,328 };
+		eye               = { 148,180, 180,148 };
+		delete            = { 184,216, 216,184 };
+		folderNew         = { 220,216, 252,184 };
+		folderParentFrom  = {  76,252, 108,220 };
+		folderParentTo    = { 112,252, 144,220 };
+		headlandDirCW     = {   4,324,  36,292 };
+		headlandDirCCW    = {  40,324,  72,292 };
+		headlandOrdBef    = { 112,288, 176,256 };
+		headlandOrdAft    = { 184,288, 248,256 };
+		generateCourse    = {  40, 72,  72, 40 };
+		navUp             = {  76,216, 108,184 };
+		navDown           = { 112,216, 144,184 };
+		navLeft           = {   4,216,  36,184 };
+		navRight          = {  40,216,  72,184 };
+		navPlus           = { 148,252, 180,220 };
+		navMinus          = { 184,252, 216,220 };
+		recordingAddSplit = { 220,360, 252,328 };
+		recordingCross    = {  76,180, 108,148 };
+		recordingDelete   = { 148,360, 180,328 };
+		recordingPause    = {  40,360,  72,328 };
+		recordingPlay     = { 220,324, 252,292 };
+		recordingReverse  = { 112,360, 144,328 };
+		recordingStop     = {  76,360, 108,328 };
+		recordingTurn     = {   4,360,  36,328 };
+		recordingWait     = {  40,180,  72,148 };
+		refresh           = { 220,252, 252,220 };
+		save              = { 220,180, 252,148 };
+		search            = {   4,288,  36,256 };
+		shovelLoading     = {  76,324, 108,292 };
+		shovelUnloading   = { 112,324, 144,292 };
+		shovelPreUnload   = { 148,324, 180,292 };
+		shovelTransport   = { 184,324, 216,292 };
 	};
 
 	-- bottom info
@@ -368,10 +369,10 @@ function courseplay.hud:setup()
 	self.infoTextPosY = self.toolTipTextPosY;
 
 	-- DIRECTION ARROW
-	self.directionArrowPosX = self.baseCenterPosX + self:pxToNormal(96, 'x');
-	self.directionArrowPosY = self.basePosY + self:pxToNormal(118, 'y');
 	self.directionArrowWidth = self:pxToNormal(128, 'x');
 	self.directionArrowHeight = self:pxToNormal(128, 'y');
+	self.directionArrowPosX = self.baseCenterPosX - self.directionArrowWidth * 0.5;
+	self.directionArrowPosY = self.linesPosY[8]; -- self.basePosY + self:pxToNormal(118, 'y');
 
 	-- INGAME MAP ICONS
 	local iconSizePx, minX, minY = 118, 660, 10;
@@ -953,11 +954,7 @@ function courseplay.hud:loadPage(vehicle, page)
 			if vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE or vehicle.cp.mode == courseplay.MODE_FIELDWORK then
 				vehicle.cp.hud.content.pages[7][1][1].text = courseplay:loc('COURSEPLAY_LANE_OFFSET');
 				if vehicle.cp.laneOffset and vehicle.cp.laneOffset ~= 0 then
-					if vehicle.cp.laneOffset > 0 then
-						vehicle.cp.hud.content.pages[7][1][2].text = string.format('%.1fm (%s)', abs(vehicle.cp.laneOffset), courseplay:loc('COURSEPLAY_RIGHT'));
-					elseif vehicle.cp.laneOffset < 0 then
-						vehicle.cp.hud.content.pages[7][1][2].text = string.format('%.1fm (%s)', abs(vehicle.cp.laneOffset), courseplay:loc('COURSEPLAY_LEFT'));
-					end;
+					vehicle.cp.hud.content.pages[7][1][2].text = ('%.1f%s (%s)'):format(abs(vehicle.cp.laneOffset), g_i18n:getText('unit_meter'), courseplay:loc(vehicle.cp.laneOffset > 0 and 'COURSEPLAY_RIGHT' or 'COURSEPLAY_LEFT'));
 				else
 					vehicle.cp.hud.content.pages[7][1][2].text = '---';
 				end;
@@ -972,11 +969,7 @@ function courseplay.hud:loadPage(vehicle, page)
 			--Tool horizontal offset
 			vehicle.cp.hud.content.pages[7][3][1].text = courseplay:loc('COURSEPLAY_TOOL_OFFSET_X');
 			if vehicle.cp.toolOffsetX and vehicle.cp.toolOffsetX ~= 0 then
-				if vehicle.cp.toolOffsetX > 0 then
-					vehicle.cp.hud.content.pages[7][3][2].text = string.format('%.1fm (%s)', abs(vehicle.cp.toolOffsetX), courseplay:loc('COURSEPLAY_RIGHT'));
-				elseif vehicle.cp.toolOffsetX < 0 then
-					vehicle.cp.hud.content.pages[7][3][2].text = string.format('%.1fm (%s)', abs(vehicle.cp.toolOffsetX), courseplay:loc('COURSEPLAY_LEFT'));
-				end;
+				vehicle.cp.hud.content.pages[7][3][2].text = ('%.1f%s (%s)'):format(abs(vehicle.cp.toolOffsetX), g_i18n:getText('unit_meter'), courseplay:loc(vehicle.cp.toolOffsetX > 0 and 'COURSEPLAY_RIGHT' or 'COURSEPLAY_LEFT'));
 			else
 				vehicle.cp.hud.content.pages[7][3][2].text = '---';
 			end;
@@ -984,11 +977,7 @@ function courseplay.hud:loadPage(vehicle, page)
 			--Tool vertical offset
 			vehicle.cp.hud.content.pages[7][4][1].text = courseplay:loc('COURSEPLAY_TOOL_OFFSET_Z');
 			if vehicle.cp.toolOffsetZ and vehicle.cp.toolOffsetZ ~= 0 then
-				if vehicle.cp.toolOffsetZ > 0 then
-					vehicle.cp.hud.content.pages[7][4][2].text = string.format('%.1fm (%s)', abs(vehicle.cp.toolOffsetZ), courseplay:loc('COURSEPLAY_FRONT'));
-				elseif vehicle.cp.toolOffsetZ < 0 then
-					vehicle.cp.hud.content.pages[7][4][2].text = string.format('%.1fm (%s)', abs(vehicle.cp.toolOffsetZ), courseplay:loc('COURSEPLAY_BACK'));
-				end;
+				vehicle.cp.hud.content.pages[7][4][2].text = ('%.1f%s (%s)'):format(abs(vehicle.cp.toolOffsetZ), g_i18n:getText('unit_meter'), courseplay:loc(vehicle.cp.toolOffsetZ > 0 and 'COURSEPLAY_FRONT' or 'COURSEPLAY_BACK'));
 			else
 				vehicle.cp.hud.content.pages[7][4][2].text = '---';
 			end;
@@ -1318,16 +1307,17 @@ function courseplay.hud:setupVehicleHud(vehicle)
 
 	-- recording
 	local recordingData = {
-		[1] = { 'recordingStop', 'stop_record', nil, 'COURSEPLAY_RECORDING_STOP' },
-		[2] = { 'recordingPause', 'setRecordingPause', true, 'COURSEPLAY_RECORDING_PAUSE' },
-		[3] = { 'recordingDelete', 'delete_waypoint', nil, 'COURSEPLAY_RECORDING_DELETE' },
-		[4] = { 'recordingWait', 'set_waitpoint', nil, 'COURSEPLAY_RECORDING_SET_WAIT' },
-		[5] = { 'recordingCross', 'set_crossing', nil, 'COURSEPLAY_RECORDING_SET_CROSS' },
-		[6] = { 'recordingTurn', 'setRecordingTurnManeuver', true, 'COURSEPLAY_RECORDING_TURN_START' },
-		[7] = { 'recordingReverse', 'change_DriveDirection', true, 'COURSEPLAY_RECORDING_REVERSE_START' }
+		[1] = { 'recordingStop',	 'stop_record',				 nil,  'COURSEPLAY_RECORDING_STOP'			   },
+		[2] = { 'recordingPause',	 'setRecordingPause',		 true, 'COURSEPLAY_RECORDING_PAUSE'			   },
+		[3] = { 'recordingDelete',	 'delete_waypoint',			 nil,  'COURSEPLAY_RECORDING_DELETE'		   },
+		[4] = { 'recordingWait',	 'set_waitpoint',			 nil,  'COURSEPLAY_RECORDING_SET_WAIT'		   },
+		[5] = { 'recordingCross',	 'set_crossing',			 nil,  'COURSEPLAY_RECORDING_SET_CROSS'		   },
+		[6] = { 'recordingTurn',	 'setRecordingTurnManeuver', true, 'COURSEPLAY_RECORDING_TURN_START'	   },
+		[7] = { 'recordingReverse',	 'change_DriveDirection',	 true, 'COURSEPLAY_RECORDING_REVERSE_START'	   },
+		[8] = { 'recordingAddSplit', 'addSplitRecordingPoints',	 nil,  'COURSEPLAY_RECORDING_ADD_SPLIT_POINTS' }
 	};
 	local totalWidth = (#recordingData - 1) * (wBig + marginBig) + wBig;
-	local baseX = self.baseCenterPosX - totalWidth/2;
+	local baseX = self.baseCenterPosX - totalWidth * 0.5;
 	for i,data in pairs(recordingData) do
 		local posX = baseX + ((wBig + marginBig) * (i-1));
 		local fn = data[2];

@@ -209,6 +209,9 @@ function courseplay:buttonsActiveEnabled(vehicle, section)
 					button:setActive(vehicle.cp.drivingDirReverse);
 					button:setDisabled(vehicle.cp.recordingIsPaused or vehicle.cp.isRecordingTurnManeuver);
 					button:setCanBeClicked(not button.isDisabled);
+				elseif fn == 'addSplitRecordingPoints' then
+					button:setDisabled(not vehicle.cp.recordingIsPaused);
+					button:setCanBeClicked(not button.isDisabled);
 				end;
 			end;
 		end;
@@ -345,10 +348,14 @@ function courseplay:changeToolOffsetX(vehicle, changeBy, force, noDraw)
 	end;
 end;
 
-function courseplay:changeToolOffsetZ(vehicle, changeBy, force)
+function courseplay:changeToolOffsetZ(vehicle, changeBy, force, noDraw)
 	vehicle.cp.toolOffsetZ = force or (courseplay:round(vehicle.cp.toolOffsetZ, 1) + changeBy);
 	if abs(vehicle.cp.toolOffsetZ) < 0.1 then
 		vehicle.cp.toolOffsetZ = 0;
+	end;
+
+	if not noDraw and vehicle.cp.DirectionNode and vehicle.cp.backMarkerOffset and vehicle.cp.aiFrontMarker then
+		courseplay:setCustomTimer(vehicle, 'showWorkWidth', 2);
 	end;
 end;
 
@@ -721,7 +728,7 @@ function courseplay:copyCourse(vehicle)
 		courseplay:validateCanSwitchMode(vehicle);
 
 		-- SETUP 2D COURSE DRAW DATA
-		courseplay:setupCourse2dData(vehicle);
+		vehicle.cp.course2dUpdateDrawData = true;
 	end;
 end;
 

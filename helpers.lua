@@ -1049,7 +1049,63 @@ function courseplay.utils:worldCoordsTo2D(vehicle, worldX, worldZ)
 	return x, y;
 end;
 
+function courseplay.utils:update2dCourseBackgroundPos(vehicle, mouseX, mouseY)
+	local dx = mouseX - CpManager.course2dDragDropMouseDown[1];
+	local dy = mouseY - CpManager.course2dDragDropMouseDown[2];
+
+	if vehicle.cp.course2dPdaMapOverlay then
+		vehicle.cp.course2dPdaMapOverlay:setColor(1,0,0,0.6);
+		vehicle.cp.course2dPdaMapOverlay:setPosition(vehicle.cp.course2dPdaMapOverlay.origPos[1] + dx, vehicle.cp.course2dPdaMapOverlay.origPos[2] + dy)
+	else
+		setOverlayColor(CpManager.course2dPolyOverlayId, 1,0,0,0.6);
+		vehicle.cp.course2dBackground.x = vehicle.cp.course2dBackground.origPos[1] + dx;
+		vehicle.cp.course2dBackground.y = vehicle.cp.course2dBackground.origPos[2] + dy;
+	end;
+end;
+
+function courseplay.utils:move2dCoursePlotField(vehicle, mouseX, mouseY)
+	-- reset background color
+	if vehicle.cp.course2dPdaMapOverlay then
+		vehicle.cp.course2dPdaMapOverlay:setColor(1, 1, 1, CpManager.course2dPdaMapOpacity);
+	end;
+
+	local dx = mouseX - CpManager.course2dDragDropMouseDown[1];
+	local dy = mouseY - CpManager.course2dDragDropMouseDown[2];
+
+	-- update plot position
+	if dx ~= 0 or dy ~= 0 then
+		local newX = Utils.clamp(CpManager.course2dPlotPosX + dx, 0 + CpManager.course2dPlotField.width  * 0.05, 1 - CpManager.course2dPlotField.width  * 1.05); -- 5% padding
+		local newY = Utils.clamp(CpManager.course2dPlotPosY + dy, 0 + CpManager.course2dPlotField.height * 0.05, 1 - CpManager.course2dPlotField.height * 1.05); -- 5% padding
+		-- print(('move2dCoursePlotField(): dx=%.3f, dy=%.3f -> newX=%.3f, newY=%.3f'):format(dx, dy, newX, newY));
+
+		CpManager.course2dPlotPosX = newX;
+		CpManager.course2dPlotPosY = newY;
+		CpManager.course2dPlotField.x = CpManager.course2dPlotPosX;
+		CpManager.course2dPlotField.y = CpManager.course2dPlotPosY;
+
+		-- update 2D data for all vehicles
+		for k,veh in pairs(g_currentMission.steerables) do
+			if veh.hasCourseplaySpec then
+				veh.cp.course2dUpdateDrawData = true;
+			end;
+		end;
+	end;
+
+	-- reset data
+	CpManager.course2dDragDropMouseDown = nil;
+
+	-- save new position data in xml
+	if g_server ~= nil then
+		local cpFile = loadXMLFile('cpFile', CpManager.cpXmlFilePath);
+		setXMLFloat(cpFile, 'XML.course2D#posX', CpManager.course2dPlotPosX);
+		setXMLFloat(cpFile, 'XML.course2D#posY', CpManager.course2dPlotPosY);
+		saveXMLFile(cpFile);
+		delete(cpFile);
+	end;
+end;
+
 function courseplay:setupCourse2dData(vehicle)
+	vehicle.cp.course2dDrawData = nil;
 	if vehicle.cp.numWaypoints < 1 then return; end;
 
 	vehicle.cp.course2dDimensions = courseplay.utils:getCourseDimensions(vehicle.Waypoints);
@@ -1116,18 +1172,35 @@ function courseplay:setupCourse2dData(vehicle)
 			color = { r, g, b, 1 };
 		};
 	end;
+
+	vehicle.cp.course2dUpdateDrawData = false;
 end;
 
 function courseplay:drawCourse2D(vehicle, doLoop)
+	-- dynamically update the data (when drag + drop happens)
+	if vehicle.cp.course2dUpdateDrawData then
+		-- print(('%s: course2dUpdateDrawData==true -> call setupCourse2dData()'):format(nameNum(vehicle)));
+		courseplay:setupCourse2dData(vehicle);
+	end;
+
+	if not vehicle.cp.course2dDrawData then
+		return;
+	end;
+
 	-- background
 	local bg = vehicle.cp.course2dBackground;
 	if vehicle.cp.course2dPdaMapOverlay then
 		vehicle.cp.course2dPdaMapOverlay:render();
 	else
-		setOverlayColor(CpManager.course2dPolyOverlayId, 0,0,0,0.6);
+		if not CpManager.course2dDragDropMouseDown then
+			setOverlayColor(CpManager.course2dPolyOverlayId, 0,0,0,0.6);
+		end;
 		renderOverlay(CpManager.course2dPolyOverlayId, bg.x, bg.y, bg.width, bg.height);
 	end;
 
+	if CpManager.course2dDragDropMouseDown ~= nil then -- drag and drop mode -> only render background
+		return;
+	end;
 
 	-- course
 	local numPoints = #vehicle.cp.course2dDrawData;

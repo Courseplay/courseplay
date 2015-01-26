@@ -218,6 +218,7 @@
 		<text name="COURSEPLAY_RECORDING_TURN_END"						 text="Zakończ manwer zawracania" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_START"					 text="Rozpocznij powrotną jazdę" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP"					 text="Zatrzymaj powrotną jazdę" />
+		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Add split points" /> <!-- TODO: TRANSLATION! (during recording adds multiple points between last point and current position -->
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT"				 text="Tekst przy ikonie na mapie" />
 		<text name="COURSEPLAY_ALWAYS_USE_4WD"							 text="Używaj zawsze napędu na wszystkie koła" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN"						 text="Czy chcesz, aby pola były skanowane automatycznie?" />

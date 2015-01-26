@@ -855,7 +855,7 @@ function CpManager:setup2dCourseData(createOverlays)
 			{ pct = 1.0, color = { 210/255,   5/255, 0/255 } }
 		};
 
-		self.course2dPlotField = { x = self.course2dPlotPosX, y = self.course2dPlotPosY, width = 0.3, height = 0.3 * g_screenAspectRatio}; -- definition of plot field for 2D
+		self.course2dPlotField = { x = self.course2dPlotPosX, y = self.course2dPlotPosY, width = 0.3, height = 0.3 * g_screenAspectRatio }; -- definition of plot field for 2D
 
 		return;
 	end;

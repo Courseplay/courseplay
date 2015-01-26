@@ -1,5 +1,5 @@
 local curFile = 'recording.lua';
-local abs, atan2, ceil, deg, rad = math.abs, math.atan2, math.ceil, math.deg, math.rad;
+local abs, atan2, ceil, deg, floor, rad = math.abs, math.atan2, math.ceil, math.deg, math.floor, math.rad;
 
 -- records waypoints for course
 function courseplay:record(vehicle)
@@ -109,7 +109,10 @@ function courseplay:stop_record(vehicle)
 	courseplay:validateCanSwitchMode(vehicle);
 	courseplay.signs:updateWaypointSigns(vehicle);
 	courseplay:buttonsActiveEnabled(vehicle, 'recording');
-end
+
+	-- SETUP 2D COURSE DRAW DATA
+	vehicle.cp.course2dUpdateDrawData = true;
+end;
 
 function courseplay:setRecordingPause(vehicle)
 	if vehicle.cp.waypointIndex > 3 then
@@ -305,3 +308,40 @@ function courseplay:setNewWaypointFromRecording(vehicle, cx, cz, angle, wait, re
 	vehicle.cp.numWaypoints = vehicle.cp.waypointIndex
 end;
 
+function courseplay:addSplitRecordingPoints(vehicle)
+	local cx, cy, cz = getWorldTranslation(vehicle.cp.DirectionNode);
+	local prevPoint = vehicle.Waypoints[vehicle.cp.waypointIndex - 1];
+	local prevCx, prevCz = prevPoint.cx, prevPoint.cz;
+	local dist = courseplay:distance(cx, cz, prevCx, prevCz);
+	local numPointsNeeded = ceil(dist / 5) - 1;
+	local dx, dz = (cx - prevCx) / dist, (cz - prevCz) / dist;
+	local angle = deg(Utils.getYRotationFromDirection(dx, dz));
+	local speed = prevPoint.speed;
+	courseplay:debug(('%s: addSplitRecordingPoints: dist=%.1f, numPointsNeeded=%d, angle=%.1f, speed=%.1f'):format(nameNum(vehicle), dist, numPointsNeeded, angle, speed), 16);
+
+	-- change previous point sign from 'stop' to 'normal'
+	local oldSignIndex = #vehicle.cp.signs.current;
+	local oldSignType = vehicle.cp.signs.current[oldSignIndex].type;
+	local newSignType = 'normal';
+	courseplay.signs:changeSignType(vehicle, oldSignIndex, oldSignType, newSignType);
+
+
+	if numPointsNeeded > 0 then
+		local x, z;
+		for i=1, numPointsNeeded do
+			x = prevCx + (i * 5 * dx);
+			z = prevCz + (i * 5 * dz);
+
+			courseplay:setNewWaypointFromRecording(vehicle, x, z, angle, nil, nil, nil,     speed);
+			courseplay.signs:addSign(vehicle, nil, x, z, nil, angle, nil, nil, 'regular');
+			courseplay:setWaypointIndex(vehicle, vehicle.cp.waypointIndex + 1);
+		end;
+	end;
+
+	-- add current position as last new point
+	courseplay:setNewWaypointFromRecording(vehicle, cx, cz, angle, nil, nil, nil,     speed);
+	courseplay.signs:addSign(vehicle, 'stop', cx, cz, nil, angle);
+	vehicle.cp.recordingTimer = 1;
+	courseplay:setWaypointIndex(vehicle, vehicle.cp.waypointIndex + 1);
+	courseplay:buttonsActiveEnabled(vehicle, 'recording');
+end;

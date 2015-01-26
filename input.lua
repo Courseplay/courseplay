@@ -63,6 +63,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 			if isUp then
 				buttonToHandle:handleMouseClick();
 			end;
+			return;
 		end;
 
 
@@ -134,6 +135,25 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 					end;
 				end;
 			end;
+		end;
+	end;
+
+
+	-- ##################################################
+	-- 2D COURSE WINDOW: DRAG + DROP MOVE
+	if self.cp.course2dDrawData and self.cp.drawCourse then
+		local plot = CpManager.course2dPlotField;
+		if isDown and mouseButton == courseplay.inputBindings.mouse.primaryButtonId and self.cp.mouseCursorActive and self.isEntered and courseplay:mouseIsInArea(posX, posY, plot.x, plot.x + plot.width, plot.y, plot.y + plot.height) then
+			CpManager.course2dDragDropMouseDown = { posX, posY };
+			if self.cp.course2dPdaMapOverlay then
+				self.cp.course2dPdaMapOverlay.origPos = { self.cp.course2dPdaMapOverlay.x, self.cp.course2dPdaMapOverlay.y };
+			else
+				self.cp.course2dBackground.origPos = { self.cp.course2dBackground.x, self.cp.course2dBackground.y };
+			end;
+		elseif isUp and CpManager.course2dDragDropMouseDown ~= nil then
+			courseplay.utils:move2dCoursePlotField(self, posX, posY);
+		elseif not isUp and not isDown and CpManager.course2dDragDropMouseDown ~= nil then
+			courseplay.utils:update2dCourseBackgroundPos(self, posX, posY);
 		end;
 	end;
 end; --END mouseEvent()

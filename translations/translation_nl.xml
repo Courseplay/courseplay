@@ -214,6 +214,7 @@
 		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="Bocht stoppen" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_START" 				 text="Achteruit rijden starten" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="Achteruit rijden stoppen" />	
+		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Add split points" /> <!-- TODO: TRANSLATION! (during recording adds multiple points between last point and current position -->
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Map iconen, toon tekst" />
 		<text name="COURSEPLAY_ALWAYS_USE_4WD" 							 text="Altijd 4x4" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="Velden automatisch scannen?" />
