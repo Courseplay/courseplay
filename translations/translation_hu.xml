@@ -105,7 +105,7 @@
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 						 text="Irány %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 						 text="Az %d %d útvonalponthoz megy" />
 		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 					 text="Vár, amíg kombájn ürít" />
-		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 					 text="Nincs hívó kombájn" />
+		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 					 text="Hívó kombájnra vár" />
 		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 				 text="Vár, amíg kombájn megfordul!" />
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 					 text="Vár az új útvonalpontra" />
 		<text name="COURSEPLAY_FOLLOWING_TRACTOR" 						 text="Traktor követése" />
@@ -214,7 +214,7 @@
 		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="Fordulás vége" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_START" 				 text="Tolatás indítása" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="Tolatás leállítása" />
-		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Add split points" /> <!-- TODO: TRANSLATION! (during recording adds multiple points between last point and current position -->
+		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Osztási pont hozzáadása" />
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Térképikonok: kijelzőszöveg" />
 		<text name="COURSEPLAY_ALWAYS_USE_4WD" 							 text="Mindig összkerékhajtás" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="Szeretnéd, hogy a mezők adatait automatikusan beolvassa?" />
