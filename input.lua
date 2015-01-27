@@ -141,7 +141,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 
 	-- ##################################################
 	-- 2D COURSE WINDOW: DRAG + DROP MOVE
-	if self.cp.course2dDrawData and self.cp.drawCourse then
+	if self.cp.course2dDrawData and (self.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_2DONLY or self.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_BOTH) then
 		local plot = CpManager.course2dPlotField;
 		if isDown and mouseButton == courseplay.inputBindings.mouse.primaryButtonId and self.cp.mouseCursorActive and self.isEntered and courseplay:mouseIsInArea(posX, posY, plot.x, plot.x + plot.width, plot.y, plot.y + plot.height) then
 			CpManager.course2dDragDropMouseDown = { posX, posY };

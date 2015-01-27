@@ -604,7 +604,8 @@ function courseplay.hud:renderHud(vehicle)
 
 	-- 2D/DEBUG LINE BUTTON MODE
 	if CpManager.isDeveloper and vehicle.cp.drawCourseMode ~= courseplay.COURSE_2D_DISPLAY_OFF then
-		local x, y = self.col1posX + self.buttonSize.middle.w * 0.5, self.topIconsY;
+		courseplay:setFontSettings('white', true);
+		local x, y = vehicle.cp.changeDrawCourseModeButton.x + vehicle.cp.changeDrawCourseModeButton.width * 0.5, self.topIconsY;
 		if vehicle.cp.drawCourseMode ~= courseplay.COURSE_2D_DISPLAY_2DONLY then
 			renderText(x, y, self.fontSizes.version, 'DBG');
 		end;
@@ -612,6 +613,7 @@ function courseplay.hud:renderHud(vehicle)
 			y = y + self.fontSizes.version;
 			renderText(x, y, self.fontSizes.version, '2D');
 		end;
+		courseplay:setFontSettings('white', false);
 	end;
 end;
 
