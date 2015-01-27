@@ -1320,7 +1320,7 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 							trans = shovelTransSplit
 						};
 					end;
-					self.cp.hasShovelStatePositions[state] = self.cp.shovelStatePositions[state] ~= nil and self.cp.shovelStatePositions[state].rot ~= nil and self.cp.shovelStatePositions[state].trans ~= nil; --TODO (Jakob): divide into rot and trans as well?
+					self.cp.hasShovelStatePositions[state] = self.cp.shovelStatePositions[state] ~= nil and self.cp.shovelStatePositions[state].rot ~= nil and self.cp.shovelStatePositions[state].trans ~= nil;
 				end;
 			end;
 		end;
