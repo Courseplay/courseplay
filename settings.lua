@@ -1467,9 +1467,9 @@ function courseplay:showFieldEdgePath(vehicle, pathType)
 	end;
 end;
 
-function courseplay:toggleDrawCourse(vehicle)
-	vehicle.cp.drawCourse = not vehicle.cp.drawCourse;
-	vehicle.cp.toggleDrawCourseButton:setActive(vehicle.cp.drawCourse);
+function courseplay:changeDrawCourseMode(vehicle, changeBy)
+	vehicle.cp.drawCourseMode = courseplay:varLoop(vehicle.cp.drawCourseMode, changeBy, CpManager.isDeveloper and courseplay.COURSE_2D_DISPLAY_BOTH or courseplay.COURSE_2D_DISPLAY_2DONLY, courseplay.COURSE_2D_DISPLAY_OFF);
+	vehicle.cp.changeDrawCourseModeButton:setActive(vehicle.cp.drawCourseMode ~= courseplay.COURSE_2D_DISPLAY_OFF);
 end;
 
 function courseplay:setEngineState(vehicle, on)

@@ -424,7 +424,9 @@ function courseplay:load(xmlFile)
 
 	self.cp.mouseCursorActive = false;
 
-	-- 2D course: pda map background -- TODO: MP?
+	-- 2D course
+	self.cp.drawCourseMode = courseplay.COURSE_2D_DISPLAY_OFF;
+	-- 2D pda map background -- TODO: MP?
 	if g_statisticView.mapImage and g_statisticView.mapImage.overlay.filename then
 		self.cp.course2dPdaMapOverlay = Overlay:new('cpPdaMap', g_statisticView.mapImage.overlay.filename, 0, 0, 1, 1);
 		self.cp.course2dPdaMapOverlay:setColor(1, 1, 1, CpManager.course2dPdaMapOpacity);
@@ -615,7 +617,7 @@ function courseplay:draw()
 	--RENDER
 	courseplay:renderInfoText(self);
 
-	if self.cp.drawCourse then
+	if self.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_2DONLY or self.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_BOTH then
 		courseplay:drawCourse2D(self, false);
 	end;
 end; --END draw()
@@ -736,7 +738,7 @@ function courseplay:update(dt)
 		end
 	end;
 
-	if CpManager.isDeveloper and self.cp.drawCourse then
+	if CpManager.isDeveloper and (self.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_DBGONLY or self.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_BOTH) then
 		courseplay:drawWaypointsLines(self);
 	end;
 
