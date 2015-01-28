@@ -137,6 +137,7 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 			-- for turn maneuver
 			vehicle.cp.courseWorkWidth = course.workWidth;
 			vehicle.cp.courseNumHeadlandLanes = course.numHeadlandLanes;
+			vehicle.cp.courseHeadlandDirectionCW = course.headlandDirectionCW;
 
 			courseplay:debug(string.format("course_management %d: %s: no course was loaded -> new course = course -> currentCourseName=%q, numCourses=%s", debug.getinfo(1).currentline, nameNum(vehicle), tostring(vehicle.cp.currentCourseName), tostring(vehicle.cp.numCourses)), 8);
 
@@ -244,6 +245,9 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 			end;
 			if not vehicle.cp.courseNumHeadlandLanes then
 				vehicle.cp.courseNumHeadlandLanes = course.numHeadlandLanes;
+			end;
+			if vehicle.cp.courseHeadlandDirectionCW == nil then
+				vehicle.cp.courseHeadlandDirectionCW = course.headlandDirectionCW;
 			end;
 
 			courseplay:debug(string.format('%s: adding course done -> numWaypoints=%d, numCourses=%s, currentCourseName=%q', nameNum(vehicle), vehicle.cp.numWaypoints, vehicle.cp.numCourses, vehicle.cp.currentCourseName), 8);
@@ -476,7 +480,7 @@ function courseplay.courses:saveCourseToXml(course_id, File, append)
 	end
 	
 	-- { id = id, type = 'course', name = name, waypoints = tempCourse, parent = parent }
-	local types = { id = 'Int', name = 'String', parent = 'Int', workWidth = 'Float', numHeadlandLanes = 'Int' }
+	local types = { id = 'Int', name = 'String', parent = 'Int', workWidth = 'Float', numHeadlandLanes = 'Int', headlandDirectionCW = 'Bool' }
 	local i = 0
 	
 	-- find the node position and save the attributes
@@ -658,12 +662,15 @@ function courseplay.courses:deleteSaveAll()
 				file:write('\t<courses>\n')
 				for i,course in pairs(g_currentMission.cp_courses) do
 					local numWaypoints = #course.waypoints;
-					local courseTxt = ('\t\t<course name=%q id="%d" parent="%d'):format(course.name, course.id, course.parent)
+					local courseTxt = ('\t\t<course name=%q id="%d" parent="%d"'):format(course.name, course.id, course.parent)
 					if course.workWidth then
-						courseTxt = courseTxt .. (' workWidth=%.1f'):format(course.workWidth);
+						courseTxt = courseTxt .. (' workWidth="%.1f"'):format(course.workWidth);
 					end;
 					if course.numHeadlandLanes then
-						courseTxt = courseTxt .. (' numHeadlandLanes=%d'):format(course.numHeadlandLanes);
+						courseTxt = courseTxt .. (' numHeadlandLanes="%d"'):format(course.numHeadlandLanes);
+					end;
+					if course.headlandDirectionCW ~= nil then
+						courseTxt = courseTxt .. (' headlandDirectionCW="%s"'):format(tostring(course.headlandDirectionCW));
 					end;
 					courseTxt = courseText .. '>\n';
 					file:write(courseTxt);
@@ -1199,6 +1206,9 @@ function courseplay.courses:loadCoursesAndFoldersFromXml()
 				-- course numHeadlandLanes
 				local numHeadlandLanes = getXMLInt(cpFile, courseKey .. '#numHeadlandLanes');
 
+				-- course headlandDirectionCW
+				local headlandDirectionCW = getXMLBool(cpFile, courseKey .. '#headlandDirectionCW');
+
 				--course waypoints
 				waypoints = {};
 
@@ -1266,15 +1276,16 @@ function courseplay.courses:loadCoursesAndFoldersFromXml()
 				end; -- END while true (waypoints)
 				
 				local course = { 
-					id = id, 
+					id = id,
 					uid = 'c' .. id,
-					type = 'course', 
-					name = courseName, 
+					type = 'course',
+					name = courseName,
 					nameClean = courseNameClean, 
-					waypoints = waypoints, 
-					parent = parent, 
-					workWidth = workWidth, 
-					numHeadlandLanes = numHeadlandLanes 
+					waypoints = waypoints,
+					parent = parent,
+					workWidth = workWidth,
+					numHeadlandLanes = numHeadlandLanes,
+					headlandDirectionCW = headlandDirectionCW
 				};
 				if id ~= 0 then
 					courses_by_id[id] = course;

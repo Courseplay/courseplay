@@ -265,6 +265,7 @@ function courseplay:clearCurrentLoadedCourse(vehicle)
 	-- for turn maneuver
 	vehicle.cp.courseWorkWidth = nil;
 	vehicle.cp.courseNumHeadlandLanes = nil;
+	vehicle.cp.courseHeadlandDirectionCW = nil;
 
 	vehicle.cp.hasGeneratedCourse = false;
 	courseplay:validateCourseGenerationData(vehicle);

@@ -168,6 +168,9 @@ function inputCourseNameDialogue:onSaveClick()
 		if vehicle.cp.courseNumHeadlandLanes then
 			course.numHeadlandLanes = vehicle.cp.courseNumHeadlandLanes;
 		end;
+		if vehicle.cp.courseHeadlandDirectionCW ~= nil then
+			course.headlandDirectionCW = vehicle.cp.courseHeadlandDirectionCW;
+		end;
 
 		g_currentMission.cp_courses[vehicle.cp.currentCourseId] = course
 		--courseplay:dopairs(g_currentMission.cp_courses,1) replace it by tableshow
