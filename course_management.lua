@@ -828,7 +828,7 @@ function courseplay:linkParent(vehicle, index)
 			vehicle.cp.hud.choose_parent = false
 		end
 	end -- if type(vehicle.cp.hud.courses[index]) ~= nil
-	--courseplay:buttonsActiveEnabled(vehicle, "page2");
+	--courseplay.buttons:setActiveEnabled(vehicle, "page2");
 end
 
 function courseplay.courses:getNextCourse(vehicle, index, rev)

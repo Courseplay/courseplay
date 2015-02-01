@@ -76,10 +76,6 @@
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 						 text="手动调整" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 				 text="自动(根据任务) (最大. %s)" /> 
 		<text name="COURSEPLAY_NO_COURSE_LOADED" 						 text="任务：没有加载任务" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_1" 						 text="显示起点和终点" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_2" 						 text="不显示其它的任务点" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_3" 						 text="显示所有路径点" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_4" 						 text="不显示" />
 		<text name="COURSEPLAY_WARNING_LIGHTS" 							 text="信标灯:" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 					 text="从不打开信标灯" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 					 text="在道路上打开信标灯" />
@@ -223,6 +219,10 @@
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 				 text="土地编号: %d号(%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 			 text="种子类型: %s" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE" 				 text="用量: %s %s (%s)" />
+		<!-- TRANSLATION MISSING --><text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="Show/hide start and end points" />
+		<!-- TRANSLATION MISSING --><text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="Show/hide all points" />
+		<!-- TRANSLATION MISSING --><text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="Show/hide crossing points" />
+
 		<text name="COURSEPLAY_HUD_OPEN" 								 text="打开CP界面" />
 		<text name="COURSEPLAY_HUD_CLOSE" 								 text="关闭CP界面" />
 		<text name="COURSEPLAY_FUNCTIONS" 								 text="CP功能" />

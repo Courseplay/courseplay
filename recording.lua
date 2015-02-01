@@ -90,7 +90,7 @@ function courseplay:start_record(vehicle)
 
 	courseplay.signs:updateWaypointSigns(vehicle, "current");
 	courseplay:validateCanSwitchMode(vehicle);
-	courseplay:buttonsActiveEnabled(vehicle, 'recording');
+	courseplay.buttons:setActiveEnabled(vehicle, 'recording');
 end
 
 -- stops course recording -- just setting variables
@@ -108,7 +108,7 @@ function courseplay:stop_record(vehicle)
 	courseplay:validateCourseGenerationData(vehicle);
 	courseplay:validateCanSwitchMode(vehicle);
 	courseplay.signs:updateWaypointSigns(vehicle);
-	courseplay:buttonsActiveEnabled(vehicle, 'recording');
+	courseplay.buttons:setActiveEnabled(vehicle, 'recording');
 
 	-- SETUP 2D COURSE DRAW DATA
 	vehicle.cp.course2dUpdateDrawData = true;
@@ -132,7 +132,7 @@ function courseplay:setRecordingPause(vehicle)
 		courseplay.signs:changeSignType(vehicle, oldSignIndex, oldSignType, newSignType);
 
 		courseplay:validateCanSwitchMode(vehicle);
-		courseplay:buttonsActiveEnabled(vehicle, 'recording');
+		courseplay.buttons:setActiveEnabled(vehicle, 'recording');
 	end;
 end;
 
@@ -197,7 +197,7 @@ function courseplay:setRecordingTurnManeuver(vehicle)
 	courseplay:setWaypointIndex(vehicle, vehicle.cp.waypointIndex + 1);
 	local diamondColor = vehicle.cp.isRecordingTurnManeuver and 'turnStart' or 'turnEnd';
 	courseplay.signs:addSign(vehicle, 'normal', cx, cz, nil, newAngle, nil, nil, diamondColor);
-	courseplay:buttonsActiveEnabled(vehicle, 'recording');
+	courseplay.buttons:setActiveEnabled(vehicle, 'recording');
 end;
 
 -- set Waypoint before change direction
@@ -216,7 +216,7 @@ function courseplay:change_DriveDirection(vehicle)
 	vehicle.cp.recordingTimer = 1
 	courseplay:setWaypointIndex(vehicle, vehicle.cp.waypointIndex + 1);
 	courseplay.signs:addSign(vehicle, 'normal', cx, cz, nil, newAngle, nil, nil, 'regular');
-	courseplay:buttonsActiveEnabled(vehicle, 'recording');
+	courseplay.buttons:setActiveEnabled(vehicle, 'recording');
 end
 
 -- delete last waypoint
@@ -236,7 +236,7 @@ function courseplay:delete_waypoint(vehicle)
 		vehicle.Waypoints[vehicle.cp.waypointIndex] = nil
 		vehicle.cp.numWaypoints = vehicle.cp.waypointIndex
 	end;
-	courseplay:buttonsActiveEnabled(vehicle, 'recording');
+	courseplay.buttons:setActiveEnabled(vehicle, 'recording');
 end;
 
 -- clears current course -- just setting variables
@@ -343,5 +343,5 @@ function courseplay:addSplitRecordingPoints(vehicle)
 	courseplay.signs:addSign(vehicle, 'stop', cx, cz, nil, angle);
 	vehicle.cp.recordingTimer = 1;
 	courseplay:setWaypointIndex(vehicle, vehicle.cp.waypointIndex + 1);
-	courseplay:buttonsActiveEnabled(vehicle, 'recording');
+	courseplay.buttons:setActiveEnabled(vehicle, 'recording');
 end;

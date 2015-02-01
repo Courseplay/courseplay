@@ -287,45 +287,48 @@ function courseplay.hud:setup()
 	};
 
 	self.buttonUVsPx = {
-		calculator        = {  76,288, 108,256 };
-		cancel            = {  40,288,  72,256 };
-		close             = { 148,216, 180,184 };
-		copy              = { 184,180, 216,148 };
-		courseAdd         = {  40,252,  72,220 };
-		courseLoadAppend  = {   4,252,  36,220 };
-		courseClear       = { 184,360, 216,328 };
-		eye               = { 148,180, 180,148 };
-		delete            = { 184,216, 216,184 };
-		folderNew         = { 220,216, 252,184 };
-		folderParentFrom  = {  76,252, 108,220 };
-		folderParentTo    = { 112,252, 144,220 };
-		headlandDirCW     = {   4,324,  36,292 };
-		headlandDirCCW    = {  40,324,  72,292 };
-		headlandOrdBef    = { 112,288, 176,256 };
-		headlandOrdAft    = { 184,288, 248,256 };
-		generateCourse    = {  40, 72,  72, 40 };
-		navUp             = {  76,216, 108,184 };
-		navDown           = { 112,216, 144,184 };
-		navLeft           = {   4,216,  36,184 };
-		navRight          = {  40,216,  72,184 };
-		navPlus           = { 148,252, 180,220 };
-		navMinus          = { 184,252, 216,220 };
-		recordingAddSplit = { 220,360, 252,328 };
-		recordingCross    = {  76,180, 108,148 };
-		recordingDelete   = { 148,360, 180,328 };
-		recordingPause    = {  40,360,  72,328 };
-		recordingPlay     = { 220,324, 252,292 };
-		recordingReverse  = { 112,360, 144,328 };
-		recordingStop     = {  76,360, 108,328 };
-		recordingTurn     = {   4,360,  36,328 };
-		recordingWait     = {  40,180,  72,148 };
-		refresh           = { 220,252, 252,220 };
-		save              = { 220,180, 252,148 };
-		search            = {   4,288,  36,256 };
-		shovelLoading     = {  76,324, 108,292 };
-		shovelUnloading   = { 112,324, 144,292 };
-		shovelPreUnload   = { 148,324, 180,292 };
-		shovelTransport   = { 184,324, 216,292 };
+		calculator         = {  76,288, 108,256 };
+		cancel             = {  40,288,  72,256 };
+		close              = { 148,216, 180,184 };
+		copy               = { 184,180, 216,148 };
+		courseAdd          = {  40,252,  72,220 };
+		courseLoadAppend   = {   4,252,  36,220 };
+		courseClear        = { 184,360, 216,328 };
+		eye                = { 148,180, 180,148 };
+		delete             = { 184,216, 216,184 };
+		folderNew          = { 220,216, 252,184 };
+		folderParentFrom   = {  76,252, 108,220 };
+		folderParentTo     = { 112,252, 144,220 };
+		headlandDirCW      = {   4,324,  36,292 };
+		headlandDirCCW     = {  40,324,  72,292 };
+		headlandOrdBef     = { 112,288, 176,256 };
+		headlandOrdAft     = { 184,288, 248,256 };
+		generateCourse     = {  40, 72,  72, 40 };
+		navUp              = {  76,216, 108,184 };
+		navDown            = { 112,216, 144,184 };
+		navLeft            = {   4,216,  36,184 };
+		navRight           = {  40,216,  72,184 };
+		navPlus            = { 148,252, 180,220 };
+		navMinus           = { 184,252, 216,220 };
+		recordingAddSplit  = { 220,360, 252,328 };
+		recordingCross     = {  76,180, 108,148 };
+		recordingDelete    = { 148,360, 180,328 };
+		recordingPause     = {  40,360,  72,328 };
+		recordingPlay      = { 220,324, 252,292 };
+		recordingReverse   = { 112,360, 144,328 };
+		recordingStop      = {  76,360, 108,328 };
+		recordingTurn      = {   4,360,  36,328 };
+		recordingWait      = {  40,180,  72,148 };
+		refresh            = { 220,252, 252,220 };
+		save               = { 220,180, 252,148 };
+		search             = {   4,288,  36,256 };
+		shovelLoading      = {  76,324, 108,292 };
+		shovelUnloading    = { 112,324, 144,292 };
+		shovelPreUnload    = { 148,324, 180,292 };
+		shovelTransport    = { 184,324, 216,292 };
+		waypointSignsAll   = {  76,396, 144,364 };
+		waypointSignsEnd   = { 148,396, 216,364 };
+		waypointSignsStart = {   4,396,  72,364 };
 	};
 
 	-- bottom info
@@ -626,7 +629,7 @@ function courseplay:setMinHudPage(vehicle)
 
 	courseplay:setHudPage(vehicle, max(vehicle.cp.hud.currentPage, vehicle.cp.minHudPage));
 	courseplay:debug(('%s: setMinHudPage(): minHudPage=%d, currentPage=%d'):format(nameNum(vehicle), vehicle.cp.minHudPage, vehicle.cp.hud.currentPage), 18);
-	courseplay:buttonsActiveEnabled(vehicle, 'pageNav');
+	courseplay.buttons:setActiveEnabled(vehicle, 'pageNav');
 end;
 
 function courseplay.hud:loadPage(vehicle, page)
@@ -801,7 +804,7 @@ function courseplay.hud:loadPage(vehicle, page)
 		end
 
 		-- enable and disable buttons:
-		courseplay:buttonsActiveEnabled(vehicle, 'page2');
+		courseplay.buttons:setActiveEnabled(vehicle, 'page2');
 
 
 	--PAGE 3: MODE 2 SETTINGS
@@ -931,7 +934,6 @@ function courseplay.hud:loadPage(vehicle, page)
 
 		-- Waypoint mode
 		vehicle.cp.hud.content.pages[6][3][1].text = courseplay:loc('COURSEPLAY_WAYPOINT_MODE');
-		vehicle.cp.hud.content.pages[6][3][2].text = courseplay:loc('COURSEPLAY_WAYPOINT_MODE_' .. vehicle.cp.visualWaypointsMode);
 
 		-- Warning lights
 		vehicle.cp.hud.content.pages[6][4][1].text = courseplay:loc('COURSEPLAY_WARNING_LIGHTS');
@@ -1473,32 +1475,45 @@ function courseplay.hud:setupVehicleHud(vehicle)
 
 	-- ##################################################
 	-- Page 6: General settings
-	courseplay.button:new(vehicle, 6, nil, 'toggleRealisticDriving', nil,  self.contentMinX, self.linesPosY[1], self.contentMaxWidth, self.lineHeight, 1, nil, true);
+	local pg = self.PAGE_GENERAL_SETTINGS;
 
-	courseplay.button:new(vehicle, 6, nil, 'toggleOpenHudWithMouse', nil,  self.contentMinX, self.linesPosY[2], self.contentMaxWidth, self.lineHeight, 2, nil, true);
+	-- realistic driving
+	courseplay.button:new(vehicle, pg, nil, 'toggleRealisticDriving', nil,  self.contentMinX, self.linesPosY[1], self.contentMaxWidth, self.lineHeight, 1, nil, true);
 
-	courseplay.button:new(vehicle, 6, nil, 'changeVisualWaypointsMode', 1, self.contentMinX, self.linesPosY[3], self.contentMaxWidth, self.lineHeight, 3, nil, true);
+	-- open hud with mouse/keyboard
+	courseplay.button:new(vehicle, pg, nil, 'toggleOpenHudWithMouse', nil,  self.contentMinX, self.linesPosY[2], self.contentMaxWidth, self.lineHeight, 2, nil, true);
 
-	courseplay.button:new(vehicle, 6, { 'iconSprite.png', 'navLeft' },  'changeWarningLightsMode', -1, self.buttonPosX[2], self.linesButtonPosY[4], wSmall, hSmall, 4, -1, false);
-	courseplay.button:new(vehicle, 6, { 'iconSprite.png', 'navRight' }, 'changeWarningLightsMode',  1, self.buttonPosX[1], self.linesButtonPosY[4], wSmall, hSmall, 4,  1, false);
+	-- visual waypoint signs
+	local btnW = wSmall * 2 + wSmall/8;
+	vehicle.cp.visualWaypointsStartEndButton1 = courseplay.button:new(vehicle, pg, { 'iconSprite.png', 'waypointSignsStart' }, 'toggleShowVisualWaypointsStartEnd', nil, self.col2posX[pg], self.linesButtonPosY[3], btnW, hSmall, 3, nil, true, false, true, courseplay:loc('COURSEPLAY_VISUALWAYPOINTS_STARTEND'));
+	vehicle.cp.visualWaypointsAllEndButton = courseplay.button:new(vehicle, pg, { 'iconSprite.png', 'waypointSignsAll' }, 'toggleShowVisualWaypointsAll', nil, self.col2posX[pg] + btnW * 1.5, self.linesButtonPosY[3], btnW, hSmall, 3, nil, true, false, true, courseplay:loc('COURSEPLAY_VISUALWAYPOINTS_ALL'));
+	vehicle.cp.visualWaypointsStartEndButton2 = courseplay.button:new(vehicle, pg, { 'iconSprite.png', 'waypointSignsEnd' }, 'toggleShowVisualWaypointsStartEnd', nil, self.col2posX[pg] + btnW * 3, self.linesButtonPosY[3], btnW, hSmall, 3, nil, true, false, true, courseplay:loc('COURSEPLAY_VISUALWAYPOINTS_STARTEND'));
+	vehicle.cp.visualWaypointsCrossingButton = courseplay.button:new(vehicle, pg, { 'iconSprite.png', 'recordingCross' }, 'toggleShowVisualWaypointsCrossing', nil, self.col2posX[pg] + btnW * 4.5, self.linesButtonPosY[3], wSmall, hSmall, 3, nil, true, false, true, courseplay:loc('COURSEPLAY_VISUALWAYPOINTS_CROSSING'));
 
-	courseplay.button:new(vehicle, 6, { 'iconSprite.png', 'navMinus' }, 'changeWaitTime', -1, self.buttonPosX[2], self.linesButtonPosY[5], wSmall, hSmall, 5, -5, false);
-	courseplay.button:new(vehicle, 6, { 'iconSprite.png', 'navPlus' },  'changeWaitTime',  1, self.buttonPosX[1], self.linesButtonPosY[5], wSmall, hSmall, 5,  5, false);
-	courseplay.button:new(vehicle, 6, nil, 'changeWaitTime', 1, mouseWheelArea.x, self.linesButtonPosY[5], mouseWheelArea.w, mouseWheelArea.h, 5, 5, true, true);
+	-- warning lights
+	courseplay.button:new(vehicle, pg, { 'iconSprite.png', 'navLeft' },  'changeWarningLightsMode', -1, self.buttonPosX[2], self.linesButtonPosY[4], wSmall, hSmall, 4, -1, false);
+	courseplay.button:new(vehicle, pg, { 'iconSprite.png', 'navRight' }, 'changeWarningLightsMode',  1, self.buttonPosX[1], self.linesButtonPosY[4], wSmall, hSmall, 4,  1, false);
 
+	-- wait time
+	courseplay.button:new(vehicle, pg, { 'iconSprite.png', 'navMinus' }, 'changeWaitTime', -1, self.buttonPosX[2], self.linesButtonPosY[5], wSmall, hSmall, 5, -5, false);
+	courseplay.button:new(vehicle, pg, { 'iconSprite.png', 'navPlus' },  'changeWaitTime',  1, self.buttonPosX[1], self.linesButtonPosY[5], wSmall, hSmall, 5,  5, false);
+	courseplay.button:new(vehicle, pg, nil, 'changeWaitTime', 1, mouseWheelArea.x, self.linesButtonPosY[5], mouseWheelArea.w, mouseWheelArea.h, 5, 5, true, true);
+
+	-- ingame map show text
 	if CpManager.ingameMapIconActive and CpManager.ingameMapIconShowTextLoaded then
-		courseplay.button:new(vehicle, 6, nil, 'toggleIngameMapIconShowText', nil, self.contentMinX, self.linesPosY[6], self.contentMaxWidth, self.lineHeight, 6, nil, true);
+		courseplay.button:new(vehicle, pg, nil, 'toggleIngameMapIconShowText', nil, self.contentMinX, self.linesPosY[6], self.contentMaxWidth, self.lineHeight, 6, nil, true);
 	end;
 
+	-- debug channels
 	vehicle.cp.hud.debugChannelButtons = {};
 	for dbg=1, courseplay.numDebugChannelButtonsPerLine do
 		local data = courseplay.debugButtonPosData[dbg];
 		local toolTip = courseplay.debugChannelsDesc[dbg];
-		vehicle.cp.hud.debugChannelButtons[dbg] = courseplay.button:new(vehicle, 6, 'iconSprite.png', 'toggleDebugChannel', dbg, data.posX, data.posY, data.width, data.height, nil, nil, nil, false, false, toolTip);
+		vehicle.cp.hud.debugChannelButtons[dbg] = courseplay.button:new(vehicle, pg, 'iconSprite.png', 'toggleDebugChannel', dbg, data.posX, data.posY, data.width, data.height, nil, nil, nil, false, false, toolTip);
 	end;
-	courseplay.button:new(vehicle, 6, { 'iconSprite.png', 'navUp' },   'changeDebugChannelSection', -1, self.buttonPosX[2], self.linesButtonPosY[8], wSmall, hSmall, 8, -1, true, false);
-	courseplay.button:new(vehicle, 6, { 'iconSprite.png', 'navDown' }, 'changeDebugChannelSection',  1, self.buttonPosX[1], self.linesButtonPosY[8], wSmall, hSmall, 8,  1, true, false);
-	courseplay.button:new(vehicle, 6, nil, 'changeDebugChannelSection', -1, mouseWheelArea.x, self.linesButtonPosY[8], mouseWheelArea.w, mouseWheelArea.h, 8, -1, true, true);
+	courseplay.button:new(vehicle, pg, { 'iconSprite.png', 'navUp' },   'changeDebugChannelSection', -1, self.buttonPosX[2], self.linesButtonPosY[8], wSmall, hSmall, 8, -1, true, false);
+	courseplay.button:new(vehicle, pg, { 'iconSprite.png', 'navDown' }, 'changeDebugChannelSection',  1, self.buttonPosX[1], self.linesButtonPosY[8], wSmall, hSmall, 8,  1, true, false);
+	courseplay.button:new(vehicle, pg, nil, 'changeDebugChannelSection', -1, mouseWheelArea.x, self.linesButtonPosY[8], mouseWheelArea.w, mouseWheelArea.h, 8, -1, true, true);
 
 
 	-- ##################################################

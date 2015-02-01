@@ -76,10 +76,6 @@
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 						 text="maximum snelheid" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 				 text="automatisch (van opname, max. %s)" />
 		<text name="COURSEPLAY_NO_COURSE_LOADED" 						 text="route: geen route geladen" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_1" 						 text="Start en finish" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_2" 						 text="zonder kruisingen" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_3" 						 text="toon eigen" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_4" 						 text="geen" />
 		<text name="COURSEPLAY_WARNING_LIGHTS" 							 text="Alarmlichten:" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 					 text="altijd uit" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 					 text="zwaailicht aan (op de weg)" />
@@ -242,5 +238,8 @@
 		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Route bijvoegen" /> 
 		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Verplaats naar map" /> 
 		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Verwijder route/map" /> 
+		<!-- TRANSLATION MISSING --><text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="Show/hide start and end points" />
+		<!-- TRANSLATION MISSING --><text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="Show/hide all points" />
+		<!-- TRANSLATION MISSING --><text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="Show/hide crossing points" />
 	</texts>
 </l10n>

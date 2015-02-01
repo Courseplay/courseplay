@@ -80,10 +80,6 @@
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX"				text="prędkość max." />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC"			text="automatycznie (z kursu, max. %s)" />
 		<text name="COURSEPLAY_NO_COURSE_LOADED"				text="Kurs: Nie załadowano kursu" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_1"					text="początk i koniec" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_2"					text="bez skrzyżowań" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_3"					text="wszystkie" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_4"					text="nie pokazuj" />
 		<text name="COURSEPLAY_WARNING_LIGHTS"					text="Światła ostrzegawcze:" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0"				text="nigdy nie włączaj" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1"				text="kogut (na drodze)" />
@@ -228,6 +224,10 @@
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE"			text="Typ nasion: %s" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE"			text="Zużycie: %s %s (%s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_TRIM"			text="···" />
+		<!-- TRANSLATION MISSING --><text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="Show/hide start and end points" />
+		<!-- TRANSLATION MISSING --><text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="Show/hide all points" />
+		<!-- TRANSLATION MISSING --><text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="Show/hide crossing points" />
+
 		<text name="COURSEPLAY_HUD_OPEN"					text="Pokaż hud Courseplay" />
 		<text name="COURSEPLAY_HUD_CLOSE"					text="Ukryj hud Courseplay" />
 		<text name="COURSEPLAY_FUNCTIONS"					text="Courseplay funkcje" />

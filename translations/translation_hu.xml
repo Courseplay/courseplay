@@ -76,10 +76,6 @@
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 						 text="beállított sebesség" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 				 text="automaikus (az útvonalhoz, max %s)" />
 		<text name="COURSEPLAY_NO_COURSE_LOADED" 						 text="Útvonal: Útvonal nincs betöltve" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_1" 						 text="Főbb pontok" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_2" 						 text="Csak kezdő- és végpont" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_3" 						 text="Minden pont" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_4" 						 text="Nem mutat" />
 		<text name="COURSEPLAY_WARNING_LIGHTS" 							 text="Megkülönböztető jelzés:" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 					 text="nem működik" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 					 text="sárga villogó (az utakon)" />
@@ -242,5 +238,8 @@
 		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Útvonal hozzáadása a végéhez" />
 		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Áthelyezés mappába" />
 		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Útvonal/mappa törlése" />
+		<!-- TRANSLATION MISSING --><text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="Show/hide start and end points" />
+		<!-- TRANSLATION MISSING --><text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="Show/hide all points" />
+		<!-- TRANSLATION MISSING --><text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="Show/hide crossing points" />
 	</texts>
 </l10n>

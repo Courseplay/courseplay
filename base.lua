@@ -80,7 +80,9 @@ function courseplay:load(xmlFile)
 	self.cp.crossingPoints = {};
 	self.cp.numCrossingPoints = 0;
 
-	self.cp.visualWaypointsMode = 1
+	self.cp.visualWaypointsStartEnd = true;
+	self.cp.visualWaypointsAll = false;
+	self.cp.visualWaypointsCrossing = false;
 	self.cp.warningLightsMode = 1;
 	self.cp.hasHazardLights = self.turnSignalState ~= nil and self.setTurnSignalState ~= nil;
 
@@ -436,7 +438,7 @@ function courseplay:load(xmlFile)
 	courseplay.hud:setupVehicleHud(self);
 
 	courseplay:validateCanSwitchMode(self);
-	courseplay:buttonsActiveEnabled(self, 'all');
+	courseplay.buttons:setActiveEnabled(self, 'all');
 end;
 
 function courseplay:postLoad(xmlFile)
@@ -1081,7 +1083,9 @@ function courseplay:readStream(streamId, connection)
 	self.cp.speeds.field = streamDebugReadFloat32(streamId)
 	self.cp.speeds.reverse = streamDebugReadFloat32(streamId)
 	self.cp.speeds.street = streamDebugReadFloat32(streamId)
-	self.cp.visualWaypointsMode = streamDebugReadInt32(streamId)
+	self.cp.visualWaypointsStartEnd = streamDebugReadBool(streamId);
+	self.cp.visualWaypointsAll = streamDebugReadBool(streamId);
+	self.cp.visualWaypointsCrossing = streamDebugReadBool(streamId);
 	self.cp.warningLightsMode = streamDebugReadInt32(streamId)
 	self.cp.waitTime = streamDebugReadInt32(streamId)
 	self.cp.symmetricLaneChange = streamDebugReadBool(streamId)
@@ -1200,9 +1204,11 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteFloat32(streamId,self.cp.speeds.reverse)
 	streamDebugWriteFloat32(streamId,self.cp.speeds.street)
 	streamDebugWriteInt32(streamId,self.cp.visualWaypointsMode)
+	streamDebugWriteBool(streamId, self.cp.visualWaypointsStartEnd);
+	streamDebugWriteBool(streamId, self.cp.visualWaypointsAll);
+	streamDebugWriteBool(streamId, self.cp.visualWaypointsCrossing);
 	streamDebugWriteInt32(streamId,self.cp.warningLightsMode)
 	streamDebugWriteInt32(streamId,self.cp.waitTime)
-	streamDebugWriteBool(streamId,self.cp.symmetricLaneChange)
 	streamDebugWriteInt32(streamId,self.cp.startingCorner)
 	streamDebugWriteInt32(streamId,self.cp.startingDirection)
 	streamDebugWriteBool(streamId,self.cp.hasShovelStatePositions[2])
@@ -1258,8 +1264,22 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		local courses 			  = Utils.getNoNil(getXMLString(xmlFile, curKey .. '#courses'),			 '');
 		self.cp.loadedCourses = Utils.splitString(",", courses);
 		courseplay:reloadCourses(self, true);
-		local visualWaypointsMode = Utils.getNoNil(   getXMLInt(xmlFile, curKey .. '#visualWaypoints'),	 1);
-		courseplay:changeVisualWaypointsMode(self, 0, visualWaypointsMode);
+
+		local visualWaypointsStartEnd = getXMLBool(xmlFile, curKey .. '#visualWaypointsStartEnd');
+		local visualWaypointsAll = getXMLBool(xmlFile, curKey .. '#visualWaypointsAll');
+		local visualWaypointsCrossing = getXMLBool(xmlFile, curKey .. '#visualWaypointsCrossing');
+		if visualWaypointsStartEnd ~= nil then
+			courseplay:toggleShowVisualWaypointsStartEnd(self, visualWaypointsStartEnd, false);
+		end;
+		if visualWaypointsAll ~= nil then
+			courseplay:toggleShowVisualWaypointsAll(self, visualWaypointsAll, false);
+		end;
+		if visualWaypointsCrossing ~= nil then
+			courseplay:toggleShowVisualWaypointsCrossing(self, visualWaypointsCrossing, false);
+		end;
+		courseplay.buttons:setActiveEnabled(self, 'visualWaypoints');
+		courseplay.signs:setSignsVisibility(self);
+
 		self.cp.multiSiloSelectedFillType = Fillable.fillTypeNameToInt[Utils.getNoNil(getXMLString(xmlFile, curKey .. '#multiSiloSelectedFillType'), 'unknown')];
 		if self.cp.multiSiloSelectedFillType == nil then self.cp.multiSiloSelectedFillType = Fillable.FILLTYPE_UNKNOWN; end;
 
@@ -1327,7 +1347,7 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 			end;
 		end;
 		courseplay:debug(tableShow(self.cp.shovelStatePositions, nameNum(self) .. ' shovelStatePositions (after loading)', 10), 10);
-		courseplay:buttonsActiveEnabled(self, 'shovel');
+		courseplay.buttons:setActiveEnabled(self, 'shovel');
 
 		-- COMBINE
 		if self.cp.isCombine then
@@ -1387,7 +1407,7 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 
 
 	--NODES
-	local cpOpen = string.format('<courseplay aiMode=%q courses=%q openHudWithMouse=%q lights=%q visualWaypoints=%q waitTime=%q multiSiloSelectedFillType=%q>', tostring(self.cp.mode), tostring(table.concat(self.cp.loadedCourses, ",")), tostring(self.cp.hud.openWithMouse), tostring(self.cp.warningLightsMode), tostring(self.cp.visualWaypointsMode), tostring(self.cp.waitTime), Fillable.fillTypeIntToName[self.cp.multiSiloSelectedFillType]);
+	local cpOpen = string.format('<courseplay aiMode=%q courses=%q openHudWithMouse=%q lights=%q visualWaypointsStartEnd=%q visualWaypointsAll=%q visualWaypointsCrossing=%q waitTime=%q multiSiloSelectedFillType=%q>', tostring(self.cp.mode), tostring(table.concat(self.cp.loadedCourses, ",")), tostring(self.cp.hud.openWithMouse), tostring(self.cp.warningLightsMode), tostring(self.cp.visualWaypointsStartEnd), tostring(self.cp.visualWaypointsAll), tostring(self.cp.visualWaypointsCrossing), tostring(self.cp.waitTime), Fillable.fillTypeIntToName[self.cp.multiSiloSelectedFillType]);
 	local speeds = string.format('<speeds useRecordingSpeed=%q reverse="%d" turn="%d" field="%d" max="%d" />', tostring(self.cp.speeds.useRecordingSpeed), self.cp.speeds.reverse, self.cp.speeds.turn, self.cp.speeds.field, self.cp.speeds.street);
 	local combi = string.format('<combi tipperOffset="%.1f" combineOffset="%.1f" combineOffsetAutoMode=%q fillFollow="%d" fillDriveOn="%d" turnDiameter="%d" realisticDriving=%q />', self.cp.tipperOffset, self.cp.combineOffset, tostring(self.cp.combineOffsetAutoMode), self.cp.followAtFillLevel, self.cp.driveOnAtFillLevel, self.cp.turnDiameter, tostring(self.cp.realisticDriving));
 	local fieldWork = string.format('<fieldWork workWidth="%.1f" ridgeMarkersAutomatic=%q offsetData=%q abortWork="%d" refillUntilPct="%d" />', self.cp.workWidth, tostring(self.cp.ridgeMarkersAutomatic), offsetData, Utils.getNoNil(self.cp.abortWork, 0), self.cp.refillUntilPct);
