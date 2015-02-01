@@ -482,10 +482,11 @@ function CpManager:setupFieldScanInfo()
 	courseplay.utils:setOverlayUVsPx(self.fieldScanInfo.progressBarOverlay, self.fieldScanInfo.progressBarUVs, self.fieldScanInfo.fileWidth, self.fieldScanInfo.fileHeight);
 
 	self.fieldScanInfo.percentColors = {
-		{ pct = 0.0, color = { 225/255,  27/255, 0/255 } },
-		{ pct = 0.5, color = { 255/255, 204/255, 0/255 } },
-		{ pct = 1.0, color = { 137/255, 243/255, 0/255 } }
+		  [0] = courseplay.utils:rgbToNormal(225,  27, 0),
+		 [50] = courseplay.utils:rgbToNormal(255, 204, 0),
+		[100] = courseplay.utils:rgbToNormal(137, 243, 0)
 	};
+	self.fieldScanInfo.colorMapStep = 50;
 end;
 
 function CpManager:renderFieldScanInfo()
@@ -495,7 +496,7 @@ function CpManager:renderFieldScanInfo()
 
 	local pct = courseplay.fields.curFieldScanIndex / g_currentMission.fieldDefinitionBase.numberOfFields;
 
-	local r, g, b = courseplay.utils:getColorFromPct(pct, fsi.percentColors);
+	local r, g, b = courseplay.utils:getColorFromPct(pct * 100, fsi.percentColors, fsi.colorMapStep);
 	fsi.progressBarOverlay:setColor(r, g, b, 1);
 
 	fsi.progressBarOverlay.width = fsi.progressBarMaxWidth * pct;
@@ -516,7 +517,7 @@ function CpManager:renderFieldScanInfo()
 	renderText(fsi.textPosX, fsi.textPosY,         fsi.textFontSize, text);
 
 	-- reset font settings
-	courseplay:setFontSettings('white', true);
+	courseplay:setFontSettings('white', false, 'left');
 end;
 
 function CpManager.drawMouseButtonHelp(self, posY, txt)
@@ -850,10 +851,11 @@ function CpManager:setup2dCourseData(createOverlays)
 		self.course2dPdaMapOpacity = 0.7;
 
 		self.course2dColorTable = {
-			{ pct = 0.0, color = {  84/255, 255/255, 0/255 } },
-			{ pct = 0.5, color = { 255/255, 230/255, 0/255 } },
-			{ pct = 1.0, color = { 210/255,   5/255, 0/255 } }
+			  [0] = courseplay.utils:rgbToNormal( 24, 225, 0),
+			 [50] = courseplay.utils:rgbToNormal(255, 230, 0),
+			[100] = courseplay.utils:rgbToNormal(210,   5, 0)
 		};
+		self.course2dColorPctStep = 50;
 
 		self.course2dPlotField = { x = self.course2dPlotPosX, y = self.course2dPlotPosY, width = 0.3, height = 0.3 * g_screenAspectRatio }; -- definition of plot field for 2D
 

@@ -84,16 +84,16 @@ function courseplay.hud:setup()
 	-- Because Giants fucked up big time, overlay colors that don't use full values are displayed way brighter than they should.
 	-- Until Giants fixes this, we're gonna have to use fake color values that effectively produce our desired colors
 	self.colors = {
-		white =         { 255/255, 255/255, 255/255, 1.00 };
-		whiteInactive = { 255/255, 255/255, 255/255, 0.75 };
-		whiteDisabled = { 255/255, 255/255, 255/255, 0.15 };
-		hover =         {   4/255,  98/255, 180/255, 1.00 }; -- IS FAKE COLOR! ORIG COLOR: {  32/255, 168/255, 219/255, 1.00 };
-		activeGreen =   {  43/255, 205/255,  10/255, 1.00 }; -- IS FAKE COLOR! ORIG COLOR: { 110/255, 235/255,  56/255, 1.00 };
-		activeRed =     { 153/255,  22/255,  19/255, 1.00 }; -- IS FAKE COLOR! ORIG COLOR: { 206/255,  83/255,  77/255, 1.00 };
-		closeRed =      { 116/255,   0/255,   0/255, 1.00 }; -- IS FAKE COLOR! ORIG COLOR: { 180/255,   0/255,   0/255, 1.00 };
-		warningRed =    { 222/255,   2/255,   3/255, 1.00 }; -- IS FAKE COLOR! ORIG COLOR: { 240/255,  25/255,  25/255, 1.00 };
-		shadow =        {   4/255,   4/255,   4/255, 1.00 }; -- IS FAKE COLOR! ORIG COLOR: {  35/255,  35/255,  35/255, 1.00 };
-		textDark =      {   1/255,   1/255,   1/255, 1.00 }; -- IS FAKE COLOR! ORIG COLOR: {  15/255,  15/255,  15/255, 1.00 };
+		white 		  = courseplay.utils:rgbToNormal(255, 255, 255, 1.00),
+		whiteInactive = courseplay.utils:rgbToNormal(255, 255, 255, 0.75),
+		whiteDisabled = courseplay.utils:rgbToNormal(255, 255, 255, 0.15),
+		hover 		  = courseplay.utils:rgbToNormal(  4,  98, 180, 1.00), -- IS FAKE COLOR! ORIG COLOR: 32/168/219/1
+		activeGreen   = courseplay.utils:rgbToNormal( 43, 205,  10, 1.00), -- IS FAKE COLOR! ORIG COLOR: 110/235/56/1
+		activeRed 	  = courseplay.utils:rgbToNormal(153,  22,  19, 1.00), -- IS FAKE COLOR! ORIG COLOR: 206/83/77/1
+		closeRed 	  = courseplay.utils:rgbToNormal(116,   0,   0, 1.00), -- IS FAKE COLOR! ORIG COLOR: 180/0/0/1
+		warningRed 	  = courseplay.utils:rgbToNormal(222,   2,   3, 1.00), -- IS FAKE COLOR! ORIG COLOR: 240/25/25/1
+		shadow 		  = courseplay.utils:rgbToNormal(  4,   4,   4, 1.00), -- IS FAKE COLOR! ORIG COLOR: 35/35/35/1
+		textDark 	  = courseplay.utils:rgbToNormal(  1,   1,   1, 1.00)  -- IS FAKE COLOR! ORIG COLOR: 15/15/15/1
 	};
 
 	self.pagesPerMode = {						 --  Pg 0		  Pg 1		  Pg 2		  Pg 3		   Pg 4		    Pg 5		Pg 6		Pg 7		Pg 8		 Pg 9
@@ -604,15 +604,16 @@ function courseplay.hud:renderHud(vehicle)
 
 	-- 2D/DEBUG LINE BUTTON MODE
 	if CpManager.isDeveloper and vehicle.cp.drawCourseMode ~= courseplay.COURSE_2D_DISPLAY_OFF then
+		local txt;
+		if vehicle.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_2DONLY then
+			txt = '2D';
+		elseif vehicle.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_DBGONLY then
+			txt = '\nDBG';
+		else
+			txt = '2D\nDBG';
+		end;
 		courseplay:setFontSettings('white', true);
-		local x, y = vehicle.cp.changeDrawCourseModeButton.x + vehicle.cp.changeDrawCourseModeButton.width * 0.5, self.topIconsY;
-		if vehicle.cp.drawCourseMode ~= courseplay.COURSE_2D_DISPLAY_2DONLY then
-			renderText(x, y, self.fontSizes.version, 'DBG');
-		end;
-		if vehicle.cp.drawCourseMode ~= courseplay.COURSE_2D_DISPLAY_DBGONLY then
-			y = y + self.fontSizes.version;
-			renderText(x, y, self.fontSizes.version, '2D');
-		end;
+		renderText(vehicle.cp.changeDrawCourseModeButton.x + vehicle.cp.changeDrawCourseModeButton.width * 0.5, self.topIconsY + self.fontSizes.version * 1.25, self.fontSizes.version, txt);
 		courseplay:setFontSettings('white', false);
 	end;
 end;

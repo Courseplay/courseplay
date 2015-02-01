@@ -914,10 +914,7 @@ function courseplay:invertAngleDeg(ang)
 	end;
 end;
 function courseplay:positiveAngleDeg(ang)
-	while ang < 0 do
-		ang = ang + 360;
-	end;
-	return ang;
+	return ang % 360;
 end;
 
 --[[

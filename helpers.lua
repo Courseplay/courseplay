@@ -1,4 +1,4 @@
-﻿local abs, huge, max, min, pi, sqrt = math.abs, math.huge, math.max, math.min, math.pi, math.sqrt;
+﻿local abs, ceil, floor, huge, max, min, pi, sqrt = math.abs, math.ceil, math.floor, math.huge, math.max, math.min, math.pi, math.sqrt;
 
 function courseplay:isEven(n)
    return tonumber(n) % 2 == 0;
@@ -365,15 +365,6 @@ function courseplay.utils.table.move(t1, t2, t1_index, t2_index)
 	t2[t2_index] = t1[t1_index];
 	t1[t1_index] = nil;
 	return t2[t2_index] ~= nil;
-end;
-
-function table.contains(t, element) --TODO: always use Utils.hasListElement
-	for _, value in pairs(t) do
-		if value == element then
-			return true;
-		end;
-	end;
-	return false;
 end;
 
 function table.map(t, func)
@@ -829,7 +820,7 @@ function courseplay.utils:getFileNameFromPath(filePath)
 		idx = filePath:match('^.*()\\'); -- check for last backward slash
 	end;
 	if idx then
-		fileName = filePath:sub(idx + 1, 500);
+		fileName = filePath:sub(idx + 1);
 	end;
 
 	return fileName;
@@ -974,26 +965,24 @@ function courseplay.utils:setOverlayUVsPx(overlay, UVs, textureSizeX, textureSiz
 	end;
 end;
 
-function courseplay.utils:getColorFromPct(pct, colorMap)
-	local step = colorMap[2].pct - colorMap[1].pct;
+function courseplay.utils:roundToLowerInterval(num, idp)
+	return floor(num / idp) * idp;
+end;
 
-	if pct == 0 then
-		return unpack(colorMap[1].color);
+function courseplay.utils:roundToUpperInterval(num, idp)
+	return ceil(num / idp) * idp;
+end;
+
+function courseplay.utils:getColorFromPct(pct, colorMap, step)
+	if colorMap[pct] then
+		return unpack(colorMap[pct]);
 	end;
 
-	for i=2, #colorMap do
-		local data = colorMap[i];
-		if pct == data.pct then
-			return unpack(data.color);
-		end;
+	local lower = self:roundToLowerInterval(pct, step);
+	local upper = self:roundToUpperInterval(pct, step);
 
-		if pct < data.pct then
-			local lower = colorMap[i - 1];
-			local upper = colorMap[i];
-			local pctAlpha = (pct - lower.pct) / step;
-			return Utils.vector3ArrayLerp(lower.color, upper.color, pctAlpha);
-		end;
-	end;
+	local alpha = (pct - lower) / step;
+	return Utils.vector3ArrayLerp(colorMap[lower], colorMap[upper], alpha);
 end;
 
 -- 2D course
@@ -1161,7 +1150,7 @@ function courseplay:setupCourse2dData(vehicle)
 		dz = np.cz - wp.cz;
 		rotation = Utils.getYRotationFromDirection(dx, dz) - pi * 0.5;
 
-		r, g, b = courseplay.utils:getColorFromPct(wp.origIndex / vehicle.cp.numWaypoints, CpManager.course2dColorTable);
+		r, g, b = courseplay.utils:getColorFromPct(100 * wp.origIndex / vehicle.cp.numWaypoints, CpManager.course2dColorTable, CpManager.course2dColorPctStep);
 
 		vehicle.cp.course2dDrawData[i] = {
 			x = startX;
@@ -1247,3 +1236,10 @@ function courseplay:drawCourse2D(vehicle, doLoop)
 	ovl:render();
 end;
 
+function courseplay.utils:rgbToNormal(r, g, b, a)
+	if a then
+		return { r/255, g/255, b/255, a };
+	end;
+
+	return { r/255, g/255, b/255 };
+end;

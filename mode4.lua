@@ -89,11 +89,11 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 		workTool = self.cp.workTools[i];
 		local isFolding, isFolded, isUnfolded = courseplay:isFolding(workTool);
 		local needsLowering = false
-		
+
 		if workTool.attacherJoint ~= nil then
 			needsLowering = workTool.attacherJoint.needsLowering
 		end
-		
+
 		--speedlimits
 		local speedLimitActive = false
 		if workTool.doCheckSpeedLimit and workTool:doCheckSpeedLimit() then
@@ -101,7 +101,6 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 			speedLimitActive = true
 		end
 
-		
 		-- stop while folding
 		if courseplay:isFoldable(workTool) then
 			if isFolding and self.cp.turnStage == 0 then

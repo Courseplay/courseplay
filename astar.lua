@@ -6,10 +6,6 @@ courseplay edit by hummel 2011
 --]]
 
 
-function courseplay:roundToBottomInterval(num, idp)
-	return math.floor(num / idp) * idp;
-end
-
 function courseplay:calcMoves(px, py, tx, ty, fruit_type, interval) -- Based on some code of LMelior but made it work and improved way beyond his code, still thx LMelior!
 	print("call calcMoves()");
 	if not courseplay:isField(py, px) then
@@ -20,10 +16,10 @@ function courseplay:calcMoves(px, py, tx, ty, fruit_type, interval) -- Based on 
 	local vertical_costs = 10
 	local diagnoal_costs = 14
 
-	px = courseplay:roundToBottomInterval(px, interval);
-	py = courseplay:roundToBottomInterval(py, interval);
-	tx = courseplay:roundToBottomInterval(tx, interval);
-	ty = courseplay:roundToBottomInterval(ty, interval);
+	px = courseplay.utils:roundToLowerInterval(px, interval);
+	py = courseplay.utils:roundToLowerInterval(py, interval);
+	tx = courseplay.utils:roundToLowerInterval(tx, interval);
+	ty = courseplay.utils:roundToLowerInterval(ty, interval);
 
 	--[[ PRE:
 mapmat is a 2d array

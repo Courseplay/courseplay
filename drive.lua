@@ -185,7 +185,7 @@ function courseplay:drive(self, dt)
 				if self.cp.tipperFillLevelPct >= self.cp.refillUntilPct or drive_on then
 					courseplay:setVehicleWait(self, false);
 				end
-				courseplay:setInfoText(self, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay:roundToBottomInterval(self.cp.tipperFillLevel, 100), self.cp.tipperCapacity));
+				courseplay:setInfoText(self, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay.utils:roundToLowerInterval(self.cp.tipperFillLevel, 100), self.cp.tipperCapacity));
 			end
 		elseif self.cp.mode == 6 then
 			if self.cp.previousWaypointIndex == self.cp.startWork then

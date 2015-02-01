@@ -1269,7 +1269,7 @@ function courseplay:refillWorkTools(vehicle, fillLevelPct, driveOn, allowedToDri
 				if not workTool.isFilling then
 					workTool:setIsFilling(true);
 				end;
-				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay:roundToBottomInterval(workTool.fillLevel, 100), workTool.capacity));
+				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay.utils:roundToLowerInterval(workTool.fillLevel, 100), workTool.capacity));
 
 			elseif vehicle.cp.isLoaded or workToolFillLevelPct >= driveOn then
 				if workTool.isFilling then
@@ -1296,7 +1296,7 @@ function courseplay:refillWorkTools(vehicle, fillLevelPct, driveOn, allowedToDri
 					workTool:setIsFilling(true);
 				end;
 				allowedToDrive = false;
-				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay:roundToBottomInterval(workTool.fillLevel, 100), workTool.capacity));
+				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay.utils:roundToLowerInterval(workTool.fillLevel, 100), workTool.capacity));
 			elseif workTool.fillTriggers[1] ~= nil then
 				if workTool.isFilling then
 					workTool:setIsFilling(false);
@@ -1325,7 +1325,7 @@ function courseplay:refillWorkTools(vehicle, fillLevelPct, driveOn, allowedToDri
 					workTool:setIsFuelFilling(true);
 				end;
 				allowedToDrive = false;
-				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay:roundToBottomInterval(workTool.fillLevel, 100), workTool.capacity));
+				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay.utils:roundToLowerInterval(workTool.fillLevel, 100), workTool.capacity));
 			elseif workTool.fuelFillTriggers[1] ~= nil then
 				if workTool.isFuelFilling then
 					workTool:setIsFuelFilling(false);
@@ -1346,7 +1346,7 @@ function courseplay:refillWorkTools(vehicle, fillLevelPct, driveOn, allowedToDri
 					workTool:setIsWaterTrailerFilling(true);
 				end;
 				allowedToDrive = false;
-				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay:roundToBottomInterval(workTool.fillLevel, 100), workTool.capacity));
+				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay.utils:roundToLowerInterval(workTool.fillLevel, 100), workTool.capacity));
 			elseif workTool.waterTrailerFillTriggers[1] ~= nil then
 				if workTool.isWaterTrailerFilling then
 					workTool:setIsWaterTrailerFilling(false);
