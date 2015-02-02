@@ -136,6 +136,8 @@
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="Sur" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="Oeste" />
 		<text name="COURSEPLAY_HEADLAND" 								 text="Cabecera" />
+				<!-- TRANSLATION MISSING --><text name="COURSEPLAY_HEADLAND_COUNTER" 							text="Headland counter-/clockwise" />
+				<!-- TRANSLATION MISSING --><text name="COURSEPLAY_HEADLAND_AFTER_BEFORE_COURSE" 						text="Headland before/after field course" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="activado" />
 		<text name="COURSEPLAY_DEACTIVATED" 							 text="desactivado" />
 		<text name="COURSEPLAY_RIDGEMARKERS" 							 text="Trazador de surcos" />
