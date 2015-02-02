@@ -3,8 +3,8 @@
 	<texts>
 		<text name="COURSEPLAY_RECORDING_START" 						 text="Útvonal rögzítés indítása" />
 		<text name="COURSEPLAY_DRIVER" 									 text="Útvonal" />
-		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 					 text="Vezető indítása" />
-		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 					 text="Vezető leállítása" />
+		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 					 text="Szállító elindítása" />
+		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 					 text="Szállító megállítása" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 						 text="Állj az utlsó pontnál, következő triggernél" />
 		<text name="COURSEPLAY_UNLOADING_SIDE" 							 text="Ürítés oldala:" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="automatikus" />
@@ -238,8 +238,8 @@
 		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Útvonal hozzáadása a végéhez" />
 		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Áthelyezés mappába" />
 		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Útvonal/mappa törlése" />
-		<!-- TRANSLATION MISSING --><text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="Show/hide start and end points" />
-		<!-- TRANSLATION MISSING --><text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="Show/hide all points" />
-		<!-- TRANSLATION MISSING --><text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="Show/hide crossing points" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="Kezdő-, és végpont megjelenítése/elrejtése" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="Minden pont megjelenítése/elrejtése" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="Elágazási pontok megjelenítése/elrejtése" />
 	</texts>
 </l10n>
