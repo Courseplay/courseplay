@@ -140,6 +140,8 @@
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="South" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="West" />
 		<text name="COURSEPLAY_HEADLAND" 								 text="Headland" />
+		<text name="COURSEPLAY_HEADLAND_COUNTER" 							text="Headland counter-/clockwise" />
+		<text name="COURSEPLAY_HEADLAND_AFTER_BEFORE_COURSE" 						text="Headland before/after field course" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="activated" />
 		<text name="COURSEPLAY_DEACTIVATED" 							 text="deactivated" />
 		<text name="COURSEPLAY_RIDGEMARKERS" 							 text="Ridge markers" />
