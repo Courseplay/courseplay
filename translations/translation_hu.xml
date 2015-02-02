@@ -135,7 +135,9 @@
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="Kelet" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="Dél" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="Nyugat" />
-		<text name="COURSEPLAY_HEADLAND" 								 text="Munkasáv" />
+		<text name="COURSEPLAY_HEADLAND" 								 text="A tábla szélének követése" />
+		<text name="COURSEPLAY_HEADLAND_COUNTER" 							text="A tábla szélének követése balra/jobbra fordulásokkal" />
+		<text name="COURSEPLAY_HEADLAND_AFTER_BEFORE_COURSE" 						text="A tábla szélének követése a sávos művelés elött/után" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="Bekapcsolva" />
 		<text name="COURSEPLAY_DEACTIVATED" 							 text="Kikapcsolva" />
 		<text name="COURSEPLAY_RIDGEMARKERS" 							 text="Főbb pontok" />
