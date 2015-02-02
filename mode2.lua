@@ -98,9 +98,14 @@ function courseplay:handle_mode2(vehicle, dt)
 		else
 			-- follow tractor in front of me
 			frontTractor = vehicle.cp.activeCombine.courseplayers[vehicle.cp.positionWithCombine - 1]
-			courseplay:debug(string.format('%s: activeCombine ~= nil, my position=%d, frontTractor (positionWithCombine %d) = %q', nameNum(vehicle), vehicle.cp.positionWithCombine, vehicle.cp.positionWithCombine - 1, nameNum(frontTractor)), 4);
-			--	courseplay:follow_tractor(vehicle, dt, tractor)
-			courseplay:setModeState(vehicle, 6);
+			if vehicle.cp.modeState ~= 6 then
+				courseplay:debug(string.format('%s: activeCombine ~= nil, my position=%d, frontTractor (positionWithCombine %d) = %q', nameNum(vehicle), vehicle.cp.positionWithCombine, vehicle.cp.positionWithCombine - 1, nameNum(frontTractor)), 4);
+				--	courseplay:follow_tractor(vehicle, dt, tractor)
+				courseplay:setModeState(vehicle, 6);
+			end
+			if (vehicle.cp.combineOffset > 0 and frontTractor.cp.combineOffset < 0) or	(vehicle.cp.combineOffset < 0 and frontTractor.cp.combineOffset > 0) then
+				vehicle.cp.combineOffset = -vehicle.cp.combineOffset
+			end
 			courseplay:unload_combine(vehicle, dt)
 		end
 	else -- NO active combine
@@ -483,7 +488,7 @@ function courseplay:unload_combine(vehicle, dt)
 					offset = offset+diff
 				end
 			end	
-			courseplay:debug(string.format("combine.workWidth: %.2f,vehicle.cp.combineOffset: %.2f, calculated offset: %.2f, fruitSide: %s  ",workWidth,combineOffset,offset,fruitSide),4)	
+			courseplay:debug(string.format("%s: combine.workWidth: %.2f,vehicle.cp.combineOffset: %.2f, calculated offset: %.2f, fruitSide: %s  ",nameNum(vehicle),workWidth,combineOffset,offset,fruitSide),4)	
 			if combineOffset > 0 then 
 				sideMultiplier = -1;
 			else
