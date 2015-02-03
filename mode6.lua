@@ -532,7 +532,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 						tool:setFoldDirection(-tool.cp.realUnfoldDirection);
 					end;
 				end
-				if tool.cp.isCombine and not tool.cp.wantsCourseplayer then
+				if tool.cp.isCombine and not tool.cp.wantsCourseplayer and tool.fillLevel > 0.1 and #(tool.courseplayers) == 0 then
 					tool.cp.wantsCourseplayer = true
 				end
 			end
