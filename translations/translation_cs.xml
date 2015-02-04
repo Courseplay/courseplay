@@ -219,9 +219,9 @@
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 				 text="土地编号: %d号(%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 			 text="种子类型: %s" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE" 				 text="用量: %s %s (%s)" />
-		<!-- TRANSLATION MISSING --><text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="Show/hide start and end points" />
-		<!-- TRANSLATION MISSING --><text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="Show/hide all points" />
-		<!-- TRANSLATION MISSING --><text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="Show/hide crossing points" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="显示/隐藏起始点和结束点" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="显示/隐藏所有路径点" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="显示/隐藏 合并点" />
 
 		<text name="COURSEPLAY_HUD_OPEN" 								 text="打开CP界面" />
 		<text name="COURSEPLAY_HUD_CLOSE" 								 text="关闭CP界面" />
