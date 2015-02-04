@@ -857,8 +857,10 @@ function CpManager:setup2dCourseData(createOverlays)
 		};
 		self.course2dColorPctStep = 50;
 
-		self.course2dPlotField = { x = self.course2dPlotPosX, y = self.course2dPlotPosY, width = 0.3, height = 0.3 * g_screenAspectRatio }; -- definition of plot field for 2D
-
+		local height = courseplay.hud:getFullPx(0.3 * 1920 / 1080, 'y');
+		local width = height / g_screenAspectRatio;
+		self.course2dPlotField = { x = self.course2dPlotPosX, y = self.course2dPlotPosY, width = width, height = height }; -- definition of plot field for 2D
+		-- print(('course2dPlotField: x=%f (%.1f px), y=%f (%.1f px), width=%.1f (%.1f px), height=%.2f (%.1f px)'):format(self.course2dPlotPosX, self.course2dPlotPosX * g_screenWidth, self.course2dPlotPosY, self.course2dPlotPosY * g_screenHeight, width, width * g_screenWidth, height, height * g_screenHeight));
 		return;
 	end;
 
@@ -868,7 +870,6 @@ function CpManager:setup2dCourseData(createOverlays)
 	self.course2dTractorOverlay = Overlay:new('cpTractorIndicator', courseplay.hud.iconSpritePath, 0.5, 0.5, w, h);
 	courseplay.utils:setOverlayUVsPx(self.course2dTractorOverlay, courseplay.hud.buttonUVsPx.recordingPlay, courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
 	self.course2dTractorOverlay:setColor(0,0.8,1,1);
-
 end;
 
 -- ####################################################################################################
