@@ -136,6 +136,8 @@
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="Zuid" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="West" />
 		<text name="COURSEPLAY_HEADLAND" 								 text="Buitenrand" />
+				<!-- TRANSLATION MISSING --><text name="COURSEPLAY_HEADLAND_COUNTER" 							text="Headland counter-/clockwise" />
+				<!-- TRANSLATION MISSING --><text name="COURSEPLAY_HEADLAND_AFTER_BEFORE_COURSE" 						text="Headland before/after field course" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="geactiveerd" />
 		<text name="COURSEPLAY_DEACTIVATED" 							 text="gedeactiveerd" />
 		<text name="COURSEPLAY_RIDGEMARKERS" 							 text="Banen markeerders" />

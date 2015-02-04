@@ -136,6 +136,8 @@
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="Юг" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="Запад" />
 		<text name="COURSEPLAY_HEADLAND" 								 text="Обработка краев:" />
+				<!-- TRANSLATION MISSING --><text name="COURSEPLAY_HEADLAND_COUNTER" 							text="Headland counter-/clockwise" />
+				<!-- TRANSLATION MISSING --><text name="COURSEPLAY_HEADLAND_AFTER_BEFORE_COURSE" 						text="Headland before/after field course" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="да" />
 		<text name="COURSEPLAY_DEACTIVATED" 							 text="нет" />
 		<text name="COURSEPLAY_RIDGEMARKERS" 							 text="Маркера:" />
