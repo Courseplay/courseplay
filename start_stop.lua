@@ -486,8 +486,9 @@ function courseplay:stop(self)
 	if self.cp.modeState > 4 then
 		courseplay:setModeState(self, 1);
 	end
-	self.cp.turnStage = 0
-	self.cp.isTurning = nil
+	self.cp.turnStage = 0;
+	self.cp.isTurning = nil;
+	courseplay:clearTurnTargets(self);
 	self.aiTractorTargetX = nil
 	self.aiTractorTargetZ = nil
 	self.aiTractorTargetBeforeTurnX = nil

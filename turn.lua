@@ -1,5 +1,23 @@
 local abs, min = math.abs, math.min;
 
+-- TODO: (Claus) This is a temp function placeholder until this branch is mergen into the new generation stuff and should be replaced with the new names.
+local Placeholder = {};
+function Placeholder:getPointDirection(cp, np, useC)
+	if useC == nil then useC = true; end;
+	local x,z = 'x','z';
+	if useC then
+		x,z = 'cx','cz';
+	end;
+
+	local dx, dz = np[x] - cp[x], np[z] - cp[z];
+	local vl = Utils.vector2Length(dx, dz);
+	if vl and vl > 0.0001 then
+		dx = dx / vl;
+		dz = dz / vl;
+	end;
+	return dx, dz, vl;
+end;
+
 function courseplay:newturn(self, dt)
 	--[[ TURN STAGES:
 	0:	Raise implements
@@ -10,7 +28,7 @@ function courseplay:newturn(self, dt)
 
 	local allowedToDrive = true;
 	local moveForwards = true;
-	local refSpeed = self.cp.speeds.turn
+	local refSpeed = self.cp.speeds.turn;
 	local directionForce = 1;
 	local lx, lz = 0, 1;
 	local turnOutTimer = 1500;
@@ -46,25 +64,53 @@ function courseplay:newturn(self, dt)
 			self.cp.curTurnIndex = 1; -- Reset the current target index to the first one.
 
 			-- Get the turn radius either by the automatic or user provided turn circle.
-			local turnRadius = self.cp.turnDiameter / 2;
+			local turnRadius = self.cp.turnDiameter / 2 + 0.25; -- The + 0.25m is a safty messure in really small turn radiuses
 
 			-- Get the new turn target with offset
-			local cx,cz = self.Waypoints[self.cp.waypointIndex+1].cx, self.Waypoints[self.cp.waypointIndex+1].cz;
 			if (self.cp.laneOffset ~= nil and self.cp.laneOffset ~= 0) or (self.cp.toolOffsetX ~= nil and self.cp.toolOffsetX ~= 0) then
 				courseplay:debug(string.format("%s:(Turn) turnWithOffset = true", nameNum(self)), 14);
-				cx,cz = courseplay:turnWithOffset(self)
+				--cx,cz = courseplay:turnWithOffset(self);
+				courseplay:turnWithOffset(self);
 			end;
+
+			local totalOffsetX = self.cp.totalOffsetX * -1
+
+			-- Create temp target node and translate it and rotate it's direction to the next wp.
+			local cx,cz = self.Waypoints[self.cp.waypointIndex+1].cx, self.Waypoints[self.cp.waypointIndex+1].cz;
+			local targetNode = createTransformGroup("cpTempTargetNode");
+			link(g_currentMission.terrainRootNode, targetNode);
+			local cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cx, 1, cz);
+			setTranslation(targetNode, cx, cy, cz);
+
+			local dx, dz = Placeholder:getPointDirection(self.Waypoints[self.cp.waypointIndex+1], self.Waypoints[self.cp.waypointIndex+2]);
+			local yRot = Utils.getYRotationFromDirection(dx, dz);
+			setRotation(targetNode, 0, yRot, 0);
+
+			cx, cy, cz = localToWorld(targetNode, totalOffsetX, 0, 0);
+			setTranslation(targetNode, cx, cy, cz);
+
+			-- Debug print start
+			--renderText(0.5,0.85-(0.03*self.cp.coursePlayerNum),0.02,string.format("%s: totalOffsetX=%.1f°" ,nameNum(self), totalOffsetX));
+			local x,y,z = getWorldTranslation(targetNode);
+			local ctx,_,ctz = localToWorld(targetNode, 0, 0, 20);
+			drawDebugLine(x, y+5, z, 1, 0, 0, ctx, y+5, ctz, 0, 1, 0);
+			local directionDifferentce = self.Waypoints[self.cp.waypointIndex].angle + self.Waypoints[self.cp.waypointIndex-1].angle;
+			courseplay:debug(("%s:(Turn) wp%d=%.1f°, wp%d=%.1f°, directionDifferentce = %.1f°"):format(nameNum(self), self.cp.waypointIndex, self.Waypoints[self.cp.waypointIndex].angle, self.cp.waypointIndex-1, self.Waypoints[self.cp.waypointIndex-1].angle, directionDifferentce), 14);
+			-- Debug print end
+
+			-- Get the local delta distances from the tractor to the targetNode
 			local targetDeltaX, _, targetDeltaZ = worldToLocal(self.cp.DirectionNode, cx, vehicleY, cz);
 			courseplay:debug(string.format("%s:(Turn) targetDeltaX=%.2f, targetDeltaZ=%.2f", nameNum(self), targetDeltaX, targetDeltaZ), 14);
 
 			-- Get the turn direction
-			local direction = 1;
-			if targetDeltaX < 0 then
-				direction = -1;
+			local direction = -1;
+			if targetDeltaX > 0 then
+				direction = 1;
 			end;
 
 			-- Find the zOffset based on tractors current position from the start turn wp
 			local _, _, z = worldToLocal(self.cp.DirectionNode, self.Waypoints[self.cp.waypointIndex].cx, vehicleY, self.Waypoints[self.cp.waypointIndex].cz);
+			targetDeltaZ = targetDeltaZ - z;
 			local zOffset = abs(z) + 1;
 			-- If the front marker is in front of us and it's bigger than the normal offset, use that instead.
 			if frontMarker > abs(z) then
@@ -75,53 +121,73 @@ function courseplay:newturn(self, dt)
 			-- No need for Ohm or reverse turn
 			if abs(targetDeltaX) > self.cp.turnDiameter then
 				local posX, posZ;
-				local index = 1;
+				local cp, np = {}, {};
+
 				-- WP 1
 				posX, _, posZ = localToWorld(self.cp.DirectionNode, 0, 0, 1);
 				courseplay:addTurnTarget(self, posX, posZ);
 
-				-- WP 2
-				-- Target is less that 45° on the side of us
-				if (targetDeltaZ + zOffset) > abs(targetDeltaX) then
-					posX, _, posZ = localToWorld(self.cp.DirectionNode, targetDeltaX - (turnRadius * 2 * direction), 0, targetDeltaZ + zOffset);
 
-				-- Target is 45° or more on the side of us
-				else
+				-- WP 2-4
+				cp.x, _, cp.z = localToWorld(self.cp.DirectionNode, turnRadius * direction, 0, 1);
+				np.x, _, np.z = localToWorld(targetNode, turnRadius * direction, 0, zOffset * -1);
+				cp, np = courseplay:getTurnCircleTangentIntersectionPoints(cp, np, turnRadius, targetDeltaX > 0);
+
+				-- Target is behind us
+				if targetDeltaZ < 0 then
+					-- WP 2
 					posX, _, posZ = localToWorld(self.cp.DirectionNode, turnRadius * direction, 0, turnRadius + 1);
+					courseplay:addTurnTarget(self, posX, posZ);
 				end;
-				courseplay:addTurnTarget(self, posX, posZ);
 
-				-- WP 3
-				posX, _, posZ = localToWorld(self.cp.DirectionNode, targetDeltaX - (turnRadius * direction), 0, targetDeltaZ + turnRadius + zOffset);
-				courseplay:addTurnTarget(self, posX, posZ);
+				-- WP 2 or 3
+				courseplay:addTurnTarget(self, cp.x, cp.z);
+				-- WP 3 or 4
+				courseplay:addTurnTarget(self, np.x, np.z);
 
-				-- WP 4
-				posX, _, posZ = localToWorld(self.cp.DirectionNode, targetDeltaX, 0, targetDeltaZ + zOffset);
-				courseplay:addTurnTarget(self, posX, posZ);
+				-- Target is ahead of us
+				if targetDeltaZ > 0 then
+					-- WP 4
+					posX, _, posZ = localToWorld(targetNode, turnRadius * direction, 0, (turnRadius + zOffset) * -1);
+					courseplay:addTurnTarget(self, posX, posZ);
+				end;
 
 				-- WP 5
-				posX, _, posZ = localToWorld(self.cp.DirectionNode, targetDeltaX, 0, targetDeltaZ - (self.cp.totalLength + self.cp.totalLengthOffset + 5));
+				posX, _, posZ = localToWorld(targetNode, 0, 0, (zOffset) * -1);
+				courseplay:addTurnTarget(self, posX, posZ);
+
+				-- WP 6
+				posX, _, posZ = localToWorld(targetNode, 0, 0, self.cp.totalLength + self.cp.totalLengthOffset + zOffset + 5);
 				courseplay:addTurnTarget(self, posX, posZ, true);
 
 				courseplay:debug(string.format("%s:(Turn) Normal turn with %d waypoints", nameNum(self), #self.cp.turnTargets), 14);
 
+				self.cp.turnStage = 2;
+				--allowedToDrive = false;
+
 			-- Ohm or reverse turn
 			else
 				-- TODO: (Claus) make Ohm and Reverse turn maneuver.
+				allowedToDrive = false;
 			end;
 
-			self.cp.turnStage = 2;
+			unlink(targetNode);
+			delete(targetNode);
 
 		-- TURN STAGES 2 - Drive Turn maneuver
 		elseif self.cp.turnStage == 2 then
 			if newTarget then
-				if newTarget.stage3 then
+				if newTarget.turnEnd then
 					self.cp.turnStage = 3;
 					return;
 				end;
 
-				-- Change turn waypoint
 				local dist = courseplay:distance(newTarget.posX, newTarget.posZ, vehicleX, vehicleZ);
+				-- If next wp is more than 10 meters ahead, use fieldwork speed.
+				if dist > 10 then
+					refSpeed = self.cp.speeds.field;
+				end;
+				-- Change turn waypoint
 				if dist < 1.5 then
 					self.cp.curTurnIndex = min(self.cp.curTurnIndex + 1, #self.cp.turnTargets);
 				end;
@@ -142,6 +208,7 @@ function courseplay:newturn(self, dt)
 				self.cp.isTurning = nil;
 				self.cp.waitForTurnTime = self.timer + turnOutTimer;
 
+				courseplay:setWaypointIndex(self, self.cp.waypointIndex + 1);
 				courseplay:setWaypointIndex(self, courseplay:getNextFwdPoint(self));
 				courseplay:clearTurnTargets(self);
 
@@ -232,15 +299,45 @@ function courseplay:newturn(self, dt)
 	end
 
 	--self,dt,steeringAngleLimit,acceleration,slowAcceleration,slowAngleLimit,allowedToDrive,moveForwards,lx,lz,maxSpeed,slowDownFactor,angle
-	AIVehicleUtil.driveInDirection(self, dt, (self.cp.steeringAngle - 5), directionForce, 0.5, 20, allowedToDrive, moveForwards, lx, lz, refSpeed, 1);
+	--AIVehicleUtil.driveInDirection(self, dt, (self.cp.steeringAngle - 5), directionForce, 0.5, 20, allowedToDrive, moveForwards, lx, lz, refSpeed, 1);
+	AIVehicleUtil.driveInDirection(self, dt, self.cp.steeringAngle, directionForce, 0.5, 20, allowedToDrive, moveForwards, lx, lz, refSpeed, 1);
 	courseplay:setTrafficCollision(self, lx, lz, true);
 end;
 
-function courseplay:addTurnTarget(vehicle, posX, posZ, stage3)
+function courseplay:getTurnCircleTangentIntersectionPoints(cp, np, radius, leftTurn)
+	local point = createTransformGroup("cpTempTurnCircleTangentIntersectionPoint");
+	link(g_currentMission.terrainRootNode, point);
+
+	-- Rotate it in the right direction
+	local dx, dz = Placeholder:getPointDirection(cp, np, false);
+	local yRot = Utils.getYRotationFromDirection(dx, dz);
+	setRotation(point, 0, yRot, 0);
+
+	if leftTurn then
+		radius = radius * -1;
+	end;
+
+	-- Get the Tangent Intersection Point from start point.
+	setTranslation(point, cp.x, 0, cp.z);
+	cp.x, _, cp.z = localToWorld(point, radius, 0, 0);
+
+	-- Get the Tangent Intersection Point from end point.
+	setTranslation(point, np.x, 0, np.z);
+	np.x, _, np.z = localToWorld(point, radius, 0, 0);
+
+	-- Clean up the created node.
+	unlink(point);
+	delete(point);
+
+	-- return the values.
+	return cp, np;
+end;
+
+function courseplay:addTurnTarget(vehicle, posX, posZ, turnEnd)
 	local target = {};
 	target.posX 	= posX;
 	target.posZ 	= posZ;
-	target.stage3	= stage3;
+	target.turnEnd	= turnEnd;
 	table.insert(vehicle.cp.turnTargets, target);
 end
 
@@ -598,6 +695,8 @@ function courseplay:turnWithOffset(self)
 			courseplay:debug(string.format("%s: cp.turnStage == 1, switchToolOffset=true -> new toolOffset=%.1f, new totalOffset=%.1f, set switchToolOffset to false", nameNum(self), self.cp.toolOffsetX, self.cp.totalOffsetX), 12);
 		end;
 	end;
+
+	-- TODO: (Claus) Delete old retrofit code below, when converted 100% over to the new turn system.
 
 	local curPoint = self.Waypoints[self.cp.waypointIndex+1]
 	local cx, cz = curPoint.cx, curPoint.cz;
