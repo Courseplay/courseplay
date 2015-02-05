@@ -50,7 +50,7 @@
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 							 text="卡住了!" />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 						 text="已进入触发区" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="装载: %d of %d" />
-		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="路径显示的模式：" />
+		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="路径点显示选择：" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="禁止碾压生长的农作物:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="横向距离调整:" />
 		<text name="COURSEPLAY_START_AT" 								 text="车辆启动的值:" />
@@ -94,11 +94,11 @@
 		<text name="COURSEPLAY_NO_WORK_AREA" 							 text="无法发现工作区" />
 		<text name="COURSEPLAY_COMBINED_COURSES" 						 text="合并任务" />
 		<text name="COURSEPLAY_DRIVE_BEHIND_COMBINE" 					 text="车辆从后方接近联合收割机" />
-		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 					 text="车辆已接近联合收割机" />
+		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 					 text="车辆准备接近联合收割机" />
 		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 						 text="车辆已连接收割机" />
 		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 				 text="收割机要求车辆先停下来" />
 		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	 text="等待空闲位置" /> 
-		<text name="COURSEPLAY_TURNING_TO_COORDS" 						 text="转向到 %d %d 点" />
+		<text name="COURSEPLAY_TURNING_TO_COORDS" 						 text="转到 %d %d 点" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 						 text="前往 %d %d 坐标点" />
 		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 					 text="等待收割机容量到达设定值" />
 		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 					 text="附近没有收割机" />
@@ -110,9 +110,9 @@
 		<text name="COURSEPLAY_IS_BEING_REFUELED" 						 text="正在加油" />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 				 text="太多的等待点！ 只允许 %d." />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="等待点太少! %d 需求." />
-		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="错误的拖车" />
-		<text name="COURSEPLAY_WRONG_TOOL" 								 text="当前工具不支持当前模式" />
-		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="当前车辆不支持当前模式" />
+		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="错误的拖斗类型" />
+		<text name="COURSEPLAY_WRONG_TOOL" 								 text="当前工具不支持本模式" />
+		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="当前车辆不支持本模式" />
 		<text name="COURSEPLAY_WEATHER_WARNING" 						 text="等待天气好转" />
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="行线偏移" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="工具横向调整" />
@@ -135,7 +135,7 @@
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="东" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="南" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="西" />
-		<text name="COURSEPLAY_HEADLAND" 								 text="路径的显示模式" />
+		<text name="COURSEPLAY_HEADLAND" 								 text="路径生成的模式" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="开启" />
 		<text name="COURSEPLAY_DEACTIVATED" 							 text="关闭" />
 		<text name="COURSEPLAY_RIDGEMARKERS" 							 text="田埂标记" />
@@ -219,9 +219,9 @@
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 				 text="土地编号: %d号(%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 			 text="种子类型: %s" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE" 				 text="用量: %s %s (%s)" />
-		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="显示/隐藏起始点和结束点" />
-		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="显示/隐藏所有路径点" />
-		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="显示/隐藏 合并点" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="显示/关闭 起始点和结束点" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="显示/关闭 所有路径点" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="显示/关闭 合并点" />
 
 		<text name="COURSEPLAY_HUD_OPEN" 								 text="打开CP界面" />
 		<text name="COURSEPLAY_HUD_CLOSE" 								 text="关闭CP界面" />
