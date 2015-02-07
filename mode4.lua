@@ -19,7 +19,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 	end;
 	
 	--go with field speed	
-	if fieldArea or self.cp.waypointIndex == self.cp.startWork then
+	if fieldArea or self.cp.waypointIndex == self.cp.startWork or self.cp.waypointIndex == self.cp.stopWork +1 then
 		workSpeed = 1;
 	end
 	
