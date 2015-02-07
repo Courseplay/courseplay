@@ -388,7 +388,8 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 							end;
 						end;
 					end;
-					courseplay:setWaypointIndex(vehicle, vehicle.cp.stopWork - 4);
+					--courseplay:setWaypointIndex(vehicle, vehicle.cp.stopWork - 4);
+					courseplay:setWaypointIndex(vehicle, vehicle.cp.stopWork + 1);
 					if vehicle.cp.waypointIndex < 1 then
 						courseplay:setWaypointIndex(vehicle, 1);
 					end

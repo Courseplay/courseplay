@@ -61,7 +61,8 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 					end;
 				end;
 			end;
-			courseplay:setWaypointIndex(self, self.cp.stopWork - 4);
+			--courseplay:setWaypointIndex(self, self.cp.stopWork - 4);
+			courseplay:setWaypointIndex(self, self.cp.stopWork +1);
 			--courseplay:debug(string.format("Abort: %d StopWork: %d",self.cp.abortWork,self.cp.stopWork), 12)
 		elseif not self.cp.hasUnloadingRefillingCourse then
 			allowedToDrive = false;
