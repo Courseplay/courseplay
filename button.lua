@@ -701,16 +701,17 @@ function courseplay.buttons:setActiveEnabled(vehicle, section)
 		local numVisibleCourses = #(vehicle.cp.hud.courses);
 		local nofolders = nil == next(g_currentMission.cp_folders);
 		local indent = courseplay.hud.indent;
-		local row;
+		local row, fn;
 		for _, button in pairs(vehicle.cp.buttons[-2]) do
 			row = button.row;
+			fn = button.functionToCall;
 			enable = true;
 			show = true;
 
 			if row > numVisibleCourses then
 				show = false;
 			else
-				if button.functionToCall == 'expandFolder' then
+				if fn == 'expandFolder' then
 					if vehicle.cp.hud.courses[row].type == 'course' then
 						show = false;
 					else
@@ -732,19 +733,21 @@ function courseplay.buttons:setActiveEnabled(vehicle, section)
 						end;
 					end;
 				else
-					if vehicle.cp.hud.courses[row].type == 'folder' and (button.functionToCall == 'loadSortedCourse' or button.functionToCall == 'addSortedCourse') then
+					if vehicle.cp.hud.courses[row].type == 'folder' and (fn == 'loadSortedCourse' or fn == 'addSortedCourse') then
 						show = false;
 					elseif vehicle.cp.hud.choose_parent ~= true then
-						if button.functionToCall == 'deleteSortedItem' and vehicle.cp.hud.courses[row].type == 'folder' and g_currentMission.cp_sorted.info[ vehicle.cp.hud.courses[row].uid ].lastChild ~= 0 then
+						if fn == 'deleteSortedItem' and vehicle.cp.hud.courses[row].type == 'folder' and g_currentMission.cp_sorted.info[ vehicle.cp.hud.courses[row].uid ].lastChild ~= 0 then
 							enable = false;
-						elseif button.functionToCall == 'linkParent' then
+						elseif fn == 'linkParent' then
 							button:setSpriteSectionUVs('folderParentFrom');
 							if nofolders then
 								enable = false;
 							end;
+						elseif vehicle.cp.hud.courses[row].type == 'course' and (fn == 'loadSortedCourse' or fn == 'addSortedCourse' or fn == 'deleteSortedItem') and vehicle.cp.isDriving then
+							enable = false;
 						end;
 					else
-						if button.functionToCall ~= 'linkParent' then
+						if fn ~= 'linkParent' then
 							enable = false;
 						else
 							button:setSpriteSectionUVs('folderParentTo');

@@ -345,6 +345,9 @@ function courseplay:start(self)
 
 	courseplay:validateCanSwitchMode(self);
 
+	-- deactivate load/add/delete course buttons
+	courseplay.buttons:setActiveEnabled(self, 'page2');
+
 	-- add ingameMap icon
 	if CpManager.ingameMapIconActive then
 		courseplay:createMapHotspot(self);
@@ -587,6 +590,9 @@ function courseplay:stop(self)
 
 	--validation: can switch mode?
 	courseplay:validateCanSwitchMode(self);
+
+	-- reactivate load/add/delete course buttons
+	courseplay.buttons:setActiveEnabled(self, 'page2');
 end
 
 
