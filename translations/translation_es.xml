@@ -219,10 +219,9 @@
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 				 text="Campo: %d (%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 			 text="Tipo de semilla: %s" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE" 				 text="Uso: %s %s (%s)" />
-		<!-- TRANSLATION MISSING --><text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="Show/hide start and end points" />
-		<!-- TRANSLATION MISSING --><text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="Show/hide all points" />
-		<!-- TRANSLATION MISSING --><text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="Show/hide crossing points" />
-
+		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="Mostrar/Ocultar Puntos: Inicial y Final" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="Mostrar/Ocultar Puntos: Todos" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="Mostrar/Ocultar Puntos: Cruce" />
 		<text name="COURSEPLAY_HUD_OPEN" 								 text="Mostrar Courseplay HUD" />
 		<text name="COURSEPLAY_HUD_CLOSE" 								 text="Ocultar Courseplay HUD" />
 		<text name="COURSEPLAY_FUNCTIONS" 								 text="Funciones Courseplay" />
