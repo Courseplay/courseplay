@@ -224,9 +224,9 @@
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE"			text="Typ nasion: %s" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE"			text="Zużycie: %s %s (%s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_TRIM"			text="···" />
-		<!-- TRANSLATION MISSING --><text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="Show/hide start and end points" />
-		<!-- TRANSLATION MISSING --><text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="Show/hide all points" />
-		<!-- TRANSLATION MISSING --><text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="Show/hide crossing points" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"			text="Pokaż/Ukryj punkt startowy i końcowy" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL"				text="Pokaż/Ukryj wszystkie punkty" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"			text="Pokaż/Ukryj skrzyżowania" />
 
 		<text name="COURSEPLAY_HUD_OPEN"					text="Pokaż hud Courseplay" />
 		<text name="COURSEPLAY_HUD_CLOSE"					text="Ukryj hud Courseplay" />
