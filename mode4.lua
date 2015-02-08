@@ -17,7 +17,9 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 			courseplay:setWaypointIndex(self, math.min(self.cp.finishWork + 1, self.cp.numWaypoints));
 		end;
 	end;
-	
+	if self.cp.hasTransferCourse and self.cp.abortWork ~= nil and self.cp.waypointIndex == 1 then
+		courseplay:setWaypointIndex(self,self.cp.startWork+1);
+	end
 	--go with field speed	
 	if fieldArea or self.cp.waypointIndex == self.cp.startWork or self.cp.waypointIndex == self.cp.stopWork +1 then
 		workSpeed = 1;

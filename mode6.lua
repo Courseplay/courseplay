@@ -28,6 +28,9 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 			courseplay:setWaypointIndex(vehicle, min(vehicle.cp.finishWork + 1,vehicle.cp.numWaypoints));
 		end;
 	end;
+	if vehicle.cp.hasTransferCourse and vehicle.cp.abortWork ~= nil and vehicle.cp.waypointIndex == 1 then
+		courseplay:setWaypointIndex(vehicle,vehicle.cp.startWork+1);
+	end
 	if fieldArea or vehicle.cp.waypointIndex == vehicle.cp.startWork or vehicle.cp.waypointIndex == vehicle.cp.stopWork +1 then
 		workSpeed = 1;
 	end

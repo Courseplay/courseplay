@@ -115,6 +115,7 @@ function courseplay:load(xmlFile)
 	self.cp.stopWork = nil
 	self.cp.abortWork = nil
 	self.cp.hasUnloadingRefillingCourse = false;
+	self.cp.hasTransferCourse = false
 	self.cp.wait = true;
 	self.cp.waitTimer = nil;
 	self.cp.realisticDriving = true;

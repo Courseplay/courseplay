@@ -262,6 +262,7 @@ function courseplay:start(self)
 	elseif self.cp.mode == 4 or self.cp.mode == 6 then
 		courseplay:setIsLoaded(self, false);
 		self.cp.hasUnloadingRefillingCourse = self.cp.numWaypoints > self.cp.stopWork + 7;
+		self.cp.hasTransferCourse = self.cp.startWork > 5
 		if  self.Waypoints[self.cp.stopWork].cx == self.Waypoints[self.cp.startWork].cx 
 		and self.Waypoints[self.cp.stopWork].cz == self.Waypoints[self.cp.startWork].cz then -- TODO: VERY unsafe, there could be LUA float problems (e.g. 7 + 8 = 15.000000001)
 			self.cp.finishWork = self.cp.stopWork-5
@@ -273,7 +274,7 @@ function courseplay:start(self)
 		if self.cp.startAtPoint == courseplay.START_AT_NEAREST_POINT and self.cp.finishWork ~= self.cp.stopWork and self.cp.waypointIndex > self.cp.finishWork and self.cp.waypointIndex <= self.cp.stopWork then
 			courseplay:setWaypointIndex(self, 2);
 		end
-		courseplay:debug(string.format("%s: numWaypoints=%d, stopWork=%d, finishWork=%d, hasUnloadingRefillingCourse=%s, waypointIndex=%d", nameNum(self), self.cp.numWaypoints, self.cp.stopWork, self.cp.finishWork, tostring(self.cp.hasUnloadingRefillingCourse), self.cp.waypointIndex), 12);
+		courseplay:debug(string.format("%s: numWaypoints=%d, stopWork=%d, finishWork=%d, hasUnloadingRefillingCourse=%s,hasTransferCourse=%s, waypointIndex=%d", nameNum(self), self.cp.numWaypoints, self.cp.stopWork, self.cp.finishWork, tostring(self.cp.hasUnloadingRefillingCourse),tostring(self.cp.hasTransferCourse), self.cp.waypointIndex), 12);
 	end
 
 	if self.cp.mode == 9 then
@@ -541,6 +542,7 @@ function courseplay:stop(self)
 	self.cp.startWork = nil
 	self.cp.stopWork = nil
 	self.cp.hasUnloadingRefillingCourse = false;
+	self.cp.hasTransferCourse = false
 	courseplay:setStopAtEnd(self, false);
 	self.cp.isUnloaded = false;
 	self.cp.prevFillLevelPct = nil;
