@@ -55,16 +55,19 @@ function courseplay:newturn(self, dt)
 		end;
 	end;
 
-	-- TURN STAGES 1 - 4
+	-- TURN STAGES 1 - 3
 	if self.cp.turnStage > 0 then
 
 		-- TURN STAGES 1 - Create Turn maneuver (Creating waypoints to follow)
 		if self.cp.turnStage == 1 then
+			local posX, posZ;
+
 			courseplay:clearTurnTargets(self); -- Make sure we have cleaned it from any previus usage.
 			self.cp.curTurnIndex = 1; -- Reset the current target index to the first one.
 
 			-- Get the turn radius either by the automatic or user provided turn circle.
-			local turnRadius = self.cp.turnDiameter / 2 + 0.25; -- The + 0.25m is a safty messure in really small turn radiuses
+			local turnRadius = self.cp.turnDiameter / 2 + 0.5; -- The + 0.5m is a safty messure in really small turn radiuses
+			local turnDiameter = turnRadius * 2;
 
 			-- Get the new turn target with offset
 			if (self.cp.laneOffset ~= nil and self.cp.laneOffset ~= 0) or (self.cp.toolOffsetX ~= nil and self.cp.toolOffsetX ~= 0) then
@@ -75,19 +78,21 @@ function courseplay:newturn(self, dt)
 
 			local totalOffsetX = self.cp.totalOffsetX * -1
 
-			-- Create temp target node and translate it and rotate it's direction to the next wp.
+			-- Create temp target node and translate it.
 			local cx,cz = self.Waypoints[self.cp.waypointIndex+1].cx, self.Waypoints[self.cp.waypointIndex+1].cz;
 			local targetNode = createTransformGroup("cpTempTargetNode");
 			link(g_currentMission.terrainRootNode, targetNode);
 			local cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cx, 1, cz);
 			setTranslation(targetNode, cx, cy, cz);
-
+			-- Rotate it's direction to the next wp.
 			local dx, dz = Placeholder:getPointDirection(self.Waypoints[self.cp.waypointIndex+1], self.Waypoints[self.cp.waypointIndex+2]);
 			local yRot = Utils.getYRotationFromDirection(dx, dz);
 			setRotation(targetNode, 0, yRot, 0);
-
-			cx, cy, cz = localToWorld(targetNode, totalOffsetX, 0, 0);
-			setTranslation(targetNode, cx, cy, cz);
+			-- Retranslate it again to the correct position if there is offsets.
+			if totalOffsetX ~= 0 then
+				cx, cy, cz = localToWorld(targetNode, totalOffsetX, 0, 0);
+				setTranslation(targetNode, cx, cy, cz);
+			end;
 
 			-- Debug print start
 			--renderText(0.5,0.85-(0.03*self.cp.coursePlayerNum),0.02,string.format("%s: totalOffsetX=%.1f°" ,nameNum(self), totalOffsetX));
@@ -117,10 +122,8 @@ function courseplay:newturn(self, dt)
 				zOffset = frontMarker + 1;
 			end;
 
-
 			-- No need for Ohm or reverse turn
-			if abs(targetDeltaX) > self.cp.turnDiameter then
-				local posX, posZ;
+			if abs(targetDeltaX) >= turnDiameter then
 				local cp, np = {}, {};
 
 				-- WP 1
@@ -163,12 +166,84 @@ function courseplay:newturn(self, dt)
 				courseplay:debug(string.format("%s:(Turn) Normal turn with %d waypoints", nameNum(self), #self.cp.turnTargets), 14);
 
 				self.cp.turnStage = 2;
-				--allowedToDrive = false;
 
 			-- Ohm or reverse turn
 			else
+				local centerLine = abs(targetDeltaX) / 2;
+				local cp, np = {}, {};
+				local targetOffsetZ = 0;
+				if targetDeltaZ < 0 then
+					targetOffsetZ = abs(targetDeltaZ);
+				end;
+
+				-- WP 1
+				posX, _, posZ = localToWorld(targetNode, targetDeltaX, 0, (targetOffsetZ + zOffset) * -1);
+				courseplay:addTurnTarget(self, posX, posZ);
+				-----------------------------------
+
+
+				local b, c = centerLine + turnRadius, turnDiameter;
+				local centerHeight = math.sqrt((c * c) - (b * b));
+
+				-- WP 2 ---------------------------
+				local tcx, _, tcz = localToWorld(targetNode, (abs(targetDeltaX) + turnRadius) * direction, 0, (targetOffsetZ + zOffset) * -1);
+				local centerNode = createTransformGroup("cpTempcenterNode");
+				link(g_currentMission.terrainRootNode, centerNode);
+				local tcy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, tcx, 1, tcz);
+				setTranslation(centerNode, tcx, tcy, tcz);
+				-- Rotate it's direction to the next wp.
+				cp.x, cp.z = tcx, tcz;
+				np.x, _, np.z = localToWorld(targetNode, centerLine * direction, 0, (targetOffsetZ + zOffset + centerHeight) * -1);
+				local dx, dz = Placeholder:getPointDirection(cp, np, false);
+				local yRot = Utils.getYRotationFromDirection(dx, dz);
+				setRotation(centerNode, 0, yRot, 0);
+
+				posX, _, posZ = localToWorld(centerNode, 0, 0, turnRadius);
+				courseplay:addTurnTarget(self, posX, posZ);
+				-----------------------------------
+
+				-- WP 3
+				posX, _, posZ = localToWorld(targetNode, (centerLine + turnRadius) * direction, 0, (targetOffsetZ + zOffset + centerHeight) * -1);
+				courseplay:addTurnTarget(self, posX, posZ);
+				-----------------------------------
+
+				-- WP 4
+				posX, _, posZ = localToWorld(targetNode, centerLine * direction, 0, (targetOffsetZ + zOffset + centerHeight + turnRadius) * -1);
+				courseplay:addTurnTarget(self, posX, posZ);
+				-----------------------------------
+
+				-- WP 5
+				posX, _, posZ = localToWorld(targetNode, (centerLine - turnRadius) * direction, 0, (targetOffsetZ + zOffset + centerHeight) * -1);
+				courseplay:addTurnTarget(self, posX, posZ);
+				-----------------------------------
+
+				-- WP 6
+				tcx, _, tcz = localToWorld(targetNode, -turnRadius * direction, 0, (targetOffsetZ + zOffset) * -1);
+				setTranslation(centerNode, tcx, tcy, tcz);
+				-- Rotate it's direction to the next wp.
+				cp.x, cp.z = tcx, tcz;
+				dx, dz = Placeholder:getPointDirection(cp, np, false);
+				yRot = Utils.getYRotationFromDirection(dx, dz);
+				setRotation(centerNode, 0, yRot, 0);
+
+				posX, _, posZ = localToWorld(centerNode, 0, 0, turnRadius);
+				courseplay:addTurnTarget(self, posX, posZ);
+				-----------------------------------
+
+				unlink(centerNode);
+				delete(centerNode);
+
+				-- WP 7
+				posX, _, posZ = localToWorld(targetNode, 0, 0, (zOffset) * -1);
+				courseplay:addTurnTarget(self, posX, posZ);
+
+				-- WP 8
+				posX, _, posZ = localToWorld(targetNode, 0, 0, self.cp.totalLength + self.cp.totalLengthOffset + zOffset + 5);
+				courseplay:addTurnTarget(self, posX, posZ, true);
+
 				-- TODO: (Claus) make Ohm and Reverse turn maneuver.
-				allowedToDrive = false;
+				self.cp.turnStage = 2;
+				--allowedToDrive = false;
 			end;
 
 			unlink(targetNode);
@@ -356,7 +431,7 @@ function courseplay:turn(self, dt) --!!!
 	6:	
 	]]
 
-	if self.cp.hasSprayer then
+	if self.cp.mode == 4 then
 		courseplay:newturn(self, dt);
 		return;
 	end;
