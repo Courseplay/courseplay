@@ -407,7 +407,6 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 
 		--COMBINES
 		elseif workTool.cp.hasSpecializationCutter then
-
 			--Start combine
 			local isTurnedOn = tool:getIsTurnedOn();
 			local pipeState = 0;
@@ -536,7 +535,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 						tool:setFoldDirection(-tool.cp.realUnfoldDirection);
 					end;
 				end
-				if tool.cp.isCombine and not tool.cp.wantsCourseplayer and tool.fillLevel > 0.1 and #(tool.courseplayers) == 0 then
+				if tool.cp.isCombine and not tool.cp.wantsCourseplayer and tool.fillLevel > 0.1 and tool.courseplayers and #(tool.courseplayers) == 0 then
 					tool.cp.wantsCourseplayer = true
 				end
 			end
