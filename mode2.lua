@@ -680,18 +680,37 @@ function courseplay:unload_combine(vehicle, dt)
 			local dirX,dirZ = combine.acDirectionBeforeTurn.trace[index].dx,combine.acDirectionBeforeTurn.trace[index].dz
 			drawDebugPoint(px+(-dirX*100),cy+10,pz+(-dirZ*100), 1, 1, 1, 1);
 			drawDebugLine(px,cy+3,pz, 1, 1, 1, px+(-dirX*100), cy+10,pz+(-dirZ*100), 1, 1, 1);]]
-			
-			if AutoCombineIsTurning and tractor.acIsCPStopped ~= nil then
-				-- print(nameNum(tractor) .. ': distance < 50 -> set acIsCPStopped to true'); --TODO: 140308 AutoTractor
-				tractor.acIsCPStopped = true
-			elseif combine.isAIThreshing then --and not (combineFillLevel == 0 and combine.currentPipeState ~= 2) then
-				combine.waitForTurnTime = combine.timer + 100
-			elseif tractor:getIsCourseplayDriving() then --and not (combineFillLevel == 0 and combine:getOverloadingTrailerInRangePipeState()==0) then
-				combine.cp.waitingForTrailerToUnload = true
+			--courseplay:setCustomTimer(vehicle, 'fieldEdgeTimeOut', 15);
+			--courseplay:resetCustomTimer(vehicle, 'fieldEdgeTimeOut');
+			if not courseplay:timerIsThrough(vehicle, 'fieldEdgeTimeOut') or vehicle.cp.modeState > 2 then
+				if AutoCombineIsTurning and tractor.acIsCPStopped ~= nil then
+					-- print(nameNum(tractor) .. ': distance < 50 -> set acIsCPStopped to true'); --TODO: 140308 AutoTractor
+					tractor.acIsCPStopped = true
+				elseif combine.isAIThreshing then --and not (combineFillLevel == 0 and combine.currentPipeState ~= 2) then
+					combine.waitForTurnTime = combine.timer + 100
+				elseif tractor:getIsCourseplayDriving() then --and not (combineFillLevel == 0 and combine:getOverloadingTrailerInRangePipeState()==0) then
+					combine.cp.waitingForTrailerToUnload = true
+				end
+			elseif vehicle.cp.fieldEdgeTimeOutSet ~= true then
+				--print("set timer")
+				courseplay:setCustomTimer(vehicle, 'fieldEdgeTimeOut', 20);
+				vehicle.cp.fieldEdgeTimeOutSet = true
+				--print("set vehicle.cp.fieldEdgeTimeOutSet")
+			else
+				allowedToDrive = false;
+				if combine.cp.waitingForTrailerToUnload then
+					--print("reset combine.cp.waitingForTrailerToUnload")
+					combine.cp.waitingForTrailerToUnload = false
+				elseif tractor.acIsCPStopped then
+					tractor.acIsCPStopped = false
+				end
 			end
 		elseif distance < 100 and vehicle.cp.modeState == 2 then
 			allowedToDrive = false;
-		end 
+		end
+	elseif vehicle.cp.fieldEdgeTimeOutSet then
+		vehicle.cp.fieldEdgeTimeOutSet = false
+		--print("reset vehicle.cp.fieldEdgeTimeOutSet")
 	end
 	if combineIsTurning and distance < 20 then
 		if vehicle.cp.modeState == 3 or vehicle.cp.modeState == 4 then
