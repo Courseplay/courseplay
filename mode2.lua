@@ -88,10 +88,14 @@ function courseplay:handle_mode2(vehicle, dt)
 			-- is there a trailer to fill, or at least a waypoint to go to?
 			if vehicle.cp.currentTrailerToFill or vehicle.cp.modeState == 5 then
 				if vehicle.cp.modeState == 6 then
-					-- drive behind combine: courseplay:setModeState(vehicle, 2);
-					-- drive next to combine:
-					courseplay:setModeState(vehicle, 3);
-					vehicle.cp.directModeThree = true
+					local x,y,z = getWorldTranslation(vehicle.cp.DirectionNode)
+					local x1, y1, z1 = worldToLocal(vehicle.cp.activeCombine.cp.DirectionNode, x, y, z)
+					if z1 > -(vehicle.cp.turnDiameter+ 13) or courseplay:distanceToObject(vehicle, vehicle.cp.activeCombine) > 55 then -- tractor in front of combine or more than 55m away
+						courseplay:setModeState(vehicle, 2);
+					else
+						courseplay:setModeState(vehicle, 3);
+						vehicle.cp.directModeThree = true
+					end
 				end
 				courseplay:unload_combine(vehicle, dt)
 			end
