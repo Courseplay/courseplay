@@ -106,7 +106,7 @@ function courseplay:registerAtCombine(callerVehicle, combine)
 			else
 				-- force unload when combine is full
 				-- is the pipe on the correct side?
-				if combine.turnStage == 1 or combine.turnStage == 2 or combine.cp.turnStage ~= 0 then
+				if combine.turnStage > 0 or combine.cp.turnStage ~= 0 then
 					courseplay:debug(nameNum(callerVehicle)..": combine is turning -> don't register tractor",4)
 					return false
 				end
