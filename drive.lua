@@ -733,9 +733,10 @@ function courseplay:setTrafficCollision(vehicle, lx, lz, workArea) --!!!
 		local recordNumber = vehicle.cp.waypointIndex
 		if vehicle.cp.collidingVehicleId == nil then
 			for i=2,vehicle.cp.numTrafficCollisionTriggers do
-				if workArea or recordNumber + i > vehicle.cp.numWaypoints or recordNumber < 2 then
+				if workArea or recordNumber + i >= vehicle.cp.numWaypoints or recordNumber < 2 then
 					AIVehicleUtil.setCollisionDirection(vehicle.cp.trafficCollisionTriggers[i-1], vehicle.cp.trafficCollisionTriggers[i], 0, -1);
 				else
+					
 					local nodeX,nodeY,nodeZ = getWorldTranslation(vehicle.cp.trafficCollisionTriggers[i]);
 					local nodeDirX,nodeDirY,nodeDirZ,distance = courseplay:getWorldDirection(nodeX,nodeY,nodeZ, vehicle.Waypoints[recordNumber].cx,nodeY,vehicle.Waypoints[recordNumber].cz);
 					local _,_,Z = worldToLocal(vehicle.cp.trafficCollisionTriggers[i], vehicle.Waypoints[recordNumber].cx,nodeY,vehicle.Waypoints[recordNumber].cz);
@@ -743,6 +744,9 @@ function courseplay:setTrafficCollision(vehicle, lx, lz, workArea) --!!!
 					local oldValue = Z
 					while Z < 5.5 do
 						recordNumber = recordNumber+index
+						if recordNumber > vehicle.cp.numWaypoints then -- just a backup
+							break
+						end
 						nodeDirX,nodeDirY,nodeDirZ,distance = courseplay:getWorldDirection(nodeX,nodeY,nodeZ, vehicle.Waypoints[recordNumber].cx,nodeY,vehicle.Waypoints[recordNumber].cz);
 						_,_,Z = worldToLocal(vehicle.cp.trafficCollisionTriggers[i], vehicle.Waypoints[recordNumber].cx,nodeY,vehicle.Waypoints[recordNumber].cz);
 						if oldValue > Z then
