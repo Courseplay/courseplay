@@ -71,6 +71,7 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 				end
 				vehicle.cp.mode7Unloading = true;
 				vehicle.cp.mode7GoBackBeforeUnloading = true;
+				vehicle.cp.mode7SpeedBackup = vehicle.cruiseControl.maxSpeed
 				courseplay:start(vehicle);
 			else
 				if courseplay.debugChannels[11] then
@@ -101,6 +102,7 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 		CpManager:setGlobalInfoText(vehicle, 'WORK_END');
 	end
 	--go to course
+	local continue = true
 	if vehicle.cp.modeState == 0 then
 		if vehicle.cp.waypointIndex ==2 then
 			refSpeed = vehicle.cp.speeds.field;
@@ -180,6 +182,8 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 						courseplay:debug(nameNum(vehicle) .. ": restored vehicle.aiThreshingDirection", 11);
 					end
 					vehicle:startAIThreshing(true);
+					vehicle:setCruiseControlMaxSpeed(vehicle.cp.mode7SpeedBackup)
+					continue = false
 					vehicle.cp.mode7Unloading = false;
 					courseplay:debug(nameNum(vehicle) .. ": start AITreshing", 11);
 					courseplay:debug(nameNum(vehicle) .. ": fault: "..tostring(ceil(abs(ctx7-vehicle.cp.curTargetMode7.x)*100)).." cm X  "..tostring(ceil(abs(ctz7-vehicle.cp.curTargetMode7.z)*100)).." cm Z", 11);
@@ -188,6 +192,6 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 		end
 	end
 
-	return true, cx, cy, cz, refSpeed, allowedToDrive;
+	return continue, cx, cy, cz, refSpeed, allowedToDrive;
 end;
 
