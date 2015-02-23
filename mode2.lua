@@ -500,7 +500,9 @@ function courseplay:unload_combine(vehicle, dt)
 			end
 			if combineIsTurning or vehicle.cp.forceNewTargets then
 				vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(currentTipper.rootNode, -sideMultiplier*turnDiameter, 0, trailerOffset);
+				courseplay:debug(string.format("%s: combine is empty and turning",nameNum(vehicle)),4)
 				if combineIsAutoCombine then
+					courseplay:debug(string.format("%s: combineIsAutoCombine",nameNum(vehicle)),4)
 					local index = combine.acDirectionBeforeTurn.traceIndex+1
 					if index > #combine.acDirectionBeforeTurn.trace then
 						index = 1
@@ -522,6 +524,7 @@ function courseplay:unload_combine(vehicle, dt)
 					vehicle.cp.forceNewTargets = nil
 				end
 			else
+				courseplay:debug(string.format("%s: combine is empty ",nameNum(vehicle)),4)
 				vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(currentTipper.rootNode, sideMultiplier*offset*0.8 , 0, totalLength + trailerOffset);
 				courseplay:addNewTargetVector(vehicle, sideMultiplier*offset ,(totalLength*3)+trailerOffset,currentTipper);
 				courseplay:setModeState(vehicle, 9);				
@@ -530,6 +533,11 @@ function courseplay:unload_combine(vehicle, dt)
 			if nodeSet then
 				unlink(baseNode);
 				delete(baseNode);
+			end
+			if vehicle.cp.nextTargets ~= nil then
+				courseplay:debug(string.format("%s: vehicle.cp.nextTargets: %s ",nameNum(vehicle),tostring(#vehicle.cp.nextTargets)),4)
+			else
+				courseplay:debug(string.format("%s: vehicle.cp.nextTargets: nil ",nameNum(vehicle)),4)
 			end
 			
 			courseplay:setMode2NextState(vehicle, 1);
