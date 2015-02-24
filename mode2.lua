@@ -163,11 +163,12 @@ function courseplay:handle_mode2(vehicle, dt)
 
 				-- chose the combine who needs me the most
 				for k, combine in pairs(vehicle.cp.reachableCombines) do
-					if combine.acParameters ~= nil and combine.acParameters.enabled and combine.isHired  and combine.fillLevel >= 0.99*combine.capacity then --AC stops at 99% fillLevel so we have to set this as full
+					local fillLevel, capacity = combine:getAttachedTrailersFillLevelAndCapacity();
+					if combine.acParameters ~= nil and combine.acParameters.enabled and combine.isHired  and fillLevel >= 0.99*capacity then --AC stops at 99% fillLevel so we have to set this as full
 						combine.cp.wantsCourseplayer = true
 					end
-					if (combine.fillLevel >= (combine.capacity * vehicle.cp.followAtFillLevel / 100)) or combine.capacity == 0 or combine.cp.wantsCourseplayer then
-						if combine.capacity == 0 then
+					if (fillLevel >= (capacity * vehicle.cp.followAtFillLevel / 100)) or capacity == 0 or combine.cp.wantsCourseplayer then
+						if capacity == 0 then
 							if combine.courseplayers == nil then
 								vehicle.cp.bestCombine = combine
 							else
@@ -187,8 +188,8 @@ function courseplay:handle_mode2(vehicle, dt)
 								end;
 							end 
 
-						elseif combine.fillLevel >= highest_fill_level and combine.cp.isCheckedIn == nil then
-							highest_fill_level = combine.fillLevel
+						elseif fillLevel >= highest_fill_level and combine.cp.isCheckedIn == nil then
+							highest_fill_level = fillLevel
 							vehicle.cp.bestCombine = combine
 							distance = courseplay:distanceToObject(vehicle, combine);
 							vehicle.cp.distanceToCombine = distance
@@ -254,9 +255,10 @@ function courseplay:unload_combine(vehicle, dt)
 	if vehicle.cp.chopperIsTurning == nil then
 		vehicle.cp.chopperIsTurning = false
 	end
-
-	if combine.capacity > 0 then
-		combineFillLevel = combine.fillLevel * 100 / combine.capacity
+	
+	local fillLevel, capacity = combine:getAttachedTrailersFillLevelAndCapacity();
+	if capacity > 0 then
+		combineFillLevel = fillLevel * 100 / capacity
 	else -- combine is a chopper / has no tank
 		combineFillLevel = 99;
 	end
@@ -469,7 +471,7 @@ function courseplay:unload_combine(vehicle, dt)
 			vehicle.cp.nextTargets = {}
 		end
 
-		if not combine.cp.isChopper and (combineFillLevel == 0 or vehicle.cp.forceNewTargets) then --combine empty set waypoints on the field !!!
+		if (not combine.cp.isChopper or combine.haeckseldolly) and (combineFillLevel == 0 or vehicle.cp.forceNewTargets) then --combine empty set waypoints on the field !!!
 			if combine.cp.offset == nil then
 				--print("saving offset")
 				combine.cp.offset = vehicle.cp.combineOffset;

@@ -58,6 +58,16 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 			workTool.cp.turnStage = vehicle.cp.turnStage
 		end
 
+		if workTool.haeckseldolly then
+			local ridgeMarker = vehicle.Waypoints[vehicle.cp.waypointIndex].ridgeMarker
+			local nextRidgeMarker = vehicle.Waypoints[min(vehicle.cp.waypointIndex+4,vehicle.cp.numWaypoints)].ridgeMarker
+			if (ridgeMarker == 2 or (nextRidgeMarker == 2 and vehicle.cp.turnStage>1)) and workTool.bunkerrechts ~= false then
+				workTool.bunkerrechts = false
+			elseif (ridgeMarker == 1 or (nextRidgeMarker == 1 and vehicle.cp.turnStage>1)) and workTool.bunkerrechts ~= true then
+				workTool.bunkerrechts = true
+			end
+		end
+		
 		local isFolding, isFolded, isUnfolded = courseplay:isFolding(workTool);
 		local needsLowering = false
 		

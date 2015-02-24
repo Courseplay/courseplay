@@ -416,7 +416,22 @@ end;
 
 function courseplay:getSpecialCombineOffset(combine)
 	if combine.cp == nil then return nil; end;
-
+	if combine.cp.isChopper then
+		for _,dolly in pairs(combine.cp.workTools) do
+			if dolly.haeckseldolly then
+				combine.haeckseldolly = true
+				if dolly.bunkerrechts then
+					return 6;
+				else
+					return -6;
+				end
+			end
+		end
+		if combine.haeckseldolly then
+			combine.haeckseldolly = nil
+		end
+	end
+	
 	if combine.cp.isCaseIH7130 then
 		return  8.0;
 	elseif combine.cp.isCaseIH9230Crawler then
