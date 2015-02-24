@@ -206,7 +206,7 @@
 		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="Konec otáční" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_START" 				 text="Začít couvat" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="Konec couvání" />
-		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Add split points" /> <!-- TODO: TRANSLATION! (during recording adds multiple points between last point and current position -->
+		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Přidat body do nahrávané trasy" /> <!-- TODO: TRANSLATION! (during recording adds multiple points between last point and current position -->
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Ikony v mapě: zobrazit text" />
 		<text name="COURSEPLAY_ALWAYS_USE_4WD" 							 text="Vždy použít 4x4" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="Chceš aby pole byla skenována automaticky?" />
@@ -234,8 +234,8 @@
 		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Připojit trasu nakonec" />
 		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Přesunout do složky" />
 		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Smazat trasu/složku" />
-		<!-- TRANSLATION MISSING --><text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="Show/hide start and end points" />
-		<!-- TRANSLATION MISSING --><text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="Show/hide all points" />
-		<!-- TRANSLATION MISSING --><text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="Show/hide crossing points" />
+		<!-- TRANSLATION MISSING --><text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="Zobrazit/skrýt body startu a konce" />
+		<!-- TRANSLATION MISSING --><text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="Zobrazit/skrýt všechny body" />
+		<!-- TRANSLATION MISSING --><text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="Zobrazit/skrýt body křížení" />
 	</texts>
 </l10n>
