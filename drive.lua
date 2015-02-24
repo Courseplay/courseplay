@@ -133,7 +133,7 @@ function courseplay:drive(self, dt)
 		local beaconOn = self.cp.warningLightsMode == courseplay.WARNING_LIGHTS_BEACON_ALWAYS 
 						 or ((self.cp.mode == 1 or self.cp.mode == 2 or self.cp.mode == 3 or self.cp.mode == 5) and self.cp.waypointIndex > 2) 
 						 or ((self.cp.mode == 4 or self.cp.mode == 6) and self.cp.waypointIndex > self.cp.stopWork)
-						 or combineBeacon;
+						 or combineBeaconOn;
 		if self.beaconLightsActive ~= beaconOn then
 			self:setBeaconLightsVisibility(beaconOn);
 		end;
