@@ -421,8 +421,8 @@ function courseplay:generateCourse(vehicle)
 	local pointDistance = 5;
 	local pipSafety = 0.1;
 	local pathPoints = {};
-  local maxPointsAtTurn = courseplay.courseMaxPointsAtTurn; 
-  local stepForPoints = courseplay.courseStepForPoints;
+  local maxPointsAtTurn = CpManager.courseMaxPointsAtTurn; 
+  local stepForPoints = CpManager.courseStepForPoints;
   
 	if dir == "N" or dir == "S" then --North or South
 		numLanes = math.ceil(dimensions.width / workWidth);
@@ -597,21 +597,21 @@ function courseplay:generateCourse(vehicle)
 	end; --END East or West
   -- cycle through lanes, let 5 points at the begin and end of lane as they are. In between only let every 10th point and remove all other
   -- go from back to front, to have indices stable  
-  local curPoint = #(pathPoints);
-  courseplay:debug('before optimize numPoints='..#(pathPoints), 7);
-  while curPoint >= maxPointsAtTurn do
-    local cpLastID = curPoint;
+  local cpCurrentID = #(pathPoints);
+  courseplay:debug('before optimize numPoints='..cpCurrentID, 7);
+  while cpCurrentID >= maxPointsAtTurn do
+    local cpLastID = cpCurrentID;
     local cpLast = pathPoints[cpLastID];
     local cpCurrent;
     local curLane = cpLast.lane;
     repeat
-      curPoint = curPoint - 1;
-      cpCurrent = pathPoints[curPoint];
-    until cpCurrent.lane ~= curLane or curPoint < 2;
-    if curPoint == 1 then 
-      curPoint = 0; 
+      cpCurrentID = cpCurrentID - 1;
+      cpCurrent = pathPoints[cpCurrentID];
+    until cpCurrent.lane ~= curLane or cpCurrentID < 2;
+    if cpCurrentID == 1 then 
+      cpCurrentID = 0; 
     end;
-    local cpFirstID = curPoint+1;
+    local cpFirstID = cpCurrentID+1;
     local cpFirst = pathPoints[cpFirstID];
     if cpLastID - cpFirstID > stepForPoints then -- only if more than 10 points in current lane
       for pID = (cpLastID - maxPointsAtTurn), (cpFirstID + maxPointsAtTurn), -1 do
