@@ -99,7 +99,8 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 
 		--speedlimits
 		local speedLimitActive = false
-		if workTool.doCheckSpeedLimit and workTool:doCheckSpeedLimit() then
+		
+		if workTool.doCheckSpeedLimit and (workTool:doCheckSpeedLimit() or workTool.isSprayerSpeedLimitActive) then
 			forceSpeedLimit = math.min(forceSpeedLimit, workTool.speedLimit)
 			speedLimitActive = true
 		end

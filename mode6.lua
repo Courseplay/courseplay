@@ -75,8 +75,8 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 			needsLowering = workTool.attacherJoint.needsLowering
 		end
 		
-		--speedlimits														--	TODO (Tom) workTool:doCheckSpeedLimit() is not working for harvesters			
-		if (workTool.doCheckSpeedLimit and workTool:doCheckSpeedLimit()) or workTool.cp.isGrimmeMaxtron620 or workTool.cp.isGrimmeTectron415 then
+		--speedlimits								--	TODO (Tom) workTool:doCheckSpeedLimit() is not working for harvesters			
+		if workTool.doCheckSpeedLimit and (workTool:doCheckSpeedLimit() or workTool.isPreparerSpeedLimitActive) then
 			forceSpeedLimit = min(forceSpeedLimit, workTool.speedLimit)
 		end
 		
