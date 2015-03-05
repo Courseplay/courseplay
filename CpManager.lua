@@ -39,7 +39,8 @@ function CpManager:loadMap(name)
 	self:setupIngameMap();
 	courseplay.courses:setup(); -- NOTE: this call is only to set up batchWriteSize, without loading anything
 	self:setup2dCourseData(false); -- NOTE: this call is only to initiate the position and opacity
-
+  self:setupCourseOptimizationData();
+  
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- LOAD SETTINGS FROM COURSEPLAY.XML / SAVE DEFAULT SETTINGS IF NOT EXISTING
 	if g_server ~= nil then
@@ -873,6 +874,13 @@ function CpManager:setup2dCourseData(createOverlays)
 end;
 
 -- ####################################################################################################
+-- COURSE GENERATION OPTIMIZATION SETUP
+function CpManager:setupCourseOptimizationData()
+  self.courseMaxPointsAtTurn = 5;
+  self.courseStepForPoints = 10;
+end;
+
+-- ####################################################################################################
 -- LOAD SETTINGS FROM courseplay.xml / SET DEFAULT SETTINGS IF NOT EXISTING
 function CpManager:loadOrSetXmlSettings()
 	if self.savegameFolderPath and self.cpXmlFilePath then
@@ -1007,6 +1015,20 @@ function CpManager:loadOrSetXmlSettings()
 			setXMLFloat(cpFile, key .. '#opacity', self.course2dPdaMapOpacity);
 		end;
 
+    -- course generation optimization settings
+    key = 'XML.courseGeneration';
+    local maxPointsAtTurn, stepForPoints = getXMLInt(cpFile, key .. '#maxPointsAtTurn'), getXMLInt(cpFile, key .. '#stepForPoints');
+    if maxPointsAtTurn ~= nil then
+      self.courseMaxPointsAtTurn = maxPointsAtTurn;
+    else
+      setXMLInt(cpFile, key .. '#maxPointsAtTurn', self.courseMaxPointsAtTurn);
+    end
+    if stepForPoints ~= nil then
+      self.courseStepForPoints = stepForPoints;
+    else
+      setXMLInt(cpFile, key .. '#stepForPoints', self.courseStepForPoints);
+    end
+    
 		--------------------------------------------------
 		saveXMLFile(cpFile);
 		delete(cpFile);
@@ -1055,7 +1077,12 @@ function CpManager:createXmlSettings()
 	setXMLFloat(cpFile, key .. '#posY', self.course2dPlotPosY);
 	setXMLFloat(cpFile, key .. '#opacity', self.course2dPdaMapOpacity);
 
-	--------------------------------------------------
+  -- course generation optimization settings
+  key = 'XML.courseGeneration';
+  setXMLInt(cpFile, key .. '#maxPointsAtTurn', self.courseMaxPointsAtTurn);
+  setXMLInt(cpFile, key .. '#stepForPoints', self.courseStepForPoints);
+
+    --------------------------------------------------
 	saveXMLFile(cpFile);
 	delete(cpFile);
 end;
