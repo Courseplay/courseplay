@@ -89,7 +89,7 @@ function courseplay:handle_mode2(vehicle, dt)
 			if vehicle.cp.currentTrailerToFill or vehicle.cp.modeState == 5 then
 				if vehicle.cp.modeState == 6 then
 					local x,y,z = getWorldTranslation(vehicle.cp.DirectionNode)
-					local x1, y1, z1 = worldToLocal(vehicle.cp.activeCombine.cp.DirectionNode, x, y, z)
+					local x1, y1, z1 = worldToLocal(vehicle.cp.activeCombine.cp.DirectionNode or vehicle.cp.activeCombine.rootNode , x, y, z)
 					if z1 > -(vehicle.cp.turnDiameter+ 13) or courseplay:distanceToObject(vehicle, vehicle.cp.activeCombine) > 55 then -- tractor in front of combine or more than 55m away
 						courseplay:setModeState(vehicle, 2);
 					else
