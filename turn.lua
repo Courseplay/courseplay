@@ -195,7 +195,7 @@ function courseplay:turn(self, dt) --!!!
 			self.turnStageTimer = Utils.getNoNil(self.turnStage2Timeout,20000)
 
 		-- TURN STAGE ??? --TODO (Jakob): what's the situation here? turnStage not > 1 and not > 0 ? When do we get to this point?
-		else
+		else              -- The situation is when a turn timeout appears...
 			self.cp.turnStage = 1;
 			if self.cp.noStopOnTurn == false then
 				self.waitForTurnTime = self.timer + turnTimer;
@@ -317,9 +317,9 @@ function courseplay:lowerImplements(self, moveDown, workToolonOff)
 			self:setFoldState(state, true);
 		end;
 		if self.cp.mode == 4 then
-			for _,workTool in pairs(self.cp.workTools) do
-				if workTool.setIsTurnedOn ~= nil and not courseplay:isFolding(workTool) and workTool ~= self and workTool.isTurnedOn ~= workToolonOff then
-					workTool:setIsTurnedOn(workToolonOff, false);
+			for _,workTool in pairs(self.cp.workTools) do								 --vvTODO (Tom) why is this here vv?
+				if workTool.setIsTurnedOn ~= nil and not courseplay:isFolding(workTool) and (true or workTool ~= self) and workTool.isTurnedOn ~= workToolonOff then
+					workTool:setIsTurnedOn(workToolonOff, false);                          -- disabled for Pantera
 				end;
 			end;
 		end;
