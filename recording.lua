@@ -8,7 +8,7 @@ function courseplay:record(vehicle)
 	if vehicle.cp.waypointIndex < 2 then
 		vehicle.rotatedTime = 0
 
-	elseif not vehicle.cp.isRecordingTurnManeuver then -- why not recording waypoints while in turn?
+	elseif not vehicle.cp.isRecordingTurnManeuver then
 		local prevPoint = vehicle.Waypoints[vehicle.cp.waypointIndex - 1];
 		local prevCx, prevCz, prevAngle = prevPoint.cx, prevPoint.cz, prevPoint.angle;
 		local dist = courseplay:distance(cx, cz, prevCx, prevCz);
