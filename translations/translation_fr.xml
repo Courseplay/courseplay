@@ -106,7 +106,7 @@
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 					 text="Conduit vers le points %d %d" />
 		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 					 text="Attend que le niveau soit atteint" />
 		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 					 text="Pas de Batteuse en vue" />
-		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 				 text="Attend que la batteuse ait finis de tourner" />
+		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 				 text="Attend que la batteuse finisse de tourner" />
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 					 text="Attend pour le nouveau point" />
 		<text name="COURSEPLAY_FOLLOWING_TRACTOR" 					 text="Suit le tracteur" />
 		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 					 text="doit bientôt faire le plein." />
@@ -214,7 +214,7 @@
 		<text name="COURSEPLAY_RECORDING_TURN_END" 					 text="Terminer la manœuvre de demi-tour" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_START" 				 text="Marche arrière" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="Marche avant" />
-		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Add split points" /> <!-- TODO: TRANSLATION! (during recording adds multiple points between last point and current position -->
+		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Ajouter des points intermédiaires" />
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Icones sur la carte: afficher le texte" />
 		<text name="COURSEPLAY_ALWAYS_USE_4WD" 						 text="Toujours utiliser le 4x4" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 					 text="Voulez-vous que vos champs soient scannés automatiquement ?" />
@@ -223,9 +223,9 @@
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 				 text="Champs: %d (%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 				 text="Type de semence: %s" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE" 				 text="Utilisation: %s %s (%s)" />
-		<!-- TRANSLATION MISSING --><text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="Show/hide start and end points" />
-		<!-- TRANSLATION MISSING --><text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="Show/hide all points" />
-		<!-- TRANSLATION MISSING --><text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="Show/hide crossing points" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="Montrer/cacher les points du début et de la fin" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL"					 text="Montrer/cacher tous les points" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="Montrer/cacher les points de croisements" />
 
 		<text name="COURSEPLAY_HUD_OPEN" 						 text="Montrer le Courseplay HUD" />
 		<text name="COURSEPLAY_HUD_CLOSE" 						 text="Cacher le Courseplay HUD" />
