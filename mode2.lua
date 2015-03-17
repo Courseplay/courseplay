@@ -88,28 +88,16 @@ function courseplay:handle_mode2(vehicle, dt)
 			-- is there a trailer to fill, or at least a waypoint to go to?
 			if vehicle.cp.currentTrailerToFill or vehicle.cp.modeState == 5 then
 				if vehicle.cp.modeState == 6 then
-					local x,y,z = getWorldTranslation(vehicle.cp.DirectionNode)
-					local x1, y1, z1 = worldToLocal(vehicle.cp.activeCombine.cp.DirectionNode or vehicle.cp.activeCombine.rootNode , x, y, z)
-					if z1 > -(vehicle.cp.turnDiameter+ 13) or courseplay:distanceToObject(vehicle, vehicle.cp.activeCombine) > 55 then -- tractor in front of combine or more than 55m away
-						courseplay:setModeState(vehicle, 2);
-					else
-						courseplay:setModeState(vehicle, 3);
-						vehicle.cp.directModeThree = true
-					end
+					courseplay:setModeState(vehicle, 2);
 				end
 				courseplay:unload_combine(vehicle, dt)
 			end
 		else
 			-- follow tractor in front of me
 			frontTractor = vehicle.cp.activeCombine.courseplayers[vehicle.cp.positionWithCombine - 1]
-			if vehicle.cp.modeState ~= 6 then
-				courseplay:debug(string.format('%s: activeCombine ~= nil, my position=%d, frontTractor (positionWithCombine %d) = %q', nameNum(vehicle), vehicle.cp.positionWithCombine, vehicle.cp.positionWithCombine - 1, nameNum(frontTractor)), 4);
-				--	courseplay:follow_tractor(vehicle, dt, tractor)
-				courseplay:setModeState(vehicle, 6);
-			end
-			if (vehicle.cp.combineOffset > 0 and frontTractor.cp.combineOffset < 0) or	(vehicle.cp.combineOffset < 0 and frontTractor.cp.combineOffset > 0) then
-				vehicle.cp.combineOffset = -vehicle.cp.combineOffset
-			end
+			courseplay:debug(string.format('%s: activeCombine ~= nil, my position=%d, frontTractor (positionWithCombine %d) = %q', nameNum(vehicle), vehicle.cp.positionWithCombine, vehicle.cp.positionWithCombine - 1, nameNum(frontTractor)), 4);
+			--	courseplay:follow_tractor(vehicle, dt, tractor)
+			courseplay:setModeState(vehicle, 6);
 			courseplay:unload_combine(vehicle, dt)
 		end
 	else -- NO active combine
@@ -559,7 +547,7 @@ function courseplay:unload_combine(vehicle, dt)
 		
 		local lx, ly, lz = worldToLocal(vehicle.cp.DirectionNode, ttX, y, ttZ)
 		dod = Utils.vector2Length(lx, lz)
-		if (dod > 40 and not vehicle.cp.directModeThree) or vehicle.cp.chopperIsTurning == true then
+		if dod > 40 or vehicle.cp.chopperIsTurning == true then
 			courseplay:setModeState(vehicle, 2);
 		end
 		-- combine is not moving and trailer is under pipe
@@ -602,9 +590,6 @@ function courseplay:unload_combine(vehicle, dt)
 				refSpeed = max(combine_speed/2,vehicle.cp.speeds.crawl)
 				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			else
-				if vehicle.cp.directModeThree then
-					vehicle.cp.directModeThree = nil
-				end
 				refSpeed = max(combine_speed,vehicle.cp.speeds.crawl)
 				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			end

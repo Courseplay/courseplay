@@ -132,8 +132,8 @@ end
 function courseplay:isSprayer(workTool) -- is the tool a sprayer/spreader?
 	return workTool.cp.hasSpecializationSprayer or courseplay:isSpecialSprayer(workTool)
 end;
-function courseplay:isWheelloader(workTool)
-	return workTool.typeName:match("wheelLoader");
+function courseplay:isWheelloader(workTool)			--vv added for Kasi, check whether it could cause problems (Tom)
+	return workTool.typeName:match("wheelLoader") or workTool.cp.isWheelLoader;
 end;
 
 -- UPDATE WORKTOOL DATA

@@ -66,7 +66,7 @@
 		<text name="COURSEPLAY_COMBINE_SEARCH_MODE" 					 text="Procurar ceifadeira:" />
 		<text name="COURSEPLAY_CURRENT" 								 text="Atual:" />
 		<text name="COURSEPLAY_AUTOMATIC_SEARCH" 						 text="busca automática" />
-		<text name="COURSEPLAY_MANUAL_SEARCH" 							 text="selecionar automaticamente" />
+		<text name="COURSEPLAY_MANUAL_SEARCH" 							 text="selecionar manualmente" />
 		<text name="COURSEPLAY_SEARCH_COMBINE_ON_FIELD" 				 text="Procurar ceifadeira no campo %s" />
 		<text name="COURSEPLAY_COPY_COURSE" 							 text="Copiar rota:" />
 		<text name="COURSEPLAY_VEHICLE" 								 text="Veículo" />

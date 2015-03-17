@@ -169,7 +169,10 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 									workTool.airBlowerSoundEnabled = true;
 								end;]]
 							else
-								workTool:setIsTurnedOn(true, false);
+								if workTool.lastTurnedOn then
+									workTool.lastTurnedOn = false
+								end
+								workTool:setIsTurnedOn(true,false);
 							end;
 							courseplay:debug(string.format('%s: turn on order', nameNum(workTool)), 17);
 						end;

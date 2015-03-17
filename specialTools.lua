@@ -162,7 +162,9 @@ function courseplay:setNameVariable(workTool)
 
 	-- [7] MOD OTHER TOOLS
 
-
+	elseif workTool.cp.xmlFileName == 'Kirovets_701AP.xml' then
+		workTool.cp.isKasi701AP = true;
+		workTool.cp.isWheelLoader = true;
 
 	-- ###########################################################
 	-- ###########################################################
