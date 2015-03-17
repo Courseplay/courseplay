@@ -768,11 +768,11 @@ end;
 
 function courseplay:checkTraffic(vehicle, displayWarnings, allowedToDrive)
 	local ahead = false
-	local inQuery = false
+	local inQueue = false
 	local collisionVehicle = g_currentMission.nodeToVehicle[vehicle.cp.collidingVehicleId]
 	if collisionVehicle ~= nil and not (vehicle.cp.mode == 9 and (collisionVehicle.allowFillFromAir or (collisionVehicle.cp and collisionVehicle.cp.mode9TrafficIgnoreVehicle))) then
 		local vx, vy, vz = getWorldTranslation(vehicle.cp.collidingVehicleId);
-		local tx, ty, tz = worldToLocal(vehicle.aiTrafficCollisionTrigger, vx, vy, vz);
+		local tx, _, tz = worldToLocal(vehicle.cp.trafficCollisionTriggers[1], vx, vy, vz);
 		local x, y, z = getWorldTranslation(vehicle.cp.DirectionNode);
 		local halfLength =  (collisionVehicle.sizeLength or 5) * 0.5;
 		local x1,z1 = AIVehicleUtil.getDriveDirection(vehicle.cp.collidingVehicleId, x, y, z);
@@ -780,8 +780,8 @@ function courseplay:checkTraffic(vehicle, displayWarnings, allowedToDrive)
 			ahead = true
 		end;
 		local _,transY,_ = getTranslation(vehicle.cp.collidingVehicleId);
-		if transY < 0 or abs(tx) > 5 and collisionVehicle.rootNode ~= nil and not vehicle.cp.collidingObjects.all[vehicle.cp.collidingVehicleId] then
-			courseplay:debug(('%s: checkTraffic:\tcall deleteCollisionVehicle(), transY= %s'):format(nameNum(vehicle),tostring(transY)), 3);
+		if (transY < 0 and collisionVehicle.rootNode == nil) or abs(tx) > 5 and collisionVehicle.rootNode ~= nil and not vehicle.cp.collidingObjects.all[vehicle.cp.collidingVehicleId] then
+			courseplay:debug(('%s: checkTraffic:\tcall deleteCollisionVehicle(), transY: %s, tx: %s, vehicle.cp.collidingObjects.all[Id]: %s'):format(nameNum(vehicle),tostring(transY),tostring(tx),tostring(vehicle.cp.collidingObjects.all[vehicle.cp.collidingVehicleId])), 3);
 			courseplay:deleteCollisionVehicle(vehicle);
 			return allowedToDrive;
 		end;
@@ -803,11 +803,11 @@ function courseplay:checkTraffic(vehicle, displayWarnings, allowedToDrive)
 		local attacher
 		if collisionVehicle.getRootAttacherVehicle then
 			attacher = collisionVehicle:getRootAttacherVehicle()
-			inQuery = vehicle.cp.mode == 1 and vehicle.cp.waypointIndex == 1 and attacher.cp ~= nil and attacher.cp.isDriving and attacher.cp.mode == 1 and attacher.cp.waypointIndex == 2 
+			inQueue = vehicle.cp.mode == 1 and vehicle.cp.waypointIndex == 1 and attacher.cp ~= nil and attacher.cp.isDriving and attacher.cp.mode == 1 and attacher.cp.waypointIndex == 2 
 		end		
 	end;
 
-	if displayWarnings and vehicle.cp.inTraffic and not inQuery then
+	if displayWarnings and vehicle.cp.inTraffic and not inQueue then
 		CpManager:setGlobalInfoText(vehicle, 'TRAFFIC');
 	end;
 	return allowedToDrive;
