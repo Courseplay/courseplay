@@ -310,7 +310,7 @@ function courseplay:changeWorkWidth(vehicle, changeBy, force, noDraw)
 		vehicle.cp.workWidth = max(courseplay:round(abs(force), 1), 0.1);
 	else
 		if vehicle.cp.workWidth + changeBy > 10 then
-			if abs(changeBy) == 0.1 then
+			if abs(changeBy) == 0.1 and not (Input.keyPressedState[Input.KEY_lalt]) then -- pressing left Alt key enables to have small 0.1 steps even over 10.0 
 				changeBy = 0.5 * Utils.sign(changeBy);
 			elseif abs(changeBy) == 0.5 then
 				changeBy = 2 * Utils.sign(changeBy);
