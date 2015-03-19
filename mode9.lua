@@ -164,8 +164,12 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive, dt)
 				end;
 			end;
 
-			if courseplay:checkAndSetMovingToolsPosition(vehicle, mt, secondary, vehicle.cp.shovelStatePositions[4], dt) and not vehicle.Waypoints[vehicle.cp.waypointIndex].rev then
-				courseplay:setShovelState(vehicle, 6);
+			if courseplay:checkAndSetMovingToolsPosition(vehicle, mt, secondary, vehicle.cp.shovelStatePositions[4], dt) then
+				if not vehicle.Waypoints[vehicle.cp.waypointIndex].rev then
+					courseplay:setShovelState(vehicle, 6);
+				end
+			else
+				allowedToDrive = false;
 			end;
 		else
 			allowedToDrive = false;
