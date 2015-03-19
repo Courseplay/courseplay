@@ -70,7 +70,7 @@ function courseplay:start(self)
 	end
 	
 	-- adapt collis height to vehicles height , its a runonce
-	if self.cp.ColliHeightSet == nil then
+	if self.cp.ColliHeightSet == nil and self.cp.numTrafficCollisionTriggers > 0 then
 		local height = 0;
 		local step = self.sizeLength/2;
 		local distance = self.sizeLength;
