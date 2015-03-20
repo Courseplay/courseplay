@@ -877,7 +877,7 @@ end;
 -- COURSE GENERATION OPTIMIZATION SETUP
 function CpManager:setupCourseOptimizationData()
   self.courseMaxPointsAtTurn = 5;
-  self.courseStepForPoints = 10;
+  self.courseStepForPoints = 5;
 end;
 
 -- ####################################################################################################
