@@ -51,6 +51,9 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 		self.cp.urfStop = false
 		if self.cp.hasUnloadingRefillingCourse and self.cp.abortWork == nil then
 			self.cp.abortWork = self.cp.waypointIndex -10
+      if self.Waypoints[self.cp.previousWaypointIndex].laneDir ~= nil then -- generated field course, no headland
+        self.cp.abortWork = self.cp.previousWaypointIndex - math.floor(10 / CpManager.courseStepForPoints + 0.5) - 1; -- optimized reduced Waypoints: we need less backup before restarting work
+      end;
 			-- invert lane offset if abortWork is before previous turn point (symmetric lane change)
 			if self.cp.symmetricLaneChange and self.cp.laneOffset ~= 0 then
 				for i=self.cp.abortWork,self.cp.previousWaypointIndex do
