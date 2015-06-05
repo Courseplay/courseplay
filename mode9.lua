@@ -245,7 +245,9 @@ function courseplay:checkAndSetMovingToolsPosition(vehicle, movingTools, seconda
 			mt = secondaryMovingTools[i - numPrimaryMovingTools];
 			mtMainObject = vehicle.cp.shovel;
 		end;
-
+		if mt == nil then
+			break
+		end
 		local curRot = mt.curRot[rotAxis];
 		local curTrans = mt.curTrans[transAxis];
 		local targetRot = targetRotations[i];

@@ -416,7 +416,7 @@ end;
 
 function courseplay:getSpecialCombineOffset(combine)
 	if combine.cp == nil then return nil; end;
-	if combine.cp.isChopper then
+	if combine.cp.isChopper and combine.cp.workTools ~= nil then
 		for _,dolly in pairs(combine.cp.workTools) do
 			if dolly.haeckseldolly then
 				combine.haeckseldolly = true

@@ -62,10 +62,14 @@ function courseplay:handle_mode2(vehicle, dt)
 				if vehicle.cp.modeState == 9 then
 					vehicle.cp.nextTargets ={}
 				end
-				if vehicle.cp.combineOffset > 0 then
-					vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, vehicle.cp.turnDiameter+2, 0, -(vehicle.cp.totalLength+2))
+				if vehicle.cp.activeCombine ~= nil and vehicle.cp.activeCombine.cp.isWoodChipper then
+					vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, 0, 0, 10)
 				else
-					vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, -vehicle.cp.turnDiameter-2, 0, -(vehicle.cp.totalLength+2))
+					if vehicle.cp.combineOffset > 0 then
+						vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, vehicle.cp.turnDiameter+2, 0, -(vehicle.cp.totalLength+2))
+					else
+						vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, -vehicle.cp.turnDiameter-2, 0, -(vehicle.cp.totalLength+2))
+					end
 				end
 				courseplay:setModeState(vehicle, 5);
 				courseplay:setMode2NextState(vehicle, 81);
@@ -316,15 +320,16 @@ function courseplay:unload_combine(vehicle, dt)
 	local distance = Utils.vector2Length(x1, z1)
 
 	local safetyDistance = 11;
-	if courseplay:isAttachedCombine(combine) then
-		safetyDistance = 11;
-	elseif combine.cp.isHarvesterSteerable or combine.cp.isSugarBeetLoader then
+	if combine.cp.isHarvesterSteerable or combine.cp.isSugarBeetLoader or combine.cp.isWoodChipper then
 		safetyDistance = 24;
+	elseif courseplay:isAttachedCombine(combine) then
+		safetyDistance = 11;
 	elseif combine.cp.isCombine then
 		safetyDistance = 10;
 	elseif combine.cp.isChopper then
 		safetyDistance = 11;
 	end;
+	
 	-- STATE 2 (drive to combine)
 	if vehicle.cp.modeState == 2 then
 		
