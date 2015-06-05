@@ -1134,8 +1134,9 @@ function courseplay:setFourWheelDrive(vehicle, workArea)
 	if awdOn and not vehicle.driveControl.fourWDandDifferentials.fourWheel then
 		courseplay:debug(('%s: set fourWheel to true'):format(nameNum(vehicle)), 14);
 		vehicle.driveControl.fourWDandDifferentials.fourWheel = true;
+		courseplay:setCustomTimer(vehicle, '4WDminTime', 5);
 		changed = true;
-	elseif awdOff and vehicle.driveControl.fourWDandDifferentials.fourWheel then
+	elseif awdOff and vehicle.driveControl.fourWDandDifferentials.fourWheel and courseplay:timerIsThrough(vehicle, '4WDminTime') then
 		courseplay:debug(('%s: set fourWheel to false'):format(nameNum(vehicle)), 14);
 		vehicle.driveControl.fourWDandDifferentials.fourWheel = false;
 		changed = true;
