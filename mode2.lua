@@ -948,8 +948,8 @@ function courseplay:unload_combine(vehicle, dt)
 			courseplay:debug(string.format('\tdod=%s, frontTractor.cp.modeState=%s -> brakeToStop', tostring(dod), tostring(frontTractor.cp.modeState)), 4);
 			allowedToDrive = false;
 		end
-		if combine.cp.isSugarBeetLoader then
-			if distance > 50 then
+		if combine.cp.isSugarBeetLoader or combine.cp.isWoodChipper then
+			if distance > 100 then
 				refSpeed = vehicle.cp.speeds.street
 				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			else
