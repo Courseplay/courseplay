@@ -462,7 +462,7 @@ function courseplay:drive(self, dt)
 			moveForwards = self.movingDirection == 1;
 		elseif self.cp.curSpeed < 0.2 then
 			-- ## The infamous "SUCK IT, GIANTS" fix, a.k.a "chain that fucker down, it ain't goin' nowhere!"
-			courseplay:getAndSetFixedWorldPosition(self);
+			--courseplay:getAndSetFixedWorldPosition(self);
 		end;
 		AIVehicleUtil.driveInDirection(self, dt, 30, -1, 0, 28, allowedToDrive, moveForwards, 0, 1)
 		self.cp.speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): allowedToDrive false ")
