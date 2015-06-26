@@ -96,6 +96,7 @@ function CpManager:loadMap(name)
 	if CpManager.isDeveloper then
 		addConsoleCommand('cpAddMoney', ('Add %s to your bank account'):format(g_i18n:formatMoney(5000000)), 'devAddMoney', self);
 		addConsoleCommand('cpAddFillLevels', 'Add 500\'000 l to all of your silos', 'devAddFillLevels', self);
+		addConsoleCommand('cpStopAll', 'Stop all Courseplayers', 'devStopAll', self);
 	end;
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -445,6 +446,15 @@ function CpManager:devAddFillLevels()
 			g_currentMission:setSiloAmount(fillType, g_currentMission:getSiloAmount(fillType) + 500000);
 		end;
 		return 'All silo fill levels increased by 500\'000.';
+	end;
+end;
+function CpManager:devStopAll()
+	if g_server ~= nil then
+		for _,vehicle in pairs (self.activeCoursePlayers) do
+			courseplay:stop(vehicle);
+		end
+		
+		return ('stopped all Courseplayers');
 	end;
 end;
 
