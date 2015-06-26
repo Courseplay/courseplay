@@ -62,8 +62,16 @@ function courseplay:handle_mode2(vehicle, dt)
 				if vehicle.cp.modeState == 9 then
 					vehicle.cp.nextTargets ={}
 				end
-				if vehicle.cp.activeCombine ~= nil and vehicle.cp.activeCombine.cp.isWoodChipper then
-					vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, 0, 0, 10)
+				local targetIsInFront = false
+				local cx,cz = vehicle.Waypoints[vehicle.cp.waypointIndex].cx, vehicle.Waypoints[vehicle.cp.waypointIndex].cz
+				local cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cx, 0, cz)
+				local x,_,z = worldToLocal(vehicle.cp.DirectionNode or vehicle.rootNode, cx, cy, cz)
+				local overTakeDistance = 15
+				if z > overTakeDistance then
+					targetIsInFront = true
+				end
+				if (vehicle.cp.activeCombine ~= nil and vehicle.cp.activeCombine.cp.isWoodChipper) or targetIsInFront then
+					vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, 0, 0, overTakeDistance)
 				else
 					if vehicle.cp.combineOffset > 0 then
 						vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, vehicle.cp.turnDiameter+2, 0, -(vehicle.cp.totalLength+2))
@@ -480,6 +488,9 @@ function courseplay:unload_combine(vehicle, dt)
 			local nodeSet = false
 			if workWidth < offset then
 				local diff = max (1.5,workWidth/2)
+				if  combine.cp.isHarvesterAttachable then
+					diff = 5
+				end
 				fruitSide = courseplay:sideToDrive(vehicle, combine, 0);
 				if (fruitSide == "right" and combineOffset > 0) or (fruitSide == "left" and combineOffset < 0) then
 					offset = offset-diff
@@ -520,7 +531,12 @@ function courseplay:unload_combine(vehicle, dt)
 				end
 			else
 				courseplay:debug(string.format("%s: combine is empty ",nameNum(vehicle)),4)
-				vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(currentTipper.rootNode, sideMultiplier*offset*0.8 , 0, totalLength + trailerOffset);
+				if combine.cp.isHarvesterAttachable then
+					vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(currentTipper.rootNode, 0 , 0, 5);
+					courseplay:addNewTargetVector(vehicle, sideMultiplier*offset*0.8 ,totalLength + trailerOffset,currentTipper);
+				else
+					vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(currentTipper.rootNode, sideMultiplier*offset*0.8 , 0, totalLength + trailerOffset);
+				end
 				courseplay:addNewTargetVector(vehicle, sideMultiplier*offset ,(totalLength*3)+trailerOffset,currentTipper);
 				courseplay:setModeState(vehicle, 9);				
 			end
@@ -878,13 +894,11 @@ function courseplay:unload_combine(vehicle, dt)
 				elseif vehicle.cp.mode2nextState == 4 and combineIsTurning then
 					courseplay:setInfoText(vehicle, "COURSEPLAY_WAITING_FOR_COMBINE_TURNED");
 				elseif vehicle.cp.mode2nextState == 81 then -- tipper turning from combine
-
 					-- print(('%s [%s(%d)]: no nextTargets, mode2nextState=81 -> set waypointIndex to 2, modeState to 99, isLoaded to true, return false'):format(nameNum(vehicle), curFile, debug.getinfo(1).currentline)); -- DEBUG140301
 					courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine)
 					courseplay:setIsLoaded(vehicle, true);
 					courseplay:setModeState(vehicle, 0);
 					courseplay:setWaypointIndex(vehicle, 2);
-
 				elseif vehicle.cp.mode2nextState == 1 then
 					-- refSpeed = vehicle.cp.speeds.turn
 					courseplay:switchToNextMode2State(vehicle);
