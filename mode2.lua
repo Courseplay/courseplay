@@ -508,7 +508,7 @@ function courseplay:unload_combine(vehicle, dt)
 				vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(currentTipper.rootNode, -sideMultiplier*turnDiameter, 0, trailerOffset);
 				courseplay:debug(string.format("%s: combine is empty and turning",nameNum(vehicle)),4)
 				if combineIsAutoCombine then
-					courseplay:debug(string.format("%s: combineIsAutoCombine",nameNum(vehicle)),4)
+					
 					local index = combine.acDirectionBeforeTurn.traceIndex+1
 					if index > #combine.acDirectionBeforeTurn.trace then
 						index = 1
@@ -516,15 +516,17 @@ function courseplay:unload_combine(vehicle, dt)
 					local tipperX,tipperY,tipperZ = getWorldTranslation(currentTipper.rootNode)
 					local dirX,dirZ = combine.acDirectionBeforeTurn.trace[index].dx,combine.acDirectionBeforeTurn.trace[index].dz
 					
-					baseNode = createTransformGroup('cpTurnBaseNode');
-					link(getRootNode(), baseNode);
-					setTranslation(baseNode, tipperX,tipperY,tipperZ);
-					setRotation(baseNode, 0, math.atan2(dirX, dirZ), 0)
+					vehicle.cp.cpTurnBaseNode = createTransformGroup('cpTurnBaseNode');
+					link(getRootNode(), vehicle.cp.cpTurnBaseNode);
+					setTranslation(vehicle.cp.cpTurnBaseNode, tipperX,tipperY,tipperZ);
+					setRotation(vehicle.cp.cpTurnBaseNode, 0, math.atan2(dirX, dirZ), 0)
 					nodeSet = true
-				end					
-				courseplay:addNewTargetVector(vehicle, sideMultiplier*offset*0.5 ,  (-totalLength*2)+trailerOffset,currentTipper,baseNode);
-				courseplay:addNewTargetVector(vehicle, sideMultiplier*offset ,  (-totalLength*3)+trailerOffset,currentTipper,baseNode);
-				courseplay:addNewTargetVector(vehicle, sideMultiplier*offset ,  (-totalLength*4)+trailerOffset,currentTipper,baseNode);
+					courseplay:debug(string.format("%s: combineIsAutoCombine- create vehicle.cp.cpTurnBaseNode (%s; %s)",nameNum(vehicle),tostring(vehicle.cp.cpTurnBaseNode), tostring(getName(vehicle.cp.cpTurnBaseNode))),4)
+				end
+				courseplay:debug(string.format("%s: addNewTargetVector: currentTipper: %s ,vehicle.cp.cpTurnBaseNode: %s",nameNum(vehicle),tostring(currentTipper),tostring(vehicle.cp.cpTurnBaseNode)),4)				
+				courseplay:addNewTargetVector(vehicle, sideMultiplier*offset*0.5 ,  (-totalLength*2)+trailerOffset,currentTipper,vehicle.cp.cpTurnBaseNode);
+				courseplay:addNewTargetVector(vehicle, sideMultiplier*offset ,  (-totalLength*3)+trailerOffset,currentTipper,vehicle.cp.cpTurnBaseNode);
+				courseplay:addNewTargetVector(vehicle, sideMultiplier*offset ,  (-totalLength*4)+trailerOffset,currentTipper,vehicle.cp.cpTurnBaseNode);
 				courseplay:setModeState(vehicle, 5);
 				if vehicle.cp.forceNewTargets then
 					vehicle.cp.forceNewTargets = nil
@@ -542,8 +544,9 @@ function courseplay:unload_combine(vehicle, dt)
 			end
 
 			if nodeSet then
-				unlink(baseNode);
-				delete(baseNode);
+				unlink(vehicle.cp.cpTurnBaseNode);
+				delete(vehicle.cp.cpTurnBaseNode);
+				vehicle.cp.cpTurnBaseNode = nil 
 			end
 			if vehicle.cp.nextTargets ~= nil then
 				courseplay:debug(string.format("%s: vehicle.cp.nextTargets: %s ",nameNum(vehicle),tostring(#vehicle.cp.nextTargets)),4)
