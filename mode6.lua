@@ -91,7 +91,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 			-- balers
 			if courseplay:isBaler(workTool) then
 				if vehicle.cp.waypointIndex >= vehicle.cp.startWork + 1 and vehicle.cp.waypointIndex < vehicle.cp.stopWork and vehicle.cp.turnStage == 0 then
-																			--  vehicle, workTool, unfold, lower, turnOn, allowedToDrive, cover, unload, ridgeMarker)
+																			--  vehicle, workTool, unfold, lower, turnOn, allowedToDrive, cover, unload, ridgeMarker,forceSpeedLimit)
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle, workTool, true,   true,  true,   allowedToDrive, nil,   nil);
 					if not specialTool then
 						-- automatic opening for balers
@@ -143,7 +143,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 			-- baleloader, copied original code parts
 			elseif courseplay:isBaleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool) then
 				if workArea and fillLevelPct ~= 100 then
-					specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,true,true,true,allowedToDrive,nil,nil);
+					specialTool, allowedToDrive, forceSpeedLimit = courseplay:handleSpecialTools(vehicle,workTool,true,true,true,allowedToDrive,nil,nil,nil,forceSpeedLimit);
 					if not specialTool then
 						-- automatic stop for baleloader
 						if workTool.grabberIsMoving then
@@ -170,10 +170,11 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 
 				if fillLevelPct == 100 and not vehicle.cp.hasUnloadingRefillingCourse then
 					if vehicle.cp.automaticUnloadingOnField then
-						vehicle.cp.unloadOrder = true
+						specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,false,false,false,allowedToDrive,nil,true); 
+						if not specialTool then
+							vehicle.cp.unloadOrder = true
+						end
 						CpManager:setGlobalInfoText(vehicle, 'UNLOADING_BALE');
-					else
-						specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,false,false,false,allowedToDrive,nil,nil); --TODO: unclear
 					end
 				end;
 

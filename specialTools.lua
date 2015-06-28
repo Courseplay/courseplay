@@ -156,8 +156,8 @@ function courseplay:setNameVariable(workTool)
 	-- ###########################################################
 
 	-- [6] MOD BALING
-
-
+	
+	
 	-- ###########################################################
 
 	-- [7] MOD OTHER TOOLS
@@ -400,6 +400,9 @@ function courseplay:isSpecialRoundBaler(workTool)
 end;
 
 function courseplay:isSpecialBaleLoader(workTool)
+	if workTool.cp.isSpecialBaleLoader or workTool.isSpecialBaleLoader then	
+		return true;
+	end;
 	return false;
 end;
 
@@ -422,8 +425,7 @@ function courseplay:isSpecialCombine(workTool, specialType, fileNames)
 end
 
 
-function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload,ridgeMarker)
-
+function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload,ridgeMarker,forceSpeedLimit)
 	local implementsDown = lower and turnOn
 	if workTool.PTOId then
 		workTool:setPTO(false)
@@ -438,13 +440,36 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 			allowedToDrive = false
 		end
 
-		return false ,allowedToDrive
-
+		return false ,allowedToDrive,forceSpeedLimit;
+		
+		
+	elseif workTool.isFlieglDPWxxx then
+		if forceSpeedLimit ~= nil and workTool.maxSpeedLimit ~= nil then 
+			forceSpeedLimit = math.min(forceSpeedLimit, workTool.maxSpeedLimit-1)
+		end
+		if not workTool.automaticLoading then
+			workTool.automaticLoading = true
+		end
+		workTool.isLookingForBales = false
+		if turnOn ~= workTool.loadingIsActive and workTool.fillLevel < workTool.capacity then
+			workTool.isLookingForBales = true
+			if workTool.nearestObject == nil then
+				workTool.loadingIsActive = turnOn
+			end
+		end
+		if unload and not workTool.loadingIsActive and workTool.fillLevel > 0 then
+				workTool.unloadingIsActive = true
+		end
+		if workTool.unloadingIsActive then
+			allowedToDrive = false
+		end
+		
+		return true, allowedToDrive, forceSpeedLimit
 	end;
 
 
 
-	return false, allowedToDrive;
+	return false, allowedToDrive,forceSpeedLimit;
 end
 
 function courseplay:askForSpecialSettings(self, object)

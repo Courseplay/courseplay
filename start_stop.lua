@@ -24,7 +24,6 @@ function courseplay:start(self)
 	--local id = self.attachedImplements[1].object.unloadTrigger.triggerId
 	--courseplay:findInTables(g_currentMission ,"g_currentMission", id)
 
-	
 	if self.cp.orgRpm == nil then
 		self.cp.orgRpm = {}
 		self.cp.orgRpm[1] = self.motor.maxRpm
@@ -450,6 +449,12 @@ end;
 
 -- stops driving the course
 function courseplay:stop(self)
+
+	--stop special tools
+	for _, tool in pairs (self.cp.workTools) do
+							--  vehicle, workTool, unfold, lower, turnOn, allowedToDrive, cover, unload, ridgeMarker,forceSpeedLimit)
+		courseplay:handleSpecialTools(self, tool, false,   false,  false,   false, false, nil,nil,0);
+	end
 
 	
 	self.forceIsActive = self.cp.forceIsActiveBackup;
