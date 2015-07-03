@@ -37,6 +37,10 @@
 		<text name="COURSEPLAY_FOLDER_NAME" 							 text="Jméno složky:" />
 		<text name="COURSEPLAY_FILTER_COURSES" 							 text="Filtrovat trasy:" />
 		<text name="COURSEPLAY_COURSES_FILTER_TITLE" 					 text="Trasy: %q" />
+		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Nahrát/sloučit trasu do nahrané trasy" />
+		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Připojit trasu nakonec" />
+		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Přesunout do složky" />
+		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Smazat trasu/složku" />
 		<text name="COURSEPLAY_CREATE_FOLDER" 							 text="Vytvořit novou složku" />
 		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 			 text="Vyhledat trasu a složku" />
 		<text name="COURSEPLAY_DEACTIVATE_FILTER" 						 text="Vypnout filtr" />
@@ -75,10 +79,13 @@
 		<text name="COURSEPLAY_MAX_SPEED_MODE_RECORDING" 				 text="jako při nahrávání" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 						 text="maximální rychlost" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 				 text="automatická (z nahrávání, max. %s)" />
-		<text name="COURSEPLAY_NO_COURSE_LOADED" 						 text="Trasa: není nahrána žádná trasa" />
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 					 text="nezapínat" />
+		<text name="COURSEPLAY_NO_COURSE_LOADED" 						 text="Trasa: není nahraná žádná trasa" />
+		<text name="COURSEPLAY_WARNING_LIGHTS" 							 text="Výstražná světla:" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 					 text="Nikdy nezapínat" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 					 text="Maják (na silnici)" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 					 text="Maják + výstražná světla" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_3" 					 text="Maják (vždy zapnout)" />
-		<text name="COURSEPLAY_PAGE_TITLE_CP_CONTROL" 					 text="Nastavení odvozce" />
+		<text name="COURSEPLAY_PAGE_TITLE_CP_CONTROL" 					 text="Nastavení stroje" />
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 			 text="Ovládání odvozce" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES" 				 text="Správa tras" />
 		<text name="COURSEPLAY_PAGE_TITLE_CHOOSE_FOLDER" 				 text="Vybrat složku" />
@@ -108,6 +115,7 @@
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 				 text="Příliš mnoho bodů čekání! Pouze %d bodů je povoleno." />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="Postrádá body čekání. Vyžaduje %d body čekání." />
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="Máš pro tento mod nevhodný přívěs" />
+		<text name="COURSEPLAY_WRONG_TOOL" 								 text="Máš pro tento mod nevhodné nářadí" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="Tento typ vozidla není v tomto módu podporován." />
 		<text name="COURSEPLAY_WEATHER_WARNING" 						 text="čeká na lepší počasí." />
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Odstup od trasy:" />
@@ -117,7 +125,7 @@
 		<text name="COURSEPLAY_BACK" 									 text="zadní" />
 		<text name="COURSEPLAY_WORK_WIDTH" 								 text="Pracovní šířka:" />
 		<text name="COURSEPLAY_WATER_WARNING" 							 text="by si rád zaplaval." />
-		<text name="COURSEPLAY_OPEN_HUD_MODE" 							 text="Zapnout CP HUD:" />
+		<text name="COURSEPLAY_OPEN_HUD_MODE" 							 text="Zapnout CoursePlay HUD:" />
 		<text name="COURSEPLAY_DEBUG_CHANNELS" 							 text="Kanálů ladění:" />
 		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 			 text="Generovat trasu" />
 		<text name="COURSEPLAY_STARTING_CORNER" 						 text="Počáteční roh:" />
@@ -132,8 +140,8 @@
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="jih" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="západ" />
 		<text name="COURSEPLAY_HEADLAND" 								 text="Úvrať:" />
-		<text name="COURSEPLAY_ACTIVATED" 								 text="zapnuto" />
-		<text name="COURSEPLAY_DEACTIVATED" 							 text="vypnuta" />
+		<text name="COURSEPLAY_ACTIVATED" 								 text="aktivní" />
+		<text name="COURSEPLAY_DEACTIVATED" 							 text="neaktivní" />
 		<text name="COURSEPLAY_RIDGEMARKERS" 							 text="Znamenák stop:" />
 		<text name="COURSEPLAY_UNLOADING_ON_FIELD" 						 text="Vyložit na poli" />
 		<text name="COURSEPLAY_AUTOMATIC" 								 text="automaticky" />
@@ -207,14 +215,19 @@
 		<text name="COURSEPLAY_RECORDING_REVERSE_START" 				 text="Začít couvat" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="Konec couvání" />
 		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Přidat body do nahrávané trasy" /> <!-- TODO: TRANSLATION! (during recording adds multiple points between last point and current position -->
-		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Ikony v mapě: zobrazit text" />
-		<text name="COURSEPLAY_ALWAYS_USE_4WD" 							 text="Vždy použít 4x4" />
+		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Ikony v mapě - zobrazit text:" />
+		<text name="COURSEPLAY_ALWAYS_USE_4WD" 							 text="Vždy použít 4x4:" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="Chceš aby pole byla skenována automaticky?" />
 		<text name="COURSEPLAY_YES_NO_WAGES" 							 text="Chceš aby byli pomocníci placeni (%s/hodinu)?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 					 text="Kalkulačka spotřeby osiva" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 				 text="Pole: %d (%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 			 text="Osivo: %s" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE" 				 text="Používání: %s %s (%s)" />
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_TRIM" 				 text="···" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="Zobrazit/skrýt body startu a konce" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="Zobrazit/skrýt všechny body" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="Zobrazit/skrýt body křížení" />
+	
 		<text name="COURSEPLAY_HUD_OPEN" 								 text="Zobrazit Courseplay HUD" />
 		<text name="COURSEPLAY_HUD_CLOSE" 								 text="Skrýt Courseplay HUD" />
 		<text name="COURSEPLAY_FUNCTIONS" 								 text="Funkce Courseplay" />
@@ -230,12 +243,5 @@
 		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: myš sekundární akce" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="skrýt kurzor" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="zobrazit kurzor" />
-		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Nahrát/sloučit trasu do nahrané trasy" />
-		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Připojit trasu nakonec" />
-		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Přesunout do složky" />
-		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Smazat trasu/složku" />
-		<!-- TRANSLATION MISSING --><text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="Zobrazit/skrýt body startu a konce" />
-		<!-- TRANSLATION MISSING --><text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="Zobrazit/skrýt všechny body" />
-		<!-- TRANSLATION MISSING --><text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="Zobrazit/skrýt body křížení" />
 	</texts>
 </l10n>
