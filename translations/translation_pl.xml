@@ -153,20 +153,20 @@
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND"				text="Nie znaleziono łychy" />
-		<text name="COURSEPLAY_SHOVEL_POSITIONS"				text="Miejsce łychy" />
-		<text name="COURSEPLAY_SHOVEL_POSITIONS_MISSING"			text="Zaginione miejsce łychy" />
-		<text name="COURSEPLAY_SHOVEL_LOADING_POSITION"				text="Miejsce załadunku" />
-		<text name="COURSEPLAY_SHOVEL_TRANSPORT_POSITION"			text="Miejsce transportu" />
-		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION"			text="Miejsce wstępnego rozładunku" />
-		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION"			text="Miejsce rozładunku" />
-		<text name="COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION"			text="Zapisz miejsce załadunu" />
-		<text name="COURSEPLAY_SHOVEL_SAVE_TRANSPORT_POSITION"			text="Zapisz miejsce transportu" />
-		<text name="COURSEPLAY_SHOVEL_SAVE_PRE_UNLOADING_POSITION"		text="Zapisz miejsce wstępnego rozładunku" />
-		<text name="COURSEPLAY_SHOVEL_SAVE_UNLOADING_POSITION"			text="Zapisz miejsce rozładunku" />
-		<text name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION"			text="Przejedź do miejsca załadunku" />
-		<text name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION"		text="Przejedź do miejsca transportu" />
-		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION"		text="Przejedź do miejsca wstępnego rozładunku" />
-		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION"		text="Przejedź do miejsca rozładunku" />
+		<text name="COURSEPLAY_SHOVEL_POSITIONS"				text="Pozycja łychy" />
+		<text name="COURSEPLAY_SHOVEL_POSITIONS_MISSING"			text="Brakuje pozycji łychy" />
+		<text name="COURSEPLAY_SHOVEL_LOADING_POSITION"				text="Pozycja załadunku" />
+		<text name="COURSEPLAY_SHOVEL_TRANSPORT_POSITION"			text="Pozycja transportu" />
+		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION"			text="Pozycja wstępnego rozładunku" />
+		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION"			text="Pozycja rozładunku" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION"			text="Zapisz pozycję załadunu" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_TRANSPORT_POSITION"			text="Zapisz pozycję transportu" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_PRE_UNLOADING_POSITION"		text="Zapisz pozycję wstępnego rozładunku" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_UNLOADING_POSITION"			text="Zapisz pozycję rozładunku" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION"			text="Przejedź do pozycji załadunku" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION"		text="Przejedź do pozycji transportu" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION"		text="Przejedź do pozycji wstępnego rozładunku" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION"		text="Przejedź do pozycji rozładunku" />
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO"				text="Zatrzymaj i idź ładować" />
 
 		<text name="COURSEPLAY_START_AT_POINT"					text="Rozpocznij kurs od" />
