@@ -230,8 +230,8 @@
 		<text name="COURSEPLAY_DRIVENOW" 								 text="Courseplay: nu rijden" />
 		<text name="COURSEPLAY_NEXTMODE" 								 text="Courseplay: volgende modus" /> 
 		<text name="COURSEPLAY_PREVMODE" 								 text="Courseplay: vorige modus" /> 
-		<text name="COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Courseplay: muis aktie" />
-		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: secundaire muis aktie" />
+		<text name="COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Courseplay: muis actie" />
+		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: secundaire muis actie" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="toon cursor" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="verberg cursor" />
 		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Laad route/Invoegen in geladen route" /> 
