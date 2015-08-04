@@ -1,4 +1,6 @@
-﻿function courseplay:isEven(n)
+﻿local abs, ceil, floor, huge, max, min, pi, sqrt = math.abs, math.ceil, math.floor, math.huge, math.max, math.min, math.pi, math.sqrt;
+
+function courseplay:isEven(n)
    return tonumber(n) % 2 == 0;
 end;
 
@@ -9,19 +11,19 @@ end;
 --Table concatenation: http://stackoverflow.com/a/1413919
 -- return a new array containing the concatenation of all of its parameters. Scaler parameters are included in place, and array parameters have their values shallow-copied to the final array. Note that userdata and function values are treated as scalar.
 function tableConcat(...) 
-	local t = {}
-	for n = 1,select("#",...) do
-		local arg = select(n,...)
-		if type(arg)=="table" then
+	local t = {};
+	for n = 1, select('#', ...) do
+		local arg = select(n, ...);
+		if type(arg) == 'table' then
 			for _,v in ipairs(arg) do
-				t[#t+1] = v
-			end
+				t[#t+1] = v;
+			end;
 		else
-			t[#t+1] = arg
-		end
-	end
+			t[#t+1] = arg;
+		end;
+	end;
 	return t;
-end
+end;
 
 function courseplay:isFolding(workTool) --returns isFolding, isFolded, isUnfolded
 	if not courseplay:isFoldable(workTool) then
@@ -135,6 +137,7 @@ function courseplay:isBetween(n, num1, num2, include)
 end;
 
 function courseplay:setVarValueFromString(self, str, value)
+	print(string.format("courseplay:setVarValueFromString(self, %s, %s)",str,tostring(value)))
 	local what = Utils.splitString(".", str);
 	local whatDepth = #what;
 	if whatDepth < 1 or whatDepth > 5 then
@@ -147,7 +150,6 @@ function courseplay:setVarValueFromString(self, str, value)
 	elseif what[1] == "courseplay" then
 		baseVar = courseplay;
 	end;
-
 	if baseVar ~= nil then
 		local result;
 		if whatDepth == 1 then --self
@@ -157,8 +159,13 @@ function courseplay:setVarValueFromString(self, str, value)
 			baseVar[what[2]] = value;
 			result = value;
 		elseif whatDepth == 3 then --self.cp.var
-			baseVar[what[2]][what[3]] = value;
-			result = value;
+			if baseVar == self and what[2] == 'cp' then
+				self:setCpVar(what[3], value,true,courseplay.isClient)
+				result = value;
+			else
+				baseVar[what[2]][what[3]] = value;
+				result = value;
+			end
 		elseif whatDepth == 4 then --self.cp.table.var
 			baseVar[what[2]][what[3]][what[4]] = value;
 			result = value;
@@ -214,6 +221,12 @@ function courseplay:intToBool(int)
 	end;
 	return int == 1;
 end;
+function courseplay:trueOrNil(bool)
+	if bool ~= nil and bool == true then
+		return true;
+	end;
+	return nil;
+end;
 
 function courseplay:loopedTable(tab, idx, maxIdx)
 	maxIdx = maxIdx or #tab;
@@ -260,10 +273,12 @@ end;
 
 function courseplay:fillTypesMatch(fillTrigger, workTool)
 	if fillTrigger ~= nil then
-		if fillTrigger.fillType then
+		if rawget(fillTrigger, 'fillType') then -- make sure the fillTrigger doesn't return a meta fillType from a parent class
 			return workTool:allowFillType(fillTrigger.fillType, false);
 		elseif fillTrigger.currentFillType then
 			return workTool:allowFillType(fillTrigger.currentFillType, false);
+		elseif fillTrigger.getFillType then
+			return workTool:allowFillType(fillTrigger:getFillType(), false);
 		end;
 	end;
 
@@ -350,15 +365,6 @@ function courseplay.utils.table.move(t1, t2, t1_index, t2_index)
 	t2[t2_index] = t1[t1_index];
 	t1[t1_index] = nil;
 	return t2[t2_index] ~= nil;
-end;
-
-function table.contains(t, element) --TODO: always use Utils.hasListElement
-	for _, value in pairs(t) do
-		if value == element then
-			return true;
-		end;
-	end;
-	return false;
 end;
 
 function table.map(t, func)
@@ -543,7 +549,7 @@ function courseplay.utils.setMultipleXML(File, node, values, types)
 				attribute = ''
 			end
 
-			if courseplay.prmSetXMLFn[valueType] ~= nil then
+			if value ~= nil and courseplay.prmSetXMLFn[valueType] ~= nil then
 				courseplay.prmSetXMLFn[valueType](File, node .. attribute, value);
 			else
 				-- Error?!
@@ -597,41 +603,22 @@ function courseplay:setCustomTimer(vehicle, timerName, seconds)
 	vehicle.cp.timers[timerName] = vehicle.timer + (seconds * 1000);
 end;
 function courseplay:timerIsThrough(vehicle, timerName, defaultToBool)
-	if vehicle.cp.timers[timerName] == nil then
+	local timer = vehicle.cp.timers[timerName];
+	if timer == nil then
 		return Utils.getNoNil(defaultToBool, true);
 	end;
-	return vehicle.timer > vehicle.cp.timers[timerName];
+	return vehicle.timer > timer;
 end;
-
---[[TODO (Jakob): delete when new custom spec fn is made sure to always work correctly
-function courseplay:hasSpecialization(vehicle, specClassName)
-	-- real customEnvironment for MoreRealisticDLCs
-	if vehicle.typeName:lower():find('morerealisticdlcs.') then
-		local customEnvironment = Utils.splitString('.', vehicle.typeName)[1];
-		specClassName = ('%s.%s'):format(customEnvironment, specClassName);
-
-	-- default customEnvironment
-	elseif vehicle.customEnvironment ~= nil then
-		specClassName = ('%s.%s'):format(vehicle.customEnvironment, specClassName);
-	end;
-
-	local spec;
-	for k,v in pairs(SpecializationUtil.specializations) do
-		if v.className == specClassName then
-			spec = SpecializationUtil.getSpecialization(k);
-			break;
-		end;
-	end;
-
-	if spec ~= nil then
-		if SpecializationUtil.hasSpecialization(spec, VehicleTypeUtil.vehicleTypes[vehicle.typeName].specializations) then -- We got the specialization class now, now checking if it's on the vehicle
-			return true;
-		end;
-	end;
-
-	return false;
+function courseplay:getCustomTimerExists(vehicle, timerName)
+	return vehicle.cp.timers[timerName] ~= nil;
 end;
-]]
+function courseplay:resetCustomTimer(vehicle, timerName, setToNil)
+	if setToNil then
+		vehicle.cp.timers[timerName] = nil;
+	else
+		vehicle.cp.timers[timerName] = 0.0;
+	end;
+end;
 
 function courseplay:getDriveDirection(node, x, y, z)
 	local lx, ly, lz = worldToLocal(node, x, y, z)
@@ -659,7 +646,7 @@ function courseplay:getAllowedCharacters()
 	for unicode=allowedSpan.from,allowedSpan.to do
 		prohibitedUnicodes[unicode] = prohibitedUnicodes[unicode] or false;
 		result[unicode] = not prohibitedUnicodes[unicode] and getCanRenderUnicode(unicode);
-		if courseplay.debugChannels[8] and getCanRenderUnicode(unicode) then
+		if courseplay.debugChannels and courseplay.debugChannels[8] and getCanRenderUnicode(unicode) then
 			print(string.format('allowedCharacters[%d]=%s (%q) (prohibited=%s, getCanRenderUnicode()=true)', unicode, tostring(result[unicode]), unicodeToUtf8(unicode), tostring(prohibitedUnicodes[unicode])));
 		end;
 	end;
@@ -708,14 +695,14 @@ function courseplay:getUtf8normalization()
 			if type(data) == "number" then
 				local utf8 = unicodeToUtf8(data);
 				result[utf8] = normal;
-				if courseplay.debugChannels[8] and getCanRenderUnicode(data) then
+				if false and getCanRenderUnicode(data) then
 					print(string.format("courseplay.utf8normalization[%q] = %q", utf8, normal));
 				end;
 			elseif type(data) == "table" then
 				for unicode=data[1],data[2] do
 					local utf8 = unicodeToUtf8(unicode);
 					result[utf8] = normal;
-					if courseplay.debugChannels[8] and getCanRenderUnicode(unicode) then
+					if false and getCanRenderUnicode(unicode) then
 						print(string.format("courseplay.utf8normalization[%q] = %q", utf8, normal));
 					end;
 				end;
@@ -773,7 +760,7 @@ function courseplay:checkAndPrintChange(vehicle, variable, VariableNameString)
 	end
 end;
 
-function courseplay.utils:hasVarChanged(vehicle, variableName, direct)
+function courseplay.utils:hasVarChanged(vehicle, variableName, direct) 
 	if direct == nil then direct = false; end;
 	if vehicle.cp.varMemory == nil then
 		vehicle.cp.varMemory = {};
@@ -833,7 +820,7 @@ function courseplay.utils:getFileNameFromPath(filePath)
 		idx = filePath:match('^.*()\\'); -- check for last backward slash
 	end;
 	if idx then
-		fileName = filePath:sub(idx + 1, 500);
+		fileName = filePath:sub(idx + 1);
 	end;
 
 	return fileName;
@@ -929,21 +916,6 @@ function courseplay:getObjectName(object, xmlFile)
 	return courseplay:loc('UNKNOWN') .. '_' .. tostring(object.rootNode);
 end;
 
-function courseplay:getMoreRealisticVersion()
-	if not courseplay.moreRealisticInstalled then
-		return nil;
-	end;
-
-	local modItem = ModsUtil.findModItemByModName(RealisticUtils.modName);
-	if modItem and modItem.version then
-		local versionSplit = table.map(Utils.splitString('.', modItem.version), tonumber);
-		versionSplit[3] = versionSplit[3] or 0;
-		return tonumber(('%d.%02d%02d'):format(versionSplit[1], versionSplit[2], versionSplit[3]));
-	end;
-
-	return 0;
-end;
-
 function courseplay:getRealWorldRotation(node, direction)
 	if not direction then direction = 1 end;
 	local x,_,z = localDirectionToWorld(node, 0, 0, direction);
@@ -961,26 +933,6 @@ function courseplay:getWorldDirection(fromX, fromY, fromZ, toX, toY, toZ)
 	return 0, 0, 0, 0;
 end;
 
--- TODO (Jakob): not ~really~ needed anymore
-function courseplay_manager:getSavegameFolderPath(index)
-	if index then
-		-- print(('getSavegameFolder(%d): "%ssavegame%d/"'):format(tostring(index), tostring(getUserProfileAppPath()), index));
-		return ('%ssavegame%d/'):format(tostring(getUserProfileAppPath()), index);
-	end;
-
-	if g_currentMission.missionInfo.savegameDirectory then
-		-- print(('getSavegameFolder(): g_currentMission.missionInfo.savegameDirectory=%q'):format(tostring(g_currentMission.missionInfo.savegameDirectory)));
-		return g_currentMission.missionInfo.savegameDirectory;
-	end;
-
-	if g_currentMission.missionInfo.savegameIndex then
-		-- print(('getSavegameFolder(): "%ssavegame%d/"'):format(tostring(getUserProfileAppPath()), g_currentMission.missionInfo.savegameIndex));
-		return ('%ssavegame%d/'):format(tostring(getUserProfileAppPath()), g_currentMission.missionInfo.savegameIndex);
-	end;
-
-	return;
-end;
-
 function courseplay.utils:setOverlayUVsSymmetric(overlay, col, line, numCols, numLines)
 	if overlay.overlayId and overlay.currentUVs == nil or overlay.currentUVs ~= { col, line, numCols, numLines } then
 		local bottomY = 1 - line / numLines;
@@ -992,8 +944,10 @@ function courseplay.utils:setOverlayUVsSymmetric(overlay, col, line, numCols, nu
 	end;
 end;
 
-function courseplay.utils:setOverlayUVsPx(overlay, leftX, bottomY, rightX, topY, textureSizeX, textureSizeY)
-	if overlay.overlayId and overlay.currentUVs == nil or overlay.currentUVs ~= { leftX, bottomY, rightX, topY } then
+function courseplay.utils:setOverlayUVsPx(overlay, UVs, textureSizeX, textureSizeY)
+	if overlay.overlayId and overlay.currentUVs == nil or overlay.currentUVs ~= UVs then
+		local leftX, bottomY, rightX, topY = unpack(UVs);
+
 		local fromTop = false;
 		if topY < bottomY then
 			fromTop = true;
@@ -1007,6 +961,285 @@ function courseplay.utils:setOverlayUVsPx(overlay, leftX, bottomY, rightX, topY,
 			topYNormal = 1 - topYNormal;
 		end;
 		setOverlayUVs(overlay.overlayId, leftXNormal,bottomYNormal, leftXNormal,topYNormal, rightXNormal,bottomYNormal, rightXNormal,topYNormal);
-		overlay.currentUVs = { leftX, bottomY, rightX, topY };
+		overlay.currentUVs = UVs;
 	end;
+end;
+
+function courseplay.utils:roundToLowerInterval(num, idp)
+	return floor(num / idp) * idp;
+end;
+
+function courseplay.utils:roundToUpperInterval(num, idp)
+	return ceil(num / idp) * idp;
+end;
+
+function courseplay.utils:getColorFromPct(pct, colorMap, step)
+	if colorMap[pct] then
+		return unpack(colorMap[pct]);
+	end;
+
+	local lower = self:roundToLowerInterval(pct, step);
+	local upper = self:roundToUpperInterval(pct, step);
+
+	local alpha = (pct - lower) / step;
+	return Utils.vector3ArrayLerp(colorMap[lower], colorMap[upper], alpha);
+end;
+
+-- 2D course
+function courseplay.utils:getCourseDimensions(poly)
+	local xMin, yMin = huge, huge;
+	local xMax, yMax = -huge, -huge;
+	for _,point in pairs(poly) do
+		xMin = min(xMin, point.cx);
+		yMin = min(yMin, point.cz);
+		xMax = max(xMax, point.cx);
+		yMax = max(yMax, point.cz);
+	end;
+	local span = max(xMax-xMin,yMax-yMin);
+
+	return { xMin = xMin, xMax = xMax, yMin = yMin, yMax = yMax, span = span };
+end;
+
+function courseplay.utils:scalePlotField2D(x, y)
+	local xRes = CpManager.course2dPlotField.x + x * CpManager.course2dPlotField.width;
+	local yRes = CpManager.course2dPlotField.y + y * CpManager.course2dPlotField.height;
+	return xRes, yRes
+end;
+
+function courseplay.utils:det(x1, y1, x2, y2)
+	return x1 * y2 - y1 * x2;
+end;
+
+function courseplay.utils:removeCollinearPoints(poly, epsilon)
+	local function pointsAreCollinear(p, q, r, eps)
+		return abs(self:det(q.cx-p.cx, q.cz-p.cz,    r.cx-p.cx, r.cz-p.cz)) <= (eps or 1e-32)
+	end
+
+	local res = self.table.copy(poly);
+	res[1].origIndex = 1;
+	res[#poly].origIndex = #poly;
+	for k=#poly-1,2,-1 do
+		res[k].origIndex = k;
+		if pointsAreCollinear(res[k+1], res[k], res[k-1], epsilon) then
+			table.remove(res,k)
+		end;
+	end;
+
+	return res;
+end;
+
+function courseplay.utils:worldCoordsTo2D(vehicle, worldX, worldZ)
+	local x =     (worldX - vehicle.cp.course2dDimensions.xMin) / vehicle.cp.course2dDimensions.span;
+	local y = 1 - (worldZ - vehicle.cp.course2dDimensions.yMin) / vehicle.cp.course2dDimensions.span;
+	x, y = self:scalePlotField2D(x, y);
+	-- x = courseplay.hud:getFullPx(x, 'x');
+	-- y = courseplay.hud:getFullPx(y, 'y');
+
+	return x, y;
+end;
+
+function courseplay.utils:update2dCourseBackgroundPos(vehicle, mouseX, mouseY)
+	local dx = mouseX - CpManager.course2dDragDropMouseDown[1];
+	local dy = mouseY - CpManager.course2dDragDropMouseDown[2];
+
+	if vehicle.cp.course2dPdaMapOverlay then
+		vehicle.cp.course2dPdaMapOverlay:setColor(1,0,0,0.6);
+		vehicle.cp.course2dPdaMapOverlay:setPosition(vehicle.cp.course2dPdaMapOverlay.origPos[1] + dx, vehicle.cp.course2dPdaMapOverlay.origPos[2] + dy)
+	else
+		setOverlayColor(CpManager.course2dPolyOverlayId, 1,0,0,0.6);
+		vehicle.cp.course2dBackground.x = vehicle.cp.course2dBackground.origPos[1] + dx;
+		vehicle.cp.course2dBackground.y = vehicle.cp.course2dBackground.origPos[2] + dy;
+	end;
+end;
+
+function courseplay.utils:move2dCoursePlotField(vehicle, mouseX, mouseY)
+	-- reset background color
+	if vehicle.cp.course2dPdaMapOverlay then
+		vehicle.cp.course2dPdaMapOverlay:setColor(1, 1, 1, CpManager.course2dPdaMapOpacity);
+	end;
+
+	local dx = mouseX - CpManager.course2dDragDropMouseDown[1];
+	local dy = mouseY - CpManager.course2dDragDropMouseDown[2];
+
+	-- update plot position
+	if dx ~= 0 or dy ~= 0 then
+		local newX = Utils.clamp(CpManager.course2dPlotPosX + dx, 0 + CpManager.course2dPlotField.width  * 0.05, 1 - CpManager.course2dPlotField.width  * 1.05); -- 5% padding
+		local newY = Utils.clamp(CpManager.course2dPlotPosY + dy, 0 + CpManager.course2dPlotField.height * 0.05, 1 - CpManager.course2dPlotField.height * 1.05); -- 5% padding
+		-- print(('move2dCoursePlotField(): dx=%.3f, dy=%.3f -> newX=%.3f, newY=%.3f'):format(dx, dy, newX, newY));
+
+		CpManager.course2dPlotPosX = newX;
+		CpManager.course2dPlotPosY = newY;
+		CpManager.course2dPlotField.x = CpManager.course2dPlotPosX;
+		CpManager.course2dPlotField.y = CpManager.course2dPlotPosY;
+
+		-- update 2D data for all vehicles
+		for k,veh in pairs(g_currentMission.steerables) do
+			if veh.hasCourseplaySpec then
+				veh.cp.course2dUpdateDrawData = true;
+			end;
+		end;
+	end;
+
+	-- reset data
+	CpManager.course2dDragDropMouseDown = nil;
+
+	-- save new position data in xml
+	if g_server ~= nil then
+		local cpFile = loadXMLFile('cpFile', CpManager.cpXmlFilePath);
+		setXMLFloat(cpFile, 'XML.course2D#posX', CpManager.course2dPlotPosX);
+		setXMLFloat(cpFile, 'XML.course2D#posY', CpManager.course2dPlotPosY);
+		saveXMLFile(cpFile);
+		delete(cpFile);
+	end;
+end;
+
+function courseplay:setupCourse2dData(vehicle)
+	vehicle.cp.course2dDrawData = nil;
+	if vehicle.cp.numWaypoints < 1 then return; end;
+
+	vehicle.cp.course2dDimensions = courseplay.utils:getCourseDimensions(vehicle.Waypoints);
+	local bBox = vehicle.cp.course2dDimensions;
+	local pxSize = 2;  -- thickness of line in pixels
+	local height = pxSize / g_screenHeight;
+
+	local bgPadding = 0.05 * bBox.span;
+	local bgX1, bgY1 = courseplay.utils:worldCoordsTo2D(vehicle, bBox.xMin - bgPadding, bBox.yMin - bgPadding);
+	local bgX2, bgY2 = courseplay.utils:worldCoordsTo2D(vehicle, bBox.xMax + bgPadding, bBox.yMax + bgPadding);
+	local bgW, bgH = bgX2 - bgX1, abs(bgY2 - bgY1);
+
+	vehicle.cp.course2dBackground = {
+		x = bgX1,
+		y = bgY2, -- seems wrong, but is correct, as [3D] topZ < bottomZ, but [2D] topY > bottomY
+		width = bgW,
+		height = bgH,
+		tractorVisAreaMinX = bgX1,
+		tractorVisAreaMaxX = bgX2,
+		tractorVisAreaMinY = bgY2,
+		tractorVisAreaMaxY = bgY1
+	};
+
+	-- PDA MAP BG
+	if vehicle.cp.course2dPdaMapOverlay then
+		local leftX	  = bBox.xMin - bgPadding + g_statisticView.worldCenterOffsetX;
+		local bottomY = bBox.yMax + bgPadding + g_statisticView.worldCenterOffsetZ;
+		local rightX  = bBox.xMax + bgPadding + g_statisticView.worldCenterOffsetX;
+		local topY	  = bBox.yMin - bgPadding + g_statisticView.worldCenterOffsetZ;
+		courseplay.utils:setOverlayUVsPx(vehicle.cp.course2dPdaMapOverlay, { leftX, bottomY, rightX, topY }, g_statisticView.worldSizeX, g_statisticView.worldSizeZ);
+
+		vehicle.cp.course2dPdaMapOverlay:setPosition(vehicle.cp.course2dBackground.x, vehicle.cp.course2dBackground.y);
+		vehicle.cp.course2dPdaMapOverlay:setDimension(vehicle.cp.course2dBackground.width, vehicle.cp.course2dBackground.height);
+	end;
+
+	vehicle.cp.course2dDrawData = {};
+	local epsilon = 2; -- orig: 0.001, also ok: 0.5
+	local reducedWaypoints = courseplay.utils:removeCollinearPoints(vehicle.Waypoints, epsilon);
+	local numReducedPoints = #reducedWaypoints;
+	-- print(('epsilon=%d -> #Waypoints=%d, #reducedWaypoints=%d'):format(epsilon, vehicle.cp.numWaypoints, numReducedPoints)); -- TODO delete print
+	local np, startX, startY, endX, endY, dx, dz, dx2D, dy2D, width, rotation, r, g, b;
+	for i,wp in ipairs(reducedWaypoints) do
+		np = i < numReducedPoints and reducedWaypoints[i + 1] or reducedWaypoints[1];
+
+		startX, startY = courseplay.utils:worldCoordsTo2D(vehicle, wp.cx, wp.cz);
+		endX, endY	   = courseplay.utils:worldCoordsTo2D(vehicle, np.cx, np.cz);
+
+		dx2D = endX - startX;
+		dy2D = (endY - startY) / g_screenAspectRatio;
+		width = Utils.vector2Length(dx2D, dy2D);
+
+		dx = np.cx - wp.cx;
+		dz = np.cz - wp.cz;
+		rotation = Utils.getYRotationFromDirection(dx, dz) - pi * 0.5;
+
+		r, g, b = courseplay.utils:getColorFromPct(100 * wp.origIndex / vehicle.cp.numWaypoints, CpManager.course2dColorTable, CpManager.course2dColorPctStep);
+
+		vehicle.cp.course2dDrawData[i] = {
+			x = startX;
+			y = startY;
+			width = width;
+			height = height;
+			rotation = rotation;
+			color = { r, g, b, 1 };
+		};
+	end;
+
+	vehicle.cp.course2dUpdateDrawData = false;
+end;
+
+function courseplay:drawCourse2D(vehicle, doLoop)
+	-- dynamically update the data (when drag + drop happens)
+	if vehicle.cp.course2dUpdateDrawData then
+		-- print(('%s: course2dUpdateDrawData==true -> call setupCourse2dData()'):format(nameNum(vehicle)));
+		courseplay:setupCourse2dData(vehicle);
+	end;
+
+	if not vehicle.cp.course2dDrawData then
+		return;
+	end;
+
+	-- background
+	local bg = vehicle.cp.course2dBackground;
+	if vehicle.cp.course2dPdaMapOverlay then
+		vehicle.cp.course2dPdaMapOverlay:render();
+	else
+		if not CpManager.course2dDragDropMouseDown then
+			setOverlayColor(CpManager.course2dPolyOverlayId, 0,0,0,0.6);
+		end;
+		renderOverlay(CpManager.course2dPolyOverlayId, bg.x, bg.y, bg.width, bg.height);
+	end;
+
+	if CpManager.course2dDragDropMouseDown ~= nil then -- drag and drop mode -> only render background
+		return;
+	end;
+
+	-- course
+	local numPoints = #vehicle.cp.course2dDrawData;
+	local r,g,b,a;
+	for i,data in ipairs(vehicle.cp.course2dDrawData) do
+		if not doLoop and i == numPoints then
+			break;
+		end;
+
+		r,g,b,a = unpack(data.color);
+		setOverlayColor(CpManager.course2dPolyOverlayId, r,g,b,a);
+
+		setOverlayRotation(CpManager.course2dPolyOverlayId, data.rotation, 0, 0);
+
+		renderOverlay(CpManager.course2dPolyOverlayId, data.x, data.y, data.width, data.height);
+	end;
+	setOverlayRotation(CpManager.course2dPolyOverlayId, 0, 0, 0); -- reset overlay rotation
+
+
+	-- render vehicle position
+	local ovl = CpManager.course2dTractorOverlay;
+	local worldX,_,worldZ = getWorldTranslation(vehicle.rootNode);
+	if worldX ~= vehicle.cp.course2dTranslationX or worldZ ~= vehicle.cp.course2dTranslationZ then
+		vehicle.cp.course2dTranslationX = worldX;
+		vehicle.cp.course2dTranslationZ = worldZ;
+		vehicle.cp.course2dTranslationX2D, vehicle.cp.course2dTranslationZ2D = courseplay.utils:worldCoordsTo2D(vehicle, worldX, worldZ);
+		ovl:setPosition(vehicle.cp.course2dTranslationX2D - ovl.width * 0.5, vehicle.cp.course2dTranslationZ2D - ovl.height * 0.5);
+	end;
+
+	local x, y = vehicle.cp.course2dTranslationX2D, vehicle.cp.course2dTranslationZ2D;
+	if x < bg.tractorVisAreaMinX or x > bg.tractorVisAreaMaxX or y < bg.tractorVisAreaMinY or y > bg.tractorVisAreaMaxY then
+		-- outside of background area -> abort
+		return;
+	end;
+
+	local dx,_,dz = localDirectionToWorld(vehicle.cp.DirectionNode or vehicle.rootNode, 0, 0, 1);
+	if dx ~= vehicle.cp.course2dDirectionX or dz ~= vehicle.cp.course2dDirectionZ then
+		vehicle.cp.course2dDirectionX = dx;
+		vehicle.cp.course2dDirectionZ = dz;
+		local rotation = Utils.getYRotationFromDirection(dx, dz) - pi * 0.5;
+		ovl:setRotation(rotation, ovl.width * 0.5, ovl.height * 0.5);
+	end;
+
+	ovl:render();
+end;
+
+function courseplay.utils:rgbToNormal(r, g, b, a)
+	if a then
+		return { r/255, g/255, b/255, a };
+	end;
+
+	return { r/255, g/255, b/255 };
 end;

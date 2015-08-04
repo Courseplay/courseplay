@@ -2,17 +2,22 @@
 
 <i3D name="CourseplayWaypointSign" version="1.6" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://i3d.giants.ch/schema/i3d-1.6.xsd">
   <Asset>
-    <Export program="GIANTS Editor 64bit" version="6.0.2"/>
+    <Export program="GIANTS Editor 64bit" version="6.0.3"/>
   </Asset>
 
   <Files>
+    <File fileId="2" filename="colorShader.xml" relativePath="true"/>
     <File fileId="1" filename="normal.png" relativePath="true"/>
   </Files>
 
 
   <Materials>
-    <Material name="CourseplayWaypointSign" materialId="6" ambientColor="5 5 5" cosPower="20" specularColor="0.25 0.25 0.25" alphaBlending="true">
+    <Material name="line" materialId="6" ambientColor="1 1 1">
       <Emissivemap fileId="1"/>
+    </Material>
+    <Material name="diamond" materialId="8" ambientColor="1 1 1" customShaderId="2">
+      <Emissivemap fileId="1"/>
+      <CustomParameter name="diffuseColor" value="1 0.212 0.0 1.0"/>
     </Material>
   </Materials>
 
@@ -25,8 +30,8 @@
   </Dynamics>
 
   <Scene>
-    <Shape shapeId="1" name="Waypoint" clipDistance="100" nodeId="12" materialIds="6" castsShadows="true">
-      <Shape shapeId="2" name="Line" nodeId="13" materialIds="6" castsShadows="true"/>
+    <Shape shapeId="1" name="Waypoint" clipDistance="100" nodeId="14" materialIds="8" castsShadows="true">
+      <Shape shapeId="2" name="Line" nodeId="15" materialIds="6" castsShadows="true"/>
     </Shape>
   </Scene>
 

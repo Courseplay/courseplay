@@ -1,83 +1,108 @@
 local curFile = 'course_management.lua';
+local ceil = math.ceil;
 
 -- saving // loading courses
+function courseplay.courses:setup(doLoading)
+	-- NOTE: setup() is called twice during loadMap(), once before and once after the XML settings have been loaded
+	if self.batchWriteSize == nil then
+		self.batchWriteSize = 4096; -- used in deleteSaveAll() for batch-writing waypoint data. value in KB
+	end;
+
+
+	if not doLoading then return end;
+
+	-- LOAD COURSES AND FOLDERS FROM XML
+	if g_currentMission.cp_courses == nil then
+		-- courseplay:debug("cp_courses was nil and initialized", 8);
+		g_currentMission.cp_courses = {};
+		g_currentMission.cp_folders = {};
+		g_currentMission.cp_sorted = { item={}, info={} };
+
+		if g_server ~= nil and next(g_currentMission.cp_courses) == nil then
+			self:loadCoursesAndFoldersFromXml();
+			-- courseplay:debug(tableShow(g_currentMission.cp_courses, "g_cM cp_courses", 8), 8);
+		end;
+	end;
+end;
+
 
 -- enables input for course/folder/filter name
-function courseplay:showSaveCourseForm(self, saveWhat)
+function courseplay:showSaveCourseForm(vehicle, saveWhat) -- fn is in courseplay because it's vehicle based
 	saveWhat = saveWhat or 'course'
 	
 	if saveWhat == 'course' then
-		if #(self.Waypoints) > 0 then
-			courseplay.vehicleToSaveCourseIn = self;
-			if self.cp.imWriting then
-				self.cp.saveWhat = 'course'
+		if vehicle.cp.numWaypoints > 0 then
+			courseplay.vehicleToSaveCourseIn = vehicle;
+			if vehicle.cp.imWriting then
+				vehicle.cp.saveWhat = 'course'
 				g_gui:showGui("inputCourseNameDialogue");
-				self.cp.imWriting = false
+				vehicle.cp.imWriting = false
 			end
 		end;
 		
 	elseif saveWhat == 'folder' then
-		courseplay.vehicleToSaveCourseIn = self;
-		if self.cp.imWriting then
-			self.cp.saveWhat = 'folder'
+		courseplay.vehicleToSaveCourseIn = vehicle;
+		if vehicle.cp.imWriting then
+			vehicle.cp.saveWhat = 'folder'
 			g_gui:showGui("inputCourseNameDialogue");
-			self.cp.imWriting = false
+			vehicle.cp.imWriting = false
 		end
 	
 	elseif saveWhat == 'filter' then
-		if self.cp.hud.filter == '' then
-			courseplay.vehicleToSaveCourseIn = self;
-			if self.cp.imWriting then
-				self.cp.saveWhat = 'filter';
+		if vehicle.cp.hud.filter == '' then
+			courseplay.vehicleToSaveCourseIn = vehicle;
+			if vehicle.cp.imWriting then
+				vehicle.cp.saveWhat = 'filter';
 				g_gui:showGui("inputCourseNameDialogue");
-				self.cp.imWriting = false;
+				vehicle.cp.imWriting = false;
 			end;
 		else
-			self.cp.hud.filter = '';
-			local button = self.cp.buttons[2][self.cp.hud.filterButtonIndex];
-			courseplay.button:setOverlay(button, 1);
-			courseplay.settings.setReloadCourseItems(self);
+			vehicle.cp.hud.filter = '';
+			vehicle.cp.hud.filterButton:setSpriteSectionUVs('search');
+			vehicle.cp.hud.filterButton:setToolTip(courseplay:loc('COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS'));
+			courseplay.settings.setReloadCourseItems(vehicle);
 		end;
 	end
 end;
 
-function courseplay:reload_courses(self, use_real_id)
-	local courses = self.cp.loadedCourses
-	self.cp.loadedCourses = {}
+function courseplay:reloadCourses(vehicle, useRealId) -- fn is in courseplay because it's vehicle based
+	courseplay:debug(('%s: reloadCourses(..., %s)'):format(nameNum(vehicle), tostring(useRealId)), 8);
+	local courses = vehicle.cp.loadedCourses;
+	vehicle.cp.loadedCourses = {};
 	for k, v in pairs(courses) do
-		courseplay:load_course(self, v, use_real_id)
-	end
-end
+		courseplay:loadCourse(vehicle, v, useRealId);
+	end;
+end;
 
-function courseplay:reinit_courses(self)
+function courseplay.courses:reinitializeCourses()
 	if g_currentMission.cp_courses == nil then
 		courseplay:debug("cp_courses is empty", 8)
 		if g_server ~= nil then
-			courseplay_manager:load_courses();
+			self:loadCoursesAndFoldersFromXml();
 		end
 		return
 	end
 end
 
-function courseplay:add_sorted_course(vehicle, index)
+function courseplay:addSortedCourse(vehicle, index) -- fn is in courseplay because it's vehicle based
 	local id = vehicle.cp.hud.courses[index].id
-	courseplay:load_course(vehicle, id, true, true)	
+	courseplay:loadCourse(vehicle, id, true, true)
 end
 
-function courseplay:load_sorted_course(vehicle, index)
+function courseplay:loadSortedCourse(vehicle, index) -- fn is in courseplay because it's vehicle based
 	if type(vehicle.cp.hud.courses[index]) ~= nil then
 		local id = vehicle.cp.hud.courses[index].id
-		courseplay:load_course(vehicle, id, true)
+		courseplay:loadCourse(vehicle, id, true)
 	end	
 end
 
-function courseplay:load_course(self, id, useRealId, addCourseAtEnd)
+function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is in courseplay because it's vehicle based
 	-- global array for courses, no refreshing needed any more
-	courseplay:reinit_courses(self);
+	courseplay.courses:reinitializeCourses();
 
 	if addCourseAtEnd == nil then addCourseAtEnd = false; end;
 
-	courseplay:debug(string.format('%s: load_course(..., id=%s, useRealId=%s, addCourseAtEnd=%s)', nameNum(self), tostring(id), tostring(useRealId), tostring(addCourseAtEnd)), 8);
+	courseplay:debug(string.format('%s: loadCourse(..., id=%s, useRealId=%s, addCourseAtEnd=%s)', nameNum(vehicle), tostring(id), tostring(useRealId), tostring(addCourseAtEnd)), 8);
 	if id ~= nil and id ~= "" then
 		if not useRealId then
 			return -- not supported any more
@@ -97,27 +122,27 @@ function courseplay:load_course(self, id, useRealId, addCourseAtEnd)
 		end
 
 		if addCourseAtEnd == true then
-			table.insert(self.cp.loadedCourses, id * -1)
+			table.insert(vehicle.cp.loadedCourses, id * -1)
 		else
-			table.insert(self.cp.loadedCourses, id)
+			table.insert(vehicle.cp.loadedCourses, id)
 		end
 
-		--	courseplay:clearCurrentLoadedCourse(self)
-		if #self.Waypoints == 0 then
-			self.cp.numCourses = 1;
-			self.Waypoints = course.waypoints
-			self.cp.numWaypoints = #self.Waypoints;
-			self.cp.currentCourseName = course.name
-			courseplay:debug(string.format("course_management %d: %s: no course was loaded -> new course = course -> currentCourseName=%q, numCourses=%s", debug.getinfo(1).currentline, nameNum(self), tostring(self.cp.currentCourseName), tostring(self.cp.numCourses)), 8);
+		--	courseplay:clearCurrentLoadedCourse(vehicle)
+		if #vehicle.Waypoints == 0 then
+			vehicle.cp.numCourses = 1;
+			vehicle.Waypoints = course.waypoints
+			vehicle.cp.numWaypoints = #vehicle.Waypoints;
+			vehicle:setCpVar('currentCourseName',course.name,courseplay.isClient)
+			courseplay:debug(string.format("course_management %d: %s: no course was loaded -> new course = course -> currentCourseName=%q, numCourses=%s", debug.getinfo(1).currentline, nameNum(vehicle), tostring(vehicle.cp.currentCourseName), tostring(vehicle.cp.numCourses)), 8);
 
 		else -- add new course to old course
-			if self.cp.currentCourseName == nil then --recorded but not saved course
-				self.cp.numCourses = 1;
+			if vehicle.cp.currentCourseName == nil then --recorded but not saved course
+				vehicle.cp.numCourses = 1;
 			end;
-			courseplay:debug(string.format("course_management %d: %s: currentCourseName=%q, numCourses=%s -> add new course %q", debug.getinfo(1).currentline, nameNum(self), tostring(self.cp.currentCourseName), tostring(self.cp.numCourses), tostring(course.name)), 8);
+			courseplay:debug(string.format("course_management %d: %s: currentCourseName=%q, numCourses=%s -> add new course %q", debug.getinfo(1).currentline, nameNum(vehicle), tostring(vehicle.cp.currentCourseName), tostring(vehicle.cp.numCourses), tostring(course.name)), 8);
 
 
-			local course1, course2 = self.Waypoints, course.waypoints;
+			local course1, course2 = vehicle.Waypoints, course.waypoints;
 			local numCourse1, numCourse2 = #course1, #course2;
 			local course1wp, course2wp = numCourse1, 1;
 
@@ -127,7 +152,7 @@ function courseplay:load_course(self, id, useRealId, addCourseAtEnd)
 			if not addCourseAtEnd then
 				--find crossing points
 				local crossingPoints = { [1] = {}, [2] = {} };
-				for i=self.cp.lastMergedWP + 1, numCourse1 do
+				for i=vehicle.cp.lastMergedWP + 1, numCourse1 do
 					if i > 1 and course1[i].crossing == true and not course1[i].merged then
 						courseplay:debug('course1 wp ' .. i .. ': add to crossingPoints[1]', 8);
 						table.insert(crossingPoints[1], i);
@@ -155,12 +180,12 @@ function courseplay:load_course(self, id, useRealId, addCourseAtEnd)
 									course1wp = wpNum1;
 									course2wp = wpNum2;
 
-									self.cp.lastMergedWP = wpNum1;
+									vehicle.cp.lastMergedWP = wpNum1;
 									course1[course1wp].merged = true;
 									course2[course2wp].merged = true;
 
 									firstMatchFound = true;
-									courseplay:debug(string.format('\tuseFirstMatch=true -> 2 valid crossing points found: (1)=#%d, (2)=#%d, dist=%.1f -> lastMergedWP=%d, set "merged" for both to "true", break', course1wp, course2wp, dist, self.cp.lastMergedWP), 8);
+									courseplay:debug(string.format('\tuseFirstMatch=true -> 2 valid crossing points found: (1)=#%d, (2)=#%d, dist=%.1f -> lastMergedWP=%d, set "merged" for both to "true", break', course1wp, course2wp, dist, vehicle.cp.lastMergedWP), 8);
 								else
 									if dist < smallestDist then
 										smallestDist = dist;
@@ -172,12 +197,12 @@ function courseplay:load_course(self, id, useRealId, addCourseAtEnd)
 										course1wp = wpNum1;
 										course2wp = wpNum2;
 
-										self.cp.lastMergedWP = wpNum1;
+										vehicle.cp.lastMergedWP = wpNum1;
 										course1[course1wp].merged = true;
 										course2[course2wp].merged = true;
 
 										closestMatchFound = true;
-										courseplay:debug(string.format('\tuseFirstMatch=false -> 2 valid crossing points found: (1)=#%d, (2)=#%d, dist=%.1f -> lastMergedWP=%d, set "merged" for both to "true", continue', course1wp, course2wp, dist, self.cp.lastMergedWP), 8);
+										courseplay:debug(string.format('\tuseFirstMatch=false -> 2 valid crossing points found: (1)=#%d, (2)=#%d, dist=%.1f -> lastMergedWP=%d, set "merged" for both to "true", continue', course1wp, course2wp, dist, vehicle.cp.lastMergedWP), 8);
 									end;
 								end;
 							end;
@@ -190,46 +215,43 @@ function courseplay:load_course(self, id, useRealId, addCourseAtEnd)
 
 			if not addCourseAtEnd then
 				if firstMatchFound or closestMatchFound then
-					courseplay:debug(string.format('%s: merge points found: course 1: #%d, course 2: #%d', nameNum(self), course1wp, course2wp), 8);
+					courseplay:debug(string.format('%s: merge points found: course 1: #%d, course 2: #%d', nameNum(vehicle), course1wp, course2wp), 8);
 				else
-					courseplay:debug(string.format('%s: no points where the courses could be merged have been found -> add 2nd course at end', nameNum(self)), 8);
+					courseplay:debug(string.format('%s: no points where the courses could be merged have been found -> add 2nd course at end', nameNum(vehicle)), 8);
 				end;
 			end;
 
-			self.Waypoints = {};
+			vehicle.Waypoints = {};
 			for i=1, course1wp do
-				table.insert(self.Waypoints, course1[i]);
+				table.insert(vehicle.Waypoints, course1[i]);
 			end;
 			for i=course2wp, numCourse2 do
-				table.insert(self.Waypoints, course2[i]);
+				table.insert(vehicle.Waypoints, course2[i]);
 			end;
 
-			self.cp.numWaypoints = #self.Waypoints;
-			self.cp.numCourses = self.cp.numCourses + 1;
-			self.cp.currentCourseName = string.format("%d %s", self.cp.numCourses, courseplay:loc('COURSEPLAY_COMBINED_COURSES'));
-			courseplay:debug(string.format('%s: adding course done -> numWaypoints=%d, numCourses=%s, currentCourseName=%q', nameNum(self), self.cp.numWaypoints, self.cp.numCourses, self.cp.currentCourseName), 8);
+			vehicle.cp.numWaypoints = #vehicle.Waypoints;
+			vehicle.cp.numCourses = vehicle.cp.numCourses + 1;
+			vehicle:setCpVar('currentCourseName',string.format("%d %s", vehicle.cp.numCourses, courseplay:loc('COURSEPLAY_COMBINED_COURSES')),courseplay.isClient);
+			courseplay:debug(string.format('%s: adding course done -> numWaypoints=%d, numCourses=%s, currentCourseName=%q', nameNum(vehicle), vehicle.cp.numWaypoints, vehicle.cp.numCourses, vehicle.cp.currentCourseName), 8);
 		end;
 
-		self.cp.canDrive = true;
+		vehicle.cp.canDrive = true;
 
-		courseplay:setRecordNumber(self, 1);  -- Waypoint number
-		--if self.cp.mode == 2 or self.cp.mode == 3 then TODO(Tom) Whats the reason fo setting to 1 ?
-			courseplay:setModeState(self, 0);
-			-- print(('%s [%s(%d)]: load_course(): mode=%d -> set modeState to 0'):format(nameNum(self), curFile, debug.getinfo(1).currentline, self.cp.mode)); -- DEBUG140301
-		--[[else
-			courseplay:setModeState(self, 1);
-			-- print(('%s [%s(%d)]: load_course() -> set modeState to 1'):format(nameNum(self), curFile, debug.getinfo(1).currentline)); -- DEBUG140301
-		end;]]
-		courseplay.utils.signs:updateWaypointSigns(self, "current");
+		courseplay:setWaypointIndex(vehicle, 1);
+		courseplay:setModeState(vehicle, 0);
+		courseplay.signs:updateWaypointSigns(vehicle, "current");
 
-		self.cp.hasGeneratedCourse = false;
-		courseplay:validateCourseGenerationData(self);
+		vehicle.cp.hasGeneratedCourse = false;
+		courseplay:validateCourseGenerationData(vehicle);
 
-		courseplay:validateCanSwitchMode(self);
+		courseplay:validateCanSwitchMode(vehicle);
+
+		-- SETUP 2D COURSE DRAW DATA
+		vehicle.cp.course2dUpdateDrawData = true;
 	end
 end
 
-function courseplay.courses.sort(courses_to_sort, folders_to_sort, parent_id, level, make_copies)
+function courseplay.courses:sort(courses_to_sort, folders_to_sort, parent_id, level, make_copies)
 --Note: this function is recursive.
 	courses_to_sort = courses_to_sort or g_currentMission.cp_courses
 	folders_to_sort = folders_to_sort or g_currentMission.cp_folders
@@ -270,7 +292,7 @@ function courseplay.courses.sort(courses_to_sort, folders_to_sort, parent_id, le
 	end
 	for i = 1, #folders do
 		-- find child's children
-		temp_sorted, temp_last_child = courseplay.courses.sort(courses_to_sort, folders_to_sort, folders[i].id, level+1, false)
+		temp_sorted, temp_last_child = self:sort(courses_to_sort, folders_to_sort, folders[i].id, level+1, false)
 		temp_sorted_items = temp_sorted.item
 		
 		folders[i].level = level
@@ -362,15 +384,15 @@ function courseplay.courses.sort(courses_to_sort, folders_to_sort, parent_id, le
 	return sorted, last_child
 end
 
-function courseplay:reset_merged(self)
+function courseplay.courses:resetMerged()
 	for _,course in pairs(g_currentMission.cp_courses) do
 		for num, wp in pairs(course.waypoints) do
-			wp.merged = nil
-		end
-	end
-end
+			wp.merged = nil;
+		end;
+	end;
+end;
 
-function courseplay:delete_sorted_item(vehicle, index)
+function courseplay:deleteSortedItem(vehicle, index) -- fn is in courseplay because it's vehicle based
 	local id = vehicle.cp.hud.courses[index].id
 	local type = vehicle.cp.hud.courses[index].type
 	
@@ -386,15 +408,16 @@ function courseplay:delete_sorted_item(vehicle, index)
 		--Error?!
 	end
 	
-	g_currentMission.cp_sorted = courseplay.courses.sort()
-	courseplay.courses.save_all()
+	g_currentMission.cp_sorted = courseplay.courses:sort()
+	courseplay.courses:saveAllToXml()
 	courseplay.settings.setReloadCourseItems()
-	courseplay.utils.signs:updateWaypointSigns(vehicle);
+	courseplay.signs:updateWaypointSigns(vehicle);
 end
 
-function courseplay.courses.save_parent(type, id)
+-- TODO (Jakob): this function isn't used anywhere
+function courseplay.courses:saveParent(type, id)
 	if id ~= nil and id > 0 then
-		local File = courseplay.courses.openOrCreateXML()
+		local File = self:openOrCreateXML()
 		local i = 0
 		local node=''
 		local value
@@ -421,7 +444,7 @@ function courseplay.courses.save_parent(type, id)
 	end
 end
 
-function courseplay.courses.save_course(course_id, File, append)
+function courseplay.courses:saveCourseToXml(course_id, File, append)
 -- save course to xml file
 --
 -- append (bool,integer): append can be a bool or an integer
@@ -434,7 +457,7 @@ function courseplay.courses.save_course(course_id, File, append)
 	end
 	
 	if File == nil then
-		File = courseplay.courses.openOrCreateXML()
+		File = self:openOrCreateXML()
 		deleteFile = true
 	end
 	
@@ -463,20 +486,22 @@ function courseplay.courses.save_course(course_id, File, append)
 	types = { pos='String', angle='String', rev='Int', wait='Int', crossing='Int', speed='String', generated='Bool', dir='String', turn='String', turnstart='Int', turnend='Int', ridgemarker='Int' };
 
 	for k, v in pairs(g_currentMission.cp_courses[course_id].waypoints) do
-		local waypoint = {} --create a new table on every call
-		waypoint.pos = tostring(courseplay:round(v.cx, 4)) .. ' ' .. tostring(courseplay:round(v.cz, 4));
-		waypoint.angle = tostring(courseplay:round(v.angle, 4));
-		-- the following would not be necessary if bools would be saved as bools instead of converting them to integers...
-		waypoint.rev = courseplay:boolToInt(v.rev);
-		waypoint.wait = courseplay:boolToInt(v.wait);
-		waypoint.crossing = courseplay:boolToInt(v.crossing);
-		waypoint.speed = tostring(courseplay:round(v.speed or 0, 5));
-		waypoint.generated = Utils.getNoNil(v.generated,false);
-		waypoint.dir = v.laneDir or "";
-		waypoint.turn = v.turn or "false";
-		waypoint.turnstart = Utils.getNoNil(courseplay:boolToInt(v.turnStart),0);
-		waypoint.turnend = Utils.getNoNil(courseplay:boolToInt(v.turnEnd),0);
-		waypoint.ridgemarker = Utils.getNoNil(v.ridgeMarker,0);
+		local waypoint = {
+			pos = ('%.2f %.2f'):format(v.cx, v.cz);
+			angle = ('%.2f'):format(v.angle);
+			speed = ('%d'):format(v.speed or 0);
+			rev = courseplay:boolToInt(v.rev);
+			wait = courseplay:boolToInt(v.wait);
+			crossing = courseplay:boolToInt(v.crossing);
+			generated = v.generated;
+			dir = v.laneDir;
+			turn = v.turn;
+			turnstart = courseplay:boolToInt(v.turnStart);
+			turnend = courseplay:boolToInt(v.turnEnd);
+		};
+		if v.ridgeMarker and v.ridgeMarker ~= 0 then
+			waypoint.ridgemarker = v.ridgeMarker;
+		end;
 
 		waypoints[k] = waypoint;
 	end
@@ -489,7 +514,7 @@ function courseplay.courses.save_course(course_id, File, append)
 	end
 end
 
-function courseplay.courses.save_folder(folder_id, File, append)
+function courseplay.courses:saveFolderToXml(folder_id, File, append)
 -- saves a folder to the courseplay xml file
 --
 -- append (bool,integer): append can be a bool or an integer
@@ -502,7 +527,7 @@ function courseplay.courses.save_folder(folder_id, File, append)
 	end
 	
 	if File == nil then
-		File = courseplay.courses.openOrCreateXML()
+		File = self:openOrCreateXML()
 		deleteFile = true
 	end
 
@@ -529,7 +554,7 @@ function courseplay.courses.save_folder(folder_id, File, append)
 	end
 end
 
-function courseplay.courses.save_folders(File, append)
+function courseplay.courses:saveFoldersToXml(File, append)
 --	function to save all folders by once
 --	append (bool): whether to append to the file (true) or check if the id exists (false)
 	local deleteFile = false
@@ -538,7 +563,7 @@ function courseplay.courses.save_folders(File, append)
 	end
 	
 	if File == nil then
-		File = courseplay.courses.openOrCreateXML()
+		File = self:openOrCreateXML()
 		deleteFile = true
 	end
 	
@@ -547,7 +572,7 @@ function courseplay.courses.save_folders(File, append)
 	end
 	
 	for k,_ in pairs(g_currentMission.cp_folders) do
-		courseplay.courses.save_folder(k, File, append)
+		self:saveFolderToXml(k, File, append)
 		if append ~= false then
 			append = append + 1
 		end
@@ -557,7 +582,7 @@ function courseplay.courses.save_folders(File, append)
 	end
 end
 
-function courseplay.courses.save_courses(File, append)
+function courseplay.courses:saveCoursesToXml(File, append)
 --	function to save all courses by once
 --	append (bool): whether to append to the file (true) or check if the id exists (false)
 	local deleteFile = false
@@ -566,7 +591,7 @@ function courseplay.courses.save_courses(File, append)
 	end
 	
 	if File == nil then
-		File = courseplay.courses.openOrCreateXML()
+		File = self:openOrCreateXML()
 		deleteFile = true
 	end
 	
@@ -575,7 +600,7 @@ function courseplay.courses.save_courses(File, append)
 	end
 	
 	for k,_ in pairs(g_currentMission.cp_courses) do
-		courseplay.courses.save_course(k, File, append) -- append is either false or an integer here
+		self:saveCourseToXml(k, File, append) -- append is either false or an integer here
 		if append ~= false then
 			append = append + 1
 		end
@@ -586,95 +611,127 @@ function courseplay.courses.save_courses(File, append)
 	end
 end
 
-function courseplay.courses.delete_save_all(self)
+function courseplay.courses:deleteSaveAll()
 -- saves courses to xml-file
 -- opening the file with io.open will delete its content...
 	if g_server ~= nil then
-		if courseplay.cpXmlFilePath then
-			local file = io.open(courseplay.cpXmlFilePath, "w");
+		if CpManager.cpXmlFilePath then
+			local file = io.open(CpManager.cpXmlFilePath, "w");
 			if file ~= nil then
-				file:write('<?xml version="1.0" encoding="utf-8" standalone="no" ?>\n<XML>\n');
-				file:write(string.format('\t<courseplayHud posX="%.3f" posY="%.3f" />\n', courseplay.hud.infoBasePosX, courseplay.hud.infoBasePosY));
-				file:write(string.format('\t<courseplayFields automaticScan=%q onlyScanOwnedFields=%q debugScannedFields=%q debugCustomLoadedFields=%q scanStep="%d" />\n', tostring(courseplay.fields.automaticScan), tostring(courseplay.fields.onlyScanOwnedFields), tostring(courseplay.fields.debugScannedFields), tostring(courseplay.fields.debugCustomLoadedFields), courseplay.fields.scanStep));
-				file:write(string.format('\t<courseplayWages active=%q wagePerHour="%d" />\n', tostring(courseplay.wagesActive), courseplay.wagePerHour));
+				-- header
+				local header = '';
+				header = header .. '<?xml version="1.0" encoding="utf-8" standalone="no" ?>\n<XML>\n';
+				header = header .. ('\t<courseplayHud posX="%.3f" posY="%.3f" />\n'):format(courseplay.hud.basePosX, courseplay.hud.basePosY);
+				header = header .. ('\t<courseplayFields automaticScan=%q onlyScanOwnedFields=%q debugScannedFields=%q debugCustomLoadedFields=%q scanStep="%d" />\n'):format(tostring(courseplay.fields.automaticScan), tostring(courseplay.fields.onlyScanOwnedFields), tostring(courseplay.fields.debugScannedFields), tostring(courseplay.fields.debugCustomLoadedFields), courseplay.fields.scanStep);
+				header = header .. ('\t<courseplayWages active=%q wagePerHour="%d" />\n'):format(tostring(CpManager.wagesActive), CpManager.wagePerHour);
+				header = header .. ('\t<courseplayIngameMap active=%q showName=%q showCourse=%q />\n'):format(tostring(CpManager.ingameMapIconActive), tostring(CpManager.ingameMapIconShowName),tostring(CpManager.ingameMapIconShowCourse));
+				header = header .. ('\t<courseManagement batchWriteSize="%d" />\n'):format(self.batchWriteSize);
+				header = header .. ('\t<course2D posX="%.3f" posY="%.3f" opacity="%.2f" />\n'):format(CpManager.course2dPlotPosX, CpManager.course2dPlotPosY, CpManager.course2dPdaMapOpacity);
+
+				file:write(header);
 
 				-- folders
-				file:write('\t<folders>\n')
+				local foldersTxt = '\t<folders>\n';
 				for i,folder in pairs(g_currentMission.cp_folders) do
-					file:write('\t\t<folder name="' .. folder.name .. '" id="' .. folder.id .. '" parent="' .. folder.parent ..'" />\n');
+					foldersTxt = foldersTxt .. ('\t\t<folder name=%q id="%d" parent="%d" />\n'):format(folder.name, folder.id, folder.parent);
 				end
-				file:write('\t</folders>\n');
+				foldersTxt = foldersTxt .. '\t</folders>\n';
+				file:write(foldersTxt);
 
-				-- course reference
-				--[[file:write('\t<courseReference>\n');
-				for i,course in pairs(g_currentMission.cp_courses) do
-					file:write(('\t\t<course name=%q id=%q numWaypoints=%q parent=%q'):format(tostring(course.name), tostring(course.id), tostring(#course.waypoints), tostring(course.parent)));
-				end;
-				file:write('\t</courseReference>\n');
-				]]
+				-- courses
 				file:write('\t<courses>\n')
 				for i,course in pairs(g_currentMission.cp_courses) do
-					file:write('\t\t<course name="' .. course.name .. '" id="' .. course.id .. '" numWaypoints="' .. #(course.waypoints) .. '" parent="' .. course.parent ..'">\n');
-					for wpNum,wp in ipairs(course.waypoints) do
-						local wpContent = '\t\t\t<waypoint' .. wpNum .. ' ';
-						wpContent = wpContent .. 'pos="' .. tostring(Utils.getNoNil(courseplay:round(wp.cx, 4), 0)) .. ' ' .. tostring(Utils.getNoNil(courseplay:round(wp.cz, 4), 0)) .. '" ';
-						wpContent = wpContent .. 'angle="' .. tostring(Utils.getNoNil(courseplay:round(wp.angle, 2), 0)) .. '" ';
-						wpContent = wpContent .. 'wait="' .. tostring(Utils.getNoNil(courseplay:boolToInt(wp.wait), 0)) .. '" ';
-						wpContent = wpContent .. 'crossing="' .. tostring(Utils.getNoNil(courseplay:boolToInt(wp.crossing), 0)) .. '" ';
-						wpContent = wpContent .. 'rev="' .. tostring(Utils.getNoNil(courseplay:boolToInt(wp.rev), 0)) .. '" ';
-						wpContent = wpContent .. 'speed="' .. tostring(courseplay:round(Utils.getNoNil(wp.speed, 0), 5)) .. '" ';
-						if wp.laneDir then
-							wpContent = wpContent .. 'dir="' .. tostring(wp.laneDir) .. '" '; --no getNoNil as we want it to be nil if it doesn't exist during loading
-						end;
-						wpContent = wpContent .. 'turn="' .. tostring(Utils.getNoNil(wp.turn, false)) .. '" ';
-						wpContent = wpContent .. 'turnstart="' .. tostring(Utils.getNoNil(courseplay:boolToInt(wp.turnStart), 0)) .. '" ';
-						wpContent = wpContent .. 'turnend="' .. tostring(Utils.getNoNil(courseplay:boolToInt(wp.turnEnd), 0)) .. '" ';
-						wpContent = wpContent .. 'ridgemarker="' .. tostring(Utils.getNoNil(wp.ridgeMarker, 0)) .. '" ';
-						wpContent = wpContent .. 'generated="' .. tostring(Utils.getNoNil(wp.generated, false)) .. '" ';
-						wpContent = wpContent .. '/>\n';
+					local numWaypoints = #course.waypoints;
+					file:write(('\t\t<course name=%q id="%d" parent="%d" numWaypoints="%d">\n'):format(course.name, course.id, course.parent, numWaypoints));
 
-						file:write(wpContent);
+					local wpBatchTxt = '';
+					for wpNum,wp in ipairs(course.waypoints) do
+						local wpContent = ('\t\t\t<waypoint%d pos="%.2f %.2f" angle="%.2f" speed="%d"'):format(wpNum, wp.cx, wp.cz, wp.angle, wp.speed or 0);
+
+						if wp.rev then
+							wpContent = wpContent .. ' rev="1"';
+						end;
+						if wp.wait then
+							wpContent = wpContent .. ' wait="1"';
+						end;
+						if wp.crossing then
+							wpContent = wpContent .. ' crossing="1"';
+						end;
+						if wp.generated then
+							wpContent = wpContent .. ' generated="true"';
+						end;
+						if wp.laneDir ~= nil and wp.laneDir ~= '' then
+							wpContent = wpContent .. (' dir=%q'):format(wp.laneDir);
+						end;
+						if wp.turn ~= nil then
+							wpContent = wpContent .. (' turn=%q'):format(tostring(wp.turn));
+						end;
+						if wp.turnStart then
+							wpContent = wpContent .. ' turnstart="1"';
+						end;
+						if wp.turnEnd then
+							wpContent = wpContent .. ' turnend="1"';
+						end;
+						if wp.ridgeMarker ~= nil and wp.ridgeMarker ~= 0 then
+							wpContent = wpContent .. (' ridgemarker="%d"'):format(wp.ridgeMarker);
+						end;
+
+						wpContent = wpContent .. ' />\n';
+
+						wpBatchTxt = wpBatchTxt .. wpContent;
+
+						-- write 4KB (or user adjusted value) at a time
+						local byteLength = wpBatchTxt:len();
+						if byteLength >= self.batchWriteSize or wpNum == numWaypoints then
+							file:write(wpBatchTxt);
+							wpBatchTxt = '';
+						end;
 					end;
+
 					file:write('\t\t</course>\n');
 				end;
 				file:write('\t</courses>\n</XML>');
 				file:close();
 			else
-				print("Error: Courseplay courses could not be saved to " .. tostring(courseplay.cpXmlFilePath)); 
+				print("COURSEPLAY ERROR: courses could not be saved to " .. tostring(CpManager.cpXmlFilePath)); 
 			end;
 		end;
 	end;
 end;
 
-function courseplay.courses.save_all(recreateXML)
+function courseplay.courses:saveAllToXml(recreateXML)
 -- saves all the courses and folders
 -- recreateXML (bool): 	if nil or true the xml file will be overwritten. While saving each course/folder it is saved without 
 --							checking if the id already exists in the file (it should not as the file was deleted and therefore empty).  This is faster than
 --						if false, the xml file will only be created if it doesn't exist. If there exists already a course/folder with the specific id in the xml, it will be overwritten
+	if g_server == nil then
+		return
+	end
+	
 	if recreateXML == nil then
 		recreateXML = true
 	end
 	
 	if recreateXML then
 	-- new version (better performance):
-		courseplay.courses.delete_save_all()
+		self:deleteSaveAll();
 	else
 	-- old version:
-		local f = courseplay.courses.openOrCreateXML(recreateXML)
+		local f = self:openOrCreateXML(recreateXML)
 		saveXMLFile(f)
-		
-		courseplay.courses.save_folders(f, recreateXML)			 -- append and don't check for id if recreateXML is true
-		courseplay.courses.save_courses(f, recreateXML)
+
+		self:saveFoldersToXml(f, recreateXML)			 -- append and don't check for id if recreateXML is true
+		self:saveCoursesToXml(f, recreateXML)
 		delete(f)
 	end
 end
 
-function courseplay.courses.openOrCreateXML(forceCreation)
+function courseplay.courses:openOrCreateXML(forceCreation)
 -- returns the file if success, nil else
 	forceCreation = forceCreation or false
 	
 	local File;
-	local filePath = courseplay.cpXmlFilePath;
+	local filePath = CpManager.cpXmlFilePath;
 	if filePath ~= nil then
 		if fileExists(filePath) and (not forceCreation) then
 			File = loadXMLFile("courseFile", filePath)
@@ -688,18 +745,18 @@ function courseplay.courses.openOrCreateXML(forceCreation)
 	return File
 end
 
-function courseplay.courses.getMaxCourseID()
+function courseplay.courses:getMaxCourseID()
 	local maxID;
 	if g_currentMission.cp_courses ~= nil then
 		maxID = courseplay.utils.table.getMax(g_currentMission.cp_courses, 'id')
 		if  maxID == false then
 			maxID = 0
 		end
-	end	
+	end
 	return maxID
 end
 
-function courseplay.courses.getMaxFolderID()
+function courseplay.courses:getMaxFolderID()
 	local maxID;
 	if g_currentMission.cp_folders ~= nil then
 		maxID = courseplay.utils.table.getMax(g_currentMission.cp_folders, 'id')
@@ -710,7 +767,7 @@ function courseplay.courses.getMaxFolderID()
 	return maxID
 end
 
-function courseplay:link_parent(vehicle, index)	
+function courseplay:linkParent(vehicle, index)
 	if type(vehicle.cp.hud.courses[index]) ~= nil then
 		local id = vehicle.cp.hud.courses[index].id
 		local type = vehicle.cp.hud.courses[index].type
@@ -738,17 +795,17 @@ function courseplay:link_parent(vehicle, index)
 				vehicle.cp.folder_settings[vehicle.cp.hud.selected_child.id].skipMe = false
 			end
 			vehicle.cp.hud.choose_parent = false
-			
+
 			-- link if possible and show courses anyway
-			if	type == 'folder' then --parent must be a folder!
+			if type == 'folder' then --parent must be a folder!
 				if vehicle.cp.hud.selected_child.type == 'folder' then
 					g_currentMission.cp_folders[vehicle.cp.hud.selected_child.id].parent = id
-					courseplay.courses.save_folder(vehicle.cp.hud.selected_child.id)
+					courseplay.courses:saveFolderToXml(vehicle.cp.hud.selected_child.id)
 				else
 					g_currentMission.cp_courses[vehicle.cp.hud.selected_child.id].parent = id
-					courseplay.courses.save_course(vehicle.cp.hud.selected_child.id)
+					courseplay.courses:saveCourseToXml(vehicle.cp.hud.selected_child.id)
 				end
-				g_currentMission.cp_sorted = courseplay.courses.sort()
+				g_currentMission.cp_sorted = courseplay.courses:sort()
 				courseplay.settings.setReloadCourseItems()
 			else
 				courseplay.hud.setCourses(vehicle,1)
@@ -771,10 +828,10 @@ function courseplay:link_parent(vehicle, index)
 			vehicle.cp.hud.choose_parent = false
 		end
 	end -- if type(vehicle.cp.hud.courses[index]) ~= nil
-	--courseplay:buttonsActiveEnabled(vehicle, "page2");
+	--courseplay.buttons:setActiveEnabled(vehicle, "page2");
 end
 
-function courseplay.courses.getNextCourse(vehicle, index, rev)
+function courseplay.courses:getNextCourse(vehicle, index, rev)
 -- returns the next entry to be showed in the hud from index onwards (assuming index is item that is shown!)
 -- if rev is true it is searchd reversely, the next item before index is returned
 -- returns 0 if no item is found
@@ -917,7 +974,7 @@ function courseplay.courses.getNextCourse(vehicle, index, rev)
 	return index
 end -- end of function
 
-function courseplay.courses.getMeOrBestFit(self, index)
+function courseplay.courses:getMeOrBestFit(self, index)
 -- if parent doesn't show its children: parent is returned
 -- if it's a course and showFoldersOnly is on: parent is returned
 -- if it's a skipped folder or an item of one: next neighbour is returned
@@ -1031,7 +1088,7 @@ function courseplay.courses.getMeOrBestFit(self, index)
 	return index
 end
 
-function courseplay.courses.reload(vehicle)
+function courseplay.courses:reloadVehicleCourses(vehicle)
 	if vehicle ~= nil then
 		-- reload courses (sort)
 		if vehicle.cp.hud.filter == '' then
@@ -1058,7 +1115,7 @@ function courseplay.courses.reload(vehicle)
 
 			-- sort
 			-- sort(courses_to_sort, folders_to_sort, parent_id, level, make_copies)
-			vehicle.cp.sorted = courseplay.courses.sort(courses, folders, 0, 0, false)
+			vehicle.cp.sorted = self:sort(courses, folders, 0, 0, false)
 		end
 		
 		-- update folder settings here??
@@ -1068,4 +1125,210 @@ function courseplay.courses.reload(vehicle)
 		
 		vehicle.cp.reloadCourseItems = false
 	end -- end vehicle ~= nil
+end
+
+
+
+function courseplay.courses:loadCoursesAndFoldersFromXml()
+	print('## Courseplay: loading courses and folders from "courseplay.xml"');
+
+	if CpManager.cpXmlFilePath then
+		local filePath = CpManager.cpXmlFilePath;
+
+		if fileExists(filePath) then
+			local cpFile = loadXMLFile('courseFile', filePath);
+			g_currentMission.cp_courses = nil -- make sure it's empty (especially in case of a reload)
+			g_currentMission.cp_courses = {}
+			local courses_by_id = g_currentMission.cp_courses
+			local courses_without_id = {}
+
+			-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			-- LOAD COURSES
+			local waypoints;
+			local i = 0;
+			while true do
+				-- current course
+				local courseKey = ('XML.courses.course(%d)'):format(i);
+				if not hasXMLProperty(cpFile, courseKey) then
+					break;
+				end;
+
+				-- course name
+				local courseName = getXMLString(cpFile, courseKey .. '#name');
+				if courseName == nil then
+					courseName = ('NO_NAME%d'):format(i);
+				end;
+				local courseNameClean = courseplay:normalizeUTF8(courseName);
+
+				-- course ID
+				local id = getXMLInt(cpFile, courseKey .. '#id') or 0;
+				
+				-- course parent
+				local parent = getXMLInt(cpFile, courseKey .. '#parent') or 0;
+
+				--course waypoints
+				waypoints = {};
+
+				local wpNum = 1;
+				while true do
+					local key = courseKey .. '.waypoint' .. wpNum;
+
+					if not hasXMLProperty(cpFile, key .. '#pos') then
+						break;
+					end;
+					local x, z = Utils.getVectorFromString(getXMLString(cpFile, key .. '#pos'));
+					if x == nil or z == nil then
+						break;
+					end;
+
+					local angle 	  =  getXMLFloat(cpFile, key .. '#angle') or 0;
+					local speed 	  = getXMLString(cpFile, key .. '#speed') or '0'; -- use string so we can get both ints and proper floats without LUA's rounding errors
+					speed = tonumber(speed);
+					if ceil(speed) ~= speed then -- is it an old savegame with old speeds ?
+						speed = ceil(speed * 3600);
+					end;
+
+					-- NOTE: only pos, angle and speed can't be nil. All others can and should be nil if not "active", so that they're not saved to the xml
+					local wait 		  =    getXMLInt(cpFile, key .. '#wait');
+					local rev 		  =    getXMLInt(cpFile, key .. '#rev');
+					local crossing 	  =    getXMLInt(cpFile, key .. '#crossing');
+
+					local generated   =   getXMLBool(cpFile, key .. '#generated');
+					local laneDir	  = getXMLString(cpFile, key .. '#dir');
+					local turn 		  = getXMLString(cpFile, key .. '#turn');
+					local turnStart	  =    getXMLInt(cpFile, key .. '#turnstart');
+					local turnEnd 	  =    getXMLInt(cpFile, key .. '#turnend');
+					local ridgeMarker =    getXMLInt(cpFile, key .. '#ridgemarker') or 0;
+
+					crossing = crossing == 1 or wpNum == 1;
+					wait = wait == 1;
+					rev = rev == 1;
+
+					if turn == 'false' then
+						turn = nil;
+					end;
+					turnStart = turnStart == 1;
+					turnEnd = turnEnd == 1;
+
+					waypoints[wpNum] = { 
+						cx = x, 
+						cz = z, 
+						angle = angle, 
+						speed = speed,
+
+						rev = rev, 
+						wait = wait, 
+						crossing = crossing, 
+						generated = generated,
+						laneDir = laneDir,
+						turn = turn,
+						turnStart = turnStart,
+						turnEnd = turnEnd,
+						ridgeMarker = ridgeMarker
+					};
+
+					wpNum = wpNum + 1;
+				end; -- END while true (waypoints)
+				
+				local course = { id = id, uid = 'c' .. id , type = 'course', name = courseName, nameClean = courseNameClean, waypoints = waypoints, parent = parent };
+				if id ~= 0 then
+					courses_by_id[id] = course;
+				else
+					table.insert(courses_without_id, course);
+				end;
+
+				waypoints = nil;
+				i = i + 1;
+			end; -- END while true (courses)
+
+
+			-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			-- LOAD FOLDERS
+			local j = 0
+			local currentFolder, FolderName, id, parent, folder
+			finish_all = false
+			g_currentMission.cp_folders = nil
+			g_currentMission.cp_folders = {}
+			local folders_by_id = g_currentMission.cp_folders
+			local folders_without_id = {}
+			repeat
+				-- current folder
+				currentFolder = string.format("XML.folders.folder(%d)", j)
+				if not hasXMLProperty(cpFile, currentFolder) then
+					finish_all = true;
+					break;
+				end;
+				
+				-- folder name
+				FolderName = getXMLString(cpFile, currentFolder .. "#name")
+				if FolderName == nil then
+					FolderName = string.format('NO_NAME%d',j)
+				end
+				local folderNameClean = courseplay:normalizeUTF8(FolderName);
+				
+				-- folder id
+				id = getXMLInt(cpFile, currentFolder .. "#id")
+				if id == nil then
+					id = 0
+				end
+				
+				-- folder parent
+				parent = getXMLInt(cpFile, currentFolder .. "#parent")
+				if parent == nil then
+					parent = 0
+				end
+				
+				-- "save" current folder
+				folder = { id = id, uid = 'f' .. id, type = 'folder', name = FolderName, nameClean = folderNameClean, parent = parent }
+				if id ~= 0 then
+					folders_by_id[id] = folder
+				else
+					table.insert(folders_without_id, folder)
+				end
+				j = j + 1
+			until finish_all == true
+
+			local save = false
+			if #courses_without_id > 0 then
+				-- give a new ID and save
+				local maxID = self:getMaxCourseID()
+				for i = 1, #courses_without_id do
+					maxID = maxID + 1
+					courses_without_id[i].id = maxID
+					courses_without_id[i].uid = 'c' .. maxID
+					courses_by_id[maxID] = courses_without_id[i]
+				end
+				save = true
+			end
+			if #folders_without_id > 0 then
+				-- give a new ID and save
+				local maxID = self:getMaxFolderID()
+				for i = #folders_without_id, 1, -1 do
+					maxID = maxID + 1
+					folders_without_id[i].id = maxID
+					folders_without_id[i].uid = 'f' .. maxID
+					folders_by_id[maxID] = table.remove(folders_without_id)
+				end
+				save = true
+			end		
+			if save then
+				-- this will overwrite the courseplay file and therefore delete the courses without ids and add them again with ids as they are now stored in g_currentMission with an id
+				self:saveAllToXml()
+			end
+
+			g_currentMission.cp_sorted = self:sort(courses_by_id, folders_by_id, 0, 0)
+
+			delete(cpFile);
+		else
+			-- print(('\t"courseplay.xml" missing at %q'):format(tostring(CpManager.cpXmlFilePath);
+		end; --END if fileExists
+
+		courseplay:debug(tableShow(g_currentMission.cp_sorted.item, "cp_sorted.item", 8), 8);
+
+		return g_currentMission.cp_courses;
+	else
+		print('COURSEPLAY ERROR: "courseplay.xml" file could not be found');
+	end; --END if savegame ~= nil
+
+	return nil;
 end

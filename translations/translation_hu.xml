@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<l10n>
+	<texts>
+		<text name="COURSEPLAY_RECORDING_START" 						 text="Útvonal rögzítés indítása" />
+		<text name="COURSEPLAY_DRIVER" 									 text="Útvonal" />
+		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 					 text="Szállító elindítása" />
+		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 					 text="Szállító megállítása" />
+		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 						 text="Állj az utlsó pontnál, következő triggernél" />
+		<text name="COURSEPLAY_UNLOADING_SIDE" 							 text="Ürítés oldala:" />
+		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="automatikus" />
+		<text name="COURSEPLAY_LEFT" 									 text="bal" />
+		<text name="COURSEPLAY_RIGHT" 									 text="jobb" />
+		<text name="COURSEPLAY_UNLOADING_DRIVER_SEND_HOME" 				 text="Szállító elküldése" />
+		<text name="COURSEPLAY_REQUEST_UNLOADING_DRIVER" 				 text="Szállító hívása" />
+		<text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED" 				 text="Szállító hívása" />
+		<text name="COURSEPLAY_START_COURSE" 							 text="Útvonal indítása" />
+		<text name="COURSEPLAY_STOP_COURSE" 							 text="Útvonal leállítása" />
+		<text name="COURSEPLAY_MODE_1" 									 text="Típus: Szállító segéd (tölt és indul)" />
+		<text name="COURSEPLAY_MODE_2" 									 text="Típus: Kombájnkövetés (kombájn ürítés és leadás)" />
+		<text name="COURSEPLAY_MODE_3" 									 text="Típus: Átrakodás (kombájn ürítés és átrakás)" />
+		<text name="COURSEPLAY_MODE_4" 									 text="Típus: Szórás és vetés" />
+		<text name="COURSEPLAY_MODE_5" 									 text="Típus: Szállitás (Vezetés a célig)" />
+		<text name="COURSEPLAY_MODE_6" 									 text="Típus: Földmunkák, gyűjtés, szállítás" />
+		<text name="COURSEPLAY_MODE_7" 									 text="Típus: A kombájn megy kirakodni" />
+		<text name="COURSEPLAY_MODE_8" 									 text="Típus: Trágyaszállítás" />
+		<text name="COURSEPLAY_MODE_9" 									 text="Típus: Rakodás (kanalat tölt és ürít)" />
+		<text name="COURSEPLAY_CONTINUE" 								 text="tovább hajtás" />
+		<text name="COURSEPLAY_CLEAR_COURSE" 							 text="Útvonalat alaphelyzetbe" />
+		<text name="COURSEPLAY_DRIVE_NOW" 								 text="Indítás azonnal (Nem vár a töltésre)" />
+		<text name="COURSEPLAY_DRIVE_ON_AT" 							 text="Elszállítás:" />
+		<text name="UNKNOWN" 											 text="Ismeretlen" />
+		<text name="COURSEPLAY_DISTANCE" 								 text="Távolság" />
+		<text name="COURSEPLAY_WAITING_TIME" 							 text="Várakozási idő" />
+		<text name="COURSEPLAY_MINUTES" 								 text="%d perc" />
+		<text name="COURSEPLAY_SECONDS" 								 text="%d másodperc" />
+		<text name="COURSEPLAY_COURSE_NAME" 							 text="Útvonal név:" />
+		<text name="COURSEPLAY_FOLDER_NAME" 							 text="Mappa név:" />
+		<text name="COURSEPLAY_FILTER_COURSES" 							 text="Útvonal szűrő:" />
+		<text name="COURSEPLAY_COURSES_FILTER_TITLE" 					 text="Útvonal: %q" />
+		<text name="COURSEPLAY_CREATE_FOLDER" 							 text="Új mappa létrehozása" />
+		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 			 text="Útvonal keresése a mappákban" />
+		<text name="COURSEPLAY_DEACTIVATE_FILTER" 						 text="Szűrő alaphelyzetbe" />
+		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 				 text="az átrakodási ponton van." />
+		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="a várakozási ponton van." />
+		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="az utolsó ponton van." />
+		<text name="COURSEPLAY_WORK_END" 								 text="végzett a munkával." />
+		<text name="COURSEPLAY_NEEDS_UNLOADING" 						 text=": A munka folytatásához ki kell ürítened!" />
+		<text name="COURSEPLAY_NEEDS_REFILLING" 						 text=": A munkaeszközt újra kell tölteni." />
+		<text name="COURSEPLAY_UNLOADING_BALES" 						 text="kirakja a bálákat." />
+		<text name="COURSEPLAY_IS_IN_TRAFFIC" 							 text="dugóban van (forgalomban)" />
+		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 						 text="Elérte a triggert" />
+		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Töltés: %d -ból %d" />
+		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Útpontok megjelenítése" />
+		<text name="COURSEPLAY_PATHFINDING" 							 text="Útvonal keresése" />
+		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Oldaltávolság:" />
+		<text name="COURSEPLAY_START_AT" 								 text="Tölteni indul:" />
+		<text name="COURSEPLAY_TURN_RADIUS" 							 text="Fordulási sugár:" />
+		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 				 text="Eltolás előre/hátra:" />
+		<text name="COURSEPLAY_COMBINE" 								 text="Kombájn" />
+		<text name="COURSEPLAY_NONE" 									 text="semmi" />
+		<text name="COURSEPLAY_CHOOSE_COMBINE" 							 text="Kombájnt választása:" />
+		<text name="COURSEPLAY_COMBINE_SEARCH_MODE" 					 text="Kombájn keresése:" />
+		<text name="COURSEPLAY_CURRENT" 								 text="Jelenlegi:" />
+		<text name="COURSEPLAY_AUTOMATIC_SEARCH" 						 text="automatikus keresés" />
+		<text name="COURSEPLAY_MANUAL_SEARCH" 							 text="kézzel kell kiválasztani" />
+		<text name="COURSEPLAY_SEARCH_COMBINE_ON_FIELD" 				 text="Kombájnkeresése a %s teületen" />
+		<text name="COURSEPLAY_COPY_COURSE" 							 text="Másolt útvonal:" />
+		<text name="COURSEPLAY_VEHICLE" 								 text="Jármű" />
+		<text name="COURSEPLAY_TEMP_COURSE" 							 text="ideiglenes útvonal" />
+		<text name="COURSEPLAY_SPEED_TURN" 								 text="Manőverezési seb.:" />
+		<text name="COURSEPLAY_SPEED_FIELD" 							 text="Termőföldi seb.:" />
+		<text name="COURSEPLAY_SPEED_MAX" 								 text="Közúti (max) seb.:" />
+		<text name="COURSEPLAY_SPEED_REVERSING" 						 text="Tolatási sebesség:" />
+		<text name="COURSEPLAY_MAX_SPEED_MODE" 							 text="Max sebesség:" />
+		<text name="COURSEPLAY_MAX_SPEED_MODE_RECORDING" 				 text="Felvétel alapján" />
+		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 						 text="beállított sebesség" />
+		<text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 				 text="automaikus (az útvonalhoz, max %s)" />
+		<text name="COURSEPLAY_NO_COURSE_LOADED" 						 text="Útvonal: Útvonal nincs betöltve" />
+		<text name="COURSEPLAY_WARNING_LIGHTS" 							 text="Megkülönböztető jelzés:" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 					 text="nem működik" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 					 text="sárga villogó (az utakon)" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 					 text="sárga villogó &amp; elakadásjelző (az utakon)" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_3" 					 text="Megkülönböztető jelzés (mindig működik)" />
+		<text name="COURSEPLAY_PAGE_TITLE_CP_CONTROL" 					 text="Útvonal lejátszó szabályozás" />
+		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 			 text="Kombájn szabályozás" />
+		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES" 				 text="Útvonal kezelés" />
+		<text name="COURSEPLAY_PAGE_TITLE_CHOOSE_FOLDER" 				 text="Mappa választás" />
+		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 					 text="Szállító üzemmód beállítása" />
+		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES" 				 text="Kombájn kezelés" />
+		<text name="COURSEPLAY_PAGE_TITLE_SPEEDS" 						 text="Sebességhatár" />
+		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 			 text="Vezetési beállítások" />
+		<text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS" 			 text="Beállitások" />
+		<text name="COURSEPLAY_COMBINE_IS_TURNING" 						 text="Kombájn éppen fordul" />
+		<text name="COURSEPLAY_NO_WORK_AREA" 							 text="Nincs munkaterülete a vezetőnek" />
+		<text name="COURSEPLAY_COMBINED_COURSES" 						 text="Betöltött útvonal" />
+		<text name="COURSEPLAY_DRIVE_BEHIND_COMBINE" 					 text="Kombájnhoz vezetés" />
+		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 					 text="Kombájn mellett halad" />
+		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 						 text="Kombájnhoz megy" />
+		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 				 text="Kombájn azt mondja, állj!" />
+		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	 text="Addig vár, míg a várakozási hely felszabadul" />		
+		<text name="COURSEPLAY_TURNING_TO_COORDS" 						 text="Irány %d %d" />
+		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 						 text="Az %d %d útvonalponthoz megy" />
+		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 					 text="Vár, amíg kombájn ürít" />
+		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 					 text="Hívó kombájnra vár" />
+		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 				 text="Vár, amíg kombájn megfordul!" />
+		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 					 text="Vár az új útvonalpontra" />
+		<text name="COURSEPLAY_FOLLOWING_TRACTOR" 						 text="Traktor követése" />
+		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 						 text="Az üzemanyag fogyóban! (20% alatt)" />
+		<text name="COURSEPLAY_MUST_BE_REFUELED" 						 text="Újra kell tankolnod!" />
+		<text name="COURSEPLAY_IS_BEING_REFUELED" 						 text="tankol!" />
+		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 				 text="Túl sok várakozási pont van! Csak %d szükséges." />
+		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="Túl kevés a várakozási pont! %d szükséges." />
+		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="Rossz szállítóeszköz ehhez a művelethez" />
+		<text name="COURSEPLAY_WRONG_TOOL" 								 text="Rossz munkaeszköz ehhez a művelethez" />
+		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="Ez a járműtípus nem megfelelő ehhez a művelethez." />
+		<text name="COURSEPLAY_WEATHER_WARNING" 						 text="vár míg jobb idő lesz! (eláll az eső)" />
+		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Közlekedő út eltolás:" />
+		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="Művelés eltolás oldalra:" />
+		<text name="COURSEPLAY_TOOL_OFFSET_Z" 							 text="Művelés eltolás előre:" />
+		<text name="COURSEPLAY_FRONT" 									 text="elöl" />
+		<text name="COURSEPLAY_BACK" 									 text="hátul" />
+		<text name="COURSEPLAY_WORK_WIDTH" 								 text="Munkaszélesség:" />
+		<text name="COURSEPLAY_WATER_WARNING" 							 text="Vízbe vezettél, úsznod kell!" />
+		<text name="COURSEPLAY_OPEN_HUD_MODE" 							 text="HUD megnyitása:" />
+		<text name="COURSEPLAY_DEBUG_CHANNELS" 							 text="Hibakereső csatorna:" />
+		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 			 text="Útvonal generálás" />
+		<text name="COURSEPLAY_STARTING_CORNER" 						 text="Kezdő sarok:" />
+		<text name="COURSEPLAY_STARTING_DIRECTION" 						 text="Művelés kezdő iránya:" />
+		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT" 					 text="Vissza az első pontra" />
+		<text name="COURSEPLAY_CORNER_1" 								 text="Dél/Nyugat" />
+		<text name="COURSEPLAY_CORNER_2" 								 text="Észak/Nyugat" />
+		<text name="COURSEPLAY_CORNER_3" 								 text="Észak/Kelet" />
+		<text name="COURSEPLAY_CORNER_4" 								 text="Dél/Kelet" />
+		<text name="COURSEPLAY_DIRECTION_1" 							 text="Észak" />
+		<text name="COURSEPLAY_DIRECTION_2" 							 text="Kelet" />
+		<text name="COURSEPLAY_DIRECTION_3" 							 text="Dél" />
+		<text name="COURSEPLAY_DIRECTION_4" 							 text="Nyugat" />
+		<text name="COURSEPLAY_HEADLAND" 								 text="Munkasáv" />
+		<text name="COURSEPLAY_ACTIVATED" 								 text="Bekapcsolva" />
+		<text name="COURSEPLAY_DEACTIVATED" 							 text="Kikapcsolva" />
+		<text name="COURSEPLAY_RIDGEMARKERS" 							 text="Főbb pontok" />
+		<text name="COURSEPLAY_UNLOADING_ON_FIELD" 						 text="Kirakodás a földön" />
+		<text name="COURSEPLAY_AUTOMATIC" 								 text="automatikus" />
+		<text name="COURSEPLAY_MANUAL" 									 text="manuális" />
+		<text name="COURSEPLAY_TURN_MANEUVER" 							 text="Fordulómanőver:" />
+		<text name="COURSEPLAY_START" 									 text="Kezdés" />
+		<text name="COURSEPLAY_FINISH" 									 text="Vége" />
+		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="Az útvonal nem megfelelő" />
+
+		<!-- shovel stuff -->
+		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="Kanál nem található" />
+		<text name="COURSEPLAY_SHOVEL_POSITIONS" 						 text="Kanál pozíció" />
+		<text name="COURSEPLAY_SHOVEL_POSITIONS_MISSING" 				 text="Hiányos kanál pozíció" />
+		<text name="COURSEPLAY_SHOVEL_LOADING_POSITION" 				 text="Töltési pozíció" />
+		<text name="COURSEPLAY_SHOVEL_TRANSPORT_POSITION" 				 text="Szállítási pozíció" />
+		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION" 			 text="Kirakodást előkészítő pozíció" />
+		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION" 				 text="Kirakási pozíció" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION" 			 text="Töltési pozíció mentése" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_TRANSPORT_POSITION" 			 text="Szállítási pozíció mentése" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_PRE_UNLOADING_POSITION" 		 text="Kirakodást előkészítő pozíció mentése" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_UNLOADING_POSITION" 			 text="Kirakási pozíció mentése" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 		 text="Mozgatás a töltési pozícióba" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 		 text="Mozgatás a szállítási pozícióba" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 	 text="Mozgatás a kirakodást előkészítő pozícióba" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 		 text="Mozgatás a kirakási pozícióba" />
+		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Kirak és indul tölteni" />
+
+		<text name="COURSEPLAY_START_AT_POINT" 							 text="Útvonal kezdése:" />
+		<text name="COURSEPLAY_NEAREST_POINT" 							 text="legközelebbi útpont" />
+		<text name="COURSEPLAY_FIRST_POINT" 							 text="első útpont" />
+		<text name="COURSEPLAY_CURRENT_POINT" 							 text="Aktuális útpont" />
+		<text name="COURSEPLAY_FIELD_EDGE_PATH" 						 text="Művelendő terület:" />
+		<text name="COURSEPLAY_FIELD" 									 text="Terület" />
+		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 				 text="(jelenleg betöltött útvonal)" />
+		<text name="COURSEPLAY_FIELD_SCAN_IN_PROGRESS" 					 text="Térkép vizsgálata." />
+		<text name="COURSEPLAY_SCANNING_FIELD_NMB" 						 text="A terület vizsgálata: %d/%d" />
+		<text name="COURSEPLAY_HOSEMISSING" 							 text="A tömlő nem található- utántöltés törölve" />
+		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE" 					 text="Szimmetrikus sávváltás:" />
+		<text name="COURSEPLAY_UNLOADING_DRIVER_PRIORITY" 				 text="Szállító prioritása:" />
+		<text name="COURSEPLAY_FILLEVEL" 								 text="töltési szint" />
+		<text name="COURSEPLAY_PICKUP_JAMMED" 							 text=": felszedő eltömődött" />
+		<text name="COURSEPLAY_BALER_NEEDS_NETS" 						 text=": bálázónak új fólia kell" />
+		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES" 				 text="A területszél útvonalának kikalkulálása" />
+		<text name="COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER" 			 text="Területszéle útvonalának száma" />
+		<text name="COURSEPLAY_ADD_CUSTOM_FIELD_EDGE_PATH_TO_LIST" 		 text="A %d terület szélének utvonala hozzáadása a listához" />
+		<text name="COURSEPLAY_OVERWRITE_CUSTOM_FIELD_EDGE_PATH_IN_LIST" text="A %d terület szélének felülirása a listában" />
+		<text name="COURSEPLAY_USER" 									 text="felhasználó" />
+		<text name="COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED" 				 text="hamarosan javításra szorul!" />
+		<text name="COURSEPLAY_DAMAGE_MUST_BE_REPAIRED" 				 text="meg kell javítani!" />
+		<text name="COURSEPLAY_DAMAGE_IS_BEING_REPAIRED" 				 text="javítás alatt" />
+		<text name="COURSEPLAY_COVER_HANDLING" 							 text="Ponyva:" />
+		<text name="COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR" 			 text="Kombájnkijelölés eltávolítása" />
+		<text name="COURSEPLAY_STOP_DURING_UNLOADING" 					 text="Kirakodás közben leállít" />
+		<text name="COURSEPLAY_SLIPPING_WARNING" 						 text="kipörög" />
+		<text name="COURSEPLAY_REFILL_UNTIL_PCT" 						 text="Újratölteni:" />
+		<text name="COURSEPLAY_BGA_IS_FULL" 							 text=": a BGA siló tele van!" />
+		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 					 text="Nem választottad ki a farm tárólóból a terménytípust" />
+		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 					 text="A farm tároló töltöttsége:" />
+		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="A farm tárólőja üres!" />
+		<text name="COURSEPLAY_STARTING_UP_TOOL" 						 text="Beindul %s!" />
+		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 				 text="Első útpont keresése" />
+		<text name="COURSEPLAY_SAVE_CURRENT_COURSE" 					 text="Aktuális útvonal mentése" />
+		<text name="COURSEPLAY_RECORDING_STOP" 							 text="Felvétel leállítása" />
+		<text name="COURSEPLAY_RECORDING_PAUSE" 						 text="Felvétel szüneteltetése" />
+		<text name="COURSEPLAY_RECORDING_PAUSE_RESUME" 					 text="Felvétel folytatása" />
+		<text name="COURSEPLAY_RECORDING_DELETE" 						 text="Az utolsó útvonalpont törlése" />
+		<text name="COURSEPLAY_RECORDING_SET_WAIT" 						 text="Várakozási pont elhelyezése" />
+		<text name="COURSEPLAY_RECORDING_SET_CROSS" 					 text="Elágazási pont elhelyezése" />
+		<text name="COURSEPLAY_RECORDING_TURN_START" 					 text="Fordulás indítása (következő sorra)" />
+		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="Fordulás vége" />
+		<text name="COURSEPLAY_RECORDING_REVERSE_START" 				 text="Tolatás indítása" />
+		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="Tolatás leállítása" />
+		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Osztási pont hozzáadása" />
+		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Térképikonok: kijelzőszöveg" />
+		<text name="COURSEPLAY_ALWAYS_USE_4WD" 							 text="Mindig összkerékhajtás" />
+		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="Szeretnéd, hogy a mezők adatait automatikusan beolvassa?" />
+		<text name="COURSEPLAY_YES_NO_WAGES" 							 text="Szeretnéd, hogy a munkásod bért kapjon (%s/óra)?" />
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 					 text="Vetőmag szükséglet számítás" />
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 				 text="Terület: %d (%s %s)" />
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 			 text="Vetőmag típusa: %s" />
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE" 				 text="Szükséglet: %s %s (%s)" />
+		<text name="COURSEPLAY_HUD_OPEN" 								 text="Vezetősegéd panel megnyitása" />
+		<text name="COURSEPLAY_HUD_CLOSE" 								 text="Vezetősegéd panel bezárása" />
+		<text name="COURSEPLAY_FUNCTIONS" 								 text="Vezetősegéd funkciók" />
+		<text name="COURSEPLAY_MODIFIER" 								 text="Vezetősegéd gombkiosztás: Elsődleges" />
+		<text name="COURSEPLAY_MENU_ACCEPT_SECONDARY" 					 text="Vezetősegéd gombkiosztás: Másodlagos" />
+		<text name="COURSEPLAY_HUD" 									 text="Vezetősegéd panel be/ki" />
+		<text name="COURSEPLAY_START_STOP" 								 text="Vezetősegéd: Vezető indítása/leállítása" />
+		<text name="COURSEPLAY_CANCELWAIT" 								 text="Vezetősegéd: Állj az utolsó ponton következő triggernél" />
+		<text name="COURSEPLAY_DRIVENOW" 								 text="Vezetősegéd: Indítás azonnal!" />
+		<text name="COURSEPLAY_NEXTMODE" 								 text="Vezetősegéd: Következő művelet" />
+		<text name="COURSEPLAY_PREVMODE" 								 text="Vezetősegéd: Előző művelet" />
+		<text name="COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Vezetősegéd: Egér activálás" />
+		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Vezetősegéd: Másodlagos egér aktiválás" />
+		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="Egérkurzor megjelenítése" />
+		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="Egérkurzor elrejtése" />
+		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Útvonal betöltése/hozzáfűzés a betöltött útvonalhoz" />
+		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Útvonal hozzáadása a végéhez" />
+		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Áthelyezés mappába" />
+		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Útvonal/mappa törlése" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="Kezdő-, és végpont megjelenítése/elrejtése" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="Minden pont megjelenítése/elrejtése" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="Elágazási pontok megjelenítése/elrejtése" />
+	</texts>
+</l10n>

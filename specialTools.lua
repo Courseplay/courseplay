@@ -7,7 +7,7 @@ function courseplay:setNameVariable(workTool)
 		return;
 	end;
 
-	-- local specList = { 'AICombine', 'AITractor', 'AnimatedVehicle', 'BaleLoader', 'Baler', 'BunkerSiloCompacter', 'Combine', 'Cultivator', 'Cutter', 'Cylindered', 'Fillable', 'Foldable', 'FruitPreparer', 'MixerWagon', 'Mower', 'PathVehicle', 'Plough', 'Shovel', 'SowingMachine', 'Sprayer', 'Steerable', 'Tedder', 'TrafficVehicle', 'Trailer', 'Windrower' };
+	-- local specList = { 'AICombine', 'AITractor', 'AnimatedVehicle', 'BaleLoader', 'Baler', 'BunkerSiloCompacter', 'Combine', 'Cultivator', 'Cutter', 'Cylindered', 'Fillable', 'Foldable', 'FruitPreparer', 'FuelTrailer', 'MixerWagon', 'Mower', 'PathVehicle', 'Plough', 'Shovel', 'SowingMachine', 'Sprayer', 'Steerable', 'Tedder', 'TrafficVehicle', 'Trailer', 'WaterTrailer', 'Windrower' };
 
 	-- Only default specs!
 	for i,spec in pairs(workTool.specializations) do
@@ -26,6 +26,7 @@ function courseplay:setNameVariable(workTool)
 		elseif spec == Fillable 		   then workTool.cp.hasSpecializationFillable 			 = true;
 		elseif spec == Foldable 		   then workTool.cp.hasSpecializationFoldable 			 = true;
 		elseif spec == FruitPreparer 	   then workTool.cp.hasSpecializationFruitPreparer 		 = true;
+		elseif spec == FuelTrailer		   then workTool.cp.hasSpecializationFuelTrailer		 = true;
 		elseif spec == MixerWagon 		   then workTool.cp.hasSpecializationMixerWagon 		 = true;
 		elseif spec == Mower 			   then workTool.cp.hasSpecializationMower 				 = true;
 		elseif spec == PathVehicle 		   then workTool.cp.hasSpecializationPathVehicle 		 = true;
@@ -37,6 +38,7 @@ function courseplay:setNameVariable(workTool)
 		elseif spec == Tedder 			   then workTool.cp.hasSpecializationTedder 			 = true;
 		elseif spec == TrafficVehicle 	   then workTool.cp.hasSpecializationTrafficVehicle 	 = true;
 		elseif spec == Trailer 			   then workTool.cp.hasSpecializationTrailer 			 = true;
+		elseif spec == WaterTrailer		   then workTool.cp.hasSpecializationWaterTrailer		 = true;
 		elseif spec == Windrower 		   then workTool.cp.hasSpecializationWindrower 			 = true;
 		end;
 
@@ -52,6 +54,9 @@ function courseplay:setNameVariable(workTool)
 
 	if workTool.cp.hasSpecializationFillable then
 		workTool.cp.closestTipDistance = math.huge;
+	end;
+	if workTool.typeName == 'hookLiftTrailer' then
+		workTool.cp.isHookLiftTrailer = true;
 	end;
 
 	--[[ DEBUG
@@ -73,7 +78,11 @@ function courseplay:setNameVariable(workTool)
 	-- SPECIALIZATIONS BASED
 	-- [1] AUGER WAGONS
 	if workTool.typeName == 'augerWagon' then
-		workTool.cp.isAugerWagon = true;
+		if workTool.fillTypes and workTool.fillTypes[Fillable.FILLTYPE_LIQUIDMANURE] ~= nil then 
+			workTool.cp.isLiquidManureOverloader = true;
+		else
+			workTool.cp.isAugerWagon = true;
+		end
 		if workTool.cp.xmlFileName == 'horschTitan34UW.xml' then
 			workTool.cp.isHorschTitan34UW = true;
 			workTool.cp.foldPipeAtWaitPoint = true;
@@ -147,13 +156,15 @@ function courseplay:setNameVariable(workTool)
 	-- ###########################################################
 
 	-- [6] MOD BALING
-
-
+	
+	
 	-- ###########################################################
 
 	-- [7] MOD OTHER TOOLS
 
-
+	elseif workTool.cp.xmlFileName == 'Kirovets_701AP.xml' then
+		workTool.cp.isKasi701AP = true;
+		workTool.cp.isWheelLoader = true;
 
 	-- ###########################################################
 	-- ###########################################################
@@ -206,6 +217,10 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.isHarvesterAttachable = true;
 		workTool.cp.isGrimmeSE260 = true;
 		
+	elseif workTool.cp.xmlFileName == 'poettingerMex5.xml' then
+		workTool.cp.isHarvesterAttachable = true;
+		workTool.cp.isPoettingerMex5 = true;
+		
 	-- Cutters [Giants]
 	elseif workTool.cp.xmlFileName == 'caseIH3162Cutter.xml' then
 		workTool.cp.isCaseIH3162Cutter = true;
@@ -235,12 +250,53 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.directionNodeZOffset = 1.567;
 		workTool.cp.showDirectionNode = true;
 
+	-- Wood harvesters [Giants]
+	elseif workTool.typeName == 'woodHarvester' then
+		workTool.cp.isWoodHarvester = true;
+		
+	-- Wood chipper [Giants]
+	elseif workTool.typeName == 'woodCrusherTrailer' then
+		workTool.cp.isWoodChipper = true;	
+
+	-- Tree Planter [Giants]
+	elseif workTool.typeName == 'treePlanter' then
+		workTool.cp.isTreePlanter = true;
+				
+	-- Wood forwarders [Giants]
+	elseif workTool.typeName == 'forwarder' then
+		workTool.cp.isWoodForwarder = true;
+
 	-- ###########################################################
 
 	-- [3] TRAILERS
 	-- Bergmann HTW 65 [Giants]
 	elseif workTool.cp.xmlFileName == 'bergmannHTW65.xml' then
 		workTool.cp.isBergmannHTW65 = true;
+		workTool.cp.isPushWagon = true;
+
+	-- Fliegl ASS 298 [Giants]
+	elseif workTool.cp.xmlFileName == 'flieglASS2101.xml' then
+		workTool.cp.isFlieglASS298 = true;
+		workTool.cp.isPushWagon = true;
+
+	-- Krampe Bandit 750 [Giants]
+	elseif workTool.cp.xmlFileName == 'krampeBandit750.xml' then
+		workTool.cp.isKrampeBandit750 = true;
+		workTool.cp.isPushWagon = true;
+
+	-- Krampe Bandit Sb 30 / 60 [Giants]
+	elseif workTool.cp.xmlFileName == 'krampeSB3060.xml' then
+		workTool.cp.isKrampeSB3060 = true;
+		workTool.cp.isPushWagon = true;
+
+	-- Kroeger Agroliner TAW 30 [Giants]
+	elseif workTool.cp.xmlFileName == 'kroegerTAW30.xml' then
+		workTool.cp.isKroegerTAW30 = true;
+		workTool.cp.isPushWagon = true;
+
+	-- Bergmann HT 50 [Giants DLC: ITRunner]
+	elseif workTool.cp.xmlFileName == 'containerChaff.xml' then
+		workTool.cp.isBergmannHT50 = true;
 		workTool.cp.isPushWagon = true;
 
 
@@ -261,6 +317,25 @@ function courseplay:setNameVariable(workTool)
 	-- Seeders [Giants]
 	elseif workTool.cp.xmlFileName == 'vaderstadRapidA600S.xml' then
 		workTool.cp.isVaderstadRapidA600S = true;
+
+	-- Special tools [Giants]
+	elseif workTool.typeName == 'strawBlower' then
+		workTool.cp.isStrawBlower = true;
+		workTool.cp.specialUnloadDistance = 0;
+
+	elseif workTool.typeName == 'fuelTrailer' or workTool.cp.hasSpecializationFuelTrailer then
+		workTool.cp.isFuelTrailer = true;
+
+	elseif workTool.typeName == 'waterTrailer' or workTool.cp.hasSpecializationWaterTrailer then
+		workTool.cp.isWaterTrailer = true;
+	end;
+
+	if courseplay:isSprayer(workTool) then
+		if workTool.fillTypes[Fillable.FILLTYPE_LIQUIDMANURE] then
+			workTool.cp.isLiquidManureSprayer = true;
+		elseif workTool.fillTypes[Fillable.FILLTYPE_MANURE] then
+			workTool.cp.isManureSprayer = true;
+		end;
 	end;
 end;
 
@@ -281,30 +356,10 @@ function courseplay:setCustomSpecVariables(vehicle)
 
 	local specToSpecClassName = {};
 
-	local vehicleCustomEnvironment = vehicle.customEnvironment;
-	local mrDlcsCustomEnvironment;
-	if vehicle.typeName:lower():find('morerealisticdlcs.') then
-		mrDlcsCustomEnvironment = Utils.splitString('.', vehicle.typeName)[1];
-	end;
-
 	for specClassName, data in pairs(customSpecNames) do
 		local fullSpecClassName = specClassName;
-		-- MoreRealisticDLCs vehicle
-		if mrDlcsCustomEnvironment then
-			-- spec must be in vehicle CE
-			if data.useVehicleCustomEnvironment then
-				if vehicleCustomEnvironment then
-					fullSpecClassName = ('%s.%s'):format(vehicleCustomEnvironment, specClassName);
-				end;
-
-			-- spec in MoreRealisticDLCs CE
-			else
-				fullSpecClassName = ('%s.%s'):format(mrDlcsCustomEnvironment, specClassName);
-			end;
-
-		-- vehicle CE
-		elseif vehicleCustomEnvironment then
-			fullSpecClassName = ('%s.%s'):format(vehicleCustomEnvironment, specClassName);
+		if vehicle.customEnvironment then
+			fullSpecClassName = ('%s.%s'):format(vehicle.customEnvironment, specClassName);
 		end;
 
 		local spec = getClassObject(fullSpecClassName);
@@ -332,10 +387,6 @@ function courseplay:isSpecialSprayer(workTool)
 	return false;
 end;
 
-function courseplay:isSpecialChopper(workTool)
-	return false
-end
-
 function courseplay:isSpecialMower(workTool)
 	return false;
 end
@@ -349,6 +400,9 @@ function courseplay:isSpecialRoundBaler(workTool)
 end;
 
 function courseplay:isSpecialBaleLoader(workTool)
+	if workTool.cp.isSpecialBaleLoader or workTool.isSpecialBaleLoader then	
+		return true;
+	end;
 	return false;
 end;
 
@@ -371,8 +425,7 @@ function courseplay:isSpecialCombine(workTool, specialType, fileNames)
 end
 
 
-function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload,ridgeMarker)
-
+function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload,ridgeMarker,forceSpeedLimit)
 	local implementsDown = lower and turnOn
 	if workTool.PTOId then
 		workTool:setPTO(false)
@@ -387,13 +440,36 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 			allowedToDrive = false
 		end
 
-		return false ,allowedToDrive
-
+		return false ,allowedToDrive,forceSpeedLimit;
+		
+		
+	elseif workTool.isFlieglDPWxxx then
+		if forceSpeedLimit ~= nil and workTool.maxSpeedLimit ~= nil then 
+			forceSpeedLimit = math.min(forceSpeedLimit, workTool.maxSpeedLimit-1)
+		end
+		if not workTool.automaticLoading then
+			workTool.automaticLoading = true
+		end
+		workTool.isLookingForBales = false
+		if turnOn ~= workTool.loadingIsActive and workTool.fillLevel < workTool.capacity then
+			workTool.isLookingForBales = true
+			if workTool.nearestObject == nil then
+				workTool.loadingIsActive = turnOn
+			end
+		end
+		if unload and not workTool.loadingIsActive and workTool.fillLevel > 0 then
+				workTool.unloadingIsActive = true
+		end
+		if workTool.unloadingIsActive then
+			allowedToDrive = false
+		end
+		
+		return true, allowedToDrive, forceSpeedLimit
 	end;
 
 
 
-	return false, allowedToDrive;
+	return false, allowedToDrive,forceSpeedLimit;
 end
 
 function courseplay:askForSpecialSettings(self, object)
@@ -455,17 +531,21 @@ function courseplay:askForSpecialSettings(self, object)
 	elseif object.cp.isGrimmeSE260 then
 		self.cp.aiTurnNoBackward = true
 		automaticToolOffsetX = -1.8
-		print("GrimmeSE260 workwidth: 1.6 m") --TODO (Tom) set local language for workwidth
+		--courseplay:debug("GrimmeSE260 workwidth: 1.6 m",7) --TODO (Tom) set local language for workwidth
 	elseif object.cp.isGrimmeRootster604 then
 		self.cp.aiTurnNoBackward = true
 		--automaticToolOffsetX = -0.9
-		print("Grimme Rootster 604 workwidth: 2.9 m") --TODO (Tom) set local language for workwidth
+		--courseplay:debug("Grimme Rootster 604 workwidth: 2.9 m",7) --TODO (Tom) set local language for workwidth
 	elseif object.cp.isUrsusZ586 then
 		self.cp.aiTurnNoBackward = true
 		self.cp.noStopOnEdge = true
 		self.cp.noStopOnTurn = true
 		automaticToolOffsetX = -2.5;
-	end
+	end;
+
+	if self.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT then
+		object.cp.lastFillLevel = object.fillLevel;
+	end;
 
 	if automaticToolOffsetX ~= nil then
 		self.cp.tempToolOffsetX = self.cp.toolOffsetX;
@@ -474,11 +554,16 @@ function courseplay:askForSpecialSettings(self, object)
 end
 
 function courseplay:getSpecialWorkWidth(workTool)
-	--[[if workTool.cp then
-		if workTool.cp.isLindnerTankModule then
+	if workTool.cp then
+		--[[if workTool.cp.isLindnerTankModule then
 			return 6.0;
-		end;
-	end;]]
+		end;]]
+		if workTool.cp.isGrimmeRootster604 then
+			return 2.9
+		elseif workTool.cp.isGrimmeSE260 then
+			return 1.6
+		end
+	end;
 
 	return nil;
 end;

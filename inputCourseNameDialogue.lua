@@ -144,15 +144,15 @@ function inputCourseNameDialogue:onSaveClick()
 	if vehicle.cp.saveWhat == 'course' then
 		if self.textInputElement ~= nil then
 			--print("self.textInputElement.text= "..tostring(self.textInputElement.text).."  courseplay.vehicleToSaveCourseIn.cp.currentCourseName= "..tostring(courseplay.vehicleToSaveCourseIn.cp.currentCourseName));
-			vehicle.cp.currentCourseName = self.textInputElement.text;
 			CourseplayEvent.sendEvent(vehicle, "self.cp.saveWhat", vehicle.cp.saveWhat)
-			CourseplayEvent.sendEvent(vehicle, "self.cp.currentCourseName", self.textInputElement.text)
+			vehicle:setCpVar('currentCourseName',self.textInputElement.text);
+			--CourseplayEvent.sendEvent(vehicle, "self.cp.currentCourseName", self.textInputElement.text)
 			vehicle.cp.doNotOnSaveClick = true
 		else
 			--print("self.textInputElement= "..tostring(self.textInputElement).."  courseplay.vehicleToSaveCourseIn.cp.currentCourseName= "..tostring(courseplay.vehicleToSaveCourseIn.cp.currentCourseName));
 		end
 
-		local maxID = courseplay.courses.getMaxCourseID() -- horoman: made maxID local, should not make a difference as it is used nowhere (at least Eclipse file search doesn't find it in any of the courseplay files)
+		local maxID = courseplay.courses:getMaxCourseID() -- horoman: made maxID local, should not make a difference as it is used nowhere (at least Eclipse file search doesn't find it in any of the courseplay files)
 		if maxID == nil then
 			g_currentMission.cp_courses = {};
 			maxID = 0
@@ -165,14 +165,13 @@ function inputCourseNameDialogue:onSaveClick()
 		g_currentMission.cp_courses[vehicle.cp.currentCourseId] = course
 		--courseplay:dopairs(g_currentMission.cp_courses,1) replace it by tableshow
 		
-		g_currentMission.cp_sorted = courseplay.courses.sort()
-		
-		
-		
-		courseplay.courses.save_course(vehicle.cp.currentCourseId, nil, true)
+		g_currentMission.cp_sorted = courseplay.courses:sort()
+		if not courseplay.isClient then
+			courseplay.courses:saveCourseToXml(vehicle.cp.currentCourseId, nil, true)
+		end
 		courseplay.settings.setReloadCourseItems()
-		courseplay.utils.signs:updateWaypointSigns(vehicle);
-		
+		courseplay.signs:updateWaypointSigns(vehicle);
+
 	elseif vehicle.cp.saveWhat == 'folder' then
 		if self.textInputElement ~= nil then
 			vehicle.cp.saveFolderName = self.textInputElement.text
@@ -180,7 +179,7 @@ function inputCourseNameDialogue:onSaveClick()
 			CourseplayEvent.sendEvent(vehicle, "self.cp.saveFolderName", self.textInputElement.text)
 		end
 	
-		local maxID = courseplay.courses.getMaxFolderID()
+		local maxID = courseplay.courses:getMaxFolderID()
 		if maxID == nil then
 			g_currentMission.cp_folders = {}
 			maxID = 0
@@ -190,22 +189,23 @@ function inputCourseNameDialogue:onSaveClick()
 
 		g_currentMission.cp_folders[folderID] = folder
 		--courseplay:dopairs(g_currentMission.cp_folders,1)replace it by tableshow
-		g_currentMission.cp_sorted = courseplay.courses.sort(g_currentMission.cp_courses, g_currentMission.cp_folders, 0, 0)
-
-		courseplay.courses.save_folder(folderID, nil, true)
+		g_currentMission.cp_sorted = courseplay.courses:sort(g_currentMission.cp_courses, g_currentMission.cp_folders, 0, 0)
+		if not courseplay.isClient then
+			courseplay.courses:saveFolderToXml(folderID, nil, true)
+		end
 		courseplay.settings.add_folder(folderID)
 		courseplay.settings.setReloadCourseItems()
-		courseplay.utils.signs:updateWaypointSigns(vehicle);
-		
+		courseplay.signs:updateWaypointSigns(vehicle);
+
 	elseif vehicle.cp.saveWhat == 'filter' then
 		if self.textInputElement ~= nil then
 			vehicle.cp.hud.filter = self.textInputElement.text;
 			CourseplayEvent.sendEvent(vehicle, "self.cp.saveWhat", vehicle.cp.saveWhat)
 			CourseplayEvent.sendEvent(vehicle, "self.cp.saveFolderName", self.textInputElement.text)
 		end
-		
-		local button = vehicle.cp.buttons[2][vehicle.cp.hud.filterButtonIndex];
-		courseplay.button:setOverlay(button, 2);
+
+		vehicle.cp.hud.filterButton:setSpriteSectionUVs('cancel');
+		vehicle.cp.hud.filterButton:setToolTip(courseplay:loc('COURSEPLAY_DEACTIVATE_FILTER'));
 		courseplay.settings.setReloadCourseItems(vehicle);
 	end
 
@@ -253,13 +253,18 @@ function inputCourseNameDialogue:setCallbacks(onCourseNameEntered, target)
 end; --END setCallbacks()
 
 function inputCourseNameDialogue:update(dt)
-	if InputBinding.hasEvent(InputBinding.MENU_ACCEPT, true) or InputBinding.hasEvent(InputBinding.COURSEPLAY_MENU_ACCEPT_SECONDARY, true) then
-		InputBinding.hasEvent(InputBinding.MENU_ACCEPT, true);
+	if InputBinding.hasEvent(InputBinding.MENU_ACCEPT) or InputBinding.hasEvent(InputBinding.COURSEPLAY_MENU_ACCEPT_SECONDARY) then
+		-- InputBinding.hasEvent(InputBinding.MENU_ACCEPT);
 		self:onEnterPressed();
 	elseif InputBinding.hasEvent(InputBinding.MENU, true) or InputBinding.hasEvent(InputBinding.MENU_CANCEL, true) then
-		InputBinding.hasEvent(InputBinding.MENU_CANCEL, true);
-		InputBinding.hasEvent(InputBinding.MENU, true);
+		-- InputBinding.hasEvent(InputBinding.MENU_CANCEL);
+		-- InputBinding.hasEvent(InputBinding.MENU);
 		self:onCancelClick();
 	end;
 end; --END update()
 
+
+
+
+g_inputCourseNameDialogue = inputCourseNameDialogue:new();
+g_gui:loadGui(courseplay.path .. 'inputCourseNameDialogue.xml', 'inputCourseNameDialogue', g_inputCourseNameDialogue);

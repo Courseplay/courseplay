@@ -9,7 +9,7 @@ end
 
 -- displays arrow and distance to previous point
 function courseplay:distanceCheck(vehicle)
-	local number = vehicle.cp.recordingIsPaused and vehicle.recordnumber - 1 or 1;
+	local number = vehicle.cp.recordingIsPaused and vehicle.cp.waypointIndex - 1 or 1;
 
 	local cx, cz = vehicle.Waypoints[number].cx, vehicle.Waypoints[number].cz;
 	local lx, ly, lz = worldToLocal(vehicle.cp.DirectionNode, cx, 0, cz);
@@ -18,7 +18,7 @@ function courseplay:distanceCheck(vehicle)
 	vehicle.cp.directionArrowOverlay:render();
 
 	local ctx, cty, ctz = getWorldTranslation(vehicle.cp.DirectionNode);
-	courseplay:setInfoText(vehicle, string.format("%s: %.1fm", courseplay:loc("COURSEPLAY_DISTANCE"), courseplay:distance(ctx, ctz, cx, cz)));
+	courseplay:setInfoText(vehicle, ('COURSEPLAY_DISTANCE;%d'):format(courseplay:distance(ctx, ctz, cx, cz)));
 end;
 
 

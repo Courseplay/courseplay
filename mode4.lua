@@ -1,10 +1,11 @@
 function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, refSpeed)
 	local workTool;
 	local forceSpeedLimit = refSpeed
-	local workArea = (self.recordnumber > self.cp.startWork) and (self.recordnumber < self.cp.finishWork)
+	local fieldArea = (self.cp.waypointIndex > self.cp.startWork) and (self.cp.waypointIndex < self.cp.stopWork)
+	local workArea = (self.cp.waypointIndex > self.cp.startWork) and (self.cp.waypointIndex < self.cp.finishWork)
 	local isFinishingWork = false
 	local hasFinishedWork = false
-	if self.recordnumber == self.cp.finishWork and self.cp.abortWork == nil then
+	if self.cp.waypointIndex == self.cp.finishWork and self.cp.abortWork == nil then
 		local _,y,_ = getWorldTranslation(self.cp.DirectionNode)
 		local _,_,z = worldToLocal(self.cp.DirectionNode,self.Waypoints[self.cp.finishWork].cx,y,self.Waypoints[self.cp.finishWork].cz)
 		z = -z
@@ -13,28 +14,35 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 			workArea = true
 			isFinishingWork = true
 		elseif self.cp.finishWork ~= self.cp.stopWork then
-			courseplay:setRecordNumber(self, math.min(self.cp.finishWork + 1, self.maxnumber));
+			courseplay:setWaypointIndex(self, math.min(self.cp.finishWork + 1, self.cp.numWaypoints));
 		end;
 	end;
-
+	if self.cp.hasTransferCourse and self.cp.abortWork ~= nil and self.cp.waypointIndex == 1 then
+		courseplay:setWaypointIndex(self,self.cp.startWork+1);
+	end
+	--go with field speed	
+	if fieldArea or self.cp.waypointIndex == self.cp.startWork or self.cp.waypointIndex == self.cp.stopWork +1 then
+		workSpeed = 1;
+	end
+	
 	-- Begin Work
-	if self.cp.lastRecordnumber == self.cp.startWork and fillLevelPct ~= 0 then
+	if self.cp.previousWaypointIndex == self.cp.startWork and fillLevelPct ~= 0 then
 		if self.cp.abortWork ~= nil then
 			if self.cp.abortWork < 5 then
 				self.cp.abortWork = 6
 			end
-			courseplay:setRecordNumber(self, self.cp.abortWork);
-			if self.Waypoints[self.recordnumber].turn ~= nil or self.Waypoints[self.recordnumber+1].turn ~= nil  then
-				courseplay:setRecordNumber(self, self.recordnumber - 2);
+			courseplay:setWaypointIndex(self, self.cp.abortWork);
+			if self.Waypoints[self.cp.waypointIndex].turn ~= nil or self.Waypoints[self.cp.waypointIndex+1].turn ~= nil  then
+				courseplay:setWaypointIndex(self, self.cp.waypointIndex - 2);
 			end
 		end
 	end
 	-- last point reached restart
 	if self.cp.abortWork ~= nil then
-		if self.cp.lastRecordnumber == self.cp.abortWork and fillLevelPct ~= 0 then
-			courseplay:setRecordNumber(self, self.cp.abortWork + 2);
+		if self.cp.previousWaypointIndex == self.cp.abortWork and fillLevelPct ~= 0 then
+			courseplay:setWaypointIndex(self, self.cp.abortWork + 2);
 		end
-		if self.cp.lastRecordnumber == self.cp.abortWork + 8 then
+		if self.cp.previousWaypointIndex == self.cp.abortWork + 8 then
 			self.cp.abortWork = nil
 		end
 	end
@@ -42,10 +50,10 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 	if (fillLevelPct == 0 or self.cp.urfStop) and workArea then
 		self.cp.urfStop = false
 		if self.cp.hasUnloadingRefillingCourse and self.cp.abortWork == nil then
-			self.cp.abortWork = self.recordnumber -10
+			self.cp.abortWork = self.cp.waypointIndex -10
 			-- invert lane offset if abortWork is before previous turn point (symmetric lane change)
 			if self.cp.symmetricLaneChange and self.cp.laneOffset ~= 0 then
-				for i=self.cp.abortWork,self.cp.lastRecordnumber do
+				for i=self.cp.abortWork,self.cp.previousWaypointIndex do
 					local wp = self.Waypoints[i];
 					if wp.turn ~= nil then
 						courseplay:debug(string.format('%s: abortWork set (%d), abortWork + %d: turn=%s -> change lane offset back to abortWork\'s lane', nameNum(self), self.cp.abortWork, i-1, tostring(wp.turn)), 12);
@@ -55,47 +63,48 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 					end;
 				end;
 			end;
-			courseplay:setRecordNumber(self, self.cp.stopWork - 4);
+			--courseplay:setWaypointIndex(self, self.cp.stopWork - 4);
+			courseplay:setWaypointIndex(self, self.cp.stopWork +1);
 			--courseplay:debug(string.format("Abort: %d StopWork: %d",self.cp.abortWork,self.cp.stopWork), 12)
 		elseif not self.cp.hasUnloadingRefillingCourse then
 			allowedToDrive = false;
-			courseplay:setGlobalInfoText(self, 'NEEDS_REFILLING');
+			CpManager:setGlobalInfoText(self, 'NEEDS_REFILLING');
 		end;
 	end
 	--
-	if (self.recordnumber == self.cp.stopWork or self.cp.lastRecordnumber == self.cp.stopWork) and self.cp.abortWork == nil and not isFinishingWork and self.cp.wait then
-		allowedToDrive = courseplay:brakeToStop(self);
-		courseplay:setGlobalInfoText(self, 'WORK_END');
+	if (self.cp.waypointIndex == self.cp.stopWork or self.cp.previousWaypointIndex == self.cp.stopWork) and self.cp.abortWork == nil and not isFinishingWork and self.cp.wait then
+		allowedToDrive = false;
+		CpManager:setGlobalInfoText(self, 'WORK_END');
 		hasFinishedWork = true;
-		if self.cp.hasUnloadingRefillingCourse and self.recordnumber == self.cp.stopWork then --make sure that lastRecordnumber is stopWork, so the 'waiting points' algorithm in drive() works
-			courseplay:setRecordNumber(self, self.cp.stopWork + 1);
+		if self.cp.hasUnloadingRefillingCourse and self.cp.waypointIndex == self.cp.stopWork then --make sure that previousWaypointIndex is stopWork, so the 'waiting points' algorithm in drive() works
+			courseplay:setWaypointIndex(self, self.cp.stopWork + 1);
 		end;
 	end;
 	
-	local firstPoint = self.cp.lastRecordnumber == 1;
-	local prevPoint = self.Waypoints[self.cp.lastRecordnumber];
-	local nextPoint = self.Waypoints[self.recordnumber];
+	local firstPoint = self.cp.previousWaypointIndex == 1;
+	local prevPoint = self.Waypoints[self.cp.previousWaypointIndex];
+	local nextPoint = self.Waypoints[self.cp.waypointIndex];
 	
 	local ridgeMarker = prevPoint.ridgeMarker;
 	local turnStart = prevPoint.turnStart;
 	local turnEnd = prevPoint.turnEnd;
-
 	for i=1, #(self.cp.workTools) do
 		workTool = self.cp.workTools[i];
-
 		local isFolding, isFolded, isUnfolded = courseplay:isFolding(workTool);
 		local needsLowering = false
-		
+
 		if workTool.attacherJoint ~= nil then
 			needsLowering = workTool.attacherJoint.needsLowering
 		end
-		
+
 		--speedlimits
-		if workTool.doCheckSpeedLimit and workTool:doCheckSpeedLimit() then
+		local speedLimitActive = false
+		
+		if workTool.doCheckSpeedLimit and (workTool:doCheckSpeedLimit() or workTool.isSprayerSpeedLimitActive) then
 			forceSpeedLimit = math.min(forceSpeedLimit, workTool.speedLimit)
+			speedLimitActive = true
 		end
 
-		
 		-- stop while folding
 		if courseplay:isFoldable(workTool) then
 			if isFolding and self.cp.turnStage == 0 then
@@ -107,13 +116,12 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 
 		if workArea and fillLevelPct ~= 0 and (self.cp.abortWork == nil or self.cp.runOnceStartCourse) and self.cp.turnStage == 0 and not self.cp.inTraffic then
 			self.cp.runOnceStartCourse = false;
-			workSpeed = 1;
 			--turn On                     courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload,ridgeMarker)
 			specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,true,true,true,allowedToDrive,nil,nil, ridgeMarker)
 			if allowedToDrive then
 				if not specialTool then
 					--unfold
-					if courseplay:isFoldable(workTool) and workTool:getIsFoldAllowed() and not isFolding and not isUnfolded then -- and ((self.cp.abortWork ~= nil and self.recordnumber == self.cp.abortWork - 2) or (self.cp.abortWork == nil and self.recordnumber == 2)) then
+					if courseplay:isFoldable(workTool) and workTool:getIsFoldAllowed() and not isFolding and not isUnfolded then -- and ((self.cp.abortWork ~= nil and self.cp.waypointIndex == self.cp.abortWork - 2) or (self.cp.abortWork == nil and self.cp.waypointIndex == 2)) then
 						courseplay:debug(string.format('%s: unfold order (foldDir %d)', nameNum(workTool), workTool.cp.realUnfoldDirection), 17);
 						workTool:setFoldDirection(workTool.cp.realUnfoldDirection);
 					end;
@@ -141,13 +149,16 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 
 						--lower/raise
 						if needsLowering and workTool.aiNeedsLowering then
-							--courseplay:debug(string.format("WP%d: isLowered() = %s, hasGroundContact = %s", self.recordnumber, tostring(workTool:isLowered()), tostring(workTool.hasGroundContact)),12);
+							--courseplay:debug(string.format("WP%d: isLowered() = %s, hasGroundContact = %s", self.cp.waypointIndex, tostring(workTool:isLowered()), tostring(workTool.hasGroundContact)),12);
 							if not workTool:isLowered() then
 								courseplay:debug(string.format('%s: lower order', nameNum(workTool)), 17);
 								self:setAIImplementsMoveDown(true);
+								courseplay:setCustomTimer(self, "lowerTimeOut" , 5 )
+							elseif not speedLimitActive and not courseplay:timerIsThrough(self, "lowerTimeOut") then 
+								allowedToDrive = false;
+								courseplay:debug(string.format('%s: wait for lowering', nameNum(workTool)), 17);
 							end;
 						end;
-
 						--turn on
 						if workTool.setIsTurnedOn ~= nil and not workTool.isTurnedOn then
 							courseplay:setMarkers(self, workTool);
@@ -158,7 +169,10 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 									workTool.airBlowerSoundEnabled = true;
 								end;]]
 							else
-								workTool:setIsTurnedOn(true, false);
+								if workTool.lastTurnedOn then
+									workTool.lastTurnedOn = false
+								end
+								workTool:setIsTurnedOn(true,false);
 							end;
 							courseplay:debug(string.format('%s: turn on order', nameNum(workTool)), 17);
 						end;
@@ -167,7 +181,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 
 				--DRIVINGLINE SPEC
 				if workTool.cp.hasSpecializationDrivingLine and not workTool.manualDrivingLine then
-					local curLaneReal = self.Waypoints[self.recordnumber].laneNum;
+					local curLaneReal = self.Waypoints[self.cp.waypointIndex].laneNum;
 					if curLaneReal then
 						local intendedDrivingLane = ((curLaneReal-1) % workTool.nSMdrives) + 1;
 						if workTool.currentDrive ~= intendedDrivingLane then
@@ -180,7 +194,6 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 
 		--TRAFFIC: TURN OFF
 		elseif workArea and self.cp.abortWork == nil and self.cp.inTraffic then
-			workSpeed = 0;
 			specialTool, allowedToDrive = courseplay:handleSpecialTools(self, workTool, true, true, false, allowedToDrive, nil, nil, ridgeMarker);
 			if not specialTool then
 				if workTool.setIsTurnedOn ~= nil and workTool.isTurnedOn then
@@ -191,7 +204,6 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 
 		--TURN OFF AND FOLD
 		elseif self.cp.turnStage == 0 then
-			workSpeed = 0;
 			--turn off
 			specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,nil, ridgeMarker)
 			if not specialTool then
@@ -228,7 +240,5 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 	if hasFinishedWork then
 		isFinishingWork = true
 	end
-
-
 	return allowedToDrive, workArea, workSpeed,isFinishingWork,forceSpeedLimit
 end;

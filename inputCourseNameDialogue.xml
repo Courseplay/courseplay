@@ -59,7 +59,7 @@
 			focusChangeTop="1" 
 
 			imageColor="1 1 1 1"
-			imageFocusedColor="0.7059 0 0 1"
+			imageFocusedColor="0.4549 0 0 1"
 			imageDisabledColor="1 1 1 0.15"
 			fadeInTime="0.2" 
 			fadeOutTime="0.2" 
@@ -84,7 +84,7 @@
 			disabled="true" 
 
 			imageColor="1 1 1 1"
-			imageFocusedColor="0.4314 0.9216 0.2196 1"
+			imageFocusedColor="0.1686 0.8039 0.0392 1"
 			imageDisabledColor="1 1 1 0.15"
 			fadeInTime="0.2" 
 			fadeOutTime="0.2" 

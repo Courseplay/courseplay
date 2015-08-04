@@ -13,6 +13,7 @@ function courseplay:turn(self, dt) --!!!
 	local moveForwards = true;
 	local updateWheels = true;
 	local turnOutTimer = 1500
+	local turnTimer = 1500
 	--local frontMarker = Utils.getNoNil(self.cp.backMarkerOffset, -3)
 	--local backMarker = Utils.getNoNil(self.cp.aiFrontMarker,0)
 	local frontMarker = Utils.getNoNil(self.cp.aiFrontMarker, -3)
@@ -20,8 +21,14 @@ function courseplay:turn(self, dt) --!!!
 	if self.cp.noStopOnEdge then
 		turnOutTimer = 0
 	end
+	if not self.cp.checkMarkers then
+		self.cp.checkMarkers = true
+		for _,workTool in pairs(self.cp.workTools) do
+			courseplay:setMarkers(self, workTool)
+		end
+	end
+	
 	self.cp.turnTimer = self.cp.turnTimer - dt;
-
 
 	-- TURN STAGES 1 - 6
 	if self.cp.turnTimer < 0 or self.cp.turnStage > 0 then
@@ -46,7 +53,7 @@ function courseplay:turn(self, dt) --!!!
 				end
 				if myDirX*dirX + myDirZ*dirZ > 0.2 or self.turnStageTimer < 0 then
 					if self.cp.aiTurnNoBackward or
-					(courseplay:distance(newTargetX, newTargetZ, self.Waypoints[self.recordnumber-1].cx, self.Waypoints[self.recordnumber-1].cz) > self.cp.turnRadius * 1.2) then
+					(courseplay:distance(newTargetX, newTargetZ, self.Waypoints[self.cp.waypointIndex-1].cx, self.Waypoints[self.cp.waypointIndex-1].cz) > self.cp.turnDiameter * 1.2) then
 						self.cp.turnStage = 4;
 					else
 						self.cp.turnStage = 3;
@@ -107,24 +114,24 @@ function courseplay:turn(self, dt) --!!!
 				end
 				if -dot < moveback  then
 					self.cp.turnStage = 0;
-					local _,_,z1 = worldToLocal(self.cp.DirectionNode, self.Waypoints[self.recordnumber+1].cx, backY, self.Waypoints[self.recordnumber+1].cz);
-					local _,_,z2 = worldToLocal(self.cp.DirectionNode, self.Waypoints[self.recordnumber+2].cx, backY, self.Waypoints[self.recordnumber+2].cz);
-					local _,_,z3 = worldToLocal(self.cp.DirectionNode, self.Waypoints[self.recordnumber+3].cx, backY, self.Waypoints[self.recordnumber+3].cz);
+					local _,_,z1 = worldToLocal(self.cp.DirectionNode, self.Waypoints[self.cp.waypointIndex+1].cx, backY, self.Waypoints[self.cp.waypointIndex+1].cz);
+					local _,_,z2 = worldToLocal(self.cp.DirectionNode, self.Waypoints[self.cp.waypointIndex+2].cx, backY, self.Waypoints[self.cp.waypointIndex+2].cz);
+					local _,_,z3 = worldToLocal(self.cp.DirectionNode, self.Waypoints[self.cp.waypointIndex+3].cx, backY, self.Waypoints[self.cp.waypointIndex+3].cz);
 					if self.cp.isCombine then
 						if z2 > 6 then
-							courseplay:setRecordNumber(self, self.recordnumber + 2);
+							courseplay:setWaypointIndex(self, self.cp.waypointIndex + 2);
 						elseif z3 > 6 then
-							courseplay:setRecordNumber(self, self.recordnumber + 3);
+							courseplay:setWaypointIndex(self, self.cp.waypointIndex + 3);
 						else
-							courseplay:setRecordNumber(self, self.recordnumber + 4);
+							courseplay:setWaypointIndex(self, self.cp.waypointIndex + 4);
 						end
 					else
 						if z1 > 0 then
-							courseplay:setRecordNumber(self, self.recordnumber + 1);
+							courseplay:setWaypointIndex(self, self.cp.waypointIndex + 1);
 						elseif z2 > 0 then
-							courseplay:setRecordNumber(self, self.recordnumber + 2);
+							courseplay:setWaypointIndex(self, self.cp.waypointIndex + 2);
 						else
-							courseplay:setRecordNumber(self, self.recordnumber + 3);
+							courseplay:setWaypointIndex(self, self.cp.waypointIndex + 3);
 						end
 					end;
 					courseplay:lowerImplements(self, true, true)
@@ -171,7 +178,7 @@ function courseplay:turn(self, dt) --!!!
 			else
 				self.aiTractorTurnLeft = true;
 			end;
-			local cx,cz = self.Waypoints[self.recordnumber+1].cx, self.Waypoints[self.recordnumber+1].cz;
+			local cx,cz = self.Waypoints[self.cp.waypointIndex+1].cx, self.Waypoints[self.cp.waypointIndex+1].cz;
 			if (self.cp.laneOffset ~= nil and self.cp.laneOffset ~= 0) or (self.cp.toolOffsetX ~= nil and self.cp.toolOffsetX ~= 0) then
 				cx,cz = courseplay:turnWithOffset(self)
 			end;
@@ -188,10 +195,10 @@ function courseplay:turn(self, dt) --!!!
 			self.turnStageTimer = Utils.getNoNil(self.turnStage2Timeout,20000)
 
 		-- TURN STAGE ??? --TODO (Jakob): what's the situation here? turnStage not > 1 and not > 0 ? When do we get to this point?
-		else
+		else              -- The situation is when a turn timeout appears...
 			self.cp.turnStage = 1;
 			if self.cp.noStopOnTurn == false then
-				self.waitForTurnTime = self.timer + 1500;
+				self.waitForTurnTime = self.timer + turnTimer;
 			end
 			courseplay:lowerImplements(self, false, true)
 			updateWheels = false;
@@ -199,26 +206,35 @@ function courseplay:turn(self, dt) --!!!
 
 	-- TURN STAGE 0
 	else
+		if self.isStrawEnabled then 
+			self.cp.savedNoStopOnTurn = self.cp.noStopOnTurn
+			self.cp.noStopOnTurn = false
+			turnTimer = self.strawToggleTime or 5;
+		elseif self.cp.savedNoStopOnTurn ~= nil then
+			self.cp.noStopOnTurn = self.cp.savedNoStopOnTurn
+			self.cp.savedNoStopOnTurn = nil
+		end
+		
 		local offset = Utils.getNoNil(self.cp.totalOffsetX, 0)
 		local x,y,z = localToWorld(self.cp.DirectionNode, offset, 0, backMarker)
-		local dist = courseplay:distance(self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz, x, z)
+		local dist = courseplay:distance(self.Waypoints[self.cp.waypointIndex].cx, self.Waypoints[self.cp.waypointIndex].cz, x, z)
 		if backMarker <= 0 then
 			if  dist < 0.5 then
 				if not self.cp.noStopOnTurn then
-					self.cp.waitForTurnTime = self.timer + 1500
+					self.cp.waitForTurnTime = self.timer + turnTimer
 				end
-				courseplay:lowerImplements(self, false, true)
+				courseplay:lowerImplements(self, false, false)
 				updateWheels = false;
 				self.cp.turnStage = 1;
 			end
 		else
 			if dist < 0.5 and self.cp.turnStage ~= -1 then
 				self.cp.turnStage = -1
-				courseplay:lowerImplements(self, false, true)
+				courseplay:lowerImplements(self, false, false)
 			end
 			if dist > backMarker and self.cp.turnStage == -1 then
 				if self.cp.noStopOnTurn == false then
-					self.cp.waitForTurnTime = self.timer + 1500
+					self.cp.waitForTurnTime = self.timer + turnTimer
 				end
 				updateWheels = false;
 				self.cp.turnStage = 1;
@@ -245,8 +261,8 @@ function courseplay:turn(self, dt) --!!!
 	if updateWheels then
 		local allowedToDrive = true
 		local refSpeed = self.cp.speeds.turn
-		
-		courseplay:setSpeed(self, refSpeed, 1)
+		self.cp.speedDebugLine = ("turn("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
+		courseplay:setSpeed(self, refSpeed )
 		
 		local lx, lz = AIVehicleUtil.getDriveDirection(self.cp.DirectionNode, newTargetX, newTargetY, newTargetZ);
 		if self.cp.turnStage == 3 and math.abs(lx) < 0.1 then
@@ -254,26 +270,14 @@ function courseplay:turn(self, dt) --!!!
 			moveForwards = true;
 		end;
 		if self.cp.TrafficBrake then
-			if self.isRealistic then
-				allowedToDrive = false
-			else
-				moveForwards = false;
-				lx = 0
-				lz = 1
-			end
+			moveForwards = self.movingDirection == -1;
+			lx = 0
+			lz = 1
 		end
 		if self.invertedDrivingDirection then
 			lx = -lx
 		end
-		if self.isRealistic then
-			if self.cp.turnStage < 1 then
-				lx = 0
-				lz = 1
-			end
- 			courseplay:driveInMRDirection(self, lx,lz,moveForwards,dt,allowedToDrive)
-		else
-			AIVehicleUtil.driveInDirection(self, dt, 25, 1, 0.5, 20, true, moveForwards, lx, lz, refSpeed, 1);
-		end
+		AIVehicleUtil.driveInDirection(self, dt, 25, 1, 0.5, 20, true, moveForwards, lx, lz, refSpeed, 1);
 		courseplay:setTrafficCollision(self, lx, lz, true)
 	end;
 	
@@ -298,36 +302,24 @@ function courseplay:lowerImplements(self, moveDown, workToolonOff)
 	for _,workTool in pairs(self.cp.workTools) do
 					--courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
 		specialTool = courseplay:handleSpecialTools(self,workTool,true,moveDown,workToolonOff,nil,nil,nil);
+		
+		if not specialTool and workTool.setPickupState ~= nil then
+			if workTool.isPickupLowered ~= nil and workTool.isPickupLowered ~= moveDown then
+				workTool:setPickupState(moveDown, false);
+			end;
+		end;
+	
 	end;
 	if not specialTool then
-		if (self.cp.isCombine or self.cp.isChopper) and not self.cp.hasSpecializationFruitPreparer  then
-			for cutter, implement in pairs(self.attachedCutters) do
-				if cutter:isLowered() ~= moveDown then
-					self:lowerImplementByJointIndex(implement.jointDescIndex, moveDown, true);
-				end;
-			end;
-		elseif self.setAIImplementsMoveDown ~= nil then
-			if self:isLowered() == moveDown then 	--TODO (Tom) temp solution for potatoe and sugar beet harvesters 
-				return								--still not nice because on every turn we have a startup event while lowering
-			end
+		if self.setAIImplementsMoveDown ~= nil then
 			self:setAIImplementsMoveDown(moveDown,true);
 		elseif self.setFoldState ~= nil then
 			self:setFoldState(state, true);
 		end;
-		if workToolonOff then
-			for _,workTool in pairs(self.cp.workTools) do
-				local needsLowering = false
-				if workTool.attacherJoint ~= nil then
-					needsLowering = workTool.attacherJoint.needsLowering
-				end
-				if workTool.setPickupState ~= nil then
-					needsLowering = true
-					if workTool.isPickupLowered ~= nil and workTool.isPickupLowered ~= moveDown then
-						workTool:setPickupState(moveDown, false);
-					end;
-				end;
-				if workTool.setIsTurnedOn ~= nil and not courseplay:isFolding(workTool) and not needsLowering and workTool ~= self then
-					workTool:setIsTurnedOn(moveDown, false);
+		if self.cp.mode == 4 then
+			for _,workTool in pairs(self.cp.workTools) do								 --vvTODO (Tom) why is this here vv?
+				if workTool.setIsTurnedOn ~= nil and not courseplay:isFolding(workTool) and (true or workTool ~= self) and workTool.isTurnedOn ~= workToolonOff then
+					workTool:setIsTurnedOn(workToolonOff, false);                          -- disabled for Pantera
 				end;
 			end;
 		end;
@@ -352,7 +344,7 @@ function courseplay:turnWithOffset(self)
 		end;
 	end;
 
-	local curPoint = self.Waypoints[self.recordnumber+1]
+	local curPoint = self.Waypoints[self.cp.waypointIndex+1]
 	local cx, cz = curPoint.cx, curPoint.cz;
 	local offsetX = self.cp.totalOffsetX
 	if curPoint.turnEnd and curPoint.laneDir ~= nil then --TODO (Jakob): use point's direction to next point to get the proper offset

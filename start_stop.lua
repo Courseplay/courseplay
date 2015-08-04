@@ -2,39 +2,42 @@ local curFile = 'start_stop.lua';
 
 -- starts driving the course
 function courseplay:start(self)
-	self.maxnumber = #(self.Waypoints)
-	if self.maxnumber < 1 then
+	self.cp.forceIsActiveBackup = self.forceIsActive;
+	self.forceIsActive = true;
+	self.cp.stopMotorOnLeaveBackup = self.stopMotorOnLeave;
+	self.stopMotorOnLeave = false;
+	self.cp.deactivateOnLeaveBackup = self.deactivateOnLeave;
+	self.deactivateOnLeave = false;
+	self.steeringEnabled = false;
+	self.disableCharacterOnLeave = false
+
+	if courseplay.isClient then
+		return
+	end
+	
+	self.cp.numWaypoints= #self.Waypoints
+	if self.cp.numWaypoints < 1 then
 		return
 	end
 	courseplay:setEngineState(self, true);
-	
+	--print(tableShow(self.attachedImplements[1].object,tableShow(self.attachedImplements[1].object.name,nil,nil,2)))
+	--local id = self.attachedImplements[1].object.unloadTrigger.triggerId
+	--courseplay:findInTables(g_currentMission ,"g_currentMission", id)
+
 	if self.cp.orgRpm == nil then
 		self.cp.orgRpm = {}
 		self.cp.orgRpm[1] = self.motor.maxRpm
 		self.cp.orgRpm[2] = self.motor.maxRpm
 		self.cp.orgRpm[3] = self.motor.maxRpm
 	end
-	--[[if self.ESLimiter ~= nil and self.ESLimiter.maxRPM[5] ~= nil then
-		self.cp.ESL = {}
-		self.cp.ESL[1] = self.ESLimiter.percentage[2]
-		self.cp.ESL[2] = self.ESLimiter.percentage[3]
-		self.cp.ESL[3] = self.ESLimiter.percentage[4]
-	end;
-	if self.isRealistic then
-		self.cp.mrOrigSpeed = {
-			[1] = self.motor.realSpeedLevelsAI[1],
-			[2] = self.motor.realSpeedLevelsAI[2],
-			[3] = self.motor.realSpeedLevelsAI[3]
-		};
-	end;]]
 
 	self.CPnumCollidingVehicles = 0;
 	self.cp.collidingVehicleId = nil
 	courseplay:debug(string.format("%s: Start/Stop: deleting \"self.cp.collidingVehicleId\"", nameNum(self)), 3);
 	--self.numToolsCollidingVehicles = {};
 	self:setIsCourseplayDriving(false);
-	self.cp.isRecording = false
-	self.cp.recordingIsPaused = false
+	courseplay:setIsRecording(self, false);
+	courseplay:setRecordingIsPaused(self, false);
 	self.cp.calculatedCourseToCombine = false
 
 	AITractor.addCollisionTrigger(self, self);
@@ -66,7 +69,7 @@ function courseplay:start(self)
 	end
 	
 	-- adapt collis height to vehicles height , its a runonce
-	if self.cp.ColliHeightSet == nil then
+	if self.cp.ColliHeightSet == nil and self.cp.numTrafficCollisionTriggers > 0 then
 		local height = 0;
 		local step = self.sizeLength/2;
 		local distance = self.sizeLength;
@@ -95,27 +98,27 @@ function courseplay:start(self)
 		courseplay:setModeState(self, 0);
 	end;
 
-	if self.recordnumber < 1 then
-		courseplay:setRecordNumber(self, 1);
+	if self.cp.waypointIndex < 1 then
+		courseplay:setWaypointIndex(self, 1);
 	end
 
 	-- add do working players if not already added
 	if self.cp.coursePlayerNum == nil then
-		self.cp.coursePlayerNum = courseplay:addToTotalCoursePlayers(self)
+		self.cp.coursePlayerNum = CpManager:addToTotalCoursePlayers(self)
 	end;
 	--add to activeCoursePlayers
-	courseplay:addToActiveCoursePlayers(self);
+	CpManager:addToActiveCoursePlayers(self);
 
 	self.cp.backMarkerOffset = nil
 	self.cp.aiFrontMarker = nil
-
+	self.cp.turnTimer = 8000
 	courseplay:reset_tools(self)
 	-- show arrow
-	self.cp.distanceCheck = true
+	self:setCpVar('distanceCheck',true,courseplay.isClient);
 	-- current position
 	local ctx, cty, ctz = getWorldTranslation(self.cp.DirectionNode);
 	-- position of next waypoint
-	local cx, cz = self.Waypoints[self.recordnumber].cx, self.Waypoints[self.recordnumber].cz
+	local cx, cz = self.Waypoints[self.cp.waypointIndex].cx, self.Waypoints[self.cp.waypointIndex].cz
 	-- distance
 	local dist = courseplay:distance(ctx, ctz, cx, cz)
 	
@@ -137,6 +140,10 @@ function courseplay:start(self)
 	end;
 
 
+	local mapIconPath = Utils.getFilename('img/mapWaypoint.png', courseplay.path);
+	local mapIconHeight = 2 / 1080;
+	local mapIconWidth = mapIconHeight / g_screenAspectRatio;
+
 	local numWaitPoints = 0
 	local numCrossingPoints = 0
 	self.cp.waitPoints = {};
@@ -147,10 +154,9 @@ function courseplay:start(self)
 	local recordNumber = 0
 	local curLaneNumber = 1;
 	local hasReversing = false;
-	local lookForNearestWaypoint = self.cp.modeState == 0 or self.cp.modeState == 99 --or self.cp.modeState == 1
-	-- print(('%s [%s(%d)]: start(), modeState=%d, mode2nextState=%s'):format(nameNum(self), curFile, debug.getinfo(1).currentline, self.cp.modeState, tostring(self.cp.mode2nextState))); -- DEBUG140301
+	local lookForNearestWaypoint = self.cp.startAtPoint == courseplay.START_AT_NEAREST_POINT and (self.cp.modeState == 0 or self.cp.modeState == 99); --or self.cp.modeState == 1
 	for i,wp in pairs(self.Waypoints) do
-		local cx, cz = wp.cx, wp.cz
+		local cx, cz = wp.cx, wp.cz;
 		if lookForNearestWaypoint then
 			dist = courseplay:distance(ctx, ctz, cx, cz)
 			if dist <= nearestpoint then
@@ -197,11 +203,6 @@ function courseplay:start(self)
 			if numWaitPoints == 3 and self.cp.shovelEmptyPoint == nil then
 				self.cp.shovelEmptyPoint = i;
 			end;
-			for i,_ in pairs(self.attachedImplements) do
-				if self.attachedImplements[i].object.ignoreVehicleDirectionOnLoad ~= nil then
-					self.attachedImplements[i].object.ignoreVehicleDirectionOnLoad = true
-				end
-			end			
 		end;
 
 		-- laneNumber (for seeders)
@@ -212,7 +213,10 @@ function courseplay:start(self)
 			end;
 			wp.laneNum = curLaneNumber;
 		end;
-	end;
+
+		-- ingame map course display
+		-- wp.ingameMapHotSpot = g_currentMission.ingameMap:createMapHotspot(nil, mapIconPath, wp.cx, wp.cz, mapIconWidth, mapIconHeight);
+	end; -- END for wp in self.Waypoints
 
 
 	-- modes 4/6 without start and stop point, set them at start and end, for only-on-field-courses
@@ -221,7 +225,7 @@ function courseplay:start(self)
 			self.cp.startWork = 1;
 		end;
 		if numWaitPoints == 0 or self.cp.stopWork == nil then
-			self.cp.stopWork = self.maxnumber;
+			self.cp.stopWork = self.cp.numWaypoints;
 		end;
 	end;
 	self.cp.numWaitPoints = numWaitPoints;
@@ -234,84 +238,148 @@ function courseplay:start(self)
 	end;
 
 
-	-- print(('%s [%s(%d)]: start(), modeState=%d, mode2nextState=%s, recordNumber=%d'):format(nameNum(self), curFile, debug.getinfo(1).currentline, self.cp.modeState, tostring(self.cp.mode2nextState), recordNumber)); -- DEBUG140301
 	if lookForNearestWaypoint then
 		local changed = false
 		for i=recordNumber,recordNumber+3 do
 			if self.Waypoints[i]~= nil and self.Waypoints[i].turn ~= nil then
-				courseplay:setRecordNumber(self, i + 2);
-				-- print(('\t(%d) self.recordnumber=%d'):format(debug.getinfo(1).currentline, self.recordnumber)); -- DEBUG140301
+				courseplay:setWaypointIndex(self, i + 2);
 				changed = true
 				break
 			end	
 		end
 		if changed == false then
-			courseplay:setRecordNumber(self, recordNumber);
-			-- print(('\t(%d) self.recordnumber=%d'):format(debug.getinfo(1).currentline, self.recordnumber)); -- DEBUG140301
+			courseplay:setWaypointIndex(self, recordNumber);
 		end
 
-		if self.recordnumber > self.maxnumber then
-			courseplay:setRecordNumber(self, 1);
+		if self.cp.waypointIndex > self.cp.numWaypoints then
+			courseplay:setWaypointIndex(self, 1);
 		end
 	end --END if modeState == 0
 
-	if self.recordnumber > 2 and self.cp.mode ~= 4 and self.cp.mode ~= 6 then
+	if self.cp.waypointIndex > 2 and self.cp.mode ~= 4 and self.cp.mode ~= 6 then
 		courseplay:setIsLoaded(self, true);
-		-- print(('%s [%s(%d)]: start(), recordnumber=%d -> set isLoaded to true'):format(nameNum(self), curFile, debug.getinfo(1).currentline, self.recordnumber)); -- DEBUG140301
 	elseif self.cp.mode == 4 or self.cp.mode == 6 then
 		courseplay:setIsLoaded(self, false);
-		self.cp.hasUnloadingRefillingCourse = self.maxnumber > self.cp.stopWork + 7;
+		self.cp.hasUnloadingRefillingCourse = self.cp.numWaypoints > self.cp.stopWork + 7;
+		self.cp.hasTransferCourse = self.cp.startWork > 5
 		if  self.Waypoints[self.cp.stopWork].cx == self.Waypoints[self.cp.startWork].cx 
-		and self.Waypoints[self.cp.stopWork].cz == self.Waypoints[self.cp.startWork].cz then
+		and self.Waypoints[self.cp.stopWork].cz == self.Waypoints[self.cp.startWork].cz then -- TODO: VERY unsafe, there could be LUA float problems (e.g. 7 + 8 = 15.000000001)
 			self.cp.finishWork = self.cp.stopWork-5
 		else
 			self.cp.finishWork = self.cp.stopWork
 		end
 
-		if self.cp.finishWork ~= self.cp.stopWork and self.recordnumber > self.cp.finishWork and self.recordnumber <= self.cp.stopWork then
-			courseplay:setRecordNumber(self, 2);
+		-- NOTE: if we want to start the course but catch one of the last 5 points ("returnToStartPoint"), make sure we get wp 2
+		if self.cp.startAtPoint == courseplay.START_AT_NEAREST_POINT and self.cp.finishWork ~= self.cp.stopWork and self.cp.waypointIndex > self.cp.finishWork and self.cp.waypointIndex <= self.cp.stopWork then
+			courseplay:setWaypointIndex(self, 2);
 		end
-		courseplay:debug(string.format("%s: maxnumber=%d, stopWork=%d, finishWork=%d, hasUnloadingRefillingCourse=%s, recordnumber=%d", nameNum(self), self.maxnumber, self.cp.stopWork, self.cp.finishWork, tostring(self.cp.hasUnloadingRefillingCourse), self.recordnumber), 12);
+		courseplay:debug(string.format("%s: numWaypoints=%d, stopWork=%d, finishWork=%d, hasUnloadingRefillingCourse=%s,hasTransferCourse=%s, waypointIndex=%d", nameNum(self), self.cp.numWaypoints, self.cp.stopWork, self.cp.finishWork, tostring(self.cp.hasUnloadingRefillingCourse),tostring(self.cp.hasTransferCourse), self.cp.waypointIndex), 12);
 	end
 
-	if self.cp.mode == 9 or self.cp.startAtFirstPoint then
-		courseplay:setRecordNumber(self, 1);
+	if self.cp.mode == 9 then
+		courseplay:setWaypointIndex(self, 1);
 		self.cp.shovelState = 1;
+		for i,_ in pairs(self.attachedImplements) do
+			local object = self.attachedImplements[i].object
+			if object.ignoreVehicleDirectionOnLoad ~= nil then
+				object.ignoreVehicleDirectionOnLoad = true
+			end	
+			if object.attachedImplements ~= nil then
+				for k,_ in pairs(object.attachedImplements) do
+					if object.attachedImplements[k].object.ignoreVehicleDirectionOnLoad ~= nil then
+						object.attachedImplements[k].object.ignoreVehicleDirectionOnLoad = true
+					end
+				end
+			end				
+		end
+	elseif self.cp.startAtPoint == courseplay.START_AT_FIRST_POINT then
+		if self.cp.mode == 2 or self.cp.mode == 3 then
+			courseplay:setWaypointIndex(self, 3);
+			courseplay:setIsLoaded(self, true);
+		else
+			courseplay:setWaypointIndex(self, 1);
+		end
 	end;
 
 	courseplay:updateAllTriggers();
 
-	self.forceIsActive = true;
-	self.stopMotorOnLeave = false;
-	self.steeringEnabled = false;
-	self.deactivateOnLeave = false
-	self.disableCharacterOnLeave = false
+	self.cp.cruiseControlSpeedBackup = self.cruiseControl.speed;
+
+	if self.cp.hasDriveControl then
+		local changed = false;
+		if self.cp.driveControl.hasFourWD then
+			self.cp.driveControl.fourWDBackup = self.driveControl.fourWDandDifferentials.fourWheel;
+			if self.cp.driveControl.alwaysUseFourWD and not self.driveControl.fourWDandDifferentials.fourWheel then
+				self.driveControl.fourWDandDifferentials.fourWheel = true;
+				changed = true;
+			end;
+		end;
+		if self.cp.driveControl.hasHandbrake then
+			if self.driveControl.handBrake.isActive == true then
+				self.driveControl.handBrake.isActive = false;
+				changed = true;
+			end;
+		end;
+		if self.cp.driveControl.hasShuttleMode and self.driveControl.shuttle.isActive then
+			if self.driveControl.shuttle.direction < 1.0 then
+				self.driveControl.shuttle.direction = 1.0;
+				changed = true;
+			end;
+		end;
+
+		if changed and driveControlInputEvent ~= nil then
+			driveControlInputEvent.sendEvent(self);
+		end;
+	end;
+
+	
+
 	-- ok i am near the waypoint, let's go
 	self.checkSpeedLimit = false
 	self.cp.runOnceStartCourse = true;
 	self:setIsCourseplayDriving(true);
-	self.cp.isRecording = false
-	self.cp.distanceCheck = false;
-
-	if self.isRealistic then
-		self.cp.realAWDModeOnBackup = self.realAWDModeOn
-	end;
+	courseplay:setIsRecording(self, false);
+	self:setCpVar('distanceCheck',false,courseplay.isClient);
 
 	self.cp.totalLength, self.cp.totalLengthOffset = courseplay:getTotalLengthOnWheels(self);
 
 	courseplay:validateCanSwitchMode(self);
+
+	-- deactivate load/add/delete course buttons
+	courseplay.buttons:setActiveEnabled(self, 'page2');
+
+	-- add ingameMap icon
+	if CpManager.ingameMapIconActive then
+		courseplay:createMapHotspot(self);
+	end;
+
 	--print("startStop "..debug.getinfo(1).currentline)
 end;
 
-function courseplay:getCanUseAiMode(vehicle)
-	--[[if not vehicle.isMotorStarted or (vehicle.motorStartTime and vehicle.motorStartTime > vehicle.time) then
+function courseplay:getCanUseCpMode(vehicle)
+	-- check engine running state
+	if not courseplay:getIsEngineReady(vehicle) then
 		return false;
-	end;]]
+	end;
 
 	local mode = vehicle.cp.mode;
 
-	if mode ~= 5 and mode ~= 6 and mode ~= 7 and not vehicle.cp.workToolAttached then
-		courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WRONG_TRAILER'));
+	if (mode == 7 and not vehicle.cp.isCombine and not vehicle.cp.isChopper and not vehicle.cp.isHarvesterSteerable)
+	or ((mode == 1 or mode == 2 or mode == 3 or mode == 4 or mode == 8 or mode == 9) and (vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable))
+	or ((mode ~= 5) and (vehicle.cp.isWoodHarvester or vehicle.cp.isWoodForwarder)) then
+		courseplay:setInfoText(vehicle, 'COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE');
+		return false;
+	end;
+
+
+	if mode ~= 5 and mode ~= 7 and not vehicle.cp.workToolAttached then
+		if mode == 4 or mode == 6 then
+			courseplay:setInfoText(vehicle, 'COURSEPLAY_WRONG_TOOL');
+		elseif mode == 9 then
+			courseplay:setInfoText(vehicle, 'COURSEPLAY_SHOVEL_NOT_FOUND');
+		else
+			courseplay:setInfoText(vehicle, 'COURSEPLAY_WRONG_TRAILER');
+		end;
 		return false;
 	end;
 
@@ -320,37 +388,40 @@ function courseplay:getCanUseAiMode(vehicle)
 	if mode == 3 or mode == 7 or mode == 8 then
 		minWait, maxWait = 1, 1;
 		if vehicle.cp.numWaitPoints < minWait then
-			courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_FEW'):format(minWait));
+			courseplay:setInfoText(vehicle, string.format("COURSEPLAY_WAITING_POINTS_TOO_FEW;%d",minWait));
 			return false;
 		elseif vehicle.cp.numWaitPoints > maxWait then
-			courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_MANY'):format(maxWait));
+			courseplay:setInfoText(vehicle, string.format('COURSEPLAY_WAITING_POINTS_TOO_MANY;%d',maxWait));
 			return false;
 		end;
 		if mode == 3 then
 			if vehicle.cp.workTools[1] == nil or vehicle.cp.workTools[1].cp == nil or not vehicle.cp.workTools[1].cp.isAugerWagon then
-				courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WRONG_TRAILER'));
+				courseplay:setInfoText(vehicle, 'COURSEPLAY_WRONG_TRAILER');
 				return false;
 			end;
-		elseif mode == 7 then
-			if vehicle.isAutoCombineActivated ~= nil and vehicle.isAutoCombineActivated then
-				courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_NO_AUTOCOMBINE_MODE_7'));
+		elseif mode == 8 then
+			if vehicle.cp.workTools[1] == nil then
+				courseplay:setInfoText(vehicle, 'COURSEPLAY_WRONG_TRAILER');
+				return false;
+			elseif vehicle.cp.workTools[1].cp.isWaterTrailer and courseplay.triggers.waterReceiversCount == 0 then
+				courseplay:setInfoText(vehicle, 'There are no water triggers on this map'); -- TODO i18n
 				return false;
 			end;
 		end;
 
 	elseif mode == 4 or mode == 6 then
 		if vehicle.cp.startWork == nil or vehicle.cp.stopWork == nil then
-			courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_NO_WORK_AREA'));
+			courseplay:setInfoText(vehicle, 'COURSEPLAY_NO_WORK_AREA');
 			return false;
 		end;
 		if mode == 6 then
 			if vehicle.cp.hasBaleLoader then
 				minWait, maxWait = 2, 3;
 				if vehicle.cp.numWaitPoints < minWait then
-					courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_FEW'):format(minWait));
+					courseplay:setInfoText(vehicle, string.format('COURSEPLAY_WAITING_POINTS_TOO_FEW;%d',minWait));
 					return false;
 				elseif vehicle.cp.numWaitPoints > maxWait then
-					courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_MANY'):format(maxWait));
+					courseplay:setInfoText(vehicle, string.format('COURSEPLAY_WAITING_POINTS_TOO_MANY;%d',maxWait));
 					return false;
 				end;
 			end;
@@ -359,16 +430,16 @@ function courseplay:getCanUseAiMode(vehicle)
 	elseif mode == 9 then
 		minWait, maxWait = 3, 3;
 		if vehicle.cp.numWaitPoints < minWait then
-			courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_FEW'):format(minWait));
+			courseplay:setInfoText(vehicle, string.format('COURSEPLAY_WAITING_POINTS_TOO_FEW;%d',minWait));
 			return false;
 		elseif vehicle.cp.numWaitPoints > maxWait then
-			courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_WAITING_POINTS_TOO_MANY'):format(maxWait));
+			courseplay:setInfoText(vehicle, string.format('COURSEPLAY_WAITING_POINTS_TOO_MANY;%d',maxWait));
 			return false;
 		elseif vehicle.cp.shovelStatePositions == nil or vehicle.cp.shovelStatePositions[2] == nil or vehicle.cp.shovelStatePositions[3] == nil or vehicle.cp.shovelStatePositions[4] == nil or vehicle.cp.shovelStatePositions[5] == nil then
-			courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_SHOVEL_POSITIONS_MISSING'));
+			courseplay:setInfoText(vehicle, 'COURSEPLAY_SHOVEL_POSITIONS_MISSING');
 			return false;
 		elseif vehicle.cp.shovelFillStartPoint == nil or vehicle.cp.shovelFillEndPoint == nil or vehicle.cp.shovelEmptyPoint == nil then
-			courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_NO_VALID_COURSE'));
+			courseplay:setInfoText(vehicle, 'COURSEPLAY_NO_VALID_COURSE');
 			return false;
 		end;
 	end;
@@ -378,32 +449,49 @@ end;
 
 -- stops driving the course
 function courseplay:stop(self)
-	self.forceIsActive = false;
-	self.stopMotorOnLeave = true;
-	self.steeringEnabled = true;
-	self.deactivateOnLeave = true
-	self.disableCharacterOnLeave = true
-	--[[if self.cp.orgRpm then
-		self.motor.maxRpm[1] = self.cp.orgRpm[1]
-		self.motor.maxRpm[2] = self.cp.orgRpm[2]
-		self.motor.maxRpm[3] = self.cp.orgRpm[3]
+
+	--stop special tools
+	for _, tool in pairs (self.cp.workTools) do
+							--  vehicle, workTool, unfold, lower, turnOn, allowedToDrive, cover, unload, ridgeMarker,forceSpeedLimit)
+		courseplay:handleSpecialTools(self, tool, false,   false,  false,   false, false, nil,nil,0);
 	end
-	if self.ESLimiter ~= nil and self.ESLimiter.maxRPM[5] ~= nil then
-		self.ESLimiter.percentage[2] =	self.cp.ESL[1]
-		self.ESLimiter.percentage[3] =	self.cp.ESL[2]
-		self.ESLimiter.percentage[4] =	self.cp.ESL[3]  
+
+	
+	self.forceIsActive = self.cp.forceIsActiveBackup;
+	self.stopMotorOnLeave = self.cp.stopMotorOnLeaveBackup;
+	self.deactivateOnLeave = self.cp.deactivateOnLeaveBackup;
+	self.steeringEnabled = true;
+	self.disableCharacterOnLeave = true
+	self.cp.lastInfoText = nil
+	if courseplay.isClient then
+		return
+	end
+
+	if self.cp.hasDriveControl then
+		local changed = false;
+		if self.cp.driveControl.hasFourWD and self.driveControl.fourWDandDifferentials.fourWheel ~= self.cp.driveControl.fourWDBackup then
+			self.driveControl.fourWDandDifferentials.fourWheel = self.cp.driveControl.fourWDBackup;
+			self.driveControl.fourWDandDifferentials.diffLockFront = false;
+			self.driveControl.fourWDandDifferentials.diffLockBack = false;
+			changed = true;
+		end;
+
+		if changed and driveControlInputEvent ~= nil then
+			driveControlInputEvent.sendEvent(self);
+		end;
 	end;
-	if self.isRealistic and self.cp.mrOrigSpeed ~= nil then
-		self.motor.realSpeedLevelsAI[1] = self.cp.mrOrigSpeed[1];
-		self.motor.realSpeedLevelsAI[2] = self.cp.mrOrigSpeed[2];
-		self.motor.realSpeedLevelsAI[3] = self.cp.mrOrigSpeed[3];
-	end;]]
+
+	if self.cp.cruiseControlSpeedBackup then
+		self.cruiseControl.speed = self.cp.cruiseControlSpeedBackup; -- NOTE JT: no need to use setter or event function - Drivable's update() checks for changes in the var and calls the event itself
+		self.cp.cruiseControlSpeedBackup = nil;
+	end;
+
 	self:setCruiseControlState(Drivable.CRUISECONTROL_STATE_OFF)
 	self.cruiseControl.minSpeed = 1
 	self.cp.forcedToStop = false
 	self.cp.waitingForTrailerToUnload = false
-	self.cp.isRecording = false
-	self.cp.recordingIsPaused = false
+	courseplay:setIsRecording(self, false);
+	courseplay:setRecordingIsPaused(self, false);
 	if self.cp.modeState > 4 then
 		courseplay:setModeState(self, 1);
 	end
@@ -417,24 +505,21 @@ function courseplay:stop(self)
 	self.cp.aiFrontMarker = nil
 	self.cp.aiTurnNoBackward = false
 	self.cp.noStopOnEdge = false
-	if self.isRealistic then
-		self.motor.speedLevel = 0 
-		self:realSetAwdActive(self.cp.realAWDModeOnBackup)
-		if self.realForceAiDriven then
-			self.realForceAiDriven = false
-		end
-	end
 	self.cp.fillTrigger = nil;
 	self.cp.hasMachineToFill = false;
 	self.cp.unloadOrder = false
+	self.cp.isUnloadingStopped = false
 	AITractor.removeCollisionTrigger(self, self);
 	self.cpTrafficCollisionIgnoreList = {}
 	self.cp.foundColli = {}
 	self.cp.inTraffic = false
 	self.cp.bypassWaypointsSet = false
-	--deactivate beacon lights
+	-- deactivate beacon and hazard lights
 	if self.beaconLightsActive then
 		self:setBeaconLightsVisibility(false);
+	end;
+	if self.turnSignalState and self.turnSignalState ~= Vehicle.TURNSIGNAL_OFF then
+		self:setTurnSignalState(Vehicle.TURNSIGNAL_OFF);
 	end;
 
 	--open all covers
@@ -443,28 +528,37 @@ function courseplay:stop(self)
 	end;
 
 	-- resetting variables
-	courseplay:setMinHudPage(self, nil);
-	self.cp.attachedCombineIdx = nil;
 	self.cp.tempCollis = {}
 	self.checkSpeedLimit = true
 	courseplay:resetTipTrigger(self);
 	self:setIsCourseplayDriving(false);
-	self.cp.canDrive = true
-	self.cp.distanceCheck = false
+	self:setCpVar('canDrive',true,courseplay.isClient)
+	self:setCpVar('distanceCheck',false,courseplay.isClient);
 	self.cp.mode7GoBackBeforeUnloading = false
 	if self.cp.checkReverseValdityPrinted then
 		self.cp.checkReverseValdityPrinted = false
+
 	end
+	self.cp.lastMode8UnloadTriggerId = nil
+
+	self.cp.curSpeed = 0;
 
 	self.motor.maxRpmOverride = nil;
 	self.cp.startWork = nil
 	self.cp.stopWork = nil
 	self.cp.hasUnloadingRefillingCourse = false;
-	self.cp.stopAtEnd = false
+	self.cp.hasTransferCourse = false
+	courseplay:setStopAtEnd(self, false);
 	self.cp.isUnloaded = false;
 	self.cp.prevFillLevelPct = nil;
 	self.cp.isInRepairTrigger = nil;
 	self.cp.curMapWeightStation = nil;
+
+	courseplay:setSlippingStage(self, 0);
+	courseplay:resetCustomTimer(self, 'slippingStage1');
+	courseplay:resetCustomTimer(self, 'slippingStage2');
+
+	courseplay:resetCustomTimer(self, 'foldBaleLoader', true);
 
 	self.cp.hasBaleLoader = false;
 	self.cp.hasPlough = false;
@@ -477,26 +571,35 @@ function courseplay:stop(self)
 	self.cp.totalLength, self.cp.totalLengthOffset = 0, 0;
 	self.cp.numWorkTools = 0;
 
-	self.cp.timers.slippingWheels = 0;
-
 	self.cp.movingToolsPrimary, self.cp.movingToolsSecondary = nil, nil;
+	self.cp.attachedFrontLoader = nil
+
+	courseplay:deleteFixedWorldPosition(self);
 
 	--remove any local and global info texts
 	if g_server ~= nil then
 		courseplay:setInfoText(self, nil);
 
-		for refIdx,_ in pairs(courseplay.globalInfoText.msgReference) do
+		for refIdx,_ in pairs(CpManager.globalInfoText.msgReference) do
 			if self.cp.activeGlobalInfoTexts[refIdx] ~= nil then
-				courseplay:setGlobalInfoText(self, refIdx, true);
+				CpManager:setGlobalInfoText(self, refIdx, true);
 			end;
 		end;
 	end
 
+	-- remove ingame map hotspot
+	if CpManager.ingameMapIconActive then
+		courseplay:deleteMapHotspot(self);
+	end;
+
 	--remove from activeCoursePlayers
-	courseplay:removeFromActiveCoursePlayers(self);
+	CpManager:removeFromActiveCoursePlayers(self);
 
 	--validation: can switch mode?
 	courseplay:validateCanSwitchMode(self);
+
+	-- reactivate load/add/delete course buttons
+	courseplay.buttons:setActiveEnabled(self, 'page2');
 end
 
 

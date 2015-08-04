@@ -2,21 +2,23 @@
 
 <i3D name="Stop" version="1.6" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://i3d.giants.ch/schema/i3d-1.6.xsd">
   <Asset>
-    <Export program="GIANTS Editor 64bit" version="6.0.2"/>
+    <Export program="GIANTS Editor 64bit" version="6.0.3"/>
   </Asset>
 
   <Files>
+    <File fileId="2" filename="colorShader.xml" relativePath="true"/>
     <File fileId="1" filename="normal.png" relativePath="true"/>
-    <File fileId="2" filename="stop.png" relativePath="true"/>
+    <File fileId="3" filename="stop.png" relativePath="true"/>
   </Files>
 
 
   <Materials>
-    <Material name="CourseplayWaypointSign" materialId="6" ambientColor="1 1 1" cosPower="20" specularColor="0.25 0.25 0.25" alphaBlending="true">
-      <Emissivemap fileId="1"/>
+    <Material name="Sign" materialId="8" ambientColor="1 1 1" cosPower="20" specularColor="0.25 0.25 0.25">
+      <Texture fileId="3"/>
     </Material>
-    <Material name="Sign" materialId="7" ambientColor="1 1 1" cosPower="20" specularColor="0.25 0.25 0.25">
-      <Texture fileId="2"/>
+    <Material name="diamond" materialId="7" ambientColor="1 1 1" customShaderId="2">
+      <Emissivemap fileId="1"/>
+      <CustomParameter name="diffuseColor" value="1 0.212 0.0 1.0"/>
     </Material>
   </Materials>
 
@@ -29,11 +31,11 @@
   </Dynamics>
 
   <Scene>
-    <Shape shapeId="1" name="Waypoint" clipDistance="175" nodeId="15" materialIds="6" castsShadows="true" receiveShadows="true">
-      <TransformGroup name="dummy" nodeId="16"/>
-      <TransformGroup name="StopSign" nodeId="17">
-        <Shape shapeId="2" name="Front" nodeId="18" materialIds="7" castsShadows="true" receiveShadows="true"/>
-        <Shape shapeId="3" name="Back" nodeId="19" materialIds="7" castsShadows="true" receiveShadows="true"/>
+    <Shape shapeId="1" name="Waypoint" clipDistance="175" nodeId="16" materialIds="7" castsShadows="true" receiveShadows="true">
+      <TransformGroup name="dummy" nodeId="17"/>
+      <TransformGroup name="StopSign" nodeId="18">
+        <Shape shapeId="2" name="Front" nodeId="19" materialIds="8" castsShadows="true" receiveShadows="true"/>
+        <Shape shapeId="3" name="Back" nodeId="20" materialIds="8" castsShadows="true" receiveShadows="true"/>
       </TransformGroup>
     </Shape>
   </Scene>

@@ -1,3 +1,4 @@
+local abs, cos, sin, min, max, deg = math.abs, math.cos, math.sin, math.min, math.max, math.deg;
 -- ##### MANAGING TOOLS ##### --
 
 function courseplay:attachImplement(implement)
@@ -6,11 +7,31 @@ function courseplay:attachImplement(implement)
 	if workTool.attacherVehicle.cp.hasSpecializationSteerable then
 		workTool.attacherVehicle.cp.toolsDirty = true;
 	end;
+
+	courseplay:setAttachedCombine(self);
 end;
 function courseplay:detachImplement(implementIndex)
 	--- Update Vehicle
 	self.cp.toolsDirty = true;
 end;
+
+local origVehicleDetachImplement = Vehicle.detachImplement;
+Vehicle.detachImplement = function(self, implementIndex, noEventSend)
+	-- don't allow detaching while CP is active
+	local tractor = self:getRootAttacherVehicle();
+	if tractor and tractor.hasCourseplaySpec and tractor.cp.isDriving and not noEventSend then -- if noEventSend == true, detachImplement has been called from Vehicle:delete() -> no need to abort
+		print('Courseplay warning: you need to stop Courseplay before detaching implements!');
+		return;
+	end;
+
+	origVehicleDetachImplement(self, implementIndex, noEventSend);
+
+	-- update attachCombineIndex and minHudPage
+	if self.hasCourseplaySpec and not noEventSend then -- if noEventSend == true, detachImplement has been called from Vehicle:delete() -> no need to set attachedCombine anymore
+		courseplay:setAttachedCombine(self);
+	end;
+end;
+
 
 function courseplay:reset_tools(vehicle)
 	vehicle.cp.workTools = {}
@@ -40,65 +61,79 @@ function courseplay:getNextFillableFillType(vehicle)
 		return workTool:getFirstEnabledFillType();
 	end;
 
-	for fillType, enabled in pairs(workTool.fillTypes) do
-		if fillType > vehicle.cp.multiSiloSelectedFillType and enabled then
-			return fillType;
-		end;
+	local nextFillType, enabled = next(workTool.fillTypes, vehicle.cp.multiSiloSelectedFillType);
+	if nextFillType and enabled then
+		return nextFillType;
 	end;
 
 	return workTool:getFirstEnabledFillType();
 end;
 
+function courseplay:isAttachedCombine(workTool)
+	return (workTool.typeName~= nil and (workTool.typeName == 'attachableCombine' or workTool.typeName == 'attachableCombine_mouseControlled')) or (not workTool.cp.hasSpecializationSteerable and workTool.hasPipe and not workTool.cp.isAugerWagon and not workTool.cp.isLiquidManureOverloader) or courseplay:isSpecialChopper(workTool)
+end;
+function courseplay:isAttachedMixer(workTool)
+	return workTool.typeName == "mixerWagon" or (not workTool.cp.hasSpecializationSteerable and  workTool.cp.hasSpecializationMixerWagon)
+end;
+function courseplay:isAttacherModule(workTool)
+	if workTool.attacherJoint then
+		return (workTool.attacherJoint.jointType == Vehicle.jointTypeNameToInt["semitrailer"] and (not workTool.wheels or (workTool.wheels and #workTool.wheels == 0))) or workTool.cp.isAttacherModule == true;
+	end;
+	return false;
+end;
+function courseplay:isBaleLoader(workTool) -- is the tool a bale loader?
+	return workTool.cp.hasSpecializationBaleLoader or (workTool.balesToLoad ~= nil and workTool.baleGrabber ~=nil and workTool.grabberIsMoving~= nil);
+end;
+function courseplay:isBaler(workTool) -- is the tool a baler?
+	return workTool.cp.hasSpecializationBaler or workTool.balerUnloadingState ~= nil or courseplay:isSpecialBaler(workTool);
+end;
+function courseplay:isBigM(workTool)
+	return workTool.cp.hasSpecializationSteerable and courseplay:isMower(workTool);
+end;
 function courseplay:isCombine(workTool)
 	return (workTool.cp.hasSpecializationCombine or workTool.cp.hasSpecializationAICombine) and workTool.attachedCutters ~= nil and workTool.capacity > 0;
 end;
 function courseplay:isChopper(workTool)
 	return (workTool.cp.hasSpecializationCombine or workTool.cp.hasSpecializationAICombine) and workTool.attachedCutters ~= nil and workTool.capacity == 0 or courseplay:isSpecialChopper(workTool);
 end;
-function courseplay:isHarvesterSteerable(workTool)
-	return workTool.typeName == "selfPropelledPotatoHarvester" or workTool.cp.isGrimmeMaxtron620 or workTool.cp.isGrimmeTectron415;
-end;
-function courseplay:isBaler(workTool) -- is the tool a baler?
-	return workTool.cp.hasSpecializationBaler or workTool.balerUnloadingState ~= nil or courseplay:isSpecialBaler(workTool);
-end;
-function courseplay:isRoundbaler(workTool) -- is the tool a roundbaler?
-	return courseplay:isBaler(workTool) and (workTool.baleCloseAnimationName ~= nil and workTool.baleUnloadAnimationName ~= nil or courseplay:isSpecialRoundBaler(workTool));
-end;
-function courseplay:isBaleLoader(workTool) -- is the tool a bale loader?
-	return workTool.cp.hasSpecializationBaleLoader or (workTool.balesToLoad ~= nil and workTool.baleGrabber ~=nil and workTool.grabberIsMoving~= nil);
-end;
-function courseplay:isSprayer(workTool) -- is the tool a sprayer/spreader?
-	return workTool.cp.hasSpecializationSprayer or courseplay:isSpecialSprayer(workTool)
-end;
-function courseplay:isSowingMachine(workTool) -- is the tool a sowing machine?
-	return workTool.cp.hasSpecializationSowingMachine or courseplay:isSpecialSowingMachine(workTool);
-end;
 function courseplay:isFoldable(workTool) --is the tool foldable?
 	return workTool.cp.hasSpecializationFoldable or workTool.foldingParts ~= nil;
-end;
-function courseplay:isMower(workTool)
-	return workTool.cp.hasSpecializationMower or courseplay:isSpecialMower(workTool);
-end;
-function courseplay:isBigM(workTool)
-	return workTool.cp.hasSpecializationSteerable and courseplay:isMower(workTool);
-end;
-function courseplay:isAttachedCombine(workTool)
-	return (workTool.typeName~= nil and workTool.typeName == "attachableCombine") or (not workTool.cp.hasSpecializationSteerable and  workTool.hasPipe) or courseplay:isSpecialChopper(workTool)
-end;
-function courseplay:isAttachedMixer(workTool)
-	return workTool.typeName == "mixerWagon" or (not workTool.cp.hasSpecializationSteerable and  workTool.cp.hasSpecializationMixerWagon)
-end;
-function courseplay:isMixer(workTool)
-	return workTool.typeName == "selfPropelledMixerWagon" or (workTool.cp.hasSpecializationSteerable and  workTool.cp.hasSpecializationMixerWagon)
 end;
 function courseplay:isFrontloader(workTool)
 	return workTool.cp.hasSpecializationCylindered  and workTool.cp.hasSpecializationAnimatedVehicle and not workTool.cp.hasSpecializationShovel;
 end;
-function courseplay:isWheelloader(workTool)
-	return workTool.typeName:match("wheelLoader");
+function courseplay:isHarvesterSteerable(workTool)
+	return workTool.typeName == "selfPropelledPotatoHarvester" or workTool.cp.isGrimmeMaxtron620 or workTool.cp.isGrimmeTectron415;
+end;
+function courseplay:isHookLift(workTool)
+	if workTool.attacherJoint then
+		return workTool.attacherJoint.jointType == Vehicle.jointTypeNameToInt["hookLift"];
+	end;
+	return false;
+end
+function courseplay:isMixer(workTool)
+	return workTool.typeName == "selfPropelledMixerWagon" or (workTool.cp.hasSpecializationSteerable and  workTool.cp.hasSpecializationMixerWagon)
+end;
+function courseplay:isMower(workTool)
+	return workTool.cp.hasSpecializationMower or courseplay:isSpecialMower(workTool);
 end;
 function courseplay:isPushWagon(workTool)
 	return workTool.typeName:match("forageWagon") or workTool.cp.hasSpecializationSiloTrailer or workTool.cp.isPushWagon;
+end;
+function courseplay:isRoundbaler(workTool) -- is the tool a roundbaler?
+	return courseplay:isBaler(workTool) and (workTool.baleCloseAnimationName ~= nil and workTool.baleUnloadAnimationName ~= nil or courseplay:isSpecialRoundBaler(workTool));
+end;
+function courseplay:isSowingMachine(workTool) -- is the tool a sowing machine?
+	return workTool.cp.hasSpecializationSowingMachine or courseplay:isSpecialSowingMachine(workTool);
+end;
+function courseplay:isSpecialChopper(workTool)
+	return workTool.typeName == "woodCrusherTrailer" or workTool.cp.isPoettingerMex5
+end
+function courseplay:isSprayer(workTool) -- is the tool a sprayer/spreader?
+	return workTool.cp.hasSpecializationSprayer or courseplay:isSpecialSprayer(workTool)
+end;
+function courseplay:isWheelloader(workTool)			--vv added for Kasi, check whether it could cause problems (Tom)
+	return workTool.typeName:match("wheelLoader") or workTool.cp.isWheelLoader;
 end;
 
 -- UPDATE WORKTOOL DATA
@@ -117,7 +152,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 
 	-- MODE 1 + 2: GRAIN TRANSPORT / COMBI MODE
 	if vehicle.cp.mode == 1 or vehicle.cp.mode == 2 then
-		if workTool.allowTipDischarge then
+		if workTool.allowTipDischarge and workTool.capacity and workTool.capacity > 0.1 then
 			hasWorkTool = true;
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
 		end;
@@ -132,7 +167,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 	-- MODE 4: FERTILIZER AND SEEDING
 	elseif vehicle.cp.mode == 4 then
 		local isSprayer, isSowingMachine = courseplay:isSprayer(workTool), courseplay:isSowingMachine(workTool);
-		if isSprayer or isSowingMachine then
+		if isSprayer or isSowingMachine or workTool.cp.isTreePlanter then
 			hasWorkTool = true;
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
 			courseplay:setMarkers(vehicle, workTool)
@@ -150,7 +185,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 	-- MODE 5: TRANSFER
 	elseif vehicle.cp.mode == 5 then
 		-- For reverse testing and only for developers!!!!
-		if isImplement and courseplay.isDeveloper then
+		if isImplement and CpManager.isDeveloper then
 			hasWorkTool = true;
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
 		end;
@@ -172,6 +207,8 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 		or courseplay:isAttachedCombine(workTool) 
 		or courseplay:isFoldable(workTool))
 		and not workTool.cp.isCaseIHPuma160
+		and not courseplay:isSprayer(workTool)
+		and not courseplay:isSowingMachine(workTool)
 		then
 			hasWorkTool = true;
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
@@ -192,9 +229,11 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 
 	-- MODE 8: LIQUID MANURE TRANSFER
 	elseif vehicle.cp.mode == 8 then
-		if workTool.cp.hasSpecializationFillable then
+		if workTool.cp.hasSpecializationFillable and ((workTool.getOverloadingTrailerInRangePipeState ~= nil or workTool.setIsReFilling ~= nil) or workTool.cp.isFuelTrailer or workTool.cp.isWaterTrailer) then
 			hasWorkTool = true;
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
+			vehicle.cp.hasMachinetoFill = true;
+			workTool.cp.waterReceiverTrigger = nil; -- water trailer: make sure it has no saved unloading water trigger
 		end;
 
 	-- MODE 9: FILL AND EMPTY SHOVEL
@@ -276,23 +315,10 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 			end;
 		end;
 
-		--MINHUDPAGE FOR ATTACHED COMBINES
-		vehicle.cp.attachedCombineIdx = nil;
-		if not (vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable or vehicle.cp.isSugarBeetLoader) then
-			for i=1, vehicle.cp.numWorkTools do
-				if courseplay:isAttachedCombine(vehicle.cp.workTools[i]) then
-					vehicle.cp.attachedCombineIdx = i;
-					break;
-				end;
-			end;
-		end;
-		if vehicle.cp.attachedCombineIdx ~= nil then
-			--courseplay:debug(string.format('setMinHudPage(vehicle, vehicle.cp.workTools[%d])', vehicle.cp.attachedCombineIdx), 18);
-			courseplay:setMinHudPage(vehicle, vehicle.cp.workTools[vehicle.cp.attachedCombineIdx]);
-		end;
-
-		-- TURN RADIUS
-		courseplay:setAutoTurnradius(vehicle, hasWorkTool);
+		-- TURN DIAMETER
+		if g_server ~= nil then
+			courseplay:setAutoTurnDiameter(vehicle, hasWorkTool);
+		end
 
 		-- TIP REFERENCE POINTS
 		courseplay:setTipRefOffset(vehicle);
@@ -330,21 +356,27 @@ end;
 
 function courseplay:setTipRefOffset(vehicle)
 	vehicle.cp.tipRefOffset = nil;
+	local foundTipRefOffset = false;
 	for i=1, vehicle.cp.numWorkTools do
-		if vehicle.cp.workTools[i].rootNode ~= nil and vehicle.cp.workTools[i].tipReferencePoints ~= nil then
+		if vehicle.cp.hasMachinetoFill then
+			vehicle.cp.tipRefOffset = 1.5;
+		elseif vehicle.cp.workTools[i].rootNode ~= nil and vehicle.cp.workTools[i].tipReferencePoints ~= nil then
 			local tipperX, tipperY, tipperZ = getWorldTranslation(vehicle.cp.workTools[i].rootNode);
 			if  #(vehicle.cp.workTools[i].tipReferencePoints) > 1 then
 				vehicle.cp.workTools[i].cp.rearTipRefPoint = nil;
 				for n=1 ,#(vehicle.cp.workTools[i].tipReferencePoints) do
 					local tipRefPointX, tipRefPointY, tipRefPointZ = worldToLocal(vehicle.cp.workTools[i].tipReferencePoints[n].node, tipperX, tipperY, tipperZ);
-					tipRefPointX = math.abs(tipRefPointX);
-					if (vehicle.cp.tipRefOffset == nil or vehicle.cp.tipRefOffset == 0) and tipRefPointX > 0.1 then
-						vehicle.cp.tipRefOffset = tipRefPointX;
-					else
-						vehicle.cp.tipRefOffset = 0
+					tipRefPointX = abs(tipRefPointX);
+					if not foundTipRefOffset then
+						if (vehicle.cp.tipRefOffset == nil or vehicle.cp.tipRefOffset == 0) and tipRefPointX > 0.1 then
+							vehicle.cp.tipRefOffset = tipRefPointX;
+							foundTipRefOffset = true;
+						else
+							vehicle.cp.tipRefOffset = 0
+						end;
 					end;
 
-					-- Find the rear tipRefpoint in case we are reverse BGA tipping.
+					-- Find the rear tipRefpoint in case we are BGA tipping.
 					if tipRefPointX < 0.1 and tipRefPointZ > 0 then
 						if not vehicle.cp.workTools[i].cp.rearTipRefPoint or vehicle.cp.workTools[i].tipReferencePoints[n].width > vehicle.cp.workTools[i].tipReferencePoints[vehicle.cp.workTools[i].cp.rearTipRefPoint].width then
 							vehicle.cp.workTools[i].cp.rearTipRefPoint = n;
@@ -352,14 +384,9 @@ function courseplay:setTipRefOffset(vehicle)
 						end;
 					end;
 				end;
-			else 
+			else
 				vehicle.cp.tipRefOffset = 0;
 			end;
-		elseif vehicle.cp.hasMachinetoFill then
-			vehicle.cp.tipRefOffset = 1.5;
-		end;
-		if vehicle.cp.tipRefOffset ~= nil then
-			break;
 		end;
 	end;
 end;
@@ -390,7 +417,7 @@ function courseplay:setMarkers(vehicle, object,isImplement)
 			if j == "start" or j == "height" or j == "width" then 
 				local x, y, z = getWorldTranslation(node)
 				local _, _, ztt = worldToLocal(vehicle.cp.DirectionNode, x, y, z)
-				courseplay:debug(('%s:%s Point %s: ztt = %s'):format(nameNum(vehicle), tostring(object.name), tostring(j), tostring(ztt)), 6);
+				courseplay:debug(('%s: %s Point %s: ztt = %s'):format(nameNum(vehicle), tostring(object.name), tostring(j), tostring(ztt)), 6);
 				if object.cp.backMarkerOffset == nil or ztt > object.cp.backMarkerOffset then
 					object.cp.backMarkerOffset = ztt
 				end
@@ -410,7 +437,7 @@ function courseplay:setMarkers(vehicle, object,isImplement)
 	end
 
 	if vehicle.cp.aiFrontMarker < -7 then
-		vehicle.aiToolExtraTargetMoveBack = math.abs(vehicle.cp.aiFrontMarker)
+		vehicle.aiToolExtraTargetMoveBack = abs(vehicle.cp.aiFrontMarker)
 	end
 
 	courseplay:debug(('%s: setMarkers(): turnEndBackDistance = %s, aiToolExtraTargetMoveBack = %s'):format(nameNum(vehicle), tostring(vehicle.turnEndBackDistance), tostring(vehicle.aiToolExtraTargetMoveBack)), 6);
@@ -456,12 +483,11 @@ function courseplay:setTipperCoverData(vehicle)
 		local workTool = vehicle.cp.workTools[i];
 
 		-- Default Giants trailers
-		if workTool.cp.hasSpecializationCover then
+		if workTool.cp.hasSpecializationCover and not workTool.cp.isStrawBlower then
 			courseplay:debug(string.format('Implement %q has a cover (hasSpecializationCover == true)', tostring(workTool.name)), 6);
 			local data = {
 				coverType = 'defaultGiants',
 				tipperIndex = i,
-				--coverItems = coverItems
 			};
 			table.insert(vehicle.cp.tippersWithCovers, data);
 			vehicle.cp.tipperHasCover = true;
@@ -482,11 +508,39 @@ function courseplay:setTipperCoverData(vehicle)
 	end;
 end;
 
-function courseplay:setAutoTurnradius(vehicle, hasWorkTool)
+function courseplay:setAutoTurnDiameter(vehicle, hasWorkTool)
+	cpPrintLine(6, 3);
+	local turnRadius, turnRadiusAuto = 10, 10;
+
+	vehicle.cp.turnDiameterAuto = vehicle.cp.vehicleTurnRadius * 2;
+	courseplay:debug(('%s: Set turnDiameterAuto to %.2fm (2 x vehicleTurnRadius)'):format(nameNum(vehicle), vehicle.cp.turnDiameterAuto), 6);
+
+	-- Check if we have worktools and if we are in a valid mode
+	if hasWorkTool and (vehicle.cp.mode == 2 or vehicle.cp.mode == 3 or vehicle.cp.mode == 4 or vehicle.cp.mode == 6) then
+		courseplay:debug(('%s: getHighestToolTurnDiameter(%s)'):format(nameNum(vehicle), vehicle.name), 6);
+
+		local toolTurnDiameter = courseplay:getHighestToolTurnDiameter(vehicle);
+
+		-- If the toolTurnDiameter is bigger than the turnDiameterAuto, then set turnDiameterAuto to toolTurnDiameter
+		if toolTurnDiameter > vehicle.cp.turnDiameterAuto then
+			courseplay:debug(('%s: toolTurnDiameter(%.2fm) > turnDiameterAuto(%.2fm), turnDiameterAuto set to %.2fm'):format(nameNum(vehicle), toolTurnDiameter, vehicle.cp.turnDiameterAuto, toolTurnDiameter), 6);
+			vehicle.cp.turnDiameterAuto = toolTurnDiameter;
+		end;
+	end;
+
+
+	if vehicle.cp.turnDiameterAutoMode then
+		vehicle.cp.turnDiameter = vehicle.cp.turnDiameterAuto;
+		courseplay:debug(('%s: turnDiameterAutoMode is active: turnDiameter set to %.2fm'):format(nameNum(vehicle), vehicle.cp.turnDiameterAuto), 6);
+	end;
+	cpPrintLine(6, 1);
+end;
+
+function courseplay:setOldAutoTurnDiameter(vehicle, hasWorkTool)
 	local sinAlpha = 0;		-- Sinus vom Lenkwinkel
 	local wheelbase = 0;	-- Radstand
 	local track = 0;		-- Spurweite
-	local turnRadius = 0;	-- Wendekreis unbereinigt
+	local turnDiameter = 0;	-- Wendekreis unbereinigt
 	local xerion = false
 	if vehicle.foundWheels == nil then
 		vehicle.foundWheels = {}
@@ -523,27 +577,27 @@ function courseplay:setAutoTurnradius(vehicle, hasWorkTool)
 		end	 
 		track  = courseplay:distance(wh1X, wh1Z, wh2X, wh2Z)
 		wheelbase = courseplay:distance(wh1X, wh1Z, wh3X, wh3Z)
-		turnRadius = 2*wheelbase/sinAlpha+track
+		turnDiameter = 2*wheelbase/sinAlpha+track
 		vehicle.foundWheels = {}
 	else
-		turnRadius = vehicle.cp.turnRadius                  -- Kasi and Co are not supported. Nobody does hauling with a Kasi or Quadtrack !!!
+		turnDiameter = vehicle.cp.turnDiameter                  -- Kasi and Co are not supported. Nobody does hauling with a Kasi or Quadtrack !!!
 	end;
 	
 	if hasWorkTool and (vehicle.cp.mode == 2 or vehicle.cp.mode == 3 or vehicle.cp.mode == 4 or vehicle.cp.mode == 6) then --TODO (Jakob): I've added modes 3, 4 & 6 - needed?
-		vehicle.cp.turnRadiusAuto = turnRadius;
-		--print(string.format("vehicle.cp.workTools[1].sizeLength = %s  turnRadius = %s", tostring(vehicle.cp.workTools[1].sizeLength),tostring( turnRadius)))
-		if vehicle.cp.numWorkTools == 1 and vehicle.cp.workTools[1].attacherVehicle ~= vehicle and (vehicle.cp.workTools[1].sizeLength > turnRadius) then
-			vehicle.cp.turnRadiusAuto = vehicle.cp.workTools[1].sizeLength;
+		vehicle.cp.turnDiameterAuto = turnDiameter;
+		--print(string.format("vehicle.cp.workTools[1].sizeLength = %s  turnDiameter = %s", tostring(vehicle.cp.workTools[1].sizeLength),tostring( turnDiameter)))
+		if vehicle.cp.numWorkTools == 1 and vehicle.cp.workTools[1].attacherVehicle ~= vehicle and (vehicle.cp.workTools[1].sizeLength > turnDiameter) then
+			vehicle.cp.turnDiameterAuto = vehicle.cp.workTools[1].sizeLength;
 		end;
 		if (vehicle.cp.numWorkTools > 1) then
-			vehicle.cp.turnRadiusAuto = turnRadius * 1.5;
+			vehicle.cp.turnDiameterAuto = turnDiameter * 1.5;
 		end
 	end;
 
-	if vehicle.cp.turnRadiusAutoMode then
-		vehicle.cp.turnRadius = vehicle.cp.turnRadiusAuto;
-		if math.abs(vehicle.cp.turnRadius) > 50 then
-			vehicle.cp.turnRadius = 15
+	if vehicle.cp.turnDiameterAutoMode then
+		vehicle.cp.turnDiameter = vehicle.cp.turnDiameterAuto;
+		if abs(vehicle.cp.turnDiameter) > 50 then
+			vehicle.cp.turnDiameter = 15
 		end
 	end;
 end
@@ -554,13 +608,25 @@ end
 -- ##### LOADING TOOLS ##### --
 function courseplay:load_tippers(vehicle, allowedToDrive)
 	local cx, cz = vehicle.Waypoints[2].cx, vehicle.Waypoints[2].cz;
+	local driveOn = false;
 
 	if vehicle.cp.currentTrailerToFill == nil then
 		vehicle.cp.currentTrailerToFill = 1;
 	end
 	local currentTrailer = vehicle.cp.workTools[vehicle.cp.currentTrailerToFill];
+	if not currentTrailer.cp.realUnloadOrFillNode then
+		currentTrailer.cp.realUnloadOrFillNode = courseplay:getRealUnloadOrFillNode(currentTrailer);
+		if not currentTrailer.cp.realUnloadOrFillNode then
+			if vehicle.cp.numWorkTools > vehicle.cp.currentTrailerToFill then
+				vehicle.cp.currentTrailerToFill = vehicle.cp.currentTrailerToFill + 1;
+			else
+				driveOn = true;
+			end;
+		end;
+	end;
 
 	if not vehicle.cp.trailerFillDistance then
+
 		if not currentTrailer.cp.realUnloadOrFillNode then
 			return allowedToDrive;
 		end;
@@ -589,21 +655,20 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 				mst:startFill(vehicle.cp.multiSiloSelectedFillType);
 				courseplay:debug(('%s: MultiSiloTrigger: selectedFillType = %s, isFilling = %s'):format(nameNum(vehicle), tostring(Fillable.fillTypeIntToName[mst.selectedFillType]), tostring(mst.isFilling)), 2);
 			elseif siloIsEmpty then
-				courseplay:setGlobalInfoText(vehicle, 'FARM_SILO_IS_EMPTY');
+				CpManager:setGlobalInfoText(vehicle, 'FARM_SILO_IS_EMPTY');
 			end;
 		else
-			courseplay:setGlobalInfoText(vehicle, 'FARM_SILO_NO_FILLTYPE');
+			CpManager:setGlobalInfoText(vehicle, 'FARM_SILO_NO_FILLTYPE');
 		end;
 	end;
 
 	-- drive on when required fill level is reached
-	local driveOn = false;
-	if vehicle.cp.timeOut < vehicle.timer or vehicle.cp.prevFillLevelPct == nil then
+	if courseplay:timerIsThrough(vehicle, 'fillLevelChange') or vehicle.cp.prevFillLevelPct == nil then
 		if vehicle.cp.prevFillLevelPct ~= nil and vehicle.cp.tipperFillLevelPct == vehicle.cp.prevFillLevelPct and vehicle.cp.tipperFillLevelPct > vehicle.cp.driveOnAtFillLevel then
 			driveOn = true;
 		end;
 		vehicle.cp.prevFillLevelPct = vehicle.cp.tipperFillLevelPct;
-		courseplay:set_timeout(vehicle, 7000);
+		courseplay:setCustomTimer(vehicle, 'fillLevelChange', 7);
 	end;
 
 	if vehicle.cp.tipperFillLevelPct == 100 or driveOn then
@@ -653,6 +718,9 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 
 	local isBGA = ctt.bunkerSilo ~= nil and ctt.bunkerSilo.movingPlanes ~= nil and vehicle.cp.handleAsOneSilo ~= true;
 	local bgaIsFull = isBGA and (ctt.bunkerSilo.fillLevel >= ctt.bunkerSilo.capacity);
+	if isBGA then
+		vehicle.cp.isBGATipping = true;
+	end;
 
 	for k, tipper in pairs(vehicle.cp.workTools) do
 		if tipper.tipReferencePoints ~= nil then
@@ -688,8 +756,6 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 				end
 
 				local stopAndGo = false;
-
-				if vehicle.isRealistic then stopAndGo = true; end;
 
 				-- Make sure we are using the rear TipReferencePoint as bestTipReferencePoint if possible.
 				if tipper.cp.rearTipRefPoint and tipper.cp.rearTipRefPoint ~= bestTipReferencePoint then
@@ -727,66 +793,64 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 				-------------------------------
 				--- Reverse into BGA and unload
 				-------------------------------
-				if vehicle.Waypoints[vehicle.recordnumber].rev or vehicle.cp.isReverseBGATipping then
+				if vehicle.Waypoints[vehicle.cp.waypointIndex].rev or vehicle.cp.isReverseBGATipping then
 					-- Get the silo section fill level based on how many sections and total capacity.
 					local medianSiloCapacity = ctt.bunkerSilo.capacity / silos * 0.92; -- we make it a bit smaler than it actually is, since it will still unload a bit to the silo next to it.
 
 					-- Find what BGA silo section to unload in if not found
-					if not vehicle.cp.BGASelectedSection then
-						-- TODO: (Claus) Make sure that the route is long enough (#535)
-
+					if not tipper.cp.BGASelectedSection then
 						vehicle.cp.BGASectionInverted = false;
 
 						-- Find out what end to start at.
 						if startDistance > endDistance then
-							vehicle.cp.BGASelectedSection = 1;
+							tipper.cp.BGASelectedSection = 1;
 						else
-							vehicle.cp.BGASelectedSection = silos;
+							tipper.cp.BGASelectedSection = silos;
 							vehicle.cp.BGASectionInverted = true;
 						end;
 
 						-- Find which section to unload into.
-						while (vehicle.cp.BGASectionInverted and vehicle.cp.BGASelectedSection > 1) or (not vehicle.cp.BGASectionInverted and vehicle.cp.BGASelectedSection < silos) do
-							if ctt.bunkerSilo.movingPlanes[vehicle.cp.BGASelectedSection].fillLevel < medianSiloCapacity then
+						while (vehicle.cp.BGASectionInverted and tipper.cp.BGASelectedSection > 1) or (not vehicle.cp.BGASectionInverted and tipper.cp.BGASelectedSection < silos) do
+							if ctt.bunkerSilo.movingPlanes[tipper.cp.BGASelectedSection].fillLevel < medianSiloCapacity then
 								break;
 							end;
 
 							if vehicle.cp.BGASectionInverted then
-								vehicle.cp.BGASelectedSection = vehicle.cp.BGASelectedSection - 1;
+								tipper.cp.BGASelectedSection = tipper.cp.BGASelectedSection - 1;
 							else
-								vehicle.cp.BGASelectedSection = vehicle.cp.BGASelectedSection + 1;
+								tipper.cp.BGASelectedSection = tipper.cp.BGASelectedSection + 1;
 							end;
 						end;
 
-						courseplay:debug(string.format("%s: BGA selected silo section: %d - Is inverted order: %s", nameNum(vehicle), vehicle.cp.BGASelectedSection, tostring(vehicle.cp.BGASectionInverted)), 13);
+						courseplay:debug(string.format("%s: BGA selected silo section: %d - Is inverted order: %s", nameNum(vehicle), tipper.cp.BGASelectedSection, tostring(vehicle.cp.BGASectionInverted)), 13);
 					end;
 
 					-- Check if last silo section.
-					local isLastSiloSection = (vehicle.cp.BGASectionInverted and vehicle.cp.BGASelectedSection == 1) or (not vehicle.cp.BGASectionInverted and vehicle.cp.BGASelectedSection == silos);
+					local isLastSiloSection = (vehicle.cp.BGASectionInverted and tipper.cp.BGASelectedSection == 1) or (not vehicle.cp.BGASectionInverted and tipper.cp.BGASelectedSection == silos);
 
 					-- Start unloading some silo section before main silo section to make a ramp for the trailer.
-					if not isLastSiloSection and nearestBGASection ~= vehicle.cp.BGASelectedSection then
+					if not isLastSiloSection and nearestBGASection ~= tipper.cp.BGASelectedSection then
 						local unloadNumOfSectionBefore = 6;
 						local sectionMaxFillLevel = 0;
 						local isInUnloadSection = false;
 
 						-- INVERTED SILO DIRECTION
-						if (vehicle.cp.BGASectionInverted and nearestBGASection >= vehicle.cp.BGASelectedSection - unloadNumOfSectionBefore) and nearestBGASection < vehicle.cp.BGASelectedSection then
+						if (vehicle.cp.BGASectionInverted and nearestBGASection >= tipper.cp.BGASelectedSection - unloadNumOfSectionBefore) and nearestBGASection < tipper.cp.BGASelectedSection then
 							-- recalculate the num of section before, in case the num of section left is less.
-							unloadNumOfSectionBefore = math.min(vehicle.cp.BGASelectedSection - 1,unloadNumOfSectionBefore);
+							unloadNumOfSectionBefore = min(tipper.cp.BGASelectedSection - 1,unloadNumOfSectionBefore);
 
 							-- Calculate the current section max fill level.
-							sectionMaxFillLevel = (unloadNumOfSectionBefore - math.max(vehicle.cp.BGASelectedSection - nearestBGASection, 0) + 1) * ((medianSiloCapacity * 0.5) / unloadNumOfSectionBefore);
+							sectionMaxFillLevel = (unloadNumOfSectionBefore - max(tipper.cp.BGASelectedSection - nearestBGASection, 0) + 1) * ((medianSiloCapacity * 0.5) / unloadNumOfSectionBefore);
 
 							isInUnloadSection = true;
 
 						-- NORMAL SILO DIRECTION
-						elseif (not vehicle.cp.BGASectionInverted and nearestBGASection <= vehicle.cp.BGASelectedSection + unloadNumOfSectionBefore) and nearestBGASection > vehicle.cp.BGASelectedSection then
+						elseif (not vehicle.cp.BGASectionInverted and nearestBGASection <= tipper.cp.BGASelectedSection + unloadNumOfSectionBefore) and nearestBGASection > tipper.cp.BGASelectedSection then
 							-- recalculate the num of section before, in case the num of section left is less.
-							unloadNumOfSectionBefore = math.min(silos - vehicle.cp.BGASelectedSection ,unloadNumOfSectionBefore)
+							unloadNumOfSectionBefore = min(silos - tipper.cp.BGASelectedSection ,unloadNumOfSectionBefore)
 
 							-- Calculate the current section max fill level.
-							sectionMaxFillLevel = (unloadNumOfSectionBefore - math.max(nearestBGASection - vehicle.cp.BGASelectedSection, 0) + 1) * ((medianSiloCapacity * 0.5) / unloadNumOfSectionBefore);
+							sectionMaxFillLevel = (unloadNumOfSectionBefore - max(nearestBGASection - tipper.cp.BGASelectedSection, 0) + 1) * ((medianSiloCapacity * 0.5) / unloadNumOfSectionBefore);
 
 							isInUnloadSection = true;
 						end;
@@ -800,30 +864,31 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 							unloadWhileReversing = true;
 						elseif isInUnloadSection and tipper.tipState ~= Trailer.TIPSTATE_CLOSING and tipper.tipState ~= Trailer.TIPSTATE_CLOSED then
 							tipper:toggleTipState();
+							tipper.cp.isTipping = false;
 							courseplay:debug(string.format("%s: Ramp(%d) fill level is at max. Waiting with unloading.]", nameNum(vehicle), nearestBGASection), 13);
 						end;
 					end;
 
 					-- Get a vector distance, to make a more precise distance check.
-					local xmp, _, zmp = getWorldTranslation(ctt.bunkerSilo.movingPlanes[vehicle.cp.BGASelectedSection].nodeId);
+					local xmp, _, zmp = getWorldTranslation(ctt.bunkerSilo.movingPlanes[tipper.cp.BGASelectedSection].nodeId);
 					local _, _, vectorDistance = worldToLocal(tipper.tipReferencePoints[bestTipReferencePoint].node, xmp, y, zmp);
 					if tipper.cp.inversedRearTipNode then vectorDistance = vectorDistance * -1 end;
 
 					-- If we drive too far, then change direction and try to replace again.
-					if not isLastSiloSection and (vectorDistance > 1 or vectorDistance < -1) and nearestBGASection ~= vehicle.cp.BGASelectedSection then
+					if not isLastSiloSection and (vectorDistance > 1 or vectorDistance < -1) and nearestBGASection ~= tipper.cp.BGASelectedSection then
 						local isChangingDirection = false;
 
-						if vectorDistance > 0 and vehicle.Waypoints[vehicle.recordnumber].rev then
+						if vectorDistance > 0 and vehicle.Waypoints[vehicle.cp.waypointIndex].rev then
 							-- Change direction to forward
 							vehicle.cp.isReverseBGATipping = true;
 							isChangingDirection = true;
-							courseplay:setRecordNumber(vehicle, courseplay:getNextFwdPoint(vehicle));
-						elseif vectorDistance < 0 and not vehicle.Waypoints[vehicle.recordnumber].rev then
+							courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle));
+						elseif vectorDistance < 0 and not vehicle.Waypoints[vehicle.cp.waypointIndex].rev then
 							-- Change direction to reverse
 							local found = false;
-							for i = vehicle.recordnumber, 1, -1 do
+							for i = vehicle.cp.waypointIndex, 1, -1 do
 								if vehicle.Waypoints[i].rev then
-									courseplay:setRecordNumber(vehicle, i);
+									courseplay:setWaypointIndex(vehicle, i);
 									found = true;
 								end;
 							end;
@@ -835,48 +900,48 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 						end;
 
 						if isChangingDirection then
-							courseplay:debug(string.format("%s: Changed direction to %s to try reposition again.]", nameNum(vehicle), vehicle.Waypoints[vehicle.recordnumber].rev and "reverse" or "forward"), 13);
+							courseplay:debug(string.format("%s: Changed direction to %s to try reposition again.]", nameNum(vehicle), vehicle.Waypoints[vehicle.cp.waypointIndex].rev and "reverse" or "forward"), 13);
 						end;
 					end;
 
 
 					-- Make sure we drive to the middle of the next silo section before stopping again.
 					if vehicle.cp.isReverseBGATipping and vectorDistance > 0 then
-						courseplay:debug(string.format("%s: Moving to the middle of silo section %d - current distance: %.3fm]", nameNum(vehicle), vehicle.cp.BGASelectedSection, vectorDistance), 13);
+						courseplay:debug(string.format("%s: Moving to the middle of silo section %d - current distance: %.3fm]", nameNum(vehicle), tipper.cp.BGASelectedSection, vectorDistance), 13);
 
 					-- Unload if inside the selected section
-					elseif trailerInTipRange and nearestBGASection == vehicle.cp.BGASelectedSection then
+					elseif trailerInTipRange and nearestBGASection == tipper.cp.BGASelectedSection then
 						goForTipping = trailerInTipRange and vectorDistance > -2.5;
 					end;
 
 					-- Goto the next silo section if this one is filled and not last silo section.
-					if not isLastSiloSection and ctt.bunkerSilo.movingPlanes[vehicle.cp.BGASelectedSection].fillLevel >= medianSiloCapacity then
+					if not isLastSiloSection and ctt.bunkerSilo.movingPlanes[tipper.cp.BGASelectedSection].fillLevel >= medianSiloCapacity then
 						-- Make sure we run this script even that we are not in an reverse waypoint anymore.
 						vehicle.cp.isReverseBGATipping = true;
 
 						-- Find next section to unload into.
-						while (vehicle.cp.BGASectionInverted and vehicle.cp.BGASelectedSection > 1) or (not vehicle.cp.BGASectionInverted and vehicle.cp.BGASelectedSection < silos) do
-							if ctt.bunkerSilo.movingPlanes[vehicle.cp.BGASelectedSection].fillLevel < medianSiloCapacity then
+						while (vehicle.cp.BGASectionInverted and tipper.cp.BGASelectedSection > 1) or (not vehicle.cp.BGASectionInverted and tipper.cp.BGASelectedSection < silos) do
+							if ctt.bunkerSilo.movingPlanes[tipper.cp.BGASelectedSection].fillLevel < medianSiloCapacity then
 								break;
 							end;
 
 							if vehicle.cp.BGASectionInverted then
-								vehicle.cp.BGASelectedSection = vehicle.cp.BGASelectedSection - 1;
+								tipper.cp.BGASelectedSection = tipper.cp.BGASelectedSection - 1;
 							else
-								vehicle.cp.BGASelectedSection = vehicle.cp.BGASelectedSection + 1;
+								tipper.cp.BGASelectedSection = tipper.cp.BGASelectedSection + 1;
 							end;
 						end;
 
 						-- Find the first forward waypoint ahead of the vehicle so we can drive ahead to the next silo section.
-						courseplay:setRecordNumber(vehicle, courseplay:getNextFwdPoint(vehicle));
+						courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle));
 
-						courseplay:debug(string.format("%s: New BGA silo section: %d", nameNum(vehicle), vehicle.cp.BGASelectedSection), 13);
+						courseplay:debug(string.format("%s: New BGA silo section: %d", nameNum(vehicle), tipper.cp.BGASelectedSection), 13);
 					elseif isLastSiloSection and goForTipping then
 						-- Make sure we run this script even that we are not in an reverse waypoint anymore.
 						vehicle.cp.isReverseBGATipping = true;
 
 						-- Make sure that we don't reverse into the silo after it's full
-						courseplay:setRecordNumber(vehicle, courseplay:getNextFwdPoint(vehicle));
+						courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle));
 					end;
 
 				-------------------------------
@@ -888,20 +953,20 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 
 					-- Get the animation
 					local animation = tipper.tipAnimations[bestTipReferencePoint];
-					local totalLength = math.abs(endDistance - startDistance);
+					local totalLength = abs(endDistance - startDistance);
 					local fillDelta = vehicle.cp.tipperFillLevel / vehicle.cp.tipperCapacity;
 					local totalTipDuration = ((animation.dischargeEndTime - animation.dischargeStartTime) / animation.animationOpenSpeedScale) * fillDelta / 1000;
 					local meterPrSeconds = totalLength / totalTipDuration;
 					if stopAndGo then
-						meterPrSeconds = vehicle.cp.speeds.unload * 1000;
+						meterPrSeconds = vehicle.cp.speeds.reverse * 1000;
 					end;
 
 					-- Find what BGA silo section to unload in if not found
-					if not vehicle.cp.BGASelectedSection then
+					if not tipper.cp.BGASelectedSection then
 						local fillLevel = ctt.bunkerSilo.fillLevel;
 						if ctt.bunkerSilo.cpTempFillLevel then fillLevel = ctt.bunkerSilo.cpTempFillLevel end;
 
-						vehicle.cp.bunkerSiloSectionFillLevel = math.min((fillLevel + (vehicle.cp.tipperFillLevel * 0.9))/silos, medianSiloCapacity);
+						vehicle.cp.bunkerSiloSectionFillLevel = min((fillLevel + (vehicle.cp.tipperFillLevel * 0.9))/silos, medianSiloCapacity);
 						courseplay:debug(string.format("%s: Max allowed fill level pr. section = %.2f", nameNum(vehicle), vehicle.cp.bunkerSiloSectionFillLevel), 2);
 						vehicle.cp.BGASectionInverted = false;
 
@@ -910,26 +975,26 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 
 						-- Find out what end to start at.
 						if startDistance < endDistance then
-							vehicle.cp.BGASelectedSection = 1;
+							tipper.cp.BGASelectedSection = 1;
 						else
-							vehicle.cp.BGASelectedSection = silos;
+							tipper.cp.BGASelectedSection = silos;
 							vehicle.cp.BGASectionInverted = true;
 						end;
 
 						-- Find which section to unload into.
-						while (vehicle.cp.BGASectionInverted and vehicle.cp.BGASelectedSection < silos) or (not vehicle.cp.BGASectionInverted and vehicle.cp.BGASelectedSection > 1) do
-							if ctt.bunkerSilo.movingPlanes[vehicle.cp.BGASelectedSection].fillLevel < vehicle.cp.bunkerSiloSectionFillLevel then
+						while (vehicle.cp.BGASectionInverted and tipper.cp.BGASelectedSection < silos) or (not vehicle.cp.BGASectionInverted and tipper.cp.BGASelectedSection > 1) do
+							if ctt.bunkerSilo.movingPlanes[tipper.cp.BGASelectedSection].fillLevel < vehicle.cp.bunkerSiloSectionFillLevel then
 								break;
 							end;
 
 							if vehicle.cp.BGASectionInverted then
-								vehicle.cp.BGASelectedSection = vehicle.cp.BGASelectedSection - 1;
+								tipper.cp.BGASelectedSection = tipper.cp.BGASelectedSection - 1;
 							else
-								vehicle.cp.BGASelectedSection = vehicle.cp.BGASelectedSection + 1;
+								tipper.cp.BGASelectedSection = tipper.cp.BGASelectedSection + 1;
 							end;
 						end;
 
-						courseplay:debug(string.format("%s: BGA selected silo section: %d - Is inverted order: %s", nameNum(vehicle), vehicle.cp.BGASelectedSection, tostring(vehicle.cp.BGASectionInverted)), 2);
+						courseplay:debug(string.format("%s: BGA selected silo section: %d - Is inverted order: %s", nameNum(vehicle), tipper.cp.BGASelectedSection, tostring(vehicle.cp.BGASectionInverted)), 2);
 
 					end;
 
@@ -938,17 +1003,18 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 						return allowedToDrive;
 					end;
 
-					local isLastSiloSection = (vehicle.cp.BGASectionInverted and vehicle.cp.BGASelectedSection == 1) or (not vehicle.cp.BGASectionInverted and vehicle.cp.BGASelectedSection == silos);
+					local isLastSiloSection = (vehicle.cp.BGASectionInverted and tipper.cp.BGASelectedSection == 1) or (not vehicle.cp.BGASectionInverted and tipper.cp.BGASelectedSection == silos);
 
 					-- Get a vector distance, to make a more precise distance check.
-					local xmp, _, zmp = getWorldTranslation(ctt.bunkerSilo.movingPlanes[vehicle.cp.BGASelectedSection].nodeId);
+					local xmp, _, zmp = getWorldTranslation(ctt.bunkerSilo.movingPlanes[tipper.cp.BGASelectedSection].nodeId);
 					local _, _, vectorDistance = worldToLocal(tipper.tipReferencePoints[bestTipReferencePoint].node, xmp, y, zmp);
 					local isOpen = tipper:getCurrentTipAnimationTime() >= animation.animationDuration;
 
-					if not isLastSiloSection and ctt.bunkerSilo.movingPlanes[vehicle.cp.BGASelectedSection].fillLevel >= vehicle.cp.bunkerSiloSectionFillLevel then
+					if not isLastSiloSection and ctt.bunkerSilo.movingPlanes[tipper.cp.BGASelectedSection].fillLevel >= vehicle.cp.bunkerSiloSectionFillLevel then
 						if tipper.tipState ~= Trailer.TIPSTATE_CLOSING and tipper.tipState ~= Trailer.TIPSTATE_CLOSED then
 							tipper:toggleTipState();
-							courseplay:debug(string.format("%s: SiloSection(%d) fill level is at max allowed fill level. Stopping unloading and move to next.", nameNum(vehicle), vehicle.cp.BGASelectedSection), 2);
+							tipper.cp.isTipping = false;
+							courseplay:debug(string.format("%s: SiloSection(%d) fill level is at max allowed fill level. Stopping unloading and move to next.", nameNum(vehicle), tipper.cp.BGASelectedSection), 2);
 							if courseplay:isPushWagon(tipper) then
 								if isOpen then
 									tipper:disableCurrentTipAnimation(tipper.tipAnimations[bestTipReferencePoint].animationDuration);
@@ -959,70 +1025,75 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 							vehicle.cp.isChangingPosition = true;
 						end;
 						if vehicle.cp.BGASectionInverted then
-							vehicle.cp.BGASelectedSection = math.max(vehicle.cp.BGASelectedSection - 1, 1);
+							tipper.cp.BGASelectedSection = max(tipper.cp.BGASelectedSection - 1, 1);
 						else
-							vehicle.cp.BGASelectedSection = math.min(vehicle.cp.BGASelectedSection + 1, silos);
+							tipper.cp.BGASelectedSection = min(tipper.cp.BGASelectedSection + 1, silos);
 						end;
-						courseplay:debug(string.format("%s: Change to siloSection = %d", nameNum(vehicle), vehicle.cp.BGASelectedSection), 2);
+						courseplay:debug(string.format("%s: Change to siloSection = %d", nameNum(vehicle), tipper.cp.BGASelectedSection), 2);
 					end;
 
-					local isFirseSiloSection = (vehicle.cp.BGASectionInverted and vehicle.cp.BGASelectedSection == silos) or (not vehicle.cp.BGASectionInverted and vehicle.cp.BGASelectedSection == 1);
+					local isFirseSiloSection = (vehicle.cp.BGASectionInverted and tipper.cp.BGASelectedSection == silos) or (not vehicle.cp.BGASectionInverted and tipper.cp.BGASelectedSection == 1);
 
+					local startTipDistance = 1.5;
 					-- Open hatch before time
 					if courseplay:isPushWagon(tipper) then
 						local openDistance = meterPrSeconds * (animation.animationDuration / animation.animationOpenSpeedScale / 1000);
 						if vectorDistance <= (3 + openDistance) and not isOpen then
 							tipper:enableTipAnimation(bestTipReferencePoint, 1);
 						end;
+
+					-- Find out when to start tipping based on speed
+					else
+						startTipDistance = meterPrSeconds * (animation.dischargeStartTime / animation.animationOpenSpeedScale / 1000);
 					end;
 
 					-- Slow down to real unload speed
 					if not vehicle.cp.backupUnloadSpeed and not stopAndGo and vectorDistance < 6*meterPrSeconds then
 						-- Calculate the unloading speed.
-						local refSpeed = meterPrSeconds * 3.6 * 0.80;
-						vehicle.cp.backupUnloadSpeed = vehicle.cp.speeds.unload;
-						courseplay:changeUnloadSpeed(vehicle, nil, refSpeed, true);
+						local refSpeed = meterPrSeconds * 3.6; -- * 0.90;
+						vehicle.cp.backupUnloadSpeed = vehicle.cp.speeds.reverse;
+						courseplay:changeReverseSpeed(vehicle, nil, refSpeed, true);
 						courseplay:debug(string.format("%s: BGA totalLength=%.2f,  totalTipDuration%.2f,  refSpeed=%.2f", nameNum(vehicle), totalLength, totalTipDuration, refSpeed), 2);
 					end;
 
 					local canUnload = false;
 					-- We can unload if we are in the right distance to the first silo
 					if isFirseSiloSection then
-						if vectorDistance < 2 then
-							canUnload = ctt.bunkerSilo.movingPlanes[vehicle.cp.BGASelectedSection].fillLevel < vehicle.cp.bunkerSiloSectionFillLevel;
+						if vectorDistance < startTipDistance then
+							canUnload = ctt.bunkerSilo.movingPlanes[tipper.cp.BGASelectedSection].fillLevel < vehicle.cp.bunkerSiloSectionFillLevel;
 						end;
 
-						if vehicle.cp.BGASelectedSection ~= nearestBGASection and not vehicle.cp.isChangingPosition then
-							vehicle.cp.BGASelectedSection = nearestBGASection;
-							courseplay:debug(string.format("%s: Change to siloSection = %d", nameNum(vehicle), vehicle.cp.BGASelectedSection), 2);
+						if tipper.cp.BGASelectedSection ~= nearestBGASection and not vehicle.cp.isChangingPosition then
+							tipper.cp.BGASelectedSection = nearestBGASection;
+							courseplay:debug(string.format("%s: Change to siloSection = %d", nameNum(vehicle), tipper.cp.BGASelectedSection), 2);
 						end;
-					elseif vehicle.cp.BGASelectedSection == nearestBGASection then
-						canUnload = ctt.bunkerSilo.movingPlanes[vehicle.cp.BGASelectedSection].fillLevel < vehicle.cp.bunkerSiloSectionFillLevel or isLastSiloSection;
+					elseif tipper.cp.BGASelectedSection == nearestBGASection then
+						canUnload = ctt.bunkerSilo.movingPlanes[tipper.cp.BGASelectedSection].fillLevel < vehicle.cp.bunkerSiloSectionFillLevel or isLastSiloSection;
 						if vehicle.cp.isChangingPosition then vehicle.cp.isChangingPosition = nil end;
-					elseif vehicle.cp.BGASelectedSection ~= nearestBGASection and not vehicle.cp.isChangingPosition then
-						vehicle.cp.BGASelectedSection = nearestBGASection;
-						courseplay:debug(string.format("%s: Change to siloSection = %d", nameNum(vehicle), vehicle.cp.BGASelectedSection), 2);
+					elseif tipper.cp.BGASelectedSection ~= nearestBGASection and not vehicle.cp.isChangingPosition then
+						tipper.cp.BGASelectedSection = nearestBGASection;
+						courseplay:debug(string.format("%s: Change to siloSection = %d", nameNum(vehicle), tipper.cp.BGASelectedSection), 2);
 					end;
 
 					goForTipping = trailerInTipRange and canUnload;
 
 					--if goForTipping or isLastSiloSection then
 					if isLastSiloSection or stopAndGo then
-						if (not stopAndGo and vectorDistance < -2) or (stopAndGo and vehicle.cp.BGASelectedSection == nearestBGASection and goForTipping) then
+						if (not stopAndGo and vectorDistance < -2) or (stopAndGo and tipper.cp.BGASelectedSection == nearestBGASection and goForTipping) then
 							allowedToDriveBackup = false;
 						end;
 					end;
 				end;
 
 			--BGA TIPTRIGGER BUT IS FULL AND WE ARE REVERSE TIPPING
-			elseif isBGA and bgaIsFull and (vehicle.Waypoints[vehicle.recordnumber].rev or vehicle.cp.isReverseBGATipping) then
+			elseif isBGA and bgaIsFull and (vehicle.Waypoints[vehicle.cp.waypointIndex].rev or vehicle.cp.isReverseBGATipping) then
 				-- Stop the vehicle, since we don't want to reverse into the BGA if it's full.
 				allowedToDrive = false;
 				-- Tell the user why we have stoped.
-				courseplay:setGlobalInfoText(vehicle, 'BGA_IS_FULL');
+				CpManager:setGlobalInfoText(vehicle, 'BGA_IS_FULL');
 
 			-- BGA TIPTRIGGER IS FULL
-			elseif isBGA and bgaIsFull and not vehicle.Waypoints[vehicle.recordnumber].rev and not vehicle.cp.isReverseBGATipping then
+			elseif isBGA and bgaIsFull and not vehicle.Waypoints[vehicle.cp.waypointIndex].rev and not vehicle.cp.isReverseBGATipping then
 				-- set trigger to nil
 				courseplay:resetTipTrigger(vehicle);
 
@@ -1038,7 +1109,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 
 			--UNLOAD
 			if ctt.acceptedFillTypes[fruitType] and goForTipping == true then
-				if vehicle.cp.unloadingTipper == nil or vehicle.cp.unloadingTipper == tipper then -- make sure we only tip one trailer at the time
+				if not tipper.cp.isTipping then
 					if isBGA then
 						courseplay:debug(nameNum(vehicle) .. ": goForTipping = true [BGA trigger accepts fruit (" .. tostring(fruitType) .. ")]", 2);
 					else
@@ -1046,7 +1117,6 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 					end;
 
 					if tipper.tipState == Trailer.TIPSTATE_CLOSED or tipper.tipState == Trailer.TIPSTATE_CLOSING then
-						vehicle.toggledTipState = bestTipReferencePoint;
 						local isNearestPoint = false
 						if distanceToTrigger > tipper.cp.closestTipDistance then
 							isNearestPoint = true
@@ -1055,21 +1125,21 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 							tipper.cp.closestTipDistance = distanceToTrigger
 						end
 						if distanceToTrigger == 0 or isBGA or isNearestPoint then
-							tipper:toggleTipState(ctt,vehicle.toggledTipState);
-							vehicle.cp.unloadingTipper = tipper
-							courseplay:debug(nameNum(vehicle)..": toggleTipState: "..tostring(vehicle.toggledTipState).."  /unloadingTipper= "..tostring(vehicle.cp.unloadingTipper.name), 2);
+							tipper:toggleTipState(ctt, bestTipReferencePoint);
+							tipper.cp.isTipping = true;
+							courseplay:debug(nameNum(vehicle)..": toggleTipState: "..tostring(bestTipReferencePoint).."  /unloadingTipper= "..tostring(tipper.name), 2);
 							allowedToDrive = false;
 						end
-					elseif tipper.tipState ~= Trailer.TIPSTATE_CLOSING then
+					end;
+				else
+					if tipper.tipState ~= Trailer.TIPSTATE_CLOSING then
 						tipper.cp.closestTipDistance = math.huge
 						allowedToDrive = false;
 					end;
 
-					if isBGA and ((not vehicle.Waypoints[vehicle.recordnumber].rev and not vehicle.cp.isReverseBGATipping) or unloadWhileReversing) then
+					if isBGA and ((not vehicle.Waypoints[vehicle.cp.waypointIndex].rev and not vehicle.cp.isReverseBGATipping) or unloadWhileReversing) then
 						allowedToDrive = allowedToDriveBackup;
 					end;
-				else
-					tipper.cp.closestTipDistance = math.huge;
 				end;
 			elseif not ctt.acceptedFillTypes[fruitType] then
 				if isBGA then
@@ -1109,14 +1179,183 @@ function courseplay:resetTipTrigger(vehicle, changeToForward)
 	vehicle.cp.currentTipTrigger = nil;
 	vehicle.cp.handleAsOneSilo = nil; -- Used for BGA tipping
 	vehicle.cp.isReverseBGATipping = nil; -- Used for reverse BGA tipping
-	vehicle.cp.BGASelectedSection = nil; -- Used for reverse BGA tipping
+	vehicle.cp.isBGATipping = false;
+	for k, tipper in pairs(vehicle.cp.workTools) do
+		tipper.cp.BGASelectedSection = nil; -- Used for reverse BGA tipping
+		tipper.cp.isTipping = false;
+	end;
 	vehicle.cp.inversedRearTipNode = nil; -- Used for reverse BGA tipping
 	if vehicle.cp.backupUnloadSpeed then
-		courseplay:changeUnloadSpeed(vehicle, nil, vehicle.cp.backupUnloadSpeed, true);
+		courseplay:changeReverseSpeed(vehicle, nil, vehicle.cp.backupUnloadSpeed, true);
 		vehicle.cp.backupUnloadSpeed = nil;
 	end;
-	if changeToForward and vehicle.Waypoints[vehicle.recordnumber].rev then
-		courseplay:setRecordNumber(vehicle, courseplay:getNextFwdPoint(vehicle));
+	if changeToForward and vehicle.Waypoints[vehicle.cp.waypointIndex].rev then
+		courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle));
 	end;
+end;
+
+function courseplay:refillWorkTools(vehicle, fillLevelPct, driveOn, allowedToDrive, lx, lz, dt)
+	for _,workTool in ipairs(vehicle.cp.workTools) do
+		if workTool.fillLevel == nil or workTool.capacity == nil then
+			return;
+		end;
+		local workToolFillLevelPct = workTool.fillLevel * 100 / workTool.capacity;
+
+		local isSprayer = courseplay:isSprayer(workTool);
+
+		if isSprayer then
+			local isSpecialSprayer = false;
+			isSpecialSprayer, allowedToDrive, lx, lz = courseplay:handleSpecialSprayer(vehicle, workTool, fillLevelPct, driveOn, allowedToDrive, lx, lz, dt, 'pull');
+			if isSpecialSprayer then
+				return allowedToDrive, lx, lz;
+			end;
+		end;
+
+		-- Sprayer / liquid manure transporters
+		if (isSprayer or workTool.cp.isLiquidManureOverloader) and not workTool.fillTypes[Fillable.FILLTYPE_MANURE] then
+			-- print(('\tworkTool %d (%q)'):format(i, nameNum(workTool)));
+			local fillTrigger;
+
+			if vehicle.cp.fillTrigger ~= nil then
+				local trigger = courseplay.triggers.all[vehicle.cp.fillTrigger];
+				if (trigger.isSprayerFillTrigger or trigger.isLiquidManureFillTrigger) and courseplay:fillTypesMatch(trigger, workTool) then 
+					--print('\t\tslow down, it\'s a sprayerFillTrigger');
+					vehicle.cp.isInFilltrigger = true;
+				end;
+			end;
+
+			-- check for fillTrigger
+			if workTool.fillTriggers then
+				local trigger = workTool.fillTriggers[1];
+				if trigger ~= nil and (trigger.isSprayerFillTrigger or trigger.isLiquidManureFillTrigger) then
+					fillTrigger = trigger;
+					vehicle.cp.fillTrigger = nil;
+				end;
+			end;
+
+			-- check for UPK fillTrigger
+			if fillTrigger == nil and workTool.upkTrigger then
+				local trigger = workTool.upkTrigger[1];
+				if trigger ~= nil and (trigger.isSprayerFillTrigger or trigger.isLiquidManureFillTrigger) then
+					fillTrigger = trigger;
+					vehicle.cp.fillTrigger = nil;
+				end;
+			end;
+
+			local fillTypesMatch = courseplay:fillTypesMatch(fillTrigger, workTool);
+			local canRefill = workToolFillLevelPct < driveOn and fillTypesMatch;
+
+			if canRefill and vehicle.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT then
+				canRefill = not courseplay:waypointsHaveAttr(vehicle, vehicle.cp.waypointIndex, -2, 2, 'wait', true, false);
+
+				if canRefill then
+					if (workTool.isSpreaderInRange ~= nil and workTool.isSpreaderInRange.manureTriggerc ~= nil) 
+					-- regular fill triggers
+					or (fillTrigger ~= nil and fillTrigger.triggerId ~= nil and vehicle.cp.lastMode8UnloadTriggerId ~= nil and fillTrigger.triggerId == vehicle.cp.lastMode8UnloadTriggerId)
+					-- manureLager fill trigger
+					or (fillTrigger ~= nil and fillTrigger.manureTrigger ~= nil and vehicle.cp.lastMode8UnloadTriggerId ~= nil and fillTrigger.manureTrigger == vehicle.cp.lastMode8UnloadTriggerId)
+					then
+						canRefill = false;
+					end;
+				end;
+			end;
+			-- print(('workToolFillLevelPct=%.1f, driveOn=%d, fillTrigger=%s, fillTypesMatch=%s, canRefill=%s'):format(workToolFillLevelPct, driveOn, tostring(fillTrigger), tostring(fillTypesMatch), tostring(canRefill)));
+
+			if canRefill then
+				allowedToDrive = false;
+				-- 												 unfold, lower, turnOn, allowedToDrive, cover, unload)
+				courseplay:handleSpecialTools(vehicle, workTool, nil,    nil,   nil,    allowedToDrive, false, false);
+
+				if not workTool.isFilling then
+					workTool:setIsFilling(true);
+				end;
+				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay.utils:roundToLowerInterval(workTool.fillLevel, 100), workTool.capacity));
+
+			elseif vehicle.cp.isLoaded or workToolFillLevelPct >= driveOn then
+				if workTool.isFilling then
+					workTool:setIsFilling(false);
+				end;
+				--												 unfold, lower, turnOn, allowedToDrive, cover, unload)
+				courseplay:handleSpecialTools(vehicle, workTool, nil,    nil,   nil,    allowedToDrive, false, false);
+				vehicle.cp.fillTrigger = nil;
+			end;
+		end;
+
+		-- SOWING MACHINE -- NOTE: no elseif, as a workTool might be both a sprayer and a seeder (URF)
+		if courseplay:isSowingMachine(workTool) then
+			if vehicle.cp.fillTrigger ~= nil then
+				local trigger = courseplay.triggers.all[vehicle.cp.fillTrigger];
+				if trigger.isSowingMachineFillTrigger then
+					--print("slow down , its a SowingMachineFillTrigger")
+					vehicle.cp.isInFilltrigger = true;
+				end
+			end
+			if fillLevelPct < driveOn and workTool.fillTriggers[1] ~= nil and workTool.fillTriggers[1].isSowingMachineFillTrigger then
+				--print(tableShow(workTool.fillTriggers,"workTool.fillTriggers"))
+				if not workTool.isFilling then
+					workTool:setIsFilling(true);
+				end;
+				allowedToDrive = false;
+				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay.utils:roundToLowerInterval(workTool.fillLevel, 100), workTool.capacity));
+			elseif workTool.fillTriggers[1] ~= nil then
+				if workTool.isFilling then
+					workTool:setIsFilling(false);
+				end;
+				vehicle.cp.fillTrigger = nil;
+			end;
+
+		-- TREE PLANTER
+		elseif workTool.cp.isTreePlanter then
+			if workTool.nearestSaplingPallet ~= nil and workTool.mountedSaplingPallet == nil then
+				local id = workTool.nearestSaplingPallet.id;
+				-- print("load Pallet "..tostring(id));
+				workTool:loadPallet(id);
+			end;
+
+		-- FUEL TRAILER
+		elseif workTool.cp.isFuelTrailer then
+			if vehicle.cp.fillTrigger ~= nil then
+				local trigger = courseplay.triggers.all[vehicle.cp.fillTrigger];
+				if trigger.isGasStationTrigger then
+					vehicle.cp.isInFilltrigger = true;
+				end
+			end
+			if fillLevelPct < driveOn and workTool.fuelFillTriggers[1] ~= nil and workTool.fuelFillTriggers[1].isGasStationTrigger then
+				if not workTool.isFuelFilling then
+					workTool:setIsFuelFilling(true);
+				end;
+				allowedToDrive = false;
+				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay.utils:roundToLowerInterval(workTool.fillLevel, 100), workTool.capacity));
+			elseif workTool.fuelFillTriggers[1] ~= nil then
+				if workTool.isFuelFilling then
+					workTool:setIsFuelFilling(false);
+				end;
+				vehicle.cp.fillTrigger = nil;
+			end;
+
+		-- WATER TRAILER
+		elseif workTool.cp.isWaterTrailer then
+			if vehicle.cp.fillTrigger ~= nil then
+				local trigger = courseplay.triggers.all[vehicle.cp.fillTrigger];
+				if trigger.isWaterTrailerFillTrigger then
+					vehicle.cp.isInFilltrigger = true;
+				end
+			end
+			if fillLevelPct < driveOn and workTool.waterTrailerFillTriggers[1] ~= nil and workTool.waterTrailerFillTriggers[1].isWaterTrailerFillTrigger then
+				if not workTool.isWaterTrailerFilling then
+					workTool:setIsWaterTrailerFilling(true);
+				end;
+				allowedToDrive = false;
+				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay.utils:roundToLowerInterval(workTool.fillLevel, 100), workTool.capacity));
+			elseif workTool.waterTrailerFillTriggers[1] ~= nil then
+				if workTool.isWaterTrailerFilling then
+					workTool:setIsWaterTrailerFilling(false);
+				end;
+				vehicle.cp.fillTrigger = nil;
+			end;
+		end;
+	end;
+
+	return allowedToDrive, lx, lz;
 end;
 

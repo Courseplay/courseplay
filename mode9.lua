@@ -29,7 +29,7 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive, dt)
 	--state 7: wait for Trailer 10 before EmptyPoint
 
 	if vehicle.cp.tipperCapacity == nil or vehicle.cp.tipperCapacity == 0 then --NOTE: query here instead of getCanUseAiMode() as tipperCapacity doesn't exist until drive() has been run
-		courseplay:setInfoText(vehicle, courseplay:loc('COURSEPLAY_SHOVEL_NOT_FOUND'));
+		courseplay:setInfoText(vehicle, 'COURSEPLAY_SHOVEL_NOT_FOUND');
 		return false;
 	end;
 
@@ -40,14 +40,14 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive, dt)
 	end;
 	local mt, secondary = vehicle.cp.movingToolsPrimary, vehicle.cp.movingToolsSecondary;
 
-	if vehicle.recordnumber == 1 and vehicle.cp.shovelState ~= 6 then  --backup for missed approach
+	if vehicle.cp.waypointIndex == 1 and vehicle.cp.shovelState ~= 6 then  --backup for missed approach
 		courseplay:setShovelState(vehicle, 1, 'backup');
 		courseplay:setIsLoaded(vehicle, false);
 	end;
 
 	-- STATE 1: DRIVE TO BUNKER SILO (1st waiting point)
 	if vehicle.cp.shovelState == 1 then
-		if vehicle.recordnumber + 1 > vehicle.cp.shovelFillStartPoint then
+		if vehicle.cp.waypointIndex + 1 > vehicle.cp.shovelFillStartPoint then
 			if courseplay:checkAndSetMovingToolsPosition(vehicle, mt, secondary, vehicle.cp.shovelStatePositions[2], dt) then
 				courseplay:setShovelState(vehicle, 2);
 			end;
@@ -73,12 +73,12 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive, dt)
 
 		if fillLevelPct == 100 or vehicle.cp.isLoaded then
 			if not vehicle.cp.isLoaded then
-				for i=vehicle.recordnumber, vehicle.maxnumber do
+				for i=vehicle.cp.waypointIndex, vehicle.cp.numWaypoints do
 					local _,ty,_ = getWorldTranslation(vehicle.cp.DirectionNode);
 					local _,_,z = worldToLocal(vehicle.cp.DirectionNode, vehicle.Waypoints[i].cx , ty , vehicle.Waypoints[i].cz);
 					if z < -3 and vehicle.Waypoints[i].rev  then
 						--print("z taken:  "..tostring(z));
-						courseplay:setRecordNumber(vehicle, i + 1);
+						courseplay:setWaypointIndex(vehicle, i + 1);
 						courseplay:setIsLoaded(vehicle, true);
 						break;
 					end;
@@ -94,7 +94,7 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive, dt)
 
 	-- STATE 3: TRANSPORT TO BGA
 	elseif vehicle.cp.shovelState == 3 then
-		if vehicle.cp.lastRecordnumber + 4 > vehicle.cp.shovelEmptyPoint then
+		if vehicle.cp.previousWaypointIndex + 4 > vehicle.cp.shovelEmptyPoint then
 			if courseplay:checkAndSetMovingToolsPosition(vehicle, mt, secondary, vehicle.cp.shovelStatePositions[4], dt) then
 				vehicle.cp.shovel.trailerFound = nil;
 				vehicle.cp.shovel.objectFound = nil;
@@ -155,17 +155,21 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive, dt)
 		local stopUnloading = vehicle.cp.shovel.trailerFound ~= nil and vehicle.cp.shovel.trailerFound.fillLevel >= vehicle.cp.shovel.trailerFound.capacity;
 		if fillLevelPct <= 1 or stopUnloading then
 			if vehicle.cp.isLoaded then
-				for i = vehicle.recordnumber,vehicle.maxnumber do
+				for i = vehicle.cp.waypointIndex,vehicle.cp.numWaypoints do
 					if vehicle.Waypoints[i].rev then
 						courseplay:setIsLoaded(vehicle, false);
-						courseplay:setRecordNumber(vehicle, i);
+						courseplay:setWaypointIndex(vehicle, i);
 						break;
 					end;
 				end;
 			end;
 
-			if courseplay:checkAndSetMovingToolsPosition(vehicle, mt, secondary, vehicle.cp.shovelStatePositions[4], dt) and not vehicle.Waypoints[vehicle.recordnumber].rev then
-				courseplay:setShovelState(vehicle, 6);
+			if courseplay:checkAndSetMovingToolsPosition(vehicle, mt, secondary, vehicle.cp.shovelStatePositions[4], dt) then
+				if not vehicle.Waypoints[vehicle.cp.waypointIndex].rev then
+					courseplay:setShovelState(vehicle, 6);
+				end
+			else
+				allowedToDrive = false;
 			end;
 		else
 			allowedToDrive = false;
@@ -177,7 +181,7 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive, dt)
 
 		courseplay:checkAndSetMovingToolsPosition(vehicle, mt, secondary, vehicle.cp.shovelStatePositions[3], dt);
 
-		if vehicle.recordnumber == 1 then
+		if vehicle.cp.waypointIndex == 1 then
 			courseplay:setShovelState(vehicle, 1);
 		end;
 	end;
@@ -241,7 +245,9 @@ function courseplay:checkAndSetMovingToolsPosition(vehicle, movingTools, seconda
 			mt = secondaryMovingTools[i - numPrimaryMovingTools];
 			mtMainObject = vehicle.cp.shovel;
 		end;
-
+		if mt == nil then
+			break
+		end
 		local curRot = mt.curRot[rotAxis];
 		local curTrans = mt.curTrans[transAxis];
 		local targetRot = targetRotations[i];
@@ -252,13 +258,13 @@ function courseplay:checkAndSetMovingToolsPosition(vehicle, movingTools, seconda
 
 			-- ROTATION
 			local rotDir = Utils.sign(targetRot - curRot);
-			if mt.node and mt.rotMin and mt.rotMax and rotDir and rotDir ~= 0 then
+			if mt.node and rotDir and rotDir ~= 0 then
 				local rotChange = mt.rotSpeed ~= nil and (mt.rotSpeed * dt) or (0.2/dt);
-				newRot = Utils.clamp(curRot + (rotChange * rotDir), mt.rotMin, mt.rotMax);
+				newRot = curRot + (rotChange * rotDir)
 				if (rotDir == 1 and newRot > targetRot) or (rotDir == -1 and newRot < targetRot) then
 					newRot = targetRot;
 				end;
-				if newRot ~= curRot and newRot >= mt.rotMin and newRot <= mt.rotMax then
+				if newRot ~= curRot  then
 					courseplay:debug(string.format('%s: movingTool %d: curRot=%.5f, targetRot=%.5f -> newRot=%.5f', nameNum(vehicle), i, curRot, targetRot, newRot), 10);
 					mt.curRot[rotAxis] = newRot;
 					setRotation(mt.node, unpack(mt.curRot));
@@ -286,8 +292,13 @@ function courseplay:checkAndSetMovingToolsPosition(vehicle, movingTools, seconda
 			end;
 
 			-- DIRTY FLAGS (movingTool)
+			-- TODO: check if Cylindered.setMovingToolDirty() is better here
 			if changed then
-				Cylindered.setDirty(mtMainObject, mt);
+				if vehicle.cp.attachedFrontLoader ~= nil then
+					Cylindered.setDirty(vehicle.cp.attachedFrontLoader, mt);
+				else
+					Cylindered.setDirty(mtMainObject, mt);
+				end	
 				vehicle:raiseDirtyFlags(mtMainObject.cylinderedDirtyFlag);
 			end;
 		end;
@@ -321,20 +332,29 @@ function courseplay:getMovingTools(vehicle)
 		end;
 	end;
 
+	courseplay:debug(('%s: getMovingTools(): frontLoader index=%d, shovel index=%d'):format(nameNum(vehicle), frontLoader, shovel), 10);
+
 	if shovel ~= 0 then
 		primaryMovingTools = vehicle.movingTools;
 		secondaryMovingTools = vehicle.attachedImplements[shovel].object.movingTools;
 		vehicle.cp.shovel = vehicle.attachedImplements[shovel].object;
+
+		courseplay:debug(('    [1] primaryMt=%s, secondaryMt=%s, shovel=%s'):format(nameNum(vehicle), nameNum(vehicle.attachedImplements[shovel].object), nameNum(vehicle.cp.shovel)), 10);
 	elseif frontLoader ~= 0 then
 		local object = vehicle.attachedImplements[frontLoader].object;
+		vehicle.cp.attachedFrontLoader = object
 		primaryMovingTools = object.movingTools;
 		if object.attachedImplements[1] ~= nil then
 			secondaryMovingTools = object.attachedImplements[1].object.movingTools;
 			vehicle.cp.shovel = object.attachedImplements[1].object;
 		end;
+
+		courseplay:debug(('    [2] attachedFrontLoader=%s, primaryMt=%s, secondaryMt=%s, shovel=%s'):format(nameNum(object), nameNum(object), nameNum(object.attachedImplements[1].object), nameNum(vehicle.cp.shovel)), 10);
 	else
 		primaryMovingTools = vehicle.movingTools;
 		vehicle.cp.shovel = vehicle;
+
+		courseplay:debug(('    [3] primaryMt=%s, shovel=%s'):format(nameNum(vehicle), nameNum(vehicle.cp.shovel)), 10);
 	end;
 
 	return primaryMovingTools, secondaryMovingTools;

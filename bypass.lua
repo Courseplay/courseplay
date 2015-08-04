@@ -5,7 +5,7 @@ function courseplay:isTheWayToTargetFree(self,lx,lz)
 		lx = -0.5;
 	end;
 	local distance = 20
-	local heigth = 0.25
+	local heigth = 0.5
 	local tx, ty, tz = localToWorld(self.cp.DirectionNode,0,heigth,4)
 	local nx, _, nz = localDirectionToWorld(self.cp.DirectionNode, lx, 0, lz)
 	local terrainHeight = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, tx+(nx*distance), 0, tz+(nz*distance))
@@ -22,10 +22,11 @@ function courseplay:isTheWayToTargetFree(self,lx,lz)
 		local x,y,z = worldToLocal(self.cp.DirectionNode,self.cp.foundColli[1].x, self.cp.foundColli[1].y, self.cp.foundColli[1].z)
 		local bypass = Utils.getNoNil(self.cp.foundColli[1].bp,5)
 		local sideStep = x +(bypass* self.cp.foundColli[1].s)
-		y = math.max(y,4)
-		xC,yC,zC = localToWorld(self.cp.DirectionNode,sideStep,y,z)
-		if vehicleSpeed ~= 0 then
+		--y = math.max(y,4)
+		xC,yC,zC = localToWorld(self.cp.DirectionNode,sideStep,y,z+bypass)
+		if vehicleSpeed == 0 then
 			if not self.cp.bypassWaypointsSet then
+				courseplay:debug(string.format("%s setting bypassing point at x:%s, y%s, z:%s",nameNum(self) ,tostring(sideStep),tostring(y),tostring(z+bypass)),3)
 				self.cp.bypassWaypointsSet = true
 				self.cp.bypassWaypoints = {}
 				self.cp.bypassWaypoints.x = xC
@@ -95,7 +96,7 @@ function courseplay:AnalyseRaycastResponse(self,side,transformId, x, y, z, dista
 	end
 	
 	if transformId == g_currentMission.terrainRootNode or parent == g_currentMission.terrainRootNode
-	or courseplay.trafficCollisionIgnoreList[transformId]
+	or CpManager.trafficCollisionIgnoreList[transformId]
 	or (self.cp.activeCombine ~= nil and (self.cp.activeCombine.rootNode == transformId or self.cp.activeCombine.rootNode == parent or self.cp.activeCombine.rootNode == parentParent ))
 	or self.cpTrafficCollisionIgnoreList[transformId] or self.cpTrafficCollisionIgnoreList[parent] or self.cpTrafficCollisionIgnoreList[parentParent]
 	or (self.cp.foundColli ~= nil and table.getn(self.cp.foundColli) > 0 and (self.cp.foundColli[1].id == transformId 

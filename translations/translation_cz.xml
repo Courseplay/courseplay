@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<l10n>
+	<texts>
+		<text name="COURSEPLAY_RECORDING_START" 						 text="Zapnout ukládání trasy" />
+		<text name="COURSEPLAY_DRIVER" 									 text="Odvozce:" />
+		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 					 text="Aktivovat odvozce" />
+		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 					 text="Zastavit odvozce" />
+		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 						 text="Čekat na posledním bodě nebo triggeru" />
+		<text name="COURSEPLAY_UNLOADING_SIDE" 							 text="Strana odvozce:" />
+		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="automaticky" />
+		<text name="COURSEPLAY_LEFT" 									 text="vlevo" />
+		<text name="COURSEPLAY_RIGHT" 									 text="vpravo" />
+		<text name="COURSEPLAY_UNLOADING_DRIVER_SEND_HOME" 				 text="Poslat odvozce domů" />
+		<text name="COURSEPLAY_REQUEST_UNLOADING_DRIVER" 				 text="Zavolat odvozce" />
+		<text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED" 				 text="Odvozce zavolán" />
+		<text name="COURSEPLAY_START_COURSE" 							 text="Aktivovat odvozce" />
+		<text name="COURSEPLAY_STOP_COURSE" 							 text="Zastavit odvozce" />
+		<text name="COURSEPLAY_MODE_1" 									 text="Mod: Odvozce (naložení v místě startu)" />
+		<text name="COURSEPLAY_MODE_2" 									 text="Mod: Kombajn (ke kombajnu/rezačce a pak odvézt)" />
+		<text name="COURSEPLAY_MODE_3" 									 text="Mod: Překládací vůz (odvoz od kombajnu na překládku)" />
+		<text name="COURSEPLAY_MODE_4" 									 text="Mod: Hnojení a setí" />
+		<text name="COURSEPLAY_MODE_5" 									 text="Mod: Průjezd (projede trasu bez zastavení)" />
+		<text name="COURSEPLAY_MODE_6" 									 text="Mod: Polní práce" />
+		<text name="COURSEPLAY_MODE_7" 									 text="Mod: Kombajn se jede sám vysypat" />
+		<text name="COURSEPLAY_MODE_8" 									 text="Mod: Převoz kejdy" />
+		<text name="COURSEPLAY_MODE_9" 									 text="Mod: Nakladač" />
+		<text name="COURSEPLAY_CONTINUE" 								 text="Pokračovat v jízdě" />
+		<text name="COURSEPLAY_CLEAR_COURSE" 							 text="Odstranit orientační body" />
+		<text name="COURSEPLAY_DRIVE_NOW" 								 text="Odvézt bez čekání na doplnění" />
+		<text name="COURSEPLAY_DRIVE_ON_AT" 							 text="Odvézt při:" />
+		<text name="UNKNOWN" 											 text="neznámý" />
+		<text name="COURSEPLAY_DISTANCE" 								 text="vzdálenost" />
+		<text name="COURSEPLAY_WAITING_TIME" 							 text="Doba čekání:" />
+		<text name="COURSEPLAY_MINUTES" 								 text="%d min" />
+		<text name="COURSEPLAY_SECONDS" 								 text="%d sek" />
+		<text name="COURSEPLAY_COURSE_NAME" 							 text="Jméno trasy:" />
+		<text name="COURSEPLAY_FOLDER_NAME" 							 text="Jméno složky:" />
+		<text name="COURSEPLAY_FILTER_COURSES" 							 text="Filtrovat trasy:" />
+		<text name="COURSEPLAY_COURSES_FILTER_TITLE" 					 text="Trasy: %q" />
+		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Nahrát/sloučit trasu do nahrané trasy" />
+		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Připojit trasu nakonec" />
+		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Přesunout do složky" />
+		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Smazat trasu/složku" />
+		<text name="COURSEPLAY_CREATE_FOLDER" 							 text="Vytvořit novou složku" />
+		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 			 text="Vyhledat trasu a složku" />
+		<text name="COURSEPLAY_DEACTIVATE_FILTER" 						 text="Vypnout filtr" />
+		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 				 text="přijel na místo překládky." />
+		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="přijel na místo čekání." />
+		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="dojel na trigger nebo konec." />
+		<text name="COURSEPLAY_WORK_END" 								 text="dokončil práci." />
+		<text name="COURSEPLAY_NEEDS_UNLOADING" 						 text=": potřebuje vyložit." />
+		<text name="COURSEPLAY_NEEDS_REFILLING" 						 text=": pracovní stroj musí být doplněn." />
+		<text name="COURSEPLAY_UNLOADING_BALES" 						 text="skládá balíky." />
+		<text name="COURSEPLAY_IS_IN_TRAFFIC" 							 text="stojí v dopravní zácpě." />
+		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 						 text="Místo vysypání dosaženo" />
+		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Bude naloženo: %d z %d" />
+		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Zobrazit orientační body:" />
+		<text name="COURSEPLAY_PATHFINDING" 							 text="Objíždění porostu:" />
+		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Boční odstup:" />
+		<text name="COURSEPLAY_START_AT" 								 text="Přijet při:" />
+		<text name="COURSEPLAY_TURN_RADIUS" 							 text="Poloměr otáčení:" />
+		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 				 text="Odstup vpřed/vzad:" />
+		<text name="COURSEPLAY_COMBINE" 								 text="Kombajn" />
+		<text name="COURSEPLAY_NONE" 									 text="žádný" />
+		<text name="COURSEPLAY_CHOOSE_COMBINE" 							 text="Vybrat kombajn:" />
+		<text name="COURSEPLAY_COMBINE_SEARCH_MODE" 					 text="Hledání:" />
+		<text name="COURSEPLAY_CURRENT" 								 text="Aktuální:" />
+		<text name="COURSEPLAY_AUTOMATIC_SEARCH" 						 text="najít automaticky" />
+		<text name="COURSEPLAY_MANUAL_SEARCH" 							 text="manuálně přiřadit" />
+		<text name="COURSEPLAY_SEARCH_COMBINE_ON_FIELD" 				 text="Najdi kombajn na poli %s" />
+		<text name="COURSEPLAY_COPY_COURSE" 							 text="Zkopírovat trasu:" />
+		<text name="COURSEPLAY_VEHICLE" 								 text="Vozidlo" />
+		<text name="COURSEPLAY_TEMP_COURSE" 							 text="dočasná trasa" />
+		<text name="COURSEPLAY_SPEED_TURN" 								 text="Rychlost otáčení:" />
+		<text name="COURSEPLAY_SPEED_FIELD" 							 text="Rychlost na poli:" />
+		<text name="COURSEPLAY_SPEED_MAX" 								 text="Rychlost na cestě:" />
+		<text name="COURSEPLAY_SPEED_REVERSING" 						 text="Rychlost couvání:" />
+		<text name="COURSEPLAY_MAX_SPEED_MODE" 							 text="Rychlost:" />
+		<text name="COURSEPLAY_MAX_SPEED_MODE_RECORDING" 				 text="jako při nahrávání" />
+		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 						 text="maximální rychlost" />
+		<text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 				 text="automatická (z nahrávání, max. %s)" />
+		<text name="COURSEPLAY_NO_COURSE_LOADED" 						 text="Trasa: není nahraná žádná trasa" />
+		<text name="COURSEPLAY_WARNING_LIGHTS" 							 text="Výstražná světla:" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 					 text="Nikdy nezapínat" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 					 text="Maják (na silnici)" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 					 text="Maják + výstražná světla" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_3" 					 text="Maják (vždy zapnout)" />
+		<text name="COURSEPLAY_PAGE_TITLE_CP_CONTROL" 					 text="Nastavení stroje" />
+		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 			 text="Ovládání odvozce" />
+		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES" 				 text="Správa tras" />
+		<text name="COURSEPLAY_PAGE_TITLE_CHOOSE_FOLDER" 				 text="Vybrat složku" />
+		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 					 text="Nastavení módu kombajn" />
+		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES" 				 text="Správa kombajnu/řezačky" />
+		<text name="COURSEPLAY_PAGE_TITLE_SPEEDS" 						 text="Rychlosti" />
+		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 			 text="Nastavení jízdy" />
+		<text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS" 			 text="Nastavení" />
+		<text name="COURSEPLAY_COMBINE_IS_TURNING" 						 text="Kombajn/řezačka se otáčí" />
+		<text name="COURSEPLAY_NO_WORK_AREA" 							 text="Na této trase není žádná pracovní oblast" />
+		<text name="COURSEPLAY_COMBINED_COURSES" 						 text="složená trasa" />
+		<text name="COURSEPLAY_DRIVE_BEHIND_COMBINE" 					 text="Jedu za kombajn/rezačku" />
+		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 					 text="Jedu vedle kombajnu/rezačky" />
+		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 						 text="Jedu ke kombajnu/rezačce" />
+		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 				 text="Kombajn/řezačka říká, že mám zastavit" />
+		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	 text="Čekám, než se uvolní bod k čekání" />
+		<text name="COURSEPLAY_TURNING_TO_COORDS" 						 text="Otočím se ve směru %d %d" />
+		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 						 text="Jedu na souřadnice %d %d" />
+		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 					 text="Čekám, než bude kombajn naplněn" />
+		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 					 text="Kombajn/řezačka není v dosahu" />
+		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 				 text="Čekám, než se kombajn/řezačka otočí" />
+		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 					 text="Čekám na další orientační bod" />
+		<text name="COURSEPLAY_FOLLOWING_TRACTOR" 						 text="Jedu za traktor" />
+		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 						 text="bude potřebovat dotankovat." />
+		<text name="COURSEPLAY_MUST_BE_REFUELED" 						 text="musí tankovat." />
+		<text name="COURSEPLAY_IS_BEING_REFUELED" 						 text="tankuje." />
+		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 				 text="Příliš mnoho bodů čekání! Pouze %d bodů je povoleno." />
+		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="Postrádá body čekání. Vyžaduje %d body čekání." />
+		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="Máš pro tento mod nevhodný přívěs" />
+		<text name="COURSEPLAY_WRONG_TOOL" 								 text="Máš pro tento mod nevhodné nářadí" />
+		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="Tento typ vozidla není v tomto módu podporován." />
+		<text name="COURSEPLAY_WEATHER_WARNING" 						 text="čeká na lepší počasí." />
+		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Odstup od trasy:" />
+		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="Horiz. posunutí stroje:" />
+		<text name="COURSEPLAY_TOOL_OFFSET_Z" 							 text="Vertik. posunutí stroje:" />
+		<text name="COURSEPLAY_FRONT" 									 text="přední" />
+		<text name="COURSEPLAY_BACK" 									 text="zadní" />
+		<text name="COURSEPLAY_WORK_WIDTH" 								 text="Pracovní šířka:" />
+		<text name="COURSEPLAY_WATER_WARNING" 							 text="by si rád zaplaval." />
+		<text name="COURSEPLAY_OPEN_HUD_MODE" 							 text="Zapnout CoursePlay HUD:" />
+		<text name="COURSEPLAY_DEBUG_CHANNELS" 							 text="Kanálů ladění:" />
+		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 			 text="Generovat trasu" />
+		<text name="COURSEPLAY_STARTING_CORNER" 						 text="Počáteční roh:" />
+		<text name="COURSEPLAY_STARTING_DIRECTION" 						 text="Směr trasy:" />
+		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT" 					 text="Návrat na první bod:" />
+		<text name="COURSEPLAY_CORNER_1" 								 text="jihozápad" />
+		<text name="COURSEPLAY_CORNER_2" 								 text="severozápad" />
+		<text name="COURSEPLAY_CORNER_3" 								 text="severovýchod" />
+		<text name="COURSEPLAY_CORNER_4" 								 text="jihovýchod" />
+		<text name="COURSEPLAY_DIRECTION_1" 							 text="sever" />
+		<text name="COURSEPLAY_DIRECTION_2" 							 text="východ" />
+		<text name="COURSEPLAY_DIRECTION_3" 							 text="jih" />
+		<text name="COURSEPLAY_DIRECTION_4" 							 text="západ" />
+		<text name="COURSEPLAY_HEADLAND" 								 text="Úvrať:" />
+		<text name="COURSEPLAY_ACTIVATED" 								 text="aktivní" />
+		<text name="COURSEPLAY_DEACTIVATED" 							 text="neaktivní" />
+		<text name="COURSEPLAY_RIDGEMARKERS" 							 text="Znamenák stop:" />
+		<text name="COURSEPLAY_UNLOADING_ON_FIELD" 						 text="Vyložit na poli" />
+		<text name="COURSEPLAY_AUTOMATIC" 								 text="automaticky" />
+		<text name="COURSEPLAY_MANUAL" 									 text="ručně" />
+		<text name="COURSEPLAY_TURN_MANEUVER" 							 text="Otáčení:" />
+		<text name="COURSEPLAY_START" 									 text="Start" />
+		<text name="COURSEPLAY_FINISH" 									 text="Ukončit" />
+		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="Trasa není platná" />
+
+		<!-- shovel stuff -->
+		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="Lžíce nenalezena" />
+		<text name="COURSEPLAY_SHOVEL_POSITIONS" 						 text="Pozice lžíce:" />
+		<text name="COURSEPLAY_SHOVEL_POSITIONS_MISSING" 				 text="Chybí pozice lžíce" />
+		<text name="COURSEPLAY_SHOVEL_LOADING_POSITION" 				 text="Pozice lžíce při nakládání:" />
+		<text name="COURSEPLAY_SHOVEL_TRANSPORT_POSITION" 				 text="Pozice lžíce při převozu:" />
+		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION" 			 text="Pozice lžíce před vykládáním:" />
+		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION" 				 text="Pozice lžíce při vykládání:" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION" 			 text="Uložit pozici lžíce při nakládání" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_TRANSPORT_POSITION" 			 text="Uložit pozici lžíce při převozu" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_PRE_UNLOADING_POSITION" 		 text="Uložit pozici lžíce před vykládání" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_UNLOADING_POSITION" 			 text="Uložit pozici lžíce při vykládání" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 		 text="Pohyb lžíce do pozice k nakládání" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 		 text="Pohyb lžíce do pozice k převozu" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 	 text="Pohyb lžíce do pozice k vykládání" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 		 text="Pohyb lžíce do pozice k vykládání" />
+		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Zastavit a jet nákládat:" />
+
+		<text name="COURSEPLAY_START_AT_POINT" 							 text="Začátek trasy:" />
+		<text name="COURSEPLAY_NEAREST_POINT" 							 text="na nejbližším bodě" />
+		<text name="COURSEPLAY_FIRST_POINT" 							 text="na prvním bodě" />
+		<text name="COURSEPLAY_CURRENT_POINT" 							 text="na vybraném bodě" />
+		<text name="COURSEPLAY_FIELD_EDGE_PATH" 						 text="Trasa okolo pole:" />
+		<text name="COURSEPLAY_FIELD" 									 text="Pole" />
+		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 				 text="(načtená trasa)" />
+		<text name="COURSEPLAY_FIELD_SCAN_IN_PROGRESS" 					 text="Načítání polí" />
+		<text name="COURSEPLAY_SCANNING_FIELD_NMB" 						 text="Načítání polí %d/%d" />
+		<text name="COURSEPLAY_HOSEMISSING" 							 text="Hadice chybí - plnění zrušeno" />
+		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE" 					 text="Pravidelné otáčení:" />
+		<text name="COURSEPLAY_UNLOADING_DRIVER_PRIORITY" 				 text="Priority odvozce:" />
+		<text name="COURSEPLAY_FILLEVEL" 								 text="vyrovnat naplnění" />
+		<text name="COURSEPLAY_PICKUP_JAMMED" 							 text=": odvozce je přetížený" />
+		<text name="COURSEPLAY_BALER_NEEDS_NETS" 						 text=": lis potřebuje nové balící role" />
+		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES" 				 text="Vypočítej trasu okolo aktuálního pole" />
+		<text name="COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER" 			 text="Trasa okolo pole číslo:" />
+		<text name="COURSEPLAY_ADD_CUSTOM_FIELD_EDGE_PATH_TO_LIST" 		 text="Přidej trasu okolo pole %d do seznamu" />
+		<text name="COURSEPLAY_OVERWRITE_CUSTOM_FIELD_EDGE_PATH_IN_LIST" text="Přepsat trasu okolo pole %d v seznamu" />
+		<text name="COURSEPLAY_USER" 									 text="uživatel" />
+		<text name="COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED" 				 text="by měl být brzy opraven." />
+		<text name="COURSEPLAY_DAMAGE_MUST_BE_REPAIRED" 				 text="musí být opraven." />
+		<text name="COURSEPLAY_DAMAGE_IS_BEING_REPAIRED" 				 text="je opravován." />
+		<text name="COURSEPLAY_COVER_HANDLING" 							 text="Kryty" />
+		<text name="COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR" 			 text="Odstraň přiřezení ke kombajnu" />
+		<text name="COURSEPLAY_STOP_DURING_UNLOADING" 					 text="Zastavit při vykládání" />
+		<text name="COURSEPLAY_SLIPPING_WARNING" 						 text="se zasekl" />
+		<text name="COURSEPLAY_REFILL_UNTIL_PCT" 						 text="Naplnit do:" />
+		<text name="COURSEPLAY_BGA_IS_FULL" 							 text=": Bunker je plný!" />
+		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 					 text="Silo neobsahuje vybranou plodinu" />
+		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 					 text="Na sile se nakládá:" />
+		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="Silo je prázdné!" />
+		<text name="COURSEPLAY_STARTING_UP_TOOL" 						 text="Nastartovat při %s!" />
+		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 				 text="Hledání prvního bodu" />
+		<text name="COURSEPLAY_SAVE_CURRENT_COURSE" 					 text="Uložit aktuální trasu" />
+		<text name="COURSEPLAY_RECORDING_STOP" 							 text="Ukončit nahrávání" />
+		<text name="COURSEPLAY_RECORDING_PAUSE" 						 text="Pozastavit nahrávání" />
+		<text name="COURSEPLAY_RECORDING_PAUSE_RESUME" 					 text="Pokračovat v nahrávání" />
+		<text name="COURSEPLAY_RECORDING_DELETE" 						 text="Smazat poslední bod" />
+		<text name="COURSEPLAY_RECORDING_SET_WAIT" 						 text="Nastavit bod čekání" />
+		<text name="COURSEPLAY_RECORDING_SET_CROSS" 					 text="Nastavit bod křížení" />
+		<text name="COURSEPLAY_RECORDING_TURN_START" 					 text="Začít se otáčet" />
+		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="Konec otáční" />
+		<text name="COURSEPLAY_RECORDING_REVERSE_START" 				 text="Začít couvat" />
+		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="Konec couvání" />
+		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Přidat body do nahrávané trasy" /> <!-- TODO: TRANSLATION! (during recording adds multiple points between last point and current position -->
+		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Ikony v mapě - zobrazit text:" />
+		<text name="COURSEPLAY_ALWAYS_USE_4WD" 							 text="Vždy použít 4x4:" />
+		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="Chceš aby pole byla skenována automaticky?" />
+		<text name="COURSEPLAY_YES_NO_WAGES" 							 text="Chceš aby byli pomocníci placeni (%s/hodinu)?" />
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 					 text="Kalkulačka spotřeby osiva" />
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 				 text="Pole: %d (%s %s)" />
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 			 text="Osivo: %s" />
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE" 				 text="Používání: %s %s (%s)" />
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_TRIM" 				 text="···" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="Zobrazit/skrýt body startu a konce" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="Zobrazit/skrýt všechny body" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="Zobrazit/skrýt body křížení" />
+	
+		<text name="COURSEPLAY_HUD_OPEN" 								 text="Zobrazit Courseplay HUD" />
+		<text name="COURSEPLAY_HUD_CLOSE" 								 text="Skrýt Courseplay HUD" />
+		<text name="COURSEPLAY_FUNCTIONS" 								 text="Funkce Courseplay" />
+		<text name="COURSEPLAY_MODIFIER" 								 text="Courseplay: úprava" />
+		<text name="COURSEPLAY_MENU_ACCEPT_SECONDARY" 					 text="Courseplay: vedlejší menu povoleno" />
+		<text name="COURSEPLAY_HUD" 									 text="Zobrazit/skrýt Courseplay HUD" />
+		<text name="COURSEPLAY_START_STOP" 								 text="Courseplay: aktivovat/zastavit odvozce" />
+		<text name="COURSEPLAY_CANCELWAIT" 								 text="Courseplay: čekat na posledním bodě nebo triggeru" />
+		<text name="COURSEPLAY_DRIVENOW" 								 text="Courseplay: odvézt bez čekání na doplnění" />
+		<text name="COURSEPLAY_NEXTMODE" 								 text="Courseplay: další mód" />
+		<text name="COURSEPLAY_PREVMODE" 								 text="Courseplay: předchozí mód" />
+		<text name="COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Courseplay: myš akce" />
+		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: myš sekundární akce" />
+		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="skrýt kurzor" />
+		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="zobrazit kurzor" />
+	</texts>
+</l10n>

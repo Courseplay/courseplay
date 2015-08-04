@@ -6,12 +6,12 @@ function courseplay:handleMode3(vehicle, fillLevelPct, allowedToDrive, dt)
 	workTool.cp.isUnloading = workTool.fillLevel < workTool.cp.lastFillLevel;
 
 	if workTool.cp.isAugerWagon then
-		if vehicle.cp.wait and vehicle.cp.lastRecordnumber >= math.max(vehicle.cp.waitPoints[1] - backPointsUnfoldPipe, 2) and vehicle.cp.lastRecordnumber < vehicle.cp.waitPoints[1] and not workTool.cp.isUnloading then
+		if vehicle.cp.wait and vehicle.cp.previousWaypointIndex >= math.max(vehicle.cp.waitPoints[1] - backPointsUnfoldPipe, 2) and vehicle.cp.previousWaypointIndex < vehicle.cp.waitPoints[1] and not workTool.cp.isUnloading then
 			courseplay:handleAugerWagon(vehicle, workTool, true, false, "unfold"); --unfold=true, unload=false
 		end;
 
-		if vehicle.cp.wait and vehicle.cp.lastRecordnumber == vehicle.cp.waitPoints[1] then
-			courseplay:setGlobalInfoText(vehicle, 'OVERLOADING_POINT');
+		if vehicle.cp.wait and vehicle.cp.previousWaypointIndex == vehicle.cp.waitPoints[1] then
+			CpManager:setGlobalInfoText(vehicle, 'OVERLOADING_POINT');
 
 			local driveOn = false
 			if fillLevelPct > 0 then
@@ -36,19 +36,19 @@ function courseplay:handleMode3(vehicle, fillLevelPct, allowedToDrive, dt)
 
 		if courseplay.debugChannels[15] then
 			courseplay:checkAndPrintChange(vehicle, vehicle.cp.waitPoints[1], "firstWaitPoint");
-			courseplay:checkAndPrintChange(vehicle, vehicle.maxnumber, "maxnumber");
+			courseplay:checkAndPrintChange(vehicle, vehicle.cp.numWaypoints, "numWaypoints");
 			courseplay:checkAndPrintChange(vehicle, backPointsUnfoldPipe, "backPointsUnfoldPipe");
 			courseplay:checkAndPrintChange(vehicle, forwardPointsFoldPipe, "forwardPointsFoldPipe");
 
-			courseplay:checkAndPrintChange(vehicle, vehicle.cp.lastRecordnumber, "lastRecordnumber");
+			courseplay:checkAndPrintChange(vehicle, vehicle.cp.previousWaypointIndex, "previousWaypointIndex");
 			courseplay:checkAndPrintChange(vehicle, vehicle.cp.isUnloaded, "isUnloaded");
 			courseplay:checkAndPrintChange(vehicle, vehicle.cp.wait, "wait");
 			print("-------------------------");
 		end;
 
-		if vehicle.cp.lastRecordnumber < math.max(vehicle.cp.waitPoints[1] - backPointsUnfoldPipe, 2) then -- is before unfold pipe point
+		if vehicle.cp.previousWaypointIndex < math.max(vehicle.cp.waitPoints[1] - backPointsUnfoldPipe, 2) then -- is before unfold pipe point
 			courseplay:handleAugerWagon(vehicle, workTool, false, false, "foldBefore"); --unfold=false, unload=false
-		elseif (not vehicle.cp.wait or vehicle.cp.isUnloaded) and vehicle.cp.lastRecordnumber >= math.min(vehicle.cp.waitPoints[1] + forwardPointsFoldPipe, vehicle.maxnumber - 1) then -- is past fold pipe point
+		elseif (not vehicle.cp.wait or vehicle.cp.isUnloaded) and vehicle.cp.previousWaypointIndex >= math.min(vehicle.cp.waitPoints[1] + forwardPointsFoldPipe, vehicle.cp.numWaypoints - 1) then -- is past fold pipe point
 			courseplay:handleAugerWagon(vehicle, workTool, false, false, "foldAfter"); --unfold=false, unload=false
 		elseif workTool.cp.isUnloading and not vehicle.cp.wait then
 			courseplay:handleAugerWagon(vehicle, workTool, true, false, "forceStopUnload"); --unfold=true, unload=false
@@ -86,8 +86,8 @@ function courseplay:handleAugerWagon(vehicle, workTool, unfold, unload, orderNam
 		if pipeOrderExists and workTool.pipe.out ~= nil then
 			if unfold and not workTool.pipe.out then
 				workTool:setAnimationTime(1, workTool.animationParts[1].animDuration, false);
-				if workTool.cp.hasPipeLight and workTool.cp.pipeLight.a ~= courseplay.lightsNeeded then
-					workTool:setState("work:1", courseplay.lightsNeeded);
+				if workTool.cp.hasPipeLight and workTool.cp.pipeLight.a ~= CpManager.lightsNeeded then
+					workTool:setState("work:1", CpManager.lightsNeeded);
 				end;
 			elseif not unfold and workTool.pipe.out then
 				workTool:setAnimationTime(1, workTool.animationParts[1].offSet, false);
@@ -153,11 +153,11 @@ function courseplay:handleAugerWagon(vehicle, workTool, unfold, unload, orderNam
 				courseplay:debug(string.format('\t\tunfold=%s, workTool.cpAI=%s -> set workTool.cpAI to %s', tostring(unfold), tostring(workTool.cpAI), newPipeState), 15);
 				workTool.cpAI = newPipeState;
 
-				if workTool.pipeLight ~= nil and getVisibility(workTool.pipeLight) ~= (unfold and courseplay.lightsNeeded) then
+				if workTool.pipeLight ~= nil and getVisibility(workTool.pipeLight) ~= (unfold and CpManager.lightsNeeded) then
 					if workTool.togglePipeLight then
-						workTool:togglePipeLight(unfold and courseplay.lightsNeeded);
+						workTool:togglePipeLight(unfold and CpManager.lightsNeeded);
 					else
-						setVisibility(workTool.pipeLight, unfold and courseplay.lightsNeeded);
+						setVisibility(workTool.pipeLight, unfold and CpManager.lightsNeeded);
 					end;
 				end;
 			end;

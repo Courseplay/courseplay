@@ -1,26 +1,25 @@
 function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 	--RIGHT CLICK
-	if isDown and mouseButton == courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION_SECONDARY.buttonId and self.isEntered then
+	if isUp and mouseButton == courseplay.inputBindings.mouse.secondaryButtonId and self.isEntered then
 		if self.cp.hud.show then
 			courseplay:setMouseCursor(self, not self.cp.mouseCursorActive);
 		elseif not self.cp.hud.show and self.cp.hud.openWithMouse then
 			courseplay:openCloseHud(self, true)
-			courseplay:buttonsActiveEnabled(self, "all");
 		end;
 	end;
 
 	local hudGfx = courseplay.hud.visibleArea;
-	local mouseIsInHudArea = self.cp.mouseCursorActive and courseplay:mouseIsInArea(posX, posY, hudGfx.x1, hudGfx.x2, hudGfx.y1, self.cp.suc.active and hudGfx.y2InclSuc or hudGfx.y2);
+	local mouseIsInHudArea = self.cp.mouseCursorActive and courseplay:mouseIsInArea(posX, posY, hudGfx.x1, hudGfx.x2, hudGfx.y1, self.cp.suc.active and courseplay.hud.suc.visibleArea.y2 or hudGfx.y2);
 
 	-- if not mouseIsInHudArea then return; end;
 
 	--LEFT CLICK
-	if (isDown or isUp) and mouseButton == courseplay.inputBindings.mouse.COURSEPLAY_MOUSEACTION.buttonId and self.cp.mouseCursorActive and self.cp.hud.show and self.isEntered and mouseIsInHudArea then
+	if (isDown or isUp) and mouseButton == courseplay.inputBindings.mouse.primaryButtonId and self.cp.mouseCursorActive and self.cp.hud.show and self.isEntered and mouseIsInHudArea then
 		local buttonToHandle;
 
 		if self.cp.suc.active then
 			for _,button in pairs(self.cp.buttons.suc) do
-				if button.show and courseplay:mouseIsOnButton(posX, posY, button) then
+				if button.show and button:getHasMouse(posX, posY) then
 					buttonToHandle = button;
 					break;
 				end;
@@ -29,7 +28,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 
 		if buttonToHandle == nil then
 			for _,button in pairs(self.cp.buttons.global) do
-				if button.show and courseplay:mouseIsOnButton(posX, posY, button) then
+				if button.show and button:getHasMouse(posX, posY) then
 					buttonToHandle = button;
 					break;
 				end;
@@ -38,7 +37,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 
 		if buttonToHandle == nil then
 			for _,button in pairs(self.cp.buttons[self.cp.hud.currentPage]) do
-				if button.canBeClicked and button.show and courseplay:mouseIsOnButton(posX, posY, button) then
+				if button.canBeClicked and button.show and button:getHasMouse(posX, posY) then
 					buttonToHandle = button;
 					break;
 				end;
@@ -48,7 +47,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 		if buttonToHandle == nil then
 			if self.cp.hud.currentPage == 2 then
 				for _,button in pairs(self.cp.buttons[-2]) do
-					if button.show and courseplay:mouseIsOnButton(posX, posY, button) then
+					if button.show and button:getHasMouse(posX, posY) then
 						buttonToHandle = button;
 						break;
 					end;
@@ -57,13 +56,14 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 		end;
 
 		if buttonToHandle then
-			buttonToHandle.isClicked = isDown;
-			if buttonToHandle.hoverText and buttonToHandle.functionToCall ~= nil then
+			buttonToHandle:setClicked(isDown);
+			if not buttonToHandle.isDisabled and buttonToHandle.hoverText and buttonToHandle.functionToCall ~= nil then
 				self.cp.hud.content.pages[buttonToHandle.page][buttonToHandle.row][1].isClicked = isDown;
 			end;
 			if isUp then
-				courseplay.button:handleMouseClick(self, buttonToHandle);
+				buttonToHandle:handleMouseClick();
 			end;
+			return;
 		end;
 
 
@@ -74,27 +74,26 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 		if self.cp.suc.active then
 			for _,button in pairs(self.cp.buttons.suc) do
 				if button.show and not button.isHidden then
-					button.isClicked = false;
-					button.isHovered = courseplay:mouseIsOnButton(posX, posY, button);
+					button:setClicked(false);
+					button:setHovered(button:getHasMouse(posX, posY));
 				end;
 			end;
 		end;
 
 		for _,button in pairs(self.cp.buttons.global) do
-			button.isClicked = false;
+			button:setClicked(false);
 			if button.show and not button.isHidden then
-				button.isClicked = false;
-				button.isHovered = courseplay:mouseIsOnButton(posX, posY, button);
+				button:setClicked(false);
+				button:setHovered(button:getHasMouse(posX, posY));
 			end;
 		end;
 
 		self.cp.hud.mouseWheel.render = false;
 		for _,button in pairs(self.cp.buttons[self.cp.hud.currentPage]) do
-			button.isClicked = false;
+			button:setClicked(false);
 			if button.show and not button.isHidden then
-				button.isHovered = courseplay:mouseIsOnButton(posX, posY, button);
+				button:setHovered(button:getHasMouse(posX, posY));
 				if button.isHovered then
-
 					if button.isMouseWheelArea and (button.canScrollUp or button.canScrollDown) then
 						--Mouse wheel icon
 						self.cp.hud.mouseWheel.render = true;
@@ -119,7 +118,7 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 					end;
 				end;
 
-				if button.hoverText then
+				if button.hoverText and not button.isDisabled then
 					self.cp.hud.content.pages[button.page][button.row][1].isHovered = button.isHovered;
 				end;
 			end;
@@ -127,13 +126,9 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 
 		if self.cp.hud.currentPage == 2 then
 			for _,button in pairs(self.cp.buttons[-2]) do
-				button.isClicked = false;
+				button:setClicked(false);
 				if button.show and not button.isHidden then
-					button.isHovered = false;
-					if courseplay:mouseIsOnButton(posX, posY, button) then
-						button.isClicked = false;
-						button.isHovered = true;
-					end;
+					button:setHovered(button:getHasMouse(posX, posY));
 
 					if button.hoverText then
 						self.cp.hud.content.pages[2][button.row][1].isHovered = button.isHovered;
@@ -142,39 +137,54 @@ function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 			end;
 		end;
 	end;
+
+
+	-- ##################################################
+	-- 2D COURSE WINDOW: DRAG + DROP MOVE
+	if self.cp.course2dDrawData and (self.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_2DONLY or self.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_BOTH) then
+		local plot = CpManager.course2dPlotField;
+		if isDown and mouseButton == courseplay.inputBindings.mouse.primaryButtonId and self.cp.mouseCursorActive and self.isEntered and courseplay:mouseIsInArea(posX, posY, plot.x, plot.x + plot.width, plot.y, plot.y + plot.height) then
+			CpManager.course2dDragDropMouseDown = { posX, posY };
+			if self.cp.course2dPdaMapOverlay then
+				self.cp.course2dPdaMapOverlay.origPos = { self.cp.course2dPdaMapOverlay.x, self.cp.course2dPdaMapOverlay.y };
+			else
+				self.cp.course2dBackground.origPos = { self.cp.course2dBackground.x, self.cp.course2dBackground.y };
+			end;
+		elseif isUp and CpManager.course2dDragDropMouseDown ~= nil then
+			courseplay.utils:move2dCoursePlotField(self, posX, posY);
+		elseif not isUp and not isDown and CpManager.course2dDragDropMouseDown ~= nil then
+			courseplay.utils:update2dCourseBackgroundPos(self, posX, posY);
+		end;
+	end;
 end; --END mouseEvent()
 
 function courseplay:mouseIsInArea(mouseX, mouseY, areaX1, areaX2, areaY1, areaY2)
 	return mouseX >= areaX1 and mouseX <= areaX2 and mouseY >= areaY1 and mouseY <= areaY2;
 end;
 
-function courseplay:mouseIsOnButton(mouseX, mouseY, button)
-	-- return mouseX > button.x and mouseX < button.x2 and mouseY > button.y and mouseY < button.y2;
-	return courseplay:mouseIsInArea(mouseX, mouseY, button.x, button.x2, button.y, button.y2);
-end;
-
-function courseplay.button:handleMouseClick(vehicle, button)
-	local parameter = button.parameter;
-	if InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER) and button.modifiedParameter ~= nil then --for some reason InputBinding works in :mouseEvent
-		courseplay:debug("button.modifiedParameter = " .. tostring(button.modifiedParameter), 18);
-		parameter = button.modifiedParameter;
+function courseplay.button:handleMouseClick(vehicle)
+	vehicle = vehicle or self.vehicle;
+	local parameter = self.parameter;
+	if InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER) and self.modifiedParameter ~= nil then --for some reason InputBinding works in :mouseEvent
+		courseplay:debug("self.modifiedParameter = " .. tostring(self.modifiedParameter), 18);
+		parameter = self.modifiedParameter;
 	end;
 
-	if button.show and not button.isHidden and button.canBeClicked and not button.isDisabled then
-		if button.functionToCall == "rowButton" and vehicle.cp.hud.content.pages[vehicle.cp.hud.currentPage][button.parameter][1].text == nil then
+	if self.show and not self.isHidden and self.canBeClicked and not self.isDisabled then
+		if self.functionToCall == "rowButton" and vehicle.cp.hud.content.pages[vehicle.cp.hud.currentPage][self.parameter][1].text == nil then
 			return;
 		end;
 
-		-- button.isClicked = true;
-		if button.functionToCall == "showSaveCourseForm" then
+		-- self:setClicked(true);
+		if self.functionToCall == "showSaveCourseForm" then
 			vehicle.cp.imWriting = true
 		end
-		if button.functionToCall == "goToVehicle" then
+		if self.functionToCall == "goToVehicle" then
 			courseplay:executeFunction(vehicle, "goToVehicle", parameter)
 		else
-			vehicle:setCourseplayFunc(button.functionToCall, parameter, false, button.page);
-		end	
-		-- button.isClicked = false;
+			vehicle:setCourseplayFunc(self.functionToCall, parameter, false, self.page);
+		end
+		-- self:setClicked(false);
 	end;
 end;
 
@@ -194,7 +204,7 @@ end
 
 function courseplay:executeFunction(self, func, value, page)
 	if func == "setMPGlobalInfoText" then
-		courseplay:setGlobalInfoText(self, value, page)
+		CpManager:setGlobalInfoText(self, value, page)
 		courseplay:debug("					setting infoText: "..value..", force remove: "..tostring(page),5)
 		return
 	elseif Utils.startsWith(func,"self") or Utils.startsWith(func,"courseplay") then
@@ -203,7 +213,9 @@ function courseplay:executeFunction(self, func, value, page)
 		--courseplay:debug("					"..tostring(func)..": "..tostring(value),5)
 		return
 	end
-	playSample(courseplay.hud.clickSound, 1, 1, 0);
+	if self.isEntered then
+		playSample(courseplay.hud.clickSound, 1, 1, 0);
+	end
 	courseplay:debug(('%s: calling function "%s(%s)"'):format(nameNum(self), tostring(func), tostring(value)), 18);
 
 	if func ~= "rowButton" then
@@ -215,21 +227,21 @@ function courseplay:executeFunction(self, func, value, page)
 		local line = value;
 		if page == 0 then
 			local combine = self;
-			if self.cp.attachedCombineIdx ~= nil and self.cp.workTools ~= nil and self.cp.workTools[self.cp.attachedCombineIdx] ~= nil then
-				combine = self.cp.workTools[self.cp.attachedCombineIdx];
+			if self.cp.attachedCombine ~= nil then
+				combine = self.cp.attachedCombine;
 			end;
 
 			if not combine.cp.isChopper then
 				if line == 4 then
 					courseplay:toggleDriverPriority(combine);
-				elseif line == 5 and self:getIsCourseplayDriving() and self.cp.mode == 6 then
+				elseif line == 5 and self.cp.mode == courseplay.MODE_FIELDWORK then
 					courseplay:toggleStopWhenUnloading(combine);
 				end;
 			end;
 
 			if combine.courseplayers == nil or #(combine.courseplayers) == 0 then
 				if line == 1 then
-					courseplay:callCourseplayer(combine);
+					courseplay:toggleWantsCourseplayer(combine);
 				end;
 			else
 				if line == 2 then
@@ -253,32 +265,32 @@ function courseplay:executeFunction(self, func, value, page)
 					if line == 1 then
 						courseplay:start(self);
 					elseif line == 3 and self.cp.mode ~= 9 then
-						courseplay:setStartAtFirstPoint(self);
-					elseif line == 4 then
-						courseplay:clearCurrentLoadedCourse(self);
-					elseif line == 6 and self.cp.mode == 1 and self.cp.workTools[1] ~= nil and self.cp.workTools[1].allowFillFromAir and self.cp.workTools[1].allowTipDischarge then
+						courseplay:changeStartAtPoint(self);
+					elseif line == 6 and self.cp.mode == courseplay.MODE_GRAIN_TRANSPORT and self.cp.workTools[1] ~= nil and self.cp.workTools[1].allowFillFromAir and self.cp.workTools[1].allowTipDischarge then
 						self.cp.multiSiloSelectedFillType = courseplay:getNextFillableFillType(self);
 					end;
 
 				else -- driving
 					if line == 1 then
 						courseplay:stop(self);
-					elseif line == 2 and self.cp.lastRecordnumber ~= nil and self.Waypoints[self.cp.lastRecordnumber].wait and self.cp.wait then
-						courseplay:cancelWait(self);
-					elseif line == 2 and self.cp.stopAtEnd and (self.recordnumber == self.maxnumber or self.cp.currentTipTrigger ~= nil) then
-						courseplay:setStopAtEnd(self, false);
+					elseif line == 2 and self.cp.HUD1wait then
+						if self.cp.stopAtEnd and (self.cp.waypointIndex == self.cp.numWaypoints or self.cp.currentTipTrigger ~= nil) then
+							courseplay:setStopAtEnd(self, false);
+						else
+							courseplay:cancelWait(self);
+						end;
 					elseif line == 3 and not self.cp.isLoaded then
 						courseplay:setIsLoaded(self, true);
-					elseif line == 4 and not self.cp.stopAtEnd then
-						self.cp.stopAtEnd = true
+					elseif line == 4 then
+						courseplay:setStopAtEnd(self, not self.cp.stopAtEnd);
 					elseif line == 5 then
-						if self.cp.mode == 4 and self.cp.hasSowingMachine then
+						if self.cp.mode == courseplay.MODE_SEED_FERTILIZE and self.cp.hasSowingMachine then
 							self.cp.ridgeMarkersAutomatic = not self.cp.ridgeMarkersAutomatic;
-						elseif self.cp.mode == 6 and self.cp.hasBaleLoader and not self.hasUnloadingRefillingCourse then
+						elseif self.cp.mode == courseplay.MODE_FIELDWORK and self.cp.hasBaleLoader and not self.hasUnloadingRefillingCourse then
 							self.cp.automaticUnloadingOnField = not self.cp.automaticUnloadingOnField;
 						end;
 					elseif line == 6 then
-						if self.cp.tipperHasCover and (self.cp.mode == 1 or self.cp.mode == 2 or self.cp.mode == 5 or self.cp.mode == 6) then
+						if self.cp.tipperHasCover and (self.cp.mode == courseplay.MODE_GRAIN_TRANSPORT or self.cp.mode == courseplay.MODE_COMBI or self.cp.mode == courseplay.MODE_TRANSPORT or self.cp.mode == courseplay.MODE_FIELDWORK) then
 							self.cp.automaticCoverHandling = not self.cp.automaticCoverHandling;
 						end;
 					end;
@@ -286,7 +298,7 @@ function courseplay:executeFunction(self, func, value, page)
 
 
 			elseif not self:getIsCourseplayDriving() then
-				if not self.cp.isRecording and not self.cp.recordingIsPaused and not self.cp.canDrive and #(self.Waypoints) == 0 then
+				if not self.cp.isRecording and not self.cp.recordingIsPaused and not self.cp.canDrive and self.cp.numWaypoints == 0 then
 					if line == 1 then
 						courseplay:start_record(self);
 					elseif line == 3 then
@@ -300,86 +312,56 @@ function courseplay:executeFunction(self, func, value, page)
 	end; --END isRowFunction
 end;
 
-function courseplay:keyEvent(unicode, sym, modifier, isDown)
-end;
+function courseplay:keyEvent(unicode, sym, modifier, isDown) end;
 
-function courseplay:setInputBindings()
-	courseplay.inputBindings = {
-		keyboard = {};
-		mouse = {};
-	};
 
-	--MODIFIER
+courseplay.inputBindings = {};
+courseplay.inputBindings.mouse = {};
+courseplay.inputBindings.mouse.mouseButtonOverlays = {
+	MOUSE_BUTTON_NONE	   = 'mouseNMB.png',
+	MOUSE_BUTTON_LEFT	   = 'mouseLMB.png',
+	MOUSE_BUTTON_RIGHT	   = 'mouseRMB.png',
+	MOUSE_BUTTON_MIDDLE	   = 'mouseMMB.png',
+	MOUSE_BUTTON_LEFTRIGHT = 'mouseBMB.png'
+};
+courseplay.inputBindings.keyboard = {};
+
+function courseplay.inputBindings.updateInputButtonData()
+	-- print('updateInputButtonData()')
+
+	-- MOUSE
+	for _,type in ipairs( { 'primary', 'secondary' } ) do
+		local inputName = 'COURSEPLAY_MOUSEACTION_' .. type:upper();
+		local action = InputBinding.actions[ InputBinding[inputName] ];
+		local mouseButtonId = action.mouseButtons[1]; -- can there be more than 1 mouseButton for 1 action?
+
+		-- print(('\t%s: inputName=%q'):format(type, inputName));
+
+		local txt = ('%s %s'):format(g_i18n:getText('mouse'), MouseHelper.getButtonNames(action.mouseButtons)); -- TODO (Jakob): getButtonNames returns English, not i18n text
+		courseplay.inputBindings.mouse[type .. 'TextI18n'] = txt;
+		courseplay.inputBindings.mouse[type .. 'ButtonId'] = mouseButtonId;
+		-- print(('\t\t%sTextI18n=%q, mouseButtonId=%d'):format(type, txt, mouseButtonId));
+
+		if type == 'secondary' then
+			local mouseButtonIdName = Input.mouseButtonIdToIdName[mouseButtonId];
+			local fileName = courseplay.inputBindings.mouse.mouseButtonOverlays[mouseButtonIdName] or 'mouseRMB.png';
+			-- print(('\t\tmouseButtonIdName=%q, fileName=%q'):format(tostring(mouseButtonIdName), tostring(fileName)));
+			if courseplay.inputBindings.mouse.overlaySecondary then
+				courseplay.inputBindings.mouse.overlaySecondary:delete();
+			end;
+			courseplay.inputBindings.mouse.overlaySecondary = Overlay:new('cpMouseIPB', 'dataS2/menu/controllerSymbols/mouse/' .. fileName, 0, 0, 0.0, 0.0);
+		end;
+	end;
+
+	-- KEYBOARD
+	-- open/close hud (combined with modifier): get i18n text
 	local modifierAction = InputBinding.actions[InputBinding.COURSEPLAY_MODIFIER];
-	courseplay.inputBindings.modifier = {
-		inputBinding = InputBinding.COURSEPLAY_MODIFIER;
-		actionIndex = modifierAction.actionIndex;
-		keyId = modifierAction.keys1[1];
-		isRealModifier = Input.keyIdIsModifier[modifierAction.keys1[1]];
-		keyName = Input.keyIdToIdName[modifierAction.keys1[1]];
-		displayName = KeyboardHelper.getKeyNames(modifierAction.keys1)
-	};
-	if not courseplay.inputBindings.modifier.isRealModifier then
-		print(string.format('Warning: Courseplay InputBinding modifier %q (%s) is not a real modifier. Conflicts with other mods may arise.', courseplay.inputBindings.modifier.keyName, courseplay.inputBindings.modifier.displayName));
-	end;
+	local modifierTextI18n = KeyboardHelper.getKeyNames(modifierAction.keys1);
 
-	--KEYBOARD
-	local courseplayKeyboardInputs = { 'COURSEPLAY_HUD', 'COURSEPLAY_START_STOP', 'COURSEPLAY_CANCELWAIT', 'COURSEPLAY_DRIVENOW' };
-	for i,name in pairs(courseplayKeyboardInputs) do
-		courseplay:createNewCombinedInputBinding(name);
-	end;
-	--print(tableShow(courseplay.inputBindings.keyboard, 'courseplay.inputBindings.keyboard'));
+	local openCloseHudAction = InputBinding.actions[InputBinding.COURSEPLAY_HUD];
+	local openCloseHudTextI18n = KeyboardHelper.getKeyNames(openCloseHudAction.keys1);
 
-
-	--MOUSE
-	local courseplayMouseInputs = { 'COURSEPLAY_MOUSEACTION', 'COURSEPLAY_MOUSEACTION_SECONDARY' };
-	for i,name in pairs(courseplayMouseInputs) do
-		local action = InputBinding.actions[InputBinding[name]];
-		local mouseButtonId = action.mouseButtons[1]; --can there be more than 1 mouseButton for 1 action?
-		if mouseButtonId == nil then
-			print(string.format('Warning: Courseplay InputBinding %q has no mouse button attached to it. Functionality will not be guaranteed.', name));
-		end;
-
-		courseplay.inputBindings.mouse[name] = {
-			name = name;
-			buttonId = mouseButtonId;
-			keyName = Input.mouseButtonIdToIdName[mouseButtonId];
-			displayName = g_i18n:getText('mouse') .. ' ' .. MouseHelper.getButtonNames(action.mouseButtons);
-			actionIndex = action.actionIndex;
-			inputBinding = InputBinding[name];
-		};
-	end;
-	--print(tableShow(courseplay.inputBindings.mouse, 'courseplay.inputBindings.mouse'));
+	courseplay.inputBindings.keyboard.openCloseHudTextI18n = ('%s + %s'):format(modifierTextI18n, openCloseHudTextI18n);
+	-- print(('\topenCloseHudTextI18n=%q'):format(courseplay.inputBindings.keyboard.openCloseHudTextI18n));
 end;
-
-function courseplay:createNewCombinedInputBinding(name)
-	local originalAction = InputBinding.actions[InputBinding[name]];
-
-	if #(originalAction.keys1) == 1 then
-		local action = courseplay.utils.table.copy(originalAction);
-		local actionIndex = #(InputBinding.actions) + 1;
-
-		action.name = name .. '_COMBINED';
-		local keyNameList = courseplay.inputBindings.modifier.keyName .. ' ' .. Input.keyIdToIdName[originalAction.keys1[1]];
-		action.keys1 = InputBinding.loadKeyList(keyNameList, action.name);
-		action.keys1Set = Utils.listToSet(action.keys1);
-		action.actionIndex = actionIndex;
-		InputBinding[action.name] = actionIndex;
-		table.insert(InputBinding.actions, action);
-
-		courseplay.inputBindings.keyboard[action.name] = {
-			originalKeyActionName = name;
-			originalKeyInputBinding = InputBinding[name];
-			originalModifierInputBinding = courseplay.inputBindings.modifier.inputBinding;
-			actionIndex = actionIndex;
-			displayName = courseplay.inputBindings.modifier.displayName .. ' + ' .. KeyboardHelper.getKeyNames(originalAction.keys1);
-		};
-
-		if g_i18n:hasText(name) then
-			local text = g_i18n:getText(name) .. ' (COMBINED)';
-			g_i18n:setText(action.name, text);
-			g_i18n.globalI18N.texts[action.name] = text;
-			-- print(string.format('CP: set newly created inputbinding text for %q to %q', tostring(action.name), tostring(text)));
-		end;
-	end;
-end;
+InputBinding.storeBindings = Utils.appendedFunction(InputBinding.storeBindings, courseplay.inputBindings.updateInputButtonData);

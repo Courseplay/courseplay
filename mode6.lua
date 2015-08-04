@@ -1,56 +1,73 @@
-function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, lx , lz, refSpeed )
+local max, min = math.max, math.min;
+
+function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPct, lx , lz, refSpeed )
 	local workTool;
 	local activeTipper = nil
 	local specialTool = false
 	local forceSpeedLimit = refSpeed 
 	--[[
-	if self.attachedCutters ~= nil then
-		for cutter, implement in pairs(self.attachedCutters) do
-			AICombine.addCutterTrigger(self, cutter);
+	if vehicle.attachedCutters ~= nil then
+		for cutter, implement in pairs(vehicle.attachedCutters) do
+			AICombine.addCutterTrigger(vehicle, cutter);
 		end;
 	end;
 	--]]
-	local workArea = (self.recordnumber > self.cp.startWork) and (self.recordnumber < self.cp.finishWork)
+	local fieldArea = (vehicle.cp.waypointIndex > vehicle.cp.startWork) and (vehicle.cp.waypointIndex < vehicle.cp.stopWork)
+	local workArea = (vehicle.cp.waypointIndex > vehicle.cp.startWork) and (vehicle.cp.waypointIndex < vehicle.cp.finishWork)
 	local isFinishingWork = false
 	local hasFinishedWork = false
-	if self.recordnumber == self.cp.finishWork and self.cp.abortWork == nil then
-		local _,y,_ = getWorldTranslation(self.cp.DirectionNode)
-		local _,_,z = worldToLocal(self.cp.DirectionNode,self.Waypoints[self.cp.finishWork].cx,y,self.Waypoints[self.cp.finishWork].cz)
+	if vehicle.cp.waypointIndex == vehicle.cp.finishWork and vehicle.cp.abortWork == nil then
+		local _,y,_ = getWorldTranslation(vehicle.cp.DirectionNode)
+		local _,_,z = worldToLocal(vehicle.cp.DirectionNode,vehicle.Waypoints[vehicle.cp.finishWork].cx,y,vehicle.Waypoints[vehicle.cp.finishWork].cz)
 		z = -z
-		local frontMarker = Utils.getNoNil(self.cp.aiFrontMarker,-3)
+		local frontMarker = Utils.getNoNil(vehicle.cp.aiFrontMarker,-3)
 		if frontMarker + z < 0 then
 			workArea = true
 			isFinishingWork = true
-		elseif self.cp.finishWork ~= self.cp.stopWork then
-			courseplay:setRecordNumber(self, math.min(self.cp.finishWork + 1,self.maxnumber));
+		elseif vehicle.cp.finishWork ~= vehicle.cp.stopWork then
+			courseplay:setWaypointIndex(vehicle, min(vehicle.cp.finishWork + 1,vehicle.cp.numWaypoints));
 		end;
 	end;
-	if workArea then
+	if vehicle.cp.hasTransferCourse and vehicle.cp.abortWork ~= nil and vehicle.cp.waypointIndex == 1 then
+		courseplay:setWaypointIndex(vehicle,vehicle.cp.startWork+1);
+	end
+	if fieldArea or vehicle.cp.waypointIndex == vehicle.cp.startWork or vehicle.cp.waypointIndex == vehicle.cp.stopWork +1 then
 		workSpeed = 1;
 	end
-	if (self.recordnumber == self.cp.stopWork or self.cp.lastRecordnumber == self.cp.stopWork) and self.cp.abortWork == nil and not self.cp.isLoaded and not isFinishingWork then
+	if (vehicle.cp.waypointIndex == vehicle.cp.stopWork or vehicle.cp.previousWaypointIndex == vehicle.cp.stopWork) and vehicle.cp.abortWork == nil and not vehicle.cp.isLoaded and not isFinishingWork and vehicle.cp.wait then
 		allowedToDrive = false
-		courseplay:setGlobalInfoText(self, 'WORK_END');
+		CpManager:setGlobalInfoText(vehicle, 'WORK_END');
 		hasFinishedWork = true
 	end
 
 	-- Wait until we have fully started up Threshing
-	if self.sampleThreshingStart and isSamplePlaying(self.sampleThreshingStart.sample) then
+	if vehicle.sampleThreshingStart and isSamplePlaying(vehicle.sampleThreshingStart.sample) then
 		-- Only allow us to drive if we are moving backwards.
-		if not self.cp.isReverseBackToPoint then
+		if not vehicle.cp.isReverseBackToPoint then
 			allowedToDrive = false;
 		end;
-		courseplay:setInfoText(self, string.format(courseplay:loc("COURSEPLAY_STARTING_UP_TOOL"), tostring(self.name)));
+		courseplay:setInfoText(vehicle, string.format("COURSEPLAY_STARTING_UP_TOOL;%s",tostring(vehicle.name)));
 	end;
 
-	local selfIsFolding, selfIsFolded, selfIsUnfolded = courseplay:isFolding(self);
-	for i=1, #(self.cp.workTools) do
-		workTool = self.cp.workTools[i];
-		local tool = self
+	local vehicleIsFolding, vehicleIsFolded, vehicleIsUnfolded = courseplay:isFolding(vehicle);
+	for i=1, #(vehicle.cp.workTools) do
+		workTool = vehicle.cp.workTools[i];
+		local tool = vehicle
 		if courseplay:isAttachedCombine(workTool) then
 			tool = workTool
+			workTool.cp.turnStage = vehicle.cp.turnStage
 		end
 
+		if workTool.haeckseldolly then
+			local ridgeMarker = vehicle.Waypoints[vehicle.cp.waypointIndex].ridgeMarker
+			local nextRidgeMarker = vehicle.Waypoints[min(vehicle.cp.waypointIndex+4,vehicle.cp.numWaypoints)].ridgeMarker
+			if (ridgeMarker == 2 or (nextRidgeMarker == 2 and vehicle.cp.turnStage>1)) and workTool.bunkerrechts ~= false then
+				workTool.bunkerrechts = false
+			elseif (ridgeMarker == 1 or (nextRidgeMarker == 1 and vehicle.cp.turnStage>1)) and workTool.bunkerrechts ~= true then
+				workTool.bunkerrechts = true
+			end
+		end
+		
 		local isFolding, isFolded, isUnfolded = courseplay:isFolding(workTool);
 		local needsLowering = false
 		
@@ -58,14 +75,14 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 			needsLowering = workTool.attacherJoint.needsLowering
 		end
 		
-		--speedlimits
-		if workTool.doCheckSpeedLimit and workTool:doCheckSpeedLimit() then
-			forceSpeedLimit = math.min(forceSpeedLimit, workTool.speedLimit)
+		--speedlimits								--	TODO (Tom) workTool:doCheckSpeedLimit() is not working for harvesters			
+		if workTool.doCheckSpeedLimit and (workTool:doCheckSpeedLimit() or workTool.isPreparerSpeedLimitActive) then
+			forceSpeedLimit = min(forceSpeedLimit, workTool.speedLimit)
 		end
 		
 		-- stop while folding
-		if (isFolding or selfIsFolding) and self.cp.turnStage == 0 then
-			allowedToDrive = courseplay:brakeToStop(self);
+		if (isFolding or vehicleIsFolding) and vehicle.cp.turnStage == 0 then
+			allowedToDrive = false;
 			--courseplay:debug(tostring(workTool.name) .. ": isFolding -> allowedToDrive == false", 6);
 		end;
 
@@ -73,9 +90,9 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 		if workTool ~= nil and tool.attachedCutters == nil then
 			-- balers
 			if courseplay:isBaler(workTool) then
-				if self.recordnumber >= self.cp.startWork + 1 and self.recordnumber < self.cp.stopWork and self.cp.turnStage == 0 then
-																			--  self, workTool, unfold, lower, turnOn, allowedToDrive, cover, unload, ridgeMarker)
-					specialTool, allowedToDrive = courseplay:handleSpecialTools(self, workTool, true,   true,  true,   allowedToDrive, nil,   nil);
+				if vehicle.cp.waypointIndex >= vehicle.cp.startWork + 1 and vehicle.cp.waypointIndex < vehicle.cp.stopWork and vehicle.cp.turnStage == 0 then
+																			--  vehicle, workTool, unfold, lower, turnOn, allowedToDrive, cover, unload, ridgeMarker,forceSpeedLimit)
+					specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle, workTool, true,   true,  true,   allowedToDrive, nil,   nil);
 					if not specialTool then
 						-- automatic opening for balers
 						if workTool.balerUnloadingState ~= nil then
@@ -110,8 +127,8 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 					end
 				end
 
-				if self.cp.lastRecordnumber == self.cp.stopWork -1 and workTool.isTurnedOn then
-					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,nil)
+				if vehicle.cp.previousWaypointIndex == vehicle.cp.stopWork -1 and workTool.isTurnedOn then
+					specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,false,false,false,allowedToDrive,nil,nil)
 					if not specialTool and workTool.balerUnloadingState == Baler.UNLOADING_CLOSED then
 						workTool:setIsTurnedOn(false, false);
 						if workTool.setPickupState ~= nil then
@@ -126,7 +143,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 			-- baleloader, copied original code parts
 			elseif courseplay:isBaleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool) then
 				if workArea and fillLevelPct ~= 100 then
-					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,true,true,true,allowedToDrive,nil,nil);
+					specialTool, allowedToDrive, forceSpeedLimit = courseplay:handleSpecialTools(vehicle,workTool,true,true,true,allowedToDrive,nil,nil,nil,forceSpeedLimit);
 					if not specialTool then
 						-- automatic stop for baleloader
 						if workTool.grabberIsMoving then
@@ -141,8 +158,8 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 					end;
 				end
 
-				if (fillLevelPct == 100 and self.cp.hasUnloadingRefillingCourse or self.recordnumber == self.cp.stopWork) and workTool.isInWorkPosition and not workTool:getIsAnimationPlaying('rotatePlatform') and not workTool:getIsAnimationPlaying('emptyRotate') then
-					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,nil);
+				if (fillLevelPct == 100 and vehicle.cp.hasUnloadingRefillingCourse or vehicle.cp.waypointIndex == vehicle.cp.stopWork) and workTool.isInWorkPosition and not workTool:getIsAnimationPlaying('rotatePlatform') and not workTool:getIsAnimationPlaying('emptyRotate') then
+					specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,false,false,false,allowedToDrive,nil,nil);
 					if not specialTool then
 						workTool.grabberIsMoving = true
 						workTool.isInWorkPosition = false
@@ -151,47 +168,64 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 					end;
 				end
 
-				if fillLevelPct == 100 and not self.cp.hasUnloadingRefillingCourse then
-					if self.cp.automaticUnloadingOnField then
-						self.cp.unloadOrder = true
-						courseplay:setGlobalInfoText(self, 'UNLOADING_BALE');
-					else
-						specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,nil); --TODO: unclear
+				if fillLevelPct == 100 and not vehicle.cp.hasUnloadingRefillingCourse then
+					if vehicle.cp.automaticUnloadingOnField then
+						specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,false,false,false,allowedToDrive,nil,true); 
+						if not specialTool then
+							vehicle.cp.unloadOrder = true
+						end
+						CpManager:setGlobalInfoText(vehicle, 'UNLOADING_BALE');
 					end
 				end;
 
 				-- stop when unloading
-				if workTool.activeAnimations and (workTool:getIsAnimationPlaying('rotatePlatform') --[[or workTool:getIsAnimationPlaying('emptyRotate')]]) then
+				if workTool.activeAnimations and (workTool:getIsAnimationPlaying('rotatePlatform') or workTool:getIsAnimationPlaying('emptyRotate')) then
 					allowedToDrive = false;
 				end;
 
 				-- automatic unload
-				if (not workArea and self.Waypoints[self.cp.lastRecordnumber].wait and (self.cp.wait or fillLevelPct == 0)) or self.cp.unloadOrder then
-					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,true);
+				if vehicle.cp.delayFolding and courseplay:timerIsThrough(vehicle, 'foldBaleLoader', false) then
+					vehicle.cp.unloadOrder = true
+					vehicle.cp.delayFolding = nil
+				end
+				
+				if (not workArea and vehicle.Waypoints[vehicle.cp.previousWaypointIndex].wait and (vehicle.cp.wait or fillLevelPct == 0)) or vehicle.cp.unloadOrder then
+					specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,false,false,false,allowedToDrive,nil,true);
 					if not specialTool then
 						if workTool.emptyState ~= BaleLoader.EMPTY_NONE then
 							if workTool.emptyState == BaleLoader.EMPTY_WAIT_TO_DROP then
-								-- BaleLoader.CHANGE_DROP_BALES
+								-- (2) drop the bales
+								-- print(('%s: set state BaleLoader.CHANGE_DROP_BALES'):format(nameNum(workTool)));
 								g_server:broadcastEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_DROP_BALES), true, nil, workTool)
 							elseif workTool.emptyState == BaleLoader.EMPTY_WAIT_TO_SINK then
-								-- BaleLoader.CHANGE_SINK
-								g_server:broadcastEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_SINK), true, nil, workTool)
+								-- (3) lower (fold) table
+								if not courseplay:getCustomTimerExists(vehicle, 'foldBaleLoader') then
+									-- print(('%s: foldBaleLoader timer not running -> set timer 2 seconds'):format(nameNum(workTool)));
+									courseplay:setCustomTimer(vehicle, 'foldBaleLoader', 2);
+									vehicle.cp.delayFolding = true;
+								elseif courseplay:timerIsThrough(vehicle, 'foldBaleLoader', false) then
+									-- print(('%s: timer through -> set state BaleLoader.CHANGE_SINK -> reset timer'):format(nameNum(workTool)));
+									g_server:broadcastEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_SINK), true, nil, workTool);
+									courseplay:resetCustomTimer(vehicle, 'foldBaleLoader', true);
+								end;
 
 								-- Change the direction to forward if we were reversing.
-								if self.Waypoints[self.recordnumber].rev then
-									courseplay:setRecordNumber(self, courseplay:getNextFwdPoint(self));
+								if vehicle.Waypoints[vehicle.cp.waypointIndex].rev then
+									-- print(('%s: set waypointIndex to next forward point'):format(nameNum(workTool)));
+									courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle));
 								end;
 							elseif workTool.emptyState == BaleLoader.EMPTY_WAIT_TO_REDO then
-								-- BaleLoader.CHANGE_EMPTY_REDO
+								-- print(('%s: set state BaleLoader.CHANGE_EMPTY_REDO'):format(nameNum(workTool)));
 								g_server:broadcastEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_EMPTY_REDO), true, nil, workTool);
-							end
+							end;
 						else
-							--BaleLoader.CHANGE_EMPTY_START
+							-- (1) lift (unfold) table
 							if BaleLoader.getAllowsStartUnloading(workTool) then
-								g_server:broadcastEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_EMPTY_START), true, nil, workTool)
-							end
-							self.cp.unloadOrder = false;
-						end
+								-- print(('%s: set state BaleLoader.CHANGE_EMPTY_START'):format(nameNum(workTool)));
+								g_server:broadcastEvent(BaleLoaderStateEvent:new(workTool, BaleLoader.CHANGE_EMPTY_START), true, nil, workTool);
+							end;
+							vehicle.cp.unloadOrder = false;
+						end;
 					end;
 				end;
 			--END baleloader
@@ -199,32 +233,32 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 
 			-- other worktools, tippers, e.g. forage wagon
 			else
-				if workArea and fillLevelPct ~= 100 and ((self.cp.abortWork == nil) or (self.cp.abortWork ~= nil and self.cp.lastRecordnumber == self.cp.abortWork) or (self.cp.runOnceStartCourse)) and self.cp.turnStage == 0  then
-								--courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
-					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,true,true,true,allowedToDrive,nil,nil)
+				if workArea and fillLevelPct ~= 100 and ((vehicle.cp.abortWork == nil) or (vehicle.cp.abortWork ~= nil and vehicle.cp.previousWaypointIndex == vehicle.cp.abortWork) or (vehicle.cp.runOnceStartCourse)) and vehicle.cp.turnStage == 0  then
+					--courseplay:handleSpecialTools(vehicle,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
+					specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,true,true,true,allowedToDrive,nil,nil)
 					if allowedToDrive then
 						if not specialTool then
 							--unfold
-							local recordnumber = math.min(self.recordnumber + 2, self.maxnumber);
-							local forecast = Utils.getNoNil(self.Waypoints[recordnumber].ridgeMarker,0)
-							local marker = Utils.getNoNil(self.Waypoints[self.recordnumber].ridgeMarker,0)
-							local waypoint = math.max(marker,forecast)
+							local recordnumber = min(vehicle.cp.waypointIndex + 2, vehicle.cp.numWaypoints);
+							local forecast = Utils.getNoNil(vehicle.Waypoints[recordnumber].ridgeMarker,0)
+							local marker = Utils.getNoNil(vehicle.Waypoints[vehicle.cp.waypointIndex].ridgeMarker,0)
+							local waypoint = max(marker,forecast)
 							if courseplay:isFoldable(workTool) and not isFolding and not isUnfolded then
 								if not workTool.cp.hasSpecializationPlough then
 									courseplay:debug(string.format('%s: unfold order (foldDir=%d)', nameNum(workTool), workTool.cp.realUnfoldDirection), 17);
 									workTool:setFoldDirection(workTool.cp.realUnfoldDirection);
-									self.cp.runOnceStartCourse = false;
-								elseif waypoint == 2 and self.cp.runOnceStartCourse then --wegpunkte finden und richtung setzen...
+									vehicle.cp.runOnceStartCourse = false;
+								elseif waypoint == 2 and vehicle.cp.runOnceStartCourse then --wegpunkte finden und richtung setzen...
 									courseplay:debug(string.format('%s: unfold order (foldDir=%d)', nameNum(workTool), workTool.cp.realUnfoldDirection), 17);
 									workTool:setFoldDirection(workTool.cp.realUnfoldDirection);
 									if workTool:getIsPloughRotationAllowed() then
-										AITractor.aiRotateLeft(self);
-										self.cp.runOnceStartCourse = false;
+										AITractor.aiRotateLeft(vehicle);
+										vehicle.cp.runOnceStartCourse = false;
 									end
-								elseif self.cp.runOnceStartCourse then
+								elseif vehicle.cp.runOnceStartCourse then
 									courseplay:debug(string.format('%s: unfold order (foldDir=%d)', nameNum(workTool), workTool.cp.realUnfoldDirection), 17);
 									workTool:setFoldDirection(workTool.cp.realUnfoldDirection);
-									self.cp.runOnceStartCourse = false;
+									vehicle.cp.runOnceStartCourse = false;
 								end
 							end;
 
@@ -232,7 +266,7 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 							if not isFolding and isUnfolded and not waitForSpecialTool then --TODO: where does "waitForSpecialTool" come from? what does it do?
 								--lower
 								if needsLowering and workTool.aiNeedsLowering then
-									self:setAIImplementsMoveDown(true);
+									vehicle:setAIImplementsMoveDown(true);
 									courseplay:debug(string.format('%s: lower order', nameNum(workTool)), 17);
 								end;
 
@@ -240,8 +274,8 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 								if workTool.setIsTurnedOn ~= nil and not workTool.isTurnedOn then
 									workTool:setIsTurnedOn(true, false);
 									courseplay:debug(string.format('%s: turn on order', nameNum(workTool)), 17);
-									self.cp.runOnceStartCourse = false
-									courseplay:setMarkers(self, workTool);
+									vehicle.cp.runOnceStartCourse = false
+									courseplay:setMarkers(vehicle, workTool);
 								end;
 
 								if workTool.setPickupState ~= nil then
@@ -253,9 +287,8 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 							end;
 						end;
 					end
-				elseif not workArea or self.cp.abortWork ~= nil or self.cp.isLoaded or self.cp.lastRecordnumber == self.cp.stopWork then
-					workSpeed = 0;
-					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,nil)
+				elseif not workArea or vehicle.cp.abortWork ~= nil or vehicle.cp.isLoaded or vehicle.cp.previousWaypointIndex == vehicle.cp.stopWork then
+					specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,false,false,false,allowedToDrive,nil,nil)
 					if not specialTool then
 						if not isFolding then
 							--turn off
@@ -271,8 +304,8 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 							end;
 
 							--raise
-							if needsLowering and workTool.aiNeedsLowering and self.cp.turnStage == 0 then
-								self:setAIImplementsMoveDown(false);
+							if needsLowering and workTool.aiNeedsLowering and vehicle.cp.turnStage == 0 then
+								vehicle:setAIImplementsMoveDown(false);
 								courseplay:debug(string.format('%s: raise order', nameNum(workTool)), 17);
 							end;
 						end;
@@ -287,18 +320,14 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 				end;
 
 				-- done tipping
-				if self.cp.tipperFillLevel ~= nil and self.cp.tipperCapacity ~= nil then
-					if self.cp.unloadingTipper ~= nil and self.cp.unloadingTipper.fillLevel == 0 then
-						self.cp.unloadingTipper = nil
-
-						if self.cp.tipperFillLevel == 0 then
-							courseplay:resetTipTrigger(self, true);
-						end
+				if vehicle.cp.tipperFillLevel ~= nil and vehicle.cp.tipperCapacity ~= nil then
+					if vehicle.cp.currentTipTrigger and vehicle.cp.tipperFillLevel == 0 then
+						courseplay:resetTipTrigger(vehicle, true);
 					end
 
 					-- damn, i missed the trigger!
-					if self.cp.currentTipTrigger ~= nil then
-						local trigger = self.cp.currentTipTrigger
+					if vehicle.cp.currentTipTrigger ~= nil then
+						local trigger = vehicle.cp.currentTipTrigger
 						local triggerId = trigger.triggerId
 						if trigger.isPlaceableHeapTrigger then
 							triggerId = trigger.rootNode;
@@ -308,90 +337,95 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 							triggerId = trigger.specialTriggerId
 						end
 						local trigger_x, trigger_y, trigger_z = getWorldTranslation(triggerId);
-						local ctx, cty, ctz = getWorldTranslation(self.cp.DirectionNode);
+						local ctx, cty, ctz = getWorldTranslation(vehicle.cp.DirectionNode);
 
 						-- Start reversion value is to check if we have started to reverse
 						-- This is used in case we already registered a tipTrigger but changed the direction and might not be in that tipTrigger when unloading. (Bug Fix)
-						local startReversing = self.Waypoints[self.recordnumber].rev and not self.Waypoints[self.cp.lastRecordnumber].rev;
+						local startReversing = vehicle.Waypoints[vehicle.cp.waypointIndex].rev and not vehicle.Waypoints[vehicle.cp.previousWaypointIndex].rev;
 						if startReversing then
-							courseplay:debug(string.format("%s: Is starting to reverse. Tip trigger is reset.", nameNum(self)), 13);
+							courseplay:debug(string.format("%s: Is starting to reverse. Tip trigger is reset.", nameNum(vehicle)), 13);
 						end;
 
-						if courseplay:distance(ctx, ctz, trigger_x, trigger_z) > (self.cp.totalLength + 5) or startReversing then
-							courseplay:resetTipTrigger(self);
+						local distToTrigger = courseplay:distance(ctx, ctz, trigger_x, trigger_z);
+						local isBGA = trigger.bunkerSilo ~= nil and trigger.bunkerSilo.movingPlanes ~= nil
+						local triggerLength = Utils.getNoNil(vehicle.cp.currentTipTrigger.cpActualLength,20)
+						local maxDist = isBGA and (vehicle.cp.totalLength + 55) or (vehicle.cp.totalLength + triggerLength); 
+						if distToTrigger > maxDist or startReversing then --it's a backup, so we don't need to care about +/-10m
+							courseplay:resetTipTrigger(vehicle);
+							courseplay:debug(string.format("%s: distance to currentTipTrigger = %d (> %d or start reversing) --> currentTipTrigger = nil", nameNum(vehicle), distToTrigger, maxDist), 1);
 						end
 					end
 
 					-- tipper is not empty and tractor reaches TipTrigger
-					if self.cp.tipperFillLevel > 0 and self.cp.currentTipTrigger ~= nil and self.recordnumber > 3 then
-						allowedToDrive, activeTipper = courseplay:unload_tippers(self, allowedToDrive);
-						courseplay:setInfoText(self, courseplay:loc("COURSEPLAY_TIPTRIGGER_REACHED"));
+					if vehicle.cp.tipperFillLevel > 0 and vehicle.cp.currentTipTrigger ~= nil and vehicle.cp.waypointIndex > 3 then
+						allowedToDrive, activeTipper = courseplay:unload_tippers(vehicle, allowedToDrive);
+						courseplay:setInfoText(vehicle, "COURSEPLAY_TIPTRIGGER_REACHED");
 					end
 				end;
 			end; --END other tools
 
 			-- Begin work or go to abortWork
-			if self.cp.lastRecordnumber == self.cp.startWork and fillLevelPct ~= 100 then
-				if self.cp.abortWork ~= nil then
-					if self.cp.abortWork < 5 then
-						self.cp.abortWork = 6
+			if vehicle.cp.previousWaypointIndex == vehicle.cp.startWork and fillLevelPct ~= 100 then
+				if vehicle.cp.abortWork ~= nil then
+					if vehicle.cp.abortWork < 5 then
+						vehicle.cp.abortWork = 6
 					end
-					courseplay:setRecordNumber(self, self.cp.abortWork);
-					if self.recordnumber < 2 then
-						courseplay:setRecordNumber(self, 2);
+					courseplay:setWaypointIndex(vehicle, vehicle.cp.abortWork);
+					if vehicle.cp.waypointIndex < 2 then
+						courseplay:setWaypointIndex(vehicle, 2);
 					end
-					if self.Waypoints[self.recordnumber].turn ~= nil or self.Waypoints[self.recordnumber+1].turn ~= nil  then
-						courseplay:setRecordNumber(self, self.recordnumber - 2);
+					if vehicle.Waypoints[vehicle.cp.waypointIndex].turn ~= nil or vehicle.Waypoints[vehicle.cp.waypointIndex+1].turn ~= nil  then
+						courseplay:setWaypointIndex(vehicle, vehicle.cp.waypointIndex - 2);
 					end
 				end
 			end
 			-- last point reached restart
-			if self.cp.abortWork ~= nil then
-				if (self.cp.lastRecordnumber == self.cp.abortWork ) and fillLevelPct ~= 100 then
-					courseplay:setRecordNumber(self, self.cp.abortWork + 2); -- drive to waypoint after next waypoint
-					self.cp.abortWork = nil
+			if vehicle.cp.abortWork ~= nil then
+				if (vehicle.cp.previousWaypointIndex == vehicle.cp.abortWork ) and fillLevelPct ~= 100 then
+					courseplay:setWaypointIndex(vehicle, vehicle.cp.abortWork + 2); -- drive to waypoint after next waypoint
+					vehicle.cp.abortWork = nil
 				end
 			end
-			-- safe last point
-			if (fillLevelPct == 100 or self.cp.isLoaded) and workArea and not courseplay:isBaler(workTool) then
-				if self.cp.hasUnloadingRefillingCourse and self.cp.abortWork == nil then
-					self.cp.abortWork = self.cp.lastRecordnumber - 10;
+			-- save last point
+			if (fillLevelPct == 100 or vehicle.cp.isLoaded) and workArea and not courseplay:isBaler(workTool) then
+				if vehicle.cp.hasUnloadingRefillingCourse and vehicle.cp.abortWork == nil then
+					vehicle.cp.abortWork = vehicle.cp.previousWaypointIndex - 10;
 					-- invert lane offset if abortWork is before previous turn point (symmetric lane change)
-					if self.cp.symmetricLaneChange and self.cp.laneOffset ~= 0 then
-						for i=self.cp.abortWork,self.cp.lastRecordnumber do
-							local wp = self.Waypoints[i];
+					if vehicle.cp.symmetricLaneChange and vehicle.cp.laneOffset ~= 0 then
+						for i=vehicle.cp.abortWork,vehicle.cp.previousWaypointIndex do
+							local wp = vehicle.Waypoints[i];
 							if wp.turn ~= nil then
-								courseplay:debug(string.format('%s: abortWork set (%d), abortWork + %d: turn=%s -> change lane offset back to abortWork\'s lane', nameNum(self), self.cp.abortWork, i-1, tostring(wp.turn)), 12);
-								courseplay:changeLaneOffset(self, nil, self.cp.laneOffset * -1);
-								self.cp.switchLaneOffset = true;
+								courseplay:debug(string.format('%s: abortWork set (%d), abortWork + %d: turn=%s -> change lane offset back to abortWork\'s lane', nameNum(vehicle), vehicle.cp.abortWork, i-1, tostring(wp.turn)), 12);
+								courseplay:changeLaneOffset(vehicle, nil, vehicle.cp.laneOffset * -1);
+								vehicle.cp.switchLaneOffset = true;
 								break;
 							end;
 						end;
 					end;
-					courseplay:setRecordNumber(self, self.cp.stopWork - 4);
-					if self.recordnumber < 1 then
-						courseplay:setRecordNumber(self, 1);
+					--courseplay:setWaypointIndex(vehicle, vehicle.cp.stopWork - 4);
+					courseplay:setWaypointIndex(vehicle, vehicle.cp.stopWork + 1);
+					if vehicle.cp.waypointIndex < 1 then
+						courseplay:setWaypointIndex(vehicle, 1);
 					end
-					--courseplay:debug(string.format("Abort: %d StopWork: %d",self.cp.abortWork,self.cp.stopWork), 12)
-				elseif not self.cp.hasUnloadingRefillingCourse and not self.cp.automaticUnloadingOnField then
+					--courseplay:debug(string.format("Abort: %d StopWork: %d",vehicle.cp.abortWork,vehicle.cp.stopWork), 12)
+				elseif not vehicle.cp.hasUnloadingRefillingCourse and not vehicle.cp.automaticUnloadingOnField then
 					allowedToDrive = false;
-					courseplay:setGlobalInfoText(self, 'NEEDS_UNLOADING');
-				elseif not self.cp.hasUnloadingRefillingCourse and self.cp.automaticUnloadingOnField then
+					CpManager:setGlobalInfoText(vehicle, 'NEEDS_UNLOADING');
+				elseif not vehicle.cp.hasUnloadingRefillingCourse and vehicle.cp.automaticUnloadingOnField then
 					allowedToDrive = false;
 				end;
 			end;
 
 		--COMBINES
 		elseif workTool.cp.hasSpecializationCutter then
-
 			--Start combine
 			local isTurnedOn = tool:getIsTurnedOn();
 			local pipeState = 0;
 			if tool.getOverloadingTrailerInRangePipeState ~= nil then
 				pipeState = tool:getOverloadingTrailerInRangePipeState();
 			end;
-			if workArea and not tool.isAIThreshing and self.cp.abortWork == nil and self.cp.turnStage == 0 then
-				specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,true,true,true,allowedToDrive,nil,nil)
+			if workArea and not tool.isAIThreshing and vehicle.cp.abortWork == nil and vehicle.cp.turnStage == 0 then
+				specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,true,true,true,allowedToDrive,nil,nil)
 				if not specialTool then
 					local weatherStop = not tool:getIsThreshingAllowed(true)
 
@@ -423,47 +457,51 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 							end;
 						end;
 
-						if (pipeState == 0 and self.cp.turnStage == 0) or chopperWaitForTrailer then
+						if (pipeState == 0 and vehicle.cp.turnStage == 0) or chopperWaitForTrailer then
 							tool.cp.waitingForTrailerToUnload = true;
 						end;
 
 					-- Combines
 					else
 						local tankFillLevelPct = tool.fillLevel * 100 / tool.capacity;
-
-						-- WorkTool Unfolding.
-						if courseplay:isFoldable(workTool) and not isTurnedOn and not isFolding and not isUnfolded then
-							courseplay:debug(string.format('%s: unfold order (foldDir=%d)', nameNum(workTool), workTool.cp.realUnfoldDirection), 17);
-							workTool:setFoldDirection(workTool.cp.realUnfoldDirection);
-						end;
-
-						-- Combine Unfolding
-						if courseplay:isFoldable(tool) then
-							if not selfIsFolding and not selfIsUnfolded then
-								courseplay:debug(string.format('%s: unfold order (foldDir=%d)', nameNum(tool), tool.cp.realUnfoldDirection), 17);
-								tool:setFoldDirection(tool.cp.realUnfoldDirection);
+						if not vehicle.cp.isReverseBackToPoint then
+							-- WorkTool Unfolding.
+							if courseplay:isFoldable(workTool) and not isTurnedOn and not isFolding and not isUnfolded then
+								courseplay:debug(string.format('%s: unfold order (foldDir=%d)', nameNum(workTool), workTool.cp.realUnfoldDirection), 17);
+								workTool:setFoldDirection(workTool.cp.realUnfoldDirection);
 							end;
-						end;
 
-						if not isFolding and isUnfolded and not selfIsFolding and selfIsUnfolded and tankFillLevelPct < 100 and not tool.waitingForDischarge and not isTurnedOn and not weatherStop then
-							tool:setIsTurnedOn(true);
+							-- Combine Unfolding
+							if courseplay:isFoldable(tool) then
+								if not vehicleIsFolding and not vehicleIsUnfolded then
+									courseplay:debug(string.format('%s: unfold order (foldDir=%d)', nameNum(tool), tool.cp.realUnfoldDirection), 17);
+									tool:setFoldDirection(tool.cp.realUnfoldDirection);
+								end;
+							end;
+
+							if not isFolding and isUnfolded and not vehicleIsFolding and vehicleIsUnfolded and tankFillLevelPct < 100 and not tool.waitingForDischarge and not isTurnedOn and not weatherStop then
+								tool:setIsTurnedOn(true);
+							end
 						end
 						if tool.pipeIsUnloading and (tool.courseplayers == nil or tool.courseplayers[1] == nil) and tool.cp.stopWhenUnloading and tankFillLevelPct >= 1 then
 							tool.stopForManualUnloader = true
 						end
 							
-						if tankFillLevelPct >= 100 or tool.waitingForDischarge or (tool.cp.stopWhenUnloading and tool.pipeIsUnloading and tool.courseplayers and tool.courseplayers[1] ~= nil) or tool.stopForManualUnloader then
+						if tankFillLevelPct >= 100 
+						or tool.waitingForDischarge 
+						or (tool.cp.stopWhenUnloading and tool.pipeIsUnloading and tool.courseplayers and tool.courseplayers[1] ~= nil and tool.courseplayers[1].cp.modeState ~= 9) 
+						or tool.stopForManualUnloader then
 							tool.waitingForDischarge = true;
-							allowedToDrive = courseplay:brakeToStop(self); -- allowedToDrive = false;
+							allowedToDrive = false;
 							if isTurnedOn then
 								tool:setIsTurnedOn(false);
 							end;
-							if tankFillLevelPct < 80 and (not tool.cp.stopWhenUnloading or (tool.cp.stopWhenUnloading and (tool.courseplayers == nil or tool.courseplayers[1] == nil))) then
-								courseplay:setReverseBackDistance(self, 2);
+							if workTool:isLowered() then
+									courseplay:lowerImplements(vehicle, false, false);
+							end;
+							if (tankFillLevelPct < 80 and not tool.cp.stopWhenUnloading) or (tool.cp.stopWhenUnloading and tool.fillLevel == 0) then
+								courseplay:setReverseBackDistance(vehicle, 2);
 								tool.waitingForDischarge = false;
-								if not weatherStop and not isTurnedOn then
-									tool:setIsTurnedOn(true);
-								end;
 							end;
 							if tool.stopForManualUnloader and tool.fillLevel == 0 then
 								tool.stopForManualUnloader = false
@@ -475,31 +513,27 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 							if isTurnedOn then
 								tool:setIsTurnedOn(false);
 							end;
-							courseplay:setGlobalInfoText(self, 'WEATHER');
+							CpManager:setGlobalInfoText(vehicle, 'WEATHER');
 						end
 
 					end
 
 					-- Make sure we are lowered when working the field.
-					if allowedToDrive and isTurnedOn and not workTool:isLowered() and not self.cp.isReverseBackToPoint then
-						courseplay:lowerImplements(self, true, false);
+					if allowedToDrive and isTurnedOn and not workTool:isLowered() and not vehicle.cp.isReverseBackToPoint then
+						courseplay:lowerImplements(vehicle, true, false);
 					end;
-
-					-- If we are moving a bit back, don't lower the tool before we move forward again.
-					if isTurnedOn and workTool:isLowered() and self.cp.isReverseBackToPoint then
-						courseplay:lowerImplements(self, false, false);
-					end;
+				
 				end
 			 --Stop combine
-			elseif self.recordnumber == self.cp.stopWork or self.cp.abortWork ~= nil then
+			elseif vehicle.cp.waypointIndex == vehicle.cp.stopWork or vehicle.cp.abortWork ~= nil then
 				local isEmpty = tool.fillLevel == 0
-				if self.cp.abortWork == nil then
+				if vehicle.cp.abortWork == nil and vehicle.cp.wait then
 					allowedToDrive = false;
 				end
 				if isEmpty then
-					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil)
+					specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,false,false,false,allowedToDrive,nil)
 				else
-					specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,true,false,false,allowedToDrive,nil)
+					specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,true,false,false,allowedToDrive,nil)
 				end
 				if not specialTool then
 					tool:setIsTurnedOn(false);
@@ -511,22 +545,29 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 						courseplay:debug(string.format('%s: fold order (foldDir=%d)', nameNum(tool), -tool.cp.realUnfoldDirection), 17);
 						tool:setFoldDirection(-tool.cp.realUnfoldDirection);
 					end;
-					tool:setPipeState(1)
+				end
+				if tool.cp.isCombine and not tool.cp.wantsCourseplayer and tool.fillLevel > 0.1 and tool.courseplayers and #(tool.courseplayers) == 0 then
+					tool.cp.wantsCourseplayer = true
 				end
 			end
 
 			if tool.cp.isCombine and isTurnedOn and tool.fillLevel >= tool.capacity*0.8  or ((pipeState > 0 or courseplay:isAttachedCombine(workTool))and not courseplay:isSpecialChopper(workTool))then
 				tool:setPipeState(2)
+				if tool.setOverloadingActive  and tool.getIsPipeUnloadingAllowed then
+					if tool:getIsPipeUnloadingAllowed() then
+						tool:setOverloadingActive(true);
+					end
+				end
 			elseif  pipeState == 0 and tool.cp.isCombine and tool.fillLevel < tool.capacity then
 				tool:setPipeState(1)
 			end
 			if tool.cp.waitingForTrailerToUnload then
 				local mayIDrive = false;
-				if tool.cp.isCombine or courseplay:isAttachedCombine(workTool) then
+				if tool.cp.isCombine or (courseplay:isAttachedCombine(workTool) and not courseplay:isSpecialChopper(workTool)) then
 					if tool.cp.isCheckedIn == nil or (pipeState == 0 and tool.fillLevel == 0) then
 						tool.cp.waitingForTrailerToUnload = false
 					end
-				elseif tool.cp.isChopper then
+				elseif tool.cp.isChopper or courseplay:isSpecialChopper(workTool) then
 					-- resume driving
 					local ch, gr = Fillable.FILLTYPE_CHAFF, Fillable.FILLTYPE_GRASS_WINDROW;
 					if (tool.pipeParticleSystems and ((tool.pipeParticleSystems[ch] and tool.pipeParticleSystems[ch].isEmitting) or (tool.pipeParticleSystems[gr] and tool.pipeParticleSystems[gr].isEmitting))) or pipeState > 0 then
@@ -544,18 +585,17 @@ function courseplay:handle_mode6(self, allowedToDrive, workSpeed, fillLevelPct, 
 				allowedToDrive = mayIDrive;
 			end
 
-			local dx,_,dz = localDirectionToWorld(self.cp.DirectionNode, 0, 0, 1);
+			local dx,_,dz = localDirectionToWorld(vehicle.cp.DirectionNode, 0, 0, 1);
 			local length = Utils.vector2Length(dx,dz);
-			if self.cp.turnStage == 0 then
-				self.aiThreshingDirectionX = dx/length;
-				self.aiThreshingDirectionZ = dz/length;
+			if vehicle.cp.turnStage == 0 then
+				vehicle.aiThreshingDirectionX = dx/length;
+				vehicle.aiThreshingDirectionZ = dz/length;
 			else
-				self.aiThreshingDirectionX = -(dx/length);
-				self.aiThreshingDirectionZ = -(dz/length);
+				vehicle.aiThreshingDirectionX = -(dx/length);
+				vehicle.aiThreshingDirectionZ = -(dz/length);
 			end
-
 		end
-	end; --END for i in self.cp.workTools
+	end; --END for i in vehicle.cp.workTools
 
 	if hasFinishedWork then
 		isFinishingWork = true

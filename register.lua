@@ -4,21 +4,19 @@ if courseplay.houstonWeGotAProblem then
 	return;
 end;
 
-local steerableSpec = SpecializationUtil.getSpecialization('steerable');
+local drivableSpec = SpecializationUtil.getSpecialization('drivable');
 local courseplaySpec = SpecializationUtil.getSpecialization('courseplay');
 local numInstallationsVehicles = 0;
-courseplay.nonSupportedVehicleTypeNames ={}
-courseplay.nonSupportedVehicleTypeNames["forwarderTrailerSteerable"] = true
 
 function courseplay:register()
 	for typeName,vehicleType in pairs(VehicleTypeUtil.vehicleTypes) do
 		if vehicleType then
 			for i,spec in pairs(vehicleType.specializations) do
-				if spec and spec == steerableSpec and not SpecializationUtil.hasSpecialization(courseplay, vehicleType.specializations) and not courseplay.nonSupportedVehicleTypeNames[vehicleType.name] then
-					--print(('\tadding Courseplay to %q'):format(tostring(vehicleType.name)));
+				if spec and spec == drivableSpec and not SpecializationUtil.hasSpecialization(courseplay, vehicleType.specializations) then
+					-- print(('\tadding Courseplay to %q'):format(tostring(vehicleType.name)));
 					table.insert(vehicleType.specializations, courseplaySpec);
 					vehicleType.hasCourseplaySpec = true;
-					vehicleType.hasSteerableSpec = true;
+					vehicleType.hasDrivableSpec = true;
 					numInstallationsVehicles = numInstallationsVehicles + 1;
 					break;
 				end;
@@ -30,37 +28,48 @@ end;
 -- if there are any vehicles loaded *after* Courseplay, install the spec into them
 local postRegister = function(typeName, className, filename, specializationNames, customEnvironment)
 	local vehicleType = VehicleTypeUtil.vehicleTypes[typeName];
-	if vehicleType and vehicleType.specializations and not vehicleType.hasCourseplaySpec and Utils.hasListElement(specializationNames, 'steerable') and not courseplay.nonSupportedVehicleTypeNames[typeName]then
+	if vehicleType and vehicleType.specializations and not vehicleType.hasCourseplaySpec and Utils.hasListElement(specializationNames, 'drivable') then
+		-- print(('\tadding Courseplay to %q'):format(typeName));
 		table.insert(vehicleType.specializations, courseplaySpec);
 		vehicleType.hasCourseplaySpec = true;
-		vehicleType.hasSteerableSpec = true;
+		vehicleType.hasDrivableSpec = true;
 		numInstallationsVehicles = numInstallationsVehicles + 1;
 	end;
 end;
 VehicleTypeUtil.registerVehicleType = Utils.appendedFunction(VehicleTypeUtil.registerVehicleType, postRegister);
 
-function courseplay:attachableLoad(xmlFile)
+function courseplay:attachablePostLoad(xmlFile)
 	if self.cp == nil then self.cp = {}; end;
 
 	--SET SPECIALIZATION VARIABLE
 	courseplay:setNameVariable(self);
 	courseplay:setCustomSpecVariables(self);
 
+	if courseplay.liquidManureOverloaders == nil then
+		courseplay.liquidManureOverloaders ={}
+	end
+	if self.cp.isLiquidManureOverloader then
+		courseplay.liquidManureOverloaders[self.rootNode] = self
+	end
+	
 
 	--SEARCH AND SET OBJECT'S self.name IF NOT EXISTING
 	if self.name == nil then
 		self.name = courseplay:getObjectName(self, xmlFile);
 	end;
 end;
-Attachable.load = Utils.appendedFunction(Attachable.load, courseplay.attachableLoad);
+Attachable.postLoad = Utils.appendedFunction(Attachable.postLoad, courseplay.attachablePostLoad);
 
 function courseplay:attachableDelete()
 	if self.cp ~= nil then
+		if self.cp.isLiquidManureOverloader then
+			courseplay.liquidManureOverloaders[self.rootNode] = nil
+		end
 	end;
 end;
 Attachable.delete = Utils.prependedFunction(Attachable.delete, courseplay.attachableDelete);
 
-function courseplay.vehicleLoadFinished(self)
+function courseplay.vehiclePostLoadFinished(self)
 	if self.cp == nil then self.cp = {}; end;
 
 	-- XML FILE NAME VARIABLE
@@ -68,11 +77,21 @@ function courseplay.vehicleLoadFinished(self)
 		self.cp.xmlFileName = courseplay.utils:getFileNameFromPath(self.configFileName);
 	end;
 
-	-- make sure every vehicle has the CP driving API functions
+	-- make sure every vehicle has the CP API functions
 	self.getIsCourseplayDriving = courseplay.getIsCourseplayDriving;
 	self.setIsCourseplayDriving = courseplay.setIsCourseplayDriving;
+	self.setCpVar = courseplay.setCpVar;
+	
+	-- combines table
+	if courseplay.combines == nil then
+		courseplay.combines = {};
+	end;
+
+	if self.cp.isCombine or self.cp.isChopper or self.cp.isHarvesterSteerable or self.cp.isSugarBeetLoader or courseplay:isAttachedCombine(self) then
+		courseplay.combines[self.rootNode] = self;
+	end;
 end;
-Vehicle.loadFinished = Utils.prependedFunction(Vehicle.loadFinished, courseplay.vehicleLoadFinished);
+Vehicle.loadFinished = Utils.appendedFunction(Vehicle.loadFinished, courseplay.vehiclePostLoadFinished);
 -- NOTE: using loadFinished() instead of load() so any other mod that overwrites Vehicle.load() doesn't interfere
 
 function courseplay:vehicleDelete()
@@ -80,12 +99,16 @@ function courseplay:vehicleDelete()
 		-- Remove created nodes
 		if self.cp.notesToDelete and #self.cp.notesToDelete > 0 then
 			for _, nodeId in ipairs(self.cp.notesToDelete) do
-				if nodeId and nodeId ~= 0 and getName(nodeId) ~= nil then
+				if nodeId and nodeId ~= 0 then
 					delete(nodeId);
 				end;
 			end;
+			self.cp.notesToDelete = nil;
 		end;
 
+		if courseplay.combines[self.rootNode] then
+			courseplay.combines[self.rootNode] = nil;
+		end;
 	end;
 end;
 Vehicle.delete = Utils.prependedFunction(Vehicle.delete, courseplay.vehicleDelete);
@@ -121,39 +144,6 @@ function courseplay:foldableLoad(xmlFile)
 	self.cp.foldingPartsStartMoveDirection = Utils.getNoNil(startMoveDir, 0);
 end;
 Foldable.load = Utils.appendedFunction(Foldable.load, courseplay.foldableLoad);
-
---------------------------------------------------
--- Adding easy access to MultiSiloTrigger
---------------------------------------------------
-local MultiSiloTrigger_TriggerCallback = function(triggerId, otherActorId, onEnter, onLeave, onStay, otherShapeId, trailer)
-	local trailer = g_currentMission.objectToTrailer[trailer];
-	if trailer ~= nil and trailer:allowFillType(triggerId.selectedFillType, false) and trailer.getAllowFillFromAir ~= nil and trailer:getAllowFillFromAir() then
-		-- Make sure cp table is pressent in the trailer.
-		if not trailer.cp then
-			trailer.cp = {};
-		end;
-
-		if onEnter then
-			-- Add the current MultiSiloTrigger to the cp table, for easier access.
-			if not trailer.cp.currentMultiSiloTrigger then
-				trailer.cp.currentMultiSiloTrigger = triggerId;
-				courseplay:debug(('%s: MultiSiloTrigger Added! (onEnter)'):format(nameNum(trailer)), 2);
-
-			-- Remove the current MultiSiloTrigger here, even that it should be done in onLeave, but onLeave is never fired. (Possible a bug from Giants)
-			elseif triggerId.fill == 0 and trailer.cp.currentMultiSiloTrigger ~= nil then
-				trailer.cp.currentMultiSiloTrigger = nil;
-				courseplay:debug(('%s: MultiSiloTrigger Removed! (onEnter)'):format(nameNum(trailer)), 2);
-			end;
-		elseif onLeave then
-			-- Remove the current MultiSiloTrigger. (Is here in case Giants fixes the above bug))
-			if triggerId.fill == 0 and trailer.cp.currentMultiSiloTrigger ~= nil then
-				trailer.cp.currentMultiSiloTrigger = nil;
-				courseplay:debug(('%s: MultiSiloTrigger Removed! (onLeave)'):format(nameNum(trailer)), 2);
-			end;
-		end;
-	end;
-end;
-MultiSiloTrigger.triggerCallback = Utils.appendedFunction(MultiSiloTrigger.triggerCallback, MultiSiloTrigger_TriggerCallback);
 
 courseplay.locales = courseplay.utils.table.copy(g_i18n.texts, true);
 courseplay:register();

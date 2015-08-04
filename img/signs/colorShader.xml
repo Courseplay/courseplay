@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+	Simple rgb color shader for emissiveMap materials
+	by Jakob Tischler, 26 December 2014
+-->
+<CustomShader version="3">
+	<Parameters>
+		<Parameter name="diffuseColor" target="diffuseColor" type="float4" defaultValue="1 0.212 0.0 1.0" minValue="0.0 0.0 0.0 1.0" maxValue="1.0 1.0 1.0 1.0" />
+	</Parameters>
+	<LodLevel startDistance="0">
+		<CodeInjections>
+			<CodeInjection position="MATERIALINFO">
+<![CDATA[
+float4 diffuseColor;
+]]>
+			</CodeInjection>
+			<CodeInjection position="EMISSIVE_FS">
+<![CDATA[
+emissiveColor.rgb *= diffuseColor.rgb;
+]]>
+			</CodeInjection>
+		</CodeInjections>
+	</LodLevel>
+</CustomShader>

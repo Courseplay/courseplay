@@ -207,7 +207,8 @@ function courseplay:sideToDrive(vehicle, combine, distance, switchSide)
 	local sideWatchDirSize = Utils.getNoNil(combine.sideWatchDirSize, 3); -- TODO (Jakob): default AICombine value is 8
 	local selfSideWatchDirSize = Utils.getNoNil(vehicle.sideWatchDirSize, 3); -- TODO (Jakob): default AITractor value is 7
 
-	local threshWidth = 10 -- TODO (Jakob): make more accurate - calculate and set in variable in updateWorkTools()
+	local threshWidth = Utils.getNoNil(combine.cp.workWidth,10)  
+	courseplay:debug(string.format("%s:courseplay:sideToDrive: threshWidth: %.2f", nameNum(combine), threshWidth), 4);
 	local lWidthX = x - sideX * 0.5 * threshWidth + dirX * sideWatchDirOffset;
 	local lWidthZ = z - sideZ * 0.5 * threshWidth + dirZ * sideWatchDirOffset;
 	local lStartX = lWidthX - sideX * 0.7 * threshWidth;
@@ -261,7 +262,7 @@ function courseplay:sideToDrive(vehicle, combine, distance, switchSide)
 	elseif tractor:getIsCourseplayDriving() then
 		courseplay:debug(string.format("%s:courseplay:sideToDrive: is Courseplayer", nameNum(combine)), 4);
 		local ridgeMarker = 0;
-		local wayPoint = tractor.recordnumber;
+		local wayPoint = tractor.cp.waypointIndex;
 		if tractor.cp.turnStage > 0 then
    			switchSide = true;
   		end;
