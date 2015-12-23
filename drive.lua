@@ -7,7 +7,12 @@ function courseplay:drive(self, dt)
 	if not courseplay:getCanUseCpMode(self) then
 		return;
 	end;
-
+	
+	--keeping steering disabled
+	if self.steeringEnabled then
+		self.steeringEnabled = false;
+	end
+		
 	-- debug for workAreas
 	if courseplay.debugChannels[6] then
 		local tx1, ty1, tz1 = localToWorld(self.cp.DirectionNode,3,1,self.cp.aiFrontMarker)
