@@ -130,7 +130,7 @@
 		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 			 text="コース作成" />
 		<text name="COURSEPLAY_STARTING_CORNER" 						 text="開始角" />
 		<text name="COURSEPLAY_STARTING_DIRECTION" 						 text="開始方向" />
-		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT" 					 text="スタートポイントに戻ります" />
+		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT" 					 text="スタートポイントに戻る" />
 		<text name="COURSEPLAY_CORNER_1" 								 text="南-西" />
 		<text name="COURSEPLAY_CORNER_2" 								 text="北-西" />
 		<text name="COURSEPLAY_CORNER_3" 								 text="北-東" />
