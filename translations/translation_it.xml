@@ -34,7 +34,7 @@
 		<text name="COURSEPLAY_MINUTES" 								 text="%d min" />
 		<text name="COURSEPLAY_SECONDS" 								 text="%d sec" />
 		<text name="COURSEPLAY_COURSE_NAME" 							 text="Nome del percorso:" />
-		<text name="COURSEPLAY_FOLDER_NAME" 							 text="Nome della cartella:" />
+		<text name="COURSEPLAY_FOLDER_NAME" 							 text="Nome della directory:" />
 		<text name="COURSEPLAY_FILTER_COURSES" 							 text="Filtro percorsi:" />
 		<text name="COURSEPLAY_COURSES_FILTER_TITLE" 					 text="Percorsi: %q" />
 		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 				 text="ha raggiunto il punto di scarico." />
@@ -44,7 +44,7 @@
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 						 text=": attrezzo necessita di essere scaricato." />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 						 text=": attrezzo deve essere rifornito." />
 		<text name="COURSEPLAY_UNLOADING_BALES" 						 text="scaricando le balle." />
-		<text name="COURSEPLAY_IS_IN_TRAFFIC" 							 text="e' nel traffico." />
+		<text name="COURSEPLAY_IS_IN_TRAFFIC" 							 text="è nel traffico." />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 						 text="raggiunto trigger di scarico" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Carico: %d di %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Mostra punti di passaggio" />
@@ -79,7 +79,7 @@
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 			 text="Controlli della trebbia" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES" 				 text="Gestione percorsi" />
 		<text name="COURSEPLAY_PAGE_TITLE_CHOOSE_FOLDER" 				 text="Scegliere la cartella" />
-		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 					 text="Opzioni della modalita' combi" />
+		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 					 text="Opzioni della modalità combi" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES" 				 text="Gestione della trebbia" />
 		<text name="COURSEPLAY_PAGE_TITLE_SPEEDS" 						 text="Velocità limite" />
 		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 			 text="Parametri di guida" />
@@ -91,7 +91,7 @@
 		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 					 text="Guida accanto la trebbia" />
 		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 						 text="Vai alla trebbia" />
 		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 				 text="La trebbia mi dice di fermarmi" />
-		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	                 text="Aspettando che mia posizione di aspettare sia libera" /> 
+		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	                 text="Aspettando che la mia area di sosta sia libera" /> 
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 						 text="Girando in direzione %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 						 text="Guida a %d %d" />
 		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 					 text="Aspettando che il livello di riempimento sia raggiunto" />
@@ -107,8 +107,8 @@
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="rimorchio sbagliato per questa modalità" />
 		<text name="COURSEPLAY_WEATHER_WARNING" 						 text="è in attesa di un tempo migliore" />
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Distanza corsia" />
-		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="Utensile: distanza orizz." />
-		<text name="COURSEPLAY_TOOL_OFFSET_Z" 							 text="Utensile: distanza vert." />
+		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="Attrezzo: distanza orizz." />
+		<text name="COURSEPLAY_TOOL_OFFSET_Z" 							 text="Attrezzo: distanza vert." />
 		<text name="COURSEPLAY_FRONT" 									 text="anteriore" />
 		<text name="COURSEPLAY_BACK" 									 text="posteriore" />
 		<text name="COURSEPLAY_WORK_WIDTH" 								 text="Larghezza di lavoro" />
@@ -169,16 +169,16 @@
 		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE" 					 text="Cambio di corsia simmetrica" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_PRIORITY" 				 text="Priorità dell'autista" />
 		<text name="COURSEPLAY_FILLEVEL" 								 text="livello di riempimento" />
-		<text name="COURSEPLAY_PICKUP_JAMMED" 							 text=": pickup è intasato" />
+		<text name="COURSEPLAY_PICKUP_JAMMED" 							 text=": la lama è intasata" />
 		<text name="COURSEPLAY_BALER_NEEDS_NETS" 						 text=": rotopressa ha bisogno di nuovo rotolo di rete" />
 		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES" 				 text="Calcolo perimetro del campo corrente" />
 		<text name="COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER" 			 text="Perimetro del campo numero" />
 		<text name="COURSEPLAY_ADD_CUSTOM_FIELD_EDGE_PATH_TO_LIST" 		 text="Inserisci perimetro campo %d nella lista" />
 		<text name="COURSEPLAY_OVERWRITE_CUSTOM_FIELD_EDGE_PATH_IN_LIST" text="Sovrascrivi perimetro campo %d nella lista" />
 		<text name="COURSEPLAY_USER" 									 text="utente" />
-		<text name="COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED" 				 text="dev'essere riparato al piu' presto" />
+		<text name="COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED" 				 text="dev'essere riparato al più presto" />
 		<text name="COURSEPLAY_DAMAGE_MUST_BE_REPAIRED" 				 text="dev'essere riparato ora" />
-		<text name="COURSEPLAY_DAMAGE_IS_BEING_REPAIRED" 				 text="si sta riparato" />
+		<text name="COURSEPLAY_DAMAGE_IS_BEING_REPAIRED" 				 text="si sta riparando" />
 		<text name="COURSEPLAY_COVER_HANDLING" 							 text="Copertura" />
 		<text name="COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR" 			 text="Rimuovere assegnazione trebbia" />
 		<text name="COURSEPLAY_STOP_DURING_UNLOADING" 					 text="Fermarsi durante lo scarico" />
@@ -188,7 +188,7 @@
 		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 					 text="Il granaio non sa con cosa riempire" />
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 					 text="Il granaio sta caricando:" />
 		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="Il granaio è vuoto!" />
-		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Add split points" /> <!-- TODO: TRANSLATION! (during recording adds multiple points between last point and current position -->
+		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Aggiungi punti intermedi" /> <!-- TODO: TRANSLATION! (during recording adds multiple points between last point and current position -->
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 					 text="Utilizzo dei semi" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 				 text="Campo: %d (%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 			 text="Tipo di seme: %s" />
@@ -206,12 +206,12 @@
 		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: azione secondaria del mouse" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="mostra il cursore" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="nascondere il cursore" />
-		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Caricare/combinare corso in corso caricato" />
-		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Aggiungere corso alla fine" />
-		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Spostare a directory" /> <!-- folder/directory is directory in italiano -->
-		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Cancella corso/directory" />
-		<!-- TRANSLATION MISSING --><text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="Show/hide start and end points" />
-		<!-- TRANSLATION MISSING --><text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="Show/hide all points" />
-		<!-- TRANSLATION MISSING --><text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="Show/hide crossing points" />
+		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Caricare/combinare percorso in corso caricato" />
+		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Aggiungere percorso alla fine" />
+		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Spostare nella directory" /> 
+		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Cancella percorso/directory" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="Mostra/nascondi punti di partenza e arrivo" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="Mostra/nascondi tutti i punti" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="Mostra/nascondi i punti di incrocio" />
 	</texts>
 </l10n>
