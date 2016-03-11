@@ -590,7 +590,16 @@ function courseplay:updateAllTriggers()
 			end;
 		end;
 	end;
-
+	--HeapTipTrigger
+	if g_currentMission.heapTipTriggers ~= nil then
+		courseplay:debug('\tcheck HeapTipTriggers', 1);
+		for index,trigger in pairs(g_currentMission.heapTipTriggers)do
+			if trigger.triggerId ~= nil then
+				courseplay:cpAddTrigger(trigger.triggerId, trigger, 'tipTrigger');
+				courseplay:debug('\t\tadd HeapTipTrigger', 1);
+			end;		
+		end;	
+	end;
 	-- placeables objects
 	if g_currentMission.placeables ~= nil then
 		courseplay:debug('\tcheck placeables', 1);

@@ -712,8 +712,12 @@ end
 function courseplay:unload_tippers(vehicle, allowedToDrive)
 	local ctt = vehicle.cp.currentTipTrigger;
 	if ctt.getTipDistanceFromTrailer == nil then
-		courseplay:debug(nameNum(vehicle) .. ": getTipDistanceFromTrailer function doesn't exist for currentTipTrigger - unloading function aborted", 2);
-		return allowedToDrive;
+		if ctt.getTipInfoForTrailer == nil then
+			courseplay:debug(nameNum(vehicle) .. ": getTipDistanceFromTrailer function doesn't exist for currentTipTrigger - unloading function aborted", 2);
+			return allowedToDrive;
+		else
+			ctt.isHeapTipTrigger = true;
+		end
 	end;
 
 	local isBGA = ctt.bunkerSilo ~= nil and ctt.bunkerSilo.movingPlanes ~= nil and vehicle.cp.handleAsOneSilo ~= true;
@@ -726,7 +730,12 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 		if tipper.tipReferencePoints ~= nil then
 			local allowedToDriveBackup = allowedToDrive;
 			local fruitType = tipper.currentFillType
-			local distanceToTrigger, bestTipReferencePoint = ctt:getTipDistanceFromTrailer(tipper);
+			local distanceToTrigger, bestTipReferencePoint = 0,0
+			if ctt.isHeapTipTrigger then
+				_,distanceToTrigger,bestTipReferencePoint = ctt:getTipInfoForTrailer(tipper);
+			else
+				distanceToTrigger, bestTipReferencePoint = ctt:getTipDistanceFromTrailer(tipper);
+			end
 			local trailerInTipRange = g_currentMission:getIsTrailerInTipRange(tipper, ctt, bestTipReferencePoint);
 			courseplay:debug(('%s: distanceToTrigger=%s, bestTipReferencePoint=%s -> trailerInTipRange=%s'):format(nameNum(vehicle), tostring(distanceToTrigger), tostring(bestTipReferencePoint), tostring(trailerInTipRange)), 2);
 			local goForTipping = false;
