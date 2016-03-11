@@ -131,7 +131,8 @@ function courseplay:setNameVariable(workTool)
 
 	-- MODS
 	-- [1] MOD COMBINES
-
+	elseif workTool.cp.xmlFileName == 'RopaEuroTiger_V8_3_XL.xml' then
+		workTool.cp.isRopaEuroTiger = true;
 
 	-- ###########################################################
 
@@ -465,6 +466,12 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		end
 		
 		return true, allowedToDrive, forceSpeedLimit
+	elseif workTool.cp.isRopaEuroTiger then
+		if lower then
+			workTool:setSteeringMode(5)
+		else
+			workTool:setSteeringMode(4);
+		end
 	end;
 
 
