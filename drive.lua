@@ -7,7 +7,6 @@ function courseplay:drive(self, dt)
 	if not courseplay:getCanUseCpMode(self) then
 		return;
 	end;
-	
 	--keeping steering disabled
 	if self.steeringEnabled then
 		self.steeringEnabled = false;
@@ -901,7 +900,7 @@ function courseplay:regulateTrafficSpeed(vehicle,refSpeed,allowedToDrive)
 			--courseplay:debug(nameNum(vehicle)..": regulateTrafficSpeed(1230):	setting vehicle.cp.collidingVehicleId nil",3)
 		
 		else
-			if allowedToDrive and not (vehicle.cp.mode == 9 and collisionVehicle.allowFillFromAir) then
+			if allowedToDrive and not (vehicle.cp.mode == 9 and (collisionVehicle.allowFillFromAir or collisionVehicle.cp.mode9TrafficIgnoreVehicle)) then
 				if vehicle.cp.curSpeed - (collisionVehicle.lastSpeedReal*3600) > 15 or z1 < 3 then
 					vehicle.cp.TrafficBrake = true
 				else

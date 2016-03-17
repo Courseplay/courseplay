@@ -20,7 +20,7 @@ function courseplay:start(self)
 		return
 	end
 	courseplay:setEngineState(self, true);
-	--print(tableShow(self.attachedImplements[1].object,tableShow(self.attachedImplements[1].object.name,nil,nil,2)))
+	--print(tableShow(self.attachedImplements,"self.attachedImplements",nil,nil,4))
 	--local id = self.attachedImplements[1].object.unloadTrigger.triggerId
 	--courseplay:findInTables(g_currentMission ,"g_currentMission", id)
 
@@ -331,10 +331,14 @@ function courseplay:start(self)
 			driveControlInputEvent.sendEvent(self);
 		end;
 	end;
-
 	
+	--check Crab Steering mode for HolmerDLC
+	if self.cp.isHolmerDlcCrabSteeringPossible and self.crabSteering.stateTarget > 1  then
+		self.cp.hasCrabSteeringActive = true;
+	end
 
 	-- ok i am near the waypoint, let's go
+	self.cp.savedCheckSpeedLimit = self.checkSpeedLimit;
 	self.checkSpeedLimit = false
 	self.cp.runOnceStartCourse = true;
 	self:setIsCourseplayDriving(true);
@@ -529,7 +533,7 @@ function courseplay:stop(self)
 
 	-- resetting variables
 	self.cp.tempCollis = {}
-	self.checkSpeedLimit = true
+	self.checkSpeedLimit = self.cp.savedCheckSpeedLimit;
 	courseplay:resetTipTrigger(self);
 	self:setIsCourseplayDriving(false);
 	self:setCpVar('canDrive',true,courseplay.isClient)
@@ -553,7 +557,7 @@ function courseplay:stop(self)
 	self.cp.prevFillLevelPct = nil;
 	self.cp.isInRepairTrigger = nil;
 	self.cp.curMapWeightStation = nil;
-
+	self.cp.hasCrabSteeringActive = nil;
 	courseplay:setSlippingStage(self, 0);
 	courseplay:resetCustomTimer(self, 'slippingStage1');
 	courseplay:resetCustomTimer(self, 'slippingStage2');

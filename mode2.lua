@@ -488,7 +488,7 @@ function courseplay:unload_combine(vehicle, dt)
 			local nodeSet = false
 			if workWidth < offset then
 				local diff = max (1.5,workWidth/2)
-				if  combine.cp.isHarvesterAttachable then
+				if  combine.cp.isHarvesterAttachable or combine.cp.hasCrabSteeringActive then
 					diff = 5
 				end
 				fruitSide = courseplay:sideToDrive(vehicle, combine, 0);

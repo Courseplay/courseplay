@@ -87,6 +87,12 @@ function courseplay:setNameVariable(workTool)
 			workTool.cp.isHorschTitan34UW = true;
 			workTool.cp.foldPipeAtWaitPoint = true;
 		end;
+	elseif workTool.cp.xmlFileName == 'holmerSugarBeetTank.xml' then
+			workTool.cp.isAugerWagon = true;
+			workTool.cp.isHolmerSugarbeetTank = true;
+	elseif workTool.cp.xmlFileName == 'holmerGrainTank.xml' then
+			workTool.cp.isAugerWagon = true;
+			workTool.cp.isHolmerGrainTank = true;			
 	elseif workTool.cp.hasSpecializationOverloader then
 		workTool.cp.isAugerWagon = true;
 		workTool.cp.hasSpecializationOverloaderV2 = workTool.overloaderVersion ~= nil and workTool.overloaderVersion >= 2;
@@ -137,8 +143,10 @@ function courseplay:setNameVariable(workTool)
 	-- ###########################################################
 
 	-- [2] MOD TRACTORS
-
-
+	elseif workTool.cp.xmlFileName == 'holmerTerraVariant.xml' then
+		workTool.cp.isHolmerTerraVariant = true;
+		workTool.cp.isHolmerDlcCrabSteeringPossible = true;
+		
 	-- ###########################################################
 
 	-- [3] MOD TRAILERS
@@ -147,7 +155,24 @@ function courseplay:setNameVariable(workTool)
 	-- ###########################################################
 
 	-- [4] MOD MANURE / LIQUID MANURE
-
+	elseif workTool.cp.xmlFileName == 'zunhammerTV.xml' then
+		workTool.cp.isZunhammerTV = true;
+		workTool.cp.isLiquidManureOverloader = true;
+		workTool.cp.isHolmerDlcCrabSteeringPossible = true;
+		if workTool.attacherVehicle ~= nil then
+			workTool.cp.isHolmerDlcCrabSteeringPossible = true;
+		end
+	elseif workTool.cp.xmlFileName == 'zunhammerVibro.xml' then
+		workTool.cp.isZunhammerVibro = true;
+		
+	elseif workTool.cp.xmlFileName == 'bergmannTSWA19.xml' then
+		workTool.cp.ISBergmannTSWA19 = true
+		workTool.cp.mode9TrafficIgnoreVehicle = true
+		workTool.cp.isHolmerDlcCrabSteeringPossible = true;
+		if workTool.attacherVehicle ~= nil then
+			workTool.attacherVehicle.cp.mode9TrafficIgnoreVehicle = true
+			workTool.cp.isHolmerDlcCrabSteeringPossible = true;
+		end
 
 	-- ###########################################################
 
@@ -208,6 +233,15 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.isHarvesterSteerable = true;
 		workTool.cp.isGrimmeTectron415 = true;
 		workTool.cp.directionNodeZOffset = 2.3;
+
+	elseif workTool.cp.xmlFileName == 'holmerTerraDosT4_40.xml' then
+		workTool.cp.isHarvesterSteerable = true;
+		workTool.cp.isHolmerTerraDosT4_40 = true;
+		workTool.cp.isHolmerDlcCrabSteeringPossible = true;
+	
+	elseif workTool.cp.xmlFileName == 'holmerHR9.xml' then
+		workTool.cp.isHolmerHR9 = true;
+		workTool.cp.isHolmerDlcCrabSteeringPossible = true;
 
 	-- Harvesters (attachable) [Giants]
 	elseif workTool.cp.xmlFileName == 'grimmeRootster604.xml' then
@@ -472,9 +506,28 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		else
 			workTool:setSteeringMode(4);
 		end
+	
+	elseif workTool.cp.isHolmerDlcCrabSteeringPossible then
+		local tractor = workTool.attacherVehicle;
+		if workTool.cp.isHolmerTerraDosT4_40 then
+			tractor = workTool;
+		end
+		if tractor.cp.hasCrabSteeringActive then
+			local state = tractor.crabSteering.stateTarget;
+			if implementsDown then
+				if ridgeMarker == 1 and state ~= 3 then
+					tractor:setCrabSteering(3);
+				elseif ridgeMarker ==2 and state ~= 2 then
+
+				tractor:setCrabSteering(2);
+				end				
+			elseif workTool.cp.isHolmerHR9 and state ~= 1 and unfold then 
+				tractor:setCrabSteering(1);
+			elseif not workTool.cp.isHolmerHR9 and not workTool.cp.isHolmerTerraDosT4_40 and state ~= 0 and unfold then 
+				tractor:setCrabSteering(0);
+			end			
+		end	
 	end;
-
-
 
 	return false, allowedToDrive,forceSpeedLimit;
 end
@@ -548,6 +601,18 @@ function courseplay:askForSpecialSettings(self, object)
 		self.cp.noStopOnEdge = true
 		self.cp.noStopOnTurn = true
 		automaticToolOffsetX = -2.5;
+	elseif object.cp.isZunhammerVibro  then
+		local tractor = object.attacherVehicle; 
+		if tractor.cp.noStopOnEdge then
+			tractor.cp.noStopOnEdge = false;
+			tractor.cp.noStopOnTurn = false;
+		end
+	elseif self.cp.isHolmerTerraDosT4_40 then
+		self.cp.noStopOnTurn = true;
+		self.cp.noStopOnEdge = true;
+		self.cp.backMarkerOffset = 4.5;
+		self.isStrawEnabled = false;
+		courseplay:debug(string.format("%s backMarkerOffset set to 4.5",self.name),6)	
 	end;
 
 	if self.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT then
