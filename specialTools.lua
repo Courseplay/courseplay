@@ -460,8 +460,8 @@ function courseplay:isSpecialCombine(workTool, specialType, fileNames)
 	return false;
 end
 
-
 function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload,ridgeMarker,forceSpeedLimit)
+	local forcedStop = not unfold and not lower and not turnOn and not allowedToDriveacover and not unload and not ridgeMarker and forceSpeedLimit ==0;   
 	local implementsDown = lower and turnOn
 	if workTool.PTOId then
 		workTool:setPTO(false)
@@ -522,11 +522,11 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 
 				tractor:setCrabSteering(2);
 				end				
-			elseif workTool.cp.isHolmerHR9 and state ~= 1 and unfold then 
+			elseif workTool.cp.isHolmerHR9 and state ~= 1 and not forcedStop then 
 				tractor:setCrabSteering(1);
-			elseif not workTool.cp.isHolmerHR9 and not workTool.cp.isHolmerTerraDosT4_40 and state ~= 0 and unfold then 
+			elseif not workTool.cp.isHolmerHR9 and not workTool.cp.isHolmerTerraDosT4_40 and state ~= 0 and not forcedStop then 
 				tractor:setCrabSteering(0);
-			end			
+			end
 		end	
 	end;
 

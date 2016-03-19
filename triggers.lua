@@ -395,6 +395,13 @@ function courseplay:findSpecialTriggerCallback(transformId, x, y, z, distance)
 	end;
 
 	local name = tostring(getName(transformId));
+	local parent = getParent(transformId);
+	for _,implement in pairs(self.attachedImplements) do
+		if implement.object ~= nil and implement.object.rootNode == parent then
+			courseplay:debug(('%s: trigger %s is from my own implement'):format(nameNum(self), tostring(transformId)), 19);
+			return true
+		end
+	end	
 
 	-- OTHER TRIGGERS
 	if courseplay.triggers.allNonUpdateables[transformId] then
