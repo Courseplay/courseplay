@@ -238,7 +238,6 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.isHarvesterSteerable = true;
 		workTool.cp.isHolmerTerraDosT4_40 = true;
 		workTool.cp.isHolmerDlcCrabSteeringPossible = true;
-		workTool.cp.pipeSide = 1;
 	
 	elseif workTool.cp.xmlFileName == 'holmerHR9.xml' then
 		workTool.cp.isHolmerHR9 = true;
