@@ -406,7 +406,7 @@ function courseplay:unload_combine(vehicle, dt)
 
 	-- STATE 4 (drive to rear of combine)
 	elseif vehicle.cp.modeState == 4 then
-		if combine.cp.offset == nil or vehicle.cp.combineOffset == 0 then
+		if combine.cp.offset == nil or vehicle.cp.combineOffset == 0 or combine.cp.isHolmerDlcCrabSteeringPossible then
 			--print("offset not saved - calculate")
 			courseplay:calculateCombineOffset(vehicle, combine);
 		elseif not combine.cp.isChopper and not combine.cp.isSugarBeetLoader and vehicle.cp.combineOffsetAutoMode and vehicle.cp.combineOffset ~= combine.cp.offset then

@@ -226,7 +226,7 @@ function courseplay:turn(self, dt) --!!!
 		local terrainHeight = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode,targetX,0,targetZ)
 		local dist = courseplay:distance3D(targetX,terrainHeight,targetZ, x,y,z)
 		--local dist = courseplay:distance(targetX,targetZ,x,z)
-		print(string.format("distance: %f; backmarker %f; y:%.3f vs Height:%.3f",dist,backMarker,y,terrainHeight))
+		-- print(string.format("distance: %f; backmarker %f; y:%.3f vs Height:%.3f",dist,backMarker,y,terrainHeight))
 		if backMarker <= 0 then
 			if  dist < 0.5 or self.cp.lastDistanceToTurnPoint < dist then
 				if not self.cp.noStopOnTurn then
