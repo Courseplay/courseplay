@@ -146,7 +146,7 @@ function courseplay:setNameVariable(workTool)
 	elseif workTool.cp.xmlFileName == 'holmerTerraVariant.xml' then
 		workTool.cp.isHolmerTerraVariant = true;
 		workTool.cp.isHolmerDlcCrabSteeringPossible = true;
-		
+		workTool.cp.ridgeMarkerIndex = 1 ;
 	-- ###########################################################
 
 	-- [3] MOD TRAILERS
@@ -239,7 +239,8 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.isHolmerTerraDosT4_40 = true;
 		workTool.cp.isHolmerDlcCrabSteeringPossible = true;
 		workTool.cp.pipeSide = 1;
-	
+		workTool.cp.ridgeMarkerIndex = 6;
+		
 	elseif workTool.cp.xmlFileName == 'holmerHR9.xml' then
 		workTool.cp.isHolmerHR9 = true;
 		workTool.cp.isHolmerDlcCrabSteeringPossible = true;
@@ -508,23 +509,25 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 			workTool:setSteeringMode(4);
 		end
 	
-	elseif workTool.cp.isHolmerDlcCrabSteeringPossible then
+	elseif workTool.cp.isHolmerDlcCrabSteeringPossible or workTool.attacherVehicle.cp.isHolmerDlcCrabSteeringPossible then
 		local tractor = workTool.attacherVehicle;
-		if workTool.cp.isHolmerTerraDosT4_40 then
+		if workTool.cp.isHolmerTerraDosT4_40 or workTool.cp.isHolmerTerraVariant then
 			tractor = workTool;
 		end
 		if tractor.cp.hasCrabSteeringActive then
+			local nextRidgeMarker = tractor.Waypoints[math.min(tractor.cp.waypointIndex+ tractor.cp.ridgeMarkerIndex ,tractor.cp.numWaypoints)].ridgeMarker
+			local onField = nextRidgeMarker == ridgeMarker;
 			local state = tractor.crabSteering.stateTarget;
-			if implementsDown then
+			if implementsDown and onField then
 				if ridgeMarker == 1 and state ~= 3 then
 					tractor:setCrabSteering(3);
 				elseif ridgeMarker ==2 and state ~= 2 then
 
 				tractor:setCrabSteering(2);
 				end				
-			elseif workTool.cp.isHolmerHR9 and state ~= 1 and not forcedStop then 
+			elseif tractor.cp.isHolmerTerraDosT4_40 and state ~= 1 and not forcedStop then 
 				tractor:setCrabSteering(1);
-			elseif not workTool.cp.isHolmerHR9 and not workTool.cp.isHolmerTerraDosT4_40 and state ~= 0 and not forcedStop then 
+			elseif tractor.cp.isHolmerTerraVariant and state ~= 0 and not forcedStop then 
 				tractor:setCrabSteering(0);
 			end
 		end	
