@@ -509,7 +509,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 			workTool:setSteeringMode(4);
 		end
 	
-	elseif workTool.cp.isHolmerDlcCrabSteeringPossible or workTool.attacherVehicle.cp.isHolmerDlcCrabSteeringPossible then
+	elseif workTool.cp.isHolmerDlcCrabSteeringPossible or (workTool.attacherVehicle ~= nil and workTool.attacherVehicle.cp.isHolmerDlcCrabSteeringPossible) then
 		local tractor = workTool.attacherVehicle;
 		if workTool.cp.isHolmerTerraDosT4_40 or workTool.cp.isHolmerTerraVariant then
 			tractor = workTool;
