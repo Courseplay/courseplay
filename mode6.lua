@@ -57,10 +57,10 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 			tool = workTool
 			workTool.cp.turnStage = vehicle.cp.turnStage
 		end
-
+		local ridgeMarker = vehicle.Waypoints[vehicle.cp.waypointIndex].ridgeMarker
+		local nextRidgeMarker = vehicle.Waypoints[min(vehicle.cp.waypointIndex+4,vehicle.cp.numWaypoints)].ridgeMarker
+		
 		if workTool.haeckseldolly then
-			local ridgeMarker = vehicle.Waypoints[vehicle.cp.waypointIndex].ridgeMarker
-			local nextRidgeMarker = vehicle.Waypoints[min(vehicle.cp.waypointIndex+4,vehicle.cp.numWaypoints)].ridgeMarker
 			if (ridgeMarker == 2 or (nextRidgeMarker == 2 and vehicle.cp.turnStage>1)) and workTool.bunkerrechts ~= false then
 				workTool.bunkerrechts = false
 			elseif (ridgeMarker == 1 or (nextRidgeMarker == 1 and vehicle.cp.turnStage>1)) and workTool.bunkerrechts ~= true then
@@ -425,7 +425,8 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 				pipeState = tool:getOverloadingTrailerInRangePipeState();
 			end;
 			if workArea and not tool.isAIThreshing and vehicle.cp.abortWork == nil and vehicle.cp.turnStage == 0 then
-				specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,true,true,true,allowedToDrive,nil,nil)
+											--courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload,ridgeMarker,forceSpeedLimit)
+				specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,true,true,true,allowedToDrive,nil,nil,ridgeMarker)
 				if not specialTool then
 					local weatherStop = not tool:getIsThreshingAllowed(true)
 

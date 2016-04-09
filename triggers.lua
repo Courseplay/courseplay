@@ -357,7 +357,8 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 
 					if fillTypeIsValid then
 						self.cp.currentTipTrigger = trigger;
-						self.cp.currentTipTrigger.cpActualLength = courseplay:distanceToObject(self, trigger)*2 
+						--self.cp.currentTipTrigger.cpActualLength = courseplay:distanceToObject(self, trigger)*2
+						self.cp.currentTipTrigger.cpActualLength = courseplay:nodeToNodeDistance(self.cp.DirectionNode or self.rootNode, trigger.rootNode)*2
 						courseplay:debug(('%s: self.cp.currentTipTrigger=%s , cpActualLength=%s'):format(nameNum(self), tostring(triggerId),tostring(self.cp.currentTipTrigger.cpActualLength)), 1);
 						return false
 					end;
@@ -394,6 +395,13 @@ function courseplay:findSpecialTriggerCallback(transformId, x, y, z, distance)
 	end;
 
 	local name = tostring(getName(transformId));
+	local parent = getParent(transformId);
+	for _,implement in pairs(self.attachedImplements) do
+		if implement.object ~= nil and implement.object.rootNode == parent then
+			courseplay:debug(('%s: trigger %s is from my own implement'):format(nameNum(self), tostring(transformId)), 19);
+			return true
+		end
+	end	
 
 	-- OTHER TRIGGERS
 	if courseplay.triggers.allNonUpdateables[transformId] then
@@ -589,7 +597,16 @@ function courseplay:updateAllTriggers()
 			end;
 		end;
 	end;
-
+	--HeapTipTrigger
+	if g_currentMission.heapTipTriggers ~= nil then
+		courseplay:debug('\tcheck HeapTipTriggers', 1);
+		for index,trigger in pairs(g_currentMission.heapTipTriggers)do
+			if trigger.triggerId ~= nil then
+				courseplay:cpAddTrigger(trigger.triggerId, trigger, 'tipTrigger');
+				courseplay:debug('\t\tadd HeapTipTrigger', 1);
+			end;		
+		end;	
+	end;
 	-- placeables objects
 	if g_currentMission.placeables ~= nil then
 		courseplay:debug('\tcheck placeables', 1);
