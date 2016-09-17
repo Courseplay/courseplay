@@ -3,8 +3,8 @@
 	<texts>
 		<text name="COURSEPLAY_RECORDING_START" 						 text="Útvonal rögzítés indítása" />
 		<text name="COURSEPLAY_DRIVER" 									 text="Útvonal" />
-		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 					 text="Vezető indítása" />
-		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 					 text="Vezető leállítása" />
+		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 					 text="Szállító elindítása" />
+		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 					 text="Szállító megállítása" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 						 text="Állj az utlsó pontnál, következő triggernél" />
 		<text name="COURSEPLAY_UNLOADING_SIDE" 							 text="Ürítés oldala:" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="automatikus" />
@@ -76,10 +76,6 @@
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 						 text="beállított sebesség" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 				 text="automaikus (az útvonalhoz, max %s)" />
 		<text name="COURSEPLAY_NO_COURSE_LOADED" 						 text="Útvonal: Útvonal nincs betöltve" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_1" 						 text="Főbb pontok" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_2" 						 text="Csak kezdő- és végpont" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_3" 						 text="Minden pont" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_4" 						 text="Nem mutat" />
 		<text name="COURSEPLAY_WARNING_LIGHTS" 							 text="Megkülönböztető jelzés:" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 					 text="nem működik" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 					 text="sárga villogó (az utakon)" />
@@ -105,7 +101,7 @@
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 						 text="Irány %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 						 text="Az %d %d útvonalponthoz megy" />
 		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 					 text="Vár, amíg kombájn ürít" />
-		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 					 text="Nincs hívó kombájn" />
+		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 					 text="Hívó kombájnra vár" />
 		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 				 text="Vár, amíg kombájn megfordul!" />
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 					 text="Vár az új útvonalpontra" />
 		<text name="COURSEPLAY_FOLLOWING_TRACTOR" 						 text="Traktor követése" />
@@ -214,6 +210,7 @@
 		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="Fordulás vége" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_START" 				 text="Tolatás indítása" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="Tolatás leállítása" />
+		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Osztási pont hozzáadása" />
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Térképikonok: kijelzőszöveg" />
 		<text name="COURSEPLAY_ALWAYS_USE_4WD" 							 text="Mindig összkerékhajtás" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="Szeretnéd, hogy a mezők adatait automatikusan beolvassa?" />
@@ -241,5 +238,8 @@
 		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Útvonal hozzáadása a végéhez" />
 		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Áthelyezés mappába" />
 		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Útvonal/mappa törlése" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="Kezdő-, és végpont megjelenítése/elrejtése" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="Minden pont megjelenítése/elrejtése" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="Elágazási pontok megjelenítése/elrejtése" />
 	</texts>
 </l10n>

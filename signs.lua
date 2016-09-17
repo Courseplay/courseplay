@@ -271,18 +271,26 @@ function courseplay.signs:setSignsVisibility(vehicle, forceHide)
 		return;
 	end;
 
-	local mode = vehicle.cp.visualWaypointsMode;
-	-- waypointModes: 1 = Start and end, 2 = Start and end [without crossing], 3 = all own waypoints [with crossing], 4 = none
 	local numSigns = #vehicle.cp.signs.current;
+	local vis, isStartEndPoint;
 	for k,signData in pairs(vehicle.cp.signs.current) do
-		local vis = false;
+		vis = false;
+		isStartEndPoint = k <= 2 or k >= (numSigns - 2);
 
-		if mode == 1 or mode == 2 then
-			vis = k <= 3 or k >= (numSigns - 2) or signData.type == 'wait';
-		elseif mode == 3 then
+		if signData.type == 'wait' and (vehicle.cp.visualWaypointsStartEnd or vehicle.cp.visualWaypointsAll) then
 			vis = true;
-		elseif mode == 4 then
-			vis = false;
+			local line = getChildAt(signData.sign, 0);
+			if vehicle.cp.visualWaypointsStartEnd then
+				setVisibility(line, isStartEndPoint);
+			else
+				setVisibility(line, true);
+			end;
+		else
+			if vehicle.cp.visualWaypointsAll then
+				vis = true;
+			elseif vehicle.cp.visualWaypointsStartEnd and isStartEndPoint then
+				vis = true;
+			end;
 		end;
 
 		if vehicle.cp.isRecording then
@@ -292,19 +300,10 @@ function courseplay.signs:setSignsVisibility(vehicle, forceHide)
 		end;
 
 		setVisibility(signData.sign, vis);
-
-		if signData.type == 'wait' then
-			local line = getChildAt(signData.sign, 0);
-			if mode == 1 or mode == 2 then
-				setVisibility(line, k <= 2 or k >= (numSigns - 2));
-			elseif vis then
-				setVisibility(line, true);
-			end;
-		end;
 	end;
 
 	for k,signData in pairs(vehicle.cp.signs.crossing) do
-		local vis = mode == 1 or mode == 3;
+		local vis = vehicle.cp.visualWaypointsCrossing;
 		if forceHide or not vehicle.isEntered then
 			vis = false;
 		end;

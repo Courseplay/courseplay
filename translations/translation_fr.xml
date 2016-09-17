@@ -80,10 +80,6 @@
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 					 text="vitesse maximale" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 				 text="automatique (max. %s)" />
 		<text name="COURSEPLAY_NO_COURSE_LOADED" 					 text="course: pas de course chargée" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_1" 					 text="le début et la fin" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_2" 					 text="sans les croisements" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_3" 					 text="montrer les tous" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_4" 					 text="aucun" />
 		<text name="COURSEPLAY_WARNING_LIGHTS" 						 text="Avertisseur lumineux:" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 					 text="jamais allumés" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 					 text="gyrophares (sur la route)" />
@@ -110,7 +106,7 @@
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 					 text="Conduit vers le points %d %d" />
 		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 					 text="Attend que le niveau soit atteint" />
 		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 					 text="Pas de Batteuse en vue" />
-		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 				 text="Attend que la batteuse ait finis de tourner" />
+		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 				 text="Attend que la batteuse finisse de tourner" />
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 					 text="Attend pour le nouveau point" />
 		<text name="COURSEPLAY_FOLLOWING_TRACTOR" 					 text="Suit le tracteur" />
 		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 					 text="doit bientôt faire le plein." />
@@ -218,6 +214,7 @@
 		<text name="COURSEPLAY_RECORDING_TURN_END" 					 text="Terminer la manœuvre de demi-tour" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_START" 				 text="Marche arrière" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="Marche avant" />
+		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Ajouter des points intermédiaires" />
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Icones sur la carte: afficher le texte" />
 		<text name="COURSEPLAY_ALWAYS_USE_4WD" 						 text="Toujours utiliser le 4x4" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 					 text="Voulez-vous que vos champs soient scannés automatiquement ?" />
@@ -226,6 +223,10 @@
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 				 text="Champs: %d (%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 				 text="Type de semence: %s" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE" 				 text="Utilisation: %s %s (%s)" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="Montrer/cacher les points du début et de la fin" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL"					 text="Montrer/cacher tous les points" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="Montrer/cacher les points de croisements" />
+
 		<text name="COURSEPLAY_HUD_OPEN" 						 text="Montrer le Courseplay HUD" />
 		<text name="COURSEPLAY_HUD_CLOSE" 						 text="Cacher le Courseplay HUD" />
 		<text name="COURSEPLAY_FUNCTIONS" 						 text="Fonctions de Courseplay" />

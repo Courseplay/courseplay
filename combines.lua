@@ -106,7 +106,7 @@ function courseplay:registerAtCombine(callerVehicle, combine)
 			else
 				-- force unload when combine is full
 				-- is the pipe on the correct side?
-				if combine.turnStage == 1 or combine.turnStage == 2 or combine.cp.turnStage ~= 0 then
+				if (combine.turnStage ~= nil and combine.turnStage > 0) or combine.cp.turnStage ~= 0 then
 					courseplay:debug(nameNum(callerVehicle)..": combine is turning -> don't register tractor",4)
 					return false
 				end
@@ -416,7 +416,22 @@ end;
 
 function courseplay:getSpecialCombineOffset(combine)
 	if combine.cp == nil then return nil; end;
-
+	if combine.cp.isChopper and combine.cp.workTools ~= nil then
+		for _,dolly in pairs(combine.cp.workTools) do
+			if dolly.haeckseldolly then
+				combine.haeckseldolly = true
+				if dolly.bunkerrechts then
+					return 6;
+				else
+					return -6;
+				end
+			end
+		end
+		if combine.haeckseldolly then
+			combine.haeckseldolly = nil
+		end
+	end
+	
 	if combine.cp.isCaseIH7130 then
 		return  8.0;
 	elseif combine.cp.isCaseIH9230Crawler then
@@ -429,12 +444,22 @@ function courseplay:getSpecialCombineOffset(combine)
 		return 4.8;
 	elseif combine.cp.isGrimmeRootster604 then
 		return -4.3;
+	elseif combine.cp.isGrimmeSE260 then
+		return 4.2;
 	elseif combine.cp.isPoettingerMex5 then
 		combine.cp.offset = 5.9;
 		return 5.9;
 	elseif combine.cp.isKroneBigX1100 then
 		combine.cp.offset = 8.5;
 		return 8.5;
+	elseif combine.cp.isHolmerTerraDosT4_40 then
+		if combine.crabSteering.stateTarget == 2 then	
+			combine.cp.offset = 6.5;
+			return 6.5;
+		elseif combine.crabSteering.stateTarget < 2 then
+			combine.cp.offset = 4.6;
+			return 4.6;
+		end	
 	elseif combine.cp.isSugarBeetLoader then
 		local utwX,utwY,utwZ = getWorldTranslation(combine.unloadingTrigger.node);
 		local combineToUtwX,_,_ = worldToLocal(combine.cp.DirectionNode or combine.rootNode, utwX,utwY,utwZ);

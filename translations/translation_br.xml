@@ -66,7 +66,7 @@
 		<text name="COURSEPLAY_COMBINE_SEARCH_MODE" 					 text="Procurar ceifadeira:" />
 		<text name="COURSEPLAY_CURRENT" 								 text="Atual:" />
 		<text name="COURSEPLAY_AUTOMATIC_SEARCH" 						 text="busca automática" />
-		<text name="COURSEPLAY_MANUAL_SEARCH" 							 text="selecionar automaticamente" />
+		<text name="COURSEPLAY_MANUAL_SEARCH" 							 text="selecionar manualmente" />
 		<text name="COURSEPLAY_SEARCH_COMBINE_ON_FIELD" 				 text="Procurar ceifadeira no campo %s" />
 		<text name="COURSEPLAY_COPY_COURSE" 							 text="Copiar rota:" />
 		<text name="COURSEPLAY_VEHICLE" 								 text="Veículo" />
@@ -80,10 +80,6 @@
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 						 text="velocidade máxima" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 				 text="automática (da gravação, max. %s)" />
 		<text name="COURSEPLAY_NO_COURSE_LOADED" 						 text="nenhuma rota carregada" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_1" 						 text="inicio e fim" />
-	    <text name="COURSEPLAY_WAYPOINT_MODE_2" 						 text="sem pontos cruzados" />	
-		<text name="COURSEPLAY_WAYPOINT_MODE_3" 						 text="mostrar todos" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_4" 						 text="nenhum" />
 		<text name="COURSEPLAY_WARNING_LIGHTS" 							 text="Luzes de aviso:" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 					 text="desligadas" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 					 text="luzes rotativas (na estrada)" />
@@ -218,6 +214,7 @@
 		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="Fim da manobra de giro" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_START" 				 text="Marcha ré" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="Parar marcha ré" />
+		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Adicionar pontos de divisão" /> 
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Icones do mapa: Mostrar texto" />
 		<text name="COURSEPLAY_ALWAYS_USE_4WD" 							 text="Usar sempre tração nas quatro rodas" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="Você deseja que os campos sejam escaneados automaticamente?" />
@@ -227,6 +224,10 @@
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 			 text="Tipo de semente: %s" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE" 				 text="Utilizado: %s %s (%s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_TRIM" 				 text="···" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="Mostrar/ocultar início e fim" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL"					 text="Mostrar/ocultar todos os pontos" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="Mostrar/ocultar cruzamentos de pontos" />
+
 		<text name="COURSEPLAY_HUD_OPEN" 								 text="Mostrar Courseplay HUD" />
 		<text name="COURSEPLAY_HUD_CLOSE" 								 text="Ocultar Courseplay HUD" />
 		<text name="COURSEPLAY_FUNCTIONS" 								 text="Funções do Courseplay" />

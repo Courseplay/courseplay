@@ -41,6 +41,10 @@ VehicleTypeUtil.registerVehicleType = Utils.appendedFunction(VehicleTypeUtil.reg
 function courseplay:attachablePostLoad(xmlFile)
 	if self.cp == nil then self.cp = {}; end;
 
+	if self.cp.xmlFileName == nil then
+		self.cp.xmlFileName = courseplay.utils:getFileNameFromPath(self.configFileName);
+	end;
+	
 	--SET SPECIALIZATION VARIABLE
 	courseplay:setNameVariable(self);
 	courseplay:setCustomSpecVariables(self);
@@ -81,6 +85,8 @@ function courseplay.vehiclePostLoadFinished(self)
 	self.getIsCourseplayDriving = courseplay.getIsCourseplayDriving;
 	self.setIsCourseplayDriving = courseplay.setIsCourseplayDriving;
 	self.setCpVar = courseplay.setCpVar;
+	
+	courseplay:setNameVariable(self);
 	
 	-- combines table
 	if courseplay.combines == nil then

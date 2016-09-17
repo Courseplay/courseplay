@@ -17,9 +17,11 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 			courseplay:setWaypointIndex(self, math.min(self.cp.finishWork + 1, self.cp.numWaypoints));
 		end;
 	end;
-	
+	if self.cp.hasTransferCourse and self.cp.abortWork ~= nil and self.cp.waypointIndex == 1 then
+		courseplay:setWaypointIndex(self,self.cp.startWork+1);
+	end
 	--go with field speed	
-	if fieldArea or self.cp.waypointIndex == self.cp.startWork then
+	if fieldArea or self.cp.waypointIndex == self.cp.startWork or self.cp.waypointIndex == self.cp.stopWork +1 then
 		workSpeed = 1;
 	end
 	
@@ -61,7 +63,8 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 					end;
 				end;
 			end;
-			courseplay:setWaypointIndex(self, self.cp.stopWork - 4);
+			--courseplay:setWaypointIndex(self, self.cp.stopWork - 4);
+			courseplay:setWaypointIndex(self, self.cp.stopWork +1);
 			--courseplay:debug(string.format("Abort: %d StopWork: %d",self.cp.abortWork,self.cp.stopWork), 12)
 		elseif not self.cp.hasUnloadingRefillingCourse then
 			allowedToDrive = false;
@@ -89,19 +92,19 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 		workTool = self.cp.workTools[i];
 		local isFolding, isFolded, isUnfolded = courseplay:isFolding(workTool);
 		local needsLowering = false
-		
+
 		if workTool.attacherJoint ~= nil then
 			needsLowering = workTool.attacherJoint.needsLowering
 		end
-		
+
 		--speedlimits
 		local speedLimitActive = false
-		if workTool.doCheckSpeedLimit and workTool:doCheckSpeedLimit() then
+		
+		if workTool.doCheckSpeedLimit and (workTool:doCheckSpeedLimit() or workTool.isSprayerSpeedLimitActive) then
 			forceSpeedLimit = math.min(forceSpeedLimit, workTool.speedLimit)
 			speedLimitActive = true
 		end
 
-		
 		-- stop while folding
 		if courseplay:isFoldable(workTool) then
 			if isFolding and self.cp.turnStage == 0 then
@@ -166,7 +169,10 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 									workTool.airBlowerSoundEnabled = true;
 								end;]]
 							else
-								workTool:setIsTurnedOn(true, false);
+								if workTool.lastTurnedOn then
+									workTool.lastTurnedOn = false
+								end
+								workTool:setIsTurnedOn(true,false);
 							end;
 							courseplay:debug(string.format('%s: turn on order', nameNum(workTool)), 17);
 						end;

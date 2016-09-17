@@ -76,10 +76,6 @@
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 						 text="maximum snelheid" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 				 text="automatisch (van opname, max. %s)" />
 		<text name="COURSEPLAY_NO_COURSE_LOADED" 						 text="route: geen route geladen" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_1" 						 text="Start en finish" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_2" 						 text="zonder kruisingen" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_3" 						 text="toon eigen" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_4" 						 text="geen" />
 		<text name="COURSEPLAY_WARNING_LIGHTS" 							 text="Alarmlichten:" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 					 text="altijd uit" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 					 text="zwaailicht aan (op de weg)" />
@@ -214,6 +210,7 @@
 		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="Bocht stoppen" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_START" 				 text="Achteruit rijden starten" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="Achteruit rijden stoppen" />	
+		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Voeg tussenpunten toe" />
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Map iconen, toon tekst" />
 		<text name="COURSEPLAY_ALWAYS_USE_4WD" 							 text="Altijd 4x4" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="Velden automatisch scannen?" />
@@ -233,13 +230,16 @@
 		<text name="COURSEPLAY_DRIVENOW" 								 text="Courseplay: nu rijden" />
 		<text name="COURSEPLAY_NEXTMODE" 								 text="Courseplay: volgende modus" /> 
 		<text name="COURSEPLAY_PREVMODE" 								 text="Courseplay: vorige modus" /> 
-		<text name="COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Courseplay: muis aktie" />
-		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: secundaire muis aktie" />
+		<text name="COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Courseplay: muis actie" />
+		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: secundaire muis actie" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="toon cursor" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="verberg cursor" />
 		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Laad route/Invoegen in geladen route" /> 
 		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Route bijvoegen" /> 
 		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Verplaats naar map" /> 
 		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Verwijder route/map" /> 
+		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="Toon/verberg 'start en 'eind' markeringen" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="Toon/verberg alle markeringen" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="Toon/verberg kruispunten" />
 	</texts>
 </l10n>

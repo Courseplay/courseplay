@@ -50,7 +50,7 @@
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 							 text="застрял." />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 						 text="Достигнут пункт разрузки" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Заполнение %d из %d" />
-		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Показать точки:" />
+		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Режим отображения:" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Поиск точек:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="правее/левее:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Загрузка при:" />
@@ -76,10 +76,6 @@
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 						 text="скоростной" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 				 text="автоматически (до %s)" />
 		<text name="COURSEPLAY_NO_COURSE_LOADED" 						 text="Маршрут: отсутствует" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_1" 						 text="старт и финиш" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_2" 						 text="без перекрестков" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_3" 						 text="показать все" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_4" 						 text="не показывать" />
 		<text name="COURSEPLAY_WARNING_LIGHTS" 							 text="Сигнальные огни:" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 					 text="отключено" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 					 text="в дороге - маячок" />
@@ -214,6 +210,7 @@
 		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="поворот" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_START" 				 text="включить задний ход" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="отключить задний ход" />
+		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="добавить точку" />
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Показать инфо на карте:" />
 		<text name="COURSEPLAY_ALWAYS_USE_4WD" 							 text="Всегда 4х4" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="Включить автосканирование полей?" />
@@ -242,5 +239,8 @@
 		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Добавить последним" />
 		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Переместить в папку" />
 		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Удалить" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="начало и конец маршрута" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="весь маршрут" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="перекрестки" />
 	</texts>
 </l10n>

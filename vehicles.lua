@@ -360,6 +360,24 @@ function courseplay:getRealTurningNode(object)
 				if ASInfo.rotCenterZ then
 					setTranslation(node, 0, 0, ASInfo.rotCenterZ);
 
+					-- Check if it's actually an four wheel steering
+					if not object.crawlers or #object.crawlers == 0 then
+						for index, wheel in ipairs(object.wheels) do
+							-- Strait wheels
+							if wheel.rotMax == 0 and wheel.maxLatStiffness > 0 then
+								haveStraitWheels = true;
+
+							-- Turning wheels
+							else
+								haveTurningWheels = true;
+							end;
+						end;
+
+						if not haveStraitWheels and haveTurningWheels then
+							object.cp.isFourWheelSteering = true;
+						end;
+					end;
+
 				-- We know which wheels that is the center.
 				else
 					for i, index in pairs(ASInfo.rotCenterWheels) do
@@ -437,6 +455,7 @@ function courseplay:getRealTurningNode(object)
 
 					-- 4WS: Calculate turning wheel median distance if there are no strait wheels.
 					elseif haveTurningWheels then
+						object.cp.isFourWheelSteering = true;
 						object.cp.fourWheelSteerMaxRot = rotMax;
 						if minDisRot == maxDisRot then
 							Distance = minDisRot;

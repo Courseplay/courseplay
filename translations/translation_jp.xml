@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<l10n>
+	<texts>
+		<text name="COURSEPLAY_RECORDING_START" 						 text="コースの記録開始" />
+		<text name="COURSEPLAY_DRIVER" 									 text="ドライバー" />
+		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 					 text="ドライバーを始動" />
+		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 					 text="ドライバーを停止" />
+		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 						 text="次回のトリガかエンドポイントで停止" />
+		<text name="COURSEPLAY_UNLOADING_SIDE" 							 text="運転席側" />
+		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="自動" />
+		<text name="COURSEPLAY_LEFT" 									 text="左" />
+		<text name="COURSEPLAY_RIGHT" 									 text="右" />
+		<text name="COURSEPLAY_UNLOADING_DRIVER_SEND_HOME" 				 text="ドライバーを帰還" />
+		<text name="COURSEPLAY_REQUEST_UNLOADING_DRIVER" 				 text="ドライバーをリクエスト" />
+		<text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED" 				 text="ドライバーをリクエスト中" />
+		<text name="COURSEPLAY_START_COURSE" 							 text="運転開始" />
+		<text name="COURSEPLAY_STOP_COURSE" 							 text="運転停止" />
+		<text name="COURSEPLAY_MODE_1" 									 text="タイプ: 穀物輸送 (ローディングしてから開始)" />
+		<text name="COURSEPLAY_MODE_2" 									 text="タイプ: コンビ (コンバインからトレーラーへ)" />
+		<text name="COURSEPLAY_MODE_3" 									 text="タイプ: オーガーワゴン (コンバインからオーガーワゴンへ)" />
+		<text name="COURSEPLAY_MODE_4" 									 text="タイプ: 肥料散布や播種" />
+		<text name="COURSEPLAY_MODE_5" 									 text="タイプ: 回送 (スタートポイントからエンドポイントへ移動)" />
+		<text name="COURSEPLAY_MODE_6" 									 text="タイプ: フィールドワーク" />
+		<text name="COURSEPLAY_MODE_7" 									 text="タイプ: コンバイン セルフアンロード" />
+		<text name="COURSEPLAY_MODE_8" 									 text="タイプ: スラリー輸送" />
+		<text name="COURSEPLAY_MODE_9" 									 text="タイプ: バケット・ローダー" />
+		<text name="COURSEPLAY_CONTINUE" 								 text="続行" />
+		<text name="COURSEPLAY_CLEAR_COURSE" 							 text="現在のコースをクリア" />
+		<text name="COURSEPLAY_DRIVE_NOW" 								 text="走行" />
+		<text name="COURSEPLAY_DRIVE_ON_AT" 							 text="目的地:" />
+		<text name="UNKNOWN" 											 text="unknown" />
+		<text name="COURSEPLAY_DISTANCE" 								 text="距離" />
+		<text name="COURSEPLAY_WAITING_TIME" 							 text="待機時間" />
+		<text name="COURSEPLAY_MINUTES" 								 text="%d 分" />
+		<text name="COURSEPLAY_SECONDS" 								 text="%d 秒" />
+		<text name="COURSEPLAY_COURSE_NAME" 							 text="コース名:" />
+		<text name="COURSEPLAY_FOLDER_NAME" 							 text="フォルダ名:" />
+		<text name="COURSEPLAY_FILTER_COURSES" 							 text="コースフィルタ:" />
+		<text name="COURSEPLAY_COURSES_FILTER_TITLE" 					 text="コース: %q" />
+		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="コースを読み込む/コースを読み込んで結合" />
+		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="コースを読み込んでエンドポイントに結合" />
+		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="フォルダへ入れる" />
+		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="コース・フォルダを削除" />
+		<text name="COURSEPLAY_CREATE_FOLDER" 							 text="フォルダの新規作成" />
+		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 			 text="コース・フォルダを検索" />
+		<text name="COURSEPLAY_DEACTIVATE_FILTER" 						 text="フィルタを解除" />
+		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 				 text="オーバーロードポイントに到着" />
+		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="待機ポイントに到着" />
+		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="トリガやエンドポイントに到着" />
+		<text name="COURSEPLAY_WORK_END" 								 text="作業終了" />
+		<text name="COURSEPLAY_NEEDS_UNLOADING" 						 text=": アンロードしてください" />
+		<text name="COURSEPLAY_NEEDS_REFILLING" 						 text=": 補給してください" />
+		<text name="COURSEPLAY_UNLOADING_BALES" 						 text="ベールをアンロード" />
+		<text name="COURSEPLAY_IS_IN_TRAFFIC" 							 text="トラフィックエラー" />
+		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 						 text="トリガへ到着" />
+		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="ローディング: %d of %d" />
+		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="ウエイポイントを表示" />
+		<text name="COURSEPLAY_PATHFINDING" 							 text="経路検索" />
+		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="サイドオフセット:" />
+		<text name="COURSEPLAY_START_AT" 								 text="スタート:" />
+		<text name="COURSEPLAY_TURN_RADIUS" 							 text="ターン半径:" />
+		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 				 text="バーティカルオフセット:" />
+		<text name="COURSEPLAY_COMBINE" 								 text="コンバイン" />
+		<text name="COURSEPLAY_NONE" 									 text="無" />
+		<text name="COURSEPLAY_CHOOSE_COMBINE" 							 text="コンバインを選択:" />
+		<text name="COURSEPLAY_COMBINE_SEARCH_MODE" 					 text="コンバインを検索:" />
+		<text name="COURSEPLAY_CURRENT" 								 text="現在:" />
+		<text name="COURSEPLAY_AUTOMATIC_SEARCH" 						 text="自動検索" />
+		<text name="COURSEPLAY_MANUAL_SEARCH" 							 text="手動検索" />
+		<text name="COURSEPLAY_SEARCH_COMBINE_ON_FIELD" 				 text="コンバインをフィールドで検索 %s" />
+		<text name="COURSEPLAY_COPY_COURSE" 							 text="コースをコピー:" />
+		<text name="COURSEPLAY_VEHICLE" 								 text="車両" />
+		<text name="COURSEPLAY_TEMP_COURSE" 							 text="コースは保存されていません" />
+		<text name="COURSEPLAY_SPEED_TURN" 								 text="ターン速度:" />
+		<text name="COURSEPLAY_SPEED_FIELD" 							 text="フィールド速度:" />
+		<text name="COURSEPLAY_SPEED_MAX" 								 text="路上速度:" />
+		<text name="COURSEPLAY_SPEED_REVERSING" 						 text="後進速度:" />
+		<text name="COURSEPLAY_MAX_SPEED_MODE" 							 text="速度:" />
+		<text name="COURSEPLAY_MAX_SPEED_MODE_RECORDING" 				 text="実速度" />
+		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 						 text="最高速度" />
+		<text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 				 text="自動 (全コース%s制限)" />
+		<text name="COURSEPLAY_NO_COURSE_LOADED" 						 text="コースを読み込んでいません" />
+		<text name="COURSEPLAY_WARNING_LIGHTS" 							 text="ビーコン:" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 					 text="ネバーターンオン" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 					 text="ビーコンライト (路上)" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 					 text="ビーコン &amp; ハザード (路上)" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_3" 					 text="ビーコンライト (常時)" />
+		<text name="COURSEPLAY_PAGE_TITLE_CP_CONTROL" 					 text="コースプレイ コントロール" />
+		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 			 text="コンバイン コントロール" />
+		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES" 				 text="コース設定" />
+		<text name="COURSEPLAY_PAGE_TITLE_CHOOSE_FOLDER" 				 text="フォルダを選択" />
+		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 					 text="コンビモード設定" />
+		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES" 				 text="コンバイン設定" />
+		<text name="COURSEPLAY_PAGE_TITLE_SPEEDS" 						 text="速度制限" />
+		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 			 text="ドライバー設定" />
+		<text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS" 			 text="設定" />
+		<text name="COURSEPLAY_COMBINE_IS_TURNING" 						 text="コンバインがターン" />
+		<text name="COURSEPLAY_NO_WORK_AREA" 							 text="ワークエリアではありません" />
+		<text name="COURSEPLAY_COMBINED_COURSES" 						 text="コースの結合" />
+		<text name="COURSEPLAY_DRIVE_BEHIND_COMBINE" 					 text="前のコンバイン" />
+		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 					 text="次のコンバイン" />
+		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 						 text="ドライブ to コンバイン" />
+		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 				 text="コンバインからの停止要請" />
+		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	 text="場所があくまで停止" />
+		<text name="COURSEPLAY_TURNING_TO_COORDS" 						 text="目標へターン %d %d" />
+		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 						 text="ウエイポイントへ %d %d" />
+		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 					 text="充填レベルに到達するまで待機" />
+		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 					 text="ノー コンバイン リーチ" />
+		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 				 text="コンバインまで待ちます" />
+		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 					 text="新しいウエイポイントを待っています" />
+		<text name="COURSEPLAY_FOLLOWING_TRACTOR" 						 text="トラクターを追走" />
+		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 						 text="すぐに給油する必要があります" />
+		<text name="COURSEPLAY_MUST_BE_REFUELED" 						 text="給油する必要があります" />
+		<text name="COURSEPLAY_IS_BEING_REFUELED" 						 text="給油中" />
+		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 				 text="多くのポイント! Only %d allowed." />
+		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="少ないポイント! %d needed." />
+		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="トレーラーが用途に合いません" />
+		<text name="COURSEPLAY_WRONG_TOOL" 								 text="ツールが用途に合いません" />
+		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="車種が用途に合いません" />
+		<text name="COURSEPLAY_WEATHER_WARNING" 						 text="天候待ち" />
+		<text name="COURSEPLAY_LANE_OFFSET" 							 text="レーン オフセット" />
+		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="ツールレベルオフセット" />
+		<text name="COURSEPLAY_TOOL_OFFSET_Z" 							 text="ツールバーティカルオフセット" />
+		<text name="COURSEPLAY_FRONT" 									 text="先方" />
+		<text name="COURSEPLAY_BACK" 									 text="後方" />
+		<text name="COURSEPLAY_WORK_WIDTH" 								 text="作業幅" />
+		<text name="COURSEPLAY_WATER_WARNING" 							 text="泳ぎに行くつもり" />
+		<text name="COURSEPLAY_OPEN_HUD_MODE" 							 text="HUD表示方法:" />
+		<text name="COURSEPLAY_DEBUG_CHANNELS" 							 text="デバッグチャンネル" />
+		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 			 text="コース作成" />
+		<text name="COURSEPLAY_STARTING_CORNER" 						 text="開始角" />
+		<text name="COURSEPLAY_STARTING_DIRECTION" 						 text="開始方向" />
+		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT" 					 text="スタートポイントに戻る" />
+		<text name="COURSEPLAY_CORNER_1" 								 text="南-西" />
+		<text name="COURSEPLAY_CORNER_2" 								 text="北-西" />
+		<text name="COURSEPLAY_CORNER_3" 								 text="北-東" />
+		<text name="COURSEPLAY_CORNER_4" 								 text="南-東" />
+		<text name="COURSEPLAY_DIRECTION_1" 							 text="北" />
+		<text name="COURSEPLAY_DIRECTION_2" 							 text="東" />
+		<text name="COURSEPLAY_DIRECTION_3" 							 text="南" />
+		<text name="COURSEPLAY_DIRECTION_4" 							 text="西" />
+		<text name="COURSEPLAY_HEADLAND" 								 text="ターンスペース" />
+		<text name="COURSEPLAY_ACTIVATED" 								 text="有効" />
+		<text name="COURSEPLAY_DEACTIVATED" 							 text="無効" />
+		<text name="COURSEPLAY_RIDGEMARKERS" 							 text="リッジマーカー" />
+		<text name="COURSEPLAY_UNLOADING_ON_FIELD" 						 text="フィールドでアンロード" />
+		<text name="COURSEPLAY_AUTOMATIC" 								 text="自動" />
+		<text name="COURSEPLAY_MANUAL" 									 text="手動" />
+		<text name="COURSEPLAY_TURN_MANEUVER" 							 text="ターン機動:" />
+		<text name="COURSEPLAY_START" 									 text="開始" />
+		<text name="COURSEPLAY_FINISH" 									 text="終了" />
+		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="コースは有効ではありません" />
+
+		<!-- shovel stuff -->
+		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="バケットが見つかりません" />
+		<text name="COURSEPLAY_SHOVEL_POSITIONS" 						 text="バケットポジション" />
+		<text name="COURSEPLAY_SHOVEL_POSITIONS_MISSING" 				 text="バケットポジション異常" />
+		<text name="COURSEPLAY_SHOVEL_LOADING_POSITION" 				 text="ローディングポジション" />
+		<text name="COURSEPLAY_SHOVEL_TRANSPORT_POSITION" 				 text="トランスポートポジション" />
+		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION" 			 text="アンロード準備ポジジョン" />
+		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION" 				 text="アンロードポジション" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION" 			 text="ローディングポジションを保存" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_TRANSPORT_POSITION" 			 text="トランスポートポジションを保存" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_PRE_UNLOADING_POSITION" 		 text="アンロード準備ポジジョンを保存" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_UNLOADING_POSITION" 			 text="アンロードポジションを保存" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 		 text="ローディングポジションへ移行" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 		 text="トランスポートポジションへ移行" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 	 text="アンロード準備ポジジョンへ移行" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 		 text="アンロードポジションへ移行" />
+		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="停止 &amp; ローディング" />
+
+		<text name="COURSEPLAY_START_AT_POINT" 							 text="コースの開始位置" />
+		<text name="COURSEPLAY_NEAREST_POINT" 							 text="近くのウエイポイント" />
+		<text name="COURSEPLAY_FIRST_POINT" 							 text="スタートポイント" />
+		<text name="COURSEPLAY_CURRENT_POINT" 							 text="記憶中のウエイポイント" />
+		<text name="COURSEPLAY_FIELD_EDGE_PATH" 						 text="フィールドエッジパス" />
+		<text name="COURSEPLAY_FIELD" 									 text="フィールド" />
+		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 				 text="(現在読み込まれているコース)" />
+		<text name="COURSEPLAY_FIELD_SCAN_IN_PROGRESS" 					 text="進行中のフィールドのスキャン" />
+		<text name="COURSEPLAY_SCANNING_FIELD_NMB" 						 text="フィールドスキャン %d/%d" />
+		<text name="COURSEPLAY_HOSEMISSING" 							 text="ホースは見つかりませんでした - 補給停止" />
+		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE" 					 text="対称車線変更" />
+		<text name="COURSEPLAY_UNLOADING_DRIVER_PRIORITY" 				 text="ドライバの優先順位" />
+		<text name="COURSEPLAY_FILLEVEL" 								 text="積載量" />
+		<text name="COURSEPLAY_PICKUP_JAMMED" 							 text=": ピックアップが詰まっています" />
+		<text name="COURSEPLAY_BALER_NEEDS_NETS" 						 text=": ベーラーは、新しいネットのロールが必要" />
+		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES" 				 text="現在のフィールドのエッジパスを計算します" />
+		<text name="COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER" 			 text="フィールドエッジパス番号" />
+		<text name="COURSEPLAY_ADD_CUSTOM_FIELD_EDGE_PATH_TO_LIST" 		 text="リストに %d番のエッジパスを追加します" />
+		<text name="COURSEPLAY_OVERWRITE_CUSTOM_FIELD_EDGE_PATH_IN_LIST" text="リストの %d番のエッジパスを上書きします" />
+		<text name="COURSEPLAY_USER" 									 text="ユーザー" />
+		<text name="COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED" 				 text="すぐに修復する必要があります" />
+		<text name="COURSEPLAY_DAMAGE_MUST_BE_REPAIRED" 				 text="修復する必要があります" />
+		<text name="COURSEPLAY_DAMAGE_IS_BEING_REPAIRED" 				 text="修復します" />
+		<text name="COURSEPLAY_COVER_HANDLING" 							 text="カバー" />
+		<text name="COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR" 			 text="コンバインの割り当てを解除" />
+		<text name="COURSEPLAY_STOP_DURING_UNLOADING" 					 text="アンロード時に停止" />
+		<text name="COURSEPLAY_SLIPPING_WARNING" 						 text="スタック中" />
+		<text name="COURSEPLAY_REFILL_UNTIL_PCT" 						 text="補給まで:" />
+		<text name="COURSEPLAY_BGA_IS_FULL" 							 text=": バンカーサイロがいっぱいです!" />
+		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 					 text="このサイロに選択したものがありません" />
+		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 					 text="サイロから:" />
+		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="サイロは空です!" />
+		<text name="COURSEPLAY_STARTING_UP_TOOL" 						 text="起動 %s!" />
+		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 				 text="最初のウエイポイントを検索します" />
+		<text name="COURSEPLAY_SAVE_CURRENT_COURSE" 					 text="現在のコースを保存" />
+		<text name="COURSEPLAY_RECORDING_STOP" 							 text="コースの記録を停止" />
+		<text name="COURSEPLAY_RECORDING_PAUSE" 						 text="記録の一時停止" />
+		<text name="COURSEPLAY_RECORDING_PAUSE_RESUME" 					 text="記録を再開" />
+		<text name="COURSEPLAY_RECORDING_DELETE" 						 text="最後のウエイポイントを削除" />
+		<text name="COURSEPLAY_RECORDING_SET_WAIT" 						 text="待機ポイントを設定" />
+		<text name="COURSEPLAY_RECORDING_SET_CROSS" 					 text="クロスポイントを設定" />
+		<text name="COURSEPLAY_RECORDING_TURN_START" 					 text="ターン動作を開始" />
+		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="ターン動作を終了" />
+		<text name="COURSEPLAY_RECORDING_REVERSE_START" 				 text="後進動作を開始" />
+		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="後進動作を終了" />
+		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="現在地までウエイポイントを追加" />
+		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="マップアイコン: テキスト表示" />
+		<text name="COURSEPLAY_ALWAYS_USE_4WD" 							 text="オールタイム4WD" />
+		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="フィールドを自動的にスキャンされるようにしますか?" />
+		<text name="COURSEPLAY_YES_NO_WAGES" 							 text="作業者に賃金を支払いますか? (%s/時間)?" />
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 					 text="消費量計算機" />
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 				 text="フィールド: %d (%s %s)" />
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 			 text="種子タイプ: %s" />
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE" 				 text="使用量: %s %s (%s)" />
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_TRIM" 				 text="···" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="スタート・エンドポイントを表示" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="すべてのポイントを表示" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="クロスポイントを表示" />
+
+		<text name="COURSEPLAY_HUD_OPEN" 								 text="コースプレイHUDを表示" />
+		<text name="COURSEPLAY_HUD_CLOSE" 								 text="コースプレイHUDを非表示" />
+		<text name="COURSEPLAY_FUNCTIONS" 								 text="コースプレイ ファンクション" />
+		<text name="COURSEPLAY_MODIFIER" 								 text="コースプレイ: 操作の有効化" />
+		<text name="COURSEPLAY_MENU_ACCEPT_SECONDARY" 					 text="コースプレイ: セカンドメニュー" />
+		<text name="COURSEPLAY_HUD" 									 text="コースプレイ: HUDの表示・非表示" />
+		<text name="COURSEPLAY_START_STOP" 								 text="コースプレイ: 開始・停止" />
+		<text name="COURSEPLAY_CANCELWAIT" 								 text="コースプレイ: エンドポイントか次トリガで停止" />
+		<text name="COURSEPLAY_DRIVENOW" 								 text="コースプレイ: 走行" />
+		<text name="COURSEPLAY_NEXTMODE" 								 text="コースプレイ: 次のモード" />
+		<text name="COURSEPLAY_PREVMODE" 								 text="コースプレイ: 前のモード" />
+		<text name="COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="コースプレイ: 左クリック" />
+		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="コースプレイ: 右クリック" />
+		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="マウスカーソルを表示" />
+		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="マウスカーソルを非表示" />
+
+		<text name="COURSEPLAY_SPEED_UNLOAD" 							 text="アンロード (BGA):" />
+		<text name="COURSEPLAY_WAYPOINT_MODE_1" 						 text="スタート・エンド ポイント" />
+		<text name="COURSEPLAY_WAYPOINT_MODE_2" 						 text="クロスポイント非表示" />
+		<text name="COURSEPLAY_WAYPOINT_MODE_3" 						 text="全表示" />
+		<text name="COURSEPLAY_WAYPOINT_MODE_4" 						 text="非表示" />
+	</texts>
+</l10n>

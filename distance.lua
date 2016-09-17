@@ -7,6 +7,10 @@ function courseplay:distance(x1, z1, x2, z2)
 	return Utils.vector2Length(x2 - x1, z2 - z1);
 end
 
+function courseplay:distance3D(x1,y1,z1,x2,y2,z2)
+	return Utils.vector3Length(x2 - x1, y2 - y1, z2 - z1);
+end
+
 -- displays arrow and distance to previous point
 function courseplay:distanceCheck(vehicle)
 	local number = vehicle.cp.recordingIsPaused and vehicle.cp.waypointIndex - 1 or 1;

@@ -80,10 +80,6 @@
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 						 text="maximum speed" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 				 text="automatic (from course, max. %s)" />
 		<text name="COURSEPLAY_NO_COURSE_LOADED" 						 text="no course loaded" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_1" 						 text="Start and end" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_2" 						 text="without crossing points" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_3" 						 text="show all own" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_4" 						 text="none" />
 		<text name="COURSEPLAY_WARNING_LIGHTS" 							 text="Warning lights:" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 					 text="never turn on" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 					 text="beacon lights (on the street)" />
@@ -218,6 +214,7 @@
 		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="End turn maneuver" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_START" 				 text="Start reverse driving" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="Stop reverse driving" />
+		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Add split points" />
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Map icons: display text" />
 		<text name="COURSEPLAY_ALWAYS_USE_4WD" 							 text="Always use 4WD" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="Do you want the fields to be scanned automatically?" />
@@ -227,9 +224,12 @@
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 			 text="Seed type: %s" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE" 				 text="Usage: %s %s (%s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_TRIM" 				 text="···" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="Show/hide start and end points" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="Show/hide all points" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="Show/hide crossing points" />
+
 		<text name="COURSEPLAY_HUD_OPEN" 								 text="Show Courseplay HUD" />
 		<text name="COURSEPLAY_HUD_CLOSE" 								 text="Hide Courseplay HUD" />
-
 		<text name="COURSEPLAY_FUNCTIONS" 								 text="Courseplay functions" />
 		<text name="COURSEPLAY_MODIFIER" 								 text="Courseplay: modifier" />
 		<text name="COURSEPLAY_MENU_ACCEPT_SECONDARY" 					 text="Courseplay: secondary menu accept" />

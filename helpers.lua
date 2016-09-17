@@ -1,4 +1,4 @@
-﻿local abs, huge, max, min, pi, sqrt = math.abs, math.huge, math.max, math.min, math.pi, math.sqrt;
+﻿local abs, ceil, floor, huge, max, min, pi, sqrt = math.abs, math.ceil, math.floor, math.huge, math.max, math.min, math.pi, math.sqrt;
 
 function courseplay:isEven(n)
    return tonumber(n) % 2 == 0;
@@ -362,15 +362,6 @@ function courseplay.utils.table.move(t1, t2, t1_index, t2_index)
 	t2[t2_index] = t1[t1_index];
 	t1[t1_index] = nil;
 	return t2[t2_index] ~= nil;
-end;
-
-function table.contains(t, element) --TODO: always use Utils.hasListElement
-	for _, value in pairs(t) do
-		if value == element then
-			return true;
-		end;
-	end;
-	return false;
 end;
 
 function table.map(t, func)
@@ -826,7 +817,7 @@ function courseplay.utils:getFileNameFromPath(filePath)
 		idx = filePath:match('^.*()\\'); -- check for last backward slash
 	end;
 	if idx then
-		fileName = filePath:sub(idx + 1, 500);
+		fileName = filePath:sub(idx + 1);
 	end;
 
 	return fileName;
@@ -971,26 +962,24 @@ function courseplay.utils:setOverlayUVsPx(overlay, UVs, textureSizeX, textureSiz
 	end;
 end;
 
-function courseplay.utils:getColorFromPct(pct, colorMap)
-	local step = colorMap[2].pct - colorMap[1].pct;
+function courseplay.utils:roundToLowerInterval(num, idp)
+	return floor(num / idp) * idp;
+end;
 
-	if pct == 0 then
-		return unpack(colorMap[1].color);
+function courseplay.utils:roundToUpperInterval(num, idp)
+	return ceil(num / idp) * idp;
+end;
+
+function courseplay.utils:getColorFromPct(pct, colorMap, step)
+	if colorMap[pct] then
+		return unpack(colorMap[pct]);
 	end;
 
-	for i=2, #colorMap do
-		local data = colorMap[i];
-		if pct == data.pct then
-			return unpack(data.color);
-		end;
+	local lower = self:roundToLowerInterval(pct, step);
+	local upper = self:roundToUpperInterval(pct, step);
 
-		if pct < data.pct then
-			local lower = colorMap[i - 1];
-			local upper = colorMap[i];
-			local pctAlpha = (pct - lower.pct) / step;
-			return Utils.vector3ArrayLerp(lower.color, upper.color, pctAlpha);
-		end;
-	end;
+	local alpha = (pct - lower) / step;
+	return Utils.vector3ArrayLerp(colorMap[lower], colorMap[upper], alpha);
 end;
 
 -- 2D course
@@ -1046,13 +1035,73 @@ function courseplay.utils:worldCoordsTo2D(vehicle, worldX, worldZ)
 	return x, y;
 end;
 
+function courseplay.utils:update2dCourseBackgroundPos(vehicle, mouseX, mouseY)
+	local dx = mouseX - CpManager.course2dDragDropMouseDown[1];
+	local dy = mouseY - CpManager.course2dDragDropMouseDown[2];
+
+	if vehicle.cp.course2dPdaMapOverlay then
+		vehicle.cp.course2dPdaMapOverlay:setColor(1,0,0,0.6);
+		vehicle.cp.course2dPdaMapOverlay:setPosition(vehicle.cp.course2dPdaMapOverlay.origPos[1] + dx, vehicle.cp.course2dPdaMapOverlay.origPos[2] + dy)
+	else
+		setOverlayColor(CpManager.course2dPolyOverlayId, 1,0,0,0.6);
+		vehicle.cp.course2dBackground.x = vehicle.cp.course2dBackground.origPos[1] + dx;
+		vehicle.cp.course2dBackground.y = vehicle.cp.course2dBackground.origPos[2] + dy;
+	end;
+end;
+
+function courseplay.utils:move2dCoursePlotField(vehicle, mouseX, mouseY)
+	-- reset background color
+	if vehicle.cp.course2dPdaMapOverlay then
+		vehicle.cp.course2dPdaMapOverlay:setColor(1, 1, 1, CpManager.course2dPdaMapOpacity);
+	end;
+
+	local dx = mouseX - CpManager.course2dDragDropMouseDown[1];
+	local dy = mouseY - CpManager.course2dDragDropMouseDown[2];
+
+	-- update plot position
+	if dx ~= 0 or dy ~= 0 then
+		local newX = Utils.clamp(CpManager.course2dPlotPosX + dx, 0 + CpManager.course2dPlotField.width  * 0.05, 1 - CpManager.course2dPlotField.width  * 1.05); -- 5% padding
+		local newY = Utils.clamp(CpManager.course2dPlotPosY + dy, 0 + CpManager.course2dPlotField.height * 0.05, 1 - CpManager.course2dPlotField.height * 1.05); -- 5% padding
+		-- print(('move2dCoursePlotField(): dx=%.3f, dy=%.3f -> newX=%.3f, newY=%.3f'):format(dx, dy, newX, newY));
+
+		CpManager.course2dPlotPosX = newX;
+		CpManager.course2dPlotPosY = newY;
+		CpManager.course2dPlotField.x = CpManager.course2dPlotPosX;
+		CpManager.course2dPlotField.y = CpManager.course2dPlotPosY;
+
+		-- update 2D data for all vehicles
+		for k,veh in pairs(g_currentMission.steerables) do
+			if veh.hasCourseplaySpec then
+				veh.cp.course2dUpdateDrawData = true;
+			end;
+		end;
+	end;
+
+	-- reset data
+	CpManager.course2dDragDropMouseDown = nil;
+
+	-- save new position data in xml
+	if g_server ~= nil then
+		local cpFile = loadXMLFile('cpFile', CpManager.cpXmlFilePath);
+		setXMLFloat(cpFile, 'XML.course2D#posX', CpManager.course2dPlotPosX);
+		setXMLFloat(cpFile, 'XML.course2D#posY', CpManager.course2dPlotPosY);
+		saveXMLFile(cpFile);
+		delete(cpFile);
+	end;
+end;
+
 function courseplay:setupCourse2dData(vehicle)
+	vehicle.cp.course2dDrawData = nil;
+	if vehicle.cp.numWaypoints < 1 then return; end;
+
 	vehicle.cp.course2dDimensions = courseplay.utils:getCourseDimensions(vehicle.Waypoints);
+	local bBox = vehicle.cp.course2dDimensions;
 	local pxSize = 2;  -- thickness of line in pixels
 	local height = pxSize / g_screenHeight;
 
-	local bgX1, bgY1 = courseplay.utils:worldCoordsTo2D(vehicle, vehicle.cp.course2dDimensions.xMin, vehicle.cp.course2dDimensions.yMin);
-	local bgX2, bgY2 = courseplay.utils:worldCoordsTo2D(vehicle, vehicle.cp.course2dDimensions.xMax, vehicle.cp.course2dDimensions.yMax);
+	local bgPadding = 0.05 * bBox.span;
+	local bgX1, bgY1 = courseplay.utils:worldCoordsTo2D(vehicle, bBox.xMin - bgPadding, bBox.yMin - bgPadding);
+	local bgX2, bgY2 = courseplay.utils:worldCoordsTo2D(vehicle, bBox.xMax + bgPadding, bBox.yMax + bgPadding);
 	local bgW, bgH = bgX2 - bgX1, abs(bgY2 - bgY1);
 
 	vehicle.cp.course2dBackground = {
@@ -1060,11 +1109,23 @@ function courseplay:setupCourse2dData(vehicle)
 		y = bgY2, -- seems wrong, but is correct, as [3D] topZ < bottomZ, but [2D] topY > bottomY
 		width = bgW,
 		height = bgH,
-		tractorVisAreaMinX = bgX1 - 0.1;
-		tractorVisAreaMaxX = bgX2 + 0.1;
-		tractorVisAreaMinY = bgY2 - 0.1 * g_screenAspectRatio;
-		tractorVisAreaMaxY = bgY1 + 0.1 * g_screenAspectRatio;
+		tractorVisAreaMinX = bgX1,
+		tractorVisAreaMaxX = bgX2,
+		tractorVisAreaMinY = bgY2,
+		tractorVisAreaMaxY = bgY1
 	};
+
+	-- PDA MAP BG
+	if vehicle.cp.course2dPdaMapOverlay then
+		local leftX	  = bBox.xMin - bgPadding + g_statisticView.worldCenterOffsetX;
+		local bottomY = bBox.yMax + bgPadding + g_statisticView.worldCenterOffsetZ;
+		local rightX  = bBox.xMax + bgPadding + g_statisticView.worldCenterOffsetX;
+		local topY	  = bBox.yMin - bgPadding + g_statisticView.worldCenterOffsetZ;
+		courseplay.utils:setOverlayUVsPx(vehicle.cp.course2dPdaMapOverlay, { leftX, bottomY, rightX, topY }, g_statisticView.worldSizeX, g_statisticView.worldSizeZ);
+
+		vehicle.cp.course2dPdaMapOverlay:setPosition(vehicle.cp.course2dBackground.x, vehicle.cp.course2dBackground.y);
+		vehicle.cp.course2dPdaMapOverlay:setDimension(vehicle.cp.course2dBackground.width, vehicle.cp.course2dBackground.height);
+	end;
 
 	vehicle.cp.course2dDrawData = {};
 	local epsilon = 2; -- orig: 0.001, also ok: 0.5
@@ -1086,7 +1147,7 @@ function courseplay:setupCourse2dData(vehicle)
 		dz = np.cz - wp.cz;
 		rotation = Utils.getYRotationFromDirection(dx, dz) - pi * 0.5;
 
-		r, g, b = courseplay.utils:getColorFromPct(wp.origIndex / vehicle.cp.numWaypoints, CpManager.course2dColorTable);
+		r, g, b = courseplay.utils:getColorFromPct(100 * wp.origIndex / vehicle.cp.numWaypoints, CpManager.course2dColorTable, CpManager.course2dColorPctStep);
 
 		vehicle.cp.course2dDrawData[i] = {
 			x = startX;
@@ -1097,14 +1158,35 @@ function courseplay:setupCourse2dData(vehicle)
 			color = { r, g, b, 1 };
 		};
 	end;
+
+	vehicle.cp.course2dUpdateDrawData = false;
 end;
 
 function courseplay:drawCourse2D(vehicle, doLoop)
-	-- background
-	setOverlayColor(CpManager.course2dPolyOverlayId, 0,0,0,0.6);
-	local bg = vehicle.cp.course2dBackground;
-	renderOverlay(CpManager.course2dPolyOverlayId, bg.x, bg.y, bg.width, bg.height);
+	-- dynamically update the data (when drag + drop happens)
+	if vehicle.cp.course2dUpdateDrawData then
+		-- print(('%s: course2dUpdateDrawData==true -> call setupCourse2dData()'):format(nameNum(vehicle)));
+		courseplay:setupCourse2dData(vehicle);
+	end;
 
+	if not vehicle.cp.course2dDrawData then
+		return;
+	end;
+
+	-- background
+	local bg = vehicle.cp.course2dBackground;
+	if vehicle.cp.course2dPdaMapOverlay then
+		vehicle.cp.course2dPdaMapOverlay:render();
+	else
+		if not CpManager.course2dDragDropMouseDown then
+			setOverlayColor(CpManager.course2dPolyOverlayId, 0,0,0,0.6);
+		end;
+		renderOverlay(CpManager.course2dPolyOverlayId, bg.x, bg.y, bg.width, bg.height);
+	end;
+
+	if CpManager.course2dDragDropMouseDown ~= nil then -- drag and drop mode -> only render background
+		return;
+	end;
 
 	-- course
 	local numPoints = #vehicle.cp.course2dDrawData;
@@ -1125,25 +1207,36 @@ function courseplay:drawCourse2D(vehicle, doLoop)
 
 
 	-- render vehicle position
+	local ovl = CpManager.course2dTractorOverlay;
 	local worldX,_,worldZ = getWorldTranslation(vehicle.rootNode);
-	local x, y = courseplay.utils:worldCoordsTo2D(vehicle, worldX, worldZ);
-
-	-- outside of screen -> abort
-	if x < 0 or x > 1 or y < 0 or y > 1 then
-		return;
+	if worldX ~= vehicle.cp.course2dTranslationX or worldZ ~= vehicle.cp.course2dTranslationZ then
+		vehicle.cp.course2dTranslationX = worldX;
+		vehicle.cp.course2dTranslationZ = worldZ;
+		vehicle.cp.course2dTranslationX2D, vehicle.cp.course2dTranslationZ2D = courseplay.utils:worldCoordsTo2D(vehicle, worldX, worldZ);
+		ovl:setPosition(vehicle.cp.course2dTranslationX2D - ovl.width * 0.5, vehicle.cp.course2dTranslationZ2D - ovl.height * 0.5);
 	end;
 
-	-- outside of plotField padding area -> abort
+	local x, y = vehicle.cp.course2dTranslationX2D, vehicle.cp.course2dTranslationZ2D;
 	if x < bg.tractorVisAreaMinX or x > bg.tractorVisAreaMaxX or y < bg.tractorVisAreaMinY or y > bg.tractorVisAreaMaxY then
+		-- outside of background area -> abort
 		return;
 	end;
 
 	local dx,_,dz = localDirectionToWorld(vehicle.cp.DirectionNode or vehicle.rootNode, 0, 0, 1);
-	local rotation = Utils.getYRotationFromDirection(dx, dz) - pi * 0.5;
+	if dx ~= vehicle.cp.course2dDirectionX or dz ~= vehicle.cp.course2dDirectionZ then
+		vehicle.cp.course2dDirectionX = dx;
+		vehicle.cp.course2dDirectionZ = dz;
+		local rotation = Utils.getYRotationFromDirection(dx, dz) - pi * 0.5;
+		ovl:setRotation(rotation, ovl.width * 0.5, ovl.height * 0.5);
+	end;
 
-	local ovl = CpManager.course2dTractorOverlay;
-	ovl:setPosition(x - ovl.width * 0.5, y - ovl.height * 0.5);
-	ovl:setRotation(rotation, ovl.width * 0.5, ovl.height * 0.5);
 	ovl:render();
 end;
 
+function courseplay.utils:rgbToNormal(r, g, b, a)
+	if a then
+		return { r/255, g/255, b/255, a };
+	end;
+
+	return { r/255, g/255, b/255 };
+end;

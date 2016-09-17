@@ -28,7 +28,10 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 			courseplay:setWaypointIndex(vehicle, min(vehicle.cp.finishWork + 1,vehicle.cp.numWaypoints));
 		end;
 	end;
-	if fieldArea or vehicle.cp.waypointIndex == vehicle.cp.startWork then
+	if vehicle.cp.hasTransferCourse and vehicle.cp.abortWork ~= nil and vehicle.cp.waypointIndex == 1 then
+		courseplay:setWaypointIndex(vehicle,vehicle.cp.startWork+1);
+	end
+	if fieldArea or vehicle.cp.waypointIndex == vehicle.cp.startWork or vehicle.cp.waypointIndex == vehicle.cp.stopWork +1 then
 		workSpeed = 1;
 	end
 	if (vehicle.cp.waypointIndex == vehicle.cp.stopWork or vehicle.cp.previousWaypointIndex == vehicle.cp.stopWork) and vehicle.cp.abortWork == nil and not vehicle.cp.isLoaded and not isFinishingWork and vehicle.cp.wait then
@@ -54,7 +57,17 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 			tool = workTool
 			workTool.cp.turnStage = vehicle.cp.turnStage
 		end
-
+		local ridgeMarker = vehicle.Waypoints[vehicle.cp.waypointIndex].ridgeMarker
+		local nextRidgeMarker = vehicle.Waypoints[min(vehicle.cp.waypointIndex+4,vehicle.cp.numWaypoints)].ridgeMarker
+		
+		if workTool.haeckseldolly then
+			if (ridgeMarker == 2 or (nextRidgeMarker == 2 and vehicle.cp.turnStage>1)) and workTool.bunkerrechts ~= false then
+				workTool.bunkerrechts = false
+			elseif (ridgeMarker == 1 or (nextRidgeMarker == 1 and vehicle.cp.turnStage>1)) and workTool.bunkerrechts ~= true then
+				workTool.bunkerrechts = true
+			end
+		end
+		
 		local isFolding, isFolded, isUnfolded = courseplay:isFolding(workTool);
 		local needsLowering = false
 		
@@ -62,8 +75,8 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 			needsLowering = workTool.attacherJoint.needsLowering
 		end
 		
-		--speedlimits														--	TODO (Tom) workTool:doCheckSpeedLimit() is not working for harvesters			
-		if (workTool.doCheckSpeedLimit and workTool:doCheckSpeedLimit()) or workTool.cp.isGrimmeMaxtron620 or workTool.cp.isGrimmeTectron415 then
+		--speedlimits								--	TODO (Tom) workTool:doCheckSpeedLimit() is not working for harvesters			
+		if workTool.doCheckSpeedLimit and (workTool:doCheckSpeedLimit() or workTool.isPreparerSpeedLimitActive) then
 			forceSpeedLimit = min(forceSpeedLimit, workTool.speedLimit)
 		end
 		
@@ -78,7 +91,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 			-- balers
 			if courseplay:isBaler(workTool) then
 				if vehicle.cp.waypointIndex >= vehicle.cp.startWork + 1 and vehicle.cp.waypointIndex < vehicle.cp.stopWork and vehicle.cp.turnStage == 0 then
-																			--  vehicle, workTool, unfold, lower, turnOn, allowedToDrive, cover, unload, ridgeMarker)
+																			--  vehicle, workTool, unfold, lower, turnOn, allowedToDrive, cover, unload, ridgeMarker,forceSpeedLimit)
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle, workTool, true,   true,  true,   allowedToDrive, nil,   nil);
 					if not specialTool then
 						-- automatic opening for balers
@@ -130,7 +143,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 			-- baleloader, copied original code parts
 			elseif courseplay:isBaleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool) then
 				if workArea and fillLevelPct ~= 100 then
-					specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,true,true,true,allowedToDrive,nil,nil);
+					specialTool, allowedToDrive, forceSpeedLimit = courseplay:handleSpecialTools(vehicle,workTool,true,true,true,allowedToDrive,nil,nil,nil,forceSpeedLimit);
 					if not specialTool then
 						-- automatic stop for baleloader
 						if workTool.grabberIsMoving then
@@ -157,10 +170,11 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 
 				if fillLevelPct == 100 and not vehicle.cp.hasUnloadingRefillingCourse then
 					if vehicle.cp.automaticUnloadingOnField then
-						vehicle.cp.unloadOrder = true
+						specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,false,false,false,allowedToDrive,nil,true); 
+						if not specialTool then
+							vehicle.cp.unloadOrder = true
+						end
 						CpManager:setGlobalInfoText(vehicle, 'UNLOADING_BALE');
-					else
-						specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,false,false,false,allowedToDrive,nil,nil); --TODO: unclear
 					end
 				end;
 
@@ -388,7 +402,8 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 							end;
 						end;
 					end;
-					courseplay:setWaypointIndex(vehicle, vehicle.cp.stopWork - 4);
+					--courseplay:setWaypointIndex(vehicle, vehicle.cp.stopWork - 4);
+					courseplay:setWaypointIndex(vehicle, vehicle.cp.stopWork + 1);
 					if vehicle.cp.waypointIndex < 1 then
 						courseplay:setWaypointIndex(vehicle, 1);
 					end
@@ -403,7 +418,6 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 
 		--COMBINES
 		elseif workTool.cp.hasSpecializationCutter then
-
 			--Start combine
 			local isTurnedOn = tool:getIsTurnedOn();
 			local pipeState = 0;
@@ -411,7 +425,8 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 				pipeState = tool:getOverloadingTrailerInRangePipeState();
 			end;
 			if workArea and not tool.isAIThreshing and vehicle.cp.abortWork == nil and vehicle.cp.turnStage == 0 then
-				specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,true,true,true,allowedToDrive,nil,nil)
+											--courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload,ridgeMarker,forceSpeedLimit)
+				specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,true,true,true,allowedToDrive,nil,nil,ridgeMarker)
 				if not specialTool then
 					local weatherStop = not tool:getIsThreshingAllowed(true)
 
@@ -532,7 +547,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 						tool:setFoldDirection(-tool.cp.realUnfoldDirection);
 					end;
 				end
-				if tool.cp.isCombine and not tool.cp.wantsCourseplayer then
+				if tool.cp.isCombine and not tool.cp.wantsCourseplayer and tool.fillLevel > 0.1 and tool.courseplayers and #(tool.courseplayers) == 0 then
 					tool.cp.wantsCourseplayer = true
 				end
 			end
@@ -549,11 +564,11 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 			end
 			if tool.cp.waitingForTrailerToUnload then
 				local mayIDrive = false;
-				if tool.cp.isCombine or courseplay:isAttachedCombine(workTool) then
+				if tool.cp.isCombine or (courseplay:isAttachedCombine(workTool) and not courseplay:isSpecialChopper(workTool)) then
 					if tool.cp.isCheckedIn == nil or (pipeState == 0 and tool.fillLevel == 0) then
 						tool.cp.waitingForTrailerToUnload = false
 					end
-				elseif tool.cp.isChopper then
+				elseif tool.cp.isChopper or courseplay:isSpecialChopper(workTool) then
 					-- resume driving
 					local ch, gr = Fillable.FILLTYPE_CHAFF, Fillable.FILLTYPE_GRASS_WINDROW;
 					if (tool.pipeParticleSystems and ((tool.pipeParticleSystems[ch] and tool.pipeParticleSystems[ch].isEmitting) or (tool.pipeParticleSystems[gr] and tool.pipeParticleSystems[gr].isEmitting))) or pipeState > 0 then

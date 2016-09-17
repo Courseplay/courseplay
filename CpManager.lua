@@ -38,6 +38,7 @@ function CpManager:loadMap(name)
 	self:setupWages();
 	self:setupIngameMap();
 	courseplay.courses:setup(); -- NOTE: this call is only to set up batchWriteSize, without loading anything
+	self:setup2dCourseData(false); -- NOTE: this call is only to initiate the position and opacity
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- LOAD SETTINGS FROM COURSEPLAY.XML / SAVE DEFAULT SETTINGS IF NOT EXISTING
@@ -50,6 +51,7 @@ function CpManager:loadMap(name)
 	self:setUpDebugChannels(); -- NOTE: debugChannels have to be set up after the hud, as they rely on some hud values [positioning]
 	self:setupGlobalInfoText(); -- NOTE: globalInfoText has to be set up after the hud, as they rely on some hud values [colors, function]
 	courseplay.courses:setup(true); -- NOTE: courses:setup is called a second time, now we actually load the courses and folders from the XML
+	self:setup2dCourseData(true); -- NOTE: setup2dCourseData is called a second time, now we actually create the data and overlays
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- COURSEPLAYERS TABLES
@@ -94,6 +96,7 @@ function CpManager:loadMap(name)
 	if CpManager.isDeveloper then
 		addConsoleCommand('cpAddMoney', ('Add %s to your bank account'):format(g_i18n:formatMoney(5000000)), 'devAddMoney', self);
 		addConsoleCommand('cpAddFillLevels', 'Add 500\'000 l to all of your silos', 'devAddFillLevels', self);
+		addConsoleCommand('cpStopAll', 'Stop all Courseplayers', 'devStopAll', self);
 	end;
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -106,23 +109,6 @@ function CpManager:loadMap(name)
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- TRAFFIC
 	self.trafficCollisionIgnoreList = {};
-
-	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	-- 2D COURSE
-	self.course2dPolyOverlayId = createImageOverlay('dataS/scripts/shared/graph_pixel.dds');
-
-	local w, h = courseplay.hud:getPxToNormalConstant(14, 10);
-	self.course2dTractorOverlay = Overlay:new('cpTractorIndicator', courseplay.hud.iconSpritePath, 0.5, 0.5, w, h);
-	courseplay.utils:setOverlayUVsPx(self.course2dTractorOverlay, courseplay.hud.buttonUVsPx.recordingPlay, courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
-	self.course2dTractorOverlay:setColor(0,0.8,1,1);
-
-	self.course2dPlotField = { x = 0.65, y = 0.35, width = 0.3, height = 0.3 * g_screenAspectRatio}; -- definition of plot field for 2D
-
-	self.course2dColorTable = {
-		{ pct = 0.0, color = {  84/255, 255/255, 0/255 } },
-		{ pct = 0.5, color = { 255/255, 230/255, 0/255 } },
-		{ pct = 1.0, color = { 210/255,   5/255, 0/255 } }
-	};
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- MISCELLANEOUS
@@ -209,6 +195,9 @@ function CpManager:deleteMap()
 	end;
 	if self.course2dTractorOverlay then
 		self.course2dTractorOverlay:delete();
+	end;
+	if self.course2dPdaMapOverlay then
+		self.course2dPdaMapOverlay:delete();
 	end;
 end;
 
@@ -459,6 +448,15 @@ function CpManager:devAddFillLevels()
 		return 'All silo fill levels increased by 500\'000.';
 	end;
 end;
+function CpManager:devStopAll()
+	if g_server ~= nil then
+		for _,vehicle in pairs (self.activeCoursePlayers) do
+			courseplay:stop(vehicle);
+		end
+		
+		return ('stopped all Courseplayers');
+	end;
+end;
 
 function CpManager:setupFieldScanInfo()
 	-- FIELD SCAN INFO DISPLAY
@@ -494,10 +492,11 @@ function CpManager:setupFieldScanInfo()
 	courseplay.utils:setOverlayUVsPx(self.fieldScanInfo.progressBarOverlay, self.fieldScanInfo.progressBarUVs, self.fieldScanInfo.fileWidth, self.fieldScanInfo.fileHeight);
 
 	self.fieldScanInfo.percentColors = {
-		{ pct = 0.0, color = { 225/255,  27/255, 0/255 } },
-		{ pct = 0.5, color = { 255/255, 204/255, 0/255 } },
-		{ pct = 1.0, color = { 137/255, 243/255, 0/255 } }
+		  [0] = courseplay.utils:rgbToNormal(225,  27, 0),
+		 [50] = courseplay.utils:rgbToNormal(255, 204, 0),
+		[100] = courseplay.utils:rgbToNormal(137, 243, 0)
 	};
+	self.fieldScanInfo.colorMapStep = 50;
 end;
 
 function CpManager:renderFieldScanInfo()
@@ -507,7 +506,7 @@ function CpManager:renderFieldScanInfo()
 
 	local pct = courseplay.fields.curFieldScanIndex / g_currentMission.fieldDefinitionBase.numberOfFields;
 
-	local r, g, b = courseplay.utils:getColorFromPct(pct, fsi.percentColors);
+	local r, g, b = courseplay.utils:getColorFromPct(pct * 100, fsi.percentColors, fsi.colorMapStep);
 	fsi.progressBarOverlay:setColor(r, g, b, 1);
 
 	fsi.progressBarOverlay.width = fsi.progressBarMaxWidth * pct;
@@ -528,7 +527,7 @@ function CpManager:renderFieldScanInfo()
 	renderText(fsi.textPosX, fsi.textPosY,         fsi.textFontSize, text);
 
 	-- reset font settings
-	courseplay:setFontSettings('white', true);
+	courseplay:setFontSettings('white', false, 'left');
 end;
 
 function CpManager.drawMouseButtonHelp(self, posY, txt)
@@ -853,6 +852,35 @@ function CpManager:renderGlobalInfoTexts(basePosY)
 	return line;
 end;
 
+-- ####################################################################################################
+-- 2D COURSE DRAW SETUP
+function CpManager:setup2dCourseData(createOverlays)
+	if not createOverlays then
+		self.course2dPlotPosX = 0.65;
+		self.course2dPlotPosY = 0.35;
+		self.course2dPdaMapOpacity = 0.7;
+
+		self.course2dColorTable = {
+			  [0] = courseplay.utils:rgbToNormal( 24, 225, 0),
+			 [50] = courseplay.utils:rgbToNormal(255, 230, 0),
+			[100] = courseplay.utils:rgbToNormal(210,   5, 0)
+		};
+		self.course2dColorPctStep = 50;
+
+		local height = courseplay.hud:getFullPx(0.3 * 1920 / 1080, 'y');
+		local width = height / g_screenAspectRatio;
+		self.course2dPlotField = { x = self.course2dPlotPosX, y = self.course2dPlotPosY, width = width, height = height }; -- definition of plot field for 2D
+		-- print(('course2dPlotField: x=%f (%.1f px), y=%f (%.1f px), width=%.1f (%.1f px), height=%.2f (%.1f px)'):format(self.course2dPlotPosX, self.course2dPlotPosX * g_screenWidth, self.course2dPlotPosY, self.course2dPlotPosY * g_screenHeight, width, width * g_screenWidth, height, height * g_screenHeight));
+		return;
+	end;
+
+	self.course2dPolyOverlayId = createImageOverlay('dataS/scripts/shared/graph_pixel.dds');
+
+	local w, h = courseplay.hud:getPxToNormalConstant(14, 10);
+	self.course2dTractorOverlay = Overlay:new('cpTractorIndicator', courseplay.hud.iconSpritePath, 0.5, 0.5, w, h);
+	courseplay.utils:setOverlayUVsPx(self.course2dTractorOverlay, courseplay.hud.buttonUVsPx.recordingPlay, courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
+	self.course2dTractorOverlay:setColor(0,0.8,1,1);
+end;
 
 -- ####################################################################################################
 -- LOAD SETTINGS FROM courseplay.xml / SET DEFAULT SETTINGS IF NOT EXISTING
@@ -967,6 +995,28 @@ function CpManager:loadOrSetXmlSettings()
 			setXMLInt(cpFile, key .. '#batchWriteSize', courseplay.courses.batchWriteSize);
 		end;
 
+
+		-- 2D course
+		key = 'XML.course2D';
+		local posX, posY, opacity = getXMLFloat(cpFile, key .. '#posX'), getXMLFloat(cpFile, key .. '#posY'), getXMLFloat(cpFile, key .. '#opacity');
+		if posX ~= nil then
+			self.course2dPlotPosX = posX;
+			self.course2dPlotField.x = self.course2dPlotPosX;
+		else
+			setXMLFloat(cpFile, key .. '#posX', self.course2dPlotPosX);
+		end;
+		if posY ~= nil then
+			self.course2dPlotPosY = posY;
+			self.course2dPlotField.y = self.course2dPlotPosY;
+		else
+			setXMLFloat(cpFile, key .. '#posY', self.course2dPlotPosY);
+		end;
+		if opacity ~= nil then
+			self.course2dPdaMapOpacity = opacity;
+		else
+			setXMLFloat(cpFile, key .. '#opacity', self.course2dPdaMapOpacity);
+		end;
+
 		--------------------------------------------------
 		saveXMLFile(cpFile);
 		delete(cpFile);
@@ -1008,8 +1058,14 @@ function CpManager:createXmlSettings()
 	-- batch write size (used in deleteSaveAll())
 	key = 'XML.courseManagement';
 	setXMLInt(cpFile, key .. '#batchWriteSize', courseplay.courses.batchWriteSize);
-	--------------------------------------------------
 
+	-- 2D course
+	key = 'XML.course2D';
+	setXMLFloat(cpFile, key .. '#posX', self.course2dPlotPosX);
+	setXMLFloat(cpFile, key .. '#posY', self.course2dPlotPosY);
+	setXMLFloat(cpFile, key .. '#opacity', self.course2dPdaMapOpacity);
+
+	--------------------------------------------------
 	saveXMLFile(cpFile);
 	delete(cpFile);
 end;

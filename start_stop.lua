@@ -20,11 +20,10 @@ function courseplay:start(self)
 		return
 	end
 	courseplay:setEngineState(self, true);
-	--print(tableShow(self.attachedImplements[1].object,tableShow(self.attachedImplements[1].object.name,nil,nil,2)))
+	--print(tableShow(self.attachedImplements,"self.attachedImplements",nil,nil,4))
 	--local id = self.attachedImplements[1].object.unloadTrigger.triggerId
 	--courseplay:findInTables(g_currentMission ,"g_currentMission", id)
 
-	
 	if self.cp.orgRpm == nil then
 		self.cp.orgRpm = {}
 		self.cp.orgRpm[1] = self.motor.maxRpm
@@ -70,7 +69,7 @@ function courseplay:start(self)
 	end
 	
 	-- adapt collis height to vehicles height , its a runonce
-	if self.cp.ColliHeightSet == nil then
+	if self.cp.ColliHeightSet == nil and self.cp.numTrafficCollisionTriggers > 0 then
 		local height = 0;
 		local step = self.sizeLength/2;
 		local distance = self.sizeLength;
@@ -112,7 +111,7 @@ function courseplay:start(self)
 
 	self.cp.backMarkerOffset = nil
 	self.cp.aiFrontMarker = nil
-
+	self.cp.turnTimer = 8000
 	courseplay:reset_tools(self)
 	-- show arrow
 	self:setCpVar('distanceCheck',true,courseplay.isClient);
@@ -262,6 +261,7 @@ function courseplay:start(self)
 	elseif self.cp.mode == 4 or self.cp.mode == 6 then
 		courseplay:setIsLoaded(self, false);
 		self.cp.hasUnloadingRefillingCourse = self.cp.numWaypoints > self.cp.stopWork + 7;
+		self.cp.hasTransferCourse = self.cp.startWork > 5
 		if  self.Waypoints[self.cp.stopWork].cx == self.Waypoints[self.cp.startWork].cx 
 		and self.Waypoints[self.cp.stopWork].cz == self.Waypoints[self.cp.startWork].cz then -- TODO: VERY unsafe, there could be LUA float problems (e.g. 7 + 8 = 15.000000001)
 			self.cp.finishWork = self.cp.stopWork-5
@@ -273,7 +273,7 @@ function courseplay:start(self)
 		if self.cp.startAtPoint == courseplay.START_AT_NEAREST_POINT and self.cp.finishWork ~= self.cp.stopWork and self.cp.waypointIndex > self.cp.finishWork and self.cp.waypointIndex <= self.cp.stopWork then
 			courseplay:setWaypointIndex(self, 2);
 		end
-		courseplay:debug(string.format("%s: numWaypoints=%d, stopWork=%d, finishWork=%d, hasUnloadingRefillingCourse=%s, waypointIndex=%d", nameNum(self), self.cp.numWaypoints, self.cp.stopWork, self.cp.finishWork, tostring(self.cp.hasUnloadingRefillingCourse), self.cp.waypointIndex), 12);
+		courseplay:debug(string.format("%s: numWaypoints=%d, stopWork=%d, finishWork=%d, hasUnloadingRefillingCourse=%s,hasTransferCourse=%s, waypointIndex=%d", nameNum(self), self.cp.numWaypoints, self.cp.stopWork, self.cp.finishWork, tostring(self.cp.hasUnloadingRefillingCourse),tostring(self.cp.hasTransferCourse), self.cp.waypointIndex), 12);
 	end
 
 	if self.cp.mode == 9 then
@@ -331,10 +331,14 @@ function courseplay:start(self)
 			driveControlInputEvent.sendEvent(self);
 		end;
 	end;
-
 	
+	--check Crab Steering mode for HolmerDLC
+	if self.cp.isHolmerDlcCrabSteeringPossible and self.crabSteering.stateTarget > 1  then
+		self.cp.hasCrabSteeringActive = true;
+	end
 
 	-- ok i am near the waypoint, let's go
+	self.cp.savedCheckSpeedLimit = self.checkSpeedLimit;
 	self.checkSpeedLimit = false
 	self.cp.runOnceStartCourse = true;
 	self:setIsCourseplayDriving(true);
@@ -344,6 +348,9 @@ function courseplay:start(self)
 	self.cp.totalLength, self.cp.totalLengthOffset = courseplay:getTotalLengthOnWheels(self);
 
 	courseplay:validateCanSwitchMode(self);
+
+	-- deactivate load/add/delete course buttons
+	courseplay.buttons:setActiveEnabled(self, 'page2');
 
 	-- add ingameMap icon
 	if CpManager.ingameMapIconActive then
@@ -447,6 +454,12 @@ end;
 -- stops driving the course
 function courseplay:stop(self)
 
+	--stop special tools
+	for _, tool in pairs (self.cp.workTools) do
+							--  vehicle, workTool, unfold, lower, turnOn, allowedToDrive, cover, unload, ridgeMarker,forceSpeedLimit)
+		courseplay:handleSpecialTools(self, tool, false,   false,  false,   false, false, nil,nil,0);
+	end
+
 	
 	self.forceIsActive = self.cp.forceIsActiveBackup;
 	self.stopMotorOnLeave = self.cp.stopMotorOnLeaveBackup;
@@ -521,7 +534,7 @@ function courseplay:stop(self)
 
 	-- resetting variables
 	self.cp.tempCollis = {}
-	self.checkSpeedLimit = true
+	self.checkSpeedLimit = self.cp.savedCheckSpeedLimit;
 	courseplay:resetTipTrigger(self);
 	self:setIsCourseplayDriving(false);
 	self:setCpVar('canDrive',true,courseplay.isClient)
@@ -539,12 +552,13 @@ function courseplay:stop(self)
 	self.cp.startWork = nil
 	self.cp.stopWork = nil
 	self.cp.hasUnloadingRefillingCourse = false;
+	self.cp.hasTransferCourse = false
 	courseplay:setStopAtEnd(self, false);
 	self.cp.isUnloaded = false;
 	self.cp.prevFillLevelPct = nil;
 	self.cp.isInRepairTrigger = nil;
 	self.cp.curMapWeightStation = nil;
-
+	self.cp.hasCrabSteeringActive = nil;
 	courseplay:setSlippingStage(self, 0);
 	courseplay:resetCustomTimer(self, 'slippingStage1');
 	courseplay:resetCustomTimer(self, 'slippingStage2');
@@ -588,6 +602,9 @@ function courseplay:stop(self)
 
 	--validation: can switch mode?
 	courseplay:validateCanSwitchMode(self);
+
+	-- reactivate load/add/delete course buttons
+	courseplay.buttons:setActiveEnabled(self, 'page2');
 end
 
 

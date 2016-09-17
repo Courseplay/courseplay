@@ -430,12 +430,12 @@ function courseplay:turn(self, dt) --!!!
 	5:	
 	6:	
 	]]
-
+	
 	if self.cp.mode == 4 then
 		courseplay:newturn(self, dt);
 		return;
 	end;
-
+	
 	local newTargetX, newTargetY, newTargetZ;
 	local moveForwards = true;
 	local updateWheels = true;
@@ -448,10 +448,14 @@ function courseplay:turn(self, dt) --!!!
 	if self.cp.noStopOnEdge then
 		turnOutTimer = 0
 	end
+	if self.cp.lastDistanceToTurnPoint == nil then
+		self.cp.lastDistanceToTurnPoint = math.huge;
+	end
 	if not self.cp.checkMarkers then
 		self.cp.checkMarkers = true
 		for _,workTool in pairs(self.cp.workTools) do
 			courseplay:setMarkers(self, workTool)
+			courseplay:askForSpecialSettings(self, workTool)
 		end
 	end
 	
@@ -599,6 +603,7 @@ function courseplay:turn(self, dt) --!!!
 		-- TURN STAGE 1
 		elseif self.cp.turnStage == 1 then
 			-- turn
+			self.cp.lastDistanceToTurnPoint = math.huge;
 			local dirX, dirZ = self.aiTractorDirectionX, self.aiTractorDirectionZ;
 			if self.cp.isTurning == "right" then
 				self.aiTractorTurnLeft = false;
@@ -622,7 +627,7 @@ function courseplay:turn(self, dt) --!!!
 			self.turnStageTimer = Utils.getNoNil(self.turnStage2Timeout,20000)
 
 		-- TURN STAGE ??? --TODO (Jakob): what's the situation here? turnStage not > 1 and not > 0 ? When do we get to this point?
-		else
+		else              -- The situation is when a turn timeout appears...
 			self.cp.turnStage = 1;
 			if self.cp.noStopOnTurn == false then
 				self.waitForTurnTime = self.timer + turnTimer;
@@ -643,16 +648,22 @@ function courseplay:turn(self, dt) --!!!
 		end
 		
 		local offset = Utils.getNoNil(self.cp.totalOffsetX, 0)
+		local targetX,targetZ = self.Waypoints[self.cp.waypointIndex].cx, self.Waypoints[self.cp.waypointIndex].cz;
 		local x,y,z = localToWorld(self.cp.DirectionNode, offset, 0, backMarker)
-		local dist = courseplay:distance(self.Waypoints[self.cp.waypointIndex].cx, self.Waypoints[self.cp.waypointIndex].cz, x, z)
+		local terrainHeight = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode,targetX,0,targetZ)
+		local dist = courseplay:distance3D(targetX,terrainHeight,targetZ, x,y,z)
+		--local dist = courseplay:distance(targetX,targetZ,x,z)
+		-- print(string.format("distance: %f; backmarker %f; y:%.3f vs Height:%.3f",dist,backMarker,y,terrainHeight))
 		if backMarker <= 0 then
-			if  dist < 0.5 then
+			if  dist < 0.5 or self.cp.lastDistanceToTurnPoint < dist then
 				if not self.cp.noStopOnTurn then
 					self.cp.waitForTurnTime = self.timer + turnTimer
 				end
 				courseplay:lowerImplements(self, false, false)
 				updateWheels = false;
 				self.cp.turnStage = 1;
+			else
+				self.cp.lastDistanceToTurnPoint = dist;
 			end
 		else
 			if dist < 0.5 and self.cp.turnStage ~= -1 then
@@ -744,9 +755,9 @@ function courseplay:lowerImplements(self, moveDown, workToolonOff)
 			self:setFoldState(state, true);
 		end;
 		if self.cp.mode == 4 then
-			for _,workTool in pairs(self.cp.workTools) do
-				if workTool.setIsTurnedOn ~= nil and not courseplay:isFolding(workTool) and workTool ~= self and workTool.isTurnedOn ~= workToolonOff then
-					workTool:setIsTurnedOn(workToolonOff, false);
+			for _,workTool in pairs(self.cp.workTools) do								 --vvTODO (Tom) why is this here vv?
+				if workTool.setIsTurnedOn ~= nil and not courseplay:isFolding(workTool) and (true or workTool ~= self) and workTool.isTurnedOn ~= workToolonOff then
+					workTool:setIsTurnedOn(workToolonOff, false);                          -- disabled for Pantera
 				end;
 			end;
 		end;

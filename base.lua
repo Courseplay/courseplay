@@ -80,7 +80,9 @@ function courseplay:load(xmlFile)
 	self.cp.crossingPoints = {};
 	self.cp.numCrossingPoints = 0;
 
-	self.cp.visualWaypointsMode = 1
+	self.cp.visualWaypointsStartEnd = true;
+	self.cp.visualWaypointsAll = false;
+	self.cp.visualWaypointsCrossing = false;
 	self.cp.warningLightsMode = 1;
 	self.cp.hasHazardLights = self.turnSignalState ~= nil and self.setTurnSignalState ~= nil;
 
@@ -113,6 +115,7 @@ function courseplay:load(xmlFile)
 	self.cp.stopWork = nil
 	self.cp.abortWork = nil
 	self.cp.hasUnloadingRefillingCourse = false;
+	self.cp.hasTransferCourse = false
 	self.cp.wait = true;
 	self.cp.waitTimer = nil;
 	self.cp.realisticDriving = true;
@@ -426,11 +429,19 @@ function courseplay:load(xmlFile)
 
 	self.cp.mouseCursorActive = false;
 
+	-- 2D course
+	self.cp.drawCourseMode = courseplay.COURSE_2D_DISPLAY_OFF;
+	-- 2D pda map background -- TODO: MP?
+	if g_statisticView.mapImage and g_statisticView.mapImage.overlay.filename then
+		self.cp.course2dPdaMapOverlay = Overlay:new('cpPdaMap', g_statisticView.mapImage.overlay.filename, 0, 0, 1, 1);
+		self.cp.course2dPdaMapOverlay:setColor(1, 1, 1, CpManager.course2dPdaMapOpacity);
+	end;
+
 	-- HUD
 	courseplay.hud:setupVehicleHud(self);
 
 	courseplay:validateCanSwitchMode(self);
-	courseplay:buttonsActiveEnabled(self, 'all');
+	courseplay.buttons:setActiveEnabled(self, 'all');
 end;
 
 function courseplay:postLoad(xmlFile)
@@ -611,21 +622,23 @@ function courseplay:draw()
 	--RENDER
 	courseplay:renderInfoText(self);
 
-	if self.cp.course2dDrawData and self.cp.drawCourse then
+	if self.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_2DONLY or self.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_BOTH then
 		courseplay:drawCourse2D(self, false);
 	end;
 end; --END draw()
 
 function courseplay:showWorkWidth(vehicle)
+	local offsX, offsZ = vehicle.cp.toolOffsetX or 0, vehicle.cp.toolOffsetZ or 0;
 
-	local left =  (vehicle.cp.workWidth *  0.5) + (vehicle.cp.toolOffsetX or 0);
-	local right = (vehicle.cp.workWidth * -0.5) + (vehicle.cp.toolOffsetX or 0);
+	local left =  (vehicle.cp.workWidth *  0.5) + offsX;
+	local right = (vehicle.cp.workWidth * -0.5) + offsX;
+
 
 	if vehicle.cp.DirectionNode and vehicle.cp.backMarkerOffset and vehicle.cp.aiFrontMarker then
-		local p1x, p1y, p1z = localToWorld(vehicle.cp.DirectionNode, left,  1.6, vehicle.cp.backMarkerOffset);
-		local p2x, p2y, p2z = localToWorld(vehicle.cp.DirectionNode, right, 1.6, vehicle.cp.backMarkerOffset);
-		local p3x, p3y, p3z = localToWorld(vehicle.cp.DirectionNode, right, 1.6, vehicle.cp.aiFrontMarker);
-		local p4x, p4y, p4z = localToWorld(vehicle.cp.DirectionNode, left,  1.6, vehicle.cp.aiFrontMarker);
+		local p1x, p1y, p1z = localToWorld(vehicle.cp.DirectionNode, left,  1.6, vehicle.cp.backMarkerOffset - offsZ);
+		local p2x, p2y, p2z = localToWorld(vehicle.cp.DirectionNode, right, 1.6, vehicle.cp.backMarkerOffset - offsZ);
+		local p3x, p3y, p3z = localToWorld(vehicle.cp.DirectionNode, right, 1.6, vehicle.cp.aiFrontMarker - offsZ);
+		local p4x, p4y, p4z = localToWorld(vehicle.cp.DirectionNode, left,  1.6, vehicle.cp.aiFrontMarker - offsZ);
 
 		drawDebugPoint(p1x, p1y, p1z, 1, 1, 0, 1);
 		drawDebugPoint(p2x, p2y, p2z, 1, 1, 0, 1);
@@ -637,8 +650,8 @@ function courseplay:showWorkWidth(vehicle)
 		drawDebugLine(p3x, p3y, p3z, 1, 0, 0, p4x, p4y, p4z, 1, 0, 0);
 		drawDebugLine(p4x, p4y, p4z, 1, 0, 0, p1x, p1y, p1z, 1, 0, 0);
 	else
-		local lX, lY, lZ = localToWorld(vehicle.rootNode, left,  1.6, -6);
-		local rX, rY, rZ = localToWorld(vehicle.rootNode, right, 1.6, -6);
+		local lX, lY, lZ = localToWorld(vehicle.rootNode, left,  1.6, -6 - offsZ);
+		local rX, rY, rZ = localToWorld(vehicle.rootNode, right, 1.6, -6 - offsZ);
 
 		drawDebugPoint(lX, lY, lZ, 1, 1, 0, 1);
 		drawDebugPoint(rX, rY, rZ, 1, 1, 0, 1);
@@ -730,7 +743,7 @@ function courseplay:update(dt)
 		end
 	end;
 
-	if CpManager.isDeveloper and self.cp.drawCourse then
+	if CpManager.isDeveloper and (self.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_DBGONLY or self.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_BOTH) then
 		courseplay:drawWaypointsLines(self);
 	end;
 
@@ -933,6 +946,9 @@ function courseplay:delete()
 			end;
 			self.cp.signs = nil;
 		end;
+		if self.cp.course2dPdaMapOverlay then
+			self.cp.course2dPdaMapOverlay:delete();
+		end;
 	end;
 end;
 
@@ -1070,7 +1086,9 @@ function courseplay:readStream(streamId, connection)
 	self.cp.speeds.field = streamDebugReadFloat32(streamId)
 	self.cp.speeds.reverse = streamDebugReadFloat32(streamId)
 	self.cp.speeds.street = streamDebugReadFloat32(streamId)
-	self.cp.visualWaypointsMode = streamDebugReadInt32(streamId)
+	self.cp.visualWaypointsStartEnd = streamDebugReadBool(streamId);
+	self.cp.visualWaypointsAll = streamDebugReadBool(streamId);
+	self.cp.visualWaypointsCrossing = streamDebugReadBool(streamId);
 	self.cp.warningLightsMode = streamDebugReadInt32(streamId)
 	self.cp.waitTime = streamDebugReadInt32(streamId)
 	self.cp.symmetricLaneChange = streamDebugReadBool(streamId)
@@ -1189,9 +1207,11 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteFloat32(streamId,self.cp.speeds.reverse)
 	streamDebugWriteFloat32(streamId,self.cp.speeds.street)
 	streamDebugWriteInt32(streamId,self.cp.visualWaypointsMode)
+	streamDebugWriteBool(streamId, self.cp.visualWaypointsStartEnd);
+	streamDebugWriteBool(streamId, self.cp.visualWaypointsAll);
+	streamDebugWriteBool(streamId, self.cp.visualWaypointsCrossing);
 	streamDebugWriteInt32(streamId,self.cp.warningLightsMode)
 	streamDebugWriteInt32(streamId,self.cp.waitTime)
-	streamDebugWriteBool(streamId,self.cp.symmetricLaneChange)
 	streamDebugWriteInt32(streamId,self.cp.startingCorner)
 	streamDebugWriteInt32(streamId,self.cp.startingDirection)
 	streamDebugWriteBool(streamId,self.cp.hasShovelStatePositions[2])
@@ -1247,8 +1267,22 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		local courses 			  = Utils.getNoNil(getXMLString(xmlFile, curKey .. '#courses'),			 '');
 		self.cp.loadedCourses = Utils.splitString(",", courses);
 		courseplay:reloadCourses(self, true);
-		local visualWaypointsMode = Utils.getNoNil(   getXMLInt(xmlFile, curKey .. '#visualWaypoints'),	 1);
-		courseplay:changeVisualWaypointsMode(self, 0, visualWaypointsMode);
+
+		local visualWaypointsStartEnd = getXMLBool(xmlFile, curKey .. '#visualWaypointsStartEnd');
+		local visualWaypointsAll = getXMLBool(xmlFile, curKey .. '#visualWaypointsAll');
+		local visualWaypointsCrossing = getXMLBool(xmlFile, curKey .. '#visualWaypointsCrossing');
+		if visualWaypointsStartEnd ~= nil then
+			courseplay:toggleShowVisualWaypointsStartEnd(self, visualWaypointsStartEnd, false);
+		end;
+		if visualWaypointsAll ~= nil then
+			courseplay:toggleShowVisualWaypointsAll(self, visualWaypointsAll, false);
+		end;
+		if visualWaypointsCrossing ~= nil then
+			courseplay:toggleShowVisualWaypointsCrossing(self, visualWaypointsCrossing, false);
+		end;
+		courseplay.buttons:setActiveEnabled(self, 'visualWaypoints');
+		courseplay.signs:setSignsVisibility(self);
+
 		self.cp.multiSiloSelectedFillType = Fillable.fillTypeNameToInt[Utils.getNoNil(getXMLString(xmlFile, curKey .. '#multiSiloSelectedFillType'), 'unknown')];
 		if self.cp.multiSiloSelectedFillType == nil then self.cp.multiSiloSelectedFillType = Fillable.FILLTYPE_UNKNOWN; end;
 
@@ -1289,7 +1323,7 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		offsetData = Utils.splitString(';', offsetData);
 		courseplay:changeLaneOffset(self, nil, tonumber(offsetData[1]));
 		courseplay:changeToolOffsetX(self, nil, tonumber(offsetData[2]), true);
-		courseplay:changeToolOffsetZ(self, nil, tonumber(offsetData[3]));
+		courseplay:changeToolOffsetZ(self, nil, tonumber(offsetData[3]), true);
 		courseplay:toggleSymmetricLaneChange(self, offsetData[4] == 'true');
 
 		-- SHOVEL POSITIONS
@@ -1311,12 +1345,12 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 							trans = shovelTransSplit
 						};
 					end;
-					self.cp.hasShovelStatePositions[state] = self.cp.shovelStatePositions[state] ~= nil and self.cp.shovelStatePositions[state].rot ~= nil and self.cp.shovelStatePositions[state].trans ~= nil; --TODO (Jakob): divide into rot and trans as well?
+					self.cp.hasShovelStatePositions[state] = self.cp.shovelStatePositions[state] ~= nil and self.cp.shovelStatePositions[state].rot ~= nil and self.cp.shovelStatePositions[state].trans ~= nil;
 				end;
 			end;
 		end;
 		courseplay:debug(tableShow(self.cp.shovelStatePositions, nameNum(self) .. ' shovelStatePositions (after loading)', 10), 10);
-		courseplay:buttonsActiveEnabled(self, 'shovel');
+		courseplay.buttons:setActiveEnabled(self, 'shovel');
 
 		-- COMBINE
 		if self.cp.isCombine then
@@ -1376,7 +1410,7 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 
 
 	--NODES
-	local cpOpen = string.format('<courseplay aiMode=%q courses=%q openHudWithMouse=%q lights=%q visualWaypoints=%q waitTime=%q multiSiloSelectedFillType=%q>', tostring(self.cp.mode), tostring(table.concat(self.cp.loadedCourses, ",")), tostring(self.cp.hud.openWithMouse), tostring(self.cp.warningLightsMode), tostring(self.cp.visualWaypointsMode), tostring(self.cp.waitTime), Fillable.fillTypeIntToName[self.cp.multiSiloSelectedFillType]);
+	local cpOpen = string.format('<courseplay aiMode=%q courses=%q openHudWithMouse=%q lights=%q visualWaypointsStartEnd=%q visualWaypointsAll=%q visualWaypointsCrossing=%q waitTime=%q multiSiloSelectedFillType=%q>', tostring(self.cp.mode), tostring(table.concat(self.cp.loadedCourses, ",")), tostring(self.cp.hud.openWithMouse), tostring(self.cp.warningLightsMode), tostring(self.cp.visualWaypointsStartEnd), tostring(self.cp.visualWaypointsAll), tostring(self.cp.visualWaypointsCrossing), tostring(self.cp.waitTime), Fillable.fillTypeIntToName[self.cp.multiSiloSelectedFillType]);
 	local speeds = string.format('<speeds useRecordingSpeed=%q reverse="%d" turn="%d" field="%d" max="%d" />', tostring(self.cp.speeds.useRecordingSpeed), self.cp.speeds.reverse, self.cp.speeds.turn, self.cp.speeds.field, self.cp.speeds.street);
 	local combi = string.format('<combi tipperOffset="%.1f" combineOffset="%.1f" combineOffsetAutoMode=%q fillFollow="%d" fillDriveOn="%d" turnDiameter="%d" realisticDriving=%q />', self.cp.tipperOffset, self.cp.combineOffset, tostring(self.cp.combineOffsetAutoMode), self.cp.followAtFillLevel, self.cp.driveOnAtFillLevel, self.cp.turnDiameter, tostring(self.cp.realisticDriving));
 	local fieldWork = string.format('<fieldWork workWidth="%.1f" ridgeMarkersAutomatic=%q offsetData=%q abortWork="%d" refillUntilPct="%d" />', self.cp.workWidth, tostring(self.cp.ridgeMarkersAutomatic), offsetData, Utils.getNoNil(self.cp.abortWork, 0), self.cp.refillUntilPct);

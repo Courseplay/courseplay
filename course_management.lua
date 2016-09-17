@@ -265,7 +265,7 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 		courseplay:validateCanSwitchMode(vehicle);
 
 		-- SETUP 2D COURSE DRAW DATA
-		courseplay:setupCourse2dData(vehicle);
+		vehicle.cp.course2dUpdateDrawData = true;
 	end
 end
 
@@ -647,6 +647,7 @@ function courseplay.courses:deleteSaveAll()
 				header = header .. ('\t<courseplayWages active=%q wagePerHour="%d" />\n'):format(tostring(CpManager.wagesActive), CpManager.wagePerHour);
 				header = header .. ('\t<courseplayIngameMap active=%q showName=%q showCourse=%q />\n'):format(tostring(CpManager.ingameMapIconActive), tostring(CpManager.ingameMapIconShowName),tostring(CpManager.ingameMapIconShowCourse));
 				header = header .. ('\t<courseManagement batchWriteSize="%d" />\n'):format(self.batchWriteSize);
+				header = header .. ('\t<course2D posX="%.3f" posY="%.3f" opacity="%.2f" />\n'):format(CpManager.course2dPlotPosX, CpManager.course2dPlotPosY, CpManager.course2dPdaMapOpacity);
 
 				file:write(header);
 
@@ -672,7 +673,7 @@ function courseplay.courses:deleteSaveAll()
 					if course.headlandDirectionCW ~= nil then
 						courseTxt = courseTxt .. (' headlandDirectionCW="%s"'):format(tostring(course.headlandDirectionCW));
 					end;
-					courseTxt = courseText .. '>\n';
+					courseTxt = courseTxt .. '>\n';
 					file:write(courseTxt);
 
 					local wpBatchTxt = '';
@@ -862,7 +863,7 @@ function courseplay:linkParent(vehicle, index)
 			vehicle.cp.hud.choose_parent = false
 		end
 	end -- if type(vehicle.cp.hud.courses[index]) ~= nil
-	--courseplay:buttonsActiveEnabled(vehicle, "page2");
+	--courseplay.buttons:setActiveEnabled(vehicle, "page2");
 end
 
 function courseplay.courses:getNextCourse(vehicle, index, rev)

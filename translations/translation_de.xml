@@ -80,10 +80,6 @@
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 						 text="maximale Geschwindigkeit" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 				 text="automatisch (vom Kurs, max. %s)" />
 		<text name="COURSEPLAY_NO_COURSE_LOADED" 						 text="kein Kurs geladen" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_1" 						 text="Anfang und Ende" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_2" 						 text="ohne Kreuzungspunkte" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_3" 						 text="alle eigenen" />
-		<text name="COURSEPLAY_WAYPOINT_MODE_4" 						 text="keine" />
 		<text name="COURSEPLAY_WARNING_LIGHTS" 							 text="Warnleuchten:" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 					 text="ausgeschaltet" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 					 text="RUL (auf der Straße)" />
@@ -218,6 +214,7 @@
 		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="Wendemaneuver beenden" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_START" 				 text="Rückwärtsfahren beginnen" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="Rückwärtsfahren beenden" />
+		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Zwischenpunkte hinzufügen" />
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Karten-Icons: Text anzeigen" />
 		<text name="COURSEPLAY_ALWAYS_USE_4WD" 							 text="Allrad immer anschalten" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="Möchtest du dass die Felder automatisch gescanned werden?" />
@@ -226,6 +223,10 @@
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 				 text="Feld: %d (%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 			 text="Saattyp: %s" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE" 				 text="Verbrauch: %s %s (%s)" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="Start- und Endpunkte anzeigen/verstecken" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="Alle Punkte anzeigen/verstecken" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="Kreuzungspunkte anzeigen/verstecken" />
+
 		<text name="COURSEPLAY_HUD_OPEN" 								 text="Courseplay HUD öffnen" />
 		<text name="COURSEPLAY_HUD_CLOSE" 								 text="Courseplay HUD schließen" />
 		<text name="COURSEPLAY_FUNCTIONS" 								 text="Courseplay-Funktionen" />

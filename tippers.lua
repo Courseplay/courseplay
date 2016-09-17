@@ -134,8 +134,8 @@ end
 function courseplay:isSprayer(workTool) -- is the tool a sprayer/spreader?
 	return workTool.cp.hasSpecializationSprayer or courseplay:isSpecialSprayer(workTool)
 end;
-function courseplay:isWheelloader(workTool)
-	return workTool.typeName:match("wheelLoader");
+function courseplay:isWheelloader(workTool)			--vv added for Kasi, check whether it could cause problems (Tom)
+	return workTool.typeName:match("wheelLoader") or workTool.cp.isWheelLoader;
 end;
 
 -- UPDATE WORKTOOL DATA
@@ -419,7 +419,7 @@ function courseplay:setMarkers(vehicle, object,isImplement)
 			if j == "start" or j == "height" or j == "width" then 
 				local x, y, z = getWorldTranslation(node)
 				local _, _, ztt = worldToLocal(vehicle.cp.DirectionNode, x, y, z)
-				courseplay:debug(('%s:%s Point %s: ztt = %s'):format(nameNum(vehicle), tostring(object.name), tostring(j), tostring(ztt)), 6);
+				courseplay:debug(('%s: %s Point %s: ztt = %s'):format(nameNum(vehicle), tostring(object.name), tostring(j), tostring(ztt)), 6);
 				if object.cp.backMarkerOffset == nil or ztt > object.cp.backMarkerOffset then
 					object.cp.backMarkerOffset = ztt
 				end
@@ -714,8 +714,12 @@ end
 function courseplay:unload_tippers(vehicle, allowedToDrive)
 	local ctt = vehicle.cp.currentTipTrigger;
 	if ctt.getTipDistanceFromTrailer == nil then
-		courseplay:debug(nameNum(vehicle) .. ": getTipDistanceFromTrailer function doesn't exist for currentTipTrigger - unloading function aborted", 2);
-		return allowedToDrive;
+		if ctt.getTipInfoForTrailer == nil then
+			courseplay:debug(nameNum(vehicle) .. ": getTipDistanceFromTrailer function doesn't exist for currentTipTrigger - unloading function aborted", 2);
+			return allowedToDrive;
+		else
+			ctt.isHeapTipTrigger = true;
+		end
 	end;
 
 	local isBGA = ctt.bunkerSilo ~= nil and ctt.bunkerSilo.movingPlanes ~= nil and vehicle.cp.handleAsOneSilo ~= true;
@@ -728,7 +732,12 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 		if tipper.tipReferencePoints ~= nil then
 			local allowedToDriveBackup = allowedToDrive;
 			local fruitType = tipper.currentFillType
-			local distanceToTrigger, bestTipReferencePoint = ctt:getTipDistanceFromTrailer(tipper);
+			local distanceToTrigger, bestTipReferencePoint = 0,0
+			if ctt.isHeapTipTrigger then
+				_,distanceToTrigger,bestTipReferencePoint = ctt:getTipInfoForTrailer(tipper);
+			else
+				distanceToTrigger, bestTipReferencePoint = ctt:getTipDistanceFromTrailer(tipper);
+			end
 			local trailerInTipRange = g_currentMission:getIsTrailerInTipRange(tipper, ctt, bestTipReferencePoint);
 			courseplay:debug(('%s: distanceToTrigger=%s, bestTipReferencePoint=%s -> trailerInTipRange=%s'):format(nameNum(vehicle), tostring(distanceToTrigger), tostring(bestTipReferencePoint), tostring(trailerInTipRange)), 2);
 			local goForTipping = false;
@@ -1271,7 +1280,7 @@ function courseplay:refillWorkTools(vehicle, fillLevelPct, driveOn, allowedToDri
 				if not workTool.isFilling then
 					workTool:setIsFilling(true);
 				end;
-				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay:roundToBottomInterval(workTool.fillLevel, 100), workTool.capacity));
+				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay.utils:roundToLowerInterval(workTool.fillLevel, 100), workTool.capacity));
 
 			elseif vehicle.cp.isLoaded or workToolFillLevelPct >= driveOn then
 				if workTool.isFilling then
@@ -1298,7 +1307,7 @@ function courseplay:refillWorkTools(vehicle, fillLevelPct, driveOn, allowedToDri
 					workTool:setIsFilling(true);
 				end;
 				allowedToDrive = false;
-				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay:roundToBottomInterval(workTool.fillLevel, 100), workTool.capacity));
+				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay.utils:roundToLowerInterval(workTool.fillLevel, 100), workTool.capacity));
 			elseif workTool.fillTriggers[1] ~= nil then
 				if workTool.isFilling then
 					workTool:setIsFilling(false);
@@ -1327,7 +1336,7 @@ function courseplay:refillWorkTools(vehicle, fillLevelPct, driveOn, allowedToDri
 					workTool:setIsFuelFilling(true);
 				end;
 				allowedToDrive = false;
-				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay:roundToBottomInterval(workTool.fillLevel, 100), workTool.capacity));
+				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay.utils:roundToLowerInterval(workTool.fillLevel, 100), workTool.capacity));
 			elseif workTool.fuelFillTriggers[1] ~= nil then
 				if workTool.isFuelFilling then
 					workTool:setIsFuelFilling(false);
@@ -1348,7 +1357,7 @@ function courseplay:refillWorkTools(vehicle, fillLevelPct, driveOn, allowedToDri
 					workTool:setIsWaterTrailerFilling(true);
 				end;
 				allowedToDrive = false;
-				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay:roundToBottomInterval(workTool.fillLevel, 100), workTool.capacity));
+				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay.utils:roundToLowerInterval(workTool.fillLevel, 100), workTool.capacity));
 			elseif workTool.waterTrailerFillTriggers[1] ~= nil then
 				if workTool.isWaterTrailerFilling then
 					workTool:setIsWaterTrailerFilling(false);

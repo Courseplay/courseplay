@@ -171,7 +171,7 @@ function courseplay:handleAugerWagon(vehicle, workTool, unfold, unload, orderNam
 		end;
 
 	--AugerWagon spec
-	elseif workTool.typeName == 'augerWagon' then
+	elseif workTool.typeName == 'augerWagon' or workTool.cp.isAugerWagon then
 		if pipeOrderExists then
 			local pipeIsFolding = workTool.currentPipeState == 0;
 			local pipeIsFolded = workTool.currentPipeState == 1;

@@ -2,6 +2,21 @@
 
 -- traffic collision
 function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
+	-- prevent double or tripple runs for one event
+	if self.cp.lastCheckedTrigger == triggerId 
+	and self.cp.lastCheckedotherId == otherId
+	and self.cp.lastCheckedonEnter == onEnter
+	and self.cp.lastCheckedonLeave == onLeave then
+		return
+	end
+	
+	self.cp.lastCheckedTrigger = triggerId
+	self.cp.lastCheckedotherId = otherId
+	self.cp.lastCheckedonEnter = onEnter
+	self.cp.lastCheckedonLeave = onLeave
+	---
+	
+	
 	if not self.isMotorStarted then return; end;
 
 	--oops i found myself
@@ -166,8 +181,10 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 						else
 							courseplay:debug(string.format('%s: 	onLeave - keep "self.CPnumCollidingVehicles"', nameNum(self)), 3);
 						end
-					else
+					elseif self.cp.collidingVehicleId ~= nil then
 						courseplay:debug(string.format('%s: 	onLeave - not valid for "self.cp.collidingVehicleId" keep it', nameNum(self)), 3);
+					else
+						courseplay:debug(string.format('%s: 	onLeave - %d is out of all triggers', nameNum(self),otherId), 3);
 					end
 				else
 					--courseplay:debug(string.format('%s: 	no registration:onEnter:%s, OtherIdisCloser:%s, registered: %s ,isInOtherTrigger: %s', nameNum(self),tostring(onEnter),tostring(OtherIdisCloser),tostring(self.cp.collidingObjects.all[otherId]),tostring(isInOtherTrigger)), 3);
@@ -178,8 +195,30 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 			
 			if  onEnter then
 				self.cp.collidingObjects[TriggerNumber][otherId] = true
+				if courseplay.debugChannels[3] then
+					print(string.format('%s: 	added %d to self.cp.collidingObjects[%d]', nameNum(self),otherId,TriggerNumber));
+					for trigger,_ in pairs(self.cp.collidingObjects)do
+						if trigger ~= "all" then
+							print(string.format('%s: 	self.cp.collidingObjects[%d]:',nameNum(self),trigger))
+							for otherId,_ in pairs(self.cp.collidingObjects[trigger])do
+								print(string.format('%s: 	                             %d %s',nameNum(self),otherId,tostring(getName(otherId))))
+							end
+						end
+					end
+				end	
 			else
 				self.cp.collidingObjects[TriggerNumber][otherId] = nil
+				if courseplay.debugChannels[3] then
+					print(string.format('%s: 	deleted %d from self.cp.collidingObjects[%d]', nameNum(self),otherId,TriggerNumber));
+					for trigger,_ in pairs(self.cp.collidingObjects)do
+						if trigger ~= "all" then
+							print(string.format('%s: 	self.cp.collidingObjects[%d]:',nameNum(self),trigger))
+							for otherId,_ in pairs(self.cp.collidingObjects[trigger])do
+								print(string.format('%s: 	                             %d %s',nameNum(self),otherId,tostring(getName(otherId))))								
+							end
+						end
+					end
+				end
 			end	
 		end;
 	end;
@@ -318,7 +357,8 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 
 					if fillTypeIsValid then
 						self.cp.currentTipTrigger = trigger;
-						self.cp.currentTipTrigger.cpActualLength = courseplay:distanceToObject(self, trigger)*2 
+						--self.cp.currentTipTrigger.cpActualLength = courseplay:distanceToObject(self, trigger)*2
+						self.cp.currentTipTrigger.cpActualLength = courseplay:nodeToNodeDistance(self.cp.DirectionNode or self.rootNode, trigger.rootNode)*2
 						courseplay:debug(('%s: self.cp.currentTipTrigger=%s , cpActualLength=%s'):format(nameNum(self), tostring(triggerId),tostring(self.cp.currentTipTrigger.cpActualLength)), 1);
 						return false
 					end;
@@ -355,6 +395,13 @@ function courseplay:findSpecialTriggerCallback(transformId, x, y, z, distance)
 	end;
 
 	local name = tostring(getName(transformId));
+	local parent = getParent(transformId);
+	for _,implement in pairs(self.attachedImplements) do
+		if implement.object ~= nil and implement.object.rootNode == parent then
+			courseplay:debug(('%s: trigger %s is from my own implement'):format(nameNum(self), tostring(transformId)), 19);
+			return true
+		end
+	end	
 
 	-- OTHER TRIGGERS
 	if courseplay.triggers.allNonUpdateables[transformId] then
@@ -550,7 +597,16 @@ function courseplay:updateAllTriggers()
 			end;
 		end;
 	end;
-
+	--HeapTipTrigger
+	if g_currentMission.heapTipTriggers ~= nil then
+		courseplay:debug('\tcheck HeapTipTriggers', 1);
+		for index,trigger in pairs(g_currentMission.heapTipTriggers)do
+			if trigger.triggerId ~= nil then
+				courseplay:cpAddTrigger(trigger.triggerId, trigger, 'tipTrigger');
+				courseplay:debug('\t\tadd HeapTipTrigger', 1);
+			end;		
+		end;	
+	end;
 	-- placeables objects
 	if g_currentMission.placeables ~= nil then
 		courseplay:debug('\tcheck placeables', 1);
