@@ -48,6 +48,7 @@ function courseplay:load(xmlFile)
 	self.cp.waitForTurnTime = 0.00   --float
 	self.cp.turnStage = 0 --int
 	self.cp.aiTurnNoBackward = false --bool
+	self.cp.canBeReversed = nil --bool
 	self.cp.backMarkerOffset = nil --float
 	self.cp.aiFrontMarker = nil --float
 	self.cp.turnTimer = 8000 --int

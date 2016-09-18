@@ -148,6 +148,11 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 		courseplay:debug(('%s: updateWorkTools(%s, %q, isImplement=true)'):format(nameNum(vehicle),tostring(vehicle.name), nameNum(workTool)), 6);
 	end;
 
+	-- Reset distances if in debug mode 6.
+	if courseplay.debugChannels[6] ~= nil and courseplay.debugChannels[6] == true then
+		workTool.cp.distances = nil;
+	end;
+
 	courseplay:setNameVariable(workTool);
 
 	local hasWorkTool = false;
@@ -214,7 +219,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 		then
 			hasWorkTool = true;
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
-			courseplay:setMarkers(vehicle, workTool,isImplement);
+			courseplay:setMarkers(vehicle, workTool);
 			vehicle.cp.noStopOnTurn = courseplay:isBaler(workTool) or courseplay:isBaleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool) or vehicle.attachedCutters ~= nil;
 			vehicle.cp.noStopOnEdge = courseplay:isBaler(workTool) or courseplay:isBaleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool) or vehicle.attachedCutters ~= nil;
 			if workTool.cp.hasSpecializationPlough then 
@@ -275,12 +280,13 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 		local _,_,tractorToImplZ = worldToLocal(vehicle.cp.DirectionNode, implX,implY,implZ);
 
 		vehicle.cp.aiBackMarker = nil; --TODO (Jakob): still needed?
-		if not vehicle.cp.aiTurnNoBackward and workTool.aiLeftMarker ~= nil and workTool.aiForceTurnNoBackward == true then 
+		if not vehicle.cp.aiTurnNoBackward and workTool.aiLeftMarker ~= nil and workTool.aiForceTurnNoBackward == true and not workTool.cp.canBeReversed then
 			vehicle.cp.aiTurnNoBackward = true;
 			courseplay:debug(('%s: workTool.aiLeftMarker ~= nil and workTool.aiForceTurnNoBackward == true --> vehicle.cp.aiTurnNoBackward = true'):format(nameNum(workTool)), 6);
-		elseif not vehicle.cp.aiTurnNoBackward and workTool.aiLeftMarker == nil and #(workTool.wheels) > 0 and tractorToImplZ <= 0 then
-			vehicle.cp.aiTurnNoBackward = true;
-			courseplay:debug(('%s: workTool.aiLeftMarker == nil and #(workTool.wheels) > 0 and tractorToImplZ (%.2f) <= 0 --> vehicle.cp.aiTurnNoBackward = true'):format(nameNum(workTool), tractorToImplZ), 6);
+		-- TODO: (Claus) Check if we still need this. [Disables for now]
+		--elseif not vehicle.cp.aiTurnNoBackward and workTool.aiLeftMarker == nil and #(workTool.wheels) > 0 and tractorToImplZ <= 0 then
+		--	vehicle.cp.aiTurnNoBackward = true;
+		--	courseplay:debug(('%s: workTool.aiLeftMarker == nil and #(workTool.wheels) > 0 and tractorToImplZ (%.2f) <= 0 --> vehicle.cp.aiTurnNoBackward = true'):format(nameNum(workTool), tractorToImplZ), 6);
 		end;
 	end;
 
@@ -393,15 +399,22 @@ function courseplay:setTipRefOffset(vehicle)
 	end;
 end;
 
-function courseplay:setMarkers(vehicle, object,isImplement)
-	local aLittleBitMore = 1;
-	object.cp.backMarkerOffset = nil
-	object.cp.aiFrontMarker = nil
+function courseplay:setMarkers(vehicle, object)
+	local aLittleBitMore 		= 2;
+	local pivotJointNode 		= courseplay:getPivotJointNode(object);
+	object.cp.backMarkerOffset 	= nil;
+	object.cp.aiFrontMarker 	= nil;
+
+	-- Get and set vehicle distances if not set
+	local vehicleDistances = vehicle.cp.distances or courseplay:getDistances(vehicle);
+	-- Get and set object distances if not set
+	local objectDistances = object.cp.distances or courseplay:getDistances(object);
+
 	-- get the behindest and the frontest  points :-) ( as offset to root node)
 	local area = object.workAreas
 	if object.attachedCutters ~= nil and not object.cp.hasSpecializationFruitPreparer and not courseplay:isAttachedCombine(object) then
 		courseplay:debug(('%s: setMarkers(): %s is a combine -> return '):format(nameNum(vehicle), tostring(object.name)), 6);
-		return
+		return;
 	end
 	
 	if not area then
@@ -412,19 +425,57 @@ function courseplay:setMarkers(vehicle, object,isImplement)
 	local tableLength = #(area)
 	if tableLength == 0 then
 		courseplay:debug(('%s: setMarkers(): %s has no workAreas -> return '):format(nameNum(vehicle), tostring(object.name)), 6);
-		return
+		return;
 	end
 	for k = 1, tableLength do
 		for j,node in pairs(area[k]) do
 			if j == "start" or j == "height" or j == "width" then 
 				local x, y, z = getWorldTranslation(node)
-				local _, _, ztt = worldToLocal(vehicle.cp.DirectionNode, x, y, z)
-				courseplay:debug(('%s: %s Point %s: ztt = %s'):format(nameNum(vehicle), tostring(object.name), tostring(j), tostring(ztt)), 6);
+				local ztt = 0;
+				local type;
+
+				if pivotJointNode and object.attacherJoint.jointType then
+					type = "Pivot Trailer";
+
+					-- Get the marker offset from the pivot node.
+					_, _, ztt = worldToLocal(pivotJointNode, x, y, z);
+
+					-- Calculate the offset based on the distances
+					ztt = ((vehicleDistances.frontWheelToDirectionNodeOffset
+							+ vehicleDistances.frontWheelToRearTrailerAttacherJoints[object.attacherJoint.jointType]
+							+ objectDistances.attacherJointToPivot) * -1)
+							+ ztt;
+
+				elseif courseplay:isWheeledWorkTool(object) then
+					type = "Trailer";
+
+					-- Backup node rotation and set the rotation to 0
+					local nodeXTemp, nodeYTemp, nodeZTemp = getRotation(object.attacherJoint.node);
+					setRotation(object.attacherJoint.node, 0, 0, 0);
+
+					-- Get the marker offset from the pivot node.
+					_, _, ztt = worldToLocal(object.attacherJoint.node, x, y, z);
+
+					-- Restore node rotation from backup.
+					setRotation(object.attacherJoint.node, nodeXTemp, nodeYTemp, nodeZTemp);
+
+					-- Calculate the offset based on the distances
+					ztt = ((vehicleDistances.frontWheelToDirectionNodeOffset
+							+ vehicleDistances.frontWheelToRearTrailerAttacherJoints[object.attacherJoint.jointType]) * -1)
+							+ ztt;
+
+				else
+					type = "Vehicle";
+
+					_, _, ztt = worldToLocal(vehicle.cp.DirectionNode, x, y, z);
+				end;
+
+				courseplay:debug(('%s: %s %s Point(%s) %s: ztt = %s'):format(nameNum(vehicle), tostring(object.name), type, tostring(k), tostring(j), tostring(ztt)), 6);
 				if object.cp.backMarkerOffset == nil or ztt > object.cp.backMarkerOffset then
-					object.cp.backMarkerOffset = ztt
+					object.cp.backMarkerOffset = ztt + (Utils.getNoNil(object.cp.backMarkerOffsetCorection, 0) * -1);
 				end
 				if object.cp.aiFrontMarker == nil  or ztt < object.cp.aiFrontMarker then
-					object.cp.aiFrontMarker = ztt
+					object.cp.aiFrontMarker = ztt + (Utils.getNoNil(object.cp.frontMarkerOffsetCorection, 0) * -1);
 				end
 			end
 		end

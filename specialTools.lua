@@ -355,7 +355,17 @@ function courseplay:setNameVariable(workTool)
 	elseif workTool.cp.xmlFileName == 'vaderstadRapidA600S.xml' then
 		workTool.cp.isVaderstadRapidA600S = true;
 
-	-- Special tools [Giants]
+	elseif workTool.cp.xmlFileName == 'horschPronto9SW.xml' then
+		workTool.cp.isHorschPronto9SW = true;
+		--print(tableShow(workTool,"HorschPronto9SW", 14));
+
+	elseif workTool.cp.xmlFileName == 'horschMaestro12SW.xml' then
+		workTool.cp.isHorschMaestro12SW = true;
+
+	elseif workTool.cp.xmlFileName == 'vaederstadRapidA600S.xml' then
+		workTool.cp.isVaederstadRapidA600S = true;
+
+		-- Special tools [Giants]
 	elseif workTool.typeName == 'strawBlower' then
 		workTool.cp.isStrawBlower = true;
 		workTool.cp.specialUnloadDistance = 0;
@@ -437,7 +447,7 @@ function courseplay:isSpecialRoundBaler(workTool)
 end;
 
 function courseplay:isSpecialBaleLoader(workTool)
-	if workTool.cp.isSpecialBaleLoader or workTool.isSpecialBaleLoader then	
+	if workTool.cp.isSpecialBaleLoader or workTool.isSpecialBaleLoader then
 		return true;
 	end;
 	return false;
@@ -462,7 +472,7 @@ function courseplay:isSpecialCombine(workTool, specialType, fileNames)
 end
 
 function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload,ridgeMarker,forceSpeedLimit)
-	local forcedStop = not unfold and not lower and not turnOn and not allowedToDriveacover and not unload and not ridgeMarker and forceSpeedLimit ==0;   
+	local forcedStop = not unfold and not lower and not turnOn and not allowedToDriveacover and not unload and not ridgeMarker and forceSpeedLimit ==0;
 	local implementsDown = lower and turnOn
 	if workTool.PTOId then
 		workTool:setPTO(false)
@@ -473,15 +483,15 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		if workTool.baleWrapperState == 4 then
 			workTool:doStateChange(5)
 		end
-		if workTool.baleWrapperState ~= 0 then 
+		if workTool.baleWrapperState ~= 0 then
 			allowedToDrive = false
 		end
 
 		return false ,allowedToDrive,forceSpeedLimit;
-		
-		
+
+
 	elseif workTool.isFlieglDPWxxx then
-		if forceSpeedLimit ~= nil and workTool.maxSpeedLimit ~= nil then 
+		if forceSpeedLimit ~= nil and workTool.maxSpeedLimit ~= nil then
 			forceSpeedLimit = math.min(forceSpeedLimit, workTool.maxSpeedLimit-1)
 		end
 		if not workTool.automaticLoading then
@@ -500,7 +510,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		if workTool.unloadingIsActive then
 			allowedToDrive = false
 		end
-		
+
 		return true, allowedToDrive, forceSpeedLimit
 	elseif workTool.cp.isRopaEuroTiger then
 		if lower then
@@ -508,7 +518,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		else
 			workTool:setSteeringMode(4);
 		end
-	
+
 	elseif workTool.cp.isHolmerDlcCrabSteeringPossible or (workTool.attacherVehicle ~= nil and workTool.attacherVehicle.cp.isHolmerDlcCrabSteeringPossible) then
 		local tractor = workTool.attacherVehicle;
 		if workTool.cp.isHolmerTerraDosT4_40 or workTool.cp.isHolmerTerraVariant then
@@ -524,13 +534,13 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 				elseif ridgeMarker ==2 and state ~= 2 then
 
 				tractor:setCrabSteering(2);
-				end				
-			elseif tractor.cp.isHolmerTerraDosT4_40 and state ~= 1 and not forcedStop then 
+				end
+			elseif tractor.cp.isHolmerTerraDosT4_40 and state ~= 1 and not forcedStop then
 				tractor:setCrabSteering(1);
-			elseif tractor.cp.isHolmerTerraVariant and state ~= 0 and not forcedStop then 
+			elseif tractor.cp.isHolmerTerraVariant and state ~= 0 and not forcedStop then
 				tractor:setCrabSteering(0);
 			end
-		end	
+		end
 	end;
 
 	return false, allowedToDrive,forceSpeedLimit;
@@ -540,6 +550,11 @@ function courseplay:askForSpecialSettings(self, object)
 	-- SPECIAL VARIABLES TO USE:
 	--[[
 	-- automaticToolOffsetX:					(Distance in meters)	Used to automatically set the tool horizontal offset.
+	-- object.cp.backMarkerOffsetCorection:		(Distance in meters)	If the implement stops to early or to late, you can specify then it needs to raise and/or turn off the work tool
+	--																	Positive value, moves it forward, Negative value moves it backwards.
+	-- object.cp.frontMarkerOffsetCorection:	(Distance in meters)	If the implement starts to early or to late, you can specify then it needs to lower and/or turn on the work tool
+	--																	Positive value, moves it forward, Negative value moves it backwards.
+	-- object.cp.canBeReversed					(Boolean)				Tools that can be reversed even if the default Giants value: aiForceTurnNoBackward is set to true
 	-- object.cp.haveInversedRidgeMarkerState:	(Boolean)				If the ridmarker is using the wrong side in auto mode, set this value to true
 	-- object.cp.realUnfoldDirectionIsReversed:	(Boolean)				If the tool unfolds when driving roads and folds when working fields, then set this one to true to reverse the folding order.
 	-- object.cp.isPushWagon					(Boolean)				Set to true if the trailer is unloading by not lifting the trailer but pushing it out in the rear end. (Used in BGA tipping)
@@ -563,6 +578,17 @@ function courseplay:askForSpecialSettings(self, object)
 	-- OBJECTS
 	if object.cp.isVaderstadRapidA600S then
 		object.cp.haveInversedRidgeMarkerState = true;
+
+	elseif object.cp.isHorschPronto9SW then
+		object.cp.canBeReversed = true;
+		object.cp.frontMarkerOffsetCorection = -1;
+
+	elseif object.cp.isHorschMaestro12SW then
+		--object.cp.canBeReversed = true;
+
+	elseif object.cp.isVaederstadRapidA600S then
+		--object.cp.canBeReversed = true;
+		object.cp.frontMarkerOffsetCorection = -1;
 
 	elseif object.cp.isUrsusT127 then
 		object.cp.specialUnloadDistance = -1.8;
