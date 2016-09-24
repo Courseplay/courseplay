@@ -400,7 +400,7 @@ function courseplay:setTipRefOffset(vehicle)
 end;
 
 function courseplay:setMarkers(vehicle, object)
-	local aLittleBitMore 		= 2;
+	local aLittleBitMore 		= 1;
 	local pivotJointNode 		= courseplay:getPivotJointNode(object);
 	object.cp.backMarkerOffset 	= nil;
 	object.cp.aiFrontMarker 	= nil;
@@ -472,10 +472,10 @@ function courseplay:setMarkers(vehicle, object)
 
 				courseplay:debug(('%s: %s %s Point(%s) %s: ztt = %s'):format(nameNum(vehicle), tostring(object.name), type, tostring(k), tostring(j), tostring(ztt)), 6);
 				if object.cp.backMarkerOffset == nil or ztt > object.cp.backMarkerOffset then
-					object.cp.backMarkerOffset = ztt + (Utils.getNoNil(object.cp.backMarkerOffsetCorection, 0) * -1);
+					object.cp.backMarkerOffset = ztt + Utils.getNoNil(object.cp.backMarkerOffsetCorection, 0);
 				end
 				if object.cp.aiFrontMarker == nil  or ztt < object.cp.aiFrontMarker then
-					object.cp.aiFrontMarker = ztt + (Utils.getNoNil(object.cp.frontMarkerOffsetCorection, 0) * -1);
+					object.cp.aiFrontMarker = ztt + Utils.getNoNil(object.cp.frontMarkerOffsetCorection, 0);
 				end
 			end
 		end

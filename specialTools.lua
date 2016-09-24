@@ -357,7 +357,6 @@ function courseplay:setNameVariable(workTool)
 
 	elseif workTool.cp.xmlFileName == 'horschPronto9SW.xml' then
 		workTool.cp.isHorschPronto9SW = true;
-		--print(tableShow(workTool,"HorschPronto9SW", 14));
 
 	elseif workTool.cp.xmlFileName == 'horschMaestro12SW.xml' then
 		workTool.cp.isHorschMaestro12SW = true;
@@ -365,7 +364,11 @@ function courseplay:setNameVariable(workTool)
 	elseif workTool.cp.xmlFileName == 'vaederstadRapidA600S.xml' then
 		workTool.cp.isVaederstadRapidA600S = true;
 
-		-- Special tools [Giants]
+	-- Sprayers [Giants]
+	elseif workTool.cp.xmlFileName == 'amazoneUF1801.xml' then
+		workTool.cp.isAmazoneUF1801 = true;
+
+	-- Special tools [Giants]
 	elseif workTool.typeName == 'strawBlower' then
 		workTool.cp.isStrawBlower = true;
 		workTool.cp.specialUnloadDistance = 0;
@@ -554,6 +557,7 @@ function courseplay:askForSpecialSettings(self, object)
 	--																	Positive value, moves it forward, Negative value moves it backwards.
 	-- object.cp.frontMarkerOffsetCorection:	(Distance in meters)	If the implement starts to early or to late, you can specify then it needs to lower and/or turn on the work tool
 	--																	Positive value, moves it forward, Negative value moves it backwards.
+	-- object.cp.widthWillCollideOnTurn			(Boolean)				If set, then the vehicle will reverse(if possible) further back, before turning to make room for the width of the tool
 	-- object.cp.canBeReversed					(Boolean)				Tools that can be reversed even if the default Giants value: aiForceTurnNoBackward is set to true
 	-- object.cp.haveInversedRidgeMarkerState:	(Boolean)				If the ridmarker is using the wrong side in auto mode, set this value to true
 	-- object.cp.realUnfoldDirectionIsReversed:	(Boolean)				If the tool unfolds when driving roads and folds when working fields, then set this one to true to reverse the folding order.
@@ -581,14 +585,15 @@ function courseplay:askForSpecialSettings(self, object)
 
 	elseif object.cp.isHorschPronto9SW then
 		object.cp.canBeReversed = true;
-		object.cp.frontMarkerOffsetCorection = -1;
 
 	elseif object.cp.isHorschMaestro12SW then
-		--object.cp.canBeReversed = true;
+		object.cp.canBeReversed = true;
 
 	elseif object.cp.isVaederstadRapidA600S then
-		--object.cp.canBeReversed = true;
-		object.cp.frontMarkerOffsetCorection = -1;
+		object.cp.canBeReversed = true;
+
+	elseif object.cp.isAmazoneUF1801 then
+		object.cp.widthWillCollideOnTurn = true;
 
 	elseif object.cp.isUrsusT127 then
 		object.cp.specialUnloadDistance = -1.8;

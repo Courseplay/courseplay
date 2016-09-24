@@ -1,6 +1,14 @@
 function CpManager:setUpDebugChannels()
 	print('## Courseplay: setting up debug channels');
 
+	-- DEVELOPERS DEFAULT ACTIVE CHANNELS - ONLY WORKS FOR DEVELOPERS.
+	local defaultActive = {};
+	if CpManager.isDeveloper then
+		-- TODO: (Claus) Remove my default active debug channels
+		defaultActive[12] = true;
+		defaultActive[14] = true;
+	end;
+
 	-- DEBUG CHANNELS
 	courseplay.numAvailableDebugChannels = 24;
 	courseplay.numDebugChannels = 23;
@@ -11,7 +19,7 @@ function CpManager:setUpDebugChannels()
 	courseplay.debugChannelSectionEnd = courseplay.numDebugChannelButtonsPerLine;
 	courseplay.debugChannels = {};
 	for channel=1, courseplay.numAvailableDebugChannels do
-		courseplay.debugChannels[channel] = false;
+		courseplay.debugChannels[channel] = defaultActive[channel] or false;
 	end;
 
 	-- Debug channels legend:

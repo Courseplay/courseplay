@@ -20,6 +20,7 @@ $RECYCLE.BIN/
 
 # Satis
 TurnRadiusCalculation.lua
+TriangleCalculation.lua
 
 # Jakob
 *.WinMerge

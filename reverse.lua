@@ -2,7 +2,7 @@ local abs, max, rad, sin = math.abs, math.max, math.rad, math.sin;
 
 function courseplay:goReverse(vehicle,lx,lz)
 	local fwd = false;
-	local workTool = vehicle.cp.workTools[1];
+	local workTool = courseplay:getFirstReversingWheledWorkTool(vehicle) or vehicle.cp.workTools[1];
 	local newTarget = vehicle.cp.turnTargets[vehicle.cp.curTurnIndex];
 
 	if workTool then
@@ -22,10 +22,9 @@ function courseplay:goReverse(vehicle,lx,lz)
 	local isNotValid = vehicle.cp.numWorkTools == 0 or workTool == nil or workTool.cp.isPivot == nil or not workTool.cp.frontNode or vehicle.cp.mode == 9;
 	if isNotValid then
 		if newTarget then
-			local vehicleX, vehicleY, vehicleZ = getWorldTranslation(vehicle.cp.DirectionNode);
-			local dist = courseplay:distance(newTarget.posX, newTarget.posZ, vehicleX, vehicleZ);
-			-- If there is less than 5 meters, use the seconddary waypoint.
-			if dist < 5 then
+			-- If we have the revPosX, revPosZ set, use those
+			if newTarget.revPosX and newTarget.revPosZ then
+				local _, vehicleY, _ = getWorldTranslation(vehicle.cp.DirectionNode);
 				lx, lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, newTarget.revPosX, vehicleY, newTarget.revPosZ);
 			end;
 		else
@@ -72,8 +71,13 @@ function courseplay:goReverse(vehicle,lx,lz)
 	end;
 
 	if newTarget then
+		if newTarget.revPosX and newTarget.revPosZ then
 			tcx = newTarget.revPosX;
 			tcz = newTarget.revPosZ;
+		else
+			tcx = newTarget.posX;
+			tcz = newTarget.posZ;
+		end;
 	else
 		for i= index, vehicle.cp.numWaypoints do
 			if vehicle.Waypoints[i].rev and not vehicle.Waypoints[i-1].wait then
@@ -218,6 +222,25 @@ function courseplay:goReverse(vehicle,lx,lz)
 	courseplay:showDirection(vehicle.cp.DirectionNode,lx,lz);
 
 	return lx,lz,fwd;
+end;
+
+function courseplay:getFirstReversingWheledWorkTool(vehicle)
+	-- Checl all attached implements if we are an wheeled workTool behind the tractor
+	for _, imp in ipairs(vehicle.attachedImplements) do
+		-- Check if the implement is behind
+		if courseplay:isRearAttached(vehicle, imp.jointDescIndex) then
+			if courseplay:isWheeledWorkTool(imp.object) then
+				-- If the implement is a wheeled workTool, then return the object
+				return imp.object;
+			else
+				-- If the implement is not a wheeled workTool, then check if that implement have an attached wheeled workTool and return that.
+				return courseplay:getFirstReversingWheledWorkTool(imp.object);
+			end;
+		end;
+	end;
+
+	-- If we didnt find any workTool, return nil
+	return nil;
 end;
 
 function courseplay:getLocalYRotationToPoint(node, x, y, z, direction)
