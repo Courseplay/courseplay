@@ -577,10 +577,15 @@ function courseplay:askForSpecialSettings(self, object)
 	local automaticToolOffsetX;
 
 	-- STEERABLES
+	if object.cp.isCaseIHQuadtrac620 then
+		self.cp.aiTurnNoBackward = true;
+
+	elseif object.cp.isNewHollandT9560 then
+		self.cp.aiTurnNoBackward = true;
 
 
 	-- OBJECTS
-	if object.cp.isVaderstadRapidA600S then
+	elseif object.cp.isVaderstadRapidA600S then
 		object.cp.haveInversedRidgeMarkerState = true;
 
 	elseif object.cp.isHorschPronto9SW then

@@ -2,7 +2,7 @@ local abs, max, rad, sin = math.abs, math.max, math.rad, math.sin;
 
 function courseplay:goReverse(vehicle,lx,lz)
 	local fwd = false;
-	local workTool = courseplay:getFirstReversingWheledWorkTool(vehicle) or vehicle.cp.workTools[1];
+	local workTool = courseplay:getFirstReversingWheeledWorkTool(vehicle) or vehicle.cp.workTools[1];
 	local newTarget = vehicle.cp.turnTargets[vehicle.cp.curTurnIndex];
 
 	if workTool then
@@ -224,7 +224,7 @@ function courseplay:goReverse(vehicle,lx,lz)
 	return lx,lz,fwd;
 end;
 
-function courseplay:getFirstReversingWheledWorkTool(vehicle)
+function courseplay:getFirstReversingWheeledWorkTool(vehicle)
 	-- Checl all attached implements if we are an wheeled workTool behind the tractor
 	for _, imp in ipairs(vehicle.attachedImplements) do
 		-- Check if the implement is behind
@@ -234,7 +234,7 @@ function courseplay:getFirstReversingWheledWorkTool(vehicle)
 				return imp.object;
 			else
 				-- If the implement is not a wheeled workTool, then check if that implement have an attached wheeled workTool and return that.
-				return courseplay:getFirstReversingWheledWorkTool(imp.object);
+				return courseplay:getFirstReversingWheeledWorkTool(imp.object);
 			end;
 		end;
 	end;
