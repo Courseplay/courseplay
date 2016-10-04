@@ -179,7 +179,7 @@ function courseplay:newturn(vehicle, dt)
 			----------------------------------------------------------
 			local _, _, z = worldToLocal(vehicle.cp.DirectionNode, vehicle.Waypoints[vehicle.cp.waypointIndex].cx, vehicleY, vehicle.Waypoints[vehicle.cp.waypointIndex].cz);
 			turnInfo.targetDeltaZ = turnInfo.targetDeltaZ - z;
-			turnInfo.zOffset = abs(z) + 1;
+			turnInfo.zOffset = abs(z);
 
 			----------------------------------------------------------
 			-- Get headland height
@@ -196,7 +196,7 @@ function courseplay:newturn(vehicle, dt)
 			----------------------------------------------------------
 			-- Calculate reverseOffset in case we need to reverse
 			----------------------------------------------------------
-			turnInfo.reverseOffset = turnInfo.zOffset + turnInfo.turnRadius + turnInfo.halfVehicleWidth - turnInfo.headlandHeight - 1;
+			turnInfo.reverseOffset = turnInfo.zOffset + turnInfo.turnRadius + turnInfo.halfVehicleWidth - turnInfo.headlandHeight;
 			if turnInfo.reverseOffset < 0 then
 				turnInfo.reverseOffset = 0;
 			end;
@@ -205,7 +205,11 @@ function courseplay:newturn(vehicle, dt)
 			-- WIDE TURNS (Turns where the distance to next lane is bigger than the turning Diameter
 			----------------------------------------------------------
 			if abs(turnInfo.targetDeltaX) >= turnInfo.turnDiameter then
-				courseplay:generateWideTurn(vehicle, turnInfo);
+				if abs(turnInfo.targetDeltaX) >= (turnInfo.turnDiameter * 2) and abs(turnInfo.targetDeltaZ) >= (turnInfo.turnRadius * 3) then
+					courseplay:generateWideTurnWithAvoidance(vehicle, turnInfo);
+				else
+					courseplay:generateWideTurn(vehicle, turnInfo);
+				end;
 
 
 			----------------------------------------------------------
@@ -418,7 +422,6 @@ function courseplay:newturn(vehicle, dt)
 end;
 
 function courseplay:generateWideTurn(vehicle, turnInfo)
-	-- TODO: (Claus) If there are space for avoiding going outside the field, then do it
 	cpPrintLine(14, 3);
 	courseplay:debug(string.format("%s:(Turn) Using Wide Turn", nameNum(vehicle)), 14);
 	cpPrintLine(14, 3);
@@ -430,7 +433,7 @@ function courseplay:generateWideTurn(vehicle, turnInfo)
 	local center1, center2, startDir, intersect1, intersect2, stopDir = {}, {}, {}, {}, {}, {};
 
 	-- Check if we can turn on the headlands
-	if (turnInfo.zOffset + turnInfo.turnRadius + turnInfo.halfVehicleWidth - 1) < turnInfo.headlandHeight then
+	if (turnInfo.zOffset + turnInfo.turnRadius + turnInfo.halfVehicleWidth) < turnInfo.headlandHeight then
 		canTurnOnHeadland = true;
 	end;
 
@@ -443,7 +446,7 @@ function courseplay:generateWideTurn(vehicle, turnInfo)
 	end;
 
 	--- Get the 2 circle center cordinate
-	center1.x,_,center1.z = localToWorld(vehicle.cp.DirectionNode, turnInfo.turnRadius * turnInfo.direction, 0, 1 - turnInfo.reverseOffset);
+	center1.x,_,center1.z = localToWorld(vehicle.cp.DirectionNode, turnInfo.turnRadius * turnInfo.direction, 0, -turnInfo.reverseOffset);
 	center2.x,_,center2.z = localToWorld(turnInfo.targetNode, turnInfo.turnRadius * turnInfo.direction, 0, turnInfo.zOffset * -1 + turnInfo.reverseOffset);
 
 	--- Get the circle intersection points
@@ -452,12 +455,91 @@ function courseplay:generateWideTurn(vehicle, turnInfo)
 	intersect1, intersect2 = courseplay:getTurnCircleTangentIntersectionPoints(intersect1, intersect2, turnInfo.turnRadius, turnInfo.targetDeltaX > 0);
 
 	--- Set start and stop dir for first turn circle
-	startDir.x,_,startDir.z = localToWorld(vehicle.cp.DirectionNode, 0, 0, 1 - turnInfo.reverseOffset);
+	startDir.x,_,startDir.z = localToWorld(vehicle.cp.DirectionNode, 0, 0, -turnInfo.reverseOffset);
 	stopDir.x,_,stopDir.z = localToWorld(turnInfo.targetNode, 0, 0, (turnInfo.zOffset) * -1 + turnInfo.reverseOffset);
 
 	--- Generate the 2 turn circles
 	courseplay:generateTurnCircle(vehicle, center1, startDir, intersect1, turnInfo.turnRadius, turnInfo.direction, true);
 	courseplay:generateTurnCircle(vehicle, center2, intersect2, stopDir, turnInfo.turnRadius, turnInfo.direction, true);
+
+	--- Extra WP 2 - Reverse back to field edge
+	if not canTurnOnHeadland and not vehicle.cp.aiTurnNoBackward then
+		--- Add extra length to the directionNodeToTurnNodeLength if there is an pivoted tool behind the tractor.
+		-- This is to prevent too sharp turning when reversing to the first reverse point.
+		local directionNodeToTurnNodeLength = turnInfo.directionNodeToTurnNodeLength;
+		if turnInfo.haveWheeledImplement and turnInfo.reversingWorkTool.cp.isPivot then
+			directionNodeToTurnNodeLength = directionNodeToTurnNodeLength * 1.25;
+		end;
+
+		-- Move a bit more forward
+		posX, _, posZ = localToWorld(turnInfo.targetNode, 0, 0, turnInfo.reverseOffset + directionNodeToTurnNodeLength + turnInfo.wpChangeDistance);
+		courseplay:addTurnTarget(vehicle, posX, posZ);
+
+		local extraMoveBack = 0;
+		if turnInfo.targetDeltaZ > 0 then
+			extraMoveBack = turnInfo.targetDeltaZ;
+		end;
+
+		-- Reverse back
+		if turnInfo.reverseOffset - 3 > 0 then
+			fromPoint.x, _, fromPoint.z = localToWorld(turnInfo.targetNode, 0, 0, turnInfo.reverseOffset - 3);
+			toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, 0);
+			courseplay:generateTurnReversePoints(vehicle, fromPoint, toPoint, true, directionNodeToTurnNodeLength + extraMoveBack + turnInfo.reverseWPChangeDistance);
+		else
+			posX, _, posX = localToWorld(turnInfo.targetNode, 0, 0, 0);
+			local revPosX, _, revPosZ = localToWorld(turnInfo.targetNode, 0, 0, -(directionNodeToTurnNodeLength + extraMoveBack + turnInfo.reverseWPChangeDistance));
+			courseplay:addTurnTarget(vehicle, posX, posZ, true, true, revPosX, revPosZ);
+		end;
+
+		--- Extra WP 3 - Turn End
+	else
+		posX, _, posZ = localToWorld(turnInfo.targetNode, 0, 0, turnInfo.directionNodeToTurnNodeLength + turnInfo.zOffset + 5);
+		courseplay:addTurnTarget(vehicle, posX, posZ, true);
+
+	end;
+end;
+
+function courseplay:generateWideTurnWithAvoidance(vehicle, turnInfo)
+	cpPrintLine(14, 3);
+	courseplay:debug(string.format("%s:(Turn) Using Wide Turn With Corner Avoidance", nameNum(vehicle)), 14);
+	cpPrintLine(14, 3);
+
+	local _;
+	local posX, posZ;
+	local fromPoint, toPoint = {}, {};
+	local canTurnOnHeadland = false;
+	local center, startDir, intersect1, intersect2, stopDir = {}, {}, {}, {}, {};
+
+	-- Check if we can turn on the headlands
+	if (turnInfo.zOffset + turnInfo.turnRadius + turnInfo.halfVehicleWidth) < turnInfo.headlandHeight then
+		canTurnOnHeadland = true;
+	end;
+
+	--- Extra WP 1 - Reverse back so we can turn inside the field (Only if we can't turn inside the headlands)
+	if not canTurnOnHeadland and not vehicle.cp.aiTurnNoBackward then
+		-- Reverse back
+		fromPoint.x, _, fromPoint.z = localToWorld(vehicle.cp.DirectionNode, 0, 0, (turnInfo.zOffset + turnInfo.directionNodeToTurnNodeLength + turnInfo.reverseWPChangeDistance) * -1);
+		toPoint.x, _, toPoint.z = localToWorld(vehicle.cp.DirectionNode, 0, 0, (turnInfo.reverseOffset + turnInfo.directionNodeToTurnNodeLength + turnInfo.reverseWPChangeDistance) * -1);
+		courseplay:generateTurnReversePoints(vehicle, fromPoint, toPoint);
+	end;
+
+	--- Generate the first turn circles
+	center.x,_,center.z = localToWorld(vehicle.cp.DirectionNode, turnInfo.turnRadius * turnInfo.direction, 0, -turnInfo.reverseOffset);
+	startDir.x,_,startDir.z = localToWorld(vehicle.cp.DirectionNode, 0, 0, -turnInfo.reverseOffset);
+	stopDir.x,_,stopDir.z = localToWorld(vehicle.cp.DirectionNode, turnInfo.turnRadius * turnInfo.direction, 0, turnInfo.turnRadius - turnInfo.reverseOffset);
+	courseplay:generateTurnCircle(vehicle, center, startDir, stopDir, turnInfo.turnRadius, turnInfo.direction, true);
+
+	--- Generate the second turn circles
+	center.x,_,center.z = localToWorld(vehicle.cp.DirectionNode, (vehicle.cp.courseWorkWidth - turnInfo.turnRadius - turnInfo.turnDiameter) * turnInfo.direction, 0, turnInfo.turnDiameter - turnInfo.reverseOffset);
+	startDir.x,_,startDir.z = localToWorld(vehicle.cp.DirectionNode, (vehicle.cp.courseWorkWidth - turnInfo.turnRadius - turnInfo.turnDiameter) * turnInfo.direction, 0, turnInfo.turnRadius - turnInfo.reverseOffset);
+	stopDir.x,_,stopDir.z = localToWorld(vehicle.cp.DirectionNode, (vehicle.cp.courseWorkWidth - turnInfo.turnDiameter) * turnInfo.direction, 0, turnInfo.turnDiameter - turnInfo.reverseOffset);
+	courseplay:generateTurnCircle(vehicle, center, startDir, stopDir, turnInfo.turnRadius, turnInfo.direction * -1, true);
+
+	--- Generate the third turn circles
+	center.x,_,center.z = localToWorld(turnInfo.targetNode, turnInfo.turnRadius * turnInfo.direction, 0, turnInfo.zOffset * -1 + turnInfo.reverseOffset);
+	startDir.x,_,startDir.z = localToWorld(turnInfo.targetNode, turnInfo.turnDiameter * turnInfo.direction, 0, turnInfo.zOffset * -1 + turnInfo.reverseOffset);
+	stopDir.x,_,stopDir.z = localToWorld(turnInfo.targetNode, 0, 0, turnInfo.zOffset * -1 + turnInfo.reverseOffset);
+	courseplay:generateTurnCircle(vehicle, center, startDir, stopDir, turnInfo.turnRadius, turnInfo.direction, true);
 
 	--- Extra WP 2 - Reverse back to field edge
 	if not canTurnOnHeadland and not vehicle.cp.aiTurnNoBackward then
@@ -535,6 +617,7 @@ function courseplay:generateOhmTurn(vehicle, turnInfo)
 end;
 
 function courseplay:generateCircleReverseTurn(vehicle, turnInfo)
+	-- TODO: (Claus) If we are halfway on the lanes, reverse the turn direction order.
 	cpPrintLine(14, 3);
 	courseplay:debug(string.format("%s:(Turn) Using Circle Reverse Turn", nameNum(vehicle)), 14);
 	cpPrintLine(14, 3);
@@ -559,7 +642,7 @@ function courseplay:generateCircleReverseTurn(vehicle, turnInfo)
 	end;
 
 	--- Get the center height offset
-	local centerHeightOffset = (turnInfo.zOffset - 1 + targetOffsetZ) * -1;
+	local centerHeightOffset = (turnInfo.zOffset + targetOffsetZ) * -1;
 
 	--- Check if we can turn on the headlands
 	if (turnInfo.zOffset + turnInfo.turnRadius + turnInfo.halfVehicleWidth) < turnInfo.headlandHeight then
@@ -666,7 +749,7 @@ function courseplay:generateTurnReversePoints(vehicle, fromPoint, toPoint, turnE
 	local endTurn = false;
 	local wpDistance = 3;
 	local dist = courseplay:distance(fromPoint.x, fromPoint.z, toPoint.x, toPoint.z);
-	local numPointsNeeded = ceil(dist / wpDistance) - 1;
+	local numPointsNeeded = ceil(dist / wpDistance) - 2;
 	local dx, dz = (toPoint.x - fromPoint.x) / dist, (toPoint.z - fromPoint.z) / dist;
 
 	courseplay:addTurnTarget(vehicle, fromPoint.x, fromPoint.z, nil, true);
