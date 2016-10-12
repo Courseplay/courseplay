@@ -208,10 +208,9 @@ function courseplay:generateCourse(vehicle)
 					local checkOverlap = true;
 
 					-- (2.2.1) check intersections
-					local previousDeleted = false;
-					local p1, p2, p3, p4 = lane[i - 2], lane[i - 1], lane[i + 1], lane[i + 2];
+					local p1, p2, p3, p4 = lane[i - 1], lane[i], lane[i + 1], lane[i + 2];
 
-					if p1 and p2 and p3 and p4 then
+					--[[if p1 and p2 and p3 and p4 then
 						local intersect = courseplay:segmentsIntersection(p1.cx, p1.cz, p2.cx, p2.cz, p3.cx, p3.cz, p4.cx, p4.cz);
 						if intersect then
 							local newPoint = { cx = intersect.x, cy = 0, cz = intersect.z, offsetLane = curLane };
@@ -225,11 +224,40 @@ function courseplay:generateCourse(vehicle)
 							table.insert(toBeDeleted, i + 1);
 							lane[i + 1].toBeDeleted = true;
 							courseplay:debug(string.format('\tdelete %d and %d, set intersection as new point %d, skip checking overlap', i - 1, i + 1, i), 7);
-							previousDeleted = true;
 							checkOverlap = false;
 						end;
+					end;]]
+					if p1 and p2 and p3 and p4 and not p1.isNew then
+						--print(string.format("%d: checking: %.2f %.2f",i,p1.cx,p1.cz ))
+						print(string.format("%d: checking %d: %.2f %.2f",i,i,p2.cx,p2.cz ))
+						print(string.format("%d: checking %d: %.2f %.2f",i,i+1,p3.cx,p3.cz ))
+						local newPoint = {}
+						if math.abs(p2.cx-p3.cx)> 0.5 and math.abs(p2.cz-p3.cz)> 0.5 then
+							print(string.format("%d: found corner ",i))
+							if math.abs(p1.cx-p2.cx) < 0.5 then
+								newPoint = { cx = p2.cx, cy = 0, cz = p4.cz, offsetLane = curLane , isNew = true}--, turnStart = true , turn = true }; --TODO determine, which direction for turn
+								print(string.format("%d: set: %.2f %.2f",i,newPoint.cx,newPoint.cz ))
+							else
+								newPoint = { cx = p4.cx, cy = 0, cz = p2.cz, offsetLane = curLane , isNew = true } --, turnStart = true , turn = true };
+								print(string.format("%d: set: %.2f %.2f",i,newPoint.cx,newPoint.cz ))
+							end
+							lane[i] = newPoint;
+							offsP = newPoint;
+							--table.insert(toBeDeleted, i - 1);
+							--table.insert(toBeDeleted, i + 1);
+							--lane[i + 1].toBeDeleted = true;
+							--lane[i + 1].turnEnd = true
+							--lane[i + 1].turn = true
+							courseplay:debug(string.format('\tinsert between %d and %d, set as new point %d, skip checking overlap', i - 1, i + 1, i), 7);
+							checkOverlap = false;
+						end	
+						--cp.turnStart = nil;
+						--cp.turnEnd = nil;
+														
+						print(string.format("_______"))
+					else
+						print(string.format("%d: skip check",i))
 					end;
-
 					-- (2.2.2) check overlap -- TODO: include pointInPoly check in the while loop
 					if checkOverlap then
 						local checkNum = i;
