@@ -203,120 +203,105 @@ function courseplay:generateCourse(vehicle)
 			courseplay:debug('(2.2) CHECK AND DELETE OVERLAPS', 7);
 
 			local toBeDeleted = {};
+			local laneBuffer = {}
+			local iBuffer = 0
 			for i,offsP in pairs(lane) do
-				if not offsP.toBeDeleted then
-					local checkOverlap = true;
+				local checkOverlap = true;
+				-- (2.2.1) check intersections
+				local p1, p2, p3, p4 = lane[i - 1], lane[i], lane[i + 1], lane[i + 2];
 
-					-- (2.2.1) check intersections
-					local p1, p2, p3, p4 = lane[i - 1], lane[i], lane[i + 1], lane[i + 2];
-
-					--[[if p1 and p2 and p3 and p4 then
-						local intersect = courseplay:segmentsIntersection(p1.cx, p1.cz, p2.cx, p2.cz, p3.cx, p3.cz, p4.cx, p4.cz);
-						if intersect then
-							local newPoint = { cx = intersect.x, cy = 0, cz = intersect.z, offsetLane = curLane };
-							-- newPoint.cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, intersect.x, 1, intersect.z); --TODO: needed for anything else than debugPoint/debugLine?
-							newPoint.dirX,newPoint.dirZ = self:getPointDirection(offsP, p3);
-
-							courseplay:debug(string.format('\tintersection found (%d-%d and %d-%d): x,y,z=%.1f,%.1f,%.1f', i - 2, i - 1, i + 1, i + 2, newPoint.cx, newPoint.cy, newPoint.cz), 7);
-							table.insert(toBeDeleted, i - 1);
-							lane[i] = newPoint;
-							offsP = newPoint;
-							table.insert(toBeDeleted, i + 1);
-							lane[i + 1].toBeDeleted = true;
-							courseplay:debug(string.format('\tdelete %d and %d, set intersection as new point %d, skip checking overlap', i - 1, i + 1, i), 7);
-							checkOverlap = false;
+				if p1 and p2 and p3 and p4 and not p1.isHeadlandEdge then
+					--print(string.format("%d: checking: %.2f %.2f",i,p1.cx,p1.cz ))
+					--print(string.format("%d: checking %d: %.2f %.2f",i,i,p2.cx,p2.cz ))
+					--print(string.format("%d: checking %d: %.2f %.2f",i,i+1,p3.cx,p3.cz ))
+					local newPoint = {}
+					if math.abs(p2.cx-p3.cx)> 0.5 and math.abs(p2.cz-p3.cz)> 0.5 then
+						--print(string.format("%d: found corner ",i))
+						if math.abs(p1.cx-p2.cx) < 0.5 then
+							newPoint = { cx = p2.cx, cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, p2.cx, 1, p4.cz),isFirstSetIn = true, cz = p4.cz, offsetLane = curLane , isHeadlandEdge = true, turnStart = true , turn = true }; --TODO determine, which direction for turn
+							--print(string.format("%d: set: %.2f %.2f",i,newPoint.cx,newPoint.cz ))
+						else
+							newPoint = { cx = p4.cx, cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, p4.cx, 1, p2.cz),isFirstSetIn = true, cz = p2.cz, offsetLane = curLane , isHeadlandEdge = true, turnStart = true , turn = true };
+							--print(string.format("%d: set: %.2f %.2f",i,newPoint.cx,newPoint.cz ))
+						end
+						lane[i] = newPoint
+						laneBuffer[i+iBuffer] = newPoint
+						--print(tableShow(laneBuffer[i+iBuffer],"laneBuffer[i+iBuffer]",nil,nil,4))
+						
+						iBuffer = iBuffer + 1               -- add second point with .turnEnd on the same place
+						local secondPoint = { cx = newPoint.cx, cy = newPoint.cy, cz = newPoint.cz, offsetLane = curLane , isHeadlandEdge = true, turnEnd = true,isSecondSetIn = true}
+						laneBuffer[i+iBuffer]= secondPoint				
+						courseplay:debug(string.format('\tinsert between %d and %d, set as new point %d, skip checking overlap', i - 1, i + 1, i), 7);
+						checkOverlap = false;
+					end	
+						
+					--print(string.format("_______"))
+				else
+					--print(string.format("%d: skip intersection check",i))
+				end;
+				
+				-- (2.2.2) check overlap -- TODO: include pointInPoly check in the while loop
+				if checkOverlap then
+					--print(string.format("%d: check overlap",i))
+					local checkNum = i;
+					local swingDir = 1;
+					local count = 0;
+					local keepThisPoint = true
+					while true do
+						count = count + 1;
+						if count > polyLength then
+							break;
 						end;
-					end;]]
-					if p1 and p2 and p3 and p4 and not p1.isNew then
-						--print(string.format("%d: checking: %.2f %.2f",i,p1.cx,p1.cz ))
-						print(string.format("%d: checking %d: %.2f %.2f",i,i,p2.cx,p2.cz ))
-						print(string.format("%d: checking %d: %.2f %.2f",i,i+1,p3.cx,p3.cz ))
-						local newPoint = {}
-						if math.abs(p2.cx-p3.cx)> 0.5 and math.abs(p2.cz-p3.cz)> 0.5 then
-							print(string.format("%d: found corner ",i))
-							if math.abs(p1.cx-p2.cx) < 0.5 then
-								newPoint = { cx = p2.cx, cy = 0, cz = p4.cz, offsetLane = curLane , isNew = true}--, turnStart = true , turn = true }; --TODO determine, which direction for turn
-								print(string.format("%d: set: %.2f %.2f",i,newPoint.cx,newPoint.cz ))
-							else
-								newPoint = { cx = p4.cx, cy = 0, cz = p2.cz, offsetLane = curLane , isNew = true } --, turnStart = true , turn = true };
-								print(string.format("%d: set: %.2f %.2f",i,newPoint.cx,newPoint.cz ))
-							end
-							lane[i] = newPoint;
-							offsP = newPoint;
-							--table.insert(toBeDeleted, i - 1);
-							--table.insert(toBeDeleted, i + 1);
-							--lane[i + 1].toBeDeleted = true;
-							--lane[i + 1].turnEnd = true
-							--lane[i + 1].turn = true
-							courseplay:debug(string.format('\tinsert between %d and %d, set as new point %d, skip checking overlap', i - 1, i + 1, i), 7);
-							checkOverlap = false;
-						end	
-						--cp.turnStart = nil;
-						--cp.turnEnd = nil;
-														
-						print(string.format("_______"))
-					else
-						print(string.format("%d: skip check",i))
-					end;
-					-- (2.2.2) check overlap -- TODO: include pointInPoly check in the while loop
-					if checkOverlap then
-						local checkNum = i;
-						local swingDir = 1;
-						local count = 0;
 
-						while true do
-							count = count + 1;
-							if count > polyLength then
-								break;
+						local cp = polyPoints[checkNum];
+
+						--set and rotate tg
+						setTranslation(vehicle.cp.headland.tg, cp.cx, cp.cy, cp.cz);
+						local rot = Utils.getYRotationFromDirection(cp.dirX, cp.dirZ);
+						setRotation(vehicle.cp.headland.tg, 0, rot, 0);
+						-- courseplay:debug(string.format('\ttg setTranslation(%s, [x] %.1f, [y] %.1f, [z] %.1f), setRotation() [y] %.1f', tostring(vehicle.cp.headland.tg), cp.cx, cp.cy, cp.cz, rot), 7);
+
+						-- check overlap
+						local dx,dy,dz = worldToLocal(vehicle.cp.headland.tg, offsP.cx, offsP.cy, offsP.cz);
+						local overlap = dx > -noGoWidth and dx < noGoWidth and dz > 0 and dz < cp.distToNextPoint * vehicle.cp.headland.rectWidthRatio;
+						if overlap then
+							courseplay:debug(string.format('\toffset point %d: OVERLAP!!!', i), 7);
+							courseplay:debug(string.format('\t\tcount=%d, swingDir=%d, checkNum=%d', count, swingDir, checkNum), 7);
+							courseplay:debug(string.format('\t\tdx,dy,dz=%.1f,%.1f,%.1f', dx,dy,dz), 7);
+							-- courseplay:debug(string.format('\t\tdx > -noGoWidth = %s // dx < noGoWidth = %s // dz > 0 = %s, dz < cp.distToNextPoint * vehicle.cp.headland.rectWidthRatio = %s', tostring(dx > -noGoWidth), tostring(dx < noGoWidth), tostring(dz > 0), tostring(dz < cp.distToNextPoint * vehicle.cp.headland.rectWidthRatio)), 7);
+							--print(string.format("%d: delete",i))
+							--table.insert(toBeDeleted, i);
+							keepThisPoint = false
+							break;
+						else
+							-- courseplay:debug(string.format('\t\tNO OVERLAP!!! --> new checkNum = %d + (%d * %d) = %d', checkNum, count, swingDir, checkNum + (count * swingDir)), 7);
+							checkNum = checkNum + (count * swingDir);
+							--rudimentary looped table
+							if checkNum < 1 then
+								checkNum = polyLength - math.abs(checkNum);
+								-- courseplay:debug(string.format('\t\t\tcheckNum < 1 --> checkNum = %d', checkNum), 7);
+							elseif checkNum > polyLength then
+								checkNum = checkNum - polyLength;
+								-- courseplay:debug(string.format('\t\t\tcheckNum > numPoints --> checkNum = %d', checkNum), 7);
 							end;
 
-							local cp = polyPoints[checkNum];
-
-							--set and rotate tg
-							setTranslation(vehicle.cp.headland.tg, cp.cx, cp.cy, cp.cz);
-							local rot = Utils.getYRotationFromDirection(cp.dirX, cp.dirZ);
-							setRotation(vehicle.cp.headland.tg, 0, rot, 0);
-							-- courseplay:debug(string.format('\ttg setTranslation(%s, [x] %.1f, [y] %.1f, [z] %.1f), setRotation() [y] %.1f', tostring(vehicle.cp.headland.tg), cp.cx, cp.cy, cp.cz, rot), 7);
-
-							-- check overlap
-							local dx,dy,dz = worldToLocal(vehicle.cp.headland.tg, offsP.cx, offsP.cy, offsP.cz);
-							local overlap = dx > -noGoWidth and dx < noGoWidth and dz > 0 and dz < cp.distToNextPoint * vehicle.cp.headland.rectWidthRatio;
-							if overlap then
-								courseplay:debug(string.format('\toffset point %d: OVERLAP!!!', i), 7);
-								courseplay:debug(string.format('\t\tcount=%d, swingDir=%d, checkNum=%d', count, swingDir, checkNum), 7);
-								courseplay:debug(string.format('\t\tdx,dy,dz=%.1f,%.1f,%.1f', dx,dy,dz), 7);
-								-- courseplay:debug(string.format('\t\tdx > -noGoWidth = %s // dx < noGoWidth = %s // dz > 0 = %s, dz < cp.distToNextPoint * vehicle.cp.headland.rectWidthRatio = %s', tostring(dx > -noGoWidth), tostring(dx < noGoWidth), tostring(dz > 0), tostring(dz < cp.distToNextPoint * vehicle.cp.headland.rectWidthRatio)), 7);
-
-								table.insert(toBeDeleted, i);
-								break;
-							else
-								-- courseplay:debug(string.format('\t\tNO OVERLAP!!! --> new checkNum = %d + (%d * %d) = %d', checkNum, count, swingDir, checkNum + (count * swingDir)), 7);
-								checkNum = checkNum + (count * swingDir);
-								--rudimentary looped table
-								if checkNum < 1 then
-									checkNum = polyLength - math.abs(checkNum);
-									-- courseplay:debug(string.format('\t\t\tcheckNum < 1 --> checkNum = %d', checkNum), 7);
-								elseif checkNum > polyLength then
-									checkNum = checkNum - polyLength;
-									-- courseplay:debug(string.format('\t\t\tcheckNum > numPoints --> checkNum = %d', checkNum), 7);
-								end;
-
-								swingDir = swingDir * -1;
-							end;
-						end; --END while true
-					end; --END if checkOverlap
-				end; --END if not offsP.toBeDeleted
+							swingDir = swingDir * -1;
+						end;
+					end; --END while true
+					
+					if keepThisPoint then
+						laneBuffer[i+iBuffer] = lane[i]
+					end
+ 					
+					
+				end; --END if checkOverlap				
 			end;
 
-			for i,offsPointNum in pairs(toBeDeleted) do
-				lane[offsPointNum] = nil;
-				-- numOffsetPoints = table.maxn(lane);
-				numOffsetPoints = numOffsetPoints - 1;
-				courseplay:debug(string.format('delete offset point(%d) -> new numOffsetPoints=%d', offsPointNum, numOffsetPoints), 7);
-			end;
 			-- courseplay:debug(tableShow(lane, string.format('[line %d] lane %d', debug.getinfo(1).currentline, curLane), 7), 7); --WORKS
-
-
+			
+			lane = {}
+			lane = laneBuffer
+			
 			-- --------------------------------------------------
 			-- (2.3) CHECK AND FIX DISTANCES
 			courseplay:debug('(2.3) CHECK AND FIX DISTANCES', 7);
@@ -333,7 +318,7 @@ function courseplay:generateCourse(vehicle)
 					-- courseplay:debug(string.format('\t%d: dist to next=%.1f', i, dist), 7);
 
 					-- check min distance, if less: delete cur point
-					if dist < vehicle.cp.headland.minPointDistance then
+					if dist < vehicle.cp.headland.minPointDistance and not offsP.isHeadlandEdge then
 						courseplay:debug(string.format('\tpoint %d: distance to next [%d] = %.1f (< minDistance %.1f) -> delete cur point', i, np1Idx, dist, vehicle.cp.headland.minPointDistance), 7);
 						insertCurrent = false;
 
@@ -382,7 +367,7 @@ function courseplay:generateCourse(vehicle)
 			numOffsetPoints = pointsInserted;
 			-- courseplay:debug(tableShow(finalPoints, string.format('[line %d] finalPoints %d', debug.getinfo(1).currentline, curLane), 7), 7); --WORKS
 
-
+			
 			if numOffsetPoints >= 5 then
 				-- --------------------------------------------------
 				-- (2.4) FINALIZE (ADD POINT DATA)
@@ -403,9 +388,9 @@ function courseplay:generateCourse(vehicle)
 					cp.generated = true;
 					cp.lane = curLane * -1; --negative lane = headland
 					-- cp.firstInLane = false;
-					cp.turn = nil;
-					cp.turnStart = nil;
-					cp.turnEnd = nil;
+					--cp.turn = nil;
+					--cp.turnStart = nil;
+					--cp.turnEnd = nil;
 					cp.ridgeMarker = laneRidgeMarker;
 				end;
 
@@ -797,7 +782,8 @@ function courseplay:generateCourse(vehicle)
 					local numPoints = #lane;
 					local closest = self:getClosestPolyPoint(lane, fieldWorkCourse[1].cx, fieldWorkCourse[1].cz);
 					courseplay:debug(string.format('[before] rotating headland lane=%d, closest=%d -> rotate: numPoints-(closest-1)=%d-(%d-1)=%d', i, closest, numPoints, closest, numPoints - (closest-1)), 7);
-					vehicle.cp.headland.lanes[i] = table.rotate(lane, numPoints - (closest-1));
+					vehicle.cp.headland.lanes[i] = table.rotate(lane, numPoints - (closest));
+					--vehicle.cp.headland.lanes[i] = table.rotate(lane, numPoints - (closest-1));
 					--courseplay:debug(tableShow(vehicle.cp.headland.lanes[i], 'rotated headland lane '..i), 7);
 				end;
 
@@ -812,6 +798,7 @@ function courseplay:generateCourse(vehicle)
 					courseplay:debug(string.format('[after] rotating headland lane=%d, closest=%d -> rotate: numPoints-(closest-1)=%d-(%d-1)=%d', i, closest, numPoints, closest, numPoints - (closest-1)), 7);
 
 					table.insert(headlandLanes, table.rotate(lane, numPoints - (closest-1)));
+					--table.insert(headlandLanes, table.rotate(lane, numPoints - (closest-1)));
 				end;
 
 				vehicle.cp.headland.lanes = nil;
