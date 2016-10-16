@@ -58,6 +58,7 @@
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Pathfinding" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Side offset:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Start at:" />
+		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Turn on field:" />
 		<text name="COURSEPLAY_TURN_RADIUS" 							 text="Turning circle:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 				 text="Vertical offset:" />
 		<text name="COURSEPLAY_COMBINE" 								 text="Combine" />

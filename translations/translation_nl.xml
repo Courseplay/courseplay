@@ -54,6 +54,7 @@
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Om gewas rijden" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Zijwaardse afstand:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Start bij:" />
+		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Turn on field:" />  <!-- Need Translation! -->
 		<text name="COURSEPLAY_TURN_RADIUS" 							 text="Draaicirkel:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 				 text="Verticale afstand:" />
 		<text name="COURSEPLAY_COMBINE" 								 text="Combine" />

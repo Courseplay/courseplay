@@ -54,6 +54,7 @@
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Поиск точек:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="правее/левее:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Загрузка при:" />
+		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Turn on field:" />  <!-- Need Translation! -->
 		<text name="COURSEPLAY_TURN_RADIUS" 							 text="Радиус поворота:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 				 text="вперед/назад:" />
 		<text name="COURSEPLAY_COMBINE" 								 text="Комбайн" />

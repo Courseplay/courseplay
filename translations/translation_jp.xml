@@ -58,6 +58,7 @@
 		<text name="COURSEPLAY_PATHFINDING" 							 text="経路検索" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="サイドオフセット:" />
 		<text name="COURSEPLAY_START_AT" 								 text="スタート:" />
+		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Turn on field:" />  <!-- Need Translation! -->
 		<text name="COURSEPLAY_TURN_RADIUS" 							 text="ターン半径:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 				 text="バーティカルオフセット:" />
 		<text name="COURSEPLAY_COMBINE" 								 text="コンバイン" />

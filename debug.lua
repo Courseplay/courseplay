@@ -4,7 +4,7 @@ function CpManager:setUpDebugChannels()
 	-- DEVELOPERS DEFAULT ACTIVE CHANNELS - ONLY WORKS FOR DEVELOPERS.
 	local defaultActive = {};
 	if CpManager.isDeveloper then
-		-- TODO: (Claus) Remove my default active debug channels
+		-- TODO: (Claus) Remove my default active debug channels when done.
 		defaultActive[12] = true;
 		defaultActive[14] = true;
 	end;

@@ -54,6 +54,7 @@
 		<text name="COURSEPLAY_PATHFINDING" 							 text="禁止碾压生长的农作物:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="横向距离调整:" />
 		<text name="COURSEPLAY_START_AT" 								 text="车辆启动的值:" />
+		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Turn on field:" />  <!-- Need Translation! -->
 		<text name="COURSEPLAY_TURN_RADIUS" 							 text="转弯半径:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 				 text="纵向距离调整:" />
 		<text name="COURSEPLAY_COMBINE" 								 text="联合收割机" />

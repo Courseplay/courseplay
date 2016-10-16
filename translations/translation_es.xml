@@ -54,6 +54,7 @@
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Evitar los cultivos" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Distancia lateral:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Iniciar en:" />
+		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Turn on field:" />  <!-- Need Translation! -->
 		<text name="COURSEPLAY_TURN_RADIUS" 							 text="Radio de giro:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 				 text="Decalaje vertical:" />
 		<text name="COURSEPLAY_COMBINE" 								 text="Cosechadora" />

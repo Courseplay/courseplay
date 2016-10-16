@@ -761,6 +761,17 @@ function courseplay.buttons:setActiveEnabled(vehicle, section)
 		end; -- for buttons
 		courseplay.settings.validateCourseListArrows(vehicle);
 
+	elseif vehicle.cp.hud.currentPage == 3 and anySection then
+		local isMode4or6 = vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE or vehicle.cp.mode == courseplay.MODE_FIELDWORK;
+		for _,button in pairs(vehicle.cp.buttons[3]) do
+			if button.row == 2 and button.functionToCall == 'rowButton' then
+				button:setDisabled(not isMode4or6);
+				button:setShow(isMode4or6);
+				button:setActive(vehicle.cp.turnOnField);
+				button:setCanBeClicked(not button.isDisabled);
+			end;
+		end;
+
 	elseif vehicle.cp.hud.currentPage == 6 then
 		if anySection or section == 'debug' then
 			for _,button in pairs(vehicle.cp.buttons[6]) do
