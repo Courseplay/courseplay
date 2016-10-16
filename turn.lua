@@ -260,9 +260,6 @@ function courseplay:newturn(vehicle, dt)
 					vehicle.cp.curTurnIndex = min(vehicle.cp.curTurnIndex + 1, #vehicle.cp.turnTargets);
 				end;
 
-				if courseplay.debugChannels[14] then
-					renderText(0.5,0.85-(0.03*vehicle.cp.coursePlayerNum),0.02,string.format("%s: Current Distance: %.2fm ",nameNum(vehicle),dist))
-				end
 			else
 				vehicle.cp.turnStage = 1; -- (THIS SHOULD NEVER HAPPEN) Somehow we don't have any waypoints, so try recollect them.
 				return;
