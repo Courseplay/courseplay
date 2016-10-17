@@ -215,7 +215,7 @@ function courseplay:generateCourse(vehicle)
 					--print(string.format("%d: checking %d: %.2f %.2f",i,i,p2.cx,p2.cz ))
 					--print(string.format("%d: checking %d: %.2f %.2f",i,i+1,p3.cx,p3.cz ))
 					local newPoint = {}
-					if math.abs(p2.cx-p3.cx)> 0.5 and math.abs(p2.cz-p3.cz)> 0.5 then
+					if math.abs(p2.cx-p3.cx)> 0.5 and math.abs(p2.cz-p3.cz)> 0.5 and  (math.abs(p1.cx-p2.cx)< 0.5 or math.abs(p1.cz-p2.cz)< 0.5)  then
 						--print(string.format("%d: found corner ",i))
 						if math.abs(p1.cx-p2.cx) < 0.5 then
 							newPoint = { cx = p2.cx, cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, p2.cx, 1, p4.cz),isFirstSetIn = true, cz = p4.cz, offsetLane = curLane , isHeadlandEdge = true, turnStart = true , turn = true }; --TODO determine, which direction for turn
