@@ -140,7 +140,7 @@ function courseplay:newturn(vehicle, dt)
 				local x,y,z = getWorldTranslation(turnInfo.targetNode);
 				local ctx,_,ctz = localToWorld(turnInfo.targetNode, 0, 0, 20);
 				drawDebugLine(x, y+5, z, 1, 0, 0, ctx, y+5, ctz, 0, 1, 0);
-
+				-- this is an test
 				local directionDifferentce = vehicle.Waypoints[vehicle.cp.waypointIndex].angle + vehicle.Waypoints[vehicle.cp.waypointIndex-1].angle;
 				courseplay:debug(("%s:(Turn) wp%d=%.1f°, wp%d=%.1f°, directionDifferentce = %.1f°"):format(nameNum(vehicle), vehicle.cp.waypointIndex, vehicle.Waypoints[vehicle.cp.waypointIndex].angle, vehicle.cp.waypointIndex-1, vehicle.Waypoints[vehicle.cp.waypointIndex-1].angle, directionDifferentce), 14);
 			end;
