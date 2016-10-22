@@ -57,6 +57,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 			tool = workTool
 			workTool.cp.turnStage = vehicle.cp.turnStage
 		end
+		courseplay:getOwnFillLevelAndCapacity(tool) --!!!
 		local ridgeMarker = vehicle.Waypoints[vehicle.cp.waypointIndex].ridgeMarker
 		local nextRidgeMarker = vehicle.Waypoints[min(vehicle.cp.waypointIndex+4,vehicle.cp.numWaypoints)].ridgeMarker
 		
