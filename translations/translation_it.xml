@@ -92,7 +92,7 @@
 		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 					 text="Guida accanto la trebbia" />
 		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 						 text="Vai alla trebbia" />
 		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 				 text="La trebbia mi dice di fermarmi" />
-		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	                 text="Aspettando che la mia area di sosta sia libera" /> 
+		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	 text="Aspettando che la mia area di sosta sia libera" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 						 text="Girando in direzione %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 						 text="Guida a %d %d" />
 		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 					 text="Aspettando che il livello di riempimento sia raggiunto" />

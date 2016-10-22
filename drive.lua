@@ -104,6 +104,8 @@ function courseplay:drive(self, dt)
 
 	if self.cp.mode == 4 or self.cp.mode == 6 then
 		if self.Waypoints[self.cp.waypointIndex].turn ~= nil then
+			-- TODO: (Claus) Change the isTurning to use turnStart from waypoint instead
+			-- TODO: (Claus) Change the isTurning is calculated by distance to turn point
 			self.cp.isTurning = self.Waypoints[self.cp.waypointIndex].turn
 		end
 		if self.cp.abortWork ~= nil and self.cp.tipperFillLevelPct == 0 then
