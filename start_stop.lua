@@ -11,6 +11,7 @@ function courseplay:start(self)
 	self.steeringEnabled = false;
 	self.disableCharacterOnLeave = false
 
+	--!!!  this is not enough, the motor will be shut off after sevreal seconds outside the vehicle, please check it with GIANTS
 	if courseplay.isClient then
 		return
 	end
@@ -40,7 +41,7 @@ function courseplay:start(self)
 	courseplay:setRecordingIsPaused(self, false);
 	self.cp.calculatedCourseToCombine = false
 
-	AITractor.addCollisionTrigger(self, self);
+	--!!! AITractor.addCollisionTrigger(self, self);
 		
 	if self.attachedCutters ~= nil then
 		for cutter, implement in pairs(self.attachedCutters) do
@@ -333,7 +334,7 @@ function courseplay:start(self)
 	end;
 	
 	--check Crab Steering mode for HolmerDLC
-	if self.cp.isHolmerDlcCrabSteeringPossible and self.crabSteering.stateTarget > 1  then
+	if self.cp.isHolmerDlcCrabSteeringPossible and self.crabSteering.state > 2  then
 		self.cp.hasCrabSteeringActive = true;
 	end
 
@@ -353,9 +354,9 @@ function courseplay:start(self)
 	courseplay.buttons:setActiveEnabled(self, 'page2');
 
 	-- add ingameMap icon
-	if CpManager.ingameMapIconActive then
+	--[[ !!! if CpManager.ingameMapIconActive then
 		courseplay:createMapHotspot(self);
-	end;
+	end;]]
 
 	--print("startStop "..debug.getinfo(1).currentline)
 end;
@@ -513,7 +514,7 @@ function courseplay:stop(self)
 	self.cp.hasMachineToFill = false;
 	self.cp.unloadOrder = false
 	self.cp.isUnloadingStopped = false
-	AITractor.removeCollisionTrigger(self, self);
+	--!!! AITractor.removeCollisionTrigger(self, self);
 	self.cpTrafficCollisionIgnoreList = {}
 	self.cp.foundColli = {}
 	self.cp.inTraffic = false

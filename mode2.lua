@@ -53,7 +53,7 @@ function courseplay:handle_mode2(vehicle, dt)
 		courseplay:setMode2NextState(vehicle, 2);
 	end
 	
-	if currentTipper.fillLevel >= currentTipper.capacity or vehicle.cp.isLoaded then
+	if currentTipper.fillUnits[1].fillLevel >= currentTipper.fillUnits[1].capacity or vehicle.cp.isLoaded then  --!!!
 		if #(vehicle.cp.workTools) > vehicle.cp.currentTrailerToFill and not vehicle.cp.isLoaded then -- TODO (Jakob): use numWorkTools
 			vehicle.cp.currentTrailerToFill = vehicle.cp.currentTrailerToFill + 1
 		else
@@ -163,7 +163,9 @@ function courseplay:handle_mode2(vehicle, dt)
 
 				-- chose the combine who needs me the most
 				for k, combine in pairs(vehicle.cp.reachableCombines) do
-					local fillLevel, capacity = combine:getAttachedTrailersFillLevelAndCapacity();
+					--!!!local fillLevel, capacity = courseplay:getAttachedTrailersFillLevelAndCapacity(combine);
+					courseplay:getOwnFillLevelAndCapacity(combine);
+					local fillLevel, capacity = combine.fillLevel, combine.capacity
 					if combine.acParameters ~= nil and combine.acParameters.enabled and combine.isHired  and fillLevel >= 0.99*capacity then --AC stops at 99% fillLevel so we have to set this as full
 						combine.cp.wantsCourseplayer = true
 					end
@@ -683,7 +685,7 @@ function courseplay:unload_combine(vehicle, dt)
 			if combineIsAutoCombine and tractor.acIsCPStopped ~= nil then
 				-- print(nameNum(tractor) .. ': fillLevel > 90%% -> set acIsCPStopped to true'); --TODO: 140308 AutoTractor
 				tractor.acIsCPStopped = true
-			elseif combine.isAIThreshing then 
+			elseif combine.isAIThreshing then    --!!!  isAIThreshinig is nil
 				combine.waitForTurnTime = combine.timer + 100
 			elseif tractor:getIsCourseplayDriving() then
 				combine.cp.waitingForTrailerToUnload = true
@@ -1255,11 +1257,11 @@ end;
 
 function courseplay:calculateVerticalOffset(vehicle, combine)
 	local cwX,cwY,cwZ;
-	if combine.cp.isSugarBeetLoader then
+	--[[ !!! if combine.cp.isSugarBeetLoader then
 		cwX, cwY, cwZ = getWorldTranslation(combine.unloadingTrigger.node);
-	else
+	else]]
 		cwX, cwY, cwZ = getWorldTranslation(combine.pipeRaycastNode);
-	end;
+	--end;
 	
 	local _, _, prnToCombineZ = worldToLocal(combine.cp.DirectionNode or combine.rootNode, cwX, cwY, cwZ);
 	

@@ -2,7 +2,6 @@ function courseplay:setNameVariable(workTool)
 	if workTool.cp == nil then
 		workTool.cp = {};
 	end;
-
 	if workTool.cp.hasSpecializationPathVehicle or workTool.cp.hasSpecializationTrafficVehicle then
 		return;
 	end;
@@ -139,7 +138,11 @@ function courseplay:setNameVariable(workTool)
 	-- [1] MOD COMBINES
 	elseif workTool.cp.xmlFileName == 'RopaEuroTiger_V8_3_XL.xml' then
 		workTool.cp.isRopaEuroTiger = true;
-
+				
+	elseif workTool.cp.xmlFileName ==  'holmerTerraFelis2.xml' then --!!! already new
+		workTool.cp.isHolmerTerraFelis2 = true;
+		workTool.cp.isSugarBeetLoader = true
+		
 	-- ###########################################################
 
 	-- [2] MOD TRACTORS
@@ -368,11 +371,11 @@ function courseplay:setNameVariable(workTool)
 	end;
 
 	if courseplay:isSprayer(workTool) then
-		if workTool.fillTypes[Fillable.FILLTYPE_LIQUIDMANURE] then
+		--[[ !!! if workTool.fillTypes[Fillable.FILLTYPE_LIQUIDMANURE] then
 			workTool.cp.isLiquidManureSprayer = true;
 		elseif workTool.fillTypes[Fillable.FILLTYPE_MANURE] then
 			workTool.cp.isManureSprayer = true;
-		end;
+		end;]]
 	end;
 end;
 
@@ -399,7 +402,7 @@ function courseplay:setCustomSpecVariables(vehicle)
 			fullSpecClassName = ('%s.%s'):format(vehicle.customEnvironment, specClassName);
 		end;
 
-		local spec = getClassObject(fullSpecClassName);
+		--!!! local spec = getClassObject(fullSpecClassName);
 		if spec then
 			specToSpecClassName[spec] = specClassName;
 		end;
@@ -746,3 +749,35 @@ function courseplay:rotateSingleTool(vehicle, activeTool, toolIndex, rotatePos, 
 		vehicle:raiseDirtyFlags(vehicle.cylinderedDirtyFlag);
 	end;
 end;
+
+function courseplay:getAttachedTrailersFillLevelAndCapacity(workTool) --!!! just a hack, we have to check the new cpacity system (fillUnits{}) 
+	local fillLevel, capacity = 0,0
+	for index,implement in pairs(workTool.attachedImplements) do    --TODO concider tools with more capacities !
+		local object = implement.object;
+		fillLevel= fillLevel+object.fillUnits[1].fillLevel
+		capacity = capacity+object.fillUnits[1].capacity
+	end
+	return fillLevel, capacity
+end
+
+function courseplay:getOwnFillLevelAndCapacity(workTool) --!!! just a hack, we have to check the new cpacity system (fillUnits{}) 
+	if workTool.fillUnits == nil then
+		return
+	end
+	workTool.fillLevel = workTool.fillUnits[1].fillLevel
+	workTool.capacity = workTool.fillUnits[1].capacity
+	return 
+end
+
+function courseplay:getAttachedTrailersFillType(workTool) --!!! just a hack, we have to check the new cpacity system (fillUnits{}) 
+	local filltype = 0
+	for index,implement in pairs(workTool.attachedImplements) do    
+		local object = implement.object;
+		if object.fillUnits ~= nil and object.fillUnits[1] ~= nil then
+			filltype = object.fillUnits[1].lastValidFillType;
+		else	
+			return
+		end	
+	end
+	return filltype
+end

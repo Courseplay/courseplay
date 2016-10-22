@@ -928,7 +928,7 @@ end;
 function courseplay:changeStartingDirection(vehicle)
 	-- corners: 1 = SW, 2 = NW, 3 = NE, 4 = SE
 	-- directions: 1 = North, 2 = East, 3 = South, 4 = West
-
+	local clockwise = true
 	local validDirections = {};
 	if vehicle.cp.hasStartingCorner then
 		if vehicle.cp.startingCorner == 1 then --SW
@@ -950,12 +950,15 @@ function courseplay:changeStartingDirection(vehicle)
 			vehicle.cp.startingDirection = validDirections[1];
 		elseif vehicle.cp.startingDirection == validDirections[1] then
 			vehicle.cp.startingDirection = validDirections[2];
+			clockwise = false
 		elseif vehicle.cp.startingDirection == validDirections[2] then
 			vehicle.cp.startingDirection = validDirections[1];
 		end;
 		vehicle.cp.hasStartingDirection = true;
 	end;
-
+	if vehicle.cp.headland.userDirClockwise ~= clockwise then
+		courseplay:toggleHeadlandDirection(vehicle)
+	end
 	courseplay:validateCourseGenerationData(vehicle);
 end;
 

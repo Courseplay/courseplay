@@ -61,7 +61,7 @@ function courseplay:drive(self, dt)
 
 	-- Turn on sound / control lights
 	if not self.isControlled then
-		self:setLightsVisibility(CpManager.lightsNeeded);
+		--!!! self:setLightsVisibility(CpManager.lightsNeeded);
 	end;
 
 	-- current position
@@ -127,19 +127,20 @@ function courseplay:drive(self, dt)
 	-- WARNING LIGHTS
 	if self.cp.warningLightsMode == courseplay.WARNING_LIGHTS_NEVER then -- never
 		if self.beaconLightsActive then
-			self:setBeaconLightsVisibility(false);
+			--self:setBeaconLightsVisibility(false);
 		end;
 		if self.cp.hasHazardLights and self.turnSignalState ~= Vehicle.TURNSIGNAL_OFF then
 			self:setTurnSignalState(Vehicle.TURNSIGNAL_OFF);
 		end;
 	else -- on street/always
-		local combineBeaconOn = self.cp.isCombine and (self.fillLevel / self.capacity) > 0.8;
+		--!!! local combineBeaconOn = self.cp.isCombine and (self.fillLevel / self.capacity) > 0.8;
+		local combineBeaconOn = self.cp.isCombine and (self.fillUnits[1].fillLevel / self.fillUnits[1].capacity) > 0.8;
 		local beaconOn = self.cp.warningLightsMode == courseplay.WARNING_LIGHTS_BEACON_ALWAYS 
 						 or ((self.cp.mode == 1 or self.cp.mode == 2 or self.cp.mode == 3 or self.cp.mode == 5) and self.cp.waypointIndex > 2) 
 						 or ((self.cp.mode == 4 or self.cp.mode == 6) and self.cp.waypointIndex > self.cp.stopWork)
 						 or combineBeaconOn;
 		if self.beaconLightsActive ~= beaconOn then
-			self:setBeaconLightsVisibility(beaconOn);
+			--!!!self:setBeaconLightsVisibility(beaconOn);
 		end;
 		if self.cp.hasHazardLights then
 			local hazardOn = self.cp.warningLightsMode == courseplay.WARNING_LIGHTS_BEACON_HAZARD_ON_STREET and beaconOn and not combineBeaconOn;
@@ -717,7 +718,11 @@ end
 -- END drive();
 
 
-function courseplay:setTrafficCollision(vehicle, lx, lz, workArea) --!!!
+function courseplay:setTrafficCollision(vehicle, lx, lz, workArea)
+	if AIVehicleUtil.setCollisionDirection == nil then --!!!
+		return --!!!
+	end --!!!
+	
 	--local goForRaycast = vehicle.cp.mode == 1 or (vehicle.cp.mode == 3 and vehicle.cp.waypointIndex > 3) or vehicle.cp.mode == 5 or vehicle.cp.mode == 8 or ((vehicle.cp.mode == 4 or vehicle.cp.mode == 6) and vehicle.cp.waypointIndex > vehicle.cp.stopWork) or (vehicle.cp.mode == 2 and vehicle.cp.waypointIndex > 3)
 	--print("lx: "..tostring(lx).."	distance: "..tostring(distance))
 	--local maxlx = 0.5; --sin(maxAngle); --sin30°  old was : 0.7071067 sin 45°

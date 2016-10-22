@@ -176,7 +176,7 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 								--self.cp.collidingVehicleId = nil
 							courseplay:deleteCollisionVehicle(self);
 							--end
-							AIVehicleUtil.setCollisionDirection(self.cp.trafficCollisionTriggers[1], self.cp.trafficCollisionTriggers[2], 0, -1);
+							--!!! AIVehicleUtil.setCollisionDirection(self.cp.trafficCollisionTriggers[1], self.cp.trafficCollisionTriggers[2], 0, -1);
 							courseplay:debug(string.format('%s: 	onLeave - setting "self.cp.collidingVehicleId" to nil', nameNum(self)), 3);
 						else
 							courseplay:debug(string.format('%s: 	onLeave - keep "self.CPnumCollidingVehicles"', nameNum(self)), 3);
@@ -297,7 +297,8 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 
 	if self.cp.workTools[1] ~= nil and tipTriggers ~= nil and tipTriggersCount > 0 then
 		courseplay:debug(('%s: transformId=%s: %s'):format(nameNum(self), tostring(transformId), name), 1);
-		local trailerFillType = self.cp.workTools[1].currentFillType;
+		local trailerFillType = courseplay:getAttachedTrailersFillType(self)  --!!! self.cp.workTools[1].currentFillType;
+		--print("trailerFillType: "..tostring(trailerFillType))
 		if trailerFillType == nil or trailerFillType == 0 then
 			for i=2,#(self.cp.workTools) do
 				trailerFillType = self.cp.workTools[i].currentFillType;
@@ -334,7 +335,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 					courseplay:debug('    trigger is PlaceableHeap', 1);
 				end;
 
-				courseplay:debug(('    trailerFillType=%s %s'):format(tostring(trailerFillType), trailerFillType and Fillable.fillTypeIntToName[trailerFillType] or ''), 1);
+				--courseplay:debug(('    trailerFillType=%s %s'):format(tostring(trailerFillType), trailerFillType and Fillable.fillTypeIntToName[trailerFillType] or ''), 1); --!!! fillTypeIntToName is nil 
 				if trailerFillType and trigger.acceptedFillTypes ~= nil and trigger.acceptedFillTypes[trailerFillType] then
 					courseplay:debug(('    trigger (%s) accepts trailerFillType'):format(tostring(triggerId)), 1);
 
@@ -367,7 +368,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 					if courseplay.debugChannels[1] then
 						courseplay:debug(('    trigger (%s) does not accept trailerFillType (%s)'):format(tostring(triggerId), tostring(trailerFillType)), 1);
 						courseplay:debug(('    trigger (%s) acceptedFillTypes:'):format(tostring(triggerId)), 1);
-						courseplay:printTipTriggersFruits(trigger)
+						--!!! courseplay:printTipTriggersFruits(trigger)
 					end
 				else
 					courseplay:debug(string.format("%s: trigger %s does not have acceptedFillTypes (trailerFillType=%s)", nameNum(self), tostring(triggerId), tostring(trailerFillType)), 1);
@@ -830,7 +831,7 @@ end;
 
 function courseplay:printTipTriggersFruits(trigger)
 	for k,_ in pairs(trigger.acceptedFillTypes) do
-		print(('    %s: %s'):format(tostring(k), tostring(Fillable.fillTypeIntToName[k])));
+		print(('    %s: %s'):format(tostring(k), tostring(Fillable.fillTypeIntToName[k]))); --!!! fillTypeIntToName is nil 
 	end
 end;
 
@@ -868,5 +869,5 @@ local MultiSiloTrigger_TriggerCallback = function(triggerId, otherActorId, onEnt
 		end;
 	end;
 end;
-MultiSiloTrigger.triggerCallback = Utils.appendedFunction(MultiSiloTrigger.triggerCallback, MultiSiloTrigger_TriggerCallback);
+--!!! MultiSiloTrigger.triggerCallback = Utils.appendedFunction(MultiSiloTrigger.triggerCallback, MultiSiloTrigger_TriggerCallback);
 

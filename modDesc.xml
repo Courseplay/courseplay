@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
-<modDesc descVersion="22">
-	<version>4.01.0120</version>
+<modDesc descVersion="30">
+	<version>4.01.00120</version>
 	<author><![CDATA[Courseplay Dev Team]]></author>
 	<title>
 		<br>Courseplay</br>
@@ -21,72 +21,72 @@
 
 	<description>
 		<br>
-<![CDATA[Desenvolvedores: Jakob Tischler, Thomas Gärtner, Satis
+<![CDATA[Desenvolvedores:  Thomas Gärtner, Satis
 
 Tradutores: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli]]>
 		</br>
 		<cs>
-<![CDATA[开发成员: Jakob Tischler, Thomas Gärtner, Satis
+<![CDATA[开发成员:  Thomas Gärtner, Satis
 
 语言支持: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli]]>
 		</cs>
 		<cz>
-<![CDATA[Vývojáři: Jakob Tischler, Thomas Gärtner, Satis
+<![CDATA[Vývojáři:  Thomas Gärtner, Satis
 
 Překlady: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli]]>
 		</cz>
 		<de>
-<![CDATA[Entwickler: Jakob Tischler, Thomas Gärtner, Satis
+<![CDATA[Entwickler:  Thomas Gärtner, Satis
 
 Übersetzungen: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli]]>
 		</de>
 		<en>
-<![CDATA[Developers: Jakob Tischler, Thomas Gärtner, Satis
+<![CDATA[Developers:  Thomas Gärtner, Satis
 
 Translations: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli]]>
 		</en>
 		<es>
-<![CDATA[Desarrolladores: Jakob Tischler, Thomas Gärtner, Satis
+<![CDATA[Desarrolladores:  Thomas Gärtner, Satis
 
 Traducciones: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli]]>
 		</es>
 		<fr>
-<![CDATA[Développeurs: Jakob Tischler, Thomas Gärtner, Satis
+<![CDATA[Développeurs:  Thomas Gärtner, Satis
 
 Traductions: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli]]>
 		</fr>
 		<it>
-<![CDATA[Sviluppatori: Jakob Tischler, Thomas Gärtner, Satis
+<![CDATA[Sviluppatori:  Thomas Gärtner, Satis
 
 Traduzioni: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR] Gui7545,[HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli]]>
 		</it>
 		<jp>
-<![CDATA[開発者: Jakob Tischler, Thomas Gärtner, Satis
+<![CDATA[開発者:  Thomas Gärtner, Satis
 
 翻訳: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR] Gui7545,[HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli]]>
 		</jp>
 		<hu>
-<![CDATA[Készítők: Jakob Tischler, Thomas Gärtner, Satis
+<![CDATA[Készítők:  Thomas Gärtner, Satis
 
 Fordítók: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli]]>
 		</hu>
 		<nl>
-<![CDATA[Ontwikkelaars: Jakob Tischler, Thomas Gärtner, Satis
+<![CDATA[Ontwikkelaars:  Thomas Gärtner, Satis
 
 Vertaling: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli]]>
 		</nl>
 		<pl>
-<![CDATA[Deweloperzy: Jakob Tischler, Thomas Gärtner, Satis
+<![CDATA[Deweloperzy:  Thomas Gärtner, Satis
 
 Tłumaczenia: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli]]>
 		</pl>
 		<pt>
-<![CDATA[Desenvolvedores: Jakob Tischler, Thomas Gärtner, Satis
+<![CDATA[Desenvolvedores:  Thomas Gärtner, Satis
 
 Tradutores: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli]]>
 		</pt>
 		<ru>
-<![CDATA[Разработка: Jakob Tischler, Thomas Gärtner, Satis
+<![CDATA[Разработка:  Thomas Gärtner, Satis
 
 Переводчики: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, [FR] Gui7545, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli]]>
 		</ru>

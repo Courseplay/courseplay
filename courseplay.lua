@@ -32,14 +32,12 @@ courseplay.fields = {};
 courseplay.generation = {};
 
 local sonOfaBangSonOfaBoom = {
-	['44d143f3e847254a55835a8298ba4e21'] = true;
-	['6fbb6a98a4054b1d603bd8c591d572af'] = true;
-	['87a96c3bb39fa285d7ed2fb5beaffc16'] = true;
-	['d4043d2f9265e18c794be4159faaef5c'] = true;
-	['f4a77acf03e969bbb2b99fee35d137fb'] = true;
-	['7fdd2fa7e858ae062946bbbc1143567c'] = true;
-};
+	['56bb4a8d3f72d5a31aee0c317302dde5'] = true;
+	['9a9f028043394ff9de1cf6c905b515c1'] = true;
+
+	};
 CpManager.isDeveloper = sonOfaBangSonOfaBoom[getMD5(g_settingsNickname)];
+
 if CpManager.isDeveloper then
 	print('Special dev magic for Courseplay developer unlocked. You go, girl!');
 else

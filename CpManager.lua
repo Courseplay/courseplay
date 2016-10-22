@@ -61,7 +61,7 @@ function CpManager:loadMap(name)
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- height for mouse text line in game's help menu
-	self.hudHelpMouseLineHeight = g_currentMission.hudHelpTextSize + g_currentMission.hudHelpTextLineSpacing*2;
+	self.hudHelpMouseLineHeight = 0.0291 --!!!  g_currentMission.hudHelpTextSize + g_currentMission.hudHelpTextLineSpacing*2;
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- INPUT
@@ -69,7 +69,7 @@ function CpManager:loadMap(name)
 	self.wasPlayerFrozen = false;
 	local ovl = courseplay.inputBindings.mouse.overlaySecondary;
 	if ovl then
-		local h = (2.5 * g_currentMission.hudHelpTextSize);
+		local h = (2.5 * 0.01225 ) --!!! g_currentMission.hudHelpTextSize);
 		local w = h / g_screenAspectRatio;
 		ovl:setDimension(w, h);
 	end;
@@ -405,7 +405,7 @@ function CpManager.getThatFuckerBack(self)
 			CpManager.cpFieldsFileBackupPath = nil;
 		end;
 
-		deleteFolder(CpManager.cpTempSaveFolderPath);
+		--!!! deleteFolder(CpManager.cpTempSaveFolderPath);
 		-- print('    delete backup folder');
 
 	else -- corrupt savegame: display backup info message
@@ -536,18 +536,20 @@ function CpManager.drawMouseButtonHelp(self, posY, txt)
 
 	local ovl = courseplay.inputBindings.mouse.overlaySecondary;
 	if ovl then
-		local y = posY - g_currentMission.hudHelpTextSize - g_currentMission.hudHelpTextLineSpacing*3;
+		local y = posY - 0.01225 - 0.0084*3 ;--!!! g_currentMission.hudHelpTextSize - g_currentMission.hudHelpTextLineSpacing*3;
 		ovl:setPosition(xLeft - ovl.width*0.2, y);
 		ovl:render();
 		xLeft = xLeft + ovl.width*0.6;
 	end;
 
-	posY = posY - g_currentMission.hudHelpTextSize - g_currentMission.hudHelpTextLineSpacing*2;
+	posY = posY - 0.01225 - 0.0084*2; --!!! g_currentMission.hudHelpTextSize - g_currentMission.hudHelpTextLineSpacing*2;
 	setTextAlignment(RenderText.ALIGN_RIGHT);
-	renderText(xRight, posY, g_currentMission.hudHelpTextSize, txt);
+	--!!! renderText(xRight, posY, g_currentMission.hudHelpTextSize, txt);
+	renderText(xRight, posY, 0.01225, txt);
 
 	setTextAlignment(RenderText.ALIGN_LEFT);
-	renderText(xLeft, posY, g_currentMission.hudHelpTextSize, courseplay.inputBindings.mouse.secondaryTextI18n);
+	--!!! renderText(xLeft, posY, g_currentMission.hudHelpTextSize, courseplay.inputBindings.mouse.secondaryTextI18n);
+	renderText(xLeft, posY, 0.01225, courseplay.inputBindings.mouse.secondaryTextI18n);
 end;
 
 function CpManager:severCombineTractorConnection(vehicle, callDelete)
@@ -614,9 +616,9 @@ end;
 
 function CpManager:showYesNoDialogue(title, text, callbackFn, showBoolVar)
 	local yesNoDialogue = g_gui:showGui('YesNoDialog');
-	yesNoDialogue.target.titleElement:setText(title);
+	--!!! yesNoDialogue.target.titleElement:setText(title);       titleElement is nil
 	yesNoDialogue.target:setText(text);
-	yesNoDialogue.target:setCallbacks(callbackFn, self);
+	yesNoDialogue.target:setCallbacks(callbackFn, self); --!!!
 	self[showBoolVar] = false;
 end;
 
@@ -638,7 +640,22 @@ end;
 -- ####################################################################################################
 -- WAGES
 function CpManager:setupWages()
-	self.wageDifficultyMultiplier = Utils.lerp(0.5, 1, (g_currentMission.missionStats.difficulty - 1) / 2);
+	--[[for k,v in pairs(Fillable) do
+		print(string.format("%s: %s",tostring(k),tostring(v)))--!!!
+		if type(v) == "table" then
+			local tableName = g_currentMission[k]
+			for a,b in pairs( tableName) do
+				print(string.format("	%s: %s",tostring(a),tostring(b)))
+				if type(v) == "table" then
+					local tableName2 = tableName[a]
+					for c,d in pairs( tableName) do
+						print(string.format("		%s: %s",tostring(c),tostring(d)))					
+					end
+				end			
+			end
+		end
+	end]]
+	self.wageDifficultyMultiplier = 1 -- Utils.lerp(0.5, 1, (g_currentMission.missionStats.difficulty - 1) / 2); !!!
 	self.wagesActive = true;
 	self.wagePerHour = 1500;
 	self.wagePer10Secs  = self.wagePerHour / 360;

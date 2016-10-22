@@ -571,7 +571,7 @@ function courseplay.fields:getFruitTypes()
 	local hudH = courseplay.hud.suc.visibleArea.overlayHeight;
 	local hudX = courseplay.hud.suc.visibleArea.overlayPosX;
 	local hudY = courseplay.hud.suc.visibleArea.overlayPosY;
-	for name,fruitType in pairs(FruitUtil.fruitTypes) do
+	--[[!!! for name,fruitType in pairs(FruitUtil.fruitTypes) do
 		if fruitType.allowsSeeding and fruitType.seedUsagePerSqm then
 			local fillType = FruitUtil.fruitTypeToFillType[fruitType.index];
 			local fillTypeDesc = Fillable.fillTypeIndexToDesc[ fillType ];
@@ -602,7 +602,7 @@ function courseplay.fields:getFruitTypes()
 				end;
 			end;
 		end;
-	end;
+	end;]]
 	self.seedUsageCalculator.numFruits = #fruitTypes;
 	table.sort(fruitTypes, function(a,b) return a.nameI18N:lower() < b.nameI18N:lower() end);
 	self.seedUsageCalculator.enabled = self.seedUsageCalculator.numFruits > 0;

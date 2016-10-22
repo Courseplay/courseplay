@@ -14,7 +14,7 @@ function courseplay:detachImplement(implementIndex)
 	--- Update Vehicle
 	self.cp.toolsDirty = true;
 end;
-
+--[[ !!!
 local origVehicleDetachImplement = Vehicle.detachImplement;
 Vehicle.detachImplement = function(self, implementIndex, noEventSend)
 	-- don't allow detaching while CP is active
@@ -31,6 +31,7 @@ Vehicle.detachImplement = function(self, implementIndex, noEventSend)
 		courseplay:setAttachedCombine(self);
 	end;
 end;
+]]
 
 
 function courseplay:reset_tools(vehicle)
@@ -39,7 +40,7 @@ function courseplay:reset_tools(vehicle)
 	vehicle.cp.workToolAttached = courseplay:updateWorkTools(vehicle, vehicle);
 
 	-- Reset fill type.
-	if #vehicle.cp.workTools > 0 and vehicle.cp.workTools[1].cp.hasSpecializationFillable and vehicle.cp.workTools[1].allowFillFromAir and vehicle.cp.workTools[1].allowTipDischarge then
+	if #vehicle.cp.workTools > 0 and vehicle.cp.workTools[1].cp.hasSpecializationFillable and vehicle.cp.workTools[1].allowFillFromAir and vehicle.cp.workTools[1].allowTipDischarge and false then --!!!
 		if vehicle.cp.multiSiloSelectedFillType == Fillable.FILLTYPE_UNKNOWN or (vehicle.cp.multiSiloSelectedFillType ~= Fillable.FILLTYPE_UNKNOWN and not vehicle.cp.workTools[1].fillTypes[vehicle.cp.multiSiloSelectedFillType]) then
 			vehicle.cp.multiSiloSelectedFillType = vehicle.cp.workTools[1]:getFirstEnabledFillType();
 		end;
@@ -91,7 +92,8 @@ function courseplay:isBigM(workTool)
 	return workTool.cp.hasSpecializationSteerable and courseplay:isMower(workTool);
 end;
 function courseplay:isCombine(workTool)
-	return (workTool.cp.hasSpecializationCombine or workTool.cp.hasSpecializationAICombine) and workTool.attachedCutters ~= nil and workTool.capacity > 0;
+	--!!! return (workTool.cp.hasSpecializationCombine or workTool.cp.hasSpecializationAICombine) and workTool.attachedCutters ~= nil and workTool.capacity > 0;
+	return (workTool.cp.hasSpecializationCombine or workTool.cp.hasSpecializationAICombine) and workTool.attachedCutters ~= nil ; --and workTool.capacity > 0;
 end;
 function courseplay:isChopper(workTool)
 	return (workTool.cp.hasSpecializationCombine or workTool.cp.hasSpecializationAICombine) and workTool.attachedCutters ~= nil and workTool.capacity == 0 or courseplay:isSpecialChopper(workTool);
@@ -107,7 +109,7 @@ function courseplay:isHarvesterSteerable(workTool)
 end;
 function courseplay:isHookLift(workTool)
 	if workTool.attacherJoint then
-		return workTool.attacherJoint.jointType == Vehicle.jointTypeNameToInt["hookLift"];
+		return false ---!!! workTool.attacherJoint.jointType == Vehicle.jointTypeNameToInt["hookLift"];
 	end;
 	return false;
 end
@@ -144,6 +146,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 	else
 		cpPrintLine(6);
 		courseplay:debug(('%s: updateWorkTools(%s, %q, isImplement=true)'):format(nameNum(vehicle),tostring(vehicle.name), nameNum(workTool)), 6);
+		_ , workTool.capacity = courseplay:getOwnFillLevelAndCapacity(workTool) -- !!!
 	end;
 
 	courseplay:setNameVariable(workTool);
@@ -152,7 +155,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 
 	-- MODE 1 + 2: GRAIN TRANSPORT / COMBI MODE
 	if vehicle.cp.mode == 1 or vehicle.cp.mode == 2 then
-		if workTool.allowTipDischarge and workTool.capacity and workTool.capacity > 0.1 then
+		if workTool.allowTipDischarge and workTool.fillUnits[1].capacity and workTool.fillUnits[1].capacity > 0.1 then  --!!!
 			hasWorkTool = true;
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
 		end;
@@ -653,7 +656,7 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 
 			if not mst.isFilling and not siloIsEmpty and (currentTrailer.currentFillType == Fillable.FILLTYPE_UNKNOWN or currentTrailer.currentFillType == vehicle.cp.multiSiloSelectedFillType) then
 				mst:startFill(vehicle.cp.multiSiloSelectedFillType);
-				courseplay:debug(('%s: MultiSiloTrigger: selectedFillType = %s, isFilling = %s'):format(nameNum(vehicle), tostring(Fillable.fillTypeIntToName[mst.selectedFillType]), tostring(mst.isFilling)), 2);
+				courseplay:debug(('%s: MultiSiloTrigger: selectedFillType = %s, isFilling = %s'):format(nameNum(vehicle), tostring(Fillable.fillTypeIntToName[mst.selectedFillType]), tostring(mst.isFilling)), 2);  --!!! fillTypeIntToName is nil 
 			elseif siloIsEmpty then
 				CpManager:setGlobalInfoText(vehicle, 'FARM_SILO_IS_EMPTY');
 			end;
@@ -729,7 +732,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 	for k, tipper in pairs(vehicle.cp.workTools) do
 		if tipper.tipReferencePoints ~= nil then
 			local allowedToDriveBackup = allowedToDrive;
-			local fruitType = tipper.currentFillType
+			local fruitType = courseplay:getAttachedTrailersFillType(vehicle) --!!! tipper.currentFillType
 			local distanceToTrigger, bestTipReferencePoint = 0,0
 			if ctt.isHeapTipTrigger then
 				_,distanceToTrigger,bestTipReferencePoint = ctt:getTipInfoForTrailer(tipper);

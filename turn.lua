@@ -21,9 +21,6 @@ function courseplay:turn(self, dt) --!!!
 	if self.cp.noStopOnEdge then
 		turnOutTimer = 0
 	end
-	if self.cp.lastDistanceToTurnPoint == nil then
-		self.cp.lastDistanceToTurnPoint = math.huge;
-	end
 	if not self.cp.checkMarkers then
 		self.cp.checkMarkers = true
 		for _,workTool in pairs(self.cp.workTools) do
@@ -51,9 +48,9 @@ function courseplay:turn(self, dt) --!!!
 			if self.cp.turnStage == 2 then
 				self.turnStageTimer = self.turnStageTimer - dt;
 				if self.cp.isTurning == "left" then
-					AITractor.aiRotateLeft(self);
+					--!!! AITractor.aiRotateLeft(self);
 				else
-					AITractor.aiRotateRight(self);
+					--!!!AITractor.aiRotateRight(self);
 				end
 				if myDirX*dirX + myDirZ*dirZ > 0.2 or self.turnStageTimer < 0 then
 					if self.cp.aiTurnNoBackward or
@@ -176,7 +173,6 @@ function courseplay:turn(self, dt) --!!!
 		-- TURN STAGE 1
 		elseif self.cp.turnStage == 1 then
 			-- turn
-			self.cp.lastDistanceToTurnPoint = math.huge;
 			local dirX, dirZ = self.aiTractorDirectionX, self.aiTractorDirectionZ;
 			if self.cp.isTurning == "right" then
 				self.aiTractorTurnLeft = false;
@@ -228,15 +224,13 @@ function courseplay:turn(self, dt) --!!!
 		--local dist = courseplay:distance(targetX,targetZ,x,z)
 		-- print(string.format("distance: %f; backmarker %f; y:%.3f vs Height:%.3f",dist,backMarker,y,terrainHeight))
 		if backMarker <= 0 then
-			if  dist < 0.5 or self.cp.lastDistanceToTurnPoint < dist then
+			if  dist < 0.5 then
 				if not self.cp.noStopOnTurn then
 					self.cp.waitForTurnTime = self.timer + turnTimer
 				end
 				courseplay:lowerImplements(self, false, false)
 				updateWheels = false;
 				self.cp.turnStage = 1;
-			else
-				self.cp.lastDistanceToTurnPoint = dist;
 			end
 		else
 			if dist < 0.5 and self.cp.turnStage ~= -1 then

@@ -31,7 +31,6 @@ Be as specific as possible:
 ___
 
 ## Credits  
-* Jakob Tischler
 * Thomas Gärtner
 * Satis
 
@@ -41,7 +40,8 @@ ___
 Please see [`__Attributions.md`](https://github.com/Courseplay/courseplay/blob/master/__Attributions.md) for more information.
 ___
 
-## Former developers  
+## Former developers
+* Jakob Tischler  
 * Bastian82
 * Lautschreier
 * Horoman

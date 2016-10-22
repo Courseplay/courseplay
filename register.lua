@@ -92,7 +92,6 @@ function courseplay.vehiclePostLoadFinished(self)
 	if courseplay.combines == nil then
 		courseplay.combines = {};
 	end;
-
 	if self.cp.isCombine or self.cp.isChopper or self.cp.isHarvesterSteerable or self.cp.isSugarBeetLoader or courseplay:isAttachedCombine(self) then
 		courseplay.combines[self.rootNode] = self;
 	end;
@@ -123,9 +122,9 @@ function courseplay:foldableLoad(xmlFile)
 	if self.cp == nil then self.cp = {}; end;
 
 	--FOLDING PARTS STARTMOVEDIRECTION
-	local startMoveDir = getXMLInt(xmlFile, 'vehicle.foldingParts#startMoveDirection');
-	if startMoveDir == nil then
-		local singleDir;
+	local startMoveDir = 1 --!!!getXMLInt(xmlFile, 'vehicle.foldingParts#startMoveDirection');
+	if startMoveDir == nil and false then --!!!
+ 		local singleDir;
 		local i = 0;
 		while true do -- go through single foldingPart entries
 			local key = string.format('vehicle.foldingParts.foldingPart(%d)', i);

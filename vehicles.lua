@@ -1018,7 +1018,8 @@ end;
 
 local allowedJointType = {};
 function courseplay:isWheeledWorkTool(workTool)
-	if #allowedJointType == 0 then
+	if #allowedJointType == 0 and Vehicle.jointTypeNameToInt ~= nil then --!!!
+	--!!! if #allowedJointType == 0 then
 		local jointTypeList = {"implement", "trailer", "trailerLow", "semitrailer"};
 		for _,jointType in ipairs(jointTypeList) do
 			local index = Vehicle.jointTypeNameToInt[jointType];
@@ -1048,7 +1049,7 @@ end;
 function courseplay:setAckermannSteeringInfo(vehicle, xmlFile)
 	if xmlFile ~= nil and xmlFile ~= 0 then
 		local mainKey = "vehicle.ackermannSteering#";
-		local rotMax = getXMLInt(xmlFile, mainKey.."rotMax");
+		--!!! local rotMax = getXMLInt(xmlFile, mainKey.."rotMax");
 
 		-- If rotMax is not set, Giants don't calculate the ackermannSteering.
 		if not rotMax then

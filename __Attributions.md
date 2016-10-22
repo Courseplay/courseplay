@@ -36,7 +36,7 @@ ___
 ___
 
 ## Former Developers
-
+* Jakob Tischler
 * Bastian82
 * Lautschreier
 * Horoman
