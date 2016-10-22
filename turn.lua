@@ -286,11 +286,6 @@ function courseplay:newturn(vehicle, dt)
 				lowerImplements = deltaZ > frontMarker;
 			end;
 
-			local dist = courseplay:distance(newTarget.posX, newTarget.posZ, vehicleX, vehicleZ);
-			if courseplay.debugChannels[14] then
-				renderText(0.5,0.85-(0.03*vehicle.cp.coursePlayerNum),0.02,string.format("%s: Current Distance: %.2fm ",nameNum(vehicle),dist))
-			end
-
 			-- Lower implement and continue on next lane
 			if lowerImplements then
 				courseplay:lowerImplements(vehicle, true, true);
