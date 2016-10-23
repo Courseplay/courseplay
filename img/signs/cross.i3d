@@ -2,7 +2,7 @@
 
 <i3D name="Crossing" version="1.6" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://i3d.giants.ch/schema/i3d-1.6.xsd">
   <Asset>
-    <Export program="GIANTS Editor 64bit" version="6.0.2"/>
+    <Export program="GIANTS Editor 64bit" version="7.0.0"/>
   </Asset>
 
   <Files>
@@ -11,7 +11,7 @@
 
 
   <Materials>
-    <Material name="Sign" materialId="6" ambientColor="1 1 1" cosPower="20" specularColor="0.25 0.25 0.25">
+    <Material name="Sign" materialId="7" ambientColor="1 1 1" cosPower="20" specularColor="0.25 0.25 0.25">
       <Texture fileId="1"/>
     </Material>
   </Materials>
@@ -25,9 +25,9 @@
   </Dynamics>
 
   <Scene>
-    <TransformGroup name="CrossingSign" clipDistance="175" nodeId="12">
-      <Shape shapeId="1" name="Front" nodeId="13" materialIds="6" castsShadows="true" receiveShadows="true"/>
-      <Shape shapeId="2" name="Back" nodeId="14" materialIds="6" castsShadows="true" receiveShadows="true"/>
+    <TransformGroup name="CrossingSign" clipDistance="175" nodeId="11">
+      <Shape shapeId="1" name="Front" nodeId="12" materialIds="7" castsShadows="true" receiveShadows="true"/>
+      <Shape shapeId="2" name="Back" nodeId="13" materialIds="7" castsShadows="true" receiveShadows="true"/>
     </TransformGroup>
   </Scene>
 

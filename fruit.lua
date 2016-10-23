@@ -224,8 +224,8 @@ function courseplay:sideToDrive(vehicle, combine, distance, switchSide)
 	local rHeightZ = rStartZ + dirZ * selfSideWatchDirSize;
 
 	-- TODO (Jakob): the last "true" means we're also including preparing fruit. Should this only be done if the combine has indeed a fruit preparer?
-	local leftFruit = Utils.getFruitArea(combine.lastValidInputFruitType, lStartX, lStartZ, lWidthX, lWidthZ, lHeightX, lHeightZ, true);
-	local rightFruit = Utils.getFruitArea(combine.lastValidInputFruitType, rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ, true);
+	local leftFruit = Utils.getFruitArea(combine.fillUnits[1].lastValidFillType, lStartX, lStartZ, lWidthX, lWidthZ, lHeightX, lHeightZ, true);  --!!! lastValidInputFruitType nil ?
+	local rightFruit = Utils.getFruitArea(combine.fillUnits[1].lastValidFillType, rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ, true);
 
 	courseplay:debug(string.format("%s:courseplay:sideToDrive: fruit: left %f, right %f", nameNum(combine), leftFruit, rightFruit), 4);
 	
