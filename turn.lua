@@ -39,11 +39,10 @@ function courseplay:turn(self, dt) --!!!
 			local x,y,z = getWorldTranslation(self.cp.DirectionNode);
 			local dirX, dirZ = self.aiTractorDirectionX, self.aiTractorDirectionZ;
 			local myDirX, myDirY, myDirZ = localDirectionToWorld(self.cp.DirectionNode, 0, 0, 1);
-
 			newTargetX = self.aiTractorTargetX;
 			newTargetY = y;
 			newTargetZ = self.aiTractorTargetZ;
-
+			
 			-- TURN STAGE 2
 			if self.cp.turnStage == 2 then
 				self.turnStageTimer = self.turnStageTimer - dt;
@@ -64,6 +63,7 @@ function courseplay:turn(self, dt) --!!!
 						self.aiTractorTargetBeforeSaveX = self.aiTractorTargetX;
 						self.aiTractorTargetBeforeSaveZ = self.aiTractorTargetZ;
 						newTargetX = self.aiTractorTargetBeforeTurnX;
+						newTargetY = y;
 						newTargetZ = self.aiTractorTargetBeforeTurnZ;
 						moveForwards = false;
 						self.cp.turnStage = 6;
@@ -72,7 +72,7 @@ function courseplay:turn(self, dt) --!!!
 						self.turnStageTimer = Utils.getNoNil(self.turnStage3Timeout,20000)
 					end;
 				end;
-
+			
 			-- TURN STAGE 3
 			elseif self.cp.turnStage == 3 then
 				self.turnStageTimer = self.turnStageTimer - dt;
@@ -145,7 +145,8 @@ function courseplay:turn(self, dt) --!!!
 			elseif self.cp.turnStage == 6 then
 				self.turnStageTimer = self.turnStageTimer - dt;
 				if self.turnStageTimer < 0 then
-					self.turnStageTimer = Utils.getNoNil(self.turnStage2Timeout,20000)
+					self.turnStageTimer = Utils.getNoNil(self.didNotMoveTimeout,20000)
+					--!!! self.turnStageTimer = Utils.getNoNil(self.turnStage2Timeout,20000)
 					self.cp.turnStage = 2;
 
 					newTargetX = self.aiTractorTargetBeforeSaveX;
@@ -174,6 +175,7 @@ function courseplay:turn(self, dt) --!!!
 		elseif self.cp.turnStage == 1 then
 			-- turn
 			local dirX, dirZ = self.aiTractorDirectionX, self.aiTractorDirectionZ;
+			local _,y,_ = getWorldTranslation(self.cp.DirectionNode); --!!! y is new in getDriveDirection
 			if self.cp.isTurning == "right" then
 				self.aiTractorTurnLeft = false;
 			else
@@ -193,7 +195,8 @@ function courseplay:turn(self, dt) --!!!
 			self.aiTractorDirectionX = -dirX;
 			self.aiTractorDirectionZ = -dirZ;
 			self.cp.turnStage = 2;
-			self.turnStageTimer = Utils.getNoNil(self.turnStage2Timeout,20000)
+			self.turnStageTimer = Utils.getNoNil(self.didNotMoveTimeout,20000)
+			--!!! self.turnStageTimer = Utils.getNoNil(self.turnStage2Timeout,20000)
 
 		-- TURN STAGE ??? --TODO (Jakob): what's the situation here? turnStage not > 1 and not > 0 ? When do we get to this point?
 		else              -- The situation is when a turn timeout appears...
@@ -268,7 +271,6 @@ function courseplay:turn(self, dt) --!!!
 		local refSpeed = self.cp.speeds.turn
 		self.cp.speedDebugLine = ("turn("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 		courseplay:setSpeed(self, refSpeed )
-		
 		local lx, lz = AIVehicleUtil.getDriveDirection(self.cp.DirectionNode, newTargetX, newTargetY, newTargetZ);
 		if self.cp.turnStage == 3 and math.abs(lx) < 0.1 then
 			self.cp.turnStage = 4;
@@ -282,8 +284,8 @@ function courseplay:turn(self, dt) --!!!
 		if self.invertedDrivingDirection then
 			lx = -lx
 		end
-		AIVehicleUtil.driveInDirection(self, dt, 25, 1, 0.5, 20, true, moveForwards, lx, lz, refSpeed, 1);
-		courseplay:setTrafficCollision(self, lx, lz, true)
+		AIVehicleUtil.driveInDirection(self, dt, 25, 1, 0.5, 20, true, moveForwards, lx, lz, refSpeed, 1); --!!! check with Giants , tractor doesn't back up
+		courseplay:setTrafficCollision(self, lx, lz, true) 
 	end;
 	
 	if newTargetX ~= nil and newTargetZ ~= nil then
