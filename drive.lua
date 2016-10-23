@@ -12,6 +12,12 @@ function courseplay:drive(self, dt)
 		self.steeringEnabled = false;
 	end
 		
+	--!!! print(string.format("self.motorStopTimer: %s",tostring(self.motorStopTimer)))
+	if self.motorStopTimer ~= nil and self.motorStopTimer <20000 then --!!! hack to keep motors runing...
+		self.motorStopTimer = 30000
+	end
+	
+	
 	-- debug for workAreas
 	if courseplay.debugChannels[6] then
 		local tx1, ty1, tz1 = localToWorld(self.cp.DirectionNode,3,1,self.cp.aiFrontMarker)
@@ -32,7 +38,7 @@ function courseplay:drive(self, dt)
 	self.cp.curSpeed = self.lastSpeedReal * 3600;
 
 	-- TIPPER FILL LEVELS (get once for all following functions)
-	self.cp.tipperFillLevel, self.cp.tipperCapacity = self:getAttachedTrailersFillLevelAndCapacity();
+	self.cp.tipperFillLevel, self.cp.tipperCapacity = courseplay:getAttachedTrailersFillLevelAndCapacity(self) --!!! self:getAttachedTrailersFillLevelAndCapacity();
 	if self.cp.tipperFillLevel == nil then self.cp.tipperFillLevel = 0; end;
 	if self.cp.tipperCapacity == nil or self.cp.tipperCapacity == 0 then self.cp.tipperCapacity = 0.00001; end;
 	self.cp.tipperFillLevelPct = self.cp.tipperFillLevel * 100 / self.cp.tipperCapacity;

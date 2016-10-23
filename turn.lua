@@ -267,7 +267,6 @@ function courseplay:turn(self, dt) --!!!
 	end;
 
 	if updateWheels then
-		local allowedToDrive = true
 		local refSpeed = self.cp.speeds.turn
 		self.cp.speedDebugLine = ("turn("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 		courseplay:setSpeed(self, refSpeed )
@@ -284,6 +283,8 @@ function courseplay:turn(self, dt) --!!!
 		if self.invertedDrivingDirection then
 			lx = -lx
 		end
+		--AIVehicleUtil.driveToPoint(33.233373641968,1,true,true,-0.0025672912597656,9.9975929260254,10)
+		--AIVehicleUtil.driveToPoint(newTargetX,1,true,moveForwards,newTargetZ,self.lastSpeedReal,refSpeed) ???
 		AIVehicleUtil.driveInDirection(self, dt, 25, 1, 0.5, 20, true, moveForwards, lx, lz, refSpeed, 1); --!!! check with Giants , tractor doesn't back up
 		courseplay:setTrafficCollision(self, lx, lz, true) 
 	end;

@@ -11,7 +11,9 @@ function courseplay:start(self)
 	self.steeringEnabled = false;
 	self.disableCharacterOnLeave = false
 
-	--!!!  this is not enough, the motor will be shut off after sevreal seconds outside the vehicle, please check it with GIANTS
+	--!!!  the motor will be shut off after severeal seconds outside and away from the vehicle - look at drive.lua(16)
+	
+	
 	if courseplay.isClient then
 		return
 	end
