@@ -616,9 +616,9 @@ end;
 
 function CpManager:showYesNoDialogue(title, text, callbackFn, showBoolVar)
 	local yesNoDialogue = g_gui:showGui('YesNoDialog');
-	--!!! yesNoDialogue.target.titleElement:setText(title);       titleElement is nil
+    yesNoDialogue.target:setTitle(title);
 	yesNoDialogue.target:setText(text);
-	yesNoDialogue.target:setCallbacks(callbackFn, self); --!!!
+ 	yesNoDialogue.target:setCallback(callbackFn, self); --!!!
 	self[showBoolVar] = false;
 end;
 
@@ -640,7 +640,7 @@ end;
 -- ####################################################################################################
 -- WAGES
 function CpManager:setupWages()
-	self.wageDifficultyMultiplier = 1 -- Utils.lerp(0.5, 1, (g_currentMission.missionStats.difficulty - 1) / 2); !!!
+	self.wageDifficultyMultiplier = Utils.lerp(0.5, 1, (g_currentMission.missionInfo.difficulty - 1) / 2);
 	self.wagesActive = true;
 	self.wagePerHour = 1500;
 	self.wagePer10Secs  = self.wagePerHour / 360;
