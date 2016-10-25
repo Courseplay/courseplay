@@ -262,12 +262,14 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 									vehicle.cp.runOnceStartCourse = false;
 								end
 							end;
-
-
+							if printPnce == nil then
+							   printPnce = true
+							print(string.format("mode6: workTool.aiLower: %s ;workTool.aiRaise: %s",tostring(workTool.aiLower),tostring(workTool.aiRaise)))
+							end
 							if not isFolding and isUnfolded and not waitForSpecialTool then --TODO: where does "waitForSpecialTool" come from? what does it do?
 								--lower
 								if needsLowering and workTool.aiNeedsLowering then
-									vehicle:setAIImplementsMoveDown(true);
+									workTool:aiLower()
 									courseplay:debug(string.format('%s: lower order', nameNum(workTool)), 17);
 								end;
 
@@ -306,7 +308,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 
 							--raise
 							if needsLowering and workTool.aiNeedsLowering and vehicle.cp.turnStage == 0 then
-								vehicle:setAIImplementsMoveDown(false);
+								workTool:aiRaise();
 								courseplay:debug(string.format('%s: raise order', nameNum(workTool)), 17);
 							end;
 						end;

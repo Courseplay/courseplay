@@ -47,9 +47,9 @@ function courseplay:turn(self, dt) --!!!
 			if self.cp.turnStage == 2 then
 				self.turnStageTimer = self.turnStageTimer - dt;
 				if self.cp.isTurning == "left" then
-					--!!! AITractor.aiRotateLeft(self);
+					AIVehicle.aiRotateLeft(self);
 				else
-					--!!!AITractor.aiRotateRight(self);
+					AIVehicle.aiRotateRight(self);
 				end
 				if myDirX*dirX + myDirZ*dirZ > 0.2 or self.turnStageTimer < 0 then
 					if self.cp.aiTurnNoBackward or
@@ -324,14 +324,20 @@ function courseplay:lowerImplements(self, moveDown, workToolonOff)
 				workTool:setPickupState(moveDown, false);
 			end;
 		end;
+		if moveDown then
+			if workTool.aiLower ~= nil then
+				workTool:aiLower();
+			end
+		elseif workTool.aiRaise ~= nil then
+				workTool:aiRaise()
+		end
 	
 	end;
 	if not specialTool then
-		if self.setAIImplementsMoveDown ~= nil then
-			self:setAIImplementsMoveDown(moveDown,true);
-		elseif self.setFoldState ~= nil then
+	
+		--[[if self.setFoldState ~= nil then
 			self:setFoldState(state, true);
-		end;
+		end;]] --!!! disabled just to know whether it's stll needed
 		if self.cp.mode == 4 then
 			for _,workTool in pairs(self.cp.workTools) do								 --vvTODO (Tom) why is this here vv?
 				if workTool.setIsTurnedOn ~= nil and not courseplay:isFolding(workTool) and (true or workTool ~= self) and workTool.isTurnedOn ~= workToolonOff then

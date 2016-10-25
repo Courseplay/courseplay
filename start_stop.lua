@@ -129,8 +129,8 @@ function courseplay:start(self)
 	local setLaneNumber = false;
 	for k,workTool in pairs(self.cp.workTools) do    --TODO temporary solution (better would be Tool:getIsAnimationPlaying(animationName))
 		if courseplay:isFolding(workTool) then
-			if  self.setAIImplementsMoveDown ~= nil then
-				self:setAIImplementsMoveDown(true)
+			if  self.aiLower ~= nil then
+				workTool:aiLower(true)
 			elseif self.setFoldState ~= nil then
 				self:setFoldState(-1, true)
 			end
