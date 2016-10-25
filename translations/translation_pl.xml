@@ -231,16 +231,16 @@
 		<text name="COURSEPLAY_HUD_OPEN"					text="Pokaż hud Courseplay" />
 		<text name="COURSEPLAY_HUD_CLOSE"					text="Ukryj hud Courseplay" />
 		<text name="COURSEPLAY_FUNCTIONS"					text="Courseplay funkcje" />
-		<text name="COURSEPLAY_MODIFIER"					text="Courseplay: modyfikator" />
-		<text name="COURSEPLAY_MENU_ACCEPT_SECONDARY"				text="Courseplay: akceptacja podmenu" />
-		<text name="COURSEPLAY_HUD"						text="Pokaż/Ukryj hud Courseplay" />
-		<text name="COURSEPLAY_START_STOP"					text="Courseplay: Wystartuj/zatrzymaj kierowcę" />
-		<text name="COURSEPLAY_CANCELWAIT"					text="Courseplay: zatrzymaj się w ostatnim miejscu lub następnym triggerze" />
-		<text name="COURSEPLAY_DRIVENOW"					text="Courseplay: jedź teraz" />
-		<text name="COURSEPLAY_NEXTMODE" 					text="Courseplay: następny tryb" />
-		<text name="COURSEPLAY_PREVMODE" 					text="Courseplay: poprzedni tryb" />
-		<text name="COURSEPLAY_MOUSEACTION_PRIMARY"				text="Courseplay: akcja myszy" />
-		<text name="COURSEPLAY_MOUSEACTION_SECONDARY"				text="Courseplay: kolejna akcja myszy" />
+		<text name="input_COURSEPLAY_MODIFIER"					text="Courseplay: modyfikator" />
+		<text name="input_COURSEPLAY_MENU_ACCEPT_SECONDARY"				text="Courseplay: akceptacja podmenu" />
+		<text name="input_COURSEPLAY_HUD"						text="Pokaż/Ukryj hud Courseplay" />
+		<text name="input_COURSEPLAY_START_STOP"					text="Courseplay: Wystartuj/zatrzymaj kierowcę" />
+		<text name="input_COURSEPLAY_CANCELWAIT"					text="Courseplay: zatrzymaj się w ostatnim miejscu lub następnym triggerze" />
+		<text name="input_COURSEPLAY_DRIVENOW"					text="Courseplay: jedź teraz" />
+		<text name="input_COURSEPLAY_NEXTMODE" 					text="Courseplay: następny tryb" />
+		<text name="input_COURSEPLAY_PREVMODE" 					text="Courseplay: poprzedni tryb" />
+		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY"				text="Courseplay: akcja myszy" />
+		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY"				text="Courseplay: kolejna akcja myszy" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW"					text="Pokaż kursor myszy" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE"					text="Ukryj kursor myszy" />
 	</texts>

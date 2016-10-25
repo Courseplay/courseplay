@@ -222,16 +222,16 @@
 		<text name="COURSEPLAY_HUD_OPEN" 								 text="Vezetősegéd panel megnyitása" />
 		<text name="COURSEPLAY_HUD_CLOSE" 								 text="Vezetősegéd panel bezárása" />
 		<text name="COURSEPLAY_FUNCTIONS" 								 text="Vezetősegéd funkciók" />
-		<text name="COURSEPLAY_MODIFIER" 								 text="Vezetősegéd gombkiosztás: Elsődleges" />
-		<text name="COURSEPLAY_MENU_ACCEPT_SECONDARY" 					 text="Vezetősegéd gombkiosztás: Másodlagos" />
-		<text name="COURSEPLAY_HUD" 									 text="Vezetősegéd panel be/ki" />
-		<text name="COURSEPLAY_START_STOP" 								 text="Vezetősegéd: Vezető indítása/leállítása" />
-		<text name="COURSEPLAY_CANCELWAIT" 								 text="Vezetősegéd: Állj az utolsó ponton következő triggernél" />
-		<text name="COURSEPLAY_DRIVENOW" 								 text="Vezetősegéd: Indítás azonnal!" />
-		<text name="COURSEPLAY_NEXTMODE" 								 text="Vezetősegéd: Következő művelet" />
-		<text name="COURSEPLAY_PREVMODE" 								 text="Vezetősegéd: Előző művelet" />
-		<text name="COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Vezetősegéd: Egér activálás" />
-		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Vezetősegéd: Másodlagos egér aktiválás" />
+		<text name="input_COURSEPLAY_MODIFIER" 							 text="Vezetősegéd gombkiosztás: Elsődleges" />
+		<text name="input_COURSEPLAY_MENU_ACCEPT_SECONDARY" 			 text="Vezetősegéd gombkiosztás: Másodlagos" />
+		<text name="input_COURSEPLAY_HUD" 								 text="Vezetősegéd panel be/ki" />
+		<text name="input_COURSEPLAY_START_STOP" 								 text="Vezetősegéd: Vezető indítása/leállítása" />
+		<text name="input_COURSEPLAY_CANCELWAIT" 								 text="Vezetősegéd: Állj az utolsó ponton következő triggernél" />
+		<text name="input_COURSEPLAY_DRIVENOW" 								 text="Vezetősegéd: Indítás azonnal!" />
+		<text name="input_COURSEPLAY_NEXTMODE" 								 text="Vezetősegéd: Következő művelet" />
+		<text name="input_COURSEPLAY_PREVMODE" 								 text="Vezetősegéd: Előző művelet" />
+		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Vezetősegéd: Egér activálás" />
+		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Vezetősegéd: Másodlagos egér aktiválás" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="Egérkurzor megjelenítése" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="Egérkurzor elrejtése" />
 		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Útvonal betöltése/hozzáfűzés a betöltött útvonalhoz" />

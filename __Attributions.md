@@ -13,7 +13,7 @@
 * Calculator icon by Scott Lewis - under "CC BY 3.0" license
 
 
-* "Diamond", start, stop, wait and cross sign i3Ds by Claus Pedersen (Satissis)
+* "Diamond", start, stop, wait and cross sign i3Ds by Claus Pedersen (Satis)
 
 * All other icons and graphics by Jakob Tischler
 

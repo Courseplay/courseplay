@@ -226,16 +226,16 @@
 		<text name="COURSEPLAY_HUD_OPEN" 								 text="打开CP界面" />
 		<text name="COURSEPLAY_HUD_CLOSE" 								 text="关闭CP界面" />
 		<text name="COURSEPLAY_FUNCTIONS" 								 text="CP功能" />
-		<text name="COURSEPLAY_MODIFIER" 								 text="Courseplay: 更改" />
-		<text name="COURSEPLAY_MENU_ACCEPT_SECONDARY" 					 text="Courseplay：弹出窗口" />
-		<text name="COURSEPLAY_HUD" 									 text="打开/关闭CP界面" />
-		<text name="COURSEPLAY_START_STOP" 								 text="Courseplay：开始/停止 任务" />
-		<text name="COURSEPLAY_CANCELWAIT" 								 text="Courseplay：停在最后路点或等待点" />
-		<text name="COURSEPLAY_DRIVENOW" 								 text="Courseplay：开车" />
-		<text name="COURSEPLAY_NEXTMODE" 								 text="Courseplay: 下一个任务模式" />
-		<text name="COURSEPLAY_PREVMODE" 								 text="Courseplay: 上一个任务模式" />
-		<text name="COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Courseplay：鼠标操作" />
-		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay：辅助鼠标操作" />
+		<text name="input_COURSEPLAY_MODIFIER" 							 text="Courseplay: 更改" />
+		<text name="input_COURSEPLAY_MENU_ACCEPT_SECONDARY" 			 text="Courseplay：弹出窗口" />
+		<text name="input_COURSEPLAY_HUD" 								 text="打开/关闭CP界面" />
+		<text name="input_COURSEPLAY_START_STOP" 								 text="Courseplay：开始/停止 任务" />
+		<text name="input_COURSEPLAY_CANCELWAIT" 								 text="Courseplay：停在最后路点或等待点" />
+		<text name="input_COURSEPLAY_DRIVENOW" 								 text="Courseplay：开车" />
+		<text name="input_COURSEPLAY_NEXTMODE" 								 text="Courseplay: 下一个任务模式" />
+		<text name="input_COURSEPLAY_PREVMODE" 								 text="Courseplay: 上一个任务模式" />
+		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Courseplay：鼠标操作" />
+		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay：辅助鼠标操作" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="显示鼠标" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="不显示鼠标" />
 		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="加载或合并任务" /> 

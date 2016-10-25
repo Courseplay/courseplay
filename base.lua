@@ -9,7 +9,8 @@ function courseplay:preLoad(xmlFile)
 end;
 ]]
 
-function courseplay:load(xmlFile)
+function courseplay:load(savegame)
+	local xmlFile = self.xmlFile;
 	self.setCourseplayFunc = courseplay.setCourseplayFunc;
 	self.getIsCourseplayDriving = courseplay.getIsCourseplayDriving;
 	self.setIsCourseplayDriving = courseplay.setIsCourseplayDriving;
@@ -120,7 +121,7 @@ function courseplay:load(xmlFile)
 	self.cp.waitTimer = nil;
 	self.cp.realisticDriving = true;
 	self.cp.canSwitchMode = false;
-	self.cp.multiSiloSelectedFillType = Fillable.FILLTYPE_UNKNOWN;
+	self.cp.siloSelectedFillType = FillUtil.FILLTYPE_UNKNOWN;
 	self.cp.slippingStage = 0;
 
 	self.cp.startAtPoint = courseplay.START_AT_NEAREST_POINT;
@@ -262,7 +263,7 @@ function courseplay:load(xmlFile)
 	-- traffic collision
 	self.cpOnTrafficCollisionTrigger = courseplay.cpOnTrafficCollisionTrigger;
 
-	self.cp.steeringAngle = 30 --!!! Utils.getNoNil(getXMLFloat(xmlFile, "vehicle.wheels.wheel(1)" .. "#rotMax"), 30)
+	self.cp.steeringAngle = Utils.getNoNil(getXMLFloat(xmlFile, "vehicle.ackermannSteering" .. "#rotMax"), 30)
 	self.cp.tempCollis = {}
 	self.CPnumCollidingVehicles = 0;
 	self.cpTrafficCollisionIgnoreList = {};
@@ -430,10 +431,10 @@ function courseplay:load(xmlFile)
 	-- 2D course
 	self.cp.drawCourseMode = courseplay.COURSE_2D_DISPLAY_OFF;
 	-- 2D pda map background -- TODO: MP?
---[[!!!	if g_statisticView.mapImage and g_statisticView.mapImage.overlay.filename then
-		self.cp.course2dPdaMapOverlay = Overlay:new('cpPdaMap', g_statisticView.mapImage.overlay.filename, 0, 0, 1, 1);
+    if g_currentMission.ingameMap and g_currentMission.ingameMap.mapOverlay and g_currentMission.ingameMap.mapOverlay.filename then
+		self.cp.course2dPdaMapOverlay = Overlay:new('cpPdaMap', g_currentMission.ingameMap.mapOverlay.filename, 0, 0, 1, 1);
 		self.cp.course2dPdaMapOverlay:setColor(1, 1, 1, CpManager.course2dPdaMapOpacity);
-	end;]]
+	end;
 
 	-- HUD
 	courseplay.hud:setupVehicleHud(self);
@@ -442,7 +443,11 @@ function courseplay:load(xmlFile)
 	courseplay.buttons:setActiveEnabled(self, 'all');
 end;
 
-function courseplay:postLoad(xmlFile)
+function courseplay:postLoad(savegame)
+    if savegame ~= nil and savegame.key ~= nil and not savegame.resetVehicles then
+		courseplay.loadVehicleCPSettings(self, savegame.xmlFile, savegame.key, savegame.resetVehicles)
+    end
+
 	-- Drive Control (upsidedown)
 	if self.driveControl ~= nil and g_currentMission.driveControl ~= nil then
 		self.cp.hasDriveControl = true;
@@ -587,10 +592,10 @@ function courseplay:draw()
 
 			if self.cp.canSwitchMode then
 				if self.cp.nextMode then
-					g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_NEXTMODE'), InputBinding.COURSEPLAY_NEXTMODE);
+					g_currentMission:addHelpButtonText(courseplay:loc('input_COURSEPLAY_NEXTMODE'), InputBinding.COURSEPLAY_NEXTMODE);
 				end;
 				if self.cp.prevMode then
-					g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_PREVMODE'), InputBinding.COURSEPLAY_PREVMODE);
+					g_currentMission:addHelpButtonText(courseplay:loc('input_COURSEPLAY_PREVMODE'), InputBinding.COURSEPLAY_PREVMODE);
 				end;
 			end;
 		end;
@@ -1254,7 +1259,7 @@ function courseplay:writeStream(streamId, connection)
 end
 
 
-function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
+function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 	if not resetVehicles and g_server ~= nil then
 		-- COURSEPLAY
 		local curKey = key .. '.courseplay';
@@ -1281,8 +1286,8 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		courseplay.buttons:setActiveEnabled(self, 'visualWaypoints');
 		courseplay.signs:setSignsVisibility(self);
 
-		self.cp.multiSiloSelectedFillType = Fillable.fillTypeNameToInt[Utils.getNoNil(getXMLString(xmlFile, curKey .. '#multiSiloSelectedFillType'), 'unknown')];
-		if self.cp.multiSiloSelectedFillType == nil then self.cp.multiSiloSelectedFillType = Fillable.FILLTYPE_UNKNOWN; end;
+		self.cp.siloSelectedFillType = FillUtil.fillTypeNameToInt[Utils.getNoNil(getXMLString(xmlFile, curKey .. '#siloSelectedFillType'), 'unknown')];
+		if self.cp.siloSelectedFillType == nil then self.cp.siloSelectedFillType = FillUtil.FILLTYPE_UNKNOWN; end;
 
 		-- SPEEDS
 		curKey = key .. '.courseplay.speeds';
@@ -1408,8 +1413,8 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 
 
 	--NODES
-	--!!!local cpOpen = string.format('<courseplay aiMode=%q courses=%q openHudWithMouse=%q lights=%q visualWaypointsStartEnd=%q visualWaypointsAll=%q visualWaypointsCrossing=%q waitTime=%q multiSiloSelectedFillType=%q>', tostring(self.cp.mode), tostring(table.concat(self.cp.loadedCourses, ",")), tostring(self.cp.hud.openWithMouse), tostring(self.cp.warningLightsMode), tostring(self.cp.visualWaypointsStartEnd), tostring(self.cp.visualWaypointsAll), tostring(self.cp.visualWaypointsCrossing), tostring(self.cp.waitTime), Fillable.fillTypeIntToName[self.cp.multiSiloSelectedFillType]); --!!! fillTypeIntToName is nil 
-	local cpOpen = string.format('<courseplay aiMode=%q courses=%q openHudWithMouse=%q lights=%q visualWaypointsStartEnd=%q visualWaypointsAll=%q visualWaypointsCrossing=%q waitTime=%q >', tostring(self.cp.mode), tostring(table.concat(self.cp.loadedCourses, ",")), tostring(self.cp.hud.openWithMouse), tostring(self.cp.warningLightsMode), tostring(self.cp.visualWaypointsStartEnd), tostring(self.cp.visualWaypointsAll), tostring(self.cp.visualWaypointsCrossing), tostring(self.cp.waitTime));
+	local cpOpen = string.format('<courseplay aiMode=%q courses=%q openHudWithMouse=%q lights=%q visualWaypointsStartEnd=%q visualWaypointsAll=%q visualWaypointsCrossing=%q waitTime=%q siloSelectedFillType=%q>', tostring(self.cp.mode), tostring(table.concat(self.cp.loadedCourses, ",")), tostring(self.cp.hud.openWithMouse), tostring(self.cp.warningLightsMode), tostring(self.cp.visualWaypointsStartEnd), tostring(self.cp.visualWaypointsAll), tostring(self.cp.visualWaypointsCrossing), tostring(self.cp.waitTime), FillUtil.fillTypeIntToName[self.cp.siloSelectedFillType]);
+	--local cpOpen = string.format('<courseplay aiMode=%q courses=%q openHudWithMouse=%q lights=%q visualWaypointsStartEnd=%q visualWaypointsAll=%q visualWaypointsCrossing=%q waitTime=%q >', tostring(self.cp.mode), tostring(table.concat(self.cp.loadedCourses, ",")), tostring(self.cp.hud.openWithMouse), tostring(self.cp.warningLightsMode), tostring(self.cp.visualWaypointsStartEnd), tostring(self.cp.visualWaypointsAll), tostring(self.cp.visualWaypointsCrossing), tostring(self.cp.waitTime));
 	local speeds = string.format('<speeds useRecordingSpeed=%q reverse="%d" turn="%d" field="%d" max="%d" />', tostring(self.cp.speeds.useRecordingSpeed), self.cp.speeds.reverse, self.cp.speeds.turn, self.cp.speeds.field, self.cp.speeds.street);
 	local combi = string.format('<combi tipperOffset="%.1f" combineOffset="%.1f" combineOffsetAutoMode=%q fillFollow="%d" fillDriveOn="%d" turnDiameter="%d" realisticDriving=%q />', self.cp.tipperOffset, self.cp.combineOffset, tostring(self.cp.combineOffsetAutoMode), self.cp.followAtFillLevel, self.cp.driveOnAtFillLevel, self.cp.turnDiameter, tostring(self.cp.realisticDriving));
 	local fieldWork = string.format('<fieldWork workWidth="%.1f" ridgeMarkersAutomatic=%q offsetData=%q abortWork="%d" refillUntilPct="%d" />', self.cp.workWidth, tostring(self.cp.ridgeMarkersAutomatic), offsetData, Utils.getNoNil(self.cp.abortWork, 0), self.cp.refillUntilPct);

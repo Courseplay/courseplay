@@ -231,16 +231,16 @@
 		<text name="COURSEPLAY_HUD_OPEN" 								 text="コースプレイHUDを表示" />
 		<text name="COURSEPLAY_HUD_CLOSE" 								 text="コースプレイHUDを非表示" />
 		<text name="COURSEPLAY_FUNCTIONS" 								 text="コースプレイ ファンクション" />
-		<text name="COURSEPLAY_MODIFIER" 								 text="コースプレイ: 操作の有効化" />
-		<text name="COURSEPLAY_MENU_ACCEPT_SECONDARY" 					 text="コースプレイ: セカンドメニュー" />
-		<text name="COURSEPLAY_HUD" 									 text="コースプレイ: HUDの表示・非表示" />
-		<text name="COURSEPLAY_START_STOP" 								 text="コースプレイ: 開始・停止" />
-		<text name="COURSEPLAY_CANCELWAIT" 								 text="コースプレイ: エンドポイントか次トリガで停止" />
-		<text name="COURSEPLAY_DRIVENOW" 								 text="コースプレイ: 走行" />
-		<text name="COURSEPLAY_NEXTMODE" 								 text="コースプレイ: 次のモード" />
-		<text name="COURSEPLAY_PREVMODE" 								 text="コースプレイ: 前のモード" />
-		<text name="COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="コースプレイ: 左クリック" />
-		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="コースプレイ: 右クリック" />
+		<text name="input_COURSEPLAY_MODIFIER" 								 text="コースプレイ: 操作の有効化" />
+		<text name="input_COURSEPLAY_MENU_ACCEPT_SECONDARY" 					 text="コースプレイ: セカンドメニュー" />
+		<text name="input_COURSEPLAY_HUD" 									 text="コースプレイ: HUDの表示・非表示" />
+		<text name="input_COURSEPLAY_START_STOP" 								 text="コースプレイ: 開始・停止" />
+		<text name="input_COURSEPLAY_CANCELWAIT" 								 text="コースプレイ: エンドポイントか次トリガで停止" />
+		<text name="input_COURSEPLAY_DRIVENOW" 								 text="コースプレイ: 走行" />
+		<text name="input_COURSEPLAY_NEXTMODE" 								 text="コースプレイ: 次のモード" />
+		<text name="input_COURSEPLAY_PREVMODE" 								 text="コースプレイ: 前のモード" />
+		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="コースプレイ: 左クリック" />
+		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="コースプレイ: 右クリック" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="マウスカーソルを表示" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="マウスカーソルを非表示" />
 

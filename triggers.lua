@@ -1,5 +1,5 @@
 -- triggers
-
+local _;
 -- traffic collision
 function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
 	-- prevent double or tripple runs for one event
@@ -253,12 +253,12 @@ function courseplay:doTriggerRaycasts(vehicle, triggerType, direction, sides, x,
 
 	if sides and vehicle.cp.tipRefOffset ~= 0 then
 		if (triggerType == 'tipTrigger' and vehicle.cp.currentTipTrigger == nil) or (triggerType == 'specialTrigger' and vehicle.cp.fillTrigger == nil) then
-			x, _, z = localToWorld(vehicle.aiTrafficCollisionTrigger, vehicle.cp.tipRefOffset, 0, 0);
+			local x, _, z = localToWorld(vehicle.aiTrafficCollisionTrigger, vehicle.cp.tipRefOffset, 0, 0);
 			courseplay:doSingleRaycast(vehicle, triggerType, direction, callBack, x, y, z, nx, ny, nz, distance, debugChannel, r, g, b, 2);
 		end;
 
 		if (triggerType == 'tipTrigger' and vehicle.cp.currentTipTrigger == nil) or (triggerType == 'specialTrigger' and vehicle.cp.fillTrigger == nil) then
-			x, _, z = localToWorld(vehicle.aiTrafficCollisionTrigger, -vehicle.cp.tipRefOffset, 0, 0);
+			local x, _, z = localToWorld(vehicle.aiTrafficCollisionTrigger, -vehicle.cp.tipRefOffset, 0, 0);
 			courseplay:doSingleRaycast(vehicle, triggerType, direction, callBack, x, y, z, nx, ny, nz, distance, debugChannel, r, g, b, 3);
 		end;
 	end;
@@ -335,7 +335,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 					courseplay:debug('    trigger is PlaceableHeap', 1);
 				end;
 
-				--courseplay:debug(('    trailerFillType=%s %s'):format(tostring(trailerFillType), trailerFillType and Fillable.fillTypeIntToName[trailerFillType] or ''), 1); --!!! fillTypeIntToName is nil 
+				courseplay:debug(('    trailerFillType=%s %s'):format(tostring(trailerFillType), trailerFillType and FillUtil.fillTypeIntToName[trailerFillType] or ''), 1);
 				if trailerFillType and trigger.acceptedFillTypes ~= nil and trigger.acceptedFillTypes[trailerFillType] then
 					courseplay:debug(('    trigger (%s) accepts trailerFillType'):format(tostring(triggerId)), 1);
 
@@ -499,13 +499,13 @@ function courseplay:updateAllTriggers()
 						courseplay:debug('\t\tadd GasStationTrigger', 1);
 
 					-- SowingMachineFillTriggers
-					elseif trigger.fillType and trigger.fillType == Fillable.FILLTYPE_SEEDS then
+					elseif trigger.fillType and trigger.fillType == FillUtil.FILLTYPE_SEEDS then
 						trigger.isSowingMachineFillTrigger = true;
 						courseplay:cpAddTrigger(triggerId, trigger, 'sowingMachine', 'nonUpdateable');
 						courseplay:debug('\t\tadd SowingMachineFillTrigger', 1);
 
 					-- SprayerFillTriggers
-					elseif trigger.fillType and trigger.fillType == Fillable.FILLTYPE_FERTILIZER then
+					elseif trigger.fillType and trigger.fillType == FillUtil.FILLTYPE_FERTILIZER then
 						trigger.isSprayerFillTrigger = true;
 						courseplay:cpAddTrigger(triggerId, trigger, 'sprayer', 'nonUpdateable');
 						courseplay:debug('\t\tadd SprayerFillTrigger', 1);
@@ -667,7 +667,7 @@ function courseplay:updateAllTriggers()
 					end;
 
 				-- BioHeatPlant / WoodChip storage tipTrigger (Forest Mod) (placeable)
-				elseif trigger.isStorageTipTrigger and trigger.acceptedFillType ~= nil and Fillable.fillTypeNameToInt.woodChip ~= nil and trigger.acceptedFillType == Fillable.fillTypeNameToInt.woodChip and trigger.triggerId ~= nil then
+				elseif trigger.isStorageTipTrigger and trigger.acceptedFillType ~= nil and FillUtil.fillTypeNameToInt.woodChip ~= nil and trigger.acceptedFillType == FillUtil.fillTypeNameToInt.woodChip and trigger.triggerId ~= nil then
 					courseplay:cpAddTrigger(trigger.triggerId, trigger, 'tipTrigger');
 					courseplay:debug('\t\tadd BioHeatPlant / WoodChop storage trigger [forest mod]', 1);
 
@@ -831,43 +831,45 @@ end;
 
 function courseplay:printTipTriggersFruits(trigger)
 	for k,_ in pairs(trigger.acceptedFillTypes) do
-		print(('    %s: %s'):format(tostring(k), tostring(Fillable.fillTypeIntToName[k]))); --!!! fillTypeIntToName is nil 
+		print(('    %s: %s'):format(tostring(k), tostring(FillUtil.fillTypeIntToName[k])));
 	end
 end;
 
 
 
 --------------------------------------------------
--- Adding easy access to MultiSiloTrigger
+-- Adding easy access to SiloTrigger
 --------------------------------------------------
-local MultiSiloTrigger_TriggerCallback = function(triggerId, otherActorId, onEnter, onLeave, onStay, otherShapeId, trailer)
-	local trailer = g_currentMission.objectToTrailer[trailer];
-	if trailer ~= nil and trailer:allowFillType(triggerId.selectedFillType, false) and trailer.getAllowFillFromAir ~= nil and trailer:getAllowFillFromAir() then
+local SiloTrigger_TriggerCallback = function(self, triggerId, otherActorId, onEnter, onLeave, onStay, otherShapeId)
+	local trailer = g_currentMission.objectToTrailer[otherShapeId];
+	--print(self.selectedFillType and self.selectedFillType or "no go");
+	if trailer ~= nil and trailer.getAllowFillFromAir ~= nil and trailer:getAllowFillFromAir() then
 		-- Make sure cp table is pressent in the trailer.
 		if not trailer.cp then
 			trailer.cp = {};
 		end;
 
 		if onEnter then
-			-- Add the current MultiSiloTrigger to the cp table, for easier access.
-			-- triggerId.Schnecke is only set for MischStation and that one is not an real MultiSiloTrigger and should not be used as one.
-			if not trailer.cp.currentMultiSiloTrigger and not triggerId.Schnecke then
-				trailer.cp.currentMultiSiloTrigger = triggerId;
-				courseplay:debug(('%s: MultiSiloTrigger Added! (onEnter)'):format(nameNum(trailer)), 2);
+			-- Add the current SiloTrigger to the cp table, for easier access.
+			-- self.Schnecke is only set for MischStation and that one is not an real SiloTrigger and should not be used as one.
+			if not trailer.cp.currentSiloTrigger and not self.Schnecke then
+				trailer.cp.currentSiloTrigger = self;
+				courseplay:debug(('%s: SiloTrigger Added! (onEnter)'):format(nameNum(trailer)), 2);
 
-			-- Remove the current MultiSiloTrigger here, even that it should be done in onLeave, but onLeave is never fired. (Possible a bug from Giants)
-			elseif triggerId.fill == 0 and trailer.cp.currentMultiSiloTrigger ~= nil then
-				trailer.cp.currentMultiSiloTrigger = nil;
-				courseplay:debug(('%s: MultiSiloTrigger Removed! (onEnter)'):format(nameNum(trailer)), 2);
+			-- Remove the current SiloTrigger here, even that it should be done in onLeave, but onLeave is never fired. (Possible a bug from Giants)
+			--elseif self.fill == 0 and trailer.cp.currentSiloTrigger ~= nil then
+			--	print("Were are here 5");
+			--	trailer.cp.currentSiloTrigger = nil;
+			--	courseplay:debug(('%s: SiloTrigger Removed! (onEnter)'):format(nameNum(trailer)), 2);
 			end;
 		elseif onLeave then
-			-- Remove the current MultiSiloTrigger. (Is here in case Giants fixes the above bug))
-			if triggerId.fill == 0 and trailer.cp.currentMultiSiloTrigger ~= nil then
-				trailer.cp.currentMultiSiloTrigger = nil;
-				courseplay:debug(('%s: MultiSiloTrigger Removed! (onLeave)'):format(nameNum(trailer)), 2);
+			print("onLeave");
+			-- Remove the current SiloTrigger. (Is here in case Giants fixes the above bug))
+			if self.fill == 0 and trailer.cp.currentSiloTrigger ~= nil then
+				trailer.cp.currentSiloTrigger = nil;
+				courseplay:debug(('%s: SiloTrigger Removed! (onLeave)'):format(nameNum(trailer)), 2);
 			end;
 		end;
 	end;
 end;
---!!! MultiSiloTrigger.triggerCallback = Utils.appendedFunction(MultiSiloTrigger.triggerCallback, MultiSiloTrigger_TriggerCallback);
-
+SiloTrigger.triggerCallback = Utils.appendedFunction(SiloTrigger.triggerCallback, SiloTrigger_TriggerCallback);

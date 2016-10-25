@@ -571,7 +571,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 					end
 				elseif tool.cp.isChopper or courseplay:isSpecialChopper(workTool) then
 					-- resume driving
-					local ch, gr = Fillable.FILLTYPE_CHAFF, Fillable.FILLTYPE_GRASS_WINDROW;
+					local ch, gr = FillUtil.FILLTYPE_CHAFF, FillUtil.FILLTYPE_GRASS_WINDROW;
 					if (tool.pipeParticleSystems and ((tool.pipeParticleSystems[ch] and tool.pipeParticleSystems[ch].isEmitting) or (tool.pipeParticleSystems[gr] and tool.pipeParticleSystems[gr].isEmitting))) or pipeState > 0 then
 						if tool.lastValidFillType ~= FruitUtil.FRUITTYPE_UNKNOWN then
 							local targetTrailer = tool:findAutoAimTrailerToUnload(tool.lastValidFillType);

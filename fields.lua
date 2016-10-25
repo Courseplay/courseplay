@@ -574,7 +574,7 @@ function courseplay.fields:getFruitTypes()
 	--[[!!! for name,fruitType in pairs(FruitUtil.fruitTypes) do
 		if fruitType.allowsSeeding and fruitType.seedUsagePerSqm then
 			local fillType = FruitUtil.fruitTypeToFillType[fruitType.index];
-			local fillTypeDesc = Fillable.fillTypeIndexToDesc[ fillType ];
+			local fillTypeDesc = FillUtil.fillTypeIndexToDesc[ fillType ];
 			if fillTypeDesc then
 				local fruitData = {
 					index = fruitType.index,

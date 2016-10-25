@@ -1093,7 +1093,7 @@ function courseplay:setAckermannSteeringInfo(vehicle, xmlFile)
 end;
 
 function courseplay:setPathVehiclesSpeed(vehicle,dt)
-	pathVehicle = g_currentMission.nodeToVehicle[vehicle.cp.collidingVehicleId]
+	local pathVehicle = g_currentMission.nodeToVehicle[vehicle.cp.collidingVehicleId]
 	--print("update speed")
 	if pathVehicle.speedDisplayDt == nil then
 		pathVehicle.speedDisplayDt = 0

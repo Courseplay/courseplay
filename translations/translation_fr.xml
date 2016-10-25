@@ -230,16 +230,16 @@
 		<text name="COURSEPLAY_HUD_OPEN" 						 text="Montrer le Courseplay HUD" />
 		<text name="COURSEPLAY_HUD_CLOSE" 						 text="Cacher le Courseplay HUD" />
 		<text name="COURSEPLAY_FUNCTIONS" 						 text="Fonctions de Courseplay" />
-		<text name="COURSEPLAY_MODIFIER" 						 text="Courseplay: modifier" />
-		<text name="COURSEPLAY_MENU_ACCEPT_SECONDARY" 					 text="Courseplay: Accepter les pop-ups" />
-		<text name="COURSEPLAY_HUD" 							 text="Courseplay: Montrer/cacher l'interface" />
-		<text name="COURSEPLAY_START_STOP" 						 text="Courseplay: Démarrer/arrêter la course" />
-		<text name="COURSEPLAY_CANCELWAIT" 						 text="Courseplay: Arrêter au prochain point ou trigger" />
-		<text name="COURSEPLAY_DRIVENOW" 						 text="Courseplay: Démarrer maintenant" />
-		<text name="COURSEPLAY_NEXTMODE" 						 text="Courseplay: mode suivant" /> 
-		<text name="COURSEPLAY_PREVMODE" 						 text="Courseplay: mode précedent" /> 
-		<text name="COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Courseplay: Action de la souris" />
-		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: Action secondaire de la souris" />
+		<text name="input_COURSEPLAY_MODIFIER" 						 text="Courseplay: modifier" />
+		<text name="input_COURSEPLAY_MENU_ACCEPT_SECONDARY" 					 text="Courseplay: Accepter les pop-ups" />
+		<text name="input_COURSEPLAY_HUD" 							 text="Courseplay: Montrer/cacher l'interface" />
+		<text name="input_COURSEPLAY_START_STOP" 						 text="Courseplay: Démarrer/arrêter la course" />
+		<text name="input_COURSEPLAY_CANCELWAIT" 						 text="Courseplay: Arrêter au prochain point ou trigger" />
+		<text name="input_COURSEPLAY_DRIVENOW" 						 text="Courseplay: Démarrer maintenant" />
+		<text name="input_COURSEPLAY_NEXTMODE" 						 text="Courseplay: mode suivant" />
+		<text name="input_COURSEPLAY_PREVMODE" 						 text="Courseplay: mode précedent" />
+		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Courseplay: Action de la souris" />
+		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: Action secondaire de la souris" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 					 text="Afficher le curseur" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 					 text="Cacher le curseur" />
 	</texts>

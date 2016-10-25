@@ -718,7 +718,7 @@ function courseplay.hud:loadPage(vehicle, page)
 
 				if vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT and vehicle.cp.workTools[1] ~= nil and vehicle.cp.workTools[1].allowFillFromAir and vehicle.cp.workTools[1].allowTipDischarge then
 					vehicle.cp.hud.content.pages[1][6][1].text = courseplay:loc('COURSEPLAY_FARM_SILO_FILL_TYPE');
-					vehicle.cp.hud.content.pages[1][6][2].text = "404"  --!!!Fillable.fillTypeIndexToDesc[vehicle.cp.multiSiloSelectedFillType].nameI18N;
+					vehicle.cp.hud.content.pages[1][6][2].text = FillUtil.fillTypeIndexToDesc[vehicle.cp.siloSelectedFillType].nameI18N;
 				end;
 			else
 				vehicle.cp.hud.content.pages[1][1][1].text = courseplay:loc('COURSEPLAY_STOP_COURSE')

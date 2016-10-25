@@ -231,16 +231,16 @@
 		<text name="COURSEPLAY_HUD_OPEN" 								 text="Zobrazit Courseplay HUD" />
 		<text name="COURSEPLAY_HUD_CLOSE" 								 text="Skrýt Courseplay HUD" />
 		<text name="COURSEPLAY_FUNCTIONS" 								 text="Funkce Courseplay" />
-		<text name="COURSEPLAY_MODIFIER" 								 text="Courseplay: úprava" />
-		<text name="COURSEPLAY_MENU_ACCEPT_SECONDARY" 					 text="Courseplay: vedlejší menu povoleno" />
-		<text name="COURSEPLAY_HUD" 									 text="Zobrazit/skrýt Courseplay HUD" />
-		<text name="COURSEPLAY_START_STOP" 								 text="Courseplay: aktivovat/zastavit odvozce" />
-		<text name="COURSEPLAY_CANCELWAIT" 								 text="Courseplay: čekat na posledním bodě nebo triggeru" />
-		<text name="COURSEPLAY_DRIVENOW" 								 text="Courseplay: odvézt bez čekání na doplnění" />
-		<text name="COURSEPLAY_NEXTMODE" 								 text="Courseplay: další mód" />
-		<text name="COURSEPLAY_PREVMODE" 								 text="Courseplay: předchozí mód" />
-		<text name="COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Courseplay: myš akce" />
-		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: myš sekundární akce" />
+		<text name="input_COURSEPLAY_MODIFIER" 							 text="Courseplay: úprava" />
+		<text name="input_COURSEPLAY_MENU_ACCEPT_SECONDARY" 			 text="Courseplay: vedlejší menu povoleno" />
+		<text name="input_COURSEPLAY_HUD" 								 text="Zobrazit/skrýt Courseplay HUD" />
+		<text name="input_COURSEPLAY_START_STOP" 								 text="Courseplay: aktivovat/zastavit odvozce" />
+		<text name="input_COURSEPLAY_CANCELWAIT" 								 text="Courseplay: čekat na posledním bodě nebo triggeru" />
+		<text name="input_COURSEPLAY_DRIVENOW" 								 text="Courseplay: odvézt bez čekání na doplnění" />
+		<text name="input_COURSEPLAY_NEXTMODE" 								 text="Courseplay: další mód" />
+		<text name="input_COURSEPLAY_PREVMODE" 								 text="Courseplay: předchozí mód" />
+		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Courseplay: myš akce" />
+		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: myš sekundární akce" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="skrýt kurzor" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="zobrazit kurzor" />
 	</texts>

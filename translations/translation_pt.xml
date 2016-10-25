@@ -225,16 +225,16 @@
 		<text name="COURSEPLAY_HUD_OPEN" 						 text="Mostrar Courseplay HUD" />
 		<text name="COURSEPLAY_HUD_CLOSE" 						 text="Ocultar Courseplay HUD" />
 		<text name="COURSEPLAY_FUNCTIONS" 						 text="Funções do Courseplay" />
-		<text name="COURSEPLAY_MODIFIER" 						 text="Courseplay: modificador" />
-		<text name="COURSEPLAY_MENU_ACCEPT_SECONDARY" 					 text="Courseplay: aceitar menu secundário" />
-		<text name="COURSEPLAY_HUD" 							 text="Mostrar/ocultar Courseplay HUD" />
-		<text name="COURSEPLAY_START_STOP" 						 text="Courseplay: conduzir/parar no percurso" />
-		<text name="COURSEPLAY_CANCELWAIT" 						 text="Courseplay: parar no último ponto ou próximo trigger" />
-		<text name="COURSEPLAY_DRIVENOW" 						 text="Courseplay: conduzir agora" />
-		<text name="COURSEPLAY_NEXTMODE" 						 text="Courseplay: modo seguinte" />
-		<text name="COURSEPLAY_PREVMODE" 						 text="Courseplay: modo anterior" />
-		<text name="COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Courseplay: ações do rato" />
-		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: ações secundárias do rato" />
+		<text name="input_COURSEPLAY_MODIFIER" 						 text="Courseplay: modificador" />
+		<text name="input_COURSEPLAY_MENU_ACCEPT_SECONDARY" 					 text="Courseplay: aceitar menu secundário" />
+		<text name="input_COURSEPLAY_HUD" 							 text="Mostrar/ocultar Courseplay HUD" />
+		<text name="input_COURSEPLAY_START_STOP" 						 text="Courseplay: conduzir/parar no percurso" />
+		<text name="input_COURSEPLAY_CANCELWAIT" 						 text="Courseplay: parar no último ponto ou próximo trigger" />
+		<text name="input_COURSEPLAY_DRIVENOW" 						 text="Courseplay: conduzir agora" />
+		<text name="input_COURSEPLAY_NEXTMODE" 						 text="Courseplay: modo seguinte" />
+		<text name="input_COURSEPLAY_PREVMODE" 						 text="Courseplay: modo anterior" />
+		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Courseplay: ações do rato" />
+		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: ações secundárias do rato" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 					 text="mostrar seta do rato" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 					 text="ocultar seta do rato" />
 		<text name="COURSEPLAY_LOAD_COURSE" 					 	 text="Carregar percurso/combinar no percurso carregado" />

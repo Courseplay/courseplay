@@ -188,7 +188,7 @@
 		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 					 text="Il granaio non sa con cosa riempire" />
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 					 text="Il granaio sta caricando:" />
 		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="Il granaio è vuoto!" />
-		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Aggiungi punti intermedi" /> <!-- TODO: TRANSLATION! (during recording adds multiple points between last point and current position -->
+		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Aggiungi punti intermedi" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 					 text="Utilizzo dei semi" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 				 text="Campo: %d (%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 			 text="Tipo di seme: %s" />
@@ -196,14 +196,16 @@
 		<text name="COURSEPLAY_HUD_OPEN" 								 text="Mostra il Courseplay HUD" />
 		<text name="COURSEPLAY_HUD_CLOSE" 								 text="Nascondi Courseplay HUD" />
 		<text name="COURSEPLAY_FUNCTIONS" 								 text="Funzioni Courseplay" />
-		<text name="COURSEPLAY_HUD" 									 text="Mostra/nascondi Courseplay HUD" />
-		<text name="COURSEPLAY_START_STOP" 								 text="Courseplay: usa/ferma percorso" />
-		<text name="COURSEPLAY_CANCELWAIT" 								 text="Courseplay: ferma all'ultimo punto o al prossimo trigger" />
-		<text name="COURSEPLAY_DRIVENOW" 								 text="Courseplay: avvia ora" />
-		<text name="COURSEPLAY_NEXTMODE" 								 text="Courseplay: modo successivo" /> 
-		<text name="COURSEPLAY_PREVMODE" 								 text="Courseplay: modo precedente" /> 
-		<text name="COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Courseplay: azione del mouse" />
-		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: azione secondaria del mouse" />
+		<text name="input_COURSEPLAY_MODIFIER" 							 text="Courseplay: modifier" /> <!-- TODO: TRANSLATION! -->
+		<text name="input_COURSEPLAY_MENU_ACCEPT_SECONDARY" 			 text="Courseplay: secondary menu accept" /><!-- TODO: TRANSLATION! -->
+		<text name="input_COURSEPLAY_HUD" 								 text="Mostra/nascondi Courseplay HUD" />
+		<text name="input_COURSEPLAY_START_STOP" 						 text="Courseplay: usa/ferma percorso" />
+		<text name="input_COURSEPLAY_CANCELWAIT" 								 text="Courseplay: ferma all'ultimo punto o al prossimo trigger" />
+		<text name="input_COURSEPLAY_DRIVENOW" 								 text="Courseplay: avvia ora" />
+		<text name="input_COURSEPLAY_NEXTMODE" 								 text="Courseplay: modo successivo" />
+		<text name="input_COURSEPLAY_PREVMODE" 								 text="Courseplay: modo precedente" />
+		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Courseplay: azione del mouse" />
+		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: azione secondaria del mouse" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="mostra il cursore" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="nascondere il cursore" />
 		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Caricare/combinare percorso in corso caricato" />

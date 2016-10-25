@@ -1095,7 +1095,7 @@ function courseplay:calculateAstarPathToCoords(vehicle, targetX, targetZ)
 		for i,tipper in pairs(vehicle.cp.workTools) do
 			if tipper.getCurrentFruitType and tipper.fillLevel > 0 then
 				local tipperFruitType = tipper:getCurrentFruitType();
-				courseplay:debug(string.format('%s: workTools[%d]: fillType=%d (%s), getCurrentFruitType()=%s (%s)', nameNum(vehicle), i, tipper.currentFillType, tostring(Fillable.fillTypeIntToName[tipper.currentFillType]), tostring(tipperFruitType), tostring(FruitUtil.fruitIndexToDesc[tipperFruitType].name)), 4);
+				courseplay:debug(string.format('%s: workTools[%d]: fillType=%d (%s), getCurrentFruitType()=%s (%s)', nameNum(vehicle), i, tipper.currentFillType, tostring(FillUtil.fillTypeIntToName[tipper.currentFillType]), tostring(tipperFruitType), tostring(FruitUtil.fruitIndexToDesc[tipperFruitType].name)), 4);
 				if tipperFruitType and tipperFruitType ~= FruitUtil.FRUITTYPE_UNKNOWN then
 					fruitType = tipperFruitType;
 					courseplay:debug(string.format('\tset pathFinding fruitType as workTools[%d]\'s fruitType', i), 4);

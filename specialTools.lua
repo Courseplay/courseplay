@@ -77,7 +77,7 @@ function courseplay:setNameVariable(workTool)
 	-- SPECIALIZATIONS BASED
 	-- [1] AUGER WAGONS
 	if workTool.typeName == 'augerWagon' then
-		if workTool.fillTypes and workTool.fillTypes[Fillable.FILLTYPE_LIQUIDMANURE] ~= nil then 
+		if workTool:allowFillType(FillUtil.FILLTYPE_LIQUIDMANURE) then
 			workTool.cp.isLiquidManureOverloader = true;
 		else
 			workTool.cp.isAugerWagon = true;
@@ -358,6 +358,10 @@ function courseplay:setNameVariable(workTool)
 	elseif workTool.cp.xmlFileName == 'vaderstadRapidA600S.xml' then
 		workTool.cp.isVaderstadRapidA600S = true;
 
+	elseif workTool.cp.xmlFileName == 'db8000.xml' then
+		workTool.cp.isDB8000 = true;
+        --print(tableShow(workTool, "db8000"));
+
 	-- Special tools [Giants]
 	elseif workTool.typeName == 'strawBlower' then
 		workTool.cp.isStrawBlower = true;
@@ -371,11 +375,11 @@ function courseplay:setNameVariable(workTool)
 	end;
 
 	if courseplay:isSprayer(workTool) then
-		--[[ !!! if workTool.fillTypes[Fillable.FILLTYPE_LIQUIDMANURE] then
+		if workTool:allowFillType(FillUtil.FILLTYPE_LIQUIDMANURE) then
 			workTool.cp.isLiquidManureSprayer = true;
-		elseif workTool.fillTypes[Fillable.FILLTYPE_MANURE] then
+		elseif workTool:allowFillType(FillUtil.FILLTYPE_MANURE) then
 			workTool.cp.isManureSprayer = true;
-		end;]]
+		end;
 	end;
 end;
 

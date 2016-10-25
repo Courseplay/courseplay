@@ -225,16 +225,16 @@
 		<text name="COURSEPLAY_HUD_OPEN" 								 text="Mostrar Courseplay HUD" />
 		<text name="COURSEPLAY_HUD_CLOSE" 								 text="Ocultar Courseplay HUD" />
 		<text name="COURSEPLAY_FUNCTIONS" 								 text="Funciones Courseplay" />
-		<text name="COURSEPLAY_MODIFIER" 								 text="Courseplay: modificador" />
-		<text name="COURSEPLAY_MENU_ACCEPT_SECONDARY" 					 text="Courseplay: Aceptar menus emergentes" />
-		<text name="COURSEPLAY_HUD" 									 text="Mostrar/ocultar Courseplay HUD" />
-		<text name="COURSEPLAY_START_STOP" 								 text="Courseplay: conducir/detener ruta" />
-		<text name="COURSEPLAY_CANCELWAIT" 								 text="Courseplay: parar en último punto o siguiente trigger" />
-		<text name="COURSEPLAY_DRIVENOW" 								 text="Courseplay: conducir ahora" />
-		<text name="COURSEPLAY_NEXTMODE" 								 text="Courseplay: modo siguiente" />
-		<text name="COURSEPLAY_PREVMODE" 								 text="Courseplay: modo anterior mode" />
-		<text name="COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Courseplay: acción del ratón" />
-		<text name="COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: acción secondaria del ratón" />
+		<text name="input_COURSEPLAY_MODIFIER" 							 text="Courseplay: modificador" />
+		<text name="input_COURSEPLAY_MENU_ACCEPT_SECONDARY" 			 text="Courseplay: Aceptar menus emergentes" />
+		<text name="input_COURSEPLAY_HUD" 								 text="Mostrar/ocultar Courseplay HUD" />
+		<text name="input_COURSEPLAY_START_STOP" 								 text="Courseplay: conducir/detener ruta" />
+		<text name="input_COURSEPLAY_CANCELWAIT" 								 text="Courseplay: parar en último punto o siguiente trigger" />
+		<text name="input_COURSEPLAY_DRIVENOW" 								 text="Courseplay: conducir ahora" />
+		<text name="input_COURSEPLAY_NEXTMODE" 								 text="Courseplay: modo siguiente" />
+		<text name="input_COURSEPLAY_PREVMODE" 								 text="Courseplay: modo anterior mode" />
+		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Courseplay: acción del ratón" />
+		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: acción secondaria del ratón" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="mostrar el cursor" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="ocultar el cursor" />
 		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Cargar ruta/combinarla con la ruta cargada" />

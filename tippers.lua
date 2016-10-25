@@ -40,12 +40,12 @@ function courseplay:reset_tools(vehicle)
 	vehicle.cp.workToolAttached = courseplay:updateWorkTools(vehicle, vehicle);
 
 	-- Reset fill type.
-	if #vehicle.cp.workTools > 0 and vehicle.cp.workTools[1].cp.hasSpecializationFillable and vehicle.cp.workTools[1].allowFillFromAir and vehicle.cp.workTools[1].allowTipDischarge and false then --!!!
-		if vehicle.cp.multiSiloSelectedFillType == Fillable.FILLTYPE_UNKNOWN or (vehicle.cp.multiSiloSelectedFillType ~= Fillable.FILLTYPE_UNKNOWN and not vehicle.cp.workTools[1].fillTypes[vehicle.cp.multiSiloSelectedFillType]) then
-			vehicle.cp.multiSiloSelectedFillType = vehicle.cp.workTools[1]:getFirstEnabledFillType();
+	if #vehicle.cp.workTools > 0 and vehicle.cp.workTools[1].cp.hasSpecializationFillable and vehicle.cp.workTools[1].allowFillFromAir and vehicle.cp.workTools[1].allowTipDischarge then
+		if vehicle.cp.siloSelectedFillType == FillUtil.FILLTYPE_UNKNOWN or (vehicle.cp.siloSelectedFillType ~= FillUtil.FILLTYPE_UNKNOWN and not vehicle.cp.workTools[1]:allowFillType(vehicle.cp.siloSelectedFillType)) then
+			vehicle.cp.siloSelectedFillType = vehicle.cp.workTools[1]:getFirstEnabledFillType();
 		end;
 	else
-		vehicle.cp.multiSiloSelectedFillType = Fillable.FILLTYPE_UNKNOWN;
+		vehicle.cp.siloSelectedFillType = FillUtil.FILLTYPE_UNKNOWN;
 	end;
 	if vehicle.cp.hud.currentPage == 1 then
 		courseplay.hud:setReloadPageOrder(vehicle, 1, true);
@@ -58,16 +58,21 @@ end;
 
 function courseplay:getNextFillableFillType(vehicle)
 	local workTool = vehicle.cp.workTools[1];
-	if vehicle.cp.multiSiloSelectedFillType == Fillable.FILLTYPE_UNKNOWN or vehicle.cp.multiSiloSelectedFillType == Fillable.NUM_FILLTYPES then
+	if vehicle.cp.siloSelectedFillType == FillUtil.FILLTYPE_UNKNOWN or vehicle.cp.siloSelectedFillType == FillUtil.NUM_FILLTYPES then
 		return workTool:getFirstEnabledFillType();
 	end;
 
-	local nextFillType, enabled = next(workTool.fillTypes, vehicle.cp.multiSiloSelectedFillType);
+    local fillTypes = courseplay:getAvalibleFillTypes(workTool, 1);
+	local nextFillType, enabled = next(fillTypes, vehicle.cp.siloSelectedFillType);
 	if nextFillType and enabled then
 		return nextFillType;
 	end;
 
 	return workTool:getFirstEnabledFillType();
+end;
+
+function courseplay:getAvalibleFillTypes(object, fillUnitIndex)
+    return object.fillUnits[fillUnitIndex].fillTypes;
 end;
 
 function courseplay:isAttachedCombine(workTool)
@@ -639,24 +644,24 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 		vehicle.cp.trailerFillDistance = z;
 	end;
 
-	-- MultiSiloTrigger (Giants)
-	if currentTrailer.cp.currentMultiSiloTrigger ~= nil then
-		local acceptedFillType = false;
-		local mst = currentTrailer.cp.currentMultiSiloTrigger;
+	-- SiloTrigger (Giants)
+	if currentTrailer.cp.currentSiloTrigger ~= nil then
+        local acceptedFillType = false;
+		local mst = currentTrailer.cp.currentSiloTrigger;
 
 		for _, fillType in pairs(mst.fillTypes) do
-			if fillType == vehicle.cp.multiSiloSelectedFillType then
+			if fillType == vehicle.cp.siloSelectedFillType then
 				acceptedFillType = true;
 				break;
 			end;
 		end;
 
 		if acceptedFillType then
-			local siloIsEmpty = g_currentMission.missionStats.farmSiloAmounts[vehicle.cp.multiSiloSelectedFillType] <= 1;
+			local siloIsEmpty = false; --g_currentMission.missionStats.farmSiloAmounts[vehicle.cp.siloSelectedFillType] <= 1;
 
-			if not mst.isFilling and not siloIsEmpty and (currentTrailer.currentFillType == Fillable.FILLTYPE_UNKNOWN or currentTrailer.currentFillType == vehicle.cp.multiSiloSelectedFillType) then
-				mst:startFill(vehicle.cp.multiSiloSelectedFillType);
-				courseplay:debug(('%s: MultiSiloTrigger: selectedFillType = %s, isFilling = %s'):format(nameNum(vehicle), tostring(Fillable.fillTypeIntToName[mst.selectedFillType]), tostring(mst.isFilling)), 2);  --!!! fillTypeIntToName is nil 
+			if not mst.isFilling and not siloIsEmpty and currentTrailer:allowFillType(vehicle.cp.siloSelectedFillType, false) then
+				mst:startFill(vehicle.cp.siloSelectedFillType);
+				courseplay:debug(('%s: SiloTrigger: selectedFillType = %s, isFilling = %s'):format(nameNum(vehicle), tostring(FillUtil.fillTypeIntToName[mst.selectedFillType]), tostring(mst.isFilling)), 2);  --!!! fillTypeIntToName is nil
 			elseif siloIsEmpty then
 				CpManager:setGlobalInfoText(vehicle, 'FARM_SILO_IS_EMPTY');
 			end;
@@ -684,7 +689,7 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 
 	if currentTrailer.cp.realUnloadOrFillNode and vehicle.cp.trailerFillDistance then
 		if currentTrailer.fillLevel == currentTrailer.capacity
-		or currentTrailer.cp.currentMultiSiloTrigger ~= nil and not (currentTrailer.currentFillType == Fillable.FILLTYPE_UNKNOWN or currentTrailer.currentFillType == vehicle.cp.multiSiloSelectedFillType) then
+		or currentTrailer.cp.currentSiloTrigger ~= nil and not (currentTrailer.currentFillType == FillUtil.FILLTYPE_UNKNOWN or currentTrailer.currentFillType == vehicle.cp.siloSelectedFillType) then
 			if vehicle.cp.numWorkTools > vehicle.cp.currentTrailerToFill then
 				vehicle.cp.currentTrailerToFill = vehicle.cp.currentTrailerToFill + 1;
 			else
@@ -1224,7 +1229,7 @@ function courseplay:refillWorkTools(vehicle, fillLevelPct, driveOn, allowedToDri
 		end;
 
 		-- Sprayer / liquid manure transporters
-		if (isSprayer or workTool.cp.isLiquidManureOverloader) and not workTool.fillTypes[Fillable.FILLTYPE_MANURE] then
+		if (isSprayer or workTool.cp.isLiquidManureOverloader) and not workTool:allowFillType(FillUtil.FILLTYPE_MANURE) then
 			-- print(('\tworkTool %d (%q)'):format(i, nameNum(workTool)));
 			local fillTrigger;
 
