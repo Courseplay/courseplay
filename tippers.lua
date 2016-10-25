@@ -1,4 +1,5 @@
 local abs, cos, sin, min, max, deg = math.abs, math.cos, math.sin, math.min, math.max, math.deg;
+local _;
 -- ##### MANAGING TOOLS ##### --
 
 function courseplay:attachImplement(implement)
@@ -688,8 +689,8 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 	end;
 
 	if currentTrailer.cp.realUnloadOrFillNode and vehicle.cp.trailerFillDistance then
-		if currentTrailer.fillLevel == currentTrailer.capacity
-		or currentTrailer.cp.currentSiloTrigger ~= nil and not (currentTrailer.currentFillType == FillUtil.FILLTYPE_UNKNOWN or currentTrailer.currentFillType == vehicle.cp.siloSelectedFillType) then
+		if currentTrailer:getFreeCapacity(vehicle.cp.siloSelectedFillType) == 0
+		or currentTrailer.cp.currentSiloTrigger ~= nil and not (currentTrailer:getFreeCapacity(vehicle.cp.siloSelectedFillType) > 0 and #currentTrailer:getFillUnitsWithFillType(vehicle.cp.siloSelectedFillType) > 0) then
 			if vehicle.cp.numWorkTools > vehicle.cp.currentTrailerToFill then
 				vehicle.cp.currentTrailerToFill = vehicle.cp.currentTrailerToFill + 1;
 			else

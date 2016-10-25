@@ -855,15 +855,8 @@ local SiloTrigger_TriggerCallback = function(self, triggerId, otherActorId, onEn
 			if not trailer.cp.currentSiloTrigger and not self.Schnecke then
 				trailer.cp.currentSiloTrigger = self;
 				courseplay:debug(('%s: SiloTrigger Added! (onEnter)'):format(nameNum(trailer)), 2);
-
-			-- Remove the current SiloTrigger here, even that it should be done in onLeave, but onLeave is never fired. (Possible a bug from Giants)
-			--elseif self.fill == 0 and trailer.cp.currentSiloTrigger ~= nil then
-			--	print("Were are here 5");
-			--	trailer.cp.currentSiloTrigger = nil;
-			--	courseplay:debug(('%s: SiloTrigger Removed! (onEnter)'):format(nameNum(trailer)), 2);
 			end;
 		elseif onLeave then
-			print("onLeave");
 			-- Remove the current SiloTrigger. (Is here in case Giants fixes the above bug))
 			if self.fill == 0 and trailer.cp.currentSiloTrigger ~= nil then
 				trailer.cp.currentSiloTrigger = nil;
