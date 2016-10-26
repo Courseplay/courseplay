@@ -152,7 +152,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 							--courseplay:debug(string.format("WP%d: isLowered() = %s, hasGroundContact = %s", self.cp.waypointIndex, tostring(workTool:isLowered()), tostring(workTool.hasGroundContact)),12);
 							if not workTool:isLowered() then
 								courseplay:debug(string.format('%s: lower order', nameNum(workTool)), 17);
-								self:setAIImplementsMoveDown(true);
+								workTool:aiLower();
 								courseplay:setCustomTimer(self, "lowerTimeOut" , 5 )
 							elseif not speedLimitActive and not courseplay:timerIsThrough(self, "lowerTimeOut") then 
 								allowedToDrive = false;
@@ -215,7 +215,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 				--raise
 				if not isFolding and isUnfolded then
 					if needsLowering and workTool.aiNeedsLowering and workTool:isLowered() then
-						self:setAIImplementsMoveDown(false);
+						workTool:aiRaise();
 						courseplay:debug(string.format('%s: raise order', nameNum(workTool)), 17);
 					end;
 				end;
