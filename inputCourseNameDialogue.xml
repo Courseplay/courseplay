@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <GUI onOpen="onOpen" onClose="onClose" onEnterPressed="onEnterPressed">
-	<GuiElement name="background" type="bitmap" position="0px 300px" size="512px 128px" screenAlign="middleCenter" positionOrigin="middleCenter" imageFilename="dataS2/menu/background01.png" MOD_imageDir="img/inputCourseNameGUI/" MOD_imageFilename="inputCourseName_bg.png" imageColor="1 1 1 1">
+	<GuiElement name="background" type="bitmap" position="0px 300px" size="512px 128px" screenAlign="middleCenter" positionOrigin="middleCenter" imageFilename="shared/splash.png" MOD_imageDir="img/inputCourseNameGUI/" MOD_imageFilename="inputCourseName_bg.png" imageColor="1 1 1 1">
 		<!-- Title text -->
 		<GuiElement 
 			name="titleText" 

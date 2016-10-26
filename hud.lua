@@ -1147,7 +1147,10 @@ function courseplay.hud:setupVehicleHud(vehicle)
 			pages = {};
 		};
 		mouseWheel = {
-			icon = Overlay:new('cpMouseWheelIcon', 'dataS2/menu/controllerSymbols/mouse/mouseMMB.png', 0, 0, w32pxConstant, h32pxConstant); -- FS15
+			icon = Overlay:new('cpMouseWheelIcon', courseplay.path .. 'img/mouseIcons/mouseMMB.png', 0, 0, w32pxConstant, h32pxConstant); -- FS15
+			--icon = InputBinding.controllerSymbols["mouse_MOUSE_BUTTON_MIDDLE"].overlay;
+			--width = w32pxConstant;
+			--height = h32pxConstant;
 			render = false;
 		};
 	};

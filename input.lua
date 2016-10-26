@@ -345,11 +345,11 @@ function courseplay.inputBindings.updateInputButtonData()
 		if type == 'secondary' then
 			local mouseButtonIdName = Input.mouseButtonIdToIdName[mouseButtonId];
 			local fileName = courseplay.inputBindings.mouse.mouseButtonOverlays[mouseButtonIdName] or 'mouseRMB.png';
-			-- print(('\t\tmouseButtonIdName=%q, fileName=%q'):format(tostring(mouseButtonIdName), tostring(fileName)));
+			 --print(('\t\tmouseButtonIdName=%q, fileName=%q'):format(tostring(mouseButtonIdName), tostring(fileName)));
 			if courseplay.inputBindings.mouse.overlaySecondary then
 				courseplay.inputBindings.mouse.overlaySecondary:delete();
 			end;
-			courseplay.inputBindings.mouse.overlaySecondary = Overlay:new('cpMouseIPB', 'dataS2/menu/controllerSymbols/mouse/' .. fileName, 0, 0, 0.0, 0.0);
+			courseplay.inputBindings.mouse.overlaySecondary = Overlay:new('cpMouseIPB', courseplay.path .. 'img/mouseIcons/' .. fileName, 0, 0, 0.0, 0.0);
 		end;
 	end;
 
