@@ -33,8 +33,7 @@ courseplay.generation = {};
 
 local sonOfaBangSonOfaBoom = {
 	['56bb4a8d3f72d5a31aee0c317302dde5'] = true;
-	['9a9f028043394ff9de1cf6c905b515c1'] = true;
-
+	['7b7bc2512ee1fedcd76bdc68926d4f7b'] = true;
 	};
 CpManager.isDeveloper = sonOfaBangSonOfaBoom[getMD5(g_settingsNickname)];
 

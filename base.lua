@@ -218,10 +218,8 @@ function courseplay:load(savegame)
 
 	--Direction 
 	local DirectionNode;
-	if self.aiTractorDirectionNode ~= nil then
-		DirectionNode = self.aiTractorDirectionNode;
-	elseif self.aiTreshingDirectionNode ~= nil then
-		DirectionNode = self.aiTreshingDirectionNode;
+	if self.aiVehicleDirectionNode ~= nil then
+		DirectionNode = self.aiVehicleDirectionNode;
 	else
 		if courseplay:isWheelloader(self)then
 			-- DirectionNode = getParent(self.shovelTipReferenceNode)
@@ -247,6 +245,7 @@ function courseplay:load(savegame)
 		self.cp.oldDirectionNode = DirectionNode;  -- Only used for debugging.
 		DirectionNode = courseplay:createNewLinkedNode(self, "realDirectionNode", DirectionNode);
 		setTranslation(DirectionNode, 0, 0, self.cp.directionNodeZOffset);
+		-- TODO: (Claus) set self.aiVehicleDirectionNode as well here.
 	end;
 
 	self.cp.DirectionNode = DirectionNode;

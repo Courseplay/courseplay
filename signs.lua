@@ -254,7 +254,7 @@ end;
 function courseplay.signs:setSignColor(signData, colorName)
 	if signData.type ~= 'cross' and (signData.color == nil or signData.color ~= colorName) then
 		local x,y,z,w = unpack(diamondColors[colorName]);
-		-- print(('setSignColor (%q): sign=%s, x=%.3f, y=%.3f, z=%.3f, w=%d'):format(color, tostring(sign), x, y, z, w));
+		-- print(('setSignColor (%q): sign=%s, x=%.3f, y=%.3f, z=%.3f, w=%d'):format(colorName, tostring(signData.sign), x, y, z, w));
 		setShaderParameter(signData.sign, 'diffuseColor', x,y,z,w, false);
 		signData.color = colorName;
 	end;

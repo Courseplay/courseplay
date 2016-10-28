@@ -1120,11 +1120,11 @@ function courseplay:setupCourse2dData(vehicle)
 
 	-- PDA MAP BG
 	if vehicle.cp.course2dPdaMapOverlay then
-		local leftX	  = bBox.xMin - bgPadding + g_statisticView.worldCenterOffsetX;
-		local bottomY = bBox.yMax + bgPadding + g_statisticView.worldCenterOffsetZ;
-		local rightX  = bBox.xMax + bgPadding + g_statisticView.worldCenterOffsetX;
-		local topY	  = bBox.yMin - bgPadding + g_statisticView.worldCenterOffsetZ;
-		courseplay.utils:setOverlayUVsPx(vehicle.cp.course2dPdaMapOverlay, { leftX, bottomY, rightX, topY }, g_statisticView.worldSizeX, g_statisticView.worldSizeZ);
+		local leftX	  = bBox.xMin - bgPadding + g_currentMission.ingameMap.worldCenterOffsetX;
+		local bottomY = bBox.yMax + bgPadding + g_currentMission.ingameMap.worldCenterOffsetZ;
+		local rightX  = bBox.xMax + bgPadding + g_currentMission.ingameMap.worldCenterOffsetX;
+		local topY	  = bBox.yMin - bgPadding + g_currentMission.ingameMap.worldCenterOffsetZ;
+		courseplay.utils:setOverlayUVsPx(vehicle.cp.course2dPdaMapOverlay, { leftX, bottomY, rightX, topY }, g_currentMission.ingameMap.worldSizeX, g_currentMission.ingameMap.worldSizeZ);
 
 		vehicle.cp.course2dPdaMapOverlay:setPosition(vehicle.cp.course2dBackground.x, vehicle.cp.course2dBackground.y);
 		vehicle.cp.course2dPdaMapOverlay:setDimension(vehicle.cp.course2dBackground.width, vehicle.cp.course2dBackground.height);

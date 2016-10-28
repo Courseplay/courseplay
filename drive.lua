@@ -1,7 +1,7 @@
 local curFile = 'drive.lua';
 
 local abs, max, min, pow, sin , huge = math.abs, math.max, math.min, math.pow, math.sin, math.huge;
-
+local _;
 -- drives recored course
 function courseplay:drive(self, dt)
 	if not courseplay:getCanUseCpMode(self) then
@@ -603,7 +603,7 @@ function courseplay:drive(self, dt)
 	
 	self.cp.speedDebugLine = speedDebugLine
 	
-	courseplay:setSpeed(self, refSpeed)
+	refSpeed = courseplay:setSpeed(self, refSpeed)
 
 	-- Four wheel drive
 	if self.cp.hasDriveControl and self.cp.driveControl.hasFourWD then
@@ -657,6 +657,7 @@ function courseplay:drive(self, dt)
 			distToChange = 2.85; --orig: 5
 		end;
 	end
+	--distToChange = 2;
 
 
 
@@ -693,16 +694,25 @@ function courseplay:drive(self, dt)
 				steeringAngle = self.cp.steeringAngle * 2;
 			end;
 
-			--self,dt,steeringAngleLimit,acceleration,slowAcceleration,slowAngleLimit,allowedToDrive,moveForwards,lx,lz,maxSpeed,slowDownFactor,angle
-			if math.abs(self.lastSpeedReal) < 0.0001 and  not g_currentMission.missionInfo.stopAndGoBraking then
-				if not fwd then
-					self.nextMovingDirection = -1
-				else
-					self.nextMovingDirection = 1
-				end
-			end
-			
-			AIVehicleUtil.driveInDirection(self, dt, steeringAngle, acceleration, 0.5, 20, true, fwd, lx, lz, refSpeed, 1);
+			--if self.Waypoints[self.cp.waypointIndex].rev then
+				if math.abs(self.lastSpeedReal) < 0.0001 and  not g_currentMission.missionInfo.stopAndGoBraking then
+					if not fwd then
+						self.nextMovingDirection = -1
+					else
+						self.nextMovingDirection = 1
+					end;
+				end;
+
+				--self,dt,steeringAngleLimit,acceleration,slowAcceleration,slowAngleLimit,allowedToDrive,moveForwards,lx,lz,maxSpeed,slowDownFactor,angle
+				AIVehicleUtil.driveInDirection(self, dt, steeringAngle, acceleration, 0.5, 20, true, fwd, lx, lz, refSpeed, 1);
+			--else
+			--	--local posY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cx, 1, cz);
+			--	--local tX,_,tZ = worldToLocal(self.cp.DirectionNode, cx, posY, cz);
+			--	local vx,_,vz = getWorldTranslation(self.aiVehicleDirectionNode);
+			--	drawDebugLine(vx, cty + 3, vz, 0, 1, 0, cx, cty + 3, cz, 0, 0, 1)
+			--	local tX,_,tZ = worldToLocal(self.aiVehicleDirectionNode, cx, cty, cz);
+			--	AIVehicleUtil.driveToPoint(self, dt, acceleration, allowedToDrive, fwd, tX, tZ, refSpeed);
+			--end;
 			
 			if not isBypassing then
 				courseplay:setTrafficCollision(self, lx, lz, workArea)
@@ -843,7 +853,12 @@ function courseplay:setSpeed(vehicle, refSpeed)
 	local newSpeed = math.max(refSpeed,3)	
 	if vehicle.cruiseControl.state == Drivable.CRUISECONTROL_STATE_OFF then
 		vehicle:setCruiseControlState(Drivable.CRUISECONTROL_STATE_ACTIVE)
-	end 
+	end
+
+	if newSpeed < vehicle.cruiseControl.speed then
+		newSpeed = math.max(newSpeed, vehicle.cp.curSpeed - 0.005);
+	end;
+
 	vehicle:setCruiseControlMaxSpeed(newSpeed) 
 
 	courseplay:handleSlipping(vehicle, refSpeed);
@@ -859,6 +874,8 @@ function courseplay:setSpeed(vehicle, refSpeed)
 	else
 		vehicle.cp.speedBrake = false;
 	end;
+
+	return newSpeed;
 end
 	
 function courseplay:openCloseCover(vehicle, dt, showCover, isAtTipTrigger)
