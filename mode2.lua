@@ -85,7 +85,7 @@ function courseplay:handle_mode2(vehicle, dt)
 		end
 	end
 	
-	if vehicle.cp.modeState == 1 and (vehicle.cp.tipperFillLevelPct >= vehicle.cp.driveOnAtFillLevel or vehicle.cp.isLoaded) then
+	if vehicle.cp.modeState == 1 and (vehicle.cp.totalFillLevelPercent >= vehicle.cp.driveOnAtFillLevel or vehicle.cp.isLoaded) then
 		vehicle.cp.currentTrailerToFill = nil
 		courseplay:setWaypointIndex(vehicle, 2);
 		courseplay:setIsLoaded(vehicle, true);
@@ -163,9 +163,8 @@ function courseplay:handle_mode2(vehicle, dt)
 
 				-- chose the combine who needs me the most
 				for k, combine in pairs(vehicle.cp.reachableCombines) do
-					--!!!local fillLevel, capacity = courseplay:getAttachedTrailersFillLevelAndCapacity(combine);
-					courseplay:getOwnFillLevelAndCapacity(combine);
-					local fillLevel, capacity = combine.fillLevel, combine.capacity
+					courseplay:setOwnFillLevelsAndCapacities(combine)
+					local fillLevel, capacity = combine.cp.fillLevel, combine.cp.capacity
 					if combine.acParameters ~= nil and combine.acParameters.enabled and combine.isHired  and fillLevel >= 0.99*capacity then --AC stops at 99% fillLevel so we have to set this as full
 						combine.cp.wantsCourseplayer = true
 					end
@@ -195,7 +194,7 @@ function courseplay:handle_mode2(vehicle, dt)
 							vehicle.cp.bestCombine = combine
 							distance = courseplay:distanceToObject(vehicle, combine);
 							vehicle.cp.distanceToCombine = distance
-							vehicle.cp.callCombineFillLevel = vehicle.cp.tipperFillLevelPct
+							vehicle.cp.callCombineFillLevel = vehicle.cp.totalFillLevelPercent
 							vehicle.cp.combineID = combine.id
 						end
 					end
@@ -258,7 +257,7 @@ function courseplay:unload_combine(vehicle, dt)
 		vehicle.cp.chopperIsTurning = false
 	end
 	
-	local fillLevel, capacity = combine:getAttachedTrailersFillLevelAndCapacity();
+	local fillLevel, capacity = combine.cp.fillLevel, combine.cp.capacity;
 	if capacity > 0 then
 		combineFillLevel = fillLevel * 100 / capacity
 	else -- combine is a chopper / has no tank
@@ -577,7 +576,7 @@ function courseplay:unload_combine(vehicle, dt)
 			courseplay:setModeState(vehicle, 2);
 		end
 		-- combine is not moving and trailer is under pipe
-		if lz < 5 and combine.fillLevel > 100 then 
+		if lz < 5 and combine.cp.fillLevel > 100 then 
 			-- print(string.format("lz: %.4f, prnToCombineZ: %.2f, trailerOffset: %.2f",lz,prnToCombineZ,trailerOffset))
 		end
 		if not combine.cp.isChopper and combineIsStopped and (lz <= 1 or lz < -0.1 * trailerOffset) then
@@ -681,7 +680,7 @@ function courseplay:unload_combine(vehicle, dt)
 	local sx, sy, sz = getWorldTranslation(vehicle.cp.DirectionNode)
 	distance = courseplay:distance(sx, sz, cx, cz)
 	if combineIsTurning and not combine.cp.isChopper and vehicle.cp.modeState > 1 then
-		if combine.fillLevel > combine.capacity*0.9 then
+		if combine.cp.fillLevel > combine.cp.capacity*0.9 then
 			if combineIsAutoCombine and tractor.acIsCPStopped ~= nil then
 				-- print(nameNum(tractor) .. ': fillLevel > 90%% -> set acIsCPStopped to true'); --TODO: 140308 AutoTractor
 				tractor.acIsCPStopped = true
@@ -1093,7 +1092,7 @@ function courseplay:calculateAstarPathToCoords(vehicle, targetX, targetZ)
 	-- check fruit: tipper
 	if vehicle.cp.workToolAttached then
 		for i,tipper in pairs(vehicle.cp.workTools) do
-			if tipper.getCurrentFruitType and tipper.fillLevel > 0 then
+			if tipper.getCurrentFruitType and tipper.cp.fillLevel > 0 then
 				local tipperFruitType = tipper:getCurrentFruitType();
 				courseplay:debug(string.format('%s: workTools[%d]: fillType=%d (%s), getCurrentFruitType()=%s (%s)', nameNum(vehicle), i, tipper.currentFillType, tostring(FillUtil.fillTypeIntToName[tipper.currentFillType]), tostring(tipperFruitType), tostring(FruitUtil.fruitIndexToDesc[tipperFruitType].name)), 4);
 				if tipperFruitType and tipperFruitType ~= FruitUtil.FRUITTYPE_UNKNOWN then
@@ -1183,7 +1182,7 @@ function courseplay:calculateCombineOffset(vehicle, combine)
 		offs = combineToUtwX;
 
 	--combine // combine_offset is in auto mode, pipe is open
-	elseif not combine.cp.isChopper and vehicle.cp.combineOffsetAutoMode and combine.currentPipeState == 2 and combine.pipeRaycastNode ~= nil then --pipe is open
+	elseif not combine.cp.isChopper and vehicle.cp.combineOffsetAutoMode and combine.pipeCurrentState == 2 and combine.pipeRaycastNode ~= nil then --pipe is open
 		local raycastNodeParent = getParent(combine.pipeRaycastNode);
 		if raycastNodeParent == combine.rootNode then -- pipeRaycastNode is direct child of combine.root
 			--safety distance so the trailer doesn't crash into the pipe (sidearm)

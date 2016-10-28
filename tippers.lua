@@ -98,11 +98,10 @@ function courseplay:isBigM(workTool)
 	return workTool.cp.hasSpecializationSteerable and courseplay:isMower(workTool);
 end;
 function courseplay:isCombine(workTool)
-	--!!! return (workTool.cp.hasSpecializationCombine or workTool.cp.hasSpecializationAICombine) and workTool.attachedCutters ~= nil and workTool.capacity > 0;
-	return (workTool.cp.hasSpecializationCombine or workTool.cp.hasSpecializationAICombine) and workTool.attachedCutters ~= nil ; --and workTool.capacity > 0;
+	return (workTool.cp.hasSpecializationCombine or workTool.cp.hasSpecializationAICombine) and workTool.attachedCutters ~= nil and workTool.cp.capacity > 0;
 end;
 function courseplay:isChopper(workTool)
-	return (workTool.cp.hasSpecializationCombine or workTool.cp.hasSpecializationAICombine) and workTool.attachedCutters ~= nil and workTool.capacity == 0 or courseplay:isSpecialChopper(workTool);
+	return (workTool.cp.hasSpecializationCombine or workTool.cp.hasSpecializationAICombine) and workTool.attachedCutters ~= nil and workTool.cp.capacity == 0 or courseplay:isSpecialChopper(workTool);
 end;
 function courseplay:isFoldable(workTool) --is the tool foldable?
 	return workTool.cp.hasSpecializationFoldable or workTool.foldingParts ~= nil;
@@ -152,16 +151,15 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 	else
 		cpPrintLine(6);
 		courseplay:debug(('%s: updateWorkTools(%s, %q, isImplement=true)'):format(nameNum(vehicle),tostring(vehicle.name), nameNum(workTool)), 6);
-		_ , workTool.capacity = courseplay:getOwnFillLevelAndCapacity(workTool) -- !!!
 	end;
 
 	courseplay:setNameVariable(workTool);
-
+	courseplay:setOwnFillLevelsAndCapacities(workTool,vehicle.cp.mode)
 	local hasWorkTool = false;
 
 	-- MODE 1 + 2: GRAIN TRANSPORT / COMBI MODE
 	if vehicle.cp.mode == 1 or vehicle.cp.mode == 2 then
-		if workTool.allowTipDischarge and workTool.fillUnits[1].capacity and workTool.fillUnits[1].capacity > 0.1 then  --!!!
+		if workTool.allowTipDischarge and workTool.cp.capacity and workTool.cp.capacity > 0.1 then
 			hasWorkTool = true;
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
 		end;
@@ -738,7 +736,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 	for k, tipper in pairs(vehicle.cp.workTools) do
 		if tipper.tipReferencePoints ~= nil then
 			local allowedToDriveBackup = allowedToDrive;
-			local fruitType = courseplay:getAttachedTrailersFillType(vehicle) --!!! tipper.currentFillType
+			local fruitType = tipper.cp.fillType;
 			local distanceToTrigger, bestTipReferencePoint = 0,0
 			if ctt.isHeapTipTrigger then
 				_,distanceToTrigger,bestTipReferencePoint = ctt:getTipInfoForTrailer(tipper);
@@ -1214,10 +1212,10 @@ end;
 
 function courseplay:refillWorkTools(vehicle, fillLevelPct, driveOn, allowedToDrive, lx, lz, dt)
 	for _,workTool in ipairs(vehicle.cp.workTools) do
-		if workTool.fillLevel == nil or workTool.capacity == nil then
+		if workTool.cp.fillLevel == nil or workTool.cp.capacity == nil then
 			return;
 		end;
-		local workToolFillLevelPct = workTool.fillLevel * 100 / workTool.capacity;
+		local workToolFillLevelPct = workTool.fillLevelPercent;
 
 		local isSprayer = courseplay:isSprayer(workTool);
 
@@ -1287,7 +1285,7 @@ function courseplay:refillWorkTools(vehicle, fillLevelPct, driveOn, allowedToDri
 				if not workTool.isFilling then
 					workTool:setIsFilling(true);
 				end;
-				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay.utils:roundToLowerInterval(workTool.fillLevel, 100), workTool.capacity));
+				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay.utils:roundToLowerInterval(workTool.cp.fillLevel, 100), workTool.cp.capacity));
 
 			elseif vehicle.cp.isLoaded or workToolFillLevelPct >= driveOn then
 				if workTool.isFilling then
@@ -1314,7 +1312,7 @@ function courseplay:refillWorkTools(vehicle, fillLevelPct, driveOn, allowedToDri
 					workTool:setIsFilling(true);
 				end;
 				allowedToDrive = false;
-				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay.utils:roundToLowerInterval(workTool.fillLevel, 100), workTool.capacity));
+				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay.utils:roundToLowerInterval(workTool.cp.fillLevel, 100), workTool.cp.capacity));
 			elseif workTool.fillTriggers[1] ~= nil then
 				if workTool.isFilling then
 					workTool:setIsFilling(false);
@@ -1343,7 +1341,7 @@ function courseplay:refillWorkTools(vehicle, fillLevelPct, driveOn, allowedToDri
 					workTool:setIsFuelFilling(true);
 				end;
 				allowedToDrive = false;
-				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay.utils:roundToLowerInterval(workTool.fillLevel, 100), workTool.capacity));
+				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay.utils:roundToLowerInterval(workTool.cp.fillLevel, 100), workTool.cp.capacity));
 			elseif workTool.fuelFillTriggers[1] ~= nil then
 				if workTool.isFuelFilling then
 					workTool:setIsFuelFilling(false);
@@ -1364,7 +1362,7 @@ function courseplay:refillWorkTools(vehicle, fillLevelPct, driveOn, allowedToDri
 					workTool:setIsWaterTrailerFilling(true);
 				end;
 				allowedToDrive = false;
-				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay.utils:roundToLowerInterval(workTool.fillLevel, 100), workTool.capacity));
+				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay.utils:roundToLowerInterval(workTool.cp.fillLevel, 100), workTool.cp.capacity));
 			elseif workTool.waterTrailerFillTriggers[1] ~= nil then
 				if workTool.isWaterTrailerFilling then
 					workTool:setIsWaterTrailerFilling(false);

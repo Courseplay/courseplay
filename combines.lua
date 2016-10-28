@@ -101,9 +101,8 @@ function courseplay:registerAtCombine(callerVehicle, combine)
 	else
 		
 		if callerVehicle.cp.realisticDriving then
-			courseplay:getOwnFillLevelAndCapacity(combine) --!!!
-			if combine.cp.wantsCourseplayer == true or combine.fillLevel >= combine.capacity then
-				courseplay:debug(string.format("%s: combine.cp.wantsCourseplayer(%s) or combine.fillLevel >= combine.capacity (%s)",nameNum(callerVehicle),tostring(combine.cp.wantsCourseplayer),tostring(combine.fillLevel >= 0.99*combine.capacity)),4)
+			if combine.cp.wantsCourseplayer == true or combine.cp.fillLevel >= combine.cp.capacity then
+				courseplay:debug(string.format("%s: combine.cp.wantsCourseplayer(%s) or combine.cp.fillLevel >= combine.cp.capacity (%s)",nameNum(callerVehicle),tostring(combine.cp.wantsCourseplayer),tostring(combine.cp.fillLevel >= 0.99*combine.cp.capacity)),4)
 			else
 				-- force unload when combine is full
 				-- is the pipe on the correct side?
@@ -339,7 +338,7 @@ function courseplay:calculateInitialCombineOffset(vehicle, combine) --TODO (Jako
 		end;
 
 	-- combine // combine_offset is in auto mode
-	elseif not combine.cp.isChopper and combine.currentPipeState == 2 and combine.pipeRaycastNode ~= nil then -- pipe is extended
+	elseif not combine.cp.isChopper and combine.pipeCurrentState == 2 and combine.pipeRaycastNode ~= nil then -- pipe is extended
 		vehicle.cp.combineOffset = combineToPrnX;
 		courseplay:debug(string.format("%s(%i): %s @ %s: using combineToPrnX=%f, vehicle.cp.combineOffset=%f", curFile, debug.getinfo(1).currentline, nameNum(vehicle), tostring(combine.name), combineToPrnX, vehicle.cp.combineOffset), 4)
 	elseif not combine.cp.isChopper and combine.pipeRaycastNode ~= nil then -- pipe is closed

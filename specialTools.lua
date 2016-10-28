@@ -5,7 +5,15 @@ function courseplay:setNameVariable(workTool)
 	if workTool.cp.hasSpecializationPathVehicle or workTool.cp.hasSpecializationTrafficVehicle then
 		return;
 	end;
-
+	--[[local counter = 0;
+	if workTool.fillUnits ~= nil then
+		for index ,unit in pairs(workTool.fillUnits) do
+			counter = counter +1
+		end	
+	end
+	print(string.format("%s: has %d fillUnits",tostring(workTool.name),counter))
+	]]
+	
 	-- local specList = { 'AICombine', 'AITractor', 'AnimatedVehicle', 'BaleLoader', 'Baler', 'BunkerSiloCompacter', 'Combine', 'Cultivator', 'Cutter', 'Cylindered', 'Fillable', 'Foldable', 'FruitPreparer', 'FuelTrailer', 'MixerWagon', 'Mower', 'PathVehicle', 'Plough', 'Shovel', 'SowingMachine', 'Sprayer', 'Steerable', 'Tedder', 'TrafficVehicle', 'Trailer', 'WaterTrailer', 'Windrower' };
 
 	-- Only default specs!
@@ -86,12 +94,6 @@ function courseplay:setNameVariable(workTool)
 			workTool.cp.isHorschTitan34UW = true;
 			workTool.cp.foldPipeAtWaitPoint = true;
 		end;
-	elseif workTool.cp.xmlFileName == 'holmerSugarBeetTank.xml' then
-			workTool.cp.isAugerWagon = true;
-			workTool.cp.isHolmerSugarbeetTank = true;
-	elseif workTool.cp.xmlFileName == 'holmerGrainTank.xml' then
-			workTool.cp.isAugerWagon = true;
-			workTool.cp.isHolmerGrainTank = true;			
 	elseif workTool.cp.hasSpecializationOverloader then
 		workTool.cp.isAugerWagon = true;
 		workTool.cp.hasSpecializationOverloaderV2 = workTool.overloaderVersion ~= nil and workTool.overloaderVersion >= 2;
@@ -582,7 +584,7 @@ function courseplay:askForSpecialSettings(self, object)
 				object.cp.lastFoldAnimTime = object.foldAnimTime;
 			end;
 		end;
-		object.cp.lastFillLevel = object.fillLevel;
+		object.cp.lastFillLevel = object.cp.fillLevel;
 
 		if object.cp.isHaweSUW4000 or object.cp.isHaweSUW5000 or object.cp.isHaweULW2600T or object.cp.isHaweULW3000T then
 			object.cp.hasPipeLight = object.B3 and object.B3.work and object.B3.work[1];
@@ -627,7 +629,7 @@ function courseplay:askForSpecialSettings(self, object)
 	end;
 
 	if self.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT then
-		object.cp.lastFillLevel = object.fillLevel;
+		object.cp.lastFillLevel = object.cp.fillLevel;
 	end;
 
 	if automaticToolOffsetX ~= nil then
@@ -753,35 +755,3 @@ function courseplay:rotateSingleTool(vehicle, activeTool, toolIndex, rotatePos, 
 		vehicle:raiseDirtyFlags(vehicle.cylinderedDirtyFlag);
 	end;
 end;
-
-function courseplay:getAttachedTrailersFillLevelAndCapacity(workTool) --!!! just a hack, we have to check the new cpacity system (fillUnits{}) 
-	local fillLevel, capacity = 0,0
-	for index,implement in pairs(workTool.attachedImplements) do    --TODO concider tools with more capacities !
-		local object = implement.object;
-		fillLevel= fillLevel+object.fillUnits[1].fillLevel
-		capacity = capacity+object.fillUnits[1].capacity
-	end
-	return fillLevel, capacity
-end
-
-function courseplay:getOwnFillLevelAndCapacity(workTool) --!!! just a hack, we have to check the new cpacity system (fillUnits{}) 
-	if workTool.fillUnits == nil then
-		return
-	end
-	workTool.fillLevel = workTool.fillUnits[1].fillLevel
-	workTool.capacity = workTool.fillUnits[1].capacity
-	return 
-end
-
-function courseplay:getAttachedTrailersFillType(workTool) --!!! just a hack, we have to check the new cpacity system (fillUnits{}) 
-	local filltype = 0
-	for index,implement in pairs(workTool.attachedImplements) do    
-		local object = implement.object;
-		if object.fillUnits ~= nil and object.fillUnits[1] ~= nil then
-			filltype = object.fillUnits[1].lastValidFillType;
-		else	
-			return
-		end	
-	end
-	return filltype
-end

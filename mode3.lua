@@ -1,9 +1,10 @@
-function courseplay:handleMode3(vehicle, fillLevelPct, allowedToDrive, dt)
-	courseplay:debug(string.format("handleMode3(vehicle, fillLevelPct=%s, allowedToDrive=%s, dt)", tostring(fillLevelPct), tostring(allowedToDrive)), 15);
+function courseplay:handleMode3(vehicle, allowedToDrive, dt)
+	courseplay:debug(string.format("handleMode3(vehicle, allowedToDrive=%s, dt)",tostring(allowedToDrive)), 15);
 	local workTool = vehicle.cp.workTools[vehicle.cp.currentTrailerToFill] or vehicle.cp.workTools[1];
 	local backPointsUnfoldPipe = 8; --[[workTool.cp.backPointsUnfoldPipe or 8;]] --NOTE: backPointsUnfoldPipe must not be 0! 
 	local forwardPointsFoldPipe = workTool.cp.forwardPointsFoldPipe or 2;
-	workTool.cp.isUnloading = workTool.fillLevel < workTool.cp.lastFillLevel;
+	local fillLevelPct = workTool.cp.fillLevelPercent
+	workTool.cp.isUnloading = workTool.cp.fillLevel < workTool.cp.lastFillLevel;
 
 	if workTool.cp.isAugerWagon then
 		if vehicle.cp.wait and vehicle.cp.previousWaypointIndex >= math.max(vehicle.cp.waitPoints[1] - backPointsUnfoldPipe, 2) and vehicle.cp.previousWaypointIndex < vehicle.cp.waitPoints[1] and not workTool.cp.isUnloading then
@@ -55,7 +56,7 @@ function courseplay:handleMode3(vehicle, fillLevelPct, allowedToDrive, dt)
 		end;
 	end;
 
-	workTool.cp.lastFillLevel = workTool.fillLevel;
+	workTool.cp.lastFillLevel = workTool.cp.fillLevel;
 end;
 
 
@@ -173,9 +174,9 @@ function courseplay:handleAugerWagon(vehicle, workTool, unfold, unload, orderNam
 	--AugerWagon spec
 	elseif workTool.typeName == 'augerWagon' or workTool.cp.isAugerWagon then
 		if pipeOrderExists then
-			local pipeIsFolding = workTool.currentPipeState == 0;
-			local pipeIsFolded = workTool.currentPipeState == 1;
-			local pipeIsUnfolded = workTool.currentPipeState == 2;
+			local pipeIsFolding = workTool.pipeCurrentState == 0;
+			local pipeIsFolded = workTool.pipeCurrentState == 1;
+			local pipeIsUnfolded = workTool.pipeCurrentState == 2;
 			courseplay:debug(string.format("\t\tpipeIsFolding=%s, pipeIsFolded=%s, pipeIsUnfolded=%s", tostring(pipeIsFolding), tostring(pipeIsFolded), tostring(pipeIsUnfolded)), 15);
 			if unfold and not pipeIsFolding and pipeIsFolded then
 				workTool:setPipeState(2);

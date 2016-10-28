@@ -2,14 +2,14 @@ local max = math.max;
 -- handles "mode1" : waiting at start until tippers full - driving course and unloading on trigger
 function courseplay:handle_mode1(vehicle, allowedToDrive)
 	-- done tipping
-	if vehicle.cp.currentTipTrigger and vehicle.cp.tipperFillLevel == 0 then
+	if vehicle.cp.currentTipTrigger and vehicle.cp.totalFillLevel == 0 then
 		courseplay:resetTipTrigger(vehicle, true);
 	end
 
 	-- tippers are not full
-	if vehicle.cp.isLoaded ~= true and ((vehicle.cp.waypointIndex == 2 and vehicle.cp.tipperFillLevel < vehicle.cp.tipperCapacity and vehicle.cp.isUnloaded == false) or vehicle.cp.trailerFillDistance) then
+	if vehicle.cp.isLoaded ~= true and ((vehicle.cp.waypointIndex == 2 and vehicle.cp.totalFillLevel < vehicle.cp.totalCapacity and vehicle.cp.isUnloaded == false) or vehicle.cp.trailerFillDistance) then
 		allowedToDrive = courseplay:load_tippers(vehicle, allowedToDrive);
-		courseplay:setInfoText(vehicle, string.format("COURSEPLAY_LOADING_AMOUNT;%d;%d",courseplay.utils:roundToLowerInterval(vehicle.cp.tipperFillLevel, 100),vehicle.cp.tipperCapacity));
+		courseplay:setInfoText(vehicle, string.format("COURSEPLAY_LOADING_AMOUNT;%d;%d",courseplay.utils:roundToLowerInterval(vehicle.cp.totalFillLevel, 100),vehicle.cp.totalCapacity));
 	end
 
 	-- damn, I missed the trigger!
@@ -49,7 +49,7 @@ function courseplay:handle_mode1(vehicle, allowedToDrive)
 	end;
 
 	-- tipper is not empty and tractor reaches TipTrigger
-	if vehicle.cp.tipperFillLevel > 0 and vehicle.cp.currentTipTrigger ~= nil and vehicle.cp.waypointIndex > 3 then
+	if vehicle.cp.totalFillLevel > 0 and vehicle.cp.currentTipTrigger ~= nil and vehicle.cp.waypointIndex > 3 then
 		allowedToDrive = courseplay:unload_tippers(vehicle, allowedToDrive);
 		courseplay:setInfoText(vehicle, "COURSEPLAY_TIPTRIGGER_REACHED");
 	end;

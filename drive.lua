@@ -38,11 +38,14 @@ function courseplay:drive(self, dt)
 	self.cp.curSpeed = self.lastSpeedReal * 3600;
 
 	-- TIPPER FILL LEVELS (get once for all following functions)
-	self.cp.tipperFillLevel, self.cp.tipperCapacity = courseplay:getAttachedTrailersFillLevelAndCapacity(self) --!!! self:getAttachedTrailersFillLevelAndCapacity();
+	courseplay:updateFillLevelsAndCapacities(self)
+	
+	
+	--[[self.cp.tipperFillLevel, self.cp.tipperCapacity = courseplay:getAttachedTrailersFillLevelAndCapacity(self) --!!! self:getAttachedTrailersFillLevelAndCapacity();
 	if self.cp.tipperFillLevel == nil then self.cp.tipperFillLevel = 0; end;
 	if self.cp.tipperCapacity == nil or self.cp.tipperCapacity == 0 then self.cp.tipperCapacity = 0.00001; end;
-	self.cp.tipperFillLevelPct = self.cp.tipperFillLevel * 100 / self.cp.tipperCapacity;
-
+	self.cp.fillLevelPercent = self.cp.tipperFillLevel * 100 / self.cp.tipperCapacity;
+	]]
 
 	-- RESET TRIGGER RAYCASTS
 	self.cp.hasRunRaycastThisLoop['tipTrigger'] = false;
@@ -112,7 +115,7 @@ function courseplay:drive(self, dt)
 		if self.Waypoints[self.cp.waypointIndex].turn ~= nil then
 			self.cp.isTurning = self.Waypoints[self.cp.waypointIndex].turn
 		end
-		if self.cp.abortWork ~= nil and self.cp.tipperFillLevelPct == 0 then
+		if self.cp.abortWork ~= nil and self.cp.totalFillLevelPercent == 0 then
 			self.cp.isTurning = nil
 		end
 
@@ -133,20 +136,20 @@ function courseplay:drive(self, dt)
 	-- WARNING LIGHTS
 	if self.cp.warningLightsMode == courseplay.WARNING_LIGHTS_NEVER then -- never
 		if self.beaconLightsActive then
-			--self:setBeaconLightsVisibility(false);
+			self:setBeaconLightsVisibility(false);
 		end;
 		if self.cp.hasHazardLights and self.turnSignalState ~= Vehicle.TURNSIGNAL_OFF then
 			self:setTurnSignalState(Vehicle.TURNSIGNAL_OFF);
 		end;
 	else -- on street/always
-		--!!! local combineBeaconOn = self.cp.isCombine and (self.fillLevel / self.capacity) > 0.8;
-		local combineBeaconOn = self.cp.isCombine and (self.fillUnits[1].fillLevel / self.fillUnits[1].capacity) > 0.8;
-		local beaconOn = self.cp.warningLightsMode == courseplay.WARNING_LIGHTS_BEACON_ALWAYS 
+		local combineBeaconOn = self.cp.isCombine and self.cp.totalFillLevelPercent > 80;
+		local beaconOn = (self.cp.warningLightsMode == courseplay.WARNING_LIGHTS_BEACON_ALWAYS 
 						 or ((self.cp.mode == 1 or self.cp.mode == 2 or self.cp.mode == 3 or self.cp.mode == 5) and self.cp.waypointIndex > 2) 
 						 or ((self.cp.mode == 4 or self.cp.mode == 6) and self.cp.waypointIndex > self.cp.stopWork)
-						 or combineBeaconOn;
+						 or combineBeaconOn) or false;
+
 		if self.beaconLightsActive ~= beaconOn then
-			--!!!self:setBeaconLightsVisibility(beaconOn);
+			self:setBeaconLightsVisibility(beaconOn);
 		end;
 		if self.cp.hasHazardLights then
 			local hazardOn = self.cp.warningLightsMode == courseplay.WARNING_LIGHTS_BEACON_HAZARD_ON_STREET and beaconOn and not combineBeaconOn;
@@ -172,7 +175,7 @@ function courseplay:drive(self, dt)
 		end;
 
 		if self.cp.mode == 3 and self.cp.workToolAttached then
-			courseplay:handleMode3(self, self.cp.tipperFillLevelPct, allowedToDrive, dt);
+			courseplay:handleMode3(self, allowedToDrive, dt);
 
 		elseif self.cp.mode == 4 then
 			local drive_on = false
@@ -183,20 +186,20 @@ function courseplay:drive(self, dt)
 			elseif self.cp.waitPoints[3] and self.cp.previousWaypointIndex == self.cp.waitPoints[3] then
 				local isInWorkArea = self.cp.waypointIndex > self.cp.startWork and self.cp.waypointIndex <= self.cp.stopWork;
 				if self.cp.workToolAttached and self.cp.startWork ~= nil and self.cp.stopWork ~= nil and self.cp.workTools ~= nil and not isInWorkArea then
-					allowedToDrive,lx,lz = courseplay:refillWorkTools(self, self.cp.tipperFillLevelPct, self.cp.refillUntilPct, allowedToDrive, lx, lz, dt);
+					allowedToDrive,lx,lz = courseplay:refillWorkTools(self, self.cp.totalFillLevelPercent, self.cp.refillUntilPct, allowedToDrive, lx, lz, dt);
 				end;
 				if courseplay:timerIsThrough(self, "fillLevelChange") or self.cp.prevFillLevelPct == nil then
-					if self.cp.prevFillLevelPct ~= nil and self.cp.tipperFillLevelPct == self.cp.prevFillLevelPct and self.cp.tipperFillLevelPct >= self.cp.refillUntilPct then
+					if self.cp.prevFillLevelPct ~= nil and self.cp.totalFillLevelPercent == self.cp.prevFillLevelPct and self.cp.totalFillLevelPercent >= self.cp.refillUntilPct then
 						drive_on = true
 					end
-					self.cp.prevFillLevelPct = self.cp.tipperFillLevelPct
+					self.cp.prevFillLevelPct = self.cp.totalFillLevelPercent
 					courseplay:setCustomTimer(self, "fillLevelChange", 7);
 				end
 
-				if self.cp.tipperFillLevelPct >= self.cp.refillUntilPct or drive_on then
+				if self.cp.totalFillLevelPercent >= self.cp.refillUntilPct or drive_on then
 					courseplay:setVehicleWait(self, false);
 				end
-				courseplay:setInfoText(self, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay.utils:roundToLowerInterval(self.cp.tipperFillLevel, 100), self.cp.tipperCapacity));
+				courseplay:setInfoText(self, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay.utils:roundToLowerInterval(self.cp.totalFillLevel, 100), self.cp.capacity));
 			end
 		elseif self.cp.mode == 6 then
 			if self.cp.previousWaypointIndex == self.cp.startWork then
@@ -205,13 +208,13 @@ function courseplay:drive(self, dt)
 				courseplay:setVehicleWait(self, false);
 			elseif self.cp.previousWaypointIndex ~= self.cp.startWork and self.cp.previousWaypointIndex ~= self.cp.stopWork then 
 				CpManager:setGlobalInfoText(self, 'UNLOADING_BALE');
-				if self.cp.tipperFillLevelPct == 0 or drive_on then
+				if self.cp.totalFillLevelPercent == 0 or drive_on then
 					courseplay:setVehicleWait(self, false);
 				end;
 			end;
 		elseif self.cp.mode == 7 then
 			if self.cp.previousWaypointIndex == self.cp.startWork then
-				if self.fillLevel > 0 then
+				if self.totalFillLevel > 0 then
 					self:setPipeState(2)
 					CpManager:setGlobalInfoText(self, 'OVERLOADING_POINT');
 				else
@@ -242,8 +245,8 @@ function courseplay:drive(self, dt)
 	-- ### NON-WAITING POINTS
 	else
 		-- MODES 1 & 2: unloading in trigger
-		if (self.cp.mode == 1 or (self.cp.mode == 2 and self.cp.isLoaded)) and self.cp.tipperFillLevel ~= nil and self.cp.tipRefOffset ~= nil and self.cp.workToolAttached then
-			if self.cp.currentTipTrigger == nil and self.cp.tipperFillLevel > 0 and self.cp.waypointIndex > 2 and self.cp.waypointIndex < self.cp.numWaypoints and not self.Waypoints[self.cp.waypointIndex].rev then
+		if (self.cp.mode == 1 or (self.cp.mode == 2 and self.cp.isLoaded)) and self.cp.totalFillLevel ~= nil and self.cp.tipRefOffset ~= nil and self.cp.workToolAttached then
+			if self.cp.currentTipTrigger == nil and self.cp.totalFillLevel > 0 and self.cp.waypointIndex > 2 and self.cp.waypointIndex < self.cp.numWaypoints and not self.Waypoints[self.cp.waypointIndex].rev then
 				courseplay:doTriggerRaycasts(self, 'tipTrigger', 'fwd', true, tx, ty, tz, nx, ny, nz);
 			end;
 
@@ -269,14 +272,14 @@ function courseplay:drive(self, dt)
 
 		-- MODE 3: UNLOADING
 		if self.cp.mode == 3 and self.cp.workToolAttached and self.cp.waypointIndex >= 2 and self.cp.modeState == 0 then
-			courseplay:handleMode3(self, self.cp.tipperFillLevelPct, allowedToDrive, dt);
+			courseplay:handleMode3(self, self.cp.totalFillLevelPercent, allowedToDrive, dt);
 
 		-- MODE 4: REFILL SPRAYER or SEEDER
 		elseif self.cp.mode == 4 then
 			if self.cp.workToolAttached and self.cp.startWork ~= nil and self.cp.stopWork ~= nil then
 				local isInWorkArea = self.cp.waypointIndex > self.cp.startWork and self.cp.waypointIndex <= self.cp.stopWork;
 				if self.cp.workTools ~= nil and not isInWorkArea then
-					allowedToDrive,lx,lz = courseplay:refillWorkTools(self, self.cp.tipperFillLevelPct, self.cp.refillUntilPct, allowedToDrive, lx, lz, dt);
+					allowedToDrive,lx,lz = courseplay:refillWorkTools(self, self.cp.totalFillLevelPercent, self.cp.refillUntilPct, allowedToDrive, lx, lz, dt);
 				end
 			end;
 
@@ -372,23 +375,23 @@ function courseplay:drive(self, dt)
 	local isFinishingWork = false;
 	-- MODE 4
 	if self.cp.mode == 4 and self.cp.startWork ~= nil and self.cp.stopWork ~= nil and self.cp.workToolAttached then
-		allowedToDrive, workArea, workSpeed, isFinishingWork, refSpeed = courseplay:handle_mode4(self, allowedToDrive, workSpeed, self.cp.tipperFillLevelPct, refSpeed);
+		allowedToDrive, workArea, workSpeed, isFinishingWork, refSpeed = courseplay:handle_mode4(self, allowedToDrive, workSpeed, self.cp.totalFillLevelPercent, refSpeed);
 		speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
-		if not workArea and self.cp.tipperFillLevelPct < self.cp.refillUntilPct then
+		if not workArea and self.cp.fillLevelPercent < self.cp.refillUntilPct then
 			courseplay:doTriggerRaycasts(self, 'specialTrigger', 'fwd', true, tx, ty, tz, nx, ny, nz);
 		end;
 
 	-- MODE 6
 	elseif self.cp.mode == 6 and self.cp.startWork ~= nil and self.cp.stopWork ~= nil then
-		allowedToDrive, workArea, workSpeed, activeTipper, isFinishingWork,refSpeed = courseplay:handle_mode6(self, allowedToDrive, workSpeed, self.cp.tipperFillLevelPct, lx, lz,refSpeed);
+		allowedToDrive, workArea, workSpeed, activeTipper, isFinishingWork,refSpeed = courseplay:handle_mode6(self, allowedToDrive, workSpeed, lx, lz,refSpeed);
 		speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
-		if not workArea and self.cp.currentTipTrigger == nil and self.cp.tipperFillLevel and self.cp.tipperFillLevel > 0 and self.capacity == nil and self.cp.tipRefOffset ~= nil and not self.Waypoints[self.cp.waypointIndex].rev then
+		if not workArea and self.cp.currentTipTrigger == nil and self.cp.totalFillLevel and self.cp.totalFillLevel > 0 and self.capacity == nil and self.cp.tipRefOffset ~= nil and not self.Waypoints[self.cp.waypointIndex].rev then
 			courseplay:doTriggerRaycasts(self, 'tipTrigger', 'fwd', true, tx, ty, tz, nx, ny, nz);
 		end;
 
 	-- MODE 9
 	elseif self.cp.mode == 9 then
-		allowedToDrive = courseplay:handle_mode9(self, self.cp.tipperFillLevelPct, allowedToDrive, dt);
+		allowedToDrive = courseplay:handle_mode9(self, self.cp.fillLevelPercent, allowedToDrive, dt);
 	end;
 	self.cp.inTraffic = false;
 
@@ -445,7 +448,7 @@ function courseplay:drive(self, dt)
 		local x,y,z = getWorldTranslation(self.cp.DirectionNode)
 		local _,_,ez = worldToLocal(self.cp.DirectionNode, self.Waypoints[i].cx , y , self.Waypoints[i].cz)
 		if  ez < 0.2 then
-			if self.cp.tipperFillLevelPct == 0 then
+			if self.cp.totalFillLevelPercent == 0 then
 				allowedToDrive = false
 				CpManager:setGlobalInfoText(self, 'WORK_END');
 			else
@@ -1271,4 +1274,51 @@ end;
 function courseplay:setIsCourseplayDriving(active)
 	self:setCpVar('isDriving',active,courseplay.isClient)
 end;
+
+function courseplay:updateFillLevelsAndCapacities(vehicle)
+	courseplay:setOwnFillLevelsAndCapacities(vehicle,vehicle.cp.mode)
+	vehicle.cp.totalFillLevel = vehicle.cp.fillLevel;
+	vehicle.cp.totalCapacity = vehicle.cp.capacity;
+	if vehicle.cp.fillLevel ~= nil and vehicle.cp.capacity ~= nil then
+		vehicle.cp.totalFillLevelPercent = (vehicle.cp.fillLevel*100)/vehicle.cp.capacity or 0;
+	end
+	--print(string.format("vehicle itself(%s): vehicle.cp.totalFillLevel:(%s)",tostring(vehicle.name),tostring(vehicle.cp.totalFillLevel)))
+	if vehicle.cp.workTools ~= nil then
+		for _,tool in pairs(vehicle.cp.workTools) do
+			local hasMoreFillUnits = courseplay:setOwnFillLevelsAndCapacities(tool)
+			if hasMoreFillUnits and tool ~= vehicle then
+				vehicle.cp.totalFillLevel = (vehicle.cp.totalFillLevel or 0) + tool.cp.fillLevel
+				vehicle.cp.totalCapacity = (vehicle.cp.totalCapacity or 0 ) + tool.cp.capacity
+				vehicle.cp.totalFillLevelPercent = (vehicle.cp.totalFillLevel*100)/vehicle.cp.totalCapacity;
+				--print(string.format("%s: adding %s to vehicle.cp.totalFillLevel = %s",tostring(tool.name),tostring(tool.cp.fillLevel), tostring(vehicle.cp.totalFillLevel)))
+			end	
+		end
+	end
+	--print(string.format("End of function: vehicle.cp.totalFillLevel:(%s)",tostring(vehicle.cp.totalFillLevel)))
+end
+
+function courseplay:setOwnFillLevelsAndCapacities(workTool,mode)
+    local fillLevel,capacity = 0,0
+	local fillLevelPercent = 0;
+	local fillType = 0;
+	if workTool.fillUnits == nil then
+		return false
+	end
+	for _,fillUnit in pairs(workTool.fillUnits) do
+		fillLevel = fillLevel + fillUnit.fillLevel
+		capacity = capacity + fillUnit.capacity
+		if fillLevel ~= nil and capacity ~= nil then
+			fillLevelPercent = (fillLevel*100)/capacity;
+		else
+			fillLevelPercent = nil
+		end
+		fillType = lastValidFillType
+	end 
+	workTool.cp.fillLevel = fillLevel
+	workTool.cp.capacity = capacity
+	workTool.cp.fillLevelPercent = fillLevelPercent
+	workTool.cp.fillType = fillType
+	--print(string.format("%s: adding %s to workTool.cp.capacity",tostring(workTool.name),tostring(workTool.cp.capacity)))
+	return true
+end
 

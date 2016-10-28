@@ -297,8 +297,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 
 	if self.cp.workTools[1] ~= nil and tipTriggers ~= nil and tipTriggersCount > 0 then
 		courseplay:debug(('%s: transformId=%s: %s'):format(nameNum(self), tostring(transformId), name), 1);
-		local trailerFillType = courseplay:getAttachedTrailersFillType(self)  --!!! self.cp.workTools[1].currentFillType;
-		--print("trailerFillType: "..tostring(trailerFillType))
+		local trailerFillType = self.cp.workTools[1].cp.fillType;
 		if trailerFillType == nil or trailerFillType == 0 then
 			for i=2,#(self.cp.workTools) do
 				trailerFillType = self.cp.workTools[i].currentFillType;

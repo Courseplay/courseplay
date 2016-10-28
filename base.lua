@@ -310,7 +310,7 @@ function courseplay:load(savegame)
 
 
 	courseplay:askForSpecialSettings(self,self)
-
+	courseplay:setOwnFillLevelsAndCapacities(self)
 
 	-- workTools
 	self.cp.workTools = {};
