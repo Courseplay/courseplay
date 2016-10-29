@@ -14,6 +14,9 @@ function courseplay:setNameVariable(workTool)
 	print(string.format("%s: has %d fillUnits",tostring(workTool.name),counter))
 	]]
 	
+	courseplay:updateFillLevelsAndCapacities(workTool)
+	
+	
 	-- local specList = { 'AICombine', 'AITractor', 'AnimatedVehicle', 'BaleLoader', 'Baler', 'BunkerSiloCompacter', 'Combine', 'Cultivator', 'Cutter', 'Cylindered', 'Fillable', 'Foldable', 'FruitPreparer', 'FuelTrailer', 'MixerWagon', 'Mower', 'PathVehicle', 'Plough', 'Shovel', 'SowingMachine', 'Sprayer', 'Steerable', 'Tedder', 'TrafficVehicle', 'Trailer', 'WaterTrailer', 'Windrower' };
 
 	-- Only default specs!

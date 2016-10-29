@@ -429,11 +429,9 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 			--Start combine
 			local isTurnedOn = tool:getIsTurnedOn();
 			local pipeState = 0;
-			if tool.getOverloadingTrailerInRangePipeState ~= nil then
-				pipeState = tool:getOverloadingTrailerInRangePipeState();
-			end;
-			pipeState = 2 --!!! hack
-			
+			if tool.overloading ~= nil then
+				pipeState = courseplay:getTrailerInPipeRangeState(tool)
+			end
 			if workArea and not tool.isAIThreshing and vehicle.cp.abortWork == nil and vehicle.cp.turnStage == 0 then
 											--courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload,ridgeMarker,forceSpeedLimit)
 				specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,true,true,true,allowedToDrive,nil,nil,ridgeMarker)

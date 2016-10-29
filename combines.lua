@@ -461,3 +461,21 @@ function courseplay:getCombinesPipeSide(combine)
 		--print("pipe is right")
 	end;
 end
+
+
+function courseplay:getTrailerInPipeRangeState(combine)
+        local validPipeState = 0;
+        for trailer,value in pairs(combine.overloading.trailersInRange) do
+            if value > 0 then
+				local fillType = combine.cp.fillType
+                if trailer:allowFillType(combine.cp.fillType) then
+					if trailer:getFillLevel(fillType) < trailer:getCapacity(fillType) then
+						validPipeState = 2;
+						break;
+					end
+                end
+            end
+        end
+		return validPipeState 
+end		
+		

@@ -27,7 +27,7 @@ function courseplay:handleMode8(vehicle, load, unload, allowedToDrive, lx, lz, d
 			local isSpecialTool, allowedToDrive, lx, lz = courseplay:handleSpecialTools(vehicle, workTool, nil,    nil,   nil,    allowedToDrive, nil,   true  );
 			if not isSpecialTool then
 				-- trailer
-				if workTool.cp.isLiquidManureOverloader and workTool.getOverloadingTrailerInRangePipeState ~= nil and workTool:getOverloadingTrailerInRangePipeState() > 0 and not workTool.isOverloadingActive then
+				if workTool.cp.isLiquidManureOverloader and workTool.overloading ~= nil and courseplay:getTrailerInPipeRangeState(workTool) > 0 and not workTool.isOverloadingActive then
 					for trailer,_ in pairs(workTool.overloadingTrailersInRange) do
 						if trailer.unloadTrigger ~= nil and trailer.fillLevel < trailer.capacity then
 							workTool:setOverloadingActive(true);

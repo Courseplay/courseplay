@@ -694,7 +694,7 @@ function courseplay:drive(self, dt)
 				steeringAngle = self.cp.steeringAngle * 2;
 			end;
 
-			--if self.Waypoints[self.cp.waypointIndex].rev then
+			
 				if math.abs(self.lastSpeedReal) < 0.0001 and  not g_currentMission.missionInfo.stopAndGoBraking then
 					if not fwd then
 						self.nextMovingDirection = -1
@@ -702,7 +702,7 @@ function courseplay:drive(self, dt)
 						self.nextMovingDirection = 1
 					end;
 				end;
-
+			--if self.Waypoints[self.cp.waypointIndex].rev then
 				--self,dt,steeringAngleLimit,acceleration,slowAcceleration,slowAngleLimit,allowedToDrive,moveForwards,lx,lz,maxSpeed,slowDownFactor,angle
 				AIVehicleUtil.driveInDirection(self, dt, steeringAngle, acceleration, 0.5, 20, true, fwd, lx, lz, refSpeed, 1);
 			--else
@@ -1329,7 +1329,7 @@ function courseplay:setOwnFillLevelsAndCapacities(workTool,mode)
 		else
 			fillLevelPercent = nil
 		end
-		fillType = lastValidFillType
+		fillType = fillUnit.lastValidFillType
 	end 
 	workTool.cp.fillLevel = fillLevel
 	workTool.cp.capacity = capacity

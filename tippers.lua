@@ -98,7 +98,7 @@ function courseplay:isBigM(workTool)
 	return workTool.cp.hasSpecializationSteerable and courseplay:isMower(workTool);
 end;
 function courseplay:isCombine(workTool)
-	return (workTool.cp.hasSpecializationCombine or workTool.cp.hasSpecializationAICombine) and workTool.attachedCutters ~= nil and workTool.cp.capacity > 0;
+	return (workTool.cp.hasSpecializationCombine or workTool.cp.hasSpecializationAICombine) and workTool.attachedCutters ~= nil and workTool.cp.capacity ~= nil  and workTool.cp.capacity > 0;
 end;
 function courseplay:isChopper(workTool)
 	return (workTool.cp.hasSpecializationCombine or workTool.cp.hasSpecializationAICombine) and workTool.attachedCutters ~= nil and workTool.cp.capacity == 0 or courseplay:isSpecialChopper(workTool);
@@ -236,7 +236,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 
 	-- MODE 8: LIQUID MANURE TRANSFER
 	elseif vehicle.cp.mode == 8 then
-		if workTool.cp.hasSpecializationFillable and ((workTool.getOverloadingTrailerInRangePipeState ~= nil or workTool.setIsReFilling ~= nil) or workTool.cp.isFuelTrailer or workTool.cp.isWaterTrailer) then
+		if workTool.cp.hasSpecializationFillable and ((workTool.overloading ~= nil or workTool.setIsReFilling ~= nil) or workTool.cp.isFuelTrailer or workTool.cp.isWaterTrailer) then
 			hasWorkTool = true;
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
 			vehicle.cp.hasMachinetoFill = true;
