@@ -1,10 +1,13 @@
-function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, refSpeed)
+function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 	local workTool;
 	local forceSpeedLimit = refSpeed
 	local fieldArea = (self.cp.waypointIndex > self.cp.startWork) and (self.cp.waypointIndex < self.cp.stopWork)
 	local workArea = (self.cp.waypointIndex > self.cp.startWork) and (self.cp.waypointIndex < self.cp.finishWork)
 	local isFinishingWork = false
 	local hasFinishedWork = false
+	local seederFillLevelPct = self.cp.totalSeederFillLevelPercent or 100
+	local sprayerFillLevelPct = self.cp.totalSprayerFillLevelPercent or 100
+	--print(string.format("seederFillLevelPct:%s; sprayerFillLevelPct:%s",tostring(seederFillLevelPct),tostring(sprayerFillLevelPct)))
 	if self.cp.waypointIndex == self.cp.finishWork and self.cp.abortWork == nil then
 		local _,y,_ = getWorldTranslation(self.cp.DirectionNode)
 		local _,_,z = worldToLocal(self.cp.DirectionNode,self.Waypoints[self.cp.finishWork].cx,y,self.Waypoints[self.cp.finishWork].cz)
@@ -26,20 +29,25 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 	end
 	
 	-- Begin Work
-	if self.cp.previousWaypointIndex == self.cp.startWork and fillLevelPct ~= 0 then
-		if self.cp.abortWork ~= nil then
-			if self.cp.abortWork < 5 then
-				self.cp.abortWork = 6
+	if self.cp.previousWaypointIndex == self.cp.startWork then
+		if seederFillLevelPct ~= 0 and sprayerFillLevelPct ~= 0 then
+			if self.cp.abortWork ~= nil then
+				if self.cp.abortWork < 5 then
+					self.cp.abortWork = 6
+				end
+				courseplay:setWaypointIndex(self, self.cp.abortWork);
+				if self.Waypoints[self.cp.waypointIndex].turn ~= nil or self.Waypoints[self.cp.waypointIndex+1].turn ~= nil  then
+					courseplay:setWaypointIndex(self, self.cp.waypointIndex - 2);
+				end
 			end
-			courseplay:setWaypointIndex(self, self.cp.abortWork);
-			if self.Waypoints[self.cp.waypointIndex].turn ~= nil or self.Waypoints[self.cp.waypointIndex+1].turn ~= nil  then
-				courseplay:setWaypointIndex(self, self.cp.waypointIndex - 2);
-			end
+		elseif self.cp.hasUnloadingRefillingCourse and self.cp.abortWork ~= nil then
+			allowedToDrive = false;
+			CpManager:setGlobalInfoText(self, 'NEEDS_REFILLING');		
 		end
 	end
 	-- last point reached restart
 	if self.cp.abortWork ~= nil then
-		if self.cp.previousWaypointIndex == self.cp.abortWork and fillLevelPct ~= 0 then
+		if self.cp.previousWaypointIndex == self.cp.abortWork and seederFillLevelPct ~= 0 and sprayerFillLevelPct ~= 0 then
 			courseplay:setWaypointIndex(self, self.cp.abortWork + 2);
 		end
 		if self.cp.previousWaypointIndex == self.cp.abortWork + 8 then
@@ -47,9 +55,10 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 		end
 	end
 	-- save last point
-	if (fillLevelPct == 0 or self.cp.urfStop) and workArea then
+	if (seederFillLevelPct == 0 or sprayerFillLevelPct == 0 or self.cp.urfStop) and workArea then
 		self.cp.urfStop = false
 		if self.cp.hasUnloadingRefillingCourse and self.cp.abortWork == nil then
+			courseplay:updateAllTriggers(); --update triggers for the case that new BiGPacks had been bought
 			self.cp.abortWork = self.cp.waypointIndex -10
 			-- invert lane offset if abortWork is before previous turn point (symmetric lane change)
 			if self.cp.symmetricLaneChange and self.cp.laneOffset ~= 0 then
@@ -96,7 +105,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 		if workTool.attacherJoint ~= nil then
 			needsLowering = workTool.attacherJoint.needsLowering
 		end
-
+		
 		--speedlimits
 		local speedLimitActive = false
 		
@@ -113,8 +122,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 			end;
 			--courseplay:debug(string.format("%s: unfold: turnOnFoldDirection=%s, foldMoveDirection=%s", workTool.name, tostring(workTool.turnOnFoldDirection), tostring(workTool.foldMoveDirection)), 12);
 		end;
-
-		if workArea and fillLevelPct ~= 0 and (self.cp.abortWork == nil or self.cp.runOnceStartCourse) and self.cp.turnStage == 0 and not self.cp.inTraffic then
+		if workArea and seederFillLevelPct ~= 0 and sprayerFillLevelPct ~= 0 and (self.cp.abortWork == nil or self.cp.runOnceStartCourse) and self.cp.turnStage == 0 and not self.cp.inTraffic then
 			self.cp.runOnceStartCourse = false;
 			--turn On                     courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload,ridgeMarker)
 			specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,true,true,true,allowedToDrive,nil,nil, ridgeMarker)
@@ -164,7 +172,8 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, fillLevelPct, 
 							courseplay:setMarkers(self, workTool);
 							if courseplay:isSowingMachine(workTool) then
 								--do manually instead of :setIsTurnedOn so that workTool.turnOnAnimation and workTool.playAnimation aren't called
-								workTool.isTurnedOn = true;
+								--!!!workTool.isTurnedOn = true;
+								workTool:setIsTurnedOn(true,false); --!!!
 								--[[if workTool.airBlowerSoundEnabled ~= nil then
 									workTool.airBlowerSoundEnabled = true;
 								end;]]
