@@ -1217,6 +1217,9 @@ function courseplay:refillWorkTools(vehicle, driveOn, allowedToDrive, lx, lz, dt
 		end;
 		local workToolSeederFillLevelPct = workTool.cp.seederFillLevelPercent;
 		local workToolSprayerFillLevelPct = workTool.cp.sprayerFillLevelPercent;
+		if workTool.cp.isLiquidManureOverloader then
+			workToolSprayerFillLevelPct = workTool.cp.fillLevelPercent
+		end
 		local fillLevelPct = vehicle.cp.totalFillLevelPercent;
 		
 		local isSprayer = courseplay:isSprayer(workTool);
@@ -1296,7 +1299,7 @@ function courseplay:refillWorkTools(vehicle, driveOn, allowedToDrive, lx, lz, dt
 				if not workTool.isFilling then
 					workTool:setIsFilling(true);
 				end;
-				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay.utils:roundToLowerInterval(workTool.cp.sprayerFillLevel, 100), workTool.cp.sprayerCapacity));
+				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay.utils:roundToLowerInterval(workTool.cp.sprayerFillLevel or workTool.cp.fillLevel, 100), workTool.cp.sprayerCapacity or workTool.cp.capacity));
 
 			elseif vehicle.cp.isLoaded or workToolSprayerFillLevelPct >= driveOn and fillTrigger~= nil and (fillTrigger.isSprayerFillTrigger or fillTrigger.isLiquidManureFillTrigger) then
 				if workTool.isFilling then

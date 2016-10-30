@@ -18,7 +18,7 @@ function courseplay:handleMode8(vehicle, load, unload, allowedToDrive, lx, lz, d
 		CpManager:setGlobalInfoText(vehicle, 'OVERLOADING_POINT');
 
 		if vehicle.cp.prevFillLevelPct then
-			vehicle.cp.isUnloading = vehicle.cp.tipperFillLevelPct < vehicle.cp.prevFillLevelPct;
+			vehicle.cp.isUnloading = vehicle.cp.totalFillLevelPercent < vehicle.cp.prevFillLevelPct;
 		end;
 
 		-- liquid manure sprayers/transporters
@@ -28,8 +28,9 @@ function courseplay:handleMode8(vehicle, load, unload, allowedToDrive, lx, lz, d
 			if not isSpecialTool then
 				-- trailer
 				if workTool.cp.isLiquidManureOverloader and workTool.overloading ~= nil and courseplay:getTrailerInPipeRangeState(workTool) > 0 and not workTool.isOverloadingActive then
-					for trailer,_ in pairs(workTool.overloadingTrailersInRange) do
-						if trailer.unloadTrigger ~= nil and trailer.fillLevel < trailer.capacity then
+					for trailer,_ in pairs(workTool.overloading.trailersInRange) do
+						courseplay:setOwnFillLevelsAndCapacities(trailer)
+						if trailer.unloadTrigger ~= nil and trailer.cp.fillLevel < trailer.cp.capacity then
 							workTool:setOverloadingActive(true);
 							vehicle.cp.lastMode8UnloadTriggerId = trailer.unloadTrigger.triggerId;
 							courseplay:debug(('    %s: [trailer] setOverloadingActive(true), triggerId=%d'):format(nameNum(workTool), vehicle.cp.lastMode8UnloadTriggerId), 23);
@@ -139,13 +140,13 @@ function courseplay:handleMode8(vehicle, load, unload, allowedToDrive, lx, lz, d
 		end;
 
 
-		local driveOn = vehicle.cp.tipperFillLevelPct == 0;
+		local driveOn = vehicle.cp.totalFillLevelPercent == 0;
 		if not driveOn and vehicle.cp.prevFillLevelPct ~= nil then
-			if vehicle.cp.tipperFillLevelPct > 0 and vehicle.cp.isUnloading then
+			if vehicle.cp.totalFillLevelPercent > 0 and vehicle.cp.isUnloading then
 				courseplay:setCustomTimer(vehicle, 'fillLevelChange', 7);
 			else
 				-- courseplay:debug(('        isUnloading=%s, tipperFillLevelPct=%.2f, prevFillLevelPct=%.2f, equal=%s, followAtFillLevel=%d, timerThrough=%s'):format(tostring(vehicle.cp.isUnloading), vehicle.cp.tipperFillLevelPct, vehicle.cp.prevFillLevelPct, tostring(vehicle.cp.tipperFillLevelPct == vehicle.cp.prevFillLevelPct), vehicle.cp.followAtFillLevel, tostring(courseplay:timerIsThrough(vehicle, 'fillLevelChange', false))), 23);
-				if vehicle.cp.tipperFillLevelPct == vehicle.cp.prevFillLevelPct and vehicle.cp.tipperFillLevelPct < vehicle.cp.followAtFillLevel and courseplay:timerIsThrough(vehicle, 'fillLevelChange', false) then
+				if vehicle.cp.totalFillLevelPercent == vehicle.cp.prevFillLevelPct and vehicle.cp.totalFillLevelPercent < vehicle.cp.followAtFillLevel and courseplay:timerIsThrough(vehicle, 'fillLevelChange', false) then
 					driveOn = true; -- drive on if fillLevelPct doesn't change for 7 seconds and fill level is < followAtFillLevel
 					courseplay:debug('        no fillLevel change for 7 seconds -> driveOn', 23);
 				end;
@@ -154,7 +155,7 @@ function courseplay:handleMode8(vehicle, load, unload, allowedToDrive, lx, lz, d
 			courseplay:debug('        tipperFillLevelPct == 0 -> driveOn', 23);
 		end;
 
-		vehicle.cp.prevFillLevelPct = vehicle.cp.tipperFillLevelPct;
+		vehicle.cp.prevFillLevelPct = vehicle.cp.totalFillLevelPercent;
 
 		if driveOn and not vehicle.cp.isUnloading then
 			vehicle.cp.prevFillLevelPct = nil;

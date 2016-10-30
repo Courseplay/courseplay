@@ -405,7 +405,6 @@ function courseplay:findSpecialTriggerCallback(transformId, x, y, z, distance)
 	
 	-- OTHER TRIGGERS
 	if courseplay.triggers.allNonUpdateables[transformId] then
-		print(('%s: is in courseplay.triggers.allNonUpdateables'):format(nameNum(self)));
 		local trigger = courseplay.triggers.allNonUpdateables[transformId];
 		courseplay:debug(('%s: transformId=%s: %s is allNonUpdateables'):format(nameNum(self), tostring(transformId), name), 19);
 
