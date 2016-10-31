@@ -745,7 +745,7 @@ end
 
 
 function courseplay:setTrafficCollision(vehicle, lx, lz, workArea)
-	if AIVehicleUtil.setCollisionDirection == nil then --!!!
+	if courseplay.setCollisionDirection == nil then --!!!
 		return --!!!
 	end --!!!
 	
@@ -764,12 +764,12 @@ function courseplay:setTrafficCollision(vehicle, lx, lz, workArea)
 	end;]]
 	--courseplay:debug(string.format("colDirX: %f colDirZ %f ",colDirX,colDirZ ), 3)
 	if vehicle.cp.trafficCollisionTriggers[1] ~= nil then 
-		AIVehicleUtil.setCollisionDirection(vehicle.cp.DirectionNode, vehicle.cp.trafficCollisionTriggers[1], colDirX, colDirZ);
+		courseplay:setCollisionDirection(vehicle.cp.DirectionNode, vehicle.cp.trafficCollisionTriggers[1], colDirX, colDirZ);
 		local recordNumber = vehicle.cp.waypointIndex
 		if vehicle.cp.collidingVehicleId == nil then
 			for i=2,vehicle.cp.numTrafficCollisionTriggers do
 				if workArea or recordNumber + i >= vehicle.cp.numWaypoints or recordNumber < 2 then
-					AIVehicleUtil.setCollisionDirection(vehicle.cp.trafficCollisionTriggers[i-1], vehicle.cp.trafficCollisionTriggers[i], 0, -1);
+					courseplay:setCollisionDirection(vehicle.cp.trafficCollisionTriggers[i-1], vehicle.cp.trafficCollisionTriggers[i], 0, -1);
 				else
 					
 					local nodeX,nodeY,nodeZ = getWorldTranslation(vehicle.cp.trafficCollisionTriggers[i]);
@@ -785,7 +785,7 @@ function courseplay:setTrafficCollision(vehicle, lx, lz, workArea)
 						nodeDirX,nodeDirY,nodeDirZ,distance = courseplay:getWorldDirection(nodeX,nodeY,nodeZ, vehicle.Waypoints[recordNumber].cx,nodeY,vehicle.Waypoints[recordNumber].cz);
 						_,_,Z = worldToLocal(vehicle.cp.trafficCollisionTriggers[i], vehicle.Waypoints[recordNumber].cx,nodeY,vehicle.Waypoints[recordNumber].cz);
 						if oldValue > Z then
-							AIVehicleUtil.setCollisionDirection(vehicle.cp.trafficCollisionTriggers[1], vehicle.cp.trafficCollisionTriggers[i], 0, 1);
+							courseplay:setCollisionDirection(vehicle.cp.trafficCollisionTriggers[1], vehicle.cp.trafficCollisionTriggers[i], 0, 1);
 							break
 						end
 						index = index +1
@@ -793,7 +793,7 @@ function courseplay:setTrafficCollision(vehicle, lx, lz, workArea)
 					end					
 					nodeDirX,nodeDirY,nodeDirZ = worldDirectionToLocal(vehicle.cp.trafficCollisionTriggers[i-1], nodeDirX,nodeDirY,nodeDirZ);
 					--print("colli"..i..": setDirection z= "..tostring(nodeDirZ).." waypoint: "..tostring(recordNumber))
-					AIVehicleUtil.setCollisionDirection(vehicle.cp.trafficCollisionTriggers[i-1], vehicle.cp.trafficCollisionTriggers[i], nodeDirX, nodeDirZ);
+					courseplay:setCollisionDirection(vehicle.cp.trafficCollisionTriggers[i-1], vehicle.cp.trafficCollisionTriggers[i], nodeDirX, nodeDirZ);
 				end;
 			end
 		end
@@ -1304,7 +1304,7 @@ function courseplay:updateFillLevelsAndCapacities(vehicle)
 	vehicle.cp.totalSprayerCapacity = vehicle.cp.sprayerCapacity
 	
 	if vehicle.cp.fillLevel ~= nil and vehicle.cp.capacity ~= nil then
-		vehicle.cp.totalFillLevelPercent = (vehicle.cp.fillLevel*100)/vehicle.cp.capacity or 0;
+		vehicle.cp.totalFillLevelPercent = (vehicle.cp.fillLevel*100)/vehicle.cp.capacity;
 	end
 	--print(string.format("vehicle itself(%s): vehicle.cp.totalFillLevel:(%s)",tostring(vehicle.name),tostring(vehicle.cp.totalFillLevel)))
 	--print(string.format("vehicle itself(%s): vehicle.cp.totalCapacity:(%s)",tostring(vehicle.name),tostring(vehicle.cp.totalCapacity)))
@@ -1376,4 +1376,13 @@ function courseplay:setOwnFillLevelsAndCapacities(workTool,mode)
 	--print(string.format("%s: adding %s to workTool.cp.fillLevel",tostring(workTool.name),tostring(workTool.cp.fillLevel)))
 	--print(string.format("%s: adding %s to workTool.cp.capacity",tostring(workTool.name),tostring(workTool.cp.capacity)))
 	return true
+end
+
+function courseplay:setCollisionDirection(node, col, colDirX, colDirZ)
+  local parent = getParent(col)
+  local colDirY = 0
+  if parent ~= node then
+    colDirX, colDirY, colDirZ = worldDirectionToLocal(parent, localDirectionToWorld(node, colDirX, 0, colDirZ))
+  end
+  setDirection(col, colDirX, colDirY, colDirZ, 0, 1, 0)
 end
