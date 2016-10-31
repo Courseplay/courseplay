@@ -59,6 +59,7 @@ function courseplay:load(savegame)
 	self.cp.isDriving = false;
 	self.cp.runOnceStartCourse = false;
 	self.cp.stopAtEnd = false;
+	self.cp.stopAtEndMode1 = false;
 	self.cp.calculatedCourseToCombine = false
 
 	self.cp.waypointIndex = 1;
@@ -123,6 +124,7 @@ function courseplay:load(savegame)
 	self.cp.canSwitchMode = false;
 	self.cp.siloSelectedFillType = FillUtil.FILLTYPE_UNKNOWN;
 	self.cp.slippingStage = 0;
+	self.cp.isTipping = false;
 
 	self.cp.startAtPoint = courseplay.START_AT_NEAREST_POINT;
 
@@ -319,9 +321,9 @@ function courseplay:load(savegame)
 	self.cp.trailerFillDistance = nil;
 	self.cp.isUnloaded = false;
 	self.cp.isLoaded = false;
-	self.cp.tipperFillLevel = nil;
-	self.cp.tipperCapacity = nil;
-	self.cp.tipperFillLevelPct = 0;
+	self.cp.tipperFillLevel = nil;		-- TODO: don't this need to be changed as well?
+	self.cp.tipperCapacity = nil; 		-- TODO: don't this need to be changed as well?
+	self.cp.totalFillLevelPercent = 0;
 	self.cp.prevFillLevelPct = nil;
 	self.cp.tipRefOffset = 0;
 	self.cp.isReverseBGATipping = nil; -- Used for reverse BGA tipping

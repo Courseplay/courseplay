@@ -646,9 +646,9 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 	-- SiloTrigger (Giants)
 	if currentTrailer.cp.currentSiloTrigger ~= nil then
         local acceptedFillType = false;
-		local mst = currentTrailer.cp.currentSiloTrigger;
+		local siloTrigger = currentTrailer.cp.currentSiloTrigger;
 
-		for _, fillType in pairs(mst.fillTypes) do
+		for _, fillType in pairs(siloTrigger.fillTypes) do
 			if fillType == vehicle.cp.siloSelectedFillType then
 				acceptedFillType = true;
 				break;
@@ -656,12 +656,12 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 		end;
 
 		if acceptedFillType then
-			local siloIsEmpty = false; --g_currentMission.missionStats.farmSiloAmounts[vehicle.cp.siloSelectedFillType] <= 1;
+			local siloIsEmpty = siloTrigger:getFillLevel(vehicle.cp.siloSelectedFillType) <= 1; --g_currentMission.missionStats.farmSiloAmounts[vehicle.cp.siloSelectedFillType] <= 1;
 
-			if not mst.isFilling and not siloIsEmpty and currentTrailer:allowFillType(vehicle.cp.siloSelectedFillType, false) then
-				mst:startFill(vehicle.cp.siloSelectedFillType);
-				courseplay:debug(('%s: SiloTrigger: selectedFillType = %s, isFilling = %s'):format(nameNum(vehicle), tostring(FillUtil.fillTypeIntToName[mst.selectedFillType]), tostring(mst.isFilling)), 2);  --!!! fillTypeIntToName is nil
-			elseif siloIsEmpty then
+			if not siloTrigger.isFilling and not siloIsEmpty and currentTrailer:allowFillType(vehicle.cp.siloSelectedFillType, false) then
+				siloTrigger:startFill(vehicle.cp.siloSelectedFillType);
+				courseplay:debug(('%s: SiloTrigger: selectedFillType = %s, isFilling = %s'):format(nameNum(vehicle), tostring(FillUtil.fillTypeIntToName[siloTrigger.selectedFillType]), tostring(siloTrigger.isFilling)), 2);  --!!! fillTypeIntToName is nil
+			elseif siloIsEmpty and vehicle.cp.totalFillLevelPercent < vehicle.cp.driveOnAtFillLevel then
 				CpManager:setGlobalInfoText(vehicle, 'FARM_SILO_IS_EMPTY');
 			end;
 		else
@@ -671,14 +671,14 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 
 	-- drive on when required fill level is reached
 	if courseplay:timerIsThrough(vehicle, 'fillLevelChange') or vehicle.cp.prevFillLevelPct == nil then
-		if vehicle.cp.prevFillLevelPct ~= nil and vehicle.cp.tipperFillLevelPct == vehicle.cp.prevFillLevelPct and vehicle.cp.tipperFillLevelPct > vehicle.cp.driveOnAtFillLevel then
+		if vehicle.cp.prevFillLevelPct ~= nil and vehicle.cp.totalFillLevelPercent == vehicle.cp.prevFillLevelPct and vehicle.cp.totalFillLevelPercent > vehicle.cp.driveOnAtFillLevel then
 			driveOn = true;
 		end;
-		vehicle.cp.prevFillLevelPct = vehicle.cp.tipperFillLevelPct;
+		vehicle.cp.prevFillLevelPct = vehicle.cp.totalFillLevelPercent;
 		courseplay:setCustomTimer(vehicle, 'fillLevelChange', 7);
 	end;
 
-	if vehicle.cp.tipperFillLevelPct == 100 or driveOn then
+	if vehicle.cp.totalFillLevelPercent == 100 or driveOn then
 		vehicle.cp.prevFillLevelPct = nil;
 		courseplay:setIsLoaded(vehicle, true);
 		vehicle.cp.trailerFillDistance = nil;
@@ -725,7 +725,49 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 		else
 			ctt.isHeapTipTrigger = true;
 		end
+	end
+
+	-- If we are less than 15 waypoints from the end point, don't reset the stopAtEndMode1 (We might be at the same silo as we are filling from)
+	if vehicle.cp.waypointIndex + 20 < vehicle.cp.numWaypoints then
+		vehicle.cp.stopAtEndMode1 = false;
 	end;
+
+	-- If the tipTrigger is full, then drive on to see if there is
+	local freeCapacity = 0;
+	for _, tipper in pairs(vehicle.cp.workTools) do
+		if tipper.tipReferencePoints ~= nil then
+			freeCapacity = freeCapacity + courseplay:getTipTriggerFreeCapacity(ctt, tipper.cp.fillType);
+			if tipper.cp.isTipping then
+				vehicle.cp.isTipping = true;
+			end;
+		end;
+	end;
+	if freeCapacity == 0 then
+		if vehicle.cp.isTipping then
+			if not courseplay.SiloIsFullMessageTimeOn then
+				courseplay:setCustomTimer(vehicle, 'SiloIsFullMessage', 5);
+				courseplay.SiloIsFullMessageTimeOn = true;
+			end;
+
+			if courseplay:timerIsThrough(vehicle, 'SiloIsFullMessage') then
+				courseplay:resetTipTrigger(vehicle)
+				courseplay:resetCustomTimer(vehicle, 'SiloIsFullMessage', true);
+				courseplay.SiloIsFullMessageTimeOn = nil;
+				vehicle.cp.stopAtEndMode1 = true;
+				vehicle.cp.isTipping = false;
+			end;
+
+			CpManager:setGlobalInfoText(vehicle, 'FARM_SILO_IS_FULL')
+		else
+			courseplay:resetTipTrigger(vehicle)
+			courseplay:resetCustomTimer(vehicle, 'SiloIsFullMessage', true);
+			courseplay.SiloIsFullMessageTimeOn = nil;
+			vehicle.cp.stopAtEndMode1 = true;
+		end;
+
+		return allowedToDrive;
+	end;
+
 
 	local isBGA = ctt.bunkerSilo ~= nil and ctt.bunkerSilo.movingPlanes ~= nil and vehicle.cp.handleAsOneSilo ~= true;
 	local bgaIsFull = isBGA and (ctt.bunkerSilo.fillLevel >= ctt.bunkerSilo.capacity);
@@ -736,12 +778,12 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 	for k, tipper in pairs(vehicle.cp.workTools) do
 		if tipper.tipReferencePoints ~= nil then
 			local allowedToDriveBackup = allowedToDrive;
-			local fruitType = tipper.cp.fillType;
+			local fillType = tipper.cp.fillType;
 			local distanceToTrigger, bestTipReferencePoint = 0,0
 			if ctt.isHeapTipTrigger then
-				_,distanceToTrigger,bestTipReferencePoint = ctt:getTipInfoForTrailer(tipper);
+				_,distanceToTrigger,bestTipReferencePoint = ctt:getTipInfoForTrailer(tipper, tipper.preferedTipReferencePointIndex);
 			else
-				distanceToTrigger, bestTipReferencePoint = ctt:getTipDistanceFromTrailer(tipper);
+				distanceToTrigger, bestTipReferencePoint = ctt:getTipDistanceFromTrailer(tipper, tipper.preferedTipReferencePointIndex);
 			end
 			local trailerInTipRange = g_currentMission:getIsTrailerInTipRange(tipper, ctt, bestTipReferencePoint);
 			courseplay:debug(('%s: distanceToTrigger=%s, bestTipReferencePoint=%s -> trailerInTipRange=%s'):format(nameNum(vehicle), tostring(distanceToTrigger), tostring(bestTipReferencePoint), tostring(trailerInTipRange)), 2);
@@ -1113,7 +1155,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 				-- set trigger to nil
 				courseplay:resetTipTrigger(vehicle);
 
-			--REGULAR TIPTRIGGER
+			-- REGULAR TIPTRIGGER
 			elseif not isBGA then
 				goForTipping = trailerInTipRange;
 
@@ -1124,12 +1166,12 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 			end
 
 			--UNLOAD
-			if ctt.acceptedFillTypes[fruitType] and goForTipping == true then
+			if ctt.acceptedFillTypes[fillType] and goForTipping == true then
 				if not tipper.cp.isTipping then
 					if isBGA then
-						courseplay:debug(nameNum(vehicle) .. ": goForTipping = true [BGA trigger accepts fruit (" .. tostring(fruitType) .. ")]", 2);
+						courseplay:debug(nameNum(vehicle) .. ": goForTipping = true [BGA trigger accepts fruit (" .. tostring(fillType) .. ")]", 2);
 					else
-						courseplay:debug(nameNum(vehicle) .. ": goForTipping = true [trigger accepts fruit (" .. tostring(fruitType) .. ")]", 2);
+						courseplay:debug(nameNum(vehicle) .. ": goForTipping = true [trigger accepts fruit (" .. tostring(fillType) .. ")]", 2);
 					end;
 
 					if tipper.tipState == Trailer.TIPSTATE_CLOSED or tipper.tipState == Trailer.TIPSTATE_CLOSING then
@@ -1157,11 +1199,11 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 						allowedToDrive = allowedToDriveBackup;
 					end;
 				end;
-			elseif not ctt.acceptedFillTypes[fruitType] then
+			elseif not ctt.acceptedFillTypes[fillType] then
 				if isBGA then
-					courseplay:debug(nameNum(vehicle) .. ": goForTipping = false [BGA trigger does not accept fruit (" .. tostring(fruitType) .. ")]", 2);
+					courseplay:debug(nameNum(vehicle) .. ": goForTipping = false [BGA trigger does not accept fruit (" .. tostring(fillType) .. ")]", 2);
 				else
-					courseplay:debug(nameNum(vehicle) .. ": goForTipping = false [trigger does not accept fruit (" .. tostring(fruitType) .. ")]", 2);
+					courseplay:debug(nameNum(vehicle) .. ": goForTipping = false [trigger does not accept fruit (" .. tostring(fillType) .. ")]", 2);
 				end;
 			elseif isBGA and not bgaIsFull and not trailerInTipRange and not goForTipping then
 				courseplay:debug(nameNum(vehicle) .. ": goForTipping = false [BGA: trailerInTipRange == false]", 2);
@@ -1186,6 +1228,15 @@ function courseplay:addCpNilTempFillLevelFunction()
 		end;
 	end;
 	BunkerSilo.setState = Utils.prependedFunction(BunkerSilo.setState, cpNilTempFillLevel);
+end;
+
+function courseplay:getTipTriggerFreeCapacity(trigger, fillType)
+	local freeCapacity = 0;
+	for _, storage in pairs(trigger.tipTriggerTargets) do
+		freeCapacity = freeCapacity + storage:getFreeCapacity(fillType)
+	end;
+
+	return freeCapacity;
 end;
 
 function courseplay:resetTipTrigger(vehicle, changeToForward)

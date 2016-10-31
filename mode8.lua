@@ -145,14 +145,14 @@ function courseplay:handleMode8(vehicle, load, unload, allowedToDrive, lx, lz, d
 			if vehicle.cp.totalFillLevelPercent > 0 and vehicle.cp.isUnloading then
 				courseplay:setCustomTimer(vehicle, 'fillLevelChange', 7);
 			else
-				-- courseplay:debug(('        isUnloading=%s, tipperFillLevelPct=%.2f, prevFillLevelPct=%.2f, equal=%s, followAtFillLevel=%d, timerThrough=%s'):format(tostring(vehicle.cp.isUnloading), vehicle.cp.tipperFillLevelPct, vehicle.cp.prevFillLevelPct, tostring(vehicle.cp.tipperFillLevelPct == vehicle.cp.prevFillLevelPct), vehicle.cp.followAtFillLevel, tostring(courseplay:timerIsThrough(vehicle, 'fillLevelChange', false))), 23);
+				-- courseplay:debug(('        isUnloading=%s, totalFillLevelPercent=%.2f, prevFillLevelPct=%.2f, equal=%s, followAtFillLevel=%d, timerThrough=%s'):format(tostring(vehicle.cp.isUnloading), vehicle.cp.totalFillLevelPercent, vehicle.cp.prevFillLevelPct, tostring(vehicle.cp.totalFillLevelPercent == vehicle.cp.prevFillLevelPct), vehicle.cp.followAtFillLevel, tostring(courseplay:timerIsThrough(vehicle, 'fillLevelChange', false))), 23);
 				if vehicle.cp.totalFillLevelPercent == vehicle.cp.prevFillLevelPct and vehicle.cp.totalFillLevelPercent < vehicle.cp.followAtFillLevel and courseplay:timerIsThrough(vehicle, 'fillLevelChange', false) then
 					driveOn = true; -- drive on if fillLevelPct doesn't change for 7 seconds and fill level is < followAtFillLevel
 					courseplay:debug('        no fillLevel change for 7 seconds -> driveOn', 23);
 				end;
 			end;
 		elseif driveOn then
-			courseplay:debug('        tipperFillLevelPct == 0 -> driveOn', 23);
+			courseplay:debug('        totalFillLevelPercent == 0 -> driveOn', 23);
 		end;
 
 		vehicle.cp.prevFillLevelPct = vehicle.cp.totalFillLevelPercent;

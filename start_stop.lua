@@ -557,6 +557,8 @@ function courseplay:stop(self)
 	self.cp.hasUnloadingRefillingCourse = false;
 	self.cp.hasTransferCourse = false
 	courseplay:setStopAtEnd(self, false);
+	self.cp.stopAtEndMode1 = false;
+	self.cp.isTipping = false;
 	self.cp.isUnloaded = false;
 	self.cp.prevFillLevelPct = nil;
 	self.cp.isInRepairTrigger = nil;

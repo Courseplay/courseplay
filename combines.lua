@@ -1,5 +1,5 @@
 local curFile = 'combines.lua';
-
+local _;
 function courseplay:getAllCombines()
 	local combines = {}
 	for _, vehicle in pairs(courseplay.combines) do
@@ -196,8 +196,8 @@ function courseplay:registerAtCombine(callerVehicle, combine)
 	if #(combine.courseplayers) == numAllowedCourseplayers - 1 then
 		local frontTractor = combine.courseplayers[numAllowedCourseplayers - 1];
 		if frontTractor then
-			local canFollowFrontTractor = frontTractor.cp.tipperFillLevelPct and frontTractor.cp.tipperFillLevelPct >= callerVehicle.cp.followAtFillLevel;
-			courseplay:debug(string.format('%s: frontTractor (%s) fillLevelPct (%.1f), my followAtFillLevel=%d -> canFollowFrontTractor=%s', nameNum(callerVehicle), nameNum(frontTractor), frontTractor.cp.tipperFillLevelPct, callerVehicle.cp.followAtFillLevel, tostring(canFollowFrontTractor)), 4)
+			local canFollowFrontTractor = frontTractor.cp.totalFillLevelPercent and frontTractor.cp.totalFillLevelPercent >= callerVehicle.cp.followAtFillLevel;
+			courseplay:debug(string.format('%s: frontTractor (%s) fillLevelPct (%.1f), my followAtFillLevel=%d -> canFollowFrontTractor=%s', nameNum(callerVehicle), nameNum(frontTractor), frontTractor.cp.totalFillLevelPercent, callerVehicle.cp.followAtFillLevel, tostring(canFollowFrontTractor)), 4)
 			if not canFollowFrontTractor then
 				return false;
 			end;

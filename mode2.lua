@@ -1,5 +1,6 @@
 local curFile = 'mode2.lua';
 local abs, ceil, max, min = math.abs, math.ceil, math.max, math.min;
+local _;
 
 --[[ MODE 2 STATES
  0: default, when not active
@@ -178,7 +179,7 @@ function courseplay:handle_mode2(vehicle, dt)
 									num_courseplayers = numCombineCourseplayers;
 									if numCombineCourseplayers > 0 then
 										frontTractor = combine.courseplayers[num_courseplayers];
-										local canFollowFrontTractor = frontTractor.cp.tipperFillLevelPct and frontTractor.cp.tipperFillLevelPct >= vehicle.cp.followAtFillLevel;
+										local canFollowFrontTractor = frontTractor.cp.totalFillLevelPercent and frontTractor.cp.totalFillLevelPercent >= vehicle.cp.followAtFillLevel;
 										courseplay:debug(string.format('%s: frontTractor (pos %d)=%q, canFollowFrontTractor=%s', nameNum(vehicle), numCombineCourseplayers, nameNum(frontTractor), tostring(canFollowFrontTractor)), 4);
 										if canFollowFrontTractor then
 											vehicle.cp.bestCombine = combine
@@ -230,7 +231,8 @@ function courseplay:unload_combine(vehicle, dt)
 	local isHarvester = false
 	local xt, yt, zt;
 	local dod;
-	local currentTipper = {}
+	local currentTipper = {};
+	local speedDebugLine;
 	-- Calculate Trailer Offset
 
 	if vehicle.cp.currentTrailerToFill ~= nil then

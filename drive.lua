@@ -351,10 +351,16 @@ function courseplay:drive(self, dt)
 			CpManager:setGlobalInfoText(self, 'WATER');
 		end;
 
-		-- STOP AND END OR TRIGGER
+		-- STOP AT END OR TRIGGER
 		if self.cp.stopAtEnd and (self.cp.waypointIndex == self.cp.numWaypoints or self.cp.currentTipTrigger ~= nil or self.cp.fillTrigger ~= nil) then
 			allowedToDrive = false;
 			CpManager:setGlobalInfoText(self, 'END_POINT');
+		end;
+
+		-- STOP AT END MODE 1
+		if self.cp.stopAtEndMode1 and self.cp.waypointIndex == self.cp.numWaypoints then
+			allowedToDrive = false;
+			CpManager:setGlobalInfoText(self, 'END_POINT_MODE_1');
 		end;
 	end;
 	-- ### NON-WAITING POINTS END
@@ -849,8 +855,10 @@ function courseplay:setSpeed(vehicle, refSpeed)
 	end
 
 	if newSpeed < vehicle.cruiseControl.speed then
-		--newSpeed = math.max(newSpeed, vehicle.cp.curSpeed - 0.005);
-		newSpeed = (newSpeed + vehicle.cruiseControl.speed)/2
+		local delta = newSpeed - vehicle.cp.curSpeed;
+
+		newSpeed = math.max(newSpeed, vehicle.cp.curSpeed - math.max(0.005, math.min(delta * 0.001, 0.02)));
+		--newSpeed = (newSpeed + vehicle.cruiseControl.speed)/2
 	end;
 
 	vehicle:setCruiseControlMaxSpeed(newSpeed) 
