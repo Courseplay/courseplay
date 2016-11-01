@@ -36,7 +36,7 @@ function courseplay:handle_mode1(vehicle, allowedToDrive)
 				courseplay:debug(string.format("%s: Is starting to reverse. Tip trigger is reset.", nameNum(vehicle)), 13);
 			end;
 			
-			local isBGA = t.bunkerSilo ~= nil 
+			local isBGA = t.bunkerSilo ~= nil and t.bunkerSilo.movingPlanes ~= nil
 			local triggerLength = Utils.getNoNil(vehicle.cp.currentTipTrigger.cpActualLength,20)
 			local maxDist = isBGA and (vehicle.cp.totalLength + 55) or (vehicle.cp.totalLength + triggerLength); 
 			if distToTrigger > maxDist or startReversing then --it's a backup, so we don't need to care about +/-10m

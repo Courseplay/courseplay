@@ -294,7 +294,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 	-- TIPTRIGGERS
 	local tipTriggers, tipTriggersCount = courseplay.triggers.tipTriggers, courseplay.triggers.tipTriggersCount
 	courseplay:debug(('%s: found %s'):format(nameNum(self), name), 1);
-	
+
 	if self.cp.workTools[1] ~= nil and tipTriggers ~= nil and tipTriggersCount > 0 then
 		courseplay:debug(('%s: transformId=%s: %s'):format(nameNum(self), tostring(transformId), name), 1);
 		local trailerFillType = self.cp.workTools[1].cp.fillType;
@@ -310,7 +310,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 			local trigger = tipTriggers[transformId];
 
 			if trigger ~= nil then
-				if trigger.bunkerSilo ~= nil and trigger.state ~= 0 then 
+				if trigger.bunkerSilo ~= nil and trigger.bunkerSilo.state ~= 0 then 
 					courseplay:debug(('%s: bunkerSilo.state=%d -> ignoring trigger'):format(nameNum(self), trigger.bunkerSilo.state), 1);
 					return true
 				end
@@ -346,10 +346,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 
 					-- check single fillType validity
 					local fillTypeIsValid = true;
-					if trigger.inputFillType then
-						fillTypeIsValid = trigger.inputFillType == 0 or trigger.inputFillType == trailerFillType;
-						courseplay:debug(('    trigger (%s): inputFillType=%d -> fillTypeIsValid=%s'):format(tostring(triggerId), trigger.inputFillType, tostring(fillTypeIsValid)), 1);
-					elseif trigger.currentFillType then
+					if trigger.currentFillType then
 						fillTypeIsValid = trigger.currentFillType == 0 or trigger.currentFillType == trailerFillType;
 						courseplay:debug(('    trigger (%s): currentFillType=%d -> fillTypeIsValid=%s'):format(tostring(triggerId), trigger.currentFillType, tostring(fillTypeIsValid)), 1);
 					elseif trigger.getFillType then
@@ -766,18 +763,7 @@ function courseplay:updateAllTriggers()
 			end;
 		end;
 	end;
-	if g_currentMission.bunkerSilos ~= nil then
-		courseplay:debug('\tcheck bunkerSilos', 1);
-		for _, trigger in pairs(g_currentMission.bunkerSilos) do
-			if courseplay:isValidTipTrigger(trigger) and trigger.bunkerSilo then
-				local triggerId = trigger.triggerId;
-				local name = tostring(getName(triggerId));
-				local className = tostring(trigger.className);
-				courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
-				courseplay:debug(('\t\tadd tipTrigger: id=%d, name=%q, className=%q, is BunkerSiloTipTrigger '):format(triggerId, name, className), 1);
-			end
-		end
-	end
+
 	-- tipTriggers objects
 	if g_currentMission.tipTriggers ~= nil then
 		courseplay:debug('\tcheck tipTriggers', 1);
@@ -871,8 +857,9 @@ end;
 
 function courseplay:isValidTipTrigger(trigger)
 	local isValid = trigger.className and (trigger.className == 'SiloTrigger' or trigger.isAlternativeTipTrigger or Utils.endsWith(trigger.className, 'TipTrigger'));
-
-
+	if isValid and trigger.bunkerSilo and trigger.bunkerSilo.movingPlanes == nil then
+		isValid = false;
+	end;
 	return isValid;
 end;
 
@@ -914,22 +901,3 @@ local SiloTrigger_TriggerCallback = function(self, triggerId, otherActorId, onEn
 	end;
 end;
 SiloTrigger.triggerCallback = Utils.appendedFunction(SiloTrigger.triggerCallback, SiloTrigger_TriggerCallback);
-
-
-local oldBunkerSiloLoad = BunkerSilo.load;
-function BunkerSilo:load(nodeId)
-	local old = oldBunkerSiloLoad(self,nodeId);
-	local trigger = self
-	
-	trigger.triggerId = trigger.interactionTriggerId
-	trigger.bunkerSilo = true
-	trigger.className = "BunkerSiloTipTrigger"
-	trigger.rootNode = nodeId
-	if g_currentMission.bunkerSilos == nil then
-		g_currentMission.bunkerSilos = {}
-	end
-	g_currentMission.bunkerSilos[trigger.triggerId] = trigger
-	
-	return old
-end
-
