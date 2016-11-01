@@ -59,7 +59,6 @@ function courseplay:load(savegame)
 	self.cp.isDriving = false;
 	self.cp.runOnceStartCourse = false;
 	self.cp.stopAtEnd = false;
-	self.cp.stopAtEndMode1 = false;
 	self.cp.calculatedCourseToCombine = false
 
 	self.cp.waypointIndex = 1;
@@ -124,7 +123,6 @@ function courseplay:load(savegame)
 	self.cp.canSwitchMode = false;
 	self.cp.siloSelectedFillType = FillUtil.FILLTYPE_UNKNOWN;
 	self.cp.slippingStage = 0;
-	self.cp.isTipping = false;
 
 	self.cp.startAtPoint = courseplay.START_AT_NEAREST_POINT;
 
@@ -225,10 +223,10 @@ function courseplay:load(savegame)
 	else
 		if courseplay:isWheelloader(self)then
 			-- DirectionNode = getParent(self.shovelTipReferenceNode)
-			DirectionNode = self.components[2].node;
+			--[[!!!DirectionNode = self.components[2].node;
 			if self.wheels[1].rotMax ~= 0 then
 				DirectionNode = self.rootNode;
-			end
+			end]]
 			--[[if DirectionNode == nil then
 				for i=1, table.getn(self.attacherJoints) do
 					if self.rootNode ~= getParent(self.attacherJoints[i].jointTransform) then
@@ -321,8 +319,8 @@ function courseplay:load(savegame)
 	self.cp.trailerFillDistance = nil;
 	self.cp.isUnloaded = false;
 	self.cp.isLoaded = false;
-	self.cp.tipperFillLevel = nil;		-- TODO: don't this need to be changed as well?
-	self.cp.tipperCapacity = nil; 		-- TODO: don't this need to be changed as well?
+	self.cp.totalFillLevel = nil;
+	self.cp.totalCapacity = nil;
 	self.cp.totalFillLevelPercent = 0;
 	self.cp.prevFillLevelPct = nil;
 	self.cp.tipRefOffset = 0;
