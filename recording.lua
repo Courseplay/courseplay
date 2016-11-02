@@ -24,8 +24,7 @@ function courseplay:record(vehicle)
 					vehicle.cp.recordingTimer = 101;
 				end;
 			else
-				--if dist > 5 and (angleDiff > 5 or dist > 10) then
-				if dist > 2.5 and (angleDiff > 2.5 or dist > 10) then  -- TODO: (Claus/Tom) Lets test if is this will work for all modes
+				if dist > 5 and (angleDiff > 5 or dist > 10) then
 					vehicle.cp.recordingTimer = 101;
 				end;
 			end;

@@ -2,18 +2,26 @@ local curFile = 'start_stop.lua';
 
 -- starts driving the course
 function courseplay:start(self)
+	self.currentHelper = HelperUtil.getRandomHelper()
+	HelperUtil.useHelper(self.currentHelper);
+
+	self.isHired = true;
+	self.isHirableBlocked = false;
 	self.cp.forceIsActiveBackup = self.forceIsActive;
 	self.forceIsActive = true;
 	self.cp.stopMotorOnLeaveBackup = self.stopMotorOnLeave;
 	self.stopMotorOnLeave = false;
-	self.cp.deactivateOnLeaveBackup = self.deactivateOnLeave;
-	self.deactivateOnLeave = false;
 	self.steeringEnabled = false;
-	self.disableCharacterOnLeave = false
+	self.disableCharacterOnLeave = false;
 
-	--!!!  the motor will be shut off after severeal seconds outside and away from the vehicle - look at drive.lua(16)
-	
-	
+	if self.vehicleCharacter ~= nil then
+		self.vehicleCharacter:delete();
+		self.vehicleCharacter:loadCharacter(self.currentHelper.xmlFilename, getUserRandomizedMpColor(self.currentHelper.name))
+		if self.isEntered then
+			self.vehicleCharacter:setCharacterVisibility(false)
+		end
+	end
+
 	if courseplay.isClient then
 		return
 	end
@@ -457,20 +465,36 @@ end;
 
 -- stops driving the course
 function courseplay:stop(self)
-
 	--stop special tools
 	for _, tool in pairs (self.cp.workTools) do
 							--  vehicle, workTool, unfold, lower, turnOn, allowedToDrive, cover, unload, ridgeMarker,forceSpeedLimit)
 		courseplay:handleSpecialTools(self, tool, false,   false,  false,   false, false, nil,nil,0);
 	end
 
-	
+
+	HelperUtil.releaseHelper(self.currentHelper);
+
+	self.isHired = false;
 	self.forceIsActive = self.cp.forceIsActiveBackup;
 	self.stopMotorOnLeave = self.cp.stopMotorOnLeaveBackup;
-	self.deactivateOnLeave = self.cp.deactivateOnLeaveBackup;
 	self.steeringEnabled = true;
-	self.disableCharacterOnLeave = true
+	self.disableCharacterOnLeave = true;
+
+	if self.vehicleCharacter ~= nil then
+		self.vehicleCharacter:delete();
+	end
+
+	if self.isEntered or self.isControlled then
+		if self.vehicleCharacter ~= nil then
+			self.vehicleCharacter:loadCharacter(PlayerUtil.playerIndexToDesc[self.playerIndex].xmlFilename, self.playerColorIndex)
+			self.vehicleCharacter:setCharacterVisibility(not self.isEntered)
+		end
+	end;
+	self.currentHelper = nil
+
+
 	self.cp.lastInfoText = nil
+
 	if courseplay.isClient then
 		return
 	end
@@ -614,20 +638,20 @@ end
 
 
 function courseplay:findVehicleHeights(transformId, x, y, z, distance)
-		local height = self.sizeLength - distance
-		local vehicle = false
-		if self.cp.trafficCollisionTriggerToTriggerIndex[transformId] ~= nil then
-			if self.cp.HeightsFoundColli < height then
-				self.cp.HeightsFoundColli = height
-			end	
-		elseif transformId == self.rootNode then
-			vehicle = true
-		elseif getParent(transformId) == self.rootNode and self.aiTrafficCollisionTrigger ~= transformId then
-			vehicle = true
+	local height = self.sizeLength - distance
+	local vehicle = false
+	if self.cp.trafficCollisionTriggerToTriggerIndex[transformId] ~= nil then
+		if self.cp.HeightsFoundColli < height then
+			self.cp.HeightsFoundColli = height
 		end
-		if vehicle and self.cp.HeightsFound < height then
-			self.cp.HeightsFound = height
-		end	
-		
-		return true
+	elseif transformId == self.rootNode then
+		vehicle = true
+	elseif getParent(transformId) == self.rootNode and self.aiTrafficCollisionTrigger ~= transformId then
+		vehicle = true
+	end
+	if vehicle and self.cp.HeightsFound < height then
+		self.cp.HeightsFound = height
+	end
+
+	return true
 end

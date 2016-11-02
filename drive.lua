@@ -12,12 +12,6 @@ function courseplay:drive(self, dt)
 		self.steeringEnabled = false;
 	end
 		
-	--!!! print(string.format("self.motorStopTimer: %s",tostring(self.motorStopTimer)))
-	if self.motorStopTimer ~= nil and self.motorStopTimer <20000 then --!!! hack to keep motors runing...
-		self.motorStopTimer = 30000
-	end
-	
-	
 	-- debug for workAreas
 	if courseplay.debugChannels[6] then
 		local tx1, ty1, tz1 = localToWorld(self.cp.DirectionNode,3,1,self.cp.aiFrontMarker)
@@ -80,7 +74,8 @@ function courseplay:drive(self, dt)
 	end
 
 	if courseplay.debugChannels[12] and self.cp.isTurning == nil then
-		drawDebugPoint(cx, cty+3, cz, 1, 0 , 1, 1);
+		drawDebugLine(ctx, cty + 3, ctz, 0, 1, 0, cx, cty + 3, cz, 0, 0, 1)
+		--drawDebugPoint(cx, cty+3, cz, 1, 0 , 1, 1);
 	end;
 
 	-- HORIZONTAL/VERTICAL OFFSET
@@ -693,7 +688,8 @@ function courseplay:drive(self, dt)
 				steeringAngle = self.cp.steeringAngle * 2;
 			end;
 
-			
+
+			if self.Waypoints[self.cp.waypointIndex].rev then
 				if math.abs(self.lastSpeedReal) < 0.0001 and  not g_currentMission.missionInfo.stopAndGoBraking then
 					if not fwd then
 						self.nextMovingDirection = -1
@@ -701,17 +697,12 @@ function courseplay:drive(self, dt)
 						self.nextMovingDirection = 1
 					end;
 				end;
-			--if self.Waypoints[self.cp.waypointIndex].rev then
 				--self,dt,steeringAngleLimit,acceleration,slowAcceleration,slowAngleLimit,allowedToDrive,moveForwards,lx,lz,maxSpeed,slowDownFactor,angle
 				AIVehicleUtil.driveInDirection(self, dt, steeringAngle, acceleration, 0.5, 20, true, fwd, lx, lz, refSpeed, 1);
-			--else
-			--	--local posY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cx, 1, cz);
-			--	--local tX,_,tZ = worldToLocal(self.cp.DirectionNode, cx, posY, cz);
-			--	local vx,_,vz = getWorldTranslation(self.aiVehicleDirectionNode);
-			--	drawDebugLine(vx, cty + 3, vz, 0, 1, 0, cx, cty + 3, cz, 0, 0, 1)
-			--	local tX,_,tZ = worldToLocal(self.aiVehicleDirectionNode, cx, cty, cz);
-			--	AIVehicleUtil.driveToPoint(self, dt, acceleration, allowedToDrive, fwd, tX, tZ, refSpeed);
-			--end;
+			else
+				local tX,_,tZ = worldToLocal(self.aiVehicleDirectionNode, cx, cty, cz);
+				AIVehicleUtil.driveToPoint(self, dt, acceleration, allowedToDrive, fwd, tX, tZ, refSpeed);
+			end;
 			
 			if not isBypassing then
 				courseplay:setTrafficCollision(self, lx, lz, workArea)
