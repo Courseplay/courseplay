@@ -33,6 +33,7 @@
 		<text name="COURSEPLAY_WAITING_TIME" 						 text="tempo de espera" />
 		<text name="COURSEPLAY_MINUTES" 						 text="%d min" />
 		<text name="COURSEPLAY_SECONDS" 						 text="%d sec" />
+		<text name="COURSEPLAY_UNIT_METER" 								 text="m" />            <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_COURSE_NAME" 				        	 text="Nome do percurso" />
 		<text name="COURSEPLAY_FOLDER_NAME" 						 text="Nome da pasta" />
 		<text name="COURSEPLAY_FILTER_COURSES" 						 text="Filtrar percursos" />

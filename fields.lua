@@ -281,7 +281,7 @@ function courseplay.fields:setSingleFieldEdgePath(initObject, initX, initZ, scan
 								name = string.format('%s %d', courseplay:loc('COURSEPLAY_FIELD'), fieldNum);
 							};
 
-							self.fieldData[fieldNum].fieldAreaText = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR_FIELD'):format(fieldNum, self:formatNumber(self.fieldData[fieldNum].areaHa, 2), g_i18n:getText('area_unit_short'));
+							self.fieldData[fieldNum].fieldAreaText = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR_FIELD'):format(fieldNum, self:formatNumber(self.fieldData[fieldNum].areaHa, 2), g_i18n:getText('unit_areaShort'));
 							self.fieldData[fieldNum].seedUsage, self.fieldData[fieldNum].seedPrice, self.fieldData[fieldNum].seedDataText = self:getFruitData(area);
 
 							self.numAvailableFields = table.maxn(courseplay.fields.fieldData);
@@ -537,7 +537,7 @@ function courseplay.fields:loadAllCustomFields()
 						local area, _, dimensions = self:getPolygonData(fieldData.points, nil, nil, true);
 						fieldData.areaSqm = area;
 						fieldData.areaHa = area / 10000;
-						fieldData.fieldAreaText = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR_FIELD'):format(fieldNum, self:formatNumber(fieldData.areaHa, 2), g_i18n:getText('area_unit_short'));
+						fieldData.fieldAreaText = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR_FIELD'):format(fieldNum, self:formatNumber(fieldData.areaHa, 2), g_i18n:getText('unit_areaShort'));
 						fieldData.dimensions = dimensions;
 
 
@@ -616,7 +616,7 @@ function courseplay.fields:getFruitData(area)
 		local name = fruitData.name;
 		usage[name] = fruitData.usagePerSqm * area;
 		price[name] = fruitData.pricePerLiter * usage[name];
-		text[name] = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR_USAGE'):format(courseplay:round(g_i18n:getFluid(usage[name])), g_i18n:getText('fluid_unit_short'), g_i18n:formatMoney(g_i18n:getCurrency(price[name])));
+		text[name] = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR_USAGE'):format(courseplay:round(g_i18n:getFluid(usage[name])), g_i18n:getText('unit_literShort'), g_i18n:formatMoney(g_i18n:getCurrency(price[name])));
 	end;
 
 	return usage, price, text;

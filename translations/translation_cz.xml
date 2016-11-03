@@ -33,6 +33,7 @@
 		<text name="COURSEPLAY_WAITING_TIME" 							 text="Doba čekání:" />
 		<text name="COURSEPLAY_MINUTES" 								 text="%d min" />
 		<text name="COURSEPLAY_SECONDS" 								 text="%d sek" />
+		<text name="COURSEPLAY_UNIT_METER" 								 text="m" />            <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_COURSE_NAME" 							 text="Jméno trasy:" />
 		<text name="COURSEPLAY_FOLDER_NAME" 							 text="Jméno složky:" />
 		<text name="COURSEPLAY_FILTER_COURSES" 							 text="Filtrovat trasy:" />
