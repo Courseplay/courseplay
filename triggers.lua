@@ -773,6 +773,12 @@ function courseplay:updateAllTriggers()
 				local triggerId = trigger.triggerId;
 				local name = tostring(getName(triggerId));
 				local className = tostring(trigger.className);
+				local detailId = g_currentMission.terrainDetailId
+				local area = trigger.bunkerSiloArea
+				local px,pz, pWidthX,pWidthZ, pHeightX,pHeightZ = Utils.getXZWidthAndHeight(detailId, area.sx,area.sz, area.wx, area.wz, area.hx, area.hz);
+				local _ ,_,totalArea = getDensityParallelogram(detailId, px, pz, pWidthX, pWidthZ, pHeightX, pHeightZ, g_currentMission.terrainDetailTypeFirstChannel, g_currentMission.terrainDetailTypeNumChannels);
+				trigger.capacity = TipUtil.volumePerPixel*totalArea*800 ;
+				--print(string.format("capacity= %s  fillLevel= %s ",tostring(trigger.capacity),tostring(trigger.fillLevel)))
 				courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
 				courseplay:debug(('\t\tadd tipTrigger: id=%d, name=%q, className=%q, is BunkerSiloTipTrigger '):format(triggerId, name, className), 1);
 			end
@@ -906,7 +912,7 @@ local SiloTrigger_TriggerCallback = function(self, triggerId, otherActorId, onEn
 			end;
 		elseif onLeave then
 			-- Remove the current SiloTrigger. (Is here in case Giants fixes the above bug))
-			if trailer.cp.currentSiloTrigger ~= nil then
+			if self.fill == 0 and trailer.cp.currentSiloTrigger ~= nil then
 				trailer.cp.currentSiloTrigger = nil;
 				courseplay:debug(('%s: SiloTrigger Removed! (onLeave)'):format(nameNum(trailer)), 2);
 			end;
@@ -925,6 +931,18 @@ function BunkerSilo:load(nodeId)
 	trigger.bunkerSilo = true
 	trigger.className = "BunkerSiloTipTrigger"
 	trigger.rootNode = nodeId
+	trigger.triggerStartId = trigger.bunkerSiloArea.start
+	trigger.triggerEndId = trigger.bunkerSiloArea.height
+	trigger.triggerWidth = courseplay:nodeToNodeDistance(trigger.bunkerSiloArea.start, trigger.bunkerSiloArea.width)
+	trigger.getTipDistanceFromTrailer = TipTrigger.getTipDistanceFromTrailer
+	trigger.getTipInfoForTrailer = TipTrigger.getTipInfoForTrailer
+	trigger.getAllowFillTypeFromTool = TipTrigger.getAllowFillTypeFromTool
+	trigger.allowedToolTypes = 	{
+								[trigger.inputFillType] = 	{
+															[TipTrigger.TOOL_TYPE_TRAILER] = true
+															}
+								}
+	
 	if g_currentMission.bunkerSilos == nil then
 		g_currentMission.bunkerSilos = {}
 	end
@@ -932,4 +950,3 @@ function BunkerSilo:load(nodeId)
 	
 	return old
 end
-

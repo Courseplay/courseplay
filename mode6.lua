@@ -457,13 +457,9 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 						-- stop when there's no trailer to fill - courtesy of upsidedown
 						local chopperWaitForTrailer = false;
 						if tool.cp.isChopper and tool.lastValidFillType ~= FruitUtil.FRUITTYPE_UNKNOWN then
-							local targetTrailer = tool:findAutoAimTrailerToUnload(tool.lastValidFillType);
-							local trailer, trailerDistance = tool:findTrailerToUnload(tool.lastValidFillType);
-							--print(string.format('targetTrailer=%s, trailer=%s', tostring(targetTrailer), tostring(trailer)));
-							if targetTrailer == nil or trailer == nil then
+							if not tool.pipeFoundTrailer then
 								chopperWaitForTrailer = true;
-								--print(string.format('\tat least one of them not found at pipeState %s -> chopperWaitForTrailer=true', tostring(pipeState)));
-							end;
+							end								
 						end;
 
 						if (pipeState == 0 and vehicle.cp.turnStage == 0) or chopperWaitForTrailer then
@@ -581,11 +577,9 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 					local ch, gr = FillUtil.FILLTYPE_CHAFF, FillUtil.FILLTYPE_GRASS_WINDROW;
 					if (tool.pipeParticleSystems and ((tool.pipeParticleSystems[ch] and tool.pipeParticleSystems[ch].isEmitting) or (tool.pipeParticleSystems[gr] and tool.pipeParticleSystems[gr].isEmitting))) or pipeState > 0 then
 						if tool.lastValidFillType ~= FruitUtil.FRUITTYPE_UNKNOWN then
-							local targetTrailer = tool:findAutoAimTrailerToUnload(tool.lastValidFillType);
-							local trailer, trailerDistance = tool:findTrailerToUnload(tool.lastValidFillType);
-							if targetTrailer ~= nil and trailer ~= nil and targetTrailer == trailer then
+							if tool.pipeFoundTrailer then
 								tool.cp.waitingForTrailerToUnload = false;
-							end;
+							end
 						else
 							mayIDrive = allowedToDrive;
 						end;

@@ -240,6 +240,15 @@ function courseplay:drive(self, dt)
 
 			allowedToDrive = courseplay:handle_mode1(self, allowedToDrive);
 		end;
+		
+		--resetTrailer when empty after unloading in Bunkersilo
+		if 	self.cp.mode == 2 and self.cp.totalFillLevel == 0 then
+			for _,tipper in pairs (self.cp.workTools) do
+				if tipper.tipState ~= nil and tipper.tipState == Trailer.TIPSTATE_OPEN then
+					tipper:toggleTipState();
+				end
+			end
+		end
 
 		-- COMBI MODE / BYPASSING
 		if (((self.cp.mode == 2 or self.cp.mode == 3) and self.cp.waypointIndex < 2) or self.cp.activeCombine) and self.cp.workToolAttached then
