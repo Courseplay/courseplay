@@ -1,10 +1,10 @@
 --
 -- Courseplay
 --
--- @authors: Jakob Tischler / Thomas Gärtner / Satissis
--- @version: 4.00 beta
+-- @authors: Thomas Gärtner / Satissis
+-- @version: 5.00 beta
 -- @website: http://courseplay.github.io/courseplay/
--- @date:    2014
+-- @date:    2016
 -- @history: http://courseplay.github.io/courseplay/en/changelog/index.html
 --
 -- Copyright (C) 2014 Courseplay Dev Team
@@ -40,9 +40,9 @@ CpManager.isDeveloper = sonOfaBangSonOfaBoom[getMD5(g_settingsNickname)];
 if CpManager.isDeveloper then
 	print('Special dev magic for Courseplay developer unlocked. You go, girl!');
 else
-	print('No cookies for you! (please wait until we have some limited form of a working version...)');
-	courseplay.houstonWeGotAProblem = true;
-	return;
+	--print('No cookies for you! (please wait until we have some limited form of a working version...)');
+	--courseplay.houstonWeGotAProblem = true;
+	--return;
 end;
 
 local function initialize()

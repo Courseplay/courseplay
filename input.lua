@@ -337,7 +337,7 @@ function courseplay.inputBindings.updateInputButtonData()
 
 		-- print(('\t%s: inputName=%q'):format(type, inputName));
 
-		local txt = ('%s %s'):format(g_i18n:getText('mouse'), MouseHelper.getButtonNames(action.mouseButtons)); -- TODO (Jakob): getButtonNames returns English, not i18n text
+		local txt = ('%s %s'):format(g_i18n:getText('ui_mouse'), MouseHelper.getButtonNames(action.mouseButtons)); -- TODO (Jakob): getButtonNames returns English, not i18n text
 		courseplay.inputBindings.mouse[type .. 'TextI18n'] = txt;
 		courseplay.inputBindings.mouse[type .. 'ButtonId'] = mouseButtonId;
 		-- print(('\t\t%sTextI18n=%q, mouseButtonId=%d'):format(type, txt, mouseButtonId));

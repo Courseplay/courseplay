@@ -912,7 +912,7 @@ local SiloTrigger_TriggerCallback = function(self, triggerId, otherActorId, onEn
 			end;
 		elseif onLeave then
 			-- Remove the current SiloTrigger. (Is here in case Giants fixes the above bug))
-			if self.fill == 0 and trailer.cp.currentSiloTrigger ~= nil then
+			if trailer.cp.currentSiloTrigger ~= nil then
 				trailer.cp.currentSiloTrigger = nil;
 				courseplay:debug(('%s: SiloTrigger Removed! (onLeave)'):format(nameNum(trailer)), 2);
 			end;

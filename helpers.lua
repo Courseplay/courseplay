@@ -830,6 +830,14 @@ function courseplay:loc(key)
 	return courseplay.locales[key] or key;
 end;
 
+function courseplay:getSpeedMeasuringUnit()
+	return g_i18n.globalI18N.useMiles and g_i18n:getText('unit_mph') or g_i18n:getText('unit_kmh');
+end
+
+function courseplay:getMeasuringUnit()
+	return g_i18n.globalI18N.useMiles and g_i18n:getText('unit_miles') or g_i18n:getText('unit_km');
+end
+
 function courseplay.utils:crossProductQuery(a, b, c, useC)
 	-- returns:
 	--	-1	vector from A to right intersects BC (except at the bottom end point)
