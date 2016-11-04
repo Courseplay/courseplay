@@ -50,7 +50,7 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 			
 			-- is this a traffic vehicle?
 			local cm = getCollisionMask(otherId);
-			if vehicle == nil and (bitAND(cm, 33554432) ~= 0 or getName(otherId) == "piQup") then -- if bit25 is part of the collisionMask then set new vehicle in GCM.NTV
+			if vehicle == nil and (bitAND(cm, 2105410) ~= 0 or getName(otherId) == "piQup") then -- if bit25 is part of the collisionMask then set new vehicle in GCM.NTV
 				local pathVehicle = {}
 				pathVehicle.rootNode = otherId
 				pathVehicle.isCpPathvehicle = true
