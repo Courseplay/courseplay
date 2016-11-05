@@ -709,7 +709,10 @@ function courseplay:drive(self, dt)
 				--self,dt,steeringAngleLimit,acceleration,slowAcceleration,slowAngleLimit,allowedToDrive,moveForwards,lx,lz,maxSpeed,slowDownFactor,angle
 				AIVehicleUtil.driveInDirection(self, dt, steeringAngle, acceleration, 0.5, 20, true, fwd, lx, lz, refSpeed, 1);
 			else
-				local tX,_,tZ = worldToLocal(self.aiVehicleDirectionNode, cx, cty, cz);
+				local tX,_,tZ = worldToLocal(self.cp.DirectionNode, cx, cty, cz);
+				if courseplay:isWheelloader(self) then
+					tZ = tZ * 0.5; -- wheel loaders need to turn more
+				end;
 				AIVehicleUtil.driveToPoint(self, dt, acceleration, allowedToDrive, fwd, tX, tZ, refSpeed);
 			end;
 			
@@ -854,10 +857,9 @@ function courseplay:setSpeed(vehicle, refSpeed)
 		vehicle:setCruiseControlState(Drivable.CRUISECONTROL_STATE_ACTIVE)
 	end
 
+	local deltaMinus = vehicle.cp.curSpeed - refSpeed;
 	if newSpeed < vehicle.cruiseControl.speed then
-		local delta = newSpeed - vehicle.cp.curSpeed;
-
-		newSpeed = math.max(newSpeed, vehicle.cp.curSpeed - math.max(0.005, math.min(delta * 0.001, 0.02)));
+		newSpeed = math.max(newSpeed, vehicle.cp.curSpeed - math.max(0.005, math.min(deltaMinus * 0.0015, 0.035)));
 		--newSpeed = (newSpeed + vehicle.cruiseControl.speed)/2
 	end;
 
@@ -865,7 +867,6 @@ function courseplay:setSpeed(vehicle, refSpeed)
 
 	courseplay:handleSlipping(vehicle, refSpeed);
 
-	local deltaMinus = vehicle.cp.curSpeed - refSpeed;
 	local tolerance = 2.5;
 
 	if vehicle.cp.currentTipTrigger and vehicle.cp.currentTipTrigger.bunkerSilo then

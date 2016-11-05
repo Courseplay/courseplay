@@ -218,25 +218,19 @@ function courseplay:load(savegame)
 		print(string.format('## Courseplay: %s: aiTrafficCollisionTrigger missing. Traffic collision prevention will not work!', nameNum(self)));
 	end;
 
-	--Direction 
+	-- DIRECTION NODE SETUP
 	local DirectionNode;
 	if self.aiVehicleDirectionNode ~= nil then
-		DirectionNode = self.aiVehicleDirectionNode;
+		if self.cp.componentNumAsDirectionNode then
+			DirectionNode = self.components[self.cp.componentNumAsDirectionNode].node;
+		else
+			DirectionNode = self.aiVehicleDirectionNode;
+		end;
 	else
 		if courseplay:isWheelloader(self)then
-			-- DirectionNode = getParent(self.shovelTipReferenceNode)
-			--[[ !!!DirectionNode = self.components[2].node;
-			if self.wheels[1].rotMax ~= 0 then
-				DirectionNode = self.rootNode;
-			end]]
-			--[[if DirectionNode == nil then
-				for i=1, table.getn(self.attacherJoints) do
-					if self.rootNode ~= getParent(self.attacherJoints[i].jointTransform) then
-						DirectionNode = getParent(self.attacherJoints[i].jointTransform)
-						break
-					end
-				end
-			end]]
+			if self.cp.hasSpecializationArticulatedAxis then
+				DirectionNode = self.components[Utils.getNoNil(self.cp.componentNumAsDirectionNode, 2)].node;
+			end;
 		end
 		if DirectionNode == nil then
 			DirectionNode = self.rootNode;
@@ -247,7 +241,6 @@ function courseplay:load(savegame)
 		self.cp.oldDirectionNode = DirectionNode;  -- Only used for debugging.
 		DirectionNode = courseplay:createNewLinkedNode(self, "realDirectionNode", DirectionNode);
 		setTranslation(DirectionNode, 0, 0, self.cp.directionNodeZOffset);
-		-- TODO: (Claus) set self.aiVehicleDirectionNode as well here.
 	end;
 
 	self.cp.DirectionNode = DirectionNode;
@@ -264,7 +257,7 @@ function courseplay:load(savegame)
 	-- traffic collision
 	self.cpOnTrafficCollisionTrigger = courseplay.cpOnTrafficCollisionTrigger;
 
-	self.cp.steeringAngle = Utils.getNoNil(getXMLFloat(xmlFile, "vehicle.ackermannSteering" .. "#rotMax"), 30)
+	self.cp.steeringAngle = Utils.getNoNil(math.deg(self.maxRotation), 30);
 	self.cp.tempCollis = {}
 	self.CPnumCollidingVehicles = 0;
 	self.cpTrafficCollisionIgnoreList = {};

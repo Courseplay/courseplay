@@ -281,19 +281,19 @@ function courseplay:setNameVariable(workTool)
 	elseif workTool.cp.xmlFileName == 'caseIHQuadtrac620.xml' then
 		workTool.cp.isCaseIHQuadtrac620 = true;
 		workTool.cp.directionNodeZOffset = 1.556;
-		workTool.cp.showDirectionNode = true;
+		workTool.cp.showDirectionNode = true; -- Only for debug mode 12
 
 	-- Liebherr L538 [Giants]
 	elseif workTool.cp.xmlFileName == 'liebherrL538.xml' then
 		workTool.cp.isLiebherrL538 = true;
 		workTool.cp.directionNodeZOffset = 1.533;
-		workTool.cp.showDirectionNode = true;
+		workTool.cp.showDirectionNode = true; -- Only for debug mode 12
 
-	-- New Holland T9.560 [Giants]
-	elseif workTool.cp.xmlFileName == 'newHollandT9560.xml' then
-		workTool.cp.isNewHollandT9560 = true;
-		workTool.cp.directionNodeZOffset = 1.567;
-		workTool.cp.showDirectionNode = true;
+	-- New Holland T9 [Giants]
+	elseif workTool.cp.xmlFileName == 'newHollandT9.xml' then
+		workTool.cp.isNewHollandT9 = true;
+		--workTool.cp.directionNodeZOffset = 1.567;
+		workTool.cp.showDirectionNode = true; -- Only for debug mode 12
 
 	-- Wood harvesters [Giants]
 	elseif workTool.typeName == 'woodHarvester' then
@@ -359,6 +359,23 @@ function courseplay:setNameVariable(workTool)
 	-- ###########################################################
 
 	-- [5] OTHER TOOLS
+	-- Trucks [Giants]
+	elseif workTool.cp.xmlFileName == 'americanTruckDualAxle.xml' then
+		workTool.cp.isAmericanTruckDualAxle = true;
+		workTool.cp.directionNodeZOffset = 2;
+		workTool.cp.showDirectionNode = true; -- Only for debug mode 12
+
+	elseif workTool.cp.xmlFileName == 'americanTruckOneAxle.xml' then
+		workTool.cp.isAmericanTruckOneAxle = true;
+		workTool.cp.directionNodeZOffset = 2;
+		workTool.cp.showDirectionNode = true; -- Only for debug mode 12
+
+	-- Wheel Loaders [Giants]
+	elseif workTool.cp.xmlFileName == 'jcb435s.xml' then
+		workTool.cp.isJCB435S = true;
+		workTool.cp.directionNodeZOffset = -0.705;
+		workTool.cp.showDirectionNode = true; -- Only for debug mode 12
+
 	-- Seeders [Giants]
 	elseif workTool.cp.xmlFileName == 'vaderstadRapidA600S.xml' then
 		workTool.cp.isVaderstadRapidA600S = true;
