@@ -95,28 +95,26 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 		if workTool ~= nil and tool.attachedCutters == nil then
 			-- balers
 			if courseplay:isBaler(workTool) then
-				print("is Baler")
 				if vehicle.cp.waypointIndex >= vehicle.cp.startWork + 1 and vehicle.cp.waypointIndex < vehicle.cp.stopWork and vehicle.cp.turnStage == 0 then
-					print("is on field")														--  vehicle, workTool, unfold, lower, turnOn, allowedToDrive, cover, unload, ridgeMarker,forceSpeedLimit)
+					                                       --  vehicle, workTool, unfold, lower, turnOn, allowedToDrive, cover, unload, ridgeMarker,forceSpeedLimit)
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle, workTool, true,   true,  true,   allowedToDrive, nil,   nil);
 					if not specialTool then
-						print("is not specialTool")
 						-- automatic opening for balers
 						if workTool.baler.unloadingState ~= nil then
-							print("workTool.baler.unloadingState ~= nil")
 							fillLevelPct = courseplay:round(workTool.cp.fillLevelPercent, 3);
 							--!!! local capacity = courseplay:round(100 * (workTool.realBalerOverFillingRatio or 1), 3);
 							local capacity = workTool.cp.capacity
+							local fillLevel = workTool.cp.fillLevel
 							--print(string.format("if courseplay:isRoundbaler(workTool)(%s) and fillLevelPct(%s) > capacity(%s) * 0.9 and fillLevelPct < capacity and workTool.baler.unloadingState(%s) == Baler.UNLOADING_CLOSED(%s) then",
 							--tostring(courseplay:isRoundbaler(workTool)),tostring(fillLevelPct),tostring(capacity),tostring(workTool.baler.unloadingState),tostring(Baler.UNLOADING_CLOSED)))
-							if courseplay:isRoundbaler(workTool) and fillLevelPct > capacity * 0.9 and fillLevelPct < capacity and workTool.baler.unloadingState == Baler.UNLOADING_CLOSED then
+							if courseplay:isRoundbaler(workTool) and fillLevel > capacity * 0.9 and fillLevel < capacity and workTool.baler.unloadingState == Baler.UNLOADING_CLOSED then
 								if not workTool.isTurnedOn then
 									workTool:setIsTurnedOn(true, false);
 								end;
 								workSpeed = 0.5;
-							elseif fillLevelPct >= capacity and workTool.baler.unloadingState == Baler.UNLOADING_CLOSED then
+							elseif fillLevel >= capacity and workTool.baler.unloadingState == Baler.UNLOADING_CLOSED then
 								allowedToDrive = false;
-								if #(workTool.bales) > 0 then
+								if #(workTool.baler.bales) > 0 then
 									workTool:setIsUnloadingBale(true, false)
 								end
 							elseif workTool.baler.unloadingState ~= Baler.UNLOADING_CLOSED then
@@ -124,7 +122,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 								if workTool.baler.unloadingState == Baler.UNLOADING_OPEN then
 									workTool:setIsUnloadingBale(false)
 								end
-							elseif fillLevelPct >= 0 and not workTool.isTurnedOn and workTool.baler.unloadingState == Baler.UNLOADING_CLOSED then
+							elseif fillLevel >= 0 and not workTool.isTurnedOn and workTool.baler.unloadingState == Baler.UNLOADING_CLOSED then
 								workTool:setIsTurnedOn(true, false);
 							end
 						end

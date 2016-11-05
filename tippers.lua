@@ -84,7 +84,7 @@ function courseplay:isAttachedMixer(workTool)
 end;
 function courseplay:isAttacherModule(workTool)
 	if workTool.attacherJoint then
-		return (workTool.attacherJoint.jointType == Vehicle.jointTypeNameToInt["semitrailer"] and (not workTool.wheels or (workTool.wheels and #workTool.wheels == 0))) or workTool.cp.isAttacherModule == true;
+		return (workTool.attacherJoint.jointType == Vehicle.JOINTTYPE_SEMITRAILER and (not workTool.wheels or (workTool.wheels and #workTool.wheels == 0))) or workTool.cp.isAttacherModule == true;
 	end;
 	return false;
 end;
@@ -114,7 +114,7 @@ function courseplay:isHarvesterSteerable(workTool)
 end;
 function courseplay:isHookLift(workTool)
 	if workTool.attacherJoint then
-		return false ---!!! workTool.attacherJoint.jointType == Vehicle.jointTypeNameToInt["hookLift"];
+		return workTool.attacherJoint.jointType == Vehicle.JOINTTYPE_HOOKLIFT;
 	end;
 	return false;
 end
@@ -128,7 +128,7 @@ function courseplay:isPushWagon(workTool)
 	return workTool.typeName:match("forageWagon") or workTool.cp.hasSpecializationSiloTrailer or workTool.cp.isPushWagon;
 end;
 function courseplay:isRoundbaler(workTool) -- is the tool a roundbaler?
-	return courseplay:isBaler(workTool) and (workTool.baleCloseAnimationName ~= nil and workTool.baleUnloadAnimationName ~= nil or courseplay:isSpecialRoundBaler(workTool));
+	return courseplay:isBaler(workTool) and workTool.baler ~= nil and (workTool.baler.baleCloseAnimationName ~= nil and workTool.baler.baleUnloadAnimationName ~= nil or courseplay:isSpecialRoundBaler(workTool));
 end;
 function courseplay:isSowingMachine(workTool) -- is the tool a sowing machine?
 	return workTool.cp.hasSpecializationSowingMachine or courseplay:isSpecialSowingMachine(workTool);

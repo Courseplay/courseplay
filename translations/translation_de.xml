@@ -33,7 +33,7 @@
 		<text name="COURSEPLAY_WAITING_TIME" 							 text="Haltezeit" />
 		<text name="COURSEPLAY_MINUTES" 								 text="%d Min" />
 		<text name="COURSEPLAY_SECONDS" 								 text="%d Sek" />
-		<text name="COURSEPLAY_UNIT_METER" 								 text="meter" /> 
+		<text name="COURSEPLAY_UNIT_METER" 								 text="m" /> 
 		<text name="COURSEPLAY_COURSE_NAME" 							 text="Name des Kurses:" />
 		<text name="COURSEPLAY_FOLDER_NAME" 							 text="Name des Ordners:" />
 		<text name="COURSEPLAY_FILTER_COURSES" 							 text="Kurse filtern:" />

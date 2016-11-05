@@ -278,9 +278,9 @@ function courseplay:getRealDollyFrontNode(dolly)
 		local node, _ = courseplay:findJointNodeConnectingToNode(dolly, dolly.attacherJoint.rootNode, dolly.rootNode);
 		if node then
 			-- Trailers without pivote
-			if (node == dolly.rootNode and dolly.attacherJoint.jointType ~= Vehicle.jointTypeNameToInt["implement"])
+			if (node == dolly.rootNode and dolly.attacherJoint.jointType ~= Vehicle.JOINTTYPE_IMPLEMENT)
 					-- Implements with pivot and wheels that do not lift the wheels from the ground.
-					or (node ~= dolly.rootNode and dolly.attacherJoint.jointType == Vehicle.jointTypeNameToInt["implement"] and not dolly.attacherJoint.topReferenceNode) then
+					or (node ~= dolly.rootNode and dolly.attacherJoint.jointType == Vehicle.JOINTTYPE_IMPLEMENT and not dolly.attacherJoint.topReferenceNode) then
 				dolly.cp.realDollyFrontNode = courseplay:getRealTurningNode(dolly);
 			else
 				dolly.cp.realDollyFrontNode = false;
@@ -311,7 +311,7 @@ end;
 function courseplay:getRealTrailerFrontNode(workTool)
 	if not workTool.cp.realFrontNode then
 		local jointNode, backtrack = courseplay:findJointNodeConnectingToNode(workTool, workTool.attacherJoint.rootNode, workTool.rootNode);
-		if jointNode and backtrack and workTool.attacherJoint.jointType ~= Vehicle.jointTypeNameToInt["implement"] then
+		if jointNode and backtrack and workTool.attacherJoint.jointType ~= Vehicle.JOINTTYPE_IMPLEMENT then
 			local rootNode;
 			for _, joint in ipairs(workTool.componentJoints) do
 				if joint.jointNode == jointNode then
@@ -641,7 +641,7 @@ function courseplay:getToolTurnRadius(workTool)
 
 		for i, attachedImplement in pairs(attacherVehicle.attachedImplements) do
 			if attachedImplement.object == workTool then
-				rotMax = attachedImplement.maxRotLimit[2];
+				rotMax = attachedImplement.upperRotLimit[2];
 				break;
 			end;
 		end;
@@ -695,7 +695,7 @@ function courseplay:getToolTurnRadius(workTool)
 			courseplay:debug(('%s -> TurnRadius: pivotRotMax=%d° (Pivot trailer/implement)'):format(nameNum(workTool), deg(pivotRotMax)), 6);
 
 			-- We are an implement and should be handled a bit different
-			if workTool.attacherJoint.jointType == Vehicle.jointTypeNameToInt["implement"] then
+			if workTool.attacherJoint.jointType == Vehicle.JOINTTYPE_IMPLEMENT then
 				-- We have a valid pivotRotMax, so calculate it normally.
 				if pivotRotMax > rad(15) then
 					frontLength = frontLength + workToolDistances.attacherJointToPivot;
@@ -744,7 +744,7 @@ function courseplay:getToolTurnRadius(workTool)
 		end;
 
 		-- If we are not an implement then check if half trailer length is bigger than the turnRadius and set it, if it is.
-		if workTool.attacherJoint.jointType ~= Vehicle.jointTypeNameToInt["implement"] and workToolDistances.attacherJointToRearWheel then
+		if workTool.attacherJoint.jointType ~= workTool.JOINTTYPE_IMPLEMENT and workToolDistances.attacherJointToRearWheel then
 			if (workToolDistances.attacherJointToRearWheel / 2) > turnRadius then
 				turnRadius = workToolDistances.attacherJointToRearWheel / 2;
 				courseplay:debug(('%s -> TurnRadius: Using half tool length = %.2fm'):format(nameNum(workTool), turnRadius), 6);
@@ -1018,11 +1018,10 @@ end;
 
 local allowedJointType = {};
 function courseplay:isWheeledWorkTool(workTool)
-	if #allowedJointType == 0 and Vehicle.jointTypeNameToInt ~= nil then --!!!
-	--!!! if #allowedJointType == 0 then
+	if #allowedJointType == 0 then
 		local jointTypeList = {"implement", "trailer", "trailerLow", "semitrailer"};
 		for _,jointType in ipairs(jointTypeList) do
-			local index = Vehicle.jointTypeNameToInt[jointType];
+			local index = AttacherJoints.jointTypeNameToInt[jointType];
 			if index then
 				table.insert(allowedJointType, index, true);
 			end;
@@ -1034,9 +1033,9 @@ function courseplay:isWheeledWorkTool(workTool)
 		local node, _ = courseplay:findJointNodeConnectingToNode(workTool, workTool.attacherJoint.rootNode, workTool.rootNode);
 		if node then
 			-- Trailers
-			if (workTool.attacherJoint.jointType ~= Vehicle.jointTypeNameToInt["implement"])
+			if (workTool.attacherJoint.jointType ~= AttacherJoints.jointTypeNameToInt["implement"])
 			-- Implements with pivot and wheels that do not lift the wheels from the ground.
-			or (node ~= workTool.rootNode and workTool.attacherJoint.jointType == Vehicle.jointTypeNameToInt["implement"] and not workTool.attacherJoint.topReferenceNode)
+			or (node ~= workTool.rootNode and workTool.attacherJoint.jointType == workTool.JOINTTYPE_IMPLEMENT and not workTool.attacherJoint.topReferenceNode)
 			then
 				return true;
 			end;
