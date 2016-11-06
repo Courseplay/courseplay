@@ -212,8 +212,6 @@ function CpManager:update(dt)
 		self.firstRun = false;
 	end;
 
-	print(("moneyIconOverlay.visible = %s"):format(g_currentMission.moneyIconOverlay.visible))
-
 	if g_gui.currentGui == nil then
 		-- SETUP FIELD INGAME DATA
 		if not courseplay.fields.ingameDataSetUp then
