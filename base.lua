@@ -467,7 +467,7 @@ function courseplay:onLeave()
 	end
 
 	--hide visual i3D waypoint signs when not in vehicle
-	courseplay.signs:setSignsVisibility(self, false);
+	courseplay.signs:setSignsVisibility(self, true);
 end
 
 function courseplay:onEnter()
