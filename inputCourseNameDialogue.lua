@@ -185,7 +185,7 @@ function inputCourseNameDialogue:onSaveClick()
 			maxID = 0
 		end
 		local folderID = maxID+1
-		folder = { id = folderID, uid = 'f'..folderID, type = 'folder', name = vehicle.cp.saveFolderName, nameClean = courseplay:normalizeUTF8(vehicle.cp.saveFolderName), parent = 0 }
+		local folder = { id = folderID, uid = 'f'..folderID, type = 'folder', name = vehicle.cp.saveFolderName, nameClean = courseplay:normalizeUTF8(vehicle.cp.saveFolderName), parent = 0 }
 
 		g_currentMission.cp_folders[folderID] = folder
 		--courseplay:dopairs(g_currentMission.cp_folders,1)replace it by tableshow

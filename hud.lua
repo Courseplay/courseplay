@@ -49,8 +49,8 @@ end;
 
 -- ####################################################################################################
 -- SETUP
-courseplay.hud.basePosX = 0.826458 - courseplay.hud:pxToNormal(630 + 50, 'x'); -- vehicleHud - 50px padding - hud width
-courseplay.hud.basePosY = courseplay.hud:pxToNormal(8, 'y');
+courseplay.hud.basePosX = 0.5 - courseplay.hud:pxToNormal(630 / 2, 'x'); -- Center Screen - half hud width
+courseplay.hud.basePosY = courseplay.hud:pxToNormal(32, 'y');
 
 function courseplay.hud:setup()
 	-- self = courseplay.hud

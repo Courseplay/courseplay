@@ -5,14 +5,14 @@
 		<GuiElement 
 			name="titleText" 
 			type="text" 
-			profile="defaultTextWhite" 
-			onCreate="onCreateTitleText" 
-			textSize="14px" 
+			onCreate="onCreateTitleText"
+			textSize="10px"
 			textBold="false" 
 			textColor="0.95 0.95 0.95 1" 
 			text="$CP_COURSEPLAY_COURSE_NAME,$CP_COURSEPLAY_FOLDER_NAME,$CP_COURSEPLAY_FILTER_COURSES" 
 
-			screenAlign="topLeft" positionOrigin="topLeft" position="8px+20px -8px-22px"
+			screenAlign="topLeft" positionOrigin="topLeft" position="8px+10px -8px"
+			profile="textDefault"
 		/>
 
 		<GuiElement 
@@ -33,20 +33,20 @@
 
 			textColor="0.12 0.12 0.12 1" 
 			textSelectedColor="0.12 0.12 0.12 1" 
-			textSize="18px"
-			textBold="false" 
-			alignment="left" 
+			textSize="20px"
+			textBold="false"
+			textAlignment="left"
 
 			cursorFilename="g_baseUIFilename" 
 			cursorUVs="176px 457px 208px 489px"
-			cursorOffset="4px 0px" 
+			cursorOffset="4px 0px"
 		/>
 
 		<!-- Cancel button -->
-		<GuiElement 
+		<GuiElement
 			name="cancelButton" 
 			type="button" 
-			profile="defaultButton" 
+			profile="defaultButton"
 
 			screenAlign="topLeft" positionOrigin="topLeft" position="412px -80px"
 			size="30px 30px"
@@ -69,10 +69,10 @@
 		/>
 
 		<!-- Save button -->
-		<GuiElement 
+		<GuiElement
 			name="saveButton" 
 			type="button" 
-			profile="defaultButton" 
+			profile="defaultButton"
 
 			screenAlign="topLeft" positionOrigin="topLeft" position="454px -80px"
 			size="30px 30px"

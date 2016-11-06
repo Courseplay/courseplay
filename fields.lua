@@ -159,7 +159,7 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 		while numPoints < maxN do
 			setTranslation(probe1, 0, 0, scanAt);
 			rotate(tg,0,math.pi/2,0); -- place probe1 inside the field (90 deg)
-			px,_,pz = getWorldTranslation(probe1);
+			local px,_,pz = getWorldTranslation(probe1);
 			local rotAngle = 0.1; -- 5.73 deg
 
 			local return2field = not courseplay:isField(px, pz, 0.1, 0.1); --there is NO guarantee that probe1 (px,pz) is in field just because tg is!!!
@@ -571,7 +571,7 @@ function courseplay.fields:getFruitTypes()
 	local hudH = courseplay.hud.suc.visibleArea.overlayHeight;
 	local hudX = courseplay.hud.suc.visibleArea.overlayPosX;
 	local hudY = courseplay.hud.suc.visibleArea.overlayPosY;
-	--[[!!! for name,fruitType in pairs(FruitUtil.fruitTypes) do
+	for name,fruitType in pairs(FruitUtil.fruitTypes) do
 		if fruitType.allowsSeeding and fruitType.seedUsagePerSqm then
 			local fillType = FruitUtil.fruitTypeToFillType[fruitType.index];
 			local fillTypeDesc = FillUtil.fillTypeIndexToDesc[ fillType ];
@@ -602,7 +602,7 @@ function courseplay.fields:getFruitTypes()
 				end;
 			end;
 		end;
-	end;]]
+	end;
 	self.seedUsageCalculator.numFruits = #fruitTypes;
 	table.sort(fruitTypes, function(a,b) return a.nameI18N:lower() < b.nameI18N:lower() end);
 	self.seedUsageCalculator.enabled = self.seedUsageCalculator.numFruits > 0;

@@ -90,6 +90,7 @@ function CpManager:loadMap(name)
 	self.realTime10SecsTimer = 0;
 	self.realTime5SecsTimer = 0;
 	self.realTime5SecsTimerThrough = 0;
+	self.startFieldScanAfter = 1500; -- Start field scanning after specified milliseconds
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- DEV CONSOLE COMMANDS
@@ -211,6 +212,8 @@ function CpManager:update(dt)
 		self.firstRun = false;
 	end;
 
+	print(("moneyIconOverlay.visible = %s"):format(g_currentMission.moneyIconOverlay.visible))
+
 	if g_gui.currentGui == nil then
 		-- SETUP FIELD INGAME DATA
 		if not courseplay.fields.ingameDataSetUp then
@@ -218,7 +221,10 @@ function CpManager:update(dt)
 		end;
 
 		-- SCAN ALL FIELD EDGES
-		if courseplay.fields.automaticScan and not courseplay.fields.allFieldsScanned then
+		if self.startFieldScanAfter > 0 then
+			self.startFieldScanAfter = self.startFieldScanAfter - dt;
+		end;
+		if courseplay.fields.automaticScan and not courseplay.fields.allFieldsScanned and self.startFieldScanAfter <= 0 then
 			courseplay.fields:setAllFieldEdges();
 		end;
 
@@ -285,7 +291,7 @@ function CpManager:draw()
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- DISPLAY FIELD SCAN MSG
-	if courseplay.fields.automaticScan and not courseplay.fields.allFieldsScanned then
+	if courseplay.fields.automaticScan and not courseplay.fields.allFieldsScanned and self.startFieldScanAfter <= 0 then
 		self:renderFieldScanInfo();
 	end;
 end;
@@ -618,7 +624,7 @@ function CpManager:showYesNoDialogue(title, text, callbackFn, showBoolVar)
 	local yesNoDialogue = g_gui:showGui('YesNoDialog');
     yesNoDialogue.target:setTitle(title);
 	yesNoDialogue.target:setText(text);
- 	yesNoDialogue.target:setCallback(callbackFn, self); --!!!
+ 	yesNoDialogue.target:setCallback(callbackFn, self);
 	self[showBoolVar] = false;
 end;
 
